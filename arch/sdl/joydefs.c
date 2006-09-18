@@ -36,9 +36,9 @@ char szMouseAxis [3] = {'X', 'Y', 'R'};
 
 char mouseHotkeys [3] = {KEY_X, KEY_Y, KEY_R};
 
-char szJoyAxis [4] = {'X', 'Y', 'R', 'T'};
+char szJoyAxis [UNIQUE_JOY_AXES] = {'X', 'Y', 'R', 'T', 'Z'};
 
-char joyHotkeys [4] = {KEY_X, KEY_Y, KEY_R, KEY_T};
+char joyHotkeys [UNIQUE_JOY_AXES] = {KEY_X, KEY_Y, KEY_R, KEY_T, KEY_Z};
 
 int joydefs_calibrate_flag = 0;
 
@@ -145,7 +145,7 @@ if (gameOpts->input.bUseJoystick) {
 		if (gameOpts->input.bSyncJoyAxes != v) {
 			gameOpts->input.bSyncJoyAxes = v;
 			if (gameOpts->input.bSyncJoyAxes)
-				for (i = 1; i < 4; i++) {
+				for (i = 1; i < UNIQUE_JOY_AXES; i++) {
 					gameOpts->input.joyDeadZones [i] = gameOpts->input.joyDeadZones [0];
 					gameOpts->input.joySensitivity [i] = gameOpts->input.joySensitivity [0];
 					}
@@ -154,10 +154,10 @@ if (gameOpts->input.bUseJoystick) {
 			return;
 			}
 		}
-	h = gameOpts->input.bSyncJoyAxes ? 1 : 4;
+	h = gameOpts->input.bSyncJoyAxes ? 1 : UNIQUE_JOY_AXES;
 	for (i = 0; i < h; i++)
 		gameOpts->input.joySensitivity [i] = items [nJoySensOpt + i].value;
-	for (i = h; i < 4; i++)
+	for (i = h; i < UNIQUE_JOY_AXES; i++)
 		gameOpts->input.joySensitivity [i] = gameOpts->input.joySensitivity [0];
 
 	for (i = 0; i < h; i++) {
@@ -174,7 +174,7 @@ if (gameOpts->input.bUseJoystick) {
 			*last_key = -2;
 			}
 		}
-	for (i = h; i < 4; i++)
+	for (i = h; i < UNIQUE_JOY_AXES; i++)
 		gameOpts->input.joyDeadZones [i] = gameOpts->input.joyDeadZones [0];
 	}
 if (gameOpts->app.bExpertMode) {
@@ -209,8 +209,8 @@ void joydefs_config()
 			nFastPitchOpt, nJoyMouseOpt;
 	char	szKeyRampScale [40];
 	char	szMouseSens [3][40];
-	char	szJoySens [4][40];
-	char	szJoyDeadzone [4][40];
+	char	szJoySens [UNIQUE_JOY_AXES][40];
+	char	szJoyDeadzone [UNIQUE_JOY_AXES][40];
 
 rebuild_menu:
 
@@ -263,15 +263,21 @@ rebuild_menu:
 			m [nMouseTypeOpt + NMCLAMP (gameStates.input.nMouseType - CONTROL_MOUSE, 0, 1)].value = 1;
 			}
 		}
-
+#ifdef RELEASE
 	if (gameOpts->input.bUseMouse || (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick)) {
+#else
+	if (gameOpts->input.bUseMouse || gameOpts->input.bUseJoystick) {
+#endif
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
 
+#ifdef RELEASE
 	if (!gameOpts->input.nJoysticks) 
 		nUseJoyOpt = -1;
-	else {
+	else 
+#endif
+		{
 		ADD_CHECK (opt, TXT_USE_JOY, gameOpts->input.bUseJoystick, KEY_J, HTX_CONF_USEJOY);
 		nUseJoyOpt = opt++;
 		if (gameOpts->input.bUseJoystick || gameStates.app.bNostalgia) {
@@ -285,7 +291,7 @@ rebuild_menu:
 				ADD_CHECK (opt, TXT_SYNC_JOY_AXES, gameOpts->input.bSyncJoyAxes, KEY_Y, HTX_CONF_SYNCJOY);
 				nSyncJoyAxesOpt = opt++;
 				}
-			h = gameOpts->input.bSyncJoyAxes ? 1 : 4;
+			h = gameOpts->input.bSyncJoyAxes ? 1 : UNIQUE_JOY_AXES;
 			for (i = 0; i < h; i++) {
 				if (gameOpts->input.bSyncJoyAxes)
 					strcpy (szJoySens [i] + 1, TXT_JOY_SENS); 
@@ -381,14 +387,16 @@ rebuild_menu:
 			gameOpts->input.mouseSensitivity [j] = m [nMouseSensOpt + j].value;
 		for (j = h; j < 3; j++)
 			gameOpts->input.mouseSensitivity [j] = gameOpts->input.mouseSensitivity [0];
-		h = gameOpts->input.bSyncJoyAxes ? 1 : 4;
+		h = gameOpts->input.bSyncJoyAxes ? 1 : UNIQUE_JOY_AXES;
 		for (j = 0; j < h; j++)
 			gameOpts->input.joySensitivity [j] = m [nJoySensOpt + j].value;
-		for (j = h; j < 4; j++)
+		for (j = h; j < UNIQUE_JOY_AXES; j++)
 			gameOpts->input.joySensitivity [j] = gameOpts->input.joySensitivity [0];
 */
 		gameOpts->input.bUseMouse = m [nUseMouseOpt].value;
+#ifdef RELEASE
 		if (gameOpts->input.nJoysticks)
+#endif
 			gameOpts->input.bUseJoystick = m [nUseJoyOpt].value;
 		gameOpts->input.bUseHotKeys = m [nUseHotKeysOpt].value;
 		if (!gameStates.app.bNostalgia) {
@@ -406,13 +414,17 @@ rebuild_menu:
 							}
 						}
 				}
+#ifdef RELEASE
 			if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
+#else
+			if (gameOpts->input.bUseJoystick) {
+#endif
 				if (nJoyTypeOpt < 0)
 					gameStates.input.nJoyType = CONTROL_JOYSTICK;
 				else {
 					if (gameOpts->app.bExpertMode) {
 						gameOpts->input.bLinearJoySens = m [nLinSensOpt].value;
-					for (j = 0; j < 4; j++)
+					for (j = 0; j < UNIQUE_JOY_AXES; j++)
 						if (m [nJoyTypeOpt + j].value) {
 							gameStates.input.nJoyType = CONTROL_JOYSTICK + j;
 							break;

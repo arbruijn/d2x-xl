@@ -619,17 +619,17 @@ ubyte kc_kbd_flags [NUM_KEY_CONTROLS];
 kc_item kc_joystick [NUM_JOY_CONTROLS] = {
 	{  0, 25, 46, 85, 26, 15,  1, 24,  5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
 	{  1, 25, 54, 85, 26,  0,  4,  5,  6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
-	{  2, 25, 85, 85, 26, 26,  3,  9, 10,"Accelerate", 285, BT_JOY_BUTTON, 255 },
-	{  3, 25, 93, 85, 26,  2, 25, 10, 11,"reverse", 286, BT_JOY_BUTTON, 255 },
+	{  2, 25, 94, 85, 26, 35,  3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+	{  3, 25,102, 85, 26,  2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
 	{  4, 25, 62, 85, 26,  1, 26,  6,  7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
 	{  5,180, 46, 79, 26, 23,  6,  0,  1,"Slide on", 274, BT_JOY_BUTTON, 255 },
 	{  6,180, 54, 79, 26,  5,  7,  1,  4,"Slide left", 275, BT_JOY_BUTTON, 255 },
 	{  7,180, 62, 79, 26,  6,  8,  4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
-	{  8,180, 70, 79, 26,  7,  9, 26,  9,"Slide up", 277, BT_JOY_BUTTON, 255 },
-	{  9,180, 78, 79, 26,  8, 10,  8,  2,"Slide down", 278, BT_JOY_BUTTON, 255 },
-	{ 10,180, 86, 79, 26,  9, 11,  2,  3,"Bank on", 279, BT_JOY_BUTTON, 255 },
-	{ 11,180, 94, 79, 26, 10, 12,  3, 12,"Bank left", 280, BT_JOY_BUTTON, 255 },
-	{ 12,180,102, 79, 26, 11, 28, 11, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+	{  8,180, 70, 79, 26,  7,  9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
+	{  9,180, 78, 79, 26,  8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
+	{ 10,180, 86, 79, 26,  9, 11, 35,  2,"Bank on", 279, BT_JOY_BUTTON, 255 },
+	{ 11,180, 94, 79, 26, 10, 12,  2,  3,"Bank left", 280, BT_JOY_BUTTON, 255 },
+	{ 12,180,102, 79, 26, 11, 28,  3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
 	{ 13, 22,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
 	{ 14, 22,162, 99,  8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
 	{ 15, 22,170, 51, 26, 13,  0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
@@ -643,7 +643,7 @@ kc_item kc_joystick [NUM_JOY_CONTROLS] = {
 	{ 23,164,186, 58, 26, 21,  5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
 	{ 24,164,186,106,  8, 22, 13, 23,  0,"throttle", 305, BT_INVERT, 255 },
 	{ 25, 25,110, 85, 26,  3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
-	{ 26, 25, 70, 85, 26,  4,  2,  7,  8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+	{ 26, 25, 70, 85, 26,  4, 34,  7,  8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
 	{ 27, 25,118, 85, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
 	{ 28,180,110, 79, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
 	{ 29,180,118, 79, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
@@ -651,6 +651,8 @@ kc_item kc_joystick [NUM_JOY_CONTROLS] = {
 	{ 31,180,126, 79, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
 	{ 32,180,134, 79, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
 	{ 33, 25,134, 85, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+	{ 34, 25, 78, 85, 26, 26, 35, 8,   9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
+	{ 35, 25, 86, 85, 26, 34,  2, 9,  10,"Use Invul", 752, BT_JOY_BUTTON, 255 }
 };
 
 kc_item kc_mouse [NUM_MOUSE_CONTROLS] = {

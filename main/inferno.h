@@ -217,6 +217,8 @@ typedef struct tGameplayOptions {
 	int bInventory;
 } tGameplayOptions;
 
+#define UNIQUE_JOY_AXES	5
+
 typedef struct tInputOptions {
 	int bUseJoystick;
 	int bUseMouse;
@@ -234,8 +236,8 @@ typedef struct tInputOptions {
 	int nMinTurnRate;
 	int nMaxPitch;
 	ubyte mouseSensitivity [3];
-	ubyte joySensitivity [4];
-	int joyDeadZones [4];
+	ubyte joySensitivity [UNIQUE_JOY_AXES];
+	int joyDeadZones [UNIQUE_JOY_AXES];
 } tInputOptions;
 
 typedef struct tSoundOptions {

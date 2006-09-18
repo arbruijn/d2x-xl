@@ -2084,16 +2084,26 @@ for (i = 0; i < 2; i++) {
 		hIcon = (int) ((h + nIconScale - 1) / nIconScale * cmScaleY);
 		if (bInitIcons)
 			continue;
-		HUDBitBlt (nIconScale * -(x + (w - bmP->bm_props.w) / (2 * nIconScale)), 
-						nIconScale * -(y - hIcon), bmP, nIconScale * F1_0, 0);
 		if (i)
 			bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags & (1 << l));
-		else if (!l)
+		else if (!l) {
 			bHave = (ll <= MAX_LASER_LEVEL);
-		else if (l == 5)
+			if (!bHave)
+				continue;
+			}
+		else if (l == 5) {
 			bHave = (ll > MAX_LASER_LEVEL);
-		else
+			if (!bHave)
+				continue;
+			}
+		else {
 			bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags & (1 << l));
+			if (bHave && extraGameInfo [0].bSmartWeaponSwitch && ((l == 1) || (l == 2)) &&
+				 gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags & (1 << (l + 5)))
+				continue;
+			}
+		HUDBitBlt (nIconScale * -(x + (w - bmP->bm_props.w) / (2 * nIconScale)), 
+					  nIconScale * -(y - hIcon), bmP, nIconScale * F1_0, 0);
 		*szAmmo = '\0';
 		if (bHave && ammoType [i][l]) {
 			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo [(l == 6) ? 1 : l]);

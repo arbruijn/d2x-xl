@@ -2695,6 +2695,7 @@ if (fp) {
 						}
 					}
 				}
+			j = indices [i];
 			}
 		else {
 			int nSize = bm.bm_props.w * bm.bm_props.h;
@@ -2703,8 +2704,9 @@ if (fp) {
 				break;
 				}
 			bm.bm_palette = gamePalette;
+			j = indices [i];
+			bm.bm_props = gameData.pig.tex.pBitmaps [j].bm_props;
 			}
-		j = indices [i];
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bm_fromPog = 1;
 		bm.bm_handle = j;
