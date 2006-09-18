@@ -2132,7 +2132,7 @@ for (i = 0; i < 2; i++) {
 				GrGetStringSize (szAmmo, &fw, &fh, &faw);
 				}
 			else if ((l == 5) && (ll > MAX_LASER_LEVEL)) {
-				sprintf (szAmmo, "%d", ll - MAX_LASER_LEVEL);
+				sprintf (szAmmo, "S%d", ll - MAX_LASER_LEVEL);
 				GrGetStringSize (szAmmo, &fw, &fh, &faw);
 				}
 			}
