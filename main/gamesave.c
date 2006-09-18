@@ -390,7 +390,7 @@ int is_real_level(char *filename)
 
 //------------------------------------------------------------------------------
 
-void change_filename_extension(char *dest, char *src, char *new_ext)
+void ChangeFilenameExtension(char *dest, char *src, char *new_ext)
 {
 	int i;
 
@@ -1743,11 +1743,11 @@ strcpy(filename,filename_passed);
 	//if we don't have an LVL, try RDL  
 	//if we don't have the editor, we just use what was passed
 
-	change_filename_extension(filename,filename_passed,".lvl");
+	ChangeFilenameExtension(filename,filename_passed,".lvl");
 	use_compiled_level = 0;
 
 	if (!CFExist(filename))	{
-		change_filename_extension(filename,filename,".rl2");
+		ChangeFilenameExtension(filename,filename,".rl2");
 		use_compiled_level = 1;
 	}		
 #endif
@@ -2159,13 +2159,13 @@ int save_level_sub(char * filename, int compiled_version)
 				StartTime();
 			}
 		}
-		change_filename_extension(temp_filename,filename,".LVL");
+		ChangeFilenameExtension(temp_filename,filename,".LVL");
 	}
 	else
 	{
 		// macs are using the regular hog/rl2 files for shareware
 		#if defined(SHAREWARE)
-			change_filename_extension(temp_filename,filename,".SL2");
+			ChangeFilenameExtension(temp_filename,filename,".SL2");
 		#endif
 	}
 

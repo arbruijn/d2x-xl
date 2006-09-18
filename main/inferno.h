@@ -659,10 +659,18 @@ typedef struct tLightInfo {
 
 #define MAX_SHADOW_MAPS	20
 
+typedef struct tLightRef {
+	short			nSegment;
+	short			nSide;
+	short			nTexture;
+} tLightRef;
+
 typedef struct tColorData {
 	tFaceColor	lights [MAX_SEGMENTS][6];
 	tFaceColor	sides [MAX_SEGMENTS][6];
 	tFaceColor	vertices [MAX_VERTICES];
+	tLightRef	visibleLights [MAX_SEGMENTS * 6];
+	int			nVisibleLights;
 } tColorData;
 
 typedef struct tPulseData {
@@ -978,6 +986,7 @@ typedef struct tTextureData {
 	grs_bitmap			*pAltBitmaps;
 	bitmap_index		*pBmIndex;
 	tmap_info			*pTMapInfo;
+	int					brightness [MAX_WALL_TEXTURES];
 } tTextureData;
 
 typedef struct tEffectData {

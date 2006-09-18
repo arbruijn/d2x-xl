@@ -1199,6 +1199,8 @@ else {
 		PiggyLoadLevelData ();
 	LoadBitmapReplacements (pszLevelName);
 	}
+/*---*/LogErr ("   loading texture brightness info\n");
+LoadTextureBrightness (pszLevelName);
 /*---*/LogErr ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 /*---*/LogErr ("   loading cambot\n");

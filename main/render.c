@@ -3526,6 +3526,37 @@ if (gameOpts->render.bOptimize) {
 }
 
 //------------------------------------------------------------------------------
+
+void AddVisibleLight (short nSegment, short nSide, short nTexture, int bPrimary)
+{
+if ((bPrimary || nTexture) && gameData.pig.tex.brightness [nTexture]) {
+	tLightRef	*plr = gameData.render.color.visibleLights + gameData.render.color.nVisibleLights++;
+
+	plr->nSegment = nSegment;
+	plr->nSide = nSide;
+	plr->nTexture = nTexture;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void GatherVisibleLights (void)
+{
+	int	i;
+	short	nSegment, nSide;
+	side	*sideP;
+
+gameData.render.color.nVisibleLights = 0;
+for (i = 0; i < nRenderSegs;i++) {
+	nSegment = nRenderList [i];
+	for (nSide = 0, sideP = gameData.segs.segments [nSegment].sides; nSide < 6; nSide++, sideP++) {
+		AddVisibleLight (nSegment, nSide, sideP->tmap_num, 1);
+		AddVisibleLight (nSegment, nSide, sideP->tmap_num, 0);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 void RenderMine (short startSegNum, fix nEyeOffset, int nWindowNum)
@@ -3570,6 +3601,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 
 if (gameStates.render.nRenderPass <= 0) {
 	BuildSegmentList (startSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
+	GatherVisibleLights ();
 #if OGL_QUERY
 	if (gameOpts->render.bAllSegs && !nWindowNum) {
 		memset (bRenderSegObjs, 0, sizeof (bRenderSegObjs));

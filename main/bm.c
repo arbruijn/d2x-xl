@@ -76,6 +76,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cntrlcen.h"
 #include "makesig.h"
 #include "interp.h"
+#include "lighting.h"
+#include "byteswap.h"
 
 ubyte Sounds [2][MAX_SOUNDS];
 ubyte AltSounds [2][MAX_SOUNDS];
@@ -361,7 +363,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 	if (szInput [0]==' ' || szInput [0]=='\t') {
 		char *t;
 		for (t=szInput;*t && *t!='\n';t++)
-			if (! (*t==' ' || *t=='\t')) {
+			if (!(*t==' ' || *t=='\t')) {
 #if TRACE
 				con_printf (1,"Suspicious: line %d of BITMAPS.TBL starts with whitespace\n",linenum);
 #endif
@@ -1219,7 +1221,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern void change_filename_extension ( char *dest, char *src, char *new_ext );
+extern void ChangeFilenameExtension ( char *dest, char *src, char *new_ext );
 
 int LoadRobotReplacements (char *level_name, int bAddBots)
 {
@@ -1230,9 +1232,9 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
 			nPolyModelSave = gameData.models.nPolyModels;
 	char	ifile_name [FILENAME_LEN];
 
-	change_filename_extension (ifile_name, level_name, ".hxm");
+	ChangeFilenameExtension (ifile_name, level_name, ".hxm");
 
-	if (! (fp = CFOpen (ifile_name, gameFolders.szDataDir,"rb", 0)))		//no robot replacement file
+	if (!(fp = CFOpen (ifile_name, gameFolders.szDataDir,"rb", 0)))		//no robot replacement file
 		return 0;
 
 	t = CFReadInt (fp);			//read id "HXM!"
@@ -1408,7 +1410,7 @@ if (!bip->index) {
 	*bip = ReadExtraBitmapD1Pig (name2);
 	d_free (name2);
 	}
-if (! (i = bip->index))
+if (!(i = bip->index))
 	return NULL;
 //if (gameData.pig.tex.bitmaps [0][i].bm_props.w != 64 || gameData.pig.tex.bitmaps [0][i].bm_props.h != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
@@ -1556,5 +1558,26 @@ for (;i < gameData.models.nPolyModels;i++)
 gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
 gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 }
+
+//------------------------------------------------------------------------------
+
+void LoadTextureBrightness (char *pszLevel)
+{
+	CFILE		*fp;
+	char		szFile [FILENAME_LEN];
+	int		i, *pb;
+
+ChangeFilenameExtension (szFile, pszLevel, ".lgt");
+if ((fp = CFOpen (szFile, gameFolders.szDataDir,"rb", 0)) &&
+	 (CFRead (gameData.pig.tex.brightness, sizeof (gameData.pig.tex.brightness), 1, fp) == 1)) {
+	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness; i; i--, pb++)
+		*pb = INTEL_INT (*pb);
+	CFClose (fp);
+	}
+else
+	InitTextureBrightness ();
+}
+
+
 //------------------------------------------------------------------------------
 //eof

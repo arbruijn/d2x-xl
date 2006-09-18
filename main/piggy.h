@@ -163,6 +163,7 @@ void PiggyLoadLevelData();
 
 #define MAX_BITMAP_FILES    2620 // Upped for CD Enhanced
 #define D1_MAX_BITMAP_FILES 1555 // Upped for CD Enhanced
+#define MAX_WALL_TEXTURES	 910
 #define MAX_SOUND_FILES     MAX_SOUNDS
 
 #ifdef PIGGY_USE_PAGING

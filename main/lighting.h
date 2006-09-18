@@ -79,4 +79,6 @@ void ComputeEngineGlow (object *obj, fix *engine_glow_value);
 // turn headlight boost on & off
 void toggle_headlight_active(void);
 
+void InitTextureBrightness (void);
+
 #endif /* _LIGHTING_H */

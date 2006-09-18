@@ -201,7 +201,7 @@ gameData.render.nComputedColors = 0;
 
 //------------------------------------------------------------------------------
 
-extern void change_filename_extension(char *dest, char *src, char *new_ext);
+extern void ChangeFilenameExtension(char *dest, char *src, char *new_ext);
 
 ubyte *GrUsePaletteTable (char *pszFile, char *pszLevel)
 {
@@ -215,7 +215,7 @@ ubyte *GrUsePaletteTable (char *pszFile, char *pszLevel)
 if (pszLevel) {
 	char ifile_name [FILENAME_LEN];
 	
-	change_filename_extension (ifile_name, pszLevel, ".pal");
+	ChangeFilenameExtension (ifile_name, pszLevel, ".pal");
 	fp = CFOpen (ifile_name, gameFolders.szDataDir, "rb", 0);
 	}
 if (!fp)

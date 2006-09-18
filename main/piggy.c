@@ -2569,7 +2569,7 @@ void PiggyBitmapPageOutAllW ()
  *  2) From descent.pig (for loading d1 levels)
  */
 
-extern void change_filename_extension (char *dest, char *src, char *new_ext);
+extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 extern char szLastPalettePig [];
 
 void _CDECL_ FreeBitmapReplacements (void)
@@ -2588,7 +2588,7 @@ void LoadBitmapReplacements (char *level_name)
 	//first, d_free up data allocated for old bitmaps
 LogErr ("   loading replacement textures\n");
 FreeBitmapReplacements ();
-change_filename_extension (szFilename, level_name, ".pog");
+ChangeFilenameExtension (szFilename, level_name, ".pog");
 fp = CFOpen (szFilename, gameFolders.szDataDir,"rb",0);
 if (fp) {
 	int					id, version, nBitmapNum, bTGA;
