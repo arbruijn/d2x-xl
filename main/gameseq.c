@@ -2027,15 +2027,15 @@ else
 			return;
 			}
 		}
-	if (gameData.reactor.bDestroyed) {
+	if (gameData.reactor.bDestroyed || gameStates.app.bD1Mission) {
 		//clear out stuff so no bonus
 		gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].shields = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = 3;
 		died_in_mine_message (); // Give them some indication of what happened
-		if (gameData.missions.nCurrentLevel < 0) {
-			if (CFExist (SECRETB_FILENAME,gameFolders.szSaveDir,0)) {
+		if ((gameData.missions.nCurrentLevel < 0) && !gameStates.app.bD1Mission) {
+			if (CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 				ReturningToLevelMessage ();
 				StateRestoreAll (1, 2, SECRETB_FILENAME);			//	2 means you died
 				SetPosFromReturnSegment ();
