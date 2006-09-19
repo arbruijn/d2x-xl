@@ -509,6 +509,7 @@ typedef struct {
 typedef struct tObjDropInfo {
 	time_t	nDropTime;
 	short		nPowerupType;
+	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
 } tObjDropInfo;

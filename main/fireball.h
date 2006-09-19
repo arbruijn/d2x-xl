@@ -106,7 +106,7 @@ void DrawFireball(object *obj);
 void ExplodeWall(short segnum, short sidenum);
 void DoExplodingWallFrame(void);
 void InitExplodingWalls(void);
-void MaybeDropNetPowerup(short objnum, int powerup_type, int nDropState);
+int MaybeDropNetPowerup(short objnum, int powerup_type, int nDropState);
 RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy(object *del_obj);
 void DropPowerups();
@@ -124,7 +124,5 @@ int CheckConquerRoom (xsegment *segP);
 void ConquerRoom (int newOwner, int oldOwner, int roomId);
 void StartConquerWarning (void);
 void StopConquerWarning (void);
-
-extern int nDroppedPowerups, nFreeDropInfos;
 
 #endif /* _FIREBALL_H */

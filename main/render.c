@@ -696,7 +696,7 @@ props.tMap1 = propsP->tMap1;
 props.tMap2 = propsP->tMap2;
 props.nv = propsP->nv;
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 22 && props.sideNum == 4)
+if (props.segNum == 91 && props.sideNum == 0)
 	props.segNum = props.segNum;
 #endif
 memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
@@ -858,7 +858,7 @@ Assert(props.nv <= 4);
 				bm = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.tMap1].index;
 				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.tMap1], gameStates.app.bD1Mission);
 				}
-		Assert(!(bm->bm_props.flags & BM_FLAG_PAGED_OUT));
+//		Assert(!(bm->bm_props.flags & BM_FLAG_PAGED_OUT));
 		}
 	//else 
 	if (bHaveCamImg) {

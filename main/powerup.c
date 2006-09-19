@@ -971,7 +971,9 @@ return bUsed;
 
 void SpawnLeftoverPowerups (short nObject)
 {
-	ubyte	nLeft = gameData.multi.leftoverPowerups [nObject].nCount;
+	ubyte		nLeft = gameData.multi.leftoverPowerups [nObject].nCount;
+	short		i;
+	object	*objP;
 
 if (nLeft) {	//leave powerups that cannot be picked up in mine
 	ubyte nType = gameData.multi.leftoverPowerups [nObject].nType;
@@ -979,8 +981,11 @@ if (nLeft) {	//leave powerups that cannot be picked up in mine
 	spitter.mtype.phys_info.velocity.x =
 	spitter.mtype.phys_info.velocity.y =
 	spitter.mtype.phys_info.velocity.z = 0;
-	for (; nLeft; nLeft--)
-		SpitPowerup (&spitter, nType, d_rand ());
+	for (; nLeft; nLeft--) {
+		i = SpitPowerup (&spitter, nType, d_rand ());
+		objP = gameData.objs.objects + i;
+		MultiSendCreatePowerup (nType, objP->segnum, i, &objP->pos);
+		}
 	gameData.multi.powerupsInMine [nType] += nLeft;
 	memset (gameData.multi.leftoverPowerups + nObject, 0, sizeof (gameData.multi.leftoverPowerups [nObject]));
 	}

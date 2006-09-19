@@ -1900,7 +1900,7 @@ Assert (objnum != -1);
 Assert (objnum != 0);
 Assert (objP->type != OBJ_NONE);
 Assert (objP != gameData.objs.console);
-if (objP->type==OBJ_WEAPON) {
+if (objP->type == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (objnum);
 	if (objP->id == GUIDEDMISS_ID) {
 		pnum=gameData.objs.objects [objP->ctype.laser_info.parent_num].id;

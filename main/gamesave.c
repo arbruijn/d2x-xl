@@ -1247,11 +1247,12 @@ i = CFTell (LoadFile);
 			gameData.objs.init [i] = *objP;
 		}
 	}
-	for (i=0;i<MAX_OBJECTS-1;i++)
+	for (i = 0; i < MAX_OBJECTS - 1; i++)
 		gameData.objs.dropInfo [i].nNextPowerup = i + 1;
 	gameData.objs.dropInfo [i].nNextPowerup = -1;
-	nDroppedPowerups = -1;
-	nFreeDropInfos = 0;
+	gameData.objs.nFirstDropped =
+	gameData.objs.nLastDropped = -1;
+	gameData.objs.nFreeDropped = 0;
 i = CFTell (LoadFile);
 
 	//===================== READ WALL INFO ============================

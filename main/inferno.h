@@ -853,6 +853,10 @@ typedef struct tObjectData {
 	short					firstChild [MAX_OBJECTS];
 	object				init [MAX_OBJECTS];
 	tObjDropInfo		dropInfo [MAX_OBJECTS];
+	short					nFirstDropped;
+	short					nLastDropped;
+	short					nFreeDropped;
+	short					nDropped;
 	ushort				cameraRef [MAX_OBJECTS];
 	object				*guidedMissile [MAX_PLAYERS];
 	int					guidedMissileSig [MAX_PLAYERS];

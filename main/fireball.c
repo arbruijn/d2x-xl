@@ -161,10 +161,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this 
 
-int nDroppedPowerups = -1;
-int nFreeDropInfos = 0;
-int nDroppedCount = 0;
-
 //--unused-- ubyte	Frame_processed[MAX_OBJECTS];
 
 int	PK1=1, PK2=8;
@@ -1073,12 +1069,13 @@ int ChooseDropSegment(object *objP, int *pbFixedPos, int nDropState)
 
 void DropPowerups (void)
 {
-	int	h = nDroppedPowerups, i;
+	short	h = gameData.objs.nFirstDropped, i;
 
 while (h >= 0) {
 	i = h;
 	h = gameData.objs.dropInfo [i].nNextPowerup;
-	MaybeDropNetPowerup ((short) i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP);
+	if (!MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP))
+		break;
 	}
 }
 
@@ -1086,69 +1083,105 @@ while (h >= 0) {
 
 RespawnDestroyedWeapon (short nObject)
 {
-	int	i;
+	int	h = gameData.objs.nFirstDropped, i;
 
-for (i = nDroppedPowerups; i >= 0; i = gameData.objs.dropInfo [i].nNextPowerup)
+while (h >= 0) {
+	i = h;
+	h = gameData.objs.dropInfo [i].nNextPowerup;
 	if ((gameData.objs.dropInfo [i].nObject == nObject) &&
 		 (gameData.objs.dropInfo [i].nDropTime < 0)) {
 		gameData.objs.dropInfo [i].nDropTime = 0;
-		MaybeDropNetPowerup (nObject, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP);
+		MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP);
 		}
+	}
+}
+
+//	------------------------------------------------------------------------------------------------------
+
+static int AddDropInfo (void)
+{
+	int	h;
+
+if (gameData.objs.nFreeDropped < 0)
+	return 0;
+h = gameData.objs.nFreeDropped;
+gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
+gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
+gameData.objs.dropInfo [h].nNextPowerup = -1;
+if (gameData.objs.nLastDropped >= 0)
+	gameData.objs.dropInfo [gameData.objs.nLastDropped].nNextPowerup = h;
+else
+	gameData.objs.nFirstDropped =
+	gameData.objs.nLastDropped = h;
+gameData.objs.nDropped++;
+}
+
+//	------------------------------------------------------------------------------------------------------
+
+static void DelDropInfo (int h)
+{
+	int	i, j;
+
+i = gameData.objs.dropInfo [h].nPrevPowerup;
+j = gameData.objs.dropInfo [h].nNextPowerup;
+if (i < 0)
+	gameData.objs.nFirstDropped = j;
+else
+	gameData.objs.dropInfo [i].nNextPowerup = j;
+if (j < 0)
+	gameData.objs.nLastDropped = i;
+else
+	gameData.objs.dropInfo [j].nPrevPowerup = i;
+gameData.objs.dropInfo [h].nNextPowerup = gameData.objs.nFreeDropped;
+gameData.objs.nFreeDropped = h;
+gameData.objs.nDropped--;
 }
 
 //	------------------------------------------------------------------------------------------------------
 //	Drop cloak powerup if in a network game.
 
-void MaybeDropNetPowerup (short objnum, int powerup_type, int nDropState)
+int MaybeDropNetPowerup (short objnum, int powerup_type, int nDropState)
 {
 if (EGI_FLAG (bImmortalPowerups, 0, 0) || 
 		((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
 	short	segnum;
-	int i, bFixedPos = 0;
+	int h, bFixedPos = 0;
 	vms_vector vNewPos;
 
 	MultiSendWeapons (1);
 #if 0
 	if ((gameData.app.nGameMode & GM_NETWORK) && (nDropState < CHECK_DROP) && (powerup_type >= 0)) {
 		if (gameData.multi.powerupsInMine[powerup_type] >= gameData.multi.maxPowerupsAllowed[powerup_type])
-			return;
+			return 0;
 		}
 #endif
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
-		return;
+		return 0;
 	multiData.create.nLoc = 0;
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [objnum].nDropTime < 0) ||
 				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [objnum].nDropTime < 
 				  extraGameInfo [IsMultiGame].nSpawnDelay))
-				return;
+				return 0;
 			nDropState = EXEC_DROP;
 			}
 		else if (nDropState == INIT_DROP) {
-			if (nFreeDropInfos < 0)
-				return;
-			i = nFreeDropInfos;
-			nFreeDropInfos = gameData.objs.dropInfo [nFreeDropInfos].nNextPowerup;
-			gameData.objs.dropInfo [i].nObject = objnum;
-			gameData.objs.dropInfo [i].nNextPowerup = nDroppedPowerups;
-			nDroppedPowerups = i;
-			gameData.objs.dropInfo [nDroppedPowerups].nDropTime = 
+			if (0 > (h = AddDropInfo ()))
+				return 0;
+			gameData.objs.dropInfo [h].nObject = objnum;
+			gameData.objs.dropInfo [h].nPowerupType = powerup_type;
+			gameData.objs.dropInfo [h].nDropTime = 
 				(extraGameInfo [IsMultiGame].nSpawnDelay < 0) ? -1 : gameStates.app.nSDLTicks;
-			gameData.objs.dropInfo [nDroppedPowerups].nPowerupType = powerup_type;
-			return;
+			return 0;
 			}
 		if (nDropState == EXEC_DROP) {
-			i = nDroppedPowerups;
-			nDroppedPowerups = gameData.objs.dropInfo [nDroppedPowerups].nNextPowerup;
-			gameData.objs.dropInfo [i].nNextPowerup = nFreeDropInfos;
-			nFreeDropInfos = i;
-			nDroppedCount--;
+			DelDropInfo (objnum);
 			}
 		}
-	objnum = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players[gameData.multi.nLocalPlayer].objnum, 1, OBJ_POWERUP, powerup_type);
+	objnum = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum, 1, OBJ_POWERUP, powerup_type);
 	if (objnum < 0)
-		return;
+		return 0;
 	segnum = ChooseDropSegment (gameData.objs.objects + objnum, &bFixedPos, nDropState);
 	if (bFixedPos)
 		vNewPos = gameData.objs.objects[objnum].pos;
@@ -1160,7 +1193,9 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0) ||
 	VmVecZero(&gameData.objs.objects[objnum].mtype.phys_info.velocity);
 	RelinkObject(objnum, segnum);
 	ObjectCreateExplosion(segnum, &vNewPos, i2f(5), VCLIP_POWERUP_DISAPPEARANCE);
+	return 1;
 	}
+return 0;
 }
 #endif
 
