@@ -669,7 +669,7 @@ switch (select) {
 		if ((select == MENU_JOIN_UDP_NETGAME) ||
 			 (select == MENU_JOIN_UDP_TRACKER_NETGAME)) {
 			if (!(InitAutoNetGame () || NetworkGetIpAddr ())) {
-				ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_IP);
+				//ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_IP);
 				return;
 				}
 			}

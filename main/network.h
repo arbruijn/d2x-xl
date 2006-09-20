@@ -462,6 +462,7 @@ typedef struct extra_gameinfo {
 	char		bShadows;
 	char		bRenderShield;
 	char		bTeleporterCams;
+	char		nMonsterballBonus;
 	tMonsterballForce monsterballForces [MAX_MONSTERBALL_FORCES];
 } __pack__ extra_gameinfo;
 

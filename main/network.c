@@ -4418,6 +4418,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].entropy.nOverrideTextures = 2;
 	extraGameInfo [i].entropy.bBrightenRooms = 0;
 	extraGameInfo [i].entropy.bPlayerHandicap = 0;
+	extraGameInfo [i].nMonsterballBonus = 3;
 	InitMonsterballForces (extraGameInfo [i].monsterballForces);
 	}
 }

@@ -265,30 +265,24 @@ void NetworkEndLevelPoll2 (int nitems, newmenu_item * menus, int * key, int cite
 	int goto_secret = 0;
 
 	// Send our endlevel packet at regular intervals
-	if (TimerGetApproxSeconds () > (t1+ENDLEVEL_SEND_INTERVAL))
-	{
-		NetworkSendEndLevelPacket ();
-		t1 = TimerGetApproxSeconds ();
+if (TimerGetApproxSeconds () > (t1+ENDLEVEL_SEND_INTERVAL)) {
+	NetworkSendEndLevelPacket ();
+	t1 = TimerGetApproxSeconds ();
 	}
-
-	NetworkListen ();
-
-	for (i = 0; i < gameData.multi.nPlayers; i++)
-	{
-		if ((gameData.multi.players [i].connected != 1) && 
-			 (gameData.multi.players [i].connected != 5) && 
-			 (gameData.multi.players [i].connected != 6))
-			num_ready++;
-		if (gameData.multi.players [i].connected == 4)
-			goto_secret = 1;                                        
+NetworkListen ();
+for (i = 0; i < gameData.multi.nPlayers; i++) {
+	if ((gameData.multi.players [i].connected != 1) && 
+		 (gameData.multi.players [i].connected != 5) && 
+		 (gameData.multi.players [i].connected != 6))
+		num_ready++;
+	if (gameData.multi.players [i].connected == 4)
+		goto_secret = 1;                                        
 	}
-
-	if (num_ready == gameData.multi.nPlayers) // All players have checked in or are disconnected
-	{
-		if (goto_secret)
-			*key = -3;
-		else
-			*key = -2;
+if (num_ready == gameData.multi.nPlayers) {// All players have checked in or are disconnected
+	if (goto_secret)
+		*key = -3;
+	else
+		*key = -2;
 	}
 }
 
@@ -319,69 +313,67 @@ void NetworkStartPoll (int nitems, newmenu_item * menus, int * key, int citem)
 	key = key;
 	citem = citem;
 
-	Assert (networkData.nStatus == NETSTAT_STARTING);
-
-	if (!menus [0].value) {
-		menus [0].value = 1;
-		menus [0].rebuild = 1;
+Assert (networkData.nStatus == NETSTAT_STARTING);
+if (!menus [0].value) {
+	menus [0].value = 1;
+	menus [0].rebuild = 1;
+	}
+for (i = 1; i < nitems; i++) {
+	if ((i >= gameData.multi.nPlayers) && menus [i].value) {
+		menus [i].value = 0;
+		menus [i].rebuild = 1;
+		}
+	}
+nm = 0;
+for (i = 0; i < nitems; i++) {
+	if (menus [i].value) {
+		if (++nm > gameData.multi.nPlayers)   {
+			menus [i].value = 0;
+			menus [i].rebuild = 1;
+			}
+		}
+	}
+if (nm > gameData.multi.nMaxPlayers) {
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
+	// Turn off the last player highlighted
+	for (i = gameData.multi.nPlayers; i > 0; i--)
+		if (menus [i].value == 1) {
+			menus [i].value = 0;
+			menus [i].rebuild = 1;
+			break;
+			}
 	}
 
-	for (i = 1; i < nitems; i++) {
-		if ((i >= gameData.multi.nPlayers) && menus [i].value) {
-			menus [i].value = 0;
-			menus [i].rebuild = 1;
-			}
-		}
-	nm = 0;
-	for (i = 0; i < nitems; i++) {
-		if (menus [i].value) {
-			if (++nm > gameData.multi.nPlayers)   {
-				menus [i].value = 0;
-				menus [i].rebuild = 1;
-				}
-			}
-		}
-	if (nm > gameData.multi.nMaxPlayers) {
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
-		// Turn off the last player highlighted
-		for (i = gameData.multi.nPlayers; i > 0; i--)
-			if (menus [i].value == 1) {
-				menus [i].value = 0;
-				menus [i].rebuild = 1;
-				break;
-				}
-		}
-
 //       if (nitems > MAX_PLAYERS) return; 
-	
-	n = netGame.numplayers;
-	NetworkListen ();
 
-	if (n < netGame.numplayers) {
-		DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-		if (gameOpts->multi.bNoRankings)
-	      sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %-20s", gameData.multi.nPlayers, netPlayers.players [gameData.multi.nPlayers-1].callsign);
+n = netGame.numplayers;
+NetworkListen ();
+
+if (n < netGame.numplayers) {
+	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	if (gameOpts->multi.bNoRankings)
+	   sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %-20s", gameData.multi.nPlayers, netPlayers.players [gameData.multi.nPlayers-1].callsign);
+	else
+	   sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %s%-20s", gameData.multi.nPlayers, pszRankStrings [netPlayers.players [gameData.multi.nPlayers-1].rank], netPlayers.players [gameData.multi.nPlayers-1].callsign);
+	menus [gameData.multi.nPlayers - 1].rebuild = 1;
+	if (gameData.multi.nPlayers <= gameData.multi.nMaxPlayers)
+		menus [gameData.multi.nPlayers - 1].value = 1;
+	} 
+else if (n > netGame.numplayers) {
+	// One got removed...
+   DigiPlaySample (SOUND_HUD_KILL, F1_0);
+	for (i = 0; i < gameData.multi.nPlayers; i++) {
+		if (gameOpts->multi.bNoRankings)	
+			sprintf (menus [i].text, "%d. %-20s", i+1, netPlayers.players [i].callsign);
 		else
-	      sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %s%-20s", gameData.multi.nPlayers, pszRankStrings [netPlayers.players [gameData.multi.nPlayers-1].rank], netPlayers.players [gameData.multi.nPlayers-1].callsign);
-		menus [gameData.multi.nPlayers - 1].rebuild = 1;
-		if (gameData.multi.nPlayers <= gameData.multi.nMaxPlayers)
-			menus [gameData.multi.nPlayers - 1].value = 1;
-		} 
-	else if (n > netGame.numplayers) {
-		// One got removed...
-      DigiPlaySample (SOUND_HUD_KILL, F1_0);
-		for (i = 0; i < gameData.multi.nPlayers; i++) {
-			if (gameOpts->multi.bNoRankings)	
-				sprintf (menus [i].text, "%d. %-20s", i+1, netPlayers.players [i].callsign);
-			else
-				sprintf (menus [i].text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers.players [i].rank], netPlayers.players [i].callsign);
-			menus [i].value = (i < gameData.multi.nMaxPlayers);
-			menus [i].rebuild = 1;
-			}
-		for (i = gameData.multi.nPlayers; i<n; i++)  {
-			sprintf (menus [i].text, "%d. ", i+1);          // Clear out the deleted entries...
-			menus [i].value = 0;
-			menus [i].rebuild = 1;
+			sprintf (menus [i].text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers.players [i].rank], netPlayers.players [i].callsign);
+		menus [i].value = (i < gameData.multi.nMaxPlayers);
+		menus [i].rebuild = 1;
+		}
+	for (i = gameData.multi.nPlayers; i<n; i++)  {
+		sprintf (menus [i].text, "%d. ", i+1);          // Clear out the deleted entries...
+		menus [i].value = 0;
+		menus [i].rebuild = 1;
 		}
    }
 }
@@ -590,6 +582,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 do_menu:
 
   gameStates.app.nExtGameStatus = GAMESTAT_MORE_NETGAME_OPTIONS; 
+  Assert (sizeofa (m) >= opt);
   i = ExecMenu1 (NULL, TXT_MORE_MPOPTIONS, opt, m, NetworkMoreOptionsPoll, 0);
 
    //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
@@ -713,6 +706,7 @@ SetRadioOpt (TXT_ENT_VIRSTAB_TOUCH, 2, KEY_L);
 SetRadioOpt (TXT_ENT_VIRSTAB_NEVER, 2, KEY_N);
 m [optVirStab + extraGameInfo [0].entropy.nVirusStability].value = 1;
 
+Assert (sizeofa (m) >= opt);
 ExecMenu1 (NULL, TXT_ENT_TOGGLES, opt, m, NetworkDummyCallback, 0);
 
 extraGameInfo [0].entropy.bRevertRooms = m [optRevRooms].value;
@@ -742,6 +736,7 @@ SetTextOpt ("");
 ADD_CHECK (opt, TXT_ENT_TEX_BRIGHTEN, extraGameInfo [0].entropy.bBrightenRooms, KEY_B, HTX_ONLINE_MANUAL);
 optBrRooms = opt++;
 
+Assert (sizeofa (m) >= opt);
 ExecMenu1 (NULL, TXT_ENT_TEXTURES, opt, m, NetworkDummyCallback, 0);
 
 extraGameInfo [0].entropy.bBrightenRooms = m [optBrRooms].value;
@@ -794,6 +789,7 @@ optTextureMenu = opt;
 m [opt].type = NM_TYPE_MENU;  
 m [opt].text = TXT_ENT_TEXMENU; 
 m [opt++].key = KEY_T;
+Assert (sizeofa (m) >= opt);
 
 for (;;) {
 	i = ExecMenu1 (NULL, "Entropy Options", opt, m, NetworkDummyCallback, 0);
@@ -814,6 +810,26 @@ extraGameInfo [0].entropy.nVirusLifespan = (char) atol (m [optVirLife].text);
 extraGameInfo [0].entropy.nEnergyFillRate = (ushort) atol (m [optEnergyFill].text);
 extraGameInfo [0].entropy.nShieldFillRate = (ushort) atol (m [optShieldFill].text);
 extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].text);
+}
+
+//------------------------------------------------------------------------------
+
+static int nBonusOpt;
+
+void MonsterballMenuCallback (int nitems, newmenu_item * menus, int * key, int citem)
+{
+	newmenu_item * m;
+	int				v;
+
+m = menus + nBonusOpt;
+v = m->value + 1;
+if (v != extraGameInfo [0].nMonsterballBonus) {
+	extraGameInfo [0].nMonsterballBonus = v;
+	sprintf (m->text, TXT_GOAL_BONUS, v);
+	m->rebuild = 1;
+	//*key = -2;
+	return;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -879,7 +895,7 @@ static char *szWeaponTexts [] = {
 
 static inline int ForceToOption (double dForce)
 {
-	int	i, h = sizeof (nOptionToForce) / sizeof (nOptionToForce [0]);
+	int	i, h = sizeofa (nOptionToForce);
 
 for (i = 0; i < h - 1; i++)
 	if ((dForce >= nOptionToForce [i]) && (dForce < nOptionToForce [i + 1]))
@@ -892,12 +908,13 @@ extern short nMonsterballPyroForce;
 
 void NetworkMonsterballOptions (void)
 {
-	newmenu_item		m [30];
+	newmenu_item		m [31];
 	int					h, i, j, opt = 0, optPyroForce, optDefaultForces;
+	char					szBonus [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterballForces;
 
-h = sizeof (optionToWeaponId) / sizeof (int);
-j = sizeof (nOptionToForce) / sizeof (double);
+h = sizeofa (optionToWeaponId);
+j = sizeofa (nOptionToForce);
 memset (m, 0, sizeof (m));
 for (i = opt = 0; i < h; i++, opt++, pf++) {
 	ADD_SLIDER (opt, szWeaponTexts [i], ForceToOption (pf->nForce), 
@@ -913,12 +930,19 @@ ADD_SLIDER (opt, "Pyro", pf->nForce - 1, 0, 9, 0, NULL);
 optPyroForce = opt++;
 ADD_TEXT (opt, "", 0);
 opt++;
+sprintf (szBonus + 1, TXT_GOAL_BONUS, extraGameInfo [0].nMonsterballBonus);
+*szBonus = *(TXT_GOAL_BONUS - 1);
+ADD_SLIDER (opt, szBonus + 1, extraGameInfo [0].nMonsterballBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
+nBonusOpt = opt++;
+ADD_TEXT (opt, "", 0);
+opt++;
 ADD_MENU (opt, "Set default values", 0, NULL);
 optDefaultForces = opt++;
+Assert (sizeofa (m) >= opt);
 
 for (;;) {
-	i = ExecMenu1 (NULL, "Monsterball Impact Forces", opt, m, NetworkDummyCallback, 0);
-	if (i < 0)
+	i = ExecMenu1 (NULL, "Monsterball Impact Forces", opt, m, MonsterballMenuCallback, 0);
+	if (i == -1)
 		return;
 	if (i != optDefaultForces)
 		break;
@@ -1107,6 +1131,7 @@ do_menu:
 		}
 
    gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_OPTIONS; 
+	Assert (sizeofa (m) >= opt);
 	key = ExecMenu1 (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NULL, 
 						  opt, m, NetworkGameParamPoll, &choice);
 									//TXT_NETGAME_SETUP
@@ -1425,7 +1450,8 @@ int NetworkSelectPlayers (int bAutoRun)
 
 GetPlayersAgain:
    gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
-	j = ExecMenu1 (NULL, title, MAX_PLAYERS+4, m, NetworkStartPoll, &choice);
+	Assert (sizeofa (m) >= MAX_PLAYERS + 4);
+	j = ExecMenu1 (NULL, title, MAX_PLAYERS + 4, m, NetworkStartPoll, &choice);
 
 	save_nplayers = gameData.multi.nPlayers;
 
@@ -1991,6 +2017,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	m [opt].text = "ISDN or T1 over Internet"; 
 	opt++;
 
+	Assert (sizeofa (m) >= opt);
 	choice = ExecMenu1 (NULL, "Choose connection type", opt, m, NULL, 0);
 
 	if (choice<0)
@@ -2146,6 +2173,7 @@ ADD_TEXT (opt, TXT_PORT_HELP1, 0);
 ADD_TEXT (opt, TXT_PORT_HELP2, 0);
 opt++;
 commands = opt;
+Assert (sizeofa (m) >= opt);
 for (;;) {
 	i = ExecMenu1 (NULL, gameStates.multi.bUseTracker ? TXT_CLIENT_PORT + 1 : TXT_IP_HEADER, 
 						opt, m, &IpAddrMenuCallBack, &choice);

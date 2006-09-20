@@ -1023,6 +1023,7 @@ for (j = 0; j < 1; j++) {
 	if (player_file_version >= 115)
 		if (!j) {
 			tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
+			extraGameInfo [0].nMonsterballBonus = CFReadByte (fp);
 			for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
 				pf->nWeaponId = CFReadByte (fp);
 				pf->nForce = CFReadShort (fp);
@@ -1426,6 +1427,7 @@ for (j = 0; j < 1; j++) {
 	CFWriteByte (gameOptions [j].input.joySensitivity [4], fp);
 	if (!j) {
 		tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
+		CFWriteByte (extraGameInfo [0].nMonsterballBonus, fp);
 		for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
 			CFWriteByte (pf->nWeaponId, fp);
 			CFWriteShort (pf->nForce, fp);

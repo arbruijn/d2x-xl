@@ -3847,11 +3847,16 @@ void MultiDoCaptureBonus (char *buf)
 	// appropriate player's tally.
 
 	char 	nPlayer = buf [1];
-	short	h, i, nTeam, nKillGoal, penalty = 0, bonus = (gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5;
+	short	nTeam, nKillGoal, penalty = 0, bonus;
 	char	szTeam [20];
 
+if (gameData.app.nGameMode & GM_HOARD)
+	bonus = 5;
+else if (gameData.app.nGameMode & GM_ENTROPY)
+	bonus = 3;
+else if (gameData.app.nGameMode & GM_MONSTERBALL)
+	bonus = extraGameInfo [1].nMonsterballBonus;
 kmatrix_kills_changed = 1;
-
 if (nPlayer < 0) {
 	penalty = 1;
 	nPlayer = -nPlayer - 1;
@@ -3874,10 +3879,7 @@ if (penalty) {
 	gameData.multi.players [nPlayer].KillGoalCount -= bonus;
 	if (netGame.KillGoal > 0) {
 		nKillGoal = netGame.KillGoal * bonus;
-		for (h = i = 0; i < gameData.multi.nPlayers; i++)
-			if (h < gameData.multi.players [i].KillGoalCount)
-				h = gameData.multi.players [i].KillGoalCount;
-		if (multiData.kills.nTeam [nTeam] + h >= nKillGoal) {
+		if (multiData.kills.nTeam [nTeam] >= nKillGoal) {
 			sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
