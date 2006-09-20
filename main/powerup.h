@@ -143,16 +143,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "vclip.h"
 
-#define POW_EXTRA_LIFE          0
-#define POW_ENERGY              1
-#define POW_SHIELD_BOOST        2
-#define POW_LASER               3
+#define POW_EXTRA_LIFE				0
+#define POW_ENERGY					1
+#define POW_SHIELD_BOOST			2
+#define POW_LASER						3
 
-#define POW_KEY_BLUE            4
-#define POW_KEY_RED             5
-#define POW_KEY_GOLD            6
+#define POW_KEY_BLUE					4
+#define POW_KEY_RED					5
+#define POW_KEY_GOLD					6
 
-#define POW_HOARD_ORB           7       // use unused slot
+#define POW_HOARD_ORB				7       // use unused slot
+#define POW_MONSTERBALL				8
 
 //#define POW_RADAR_ROBOTS        8
 //#define POW_RADAR_POWERUPS      9

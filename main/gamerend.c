@@ -1855,7 +1855,7 @@ void ShowBoxedMessage(char *msg)
 
 //------------------------------------------------------------------------------
 
-void clear_boxed_message()
+void ClearBoxedMessage()
 {
 if (bg.bmp) {
 	WIN(DDGRLOCK(dd_grd_curcanv));

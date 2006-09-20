@@ -310,7 +310,7 @@ if (Controls.useInvulDownCount)
 	ApplyInvul (0, -1);
 if (Controls.fire_flareDownCount)
 	if (AllowedToFireFlare())
-		Flare_create(gameData.objs.console);
+		CreateFlare(gameData.objs.console);
 if (AllowedToFireMissile()) {
 	i = secondaryWeaponToWeaponInfo[gameData.weapons.nSecondary];
 	gameData.app.nGlobalMissileFiringCount += WI_fire_count (i) * (Controls.fire_secondary_state || Controls.fire_secondaryDownCount);
@@ -584,7 +584,7 @@ int do_game_pause()
 	}
 	GrabMouse (1, 0);
 	if (VR_screen_flags & VRF_COMPATIBLE_MENUS) {
-		clear_boxed_message();
+		ClearBoxedMessage();
 	}
 
 	GameFlushInputs();
@@ -1035,7 +1035,7 @@ dump_door_debugging_info()
 	fq.ignore_obj_list	= NULL;
 	fq.flags					= 0;
 
-	fate = find_vector_intersection(&fq, &hit_info);
+	fate = FindVectorIntersection(&fq, &hit_info);
 
 	dfile = fopen("door.out", "at");
 
@@ -1812,7 +1812,7 @@ void HandleTestKey(int key)
 			//fvi_info hit_data;
 			//vms_vector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
 			//vms_vector p1 = {-0x217865, -0x1b20000, 0x187de3e};
-			//find_vector_intersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
+			//FindVectorIntersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
 			break;
 		}
 

@@ -139,7 +139,7 @@ void RecreateThief(object *objP)
 	segnum = ChooseThiefRecreationSegment();
 	COMPUTE_SEGMENT_CENTER_I (&center_point, segnum);
 
-	new_obj = create_morph_robot( &gameData.segs.segments[segnum], &center_point, objP->id);
+	new_obj = CreateMorphRobot( &gameData.segs.segments[segnum], &center_point, objP->id);
 	InitAIObject(OBJ_IDX (new_obj), AIB_SNIPE, -1);
 	gameData.thief.xReInitTime = gameData.app.xGameTime + F1_0*10;		//	In 10 seconds, re-initialize thief.
 }

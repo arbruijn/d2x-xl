@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed saturation in short light value
  *
  * Revision 1.57  1994/11/20  22:11:49  mike
- * comment out an apparently unnecessary call to fuelcen_reset ().
+ * comment out an apparently unnecessary call to FuelCenReset ().
  *
  * Revision 1.56  1994/11/18  21:56:42  john
  * Added a better, leaner pig format.
@@ -123,7 +123,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made tmap overrides for robots remap texture numbers
  *
  * Revision 1.42  1994/10/03  23:37:01  mike
- * Adapt to changed fuelcen_activate parameters.
+ * Adapt to changed FuelCenActivate parameters.
  *
  * Revision 1.41  1994/09/23  22:14:49  matt
  * Took out obsolete structure fields
@@ -539,7 +539,7 @@ int load_mine_data (CFILE *loadFile)
 	d1_pig_present = CFExist (D1_PIGFILE);
 
 	oldsizeadjust= (sizeof (int)*2)+sizeof (vms_matrix);
-	fuelcen_reset ();
+	FuelCenReset ();
 
 	for (i=0; i<MAX_TEXTURES; i++ )
 		tmap_times_used [i] = 0;
@@ -633,7 +633,7 @@ int load_mine_data (CFILE *loadFile)
 		gameStates.gameplay.seismic.nShakeFrequency = 0;
 		gameStates.gameplay.seismic.nShakeDuration = 0;
 		gameData.segs.secret.nReturnSegment = 0;
-		gameData.segs.secret.returnOrient = vmd_identity_matrix;
+		gameData.segs.secret.returnOrient = vmdIdentityMatrix;
 	} else {
 		gameStates.gameplay.seismic.nShakeFrequency = mine_fileinfo.level_shake_frequency << 12;
 		gameStates.gameplay.seismic.nShakeDuration = mine_fileinfo.level_shake_duration << 12;
@@ -777,7 +777,7 @@ int load_mine_data (CFILE *loadFile)
 		mine_fileinfo.segment2_howmany = MAX_SEGMENTS;
 	}
 
-	// [commented out by mk on 11/20/94 (weren't we supposed to hit final in October?) because it looks redundant.  I think I'll test it now...]  fuelcen_reset ();
+	// [commented out by mk on 11/20/94 (weren't we supposed to hit final in October?) because it looks redundant.  I think I'll test it now...]  FuelCenReset ();
 
 	if ((mine_fileinfo.segment_offset > -1) && (mine_fileinfo.segment_howmany > 0))	{
 
@@ -819,7 +819,7 @@ int load_mine_data (CFILE *loadFile)
 				gameData.segs.segment2s [i].s2_flags = 0;
 				gameData.segs.segment2s [i].matcen_num = v16_seg.matcen_num;
 				gameData.segs.segment2s [i].static_light = v16_seg.static_light;
-				fuelcen_activate ( &gameData.segs.segments [i], gameData.segs.segment2s [i].special );
+				FuelCenActivate ( &gameData.segs.segments [i], gameData.segs.segment2s [i].special );
 
 			} else  {
 				if (CFRead (gameData.segs.segments + i, mine_fileinfo.segment_sizeof, 1, loadFile )!=1)
@@ -877,7 +877,7 @@ int load_mine_data (CFILE *loadFile)
 		if (mine_top_fileinfo.fileinfo_version >= 20)
 			for (i=0; i<=gameData.segs.nLastSegment; i++) {
 				CFRead (gameData.segs.segment2s + i, sizeof (segment2), 1, loadFile);
-				fuelcen_activate (gameData.segs.segments + i, gameData.segs.segment2s [i].special );
+				FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special );
 			}
 	}
 
@@ -1293,7 +1293,7 @@ void LoadSegment2sCompiled (CFILE *loadFile)
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		segment2_read (gameData.segs.segment2s + i, loadFile);
-	fuelcen_activate (gameData.segs.segments + i, gameData.segs.segment2s [i].special);
+	FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special);
 	}
 }
 
@@ -1499,7 +1499,7 @@ for (i = 0; i < MAX_TEXTURES; i++)
 #endif
 
 //	memset ( gameData.segs.segments, 0, sizeof (segment)*MAX_SEGMENTS );
-fuelcen_reset ();
+FuelCenReset ();
 
 //=============================== Reading part ==============================
 compiled_version = CFReadByte (loadFile);

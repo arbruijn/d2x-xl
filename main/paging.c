@@ -657,7 +657,7 @@ void PagingTouchAllSub ()
 #if TRACE				
 	con_printf (CON_VERBOSE, "... loading all textures in mine done\n" );
 #endif
-//@@	clear_boxed_message();
+//@@	ClearBoxedMessage();
 
 	if ( bBlackScreen )	{
 		GrPaletteStepClear();

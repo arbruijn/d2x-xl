@@ -807,7 +807,7 @@ if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].sound_num > -1)
 robotcen->Flag = 0;
 robotcen->Capacity -= gameData.matCens.xEnergyToCreateOneRobot;
 robotcen->Timer = 0;
-if (! (objP = create_morph_robot (gameData.segs.segments + robotcen->segnum, &cur_object_loc, type)))
+if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->segnum, &cur_object_loc, type)))
 	return; // Cannot create object!
 objP->matcen_creator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->orient, &gameData.segs.segments [robotcen->segnum]);

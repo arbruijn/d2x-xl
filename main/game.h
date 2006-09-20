@@ -180,7 +180,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.34  1994/05/20  11:56:45  matt
- * Cleaned up find_vector_intersection() interface
+ * Cleaned up FindVectorIntersection() interface
  * Killed check_point_in_seg(), check_player_seg(), check_object_seg()
  *
  * Revision 1.33  1994/05/19  21:45:21  matt
@@ -270,7 +270,8 @@ extern int ft_preference;
 #define GM_TEAM         256     // Team mode for network play
 #define GM_CAPTURE      512     // Capture the flag mode for D2
 #define GM_HOARD        1024    // New hoard mode for D2 Christmas
-#define GM_ENTROPY      2048
+#define GM_ENTROPY      2048	  // Similar to Descent 3's entropy game mode
+#define GM_MONSTERBALL	4096	  // Similar to Descent 3's monsterball game mode
 
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
 #define GM_MULTI        38      // You are in some type of multiplayer game
@@ -395,7 +396,7 @@ void do_show_help();
 void ShowBoxedMessage(char *msg);
 
 // erases message drawn with ShowBoxedMessage()
-void clear_boxed_message();
+void ClearBoxedMessage();
 
 // turns off rear view & rear view cockpit
 void ResetRearView(void);

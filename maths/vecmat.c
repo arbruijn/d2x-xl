@@ -61,7 +61,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 
 #ifndef ASM_VECMAT
 vms_vector vmd_zero_vector = {0, 0, 0};
-vms_matrix vmd_identity_matrix = { { f1_0, 0, 0 }, 
+vms_matrix vmdIdentityMatrix = { { f1_0, 0, 0 }, 
                                    { 0, f1_0, 0 }, 
                                    { 0, 0, f1_0 } };
 
@@ -672,7 +672,7 @@ return dest;
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
-vms_vector *VmVecPerp(vms_vector *dest, vms_vector *p0, vms_vector *p1, vms_vector *p2)
+vms_vector *VmVecPerp (vms_vector *dest, vms_vector *p0, vms_vector *p1, vms_vector *p2)
 {
 	vms_vector t0, t1;
 
@@ -689,7 +689,7 @@ return VmVecCrossProd(dest, &t0, &t1);
 //the forward vector (third parameter) can be NULL, in which case the absolute
 //value of the angle in returned.  Otherwise the angle around that vector is
 //returned.
-fixang VmVecDeltaAng(vms_vector *v0, vms_vector *v1, vms_vector *fvec)
+fixang VmVecDeltaAng (vms_vector *v0, vms_vector *v1, vms_vector *fvec)
 {
 vms_vector t0, t1;
 

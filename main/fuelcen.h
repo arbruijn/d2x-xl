@@ -43,10 +43,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Moved fuelcen_info struct here from fuelcen.c
  *
  * Revision 1.20  1994/09/25  15:55:37  mike
- * Prototype function disable_matcens.
+ * Prototype function DisableMatCens.
  *
  * Revision 1.19  1994/09/24  17:41:34  mike
- * Prototype trigger_matcen.
+ * Prototype TriggerMatCen.
  *
  * Revision 1.18  1994/08/03  17:52:19  matt
  * Tidied up repair centers a bit
@@ -121,50 +121,50 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //-------------------------------------------------------------
 // To hook into Inferno:
 // * When all segents are deleted or before a new mine is created
-//   or loaded, call fuelcen_reset().
-// * Add call to fuelcen_create(segment * segp) to make a segment
+//   or loaded, call FuelCenReset().
+// * Add call to FuelCenCreate(segment * segp) to make a segment
 //   which isn't a fuel center be a fuel center.
 // * When a mine is loaded call fuelcen_activate(segp) with each
 //   new segment as it loads. Always do this.
-// * When a segment is deleted, always call fuelcen_delete(segp).
-// * Call fuelcen_replenish_all() to fill 'em all up, like when
+// * When a segment is deleted, always call FuelCenDelete(segp).
+// * Call FuelCenReplenishAll() to fill 'em all up, like when
 //   a new game is started.
 // * When an object that needs to be refueled is in a segment, call
-//   fuelcen_give_fuel(segp) to get fuel. (Call once for any refueling
+//   FuelCenGiveFuel(segp) to get fuel. (Call once for any refueling
 //   object once per frame with the object's current segment.) This
 //   will return a value between 0 and 100 that tells how much fuel
 //   he got.
 
 
 // Destroys all fuel centers, clears segment backpointer array.
-void fuelcen_reset();
+void FuelCenReset();
 // Create materialization center
-void matcen_create ( segment * segp, int oldType );
+void MatCenCreate ( segment * segp, int oldType );
 // Makes a segment a fuel center.
-void fuelcen_create( segment * segp, int oldType );
+void FuelCenCreate( segment * segp, int oldType );
 // Makes a fuel center active... needs to be called when
 // a segment is loaded from disk.
-void fuelcen_activate( segment * segp, int station_type );
+void FuelCenActivate( segment * segp, int station_type );
 // Deletes a segment as a fuel center.
-void fuelcen_delete( segment * segp );
+void FuelCenDelete( segment * segp );
 
 // Charges all fuel centers to max capacity.
-void fuelcen_replenish_all();
+void FuelCenReplenishAll();
 
 // Create a matcen robot
-extern object *create_morph_robot(segment *segp, vms_vector *object_pos, ubyte object_id);
+object *CreateMorphRobot (segment *segp, vms_vector *object_pos, ubyte object_id);
 
 // Returns the amount of fuel this segment can give up.
 // Can be from 0 to 100.
-extern fix fuelcen_give_fuel(segment *segp, fix MaxAmountCanTake );
-extern fix repaircen_give_shields(segment *segp, fix MaxAmountCanTake );
-extern fix hostile_room_damage_shields (segment *segp, fix MaxAmountCanGive);
+fix FuelCenGiveFuel(segment *segp, fix MaxAmountCanTake );
+fix RepairCenGiveShields(segment *segp, fix MaxAmountCanTake );
+fix HostileRoomDamageShields (segment *segp, fix MaxAmountCanGive);
 
 // Call once per frame.
 void FuelcenUpdateAll();
 
 // Called when hit by laser.
-void fuelcen_damage(segment *segp, fix AmountOfDamage );
+void FuelCenDamage(segment *segp, fix AmountOfDamage );
 
 // Called to repair an object
 //--repair-- int refuel_do_repair_effect( object * obj, int first_time, int repair_seg );
@@ -221,27 +221,27 @@ extern matcen_info RobotCenters[MAX_ROBOT_CENTERS];
 
 // Called when a materialization center gets triggered by the player
 // flying through some trigger!
-extern void trigger_matcen(short segnum);
+extern void MatCenTrigger (short segnum);
 
-extern void disable_matcens(void);
+extern void DisableMatCens (void);
 
-extern void InitAllMatCens(void);
+extern void InitAllMatCens (void);
 
-void fuelcen_check_for_hoard_goal(segment *segp);
+void FuelCenCheckForHoardGoal(segment *segp);
 
 #ifdef FAST_FILE_IO
-#define old_matcen_info_read(mi, fp) CFRead(mi, sizeof(old_matcen_info), 1, fp)
-#define matcen_info_read(mi, fp) CFRead(mi, sizeof(matcen_info), 1, fp)
+#define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_matcen_info), 1, fp)
+#define MatCenInfoRead (mi, fp) CFRead(mi, sizeof(matcen_info), 1, fp)
 #else
 /*
  * reads an old_matcen_info structure from a CFILE
  */
-void old_matcen_info_read(old_matcen_info *mi, CFILE *fp);
+void OldMatCenInfoRead(old_matcen_info *mi, CFILE *fp);
 
 /*
  * reads a matcen_info structure from a CFILE
  */
-void matcen_info_read(matcen_info *ps, CFILE *fp);
+void MatCenInfoRead (matcen_info *ps, CFILE *fp);
 #endif
 
 #define FUELCEN_IDX(_fuelcenP)	((short) ((_fuelcenP) - gameData.matCens.fuelCenters))

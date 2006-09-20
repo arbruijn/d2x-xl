@@ -363,7 +363,7 @@ if (VmVecMagQuick(&e) < F1_0/2)
 			fq.ignore_obj_list	= NULL;
 			fq.flags					= 0;
 	
-			hit_type = find_vector_intersection(&fq, &hit_data);
+			hit_type = FindVectorIntersection(&fq, &hit_data);
 	
 			if (hit_type == HIT_NONE)
 				count = 0;
@@ -501,7 +501,7 @@ if ((objP->type == OBJ_ROBOT) && (objP->ctype.ai_info.behavior == AIB_RUN_FROM))
 					fq.ignore_obj_list	= NULL;
 					fq.flags					= 0;
 
-					hit_type = find_vector_intersection(&fq, &hit_data);
+					hit_type = FindVectorIntersection(&fq, &hit_data);
 					if (hit_type != HIT_NONE) {
 						goto dont_add;
 					}
@@ -673,7 +673,7 @@ int polish_path(object *objP, point_seg *psegs, int num_points)
 		fq.ignore_obj_list	= NULL;
 		fq.flags					= 0;
 
-		hit_type = find_vector_intersection(&fq, &hit_data);
+		hit_type = FindVectorIntersection(&fq, &hit_data);
 	
 		if (hit_type == HIT_NONE)
 			first_point = i+1;
@@ -1100,7 +1100,7 @@ void move_object_to_goal(object *objP, vms_vector *goal_point, short goal_seg)
 // -- too much work -- 	fq.ignore_obj_list	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
-// -- too much work -- 	fate = find_vector_intersection(&fq,&hit_data);
+// -- too much work -- 	fate = FindVectorIntersection(&fq,&hit_data);
 // -- too much work --
 // -- too much work -- 	if (fate == HIT_NONE)
 // -- too much work -- 		return 1;
@@ -1374,7 +1374,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 				fq.ignore_obj_list	= NULL;
 				fq.flags					= 0; 				//what about trans walls???
 
-				fate = find_vector_intersection(&fq,&hit_data);
+				fate = FindVectorIntersection(&fq,&hit_data);
 
 				if (fate != HIT_WALL) {
 					//	We can be circular!  Do it!

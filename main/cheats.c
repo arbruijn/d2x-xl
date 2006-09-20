@@ -587,10 +587,10 @@ else {
 		}
 
 	if (gameData.app.nGameMode & GM_HOARD)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX] = 12;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX] = 12;
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX] = 5;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[SMART_MINE_INDEX] = 5;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX] = 5;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMART_MINE_INDEX] = 5;
 		}
 	}
 

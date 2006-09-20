@@ -59,7 +59,7 @@
  * Revision 1.26  1994/05/18  22:28:57  matt
  * Added function VmVecNormalizedDir()
  * Added C macros IS_ZERO_VEC(), VmVecZero(), and vm_set_identity()
- * Added C global static vars vmd_zero_vector & vmd_identity_matrix
+ * Added C global static vars vmd_zero_vector & vmdIdentityMatrix
  * 
  * Revision 1.25  1994/05/18  21:45:06  matt
  * Added functions:
@@ -248,7 +248,7 @@ vms_angvec * VmAngVecMake (vms_angvec * v, fixang p, fixang b, fixang h);
 
 extern vms_vector vmd_zero_vector;
 
-extern vms_matrix vmd_identity_matrix;
+extern vms_matrix vmdIdentityMatrix;
 
 
 //Here's a handy constant

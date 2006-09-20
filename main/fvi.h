@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * take a list of ingore objects rather than just one ignore object.
  *
  * Revision 1.2  1994/06/09  09:58:39  matt
- * Moved find_vector_intersection() from physics.c to new file fvi.c
+ * Moved FindVectorIntersection() from physics.c to new file fvi.c
  *
  * Revision 1.1  1994/06/09  09:26:14  matt
  * Initial revision
@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "object.h"
 
-//return values for find_vector_intersection() - what did we hit?
+//return values for FindVectorIntersection() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
 #define HIT_WALL		1		//we hit - guess - a wall
 #define HIT_OBJECT	2		//we hit an object - which one?  no way to tell...
@@ -85,7 +85,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FVI_SEGS 100
 
-//this data structure gets filled in by find_vector_intersection()
+//this data structure gets filled in by FindVectorIntersection()
 typedef struct fvi_info {
 	int hit_type;					//what sort of intersection
 	vms_vector hit_pnt;			//where we hit
@@ -126,7 +126,7 @@ typedef struct fvi_query {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_obj_flag	determines whether collisions with objects are checked
 //Returns the hit_data->hit_type
-int find_vector_intersection(fvi_query *fq,fvi_info *hit_data);
+int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data);
 
 //finds the uv coords of the given point on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also

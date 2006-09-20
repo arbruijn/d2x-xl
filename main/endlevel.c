@@ -827,7 +827,7 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 		fq.thisobjnum = 0;
 		fq.ignore_obj_list = NULL;
 		fq.flags = 0;
-		find_vector_intersection (&fq, &hit_data);
+		FindVectorIntersection (&fq, &hit_data);
 		if (hit_data.hit_type==HIT_WALL && hit_data.hit_seg!=-1)
 			ObjectCreateExplosion ((short) hit_data.hit_seg, &hit_data.hit_pnt, i2f (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
@@ -850,7 +850,7 @@ switch (gameStates.app.bEndLevelSequence) {
 												gameData.objs.console->segnum, 
 												&gameData.objs.console->pos, 
 												&gameData.objs.console->orient, 0, 
-												CT_NONE, MT_NONE, RT_NONE);
+												CT_NONE, MT_NONE, RT_NONE, 1);
 				if (objnum == -1) { //can't get object, so abort
 #if TRACE
 					con_printf (1, "Can't get object for endlevel sequence.  Aborting endlevel sequence.\n");
@@ -1101,7 +1101,7 @@ if (!(p.p3_codes & CC_BEHIND)) {
 		}
 	}
 #ifdef STATION_ENABLED
-DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmd_identity_matrix, NULL, gameData.endLevel.station.nModel, 0, f1_0, NULL, NULL);
+DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL, gameData.endLevel.station.nModel, 0, f1_0, NULL, NULL);
 #endif
 RenderTerrain (&gameData.endLevel.exit.vGroundExit, exit_point_bmx, exit_point_bmy);
 DrawExitModel ();

@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed bug with looking for stick even if one not present.
  *
  * Revision 1.26  1994/05/20  11:56:33  matt
- * Cleaned up find_vector_intersection() interface
+ * Cleaned up FindVectorIntersection() interface
  * Killed check_point_in_seg(), check_player_seg(), check_object_seg()
  *
  * Revision 1.25  1994/05/19  12:08:41  matt

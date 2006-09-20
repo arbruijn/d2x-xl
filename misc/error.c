@@ -39,7 +39,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * calling exit()
  *
  * Revision 1.5  1993/10/14  15:29:11  matt
- * Added new function clear_warn_func()
+ * Added new function ClearWarnFunc()
  *
  * Revision 1.4  1993/10/08  16:17:19  matt
  * Made Assert() call function _Assert(), rather to do 'if...' inline.
@@ -120,7 +120,7 @@ void SetWarnFunc(void (*f)(char *s))
 
 //------------------------------------------------------------------------------
 //uninstall warning function - install default //printf
-void clear_warn_func(void (*f)(char *s))
+void ClearWarnFunc(void (*f)(char *s))
 {
 #ifdef _WIN32
 pWarnFunc = NULL;

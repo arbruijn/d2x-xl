@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Clean up proximity/homing mess.
  *
  * Revision 1.41  1994/10/09  20:07:04  rob
- * Change prototype for do_laser_firing
+ * Change prototype for LaserFireObject
  *
  * Revision 1.40  1994/10/09  00:15:48  mike
  * Add constants for super mech missile, regular mech missile, silent spreadfire.
@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added firing of missiles on networks/serial.
  *
  * Revision 1.35  1994/09/24  14:17:02  mike
- * Prototype do_laser_firing.
+ * Prototype LaserFireObject.
  *
  * Revision 1.34  1994/09/23  11:36:49  mike
  * Prototype CreateNewLaserEasy.
@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Homing missile.
  *
  * Revision 1.27  1994/09/07  15:59:47  mike
- * Kill FLARE_MAX_TIME (now defined in bitmaps.tbl), add PROXIMITY_ID (shame!), prototype do_laser_firing, DoMissileFiring.
+ * Kill FLARE_MAX_TIME (now defined in bitmaps.tbl), add PROXIMITY_ID (shame!), prototype LaserFireObject, DoMissileFiring.
  *
  * Revision 1.26  1994/09/03  15:22:41  mike
  * Kill Projectile_player_fire prototype.
@@ -228,7 +228,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define OMEGA_MULTI_LIFELEFT    (F1_0/6)
 
-// These are new defines for the value of 'flags' passed to do_laser_firing.
+// These are new defines for the value of 'flags' passed to LaserFireObject.
 // The purpose is to collect other flags like QUAD_LASER and Spreadfire_toggle
 // into a single 8-bit quantity so it can be easily used in network mode.
 
@@ -260,15 +260,15 @@ extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTi
 
 void RenderLaser(object *obj);
 void find_goal_texture(object * obj, ubyte type, int gun_num, int make_sound, int harmless_flag);
-int Laser_player_fire(object *obj, ubyte laser_type, int gun_num, int make_sound, int harmless);
-int Laser_player_fire_spread(object *obj, ubyte laser_type, int gun_num, fix spreadr, fix spreadu, int make_sound, int harmless);
-void Laser_do_weapon_sequence(object *obj);
-void Flare_create(object *obj);
+void LaserDoWeaponSequence(object *obj);
+void CreateFlare(object *obj);
 int LasersAreRelated(int o1, int o2);
+int LaserPlayerFireSpreadDelay (object *objP, ubyte laser_type, int gun_num, fix spreadr, 
+										  fix spreadu, fix delay_time, int make_sound, int harmless);
 
-extern int do_laser_firing_player(void);
-extern void DoMissileFiring(int do_autoselect);
-extern void net_missile_firing(int player, int weapon, int flags);
+int LaserFireLocalPlayer(void);
+void DoMissileFiring(int do_autoselect);
+void NetMissileFiring(int player, int weapon, int flags);
 
 int CreateNewLaser(vms_vector * direction, vms_vector * position, short segnum, short parent, ubyte type, int make_sound);
 
@@ -279,7 +279,7 @@ int CreateNewLaser(vms_vector * direction, vms_vector * position, short segnum, 
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,
 // such as vulcan or plasma are fired.
-extern int do_laser_firing(short objnum, ubyte weapon_id, int level, int flags, int nfires);
+extern int LaserFireObject(short objnum, ubyte weapon_id, int level, int flags, int nfires);
 
 // Easier to call than CreateNewLaser because it determines the
 // segment containing the firing point and deals with it being stuck
@@ -296,7 +296,7 @@ int CreateWeaponObject(ubyte weapon_type, short segnum,vms_vector *position);
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
 
-extern void create_smart_children(object *objp, int count);
+extern void CreateSmartChildren(object *objp, int count);
 extern int ObjectToObjectVisibility(object *obj1, object *obj2, int trans_type);
 
 typedef struct muzzle_info {
@@ -309,5 +309,21 @@ typedef struct muzzle_info {
 #define MAX_OMEGA_CHARGE    (F1_0)  //  Maximum charge level for omega cannonw
 extern fix xOmegaCharge;
 // NOTE: OMEGA_CHARGE_SCALE moved to laser.c to avoid long rebuilds if changed
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static int LaserPlayerFireSpread (object *objP, ubyte laser_type, int gun_num, fix spreadr, fix spreadu, int make_sound, int harmless)
+{
+return LaserPlayerFireSpreadDelay (objP, laser_type, gun_num, spreadr, spreadu, 0, make_sound, harmless);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static int LaserPlayerFire (object *objP, ubyte laser_type, int gun_num, int make_sound, int harmless)
+{
+return LaserPlayerFireSpread (objP, laser_type, gun_num, 0, 0, make_sound, harmless);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
 
 #endif /* _LASER_H */

@@ -796,6 +796,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "sphere.h"
 #include "endlevel.h"
 #include "banlist.h"
+#include "collide.h"
 
 //#  include "3dfx_des.h"
 
@@ -3082,6 +3083,7 @@ TexMergeInit (100);		// 100 cache bitmaps
 /*---*/LogErr ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
+InitMonsterBallForces ();
 InitGame ();
 return 0;
 }

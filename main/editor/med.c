@@ -78,7 +78,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Stop Delete-{whatever} from hanging you!
  * 
  * Revision 1.179  1994/10/03  23:39:37  mike
- * Adapt to newer, better, fuelcen_activate function.
+ * Adapt to newer, better, FuelCenActivate function.
  * 
  * Revision 1.178  1994/09/30  00:38:05  mike
  * Shorten diagnostic message erase -- was erasing outside canvas.
@@ -575,7 +575,7 @@ int SetPlayerFromCurseg()
 int fuelcen_create_from_curseg()
 {
 	Cursegp->special = SEGMENT_IS_FUELCEN;
-	fuelcen_activate( Cursegp, Cursegp->special);
+	FuelCenActivate( Cursegp, Cursegp->special);
 	return 1;
 }
 
@@ -583,31 +583,31 @@ int repaircen_create_from_curseg()
 {
 	Int3();	//	-- no longer supported!
 //	Cursegp->special = SEGMENT_IS_REPAIRCEN;
-//	fuelcen_activate( Cursegp, Cursegp->special);
+//	FuelCenActivate( Cursegp, Cursegp->special);
 	return 1;
 }
 
 int controlcen_create_from_curseg()
 {
 	Cursegp->special = SEGMENT_IS_CONTROLCEN;
-	fuelcen_activate( Cursegp, Cursegp->special);
+	FuelCenActivate( Cursegp, Cursegp->special);
 	return 1;
 }
 
 int robotmaker_create_from_curseg()
 {
 	Cursegp->special = SEGMENT_IS_ROBOTMAKER;
-	fuelcen_activate( Cursegp, Cursegp->special);
+	FuelCenActivate( Cursegp, Cursegp->special);
 	return 1;
 }
 
 int fuelcen_reset_all()	{
-	fuelcen_reset();
+	FuelCenReset();
 	return 1;
 }
 
 int fuelcen_delete_from_curseg() {
-	fuelcen_delete( Cursegp );
+	FuelCenDelete( Cursegp );
 	return 1;
 }
 
@@ -1164,19 +1164,10 @@ void editor(void)
 //	_MARK_("start of editor");//Nuked to compile -KRB
 
 	ui_mouse_hide();
-
 	ui_reset_idle_seconds();
-
-//@@	//create a camera for viewing in the editor. copy position from gameData.objs.console
-//@@	camera_objnum = CreateObject(OBJ_CAMERA,0,gameData.objs.console->segnum,&gameData.objs.console->pos,&gameData.objs.console->orient,0);
-//@@	gameData.objs.viewer = &gameData.objs.objects[camera_objnum];
-//@@	slew_init(gameData.objs.viewer);		//camera is slewing
-
 	gameData.objs.viewer = gameData.objs.console;
 	slew_init(gameData.objs.console);
-
 	Update_flags = UF_ALL;
-
 	medlisp_update_screen();
 
 	//set the wire-frame window to be the current view
@@ -1513,7 +1504,7 @@ void editor(void)
 
 //	_MARK_("end of editor");//Nuked to compile -KRB
 
-	clear_warn_func(med_show_warning);
+	ClearWarnFunc(med_show_warning);
 
 	//kill our camera object
 

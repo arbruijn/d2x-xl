@@ -638,9 +638,9 @@ void SlideTextures (void);
 void PowerupGrabCheatAll (void);
 
 //	Other functions
-extern void MultiCheckForKillGoalWinner ();
-extern void MultiCheckForEntropyWinner ();
-extern void RestoreGameSurfaces ();
+void MultiCheckForKillGoalWinner ();
+void MultiCheckForEntropyWinner ();
+void RestoreGameSurfaces ();
 
 // window functions
 
@@ -2826,7 +2826,7 @@ if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 #if !defined (WINDOWS) && !defined (MACINTOSH)
 //_MARK_ ("end of game");
 #endif
-clear_warn_func (ShowInGameWarning);     //don't use this func anymore
+ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 GameDisableCheats ();
 UnloadCamBot ();
 #ifdef APPLE_DEMO
@@ -2905,7 +2905,7 @@ if (bmBackground.bm_texBuf) {
 	LogErr ("unloading background bitmap\n");
 	d_free (bmBackground.bm_texBuf);
 	}
-clear_warn_func (ShowInGameWarning);     //don't use this func anymore
+ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 LogErr ("unloading custom background data\n");
 NMFreeAltBg (1);
 SaveBanList ();
@@ -3245,6 +3245,7 @@ if (Debug_slowdown) {
 	if (gameData.app.nGameMode & GM_MULTI) {
 		AddServerToTracker ();
       MultiDoFrame ();
+		CheckMonsterBallScore ();
 		if (netGame.PlayTimeAllowed && ThisLevelTime>=i2f ((netGame.PlayTimeAllowed*5*60)))
           MultiCheckForKillGoalWinner ();
 		else 
@@ -3341,7 +3342,7 @@ if (Debug_slowdown) {
 			longjmp (gameExitPoint, 0);		// Go back to menu
 		}
 	} else { // Note the link to above!
-		gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist = -1;		//	Assume not being tracked.  Laser_do_weapon_sequence modifies this.
+		gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
 //LogErr ("MoveAllObjects\n");
 		if (!MoveAllObjects ())
 			return 0;
@@ -3385,7 +3386,7 @@ if (Debug_slowdown) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.app.fusion.xCharge > F1_0*2)
 			// 	gameData.app.fusion.xCharge = F1_0*2;
-			gameData.app.nGlobalLaserFiringCount -= do_laser_firing_player ();	//do_laser_firing (gameData.multi.players[gameData.multi.nLocalPlayer].objnum, gameData.weapons.nPrimary);
+			gameData.app.nGlobalLaserFiringCount -= LaserFireLocalPlayer ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].objnum, gameData.weapons.nPrimary);
 		}
 		if (gameData.app.nGlobalLaserFiringCount < 0)
 			gameData.app.nGlobalLaserFiringCount = 0;
@@ -3785,7 +3786,8 @@ int mark_player_path_to_segment (int segnum)
 #endif
 		seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
 
-		objnum = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, segnum, &seg_center, &vmd_identity_matrix, gameData.objs.pwrUp.info[POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP);
+		objnum = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, segnum, &seg_center, &vmdIdentityMatrix,
+									  gameData.objs.pwrUp.info[POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
 		if (objnum == -1) {
 			Int3 ();		//	Unable to drop energy powerup for path
 			return 1;

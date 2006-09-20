@@ -489,14 +489,15 @@ extern int control_invul_time;
 
 extern bitmap_index multi_player_textures[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
-#define NETGAME_FLAG_CLOSED             1
-#define NETGAME_FLAG_SHOW_ID            2
-#define NETGAME_FLAG_SHOW_MAP           4
-#define NETGAME_FLAG_HOARD              8
-#define NETGAME_FLAG_TEAM_HOARD         16
-#define NETGAME_FLAG_REALLY_ENDLEVEL    32
-#define NETGAME_FLAG_REALLY_FORMING     64
-#define NETGAME_FLAG_ENTROPY				 128
+#define NETGAME_FLAG_CLOSED            1
+#define NETGAME_FLAG_SHOW_ID           2
+#define NETGAME_FLAG_SHOW_MAP          4
+#define NETGAME_FLAG_HOARD             8
+#define NETGAME_FLAG_TEAM_HOARD        16
+#define NETGAME_FLAG_REALLY_ENDLEVEL   32
+#define NETGAME_FLAG_REALLY_FORMING    64
+#define NETGAME_FLAG_ENTROPY				128
+#define NETGAME_FLAG_MONSTERBALL			(NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY)	//ugly hack, but we only have a single byte ... :-/
 
 #define NETGAME_NAME_LEN                15
 #define NETGAME_AUX_SIZE                20  // Amount of extra data for the network protocol to store in the netgame packet
@@ -736,7 +737,7 @@ extern struct allNetPlayers_info netPlayers;
 int NetworkIAmMaster(void);
 void ChangePlayerNumTo(int new_pnum);
 
-void change_segment_texture (int segnum, int oldOwner);
+void ChangeSegmentTexture (int segnum, int oldOwner);
 
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100

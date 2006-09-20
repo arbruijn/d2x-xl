@@ -750,7 +750,7 @@ void MultiComputeKill (int killer, int killed)
 
 	int		killed_pnum, killed_type, t0, t1;
 	int		killer_pnum, killer_type, killer_id;
-	int		TheGoal;
+	int		nKillGoal;
 	char		killed_name [(CALLSIGN_LEN*2)+4];
 	char		killer_name [(CALLSIGN_LEN*2)+4];
 	player	*pKiller, *pKilled;
@@ -927,9 +927,9 @@ else {
 	else
 		HUDInitMessage ("%s %s %s!", killer_name, TXT_KILLED, killed_name);
 	}
-TheGoal = netGame.KillGoal * ((gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5);
+nKillGoal = netGame.KillGoal * ((gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5);
 if (netGame.KillGoal > 0) {
-	if (pKiller->KillGoalCount >= TheGoal) {
+	if (pKiller->KillGoalCount >= nKillGoal) {
 		if (killer_pnum == gameData.multi.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);
@@ -1110,20 +1110,26 @@ if (!(gameData.app.nGameMode & GM_MULTI_COOP))
 void MultiDoFire (char *buf)
 {
 char nPlayer = buf [1];
-ubyte weapon = (int)buf [2];
+ubyte weapon = (ubyte) buf [2];
 sbyte flags = buf [4];
 multiData.laser.nTrack = GET_INTEL_SHORT (buf + 6);
 Assert (nPlayer < gameData.multi.nPlayers);
 if (gameData.objs.objects [gameData.multi.players [(int)nPlayer].objnum].type == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
-	Laser_player_fire (gameData.objs.objects+gameData.multi.players [(int)nPlayer].objnum, FLARE_ID, 6, 1, 0);
-else if (weapon  >= MISSILE_ADJUST) {
-	ubyte weapon_id = secondaryWeaponToWeaponInfo [weapon-MISSILE_ADJUST];
-	int weapon_gun = secondaryWeaponToGunNum [weapon-MISSILE_ADJUST] + (flags & 1);
-	if (weapon-MISSILE_ADJUST == GUIDED_INDEX)
+	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [(int)nPlayer].objnum, 
+						  FLARE_ID, 6, 1, 0);
+else if (weapon >= MISSILE_ADJUST) {
+	int h = weapon - MISSILE_ADJUST;
+	ubyte weapon_id = secondaryWeaponToWeaponInfo [h];
+	int weapon_gun = secondaryWeaponToGunNum [h] + (flags & 1);
+	player *playerP = gameData.multi.players + nPlayer;
+	if (h == GUIDED_INDEX)
 		multiData.bIsGuided = 1;
-	Laser_player_fire (gameData.objs.objects+gameData.multi.players [(int)nPlayer].objnum, weapon_id, weapon_gun, 1, 0);
+	if (playerP->secondary_ammo [h] > 0)
+		playerP->secondary_ammo [h]--;
+	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [(int)nPlayer].objnum, 
+						  weapon_id, weapon_gun, 1, 0);
 	}
 else {
 	fix save_charge = gameData.app.fusion.xCharge;
@@ -1135,7 +1141,7 @@ else {
 		else
 			gameData.multi.players [(int)nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
-	do_laser_firing ((short) gameData.multi.players [(int)nPlayer].objnum, weapon, (int)buf [3], flags, (int)buf [5]);
+	LaserFireObject ((short) gameData.multi.players [(int)nPlayer].objnum, weapon, (int)buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
 		gameData.app.fusion.xCharge = save_charge;
 	}
@@ -2624,7 +2630,10 @@ inv_count = 0;
 cloak_count = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((gameData.objs.objects [i].type == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		objnum = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].segnum, &gameData.objs.objects [i].pos, &vmd_identity_matrix, gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
+		objnum = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].segnum, 
+									  &gameData.objs.objects [i].pos, &vmdIdentityMatrix, 
+									  gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
+									  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 		ReleaseObject ((short) i);
 		if (objnum != -1) {
 			gameData.objs.objects [objnum].rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
@@ -2746,10 +2755,13 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 		}
 	}
 #ifdef RELEASE
-if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
+if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif	
 	InitHoardData ();
-if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY))
+if ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)
+	if (!FindMonsterBall ())
+		CreateMonsterBall ();
+if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
 MultiSortKillList ();
 MultiShowPlayerList ();
@@ -2807,7 +2819,7 @@ if (bFullBright)
 
 int Goal_blue_segnum, Goal_red_segnum;
 
-void change_segment_texture (int segnum, int oldOwner)
+void ChangeSegmentTexture (int segnum, int oldOwner)
 {
 	segment	*seg = gameData.segs.segments + segnum;
 	segment2 *seg2 = gameData.segs.segment2s + segnum;
@@ -2864,7 +2876,7 @@ void MultiApplyGoalTextures ()
 
 if (!(gameData.app.nGameMode & GM_ENTROPY) || (extraGameInfo [1].entropy.nOverrideTextures == 1))
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		change_segment_texture (i, -1);
+		ChangeSegmentTexture (i, -1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3407,7 +3419,7 @@ HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
 for (i = 0, xsegP = gameData.segs.xSegments; i <= gameData.segs.nLastSegment; i++, xsegP++) {
 	if (xsegP->owner != t + 1)
 		xsegP->owner = t + 1;
-	change_segment_texture (i, -1);
+	ChangeSegmentTexture (i, -1);
 	}
 gameStates.entropy.bExitSequence = 1;
 for (i = 0; i < gameData.multi.nPlayers; i++)
@@ -3720,13 +3732,13 @@ else if (whichfunc == 3)
 
 void MultiSendCaptureBonus (char nPlayer)
 {
-	Assert (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY));
+	Assert ((gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY)) ||
+			  ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL));
 
-	multiData.msg.buf [0] = MULTI_CAPTURE_BONUS;
-	multiData.msg.buf [1] = nPlayer;
-
-	MultiSendData (multiData.msg.buf, 2, 1);
-	MultiDoCaptureBonus (multiData.msg.buf);
+multiData.msg.buf [0] = MULTI_CAPTURE_BONUS;
+multiData.msg.buf [1] = nPlayer;
+MultiSendData (multiData.msg.buf, 2, 1);
+MultiDoCaptureBonus (multiData.msg.buf);
 }
 
 //-----------------------------------------------------------------------------
@@ -3748,36 +3760,67 @@ void MultiDoCaptureBonus (char *buf)
 	// Figure out the results of a network kills and add it to the
 	// appropriate player's tally.
 
-	char nPlayer = buf [1];
-	int TheGoal, bonus = (gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5;
+	char 	nPlayer = buf [1];
+	int 	h, i, nTeam, nKillGoal, bonus = (gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5;
+	char	szTeam [20];
 
 kmatrix_kills_changed = 1;
 
-if (nPlayer == gameData.multi.nLocalPlayer)
-	HUDInitMessage (TXT_SCORED);
-else
-	HUDInitMessage (TXT_SCORED2, gameData.multi.players [(int)nPlayer].callsign);
-if (nPlayer == gameData.multi.nLocalPlayer)
-	DigiPlaySample (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
-else if (GetTeam (nPlayer) == TEAM_RED)
-	DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
-else
-	DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
-gameData.multi.players [(int)nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);  // Clear capture flag
-multiData.kills.nTeam [GetTeam (nPlayer)] += bonus;
-gameData.multi.players [(int)nPlayer].net_kills_total += bonus;
-gameData.multi.players [(int)nPlayer].KillGoalCount += bonus;
-if (netGame.KillGoal>0) {
-	TheGoal = netGame.KillGoal * bonus;
-	if (gameData.multi.players [(int)nPlayer].KillGoalCount >= TheGoal) {
-		if (nPlayer == gameData.multi.nLocalPlayer) {
-			HUDInitMessage (TXT_REACH_KILLGOAL);
-			gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);
+if (nPlayer < 0) {
+	nTeam = -nPlayer;
+	if (nTeam == TEAM_RED) {
+		sprintf (szTeam, "%s Team", TXT_RED);
+		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
+		}
+	else {
+		sprintf (szTeam, "%s Team", TXT_BLUE);
+		DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
+		}
+	HUDInitMessage (TXT_SCORED2, szTeam);
+	}
+else {
+	nTeam = GetTeam (nPlayer);
+	if (nPlayer == gameData.multi.nLocalPlayer)
+		HUDInitMessage (TXT_SCORED);
+	else if (nPlayer >= 0)
+		HUDInitMessage (TXT_SCORED2, gameData.multi.players [(int)nPlayer].callsign);
+	}
+multiData.kills.nTeam [nTeam] += bonus;
+if (nPlayer < 0) {
+	if (netGame.KillGoal > 0) {
+		nKillGoal = netGame.KillGoal * bonus;
+		for (h = i = 0; i < gameData.multi.nPlayers; i++)
+			if (h < gameData.multi.players [i].KillGoalCount)
+				h = gameData.multi.players [i].KillGoalCount;
+		if (multiData.kills.nTeam [nTeam] + h >= nKillGoal) {
+			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
+			HUDInitMessage (TXT_CTRLCEN_DEAD);
+			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+			}		
+		}
+	}
+else {
+	if (nPlayer == gameData.multi.nLocalPlayer)
+		DigiPlaySample (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
+	else if (GetTeam (nPlayer) == TEAM_RED)
+		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
+	else
+		DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
+	gameData.multi.players [(int)nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
+	gameData.multi.players [(int)nPlayer].net_kills_total += bonus;
+	gameData.multi.players [(int)nPlayer].KillGoalCount += bonus;
+	if (netGame.KillGoal > 0) {
+		nKillGoal = netGame.KillGoal * bonus;
+		if (gameData.multi.players [(int)nPlayer].KillGoalCount >= nKillGoal) {
+			if (nPlayer == gameData.multi.nLocalPlayer) {
+				HUDInitMessage (TXT_REACH_KILLGOAL);
+				gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);
+				}
+			else
+				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multi.players [(int)nPlayer].callsign);
+			HUDInitMessage (TXT_CTRLCEN_DEAD);
+			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
 			}
-		else
-			HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multi.players [(int)nPlayer].callsign);
-		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
 		}
 	}
 MultiSortKillList ();
@@ -3801,7 +3844,7 @@ int GetOrbBonus (char num)
 void MultiDoOrbBonus (char *buf)
 {
 	char nPlayer = buf [1];
-	int TheGoal;
+	int nKillGoal;
 	int bonus = GetOrbBonus (buf [2]);
 
 kmatrix_kills_changed = 1;
@@ -3836,8 +3879,8 @@ multiData.kills.nTeam [GetTeam (nPlayer)] %= 1000;
 gameData.multi.players [(int)nPlayer].net_kills_total %= 1000;
 gameData.multi.players [(int)nPlayer].KillGoalCount %= 1000;
 if (netGame.KillGoal>0) {
-	TheGoal = netGame.KillGoal*5;
-	if (gameData.multi.players [(int)nPlayer].KillGoalCount >= TheGoal) {
+	nKillGoal = netGame.KillGoal*5;
+	if (gameData.multi.players [(int)nPlayer].KillGoalCount >= nKillGoal) {
 		if (nPlayer == gameData.multi.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);

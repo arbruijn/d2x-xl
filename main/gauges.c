@@ -4239,7 +4239,7 @@ int CanSeeObject(int objnum, int bCheckObjs)
 	fq.startseg				= gameData.objs.viewer->segnum;
 	fq.ignore_obj_list	= NULL;
 
-	hit_type = find_vector_intersection(&fq, &hit_data);
+	hit_type = FindVectorIntersection(&fq, &hit_data);
 
 	return bCheckObjs ? (hit_type == HIT_OBJECT && hit_data.hit_object == objnum) : hit_type != HIT_WALL;
 }

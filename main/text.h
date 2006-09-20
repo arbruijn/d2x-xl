@@ -1714,11 +1714,10 @@ void LoadGameTexts(void);
 #define TXT_MSNFILE_ERROR			GT(769)
 #define TXT_EXTRA_PLRMSGS			GT(770)
 #define TXT_ALTERNATE_EXIT			GT(771)
+#define TXT_MONSTERBALL				GT(772)
+#define TXT_NO_CTF					GT(773)
+#define TXT_NO_MONSTERBALL			GT(774)
 #if 0
-#define TXT_				GT(771)
-#define TXT_				GT(772)
-#define TXT_				GT(773)
-#define TXT_				GT(774)
 #define TXT_				GT(775)
 #define TXT_				GT(776)
 #define TXT_				GT(777)
@@ -2054,10 +2053,10 @@ void LoadGameTexts(void);
 #define HTX_CPIT_MOUSEIND		HT(190)				
 #define HTX_TELEPORTER_CAMS	HT(191)				
 #define HTX_CPIT_SPLITMSGS		HT(192)				
+#define HTX_MULTI_MONSTERBALL	HT(193)				
 
 #if 0
 				
-#define HTX_				HT(193)				
 #define HTX_				HT(194)				
 #define HTX_				HT(195)				
 #define HTX_				HT(196)				

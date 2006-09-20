@@ -119,10 +119,13 @@ void DropAfterburnerBlobs(object *obj, int count, fix size_scale, fix lifetime, 
 
 int ReturnFlagHome (object *pObj);
 int CountRooms (void);
-void GatherFlagGoals (void);
+int GatherFlagGoals (void);
 int CheckConquerRoom (xsegment *segP);
 void ConquerRoom (int newOwner, int oldOwner, int roomId);
 void StartConquerWarning (void);
 void StopConquerWarning (void);
+int FindMonsterBall (void);
+int CreateMonsterBall (void);
+int CheckMonsterScore (void);
 
 #endif /* _FIREBALL_H */

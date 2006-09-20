@@ -68,10 +68,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fix confusing precedence problems.
  *
  * Revision 1.149  1994/12/15  13:04:22  mike
- * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
  *
  * Revision 1.148  1994/12/15  03:05:18  matt
- * Added error checking for NULL return from ObjectCreateExplosion()
+ * Added error checking for NULL return from ObjectCreateExplosion ()
  *
  * Revision 1.147  1994/12/13  19:49:12  rob
  * Made the fuelcen noise quieter.
@@ -96,7 +96,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed bug with fueling when above 100.
  *
  * Revision 1.141  1994/12/05  23:37:14  matt
- * Took out calls to warning() function
+ * Took out calls to warning () function
  *
  * Revision 1.140  1994/12/05  23:19:18  yuan
  * Fixed fuel center refuelers..
@@ -243,7 +243,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef RCS
-static char rcsid[] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
+static char rcsid [] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 #endif
 
 #include <stdio.h>
@@ -290,7 +290,7 @@ static char rcsid[] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 #define MATCEN_INTERVAL_DEFAULT	F1_0*5;	//  5 seconds
 
 #ifdef EDITOR
-char	Special_names[MAX_CENTER_TYPES][11] = {
+char	Special_names [MAX_CENTER_TYPES] [11] = {
 	"NOTHING   ",
 	"FUELCEN   ",
 	"REPAIRCEN ",
@@ -303,42 +303,42 @@ char	Special_names[MAX_CENTER_TYPES][11] = {
 
 //------------------------------------------------------------
 // Resets all fuel center info
-void fuelcen_reset()
+void FuelCenReset ()
 {
 	int i;
 
 	gameData.matCens.nFuelCenters = 0;
-	for(i=0; i<MAX_SEGMENTS; i++ )
-		gameData.segs.segment2s[i].special = SEGMENT_IS_NOTHING;
+	for (i=0; i<MAX_SEGMENTS; i++)
+		gameData.segs.segment2s [i].special = SEGMENT_IS_NOTHING;
 
 	gameData.matCens.nRobotCenters = 0;
 
 }
 
 #ifndef NDEBUG		//this is sometimes called by people from the debugger
-void reset_all_robot_centers()
+void reset_all_robot_centers ()
 {
 	int i;
 
 	// Remove all materialization centers
 	for (i=0; i<gameData.segs.nSegments; i++)
-		if (gameData.segs.segment2s[i].special == SEGMENT_IS_ROBOTMAKER) {
-			gameData.segs.segment2s[i].special = SEGMENT_IS_NOTHING;
-			gameData.segs.segment2s[i].matcen_num = -1;
+		if (gameData.segs.segment2s [i].special == SEGMENT_IS_ROBOTMAKER) {
+			gameData.segs.segment2s [i].special = SEGMENT_IS_NOTHING;
+			gameData.segs.segment2s [i].matcen_num = -1;
 		}
 }
 #endif
 
 //------------------------------------------------------------
 // Turns a segment into a fully charged up fuel center...
-void fuelcen_create( segment *segP, int oldType)
+void FuelCenCreate (segment *segP, int oldType)
 {
 	segment2	*seg2p = gameData.segs.segment2s + (SEG_IDX (segP));
 
 	int	station_type = seg2p->special;
 	int	i;
 	
-	switch( station_type )	{
+	switch (station_type)	{
 	case SEGMENT_IS_NOTHING:
 	case SEGMENT_IS_GOAL_BLUE:
 	case SEGMENT_IS_GOAL_RED:
@@ -357,11 +357,11 @@ void fuelcen_create( segment *segP, int oldType)
 	case SEGMENT_IS_ROBOTMAKER:
 		break;
 	default:
-		Error( "Segment %d has invalid\nstation type %d in fuelcen.c\n", SEG_IDX (segP), station_type );
+		Error ("Segment %d has invalid\nstation type %d in fuelcen.c\n", SEG_IDX (segP), station_type);
 	}
 
-	Assert((seg2p != NULL));
-	if ( seg2p == NULL ) 
+	Assert ((seg2p != NULL));
+	if (seg2p == NULL) 
 		return;
 
 	switch (oldType) {
@@ -371,22 +371,22 @@ void fuelcen_create( segment *segP, int oldType)
 			i = seg2p->value;
 			break;
 		default:
-			Assert( gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS );
+			Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
 			i = gameData.matCens.nFuelCenters;
 		}
 
 	seg2p->value = i;
-	gameData.matCens.fuelCenters[i].Type = station_type;
+	gameData.matCens.fuelCenters [i].Type = station_type;
 	gameData.matCens.origStationTypes [i] = (oldType == station_type) ? SEGMENT_IS_NOTHING : oldType;
-	gameData.matCens.fuelCenters[i].MaxCapacity = gameData.matCens.xFuelMaxAmount;
-	gameData.matCens.fuelCenters[i].Capacity = gameData.matCens.fuelCenters[i].MaxCapacity;
-	gameData.matCens.fuelCenters[i].segnum = SEG2_IDX (seg2p);
-	gameData.matCens.fuelCenters[i].Timer = -1;
-	gameData.matCens.fuelCenters[i].Flag = 0;
-//	gameData.matCens.fuelCenters[i].NextRobotType = -1;
-//	gameData.matCens.fuelCenters[i].last_created_obj=NULL;
-//	gameData.matCens.fuelCenters[i].last_created_sig = -1;
-	COMPUTE_SEGMENT_CENTER(&gameData.matCens.fuelCenters[i].Center, segP);
+	gameData.matCens.fuelCenters [i].MaxCapacity = gameData.matCens.xFuelMaxAmount;
+	gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
+	gameData.matCens.fuelCenters [i].segnum = SEG2_IDX (seg2p);
+	gameData.matCens.fuelCenters [i].Timer = -1;
+	gameData.matCens.fuelCenters [i].Flag = 0;
+//	gameData.matCens.fuelCenters [i].NextRobotType = -1;
+//	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
+//	gameData.matCens.fuelCenters [i].last_created_sig = -1;
+	COMPUTE_SEGMENT_CENTER (&gameData.matCens.fuelCenters [i].Center, segP);
 	if (oldType == SEGMENT_IS_NOTHING)
 		gameData.matCens.nFuelCenters++;
 	else if (oldType == SEGMENT_IS_ROBOTMAKER) {
@@ -396,23 +396,23 @@ void fuelcen_create( segment *segP, int oldType)
 			memcpy (gameData.matCens.robotCenters + i, gameData.matCens.robotCenters + i + 1, (gameData.matCens.nRobotCenters - i) * sizeof (fuelcen_info));
 		}
 //	if (station_type == SEGMENT_IS_ROBOTMAKER)
-//		gameData.matCens.fuelCenters[gameData.matCens.nFuelCenters].Capacity = i2f(gameStates.app.nDifficultyLevel + 3);
+//		gameData.matCens.fuelCenters [gameData.matCens.nFuelCenters].Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
 }
 
 //------------------------------------------------------------
 // Adds a matcen that already is a special type into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
-void matcen_create( segment *segP, int oldType)
+void MatCenCreate (segment *segP, int oldType)
 {
-	segment2	*seg2p = &gameData.segs.segment2s[SEG_IDX (segP)];
+	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int	station_type = seg2p->special;
 	int	i;
 
-	Assert( (seg2p != NULL) );
-	Assert(station_type == SEGMENT_IS_ROBOTMAKER);
-	if ( seg2p == NULL ) return;
+	Assert ((seg2p != NULL));
+	Assert (station_type == SEGMENT_IS_ROBOTMAKER);
+	if (seg2p == NULL) return;
 
-	Assert( gameData.matCens.nFuelCenters > -1 );
+	Assert (gameData.matCens.nFuelCenters > -1);
 	switch (oldType) {
 		case SEGMENT_IS_FUELCEN:
 		case SEGMENT_IS_REPAIRCEN:
@@ -420,55 +420,55 @@ void matcen_create( segment *segP, int oldType)
 			i = seg2p->value;
 			break;
 		default:
-			Assert( gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS );
+			Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
 			i = gameData.matCens.nFuelCenters;
 		}
 	seg2p->value = i;
-	gameData.matCens.fuelCenters[i].Type = station_type;
+	gameData.matCens.fuelCenters [i].Type = station_type;
 	gameData.matCens.origStationTypes [i] = (oldType == station_type) ? SEGMENT_IS_NOTHING : oldType;
-	gameData.matCens.fuelCenters[i].Capacity = i2f(gameStates.app.nDifficultyLevel + 3);
-	gameData.matCens.fuelCenters[i].MaxCapacity = gameData.matCens.fuelCenters[i].Capacity;
-	gameData.matCens.fuelCenters[i].segnum = SEG2_IDX (seg2p);
-	gameData.matCens.fuelCenters[i].Timer = -1;
-	gameData.matCens.fuelCenters[i].Flag = 0;
-//	gameData.matCens.fuelCenters[i].NextRobotType = -1;
-//	gameData.matCens.fuelCenters[i].last_created_obj=NULL;
-//	gameData.matCens.fuelCenters[i].last_created_sig = -1;
-	COMPUTE_SEGMENT_CENTER_I(&gameData.matCens.fuelCenters[i].Center, seg2p-gameData.segs.segment2s);
+	gameData.matCens.fuelCenters [i].Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
+	gameData.matCens.fuelCenters [i].MaxCapacity = gameData.matCens.fuelCenters [i].Capacity;
+	gameData.matCens.fuelCenters [i].segnum = SEG2_IDX (seg2p);
+	gameData.matCens.fuelCenters [i].Timer = -1;
+	gameData.matCens.fuelCenters [i].Flag = 0;
+//	gameData.matCens.fuelCenters [i].NextRobotType = -1;
+//	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
+//	gameData.matCens.fuelCenters [i].last_created_sig = -1;
+	COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].Center, seg2p-gameData.segs.segment2s);
 	seg2p->matcen_num = gameData.matCens.nRobotCenters;
-	gameData.matCens.robotCenters[gameData.matCens.nRobotCenters].hit_points = MATCEN_HP_DEFAULT;
-	gameData.matCens.robotCenters[gameData.matCens.nRobotCenters].interval = MATCEN_INTERVAL_DEFAULT;
-	gameData.matCens.robotCenters[gameData.matCens.nRobotCenters].segnum = SEG2_IDX (seg2p);
+	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].hit_points = MATCEN_HP_DEFAULT;
+	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].interval = MATCEN_INTERVAL_DEFAULT;
+	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].segnum = SEG2_IDX (seg2p);
 	if (oldType == SEGMENT_IS_NOTHING)
-		gameData.matCens.robotCenters[gameData.matCens.nRobotCenters].fuelcen_num = gameData.matCens.nFuelCenters;
+		gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].fuelcen_num = gameData.matCens.nFuelCenters;
 	gameData.matCens.nRobotCenters++;
 	gameData.matCens.nFuelCenters++;
 }
 
 //------------------------------------------------------------
 // Adds a segment that already is a special type into the gameData.matCens.fuelCenters array.
-void fuelcen_activate( segment * segP, int station_type )
+void FuelCenActivate (segment * segP, int station_type)
 {
-	segment2	*seg2p = &gameData.segs.segment2s[SEG_IDX (segP)];
+	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
 	seg2p->special = station_type;
 	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
-		matcen_create( segP, SEGMENT_IS_NOTHING);
+		MatCenCreate (segP, SEGMENT_IS_NOTHING);
 	else
-		fuelcen_create( segP, SEGMENT_IS_NOTHING);
+		FuelCenCreate (segP, SEGMENT_IS_NOTHING);
 }
 
 //	The lower this number is, the more quickly the center can be re-triggered.
 //	If it's too low, it can mean all the robots won't be put out, but for about 5
 //	robots, that's not real likely.
-#define	MATCEN_LIFE (i2f(30-2*gameStates.app.nDifficultyLevel))
+#define	MATCEN_LIFE (i2f (30-2*gameStates.app.nDifficultyLevel))
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in segment segnum
-void trigger_matcen(short segnum)
+void MatCenTrigger (short segnum)
 {
-	// -- segment		*segP = &gameData.segs.segments[segnum];
-	segment2		*seg2p = &gameData.segs.segment2s[segnum];
+	// -- segment		*segP = &gameData.segs.segments [segnum];
+	segment2		*seg2p = &gameData.segs.segment2s [segnum];
 	vms_vector	pos, delta;
 	fuelcen_info	*robotcen;
 	int			objnum;
@@ -476,9 +476,9 @@ void trigger_matcen(short segnum)
 #if TRACE
 	con_printf (CON_DEBUG, "Trigger matcen, segment %i\n", segnum);
 #endif
-	Assert(seg2p->special == SEGMENT_IS_ROBOTMAKER);
-	Assert(seg2p->matcen_num < gameData.matCens.nFuelCenters);
-	Assert((seg2p->matcen_num >= 0) && (seg2p->matcen_num <= gameData.segs.nLastSegment));
+	Assert (seg2p->special == SEGMENT_IS_ROBOTMAKER);
+	Assert (seg2p->matcen_num < gameData.matCens.nFuelCenters);
+	Assert ((seg2p->matcen_num >= 0) && (seg2p->matcen_num <= gameData.segs.nLastSegment));
 
 	robotcen = gameData.matCens.fuelCenters + gameData.matCens.robotCenters [seg2p->matcen_num].fuelcen_num;
 
@@ -494,22 +494,22 @@ void trigger_matcen(short segnum)
 
 	robotcen->Timer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
 	robotcen->Enabled = 1;			//	Say this center is enabled, it can create robots.
-	robotcen->Capacity = i2f(gameStates.app.nDifficultyLevel + 3);
+	robotcen->Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
 	robotcen->Disable_time = MATCEN_LIFE;
 
 	//	Create a bright object in the segment.
 	pos = robotcen->Center;
-	VmVecSub(&delta, &gameData.segs.vertices[gameData.segs.segments[segnum].verts[0]], &robotcen->Center);
-	VmVecScaleInc(&pos, &delta, F1_0/2);
-	objnum = CreateObject( OBJ_LIGHT, 0, -1, segnum, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE );
+	VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [segnum].verts [0], &robotcen->Center);
+	VmVecScaleInc (&pos, &delta, F1_0/2);
+	objnum = CreateObject (OBJ_LIGHT, 0, -1, segnum, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
 	if (objnum != -1) {
-		gameData.objs.objects[objnum].lifeleft = MATCEN_LIFE;
-		gameData.objs.objects[objnum].ctype.light_info.intensity = i2f(8);	//	Light cast by a fuelcen.
+		gameData.objs.objects [objnum].lifeleft = MATCEN_LIFE;
+		gameData.objs.objects [objnum].ctype.light_info.intensity = i2f (8);	//	Light cast by a fuelcen.
 	} else {
 #if TRACE
 		con_printf (1, "Can't create invisible flare for matcen.\n");
 #endif
-		Int3();
+		Int3 ();
 	}
 }
 
@@ -517,43 +517,43 @@ void trigger_matcen(short segnum)
 //------------------------------------------------------------
 // Takes away a segment's fuel center properties.
 //	Deletes the segment point entry in the fuelcen_info list.
-void fuelcen_delete( segment * segP )
+void FuelCenDelete (segment * segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s[SEG_IDX (segP)];
+	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int i, j;
 
 Restart: ;
 
 	seg2p->special = 0;
 
-	for (i=0; i<gameData.matCens.nFuelCenters; i++ )	{
-		if ( gameData.matCens.fuelCenters[i].segnum == SEG_IDX (segP) )	{
+	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
+		if (gameData.matCens.fuelCenters [i].segnum == SEG_IDX (segP))	{
 
 			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.robotCenters.
-			if (gameData.matCens.fuelCenters[i].Type == SEGMENT_IS_ROBOTMAKER) {
+			if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER) {
 				gameData.matCens.nRobotCenters--;
-				Assert(gameData.matCens.nRobotCenters >= 0);
+				Assert (gameData.matCens.nRobotCenters >= 0);
 
 				for (j=seg2p->matcen_num; j<gameData.matCens.nRobotCenters; j++)
-					gameData.matCens.robotCenters[j] = gameData.matCens.robotCenters[j+1];
+					gameData.matCens.robotCenters [j] = gameData.matCens.robotCenters [j+1];
 
 				for (j=0; j<gameData.matCens.nFuelCenters; j++) {
-					if ( gameData.matCens.fuelCenters[j].Type == SEGMENT_IS_ROBOTMAKER )
-						if ( gameData.segs.segment2s[gameData.matCens.fuelCenters[j].segnum].matcen_num > seg2p->matcen_num )
-							gameData.segs.segment2s[gameData.matCens.fuelCenters[j].segnum].matcen_num--;
+					if (gameData.matCens.fuelCenters [j].Type == SEGMENT_IS_ROBOTMAKER)
+						if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].segnum].matcen_num > seg2p->matcen_num)
+							gameData.segs.segment2s [gameData.matCens.fuelCenters [j].segnum].matcen_num--;
 				}
 			}
 
 			//fix gameData.matCens.robotCenters so they point to correct fuelcenter
-			for (j=0; j<gameData.matCens.nRobotCenters; j++ )
-				if (gameData.matCens.robotCenters[j].fuelcen_num > i)		//this robotcenter's fuelcen is changing
-					gameData.matCens.robotCenters[j].fuelcen_num--;
+			for (j=0; j<gameData.matCens.nRobotCenters; j++)
+				if (gameData.matCens.robotCenters [j].fuelcen_num > i)		//this robotcenter's fuelcen is changing
+					gameData.matCens.robotCenters [j].fuelcen_num--;
 
 			gameData.matCens.nFuelCenters--;
-			Assert(gameData.matCens.nFuelCenters >= 0);
-			for (j=i; j<gameData.matCens.nFuelCenters; j++ )	{
-				gameData.matCens.fuelCenters[j] = gameData.matCens.fuelCenters[j+1];
-				gameData.segs.segment2s[gameData.matCens.fuelCenters[j].segnum].value = j;
+			Assert (gameData.matCens.nFuelCenters >= 0);
+			for (j=i; j<gameData.matCens.nFuelCenters; j++)	{
+				gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
+				gameData.segs.segment2s [gameData.matCens.fuelCenters [j].segnum].value = j;
 			}
 			goto Restart;
 		}
@@ -561,42 +561,42 @@ Restart: ;
 }
 #endif
 
-#define	ROBOT_GEN_TIME (i2f(5))
+#define	ROBOT_GEN_TIME (i2f (5))
 
-object * create_morph_robot(segment *segP, vms_vector *vObjPosP, ubyte object_id)
+object * CreateMorphRobot (segment *segP, vms_vector *vObjPosP, ubyte object_id)
 {
 	short		objnum;
 	object	*objP;
 	ubyte		default_behavior;
 
-	gameData.multi.players[gameData.multi.nLocalPlayer].num_robots_level++;
-	gameData.multi.players[gameData.multi.nLocalPlayer].num_robots_total++;
+	gameData.multi.players [gameData.multi.nLocalPlayer].num_robots_level++;
+	gameData.multi.players [gameData.multi.nLocalPlayer].num_robots_total++;
 
 	objnum = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
-				&vmd_identity_matrix, gameData.models.polyModels [gameData.bots.pInfo[object_id].model_num].rad,
-				(ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ);
+								  &vmdIdentityMatrix, gameData.models.polyModels [gameData.bots.pInfo [object_id].model_num].rad,
+				 				  (ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
 
-	if ( objnum < 0 ) {
+	if (objnum < 0) {
 #if TRACE
 		con_printf (1, "Can't create morph robot.  Aborting morph.\n");
 #endif
-		Int3();
+		Int3 ();
 		return NULL;
 	}
 
 	objP = gameData.objs.objects + objnum;
 	//Set polygon-object-specific data
-	objP->rtype.pobj_info.model_num = gameData.bots.pInfo[objP->id].model_num;
+	objP->rtype.pobj_info.model_num = gameData.bots.pInfo [objP->id].model_num;
 	objP->rtype.pobj_info.subobj_flags = 0;
 	//set Physics info
-	objP->mtype.phys_info.mass = gameData.bots.pInfo[objP->id].mass;
-	objP->mtype.phys_info.drag = gameData.bots.pInfo[objP->id].drag;
+	objP->mtype.phys_info.mass = gameData.bots.pInfo [objP->id].mass;
+	objP->mtype.phys_info.drag = gameData.bots.pInfo [objP->id].drag;
 	objP->mtype.phys_info.flags |= (PF_LEVELLING);
-	objP->shields = gameData.bots.pInfo[objP->id].strength;
-	default_behavior = gameData.bots.pInfo[objP->id].behavior;
-	InitAIObject(OBJ_IDX (objP), default_behavior, -1 );		//	Note, -1 = segment this robot goes to to hide, should probably be something useful
-	create_n_segment_path(objP, 6, -1);		//	Create a 6 segment path from creation point.
-	gameData.ai.localInfo[objnum].mode = AIBehaviorToMode(default_behavior);
+	objP->shields = gameData.bots.pInfo [objP->id].strength;
+	default_behavior = gameData.bots.pInfo [objP->id].behavior;
+	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = segment this robot goes to to hide, should probably be something useful
+	create_n_segment_path (objP, 6, -1);		//	Create a 6 segment path from creation point.
+	gameData.ai.localInfo [objnum].mode = AIBehaviorToMode (default_behavior);
 	return objP;
 }
 
@@ -608,7 +608,7 @@ int	FrameCount_last_msg = 0;
 
 //	----------------------------------------------------------------------------------------------------------
 
-void robotmaker_proc (fuelcen_info * robotcen)
+void MatCenHandler (fuelcen_info * robotcen)
 {
 	fix			dist_to_player;
 	vms_vector	cur_object_loc; //, direction;
@@ -647,7 +647,7 @@ void robotmaker_proc (fuelcen_info * robotcen)
 	//	No robot making in multiplayer mode.
 #ifdef NETWORK
 #ifndef SHAREWARE
-	if (!bMakeVirus && (gameData.app.nGameMode & GM_MULTI) && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster()))
+	if (!bMakeVirus && (gameData.app.nGameMode & GM_MULTI) && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster ()))
 		return;
 #else
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -660,9 +660,9 @@ void robotmaker_proc (fuelcen_info * robotcen)
 		return;
 	}
 
-	matcen_num = gameData.segs.segment2s[robotcen->segnum].matcen_num;
+	matcen_num = gameData.segs.segment2s [robotcen->segnum].matcen_num;
 
-	if ( matcen_num == -1 ) {
+	if (matcen_num == -1) {
 #if TRACE
 		con_printf (CON_DEBUG, "Non-functional robotcen at %d\n", robotcen->segnum);
 #endif
@@ -670,15 +670,15 @@ void robotmaker_proc (fuelcen_info * robotcen)
 	}
 
 	if (!bMakeVirus && 
-		 gameData.matCens.robotCenters[matcen_num].robot_flags[0]==0 && 
-		 gameData.matCens.robotCenters[matcen_num].robot_flags[1]==0) {
+		 gameData.matCens.robotCenters [matcen_num].robot_flags [0]==0 && 
+		 gameData.matCens.robotCenters [matcen_num].robot_flags [1]==0) {
 		return;
 	}
 
 	// Wait until we have a d_free slot for this puppy...
    //	  <<<<<<<<<<<<<<<< Num robots in mine >>>>>>>>>>>>>>>>>>>>>>>>>>    <<<<<<<<<<<< Max robots in mine >>>>>>>>>>>>>>>
-	if ((gameData.multi.players[gameData.multi.nLocalPlayer].num_robots_level - gameData.multi.players[gameData.multi.nLocalPlayer].num_kills_level) >= 
-		 (Gamesave_num_org_robots + Num_extry_robots )) {
+	if ((gameData.multi.players [gameData.multi.nLocalPlayer].num_robots_level - gameData.multi.players [gameData.multi.nLocalPlayer].num_kills_level) >= 
+		 (Gamesave_num_org_robots + Num_extry_robots)) {
 		#ifndef NDEBUG
 		if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE
@@ -692,7 +692,7 @@ void robotmaker_proc (fuelcen_info * robotcen)
 
 	robotcen->Timer += gameData.app.xFrameTime;
 
-	switch(robotcen->Flag)	{
+	switch (robotcen->Flag)	{
 	case 0:		// Wait until next robot can generate
 		if (gameData.app.nGameMode & GM_MULTI) {
 			top_time = bMakeVirus ? i2f (extraGameInfo [1].entropy.nVirusGenTime) : ROBOT_GEN_TIME;	
@@ -700,14 +700,14 @@ void robotmaker_proc (fuelcen_info * robotcen)
 //				top_time *= 2;
 			}
 		else {
-			dist_to_player = VmVecDistQuick( &gameData.objs.console->pos, &robotcen->Center );
-			top_time = dist_to_player/64 + d_rand() * 2 + F1_0*2;
-			if ( top_time > ROBOT_GEN_TIME )
-				top_time = ROBOT_GEN_TIME + d_rand();
-			if ( top_time < F1_0*2 )
-				top_time = F1_0*3/2 + d_rand()*2;
+			dist_to_player = VmVecDistQuick (&gameData.objs.console->pos, &robotcen->Center);
+			top_time = dist_to_player/64 + d_rand () * 2 + F1_0*2;
+			if (top_time > ROBOT_GEN_TIME)
+				top_time = ROBOT_GEN_TIME + d_rand ();
+			if (top_time < F1_0*2)
+				top_time = F1_0*3/2 + d_rand ()*2;
 			}
-		if (robotcen->Timer > top_time )	{
+		if (robotcen->Timer > top_time)	{
 			int	count=0;
 			int	i, my_station_num = FUELCEN_IDX (robotcen);
 
@@ -727,8 +727,8 @@ void robotmaker_proc (fuelcen_info * robotcen)
 				}
 			else {
 				for (i=0; i<=gameData.objs.nLastObject; i++)
-					if (gameData.objs.objects[i].type == OBJ_ROBOT)
-						if ((gameData.objs.objects[i].matcen_creator^0x80) == my_station_num)
+					if (gameData.objs.objects [i].type == OBJ_ROBOT)
+						if ((gameData.objs.objects [i].matcen_creator^0x80) == my_station_num)
 							count++;
 				if (count > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE
@@ -745,36 +745,36 @@ void robotmaker_proc (fuelcen_info * robotcen)
 #if 1//def _DEBUG
 		if (!bMakeVirus)
 #endif
-			for (objnum=gameData.segs.segments[segnum].objects;objnum!=-1;objnum=gameData.objs.objects[objnum].next)	{
+			for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
 				count++;
-				if ( count > MAX_OBJECTS )	{
+				if (count > MAX_OBJECTS)	{
 #if TRACE
-					con_printf (CON_DEBUG, "Object list in segment %d is circular.", segnum );
+					con_printf (CON_DEBUG, "Object list in segment %d is circular.", segnum);
 #endif
-					Int3();
+					Int3 ();
 					return;
 				}
-				if (gameData.objs.objects[objnum].type == OBJ_ROBOT) {
+				if (gameData.objs.objects [objnum].type == OBJ_ROBOT) {
 					CollideRobotAndMatCen (gameData.objs.objects + objnum);
 					robotcen->Timer = top_time / 2;
 					return;
 					}
-				else if (gameData.objs.objects[objnum].type == OBJ_PLAYER ) {
+				else if (gameData.objs.objects [objnum].type == OBJ_PLAYER) {
 					CollidePlayerAndMatCen (gameData.objs.objects + objnum);
 					robotcen->Timer = top_time / 2;
 					return;
 				}
 			}
 
-			COMPUTE_SEGMENT_CENTER_I(&cur_object_loc, robotcen->segnum);
-			// HACK!!! The 10 under here should be something equal to the 1/2 the size of the segment.
-			objP = ObjectCreateExplosion((short) robotcen->segnum, &cur_object_loc, i2f(10), vclip);
+			COMPUTE_SEGMENT_CENTER_I (&cur_object_loc, robotcen->segnum);
+			// HACK!!!The 10 under here should be something equal to the 1/2 the size of the segment.
+			objP = ObjectCreateExplosion ((short) robotcen->segnum, &cur_object_loc, i2f (10), vclip);
 
 			if (objP)
 				ExtractOrientFromSegment (&objP->orient,gameData.segs.segments + robotcen->segnum);
 
-			if (gameData.eff.vClips [0][vclip].sound_num > -1) {
-				DigiLinkSoundToPos (gameData.eff.vClips [0][vclip].sound_num, (short) robotcen->segnum,
+			if (gameData.eff.vClips [0] [vclip].sound_num > -1) {
+				DigiLinkSoundToPos (gameData.eff.vClips [0] [vclip].sound_num, (short) robotcen->segnum,
 												0, &cur_object_loc, 0, F1_0);
 			}
 			robotcen->Flag	= 1;
@@ -783,7 +783,7 @@ void robotmaker_proc (fuelcen_info * robotcen)
 		break;
 
 	case 1:			// Wait until 1/2 second after VCLIP started.
-		if (robotcen->Timer > (gameData.eff.vClips [0][vclip].xTotalTime / 2))	{
+		if (robotcen->Timer > (gameData.eff.vClips [0] [vclip].xTotalTime / 2))	{
 			if (!bMakeVirus)
 				robotcen->Capacity -= gameData.matCens.xEnergyToCreateOneRobot;
 			robotcen->Flag = 0;
@@ -792,43 +792,44 @@ void robotmaker_proc (fuelcen_info * robotcen)
 
 			// If this is the first materialization, set to valid robot.
 			if (bMakeVirus ||
-				 gameData.matCens.robotCenters [matcen_num].robot_flags[0] != 0 || 
-				 gameData.matCens.robotCenters [matcen_num].robot_flags[1] != 0) {
+				 gameData.matCens.robotCenters [matcen_num].robot_flags [0] != 0 || 
+				 gameData.matCens.robotCenters [matcen_num].robot_flags [1] != 0) {
 				ubyte	type;
 				uint	flags;
-				sbyte legal_types[64];   // 64 bits, the width of robot_flags[].
+				sbyte legal_types [64];   // 64 bits, the width of robot_flags [].
 				int	num_types, robot_index, i;
 
 				if (!bMakeVirus) {
 					num_types = 0;
 					for (i=0;i<2;i++) {
 						robot_index = i*32;
-						flags = gameData.matCens.robotCenters[matcen_num].robot_flags[i];
+						flags = gameData.matCens.robotCenters [matcen_num].robot_flags [i];
 						while (flags) {
 							if (flags & 1)
-								legal_types[num_types++] = robot_index;
+								legal_types [num_types++] = robot_index;
 							flags >>= 1;
 							robot_index++;
 							}
 						}
 
 					if (num_types == 1)
-						type = legal_types[0];
+						type = legal_types [0];
 					else
-						type = legal_types [(d_rand() * num_types) / 32768];
+						type = legal_types [ (d_rand () * num_types) / 32768];
 #if TRACE
 					con_printf (CON_DEBUG, "Morph: (type = %i) (seg = %i) (capacity = %08x)\n", type, robotcen->segnum, robotcen->Capacity);
 #endif
 					}
 				if (bMakeVirus) {
-					int objnum = CreateObject(OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) robotcen->segnum, &cur_object_loc, &vmd_identity_matrix, 
-													gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
+					int objnum = CreateObject (OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) robotcen->segnum, &cur_object_loc, &vmdIdentityMatrix, 
+														gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, 
+														CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 					if (objnum >= 0) {
 						objP = gameData.objs.objects + objnum;
 						if (gameData.app.nGameMode & GM_MULTI)
-							multiData.create.nObjNums[multiData.create.nLoc++] = objnum;
-						objP->rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info[objP->id].nClipIndex;
-						objP->rtype.vclip_info.xFrameTime = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].xFrameTime;
+							multiData.create.nObjNums [multiData.create.nLoc++] = objnum;
+						objP->rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+						objP->rtype.vclip_info.xFrameTime = gameData.eff.vClips [0] [objP->rtype.vclip_info.nClipIndex].xFrameTime;
 						objP->rtype.vclip_info.nCurFrame = 0;
 						objP->matcen_creator = gameData.segs.xSegments [robotcen->segnum].owner;
 #if 1//def _DEBUG
@@ -837,24 +838,24 @@ void robotmaker_proc (fuelcen_info * robotcen)
 						}
 					}
 				else {
-					objP = create_morph_robot(gameData.segs.segments + robotcen->segnum, &cur_object_loc, type);
+					objP = CreateMorphRobot (gameData.segs.segments + robotcen->segnum, &cur_object_loc, type);
 					if (objP == NULL) {
 #if TRACE
-						con_printf (CON_DEBUG, "Warning: create_morph_robot returned NULL (no gameData.objs.objects left?)\n");
+						con_printf (CON_DEBUG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
 #endif
 						}
 					else {
 #ifndef SHAREWARE
 #ifdef NETWORK
 						if (gameData.app.nGameMode & GM_MULTI)
-							MultiSendCreateRobot(FUELCEN_IDX (robotcen), OBJ_IDX (objP), type);
+							MultiSendCreateRobot (FUELCEN_IDX (robotcen), OBJ_IDX (objP), type);
 #endif
 #endif
 						objP->matcen_creator = (FUELCEN_IDX (robotcen)) | 0x80;
 						// Make object faces player...
-						VmVecSub( &direction, &gameData.objs.console->pos,&objP->pos );
-						VmVector2Matrix( &objP->orient, &direction, &objP->orient.uvec, NULL);
-						MorphStart( objP );
+						VmVecSub (&direction, &gameData.objs.console->pos,&objP->pos);
+						VmVector2Matrix (&objP->orient, &direction, &objP->orient.uvec, NULL);
+						MorphStart (objP);
 						//robotcen->last_created_obj = obj;
 						//robotcen->last_created_sig = robotcen->last_created_objP->signature;
 						}
@@ -872,24 +873,24 @@ void robotmaker_proc (fuelcen_info * robotcen)
 
 //-------------------------------------------------------------
 // Called once per frame, replenishes fuel supply.
-void FuelcenUpdateAll()
+void FuelcenUpdateAll ()
 {
 	int i;
-	fix xAmountToReplenish = fixmul(gameData.app.xFrameTime,gameData.matCens.xFuelRefillSpeed);
+	fix xAmountToReplenish = fixmul (gameData.app.xFrameTime,gameData.matCens.xFuelRefillSpeed);
 
-	for (i=0; i<gameData.matCens.nFuelCenters; i++ )	{
-		if ( gameData.matCens.fuelCenters[i].Type == SEGMENT_IS_ROBOTMAKER )	{
-			if (! (gameStates.app.bGameSuspended & SUSP_ROBOTS))
-				robotmaker_proc( &gameData.matCens.fuelCenters[i] );
-		} else if ( gameData.matCens.fuelCenters[i].Type == SEGMENT_IS_CONTROLCEN )	{
-			//controlcen_proc( &gameData.matCens.fuelCenters[i] );
+	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
+		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER)	{
+			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
+				MatCenHandler (&gameData.matCens.fuelCenters [i]);
+		} else if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_CONTROLCEN)	{
+			//controlcen_proc (&gameData.matCens.fuelCenters [i]);
 	
-		} else if ( (gameData.matCens.fuelCenters[i].MaxCapacity > 0) && (gameData.matCens.playerSegP!=gameData.segs.segments + gameData.matCens.fuelCenters[i].segnum) )	{
-			if ( gameData.matCens.fuelCenters[i].Capacity < gameData.matCens.fuelCenters[i].MaxCapacity )	{
- 				gameData.matCens.fuelCenters[i].Capacity += xAmountToReplenish;
-				if ( gameData.matCens.fuelCenters[i].Capacity >= gameData.matCens.fuelCenters[i].MaxCapacity )		{
-					gameData.matCens.fuelCenters[i].Capacity = gameData.matCens.fuelCenters[i].MaxCapacity;
-					//gauge_message( "Fuel center is fully recharged!    " );
+		} else if ((gameData.matCens.fuelCenters [i].MaxCapacity > 0) && (gameData.matCens.playerSegP!=gameData.segs.segments + gameData.matCens.fuelCenters [i].segnum))	{
+			if (gameData.matCens.fuelCenters [i].Capacity < gameData.matCens.fuelCenters [i].MaxCapacity)	{
+ 				gameData.matCens.fuelCenters [i].Capacity += xAmountToReplenish;
+				if (gameData.matCens.fuelCenters [i].Capacity >= gameData.matCens.fuelCenters [i].MaxCapacity)		{
+					gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
+					//gauge_message ("Fuel center is fully recharged!   ");
 				}
 			}
 		}
@@ -898,12 +899,12 @@ void FuelcenUpdateAll()
 
 //--unused-- //-------------------------------------------------------------
 //--unused-- // replenishes all fuel supplies.
-//--unused-- void fuelcen_replenish_all()
+//--unused-- void FuelCenReplenishAll ()
 //--unused-- {
 //--unused-- 	int i;
 //--unused--
-//--unused-- 	for (i=0; i<gameData.matCens.nFuelCenters; i++ )	{
-//--unused-- 		gameData.matCens.fuelCenters[i].Capacity = gameData.matCens.fuelCenters[i].MaxCapacity;
+//--unused-- 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
+//--unused-- 		gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
 //--unused-- 	}
 //--unused--
 //--unused-- }
@@ -912,7 +913,7 @@ void FuelcenUpdateAll()
 
 //-------------------------------------------------------------
 
-fix hostile_room_damage_shields (segment *segP, fix MaxAmountCanGive)
+fix HostileRoomDamageShields (segment *segP, fix MaxAmountCanGive)
 {
 	static fix last_play_time=0;
 	fix amount;
@@ -920,7 +921,7 @@ fix hostile_room_damage_shields (segment *segP, fix MaxAmountCanGive)
 
 if (!(gameData.app.nGameMode & GM_ENTROPY))
 	return 0;
-Assert(segP != NULL);
+Assert (segP != NULL);
 gameData.matCens.playerSegP = segP;
 if (!segP)
 	return 0;
@@ -928,15 +929,15 @@ xsegP = gameData.segs.xSegments + SEG_IDX (segP);
 if ((xsegP->owner < 1) || (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1))
 	return 0;
 amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
-if (amount > MaxAmountCanGive )
+if (amount > MaxAmountCanGive)
 	amount = MaxAmountCanGive;
 if (last_play_time > gameData.app.xGameTime)
 	last_play_time = 0;
 if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
-	DigiPlaySample(SOUND_PLAYER_GOT_HIT, F1_0/2 );
+	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0/2);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendPlaySound(SOUND_PLAYER_GOT_HIT, F1_0/2);
+		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0/2);
 #endif
 	last_play_time = gameData.app.xGameTime;
 	}
@@ -945,7 +946,7 @@ return amount;
 
 //-------------------------------------------------------------
 
-fix fuelcen_give_fuel(segment *segP, fix MaxAmountCanTake )
+fix FuelCenGiveFuel (segment *segP, fix MaxAmountCanTake)
 {
 	short		segnum = SEG_IDX (segP);
 	segment2	*seg2p = gameData.segs.segment2s + segnum;
@@ -953,21 +954,21 @@ fix fuelcen_give_fuel(segment *segP, fix MaxAmountCanTake )
 
 	static fix last_play_time=0;
 
-	Assert( segP != NULL );
+	Assert (segP != NULL);
 	gameData.matCens.playerSegP = segP;
 	if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multi.nLocalPlayer) + 1))))
 		return 0;
-	if ( (segP) && (seg2p->special==SEGMENT_IS_FUELCEN) )	{
+	if ((segP) && (seg2p->special==SEGMENT_IS_FUELCEN))	{
 		fix amount;
-		DetectEscortGoalAccomplished(-4);	//	UGLY! Hack! -4 means went through fuelcen.
+		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 
-//		if (gameData.matCens.fuelCenters[segP->value].MaxCapacity<=0)	{
-//			HUDInitMessage( "Fuelcenter %d is destroyed.", segP->value );
+//		if (gameData.matCens.fuelCenters [segP->value].MaxCapacity<=0)	{
+//			HUDInitMessage ("Fuelcenter %d is destroyed.", segP->value);
 //			return 0;
 //		}
 
-//		if (gameData.matCens.fuelCenters[segP->value].Capacity<=0)	{
-//			HUDInitMessage( "Fuelcenter %d is empty.", segP->value );
+//		if (gameData.matCens.fuelCenters [segP->value].Capacity<=0)	{
+//			HUDInitMessage ("Fuelcenter %d is empty.", segP->value);
 //			return 0;
 //		}
 
@@ -980,21 +981,21 @@ fix fuelcen_give_fuel(segment *segP, fix MaxAmountCanTake )
 								  extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
 		else
 			amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount);
-		if (amount > MaxAmountCanTake )
+		if (amount > MaxAmountCanTake)
 			amount = MaxAmountCanTake;
 		if (last_play_time > gameData.app.xGameTime)
 			last_play_time = 0;
 		if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
-			DigiPlaySample( SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2 );
+			DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendPlaySound(SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+				MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #endif
 			last_play_time = gameData.app.xGameTime;
 		}
 
 
-		//HUDInitMessage( "Fuelcen %d has %d/%d fuel", segP->value,f2i(gameData.matCens.fuelCenters[segP->value].Capacity),f2i(gameData.matCens.fuelCenters[segP->value].MaxCapacity) );
+		//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].Capacity),f2i (gameData.matCens.fuelCenters [segP->value].MaxCapacity));
 		return amount;
 
 	} else {
@@ -1006,7 +1007,7 @@ fix fuelcen_give_fuel(segment *segP, fix MaxAmountCanTake )
 // DM/050904
 // Repair centers
 // use same values as fuel centers
-fix repaircen_give_shields(segment *segP, fix MaxAmountCanTake )
+fix RepairCenGiveShields (segment *segP, fix MaxAmountCanTake)
 {
 	short		segnum = SEG_IDX (segP);
 	segment2	*seg2p = gameData.segs.segment2s + segnum;
@@ -1020,32 +1021,33 @@ Assert (segP != NULL);
 if (!segP)
 	return 0;
 gameData.matCens.playerSegP = segP;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multi.nLocalPlayer) + 1))))
+if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || 
+	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multi.nLocalPlayer) + 1))))
 	return 0;
 if (seg2p->special != SEGMENT_IS_REPAIRCEN)
 	return 0;
-//		DetectEscortGoalAccomplished(-4);	//	UGLY! Hack! -4 means went through fuelcen.
-//		if (gameData.matCens.fuelCenters[segP->value].MaxCapacity<=0)	{
-//			HUDInitMessage( "Repaircenter %d is destroyed.", segP->value );
+//		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
+//		if (gameData.matCens.fuelCenters [segP->value].MaxCapacity<=0)	{
+//			HUDInitMessage ("Repaircenter %d is destroyed.", segP->value);
 //			return 0;
 //		}
-//		if (gameData.matCens.fuelCenters[segP->value].Capacity<=0)	{
-//			HUDInitMessage( "Repaircenter %d is empty.", segP->value );
+//		if (gameData.matCens.fuelCenters [segP->value].Capacity<=0)	{
+//			HUDInitMessage ("Repaircenter %d is empty.", segP->value);
 //			return 0;
 //		}
-if (MaxAmountCanTake <= 0 )	{
+if (MaxAmountCanTake <= 0)	{
 	return 0;
 }
 amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
-if (amount > MaxAmountCanTake )
+if (amount > MaxAmountCanTake)
 	amount = MaxAmountCanTake;
 if (last_play_time > gameData.app.xGameTime)
 	last_play_time = 0;
 if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
-	DigiPlaySample( SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2 );
+	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendPlaySound(SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #endif
 	last_play_time = gameData.app.xGameTime;
 	}
@@ -1054,76 +1056,76 @@ return amount;
 
 //--unused-- //-----------------------------------------------------------
 //--unused-- // Damages a fuel center
-//--unused-- void fuelcen_damage(segment *segP, fix damage )
+//--unused-- void FuelCenDamage (segment *segP, fix damage)
 //--unused-- {
 //--unused-- 	//int i;
 //--unused-- 	// int	station_num = segP->value;
 //--unused--
-//--unused-- 	Assert( segP != NULL );
-//--unused-- 	if ( segP == NULL ) return;
+//--unused-- 	Assert (segP != NULL);
+//--unused-- 	if (segP == NULL) return;
 //--unused--
-//--unused-- 	switch( segP->special )	{
+//--unused-- 	switch (segP->special)	{
 //--unused-- 	case SEGMENT_IS_NOTHING:
 //--unused-- 		return;
 //--unused-- 	case SEGMENT_IS_ROBOTMAKER:
 //--unused-- //--		// Robotmaker hit by laser
-//--unused-- //--		if (gameData.matCens.fuelCenters[station_num].MaxCapacity<=0 )	{
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].MaxCapacity<=0)	{
 //--unused-- //--			// Shooting a already destroyed materializer
 //--unused-- //--		} else {
-//--unused-- //--			gameData.matCens.fuelCenters[station_num].MaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters[station_num].Capacity > gameData.matCens.fuelCenters[station_num].MaxCapacity )	{
-//--unused-- //--				gameData.matCens.fuelCenters[station_num].Capacity = gameData.matCens.fuelCenters[station_num].MaxCapacity;
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity -= damage;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].Capacity > gameData.matCens.fuelCenters [station_num].MaxCapacity)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].Capacity = gameData.matCens.fuelCenters [station_num].MaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters[station_num].MaxCapacity <= 0 )	{
-//--unused-- //--				gameData.matCens.fuelCenters[station_num].MaxCapacity = 0;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].MaxCapacity <= 0)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
 //--unused-- //--				// Robotmaker dead
-//--unused-- //--				for (i=0; i<6; i++ )
-//--unused-- //--					segP->sides[i].tmap_num2 = 0;
+//--unused-- //--				for (i=0; i<6; i++)
+//--unused-- //--					segP->sides [i].tmap_num2 = 0;
 //--unused-- //--			}
 //--unused-- //--		}
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_FUELCEN:	
-//--unused-- //--		DigiPlaySample( SOUND_REFUEL_STATION_HIT );
-//--unused-- //--		if (gameData.matCens.fuelCenters[station_num].MaxCapacity>0 )	{
-//--unused-- //--			gameData.matCens.fuelCenters[station_num].MaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters[station_num].Capacity > gameData.matCens.fuelCenters[station_num].MaxCapacity )	{
-//--unused-- //--				gameData.matCens.fuelCenters[station_num].Capacity = gameData.matCens.fuelCenters[station_num].MaxCapacity;
+//--unused-- //--		DigiPlaySample (SOUND_REFUEL_STATION_HIT);
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].MaxCapacity>0)	{
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity -= damage;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].Capacity > gameData.matCens.fuelCenters [station_num].MaxCapacity)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].Capacity = gameData.matCens.fuelCenters [station_num].MaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters[station_num].MaxCapacity <= 0 )	{
-//--unused-- //--				gameData.matCens.fuelCenters[station_num].MaxCapacity = 0;
-//--unused-- //--				DigiPlaySample( SOUND_REFUEL_STATION_DESTROYED );
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].MaxCapacity <= 0)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
+//--unused-- //--				DigiPlaySample (SOUND_REFUEL_STATION_DESTROYED);
 //--unused-- //--			}
 //--unused-- //--		} else {
-//--unused-- //--			gameData.matCens.fuelCenters[station_num].MaxCapacity = 0;
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
 //--unused-- //--		}
-//--unused-- //--		HUDInitMessage( "Fuelcenter %d damaged", station_num );
+//--unused-- //--		HUDInitMessage ("Fuelcenter %d damaged", station_num);
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_REPAIRCEN:
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_CONTROLCEN:
 //--unused-- 		break;
 //--unused-- 	default:
-//--unused-- 		Error( "Invalid type in fuelcen.c" );
+//--unused-- 		Error ("Invalid type in fuelcen.c");
 //--unused-- 	}
 //--unused-- }
 
 //--unused-- //	----------------------------------------------------------------------------------------------------------
-//--unused-- fixang my_delta_ang(fixang a,fixang b)
+//--unused-- fixang my_delta_ang (fixang a,fixang b)
 //--unused-- {
 //--unused-- 	fixang delta0,delta1;
 //--unused--
-//--unused-- 	return (abs(delta0 = a - b) < abs(delta1 = b - a)) ? delta0 : delta1;
+//--unused-- 	return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //--unused--
 //--unused-- }
 
 //--unused-- //	----------------------------------------------------------------------------------------------------------
 //--unused-- //return though which side of seg0 is seg1
-//--unused-- int john_find_connect_side(int seg0,int seg1)
+//--unused-- int john_find_connect_side (int seg0,int seg1)
 //--unused-- {
-//--unused-- 	segment *Seg=&gameData.segs.segments[seg0];
+//--unused-- 	segment *Seg=&gameData.segs.segments [seg0];
 //--unused-- 	int i;
 //--unused--
-//--unused-- 	for (i=MAX_SIDES_PER_SEGMENT;i--;) if (Seg->children[i]==seg1) return i;
+//--unused-- 	for (i=MAX_SIDES_PER_SEGMENT;i--;) if (Seg->children [i]==seg1) return i;
 //--unused--
 //--unused-- 	return -1;
 //--unused-- }
@@ -1141,21 +1143,21 @@ return amount;
 //--repair-- object *RepairObj=NULL;		//which object getting repaired
 //--repair-- int disable_repair_center=0;
 //--repair-- fix repair_rate;
-//--repair-- #define FULL_REPAIR_RATE i2f(10)
+//--repair-- #define FULL_REPAIR_RATE i2f (10)
 
 //--unused-- ubyte save_control_type,save_movement_type;
 
-//--unused-- int SideOrderBack[] = {WFRONT, WRIGHT, WTOP, WLEFT, WBOTTOM, WBACK};
-//--unused-- int SideOrderFront[] =  {WBACK, WLEFT, WTOP, WRIGHT, WBOTTOM, WFRONT};
-//--unused-- int SideOrderLeft[] =  { WRIGHT, WBACK, WTOP, WFRONT, WBOTTOM, WLEFT };
-//--unused-- int SideOrderRight[] =  { WLEFT, WFRONT, WTOP, WBACK, WBOTTOM, WRIGHT };
-//--unused-- int SideOrderTop[] =  { WBOTTOM, WLEFT, WBACK, WRIGHT, WFRONT, WTOP };
-//--unused-- int SideOrderBottom[] =  { WTOP, WLEFT, WFRONT, WRIGHT, WBACK, WBOTTOM };
+//--unused-- int SideOrderBack [] = {WFRONT, WRIGHT, WTOP, WLEFT, WBOTTOM, WBACK};
+//--unused-- int SideOrderFront [] =  {WBACK, WLEFT, WTOP, WRIGHT, WBOTTOM, WFRONT};
+//--unused-- int SideOrderLeft [] =  { WRIGHT, WBACK, WTOP, WFRONT, WBOTTOM, WLEFT };
+//--unused-- int SideOrderRight [] =  { WLEFT, WFRONT, WTOP, WBACK, WBOTTOM, WRIGHT };
+//--unused-- int SideOrderTop [] =  { WBOTTOM, WLEFT, WBACK, WRIGHT, WFRONT, WTOP };
+//--unused-- int SideOrderBottom [] =  { WTOP, WLEFT, WFRONT, WRIGHT, WBACK, WBOTTOM };
 
-//--unused-- int SideUpVector[] = {WBOTTOM, WFRONT, WBOTTOM, WFRONT, WBOTTOM, WBOTTOM };
+//--unused-- int SideUpVector [] = {WBOTTOM, WFRONT, WBOTTOM, WFRONT, WBOTTOM, WBOTTOM };
 
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- void refuel_calc_deltas(object *objP, int next_side, int repair_seg)
+//--repair-- void refuel_calc_deltas (object *objP, int next_side, int repair_seg)
 //--repair-- {
 //--repair-- 	vms_vector nextcenter, headfvec, *headuvec;
 //--repair-- 	vms_matrix goal_orient;
@@ -1167,51 +1169,51 @@ return amount;
 //--repair-- 	start_pos = objP->pos;
 //--repair-- 	
 //--repair-- 	// Find delta position to get to goal position
-//--repair-- 	COMPUTE_SEGMENT_CENTER(&goal_pos,&gameData.segs.segments[repair_seg]);
-//--repair-- 	VmVecSub( &delta_pos,&goal_pos,&start_pos);
+//--repair-- 	COMPUTE_SEGMENT_CENTER (&goal_pos,&gameData.segs.segments [repair_seg]);
+//--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
 //--repair-- 	
 //--repair-- 	// Find start angles
-//--repair-- 	//angles_from_vector(&start_angles,&objP->orient.fvec);
-//--repair-- 	VmExtractAnglesMatrix(&start_angles,&objP->orient);
+//--repair-- 	//angles_from_vector (&start_angles,&objP->orient.fvec);
+//--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->orient);
 //--repair-- 	
 //--repair-- 	// Find delta angles to get to goal orientation
-//--repair-- 	med_compute_center_point_on_side(&nextcenter,&gameData.segs.segments[repair_seg],next_side);
-//--repair-- 	VmVecSub(&headfvec,&nextcenter,&goal_pos);
+//--repair-- 	med_compute_center_point_on_side (&nextcenter,&gameData.segs.segments [repair_seg],next_side);
+//--repair-- 	VmVecSub (&headfvec,&nextcenter,&goal_pos);
 //--repair--
 //--repair-- 	if (next_side == 5)						//last side
 //--repair-- 		headuvec = &repair_save_uvec;
 //--repair-- 	else
-//--repair-- 		headuvec = &gameData.segs.segments[repair_seg].sides[SideUpVector[next_side]].normals[0];
+//--repair-- 		headuvec = &gameData.segs.segments [repair_seg].sides [SideUpVector [next_side]].normals [0];
 //--repair--
-//--repair-- 	VmVector2Matrix(&goal_orient,&headfvec,headuvec,NULL);
-//--repair-- 	VmExtractAnglesMatrix(&goal_angles,&goal_orient);
-//--repair-- 	delta_angles.p = my_delta_ang(start_angles.p,goal_angles.p);
-//--repair-- 	delta_angles.b = my_delta_ang(start_angles.b,goal_angles.b);
-//--repair-- 	delta_angles.h = my_delta_ang(start_angles.h,goal_angles.h);
+//--repair-- 	VmVector2Matrix (&goal_orient,&headfvec,headuvec,NULL);
+//--repair-- 	VmExtractAnglesMatrix (&goal_angles,&goal_orient);
+//--repair-- 	delta_angles.p = my_delta_ang (start_angles.p,goal_angles.p);
+//--repair-- 	delta_angles.b = my_delta_ang (start_angles.b,goal_angles.b);
+//--repair-- 	delta_angles.h = my_delta_ang (start_angles.h,goal_angles.h);
 //--repair-- 	current_time = 0;
 //--repair-- 	Repairing = 0;
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- //if repairing, cut it short
-//--repair-- abort_repair_center()
+//--repair-- abort_repair_center ()
 //--repair-- {
 //--repair-- 	if (!RepairObj || side_index==5)
 //--repair-- 		return;
 //--repair--
 //--repair-- 	current_time = 0;
 //--repair-- 	side_index = 5;
-//--repair-- 	next_side = sidelist[side_index];
-//--repair-- 	refuel_calc_deltas(RepairObj, next_side, FuelStationSeg);
+//--repair-- 	next_side = sidelist [side_index];
+//--repair-- 	refuel_calc_deltas (RepairObj, next_side, FuelStationSeg);
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- void repair_ship_damage()
+//--repair-- void repair_ship_damage ()
 //--repair-- {
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
-//--repair-- int refuel_do_repair_effect( object * objP, int first_time, int repair_seg )	{
+//--repair-- int refuel_do_repair_effect (object * objP, int first_time, int repair_seg)	{
 //--repair--
 //--repair-- 	objP->mtype.phys_info.velocity.x = 0;				
 //--repair-- 	objP->mtype.phys_info.velocity.y = 0;				
@@ -1221,12 +1223,12 @@ return amount;
 //--repair-- 		int entry_side;
 //--repair-- 		current_time = 0;
 //--repair--
-//--repair-- 		DigiPlaySample( SOUND_REPAIR_STATION_PLAYER_ENTERING, F1_0 );
+//--repair-- 		DigiPlaySample (SOUND_REPAIR_STATION_PLAYER_ENTERING, F1_0);
 //--repair--
-//--repair-- 		entry_side = john_find_connect_side(repair_seg,objP->segnum );
-//--repair-- 		Assert( entry_side > -1 );
+//--repair-- 		entry_side = john_find_connect_side (repair_seg,objP->segnum);
+//--repair-- 		Assert (entry_side > -1);
 //--repair--
-//--repair-- 		switch( entry_side )	{
+//--repair-- 		switch (entry_side)	{
 //--repair-- 		case WBACK: sidelist = SideOrderBack; break;
 //--repair-- 		case WFRONT: sidelist = SideOrderFront; break;
 //--repair-- 		case WLEFT: sidelist = SideOrderLeft; break;
@@ -1235,94 +1237,94 @@ return amount;
 //--repair-- 		case WBOTTOM: sidelist = SideOrderBottom; break;
 //--repair-- 		}
 //--repair-- 		side_index = 0;
-//--repair-- 		next_side = sidelist[side_index];
+//--repair-- 		next_side = sidelist [side_index];
 //--repair--
-//--repair-- 		refuel_calc_deltas(objP,next_side, repair_seg);
+//--repair-- 		refuel_calc_deltas (objP,next_side, repair_seg);
 //--repair-- 	}
 //--repair--
 //--repair-- 	//update shields
-//--repair-- 	if (gameData.multi.players[gameData.multi.nLocalPlayer].shields < MAX_SHIELDS) {	//if above max, don't mess with it
+//--repair-- 	if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < MAX_SHIELDS) {	//if above max, don't mess with it
 //--repair--
-//--repair-- 		gameData.multi.players[gameData.multi.nLocalPlayer].shields += fixmul(gameData.app.xFrameTime,repair_rate);
+//--repair-- 		gameData.multi.players [gameData.multi.nLocalPlayer].shields += fixmul (gameData.app.xFrameTime,repair_rate);
 //--repair--
-//--repair-- 		if (gameData.multi.players[gameData.multi.nLocalPlayer].shields > MAX_SHIELDS)
-//--repair-- 			gameData.multi.players[gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
+//--repair-- 		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > MAX_SHIELDS)
+//--repair-- 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
 //--repair-- 	}
 //--repair--
 //--repair-- 	current_time += gameData.app.xFrameTime;
 //--repair--
-//--repair-- 	if (current_time >= delta_time )	{
+//--repair-- 	if (current_time >= delta_time)	{
 //--repair-- 		vms_angvec av;
 //--repair-- 		objP->pos = goal_pos;
 //--repair-- 		av	= goal_angles;
-//--repair-- 		VmAngles2Matrix(&objP->orient,&av);
+//--repair-- 		VmAngles2Matrix (&objP->orient,&av);
 //--repair--
-//--repair-- 		if (side_index >= 5 )	
+//--repair-- 		if (side_index >= 5)	
 //--repair-- 			return 1;		// Done being repaired...
 //--repair--
 //--repair-- 		if (Repairing==0)		{
-//--repair-- 			//DigiPlaySample( SOUND_REPAIR_STATION_FIXING );
+//--repair-- 			//DigiPlaySample (SOUND_REPAIR_STATION_FIXING);
 //--repair-- 			Repairing=1;
 //--repair--
-//--repair-- 			switch( next_side )	{
-//--repair-- 			case 0:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_1,F1_0 ); break;
-//--repair-- 			case 1:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_2,F1_0 ); break;
-//--repair-- 			case 2:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_3,F1_0 ); break;
-//--repair-- 			case 3:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_4,F1_0 ); break;
-//--repair-- 			case 4:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_1,F1_0 ); break;
-//--repair-- 			case 5:	DigiPlaySample( SOUND_REPAIR_STATION_FIXING_2,F1_0 ); break;
+//--repair-- 			switch (next_side)	{
+//--repair-- 			case 0:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
+//--repair-- 			case 1:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
+//--repair-- 			case 2:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_3,F1_0); break;
+//--repair-- 			case 3:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_4,F1_0); break;
+//--repair-- 			case 4:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
+//--repair-- 			case 5:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
 //--repair-- 			}
 //--repair-- 		
-//--repair-- 			repair_ship_damage();
+//--repair-- 			repair_ship_damage ();
 //--repair--
 //--repair-- 		}
 //--repair--
-//--repair-- 		if (current_time >= (delta_time+(F1_0/2)) )	{
+//--repair-- 		if (current_time >= (delta_time+ (F1_0/2)))	{
 //--repair-- 			current_time = 0;
 //--repair-- 			// Find next side...
 //--repair-- 			side_index++;
-//--repair-- 			if (side_index >= 6 ) return 1;
-//--repair-- 			next_side = sidelist[side_index];
+//--repair-- 			if (side_index >= 6) return 1;
+//--repair-- 			next_side = sidelist [side_index];
 //--repair-- 	
-//--repair-- 			refuel_calc_deltas(objP, next_side, repair_seg);
+//--repair-- 			refuel_calc_deltas (objP, next_side, repair_seg);
 //--repair-- 		}
 //--repair--
 //--repair-- 	} else {
 //--repair-- 		fix factor, p,b,h;	
 //--repair-- 		vms_angvec av;
 //--repair--
-//--repair-- 		factor = fixdiv( current_time,delta_time );
+//--repair-- 		factor = fixdiv (current_time,delta_time);
 //--repair--
 //--repair-- 		// Find object's current position
 //--repair-- 		objP->pos = delta_pos;
-//--repair-- 		VmVecScale( &objP->pos, factor );
-//--repair-- 		VmVecInc( &objP->pos, &start_pos );
+//--repair-- 		VmVecScale (&objP->pos, factor);
+//--repair-- 		VmVecInc (&objP->pos, &start_pos);
 //--repair-- 			
 //--repair-- 		// Find object's current orientation
-//--repair-- 		p	= fixmul(delta_angles.p,factor);
-//--repair-- 		b	= fixmul(delta_angles.b,factor);
-//--repair-- 		h	= fixmul(delta_angles.h,factor);
+//--repair-- 		p	= fixmul (delta_angles.p,factor);
+//--repair-- 		b	= fixmul (delta_angles.b,factor);
+//--repair-- 		h	= fixmul (delta_angles.h,factor);
 //--repair-- 		av.p = (fixang)p + start_angles.p;
 //--repair-- 		av.b = (fixang)b + start_angles.b;
 //--repair-- 		av.h = (fixang)h + start_angles.h;
-//--repair-- 		VmAngles2Matrix(&objP->orient,&av);
+//--repair-- 		VmAngles2Matrix (&objP->orient,&av);
 //--repair--
 //--repair-- 	}
 //--repair--
-//--repair-- 	UpdateObjectSeg(objP);		//update segment
+//--repair-- 	UpdateObjectSeg (objP);		//update segment
 //--repair--
 //--repair-- 	return 0;
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- //do the repair center for this frame
-//--repair-- void do_repair_sequence(object *objP)
+//--repair-- void do_repair_sequence (object *objP)
 //--repair-- {
-//--repair-- 	Assert(obj == RepairObj);
+//--repair-- 	Assert (obj == RepairObj);
 //--repair--
-//--repair-- 	if (refuel_do_repair_effect( objP, 0, FuelStationSeg )) {
-//--repair-- 		if (gameData.multi.players[gameData.multi.nLocalPlayer].shields < MAX_SHIELDS)
-//--repair-- 			gameData.multi.players[gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
+//--repair-- 	if (refuel_do_repair_effect (objP, 0, FuelStationSeg)) {
+//--repair-- 		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < MAX_SHIELDS)
+//--repair-- 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
 //--repair-- 		objP->control_type = save_control_type;
 //--repair-- 		objP->movement_type = save_movement_type;
 //--repair-- 		disable_repair_center=1;
@@ -1332,18 +1334,18 @@ return amount;
 //--repair-- 		//the two lines below will spit the player out of the rapair center,
 //--repair-- 		//but what happen is that the ship just bangs into the door
 //--repair-- 		//if (objP->movement_type == MT_PHYSICS)
-//--repair-- 		//	VmVecCopyScale(&objP->mtype.phys_info.velocity,&objP->orient.fvec,i2f(200);
+//--repair-- 		//	VmVecCopyScale (&objP->mtype.phys_info.velocity,&objP->orient.fvec,i2f (200);
 //--repair-- 	}
 //--repair--
 //--repair-- }
 //--repair--
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- //see if we should start the repair center
-//--repair-- void check_start_repair_center(object *objP)
+//--repair-- void check_start_repair_center (object *objP)
 //--repair-- {
 //--repair-- 	if (RepairObj != NULL) return;		//already in repair center
 //--repair--
-//--repair-- 	if (Lsegments[objP->segnum].special_type & SS_REPAIR_CENTER) {
+//--repair-- 	if (Lsegments [objP->segnum].special_type & SS_REPAIR_CENTER) {
 //--repair--
 //--repair-- 		if (!disable_repair_center) {
 //--repair-- 			//have just entered repair center
@@ -1351,7 +1353,7 @@ return amount;
 //--repair-- 			RepairObj = obj;
 //--repair-- 			repair_save_uvec = objP->orient.uvec;
 //--repair--
-//--repair-- 			repair_rate = fixmuldiv(FULL_REPAIR_RATE,(MAX_SHIELDS - gameData.multi.players[gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
+//--repair-- 			repair_rate = fixmuldiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multi.players [gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
 //--repair--
 //--repair-- 			save_control_type = objP->control_type;
 //--repair-- 			save_movement_type = objP->movement_type;
@@ -1359,11 +1361,11 @@ return amount;
 //--repair-- 			objP->control_type = CT_REPAIRCEN;
 //--repair-- 			objP->movement_type = MT_NONE;
 //--repair--
-//--repair-- 			FuelStationSeg	= Lsegments[objP->segnum].special_segment;
-//--repair-- 			Assert(FuelStationSeg != -1);
+//--repair-- 			FuelStationSeg	= Lsegments [objP->segnum].special_segment;
+//--repair-- 			Assert (FuelStationSeg != -1);
 //--repair--
-//--repair-- 			if (refuel_do_repair_effect( objP, 1, FuelStationSeg )) {
-//--repair-- 				Int3();		//can this happen?
+//--repair-- 			if (refuel_do_repair_effect (objP, 1, FuelStationSeg)) {
+//--repair-- 				Int3 ();		//can this happen?
 //--repair-- 				objP->control_type = CT_FLYING;
 //--repair-- 				objP->movement_type = MT_PHYSICS;
 //--repair-- 			}
@@ -1375,37 +1377,37 @@ return amount;
 //--repair-- }
 
 //	--------------------------------------------------------------------------------------------
-void disable_matcens(void)
+void DisableMatCens (void)
 {
 	int	i;
 
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		gameData.matCens.fuelCenters[i].Enabled = 0;
-		gameData.matCens.fuelCenters[i].Disable_time = 0;
+		gameData.matCens.fuelCenters [i].Enabled = 0;
+		gameData.matCens.fuelCenters [i].Disable_time = 0;
 	}
 }
 
 //	--------------------------------------------------------------------------------------------
 //	Initialize all materialization centers.
 //	Give them all the right number of lives.
-void InitAllMatCens(void)
+void InitAllMatCens (void)
 {
 	int	i;
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)
-		if (gameData.matCens.fuelCenters[i].Type == SEGMENT_IS_ROBOTMAKER) {
-			gameData.matCens.fuelCenters[i].Lives = 3;
-			gameData.matCens.fuelCenters[i].Enabled = 0;
-			gameData.matCens.fuelCenters[i].Disable_time = 0;
+		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER) {
+			gameData.matCens.fuelCenters [i].Lives = 3;
+			gameData.matCens.fuelCenters [i].Enabled = 0;
+			gameData.matCens.fuelCenters [i].Disable_time = 0;
 #ifndef NDEBUG
 {
 			//	Make sure this fuelcen is pointed at by a matcen.
 			int	j;
 			for (j=0; j<gameData.matCens.nRobotCenters; j++) {
-				if (gameData.matCens.robotCenters[j].fuelcen_num == i)
+				if (gameData.matCens.robotCenters [j].fuelcen_num == i)
 					break;
 			}
-			Assert(j != gameData.matCens.nRobotCenters);
+			Assert (j != gameData.matCens.nRobotCenters);
 }
 #endif
 
@@ -1414,10 +1416,10 @@ void InitAllMatCens(void)
 #ifndef NDEBUG
 	//	Make sure all matcens point at a fuelcen
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		int	fuelcen_num = gameData.matCens.robotCenters[i].fuelcen_num;
+		int	fuelcen_num = gameData.matCens.robotCenters [i].fuelcen_num;
 
-		Assert(fuelcen_num < gameData.matCens.nFuelCenters);
-		Assert(gameData.matCens.fuelCenters[fuelcen_num].Type == SEGMENT_IS_ROBOTMAKER);
+		Assert (fuelcen_num < gameData.matCens.nFuelCenters);
+		Assert (gameData.matCens.fuelCenters [fuelcen_num].Type == SEGMENT_IS_ROBOTMAKER);
 	}
 #endif
 
@@ -1431,30 +1433,35 @@ short blue_flag_goals = -1;
 
 // create linked lists of all segments with special type blue and red goal
 
-void GatherFlagGoals (void)
+int GatherFlagGoals (void)
 {
-	int			i, j;
+	int			h, i, j;
 	segment2		*seg2P = gameData.segs.segment2s;
 
 memset (flag_goal_list, 0xff, sizeof (flag_goal_list));
-for (i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
-	if (seg2P->special == SEGMENT_IS_GOAL_BLUE)
+for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
+	if (seg2P->special == SEGMENT_IS_GOAL_BLUE) {
 		j = 0;
-	else if (seg2P->special == SEGMENT_IS_GOAL_RED)
+		h |= 1;
+		}
+	else if (seg2P->special == SEGMENT_IS_GOAL_RED) {
+		h |= 2;
 		j = 1;
+		}
 	else
 		continue;
 	flag_goal_list [i] = flag_goal_roots [j];
 	flag_goal_roots [j] = i;
 	}
+return h;
 }
 
 //--------------------------------------------------------------------
 
 #ifdef NETWORK
-extern void MultiSendCaptureBonus (char);
+void MultiSendCaptureBonus (char);
 
-int flag_at_home (int nFlagId)
+int FlagAtHome (int nFlagId)
 {
 	int		i, j;
 	object	*objP;
@@ -1476,23 +1483,24 @@ if (pSeg->special != nGoalId)
 	return 0;
 if (GetTeam (gameData.multi.nLocalPlayer) != nTeamId)
 	return 0;
-if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
+if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
 	return 0;
-if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF && !flag_at_home ((nFlagId == POW_FLAG_BLUE) ? POW_FLAG_RED : POW_FLAG_BLUE))
+if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF && 
+	 !FlagAtHome ((nFlagId == POW_FLAG_BLUE) ? POW_FLAG_RED : POW_FLAG_BLUE))
 	return 0;
 MultiSendCaptureBonus ((char) gameData.multi.nLocalPlayer);
-gameData.multi.players[gameData.multi.nLocalPlayer].flags &=(~(PLAYER_FLAGS_FLAG));
+gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
 }
 
 //--------------------------------------------------------------------
 
-void fuelcen_check_for_goal(segment *segP)
+void FuelCenCheckForGoal (segment *segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s[SEG_IDX (segP)];
+	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
-	Assert( segP != NULL );
+	Assert (segP != NULL);
 	Assert (gameData.app.nGameMode & GM_CAPTURE);
 
 #if 1
@@ -1500,27 +1508,27 @@ CheckFlagDrop (seg2p, TEAM_BLUE, POW_FLAG_RED, SEGMENT_IS_GOAL_BLUE);
 CheckFlagDrop (seg2p, TEAM_RED, POW_FLAG_BLUE, SEGMENT_IS_GOAL_RED);
 #else
 if (seg2p->special==SEGMENT_IS_GOAL_BLUE)	{
-	if ((GetTeam(gameData.multi.nLocalPlayer)==TEAM_BLUE) && 
-		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
-		  flag_at_home (POW_FLAG_BLUE)) {		
+	if ((GetTeam (gameData.multi.nLocalPlayer)==TEAM_BLUE) && 
+		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
+		  FlagAtHome (POW_FLAG_BLUE)) {		
 		{
 #if TRACE
 		con_printf (CON_DEBUG,"In goal segment BLUE\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
-		gameData.multi.players[gameData.multi.nLocalPlayer].flags &=(~(PLAYER_FLAGS_FLAG);
+		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_FLAG_RED, FORCE_DROP);
 		}
 	}
-else if ( seg2p->special==SEGMENT_IS_GOAL_RED) {
-	if ((GetTeam(gameData.multi.nLocalPlayer)==TEAM_RED) && 
-		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) &&
-		 flag_at_home (POW_FLAG_RED)) {		
+else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
+	if ((GetTeam (gameData.multi.nLocalPlayer)==TEAM_RED) && 
+		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) &&
+		 FlagAtHome (POW_FLAG_RED)) {		
 #if TRACE
 		con_printf (CON_DEBUG,"In goal segment RED\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
-		gameData.multi.players[gameData.multi.nLocalPlayer].flags &=(~(PLAYER_FLAGS_FLAG);
+		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_FLAG_BLUE, FORCE_DROP);
 		}
 	}
@@ -1529,26 +1537,26 @@ else if ( seg2p->special==SEGMENT_IS_GOAL_RED) {
 
 //--------------------------------------------------------------------
 
-void fuelcen_check_for_hoard_goal(segment *segP)
+void FuelCenCheckForHoardGoal (segment *segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s[SEG_IDX (segP)];
+	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
-	Assert( segP != NULL );
+	Assert (segP != NULL);
 	Assert (gameData.app.nGameMode & GM_HOARD);
 
    if (gameStates.app.bPlayerIsDead)
 		return;
 
-	if (seg2p->special==SEGMENT_IS_GOAL_BLUE || seg2p->special==SEGMENT_IS_GOAL_RED  )	
+	if (seg2p->special==SEGMENT_IS_GOAL_BLUE || seg2p->special==SEGMENT_IS_GOAL_RED )	
 	{
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX])
+		if (gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX])
 		{
 #if TRACE
 				con_printf (CON_DEBUG,"In orb goal!\n");
 #endif
 				multi_send_orb_bonus ((char) gameData.multi.nLocalPlayer);
-				gameData.multi.players[gameData.multi.nLocalPlayer].flags &=(~(PLAYER_FLAGS_FLAG));
-				gameData.multi.players[gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX]=0;
+				gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
+				gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX]=0;
       }
 	}
 
@@ -1561,25 +1569,25 @@ void fuelcen_check_for_hoard_goal(segment *segP)
 /*
  * reads an old_matcen_info structure from a CFILE
  */
-void old_matcen_info_read(old_matcen_info *mi, CFILE *fp)
+void OldMatCenInfoRead (old_matcen_info *mi, CFILE *fp)
 {
-	mi->robot_flags = CFReadInt(fp);
-	mi->hit_points = CFReadFix(fp);
-	mi->interval = CFReadFix(fp);
-	mi->segnum = CFReadShort(fp);
-	mi->fuelcen_num = CFReadShort(fp);
+	mi->robot_flags = CFReadInt (fp);
+	mi->hit_points = CFReadFix (fp);
+	mi->interval = CFReadFix (fp);
+	mi->segnum = CFReadShort (fp);
+	mi->fuelcen_num = CFReadShort (fp);
 }
 
 /*
  * reads a matcen_info structure from a CFILE
  */
-void matcen_info_read(matcen_info *mi, CFILE *fp)
+void MatCenInfoRead (matcen_info *mi, CFILE *fp)
 {
-	mi->robot_flags[0] = CFReadInt(fp);
-	mi->robot_flags[1] = CFReadInt(fp);
-	mi->hit_points = CFReadFix(fp);
-	mi->interval = CFReadFix(fp);
-	mi->segnum = CFReadShort(fp);
-	mi->fuelcen_num = CFReadShort(fp);
+	mi->robot_flags [0] = CFReadInt (fp);
+	mi->robot_flags [1] = CFReadInt (fp);
+	mi->hit_points = CFReadFix (fp);
+	mi->interval = CFReadFix (fp);
+	mi->segnum = CFReadShort (fp);
+	mi->fuelcen_num = CFReadShort (fp);
 }
 #endif

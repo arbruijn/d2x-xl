@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * New home for find_vector_intersection()
+ * New home for FindVectorIntersection()
  *
  * Old Log:
  * Revision 1.7  1995/10/21  23:52:18  allender
@@ -217,7 +217,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * keep the same information in different ways.
  *
  * Revision 1.2  1994/06/09  09:58:38  matt
- * Moved find_vector_intersection() from physics.c to new file fvi.c
+ * Moved FindVectorIntersection() from physics.c to new file fvi.c
  *
  * Revision 1.1  1994/06/09  09:25:57  matt
  * Initial revision
@@ -878,8 +878,8 @@ short segs_visited[MAX_SEGS_VISITED];
 
 int fvi_nest_count;
 
-//these vars are used to pass vars from fvi_sub() to find_vector_intersection()
-short fvi_hit_object;	// object number of object hit in last find_vector_intersection call.
+//these vars are used to pass vars from fvi_sub() to FindVectorIntersection()
+short fvi_hit_object;	// object number of object hit in last FindVectorIntersection call.
 short fvi_hit_seg;		// what segment the hit point is in
 short fvi_hit_side;		// what side was hit
 short fvi_hit_side_seg;// what seg the hitside is in
@@ -904,7 +904,7 @@ int fvi_sub (vms_vector *intp, short *ints, vms_vector *p0, short startseg, vms_
 //  ingore_obj			ignore collisions with this object
 //  check_obj_flag	determines whether collisions with gameData.objs.objects are checked
 //Returns the hit_data->hit_type
-int find_vector_intersection(fvi_query *fq,fvi_info *hit_data)
+int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data)
 {
 	int hit_type;
 	short hit_seg,hit_seg2;

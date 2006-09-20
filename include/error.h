@@ -40,7 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made error functions generate int3's if debugging on
  *
  * Revision 1.5  1993/10/14  15:29:22  matt
- * Added new function clear_warn_func()
+ * Added new function ClearWarnFunc()
  *
  * Revision 1.4  1993/10/08  16:16:47  matt
  * Made Assert() call function _Assert(), rather to do 'if...' inline.
@@ -75,7 +75,7 @@ int _CDECL_ error_init(void (*func)(char *), char *fmt,...);    //init error sys
 void _CDECL_ set_exit_message(char *fmt,...);	//specify message to print at exit
 void _CDECL_ Warning(char *fmt,...);				//print out warning message to user
 void SetWarnFunc(void (*f)(char *s));//specifies the function to call with warning messages
-void clear_warn_func(void (*f)(char *s));//say this function no longer valid
+void ClearWarnFunc(void (*f)(char *s));//say this function no longer valid
 void _Assert(int expr,char *expr_text,char *filename,int linenum);	//assert func
 void _CDECL_ Error(char *fmt,...) __noreturn __format;				//exit with error code=1, print message
 void Assert(int expr);

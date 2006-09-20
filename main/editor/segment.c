@@ -804,7 +804,7 @@ void med_extract_matrix_from_segment(segment *sp,vms_matrix *rotmat)
 #if TRACE
 		con_printf (CON_DEBUG, "Trapped null vector in med_extract_matrix_from_segment, returning identity matrix.\n");
 #endif
-		*rotmat = vmd_identity_matrix;
+		*rotmat = vmdIdentityMatrix;
 		return;
 	}
 
@@ -1342,7 +1342,7 @@ int med_delete_segment(segment *sp)
 	}
 
 	// Delete its refueling center if it has one
-	fuelcen_delete(sp);
+	FuelCenDelete(sp);
 
 	delete_vertices_in_segment(sp);
 
@@ -1942,7 +1942,7 @@ int create_new_mine(void)
 //	gamestate_not_restored = 1;
 
 	// Clear refueling center code
-	fuelcen_reset();
+	FuelCenReset();
 	hostage_init_all();
 
 	init_all_vertices();

@@ -1321,7 +1321,9 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
-	if (gameData.app.nGameMode & GM_ENTROPY)
+	if (gameData.app.nGameMode & GM_MONSTERBALL)
+		netGame.game_flags |= NETGAME_FLAG_MONSTERBALL;
+	else if (gameData.app.nGameMode & GM_ENTROPY)
 		netGame.game_flags |= NETGAME_FLAG_ENTROPY;
 	else if (gameData.app.nGameMode & GM_HOARD) {
 		netGame.game_flags |= NETGAME_FLAG_HOARD;
@@ -1547,14 +1549,16 @@ else {
 	}  
 //  Restore the pre-hoard mode
 if (HoardEquipped ()) {
-	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
+	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
  			netGame.gamemode = NETGAME_ENTROPY;
+		else if (gameData.app.nGameMode & GM_MONSTERBALL)
+ 			netGame.gamemode = NETGAME_MONSTERBALL;
 		else if (gameData.app.nGameMode & GM_TEAM)
  			netGame.gamemode = NETGAME_TEAM_HOARD;
 		else
  			netGame.gamemode = NETGAME_HOARD;
-		netGame.game_flags&=~ (NETGAME_FLAG_REALLY_ENDLEVEL | NETGAME_FLAG_REALLY_FORMING | NETGAME_FLAG_TEAM_HOARD);
+		netGame.game_flags &= ~(NETGAME_FLAG_REALLY_ENDLEVEL | NETGAME_FLAG_REALLY_FORMING | NETGAME_FLAG_TEAM_HOARD);
 		}
 	}
 netGame.type = old_type;
@@ -1745,12 +1749,17 @@ if (i == networkData.nActiveGames) {
 actGameP = activeNetGames + i;
 memcpy (actGameP, (ubyte *) newInfo, sizeof (lite_info));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
-// See if this is really a Hoard game
+// See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the data accordingly
 if (HoardEquipped ()) {
-	if (actGameP->game_flags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY)) {
-		actGameP->gamemode= (actGameP->game_flags & NETGAME_FLAG_HOARD) ? NETGAME_HOARD : NETGAME_ENTROPY;					  
-		actGameP->game_status=NETSTAT_PLAYING;
+	if (actGameP->game_flags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
+		if ((actGameP->game_flags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
+			actGameP->gamemode = NETGAME_MONSTERBALL; 
+		else if (actGameP->game_flags & NETGAME_FLAG_HOARD)
+			actGameP->gamemode = NETGAME_HOARD;					  
+		else if (actGameP->game_flags & NETGAME_FLAG_ENTROPY)
+			actGameP->gamemode = NETGAME_ENTROPY;					  
+		actGameP->game_status = NETSTAT_PLAYING;
 		if (actGameP->game_flags & NETGAME_FLAG_TEAM_HOARD)
 			actGameP->gamemode = NETGAME_TEAM_HOARD;					  
 		if (actGameP->game_flags & NETGAME_FLAG_REALLY_ENDLEVEL)
@@ -2419,6 +2428,8 @@ else if (HoardEquipped ()) {
 		gameData.app.nGameMode = GM_HOARD | GM_TEAM;
 	else if (gamemode == NETGAME_ENTROPY)
 		gameData.app.nGameMode = GM_ENTROPY | GM_TEAM;
+	else if (gamemode == NETGAME_MONSTERBALL)
+		gameData.app.nGameMode = GM_MONSTERBALL | GM_TEAM;
 	}
 else
 	Int3 ();
@@ -4379,6 +4390,9 @@ if (gameData.multi.autoNG.bHost) {
 			break;
 		case 5:
 			mpParams.nGameMode = NETGAME_ENTROPY;
+			break;
+		case 6:
+			mpParams.nGameMode = NETGAME_MONSTERBALL;
 			break;
 			}
 	mpParams.nGameType = mpParams.nGameMode;

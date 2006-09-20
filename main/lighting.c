@@ -290,7 +290,7 @@ Cache_lookups++;
 		fq.ignore_obj_list	= NULL;
 		fq.flags					= FQ_TRANSWALL;
 
-		hit_type = find_vector_intersection(&fq, &hit_data);
+		hit_type = FindVectorIntersection(&fq, &hit_data);
 
 		// gameData.ai.vHitPos = gameData.ai.hitData.hit_pnt;
 		// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
@@ -433,7 +433,7 @@ void ApplyLight(
 						fq.ignore_obj_list	= NULL;
 						fq.flags					= FQ_TRANSWALL;
 
-						fate = find_vector_intersection(&fq, &hit_data);
+						fate = FindVectorIntersection(&fq, &hit_data);
 						if (fate != HIT_NONE) {
 							VmVecSub(&tvec, &hit_data.hit_pnt, obj_pos);
 							max_headlight_dist = VmVecMagQuick(&tvec) + F1_0*4;

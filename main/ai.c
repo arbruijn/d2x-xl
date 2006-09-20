@@ -365,7 +365,7 @@ tBossProps bossProps [2][NUM_D2_BOSSES] = {
 
 // -- sbyte Super_boss_gate_list[MAX_GATE_INDEX] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22, 0, 8, 11, 19, 20, 8, 20, 8};
 
-// These globals are set by a call to find_vector_intersection, which is a slow routine,
+// These globals are set by a call to FindVectorIntersection, which is a slow routine,
 // so we don't want to call it again (for this object) unless we have to.
 
 #ifndef NDEBUG

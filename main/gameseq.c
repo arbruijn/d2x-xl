@@ -504,7 +504,7 @@ int count_number_of_hostages ()
 
 //------------------------------------------------------------------------------
 //added 10/12/95: delete buddy bot if coop game.  Probably doesn't really belong here. -MT
-void gameseq_init_network_players ()
+void GameSeqInitNetworkPlayers ()
 {
 	int		i, j, t,
 				segNum, segType, 
@@ -820,7 +820,7 @@ extern int gameData.segs.bHaveSlideSegs;
 //reset stuff so game is semi-normal when playing from editor
 void editor_reset_stuff_on_level ()
 {
-	gameseq_init_network_players ();
+	GameSeqInitNetworkPlayers ();
 	init_player_stats_level (0);
 	gameData.objs.viewer = gameData.objs.console;
 	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
@@ -885,7 +885,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].time_total > i2f (3600)
 //------------------------------------------------------------------------------
 
 //go through this level and start any eclip sounds
-void set_sound_sources ()
+void SetSoundSources ()
 {
 	short segnum,sidenum;
 	segment *seg;
@@ -1217,22 +1217,32 @@ ResetChildObjects ();
 ResetMovementPath ();
 /*---*/LogErr ("   counting entropy rooms\n");
 nRooms = CountRooms ();
-if ((gameData.app.nGameMode & GM_ENTROPY) && !nRooms) {
-	Warning (TXT_NO_ENTROPY);
-	gameData.app.nGameMode &= ~GM_ENTROPY;
-	gameData.app.nGameMode |= GM_TEAM;
+if (gameData.app.nGameMode & GM_ENTROPY) {
+	if (!nRooms) {
+		Warning (TXT_NO_ENTROPY);
+		gameData.app.nGameMode &= ~GM_ENTROPY;
+		gameData.app.nGameMode |= GM_TEAM;
+		}
 	}
+else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) || 
+			((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)) {
 /*---*/LogErr ("   gathering CTF+ flag goals\n");
-GatherFlagGoals ();
+	if (GatherFlagGoals () != 3) {
+		Warning (TXT_NO_CTF);
+		gameData.app.nGameMode &= ~GM_CAPTURE;
+		gameData.app.nGameMode |= GM_TEAM;
+		}
+	}
 memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segDeltas));
 /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
 #endif
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
+gameData.hoard.nMonsterBallSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");
-set_sound_sources ();
+SetSoundSources ();
 PlayLevelSong (gameData.missions.nCurrentLevel);
-clear_boxed_message ();		//remove message before new palette loaded
+ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette
 #ifdef OGL
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
@@ -1454,7 +1464,7 @@ InitPlayerPosition (0);
 verify_console_object ();
 gameData.objs.console->control_type	= CT_FLYING;
 gameData.objs.console->movement_type	= MT_PHYSICS;
-// -- WHY? -- disable_matcens ();
+// -- WHY? -- DisableMatCens ();
 clear_transient_objects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
@@ -1547,7 +1557,7 @@ if (!LoadLevel (nLevel,bPageInTextures))
 	return 0;
 Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
-gameseq_init_network_players (); // Initialize the gameData.multi.players array for this level
+GameSeqInitNetworkPlayers (); // Initialize the gameData.multi.players array for this level
 HUDClearMessages ();
 AutomapClearVisited ();
 // --	init_player_stats_level ();
@@ -2104,11 +2114,11 @@ if (gameData.app.nGameMode & GM_MULTI)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
 funcRes = LoadLevel (nLevel, bPageInTextures);
-clear_warn_func (ShowInGameWarning);
+ClearWarnFunc (ShowInGameWarning);
 if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
-gameseq_init_network_players (); // Initialize the gameData.multi.players array for
+GameSeqInitNetworkPlayers (); // Initialize the gameData.multi.players array for
 #if 0//def _DEBUG										  // this level
 InitHoardData ();
 #endif
@@ -2538,7 +2548,7 @@ verify_console_object ();
 gameData.objs.console->control_type = CT_FLYING;
 gameData.objs.console->movement_type = MT_PHYSICS;
 MultiSendShields ();
-disable_matcens ();
+DisableMatCens ();
 clear_transient_objects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;

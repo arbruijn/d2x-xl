@@ -496,7 +496,7 @@ void ObjectGotoNextViewer ()
 			return;
 		}
 	}
-	Error ( "Couldn't find a viewer object!");
+	Error ("Couldn't find a viewer object!");
 }
 
 //------------------------------------------------------------------------------
@@ -514,7 +514,7 @@ void ObjectGotoPrevViewer ()
 			return;
 		}
 	}
-	Error ( "Couldn't find a viewer object!");
+	Error ("Couldn't find a viewer object!");
 }
 #endif
 
@@ -568,6 +568,7 @@ void DrawObjectBlob (object *objP, bitmap_index bmi0, bitmap_index bmi, int iFra
 	int			id, orientation = 0;
 	int			transp = (objP->type == OBJ_FIREBALL);
 	int			bDepthInfo = 1; // (objP->type != OBJ_FIREBALL);
+	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
 	if (transp)
@@ -608,46 +609,41 @@ if ((bmP->bm_type == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 		bmP = BM_FRAMES (bmP) + iFrame;
 	}
 
+xSize = objP->size;
 if (bmP->bm_props.w > bmP->bm_props.h)
-	G3DrawBitMap (&objP->pos, objP->size, fixmuldiv (objP->size, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+	G3DrawBitMap (&objP->pos,  xSize, fixmuldiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
 					  orientation, alpha, transp, bDepthInfo);
 else
-	G3DrawBitMap (&objP->pos, fixmuldiv (objP->size, bmP->bm_props.w, bmP->bm_props.h), objP->size, bmP, 
+	G3DrawBitMap (&objP->pos, fixmuldiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
 					  orientation, alpha, transp, bDepthInfo);
-	if (color) {
+if (color) {
 #if 1
-		memcpy (color, bitmapColors + bmi.index, sizeof (*color));
+	memcpy (color, bitmapColors + bmi.index, sizeof (*color));
 #else
 #	if 0
-		ubyte *p = bmP->bm_texBuf;
-		int c, h, i, j = 0, r = 0, g = 0, b = 0;
-		for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, p++) {
-			if (c = *p) {
-				c *= 3;
-				r += grPalette [c++];
-				g += grPalette [c++];
-				b += grPalette [c];
-				j++;
-				}
+	ubyte *p = bmP->bm_texBuf;
+	int c, h, i, j = 0, r = 0, g = 0, b = 0;
+	for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, p++) {
+		if (c = *p) {
+			c *= 3;
+			r += grPalette [c++];
+			g += grPalette [c++];
+			b += grPalette [c];
+			j++;
 			}
-		j *= 63;
-		color->red = (double) r / (double) j;
-		color->green = (double) g / (double) j;
-		color->blue = (double) b / (double) j;
+		}
+	j *= 63;
+	color->red = (double) r / (double) j;
+	color->green = (double) g / (double) j;
+	color->blue = (double) b / (double) j;
 #	else
-		unsigned char c = bmP->avg_color;
-		color->red = CPAL2Tr (c);
-		color->green = CPAL2Tg (c);
-		color->blue = CPAL2Tb (c);
+	unsigned char c = bmP->avg_color;
+	color->red = CPAL2Tr (c);
+	color->green = CPAL2Tg (c);
+	color->blue = CPAL2Tb (c);
 #	endif
 #endif
-		}
-
-//@@#ifdef WINDOWS
-//@@	if (bmP->bm_handle) {
-//@@		DDGRLOCK (dd_grd_curcanv);
-//@@	}
-//@@#endif
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -762,7 +758,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix cloak_start_time
 		bitmap_index * alt_textures = NULL;
 
 #ifdef NETWORK
-		if ( objP->rtype.pobj_info.alt_textures > 0)
+		if (objP->rtype.pobj_info.alt_textures > 0)
 			alt_textures = multi_player_textures [objP->rtype.pobj_info.alt_textures-1];
 #endif
 		new_light = fixmul (light, light_scale);
@@ -867,7 +863,7 @@ void DrawPolygonObject (object *objP)
 			bitmap_index * alt_textures = NULL;
 	
 			#ifdef NETWORK
-			if ( objP->rtype.pobj_info.alt_textures > 0)
+			if (objP->rtype.pobj_info.alt_textures > 0)
 				alt_textures = multi_player_textures [objP->rtype.pobj_info.alt_textures-1];
 			#endif
 
@@ -946,9 +942,9 @@ void DrawPolygonObject (object *objP)
 //091494:
 //091494: 	// The following code keeps a list of the 10 closest robots to the
 //091494: 	// viewer.  See comments in front of this function for how this works.
-//091494: 	dist = VmVecDist ( &objP->pos, &gameData.objs.viewer->pos);
-//091494: 	if ( dist < i2f (20*10))	{				
-//091494: 		if ( Object_num_close < MAX_CLOSE_ROBOTS)	{
+//091494: 	dist = VmVecDist (&objP->pos, &gameData.objs.viewer->pos);
+//091494: 	if (dist < i2f (20*10))	{				
+//091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
 //091494: 			Object_close_ones [Object_num_close] = obj;
 //091494: 			Object_close_distance [Object_num_close] = dist;
 //091494: 			Object_num_close++;
@@ -959,14 +955,14 @@ void DrawPolygonObject (object *objP)
 //091494: 			farthest_robot = 0;
 //091494: 			farthest_distance = Object_close_distance [0];
 //091494: 			for (i=1; i<Object_num_close; i++)	{
-//091494: 				if ( Object_close_distance [i] > farthest_distance)	{
+//091494: 				if (Object_close_distance [i] > farthest_distance)	{
 //091494: 					farthest_distance = Object_close_distance [i];
 //091494: 					farthest_robot = i;
 //091494: 				}
 //091494: 			}
 //091494: 			// If this object is closer to the viewer than
 //091494: 			// the farthest in the list, replace the farthest with this object.
-//091494: 			if ( farthest_distance > dist)	{
+//091494: 			if (farthest_distance > dist)	{
 //091494: 				Object_close_ones [farthest_robot] = obj;
 //091494: 				Object_close_distance [farthest_robot] = dist;
 //091494: 			}
@@ -1112,9 +1108,10 @@ void RenderObject (object *objP, int nWindowNum)
 
 if ((objP == gameData.objs.viewer) && 
 	 (gameStates.render.nShadowPass != 2) && 
-	 ((IsMultiGame && !IsCoopGame) || !gameStates.render.bExternalView || nWindowNum)) 
+	 ((IsMultiGame && !IsCoopGame) || !gameStates.render.bExternalView || nWindowNum)) {
+	DoPlayerSmoke (objP, -1);
 	return;		
-
+	}
 if ((objP->type==OBJ_NONE)/* || (objP->type==OBJ_CAMBOT)*/){
 #if TRACE				
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->segnum);
@@ -1210,8 +1207,8 @@ switch (objP->render_type) {
 	}
 
 #ifdef NEWDEMO
-if ( objP->render_type != RT_NONE)
-	if ( gameData.demo.nState == ND_STATE_RECORDING) {
+if (objP->render_type != RT_NONE)
+	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (!gameData.demo.bWasRecorded [OBJ_IDX (objP)]) {
 			NDRecordRenderObject (objP);
 			gameData.demo.bWasRecorded [OBJ_IDX (objP)]=1;
@@ -1239,13 +1236,13 @@ gameStates.render.detail.nMaxLinearDepth = mld_save;
 //091494: 	for (i = 0; i<Object_num_close; i++)	{
 //091494: 			
 //091494: 		codes = G3RotatePoint (&pt, &Object_close_ones [i]->pos);
-//091494: 		if ( !(codes & CC_BEHIND))	{
+//091494: 		if (!(codes & CC_BEHIND))	{
 //091494: 			G3ProjectPoint (&pt);
 //091494: 			if (pt.p3_flags & PF_PROJECTED)	{
 //091494: 				x = f2i (pt.p3_sx);
 //091494: 				y = f2i (pt.p3_sy);
 //091494: 				radius = f2i (fixdiv ((grdCurCanv->cv_bitmap.bm_props.w*Object_close_ones [i]->size)/8, pt.z);
-//091494: 				GrSetColor ( BM_XRGB (0, 31, 0));
+//091494: 				GrSetColor (BM_XRGB (0, 31, 0));
 //091494: 				gr_box (x-radius, y-radius, x+radius, y+radius);
 //091494: 			}
 //091494: 		}
@@ -1261,23 +1258,23 @@ gameStates.render.detail.nMaxLinearDepth = mld_save;
 //--unused-- 	int w, h, aw;
 //--unused-- 	char s [20], *s1;
 //--unused--
-//--unused-- 	s1 = NetworkGetPlayerName ( OBJ_IDX (objP));
+//--unused-- 	s1 = NetworkGetPlayerName (OBJ_IDX (objP));
 //--unused--
 //--unused-- 	if (s1)
-//--unused-- 		sprintf ( s, "%s", s1);
+//--unused-- 		sprintf (s, "%s", s1);
 //--unused-- 	else
-//--unused-- 		sprintf ( s, "<%d>", objP->id);
+//--unused-- 		sprintf (s, "<%d>", objP->id);
 //--unused--
 //--unused-- 	codes = G3RotatePoint (&pt, &objP->pos);
-//--unused-- 	if ( !(codes & CC_BEHIND))	{
+//--unused-- 	if (!(codes & CC_BEHIND))	{
 //--unused-- 		G3ProjectPoint (&pt);
 //--unused-- 		if (pt.p3_flags & PF_PROJECTED)	{
-//--unused-- 			GrGetStringSize ( s, &w, &h, &aw);
+//--unused-- 			GrGetStringSize (s, &w, &h, &aw);
 //--unused-- 			x = f2i (pt.p3_sx) - w / 2;
 //--unused-- 			y = f2i (pt.p3_sy) - h / 2;
-//--unused-- 			if ( x>= 0 && y >= 0 && (x+w)<=grdCurCanv->cv_bitmap.bm_props.w && (y+h)<grdCurCanv->cv_bitmap.bm_props.h)	{
-//--unused-- 				GrSetFontColor ( BM_XRGB (0, 31, 0), -1);
-//--unused-- 				GrString ( x, y, s);
+//--unused-- 			if (x>= 0 && y >= 0 && (x+w)<=grdCurCanv->cv_bitmap.bm_props.w && (y+h)<grdCurCanv->cv_bitmap.bm_props.h)	{
+//--unused-- 				GrSetFontColor (BM_XRGB (0, 31, 0), -1);
+//--unused-- 				GrString (x, y, s);
 //--unused-- 			}
 //--unused-- 		}
 //--unused-- 	}
@@ -1395,29 +1392,29 @@ void SpecialResetObjects (void)
 
 //------------------------------------------------------------------------------
 #ifdef _DEBUG
-int is_object_in_seg ( int segnum, int objn)
+int is_object_in_seg (int segnum, int objn)
 {
 	int objnum, count = 0;
 
 	for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
-		if ( count > MAX_OBJECTS) 	{
+		if (count > MAX_OBJECTS) 	{
 			Int3 ();
 			return count;
 		}
-		if ( objnum==objn) count++;
+		if (objnum==objn) count++;
 	}
 	 return count;
 }
 
 //------------------------------------------------------------------------------
 
-int search_all_segments_for_object ( int objnum)
+int search_all_segments_for_object (int objnum)
 {
 	int i;
 	int count = 0;
 
 	for (i = 0; i<=gameData.segs.nLastSegment; i++) {
-		count += is_object_in_seg ( i, objnum);
+		count += is_object_in_seg (i, objnum);
 	}
 	return count;
 }
@@ -1450,7 +1447,7 @@ void remove_incorrect_objects ()
 		for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
 			count++;
 			#ifndef NDEBUG
-			if ( count > MAX_OBJECTS)	{
+			if (count > MAX_OBJECTS)	{
 #if TRACE				
 				con_printf (1, "Object list in segment %d is circular.\n", segnum);
 #endif
@@ -1472,14 +1469,14 @@ void remove_incorrect_objects ()
 
 //------------------------------------------------------------------------------
 
-void remove_all_objects_but ( int segnum, int objnum)
+void remove_all_objects_but (int segnum, int objnum)
 {
 	int i;
 
 	for (i = 0; i<=gameData.segs.nLastSegment; i++) {
 		if (segnum != i)	{
-			if (is_object_in_seg ( i, objnum))	{
-				johns_obj_unlink ( i, objnum);
+			if (is_object_in_seg (i, objnum))	{
+				johns_obj_unlink (i, objnum);
 			}
 		}
 	}
@@ -1492,16 +1489,16 @@ int check_duplicate_objects ()
 	int i, count = 0;
 	
 	for (i = 0;i<=gameData.objs.nLastObject;i++) {
-		if ( gameData.objs.objects [i].type != OBJ_NONE)	{
-			count = search_all_segments_for_object ( i);
-			if ( count > 1)	{
+		if (gameData.objs.objects [i].type != OBJ_NONE)	{
+			count = search_all_segments_for_object (i);
+			if (count > 1)	{
 				#ifndef NDEBUG
 #if TRACE				
 				con_printf (1, "Object %d is in %d segments!\n", i, count);
 #endif
 				Int3 ();
 				#endif
-				remove_all_objects_but ( gameData.objs.objects [i].segnum,  i);
+				remove_all_objects_but (gameData.objs.objects [i].segnum,  i);
 				return count;
 			}
 		}
@@ -1511,13 +1508,13 @@ int check_duplicate_objects ()
 
 //------------------------------------------------------------------------------
 
-void list_seg_objects ( int segnum)
+void list_seg_objects (int segnum)
 {
 	int objnum, count = 0;
 
 	for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
 		count++;
-		if ( count > MAX_OBJECTS) 	{
+		if (count > MAX_OBJECTS) 	{
 			Int3 ();
 			return;
 		}
@@ -1545,7 +1542,7 @@ gameData.segs.segments [segnum].objects = objnum;
 if (objP->next != -1)
 		gameData.objs.objects [objP->next].prev = objnum;
 
-//list_seg_objects ( segnum);
+//list_seg_objects (segnum);
 //check_duplicate_objects ();
 
 Assert (gameData.objs.objects [0].next != 0);
@@ -1594,7 +1591,7 @@ int AllocObject (void)
 	int objnum;
 	object *objP;
 
-if ( gameData.objs.nObjects >= MAX_OBJECTS - 2)
+if (gameData.objs.nObjects >= MAX_OBJECTS - 2)
 	FreeObjectSlots (MAX_OBJECTS - 10);
 if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
@@ -1743,12 +1740,13 @@ int FreeObjectSlots (int num_used)
 //searches for the correct segment
 //returns the object number
 int CreateObject (ubyte type, ubyte id, short owner, short segnum, vms_vector *pos, 
-					   vms_matrix *orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype)
+					   vms_matrix *orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype,
+						int bIgnoreLimits)
 {
 	short objnum;
 	object *objP;
 
-if (type == OBJ_POWERUP) {
+if ((type == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
 #ifdef _DEBUG
 		HUDInitMessage ("%c%cDiscarding excess powerup!", 1, 
@@ -1762,7 +1760,7 @@ Assert (segnum >= 0);
 if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
 	return -1;
 Assert (ctype <= CT_CNTRLCEN);
-if (type==OBJ_DEBRIS && Debris_object_count>=gameStates.render.detail.nMaxDebrisObjects)
+if (type == OBJ_DEBRIS && Debris_object_count>=gameStates.render.detail.nMaxDebrisObjects)
 	return -1;
 
 if (get_seg_masks (pos, segnum, 0).centermask)
@@ -1784,7 +1782,7 @@ objP = gameData.objs.objects + objnum;
 Assert (objP->segnum == -1);
 // Zero out object structure to keep weird bugs from happening
 // in uninitialized fields.
-memset ( objP, 0, sizeof (object));
+memset (objP, 0, sizeof (object));
 objP->signature = gameData.objs.nNextSignature++;
 objP->type = type;
 objP->id = id;
@@ -1795,7 +1793,7 @@ objP->flags = 0;
 objP->matcen_creator = (sbyte) owner;
 //@@if (orient != NULL)
 //@@	objP->orient = *orient;
-objP->orient = orient?*orient:vmd_identity_matrix;
+objP->orient = orient?*orient:vmdIdentityMatrix;
 objP->control_type = ctype;
 objP->movement_type = mtype;
 objP->render_type = rtype;
@@ -2005,7 +2003,7 @@ void SetCameraPos (vms_vector *camera_pos, object *objP)
 			fq.thisobjnum = OBJ_IDX (objP);
 			fq.ignore_obj_list = NULL;
 			fq.flags = 0;
-			find_vector_intersection ( &fq, &hit_data);
+			FindVectorIntersection (&fq, &hit_data);
 
 			if (hit_data.hit_type == HIT_NONE) {
 				*camera_pos = closer_p1;
@@ -2035,7 +2033,8 @@ if (gameStates.app.bPlayerIsDead) {
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == Viewer_save) {
 		object *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
-		int objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE);
+		int objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, 
+											CT_NONE, MT_NONE, RT_NONE, 1);
 		if (objnum != -1)
 			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + objnum;
 		else
@@ -2179,7 +2178,7 @@ gameStates.app.bPlayerIsDead = 1;
 VmVecZero (&player->mtype.phys_info.rotthrust);
 VmVecZero (&player->mtype.phys_info.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.app.xGameTime;
-objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE);
+objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 Viewer_save = gameData.objs.viewer;
 if (objnum != -1)
 	gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + objnum;
@@ -2278,7 +2277,7 @@ void SpinObject (object *objP)
 }
 
 extern void multi_send_drop_blobs (char);
-extern void fuelcen_check_for_goal (segment *);
+extern void FuelCenCheckForGoal (segment *);
 
 //see if wall is volatile, and if so, cause damage to player
 //returns true if player is in lava
@@ -2392,9 +2391,9 @@ if ((objP->type==OBJ_PLAYER) && (gameData.multi.nLocalPlayer==objP->id))	{
 	
 #ifdef NETWORK
    if (gameData.app.nGameMode & GM_CAPTURE)
-		 fuelcen_check_for_goal (segP);
+		 FuelCenCheckForGoal (segP);
    else if (gameData.app.nGameMode & GM_HOARD)
-		 fuelcen_check_for_hoard_goal (segP);
+		 FuelCenCheckForHoardGoal (segP);
    else if (gameData.app.nGameMode & GM_ENTROPY) {
 		if (Controls.forward_thrust_time || 
 			 Controls.vertical_thrust_time || 
@@ -2408,7 +2407,7 @@ if ((objP->type==OBJ_PLAYER) && (gameData.multi.nLocalPlayer==objP->id))	{
 			gameStates.entropy.nTimeLastMoved = 0;
 		}
 #endif
-	shields = hostile_room_damage_shields (segP, playerP->shields + 1);
+	shields = HostileRoomDamageShields (segP, playerP->shields + 1);
 	if (shields > 0) {
 		playerP->shields -= shields;
 		MultiSendShields ();
@@ -2419,10 +2418,10 @@ if ((objP->type==OBJ_PLAYER) && (gameData.multi.nLocalPlayer==objP->id))	{
 		}
 	else {
 		StopConquerWarning ();
-		fuel=fuelcen_give_fuel (segP, INITIAL_ENERGY - playerP->energy);
+		fuel=FuelCenGiveFuel (segP, INITIAL_ENERGY - playerP->energy);
 		if (fuel > 0)
 			playerP->energy += fuel;
-		shields = repaircen_give_shields (segP, INITIAL_SHIELDS - playerP->shields);
+		shields = RepairCenGiveShields (segP, INITIAL_SHIELDS - playerP->shields);
 		if (shields > 0) {
 			playerP->shields += shields;
 			MultiSendShields ();
@@ -2472,7 +2471,7 @@ switch (objP->control_type) {
 		break;
 
 	case CT_WEAPON:		
-		Laser_do_weapon_sequence (objP); 
+		LaserDoWeaponSequence (objP); 
 		break;
 
 	case CT_EXPLOSION:	
@@ -2528,9 +2527,9 @@ switch (objP->control_type) {
 
 if (objP->lifeleft < 0) {		// We died of old age
 	objP->flags |= OF_SHOULD_BE_DEAD;
-	if ( objP->type==OBJ_WEAPON && WI_damage_radius (objP->id))
+	if (objP->type==OBJ_WEAPON && WI_damage_radius (objP->id))
 		ExplodeBadassWeapon (objP, &objP->pos);
-	else if ( objP->type==OBJ_ROBOT)	//make robots explode
+	else if (objP->type==OBJ_ROBOT)	//make robots explode
 		ExplodeObject (objP, 0);
 }
 
@@ -2602,7 +2601,7 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 					under_lavafall = 1;
 					chkVolaSeg = 0;
 					if (!lavafall_hiss_playing [objP->id]) {
-						DigiLinkSoundToObject3 ( sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+						DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
 						lavafall_hiss_playing [objP->id] = 1;
 						}
 					}
@@ -2613,14 +2612,14 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 				short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 				under_lavafall = 1;
 				if (!lavafall_hiss_playing [objP->id]) {
-					DigiLinkSoundToObject3 ( sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+					DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
 					lavafall_hiss_playing [objP->id] = 1;
 					}
 				}
 			}
 
 		if (!under_lavafall && lavafall_hiss_playing [objP->id]) {
-			DigiKillSoundLinkedToObject ( OBJ_IDX (objP));
+			DigiKillSoundLinkedToObject (OBJ_IDX (objP));
 			lavafall_hiss_playing [objP->id] = 0;
 		}
 	}
@@ -2635,7 +2634,7 @@ if (objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer] &&
 		if (connect_side != -1) {
 			short wall_num, trigger_num;
 			wall_num = WallNumI (previous_segment, connect_side);
-			if ( IS_WALL (wall_num)) {
+			if (IS_WALL (wall_num)) {
 				trigger_num = gameData.walls.walls [wall_num].trigger;
 				if (trigger_num < gameData.trigs.nTriggers)
 					if (gameData.trigs.triggers [trigger_num].type == TT_EXIT)
@@ -2716,7 +2715,7 @@ int MoveAllObjects ()
 	UpdatePlayerOrient ();
 	for (i = 0;i<=gameData.objs.nLastObject;i++) {
 		if ((objP->type != OBJ_NONE) && (!(objP->flags&OF_SHOULD_BE_DEAD)))	{
-			if (!MoveOneObject ( objP))
+			if (!MoveOneObject (objP))
 				return 0;
 		}
 		objP++;
@@ -2818,20 +2817,17 @@ int FindObjectSeg (object * objP)
 //------------------------------------------------------------------------------
 //If an object is in a segment, set its segnum field and make sure it's
 //properly linked.  If not in any segment, returns 0, else 1.
-//callers should generally use find_vector_intersection ()
+//callers should generally use FindVectorIntersection ()
 int UpdateObjectSeg (object * objP)
 {
 	int newseg;
 
-	newseg = FindObjectSeg (objP);
-
-	if (newseg == -1)
-		return 0;
-
-	if ( newseg != objP->segnum)
-		RelinkObject (OBJ_IDX (objP), newseg);
-
-	return 1;
+newseg = FindObjectSeg (objP);
+if (newseg == -1)
+	return 0;
+if (newseg != objP->segnum)
+	RelinkObject (OBJ_IDX (objP), newseg);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -2852,7 +2848,7 @@ void FixObjectSegs ()
 }
 
 
-//--unused-- void object_use_new_object_list ( object * new_list)
+//--unused-- void object_use_new_object_list (object * new_list)
 //--unused-- {
 //--unused-- 	int i, segnum;
 //--unused-- 	object *objP;
@@ -2865,14 +2861,14 @@ void FixObjectSegs ()
 //--unused-- 	ResetObjects (1);
 //--unused--
 //--unused-- 	// Fill in the object array
-//--unused-- 	memcpy ( gameData.objs.objects, new_list, sizeof (object)*MAX_OBJECTS);
+//--unused-- 	memcpy (gameData.objs.objects, new_list, sizeof (object)*MAX_OBJECTS);
 //--unused--
 //--unused-- 	gameData.objs.nLastObject=-1;
 //--unused--
 //--unused-- 	// Relink 'em
 //--unused-- 	for (i = 0; i<MAX_OBJECTS; i++)	{
 //--unused-- 		obj = &gameData.objs.objects [i];
-//--unused-- 		if ( objP->type != OBJ_NONE)	{
+//--unused-- 		if (objP->type != OBJ_NONE)	{
 //--unused-- 			gameData.objs.nObjects++;
 //--unused-- 			gameData.objs.nLastObject = i;
 //--unused-- 			segnum = objP->segnum;
@@ -2894,7 +2890,7 @@ void clear_transient_objects (int clear_all)
 	object *objP;
 
 	for (objnum = 0, objP = gameData.objs.objects; objnum <= gameData.objs.nLastObject; objnum++, objP++)
-		if (( (objP->type == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXIMITY_ID) && (objP->id != SUPERPROX_ID)))) ||
+		if (((objP->type == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXIMITY_ID) && (objP->id != SUPERPROX_ID)))) ||
 			   objP->type == OBJ_FIREBALL ||
 			   objP->type == OBJ_DEBRIS ||
 			   objP->type == OBJ_DEBRIS ||
@@ -2987,7 +2983,8 @@ int DropMarkerObject (vms_vector *pos, short segnum, vms_matrix *orient, ubyte m
 	short objnum;
 
 	Assert (Marker_model_num != -1);
-	objnum = CreateObject (OBJ_MARKER, marker_num, -1, segnum, pos, orient, gameData.models.polyModels [Marker_model_num].rad, CT_NONE, MT_NONE, RT_POLYOBJ);
+	objnum = CreateObject (OBJ_MARKER, marker_num, -1, segnum, pos, orient, 
+								  gameData.models.polyModels [Marker_model_num].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
 	if (objnum >= 0) {
 		object *objP = &gameData.objs.objects [objnum];
 		objP->rtype.pobj_info.model_num = Marker_model_num;

@@ -256,7 +256,7 @@ void InitAIObject(short objnum, short behavior, short hide_segment)
 }
 
 
-extern object * create_morph_robot( segment *segp, vms_vector *object_pos, ubyte object_id);
+extern object * CreateMorphRobot( segment *segp, vms_vector *object_pos, ubyte object_id);
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Create a Buddy bot.
@@ -278,7 +278,7 @@ void CreateBuddyBot(void)
 		return;
 	}
 	COMPUTE_SEGMENT_CENTER_I(&object_pos, gameData.objs.console->segnum);
-	create_morph_robot(gameData.segs.segments + gameData.objs.console->segnum, &object_pos, buddy_id);
+	CreateMorphRobot(gameData.segs.segments + gameData.objs.console->segnum, &object_pos, buddy_id);
 }
 
 #define	QUEUE_SIZE	256
@@ -634,7 +634,7 @@ int ObjectCanSeePlayer(object *objP, vms_vector *pos, fix field_of_view, vms_vec
 	fq.ignore_obj_list	= NULL;
 	fq.flags					= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
 
-	gameData.ai.nHitType = find_vector_intersection(&fq,&gameData.ai.hitData);
+	gameData.ai.nHitType = FindVectorIntersection(&fq,&gameData.ai.hitData);
 
 	gameData.ai.vHitPos = gameData.ai.hitData.hit_pnt;
 	gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
@@ -1079,7 +1079,7 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 				return;
 			}
 		} else {
-			//	Well, they are not directly connected, so use find_vector_intersection to see if they are unobstructed.
+			//	Well, they are not directly connected, so use FindVectorIntersection to see if they are unobstructed.
 			fvi_query	fq;
 			fvi_info		hit_data;
 			int			fate;
@@ -1092,7 +1092,7 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 			fq.ignore_obj_list	= NULL;
 			fq.flags					= FQ_TRANSWALL;
 
-			fate = find_vector_intersection(&fq, &hit_data);
+			fate = FindVectorIntersection(&fq, &hit_data);
 			if (fate != HIT_NONE) {
 				Int3();		//	This bot's gun is poking through a wall, so don't fire.
 				move_towards_segment_center(objP);		//	And decrease chances it will happen again.
@@ -1991,7 +1991,7 @@ int CreateGatedRobot( short segnum, ubyte object_id, vms_vector *pos)
 			break;
 		}
 
-	objnum = CreateObject(OBJ_ROBOT, object_id, -1, segnum, &object_pos, &vmd_identity_matrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ);
+	objnum = CreateObject(OBJ_ROBOT, object_id, -1, segnum, &object_pos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
 
 	if ( objnum < 0 ) {
 		gameData.boss.nLastGateTime = gameData.app.xGameTime - 3*gameData.boss.nGateInterval/4;

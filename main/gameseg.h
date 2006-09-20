@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Killed unused FindSegByPoint()
  *
  * Revision 1.8  1994/05/20  11:56:57  matt
- * Cleaned up find_vector_intersection() interface
+ * Cleaned up FindVectorIntersection() interface
  * Killed check_point_in_seg(), check_player_seg(), check_object_seg()
  *
  * Revision 1.7  1994/03/17  18:07:38  yuan

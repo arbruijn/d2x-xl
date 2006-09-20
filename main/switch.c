@@ -541,9 +541,8 @@ void do_matcen (trigger *t)
 	int i;
 
 short *segs = t->seg;
-for (i=t->num_links;i;i--,segs++) {
-	trigger_matcen(*segs);
-}
+for (i = t->num_links; i; i--, segs++)
+	MatCenTrigger (*segs);
 }
 
 //------------------------------------------------------------------------------

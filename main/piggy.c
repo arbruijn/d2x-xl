@@ -2017,11 +2017,12 @@ org_i = 0;
 i = bmi.index;
 nShrinkFactor = 1 << (3 - gameOpts->render.textures.nQuality);
 nShrinkFactor *= nShrinkFactor;
+#if 0
 Assert (i >= 0);
 Assert (i < MAX_BITMAP_FILES);
 Assert (i < gameData.pig.tex.nBitmaps [bD1]);
 Assert (bitmapCacheSize > 0);
-
+#endif
 if (i < 1) 
 	return;
 if (i >= MAX_BITMAP_FILES) 

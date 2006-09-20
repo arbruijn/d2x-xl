@@ -1458,7 +1458,7 @@ i = CFTell (LoadFile);
 				if (gameTopFileInfo.fileinfo_version < 27) {
 					old_matcen_info m;
 
-					old_matcen_info_read(&m, LoadFile);
+					OldMatCenInfoRead(&m, LoadFile);
 
 					gameData.matCens.robotCenters[i].robot_flags[0] = m.robot_flags;
 					gameData.matCens.robotCenters[i].robot_flags[1] = 0;
@@ -1468,7 +1468,7 @@ i = CFTell (LoadFile);
 					gameData.matCens.robotCenters[i].fuelcen_num = m.fuelcen_num;
 				}
 				else
-					matcen_info_read(&gameData.matCens.robotCenters[i], LoadFile);
+					MatCenInfoRead(&gameData.matCens.robotCenters[i], LoadFile);
 
 				//	Set links in gameData.matCens.robotCenters to gameData.matCens.fuelCenters array
 
@@ -1718,7 +1718,7 @@ int LoadLevelSub(char * filename_passed)
 	int sig, minedata_offset, gamedata_offset;
 	int mine_err, game_err;
 #ifdef NETWORK
-	int i;
+	//int i;
 #endif
 	gameData.segs.bHaveSlideSegs = 0;
 

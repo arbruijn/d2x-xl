@@ -51,10 +51,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Change physics_lookahead to return hit_info.
  *
  * Revision 1.22  1994/06/09  09:58:43  matt
- * Moved find_vector_intersection() from physics.c to new file fvi.c
+ * Moved FindVectorIntersection() from physics.c to new file fvi.c
  *
  * Revision 1.21  1994/05/20  16:11:07  matt
- * Added new parm, ignore_obj, to find_vector_intersection()
+ * Added new parm, ignore_obj, to FindVectorIntersection()
  *
  * Revision 1.20  1994/05/20  15:16:58  matt
  * Added new fvi return type; took out some troublesome (and troubling) asserts
@@ -89,13 +89,13 @@ void do_physics_sim(object *obj);
 // the given time (in seconds) t.  Igores acceleration (sorry)
 // if check_objects is set, check with objects, else just with walls
 // returns fate, fills in hit time.  If fate==HIT_NONE, hit_time undefined
-// Stuff hit_info with fvi data as set by find_vector_intersection.
+// Stuff hit_info with fvi data as set by FindVectorIntersection.
 // for fvi_flags, refer to fvi.h for the fvi query flags
 int physics_lookahead(object *obj, fix t, int fvi_flags, fix *hit_time, fvi_info *hit_info);
 
 // Applies an instantaneous force on an object, resulting in an instantaneous
 // change in velocity.
-void phys_apply_force(object *obj, vms_vector *force_vec);
+void PhysApplyForce(object *obj, vms_vector *force_vec);
 void PhysApplyRot(object *obj, vms_vector *force_vec);
 
 // this routine will set the thrust for an object to a value that will

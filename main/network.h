@@ -633,14 +633,15 @@ void InitExtraGameInfo (void);
 void InitNetworkData (void);
 int InitAutoNetGame (void);
 
-#define NETGAME_ANARCHY         0
-#define NETGAME_TEAM_ANARCHY    1
-#define NETGAME_ROBOT_ANARCHY   2
-#define NETGAME_COOPERATIVE     3
-#define NETGAME_CAPTURE_FLAG    4
-#define NETGAME_HOARD           5
-#define NETGAME_TEAM_HOARD      6
-#define NETGAME_ENTROPY         7
+#define NETGAME_ANARCHY				0
+#define NETGAME_TEAM_ANARCHY		1
+#define NETGAME_ROBOT_ANARCHY		2
+#define NETGAME_COOPERATIVE		3
+#define NETGAME_CAPTURE_FLAG		4
+#define NETGAME_HOARD				5
+#define NETGAME_TEAM_HOARD			6
+#define NETGAME_ENTROPY				7
+#define NETGAME_MONSTERBALL		8
 
 /* The following are values for networkData.nSecurityFlag */
 #define NETSECURITY_OFF                 0

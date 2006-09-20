@@ -380,7 +380,7 @@ extern int  Ai_info_enabled;
 extern int  Robot_firing_enabled;
 
 
-// These globals are set by a call to find_vector_intersection, which is a slow routine,
+// These globals are set by a call to FindVectorIntersection, which is a slow routine,
 // so we don't want to call it again (for this object) unless we have to.
 extern vms_vector   Hit_pos;
 extern int          Hit_type, Hit_seg;

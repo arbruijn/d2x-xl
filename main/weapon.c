@@ -1292,7 +1292,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 									fq.ignore_obj_list = NULL;
 									fq.flags	= 0;
 
-									fate = find_vector_intersection(&fq, &hit_data);
+									fate = FindVectorIntersection(&fq, &hit_data);
 									if (fate != HIT_WALL)
 										gameData.objs.objects[i].lifeleft = 1;
 									}
@@ -1343,7 +1343,9 @@ VmVecScaleAdd(&new_pos,&spitter->pos,&spitter->orient.fvec,spitter->size);
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
 #endif
-objnum = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multi.nLocalPlayer) + 1), (short) spitter->segnum, &new_pos, &vmd_identity_matrix, gameData.objs.pwrUp.info[id].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
+objnum = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multi.nLocalPlayer) + 1), 
+							  (short) spitter->segnum, &new_pos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
+							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 if (objnum < 0) {
 	Int3();
 	return objnum;
@@ -1628,7 +1630,7 @@ extern int WeaponInfoReadN(weapon_info *pwi, int n, CFILE *fp, int file_version)
 		else
 			/* Set the type of children correctly when using old
 			 * datafiles.  In earlier descent versions this was simply
-			 * hard-coded in create_smart_children().
+			 * hard-coded in CreateSmartChildren().
 			 */
 			switch (i)
 			{

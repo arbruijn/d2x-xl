@@ -167,7 +167,8 @@ static int
 	optVirLife, optVirStab, optRevRooms, optEnergyFill, optShieldFill, optShieldDmg, 
 	optOvrTex, optBrRooms, optFF, optSuicide, optPlrHand, optTogglesMenu, optTextureMenu;
 
-int opt_cinvul, opt_team_anarchy, opt_coop, opt_show_on_map, opt_closed,opt_maxnet, opt_entropy;
+int opt_cinvul, opt_team_anarchy, opt_coop, opt_show_on_map, opt_closed,opt_maxnet, 
+	 opt_entropy, opt_monsterball;
 int last_cinvul=0,last_maxnet,opt_hoard,opt_team_hoard;
 int opt_refuse,opt_capture, opt_enhancedCTF;
 
@@ -776,9 +777,9 @@ void NetworkEntropyOptions ()
 {
 	newmenu_item	m [23];
 	int				i, opt = 0;
-	char				szCapVirLim [3], szCapTimLim [3], szMaxVirCap [6], szBumpVirCap [3], 
-						szBashVirCap [3], szVirGenTim [3], szVirLife [3], 
-						szEnergyFill [3], szShieldFill [3], szShieldDmg [3];
+	char				szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
+						szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
+						szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
 
 memset (m, 0, sizeof (m));
 
@@ -841,7 +842,7 @@ int NetworkGetGameParams (int bAutoRun)
 	int i, choice = 1;
 	int opt, opt_name, opt_level, opt_level_num, opt_mode, opt_moreopts, opt_entopts, opt_access, 
 				opt_mission, opt_mission_name;
-	newmenu_item m [30];
+	newmenu_item m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char level_text [32];
 	char szMaxNet [50];
@@ -940,6 +941,8 @@ build_menu:
 		if (!gameStates.app.bNostalgia) {
 			ADD_RADIO (opt, TXT_ENTROPY, 0, KEY_Y, 0, HTX_MULTI_ENTROPY);
 			opt_entropy=opt++;
+			ADD_RADIO (opt, TXT_MONSTERBALL, 0, KEY_B, 0, HTX_MULTI_MONSTERBALL);
+			opt_monsterball=opt++;
 			}
 		} 
 	ADD_TEXT (opt, "", 0); 
@@ -1086,11 +1089,13 @@ do_menu:
 		extraGameInfo [0].bEnhancedCTF = 1;
 		}
 	else if (HoardEquipped() && m [opt_hoard].value)
-			mpParams.nGameMode = NETGAME_HOARD;
+		mpParams.nGameMode = NETGAME_HOARD;
 	else if (HoardEquipped() && m [opt_team_hoard].value)
-			mpParams.nGameMode = NETGAME_TEAM_HOARD;
+		mpParams.nGameMode = NETGAME_TEAM_HOARD;
 	else if (HoardEquipped() && m [opt_entropy].value)
-			mpParams.nGameMode = NETGAME_ENTROPY;
+		mpParams.nGameMode = NETGAME_ENTROPY;
+	else if (HoardEquipped() && m [opt_monsterball].value)
+		mpParams.nGameMode = NETGAME_MONSTERBALL;
 	else if (bAnarchyOnly) {
 		ExecMessageBox(NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
 		m [opt_mode+2].value = 0;
@@ -1424,7 +1429,8 @@ abort:
 	if (netGame.gamemode == NETGAME_TEAM_ANARCHY ||
 	    netGame.gamemode == NETGAME_CAPTURE_FLAG ||
 		 netGame.gamemode == NETGAME_TEAM_HOARD ||
-		 netGame.gamemode == NETGAME_ENTROPY)
+		 netGame.gamemode == NETGAME_ENTROPY ||
+		 netGame.gamemode == NETGAME_MONSTERBALL)
 		 if (!NetworkSelectTeams())
 			goto abort;
 

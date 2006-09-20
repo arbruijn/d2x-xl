@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype CollidePlayerAndNastyRobot.
  *
  * Revision 1.16  1994/09/11  15:49:04  mike
- * Prototype for maybe_detonate_weapon.
+ * Prototype for MaybeDetonateWeapon.
  *
  * Revision 1.15  1994/09/09  14:20:07  matt
  * Added prototype for scrape function
@@ -100,33 +100,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-
 #ifndef _COLLIDE_H
 #define _COLLIDE_H
 
 void CollideInit();
 void CollideTwoObjects(object * A, object * B, vms_vector *collision_point);
 void CollideObjectWithWall(object * A, fix hitspeed, short hitseg, short hitwall, vms_vector * hitpt);
-extern void ApplyDamageToPlayer(object *player, object *killer, fix damage);
+void ApplyDamageToPlayer(object *player, object *killer, fix damage);
 
 // Returns 1 if robot died, else 0.
-extern int ApplyDamageToRobot(object *robot, fix damage, int killer_objnum);
+int ApplyDamageToRobot(object *robot, fix damage, int killer_objnum);
 
 extern int Immaterial;
 
-extern void collide_player_and_weapon(object * player, object * weapon, vms_vector *collision_point);
-extern void CollidePlayerAndMatCen(object *objp);
-extern void CollideRobotAndMatCen(object *objp);
+void CollidePlayerAndWeapon(object * player, object * weapon, vms_vector *collision_point);
+void CollidePlayerAndMatCen(object *objp);
+void CollideRobotAndMatCen(object *objp);
 
-extern void ScrapeObjectOnWall(object *obj, short hitseg, short hitwall, vms_vector * hitpt);
-extern int maybe_detonate_weapon(object *obj0p, object *obj, vms_vector *pos);
+void ScrapeObjectOnWall(object *obj, short hitseg, short hitwall, vms_vector * hitpt);
+int MaybeDetonateWeapon(object *obj0p, object *obj, vms_vector *pos);
 
-extern void CollidePlayerAndNastyRobot(object * player, object * robot, vms_vector *collision_point);
+void CollidePlayerAndNastyRobot(object * player, object * robot, vms_vector *collision_point);
 
-extern void NetDestroyReactor(object *controlcen);
-extern void CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *collision_point);
-extern int CheckEffectBlowup(segment *seg,short side,vms_vector *pnt, object *blower, int force_blowup_flag);
-extern void ApplyDamageToReactor(object *controlcen, fix damage, short who);
-extern void BumpOneObject(object *obj0, vms_vector *hit_dir, fix damage);
+void NetDestroyReactor(object *controlcen);
+void CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *collision_point);
+int CheckEffectBlowup(segment *seg,short side,vms_vector *pnt, object *blower, int force_blowup_flag);
+void ApplyDamageToReactor(object *controlcen, fix damage, short who);
+void BumpOneObject(object *obj0, vms_vector *hit_dir, fix damage);
+void InitMonsterBallForces (void);
 
 #endif /* _COLLIDE_H */

@@ -43,7 +43,8 @@ bmP->bm_props.rowsize = w;
 bmP->bm_props.h = h;
 bmP->bm_props.type = BM_LINEAR;
 bmP->bm_props.flags = flags;
-bmP->bm_texBuf = data;
+if (data)
+	bmP->bm_texBuf = data;
 //bmP->bm_handle = 0;
 bmP->avg_color = 0;
 }
@@ -53,6 +54,48 @@ bmP->avg_color = 0;
 #define	CalcHoardItemSizes(_item) \
 			 (_item).nFrameSize = (_item).nWidth * (_item).nHeight; \
 			 (_item).nSize = (_item).nFrames * (_item).nFrameSize
+
+//-----------------------------------------------------------------------------
+
+int InitMonsterBall (int nBitmap)
+{
+	grs_bitmap			*bmP, *altBmP;
+	vclip					*vcP;
+	powerup_type_info	*ptP;
+	int					i;
+
+memcpy (&gameData.hoard.monsterball, &gameData.hoard.orb, sizeof (tHoardItem));
+gameData.hoard.monsterball.nClip = gameData.eff.nClips [0]++;
+memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip], 
+		  &gameData.eff.vClips [0][gameData.hoard.orb.nClip],
+		  sizeof (vclip));
+altBmP = (grs_bitmap *) d_malloc (sizeof (grs_bitmap));
+if (altBmP && ReadTGA ("mball01#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0)) {
+	vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];
+	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
+		Assert (nBitmap < MAX_BITMAP_FILES);
+		vcP->frames [i].index = nBitmap;
+		InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
+								gameData.hoard.monsterball.nWidth, 
+								gameData.hoard.monsterball.nHeight, 
+								BM_FLAG_TRANSPARENT, 
+								NULL);
+		}
+	bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [0].index;
+	BM_OVERRIDE (bmP) = altBmP;
+	*altBmP = gameData.hoard.monsterball.bm;
+	altBmP->bm_type = BM_TYPE_ALT;
+	altBmP->bm_data.alt.bm_frameCount = altBmP->bm_props.h / altBmP->bm_props.w;
+	vcP->flags |= WCF_ALTFMT;
+	}
+//Create monsterball powerup
+ptP = gameData.objs.pwrUp.info + POW_MONSTERBALL;
+ptP->nClipIndex = gameData.hoard.monsterball.nClip;
+ptP->hit_sound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hit_sound;
+ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * 4;
+ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
+return nBitmap;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -104,7 +147,7 @@ if (!gameData.hoard.bInitialized) {
 							  bmDataP);
 		bmDataP += gameData.hoard.orb.nFrameSize;
 		}
-	//Create obj powerup
+	//Create hoard orb powerup
 	ptP = gameData.objs.pwrUp.info + POW_HOARD_ORB;
 	ptP->nClipIndex = gameData.hoard.orb.nClip;
 	ptP->hit_sound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hit_sound;
@@ -136,15 +179,16 @@ if (!gameData.hoard.bInitialized) {
 		bmDataP += gameData.hoard.goal.nFrameSize;
 		gameData.hoard.nBitmaps = nBitmap;
 		}
+	nBitmap = InitMonsterBall (nBitmap);
 	}
 else {
-	vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
 	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;
 	}
 
 //Load and remap bitmap data for orb
 CFRead (palette, 3, 256, fp);
 gameData.hoard.orb.palette = AddPalette (palette);
+vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	grs_bitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	CFRead (bmP->bm_texBuf, 1, gameData.hoard.orb.nFrameSize, fp);
@@ -212,6 +256,8 @@ void ResetHoardData (void)
 
 gameData.hoard.orb.bm.glTexture = 0;
 gameData.hoard.goal.bm.glTexture = 0;
+if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
+	BM_OVERRIDE (&gameData.hoard.monsterball.bm)->glTexture = 0;
 for (i = 0; i < 2; i++)
 	gameData.hoard.icon [i].bm.glTexture = 0;
 }
@@ -228,6 +274,10 @@ d_free (gameData.hoard.orb.bm.bm_texBuf);
 gameData.hoard.orb.bm.bm_texBuf = NULL;
 d_free (gameData.hoard.goal.bm.bm_texBuf);
 gameData.hoard.goal.bm.bm_texBuf = NULL;
+if (BM_OVERRIDE (&gameData.hoard.monsterball.bm)) {
+	d_free (BM_OVERRIDE (&gameData.hoard.monsterball.bm));
+	memset (&gameData.hoard.orb.bm, 0, sizeof (grs_bitmap));
+	}
 for (i = 0; i < 2; i++) {
 	d_free (gameData.hoard.icon [i].bm.bm_texBuf);
 	gameData.hoard.icon [i].bm.bm_texBuf = NULL;

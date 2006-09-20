@@ -564,7 +564,7 @@ void UnlinkObject(int objnum);
 // returns the object number
 int CreateObject(ubyte type, ubyte id, short owner, short segnum, vms_vector *pos,
                vms_matrix *orient, fix size,
-               ubyte ctype, ubyte mtype, ubyte rtype);
+               ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
 // make a copy of an object. returs num of new object
 int CreateObjectCopy(int objnum, vms_vector *new_pos, int newsegnum);
@@ -612,7 +612,7 @@ void InitPlayerObject();
 
 // check if object is in object->segnum.  if not, check the adjacent
 // segs.  if not any of these, returns false, else sets obj->segnum &
-// returns true callers should really use find_vector_intersection()
+// returns true callers should really use FindVectorIntersection()
 // Note: this function is in gameseg.c
 extern int UpdateObjectSeg(struct object *obj);
 
