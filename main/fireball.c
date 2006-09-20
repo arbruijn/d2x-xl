@@ -2060,9 +2060,9 @@ if (!(gameData.app.nGameMode & GM_MONSTERBALL))
 	return 0;
 special = gameData.segs.segment2s [gameData.hoard.monsterBallP->segnum].special;
 if (special == SEGMENT_IS_GOAL_RED)
-	MultiSendCaptureBonus (TEAM_BLUE);
+	MultiSendCaptureBonus (-TEAM_BLUE - 1);
 else if (special == SEGMENT_IS_GOAL_BLUE)
-	MultiSendCaptureBonus (TEAM_BLUE);
+	MultiSendCaptureBonus (-TEAM_RED - 1);
 else
 	return 0;
 ReleaseObject (OBJ_IDX (gameData.hoard.monsterBallP));

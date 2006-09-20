@@ -3767,7 +3767,7 @@ void MultiDoCaptureBonus (char *buf)
 kmatrix_kills_changed = 1;
 
 if (nPlayer < 0) {
-	nTeam = -nPlayer;
+	nTeam = -nPlayer - 1;
 	if (nTeam == TEAM_RED) {
 		sprintf (szTeam, "%s Team", TXT_RED);
 		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
