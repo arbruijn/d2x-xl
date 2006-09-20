@@ -2760,10 +2760,9 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif	
 	InitHoardData ();
-if ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)
-	FindMonsterball ();
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
+FindMonsterball ();	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
 MultiShowPlayerList ();
 gameData.objs.console->control_type = CT_FLYING;
