@@ -57,7 +57,7 @@ bmP->avg_color = 0;
 
 //-----------------------------------------------------------------------------
 
-int InitMonsterBall (int nBitmap)
+int InitMonsterball (int nBitmap)
 {
 	grs_bitmap			*bmP, *altBmP;
 	vclip					*vcP;
@@ -179,7 +179,7 @@ if (!gameData.hoard.bInitialized) {
 		bmDataP += gameData.hoard.goal.nFrameSize;
 		gameData.hoard.nBitmaps = nBitmap;
 		}
-	nBitmap = InitMonsterBall (nBitmap);
+	nBitmap = InitMonsterball (nBitmap);
 	}
 else {
 	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;

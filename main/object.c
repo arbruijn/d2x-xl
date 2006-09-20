@@ -1763,7 +1763,7 @@ Assert (ctype <= CT_CNTRLCEN);
 if (type == OBJ_DEBRIS && Debris_object_count>=gameStates.render.detail.nMaxDebrisObjects)
 	return -1;
 
-if (get_seg_masks (pos, segnum, 0).centermask)
+if (GetSegMasks (pos, segnum, 0).centermask)
 	if ((segnum=FindSegByPoint (pos, segnum))==-1) {
 		#ifndef NDEBUG
 #if TRACE				
@@ -2238,19 +2238,15 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 //from its old segment, and links it into the new segment
 void RelinkObject (int objnum, int newsegnum)
 {
-
-	Assert ((objnum >= 0) && (objnum <= gameData.objs.nLastObject));
-	Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
-
-	UnlinkObject (objnum);
-
-	LinkObject (objnum, newsegnum);
-	
+Assert ((objnum >= 0) && (objnum <= gameData.objs.nLastObject));
+Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
+UnlinkObject (objnum);
+LinkObject (objnum, newsegnum);
 #ifndef NDEBUG
 #if TRACE				
-	if (get_seg_masks (&gameData.objs.objects [objnum].pos, 
-							 gameData.objs.objects [objnum].segnum, 0).centermask)
-		con_printf (1, "RelinkObject violates seg masks.\n");
+if (GetSegMasks (&gameData.objs.objects [objnum].pos, 
+					   gameData.objs.objects [objnum].segnum, 0).centermask)
+	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
 #endif
 }
@@ -2276,7 +2272,7 @@ void SpinObject (object *objP)
 	check_and_fix_matrix (&objP->orient);
 }
 
-extern void multi_send_drop_blobs (char);
+extern void MultiSendDropBlobs (char);
 extern void FuelCenCheckForGoal (segment *);
 
 //see if wall is volatile, and if so, cause damage to player
@@ -2583,7 +2579,7 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 		int chkVolaSeg=1, type, sidemask, under_lavafall = 0;
 		static int lavafall_hiss_playing [MAX_PLAYERS]={0};
 
-		sidemask = get_seg_masks (&objP->pos, objP->segnum, objP->size).sidemask;
+		sidemask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sidemask;
 		if (sidemask) {
 			short sidenum, wall_num;
 			int bit;
@@ -2649,7 +2645,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
-		multi_send_drop_blobs ((char) gameData.multi.nLocalPlayer);
+		MultiSendDropBlobs ((char) gameData.multi.nLocalPlayer);
 #endif
 	gameStates.render.bDropAfterburnerBlob = 0;
 }

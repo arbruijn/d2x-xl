@@ -63,6 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kmatrix.h"
 #include "multibot.h"
 #include "gameseq.h"
+#include "gameseg.h"
 #include "physics.h"
 #include "config.h"
 #include "state.h"
@@ -244,6 +245,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	2,	 // MULTI_INVUL
 	2,	 // MULTI_DEINVUL
 	29, // MULTI_WEAPONS
+	40  // MULTI_MONSTERBALL
 };
 
 void extract_netplayer_stats (netplayer_stats *ps, player * pd);
@@ -1114,10 +1116,10 @@ ubyte weapon = (ubyte) buf [2];
 sbyte flags = buf [4];
 multiData.laser.nTrack = GET_INTEL_SHORT (buf + 6);
 Assert (nPlayer < gameData.multi.nPlayers);
-if (gameData.objs.objects [gameData.multi.players [(int)nPlayer].objnum].type == OBJ_GHOST)
+if (gameData.objs.objects [gameData.multi.players [nPlayer].objnum].type == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
-	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [(int)nPlayer].objnum, 
+	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [nPlayer].objnum, 
 						  FLARE_ID, 6, 1, 0);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
@@ -1128,7 +1130,7 @@ else if (weapon >= MISSILE_ADJUST) {
 		multiData.bIsGuided = 1;
 	if (playerP->secondary_ammo [h] > 0)
 		playerP->secondary_ammo [h]--;
-	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [(int)nPlayer].objnum, 
+	LaserPlayerFire (gameData.objs.objects + gameData.multi.players [nPlayer].objnum, 
 						  weapon_id, weapon_gun, 1, 0);
 	}
 else {
@@ -1137,11 +1139,11 @@ else {
 		gameData.app.fusion.xCharge = flags << 12;
 	if (weapon == LASER_ID) {
 		if (flags & LASER_QUAD)
-			gameData.multi.players [(int)nPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
+			gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
 		else
-			gameData.multi.players [(int)nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
+			gameData.multi.players [nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
-	LaserFireObject ((short) gameData.multi.players [(int)nPlayer].objnum, weapon, (int)buf [3], flags, (int)buf [5]);
+	LaserFireObject ((short) gameData.multi.players [nPlayer].objnum, weapon, (int)buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
 		gameData.app.fusion.xCharge = save_charge;
 	}
@@ -1569,7 +1571,7 @@ count += sizeof (vms_vector);
 INTEL_VECTOR (&vNewPos);
 #endif
 multiData.create.nLoc = 0;
-my_objnum = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players [(int)nPlayer].objnum, 1, OBJ_POWERUP, powerupType);
+my_objnum = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players [nPlayer].objnum, 1, OBJ_POWERUP, powerupType);
 if (my_objnum < 0)
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (my_objnum))
@@ -2759,8 +2761,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif	
 	InitHoardData ();
 if ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)
-	if (!FindMonsterBall ())
-		CreateMonsterBall ();
+	FindMonsterball ();
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
 MultiSortKillList ();
@@ -3219,7 +3220,7 @@ void MultiDoGuided (char *buf)
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	shortpos sp;
 #endif
-	object *gmObj = gameData.objs.guidedMissile [(int)nPlayer];
+	object *gmObj = gameData.objs.guidedMissile [nPlayer];
 
 if (gmObj == NULL) {
 	if (++fun >= 50)
@@ -3537,7 +3538,7 @@ void MultiDoFlags (char *buf)
 
 flags = GET_INTEL_INT (buf + 2);
 if (nPlayer!=gameData.multi.nLocalPlayer)
-	gameData.multi.players [(int)nPlayer].flags = flags;
+	gameData.multi.players [nPlayer].flags = flags;
 }
 
 //-----------------------------------------------------------------------------
@@ -3571,16 +3572,16 @@ gameData.multi.players [(int) nPlayer].laser_level = multiData.msg.buf [bufP];
 
 //-----------------------------------------------------------------------------
 
-static int nWeaponTimeout = 0;
-
 void MultiSendWeapons (int bForce)
 {
 	int t = gameStates.app.nSDLTicks;
 
-if (bForce || (t - nWeaponTimeout > 3000)) {
+	static int nTimeout = 0;
+
+if (bForce || (t - nTimeout > 3000)) {
 		int i, bufP = 0;
 
-	nWeaponTimeout = t;
+	nTimeout = t;
 	multiData.msg.buf [bufP++] = (char) MULTI_WEAPONS;
 	multiData.msg.buf [bufP++] = (char) gameData.multi.nLocalPlayer;
 	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.multi.players [gameData.multi.nLocalPlayer].shields);
@@ -3598,7 +3599,92 @@ if (bForce || (t - nWeaponTimeout > 3000)) {
 
 //-----------------------------------------------------------------------------
 
-void multi_send_drop_blobs (char nPlayer)
+void MultiDoMonsterball (char *buf)
+{
+	int			bCreate, bufP = 1;
+	short			nSegment;
+	vms_vector	v;
+
+bCreate = (int) buf [bufP++];
+nSegment = GET_INTEL_SHORT (buf + bufP);
+if (bCreate) {
+	gameData.hoard.nMonsterballSeg = nSegment;
+	CreateMonsterball ();
+	return;
+	}
+bufP += 2;
+v.x = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.y = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.z = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+if (!gameData.hoard.monsterballP) {
+	gameData.hoard.nMonsterballSeg = FindSegByPoint (&v, nSegment);
+	CreateMonsterball ();
+	gameData.hoard.monsterballP->pos = v;
+	}
+v.x = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.y = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.z = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+PhysApplyForce (gameData.hoard.monsterballP, &v);
+v.x = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.y = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+v.z = GET_INTEL_INT (buf + bufP);
+bufP += 4;
+PhysApplyRot (gameData.hoard.monsterballP, &v);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendMonsterball (int bForce, int bCreate)
+{
+	int t = gameStates.app.nSDLTicks;
+
+	static int nTimeout = 0;
+
+if (!(gameData.app.nGameMode & GM_MONSTERBALL))
+	return;
+if (!gameData.hoard.monsterballP)
+	return;
+if (bForce || (t - nTimeout > 1000)) {
+		int bufP = 0;
+
+	nTimeout = t;
+	multiData.msg.buf [bufP++] = (char) MULTI_MONSTERBALL;
+	multiData.msg.buf [bufP++] = (char) bCreate;
+	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->segnum);
+	bufP += 2;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->pos.x);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->pos.y);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->pos.z);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.velocity.x);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.velocity.y);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.velocity.z);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.rotvel.x);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.rotvel.y);
+	bufP += 4;
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mtype.phys_info.rotvel.z);
+	bufP += 4;
+	MultiSendData (multiData.msg.buf, bufP, 1);
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendDropBlobs (char nPlayer)
 {
 multiData.msg.buf [0] = MULTI_DROP_BLOB;
 multiData.msg.buf [1] = nPlayer;
@@ -3611,7 +3697,7 @@ void MultiDoDropBlob (char *buf)
 {
 	char nPlayer = buf [1];
 	
-DropAfterburnerBlobs (&gameData.objs.objects [gameData.multi.players [(int)nPlayer].objnum], 2, i2f (5)/2, -1, NULL, 0);
+DropAfterburnerBlobs (&gameData.objs.objects [gameData.multi.players [nPlayer].objnum], 2, i2f (5)/2, -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -3723,9 +3809,9 @@ nPlayer = buf [1];
 whichfunc = buf [2];
 sound = buf [3];
 if (whichfunc == 0)
-	DigiKillSoundLinkedToObject (gameData.multi.players [(int)nPlayer].objnum);
+	DigiKillSoundLinkedToObject (gameData.multi.players [nPlayer].objnum);
 else if (whichfunc == 3)
-	DigiLinkSoundToObject3 (sound, (short) gameData.multi.players [(int)nPlayer].objnum, 1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+	DigiLinkSoundToObject3 (sound, (short) gameData.multi.players [nPlayer].objnum, 1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 }
 
 //-----------------------------------------------------------------------------
@@ -3743,7 +3829,7 @@ MultiDoCaptureBonus (multiData.msg.buf);
 
 //-----------------------------------------------------------------------------
 
-void multi_send_orb_bonus (char nPlayer)
+void MultiSendOrbBonus (char nPlayer)
 {
 Assert (gameData.app.nGameMode & GM_HOARD);
 multiData.msg.buf [0] = MULTI_ORB_BONUS;
@@ -3761,38 +3847,38 @@ void MultiDoCaptureBonus (char *buf)
 	// appropriate player's tally.
 
 	char 	nPlayer = buf [1];
-	int 	h, i, nTeam, nKillGoal, bonus = (gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5;
+	short	h, i, nTeam, nKillGoal, penalty = 0, bonus = (gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5;
 	char	szTeam [20];
 
 kmatrix_kills_changed = 1;
 
 if (nPlayer < 0) {
-	nTeam = -nPlayer - 1;
-	if (nTeam == TEAM_RED) {
-		sprintf (szTeam, "%s Team", TXT_RED);
-		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
-		}
-	else {
-		sprintf (szTeam, "%s Team", TXT_BLUE);
-		DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
-		}
-	HUDInitMessage (TXT_SCORED2, szTeam);
+	penalty = 1;
+	nPlayer = -nPlayer - 1;
 	}
-else {
-	nTeam = GetTeam (nPlayer);
-	if (nPlayer == gameData.multi.nLocalPlayer)
-		HUDInitMessage (TXT_SCORED);
-	else if (nPlayer >= 0)
-		HUDInitMessage (TXT_SCORED2, gameData.multi.players [(int)nPlayer].callsign);
-	}
+nTeam = GetTeam (nPlayer) ^ penalty;
+if (nPlayer == gameData.multi.nLocalPlayer)
+	HUDInitMessage (TXT_SCORED);
+else
+	HUDInitMessage (TXT_SCORED2, gameData.multi.players [nPlayer].callsign);
 multiData.kills.nTeam [nTeam] += bonus;
-if (nPlayer < 0) {
+if (nPlayer == gameData.multi.nLocalPlayer)
+	DigiPlaySample (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
+else if (GetTeam (nPlayer) == TEAM_RED)
+	DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
+else
+	DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
+gameData.multi.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
+if (penalty) {
+	gameData.multi.players [nPlayer].net_kills_total -= bonus;
+	gameData.multi.players [nPlayer].KillGoalCount -= bonus;
 	if (netGame.KillGoal > 0) {
 		nKillGoal = netGame.KillGoal * bonus;
 		for (h = i = 0; i < gameData.multi.nPlayers; i++)
 			if (h < gameData.multi.players [i].KillGoalCount)
 				h = gameData.multi.players [i].KillGoalCount;
 		if (multiData.kills.nTeam [nTeam] + h >= nKillGoal) {
+			sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
 			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
@@ -3800,24 +3886,17 @@ if (nPlayer < 0) {
 		}
 	}
 else {
-	if (nPlayer == gameData.multi.nLocalPlayer)
-		DigiPlaySample (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
-	else if (GetTeam (nPlayer) == TEAM_RED)
-		DigiPlaySample (SOUND_HUD_RED_GOT_GOAL, F1_0*2);
-	else
-		DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
-	gameData.multi.players [(int)nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
-	gameData.multi.players [(int)nPlayer].net_kills_total += bonus;
-	gameData.multi.players [(int)nPlayer].KillGoalCount += bonus;
+	gameData.multi.players [nPlayer].net_kills_total += bonus;
+	gameData.multi.players [nPlayer].KillGoalCount += bonus;
 	if (netGame.KillGoal > 0) {
 		nKillGoal = netGame.KillGoal * bonus;
-		if (gameData.multi.players [(int)nPlayer].KillGoalCount >= nKillGoal) {
+		if (gameData.multi.players [nPlayer].KillGoalCount >= nKillGoal) {
 			if (nPlayer == gameData.multi.nLocalPlayer) {
 				HUDInitMessage (TXT_REACH_KILLGOAL);
 				gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);
 				}
 			else
-				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multi.players [(int)nPlayer].callsign);
+				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multi.players [nPlayer].callsign);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
 			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
 			}
@@ -3851,7 +3930,7 @@ kmatrix_kills_changed = 1;
 if (nPlayer == gameData.multi.nLocalPlayer)
 	HUDInitMessage (TXT_SCORED_ORBS, bonus);
 else
-	HUDInitMessage (TXT_SCORED_ORBS2, gameData.multi.players [(int)nPlayer].callsign, buf [2]);
+	HUDInitMessage (TXT_SCORED_ORBS2, gameData.multi.players [nPlayer].callsign, buf [2]);
 if (nPlayer == gameData.multi.nLocalPlayer)
 	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_GOAL, F1_0*2);
 else if (gameData.app.nGameMode & GM_TEAM) {
@@ -3866,27 +3945,27 @@ if (bonus>PhallicLimit) {
 	if (nPlayer == gameData.multi.nLocalPlayer)
 		HUDInitMessage (TXT_RECORD, bonus);
 	else
-		HUDInitMessage (TXT_RECORD2, gameData.multi.players [(int)nPlayer].callsign, bonus);
+		HUDInitMessage (TXT_RECORD2, gameData.multi.players [nPlayer].callsign, bonus);
 	DigiPlaySample (SOUND_BUDDY_MET_GOAL, F1_0*2);
 	PhallicMan = nPlayer;
 	PhallicLimit = bonus;
 	}
-gameData.multi.players [(int)nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);  // Clear orb flag
+gameData.multi.players [nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);  // Clear orb flag
 multiData.kills.nTeam [GetTeam (nPlayer)] += bonus;
-gameData.multi.players [(int)nPlayer].net_kills_total += bonus;
-gameData.multi.players [(int)nPlayer].KillGoalCount += bonus;
+gameData.multi.players [nPlayer].net_kills_total += bonus;
+gameData.multi.players [nPlayer].KillGoalCount += bonus;
 multiData.kills.nTeam [GetTeam (nPlayer)] %= 1000;
-gameData.multi.players [(int)nPlayer].net_kills_total %= 1000;
-gameData.multi.players [(int)nPlayer].KillGoalCount %= 1000;
+gameData.multi.players [nPlayer].net_kills_total %= 1000;
+gameData.multi.players [nPlayer].KillGoalCount %= 1000;
 if (netGame.KillGoal>0) {
 	nKillGoal = netGame.KillGoal*5;
-	if (gameData.multi.players [(int)nPlayer].KillGoalCount >= nKillGoal) {
+	if (gameData.multi.players [nPlayer].KillGoalCount >= nKillGoal) {
 		if (nPlayer == gameData.multi.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (200);
 			}
 		else
-			HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multi.players [(int)nPlayer].callsign);
+			HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multi.players [nPlayer].callsign);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
 		NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
 		}
@@ -3942,8 +4021,8 @@ else if (GetTeam (nPlayer) == TEAM_RED)
 	DigiStartSoundQueued (SOUND_HUD_RED_GOT_FLAG, F1_0*2);
 else
 	DigiStartSoundQueued (SOUND_HUD_BLUE_GOT_FLAG, F1_0*2);
-gameData.multi.players [(int)nPlayer].flags|= PLAYER_FLAGS_FLAG;
-HUDInitMessage (TXT_PICKFLAG2, gameData.multi.players [(int)nPlayer].callsign);
+gameData.multi.players [nPlayer].flags|= PLAYER_FLAGS_FLAG;
+HUDInitMessage (TXT_PICKFLAG2, gameData.multi.players [nPlayer].callsign);
 }
 
 //-----------------------------------------------------------------------------
@@ -3961,11 +4040,11 @@ if (gameData.app.nGameMode & GM_TEAM) {
    }
 else
 	DigiPlaySample (SOUND_OPPONENT_GOT_ORB, F1_0*2);
-gameData.multi.players [(int)nPlayer].flags|= PLAYER_FLAGS_FLAG;
+gameData.multi.players [nPlayer].flags|= PLAYER_FLAGS_FLAG;
 if (gameData.app.nGameMode & GM_ENTROPY)
-	HUDInitMessage (TXT_PICKVIRUS2, gameData.multi.players [(int)nPlayer].callsign);
+	HUDInitMessage (TXT_PICKVIRUS2, gameData.multi.players [nPlayer].callsign);
 else
-	HUDInitMessage (TXT_PICKORB2, gameData.multi.players [(int)nPlayer].callsign);
+	HUDInitMessage (TXT_PICKORB2, gameData.multi.players [nPlayer].callsign);
 }
 
 //-----------------------------------------------------------------------------
@@ -4402,17 +4481,17 @@ void MultiDoRanking (char *buf)
 	char nPlayer = buf [1];
 	char rank = buf [2];
 
-	if (netPlayers.players [(int)nPlayer].rank<rank)
+	if (netPlayers.players [nPlayer].rank<rank)
 		strcpy (rankstr, TXT_RANKUP);
-	else if (netPlayers.players [(int)nPlayer].rank>rank)
+	else if (netPlayers.players [nPlayer].rank>rank)
 		strcpy (rankstr, TXT_RANKDOWN);
 	else
 		return;
 
-	netPlayers.players [(int)nPlayer].rank = rank;
+	netPlayers.players [nPlayer].rank = rank;
 
 	if (!gameOpts->multi.bNoRankings)
-		HUDInitMessage (TXT_RANKCHANGE2, gameData.multi.players [(int)nPlayer].callsign, 
+		HUDInitMessage (TXT_RANKCHANGE2, gameData.multi.players [nPlayer].callsign, 
 								rankstr, pszRankStrings [(int)rank]);
 }
 
@@ -4682,7 +4761,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoShields, 1}, 
 	{MultiDoInvul, 1}, 
 	{MultiDoDeInvul, 1},
-	{MultiDoWeapons, 1}
+	{MultiDoWeapons, 1},
+	{MultiDoMonsterball, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -4935,6 +5015,10 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 	case MULTI_WEAPONS:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoWeapons (buf); 
+		break;
+	case MULTI_MONSTERBALL:
+		if (!gameStates.app.bEndLevelSequence) 
+			MultiDoMonsterball (buf); 
 		break;
 	case MULTI_DROP_BLOB:
 		if (!gameStates.app.bEndLevelSequence) 

@@ -1238,7 +1238,7 @@ memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segD
 InitDoorAnims ();
 #endif
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
-gameData.hoard.nMonsterBallSeg = -1;
+gameData.hoard.nMonsterballSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");
 SetSoundSources ();
 PlayLevelSong (gameData.missions.nCurrentLevel);

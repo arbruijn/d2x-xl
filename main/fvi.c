@@ -923,7 +923,7 @@ int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data)
 	//Assert(check_point_in_seg(p0,startseg,0).centermask==0);	//start point not in seg
 
 	// gameData.objs.viewer is not in segment as claimed, so say there is no hit.
-	masks = get_seg_masks(fq->p0,fq->startseg,0);
+	masks = GetSegMasks(fq->p0,fq->startseg,0);
 	if(masks.centermask!=0) {
 
 		hit_data->hit_type = HIT_BAD_P0;
@@ -943,13 +943,13 @@ int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data)
 							  (short) fq->thisobjnum, fq->ignore_obj_list, fq->flags, 
 							  hit_data->seglist, &hit_data->n_segs, -2);
 	//!!hit_seg = FindSegByPoint(&hit_pnt,fq->startseg);
-	if (hit_seg2!=-1 && !get_seg_masks(&hit_pnt,hit_seg2,0).centermask)
+	if (hit_seg2!=-1 && !GetSegMasks(&hit_pnt,hit_seg2,0).centermask)
 		hit_seg = hit_seg2;
 	else
 		hit_seg = FindSegByPoint(&hit_pnt,fq->startseg);
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 	if (hit_type == HIT_WALL && hit_seg==-1)
-		if (fvi_hit_seg2!=-1 && get_seg_masks(&hit_pnt,fvi_hit_seg2,0).centermask==0)
+		if (fvi_hit_seg2!=-1 && GetSegMasks(&hit_pnt,fvi_hit_seg2,0).centermask==0)
 			hit_seg = fvi_hit_seg2;
 
 	if (hit_seg == -1) {
@@ -1020,7 +1020,7 @@ if (hit_seg!=-1 && fq->flags&FQ_GET_SEGLIST)
 	hit_data->hit_object		= fvi_hit_object;	//looks at global
 	hit_data->hit_wallnorm	= wall_norm;		//looks at global
 
-//	if(hit_seg!=-1 && get_seg_masks(&hit_data->hit_pnt,hit_data->hit_seg,0).centermask!=0)
+//	if(hit_seg!=-1 && GetSegMasks(&hit_data->hit_pnt,hit_data->hit_seg,0).centermask!=0)
 //		Int3();
 
 	return hit_type;
@@ -1123,8 +1123,8 @@ int fvi_sub(vms_vector *intp, short *ints, vms_vector *p0, short startseg, vms_v
 		rad = 0;		//HACK - ignore when edges hit walls
 
 	//now, check segment walls
-	startmask = get_seg_masks (p0,startseg,rad).facemask;
-	masks = get_seg_masks (p1,startseg,rad);    //on back of which faces?
+	startmask = GetSegMasks (p0,startseg,rad).facemask;
+	masks = GetSegMasks (p1,startseg,rad);    //on back of which faces?
 	endmask = masks.facemask;
 	//@@sidemask = masks.sidemask;
 	centermask = masks.centermask;
@@ -1254,7 +1254,7 @@ int fvi_sub(vms_vector *intp, short *ints, vms_vector *p0, short startseg, vms_v
 									#else
 										wall_norm = seg->sides[side].normals[face];	
 									#endif
-									if (get_seg_masks(&hit_point,startseg,rad).centermask==0)
+									if (GetSegMasks(&hit_point,startseg,rad).centermask==0)
 										hit_seg = startseg;             //hit in this segment
 									else
 										fvi_hit_seg2 = startseg;
@@ -1532,7 +1532,7 @@ int sphere_intersects_wall(vms_vector *pnt,int segnum,fix rad)
 
 	segs_visited[n_segs_visited++] = segnum;
 
-	facemask = get_seg_masks(pnt,segnum,rad).facemask;
+	facemask = GetSegMasks(pnt,segnum,rad).facemask;
 
 	seg = gameData.segs.segments + segnum;
 

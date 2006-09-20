@@ -581,7 +581,7 @@ void do_physics_sim_rot(object *objP)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-extern object *monsterBallP;
+extern object *monsterballP;
 extern vms_vector boostedVel, minBoostedVel, maxBoostedVel;
 
 //Simulate a physics object for this frame
@@ -639,7 +639,7 @@ if (Dont_move_ai_objects)
 		//printf("  sim_time = %x\n", sim_time);
 	}
 	//check for correct object segment
-	if(get_seg_masks(&objP->pos, objP->segnum, 0).centermask!=0) {
+	if(GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
 #if TRACE				
 		con_printf (CON_DEBUG, "Warning: object %d not in given seg!\n", objnum);
 #endif
@@ -789,7 +789,7 @@ retryMove:
 		if (objP->type == OBJ_PLAYER)
 			fq.flags |= FQ_GET_SEGLIST;
 
-//@@			if (get_seg_masks(&objP->pos, objP->segnum, 0).centermask!=0)
+//@@			if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0)
 //@@				Int3();
 
 save_p0 = *fq.p0;
@@ -865,7 +865,7 @@ save_p1 = *fq.p1;
 
 		Assert(!((fate==HIT_WALL) && ((WallHitSeg == -1) || (WallHitSeg > gameData.segs.nLastSegment))));
 
-		//if(!get_seg_masks(&hit_info.hit_pnt, hit_info.hit_seg, 0).centermask==0)
+		//if(!GetSegMasks(&hit_info.hit_pnt, hit_info.hit_seg, 0).centermask==0)
 		//	Int3();
 
 		save_pos = objP->pos;			//save the object's position
@@ -883,7 +883,7 @@ save_p1 = *fq.p1;
 			RelinkObject(objnum, iseg);
 
 		//if start point not in segment, move object to center of segment
-		if (get_seg_masks(&objP->pos, objP->segnum, 0).centermask!=0) {
+		if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
 			int n;
 
 			if ((n=FindObjectSeg(objP))==-1) {
@@ -1204,7 +1204,7 @@ save_p1 = *fq.p1;
 
 //--WE ALWYS WANT THIS IN, MATT AND MIKE DECISION ON 12/10/94, TWO MONTHS AFTER FINAL 	#ifndef NDEBUG
 	//if end point not in segment, move object to last pos, or segment center
-	if (get_seg_masks(&objP->pos, objP->segnum, 0).centermask!=0) {
+	if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
 		if (FindObjectSeg(objP)==-1) {
 			int n;
 

@@ -2370,7 +2370,7 @@ void BuildObjectLists(int n_segs)
 				do {
 					segmasks m;
 					did_migrate = 0;
-					m = get_seg_masks(&objP->pos,new_segnum,objP->size);
+					m = GetSegMasks(&objP->pos,new_segnum,objP->size);
 					if (m.sidemask) {
 						short sn,sf;
 						for (sn=0,sf=1;sn<6;sn++,sf<<=1)

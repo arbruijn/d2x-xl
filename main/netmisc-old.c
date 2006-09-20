@@ -592,6 +592,7 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *net_address)
 {
 	int	i = 0;
+	tMonsterballForce	*pf;
 
 memcpy (out_buffer, &extraGameInfo [1], sizeof (extra_gameinfo));
 EGI_INTEL_SHORT_2BUF (entropy.nMaxVirusCapacity);
@@ -599,6 +600,9 @@ EGI_INTEL_SHORT_2BUF (entropy.nEnergyFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldDamageRate);
 EGI_INTEL_INT_2BUF (nSpawnDelay);
+pf = (tMonsterballForce *) (out_buffer + ((char *) &extraGameInfo [1].monsterballForces - (char *) &extraGameInfo [1]));
+for (i = 0; i < MAX_MONSTERBALL_FORCES; i++, pf++)
+	pf->nForce = INTEL_SHORT (pf->nForce);
 if (net_address != NULL)
 	IPXSendPacketData(out_buffer, sizeof (extra_gameinfo), server, node, net_address);
 else if ((server == NULL) && (node == NULL))
@@ -610,7 +614,8 @@ else
 
 void BEReceiveExtraGameInfo(ubyte *data, extra_gameinfo *extraGameInfo)
 {
-	int	i;
+	int					i;
+	tMonsterballForce	*pf;
 
 memcpy (&extraGameInfo [1], data, sizeof (extra_gameinfo));
 BUF2_EGI_INTEL_SHORT (entropy.nMaxVirusCapacity);
@@ -618,6 +623,9 @@ BUF2_EGI_INTEL_SHORT (entropy.nEnergyFillRate);
 BUF2_EGI_INTEL_SHORT (entropy.nShieldFillRate);
 BUF2_EGI_INTEL_SHORT (entropy.nShieldDamageRate);
 BUF2_EGI_INTEL_INT (nSpawnDelay);
+pf = extraGameInfo [1].monsterballForces;
+for (i = 0; i < MAX_MONSTERBALL_FORCES; i++, pf++)
+	pf->nForce = INTEL_SHORT (pf->nForce);
 }
 
 

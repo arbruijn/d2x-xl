@@ -90,6 +90,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "vers_id.h"
 #include "netmenu.h"
 #include "banlist.h"
+#include "collide.h"
 
 /*
 The general proceedings of D2X-XL when establishing a UDP/IP communication between two peers is as follows:
@@ -1473,6 +1474,7 @@ netGame.game_status = old_status;
 NetworkSendExtraGameInfo (their);
 NetworkSendExtraGameInfo (their);
 NetworkSendExtraGameInfo (their);
+MultiSendMonsterball (1, 1);
 }       
 
 //------------------------------------------------------------------------------
@@ -1508,6 +1510,7 @@ else {
 		}
 	} 
 #endif 
+SetMonsterballForces ();
 }
 
 //------------------------------------------------------------------------------
@@ -2037,6 +2040,7 @@ switch (pid) {
 		con_printf (0, "received PID_EXTRA_GAMEINFO\n");
 		if (gameStates.multi.nGameType >= IPX_GAME) {
 			ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
+			SetMonsterballForces ();
 			LogExtraGameInfo ();
 			gameStates.app.bHaveExtraGameInfo [1] = 1;
 			}
@@ -3092,6 +3096,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 		case PID_EXTRA_GAMEINFO: 
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
+				SetMonsterballForces ();
 				LogExtraGameInfo ();
 				gameStates.app.bHaveExtraGameInfo [1] = 1;
 				}
@@ -4293,6 +4298,67 @@ networkData.tLastPingStat = 0;
 
 //------------------------------------------------------------------------------
 
+void InitMonsterballForces (tMonsterballForce *forceP)
+{
+// primary weapons
+forceP [0].nWeaponId = LASER_ID; 
+forceP [0].nForce = 10;
+forceP [1].nWeaponId = LASER_ID + 1; 
+forceP [1].nForce = 15;
+forceP [2].nWeaponId = LASER_ID + 2; 
+forceP [2].nForce = 20;
+forceP [3].nWeaponId = LASER_ID + 3; 
+forceP [3].nForce = 25;
+forceP [4].nWeaponId = SPREADFIRE_ID; 
+forceP [4].nForce = 20;
+forceP [5].nWeaponId = VULCAN_ID; 
+forceP [5].nForce = 10;
+forceP [6].nWeaponId = PLASMA_ID; 
+forceP [6].nForce = 30;
+forceP [7].nWeaponId = FUSION_ID; 
+forceP [7].nForce = 100;
+// primary "super" weapons
+forceP [8].nWeaponId = SUPER_LASER_ID; 
+forceP [8].nForce = 50;
+forceP [9].nWeaponId = SUPER_LASER_ID + 1; 
+forceP [9].nForce = 60;
+forceP [10].nWeaponId = HELIX_ID; 
+forceP [10].nForce = 40;
+forceP [11].nWeaponId = GAUSS_ID; 
+forceP [11].nForce = 30;
+forceP [12].nWeaponId = PHOENIX_ID; 
+forceP [12].nForce = 60;
+forceP [13].nWeaponId = OMEGA_ID; 
+forceP [13].nForce = 30;
+forceP [14].nWeaponId = FLARE_ID; 
+forceP [14].nForce = 5;
+// missiles
+forceP [15].nWeaponId = CONCUSSION_ID; 
+forceP [15].nForce = 50;
+forceP [16].nWeaponId = HOMING_ID; 
+forceP [16].nForce = 50;
+forceP [17].nWeaponId = SMART_ID; 
+forceP [17].nForce = 80;
+forceP [18].nWeaponId = MEGA_ID; 
+forceP [18].nForce = 150;
+// "super" missiles
+forceP [19].nWeaponId = FLASH_ID; 
+forceP [19].nForce = 30;
+forceP [20].nWeaponId = GUIDEDMISS_ID; 
+forceP [20].nForce = 40;
+forceP [21].nWeaponId = MERCURY_ID; 
+forceP [21].nForce = 70;
+forceP [22].nWeaponId = EARTHSHAKER_ID; 
+forceP [22].nForce = 200;
+forceP [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
+forceP [23].nForce = 150;
+// player ships
+forceP [24].nWeaponId = 255;
+forceP [24].nForce = 4;
+}
+
+//------------------------------------------------------------------------------
+
 void InitExtraGameInfo (void)
 {
 	int	i;
@@ -4352,6 +4418,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].entropy.nOverrideTextures = 2;
 	extraGameInfo [i].entropy.bBrightenRooms = 0;
 	extraGameInfo [i].entropy.bPlayerHandicap = 0;
+	InitMonsterballForces (extraGameInfo [i].monsterballForces);
 	}
 }
 

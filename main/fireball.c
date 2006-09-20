@@ -1068,7 +1068,7 @@ while (h >= 0) {
 
 //	------------------------------------------------------------------------------------------------------
 
-RespawnDestroyedWeapon (short nObject)
+void RespawnDestroyedWeapon (short nObject)
 {
 	int	h = gameData.objs.nFirstDropped, i;
 
@@ -2009,39 +2009,33 @@ void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime
 
 //------------------------------------------------------------------------------
 
-int FindMonsterBall (void)
+void RemoveMonsterball (void)
 {
-	short		i;
-	object	*objP;
-
-for (i = gameData.objs.nObjects, objP = gameData.objs.objects; i; i--, objP++)
-	if ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL)) {
-		gameData.hoard.monsterBallP = objP;
-		gameData.hoard.nMonsterBallSeg = objP->segnum;
-		return 1;
-		}
-gameData.hoard.nMonsterBallSeg = -1;
-return 0;
+if (gameData.hoard.monsterballP) {
+	ReleaseObject (OBJ_IDX (gameData.hoard.monsterballP));
+	gameData.hoard.monsterballP = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
 
-int CreateMonsterBall (void)
+int CreateMonsterball (void)
 {
 	short			nDropSeg, nObject;
 	vms_vector	vSegCenter;
 	vms_vector	vInitVel = {0,0,0};
 
-if (!(NetworkIAmMaster() && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
-	return 0;
-nDropSeg = (gameData.hoard.nMonsterBallSeg >= 0) ? 
-			  gameData.hoard.nMonsterBallSeg : ChooseDropSegment (NULL, NULL, EXEC_DROP);
+RemoveMonsterball ();
+nDropSeg = (gameData.hoard.nMonsterballSeg >= 0) ? 
+			  gameData.hoard.nMonsterballSeg : ChooseDropSegment (NULL, NULL, EXEC_DROP);
 if (nDropSeg >= 0) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nDropSeg);
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vInitVel, &vSegCenter, nDropSeg);
 	if (nObject >= 0) {
-		gameData.hoard.monsterBallP = gameData.objs.objects + nObject;
-		gameData.hoard.monsterBallP->mtype.phys_info.mass = F1_0 * 10;
+		gameData.hoard.monsterballP = gameData.objs.objects + nObject;
+		gameData.hoard.monsterballP->mtype.phys_info.mass = F1_0 * 10;
+		gameData.hoard.nLastHitter = -1;
+		CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 		return 1;
 		}
 	}
@@ -2050,24 +2044,55 @@ gameData.app.nGameMode &= ~GM_MONSTERBALL;
 return 0;
 }
 
+//------------------------------------------------------------------------------
+
+int FindMonsterball (void)
+{
+	short		i;
+	object	*objP;
+
+gameData.hoard.monsterballP = NULL;
+gameData.hoard.nMonsterballSeg = -1;
+gameData.hoard.nLastHitter = -1;
+for (i = gameData.objs.nObjects, objP = gameData.objs.objects; i; i--, objP++)
+	if ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL)) {
+		if (gameData.hoard.nMonsterballSeg < 0)
+			gameData.hoard.nMonsterballSeg = objP->segnum;
+		ReleaseObject (i);
+		}
+if (!(NetworkIAmMaster() && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
+	return 0;
+if (!CreateMonsterball ())
+	return 0;
+MultiSendMonsterball (1, 1);
+return 1;
+}
+
 //	-----------------------------------------------------------------------------
 
-int CheckMonsterBallScore (void)
+int CheckMonsterballScore (void)
 {
-	ubyte special;
+	ubyte	special;
+	short	t;
 
 if (!(gameData.app.nGameMode & GM_MONSTERBALL))
 	return 0;
-special = gameData.segs.segment2s [gameData.hoard.monsterBallP->segnum].special;
+if (!gameData.hoard.monsterballP)
+	return 0;
+if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
+	return 0;
+special = gameData.segs.segment2s [gameData.hoard.monsterballP->segnum].special;
+t = GetTeam (gameData.multi.nLocalPlayer);
 if (special == SEGMENT_IS_GOAL_RED)
-	MultiSendCaptureBonus (-TEAM_BLUE - 1);
+	MultiSendCaptureBonus ((t == TEAM_BLUE) ? gameData.multi.nLocalPlayer : -gameData.multi.nLocalPlayer - 1);
 else if (special == SEGMENT_IS_GOAL_BLUE)
-	MultiSendCaptureBonus (-TEAM_RED - 1);
+	MultiSendCaptureBonus ((t == TEAM_RED) ? gameData.multi.nLocalPlayer : -gameData.multi.nLocalPlayer - 1);
 else
 	return 0;
-ReleaseObject (OBJ_IDX (gameData.hoard.monsterBallP));
-gameData.hoard.monsterBallP = NULL;
-CreateMonsterBall ();
+CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
+RemoveMonsterball ();
+CreateMonsterball ();
+MultiSendMonsterball (1, 1);
 return 1;
 }
 

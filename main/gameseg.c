@@ -223,7 +223,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * find_new_seg() now will look through any kind of wall but a totally solid one
  *
  * Revision 1.26  1994/07/28  19:15:59  matt
- * Fixed yet another bug in get_seg_masks()
+ * Fixed yet another bug in GetSegMasks()
  *
  */
 
@@ -694,7 +694,7 @@ void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, int side
 
 //returns 3 different bitmasks with info telling if this sphere is in
 //this segment.  See segmasks structure for info on fields  
-segmasks get_seg_masks(vms_vector *checkp,int segnum,fix rad)
+segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
 {
 	int			sn,facebit,sidebit;
 	segmasks		masks;
@@ -706,7 +706,7 @@ segmasks get_seg_masks(vms_vector *checkp,int segnum,fix rad)
 	masks.facemask = 0;
 	masks.centermask = 0;
 	if (segnum==-1) {
-		Error("segnum == -1 in get_seg_masks()");
+		Error("segnum == -1 in GetSegMasks()");
 		return masks;
 		}
 	Assert((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
@@ -841,7 +841,7 @@ segmasks get_seg_masks(vms_vector *checkp,int segnum,fix rad)
 	return masks;
 }
 
-//this was converted from get_seg_masks()...it fills in an array of 6
+//this was converted from GetSegMasks()...it fills in an array of 6
 //elements for the distace behind each side, or zero if not behind
 //only gets centermask, and assumes zero rad
 ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
@@ -1238,7 +1238,7 @@ int FindSegByPoint(vms_vector *p,int segnum)
 #endif
 		for (newseg=0;newseg <= gameData.segs.nLastSegment;newseg++)
 			if ((gameData.segs.segment2s [newseg].special != SEGMENT_IS_SKYBOX) && 
-			    (get_seg_masks(p,newseg,0).centermask == 0))
+			    (GetSegMasks(p,newseg,0).centermask == 0))
 				return newseg;
 	++Exhaustive_failed_count;
 #if TRACE

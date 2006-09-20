@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					114	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					115	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -486,7 +486,7 @@ int ReadPlayerFile(int bOnlyWindowSizes)
 	char filename[FILENAME_LEN];
 	CFILE *fp;
 	int errno_ret = EZERO;
-	int id, i, j;
+	int id, h, i, j;
 	short player_file_version;
 	int rewrite_it=0;
 	int swap = 0;
@@ -1020,6 +1020,14 @@ for (j = 0; j < 1; j++) {
 	if (player_file_version >= 114) {
 		gameOptions [j].input.joyDeadZones [4] = (int) CFReadByte (fp);
 		gameOptions [j].input.joySensitivity [4] = CFReadByte (fp);
+	if (player_file_version >= 115)
+		if (!j) {
+			tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
+			for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
+				pf->nWeaponId = CFReadByte (fp);
+				pf->nForce = CFReadShort (fp);
+				}
+			}
 		}
 	}
 if (errno_ret == EZERO)
@@ -1102,7 +1110,7 @@ int WritePlayerFile()
 {
 	char filename[FILENAME_LEN];		// because of ":gameData.multi.players:" path
 	CFILE *fp;
-	int errno_ret, i, j;
+	int errno_ret, h, i, j;
 
 //	#ifdef APPLE_DEMO		// no saving of player files in Apple OEM version
 //	return 0;
@@ -1414,6 +1422,15 @@ for (j = 0; j < 1; j++) {
 	CFWriteInt (gameOptions [j].render.cockpit.bMouseIndicator, fp);
 	CFWriteInt (extraGameInfo [j].bTeleporterCams, fp);
 	CFWriteInt (gameOptions [j].render.cockpit.bSplitHUDMsgs, fp);
+	CFWriteByte (gameOptions [j].input.joyDeadZones [4], fp);
+	CFWriteByte (gameOptions [j].input.joySensitivity [4], fp);
+	if (!j) {
+		tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
+		for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
+			CFWriteByte (pf->nWeaponId, fp);
+			CFWriteShort (pf->nForce, fp);
+			}
+		}
 // end of D2X-XL stuff
 	}
 

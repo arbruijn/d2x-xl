@@ -127,6 +127,6 @@ void CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *coll
 int CheckEffectBlowup(segment *seg,short side,vms_vector *pnt, object *blower, int force_blowup_flag);
 void ApplyDamageToReactor(object *controlcen, fix damage, short who);
 void BumpOneObject(object *obj0, vms_vector *hit_dir, fix damage);
-void InitMonsterBallForces (void);
+void SetMonsterballForces (void);
 
 #endif /* _COLLIDE_H */

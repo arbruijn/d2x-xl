@@ -755,7 +755,9 @@ if (gameOpts->menus.nStyle) {
 			pszCurBg = bg->pszPrevBg;
 #if 1
 		if (bg->menu_canvas) {
-			GrFreeSubCanvas (bg->menu_canvas);
+			WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
+					  GrFreeSubCanvas (bg->menu_canvas));
+			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
 			bg->menu_canvas = NULL;
 			}
 #endif
@@ -4488,12 +4490,14 @@ RePaintNewmenuListbox:
 
 	if (gameOpts->menus.nStyle) {
 		NMRemoveBackground (&bg);
+#if 1
 		if (bg.menu_canvas) {
 			WINDOS (DDGrFreeSubCanvas (bg.menu_canvas), 
 					  GrFreeSubCanvas (bg.menu_canvas));
 			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
 			bg.menu_canvas = NULL;
 			}
+#endif
 		}
 	else {
 		newmenu_hide_cursor ();

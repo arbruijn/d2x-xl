@@ -3083,7 +3083,6 @@ TexMergeInit (100);		// 100 cache bitmaps
 /*---*/LogErr ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
-InitMonsterBallForces ();
 InitGame ();
 return 0;
 }

@@ -107,7 +107,7 @@ void ExplodeWall(short segnum, short sidenum);
 void DoExplodingWallFrame(void);
 void InitExplodingWalls(void);
 int MaybeDropNetPowerup(short objnum, int powerup_type, int nDropState);
-RespawnDestroyedWeapon (short nObject);
+void RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy(object *del_obj);
 void DropPowerups();
 
@@ -124,8 +124,8 @@ int CheckConquerRoom (xsegment *segP);
 void ConquerRoom (int newOwner, int oldOwner, int roomId);
 void StartConquerWarning (void);
 void StopConquerWarning (void);
-int FindMonsterBall (void);
-int CreateMonsterBall (void);
-int CheckMonsterScore (void);
+int FindMonsterball (void);
+int CreateMonsterball (void);
+int CheckMonsterballScore (void);
 
 #endif /* _FIREBALL_H */

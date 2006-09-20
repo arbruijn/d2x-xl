@@ -1554,7 +1554,7 @@ void FuelCenCheckForHoardGoal (segment *segP)
 #if TRACE
 				con_printf (CON_DEBUG,"In orb goal!\n");
 #endif
-				multi_send_orb_bonus ((char) gameData.multi.nLocalPlayer);
+				MultiSendOrbBonus ((char) gameData.multi.nLocalPlayer);
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
 				gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX]=0;
       }

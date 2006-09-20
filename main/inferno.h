@@ -1421,8 +1421,9 @@ typedef struct tHoardData {
 	tHoardItem	icon [2];
 	tHoardItem	goal;
 	tHoardItem	monsterball;
-	short			nMonsterBallSeg;
-	object		*monsterBallP;
+	short			nMonsterballSeg;
+	object		*monsterballP;
+	short			nLastHitter;
 } tHoardData;
 
 #include "hudmsg.h"

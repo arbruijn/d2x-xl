@@ -376,7 +376,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_INVUL						74
 #define MULTI_DEINVUL					75
 #define MULTI_WEAPONS					76
-#define MULTI_MAX_TYPE					76
+#define MULTI_MONSTERBALL				77
+#define MULTI_MAX_TYPE					77
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -397,6 +398,7 @@ void MultiDoFrame(void);
 
 void MultiSendFlags(char);
 void MultiSendWeapons (int bForce);
+void MultiSendMonsterball (int bForce, int bCreate);
 void MultiSendFire(void);
 void MultiSendDestroyReactor(int objnum, int player);
 void MultiSendEndLevelStart(int);
@@ -477,7 +479,7 @@ extern void MultiSendMsgQuit(void);
 extern void MultiSendTyping (void);
 
 extern int MultiPowerupIs4Pack(int );
-extern void multi_send_orb_bonus( char pnum );
+extern void MultiSendOrbBonus( char pnum );
 extern void MultiSendGotOrb( char pnum );
 extern void MultiAddLifetimeKills(void);
 

@@ -613,38 +613,19 @@ if ((otherObjP->type == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 
 //	-----------------------------------------------------------------------------
 
-double dMonsterBallForces [100];
+short nMonsterballForces [100];
 
-void InitMonsterBallForces (void)
+short nMonsterballPyroForce;
+
+void SetMonsterballForces (void)
 {
-memset (dMonsterBallForces, 0, sizeof (dMonsterBallForces));
-dMonsterBallForces [LASER_ID] = 0.1;
-dMonsterBallForces [LASER_ID + 1] = 0.15;
-dMonsterBallForces [LASER_ID + 2] = 0.2;
-dMonsterBallForces [LASER_ID + 3] = 0.25;
-dMonsterBallForces [CONCUSSION_ID] = 0.5;
-dMonsterBallForces [FLARE_ID] = 0.05;
-dMonsterBallForces [VULCAN_ID] = 0.1;
-dMonsterBallForces [SPREADFIRE_ID] = 0.2;
-dMonsterBallForces [PLASMA_ID] = 0.3;
-dMonsterBallForces [FUSION_ID] = 1.0;
-dMonsterBallForces [HOMING_ID] = 0.5;
-dMonsterBallForces [SMART_ID] = 0.8;
-dMonsterBallForces [MEGA_ID] = 1.5;
-//dMonsterBallForces [PLAYER_SMART_HOMING_ID] - smart blob?
-dMonsterBallForces [EARTHSHAKER_MEGA_ID] = 1.5;
+	int	i, h = IsMultiGame;
+	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterballForces;
 
-dMonsterBallForces [SUPER_LASER_ID] = 0.5;
-dMonsterBallForces [SUPER_LASER_ID + 1] = 0.6;
-dMonsterBallForces [GAUSS_ID] = 0.3;
-dMonsterBallForces [HELIX_ID] = 0.4;
-dMonsterBallForces [PHOENIX_ID] = 0.6;
-dMonsterBallForces [OMEGA_ID] = 0.3;
-
-dMonsterBallForces [FLASH_ID] = 0.3;
-dMonsterBallForces [GUIDEDMISS_ID] = 0.4;
-dMonsterBallForces [MERCURY_ID] = 0.7;
-dMonsterBallForces [EARTHSHAKER_ID] = 2.0;
+memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
+for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
+	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
+nMonsterballPyroForce = forceP->nForce;
 }
 
 //	-----------------------------------------------------------------------------
@@ -685,14 +666,23 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 			PhysApplyRot (objP, &vRotForce);
 			}	
 		else if ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL)) {
-			double mq = (otherObjP->type == OBJ_PLAYER) ?
-							(double) otherObjP->mtype.phys_info.mass / (double) objP->mtype.phys_info.mass * 2.0
-							: dMonsterBallForces [otherObjP->id] * ((double) F1_0 / (double) otherObjP->mtype.phys_info.mass) * 10.0;
+			double mq;
+			
+			if (otherObjP->type == OBJ_PLAYER) {
+				gameData.hoard.nLastHitter = OBJ_IDX (otherObjP);
+				mq = (double) otherObjP->mtype.phys_info.mass / (double) objP->mtype.phys_info.mass * nMonsterballPyroForce;
+				}
+			else {
+				gameData.hoard.nLastHitter = otherObjP->ctype.laser_info.parent_num;
+				mq = (double) nMonsterballForces [otherObjP->id] * ((double) F1_0 / (double) otherObjP->mtype.phys_info.mass) / 10.0;
+				}
 			vRotForce.x = (fix) ((double) vForce->x * mq);
 			vRotForce.y = (fix) ((double) vForce->y * mq);
 			vRotForce.z = (fix) ((double) vForce->z * mq);
 			PhysApplyForce (objP, &vRotForce);
 			PhysApplyRot (objP, &vRotForce);
+			if (gameData.hoard.nLastHitter == gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
+				MultiSendMonsterball (1, 0);
 			}
 		else
 			return;
@@ -1986,7 +1976,7 @@ fix	Last_time_buddy_gave_hint = 0;
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if damage done to boss, else return false.
-int do_bossWeapon_collision (object *robot, object *weapon, vms_vector *vHitPt)
+int DoBossWeaponCollision (object *robot, object *weapon, vms_vector *vHitPt)
 {
 	int	d2_boss_index;
 	int	bDamage;
@@ -2116,7 +2106,7 @@ void CollideRobotAndWeapon (object * robot, object * weapon, vms_vector *vHitPt)
 	if (rInfoP->boss_flag) {
 		gameData.boss.nHitTime = gameData.app.xGameTime;
 		if (rInfoP->boss_flag >= BOSS_D2) {
-			bDamage = do_bossWeapon_collision (robot, weapon, vHitPt);
+			bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
 			boss_invul_flag = !bDamage;
 		}
 	}

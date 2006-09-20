@@ -3191,6 +3191,7 @@ if (Debug_slowdown) {
 	AutoBalanceTeams ();
 	MultiSendTyping ();
 	MultiSendWeapons (0);
+	//MultiSendMonsterball (0, 0);
 	UpdatePlayerStats ();
 	DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.
 //LogErr ("DoAfterburnerStuff\n");
@@ -3245,7 +3246,7 @@ if (Debug_slowdown) {
 	if (gameData.app.nGameMode & GM_MULTI) {
 		AddServerToTracker ();
       MultiDoFrame ();
-		CheckMonsterBallScore ();
+		CheckMonsterballScore ();
 		if (netGame.PlayTimeAllowed && ThisLevelTime>=i2f ((netGame.PlayTimeAllowed*5*60)))
           MultiCheckForKillGoalWinner ();
 		else 

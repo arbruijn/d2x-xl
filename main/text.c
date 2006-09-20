@@ -1570,8 +1570,8 @@ char *defaultGameTexts [][2] = {
 	 "Couldn't find team goals.\nSwitching to Team Anarchy."},
 	{"Konnte keinen Monsterball erzeugen.\nSchalte zu Team-Anarchie um.", 
 	 "Couldn't create Monsterball object.\nSwitching to Team Anarchy."},
+	{"Monster~Ball-Optionen...", "Monster~Ball Options..."},
 #if 0
-	{"", ""},
 	{"", ""},
 	{"", ""},
 	{"", ""},
@@ -1960,6 +1960,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, player messages will be shown in a separate screen\narea below the regular game messages."},
 	{"Spieltyp 'Monsterball' auswaehlen: Monsterball stammt eigentlich aus\nDescent 3. Es geht darum, einen riesigen Ball mit Schüssen und\ndurch Rammen in das Ziel zu bugsieren.", 
 	 "Chose a 'Monsterball' game: This game mode was actually introduced\nwith Descent 3. The rules are simple: Move a giant ball into the\ngoal by shooting and ramming it."},
+	{"Menue der Monsterball-Einstellungen aufrufen.", 
+	 "Invoke the Monsterball settings menu."},
 #if 0
 	{"", ""},
 	{"", ""},
