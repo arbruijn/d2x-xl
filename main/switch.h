@@ -149,9 +149,8 @@ typedef struct v30_trigger {
 //flags bits are exclusive of the others.
 typedef struct trigger {
 	ubyte   type;       //what this trigger does
-	ubyte   flags;      //currently unused
+	short   flags;      //currently unused
 	sbyte   num_links;  //how many doors, etc. linked to this
-	sbyte   pad;        //keep alignment
 	fix     value;
 	fix     time;
 	short   seg[MAX_WALLS_PER_LINK];
@@ -181,7 +180,7 @@ void ExecObjTriggers (short objnum);
 #ifdef FAST_FILE_IO
 #define v29_trigger_read(t, fp) CFRead(t, sizeof(v29_trigger), 1, fp)
 #define v30_trigger_read(t, fp) CFRead(t, sizeof(v30_trigger), 1, fp)
-#define trigger_read(t, fp) CFRead(t, sizeof(trigger), 1, fp)
+#define TriggerRead(t, fp) CFRead(t, sizeof(trigger), 1, fp)
 #else
 /*
  * reads a v29_trigger structure from a CFILE
@@ -196,7 +195,7 @@ void v30_trigger_read(v30_trigger *t, CFILE *fp);
 /*
  * reads a trigger structure from a CFILE
  */
-void trigger_read(trigger *t, CFILE *fp);
+void TriggerRead(trigger *t, CFILE *fp, int bObjTrigger);
 #endif
 
 void SetSpeedBoostVelocity (short objnum, fix speed, 

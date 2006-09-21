@@ -248,7 +248,7 @@ nCacheEntries = 0;
 //--unused-- int info_printed = 0;
 grs_bitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop)
 {
-	grs_bitmap		*bmTop, *bmBot, *bmp;
+	grs_bitmap		*bmTop, *bmBot, *bmP;
 	int				i, nOrient, nLowestFrame, nLRU;
 	TEXTURE_CACHE	*cacheP;
 
@@ -281,7 +281,6 @@ nCacheMisses++;
 // Make sure the bitmaps are paged in...
 #ifdef PIGGY_USE_PAGING
 gameData.pig.tex.bPageFlushed = 0;
-
 PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop], gameStates.app.bD1Mission);
 PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot], gameStates.app.bD1Mission);
 if (gameData.pig.tex.bPageFlushed)	{	// If cache got flushed, re-read 'em.
@@ -289,49 +288,54 @@ if (gameData.pig.tex.bPageFlushed)	{	// If cache got flushed, re-read 'em.
 	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop], gameStates.app.bD1Mission);
 	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot], gameStates.app.bD1Mission);
 	}
-Assert( gameData.pig.tex.bPageFlushed == 0 );
+Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
 
 bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index);
 bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapBot].index);
+if (!bmTop->bm_palette)
+	bmTop->bm_palette = gamePalette;
+if (!bmBot->bm_palette)
+	bmBot->bm_palette = gamePalette;
 cacheP = texCache + nLRU;
-bmp = cacheP->bitmap;
+bmP = cacheP->bitmap;
 #ifdef OGL
-if (bmp)
-	OglFreeBmTexture(bmp);
+if (bmP)
+	OglFreeBmTexture(bmP);
 #endif
 
 // if necessary, allocate cache bitmap
 // in any case make sure the cache bitmap has the proper size
-if (!bmp ||
-	(bmp->bm_props.w != bmBot->bm_props.w) || 
-	(bmp->bm_props.h != bmBot->bm_props.h)) {
-	if (bmp)
-		GrFreeBitmap (bmp);
+if (!bmP ||
+	(bmP->bm_props.w != bmBot->bm_props.w) || 
+	(bmP->bm_props.h != bmBot->bm_props.h)) {
+	if (bmP)
+		GrFreeBitmap (bmP);
 	cacheP->bitmap =
-	bmp = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 1);
+	bmP = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 1);
 	}
 else
-	bmp->bm_props.flags = (char) BM_FLAG_TGA;
+	bmP->bm_props.flags = (char) BM_FLAG_TGA;
+bmP->bm_palette = gamePalette;
 if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 	if (bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) {
 //			return bmTop;
-		MergeTextures (nOrient, bmBot, bmTop, bmp, 1);
-		bmp->bm_props.flags |= BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT;
-		bmp->avg_color = bmTop->avg_color;
+		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
+		bmP->bm_props.flags |= BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT;
+		bmP->avg_color = bmTop->avg_color;
 		}
 	else {
-//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmp->bm_texBuf);
-		MergeTextures (nOrient, bmBot, bmTop, bmp, 0);
-		bmp->bm_props.flags |= bmBot->bm_props.flags & (~BM_FLAG_RLE);
-		bmp->avg_color = bmBot->avg_color;
+//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->bm_texBuf);
+		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
+		bmP->bm_props.flags |= bmBot->bm_props.flags & (~BM_FLAG_RLE);
+		bmP->avg_color = bmBot->avg_color;
 		}
 	}
 cacheP->bmTop = bmTop;
 cacheP->bmBot = bmBot;
 cacheP->last_frame_used = gameData.app.nFrameCount;
 cacheP->nOrient = nOrient;
-return bmp;
+return bmP;
 }
 
 //-------------------------------------------------------------------------
@@ -446,7 +450,7 @@ void MergeTextures (
 	frac		topScale, btmScale;
 	tRGBA		*dest_data = (tRGBA *) dest_bmp->bm_texBuf;
 
-	ubyte * top_data, *bottom_data, *top_pal, *bottom_pal;
+	ubyte * top_data, *bottom_data, *top_pal, *btmPalette;
 
 bmBot = BmOverride (bmBot);
 bmTop = BmOverride (bmTop);
@@ -463,7 +467,7 @@ if (bmBot->bm_props.flags & BM_FLAG_RLE)
 top_data = bmTop->bm_texBuf;
 bottom_data = bmBot->bm_texBuf;
 top_pal = bmTop->bm_palette;
-bottom_pal = bmBot->bm_palette;
+btmPalette = bmBot->bm_palette;
 
 //	Assert( bottom_data != top_data );
 
@@ -512,7 +516,7 @@ switch( type )	{
 			for (x = 0; x < dw; x++, i++) {
 				c = C (top_pal, top_data, tw * TOPSCALE (y) + TOPSCALE (x), bTopTGA, &bST);
 				if (!(bST || c->a))
-					c = C (bottom_pal, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -522,7 +526,7 @@ switch( type )	{
 			for (x = 0; x < dw; x++, i++) {
 				c = C (top_pal, top_data, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopTGA, &bST);
 				if (!(bST || c->a))
-					c = C (bottom_pal, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -532,7 +536,7 @@ switch( type )	{
 			for (x = 0; x < dw; x++, i++) {
 				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopTGA, &bST);
 				if (!(bST || c->a))
-					c = C (bottom_pal, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -542,7 +546,7 @@ switch( type )	{
 			for (x = 0; x < dw; x++, i++) {
 				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopTGA, &bST);
 				if (!(bST || c->a))
-					c = C (bottom_pal, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
 				dest_data [i] = *c;
 			}
 		break;

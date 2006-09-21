@@ -1339,7 +1339,7 @@ i = CFTell (LoadFile);
 		if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
 			for (i=0;i<gameFileInfo.triggers.count;i++) {
 				if (gameTopFileInfo.fileinfo_version >= 31) 
-					trigger_read(gameData.trigs.triggers + i, LoadFile);
+					TriggerRead(gameData.trigs.triggers + i, LoadFile, 0);
 				else {
 					v30_trigger trig;
 					int t,type,flags;
@@ -1411,18 +1411,21 @@ i = CFTell (LoadFile);
 					}
 				}
 			}
+		i = CFTell (LoadFile);
 		if (gameTopFileInfo.fileinfo_version >= 33) {
 			gameData.trigs.nObjTriggers = CFReadInt (LoadFile);
 			if (gameData.trigs.nObjTriggers) {
 				for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-					trigger_read (gameData.trigs.objTriggers + i, LoadFile);
+					TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
 				for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
 					gameData.trigs.objTriggerRefs [i].prev = CFReadShort (LoadFile);
 					gameData.trigs.objTriggerRefs [i].next = CFReadShort (LoadFile);
 					gameData.trigs.objTriggerRefs [i].objnum = CFReadShort (LoadFile);
 					}
 				}
-			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), MAX_OBJECTS_D2X, LoadFile);
+			i = CFTell (LoadFile);
+			for (i = 0; i < MAX_OBJECTS_D2X; i++)
+				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
 			}
 		else {
 			gameData.trigs.nObjTriggers = 0;

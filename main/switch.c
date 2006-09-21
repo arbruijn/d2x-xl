@@ -1216,14 +1216,17 @@ for (i=0; i<MAX_WALLS_PER_LINK; i++ )
 /*
  * reads a trigger structure from a CFILE
  */
-extern void trigger_read(trigger *t, CFILE *fp)
+extern void TriggerRead(trigger *t, CFILE *fp, int bObjTrigger)
 {
 	int i;
 
 t->type = CFReadByte(fp);
-t->flags = CFReadByte(fp);
+if (bObjTrigger)
+	t->flags = (short) CFReadShort(fp);
+else
+	t->flags = (short) CFReadByte(fp);
 t->num_links = CFReadByte(fp);
-t->pad = CFReadByte(fp);
+CFReadByte(fp);
 t->value = CFReadFix(fp);
 t->time = CFReadFix(fp);
 for (i=0; i<MAX_WALLS_PER_LINK; i++ )

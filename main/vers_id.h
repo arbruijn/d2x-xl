@@ -8,7 +8,7 @@
 #define _VERS_ID
 
 #ifndef VERSION
-#	define VERSION "1.7.4"
+#	define VERSION "1.7.5"
 #endif
 
 #define D2X_NAME		"D2X-XL "
@@ -20,7 +20,7 @@
 #define D2X_MINOR		7
 #endif
 #ifndef D2X_MICRO
-#define D2X_MICRO		4
+#define D2X_MICRO		5
 #endif
 
 #define VERSION_TYPE		"Full Version"
