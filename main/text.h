@@ -1719,8 +1719,8 @@ void LoadGameTexts(void);
 #define TXT_NO_MONSTERBALL			GT(774)
 #define TXT_MONSTERBALL_OPTS		GT(775)
 #define TXT_GOAL_BONUS				GT(776)
+#define TXT_MBALL_SIZE				GT(777)
 #if 0
-#define TXT_				GT(777)
 #define TXT_				GT(778)
 #define TXT_				GT(779)
 #define TXT_				GT(780)
@@ -2056,10 +2056,10 @@ void LoadGameTexts(void);
 #define HTX_MULTI_MONSTERBALL	HT(193)				
 #define HTX_MULTI_MBALLOPTS	HT(194)				
 #define HTX_GOAL_BONUS			HT(195)				
+#define HTX_MBALL_SIZE			HT(196)				
 
 #if 0
 				
-#define HTX_				HT(196)				
 #define HTX_				HT(197)				
 #define HTX_				HT(198)				
 #define HTX_				HT(199)				

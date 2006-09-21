@@ -1572,8 +1572,8 @@ char *defaultGameTexts [][2] = {
 	 "Couldn't create Monsterball object.\nSwitching to Team Anarchy."},
 	{"Monster~Ball-Optionen...", "Monster~Ball Options..."},
 	{"Tor-~Bonus: %d", "Goal ~Bonus: %d"},
+	{"Monsterball-~Groesse: %d.%d", "Monsterball ~Size: %d.%d"},
 #if 0
-	{"", ""},
 	{"", ""},
 	{"", ""},
 #endif
@@ -1965,8 +1965,9 @@ char *defaultHelpTexts [][2] = {
 	 "Invoke the Monsterball settings menu."},
 	{"Hier kann man einstellen, wieviele Punkte ein Spieler und sein Team\nerhalten, wenn sie ein Tor erzielen.", 
 	 "Here you can adjust how many points a player and his team receive\nfor scoring a goal."},
+	{"Hier kann die Groesse des Monsterballs im Vergleich zur Schildkugel\neingestellt werden. Achtung: Ab einer Groesse von 4 passt\nder Ball nicht mehr in ein Standardsegment!", 
+	 "Here you can set the size of the Monsterball compared to a shield\norb. Beware: A ball of size 4 or bigger does not fit in a\nstandard segment any more!"},
 #if 0
-	{"", ""},
 	{"", ""},
 	{"", ""},
 	{"", ""},

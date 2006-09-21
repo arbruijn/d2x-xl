@@ -814,7 +814,7 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 //------------------------------------------------------------------------------
 
-static int nBonusOpt;
+static int nBonusOpt, nSizeModOpt;
 
 void MonsterballMenuCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
@@ -826,6 +826,15 @@ v = m->value + 1;
 if (v != extraGameInfo [0].nMonsterballBonus) {
 	extraGameInfo [0].nMonsterballBonus = v;
 	sprintf (m->text, TXT_GOAL_BONUS, v);
+	m->rebuild = 1;
+	//*key = -2;
+	return;
+	}
+m = menus + nSizeModOpt;
+v = m->value + 2;
+if (v != extraGameInfo [0].nMonsterballSizeMod) {
+	extraGameInfo [0].nMonsterballSizeMod = v;
+	sprintf (m->text, TXT_MBALL_SIZE, v / 2, (v & 1) ? 5 : 0);
 	m->rebuild = 1;
 	//*key = -2;
 	return;
@@ -908,9 +917,9 @@ extern short nMonsterballPyroForce;
 
 void NetworkMonsterballOptions (void)
 {
-	newmenu_item		m [31];
+	newmenu_item		m [35];
 	int					h, i, j, opt = 0, optPyroForce, optDefaultForces;
-	char					szBonus [60];
+	char					szBonus [60], szSize [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterballForces;
 
 h = sizeofa (optionToWeaponId);
@@ -934,6 +943,11 @@ sprintf (szBonus + 1, TXT_GOAL_BONUS, extraGameInfo [0].nMonsterballBonus);
 *szBonus = *(TXT_GOAL_BONUS - 1);
 ADD_SLIDER (opt, szBonus + 1, extraGameInfo [0].nMonsterballBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
 nBonusOpt = opt++;
+i = extraGameInfo [0].nMonsterballSizeMod;
+sprintf (szSize + 1, TXT_MBALL_SIZE, i / 2, (i & 1) ? 5 : 0);
+*szSize = *(TXT_MBALL_SIZE - 1);
+ADD_SLIDER (opt, szSize + 1, extraGameInfo [0].nMonsterballSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
+nSizeModOpt = opt++;
 ADD_TEXT (opt, "", 0);
 opt++;
 ADD_MENU (opt, "Set default values", 0, NULL);
@@ -959,6 +973,9 @@ pf = extraGameInfo [0].monsterballForces;
 for (i = 0; i < h; i++, pf++)
 	pf->nForce = nOptionToForce [m [i].value];
 pf->nForce = m [optPyroForce].value + 1;
+extraGameInfo [0].nMonsterballSizeMod = (m [nSizeModOpt].value + 1) * 2;
+gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
+	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [1].nMonsterballSizeMod) / 2;
 }
 
 //------------------------------------------------------------------------------

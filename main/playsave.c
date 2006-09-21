@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					115	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					116	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -1020,6 +1020,7 @@ for (j = 0; j < 1; j++) {
 	if (player_file_version >= 114) {
 		gameOptions [j].input.joyDeadZones [4] = (int) CFReadByte (fp);
 		gameOptions [j].input.joySensitivity [4] = CFReadByte (fp);
+		}
 	if (player_file_version >= 115)
 		if (!j) {
 			tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
@@ -1029,7 +1030,9 @@ for (j = 0; j < 1; j++) {
 				pf->nForce = CFReadShort (fp);
 				}
 			}
-		}
+	if (player_file_version >= 116)
+		if (!j)
+			extraGameInfo [0].nMonsterballSizeMod = CFReadByte (fp);
 	}
 if (errno_ret == EZERO)
 	KCSetControls();
@@ -1433,6 +1436,8 @@ for (j = 0; j < 1; j++) {
 			CFWriteShort (pf->nForce, fp);
 			}
 		}
+	if (!j)
+		CFWriteByte (extraGameInfo [0].nMonsterballSizeMod, fp);
 // end of D2X-XL stuff
 	}
 
