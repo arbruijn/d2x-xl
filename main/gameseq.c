@@ -2166,9 +2166,10 @@ if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		gameData.multi.players [i].flags |= netGame.player_flags [i];
 }
-if (gameData.app.nGameMode & GM_MULTI) {
+if (gameData.app.nGameMode & GM_MULTI)
 	MultiPrepLevel (); // Removes robots from level if necessary
-}
+else
+	FindMonsterball (); //will simply remove all Monsterballs
 #endif
 gameseq_remove_unused_players ();
 gameStates.app.bGameSuspended = 0;

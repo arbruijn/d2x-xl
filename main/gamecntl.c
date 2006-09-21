@@ -1311,9 +1311,11 @@ int HandleSystemKey(int key)
 			break;		// send taunt macros
 			
 		case KEY_ALTED + KEY_F12:
+#ifndef _DEBUG		
 			if (!IsMultiGame || IsCoopGame)
+#endif			
 				gameStates.render.bExternalView = !gameStates.render.bExternalView;
-				ResetMovementPath ();
+			ResetMovementPath ();
 			break;
 
 		case KEY_SHIFTED + KEY_F9:

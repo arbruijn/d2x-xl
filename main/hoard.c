@@ -92,7 +92,7 @@ if (altBmP && ReadTGA ("mball01#0.tga", gameFolders.szTextureDir [0], &gameData.
 ptP = gameData.objs.pwrUp.info + POW_MONSTERBALL;
 ptP->nClipIndex = gameData.hoard.monsterball.nClip;
 ptP->hit_sound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hit_sound;
-ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * 4;
+ptP->size = (gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * 7) / 2;
 ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
 return nBitmap;
 }

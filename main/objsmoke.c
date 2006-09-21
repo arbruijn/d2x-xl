@@ -258,7 +258,11 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 void DoSmokeFrame (void)
 {
+#ifdef _DEBUG
+if (!gameStates.render.bExternalView)
+#else
 if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame))
+#endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
 RobotSmokeFrame ();
 if (SHOW_SMOKE)

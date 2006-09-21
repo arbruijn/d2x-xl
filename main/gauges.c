@@ -3999,7 +3999,11 @@ void ShowReticle(int force_big_one)
 	Assert(nPrimaryBm <= 2);
 	Assert(nSecondaryBm <= 4);
 	Assert(nCrossBm <= 1);
+#ifdef _DEBUG
+	if (gameStates.render.bExternalView)
+#else	
 	if (gameStates.render.bExternalView && !IsMultiGame)
+#endif	
 		return;
 #ifdef OGL
       if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bitmap.bm_props.w > 320)){                

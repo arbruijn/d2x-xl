@@ -632,23 +632,35 @@ nMonsterballPyroForce = forceP->nForce;
 
 void BumpThisObject (object *objP, object *otherObjP, vms_vector *vForce, int bDamage)
 {
-	fix xForceMag;
+	fix			xForceMag;
+	vms_vector	vRotForce, v;
+	fix			a;
 
 if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 	if (objP->type == OBJ_PLAYER) {
-		vms_vector force2;
-		force2.x = vForce->x / 4;
-		force2.y = vForce->y / 4;
-		force2.z = vForce->z / 4;
-		PhysApplyForce (objP, &force2);
-		if (bDamage && ((otherObjP->type != OBJ_ROBOT) || !gameData.bots.pInfo [otherObjP->id].companion)) {
-			xForceMag = VmVecMagQuick (&force2);
-			ApplyForceDamage (objP, xForceMag, otherObjP);
+		if ((otherObjP->type == OBJ_POWERUP) && (otherObjP->id == POW_MONSTERBALL)) {
+			double mq;
+			
+			mq = (double) otherObjP->mtype.phys_info.mass / ((double) objP->mtype.phys_info.mass * (double) nMonsterballPyroForce);
+			vRotForce.x = (fix) ((double) vForce->x * mq);
+			vRotForce.y = (fix) ((double) vForce->y * mq);
+			vRotForce.z = (fix) ((double) vForce->z * mq);
+			PhysApplyForce (objP, vForce);
+			//PhysApplyRot (objP, &vRotForce);
+			}
+		else {
+			vms_vector force2;
+			force2.x = vForce->x / 4;
+			force2.y = vForce->y / 4;
+			force2.z = vForce->z / 4;
+			PhysApplyForce (objP, &force2);
+			if (bDamage && ((otherObjP->type != OBJ_ROBOT) || !gameData.bots.pInfo [otherObjP->id].companion)) {
+				xForceMag = VmVecMagQuick (&force2);
+				ApplyForceDamage (objP, xForceMag, otherObjP);
+				}
 			}
 		}
 	else {
-		vms_vector vRotForce;
-
 		if (objP->type == OBJ_ROBOT) {
 			if (gameData.bots.pInfo [objP->id].boss_flag)
 				return;
@@ -670,7 +682,7 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 			
 			if (otherObjP->type == OBJ_PLAYER) {
 				gameData.hoard.nLastHitter = OBJ_IDX (otherObjP);
-				mq = (double) otherObjP->mtype.phys_info.mass / (double) objP->mtype.phys_info.mass * nMonsterballPyroForce;
+				mq = ((double) otherObjP->mtype.phys_info.mass * (double) nMonsterballPyroForce) / (double) objP->mtype.phys_info.mass;
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->ctype.laser_info.parent_num;
@@ -680,7 +692,7 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 			vRotForce.y = (fix) ((double) vForce->y * mq);
 			vRotForce.z = (fix) ((double) vForce->z * mq);
 			PhysApplyForce (objP, &vRotForce);
-			PhysApplyRot (objP, &vRotForce);
+			//PhysApplyRot (objP, &vRotForce);
 			if (gameData.hoard.nLastHitter == gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
 				MultiSendMonsterball (1, 0);
 			}
@@ -698,10 +710,10 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 //deal with two gameData.objs.objects bumping into each other.  Apply vForce from collision
 //to each robot.  The flags tells whether the gameData.objs.objects should take damage from
 //the collision.
-void BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
+int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
 	vms_vector	vForce, v0, v1;
-	fixang		angle;
+	fixang		angle, mag;
 	object		*t;
 
 	static int nCallDepth = 0;
@@ -719,18 +731,24 @@ if (t) {
 #endif
 	PhysApplyForce (t, &vForce);
 	//MoveOneObject (t);
-	return;
+	return 1;
 	}
-VmVecSub (&v0, vHitPt, &objP0->pos);
-VmVecSub (&v1, vHitPt, &objP1->pos);
-angle = VmVecDeltaAng (&v0, &v1, NULL);
+VmVecSub (&v1, &objP1->pos, &objP0->pos);
+angle = VmVecDeltaAng (&v1, &objP0->mtype.phys_info.velocity, NULL);
+if (angle >= F1_0 / 4)
+	return 0;	// don't bump if moving away
 VmVecSub (&vForce, &objP0->mtype.phys_info.velocity, &objP1->mtype.phys_info.velocity);
 VmVecScaleFrac (&vForce, 
 					 2 * fixmul (objP0->mtype.phys_info.mass, objP1->mtype.phys_info.mass), 
 					 objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass);
+mag = VmVecMag (&vForce);
+if (mag < (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200)
+	return 0;	// don't bump if force too low
+//HUDMessage (0, "%d %d", mag, (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200);
 BumpThisObject (objP1, objP0, &vForce, bDamage);
 VmVecNegate (&vForce);
 BumpThisObject (objP0, objP1, &vForce, bDamage);
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1501,8 +1519,8 @@ void CollideRobotAndRobot (object * robotP1, object * robotP2, vms_vector *vHitP
 //		robot2-gameData.objs.objects, f2i (robot2->pos.x), f2i (robot2->pos.y), f2i (robot2->pos.z), 
 //		f2i (vHitPt->x), f2i (vHitPt->y), f2i (vHitPt->z));
 
-	BumpTwoObjects (robotP1, robotP2, 1, vHitPt);
-	return; 
+BumpTwoObjects (robotP1, robotP2, 1, vHitPt);
+return; 
 }
 
 //	-----------------------------------------------------------------------------
@@ -1671,15 +1689,13 @@ void ApplyDamageToReactor (object *controlcen, fix damage, short who)
 
 void CollidePlayerAndReactor (object * controlcen, object * playerObjP, vms_vector *vHitPt)
 { 
-	if (playerObjP->id == gameData.multi.nLocalPlayer) {
-		gameData.reactor.bHit = 1;
-		AIDoCloakStuff ();				//	In case player cloaked, make control center know where he is.
+if (playerObjP->id == gameData.multi.nLocalPlayer) {
+	gameData.reactor.bHit = 1;
+	AIDoCloakStuff ();				//	In case player cloaked, make control center know where he is.
 	}
-
+if (BumpTwoObjects (controlcen, playerObjP, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->segnum, 0, vHitPt, 0, F1_0);
-	BumpTwoObjects (controlcen, playerObjP, 1, vHitPt);
-
-	return; 
+return; 
 }
 
 //	-----------------------------------------------------------------------------
@@ -2319,10 +2335,10 @@ void CollideHostageAndPlayer (object * hostage, object * player, vms_vector *vHi
 
 void CollidePlayerAndPlayer (object * player1, object * player2, vms_vector *vHitPt) 
 { 
-DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, player1->segnum, 0, vHitPt, 0, F1_0);
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [player1->segnum].special == SEGMENT_IS_NODAMAGE))
 	return;
-BumpTwoObjects (player1, player2, 1, vHitPt);
+if (BumpTwoObjects (player1, player2, 1, vHitPt))
+	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, player1->segnum, 0, vHitPt, 0, F1_0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -2777,11 +2793,11 @@ return;
 void CollidePlayerAndNastyRobot (object * playerObjP, object * robot, vms_vector *vHitPt)
 {
 //	if (!(gameData.bots.pInfo [robot->id].energy_drain && gameData.multi.players [playerObjP->id].energy))
-		DigiLinkSoundToPos (gameData.bots.pInfo [robot->id].claw_sound, playerObjP->segnum, 0, vHitPt, 0, F1_0);
-	ObjectCreateExplosion (playerObjP->segnum, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
-	BumpTwoObjects (playerObjP, robot, 0, vHitPt);	//no damage from bump
+ObjectCreateExplosion (playerObjP->segnum, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
+if (BumpTwoObjects (playerObjP, robot, 0, vHitPt))	{//no damage from bump
+	DigiLinkSoundToPos (gameData.bots.pInfo [robot->id].claw_sound, playerObjP->segnum, 0, vHitPt, 0, F1_0);
 	ApplyDamageToPlayer (playerObjP, robot, F1_0* (gameStates.app.nDifficultyLevel+1));
-	return; 
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -2854,8 +2870,8 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(playerObjP->id == gameData.multi.nLocalPlayer)) {
 	int bPowerupUsed;
 	if (powerup->id == POW_MONSTERBALL) {
-		DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->segnum, 0, vHitPt, 0, F1_0);
-		BumpTwoObjects (playerObjP, powerup, 0, vHitPt);
+		if (BumpTwoObjects (playerObjP, powerup, 0, vHitPt))
+			DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->segnum, 0, vHitPt, 0, F1_0);
 		return;
 		}
 	if (bPowerupUsed = DoPowerup (powerup, playerObjP->id)) {
@@ -2893,11 +2909,10 @@ else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData
 
 void CollidePlayerAndClutter (object * playerObjP, object * clutter, vms_vector *vHitPt) 
 { 
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->segnum].special == SEGMENT_IS_NODAMAGE))
-		return;
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->segnum].special == SEGMENT_IS_NODAMAGE))
+	return;
+if (BumpTwoObjects (clutter, playerObjP, 1, vHitPt))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->segnum, 0, vHitPt, 0, F1_0);
-	BumpTwoObjects (clutter, playerObjP, 1, vHitPt);
-	return; 
 }
 
 //	-----------------------------------------------------------------------------

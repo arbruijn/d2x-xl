@@ -1108,7 +1108,11 @@ void RenderObject (object *objP, int nWindowNum)
 
 if ((objP == gameData.objs.viewer) && 
 	 (gameStates.render.nShadowPass != 2) && 
+#ifdef _DEBUG
+	 (!gameStates.render.bExternalView || nWindowNum)) {
+#else	 
 	 ((IsMultiGame && !IsCoopGame) || !gameStates.render.bExternalView || nWindowNum)) {
+#endif	 	
 	DoPlayerSmoke (objP, -1);
 	return;		
 	}

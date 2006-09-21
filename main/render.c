@@ -2868,7 +2868,11 @@ else {
 				}
 			}
 		if ((gameData.objs.viewer == gameData.objs.console) && 
+#ifdef _DEBUG
+			 gameStates.render.bExternalView) {
+#else		
 			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame)) {
+#endif			 	
 #if 1
 			SetPathPoint ();
 			GetViewPoint ();
@@ -2911,7 +2915,11 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	gameStates.render.nShadowPass = 3;
 	OglStartFrame (0, 0);
 	if (gameStates.render.bShadowMaps) {
+#ifdef _DEBUG
+		if (gameStates.render.bExternalView)
+#else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame))
+#endif			 	
 			G3SetViewMatrix (&viewerEye, pPathPos ? &pPathPos->orient : &gameData.objs.viewer->orient, nRenderZoom);
 		else
 			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, fixdiv (nRenderZoom, gameStates.render.nZoomFactor));

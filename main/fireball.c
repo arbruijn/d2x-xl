@@ -2054,7 +2054,7 @@ int FindMonsterball (void)
 gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
-for (i = gameData.objs.nObjects, objP = gameData.objs.objects; i; i--, objP++)
+for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP++)
 	if ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL)) {
 		if (gameData.hoard.nMonsterballSeg < 0)
 			gameData.hoard.nMonsterballSeg = objP->segnum;
