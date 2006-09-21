@@ -221,17 +221,17 @@ extern matcen_info RobotCenters[MAX_ROBOT_CENTERS];
 
 // Called when a materialization center gets triggered by the player
 // flying through some trigger!
-extern void MatCenTrigger (short segnum);
+void MatCenTrigger (short segnum);
 
-extern void DisableMatCens (void);
+void DisableMatCens (void);
 
-extern void InitAllMatCens (void);
+void InitAllMatCens (void);
 
 void FuelCenCheckForHoardGoal(segment *segp);
 
 #ifdef FAST_FILE_IO
 #define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_matcen_info), 1, fp)
-#define MatCenInfoRead (mi, fp) CFRead(mi, sizeof(matcen_info), 1, fp)
+#define MatCenInfoRead(mi, fp) CFRead(mi, sizeof(matcen_info), 1, fp)
 #else
 /*
  * reads an old_matcen_info structure from a CFILE

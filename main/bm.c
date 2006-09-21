@@ -303,7 +303,7 @@ void BMReadAll (CFILE * fp)
 
 	gameData.reactor.nReactors = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
-	reactor_read_n (gameData.reactor.reactors, gameData.reactor.nReactors, fp);
+	ReactorReadN (gameData.reactor.reactors, gameData.reactor.nReactors, fp);
 
 	Marker_model_num = CFReadInt (fp);
 

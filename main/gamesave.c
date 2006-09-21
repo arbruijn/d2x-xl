@@ -1442,7 +1442,7 @@ i = CFTell (LoadFile);
 		if (!CFSeek(LoadFile, gameFileInfo.control.offset, SEEK_SET))
 		{
 			Assert(gameFileInfo.control.size == sizeof(reactor_triggers));
-			control_center_triggers_read_n(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
+			ControlCenterTriggersReadN(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
 		}
 	}	
 

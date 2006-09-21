@@ -4419,7 +4419,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].entropy.bBrightenRooms = 0;
 	extraGameInfo [i].entropy.bPlayerHandicap = 0;
 	extraGameInfo [i].nMonsterballBonus = 1;
-	extraGameInfo [i].nMonsterballSizeMod = 6;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
+	extraGameInfo [i].nMonsterballSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
 	InitMonsterballForces (extraGameInfo [i].monsterballForces);
 	}
 }

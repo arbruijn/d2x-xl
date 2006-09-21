@@ -419,7 +419,7 @@ void LoadStars (bkg *bg, int bRedraw);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);
-void AdvanceLevel (int bSecret);
+void AdvanceLevel (int bSecret, int bFromSecret);
 void FilterObjectsFromLevel ();
 
 // From allender -- you'll find these defines in state.c and cntrlcen.c
@@ -1630,16 +1630,21 @@ if (!gameData.reactor.bDestroyed)
 if (CFExist (SECRETB_FILENAME, gameFolders.szSaveDir,0)) {
 	int	pw_save, sw_save;
 
-	if (!gameStates.app.bD1Mission)
-		ReturningToLevelMessage ();
 	pw_save = gameData.weapons.nPrimary;
 	sw_save = gameData.weapons.nSecondary;
+	if (gameStates.app.bD1Mission)
+		DoEndLevelScoreGlitz (0);
+	else
+		ReturningToLevelMessage ();
 	StateRestoreAll (1, 1, SECRETB_FILENAME);
 	gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 	if (gameStates.app.bD1Mission) {
+		AdvanceLevel (0, 1);			//if finished, go on to next level
+#if 0
 		gameData.app.bGamePaused = 1;
 		ReturningToLevelMessage ();
 		gameData.app.bGamePaused = 0;
+#endif
 		}
 	SetDataVersion (-1);
 	gameData.weapons.nPrimary = pw_save;
@@ -1651,7 +1656,7 @@ else {
 		DoEndGame ();
 	else {
 		AdvancingToLevelMessage ();
-		StartNewLevel (gameData.missions.nEnteredFromLevel+1, 0);
+		StartNewLevel (gameData.missions.nEnteredFromLevel + 1, 0);
 		}
 	}
 }
@@ -1723,7 +1728,7 @@ last_drawn_cockpit [1] = -1;
 if (gameData.missions.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
-	AdvanceLevel (0);				//now go on to the next one (if one)
+	AdvanceLevel (0, 0);				//now go on to the next one (if one)
 }
 
 //------------------------------------------------------------------------------
@@ -1834,52 +1839,50 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 //called to go to the next level (if there is one)
 //if bSecret is true, advance to secret level, else next normal one
 //	Return true if game over.
-void AdvanceLevel (int bSecret)
+void AdvanceLevel (int bSecret, int bFromSecret)
 {
 #ifdef NETWORK
 	int result;
 #endif
 
-	Assert (!bSecret);
-
-	if ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
-		 extraGameInfo [IsMultiGame].bRotateLevels) {
+Assert (!bSecret);
+if ((!bFromSecret && gameStates.app.bD1Mission) &&
+	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
+	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 #ifdef NETWORK
-		if (gameData.app.nGameMode & GM_MULTI)
-			MultiEndLevelScore ();		
-		else
+	if (gameData.app.nGameMode & GM_MULTI)
+		MultiEndLevelScore ();		
+	else
 #endif
-			// NOTE LINK TO ABOVE!!!
-			DoEndLevelScoreGlitz (0);		//give bonuses
+	// NOTE LINK TO ABOVE!!!
+	DoEndLevelScoreGlitz (0);		//give bonuses
 	}
-	gameData.reactor.bDestroyed = 0;
-	#ifdef EDITOR
-	if (gameData.missions.nCurrentLevel == 0)
-		return;		//not a real level
-	#endif
+gameData.reactor.bDestroyed = 0;
+#ifdef EDITOR
+if (gameData.missions.nCurrentLevel == 0)
+	return;		//not a real level
+#endif
 #ifdef NETWORK
-	if (gameData.app.nGameMode & GM_MULTI)	{
-		result = MultiEndLevel (&bSecret); // Wait for other players to reach this point
-		if (result) // failed to sync
-		{
-			if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)		//player has finished the game!
-				longjmp (gameExitPoint, 0);		// Exit out of game loop
-			else
-				return;
+if (gameData.app.nGameMode & GM_MULTI)	{
+	result = MultiEndLevel (&bSecret); // Wait for other players to reach this point
+	if (result) { // failed to sync
+		if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)		//player has finished the game!
+			longjmp (gameExitPoint, 0);		// Exit out of game loop
+		else
+			return;
 		}
 	}
 #endif
-
-	if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
-		 !extraGameInfo [IsMultiGame].bRotateLevels) //player has finished the game!
-		DoEndGame ();
-	else {
-		gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
-		if (gameData.missions.nNextLevel > gameData.missions.nLastLevel)
-			gameData.missions.nNextLevel = gameData.missions.nLastLevel;
-		if (!(gameData.app.nGameMode & GM_MULTI))
-			DoEndlevelMenu (); // Let user save their game
-		StartNewLevel (gameData.missions.nNextLevel, 0);
+if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
+	!extraGameInfo [IsMultiGame].bRotateLevels) //player has finished the game!
+	DoEndGame ();
+else {
+	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
+	if (gameData.missions.nNextLevel > gameData.missions.nLastLevel)
+		gameData.missions.nNextLevel = gameData.missions.nLastLevel;
+	if (!(gameData.app.nGameMode & GM_MULTI))
+		DoEndlevelMenu (); // Let user save their game
+	StartNewLevel (gameData.missions.nNextLevel, 0);
 	}
 }
 
@@ -1902,7 +1905,7 @@ starsPalette = gameData.render.pal.pCurPal;
 
 //------------------------------------------------------------------------------
 
-void died_in_mine_message (void)
+void DiedInMineMessage (void)
 {
 	// Tell the player he died in the mine, explain why
 	int old_fmode;
@@ -2043,22 +2046,22 @@ else
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].shields = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = 3;
-		died_in_mine_message (); // Give them some indication of what happened
+		DiedInMineMessage (); // Give them some indication of what happened
 		if ((gameData.missions.nCurrentLevel < 0) && !gameStates.app.bD1Mission) {
 			if (CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 				ReturningToLevelMessage ();
 				StateRestoreAll (1, 2, SECRETB_FILENAME);			//	2 means you died
 				SetPosFromReturnSegment ();
-				gameData.multi.players [gameData.multi.nLocalPlayer].lives--;						//	re-lose the life, gameData.multi.players [gameData.multi.nLocalPlayer].lives got written over in restore.
+				gameData.multi.players [gameData.multi.nLocalPlayer].lives--; //re-lose the life, gameData.multi.players [gameData.multi.nLocalPlayer].lives got written over in restore.
 				}
 			else {
 				AdvancingToLevelMessage ();
-				StartNewLevel (gameData.missions.nEnteredFromLevel+1, 0);
+				StartNewLevel (gameData.missions.nEnteredFromLevel + 1, 0);
 				InitPlayerStatsNewShip ();	//	New, MK, 05/29/96!, fix bug with dying in secret level, advance to next level, keep powerups!
 				}
 			}
 		else {
-			AdvanceLevel (0);			//if finished, go on to next level
+			ExitSecretLevel ();
 			InitPlayerStatsNewShip ();
 			last_drawn_cockpit [0] = -1;
 			last_drawn_cockpit [1] = -1;
@@ -2074,7 +2077,7 @@ else
 			gameData.multi.players [gameData.multi.nLocalPlayer].lives--;						//	re-lose the life, gameData.multi.players [gameData.multi.nLocalPlayer].lives got written over in restore.
 			} 
 		else {
-			died_in_mine_message (); // Give them some indication of what happened
+			DiedInMineMessage (); // Give them some indication of what happened
 			AdvancingToLevelMessage ();
 			StartNewLevel (gameData.missions.nEnteredFromLevel+1, 0);
 			InitPlayerStatsNewShip ();

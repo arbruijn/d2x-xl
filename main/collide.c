@@ -633,8 +633,7 @@ nMonsterballPyroForce = forceP->nForce;
 void BumpThisObject (object *objP, object *otherObjP, vms_vector *vForce, int bDamage)
 {
 	fix			xForceMag;
-	vms_vector	vRotForce, v;
-	fix			a;
+	vms_vector	vRotForce;
 
 if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 	if (objP->type == OBJ_PLAYER) {
@@ -712,7 +711,7 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 //the collision.
 int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
-	vms_vector	vForce, v0, v1;
+	vms_vector	vForce, v;
 	fixang		angle, mag;
 	object		*t;
 
@@ -733,8 +732,8 @@ if (t) {
 	//MoveOneObject (t);
 	return 1;
 	}
-VmVecSub (&v1, &objP1->pos, &objP0->pos);
-angle = VmVecDeltaAng (&v1, &objP0->mtype.phys_info.velocity, NULL);
+VmVecSub (&v, &objP1->pos, &objP0->pos);
+angle = VmVecDeltaAng (&v, &objP0->mtype.phys_info.velocity, NULL);
 if (angle >= F1_0 / 4)
 	return 0;	// don't bump if moving away
 VmVecSub (&vForce, &objP0->mtype.phys_info.velocity, &objP1->mtype.phys_info.velocity);

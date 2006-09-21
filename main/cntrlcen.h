@@ -89,18 +89,18 @@ extern void DoReactorDestroyedStuff(object *objp);
 extern void DoReactorDeadFrame(void);
 
 #ifdef FAST_FILE_IO
-#define reactor_read_n(r, n, fp) CFRead(r, sizeof(reactor), n, fp)
-#define control_center_triggers_read_n(cct, n, fp) CFRead(cct, sizeof(reactor_triggers), n, fp)
+#define ReactorReadN(r, n, fp) CFRead(r, sizeof(reactor), n, fp)
+#define ControlCenterTriggersReadN(cct, n, fp) CFRead(cct, sizeof(reactor_triggers), n, fp)
 #else
 /*
  * reads n reactor structs from a CFILE
  */
-extern int reactor_read_n(reactor *r, int n, CFILE *fp);
+extern int ReactorReadN(reactor *r, int n, CFILE *fp);
 
 /*
  * reads n reactor_triggers structs from a CFILE
  */
-extern int control_center_triggers_read_n(reactor_triggers *cct, int n, CFILE *fp);
+extern int ControlCenterTriggersReadN(reactor_triggers *cct, int n, CFILE *fp);
 #endif
 
 #endif /* _CNTRLCEN_H */

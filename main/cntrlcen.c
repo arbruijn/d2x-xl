@@ -249,7 +249,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 	// On last level, we don't want a countdown.
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-		if (! (gameData.app.nGameMode & GM_MULTI))
+		if (!(gameData.app.nGameMode & GM_MULTI))
 			return;
 		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 			return;
@@ -327,7 +327,7 @@ if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
 for (i = 0; i < gameData.reactor.triggers.num_links; i++)
 	WallToggle (gameData.segs.segments + gameData.reactor.triggers.seg [i], gameData.reactor.triggers.side[i]);
 // And start the countdown stuff.
-if (! (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount))
+if (!(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount))
 	gameData.reactor.bDestroyed = 1;
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 if (gameData.missions.nCurrentLevel < 0)
@@ -337,7 +337,7 @@ if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
 gameData.reactor.countdown.nTimer = i2f (gameData.reactor.countdown.nTotalTime);
-if (! (gameData.reactor.bPresent && objP)) {
+if (!(gameData.reactor.bPresent && objP)) {
 	//Assert (objP == NULL);
 	return;
 	}
@@ -350,138 +350,130 @@ int	Last_time_cc_vis_check = 0;
 //do whatever this thing does in a frame
 void DoReactorFrame (object *objP)
 {
-	int			best_gun_num;
+	int	nBestGun;
 
 	//	If a boss level, then gameData.reactor.bPresent will be 0.
-	if (!gameData.reactor.bPresent)
-		return;
+if (!gameData.reactor.bPresent)
+	return;
 
 #ifndef NDEBUG
-	if (!gameStates.app.cheats.bRobotsFiring || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
-		return;
+if (!gameStates.app.cheats.bRobotsFiring || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
+	return;
 #else
-	if (!gameStates.app.cheats.bRobotsFiring)
-		return;
+if (!gameStates.app.cheats.bRobotsFiring)
+	return;
 #endif
 
-	if (! (gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
-		if (! (gameData.app.nFrameCount % 8)) {		//	Do every so often...
-			vms_vector	vec_to_player;
-			fix			dist_to_player;
-			int			i;
-			segment		*segp = &gameData.segs.segments[objP->segnum];
+if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
+	if (!(gameData.app.nFrameCount % 8)) {		//	Do every so often...
+		vms_vector	vec_to_player;
+		fix			dist_to_player;
+		int			i;
+		segment		*segp = &gameData.segs.segments[objP->segnum];
 
-			// This is a hack.  Since the control center is not processed by
-			// ai_do_frame, it doesn't know to deal with cloaked dudes.  It
-			// seems to work in single-player mode because it is actually using
-			// the value of Believed_player_position that was set by the last
-			// person to go through ai_do_frame.  But since a no-robots game
-			// never goes through ai_do_frame, I'm making it so the control
-			// center can spot cloaked dudes.
+		// This is a hack.  Since the control center is not processed by
+		// ai_do_frame, it doesn't know to deal with cloaked dudes.  It
+		// seems to work in single-player mode because it is actually using
+		// the value of Believed_player_position that was set by the last
+		// person to go through ai_do_frame.  But since a no-robots game
+		// never goes through ai_do_frame, I'm making it so the control
+		// center can spot cloaked dudes.
 
-			if (gameData.app.nGameMode & GM_MULTI)
-				gameData.ai.vBelievedPlayerPos = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].pos;
+		if (gameData.app.nGameMode & GM_MULTI)
+			gameData.ai.vBelievedPlayerPos = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].pos;
 
-			//	Hack for special control centers which are isolated and not reachable because the
-			//	real control center is inside the boss.
-			for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
-				if (IS_CHILD (segp->children[i]))
-					break;
-			if (i == MAX_SIDES_PER_SEGMENT)
-				return;
+		//	Hack for special control centers which are isolated and not reachable because the
+		//	real control center is inside the boss.
+		for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
+			if (IS_CHILD (segp->children[i]))
+				break;
+		if (i == MAX_SIDES_PER_SEGMENT)
+			return;
 
-			VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
-			dist_to_player = VmVecNormalizeQuick (&vec_to_player);
-			if (dist_to_player < F1_0*200) {
-				gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
-				gameData.reactor.nNextFireTime = 0;
+		VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
+		dist_to_player = VmVecNormalizeQuick (&vec_to_player);
+		if (dist_to_player < F1_0*200) {
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
+			gameData.reactor.nNextFireTime = 0;
 			}
 		}			
-
 		return;
 	}
 
-	//	Periodically, make the reactor fall asleep if player not visible.
-	if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
-		if ((Last_time_cc_vis_check + F1_0*5 < gameData.app.xGameTime) || (Last_time_cc_vis_check > gameData.app.xGameTime)) {
-			vms_vector	vec_to_player;
-			fix			dist_to_player;
+//	Periodically, make the reactor fall asleep if player not visible.
+if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
+	if ((Last_time_cc_vis_check + F1_0*5 < gameData.app.xGameTime) || (Last_time_cc_vis_check > gameData.app.xGameTime)) {
+		vms_vector	vec_to_player;
+		fix			dist_to_player;
 
-			VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
-			dist_to_player = VmVecNormalizeQuick (&vec_to_player);
-			Last_time_cc_vis_check = gameData.app.xGameTime;
-			if (dist_to_player < F1_0*120) {
-				gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
-				if (!gameData.reactor.bSeenPlayer)
-					gameData.reactor.bHit = 0;
+		VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
+		dist_to_player = VmVecNormalizeQuick (&vec_to_player);
+		Last_time_cc_vis_check = gameData.app.xGameTime;
+		if (dist_to_player < F1_0*120) {
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
+			if (!gameData.reactor.bSeenPlayer)
+				gameData.reactor.bHit = 0;
 			}
 		}
-
 	}
 
-	if ((gameData.reactor.nNextFireTime < 0) && ! (gameStates.app.bPlayerIsDead && (gameData.app.xGameTime > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
-			best_gun_num = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
-		else
-			best_gun_num = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.objs.console->pos);
+if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.app.xGameTime > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
+		nBestGun = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
+	else
+		nBestGun = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.objs.console->pos);
 
-		if (best_gun_num != -1) {
-			int			rand_prob, count;
-			vms_vector	vec_to_goal;
-			fix			dist_to_player;
-			fix			delta_fire_time;
+	if (nBestGun != -1) {
+		int			rand_prob, count;
+		vms_vector	vec_to_goal;
+		fix			dist_to_player;
+		fix			delta_fire_time;
 
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-				VmVecSub (&vec_to_goal, &gameData.ai.vBelievedPlayerPos, &Gun_pos[best_gun_num]);
-				dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
-			} else {
-				VmVecSub (&vec_to_goal, &gameData.objs.console->pos, &Gun_pos[best_gun_num]);
-				dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+			VmVecSub (&vec_to_goal, &gameData.ai.vBelievedPlayerPos, &Gun_pos[nBestGun]);
+			dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
+			} 
+		else {
+			VmVecSub (&vec_to_goal, &gameData.objs.console->pos, &Gun_pos[nBestGun]);
+			dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
 			}
-
-			if (dist_to_player > F1_0*300)
-			{
-				gameData.reactor.bHit = 0;
-				gameData.reactor.bSeenPlayer = 0;
-				return;
+		if (dist_to_player > F1_0*300) {
+			gameData.reactor.bHit = 0;
+			gameData.reactor.bSeenPlayer = 0;
+			return;
 			}
-	
+#ifdef NETWORK
+		if (gameData.app.nGameMode & GM_MULTI)
+			MultiSendCtrlcenFire (&vec_to_goal, nBestGun, OBJ_IDX (objP));	
+#endif
+		CreateNewLaserEasy (&vec_to_goal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
+		//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.
+		rand_prob = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
+		count = 0;
+		while ((d_rand () > rand_prob) && (count < 4)) {
+			vms_vector	randvec;
+
+			make_random_vector (&randvec);
+			VmVecScaleInc (&vec_to_goal, &randvec, F1_0/6);
+			VmVecNormalizeQuick (&vec_to_goal);
 			#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendCtrlcenFire (&vec_to_goal, best_gun_num, OBJ_IDX (objP));	
+				MultiSendCtrlcenFire (&vec_to_goal, nBestGun, OBJ_IDX (objP));
 			#endif
-			CreateNewLaserEasy (&vec_to_goal, &Gun_pos[best_gun_num], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
-
-			//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.
-			rand_prob = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
-			count = 0;
-			while ((d_rand () > rand_prob) && (count < 4)) {
-				vms_vector	randvec;
-
-				make_random_vector (&randvec);
-				VmVecScaleInc (&vec_to_goal, &randvec, F1_0/6);
-				VmVecNormalizeQuick (&vec_to_goal);
-				#ifdef NETWORK
-				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendCtrlcenFire (&vec_to_goal, best_gun_num, OBJ_IDX (objP));
-				#endif
-				CreateNewLaserEasy (&vec_to_goal, &Gun_pos[best_gun_num], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
-				count++;
+			CreateNewLaserEasy (&vec_to_goal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
+			count++;
 			}
 
-			delta_fire_time = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
-			if (gameStates.app.nDifficultyLevel == 0)
-				delta_fire_time += F1_0/2;
-
-			if (gameData.app.nGameMode & GM_MULTI) // slow down rate of fire in multi player
-				delta_fire_time *= 2;
-
-			gameData.reactor.nNextFireTime = delta_fire_time;
-
+		delta_fire_time = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
+		if (gameStates.app.nDifficultyLevel == 0)
+			delta_fire_time += F1_0/2;
+		if (gameData.app.nGameMode & GM_MULTI) // slow down rate of fire in multi player
+			delta_fire_time *= 2;
+		gameData.reactor.nNextFireTime = delta_fire_time;
 		}
-	} else
-		gameData.reactor.nNextFireTime -= gameData.app.xFrameTime;
-
+	} 
+else
+	gameData.reactor.nNextFireTime -= gameData.app.xFrameTime;
 }
 
 //	-----------------------------------------------------------------------------
@@ -531,7 +523,8 @@ if (cntrlcen_objnum == -1) {
 #endif
 
 if (EGI_FLAG (bDisableReactor, 0, 0) ||
-	 ((boss_objnum != -1) && (cntrlcen_objnum != -1) && ! (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))) {
+	 ((boss_objnum != -1) && (cntrlcen_objnum != -1) && 
+	  !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))) {
 	BashToShield (cntrlcen_objnum, "reactor");
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
@@ -559,12 +552,10 @@ if (cntrlcen_objnum != -1) {
 		objP->shields = i2f (gameData.reactor.nStrength);
 	}
 }
-
 //	Say the control center has not yet been hit.
 gameData.reactor.bHit = 0;
 gameData.reactor.bSeenPlayer = 0;
 gameData.reactor.nNextFireTime = 0;
-
 gameData.reactor.nDeadObj = -1;
 }
 
@@ -573,11 +564,11 @@ gameData.reactor.nDeadObj = -1;
 void SpecialReactorStuff (void)
 {
 #if TRACE
-	con_printf (CON_DEBUG, "Mucking with reactor countdown time.\n");
+con_printf (CON_DEBUG, "Mucking with reactor countdown time.\n");
 #endif
-	if (gameData.reactor.bDestroyed) {
-		gameData.reactor.countdown.nTimer += i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL-1-gameStates.app.nDifficultyLevel)*gameStates.app.nBaseCtrlCenExplTime/ (NDL-1));
-		gameData.reactor.countdown.nTotalTime = f2i (gameData.reactor.countdown.nTimer)+2;	//	Will prevent "Self destruct sequence activated" message from replaying.
+if (gameData.reactor.bDestroyed) {
+	gameData.reactor.countdown.nTimer += i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL-1-gameStates.app.nDifficultyLevel)*gameStates.app.nBaseCtrlCenExplTime/ (NDL-1));
+	gameData.reactor.countdown.nTotalTime = f2i (gameData.reactor.countdown.nTimer)+2;	//	Will prevent "Self destruct sequence activated" message from replaying.
 	}
 }
 
@@ -586,38 +577,37 @@ void SpecialReactorStuff (void)
 /*
  * reads n reactor structs from a CFILE
  */
-extern int reactor_read_n (reactor *r, int n, CFILE *fp)
+extern int ReactorReadN (reactor *r, int n, CFILE *fp)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++) {
-		r[i].model_num = CFReadInt (fp);
-		r[i].n_guns = CFReadInt (fp);
-		for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-			CFReadVector (r[i].gun_points + j, fp);
-		for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-			CFReadVector (r[i].gun_dirs + j, fp);
+for (i = 0; i < n; i++) {
+	r[i].model_num = CFReadInt (fp);
+	r[i].n_guns = CFReadInt (fp);
+	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
+		CFReadVector (r[i].gun_points + j, fp);
+	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
+		CFReadVector (r[i].gun_dirs + j, fp);
 	}
-	return i;
+return i;
 }
 
 //------------------------------------------------------------------------------
 /*
  * reads a reactor_triggers structure from a CFILE
  */
-extern int control_center_triggers_read_n (reactor_triggers *cct, int n, CFILE *fp)
+extern int ControlCenterTriggersReadN (reactor_triggers *cct, int n, CFILE *fp)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++)
-	{
-		cct->num_links = CFReadShort (fp);
-		for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-			cct->seg[j] = CFReadShort (fp);
-		for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
-			cct->side[j] = CFReadShort (fp);
+for (i = 0; i < n; i++) {
+	cct->num_links = CFReadShort (fp);
+	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
+		cct->seg[j] = CFReadShort (fp);
+	for (j = 0; j < MAX_CONTROLCEN_LINKS; j++)
+		cct->side[j] = CFReadShort (fp);
 	}
-	return i;
+return i;
 }
 #endif
 
