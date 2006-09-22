@@ -698,7 +698,7 @@ int SetPlayerFromCursegMinusOne()
 
 	for (i=max=0;i<4;i++) {
 		corner_v[i] = gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][i]]];
-		G3RotatePoint(&corner_p[i],&corner_v[i]);
+		G3TransformAndEncodePoint(&corner_p[i],&corner_v[i]);
 		if (labs(corner_p[i].p3_x) > max) max = labs(corner_p[i].p3_x);
 		if (labs(corner_p[i].p3_y) > max) max = labs(corner_p[i].p3_y);
 	}

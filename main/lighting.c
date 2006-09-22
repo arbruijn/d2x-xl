@@ -919,7 +919,7 @@ fix ComputeObjectLight(object *objP,vms_vector *rotated_pnt)
 	int objnum = OBJ_IDX (objP);
 
 	if (!rotated_pnt) {
-		G3RotatePoint(&objpnt,&objP->pos);
+		G3TransformAndEncodePoint(&objpnt,&objP->pos);
 		rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this segment
@@ -1208,7 +1208,7 @@ void TransRotOglLights (void)
 
 fPos [3] = 1.0f;
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
-	G3RotatePointToVec (&vPos, &pl->vPos);
+	G3TransformPoint (&vPos, &pl->vPos);
 	fPos [0] = f2fl (vPos.x);
 	fPos [1] = f2fl (vPos.y);
 	fPos [2] = f2fl (vPos.z);

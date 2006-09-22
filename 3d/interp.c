@@ -135,7 +135,7 @@ while (n--) {
 		}
 	else
 		dest->p3_index = -1;
-	G3RotatePoint (dest++, src++);
+	G3TransformAndEncodePoint (dest++, src++);
 	}
 }
 
@@ -144,7 +144,7 @@ while (n--) {
 inline void RotatePointListToVec (vms_vector *dest, vms_vector *src, int n)
 {
 while (n--)
-	G3RotatePointToVec (dest++, src++);
+	G3TransformPoint (dest++, src++);
 }
 
 //------------------------------------------------------------------------------
@@ -633,7 +633,7 @@ return G3CheckPointFacing (pv, pNorm, &vLightPos);
 
 inline tOOF_vector *G3RotateFaceNormal (tPOF_face *pf)
 {
-return (tOOF_vector *) OOF_VecVms2Oof (&pf->vNormf, G3RotatePointToVec (&pf->vRotNorm, &pf->vNorm));
+return (tOOF_vector *) OOF_VecVms2Oof (&pf->vNormf, G3TransformPoint (&pf->vRotNorm, &pf->vNorm));
 }
 					
 //------------------------------------------------------------------------------
@@ -1329,7 +1329,7 @@ for (gameData.render.shadows.nLight = 0;
 #if 0
 		vmsLightPos = gameData.render.shadows.pLight->pos;
 #else
-		G3RotatePointToVec (&vmsLightPos, &gameData.render.shadows.pLight->pos);
+		G3TransformPoint (&vmsLightPos, &gameData.render.shadows.pLight->pos);
 #endif
 		OOF_VecVms2Oof (&vLightPos, &vmsLightPos);
 		G3PolyModelVerts2Float (po);
@@ -1480,8 +1480,8 @@ for (;;) {
 		}
 	else if (h == OP_RODBM) {
 		g3s_point rod_bot_p, rod_top_p;
-		G3RotatePoint (&rod_bot_p, VECPTR (p+20));
-		G3RotatePoint (&rod_top_p, VECPTR (p+4));
+		G3TransformAndEncodePoint (&rod_bot_p, VECPTR (p+20));
+		G3TransformAndEncodePoint (&rod_top_p, VECPTR (p+4));
 		G3DrawRodTexPoly (model_bitmaps [WORDVAL (p+2)], &rod_bot_p, WORDVAL (p+16), &rod_top_p, WORDVAL (p+32), f1_0);
 		p+=36;
 		}
@@ -1613,8 +1613,8 @@ for (;;) {
 
 		case OP_RODBM: {
 			g3s_point rod_bot_p, rod_top_p;
-			G3RotatePoint (&rod_bot_p, VECPTR (p+20));
-			G3RotatePoint (&rod_top_p, VECPTR (p+4));
+			G3TransformAndEncodePoint (&rod_bot_p, VECPTR (p+20));
+			G3TransformAndEncodePoint (&rod_top_p, VECPTR (p+4));
 			G3DrawRodTexPoly (model_bitmaps [WORDVAL (p+2)], &rod_bot_p, WORDVAL (p+16), &rod_top_p, WORDVAL (p+32), f1_0);
 			p+=36;
 			break;

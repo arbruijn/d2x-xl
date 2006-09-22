@@ -182,7 +182,7 @@ ubyte G3AddDeltaVec (g3s_point *dest, g3s_point *src, vms_vector *vDelta)
 {
 VmVecAdd (&dest->p3_vec, &src->p3_vec, vDelta);
 dest->p3_flags = 0;		//not projected
-return G3CodePoint (dest);
+return G3EncodePoint (dest);
 }
 
 // -----------------------------------------------------------------------------------

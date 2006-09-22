@@ -180,8 +180,8 @@ switch (gameData.weapons.info [objP->id].render_type)	{
 //	start_pos = objP->pos;
 //	VmVecScaleAdd (&end_pos,&start_pos,&objP->orient.fvec,-Laser_length);
 //
-//	G3RotatePoint (&p1,&start_pos);
-//	G3RotatePoint (&p2,&end_pos);
+//	G3TransformAndEncodePoint (&p1,&start_pos);
+//	G3TransformAndEncodePoint (&p2,&end_pos);
 //
 //	t1 = gameStates.render.nLighting;
 //	t2 = gameStates.render.nInterpolationMethod;

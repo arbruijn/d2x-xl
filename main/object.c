@@ -660,8 +660,8 @@ bmP = BmOverride (bmP);
 VmVecCopyScale (&delta, &objP->orient.uvec, objP->size);
 VmVecAdd (&top_v, &objP->pos, &delta);
 VmVecSub (&bot_v, &objP->pos, &delta);
-G3RotatePoint (&top_p, &top_v);
-G3RotatePoint (&bot_p, &bot_v);
+G3TransformAndEncodePoint (&top_p, &top_v);
+G3TransformAndEncodePoint (&bot_p, &bot_v);
 if (lighted)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
@@ -980,7 +980,7 @@ void SetRobotLocationInfo (object *objP)
 	if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 		g3s_point temp;
 
-		G3RotatePoint (&temp, &objP->pos);
+		G3TransformAndEncodePoint (&temp, &objP->pos);
 
 		if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
 			return;
@@ -1240,7 +1240,7 @@ gameStates.render.detail.nMaxLinearDepth = mld_save;
 //091494:
 //091494: 	for (i = 0; i<Object_num_close; i++)	{
 //091494: 			
-//091494: 		codes = G3RotatePoint (&pt, &Object_close_ones [i]->pos);
+//091494: 		codes = G3TransformAndEncodePoint (&pt, &Object_close_ones [i]->pos);
 //091494: 		if (!(codes & CC_BEHIND))	{
 //091494: 			G3ProjectPoint (&pt);
 //091494: 			if (pt.p3_flags & PF_PROJECTED)	{
@@ -1270,7 +1270,7 @@ gameStates.render.detail.nMaxLinearDepth = mld_save;
 //--unused-- 	else
 //--unused-- 		sprintf (s, "<%d>", objP->id);
 //--unused--
-//--unused-- 	codes = G3RotatePoint (&pt, &objP->pos);
+//--unused-- 	codes = G3TransformAndEncodePoint (&pt, &objP->pos);
 //--unused-- 	if (!(codes & CC_BEHIND))	{
 //--unused-- 		G3ProjectPoint (&pt);
 //--unused-- 		if (pt.p3_flags & PF_PROJECTED)	{

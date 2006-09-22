@@ -241,7 +241,7 @@ VmVecScaleInc (&gameData.render.terrain.vStartPoint, &surface_orient.fvec,
 VmVecSub (&tv, &gameData.objs.viewer->pos, &gameData.render.terrain.vStartPoint);
 iViewer = VmVecDot (&tv, &surface_orient.rvec) / TERRAIN_GRID_SCALE;
 jViewer = VmVecDot (&tv, &surface_orient.fvec) / TERRAIN_GRID_SCALE;
-G3RotatePoint (&pLast, &gameData.render.terrain.vStartPoint);
+G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iLow, j)));
@@ -283,7 +283,7 @@ for (i = iLow; i < iViewer; i++) {
 VmVecNegate (&delta_i);		//going the other way now...
 VmVecScaleInc (&gameData.render.terrain.vStartPoint, &surface_orient.rvec, 
 						(iHigh-iLow)*TERRAIN_GRID_SCALE);
-G3RotatePoint (&pLast, &gameData.render.terrain.vStartPoint);
+G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
 	G3AddDeltaVec (gameData.render.terrain.saveRow + j, &pLast, get_dy_vec (HEIGHT (iHigh, j)));

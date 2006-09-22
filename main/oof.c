@@ -2270,7 +2270,7 @@ for (gameData.render.shadows.nLight = 0;
 #if 0
 	OOF_VecVms2Oof (&vrLightPos, &gameData.render.shadows.pLight->pos);
 #else
-	G3RotatePointToVec (&vl, &gameData.render.shadows.pLight->pos);
+	G3TransformPoint (&vl, &gameData.render.shadows.pLight->pos);
 	OOF_VecVms2Oof (&vrLightPos, &vl);
 #endif
 	if (!OOF_RenderModel (po, pv, pm, fLight))

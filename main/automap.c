@@ -452,7 +452,7 @@ void DrawMarkerNumber (int num)
    GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
 
 
-G3RotatePoint (&basePoint, &gameData.objs.objects [gameData.marker.object[(gameData.multi.nLocalPlayer*2)+num]].pos);
+G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.object[(gameData.multi.nLocalPlayer*2)+num]].pos);
 fromPoint.p3_index =
 toPoint.p3_index =
 basePoint.p3_index = -1;
@@ -465,12 +465,12 @@ basePoint.p3_index = -1;
 
     fromPoint.p3_x+=fixmul ((fl2f (ArrayX[num][i])),viewInfo.scale.x);
     fromPoint.p3_y+=fixmul ((fl2f (ArrayY[num][i])),viewInfo.scale.y);
-    G3CodePoint (&fromPoint);
+    G3EncodePoint (&fromPoint);
     G3ProjectPoint (&fromPoint);
 
     toPoint.p3_x+=fixmul ((fl2f (ArrayX[num][i+1])),viewInfo.scale.x);
     toPoint.p3_y+=fixmul ((fl2f (ArrayY[num][i+1])),viewInfo.scale.y);
-    G3CodePoint (&toPoint);
+    G3EncodePoint (&toPoint);
     G3ProjectPoint (&toPoint);
 
 	AutomapDrawLine (&fromPoint, &toPoint);
@@ -540,7 +540,7 @@ void DrawMarkers ()
 	for (i=0;i<maxdrop;i++)
 		if (gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
 
-			G3RotatePoint (&spherePoint,&gameData.objs.objects[gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i]].pos);
+			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i]].pos);
 
 			GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
 			G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE, 1);
@@ -687,7 +687,7 @@ headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console player -- shaped like a ellipse with an arrow.
-G3RotatePoint (&spherePoint, &objP->pos);
+G3TransformAndEncodePoint (&spherePoint, &objP->pos);
 G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
 //G3DrawSphere3D (&spherePoint, bRadar ? 8 : 20, objP->size * (bRadar + 1));
 
@@ -695,24 +695,24 @@ if (bRadar && (OBJ_IDX (objP) != gameData.multi.players [gameData.multi.nLocalPl
 	return;
 // Draw shaft of arrow
 VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.fvec, size*3);
-G3RotatePoint (&arrowPoint,&arrow_pos);
+G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
 VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fvec, size*2);
 VmVecScaleInc (&head_pos, &objP->orient.rvec, size*1);
-G3RotatePoint (&headPoint,&head_pos);
+G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
 VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fvec, size*2);
 VmVecScaleInc (&head_pos, &objP->orient.rvec, size* (-1));
-G3RotatePoint (&headPoint,&head_pos);
+G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
 // Draw player's up vector
 VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.uvec, size*2);
-G3RotatePoint (&arrowPoint,&arrow_pos);
+G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 }
 
@@ -863,7 +863,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			switch (objP->type)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
-				G3RotatePoint (&spherePoint,&objP->pos);
+				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
 				G3DrawSphere (&spherePoint,size, !bRadar);	
 				break;
 
@@ -890,7 +890,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							GrSetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
-					G3RotatePoint (&spherePoint,&objP->pos);
+					G3TransformAndEncodePoint (&spherePoint,&objP->pos);
 					G3DrawSphere (&spherePoint, (size*3)/2, !bRadar);	
 				}
 				break;
@@ -918,7 +918,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							GrSetColorRGBi (ORANGE_RGBA); //orange
 							//Error ("Illegal key type: %i", objP->id);
 						}
-						G3RotatePoint (&spherePoint,&objP->pos);
+						G3TransformAndEncodePoint (&spherePoint,&objP->pos);
 						G3DrawSphere (&spherePoint,size, !bRadar);	
 					}
 				}

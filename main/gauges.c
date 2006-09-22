@@ -4298,7 +4298,7 @@ void ShowHUDNames()
 
 		if ((show_name || has_flag) && CanSeeObject(objnum, 1)) {
 			g3s_point player_point;
-			G3RotatePoint(&player_point,&gameData.objs.objects[objnum].pos);
+			G3TransformAndEncodePoint(&player_point,&gameData.objs.objects[objnum].pos);
 			if (player_point.p3_codes == 0) {	//on screen
 				G3ProjectPoint(&player_point);
 				if (! (player_point.p3_flags & PF_OVERFLOW)) {

@@ -518,19 +518,19 @@ VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rvec,nEyeOffset);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-G3RotatePoint(&reticlePoints [0],&v2);
+G3TransformAndEncodePoint(&reticlePoints [0],&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-G3RotatePoint(&reticlePoints [1],&v2);
+G3TransformAndEncodePoint(&reticlePoints [1],&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-G3RotatePoint(&reticlePoints [2],&v2);
+G3TransformAndEncodePoint(&reticlePoints [2],&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-G3RotatePoint(&reticlePoints [3],&v2);
+G3TransformAndEncodePoint(&reticlePoints [3],&v2);
 
 if ( reticle_canvas == NULL )	{
 	reticle_canvas = GrCreateCanvas(64,64);
@@ -1557,7 +1557,7 @@ for (i = 0; i < nv; i++) {
 	pnum = pointnumlist [i];
 	pnt = gameData.segs.points + pnum;
 	if (nRotatedLast [pnum] != nRLFrameCount) {
-		G3RotatePoint (pnt, gameData.segs.vertices + pnum);
+		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
 		if (!gameStates.render.bGlTransform) {
 			gameData.segs.fVertices [pnum].x = ((float) pnt->p3_vec.x) / 65536.0f;
 			gameData.segs.fVertices [pnum].y = ((float) pnt->p3_vec.y) / 65536.0f;

@@ -136,10 +136,10 @@ int FindConnectedSide(segment *base_seg, segment *con_seg);
 
 #else
 #define	COMPUTE_SEGMENT_CENTER_I(_pc,_nSeg) \
-			G3RotatePointToVec (_pc, gameData.segs.segCenters + (_nSeg));
+			G3TransformPoint (_pc, gameData.segs.segCenters + (_nSeg));
 
 #define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
-			G3RotatePointToVec (_pc, gameData.segs.sideCenters + ((_nSeg) * 6 + (_nSide)))
+			G3TransformPoint (_pc, gameData.segs.sideCenters + ((_nSeg) * 6 + (_nSide)))
 			
 #endif
 #define	COMPUTE_SEGMENT_CENTER(_pc,_segP) \

@@ -1089,7 +1089,7 @@ G3StartInstanceMatrix (&vmd_zero_vector, &surface_orient);
 DrawStars ();
 G3DoneInstance ();
 //draw satellite
-G3RotatePoint (&p, &gameData.endLevel.satellite.vPos);
+G3TransformAndEncodePoint (&p, &gameData.endLevel.satellite.vPos);
 G3RotateDeltaVec (&delta, &gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&top_pnt, &p, &delta);
 if (!(p.p3_codes & CC_BEHIND)) {
@@ -1143,7 +1143,7 @@ for (i = 0; i < MAX_STARS; i++) {
 		intensity-=3;
 		}
 	G3RotateDeltaVec (&p.p3_vec, &stars [i]);
-	G3CodePoint (&p);
+	G3EncodePoint (&p);
 	if (p.p3_codes == 0) {
 		p.p3_flags &= ~PF_PROJECTED;
 		G3ProjectPoint (&p);

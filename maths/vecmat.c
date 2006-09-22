@@ -201,7 +201,10 @@ fix VmVecDotProd (vms_vector *v0, vms_vector *v1)
 {
 #if 1//def _WIN32
 if (gameOpts->render.nMathFormat == 2)
-	return (fix) (((double) v0->x * (double) v1->x + (double) v0->y * (double) v1->y + (double) v0->z * (double) v1->z) / 65536.0);
+	return (fix) (((double) v0->x * (double) v1->x + 
+						(double) v0->y * (double) v1->y + 
+						(double) v0->z * (double) v1->z) 
+					  / 65536.0);
 else {
 	QLONG q = mul64 (v0->x, v1->x);
 	q += mul64 (v0->y, v1->y);

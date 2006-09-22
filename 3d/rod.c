@@ -91,7 +91,7 @@ VmVecAdd (&rod_points [3].p3_vec, &bot_point->p3_vec, &tempv);
 
 //now code the four points
 for (i = 0, codes_and = 0xff; i < 4; i++)
-	codes_and &= G3CodePoint (rod_points + i);
+	codes_and &= G3EncodePoint (rod_points + i);
 if (codes_and)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
@@ -137,7 +137,7 @@ bool G3DrawBitMap(vms_vector *pos,fix width,fix height,grs_bitmap *bm, int orien
 	g3s_point pnt;
 	fix t,w,h;
 
-	if (G3RotatePoint(&pnt,pos) & CC_BEHIND)
+	if (G3TransformAndEncodePoint(&pnt,pos) & CC_BEHIND)
 		return 1;
 
 	G3ProjectPoint(&pnt);
@@ -168,7 +168,7 @@ bool G3DrawBitMap(vms_vector *pos,fix width,fix height,grs_bitmap *bm, int orien
 	fix w,h;
 	double fz;
 
-	if (G3RotatePoint(&pnt,pos) & CC_BEHIND)
+	if (G3TransformAndEncodePoint(&pnt,pos) & CC_BEHIND)
 		return 1;
 
 	G3ProjectPoint(&pnt);

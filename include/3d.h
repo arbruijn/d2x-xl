@@ -86,7 +86,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added instancing functions
  *
  * Revision 1.14  1994/01/22  18:21:48  matt
- * New lighting stuff now done in 3d; g3_draw_tmap() takes lighting parm
+ * New lighting stuff now done in 3d; G3DrawTMap() takes lighting parm
  *
  * Revision 1.13  1994/01/20  17:21:24  matt
  * New function g3_compute_sky_polygon()
@@ -104,7 +104,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added function g3_draw_line_ptrs()
  *
  * Revision 1.7  1993/12/05  23:13:22  matt
- * Added prototypes for G3RotatePoint() and G3ProjectPoint()
+ * Added prototypes for G3TransformAndEncodePoint() and G3ProjectPoint()
  *
  * Revision 1.6  1993/12/05  23:03:28  matt
  * Changed uvl structs to uvl
@@ -276,7 +276,7 @@ void G3ProjectPoint(g3s_point *point);
 
 //code a point.  fills in the p3_codes field of the point, and returns the codes
 #if 1
-static inline ubyte G3CodePoint(g3s_point *p)
+static inline ubyte G3EncodePoint(g3s_point *p)
 {
 ubyte cc=0;
 fix z = p->p3_z;
@@ -294,20 +294,20 @@ if (z < 0)
 return p->p3_codes = cc;
 }
 #else
-ubyte G3CodePoint(g3s_point *point);
+ubyte G3EncodePoint(g3s_point *point);
 #endif
 
-static inline vms_vector *G3RotatePointToVec (vms_vector *pDest, vms_vector *pSrc)
+static inline vms_vector *G3TransformPoint (vms_vector *pDest, vms_vector *pSrc)
 {
 vms_vector	h;
 return VmVecRotate (pDest, VmVecSub (&h, pSrc, &viewInfo.position), &viewInfo.view);
 }
 
-static inline ubyte G3RotatePoint (g3s_point *pDest, vms_vector *pSrc)
+static inline ubyte G3TransformAndEncodePoint (g3s_point *pDest, vms_vector *pSrc)
 {
-G3RotatePointToVec (&pDest->p3_vec, pSrc);
+G3TransformPoint (&pDest->p3_vec, pSrc);
 pDest->p3_flags = 0;	
-return G3CodePoint (pDest);
+return G3EncodePoint (pDest);
 }
 
 //calculate the depth of a point - returns the z coord of the rotated point
@@ -331,7 +331,7 @@ bool G3DrawPoly(int nv,g3s_point **pointlist);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool g3_draw_tmap(int nv,g3s_point **pointlist,uvl *uvl_list,grs_bitmap *bm, int bBlend);
+bool G3DrawTMap(int nv,g3s_point **pointlist,uvl *uvl_list,grs_bitmap *bm, int bBlend);
 
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
