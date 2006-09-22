@@ -682,7 +682,7 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameOpts->ogl.bUseLights)
+if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights)
 	return 0;
 if (gameOpts->render.color.bAmbientLight && gameStates.app.bD2XLevel && !USE_LIGHTMAPS) { 
 #if VERTEX_LIGHTING
@@ -716,7 +716,7 @@ int SetFaceLight (tFaceProps *propsP)
 	tRgbColorf	*pdc;
 	fix			dynLight;
 
-if (gameOpts->ogl.bUseLights)
+if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights)
 	return 0;
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it

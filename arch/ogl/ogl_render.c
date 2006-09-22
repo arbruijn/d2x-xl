@@ -578,7 +578,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (gameOpts->ogl.bUseLights)
+if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights)
 	OglColor4sf (1.0f, 1.0f, 1.0f, s);
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
@@ -1496,7 +1496,7 @@ if (gameStates.render.nShadowPass) {
 			glDisable (GL_CULL_FACE);		
 			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
-		if (gameOpts->ogl.bUseLights) {	//for optional hardware lighting
+		if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights) {	//for optional hardware lighting
 			glEnable (GL_LIGHTING);
 			glShadeModel (GL_SMOOTH);
 			glColorMaterial (GL_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -1640,7 +1640,7 @@ else
 			gameOpts->legacy.bZBuf = 1;
 		}	
 #endif
-	if (gameOpts->ogl.bUseLights)	{//for optional hardware lighting
+	if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights)	{//for optional hardware lighting
 		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glEnable (GL_LIGHTING);
 		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
@@ -1686,7 +1686,7 @@ glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);
 glDisable (GL_CULL_FACE);
 glDisable (GL_STENCIL_TEST);
-if (gameOpts->ogl.bUseLights) {
+if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
 	}
