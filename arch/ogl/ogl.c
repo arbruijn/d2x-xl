@@ -460,8 +460,6 @@ h = (int) (bmP - gameData.pig.tex.pBitmaps);
 if (!bufP || (h < 0) || (h >= MAX_BITMAP_FILES))
 	return NULL;
 color = bitmapColors + h;
-if (color->red > 1.0 || color->green > 1.0 || color->blue > 1.0)
-	c = c;
 if (color->red || color->green || color->blue)
 	return color;
 palette = bmP->bm_palette;
