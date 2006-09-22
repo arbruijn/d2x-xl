@@ -474,7 +474,7 @@ return m;
 
 // ------------------------------------------------------------------------
 //returns approximation of 1/magnitude of a vector
-fix vm_vec_invmag(vms_vector *v)
+fix VmVecInvMag(vms_vector *v)
 {
 #if FLOAT_COORD
 return 1.0f / VmVecMag (v);
@@ -510,7 +510,7 @@ return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
 //normalize a vector. returns 1/mag of source vec. uses approx 1/mag
 fix VmVecCopyNormalizeQuick(vms_vector *dest, vms_vector *src)
 {
-fix im = vm_vec_invmag(src);
+fix im = VmVecInvMag(src);
 dest->x = fixmul(src->x, im);
 dest->y = fixmul(src->y, im);
 dest->z = fixmul(src->z, im);

@@ -1625,6 +1625,7 @@ void FreeObject (int objnum)
 DelObjChildrenN (objnum);
 DelObjChildN (objnum);
 KillObjectSmoke (objnum);
+RemoveOglLight (-1, -1, objnum);
 if (gameData.objs.objects [objnum].type == OBJ_ROBOT)
 	id = gameData.objs.objects [objnum].id;
 gameData.objs.freeList [--gameData.objs.nObjects] = objnum;

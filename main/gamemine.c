@@ -189,6 +189,8 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "vecmat.h"
 #include "gamepal.h"
 #include "paging.h"
+#include "maths.h"
+#include "lighting.h"
 
 //------------------------------------------------------------------------------
 
@@ -522,7 +524,7 @@ short convert_d1_tmap_num (short d1_tmap_num)
 
 #ifdef EDITOR
 
-static char old_tmap_list [MAX_TEXTURES] [FILENAME_LEN];
+static char old_tmap_list [MAX_TEXTURES][FILENAME_LEN];
 short tmap_xlate_table [MAX_TEXTURES];
 static short tmap_times_used [MAX_TEXTURES];
 
@@ -1140,9 +1142,9 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 	QSortLightDist (pDists, 0, gameData.render.shadows.nLights - 1);
 	h = (gameData.render.shadows.nLights < 8) ? gameData.render.shadows.nLights : 8;
 	for (j = 0; j < h; j++)
-		gameData.render.shadows.nNearestLights [i] [j] = pDists [j].nIndex;
+		gameData.render.shadows.nNearestLights [i][j] = pDists [j].nIndex;
 	for (; j < 8; j++)
-		gameData.render.shadows.nNearestLights [i] [j] = -1;
+		gameData.render.shadows.nNearestLights [i][j] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1313,6 +1315,35 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
+void InitTexColors (void)
+{
+	int			i;
+	tLightMap	lm;
+
+// get the default colors
+for (i = 0; i < MAX_WALL_TEXTURES; i++) {
+	GetColor (i, &lm);	
+	gameData.render.color.textures [i].index = 1;
+	gameData.render.color.textures [i].color = *((tRgbColorf *) &lm.color);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LoadTexColorsCompiled (int i, CFILE *loadFile)
+{
+	int			j;
+
+// get the default colors
+if (gameStates.app.bD2XLevel) {
+	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
+	for (; i < j; i++)
+		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void LoadSideLightsCompiled (int i, CFILE *loadFile)
 {
 	tFaceColor	*pc;
@@ -1322,7 +1353,7 @@ gameData.render.shadows.nLights = 0;
 #if LIGHTMAPS
 if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk) { 
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
-	pc = &gameData.render.color.lights [0] [0] + i;
+	pc = &gameData.render.color.lights [0][0] + i;
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
 #if SHADOWS
@@ -1402,30 +1433,35 @@ else if (loadOp == 3) {
 else if (loadOp == 4) {
 	LoadSideLightsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
-#if LIGHTMAPS
-	if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk) {
+	if (gameStates.app.bD2XLevel) {
 		if (loadIdx >= gameData.segs.nSegments * 6) {
 			loadIdx = 0;
 			loadOp = 5;
 			}
 		}
 	else
-#endif
 #if SHADOWS
-	if (loadIdx >= gameData.segs.nSegments) {
-#else
-		{
+	if (loadIdx >= gameData.segs.nSegments)
 #endif
+		{
 		loadIdx = 0;
 		loadOp = 5;
 		}
 	}
 else if (loadOp == 5) {
+	LoadTexColorsCompiled (loadIdx, mineDataFile);
+	loadIdx += PROGRESS_INCR;
+	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
+		loadIdx = 0;
+		loadOp = 6;
+		}
+	}
+else if (loadOp == 6) {
 	ComputeSegSideCenters (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
-		loadOp = 6;
+		loadOp = 7;
 		}
 	}
 else {
@@ -1500,7 +1536,7 @@ for (i = 0; i < MAX_TEXTURES; i++)
 
 //	memset ( gameData.segs.segments, 0, sizeof (segment)*MAX_SEGMENTS );
 FuelCenReset ();
-
+InitTexColors ();
 //=============================== Reading part ==============================
 compiled_version = CFReadByte (loadFile);
 //Assert ( compiled_version==COMPILED_MINE_VERSION );
@@ -1526,7 +1562,7 @@ Assert ( gameData.segs.nSegments <= MAX_SEGMENTS );
 con_printf (CON_DEBUG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	CFReadVector ( gameData.segs.vertices+i, loadFile);
+	CFReadVector (gameData.segs.vertices+i, loadFile);
 #if !FLOAT_COORD
 	gameData.segs.fVertices [i].x = ((float) gameData.segs.vertices [i].x) / 65536.0f;
 	gameData.segs.fVertices [i].y = ((float) gameData.segs.vertices [i].y) / 65536.0f;
@@ -1547,10 +1583,12 @@ else {
 	LoadSegment2sCompiled (loadFile);
 	LoadVertLightsCompiled (-1, loadFile);
 	LoadSideLightsCompiled (-1, loadFile);
+	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-
 ResetObjects (1);		//one object, the player
+if (gameOpts->ogl.bUseLights)
+	AddOglLights ();
 #if SHADOWS
 ComputeNearestSegmentLights ();
 #endif

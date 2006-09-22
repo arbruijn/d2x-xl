@@ -4298,8 +4298,10 @@ networkData.tLastPingStat = 0;
 
 //------------------------------------------------------------------------------
 
-void InitMonsterballForces (tMonsterballForce *forceP)
+void InitMonsterballSettings (monsterball_info *monsterballP)
 {
+	tMonsterballForce *forceP = monsterballP->forces;
+
 // primary weapons
 forceP [0].nWeaponId = LASER_ID; 
 forceP [0].nForce = 10;
@@ -4355,6 +4357,8 @@ forceP [23].nForce = 150;
 // player ships
 forceP [24].nWeaponId = 255;
 forceP [24].nForce = 4;
+monsterballP->nBonus = 1;
+monsterballP->nSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
 }
 
 //------------------------------------------------------------------------------
@@ -4418,9 +4422,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].entropy.nOverrideTextures = 2;
 	extraGameInfo [i].entropy.bBrightenRooms = 0;
 	extraGameInfo [i].entropy.bPlayerHandicap = 0;
-	extraGameInfo [i].nMonsterballBonus = 1;
-	extraGameInfo [i].nMonsterballSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
-	InitMonsterballForces (extraGameInfo [i].monsterballForces);
+	InitMonsterballSettings (&extraGameInfo [i].monsterball);
 	}
 }
 

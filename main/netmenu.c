@@ -814,17 +814,26 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 //------------------------------------------------------------------------------
 
-static int nBonusOpt, nSizeModOpt;
+static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
 void MonsterballMenuCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v;
 
+m = menus + nPyroForceOpt;
+v = m->value + 1;
+if (v != extraGameInfo [0].monsterball.forces [24].nForce) {
+	extraGameInfo [0].monsterball.forces [24].nForce = v;
+	sprintf (m->text, TXT_MBALL_PYROFORCE, v);
+	m->rebuild = 1;
+	//*key = -2;
+	return;
+	}
 m = menus + nBonusOpt;
 v = m->value + 1;
-if (v != extraGameInfo [0].nMonsterballBonus) {
-	extraGameInfo [0].nMonsterballBonus = v;
+if (v != extraGameInfo [0].monsterball.nBonus) {
+	extraGameInfo [0].monsterball.nBonus = v;
 	sprintf (m->text, TXT_GOAL_BONUS, v);
 	m->rebuild = 1;
 	//*key = -2;
@@ -832,8 +841,8 @@ if (v != extraGameInfo [0].nMonsterballBonus) {
 	}
 m = menus + nSizeModOpt;
 v = m->value + 2;
-if (v != extraGameInfo [0].nMonsterballSizeMod) {
-	extraGameInfo [0].nMonsterballSizeMod = v;
+if (v != extraGameInfo [0].monsterball.nSizeMod) {
+	extraGameInfo [0].monsterball.nSizeMod = v;
 	sprintf (m->text, TXT_MBALL_SIZE, v / 2, (v & 1) ? 5 : 0);
 	m->rebuild = 1;
 	//*key = -2;
@@ -870,9 +879,9 @@ static int optionToWeaponId [] = {
 	EARTHSHAKER_MEGA_ID
 	};
 
-short nOptionToForce [] = {
+ubyte nOptionToForce [] = {
 	5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 
-	60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 200, 300, 400
+	60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 175, 200, 250
 	};
 
 static char *szWeaponTexts [] = {
@@ -918,9 +927,9 @@ extern short nMonsterballPyroForce;
 void NetworkMonsterballOptions (void)
 {
 	newmenu_item		m [35];
-	int					h, i, j, opt = 0, optPyroForce, optDefaultForces;
-	char					szBonus [60], szSize [60];
-	tMonsterballForce	*pf = extraGameInfo [0].monsterballForces;
+	int					h, i, j, opt = 0, optDefaultForces;
+	char					szBonus [60], szSize [60], szPyroForce [60];
+	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
 
 h = sizeofa (optionToWeaponId);
 j = sizeofa (nOptionToForce);
@@ -935,18 +944,20 @@ for (i = opt = 0; i < h; i++, opt++, pf++) {
 	}
 ADD_TEXT (opt, "", 0);
 opt++;
-ADD_SLIDER (opt, "Pyro", pf->nForce - 1, 0, 9, 0, NULL);
-optPyroForce = opt++;
+sprintf (szPyroForce + 1, TXT_MBALL_PYROFORCE, pf->nForce);
+*szPyroForce = *(TXT_MBALL_PYROFORCE - 1);
+ADD_SLIDER (opt, szPyroForce + 1, pf->nForce - 1, 0, 9, 0, NULL);
+nPyroForceOpt = opt++;
 ADD_TEXT (opt, "", 0);
 opt++;
-sprintf (szBonus + 1, TXT_GOAL_BONUS, extraGameInfo [0].nMonsterballBonus);
+sprintf (szBonus + 1, TXT_GOAL_BONUS, extraGameInfo [0].monsterball.nBonus);
 *szBonus = *(TXT_GOAL_BONUS - 1);
-ADD_SLIDER (opt, szBonus + 1, extraGameInfo [0].nMonsterballBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
+ADD_SLIDER (opt, szBonus + 1, extraGameInfo [0].monsterball.nBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
 nBonusOpt = opt++;
-i = extraGameInfo [0].nMonsterballSizeMod;
+i = extraGameInfo [0].monsterball.nSizeMod;
 sprintf (szSize + 1, TXT_MBALL_SIZE, i / 2, (i & 1) ? 5 : 0);
 *szSize = *(TXT_MBALL_SIZE - 1);
-ADD_SLIDER (opt, szSize + 1, extraGameInfo [0].nMonsterballSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
+ADD_SLIDER (opt, szSize + 1, extraGameInfo [0].monsterball.nSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
 nSizeModOpt = opt++;
 ADD_TEXT (opt, "", 0);
 opt++;
@@ -957,25 +968,25 @@ Assert (sizeofa (m) >= opt);
 for (;;) {
 	i = ExecMenu1 (NULL, "Monsterball Impact Forces", opt, m, MonsterballMenuCallback, 0);
 	if (i == -1)
-		return;
+		break;
 	if (i != optDefaultForces)
 		break;
-	pf = extraGameInfo [0].monsterballForces;
-	InitMonsterballForces (pf);
+	InitMonsterballSettings (&extraGameInfo [0].monsterball);
+	pf = extraGameInfo [0].monsterball.forces;
 	for (i = 0; i < h + 1; i++, pf++) {
 		m [i].value = ForceToOption (pf->nForce);
 		if (pf->nWeaponId == FLARE_ID)
 			i++;
 		}
-	m [optPyroForce].value = NMCLAMP (pf->nForce - 1, 0, 9);
+	m [nPyroForceOpt].value = NMCLAMP (pf->nForce - 1, 0, 9);
+	m [nSizeModOpt].value = extraGameInfo [0].monsterball.nSizeMod - 2;
 	}
-pf = extraGameInfo [0].monsterballForces;
+pf = extraGameInfo [0].monsterball.forces;
 for (i = 0; i < h; i++, pf++)
 	pf->nForce = nOptionToForce [m [i].value];
-pf->nForce = m [optPyroForce].value + 1;
-extraGameInfo [0].nMonsterballSizeMod = (m [nSizeModOpt].value + 1) * 2;
-gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
-	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [1].nMonsterballSizeMod) / 2;
+pf->nForce = m [nPyroForceOpt].value + 1;
+extraGameInfo [0].monsterball.nBonus = m [nBonusOpt].value + 1;
+extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].value + 2;
 }
 
 //------------------------------------------------------------------------------

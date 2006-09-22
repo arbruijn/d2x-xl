@@ -490,63 +490,67 @@ extern void ShowReticle(int force_big);
 // Draw the reticle in 3D for head tracking
 void Draw3DReticle (fix nEyeOffset)
 {
-	g3s_point 	reticle_points [4];
-	uvl		uvl [4];
+	g3s_point 	reticlePoints [4];
+	uvl			uvl [4];
 	g3s_point	*pointlist [4];
 	int 			i;
-	vms_vector v1, v2;
-	grs_canvas *saved_canvas;
-	int saved_interp_method;
+	vms_vector	v1, v2;
+	grs_canvas	*saved_canvas;
+	int			saved_interp_method;
 
 //	if (!bUsePlayerHeadAngles) return;
 	
-	for (i=0; i<4; i++ )	{
-		pointlist [i] = &reticle_points [i];
-		uvl [i].l = MAX_LIGHT;
+for (i=0; i<4; i++ )	{
+	pointlist [i] = &reticlePoints [i];
+	uvl [i].l = MAX_LIGHT;
 	}
-	uvl [0].u = 0; uvl [0].v = 0;
-	uvl [1].u = F1_0; uvl [1].v = 0;
-	uvl [2].u = F1_0; uvl [2].v = F1_0;
-	uvl [3].u = 0; uvl [3].v = F1_0;
+uvl [0].u =
+uvl [0].v =
+uvl [1].v =
+uvl [3].u = 0; 
+uvl [1].u =
+uvl [2].u =
+uvl [2].v =
+uvl [3].v = F1_0;
 
-	VmVecScaleAdd( &v1,&gameData.objs.viewer->pos, &gameData.objs.viewer->orient.fvec, F1_0*4 );
-	VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rvec,nEyeOffset);
+VmVecScaleAdd( &v1,&gameData.objs.viewer->pos, &gameData.objs.viewer->orient.fvec, F1_0*4 );
+VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rvec,nEyeOffset);
 
-	VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
-	VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-	G3RotatePoint(&reticle_points [0],&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
+G3RotatePoint(&reticlePoints [0],&v2);
 
-	VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
-	VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-	G3RotatePoint(&reticle_points [1],&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
+G3RotatePoint(&reticlePoints [1],&v2);
 
-	VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
-	VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-	G3RotatePoint(&reticle_points [2],&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
+G3RotatePoint(&reticlePoints [2],&v2);
 
-	VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
-	VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-	G3RotatePoint(&reticle_points [3],&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
+G3RotatePoint(&reticlePoints [3],&v2);
 
-	if ( reticle_canvas == NULL )	{
-		reticle_canvas = GrCreateCanvas(64,64);
-		if ( !reticle_canvas )
-			Error( "Couldn't d_malloc reticle_canvas" );
-		atexit( FreeReticleCanvas );
-		//reticle_canvas->cv_bitmap.bm_handle = 0;
-		reticle_canvas->cv_bitmap.bm_props.flags = BM_FLAG_TRANSPARENT;
+if ( reticle_canvas == NULL )	{
+	reticle_canvas = GrCreateCanvas(64,64);
+	if ( !reticle_canvas )
+		Error( "Couldn't d_malloc reticle_canvas" );
+	atexit( FreeReticleCanvas );
+	//reticle_canvas->cv_bitmap.bm_handle = 0;
+	reticle_canvas->cv_bitmap.bm_props.flags = BM_FLAG_TRANSPARENT;
 	}
 
-	saved_canvas = grdCurCanv;
-	GrSetCurrentCanvas(reticle_canvas);
-	GrClearCanvas(0);		// Clear to Xparent
-	ShowReticle(1);
-	GrSetCurrentCanvas(saved_canvas);
-	
-	saved_interp_method=gameStates.render.nInterpolationMethod;
-	gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-	G3DrawTexPoly(4,pointlist,uvl,&reticle_canvas->cv_bitmap,1);
-	gameStates.render.nInterpolationMethod	= saved_interp_method;
+saved_canvas = grdCurCanv;
+GrSetCurrentCanvas(reticle_canvas);
+GrClearCanvas(0);		// Clear to Xparent
+ShowReticle(1);
+GrSetCurrentCanvas(saved_canvas);
+
+saved_interp_method=gameStates.render.nInterpolationMethod;
+gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
+G3DrawTexPoly (4, pointlist, uvl, &reticle_canvas->cv_bitmap, 1);
+gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
 
@@ -628,16 +632,16 @@ return funcRes;
 //------------------------------------------------------------------------------
 
 typedef struct tFaceProps {
-	short		segNum, sideNum;
-	short		tMap1, tMap2;
-	uvl		uvls [4];
-	short		vp [4];
+	short			segNum, sideNum;
+	short			tMap1, tMap2;
+	uvl			uvls [4];
+	short			vp [4];
 #if LIGHTMAPS
-	uvl	uvl_lMaps [4];
+	uvl			uvl_lMaps [4];
 #endif
-	ubyte		nv;
-	ubyte		widFlags;
-	char		renderState;
+	ubyte			nv;
+	ubyte			widFlags;
+	char			renderState;
 } tFaceProps;
 
 typedef struct tFaceListEntry {
@@ -672,6 +676,195 @@ color->color.green *= m;
 color->color.blue *= m;
 #	endif
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+int SetVertexColors (tFaceProps *propsP)
+{
+if (gameOpts->ogl.bUseLights)
+	return 0;
+if (gameOpts->render.color.bAmbientLight && gameStates.app.bD2XLevel && !USE_LIGHTMAPS) { 
+#if VERTEX_LIGHTING
+	int i, j = propsP->nv;
+	for (i = 0; i < j; i++)
+		vertColors [i] = gameData.render.color.vertices [propsP->vp [i]];
+	}
+else
+	memset (vertColors, 0, sizeof (vertColors));
+#else
+	tFaceColor *colorP = gameData.render.color.sides [segnum] + sidenum;
+	if (colorP->index)
+		lightColor = *colorP;
+	else
+		lightColor.color.red =
+		lightColor.color.blue =
+		lightColor.color.green = 1.0;
+		}
+else
+	lightColor.index = 0;
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int SetFaceLight (tFaceProps *propsP)
+{
+	int			h, i;
+	tFaceColor	*pvc = vertColors;
+	tRgbColorf	*pdc;
+	fix			reflect, dynLight;
+
+if (gameOpts->ogl.bUseLights)
+	return 0;
+for (i = 0; i < propsP->nv; i++, pvc++) {
+	//the uvl struct has static light already in it
+	//scale static light for destruction effect
+#if LMAP_LIGHTADJUST
+	if (gameStates.render.color.bLightMapsOk && 
+			gameOpts->render.color.bAmbientLight && 
+			gameOpts->render.color.bUseLightMaps && 
+			!IsMultiGame) {
+		propsP->uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [propsP->segNum][propsP->sideNum];
+		if (propsP->uvls [i].l < 0)
+			propsP->uvls [i].l = 0;
+		}
+#endif
+	if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
+		propsP->uvls [i].l = fixmul (gameStates.render.nFlashScale,propsP->uvls [i].l);
+	//add in dynamic light (from explosions, etc.)
+	dynLight = dynamicLight [h = propsP->vp [i]];
+#ifdef _DEBUG
+	if (dynLight)
+#endif
+	propsP->uvls [i].l += dynLight;
+#if 0
+	if (gameData.app.nGameMode & GM_ENTROPY) {
+		if (segP->owner == 1) {
+			tMapColor.index = 1;
+			tMapColor.color.red = 
+			tMapColor.color.green = 5.0 / 63.0;
+			tMapColor.color.blue = 1.0;
+			}
+		else if (segP->owner == 3) {
+			tMapColor.index = 1;
+			tMapColor.color.red = 1.0;
+			tMapColor.color.green = 
+			tMapColor.color.blue = 5.0 / 63.0;
+			}
+		}
+#endif
+	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameOpts->render.color.bGunLight) {
+		if (bUseGlobalColor) {
+			if (bGotGlobalDynColor) {
+				tMapColor.index = 1;
+				memcpy (&tMapColor.color, &globalDynColor, sizeof (tRgbColorf));
+				}
+			}
+		else if (bGotDynColor [h]) {
+			pdc = dynamicColor + h;
+			pvc->index = -1;
+			if (gameOpts->render.color.bMix) {
+				float dl = f2fl (dynLight);
+#if 0
+				pvc->color.red = (pvc->color.red + dynamicColor [h].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
+				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
+				pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
+#else
+				if (gameStates.app.bD2XLevel && 
+						gameOpts->render.color.bAmbientLight && 
+						!gameOpts->render.color.bUseLightMaps && 
+						(pvc->index != -1)) {
+					pvc->color.red += pdc->red * dl;
+					pvc->color.green += pdc->green * dl;
+					pvc->color.blue += pdc->blue * dl;
+					}
+				else {
+					float l = f2fl (propsP->uvls [i].l);
+					pvc->color.red = l + pdc->red * dl;
+					pvc->color.green = l + pdc->green * dl;
+					pvc->color.blue = l + pdc->blue * dl;
+					}
+				if (gameOpts->render.color.bCap) {
+					if (pvc->color.red > 1.0)
+						pvc->color.red = 1.0;
+					if (pvc->color.green > 1.0)
+						pvc->color.green = 1.0;
+					if (pvc->color.blue > 1.0)
+						pvc->color.blue = 1.0;
+					}
+#endif
+				}
+			else {
+				float dl = f2fl (propsP->uvls [i].l);
+				dl = (float) pow (dl, 1.0 / 3.0); //sqrt (dl);
+				pvc->color.red = pdc->red * dl;
+				pvc->color.green = pdc->green * dl;
+				pvc->color.blue = pdc->blue * dl;
+				}
+			}
+		else {
+			if (pvc->index)
+				ScaleColor (pvc, f2fl (propsP->uvls [i].l));
+			}
+		}
+	else {
+		if (pvc->index)
+			ScaleColor (pvc, f2fl (propsP->uvls [i].l));
+		}
+	//add in light from player's headlight
+	// -- Using new headlight system...propsP->uvls [i].l += compute_headlight_light(&gameData.segs.points [propsP->vp [i]].p3_vec,face_light);
+	//saturate at max value
+	if (propsP->uvls [i].l > MAX_LIGHT)
+		propsP->uvls [i].l = MAX_LIGHT;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int RenderWall (tFaceProps *propsP, g3s_point **pointlist, int bIsMonitor)
+{
+short c, nWallNum = WallNumI (propsP->segNum, propsP->sideNum);
+
+if (IS_WALL (nWallNum)) {
+	if (propsP->widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
+		if (!bIsMonitor) {
+			if (!RenderColoredSegment (propsP->segNum, propsP->sideNum, propsP->nv, pointlist)) {
+				c = gameData.walls.walls [nWallNum].cloak_value;
+				if (propsP->widFlags & WID_CLOAKED_FLAG) {
+					if (c < GR_ACTUAL_FADE_LEVELS) {
+						gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - (float) c;
+						G3DrawPolyAlpha (propsP->nv, pointlist, 0, 0, 0, -1);		//draw as flat poly
+						}
+					}
+				else {
+					if (!gameOpts->render.color.bWalls)
+						c = 0;
+					if (gameData.walls.walls [nWallNum].hps)
+						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
+					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
+						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
+					else
+						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
+					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
+						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (c), CPAL2Tg (c), CPAL2Tb (c), -1);	//draw as flat poly
+					}
+				}
+			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+			return 1;
+			}
+		}
+	else if (gameStates.app.bD2XLevel) {
+		c = gameData.walls.walls [nWallNum].cloak_value;
+		if (c && (c < GR_ACTUAL_FADE_LEVELS))
+			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
+		}
+	else	
+		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -713,20 +906,16 @@ if (!bRender)
 #endif
 {
 	// -- Using new headlight system...fix			face_light;
-	grs_bitmap  *bm = NULL;
+	grs_bitmap  *bmBot = NULL;
 #ifdef OGL
-	grs_bitmap  *bm2 = NULL;
+	grs_bitmap  *bmTop = NULL;
 #endif
 
-	fix			reflect, dynLight;
-	int			h,i,c, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, nWallNum, bCamBufAvail;
+	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
 	g3s_point	*pointlist [8];
 	segment		*segP = gameData.segs.segments + props.segNum;
 	side			*sideP = segP->sides + props.sideNum;
 	tCamera		*pc = NULL;
-#if VERTEX_LIGHTING == 0
-	tFaceColor	*colorP;
-#endif
 
 Assert(props.nv <= 4);
 	for (i = 0; i < props.nv; i++)
@@ -739,25 +928,7 @@ Assert(props.nv <= 4);
 	if (!(gameOpts->render.bTextures || IsMultiGame))
 		goto drawWireFrame;
 #endif
-	if (gameOpts->render.color.bAmbientLight && gameStates.app.bD2XLevel && !USE_LIGHTMAPS) { 
-#if VERTEX_LIGHTING
-		for (i = 0; i < props.nv; i++)
-			vertColors [i] = gameData.render.color.vertices [props.vp [i]];
-		}
-	else
-		memset (vertColors, 0, sizeof (vertColors));
-#else
-		colorP = gameData.render.color.sides [segnum] + sidenum;
-		if (colorP->index)
-			lightColor = *colorP;
-		else
-			lightColor.color.red =
-			lightColor.color.blue =
-			lightColor.color.green = 1.0;
-			}
-	else
-		lightColor.index = 0;
-#endif
+	SetVertexColors (propsP);
 #ifdef OGL_ZBUF
 	if (!gameOpts->legacy.bZBuf && !gameOpts->legacy.bRender && (renderState == 2)) {
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
@@ -788,43 +959,8 @@ Assert(props.nv <= 4);
 	//handle cloaked walls
 	if (bIsMonitor)
 		pc->bVisible = 1;
-	nWallNum = WallNumP (segP, props.sideNum);
-	if (IS_WALL (nWallNum)) {
-		if (props.widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
-			if (!bIsMonitor) {
-				if (!RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist)) {
-					c = gameData.walls.walls [nWallNum].cloak_value;
-					if (props.widFlags & WID_CLOAKED_FLAG) {
-						if (c < GR_ACTUAL_FADE_LEVELS) {
-							gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - (float) c;
-							G3DrawPolyAlpha (props.nv, pointlist, 0, 0, 0, -1);		//draw as flat poly
-							}
-						}
-					else {
-						if (!gameOpts->render.color.bWalls)
-							c = 0;
-						if (gameData.walls.walls [nWallNum].hps)
-							gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
-						else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-							gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
-						else
-							gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
-						if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
-							G3DrawPolyAlpha (props.nv, pointlist, CPAL2Tr (c), CPAL2Tg (c), CPAL2Tb (c), -1);	//draw as flat poly
-						}
-					}
-				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-				return;
-				}
-			}
-		else if (gameStates.app.bD2XLevel) {
-			c = gameData.walls.walls [nWallNum].cloak_value;
-			if (c && (c < GR_ACTUAL_FADE_LEVELS))
-				gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
-			}
-		else	
-			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-		}
+	if (RenderWall (&props, pointlist, bIsMonitor))
+		return;
 	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->orient.fvec,norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, sidenum) == WID_NO_WALL)
 		if (props.tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
@@ -837,28 +973,26 @@ Assert(props.nv <= 4);
 		sideP->tmap_num = 0;
 		}
 	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
-#ifdef OGL
 		if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 
-			bm = LoadFaceBitmap (props.tMap1, sideP->frame_num);
+			bmBot = LoadFaceBitmap (props.tMap1, sideP->frame_num);
 			if (props.tMap2)
-				bm2 = LoadFaceBitmap ((short) (props.tMap2 & 0x3fff), sideP->frame_num);
+				bmTop = LoadFaceBitmap ((short) (props.tMap2 & 0x3fff), sideP->frame_num);
 			}
 		else
-#endif
 			// New code for overlapping textures...
 			if (props.tMap2 != 0) {
-				bm = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
+				bmBot = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
 #ifdef _DEBUG
-				if (!bm)
-					bm = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
+				if (!bmBot)
+					bmBot = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
 #endif
 				}
 			else {
-				bm = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.tMap1].index;
+				bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.tMap1].index;
 				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.tMap1], gameStates.app.bD1Mission);
 				}
-//		Assert(!(bm->bm_props.flags & BM_FLAG_PAGED_OUT));
+//		Assert(!(bmBot->bm_props.flags & BM_FLAG_PAGED_OUT));
 		}
 	//else 
 	if (bHaveCamImg) {
@@ -866,136 +1000,26 @@ Assert(props.nv <= 4);
 		pc->texBuf.glTexture->wrapstate = -1;
 		if (bIsTeleCam) {
 #ifdef _DEBUG
-			bm = &pc->texBuf;
+			bmBot = &pc->texBuf;
 			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #else
-			bm2 = &pc->texBuf;
+			bmTop = &pc->texBuf;
 			gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
 #endif
 			}
 		else if (gameOpts->render.cameras.bFitToWall || (props.tMap2 > 0))
-			bm = &pc->texBuf;
+			bmBot = &pc->texBuf;
 		else
-			bm2 = &pc->texBuf;
+			bmTop = &pc->texBuf;
 		}
-	//reflect = fl2f((1.0-gameData.pig.tex.tMapInfo [p->tmap_num].reflect)/2.0 + 0.5);
-	//reflect = fl2f((1.0-gameData.pig.tex.tMapInfo [p->tmap_num].reflect);
-	reflect = Face_reflectivity;		// f1_0;	//until we figure this stuff out...
-	//set light values for each vertex & build pointlist
-	{
-		int i;
-		tFaceColor	*pvc = vertColors;
-		tRgbColorf	*pdc;
-		// -- Using new headlight system...face_light = fixmul(face_light,reflect);
-		for (i = 0; i < props.nv; i++, pvc++) {
-			//the uvl struct has static light already in it
-			//scale static light for destruction effect
-#if LMAP_LIGHTADJUST
-			if (gameStates.render.color.bLightMapsOk && 
-				 gameOpts->render.color.bAmbientLight && 
-				 gameOpts->render.color.bUseLightMaps && 
-				 !IsMultiGame) {
-				props.uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [props.segNum][props.sideNum];
-				if (props.uvls [i].l < 0)
-					props.uvls [i].l = 0;
-				}
-#endif
-			if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
-				props.uvls [i].l = fixmul (gameStates.render.nFlashScale,props.uvls [i].l);
-			//add in dynamic light (from explosions, etc.)
-			dynLight = dynamicLight [h = props.vp [i]];
-#ifdef _DEBUG
-			if (dynLight)
-#endif
-			props.uvls [i].l += dynLight;
-#if 0
-			if (gameData.app.nGameMode & GM_ENTROPY) {
-				if (segP->owner == 1) {
-					tMapColor.index = 1;
-					tMapColor.color.red = 
-					tMapColor.color.green = 5.0 / 63.0;
-					tMapColor.color.blue = 1.0;
-					}
-				else if (segP->owner == 3) {
-					tMapColor.index = 1;
-					tMapColor.color.red = 1.0;
-					tMapColor.color.green = 
-					tMapColor.color.blue = 5.0 / 63.0;
-					}
-				}
-#endif
-			if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameOpts->render.color.bGunLight) {
-				if (bUseGlobalColor) {
-					if (bGotGlobalDynColor) {
-						tMapColor.index = 1;
-						memcpy (&tMapColor.color, &globalDynColor, sizeof (tRgbColorf));
-						}
-					}
-				else if (bGotDynColor [h]) {
-					pdc = dynamicColor + h;
-					pvc->index = -1;
-					if (gameOpts->render.color.bMix) {
-						float dl = f2fl (dynLight);
-#if 0
-						pvc->color.red = (pvc->color.red + dynamicColor [h].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
-						pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
-						pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
-#else
-						if (gameStates.app.bD2XLevel && 
-							 gameOpts->render.color.bAmbientLight && 
-							 !gameOpts->render.color.bUseLightMaps && 
-							 (pvc->index != -1)) {
-							pvc->color.red += pdc->red * dl;
-							pvc->color.green += pdc->green * dl;
-							pvc->color.blue += pdc->blue * dl;
-							}
-						else {
-							float l = f2fl (props.uvls [i].l);
-							pvc->color.red = l + pdc->red * dl;
-							pvc->color.green = l + pdc->green * dl;
-							pvc->color.blue = l + pdc->blue * dl;
-							}
-						if (gameOpts->render.color.bCap) {
-							if (pvc->color.red > 1.0)
-								pvc->color.red = 1.0;
-							if (pvc->color.green > 1.0)
-								pvc->color.green = 1.0;
-							if (pvc->color.blue > 1.0)
-								pvc->color.blue = 1.0;
-							}
-#endif
-						}
-					else {
-						float dl = f2fl (props.uvls [i].l);
-						dl = (float) pow (dl, 1.0 / 3.0); //sqrt (dl);
-						pvc->color.red = pdc->red * dl;
-						pvc->color.green = pdc->green * dl;
-						pvc->color.blue = pdc->blue * dl;
-						}
-					}
-				else {
-					if (pvc->index)
-						ScaleColor (pvc, f2fl (props.uvls [i].l));
-					}
-				}
-			else {
-				if (pvc->index)
-					ScaleColor (pvc, f2fl (props.uvls [i].l));
-				}
-			//add in light from player's headlight
-			// -- Using new headlight system...props.uvls [i].l += compute_headlight_light(&gameData.segs.points [props.vp [i]].p3_vec,face_light);
-			//saturate at max value
-			if (props.uvls [i].l > MAX_LIGHT)
-				props.uvls [i].l = MAX_LIGHT;
-		}
-	}
+	SetFaceLight (&props);
 #ifdef EDITOR
 	if (Render_only_bottom && (sidenum == WBOTTOM))
 		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index,1);
 	else
 #endif
 #ifdef OGL
-	if (bm2)
+	if (bmTop)
 		G3DrawTexPolyMulti (
 			props.nv, 
 			pointlist,
@@ -1003,12 +1027,12 @@ Assert(props.nv <= 4);
 #if LIGHTMAPS
 			props.uvl_lMaps, 
 #endif
-			bm, bm2, 
+			bmBot, bmTop, 
 #if LIGHTMAPS
 			lightMaps + props.segNum * 6 + props.sideNum, 
 #endif
 			(props.tMap2 >> 14) & 3, 
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor || (bm->bm_props.flags & BM_FLAG_TGA))); //((tmap2&0xC000)>>14) & 3);
+			!bIsMonitor || bIsTeleCam); //(bIsMonitor || (bmBot->bm_props.flags & BM_FLAG_TGA))); //((tmap2&0xC000)>>14) & 3);
 	else
 #endif
 #if LIGHTMAPS == 0
@@ -1016,19 +1040,19 @@ Assert(props.nv <= 4);
 			props.nv,
 			pointlist, 
 			props.uvls, 
-			bm, 
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bm->bm_props.flags & BM_FLAG_TGA));
+			bmBot, 
+			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
 #else
 		G3DrawTexPolyMulti (
 			props.nv,
 			pointlist,
 			props.uvls, 
 			props.uvl_lMaps,
-			bm,
+			bmBot,
 			NULL,
 			lightMaps + props.segNum * 6 + props.sideNum, 
 			0,
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bm->bm_props.flags & BM_FLAG_TGA));
+			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
 #endif
 		}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -3593,6 +3617,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	 gameStates.render.bShadowMaps || 
 	 (gameStates.render.nShadowPass < 2)) {
 	RenderStartFrame ();
+	TransRotOglLights ();
 #if defined(EDITOR) && !defined(NDEBUG)
 		if (bShowOnlyCurSide) {
 			RotateList (8, Cursegp->verts);

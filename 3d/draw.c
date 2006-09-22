@@ -251,7 +251,7 @@ bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list, grs_bitmap *bm)
+bool G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list, vms_vector *norm, grs_bitmap *bm)
 {
 	int i;
 	g3s_point **bufptr, *p;

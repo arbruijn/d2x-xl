@@ -178,6 +178,8 @@ typedef struct tRenderOptions {
 typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
+	int bHaveLights;
+	int bUseLights;
 	int bRgbaFormat;
 	int bIntensity4;
 	int bLuminance4Alpha4;
@@ -669,6 +671,7 @@ typedef struct tColorData {
 	tFaceColor	lights [MAX_SEGMENTS][6];
 	tFaceColor	sides [MAX_SEGMENTS][6];
 	tFaceColor	vertices [MAX_VERTICES];
+	tFaceColor	textures [MAX_WALL_TEXTURES];
 	tLightRef	visibleLights [MAX_SEGMENTS * 6];
 	int			nVisibleLights;
 } tColorData;
@@ -689,12 +692,35 @@ typedef struct tSphereData {
 	tPulseData	*pPulse;
 } tSphereData;
 
+typedef struct tOglLight {
+	unsigned		handle;
+	vms_vector	vPos;
+	tRgbColorf	color;
+	float			brightness;
+	float			fAmbient [4];
+	float			fDiffuse [4];
+	float			fSpecular [4];
+	float			fAttenuation [3];	// constant, linear quadratic
+	short			nSegment;
+	short			nSide;
+	short			nObject;
+	ubyte			bState;
+} tOglLight;
+
+typedef struct tOglLightData {
+	tOglLight	lights [MAX_SEGMENTS];
+	int			nLights;
+	ubyte			bUsedHandles [MAX_SEGMENTS];
+	short			owners [MAX_OBJECTS];
+} tOglLightData;
+
 typedef struct tLightData {
-	int			nStatic;
-	fix			segDeltas [MAX_SEGMENTS][6];
-	dl_index		deltaIndices [MAX_DL_INDICES];
-	delta_light	deltas [MAX_DELTA_LIGHTS];
-	ubyte			subtracted [MAX_SEGMENTS];
+	int				nStatic;
+	fix				segDeltas [MAX_SEGMENTS][6];
+	dl_index			deltaIndices [MAX_DL_INDICES];
+	delta_light		deltas [MAX_DELTA_LIGHTS];
+	ubyte				subtracted [MAX_SEGMENTS];
+	tOglLightData	ogl;
 } tLightData;
 
 typedef struct tShadowData {

@@ -1720,8 +1720,8 @@ void LoadGameTexts(void);
 #define TXT_MONSTERBALL_OPTS		GT(775)
 #define TXT_GOAL_BONUS				GT(776)
 #define TXT_MBALL_SIZE				GT(777)
+#define TXT_MBALL_PYROFORCE		GT(778)
 #if 0
-#define TXT_				GT(778)
 #define TXT_				GT(779)
 #define TXT_				GT(780)
 #define TXT_				GT(781)

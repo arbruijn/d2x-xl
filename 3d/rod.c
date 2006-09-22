@@ -120,7 +120,7 @@ bool G3DrawRodTexPoly(grs_bitmap *bitmap,g3s_point *bot_point,fix bot_width,g3s_
 if (CalcRodCorners (bot_point,bot_width,top_point,top_width))
 	return 0;
 uvl_list [0].l = uvl_list [1].l = uvl_list [2].l = uvl_list [3].l = light;
-return G3DrawTexPoly (4, rod_point_list, uvl_list,bitmap, 1);
+return G3DrawTexPoly (4, rod_point_list, uvl_list, bitmap, 1);
 }
 
 //------------------------------------------------------------------------------

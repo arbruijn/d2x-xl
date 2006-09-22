@@ -620,12 +620,14 @@ short nMonsterballPyroForce;
 void SetMonsterballForces (void)
 {
 	int	i, h = IsMultiGame;
-	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterballForces;
+	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterball.forces;
 
 memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
 for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
 	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
+gameData.objs.pwrUp.info [POW_MONSTERBALL].size = 
+	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
 }
 
 //	-----------------------------------------------------------------------------

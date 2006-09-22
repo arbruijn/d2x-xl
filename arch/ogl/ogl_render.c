@@ -53,6 +53,7 @@
 #include "network.h"
 #include "lightmap.h"
 #include "mouse.h"
+#include "oof.h"
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -577,7 +578,9 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (tMapColor.index) {
+if (gameOpts->ogl.bUseLights)
+	OglColor4sf (1.0f, 1.0f, 1.0f, s);
+else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
 	OglColor4sf (tMapColor.color.red, tMapColor.color.green, tMapColor.color.blue, s);
 	tMapColor.color.red =
@@ -1023,6 +1026,25 @@ else
 #	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
+		if (gameOpts->ogl.bUseLights) {
+#if 0
+			tOOF_vector	p [3], vNormal;
+
+			OOF_VecVms2Oof (p, &pointlist [0]->p3_vec);
+			OOF_VecVms2Oof (p + 1, &pointlist [1]->p3_vec);
+			OOF_VecVms2Oof (p + 2, &pointlist [2]->p3_vec);
+			glNormal3fv ((GLfloat *) OOF_VecNormal (&vNormal, p, p + 1, p + 2));
+#else			
+			GLfloat		fNormal [3];
+			vms_vector	vNormal;
+
+			VmVecNormal (&vNormal, &pointlist [0]->p3_vec, &pointlist [1]->p3_vec, &pointlist [2]->p3_vec);
+			fNormal [0] = f2fl (vNormal.x);
+			fNormal [1] = f2fl (vNormal.y);
+			fNormal [2] = f2fl (vNormal.z);
+			glNormal3fv (fNormal);
+#endif
+			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 			SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
@@ -1478,9 +1500,12 @@ if (gameStates.render.nShadowPass) {
 			glDisable (GL_CULL_FACE);		
 			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
-		if (gameStates.render.bGlLighting) {	//for optional hardware lighting
+		if (gameOpts->ogl.bUseLights) {	//for optional hardware lighting
 			glEnable (GL_LIGHTING);
-			glDisable (GL_LIGHT0);
+			glShadeModel (GL_SMOOTH);
+			glColorMaterial (GL_BACK, GL_AMBIENT_AND_DIFFUSE);
+			glEnable (GL_COLOR_MATERIAL);
+			//glDisable (GL_LIGHT0);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
@@ -1619,6 +1644,12 @@ else
 			gameOpts->legacy.bZBuf = 1;
 		}	
 #endif
+	if (gameOpts->ogl.bUseLights)	{//for optional hardware lighting
+		glEnable (GL_LIGHTING);
+		glShadeModel (GL_SMOOTH);
+		glEnable (GL_COLOR_MATERIAL);
+		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+		}
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
@@ -1657,6 +1688,10 @@ glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);
 glDisable (GL_CULL_FACE);
 glDisable (GL_STENCIL_TEST);
+if (gameOpts->ogl.bUseLights) {
+	glDisable (GL_LIGHTING);
+	glDisable (GL_COLOR_MATERIAL);
+	}
 glDepthMask (1);
 if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);

@@ -2116,6 +2116,7 @@ else {
 void InitOglOptions (int i)
 {
 if (i) {
+	gameOptions [1].ogl.bUseLights = 0;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bRgbaFormat = 4;
 	gameOptions [1].ogl.bIntensity4 = 1;
@@ -2133,6 +2134,11 @@ if (i) {
 	gameOptions [1].ogl.bGlTexMerge = 0;
 	}
 else {
+#ifdef _DEBUG
+	gameOptions [0].ogl.bUseLights = 1;
+#else
+	gameOptions [0].ogl.bUseLights = 0;
+#endif
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bRgbaFormat = 4;
 	gameOptions [0].ogl.bIntensity4 = 1;

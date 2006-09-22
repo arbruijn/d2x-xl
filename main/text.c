@@ -1573,6 +1573,7 @@ char *defaultGameTexts [][2] = {
 	{"Monster~Ball-Optionen...", "Monster~Ball Options..."},
 	{"Tor-~Bonus: %d", "Goal ~Bonus: %d"},
 	{"Monsterball-~Groesse: %d.%d", "Monsterball ~Size: %d.%d"},
+	{"~Pyro-Kraft: x %d", "~Pyro Force: x %d"},
 #if 0
 	{"", ""},
 	{"", ""},

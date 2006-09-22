@@ -419,8 +419,15 @@ typedef struct entropy_gameinfo {
 
 typedef struct tMonsterballForce {
 	ubyte		nWeaponId;
-	short		nForce;
+	ubyte		nForce;
 } tMonsterballForce;
+
+typedef struct monsterball_info {
+	char					nBonus;
+	char					nSizeMod;
+	tMonsterballForce forces [MAX_MONSTERBALL_FORCES];
+
+} monsterball_info;
 
 typedef struct extra_gameinfo {
 	ubyte   	type;
@@ -462,9 +469,7 @@ typedef struct extra_gameinfo {
 	char		bShadows;
 	char		bRenderShield;
 	char		bTeleporterCams;
-	char		nMonsterballBonus;
-	char		nMonsterballSizeMod;
-	tMonsterballForce monsterballForces [MAX_MONSTERBALL_FORCES];
+	monsterball_info	monsterball;
 } __pack__ extra_gameinfo;
 
 typedef struct tMpParams {
@@ -737,7 +742,7 @@ void NetworkAdjustMaxDataSize();
 int CanJoinNetgame(netgame_info *game,allNetPlayers_info *people);
 void RestartNetSearching(newmenu_item * m);
 void DeleteTimedOutNetGames (void);
-void InitMonsterballForces (tMonsterballForce *forceP);
+void InitMonsterballSettings (monsterball_info *monsterballP);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started

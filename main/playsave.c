@@ -1023,16 +1023,16 @@ for (j = 0; j < 1; j++) {
 		}
 	if (player_file_version >= 115)
 		if (!j) {
-			tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
-			extraGameInfo [0].nMonsterballBonus = CFReadByte (fp);
+			tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
+			extraGameInfo [0].monsterball.nBonus = CFReadByte (fp);
 			for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
 				pf->nWeaponId = CFReadByte (fp);
-				pf->nForce = CFReadShort (fp);
+				pf->nForce = CFReadByte (fp);
 				}
 			}
 	if (player_file_version >= 116)
 		if (!j)
-			extraGameInfo [0].nMonsterballSizeMod = CFReadByte (fp);
+			extraGameInfo [0].monsterball.nSizeMod = CFReadByte (fp);
 	}
 if (errno_ret == EZERO)
 	KCSetControls();
@@ -1429,15 +1429,15 @@ for (j = 0; j < 1; j++) {
 	CFWriteByte (gameOptions [j].input.joyDeadZones [4], fp);
 	CFWriteByte (gameOptions [j].input.joySensitivity [4], fp);
 	if (!j) {
-		tMonsterballForce *pf = extraGameInfo [0].monsterballForces;
-		CFWriteByte (extraGameInfo [0].nMonsterballBonus, fp);
+		tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
+		CFWriteByte (extraGameInfo [0].monsterball.nBonus, fp);
 		for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
 			CFWriteByte (pf->nWeaponId, fp);
-			CFWriteShort (pf->nForce, fp);
+			CFWriteByte (pf->nForce, fp);
 			}
 		}
 	if (!j)
-		CFWriteByte (extraGameInfo [0].nMonsterballSizeMod, fp);
+		CFWriteByte (extraGameInfo [0].monsterball.nSizeMod, fp);
 // end of D2X-XL stuff
 	}
 
