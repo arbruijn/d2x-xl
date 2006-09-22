@@ -1350,7 +1350,7 @@ bool G3DrawPolyModel (
 	vms_angvec	*pAnimAngles, 
 	fix			model_light, 
 	fix			*glow_values, 
-	tRgbColorf	*obj_color)
+	tRgbColorf	*objColorP)
 {
 	ubyte *p = modelP;
 	short	h;
@@ -1404,19 +1404,19 @@ for (;;) {
 #if 1
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
 			GrFadeColorRGB (32.0 / (double) l);
-			if (obj_color) {
-				obj_color->red = grdCurCanv->cv_color.color.red;
-				obj_color->green = grdCurCanv->cv_color.color.green;
-				obj_color->blue = grdCurCanv->cv_color.color.blue;
+			if (objColorP) {
+				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 
+				objColorP->green = (float) grdCurCanv->cv_color.color.green / 255.0f;
+				objColorP->blue = (float) grdCurCanv->cv_color.color.blue / 255.0f;
 				}
 #else
 			cc = GrFindClosestColor15bpp (WORDVAL (p+28));
 			c = grFadeTable [(l << 8) | cc];
 			GrSetColor (c);
-			if (obj_color) {
-				obj_color->red = CPAL2Tr (c);
-				obj_color->green = CPAL2Tg (c);
-				obj_color->blue = CPAL2Tb (c);
+			if (objColorP) {
+				objColorP->red = CPAL2Tr (c);
+				objColorP->green = CPAL2Tg (c);
+				objColorP->blue = CPAL2Tb (c);
 				}
 #endif
 			p += 30;
@@ -1451,11 +1451,11 @@ for (;;) {
 			for (i = 0; i < nv; i++)
 				uvl_list [i].l = light;
 
-			if (obj_color) {
+			if (objColorP) {
 				unsigned char c = model_bitmaps [WORDVAL (p+28)]->avg_color;
-				obj_color->red = CPAL2Tr (c);
-				obj_color->green = CPAL2Tg (c);
-				obj_color->blue = CPAL2Tb (c);
+				objColorP->red = CPAL2Tr (c);
+				objColorP->green = CPAL2Tg (c);
+				objColorP->blue = CPAL2Tb (c);
 				}
 			p += 30;
 			for (i = 0; i < nv; i++)
@@ -1469,12 +1469,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, obj_color);
-			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, obj_color);
+			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, obj_color);
-			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, obj_color);
+			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
 			}
 		p += 32;
 		}
@@ -1493,7 +1493,7 @@ for (;;) {
 		else
 			a = &zeroAngles;
 		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (p+WORDVAL (p+16), model_bitmaps, pAnimAngles, model_light, glow_values, obj_color);
+		G3DrawPolyModel (p+WORDVAL (p+16), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
 		G3DoneInstance ();
 		p += 20;
 		}

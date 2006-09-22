@@ -599,8 +599,7 @@ else {
 	transp = 0;
 	alpha = 1.0f;
 	}
-	orientation = global_orientation;
-
+orientation = global_orientation;
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bm_type == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
@@ -885,23 +884,25 @@ void DrawPolygonObject (object *objP)
 				if (dist_to_eye >= gameData.models.nSimpleModelThresholdScale * F1_0*2)
 					bBlendPolys = 0;
 				else
-					DrawPolygonModel (objP, &objP->pos, &objP->orient, 
-							   (vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-							   gameData.weapons.info [objP->id].model_num_inner, 
-							   objP->rtype.pobj_info.subobj_flags, 
-							   bBrightPolys?F1_0:light, 
-							   engine_glow_value, 
-							   alt_textures, 
-								NULL /*gameData.weapons.color + objP->id*/);
+					DrawPolygonModel (
+						objP, &objP->pos, &objP->orient, 
+						(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
+						gameData.weapons.info [objP->id].model_num_inner, 
+						objP->rtype.pobj_info.subobj_flags, 
+						bBrightPolys?F1_0:light, 
+						engine_glow_value, 
+						alt_textures, 
+						NULL /*gameData.weapons.color + objP->id*/);
 			}
-			DrawPolygonModel (objP, &objP->pos, &objP->orient, 
-					   (vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-						objP->rtype.pobj_info.model_num, 
-					   objP->rtype.pobj_info.subobj_flags, 
-					   bBrightPolys?F1_0:light, 
-					   engine_glow_value, 
-					   alt_textures, 
-						 (objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+			DrawPolygonModel (
+				objP, &objP->pos, &objP->orient, 
+				(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
+				objP->rtype.pobj_info.model_num, 
+				objP->rtype.pobj_info.subobj_flags, 
+				bBrightPolys?F1_0:light, 
+				engine_glow_value, 
+				alt_textures, 
+					(objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 #if OGL_ZBUF
 			if (bBlendPolys) {
 				if (!gameOpts->legacy.bRender) {
@@ -2446,7 +2447,7 @@ switch (objP->control_type) {
 		break;
 
 	case CT_FLYING:
-		read_flying_controls (objP);
+		ReadFlyingControls (objP);
 		break;
 
 	case CT_REPAIRCEN: 
@@ -2543,7 +2544,8 @@ switch (objP->movement_type) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
-		do_physics_sim (objP);	
+		DoPhysicsSim (objP);	
+		SetOglLightPos (OBJ_IDX (objP));
 		break;	//move by physics
 
 	case MT_SPINNING:		

@@ -450,36 +450,38 @@ return 0;
 
 tRgbColorf bitmapColors [MAX_BITMAP_FILES];
 
-tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bm_texBuf)
+tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bufP)
 {
 	int c, h, i, j = 0, r = 0, g = 0, b = 0;
 	tRgbColorf *color;
 	ubyte	*palette;
 		
 h = (int) (bmP - gameData.pig.tex.pBitmaps);
-if (!bm_texBuf || (h < 0) || (h >= MAX_BITMAP_FILES))
+if (!bufP || (h < 0) || (h >= MAX_BITMAP_FILES))
 	return NULL;
 color = bitmapColors + h;
+if (color->red > 1.0 || color->green > 1.0 || color->blue > 1.0)
+	c = c;
 if (color->red || color->green || color->blue)
 	return color;
-//if (color->red || color->green || color->blue)
-//	return color;
 palette = bmP->bm_palette;
 if (!palette)
 	palette = defaultPalette;
-for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, bm_texBuf++) {
-	if (c = *bm_texBuf) {
+for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, bufP++) {
+	if (c = *bufP) {
 		c *= 3;
-		r += palette [c++];
-		g += palette [c++];
-		b += palette [c];
+		r += palette [c];
+		g += palette [c+1];
+		b += palette [c+2];
 		j++;
 		}
 	}
-j *= 63;
+j *= 63;	//palette entries are all /4, so do not divide by 256
 color->red = (float) r / (float) j;
 color->green = (float) g / (float) j;
 color->blue = (float) b / (float) j;
+if (color->red > 1.0 || color->green > 1.0 || color->blue > 1.0)
+	c = c;
 return color;
 }
 

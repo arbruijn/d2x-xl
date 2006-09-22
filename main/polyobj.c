@@ -831,7 +831,7 @@ for (i = 0; i < gameData.models.nPolyModels; i++) {
 
 //------------------------------------------------------------------------------
 
-void init_polygon_models ()
+void InitPolygonModels ()
 {
 	gameData.models.nPolyModels = 0;
 	atexit (free_polygon_models);

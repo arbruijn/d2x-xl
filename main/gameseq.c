@@ -1118,6 +1118,8 @@ gameStates.app.bGameRunning = 0;
 #if 1
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
+/*---*/LogErr ("   unloading hardware lights\n");
+RemoveOglLights ();
 /*---*/LogErr ("   unloading cambot\n");
 UnloadCamBot ();
 /*---*/LogErr ("   unloading additional models\n");

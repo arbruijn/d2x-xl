@@ -1321,10 +1321,14 @@ void InitTexColors (void)
 	tLightMap	lm;
 
 // get the default colors
+memset (gameData.render.color.textures, 0, sizeof (gameData.render.color.textures));
 for (i = 0; i < MAX_WALL_TEXTURES; i++) {
-	GetColor (i, &lm);	
-	gameData.render.color.textures [i].index = 1;
-	gameData.render.color.textures [i].color = *((tRgbColorf *) &lm.color);
+	if (GetColor (i, &lm)) {
+		gameData.render.color.textures [i].index = 1;
+		gameData.render.color.textures [i].color.red = lm.color [0];
+		gameData.render.color.textures [i].color.green = lm.color [1];
+		gameData.render.color.textures [i].color.blue = lm.color [2];
+		}
 	}
 }
 

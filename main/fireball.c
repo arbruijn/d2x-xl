@@ -528,7 +528,7 @@ object *ObjectCreateDebris(object *parentObjP, int subobj_num)
 void DrawFireball(object *objP)
 {
 	if (objP->lifeleft > 0)
-		draw_vclip_object (objP, objP->lifeleft, 0, objP->id, (objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+		DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 
 }
 

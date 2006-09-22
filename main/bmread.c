@@ -451,7 +451,7 @@ int bm_init_use_tbl()
 
 	LoadPalette(DEFAULT_PIG_PALETTE,-2,0,0);		//special: tell palette code which pig is loaded
 
-	init_polygon_models();
+	InitPolygonModels();
 
 	gameData.objs.types.nType[0] = OL_PLAYER;
 	gameData.objs.types.nType.nId[0] = 0;

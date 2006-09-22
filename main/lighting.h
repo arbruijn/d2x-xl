@@ -84,6 +84,7 @@ void InitTextureBrightness (void);
 int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
 void RemoveOglLight (short nSegment, short nSide, short nObject);
 void AddOglLights (void);
+void RemoveOglLights (void);
 void SetOglLightPos (short nObject);
 void MoveOglLight (short nObject);
 void TransRotOglLights ();

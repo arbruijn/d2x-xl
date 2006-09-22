@@ -714,7 +714,7 @@ int SetFaceLight (tFaceProps *propsP)
 	int			h, i;
 	tFaceColor	*pvc = vertColors;
 	tRgbColorf	*pdc;
-	fix			reflect, dynLight;
+	fix			dynLight;
 
 if (gameOpts->ogl.bUseLights)
 	return 0;

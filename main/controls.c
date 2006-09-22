@@ -273,7 +273,7 @@ vms_vector player_thrust;
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
 
-void read_flying_controls(object *objP)
+void ReadFlyingControls(object *objP)
 {
 	fix	forward_thrust_time;
 	object *gmObjP;

@@ -585,7 +585,7 @@ extern object *monsterballP;
 extern vms_vector boostedVel, minBoostedVel, maxBoostedVel;
 
 //Simulate a physics object for this frame
-void do_physics_sim(object *objP)
+void DoPhysicsSim(object *objP)
 {
 	short ignore_obj_list[MAX_IGNORE_OBJS], n_ignore_objs;
 	int iseg;

@@ -168,7 +168,7 @@ extern int nSimpleModelThresholdScale;
 // array of names of currently-loaded models
 extern char Pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-void init_polygon_models();
+void InitPolygonModels();
 
 #ifndef DRIVE
 int LoadPolygonModel(char *filename,int n_textures,int first_texture,robot_info *r);

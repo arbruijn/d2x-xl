@@ -1026,24 +1026,20 @@ else
 #	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
-		if (gameOpts->ogl.bUseLights) {
-#if 0
+		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
 			tOOF_vector	p [3], vNormal;
-
+#if 1
 			OOF_VecVms2Oof (p, &pointlist [0]->p3_vec);
 			OOF_VecVms2Oof (p + 1, &pointlist [1]->p3_vec);
 			OOF_VecVms2Oof (p + 2, &pointlist [2]->p3_vec);
-			glNormal3fv ((GLfloat *) OOF_VecNormal (&vNormal, p, p + 1, p + 2));
-#else			
-			GLfloat		fNormal [3];
-			vms_vector	vNormal;
-
-			VmVecNormal (&vNormal, &pointlist [0]->p3_vec, &pointlist [1]->p3_vec, &pointlist [2]->p3_vec);
-			fNormal [0] = f2fl (vNormal.x);
-			fNormal [1] = f2fl (vNormal.y);
-			fNormal [2] = f2fl (vNormal.z);
-			glNormal3fv (fNormal);
+			OOF_VecNormal (&vNormal, p, p + 1, p + 2);
+#else
+			OOF_VecNormal (&vNormal, //p, p + 1, p + 2)
+								(tOOF_vector *) (gameData.segs.fVertices + pointlist [0]->p3_index),
+								(tOOF_vector *) (gameData.segs.fVertices + pointlist [1]->p3_index),
+								(tOOF_vector *) (gameData.segs.fVertices + pointlist [2]->p3_index));
 #endif
+			glNormal3fv ((GLfloat *) &vNormal);
 			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
@@ -1645,7 +1641,9 @@ else
 		}	
 #endif
 	if (gameOpts->ogl.bUseLights)	{//for optional hardware lighting
+		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glEnable (GL_LIGHTING);
+		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
 		glShadeModel (GL_SMOOTH);
 		glEnable (GL_COLOR_MATERIAL);
 		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);

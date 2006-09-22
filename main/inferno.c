@@ -2587,6 +2587,8 @@ gameData.escort.bMsgsSuppressed = 0;
 gameData.objs.nNextSignature = 1;
 memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissileSig));
 gameData.render.morph.xRate = MORPH_RATE;
+memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
+gameData.render.lights.ogl.nLights = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
 gameData.pig.tex.nFirstMultiBitmap = -1;
 strcpy (gameData.escort.szName, "GUIDE-BOT");

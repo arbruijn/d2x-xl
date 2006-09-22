@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Old Log:
  * Revision 1.2  1995/09/14  14:14:45  allender
- * return void in draw_vclip_object
+ * return void in DrawVClipObject
  *
  * Revision 1.1  1995/05/16  16:04:35  allender
  * Initial revision
@@ -175,7 +175,7 @@ extern int Num_vclips [2];
 extern vclip Vclip [2][VCLIP_MAXNUM];
 
 // draw an object which renders as a vclip.
-void draw_vclip_object(object *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
+void DrawVClipObject(object *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
 extern void DrawWeaponVClip(object *obj);
 
 #ifdef FAST_FILE_IO

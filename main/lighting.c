@@ -365,16 +365,17 @@ void ApplyLight(
 	fix			xObjIntensity, 
 	int			obj_seg, 
 	vms_vector	*obj_pos, 
-	int			n_render_vertices, 
-	short			*render_vertices, 
+	int			nRenderVertices, 
+	short			*renderVertices, 
 	int			objnum,
 	tRgbColorf	*color)
 {
 	int	vv, bUseColor, bForceColor;
 	object *objP = gameData.objs.objects + objnum;
 
-if (gameOpts->ogl.bHaveLights && gameOpts->ogl.bUseLights) {
-	AddOglLight (color, xObjIntensity, -1, -1, objnum);
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
+	//AddOglLight (color, xObjIntensity, -1, -1, objnum);
+	return;
 	}
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity*64;
@@ -444,14 +445,14 @@ if (xObjIntensity) {
 					}
 				}
 			}
-		// -- for (vv=gameData.app.nFrameCount&1; vv<n_render_vertices; vv+=2) {
-		for (vv=0; vv<n_render_vertices; vv++) {
+		// -- for (vv=gameData.app.nFrameCount&1; vv<nRenderVertices; vv+=2) {
+		for (vv=0; vv<nRenderVertices; vv++) {
 			int			vertnum;
 			vms_vector	*vertpos;
 			fix			dist;
 			int			bApplyLight;
 
-			vertnum = render_vertices[vv];
+			vertnum = renderVertices[vv];
 #if FLICKERFIX == 0
 			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ ((vertnum ^ gameData.app.nFrameCount) & 1))
 #endif
@@ -507,7 +508,7 @@ if (xObjIntensity) {
 #define	FLASH_SCALE					(3*F1_0/FLASH_LEN_FIXED_SECONDS)
 
 // ----------------------------------------------------------------------------------------------
-void CastMuzzleFlashLight(int n_render_vertices, short *render_vertices)
+void CastMuzzleFlashLight(int nRenderVertices, short *renderVertices)
 {
 	fix current_time;
 	int	i;
@@ -519,7 +520,7 @@ void CastMuzzleFlashLight(int n_render_vertices, short *render_vertices)
 		if (gameData.muzzle.info[i].create_time) {
 			time_since_flash = current_time - gameData.muzzle.info[i].create_time;
 			if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
-				ApplyLight((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, gameData.muzzle.info[i].segnum, &gameData.muzzle.info[i].pos, n_render_vertices, render_vertices, -1, NULL);
+				ApplyLight((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, gameData.muzzle.info[i].segnum, &gameData.muzzle.info[i].pos, nRenderVertices, renderVertices, -1, NULL);
 			else
 				gameData.muzzle.info[i].create_time = 0;		// turn off this muzzle flash
 		}
@@ -601,7 +602,7 @@ switch (objtype) {
 			if (objP->id == OMEGA_ID)
 				if (d_rand() > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
-		if (objP->id == FLARE_ID )
+		if (objP->id == FLARE_ID)
 			return 2* (min(tval, objP->lifeleft) + ((gameData.app.xGameTime ^ Obj_light_xlate[objnum&0x0f]) & 0x3fff));
 		else
 			return tval;
@@ -638,8 +639,8 @@ void SetDynamicLight(void)
 {
 	int	vv;
 	int	objnum;
-	int	n_render_vertices;
-	short	render_vertices[MAX_VERTICES];
+	int	nRenderVertices;
+	short	renderVertices[MAX_VERTICES];
 	sbyte render_vertex_flags[MAX_VERTICES];
 	int	render_seg,segnum, v;
 	sbyte	new_lighting_objects[MAX_OBJECTS];
@@ -657,7 +658,7 @@ void SetDynamicLight(void)
 		}
 
 	//	Create list of vertices that need to be looked at for setting of ambient light.
-	n_render_vertices = 0;
+	nRenderVertices = 0;
 	for (render_seg=0; render_seg<nRenderSegs; render_seg++) {
 		segnum = nRenderList[render_seg];
 		if (segnum != -1) {
@@ -670,22 +671,22 @@ void SetDynamicLight(void)
 				}
 				if (!render_vertex_flags[vnum]) {
 					render_vertex_flags[vnum] = 1;
-					render_vertices[n_render_vertices++] = vnum;
+					renderVertices[nRenderVertices++] = vnum;
 				}
-				//--old way-- for (s=0; s<n_render_vertices; s++)
-				//--old way-- 	if (render_vertices[s] == vnum)
+				//--old way-- for (s=0; s<nRenderVertices; s++)
+				//--old way-- 	if (renderVertices[s] == vnum)
 				//--old way-- 		break;
-				//--old way-- if (s == n_render_vertices)
-				//--old way-- 	render_vertices[n_render_vertices++] = vnum;
+				//--old way-- if (s == nRenderVertices)
+				//--old way-- 	renderVertices[nRenderVertices++] = vnum;
 			}
 		}
 	}
 
-	// -- for (vertnum=gameData.app.nFrameCount&1; vertnum<n_render_vertices; vertnum+=2) {
-	for (vv=0; vv<n_render_vertices; vv++) {
+	// -- for (vertnum=gameData.app.nFrameCount&1; vertnum<nRenderVertices; vertnum+=2) {
+	for (vv=0; vv<nRenderVertices; vv++) {
 		int	vertnum;
 
-		vertnum = render_vertices[vv];
+		vertnum = renderVertices[vv];
 		Assert(vertnum >= 0 && vertnum <= gameData.segs.nLastVertex);
 #if FLICKERFIX == 0
 		if (/*gameOpts->render.color.bAmbientLight || gameOpts->render.color.bGunLight ||*/ ((vertnum ^ gameData.app.nFrameCount) & 1))
@@ -696,7 +697,7 @@ void SetDynamicLight(void)
 			memset (dynamicColor + vertnum, 0, sizeof (*dynamicColor));
 		}
 	}
-	CastMuzzleFlashLight(n_render_vertices, render_vertices);
+	CastMuzzleFlashLight(nRenderVertices, renderVertices);
 
 	for (objnum=0; objnum<=gameData.objs.nLastObject; objnum++)
 		new_lighting_objects[objnum] = 0;
@@ -720,7 +721,7 @@ void SetDynamicLight(void)
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->segnum, objpos, n_render_vertices, render_vertices, OBJ_IDX (objP), &color);
+				ApplyLight (xObjIntensity, objP->segnum, objpos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
 				new_lighting_objects[objnum] = 1;
 				}
 			objnum = objP->next;
@@ -743,7 +744,7 @@ void SetDynamicLight(void)
 				if (bGotColor)
 					bKeepDynColoring = 1;
 				if (xObjIntensity) {
-					ApplyLight(xObjIntensity, objP->segnum, objpos, n_render_vertices, render_vertices, objnum, NULL);//&color);
+					ApplyLight(xObjIntensity, objP->segnum, objpos, nRenderVertices, renderVertices, objnum, NULL);//&color);
 					Lighting_objects[objnum] = 1;
 				} else
 					Lighting_objects[objnum] = 0;
@@ -1050,6 +1051,8 @@ short UpdateOglLight (tRgbColorf *pc, float brightness, short nSegment, short nS
 	
 if (nLight >= 0) {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	if (!pc)
+		pc = &pl->color;
 	if ((pl->brightness != brightness) || 
 		 (pl->color.red != pc->red) || (pl->color.green != pc->green) || (pl->color.blue != pc->blue))
 		SetOglLightColor (nLight, pc->red, pc->green, pc->blue, brightness);
@@ -1086,10 +1089,11 @@ if (0 <= (h = UpdateOglLight (pc, f2fl (xBrightness), nSegment, nSide, nObject))
 	return h;
 if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f))
 	return -1;
-if (gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS)
+if ((gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS) ||
+	 (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)) {
+	gameStates.ogl.bHaveLights = 0;
 	return -1;	//too many lights
-if (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)
-	return -1;	//too many lights
+	}
 pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
 pl->handle = GetOglLightHandle (); 
 if (pl->handle == 0xffffffff)
@@ -1100,7 +1104,7 @@ if (nObject >= 0)
 else
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
-pl->fAttenuation [1] = 0.0f;
+pl->fAttenuation [1] = 0.01f;
 pl->fAttenuation [2] = 0.0f;
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
@@ -1110,7 +1114,8 @@ pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
-gameData.render.lights.ogl.owners [gameData.render.lights.ogl.nLights] = nObject;
+LogErr ("adding light %d,%d\n", gameData.render.lights.ogl.nLights, pl->handle - 0x4000);
+gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
 return gameData.render.lights.ogl.nLights++;
 }
 
@@ -1120,11 +1125,14 @@ void DeleteOglLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
 	tOglLight	*pl = gameData.render.lights.ogl.lights + nLight;
+	LogErr ("removing light %d,%d\n", nLight, pl->handle - 0x4000);
 	glDisable (pl->handle);
 	pl->bState = 0;
-	gameData.render.lights.ogl.bUsedHandles [nLight] = 0;
-	if (nLight < --gameData.render.lights.ogl.nLights)
+	gameData.render.lights.ogl.bUsedHandles [pl->handle - 0x4000] = 0;
+	if (nLight < --gameData.render.lights.ogl.nLights) {
 		*pl = gameData.render.lights.ogl.lights [gameData.render.lights.ogl.nLights];
+		gameData.render.lights.ogl.owners [pl->nObject] = nLight;
+		}
 	}
 }
 
@@ -1143,6 +1151,16 @@ if (nObject >= 0)
 
 //------------------------------------------------------------------------------
 
+void RemoveOglLights (void)
+{
+	short	i;
+
+for (i = 0; i < gameData.render.lights.ogl.nLights; i++)
+	DeleteOglLight (i);
+}
+
+//------------------------------------------------------------------------------
+
 void AddOglLights (void)
 {
 	int			i, j, t;
@@ -1150,9 +1168,8 @@ void AddOglLights (void)
 	side			*sideP;
 	tFaceColor	*pc = gameData.render.color.sides [0];
 
+gameStates.ogl.bHaveLights = 1;
 glEnable (GL_LIGHTING);
-glEnable (GL_COLOR_MATERIAL);
-glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 gameData.render.lights.ogl.nLights = 0;
 memset (gameData.render.lights.ogl.bUsedHandles, 0, sizeof (gameData.render.lights.ogl.bUsedHandles));
 InitTextureBrightness ();
@@ -1172,6 +1189,10 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			continue;
 		pc = gameData.render.color.textures + t;
 		AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+		if (!gameStates.ogl.bHaveLights) {
+			RemoveOglLights ();
+			return;
+			}
 		}
 	}
 }
@@ -1184,17 +1205,10 @@ void TransRotOglLights (void)
 	tOglLight	*pl = gameData.render.lights.ogl.lights;
 	vms_vector	vPos;
 	float			fPos [4];
-	object		*objP;
 
 fPos [3] = 1.0f;
-for (i = gameData.render.lights.ogl.nLights; i; i--, pl++) {
-	if (pl->nObject >= 0) {
-		objP = gameData.objs.objects + pl->nObject;
-		G3StartInstanceMatrix (&objP->pos, &objP->orient);
-		}
+for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	G3RotatePointToVec (&vPos, &pl->vPos);
-	if (pl->nObject >= 0)
-		G3DoneInstance ();
 	fPos [0] = f2fl (vPos.x);
 	fPos [1] = f2fl (vPos.y);
 	fPos [2] = f2fl (vPos.z);

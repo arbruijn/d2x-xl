@@ -178,7 +178,6 @@ typedef struct tRenderOptions {
 typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
-	int bHaveLights;
 	int bUseLights;
 	int bRgbaFormat;
 	int bIntensity4;
@@ -387,6 +386,7 @@ typedef struct tOglStates {
 	int bAntiAliasing;
 	int bAntiAliasingOk;
 	int bVoodooHack;
+	int bHaveLights;
 	int texMinFilter;
 	int texMagFilter;
 	int nTexMagFilterState;
@@ -710,7 +710,7 @@ typedef struct tOglLight {
 typedef struct tOglLightData {
 	tOglLight	lights [MAX_SEGMENTS];
 	int			nLights;
-	ubyte			bUsedHandles [MAX_SEGMENTS];
+	unsigned		bUsedHandles [MAX_SEGMENTS];
 	short			owners [MAX_OBJECTS];
 } tOglLightData;
 

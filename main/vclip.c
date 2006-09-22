@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Old Log:
  * Revision 1.2  1995/09/14  14:14:31  allender
- * return void in draw_vclip_object
+ * return void in DrawVClipObject
  *
  * Revision 1.1  1995/05/16  15:32:00  allender
  * Initial revision
@@ -106,7 +106,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 #define	FIREBALL_ALPHA		0.7f
 #define	WEAPON_ALPHA		1.0f
 
-void draw_vclip_object(object *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
+void DrawVClipObject(object *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
 	float		ta = 0,alpha = 0;
 	vclip		*pvc = gameData.eff.vClips [0] + vclip_num;
@@ -158,7 +158,7 @@ void DrawWeaponVClip(object *objP)
 			modtime -= play_time;
 	}
 
-	draw_vclip_object(objP, modtime, 0, vclip_num, gameData.weapons.color + objP->id);
+	DrawVClipObject(objP, modtime, 0, vclip_num, gameData.weapons.color + objP->id);
 }
 
 //------------------------------------------------------------------------------

@@ -75,15 +75,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define FL_HOVER   2
 //#define FL_REVERSE 3
 
-// these global vars are set after a call to do_physics_sim().  Ugly, I know.
+// these global vars are set after a call to DoPhysicsSim().  Ugly, I know.
 // list of segments went through
 extern int phys_seglist[MAX_FVI_SEGS], n_phys_segs;
 
 // Read contrls and set physics vars
-void read_flying_controls(object *obj);
+void ReadFlyingControls(object *obj);
 
 // Simulate a physics object for this frame
-void do_physics_sim(object *obj);
+void DoPhysicsSim(object *obj);
 
 // tell us what the given object will do (as far as hiting walls) in
 // the given time (in seconds) t.  Igores acceleration (sorry)
