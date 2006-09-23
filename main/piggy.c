@@ -2732,12 +2732,12 @@ ubyte *LoadD1Palette (void)
 {
 	tPalette	palette;
 
-CFILE * palette_file = CFOpen (D1_PALETTE, gameFolders.szDataDir, "rb", 0);
-if (!palette_file || CFLength (palette_file,0) != 9472) {
+CFILE * fp = CFOpen (D1_PALETTE, gameFolders.szDataDir, "rb", 1);
+if (!fp || CFLength (fp, 0) != 9472) {
 	return NULL;
 	}
-CFRead (palette, 256, 3, palette_file);
-CFClose (palette_file);
+CFRead (palette, 256, 3, fp);
+CFClose (fp);
 palette [254] = SUPER_TRANSP_COLOR;
 palette [255] = TRANSPARENCY_COLOR;
 return d1Palette = AddPalette (palette);
