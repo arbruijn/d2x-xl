@@ -494,7 +494,7 @@ int check_line_to_face(vms_vector *newp,vms_vector *p0,vms_vector *p1,segment *s
 	if ((SEG_IDX (seg))==-1)
 		Error("segnum == -1 in check_line_to_face()");
 
-	create_abs_vertex_lists(&num_faces,vertex_list,SEG_IDX (seg),side);
+	CreateAbsVertexLists(&num_faces,vertex_list,SEG_IDX (seg),side);
 
 	//use lowest point number
 	if (num_faces==2) {
@@ -597,7 +597,7 @@ int special_check_line_to_face(vms_vector *newp,vms_vector *p0,vms_vector *p1,se
 	if ((SEG_IDX (seg))==-1)
 		Error("segnum == -1 in special_check_line_to_face()");
 
-	create_abs_vertex_lists(&num_faces,vertex_list,SEG_IDX (seg),side);
+	CreateAbsVertexLists(&num_faces,vertex_list,SEG_IDX (seg),side);
 	VmVecSub(&move_vec,p1,p0);
 
 	//figure out which edge(s) to check against
@@ -1383,8 +1383,8 @@ void find_hitpoint_uv(fix *u,fix *v,fix *l,vms_vector *pnt,segment *seg,int side
 	if (segnum==-1)
 		Error("segnum == -1 in find_hitpoint_uv()");
 
-	create_abs_vertex_lists(&num_faces,vertex_list,segnum,sidenum);
-	create_all_vertnum_lists(&num_faces,vertnum_list,segnum,sidenum);
+	CreateAbsVertexLists(&num_faces,vertex_list,segnum,sidenum);
+	CreateAllVertNumLists(&num_faces,vertnum_list,segnum,sidenum);
 
 	//now the hard work.
 
@@ -1555,7 +1555,7 @@ int sphere_intersects_wall(vms_vector *pnt,int segnum,fix rad)
 					if ((SEG_IDX (seg))==-1)
 						Error("segnum == -1 in sphere_intersects_wall()");
 
-					create_abs_vertex_lists(&num_faces,vertex_list,SEG_IDX (seg),side);
+					CreateAbsVertexLists(&num_faces,vertex_list,SEG_IDX (seg),side);
 
 					face_hit_type = check_sphere_to_face( pnt,&seg->sides[side],
 										face,((num_faces==1)?4:3),rad,vertex_list);

@@ -164,7 +164,7 @@ void GetSideVerts(short *vertlist,int segnum,int sidenum);
 extern void create_all_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum);
 
 //like create_all_vertex_lists(), but generate absolute point numbers
-extern void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum);
+extern void CreateAbsVertexLists(int *num_faces, int *vertices, int segnum, int sidenum);
 
 // -----------------------------------------------------------------------------------
 // Like create all vertex lists, but returns the vertnums (relative to
@@ -172,7 +172,7 @@ extern void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, i
 //      If there is one face, it has 4 vertices.
 //      If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
 //      face #1 is stored in vertices 3,4,5.
-void create_all_vertnum_lists(int *num_faces, int *vertnums, int segnum, int sidenum);
+void CreateAllVertNumLists(int *num_faces, int *vertnums, int segnum, int sidenum);
 
 //      Given a side, return the number of faces
 extern int get_num_faces(side *sidep);

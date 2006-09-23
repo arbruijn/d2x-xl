@@ -21,10 +21,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * minor bug fix in FindConnectedDistance
  *
  * Revision 1.8  1995/10/12  17:36:55  allender
- * made trace_segs only recurse 100 times max
+ * made TraceSegs only recurse 100 times max
  *
  * Revision 1.7  1995/10/11  18:29:01  allender
- * removed Int3 from trace_segs
+ * removed Int3 from TraceSegs
  *
  * Revision 1.6  1995/10/11  14:13:54  allender
  * put in stack check code into trace-segs
@@ -132,7 +132,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.54  1994/10/22  18:56:51  matt
  * Fixed obscure bug in segment trace code
- * Added error find routine, check_segment_connections()
+ * Added error find routine, CheckSegmentConnections()
  *
  * Revision 1.53  1994/10/17  14:05:19  matt
  * Don't give recursion assert if doing lighting
@@ -156,7 +156,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made find_hitpoint_uv() work with triangulated sides
  *
  * Revision 1.46  1994/10/08  23:06:52  matt
- * trace_segs() didn't know about external walls
+ * TraceSegs() didn't know about external walls
  *
  * Revision 1.45  1994/10/07  22:18:57  mike
  * Put in asserts to trap bad segnums.
@@ -623,7 +623,7 @@ void CreateAllVertexLists(int *num_faces, int *vertices, int segnum, int sidenum
 //	If there is one face, it has 4 vertices.
 //	If there are two faces, they both have three vertices, so face #0 is stored in vertices 0,1,2,
 //	face #1 is stored in vertices 3,4,5.
-void create_all_vertnum_lists(int *num_faces, int *vertnums, int segnum, int sidenum)
+void CreateAllVertNumLists(int *num_faces, int *vertnums, int segnum, int sidenum)
 {
 	side	*sideP = &gameData.segs.segments[segnum].sides[sidenum];
 
@@ -674,9 +674,9 @@ void create_all_vertnum_lists(int *num_faces, int *vertnums, int segnum, int sid
 
 }
 
-// -----
+// -------------------------------------------------------------------------------
 //like CreateAllVertexLists(), but generate absolute point numbers
-void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum)
+void CreateAbsVertexLists(int *num_faces, int *vertices, int segnum, int sidenum)
 {
 	short	*vp = gameData.segs.segments[segnum].verts;
 	side	*sideP = gameData.segs.segments[segnum].sides + sidenum;
@@ -729,6 +729,7 @@ void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, int side
 
 }
 
+// -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this segment.  See segmasks structure for info on fields  
 segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
@@ -759,7 +760,7 @@ segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
 		// Get number of faces on this side, and at vertex_list, store vertices.
 		//	If one face, then vertex_list indicates a quadrilateral.
 		//	If two faces, then 0,1,2 define one triangle, 3,4,5 define the second.
-		create_abs_vertex_lists (&num_faces, vertex_list, segnum, sn);
+		CreateAbsVertexLists (&num_faces, vertex_list, segnum, sn);
 
 		//ok...this is important.  If a side has 2 faces, we need to know if
 		//those faces form a concave or convex side.  If the side pokes out,
@@ -878,10 +879,11 @@ segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
 	return masks;
 }
 
+// -------------------------------------------------------------------------------
 //this was converted from GetSegMasks()...it fills in an array of 6
 //elements for the distace behind each side, or zero if not behind
 //only gets centermask, and assumes zero rad
-ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
+ubyte GetSideDists(vms_vector *checkp,int segnum,fix *side_dists)
 {
 	int			sn,facebit,sidebit;
 	ubyte			mask;
@@ -909,7 +911,7 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 		// Get number of faces on this side, and at vertex_list, store vertices.
 		//	If one face, then vertex_list indicates a quadrilateral.
 		//	If two faces, then 0,1,2 define one triangle, 3,4,5 define the second.
-		create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
+		CreateAbsVertexLists(&num_faces, vertex_list, segnum, sn);
 
 		//ok...this is important.  If a side has 2 faces, we need to know if
 		//those faces form a concave or convex side.  If the side pokes out,
@@ -927,7 +929,7 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 			vertnum = min(vertex_list[0],vertex_list[2]);
 #ifdef _DEBUG
 			if ((vertnum < 0) || (vertnum >= gameData.segs.nVertices))
-				create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
+				CreateAbsVertexLists(&num_faces, vertex_list, segnum, sn);
 #endif
 			#ifdef COMPACT_SEGS
 			GetSideNormals(seg, sn, normals, normals + 1);
@@ -1002,7 +1004,7 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 					vertnum = vertex_list[i];
 #ifdef _DEBUG
 			if ((vertnum < 0) || (vertnum >= gameData.segs.nVertices))
-				create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
+				CreateAbsVertexLists(&num_faces, vertex_list, segnum, sn);
 #endif
 
 			#ifdef COMPACT_SEGS
@@ -1026,10 +1028,11 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 
 }
 
+// -------------------------------------------------------------------------------
 #ifndef NDEBUG
 #ifndef COMPACT_SEGS
 //returns true if errors detected
-int check_norms(int segnum,int sidenum,int facenum,int csegnum,int csidenum,int cfacenum)
+int CheckNorms(int segnum,int sidenum,int facenum,int csegnum,int csidenum,int cfacenum)
 {
 	vms_vector *n0,*n1;
 
@@ -1050,8 +1053,9 @@ int check_norms(int segnum,int sidenum,int facenum,int csegnum,int csidenum,int 
 		return 0;
 }
 
+// -------------------------------------------------------------------------------
 //heavy-duty error checking
-int check_segment_connections(void)
+int CheckSegmentConnections(void)
 {
 	int segnum,sidenum;
 	int errors=0;
@@ -1070,7 +1074,7 @@ int check_segment_connections(void)
 
 			s = &seg->sides[sidenum];
 
-			create_abs_vertex_lists(&num_faces, vertex_list, segnum, sidenum);
+			CreateAbsVertexLists(&num_faces, vertex_list, segnum, sidenum);
 
 			csegnum = seg->children[sidenum];
 
@@ -1088,7 +1092,7 @@ int check_segment_connections(void)
 
 				cs = &cseg->sides[csidenum];
 
-				create_abs_vertex_lists(&con_num_faces, con_vertex_list, csegnum, csidenum);
+				CreateAbsVertexLists(&con_num_faces, con_vertex_list, csegnum, csidenum);
 
 				if (con_num_faces != num_faces) {
 #if TRACE
@@ -1118,7 +1122,7 @@ int check_segment_connections(void)
 							errors = 1;
 						}
 						else
-							errors |= check_norms(segnum,sidenum,0,csegnum,csidenum,0);
+							errors |= CheckNorms(segnum,sidenum,0,csegnum,csidenum,0);
 	
 					}
 					else {
@@ -1144,8 +1148,8 @@ int check_segment_connections(void)
 #endif
 								gameData.segs.segments[csegnum].sides[csidenum].type = 5-gameData.segs.segments[csegnum].sides[csidenum].type;
 							} else {
-								errors |= check_norms(segnum,sidenum,0,csegnum,csidenum,0);
-								errors |= check_norms(segnum,sidenum,1,csegnum,csidenum,1);
+								errors |= CheckNorms(segnum,sidenum,0,csegnum,csidenum,0);
+								errors |= CheckNorms(segnum,sidenum,1,csegnum,csidenum,1);
 							}
 	
 						} else {
@@ -1170,8 +1174,8 @@ int check_segment_connections(void)
 #endif
 								gameData.segs.segments[csegnum].sides[csidenum].type = 5-gameData.segs.segments[csegnum].sides[csidenum].type;
 							} else {
-								errors |= check_norms(segnum,sidenum,0,csegnum,csidenum,1);
-								errors |= check_norms(segnum,sidenum,1,csegnum,csidenum,0);
+								errors |= CheckNorms(segnum,sidenum,0,csegnum,csidenum,1);
+								errors |= CheckNorms(segnum,sidenum,1,csegnum,csidenum,0);
 							}
 						}
 					}
@@ -1184,6 +1188,7 @@ int check_segment_connections(void)
 #endif
 #endif
 
+// -------------------------------------------------------------------------------
 //	Used to become a constant based on editor, but I wanted to be able to set
 //	this for omega blob FindSegByPoint calls.  Would be better to pass a paremeter
 //	to the routine...--MK, 01/17/96
@@ -1191,7 +1196,7 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns segment number, or -1 if can't find segment
-int trace_segs(vms_vector *p0,int oldsegnum)
+int TraceSegs(vms_vector *p0,int oldsegnum)
 {
 	int centermask, biggest_side;
 	segment *seg;
@@ -1204,8 +1209,8 @@ int trace_segs(vms_vector *p0,int oldsegnum)
 Assert((oldsegnum <= gameData.segs.nLastSegment) && (oldsegnum >= 0));
 if (Trace_SegCalls >= gameData.segs.nSegments) {
 #if TRACE
-	con_printf (CON_DEBUG, "trace_segs: Segment not found\n");
-	con_printf (CON_DEBUG,"trace_segs (gameseg.c) - Something went wrong - infinite loop\n");
+	con_printf (CON_DEBUG, "TraceSegs: Segment not found\n");
+	con_printf (CON_DEBUG,"TraceSegs (gameseg.c) - Something went wrong - infinite loop\n");
 #endif
 	return -1;
 }
@@ -1215,7 +1220,7 @@ if (visited [oldsegnum] || (gameData.segs.segment2s [oldsegnum].special == SEGME
 	return -1;
 Trace_SegCalls++;
 visited [oldsegnum] = 1;
-centermask = get_side_dists (p0,oldsegnum,side_dists);		//check old segment
+centermask = GetSideDists (p0,oldsegnum,side_dists);		//check old segment
 if (centermask == 0) {		//we're in the old segment
 	Trace_SegCalls--;
 	return oldsegnum;		//..say so
@@ -1231,7 +1236,7 @@ for (;;) {
 	if (biggest_side == -1)
 		break;
 	side_dists [biggest_side] = 0;
-	check = trace_segs(p0,seg->children [biggest_side]);	//trace into adjacent segment
+	check = TraceSegs(p0,seg->children [biggest_side]);	//trace into adjacent segment
 	if (check >= 0)
 		break;
 	}
@@ -1256,7 +1261,7 @@ int FindSegByPoint(vms_vector *p,int segnum)
 	Assert((segnum <= gameData.segs.nLastSegment) && (segnum >= -1));
 
 	if (segnum != -1) {
-		newseg = trace_segs(p,segnum);
+		newseg = TraceSegs(p,segnum);
 
 		if (newseg != -1)			//we found a segment!
 			return newseg;
@@ -1570,6 +1575,8 @@ fcd_done1: ;
 
 }
 
+// -------------------------------------------------------------------------------
+
 sbyte convert_to_byte(fix f)
 {
 	if (f >= 0x00010000)
@@ -1582,6 +1589,7 @@ sbyte convert_to_byte(fix f)
 
 #define VEL_PRECISION 12
 
+// -------------------------------------------------------------------------------
 //	Create a shortpos struct from an object.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 normal "fix" precision.
@@ -1624,6 +1632,8 @@ void CreateShortPos(shortpos *spp, object *objP, int swap_bytes)
 		spp->velz = INTEL_SHORT(spp->velz);
 	}
 }
+
+// -------------------------------------------------------------------------------
 
 void ExtractShortPos(object *objP, shortpos *spp, int swap_bytes)
 {
@@ -1703,6 +1713,7 @@ void extract_vector_from_segment(segment *sp, vms_vector *vp, int start, int end
 
 }
 
+// -------------------------------------------------------------------------------
 //create a matrix that describes the orientation of the given segment
 void ExtractOrientFromSegment(vms_matrix *m,segment *seg)
 {
@@ -1744,7 +1755,9 @@ void extract_up_vector_from_segment(segment *sp,vms_vector *vp)
 }
 #endif
 
-void add_side_as_quad(segment *sp, int sidenum, vms_vector *normal)
+// -------------------------------------------------------------------------------
+
+void AddSideAsQuad(segment *sp, int sidenum, vms_vector *normal)
 {
 	side	*sideP = sp->sides + sidenum;
 
@@ -1802,7 +1815,7 @@ else
 }
 
 // -------------------------------------------------------------------------------
-void add_side_as_2_triangles(segment *sp, int sidenum)
+void AddSideAsTwoTriangles(segment *sp, int sidenum)
 {
 	vms_vector	norm;
 	sbyte       *vs = sideToVerts[sidenum];
@@ -1940,9 +1953,9 @@ void CreateWallsOnSide(segment *sp, int sidenum)
 		VmVecNegate(&vn);
 #if 1
 	if (bRenderQuads || (dist_to_plane <= PLANE_DIST_TOLERANCE))
-		add_side_as_quad (sp, sidenum, &vn);
+		AddSideAsQuad (sp, sidenum, &vn);
 	else {
-		add_side_as_2_triangles(sp, sidenum);
+		AddSideAsTwoTriangles(sp, sidenum);
 		//this code checks to see if we really should be triangulated, and
 		//de-triangulates if we shouldn't be.
 		{
@@ -1953,7 +1966,7 @@ void CreateWallsOnSide(segment *sp, int sidenum)
 			int			vertnum;
 			side			*s;
 
-			create_abs_vertex_lists(&num_faces, vertex_list, SEG_IDX (sp), sidenum);
+			CreateAbsVertexLists(&num_faces, vertex_list, SEG_IDX (sp), sidenum);
 			Assert(num_faces == 2);
 			s = sp->sides + sidenum;
 			vertnum = min(vertex_list[0],vertex_list[2]);
@@ -2076,7 +2089,7 @@ for (s=0; s<=gameData.segs.nLastSegment; s++)
 
 #ifndef NDEBUG
 #	ifndef COMPACT_SEGS
-if (check_segment_connections())
+if (CheckSegmentConnections())
 	Int3();		//Get Matt, si vous plait.
 #	endif
 #endif
@@ -2210,12 +2223,12 @@ void ApplyLightToSegment(segment *segp,vms_vector *segment_center, fix light_int
 
 }
 
-
 extern object *old_viewer;
 
+//	------------------------------------------------------------------------------------------
 //update the static_light field in a segment, which is used for object lighting
 //this code is copied from the editor routine calim_process_all_lights()
-void change_segment_light(short segnum, short sidenum, int dir)
+void ChangeSegmentLight(short segnum, short sidenum, int dir)
 {
 	segment *segp = gameData.segs.segments+segnum;
 
@@ -2338,14 +2351,14 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 	}
 
 	//recompute static light for segment
-	change_segment_light(segnum,sidenum,dir);
+ChangeSegmentLight(segnum,sidenum,dir);
 }
 
 //	-----------------------------------------------------------------------------
 //	Subtract light cast by a light source from all surfaces to which it applies light.
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 // returns 1 if lights actually subtracted, else 0
-int subtract_light(short segnum, short sidenum)
+int SubtractLight(short segnum, short sidenum)
 {
 	if (gameData.render.lights.subtracted[segnum] & (1 << sidenum)) {
 		return 0;
@@ -2444,7 +2457,7 @@ return FindConnectedDistance(&p0, seg0, &p1, seg1, depth, wid_flag);
 
 //	-----------------------------------------------------------------------------
 //	Do a bfs from segnum, marking slots in marked_segs if the segment is reachable.
-void ambient_mark_bfs(short segnum, sbyte *marked_segs, int depth)
+void AmbientMarkBfs(short segnum, sbyte *marked_segs, int depth)
 {
 	short	i;
 
@@ -2459,7 +2472,7 @@ void ambient_mark_bfs(short segnum, sbyte *marked_segs, int depth)
 		if (IS_CHILD(child) && 
 		    (WALL_IS_DOORWAY(gameData.segs.segments + segnum, i, NULL) & WID_RENDPAST_FLAG) && 
 			 !marked_segs[child])
-			ambient_mark_bfs(child, marked_segs, depth-1);
+			AmbientMarkBfs(child, marked_segs, depth-1);
 	}
 
 }
@@ -2467,7 +2480,7 @@ void ambient_mark_bfs(short segnum, sbyte *marked_segs, int depth)
 //	-----------------------------------------------------------------------------
 //	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
-void set_ambient_sound_flags_common(int tmi_bit, int s2f_bit)
+void SetAmbientSoundFlagsCommon(int tmi_bit, int s2f_bit)
 {
 	short		i, j;
 	static sbyte   marked_segs[MAX_SEGMENTS];
@@ -2504,7 +2517,7 @@ void set_ambient_sound_flags_common(int tmi_bit, int s2f_bit)
 		segment2	*seg2p = &gameData.segs.segment2s[i];
 
 		if (seg2p->s2_flags & s2f_bit)
-			ambient_mark_bfs(i, marked_segs, AMBIENT_SEGMENT_DEPTH);
+			AmbientMarkBfs(i, marked_segs, AMBIENT_SEGMENT_DEPTH);
 	}
 
 	//	Now, flip bits in all segments which can hear the ambient sound.
@@ -2514,13 +2527,15 @@ void set_ambient_sound_flags_common(int tmi_bit, int s2f_bit)
 
 }
 
-
 //	-----------------------------------------------------------------------------
 //	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
 //	Bashes values in gameData.segs.segment2s array.
-void set_ambient_sound_flags(void)
+void SetAmbientSoundFlags(void)
 {
-	set_ambient_sound_flags_common(TMI_VOLATILE, S2F_AMBIENT_LAVA);
-	set_ambient_sound_flags_common(TMI_WATER, S2F_AMBIENT_WATER);
+	SetAmbientSoundFlagsCommon(TMI_VOLATILE, S2F_AMBIENT_LAVA);
+	SetAmbientSoundFlagsCommon(TMI_WATER, S2F_AMBIENT_WATER);
 }
+
+//	-----------------------------------------------------------------------------
+//eof

@@ -3548,7 +3548,7 @@ void FlickerLights ()
 			if (f->mask & 1)
 				AddLight (f->segnum,f->sidenum);
 			else
-				subtract_light (f->segnum,f->sidenum);
+				SubtractLight (f->segnum,f->sidenum);
 		}
 	}
 }

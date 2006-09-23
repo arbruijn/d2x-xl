@@ -1179,7 +1179,7 @@ save_p1 = *fq.p1;
 				s = gameData.segs.segments[orig_segnum].sides + sidenum;
 				if (orig_segnum==-1)
 					Error("orig_segnum == -1 in physics");
-				create_abs_vertex_lists(&num_faces, vertex_list, orig_segnum, sidenum);
+				CreateAbsVertexLists(&num_faces, vertex_list, orig_segnum, sidenum);
 				//let's pretend this wall is not triangulated
 				vertnum = vertex_list[0];
 				for (i=1;i<4;i++)

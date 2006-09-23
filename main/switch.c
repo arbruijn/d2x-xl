@@ -343,7 +343,7 @@ for (i=t->num_links;i;i--,segs++,sides++) {
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
 	if (gameData.pig.tex.pTMapInfo[gameData.segs.segments[segnum].sides[sidenum].tmap_num2 & 0x3fff].lighting) {
-		ret |= subtract_light(segnum, sidenum); 	//any light sets flag
+		ret |= SubtractLight(segnum, sidenum); 	//any light sets flag
 		disable_flicker(segnum, sidenum);
 	}
 }

@@ -2734,7 +2734,6 @@ ubyte *LoadD1Palette (void)
 
 CFILE * palette_file = CFOpen (D1_PALETTE, gameFolders.szDataDir, "rb", 0);
 if (!palette_file || CFLength (palette_file,0) != 9472) {
-	memset (d1Palette, 0, sizeof (d1Palette));
 	return NULL;
 	}
 CFRead (palette, 256, 3, palette_file);

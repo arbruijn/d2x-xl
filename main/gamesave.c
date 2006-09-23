@@ -1687,7 +1687,7 @@ i = CFTell (LoadFile);
 
 int check_segment_connections(void);
 
-extern void	set_ambient_sound_flags(void);
+extern void	SetAmbientSoundFlags(void);
 
 
 #define LEVEL_FILE_VERSION      8
@@ -1885,7 +1885,7 @@ if (game_err == -1) {   //error!!
 
 CFClose(LoadFile);
 
-set_ambient_sound_flags();
+SetAmbientSoundFlags();
 
 #ifdef EDITOR
 write_game_text_file(filename);

@@ -319,7 +319,7 @@ typedef union {
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
-int subtract_light(short segnum, short sidenum);
+int SubtractLight(short segnum, short sidenum);
 int AddLight(short segnum, short sidenum);
 void restore_all_lights_in_mine(void);
 void ClearLightSubtracted(void);

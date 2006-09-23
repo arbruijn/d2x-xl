@@ -1045,7 +1045,7 @@ void read_special (int segnum, ubyte bit_mask, CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void AddLight (tFaceColor *pc, int i)
+void RegisterLight (tFaceColor *pc, int i)
 {
 if (!pc || pc->index) {
 	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
@@ -1361,7 +1361,7 @@ if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk) {
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
 #if SHADOWS
-		AddLight (pc, i);
+		RegisterLight (pc, i);
 #endif
 		}
 	}
@@ -1379,7 +1379,7 @@ else {
 	for (i = 0; i < j; i++, segP++)
 		for (h = 0, sideP = segP->sides; h < 6; h++, sideP++)
 			if (IsLight (sideP->tmap_num) || IsLight (sideP->tmap_num2 & 0x3fff))
-				AddLight (NULL, i * 6 + h);
+				RegisterLight (NULL, i * 6 + h);
 #endif
 	}
 }

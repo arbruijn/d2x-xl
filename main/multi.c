@@ -3522,7 +3522,7 @@ void MultiDoLight (char *buf)
 buf += 6;
 for (i = 0; i < 6; i++, buf += 2) {
 	if ((sides & (1 << i))) {
-		subtract_light (seg, i);
+		SubtractLight (seg, i);
 		gameData.segs.segments [seg].sides [i].tmap_num2 = GET_INTEL_SHORT (buf);
 		}
 	}

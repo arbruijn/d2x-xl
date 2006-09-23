@@ -1107,7 +1107,7 @@ int CheckEffectBlowup (segment *seg, short side, vms_vector *pnt, object *blower
 					 ((trig_num = gameData.walls.walls [wall_num].trigger) != NO_TRIGGER) &&
 					 (gameData.trigs.triggers [trig_num].flags & TF_PERMANENT);
 				if (!bPermaTrigger)
-					subtract_light (SEG_IDX (seg), side);
+					SubtractLight (SEG_IDX (seg), side);
 
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordEffectBlowup (SEG_IDX (seg), side, pnt);
@@ -1271,7 +1271,7 @@ void CollideWeaponAndWall (
 #endif
 			HUDInitMessage ("Hit at segment = %i, side = %i", hitseg, hitwall);
 			if (weapon->id < 4)
-				subtract_light (hitseg, hitwall);
+				SubtractLight (hitseg, hitwall);
 			else if (weapon->id == FLARE_ID)
 				AddLight (hitseg, hitwall);
 		}
