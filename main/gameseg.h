@@ -213,7 +213,7 @@ void ExtractOrientFromSegment(vms_matrix *m,segment *seg);
 //      Make a just-modified segment valid.
 //              check all sides to see how many faces they each should have (0,1,2)
 //              create new vector normals
-void validate_segment(segment *sp);
+void ValidateSegment(segment *sp);
 
 void ValidateSegmentAll(void);
 
@@ -232,7 +232,7 @@ void extract_right_vector_from_segment(segment *sp,vms_vector *vp);
 // to the center of the top face of the segment.
 void extract_up_vector_from_segment(segment *sp,vms_vector *vp);
 
-void create_walls_on_side(segment *sp, int sidenum);
+void CreateWallsOnSide(segment *sp, int sidenum);
 
 void PickRandomPointInSeg(vms_vector *new_pos, int segnum);
 

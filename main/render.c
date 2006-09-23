@@ -1209,7 +1209,7 @@ void RenderSide (segment *segP, short sidenum)
 //CBRK (props.segNum == 123 && props.sideNum == 2);
 	bSidesRendered [props.segNum]++;
 #ifdef COMPACT_SEGS
-	get_side_normals (segP, props.sideNum, normals, normals+1);
+	GetSideNormals (segP, props.sideNum, normals, normals+1);
 #else
 	normals [0] = sideP->normals [0];
 	normals [1] = sideP->normals [1];
@@ -1381,11 +1381,7 @@ im_so_ashamed: ;
 				}
 			}
 		else {
-#ifdef __DJGPP__
-			Error("Illegal side type in RenderSide, type = %i, segment # = %li, side # = %i\n", sideP->type, SEG_IDX (segP), props.sideNum);
-#else
 			Error("Illegal side type in RenderSide, type = %i, segment # = %i, side # = %i\n", sideP->type, SEG_IDX (segP), props.sideNum);
-#endif
 			return;
 			}
 		}
@@ -1626,120 +1622,60 @@ void RenderSegment(short segnum, int nWindowNum)
 	g3s_codes 	cc;
 	short			sn;
 
-	Assert(segnum!=-1 && segnum <= gameData.segs.nLastSegment);
-	if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
-		return;
-	if (gameStates.render.bGlTransform) {
-		glMatrixMode (GL_MODELVIEW);
-		glPushMatrix ();
-		glLoadIdentity ();
-		glScalef (1.0f, 1.0f, -viewInfo.glZoom);
-		glMultMatrixf (viewInfo.glViewf);
-		glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
-		}
-	cc = RotateList (8, seg->verts);
-	gameData.render.pVerts = gameData.segs.fVertices;
-//	return;
-	if (!cc.and) {		//all off screen?
-		// set_segment_local_light_value(segnum,INITIAL_LOCAL_LIGHT);
-#ifdef OGL_ZBUF
-		if (gameOpts->legacy.bZBuf)
-#endif
-		if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->type!=OBJ_ROBOT))
-  	   	bAutomapVisited [segnum]=1;
-		if (gameStates.render.bQueryOcclusion) {
-				short		sideVerts [4];
-				double	sideDists [6];
-				char		sideNums [6];
-				int		i; 
-				double	d, dMin, dx, dy, dz;
-				object	*objP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
-
-			for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
-				sideNums [sn] = (char) sn;
-				GetSideVerts (sideVerts, segnum, sn);
-				dMin = 1e300;
-				for (i = 0; i < 4; i++) {
-					dx = objP->pos.x - gameData.segs.vertices [sideVerts [i]].x;
-					dy = objP->pos.y - gameData.segs.vertices [sideVerts [i]].y;
-					dz = objP->pos.z - gameData.segs.vertices [sideVerts [i]].z;
-					d = dx * dx + dy * dy + dz * dz;
-					if (dMin > d)
-						dMin = d;
-					}
-				sideDists [sn] = dMin;
-				}
-			SortSidesByDist (sideDists, sideNums, 0, 5);
-			for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-				RenderSide (seg, sideNums [sn]);
-			}
-		else
-			for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
-				RenderSide (seg, sn);
-			}
+Assert(segnum!=-1 && segnum <= gameData.segs.nLastSegment);
+if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
+	return;
+if (gameStates.render.bGlTransform) {
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();
+	glScalef (1.0f, 1.0f, -viewInfo.glZoom);
+	glMultMatrixf (viewInfo.glViewf);
+	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
 	}
-	if (gameStates.render.bGlTransform)
-		glPopMatrix ();
-	//draw any gameData.objs.objects that happen to be in this segment
-
-	//sort gameData.objs.objects!
-	//object_sort_segment_objects( seg );
-
-#if 0 //OGL_ZBUF
-	if (!gameOpts->legacy.bZBuf) {
-		int objnum;
-		for (objnum=seg->objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)
-			DoRenderObject(objnum, nWindowNum);
-		}
+cc = RotateList (8, seg->verts);
+gameData.render.pVerts = gameData.segs.fVertices;
+//	return;
+if (!cc.and) {		//all off screen?
+#ifdef OGL_ZBUF
+	if (gameOpts->legacy.bZBuf)
 #endif
-#if 0//def _DEBUG
-	if (!migrate_objects) {
-		int objnum;
-		for (objnum=seg->objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)
-			DoRenderObject(objnum, nWindowNum);
-		}
-#endif
+	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->type!=OBJ_ROBOT))
+  	   bAutomapVisited [segnum]=1;
+	if (gameStates.render.bQueryOcclusion) {
+			short		sideVerts [4];
+			double	sideDists [6];
+			char		sideNums [6];
+			int		i; 
+			double	d, dMin, dx, dy, dz;
+			object	*objP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
 
+		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
+			sideNums [sn] = (char) sn;
+			GetSideVerts (sideVerts, segnum, sn);
+			dMin = 1e300;
+			for (i = 0; i < 4; i++) {
+				dx = objP->pos.x - gameData.segs.vertices [sideVerts [i]].x;
+				dy = objP->pos.y - gameData.segs.vertices [sideVerts [i]].y;
+				dz = objP->pos.z - gameData.segs.vertices [sideVerts [i]].z;
+				d = dx * dx + dy * dy + dz * dz;
+				if (dMin > d)
+					dMin = d;
+				}
+			sideDists [sn] = dMin;
+			}
+		SortSidesByDist (sideDists, sideNums, 0, 5);
+		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
+			RenderSide (seg, sideNums [sn]);
+		}
+	else
+		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
+			RenderSide (seg, sn);
+		}
+	}
+if (gameStates.render.bGlTransform)
+	glPopMatrix ();
 }
-
-// ----- This used to be called when bShowOnlyCurSide was set.
-// ----- It is wholly and superiorly replaced by RenderSide.
-// -- //render one side of one segment
-// -- void render_seg_side(segment *seg,int _side)
-// -- {
-// -- 	g3s_codes cc;
-// -- 	short vertnum_list [4];
-// -- 
-// -- 	cc=g3_RotateList(8,&seg->verts);
-// -- 
-// -- 	if (! cc.and) {		//all off screen?
-// -- 		int fn,pn,i;
-// -- 		side *s;
-// -- 		face *f;
-// -- 		poly *p;
-// -- 
-// -- 		s=&seg->sides [_side];
-// -- 
-// -- 		for (f=s->faces,fn=s->num_faces;fn;fn--,f++)
-// -- 			for (p=f->polys,pn=f->num_polys;pn;pn--,p++) {
-// -- 				grs_bitmap *tmap;
-// -- 	
-// -- 				for (i=0;i<p->num_vertices;i++) vertnum_list [i] = seg->verts [p->verts [i]];
-// -- 	
-// -- 				if (p->tmap_num >= gameData.pig.tex.nTextures) {
-// -- 					Warning("Invalid tmap number %d, gameData.pig.tex.nTextures=%d\n...Changing in poly structure to tmap 0",p->tmap_num,gameData.pig.tex.nTextures);
-// -- 					p->tmap_num = 0;		//change it permanantly
-// -- 				}
-// -- 	
-// -- 				tmap = gameData.pig.tex.bmIndex [p->tmap_num];
-// -- 	
-// -- 				G3CheckAndDrawTMap(p->num_vertices,vertnum_list,(uvl *) &p->uvls,tmap,&f->normal);
-// -- 	
-// -- 				if (bOutLineMode) DrawOutline(p->num_vertices,vertnum_list);
-// -- 			}
-// -- 		}
-// -- 
-// -- }
 
 #define CROSS_WIDTH  i2f(8)
 #define CROSS_HEIGHT i2f(8)
@@ -1748,32 +1684,25 @@ void RenderSegment(short segnum, int nWindowNum)
 
 //------------------------------------------------------------------------------
 //draw outline for curside
-void outline_seg_side(segment *seg,int _side,int edge,int vert)
+void OutlineSegSide(segment *seg,int _side,int edge,int vert)
 {
 	g3s_codes cc;
 
-	cc=RotateList(8,seg->verts);
-
-	if (! cc.and) {		//all off screen?
-		side *s;
-		g3s_point *pnt;
-
-		s=seg->sides+_side;
-
-		//render curedge of curside of curseg in green
-
-		GrSetColorRGB (0, 255, 0, 255);
-		G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
-						 gameData.segs.points + seg->verts [sideToVerts [_side][(edge+1)%4]]);
-
-		//draw a little cross at the current vert
-
-		pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
-		G3ProjectPoint(pnt);		//make sure projected
-		gr_line(pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT);
-		gr_line(pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT,pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy);
-		gr_line(pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT);
-		gr_line(pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT,pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy);
+cc=RotateList(8,seg->verts);
+if (! cc.and) {		//all off screen?
+	g3s_point *pnt;
+	side *s = seg->sides+_side;
+	//render curedge of curside of curseg in green
+	GrSetColorRGB (0, 255, 0, 255);
+	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
+						gameData.segs.points + seg->verts [sideToVerts [_side][(edge+1)%4]]);
+	//draw a little cross at the current vert
+	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
+	G3ProjectPoint(pnt);		//make sure projected
+	gr_line(pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT);
+	gr_line(pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT,pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy);
+	gr_line(pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT);
+	gr_line(pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT,pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy);
 	}
 }
 
@@ -1784,28 +1713,25 @@ void outline_seg_side(segment *seg,int _side,int edge,int vert)
 //------------------------------------------------------------------------------
 #define DEFAULT_PERSPECTIVE_DEPTH 6
 
-int Perspective_depth=DEFAULT_PERSPECTIVE_DEPTH;	//how many levels deep to render in perspective
+int nPerspectiveDepth=DEFAULT_PERSPECTIVE_DEPTH;	//how many levels deep to render in perspective
 
-int inc_perspective_depth(void)
+int IncPerspectiveDepth(void)
 {
-	return ++Perspective_depth;
-
+return ++nPerspectiveDepth;
 }
 
 //------------------------------------------------------------------------------
 
-int dec_perspective_depth(void)
+int DecPerspectiveDepth(void)
 {
-	return Perspective_depth==1?Perspective_depth:--Perspective_depth;
-
+return nPerspectiveDepth==1?nPerspectiveDepth:--nPerspectiveDepth;
 }
 
 //------------------------------------------------------------------------------
 
-int reset_perspective_depth(void)
+int ResetPerspectiveDepth(void)
 {
-	return Perspective_depth = DEFAULT_PERSPECTIVE_DEPTH;
-
+return nPerspectiveDepth = DEFAULT_PERSPECTIVE_DEPTH;
 }
 #endif
 
@@ -2052,8 +1978,8 @@ int FindAdjacentSideNorms (segment *seg, short s0, short s1, tSideNormData *s)
 side0 = seg0->sides + edgeside0;
 side1 = seg1->sides + edgeside1;
 #ifdef COMPACT_SEGS
-get_side_normals (seg0, edgeside0, s [0].n, s [0].n + 1);
-get_side_normals (seg1, edgeside1, s [1].n, s [1].n + 1);
+GetSideNormals (seg0, edgeside0, s [0].n, s [0].n + 1);
+GetSideNormals (seg1, edgeside1, s [1].n, s [1].n + 1);
 #else 
 memcpy (s [0].n, side0->normals, 2 * sizeof (vms_vector));
 memcpy (s [1].n, side1->normals, 2 * sizeof (vms_vector));
@@ -3617,7 +3543,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	 gameStates.render.bShadowMaps || 
 	 (gameStates.render.nShadowPass < 2)) {
 	RenderStartFrame ();
-	TransRotOglLights ();
+	TransformOglLights ();
 #if defined(EDITOR) && !defined(NDEBUG)
 		if (bShowOnlyCurSide) {
 			RotateList (8, Cursegp->verts);
@@ -3750,7 +3676,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 #	ifdef _DEBUG
 //draw curedge stuff
 if (bOutLineMode) 
-	outline_seg_side (Cursegp,Curside,Curedge,Curvert);
+	OutlineSegSide (Cursegp,Curside,Curedge,Curvert);
 #	endif
 #endif
 //RenderVisibleObjects (nWindowNum);

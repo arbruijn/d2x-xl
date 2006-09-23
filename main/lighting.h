@@ -87,7 +87,7 @@ void AddOglLights (void);
 void RemoveOglLights (void);
 void SetOglLightPos (short nObject);
 void MoveOglLight (short nObject);
-void TransRotOglLights ();
+void TransformOglLights ();
 short FindOglLight (short nSegment, short nSide, short nObject);
 void ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
 

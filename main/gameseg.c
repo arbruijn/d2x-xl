@@ -256,7 +256,7 @@ static char rcsid[] = "$Id: gameseg.c,v 1.5 2004/04/14 08:54:35 btb Exp $";
 
 // How far a point can be from a plane, and still be "in" the plane
 
-void get_verts_for_normal(int va, int vb, int vc, int vd, int *v0, int *v1, int *v2, int *v3, int *negate_flag);
+void GetVertsForNormal(int va, int vb, int vc, int vd, int *v0, int *v1, int *v2, int *v3, int *bNegate);
 
 // -------------------------------------------------------------------------------
 
@@ -266,173 +266,210 @@ void get_verts_for_normal(int va, int vb, int vc, int vd, int *v0, int *v1, int 
 #define MAX_CACHE_NORMALS 128
 #define CACHE_MASK 127
 
-typedef struct ncache_element {
+typedef struct normCache_element {
 	short segnum;
 	ubyte sidenum;
 	vms_vector normals[2];
-} ncache_element;
+} normCache_element;
 
-int ncache_initialized = 0;
-ncache_element ncache[MAX_CACHE_NORMALS];
+int bNormCacheInitialized = 0;
+normCache_element normCache[MAX_CACHE_NORMALS];
 
 #ifdef CACHE_DEBUG
-int ncache_counter = 0;
-int ncache_hits = 0;
-int ncache_misses = 0;
+int normCache_counter = 0;
+int normCache_hits = 0;
+int normCache_misses = 0;
 #endif
 
-void ncache_init()
+void NormCacheInit()
 {
-	ncache_flush();
-	ncache_initialized = 1;
+NormCacheFlush();
+bNormCacheInitialized = 1;
 }
 
-void ncache_flush()
+void NormCacheFlush()
 {
 	int i;
-	for (i=0; i<MAX_CACHE_NORMALS; i++ )	{
-		ncache[i].segnum = -1;
+	for (i=0; i<MAX_CACHE_NORMALS; i++)	{
+		normCache[i].segnum = -1;
 	}	
 }
 
 
 // -------------------------------------------------------------------------------
-int find_ncache_element( int segnum, int sidenum, int face_flags )
+
+int FindNormCacheElement(int segnum, int sidenum, int face_flags)
 {
 	uint i;
 
-	if (!ncache_initialized) ncache_init();
+if (!bNormCacheInitialized) 
+	NormCacheInit();
 
 #ifdef CACHE_DEBUG
 #if TRACE		
-	if (((++ncache_counter % 5000)==1) && (ncache_hits+ncache_misses > 0))
-		con_printf ( 0, "NCACHE %d%% missed, H:%d, M:%d\n", (ncache_misses*100)/(ncache_hits+ncache_misses), ncache_hits, ncache_misses );
+	if (((++normCache_counter % 5000)==1) && (normCache_hits+normCache_misses > 0))
+		con_printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache_misses*100)/(normCache_hits+normCache_misses), normCache_hits, normCache_misses);
 #endif
 #endif
 
 	i = ((segnum<<2) ^ sidenum) & CACHE_MASK;
-
-	if ((ncache[i].segnum == segnum) && ((ncache[i].sidenum&0xf)==sidenum) ) 	{
+	if ((normCache[i].segnum == segnum) && ((normCache[i].sidenum&0xf)==sidenum)) 	{
 		uint f1;
 #ifdef CACHE_DEBUG
-		ncache_hits++;
+		normCache_hits++;
 #endif
-		f1 = ncache[i].sidenum>>4;
-		if ( (f1&face_flags)==face_flags )
+		f1 = normCache[i].sidenum>>4;
+		if ((f1&face_flags)==face_flags)
 			return i;
-		if ( f1 & 1 )
-			uncached_get_side_normal( &gameData.segs.segments[segnum], sidenum, 1, &ncache[i].normals[1] );
+		if (f1 & 1)
+			UncachedGetSideNormal(&gameData.segs.segments[segnum], sidenum, 1, &normCache[i].normals[1]);
 		else
-			uncached_get_side_normal( &gameData.segs.segments[segnum], sidenum, 0, &ncache[i].normals[0] );
-		ncache[i].sidenum |= face_flags<<4;
+			UncachedGetSideNormal(&gameData.segs.segments[segnum], sidenum, 0, &normCache[i].normals[0]);
+		normCache[i].sidenum |= face_flags<<4;
 		return i;
 	}
 #ifdef CACHE_DEBUG
-	ncache_misses++;
+	normCache_misses++;
 #endif
 
-	switch( face_flags )	{
+	switch(face_flags)	{
 	case 1:	
-		uncached_get_side_normal( &gameData.segs.segments[segnum], sidenum, 0, &ncache[i].normals[0] );
+		UncachedGetSideNormal(&gameData.segs.segments[segnum], sidenum, 0, &normCache[i].normals[0]);
 		break;
 	case 2:
-		uncached_get_side_normal( &gameData.segs.segments[segnum], sidenum, 1, ncache[i].normals + 1 );
+		UncachedGetSideNormal(&gameData.segs.segments[segnum], sidenum, 1, normCache[i].normals + 1);
 		break;
 	case 3:
-		uncached_get_side_normals(&gameData.segs.segments[segnum], sidenum, ncache[i].normals, ncache[i].normals + 1 );
+		UncachedGetSideNormals(&gameData.segs.segments[segnum], sidenum, normCache[i].normals, normCache[i].normals + 1);
 		break;
 	}
-	ncache[i].segnum = segnum;
-	ncache[i].sidenum = sidenum | (face_flags<<4);
+	normCache[i].segnum = segnum;
+	normCache[i].sidenum = sidenum | (face_flags<<4);
 	return i;
 }
 
-void get_side_normal(segment *sp, int sidenum, int face_num, vms_vector * vm )
+// -------------------------------------------------------------------------------
+
+void GetSideNormal(segment *sp, int sidenum, int face_num, vms_vector * vm)
 {
 	int i;
-	i = find_ncache_element( SEG_IDX (sp), sidenum, 1 << face_num );
-	*vm = ncache[i].normals[face_num];
-	if (0) {
-		vms_vector tmp;
-		uncached_get_side_normal(sp, sidenum, face_num, &tmp );
-		Assert( tmp.x == vm->x );
-		Assert( tmp.y == vm->y );
-		Assert( tmp.z == vm->z );
+	i = FindNormCacheElement(SEG_IDX (sp), sidenum, 1 << face_num);
+
+*vm = normCache[i].normals[face_num];
+if (0) {
+	vms_vector tmp;
+	UncachedGetSideNormal(sp, sidenum, face_num, &tmp);
+	Assert(tmp.x == vm->x);
+	Assert(tmp.y == vm->y);
+	Assert(tmp.z == vm->z);
 	}
 }
 
-void get_side_normals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2 )
+// -------------------------------------------------------------------------------
+
+void GetSideNormals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2)
 {
-	int i;
-	i = find_ncache_element( SEG_IDX (sp), sidenum, 3 );
-	*vm1 = ncache[i].normals[0];
-	*vm2 = ncache[i].normals[1];
+	int i = FindNormCacheElement(SEG_IDX (sp), sidenum, 3);
+	
+*vm1 = normCache[i].normals[0];
+*vm2 = normCache[i].normals[1];
 
-	if (0) {
-		vms_vector tmp;
-		uncached_get_side_normal(sp, sidenum, 0, &tmp );
-		Assert( tmp.x == vm1->x );
-		Assert( tmp.y == vm1->y );
-		Assert( tmp.z == vm1->z );
-		uncached_get_side_normal(sp, sidenum, 1, &tmp );
-		Assert( tmp.x == vm2->x );
-		Assert( tmp.y == vm2->y );
-		Assert( tmp.z == vm2->z );
+if (0) {
+	vms_vector tmp;
+	UncachedGetSideNormal(sp, sidenum, 0, &tmp);
+	Assert(tmp.x == vm1->x);
+	Assert(tmp.y == vm1->y);
+	Assert(tmp.z == vm1->z);
+	UncachedGetSideNormal(sp, sidenum, 1, &tmp);
+	Assert(tmp.x == vm2->x);
+	Assert(tmp.y == vm2->y);
+	Assert(tmp.z == vm2->z);
 	}
-
 }
 
-void uncached_get_side_normal(segment *sp, int sidenum, int face_num, vms_vector * vm )
+// -------------------------------------------------------------------------------
+
+void UncachedGetSideNormal(segment *sp, int sidenum, int face_num, vms_vector * vm)
 {
-	int	vm0, vm1, vm2, vm3, negate_flag;
+	int	vm0, vm1, vm2, vm3, bNegate;
 	char	*vs = sideToVerts[sidenum];
 
-	switch( sp->sides[sidenum].type )	{
+switch(sp->sides[sidenum].type)	{
 	case SIDE_IS_QUAD:
-		get_verts_for_normal(sp->verts[vs[0]], sp->verts[vs[1]], sp->verts[vs[2]], sp->verts[vs[3]], &vm0, &vm1, &vm2, &vm3, &negate_flag);
-		VmVecNormal(vm, &gameData.segs.vertices[vm0], &gameData.segs.vertices[vm1], &gameData.segs.vertices[vm2]);
-		if (negate_flag)
+		GetVertsForNormal(sp->verts[vs[0]], sp->verts[vs[1]], sp->verts[vs[2]], sp->verts[vs[3]], 
+								&vm0, &vm1, &vm2, &vm3, &bNegate);
+		VmVecNormal (vm, 
+						 gameData.segs.vertices + vm0, 
+						 gameData.segs.vertices + vm1, 
+						 gameData.segs.vertices + vm2);
+		if (bNegate)
 			VmVecNegate(vm);
 		break;
 	case SIDE_IS_TRI_02:
-		if ( face_num == 0 )
-			VmVecNormal(vm, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[2]]);
+		if (face_num == 0)
+			VmVecNormal(vm, 
+							gameData.segs.vertices + sp->verts[vs[0]], 
+							gameData.segs.vertices + sp->verts[vs[1]], 
+							gameData.segs.vertices + sp->verts[vs[2]]);
 		else
-			VmVecNormal(vm, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[2]], gameData.segs.vertices + sp->verts[vs[3]]);
+			VmVecNormal(vm, 
+							gameData.segs.vertices + sp->verts[vs[0]], 
+							gameData.segs.vertices + sp->verts[vs[2]], 
+							gameData.segs.vertices + sp->verts[vs[3]]);
 		break;
 	case SIDE_IS_TRI_13:
-		if ( face_num == 0 )
-			VmVecNormal(vm, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[3]]);
+		if (face_num == 0)
+			VmVecNormal (vm, 
+							 gameData.segs.vertices + sp->verts[vs[0]], 
+							 gameData.segs.vertices + sp->verts[vs[1]], 
+							 gameData.segs.vertices + sp->verts[vs[3]]);
 		else
-			VmVecNormal(vm, gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[2]], gameData.segs.vertices + sp->verts[vs[3]]);
+			VmVecNormal (vm, 
+							 gameData.segs.vertices + sp->verts[vs[1]], 
+							 gameData.segs.vertices + sp->verts[vs[2]], 
+							 gameData.segs.vertices + sp->verts[vs[3]]);
 		break;
 	}
 }
 
-void uncached_get_side_normals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2 )
+// -------------------------------------------------------------------------------
+
+void UncachedGetSideNormals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2)
 #else
-void get_side_normals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2 )
+void GetSideNormals(segment *sp, int sidenum, vms_vector * vm1, vms_vector * vm2)
 #endif
 {
-	int	vvm0, vvm1, vvm2, vvm3, negate_flag;
+	int	vvm0, vvm1, vvm2, vvm3, bNegate;
 	char	*vs = sideToVerts[sidenum];
 
-	switch( sp->sides[sidenum].type )	{
+switch(sp->sides[sidenum].type)	{
 	case SIDE_IS_QUAD:
-		get_verts_for_normal(sp->verts[vs[0]], sp->verts[vs[1]], sp->verts[vs[2]], sp->verts[vs[3]], 
-									&vvm0, &vvm1, &vvm2, &vvm3, &negate_flag);
+		GetVertsForNormal(sp->verts[vs[0]], sp->verts[vs[1]], sp->verts[vs[2]], sp->verts[vs[3]], 
+								&vvm0, &vvm1, &vvm2, &vvm3, &bNegate);
 		VmVecNormal(vm1, gameData.segs.vertices + vvm0, gameData.segs.vertices + vvm1, gameData.segs.vertices + vvm2);
-		if (negate_flag)
+		if (bNegate)
 			VmVecNegate(vm1);
 		*vm2 = *vm1;
 		break;
 	case SIDE_IS_TRI_02:
-		VmVecNormal(vm1, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[2]]);
-		VmVecNormal(vm2, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[2]], gameData.segs.vertices + sp->verts[vs[3]]);
+		VmVecNormal(vm1, 
+						gameData.segs.vertices + sp->verts[vs[0]], 
+						gameData.segs.vertices + sp->verts[vs[1]], 
+						gameData.segs.vertices + sp->verts[vs[2]]);
+		VmVecNormal(vm2, 
+						gameData.segs.vertices + sp->verts[vs[0]], 
+						gameData.segs.vertices + sp->verts[vs[2]], 
+						gameData.segs.vertices + sp->verts[vs[3]]);
 		break;
 	case SIDE_IS_TRI_13:
-		VmVecNormal(vm1, gameData.segs.vertices + sp->verts[vs[0]], gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[3]]);
-		VmVecNormal(vm2, gameData.segs.vertices + sp->verts[vs[1]], gameData.segs.vertices + sp->verts[vs[2]], gameData.segs.vertices + sp->verts[vs[3]]);
+		VmVecNormal(vm1, 
+						gameData.segs.vertices + sp->verts[vs[0]], 
+						gameData.segs.vertices + sp->verts[vs[1]], 
+						gameData.segs.vertices + sp->verts[vs[3]]);
+		VmVecNormal(vm2, 
+						gameData.segs.vertices + sp->verts[vs[1]], 
+						gameData.segs.vertices + sp->verts[vs[2]], 
+						gameData.segs.vertices + sp->verts[vs[3]]);
 		break;
 	}
 }
@@ -526,7 +563,7 @@ void GetSideVerts(short *vertlist,int segnum,int sidenum)
 // Note: these are not absolute vertex numbers, but are relative to the segment
 // Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
 //   adjacent on the diagonal edge
-void create_all_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum)
+void CreateAllVertexLists(int *num_faces, int *vertices, int segnum, int sidenum)
 {
 	side	*sideP = &gameData.segs.segments[segnum].sides[sidenum];
 	int  *sv = sideToVertsInt[sidenum];
@@ -638,7 +675,7 @@ void create_all_vertnum_lists(int *num_faces, int *vertnums, int segnum, int sid
 }
 
 // -----
-//like create_all_vertex_lists(), but generate absolute point numbers
+//like CreateAllVertexLists(), but generate absolute point numbers
 void create_abs_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum)
 {
 	short	*vp = gameData.segs.segments[segnum].verts;
@@ -738,7 +775,7 @@ segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
 
 			vertnum = min(vertex_list[0],vertex_list[2]);
 			#ifdef COMPACT_SEGS
-			get_side_normals(seg, sn, normals, normals + 1);
+			GetSideNormals(seg, sn, normals, normals + 1);
 			#endif
 			
 			if (vertex_list[4] < vertex_list[1])
@@ -821,7 +858,7 @@ segmasks GetSegMasks(vms_vector *checkp,int segnum,fix rad)
 					vertnum = vertex_list[i];
 			}
 #ifdef COMPACT_SEGS
-				get_side_normal (seg, sn, 0, &normal);
+				GetSideNormal (seg, sn, 0, &normal);
 				dist = VmDistToPlane(checkp, &normal, gameData.segs.vertices + vertnum);
 #else
 				dist = VmDistToPlane (checkp, s->normals, gameData.segs.vertices + vertnum);
@@ -872,7 +909,7 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 		// Get number of faces on this side, and at vertex_list, store vertices.
 		//	If one face, then vertex_list indicates a quadrilateral.
 		//	If two faces, then 0,1,2 define one triangle, 3,4,5 define the second.
-		create_abs_vertex_lists( &num_faces, vertex_list, segnum, sn);
+		create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
 
 		//ok...this is important.  If a side has 2 faces, we need to know if
 		//those faces form a concave or convex side.  If the side pokes out,
@@ -890,10 +927,10 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 			vertnum = min(vertex_list[0],vertex_list[2]);
 #ifdef _DEBUG
 			if ((vertnum < 0) || (vertnum >= gameData.segs.nVertices))
-				create_abs_vertex_lists( &num_faces, vertex_list, segnum, sn);
+				create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
 #endif
 			#ifdef COMPACT_SEGS
-			get_side_normals(seg, sn, normals, normals + 1);
+			GetSideNormals(seg, sn, normals, normals + 1);
 			#endif
 
 			if (vertex_list[4] < vertex_list[1])
@@ -965,11 +1002,11 @@ ubyte get_side_dists(vms_vector *checkp,int segnum,fix *side_dists)
 					vertnum = vertex_list[i];
 #ifdef _DEBUG
 			if ((vertnum < 0) || (vertnum >= gameData.segs.nVertices))
-				create_abs_vertex_lists( &num_faces, vertex_list, segnum, sn);
+				create_abs_vertex_lists(&num_faces, vertex_list, segnum, sn);
 #endif
 
 			#ifdef COMPACT_SEGS
-				get_side_normal(seg, sn, 0, &normal );
+				GetSideNormal(seg, sn, 0, &normal);
 				dist = VmDistToPlane(checkp, &normal, gameData.segs.vertices + vertnum);
 			#else
 				dist = VmDistToPlane(checkp, &s->normals[0], gameData.segs.vertices + vertnum);
@@ -1033,7 +1070,7 @@ int check_segment_connections(void)
 
 			s = &seg->sides[sidenum];
 
-			create_abs_vertex_lists( &num_faces, vertex_list, segnum, sidenum);
+			create_abs_vertex_lists(&num_faces, vertex_list, segnum, sidenum);
 
 			csegnum = seg->children[sidenum];
 
@@ -1051,7 +1088,7 @@ int check_segment_connections(void)
 
 				cs = &cseg->sides[csidenum];
 
-				create_abs_vertex_lists( &con_num_faces, con_vertex_list, csegnum, csidenum);
+				create_abs_vertex_lists(&con_num_faces, con_vertex_list, csegnum, csidenum);
 
 				if (con_num_faces != num_faces) {
 #if TRACE
@@ -1265,7 +1302,7 @@ int FindSegByPoint(vms_vector *p,int segnum)
 //--repair-- 	for (sidenum=0; sidenum < MAX_SIDES_PER_SEGMENT; sidenum++) {
 //--repair-- 		int	s = gameData.segs.segments[segnum].children[sidenum];
 //--repair--
-//--repair-- 		if ( (s != -1) && (gameData.segs.segments[s].special==SEGMENT_IS_REPAIRCEN) ) {
+//--repair-- 		if ((s != -1) && (gameData.segs.segments[s].special==SEGMENT_IS_REPAIRCEN)) {
 //--repair-- 			Lsegments[segnum].special_type |= SS_REPAIR_CENTER;
 //--repair-- 			Lsegments[segnum].special_segment = s;
 //--repair-- 		}
@@ -1730,44 +1767,38 @@ void add_side_as_quad(segment *sp, int sidenum, vms_vector *normal)
 
 
 // -------------------------------------------------------------------------------
-//	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *negate_flag set, then negate normal after computation.
+//	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bNegate set, then negate normal after computation.
 //	Note, you cannot just compute the normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
-void get_verts_for_normal(int va, int vb, int vc, int vd, int *v0, int *v1, int *v2, int *v3, int *negate_flag)
+void GetVertsForNormal (int va, int vb, int vc, int vd, int *v0, int *v1, int *v2, int *v3, int *bNegate)
 {
-	int	i,j;
-	int	v[4],w[4];
+	int	i, j, t;
+	int	v [4], w [4] = {0,1,2,3};
 
-	//	w is a list that shows how things got scrambled so we know if our normal is pointing backwards
-	for (i=0; i<4; i++)
-		w[i] = i;
+//	w is a list that shows how things got scrambled so we know if our normal is pointing backwards
 
-	v[0] = va;
-	v[1] = vb;
-	v[2] = vc;
-	v[3] = vd;
-
-	for (i=1; i<4; i++)
-		for (j=0; j<i; j++)
-			if (v[j] > v[i]) {
-				int	t;
-				t = v[j];	v[j] = v[i];	v[i] = t;
-				t = w[j];	w[j] = w[i];	w[i] = t;
+v[0] = va;
+v[1] = vb;
+v[2] = vc;
+v[3] = vd;
+for (i = 1; i < 4; i++)
+	for (j = 0; j < i; j++)
+		if (v [j] > v [i]) {
+			t = v [j]; v [j] = v [i]; v [i] = t;
+			t = w [j]; w [j] = w [i]; w [i] = t;
 			}
 
-	Assert((v[0] < v[1]) && (v[1] < v[2]) && (v[2] < v[3]));
+Assert((v [0] < v [1]) && (v [1] < v [2]) && (v [2] < v [3]));
+//	Now, if for any w[i] & w[i+1]: w[i+1] = (w[i]+3)%4, then must swap
+*v0 = v [0];
+*v1 = v [1];
+*v2 = v [2];
+*v3 = v [3];
 
-	//	Now, if for any w[i] & w[i+1]: w[i+1] = (w[i]+3)%4, then must swap
-	*v0 = v[0];
-	*v1 = v[1];
-	*v2 = v[2];
-	*v3 = v[3];
-
-	if ( (((w[0]+3) % 4) == w[1]) || (((w[1]+3) % 4) == w[2]))
-		*negate_flag = 1;
-	else
-		*negate_flag = 0;
-
+if ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]))
+	*bNegate = 1;
+else
+	*bNegate = 0;
 }
 
 // -------------------------------------------------------------------------------
@@ -1790,109 +1821,109 @@ void add_side_as_2_triangles(segment *sp, int sidenum)
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on side, a is face formed by A,B,C, Na is normal from face a.
 	//	If not a wall, then triangulate so whatever is on the other side is triangulated the same (ie, between the same absoluate vertices)
 #if 0
-		VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-		VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-		dot = VmVecDot (sideP->normals, sideP->normals + 1);
-		if (dot >= 0)
-			sideP->type = SIDE_IS_TRI_02;
-		else {
-			sideP->type = SIDE_IS_TRI_13;
-			VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
-			VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-			}
+VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+dot = VmVecDot (sideP->normals, sideP->normals + 1);
+if (dot >= 0)
+	sideP->type = SIDE_IS_TRI_02;
+else {
+	sideP->type = SIDE_IS_TRI_13;
+	VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
+	VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+	}
 #else
-	if (!IS_CHILD(sp->children[sidenum])) {
-		VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-		VmVecSub(&vec_13, gameData.segs.vertices + v3, gameData.segs.vertices + v1);
-		dot = VmVecDot(&norm, &vec_13);
+if (!IS_CHILD(sp->children[sidenum])) {
+	VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+	VmVecSub(&vec_13, gameData.segs.vertices + v3, gameData.segs.vertices + v1);
+	dot = VmVecDot(&norm, &vec_13);
 
-		//	Now, signify whether to triangulate from 0:2 or 1:3
-		if (dot >= 0)
-			sideP->type = SIDE_IS_TRI_02;
-		else
-			sideP->type = SIDE_IS_TRI_13;
+	//	Now, signify whether to triangulate from 0:2 or 1:3
+	if (dot >= 0)
+		sideP->type = SIDE_IS_TRI_02;
+	else
+		sideP->type = SIDE_IS_TRI_13;
 
-		#ifndef COMPACT_SEGS
-		//	Now, based on triangulation type, set the normals.
-		if (sideP->type == SIDE_IS_TRI_02) {
-			//VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-			sideP->normals[0] = norm;
-			VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-			sideP->normals[1] = norm;
-			}
-		else {
-			VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
-			sideP->normals[0] = norm;
-			VmVecNormal(&norm, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-			sideP->normals[1] = norm;
-			}
-		#endif
+	#ifndef COMPACT_SEGS
+	//	Now, based on triangulation type, set the normals.
+	if (sideP->type == SIDE_IS_TRI_02) {
+		//VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+		sideP->normals[0] = norm;
+		VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		sideP->normals[1] = norm;
 		}
 	else {
-		int	i,v[4], vsorted[4];
-		int	negate_flag;
+		VmVecNormal(&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
+		sideP->normals[0] = norm;
+		VmVecNormal(&norm, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		sideP->normals[1] = norm;
+		}
+	#endif
+	}
+else {
+	int	i,v[4], vsorted[4];
+	int	bNegate;
 
-		for (i=0; i<4; i++)
-			v[i] = sp->verts[vs[i]];
+	for (i=0; i<4; i++)
+		v[i] = sp->verts[vs[i]];
 
-		get_verts_for_normal(v[0], v[1], v[2], v[3], &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &negate_flag);
+	GetVertsForNormal(v[0], v[1], v[2], v[3], &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &bNegate);
 
-		if ((vsorted[0] == v[0]) || (vsorted[0] == v[2])) {
-			sideP->type = SIDE_IS_TRI_02;
+	if ((vsorted[0] == v[0]) || (vsorted[0] == v[2])) {
+		sideP->type = SIDE_IS_TRI_02;
 #ifndef COMPACT_SEGS
-			//	Now, get vertices for normal for each triangle based on triangulation type.
-			get_verts_for_normal(v[0], v[1], v[2], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &negate_flag);
-			VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
-			if (negate_flag)
-				VmVecNegate(&norm);
-			sideP->normals[0] = norm;
+		//	Now, get vertices for normal for each triangle based on triangulation type.
+		GetVertsForNormal(v[0], v[1], v[2], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &bNegate);
+		VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
+		if (bNegate)
+			VmVecNegate(&norm);
+		sideP->normals[0] = norm;
 
-			get_verts_for_normal(v[0], v[2], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &negate_flag);
-			VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
-			if (negate_flag)
-				VmVecNegate(&norm);
-			sideP->normals[1] = norm;
+		GetVertsForNormal(v[0], v[2], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &bNegate);
+		VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
+		if (bNegate)
+			VmVecNegate(&norm);
+		sideP->normals[1] = norm;
 #endif
-			}
-		else {
-			sideP->type = SIDE_IS_TRI_13;
+		}
+	else {
+		sideP->type = SIDE_IS_TRI_13;
 #ifndef COMPACT_SEGS
-			//	Now, get vertices for normal for each triangle based on triangulation type.
-			get_verts_for_normal(v[0], v[1], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &negate_flag);
-			VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
-			if (negate_flag)
-				VmVecNegate(&norm);
-			sideP->normals[0] = norm;
+		//	Now, get vertices for normal for each triangle based on triangulation type.
+		GetVertsForNormal(v[0], v[1], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &bNegate);
+		VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
+		if (bNegate)
+			VmVecNegate(&norm);
+		sideP->normals[0] = norm;
 
-			get_verts_for_normal(v[1], v[2], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &negate_flag);
-			VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
-			if (negate_flag)
-				VmVecNegate(&norm);
-			sideP->normals[1] = norm;
+		GetVertsForNormal(v[1], v[2], v[3], 32767, &vsorted[0], &vsorted[1], &vsorted[2], &vsorted[3], &bNegate);
+		VmVecNormal(&norm,  &gameData.segs.vertices[vsorted[0]], &gameData.segs.vertices[vsorted[1]], &gameData.segs.vertices[vsorted[2]]);
+		if (bNegate)
+			VmVecNegate(&norm);
+		sideP->normals[1] = norm;
 #endif
 		}
 	}
 #endif
 }
 
+// -------------------------------------------------------------------------------
+
 int sign(fix v)
 {
-
-	if (v > PLANE_DIST_TOLERANCE)
-		return 1;
-	else if (v < -(PLANE_DIST_TOLERANCE+1))		//neg & pos round differently
-		return -1;
-	else
-		return 0;
+if (v > PLANE_DIST_TOLERANCE)
+	return 1;
+if (v < -(PLANE_DIST_TOLERANCE+1))		//neg & pos round differently
+	return -1;
+return 0;
 }
 
 // -------------------------------------------------------------------------------
 
 int bRenderQuads = 0;
 
-void create_walls_on_side(segment *sp, int sidenum)
+void CreateWallsOnSide(segment *sp, int sidenum)
 {
-	int	vm0, vm1, vm2, vm3, negate_flag;
+	int	vm0, vm1, vm2, vm3, bNegate;
 	int	v0, v1, v2, v3;
 	vms_vector vn;
 	fix	dist_to_plane;
@@ -1902,10 +1933,10 @@ void create_walls_on_side(segment *sp, int sidenum)
 	v2 = sp->verts[sideToVerts[sidenum][2]];
 	v3 = sp->verts[sideToVerts[sidenum][3]];
 
-	get_verts_for_normal(v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3, &negate_flag);
+	GetVertsForNormal(v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3, &bNegate);
 	VmVecNormal(&vn, gameData.segs.vertices + vm0, gameData.segs.vertices + vm1, gameData.segs.vertices + vm2);
 	dist_to_plane = abs(VmDistToPlane(gameData.segs.vertices + vm3, &vn, gameData.segs.vertices + vm0));
-	if (negate_flag)
+	if (bNegate)
 		VmVecNegate(&vn);
 #if 1
 	if (bRenderQuads || (dist_to_plane <= PLANE_DIST_TOLERANCE))
@@ -1922,14 +1953,14 @@ void create_walls_on_side(segment *sp, int sidenum)
 			int			vertnum;
 			side			*s;
 
-			create_abs_vertex_lists( &num_faces, vertex_list, SEG_IDX (sp), sidenum);
+			create_abs_vertex_lists(&num_faces, vertex_list, SEG_IDX (sp), sidenum);
 			Assert(num_faces == 2);
 			s = sp->sides + sidenum;
 			vertnum = min(vertex_list[0],vertex_list[2]);
 #ifdef COMPACT_SEGS
 			{
 			vms_vector normals[2];
-			get_side_normals(sp, sidenum, &normals[0], &normals[1] );
+			GetSideNormals(sp, sidenum, &normals[0], &normals[1]);
 			dist0 = VmDistToPlane(gameData.segs.vertices + vertex_list[1],normals + 1, gameData.segs.vertices + vertnum);
 			dist1 = VmDistToPlane(gameData.segs.vertices + vertex_list[4],normals, gameData.segs.vertices + vertnum);
 			}
@@ -1937,7 +1968,7 @@ void create_walls_on_side(segment *sp, int sidenum)
 			{
 #	ifdef _DEBUG
 			vms_vector normals[2];
-			get_side_normals(sp, sidenum, &normals[0], &normals[1] );
+			GetSideNormals(sp, sidenum, &normals[0], &normals[1]);
 #	endif
 			dist0 = VmDistToPlane(gameData.segs.vertices + vertex_list[1],s->normals + 1, gameData.segs.vertices + vertnum);
 			dist1 = VmDistToPlane(gameData.segs.vertices + vertex_list[4],s->normals, gameData.segs.vertices + vertnum);
@@ -1958,9 +1989,9 @@ void create_walls_on_side(segment *sp, int sidenum)
 }
 
 // -------------------------------------------------------------------------------
-void validate_removable_wall(segment *sp, int sidenum, int tmap_num)
+void ValidateRemovableWall(segment *sp, int sidenum, int tmap_num)
 {
-	create_walls_on_side(sp, sidenum);
+	CreateWallsOnSide(sp, sidenum);
 	sp->sides[sidenum].tmap_num = tmap_num;
 //	assign_default_uvs_to_side(sp, sidenum);
 //	assign_light_to_side(sp, sidenum);
@@ -1968,14 +1999,14 @@ void validate_removable_wall(segment *sp, int sidenum, int tmap_num)
 
 // -------------------------------------------------------------------------------
 //	Make a just-modified segment side valid.
-void validate_segment_side(segment *sp, short sidenum)
+void ValidateSegmentSide(segment *sp, short sidenum)
 {
 	//CBRK (sp - gameData.segs.segments == 32 && sidenum == 5);
 	if (IS_WALL (WallNumP (sp, sidenum)))
 		// create_removable_wall(sp, sidenum, sp->sides[sidenum].tmap_num);
-		validate_removable_wall(sp, sidenum, sp->sides[sidenum].tmap_num);
+		ValidateRemovableWall(sp, sidenum, sp->sides[sidenum].tmap_num);
 	else
-		create_walls_on_side(sp, sidenum);
+		CreateWallsOnSide(sp, sidenum);
 
 	//	Set render_flag.
 	//	If side doesn't have a child, then render wall.  If it does have a child, but there is a temporary
@@ -1994,7 +2025,7 @@ extern int check_for_degenerate_segment(segment *sp);
 //	Make a just-modified segment valid.
 //		check all sides to see how many faces they each should have (0,1,2)
 //		create new vector normals
-void validate_segment(segment *sp)
+void ValidateSegment(segment *sp)
 {
 	short	side;
 
@@ -2003,7 +2034,7 @@ void validate_segment(segment *sp)
 	#endif
 
 	for (side = 0; side < MAX_SIDES_PER_SEGMENT; side++)
-		validate_segment_side(sp, side);
+		ValidateSegmentSide(sp, side);
 
 //	assign_default_uvs_to_segment(sp);
 }
@@ -2021,7 +2052,7 @@ for (s=0; s<=gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	if (gameData.segs.segments[s].segnum != -1)
 #endif
-		validate_segment(gameData.segs.segments + s);
+		ValidateSegment(gameData.segs.segments + s);
 #ifdef EDITOR
 	{
 	int said=0;
@@ -2072,7 +2103,7 @@ void PickRandomPointInSeg(vms_vector *new_pos, int segnum)
 //	----------------------------------------------------------------------------------------------------------
 //	Set the segment depth of all segments from start_seg in *segbuf.
 //	Returns maximum depth value.
-int set_segment_depths(int start_seg, ubyte *segbuf)
+int SetSegmentDepths(int start_seg, ubyte *segbuf)
 {
 	int	i, curseg;
 	ubyte	visited[MAX_SEGMENTS];
@@ -2132,7 +2163,7 @@ int n_changed_segs;
 
 //	------------------------------------------------------------------------------------------
 //cast static light from a segment to nearby segments
-void apply_light_to_segment(segment *segp,vms_vector *segment_center, fix light_intensity,int recursion_depth)
+void ApplyLightToSegment(segment *segp,vms_vector *segment_center, fix light_intensity,int recursion_depth)
 {
 	vms_vector	r_segment_center;
 	fix			dist_to_rseg;
@@ -2174,7 +2205,7 @@ void apply_light_to_segment(segment *segp,vms_vector *segment_center, fix light_
 	if (recursion_depth < 2)
 		for (sidenum=0; sidenum<6; sidenum++) {
 			if (WALL_IS_DOORWAY(segp,sidenum, NULL) & WID_RENDPAST_FLAG)
-				apply_light_to_segment(&gameData.segs.segments[segp->children[sidenum]],segment_center,light_intensity,recursion_depth+1);
+				ApplyLightToSegment(&gameData.segs.segments[segp->children[sidenum]],segment_center,light_intensity,recursion_depth+1);
 		}
 
 }
@@ -2197,7 +2228,7 @@ void change_segment_light(short segnum, short sidenum, int dir)
 		if (light_intensity) {
 			vms_vector	segment_center;
 			COMPUTE_SEGMENT_CENTER(&segment_center, segp);
-			apply_light_to_segment(segp,&segment_center,light_intensity,0);
+			ApplyLightToSegment(segp,&segment_center,light_intensity,0);
 		}
 	}
 
@@ -2269,7 +2300,7 @@ return gameStates.render.bD2XLights ?
 //	dir = -1 -> subtract light
 //	dir = 17 -> add 17x light
 //	dir =  0 -> you are dumb
-void change_light (short segnum, short sidenum, int dir)
+void ChangeLight (short segnum, short sidenum, int dir)
 {
 	int			i, j, k;
 	fix			dl, new_l, *pSegLightDelta;
@@ -2310,6 +2341,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 	change_segment_light(segnum,sidenum,dir);
 }
 
+//	-----------------------------------------------------------------------------
 //	Subtract light cast by a light source from all surfaces to which it applies light.
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 // returns 1 if lights actually subtracted, else 0
@@ -2320,25 +2352,27 @@ int subtract_light(short segnum, short sidenum)
 	}
 
 	gameData.render.lights.subtracted[segnum] |= (1 << sidenum);
-	change_light(segnum, sidenum, -1);
+	ChangeLight(segnum, sidenum, -1);
 	return 1;
 }
 
+//	-----------------------------------------------------------------------------
 //	Add light cast by a light source from all surfaces to which it applies light.
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 //	You probably only want to call this after light has been subtracted.
 // returns 1 if lights actually added, else 0
-int add_light(short segnum, short sidenum)
+int AddLight(short segnum, short sidenum)
 {
 	if (!(gameData.render.lights.subtracted[segnum] & (1 << sidenum))) {
 		return 0;
 	}
 
 	gameData.render.lights.subtracted[segnum] &= ~(1 << sidenum);
-	change_light(segnum, sidenum, 1);
+	ChangeLight(segnum, sidenum, 1);
 	return 1;
 }
 
+//	-----------------------------------------------------------------------------
 //	Parse the gameData.render.lights.subtracted array, turning on or off all lights.
 void ApplyAllChangedLight(void)
 {
@@ -2347,7 +2381,7 @@ void ApplyAllChangedLight(void)
 	for (i=0; i<=gameData.segs.nLastSegment; i++) {
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
 			if (gameData.render.lights.subtracted[i] & (1 << j))
-				change_light(i, j, -1);
+				ChangeLight(i, j, -1);
 	}
 }
 
@@ -2381,10 +2415,11 @@ void ApplyAllChangedLight(void)
 //@@	}
 //@@}
 
+//	-----------------------------------------------------------------------------
 //	Should call this whenever a new mine gets loaded.
 //	More specifically, should call this whenever something global happens
 //	to change the status of static light in the mine.
-void clear_light_subtracted(void)
+void ClearLightSubtracted(void)
 {
 #if 1	
 	memset (gameData.render.lights.subtracted, 0, gameData.segs.nLastSegment * sizeof (gameData.render.lights.subtracted [0]));
@@ -2396,14 +2431,13 @@ void clear_light_subtracted(void)
 }
 
 //	-----------------------------------------------------------------------------
-fix find_connected_distance_segments( short seg0, short seg1, int depth, int wid_flag)
+fix FindConnectedDistanceSegments(short seg0, short seg1, int depth, int wid_flag)
 {
 	vms_vector	p0, p1;
 
-	COMPUTE_SEGMENT_CENTER_I(&p0, seg0);
-	COMPUTE_SEGMENT_CENTER_I(&p1, seg1);
-
-	return FindConnectedDistance(&p0, seg0, &p1, seg1, depth, wid_flag);
+COMPUTE_SEGMENT_CENTER_I(&p0, seg0);
+COMPUTE_SEGMENT_CENTER_I(&p1, seg1);
+return FindConnectedDistance(&p0, seg0, &p1, seg1, depth, wid_flag);
 }
 
 #define	AMBIENT_SEGMENT_DEPTH		5

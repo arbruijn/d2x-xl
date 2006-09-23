@@ -1073,7 +1073,7 @@ void create_name_canv ()
 //------------------------------------------------------------------------------
 
 extern void GameLoop (int, int);
-extern int set_segment_depths (int start_seg, ubyte *segbuf);
+extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 
 #ifdef RELEASE
 #define MAP_BACKGROUND_FILENAME (AutomapHires?"\x01MAPB.PCX":"\x01MAP.PCX")	//load only from hog file
@@ -1282,7 +1282,7 @@ WIN (if (!redraw_screen) {)
 		memset (bAutomapVisited, 1, sizeof (bRadarVisited));
 		}
 	Max_segments_away = 
-		set_segment_depths (
+		SetSegmentDepths (
 			gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum, 
 			bRadar ? bAutomapVisited : bAutomapVisited);
 	SegmentLimit = bRadar ? Max_segments_away : Max_segments_away;
@@ -1390,7 +1390,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 				for (i=0; i<=gameData.segs.nLastSegment; i++)
 					bAutomapVisited[i] = 1;
 				AutomapBuildEdgeList ();
-				Max_segments_away = set_segment_depths (gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum, bAutomapVisited);
+				Max_segments_away = SetSegmentDepths (gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum, bAutomapVisited);
 				SegmentLimit = Max_segments_away;
 				adjust_segment_limit (SegmentLimit, bAutomapVisited);
 				}
@@ -1645,7 +1645,7 @@ void DrawAllEdges ()
 			while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
 #ifdef COMPACT_SEGS
 				vms_vector temp_v;
-				get_side_normal (&gameData.segs.segments[e->segnum[j]], e->sides[j], 0, &temp_v);
+				GetSideNormal (&gameData.segs.segments[e->segnum[j]], e->sides[j], 0, &temp_v);
 				if (!G3CheckNormalFacing (tv1, &temp_v))
 #else
 				if (!G3CheckNormalFacing (tv1, &gameData.segs.segments[e->segnum[j]].sides[e->sides[j]].normals[0]))
@@ -2076,8 +2076,8 @@ void AutomapBuildEdgeList ()
 				if ( (e1 != e2) && (e->segnum[e1] != e->segnum[e2]))	{
 					#ifdef COMPACT_SEGS
 					vms_vector v1, v2;
-					get_side_normal (&gameData.segs.segments[e->segnum[e1]], e->sides[e1], 0, &v1);
-					get_side_normal (&gameData.segs.segments[e->segnum[e2]], e->sides[e2], 0, &v2);
+					GetSideNormal (&gameData.segs.segments[e->segnum[e1]], e->sides[e1], 0, &v1);
+					GetSideNormal (&gameData.segs.segments[e->segnum[e2]], e->sides[e2], 0, &v2);
 					if (VmVecDot (&v1,&v2) > (F1_0- (F1_0/10)) )	{
 					#else
 					if (VmVecDot (&gameData.segs.segments[e->segnum[e1]].sides[e->sides[e1]].normals[0], &gameData.segs.segments[e->segnum[e2]].sides[e->sides[e2]].normals[0]) > (F1_0- (F1_0/10)) )	{

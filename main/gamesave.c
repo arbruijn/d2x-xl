@@ -1510,7 +1510,7 @@ i = CFTell (LoadFile);
 		}
 
 	//	Indicate that no light has been subtracted from any vertices.
-	clear_light_subtracted();
+	ClearLightSubtracted();
 
 	//================ READ DELTA LIGHT INFO ===============
 

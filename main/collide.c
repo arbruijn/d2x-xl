@@ -995,7 +995,7 @@ void ScrapeObjectOnWall (object *objP, short hitseg, short hitside, vms_vector *
 					}
 
 					#ifdef COMPACT_SEGS
-						get_side_normal (&gameData.segs.segments [hitseg], hitside, 0, &hit_dir);	
+						GetSideNormal (&gameData.segs.segments [hitseg], hitside, 0, &hit_dir);	
 					#else
 						hit_dir = gameData.segs.segments [hitseg].sides [hitside].normals [0];
 					#endif
@@ -1273,7 +1273,7 @@ void CollideWeaponAndWall (
 			if (weapon->id < 4)
 				subtract_light (hitseg, hitwall);
 			else if (weapon->id == FLARE_ID)
-				add_light (hitseg, hitwall);
+				AddLight (hitseg, hitwall);
 		}
 
 		//@@#ifdef EDITOR

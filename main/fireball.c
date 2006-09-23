@@ -1934,7 +1934,7 @@ void DoExplodingWallFrame()
 				#ifdef COMPACT_SEGS	
 					{
 					vms_vector _vn;
-					get_side_normal(gameData.segs.segments + segnum, sidenum, 0, &_vn);
+					GetSideNormal(gameData.segs.segments + segnum, sidenum, 0, &_vn);
 					VmVecScaleInc(&pos,&_vn,size*(EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
 					}
 				#else

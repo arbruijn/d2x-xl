@@ -1199,7 +1199,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 
 //------------------------------------------------------------------------------
 
-void TransRotOglLights (void)
+void TransformOglLights (void)
 {
 	int			i;
 	tOglLight	*pl = gameData.render.lights.ogl.lights;

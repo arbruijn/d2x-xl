@@ -254,8 +254,8 @@ typedef struct tFaceColor {
 #define MAX_CENTER_TYPES        15
 
 #ifdef COMPACT_SEGS
-extern void get_side_normal(segment *sp, int sidenum, int normal_num, vms_vector * vm );
-extern void get_side_normals(segment *sp, int sidenum, vms_vector * vm1, vms_vector *vm2 );
+extern void GetSideNormal(segment *sp, int sidenum, int normal_num, vms_vector * vm );
+extern void GetSideNormals(segment *sp, int sidenum, vms_vector * vm1, vms_vector *vm2 );
 #endif
 
 // Local segment data.
@@ -320,9 +320,9 @@ typedef union {
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
 int subtract_light(short segnum, short sidenum);
-int add_light(short segnum, short sidenum);
+int AddLight(short segnum, short sidenum);
 void restore_all_lights_in_mine(void);
-void clear_light_subtracted(void);
+void ClearLightSubtracted(void);
 
 // ----------------------------------------------------------------------------
 // --------------------- Segment interrogation functions ----------------------

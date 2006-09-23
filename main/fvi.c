@@ -350,7 +350,7 @@ uint check_point_to_face(vms_vector *checkp, side *s,int facenum,int nv,int *ver
 	vms_vector_array *v0,*v1;
 
 	#ifdef COMPACT_SEGS
-		get_side_normal(sp, s-sp->sides, facenum, (vms_vector *)&norm );
+		GetSideNormal(sp, s-sp->sides, facenum, (vms_vector *)&norm );
 	#else
 		memcpy( &norm, &s->normals[facenum], sizeof(vms_vector_array));
 	#endif
@@ -486,7 +486,7 @@ int check_line_to_face(vms_vector *newp,vms_vector *p0,vms_vector *p1,segment *s
 	vms_vector norm;
 
 	#ifdef COMPACT_SEGS
-		get_side_normal(seg, side, facenum, &norm );
+		GetSideNormal(seg, side, facenum, &norm );
 	#else
 		norm = seg->sides[side].normals[facenum];
 	#endif
@@ -1250,7 +1250,7 @@ int fvi_sub(vms_vector *intp, short *ints, vms_vector *p0, short startseg, vms_v
 									hit_type = HIT_WALL;
 									
 									#ifdef COMPACT_SEGS
-										get_side_normal(seg, side, face, &wall_norm );
+										GetSideNormal(seg, side, face, &wall_norm );
 									#else
 										wall_norm = seg->sides[side].normals[face];	
 									#endif
@@ -1391,7 +1391,7 @@ void find_hitpoint_uv(fix *u,fix *v,fix *l,vms_vector *pnt,segment *seg,int side
 	//1. find what plane to project this wall onto to make it a 2d case
 
 	#ifdef COMPACT_SEGS
-		get_side_normal(seg, sidenum, facenum, (vms_vector *)&normal_array );
+		GetSideNormal(seg, sidenum, facenum, (vms_vector *)&normal_array );
 	#else
 		memcpy( &normal_array, &side->normals[facenum], sizeof(vms_vector_array) );
 	#endif

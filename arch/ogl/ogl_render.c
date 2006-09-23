@@ -1028,17 +1028,13 @@ else
 		//CapTMapColor (uvl_list, nv, bmBot);
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
 			tOOF_vector	p [3], vNormal;
-#if 1
 			OOF_VecVms2Oof (p, &pointlist [0]->p3_vec);
 			OOF_VecVms2Oof (p + 1, &pointlist [1]->p3_vec);
 			OOF_VecVms2Oof (p + 2, &pointlist [2]->p3_vec);
 			OOF_VecNormal (&vNormal, p, p + 1, p + 2);
-#else
-			OOF_VecNormal (&vNormal, //p, p + 1, p + 2)
-								(tOOF_vector *) (gameData.segs.fVertices + pointlist [0]->p3_index),
-								(tOOF_vector *) (gameData.segs.fVertices + pointlist [1]->p3_index),
-								(tOOF_vector *) (gameData.segs.fVertices + pointlist [2]->p3_index));
-#endif
+			vNormal.x = -vNormal.x;
+			vNormal.y = -vNormal.y;
+			vNormal.z = -vNormal.z;
 			glNormal3fv ((GLfloat *) &vNormal);
 			}
 		glBegin (GL_TRIANGLE_FAN);

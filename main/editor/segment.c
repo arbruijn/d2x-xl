@@ -457,7 +457,7 @@ void med_move_vertex(segment *sp, int pi, vms_vector *vofs)
 	// You need to make sure:
 	//		The segment is not concave.
 	//		None of the sides are concave.
-	validate_segment(sp);
+	ValidateSegment(sp);
 
 }
 
@@ -477,7 +477,7 @@ void med_move_wall(segment *sp,int wi, vms_vector *vofs)
 		vp++;
 	}
 
-	validate_segment(sp);
+	ValidateSegment(sp);
 }
 
 // -------------------------------------------------------------------------------
@@ -669,7 +669,7 @@ int check_for_degenerate_side(segment *sp, int sidenum)
 // -------------------------------------------------------------------------------
 void create_removable_wall(segment *sp, int sidenum, int tmap_num)
 {
-	create_walls_on_side(sp, sidenum);
+	CreateWallsOnSide(sp, sidenum);
 
 	sp->sides[sidenum].tmap_num = tmap_num;
 
@@ -1180,7 +1180,7 @@ int med_attach_segment_rotated(segment *destseg, segment *newseg, int destside, 
 	set_vertex_counts();
 
 	// Now all the vertices are in place.  Create the faces.
-	validate_segment(nsp);
+	ValidateSegment(nsp);
 
 	//	Say to not render at the joint.
 //	destseg->sides[destside].render_flag = 0;
@@ -1315,7 +1315,7 @@ void delete_vertices_in_segment(segment *sp)
 	update_num_vertices();
 }
 
-extern void validate_segment_side(segment *sp, int sidenum);
+extern void ValidateSegmentSide(segment *sp, int sidenum);
 
 // -------------------------------------------------------------------------------
 //	Delete segment *sp in gameData.segs.segments array.
@@ -1363,7 +1363,7 @@ int med_delete_segment(segment *sp)
 			for (s=0; s<MAX_SIDES_PER_SEGMENT; s++)
 				if (csp->children[s] == segnum) {
 					csp->children[s] = -1;				// this is the side of connection, break it
-					validate_segment_side(csp,s);					// we have converted a connection to a side so validate the segment
+					ValidateSegmentSide(csp,s);					// we have converted a connection to a side so validate the segment
 					med_propagate_tmaps_to_back_side(csp,s,0);
 				}
 			Cursegp = csp;
@@ -1670,9 +1670,9 @@ int med_form_joint(segment *seg1, int side1, segment *seg2, int side2)
 	seg2->children[side2] = SEG_IDX (seg1);
 
 	// validate all segments
-	validate_segment_side(seg1,side1);
+	ValidateSegmentSide(seg1,side1);
 	for (s=0; s<nv; s++) {
-		validate_segment(&gameData.segs.segments[validation_list[s]]);
+		ValidateSegment(&gameData.segs.segments[validation_list[s]]);
 		remap_side_uvs(&gameData.segs.segments[validation_list[s]],remap_vertices);	// remap uv coordinates on sides which were reshaped (ie, have a vertex in lost_vertices)
 		warn_if_concave_segment(&gameData.segs.segments[validation_list[s]]);
 	}
@@ -1752,7 +1752,7 @@ int med_form_bridge_segment(segment *seg1, int side1, segment *seg2, int side2)
 	//	Validate bridge segment, and if degenerate, clean up mess.
 	Degenerate_segment_found = 0;
 
-	validate_segment(bs);
+	ValidateSegment(bs);
 
 	if (Degenerate_segment_found) {
 		seg1->children[side1] = -1;
@@ -1768,8 +1768,8 @@ int med_form_bridge_segment(segment *seg1, int side1, segment *seg2, int side2)
 		editor_status("Bridge segment would be degenerate, not created.\n");
 		return 1;
 	} else {
-		validate_segment(seg1);	// used to only validate side, but segment does more error checking: ,side1);
-		validate_segment(seg2);	// ,side2);
+		ValidateSegment(seg1);	// used to only validate side, but segment does more error checking: ,side1);
+		ValidateSegment(seg2);	// ,side2);
 		med_propagate_tmaps_to_segments(seg1,bs,0);
 
 		editor_status("Bridge segment formed.");
@@ -1827,7 +1827,7 @@ void med_create_segment(segment *sp,fix cx, fix cy, fix cz, fix length, fix widt
 
 	//	Add faces to all sides.
 	for (f=0; f<MAX_SIDES_PER_SEGMENT; f++)
-		create_walls_on_side(sp,f);
+		CreateWallsOnSide(sp,f);
 
 	sp->objects = -1;		//no gameData.objs.objects in this segment
 
@@ -1879,7 +1879,7 @@ void med_create_new_segment(vms_vector *scale)
 		sp->children[s] = -1;
 //		sp->sides[s].render_flag = 0;
 		sp->sides[s].wall_num = NO_WALL;
-		create_walls_on_side(sp,s);
+		CreateWallsOnSide(sp,s);
 		sp->sides[s].tmap_num = s;					// assign some stupid old tmap to this side.
 		sp->sides[s].tmap_num2 = 0;
 	}

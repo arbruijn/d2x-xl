@@ -1287,7 +1287,7 @@ if (flydata->first_time || objP->segnum != old_player_seg) {		//moved into new s
 		for (i = 0; i < 6; i++) {
 #ifdef COMPACT_SEGS
 			vms_vector v1;
-			get_side_normal (pseg, i, 0, &v1);
+			GetSideNormal (pseg, i, 0, &v1);
 			d = VmVecDot (&v1, &flydata->objP->orient.uvec);
 #else
 			d = VmVecDot (&pseg->sides [i].normals [0], &flydata->objP->orient.uvec);
@@ -1328,7 +1328,7 @@ if (flydata->first_time || objP->segnum != old_player_seg) {		//moved into new s
 #ifdef COMPACT_SEGS
 	{
 	vms_vector _v1;
-	get_side_normal (pseg, up_side, 0, &_v1);
+	GetSideNormal (pseg, up_side, 0, &_v1);
 	VmVector2Matrix (&dest_orient, &flydata->headvec, &_v1, NULL);
 	}
 #else

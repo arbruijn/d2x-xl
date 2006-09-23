@@ -357,7 +357,7 @@ void do_physics_align_object(object * objP)
 	for (i=0;i<6;i++) {
 		#ifdef COMPACT_SEGS
 			vms_vector _tv1;
-			get_side_normal(gameData.segs.segments + objP->segnum, i, 0, &_tv1);
+			GetSideNormal(gameData.segs.segments + objP->segnum, i, 0, &_tv1);
 			d = VmVecDot(&_tv1, &objP->orient.uvec);
 		#else					
 			d = VmVecDot(gameData.segs.segments [objP->segnum].sides[i].normals, &objP->orient.uvec);
@@ -370,7 +370,7 @@ void do_physics_align_object(object * objP)
 
 		// old way: used floor's normal as upvec
 		#ifdef COMPACT_SEGS
-			get_side_normal(gameData.segs.segments + objP->segnum, 3, 0, &desired_upvec);			
+			GetSideNormal(gameData.segs.segments + objP->segnum, 3, 0, &desired_upvec);			
 		#else
 			desired_upvec = gameData.segs.segments[objP->segnum].sides[3].normals[0];
 		#endif
@@ -380,7 +380,7 @@ void do_physics_align_object(object * objP)
 		if (get_num_faces(&gameData.segs.segments[objP->segnum].sides[best_side])==2) {
 			#ifdef COMPACT_SEGS
 				vms_vector normals[2];
-				get_side_normals(&gameData.segs.segments[objP->segnum], best_side, &normals[0], &normals[1]);			
+				GetSideNormals(&gameData.segs.segments[objP->segnum], best_side, &normals[0], &normals[1]);			
 
 				desired_upvec.x = (normals[0].x + normals[1].x) / 2;
 				desired_upvec.y = (normals[0].y + normals[1].y) / 2;
@@ -398,7 +398,7 @@ void do_physics_align_object(object * objP)
 		}
 		else
 			#ifdef COMPACT_SEGS
-				get_side_normal(&gameData.segs.segments[objP->segnum], best_side, 0, &desired_upvec);			
+				GetSideNormal(&gameData.segs.segments[objP->segnum], best_side, 0, &desired_upvec);			
 			#else
 				desired_upvec = gameData.segs.segments[objP->segnum].sides[best_side].normals[0];
 			#endif
@@ -1188,7 +1188,7 @@ save_p1 = *fq.p1;
 				#ifdef COMPACT_SEGS
 					{
 					vms_vector _vn;
-					get_side_normal(gameData.segs.segments + orig_segnum, sidenum, 0, &_vn);
+					GetSideNormal(gameData.segs.segments + orig_segnum, sidenum, 0, &_vn);
 					dist = VmDistToPlane(&start_pos, &_vn, &gameData.segs.vertices[vertnum]);
 					VmVecScaleAdd(&objP->pos, &start_pos, &_vn, objP->size-dist);
 					}

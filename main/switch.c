@@ -319,7 +319,7 @@ for (i=t->num_links;i;i--,segs++,sides++) {
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
 	if (gameData.pig.tex.pTMapInfo[gameData.segs.segments[segnum].sides[sidenum].tmap_num2 & 0x3fff].lighting) {
-		ret |= add_light(segnum, sidenum); 		//any light sets flag
+		ret |= AddLight(segnum, sidenum); 		//any light sets flag
 		enable_flicker(segnum, sidenum);
 	}
 }
@@ -588,7 +588,7 @@ void TriggerSetObjOrient (short objnum, short segnum, short sidenum, int bSetPos
 
 if (nStep <= 0) {
 #ifdef COMPACT_SEGS
-	get_side_normals (gameData.segs.segments + segnum, int sidenum, &n1, &n2);
+	GetSideNormals (gameData.segs.segments + segnum, int sidenum, &n1, &n2);
 #else
 	n = *gameData.segs.segments [segnum].sides [sidenum].normals;
 #endif
@@ -715,7 +715,7 @@ if (gameStates.gameplay.bSpeedBoost) {
 			Controls.forward_thrust_time =
 			Controls.sideways_thrust_time = 0;
 #ifdef COMPACT_SEGS
-			get_side_normals (gameData.segs.segments + destSegnum, destSidenum, &n1, &n2);
+			GetSideNormals (gameData.segs.segments + destSegnum, destSidenum, &n1, &n2);
 #else
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 #endif
@@ -728,7 +728,7 @@ if (gameStates.gameplay.bSpeedBoost) {
 		}
 	else {
 #ifdef COMPACT_SEGS
-		get_side_normals (gameData.segs.segments + destSegnum, destSidenum, &n1, &n2);
+		GetSideNormals (gameData.segs.segments + destSegnum, destSidenum, &n1, &n2);
 #else
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 #endif
