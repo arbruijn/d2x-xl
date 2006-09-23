@@ -158,7 +158,7 @@ bool G3CheckAndDrawTMap (
 	int nv, g3s_point **pointlist, uvl *uvl_list, grs_bitmap *bm, vms_vector *norm, vms_vector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
-	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, 1);
+	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1);
 else
 	return 0;
 }

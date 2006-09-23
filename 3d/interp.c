@@ -1346,10 +1346,10 @@ return 1;
 
 bool G3DrawPolyModel (
 	void			*modelP, 
-	grs_bitmap	**model_bitmaps, 
+	grs_bitmap	**modelBitmaps, 
 	vms_angvec	*pAnimAngles, 
-	fix			model_light, 
-	fix			*glow_values, 
+	fix			xModelLight, 
+	fix			*xGlowValues, 
 	tRgbColorf	*objColorP)
 {
 	ubyte *p = modelP;
@@ -1395,7 +1395,7 @@ for (;;) {
 #if 1
 			l = 32;
 #else
-			l = f2i (fixmul (i2f (32), model_light);
+			l = f2i (fixmul (i2f (32), xModelLight);
 			if (l < 0) 
 				l = 0;
 			else if (l > 32) 
@@ -1440,10 +1440,10 @@ for (;;) {
 			if (nGlow < 0) {			//no glow
 				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
-				light = fixmul (light, model_light);
+				light = fixmul (light, xModelLight);
 				}
 			else {				//yes glow
-				light = glow_values [nGlow];
+				light = xGlowValues [nGlow];
 				nGlow = -1;
 				}
 			//now poke light into l values
@@ -1452,7 +1452,7 @@ for (;;) {
 				uvl_list [i].l = light;
 
 			if (objColorP) {
-				unsigned char c = model_bitmaps [WORDVAL (p+28)]->avg_color;
+				unsigned char c = modelBitmaps [WORDVAL (p+28)]->avg_color;
 				objColorP->red = CPAL2Tr (c);
 				objColorP->green = CPAL2Tg (c);
 				objColorP->blue = CPAL2Tb (c);
@@ -1460,7 +1460,7 @@ for (;;) {
 			p += 30;
 			for (i = 0; i < nv; i++)
 				pointList [i] = interpPointList + WORDPTR (p) [i];
-			G3DrawTexPoly (nv, pointList, uvl_list, model_bitmaps [WORDVAL (p-2)], 1);
+			G3DrawTexPoly (nv, pointList, uvl_list, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			}
 		else
 			p += 30;
@@ -1469,20 +1469,20 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
-			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
-			G3DrawPolyModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP);
+			G3DrawPolyModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP);
 			}
 		p += 32;
 		}
 	else if (h == OP_RODBM) {
-		g3s_point rod_bot_p, rod_top_p;
-		G3TransformAndEncodePoint (&rod_bot_p, VECPTR (p+20));
-		G3TransformAndEncodePoint (&rod_top_p, VECPTR (p+4));
-		G3DrawRodTexPoly (model_bitmaps [WORDVAL (p+2)], &rod_bot_p, WORDVAL (p+16), &rod_top_p, WORDVAL (p+32), f1_0);
+		g3s_point rodBotP, rodTopP;
+		G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
+		G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
+		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
 		p+=36;
 		}
 	else if (h == OP_SUBCALL) {
@@ -1493,12 +1493,12 @@ for (;;) {
 		else
 			a = &zeroAngles;
 		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (p+WORDVAL (p+16), model_bitmaps, pAnimAngles, model_light, glow_values, objColorP);
+		G3DrawPolyModel (p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP);
 		G3DoneInstance ();
 		p += 20;
 		}
 	else if (h == OP_GLOW) {
-		if (glow_values)
+		if (xGlowValues)
 			nGlow = WORDVAL (p+2);
 		p += 4;
 		}
@@ -1514,11 +1514,11 @@ int nest_count;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing object
-bool G3DrawMorphingModel (void *modelP, grs_bitmap **model_bitmaps, vms_angvec *pAnimAngles, 
-								  fix model_light, vms_vector *new_points)
+bool G3DrawMorphingModel (void *modelP, grs_bitmap **modelBitmaps, vms_angvec *pAnimAngles, 
+								  fix xModelLight, vms_vector *new_points)
 {
 	ubyte *p = modelP;
-	fix *glow_values = NULL;
+	fix *xGlowValues = NULL;
 
 G3CheckAndSwap (modelP);
 nGlow = -1;		//glow off by default
@@ -1568,10 +1568,10 @@ for (;;) {
 			if (nGlow < 0) {			//no glow
 				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
-				light = fixmul (light, model_light);
+				light = fixmul (light, xModelLight);
 				}
 			else {				//yes glow
-				light = glow_values [nGlow];
+				light = xGlowValues [nGlow];
 				nGlow = -1;
 				}
 			//now poke light into l values
@@ -1588,7 +1588,7 @@ for (;;) {
 				morph_uvls [2].u = uvl_list [i].u;
 				morph_uvls [2].v = uvl_list [i].v;
 				i++;
-				G3CheckAndDrawTMap (3, pointList, uvl_list, model_bitmaps [WORDVAL (p+28)], NULL, NULL);
+				G3CheckAndDrawTMap (3, pointList, uvl_list, modelBitmaps [WORDVAL (p+28)], NULL, NULL);
 				pointList [1] = pointList [2];
 				morph_uvls [1].u = morph_uvls [2].u;
 				morph_uvls [1].v = morph_uvls [2].v;
@@ -1600,22 +1600,22 @@ for (;;) {
 		case OP_SORTNORM:
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 				//draw back then front
-				G3DrawMorphingModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, new_points);
-				G3DrawMorphingModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points);
 
 				}
 			else {			//not facing.  draw front then back
-				G3DrawMorphingModel (p+WORDVAL (p+28), model_bitmaps, pAnimAngles, model_light, new_points);
-				G3DrawMorphingModel (p+WORDVAL (p+30), model_bitmaps, pAnimAngles, model_light, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points);
 				}
 			p += 32;
 			break;
 
 		case OP_RODBM: {
-			g3s_point rod_bot_p, rod_top_p;
-			G3TransformAndEncodePoint (&rod_bot_p, VECPTR (p+20));
-			G3TransformAndEncodePoint (&rod_top_p, VECPTR (p+4));
-			G3DrawRodTexPoly (model_bitmaps [WORDVAL (p+2)], &rod_bot_p, WORDVAL (p+16), &rod_top_p, WORDVAL (p+32), f1_0);
+			g3s_point rodBotP, rodTopP;
+			G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
+			G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
+			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
 			p+=36;
 			break;
 			}
@@ -1627,14 +1627,14 @@ for (;;) {
 			else
 				a = &zeroAngles;
 			G3StartInstanceAngles (VECPTR (p+4), a);
-			G3DrawPolyModel (p+WORDVAL (p+16), model_bitmaps, pAnimAngles, model_light, glow_values, NULL);
+			G3DrawPolyModel (p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL);
 			G3DoneInstance ();
 			p += 20;
 			break;
 			}
 
 		case OP_GLOW:
-			if (glow_values)
+			if (xGlowValues)
 				nGlow = WORDVAL (p+2);
 			p += 4;
 			break;

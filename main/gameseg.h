@@ -175,7 +175,7 @@ extern void CreateAbsVertexLists(int *num_faces, int *vertices, int segnum, int 
 void CreateAllVertNumLists(int *num_faces, int *vertnums, int segnum, int sidenum);
 
 //      Given a side, return the number of faces
-extern int get_num_faces(side *sidep);
+extern int GetNumFaces(side *sidep);
 
 //returns 3 different bitmasks with info telling if this sphere is in
 //this segment.  See segmasks structure for info on fields
@@ -235,6 +235,9 @@ void extract_up_vector_from_segment(segment *sp,vms_vector *vp);
 void CreateWallsOnSide(segment *sp, int sidenum);
 
 void PickRandomPointInSeg(vms_vector *new_pos, int segnum);
+
+int GetVertsForNormal (int v0, int v1, int v2, int v3, int *pv0, int *pv1, int *pv2, int *pv3);
+int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2);
 
 #endif
 

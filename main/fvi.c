@@ -1135,7 +1135,7 @@ int fvi_sub(vms_vector *intp, short *ints, vms_vector *p0, short startseg, vms_v
 
 		//for each face we are on the back of, check if intersected
 		for (side=0,bit=1;side<6 && endmask>=bit;side++) {
-			int num_faces = get_num_faces(seg->sides + side);
+			int num_faces = GetNumFaces(seg->sides + side);
 			if (!num_faces)
 				num_faces = 1;
 			// commented out by mk on 02/13/94:: if ((num_faces=seg->sides[side].num_faces)==0) num_faces=1;

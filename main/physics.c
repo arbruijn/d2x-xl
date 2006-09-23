@@ -377,7 +377,7 @@ void do_physics_align_object(object * objP)
 
 	}
 	else  // new player leveling code: use normal of side closest to our up vec
-		if (get_num_faces(&gameData.segs.segments[objP->segnum].sides[best_side])==2) {
+		if (GetNumFaces(&gameData.segs.segments[objP->segnum].sides[best_side])==2) {
 			#ifdef COMPACT_SEGS
 				vms_vector normals[2];
 				GetSideNormals(&gameData.segs.segments[objP->segnum], best_side, &normals[0], &normals[1]);			

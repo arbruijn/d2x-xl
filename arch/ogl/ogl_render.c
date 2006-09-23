@@ -53,7 +53,7 @@
 #include "network.h"
 #include "lightmap.h"
 #include "mouse.h"
-#include "oof.h"
+#include "gameseg.h"
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -808,6 +808,59 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void G3Normal (g3s_point **pointlist, vms_vector *pvNormal)
+{
+vms_vector	vNormal;
+
+#if 0
+if (gameStates.render.bGlTransform && pvNormal)
+	glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
+else 
+#endif
+	{
+	int	v [4];
+
+	v [0] = pointlist [0]->p3_index;
+	v [1] = pointlist [1]->p3_index;
+	v [2] = pointlist [2]->p3_index;
+	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
+		VmVecNormal (&vNormal, 
+						 &pointlist [0]->p3_vec,
+						 &pointlist [1]->p3_vec,
+						 &pointlist [2]->p3_vec);
+		}
+	else {
+		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
+		if (gameStates.render.bGlTransform) {
+			fVector	vNormal;
+			OOF_VecNormal ((tOOF_vector *) &vNormal, 
+								(tOOF_vector *) gameData.segs.fVertices + v [0], 
+								(tOOF_vector *) gameData.segs.fVertices + v [1], 
+								(tOOF_vector *) gameData.segs.fVertices + v [2]);
+			if (bFlip) {
+				vNormal.x = -vNormal.x;
+				vNormal.y = -vNormal.y;
+				vNormal.z = -vNormal.z;
+				}
+			glNormal3fv ((GLfloat *) &vNormal);
+
+			}
+		else {
+			vms_vector p [3];
+			VmVecNormal (&vNormal, 
+							 G3TransformPoint (p, gameData.segs.vertices + v [0]), 
+							 G3TransformPoint (p + 1, gameData.segs.vertices + v [1]), 
+							 G3TransformPoint (p + 2, gameData.segs.vertices + v [2]));
+			if (!bFlip)
+				VmVecNegate (&vNormal);
+			glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 extern void (*tmap_drawer_ptr) (grs_bitmap *bm, int nv, g3s_point **vertlist);
 
 static GLhandleARB	lmProg = (GLhandleARB) 0, 
@@ -825,6 +878,7 @@ bool G3DrawTexPolyMulti (
 #if LIGHTMAPS
 	ogl_texture	*lightMap, 
 #endif
+	vms_vector	*pvNormal,
 	int orient, 
 	int bBlend)
 {
@@ -1026,17 +1080,8 @@ else
 #	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
-		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
-			tOOF_vector	p [3], vNormal;
-			OOF_VecVms2Oof (p, &pointlist [0]->p3_vec);
-			OOF_VecVms2Oof (p + 1, &pointlist [1]->p3_vec);
-			OOF_VecVms2Oof (p + 2, &pointlist [2]->p3_vec);
-			OOF_VecNormal (&vNormal, p, p + 1, p + 2);
-			vNormal.x = -vNormal.x;
-			vNormal.y = -vNormal.y;
-			vNormal.z = -vNormal.z;
-			glNormal3fv ((GLfloat *) &vNormal);
-			}
+		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)
+			G3Normal (pointlist, pvNormal);
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 			SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);

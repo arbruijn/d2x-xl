@@ -500,8 +500,9 @@ void Draw3DReticle (fix nEyeOffset)
 
 //	if (!bUsePlayerHeadAngles) return;
 	
-for (i=0; i<4; i++ )	{
-	pointlist [i] = &reticlePoints [i];
+for (i = 0; i < 4; i++) {
+	reticlePoints [i].p3_index = -1;
+	pointlist [i] = reticlePoints + i;
 	uvl [i].l = MAX_LIGHT;
 	}
 uvl [0].u =
@@ -518,19 +519,19 @@ VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rvec,nEyeOffset);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-G3TransformAndEncodePoint(&reticlePoints [0],&v2);
+G3TransformAndEncodePoint(reticlePoints,&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
-G3TransformAndEncodePoint(&reticlePoints [1],&v2);
+G3TransformAndEncodePoint(reticlePoints + 1,&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-G3TransformAndEncodePoint(&reticlePoints [2],&v2);
+G3TransformAndEncodePoint(reticlePoints + 2,&v2);
 
 VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
 VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
-G3TransformAndEncodePoint(&reticlePoints [3],&v2);
+G3TransformAndEncodePoint(reticlePoints + 3,&v2);
 
 if ( reticle_canvas == NULL )	{
 	reticle_canvas = GrCreateCanvas(64,64);
@@ -549,7 +550,7 @@ GrSetCurrentCanvas(saved_canvas);
 
 saved_interp_method=gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointlist, uvl, &reticle_canvas->cv_bitmap, 1);
+G3DrawTexPoly (4, pointlist, uvl, &reticle_canvas->cv_bitmap, NULL, 1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -639,6 +640,7 @@ typedef struct tFaceProps {
 #if LIGHTMAPS
 	uvl			uvl_lMaps [4];
 #endif
+	vms_vector	vNormal;
 	ubyte			nv;
 	ubyte			widFlags;
 	char			renderState;
@@ -1031,6 +1033,7 @@ Assert(props.nv <= 4);
 #if LIGHTMAPS
 			lightMaps + props.segNum * 6 + props.sideNum, 
 #endif
+			&props.vNormal,
 			(props.tMap2 >> 14) & 3, 
 			!bIsMonitor || bIsTeleCam); //(bIsMonitor || (bmBot->bm_props.flags & BM_FLAG_TGA))); //((tmap2&0xC000)>>14) & 3);
 	else
@@ -1041,6 +1044,7 @@ Assert(props.nv <= 4);
 			pointlist, 
 			props.uvls, 
 			bmBot, 
+			&props.vNormal,
 			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
 #else
 		G3DrawTexPolyMulti (
@@ -1051,6 +1055,7 @@ Assert(props.nv <= 4);
 			bmBot,
 			NULL,
 			lightMaps + props.segNum * 6 + props.sideNum, 
+			&props.vNormal,
 			0,
 			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
 #endif
@@ -1250,6 +1255,7 @@ if (sideP->type == SIDE_IS_QUAD) {
 		}
 #endif
 	props.nv = 4;
+	props.vNormal = normals [0];
 	RenderFace (&props, 0, 0);
 #ifdef EDITOR
 	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1294,6 +1300,7 @@ else {
 				}
 #endif
 			props.nv = 4;
+			props.vNormal = normals [0];
 			RenderFace (&props, 0, 0);
 #ifdef EDITOR
 			CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1316,6 +1323,7 @@ im_so_ashamed: ;
 #	endif
 					}
 #endif
+				props.vNormal = normals [0];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
 				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1336,6 +1344,7 @@ im_so_ashamed: ;
 #endif
 				props.vp [1] = props.vp [2];	
 				props.vp [2] = props.vp [3];	// want to render from vertices 0, 2, 3 on side
+				props.vNormal = normals [1];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
 				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1353,6 +1362,7 @@ im_so_ashamed: ;
 #	endif
 					}
 #endif
+				props.vNormal = normals [0];
 				RenderFace (&props, 1, 0);
 #ifdef EDITOR
 				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1374,6 +1384,7 @@ im_so_ashamed: ;
 #endif
 					}
 #endif
+				props.vNormal = normals [1];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
 				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
@@ -1541,7 +1552,7 @@ if (!++nRLFrameCount) {		//wrap!
 //Given a list of point numbers, rotate any that haven't been rotated this frame
 //cc.and and cc.or will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
-g3s_codes RotateList (int nv, short *pointnumlist)
+g3s_codes RotateList (int nv, short *pointNumList)
 {
 	int i,pnum;
 	g3s_point *pnt;
@@ -1550,7 +1561,7 @@ g3s_codes RotateList (int nv, short *pointnumlist)
 cc.and = 0xff;  
 cc.or = 0;
 for (i = 0; i < nv; i++) {
-	pnum = pointnumlist [i];
+	pnum = pointNumList [i];
 	pnt = gameData.segs.points + pnum;
 	if (nRotatedLast [pnum] != nRLFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
@@ -1570,12 +1581,12 @@ return cc;
 
 // -----------------------------------------------------------------------------------
 //Given a lit of point numbers, project any that haven't been projected
-void ProjectList (int nv,short *pointnumlist)
+void ProjectList (int nv,short *pointNumList)
 {
 	int i,pnum;
 
 for (i=0;i<nv;i++) {
-	pnum = pointnumlist [i];
+	pnum = pointNumList [i];
 	if (!(gameData.segs.points [pnum].p3_flags & PF_PROJECTED))
 		G3ProjectPoint (gameData.segs.points + pnum);
 	}

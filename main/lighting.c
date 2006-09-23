@@ -1208,7 +1208,10 @@ void TransformOglLights (void)
 
 fPos [3] = 1.0f;
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
-	G3TransformPoint (&vPos, &pl->vPos);
+	if (gameStates.render.bGlTransform)
+		vPos = pl->vPos;
+	else
+		G3TransformPoint (&vPos, &pl->vPos);
 	fPos [0] = f2fl (vPos.x);
 	fPos [1] = f2fl (vPos.y);
 	fPos [2] = f2fl (vPos.z);

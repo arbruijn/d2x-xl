@@ -318,6 +318,7 @@ bool G3DrawTexPolyMulti (
 #if LIGHTMAPS
 	ogl_texture *lightMap,
 #endif
+	vms_vector	*pvNormal,
 	int orient,
 	int bBlend);
 void OglDrawReticle (int cross,int primary,int secondary);
@@ -376,12 +377,12 @@ return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
 }
 
 static inline int G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list,
-											grs_bitmap *bm, int bBlend)
+											grs_bitmap *bm, vms_vector *pvNormal, int bBlend)
 {
 #if LIGHTMAPS
-return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, 0, bBlend);
+return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);
 #else
-return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, 0, bBlend);
+return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlend);
 #endif
 }
 
