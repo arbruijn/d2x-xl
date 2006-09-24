@@ -113,9 +113,8 @@ else {
 	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
 		fc [3] = 1.0f;
 	else {
-		fc [3] = 1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f);
+		fc [3] = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS; //1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f);
 		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	glColor4fv (fc);
 	}
@@ -134,10 +133,8 @@ else if (pc->rgb) {
 	fc [1] = (float) (pc->color.green) / 255.0f;
 	fc [2] = (float) (pc->color.blue) / 255.0f;
 	fc [3] = (float) (pc->color.alpha) / 255.0f;
-	if (fc [3] < 1.0f) {
+	if (fc [3] < 1.0f)
 		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
 	glColor4fv (fc);
 	}
 else

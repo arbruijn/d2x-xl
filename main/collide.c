@@ -777,96 +777,72 @@ void CollidePlayerAndWall (object * playerObjP, fix hitspeed, short hitseg, shor
 	char ForceFieldHit=0;
 	int tmap_num, tmap_num2;
 
-	if (playerObjP->id != gameData.multi.nLocalPlayer) // Execute only for local player
-		return;
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [hitseg].special == SEGMENT_IS_NODAMAGE))
-		return;
-	tmap_num = gameData.segs.segments [hitseg].sides [hitwall].tmap_num;
-
-	//	If this wall does damage, don't make *BONK* sound, we'll be making another sound.
-	if (gameData.pig.tex.pTMapInfo [tmap_num].damage > 0)
-		return;
-
-	if (gameData.pig.tex.pTMapInfo [tmap_num].flags & TMI_FORCE_FIELD) {
-		vms_vector vForce;
-
-		PALETTE_FLASH_ADD (0, 0, 60);	//flash blue
-
-		//knock player around
-		vForce.x = 40* (d_rand () - 16384);
-		vForce.y = 40* (d_rand () - 16384);
-		vForce.z = 40* (d_rand () - 16384);
-		PhysApplyRot (playerObjP, &vForce);
-
+if (playerObjP->id != gameData.multi.nLocalPlayer) // Execute only for local player
+	return;
+tmap_num = gameData.segs.segments [hitseg].sides [hitwall].tmap_num;
+//	If this wall does damage, don't make *BONK* sound, we'll be making another sound.
+if (gameData.pig.tex.pTMapInfo [tmap_num].damage > 0)
+	return;
+if (gameData.pig.tex.pTMapInfo [tmap_num].flags & TMI_FORCE_FIELD) {
+	vms_vector vForce;
+	PALETTE_FLASH_ADD (0, 0, 60);	//flash blue
+	//knock player around
+	vForce.x = 40* (d_rand () - 16384);
+	vForce.y = 40* (d_rand () - 16384);
+	vForce.z = 40* (d_rand () - 16384);
+	PhysApplyRot (playerObjP, &vForce);
 #ifdef TACTILE
-		if (TactileStick)
-		 Tactile_apply_force (&vForce, &playerObjP->orient);
+	if (TactileStick)
+		Tactile_apply_force (&vForce, &playerObjP->orient);
 #endif
-
-		//make sound
-		DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, hitseg, 0, vHitPt, 0, f1_0);
+	//make sound
+	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, hitseg, 0, vHitPt, 0, f1_0);
+#ifdef NETWORK
+	if (gameData.app.nGameMode & GM_MULTI)
+		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, f1_0);
+#endif
+	ForceFieldHit=1;
+	} 
+else {
+#ifdef TACTILE
+	vms_vector vForce;
+	if (TactileStick) {
+		vForce.x = -playerObjP->mtype.phys_info.velocity.x;
+		vForce.y = -playerObjP->mtype.phys_info.velocity.y;
+		vForce.z = -playerObjP->mtype.phys_info.velocity.z;
+		Tactile_do_collide (&vForce, &playerObjP->orient);
+	}
+#endif
+   WallHitProcess (gameData.segs.segments + hitseg, hitwall, 20, playerObjP->id, playerObjP);
+	}
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [hitseg].special == SEGMENT_IS_NODAMAGE))
+	return;
+//	** Damage from hitting wall **
+//	If the player has less than 10% shields, don't take damage from bump
+// Note: Does quad damage if hit a vForce field - JL
+damage = (hitspeed / DAMAGE_SCALE) * (ForceFieldHit * 8 + 1);
+tmap_num2 = gameData.segs.segments [hitseg].sides [hitwall].tmap_num2;
+//don't do wall damage and sound if hit lava or water
+if ((gameData.pig.tex.pTMapInfo [tmap_num].flags & (TMI_WATER|TMI_VOLATILE)) || 
+		(tmap_num2 && (gameData.pig.tex.pTMapInfo [tmap_num2 & 0x3fff].flags & (TMI_WATER|TMI_VOLATILE))))
+	damage = 0;
+if (damage >= DAMAGE_THRESHOLD) {
+	int	volume = (hitspeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE ;
+	create_awareness_event (playerObjP, PA_WEAPON_WALL_COLLISION);
+	if (volume > F1_0)
+		volume = F1_0;
+	if (volume > 0 && !ForceFieldHit) {  // uhhhgly hack
+		DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, volume);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, f1_0);
+			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);	
 #endif
-		ForceFieldHit=1;
-	} 
-	else {
-
-	#ifdef TACTILE
-		vms_vector vForce;
-		if (TactileStick) {
-			vForce.x = -playerObjP->mtype.phys_info.velocity.x;
-			vForce.y = -playerObjP->mtype.phys_info.velocity.y;
-			vForce.z = -playerObjP->mtype.phys_info.velocity.z;
-			Tactile_do_collide (&vForce, &playerObjP->orient);
 		}
-	#endif
-
-    	WallHitProcess (gameData.segs.segments + hitseg, hitwall, 20, playerObjP->id, playerObjP);
+	if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > f1_0*10 || ForceFieldHit)
+			ApplyDamageToPlayer (playerObjP, playerObjP, damage);
 	}
-
-	//	** Damage from hitting wall **
-	//	If the player has less than 10% shields, don't take damage from bump
-	// Note: Does quad damage if hit a vForce field - JL
-	damage = (hitspeed / DAMAGE_SCALE) * (ForceFieldHit * 8 + 1);
-	tmap_num2 = gameData.segs.segments [hitseg].sides [hitwall].tmap_num2;
-	//don't do wall damage and sound if hit lava or water
-	if ((gameData.pig.tex.pTMapInfo [tmap_num].flags & (TMI_WATER|TMI_VOLATILE)) || 
-		 (tmap_num2 && (gameData.pig.tex.pTMapInfo [tmap_num2 & 0x3fff].flags & (TMI_WATER|TMI_VOLATILE))))
-		damage = 0;
-
-	if (damage >= DAMAGE_THRESHOLD) {
-		int	volume;
-		volume = (hitspeed- (DAMAGE_SCALE*DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE ;
-		create_awareness_event (playerObjP, PA_WEAPON_WALL_COLLISION);
-
-		if (volume > F1_0)
-			volume = F1_0;
-		if (volume > 0 && !ForceFieldHit) {  // uhhhgly hack
-			DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, volume);
-			#ifdef NETWORK
-			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);	
-			#endif
-		}
-		if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > f1_0*10 || ForceFieldHit)
-			  	ApplyDamageToPlayer (playerObjP, playerObjP, damage);
-
-		// -- No point in doing this unless we compute a reasonable vHitPt.  Currently it is just the player's position. --MK, 01/18/96
-		// -- if (!(gameData.pig.tex.pTMapInfo [gameData.segs.segments [hitseg].sides [hitwall].tmap_num].flags & TMI_FORCE_FIELD)) {
-		// -- 	vms_vector	hitpt1;
-		// -- 	int			hitseg1;
-		// --
-		// -- 		VmVecAvg (&hitpt1, vHitPt, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].pos);
-		// -- 	hitseg1 = FindSegByPoint (&hitpt1, gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].segnum);
-		// -- 	if (hitseg1 != -1)
-		// -- 		ObjectCreateExplosion (hitseg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
-		// -- }
-
-	}
-	return;
+return;
 }
 
 //	-----------------------------------------------------------------------------

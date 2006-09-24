@@ -877,7 +877,7 @@ void DrawPolygonObject (object *objP)
 #if OGL_ZBUF
 				fix dist_to_eye = VmVecDistQuick (&gameData.objs.viewer->pos, &objP->pos);
 				if (!gameOpts->legacy.bRender) {
-					gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2;
+					gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 10.0f;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 					}
 #endif

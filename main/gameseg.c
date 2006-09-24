@@ -808,7 +808,7 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 				nSideCount++;
 				}
 			}
-		if (!bSidePokesOut) {		//must be behind at least one face
+		if (bSidePokesOut) {		//must be behind at least one face
 			if (nSideCount)
 				masks.sidemask |= sideBit;
 			if (nCenterCount)
