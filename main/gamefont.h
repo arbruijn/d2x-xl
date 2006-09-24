@@ -87,8 +87,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern grs_font *Gamefonts[MAX_FONTS];
 
-void gamefont_init();
-void _CDECL_ gamefont_close(void);
+void GameFontInit();
+void _CDECL_ GameFontClose(void);
 int get_font_total_width(grs_font * font);
 
 #endif /* _GAMEFONT_H */

@@ -195,7 +195,7 @@ void songs_stop_redbook(void)
 }
 
 //stop any songs - midi or redbook - that are currently playing
-void songs_stop_all(void)
+void SongsStopAll(void)
 {
 	DigiStopCurrentSong();	// Stop midi song, if playing
 	songs_stop_redbook();			// Stop CD, if playing
@@ -335,7 +335,7 @@ void songs_play_song( int songnum, int repeat )
 	//stop any music already playing
 	if (!(gameStates.sound.bRedbookEnabled ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 		return;
-	songs_stop_all();
+	SongsStopAll();
 
 	//do we want any of these to be redbook songs?
 
@@ -375,7 +375,7 @@ void PlayLevelSong( int levelnum )
 
 	if ( !gameData.songs.bInitialized )
 		songs_init();
-	songs_stop_all();
+	SongsStopAll();
 	nCurrentLevelSong = levelnum;
 	songnum = (levelnum > 0) ? levelnum - 1 : -levelnum;
 	gameStates.sound.nCurrentSong = songnum;

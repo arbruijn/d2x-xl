@@ -1315,7 +1315,7 @@ void ogl_init_font(grs_font * font)
 
 //------------------------------------------------------------------------------
 
-int ogl_internal_string (int x, int y, char *s)
+int OglInternalString (int x, int y, char *s)
 {
 	char * text_ptr, * next_row, * text_ptr1;
 	int width, spacing,letter;
@@ -1359,7 +1359,7 @@ while (next_row != NULL) {
 			if (grdCurCanv->cv_bitmap.bm_props.type == BM_OGL)
 				OglUBitMapMC (xx, yy, 0, 0, bmf, &FG_COLOR, F1_0, 0);
 			else
-				Error("ogl_internal_string: non-color string to non-ogl dest\n");
+				Error("OglInternalString: non-color string to non-ogl dest\n");
 	//					GrUBitmapM(xx,yy,&FONT->ft_bitmaps[letter]);//ignores color..
 			}
 		xx += spacing;
@@ -1500,7 +1500,7 @@ return bmP;
 
 int gr_internal_color_string(int x, int y, char *s)
 {
-	return ogl_internal_string(x,y,s);
+	return OglInternalString(x,y,s);
 }
 #endif //OGL
 
@@ -1560,7 +1560,7 @@ int GrString(int x, int y, char *s)
 	// Partially clipped...
 #ifdef OGL
 	if (TYPE==BM_OGL)
-		return ogl_internal_string(x,y,s);
+		return OglInternalString(x,y,s);
 #endif
 
 	if (FFLAGS & FT_COLOR)
@@ -1578,7 +1578,7 @@ int GrUString(int x, int y, char *s)
 {
 #ifdef OGL
 	if (TYPE==BM_OGL)
-		return ogl_internal_string(x,y,s);
+		return OglInternalString(x,y,s);
 #endif
 	
 	if (FFLAGS & FT_COLOR) {
@@ -1811,7 +1811,7 @@ void grs_font_read(grs_font *gf, CFILE *fp)
 
 //------------------------------------------------------------------------------
 
-grs_font * gr_init_font(char * fontname)
+grs_font * GrInitFont(char * fontname)
 {
 	static int first_time=1;
 	grs_font *font;
@@ -1936,7 +1936,7 @@ grs_font * gr_init_font(char * fontname)
 		GrSetPalette (&font->ft_parent_bitmap, palette, TRANSPARENCY_COLOR, -1, freq);
 		}
 	else
-		GrSetPalette (&font->ft_parent_bitmap, gamePalette, TRANSPARENCY_COLOR, -1, freq);
+		GrSetPalette (&font->ft_parent_bitmap, defaultPalette, TRANSPARENCY_COLOR, -1, freq);
 
 	CFClose(fontfile);
 

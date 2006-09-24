@@ -87,7 +87,7 @@ char * Gamefont_filenames[] = { "font1-1.fnt",      // Font 0
 
 grs_font *Gamefonts[MAX_FONTS];
 
-void _CDECL_ gamefont_close(void)
+void _CDECL_ GameFontClose(void)
 {
 	int i;
 
@@ -102,7 +102,7 @@ for (i = 0; i < MAX_FONTS; i++) {
 }
 
 
-void gamefont_init()
+void GameFontInit()
 {
 	int i;
 
@@ -112,12 +112,12 @@ gameStates.render.fonts.bInstalled = 1;
 gameStates.render.fonts.bHiresAvailable = 1;
 // load lores fonts
 for (i = 0; i < MAX_FONTS; i += 2)
-	Gamefonts [i] = gr_init_font (Gamefont_filenames [i]);
+	Gamefonts [i] = GrInitFont (Gamefont_filenames [i]);
 // load hires fonts
 for (i = 1; i < MAX_FONTS; i += 2)
-	if (!(Gamefonts [i] = gr_init_font (Gamefont_filenames [i])))
+	if (!(Gamefonts [i] = GrInitFont (Gamefont_filenames [i])))
 		gameStates.render.fonts.bHiresAvailable = 0;
-atexit(gamefont_close);
+atexit(GameFontClose);
 }
 
 

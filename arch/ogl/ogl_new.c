@@ -321,9 +321,9 @@ else{
 
 glBegin(GL_QUADS);
 if (c < 0)
-	glColor3d(1.0,1.0,1.0);
+	glColor3d (1.0,1.0,1.0);
 else
-	glColor3d(CPAL2Tr(c),CPAL2Tg(c),CPAL2Tb(c));
+	glColor3d (CPAL2Tr (bmP->bm_palette, c), CPAL2Tg (bmP->bm_palette, c), CPAL2Tb (bmP->bm_palette, c));
 glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u1, v1);
 glVertex2d(xo, yo);
 glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u2, v1);

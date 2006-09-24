@@ -332,12 +332,12 @@ void OglCachePolyModelTextures (int nModel);
 //#define PAL2Tg(c) ((gr_palette[c*3+1])/63.0)
 //#define PAL2Tb(c) ((gr_palette[c*3+2])/63.0)
 #if 1
-#define CPAL2Tr(c) ((float) (gamePalette[c*3])/63.0f)
-#define CPAL2Tg(c) ((float) (gamePalette[c*3+1])/63.0f)
-#define CPAL2Tb(c) ((float) (gamePalette[c*3+2])/63.0f)
-#define PAL2Tr(c) ((float) (gamePalette[c*3])/63.0f)
-#define PAL2Tg(c) ((float) (gamePalette[c*3+1])/63.0f)
-#define PAL2Tb(c)	((float) (gamePalette[c*3+2])/63.0f)
+#define CPAL2Tr(_p,_c)	((float) ((_p)[(_c)*3])/63.0f)
+#define CPAL2Tg(_p,_c)	((float) ((_p)[(_c)*3+1])/63.0f)
+#define CPAL2Tb(_p,_c)	((float) ((_p)[(_c)*3+2])/63.0f)
+#define PAL2Tr(_p,_c)	((float) ((_p)[(_c)*3])/63.0f)
+#define PAL2Tg(_p,_c)	((float) ((_p)[(_c)*3+1])/63.0f)
+#define PAL2Tb(_p,_c)	((float) ((_p)[(_c)*3+2])/63.0f)
 #endif
 #define CC2T(c) ((float) c / 255.0f)
 //inline GLfloat PAL2Tr(int c);
@@ -350,8 +350,11 @@ void CreateShaderProg (GLhandleARB *fsP, GLhandleARB *vsP, GLhandleARB *pProg,
 							  char *fsName, char *vsName, int *pShaderOk);
 void InitShaders ();
 void SetRenderQuality ();
-
 void DrawTexPolyFlat (grs_bitmap *bm,int nv,g3s_point **vertlist);
+void OglSetupTransform ();
+void OglResetTransform ();
+void OglPalColor (ubyte *palette, int c);
+void OglGrsColor (grs_color *pc);
 
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20

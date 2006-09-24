@@ -617,12 +617,7 @@ bool G3DrawSphere3D (g3s_point *p0, int nSides, int rad)
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
-if (c.rgb) {
-	glEnable (GL_BLEND);
-	glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-	}
-else
-	glColor3f (PAL2Tr (c.index),PAL2Tg (c.index),PAL2Tb (c.index));
+OglGrsColor (&grdCurCanv->cv_color);
 x = f2glf (p.p3_vec.x);
 y = f2glf (p.p3_vec.y);
 z = -f2glf (p.p3_vec.z);
@@ -644,19 +639,13 @@ return 1;
 
 bool G3DrawCircle3D (g3s_point *p0, int nSides, int rad)
 {
-	grs_color	c = grdCurCanv->cv_color;
 	g3s_point	p = *p0;
 	int			i, j;
 	float			hx, hy, x, y, z, r;
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
-if (c.rgb) {
-	glEnable (GL_BLEND);
-	glColor4d (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-	}
-else
-	glColor3d (PAL2Tr (c.index),PAL2Tg (c.index),PAL2Tb (c.index));
+OglGrsColor (&grdCurCanv->cv_color);
 x = f2glf (p.p3_vec.x);
 y = f2glf (p.p3_vec.y);
 z = -f2glf (p.p3_vec.z);
@@ -669,7 +658,7 @@ for (i = 0; i <= nSides; i++)
 		hy = y + (float) sin (ang) * r;
 		glVertex3f (hx, hy, z);
 		}
-if (c.rgb)
+if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
 return 1;

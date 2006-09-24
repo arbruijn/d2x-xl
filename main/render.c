@@ -684,8 +684,11 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
+	// set material properties specific for certain textures here
+	SetOglLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
+	}
 if (gameOpts->render.color.bAmbientLight && gameStates.app.bD2XLevel && !USE_LIGHTMAPS) { 
 #if VERTEX_LIGHTING
 	int i, j = propsP->nv;
@@ -851,7 +854,7 @@ if (IS_WALL (nWallNum)) {
 					else
 						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
-						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (c), CPAL2Tg (c), CPAL2Tb (c), -1);	//draw as flat poly
+						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1);	//draw as flat poly
 					}
 				}
 			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -1636,14 +1639,7 @@ void RenderSegment(short segnum, int nWindowNum)
 Assert(segnum!=-1 && segnum <= gameData.segs.nLastSegment);
 if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
 	return;
-if (gameStates.render.bGlTransform) {
-	glMatrixMode (GL_MODELVIEW);
-	glPushMatrix ();
-	glLoadIdentity ();
-	glScalef (1.0f, 1.0f, -viewInfo.glZoom);
-	glMultMatrixf (viewInfo.glViewf);
-	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
-	}
+OglSetupTransform ();
 cc = RotateList (8, seg->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
@@ -1684,8 +1680,7 @@ if (!cc.and) {		//all off screen?
 			RenderSide (seg, sn);
 		}
 	}
-if (gameStates.render.bGlTransform)
-	glPopMatrix ();
+OglResetTransform ();
 }
 
 #define CROSS_WIDTH  i2f(8)

@@ -1453,9 +1453,9 @@ for (;;) {
 
 			if (objColorP) {
 				unsigned char c = modelBitmaps [WORDVAL (p+28)]->avg_color;
-				objColorP->red = CPAL2Tr (c);
-				objColorP->green = CPAL2Tg (c);
-				objColorP->blue = CPAL2Tb (c);
+				objColorP->red = CPAL2Tr (gamePalette, c);
+				objColorP->green = CPAL2Tg (gamePalette, c);
+				objColorP->blue = CPAL2Tb (gamePalette, c);
 				}
 			p += 30;
 			for (i = 0; i < nv; i++)

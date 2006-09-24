@@ -92,7 +92,7 @@ void PlayLevelSong( int levelnum );
 void songs_stop_redbook(void);
 
 // stop any songs - midi or redbook - that are currently playing
-void songs_stop_all(void);
+void SongsStopAll(void);
 
 // this should be called regularly to check for redbook restart
 void songs_check_redbook_repeat(void);

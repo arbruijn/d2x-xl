@@ -700,6 +700,7 @@ typedef struct tOglLight {
 	float			fAmbient [4];
 	float			fDiffuse [4];
 	float			fSpecular [4];
+	float			fEmissive [4];
 	float			fAttenuation [3];	// constant, linear quadratic
 	short			nSegment;
 	short			nSide;

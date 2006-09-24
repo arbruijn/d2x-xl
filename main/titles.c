@@ -1893,7 +1893,7 @@ if (!load_screen_text (filename, &Briefing_text))
 #ifndef SHAREWARE
 songs_play_song (SONG_BRIEFING, 1);
 #else
-songs_stop_all ();
+SongsStopAll ();
 #endif
 SetScreenMode (SCREEN_MENU);
 WINDOS (

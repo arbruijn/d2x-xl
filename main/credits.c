@@ -365,9 +365,9 @@ CreditsPaint:
 #if defined(POLY_ACC)
 	pa_update_clut(grPalette, 0, 256, 0);
 #endif
-	header_font = gr_init_font(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
-	title_font = gr_init_font(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
-	names_font = gr_init_font(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
+	header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
+	title_font = GrInitFont(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
+	names_font = GrInitFont(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
 	bmBackdrop.bm_texBuf=NULL;
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not

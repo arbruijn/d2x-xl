@@ -374,7 +374,8 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
-	//AddOglLight (color, xObjIntensity, -1, -1, objnum);
+	if (objP->type == 5)
+		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 	return;
 	}
 if (xObjIntensity) {
@@ -1006,7 +1007,8 @@ pl->fSpecular [1] = green;
 pl->fSpecular [2] = blue;
 for (i = 0; i < 3; i++) {
 	pl->fDiffuse [i] = pl->fSpecular [i];// * brightness;
-	pl->fAmbient [i] = 0.0f; //pl->fDiffuse [i] * 0.01f;
+	pl->fAmbient [i] = pl->fDiffuse [i] * 0.01f;
+	pl->fEmissive [i] = pl->fDiffuse [i];
 	}
 // light alphas
 pl->fAmbient [3] = 1.0f;
@@ -1104,8 +1106,8 @@ if (nObject >= 0)
 else
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
-pl->fAttenuation [1] = 0.01f;
-pl->fAttenuation [2] = 0.0f;
+pl->fAttenuation [1] = pl->fAttenuation [0] / 10.0f; //0.01f;
+pl->fAttenuation [2] = pl->fAttenuation [1] / 10.0f; //0.004f;
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
@@ -1161,6 +1163,27 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++)
 
 //------------------------------------------------------------------------------
 
+void SetOglLightMaterial (short nSegment, short nSide, short nObject)
+{
+	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+	int nLight = FindOglLight (nSegment, nSide, nObject);
+return;
+if (nLight < 0) {
+	glMaterialfv (GL_FRONT, GL_EMISSION, fBlack);
+	glMaterialfv (GL_FRONT, GL_SPECULAR, fBlack);
+	glMateriali (GL_FRONT, GL_SHININESS, 0);
+	}
+else {
+	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	glMaterialfv (GL_FRONT, GL_EMISSION, pl->fEmissive);
+	glMaterialfv (GL_FRONT, GL_SPECULAR, pl->fSpecular);
+	glMateriali (GL_FRONT, GL_SHININESS, 96);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void AddOglLights (void)
 {
 	int			i, j, t;
@@ -1175,7 +1198,7 @@ memset (gameData.render.lights.ogl.bUsedHandles, 0, sizeof (gameData.render.ligh
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		if (i != 68)
+		if (i != 16)
 			continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
@@ -1206,6 +1229,7 @@ void TransformOglLights (void)
 	vms_vector	vPos;
 	float			fPos [4];
 
+OglSetupTransform ();
 fPos [3] = 1.0f;
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	if (gameStates.render.bGlTransform)
@@ -1217,6 +1241,7 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	fPos [2] = f2fl (vPos.z);
 	glLightfv (pl->handle, GL_POSITION, fPos);
 	}
+OglResetTransform ();
 }
 
 // ----------------------------------------------------------------------------------------------

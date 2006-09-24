@@ -540,7 +540,7 @@ void init_editor()
 
 	medkey_init();
 
-	editor_font = gr_init_font( "pc8x16.fnt" );
+	editor_font = GrInitFont( "pc8x16.fnt" );
 	
 	menubar_init( "MED.MNU" );
 

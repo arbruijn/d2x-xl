@@ -46,7 +46,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-
 #ifndef _LIGHTING_H
 #define _LIGHTING_H
 
@@ -90,5 +89,6 @@ void MoveOglLight (short nObject);
 void TransformOglLights ();
 short FindOglLight (short nSegment, short nSide, short nObject);
 void ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
+void SetOglLightMaterial (short nSegment, short nSide, short nObject);
 
 #endif /* _LIGHTING_H */

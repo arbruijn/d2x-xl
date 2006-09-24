@@ -618,7 +618,7 @@ void gr_uscanline( int x1, int x2, int y );
 
 
 // Reads in a font file... current font set to this one.
-grs_font * gr_init_font( char * fontfile );
+grs_font * GrInitFont( char * fontfile );
 void gr_close_font( grs_font * font );
 
 //remap a font, re-reading its data & palette

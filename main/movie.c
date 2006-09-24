@@ -207,7 +207,7 @@ int PlayMovie(const char *filename, int must_have, int bForce, int bFullScreen)
 	// Stop all digital sounds currently playing.
 	DigiStopAll();
 	// Stop all songs
-	songs_stop_all();
+	SongsStopAll();
 	DigiClose();
 	// Start sound
 	if (!FindArg("-nosound"))

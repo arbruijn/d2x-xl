@@ -2135,7 +2135,7 @@ if (i) {
 	}
 else {
 #ifdef _DEBUG
-	gameOptions [0].ogl.bUseLights = 1;
+	gameOptions [0].ogl.bUseLights = 0;
 #else
 	gameOptions [0].ogl.bUseLights = 0;
 #endif
@@ -2673,7 +2673,7 @@ else
 #endif
 
 #ifndef SHAREWARE
-	if (gameStates.app.bHaveExtraData) {
+	if (gameStates.app.bHaveExtraMovies) {
 		nPlayed = PlayMovie ("starta.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
 			nPlayed = MOVIE_PLAYED_FULL;
@@ -3055,7 +3055,7 @@ else
 defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
 grdCurCanv->cv_bitmap.bm_palette = defaultPalette;	//just need some valid palette here
 /*---*/LogErr ("Initializing game fonts\n");
-gamefont_init ();	// must load after palette data loaded.
+GameFontInit ();	// must load after palette data loaded.
 /*---*/LogErr ("Initializing movies\n");
 InitMovies ();		//init movie libraries
 
@@ -3099,7 +3099,7 @@ return 0;
 
 int CleanUp (void)
 {
-songs_stop_all ();
+SongsStopAll ();
 DigiStopCurrentSong ();
 /*---*/LogErr ("Saving configuration file\n");
 WriteConfigFile ();

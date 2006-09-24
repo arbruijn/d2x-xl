@@ -638,12 +638,7 @@ r_upixelc++;
 glDisable (GL_TEXTURE_2D);
 glPointSize(1.0);
 glBegin(GL_POINTS);
-if (c->rgb) {
-	glEnable (GL_BLEND);
-	glColor4f(CC2T (c->color.red), CC2T (c->color.green), CC2T (c->color.blue), CC2T (c->color.alpha));
-	}		
-else
-	glColor3f(CPAL2Tr(c->index),CPAL2Tg(c->index),CPAL2Tb(c->index));
+OglGrsColor (c);
 glVertex2d ((x + grdCurCanv->cv_bitmap.bm_props.x) / (double) gameStates.ogl.nLastW,
 				1.0 - (y + grdCurCanv->cv_bitmap.bm_props.y) / (double) gameStates.ogl.nLastW);
 if (c->rgb)
@@ -656,7 +651,6 @@ glEnd();
 void OglURect(int left,int top,int right,int bot)
 {
 	GLfloat		xo, yo, xf, yf;
-	grs_color	c = COLOR;
 	
 xo = ((float) left + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
 xf = (float) (right + grdCurCanv->cv_bitmap.bm_props.x)/ (float) gameStates.ogl.nLastW;
@@ -664,26 +658,13 @@ yo = 1.0f - (float) (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameState
 yf = 1.0f - (float) (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
 	
 glDisable (GL_TEXTURE_2D);
-if (c.rgb) {
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-	}
-else
-	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
-		glColor3f(CPAL2Tr(c.index),CPAL2Tg(c.index),CPAL2Tb(c.index));
-	else {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f (CPAL2Tr(c.index), CPAL2Tg(c.index), CPAL2Tb(c.index), 
-					  1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f));
-		}
+OglGrsColor (&COLOR);
 glBegin (GL_QUADS);
 glVertex2f (xo,yo);
 glVertex2f (xo,yf);
 glVertex2f (xf,yf);
 glVertex2f (xf,yo);
-if (c.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
+if (COLOR.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
 glEnd ();
 }
@@ -699,12 +680,7 @@ xf = (right + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
 yo = 1.0f - (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
 yf = 1.0f - (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
 glDisable (GL_TEXTURE_2D);
-if (c->rgb) {
-	glEnable (GL_BLEND);
-	glColor4f (CC2T (c->color.red), CC2T (c->color.green), CC2T (c->color.blue), CC2T (c->color.alpha));
-	}
-else
-	glColor3f(CPAL2Tr(c->index),CPAL2Tg(c->index),CPAL2Tb(c->index));
+OglGrsColor (c);
 glBegin (GL_LINES);
 glVertex2f (xo,yo);
 glVertex2f (xf,yf);

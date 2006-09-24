@@ -93,6 +93,56 @@ GLuint glExitTMU = 0;
 int OglBindBmTex (grs_bitmap *bm, int transp);
 void ogl_clean_texture_cache (void);
 
+//------------------------------------------------------------------------------
+
+void OglPalColor (ubyte *palette, int c)
+{
+	GLfloat	fc [4];
+
+if (c < 0)
+	glColor3f (1.0, 1.0, 1.0);
+else {
+	if (!palette)
+		palette = gamePalette;
+	if (!palette)
+		palette = defaultPalette;
+	c *= 3;
+	fc [0] = (float) (palette [c]) / 63.0f;
+	fc [1] = (float) (palette [c]) / 63.0f;
+	fc [2] = (float) (palette [c]) / 63.0f;
+	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
+		fc [3] = 1.0f;
+	else {
+		fc [3] = 1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+	glColor4fv (fc);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void OglGrsColor (grs_color *pc)
+{
+	GLfloat	fc [4];
+
+if (!pc)
+	glColor3f (1.0, 1.0, 1.0);
+else if (pc->rgb) {
+	fc [0] = (float) (pc->color.red) / 255.0f;
+	fc [1] = (float) (pc->color.green) / 255.0f;
+	fc [2] = (float) (pc->color.blue) / 255.0f;
+	fc [3] = (float) (pc->color.alpha) / 255.0f;
+	if (fc [3] < 1.0f) {
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+	glColor4fv (fc);
+	}
+else
+	OglPalColor (gamePalette, pc->index);
+}
 
 //------------------------------------------------------------------------------
 
@@ -102,19 +152,12 @@ int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
 
 bool G3DrawLine (g3s_point *p0, g3s_point *p1)
 {
-	grs_color c = grdCurCanv->cv_color;
-
 glDisable (GL_TEXTURE_2D);
-if (c.rgb) {
-	glEnable (GL_BLEND);
-	glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-	}
-else
-	glColor3f (PAL2Tr (c.index), PAL2Tg (c.index), PAL2Tb (c.index));
+OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
 glVertex3x (p0->p3_vec.x, p0->p3_vec.y, -p0->p3_vec.z);
 glVertex3x (p1->p3_vec.x, p1->p3_vec.y, -p1->p3_vec.z);
-if (c.rgb)
+if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
 return 1;
@@ -308,109 +351,74 @@ int G3DrawSphere (g3s_point *pnt, fix rad, int bBigSphere)
 {
 	double r;
 
-	grs_color c=grdCurCanv->cv_color;
-	glDisable (GL_TEXTURE_2D);
-	if (c.rgb) {
-		glEnable (GL_BLEND);
-		glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-		}
-	else
-		glColor3f (PAL2Tr (c.index), PAL2Tg (c.index), PAL2Tb (c.index));
-#if 0
-	glPointSize (f2glf (rad));
-	glBegin (GL_POINTS);
-	glVertex3x (pnt->p3_vec.x, pnt->p3_vec.y, -pnt->p3_vec.z);
-	if (c.rgb)
-		glDisable (GL_BLEND);
-	glEnd ();
-#else
-	glPushMatrix ();
+glDisable (GL_TEXTURE_2D);
+OglGrsColor (&grdCurCanv->cv_color);
+glPushMatrix ();
 //	glTranslated (f2glf (0), f2glf (0), -f2glf (pnt->p3_vec.z));
-	glTranslatef (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), -f2glf (pnt->p3_vec.z));
-	r = f2glf (rad);
-	glScaled (r, r, r);
-	if (bBigSphere)
-		if (bsphereh)
-			glCallList (bsphereh);
-		else
-			bsphereh=CircleListInit (20, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+glTranslatef (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), -f2glf (pnt->p3_vec.z));
+r = f2glf (rad);
+glScaled (r, r, r);
+if (bBigSphere)
+	if (bsphereh)
+		glCallList (bsphereh);
 	else
-		if (ssphereh)
-			glCallList (ssphereh);
-		else
-			ssphereh=CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
-	glPopMatrix ();
-#endif
-	return 0;
-
+		bsphereh=CircleListInit (20, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+else
+	if (ssphereh)
+		glCallList (ssphereh);
+	else
+		ssphereh=CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+glPopMatrix ();
+if (grdCurCanv->cv_color.rgb)
+	glDisable (GL_BLEND);
+return 0;
 }
 
 //------------------------------------------------------------------------------
 
 int gr_ucircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
-	grs_color c=grdCurCanv->cv_color;
-	glDisable (GL_TEXTURE_2D);
+glDisable (GL_TEXTURE_2D);
 //	glPointSize (f2glf (rad);
-	if (c.rgb) {
-		glEnable (GL_BLEND);
-		glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-		}
-	else
-		glColor3f (PAL2Tr (c.index), PAL2Tg (c.index), PAL2Tb (c.index));
-//	glBegin (GL_POINTS);
-//	glVertex3f (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), -f2glf (pnt->p3_vec.z);
-//	glEnd ();
-	glPushMatrix ();
-	glTranslatef (
-			 (f2fl (xc1) + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW, 
-			1.0f - (f2fl (yc1) + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH, 0);
-	glScalef (f2fl (r1), f2fl (r1), f2fl (r1));
-	if (r1<=i2f (5)){
-		if (!circleh5) 
-			circleh5=CircleListInit (5, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
-		else 
-			glCallList (circleh5);
-		}
-	else{
-		if (!circleh10) 
-			circleh10=CircleListInit (10, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
-		else 
-			glCallList (circleh10);
+OglGrsColor (&grdCurCanv->cv_color);
+glPushMatrix ();
+glTranslatef (
+			(f2fl (xc1) + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW, 
+		1.0f - (f2fl (yc1) + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH, 0);
+glScalef (f2fl (r1), f2fl (r1), f2fl (r1));
+if (r1<=i2f (5)){
+	if (!circleh5) 
+		circleh5=CircleListInit (5, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
+	else 
+		glCallList (circleh5);
 	}
-	glPopMatrix ();
-	if (c.rgb)
-		glDisable (GL_BLEND);
-	return 0;
+else{
+	if (!circleh10) 
+		circleh10=CircleListInit (10, GL_LINE_LOOP, GL_COMPILE_AND_EXECUTE);
+	else 
+		glCallList (circleh10);
+}
+glPopMatrix ();
+if (grdCurCanv->cv_color.rgb)
+	glDisable (GL_BLEND);
+return 0;
 }
 
 //------------------------------------------------------------------------------
 
 bool G3DrawPoly (int nv, g3s_point **pointlist)
 {
-	grs_color c = grdCurCanv->cv_color;
 	int i;
 
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
-if (c.rgb) {
-	glEnable (GL_BLEND);
-	glColor4f (CC2T (c.color.red), CC2T (c.color.green), CC2T (c.color.blue), CC2T (c.color.alpha));
-	}
-else
-	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
-		glColor3f (PAL2Tr (c.index), PAL2Tg (c.index), PAL2Tb (c.index));
-	else {
-		glEnable (GL_BLEND);
-		glColor4f (PAL2Tr (c.index), PAL2Tg (c.index), PAL2Tb (c.index), 
-					  1.0f - (float) gameStates.render.grAlpha / ((float) GR_ACTUAL_FADE_LEVELS - 1.0f));
-		}
+OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nv; i++, pointlist++) {
 //	glVertex3f (f2glf (pointlist [c]->p3_vec.x), f2glf (pointlist [c]->p3_vec.y), f2glf (pointlist [c]->p3_vec.z);
 	OglVertex3f (*pointlist);
 	}
-if (c.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
+if (grdCurCanv->cv_color.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
 glEnd ();
 return 0;
@@ -814,7 +822,7 @@ vms_vector	vNormal;
 
 #if 0
 if (gameStates.render.bGlTransform && pvNormal)
-	glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
+	glNormal3f ((GLfloat)- f2fl (pvNormal->x), (GLfloat) -f2fl (pvNormal->y), (GLfloat) -f2fl (pvNormal->z));
 else 
 #endif
 	{
@@ -1232,7 +1240,6 @@ bool OglUBitMapMC (int x, int y, int dw, int dh, grs_bitmap *bmP, grs_color *c, 
 	GLfloat u1, u2, v1, v2;
 	GLfloat	h, a;
 	GLfloat	dx, dy;
-	int i;
 
 bmP = BmOverride (bmP);
 if (dw < 0)
@@ -1304,14 +1311,7 @@ else{
 	}
 
 glBegin (GL_QUADS);
-if (!c)
-	glColor4f (1.0, 1.0, 1.0, 1.0);
-else if (c->rgb)
-	glColor4f (CC2T (c->color.red), CC2T (c->color.green), CC2T (c->color.blue), CC2T (c->color.alpha));
-else if ((i = c->index) < 0)
-	glColor4f (1.0, 1.0, 1.0, 1.0);
-else
-	glColor4f (CPAL2Tr (i), CPAL2Tg (i), CPAL2Tb (i), 1.0);
+OglGrsColor (c);
 BmSetTexCoord (u1, v1, a, orient);
 glVertex2f (xo, yo);
 BmSetTexCoord (u2, v1, a, orient);
@@ -1685,6 +1685,7 @@ else
 		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glEnable (GL_LIGHTING);
 		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
+		glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
 		glShadeModel (GL_SMOOTH);
 		glEnable (GL_COLOR_MATERIAL);
 		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
@@ -1750,6 +1751,28 @@ if (!gameStates.menus.nInMenu || bForce) {
 	if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
 	}
+}
+
+// -----------------------------------------------------------------------------------
+
+void OglSetupTransform (void)
+{
+if (gameStates.render.bGlTransform) {
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();
+	glScalef (1.0f, 1.0f, -viewInfo.glZoom);
+	glMultMatrixf (viewInfo.glViewf);
+	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
+	}
+}
+
+// -----------------------------------------------------------------------------------
+
+void OglResetTransform (void)
+{
+if (gameStates.render.bGlTransform)
+	glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------

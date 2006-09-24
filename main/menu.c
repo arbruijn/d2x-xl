@@ -733,7 +733,7 @@ switch (select) {
 		break;
 	case MENU_SHOW_CREDITS:
 		GrPaletteFadeOut (NULL, 32, 0);
-		songs_stop_all ();
+		SongsStopAll ();
 		credits_show (NULL); 
 		break;
 	default:
