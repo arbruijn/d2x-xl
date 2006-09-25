@@ -249,6 +249,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "player.h"
 #include "gamesave.h"
+#include "lighting.h"
 
 #ifdef RCS
 static char rcsid [] = "$Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $";
@@ -1888,15 +1889,28 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
+void AddToVertexNormal (int nVertex, vms_vector *pvNormal)
+{
+	tVertNorm	*pn = gameData.segs.vertNorms + nVertex;
+
+pn->nFaces++;
+pn->vNormal.x += f2fl (pvNormal->x);
+pn->vNormal.y += f2fl (pvNormal->y);
+pn->vNormal.z += f2fl (pvNormal->z);
+}
+
+// -------------------------------------------------------------------------------
+
 int bRenderQuads = 0;
 
 void CreateWallsOnSide (segment *segP, int sidenum)
 {
-	int	vm0, vm1, vm2, vm3, bFlip;
-	int	v0, v1, v2, v3;
-	vms_vector vn;
-	fix	xDistToPlane;
-	sbyte *s2v = sideToVerts [sidenum];
+	int			vm0, vm1, vm2, vm3, bFlip;
+	int			v0, v1, v2, v3, i;
+	int			vertexList [6];
+	vms_vector	vn;
+	fix			xDistToPlane;
+	sbyte			*s2v = sideToVerts [sidenum];
 
 	v0 = segP->verts [s2v [0]];
 	v1 = segP->verts [s2v [1]];
@@ -1916,7 +1930,6 @@ void CreateWallsOnSide (segment *segP, int sidenum)
 		//de-triangulates if we shouldn't be.
 		{
 			int			nFaces;
-			int			vertexList [6];
 			fix			dist0, dist1;
 			int			s0, s1;
 			int			nVertex;
@@ -1948,16 +1961,31 @@ void CreateWallsOnSide (segment *segP, int sidenum)
 			if (s0 == 0 || s1 == 0 || s0 != s1) {
 				segP->sides [sidenum].type = SIDE_IS_QUAD; 	//detriangulate!
 #ifndef COMPACT_SEGS
-				segP->sides [sidenum].normals [0] = vn;
+				segP->sides [sidenum].normals [0] =
 				segP->sides [sidenum].normals [1] = vn;
 #endif
 			}
 		}
 	}
 #endif
+if (segP->sides [sidenum].type == SIDE_IS_QUAD) {
+	AddToVertexNormal (v0, &vn);
+	AddToVertexNormal (v1, &vn);
+	AddToVertexNormal (v2, &vn);
+	AddToVertexNormal (v3, &vn);
+	}
+else {
+	vn = segP->sides [sidenum].normals [0];
+	for (i = 0; i < 3; i++) 
+		AddToVertexNormal (vertexList [i], &vn);
+	vn = segP->sides [sidenum].normals [1];
+	for (; i < 6; i++) 
+		AddToVertexNormal (vertexList [i], &vn);
+	}
 }
 
 // -------------------------------------------------------------------------------
+
 void ValidateRemovableWall (segment *segP, int sidenum, int tmap_num)
 {
 	CreateWallsOnSide (segP, sidenum);
@@ -1970,25 +1998,27 @@ void ValidateRemovableWall (segment *segP, int sidenum, int tmap_num)
 //	Make a just-modified segment side valid.
 void ValidateSegmentSide (segment *segP, short sidenum)
 {
-	//CBRK (segP - gameData.segs.segments == 32 && sidenum == 5);
-	if (IS_WALL (WallNumP (segP, sidenum)))
-		// create_removable_wall (segP, sidenum, segP->sides [sidenum].tmap_num);
-		ValidateRemovableWall (segP, sidenum, segP->sides [sidenum].tmap_num);
-	else
-		CreateWallsOnSide (segP, sidenum);
-
-	//	Set render_flag.
-	//	If side doesn't have a child, then render wall.  If it does have a child, but there is a temporary
-	//	wall there, then do render wall.
-//	if (segP->children [sidenum] == -1)
-//		segP->sides [sidenum].render_flag = 1;
-//	else if (IS_WALL (WallNumP (segP, sidenum)))
-//		segP->sides [sidenum].render_flag = 1;
-//	else
-//		segP->sides [sidenum].render_flag = 0;
+if (IS_WALL (WallNumP (segP, sidenum)))
+	ValidateRemovableWall (segP, sidenum, segP->sides [sidenum].tmap_num);
+else
+	CreateWallsOnSide (segP, sidenum);
 }
 
 extern int check_for_degenerate_segment (segment *segP);
+
+// -------------------------------------------------------------------------------
+
+void ComputeVertexNormals (void)
+{
+	int			i;
+	tVertNorm	*pv;
+
+for (i = gameData.segs.nVertices, pv = gameData.segs.vertNorms; i; i--, pv++) {
+	pv->vNormal.x /= pv->nFaces;
+	pv->vNormal.y /= pv->nFaces;
+	pv->vNormal.z /= pv->nFaces;
+	}
+}
 
 // -------------------------------------------------------------------------------
 //	Make a just-modified segment valid.
@@ -1998,26 +2028,25 @@ void ValidateSegment (segment *segP)
 {
 	short	side;
 
-	#ifdef EDITOR
-	check_for_degenerate_segment (segP);
-	#endif
-
-	for (side = 0; side < MAX_SIDES_PER_SEGMENT; side++)
-		ValidateSegmentSide (segP, side);
-
-//	assign_default_uvs_to_segment (segP);
+#ifdef EDITOR
+check_for_degenerate_segment (segP);
+#endif
+for (side = 0; side < MAX_SIDES_PER_SEGMENT; side++)
+	ValidateSegmentSide (segP, side);
 }
 
 // -------------------------------------------------------------------------------
 //	Validate all segments.
 //	gameData.segs.nLastSegment must be set.
 //	For all used segments (number <= gameData.segs.nLastSegment), segnum field must be != -1.
+
 void ValidateSegmentAll (void)
 {
 	int	s;
 
 gameOpts->render.nMathFormat = 0;
-for (s=0; s<=gameData.segs.nLastSegment; s++)
+memset (gameData.segs.vertNorms, 0, sizeof (gameData.segs.vertNorms));
+for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	if (gameData.segs.segments [s].segnum != -1)
 #endif
@@ -2049,6 +2078,7 @@ if (CheckSegmentConnections ())
 	Int3 ();		//Get Matt, si vous plait.
 #	endif
 #endif
+ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 }
 
@@ -2272,6 +2302,10 @@ void ChangeLight (short segnum, short sidenum, int dir)
 	delta_light	*dlP;
 	short			nSeg, nSide;
 
+if ((dir < 0) && RemoveOglLight (segnum, sidenum, -1))
+	return;
+if (ToggleOglLight (segnum, sidenum, -1, dir >= 0) >= 0)
+	return;
 i = FindDLIndex (segnum, sidenum);
 for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
 	if (gameStates.render.bD2XLights) {

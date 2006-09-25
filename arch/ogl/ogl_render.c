@@ -59,8 +59,9 @@
 #	define M_PI 3.141592653589793240
 #endif
 
-#define OGL_CLEANUP	1
-#define SHADER_OPT   0
+#define OGL_CLEANUP		1
+#define SHADER_OPT		0
+#define USE_VERTNORMS	1
 
 int bShadowTest = 0;
 
@@ -821,10 +822,13 @@ vms_vector	vNormal;
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
 		glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
+		//VmVecAdd (&vNormal, pvNormal, &pointlist [0]->p3_vec);
 	else {
-		G3TransformPoint (&vNormal, pvNormal);
+		G3RotatePoint (&vNormal, pvNormal);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+		//VmVecInc (&vNormal, &pointlist [0]->p3_vec);
 		}
+//	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 	}
 else 
 #endif
@@ -839,34 +843,74 @@ else
 						 &pointlist [0]->p3_vec,
 						 &pointlist [1]->p3_vec,
 						 &pointlist [2]->p3_vec);
+		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		if (gameStates.ogl.bUseTransform) {
-			fVector	vNormal;
-			OOF_VecNormal ((tOOF_vector *) &vNormal, 
-								(tOOF_vector *) gameData.segs.fVertices + v [0], 
-								(tOOF_vector *) gameData.segs.fVertices + v [1], 
-								(tOOF_vector *) gameData.segs.fVertices + v [2]);
-			if (bFlip) {
-				vNormal.x = -vNormal.x;
-				vNormal.y = -vNormal.y;
-				vNormal.z = -vNormal.z;
-				}
-			glNormal3fv ((GLfloat *) &vNormal);
-
-			}
-		else {
-			vms_vector p [3];
-			VmVecNormal (&vNormal, 
-							 G3TransformPoint (p, gameData.segs.vertices + v [0]), 
-							 G3TransformPoint (p + 1, gameData.segs.vertices + v [1]), 
-							 G3TransformPoint (p + 2, gameData.segs.vertices + v [2]));
-			if (!bFlip)
-				VmVecNegate (&vNormal);
-			glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
-			}
+		VmVecNormal (&vNormal, 
+							gameData.segs.vertices + v [0], 
+							gameData.segs.vertices + v [1], 
+							gameData.segs.vertices + v [2]);
+		if (bFlip)
+			VmVecNegate (&vNormal);
+		if (!gameStates.ogl.bUseTransform)
+			G3RotatePoint (&vNormal, &vNormal);
+		//VmVecInc (&vNormal, &pointlist [0]->p3_vec);
+		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void G3CalcNormal (g3s_point **pointlist, vms_vector *pvNormal)
+{
+	vms_vector	vNormal;
+	int	v [4];
+
+v [0] = pointlist [0]->p3_index;
+v [1] = pointlist [1]->p3_index;
+v [2] = pointlist [2]->p3_index;
+if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
+	VmVecNormal (&vNormal, 
+					 &pointlist [0]->p3_vec,
+					 &pointlist [1]->p3_vec,
+					 &pointlist [2]->p3_vec);
+	}
+else {
+	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
+	VmVecNormal (&vNormal, 
+					 gameData.segs.vertices + v [0], 
+					 gameData.segs.vertices + v [1], 
+					 gameData.segs.vertices + v [2]);
+	if (bFlip)
+		VmVecNegate (&vNormal);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void G3SetNormal (g3s_point *pPoint, vms_vector *pvNormal)
+{
+	int	i = pPoint->p3_index;
+
+if (i < 0) {
+	vms_vector	vNormal = *pvNormal;
+	if (!gameStates.ogl.bUseTransform)
+		G3RotatePoint (&vNormal, &vNormal);
+	//VmVecInc (&vNormal, &pPoint->p3_vec);
+	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+	}
+else {
+	fVector	vNormal = gameData.segs.vertNorms [i].vNormal;
+	if (gameStates.ogl.bUseTransform)
+		;//VmVecIncf (&vNormal, gameData.segs.fVertices + i);
+	else {
+		//fVector	p;
+		G3RotatePointf (&vNormal, &vNormal);
+		//VmVecIncf (&vNormal, VmsVecToFloat (&p, &pPoint->p3_vec));
+		}
+	glNormal3fv ((GLfloat *) &vNormal);
 	}
 }
 
@@ -896,6 +940,9 @@ bool G3DrawTexPolyMulti (
 	int			c, nFrame, bDrawBM = 0;
 	grs_bitmap	*bmP, *bmMask;
 	g3s_point	**pp;
+#if USE_VERTNORMS
+	vms_vector	vNormal;
+#endif
 #if SHADER_OPT 
 	GLhandleARB	hProg;
 #endif
@@ -984,6 +1031,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		if (bmTop)
 			SetTexCoord (uvl_list + c, orient, 1);
 		glMultiTexCoord2f (GL_TEXTURE2_ARB, f2glf (uvl_lMap [c].u), f2glf (uvl_lMap [c].v));
+		G3SetNormal (*pp, pvNormal);
 		OglVertex3f (*pp);
 		}
 	glEnd ();
@@ -999,8 +1047,10 @@ else
 		glDisable (GL_TEXTURE_2D);
 		glColor4f (0, 0, 0, 1.0f - (gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS));
 		glBegin (GL_TRIANGLE_FAN);
-		for (c = 0, pp = pointlist; c < nv; c++, pp++)
+		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+			G3SetNormal (*pp, pvNormal);
 			OglVertex3f (*pp);
+			}
 		glEnd ();
 		}
 	else if (tmap_drawer_ptr == draw_tmap) {
@@ -1091,14 +1141,22 @@ else
 #	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
+#if USE_VERTNORMS
+		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && !pvNormal)
+			G3CalcNormal (pointlist, pvNormal = &vNormal);
+#else
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 			G3Normal (pointlist, pvNormal);
+#endif
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 			SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
 			if (bmTop && !bDrawBM)
 				SetTexCoord (uvl_list + c, orient, 1);
+#if USE_VERTNORMS
+			G3SetNormal (*pp, pvNormal);
+#endif
 			OglVertex3f (*pp);
 			}
 		glEnd ();
@@ -1115,6 +1173,9 @@ else
 			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 				SetTMapColor (uvl_list + c, c, bmTop, 1);
 				SetTexCoord (uvl_list + c, orient, 0);
+#if USE_VERTNORMS
+				G3SetNormal (*pp, pvNormal);
+#endif
 				OglVertex3f (*pp);
 				}
 			glEnd ();

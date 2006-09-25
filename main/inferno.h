@@ -711,7 +711,6 @@ typedef struct tOglLight {
 typedef struct tOglLightData {
 	tOglLight	lights [MAX_SEGMENTS];
 	int			nLights;
-	unsigned		bUsedHandles [MAX_SEGMENTS];
 	short			owners [MAX_OBJECTS];
 } tOglLightData;
 
@@ -814,9 +813,15 @@ typedef struct tSlideSegs {
 	ubyte	nSides;
 } tSlideSegs;
 
+typedef struct tVertNorm {
+	fVector		vNormal;
+	ubyte			nFaces;	// # of faces that use this vertex
+} tVertNorm;
+
 typedef struct tSegmentData {
 	vms_vector			vertices [MAX_VERTICES];
 	fVector				fVertices [MAX_VERTICES];
+	tVertNorm			vertNorms [MAX_VERTICES];
 	segment				segments [MAX_SEGMENTS];
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];

@@ -969,7 +969,8 @@ if (objP->movement_type == MT_PHYSICS) {
 	}
 //set value for player headlight
 if (objP->type == OBJ_PLAYER) {
-	if ((gameData.multi.players[objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && !gameStates.app.bEndLevelSequence)
+	if ((gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
+		 !gameStates.app.bEndLevelSequence)
 		engine_glow_value[1] =  (gameData.multi.players[objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
 	else
 		engine_glow_value[1] = -3;			//don't draw
@@ -980,15 +981,10 @@ if (objP->type == OBJ_PLAYER) {
 
 unsigned GetOglLightHandle (void)
 {
-	int	i;
-
-for (i = 0; i < gameData.render.lights.ogl.nLights; i++)
-	if (!gameData.render.lights.ogl.bUsedHandles [i])
-		break;
-if (i >= MAX_SEGMENTS)
+if ((gameData.render.lights.ogl.nLights >= MAX_SEGMENTS) ||
+	 (gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS))
 	return 0xffffffff;
-gameData.render.lights.ogl.bUsedHandles [i] = 1;
-return (unsigned) (0x4000 + i);
+return (unsigned) (GL_LIGHT0 + gameData.render.lights.ogl.nLights);
 }
 
 //------------------------------------------------------------------------------
@@ -1036,14 +1032,16 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 
 short FindOglLight (short nSegment, short nSide, short nObject)
 {
-	tOglLight	*pl = gameData.render.lights.ogl.lights;
-	short			i;
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
+		tOglLight	*pl = gameData.render.lights.ogl.lights;
+		short			i;
 
-if (nObject >= 0)
-	return gameData.render.lights.ogl.owners [nObject];
-for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++)
-	if ((pl->nSegment == nSegment) && (pl->nSide == nSide))
-		return i;
+	if (nObject >= 0)
+		return gameData.render.lights.ogl.owners [nObject];
+	for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++)
+		if ((pl->nSegment == nSegment) && (pl->nSide == nSide))
+			return i;
+	}
 return -1;
 }
 
@@ -1066,20 +1064,73 @@ return nLight;
 
 //------------------------------------------------------------------------------
 
-void ToggleOglLight (short nSegment, short nSide, short nObject, int bState)
+int LastEnabledOglLight (void)
 {
-	short			nLight = FindOglLight (nSegment, nSide, nObject);
+	int	i = gameData.render.lights.ogl.nLights;
+
+while (i)
+	if (gameData.render.lights.ogl.lights [--i].bState)
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void RefreshOglLight (tOglLight *pl)
+{
+glLightfv (pl->handle, GL_AMBIENT, pl->fAmbient);
+glLightfv (pl->handle, GL_DIFFUSE, pl->fDiffuse);
+glLightfv (pl->handle, GL_SPECULAR, pl->fSpecular);
+glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
+glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
+glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
+}
+
+//------------------------------------------------------------------------------
+
+void SwapOglLights (tOglLight *pl1, tOglLight *pl2)
+{
+if (pl1 != pl2) {
+		tOglLight	h;
+
+	h = *pl1;
+	*pl1 = *pl2;
+	*pl2 = h;
+	pl1->handle = (unsigned) (GL_LIGHT0 + (pl1 - gameData.render.lights.ogl.lights));
+	pl2->handle = (unsigned) (GL_LIGHT0 + (pl2 - gameData.render.lights.ogl.lights));
+	if (pl1->nObject >= 0)
+		gameData.render.lights.ogl.owners [pl1->nObject] = pl1 - gameData.render.lights.ogl.lights;
+	if (pl2->nObject >= 0)
+		gameData.render.lights.ogl.owners [pl2->nObject] = pl2 - gameData.render.lights.ogl.lights;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int ToggleOglLight (short nSegment, short nSide, short nObject, int bState)
+{
+	short nLight = FindOglLight (nSegment, nSide, nObject);
 	
 if (nLight >= 0) {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
 	if (pl->bState != bState) {
-		if (bState)
+		int i = LastEnabledOglLight ();
+		if (bState) {
+			SwapOglLights (pl, gameData.render.lights.ogl.lights + i + 1);
+			pl = gameData.render.lights.ogl.lights + i + 1;
 			glEnable (pl->handle);
-		else
+			RefreshOglLight (pl);
+			}
+		else {
+			SwapOglLights (pl, gameData.render.lights.ogl.lights + i);
+			RefreshOglLight (pl);
+			pl = gameData.render.lights.ogl.lights + i;
 			glDisable (pl->handle);
+			}
 		pl->bState = bState;
 		}
 	}
+return nLight;
 }
 
 //------------------------------------------------------------------------------
@@ -1087,7 +1138,7 @@ if (nLight >= 0) {
 int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
 {
 	tOglLight	*pl;
-	short			h;
+	short			h, i;
 
 if (0 <= (h = UpdateOglLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
@@ -1098,10 +1149,13 @@ if ((gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS) ||
 	gameStates.ogl.bHaveLights = 0;
 	return -1;	//too many lights
 	}
-pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
+i = LastEnabledOglLight () + 1;
+pl = gameData.render.lights.ogl.lights + i;
 pl->handle = GetOglLightHandle (); 
 if (pl->handle == 0xffffffff)
 	return -1;
+if (i < gameData.render.lights.ogl.nLights)
+	SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].pos;
@@ -1117,25 +1171,30 @@ else {
 	VmVecInc (&pl->vPos, &vOffs);
 #endif
 	}
-#if 1
+#if 0
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
-pl->fAttenuation [1] = pl->fAttenuation [0] / 25.0f; //0.01f;
-pl->fAttenuation [2] = pl->fAttenuation [1] / 25.0f; //0.004f;
+pl->fAttenuation [1] = 0.0f; //pl->fAttenuation [0] / 25.0f; //0.01f;
+pl->fAttenuation [2] = pl->fAttenuation [0] / 1000.0f; //0.004f;
 #else
-pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
-pl->fAttenuation [1] = f2fl (xBrightness) / 10.0f;
-pl->fAttenuation [2] = f2fl (xBrightness) / 100.0f;
+pl->fAttenuation [0] = 0.0f;
+pl->fAttenuation [1] = 0.0f; //f2fl (xBrightness) / 10.0f;
+pl->fAttenuation [2] = (1.0f / f2fl (xBrightness)) / 625.0f;
 #endif
+glEnable (pl->handle);
+if (!glIsEnabled (pl->handle)) {
+	gameStates.ogl.bHaveLights = 0;
+	return -1;
+	}
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
-glEnable (pl->handle);
 pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
-LogErr ("adding light %d,%d\n", gameData.render.lights.ogl.nLights, pl->handle - 0x4000);
-gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
+LogErr ("adding light %d,%d\n", gameData.render.lights.ogl.nLights, pl->handle - GL_LIGHT0);
+if (nObject >= 0)
+	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
 return gameData.render.lights.ogl.nLights++;
 }
 
@@ -1144,29 +1203,34 @@ return gameData.render.lights.ogl.nLights++;
 void DeleteOglLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
-	tOglLight	*pl = gameData.render.lights.ogl.lights + nLight;
-	LogErr ("removing light %d,%d\n", nLight, pl->handle - 0x4000);
+	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	LogErr ("removing light %d,%d\n", nLight, pl->handle - GL_LIGHT0);
+	// if not removing last light in list, move last light down to the now free list entry
+	// and keep the freed light handle thus avoiding gaps in used handles
+	if (nLight < --gameData.render.lights.ogl.nLights) {
+		SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
+		RefreshOglLight (pl);
+		pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
+		}
 	glDisable (pl->handle);
 	pl->bState = 0;
-	gameData.render.lights.ogl.bUsedHandles [pl->handle - 0x4000] = 0;
-	if (nLight < --gameData.render.lights.ogl.nLights) {
-		*pl = gameData.render.lights.ogl.lights [gameData.render.lights.ogl.nLights];
+	if (pl->nObject >= 0)
 		gameData.render.lights.ogl.owners [pl->nObject] = nLight;
-		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RemoveOglLight (short nSegment, short nSide, short nObject)
+int RemoveOglLight (short nSegment, short nSide, short nObject)
 {
 	int	nLight = FindOglLight (nSegment, nSide, nObject);
 
 if (nLight < 0)
-	return;
+	return 0;
 DeleteOglLight (nLight);
 if (nObject >= 0)
 	gameData.render.lights.ogl.owners [nObject] = -1;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1186,7 +1250,7 @@ void SetOglLightMaterial (short nSegment, short nSide, short nObject)
 	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 	int nLight = FindOglLight (nSegment, nSide, nObject);
-return;
+
 if (nLight < 0) {
 	glMaterialfv (GL_FRONT, GL_EMISSION, fBlack);
 	glMaterialfv (GL_FRONT, GL_SPECULAR, fBlack);
@@ -1194,9 +1258,11 @@ if (nLight < 0) {
 	}
 else {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
-	glMaterialfv (GL_FRONT, GL_EMISSION, pl->fEmissive);
-	glMaterialfv (GL_FRONT, GL_SPECULAR, pl->fSpecular);
-	glMateriali (GL_FRONT, GL_SHININESS, 96);
+	if (pl->bState) {
+		glMaterialfv (GL_FRONT, GL_EMISSION, pl->fEmissive);
+		glMaterialfv (GL_FRONT, GL_SPECULAR, pl->fSpecular);
+		glMateriali (GL_FRONT, GL_SHININESS, 96);
+		}
 	}
 }
 
@@ -1212,11 +1278,10 @@ void AddOglLights (void)
 gameStates.ogl.bHaveLights = 1;
 glEnable (GL_LIGHTING);
 gameData.render.lights.ogl.nLights = 0;
-memset (gameData.render.lights.ogl.bUsedHandles, 0, sizeof (gameData.render.lights.ogl.bUsedHandles));
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		if (i != 68) continue;
+		//if (i == 6) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1225,10 +1290,10 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		pc = gameData.render.color.textures + t;
 		AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 		t = sideP->tmap_num2 & 0x3fff;
-		if ((t <= 0) || (t >= MAX_WALL_TEXTURES))
-			continue;
-		pc = gameData.render.color.textures + t;
-		AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+		if ((t > 0) && (t < MAX_WALL_TEXTURES)) {
+			pc = gameData.render.color.textures + t;
+			AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+			}
 		if (!gameStates.ogl.bHaveLights) {
 			RemoveOglLights ();
 			return;

@@ -1199,7 +1199,7 @@ void CollideWeaponAndWall (
 	weapon_info *wInfoP = gameData.weapons.info + weapon->id;
 	object *wObjP = gameData.objs.objects + weapon->ctype.laser_info.parent_num;
 
-	int blew_up;
+	int bBlewUp;
 	int wall_type;
 	int playernum;
 	int	robot_escort;
@@ -1263,7 +1263,7 @@ void CollideWeaponAndWall (
 		return;
 	}
 #endif
-	blew_up = CheckEffectBlowup (segP, hitwall, vHitPt, weapon, 0);
+	bBlewUp = CheckEffectBlowup (segP, hitwall, vHitPt, weapon, 0);
 
 	//if ((sideP->tmap_num2==0) && (gameData.pig.tex.pTMapInfo [sideP->tmap_num].flags & TMI_VOLATILE)) {
 
@@ -1286,7 +1286,7 @@ void CollideWeaponAndWall (
 			playernum = -1;		//not a player (thus a robot)
 	}
 
-	if (blew_up) {		//could be a wall switch
+	if (bBlewUp) {		//could be a wall switch
 		//for wall triggers, always say that the player shot it out.  This is
 		//because robots can shoot out wall triggers, and so the trigger better
 		//take effect  
@@ -1369,7 +1369,7 @@ void CollideWeaponAndWall (
 			//if it's not the player's weapon, or it is the player's and there
 			//is no wall, and no blowing up monitor, then play sound
 			if ((weapon->ctype.laser_info.parent_type != OBJ_PLAYER) ||	
-				 ((!IS_WALL (WallNumS (sideP)) || wall_type==WHP_NOT_SPECIAL) && !blew_up))
+				 ((!IS_WALL (WallNumS (sideP)) || wall_type==WHP_NOT_SPECIAL) && !bBlewUp))
 				if ((wInfoP->wall_hit_sound > -1) && (!(weapon->flags & OF_SILENT)))
 				DigiLinkSoundToPos (wInfoP->wall_hit_sound, weapon->segnum, 0, &weapon->pos, 0, F1_0);
 		

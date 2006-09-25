@@ -99,7 +99,7 @@
  * Added VmVecDeltaAng(), VmVecDeltaAngNorm(), and VmVecAng2Matrix()
  * 
  * Revision 1.14  1993/10/17  17:02:52  matt
- * VmVector2Matrix() now takes optional right vector
+ *VmVector2Matrix() now takes optional right vector
  * 
  * Revision 1.13  1993/10/12  19:31:39  matt
  * Added IDENTITY_MATRIX constant
@@ -222,7 +222,7 @@ static inline void vm_set_identity(vms_matrix *m)
 
 // DPH (19/8/98): End changes.
 
-vms_vector * VmVecMake (vms_vector * v, fix x, fix y, fix z);
+vms_vector *VmVecMake (vms_vector * v, fix x, fix y, fix z);
 
 
 #ifdef __WATCOMC__
@@ -233,7 +233,7 @@ vms_vector * VmVecMake (vms_vector * v, fix x, fix y, fix z);
 
 #endif
 
-vms_angvec * VmAngVecMake (vms_angvec * v, fixang p, fixang b, fixang h);
+vms_angvec *VmAngVecMake (vms_angvec * v, fixang p, fixang b, fixang h);
 
 
 #ifdef __WATCOMC__
@@ -300,27 +300,37 @@ static inline vms_vector *VmVecAdd (vms_vector *d, vms_vector *s0, vms_vector *s
 static inline vms_vector *VmVecSub (vms_vector *d, vms_vector *s0, vms_vector *s1)
 	{d->x = s0->x - s1->x; d->y = s0->y - s1->y; d->z = s0->z - s1->z;return d;}
 
+static inline fVector *VmVecSubf (fVector *d, fVector *s0, fVector *s1)
+	{d->x = s0->x - s1->x; d->y = s0->y - s1->y; d->z = s0->z - s1->z; return d;}
+
 static inline vms_vector *VmVecDec (vms_vector *d, vms_vector *s)
 	{d->x -= s->x; d->y -= s->y; d->z -= s->z; return d;}
 
 static inline vms_vector *VmVecInc (vms_vector *d, vms_vector *s)
 	{d->x += s->x; d->y += s->y; d->z += s->z; return d;}
+
+static inline fVector *VmVecIncf (fVector *d, fVector *s)
+	{d->x += s->x; d->y += s->y; d->z += s->z; return d;}
+
+static inline fVector *VmsVecToFloat (fVector *d, vms_vector *s)
+	{d->x = f2fl (s->x); d->y = f2fl (s->y); d->z = f2fl (s->z); return d;}
+
 #else
 //adds two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecInc() if so
-vms_vector * VmVecAdd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecAdd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
 
 //subs two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecDec() if so
-vms_vector * VmVecSub (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecSub (vms_vector * dest, vms_vector * src0, vms_vector * src1);
 
 //adds one vector to another. returns ptr to dest
 //dest can equal source
-vms_vector * VmVecInc (vms_vector * dest, vms_vector * src);
+vms_vector *VmVecInc (vms_vector * dest, vms_vector * src);
 
 //subs one vector from another, returns ptr to dest
 //dest can equal source
-vms_vector * VmVecDec (vms_vector * dest, vms_vector * src);
+vms_vector *VmVecDec (vms_vector * dest, vms_vector * src);
 
 #endif
 
@@ -346,35 +356,35 @@ vms_vector * VmVecDec (vms_vector * dest, vms_vector * src);
 
 //averages two vectors. returns ptr to dest
 //dest can equal either source
-vms_vector * VmVecAvg (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecAvg (vms_vector * dest, vms_vector * src0, vms_vector * src1);
 
 
 //averages four vectors. returns ptr to dest
 //dest can equal any source
-vms_vector * VmVecAvg4 (vms_vector * dest, vms_vector * src0, vms_vector * src1, vms_vector * src2, vms_vector * src3);
+vms_vector *VmVecAvg4 (vms_vector * dest, vms_vector * src0, vms_vector * src1, vms_vector * src2, vms_vector * src3);
 
 
 //scales a vector in place.  returns ptr to vector
-vms_vector * VmVecScale (vms_vector * dest, fix s);
+vms_vector *VmVecScale (vms_vector * dest, fix s);
 
 
 //scales and copies a vector.  returns ptr to dest
-vms_vector * VmVecCopyScale (vms_vector * dest, vms_vector * src, fix s);
+vms_vector *VmVecCopyScale (vms_vector * dest, vms_vector * src, fix s);
 
 
 //scales a vector, adds it to another, and stores in a 3rd vector
 //dest = src1 + k * src2
-vms_vector * VmVecScaleAdd (vms_vector * dest, vms_vector * src1, vms_vector * src2, fix k);
+vms_vector *VmVecScaleAdd (vms_vector * dest, vms_vector * src1, vms_vector * src2, fix k);
 
 
 //scales a vector and adds it to another
 //dest += k * src
-vms_vector * VmVecScaleInc (vms_vector * dest, vms_vector * src, fix k);
+vms_vector *VmVecScaleInc (vms_vector * dest, vms_vector * src, fix k);
 
 
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d
-vms_vector * VmVecScaleFrac (vms_vector *dest, fix n, fix d);
+vms_vector *VmVecScaleFrac (vms_vector *dest, fix n, fix d);
 
 
 //returns magnitude of a vector
@@ -432,20 +442,20 @@ fix VmVecDotProd (vms_vector * v0, vms_vector * v1);
 
 //computes cross product of two vectors. returns ptr to dest
 //dest CANNOT equal either source
-vms_vector * VmVecCrossProd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecCrossProd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
 
 #define VmVecCross(dest,src0,src1) VmVecCrossProd((dest),(src0),(src1))
 
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-vms_vector * VmVecNormal (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
+vms_vector *VmVecNormal (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
 
 
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
-vms_vector * VmVecPerp (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
+vms_vector *VmVecPerp (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
 
 
 //computes the delta angle between two vectors. 
@@ -461,11 +471,11 @@ fixang VmVecDeltaAngNorm (vms_vector * v0, vms_vector * v1, vms_vector * fvec);
 
 
 //computes a matrix from a set of three angles.  returns ptr to matrix
-vms_matrix * VmAngles2Matrix (vms_matrix * m, vms_angvec * a);
+vms_matrix *VmAngles2Matrix (vms_matrix * m, vms_angvec * a);
 
 
 //computes a matrix from a forward vector and an angle
-vms_matrix * VmVecAng2Matrix (vms_matrix * m, vms_vector * v, fixang a);
+vms_matrix *VmVecAng2Matrix (vms_matrix * m, vms_vector * v, fixang a);
 
 
 //computes a matrix from one or more vectors. The forward vector is required,
@@ -473,41 +483,41 @@ vms_matrix * VmVecAng2Matrix (vms_matrix * m, vms_vector * v, fixang a);
 //the up vector is used.  If only the forward vector is passed, a bank of
 //zero is assumed
 //returns ptr to matrix
-vms_matrix * VmVector2Matrix (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
+vms_matrix *VmVector2Matrix (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
 
 
 //this version of vector_2_matrix requires that the vectors be more-or-less
 //normalized and close to perpendicular
-vms_matrix * VmVector2MatrixNorm (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
+vms_matrix *VmVector2MatrixNorm (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
 
 
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal either source
-vms_vector * VmVecRotate (vms_vector * dest, vms_vector * src, vms_matrix * m);
-
+vms_vector *VmVecRotate (vms_vector * dest, vms_vector * src, vms_matrix * m);
+fVector *VmVecRotatef (fVector * dest, fVector * src, float * m);
 
 //transpose a matrix in place. returns ptr to matrix
-vms_matrix * VmTransposeMatrix (vms_matrix * m);
+vms_matrix *VmTransposeMatrix (vms_matrix * m);
 
 #define VmTranspose(m) VmTransposeMatrix(m)
 
 //copy and transpose a matrix. returns ptr to matrix
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
-vms_matrix * VmCopyTransposeMatrix (vms_matrix * dest, vms_matrix * src);
+vms_matrix *VmCopyTransposeMatrix (vms_matrix * dest, vms_matrix * src);
 
 #define VmCopyTranspose(dest,src) VmCopyTransposeMatrix((dest),(src))
 
 //mulitply 2 matrices, fill in dest.  returns ptr to dest
 //dest CANNOT equal either source
-vms_matrix * VmMatMul (vms_matrix * dest, vms_matrix * src0, vms_matrix * src1);
+vms_matrix *VmMatMul (vms_matrix * dest, vms_matrix * src0, vms_matrix * src1);
 
 
 //extract angles from a matrix 
-vms_angvec * VmExtractAnglesMatrix (vms_angvec * a, vms_matrix * m);
+vms_angvec *VmExtractAnglesMatrix (vms_angvec * a, vms_matrix * m);
 
 
 //extract heading and pitch from a vector, assuming bank==0
-vms_angvec * VmExtractAnglesVector (vms_angvec * a, vms_vector * v);
+vms_angvec *VmExtractAnglesVector (vms_angvec * a, vms_vector * v);
 
 
 //compute the distance from a point to a plane.  takes the normalized normal

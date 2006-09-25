@@ -81,14 +81,14 @@ void toggle_headlight_active(void);
 void InitTextureBrightness (void);
 
 int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
-void RemoveOglLight (short nSegment, short nSide, short nObject);
+int RemoveOglLight (short nSegment, short nSide, short nObject);
 void AddOglLights (void);
 void RemoveOglLights (void);
 void SetOglLightPos (short nObject);
 void MoveOglLight (short nObject);
 void TransformOglLights ();
 short FindOglLight (short nSegment, short nSide, short nObject);
-void ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
+int ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
 void SetOglLightMaterial (short nSegment, short nSide, short nObject);
 
 #endif /* _LIGHTING_H */

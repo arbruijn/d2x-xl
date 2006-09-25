@@ -235,6 +235,13 @@ return fixquadadjust(&i);
 
 // ------------------------------------------------------------------------
 
+inline float VmVecDotf (fVector *v0, fVector *v1)
+{
+return v0->x * v1->x +  v0->y * v1->y + v0->z * v1->z;
+}
+
+// ------------------------------------------------------------------------
+
 fix vm_vec_dot3(fix x, fix y, fix z, vms_vector *v)
 {
 #if 1//def _WIN32
@@ -869,10 +876,32 @@ return m;
 //dest CANNOT equal source
 vms_vector *VmVecRotate (vms_vector *dest, vms_vector *src, vms_matrix *m)
 {
-Assert (dest != src);
+	vms_vector	h;
+
+if (src == dest) {
+	h = *src;
+	src = &h;
+	}
 dest->x = VmVecDot (src, &m->rvec);
 dest->y = VmVecDot (src, &m->uvec);
 dest->z = VmVecDot (src, &m->fvec);
+return dest;
+}
+
+// ------------------------------------------------------------------------
+//rotates a vector through a matrix. returns ptr to dest vector
+//dest CANNOT equal source
+fVector *VmVecRotatef (fVector *dest, fVector *src, float *m)
+{
+	fVector h;
+
+if (src == dest) {
+	h = *src;
+	src = &h;
+	}
+dest->x = VmVecDotf (src, (fVector *) m);
+dest->y = VmVecDotf (src, (fVector *) (m + 4));
+dest->z = VmVecDotf (src, (fVector *) (m + 8));
 return dest;
 }
 
