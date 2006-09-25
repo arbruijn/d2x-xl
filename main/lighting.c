@@ -981,8 +981,12 @@ if (objP->type == OBJ_PLAYER) {
 
 unsigned GetOglLightHandle (void)
 {
-if ((gameData.render.lights.ogl.nLights >= MAX_SEGMENTS) ||
-	 (gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS))
+	GLint	nMaxLights;
+
+if (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)
+	return 0xffffffff;
+glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
+if (gameData.render.lights.ogl.nLights >= nMaxLights)
 	return 0xffffffff;
 return (unsigned) (GL_LIGHT0 + gameData.render.lights.ogl.nLights);
 }
@@ -1139,12 +1143,14 @@ int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 {
 	tOglLight	*pl;
 	short			h, i;
+	GLint			nMaxLights;
 
 if (0 <= (h = UpdateOglLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f))
 	return -1;
-if ((gameData.render.lights.ogl.nLights >= GL_MAX_LIGHTS) ||
+glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
+if ((gameData.render.lights.ogl.nLights >= nMaxLights) ||
 	 (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)) {
 	gameStates.ogl.bHaveLights = 0;
 	return -1;	//too many lights
