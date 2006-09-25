@@ -204,8 +204,6 @@ extern int Cockpit_rear_view;
 #define PROGRESS_INCR		20
 #define PROGRESS_STEPS(_i)	(((_i) + PROGRESS_INCR - 1) / PROGRESS_INCR)
 
-#define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
-
 //------------------------------------------------------------------------------
 
 #define INIT_PROGRESS_LOOP(_i,_j,_max) \

@@ -1578,6 +1578,8 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 
 #define LOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
 
+#define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
+
 void D2SetCaption (void);
 
 #endif

@@ -835,23 +835,19 @@ save_p1 = *fq.p1;
 				phys_seglist[n_phys_segs++] = hit_info.seglist[i++];
 		}
 
-		#ifdef EXTRA_DEBUG
-		//if (objP == debugObjP)
-			//printf("   fate = %d, hit_pnt = %8x %8x %8x\n", fate, XYZ(&hit_info.hit_pnt));
-		#endif
-
 		ipos = hit_info.hit_pnt;
 		iseg = hit_info.hit_seg;
 		WallHitSide = hit_info.hit_side;
 		WallHitSeg = hit_info.hit_side_seg;
 		if (iseg==-1) {		//some sort of horrible error
-#ifndef NDEBUG
-#if TRACE				
+#ifdef _DEBUG
+#	if TRACE				
 			con_printf (1, "iseg==-1 in physics!  Object = %i, type = %i (%s)\n", 
 				OBJ_IDX (objP), objP->type, szObjectTypeNames[objP->type]);
+			fate = FindVectorIntersection(&fq, &hit_info);
 //			CBRK (1);
 //			goto iSegError;
-#endif
+#	endif
 #endif
 			//Int3();
 			//COMPUTE_SEGMENT_CENTER(&ipos, &gameData.segs.segments[objP->segnum]);

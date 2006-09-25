@@ -1409,6 +1409,16 @@ static CFILE *mineDataFile;
 
 static void LoadSegmentsPoll (int nItems, newmenu_item *m, int *key, int cItem)
 {
+	int	bLightmaps = 0, bShadows = 0;
+
+#if LIGHTMAPS
+if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk)
+	bLightmaps = 1;
+#endif
+#if SHADOWS
+bShadows = 1;
+#endif
+
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
 	LoadSegmentsCompiled (loadIdx, mineDataFile);
@@ -1437,17 +1447,7 @@ else if (loadOp == 3) {
 else if (loadOp == 4) {
 	LoadSideLightsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (gameStates.app.bD2XLevel) {
-		if (loadIdx >= gameData.segs.nSegments * 6) {
-			loadIdx = 0;
-			loadOp = 5;
-			}
-		}
-	else
-#if SHADOWS
-	if (loadIdx >= gameData.segs.nSegments)
-#endif
-		{
+	if (loadIdx >= (bLightmaps ? gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
 		loadIdx = 0;
 		loadOp = 5;
 		}
@@ -1485,25 +1485,30 @@ return;
 int LoadMineGaugeSize (void)
 {
 	int	i = 2 * PROGRESS_STEPS (gameData.segs.nSegments) + 2;
+	int	bLightmaps = 0, bShadows = 0;
 
-if (gameStates.app.bD2XLevel) {
-	i += PROGRESS_STEPS (gameData.segs.nVertices);
 #if LIGHTMAPS
 	if (gameStates.render.color.bLightMapsOk)
+		bLightmaps = 1;
+#endif
+#if SHADOWS
+	bShadows = 1;
+#endif
+if (gameStates.app.bD2XLevel) {
+	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
+	if (bLightmaps)
 		i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
+	else if (bShadows)
+		i += PROGRESS_STEPS (gameData.segs.nSegments);
 	else
 		i++;
-#else
-	i++;
-#endif
 	}
 else {
 	i++;
-#if SHADOWS
-	i += PROGRESS_STEPS (gameData.segs.nSegments);
-#else
-	i++;
-#endif
+	if (bShadows)
+		i += PROGRESS_STEPS (gameData.segs.nSegments);
+	else
+		i++;
 	}
 return i;
 }
@@ -1523,7 +1528,7 @@ NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize (), L
 int LoadMineSegmentsCompiled (CFILE *loadFile)
 {
 	short			i;
-	ubyte			compiled_version;
+	ubyte			nCompiledVersion;
 	ushort		temp_ushort = 0;
 	char			*psz;
 
@@ -1542,12 +1547,12 @@ for (i = 0; i < MAX_TEXTURES; i++)
 FuelCenReset ();
 InitTexColors ();
 //=============================== Reading part ==============================
-compiled_version = CFReadByte (loadFile);
-//Assert ( compiled_version==COMPILED_MINE_VERSION );
+nCompiledVersion = CFReadByte (loadFile);
+//Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
-if (compiled_version!=COMPILED_MINE_VERSION)
-	con_printf (CON_DEBUG, "compiled mine version=%i\n", compiled_version); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
-con_printf (CON_DEBUG, "   compiled mine version = %d\n", compiled_version);
+if (nCompiledVersion!=COMPILED_MINE_VERSION)
+	con_printf (CON_DEBUG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
+con_printf (CON_DEBUG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
 if (bNewFileFormat)
 	gameData.segs.nVertices = CFReadShort (loadFile);

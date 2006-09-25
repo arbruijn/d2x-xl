@@ -562,35 +562,31 @@ void FlashFrame()
 {
 	static fixang flash_ang=0;
 
-	if (!gameData.reactor.bDestroyed && !gameStates.gameplay.seismic.nMagnitude)
-		return;
-
-	if (gameStates.app.bEndLevelSequence)
-		return;
-
-	if (gameStates.ogl.palAdd.blue > 10 )		//whiting out
-		return;
-
+if (!gameData.reactor.bDestroyed && !gameStates.gameplay.seismic.nMagnitude)
+	return;
+if (gameStates.app.bEndLevelSequence)
+	return;
+if (gameStates.ogl.palAdd.blue > 10 )		//whiting out
+	return;
 //	flash_ang += fixmul(FLASH_CYCLE_RATE,gameData.app.xFrameTime);
-	if (gameStates.gameplay.seismic.nMagnitude) {
-		fix	added_flash;
+if (gameStates.gameplay.seismic.nMagnitude) {
+	fix	added_flash;
 
-		added_flash = abs(gameStates.gameplay.seismic.nMagnitude);
-		if (added_flash < F1_0)
-			added_flash *= 16;
+	added_flash = abs(gameStates.gameplay.seismic.nMagnitude);
+	if (added_flash < F1_0)
+		added_flash *= 16;
 
-		flash_ang += fixmul(gameStates.render.nFlashRate, fixmul(gameData.app.xFrameTime, added_flash+F1_0));
-		fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
-		gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
-	} else {
-		flash_ang += fixmul(gameStates.render.nFlashRate,gameData.app.xFrameTime);
-		fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
-		gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
-		if (gameStates.app.nDifficultyLevel == 0)
-			gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
+	flash_ang += fixmul(gameStates.render.nFlashRate, fixmul(gameData.app.xFrameTime, added_flash+F1_0));
+	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
-
-
+else {
+	flash_ang += fixmul(gameStates.render.nFlashRate,gameData.app.xFrameTime);
+	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
+	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
+	if (gameStates.app.nDifficultyLevel == 0)
+		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -840,7 +836,7 @@ if (IS_WALL (nWallNum)) {
 				c = gameData.walls.walls [nWallNum].cloak_value;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < GR_ACTUAL_FADE_LEVELS) {
-						gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - (float) c;
+						gameStates.render.grAlpha = (float) c;
 						G3DrawPolyAlpha (propsP->nv, pointlist, 0, 0, 0, -1);		//draw as flat poly
 						}
 					}
@@ -850,9 +846,9 @@ if (IS_WALL (nWallNum)) {
 					if (gameData.walls.walls [nWallNum].hps)
 						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
+						gameStates.render.grAlpha = (float) extraGameInfo [1].grWallTransparency;
 					else
-						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
+						gameStates.render.grAlpha = (float) extraGameInfo [0].grWallTransparency;
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
 						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1);	//draw as flat poly
 					}

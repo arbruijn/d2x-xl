@@ -2626,6 +2626,8 @@ if (fp) {
 			bm.bm_props.h = bm.bm_props.w * bmh [i].height;
 		else
 			bm.bm_props.h = bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4);
+		if (!(bm.bm_props.w * bm.bm_props.h))
+			continue;
 		if (offset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
 			break;
 		bm.avg_color = bmh [i].avg_color;
@@ -2634,7 +2636,6 @@ if (fp) {
 			break;
 		if (bTGA) {
 			int	nFrames = bm.bm_props.h / bm.bm_props.w;
-#if 1
 			tTgaHeader	h;
 
 			h.width = bm.bm_props.w;
@@ -2644,37 +2645,6 @@ if (fp) {
 				d_free (bm.bm_texBuf);
 				break;
 				}
-#else
-			int	b, j, h;
-
-			for (h = 0; h < nFrames; h++) {
-				j = bm.bm_props.w * bm.bm_props.w;
-				for (pc = (tRgbaColorb *) bm.bm_texBuf + h * j; j; j--, pc++) {
-					if (pc->alpha < 128) {
-						bm.bm_props.flags |= BM_FLAG_TRANSPARENT;
-						b = 1 << (h % 32);
-						bm.bm_data.alt.bm_transparentFrames [h / 32] |= b;
-//						if (bm.bm_supertranspFrames [h / 32] & b)
-//							break;
-						}
-					if ((pc->red == 120) && (pc->green == 88) && (pc->blue == 128)) {
-						if (bShaderMerge) {
-							pc->red =
-							pc->green =
-							pc->blue = 0;
-							pc->alpha = 1;
-							}
-						else
-							pc->alpha = 0;
-						bm.bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
-						b = 1 << (h % 32);
-						bm.bm_data.alt.bm_supertranspFrames [h / 32] |= b;
-//						if (bm.bm_transparentFrames [h / 32] & b)
-//							break;
-						}
-					}
-				}
-#endif
 			bm.bm_props.rowsize *= 4;
 			bm.bm_data.alt.bm_frameCount = (ubyte) nFrames;
 			if (nFrames > 1) {

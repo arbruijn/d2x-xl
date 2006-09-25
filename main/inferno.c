@@ -1695,7 +1695,7 @@ if (t = FindArg ("-progress_bars"))
 	gameStates.app.bProgressBars = NumArg (t, 1);
 if (t=FindArg ("-print_version"))
 	PrintVersion ();
-if (t=FindArg ("-alt_language"))
+if (t=FindArg ("-altLanguage"))
 	gameStates.app.bEnglish = (NumArg (t, 1) == 0);
 
 if (t=FindArg ("-auto_hogfile")) {

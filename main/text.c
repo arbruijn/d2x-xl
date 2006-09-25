@@ -84,7 +84,7 @@ static char rcsid[] = "$Id: text.c,v 1.11 2003/11/26 12:26:33 btb Exp $";
 #ifdef RELEASE
 #	define DUMP_TEXTS 0
 #else
-#	define DUMP_TEXTS 2
+#	define DUMP_TEXTS 0
 #endif
 
 #define SHAREWARE_TEXTSIZE  14677
@@ -2134,6 +2134,8 @@ void LoadGameTexts (void)
 {
 #if DUMP_TEXTS == 2
 	FILE *fTxt = fopen (gameStates.app.bEnglish ? "descent.tex.e" : "descent.tex.g", "wt");
+#elif DUMP_TEXTS == 3
+	FILE *fTxt = fopen ("d:\\temp\\basetex.h", "wt");
 #endif
 	CFILE  *tfile;
 	CFILE *ifile;
@@ -2143,7 +2145,7 @@ void LoadGameTexts (void)
 
 if ((i = FindArg ("-text")))
 	filename = Args [i+1];
-if (!(tfile = CFOpen (filename, gameFolders.szDataDir, "rb", 0))) {
+if (!(tfile = CFOpen (filename, gameFolders.szDataDir, "rt", 0))) {
 	filename= "descent.txb";
 	if (!(ifile = CFOpen (filename, gameFolders.szDataDir, "rb", 0))) {
 		Warning (TXT_NO_TEXTFILES);
@@ -2188,13 +2190,46 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 	if (!(psz = strchr (psz, '\n'))) {
 		if (i == 644) 
 			break;    /* older datafiles */
+#if DUMP_TEXTS 
+		fclose (fTxt);
+#endif
 		Error ("Not enough strings in text file - expecting %d, found %d\n", N_BASE_TEXTS, i);
 		}
 	*psz++ = 0;
 	if (!bBinary && ((*ph == ';') || ((*ph == '/') && ph [1] == '/')))
 		continue;
-	if (i < N_BASE_TEXTS)
+	if (i < N_BASE_TEXTS) {
 		baseGameTexts [h] = ph;
+#if DUMP_TEXTS == 3
+		{
+		char s [200], *pi, *pj;
+		if (h == 364)
+			h = h;
+		strcpy (s, d2GameTexts [h]);
+		fprintf (fTxt, "\t{\"%s\", ", ph);
+		if (strlen (ph) > 50)
+			fprintf (fTxt, "\n\t ");
+		fprintf (fTxt, "\"");
+		for (pi = pj = s; *pj; pj++) {
+			switch (*pj) {
+				case '\t':
+					*pj = '\0';
+					fprintf (fTxt, "%s\\t", pi);
+					*pj = '\t';
+					pi = pj + 1;
+					break;
+				case '\n':
+					*pj = '\0';
+					fprintf (fTxt, "%s\\n", pi);
+					*pj = '\n';
+					pi = pj + 1;
+					break;
+				}
+			}
+		fprintf (fTxt, "%s\"},\n", pi);
+		}
+#endif
+		}
 	else if (gameStates.app.bEnglish)
 		break;
 	else {
@@ -2238,7 +2273,7 @@ if (i == 644) {
 	baseGameTexts[647] = "R1";
 	baseGameTexts[648] = "Y1";
 	}
-#if DUMP_TEXTS == 2
+#if DUMP_TEXTS 
 fclose (fTxt);
 #endif
 InitGameTexts ();

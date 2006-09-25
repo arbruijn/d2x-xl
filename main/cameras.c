@@ -252,7 +252,7 @@ return 1;
 
 int CreateCameras (void)
 {
-	int		i, j, k;
+	int		h, i, j, k;
 	ubyte		t;
 	wall		*wallP;
 	object	*objP;
@@ -280,7 +280,7 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP+
 	}
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	j = gameData.trigs.firstObjTrigger [i];
-	for (; j >= 0; j = gameData.trigs.objTriggerRefs [j].next) {
+	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h; j = gameData.trigs.objTriggerRefs [j].next, h--) {
 		triggerP = gameData.trigs.objTriggers + j;
 		if (triggerP->type == TT_CAMERA) {
 			for (k = 0; k < triggerP->num_links; k++)

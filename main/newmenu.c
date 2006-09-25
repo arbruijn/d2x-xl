@@ -817,7 +817,7 @@ if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || 
 	else
 #endif
 		GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 80);
-	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 3;
+	gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 3.0f;
 	GrURect (x1, y1, x2, y2);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);

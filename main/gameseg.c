@@ -856,149 +856,124 @@ return masks;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each side, or zero if not behind
 //only gets centermask, and assumes zero rad
-ubyte GetSideDists (vms_vector *checkp, int segnum, fix *side_dists)
+ubyte GetSideDists (vms_vector *checkp, int segnum, fix *xSideDists)
 {
 	int			sn, faceBit, sideBit;
 	ubyte			mask;
 	int			nFaces;
 	int			vertexList [6];
-	segment		*seg;
+	segment		*segP;
+	side			*sideP;
 
-	Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
+Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
+if (segnum == -1)
+	Error ("segnum == -1 in get_seg_dists ()");
 
-	if (segnum == -1)
-		Error ("segnum == -1 in get_seg_dists ()");
-
-	seg = gameData.segs.segments + segnum;
-	//check point against each side of segment. return bitmask
-	mask = 0;
-	for (sn=0, faceBit=sideBit=1;sn<6;sn++, sideBit<<=1) {
-		#ifndef COMPACT_SEGS
-		side	*s = seg->sides + sn;
-		#endif
+segP = gameData.segs.segments + segnum;
+sideP = segP->sides;
+//check point against each side of segment. return bitmask
+mask = 0;
+for (sn = 0, faceBit = sideBit = 1;sn < 6; sn++, sideBit <<= 1, sideP++) {
 		int	bSidePokesOut;
 		int	fn;
 
-		side_dists [sn] = 0;
+	xSideDists [sn] = 0;
+	// Get number of faces on this side, and at vertexList, store vertices.
+	//	If one face, then vertexList indicates a quadrilateral.
+	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
+	CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+	//ok...this is important.  If a side has 2 faces, we need to know if
+	//those faces form a concave or convex side.  If the side pokes out, 
+	//then a point is on the back of the side if it is behind BOTH faces, 
+	//but if the side pokes in, a point is on the back if behind EITHER face.
 
-		// Get number of faces on this side, and at vertexList, store vertices.
-		//	If one face, then vertexList indicates a quadrilateral.
-		//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-		CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
-
-		//ok...this is important.  If a side has 2 faces, we need to know if
-		//those faces form a concave or convex side.  If the side pokes out, 
-		//then a point is on the back of the side if it is behind BOTH faces, 
-		//but if the side pokes in, a point is on the back if behind EITHER face.
-
-		if (nFaces == 2) {
-			fix	dist;
-			int	nCenterCount;
-			int	nVertex;
-			#ifdef COMPACT_SEGS
-			vms_vector normals [2];
-			#endif
-
-			nVertex = min (vertexList [0], vertexList [2]);
-#ifdef _DEBUG
-			if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-				CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+	if (nFaces == 2) {
+		fix	xDist;
+		int	nCenterCount;
+		int	nVertex;
+#ifdef COMPACT_SEGS
+		vms_vector normals [2];
 #endif
-			#ifdef COMPACT_SEGS
-			GetSideNormals (seg, sn, normals, normals + 1);
-			#endif
-
-			if (vertexList [4] < vertexList [1])
-				#ifdef COMPACT_SEGS
-					dist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
-				#else
-					dist = VmDistToPlane (gameData.segs.vertices + vertexList [4], s->normals, gameData.segs.vertices + nVertex);
-				#endif
-			else
-				#ifdef COMPACT_SEGS
-					dist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
-				#else
-					dist = VmDistToPlane (gameData.segs.vertices + vertexList [1], s->normals + 1, gameData.segs.vertices + nVertex);
-				#endif
-
-			bSidePokesOut = (dist > PLANE_DIST_TOLERANCE);
-
-			nCenterCount = 0;
-
-			for (fn=0;fn<2;fn++, faceBit<<=1) {
-
-				#ifdef COMPACT_SEGS
-					dist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
-				#else
-					dist = VmDistToPlane (checkp, s->normals + fn, gameData.segs.vertices + nVertex);
-				#endif
-
-				if (dist < -PLANE_DIST_TOLERANCE) {	//in front of face
-					nCenterCount++;
-					side_dists [sn] += dist;
-				}
-
-			}
-
-			if (!bSidePokesOut) {		//must be behind both faces
-
-				if (nCenterCount == 2) {
-					mask |= sideBit;
-					side_dists [sn] /= 2;		//get average
-				}
-					
-
-			}
-			else {							//must be behind at least one face
-
-				if (nCenterCount) {
-					mask |= sideBit;
-					if (nCenterCount == 2)
-						side_dists [sn] /= 2;		//get average
-
-				}
-			}
-
-
-		}
-		else {				//only one face on this side
-			fix dist;
-			int i, nVertex;
-			#ifdef COMPACT_SEGS			
-			vms_vector normal;
-			#endif
-
-
-			//use lowest point number
-
-			nVertex = vertexList [0];
-			for (i=1;i<4;i++)
-				if (vertexList [i] < nVertex)
-					nVertex = vertexList [i];
+		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
-			if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-				CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
+			CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
 #endif
-
-			#ifdef COMPACT_SEGS
-				GetSideNormal (seg, sn, 0, &normal);
-				dist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
-			#else
-				dist = VmDistToPlane (checkp, &s->normals [0], gameData.segs.vertices + nVertex);
-			#endif
-	
-			if (dist < -PLANE_DIST_TOLERANCE) {
+#ifdef COMPACT_SEGS
+		GetSideNormals (segP, sn, normals, normals + 1);
+#endif
+		if (vertexList [4] < vertexList [1])
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+#endif
+		else
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+#endif
+		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
+		nCenterCount = 0;
+		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (checkp, sideP->normals + fn, gameData.segs.vertices + nVertex);
+#endif
+			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
+				nCenterCount++;
+				xSideDists [sn] += xDist;
+				}
+			}
+		if (!bSidePokesOut) {		//must be behind both faces
+			if (nCenterCount == 2) {
 				mask |= sideBit;
-				side_dists [sn] = dist;
+				xSideDists [sn] /= 2;		//get average
+				}
 			}
-	
-			faceBit <<= 2;
+		else {							//must be behind at least one face
+			if (nCenterCount) {
+				mask |= sideBit;
+				if (nCenterCount == 2)
+					xSideDists [sn] /= 2;		//get average
+				}
+			}
 		}
+	else {				//only one face on this side
+		fix xDist;
+		int nVertex;
+#ifdef COMPACT_SEGS			
+		vms_vector normal;
+#endif
+		//use lowest point number
+		nVertex = vertexList [0];
+		if (nVertex > vertexList [1])
+			nVertex = vertexList [1];
+		if (nVertex > vertexList [2])
+			nVertex = vertexList [2];
+		if (nVertex > vertexList [3])
+			nVertex = vertexList [3];
+#ifdef _DEBUG
+		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
+			CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+#endif
 
+#ifdef COMPACT_SEGS
+		GetSideNormal (segP, sn, 0, &normal);
+		xDist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
+#else
+		xDist = VmDistToPlane (checkp, &sideP->normals [0], gameData.segs.vertices + nVertex);
+#endif
+		if (xDist < -PLANE_DIST_TOLERANCE) {
+			mask |= sideBit;
+			xSideDists [sn] = xDist;
+			}
+		faceBit <<= 2;
+		}
 	}
-
-	return mask;
-
+return mask;
 }
 
 // -------------------------------------------------------------------------------
@@ -1173,7 +1148,7 @@ int TraceSegs (vms_vector *p0, int oldsegnum)
 {
 	int centermask, biggest_side;
 	segment *seg;
-	fix side_dists [6];
+	fix xSideDists [6];
 	fix biggest_val;
 	int sidenum, bit, check = -1;
 	static int Trace_SegCalls = 0;
@@ -1193,22 +1168,23 @@ if (visited [oldsegnum] || (gameData.segs.segment2s [oldsegnum].special == SEGME
 	return -1;
 Trace_SegCalls++;
 visited [oldsegnum] = 1;
-centermask = GetSideDists (p0, oldsegnum, side_dists);		//check old segment
+centermask = GetSideDists (p0, oldsegnum, xSideDists);		//check old segment
 if (centermask == 0) {		//we're in the old segment
 	Trace_SegCalls--;
 	return oldsegnum;		//..say so
 	}
 for (;;) {
 	seg = gameData.segs.segments+oldsegnum;
-	biggest_side = -1; biggest_val = 0;
+	biggest_side = -1; 
+	biggest_val = 0;
 	for (sidenum = 0, bit = 1; sidenum < 6; sidenum ++, bit <<= 1)
-		if ((centermask&bit) && (seg->children [sidenum]>-1) && (side_dists [sidenum] < biggest_val)) {
-			biggest_val = side_dists [sidenum];
+		if ((centermask & bit) && (seg->children [sidenum] > -1) && (xSideDists [sidenum] < biggest_val)) {
+			biggest_val = xSideDists [sidenum];
 			biggest_side = sidenum;
 			}
 	if (biggest_side == -1)
 		break;
-	side_dists [biggest_side] = 0;
+	xSideDists [biggest_side] = 0;
 	check = TraceSegs (p0, seg->children [biggest_side]);	//trace into adjacent segment
 	if (check >= 0)
 		break;
@@ -1786,34 +1762,6 @@ return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
 
 // -------------------------------------------------------------------------------
 
-int GetVertsForNormalTri (int v0, int v1, int v2, int *pv0, int *pv1, int *pv2)
-{
-	int	i, j, t;
-	int	v [3], w [3] = {0, 1, 2};
-
-//	w is a list that shows how things got scrambled so we know if our normal is pointing backwards
-
-v [0] = v0;
-v [1] = v1;
-v [2] = v2;
-// bubble sort v in reverse order (largest first)
-for (i = 1; i < 3; i++)
-	for (j = 0; j < i; j++)
-		if (v [j] > v [i]) {
-			t = v [j]; v [j] = v [i]; v [i] = t;
-			t = w [j]; w [j] = w [i]; w [i] = t;
-			}
-
-Assert ((v [0] < v [1]) && (v [1] < v [2]));
-*pv0 = v [0];
-*pv1 = v [1];
-*pv2 = v [2];
-//	Now, if for any w [i] & w [i+1]: w [i+1] = (w [i]+3)%4, then must flip normal
-return ((((w [0] + 2) % 3) == w [1]) || (((w [1] + 2) % 3) == w [2]));
-}
-
-// -------------------------------------------------------------------------------
-
 void AddSideAsTwoTriangles (segment *segP, int sidenum)
 {
 	vms_vector	norm;
@@ -1883,7 +1831,7 @@ else {
 		sideP->type = SIDE_IS_TRI_02;
 #ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation type.
-		bFlip = GetVertsForNormalTri (v [0], v [1], v [2], vSorted, vSorted + 1, vSorted + 2);
+		bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		VmVecNormal (&norm, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
@@ -1891,7 +1839,7 @@ else {
 		if (bFlip)
 			VmVecNegate (&norm);
 		sideP->normals [0] = norm;
-		bFlip = GetVertsForNormalTri (v [0], v [2], v [3], vSorted, vSorted + 1, vSorted + 2);
+		bFlip = GetVertsForNormal (v [0], v [2], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		VmVecNormal (&norm, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
@@ -1905,7 +1853,7 @@ else {
 		sideP->type = SIDE_IS_TRI_13;
 #ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation type.
-		bFlip = GetVertsForNormalTri (v [0], v [1], v [3], vSorted, vSorted + 1, vSorted + 2);
+		bFlip = GetVertsForNormal (v [0], v [1], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		VmVecNormal (&norm, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
@@ -1913,7 +1861,7 @@ else {
 		if (bFlip)
 			VmVecNegate (&norm);
 		sideP->normals [0] = norm;
-		GetVertsForNormalTri (v [1], v [2], v [3], vSorted, vSorted + 1, vSorted + 2);
+		bFlip = GetVertsForNormal (v [1], v [2], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 		VmVecNormal (&norm, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
@@ -1948,12 +1896,12 @@ void CreateWallsOnSide (segment *segP, int sidenum)
 	int	v0, v1, v2, v3;
 	vms_vector vn;
 	fix	xDistToPlane;
+	sbyte *s2v = sideToVerts [sidenum];
 
-	v0 = segP->verts [sideToVerts [sidenum][0]];
-	v1 = segP->verts [sideToVerts [sidenum][1]];
-	v2 = segP->verts [sideToVerts [sidenum][2]];
-	v3 = segP->verts [sideToVerts [sidenum][3]];
-
+	v0 = segP->verts [s2v [0]];
+	v1 = segP->verts [s2v [1]];
+	v2 = segP->verts [s2v [2]];
+	v3 = segP->verts [s2v [3]];
 	bFlip = GetVertsForNormal (v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3);
 	VmVecNormal (&vn, gameData.segs.vertices + vm0, gameData.segs.vertices + vm1, gameData.segs.vertices + vm2);
 	xDistToPlane = abs (VmDistToPlane (gameData.segs.vertices + vm3, &vn, gameData.segs.vertices + vm0));
@@ -1997,12 +1945,12 @@ void CreateWallsOnSide (segment *segP, int sidenum)
 #endif
 			s0 = sign (dist0);
 			s1 = sign (dist1);
-			if (s0 == 0 || s1 == 0 || s0!=s1) {
+			if (s0 == 0 || s1 == 0 || s0 != s1) {
 				segP->sides [sidenum].type = SIDE_IS_QUAD; 	//detriangulate!
-				#ifndef COMPACT_SEGS
+#ifndef COMPACT_SEGS
 				segP->sides [sidenum].normals [0] = vn;
 				segP->sides [sidenum].normals [1] = vn;
-				#endif
+#endif
 			}
 		}
 	}

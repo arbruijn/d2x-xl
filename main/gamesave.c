@@ -1415,13 +1415,13 @@ i = CFTell (LoadFile);
 		if (gameTopFileInfo.fileinfo_version >= 33) {
 			gameData.trigs.nObjTriggers = CFReadInt (LoadFile);
 			if (gameData.trigs.nObjTriggers) {
-				for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-					TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
 				for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
 					gameData.trigs.objTriggerRefs [i].prev = CFReadShort (LoadFile);
 					gameData.trigs.objTriggerRefs [i].next = CFReadShort (LoadFile);
 					gameData.trigs.objTriggerRefs [i].objnum = CFReadShort (LoadFile);
 					}
+				for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+					TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
 				}
 			i = CFTell (LoadFile);
 			for (i = 0; i < MAX_OBJECTS_D2X; i++)
