@@ -66,8 +66,8 @@ static grs_bitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
 static grs_bitmap *bmpBumpMaps [2] = {NULL, NULL};
 
 static char *szParticleImg [2][3] = {
-	{"blksmoke.tga", "whtsmoke.tga", "whtsmoke.tga"},
-	{"blksmoke.tga", "whtsmoke.tga", "whtsmoke.tga"}
+	{"blksmoke.tga", "grysmoke.tga", "whtsmoke.tga"},
+	{"blksmoke.tga", "grysmoke.tga", "whtsmoke.tga"}
 #if 0
 	{"blakpart.tga", "graypart.tga", "whitpart.tga"},
 	{"blakpart.tga", "graypart.tga", "whitpart.tga"}
@@ -89,7 +89,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		128 //191
+#define SMOKE_START_ALPHA		191 //128 //191
 
 //	-----------------------------------------------------------------------------
 
@@ -385,7 +385,7 @@ if ((1000 / PARTICLE_FPS) <= (t = nCurTime - pParticle->nMoved)) {
 			decay = 1.0 - (double) t / (double) pParticle->nTTL;
 			pParticle->glColor.a *= decay;
 			HUDMessage (0, "%1.5f", decay);
-			if (!gameStates.render.bPointSprites) {
+			if (0 && !gameStates.render.bPointSprites) {
 				pParticle->nWidth = (short) ((double) pParticle->nWidth * decay);
 				pParticle->nHeight = (short) ((double) pParticle->nHeight * decay);
 				}
@@ -568,11 +568,10 @@ if (nFrames > 1) {
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
-#if 0
-glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-#else
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
+if (nType)
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+else
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};

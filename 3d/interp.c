@@ -126,7 +126,7 @@ void RotatePointList (g3s_point *dest, vms_vector *src, int n, int o)
 
 dest += o;
 while (n--) {
-	if (gameStates.render.bGlTransform) {
+	if (gameStates.ogl.bUseTransform) {
 		pfv->x = (float) src->x / 65536.0f;
 		pfv->y = (float) src->y / 65536.0f;
 		pfv->z = -(float) src->z / 65536.0f;

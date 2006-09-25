@@ -89,7 +89,7 @@ else
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset   
 void G3StartInstanceMatrix(vms_vector *pos, vms_matrix *orient)
 {
-if (gameStates.render.bGlTransform) {
+if (gameStates.ogl.bUseTransform) {
 	vms_vector	h;
 
 	glMatrixMode (GL_MODELVIEW);
@@ -155,7 +155,7 @@ G3StartInstanceMatrix (pos, &tm);
 //pops the old context
 void G3DoneInstance()
 {
-if (gameStates.render.bGlTransform) {
+if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}

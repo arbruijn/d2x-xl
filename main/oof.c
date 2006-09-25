@@ -2118,7 +2118,7 @@ pv = pso->pvRotVerts;
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	pfv = pf->pVerts;
 #if 0
-	if (!(gameStates.render.bGlTransform || OOF_FrontFace (pso, pf)))
+	if (!(gameStates.ogl.bUseTransform || OOF_FrontFace (pso, pf)))
 		continue;
 #endif
 	if (pf->bTextured) {
@@ -2175,7 +2175,7 @@ inline void OOF_RotVert (tOOF_vector *prv, tOOF_vector *pv, tOOF_vector *vo)
 {
 	tOOF_vector	v;
 
-if (gameStates.render.bGlTransform)
+if (gameStates.ogl.bUseTransform)
 	OOF_VecAdd (prv, pv, vo);
 else {
 	OOF_VecSub (&v, pv, &vPos);
@@ -2237,7 +2237,7 @@ int OOF_RenderModel (tOOF_object *po, vms_vector *pv, vms_matrix *pm, float *fLi
 	tOOF_vector		vo = {0.0f,0.0f,0.0f};
 
 G3StartInstanceMatrix (pv, pm);
-if (!gameStates.render.bGlTransform)
+if (!gameStates.ogl.bUseTransform)
 	OOF_MatVms2Oof (&mView, &viewInfo.view);
 OOF_VecVms2Oof (&vPos, &viewInfo.position);
 if (IsMultiGame && netGame.BrightPlayers)

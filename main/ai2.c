@@ -970,7 +970,7 @@ int lead_player(object *objP, vms_vector *fire_point, vms_vector *believed_playe
 		if (gun_num == 0)
 			weapon_type = robptr->weapon_type2;
 
-	wptr = &gameData.weapons.info[weapon_type];
+	wptr = gameData.weapons.info + weapon_type;
 	max_weapon_speed = wptr->speed[gameStates.app.nDifficultyLevel];
 	if (max_weapon_speed < F1_0)
 		return 0;

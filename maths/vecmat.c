@@ -61,15 +61,15 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 
 #ifndef ASM_VECMAT
 vms_vector vmd_zero_vector = {0, 0, 0};
-vms_matrix vmdIdentityMatrix = { { f1_0, 0, 0 }, 
-                                   { 0, f1_0, 0 }, 
-                                   { 0, 0, f1_0 } };
+vms_matrix vmdIdentityMatrix = {{f1_0, 0, 0}, 
+                                {0, f1_0, 0}, 
+                                {0, 0, f1_0}};
 
 // ------------------------------------------------------------------------
 //adds two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecInc() if so
 #if !INLINE_VEC_ADD
-vms_vector *VmVecAdd(vms_vector *dest, vms_vector *src0, vms_vector *src1)
+vms_vector *VmVecAdd (vms_vector *dest, vms_vector *src0, vms_vector *src1)
 {
 dest->x = src0->x + src1->x;
 dest->y = src0->y + src1->y;
@@ -91,7 +91,7 @@ return dest;
 // ------------------------------------------------------------------------
 //adds one vector to another. returns ptr to dest
 //dest can equal source
-vms_vector *VmVecInc(vms_vector *dest, vms_vector *src)
+vms_vector *VmVecInc (vms_vector *dest, vms_vector *src)
 {
 dest->x += src->x;
 dest->y += src->y;
@@ -184,13 +184,13 @@ vms_vector *VmVecScaleFrac (vms_vector *dest, fix n, fix d)
 {
 #if 1 // DPH: Kludge: this was overflowing a lot, so I made it use the FPU.
 double nd = f2fl(n) / f2fl(d);
-dest->x = fl2f(f2fl(dest->x) * nd);
-dest->y = fl2f(f2fl(dest->y) * nd);
-dest->z = fl2f(f2fl(dest->z) * nd);
+dest->x = fl2f (f2fl (dest->x) * nd);
+dest->y = fl2f (f2fl (dest->y) * nd);
+dest->z = fl2f (f2fl (dest->z) * nd);
 #else
-dest->x = fixmuldiv(dest->x, n, d);
-dest->y = fixmuldiv(dest->y, n, d);
-dest->z = fixmuldiv(dest->z, n, d);
+dest->x = fixmuldiv (src->x, n, d);
+dest->y = fixmuldiv (src->y, n, d);
+dest->z = fixmuldiv (src->z, n, d);
 #endif
 return dest;
 }

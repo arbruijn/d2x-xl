@@ -206,6 +206,27 @@ int BMInit ()
 
 //------------------------------------------------------------------------------
 
+void BMSetAfterburnerSizes (void)
+{
+	sbyte	nSize = gameData.weapons.info [MERCURY_ID].afterburner_size;
+	
+gameData.weapons.info [CONCUSSION_ID].afterburner_size =
+gameData.weapons.info [HOMING_ID].afterburner_size =
+gameData.weapons.info [REGULAR_MECH_MISS].afterburner_size =
+gameData.weapons.info [FLASH_ID].afterburner_size =
+gameData.weapons.info [GUIDEDMISS_ID].afterburner_size =
+gameData.weapons.info [ROBOT_MERCURY_ID].afterburner_size = nSize;
+gameData.weapons.info [SUPER_MECH_MISS].afterburner_size =
+gameData.weapons.info [SMART_ID].afterburner_size = 2 * nSize;
+gameData.weapons.info [MEGA_ID].afterburner_size =
+gameData.weapons.info [ROBOT_MEGA_ID].afterburner_size =
+gameData.weapons.info [EARTHSHAKER_MEGA_ID].afterburner_size = 3 * nSize;
+gameData.weapons.info [EARTHSHAKER_ID].afterburner_size =
+gameData.weapons.info [ROBOT_EARTHSHAKER_ID].afterburner_size = 4 * nSize;
+}
+
+//------------------------------------------------------------------------------
+
 void BMReadAll (CFILE * fp)
 {
 	int i,t;
@@ -253,6 +274,7 @@ void BMReadAll (CFILE * fp)
 	gameData.weapons.nTypes [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
 	WeaponInfoReadN (gameData.weapons.info, gameData.weapons.nTypes [0], fp, gameData.pig.tex.nHamFileVersion);
+	BMSetAfterburnerSizes ();
 
 	gameData.objs.pwrUp.nTypes = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);

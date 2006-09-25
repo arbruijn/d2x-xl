@@ -583,7 +583,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 	OglColor4sf (1.0f, 1.0f, 1.0f, s);
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
@@ -817,9 +817,15 @@ void G3Normal (g3s_point **pointlist, vms_vector *pvNormal)
 {
 vms_vector	vNormal;
 
-#if 0
-if (gameStates.render.bGlTransform && pvNormal)
-	glNormal3f ((GLfloat)- f2fl (pvNormal->x), (GLfloat) -f2fl (pvNormal->y), (GLfloat) -f2fl (pvNormal->z));
+#if 1
+if (pvNormal) {
+	if (gameStates.ogl.bUseTransform)
+		glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
+	else {
+		G3TransformPoint (&vNormal, pvNormal);
+		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+		}
+	}
 else 
 #endif
 	{
@@ -836,7 +842,7 @@ else
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
-		if (gameStates.render.bGlTransform) {
+		if (gameStates.ogl.bUseTransform) {
 			fVector	vNormal;
 			OOF_VecNormal ((tOOF_vector *) &vNormal, 
 								(tOOF_vector *) gameData.segs.fVertices + v [0], 
@@ -1085,7 +1091,7 @@ else
 #	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
-		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)
+		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 			G3Normal (pointlist, pvNormal);
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
@@ -1492,7 +1498,7 @@ gameStates.render.glFOV = fov;
 #if 0
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
-if (gameStates.render.bGlTransform)
+if (gameStates.ogl.bUseTransform)
 	gameStates.render.glAspect = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
@@ -1534,7 +1540,7 @@ if (gameStates.render.nShadowPass) {
 			glDisable (GL_CULL_FACE);		
 			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
-		if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLights) {	//for optional hardware lighting
+		if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLighting) {	//for optional hardware lighting
 			glEnable (GL_LIGHTING);
 			glShadeModel (GL_SMOOTH);
 			glColorMaterial (GL_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -1678,7 +1684,7 @@ else
 			gameOpts->legacy.bZBuf = 1;
 		}	
 #endif
-	if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)	{//for optional hardware lighting
+	if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)	{//for optional hardware lighting
 		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glEnable (GL_LIGHTING);
 		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
@@ -1725,7 +1731,7 @@ glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);
 glDisable (GL_CULL_FACE);
 glDisable (GL_STENCIL_TEST);
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
 	}
@@ -1754,7 +1760,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 
 void OglSetupTransform (void)
 {
-if (gameStates.render.bGlTransform) {
+if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
@@ -1768,7 +1774,7 @@ if (gameStates.render.bGlTransform) {
 
 void OglResetTransform (void)
 {
-if (gameStates.render.bGlTransform)
+if (gameStates.ogl.bUseTransform)
 	glPopMatrix ();
 }
 

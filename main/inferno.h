@@ -178,7 +178,7 @@ typedef struct tRenderOptions {
 typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
-	int bUseLights;
+	int bUseLighting;
 	int bRgbaFormat;
 	int bIntensity4;
 	int bLuminance4Alpha4;
@@ -374,6 +374,7 @@ typedef struct tOglStates {
 	int bShadersOk;
 	int bFullScreen;
 	int bLastFullScreen;
+	int bUseTransform;
 	int bBrightness;
 	int bDoPalStep;
 	int nColorBits;
@@ -463,7 +464,6 @@ typedef struct tRenderStates {
 	int bOutsideMine;
 	int bExtExplPlaying;
 	int bDoAppearanceEffect;
-	int bGlTransform;
 	int bGlLighting;
 	int bRearView;
 	int nInterpolationMethod;

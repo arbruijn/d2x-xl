@@ -1596,7 +1596,7 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 ResetObjects (1);		//one object, the player
-if (gameOpts->ogl.bUseLights)
+if (gameOpts->ogl.bUseLighting)
 	AddOglLights ();
 #if SHADOWS
 ComputeNearestSegmentLights ();

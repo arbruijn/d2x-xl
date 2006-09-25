@@ -1593,6 +1593,11 @@ void EvalOglArgs (void)
 {
 	int	t;
 
+if ((t = FindArg ("-gl_lighting"))) {
+	gameOpts->ogl.bUseLighting = NumArg (t, 1);
+	if (gameOpts->ogl.bUseLighting)
+		gameStates.ogl.bUseTransform = 1;
+	}
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
 if ((t = FindArg("-gl_16bittextures")))
@@ -1667,8 +1672,10 @@ if (t = FindArg ("-mathformat"))
 if (t = FindArg ("-render_opt"))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
-if (t = FindArg ("-gl_transform"))
-	gameStates.render.bGlTransform = NumArg (t, 1);
+if (gameOpts->ogl.bUseLighting)
+	gameStates.ogl.bUseTransform = 1;
+else if (t = FindArg ("-gl_transform"))
+	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
 }
 
@@ -2116,7 +2123,7 @@ else {
 void InitOglOptions (int i)
 {
 if (i) {
-	gameOptions [1].ogl.bUseLights = 0;
+	gameOptions [1].ogl.bUseLighting = 0;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bRgbaFormat = 4;
 	gameOptions [1].ogl.bIntensity4 = 1;
@@ -2135,9 +2142,9 @@ if (i) {
 	}
 else {
 #ifdef _DEBUG
-	gameOptions [0].ogl.bUseLights = 0;
+	gameOptions [0].ogl.bUseLighting = 0;
 #else
-	gameOptions [0].ogl.bUseLights = 0;
+	gameOptions [0].ogl.bUseLighting = 0;
 #endif
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bRgbaFormat = 4;
@@ -2291,6 +2298,7 @@ gameStates.ogl.bVoodooHack = 0;
 gameStates.ogl.bBrightness = 0;
 gameStates.ogl.nContrast = 8;
 gameStates.ogl.bFullScreen = 0;
+gameStates.ogl.bUseTransform = 0;
 gameStates.ogl.bDoPalStep = 0;
 gameStates.ogl.nColorBits = 32;
 gameStates.ogl.nDepthBits = 24;
@@ -2345,7 +2353,6 @@ gameStates.render.nFlashRate = FLASH_CYCLE_RATE;
 gameStates.render.bOutsideMine = 0;
 gameStates.render.bExtExplPlaying = 0;
 gameStates.render.bDoAppearanceEffect = 0;
-gameStates.render.bGlTransform = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 gameStates.render.glAspect = 1.0f;
 gameStates.render.bDetriangulation = 0;

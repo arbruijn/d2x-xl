@@ -373,7 +373,7 @@ void ApplyLight(
 	int	vv, bUseColor, bForceColor;
 	object *objP = gameData.objs.objects + objnum;
 
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == 5)
 		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 	return;
@@ -1024,10 +1024,12 @@ glLightf (pl->handle, GL_SPOT_EXPONENT, 0.0f);
 
 void SetOglLightPos (short nObject)
 {
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	int	nLight = gameData.render.lights.ogl.owners [nObject];
 
-if (nLight >= 0)
-	gameData.render.lights.ogl.lights [nLight].vPos = gameData.objs.objects [nObject].pos;
+	if (nLight >= 0)
+		gameData.render.lights.ogl.lights [nLight].vPos = gameData.objs.objects [nObject].pos;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1103,11 +1105,27 @@ if (pl->handle == 0xffffffff)
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].pos;
-else
+else {
+#if 0
+	vms_vector	vOffs;
+	side			*sideP = gameData.segs.segments [nSegment].sides + nSide;
+#endif
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
+#if 0
+	VmVecScaleAdd (&vOffs, sideP->normals, sideP->normals + 1, 2);
+	VmVecScaleFrac (&vOffs, 1, 100);
+	VmVecInc (&pl->vPos, &vOffs);
+#endif
+	}
+#if 1
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
-pl->fAttenuation [1] = pl->fAttenuation [0] / 10.0f; //0.01f;
-pl->fAttenuation [2] = pl->fAttenuation [1] / 10.0f; //0.004f;
+pl->fAttenuation [1] = pl->fAttenuation [0] / 25.0f; //0.01f;
+pl->fAttenuation [2] = pl->fAttenuation [1] / 25.0f; //0.004f;
+#else
+pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
+pl->fAttenuation [1] = f2fl (xBrightness) / 10.0f;
+pl->fAttenuation [2] = f2fl (xBrightness) / 100.0f;
+#endif
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
@@ -1198,8 +1216,7 @@ memset (gameData.render.lights.ogl.bUsedHandles, 0, sizeof (gameData.render.ligh
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		if (i != 16)
-			continue;
+		if (i != 68) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1232,7 +1249,7 @@ void TransformOglLights (void)
 OglSetupTransform ();
 fPos [3] = 1.0f;
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
-	if (gameStates.render.bGlTransform)
+	if (gameStates.ogl.bUseTransform)
 		vPos = pl->vPos;
 	else
 		G3TransformPoint (&vPos, &pl->vPos);

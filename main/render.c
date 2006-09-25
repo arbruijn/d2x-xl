@@ -680,7 +680,7 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights) {
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	// set material properties specific for certain textures here
 	SetOglLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
@@ -717,7 +717,7 @@ int SetFaceLight (tFaceProps *propsP)
 	tRgbColorf	*pdc;
 	fix			dynLight;
 
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLights)
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 	return 0;
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it
@@ -884,21 +884,28 @@ void RenderFace (tFaceProps *propsP, int offs, int bRender)
 
 if (propsP->tMap1 < 0)
 	return;
+#if 1
+props = *propsP;
+memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
+memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
+#else
 props.segNum = propsP->segNum;
 props.sideNum = propsP->sideNum;
 props.tMap1 = propsP->tMap1;
 props.tMap2 = propsP->tMap2;
 props.nv = propsP->nv;
-#ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 91 && props.sideNum == 0)
-	props.segNum = props.segNum;
-#endif
 memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
 memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
 #if LIGHTMAPS
 memcpy (props.uvl_lMaps, propsP->uvl_lMaps + offs, props.nv * sizeof (*props.uvl_lMaps));
 #endif
+memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
+#endif
+#ifdef _DEBUG //convenient place for a debug breakpoint
+if (props.segNum == 91 && props.sideNum == 0)
+	props.segNum = props.segNum;
+#endif
 
 #if APPEND_LAYERED_TEXTURES
 if (!gameOpts->render.bOptimize || bRender) 
@@ -1564,7 +1571,7 @@ for (i = 0; i < nv; i++) {
 	pnt = gameData.segs.points + pnum;
 	if (nRotatedLast [pnum] != nRLFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
-		if (!gameStates.render.bGlTransform) {
+		if (!gameStates.ogl.bUseTransform) {
 			gameData.segs.fVertices [pnum].x = ((float) pnt->p3_vec.x) / 65536.0f;
 			gameData.segs.fVertices [pnum].y = ((float) pnt->p3_vec.y) / 65536.0f;
 			gameData.segs.fVertices [pnum].z = -((float) pnt->p3_vec.z) / 65536.0f;

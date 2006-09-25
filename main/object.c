@@ -2629,23 +2629,22 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 }
 
 //see if guided missile has flown through exit trigger
-if (objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer] && 
-	 objP->signature==gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]) {
+if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) && 
+	 (objP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
 	if (previous_segment != objP->segnum) {
-		short	connect_side;
-		connect_side = FindConnectedSide (gameData.segs.segments + objP->segnum, gameData.segs.segments+previous_segment);
-		if (connect_side != -1) {
-			short wall_num, trigger_num;
-			wall_num = WallNumI (previous_segment, connect_side);
-			if (IS_WALL (wall_num)) {
-				trigger_num = gameData.walls.walls [wall_num].trigger;
-				if (trigger_num < gameData.trigs.nTriggers)
-					if (gameData.trigs.triggers [trigger_num].type == TT_EXIT)
-						gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]->lifeleft = 0;
+		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->segnum, gameData.segs.segments+previous_segment);
+		if (nConnSide != -1) {
+			short nWall, nTrigger;
+			nWall = WallNumI (previous_segment, nConnSide);
+			if (IS_WALL (nWall)) {
+				nTrigger = gameData.walls.walls [nWall].trigger;
+				if ((nTrigger < gameData.trigs.nTriggers) &&
+					 (gameData.trigs.triggers [nTrigger].type == TT_EXIT))
+					gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]->lifeleft = 0;
+				}
 			}
 		}
 	}
-}
 
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
