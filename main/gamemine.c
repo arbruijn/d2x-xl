@@ -1573,9 +1573,9 @@ con_printf (CON_DEBUG, "   %d segments\n", gameData.segs.nSegments);
 for (i = 0; i < gameData.segs.nVertices; i++) {
 	CFReadVector (gameData.segs.vertices+i, loadFile);
 #if !FLOAT_COORD
-	gameData.segs.fVertices [i].x = ((float) gameData.segs.vertices [i].x) / 65536.0f;
-	gameData.segs.fVertices [i].y = ((float) gameData.segs.vertices [i].y) / 65536.0f;
-	gameData.segs.fVertices [i].z = ((float) gameData.segs.vertices [i].z) / 65536.0f;
+	gameData.segs.fVertices [i].p.x = ((float) gameData.segs.vertices [i].x) / 65536.0f;
+	gameData.segs.fVertices [i].p.y = ((float) gameData.segs.vertices [i].y) / 65536.0f;
+	gameData.segs.fVertices [i].p.z = ((float) gameData.segs.vertices [i].z) / 65536.0f;
 #endif
 	}
 memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (segment));

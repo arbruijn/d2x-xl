@@ -122,14 +122,14 @@ interpPointList = pointlist;
 
 void RotatePointList (g3s_point *dest, vms_vector *src, int n, int o)
 {
-	fVector	*pfv = gameData.models.fPolyModelVerts + o;
+	fVector3	*pfv = (fVector3 *) (gameData.models.fPolyModelVerts + o);
 
 dest += o;
 while (n--) {
 	if (gameStates.ogl.bUseTransform) {
-		pfv->x = (float) src->x / 65536.0f;
-		pfv->y = (float) src->y / 65536.0f;
-		pfv->z = -(float) src->z / 65536.0f;
+		pfv->p.x = (float) src->x / 65536.0f;
+		pfv->p.y = (float) src->y / 65536.0f;
+		pfv->p.z = -(float) src->z / 65536.0f;
 		dest->p3_index = o++;
 		pfv++;
 		}

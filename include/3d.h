@@ -313,20 +313,20 @@ vms_vector	vTrans;
 return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.position), &viewInfo.view);
 }
 
-static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
+static inline fVector3 *G3TranslatePointf (fVector3 *pDest, fVector3 *pSrc)
 {
-return VmVecSubf (pDest, pSrc, (fVector *) &viewInfo.glPosf);
+return VmVecSubf (pDest, pSrc, (fVector3 *) &viewInfo.glPosf);
 }
 
-static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc)
+static inline fVector3 *G3RotatePointf (fVector3 *pDest, fVector3 *pSrc)
 {
 return VmVecRotatef (pDest, pSrc, viewInfo.glViewf);
 }
 
-static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc)
+static inline fVector3 *G3TransformPointf (fVector3 *pDest, fVector3 *pSrc)
 {
-fVector vTrans;
-return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, (fVector *) &viewInfo.glPosf), viewInfo.glViewf);
+fVector3 vTrans;
+return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, (fVector3 *) &viewInfo.glPosf), viewInfo.glViewf);
 }
 
 static inline ubyte G3TransformAndEncodePoint (g3s_point *pDest, vms_vector *pSrc)

@@ -1572,9 +1572,9 @@ for (i = 0; i < nv; i++) {
 	if (nRotatedLast [pnum] != nRLFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
 		if (!gameStates.ogl.bUseTransform) {
-			gameData.segs.fVertices [pnum].x = ((float) pnt->p3_vec.x) / 65536.0f;
-			gameData.segs.fVertices [pnum].y = ((float) pnt->p3_vec.y) / 65536.0f;
-			gameData.segs.fVertices [pnum].z = -((float) pnt->p3_vec.z) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.x = ((float) pnt->p3_vec.x) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.y = ((float) pnt->p3_vec.y) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.z = -((float) pnt->p3_vec.z) / 65536.0f;
 			}
 		nRotatedLast [pnum] = nRLFrameCount;
 		}
@@ -3569,7 +3569,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 
 if (gameStates.render.nRenderPass <= 0) {
 	BuildSegmentList (startSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
-	GatherVisibleLights ();
+	//GatherVisibleLights ();
 #if OGL_QUERY
 	if (gameOpts->render.bAllSegs && !nWindowNum) {
 		memset (bRenderSegObjs, 0, sizeof (bRenderSegObjs));

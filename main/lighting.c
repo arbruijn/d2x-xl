@@ -136,6 +136,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #endif
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>	// for memset()
 
@@ -1316,12 +1317,12 @@ void AddOglLights (void)
 	tFaceColor	*pc = gameData.render.color.sides [0];
 
 gameStates.ogl.bHaveLights = 1;
-glEnable (GL_LIGHTING);
+//glEnable (GL_LIGHTING);
 gameData.render.lights.ogl.nLights = 0;
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		//if (i == 6) continue;
+		if (i != 68) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1349,6 +1350,7 @@ void TransformOglLights (void)
 	int			i;
 	tOglLight	*pl = gameData.render.lights.ogl.lights;
 	vms_vector	vPos;
+
 #if USE_OGL_LIGHTS
 OglSetupTransform ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
@@ -1366,21 +1368,24 @@ OglResetTransform ();
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 
 gameData.render.lights.ogl.shader.nLights = 0;
-for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++, psl++) {
+for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	if (pl->bState) {
 		if (pl->brightness == 0.0)
 			continue;
 		if (pl->color.red + pl->color.green + pl->color.blue == 0.0)
 			continue;
-		memcpy (psl->color, &pl->color, sizeof (pl->color));
+		memcpy (&psl->color, &pl->color, sizeof (pl->color));
 		G3TransformPoint (&vPos, &pl->vPos);
-		psl->pos [0] = f2fl (vPos.x);
-		psl->pos [1] = f2fl (vPos.y);
-		psl->pos [2] = f2fl (vPos.z);
-		psl->pos [3] = pl->brightness;
+		psl->pos.p.x = f2fl (vPos.x);
+		psl->pos.p.y = f2fl (vPos.y);
+		psl->pos.p.z = f2fl (vPos.z);
+		psl->brightness = pl->brightness;
 		gameData.render.lights.ogl.shader.nLights++;
+		psl++;
 		}
 	}
+memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
+#	if 0
 if (gameData.render.lights.ogl.shader.nTexHandle)
 	glDeleteTextures (1, &gameData.render.lights.ogl.shader.nTexHandle);
 gameData.render.lights.ogl.shader.nTexHandle = 0;
@@ -1390,10 +1395,36 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-// set texenv to replace instead of the default modulate
-glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_RGBA,
 				  GL_FLOAT, gameData.render.lights.ogl.shader.lights);
+#	endif
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CalcOglLightAttenuation (vms_vector *pv)
+{
+#if !USE_OGL_LIGHTS
+	int				i;
+	tOglLight		*pl = gameData.render.lights.ogl.lights;
+	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+	fVector3			v, d;
+	float				l;
+
+v.p.x = f2fl (pv->x);
+v.p.y = f2fl (pv->y);
+v.p.z = f2fl (pv->z);
+if (!gameStates.ogl.bUseTransform)
+	G3TransformPointf (&v, &v);
+for (i = gameData.render.lights.ogl.nLights; i; i--, pl++, psl++) {
+	d.p.x = v.p.x - psl->pos.p.x;
+	d.p.y = v.p.y - psl->pos.p.y;
+	d.p.z = v.p.z - psl->pos.p.z;
+	l = (float) (sqrt (d.p.x * d.p.x + d.p.y * d.p.y + d.p.z * d.p.z) / 625.0);
+	psl->brightness = l / pl->brightness;
+	}
 #endif
 }
 
@@ -1425,11 +1456,15 @@ void InitLightingShaders (void)
 if (!gameOpts->ogl.bUseLighting)
 	gameStates.ogl.bHaveLights = 0;
 else {
+#if 1
+	gameStates.ogl.bHaveLights = 1;
+#else
 	LogErr ("building lighting shader programs\n");
 	DeleteShaderProg (NULL);
 	gameStates.ogl.bHaveLights = CreateShaderFunc (NULL, &lvs, &lfs, lightingFS, lightingVS, 1);
 	if (!gameStates.ogl.bHaveLights)
 		gameOpts->ogl.bUseLighting = 0;
+#endif
 	}
 }
 

@@ -1598,8 +1598,8 @@ void EvalOglArgs (void)
 
 if ((t = FindArg ("-gl_lighting"))) {
 	gameOpts->ogl.bUseLighting = NumArg (t, 1);
-	if (gameOpts->ogl.bUseLighting)
-		gameStates.ogl.bUseTransform = 1;
+//	if (gameOpts->ogl.bUseLighting)
+//		gameStates.ogl.bUseTransform = 1;
 	}
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
@@ -1675,9 +1675,10 @@ if (t = FindArg ("-mathformat"))
 if (t = FindArg ("-render_opt"))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
-if (gameOpts->ogl.bUseLighting)
-	gameStates.ogl.bUseTransform = 1;
-else if (t = FindArg ("-gl_transform"))
+//if (gameOpts->ogl.bUseLighting)
+//	gameStates.ogl.bUseTransform = 1;
+//else
+if (t = FindArg ("-gl_transform"))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
 }

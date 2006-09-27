@@ -89,6 +89,16 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecSubf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+{
+dest->p.x = src0->p.x - src1->p.x;
+dest->p.y = src0->p.y - src1->p.y;
+dest->p.z = src0->p.z - src1->p.z;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //adds one vector to another. returns ptr to dest
 //dest can equal source
 vms_vector *VmVecInc (vms_vector *dest, vms_vector *src)
@@ -146,6 +156,16 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale)
+{
+dest->p.x = src->p.x * scale;
+dest->p.y = src->p.y * scale;
+dest->p.z = src->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //scales and copies a vector.  returns ptr to dest
 vms_vector *VmVecCopyScale (vms_vector *dest, vms_vector *src, fix s)
 {
@@ -163,6 +183,27 @@ vms_vector *VmVecScaleAdd (vms_vector *dest, vms_vector *src1, vms_vector *src2,
 dest->x = src1->x + fixmul (src2->x, k);
 dest->y = src1->y + fixmul (src2->y, k);
 dest->z = src1->z + fixmul (src2->z, k);
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fVector3 *VmVecScaleAddf (fVector3 *dest, fVector3 *src1, fVector3 *src2, float scale)
+{
+dest->p.x = src1->p.x + src2->p.x * scale;
+dest->p.y = src1->p.y + src2->p.y * scale;
+dest->p.z = src1->p.z + src2->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fVector4 *VmVecScaleAddf4 (fVector4 *dest, fVector4 *src1, fVector4 *src2, float scale)
+{
+dest->c.r = src1->c.r + src2->c.r * scale;
+dest->c.g = src1->c.g + src2->c.g * scale;
+dest->c.b = src1->c.b + src2->c.b * scale;
+dest->c.a = src1->c.a + src2->c.a * scale;
 return dest;
 }
 
@@ -192,6 +233,16 @@ dest->x = fixmuldiv (src->x, n, d);
 dest->y = fixmuldiv (src->y, n, d);
 dest->z = fixmuldiv (src->z, n, d);
 #endif
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fVector3 *VmVecMulf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+{
+dest->p.x = src0->p.x * src1->p.x;
+dest->p.y = src0->p.y * src1->p.y;
+dest->p.z = src0->p.z * src1->p.z;
 return dest;
 }
 
@@ -235,9 +286,9 @@ return fixquadadjust(&i);
 
 // ------------------------------------------------------------------------
 
-inline float VmVecDotf (fVector *v0, fVector *v1)
+float VmVecDotf (fVector3 *v0, fVector3 *v1)
 {
-return v0->x * v1->x +  v0->y * v1->y + v0->z * v1->z;
+return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 }
 
 // ------------------------------------------------------------------------
@@ -354,11 +405,27 @@ else {
 }
 
 // ------------------------------------------------------------------------
+
+float VmVecMagf (fVector3 *v)
+{
+return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
+}
+
+// ------------------------------------------------------------------------
 //computes the distance between two points. (does sub and mag)
 fix VmVecDist(vms_vector *v0, vms_vector *v1)
 {
 vms_vector t;
 return VmVecMag (VmVecSub (&t, v0, v1));
+}
+
+// ------------------------------------------------------------------------
+
+float VmVecDistf (fVector3 *v0, fVector3 *v1)
+{
+fVector3	t;
+
+return VmVecMagf (VmVecSubf (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
@@ -450,6 +517,19 @@ if (m) {
 	dest->x = fixdiv(src->x, m);
 	dest->y = fixdiv(src->y, m);
 	dest->z = fixdiv(src->z, m);
+	}
+return m;
+}
+
+// ------------------------------------------------------------------------
+//normalize a vector. returns mag of source vec
+float VmVecNormalizef (fVector3 *dest, fVector3 *src)
+{
+float m = VmVecMagf (src);
+if (m) {
+	dest->p.x = src->p.x / m;
+	dest->p.y = src->p.y / m;
+	dest->p.z = src->p.z / m;
 	}
 return m;
 }
@@ -891,17 +971,17 @@ return dest;
 // ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal source
-fVector *VmVecRotatef (fVector *dest, fVector *src, float *m)
+fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, float *m)
 {
-	fVector h;
+	fVector3 h;
 
 if (src == dest) {
 	h = *src;
 	src = &h;
 	}
-dest->x = VmVecDotf (src, (fVector *) m);
-dest->y = VmVecDotf (src, (fVector *) (m + 4));
-dest->z = VmVecDotf (src, (fVector *) (m + 8));
+dest->p.x = VmVecDotf (src, (fVector3 *) m);
+dest->p.y = VmVecDotf (src, (fVector3 *) (m + 4));
+dest->p.z = VmVecDotf (src, (fVector3 *) (m + 8));
 return dest;
 }
 

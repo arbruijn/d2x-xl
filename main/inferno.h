@@ -47,6 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 #include "segment.h"
 #include "console.h"
+#include "vecmat.h"
 
 // MACRO for single line #ifdef WINDOWS #else DOS
 #ifdef WINDOWS
@@ -692,9 +693,6 @@ typedef struct tSphereData {
 	tPulseData	*pPulse;
 } tSphereData;
 
-typedef	float	fVector3 [3];
-typedef	float	fVector4 [4];
-
 #define USE_OGL_LIGHTS	0
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
 
@@ -717,9 +715,11 @@ typedef struct tOglLight {
 } tOglLight;
 
 typedef struct tShaderLight {
+#if 1
 	fVector4		color;
 	fVector3		pos;
-	float			brightness;
+#endif
+float			brightness;
 } tShaderLight;
 
 typedef struct tShaderLightData {
@@ -814,7 +814,7 @@ typedef struct tRenderData {
 	int						nComputedColors;
 	fix						xFlashEffect;
 	fix						xTimeFlashLastPlayed;
-	fVector					*pVerts;
+	fVector3					*pVerts;
 	tLightData				lights;
 	tMorphData				morph;
 	tShadowData				shadows;
@@ -835,13 +835,13 @@ typedef struct tSlideSegs {
 } tSlideSegs;
 
 typedef struct tVertNorm {
-	fVector		vNormal;
+	fVector3		vNormal;
 	ubyte			nFaces;	// # of faces that use this vertex
 } tVertNorm;
 
 typedef struct tSegmentData {
 	vms_vector			vertices [MAX_VERTICES];
-	fVector				fVertices [MAX_VERTICES];
+	fVector3				fVertices [MAX_VERTICES];
 	tVertNorm			vertNorms [MAX_VERTICES];
 	segment				segments [MAX_SEGMENTS];
 	segment2				segment2s [MAX_SEGMENTS];
@@ -1119,7 +1119,7 @@ typedef struct tModelData {
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3s_point			polyModelPoints [MAX_POLYGON_VERTS];
-	fVector				fPolyModelVerts [MAX_POLYGON_VERTS];
+	fVector3				fPolyModelVerts [MAX_POLYGON_VERTS];
 	grs_bitmap			*textures [MAX_POLYOBJ_TEXTURES];
 	bitmap_index		textureIndex [MAX_POLYOBJ_TEXTURES];
 	int					nSimpleModelThresholdScale;
@@ -1587,8 +1587,8 @@ static inline void OglVertex3f (g3s_point *p)
 if (p->p3_index < 0)
 	glVertex3x (p->p3_vec.x, p->p3_vec.y, -p->p3_vec.z);
 else {
-	fVector	*pv = gameData.render.pVerts + p->p3_index;
-	glVertex3f (pv->x, pv->y, pv->z);
+	fVector3	*pv = gameData.render.pVerts + p->p3_index;
+	glVertex3f (pv->p.x, pv->p.y, pv->p.z);
 	}
 }
 

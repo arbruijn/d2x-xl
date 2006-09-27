@@ -157,9 +157,17 @@
 
 //#define INLINE 1              //are some of these functions inline?
 
-typedef struct fVector {
-	float					x, y, z;
-} fVector;
+typedef union fVector3 {
+	float a [3];
+	struct {float x, y, z;} p;
+	struct {float r, g, b;} c;
+} fVector3;
+
+typedef union fVector4 {
+	float a [4];
+	struct {float x, y, z, w;} p;
+	struct {float r, g, b, a;} c;
+} fVector4;
 
 //The basic fixed-point vector.  Access elements by name or position
 typedef struct vms_vector {
@@ -222,7 +230,7 @@ static inline void vm_set_identity(vms_matrix *m)
 
 // DPH (19/8/98): End changes.
 
-vms_vector *VmVecMake (vms_vector * v, fix x, fix y, fix z);
+vms_vector *VmVecMake (vms_vector *v, fix x, fix y, fix z);
 
 
 #ifdef __WATCOMC__
@@ -284,7 +292,11 @@ extern vms_matrix vmdIdentityMatrix;
 //#define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
 
 //negate a vector
-#define VmVecNegate(v)	(v)->x = -(v)->x, (v)->y = -(v)->y, (v)->z = -(v)->z
+static inline vms_vector *VmVecNegate (vms_vector *v)
+	{v->x = -v->x; v->y = -v->y; v->z = -v->z; return v;}
+
+static inline fVector3 *VmVecNegatef (fVector3 *v)
+	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
 
 //Functions in library
 
@@ -300,8 +312,11 @@ static inline vms_vector *VmVecAdd (vms_vector *d, vms_vector *s0, vms_vector *s
 static inline vms_vector *VmVecSub (vms_vector *d, vms_vector *s0, vms_vector *s1)
 	{d->x = s0->x - s1->x; d->y = s0->y - s1->y; d->z = s0->z - s1->z;return d;}
 
-static inline fVector *VmVecSubf (fVector *d, fVector *s0, fVector *s1)
-	{d->x = s0->x - s1->x; d->y = s0->y - s1->y; d->z = s0->z - s1->z; return d;}
+static inline fVector3 *VmVecAddf (fVector3 *d, fVector3 *s0, fVector3 *s1)
+	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
+
+static inline fVector3 *VmVecSubf (fVector3 *d, fVector3 *s0, fVector3 *s1)
+	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z; return d;}
 
 static inline vms_vector *VmVecDec (vms_vector *d, vms_vector *s)
 	{d->x -= s->x; d->y -= s->y; d->z -= s->z; return d;}
@@ -309,28 +324,31 @@ static inline vms_vector *VmVecDec (vms_vector *d, vms_vector *s)
 static inline vms_vector *VmVecInc (vms_vector *d, vms_vector *s)
 	{d->x += s->x; d->y += s->y; d->z += s->z; return d;}
 
-static inline fVector *VmVecIncf (fVector *d, fVector *s)
-	{d->x += s->x; d->y += s->y; d->z += s->z; return d;}
+static inline fVector3 *VmVecIncf (fVector3 *d, fVector3 *s)
+	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
 
-static inline fVector *VmsVecToFloat (fVector *d, vms_vector *s)
-	{d->x = f2fl (s->x); d->y = f2fl (s->y); d->z = f2fl (s->z); return d;}
+static inline fVector3 *VmVecDecf (fVector3 *d, fVector3 *s)
+	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
+
+static inline fVector3 *VmsVecToFloat (fVector3 *d, vms_vector *s)
+	{d->p.x = f2fl (s->x); d->p.y = f2fl (s->y); d->p.z = f2fl (s->z); return d;}
 
 #else
 //adds two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecInc() if so
-vms_vector *VmVecAdd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecAdd (vms_vector *dest, vms_vector *src0, vms_vector *src1);
 
 //subs two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecDec() if so
-vms_vector *VmVecSub (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecSub (vms_vector *dest, vms_vector *src0, vms_vector *src1);
 
 //adds one vector to another. returns ptr to dest
 //dest can equal source
-vms_vector *VmVecInc (vms_vector * dest, vms_vector * src);
+vms_vector *VmVecInc (vms_vector *dest, vms_vector *src);
 
 //subs one vector from another, returns ptr to dest
 //dest can equal source
-vms_vector *VmVecDec (vms_vector * dest, vms_vector * src);
+vms_vector *VmVecDec (vms_vector *dest, vms_vector *src);
 
 #endif
 
@@ -354,46 +372,43 @@ vms_vector *VmVecDec (vms_vector * dest, vms_vector * src);
 #endif	/* 
  */
 
+fVector3 *VmVecMulf (fVector3 *dest, fVector3 *src0, fVector3 *src1);
+
 //averages two vectors. returns ptr to dest
 //dest can equal either source
-vms_vector *VmVecAvg (vms_vector * dest, vms_vector * src0, vms_vector * src1);
-
+vms_vector *VmVecAvg (vms_vector *dest, vms_vector *src0, vms_vector *src1);
 
 //averages four vectors. returns ptr to dest
 //dest can equal any source
-vms_vector *VmVecAvg4 (vms_vector * dest, vms_vector * src0, vms_vector * src1, vms_vector * src2, vms_vector * src3);
-
+vms_vector *VmVecAvg4 (vms_vector *dest, vms_vector *src0, vms_vector *src1, vms_vector *src2, vms_vector *src3);
 
 //scales a vector in place.  returns ptr to vector
-vms_vector *VmVecScale (vms_vector * dest, fix s);
-
+vms_vector *VmVecScale (vms_vector *dest, fix s);
+fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale);
 
 //scales and copies a vector.  returns ptr to dest
-vms_vector *VmVecCopyScale (vms_vector * dest, vms_vector * src, fix s);
-
+vms_vector *VmVecCopyScale (vms_vector *dest, vms_vector *src, fix s);
 
 //scales a vector, adds it to another, and stores in a 3rd vector
 //dest = src1 + k * src2
-vms_vector *VmVecScaleAdd (vms_vector * dest, vms_vector * src1, vms_vector * src2, fix k);
-
+vms_vector *VmVecScaleAdd (vms_vector *dest, vms_vector *src1, vms_vector *src2, fix k);
+fVector3 *VmVecScaleAddf (fVector3 *dest, fVector3 *src1, fVector3 *src2, float scale);
 
 //scales a vector and adds it to another
 //dest += k * src
-vms_vector *VmVecScaleInc (vms_vector * dest, vms_vector * src, fix k);
-
+vms_vector *VmVecScaleInc (vms_vector *dest, vms_vector *src, fix k);
 
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d
 vms_vector *VmVecScaleFrac (vms_vector *dest, fix n, fix d);
 
-
 //returns magnitude of a vector
-fix VmVecMag (vms_vector * v);
-
+fix VmVecMag (vms_vector *v);
+float VmVecMagf (fVector3 *v);
 
 //computes the distance between two points. (does sub and mag)
-fix VmVecDist (vms_vector * v0, vms_vector * v1);
-
+fix VmVecDist (vms_vector *v0, vms_vector *v1);
+float VmVecDistf (fVector3 *v0, fVector3 *v1);
 
 //computes an approximation of the magnitude of the vector
 //uses dist = largest + next_largest*3/8 + smallest*3/16
@@ -414,48 +429,48 @@ fix FixVecMagQuick (fix a, fix b, fix c);
 #endif
 
 
-
 //normalize a vector. returns mag of source vec
-fix VmVecCopyNormalize (vms_vector * dest, vms_vector * src);
+fix VmVecCopyNormalize (vms_vector *dest, vms_vector *src);
 
 #define VmVecNormalize(_v)	VmVecCopyNormalize (_v, _v)
-
+float VmVecNormalizef (fVector3 *dest, fVector3 *src);
 
 //normalize a vector. returns mag of source vec. uses approx mag
-fix VmVecCopyNormalizeQuick (vms_vector * dest, vms_vector * src);
+fix VmVecCopyNormalizeQuick (vms_vector *dest, vms_vector *src);
 
-fix VmVecNormalizeQuick (vms_vector * v);
+fix VmVecNormalizeQuick (vms_vector *v);
 
 
 //return the normalized direction vector between two points
 //dest = normalized(end - start).  Returns mag of direction vector
 //NOTE: the order of the parameters matches the vector subtraction
-fix VmVecNormalizedDir (vms_vector * dest, vms_vector * end, vms_vector * start);
+fix VmVecNormalizedDir (vms_vector *dest, vms_vector *end, vms_vector *start);
 
-fix VmVecNormalizedDirQuick (vms_vector * dest, vms_vector * end, vms_vector * start);
+fix VmVecNormalizedDirQuick (vms_vector *dest, vms_vector *end, vms_vector *start);
 
 
 ////returns dot product of two vectors
-fix VmVecDotProd (vms_vector * v0, vms_vector * v1);
+fix VmVecDotProd (vms_vector *v0, vms_vector *v1);
+float VmVecDotf (fVector3 *v0, fVector3 *v1);
 
 #define VmVecDot(v0,v1) VmVecDotProd((v0),(v1))
 
 //computes cross product of two vectors. returns ptr to dest
 //dest CANNOT equal either source
-vms_vector *VmVecCrossProd (vms_vector * dest, vms_vector * src0, vms_vector * src1);
+vms_vector *VmVecCrossProd (vms_vector *dest, vms_vector *src0, vms_vector *src1);
 
 #define VmVecCross(dest,src0,src1) VmVecCrossProd((dest),(src0),(src1))
 
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-vms_vector *VmVecNormal (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
+vms_vector *VmVecNormal (vms_vector *dest, vms_vector *p0, vms_vector *p1, vms_vector *p2);
 
 
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
-vms_vector *VmVecPerp (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_vector * p2);
+vms_vector *VmVecPerp (vms_vector *dest, vms_vector *p0, vms_vector *p1, vms_vector *p2);
 
 
 //computes the delta angle between two vectors. 
@@ -463,11 +478,11 @@ vms_vector *VmVecPerp (vms_vector * dest, vms_vector * p0, vms_vector * p1, vms_
 //the forward vector (third parameter) can be NULL, in which case the absolute
 //value of the angle in returned.  Otherwise the angle around that vector is
 //returned.
-fixang VmVecDeltaAng (vms_vector * v0, vms_vector * v1, vms_vector * fvec);
+fixang VmVecDeltaAng (vms_vector *v0, vms_vector *v1, vms_vector *fvec);
 
 
 //computes the delta angle between two normalized vectors. 
-fixang VmVecDeltaAngNorm (vms_vector * v0, vms_vector * v1, vms_vector * fvec);
+fixang VmVecDeltaAngNorm (vms_vector *v0, vms_vector *v1, vms_vector *fvec);
 
 
 //computes a matrix from a set of three angles.  returns ptr to matrix
@@ -475,7 +490,7 @@ vms_matrix *VmAngles2Matrix (vms_matrix * m, vms_angvec * a);
 
 
 //computes a matrix from a forward vector and an angle
-vms_matrix *VmVecAng2Matrix (vms_matrix * m, vms_vector * v, fixang a);
+vms_matrix *VmVecAng2Matrix (vms_matrix * m, vms_vector *v, fixang a);
 
 
 //computes a matrix from one or more vectors. The forward vector is required,
@@ -483,18 +498,18 @@ vms_matrix *VmVecAng2Matrix (vms_matrix * m, vms_vector * v, fixang a);
 //the up vector is used.  If only the forward vector is passed, a bank of
 //zero is assumed
 //returns ptr to matrix
-vms_matrix *VmVector2Matrix (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
+vms_matrix *VmVector2Matrix (vms_matrix * m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec);
 
 
 //this version of vector_2_matrix requires that the vectors be more-or-less
 //normalized and close to perpendicular
-vms_matrix *VmVector2MatrixNorm (vms_matrix * m, vms_vector * fvec, vms_vector * uvec, vms_vector * rvec);
+vms_matrix *VmVector2MatrixNorm (vms_matrix * m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec);
 
 
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal either source
-vms_vector *VmVecRotate (vms_vector * dest, vms_vector * src, vms_matrix * m);
-fVector *VmVecRotatef (fVector * dest, fVector * src, float * m);
+vms_vector *VmVecRotate (vms_vector *dest, vms_vector *src, vms_matrix * m);
+fVector3 *VmVecRotatef (fVector3 * dest, fVector3 * src, float * m);
 
 //transpose a matrix in place. returns ptr to matrix
 vms_matrix *VmTransposeMatrix (vms_matrix * m);
@@ -517,14 +532,14 @@ vms_angvec *VmExtractAnglesMatrix (vms_angvec * a, vms_matrix * m);
 
 
 //extract heading and pitch from a vector, assuming bank==0
-vms_angvec *VmExtractAnglesVector (vms_angvec * a, vms_vector * v);
+vms_angvec *VmExtractAnglesVector (vms_angvec * a, vms_vector *v);
 
 
 //compute the distance from a point to a plane.  takes the normalized normal
 //of the plane (ebx), a point on the plane (edi), and the point to check (esi).
 //returns distance in eax
 //distance is signed, so negative dist is on the back of the plane
-fix VmDistToPlane (vms_vector * checkp, vms_vector * norm, vms_vector * planep);
+fix VmDistToPlane (vms_vector *checkp, vms_vector *norm, vms_vector *planep);
 
 vms_vector *VmPlaneProjection (vms_vector *i, vms_vector *n, vms_vector *p, vms_vector *a);
 

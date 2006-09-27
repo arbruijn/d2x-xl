@@ -556,7 +556,7 @@ return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 inline void OglColor4sf (float r, float g, float b, float s)
 {
 if (IsMultiGame || (gameStates.ogl.nContrast == 8))
-	glColor4f (r * s, g * s, b * s, (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+	glColor4f (r * s, g * s, b * s, gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 else {
 	float c = (float) gameStates.ogl.nContrast - 8.0f;
 
@@ -565,7 +565,7 @@ else {
 	else
 		c = 1.0f - c * (3.0f / 8.0f);
 	glColor4f (BC (r, c) * s, BC (g, c) * s, BC (b, c) * s, 
-				  (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+				  gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 	}
 }
 
@@ -919,11 +919,11 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && pvNormal) {
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
 	else {
-		fVector	vNormal = gameData.segs.vertNorms [i].vNormal;
+		fVector3	vNormal = gameData.segs.vertNorms [i].vNormal;
 		if (gameStates.ogl.bUseTransform)
 			;//VmVecIncf (&vNormal, gameData.segs.fVertices + i);
 		else {
-			//fVector	p;
+			//fVector3	p;
 			G3RotatePointf (&vNormal, &vNormal);
 			//VmVecIncf (&vNormal, VmsVecToFloat (&p, &pPoint->p3_vec));
 			}
@@ -931,6 +931,88 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && pvNormal) {
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+
+fVector3 *reflect (fVector3 *vLight, fVector3 *vNormal)
+{
+return vLight;
+}
+
+//------------------------------------------------------------------------------
+
+void G3VertexColor (vms_vector *pvNormal, vms_vector *pvVertex, int nVertex)
+{
+	fVector3			vNormal, vLight, vVertex;
+	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
+	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
+	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
+	fVector3			lightColor, lightPos;
+	fVector3			vertColor, colorSum = {0.0f, 0.0f, 0.0f};
+	float				NdotL, RdotV, fLightDist, fAttenuation, fMatShininess = 0.0f;
+	int				i, bMatSpecular = 0;
+	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+	tFaceColor		*pc = NULL;
+
+if (nVertex >= 0) {
+	pc = gameData.render.color.vertices + nVertex;
+	if (pc->index) {
+		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
+		return;
+		}
+	}
+VmsVecToFloat (&vNormal, pvNormal);
+if (!gameStates.ogl.bUseTransform)
+	G3RotatePointf (&vNormal, &vNormal);
+VmsVecToFloat (&vVertex, pvVertex);
+for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
+	lightColor = *((fVector3 *) &psl->color);
+	lightPos = psl->pos;
+	VmVecNormalizef (&vLight, &lightPos);
+	NdotL = VmVecDotf (&vNormal, &vLight);
+	if (NdotL < 0.0)
+		NdotL = 0.0;
+	VmVecSubf (&vLight, &lightPos, &vVertex);
+	//scaled quadratic fAttenuation depending on brightness
+	fLightDist = VmVecMagf (&vLight);
+	fLightDist *= fLightDist;
+	fLightDist /= 625.0;	//some scaling
+	fAttenuation = fLightDist / psl->brightness;
+	if (fAttenuation > 1000.0)
+		continue;	//too far away
+	//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
+	VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
+	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
+	if ((NdotL > 0.0) && bMatSpecular) {
+		//RdotV = max (dot (reflect (-normalize (vLight), normal), normalize (-vVertex)), 0.0);
+		VmVecNormalizef (&vLight, &vLight);
+		VmVecNegatef (&vLight);
+		VmVecNegatef (&vVertex);
+		VmVecNormalizef (&vVertex, &vVertex);
+		RdotV = VmVecDotf (reflect (&vLight, &vNormal), &vVertex);
+		if (RdotV < 0.0)
+			RdotV = 0.0;
+		//vertColor += vMatSpecular * lightColor * pow (RdotV, fMatShininess);
+		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotV, fMatShininess));
+		VmVecMulf (&lightColor, &lightColor, &matSpecular);
+		VmVecIncf (&vertColor, &lightColor);
+		}
+	VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
+	}
+if (colorSum.c.r > 1.0)
+	colorSum.c.r = 1.0;
+if (colorSum.c.g > 1.0)
+	colorSum.c.g = 1.0;
+if (colorSum.c.b > 1.0)
+	colorSum.c.b = 1.0;
+OglColor4sf (colorSum.c.r, colorSum.c.g, colorSum.c.b, 1.0);
+if (pc) {
+	pc->index = 1;
+	pc->color.red = colorSum.c.r;
+	pc->color.green = colorSum.c.g;
+	pc->color.blue = colorSum.c.b;
+	}
+} 
 
 //------------------------------------------------------------------------------
 
@@ -1075,15 +1157,15 @@ else
 			bmTop && 
 			gameOpts->ogl.bGlTexMerge && 
 			gameStates.render.textures.bGlsTexMergeOk && 
-			(bSuperTransp || gameOpts->ogl.bUseLighting);
+			bSuperTransp;
 			//(bTransparent || bSuperTransp);
 		// if the bottom texture contains transparency, draw the overlay texture in a separate step
 		bDrawBM = bmTop && !bShaderMerge;
 		if (bSuperTransp)
 			r_tpolyc++;
-		if (bShaderMerge || gameOpts->ogl.bUseLighting) {	
+		if (bShaderMerge || (0 && gameOpts->ogl.bUseLighting)) {	
 			GLint loc;
-			if (gameOpts->ogl.bUseLighting) {
+			if (0 && gameOpts->ogl.bUseLighting) {
 				glUseProgramObject (tmProg = genShaderProg);
 				glUniform1f (loc = glGetUniformLocation (tmProg, "nLights"), 
 								 (GLfloat) gameData.render.lights.ogl.shader.nLights);
@@ -1122,7 +1204,7 @@ else
 				}
 			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-			if (gameOpts->ogl.bUseLighting) {
+			if (0 && gameOpts->ogl.bUseLighting) {
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeFS"), tmType);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeVS"), tmType);
 				}
@@ -1145,7 +1227,8 @@ else
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
 #if USE_VERTNORMS
-		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && !pvNormal)
+		//if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && !pvNormal)
+		if (!pvNormal)
 			G3CalcNormal (pointlist, pvNormal = &vNormal);
 #else
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
@@ -1153,13 +1236,16 @@ else
 #endif
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
-			SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
-			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
-			if (bmTop && !bDrawBM)
-				SetTexCoord (uvl_list + c, orient, 1);
 #if USE_VERTNORMS
 			G3SetNormal (*pp, pvNormal);
 #endif
+			if (gameOpts->ogl.bUseLighting)
+				G3VertexColor (pvNormal, &((*pp)->p3_vec), (*pp)->p3_index);
+			else
+				SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
+			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
+			if (bmTop && !bDrawBM)
+				SetTexCoord (uvl_list + c, orient, 1);
 			OglVertex3f (*pp);
 			}
 		glEnd ();
@@ -1173,11 +1259,14 @@ else
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
-				SetTMapColor (uvl_list + c, c, bmTop, 1);
-				SetTexCoord (uvl_list + c, orient, 0);
 #if USE_VERTNORMS
 				G3SetNormal (*pp, pvNormal);
 #endif
+				if (gameOpts->ogl.bUseLighting)
+					G3VertexColor (pvNormal, &((*pp)->p3_vec), (*pp)->p3_index);
+				else
+				SetTMapColor (uvl_list + c, c, bmTop, 1);
+				SetTexCoord (uvl_list + c, orient, 0);
 				OglVertex3f (*pp);
 				}
 			glEnd ();
@@ -1601,10 +1690,10 @@ if (gameStates.render.nShadowPass) {
 			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
 		if (gameStates.app.bHaveLights && gameOpts->ogl.bUseLighting) {	//for optional hardware lighting
-			glEnable (GL_LIGHTING);
+			//glEnable (GL_LIGHTING);
 			glShadeModel (GL_SMOOTH);
-			glColorMaterial (GL_BACK, GL_AMBIENT_AND_DIFFUSE);
-			glEnable (GL_COLOR_MATERIAL);
+			//glColorMaterial (GL_BACK, GL_AMBIENT_AND_DIFFUSE);
+			//glEnable (GL_COLOR_MATERIAL);
 			//glDisable (GL_LIGHT0);
 			}
 		}
@@ -1746,12 +1835,12 @@ else
 #endif
 	if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)	{//for optional hardware lighting
 		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
-		glEnable (GL_LIGHTING);
-		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
-		glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
+		//glEnable (GL_LIGHTING);
+		//glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
+		//glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
 		glShadeModel (GL_SMOOTH);
-		glEnable (GL_COLOR_MATERIAL);
-		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+		//glEnable (GL_COLOR_MATERIAL);
+		//glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		}
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

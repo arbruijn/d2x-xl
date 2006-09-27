@@ -1894,9 +1894,9 @@ void AddToVertexNormal (int nVertex, vms_vector *pvNormal)
 	tVertNorm	*pn = gameData.segs.vertNorms + nVertex;
 
 pn->nFaces++;
-pn->vNormal.x += f2fl (pvNormal->x);
-pn->vNormal.y += f2fl (pvNormal->y);
-pn->vNormal.z += f2fl (pvNormal->z);
+pn->vNormal.p.x += f2fl (pvNormal->x);
+pn->vNormal.p.y += f2fl (pvNormal->y);
+pn->vNormal.p.z += f2fl (pvNormal->z);
 }
 
 // -------------------------------------------------------------------------------
@@ -2014,9 +2014,9 @@ void ComputeVertexNormals (void)
 	tVertNorm	*pv;
 
 for (i = gameData.segs.nVertices, pv = gameData.segs.vertNorms; i; i--, pv++) {
-	pv->vNormal.x /= pv->nFaces;
-	pv->vNormal.y /= pv->nFaces;
-	pv->vNormal.z /= pv->nFaces;
+	pv->vNormal.p.x /= pv->nFaces;
+	pv->vNormal.p.y /= pv->nFaces;
+	pv->vNormal.p.z /= pv->nFaces;
 	}
 }
 
