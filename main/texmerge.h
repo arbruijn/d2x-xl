@@ -41,7 +41,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-
 #ifndef _TEXMERGE_H
 #define _TEXMERGE_H
 
@@ -52,6 +51,6 @@ void TexMergeFlush();
 void InitTexMergeShaders ();
 
 extern int bGlsTexMergeOk;
-extern GLhandleARB texMergeProg [3]; 
+extern GLhandleARB tmShaderProgs [3]; 
 
 #endif /* _TEXMERGE_H */

@@ -981,6 +981,7 @@ if (objP->type == OBJ_PLAYER) {
 
 unsigned GetOglLightHandle (void)
 {
+#if USE_OGL_LIGHTS
 	GLint	nMaxLights;
 
 if (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)
@@ -989,6 +990,9 @@ glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
 if (gameData.render.lights.ogl.nLights >= nMaxLights)
 	return 0xffffffff;
 return (unsigned) (GL_LIGHT0 + gameData.render.lights.ogl.nLights);
+#else
+return 0xffffffff;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1006,11 +1010,14 @@ pl->fSpecular [0] = red;
 pl->fSpecular [1] = green;
 pl->fSpecular [2] = blue;
 for (i = 0; i < 3; i++) {
-	pl->fDiffuse [i] = pl->fSpecular [i];// * brightness;
+#if USE_OGL_LIGHTS
 	pl->fAmbient [i] = pl->fDiffuse [i] * 0.01f;
-	pl->fEmissive [i] = pl->fDiffuse [i];
+	pl->fDiffuse [i] = 
+#endif
+	pl->fEmissive [i] = pl->fSpecular [i];
 	}
 // light alphas
+#if USE_OGL_LIGHTS
 pl->fAmbient [3] = 1.0f;
 pl->fDiffuse [3] = 1.0f;
 pl->fSpecular [3] = 1.0f;
@@ -1018,6 +1025,7 @@ glLightfv (pl->handle, GL_AMBIENT, pl->fAmbient);
 glLightfv (pl->handle, GL_DIFFUSE, pl->fDiffuse);
 glLightfv (pl->handle, GL_SPECULAR, pl->fSpecular);
 glLightf (pl->handle, GL_SPOT_EXPONENT, 0.0f);
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -1082,12 +1090,14 @@ return -1;
 
 void RefreshOglLight (tOglLight *pl)
 {
+#if USE_OGL_LIGHTS
 glLightfv (pl->handle, GL_AMBIENT, pl->fAmbient);
 glLightfv (pl->handle, GL_DIFFUSE, pl->fDiffuse);
 glLightfv (pl->handle, GL_SPECULAR, pl->fSpecular);
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1100,8 +1110,10 @@ if (pl1 != pl2) {
 	h = *pl1;
 	*pl1 = *pl2;
 	*pl2 = h;
+#if USE_OGL_LIGHTS
 	pl1->handle = (unsigned) (GL_LIGHT0 + (pl1 - gameData.render.lights.ogl.lights));
 	pl2->handle = (unsigned) (GL_LIGHT0 + (pl2 - gameData.render.lights.ogl.lights));
+#endif
 	if (pl1->nObject >= 0)
 		gameData.render.lights.ogl.owners [pl1->nObject] = pl1 - gameData.render.lights.ogl.lights;
 	if (pl2->nObject >= 0)
@@ -1122,14 +1134,20 @@ if (nLight >= 0) {
 		if (bState) {
 			SwapOglLights (pl, gameData.render.lights.ogl.lights + i + 1);
 			pl = gameData.render.lights.ogl.lights + i + 1;
+#if USE_OGL_LIGHTS
 			glEnable (pl->handle);
 			RefreshOglLight (pl);
+#endif
 			}
 		else {
 			SwapOglLights (pl, gameData.render.lights.ogl.lights + i);
+#if USE_OGL_LIGHTS
 			RefreshOglLight (pl);
+#endif
 			pl = gameData.render.lights.ogl.lights + i;
+#if USE_OGL_LIGHTS
 			glDisable (pl->handle);
+#endif
 			}
 		pl->bState = bState;
 		}
@@ -1143,23 +1161,32 @@ int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 {
 	tOglLight	*pl;
 	short			h, i;
+#if USE_OGL_LIGHTS
 	GLint			nMaxLights;
+#endif
 
 if (0 <= (h = UpdateOglLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f))
 	return -1;
-glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
-if ((gameData.render.lights.ogl.nLights >= nMaxLights) ||
-	 (gameData.render.lights.ogl.nLights >= MAX_SEGMENTS)) {
+if (gameData.render.lights.ogl.nLights >= MAX_OGL_LIGHTS) {
 	gameStates.ogl.bHaveLights = 0;
 	return -1;	//too many lights
 	}
+#if USE_OGL_LIGHTS
+glGetIntegerv (GL_MAX_LIGHTS, &nMaxLights);
+if (gameData.render.lights.ogl.nLights >= MAX_OGL_LIGHTS) {
+	gameStates.ogl.bHaveLights = 0;
+	return -1;	//too many lights
+	}
+#endif
 i = LastEnabledOglLight () + 1;
 pl = gameData.render.lights.ogl.lights + i;
+#if USE_OGL_LIGHTS
 pl->handle = GetOglLightHandle (); 
 if (pl->handle == 0xffffffff)
 	return -1;
+#endif
 if (i < gameData.render.lights.ogl.nLights)
 	SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
@@ -1177,15 +1204,16 @@ else {
 	VmVecInc (&pl->vPos, &vOffs);
 #endif
 	}
-#if 0
+#if USE_OGL_LIGHTS
+#	if 0
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
 pl->fAttenuation [1] = 0.0f; //pl->fAttenuation [0] / 25.0f; //0.01f;
 pl->fAttenuation [2] = pl->fAttenuation [0] / 1000.0f; //0.004f;
-#else
+#	else
 pl->fAttenuation [0] = 0.0f;
 pl->fAttenuation [1] = 0.0f; //f2fl (xBrightness) / 10.0f;
 pl->fAttenuation [2] = (1.0f / f2fl (xBrightness)) / 625.0f;
-#endif
+#	endif
 glEnable (pl->handle);
 if (!glIsEnabled (pl->handle)) {
 	gameStates.ogl.bHaveLights = 0;
@@ -1194,11 +1222,13 @@ if (!glIsEnabled (pl->handle)) {
 glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
+#endif
 pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
-LogErr ("adding light %d,%d\n", gameData.render.lights.ogl.nLights, pl->handle - GL_LIGHT0);
+LogErr ("adding light %d,%d\n", 
+		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
 if (nObject >= 0)
 	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
 return gameData.render.lights.ogl.nLights++;
@@ -1210,15 +1240,19 @@ void DeleteOglLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
-	LogErr ("removing light %d,%d\n", nLight, pl->handle - GL_LIGHT0);
+	LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.ogl.lights);
 	// if not removing last light in list, move last light down to the now free list entry
 	// and keep the freed light handle thus avoiding gaps in used handles
 	if (nLight < --gameData.render.lights.ogl.nLights) {
 		SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
+#if USE_OGL_LIGHTS
 		RefreshOglLight (pl);
+#endif
 		pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
 		}
+#if USE_OGL_LIGHTS
 	glDisable (pl->handle);
+#endif
 	pl->bState = 0;
 	if (pl->nObject >= 0)
 		gameData.render.lights.ogl.owners [pl->nObject] = nLight;
@@ -1256,7 +1290,7 @@ void SetOglLightMaterial (short nSegment, short nSide, short nObject)
 	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 	int nLight = FindOglLight (nSegment, nSide, nObject);
-
+return;
 if (nLight < 0) {
 	glMaterialfv (GL_FRONT, GL_EMISSION, fBlack);
 	glMaterialfv (GL_FRONT, GL_SPECULAR, fBlack);
@@ -1315,10 +1349,8 @@ void TransformOglLights (void)
 	int			i;
 	tOglLight	*pl = gameData.render.lights.ogl.lights;
 	vms_vector	vPos;
-	float			fPos [4];
-
+#if USE_OGL_LIGHTS
 OglSetupTransform ();
-fPos [3] = 1.0f;
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	if (gameStates.ogl.bUseTransform)
 		vPos = pl->vPos;
@@ -1330,6 +1362,75 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	glLightfv (pl->handle, GL_POSITION, fPos);
 	}
 OglResetTransform ();
+#else
+	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+
+gameData.render.lights.ogl.shader.nLights = 0;
+for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++, psl++) {
+	if (pl->bState) {
+		if (pl->brightness == 0.0)
+			continue;
+		if (pl->color.red + pl->color.green + pl->color.blue == 0.0)
+			continue;
+		memcpy (psl->color, &pl->color, sizeof (pl->color));
+		G3TransformPoint (&vPos, &pl->vPos);
+		psl->pos [0] = f2fl (vPos.x);
+		psl->pos [1] = f2fl (vPos.y);
+		psl->pos [2] = f2fl (vPos.z);
+		psl->pos [3] = pl->brightness;
+		gameData.render.lights.ogl.shader.nLights++;
+		}
+	}
+if (gameData.render.lights.ogl.shader.nTexHandle)
+	glDeleteTextures (1, &gameData.render.lights.ogl.shader.nTexHandle);
+gameData.render.lights.ogl.shader.nTexHandle = 0;
+glGenTextures (1, &gameData.render.lights.ogl.shader.nTexHandle);
+glBindTexture (GL_TEXTURE_2D, gameData.render.lights.ogl.shader.nTexHandle);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+// set texenv to replace instead of the default modulate
+glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_RGBA,
+				  GL_FLOAT, gameData.render.lights.ogl.shader.lights);
+#endif
+}
+
+//-------------------------------------------------------------------------
+
+#ifdef _DEBUG
+
+char *lightingVS = "lighting.vert";
+char *lightingFS = "lighting.frag";
+
+#else
+
+char *lightingFS =
+	"";
+
+char *lightingVS =
+	"void LightingVS(void){gl_FragColor=gl_Color;}"
+	;
+
+#endif
+
+//-------------------------------------------------------------------------
+
+GLhandleARB lvs = 0; 
+GLhandleARB lfs = 0; 
+
+void InitLightingShaders (void)
+{
+if (!gameOpts->ogl.bUseLighting)
+	gameStates.ogl.bHaveLights = 0;
+else {
+	LogErr ("building lighting shader programs\n");
+	DeleteShaderProg (NULL);
+	gameStates.ogl.bHaveLights = CreateShaderFunc (NULL, &lvs, &lfs, lightingFS, lightingVS, 1);
+	if (!gameStates.ogl.bHaveLights)
+		gameOpts->ogl.bUseLighting = 0;
+	}
 }
 
 // ----------------------------------------------------------------------------------------------

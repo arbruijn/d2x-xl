@@ -1221,6 +1221,7 @@ exit (0);
 
 #if defined(__macosx__)
 #	define	DATADIR			"Data"
+#	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
 #	define	CONFIGDIR		"Config"
 #	define	PROFDIR			"Profiles"
@@ -1232,6 +1233,7 @@ exit (0);
 #	define	TEXTUREDIR_D1	"Textures/d1"
 #else
 #	define	DATADIR			"data"
+#	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
 #	define	CONFIGDIR		"config"
 #	define	PROFDIR			"profiles"
@@ -1302,6 +1304,7 @@ else
 /*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
 GetAppFolder (szDataRootDir, gameFolders.szModelDir, MODELDIR, "*.oof");
+GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");

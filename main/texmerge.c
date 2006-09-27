@@ -555,59 +555,42 @@ switch( type )	{
 
 //------------------------------------------------------------------------------
 
-GLhandleARB texMergeProg [3] = {0,0,0}; 
+GLhandleARB tmShaderProgs [3] = {0,0,0};
 GLhandleARB tmf [3] = {0,0,0}; 
 GLhandleARB tmv [3] = {0,0,0}; 
 
 #ifdef _DEBUG
 
-char *texMergeFS [3] = {"texmerge.frag", "texmerge2.frag","texmerge3.frag"};
-char *texMergeVS [3] = {"texmerge.vert", "texmerge.vert", "texmerge3.vert"};
+char *texMergeFS [3] = {"texmerge1.frag", "texmerge2.frag","texmerge3.frag"};
+char *texMergeVS [3] = {"texmerge12.vert", "texmerge12.vert", "texmerge3.vert"};
 
 #else
 
 char *texMergeFS [3] = {
 	"uniform sampler2D btmTex, topTex;" \
 	"uniform float grAlpha;" \
-	"vec4 btmColor, topColor;" \
 	"void main(void){" \
-	"topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
+	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
 	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}"
 ,
-#if 1
 	"uniform sampler2D btmTex, topTex;" \
 	"uniform float grAlpha;" \
-	"vec4 btmColor, topColor;" \
 	"void main(void)" \
-	"{topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
+	"{vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
 	"if(abs(topColor.a*255.0-1.0)<0.5)discard;" \
 	"else{"
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
+	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
 	"if(topColor.a==0.0)gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;" \
 	"else gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"
-#else
-	"uniform sampler2D btmTex, topTex;" \
-	"uniform float grAlpha;" \
-	"vec4 btmColor, topColor;" \
-	"void main(void)" \
-	"{topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
-	"if(topColor.a==0.0){" \
-	"if((abs(topColor.r*255.0-120.0)<1.0)&&(abs(topColor.g*255.0-88.0)<1.0)&&(abs(topColor.b*255.0-128.0)<1.0))discard;"\
-	"else gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;}" \
-	"else{gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"
-#endif
 ,
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"uniform float grAlpha;" \
-	"vec4 btmColor, topColor;" \
-	"float bMask;" \
-	"void main (void)" \
-	"{bMask=texture2D(maskTex,vec2(gl_TexCoord [2])).a;" \
+	"void main(void)" \
+	"{float bMask=texture2D(maskTex,vec2(gl_TexCoord [2])).a;" \
 	"if(bMask<0.5)discard;" \
-	"else {topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
+	"else {vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
+	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
 	"if(topColor.a==0.0)gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;" \
 	"else gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"
 	};
@@ -634,21 +617,37 @@ char *texMergeVS [3] = {
 
 #endif
 
+char *texMergeFSData = 
+	"uniform sampler2D btmTex, topTex, maskTex;" \
+	"uniform float grAlpha;";
+
+
+
 //-------------------------------------------------------------------------
 
 void InitTexMergeShaders (void)
 {
-	int	i;
+	int	i, b;
 
 if (!gameOpts->ogl.bGlTexMerge)
 	gameStates.render.textures.bGlsTexMergeOk = 0;
 else {
 	LogErr ("building texturing shader programs\n");
 	for (i = 0; i < 2; i++) {
-		CreateShaderProg (tmf + i, tmv + i, &texMergeProg [i], texMergeFS [i], texMergeVS [i], 
-								(i == 2) ? &gameStates.render.textures.bHaveMaskShader : &gameStates.render.textures.bGlsTexMergeOk);
-		if (!gameStates.render.textures.bGlsTexMergeOk)
+		if (tmShaderProgs [i])
+			DeleteShaderProg (tmShaderProgs + i);
+		b = CreateShaderProg (tmShaderProgs + i) &&
+			 CreateShaderFunc (tmShaderProgs + i, tmf + i, tmv + i, texMergeFS [i], texMergeVS [i], 1) &&
+			 LinkShaderProg (tmShaderProgs + i);
+		if (i == 2)
+			gameStates.render.textures.bHaveMaskShader = b;
+		else
+			gameStates.render.textures.bGlsTexMergeOk = b;
+		if (!gameStates.render.textures.bGlsTexMergeOk) {
+			while (i)
+				DeleteShaderProg (tmShaderProgs + --i);
 			break;
+			}
 		}
 	if (!gameStates.render.textures.bGlsTexMergeOk)
 		gameOpts->ogl.bGlTexMerge = 0;

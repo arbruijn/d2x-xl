@@ -11,27 +11,20 @@
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
 #	define OGL_QUERY				0
-#	define OGL_SHADERS			1
 #elif defined(__unix__)
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
 #	define OGL_QUERY				0
-#	define OGL_SHADERS			1
 #elif defined(__macosx__)
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
 #	define OGL_QUERY				0
-#	define OGL_SHADERS			1
 #endif
 
-#if OGL_SHADERS
-#	ifdef _WIN32
-#		define LIGHTMAPS 1
-#	else
-#		define LIGHTMAPS 1
-#	endif
+#ifdef _WIN32
+#	define LIGHTMAPS 1
 #else
-#	define LIGHTMAPS 0
+#	define LIGHTMAPS 1
 #endif
 
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
@@ -130,28 +123,6 @@ int OglBindBmTex (grs_bitmap *bm, int nTransp);
 
 extern int ogl_brightness_ok;
 extern int ogl_brightness_r, ogl_brightness_g, ogl_brightness_b;
-
-#if 0
-extern int gameStates.ogl.bVoodooHack;
-
-extern int ogl_alttexmerge;//merge textures by just printing the seperate textures?
-extern int ogl_rgba_format;
-extern int ogl_intensity4_ok;
-extern int ogl_luminance4_alpha4_ok;
-extern int ogl_rgba2_ok;
-extern int ogl_readpixels_ok;
-extern int ogl_gettexlevelparam_ok;
-#ifdef GL_ARB_multitexture
-extern int ogl_arb_multitexture_ok;
-#else
-#define ogl_arb_multitexture_ok 0
-#endif
-#ifdef GL_SGIS_multitexture
-extern int ogl_sgis_multitexture_ok;
-#else
-#define ogl_sgis_multitexture_ok 0
-#endif
-#endif
 
 typedef struct tRenderQuality {
 	int	texMinFilter;
@@ -346,8 +317,11 @@ void OglCachePolyModelTextures (int nModel);
 
 GLuint EmptyTexture (int Xsize, int Ysize);
 char *LoadShader (char* fileName);
-void CreateShaderProg (GLhandleARB *fsP, GLhandleARB *vsP, GLhandleARB *pProg, 
-							  char *fsName, char *vsName, int *pShaderOk);
+int CreateShaderProg (GLhandleARB *progP);
+int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, 
+							 char *fsName, char *vsName, int bFromFile);
+int LinkShaderProg (GLhandleARB *progP);
+void DeleteShaderProg (GLhandleARB *progP);
 void InitShaders ();
 void SetRenderQuality ();
 void DrawTexPolyFlat (grs_bitmap *bm,int nv,g3s_point **vertlist);
@@ -422,6 +396,8 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 #define OGL_BINDTEX(_handle)	glBindTexture (GL_TEXTURE_2D, _handle)
 
 #endif
+
+extern GLhandleARB	genShaderProg;
 
 //------------------------------------------------------------------------------
 

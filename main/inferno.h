@@ -692,26 +692,47 @@ typedef struct tSphereData {
 	tPulseData	*pPulse;
 } tSphereData;
 
+typedef	float	fVector3 [3];
+typedef	float	fVector4 [4];
+
+#define USE_OGL_LIGHTS	0
+#define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
+
 typedef struct tOglLight {
-	unsigned		handle;
 	vms_vector	vPos;
 	tRgbColorf	color;
 	float			brightness;
+#if USE_OGL_LIGHTS
+	unsigned		handle;
+	float			fAttenuation [3];	// constant, linear quadratic
 	float			fAmbient [4];
 	float			fDiffuse [4];
+#endif
 	float			fSpecular [4];
 	float			fEmissive [4];
-	float			fAttenuation [3];	// constant, linear quadratic
 	short			nSegment;
 	short			nSide;
 	short			nObject;
 	ubyte			bState;
 } tOglLight;
 
+typedef struct tShaderLight {
+	fVector4		color;
+	fVector3		pos;
+	float			brightness;
+} tShaderLight;
+
+typedef struct tShaderLightData {
+	tShaderLight	lights [MAX_OGL_LIGHTS];
+	int				nLights;
+	GLuint			nTexHandle;
+} tShaderLightData;
+
 typedef struct tOglLightData {
-	tOglLight	lights [MAX_SEGMENTS];
-	int			nLights;
-	short			owners [MAX_OBJECTS];
+	tOglLight			lights [MAX_OGL_LIGHTS];
+	int					nLights;
+	short					owners [MAX_OBJECTS];
+	tShaderLightData	shader;
 } tOglLightData;
 
 typedef struct tLightData {

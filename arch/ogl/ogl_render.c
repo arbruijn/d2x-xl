@@ -60,7 +60,6 @@
 #endif
 
 #define OGL_CLEANUP		1
-#define SHADER_OPT		0
 #define USE_VERTNORMS	1
 
 int bShadowTest = 0;
@@ -88,7 +87,7 @@ GLuint mouseIndList = 0;
 GLuint cross_lh [2]={0, 0};
 GLuint primary_lh [3]={0, 0, 0};
 GLuint secondary_lh [5]={0, 0, 0, 0, 0};
-GLuint glInitTMU [3]= {0, 0, 0};
+GLuint glInitTMU [4]= {0, 0, 0, 0};
 GLuint glExitTMU = 0;
 
 int OglBindBmTex (grs_bitmap *bm, int transp);
@@ -761,6 +760,26 @@ else
 
 //------------------------------------------------------------------------------
 
+inline void InitTMU3 (void)
+{
+if (glIsList (glInitTMU [3]))
+	glCallList (glInitTMU [3]);
+else 
+	{
+	glInitTMU [3] = glGenLists (1);
+	if (glInitTMU [3])
+		glNewList (glInitTMU [3], GL_COMPILE);
+	OglActiveTexture (GL_TEXTURE2_ARB);
+	glEnable (GL_TEXTURE_2D);
+	if (glInitTMU [3]) {
+		glEndList ();
+		InitTMU3 ();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 inline void ExitTMU (void)
 {
 if (glIsList (glExitTMU))
@@ -779,9 +798,6 @@ else
 	OglActiveTexture (GL_TEXTURE0_ARB);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-#if !SHADER_OPT
-	glUseProgramObject (0);
-#endif
 	if (glExitTMU) {
 		glEndList ();
 		ExitTMU ();
@@ -795,7 +811,7 @@ typedef void tInitTMU (void);
 typedef tInitTMU *pInitTMU;
 
 inline int G3BindTex (grs_bitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId, 
-						    pInitTMU initTMU, int bUseShader)
+						    pInitTMU initTMU, int bShaderMerge)
 {
 if (bmP || (nTexId >= 0)) {
 	initTMU ();
@@ -806,7 +822,7 @@ if (bmP || (nTexId >= 0)) {
 			return 1;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		}
-	if (bUseShader)
+	if (bShaderMerge)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
 	}
 return 0;
@@ -894,32 +910,42 @@ void G3SetNormal (g3s_point *pPoint, vms_vector *pvNormal)
 {
 	int	i = pPoint->p3_index;
 
-if (i < 0) {
-	vms_vector	vNormal = *pvNormal;
-	if (!gameStates.ogl.bUseTransform)
-		G3RotatePoint (&vNormal, &vNormal);
-	//VmVecInc (&vNormal, &pPoint->p3_vec);
-	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
-	}
-else {
-	fVector	vNormal = gameData.segs.vertNorms [i].vNormal;
-	if (gameStates.ogl.bUseTransform)
-		;//VmVecIncf (&vNormal, gameData.segs.fVertices + i);
-	else {
-		//fVector	p;
-		G3RotatePointf (&vNormal, &vNormal);
-		//VmVecIncf (&vNormal, VmsVecToFloat (&p, &pPoint->p3_vec));
+if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && pvNormal) {
+	if (i < 0) {
+		vms_vector	vNormal = *pvNormal;
+		if (!gameStates.ogl.bUseTransform)
+			G3RotatePoint (&vNormal, &vNormal);
+		//VmVecInc (&vNormal, &pPoint->p3_vec);
+		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
-	glNormal3fv ((GLfloat *) &vNormal);
+	else {
+		fVector	vNormal = gameData.segs.vertNorms [i].vNormal;
+		if (gameStates.ogl.bUseTransform)
+			;//VmVecIncf (&vNormal, gameData.segs.fVertices + i);
+		else {
+			//fVector	p;
+			G3RotatePointf (&vNormal, &vNormal);
+			//VmVecIncf (&vNormal, VmsVecToFloat (&p, &pPoint->p3_vec));
+			}
+		glNormal3fv ((GLfloat *) &vNormal);
+		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
+#define	INIT_TMU(_initTMU,_bm) \
+			_initTMU (); \
+			if (OglBindBmTex (_bm, 0)) \
+				return 1; \
+			(_bm) = BmCurFrame (_bm); \
+			OglTexWrap ((_bm)->glTexture, GL_REPEAT);
+
+
 extern void (*tmap_drawer_ptr) (grs_bitmap *bm, int nv, g3s_point **vertlist);
 
-static GLhandleARB	lmProg = (GLhandleARB) 0, 
-							tmProg = (GLhandleARB) 0;
+static GLhandleARB	lmProg = (GLhandleARB) 0;
+static GLhandleARB	tmProg = (GLhandleARB) 0;
 
 bool G3DrawTexPolyMulti (
 	int			nv, 
@@ -937,14 +963,11 @@ bool G3DrawTexPolyMulti (
 	int orient, 
 	int bBlend)
 {
-	int			c, nFrame, bDrawBM = 0;
+	int			c, tmType, nFrame, bDrawBM = 0;
 	grs_bitmap	*bmP, *bmMask;
 	g3s_point	**pp;
 #if USE_VERTNORMS
 	vms_vector	vNormal;
-#endif
-#if SHADER_OPT 
-	GLhandleARB	hProg;
 #endif
 
 if (!bmBot)
@@ -971,34 +994,15 @@ if (gameStates.render.color.bLightMapsOk &&
 	 lightMap && 
 	 !IsMultiGame) {//lightMapping enabled
 	// chose shaders depending on whether overlay bitmap present or not
-#if OGL_SHADERS
-		// only use shaders for highres textures containing color keyed transparency
-#	if 1
-	int bUseShader = bmTop && gameOpts->ogl.bGlTexMerge;
-#	else
-	int bUseShader = 1;
-#	endif
-#else
-	int bUseShader = 0;
-#endif
-	if (bUseShader) {
-#if SHADER_OPT
-		hProg = lightmapProg [(bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
-		if (lmProg != hProg)
-			glUseProgramObject (lmProg = hProg);
-#else
-			lmProg = lightmapProg [(bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
-			glUseProgramObject (lmProg);
-#endif
+	int bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge;
+	if (bShaderMerge) {
+		lmProg = lmShaderProgs [(bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
+		glUseProgramObject (lmProg);
 		}
-#if SHADER_OPT
-	else if (lmProg)
-		glUseProgramObject (lmProg = (GLhandleARB) 0);
-#endif
 #if 0
-	if (G3BindTex (bmBot, -1, lmProg, "btmTex", InitTMU0, bUseShader) ||
-		 G3BindTex (bmTop, -1, lmProg, "topTex", InitTMU1, bUseShader) ||
-		 G3BindTex (NULL, lightMap->handle, lmProg, "lMapTex", InitTMU2, bUseShader))
+	if (G3BindTex (bmBot, -1, lmProg, "btmTex", InitTMU0, bShaderMerge) ||
+		 G3BindTex (bmTop, -1, lmProg, "topTex", InitTMU1, bShaderMerge) ||
+		 G3BindTex (NULL, lightMap->handle, lmProg, "lMapTex", InitTMU2, bShaderMerge))
 		return 1;
 #else
 	InitTMU0 ();	// use render pipeline 0 for bottom texture
@@ -1006,7 +1010,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		return 1;
 	bmBot = BmCurFrame (bmBot);
 	OglTexWrap (bmBot->glTexture, GL_REPEAT);
-	if (bUseShader)
+	if (bShaderMerge)
 		glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 	if (bmTop) { // use render pipeline 0 for overlay texture
 		InitTMU1 ();
@@ -1019,7 +1023,7 @@ if (gameStates.render.color.bLightMapsOk &&
 	// use render pipeline 2 for lightmap texture
 	InitTMU2 ();
 	OGL_BINDTEX (lightMap->handle);
-	if (bUseShader)
+	if (bShaderMerge)
 		glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
 #endif
 	glBegin (GL_TRIANGLE_FAN);
@@ -1056,7 +1060,7 @@ else
 	else if (tmap_drawer_ptr == draw_tmap) {
 		// this controls merging of textures containing color keyed transparency 
 		// or transpareny in the bottom texture with an overlay texture present
-		int	bUseShader,
+		int	bShaderMerge,
 				bTransparent = 0,
 				bSuperTransp = 0;
 		if (bmTop) {
@@ -1066,79 +1070,78 @@ else
 				bSuperTransp = (BM_PARENT (bmP)->bm_data.alt.bm_supertranspFrames [nFrame / 32] & (1 << (nFrame % 32))) != 0;
 			//bTransparent = gameStates.render.grAlpha < (float) GR_ACTUAL_FADE_LEVELS;
 			}
-#if OGL_SHADERS
 		// only use shaders for highres textures containing color keyed transparency
-		bUseShader = 
+		bShaderMerge = 
 			bmTop && 
 			gameOpts->ogl.bGlTexMerge && 
 			gameStates.render.textures.bGlsTexMergeOk && 
-			bSuperTransp;
+			(bSuperTransp || gameOpts->ogl.bUseLighting);
 			//(bTransparent || bSuperTransp);
-#else
-		int bUseShader = 0;
-#endif
 		// if the bottom texture contains transparency, draw the overlay texture in a separate step
-		bDrawBM = bmTop && !bUseShader;
+		bDrawBM = bmTop && !bShaderMerge;
 		if (bSuperTransp)
 			r_tpolyc++;
-		InitTMU0 ();
-		if (OglBindBmTex (bmBot, 0))
-			return 1;
-		bmBot = BmCurFrame (bmBot);
-		OglTexWrap (bmBot->glTexture, GL_REPEAT);
-#if OGL_SHADERS
-		if (bUseShader) {	
-			bmMask = BM_MASK (bmTop);
-#	if SHADER_OPT
-			hProg = texMergeProg [bSuperTransp ? bmMask ? 2 : 1 : 0];
-			if (tmProg != hProg)
-				glUseProgramObject (tmProg = hProg);
-#	else
-			tmProg = texMergeProg [bSuperTransp ? bmMask ? 2 : 1 : 0];
-			glUseProgramObject (tmProg);
-#	endif
-			glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 
-							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
-			InitTMU1 ();
-			if (OglBindBmTex (bmTop, 0))
-				return 1;
-			bmTop = BmCurFrame (bmTop);
-			OglTexWrap (bmTop->glTexture, GL_REPEAT);
-			glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
-			if (bmMask) {
-				InitTMU2 ();
-				if (OglBindBmTex (bmMask, 0))
-					return 1;
-				OglTexWrap (bmMask->glTexture, GL_REPEAT);
-				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+		if (bShaderMerge || gameOpts->ogl.bUseLighting) {	
+			GLint loc;
+			if (gameOpts->ogl.bUseLighting) {
+				glUseProgramObject (tmProg = genShaderProg);
+				glUniform1f (loc = glGetUniformLocation (tmProg, "nLights"), 
+								 (GLfloat) gameData.render.lights.ogl.shader.nLights);
+				glUniform1i (loc = glGetUniformLocation (tmProg, "lightTex"), 3);
+				InitTMU3 ();
+				glBindTexture (GL_TEXTURE_2D, gameData.render.lights.ogl.shader.nTexHandle);
+				tmType = 0;
 				}
-#if 0
-			else {
-				OglActiveTexture (GL_TEXTURE2);
-				glEnable (GL_TEXTURE_2D);
-				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-				glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
-				glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS);
-				glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-				}
+			if (bShaderMerge) {
+				bmMask = BM_MASK (bmTop);
+				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
+				if (gameOpts->ogl.bUseLighting)
+					tmType++;
+				else
+					glUseProgramObject (tmProg = tmShaderProgs [tmType]);
+				INIT_TMU (InitTMU0, bmBot);
+				glUniform1i (loc = glGetUniformLocation (tmProg, "btmTex"), 0);
+				INIT_TMU (InitTMU1, bmTop);
+				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+				if (bmMask) {
+					INIT_TMU (InitTMU2, bmMask);
+					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+					}
+#if 0 //failed attempt to properly handle overlay texture lighting
+				else {
+					OglActiveTexture (GL_TEXTURE2);
+					glEnable (GL_TEXTURE_2D);
+					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+					glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+					glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
+					glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+					glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS);
+					glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+					}
 #endif
+				}
+			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
+							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+			if (gameOpts->ogl.bUseLighting) {
+				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeFS"), tmType);
+				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeVS"), tmType);
+				}
 			}
-#	if SHADER_OPT
-		else if (tmProg)
-			glUseProgramObject (tmProg = (GLhandleARB) 0);
-#	else
-		else if (bmTop && !bDrawBM) {
+		else {
+			InitTMU0 ();
+			if (OglBindBmTex (bmBot, 0))
+				return 1;
+			bmBot = BmCurFrame (bmBot);
+			OglTexWrap (bmBot->glTexture, GL_REPEAT);
+			}
+#if 0
+		if (!bShaderMerge && bmTop && !bDrawBM) {
 			InitTMU1 ();
 			if (OglBindBmTex (bmTop, 0))
 				return 1;
 			bmTop = BmCurFrame (bmTop);
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			}
-
-#	endif
 #endif
 		//CapTMapColor (uvl_list, nv, bmBot);
 #if USE_VERTNORMS
@@ -1160,7 +1163,6 @@ else
 			OglVertex3f (*pp);
 			}
 		glEnd ();
-#if OGL_SHADERS
 		if (bDrawBM) {
 			r_tpolyc++;
 			OglActiveTexture (GL_TEXTURE0_ARB);
@@ -1185,17 +1187,14 @@ else
 			glDisable (GL_TEXTURE_2D);
 #endif
 			}
-		else if (bUseShader) {
+		else if (bShaderMerge) {
 #if OGL_CLEANUP
 			OglActiveTexture (GL_TEXTURE1_ARB);
 			OGL_BINDTEX (0);
 			glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
-#if !SHADER_OPT
-			glUseProgramObject (tmProg = 0);
-#endif
+			glUseProgramObject (genShaderProg = 0);
 			}
-#endif
 		}
 	else {
 #if TRACE	
@@ -1472,29 +1471,29 @@ bool OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy,
 	int w1, h1;
 	int bTGA = (dest->bm_props.flags & BM_FLAG_TGA) != 0;
 //	w1=w;h1=h;
-	w1=grdCurScreen->sc_w;
-	h1=grdCurScreen->sc_h;
+w1=grdCurScreen->sc_w;
+h1=grdCurScreen->sc_h;
 
-	if (gameOpts->ogl.bReadPixels > 0) {
-		glDisable (GL_TEXTURE_2D);
-		glReadBuffer (GL_FRONT);
-		if (bTGA)
-			glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+if (gameOpts->ogl.bReadPixels > 0) {
+	glDisable (GL_TEXTURE_2D);
+	glReadBuffer (GL_FRONT);
+	if (bTGA)
+		glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 //			glReadPixels (sx, grdCurScreen->sc_h - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->bm_texBuf);
-		else {
-			if (w1*h1*3>OGLTEXBUFSIZE)
-				Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
-			glReadPixels (0, 0, w1, h1, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-			}
+	else {
+		if (w1*h1*3>OGLTEXBUFSIZE)
+			Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
+		glReadPixels (0, 0, w1, h1, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+		}
 //		glReadPixels (sx, grdCurScreen->sc_h- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 //		glReadPixels (sx, sy, w+sx, h+sy, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-		}
-	else {
-		if (dest->bm_props.flags & BM_FLAG_TGA)
-			memset (dest->bm_texBuf, 0, w1*h1*4);
-		else
-			memset (gameData.render.ogl.texBuf, 0, w1*h1*3);
-		}
+	}
+else {
+	if (dest->bm_props.flags & BM_FLAG_TGA)
+		memset (dest->bm_texBuf, 0, w1*h1*4);
+	else
+		memset (gameData.render.ogl.texBuf, 0, w1*h1*3);
+	}
 if (bTGA) {
 	sx += src->bm_props.x;
 	sy += src->bm_props.y;
@@ -1775,12 +1774,6 @@ OGL_VIEWPORT (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();
-#endif
-#if SHADER_OPT
-if (lmProg)
-	glUseProgramObject (lmProg = 0);
-if (tmProg)
-	glUseProgramObject (tmProg = 0);
 #endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix

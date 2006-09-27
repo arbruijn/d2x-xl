@@ -41,15 +41,14 @@ there I just had it exit instead.
 
 //------------------------------------------------------------------------------
 
-#define LEHM_CODE			0
 #define LMAP_REND2TEX	0
 
-GLhandleARB lightmapProg [3] = {0,0,0}; 
-GLhandleARB f [3] = {0,0,0}; 
-GLhandleARB v [3] = {0,0,0}; 
+GLhandleARB lmShaderProgs [3] = {0,0,0}; 
+GLhandleARB lmFS [3] = {0,0,0}; 
+GLhandleARB lmVS [3] = {0,0,0}; 
 
 int numLightMaps; 
-ogl_texture lightMaps [MAX_SEGMENTS * 6];  //Level Lightmaps - currently hardset to 5400, probably need to change this to a variable number
+ogl_texture lightMaps [MAX_SEGMENTS * 6];  //Level Lightmaps
 tLightMap *lightData = NULL;  //Level lights
 
 #ifndef GL_VERSION_20
@@ -65,9 +64,12 @@ PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv = NULL;
 PFNGLGETINFOLOGARBPROC				glGetInfoLog = NULL; 
 PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocation = NULL; 
 PFNGLUNIFORM4FARBPROC				glUniform4f = NULL; 
-PFNGLUNIFORM1IARBPROC				glUniform1i = NULL; 
 PFNGLUNIFORM3FARBPROC				glUniform3f = NULL; 
 PFNGLUNIFORM1FARBPROC				glUniform1f = NULL; 
+PFNGLUNIFORM4FVARBPROC				glUniform4fv = NULL; 
+PFNGLUNIFORM3FVARBPROC				glUniform3fv = NULL; 
+PFNGLUNIFORM1FVARBPROC				glUniform1fv = NULL; 
+PFNGLUNIFORM1IARBPROC				glUniform1i = NULL; 
 #endif
 
 #define TEXTURE_CHECK 1
@@ -78,8 +80,8 @@ int InitLightData (void);
 
 #ifdef _DEBUG
 
-char *lightMapFS [3] = {"lightmaps.frag", "lightmaps2.frag", "lightmaps3.frag"};
-char *lightMapVS [3] = {"lightmaps.vert", "lightmaps2.vert", "lightmaps3.vert"};
+char *lightMapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
+char *lightMapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
 
 #else
 
@@ -168,9 +170,17 @@ void InitLightmapShaders (void)
 if (gameStates.render.color.bLightMapsOk) {
 	LogErr ("building lightmap shader programs\n");
 	for (i = 0; i < 2; i++) {
-		CreateShaderProg (f + i, v + i, lightmapProg + i, lightMapFS [i], lightMapVS [i], &gameStates.render.color.bLightMapsOk);
-		if (!gameStates.render.color.bLightMapsOk)
+		if (lmShaderProgs [i])
+			DeleteShaderProg (lmShaderProgs + i);
+		gameStates.render.color.bLightMapsOk = 
+			CreateShaderProg (lmShaderProgs + i) &&
+			CreateShaderFunc (lmShaderProgs + i, lmFS + i, lmVS + i, lightMapFS [i], lightMapVS [i], 1) &&
+			LinkShaderProg (lmShaderProgs + i);
+		if (!gameStates.render.color.bLightMapsOk) {
+			while (i)
+				DeleteShaderProg (lmShaderProgs + --i);
 			break;
+			}
 		}
 	}
 }
@@ -762,12 +772,6 @@ return numLightMaps;
 
 //------------------------------------------------------------------------------
 
-#if LEHM_CODE
-#	include "main\lehm_lightmap.c"
-#endif
-
-//------------------------------------------------------------------------------
-
 #if LMAP_REND2TEX
 
 // create 512 brightness values using inverse square
@@ -802,10 +806,6 @@ for (i = 512; i; i--, brightMap++)
 
 void ComputeLightMaps (int segNum)
 {
-#if LEHM_CODE
-create_light_maps ();
-return;
-#else
 	segment		*segP; 
 	side			*sideP; 
 	tLightMap	*lmapP; 
@@ -1048,7 +1048,6 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 #endif
 		}
 	}
-#endif //LEHM_CODE
 }
 
 //------------------------------------------------------------------------------
