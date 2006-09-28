@@ -150,7 +150,7 @@ int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
 bool G3DrawLine (g3s_point *p0, g3s_point *p1)
 {
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+//OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
 glVertex3x (p0->p3_vec.x, p0->p3_vec.y, -p0->p3_vec.z);
 glVertex3x (p1->p3_vec.x, p1->p3_vec.y, -p1->p3_vec.z);
@@ -909,9 +909,7 @@ VmsVecToFloat (pvNormal, &vNormal);
 
 inline fVector3 *G3GetNormal (g3s_point *pPoint, fVector3 *pvNormal)
 {
-	int	i = pPoint->p3_index;
-
-return (i < 0) ? pvNormal : &gameData.segs.vertNorms [i].vNormal;
+return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
 }
 
 //------------------------------------------------------------------------------
@@ -928,36 +926,29 @@ return vReflect;
 
 //------------------------------------------------------------------------------
 
-void G3VertexColor (fVector3 *pvVertNorm, vms_vector *pVertPos, int nVertex)
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex)
 {
-	fVector3			lightDir, vReflect, vertPos;
+	fVector3			lightDir, vReflect;
 	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
 	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
 	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
 	float				NdotL, RdotE, fLightDist, fAttenuation, fMatShininess = 0.0f;
-	int				i, bMatSpecular = 0;
+	int				i, j, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
 
-if (nVertex >= 0) {
-	pc = gameData.render.color.vertices + nVertex;
-	if (pc->index) {
-		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
-		return;
-		}
-	}
 if (gameData.render.lights.ogl.material.bValid) {
+#if 0
 	if (gameData.render.lights.ogl.material.emissive.c.r ||
 		 gameData.render.lights.ogl.material.emissive.c.g ||
 		 gameData.render.lights.ogl.material.emissive.c.b) {
-		OglColor4sf (gameData.render.lights.ogl.material.emissive.c.r,
-						 gameData.render.lights.ogl.material.emissive.c.g,
-						 gameData.render.lights.ogl.material.emissive.c.b,
-						 1.0);
-		return;
+		bMatEmissive = 1;
+		nMatLight = gameData.render.lights.ogl.material.nLight;
+		colorSum = gameData.render.lights.ogl.material.emissive;
 		}
+#endif
 	bMatSpecular = 
 		gameData.render.lights.ogl.material.specular.c.r ||
 		gameData.render.lights.ogl.material.specular.c.g ||
@@ -967,6 +958,13 @@ if (gameData.render.lights.ogl.material.bValid) {
 		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
 		}
 	}
+if (!bMatEmissive && (nVertex >= 0)) {
+	pc = gameData.render.color.vertices + nVertex;
+	if (pc->index) {
+		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
+		return;
+		}
+	}
 if (!gameStates.ogl.bUseTransform) {
 	G3RotatePointf (&vertNorm, pvVertNorm);
 	VmVecNormalizef (&vertNorm, &vertNorm);
@@ -974,16 +972,25 @@ if (!gameStates.ogl.bUseTransform) {
 else
 	vertNorm = *pvVertNorm;
 //VmVecNegatef (&vertNorm);
-VmsVecToFloat (&vertPos, pVertPos);
-for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
+for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
+	if (i == nMatLight)
+		continue;
+	if (!(psl->bState && psl->nType))
+		continue;
 	lightColor = *((fVector3 *) &psl->color);
 	lightPos = psl->pos;
-	VmVecSubf (&lightDir, &lightPos, &vertPos);
+	VmVecSubf (&lightDir, &lightPos, pVertPos);
 	//scaled quadratic fAttenuation depending on brightness
 	fLightDist = VmVecMagf (&lightDir) / 10.0f;
-	fLightDist *= fLightDist;
+#if 0
+	fLightDist -= 0.7f;
+	if (fLightDist < 1.0f)
+		fLightDist = 1.0f;
+	else
+#endif
+		fLightDist *= fLightDist;
 	fAttenuation = fLightDist / psl->brightness;
-	if (fAttenuation > 100.0)
+	if (fAttenuation > 50.0)
 		continue;	//too far away
 	VmVecNormalizef (&lightDir, &lightDir);
 	NdotL = VmVecDotf (&vertNorm, &lightDir);
@@ -1007,6 +1014,7 @@ for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
 		VmVecIncf (&vertColor, &lightColor);
 		}
 	VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
+	j++;
 	}
 if (colorSum.c.r > 1.0)
 	colorSum.c.r = 1.0;
@@ -1015,12 +1023,14 @@ if (colorSum.c.g > 1.0)
 if (colorSum.c.b > 1.0)
 	colorSum.c.b = 1.0;
 OglColor4sf (colorSum.c.r, colorSum.c.g, colorSum.c.b, 1.0);
-if (pc) {
+#if 1
+if (!bMatEmissive && pc) {
 	pc->index = 1;
 	pc->color.red = colorSum.c.r;
 	pc->color.green = colorSum.c.g;
 	pc->color.blue = colorSum.c.b;
 	}
+#endif
 } 
 
 //------------------------------------------------------------------------------
@@ -1058,7 +1068,7 @@ bool G3DrawTexPolyMulti (
 	grs_bitmap	*bmP, *bmMask;
 	g3s_point	**pp;
 #if USE_VERTNORMS
-	fVector3		vNormal;
+	fVector3		vNormal, vVertex;
 #endif
 
 if (!bmBot)
@@ -1247,9 +1257,11 @@ else
 #endif
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+#if 1
 			if (gameOpts->ogl.bUseLighting)
-				G3VertexColor (G3GetNormal (*pp, &vNormal), &((*pp)->p3_vec), (*pp)->p3_index);
+				G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index);
 			else
+#endif
 				SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
 			if (bmTop && !bDrawBM)
@@ -1257,6 +1269,17 @@ else
 			OglVertex3f (*pp);
 			}
 		glEnd ();
+#if 0 //draw the vertex normals
+		glColor3f (1.0f, 1.0f, 1.0f);
+		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+			g3s_point pn;
+			pn = **pp;
+			pn.p3_vec.x += (fix) (pn.p3_normal.vNormal.p.x * 655360.f);
+			pn.p3_vec.y += (fix) (pn.p3_normal.vNormal.p.y * 655360.f);
+			pn.p3_vec.z += (fix) (pn.p3_normal.vNormal.p.z * 655360.f);
+			G3DrawLine (*pp, &pn);
+			}
+#endif
 		if (bDrawBM) {
 			r_tpolyc++;
 			OglActiveTexture (GL_TEXTURE0_ARB);
@@ -1267,9 +1290,11 @@ else
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+#if 1
 				if (gameOpts->ogl.bUseLighting)
-					G3VertexColor (G3GetNormal (*pp, &vNormal), &((*pp)->p3_vec), (*pp)->p3_index);
+					G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index);
 				else
+#endif
 					SetTMapColor (uvl_list + c, c, bmTop, 1);
 				SetTexCoord (uvl_list + c, orient, 0);
 				OglVertex3f (*pp);

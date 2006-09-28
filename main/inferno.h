@@ -712,6 +712,7 @@ typedef struct tOglLight {
 	short			nSide;
 	short			nObject;
 	ubyte			bState;
+	ubyte			nType;
 } tOglLight;
 
 typedef struct tOglMaterial {
@@ -723,6 +724,7 @@ typedef struct tOglMaterial {
 	fVector3		emissive;
 	ubyte			shininess;
 	ubyte			bValid;
+	short			nLight;
 } tOglMaterial;
 
 typedef struct tShaderLight {
@@ -730,7 +732,9 @@ typedef struct tShaderLight {
 	fVector4		color;
 	fVector3		pos;
 #endif
-float			brightness;
+	float			brightness;
+	ubyte			bState;
+	ubyte			nType;
 } tShaderLight;
 
 typedef struct tShaderLightData {
@@ -739,10 +743,15 @@ typedef struct tShaderLightData {
 	GLuint			nTexHandle;
 } tShaderLightData;
 
+#define MAX_NEAREST_LIGHTS 16
+
 typedef struct tOglLightData {
 	tOglLight			lights [MAX_OGL_LIGHTS];
-	int					nLights;
+	short					nNearestLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
 	short					owners [MAX_OBJECTS];
+	short					nLights;
+	short					nMaxLights;
+	short					nSegment;
 	tShaderLightData	shader;
 	tOglMaterial		material;
 } tOglLightData;
@@ -846,15 +855,9 @@ typedef struct tSlideSegs {
 	ubyte	nSides;
 } tSlideSegs;
 
-typedef struct tVertNorm {
-	fVector3		vNormal;
-	ubyte			nFaces;	// # of faces that use this vertex
-} tVertNorm;
-
 typedef struct tSegmentData {
 	vms_vector			vertices [MAX_VERTICES];
 	fVector3				fVertices [MAX_VERTICES];
-	tVertNorm			vertNorms [MAX_VERTICES];
 	segment				segments [MAX_SEGMENTS];
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
@@ -991,6 +994,7 @@ typedef struct tPOF_object {
 	short					nVerts;
 	vms_vector			*pvVerts;
 	tOOF_vector			*pvVertsf;
+	g3s_normal			*pVertNorms;
 	vms_vector			vCenter;
 	vms_vector			*pvRotVerts;
 	tPOF_faceList		faces;

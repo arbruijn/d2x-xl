@@ -1125,6 +1125,8 @@ if ((objP->type==OBJ_NONE)/* || (objP->type==OBJ_CAMBOT)*/){
 	}
 mld_save = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
+SetNearestStaticLights (objP->segnum, 1);
+SetNearestDynamicLights (objP->segnum);
 switch (objP->render_type) {
 	case RT_NONE:	
 		break;		//doesn't render, like the player
@@ -1210,6 +1212,7 @@ switch (objP->render_type) {
 	default: 
 		Error ("Unknown render_type <%d>", objP->render_type);
 	}
+SetNearestStaticLights (objP->segnum, 0);
 
 #ifdef NEWDEMO
 if (objP->render_type != RT_NONE)

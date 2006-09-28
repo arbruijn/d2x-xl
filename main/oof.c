@@ -2107,7 +2107,7 @@ int OOF_DrawSubObject (tOOF_object *po, tOOF_subObject *pso, int bFacing, float 
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
-	tOOF_vector		*pv, *phv;
+	tOOF_vector		*pv, *pvn, *phv;
 	grs_bitmap		*bmP;
 	int				i, j;
 	float				fl, r, g, b;
@@ -2115,6 +2115,7 @@ int OOF_DrawSubObject (tOOF_object *po, tOOF_subObject *pso, int bFacing, float 
 if (bShadowTest)
 	return 1;
 pv = pso->pvRotVerts;
+pvn = pso->pvNormals;
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	pfv = pf->pVerts;
 #if 0
@@ -2136,17 +2137,19 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (OglBindBmTex (bmP, 0))
 			return 0;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		if (pso->nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)) {
+		if (pso->nFlags & (gameOpts->ogl.bUseLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 
 						  fl * pso->glowInfo.color.b, 
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
-		else 
+		else if (!gameOpts->ogl.bUseLighting)
 			glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
 			phv = pv + pfv->nIndex;
+			if (gameOpts->ogl.bUseLighting)
+				G3VertexColor ((fVector3 *) (pvn + pfv->nIndex), (fVector3 *) phv, -1);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3f (phv->x, phv->y, -phv->z);
 			}	

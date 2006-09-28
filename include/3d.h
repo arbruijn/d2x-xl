@@ -168,6 +168,12 @@ typedef struct g3s_codes {
 
 //Used to store rotated points for mines.  Has frame count to indictate
 //if rotated, and flag to indicate if projected.
+typedef struct g3s_normal {
+	fVector3		vNormal;
+	ubyte			nFaces;	// # of faces that use this vertex
+} g3s_normal;
+
+
 typedef struct g3s_point {
 	vms_vector	p3_vec;  //x,y,z of rotated point
 #ifdef D1XD3D
@@ -178,6 +184,7 @@ typedef struct g3s_point {
 	ubyte			p3_codes;     //clipping codes
 	ubyte			p3_flags;     //projected?
 	short			p3_index;     //keep structure longword aligned
+	g3s_normal	p3_normal;
 } g3s_point;
 
 //macros to reference x,y,z elements of a 3d point

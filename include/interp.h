@@ -20,13 +20,14 @@
 fix G3PolyModelSize (void *model_ptr);
 
 //gives the interpreter an array of points to use
-void G3SetInterpPoints(g3s_point *pointlist);
+void G3SetModelPoints(g3s_point *pointlist);
 
 //calls the object interpreter to render an object.  The object renderer
 //is really a seperate pipeline. returns true if drew
-bool G3DrawPolyModel(void *model_ptr,grs_bitmap **model_bitmaps,vms_angvec *anim_angles,fix light,fix *glow_values,tRgbColorf *obj_colors);
+bool G3DrawPolyModel (object *objP, void *model_ptr,grs_bitmap **model_bitmaps,vms_angvec *anim_angles,
+							 fix light,fix *glow_values, tRgbColorf *obj_colors, tPOF_object *po);
 
-int G3DrawPolyModelShadow (object *objP, void *modelP, vms_angvec *pAnimAngles, tPOF_object *po);
+int G3DrawPolyModelShadow (object *objP, void *modelP, vms_angvec *pAnimAngles);
 
 int G3FreePolyModelItems (tPOF_object *po);
 

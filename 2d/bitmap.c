@@ -159,7 +159,8 @@ grs_bitmap *GrCreateBitmapSub (int w, int h, unsigned char *data, int bTGA)
     grs_bitmap *bmP;
 
 bmP = (grs_bitmap *) d_malloc (sizeof (grs_bitmap));
-GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bTGA);
+if (bmP)
+	GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bTGA);
 return bmP;
 }
 

@@ -498,7 +498,7 @@ switch (tMapNum) {
 	case 364:
 		bIsLight = 1; 	
 		tempLight.color [0] = (GLfloat) 0.1; 
-		tempLight.color [1] = (GLfloat) 0.5; 
+		tempLight.color [1] = (GLfloat) 0.9; 
 		tempLight.color [2] = (GLfloat) 0.1; 
 		tempLight.range = baseRange / 2; 
 		break; 

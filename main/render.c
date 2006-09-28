@@ -471,7 +471,7 @@ VmVecZero (&center.p3_vec);
 for (i = 0; i < nv; i++) {
 	G3DrawLine (pointlist [i], pointlist [(i + 1) % nv]);
 	VmVecInc (&center.p3_vec, &pointlist [i]->p3_vec);
-	nf = &gameData.segs.vertNorms [pointlist [i]->p3_index].vNormal;
+	nf = &pointlist [i]->p3_normal.vNormal;
 	n.x = (fix) (nf->p.x * 65536.0f);
 	n.y = (fix) (nf->p.y * 65536.0f);
 	n.z = (fix) (nf->p.z * 65536.0f);
@@ -923,7 +923,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 120 && props.sideNum == 1)
+if (props.segNum == 3 && props.sideNum == 2)
 	props.segNum = props.segNum;
 #endif
 
@@ -1672,6 +1672,8 @@ if (!cc.and) {		//all off screen?
 #endif
 	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->type!=OBJ_ROBOT))
   	   bAutomapVisited [segnum]=1;
+	SetNearestStaticLights (segnum, 1);
+	SetNearestDynamicLights (segnum);
 	if (gameStates.render.bQueryOcclusion) {
 			short		sideVerts [4];
 			double	sideDists [6];
@@ -1698,10 +1700,11 @@ if (!cc.and) {		//all off screen?
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sideNums [sn]);
 		}
-	else
-		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
+	else {
+		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sn);
 		}
+	SetNearestStaticLights (segnum, 0);
 	}
 OglResetTransform ();
 }

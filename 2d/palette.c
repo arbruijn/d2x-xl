@@ -173,7 +173,7 @@ ubyte grFadeTable[256*GR_FADE_LEVELS];
 
 //------------------------------------------------------------------------------
 
-void GrSetPaletteGamma(int gamma)
+void GrSetPaletteGamma (int gamma)
 {
 CLAMP (gamma, 0, 16);
 if (gameData.render.nPaletteGamma != gamma) {
@@ -189,7 +189,7 @@ if (gameData.render.nPaletteGamma != gamma) {
 
 int GrGetPaletteGamma()
 {
-	return gameData.render.nPaletteGamma;
+return gameData.render.nPaletteGamma;
 }
 
 //------------------------------------------------------------------------------

@@ -1911,7 +1911,7 @@ return 0;
 
 void AddToVertexNormal (int nVertex, vms_vector *pvNormal)
 {
-	tVertNorm *pn = gameData.segs.vertNorms + nVertex;
+	g3s_normal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
 pn->nFaces++;
 pn->vNormal.p.x += f2fl (pvNormal->x);
@@ -2031,12 +2031,14 @@ extern int check_for_degenerate_segment (segment *segP);
 void ComputeVertexNormals (void)
 {
 	int			i;
-	tVertNorm	*pv;
+	g3s_point	*pp;
 
-for (i = gameData.segs.nVertices, pv = gameData.segs.vertNorms; i; i--, pv++) {
-	pv->vNormal.p.x /= pv->nFaces;
-	pv->vNormal.p.y /= pv->nFaces;
-	pv->vNormal.p.z /= pv->nFaces;
+for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
+	pp->p3_normal.vNormal.p.x /= pp->p3_normal.nFaces;
+	pp->p3_normal.vNormal.p.y /= pp->p3_normal.nFaces;
+	pp->p3_normal.vNormal.p.z /= pp->p3_normal.nFaces;
+	VmVecNormalizef (&pp->p3_normal.vNormal, &pp->p3_normal.vNormal);
+	pp->p3_normal.nFaces = 1;
 	}
 }
 
@@ -2065,7 +2067,7 @@ void ValidateSegmentAll (void)
 	int	s;
 
 gameOpts->render.nMathFormat = 0;
-memset (gameData.segs.vertNorms, 0, sizeof (gameData.segs.vertNorms));
+memset (gameData.segs.points, 0, sizeof (gameData.segs.points));
 for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	if (gameData.segs.segments [s].segnum != -1)
@@ -2074,7 +2076,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	{
 	int said=0;
-	for (s=gameData.segs.nLastSegment+1; s<MAX_SEGMENTS; s++)
+	for (s=gameData.segs.nLastSegment+1; s < MAX_SEGMENTS; s++)
 		if (gameData.segs.segments [s].segnum != -1) {
 			if (!said) {
 #if TRACE		

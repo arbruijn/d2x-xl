@@ -642,8 +642,8 @@ void DrawPolygonModel (
 	Assert (model_num < gameData.models.nPolyModels);
 	po = gameData.models.polyModels + model_num;
 	if (objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
-		G3SetInterpPoints (gameData.models.polyModelPoints);
-		G3DrawPolyModelShadow (objP, po->model_data, anim_angles, gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id);
+		G3SetModelPoints (gameData.models.polyModelPoints);
+		G3DrawPolyModelShadow (objP, po->model_data, anim_angles);
 		return;
 		}
 	//check if should use simple model (depending on detail level chosen)
@@ -690,7 +690,7 @@ void DrawPolygonModel (
 	Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
 	G3StartInstanceMatrix (pos, orient);
-	G3SetInterpPoints (gameData.models.polyModelPoints);
+	G3SetModelPoints (gameData.models.polyModelPoints);
 #ifdef _3DFX
    _3dfx_rendering_poly_obj = 1;
 #endif
@@ -698,7 +698,7 @@ void DrawPolygonModel (
 	PA_DFX (gameStates.render.nLighting = 0);
 
 	if (flags == 0)		//draw entire object
-		G3DrawPolyModel (po->model_data, gameData.models.textures, anim_angles, light, glow_values, color);
+		G3DrawPolyModel (objP, po->model_data, gameData.models.textures, anim_angles, light, glow_values, color, NULL);
 	else {
 		int i;
 	
@@ -711,8 +711,8 @@ void DrawPolygonModel (
 				VmVecAvg (&ofs, &po->submodel_mins [i], &po->submodel_maxs [i]);
 				VmVecNegate (&ofs);
 				G3StartInstanceMatrix (&ofs, NULL);
-				G3DrawPolyModel (&po->model_data [po->submodel_ptrs [i]], gameData.models.textures, anim_angles, 
-									 light, glow_values, color);
+				G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, anim_angles, 
+									 light, glow_values, color, NULL);
 				G3DoneInstance ();
 				}	
 		}

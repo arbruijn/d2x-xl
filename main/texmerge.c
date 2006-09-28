@@ -313,9 +313,13 @@ if (!bmP ||
 		GrFreeBitmap (bmP);
 	cacheP->bitmap =
 	bmP = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 1);
+	if (!bmP)
+		return NULL;
 	}
 else
 	bmP->bm_props.flags = (char) BM_FLAG_TGA;
+if (!bmP->bm_texBuf)
+	return NULL;
 bmP->bm_palette = gamePalette;
 if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 	if (bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) {

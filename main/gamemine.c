@@ -1081,7 +1081,7 @@ void QSortLightDist (tLightDist *pDist, int left, int right)
 {
 	int			l = left, 
 					r = right, 
-					m = pDist [ (l + r) / 2].nDist;
+					m = pDist [(l + r) / 2].nDist;
 	tLightDist	h;
 
 while (pDist [l].nDist < m)
@@ -1108,43 +1108,32 @@ if (left < r)
 int ComputeNearestSegmentLights (void)
 {
 	segment				*segP;
-	tLightInfo			*pli;
+	tOglLight			*pl;
 	int					h, i, j;
-	tOOF_vector			center, dist;
-	vms_vector			*pv;
+	vms_vector			center, dist;
 	struct tLightDist	*pDists;
 
-if (!gameData.render.shadows.nLights)
+if (!gameData.render.lights.ogl.nLights)
 	return 0;
-if (! (pDists = d_malloc (gameData.render.shadows.nLights * sizeof (tLightDist)))) {
+if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
-	center.x =
-	center.y =
-	center.z = 0;
-	for (j = 0; j < 8; j++) {
-		pv = gameData.segs.vertices + segP->verts [j];
-		center.x += (float) pv->x / 65336.0f;
-		center.y += (float) pv->y / 65336.0f;
-		center.z += (float) pv->z / 65336.0f;
-		}	
-	center.x /= 8.0f;
-	center.y /= 8.0f;
-	center.z /= 8.0f;
-	pli = gameData.render.shadows.lightInfo;
-	for (j = 0; j < gameData.render.shadows.nLights; j++, pli++) {
-		OOF_VecSub (&dist, &center, (tOOF_vector *) &pli->glPos);
+	COMPUTE_SEGMENT_CENTER (&center, segP);
+	pl = gameData.render.lights.ogl.lights;
+	for (j = 0; j < gameData.render.lights.ogl.nLights; j++, pl++) {
+		VmVecSub (&dist, &center, &pl->vPos);
 		pDists [j].nIndex = j;
-		pDists [j].nDist = (int) (OOF_VecMag (&dist) * 65536.0f);
+		pDists [j].nDist = VmVecMag (&dist);
 		}
-	QSortLightDist (pDists, 0, gameData.render.shadows.nLights - 1);
-	h = (gameData.render.shadows.nLights < 8) ? gameData.render.shadows.nLights : 8;
+	QSortLightDist (pDists, 0, gameData.render.lights.ogl.nLights - 1);
+	h = (gameData.render.lights.ogl.nMaxLights < MAX_NEAREST_LIGHTS) ? 
+		 gameData.render.lights.ogl.nMaxLights : MAX_NEAREST_LIGHTS;
 	for (j = 0; j < h; j++)
-		gameData.render.shadows.nNearestLights [i][j] = pDists [j].nIndex;
-	for (; j < 8; j++)
-		gameData.render.shadows.nNearestLights [i][j] = -1;
+		gameData.render.lights.ogl.nNearestLights [i][j] = pDists [j].nIndex;
+	for (; j < MAX_NEAREST_LIGHTS; j++)
+		gameData.render.lights.ogl.nNearestLights [i][j] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1596,10 +1585,13 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 ResetObjects (1);		//one object, the player
-if (gameOpts->ogl.bUseLighting)
+if (gameOpts->ogl.bUseLighting) {
 	AddOglLights ();
+	ComputeNearestSegmentLights ();
+	}
 #if SHADOWS
-ComputeNearestSegmentLights ();
+else
+	ComputeNearestSegmentLights ();
 #endif
 return 0;
 }

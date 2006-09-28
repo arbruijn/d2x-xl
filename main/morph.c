@@ -484,7 +484,7 @@ void MorphDrawObject (object *objP)
 	pmP=gameData.models.polyModels+objP->rtype.pobj_info.model_num;
 	light = ComputeObjectLight (objP, NULL);
 	G3StartInstanceMatrix (&objP->pos, &objP->orient);
-	G3SetInterpPoints (gameData.models.polyModelPoints);
+	G3SetModelPoints (gameData.models.polyModelPoints);
 	MorphDrawModel (pmP, 0, objP->rtype.pobj_info.anim_angles, light, mdP);
 	G3DoneInstance ();
 

@@ -363,6 +363,8 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlen
 #endif
 }
 
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex);
+
 #define BINDTEX_OPT 0
 
 #if BINDTEX_OPT
