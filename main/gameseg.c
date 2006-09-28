@@ -488,13 +488,30 @@ switch (segP->sides [sidenum].type)	{
 //	The center point is defined to be the average of the 4 points defining the side.
 void ComputeSideCenter (vms_vector *vp, segment *segP, int side)
 {
-	int	v;
 	sbyte	*s2v = sideToVerts [side];
+	short	*sv = segP->verts;
+	vms_vector h;
+	fix d;
 
-VmVecZero (vp);
-for (v = 4; v; v--, s2v++)
-	VmVecInc (vp, gameData.segs.vertices + segP->verts [*s2v]);
-VmVecScale (vp, F1_0/4);
+if (SEG_IDX (segP) == 120 && side == 1)
+	side = side;
+*vp = gameData.segs.vertices [segP->verts [*s2v++]];
+VmVecSub (&h, vp, gameData.segs.vertices + sv [*s2v++]);
+d = VmVecMag (&h);
+VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
+VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
+VmVecInc (vp, gameData.segs.vertices + sv [*s2v]);
+vp->x /= 4;
+vp->y /= 4;
+vp->z /= 4;
+VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][0]]);
+d = VmVecMag (&h);
+VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][1]]);
+d = VmVecMag (&h);
+VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][2]]);
+d = VmVecMag (&h);
+VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][3]]);
+d = VmVecMag (&h);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -503,11 +520,14 @@ VmVecScale (vp, F1_0/4);
 void ComputeSegmentCenter (vms_vector *vp, segment *segP)
 {
 	int v;
+	short	*sv = segP->verts;
 
-VmVecZero (vp);
-for (v = 0; v < 8; v++)
-	VmVecInc (vp, gameData.segs.vertices + segP->verts [v]);
-VmVecScale (vp, F1_0 / 8);
+*vp = gameData.segs.vertices [*sv++];
+for (v = 7; v; v--)
+	VmVecInc (vp, gameData.segs.vertices + *sv++);
+vp->x /= 8;
+vp->y /= 8;
+vp->z /= 8;
 }
 
 // -----------------------------------------------------------------------------
@@ -1891,7 +1911,7 @@ return 0;
 
 void AddToVertexNormal (int nVertex, vms_vector *pvNormal)
 {
-	tVertNorm	*pn = gameData.segs.vertNorms + nVertex;
+	tVertNorm *pn = gameData.segs.vertNorms + nVertex;
 
 pn->nFaces++;
 pn->vNormal.p.x += f2fl (pvNormal->x);

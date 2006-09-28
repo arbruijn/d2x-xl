@@ -199,6 +199,9 @@ typedef struct vms_matrix {
     vms_vector rvec, uvec, fvec;
   } __pack__ vms_matrix;
 
+typedef struct fMatrix3 {
+	fVector3		rVec, uVec, fVec;
+} fMatrix3;
 
 //Macros/functions to fill in fields of structures
 
@@ -332,6 +335,8 @@ static inline fVector3 *VmVecDecf (fVector3 *d, fVector3 *s)
 
 static inline fVector3 *VmsVecToFloat (fVector3 *d, vms_vector *s)
 	{d->p.x = f2fl (s->x); d->p.y = f2fl (s->y); d->p.z = f2fl (s->z); return d;}
+
+fMatrix3 *VmdMatToFloat (fMatrix3 *dest, vms_matrix *src);
 
 #else
 //adds two vectors, fills in dest, returns ptr to dest
@@ -509,7 +514,7 @@ vms_matrix *VmVector2MatrixNorm (vms_matrix * m, vms_vector *fvec, vms_vector *u
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal either source
 vms_vector *VmVecRotate (vms_vector *dest, vms_vector *src, vms_matrix * m);
-fVector3 *VmVecRotatef (fVector3 * dest, fVector3 * src, float * m);
+fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, fMatrix3 *m);
 
 //transpose a matrix in place. returns ptr to matrix
 vms_matrix *VmTransposeMatrix (vms_matrix * m);

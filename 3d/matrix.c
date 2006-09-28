@@ -43,32 +43,36 @@ void scale_matrix(void);
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_set_view_*() 
 void g3_set_view_angles(vms_vector *view_pos,vms_angvec *view_orient,fix zoom)
 {
-	viewInfo.zoom = zoom;
-	viewInfo.position = *view_pos;
-	VmAngles2Matrix(&viewInfo.view,view_orient);
+viewInfo.zoom = zoom;
+viewInfo.position = *view_pos;
+VmAngles2Matrix(&viewInfo.view,view_orient);
+VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
+VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 #ifdef D1XD3D
-	Win32_set_view_matrix ();
+Win32_set_view_matrix ();
 #endif
-	scale_matrix();
+scale_matrix();
 }
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_set_view_*() 
 void G3SetViewMatrix(vms_vector *view_pos, vms_matrix *view_matrix, fix zoom)
 {
-	viewInfo.zoom = zoom;
-	viewInfo.glZoom = (float) zoom / 65536.0f;
-	if (view_pos) {
-		viewInfo.position = *view_pos;
-		OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.position);
-		}
-	if (view_matrix) {
-		viewInfo.view = *view_matrix;
-		OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), &viewInfo.view);
-		}
+viewInfo.zoom = zoom;
+viewInfo.glZoom = (float) zoom / 65536.0f;
+if (view_pos) {
+	viewInfo.position = *view_pos;
+	VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
+	OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.position);
+	}
+if (view_matrix) {
+	viewInfo.view = *view_matrix;
+	VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
+	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), &viewInfo.view);
+	}
 #ifdef D1XD3D
-	Win32_set_view_matrix ();
+Win32_set_view_matrix ();
 #endif
-	scale_matrix();
+scale_matrix();
 }
 
 //performs aspect scaling on global view matrix
@@ -76,18 +80,19 @@ void scale_matrix(void)
 {
 	viewInfo.unscaledView = viewInfo.view;		//so we can use unscaled if we want
 
-	viewInfo.scale = viewInfo.windowScale;
-	if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
-		viewInfo.scale.z =  fixmul(viewInfo.scale.z,viewInfo.zoom);
-	else {			//zoom out by scaling x&y
-		fix s = fixdiv(f1_0,viewInfo.zoom);
+viewInfo.scale = viewInfo.windowScale;
+if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
+	viewInfo.scale.z =  fixmul(viewInfo.scale.z,viewInfo.zoom);
+else {			//zoom out by scaling x&y
+	fix s = fixdiv(f1_0,viewInfo.zoom);
 
-		viewInfo.scale.x = fixmul(viewInfo.scale.x,s);
-		viewInfo.scale.y = fixmul(viewInfo.scale.y,s);
-	}
-	//now scale matrix elements
-	VmVecScale(&viewInfo.view.rvec,viewInfo.scale.x);
-	VmVecScale(&viewInfo.view.uvec,viewInfo.scale.y);
-	VmVecScale(&viewInfo.view.fvec,viewInfo.scale.z);
+	viewInfo.scale.x = fixmul(viewInfo.scale.x,s);
+	viewInfo.scale.y = fixmul(viewInfo.scale.y,s);
+}
+//now scale matrix elements
+VmVecScale(&viewInfo.view.rvec,viewInfo.scale.x);
+VmVecScale(&viewInfo.view.uvec,viewInfo.scale.y);
+VmVecScale(&viewInfo.view.fvec,viewInfo.scale.z);
+VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 }
 

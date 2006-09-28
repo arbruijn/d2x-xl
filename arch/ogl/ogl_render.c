@@ -879,7 +879,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void G3CalcNormal (g3s_point **pointlist, vms_vector *pvNormal)
+void G3CalcNormal (g3s_point **pointlist, fVector3 *pvNormal)
 {
 	vms_vector	vNormal;
 	int	v [4];
@@ -902,34 +902,16 @@ else {
 	if (bFlip)
 		VmVecNegate (&vNormal);
 	}
+VmsVecToFloat (pvNormal, &vNormal);
 }
 
 //------------------------------------------------------------------------------
 
-void G3SetNormal (g3s_point *pPoint, vms_vector *pvNormal)
+inline fVector3 *G3GetNormal (g3s_point *pPoint, fVector3 *pvNormal)
 {
 	int	i = pPoint->p3_index;
 
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && pvNormal) {
-	if (i < 0) {
-		vms_vector	vNormal = *pvNormal;
-		if (!gameStates.ogl.bUseTransform)
-			G3RotatePoint (&vNormal, &vNormal);
-		//VmVecInc (&vNormal, &pPoint->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
-		}
-	else {
-		fVector3	vNormal = gameData.segs.vertNorms [i].vNormal;
-		if (gameStates.ogl.bUseTransform)
-			;//VmVecIncf (&vNormal, gameData.segs.fVertices + i);
-		else {
-			//fVector3	p;
-			G3RotatePointf (&vNormal, &vNormal);
-			//VmVecIncf (&vNormal, VmsVecToFloat (&p, &pPoint->p3_vec));
-			}
-		glNormal3fv ((GLfloat *) &vNormal);
-		}
-	}
+return (i < 0) ? pvNormal : &gameData.segs.vertNorms [i].vNormal;
 }
 
 //------------------------------------------------------------------------------
@@ -941,14 +923,14 @@ return vLight;
 
 //------------------------------------------------------------------------------
 
-void G3VertexColor (vms_vector *pvNormal, vms_vector *pvVertex, int nVertex)
+void G3VertexColor (fVector3 *pvVertNorm, vms_vector *pVertPos, int nVertex)
 {
-	fVector3			vNormal, vLight, vVertex;
+	fVector3			lightDir, vertPos;
 	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
 	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
-	fVector3			vertColor, colorSum = {0.0f, 0.0f, 0.0f};
+	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
 	float				NdotL, RdotV, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, bMatSpecular = 0;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
@@ -961,35 +943,38 @@ if (nVertex >= 0) {
 		return;
 		}
 	}
-VmsVecToFloat (&vNormal, pvNormal);
-if (!gameStates.ogl.bUseTransform)
-	G3RotatePointf (&vNormal, &vNormal);
-VmsVecToFloat (&vVertex, pvVertex);
+#if 1
+if (!gameStates.ogl.bUseTransform) {
+	G3RotatePointf (&vertNorm, pvVertNorm);
+	VmVecNormalizef (&vertNorm, &vertNorm);
+	}
+else
+	vertNorm = *pvVertNorm;
+//VmVecNegatef (&vertNorm);
+#endif
+VmsVecToFloat (&vertPos, pVertPos);
 for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
 	lightColor = *((fVector3 *) &psl->color);
 	lightPos = psl->pos;
-	VmVecNormalizef (&vLight, &lightPos);
-	NdotL = VmVecDotf (&vNormal, &vLight);
-	if (NdotL < 0.0)
-		NdotL = 0.0;
-	VmVecSubf (&vLight, &lightPos, &vVertex);
+	VmVecSubf (&lightDir, &lightPos, &vertPos);
 	//scaled quadratic fAttenuation depending on brightness
-	fLightDist = VmVecMagf (&vLight);
+	fLightDist = VmVecMagf (&lightDir) / 10.0f;
 	fLightDist *= fLightDist;
-	fLightDist /= 625.0;	//some scaling
 	fAttenuation = fLightDist / psl->brightness;
-	if (fAttenuation > 1000.0)
+	if (fAttenuation > 100.0)
 		continue;	//too far away
+	VmVecNormalizef (&lightDir, &lightDir);
+	NdotL = VmVecDotf (&vertNorm, &lightDir);
 	//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
 	VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
 	if ((NdotL > 0.0) && bMatSpecular) {
-		//RdotV = max (dot (reflect (-normalize (vLight), normal), normalize (-vVertex)), 0.0);
-		VmVecNormalizef (&vLight, &vLight);
-		VmVecNegatef (&vLight);
-		VmVecNegatef (&vVertex);
-		VmVecNormalizef (&vVertex, &vVertex);
-		RdotV = VmVecDotf (reflect (&vLight, &vNormal), &vVertex);
+		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
+		VmVecNormalizef (&lightDir, &lightDir);
+		VmVecNegatef (&lightDir);
+		VmVecNegatef (&vertPos);
+		VmVecNormalizef (&vertPos, &vertPos);
+		RdotV = VmVecDotf (reflect (&lightDir, &vertNorm), &vertPos);
 		if (RdotV < 0.0)
 			RdotV = 0.0;
 		//vertColor += vMatSpecular * lightColor * pow (RdotV, fMatShininess);
@@ -1049,7 +1034,7 @@ bool G3DrawTexPolyMulti (
 	grs_bitmap	*bmP, *bmMask;
 	g3s_point	**pp;
 #if USE_VERTNORMS
-	vms_vector	vNormal;
+	fVector3		vNormal;
 #endif
 
 if (!bmBot)
@@ -1117,7 +1102,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		if (bmTop)
 			SetTexCoord (uvl_list + c, orient, 1);
 		glMultiTexCoord2f (GL_TEXTURE2_ARB, f2glf (uvl_lMap [c].u), f2glf (uvl_lMap [c].v));
-		G3SetNormal (*pp, pvNormal);
+		//G3SetNormal (*pp, pvNormal);
 		OglVertex3f (*pp);
 		}
 	glEnd ();
@@ -1134,7 +1119,7 @@ else
 		glColor4f (0, 0, 0, 1.0f - (gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS));
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
-			G3SetNormal (*pp, pvNormal);
+			//G3SetNormal (*pp, pvNormal);
 			OglVertex3f (*pp);
 			}
 		glEnd ();
@@ -1228,19 +1213,18 @@ else
 		//CapTMapColor (uvl_list, nv, bmBot);
 #if USE_VERTNORMS
 		//if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && !pvNormal)
-		if (!pvNormal)
-			G3CalcNormal (pointlist, pvNormal = &vNormal);
+		if (pvNormal)
+			VmsVecToFloat (&vNormal, pvNormal);
+		else
+			G3CalcNormal (pointlist, &vNormal);
 #else
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 			G3Normal (pointlist, pvNormal);
 #endif
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
-#if USE_VERTNORMS
-			G3SetNormal (*pp, pvNormal);
-#endif
 			if (gameOpts->ogl.bUseLighting)
-				G3VertexColor (pvNormal, &((*pp)->p3_vec), (*pp)->p3_index);
+				G3VertexColor (G3GetNormal (*pp, &vNormal), &((*pp)->p3_vec), (*pp)->p3_index);
 			else
 				SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
@@ -1259,13 +1243,10 @@ else
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
-#if USE_VERTNORMS
-				G3SetNormal (*pp, pvNormal);
-#endif
 				if (gameOpts->ogl.bUseLighting)
-					G3VertexColor (pvNormal, &((*pp)->p3_vec), (*pp)->p3_index);
+					G3VertexColor (G3GetNormal (*pp, &vNormal), &((*pp)->p3_vec), (*pp)->p3_index);
 				else
-				SetTMapColor (uvl_list + c, c, bmTop, 1);
+					SetTMapColor (uvl_list + c, c, bmTop, 1);
 				SetTexCoord (uvl_list + c, orient, 0);
 				OglVertex3f (*pp);
 				}

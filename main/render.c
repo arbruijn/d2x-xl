@@ -453,6 +453,9 @@ void DrawOutline (int nv, g3s_point **pointlist)
 {
 	int i;
 	GLint depthFunc; 
+	g3s_point center, normal;
+	vms_vector n;
+	fVector3 *nf;
 
 #if 1 //def RELEASE
 	if (gameStates.render.bQueryOcclusion) {
@@ -464,8 +467,25 @@ void DrawOutline (int nv, g3s_point **pointlist)
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc(GL_ALWAYS);
 GrSetColorRGB (255, 255, 255, 255);
-for (i = 0; i < nv; i++)
+VmVecZero (&center.p3_vec);
+for (i = 0; i < nv; i++) {
 	G3DrawLine (pointlist [i], pointlist [(i + 1) % nv]);
+	VmVecInc (&center.p3_vec, &pointlist [i]->p3_vec);
+	nf = &gameData.segs.vertNorms [pointlist [i]->p3_index].vNormal;
+	n.x = (fix) (nf->p.x * 65536.0f);
+	n.y = (fix) (nf->p.y * 65536.0f);
+	n.z = (fix) (nf->p.z * 65536.0f);
+	G3RotatePoint (&n, &n);
+	VmVecScaleAdd (&normal.p3_vec, &pointlist [i]->p3_vec, &n, F1_0 * 10);
+	G3DrawLine (pointlist [i], &normal);
+	}
+VmVecNormal (&normal.p3_vec, 
+				 &pointlist [0]->p3_vec,
+				 &pointlist [1]->p3_vec,
+				 &pointlist [2]->p3_vec);
+VmVecInc (&normal.p3_vec, &center.p3_vec);
+VmVecScale (&normal.p3_vec, F1_0 * 10);
+G3DrawLine (&center, &normal);
 glDepthFunc (depthFunc);
 }
 
@@ -903,7 +923,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 91 && props.sideNum == 0)
+if (props.segNum == 120 && props.sideNum == 1)
 	props.segNum = props.segNum;
 #endif
 

@@ -746,7 +746,8 @@ void SetDynamicLight(void)
 				if (bGotColor)
 					bKeepDynColoring = 1;
 				if (xObjIntensity) {
-					ApplyLight(xObjIntensity, objP->segnum, objpos, nRenderVertices, renderVertices, objnum, NULL);//&color);
+					ApplyLight (xObjIntensity, objP->segnum, objpos, nRenderVertices, renderVertices, objnum, 
+								   (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) ? &color : NULL);
 					Lighting_objects[objnum] = 1;
 				} else
 					Lighting_objects[objnum] = 0;
@@ -1198,7 +1199,7 @@ else {
 	vms_vector	vOffs;
 	side			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
-	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
+	COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment); //, nSide);
 #if 0
 	VmVecScaleAdd (&vOffs, sideP->normals, sideP->normals + 1, 2);
 	VmVecScaleFrac (&vOffs, 1, 100);
@@ -1322,7 +1323,7 @@ gameData.render.lights.ogl.nLights = 0;
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		if (i != 68) continue;
+		//if (i != 120) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1335,6 +1336,8 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			pc = gameData.render.color.textures + t;
 			AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 			}
+		//if (gameData.render.lights.ogl.nLights)
+		//	return;
 		if (!gameStates.ogl.bHaveLights) {
 			RemoveOglLights ();
 			return;
@@ -1375,10 +1378,9 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		if (pl->color.red + pl->color.green + pl->color.blue == 0.0)
 			continue;
 		memcpy (&psl->color, &pl->color, sizeof (pl->color));
-		G3TransformPoint (&vPos, &pl->vPos);
-		psl->pos.p.x = f2fl (vPos.x);
-		psl->pos.p.y = f2fl (vPos.y);
-		psl->pos.p.z = f2fl (vPos.z);
+		VmsVecToFloat (&psl->pos, &pl->vPos);
+		if (!gameStates.ogl.bUseTransform)
+			G3TransformPointf (&psl->pos, &psl->pos);
 		psl->brightness = pl->brightness;
 		gameData.render.lights.ogl.shader.nLights++;
 		psl++;

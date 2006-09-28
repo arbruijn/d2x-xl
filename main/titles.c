@@ -773,6 +773,7 @@ void ShowBitmapFrame (int bRedraw)
 		G3StartFrame (0,0);
 		G3SetViewMatrix (&temp_pos,&temp_orient,0);
 		memcpy (&viewInfo.view, &temp_orient, sizeof (viewInfo.view));
+		VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 		temp_pos.z = w * F1_0;
 		G3DrawBitMap (&temp_pos, w * F1_0, h * F1_0, bitmap_ptr, 0, 1.0, 0, 0);
 		G3EndFrame ();

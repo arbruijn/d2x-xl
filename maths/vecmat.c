@@ -969,9 +969,19 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fMatrix3 *VmsMatToFloat (fMatrix3 *dest, vms_matrix *src)
+{
+VmsVecToFloat (&dest->rVec, &src->rvec);
+VmsVecToFloat (&dest->uVec, &src->uvec);
+VmsVecToFloat (&dest->fVec, &src->fvec);
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal source
-fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, float *m)
+fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, fMatrix3 *m)
 {
 	fVector3 h;
 
@@ -979,9 +989,9 @@ if (src == dest) {
 	h = *src;
 	src = &h;
 	}
-dest->p.x = VmVecDotf (src, (fVector3 *) m);
-dest->p.y = VmVecDotf (src, (fVector3 *) (m + 4));
-dest->p.z = VmVecDotf (src, (fVector3 *) (m + 8));
+dest->p.x = VmVecDotf (src, &m->rVec);
+dest->p.y = VmVecDotf (src, &m->uVec);
+dest->p.z = VmVecDotf (src, &m->fVec);
 return dest;
 }
 

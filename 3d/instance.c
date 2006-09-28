@@ -132,6 +132,8 @@ if (gameStates.ogl.bUseTransform) {
 		VmCopyTransposeMatrix (&tempm2, orient);
 		VmMatMul (&tempm, &tempm2, &viewInfo.view);
 		viewInfo.view = tempm;
+		VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
+		VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 		}
 	}
 }
@@ -167,6 +169,8 @@ if (gameStates.ogl.bUseTransform) {
 	Assert(nInstanceDepth >= 0);
 	viewInfo.position = instanceStack [nInstanceDepth].p;
 	viewInfo.view = instanceStack [nInstanceDepth].m;
+	VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
+	VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 	}
 }
 
