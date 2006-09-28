@@ -158,13 +158,13 @@
 //#define INLINE 1              //are some of these functions inline?
 
 typedef union fVector3 {
-	float a [3];
+	float v [3];
 	struct {float x, y, z;} p;
 	struct {float r, g, b;} c;
 } fVector3;
 
 typedef union fVector4 {
-	float a [4];
+	float v [4];
 	struct {float x, y, z, w;} p;
 	struct {float r, g, b, a;} c;
 } fVector4;
@@ -336,7 +336,7 @@ static inline fVector3 *VmVecDecf (fVector3 *d, fVector3 *s)
 static inline fVector3 *VmsVecToFloat (fVector3 *d, vms_vector *s)
 	{d->p.x = f2fl (s->x); d->p.y = f2fl (s->y); d->p.z = f2fl (s->z); return d;}
 
-fMatrix3 *VmdMatToFloat (fMatrix3 *dest, vms_matrix *src);
+fMatrix3 *VmsMatToFloat (fMatrix3 *dest, vms_matrix *src);
 
 #else
 //adds two vectors, fills in dest, returns ptr to dest

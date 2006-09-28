@@ -948,7 +948,25 @@ if (nVertex >= 0) {
 		return;
 		}
 	}
-#if 1
+if (gameData.render.lights.ogl.material.bValid) {
+	if (gameData.render.lights.ogl.material.emissive.c.r ||
+		 gameData.render.lights.ogl.material.emissive.c.g ||
+		 gameData.render.lights.ogl.material.emissive.c.b) {
+		OglColor4sf (gameData.render.lights.ogl.material.emissive.c.r,
+						 gameData.render.lights.ogl.material.emissive.c.g,
+						 gameData.render.lights.ogl.material.emissive.c.b,
+						 1.0);
+		return;
+		}
+	bMatSpecular = 
+		gameData.render.lights.ogl.material.specular.c.r ||
+		gameData.render.lights.ogl.material.specular.c.g ||
+		gameData.render.lights.ogl.material.specular.c.b;
+	if (bMatSpecular) {
+		matSpecular = gameData.render.lights.ogl.material.specular;
+		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
+		}
+	}
 if (!gameStates.ogl.bUseTransform) {
 	G3RotatePointf (&vertNorm, pvVertNorm);
 	VmVecNormalizef (&vertNorm, &vertNorm);
@@ -956,7 +974,6 @@ if (!gameStates.ogl.bUseTransform) {
 else
 	vertNorm = *pvVertNorm;
 //VmVecNegatef (&vertNorm);
-#endif
 VmsVecToFloat (&vertPos, pVertPos);
 for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
 	lightColor = *((fVector3 *) &psl->color);

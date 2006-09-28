@@ -1008,21 +1008,21 @@ pl->color.red = red;
 pl->color.green = green;
 pl->color.blue = blue;
 pl->brightness = brightness;
-pl->fSpecular [0] = red;
-pl->fSpecular [1] = green;
-pl->fSpecular [2] = blue;
+pl->fSpecular.v [0] = red;
+pl->fSpecular.v [1] = green;
+pl->fSpecular.v [2] = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
-	pl->fAmbient [i] = pl->fDiffuse [i] * 0.01f;
-	pl->fDiffuse [i] = 
+	pl->fAmbient.v [i] = pl->fDiffuse [i] * 0.01f;
+	pl->fDiffuse.v [i] = 
 #endif
-	pl->fEmissive [i] = pl->fSpecular [i];
+	pl->fEmissive.v [i] = pl->fSpecular.v [i] * brightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS
-pl->fAmbient [3] = 1.0f;
-pl->fDiffuse [3] = 1.0f;
-pl->fSpecular [3] = 1.0f;
+pl->fAmbient.v [3] = 1.0f;
+pl->fDiffuse.v [3] = 1.0f;
+pl->fSpecular.v [3] = 1.0f;
 glLightfv (pl->handle, GL_AMBIENT, pl->fAmbient);
 glLightfv (pl->handle, GL_DIFFUSE, pl->fDiffuse);
 glLightfv (pl->handle, GL_SPECULAR, pl->fSpecular);
@@ -1199,7 +1199,7 @@ else {
 	vms_vector	vOffs;
 	side			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
-	COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment); //, nSide);
+	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 #if 0
 	VmVecScaleAdd (&vOffs, sideP->normals, sideP->normals + 1, 2);
 	VmVecScaleFrac (&vOffs, 1, 100);
@@ -1292,20 +1292,18 @@ void SetOglLightMaterial (short nSegment, short nSide, short nObject)
 	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 	int nLight = FindOglLight (nSegment, nSide, nObject);
-return;
-if (nLight < 0) {
-	glMaterialfv (GL_FRONT, GL_EMISSION, fBlack);
-	glMaterialfv (GL_FRONT, GL_SPECULAR, fBlack);
-	glMateriali (GL_FRONT, GL_SHININESS, 0);
-	}
-else {
+
+if (nLight >= 0) {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
 	if (pl->bState) {
-		glMaterialfv (GL_FRONT, GL_EMISSION, pl->fEmissive);
-		glMaterialfv (GL_FRONT, GL_SPECULAR, pl->fSpecular);
-		glMateriali (GL_FRONT, GL_SHININESS, 96);
+		gameData.render.lights.ogl.material.emissive = *((fVector3 *) &pl->fEmissive);
+		gameData.render.lights.ogl.material.specular = *((fVector3 *) &pl->fEmissive);
+		gameData.render.lights.ogl.material.shininess = 96;
+		gameData.render.lights.ogl.material.bValid = 1;
+		return;
 		}
-	}
+	}	
+gameData.render.lights.ogl.material.bValid = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1320,10 +1318,12 @@ void AddOglLights (void)
 gameStates.ogl.bHaveLights = 1;
 //glEnable (GL_LIGHTING);
 gameData.render.lights.ogl.nLights = 0;
+gameData.render.lights.ogl.material.bValid = 0;
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
-		//if (i != 120) continue;
+		if (i == 3 && j == 2) 
+			i = i;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1335,8 +1335,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		if ((t > 0) && (t < MAX_WALL_TEXTURES)) {
 			pc = gameData.render.color.textures + t;
 			AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
-			}
-		//if (gameData.render.lights.ogl.nLights)
+			}84ata.render.lights.ogl.nLights)
 		//	return;
 		if (!gameStates.ogl.bHaveLights) {
 			RemoveOglLights ();
@@ -1352,7 +1351,6 @@ void TransformOglLights (void)
 {
 	int			i;
 	tOglLight	*pl = gameData.render.lights.ogl.lights;
-	vms_vector	vPos;
 
 #if USE_OGL_LIGHTS
 OglSetupTransform ();

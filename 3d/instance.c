@@ -40,6 +40,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "globvars.h"
 #include "inferno.h"
 #include "ogl_init.h"
+#include "vecmat.h"
 #include "oof.h"
 
 #define MAX_INSTANCE_DEPTH	5

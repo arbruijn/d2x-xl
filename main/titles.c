@@ -245,6 +245,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 #include "globvars.h"
 #include "strutil.h"
+#include "vecmat.h"
 
 #include "ogl_init.h"
 #ifdef __macosx__

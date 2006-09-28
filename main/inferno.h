@@ -702,17 +702,28 @@ typedef struct tOglLight {
 	float			brightness;
 #if USE_OGL_LIGHTS
 	unsigned		handle;
-	float			fAttenuation [3];	// constant, linear quadratic
-	float			fAmbient [4];
-	float			fDiffuse [4];
+	fVector3		fAttenuation;	// constant, linear quadratic
+	fVector4		fAmbient;
+	fVector4		fDiffuse;
 #endif
-	float			fSpecular [4];
-	float			fEmissive [4];
+	fVector4		fSpecular;
+	fVector4		fEmissive;
 	short			nSegment;
 	short			nSide;
 	short			nObject;
 	ubyte			bState;
 } tOglLight;
+
+typedef struct tOglMaterial {
+#if 0 //using global default values instead
+	fVector3		diffuse;
+	fVector3		ambient;
+#endif
+	fVector3		specular;
+	fVector3		emissive;
+	ubyte			shininess;
+	ubyte			bValid;
+} tOglMaterial;
 
 typedef struct tShaderLight {
 #if 1
@@ -733,6 +744,7 @@ typedef struct tOglLightData {
 	int					nLights;
 	short					owners [MAX_OBJECTS];
 	tShaderLightData	shader;
+	tOglMaterial		material;
 } tOglLightData;
 
 typedef struct tLightData {
