@@ -916,22 +916,27 @@ return (i < 0) ? pvNormal : &gameData.segs.vertNorms [i].vNormal;
 
 //------------------------------------------------------------------------------
 
-fVector3 *reflect (fVector3 *vLight, fVector3 *vNormal)
+fVector3 *G3Reflect (fVector3 *vReflect, fVector3 *vLight, fVector3 *vNormal)
 {
-return vLight;
+//2 * n * (l dot n) - l
+	float		LdotN = VmVecDotf (vLight, vNormal);
+
+VmVecScalef (vReflect, vNormal, 2 * LdotN);
+VmVecDecf (vReflect, vLight);
+return vReflect;
 }
 
 //------------------------------------------------------------------------------
 
 void G3VertexColor (fVector3 *pvVertNorm, vms_vector *pVertPos, int nVertex)
 {
-	fVector3			lightDir, vertPos;
+	fVector3			lightDir, vReflect, vertPos;
 	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
 	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
 	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
-	float				NdotL, RdotV, fLightDist, fAttenuation, fMatShininess = 0.0f;
+	float				NdotL, RdotE, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, bMatSpecular = 0;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
@@ -969,16 +974,18 @@ for (i = gameData.render.lights.ogl.shader.nLights; i; i--, psl++) {
 	VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
 	if ((NdotL > 0.0) && bMatSpecular) {
+		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
-		VmVecNormalizef (&lightDir, &lightDir);
-		VmVecNegatef (&lightDir);
-		VmVecNegatef (&vertPos);
-		VmVecNormalizef (&vertPos, &vertPos);
-		RdotV = VmVecDotf (reflect (&lightDir, &vertNorm), &vertPos);
-		if (RdotV < 0.0)
-			RdotV = 0.0;
-		//vertColor += vMatSpecular * lightColor * pow (RdotV, fMatShininess);
-		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotV, fMatShininess));
+		VmVecNegatef (&lightPos);	//create vector from light to eye
+		VmVecNormalizef (&lightPos, &lightPos);
+		VmVecNegatef (&lightDir); //need direction from light to vertex now
+		G3Reflect (&vReflect, &lightDir, &vertNorm);
+		VmVecNormalizef (&vReflect, &vReflect);
+		RdotE = VmVecDotf (&vReflect, &lightPos);
+		if (RdotE < 0.0)
+			RdotE = 0.0;
+		//vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
+		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, fMatShininess));
 		VmVecMulf (&lightColor, &lightColor, &matSpecular);
 		VmVecIncf (&vertColor, &lightColor);
 		}
