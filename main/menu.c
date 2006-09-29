@@ -1673,6 +1673,8 @@ do {
 		optColoredLight = opt++;
 		ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
 		nGunColorOpt = opt++;
+		nOglMaxLightsOpt = 
+		optObjectLight = -1;
 		}
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;

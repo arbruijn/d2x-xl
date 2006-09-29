@@ -1244,6 +1244,7 @@ pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
+pl->bSpot = 0;
 pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
