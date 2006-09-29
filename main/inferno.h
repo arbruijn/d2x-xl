@@ -714,10 +714,13 @@ typedef struct tOglLight {
 #endif
 	fVector4		fSpecular;
 	fVector4		fEmissive;
+	float			spotAngle;
+	float			spotExponent;
 	short			nSegment;
 	short			nSide;
 	short			nObject;
-	short			nPlayer;
+	ubyte			nPlayer;
+	ubyte			bSpot;
 	ubyte			bState;
 	ubyte			nType;
 } tOglLight;
@@ -738,9 +741,13 @@ typedef struct tShaderLight {
 #if 1
 	fVector4		color;
 	fVector3		pos;
+	fVector3		dir;
 #endif
 	float			brightness;
+	float			spotAngle;
+	float			spotExponent;
 	ubyte			bState;
+	ubyte			bSpot;
 	ubyte			nType;
 } tShaderLight;
 

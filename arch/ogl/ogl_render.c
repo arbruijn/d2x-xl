@@ -929,13 +929,13 @@ return vReflect;
 
 void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor)
 {
-	fVector3			lightDir, vReflect;
+	fVector3			lightDir, spotDir, vReflect;
 	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
 	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
 	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
-	float				NdotL, RdotE, fLightDist, fAttenuation, fMatShininess = 0.0f;
+	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
@@ -1009,6 +1009,17 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		continue;	//too far away
 	VmVecNormalizef (&lightDir, &lightDir);
 	NdotL = VmVecDotf (&vertNorm, &lightDir);
+	if (psl->bSpot) {
+		if (NdotL <= 0)
+			continue;
+		VmVecNormalizef (&spotDir, &psl->dir);
+		VmVecNegatef (&lightDir);
+		spotEffect = VmVecDotf (&spotDir, &lightDir);
+		if (spotEffect <= psl->spotAngle)
+			continue;
+		spotEffect = (float) pow (spotEffect, psl->spotExponent);
+		fAttenuation /= spotEffect;
+		}
 	//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
 	VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
@@ -1017,7 +1028,8 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
 		VmVecNegatef (&lightPos);	//create vector from light to eye
 		VmVecNormalizef (&lightPos, &lightPos);
-		VmVecNegatef (&lightDir); //need direction from light to vertex now
+		if (!psl->bSpot)
+			VmVecNegatef (&lightDir); //need direction from light to vertex now
 		G3Reflect (&vReflect, &lightDir, &vertNorm);
 		VmVecNormalizef (&vReflect, &vReflect);
 		RdotE = VmVecDotf (&vReflect, &lightPos);

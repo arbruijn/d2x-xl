@@ -242,7 +242,7 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 
 int AddOglHeadLight (object *objP);
 void RemoveOglHeadLight (object *objP);
-void SetOglHeadLightPos (void);
+void UpdateOglHeadLight (void);
 
 //--------------------------------------------------------------------------
 
@@ -381,7 +381,7 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-	if (objP->type != 5) return; //only weapons
+	//if (objP->type != 5) return; //only weapons
 		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 		if (objP->type == OBJ_PLAYER) {
 			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
@@ -1391,7 +1391,7 @@ OglResetTransform ();
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 
 gameData.render.lights.ogl.shader.nLights = 0;
-SetOglHeadLightPos ();
+UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 #if 0 //need to add all lights
 	if (pl->bState) {
@@ -1405,6 +1405,13 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPointf (&psl->pos, &psl->pos);
 		psl->brightness = pl->brightness;
+		if (psl->bSpot = pl->bSpot) {
+			VmsVecToFloat (&psl->dir, &pl->vDir);
+			if (!gameStates.ogl.bUseTransform)
+				G3RotatePointf (&psl->dir, &psl->dir);
+			psl->spotAngle = pl->spotAngle;
+			psl->spotExponent = pl->spotExponent;
+			}
 		psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 		psl->nType = pl->nType;
 		gameData.render.lights.ogl.shader.nLights++;
@@ -1555,6 +1562,9 @@ if (gameOpts->ogl.bUseLighting) {
 	if (nLight >= 0) {
 		pl = gameData.render.lights.ogl.lights + nLight;
 		pl->nPlayer = objP->id;
+		pl->bSpot = 1;
+		pl->spotAngle = 0.25f;
+		pl->spotExponent = 2.0f;
 		}
 	return nLight;
 	}
@@ -1573,7 +1583,7 @@ if (gameOpts->ogl.bUseLighting) {
 
 //------------------------------------------------------------------------------
 
-void SetOglHeadLightPos (void)
+void UpdateOglHeadLight (void)
 {
 	tOglLight	*pl;
 	object		*objP;
@@ -1586,7 +1596,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	objP = gameData.objs.objects + gameData.multi.players [nPlayer].objnum;
 	pl->vPos = objP->pos;
 	pl->vDir = objP->orient.fvec;
-	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size);
+	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 2);
 	}
 }
 
