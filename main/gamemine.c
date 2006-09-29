@@ -1119,6 +1119,8 @@ if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDis
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
+h = (gameOpts->ogl.nMaxLights < MAX_NEAREST_LIGHTS) ? 
+	 gameOpts->ogl.nMaxLights : MAX_NEAREST_LIGHTS;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.ogl.lights;
@@ -1128,8 +1130,6 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		pDists [j].nDist = VmVecMag (&dist);
 		}
 	QSortLightDist (pDists, 0, gameData.render.lights.ogl.nLights - 1);
-	h = (gameData.render.lights.ogl.nMaxLights < MAX_NEAREST_LIGHTS) ? 
-		 gameData.render.lights.ogl.nMaxLights : MAX_NEAREST_LIGHTS;
 	for (j = 0; j < h; j++)
 		gameData.render.lights.ogl.nNearestLights [i][j] = pDists [j].nIndex;
 	for (; j < MAX_NEAREST_LIGHTS; j++)

@@ -1986,7 +1986,7 @@ void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime
 				blobObjP->lifeleft = lifetime;
 			AddChildObjectP (pParent, blobObjP);
 			if (bThruster) {
-				blobObjP->render_type = RT_THRUSTER;
+				//blobObjP->render_type = RT_THRUSTER;
 				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
 				}
 			}
@@ -1999,7 +1999,7 @@ void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime
 					blobObjP->lifeleft = lifetime;
 			AddChildObjectP (pParent, blobObjP);
 			if (bThruster) {
-				blobObjP->render_type = RT_THRUSTER;
+				//blobObjP->render_type = RT_THRUSTER;
 				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
 				}	
 			}

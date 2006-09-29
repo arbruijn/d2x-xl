@@ -240,6 +240,10 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 	{434, 0x020000L}
 };
 
+int AddOglHeadLight (object *objP);
+void RemoveOglHeadLight (object *objP);
+void SetOglHeadLightPos (void);
+
 //--------------------------------------------------------------------------
 
 void InitTextureBrightness (void)
@@ -377,8 +381,14 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-	if (objP->type == 5)
+	//if (objP->type == 5) //only weapons
 		AddOglLight (color, xObjIntensity, -1, -1, objnum);
+		if (objP->type == OBJ_PLAYER) {
+			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+				RemoveOglHeadLight (objP);
+			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
+				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+			}
 	return;
 	}
 if (xObjIntensity) {
@@ -402,9 +412,9 @@ if (xObjIntensity) {
 #endif
 			{
 				vertpos = gameData.segs.vertices+vertnum;
-				dist = VmVecDistQuick(obj_pos, vertpos);
-				dist = fixmul(dist/4, dist/4);
-				if (dist < abs(obji_64)) {
+				dist = VmVecDistQuick (obj_pos, vertpos) / 4;
+				dist = fixmul(dist, dist);
+				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 
@@ -587,10 +597,16 @@ switch (objtype) {
 
 	case OBJ_FIREBALL:
 		if ((objP->id != 0xff) && (objP->render_type != RT_THRUSTER)) {
+			fix xLight = gameData.eff.vClips [0][objP->id].light_value;
+#if 0
+			if (objP->render_type != RT_THRUSTER)
+				xLight /= 8;
+#endif
 			if (objP->lifeleft < F1_0*4)
-				return fixmul(fixdiv(objP->lifeleft, gameData.eff.vClips [0] [objP->id].xTotalTime), gameData.eff.vClips [0] [objP->id].light_value);
+				return fixmul (fixdiv(objP->lifeleft, 
+								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
-				return gameData.eff.vClips [0] [objP->id].light_value;
+				return xLight;
 		} else
 			 return 0;
 		break;
@@ -1042,9 +1058,10 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 
 	if (nObject >= 0)
 		return gameData.render.lights.ogl.owners [nObject];
-	for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++)
-		if ((pl->nSegment == nSegment) && (pl->nSide == nSide))
-			return i;
+	if (nSegment >= 0)
+		for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++)
+			if ((pl->nSegment == nSegment) && (pl->nSide == nSide))
+				return i;
 	}
 return -1;
 }
@@ -1192,7 +1209,7 @@ if (i < gameData.render.lights.ogl.nLights)
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].pos;
-else {
+else if (nSegment >= 0) {
 #if 0
 	vms_vector	vOffs;
 	side			*sideP = gameData.segs.segments [nSegment].sides + nSide;
@@ -1227,7 +1244,7 @@ pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
-pl->nType = (nObject < 0) ? 0 : 2;
+pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
 if (nObject >= 0)
@@ -1374,6 +1391,7 @@ OglResetTransform ();
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 
 gameData.render.lights.ogl.shader.nLights = 0;
+SetOglHeadLightPos ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 #if 0 //need to add all lights
 	if (pl->bState) {
@@ -1387,12 +1405,8 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPointf (&psl->pos, &psl->pos);
 		psl->brightness = pl->brightness;
-		if (pl->nType == 2)
-			pl = pl;
 		psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 		psl->nType = pl->nType;
-		if (psl->nType == 2)
-			pl = pl;
 		gameData.render.lights.ogl.shader.nLights++;
 		psl++;
 #if 0
@@ -1448,12 +1462,64 @@ if (gameOpts->ogl.bUseLighting) {
 	while (i--) {
 		psl--;
 		pl--;
-		if (psl->nType != 2)
+		if (psl->nType < 2)
 			break;
-		VmVecSub (&d, &c, &pl->vPos);
-		m = VmVecMag (&d);
-		psl->bState = (m <= F1_0 * 50);
+		if (psl->nType == 3)
+			psl->bState = 1;
+		else {
+			VmVecSub (&d, &c, &pl->vPos);
+			m = VmVecMag (&d);
+			psl->bState = (m <= F1_0 * 100);
+			}
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int AddOglHeadLight (object *objP)
+{
+if (gameOpts->ogl.bUseLighting) {
+		tRgbColorf c = {1.0f, 1.0f, 1.0f};
+		tOglLight	*pl;
+		int			nLight;
+
+	nLight = AddOglLight (&c, F1_0 * 50, -1, -1, -1);
+	if (nLight >= 0) {
+		pl = gameData.render.lights.ogl.lights + nLight;
+		pl->nPlayer = objP->id;
+		}
+	return nLight;
+	}
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void RemoveOglHeadLight (object *objP)
+{
+if (gameOpts->ogl.bUseLighting) {
+	DeleteOglLight (gameData.render.lights.ogl.nHeadLights [objP->id]);
+	gameData.render.lights.ogl.nHeadLights [objP->id] = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void SetOglHeadLightPos (void)
+{
+	tOglLight	*pl;
+	object		*objP;
+	short			nPlayer;
+
+for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
+	if (gameData.render.lights.ogl.nHeadLights [nPlayer] < 0)
+		continue;
+	pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nHeadLights [nPlayer];
+	objP = gameData.objs.objects + gameData.multi.players [nPlayer].objnum;
+	pl->vPos = objP->pos;
+	pl->vDir = objP->orient.fvec;
+	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size);
 	}
 }
 

@@ -180,6 +180,8 @@ typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
 	int bUseLighting;
+	int bLightObjects;
+	int nMaxLights;
 	int bRgbaFormat;
 	int bIntensity4;
 	int bLuminance4Alpha4;
@@ -698,6 +700,7 @@ typedef struct tSphereData {
 
 typedef struct tOglLight {
 	vms_vector	vPos;
+	vms_vector	vDir;
 	tRgbColorf	color;
 	float			brightness;
 #if USE_OGL_LIGHTS
@@ -711,6 +714,7 @@ typedef struct tOglLight {
 	short			nSegment;
 	short			nSide;
 	short			nObject;
+	short			nPlayer;
 	ubyte			bState;
 	ubyte			nType;
 } tOglLight;
@@ -750,7 +754,7 @@ typedef struct tOglLightData {
 	short					nNearestLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
 	short					owners [MAX_OBJECTS];
 	short					nLights;
-	short					nMaxLights;
+	short					nHeadLights [MAX_PLAYERS];
 	short					nSegment;
 	tShaderLightData	shader;
 	tOglMaterial		material;

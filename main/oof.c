@@ -2110,6 +2110,7 @@ int OOF_DrawSubObject (tOOF_object *po, tOOF_subObject *pso, int bFacing, float 
 	tOOF_vector		*pv, *pvn, *phv;
 	grs_bitmap		*bmP;
 	int				i, j;
+	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
 if (bShadowTest)
@@ -2137,13 +2138,13 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (OglBindBmTex (bmP, 0))
 			return 0;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		if (pso->nFlags & (gameOpts->ogl.bUseLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
+		if (pso->nFlags & (bOglLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 
 						  fl * pso->glowInfo.color.b, 
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
-		else if (!gameOpts->ogl.bUseLighting)
+		else if (bOglLighting)
 			glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {

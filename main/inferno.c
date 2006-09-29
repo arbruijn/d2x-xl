@@ -2128,6 +2128,8 @@ void InitOglOptions (int i)
 {
 if (i) {
 	gameOptions [1].ogl.bUseLighting = 0;
+	gameOptions [1].ogl.bLightObjects = 0;
+	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bRgbaFormat = 4;
 	gameOptions [1].ogl.bIntensity4 = 1;
@@ -2150,6 +2152,8 @@ else {
 #else
 	gameOptions [0].ogl.bUseLighting = 0;
 #endif
+	gameOptions [0].ogl.bLightObjects = 0;
+	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bRgbaFormat = 4;
 	gameOptions [0].ogl.bIntensity4 = 1;
@@ -2599,7 +2603,6 @@ gameData.objs.nNextSignature = 1;
 memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissileSig));
 gameData.render.morph.xRate = MORPH_RATE;
 memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
-gameData.render.lights.ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 gameData.render.lights.ogl.nLights = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
 gameData.pig.tex.nFirstMultiBitmap = -1;

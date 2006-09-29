@@ -137,6 +137,7 @@ while (n--) {
 		}
 	else
 		dest->p3_index = -1;
+#if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
 			norms->vNormal.p.x /= norms->nFaces;
@@ -148,6 +149,7 @@ while (n--) {
 		dest->p3_normal = *norms++;
 		}
 	else
+#endif
 		dest->p3_normal.nFaces = 0;
 	G3TransformAndEncodePoint (dest++, src++);
 	}
@@ -799,7 +801,6 @@ else {
 	pfv = WORDPTR (p+30);
 	VmsVecToFloat (&nf, pn);
 	for (i = 0; i < nv; i++) {
-		CBRK (pfv [i] >= po->nVerts);
 		pvn = po->pVertNorms + pfv [i];
 		VmVecIncf (&pvn->vNormal, &nf);
 		pvn->nFaces++;
@@ -1535,12 +1536,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, NULL);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, NULL);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, NULL);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, NULL);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
 			}
 		p += 32;
 		}
@@ -1559,7 +1560,7 @@ for (;;) {
 		else
 			a = &zeroAngles;
 		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, NULL);
+		G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
 		G3DoneInstance ();
 		p += 20;
 		}

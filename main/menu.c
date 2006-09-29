@@ -1522,7 +1522,7 @@ static int	nFPSopt, nRSDopt,
 				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, 
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt, nSmokeSizeOpt, nUseSmokeOpt, nUseCamOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt;
+				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -1556,8 +1556,22 @@ if (!gameStates.app.bNostalgia) {
 	if (v != GrGetPaletteGamma ())
 		GrSetPaletteGamma (v);
 	}
+m = menus + nOglLightOpt;
+v = m->value;
+if (v != gameOpts->ogl.bUseLighting) {
+	gameOpts->ogl.bUseLighting = v;
+	*key = -2;
+	return;
+	}
+m = menus + nOglMaxLightsOpt;
+v = m->value + 4;
+if (v != gameOpts->ogl.nMaxLights) {
+	gameOpts->ogl.nMaxLights = v;
+	sprintf (m->text, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+	m->rebuild = 1;
+	return;
+	}
 if (gameOpts->app.bExpertMode) {
-	m = menus + nRendQualOpt;
 	m = menus + nFPSopt;
 	v = fpsTable [m->value];
 	if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
@@ -1597,12 +1611,12 @@ void RenderOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, 
-			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl;
+			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight;
 #if 0
 	int checks;
 #endif
 
-	char szMaxFps [50];
+	char szMaxFps [50], szMaxLights [50];
 	int bLightMaps = gameOpts->render.color.bUseLightMaps;
 
 do {
@@ -1625,10 +1639,26 @@ do {
 		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
 		nLightMapsOpt = opt++;
 		}
-	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_L, HTX_RENDER_AMBICOLOR);
-	optColoredLight = opt++;
-	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
-	nGunColorOpt = opt++;
+	ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_L, HTX_OGL_LIGHTING);
+	nOglLightOpt = opt++;
+	if (gameOpts->ogl.bUseLighting) {
+		ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+		optObjectLight = opt++;
+		sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+		*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
+		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, 12, KEY_I, HTX_OGL_MAXLIGHTS);
+		nOglMaxLightsOpt = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		optColoredLight =
+		nGunColorOpt = 0;
+		}
+	else {
+		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_L, HTX_RENDER_AMBICOLOR);
+		optColoredLight = opt++;
+		ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
+		nGunColorOpt = opt++;
+		}
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
@@ -1671,8 +1701,12 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-	gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+	if (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)
+		gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+	else {
+		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+		}
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
 	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
@@ -2752,6 +2786,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.color.bUseLightMaps = 0;
 			gameOpts->render.nQuality = 1;
 			gameOpts->render.cockpit.bTextGauges = 1;
+			gameOpts->ogl.bUseLighting = 0;
+			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->movies.nQuality = 0;
 			gameOpts->movies.bResize = 0;
 			extraGameInfo [0].bUseSmoke = 0;
@@ -2770,6 +2806,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nScale = 0;
 			gameOpts->render.smoke.nSize = 3;
 			gameOpts->render.cockpit.bTextGauges = 1;
+			gameOpts->ogl.bUseLighting = 0;
+			gameOpts->ogl.bLightObjects = 0;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cameras.nFPS = 5;
 			gameOpts->movies.nQuality = 0;
@@ -2788,6 +2826,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nScale = 1;
 			gameOpts->render.smoke.nSize = 3;
 			gameOpts->render.cockpit.bTextGauges = 0;
+			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->ogl.bLightObjects = 0;
+			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cameras.nFPS = 0;
 			gameOpts->movies.nQuality = 0;
@@ -2806,6 +2847,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nScale = 2;
 			gameOpts->render.smoke.nSize = 3;
 			gameOpts->render.cockpit.bTextGauges = 0;
+			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->ogl.bLightObjects = 0;
+			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cameras.nFPS = 0;
 			gameOpts->movies.nQuality = 1;
@@ -2823,6 +2867,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bCollisions = 1;
 			gameOpts->render.smoke.nScale = 3;
 			gameOpts->render.smoke.nSize = 3;
+			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->ogl.bLightObjects = 1;
+			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cockpit.bTextGauges = 0;
 			gameOpts->render.cameras.nFPS = 0;

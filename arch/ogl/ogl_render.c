@@ -92,6 +92,8 @@ GLuint glExitTMU = 0;
 
 int OglBindBmTex (grs_bitmap *bm, int transp);
 void ogl_clean_texture_cache (void);
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex);
+/*inline*/ void SetTMapColor (uvl *uvl_list, int i, grs_bitmap *bm, int bResetColor);
 
 //------------------------------------------------------------------------------
 
@@ -981,15 +983,19 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	lightPos = psl->pos;
 	VmVecSubf (&lightDir, &lightPos, pVertPos);
 	//scaled quadratic fAttenuation depending on brightness
-	fLightDist = VmVecMagf (&lightDir) / 10.0f;
+	if (psl->brightness < 0)
+		fAttenuation = 0.01f;
+	else {
+		fLightDist = VmVecMagf (&lightDir) / 10.0f;
 #if 0
-	fLightDist -= 0.7f;
-	if (fLightDist < 1.0f)
-		fLightDist = 1.0f;
-	else
+		fLightDist -= 0.7f;
+		if (fLightDist < 1.0f)
+			fLightDist = 1.0f;
+		else
 #endif
-		fLightDist *= fLightDist;
-	fAttenuation = fLightDist / psl->brightness;
+			fLightDist *= fLightDist;
+		fAttenuation = fLightDist / psl->brightness;
+		}
 	if (fAttenuation > 50.0)
 		continue;	//too far away
 	VmVecNormalizef (&lightDir, &lightDir);
@@ -1196,9 +1202,11 @@ else
 			if (bShaderMerge) {
 				bmMask = BM_MASK (bmTop);
 				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
+#if 0
 				if (gameOpts->ogl.bUseLighting)
 					tmType++;
 				else
+#endif
 					glUseProgramObject (tmProg = tmShaderProgs [tmType]);
 				INIT_TMU (InitTMU0, bmBot);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "btmTex"), 0);
@@ -1274,9 +1282,13 @@ else
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 			g3s_point pn;
 			pn = **pp;
-			pn.p3_vec.x += (fix) (pn.p3_normal.vNormal.p.x * 655360.f);
-			pn.p3_vec.y += (fix) (pn.p3_normal.vNormal.p.y * 655360.f);
-			pn.p3_vec.z += (fix) (pn.p3_normal.vNormal.p.z * 655360.f);
+			if (!pn.p3_normal.nFaces)
+				VmVecNormalizef (&pn.p3_normal.vNormal, &vNormal);
+			else
+				G3RotatePointf (&pn.p3_normal.vNormal, &pn.p3_normal.vNormal);
+			pn.p3_vec.x += (fix) (pn.p3_normal.vNormal.p.x * 5 * 65536.f);
+			pn.p3_vec.y += (fix) (pn.p3_normal.vNormal.p.y * 5 * 65536.f);
+			pn.p3_vec.z += (fix) (pn.p3_normal.vNormal.p.z * 5 * 65536.f);
 			G3DrawLine (*pp, &pn);
 			}
 #endif

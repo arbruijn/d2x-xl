@@ -1721,9 +1721,10 @@ void LoadGameTexts(void);
 #define TXT_GOAL_BONUS				GT(776)
 #define TXT_MBALL_SIZE				GT(777)
 #define TXT_MBALL_PYROFORCE		GT(778)
+#define TXT_OGL_LIGHTING			GT(779)
+#define TXT_OBJECT_LIGHTING		GT(780)
+#define TXT_OGL_MAXLIGHTS			GT(781)
 #if 0
-#define TXT_				GT(779)
-#define TXT_				GT(780)
 #define TXT_				GT(781)
 #define TXT_				GT(782)
 #define TXT_				GT(783)
@@ -2057,12 +2058,12 @@ void LoadGameTexts(void);
 #define HTX_MULTI_MBALLOPTS	HT(194)				
 #define HTX_GOAL_BONUS			HT(195)				
 #define HTX_MBALL_SIZE			HT(196)				
+#define HTX_OGL_LIGHTING		HT(197)
+#define HTX_OBJECT_LIGHTING	HT(198)
+#define HTX_OGL_MAXLIGHTS		HT(199)				
 
 #if 0
 				
-#define HTX_				HT(197)				
-#define HTX_				HT(198)				
-#define HTX_				HT(199)				
 
 #define HTX_				HT(200)				
 #define HTX_				HT(201)				
