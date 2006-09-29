@@ -1973,8 +1973,8 @@ char *defaultHelpTexts [][2] = {
 	 "Here you can set the size of the Monsterball compared to a shield\norb. Beware: A ball of size 4 or bigger does not fit in a\nstandard segment any more!"},
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungsverfahren.\n\nD2X-XL emuliert die OpenGL-Beleuchtung wegen der grossen Anzahl\nbenoetigter Lichter per Software. Dadurch kann es dadurch zu\nstarken Leistungseinbussen kommen.\n\nDie Leistung dieser Beleuchtungsmethode haengt nicht von der\nGrafikkarte, sondern ausschliesslich von der Geschwindigkeit\nvon CPU und Speicher ab.", 
 	 "If checked, D2X-XL uses the OpenGL lighting methods.\n\nDue to the large number of lights in Descent, D2X-XL emulates\nOpenGL lighting by software. This can cause a strong\nperformance hit.\n\nThe speed of this lighting method does not depend on the graphics hardware, but exclusively on the CPU and memory speed."},
-	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungs-\nmethode auch fuer Hires-Objekte. Nur fuer sehr schnelle\nRechner empfohlen.", 
-	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers."},
+	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungs-\nmethode auch fuer Hires-Objekte. Nur fuer sehr schnelle\nRechner empfohlen.\n\nWird diese Option ausgeschaltet, berechnet D2X-XL anhand der\ndurchschnittlichen Helligkeit am Ort des Objekts seine Beleuchtung.", 
+	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers.\n\nIf unchecked, D2X-XL computes the object's lighting depending on the average\nlight at the object's location."},
 	{"Hier kann die Anzahl nahegelegener Lichter eingestellt werden,\ndie die Beleuchtung eines gegebenen Punktes in der Mine be-\neinflussen. D2X-XL verwendet die hier eingestellte Anzahl der\njedem Segment am naechsten gelegenen Lichter, um das Segment\nzu beleuchten.",
 	 "Adjust the number of nearby lights that influence lighting\nfor a given point in the mine. D2X-XL will use the number of\nnearest lights set here to each segment of the mine to\nilluminate that segment."},
 #if 0
