@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "bm.h"
 #include "gr.h"
 #include "piggy.h"
+#include "ogl_init.h"
 #include "segment.h"
 #include "aistruct.h"
 #include "object.h"

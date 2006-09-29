@@ -251,6 +251,7 @@ typedef struct tOOF_subObject {
 	tOOF_vector			*pvVerts;
 	tOOF_vector			*pvRotVerts;
 	tOOF_vector			*pvNormals;
+	tFaceColor			*pVertColors;
 	float					*pfAlpha;	// only present if version >= 2300
 	tOOF_faceList		faces;
 	tOOF_edgeList		edges;

@@ -1556,20 +1556,24 @@ if (!gameStates.app.bNostalgia) {
 	if (v != GrGetPaletteGamma ())
 		GrSetPaletteGamma (v);
 	}
-m = menus + nOglLightOpt;
-v = m->value;
-if (v != gameOpts->ogl.bUseLighting) {
-	gameOpts->ogl.bUseLighting = v;
-	*key = -2;
-	return;
+if (nOglLightOpt >= 0) {
+	m = menus + nOglLightOpt;
+	v = m->value;
+	if (v != gameOpts->ogl.bUseLighting) {
+		gameOpts->ogl.bUseLighting = v;
+		*key = -2;
+		return;
+		}
 	}
-m = menus + nOglMaxLightsOpt;
-v = m->value + 4;
-if (v != gameOpts->ogl.nMaxLights) {
-	gameOpts->ogl.nMaxLights = v;
-	sprintf (m->text, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
-	m->rebuild = 1;
-	return;
+if (nOglMaxLightsOpt >= 0) {
+	m = menus + nOglMaxLightsOpt;
+	v = m->value + 4;
+	if (v != gameOpts->ogl.nMaxLights) {
+		gameOpts->ogl.nMaxLights = v;
+		sprintf (m->text, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+		m->rebuild = 1;
+		return;
+		}
 	}
 if (gameOpts->app.bExpertMode) {
 	m = menus + nFPSopt;
@@ -1639,17 +1643,28 @@ do {
 		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
 		nLightMapsOpt = opt++;
 		}
-	ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_L, HTX_OGL_LIGHTING);
-	nOglLightOpt = opt++;
+	if (gameStates.app.bGameRunning) 
+		nOglLightOpt = 
+		nOglMaxLightsOpt = 
+		optObjectLight = -1;
+	else {
+		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_L, HTX_OGL_LIGHTING);
+		nOglLightOpt = opt++;
+		}
 	if (gameOpts->ogl.bUseLighting) {
-		ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
-		optObjectLight = opt++;
-		sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
-		*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
-		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, 12, KEY_I, HTX_OGL_MAXLIGHTS);
-		nOglMaxLightsOpt = opt++;
-		ADD_TEXT (opt, "", 0);
-		opt++;
+		if (!gameStates.app.bGameRunning) {
+			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+			optObjectLight = opt++;
+			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
+			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, 12, KEY_I, HTX_OGL_MAXLIGHTS);
+			nOglMaxLightsOpt = opt++;
+			ADD_TEXT (opt, "", 0);
+			opt++;
+			}
+		else
+			nOglMaxLightsOpt = 
+			optObjectLight = -1;
 		optColoredLight =
 		nGunColorOpt = 0;
 		}
@@ -1701,11 +1716,15 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)
-		gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+	if ((nOglLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)) {
+		if (optObjectLight >= 0)
+			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+		}
 	else {
-		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+		if (optColoredLight >= 0)
+			gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+		if (nGunColorOpt >= 0)
+			gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
 		}
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;

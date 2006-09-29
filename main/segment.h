@@ -230,11 +230,6 @@ typedef struct segment2 {
 	fix     static_light;
 } segment2;
 
-typedef struct tFaceColor {
-	char			index;
-	tRgbColorf	color;
-} tFaceColor;
-
 //values for special field
 #define SEGMENT_IS_NOTHING      0
 #define SEGMENT_IS_FUELCEN      1

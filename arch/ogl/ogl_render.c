@@ -92,7 +92,6 @@ GLuint glExitTMU = 0;
 
 int OglBindBmTex (grs_bitmap *bm, int transp);
 void ogl_clean_texture_cache (void);
-void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex);
 /*inline*/ void SetTMapColor (uvl *uvl_list, int i, grs_bitmap *bm, int bResetColor);
 
 //------------------------------------------------------------------------------
@@ -555,7 +554,7 @@ return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 }
 
 
-inline void OglColor4sf (float r, float g, float b, float s)
+void OglColor4sf (float r, float g, float b, float s)
 {
 if (IsMultiGame || (gameStates.ogl.nContrast == 8))
 	glColor4f (r * s, g * s, b * s, gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
@@ -928,7 +927,7 @@ return vReflect;
 
 //------------------------------------------------------------------------------
 
-void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex)
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor)
 {
 	fVector3			lightDir, vReflect;
 	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
@@ -1035,6 +1034,12 @@ if (!bMatEmissive && pc) {
 	pc->color.red = colorSum.c.r;
 	pc->color.green = colorSum.c.g;
 	pc->color.blue = colorSum.c.b;
+	}
+if (pVertColor) {
+	pVertColor->index = 1;
+	pVertColor->color.red = colorSum.c.r;
+	pVertColor->color.green = colorSum.c.g;
+	pVertColor->color.blue = colorSum.c.b;
 	}
 #endif
 } 
@@ -1267,7 +1272,7 @@ else
 		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 #if 1
 			if (gameOpts->ogl.bUseLighting)
-				G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index);
+				G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index, NULL);
 			else
 #endif
 				SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
@@ -1304,7 +1309,7 @@ else
 			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
 #if 1
 				if (gameOpts->ogl.bUseLighting)
-					G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index);
+					G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index, NULL);
 				else
 #endif
 					SetTMapColor (uvl_list + c, c, bmTop, 1);

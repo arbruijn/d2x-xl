@@ -104,6 +104,11 @@ typedef struct _ogl_texture {
 #endif
 } ogl_texture;
 
+typedef struct tFaceColor {
+	char			index;
+	tRgbColorf	color;
+} tFaceColor;
+
 extern ogl_texture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
 
 extern int ogl_mem_target;
@@ -362,8 +367,8 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNorm
 return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlend);
 #endif
 }
-
-void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex);
+void OglColor4sf (float r, float g, float b, float s);
+void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor);
 
 #define BINDTEX_OPT 0
 
