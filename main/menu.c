@@ -1665,17 +1665,14 @@ do {
 		else
 			nOglMaxLightsOpt = 
 			optObjectLight = -1;
-		optColoredLight =
-		nGunColorOpt = 0;
 		}
-	else {
-		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_L, HTX_RENDER_AMBICOLOR);
-		optColoredLight = opt++;
-		ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
-		nGunColorOpt = opt++;
+	else
 		nOglMaxLightsOpt = 
 		optObjectLight = -1;
-		}
+	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_L, HTX_RENDER_AMBICOLOR);
+	optColoredLight = opt++;
+	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
+	nGunColorOpt = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
@@ -1722,12 +1719,10 @@ do {
 		if (optObjectLight >= 0)
 			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
 		}
-	else {
-		if (optColoredLight >= 0)
-			gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-		if (nGunColorOpt >= 0)
-			gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
-		}
+	if (optColoredLight >= 0)
+		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+	if (nGunColorOpt >= 0)
+		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
 	extraGameInfo [0].bRenderShield = m [optRenderShields].value;

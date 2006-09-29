@@ -1010,9 +1010,15 @@ void SetOglLightColor (short nLight, float red, float green, float blue, float b
 	tOglLight	*pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
 	int			i;
 
-pl->color.red = red;
-pl->color.green = green;
-pl->color.blue = blue;
+if (pl->nType ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {
+	pl->color.red = red;
+	pl->color.green = green;
+	pl->color.blue = blue;
+	}
+else
+	pl->color.red = 
+	pl->color.green =
+	pl->color.blue = 1.0f;
 pl->brightness = brightness;
 pl->fSpecular.v [0] = red;
 pl->fSpecular.v [1] = green;
@@ -1206,6 +1212,12 @@ if (pl->handle == 0xffffffff)
 if (i < gameData.render.lights.ogl.nLights)
 	SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
 #endif
+pl->nSegment = nSegment;
+pl->nSide = nSide;
+pl->nObject = nObject;
+pl->bState = 1;
+pl->bSpot = 0;
+pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].pos;
@@ -1240,12 +1252,6 @@ glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #endif
-pl->nSegment = nSegment;
-pl->nSide = nSide;
-pl->nObject = nObject;
-pl->bState = 1;
-pl->bSpot = 0;
-pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
 if (nObject >= 0)
