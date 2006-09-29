@@ -986,13 +986,21 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMagf (&lightDir) / 10.0f;
-#if 0
-		fLightDist -= 0.7f;
-		if (fLightDist < 1.0f)
-			fLightDist = 1.0f;
+#if 1
+		if (psl->nType == 1) {
+			fLightDist -= 1.0f;	//make light brighter close to light source
+			if (fLightDist < 1.0f)
+				fLightDist = 1.0f;
+			else {	//make it decay faster
+				fLightDist *= fLightDist;
+				fLightDist *= 2.0f;
+				}
+			}
 		else
-#endif
 			fLightDist *= fLightDist;
+#else
+			fLightDist *= fLightDist;
+#endif
 		fAttenuation = fLightDist / psl->brightness;
 		}
 	if (fAttenuation > 50.0)
