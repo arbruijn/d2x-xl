@@ -175,7 +175,7 @@ typedef struct side {
 	short   wall_num;
 	short   tmap_num;
 	short   tmap_num2;
-	uvl     uvls[4];
+	uvl     uvls [4];
 	//vms_vector normals[2];  // 2 normals, if quadrilateral, both the same.
 } side;
 #else
@@ -185,8 +185,8 @@ typedef struct side {
 	ushort  wall_num;
 	short   tmap_num;
 	short   tmap_num2;
-	uvl     uvls[4];
-	vms_vector normals[2];  // 2 normals, if quadrilateral, both the same.
+	uvl     uvls [4];
+	vms_vector normals [2];  // 2 normals, if quadrilateral, both the same.
 } side;
 #endif
 
@@ -194,9 +194,9 @@ typedef struct segment {
 #ifdef EDITOR
 	short   segnum;     // segment number, not sure what it means
 #endif
-	side    sides[MAX_SIDES_PER_SEGMENT];       // 6 sides
-	short   children[MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
-	short   verts[MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+	side    sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
+	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 #ifdef EDITOR
 	short   group;      // group number to which the segment belongs.
 	short   objects;    // pointer to objects in this segment

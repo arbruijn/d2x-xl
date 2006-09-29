@@ -1256,6 +1256,9 @@ gameStates.render.bAllVisited = 0;
 gameStates.render.bViewDist = 1;
 gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
+gameStates.render.nFrameFlipFlop = 0;
+memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
+memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 #endif

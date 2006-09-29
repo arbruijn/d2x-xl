@@ -2109,7 +2109,7 @@ return OOF_DrawShadowVolume (po, pso, bCullFront) && OOF_DrawShadowCaps (po, pso
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawSubObject (tOOF_object *po, tOOF_subObject *pso, int bFacing, float *fLight)
+int OOF_DrawSubObject (object *objP, tOOF_object *po, tOOF_subObject *pso, int bFacing, float *fLight)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
@@ -2153,8 +2153,14 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 						  fl * pso->glowInfo.color.b, 
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
-		else if (bOglLighting)
-			glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+		else if (!bOglLighting) {
+			tFaceColor *psc = AvgSgmColor (objP->segnum, &objP->pos);
+			if (psc->index != gameStates.render.nFrameFlipFlop)
+				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+			else
+				glColor4f (psc->color.red * fl, psc->color.green * fl, psc->color.blue * fl,
+							  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
 			phv = pv + pfv->nIndex;
@@ -2222,7 +2228,8 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderSubObject (tOOF_object *po, tOOF_subObject *pso, tOOF_vector vo, int nIndex, int bFacing, float *fLight)
+int OOF_RenderSubObject (object *objP, tOOF_object *po, tOOF_subObject *pso, tOOF_vector vo, 
+								 int nIndex, int bFacing, float *fLight)
 {
 	tOOF_subObject	*psc;
 	int				i, j;
@@ -2236,7 +2243,7 @@ for (i = 0; i < pso->nChildren; i++) {
 	psc = po->pSubObjects + (j = pso->children [i]);
 	Assert (j >= 0 && j < po->nSubObjects);
 	if (psc->nParent == nIndex)
-		if (!OOF_RenderSubObject (po, psc, vo, j, bFacing, fLight))
+		if (!OOF_RenderSubObject (objP, po, psc, vo, j, bFacing, fLight))
 			return 0;
 	}
 #if SHADOWS
@@ -2244,19 +2251,19 @@ if (gameStates.render.nShadowPass == 2)
 	OOF_DrawShadow (po, pso, bFacing);
 else 
 #endif
-	OOF_DrawSubObject (po, pso, bFacing, fLight);
+	OOF_DrawSubObject (objP, po, pso, bFacing, fLight);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderModel (tOOF_object *po, vms_vector *pv, vms_matrix *pm, float *fLight)
+int OOF_RenderModel (object *objP, tOOF_object *po, float *fLight)
 {
 	tOOF_subObject	*pso;
 	int				r = 1, i, bFacing;
 	tOOF_vector		vo = {0.0f,0.0f,0.0f};
 
-G3StartInstanceMatrix (pv, pm);
+G3StartInstanceMatrix (&objP->pos, &objP->orient);
 if (!gameStates.ogl.bUseTransform)
 	OOF_MatVms2Oof (&mView, &viewInfo.view);
 OOF_VecVms2Oof (&vPos, &viewInfo.position);
@@ -2267,7 +2274,7 @@ glEnable (GL_TEXTURE_2D);
 for (bFacing = 0; bFacing < 2; bFacing++)
 	for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 		if (pso->nParent == -1)
-			if (!OOF_RenderSubObject (po, pso, vo, i, bFacing, fLight)) {
+			if (!OOF_RenderSubObject (objP, po, pso, vo, i, bFacing, fLight)) {
 				r = 0;
 				break;
 				}
@@ -2278,7 +2285,7 @@ return r;
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderShadow (tOOF_object *po, vms_vector *pv, vms_matrix *pm, float *fLight)
+int OOF_RenderShadow (object *objP, tOOF_object *po, float *fLight)
 {
 	short			*pnl = gameData.render.shadows.nNearestLights [gameData.objs.console->segnum];
 	vms_vector	h, vl;
@@ -2293,17 +2300,17 @@ for (gameData.render.shadows.nLight = 0;
 	G3TransformPoint (&vl, &gameData.render.shadows.pLight->pos);
 	OOF_VecVms2Oof (&vrLightPos, &vl);
 #endif
-	if (!OOF_RenderModel (po, pv, pm, fLight))
+	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
 	if (gameStates.render.bAltShadows)
-		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->pos, pv))));
+		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->pos, &objP->pos))));
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_Render (tOOF_object *po, vms_vector *pv, vms_matrix *pm, float *fLight, int bCloaked)
+int OOF_Render (object *objP, tOOF_object *po, float *fLight, int bCloaked)
 {
 	float	dt;
 
@@ -2342,10 +2349,10 @@ if (po->fAlpha < 0.01f)
 	po->fAlpha = 0.01f;
 #if SHADOWS
 return (!gameStates.render.bShadowMaps && (gameStates.render.nShadowPass == 2)) ? 
-	OOF_RenderShadow (po, pv, pm, fLight) :
-	OOF_RenderModel (po, pv, pm, fLight);
+	OOF_RenderShadow (objP, po, fLight) :
+	OOF_RenderModel (objP, po, nSegment, fLight);
 #else
-return OOF_RenderModel (po, pv, pm, fLight);
+return OOF_RenderModel (objP, po, fLight);
 #endif
 }
 

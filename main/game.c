@@ -3140,6 +3140,7 @@ void FlickerLights ();
 int GameLoop (int RenderFlag, int ReadControlsFlag)
 {
 gameStates.app.bGameRunning = 1;
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 GetSlowTick ();
 #ifndef	NDEBUG
 //	Used to slow down frame rate for testing things.

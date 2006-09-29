@@ -37,6 +37,7 @@ static char rcsid[] = "$Id: matrix.c,v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "3d.h"
 #include "globvars.h"
 #include "ogl_init.h"
+#include "inferno.h"
 #include "oof.h"
 
 void scale_matrix(void);

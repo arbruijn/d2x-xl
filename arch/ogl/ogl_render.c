@@ -959,9 +959,11 @@ if (gameData.render.lights.ogl.material.bValid) {
 		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
 		}
 	}
+if (nVertex == 114)
+	nVertex = nVertex;
 if (!bMatEmissive && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
-	if (pc->index) {
+	if (pc->index == gameStates.render.nFrameFlipFlop) {
 		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
 		return;
 		}
@@ -1038,7 +1040,7 @@ if (colorSum.c.b > 1.0)
 OglColor4sf (colorSum.c.r, colorSum.c.g, colorSum.c.b, 1.0);
 #if 1
 if (!bMatEmissive && pc) {
-	pc->index = 1;
+	pc->index = gameStates.render.nFrameFlipFlop;
 	pc->color.red = colorSum.c.r;
 	pc->color.green = colorSum.c.g;
 	pc->color.blue = colorSum.c.b;

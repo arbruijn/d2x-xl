@@ -381,7 +381,7 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-	//if (objP->type == 5) //only weapons
+	if (objP->type != 5) return; //only weapons
 		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 		if (objP->type == OBJ_PLAYER) {
 			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
@@ -1413,7 +1413,6 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		}
 #endif
 	}
-memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 #	if 0
 if (gameData.render.lights.ogl.shader.nTexHandle)
 	glDeleteTextures (1, &gameData.render.lights.ogl.shader.nTexHandle);
@@ -1474,6 +1473,74 @@ if (gameOpts->ogl.bUseLighting) {
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+
+tFaceColor *AvgSgmColor (int nSegment, vms_vector *pvPos)
+{
+	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
+	short			i, *pv;
+	vms_vector	vCenter, vVertex;
+	float			d, ds;
+
+if (!gameOpts->ogl.bUseLighting) {
+	psc->index = !gameStates.render.nFrameFlipFlop;
+	return psc;
+	}
+if (psc->index == gameStates.render.nFrameFlipFlop)
+	return psc;
+if (pvPos) {
+	COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
+	//G3TransformPoint (&vCenter, &vCenter);
+	ds = 0.0f;
+	}
+else
+	ds = 1.0f;
+pv = gameData.segs.segments [nSegment].verts;
+c.color.red = c.color.green = c.color.blue = 0.0f;
+c.index = 0;
+for (i = 0; i < 8; i++, pv++) {
+	pvc = gameData.render.color.vertices + *pv;
+	if (pvc->index == gameStates.render.nFrameFlipFlop) {
+		if (pvPos) {
+			vVertex = gameData.segs.vertices [*pv];
+			//G3TransformPoint (&vVertex, &vVertex);
+			d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
+			c.color.red += pvc->color.red * d;
+			c.color.green += pvc->color.green * d;
+			c.color.blue += pvc->color.blue * d;
+			ds += d;
+			}
+		else {
+			c.color.red += pvc->color.red;
+			c.color.green += pvc->color.green;
+			c.color.blue += pvc->color.blue;
+			}
+		c.index++;
+		}
+	}
+if (c.index) {
+	ds = (float) c.index;
+	psc->color.red = c.color.red / ds;
+	psc->color.green = c.color.green / ds;
+	psc->color.blue = c.color.blue / ds;
+	d = psc->color.red;
+	if (d < psc->color.green)
+		d = psc->color.green;
+	if (d < psc->color.blue)
+		d = psc->color.blue;
+	if (d > 1.0f) {
+		psc->color.red /= d;
+		psc->color.green /= d;
+		psc->color.blue /= d;
+		}
+	}
+else
+	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
+psc->index = gameStates.render.nFrameFlipFlop;
+return psc;
+}
+
 
 //------------------------------------------------------------------------------
 

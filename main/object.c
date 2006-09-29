@@ -1141,8 +1141,8 @@ switch (objP->render_type) {
 				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
 				fLight [1] = (float) nGlow [0] / 65536.0f;				
 				fLight [2] = (float) nGlow [1] / 65536.0f;				
-				OOF_Render (gameData.models.hiresModels + OOF_PYRO, &objP->pos, &objP->orient, fLight, 
-								 (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0);
+				OOF_Render (objP, gameData.models.hiresModels + OOF_PYRO, fLight, 
+								(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0);
 				}
 			else
 				DrawPolygonObject (objP);
@@ -1160,7 +1160,7 @@ switch (objP->render_type) {
 				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
 				fLight [1] = (float) nGlow [0] / 65536.0f;				
 				fLight [2] = (float) nGlow [1] / 65536.0f;				
-				OOF_Render (gameData.models.hiresModels + oofIdx, &objP->pos, &objP->orient, fLight, 0);
+				OOF_Render (objP, gameData.models.hiresModels + oofIdx, fLight, 0);
 				}
 			else
 				DrawPolygonObject (objP);

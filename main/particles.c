@@ -27,6 +27,7 @@
 #include "globvars.h"
 #include "gameseg.h"
 #include "network.h"
+#include "lighting.h"
 #include "particles.h"
 
 #ifdef __macosx__
@@ -218,6 +219,9 @@ pParticle->glColor.r =
 pParticle->glColor.g =
 pParticle->glColor.b = 1.0;//(double) (64 + randN (64)) / 255.0;
 pParticle->glColor.a = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
+pParticle->glColor.r =
+pParticle->glColor.g =
+pParticle->glColor.b = pParticle->glColor.a - 0.5;
 #endif
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed = nSpeed * F1_0;
@@ -465,6 +469,7 @@ int RenderParticle (tParticle *pParticle)
 	GLdouble				u, v, x, y, z, h, w;
 	char					o;
 	grs_bitmap			*bmP;
+	tPartColor			pc;
 #if OGL_VERTEX_ARRAYS
 	double				*pf;
 #endif
@@ -477,6 +482,16 @@ if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 VmVecSub (&hv, &pParticle->pos, &viewInfo.position);
 VmVecRotate (&hp, &hv, &viewInfo.view);
+pc = pParticle->glColor;
+if (gameOpts->ogl.bUseLighting) {
+	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
+	if (psc->index = gameStates.render.nFrameFlipFlop) {
+		pc.r *= (double) psc->color.red;
+		pc.g *= (double) psc->color.green;
+		pc.b *= (double) psc->color.blue;
+		}
+	}
+glColor4d (pc.r, pc.g, pc.b, pc.a * decay);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 #if OGL_VERTEX_ARRAYS
@@ -500,8 +515,6 @@ if (gameStates.render.bPointSprites) {
 #endif
 	{
 //	glColor4d (1.0, 1.0, 1.0, pParticle->glColor.a);
-	glColor4d (pParticle->glColor.r, pParticle->glColor.g, 
-				  pParticle->glColor.b, pParticle->glColor.a * decay);
 	glVertex3d (f2fl (hp.x), f2fl (hp.y), -f2fl (hp.z));
 	}
 	}
@@ -528,8 +541,6 @@ else
 	else
 #endif
 	{
-	glColor4d (pParticle->glColor.r, pParticle->glColor.g, 
-				  pParticle->glColor.b, pParticle->glColor.a * decay);
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;
 	o = pParticle->nOrient;

@@ -485,6 +485,7 @@ typedef struct tRenderStates {
 	int bAllVisited;
 	int bViewDist;
 	int bD2XLights;
+	int nFrameFlipFlop;
 	ubyte nRenderingType;
 	fix nFlashScale;
 	fix nFlashRate;
@@ -674,6 +675,7 @@ typedef struct tLightRef {
 typedef struct tColorData {
 	tFaceColor	lights [MAX_SEGMENTS][6];
 	tFaceColor	sides [MAX_SEGMENTS][6];
+	tFaceColor	segments [MAX_SEGMENTS];
 	tFaceColor	vertices [MAX_VERTICES];
 	tFaceColor	textures [MAX_WALL_TEXTURES];
 	tLightRef	visibleLights [MAX_SEGMENTS * 6];

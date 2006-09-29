@@ -93,5 +93,6 @@ void SetOglLightMaterial (short nSegment, short nSide, short nObject);
 void SetNearestStaticLights (int nSegment, ubyte nType);
 void SetNearestDynamicLights (int nSegment);
 void InitLightingShaders (void);
+tFaceColor *AvgSgmColor (int nSegment, vms_vector *vPos);
 
 #endif /* _LIGHTING_H */
