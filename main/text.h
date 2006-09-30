@@ -1724,9 +1724,8 @@ void LoadGameTexts(void);
 #define TXT_OGL_LIGHTING			GT(779)
 #define TXT_OBJECT_LIGHTING		GT(780)
 #define TXT_OGL_MAXLIGHTS			GT(781)
+#define TXT_DARKMATCH				GT(782)
 #if 0
-#define TXT_				GT(781)
-#define TXT_				GT(782)
 #define TXT_				GT(783)
 #define TXT_				GT(784)
 #define TXT_				GT(785)
@@ -2061,11 +2060,10 @@ void LoadGameTexts(void);
 #define HTX_OGL_LIGHTING		HT(197)
 #define HTX_OBJECT_LIGHTING	HT(198)
 #define HTX_OGL_MAXLIGHTS		HT(199)				
+#define HTX_DARKMATCH			HT(200)				
 
 #if 0
 				
-
-#define HTX_				HT(200)				
 #define HTX_				HT(201)				
 #define HTX_				HT(202)				
 #define HTX_				HT(203)				

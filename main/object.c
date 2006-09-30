@@ -636,7 +636,7 @@ if (color) {
 	color->green = (double) g / (double) j;
 	color->blue = (double) b / (double) j;
 #	else
-	unsigned char c = bmP->avg_color;
+	unsigned char c = bmP->bm_avgColor;
 	color->red = CPAL2Tr (bmP->bm_palette, c);
 	color->green = CPAL2Tg (bmP->bm_palette, c);
 	color->blue = CPAL2Tb (bmP->bm_palette, c);

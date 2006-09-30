@@ -1045,7 +1045,7 @@ grs_bitmap char_bm = {
 #ifdef BITMAP_SELECTOR
 				0,				//selector
 #endif
-				0,     //avg_color
+				0,     //bm_avgColor
 				0      //unused
 };
 

@@ -46,7 +46,7 @@ bmP->bm_props.flags = flags;
 if (data)
 	bmP->bm_texBuf = data;
 //bmP->bm_handle = 0;
-bmP->avg_color = 0;
+bmP->bm_avgColor = 0;
 }
 
 //-----------------------------------------------------------------------------

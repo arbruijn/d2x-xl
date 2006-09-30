@@ -700,7 +700,7 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
+if (gameOpts->ogl.bUseLighting) {
 	// set material properties specific for certain textures here
 	SetOglLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;

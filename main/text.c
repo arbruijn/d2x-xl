@@ -1577,8 +1577,8 @@ char *defaultGameTexts [][2] = {
 	{"Echtzeit-OpenGL-~Beleuchtung", "real-time OpenGL ~Lighting"},
 	{"openGL ~Objekt-Beleuchtung", "openGL ~Object lighting"},
 	{"L~Ichter/Segment: %d", "l~Ights/segment: %d"},
+	{"~Verdunkelung", "~Dark Match"},
 #if 0
-	{"", ""},
 	{"", ""},
 #endif
 	{"", ""}
@@ -1977,8 +1977,9 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers.\n\nIf unchecked, D2X-XL computes the object's lighting depending on the average\nlight at the object's location."},
 	{"Hier kann die Anzahl nahegelegener Lichter eingestellt werden,\ndie die Beleuchtung eines gegebenen Punktes in der Mine be-\neinflussen. D2X-XL verwendet die hier eingestellte Anzahl der\njedem Segment am naechsten gelegenen Lichter, um das Segment\nzu beleuchten.",
 	 "Adjust the number of nearby lights that influence lighting\nfor a given point in the mine. D2X-XL will use the number of\nnearest lights set here to each segment of the mine to\nilluminate that segment."},
+	{"Diese Option ankreuzen, um saemtliche Lampen auszuschalten.\nDie Spieler sind dann auf Scheinwerfer, Leuchtraketen,\nLicht von Waffen und ihr Gehoer angewiesen.", 
+	 "Check this option to turn all static lights off. The players\nwill have to rely entirely on headlights, flares, weapon\nlight and their ears."},
 #if 0
-	{"", ""},
 	{"", ""},
 	{"", ""},
 	{"", ""},

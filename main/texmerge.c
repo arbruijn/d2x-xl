@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * rip out unused code and data
  *
  * Revision 1.23  1994/11/12  16:38:51  mike
- * deal with avg_color in texture merging.
+ * deal with bm_avgColor in texture merging.
  *
  * Revision 1.22  1994/11/09  19:55:39  john
  * Added full rle support with texture rle caching.
@@ -326,13 +326,13 @@ if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
 //			return bmTop;
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
 		bmP->bm_props.flags |= BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT;
-		bmP->avg_color = bmTop->avg_color;
+		bmP->bm_avgColor = bmTop->bm_avgColor;
 		}
 	else {
 //			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->bm_texBuf);
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
 		bmP->bm_props.flags |= bmBot->bm_props.flags & (~BM_FLAG_RLE);
-		bmP->avg_color = bmBot->avg_color;
+		bmP->bm_avgColor = bmBot->bm_avgColor;
 		}
 	}
 cacheP->bmTop = bmTop;

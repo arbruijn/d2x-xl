@@ -770,13 +770,30 @@ typedef struct tOglLightData {
 	tOglMaterial		material;
 } tOglLightData;
 
+//Flickering light system
+typedef struct flickering_light {
+	short				segnum;
+	short				sidenum;
+	unsigned long	mask;     // determines flicker pattern
+	fix				timer;    // time until next change
+	fix				delay;    // time between changes
+} flickering_light;
+
+#define MAX_FLICKERING_LIGHTS 1000
+
+typedef struct tFlickerLightData {
+	flickering_light	lights [MAX_FLICKERING_LIGHTS];
+	int					nLights;
+} tFlickerLightData;
+
 typedef struct tLightData {
-	int				nStatic;
-	fix				segDeltas [MAX_SEGMENTS][6];
-	dl_index			deltaIndices [MAX_DL_INDICES];
-	delta_light		deltas [MAX_DELTA_LIGHTS];
-	ubyte				subtracted [MAX_SEGMENTS];
-	tOglLightData	ogl;
+	int					nStatic;
+	fix					segDeltas [MAX_SEGMENTS][6];
+	dl_index				deltaIndices [MAX_DL_INDICES];
+	delta_light			deltas [MAX_DELTA_LIGHTS];
+	ubyte					subtracted [MAX_SEGMENTS];
+	tOglLightData		ogl;
+	tFlickerLightData	flicker;
 } tLightData;
 
 typedef struct tShadowData {

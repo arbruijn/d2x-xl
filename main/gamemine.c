@@ -1001,10 +1001,14 @@ void read_children (int segnum, ubyte bit_mask, CFILE *loadFile)
 
 void ReadColor (tFaceColor *pc, CFILE *loadFile, int bFloatData)
 {
-
 pc->index = CFReadByte (loadFile);
-if (bFloatData)
-	CFRead (&pc->color, sizeof (pc->color), 1, loadFile);
+if (bFloatData) {
+	tRgbColord	c;
+	CFRead (&c, sizeof (c), 1, loadFile);
+	pc->color.red = (float) c.red;
+	pc->color.green = (float) c.green;
+	pc->color.blue = (float) c.blue;
+	}
 else {
 	int c = CFReadInt (loadFile);
 	pc->color.red = (float) c / (float) 0x7fffffff;
@@ -1013,6 +1017,11 @@ else {
 	c = CFReadInt (loadFile);
 	pc->color.blue = (float) c / (float) 0x7fffffff;
 	}
+#if 0
+CBRK ((pc->color.red < 0) || (pc->color.red > 1.0f) ||
+		(pc->color.green < 0) || (pc->color.green > 1.0f) ||
+		(pc->color.blue < 0) || (pc->color.blue > 1.0f));
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1105,11 +1114,11 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int ComputeNearestSegmentLights (void)
+int ComputeNearestSegmentLights (int i)
 {
 	segment				*segP;
 	tOglLight			*pl;
-	int					h, i, j;
+	int					h, j, k, l, n;
 	vms_vector			center, dist;
 	struct tLightDist	*pDists;
 
@@ -1121,19 +1130,23 @@ if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDis
 	}
 h = (gameOpts->ogl.nMaxLights < MAX_NEAREST_LIGHTS) ? 
 	 gameOpts->ogl.nMaxLights : MAX_NEAREST_LIGHTS;
-for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
+INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
+for (i = 0, segP = gameData.segs.segments; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.ogl.lights;
-	for (j = 0; j < gameData.render.lights.ogl.nLights; j++, pl++) {
+	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
 		VmVecSub (&dist, &center, &pl->vPos);
-		pDists [j].nIndex = j;
-		pDists [j].nDist = VmVecMag (&dist);
+		if ((pDists [n].nDist = VmVecMag (&dist)) <= F1_0 * 125) {
+			pDists [n].nIndex = l;
+			n++;
+			}
 		}
-	QSortLightDist (pDists, 0, gameData.render.lights.ogl.nLights - 1);
-	for (j = 0; j < h; j++)
-		gameData.render.lights.ogl.nNearestLights [i][j] = pDists [j].nIndex;
-	for (; j < MAX_NEAREST_LIGHTS; j++)
-		gameData.render.lights.ogl.nNearestLights [i][j] = -1;
+	QSortLightDist (pDists, 0, n - 1);
+	k = (h < n) ? h : n;
+	for (l = 0; l < k; l++)
+		gameData.render.lights.ogl.nNearestLights [i][l] = pDists [l].nIndex;
+	for (; l < MAX_NEAREST_LIGHTS; l++)
+		gameData.render.lights.ogl.nNearestLights [i][l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1344,7 +1357,7 @@ void LoadSideLightsCompiled (int i, CFILE *loadFile)
 
 gameData.render.shadows.nLights = 0;
 #if LIGHTMAPS
-if (gameStates.app.bD2XLevel && gameStates.render.color.bLightMapsOk) { 
+if (gameStates.app.bD2XLevel) { 
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
 	pc = &gameData.render.color.lights [0][0] + i;
 	for (; i < j; i++, pc++) {
@@ -1436,12 +1449,14 @@ else if (loadOp == 3) {
 else if (loadOp == 4) {
 	LoadSideLightsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= (bLightmaps ? gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
+	if (loadIdx >= ((gameStates.app.bD2XLevel && (bLightmaps || gameOpts->ogl.bUseLighting)) ? 
+						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
 		loadIdx = 0;
 		loadOp = 5;
 		}
 	}
 else if (loadOp == 5) {
+	int i = CFTell (mineDataFile);
 	LoadTexColorsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
@@ -1466,7 +1481,24 @@ m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
-return;
+}
+
+//------------------------------------------------------------------------------
+
+static void SortLightsPoll (int nItems, newmenu_item *m, int *key, int cItem)
+{
+GrPaletteStepLoad (NULL);
+ComputeNearestSegmentLights (loadIdx);
+loadIdx += PROGRESS_INCR;
+if (loadIdx >= gameData.segs.nSegments) {
+	*key = -2;
+	GrPaletteStepLoad (NULL);
+	return;
+	}
+m [0].value++;
+m [0].rebuild = 1;
+*key = 0;
+GrPaletteStepLoad (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -1485,7 +1517,7 @@ int LoadMineGaugeSize (void)
 #endif
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
-	if (bLightmaps)
+	if (bLightmaps || gameOpts->ogl.bUseLighting)
 		i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
 	else if (bShadows)
 		i += PROGRESS_STEPS (gameData.segs.nSegments);
@@ -1514,9 +1546,21 @@ NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize (), L
 
 //------------------------------------------------------------------------------
 
+void SortLightsGauge (void)
+{
+loadOp = 0;
+loadIdx = 0;
+if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+	NMProgressBar (TXT_PREP_DESCENT, 0, (gameData.segs.nSegments + PROGRESS_INCR - 1) / PROGRESS_INCR, SortLightsPoll); 
+else
+	ComputeNearestSegmentLights (-1);
+}
+
+//------------------------------------------------------------------------------
+
 int LoadMineSegmentsCompiled (CFILE *loadFile)
 {
-	short			i;
+	int			i;
 	ubyte			nCompiledVersion;
 	ushort		temp_ushort = 0;
 	char			*psz;
@@ -1587,11 +1631,11 @@ else {
 ResetObjects (1);		//one object, the player
 if (gameOpts->ogl.bUseLighting) {
 	AddOglLights ();
-	ComputeNearestSegmentLights ();
+	SortLightsGauge ();
 	}
 #if SHADOWS
 else
-	ComputeNearestSegmentLights ();
+	SortLightsGauge ();
 #endif
 return 0;
 }

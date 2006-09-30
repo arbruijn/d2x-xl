@@ -469,6 +469,7 @@ typedef struct extra_gameinfo {
 	char		bShadows;
 	char		bRenderShield;
 	char		bTeleporterCams;
+	char		bDarkMatch;
 	monsterball_info	monsterball;
 } __pack__ extra_gameinfo;
 
@@ -490,6 +491,7 @@ typedef struct tMpParams {
 	ubyte	bMarkerView;
 	ubyte	bAlwaysBright;
 	ubyte	bBrightPlayers;
+	ubyte bDarkMatch;
 	ubyte	bShowAllNames;
 	ubyte	bShortPackets;
 	ubyte	nPPS;

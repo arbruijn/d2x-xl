@@ -1409,7 +1409,7 @@ bitmap_index ReadExtraBitmapIFF ( char * filename )
 		GrRemapBitmapGood ( newBm, NULL, iff_transparent_color, 254 );
 	else
 		GrRemapBitmapGood ( newBm, NULL, -1, 254 );
-	newBm->avg_color = ComputeAvgPixel (newBm);
+	newBm->bm_avgColor = ComputeAvgPixel (newBm);
 	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
 	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
 	//d_free ( new );
@@ -1590,7 +1590,7 @@ void LoadTextureBrightness (char *pszLevel)
 	int		i, *pb;
 
 ChangeFilenameExtension (szFile, pszLevel, ".lgt");
-if ((fp = CFOpen (szFile, gameFolders.szDataDir,"rb", 0)) &&
+if ((fp = CFOpen (szFile, gameFolders.szDataDir, "rb", 0)) &&
 	 (CFRead (gameData.pig.tex.brightness, sizeof (gameData.pig.tex.brightness), 1, fp) == 1)) {
 	for (i = MAX_WALL_TEXTURES, pb = gameData.pig.tex.brightness; i; i--, pb++)
 		*pb = INTEL_INT (*pb);

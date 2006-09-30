@@ -3514,133 +3514,6 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	}
 }
 
-//-----------------------------------------------------------------------------
-
-flickering_light Flickering_lights[MAX_FLICKERING_LIGHTS];
-
-int Num_flickering_lights=0;
-
-void FlickerLights ()
-{
-	int l;
-	flickering_light *f;
-
-	f = Flickering_lights;
-
-	for (l=0;l<Num_flickering_lights;l++,f++) {
-		segment *segp = &gameData.segs.segments[f->segnum];
-
-		//make sure this is actually a light
-		if (! (WALL_IS_DOORWAY (segp, f->sidenum, NULL) & WID_RENDER_FLAG))
-			continue;
-		if (! (gameData.pig.tex.pTMapInfo[segp->sides[f->sidenum].tmap_num].lighting | gameData.pig.tex.pTMapInfo[segp->sides[f->sidenum].tmap_num2 & 0x3fff].lighting))
-			continue;
-
-		if (f->timer == 0x80000000)		//disabled
-			continue;
-
-		if ((f->timer -= gameData.app.xFrameTime) < 0) {
-
-			while (f->timer < 0)
-				f->timer += f->delay;
-
-			f->mask = ((f->mask&0x80000000)?1:0) + (f->mask<<1);
-
-			if (f->mask & 1)
-				AddLight (f->segnum,f->sidenum);
-			else
-				SubtractLight (f->segnum,f->sidenum);
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-//returns ptr to flickering light structure, or NULL if can't find
-flickering_light *find_flicker (int segnum,int sidenum)
-{
-	int l;
-	flickering_light *f;
-
-	//see if there's already an entry for this seg/side
-
-	f = Flickering_lights;
-
-	for (l=0;l<Num_flickering_lights;l++,f++)
-		if (f->segnum == segnum && f->sidenum == sidenum)	//found it!
-			return f;
-
-	return NULL;
-}
-
-//-----------------------------------------------------------------------------
-//turn flickering off (because light has been turned off)
-void disable_flicker (int segnum,int sidenum)
-{
-	flickering_light *f;
-
-	if ((f=find_flicker (segnum,sidenum)) != NULL)
-		f->timer = 0x80000000;
-}
-
-//-----------------------------------------------------------------------------
-//turn flickering off (because light has been turned on)
-void enable_flicker (int segnum,int sidenum)
-{
-	flickering_light *f;
-
-	if ((f=find_flicker (segnum,sidenum)) != NULL)
-		f->timer = 0;
-}
-
-
-#ifdef EDITOR
-
-//returns 1 if ok, 0 if error
-int add_flicker (int segnum, int sidenum, fix delay, unsigned long mask)
-{
-	int l;
-	flickering_light *f;
-
-#if TRACE
-	//con_printf (CON_DEBUG,"add_flicker: %d:%d %x %x\n",segnum,sidenum,delay,mask);
-#endif
-	//see if there's already an entry for this seg/side
-
-	f = Flickering_lights;
-
-	for (l=0;l<Num_flickering_lights;l++,f++)
-		if (f->segnum == segnum && f->sidenum == sidenum)	//found it!
-			break;
-
-	if (mask==0) {		//clearing entry
-		if (l == Num_flickering_lights)
-			return 0;
-		else {
-			int i;
-			for (i=l;i<Num_flickering_lights-1;i++)
-				Flickering_lights[i] = Flickering_lights[i+1];
-			Num_flickering_lights--;
-			return 1;
-		}
-	}
-
-	if (l == Num_flickering_lights) {
-		if (Num_flickering_lights == MAX_FLICKERING_LIGHTS)
-			return 0;
-		else
-			Num_flickering_lights++;
-	}
-
-	f->segnum = segnum;
-	f->sidenum = sidenum;
-	f->delay = f->timer = delay;
-	f->mask = mask;
-
-	return 1;
-}
-
-#endif
-
 //	-----------------------------------------------------------------------------
 //	Fire Laser:  Registers a laser fire, and performs special stuff for the fusion
 //				    cannon.
@@ -3948,7 +3821,7 @@ void game_win_init_cockpit_mask (int sram)
 /*
  * reads a flickering_light structure from a CFILE
  */
-void flickering_light_read (flickering_light *fl, CFILE *fp)
+void ReadFlickeringLight (flickering_light *fl, CFILE *fp)
 {
 	fl->segnum = CFReadShort (fp);
 	fl->sidenum = CFReadShort (fp);

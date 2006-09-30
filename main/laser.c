@@ -641,10 +641,12 @@ int CreateNewLaser (
 		// Create orientation matrix for tracking purposes.
 		VmVector2Matrix (&objP->orient, direction, &gameData.objs.objects [parent].orient.uvec ,NULL);
 
-		if ((&gameData.objs.objects [parent] != gameData.objs.viewer) && (gameData.objs.objects [parent].type != OBJ_WEAPON))	{
+		if ((&gameData.objs.objects [parent] != gameData.objs.viewer) &&
+			 (gameData.objs.objects [parent].type != OBJ_WEAPON))	{
 			// Muzzle flash		
 			if (gameData.weapons.info [objP->id].flash_vclip > -1)
-				ObjectCreateMuzzleFlash (objP->segnum, &objP->pos, gameData.weapons.info [objP->id].flash_size, gameData.weapons.info [objP->id].flash_vclip);
+				ObjectCreateMuzzleFlash (objP->segnum, &objP->pos, gameData.weapons.info [objP->id].flash_size, 
+												 gameData.weapons.info [objP->id].flash_vclip);
 		}
 		DoOmegaStuff (gameData.objs.objects + parent, position, objP);
 		return objnum;
@@ -724,10 +726,12 @@ int CreateNewLaser (
 	if ((objP->render_type == RT_POLYOBJ) || (WI_homing_flag (objP->id)))
 		VmVector2Matrix (&objP->orient,direction, &gameData.objs.objects [parent].orient.uvec ,NULL);
 
-	if (((gameData.objs.objects + parent) != gameData.objs.viewer) && (gameData.objs.objects [parent].type != OBJ_WEAPON))	{
+	if (((gameData.objs.objects + parent) != gameData.objs.viewer) && 
+		 (gameData.objs.objects [parent].type != OBJ_WEAPON))	{
 		// Muzzle flash		
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
-			ObjectCreateMuzzleFlash (objP->segnum, &objP->pos, gameData.weapons.info [objP->id].flash_size, gameData.weapons.info [objP->id].flash_vclip);
+			ObjectCreateMuzzleFlash (objP->segnum, &objP->pos, gameData.weapons.info [objP->id].flash_size, 
+											 gameData.weapons.info [objP->id].flash_vclip);
 	}
 
 	volume = F1_0;
@@ -769,7 +773,8 @@ int CreateNewLaser (
 		parent_speed = VmVecMagQuick (&gameData.objs.objects [parent].mtype.phys_info.velocity);
 		if (VmVecDot (&gameData.objs.objects [parent].mtype.phys_info.velocity, &gameData.objs.objects [parent].orient.fvec) < 0)
 			parent_speed = -parent_speed;
-	} else
+		} 
+	else
 		parent_speed = 0;
 
 	weapon_speed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);

@@ -335,6 +335,7 @@ char gamesave_rcsid[] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "multi.h"
 #include "makesig.h"
 #include "gameseg.h"
+#include "lighting.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22
@@ -1819,13 +1820,13 @@ if (gameData.segs.nLevelVersion >= 7) {
 #if TRACE
 con_printf(CON_DEBUG, "   loading dynamic lights ...\n");
 #endif
-Num_flickering_lights = CFReadInt(LoadFile);
-Assert((Num_flickering_lights >= 0) && (Num_flickering_lights < MAX_FLICKERING_LIGHTS));
-for (i = 0; i < Num_flickering_lights; i++)
-	flickering_light_read(&Flickering_lights[i], LoadFile);
+gameData.render.lights.flicker.nLights = CFReadInt(LoadFile);
+Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
+for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
+	ReadFlickeringLight(&gameData.render.lights.flicker.lights[i], LoadFile);
 }
 else
-	Num_flickering_lights = 0;
+	gameData.render.lights.flicker.nLights = 0;
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
@@ -2229,8 +2230,8 @@ int save_level_sub(char * filename, int compiled_version)
 	gs_write_int(gameStates.app.nBaseCtrlCenExplTime,SaveFile);
 	gs_write_int(gameData.reactor.nStrength,SaveFile);
 
-	gs_write_int(Num_flickering_lights,SaveFile);
-	fwrite(Flickering_lights,sizeof(*Flickering_lights),Num_flickering_lights,SaveFile);
+	gs_write_int(gameData.render.lights.flicker.nLights,SaveFile);
+	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
 	
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
 	gs_write_int(gameData.segs.secret.returnOrient.rvec.x, SaveFile);

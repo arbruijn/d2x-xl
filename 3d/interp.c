@@ -1519,7 +1519,7 @@ for (;;) {
 				uvl_list [i].l = light;
 
 			if (objColorP) {
-				unsigned char c = modelBitmaps [WORDVAL (p+28)]->avg_color;
+				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bm_avgColor;
 				objColorP->red = CPAL2Tr (gamePalette, c);
 				objColorP->green = CPAL2Tg (gamePalette, c);
 				objColorP->blue = CPAL2Tb (gamePalette, c);

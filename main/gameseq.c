@@ -1154,6 +1154,7 @@ DestroyCameras ();
 DestroyAllSmoke ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
+gameData.render.lights.flicker.nLights = 0;
 save_player = gameData.multi.players [gameData.multi.nLocalPlayer];	
 Assert (gameStates.app.bAutoRunMission || ((nLevel <= gameData.missions.nLastLevel)  && (nLevel >= gameData.missions.nLastSecretLevel)  && (nLevel != 0)));
 pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
@@ -1180,13 +1181,15 @@ GrPaletteStepLoad (NULL);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 				 (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (gameData.segs.xSegments));
+/*---*/LogErr ("   loading texture brightness info\n");
+LoadTextureBrightness (pszLevelName);
 load_ret = LoadLevelSub (pszLevelName);		//actually load the data from disk!
 if (load_ret) {
 	/*---*/LogErr ("Couldn't load '%s' (%d)\n", pszLevelName, load_ret);
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
-gameData.missions.nCurrentLevel=nLevel;
+gameData.missions.nCurrentLevel = nLevel;
 gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don't change screen
 InitGaugeCanvases ();
 ResetPogEffects ();
@@ -1201,8 +1204,6 @@ else {
 		PiggyLoadLevelData ();
 	LoadBitmapReplacements (pszLevelName);
 	}
-/*---*/LogErr ("   loading texture brightness info\n");
-LoadTextureBrightness (pszLevelName);
 /*---*/LogErr ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 /*---*/LogErr ("   loading cambot\n");
@@ -1257,7 +1258,8 @@ gameStates.render.bViewDist = 1;
 gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
-memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
+if (gameOpts->ogl.bUseLighting)
+	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;

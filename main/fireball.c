@@ -181,7 +181,7 @@ object *ObjectCreateExplosionSub (
 	short objnum;
 	object *explObjP;
 
-objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdentityMatrix,size,
+objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdentityMatrix, size,
 							  CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
 	if (objnum < 0) {

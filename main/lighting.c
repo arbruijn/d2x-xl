@@ -381,7 +381,6 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-	//if (objP->type != 5) return; //only weapons
 		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 		if (objP->type == OBJ_PLAYER) {
 			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
@@ -522,7 +521,8 @@ if (xObjIntensity) {
 #define	FLASH_SCALE					(3*F1_0/FLASH_LEN_FIXED_SECONDS)
 
 // ----------------------------------------------------------------------------------------------
-void CastMuzzleFlashLight(int nRenderVertices, short *renderVertices)
+
+void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
 {
 	fix current_time;
 	int	i;
@@ -534,7 +534,9 @@ void CastMuzzleFlashLight(int nRenderVertices, short *renderVertices)
 		if (gameData.muzzle.info [i].create_time) {
 			time_since_flash = current_time - gameData.muzzle.info [i].create_time;
 			if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
-				ApplyLight((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, gameData.muzzle.info [i].segnum, &gameData.muzzle.info [i].pos, nRenderVertices, renderVertices, -1, NULL);
+				ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, 
+								gameData.muzzle.info [i].segnum, &gameData.muzzle.info [i].pos, 
+								nRenderVertices, renderVertices, -1, NULL);
 			else
 				gameData.muzzle.info [i].create_time = 0;		// turn off this muzzle flash
 		}
@@ -597,7 +599,37 @@ switch (objtype) {
 
 	case OBJ_FIREBALL:
 		if ((objP->id != 0xff) && (objP->render_type != RT_THRUSTER)) {
-			fix xLight = gameData.eff.vClips [0][objP->id].light_value;
+			vclip *vcP = gameData.eff.vClips [0] + objP->id;
+			fix xLight = vcP->light_value;
+			int i, j;
+			grs_bitmap *bmP;
+#if 1
+			color->red =
+			color->green =
+			color->blue = 0.0f;
+			for (i = j = 0; i < vcP->nFrameCount; i++) {
+				bmP = gameData.pig.tex.pBitmaps + vcP->frames [i].index;
+				if (bmP->bm_avgRGB.red + bmP->bm_avgRGB.green + bmP->bm_avgRGB.blue == 0)
+					if (!BitmapColor (bmP, bmP->bm_texBuf))
+						continue;
+				color->red += (float) bmP->bm_avgRGB.red / 255.0f;
+				color->green += (float) bmP->bm_avgRGB.green / 255.0f;
+				color->blue += (float) bmP->bm_avgRGB.blue / 255.0f;
+				j++;
+				}
+			if (j) {
+				color->red /= j;
+				color->green /= j;
+				color->blue /= j;
+				}
+			else 
+#endif
+				{
+				color->red = 0.75f;
+				color->green = 0.15f;
+				color->blue = 0.0f;
+				}
+			*pbGotColor = 1;
 #if 0
 			if (objP->render_type != RT_THRUSTER)
 				xLight /= 8;
@@ -607,7 +639,8 @@ switch (objtype) {
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
 				return xLight;
-		} else
+			}
+		else
 			 return 0;
 		break;
 
@@ -617,7 +650,7 @@ switch (objtype) {
 
 	case OBJ_WEAPON: {
 		fix tval = gameData.weapons.info [objP->id].light;
-		memcpy (color, gameData.weapons.color + objP->id, sizeof (tRgbColorf));
+		*color = gameData.weapons.color [objP->id];
 		*pbGotColor = 1;
 		if (gameData.app.nGameMode & GM_MULTI)
 			if (objP->id == OMEGA_ID)
@@ -635,6 +668,10 @@ switch (objtype) {
 		lightval = 8 * abs(F1_0/2 - lightval);
 		if (objP->lifeleft < F1_0*1000)
 			objP->lifeleft += F1_0;	//	Make sure this object doesn't go out.
+		color->red = 0.1f;
+		color->green = 1.0f;
+		color->blue = 0.25f;
+		*pbGotColor = 1;
 		return lightval;
 	}
 
@@ -656,7 +693,7 @@ switch (objtype) {
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynamicLight(void)
+void SetDynamicLight (void)
 {
 	int			vv;
 	int			objnum, vertnum, segnum;
@@ -732,6 +769,8 @@ for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
 		objP = gameData.objs.objects + objnum;
 		objPos = &objP->pos;
 
+		if (objP->type == OBJ_FIREBALL)
+			objP = objP;
 		xObjIntensity = ComputeLightIntensity (objnum, &color, &bGotColor);
 		if (bGotColor)
 			bKeepDynColoring = 1;
@@ -984,6 +1023,122 @@ if (objP->type == OBJ_PLAYER) {
 		engine_glow_value [1] = -3;			//don't draw
 	}
 }
+
+//-----------------------------------------------------------------------------
+
+void FlickerLights ()
+{
+	flickering_light	*flP = gameData.render.lights.flicker.lights;
+	segment				*segP;
+	side					*sideP;
+	int					l;
+
+for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
+	segP = gameData.segs.segments + flP->segnum;
+	//make sure this is actually a light
+	if (!(WALL_IS_DOORWAY (segP, flP->sidenum, NULL) & WID_RENDER_FLAG))
+		continue;
+	sideP = segP->sides + flP->sidenum;
+	if (!(gameData.pig.tex.brightness [sideP->tmap_num] ||
+			gameData.pig.tex.brightness [sideP->tmap_num2 & 0x3fff] ||
+		   (gameData.pig.tex.pTMapInfo [sideP->tmap_num].lighting | 
+			   gameData.pig.tex.pTMapInfo [sideP->tmap_num2 & 0x3fff].lighting)))
+		continue;
+	if (flP->timer == 0x80000000)		//disabled
+		continue;
+	if ((flP->timer -= gameData.app.xFrameTime) < 0) {
+		while (flP->timer < 0)
+			flP->timer += flP->delay;
+		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
+		if (flP->mask & 1)
+			AddLight (flP->segnum, flP->sidenum);
+		else
+			SubtractLight (flP->segnum, flP->sidenum);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+//returns ptr to flickering light structure, or NULL if can't find
+flickering_light *FindFlicker (int segnum,int sidenum)
+{
+	int l;
+	flickering_light *flP = gameData.render.lights.flicker.lights;
+
+for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
+	if ((flP->segnum == segnum) && (flP->sidenum == sidenum))	//found it!
+		return flP;
+return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//turn flickering off (because light has been turned off)
+void DisableFlicker (int segnum,int sidenum)
+{
+	flickering_light *flP = FindFlicker (segnum ,sidenum);
+
+if (flP)
+	flP->timer = 0x80000000;
+}
+
+//-----------------------------------------------------------------------------
+//turn flickering off (because light has been turned on)
+void EnableFlicker (int segnum,int sidenum)
+{
+	flickering_light *flP = FindFlicker (segnum, sidenum);
+
+if (flP)
+	flP->timer = 0;
+}
+
+
+#ifdef EDITOR
+
+//returns 1 if ok, 0 if error
+int AddFlicker (int segnum, int sidenum, fix delay, unsigned long mask)
+{
+	int l;
+	flickering_light *flP;
+
+#if TRACE
+	//con_printf (CON_DEBUG,"AddFlicker: %d:%d %x %x\n",segnum,sidenum,delay,mask);
+#endif
+	//see if there's already an entry for this seg/side
+
+	flP = gameData.render.lights.flicker.lights;
+
+	for (l=0;l<gameData.render.lights.flicker.nLights;l++,flP++)
+		if (flP->segnum == segnum && flP->sidenum == sidenum)	//found it!
+			break;
+
+	if (mask==0) {		//clearing entry
+		if (l == gameData.render.lights.flicker.nLights)
+			return 0;
+		else {
+			int i;
+			for (i=l;i<gameData.render.lights.flicker.nLights-1;i++)
+				gameData.render.lights.flicker.lights[i] = gameData.render.lights.flicker.lights[i+1];
+			gameData.render.lights.flicker.nLights--;
+			return 1;
+		}
+	}
+
+	if (l == gameData.render.lights.flicker.nLights) {
+		if (gameData.render.lights.flicker.nLights == MAX_FLICKERING_LIGHTS)
+			return 0;
+		else
+			gameData.render.lights.flicker.nLights++;
+	}
+
+	flP->segnum = segnum;
+	flP->sidenum = sidenum;
+	flP->delay = flP->timer = delay;
+	flP->mask = mask;
+
+	return 1;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1342,7 +1497,7 @@ void AddOglLights (void)
 	int			i, j, t;
 	segment		*segP;
 	side			*sideP;
-	tFaceColor	*pc = gameData.render.color.sides [0];
+	tFaceColor	*pc;
 
 gameStates.ogl.bHaveLights = 1;
 //glEnable (GL_LIGHTING);
@@ -1350,7 +1505,7 @@ gameData.render.lights.ogl.nLights = 0;
 gameData.render.lights.ogl.material.bValid = 0;
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
-	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++, pc++) {
+	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		//if (i != 3 || j != 2) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
@@ -1482,7 +1637,7 @@ if (gameOpts->ogl.bUseLighting) {
 		else {
 			VmVecSub (&d, &c, &pl->vPos);
 			m = VmVecMag (&d);
-			psl->bState = (m <= F1_0 * 100);
+			psl->bState = (m <= F1_0 * 125);
 			}
 		}
 	}

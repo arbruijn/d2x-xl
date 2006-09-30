@@ -109,6 +109,11 @@ typedef struct tFaceColor {
 	tRgbColorf	color;
 } tFaceColor;
 
+typedef struct tFaceColord {
+	char			index;
+	tRgbColord	color;
+} tFaceColord;
+
 extern ogl_texture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
 
 extern int ogl_mem_target;
@@ -272,6 +277,8 @@ void OglUPixelC (int x, int y, grs_color *c);
 void OglULineC (int left,int top,int right,int bot, grs_color *c);
 void OglTexWrap (ogl_texture *tex, int state);
 void RebuildGfxFx (int bGame, int bCameras);
+
+tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bufP);
 
 extern ubyte *defaultPalette;
 extern ubyte *gamePalette;

@@ -199,6 +199,7 @@ static char rcsid[] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "segment.h"
 #include "kconfig.h"
 #include "text.h"
+#include "lighting.h"
 #include "hudmsg.h"
 
 #ifdef EDITOR
@@ -312,15 +313,15 @@ int do_light_on (trigger *t)
 short *segs = t->seg;
 short *sides = t->side;
 short segnum,sidenum;
-for (i=t->num_links;i;i--,segs++,sides++) {
+for (i = t->num_links; i; i--, segs++, sides++) {
 	segnum = *segs;
 	sidenum = *sides;
 
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
 	if (gameData.pig.tex.pTMapInfo[gameData.segs.segments[segnum].sides[sidenum].tmap_num2 & 0x3fff].lighting) {
-		ret |= AddLight(segnum, sidenum); 		//any light sets flag
-		enable_flicker(segnum, sidenum);
+		ret |= AddLight (segnum, sidenum); 		//any light sets flag
+		EnableFlicker (segnum, sidenum);
 	}
 }
 return ret;
@@ -344,7 +345,7 @@ for (i=t->num_links;i;i--,segs++,sides++) {
 	//is to keep us from turning off blown-out lights
 	if (gameData.pig.tex.pTMapInfo[gameData.segs.segments[segnum].sides[sidenum].tmap_num2 & 0x3fff].lighting) {
 		ret |= SubtractLight(segnum, sidenum); 	//any light sets flag
-		disable_flicker(segnum, sidenum);
+		DisableFlicker(segnum, sidenum);
 	}
 }
 return ret;

@@ -255,7 +255,7 @@ bitmap_index bm_load_sub( char * filename )
 	else
 		GrRemapBitmapGood( new, newpal, -1, SuperX );
 
-	new->avg_color = ComputeAvgPixel(new);
+	new->bm_avgColor = ComputeAvgPixel(new);
 
 	bitmap_num = PiggyRegisterBitmap( new, fname, 0 );
 	d_free( new );
@@ -324,7 +324,7 @@ void ab_load( char * filename, bitmap_index bmp[], int *nframes )
 		else
 			GrRemapBitmapGood( bm[i], newpal, -1, SuperX );
 
-		bm[i]->avg_color = ComputeAvgPixel(bm[i]);
+		bm[i]->bm_avgColor = ComputeAvgPixel(bm[i]);
 
 		new_bmp = PiggyRegisterBitmap( bm[i], tempname, 0 );
 		d_free( bm[i] );

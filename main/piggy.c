@@ -268,7 +268,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Increased number of bitmaps for non-shareware version
  *
  * Revision 1.34  1994/11/19  09:11:52  john
- * Added avg_color to bitmaps saved in pig.
+ * Added bm_avgColor to bitmaps saved in pig.
  *
  * Revision 1.33  1994/11/19  00:07:05  john
  * Fixed bug with 8 char sound filenames not getting read from pig.
@@ -519,7 +519,7 @@ typedef struct DiskBitmapHeader {
 	ubyte height;           // low 8 bits here, 4 more bits in wh_extra
 	ubyte wh_extra;         // bits 0-3 width, bits 4-7 height
 	ubyte flags;
-	ubyte avg_color;
+	ubyte bm_avgColor;
 	int offset;
 } __pack__ DiskBitmapHeader;
 
@@ -911,7 +911,7 @@ void DiskBitmapHeaderRead (DiskBitmapHeader *dbh, CFILE *fp)
 	dbh->height = CFReadByte (fp);
 	dbh->wh_extra = CFReadByte (fp);
 	dbh->flags = CFReadByte (fp);
-	dbh->avg_color = CFReadByte (fp);
+	dbh->bm_avgColor = CFReadByte (fp);
 	dbh->offset = CFReadInt (fp);
 }
 
@@ -940,7 +940,7 @@ void DiskBitmapHeader_d1_read (DiskBitmapHeader *dbh, CFILE *fp)
 	dbh->height = CFReadByte (fp);
 	dbh->wh_extra = 0;
 	dbh->flags = CFReadByte (fp);
-	dbh->avg_color = CFReadByte (fp);
+	dbh->bm_avgColor = CFReadByte (fp);
 	dbh->offset = CFReadInt (fp);
 }
 
@@ -1222,7 +1222,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
 	bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
 	bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-	bmTemp.avg_color = bmh.avg_color;
+	bmTemp.bm_avgColor = bmh.bm_avgColor;
 	bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
@@ -1343,7 +1343,7 @@ void piggy_new_pigfile (char *pigname)
 			bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 			bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
 			bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-			bmTemp.avg_color = bmh.avg_color;
+			bmTemp.bm_avgColor = bmh.bm_avgColor;
 			bmTemp.bm_texBuf = d_malloc (bmTemp.bm_props.w * bmTemp.bm_props.h);
 			bitmapCacheUsed += bmTemp.bm_props.w * bmTemp.bm_props.h;
 			bitmapFlags [0][i] = bmh.flags & BM_FLAGS_TO_COPY;
@@ -1392,7 +1392,7 @@ void piggy_new_pigfile (char *pigname)
 						GrRemapBitmapGood (bm [fnum], newpal, iff_transparent_color, SuperX);
 					else
 						GrRemapBitmapGood (bm [fnum], newpal, -1, SuperX);
-					bm [fnum]->avg_color = ComputeAvgPixel (bm [fnum]);
+					bm [fnum]->bm_avgColor = ComputeAvgPixel (bm [fnum]);
 
 #ifdef EDITOR
 					if (FindArg ("-macdata"))
@@ -1431,7 +1431,7 @@ void piggy_new_pigfile (char *pigname)
 					GrRemapBitmapGood (newBm, newpal, iff_transparent_color, SuperX);
 				else
 					GrRemapBitmapGood (newBm, newpal, -1, SuperX);
-				newBm->avg_color = ComputeAvgPixel (newBm);
+				newBm->bm_avgColor = ComputeAvgPixel (newBm);
 #ifdef EDITOR
 				if (FindArg ("-macdata"))
 					swap_0_255 (newBm);
@@ -2310,7 +2310,7 @@ void PiggyWritePigFile (char *filename)
 		else
 			bmh.flags &= ~BM_FLAG_PAGED_OUT;
 			}
-		bmh.avg_color=gameData.pig.tex.bitmaps [i].avg_color;
+		bmh.bm_avgColor=gameData.pig.tex.bitmaps [i].bm_avgColor;
 		fwrite (&bmh, sizeof (DiskBitmapHeader), 1, pig_fp);  // Mark as a bitmap
 		}
 	fclose (pig_fp);
@@ -2630,7 +2630,7 @@ if (fp) {
 			continue;
 		if (offset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
 			break;
-		bm.avg_color = bmh [i].avg_color;
+		bm.bm_avgColor = bmh [i].bm_avgColor;
 		bm.bm_type = BM_TYPE_ALT;
 		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bTGA)))
 			break;
@@ -2729,7 +2729,7 @@ void PiggyBitmapReadD1 (
 memset (bmP, 0, sizeof (grs_bitmap));
 bmP->bm_props.w = bmP->bm_props.rowsize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
 bmP->bm_props.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
-bmP->avg_color = bmh->avg_color;
+bmP->bm_avgColor = bmh->bm_avgColor;
 bmP->bm_props.flags |= bmh->flags & BM_FLAGS_TO_COPY;
 
 CFSeek (Piggy_fp , nBmDataOffs + bmh->offset, SEEK_SET);
@@ -2920,7 +2920,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 		bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
 		bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-		bmTemp.avg_color = bmh.avg_color;
+		bmTemp.bm_avgColor = bmh.bm_avgColor;
 		bmTemp.bm_texBuf = d_malloc (bmTemp.bm_props.w * bmTemp.bm_props.h);
 		bitmapCacheUsed += bmTemp.bm_props.h * bmTemp.bm_props.w;
 		bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
@@ -2975,7 +2975,7 @@ if (i >= nBitmapNum) {
 	}
 PiggyBitmapReadD1 (newBm, Piggy_fp, nBmDataOffs, &bmh, 0, d1Palette, d1ColorMap);
 CFClose (Piggy_fp);
-newBm->avg_color = 0;	//ComputeAvgPixel (newBm);
+newBm->bm_avgColor = 0;	//ComputeAvgPixel (newBm);
 bmi.index = gameData.pig.tex.nExtraBitmaps;
 gameData.pig.tex.pBitmaps[gameData.pig.tex.nExtraBitmaps++] = *newBm;
 return bmi;

@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * poly code that is never used.
  *
  * Revision 1.43  1994/11/09  23:04:56  mike
- * Add avg_color field.
+ * Add bm_avgColor field.
  *
  * Revision 1.42  1994/10/27  00:53:35  john
  * Added RLE Flag to bitmap structere.
@@ -212,6 +212,12 @@ typedef struct _grs_point {
 	fix x, y;
 } grs_point;
 
+typedef struct tRgbColord {
+	double red;
+	double green;
+	double blue;
+} tRgbColord;
+
 typedef struct tRgbColorf {
 	float red;
 	float green;
@@ -330,7 +336,8 @@ typedef struct _grs_bitmap {
 											//   ModeX = *parent+(rowsize*y+x/4)
 											//   SVGA = *parent+(rowsize*y+x)
 	unsigned short	bm_handle;		//for application.  initialized to 0
-	ubyte				avg_color;		//  Average color of all pixels in texture map.
+	ubyte				bm_avgColor;	//  Average color of all pixels in texture map.
+	tRgbColorb		bm_avgRGB;
 	ubyte				bm_wallAnim :1;
 	ubyte				bm_fromPog :1;
 	ubyte				bm_type :3;

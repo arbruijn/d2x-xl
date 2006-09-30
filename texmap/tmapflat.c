@@ -267,7 +267,7 @@ void DrawTexPolyFlat(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
 	else if (average_light > NUM_LIGHTING_LEVELS-1)
 		average_light = NUM_LIGHTING_LEVELS-1;
 
-	color = grFadeTable[average_light*256 + bp->avg_color];
+	color = grFadeTable[average_light*256 + bp->bm_avgColor];
 	GrSetColor(color);
 
 	for (i=0;i<nverts;i++) {

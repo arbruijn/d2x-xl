@@ -408,31 +408,6 @@ object *find_escort();
 
 extern void apply_modified_palette(void);
 
-//Flickering light system
-typedef struct  {
-	short segnum, sidenum;
-	unsigned long mask;     // determines flicker pattern
-	fix timer;              // time until next change
-	fix delay;              // time between changes
-} flickering_light;
-
-#define MAX_FLICKERING_LIGHTS 100
-
-extern flickering_light Flickering_lights[MAX_FLICKERING_LIGHTS];
-extern int Num_flickering_lights;
-
-// returns ptr to flickering light structure, or NULL if can't find
-flickering_light *find_flicker(int segnum, int sidenum);
-
-// turn flickering off (because light has been turned off)
-void disable_flicker(int segnum, int sidenum);
-
-// turn flickering off (because light has been turned on)
-void enable_flicker(int segnum, int sidenum);
-
-// returns 1 if ok, 0 if error
-int add_flicker(int segnum, int sidenum, fix delay, unsigned long mask);
-
 int GrToggleFullScreenGame(void);
 
 void ShowInGameWarning (char *s);
@@ -441,8 +416,6 @@ void GetSlowTick (void);
 /*
  * reads a flickering_light structure from a CFILE
  */
-void flickering_light_read(flickering_light *fl, CFILE *fp);
-
 extern short maxfps;
 extern int timer_paused;
 

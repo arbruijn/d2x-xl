@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					117	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					118	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -717,7 +717,7 @@ else
 // read D2X-XL stuff
 if (player_file_version >= 97)
 	gameOptsSize = CFReadInt (fp);
-for (j = 0; j < 1; j++) {
+for (j = 0; j < 2; j++) {
 	if (j && (gameOptsSize > sizeof (tGameOptions)))
 		CFSeek (fp, gameOptsSize - sizeof (tGameOptions), SEEK_CUR);
 	if (!j && (player_file_version >= 26))
@@ -1038,6 +1038,11 @@ for (j = 0; j < 1; j++) {
 		gameOptions [j].ogl.bLightObjects = CFReadInt (fp);
 		gameOptions [j].ogl.nMaxLights = CFReadInt (fp);
 		}
+	if (player_file_version >= 118) {
+		extraGameInfo [j].bDarkMatch = CFReadByte (fp);
+		if (j)
+			mpParams.bDarkMatch = extraGameInfo [j].bDarkMatch;
+		}
 	}
 if (errno_ret == EZERO)
 	KCSetControls();
@@ -1242,7 +1247,7 @@ int WritePlayerFile()
 	CFWrite(controlSettings.d2xCustom, MAX_D2X_CONTROLS, 1, fp);
 // write D2X-XL stuff
 CFWriteInt (sizeof (tGameOptions), fp);
-for (j = 0; j < 1; j++) {
+for (j = 0; j < 2; j++) {
 	if (!j) {
 		CFWriteByte (extraGameInfo [0].bFixedRespawns, fp);
 		CFWriteByte (extraGameInfo [0].bFriendlyFire, fp);
@@ -1446,6 +1451,8 @@ for (j = 0; j < 1; j++) {
 	CFWriteInt (gameOptions [j].ogl.bUseLighting, fp);
 	CFWriteInt (gameOptions [j].ogl.bLightObjects, fp);
 	CFWriteInt (gameOptions [j].ogl.nMaxLights, fp);
+	CFWriteByte (extraGameInfo [j].bDarkMatch, fp);
+
 // end of D2X-XL stuff
 	}
 

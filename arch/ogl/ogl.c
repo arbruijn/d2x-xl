@@ -467,7 +467,7 @@ palette = bmP->bm_palette;
 if (!palette)
 	palette = defaultPalette;
 for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, bufP++) {
-	if (c = *bufP) {
+	if ((c = *bufP) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
 		c *= 3;
 		r += palette [c];
 		g += palette [c+1];
@@ -475,10 +475,23 @@ for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, bufP++) {
 		j++;
 		}
 	}
-j *= 63;	//palette entries are all /4, so do not divide by 256
-color->red = (float) r / (float) j;
-color->green = (float) g / (float) j;
-color->blue = (float) b / (float) j;
+if (j) {
+	bmP->bm_avgRGB.red = 4 * (ubyte) (r / j);
+	bmP->bm_avgRGB.green = 4 * (ubyte) (g / j);
+	bmP->bm_avgRGB.blue = 4 * (ubyte) (b / j);
+	j *= 63;	//palette entries are all /4, so do not divide by 256
+	color->red = (float) r / (float) j;
+	color->green = (float) g / (float) j;
+	color->blue = (float) b / (float) j;
+	}
+else {
+	bmP->bm_avgRGB.red =
+	bmP->bm_avgRGB.green =
+	bmP->bm_avgRGB.blue = 0;
+	color->red =
+	color->green =
+	color->blue = 0.0f;
+	}
 if (color->red > 1.0 || color->green > 1.0 || color->blue > 1.0)
 	c = c;
 return color;
@@ -488,7 +501,7 @@ return color;
 
 int GrAvgColor (grs_bitmap *bmP)
 {
-if (bmP->bm_texBuf && !bmP->avg_color) {
+if (bmP->bm_texBuf && !bmP->bm_avgColor) {
 		int c, h, i, j = 0, r = 0, g = 0, b = 0;
 		ubyte *p = bmP->bm_texBuf;
 		ubyte *palette = bmP->bm_palette;
@@ -1324,8 +1337,8 @@ else
 	tRgbColorf	*c;
 
 	c = BitmapColor (bmP, buf);
-	if (c && !bmP->avg_color)
-		bmP->avg_color = GrFindClosestColor (bmP->bm_palette, (int) c->red, (int) c->green, (int) c->blue);
+	if (c && !bmP->bm_avgColor)
+		bmP->bm_avgColor = GrFindClosestColor (bmP->bm_palette, (int) c->red, (int) c->green, (int) c->blue);
 	}
 OglLoadTexture (bmP, 0, 0, bmP->glTexture, (bmP->bm_props.flags & BM_FLAG_TGA) ? -1 : nTransp, 
 					 (bmP->bm_props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);

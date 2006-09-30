@@ -151,7 +151,7 @@ int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
 bool G3DrawLine (g3s_point *p0, g3s_point *p1)
 {
 glDisable (GL_TEXTURE_2D);
-//OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
 glVertex3x (p0->p3_vec.x, p0->p3_vec.y, -p0->p3_vec.z);
 glVertex3x (p1->p3_vec.x, p1->p3_vec.y, -p1->p3_vec.z);
@@ -959,8 +959,6 @@ if (gameData.render.lights.ogl.material.bValid) {
 		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
 		}
 	}
-if (nVertex == 114)
-	nVertex = nVertex;
 if (!bMatEmissive && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop) {
@@ -979,6 +977,8 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (i == nMatLight)
 		continue;
 	if (!(psl->bState && psl->nType))
+		continue;
+	if ((psl->nType == 1) && extraGameInfo [IsMultiGame].bDarkMatch)
 		continue;
 	lightColor = *((fVector3 *) &psl->color);
 	lightPos = psl->pos;

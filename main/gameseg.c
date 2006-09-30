@@ -2393,9 +2393,9 @@ void ApplyAllChangedLight (void)
 	short	i, j;
 	ubyte	h;
 
-for (i=0; i<=gameData.segs.nLastSegment; i++) {
+for (i=0; i <= gameData.segs.nLastSegment; i++) {
 	h = gameData.render.lights.subtracted [i];
-	for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
 		if (h & (1 << j))
 			ChangeLight (i, j, -1);
 	}
