@@ -1495,7 +1495,7 @@ if (loadIdx >= gameData.segs.nSegments) {
 	GrPaletteStepLoad (NULL);
 	return;
 	}
-m [0].value++;
+m [0].value += 10;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
@@ -1531,6 +1531,8 @@ else {
 	else
 		i++;
 	}
+if (gameOpts->ogl.bUseLighting)
+	i += PROGRESS_STEPS (gameData.segs.nSegments * 10);
 return i;
 }
 
@@ -1551,7 +1553,8 @@ void SortLightsGauge (void)
 loadOp = 0;
 loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-	NMProgressBar (TXT_PREP_DESCENT, 0, (gameData.segs.nSegments + PROGRESS_INCR - 1) / PROGRESS_INCR, SortLightsPoll); 
+	NMProgressBar (TXT_PREP_DESCENT, LoadMineGaugeSize () - (gameData.segs.nSegments * 10 + PROGRESS_INCR - 1) / PROGRESS_INCR, 
+						LoadMineGaugeSize () + PagingGaugeSize (), SortLightsPoll); 
 else
 	ComputeNearestSegmentLights (-1);
 }

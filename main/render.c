@@ -866,9 +866,9 @@ if (IS_WALL (nWallNum)) {
 					if (gameData.walls.walls [nWallNum].hps)
 						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-						gameStates.render.grAlpha = (float) extraGameInfo [1].grWallTransparency;
+						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
-						gameStates.render.grAlpha = (float) extraGameInfo [0].grWallTransparency;
+						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
 						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1);	//draw as flat poly
 					}
