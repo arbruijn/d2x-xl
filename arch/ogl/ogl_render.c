@@ -134,8 +134,10 @@ else if (pc->rgb) {
 	fc [1] = (float) (pc->color.green) / 255.0f;
 	fc [2] = (float) (pc->color.blue) / 255.0f;
 	fc [3] = (float) (pc->color.alpha) / 255.0f;
-	if (fc [3] < 1.0f)
+	if (fc [3] < 1.0f) {
 		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
 	glColor4fv (fc);
 	}
 else
@@ -1903,7 +1905,7 @@ else
 		}	
 #endif
 	if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)	{//for optional hardware lighting
-		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
+		//GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		//glEnable (GL_LIGHTING);
 		//glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
 		//glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);

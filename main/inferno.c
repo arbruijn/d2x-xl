@@ -1596,11 +1596,6 @@ void EvalOglArgs (void)
 {
 	int	t;
 
-if ((t = FindArg ("-gl_lighting"))) {
-	gameOpts->ogl.bUseLighting = NumArg (t, 1);
-//	if (gameOpts->ogl.bUseLighting)
-//		gameStates.ogl.bUseTransform = 1;
-	}
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
 if ((t = FindArg("-gl_16bittextures")))
