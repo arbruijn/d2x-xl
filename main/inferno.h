@@ -757,7 +757,7 @@ typedef struct tShaderLightData {
 	GLuint			nTexHandle;
 } tShaderLightData;
 
-#define MAX_NEAREST_LIGHTS 16
+#define MAX_NEAREST_LIGHTS 32
 
 typedef struct tOglLightData {
 	tOglLight			lights [MAX_OGL_LIGHTS];
@@ -769,6 +769,8 @@ typedef struct tOglLightData {
 	tShaderLightData	shader;
 	tOglMaterial		material;
 } tOglLightData;
+
+extern int nMaxNearestLights [21];
 
 //Flickering light system
 typedef struct flickering_light {

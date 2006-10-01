@@ -3855,6 +3855,8 @@ else if (gameData.app.nGameMode & GM_ENTROPY)
 	bonus = 3;
 else if (gameData.app.nGameMode & GM_MONSTERBALL)
 	bonus = extraGameInfo [1].monsterball.nBonus;
+else
+	bonus = 1;
 kmatrix_kills_changed = 1;
 if (nPlayer < 0) {
 	penalty = 1;

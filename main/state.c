@@ -1962,8 +1962,8 @@ playerP->hostages_level = retPlayerP->hostages_level;
 playerP->homing_object_dist = retPlayerP->homing_object_dist;
 playerP->hours_level = retPlayerP->hours_level;
 playerP->hours_total = retPlayerP->hours_total;
-playerP->nCloaks = retPlayerP->nCloaks;
-playerP->nInvuls = retPlayerP->nInvuls;
+//playerP->nCloaks = retPlayerP->nCloaks;
+//playerP->nInvuls = retPlayerP->nInvuls;
 DoCloakInvulSecretStuff (xOldGameTime);
 }
 

@@ -1114,11 +1114,13 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
+int nMaxNearestLights [21] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,24,28,32};
+
 int ComputeNearestSegmentLights (int i)
 {
 	segment				*segP;
 	tOglLight			*pl;
-	int					h, j, k, l, n;
+	int					h, j, k, l, n, nMaxLights;
 	vms_vector			center, dist;
 	struct tLightDist	*pDists;
 
@@ -1128,8 +1130,8 @@ if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDis
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
-h = (gameOpts->ogl.nMaxLights < MAX_NEAREST_LIGHTS) ? 
-	 gameOpts->ogl.nMaxLights : MAX_NEAREST_LIGHTS;
+nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
+h = (nMaxLights < MAX_NEAREST_LIGHTS) ? nMaxLights : MAX_NEAREST_LIGHTS;
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (i = 0, segP = gameData.segs.segments; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);

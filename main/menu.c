@@ -1570,7 +1570,7 @@ if (nOglMaxLightsOpt >= 0) {
 	v = m->value + 4;
 	if (v != gameOpts->ogl.nMaxLights) {
 		gameOpts->ogl.nMaxLights = v;
-		sprintf (m->text, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+		sprintf (m->text, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
 		m->rebuild = 1;
 		return;
 		}
@@ -1655,9 +1655,9 @@ do {
 		if (!gameStates.app.bGameRunning) {
 			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
 			optObjectLight = opt++;
-			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, gameOpts->ogl.nMaxLights);
+			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
 			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
-			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, 12, KEY_I, HTX_OGL_MAXLIGHTS);
+			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
 			nOglMaxLightsOpt = opt++;
 			ADD_TEXT (opt, "", 0);
 			opt++;

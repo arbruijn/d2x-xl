@@ -913,11 +913,11 @@ switch (objP->id) {
 		break;
 
 	case POW_FLAG_BLUE:
-		PickupFlag (objP, TEAM_BLUE, TEAM_RED, "BLUE FLAG!", nPlayer);
+		bUsed = PickupFlag (objP, TEAM_BLUE, TEAM_RED, "BLUE FLAG!", nPlayer);
 		break;
 
 	case POW_FLAG_RED:
-		PickupFlag (objP, TEAM_RED, TEAM_BLUE, "RED FLAG!", nPlayer);
+		bUsed = PickupFlag (objP, TEAM_RED, TEAM_BLUE, "RED FLAG!", nPlayer);
 		break;
 
 	case POW_HOARD_ORB:

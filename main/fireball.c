@@ -1986,7 +1986,7 @@ void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime
 				blobObjP->lifeleft = lifetime;
 			AddChildObjectP (pParent, blobObjP);
 			if (bThruster) {
-				//blobObjP->render_type = RT_THRUSTER;
+				blobObjP->render_type = RT_THRUSTER;
 				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
 				}
 			}
@@ -1999,7 +1999,7 @@ void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime
 					blobObjP->lifeleft = lifetime;
 			AddChildObjectP (pParent, blobObjP);
 			if (bThruster) {
-				//blobObjP->render_type = RT_THRUSTER;
+				blobObjP->render_type = RT_THRUSTER;
 				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
 				}	
 			}
@@ -2073,7 +2073,6 @@ return 1;
 int CheckMonsterballScore (void)
 {
 	ubyte	special;
-	short	t;
 
 if (!(gameData.app.nGameMode & GM_MONSTERBALL))
 	return 0;
@@ -2082,11 +2081,8 @@ if (!gameData.hoard.monsterballP)
 if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
 	return 0;
 special = gameData.segs.segment2s [gameData.hoard.monsterballP->segnum].special;
-t = GetTeam (gameData.multi.nLocalPlayer);
-if (special == SEGMENT_IS_GOAL_RED)
-	MultiSendCaptureBonus ((t == TEAM_BLUE) ? gameData.multi.nLocalPlayer : -gameData.multi.nLocalPlayer - 1);
-else if (special == SEGMENT_IS_GOAL_BLUE)
-	MultiSendCaptureBonus ((t == TEAM_RED) ? gameData.multi.nLocalPlayer : -gameData.multi.nLocalPlayer - 1);
+if ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
+	MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 else
 	return 0;
 CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
