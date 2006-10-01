@@ -2657,7 +2657,7 @@ void ShowTitleScreens (void)
 {
 #ifndef RELEASE
 if (FindArg ("-notitles"))
-	songs_play_song (SONG_TITLE, 1);
+	SongsPlaySong (SONG_TITLE, 1);
 else
 #endif
 	{	//NOTE LINK TO ABOVE!
@@ -2713,7 +2713,7 @@ else
 #else
 			GrSetMode (gameStates.menus.bHires?SM_640x480V:SM_320x200C);
 #endif
-			songs_play_song (SONG_TITLE, 1);
+			SongsPlaySong (SONG_TITLE, 1);
 			bSongPlaying = 1;
 #if TRACE		
 			con_printf(CON_DEBUG, "\nShowing logo screens..."); fflush (fErr);}
@@ -2745,7 +2745,7 @@ else
 #endif
 
 	if (!bSongPlaying)
-		songs_play_song (SONG_TITLE, 1);
+		SongsPlaySong (SONG_TITLE, 1);
 	}
 PA_DFX (pa_splash ());
 }
@@ -2922,7 +2922,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			if (gameData.multi.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU)
-				songs_play_song (SONG_TITLE, 1);
+				SongsPlaySong (SONG_TITLE, 1);
 			RestoreDefaultRobots ();
 			break;
 

@@ -196,7 +196,7 @@ int gr_message_color_level=1;
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string0(int x, int y, char *s)
+int GrInternalString0(int x, int y, char *s)
 {
 	unsigned char * fp;
 	char *text_ptr, *next_row, *text_ptr1;
@@ -296,7 +296,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string0m(int x, int y, char *s)
+int GrInternalString0m(int x, int y, char *s)
 {
 	unsigned char * fp;
 	char * text_ptr, * next_row, * text_ptr1;
@@ -406,7 +406,7 @@ VideoOffset1 = y * ROWSIZE + x;
 //------------------------------------------------------------------------------
 
 #ifdef __MSDOS__
-int gr_internal_string2(int x, int y, char *s)
+int GrInternalString2(int x, int y, char *s)
 {
 	unsigned char * fp;
 	ubyte * text_ptr, * next_row, * text_ptr1;
@@ -630,7 +630,7 @@ int gr_internal_string2(int x, int y, char *s)
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string2m(int x, int y, char *s)
+int GrInternalString2m(int x, int y, char *s)
 {
 	unsigned char * fp;
 	char * text_ptr, * next_row, * text_ptr1;
@@ -805,7 +805,7 @@ int gr_internal_string2m(int x, int y, char *s)
 //------------------------------------------------------------------------------
 
 #if defined(POLY_ACC)
-int gr_internal_string5(int x, int y, char *s)
+int GrInternalString5(int x, int y, char *s)
 {
 	unsigned char * fp;
 	ubyte * text_ptr, * next_row, * text_ptr1;
@@ -920,7 +920,7 @@ int gr_internal_string5(int x, int y, char *s)
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string5m(int x, int y, char *s)
+int GrInternalString5m(int x, int y, char *s)
 {
 	unsigned char * fp;
 	ubyte * text_ptr, * next_row, * text_ptr1;
@@ -1051,7 +1051,7 @@ grs_bitmap char_bm = {
 
 //------------------------------------------------------------------------------
 
-int gr_internal_color_string(int x, int y, char *s)
+int GrInternalColorString(int x, int y, char *s)
 {
 	unsigned char * fp;
 	ubyte * text_ptr, * next_row, * text_ptr1;
@@ -1498,7 +1498,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-int gr_internal_color_string(int x, int y, char *s)
+int GrInternalColorString(int x, int y, char *s)
 {
 	return OglInternalString(x,y,s);
 }
@@ -1514,7 +1514,8 @@ int GrString(int x, int y, char *s)
 	Assert(FONT != NULL);
 
 	if (x == 0x8000)	{
-		if (y<0) clipped |= 1;
+		if (y < 0)
+			clipped |= 1;
 		GrGetStringSize(s, &w, &h, &aw);
 		// for x, since this will be centered, only look at
 		// width.
@@ -1564,7 +1565,7 @@ int GrString(int x, int y, char *s)
 #endif
 
 	if (FFLAGS & FT_COLOR)
-		return gr_internal_color_string(x, y, s);
+		return GrInternalColorString(x, y, s);
 
 	if (BG_COLOR.index == -1)
 		return gr_internal_string_clipped_m(x, y, s);
@@ -1582,29 +1583,29 @@ int GrUString(int x, int y, char *s)
 #endif
 	
 	if (FFLAGS & FT_COLOR) {
-		return gr_internal_color_string(x,y,s);
+		return GrInternalColorString(x,y,s);
 	}
 	else
 		switch(TYPE)
 		{
 		case BM_LINEAR:
 			if (BG_COLOR.index == -1)
-				return gr_internal_string0m(x,y,s);
+				return GrInternalString0m(x,y,s);
 			else
-				return gr_internal_string0(x,y,s);
+				return GrInternalString0(x,y,s);
 #ifdef __MSDOS__
 		case BM_SVGA:
 			if (BG_COLOR.index == -1)
-				return gr_internal_string2m(x,y,s);
+				return GrInternalString2m(x,y,s);
 			else
-				return gr_internal_string2(x,y,s);
+				return GrInternalString2(x,y,s);
 #endif // __MSDOS__
 #if defined(POLY_ACC)
       case BM_LINEAR15:
 			if (BG_COLOR.index == -1)
-				return gr_internal_string5m(x,y,s);
+				return GrInternalString5m(x,y,s);
 			else
-				return gr_internal_string5(x,y,s);
+				return GrInternalString5(x,y,s);
 #endif
 		}
 	return 0;

@@ -1893,7 +1893,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 if (!load_screen_text (filename, &Briefing_text))
 	return;
 #ifndef SHAREWARE
-songs_play_song (SONG_BRIEFING, 1);
+SongsPlaySong (SONG_BRIEFING, 1);
 #else
 SongsStopAll ();
 #endif

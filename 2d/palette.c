@@ -168,8 +168,10 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define Sqr(x) ((x)*(x))
 
 ubyte *defaultPalette = NULL;
+ubyte *fadePalette = NULL;
 
 ubyte grFadeTable[256*GR_FADE_LEVELS];
+
 
 //------------------------------------------------------------------------------
 
@@ -255,7 +257,7 @@ for (i = 0; i < GR_FADE_LEVELS * 256; i++)
 for (i = 0; i < GR_FADE_LEVELS; i++)
 	grFadeTable [i * 256] = TRANSPARENCY_COLOR;
 #endif
-return AddPalette (palette);
+return fadePalette = AddPalette (palette);
 }
 
 //	-----------------------------------------------------------------------------

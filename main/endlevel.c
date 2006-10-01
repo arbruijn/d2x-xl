@@ -609,7 +609,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 #endif
 Assert (last_segnum == gameData.endLevel.exit.nSegNum);
 if (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1)
-	songs_play_song (SONG_ENDLEVEL, 0);
+	SongsPlaySong (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.console->movement_type = MT_NONE;			//movement handled by flythrough
 gameData.objs.console->control_type = CT_NONE;

@@ -323,7 +323,7 @@ int songs_haved2_cd()
 #endif
 
 
-void songs_play_song( int songnum, int repeat )
+void SongsPlaySong( int songnum, int repeat )
 {
 	#ifndef SHAREWARE
 	//Assert(songnum != SONG_ENDLEVEL && songnum != SONG_ENDGAME);	//not in full version
@@ -360,7 +360,7 @@ void songs_play_song( int songnum, int repeat )
 
 void songs_play_current_song( int repeat )
 {
-songs_play_song (gameStates.sound.nCurrentSong, repeat);
+SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
 }
 
 int nCurrentLevelSong;

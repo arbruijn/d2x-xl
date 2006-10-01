@@ -1335,8 +1335,8 @@ int G3GatherPolyModelItems (object *objP, void *modelP, vms_angvec *pAnimAngles,
 
 if (!(po->nState || G3AllocPolyModelItems (modelP, po, bShadowData)))
 	return 0;
-G3StartInstanceMatrix (&objP->pos, &objP->orient);
 if (po->nState == 1) {
+	G3StartInstanceMatrix (&objP->pos, &objP->orient);
 	po->nVerts = 0;
 	G3GetPolyModelItems (modelP, pAnimAngles, po, 1, bShadowData);
 	if (bShadowData) {
@@ -1353,12 +1353,14 @@ if (po->nState == 1) {
 		G3GetPolyModelEdges (po);
 		}
 	po->nState = 2;
+	G3DoneInstance ();
 	}
 if (bShadowData) {
 	po->nVerts = 0;
+	G3StartInstanceMatrix (&objP->pos, &objP->orient);
 	G3GetPolyModelItems (modelP, pAnimAngles, po, 0, 1);
+	G3DoneInstance ();
 	}
-G3DoneInstance ();
 return 1;
 }
 

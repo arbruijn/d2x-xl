@@ -281,6 +281,7 @@ void RebuildGfxFx (int bGame, int bCameras);
 tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bufP);
 
 extern ubyte *defaultPalette;
+extern ubyte *fadePalette;
 extern ubyte *gamePalette;
 extern ubyte *starsPalette;
 extern GLenum curDrawBuffer;

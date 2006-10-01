@@ -254,7 +254,9 @@ ubyte fade_values_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 12,12,12,12,12,11,11,11,11,11,10,10,10,10,10,10,9,9,9,9,9,8,8,8,8,8,7,7,7,7,7,6,6,6,6,6,5,5,5,5,
 5,5,4,4,4,4,4,3,3,3,3,3,2,2,2,2,2,1,1};
 
-extern ubyte *gr_bitblt_fade_table;
+ubyte *creditsPalette = NULL;
+
+extern ubyte *grBitBltFadeTable;
 
 grs_font * header_font;
 grs_font * title_font;
@@ -358,7 +360,7 @@ WIN(int credinit = 0;)
 #ifdef WINDOWS
 CreditsPaint:
 #endif
-	GrUsePaletteTable("credits.256", NULL);
+	creditsPalette = GrUsePaletteTable("credits.256", NULL);
 #ifdef OGL
 	GrPaletteStepLoad (NULL);
 #endif
@@ -368,7 +370,8 @@ CreditsPaint:
 	header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
 	title_font = GrInitFont(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
 	names_font = GrInitFont(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
-	bmBackdrop.bm_texBuf=NULL;
+	bmBackdrop.bm_texBuf = NULL;
+	bmBackdrop.bm_palette = NULL;
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
 //MWA  be linear, so we can't rely on grdCurCanv->cv_bitmap->bm_props.type.
@@ -378,7 +381,7 @@ CreditsPaint:
 		CFClose(file);
 		return;
 	}
-	songs_play_song(SONG_CREDITS, 1);
+	SongsPlaySong(SONG_CREDITS, 1);
 	GrRemapBitmapGood(&bmBackdrop, NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
@@ -421,9 +424,10 @@ if (!gameOpts->menus.nStyle) {
 	if (!CreditsOffscreenBuf)
 		Error("Not enough memory to allocate Credits Buffer.");
 	}
+CreditsOffscreenBuf->cv_bitmap.bm_palette = grdCurCanv->cv_bitmap.bm_palette;
 if (gameOpts->menus.nStyle)
 	CreditsOffscreenBuf->cv_bitmap.bm_props.flags |= BM_FLAG_TRANSPARENT;
-	KeyFlush();
+KeyFlush();
 
 #ifdef WINDOWS
 	if (!credinit)	
@@ -517,7 +521,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			} 
 		else
 			grdCurCanv->cv_font = names_font;
-		gr_bitblt_fade_table = (gameStates.menus.bHires ? fade_values_hires : fade_values);
+		grBitBltFadeTable = (gameStates.menus.bHires ? fade_values_hires : fade_values);
 		tempp = strchr (s, '\t');
 		if (tempp)	{
 		//	Wacky Credits thing
@@ -547,7 +551,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
         	dirty_box[j].left = ((gameStates.menus.bHires?640:320) - w) / 2;
 			cr_gr_printf(0x8000, y, s);
 		}
-		gr_bitblt_fade_table = NULL;
+		grBitBltFadeTable = NULL;
 		if (buffer[l][0] == '!')
 			y += ROW_SPACING/2;
 		else
@@ -572,10 +576,10 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 #if defined(POLY_ACC)
 			if (new_box->width != 0)
 #endif
-				GrBmBitBlt(new_box->width + 1, new_box->height +4,
-							new_box->left + xOffs, new_box->top + yOffs, 
-							new_box->left, new_box->top,
-							tempbmp, &(grdCurScreen->sc_canvas.cv_bitmap));
+				GrBmBitBlt (new_box->width + 1, new_box->height +4,
+								new_box->left + xOffs, new_box->top + yOffs, 
+								new_box->left, new_box->top,
+								tempbmp, &(grdCurScreen->sc_canvas.cv_bitmap));
 	//	WIN(DDGRSCREENUNLOCK);
 		}
 #if defined(POLY_ACC)
@@ -667,7 +671,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 					DDGrSetCurrentCanvas(save_canv),
 					GrSetCurrentCanvas(save_canv)
 				);
-					songs_play_song(SONG_TITLE, 1);
+					SongsPlaySong(SONG_TITLE, 1);
 
 				//if (!gameOpts->menus.nStyle) 
 				{

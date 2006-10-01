@@ -119,6 +119,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mono.h"
 #include "byteswap.h"       // because of rle code that has short for row offsets
 #include "inferno.h"
+#include "bitmap.h"
+#include "ogl_init.h"
 #include "error.h"
 
 #ifdef OGL
@@ -131,7 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int gr_bitblt_dest_step_shift = 0;
 int gr_bitblt_double = 0;
-ubyte *gr_bitblt_fade_table=NULL;
+ubyte *grBitBltFadeTable=NULL;
 
 extern void gr_vesa_bitmap(grs_bitmap * source, grs_bitmap * dest, int x, int y);
 
@@ -337,7 +339,8 @@ static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, unsigned int num_pix
 
 //------------------------------------------------------------------------------
 
-static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, ubyte fade_value);
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
+													ubyte fade_value, ubyte *srcPalette, ubyte *destPalette);
 
 #if !defined(NO_ASM) && defined(__WATCOMC__)
 
@@ -411,19 +414,31 @@ __inline void gr_linear_rep_movsdm_faded(void * src, void * dest, unsigned int n
 
 #else
 
-static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, ubyte fade_value)
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
+													ubyte fade_value, ubyte *srcPalette, ubyte *destPalette)
 {
-	int i;
-	ubyte source;
+	int	i;
+	short c;
 	ubyte *fade_base;
+	float fade = (float) fade_value / 31.0f;
 
+	if (!destPalette)
+		destPalette = srcPalette;
 	fade_base = grFadeTable + (fade_value * 256);
-
-	for (i=num_pixels; i != 0; i--)
-	{
-		source = *src;
-		if (source != (ubyte)TRANSPARENCY_COLOR)
-			*dest = *(fade_base + source);
+	for (i=num_pixels; i != 0; i--) {
+		c= (short) *src;
+		if ((ubyte) c != (ubyte) TRANSPARENCY_COLOR) {
+#if 1
+			c *= 3;
+			c = GrFindClosestColor (destPalette, 
+											(ubyte) (srcPalette [c] * fade + 0.5), 
+											(ubyte) (srcPalette [c + 1] * fade + 0.5), 
+											(ubyte) (srcPalette [c + 2] * fade + 0.5));
+			*dest = c;
+#else
+				*dest = fade_base [c];
+#endif
+			}
 		dest++;
 		src++;
 	}
@@ -657,7 +672,7 @@ static void modex_copy_column_m(ubyte * src, ubyte * dest, int num_pixels, int s
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00(int x, int y, grs_bitmap *bm)
+void gr_ubitmap00(int x, int y, grs_bitmap *bmP)
 {
 	register int y1;
 	int dest_rowsize;
@@ -668,21 +683,21 @@ void gr_ubitmap00(int x, int y, grs_bitmap *bm)
 	dest_rowsize=grdCurCanv->cv_bitmap.bm_props.rowsize << gr_bitblt_dest_step_shift;
 	dest = &(grdCurCanv->cv_bitmap.bm_texBuf[ dest_rowsize*y+x ]);
 
-	src = bm->bm_texBuf;
+	src = bmP->bm_texBuf;
 
-	for (y1=0; y1 < bm->bm_props.h; y1++)    {
+	for (y1=0; y1 < bmP->bm_props.h; y1++)    {
 		if (gr_bitblt_double)
-			gr_linear_rep_movsd_2x(src, dest, bm->bm_props.w);
+			gr_linear_rep_movsd_2x(src, dest, bmP->bm_props.w);
 		else
-			gr_linear_movsd(src, dest, bm->bm_props.w);
-		src += bm->bm_props.rowsize;
+			gr_linear_movsd(src, dest, bmP->bm_props.w);
+		src += bmP->bm_props.rowsize;
 		dest+= (int)(dest_rowsize);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00m(int x, int y, grs_bitmap *bm)
+void gr_ubitmap00m(int x, int y, grs_bitmap *bmP)
 {
 	register int y1;
 	int dest_rowsize;
@@ -693,18 +708,19 @@ void gr_ubitmap00m(int x, int y, grs_bitmap *bm)
 	dest_rowsize=grdCurCanv->cv_bitmap.bm_props.rowsize << gr_bitblt_dest_step_shift;
 	dest = &(grdCurCanv->cv_bitmap.bm_texBuf[ dest_rowsize*y+x ]);
 
-	src = bm->bm_texBuf;
+	src = bmP->bm_texBuf;
 
-	if (gr_bitblt_fade_table==NULL) {
-		for (y1=0; y1 < bm->bm_props.h; y1++)    {
-			gr_linear_rep_movsdm(src, dest, bm->bm_props.w);
-			src += bm->bm_props.rowsize;
+	if (grBitBltFadeTable==NULL) {
+		for (y1=0; y1 < bmP->bm_props.h; y1++)    {
+			gr_linear_rep_movsdm(src, dest, bmP->bm_props.w);
+			src += bmP->bm_props.rowsize;
 			dest+= (int)(dest_rowsize);
 		}
 	} else {
-		for (y1=0; y1 < bm->bm_props.h; y1++)    {
-			gr_linear_rep_movsdm_faded(src, dest, bm->bm_props.w, gr_bitblt_fade_table[y1+y]);
-			src += bm->bm_props.rowsize;
+		for (y1=0; y1 < bmP->bm_props.h; y1++)    {
+			gr_linear_rep_movsdm_faded(src, dest, bmP->bm_props.w, grBitBltFadeTable[y1+y], 
+												bmP->bm_palette, grdCurCanv->cv_bitmap.bm_palette);
+			src += bmP->bm_props.rowsize;
 			dest+= (int)(dest_rowsize);
 		}
 	}
@@ -1368,7 +1384,7 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap *
 
 	// No interlacing, copy the whole buffer.
 
-	if (gr_bitblt_fade_table==NULL) {
+	if (grBitBltFadeTable==NULL) {
 		for (i=0; i < h; i++)    {
 			gr_linear_rep_movsdm(sbits, dbits, w);
 			sbits += src->bm_props.rowsize;
@@ -1376,7 +1392,7 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap *
 		}
 	} else {
 		for (i=0; i < h; i++)    {
-			gr_linear_rep_movsdm_faded(sbits, dbits, w, gr_bitblt_fade_table[dy+i]);
+			gr_linear_rep_movsdm_faded(sbits, dbits, w, grBitBltFadeTable[dy+i], src->bm_palette, dest->bm_palette);
 			sbits += src->bm_props.rowsize;
 			dbits += dest->bm_props.rowsize;
 		}
@@ -1789,76 +1805,76 @@ GrBmUBitBlt(w,h, dx1, dy1, sx1, sy1, src, dest);
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap(int x, int y, grs_bitmap *bm)
+void gr_ubitmap(int x, int y, grs_bitmap *bmP)
 {
 	int source, dest;
 
-	source = bm->bm_props.type;
+	source = bmP->bm_props.type;
 	dest = TYPE;
 
 	if (source==BM_LINEAR) {
 		switch(dest)
 		{
 		case BM_LINEAR:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt00_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt00_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_ubitmap00(x, y, bm);
+				gr_ubitmap00(x, y, bmP);
 			return;
 #ifdef OGL
 		case BM_OGL:
-			OglUBitMapM(x,y,bm);
+			OglUBitMapM(x,y,bmP);
 			return;
 #endif
 #ifdef D1XD3D
 		case BM_DIRECTX:
 			Assert ((int)grdCurCanv->cv_bitmap.bm_texBuf == BM_D3D_RENDER || (int)grdCurCanv->cv_bitmap.bm_texBuf == BM_D3D_DISPLAY);
-			Win32_BlitLinearToDirectX_bm(bm, 0, 0, bm->bm_props.w, bm->bm_props.h, x, y, 0);
+			Win32_BlitLinearToDirectX_bm(bmP, 0, 0, bmP->bm_props.w, bmP->bm_props.h, x, y, 0);
 			return;
 #endif
 #ifdef __MSDOS__
 		case BM_SVGA:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt0x_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt0x_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_vesa_bitmap(bm, &grdCurCanv->cv_bitmap, x, y);
+				gr_vesa_bitmap(bmP, &grdCurCanv->cv_bitmap, x, y);
 			return;
 		case BM_MODEX:
-			gr_bm_ubitblt01(bm->bm_props.w, bm->bm_props.h, x+XOFFSET, y+YOFFSET, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			gr_bm_ubitblt01(bmP->bm_props.w, bmP->bm_props.h, x+XOFFSET, y+YOFFSET, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			return;
 #endif
 #if defined(POLY_ACC)
 		case BM_LINEAR15:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt05_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt05_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_ubitmap05(x, y, bm);
+				gr_ubitmap05(x, y, bmP);
 			return;
 
 #endif
 		default:
-			gr_ubitmap012(x, y, bm);
+			gr_ubitmap012(x, y, bmP);
 			return;
 		}
 	} else  {
-		gr_ubitmapGENERIC(x, y, bm);
+		gr_ubitmapGENERIC(x, y, bmP);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void GrUBitmapM(int x, int y, grs_bitmap *bm)
+void GrUBitmapM(int x, int y, grs_bitmap *bmP)
 {
 	int source, dest;
 
-	source = bm->bm_props.type;
+	source = bmP->bm_props.type;
 	dest = TYPE;
 
-	Assert(x+bm->bm_props.w <= grdCurCanv->cv_w);
-	Assert(y+bm->bm_props.h <= grdCurCanv->cv_h);
+	Assert(x+bmP->bm_props.w <= grdCurCanv->cv_w);
+	Assert(y+bmP->bm_props.h <= grdCurCanv->cv_h);
 
 #ifdef _3DFX
-	_3dfx_Blit(x, y, bm);
+	_3dfx_Blit(x, y, bmP);
 	if (_3dfx_skip_ddraw)
 		return;
 #endif
@@ -1867,67 +1883,67 @@ void GrUBitmapM(int x, int y, grs_bitmap *bm)
 		switch(dest)
 		{
 		case BM_LINEAR:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt00m_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt00m_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_ubitmap00m(x, y, bm);
+				gr_ubitmap00m(x, y, bmP);
 			return;
 #ifdef OGL
 		case BM_OGL:
-			OglUBitMapM(x,y,bm);
+			OglUBitMapM(x,y,bmP);
 			return;
 #endif
 #ifdef D1XD3D
 		case BM_DIRECTX:
-			if (bm->bm_props.w < 35 && bm->bm_props.h < 35) {
+			if (bmP->bm_props.w < 35 && bmP->bm_props.h < 35) {
 				// ugly hack needed for reticle
-				if (bm->bm_props.flags & BM_FLAG_RLE)
-					gr_bm_ubitblt0x_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap, 1);
+				if (bmP->bm_props.flags & BM_FLAG_RLE)
+					gr_bm_ubitblt0x_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap, 1);
 				else
-					gr_ubitmapGENERICm(x, y, bm);
+					gr_ubitmapGENERICm(x, y, bmP);
 				return;
 			}
 			Assert ((int)grdCurCanv->cv_bitmap.bm_texBuf == BM_D3D_RENDER || (int)grdCurCanv->cv_bitmap.bm_texBuf == BM_D3D_DISPLAY);
-			Win32_BlitLinearToDirectX_bm(bm, 0, 0, bm->bm_props.w, bm->bm_props.h, x, y, 1);
+			Win32_BlitLinearToDirectX_bm(bmP, 0, 0, bmP->bm_props.w, bmP->bm_props.h, x, y, 1);
 			return;
 #endif
 #ifdef __MSDOS__
 		case BM_SVGA:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt02m_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
-			//gr_bm_ubitblt0xm_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt02m_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
+			//gr_bm_ubitblt0xm_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_bm_ubitblt02m(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
-			//gr_ubitmapGENERICm(x, y, bm);
+				gr_bm_ubitblt02m(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
+			//gr_ubitmapGENERICm(x, y, bmP);
 			return;
 		case BM_MODEX:
-			gr_bm_ubitblt01m(bm->bm_props.w, bm->bm_props.h, x+XOFFSET, y+YOFFSET, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			gr_bm_ubitblt01m(bmP->bm_props.w, bmP->bm_props.h, x+XOFFSET, y+YOFFSET, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			return;
 #endif
 #if defined(POLY_ACC)
 		case BM_LINEAR15:
-			if (bm->bm_props.flags & BM_FLAG_RLE)
-				gr_bm_ubitblt05m_rle(bm->bm_props.w, bm->bm_props.h, x, y, 0, 0, bm, &grdCurCanv->cv_bitmap);
+			if (bmP->bm_props.flags & BM_FLAG_RLE)
+				gr_bm_ubitblt05m_rle(bmP->bm_props.w, bmP->bm_props.h, x, y, 0, 0, bmP, &grdCurCanv->cv_bitmap);
 			else
-				gr_ubitmap05m(x, y, bm);
+				gr_ubitmap05m(x, y, bmP);
 			return;
 #endif
 
 		default:
-			gr_ubitmap012m(x, y, bm);
+			gr_ubitmap012m(x, y, bmP);
 			return;
 		}
 	} else {
-		gr_ubitmapGENERICm(x, y, bm);
+		gr_ubitmapGENERICm(x, y, bmP);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void GrBitmapM(int x, int y, grs_bitmap *bm)
+void GrBitmapM(int x, int y, grs_bitmap *bmP)
 {
-	int dx1=x, dx2=x+bm->bm_props.w-1;
-	int dy1=y, dy2=y+bm->bm_props.h-1;
+	int dx1=x, dx2=x+bmP->bm_props.w-1;
+	int dy1=y, dy2=y+bmP->bm_props.h-1;
 	int sx=0, sy=0;
 
 	if ((dx1 >= grdCurCanv->cv_bitmap.bm_props.w) || (dx2 < 0)) 
@@ -1946,24 +1962,24 @@ void GrBitmapM(int x, int y, grs_bitmap *bm)
 		dx2 = grdCurCanv->cv_bitmap.bm_props.w-1;
 	if (dy2 >= grdCurCanv->cv_bitmap.bm_props.h)
 		dy2 = grdCurCanv->cv_bitmap.bm_props.h-1; 
-	// Draw bitmap bm[x,y] into (dx1,dy1)-(dx2,dy2)
+	// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
 
-	if ((bm->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_LINEAR)) {
-		if (bm->bm_props.flags & BM_FLAG_RLE)
-			gr_bm_ubitblt00m_rle(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap);
+	if ((bmP->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_LINEAR)) {
+		if (bmP->bm_props.flags & BM_FLAG_RLE)
+			gr_bm_ubitblt00m_rle(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 		else
-			gr_bm_ubitblt00m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap);
+			gr_bm_ubitblt00m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 		return;
 	}
 #ifdef __MSDOS__
-	else if ((bm->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_SVGA))
+	else if ((bmP->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_SVGA))
 	{
-		gr_bm_ubitblt02m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap);
+		gr_bm_ubitblt02m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 		return;
 	}
 #endif
 
-	GrBmUBitBltM(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap);
+	GrBmUBitBltM(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 
 }
 

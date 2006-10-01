@@ -1363,7 +1363,7 @@ void DoEndLevelScoreGlitz (int network)
 
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bHaveExtraData)
-		songs_play_song (SONG_INTER, 0);
+		SongsPlaySong (SONG_INTER, 0);
 	
    #ifdef TACTILE
 		if (TactileStick)
@@ -1787,11 +1787,11 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 			}
 		if (!played) {
 			if (IS_D2_OEM) {
-				songs_play_song (SONG_TITLE, 0);
+				SongsPlaySong (SONG_TITLE, 0);
 				DoBriefingScreens ("end2oem.tex",1);
 				}
 			else {
-				songs_play_song (SONG_ENDGAME, 0);
+				SongsPlaySong (SONG_ENDGAME, 0);
 				DoBriefingScreens (gameStates.app.bD1Mission ? "endreg.tex" : "ending2.tex", gameStates.app.bD1Mission ? 0x7e : 1);
 				}
 			}

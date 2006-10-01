@@ -85,7 +85,7 @@ extern int Num_songs, nD1SongNum, nD2SongNum;   //how many MIDI songs
 extern int Redbook_enabled;
 extern int Redbook_playing;     // track that is currently playing
 
-void songs_play_song( int songnum, int repeat );
+void SongsPlaySong( int songnum, int repeat );
 void PlayLevelSong( int levelnum );
 
 // stop the redbook, so we can read off the CD

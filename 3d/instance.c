@@ -43,14 +43,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "oof.h"
 
-#define MAX_INSTANCE_DEPTH	5
+#define MAX_INSTANCE_DEPTH	10
 
 struct instance_context {
 	vms_matrix m;
 	vms_vector p;
 } instanceStack[MAX_INSTANCE_DEPTH];
 
-static int nInstanceDepth = 0;
+int nInstanceDepth = 0;
 
 //------------------------------------------------------------------------------
 
@@ -120,7 +120,9 @@ if (gameStates.ogl.bUseTransform) {
 #ifdef D1XD3D
 	Win32_start_instance_matrix (pos, orient);
 #endif
-	Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
+	//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
+	if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
+		nInstanceDepth = nInstanceDepth;
 	instanceStack [nInstanceDepth].m = viewInfo.view;
 	instanceStack [nInstanceDepth].p = viewInfo.position;
 	nInstanceDepth++;

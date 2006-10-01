@@ -321,7 +321,7 @@ try_again:;
 				gameStates.video.nScreenMode = -1;
 #endif
 				PlayMovie ("intro.mve", 0, 1, gameOpts->movies.bResize);
-				songs_play_song (SONG_TITLE, 1);
+				SongsPlaySong (SONG_TITLE, 1);
 				*last_key = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
 				#ifdef WINDOWS
@@ -546,7 +546,7 @@ for (;;) {
 		continue;
 	for (i = 0; i < gameData.songs.nSongs; i++)
 		if (gameData.songs.info [i].filename == m [h]) {
-			songs_play_song (i, 0);
+			SongsPlaySong (i, 0);
 			return;
 			}
 	}
@@ -2459,7 +2459,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		}
 	else if (gameStates.sound.bRedbookEnabled = items [optRedbook].value) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
-			songs_play_song (SONG_TITLE, 1);
+			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
 			PlayLevelSong ( gameData.missions.nCurrentLevel );
 		else
@@ -2508,7 +2508,7 @@ else
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong ( NULL, NULL, NULL, 1, 0 );
 		else if (!song_playing)
-			songs_play_song ( gameStates.sound.nCurrentSong, 1);
+			SongsPlaySong ( gameStates.sound.nCurrentSong, 1);
 		}
 	}
 // don't enable redbook for a non-apple demo version of the shareware demo
@@ -2577,7 +2577,7 @@ if ( gameConfig.nMidiVolume < 1 )   {
 		DigiPlayMidiSong ( NULL, NULL, NULL, 0, 0 );
 	}
 else if (!song_playing)
-	songs_play_song ( gameStates.sound.nCurrentSong, 1);
+	SongsPlaySong ( gameStates.sound.nCurrentSong, 1);
 }
 
 //------------------------------------------------------------------------------
