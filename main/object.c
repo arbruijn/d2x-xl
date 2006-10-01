@@ -875,40 +875,36 @@ void DrawPolygonObject (object *objP)
 			bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 			if (bBlendPolys) {
 #if OGL_ZBUF
-				fix dist_to_eye = VmVecDistQuick (&gameData.objs.viewer->pos, &objP->pos);
+				fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->pos, &objP->pos);
 				if (!gameOpts->legacy.bRender) {
-					gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 10.0f;
+					gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 3.0f;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 					}
 #endif
-				if (dist_to_eye >= gameData.models.nSimpleModelThresholdScale * F1_0*2)
-					bBlendPolys = 0;
-				else
+				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
 					DrawPolygonModel (
 						objP, &objP->pos, &objP->orient, 
 						(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
 						gameData.weapons.info [objP->id].model_num_inner, 
 						objP->rtype.pobj_info.subobj_flags, 
-						bBrightPolys?F1_0:light, 
+						bBrightPolys ? F1_0 : light, 
 						engine_glow_value, 
 						alt_textures, 
 						NULL /*gameData.weapons.color + objP->id*/);
-			}
+				}
 			DrawPolygonModel (
 				objP, &objP->pos, &objP->orient, 
 				(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
 				objP->rtype.pobj_info.model_num, 
 				objP->rtype.pobj_info.subobj_flags, 
-				bBrightPolys?F1_0:light, 
+				bBrightPolys ? F1_0 : light, 
 				engine_glow_value, 
 				alt_textures, 
 					(objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 #if OGL_ZBUF
-			if (bBlendPolys) {
-				if (!gameOpts->legacy.bRender) {
-					gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-					glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-					}
+			if (bBlendPolys && !gameOpts->legacy.bRender) {
+				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				}
 #endif
 		}

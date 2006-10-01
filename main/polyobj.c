@@ -634,12 +634,11 @@ void DrawPolygonModel (
 	tRgbColorf		*color)
 {
 	polymodel	*po;
-	int			h, i, j, nTextures;
+	int			i, j, nTextures;
 	PA_DFX (int save_light);
 
    if (model_num >= gameData.models.nPolyModels)
 		return;
-	h = nInstanceDepth;
 	Assert (model_num < gameData.models.nPolyModels);
 	po = gameData.models.polyModels + model_num;
 	if (objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
@@ -718,8 +717,6 @@ void DrawPolygonModel (
 				}	
 		}
 	G3DoneInstance ();
-	if (h != nInstanceDepth)
-		h = h;
 #ifdef _3DFX
    _3dfx_rendering_poly_obj = 0;
 #endif
