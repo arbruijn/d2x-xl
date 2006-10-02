@@ -603,7 +603,7 @@ cpp_done1: ;
 #if TRACE
 			con_printf (CON_DEBUG, "Resetting all paths because of safety_flag.\n");
 #endif
-			ai_reset_all_paths();
+			AIResetAllPaths();
 			*num_points = l_num_points;
 			return -1;
 		} else {
@@ -814,7 +814,7 @@ void validate_all_paths(void)
 // -- 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 // -- 			//Int3();	//	Contact Mike: This is curious, though not deadly. /eip++;g
 // -- 			//force_dump_ai_objects_all("Error in create_path");
-// -- 			ai_reset_all_paths();
+// -- 			AIResetAllPaths();
 // -- 		}
 // -- 		aip->PATH_DIR = 1;		//	Initialize to moving forward.
 // -- 		aip->SUBMODE = AISM_HIDING;		//	Pretend we are hiding, so we sit here until bothered.
@@ -857,7 +857,7 @@ void create_path_to_player(object *objP, int max_length, int safety_flag)
 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 			//Int3();	//	Contact Mike: This is stupid.  Should call maybe_ai_garbage_collect before the add.
 			//force_dump_ai_objects_all("Error in create_path_to_player");
-			ai_reset_all_paths();
+			AIResetAllPaths();
 			return;
 		}
 //		Assert(gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 < MAX_POINT_SEGS);
@@ -896,7 +896,7 @@ void CreatePathToSegment(object *objP, short goalseg, int max_length, int safety
 		aip->cur_path_index = 0;
 		gameData.ai.freePointSegs += aip->path_length;
 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
-			ai_reset_all_paths();
+			AIResetAllPaths();
 			return;
 		}
 
@@ -942,7 +942,7 @@ void create_path_to_station(object *objP, int max_length)
 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 			//Int3();	//	Contact Mike: Stupid.
 			//force_dump_ai_objects_all("Error in create_path_to_station");
-			ai_reset_all_paths();
+			AIResetAllPaths();
 			return;
 		}
 //		Assert(gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 < MAX_POINT_SEGS);
@@ -981,7 +981,7 @@ void create_n_segment_path(object *objP, int path_length, short avoid_seg)
 	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 		//Int3();	//	Contact Mike: This is curious, though not deadly. /eip++;g
 		//force_dump_ai_objects_all("Error in crete_n_segment_path 2");
-		ai_reset_all_paths();
+		AIResetAllPaths();
 	}
 
 	aip->PATH_DIR = 1;		//	Initialize to moving forward.
@@ -1142,7 +1142,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 		//	didn't compress this object's path information.
 		ai_path_garbage_collect();
 		//force_dump_ai_objects_all("Error in ai_follow_path");
-		ai_reset_all_paths();
+		AIResetAllPaths();
 	}
 
 	if (aip->path_length < 2) {
@@ -1580,7 +1580,7 @@ void maybe_ai_path_garbage_collect(void)
 		if (Last_frame_garbage_collected+1 >= gameData.app.nFrameCount) {
 			//	This is kind of bad.  Garbage collected last frame or this frame.
 			//	Just destroy all paths.  Too bad for the robots.  They are memory wasteful.
-			ai_reset_all_paths();
+			AIResetAllPaths();
 #if TRACE
 			con_printf (1, "Warning: Resetting all paths.  gameData.ai.pointSegs buffer nearly exhausted.\n");
 #endif
@@ -1608,7 +1608,7 @@ void maybe_ai_path_garbage_collect(void)
 //	-----------------------------------------------------------------------------
 //	Reset all paths.  Do garbage collection.
 //	Should be called at the start of each level.
-void ai_reset_all_paths(void)
+void AIResetAllPaths(void)
 {
 	int	i;
 
@@ -1946,7 +1946,7 @@ void create_player_path_to_segment(int segnum)
 	gameData.ai.freePointSegs += Player_path_length;
 	if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 		//Int3();	//	Contact Mike: This is curious, though not deadly. /eip++;g
-		ai_reset_all_paths();
+		AIResetAllPaths();
 	}
 
 }

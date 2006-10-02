@@ -440,7 +440,7 @@ int	GotoGameCommon(int mode) {
 		editor_status("Gamestate saved.\n");
 	}
 
-	ai_reset_all_paths();
+	AIResetAllPaths();
 
 	StartTime();
 

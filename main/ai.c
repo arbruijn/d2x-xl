@@ -1982,7 +1982,7 @@ int AIRestoreBinState (CFILE *fp, int version)
 		CFRead(&temp, sizeof(int), 1, fp);
 		gameData.ai.freePointSegs = &gameData.ai.pointSegs[temp];
 	} else
-		ai_reset_all_paths();
+		AIResetAllPaths();
 
 	if (version >= 24) {
 		CFRead(gameData.boss.nTeleportSegs, sizeof(gameData.boss.nTeleportSegs), 1, fp);
@@ -2206,7 +2206,7 @@ else {
 if (version >= 15)
 	gameData.ai.freePointSegs = gameData.ai.pointSegs + CFReadInt (fp);
 else
-	ai_reset_all_paths();
+	AIResetAllPaths();
 
 if (version < 21) {
 	#if TRACE	

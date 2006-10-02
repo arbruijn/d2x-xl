@@ -3646,7 +3646,7 @@ int mark_player_path_to_segment (int segnum)
 #if TRACE
 		//con_printf (1, "Can't create path.  Not enough point_segs.\n");
 #endif
-		ai_reset_all_paths ();
+		AIResetAllPaths ();
 		return 0;
 	}
 

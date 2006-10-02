@@ -413,7 +413,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 
 void ShowLevelIntro (int nLevel);
 int StartNewLevelSecret (int nLevel, int bPageInTextures);
-void InitPlayerPosition (int random_flag);
+void InitPlayerPosition (int bRandom);
 void ResetMovementPath ();
 void LoadStars (bkg *bg, int bRedraw);
 void ReturningToLevelMessage (void);
@@ -461,7 +461,7 @@ extern int nLastMsgYCrd;
 
 //--------------------------------------------------------------------
 
-void verify_console_object ()
+void VerifyConsoleObject ()
 {
 	Assert (gameData.multi.nLocalPlayer > -1);
 	Assert (gameData.multi.players [gameData.multi.nLocalPlayer].objnum > -1);
@@ -746,67 +746,69 @@ gameData.objs.missileViewer = NULL;
 
 //------------------------------------------------------------------------------
 
-extern	void init_ai_for_ship (void);
+extern	void InitAIForShip (void);
 
 // Setup player for a brand-new ship
 void InitPlayerStatsNewShip ()
 {
 	int	i;
 
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level, 0);
-		NDRecordPlayerWeapon (0, 0);
-		NDRecordPlayerWeapon (1, 0);
+if (gameData.demo.nState == ND_STATE_RECORDING) {
+	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level, 0);
+	NDRecordPlayerWeapon (0, 0);
+	NDRecordPlayerWeapon (1, 0);
 	}
 
-	gameData.multi.players [gameData.multi.nLocalPlayer].energy = INITIAL_ENERGY;
-	gameData.multi.players [gameData.multi.nLocalPlayer].shields = xStartingShields;
-	gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = 0;
-	gameData.multi.players [gameData.multi.nLocalPlayer].killer_objnum = -1;
-	gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
+gameData.multi.players [gameData.multi.nLocalPlayer].energy = INITIAL_ENERGY;
+gameData.multi.players [gameData.multi.nLocalPlayer].shields = xStartingShields;
+gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = 0;
+gameData.multi.players [gameData.multi.nLocalPlayer].killer_objnum = -1;
+gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
 
-	xAfterburnerCharge = 0;
+xAfterburnerCharge = 0;
 
-	for (i=0; i<MAX_PRIMARY_WEAPONS; i++) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo [i] = 0;
-		bLastPrimaryWasSuper [i] = 0;
+for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
+	gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo [i] = 0;
+	bLastPrimaryWasSuper [i] = 0;
 	}
-
-	for (i=1; i<MAX_SECONDARY_WEAPONS; i++) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [i] = 0;
-		bLastSecondaryWasSuper [i] = 0;
+for (i = 1; i < MAX_SECONDARY_WEAPONS; i++) {
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [i] = 0;
+	bLastSecondaryWasSuper [i] = 0;
 	}
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
-	gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = HAS_LASER_FLAG;
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = HAS_CONCUSSION_FLAG;
-	gameData.weapons.nOverridden = 0;
-	gameData.weapons.nPrimary = 0;
-	gameData.weapons.nSecondary = 0;
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~ (	PLAYER_FLAGS_QUAD_LASERS |
-												PLAYER_FLAGS_AFTERBURNER |
-												PLAYER_FLAGS_CLOAKED |
-												PLAYER_FLAGS_INVULNERABLE |
-												PLAYER_FLAGS_MAP_ALL |
-												PLAYER_FLAGS_CONVERTER |
-												PLAYER_FLAGS_AMMO_RACK |
-												PLAYER_FLAGS_HEADLIGHT |
-												PLAYER_FLAGS_HEADLIGHT_ON |
-												PLAYER_FLAGS_FLAG);
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
-	gameStates.app.bPlayerIsDead = 0;		//player no longer dead
-	gameData.multi.players [gameData.multi.nLocalPlayer].homing_object_dist = -F1_0; // Added by RH
-	Controls.afterburner_state = 0;
-	Last_afterburner_state = 0;
-	DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
-	gameData.objs.missileViewer=NULL;		///reset missile camera if out there
-   #ifdef TACTILE
-		if (TactileStick)
-		 {
-		  tactile_set_button_jolt ();
-		 }
-	#endif
-	init_ai_for_ship ();
+gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = HAS_LASER_FLAG;
+gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = HAS_CONCUSSION_FLAG;
+gameData.weapons.nOverridden = 0;
+gameData.weapons.nPrimary = 0;
+gameData.weapons.nSecondary = 0;
+gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~ 
+										  (PLAYER_FLAGS_QUAD_LASERS |
+											PLAYER_FLAGS_AFTERBURNER |
+											PLAYER_FLAGS_CLOAKED |
+											PLAYER_FLAGS_INVULNERABLE |
+											PLAYER_FLAGS_MAP_ALL |
+											PLAYER_FLAGS_CONVERTER |
+											PLAYER_FLAGS_AMMO_RACK |
+											PLAYER_FLAGS_HEADLIGHT |
+											PLAYER_FLAGS_HEADLIGHT_ON |
+											PLAYER_FLAGS_FLAG);
+if (IsMultiGame && extraGameInfo [1].bDarkMatch)
+	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_HEADLIGHT;
+gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
+gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
+gameStates.app.bPlayerIsDead = 0;		//player no longer dead
+gameData.multi.players [gameData.multi.nLocalPlayer].homing_object_dist = -F1_0; // Added by RH
+Controls.afterburner_state = 0;
+Last_afterburner_state = 0;
+DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
+gameData.objs.missileViewer=NULL;		///reset missile camera if out there
+#ifdef TACTILE
+	if (TactileStick)
+	{
+	tactile_set_button_jolt ();
+	}
+#endif
+InitAIForShip ();
 }
 
 //------------------------------------------------------------------------------
@@ -828,7 +830,7 @@ void editor_reset_stuff_on_level ()
 	gameData.objs.console->control_type = CT_FLYING;
 	gameData.objs.console->movement_type = MT_PHYSICS;
 	gameStates.app.bGameSuspended = 0;
-	verify_console_object ();
+	VerifyConsoleObject ();
 	gameData.reactor.bDestroyed = 0;
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		gameseq_remove_unused_players ();
@@ -1468,14 +1470,14 @@ void StartSecretLevel ()
 {
 Assert (!gameStates.app.bPlayerIsDead);
 InitPlayerPosition (0);
-verify_console_object ();
+VerifyConsoleObject ();
 gameData.objs.console->control_type	= CT_FLYING;
 gameData.objs.console->movement_type	= MT_PHYSICS;
 // -- WHY? -- DisableMatCens ();
 clear_transient_objects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
-ai_reset_all_paths ();
+AIResetAllPaths ();
 ResetTime ();
 ResetRearView ();
 gameData.app.fusion.xAutoFireTime = 0;
@@ -2017,7 +2019,7 @@ void DoPlayerDead ()
 {
 	int bSecret = (gameData.missions.nCurrentLevel < 0);
 
-gameStates.app.bGameRunning= 0;
+gameStates.app.bGameRunning = 0;
 ResetPaletteAdd ();
 GrPaletteStepLoad (NULL);
 //	DigiPauseDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
@@ -2039,7 +2041,7 @@ if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 #endif
 
 #ifdef NETWORK
-if (gameData.app.nGameMode&GM_MULTI)
+if (gameData.app.nGameMode & GM_MULTI)
 	MultiDoDeath (gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
 else
 #endif
@@ -2396,7 +2398,7 @@ return StartNewLevelSub (nLevel, 1, bSecret);
 
 //------------------------------------------------------------------------------
 //initialize the player object position & orientation (at start of game, or new ship)
-void InitPlayerPosition (int random_flag)
+void InitPlayerPosition (int bRandom)
 {
 	int bNewPlayer=0;
 
@@ -2405,7 +2407,7 @@ void InitPlayerPosition (int random_flag)
 #endif
 		bNewPlayer = gameData.multi.nLocalPlayer;
 #ifdef NETWORK
-	else if (random_flag == 1) {
+	else if (bRandom == 1) {
 		object *pObj;
 		int spawnMap [MAX_NUM_NET_PLAYERS];
 		int nSpawnSegs = 0;
@@ -2553,11 +2555,11 @@ extern void ClearStuckObjects (void);
 
 //------------------------------------------------------------------------------
 //called when the player is starting a level (new game or new ship)
-void StartLevel (int random_flag)
+void StartLevel (int bRandom)
 {
 Assert (!gameStates.app.bPlayerIsDead);
-InitPlayerPosition (random_flag);
-verify_console_object ();
+InitPlayerPosition (bRandom);
+VerifyConsoleObject ();
 gameData.objs.console->control_type = CT_FLYING;
 gameData.objs.console->movement_type = MT_PHYSICS;
 MultiSendShields ();
@@ -2575,7 +2577,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
 #endif
-ai_reset_all_paths ();
+AIResetAllPaths ();
 AIInitBossForShip ();
 ClearStuckObjects ();
 #ifdef EDITOR

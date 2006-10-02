@@ -164,6 +164,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "hudmsg.h"
 #include "gameseg.h"
 #include "maths.h"
+#include "network.h"
 #include "lightmap.h"
 
 #define FLICKERFIX 0
@@ -381,13 +382,15 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-		AddOglLight (color, xObjIntensity, -1, -1, objnum);
 		if (objP->type == OBJ_PLAYER) {
 			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+			if (IsMultiGame && extraGameInfo [1].bDarkMatch)
+				return;
 			}
+	AddOglLight (color, xObjIntensity, -1, -1, objnum);
 	return;
 	}
 if (xObjIntensity) {

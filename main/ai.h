@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype Boss_cloak_start_time, Boss_cloak_end_time.
  *
  * Revision 1.38  1994/10/22  14:14:42  mike
- * Prototype ai_reset_all_paths.
+ * Prototype AIResetAllPaths.
  *
  * Revision 1.37  1994/10/21  20:42:01  mike
  * Define MAX_PATH_LENGTH: maximum allowed length of a path.
@@ -233,7 +233,7 @@ extern void DoAiRobotHitAttack(object *robot, object *player, vms_vector *collis
 extern void ai_open_doors_in_segment(object *robot);
 extern int AIDoorIsOpenable(object *objp, segment *segp, short sidenum);
 extern int ObjectCanSeePlayer(object *objp, vms_vector *pos, fix field_of_view, vms_vector *vec_to_player);
-extern void ai_reset_all_paths(void);   // Reset all paths.  Call at the start of a level.
+extern void AIResetAllPaths(void);   // Reset all paths.  Call at the start of a level.
 extern int ai_multiplayer_awareness(object *objp, int awareness_level);
 
 // In escort.c

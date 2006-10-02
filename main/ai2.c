@@ -2090,7 +2090,7 @@ int BossSpewRobot(object *objP, vms_vector *pos)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Call this each time the player starts a new ship.
-void init_ai_for_ship(void)
+void InitAIForShip(void)
 {
 	int	i;
 
