@@ -2015,7 +2015,9 @@ void DigiStopDigiSounds ();
 
 void DoPlayerDead ()
 {
-gameStates.app.bGameRunning = 0;
+	int bSecret = (gameData.missions.nCurrentLevel < 0);
+
+gameStates.app.bGameRunning= 0;
 ResetPaletteAdd ();
 GrPaletteStepLoad (NULL);
 //	DigiPauseDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
@@ -2047,14 +2049,14 @@ else
 			return;
 			}
 		}
-	if (gameData.reactor.bDestroyed || gameStates.app.bD1Mission) {
+	if (gameData.reactor.bDestroyed || (gameStates.app.bD1Mission && bSecret)) {
 		//clear out stuff so no bonus
 		gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].shields = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = 3;
 		DiedInMineMessage (); // Give them some indication of what happened
-		if ((gameData.missions.nCurrentLevel < 0) && !gameStates.app.bD1Mission) {
+		if (bSecret && !gameStates.app.bD1Mission) {
 			if (CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 				ReturningToLevelMessage ();
 				StateRestoreAll (1, 2, SECRETB_FILENAME);			//	2 means you died
@@ -2074,7 +2076,7 @@ else
 			last_drawn_cockpit [1] = -1;
 			}
 		}
-	else if (gameData.missions.nCurrentLevel < 0) {
+	else if (bSecret) {
 		if (CFExist (SECRETB_FILENAME,gameFolders.szSaveDir,0)) {
 			ReturningToLevelMessage ();
 			if (!gameData.reactor.bDestroyed)
