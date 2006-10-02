@@ -428,7 +428,8 @@ int LastKillGoal;
 
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int opt_setpower, opt_playtime, opt_killgoal, opt_socket, opt_marker_view, opt_light, opt_show_on_map;
-int opt_difficulty, opt_packets, opt_short_packets, opt_brightPlayers, opt_darkMatch, opt_teamDoors, opt_start_invul;
+int opt_difficulty, opt_packets, opt_short_packets, opt_brightPlayers, opt_start_invul;
+int opt_darkMatch, opt_teamDoors, opt_multiCheats;
 int opt_show_names, opt_enhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP;
 
@@ -528,10 +529,6 @@ ADD_CHECK (opt, TXT_KEEP_LIGHTS, mpParams.bAlwaysBright, KEY_L, HTX_MULTI2_KEEPL
 opt_light = opt++;
 ADD_CHECK (opt, TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
 opt_brightPlayers = opt++;
-ADD_CHECK (opt, TXT_DARKMATCH, mpParams.bDarkMatch, KEY_D, HTX_DARKMATCH);
-opt_darkMatch = opt++;
-ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
-opt_teamDoors = opt++;
 ADD_CHECK (opt, TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
 opt_show_names = opt++;
 ADD_CHECK (opt, TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
@@ -549,6 +546,12 @@ if (!gameStates.app.bNostalgia) {
 	optDualMiss = opt++;
 	ADD_CHECK (opt, TXT_AUTOBALANCE, extraGameInfo [0].bAutoBalanceTeams, KEY_B, HTX_MULTI2_BALANCE);
 	optAutoTeams = opt++;
+	ADD_CHECK (opt, TXT_DARKMATCH, mpParams.bDarkMatch, KEY_D, HTX_DARKMATCH);
+	opt_darkMatch = opt++;
+	ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
+	opt_teamDoors = opt++;
+	ADD_CHECK (opt, TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
+	opt_multiCheats = opt++;
 	ADD_CHECK (opt, TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE); 
 	optRotateLevels = opt++;
 #if 0
@@ -628,6 +631,8 @@ extraGameInfo [1].bDarkMatch = (ubyte) m [opt_darkMatch].value;
 mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch;
 extraGameInfo [1].bTeamDoors = (ubyte) m [opt_teamDoors].value;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
+extraGameInfo [1].bEnableCheats = (ubyte) m [opt_multiCheats].value;
+mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
 mpParams.bShortPackets = netGame.bShortPackets = m [opt_short_packets].value;
 netGame.ShowAllNames = m [opt_show_names].value;
 mpParams.bShowAllNames = (ubyte) netGame.ShowAllNames;

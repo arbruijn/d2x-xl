@@ -387,7 +387,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
-			if (IsMultiGame && extraGameInfo [1].bDarkMatch)
+			if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
 				return;
 			}
 	AddOglLight (color, xObjIntensity, -1, -1, objnum);

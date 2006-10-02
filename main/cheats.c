@@ -641,7 +641,8 @@ if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pChe
 				pCheat->pszCheat))
 	return 0;	// not this cheatcode
 #ifdef RELEASE
-if (pCheat->bPunish && (gameData.app.nGameMode & GM_MULTI)) {	//trying forbidden cheatcode in multiplayer
+if (pCheat->bPunish && (gameData.app.nGameMode & GM_MULTI) &&
+	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
 	return 1;
 	}
@@ -652,10 +653,14 @@ if ((pCheat->bD1Cheat != -1) && (pCheat->bD1Cheat != gameStates.app.bD1Mission))
 if ((pCheat->bD1Cheat > 0) && !gameStates.app.cheats.bD1CheatsEnabled)	//D1 cheats not enabled
 	return 1;
 #endif
-if (pCheat->bPunish > 0)
+if (pCheat->bPunish > 0) {
 	DoCheatPenalty ();
-if (pCheat->cheatFunc)	// known cheatcode, but no behaviour implemented
+	if (IsMultiGame)
+		MultiSendCheating ();
+	}
+if (pCheat->cheatFunc) {
 	pCheat->cheatFunc ();
+	}
 return 1;
 }
 

@@ -728,7 +728,7 @@ if (!bSecret) {
 	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
 	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
-		if ((gameData.app.nGameMode & GM_TEAM) && extraGameInfo [1].bTeamDoors)
+		if ((gameData.app.nGameMode & GM_TEAM) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= KEY_GOLD | TEAMKEY (gameData.multi.nLocalPlayer);
 		else
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
@@ -797,7 +797,7 @@ gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~
 											PLAYER_FLAGS_HEADLIGHT |
 											PLAYER_FLAGS_HEADLIGHT_ON |
 											PLAYER_FLAGS_FLAG);
-if (IsMultiGame && extraGameInfo [1].bDarkMatch)
+if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_HEADLIGHT;
 gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
 gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;

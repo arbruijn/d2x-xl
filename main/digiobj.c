@@ -199,7 +199,7 @@ DigiStartSound (soundno, max_volume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL);
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed)
+int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed, int nLoops)
 {
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -209,14 +209,24 @@ soundno = (soundno < 0) ? - soundno : DigiXlatSound (soundno);
 if (soundno < 0) 
 	return -1;
 // start the sample playing
-return DigiStartSound (soundno, max_volume, 0xffff/2, 0, -1, -1, -1, nSpeed, NULL);
+if (nLoops > 0)
+	return DigiStartSound (soundno, max_volume, 0xffff/2, 0, 0, nLoops - 1, -1, nSpeed, NULL);
+else
+	return DigiStartSound (soundno, max_volume, 0xffff/2, 0, -1, -1, -1, nSpeed, NULL);
 }
 
 //------------------------------------------------------------------------------
 
 int DigiPlaySample (short soundno, fix max_volume)
 {
-return DigiPlaySampleSpeed (soundno, max_volume, F1_0);
+return DigiPlaySampleSpeed (soundno, max_volume, F1_0, 0);
+}
+
+//------------------------------------------------------------------------------
+
+int DigiPlaySampleLooped (short soundno, fix max_volume, int nLoops)
+{
+return DigiPlaySampleSpeed (soundno, max_volume, F1_0, nLoops);
 }
 
 //------------------------------------------------------------------------------

@@ -150,7 +150,7 @@ tMpParams mpParams = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 	{'1', '2', '7', '.', '0', '.', '0', '.', '1', '\0', '\0', '\0', '\0', '\0', '\0', '\0'}, 
 	UDP_BASEPORT, 
-	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 10};
+	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 10};
 
 tPingStats pingStats [MAX_PLAYERS];
 
@@ -4412,6 +4412,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bTeleporterCams = 0;
 	extraGameInfo [i].bDarkMatch = 0;
 	extraGameInfo [i].bTeamDoors = 0;
+	extraGameInfo [i].bEnableCheats = 0;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
 	extraGameInfo [i].entropy.nShieldFillRate = 11;
 	extraGameInfo [i].entropy.nShieldDamageRate = 11;
@@ -4514,6 +4515,9 @@ else {
 	LogErr ("   bSmartWeaponSwitch: %d\n", extraGameInfo [1].bSmartWeaponSwitch);
 	LogErr ("   bFluidPhysics: %d\n", extraGameInfo [1].bFluidPhysics);
 	LogErr ("   nWeaponDropMode: %d\n", extraGameInfo [1].nWeaponDropMode);
+	LogErr ("   bDarkMatch: %d\n", extraGameInfo [1].bDarkMatch);
+	LogErr ("   bTeamDoors: %d\n", extraGameInfo [1].bTeamDoors);
+	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	LogErr ("   bRotateLevels: %d\n", extraGameInfo [1].bRotateLevels);
 	LogErr ("   bDisableReactor: %d\n", extraGameInfo [1].bDisableReactor);
 	LogErr ("   bMouseLook: %d\n", extraGameInfo [1].bMouseLook);

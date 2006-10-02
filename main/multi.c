@@ -245,7 +245,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	2,	 // MULTI_INVUL
 	2,	 // MULTI_DEINVUL
 	29, // MULTI_WEAPONS
-	40  // MULTI_MONSTERBALL
+	40, // MULTI_MONSTERBALL
+	2,  //MULTI_CHEATING
 };
 
 void extract_netplayer_stats (netplayer_stats *ps, player * pd);
@@ -778,7 +779,7 @@ if ((killed_type != OBJ_PLAYER) && (killed_type != OBJ_GHOST))	{
 	}
 pKilled = gameData.multi.players + killed_pnum;
 multiData.kills.pFlags [killed_pnum] = 1;
-Assert ((killed_pnum  >= 0) && (killed_pnum < gameData.multi.nPlayers));
+Assert ((killed_pnum >= 0) && (killed_pnum < gameData.multi.nPlayers));
 if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (killed_name, "%s (%s)", pKilled->callsign, netGame.team_name [GetTeam (killed_pnum)]);
 else
@@ -3989,6 +3990,25 @@ MultiSendData (multiData.msg.buf, 6, 1);
 
 //-----------------------------------------------------------------------------
 
+void MultiDoCheating (char *buf)
+{
+	char nPlayer = buf [1];
+
+HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multi.players [nPlayer].callsign);
+DigiPlaySampleLooped (SOUND_CONTROL_CENTER_WARNING_SIREN, F1_0, 3);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendCheating (void)
+{
+multiData.msg.buf [0] = MULTI_CHEATING;
+multiData.msg.buf [1] = gameData.multi.nLocalPlayer;
+MultiSendData (multiData.msg.buf, 2, 1);
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiSendGotFlag (char nPlayer)
 {
 multiData.msg.buf [0] = MULTI_GOT_FLAG;
@@ -4765,7 +4785,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoInvul, 1}, 
 	{MultiDoDeInvul, 1},
 	{MultiDoWeapons, 1},
-	{MultiDoMonsterball, 1}
+	{MultiDoMonsterball, 1},
+	{MultiDoCheating, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5094,6 +5115,10 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 	case MULTI_PLAYER_SHIELDS:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoShields (buf); 
+		break;
+	case MULTI_CHEATING:
+		if (!gameStates.app.bEndLevelSequence) 
+			MultiDoCheating (buf); 
 		break;
 	default:
 		Int3 ();

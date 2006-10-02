@@ -1726,9 +1726,9 @@ void LoadGameTexts(void);
 #define TXT_OGL_MAXLIGHTS			GT(781)
 #define TXT_DARKMATCH				GT(782)
 #define TXT_TEAMDOORS				GT(783)
+#define TXT_MULTICHEATS				GT(784)
+#define TXT_PLAYER_CHEATED			GT(785)
 #if 0
-#define TXT_				GT(784)
-#define TXT_				GT(785)
 #define TXT_				GT(786)
 #define TXT_				GT(787)
 #define TXT_				GT(788)
@@ -2062,6 +2062,7 @@ void LoadGameTexts(void);
 #define HTX_OGL_MAXLIGHTS		HT(199)				
 #define HTX_DARKMATCH			HT(200)				
 #define HTX_TEAMDOORS			HT(201)				
+#define HTX_MULTICHEATS			HT(202)				
 
 #if 0
 				

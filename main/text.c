@@ -1579,6 +1579,8 @@ char *defaultGameTexts [][2] = {
 	{"L~Ichter/Segment: %d", "l~Ights/segment: %d"},
 	{"~Verdunkelung", "~Dark Match"},
 	{"~Team-Tueren", "~Team Doors"},
+	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
+	{"Spieler %s schummelt", "Player %s is cheating"},
 #if 0
 	{"", ""},
 #endif
@@ -1981,7 +1983,9 @@ char *defaultHelpTexts [][2] = {
 	{"Diese Option ankreuzen, um saemtliche Lampen auszuschalten.\nDie Spieler sind dann auf Scheinwerfer, Leuchtraketen,\nLicht von Waffen und ihr Gehoer angewiesen.", 
 	 "Check this option to turn all static lights off. The players\nwill have to rely entirely on headlights, flares, weapon\nlight and their ears."},
 	{"Wenn angekreuzt, koennen nur Spieler in Team-Spielen nur Tueren\noeffnen, fuer die man einen Schluessel der eigenen Teamfarbe\noder keinen Schluessel benoetigt.", 
-	 "If checked, players can only open doors requiring a key of the\players' team color or no key in team games."},
+	 "If checked, players can only open doors requiring a key of the\nplayers' team color or no key in team games."},
+	{"Wenn angekreuzt, kann man in Netzwerkspielen Cheat Codes einsetzen.", 
+	 "If checked you can use cheat codes in multiplayer games."},
 #if 0
 	{"", ""},
 	{"", ""},

@@ -77,8 +77,9 @@ void DigiReset();
 void _CDECL_ DigiClose(void);
 
 // Volume is max at F1_0.
-int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed);
+int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed, int nLoops);
 int DigiPlaySample( short soundnum, fix max_volume );
+int DigiPlaySampleLooped (short soundno, fix max_volume, int nLoops);
 void DigiPlaySampleOnce( short soundnum, fix max_volume );
 int DigiLinkSoundToObject( short soundnum, short objnum, int forever, fix max_volume );
 int DigiLinkSoundToPos( short soundnum, short segnum, short sidenum, vms_vector * pos, int forever, fix max_volume );
