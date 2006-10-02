@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					118	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					119	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -1038,12 +1038,13 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].ogl.bLightObjects = CFReadInt (fp);
 		gameOptions [j].ogl.nMaxLights = CFReadInt (fp);
 		}
-	if (player_file_version >= 118) {
+	if (player_file_version >= 118)
 		extraGameInfo [j].bDarkMatch = CFReadByte (fp);
-		if (j)
-			mpParams.bDarkMatch = extraGameInfo [j].bDarkMatch;
-		}
+	if (player_file_version >= 119)
+		extraGameInfo [j].bTeamDoors = CFReadByte (fp);
 	}
+mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch;
+mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 if (errno_ret == EZERO)
 	KCSetControls();
 if (CFClose(fp)) 
@@ -1452,6 +1453,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteInt (gameOptions [j].ogl.bLightObjects, fp);
 	CFWriteInt (gameOptions [j].ogl.nMaxLights, fp);
 	CFWriteByte (extraGameInfo [j].bDarkMatch, fp);
+	CFWriteByte (extraGameInfo [j].bTeamDoors, fp);
 
 // end of D2X-XL stuff
 	}

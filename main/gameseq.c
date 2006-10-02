@@ -678,6 +678,8 @@ void InitPlayerStatsGame ()
 
 //------------------------------------------------------------------------------
 
+#define TEAMKEY(_p)	((GetTeam (_p) == TEAM_RED) ? KEY_RED : KEY_BLUE)
+
 void init_ammo_and_energy (void)
 {
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].energy < INITIAL_ENERGY)
@@ -722,11 +724,14 @@ gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
 if (!bSecret) {
 	init_ammo_and_energy ();
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags &=  
-		~ (PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
+		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
 	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
 	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
-		gameData.multi.players [gameData.multi.nLocalPlayer].flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+		if ((gameData.app.nGameMode & GM_TEAM) && extraGameInfo [1].bTeamDoors)
+			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= KEY_GOLD | TEAMKEY (gameData.multi.nLocalPlayer);
+		else
+			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 	}
 else if (gameStates.app.bD1Mission)
 	init_ammo_and_energy ();

@@ -1578,6 +1578,7 @@ char *defaultGameTexts [][2] = {
 	{"openGL ~Objekt-Beleuchtung", "openGL ~Object lighting"},
 	{"L~Ichter/Segment: %d", "l~Ights/segment: %d"},
 	{"~Verdunkelung", "~Dark Match"},
+	{"~Team-Tueren", "~Team Doors"},
 #if 0
 	{"", ""},
 #endif
@@ -1979,6 +1980,8 @@ char *defaultHelpTexts [][2] = {
 	 "Adjust the number of nearby lights that influence lighting\nfor a given point in the mine. D2X-XL will use the number of\nnearest lights set here to each segment of the mine to\nilluminate that segment."},
 	{"Diese Option ankreuzen, um saemtliche Lampen auszuschalten.\nDie Spieler sind dann auf Scheinwerfer, Leuchtraketen,\nLicht von Waffen und ihr Gehoer angewiesen.", 
 	 "Check this option to turn all static lights off. The players\nwill have to rely entirely on headlights, flares, weapon\nlight and their ears."},
+	{"Wenn angekreuzt, koennen nur Spieler in Team-Spielen nur Tueren\noeffnen, fuer die man einen Schluessel der eigenen Teamfarbe\noder keinen Schluessel benoetigt.", 
+	 "If checked, players can only open doors requiring a key of the\players' team color or no key in team games."},
 #if 0
 	{"", ""},
 	{"", ""},

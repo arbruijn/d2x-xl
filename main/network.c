@@ -150,7 +150,7 @@ tMpParams mpParams = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
 	{'1', '2', '7', '.', '0', '.', '0', '.', '1', '\0', '\0', '\0', '\0', '\0', '\0', '\0'}, 
 	UDP_BASEPORT, 
-	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 10};
+	1, 0, 0, 0, 0, 2, 0xFFFFFFFF, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 10};
 
 tPingStats pingStats [MAX_PLAYERS];
 
@@ -1484,6 +1484,7 @@ void NetworkSendExtraGameInfo (sequence_packet *their)
 	ubyte bMouseLook = extraGameInfo [1].bMouseLook;
 	ubyte bFastPitch = extraGameInfo [1].bFastPitch;
 	ubyte bDarkMatch = extraGameInfo [1].bDarkMatch;
+	ubyte bTeamDoors = extraGameInfo [1].bTeamDoors;
 	ubyte bDualMissileLaunch = extraGameInfo [1].bDualMissileLaunch;
 	ubyte bDisableReactor = 0; //extraGameInfo [1].bDisableReactor;
 	ubyte bRotateLevels = extraGameInfo [1].bRotateLevels;
@@ -1492,6 +1493,7 @@ extraGameInfo [1] = extraGameInfo [0];
 extraGameInfo [1].bMouseLook = bMouseLook;
 extraGameInfo [1].bFastPitch = bFastPitch;
 extraGameInfo [1].bDarkMatch = bDarkMatch;
+extraGameInfo [1].bTeamDoors = bTeamDoors;
 extraGameInfo [1].bDualMissileLaunch = bDualMissileLaunch;
 extraGameInfo [1].bDisableReactor = bDisableReactor;
 extraGameInfo [1].bRotateLevels = bRotateLevels;
@@ -4409,6 +4411,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bRenderShield = 1;
 	extraGameInfo [i].bTeleporterCams = 0;
 	extraGameInfo [i].bDarkMatch = 0;
+	extraGameInfo [i].bTeamDoors = 0;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
 	extraGameInfo [i].entropy.nShieldFillRate = 11;
 	extraGameInfo [i].entropy.nShieldDamageRate = 11;
