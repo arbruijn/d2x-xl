@@ -1089,9 +1089,9 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 
 static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
 {
-	static tRgbColorf	defaultColor = {0,255,0};
-	static tRgbColorf	botDefColor = {255,0,0};
-	static tRgbColorf	playerDefColors [] = {{0,255,0},{0,0,255},{255,0,0}};
+	static tRgbColorf	defaultColor = {0,1.0f,0};
+	static tRgbColorf	botDefColor = {1.0f,0,0};
+	static tRgbColorf	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
 
 if (pc)
 	return pc;

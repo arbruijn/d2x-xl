@@ -589,7 +589,7 @@ OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDisable (GL_DEPTH_TEST);
+//glDisable (GL_DEPTH_TEST);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
@@ -646,7 +646,7 @@ if (gameStates.render.bPointSprites) {
 	glDisable (GL_POINT_SPRITE_ARB);
 	}
 #endif
-glEnable (GL_DEPTH_TEST);
+//glEnable (GL_DEPTH_TEST);
 glDisable (GL_TEXTURE_2D);
 return 1;
 }
@@ -846,8 +846,8 @@ if (nParticles > 1) {
 	if (nSortedUp >= 9 * nParticles / 10)
 		return 1;
 	QSortParticles (pPartIdx, 0, nParticles - 1);
-	return 0;
 	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
