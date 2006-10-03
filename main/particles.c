@@ -586,10 +586,7 @@ if (nFrames > 1) {
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
-if (nType)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-else
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
@@ -854,7 +851,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetCloudPartScale (tCloud *pCloud, float nPartScale)
+void SetCloudPartScale (tCloud *pCloud, float nPartScale)
 {
 pCloud->nPartScale = nPartScale;
 }
