@@ -1133,7 +1133,7 @@ if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDis
 nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
 h = (nMaxLights < MAX_NEAREST_LIGHTS) ? nMaxLights : MAX_NEAREST_LIGHTS;
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
-for (i = 0, segP = gameData.segs.segments; i < j; i++, segP++) {
+for (i = 0, segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.ogl.lights;
 	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {

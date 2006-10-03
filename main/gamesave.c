@@ -1231,7 +1231,6 @@ int LoadMineDataCompiled(CFILE *LoadFile, int bFileInfo)
 
 	Gamesave_num_org_robots = 0;
 	Gamesave_num_players = 0;
-i = CFTell (LoadFile);
 	if (gameFileInfo.object.offset > -1) {
 		object	*objP = gameData.objs.objects;
 #if TRACE
@@ -1254,7 +1253,6 @@ i = CFTell (LoadFile);
 	gameData.objs.nFirstDropped =
 	gameData.objs.nLastDropped = -1;
 	gameData.objs.nFreeDropped = 0;
-i = CFTell (LoadFile);
 
 	//===================== READ WALL INFO ============================
 
@@ -1412,7 +1410,6 @@ i = CFTell (LoadFile);
 					}
 				}
 			}
-		i = CFTell (LoadFile);
 		if (gameTopFileInfo.fileinfo_version >= 33) {
 			gameData.trigs.nObjTriggers = CFReadInt (LoadFile);
 			if (gameData.trigs.nObjTriggers) {
@@ -1424,7 +1421,6 @@ i = CFTell (LoadFile);
 				for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 					TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
 				}
-			i = CFTell (LoadFile);
 			for (i = 0; i < MAX_OBJECTS_D2X; i++)
 				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
 			}
@@ -1496,16 +1492,17 @@ i = CFTell (LoadFile);
 #endif
 		if (!CFSeek(LoadFile, gameFileInfo.lightDeltaIndices.offset, SEEK_SET))	{
 			gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
-			for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-				if (gameTopFileInfo.fileinfo_version < 29) {
+			if (gameTopFileInfo.fileinfo_version < 29) {
 #if TRACE
-					con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+				con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
 #endif
-					Int3();	//shouldn't be here!!!
-					}
-				else
-					dl_index_read(gameData.render.lights.deltaIndices + i, LoadFile);
+				Int3();	//shouldn't be here!!!
 				}
+			else
+				for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
+					//LogErr ("reading DL index %d\n", i);
+					dl_index_read(gameData.render.lights.deltaIndices + i, LoadFile);
+					}
 			}
 		SortDLIndex ();
 		}

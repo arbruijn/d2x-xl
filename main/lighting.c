@@ -382,14 +382,14 @@ void ApplyLight(
 	object *objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
-		if (objP->type == OBJ_PLAYER) {
-			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
-				RemoveOglHeadLight (objP);
-			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
-				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
-			if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
-				return;
-			}
+	if (objP->type == OBJ_PLAYER) {
+		if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+			RemoveOglHeadLight (objP);
+		else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
+			gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+		if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
+			return;
+		}
 	AddOglLight (color, xObjIntensity, -1, -1, objnum);
 	return;
 	}

@@ -55,7 +55,7 @@
 
 #define PARTICLE_FPS	30
 
-#define PARTICLE_RAD	(F1_0 / 2)
+#define PARTICLE_RAD	(F1_0)
 
 tSmoke	smoke [MAX_SMOKE];
 
@@ -67,11 +67,16 @@ static grs_bitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
 static grs_bitmap *bmpBumpMaps [2] = {NULL, NULL};
 
 static char *szParticleImg [2][3] = {
+#if 1
 	{"blksmoke.tga", "grysmoke.tga", "whtsmoke.tga"},
 	{"blksmoke.tga", "grysmoke.tga", "whtsmoke.tga"}
-#if 0
+#else
+	{"expl1.tga", "expl1.tga", "expl1.tga"},
+	{"expl1.tga", "expl1.tga", "expl1.tga"}
+#	if 0
 	{"blakpart.tga", "graypart.tga", "whitpart.tga"},
 	{"blakpart.tga", "graypart.tga", "whitpart.tga"}
+#	endif
 #endif
 	};
 
@@ -187,10 +192,10 @@ return n * n;
 //------------------------------------------------------------------------------
 
 int CreateParticle (tParticle *pParticle, vms_vector *pPos, short nSegment, int nLife, 
-						  int nSpeed, int nType, int nScale, int nCurTime, int bStart)
+						  int nSpeed, int nType, float nScale, int nCurTime, int bStart)
 {
 	vms_vector	dir;
-	int			nRad = (PARTICLE_RAD >> (3 - gameOpts->render.smoke.nSize)) / (1 * nScale);
+	int			nRad = (int) ((float) (PARTICLE_RAD >> (3 - gameOpts->render.smoke.nSize)) / nScale + 0.5);
 
 pParticle->nType = nType;
 pParticle->nSegment = nSegment;
@@ -219,9 +224,11 @@ pParticle->glColor.r =
 pParticle->glColor.g =
 pParticle->glColor.b = 1.0;//(double) (64 + randN (64)) / 255.0;
 pParticle->glColor.a = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
+#	if 0
 pParticle->glColor.r =
 pParticle->glColor.g =
 pParticle->glColor.b = pParticle->glColor.a - 0.5;
+#	endif
 #endif
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed = nSpeed * F1_0;
@@ -490,8 +497,6 @@ if (gameOpts->ogl.bUseLighting) {
 		pc.g *= (double) psc->color.green;
 		pc.b *= (double) psc->color.blue;
 		}
-	else
-		decay = decay;
 	}
 glColor4d (pc.r, pc.g, pc.b, pc.a * decay);
 #if OGL_POINT_SPRITES
@@ -647,7 +652,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vms_vector *pPos, short nSegment, int nMaxParts, int nPartScale, int nLife, int nSpeed, int nType, int nCurTime)
+int CreateCloud (tCloud *pCloud, vms_vector *pPos, short nSegment, int nMaxParts, float nPartScale, int nLife, int nSpeed, int nType, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -849,6 +854,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int SetCloudPartScale (tCloud *pCloud, float nPartScale)
+{
+pCloud->nPartScale = nPartScale;
+}
+
+//------------------------------------------------------------------------------
+
 int IsUsedSmoke (int iSmoke)
 {
 	int	i;
@@ -934,7 +946,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 int CreateSmoke (vms_vector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  int nPartScale, int nLife, int nSpeed, int nType, int nObject)
+					  float nPartScale, int nLife, int nSpeed, int nType, int nObject)
 {
 if (!(EGI_FLAG (bUseSmoke, 0, 0)))
 	return 0;
@@ -1075,6 +1087,18 @@ if (IsUsedSmoke (i)) {
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
 			SetCloudDensity (pSmoke->pClouds + i, nMaxParts << gameOpts->render.smoke.nScale);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void SetSmokePartScale (int i, float nPartScale)
+{
+if (IsUsedSmoke (i)) {
+	tSmoke *pSmoke = smoke + i;
+	if (pSmoke->pClouds)
+		for (i = 0; i < pSmoke->nClouds; i++)
+			SetCloudPartScale (pSmoke->pClouds + i, nPartScale);
 	}
 }
 

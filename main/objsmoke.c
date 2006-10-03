@@ -81,6 +81,7 @@ if (EGI_FLAG (bDamageExplosions, 0, 0) &&
 void DoPlayerSmoke (object *objP, int i)
 {
 	int			h, j, d, nParts, nType;
+	float			nScale;
 	tCloud		*pCloud;
 	vms_vector	pos;
 
@@ -102,26 +103,34 @@ else if (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 else if ((i == gameData.multi.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multi.players [i].shields < 0)))
 	nParts = 0;
 else {
-	nParts = 10 - f2ir (gameData.multi.players [i].shields) / 5;
+	h = f2ir (gameData.multi.players [i].shields);
+	nParts = 10 - h / 5;
+	nScale = 655360.0f / (float) objP->size * 2;
+	if (h <= 25)
+		nScale /= 3;
+	else if (h <= 50)
+		nScale /= 2;
 	j = OBJ_IDX (objP);
 	if (nParts <= 0) {
-		nType = 1;
-		nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
+		nType = 2;
+		//nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
 		}
 	else {
 		CreateDamageExplosion (nParts, j);
-		nType = 0;
+		nType = (h > 25);
 		nParts *= 25;
 		nParts += 75;
 		}
+	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
 	if (SHOW_SMOKE && gameOpts->render.smoke.bPlayers) {
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating player smoke\n");
-			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->segnum, 2, nParts, 2,
+			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->segnum, 2, nParts, nScale,
 														  PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
 			}
 		else {
 			SetSmokeType (h, nType);
+			SetSmokePartScale (h, nScale);
 			SetSmokeDensity (h, nParts);
 			}
 		d = 8 * objP->size / 40;
@@ -143,6 +152,7 @@ KillObjectSmoke (i);
 void DoRobotSmoke (object *objP)
 {
 	int			h = -1, i, nShields, nParts;
+	float			nScale;
 	vms_vector	pos;
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
@@ -164,14 +174,22 @@ if (nParts > 0) {
 		nShields = 1000;
 	CreateDamageExplosion (nParts, i);
 	nParts *= nShields / 10;
+	nParts = 250;
+	nScale = 655360.0f / (float) objP->size * 1.5f;
+	if (h <= 25)
+		nScale /= 3;
+	else if (h <= 50)
+		nScale /= 2;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, 1,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, nScale,
 												OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
 		}
-	else
+	else {
+		SetSmokePartScale (gameData.smoke.objects [i], nScale);
 		SetSmokeDensity (gameData.smoke.objects [i], nParts);
-	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
+		}
+	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size / 2);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
 	}
 else 

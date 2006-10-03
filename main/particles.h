@@ -26,8 +26,8 @@ typedef struct tParticle {
 	int			nLife;			//remaining life time
 	int			nDelay;			//time between creation and appearance
 	int			nMoved;			//time last moved
-	short			nWidth;
-	short			nHeight;
+	int			nWidth;
+	int			nHeight;
 	short			nSegment;
 } tParticle;
 
@@ -39,7 +39,7 @@ typedef struct tCloud {
 	int			nParts;			//curent no. of particles
 	int			nMaxParts;		//max. no. of particles
 	int			nPartLimit;		//highest max. part. no ever set for this cloud
-	int			nPartScale;
+	float			nPartScale;
 	int			nMoved;			//time last moved
 	short			nSegment;
 	vms_vector	pos;				//initial particle position
@@ -60,12 +60,13 @@ typedef struct tSmoke {
 } tSmoke;
 
 int CreateSmoke (vms_vector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  int nPartScale, int nLife, int nSpeed, int nType, int nObject);
+					  float nPartScale, int nLife, int nSpeed, int nType, int nObject);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
 int RenderSmoke ();
 int DestroyAllSmoke (void);
 void SetSmokeDensity (int i, int nMaxParts);
+void SetSmokePartScale (int i, float nPartScale);
 void SetSmokePos (int i, vms_vector *pos);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
