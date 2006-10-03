@@ -1421,7 +1421,7 @@ do {
 	ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
 	opt++;
 	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
-	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
+	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 	optDmgInd = opt++;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);

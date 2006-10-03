@@ -574,7 +574,7 @@ opt++;
 ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
 opt++;
 m [optTgtInd + extraGameInfo [1].bTargetIndicators].value = 1;
-ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
+ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 optDmgInd = opt++;
 ADD_TEXT (opt, "", 0);
 opt++;
