@@ -1347,8 +1347,8 @@ if (gameOpts->app.bExpertMode) {
 
 void CockpitOptionsMenu ()
 {
-	newmenu_item m [30];
-	int	i, opt, choice = 0;
+	newmenu_item m [35];
+	int	i, j, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
 			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
 			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optTgtInd, optDmgInd;
@@ -1412,8 +1412,15 @@ do {
 	optPwrUpsOnRadar = opt++;
 	ADD_CHECK (opt, TXT_RADAR_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_B, HTX_CPIT_RADARBOTS);
 	optBotsOnRadar = opt++;
-	ADD_CHECK (opt, TXT_TGT_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
 	optTgtInd = opt++;
+	ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
+	opt++;
+	ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+	opt++;
+	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
 	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
 	optDmgInd = opt++;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
@@ -1463,8 +1470,14 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
 	extraGameInfo [0].bPowerUpsOnRadar = m [optPwrUpsOnRadar].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optBotsOnRadar].value;
-	extraGameInfo [0].bTargetIndicators = m [optTgtInd].value;
-	extraGameInfo [0].bDamageIndicators = m [optDmgInd].value;
+	if (optTgtInd >= 0) {
+		for (j = 0; j < 3; j++)
+			if (m [optTgtInd + j].value) {
+				extraGameInfo [0].bTargetIndicators = j;
+				break;
+				}
+		GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
+		}
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
@@ -1483,7 +1496,6 @@ do {
 		}
 	if (bShowWeaponIcons) {
 		if (gameOpts->app.bExpertMode) {
-			int j;
 			GET_VAL (gameOpts->render.weaponIcons.bEquipment, optEquipIcons);
 			GET_VAL (gameOpts->render.weaponIcons.bSmall, optSmallIcons);
 			GET_VAL (gameOpts->render.weaponIcons.nSort, optIconSort);

@@ -1581,8 +1581,10 @@ char *defaultGameTexts [][2] = {
 	{"~Team-Tueren", "~Team Doors"},
 	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
 	{"Spieler %s schummelt", "Player %s is cheating"},
-	{"~Zielanzeigen aktivieren", "show ~Target Indicators"},
-	{"~Schadensanzeigen aktivieren", "show ~Damage Indicators"},
+	{"keine ~Zielanzeigen", "no T~Arget Indicators"},
+	{"~Rechteckige Zielanzeigen", "~Rectangular Target Indicators"},
+	{"~Dreieckige Zielanzeigen", "~Triangular Target Indicators"},
+	{"~Schadensnzeigen aktivieren", "show ~Damage Indicators"},
 #if 0
 	{"", ""},
 #endif
@@ -1988,8 +1990,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, players can only open doors requiring a key of the\nplayers' team color or no key in team games."},
 	{"Wenn angekreuzt, kann man in Netzwerkspielen Cheat Codes einsetzen.", 
 	 "If checked you can use cheat codes in multiplayer games."},
-	{"Wenn angekreuzt, wird um Roboter und Schiffe der Spieler\n ein Rechteck gezeichnet.", 
-	 "If checked, a rectangle is drawn around robots and player\nships."},
+	{"Hier kann man auswaehlen, ob Roboter und Schiffe der Spieler\nmit einem umgebenden Rechteck, einem Dreieck oder gar nicht\nmarkiert werden. Bei Dreiecken wird die Schadensanzeige\nins Dreieck integriert, falls aktiviert.", 
+	 "Here you can chose whether robots and player ships are marked\nwith square brackets surrounding, with a triangle or not at\nall. For triangles, the damage indicator is integrated\nin the triangle if active."},
 	{"Wenn angekreuzt, wird oberhalb von Roboter und Schiffen\nder Spieler eine Schadensanzeige eingeblendet.", 
 	 "If checked, a damage indicator is shown above robots\nand player ships."},
 #if 0

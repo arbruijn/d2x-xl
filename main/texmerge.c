@@ -633,6 +633,8 @@ void InitTexMergeShaders (void)
 {
 	int	i, b;
 
+if (!gameStates.ogl.bShadersOk)
+	gameOpts->ogl.bGlTexMerge = 0;
 if (!gameOpts->ogl.bGlTexMerge)
 	gameStates.render.textures.bGlsTexMergeOk = 0;
 else {

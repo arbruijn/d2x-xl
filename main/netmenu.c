@@ -500,9 +500,9 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 
 void NetworkMoreGameOptions ()
  {
-  int opt = 0, i;
+  int opt = 0, i, j;
   char szPlayTime [80], szKillGoal [80], szInvul [50], socket_string [6], packstring [6];
-  newmenu_item m [30];
+  newmenu_item m [35];
 
 memset (m, 0, sizeof (m));
 
@@ -548,10 +548,6 @@ if (!gameStates.app.bNostalgia) {
 	optAutoTeams = opt++;
 	ADD_CHECK (opt, TXT_DARKMATCH, mpParams.bDarkMatch, KEY_D, HTX_DARKMATCH);
 	opt_darkMatch = opt++;
-	ADD_CHECK (opt, TXT_TGT_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
-	optTgtInd = opt++;
-	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
-	optDmgInd = opt++;
 	ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
 	opt_teamDoors = opt++;
 	ADD_CHECK (opt, TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
@@ -569,7 +565,19 @@ if (!gameStates.app.bNostalgia) {
 	}
 ADD_CHECK (opt, TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
 opt_short_packets = opt++;
-
+ADD_TEXT (opt, "", 0);
+opt++;
+ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
+optTgtInd = opt++;
+ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
+opt++;
+ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+opt++;
+m [optTgtInd + extraGameInfo [1].bTargetIndicators].value = 1;
+ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
+optDmgInd = opt++;
+ADD_TEXT (opt, "", 0);
+opt++;
 ADD_MENU (opt, TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
 opt_setpower = opt++;
 
@@ -664,8 +672,14 @@ if (!gameStates.app.bNostalgia) {
 	extraGameInfo [1].bDualMissileLaunch = m [optDualMiss].value;
 	extraGameInfo [1].bRotateLevels = m [optRotateLevels].value;
 	extraGameInfo [1].bDisableReactor = m [optDisableReactor].value;
-	extraGameInfo [1].bTargetIndicators = m [optTgtInd].value;
-	extraGameInfo [1].bDamageIndicators = m [optDmgInd].value;
+	if (optTgtInd >= 0) {
+		for (j = 0; j < 3; j++)
+			if (m [optTgtInd + j].value) {
+				extraGameInfo [1].bTargetIndicators = j;
+				break;
+				}
+		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
+		}
 	}
 }
 
