@@ -1351,7 +1351,7 @@ void CockpitOptionsMenu ()
 	int	i, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
 			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
-			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs;
+			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optTgtInd, optDmgInd;
 
 	char szCockpitWindowZoom [40];
 
@@ -1412,6 +1412,10 @@ do {
 	optPwrUpsOnRadar = opt++;
 	ADD_CHECK (opt, TXT_RADAR_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_B, HTX_CPIT_RADARBOTS);
 	optBotsOnRadar = opt++;
+	ADD_CHECK (opt, TXT_TGT_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+	optTgtInd = opt++;
+	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
+	optDmgInd = opt++;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1449,6 +1453,7 @@ do {
 		optIconPos =
 		optIconAmmo = 
 		optIconAlpha = -1;
+	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, opt, m, &CockpitOptionsCallBack, &choice);
 	} while (i >= 0);
@@ -1458,6 +1463,8 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
 	extraGameInfo [0].bPowerUpsOnRadar = m [optPwrUpsOnRadar].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optBotsOnRadar].value;
+	extraGameInfo [0].bTargetIndicators = m [optTgtInd].value;
+	extraGameInfo [0].bDamageIndicators = m [optDmgInd].value;
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {

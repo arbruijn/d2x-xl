@@ -429,7 +429,7 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int opt_setpower, opt_playtime, opt_killgoal, opt_socket, opt_marker_view, opt_light, opt_show_on_map;
 int opt_difficulty, opt_packets, opt_short_packets, opt_brightPlayers, opt_start_invul;
-int opt_darkMatch, opt_teamDoors, opt_multiCheats;
+int opt_darkMatch, opt_teamDoors, opt_multiCheats, optTgtInd, optDmgInd;
 int opt_show_names, opt_enhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP;
 
@@ -548,6 +548,10 @@ if (!gameStates.app.bNostalgia) {
 	optAutoTeams = opt++;
 	ADD_CHECK (opt, TXT_DARKMATCH, mpParams.bDarkMatch, KEY_D, HTX_DARKMATCH);
 	opt_darkMatch = opt++;
+	ADD_CHECK (opt, TXT_TGT_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+	optTgtInd = opt++;
+	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bTargetIndicators, KEY_D, HTX_CPIT_DMGIND);
+	optDmgInd = opt++;
 	ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
 	opt_teamDoors = opt++;
 	ADD_CHECK (opt, TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
@@ -660,6 +664,8 @@ if (!gameStates.app.bNostalgia) {
 	extraGameInfo [1].bDualMissileLaunch = m [optDualMiss].value;
 	extraGameInfo [1].bRotateLevels = m [optRotateLevels].value;
 	extraGameInfo [1].bDisableReactor = m [optDisableReactor].value;
+	extraGameInfo [1].bTargetIndicators = m [optTgtInd].value;
+	extraGameInfo [1].bDamageIndicators = m [optDmgInd].value;
 	}
 }
 

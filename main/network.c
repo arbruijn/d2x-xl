@@ -1485,6 +1485,8 @@ void NetworkSendExtraGameInfo (sequence_packet *their)
 	ubyte bFastPitch = extraGameInfo [1].bFastPitch;
 	ubyte bDarkMatch = extraGameInfo [1].bDarkMatch;
 	ubyte bTeamDoors = extraGameInfo [1].bTeamDoors;
+	ubyte bTargetIndicators = extraGameInfo [1].bTargetIndicators;
+	ubyte bDamageIndicators = extraGameInfo [1].bDamageIndicators;
 	ubyte bDualMissileLaunch = extraGameInfo [1].bDualMissileLaunch;
 	ubyte bDisableReactor = 0; //extraGameInfo [1].bDisableReactor;
 	ubyte bRotateLevels = extraGameInfo [1].bRotateLevels;
@@ -1494,6 +1496,8 @@ extraGameInfo [1].bMouseLook = bMouseLook;
 extraGameInfo [1].bFastPitch = bFastPitch;
 extraGameInfo [1].bDarkMatch = bDarkMatch;
 extraGameInfo [1].bTeamDoors = bTeamDoors;
+extraGameInfo [1].bTargetIndicators = bTargetIndicators;
+extraGameInfo [1].bDamageIndicators = bDamageIndicators;
 extraGameInfo [1].bDualMissileLaunch = bDualMissileLaunch;
 extraGameInfo [1].bDisableReactor = bDisableReactor;
 extraGameInfo [1].bRotateLevels = bRotateLevels;
@@ -4413,6 +4417,8 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDarkMatch = 0;
 	extraGameInfo [i].bTeamDoors = 0;
 	extraGameInfo [i].bEnableCheats = 0;
+	extraGameInfo [i].bTargetIndicators = 0;
+	extraGameInfo [i].bDamageIndicators = 0;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
 	extraGameInfo [i].entropy.nShieldFillRate = 11;
 	extraGameInfo [i].entropy.nShieldDamageRate = 11;
@@ -4530,6 +4536,9 @@ else {
 	LogErr ("   bShadows: %d\n", extraGameInfo [1].bShadows);
 	LogErr ("   bRenderShield: %d\n", extraGameInfo [1].bRenderShield);
 	LogErr ("   bTeleporterCams: %d\n", extraGameInfo [1].bTeleporterCams);
+	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
+	LogErr ("   bTargetIndicators: %d\n", extraGameInfo [1].bTargetIndicators);
+	LogErr ("   bDamageIndicators: %d\n", extraGameInfo [1].bDamageIndicators);
 	LogErr ("entropy info data:\n");
 	LogErr ("   nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	LogErr ("   nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);

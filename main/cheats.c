@@ -137,17 +137,17 @@ void KillThief(void)
 	object *objP;
 
 	//	Kill thief.
-	for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-		if (objP->type == OBJ_ROBOT)
-			if (gameData.bots.pInfo[objP->id].thief) {
-				if (gameStates.app.bNostalgia)
-					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-				else {
-					ApplyDamageToRobot (objP, objP->shields + 1, -1);
-					objP->flags |= OF_ARMAGEDDON;
-					}
-				HUDInitMessage(TXT_THIEF_TOASTED);
-			}
+for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+	if (objP->type == OBJ_ROBOT)
+		if (gameData.bots.pInfo[objP->id].thief) {
+			if (gameStates.app.bNostalgia)
+				objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			else {
+				ApplyDamageToRobot (objP, objP->shields + 1, -1);
+				objP->flags |= OF_ARMAGEDDON;
+				}
+			HUDInitMessage(TXT_THIEF_TOASTED);
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -158,15 +158,14 @@ void KillAllSnipers(void)
 {
 	int     i, dead_count=0;
 
-	//	Kill all snipers.
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects[i].type == OBJ_ROBOT)
-			if (gameData.objs.objects[i].ctype.ai_info.behavior == AIB_SNIPE) {
-				dead_count++;
-				gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-			}
-
-	HUDInitMessage(TXT_BOTS_TOASTED, dead_count);
+//	Kill all snipers.
+for (i=0; i<=gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects[i].type == OBJ_ROBOT)
+		if (gameData.objs.objects[i].ctype.ai_info.behavior == AIB_SNIPE) {
+			dead_count++;
+			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+		}
+HUDInitMessage(TXT_BOTS_TOASTED, dead_count);
 }
 
 #endif
@@ -178,12 +177,12 @@ void KillBuddy(void)
 	int     i;
 
 	//	Kill buddy.
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects[i].type == OBJ_ROBOT)
-			if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion) {
-				gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-				HUDInitMessage(TXT_BUDDY_TOASTED);
-			}
+for (i=0; i<=gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects[i].type == OBJ_ROBOT)
+		if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion) {
+			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			HUDInitMessage(TXT_BUDDY_TOASTED);
+		}
 }
 
 //	Cheat functions ------------------------------------------------------------

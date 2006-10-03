@@ -1095,8 +1095,10 @@ static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
 
 if (pc)
 	return pc;
-if (objP->type == OBJ_ROBOT)
-	return &botDefColor;
+if (objP->type == OBJ_ROBOT) {
+	if (!gameData.bots.pInfo [objP->id].companion)
+		return &botDefColor;
+	}
 else if (objP->type == OBJ_PLAYER) {
 	if (IsTeamGame)
 		return playerDefColors + GetTeam (objP->id) + 1;
@@ -1112,65 +1114,69 @@ void RenderDamageIndicator (object *objP, tRgbColorf *pc)
 	fVector3		fPos;
 	float			r, r2, w;
 
-pc = ObjectFrameColor (objP, pc);
-VmsVecToFloat (&fPos, &objP->pos);
-G3TransformPointf (&fPos, &fPos);
-r = f2fl (objP->size);
-r2 = r / 10;
-r = r2 * 9;
-w = 2 * r;
-fPos.p.x -= r;
-fPos.p.y += r;
-fPos.p.z = -fPos.p.z;
-if (objP->type == OBJ_ROBOT)
-	w *= f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
-else if (objP->type == OBJ_PLAYER)
-	w *= f2fl (gameData.multi.players [objP->id].shields);
-glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
-glBegin (GL_QUADS);
-glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
-glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
-glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
-glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
-glEnd ();
-w = 2 * r;
-glColor3fv ((GLfloat *) pc);
-glBegin (GL_LINE_LOOP);
-glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
-glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
-glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
-glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
-glEnd ();
-glDisable (GL_TEXTURE_2D);
+if (EGI_FLAG (bDamageIndicators, 0, 0)) {
+	pc = ObjectFrameColor (objP, pc);
+	VmsVecToFloat (&fPos, &objP->pos);
+	G3TransformPointf (&fPos, &fPos);
+	r = f2fl (objP->size);
+	r2 = r / 10;
+	r = r2 * 9;
+	w = 2 * r;
+	fPos.p.x -= r;
+	fPos.p.y += r;
+	fPos.p.z = -fPos.p.z;
+	if (objP->type == OBJ_ROBOT)
+		w *= f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	else if (objP->type == OBJ_PLAYER)
+		w *= f2fl (gameData.multi.players [objP->id].shields);
+	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
+	glBegin (GL_QUADS);
+	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
+	glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
+	glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
+	glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
+	glEnd ();
+	w = 2 * r;
+	glColor3fv ((GLfloat *) pc);
+	glBegin (GL_LINE_LOOP);
+	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
+	glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
+	glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
+	glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
+	glEnd ();
+	glDisable (GL_TEXTURE_2D);
+	}
 }
 
 // -----------------------------------------------------------------------------
 
-void RenderObjectFrame (object *objP, tRgbColorf *pc)
+void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 {
 	fVector3		fPos;
 	float			r, r2;
 
-pc = ObjectFrameColor (objP, pc);
-VmsVecToFloat (&fPos, &objP->pos);
-G3TransformPointf (&fPos, &fPos);
-fPos.p.z = -fPos.p.z;
-r = f2fl (objP->size);
-r2 = r * 2 / 3;
-glDisable (GL_TEXTURE_2D);
-glColor3fv ((GLfloat *) pc);
-glBegin (GL_LINE_STRIP);
-glVertex3f (fPos.p.x - r2, fPos.p.y - r, fPos.p.z);
-glVertex3f (fPos.p.x - r, fPos.p.y - r, fPos.p.z);
-glVertex3f (fPos.p.x - r, fPos.p.y + r, fPos.p.z);
-glVertex3f (fPos.p.x - r2, fPos.p.y + r, fPos.p.z);
-glEnd ();
-glBegin (GL_LINE_STRIP);
-glVertex3f (fPos.p.x + r2, fPos.p.y - r, fPos.p.z);
-glVertex3f (fPos.p.x + r, fPos.p.y - r, fPos.p.z);
-glVertex3f (fPos.p.x + r, fPos.p.y + r, fPos.p.z);
-glVertex3f (fPos.p.x + r2, fPos.p.y + r, fPos.p.z);
-glEnd ();
+if (EGI_FLAG (bTargetIndicators, 0, 0)) {
+	pc = ObjectFrameColor (objP, pc);
+	VmsVecToFloat (&fPos, &objP->pos);
+	G3TransformPointf (&fPos, &fPos);
+	fPos.p.z = -fPos.p.z;
+	r = f2fl (objP->size);
+	r2 = r * 2 / 3;
+	glDisable (GL_TEXTURE_2D);
+	glColor3fv ((GLfloat *) pc);
+	glBegin (GL_LINE_STRIP);
+	glVertex3f (fPos.p.x - r2, fPos.p.y - r, fPos.p.z);
+	glVertex3f (fPos.p.x - r, fPos.p.y - r, fPos.p.z);
+	glVertex3f (fPos.p.x - r, fPos.p.y + r, fPos.p.z);
+	glVertex3f (fPos.p.x - r2, fPos.p.y + r, fPos.p.z);
+	glEnd ();
+	glBegin (GL_LINE_STRIP);
+	glVertex3f (fPos.p.x + r2, fPos.p.y - r, fPos.p.z);
+	glVertex3f (fPos.p.x + r, fPos.p.y - r, fPos.p.z);
+	glVertex3f (fPos.p.x + r, fPos.p.y + r, fPos.p.z);
+	glVertex3f (fPos.p.x + r2, fPos.p.y + r, fPos.p.z);
+	glEnd ();
+	}
 RenderDamageIndicator (objP, pc);
 }
 
@@ -1224,11 +1230,11 @@ switch (objP->render_type) {
 			else
 				DrawPolygonObject (objP);
 			RenderPlayerShield (objP);
-			RenderObjectFrame (objP, NULL);
+			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->type == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
-			RenderObjectFrame (objP, NULL);
+			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2) {

@@ -1581,6 +1581,8 @@ char *defaultGameTexts [][2] = {
 	{"~Team-Tueren", "~Team Doors"},
 	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
 	{"Spieler %s schummelt", "Player %s is cheating"},
+	{"~Zielanzeigen aktivieren", "show ~Target Indicators"},
+	{"~Schadensanzeigen aktivieren", "show ~Damage Indicators"},
 #if 0
 	{"", ""},
 #endif
@@ -1986,6 +1988,10 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, players can only open doors requiring a key of the\nplayers' team color or no key in team games."},
 	{"Wenn angekreuzt, kann man in Netzwerkspielen Cheat Codes einsetzen.", 
 	 "If checked you can use cheat codes in multiplayer games."},
+	{"Wenn angekreuzt, wird um Roboter und Schiffe der Spieler\n ein Rechteck gezeichnet.", 
+	 "If checked, a rectangle is drawn around robots and player\nships."},
+	{"Wenn angekreuzt, wird oberhalb von Roboter und Schiffen\nder Spieler eine Schadensanzeige eingeblendet.", 
+	 "If checked, a damage indicator is shown above robots\nand player ships."},
 #if 0
 	{"", ""},
 	{"", ""},

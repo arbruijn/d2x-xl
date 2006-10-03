@@ -472,6 +472,8 @@ typedef struct extra_gameinfo {
 	char		bDarkMatch;
 	char		bTeamDoors;
 	char		bEnableCheats;
+	char		bTargetIndicators;
+	char		bDamageIndicators;
 	monsterball_info	monsterball;
 } __pack__ extra_gameinfo;
 
