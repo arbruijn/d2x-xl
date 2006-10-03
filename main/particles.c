@@ -472,7 +472,7 @@ else
 
 int RenderParticle (tParticle *pParticle)
 {
-	vms_vector			hv, hp;
+	vms_vector			hp;
 	GLdouble				u, v, x, y, z, h, w;
 	char					o;
 	grs_bitmap			*bmP;
@@ -487,8 +487,10 @@ if (pParticle->nDelay > 0)
 bmP = bmpParticle [gameStates.render.bPointSprites][pParticle->nType];
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
-VmVecSub (&hv, &pParticle->pos, &viewInfo.position);
-VmVecRotate (&hp, &hv, &viewInfo.view);
+if (gameOpts->render.smoke.bSort)
+	hp = pParticle->transPos;
+else
+	G3TransformPoint (&hp, &pParticle->pos);
 pc = pParticle->glColor;
 if (gameOpts->ogl.bUseLighting) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
@@ -587,6 +589,7 @@ OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glDisable (GL_DEPTH_TEST);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
@@ -643,6 +646,7 @@ if (gameStates.render.bPointSprites) {
 	glDisable (GL_POINT_SPRITE_ARB);
 	}
 #endif
+glEnable (GL_DEPTH_TEST);
 glDisable (GL_TEXTURE_2D);
 return 1;
 }
@@ -653,6 +657,10 @@ int CreateCloud (tCloud *pCloud, vms_vector *pPos, short nSegment, int nMaxParts
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
 	return 0;
+if (gameOpts->render.smoke.bSort) {
+	if (!(pCloud->pPartIdx = (tPartIdx *) d_malloc (nMaxParts * sizeof (tPartIdx))))
+		gameOpts->render.smoke.bSort = 0;
+	}
 pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
@@ -676,6 +684,8 @@ int DestroyCloud (tCloud *pCloud)
 if (pCloud->pParticles) {
 	d_free (pCloud->pParticles);
 	pCloud->pParticles = NULL;
+	d_free (pCloud->pPartIdx);
+	pCloud->pPartIdx = NULL;
 	}
 pCloud->nParts =
 pCloud->nMaxParts = 0;
@@ -774,12 +784,90 @@ return pCloud->nParts = i;
 
 //------------------------------------------------------------------------------
 
+void QSortParticles (tPartIdx *pPartIdx, int left, int right)
+{
+	int	l = left, 
+			r = right, 
+			m = pPartIdx [(l + r) / 2].z;
+
+while (pPartIdx [l].z > m)
+	l++;
+while (pPartIdx [r].z < m)
+	r--;
+if (l <= r) {
+	if (l < r) {
+		tPartIdx h = pPartIdx [l];
+		pPartIdx [l] = pPartIdx [r];
+		pPartIdx [r] = h;
+		}
+	l++;
+	r--;
+	}
+if (l < right)
+	QSortParticles (pPartIdx, l, right);
+if (left < r)
+	QSortParticles (pPartIdx, left, r);
+}
+
+//------------------------------------------------------------------------------
+
+void TransformParticles (tParticle *pParticles, int nParticles)
+{
+for (; nParticles; nParticles--, pParticles++)
+	G3TransformPoint (&pParticles->transPos, &pParticles->pos);
+}
+
+//------------------------------------------------------------------------------
+
+int SortParticles (tParticle *pParticles, tPartIdx *pPartIdx, int nParticles)
+{
+if (nParticles > 1) {
+	int	i, z, nSortedUp = 1, nSortedDown = 1;
+
+	TransformParticles (pParticles, nParticles);
+	for (i = 0; i < nParticles; i++) {
+		pPartIdx [i].i = i;
+		pPartIdx [i].z = pParticles [i].transPos.z;
+		if (i)
+			if (z > pPartIdx [i].z)
+				nSortedUp++;
+			else if (z < pPartIdx [i].z)
+				nSortedDown++;
+			else {
+				nSortedUp++;
+				nSortedDown++;
+				}
+		}
+	if (nSortedDown <= nParticles / 10)
+		return 0;
+	if (nSortedUp <= nParticles / 10)
+		return 1;
+	QSortParticles (pPartIdx, 0, nParticles - 1);
+	return 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int RenderCloud (tCloud *pCloud)
 {
-	int	i, j = pCloud->nParts;
+	int		i, j = pCloud->nParts, 
+				bSorted = gameOpts->render.smoke.bSort && (j > 1),
+				bReverse;
+	tPartIdx	*pPartIdx;
 
 if (!BeginRenderSmoke (pCloud->nType))
 	return 0;
+if (bSorted) {
+	pPartIdx = pCloud->pPartIdx;
+	bReverse = SortParticles (pCloud->pParticles, pPartIdx, j);
+	if (bReverse)
+		for (i = j; i; )
+			RenderParticle (pCloud->pParticles + pPartIdx [--i].i);
+	else
+		for (i = 0; i < j; i++)
+			RenderParticle (pCloud->pParticles + pPartIdx [i].i);
+	}
 for (i = 0; i < j; i++)
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
 	if (!RenderParticle (pCloud->pParticles + i))

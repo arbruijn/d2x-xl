@@ -149,6 +149,7 @@ typedef struct tSmokeOptions {
 	int bRobots;
 	int bMissiles;
 	int bCollisions;
+	int bSort;
 } tSmokeOptions;
 
 typedef struct tRenderOptions {

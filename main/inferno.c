@@ -1818,6 +1818,7 @@ if (i) {
 	gameOptions [1].render.smoke.bRobots = 0;
 	gameOptions [1].render.smoke.bMissiles = 0;
 	gameOptions [1].render.smoke.bCollisions = 0;
+	gameOptions [1].render.smoke.bSort = 0;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -1880,6 +1881,7 @@ else {
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
 	gameOptions [0].render.smoke.bCollisions = 1;
+	gameOptions [0].render.smoke.bSort = 1;
 	}
 }
 

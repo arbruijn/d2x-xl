@@ -17,6 +17,7 @@ typedef struct tParticle {
 	tPartPos		glPos;
 #endif
 	vms_vector	pos;				//position
+	vms_vector	transPos;		//transformed position
 	vms_vector	dir;				//movement direction
 	char			nType;			//black or white
 	char			nOrient;
@@ -30,6 +31,11 @@ typedef struct tParticle {
 	int			nHeight;
 	short			nSegment;
 } tParticle;
+
+typedef struct tPartIdx {
+	int			i;
+	int			z;
+} tPartIdx;
 
 typedef struct tCloud {
 	int			nType;			//black or white
@@ -46,6 +52,7 @@ typedef struct tCloud {
 	vms_vector	prevPos;			//initial particle position
 	int			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
+	tPartIdx		*pPartIdx;
 } tCloud;
 
 typedef struct tSmoke {
