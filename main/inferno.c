@@ -1881,7 +1881,7 @@ else {
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
 	gameOptions [0].render.smoke.bCollisions = 1;
-	gameOptions [0].render.smoke.bSort = 1;
+	gameOptions [0].render.smoke.bSort = 0;
 	}
 }
 

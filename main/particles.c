@@ -837,10 +837,11 @@ if (nParticles > 1) {
 				nSortedUp++;
 				nSortedDown++;
 				}
+		z = pPartIdx [i].z;
 		}
-	if (nSortedDown <= nParticles / 10)
+	if (nSortedDown >= 9 * nParticles / 10)
 		return 0;
-	if (nSortedUp <= nParticles / 10)
+	if (nSortedUp >= 9 * nParticles / 10)
 		return 1;
 	QSortParticles (pPartIdx, 0, nParticles - 1);
 	return 0;
