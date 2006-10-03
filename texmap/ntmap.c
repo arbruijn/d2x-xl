@@ -400,41 +400,41 @@ void compute_y_bounds(g3ds_tmap *t, int *vlt, int *vlb, int *vrt, int *vrb,int *
 
 fix compute_du_dy_lin(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(t->verts[bottom_vertex].u - t->verts[top_vertex].u, recip_dy);
+	return FixMul(t->verts[bottom_vertex].u - t->verts[top_vertex].u, recip_dy);
 }
 
 
 fix compute_dv_dy_lin(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(t->verts[bottom_vertex].v - t->verts[top_vertex].v, recip_dy);
+	return FixMul(t->verts[bottom_vertex].v - t->verts[top_vertex].v, recip_dy);
 }
 
 fix compute_dl_dy_lin(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(t->verts[bottom_vertex].l - t->verts[top_vertex].l, recip_dy);
+	return FixMul(t->verts[bottom_vertex].l - t->verts[top_vertex].l, recip_dy);
 
 }
 
 fix compute_dx_dy(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(t->verts[bottom_vertex].x2d - t->verts[top_vertex].x2d, recip_dy);
+	return FixMul(t->verts[bottom_vertex].x2d - t->verts[top_vertex].x2d, recip_dy);
 }
 
 fix compute_du_dy(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(fixmul(t->verts[bottom_vertex].u,t->verts[bottom_vertex].z) - fixmul(t->verts[top_vertex].u,t->verts[top_vertex].z), recip_dy);
+	return FixMul(FixMul(t->verts[bottom_vertex].u,t->verts[bottom_vertex].z) - FixMul(t->verts[top_vertex].u,t->verts[top_vertex].z), recip_dy);
 }
 
 
 fix compute_dv_dy(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(fixmul(t->verts[bottom_vertex].v,t->verts[bottom_vertex].z) - fixmul(t->verts[top_vertex].v,t->verts[top_vertex].z), recip_dy);
+	return FixMul(FixMul(t->verts[bottom_vertex].v,t->verts[bottom_vertex].z) - FixMul(t->verts[top_vertex].v,t->verts[top_vertex].z), recip_dy);
 
 }
 
 fix compute_dz_dy(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 {
-	return fixmul(t->verts[bottom_vertex].z - t->verts[top_vertex].z, recip_dy);
+	return FixMul(t->verts[bottom_vertex].z - t->verts[top_vertex].z, recip_dy);
 
 }
 int Skip_short_flag=0;
@@ -469,9 +469,9 @@ void ntmap_scanline_lighted(grs_bitmap *srcb, int y, fix xleft, fix xright, fix 
 	fx_v = vleft;
 	fx_z = zleft;
 	
-	fx_du_dx = fixmul(uright - uleft,recip_dx);
-	fx_dv_dx = fixmul(vright - vleft,recip_dx);
-	fx_dz_dx = fixmul(zright - zleft,recip_dx);
+	fx_du_dx = FixMul(uright - uleft,recip_dx);
+	fx_dv_dx = FixMul(vright - vleft,recip_dx);
+	fx_dz_dx = FixMul(zright - zleft,recip_dx);
 	fx_y = y;
 	pixptr = srcb->bm_texBuf;
 
@@ -495,7 +495,7 @@ void ntmap_scanline_lighted(grs_bitmap *srcb, int y, fix xleft, fix xright, fix 
 			if (lright > (NUM_LIGHTING_LEVELS*F1_0-F1_0/2)) lright = (NUM_LIGHTING_LEVELS*F1_0-F1_0/2);
 
 			fx_l = lleft;
-			fx_dl_dx = fixmul(lright - lleft,recip_dx);
+			fx_dl_dx = FixMul(lright - lleft,recip_dx);
 
 			//	This is a pretty ugly hack to prevent lighting overflows.
 			mul_thing = dx * fx_dl_dx;
@@ -609,10 +609,10 @@ void ntexture_map_lighted(grs_bitmap *srcb, g3ds_tmap *t)
 	zleft = v3d[vlt].z;
 	zright = v3d[vrt].z;
 
-	uleft = fixmul(v3d[vlt].u,zleft);
-	uright = fixmul(v3d[vrt].u,zright);
-	vleft = fixmul(v3d[vlt].v,zleft);
-	vright = fixmul(v3d[vrt].v,zright);
+	uleft = FixMul(v3d[vlt].u,zleft);
+	uright = FixMul(v3d[vrt].u,zright);
+	vleft = FixMul(v3d[vlt].v,zleft);
+	vright = FixMul(v3d[vrt].v,zright);
 
 	// scan all rows in texture map from top through first break.
 	next_break_left = f2i(v3d[vlb].y2d);
@@ -644,8 +644,8 @@ void ntexture_map_lighted(grs_bitmap *srcb, g3ds_tmap *t)
 
 			xleft = v3d[vlt].x2d;
 			zleft = v3d[vlt].z;
-			uleft = fixmul(v3d[vlt].u,zleft);
-			vleft = fixmul(v3d[vlt].v,zleft);
+			uleft = FixMul(v3d[vlt].u,zleft);
+			vleft = FixMul(v3d[vlt].v,zleft);
 			lleft = v3d[vlt].l;
 
 			du_dy_left = compute_du_dy(t,vlt,vlb, recip_dy);
@@ -680,8 +680,8 @@ void ntexture_map_lighted(grs_bitmap *srcb, g3ds_tmap *t)
 
 			xright = v3d[vrt].x2d;
 			zright = v3d[vrt].z;
-			uright = fixmul(v3d[vrt].u,zright);
-			vright = fixmul(v3d[vrt].v,zright);
+			uright = FixMul(v3d[vrt].u,zright);
+			vright = FixMul(v3d[vrt].v,zright);
 
 			du_dy_right = compute_du_dy(t,vrt,vrb, recip_dy);
 			dv_dy_right = compute_dv_dy(t,vrt,vrb, recip_dy);
@@ -747,8 +747,8 @@ void ntmap_scanline_lighted_linear(grs_bitmap *srcb, int y, fix xleft, fix xrigh
 		else
 			recip_dx = F1_0/dx;
 
-		du_dx = fixmul(uright - uleft,recip_dx);
-		dv_dx = fixmul(vright - vleft,recip_dx);
+		du_dx = FixMul(uright - uleft,recip_dx);
+		dv_dx = FixMul(vright - vleft,recip_dx);
 
 		fx_u = uleft;
 		fx_v = vleft;
@@ -788,7 +788,7 @@ void ntmap_scanline_lighted_linear(grs_bitmap *srcb, int y, fix xleft, fix xrigh
 			fix mul_thing;
 
 			fx_l = lleft;
-			fx_dl_dx = fixmul(lright - lleft,recip_dx);
+			fx_dl_dx = FixMul(lright - lleft,recip_dx);
 
 			//	This is a pretty ugly hack to prevent lighting overflows.
 			mul_thing = dx * fx_dl_dx;
@@ -799,7 +799,7 @@ void ntmap_scanline_lighted_linear(grs_bitmap *srcb, int y, fix xleft, fix xrigh
 }
 
 				fx_l = lleft;
-				dl_dx = fixmul(lright - lleft,recip_dx);
+				dl_dx = FixMul(lright - lleft,recip_dx);
 				fx_dl_dx = dl_dx;
 				cur_tmap_scanline_lin();
 				break;

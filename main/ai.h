@@ -135,7 +135,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * prototype create_path_to_player.
  *
  * Revision 1.24  1994/08/03  15:17:20  mike
- * Prototype make_random_vector.
+ * Prototype MakeRandomVector.
  *
  * Revision 1.23  1994/07/31  18:10:34  mike
  * Update prototype for CreatePathPoints.
@@ -214,7 +214,7 @@ extern void InitAIObjects(void);
 extern void DoAiRobotHit(object *robot, int type);
 extern void create_n_segment_path(object *objp, int path_length, short avoid_seg);
 extern void create_n_segment_path_to_door(object *objp, int path_length, short avoid_seg);
-extern void make_random_vector(vms_vector *vec);
+extern void MakeRandomVector(vms_vector *vec);
 extern void InitRobotsForLevel(void);
 extern int AIBehaviorToMode(int behavior);
 extern int Robot_firing_enabled;

@@ -47,7 +47,7 @@ int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = gr_line;
 //------------------------------------------------------------------------------
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
-void g3_set_special_render (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer)
+void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer)
 {
 tmap_drawer_ptr = (tmap_drawer)?tmap_drawer:draw_tmap;
 flat_drawer_ptr = (flat_drawer)?flat_drawer:gr_upoly_tmap;
@@ -346,7 +346,7 @@ int G3DrawSphere (g3s_point *pnt, fix rad)
 		if (! (pnt->p3_codes & PF_OVERFLOW)) {
 			fix r2, t;
 
-			r2 = fixmul (rad, viewInfo.scale.x);
+			r2 = FixMul (rad, viewInfo.scale.x);
 #ifndef __powerc
 			if (CheckMulDiv (&t, r2, xCanvW2, pnt->p3_z))
 				return gr_disk (pnt->p3_sx, pnt->p3_sy, t);

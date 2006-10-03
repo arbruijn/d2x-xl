@@ -1464,7 +1464,7 @@ for (;;) {
 #if 1
 			l = 32;
 #else
-			l = f2i (fixmul (i2f (32), xModelLight);
+			l = f2i (FixMul (i2f (32), xModelLight);
 			if (l < 0) 
 				l = 0;
 			else if (l > 32) 
@@ -1509,7 +1509,7 @@ for (;;) {
 			if (nGlow < 0) {			//no glow
 				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
-				light = fixmul (light, xModelLight);
+				light = FixMul (light, xModelLight);
 				}
 			else {				//yes glow
 				light = xGlowValues [nGlow];
@@ -1637,7 +1637,7 @@ for (;;) {
 			if (nGlow < 0) {			//no glow
 				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
-				light = fixmul (light, xModelLight);
+				light = FixMul (light, xModelLight);
 				}
 			else {				//yes glow
 				light = xGlowValues [nGlow];

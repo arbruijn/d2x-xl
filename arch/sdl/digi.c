@@ -41,7 +41,7 @@
 #include "text.h"
 
 //edited 05/17/99 Matt Mueller - added ifndef NO_ASM
-//added on 980905 by adb to add inline fixmul for mixer on i386
+//added on 980905 by adb to add inline FixMul for mixer on i386
 #ifndef NO_ASM
 #ifdef __i386__
 #define do_fixmul(x,y)				\
@@ -52,7 +52,7 @@
 	    : "rm"(y), "i"(16), "0"(x));	\
 	_ax;					\
 })
-extern inline fix fixmul(fix x, fix y) { return do_fixmul(x,y); }
+extern inline fix FixMul(fix x, fix y) { return do_fixmul(x,y); }
 #endif
 #endif
 //end edit by adb
@@ -168,8 +168,8 @@ else {
 	vl = 0x10000;
 	vr = x * 2;
 	}
-vl = fixmul (vl, (x = sl->volume));
-vr = fixmul (vr, x);
+vl = FixMul (vl, (x = sl->volume));
+vr = FixMul (vr, x);
 while (sp < streamend) {
 	if (sldata == slend) {
 		if (!sl->looped) {
@@ -180,9 +180,9 @@ while (sp < streamend) {
 		}
 	v = *(sldata++) - 0x80;
 	s = *sp;
-	*(sp++) = mix8 [s + fixmul (v, vl) + 0x80];
+	*(sp++) = mix8 [s + FixMul (v, vl) + 0x80];
 	s = *sp;
-	*(sp++) = mix8 [s + fixmul (v, vr) + 0x80];
+	*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 	}
 sl->position = (int) (sldata - sl->samples);
 }
@@ -219,8 +219,8 @@ for (sl = SoundSlots; sl < SoundSlots + MAX_SOUND_SLOTS; sl++) {
 			vl = 0x10000;
 			vr = x * 2;
 			}
-		vl = fixmul (vl, (x = sl->volume));
-		vr = fixmul (vr, x);
+		vl = FixMul (vl, (x = sl->volume));
+		vr = FixMul (vr, x);
 		while (sp < streamend) {
 			if (sldata == slend) {
 				if (!sl->looped) {
@@ -231,9 +231,9 @@ for (sl = SoundSlots; sl < SoundSlots + MAX_SOUND_SLOTS; sl++) {
 				}
 			v = *(sldata++) - 0x80;
 			s = *sp;
-			*(sp++) = mix8 [s + fixmul (v, vl) + 0x80];
+			*(sp++) = mix8 [s + FixMul (v, vl) + 0x80];
 			s = *sp;
-			*(sp++) = mix8 [s + fixmul (v, vr) + 0x80];
+			*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 			}
 		sl->position = (int) (sldata - sl->samples);
 #endif
@@ -355,7 +355,7 @@ int DigiSpeedupSound (digi_sound *gsp, struct sound_slot *ssp, int speed)
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
 
-l = fixmuldiv (ssp->bResampled ? ssp->length : gsp->length, speed, F1_0);
+l = FixMulDiv (ssp->bResampled ? ssp->length : gsp->length, speed, F1_0);
 if (!(pDest = (ubyte *) d_malloc (l)))
 	return -1;
 pSrc = ssp->bResampled ? ssp->samples : gsp->data;
@@ -382,7 +382,7 @@ void Mix_VolPan (int channel, int vol, int pan)
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer && (channel >= 0)) {
 	if (vol) {
-		vol = (fixmul (vol, gameStates.sound.digi.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
+		vol = (FixMul (vol, gameStates.sound.digi.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
 		if (!vol)
 			vol = 1;
 		Mix_Volume (channel, vol);
@@ -521,7 +521,7 @@ if (pszWAV)
 	if (speed < F1_0)
 		DigiSpeedupSound (gsp, ssp, speed);
 	}
-ssp->volume = fixmul (gameStates.sound.digi.nVolume, volume);
+ssp->volume = FixMul (gameStates.sound.digi.nVolume, volume);
 ssp->pan = pan;
 ssp->position = 0;
 ssp->soundobj = soundobj;
@@ -557,7 +557,7 @@ return -1;
 //added on 980905 by adb from original source to make sfx volume work
 void DigiSetFxVolume( int dvolume )
 {
-dvolume = fixmuldiv (dvolume, SOUND_MAX_VOLUME, 0x7fff);
+dvolume = FixMulDiv (dvolume, SOUND_MAX_VOLUME, 0x7fff);
 if (dvolume > SOUND_MAX_VOLUME)
 	gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 else if (dvolume < 0)
@@ -634,7 +634,7 @@ if (!gameStates.sound.digi.bInitialized)
 	return;
 if (!SoundSlots[channel].playing)
 	return;
-SoundSlots[channel].volume = fixmuldiv(volume, gameStates.sound.digi.nVolume, F1_0);
+SoundSlots[channel].volume = FixMulDiv(volume, gameStates.sound.digi.nVolume, F1_0);
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
 	Mix_Volume (channel, (volume * gameStates.sound.digi.nVolume / F1_0) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME));

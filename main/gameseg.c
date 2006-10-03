@@ -2206,7 +2206,7 @@ if (i == nChangedSegs) {
 
 		if (xLightAtPoint >= 0) {
 			segment2	*seg2p = gameData.segs.segment2s + segnum;
-			xLightAtPoint = fixmul (xLightAtPoint, light_intensity);
+			xLightAtPoint = FixMul (xLightAtPoint, light_intensity);
 			if (xLightAtPoint >= F1_0)
 				xLightAtPoint = F1_0-1;
 			else if (xLightAtPoint <= -F1_0)

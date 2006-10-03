@@ -876,7 +876,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 void FuelcenUpdateAll ()
 {
 	int i;
-	fix xAmountToReplenish = fixmul (gameData.app.xFrameTime,gameData.matCens.xFuelRefillSpeed);
+	fix xAmountToReplenish = FixMul (gameData.app.xFrameTime,gameData.matCens.xFuelRefillSpeed);
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
 		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER)	{
@@ -928,7 +928,7 @@ if (!segP)
 xsegP = gameData.segs.xSegments + SEG_IDX (segP);
 if ((xsegP->owner < 1) || (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1))
 	return 0;
-amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
+amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
 if (amount > MaxAmountCanGive)
 	amount = MaxAmountCanGive;
 if (last_play_time > gameData.app.xGameTime)
@@ -976,11 +976,11 @@ fix FuelCenGiveFuel (segment *segP, fix MaxAmountCanTake)
 			return 0;
 		}
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			amount = fixmul (gameData.app.xFrameTime, 
+			amount = FixMul (gameData.app.xFrameTime, 
 								  gameData.matCens.xFuelGiveAmount * 
 								  extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
 		else
-			amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount);
+			amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount);
 		if (amount > MaxAmountCanTake)
 			amount = MaxAmountCanTake;
 		if (last_play_time > gameData.app.xGameTime)
@@ -1038,7 +1038,7 @@ if (seg2p->special != SEGMENT_IS_REPAIRCEN)
 if (MaxAmountCanTake <= 0)	{
 	return 0;
 }
-amount = fixmul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
+amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
 if (amount > MaxAmountCanTake)
 	amount = MaxAmountCanTake;
 if (last_play_time > gameData.app.xGameTime)
@@ -1245,7 +1245,7 @@ return amount;
 //--repair-- 	//update shields
 //--repair-- 	if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < MAX_SHIELDS) {	//if above max, don't mess with it
 //--repair--
-//--repair-- 		gameData.multi.players [gameData.multi.nLocalPlayer].shields += fixmul (gameData.app.xFrameTime,repair_rate);
+//--repair-- 		gameData.multi.players [gameData.multi.nLocalPlayer].shields += FixMul (gameData.app.xFrameTime,repair_rate);
 //--repair--
 //--repair-- 		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > MAX_SHIELDS)
 //--repair-- 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
@@ -1301,9 +1301,9 @@ return amount;
 //--repair-- 		VmVecInc (&objP->pos, &start_pos);
 //--repair-- 			
 //--repair-- 		// Find object's current orientation
-//--repair-- 		p	= fixmul (delta_angles.p,factor);
-//--repair-- 		b	= fixmul (delta_angles.b,factor);
-//--repair-- 		h	= fixmul (delta_angles.h,factor);
+//--repair-- 		p	= FixMul (delta_angles.p,factor);
+//--repair-- 		b	= FixMul (delta_angles.b,factor);
+//--repair-- 		h	= FixMul (delta_angles.h,factor);
 //--repair-- 		av.p = (fixang)p + start_angles.p;
 //--repair-- 		av.b = (fixang)b + start_angles.b;
 //--repair-- 		av.h = (fixang)h + start_angles.h;
@@ -1353,7 +1353,7 @@ return amount;
 //--repair-- 			RepairObj = obj;
 //--repair-- 			repair_save_uvec = objP->orient.uvec;
 //--repair--
-//--repair-- 			repair_rate = fixmuldiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multi.players [gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
+//--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multi.players [gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
 //--repair--
 //--repair-- 			save_control_type = objP->control_type;
 //--repair-- 			save_movement_type = objP->movement_type;

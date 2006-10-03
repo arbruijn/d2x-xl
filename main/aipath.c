@@ -260,7 +260,7 @@ void insert_center_points(point_seg *psegs, int *num_points)
 		VmVecSub(&temp2, &psegs[i+1].point, &psegs[i].point);
 		dot = VmVecDot(&temp1, &temp2);
 
-		if (dot * 9/8 > fixmul(VmVecMag(&temp1), VmVecMag(&temp2)))
+		if (dot * 9/8 > FixMul(VmVecMag(&temp1), VmVecMag(&temp2)))
 			psegs[i].segnum = -1;
 
 	}
@@ -1189,7 +1189,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 		} else {
 			robot_info	*robptr = &gameData.bots.pInfo[objP->id];
 			fix	cur_speed = robptr->max_speed[gameStates.app.nDifficultyLevel]/2;
-			fix	distance_travellable = fixmul(gameData.app.xFrameTime, cur_speed);
+			fix	distance_travellable = FixMul(gameData.app.xFrameTime, cur_speed);
 
 			// int	connect_side = FindConnectedSide(objP->segnum, goal_seg);
 			//	Only move to goal if allowed to fly through the side.
@@ -1270,7 +1270,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 	forced_break = 0;		//	Gets set for short paths.
 	original_dir = aip->PATH_DIR;
 	original_index = aip->cur_path_index;
-	threshold_distance = fixmul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
+	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
 
 	new_goal_point = gameData.ai.pointSegs[aip->hide_index + aip->cur_path_index].point;
 
@@ -1478,7 +1478,7 @@ void ai_path_set_orient_and_vel(object *objP, vms_vector *goal_point, int player
 		if (dot < F1_0/2)
 			dot = (dot + F1_0)/2;
 
-	speed_scale = fixmul(max_speed, dot);
+	speed_scale = FixMul(max_speed, dot);
 	VmVecScale(&norm_cur_vel, speed_scale);
 	objP->mtype.phys_info.velocity = norm_cur_vel;
 
@@ -1837,7 +1837,7 @@ void player_path_set_orient_and_vel(object *objP, vms_vector *goal_point)
 	if (dot < 0)
 		dot /= 4;
 
-	speed_scale = fixmul(max_speed, dot);
+	speed_scale = FixMul(max_speed, dot);
 	VmVecScale(&norm_cur_vel, speed_scale);
 	objP->mtype.phys_info.velocity = norm_cur_vel;
 	ai_turn_towards_vector(&norm_vec_to_goal, objP, F1_0);
@@ -1881,7 +1881,7 @@ void player_follow_path(object *objP)
 	forced_break = 0;		//	Gets set for short paths.
 	//original_dir = 1;
 	original_index = Player_cur_path_index;
-	threshold_distance = fixmul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
+	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
 
 	while ((dist_to_goal < threshold_distance) && !forced_break) {
 

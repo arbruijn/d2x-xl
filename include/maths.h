@@ -74,19 +74,19 @@ quadint;
 //#if defined(NO_FIX_INLINE) || (!defined(__GNUC__) && !defined(__WATCOMC__))
 #if NO_FIX_INLINE
 //multiply two fixes, return a fix
-fix fixmul (fix a, fix b);
+fix FixMul (fix a, fix b);
 
 //divide two fixes, return a fix
 fix fixdiv (fix a, fix b);
 
 //multiply two fixes, then divide by a third, return a fix
-fix fixmuldiv (fix a, fix b, fix c);
+fix FixMulDiv (fix a, fix b, fix c);
 
 #else
 
-#define fixmul(_a, _b)	((fix) ((((QLONG) (_a)) * (_b)) / 65536))
+#define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * (_b)) / 65536))
 #define fixdiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / (_b)) : 1))
-#define fixmuldiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * (_b)) / (_c)) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * (_b)) / (_c)) : 1))
 
 #endif
 

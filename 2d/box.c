@@ -72,10 +72,14 @@ void gr_box0(int left,int top,int right,int bot)
 void gr_ubox12(int left,int top,int right,int bot)
 {
 #ifdef OGL
+#	if 1
+	OglUPolyC(left, top, right, bot, &COLOR);
+#else
 	OglULineC(left, top, right, top, &COLOR);
 	OglULineC(left, bot, right, bot, &COLOR);
 	OglULineC(left, top, left, bot, &COLOR);
 	OglULineC(right, top, right, bot, &COLOR);
+#endif
 #else
 	int i;
 

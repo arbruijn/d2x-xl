@@ -863,7 +863,7 @@ void DrawModelPicture (int mn, vms_angvec *orient_angles)
 	glDisable (GL_BLEND);
 	G3SetViewMatrix (&temp_pos, &temp_orient, 0x9000);
 	if (gameData.models.polyModels [mn].rad != 0)
-		temp_pos.z = fixmuldiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [mn].rad, BASE_MODEL_SIZE);
+		temp_pos.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [mn].rad, BASE_MODEL_SIZE);
 	else
 		temp_pos.z = DEFAULT_VIEW_DIST;
 	VmAngles2Matrix (&temp_orient, orient_angles);

@@ -24,10 +24,10 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  *
  * Revision 1.5  1995/07/05  16:15:15  allender
- * make fixmuldiv use doubles for PPC implementation
+ * make FixMulDiv use doubles for PPC implementation
  *
  * Revision 1.4  1995/05/15  13:57:36  allender
- * make fixmuldiv compile when compiling under 68k
+ * make FixMulDiv compile when compiling under 68k
  *
  * Revision 1.3  1995/05/11  13:02:59  allender
  * some routines are now in assembly
@@ -128,7 +128,7 @@ return (q->high << 16) + (q->low >> 16);
 #define EPSILON (F1_0/100)
 
 #if NO_FIX_INLINE
-fix fixmul(fix a, fix b) 
+fix FixMul(fix a, fix b) 
 {
 /*	return (fix)(((double)a*(double)b)/65536.0);*/
 /* register fix ret;
@@ -151,7 +151,7 @@ fix fixdiv(fix a, fix b)
 
 // ------------------------------------------------------------------------
 
-fix fixmuldiv(fix a, fix b, fix c)
+fix FixMulDiv(fix a, fix b, fix c)
 {
 /*        register fix ret;
 	asm("imul %%edx; idiv %%ebx" : "=a" (ret) : "a" (a), "d" (b), "b" (c) : "%edx");
@@ -572,7 +572,7 @@ fix fix_isqrt( fix a )
 	r = isqrt_guess_table[b] >> ((cnt+1)/2);
 	for (i=0; i<3; i++ )	{
 		int old_r = r;
-		r = fixmul( ( (3*65536) - fixmul(fixmul(r,r),a) ), r) / 2;
+		r = FixMul( ( (3*65536) - FixMul(FixMul(r,r),a) ), r) / 2;
 		if ( old_r >= r ) return (r+old_r)/2;
 	}
 	return r;	

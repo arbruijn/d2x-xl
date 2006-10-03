@@ -629,7 +629,7 @@ void joy_set_btn_values( int btn, int state, fix timedown, int downcount, int up
 {
 	joystick.buttons[btn].ignore = 1;
 	joystick.buttons[btn].state = state;
-	joystick.buttons[btn].timedown = fixmuldiv( timedown, 1193180, 65536 );
+	joystick.buttons[btn].timedown = FixMulDiv( timedown, 1193180, 65536 );
 	joystick.buttons[btn].downcount = downcount;
 	joystick.buttons[btn].upcount = upcount;
 }

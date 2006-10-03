@@ -83,7 +83,7 @@ fxCanvH2 = f2fl((nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h)<<15);
 #endif
 
 //compute aspect ratio for this canvas
-s = fixmuldiv(grdCurScreen->sc_aspect,nCanvasHeight,nCanvasWidth);
+s = FixMulDiv(grdCurScreen->sc_aspect,nCanvasHeight,nCanvasWidth);
 if (s <= f1_0) {	   //scale x
 	viewInfo.windowScale.x = s;
 	viewInfo.windowScale.y = f1_0;

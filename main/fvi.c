@@ -391,7 +391,7 @@ uint check_point_to_face(vms_vector *checkp, side *s, int facenum, int nv, int *
 		checkvec.i = check_i - v0->xyz [i];
 		checkvec.j = check_j - v0->xyz [j];
 
-		d = fixmul(checkvec.i, edgevec.j) - fixmul(checkvec.j, edgevec.i);
+		d = FixMul(checkvec.i, edgevec.j) - FixMul(checkvec.j, edgevec.i);
 
 		if (d < 0)              		//we are outside of triangle
 			edgemask |= (1<<edge);
@@ -527,12 +527,12 @@ int check_line_to_face(vms_vector *newp, vms_vector *p0, vms_vector *p1, segment
 //returns the value of a determinant
 fix calc_det_value(vms_matrix *det)
 {
-	return 	fixmul(det->rvec.x, fixmul(det->uvec.y, det->fvec.z)) -
-			 	fixmul(det->rvec.x, fixmul(det->uvec.z, det->fvec.y)) -
-			 	fixmul(det->rvec.y, fixmul(det->uvec.x, det->fvec.z)) +
-			 	fixmul(det->rvec.y, fixmul(det->uvec.z, det->fvec.x)) +
-			 	fixmul(det->rvec.z, fixmul(det->uvec.x, det->fvec.y)) -
-			 	fixmul(det->rvec.z, fixmul(det->uvec.y, det->fvec.x));
+	return 	FixMul(det->rvec.x, FixMul(det->uvec.y, det->fvec.z)) -
+			 	FixMul(det->rvec.x, FixMul(det->uvec.z, det->fvec.y)) -
+			 	FixMul(det->rvec.y, FixMul(det->uvec.x, det->fvec.z)) +
+			 	FixMul(det->rvec.y, FixMul(det->uvec.z, det->fvec.x)) +
+			 	FixMul(det->rvec.z, FixMul(det->uvec.x, det->fvec.y)) -
+			 	FixMul(det->rvec.z, FixMul(det->uvec.y, det->fvec.x));
 }
 
 //	-----------------------------------------------------------------------------
@@ -711,8 +711,8 @@ int check_vector_to_sphere_1(vms_vector *intp, vms_vector *p0, vms_vector *p1, v
 	if (dist < sphere_rad) {
 		fix	dist2, radius2, nShorten;
 
-		dist2 = fixmul(dist, dist);
-		radius2 = fixmul(sphere_rad, sphere_rad);
+		dist2 = FixMul(dist, dist);
+		radius2 = FixMul(sphere_rad, sphere_rad);
 
 		nShorten = fix_sqrt(radius2 - dist2);
 
@@ -813,7 +813,7 @@ int check_vector_to_sphere_1(vms_vector *intp, vms_vector *p0, vms_vector *p1, v
 //$$
 //$$	//dist = fixdiv(mag_c, mag_d);
 //$$
-//$$dist = fixmul(mag_c, mag_w);
+//$$dist = FixMul(mag_c, mag_w);
 //$$
 //$$	if (dist < sphere_rad) {        //we intersect.  find point of intersection
 //$$		fix int_dist;                   //length of vector to intersection point
@@ -822,8 +822,8 @@ int check_vector_to_sphere_1(vms_vector *intp, vms_vector *p0, vms_vector *p1, v
 //$$
 //$$//@@		mag_w2 = VmVecDot(&w, &w);     //the square of the magnitude
 //$$//@@		//WHAT ABOUT OVERFLOW???
-//$$//@@		dist2 = fixmul(dist, dist);
-//$$//@@		radius2 = fixmul(sphere_rad, sphere_rad);
+//$$//@@		dist2 = FixMul(dist, dist);
+//$$//@@		radius2 = FixMul(sphere_rad, sphere_rad);
 //$$//@@		nShorten = fix_sqrt(radius2 - dist2);
 //$$//@@		int_dist = fix_sqrt(mag_w2 - dist2) - nShorten;
 //$$
@@ -1337,7 +1337,7 @@ quit_looking:
 #include "textures.h"
 #include "texmerge.h"
 
-#define cross(v0, v1) (fixmul((v0)->i, (v1)->j) - fixmul((v0)->j, (v1)->i))
+#define cross(v0, v1) (FixMul((v0)->i, (v1)->j) - FixMul((v0)->j, (v1)->i))
 
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given point on the given seg & side
@@ -1418,18 +1418,18 @@ void find_hitpoint_uv(fix *u, fix *v, fix *l, vms_vector *pnt, segment *seg, int
 
 	k1 = -fixdiv(cross(&checkp, &vec0) + cross(&vec0, &p1), cross(&vec0, &vec1));
 	if (abs(vec0.i) > abs(vec0.j))
-		k0 = fixdiv(fixmul(-k1, vec1.i) + checkp.i - p1.i, vec0.i);
+		k0 = fixdiv(FixMul(-k1, vec1.i) + checkp.i - p1.i, vec0.i);
 	else
-		k0 = fixdiv(fixmul(-k1, vec1.j) + checkp.j - p1.j, vec0.j);
+		k0 = fixdiv(FixMul(-k1, vec1.j) + checkp.j - p1.j, vec0.j);
 
 	for (i=0;i<3;i++)
 		uvls [i] = side->uvls [vertnum_list [facenum*3+i]];
 
-	*u = uvls [1].u + fixmul(k0, uvls [0].u - uvls [1].u) + fixmul(k1, uvls [2].u - uvls [1].u);
-	*v = uvls [1].v + fixmul(k0, uvls [0].v - uvls [1].v) + fixmul(k1, uvls [2].v - uvls [1].v);
+	*u = uvls [1].u + FixMul(k0, uvls [0].u - uvls [1].u) + FixMul(k1, uvls [2].u - uvls [1].u);
+	*v = uvls [1].v + FixMul(k0, uvls [0].v - uvls [1].v) + FixMul(k1, uvls [2].v - uvls [1].v);
 
 	if (l)
-		*l = uvls [1].l + fixmul(k0, uvls [0].l - uvls [1].l) + fixmul(k1, uvls [2].l - uvls [1].l);
+		*l = uvls [1].l + FixMul(k0, uvls [0].l - uvls [1].l) + FixMul(k1, uvls [2].l - uvls [1].l);
 
 }
 

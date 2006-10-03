@@ -417,14 +417,14 @@ void ChangeFilenameExtension(char *dest, char *src, char *new_ext)
 //------------------------------------------------------------------------------
 //--unused-- vms_angvec zero_angles={0,0,0};
 
-#define vm_angvec_zero(v) do {(v)->p=(v)->b=(v)->h=0;} while (0)
+#define VmAngVecZero(v) do {(v)->p=(v)->b=(v)->h=0;} while (0)
 
 int Gamesave_num_players=0;
 
 int N_save_pof_names;
 char Save_pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-void check_and_fix_matrix(vms_matrix *m);
+void CheckAndFixMatrix(vms_matrix *m);
 
 void VerifyObject(object * objP)	{
 
@@ -533,7 +533,7 @@ if (objP->type == OBJ_PLAYER)	{
 			objP->rtype.pobj_info.model_num = gameData.pig.ship.player->model_num;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	check_and_fix_matrix(&objP->orient);
+	CheckAndFixMatrix(&objP->orient);
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = Gamesave_num_players++;
 	}

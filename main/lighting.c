@@ -415,7 +415,7 @@ if (xObjIntensity) {
 			{
 				vertpos = gameData.segs.vertices+vertnum;
 				dist = VmVecDistQuick (obj_pos, vertpos) / 4;
-				dist = fixmul(dist, dist);
+				dist = FixMul(dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
@@ -500,14 +500,14 @@ if (xObjIntensity) {
 							VmVecNormalizeQuick(&vec_to_point);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = VmVecDot(&vec_to_point, &objP->orient.fvec);
 							if (dot < F1_0/2)
-								dynamicLight [vertnum] += fixdiv(xObjIntensity, fixmul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+								dynamicLight [vertnum] += fixdiv(xObjIntensity, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 							else {
 								if (gameData.app.nGameMode & GM_MULTI) {
 									if (dist < max_headlight_dist)
-										dynamicLight [vertnum] += fixmul(fixmul(dot, dot), xObjIntensity)/8;
+										dynamicLight [vertnum] += FixMul(FixMul(dot, dot), xObjIntensity)/8;
 									}
 								else
-									dynamicLight [vertnum] += fixmul(fixmul(dot, dot), xObjIntensity)/8;
+									dynamicLight [vertnum] += FixMul(FixMul(dot, dot), xObjIntensity)/8;
 								}
 							}
 						else
@@ -589,7 +589,7 @@ switch (objtype) {
 		   fix_sincos ((gameData.app.xGameTime/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
 			s>>=1;
-			hoardlight=fixmul (s,hoardlight);
+			hoardlight=FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multi.nLocalPlayer) {
@@ -638,7 +638,7 @@ switch (objtype) {
 				xLight /= 8;
 #endif
 			if (objP->lifeleft < F1_0*4)
-				return fixmul (fixdiv(objP->lifeleft, 
+				return FixMul (fixdiv(objP->lifeleft, 
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
 				return xLight;
@@ -862,9 +862,9 @@ fix compute_headlight_light_on_object(object *objP)
 			dot = VmVecDot(&lightObjP->orient.fvec, &vecToObj);
 
 			if (dot < F1_0/2)
-				light += fixdiv(HEADLIGHT_SCALE, fixmul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+				light += fixdiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 			else
-				light += fixmul(fixmul(dot, dot), HEADLIGHT_SCALE)/8;
+				light += FixMul(FixMul(dot, dot), HEADLIGHT_SCALE)/8;
 		}
 	}
 
@@ -902,21 +902,21 @@ fix compute_headlight_light_on_object(object *objP)
 // -- Unused -- 			fix dist_scale,face_scale;
 // -- Unused --
 // -- Unused -- 			dist_scale = (MAX_DIST - point_dist) >> MAX_DIST_LOG;
-// -- Unused -- 			light = fixmul(light,dist_scale);
+// -- Unused -- 			light = FixMul(light,dist_scale);
 // -- Unused --
 // -- Unused -- 			if (face_light < 0)
 // -- Unused -- 				face_light = 0;
 // -- Unused --
 // -- Unused -- 			face_scale = f1_0/4 + face_light/2;
-// -- Unused -- 			light = fixmul(light,face_scale);
+// -- Unused -- 			light = FixMul(light,face_scale);
 // -- Unused --
 // -- Unused -- 			if (use_beam) {
 // -- Unused -- 				fix beam_scale;
 // -- Unused --
 // -- Unused -- 				if (face_light > f1_0*3/4 && point->z > i2f(12)) {
 // -- Unused -- 					beam_scale = fixdiv(point->z,point_dist);
-// -- Unused -- 					beam_scale = fixmul(beam_scale,beam_scale);	//square it
-// -- Unused -- 					light = fixmul(light,beam_scale);
+// -- Unused -- 					beam_scale = FixMul(beam_scale,beam_scale);	//square it
+// -- Unused -- 					light = FixMul(light,beam_scale);
 // -- Unused -- 				}
 // -- Unused -- 			}
 // -- Unused -- 		}
@@ -981,7 +981,7 @@ fix ComputeObjectLight(object *objP,vms_vector *rotated_pnt)
 		fix delta_light,frame_delta;
 
 		delta_light = light - object_light [objnum];
-		frame_delta = fixmul(LIGHT_RATE,gameData.app.xFrameTime);
+		frame_delta = FixMul(LIGHT_RATE,gameData.app.xFrameTime);
 		if (abs(delta_light) <= frame_delta)
 			object_light [objnum] = light;		//we've hit the goal
 		else

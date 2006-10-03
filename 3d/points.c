@@ -124,8 +124,8 @@ void G3Point2Vec(vms_vector *v,short sx,short sy)
 	vms_vector tempv;
 	vms_matrix tempm;
 
-	tempv.x =  fixmuldiv(fixdiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
-	tempv.y = -fixmuldiv(fixdiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
+	tempv.x =  FixMulDiv(fixdiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
+	tempv.y = -FixMulDiv(fixdiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
 	tempv.z = f1_0;
 
 	VmVecNormalize(&tempv);
@@ -140,9 +140,9 @@ void G3Point2Vec(vms_vector *v,short sx,short sy)
 //delta rotation functions
 vms_vector *G3RotateDeltaX(vms_vector *dest,fix dx)
 {
-	dest->x = fixmul(viewInfo.view.rvec.x,dx);
-	dest->y = fixmul(viewInfo.view.uvec.x,dx);
-	dest->z = fixmul(viewInfo.view.fvec.x,dx);
+	dest->x = FixMul(viewInfo.view.rvec.x,dx);
+	dest->y = FixMul(viewInfo.view.uvec.x,dx);
+	dest->z = FixMul(viewInfo.view.fvec.x,dx);
 
 	return dest;
 }
@@ -151,9 +151,9 @@ vms_vector *G3RotateDeltaX(vms_vector *dest,fix dx)
 
 vms_vector *G3RotateDeltaY(vms_vector *dest,fix dy)
 {
-	dest->x = fixmul(viewInfo.view.rvec.y,dy);
-	dest->y = fixmul(viewInfo.view.uvec.y,dy);
-	dest->z = fixmul(viewInfo.view.fvec.y,dy);
+	dest->x = FixMul(viewInfo.view.rvec.y,dy);
+	dest->y = FixMul(viewInfo.view.uvec.y,dy);
+	dest->z = FixMul(viewInfo.view.fvec.y,dy);
 
 	return dest;
 }
@@ -162,9 +162,9 @@ vms_vector *G3RotateDeltaY(vms_vector *dest,fix dy)
 
 vms_vector *G3RotateDeltaZ(vms_vector *dest,fix dz)
 {
-	dest->x = fixmul(viewInfo.view.rvec.z,dz);
-	dest->y = fixmul(viewInfo.view.uvec.z,dz);
-	dest->z = fixmul(viewInfo.view.fvec.z,dz);
+	dest->x = FixMul(viewInfo.view.rvec.z,dz);
+	dest->y = FixMul(viewInfo.view.uvec.z,dz);
+	dest->z = FixMul(viewInfo.view.fvec.z,dz);
 
 	return dest;
 }

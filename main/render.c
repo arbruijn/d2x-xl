@@ -431,13 +431,14 @@ int found_seg,found_side,found_face,found_poly;
 #define bSearchMode 0
 #endif
 
-int bOutLineMode=0,bShowOnlyCurSide=0;
+int	bOutLineMode = 0,
+		bShowOnlyCurSide = 0;
 
 //------------------------------------------------------------------------------
 
 int ToggleOutlineMode (void)
 {
-	return bOutLineMode = !bOutLineMode;
+return bOutLineMode = !bOutLineMode;
 }
 
 //------------------------------------------------------------------------------
@@ -588,7 +589,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.ogl.palAdd.blue > 10 )		//whiting out
 	return;
-//	flash_ang += fixmul(FLASH_CYCLE_RATE,gameData.app.xFrameTime);
+//	flash_ang += FixMul(FLASH_CYCLE_RATE,gameData.app.xFrameTime);
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix	added_flash;
 
@@ -596,12 +597,12 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 	if (added_flash < F1_0)
 		added_flash *= 16;
 
-	flash_ang += fixmul(gameStates.render.nFlashRate, fixmul(gameData.app.xFrameTime, added_flash+F1_0));
+	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.app.xFrameTime, added_flash+F1_0));
 	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
 else {
-	flash_ang += fixmul(gameStates.render.nFlashRate,gameData.app.xFrameTime);
+	flash_ang += FixMul(gameStates.render.nFlashRate,gameData.app.xFrameTime);
 	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
 	if (gameStates.app.nDifficultyLevel == 0)
@@ -753,7 +754,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 		}
 #endif
 	if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
-		propsP->uvls [i].l = fixmul (gameStates.render.nFlashScale,propsP->uvls [i].l);
+		propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale,propsP->uvls [i].l);
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
 #ifdef _DEBUG
@@ -1309,7 +1310,7 @@ else {
 		min_dot = v_dot_n1;
 		max_dot = v_dot_n0;
 		}
-	//	Determine whether to detriangulate side: (speed hack, assumes Tulate_min_ratio == F1_0*2, should fixmul(min_dot, Tulate_min_ratio))
+	//	Determine whether to detriangulate side: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
 	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->segnum != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
 		//	The other detriangulation code doesn't deal well with badly non-planar sides.
 		fix	n0_dot_n1 = VmVecDot(normals, normals + 1);

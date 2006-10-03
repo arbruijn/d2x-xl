@@ -431,6 +431,7 @@ void MultiSendGuidedInfo (object *miss,char);
 void MultiSendReturnFlagHome(short objnum);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShields (void);
+void MultiSendCheating (void);
 
 void MultiEndLevelScore(void);
 void MultiPrepLevel(void);

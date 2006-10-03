@@ -277,6 +277,7 @@ extern int ft_preference;
 #define GM_MULTI        38      // You are in some type of multiplayer game
 
 #define IsMultiGame	((gameData.app.nGameMode & GM_MULTI) != 0)
+#define IsTeamGame	((gameData.app.nGameMode & (GM_MULTI | GM_TEAM)) == (GM_TEAM | GM_MULTI))
 #define IsCoopGame	((gameData.app.nGameMode & GM_MULTI_COOP) != 0)
 
 // Examples:

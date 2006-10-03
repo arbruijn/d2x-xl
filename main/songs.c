@@ -183,7 +183,7 @@ void songs_stop_redbook(void)
 		do {
 			fix t = TimerGetFixedSeconds();
 
-			new_volume = fixmuldiv(old_volume,(FADE_TIME - (t-old_time)),FADE_TIME);
+			new_volume = FixMulDiv(old_volume,(FADE_TIME - (t-old_time)),FADE_TIME);
 			if (new_volume < 0)
 				new_volume = 0;
 			RBASetVolume(new_volume);

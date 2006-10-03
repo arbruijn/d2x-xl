@@ -223,8 +223,8 @@ objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdent
 				if (dist < maxdistance) {
 					if (ObjectToObjectVisibility(explObjP, obj0P, FQ_TRANSWALL)) {
 
-						damage = maxdamage - fixmuldiv(dist, maxdamage, maxdistance);
-						force = maxforce - fixmuldiv(dist, maxforce, maxdistance);
+						damage = maxdamage - FixMulDiv(dist, maxdamage, maxdistance);
+						force = maxforce - FixMulDiv(dist, maxforce, maxdistance);
 
 						// Find the force vector on the object
 						VmVecNormalizedDirQuick(&vforce, &obj0P->pos, &explObjP->pos);
@@ -239,7 +239,7 @@ objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdent
 								PhysApplyForce(obj0P,&vforce);
 
 								if (obj0P->id == PROXIMITY_ID || obj0P->id == SUPERPROX_ID) {		//prox bombs have chance of blowing up
-									if (fixmul(dist,force) > i2f(8000)) {
+									if (FixMul(dist,force) > i2f(8000)) {
 										obj0P->flags |= OF_SHOULD_BE_DEAD;
 										ExplodeBadassWeapon(obj0P,&obj0P->pos);
 									}
@@ -514,9 +514,9 @@ object *ObjectCreateDebris(object *parentObjP, int subobj_num)
 	VmVecMake(&debrisObjP->mtype.phys_info.rotvel, d_rand() + 0x1000, d_rand()*2 + 0x4000, d_rand()*3 + 0x2000);
 	VmVecZero(&debrisObjP->mtype.phys_info.rotthrust);
 
-	debrisObjP->lifeleft = 3*DEBRIS_LIFE/4 + fixmul(d_rand(), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+	debrisObjP->lifeleft = 3*DEBRIS_LIFE/4 + FixMul(d_rand(), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 
-	debrisObjP->mtype.phys_info.mass = fixmuldiv(parentObjP->mtype.phys_info.mass,debrisObjP->size,parentObjP->size);
+	debrisObjP->mtype.phys_info.mass = FixMulDiv(parentObjP->mtype.phys_info.mass,debrisObjP->size,parentObjP->size);
 	debrisObjP->mtype.phys_info.drag = 0; //fl2f(0.2);		//parentObjP->mtype.phys_info.drag;
 
 	return debrisObjP;
@@ -1354,9 +1354,9 @@ switch (type) {
 				}
 			else
 				rand_scale = 2;
-			new_velocity.x += fixmul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.y += fixmul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.z += fixmul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.x += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.y += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.z += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) && 
 				 (((id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
@@ -1671,7 +1671,7 @@ void ExplodeObject(object *hitobj,fix delay_time)
 		ubyte vclip_num;
 
 		vclip_num = (ubyte) GetExplosionVClip(hitobj,0);
-		expl_obj = ObjectCreateExplosion(hitobj->segnum, &hitobj->pos, fixmul(hitobj->size,EXPLOSION_SCALE), vclip_num);
+		expl_obj = ObjectCreateExplosion(hitobj->segnum, &hitobj->pos, FixMul(hitobj->size,EXPLOSION_SCALE), vclip_num);
 		if (! expl_obj) {
 			MaybeDeleteObject(hitobj);		//no explosion, die instantly
 #if TRACE
@@ -1749,14 +1749,14 @@ void DoExplosionSequence(object *obj)
 				NULL, 
 				del_obj->segnum, 
 				spawn_pos, 
-				fixmul (del_obj->size, EXPLOSION_SCALE), 
+				FixMul (del_obj->size, EXPLOSION_SCALE), 
 				vclip_num, 
 				F1_0 * badass, 
 				i2f(4) * badass, 
 				i2f(35) * badass, 
 				-1);
 		else
-			expl_obj = ObjectCreateExplosion(del_obj->segnum, spawn_pos, fixmul(del_obj->size, EXPLOSION_SCALE), vclip_num);
+			expl_obj = ObjectCreateExplosion(del_obj->segnum, spawn_pos, FixMul(del_obj->size, EXPLOSION_SCALE), vclip_num);
 
 		if ((del_obj->contains_count > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
 			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -1904,8 +1904,8 @@ void DoExplodingWallFrame()
 					gameData.walls.walls[WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
 			newfrac = fixdiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
-			old_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * fixmul(oldfrac,oldfrac));
-			new_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * fixmul(newfrac,newfrac));
+			old_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(oldfrac,oldfrac));
+			new_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(newfrac,newfrac));
 			//n = new_count - old_count;
 			//now create all the next explosions
 			for (e=old_count;e<new_count;e++) {

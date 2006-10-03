@@ -931,7 +931,7 @@ _exit_cheat:
 		rval = d_rand();
 		sval = (dist_to_player * (gameStates.app.nDifficultyLevel+1))/64;
 
-		if ((fixmul(rval, sval) < gameData.app.xFrameTime) || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+		if ((FixMul(rval, sval) < gameData.app.xFrameTime) || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
 			ailp->player_awareness_type = PA_PLAYER_COLLISION;
 			ailp->player_awareness_time = F1_0*3;
 			ComputeVisAndVec(objP, &vis_vec_pos, ailp, &vec_to_player, &player_visibility, robptr, &visibility_and_vec_computed);
@@ -1386,7 +1386,7 @@ _exit_cheat:
 
 				VmVecScale(&goal_vector, 2*(gameData.objs.console->size + objP->size + (((objnum*4 + gameData.app.nFrameCount) & 63) << 12)));
 				VmVecAdd(&goal_point, &gameData.objs.console->pos, &goal_vector);
-				make_random_vector(&rand_vec);
+				MakeRandomVector(&rand_vec);
 				VmVecScaleInc(&goal_point, &rand_vec, F1_0*8);
 				VmVecSub(&vec_to_goal, &goal_point, &objP->pos);
 				VmVecNormalizeQuick(&vec_to_goal);

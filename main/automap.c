@@ -463,13 +463,13 @@ basePoint.p3_index = -1;
     fromPoint=basePoint;
     toPoint=basePoint;
 
-    fromPoint.p3_x+=fixmul ((fl2f (ArrayX[num][i])),viewInfo.scale.x);
-    fromPoint.p3_y+=fixmul ((fl2f (ArrayY[num][i])),viewInfo.scale.y);
+    fromPoint.p3_x+=FixMul ((fl2f (ArrayX[num][i])),viewInfo.scale.x);
+    fromPoint.p3_y+=FixMul ((fl2f (ArrayY[num][i])),viewInfo.scale.y);
     G3EncodePoint (&fromPoint);
     G3ProjectPoint (&fromPoint);
 
-    toPoint.p3_x+=fixmul ((fl2f (ArrayX[num][i+1])),viewInfo.scale.x);
-    toPoint.p3_y+=fixmul ((fl2f (ArrayY[num][i+1])),viewInfo.scale.y);
+    toPoint.p3_x+=FixMul ((fl2f (ArrayX[num][i+1])),viewInfo.scale.x);
+    toPoint.p3_y+=FixMul ((fl2f (ArrayY[num][i+1])),viewInfo.scale.y);
     G3EncodePoint (&toPoint);
     G3ProjectPoint (&toPoint);
 

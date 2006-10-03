@@ -3457,9 +3457,9 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 			delta_x = objP->pos.x - curObjP->pos.x;
 			delta_y = objP->pos.y - curObjP->pos.y;
 			delta_z = objP->pos.z - curObjP->pos.z;
-			delta_x = fixmul (delta_x, factor);
-			delta_y = fixmul (delta_y, factor);
-			delta_z = fixmul (delta_z, factor);
+			delta_x = FixMul (delta_x, factor);
+			delta_y = FixMul (delta_y, factor);
+			delta_z = FixMul (delta_z, factor);
 			curObjP->pos.x += delta_x;
 			curObjP->pos.y += delta_y;
 			curObjP->pos.z += delta_z;

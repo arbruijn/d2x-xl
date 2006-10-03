@@ -275,6 +275,7 @@ bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grs_bitmap *
 bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest);
 void OglUPixelC (int x, int y, grs_color *c);
 void OglULineC (int left,int top,int right,int bot, grs_color *c);
+void OglUPolyC (int left, int top, int right, int bot, grs_color *c);
 void OglTexWrap (ogl_texture *tex, int state);
 void RebuildGfxFx (int bGame, int bCameras);
 

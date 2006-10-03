@@ -528,8 +528,8 @@ if (gameStates.render.bPointSprites) {
 else
 #endif
 	{
-	w = f2fl (fixmul (pParticle->nWidth, viewInfo.scale.x)) * decay;
-	h = f2fl (fixmul (pParticle->nHeight, viewInfo.scale.y)) * decay;
+	w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
+	h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
 	x = f2fl (hp.x);
 	y = f2fl (hp.y);
 	z = -f2fl (hp.z);

@@ -118,7 +118,7 @@ void MultiDoConquerWarning (char *buf);
 
 // LOCALIZE ME!!
 
-#define vm_angvec_zero(v) (v)->p = (v)->b = (v)->h = 0
+#define VmAngVecZero(v) (v)->p = (v)->b = (v)->h = 0
 
 void DropPlayerEggs (object *player); // from collide.c
 void GameLoop (int, int); // From game.c
@@ -744,7 +744,7 @@ while (changed) {
 //-----------------------------------------------------------------------------
 
 extern object *objP_find_first_of_type (int);
-char Multi_killed_yourself = 0;
+char bMultiSuicide = 0;
 
 void MultiComputeKill (int killer, int killed)
 {
@@ -760,7 +760,7 @@ void MultiComputeKill (int killer, int killed)
 	object	*objP;
 
 kmatrix_kills_changed = 1;
-Multi_killed_yourself = 0;
+bMultiSuicide = 0;
 
 // Both object numbers are localized already!
 if ((killed < 0) || (killed > gameData.objs.nLastObject) || (killer < 0) || (killer > gameData.objs.nLastObject)) {
@@ -866,7 +866,7 @@ if (killer_pnum == killed_pnum) {
 	multiData.kills.matrix [killed_pnum][killed_pnum] += 1; // # of suicides
 	if (killer_pnum == gameData.multi.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, TXT_YOURSELF);
-		Multi_killed_yourself = 1;
+		bMultiSuicide = 1;
 		MultiAddLifetimeKilled ();
 		}
 	else
@@ -876,13 +876,13 @@ else {
 	if (gameData.app.nGameMode & GM_HOARD) {
 		if (gameData.app.nGameMode & GM_TEAM) {
 			if ((killed_pnum == gameData.multi.nLocalPlayer) && (t0 == t1))
-				Multi_killed_yourself = 1;
+				bMultiSuicide = 1;
 			}
 		}
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
 		if (t0 == t1) {
 			if (killed_pnum == gameData.multi.nLocalPlayer)
-				Multi_killed_yourself = 1;
+				bMultiSuicide = 1;
 			}
 		else {
 			pKiller->secondary_ammo [SMART_MINE_INDEX] += extraGameInfo [1].entropy.nBumpVirusCapacity;
@@ -1805,7 +1805,7 @@ objP->render_type = RT_POLYOBJ;
 objP->rtype.pobj_info.model_num = gameData.pig.ship.player->model_num;               //what model is this?
 objP->rtype.pobj_info.subobj_flags = 0;         //zero the flags
 for (i = 0;i<MAX_SUBMODELS;i++)
-	vm_angvec_zero (&objP->rtype.pobj_info.anim_angles [i]);
+	VmAngVecZero (&objP->rtype.pobj_info.anim_angles [i]);
 //reset textures for this, if not player 0
 MultiResetObjectTexture (objP);
 // Clear misc
@@ -4542,7 +4542,7 @@ if (pingStats [0].launchTime)
 	return;
 xPingReturnTime = TimerGetFixedSeconds ();
 HUDInitMessage (TXT_PINGTIME, 
-					 f2i (fixmul (xPingReturnTime - pingStats [0].launchTime, i2f (1000))));
+					 f2i (FixMul (xPingReturnTime - pingStats [0].launchTime, i2f (1000))));
 pingStats [0].launchTime = 0;
 }
 

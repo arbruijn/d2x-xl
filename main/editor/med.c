@@ -703,7 +703,7 @@ int SetPlayerFromCursegMinusOne()
 		if (labs(corner_p[i].p3_y) > max) max = labs(corner_p[i].p3_y);
 	}
 
-	view_dist = fixmul(view_dist,fixdiv(fixdiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
+	view_dist = FixMul(view_dist,fixdiv(fixdiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
 	VmVecCopyScale(&view_vec2,&view_vec,view_dist);
 	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
 
@@ -838,14 +838,14 @@ int ToggleOutlineMode()
 
 int GameZoomOut()
 {
-	nRenderZoom = fixmul(nRenderZoom,68985);
+	nRenderZoom = FixMul(nRenderZoom,68985);
 	Update_flags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
 int GameZoomIn()
 {
-	nRenderZoom = fixmul(nRenderZoom,62259);
+	nRenderZoom = FixMul(nRenderZoom,62259);
 	Update_flags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }

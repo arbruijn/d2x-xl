@@ -1715,9 +1715,9 @@ stop_count = start_count = 0;
 if (gameData.app.xFrameTime <= F1_0/64)
 	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (F1_0 - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
 else if (gameData.app.xFrameTime < F1_0/32)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.app.xFrameTime;	// -- fixmul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
+	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.app.xFrameTime;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
 else if (gameData.app.xFrameTime < F1_0/4)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/16 - gameData.app.xFrameTime;	// -- fixmul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
+	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/16 - gameData.app.xFrameTime;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
 else
 	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/8;
 }
@@ -2123,8 +2123,8 @@ int	Ab_scale = 4;
 //@@{
 //@@	int	rx, rz;
 //@@
-//@@	rx = (Ab_scale * fixmul (d_rand () - 16384, F1_0/8 + (((gameData.app.xGameTime + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (Ab_scale * fixmul (d_rand () - 16384, F1_0/2 + ((gameData.app.xGameTime*4) & 0xffff)))/16;
+//@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.app.xGameTime + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.app.xGameTime*4) & 0xffff)))/16;
 //@@
 //@@	gameData.objs.console->mtype.phys_info.rotvel.x += rx;
 //@@	gameData.objs.console->mtype.phys_info.rotvel.z += rz;
@@ -3377,7 +3377,7 @@ if (Debug_slowdown) {
 				gameData.app.nGlobalLaserFiringCount = 0;
 				gameData.objs.console->mtype.phys_info.rotvel.x += (d_rand () - 16384)/8;
 				gameData.objs.console->mtype.phys_info.rotvel.z += (d_rand () - 16384)/8;
-				make_random_vector (&rand_vec);
+				MakeRandomVector (&rand_vec);
 				bump_amount = F1_0*4;
 				if (gameData.app.fusion.xCharge > F1_0*2)
 					bump_amount = gameData.app.fusion.xCharge*4;
@@ -3488,8 +3488,8 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
-		slideU = fixmul (gameData.app.xFrameTime, slideU << 8);
-		slideV = fixmul (gameData.app.xFrameTime, slideV << 8);
+		slideU = FixMul (gameData.app.xFrameTime, slideU << 8);
+		slideV = FixMul (gameData.app.xFrameTime, slideV << 8);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {

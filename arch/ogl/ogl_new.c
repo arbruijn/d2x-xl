@@ -231,8 +231,8 @@ OglTexWrap(bm->glTexture,GL_CLAMP);
 
 glBegin(GL_QUADS);
 glColor3d(1.0,1.0,1.0);
-width = fixmul(width,viewInfo.scale.x);
-height = fixmul(height,viewInfo.scale.y);
+width = FixMul(width,viewInfo.scale.x);
+height = FixMul(height,viewInfo.scale.y);
 for (i = 0; i < 4; i++) {
 	VmVecSub(&v1,pos,&viewInfo.position);
 	VmVecRotate(&pv,&v1,&viewInfo.view);

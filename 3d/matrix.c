@@ -84,12 +84,12 @@ void scale_matrix(void)
 
 viewInfo.scale = viewInfo.windowScale;
 if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
-	viewInfo.scale.z =  fixmul(viewInfo.scale.z,viewInfo.zoom);
+	viewInfo.scale.z =  FixMul(viewInfo.scale.z,viewInfo.zoom);
 else {			//zoom out by scaling x&y
 	fix s = fixdiv(f1_0,viewInfo.zoom);
 
-	viewInfo.scale.x = fixmul(viewInfo.scale.x,s);
-	viewInfo.scale.y = fixmul(viewInfo.scale.y,s);
+	viewInfo.scale.x = FixMul(viewInfo.scale.x,s);
+	viewInfo.scale.y = FixMul(viewInfo.scale.y,s);
 }
 //now scale matrix elements
 VmVecScale(&viewInfo.view.rvec,viewInfo.scale.x);

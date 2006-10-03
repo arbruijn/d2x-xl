@@ -331,7 +331,7 @@ int floor_levelling=0;
 //--unused-- }
 
 //make sure matrix is orthogonal
-void check_and_fix_matrix(vms_matrix *m)
+void CheckAndFixMatrix(vms_matrix *m)
 {
 	vms_matrix tempm;
 
@@ -416,7 +416,7 @@ void do_physics_align_object(object * objP)
 		if (abs(delta_ang) > DAMP_ANG) {
 			vms_matrix rotmat, new_pm;
 
-			roll_ang = fixmul(gameData.app.xFrameTime, ROLL_RATE);
+			roll_ang = FixMul(gameData.app.xFrameTime, ROLL_RATE);
 
 			if (abs(delta_ang) < roll_ang) roll_ang = delta_ang;
 			else if (delta_ang<0) roll_ang = -roll_ang;
@@ -436,10 +436,10 @@ void set_object_turnroll(object *objP)
 {
 //if (!gameStates.app.bD1Mission) 
 	{
-	fixang desired_bank = -fixmul(objP->mtype.phys_info.rotvel.y, TURNROLL_SCALE);
+	fixang desired_bank = -FixMul(objP->mtype.phys_info.rotvel.y, TURNROLL_SCALE);
 	if (objP->mtype.phys_info.turnroll != desired_bank) {
 		fixang delta_ang, max_roll;
-		max_roll = fixmul(ROLL_RATE, gameData.app.xFrameTime);
+		max_roll = FixMul(ROLL_RATE, gameData.app.xFrameTime);
 		delta_ang = desired_bank - objP->mtype.phys_info.turnroll;
 		if (labs(delta_ang) < max_roll)
 			max_roll = delta_ang;
@@ -524,17 +524,17 @@ void do_physics_sim_rot(object *objP)
 			//do linear scale on remaining bit of time
 
 			VmVecScaleInc(&objP->mtype.phys_info.rotvel, &accel, k);
-			VmVecScale(&objP->mtype.phys_info.rotvel, f1_0-fixmul(k, drag));
+			VmVecScale(&objP->mtype.phys_info.rotvel, f1_0-FixMul(k, drag));
 		}
 		else if (! (objP->mtype.phys_info.flags & PF_FREE_SPINNING)) {
 			fix total_drag=f1_0;
 
 			while (count--)
-				total_drag = fixmul(total_drag, f1_0-drag);
+				total_drag = FixMul(total_drag, f1_0-drag);
 
 			//do linear scale on remaining bit of time
 
-			total_drag = fixmul(total_drag, f1_0-fixmul(k, drag));
+			total_drag = FixMul(total_drag, f1_0-FixMul(k, drag));
 
 			VmVecScale(&objP->mtype.phys_info.rotvel, total_drag);
 		}
@@ -554,9 +554,9 @@ void do_physics_sim_rot(object *objP)
 		objP->orient = new_pm;
 	}
 
-	tangles.p = fixmul(objP->mtype.phys_info.rotvel.x, gameData.app.xFrameTime);
-	tangles.h = fixmul(objP->mtype.phys_info.rotvel.y, gameData.app.xFrameTime);
-	tangles.b = fixmul(objP->mtype.phys_info.rotvel.z, gameData.app.xFrameTime);
+	tangles.p = FixMul(objP->mtype.phys_info.rotvel.x, gameData.app.xFrameTime);
+	tangles.h = FixMul(objP->mtype.phys_info.rotvel.y, gameData.app.xFrameTime);
+	tangles.b = FixMul(objP->mtype.phys_info.rotvel.z, gameData.app.xFrameTime);
 
 	VmAngles2Matrix(&rotmat, &tangles);
 	VmMatMul(&new_orient, &objP->orient, &rotmat);
@@ -576,7 +576,7 @@ void do_physics_sim_rot(object *objP)
 		objP->orient = new_pm;
 	}
 
-	check_and_fix_matrix(&objP->orient);
+	CheckAndFixMatrix(&objP->orient);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -686,7 +686,7 @@ if (Dont_move_ai_objects)
 					}
 					//do linear scale on remaining bit of time
 					VmVecScaleInc (vel, &accel, k);
-					VmVecScale (vel, f1_0 - fixmul (k, drag));
+					VmVecScale (vel, f1_0 - FixMul (k, drag));
 					if (bDoSpeedBoost) {
 						if (vel->x < minBoostedVel.x)
 							vel->x = minBoostedVel.x;
@@ -706,9 +706,9 @@ if (Dont_move_ai_objects)
 			else {
 				fix total_drag = f1_0;
 				while (count--)
-					total_drag = fixmul(total_drag, d);
+					total_drag = FixMul(total_drag, d);
 				//do linear scale on remaining bit of time
-				total_drag = fixmul(total_drag, f1_0-fixmul(k, drag));
+				total_drag = FixMul(total_drag, f1_0-FixMul(k, drag));
 				VmVecScale(&objP->mtype.phys_info.velocity, total_drag);
 			}
 		}
@@ -737,7 +737,7 @@ if (Dont_move_ai_objects)
 			&frame_vec, 
 			&objP->mtype.phys_info.velocity, 
 #if FLUID_PHYSICS
-			fixmuldiv (sim_time, time_scale, 100)
+			FixMulDiv (sim_time, time_scale, 100)
 #else
 			sim_time
 #endif
@@ -933,7 +933,7 @@ save_p1 = *fq.p1;
 
 					VmVecCopyScale (&frame_vec, &boostedVel, 
 #			if FLUID_PHYSICS
-						fixmuldiv (sim_time, time_scale, 100)
+						FixMulDiv (sim_time, time_scale, 100)
 #			else
 						sim_time
 #			endif
@@ -953,7 +953,7 @@ save_p1 = *fq.p1;
 				//if (objP == debugObjP)
 				//	//printf("   vMoved = %x %x %x\n", XYZ(&vMoved);
 				attempted_dist = VmVecMag(&frame_vec);
-				sim_time = fixmuldiv(sim_time, attempted_dist-actual_dist, attempted_dist);
+				sim_time = FixMulDiv(sim_time, attempted_dist-actual_dist, attempted_dist);
 				moved_time = old_sim_time - sim_time;
 				if (sim_time < 0 || sim_time>old_sim_time) {
 #if TRACE				
@@ -1128,7 +1128,7 @@ save_p1 = *fq.p1;
 		if (vMoved.x || vMoved.y || vMoved.z)
 			VmVecCopyScale (&objP->mtype.phys_info.velocity, &vMoved, 
 #if FLUID_PHYSICS
-				fixmuldiv (fixdiv(f1_0, gameData.app.xFrameTime), 100, time_scale)
+				FixMulDiv (fixdiv(f1_0, gameData.app.xFrameTime), 100, time_scale)
 #else
 				fixdiv(f1_0, gameData.app.xFrameTime)
 #endif
@@ -1397,7 +1397,7 @@ void set_thrust_from_velocity(object *objP)
 
 	Assert(objP->movement_type == MT_PHYSICS);
 
-	k = fixmuldiv(objP->mtype.phys_info.mass, objP->mtype.phys_info.drag, (f1_0-objP->mtype.phys_info.drag));
+	k = FixMulDiv(objP->mtype.phys_info.mass, objP->mtype.phys_info.drag, (f1_0-objP->mtype.phys_info.drag));
 
 	VmVecCopyScale(&objP->mtype.phys_info.thrust, &objP->mtype.phys_info.velocity, k);
 

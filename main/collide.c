@@ -588,7 +588,7 @@ if ((otherObjP->type == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 			//	If colliding with a claw type robot, do damage proportional to gameData.app.xFrameTime because you can Collide with those
 			//	bots every frame since they don't move.
 			if ((otherObjP->type == OBJ_ROBOT) && (gameData.bots.pInfo [otherObjP->id].attack_type))
-				damage = fixmul (damage, gameData.app.xFrameTime*2);
+				damage = FixMul (damage, gameData.app.xFrameTime*2);
 			//	Make trainee easier.
 			if (gameStates.app.nDifficultyLevel == 0)
 				damage /= 2;
@@ -740,7 +740,7 @@ if (angle >= F1_0 / 4)
 	return 0;	// don't bump if moving away
 VmVecSub (&vForce, &objP0->mtype.phys_info.velocity, &objP1->mtype.phys_info.velocity);
 VmVecScaleFrac (&vForce, 
-					 2 * fixmul (objP0->mtype.phys_info.mass, objP1->mtype.phys_info.mass), 
+					 2 * FixMul (objP0->mtype.phys_info.mass, objP1->mtype.phys_info.mass), 
 					 objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass);
 mag = VmVecMag (&vForce);
 if (mag < (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200)
@@ -867,7 +867,7 @@ int check_volatile_wall (object *objP, int segnum, int sidenum, vms_vector *vHit
 	if (d > 0 || water) {
 		if (objP->id == gameData.multi.nLocalPlayer) {
 			if (d > 0) {
-				fix damage = fixmul (d, gameData.app.xFrameTime);
+				fix damage = FixMul (d, gameData.app.xFrameTime);
 				if (gameStates.app.nDifficultyLevel == 0)
 					damage /= 2;
 				if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
@@ -918,7 +918,7 @@ int CheckVolatileSegment (object *objP, int segnum)
 		return 0;
 		}
 	if (d > 0) {
-		fix damage = fixmul (d, gameData.app.xFrameTime) / 2;
+		fix damage = FixMul (d, gameData.app.xFrameTime) / 2;
 		if (gameStates.app.nDifficultyLevel == 0)
 			damage /= 2;
 		if (objP->type == OBJ_PLAYER) {
@@ -976,7 +976,7 @@ void ScrapeObjectOnWall (object *objP, short hitseg, short hitside, vms_vector *
 						hit_dir = gameData.segs.segments [hitseg].sides [hitside].normals [0];
 					#endif
 			
-					make_random_vector (&rand_vec);
+					MakeRandomVector (&rand_vec);
 					VmVecScaleInc (&hit_dir, &rand_vec, F1_0/8);
 					VmVecNormalizeQuick (&hit_dir);
 					BumpOneObject (objP, &hit_dir, F1_0*8);
@@ -1766,7 +1766,7 @@ void CollideWeaponAndReactor (object * weapon, object *controlcen, vms_vector *v
 		else
 			ObjectCreateExplosion (controlcen->segnum, vHitPt, controlcen->size*3/20, VCLIP_SMALL_EXPLOSION);
 		DigiLinkSoundToPos (SOUND_CONTROL_CENTER_HIT, controlcen->segnum, 0, vHitPt, 0, F1_0);
-		damage = fixmul (damage, weapon->ctype.laser_info.multiplier);
+		damage = FixMul (damage, weapon->ctype.laser_info.multiplier);
 		ApplyDamageToReactor (controlcen, damage, weapon->ctype.laser_info.parent_num);
 		MaybeKillWeapon (weapon, controlcen);
 	} else {	//	If robot weapon hits control center, blow it up, make it go away, but do no damage to control center.
@@ -2191,7 +2191,7 @@ void CollideRobotAndWeapon (object * robot, object * weapon, vms_vector *vHitPt)
 			fix	damage = weapon->shields;
 
 			if (bDamage)
-				damage = fixmul (damage, weapon->ctype.laser_info.multiplier);
+				damage = FixMul (damage, weapon->ctype.laser_info.multiplier);
 			else
 				damage = 0;
 
@@ -2219,9 +2219,9 @@ void CollideRobotAndWeapon (object * robot, object * weapon, vms_vector *vHitPt)
 
 			if (aip->SKIP_AI_COUNT * gameData.app.xFrameTime < F1_0) {
 				aip->SKIP_AI_COUNT++;
-				robot->mtype.phys_info.rotthrust.x = fixmul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
-				robot->mtype.phys_info.rotthrust.y = fixmul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
-				robot->mtype.phys_info.rotthrust.z = fixmul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.x = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.y = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.z = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
 				robot->mtype.phys_info.flags |= PF_USES_THRUST;
 
 			}
@@ -2398,7 +2398,7 @@ void DropPlayerEggs (object *playerObjP)
 			short			newseg;
 			vms_vector	tvec;
 
-			make_random_vector (&randvec);
+			MakeRandomVector (&randvec);
 			rthresh /= 2;
 			VmVecAdd (&tvec, &playerObjP->pos, &randvec);
 			newseg = FindSegByPoint (&tvec, playerObjP->segnum);
@@ -2413,7 +2413,7 @@ void DropPlayerEggs (object *playerObjP)
 				short			newseg;
 				vms_vector	tvec;
 	
-				make_random_vector (&randvec);
+				MakeRandomVector (&randvec);
 				rthresh /= 2;
 				VmVecAdd (&tvec, &playerObjP->pos, &randvec);
 				newseg = FindSegByPoint (&tvec, playerObjP->segnum);
@@ -2678,7 +2678,7 @@ void ApplyDamageToPlayer (object *playerObjP, object *killer, fix damage)
 // -- removed, 09/06/95, MK --  else if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < LOSE_WEAPON_THRESHOLD) {
 // -- removed, 09/06/95, MK -- 			int	randnum = d_rand ();
 // -- removed, 09/06/95, MK -- 
-// -- removed, 09/06/95, MK -- 			if (fixmul (gameData.multi.players [gameData.multi.nLocalPlayer].shields, randnum) < damage/4) {
+// -- removed, 09/06/95, MK -- 			if (FixMul (gameData.multi.players [gameData.multi.nLocalPlayer].shields, randnum) < damage/4) {
 // -- removed, 09/06/95, MK -- 				if (d_rand () > 20000) {
 // -- removed, 09/06/95, MK -- 					destroy_secondaryWeapon (gameData.weapons.nSecondary);
 // -- removed, 09/06/95, MK -- 				} else if (gameData.weapons.nPrimary == 0) {
@@ -2718,12 +2718,12 @@ if (weapon->id == SUPERPROX_ID)
 			return;
 if (weapon->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-damage = fixmul (damage, weapon->ctype.laser_info.multiplier);
+damage = FixMul (damage, weapon->ctype.laser_info.multiplier);
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
 	damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
 #ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI)
-	damage = fixmul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);
+	damage = FixMul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);
 #endif
 if (weapon->mtype.phys_info.flags & PF_PERSISTENT) {
 	if (weapon->ctype.laser_info.last_hitobj == OBJ_IDX (playerObjP))
@@ -2798,7 +2798,7 @@ void CollidePlayerAndMatCen (object *objP)
 			COMPUTE_SIDE_CENTER (&exit_point, segp, side);
 			VmVecSub (&exit_dir, &exit_point, &objP->pos);
 			VmVecNormalizeQuick (&exit_dir);
-			make_random_vector (&rand_vec);
+			MakeRandomVector (&rand_vec);
 			rand_vec.x /= 4;	rand_vec.y /= 4;	rand_vec.z /= 4;
 			VmVecInc (&exit_dir, &rand_vec);
 			VmVecNormalizeQuick (&exit_dir);

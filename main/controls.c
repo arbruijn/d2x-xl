@@ -247,16 +247,16 @@ if ((gameStates.render.nShadowPass != 2) &&
 	object *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix_fastsincos (gameData.app.xGameTime, &swiggle, NULL);
 	if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
-		swiggle = fixmul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
+		swiggle = FixMul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 	if ((objP->type == OBJ_PLAYER) || !pParent)
 		VmVecScaleInc (&objP->mtype.phys_info.velocity,
 								 &objP->orient.uvec,
-								 fixmul (swiggle, gameData.pig.ship.player->wiggle));
+								 FixMul (swiggle, gameData.pig.ship.player->wiggle));
 #if 1
 	else {
 		VmVecScaleInc (&objP->mtype.phys_info.velocity,
 								&pParent->orient.uvec,
-								fixmul (swiggle, gameData.pig.ship.player->wiggle));
+								FixMul (swiggle, gameData.pig.ship.player->wiggle));
 		VmVecScaleInc (&objP->pos, &objP->mtype.phys_info.velocity, wiggleTime);
 		}
 #endif
@@ -338,7 +338,7 @@ void ReadFlyingControls(object *objP)
 	
 				//add in value from 0..1
 				afterburner_scale = f1_0 + min (f1_0/2, xAfterburnerCharge) * 2;
-				forward_thrust_time = fixmul (gameData.app.xFrameTime, afterburner_scale);	//based on full thrust
+				forward_thrust_time = FixMul (gameData.app.xFrameTime, afterburner_scale);	//based on full thrust
 				old_count = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 				xAfterburnerCharge -= gameData.app.xFrameTime / AFTERBURNER_USE_SECS;
 				if (xAfterburnerCharge < 0)

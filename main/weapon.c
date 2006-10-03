@@ -1123,8 +1123,8 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 				fc = 1;
 			gameStates.gameplay.seismic.nVolume += fc;
 			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-			rx = fixmul(d_rand() - 16384, h);
-			rz = fixmul(d_rand() - 16384, h);
+			rx = FixMul(d_rand() - 16384, h);
+			rz = FixMul(d_rand() - 16384, h);
 			gameData.objs.console->mtype.phys_info.rotvel.x += rx;
 			gameData.objs.console->mtype.phys_info.rotvel.z += rz;
 			//	Shake the buddy!
@@ -1171,7 +1171,7 @@ int StartSeismicDisturbance(void)
 
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
-rval =  (2 * fixmul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.app.xFrameTime;
+rval =  (2 * FixMul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.app.xFrameTime;
 if (rval) {
 	gameStates.gameplay.seismic.nStartTime = gameData.app.xGameTime;
 	gameStates.gameplay.seismic.nEndTime = gameData.app.xGameTime + gameStates.gameplay.seismic.nShakeDuration;
@@ -1207,8 +1207,8 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 			fc = 1;
 		gameStates.gameplay.seismic.nVolume += fc;
 		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-		rx = fixmul(d_rand() - 16384, h);
-		rz = fixmul(d_rand() - 16384, h);
+		rx = FixMul(d_rand() - 16384, h);
+		rz = FixMul(d_rand() - 16384, h);
 		gameData.objs.console->mtype.phys_info.rotvel.x += rx;
 		gameData.objs.console->mtype.phys_info.rotvel.z += rz;
 		//	Shake the buddy!

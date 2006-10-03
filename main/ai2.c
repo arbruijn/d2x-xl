@@ -314,7 +314,7 @@ if (size_check)
 		int			nGroup;
 
 		boss_size_save = bossObjP->size;
-		// -- Causes problems!!	-- bossObjP->size = fixmul((F1_0/4)*3, bossObjP->size);
+		// -- Causes problems!!	-- bossObjP->size = FixMul((F1_0/4)*3, bossObjP->size);
 		original_boss_seg = bossObjP->segnum;
 		original_boss_pos = bossObjP->pos;
 		nGroup = gameData.segs.xSegments [original_boss_seg].group;
@@ -552,7 +552,7 @@ void ai_turn_towards_vector(vms_vector *goal_vector, object *objP, fix rate)
 	if (gameStates.gameplay.seismic.nMagnitude) {
 		vms_vector	rand_vec;
 		fix			scale;
-		make_random_vector(&rand_vec);
+		MakeRandomVector(&rand_vec);
 		scale = fixdiv(2*gameStates.gameplay.seismic.nMagnitude, gameData.bots.pInfo[objP->id].mass);
 		VmVecScaleInc(&new_fvec, &rand_vec, scale);
 	}
@@ -809,7 +809,7 @@ void ai_frame_animation(object *objP)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = fixmul(deltaangp->p, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
+			scaled_delta_angle = FixMul(deltaangp->p, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
 			curangp->p += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
 				curangp->p = goalangp->p;
@@ -822,7 +822,7 @@ void ai_frame_animation(object *objP)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = fixmul(deltaangp->b, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
+			scaled_delta_angle = FixMul(deltaangp->b, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
 			curangp->b += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
 				curangp->b = goalangp->b;
@@ -835,7 +835,7 @@ void ai_frame_animation(object *objP)
 			delta_to_goal = 65536 + delta_to_goal;
 
 		if (delta_to_goal) {
-			scaled_delta_angle = fixmul(deltaangp->h, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
+			scaled_delta_angle = FixMul(deltaangp->h, gameData.app.xFrameTime) * DELTA_ANG_SCALE;
 			curangp->h += scaled_delta_angle;
 			if (abs(delta_to_goal) < abs(scaled_delta_angle))
 				curangp->h = goalangp->h;
@@ -1112,7 +1112,7 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 		if (temp < F1_0/2)
 			temp = F1_0/2;
 
-		aim = fixmul(aim, temp);
+		aim = FixMul(aim, temp);
 	}
 
 	//	Lead the player half the time.
@@ -1126,9 +1126,9 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 	dot = 0;
 	count = 0;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 	while ((count < 4) && (dot < F1_0/4)) {
-		bpp_diff.x = believed_player_pos->x + fixmul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-		bpp_diff.y = believed_player_pos->y + fixmul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-		bpp_diff.z = believed_player_pos->z + fixmul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+		bpp_diff.x = believed_player_pos->x + FixMul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+		bpp_diff.y = believed_player_pos->y + FixMul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+		bpp_diff.z = believed_player_pos->z + FixMul((d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
 
 		VmVecNormalizedDirQuick(&fire_vec, &bpp_diff, fire_point);
 		dot = VmVecDot(&objP->orient.fvec, &fire_vec);
@@ -1179,13 +1179,13 @@ void move_towards_vector(object *objP, vms_vector *vec_goal, int dot_based)
 	if (dot_based && (dot < 3*F1_0/4)) {
 		//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 		//	more quickly than the general code
-		pptr->velocity.x = pptr->velocity.x/2 + fixmul(vec_goal->x, gameData.app.xFrameTime*32);
-		pptr->velocity.y = pptr->velocity.y/2 + fixmul(vec_goal->y, gameData.app.xFrameTime*32);
-		pptr->velocity.z = pptr->velocity.z/2 + fixmul(vec_goal->z, gameData.app.xFrameTime*32);
+		pptr->velocity.x = pptr->velocity.x/2 + FixMul(vec_goal->x, gameData.app.xFrameTime*32);
+		pptr->velocity.y = pptr->velocity.y/2 + FixMul(vec_goal->y, gameData.app.xFrameTime*32);
+		pptr->velocity.z = pptr->velocity.z/2 + FixMul(vec_goal->z, gameData.app.xFrameTime*32);
 	} else {
-		pptr->velocity.x += fixmul(vec_goal->x, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		pptr->velocity.y += fixmul(vec_goal->y, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		pptr->velocity.z += fixmul(vec_goal->z, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.x += FixMul(vec_goal->x, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.y += FixMul(vec_goal->y, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.z += FixMul(vec_goal->z, gameData.app.xFrameTime*64) * (gameStates.app.nDifficultyLevel+5)/4;
 	}
 
 	speed = VmVecMagQuick(&pptr->velocity);
@@ -1245,24 +1245,24 @@ void move_around_player(object *objP, vms_vector *vec_to_player, int fast_flag)
 
 	switch (dir) {
 		case 0:
-			evade_vector.x = fixmul(vec_to_player->z, gameData.app.xFrameTime*32);
-			evade_vector.y = fixmul(vec_to_player->y, gameData.app.xFrameTime*32);
-			evade_vector.z = fixmul(-vec_to_player->x, gameData.app.xFrameTime*32);
+			evade_vector.x = FixMul(vec_to_player->z, gameData.app.xFrameTime*32);
+			evade_vector.y = FixMul(vec_to_player->y, gameData.app.xFrameTime*32);
+			evade_vector.z = FixMul(-vec_to_player->x, gameData.app.xFrameTime*32);
 			break;
 		case 1:
-			evade_vector.x = fixmul(-vec_to_player->z, gameData.app.xFrameTime*32);
-			evade_vector.y = fixmul(vec_to_player->y, gameData.app.xFrameTime*32);
-			evade_vector.z = fixmul(vec_to_player->x, gameData.app.xFrameTime*32);
+			evade_vector.x = FixMul(-vec_to_player->z, gameData.app.xFrameTime*32);
+			evade_vector.y = FixMul(vec_to_player->y, gameData.app.xFrameTime*32);
+			evade_vector.z = FixMul(vec_to_player->x, gameData.app.xFrameTime*32);
 			break;
 		case 2:
-			evade_vector.x = fixmul(-vec_to_player->y, gameData.app.xFrameTime*32);
-			evade_vector.y = fixmul(vec_to_player->x, gameData.app.xFrameTime*32);
-			evade_vector.z = fixmul(vec_to_player->z, gameData.app.xFrameTime*32);
+			evade_vector.x = FixMul(-vec_to_player->y, gameData.app.xFrameTime*32);
+			evade_vector.y = FixMul(vec_to_player->x, gameData.app.xFrameTime*32);
+			evade_vector.z = FixMul(vec_to_player->z, gameData.app.xFrameTime*32);
 			break;
 		case 3:
-			evade_vector.x = fixmul(vec_to_player->y, gameData.app.xFrameTime*32);
-			evade_vector.y = fixmul(-vec_to_player->x, gameData.app.xFrameTime*32);
-			evade_vector.z = fixmul(vec_to_player->z, gameData.app.xFrameTime*32);
+			evade_vector.x = FixMul(vec_to_player->y, gameData.app.xFrameTime*32);
+			evade_vector.y = FixMul(-vec_to_player->x, gameData.app.xFrameTime*32);
+			evade_vector.z = FixMul(vec_to_player->z, gameData.app.xFrameTime*32);
 			break;
 		default:
 			Error("Function move_around_player: Bad case.");
@@ -1312,9 +1312,9 @@ void move_away_from_player(object *objP, vms_vector *vec_to_player, int attack_t
 	robot_info		*robptr = &gameData.bots.pInfo[objP->id];
 	int				objref;
 
-	pptr->velocity.x -= fixmul(vec_to_player->x, gameData.app.xFrameTime*16);
-	pptr->velocity.y -= fixmul(vec_to_player->y, gameData.app.xFrameTime*16);
-	pptr->velocity.z -= fixmul(vec_to_player->z, gameData.app.xFrameTime*16);
+	pptr->velocity.x -= FixMul(vec_to_player->x, gameData.app.xFrameTime*16);
+	pptr->velocity.y -= FixMul(vec_to_player->y, gameData.app.xFrameTime*16);
+	pptr->velocity.z -= FixMul(vec_to_player->z, gameData.app.xFrameTime*16);
 
 	if (attack_type) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
@@ -1436,7 +1436,7 @@ else {
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Compute a somewhat random, normalized vector.
-void make_random_vector(vms_vector *vec)
+void MakeRandomVector(vms_vector *vec)
 {
 	vec->x = (d_rand() - 16384) | 1;	// make sure we don't create null vector
 	vec->y = d_rand() - 16384;
@@ -1589,7 +1589,7 @@ void ComputeVisAndVec(object *objP, vms_vector *pos, ai_local *ailp, vms_vector 
 				vms_vector	randvec;
 
 				gameData.ai.cloakInfo[cloak_index].last_time = gameData.app.xGameTime;
-				make_random_vector(&randvec);
+				MakeRandomVector(&randvec);
 				VmVecScaleInc(&gameData.ai.cloakInfo[cloak_index].last_position, &randvec, 8*delta_time );
 			}
 
@@ -2226,7 +2226,7 @@ int do_robot_dying_frame(object *objP, fix StartTime, fix roll_duration, sbyte *
 
 	roll_val = fixdiv(gameData.app.xGameTime - StartTime, roll_duration);
 
-	fix_sincos(fixmul(roll_val, roll_val), &temp, &objP->mtype.phys_info.rotvel.x);
+	fix_sincos(FixMul(roll_val, roll_val), &temp, &objP->mtype.phys_info.rotvel.x);
 	fix_sincos(roll_val, &temp, &objP->mtype.phys_info.rotvel.y);
 	fix_sincos(roll_val-F1_0/8, &temp, &objP->mtype.phys_info.rotvel.z);
 
@@ -2626,7 +2626,7 @@ void ai_do_actual_firing_stuff(object *objP, ai_static *aip, ai_local *ailp, rob
 
 		vms_vector	vec_to_last_pos;
 
-		if (d_rand()/2 < fixmul(gameData.app.xFrameTime, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
+		if (d_rand()/2 < FixMul(gameData.app.xFrameTime, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!object_animates || ready_to_fire(robptr, ailp)) && (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			VmVecNormalizedDirQuick(&vec_to_last_pos, &gameData.ai.vBelievedPlayerPos, &objP->pos);
 			dot = VmVecDot(&objP->orient.fvec, &vec_to_last_pos);

@@ -1230,9 +1230,9 @@ else
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
 		}
-	else{
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	else {
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
 //	bMipMap=0;//mipmaps aren't used in GL_NEAREST anyway, and making the mipmaps is pretty slow
 //however, if texturing mode becomes an ingame option, they would need to be made regardless, so it could switch to them later.  OTOH, texturing mode could just be made a command line arg.

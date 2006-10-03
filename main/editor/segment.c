@@ -757,9 +757,9 @@ void make_orthogonal(vms_matrix *rmat,vms_matrix *smat)
 	dot = VmVecDotProd(&rmat->zrow,&tmat.yrow);
 
 	// Compute: b - dot * q1
-	rmat->yrow.x = tmat.yrow.x - fixmul(dot,rmat->zrow.x);
-	rmat->yrow.y = tmat.yrow.y - fixmul(dot,rmat->zrow.y);
-	rmat->yrow.z = tmat.yrow.z - fixmul(dot,rmat->zrow.z);
+	rmat->yrow.x = tmat.yrow.x - FixMul(dot,rmat->zrow.x);
+	rmat->yrow.y = tmat.yrow.y - FixMul(dot,rmat->zrow.y);
+	rmat->yrow.z = tmat.yrow.z - FixMul(dot,rmat->zrow.z);
 
 	// Now, compute the third vector.
 	// From page 173 of Strang, we use the equation:
@@ -772,16 +772,16 @@ void make_orthogonal(vms_matrix *rmat,vms_matrix *smat)
 	// Compute: q1*c
 	dot = VmVecDotProd(&rmat->zrow,&tmat.xrow);
 
-	tvec1.x = fixmul(dot,rmat->zrow.x);
-	tvec1.y = fixmul(dot,rmat->zrow.y);
-	tvec1.z = fixmul(dot,rmat->zrow.z);
+	tvec1.x = FixMul(dot,rmat->zrow.x);
+	tvec1.y = FixMul(dot,rmat->zrow.y);
+	tvec1.z = FixMul(dot,rmat->zrow.z);
 
 	// Compute: q2*c
 	dot = VmVecDotProd(&rmat->yrow,&tmat.xrow);
 
-	tvec2.x = fixmul(dot,rmat->yrow.x);
-	tvec2.y = fixmul(dot,rmat->yrow.y);
-	tvec2.z = fixmul(dot,rmat->yrow.z);
+	tvec2.x = FixMul(dot,rmat->yrow.x);
+	tvec2.y = FixMul(dot,rmat->yrow.y);
+	tvec2.z = FixMul(dot,rmat->yrow.z);
 
 	VmVecSub(&rmat->xrow,VmVecSub(&rmat->xrow,&tmat.xrow,&tvec1),&tvec2);
 }
@@ -1203,18 +1203,18 @@ void scale_free_vertices(segment *sp,vms_vector *vp,fix scale_factor,int min_sid
 
 	for (i=0; i<4; i++)
                 if (is_free_vertex(sp->verts[(int) verts[i]])) {
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].x = fixmul(vp->x,scale_factor)/2;
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].y = fixmul(vp->y,scale_factor)/2;
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].z = fixmul(vp->z,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].x = FixMul(vp->x,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].y = FixMul(vp->y,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].z = FixMul(vp->z,scale_factor)/2;
 		}
 
 	verts = sideToVerts[max_side];
 
 	for (i=0; i<4; i++)
                 if (is_free_vertex(sp->verts[(int) verts[i]])) {
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].x = fixmul(vp->x,scale_factor)/2;
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].y = fixmul(vp->y,scale_factor)/2;
-                        gameData.segs.vertices[sp->verts[(int) verts[i]]].z = fixmul(vp->z,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].x = FixMul(vp->x,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].y = FixMul(vp->y,scale_factor)/2;
+                        gameData.segs.vertices[sp->verts[(int) verts[i]]].z = FixMul(vp->z,scale_factor)/2;
 		}
 }
 

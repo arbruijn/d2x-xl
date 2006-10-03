@@ -265,8 +265,8 @@ div_scale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	div_scale = 4;
 h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-gameData.objs.console->mtype.phys_info.rotvel.x += (fixmul (d_rand () - 16384, h)) / div_scale;
-gameData.objs.console->mtype.phys_info.rotvel.z += (fixmul (d_rand () - 16384, h)) / div_scale;
+gameData.objs.console->mtype.phys_info.rotvel.x += (FixMul (d_rand () - 16384, h)) / div_scale;
+gameData.objs.console->mtype.phys_info.rotvel.z += (FixMul (d_rand () - 16384, h)) / div_scale;
 //	Hook in the rumble sound effect here.
 old_time = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -453,7 +453,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 		while ((d_rand () > rand_prob) && (count < 4)) {
 			vms_vector	randvec;
 
-			make_random_vector (&randvec);
+			MakeRandomVector (&randvec);
 			VmVecScaleInc (&vec_to_goal, &randvec, F1_0/6);
 			VmVecNormalizeQuick (&vec_to_goal);
 			#ifdef NETWORK

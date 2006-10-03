@@ -959,7 +959,7 @@ void CreatePlayerAppearanceEffect (object *playerObjP)
 	}
 #endif
 if (playerObjP == gameData.objs.viewer)
-	VmVecScaleAdd (&pos, &playerObjP->pos, &playerObjP->orient.fvec, fixmul (playerObjP->size,flash_dist));
+	VmVecScaleAdd (&pos, &playerObjP->pos, &playerObjP->orient.fvec, FixMul (playerObjP->size,flash_dist));
 else
 	pos = playerObjP->pos;
 effectObjP = ObjectCreateExplosion (playerObjP->segnum, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);

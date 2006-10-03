@@ -52,7 +52,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added support for morph effect
  *
  * Revision 1.25  1994/05/30  11:34:57  matt
- * Added g3_set_special_render() to allow a user to specify functions to
+ * Added G3SetSpecialRender() to allow a user to specify functions to
  * call for 2d draws.
  *
  * Revision 1.24  1994/05/19  21:46:31  matt
@@ -400,7 +400,7 @@ bool G3DrawBitMap (vms_vector *pos,fix width,fix height,grs_bitmap *bm, int orie
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
-void g3_set_special_render(tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer);
+void G3SetSpecialRender(tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer);
 
 extern g3s_point *Vbuf0[];
 extern g3s_point *Vbuf1[];

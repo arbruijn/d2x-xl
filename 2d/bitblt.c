@@ -434,7 +434,7 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int n
 											(ubyte) (srcPalette [c] * fade + 0.5), 
 											(ubyte) (srcPalette [c + 1] * fade + 0.5), 
 											(ubyte) (srcPalette [c + 2] * fade + 0.5));
-			*dest = c;
+			*dest = (ubyte) c;
 #else
 				*dest = fade_base [c];
 #endif

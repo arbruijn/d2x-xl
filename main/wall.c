@@ -1567,9 +1567,9 @@ void DoCloakingWallFrame(int cloaking_wall_num)
 		light_scale = fixdiv(CLOAKING_WALL_TIME/2-d->time,CLOAKING_WALL_TIME/2);
 
 		for (i=0;i<4;i++) {
-			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = fixmul(d->front_ls[i],light_scale);
+			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = FixMul(d->front_ls[i],light_scale);
 			if (wback)
-				gameData.segs.segments[wback->segnum].sides[wback->sidenum].uvls[i].l = fixmul(d->back_ls[i],light_scale);
+				gameData.segs.segments[wback->segnum].sides[wback->sidenum].uvls[i].l = FixMul(d->back_ls[i],light_scale);
 		}
 	}
 
@@ -1623,9 +1623,9 @@ void DoDecloakingWallFrame (int cloaking_wall_num)
 		light_scale = fixdiv(d->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
 
 		for (i=0;i<4;i++) {
-			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = fixmul(d->front_ls[i],light_scale);
+			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = FixMul(d->front_ls[i],light_scale);
 			if (wback)
-				gameData.segs.segments[wback->segnum].sides[wback->sidenum].uvls[i].l = fixmul(d->back_ls[i],light_scale);
+				gameData.segs.segments[wback->segnum].sides[wback->sidenum].uvls[i].l = FixMul(d->back_ls[i],light_scale);
 		}
 	}
 	else {		//cloaking in

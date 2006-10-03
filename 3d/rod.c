@@ -74,8 +74,8 @@ VmVecCopyNormalize (&top, &top_point->p3_vec);
 VmVecCross (&rod_norm, &delta_vec, &top);
 VmVecNormalize (&rod_norm);
 //scale for aspect
-rod_norm.x = fixmul (rod_norm.x, viewInfo.scale.x);
-rod_norm.y = fixmul (rod_norm.y, viewInfo.scale.y);
+rod_norm.x = FixMul (rod_norm.x, viewInfo.scale.x);
+rod_norm.y = FixMul (rod_norm.y, viewInfo.scale.y);
 //now we have the usable edge.  generate four points
 //top points
 VmVecCopyScale (&tempv, &rod_norm, top_width);
@@ -147,12 +147,12 @@ bool G3DrawBitMap (vms_vector *pos, fix width, fix height, grs_bitmap *bm, int o
 		return 1;
 
 	if (CheckMulDiv (&t, width, xCanvW2, pnt.p3_z))
-		w = fixmul (t, viewInfo.scale.x);
+		w = FixMul (t, viewInfo.scale.x);
 	else
 		return 1;
 
 	if (CheckMulDiv (&t, height, xCanvH2, pnt.p3_z))
-		h = fixmul (t, viewInfo.scale.y);
+		h = FixMul (t, viewInfo.scale.y);
 	else
 		return 1;
 
@@ -181,8 +181,8 @@ bool G3DrawBitMap (vms_vector *pos, fix width, fix height, grs_bitmap *bm, int o
 		return 1;
 		
 	fz = f2fl (pnt.p3_z);
-	w = fixmul (fl2f (( (f2fl (width)*fxCanvW2) / fz)), viewInfo.scale.x);
-	h = fixmul (fl2f (( (f2fl (height)*fxCanvH2) / fz)), viewInfo.scale.y);
+	w = FixMul (fl2f (( (f2fl (width)*fxCanvW2) / fz)), viewInfo.scale.x);
+	h = FixMul (fl2f (( (f2fl (height)*fxCanvH2) / fz)), viewInfo.scale.y);
 
 	blob_vertices[0].x = pnt.p3_sx - w;
 	blob_vertices[0].y = blob_vertices[1].y = pnt.p3_sy - h;

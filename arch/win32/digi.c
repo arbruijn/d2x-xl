@@ -224,7 +224,7 @@ TryNextChannel:
 	SoundSlots[slot].soundno = soundnum;
 	SoundSlots[slot].samples = Sounddat(soundnum)->data;
 	SoundSlots[slot].length = Sounddat(soundnum)->length;
-	SoundSlots[slot].volume = fixmul(gameStates.sound.digi.nVolume, volume);
+	SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, volume);
 	SoundSlots[slot].pan = pan;
 	SoundSlots[slot].position = 0;
 	SoundSlots[slot].looped = 0;
@@ -311,7 +311,7 @@ void reset_sounds_on_channel( int channel )
 //added on 980905 by adb from original source to make sfx volume work
 void DigiSetFxVolume( int dvolume )
 {
-	dvolume = fixmuldiv( dvolume, SOUND_MAX_VOLUME, 0x7fff);
+	dvolume = FixMulDiv( dvolume, SOUND_MAX_VOLUME, 0x7fff);
 	if ( dvolume > SOUND_MAX_VOLUME )
 		gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 	else if ( dvolume < 0 )
@@ -394,7 +394,7 @@ void DigiSetChannelVolume(int channel, int volume)
 	if (!SoundSlots[channel].playing)
 		return;
 
-	SoundSlots[channel].volume = fixmuldiv(volume, gameStates.sound.digi.nVolume, F1_0);
+	SoundSlots[channel].volume = FixMulDiv(volume, gameStates.sound.digi.nVolume, F1_0);
 }
 
 void DigiSetChannelPan(int channel, int pan)

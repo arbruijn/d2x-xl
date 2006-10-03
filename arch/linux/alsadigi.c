@@ -30,7 +30,7 @@
 #include "kconfig.h"
 
 //edited 05/17/99 Matt Mueller - added ifndef NO_ASM
-//added on 980905 by adb to add inline fixmul for mixer on i386
+//added on 980905 by adb to add inline FixMul for mixer on i386
 #ifndef NO_ASM
 #ifdef __i386__
 #define do_fixmul(x,y)				\
@@ -41,7 +41,7 @@
 	    : "rm"(y), "i"(16), "0"(x);	\
 	_ax;					\
 })
-extern inline fix fixmul(fix x, fix y) { return do_fixmul(x,y); }
+extern inline fix FixMul(fix x, fix y) { return do_fixmul(x,y); }
 #endif
 #endif
 //end edit by adb
@@ -217,8 +217,8 @@ static void AudioMixCallback(void *userdata, ubyte *stream, int len)
     vl = 0x10000;
     vr = x * 2;
    }
-   vl = fixmul(vl, (x = sl->volume);
-   vr = fixmul(vr, x);
+   vl = FixMul(vl, (x = sl->volume);
+   vr = FixMul(vr, x);
    while (sp < streamend) 
    {
     if (sldata == slend)
@@ -231,8 +231,8 @@ static void AudioMixCallback(void *userdata, ubyte *stream, int len)
      sldata = sl->samples;
     }
     v = *(sldata++) - 0x80;
-    *(sp++) = mix8[ *sp + fixmul(v, vl) + 0x80 ];
-    *(sp++) = mix8[ *sp + fixmul(v, vr) + 0x80 ];
+    *(sp++) = mix8[ *sp + FixMul(v, vl) + 0x80 ];
+    *(sp++) = mix8[ *sp + FixMul(v, vr) + 0x80 ];
    }
    sl->position = sldata - sl->samples;
   }
@@ -392,7 +392,7 @@ TryNextChannel:
  SoundSlots[slot].soundno = soundnum;
  SoundSlots[slot].samples = gameData.pig.snd.sounds[soundnum].data;
  SoundSlots[slot].length = gameData.pig.snd.sounds[soundnum].length;
- SoundSlots[slot].volume = fixmul(gameStates.sound.digi.nVolume, volume);
+ SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, volume);
  SoundSlots[slot].pan = pan;
  SoundSlots[slot].position = 0;
  SoundSlots[slot].looped = 0;
@@ -434,7 +434,7 @@ int DigiStartSoundObject(int obj)
  SoundSlots[slot].soundno = SoundObjects[obj].soundnum;
  SoundSlots[slot].samples = gameData.pig.snd.sounds[SoundObjects[obj].soundnum].data;
  SoundSlots[slot].length = gameData.pig.snd.sounds[SoundObjects[obj].soundnum].length;
- SoundSlots[slot].volume = fixmul(gameStates.sound.digi.nVolume, SoundObjects[obj].volume);
+ SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, SoundObjects[obj].volume);
  SoundSlots[slot].pan = SoundObjects[obj].pan;
  SoundSlots[slot].position = 0;
  SoundSlots[slot].looped = (SoundObjects[obj].flags & SOF_PLAY_FOREVER);
@@ -803,7 +803,7 @@ void DigiSyncSounds()
 						DigiStartSoundObject(i);
 					} else {
 						LOCK();
-					        SoundSlots[SoundObjects[i].handle].volume = fixmuldiv(SoundObjects[i].volume,gameStates.sound.digi.nVolume,F1_0);
+					        SoundSlots[SoundObjects[i].handle].volume = FixMulDiv(SoundObjects[i].volume,gameStates.sound.digi.nVolume,F1_0);
 						UNLOCK();
 					}
 				}
@@ -844,7 +844,7 @@ void DigiInitSounds()
 //added on 980905 by adb from original source to make sfx volume work
 void DigiSetFxVolume( int dvolume )
 {
-	dvolume = fixmuldiv( dvolume, SOUND_MAX_VOLUME, 0x7fff);
+	dvolume = FixMulDiv( dvolume, SOUND_MAX_VOLUME, 0x7fff);
 	if ( dvolume > SOUND_MAX_VOLUME )
 		gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 	else if ( dvolume < 0 )

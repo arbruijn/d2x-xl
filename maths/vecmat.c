@@ -149,9 +149,9 @@ return dest;
 //scales a vector in place.  returns ptr to vector
 vms_vector *VmVecScale (vms_vector *dest, fix s)
 {
-dest->x = fixmul (dest->x, s);
-dest->y = fixmul (dest->y, s);
-dest->z = fixmul (dest->z, s);
+dest->x = FixMul (dest->x, s);
+dest->y = FixMul (dest->y, s);
+dest->z = FixMul (dest->z, s);
 return dest;
 }
 
@@ -169,9 +169,9 @@ return dest;
 //scales and copies a vector.  returns ptr to dest
 vms_vector *VmVecCopyScale (vms_vector *dest, vms_vector *src, fix s)
 {
-dest->x = fixmul (src->x, s);
-dest->y = fixmul (src->y, s);
-dest->z = fixmul (src->z, s);
+dest->x = FixMul (src->x, s);
+dest->y = FixMul (src->y, s);
+dest->z = FixMul (src->z, s);
 return dest;
 }
 
@@ -180,9 +180,9 @@ return dest;
 //dest = src1 + k * src2
 vms_vector *VmVecScaleAdd (vms_vector *dest, vms_vector *src1, vms_vector *src2, fix k)
 {
-dest->x = src1->x + fixmul (src2->x, k);
-dest->y = src1->y + fixmul (src2->y, k);
-dest->z = src1->z + fixmul (src2->z, k);
+dest->x = src1->x + FixMul (src2->x, k);
+dest->y = src1->y + FixMul (src2->y, k);
+dest->z = src1->z + FixMul (src2->z, k);
 return dest;
 }
 
@@ -212,9 +212,9 @@ return dest;
 //dest += k * src
 vms_vector *VmVecScaleInc (vms_vector *dest, vms_vector *src, fix k)
 {
-dest->x += fixmul (src->x, k);
-dest->y += fixmul (src->y, k);
-dest->z += fixmul (src->z, k);
+dest->x += FixMul (src->x, k);
+dest->y += FixMul (src->y, k);
+dest->z += FixMul (src->z, k);
 return dest;
 }
 
@@ -229,9 +229,9 @@ dest->x = fl2f (f2fl (dest->x) * nd);
 dest->y = fl2f (f2fl (dest->y) * nd);
 dest->z = fl2f (f2fl (dest->z) * nd);
 #else
-dest->x = fixmuldiv (src->x, n, d);
-dest->y = fixmuldiv (src->y, n, d);
-dest->z = fixmuldiv (src->z, n, d);
+dest->x = FixMulDiv (src->x, n, d);
+dest->y = FixMulDiv (src->y, n, d);
+dest->z = FixMulDiv (src->z, n, d);
 #endif
 return dest;
 }
@@ -601,9 +601,9 @@ return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
 fix VmVecCopyNormalizeQuick(vms_vector *dest, vms_vector *src)
 {
 fix im = VmVecInvMag(src);
-dest->x = fixmul(src->x, im);
-dest->y = fixmul(src->y, im);
-dest->z = fixmul(src->z, im);
+dest->x = FixMul(src->x, im);
+dest->y = FixMul(src->y, im);
+dest->z = FixMul(src->z, im);
 return im;
 }
 
@@ -807,18 +807,18 @@ vms_matrix *sincos_2_matrix(vms_matrix *m, fix sinp, fix cosp, fix sinb, fix cos
 {
 	fix sbsh, cbch, cbsh, sbch;
 
-sbsh = fixmul(sinb, sinh);
-cbch = fixmul(cosb, cosh);
-cbsh = fixmul(cosb, sinh);
-sbch = fixmul(sinb, cosh);
-m->rvec.x = cbch + fixmul(sinp, sbsh);		//m1
-m->uvec.z = sbsh + fixmul(sinp, cbch);		//m8
-m->uvec.x = fixmul(sinp, cbsh) - sbch;		//m2
-m->rvec.z = fixmul(sinp, sbch) - cbsh;		//m7
-m->fvec.x = fixmul(sinh, cosp);				//m3
-m->rvec.y = fixmul(sinb, cosp);				//m4
-m->uvec.y = fixmul(cosb, cosp);				//m5
-m->fvec.z = fixmul(cosh, cosp);				//m9
+sbsh = FixMul(sinb, sinh);
+cbch = FixMul(cosb, cosh);
+cbsh = FixMul(cosb, sinh);
+sbch = FixMul(sinb, cosh);
+m->rvec.x = cbch + FixMul(sinp, sbsh);		//m1
+m->uvec.z = sbsh + FixMul(sinp, cbch);		//m8
+m->uvec.x = FixMul(sinp, cbsh) - sbch;		//m2
+m->rvec.z = FixMul(sinp, sbch) - cbsh;		//m7
+m->fvec.x = FixMul(sinh, cosp);				//m3
+m->rvec.y = FixMul(sinb, cosp);				//m4
+m->uvec.y = FixMul(cosb, cosp);				//m5
+m->fvec.z = FixMul(cosh, cosp);				//m9
 m->fvec.y = -sinp;								//m6
 return m;
 }
@@ -842,7 +842,7 @@ vms_matrix *VmVecAng2Matrix(vms_matrix *m, vms_vector *v, fixang a)
 
 fix_sincos(a, &sinb, &cosb);
 sinp = -v->y;
-cosp = fix_sqrt(f1_0 - fixmul(sinp, sinp));
+cosp = fix_sqrt(f1_0 - FixMul(sinp, sinp));
 return sincos_2_matrix (m, sinp, cosp, sinb, cosb, fixdiv(v->x, cosp), fixdiv(v->z, cosp));
 }
 

@@ -89,11 +89,11 @@ g3s_point *clip_edge(int plane_flag,g3s_point *on_pnt,g3s_point *off_pnt)
 
 	
 // PSX_HACK!!!!
-//	tmp->p3_x = on_pnt->p3_x + fixmuldiv(off_pnt->p3_x-on_pnt->p3_x,kn,kd);
-//	tmp->p3_y = on_pnt->p3_y + fixmuldiv(off_pnt->p3_y-on_pnt->p3_y,kn,kd);
+//	tmp->p3_x = on_pnt->p3_x + FixMulDiv(off_pnt->p3_x-on_pnt->p3_x,kn,kd);
+//	tmp->p3_y = on_pnt->p3_y + FixMulDiv(off_pnt->p3_y-on_pnt->p3_y,kn,kd);
 
-	tmp->p3_x = on_pnt->p3_x + fixmul( (off_pnt->p3_x-on_pnt->p3_x), psx_ratio);
-	tmp->p3_y = on_pnt->p3_y + fixmul( (off_pnt->p3_y-on_pnt->p3_y), psx_ratio);
+	tmp->p3_x = on_pnt->p3_x + FixMul( (off_pnt->p3_x-on_pnt->p3_x), psx_ratio);
+	tmp->p3_y = on_pnt->p3_y + FixMul( (off_pnt->p3_y-on_pnt->p3_y), psx_ratio);
 
 	if (plane_flag & (CC_OFF_TOP|CC_OFF_BOT))
 		tmp->p3_z = tmp->p3_y;
@@ -105,21 +105,21 @@ g3s_point *clip_edge(int plane_flag,g3s_point *on_pnt,g3s_point *off_pnt)
 
 	if (on_pnt->p3_flags & PF_UVS) {
 // PSX_HACK!!!!
-//		tmp->p3_u = on_pnt->p3_u + fixmuldiv(off_pnt->p3_u-on_pnt->p3_u,kn,kd);
-//		tmp->p3_v = on_pnt->p3_v + fixmuldiv(off_pnt->p3_v-on_pnt->p3_v,kn,kd);
-		tmp->p3_u = on_pnt->p3_u + fixmul((off_pnt->p3_u-on_pnt->p3_u), psx_ratio);
-		tmp->p3_v = on_pnt->p3_v + fixmul((off_pnt->p3_v-on_pnt->p3_v), psx_ratio);
+//		tmp->p3_u = on_pnt->p3_u + FixMulDiv(off_pnt->p3_u-on_pnt->p3_u,kn,kd);
+//		tmp->p3_v = on_pnt->p3_v + FixMulDiv(off_pnt->p3_v-on_pnt->p3_v,kn,kd);
+		tmp->p3_u = on_pnt->p3_u + FixMul((off_pnt->p3_u-on_pnt->p3_u), psx_ratio);
+		tmp->p3_v = on_pnt->p3_v + FixMul((off_pnt->p3_v-on_pnt->p3_v), psx_ratio);
 
 		tmp->p3_flags |= PF_UVS;
 	}
 
 	if (on_pnt->p3_flags & PF_LS) {
 // PSX_HACK
-//		tmp->p3_r = on_pnt->p3_r + fixmuldiv(off_pnt->p3_r-on_pnt->p3_r,kn,kd);
-//		tmp->p3_g = on_pnt->p3_g + fixmuldiv(off_pnt->p3_g-on_pnt->p3_g,kn,kd);
-//		tmp->p3_b = on_pnt->p3_b + fixmuldiv(off_pnt->p3_b-on_pnt->p3_b,kn,kd);
+//		tmp->p3_r = on_pnt->p3_r + FixMulDiv(off_pnt->p3_r-on_pnt->p3_r,kn,kd);
+//		tmp->p3_g = on_pnt->p3_g + FixMulDiv(off_pnt->p3_g-on_pnt->p3_g,kn,kd);
+//		tmp->p3_b = on_pnt->p3_b + FixMulDiv(off_pnt->p3_b-on_pnt->p3_b,kn,kd);
 
-		tmp->p3_l = on_pnt->p3_l + fixmul((off_pnt->p3_l-on_pnt->p3_l), psx_ratio);
+		tmp->p3_l = on_pnt->p3_l + FixMul((off_pnt->p3_l-on_pnt->p3_l), psx_ratio);
 
 		tmp->p3_flags |= PF_LS;
 	}

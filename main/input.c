@@ -1583,7 +1583,7 @@ if (gameStates.input.nCruiseSpeed > i2f (100))
 else if (gameStates.input.nCruiseSpeed < 0) 
 	gameStates.input.nCruiseSpeed = 0;
 if (!Controls.forward_thrust_time)
-	Controls.forward_thrust_time = fixmul (gameStates.input.nCruiseSpeed,gameStates.input.kcFrameTime)/100;
+	Controls.forward_thrust_time = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcFrameTime)/100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (bank_sens_mod > 2) {
@@ -1682,12 +1682,12 @@ void CybermouseAdjust ()
 		}
 	}*/
 
-	Controls.pitch_time += fixmul (kc_external_control->pitch_time,gameData.app.xFrameTime);						
-	Controls.vertical_thrust_time += fixmul (kc_external_control->vertical_thrust_time,gameData.app.xFrameTime);
-	Controls.heading_time += fixmul (kc_external_control->heading_time,gameData.app.xFrameTime);
-	Controls.sideways_thrust_time += fixmul (kc_external_control->sideways_thrust_time ,gameData.app.xFrameTime);
-	Controls.bank_time += fixmul (kc_external_control->bank_time ,gameData.app.xFrameTime);
-	Controls.forward_thrust_time += fixmul (kc_external_control->forward_thrust_time ,gameData.app.xFrameTime);
+	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.app.xFrameTime);						
+	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.app.xFrameTime);
+	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.app.xFrameTime);
+	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.app.xFrameTime);
+	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.app.xFrameTime);
+	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.app.xFrameTime);
 //	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 //	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;

@@ -1863,7 +1863,7 @@ void HUDShowAfterburner(void)
 		return;		//don't draw if don't have
 
 
-	h = fixmul(xAfterburnerCharge, 100);
+	h = FixMul(xAfterburnerCharge, 100);
 	if (gameOpts->render.cockpit.bTextGauges) {
 		y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * Line_spacing;
 		GrSetCurFont( GAME_FONT );
@@ -3064,7 +3064,7 @@ void DrawAfterburnerBar(int afterburner)
 //	GrUBitmapM( AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bm);
 	HUDBitBlt (AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y, bm, F1_0, 0);
 	GrSetColorRGB (0, 0, 0, 255);
-	not_afterburner = fixmul(f1_0 - afterburner,AFTERBURNER_GAUGE_H);
+	not_afterburner = FixMul(f1_0 - afterburner,AFTERBURNER_GAUGE_H);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	yMax = HUD_SCALE_Y (not_afterburner);
 	for (y = 0; y < not_afterburner; y++) {
@@ -3762,7 +3762,7 @@ void SBDrawAfterburner()
 //	GrSetCurrentCanvas( Canv_SBAfterburnerGauge );
 	PAGE_IN_GAUGE( SB_GAUGE_AFTERBURNER );
 	/*GrUBitmapM*/HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(SB_GAUGE_AFTERBURNER), F1_0, 0);
-	erase_height = fixmul((f1_0 - xAfterburnerCharge),SB_AFTERBURNER_GAUGE_H);
+	erase_height = FixMul((f1_0 - xAfterburnerCharge),SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", erase_height);
 
 	if (erase_height > 0) {
@@ -4333,8 +4333,8 @@ void ShowHUDNames()
 					if (has_flag) {				// Draw box on HUD
 						fix dx,dy,w,h;
 			
-						dy = -fixmuldiv(fixmul(gameData.objs.objects[objnum].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,player_point.p3_z);
-						dx = fixmul(dy,grdCurScreen->sc_aspect);
+						dy = -FixMulDiv(FixMul(gameData.objs.objects[objnum].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,player_point.p3_z);
+						dx = FixMul(dy,grdCurScreen->sc_aspect);
 	
 						w = dx/4;
 						h = dy/4;

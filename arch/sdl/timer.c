@@ -49,5 +49,5 @@ fix TimerGetFixedSeconds(void)
 
 void timer_delay(fix seconds)
 {
-	SDL_Delay(f2i(fixmul(seconds, i2f(1000))));
+	SDL_Delay(f2i(FixMul(seconds, i2f(1000))));
 }

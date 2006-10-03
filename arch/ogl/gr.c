@@ -691,6 +691,29 @@ glEnd();
 	
 //------------------------------------------------------------------------------
 
+void OglUPolyC (int left, int top, int right, int bot, grs_color *c)
+{
+	GLfloat xo, yo, xf, yf;
+	
+xo = (left + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
+xf = (right + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
+glDisable (GL_TEXTURE_2D);
+OglGrsColor (c);
+glBegin (GL_LINE_LOOP);
+glVertex2f (xo, yo);
+glVertex2f (xf, yo);
+glVertex2f (xf, yf);
+glVertex2f (xo, yf);
+//glVertex2f (xo, yo);
+if (c->rgb)
+	glDisable (GL_BLEND);
+glEnd();
+}
+	
+//------------------------------------------------------------------------------
+
 void OglDoPalFx (void)
 {
 	int	bDepthTest, bBlend;

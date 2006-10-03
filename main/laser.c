@@ -409,7 +409,7 @@ else {
 	}
 
 //	Create random perturbation vector, but favor _not_ going up in player's reference.
-make_random_vector (&vPerturb);
+MakeRandomVector (&vPerturb);
 VmVecScaleInc (&vPerturb, &parentObjP->orient.uvec, -F1_0/2);
 //bDoingLightingHack = 1;	//	Ugly, but prevents blobs which are probably outside the mine from killing framerate.
 for (i=0; i<nOmegaBlobs; i++) {
@@ -423,7 +423,7 @@ for (i=0; i<nOmegaBlobs; i++) {
 	if ((i % 4) == 3) {
 		vms_vector	temp_vec;
 
-		make_random_vector (&temp_vec);
+		MakeRandomVector (&temp_vec);
 		VmVecScaleInc (&vPerturb, &temp_vec, F1_0/4);
 		}
 	VmVecScaleAdd (&temp_pos, &vBlobPos, &vPerturb, xPerturbArray [i]);
@@ -443,7 +443,7 @@ for (i=0; i<nOmegaBlobs; i++) {
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		VmVecScale (&objP->mtype.phys_info.velocity, F1_0*4);
 		objP->size = gameData.weapons.info [objP->id].blob_size;
-		objP->shields = fixmul (OMEGA_DAMAGE_SCALE*gameData.app.xFrameTime, WI_strength (objP->id,gameStates.app.nDifficultyLevel));
+		objP->shields = FixMul (OMEGA_DAMAGE_SCALE*gameData.app.xFrameTime, WI_strength (objP->id,gameStates.app.nDifficultyLevel));
 		objP->ctype.laser_info.parent_type			= parentObjP->type;
 		objP->ctype.laser_info.parent_signature	= parentObjP->signature;
 		objP->ctype.laser_info.parent_num			= OBJ_IDX (parentObjP);
@@ -494,9 +494,9 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].energy) {
 	if (xOmegaCharge > MAX_OMEGA_CHARGE)
 		xOmegaCharge = MAX_OMEGA_CHARGE;
 	xDeltaCharge = xOmegaCharge - xOldOmegaCharge;
-	xEnergyUsed = fixmul (F1_0*190/17, xDeltaCharge);
+	xEnergyUsed = FixMul (F1_0*190/17, xDeltaCharge);
 	if (gameStates.app.nDifficultyLevel < 2)
-		xEnergyUsed = fixmul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
+		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
 
 	gameData.multi.players [gameData.multi.nLocalPlayer].energy -= xEnergyUsed;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].energy < 0)
@@ -562,7 +562,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	int			fate;
 	vms_vector	vPerturb, perturbed_fvec;
 
-	make_random_vector (&vPerturb);
+	MakeRandomVector (&vPerturb);
 	VmVecScaleAdd (&perturbed_fvec, &parentObjP->orient.fvec, &vPerturb, F1_0/16);
 	VmVecScaleAdd (&vGoalPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
 	fq.startseg = nFiringSeg;
@@ -783,7 +783,7 @@ int CreateNewLaser (
 
 		//	Get a scale factor between speedvar% and 1.0.
 		randval = F1_0 - ((d_rand () * gameData.weapons.info [objP->id].speedvar) >> 6);
-		weapon_speed = fixmul (weapon_speed, randval);
+		weapon_speed = FixMul (weapon_speed, randval);
 	}
 
 	//	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
@@ -1233,7 +1233,7 @@ int LaserPlayerFireSpreadDelay (
 	VmVecAdd (&LaserPos, &objP->pos, &gun_point);
 	//	If supposed to fire at a delayed time (delay_time), then move this point backwards.
 	if (delay_time)
-		VmVecScaleInc (&LaserPos, &m.fvec, -fixmul (delay_time, WI_speed (laser_type,gameStates.app.nDifficultyLevel)));
+		VmVecScaleInc (&LaserPos, &m.fvec, -FixMul (delay_time, WI_speed (laser_type,gameStates.app.nDifficultyLevel)));
 
 //	DoMuzzleStuff (objP, &Pos);
 
@@ -1343,7 +1343,7 @@ void CreateFlare (object *objP)
 	energy_usage = WI_energy_usage (FLARE_ID);
 
 	if (gameStates.app.nDifficultyLevel < 2)
-		energy_usage = fixmul (energy_usage, i2f (gameStates.app.nDifficultyLevel+2)/4);
+		energy_usage = FixMul (energy_usage, i2f (gameStates.app.nDifficultyLevel+2)/4);
 
 //	MK, 11/04/95: Allowed to fire flare even if no energy.
 // -- 	if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= energy_usage) {
@@ -1503,7 +1503,7 @@ void LaserDoWeaponSequence (object *objP)
 				speed = VmVecNormalizeQuick (&temp_vec);
 				max_speed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 				if (speed+F1_0 < max_speed) {
-					speed += fixmul (max_speed, gameData.app.xFrameTime/2);
+					speed += FixMul (max_speed, gameData.app.xFrameTime/2);
 					if (speed > max_speed)
 						speed = max_speed;
 				}
@@ -1524,7 +1524,7 @@ void LaserDoWeaponSequence (object *objP)
 				
 					absdot = abs (F1_0 - dot);
 				
-					lifelost = fixmul (absdot*32, gameData.app.xFrameTime);
+					lifelost = FixMul (absdot*32, gameData.app.xFrameTime);
 					objP->lifeleft -= lifelost;
 				}
 
@@ -1580,7 +1580,7 @@ int LaserFireLocalPlayer (void)
 	if (gameData.weapons.nPrimary == OMEGA_INDEX)
 		xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
 	if (gameStates.app.nDifficultyLevel < 2)
-		xEnergyUsed = fixmul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
+		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
 	//	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
 	if (weapon_index == HELIX_INDEX)
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1944,10 +1944,10 @@ int CreateHomingMissile (object *objP, int nGoalObj, ubyte objtype, int make_sou
 	//vms_vector	vGoalPos;
 
 	if (nGoalObj == -1) {
-		make_random_vector (&vGoal);
+		MakeRandomVector (&vGoal);
 	} else {
 		VmVecNormalizedDirQuick (&vGoal, &gameData.objs.objects [nGoalObj].pos, &objP->pos);
-		make_random_vector (&random_vector);
+		MakeRandomVector (&random_vector);
 		VmVecScaleInc (&vGoal, &random_vector, F1_0/4);
 		VmVecNormalizeQuick (&vGoal);
 	}		
