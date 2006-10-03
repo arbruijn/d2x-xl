@@ -1109,12 +1109,24 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
+static inline float ObjectDamage (object *objP)
+{
+if (objP->type == OBJ_ROBOT)
+	return f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+if (objP->type == OBJ_PLAYER)
+	return f2fl (gameData.multi.players [objP->id].shields) / 100;
+return 1.0f;
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderDamageIndicator (object *objP, tRgbColorf *pc)
 {
 	fVector3		fPos;
 	float			r, r2, w;
 
-if (EGI_FLAG (bDamageIndicators, 0, 0)) {
+if (EGI_FLAG (bDamageIndicators, 0, 0) &&
+	 (extraGameInfo [IsMultiGame].bTargetIndicators == 1)) {
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->pos);
 	G3TransformPointf (&fPos, &fPos);
@@ -1125,10 +1137,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 0)) {
 	fPos.p.x -= r;
 	fPos.p.y += r;
 	fPos.p.z = -fPos.p.z;
-	if (objP->type == OBJ_ROBOT)
-		w *= f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
-	else if (objP->type == OBJ_PLAYER)
-		w *= f2fl (gameData.multi.players [objP->id].shields);
+	w *= ObjectDamage (objP);
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glBegin (GL_QUADS);
 	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
@@ -1152,8 +1161,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 0)) {
 
 void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 {
-	fVector3		fPos;
-	float			r, r2;
+	fVector3		fPos, fVerts [4];
+	float			r, r2, r3;
 
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
@@ -1161,21 +1170,68 @@ if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	G3TransformPointf (&fPos, &fPos);
 	fPos.p.z = -fPos.p.z;
 	r = f2fl (objP->size);
-	r2 = r * 2 / 3;
 	glDisable (GL_TEXTURE_2D);
 	glColor3fv ((GLfloat *) pc);
-	glBegin (GL_LINE_STRIP);
-	glVertex3f (fPos.p.x - r2, fPos.p.y - r, fPos.p.z);
-	glVertex3f (fPos.p.x - r, fPos.p.y - r, fPos.p.z);
-	glVertex3f (fPos.p.x - r, fPos.p.y + r, fPos.p.z);
-	glVertex3f (fPos.p.x - r2, fPos.p.y + r, fPos.p.z);
-	glEnd ();
-	glBegin (GL_LINE_STRIP);
-	glVertex3f (fPos.p.x + r2, fPos.p.y - r, fPos.p.z);
-	glVertex3f (fPos.p.x + r, fPos.p.y - r, fPos.p.z);
-	glVertex3f (fPos.p.x + r, fPos.p.y + r, fPos.p.z);
-	glVertex3f (fPos.p.x + r2, fPos.p.y + r, fPos.p.z);
-	glEnd ();
+	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
+		r2 = r * 2 / 3;
+		fVerts [0].p.x = fVerts [3].p.x = fPos.p.x - r2;
+		fVerts [1].p.x = fVerts [2].p.x = fPos.p.x - r;
+		fVerts [0].p.y = fVerts [1].p.y = fPos.p.y - r;
+		fVerts [2].p.y = fVerts [3].p.y = fPos.p.y + r;
+		fVerts [0].p.z =
+		fVerts [1].p.z =
+		fVerts [2].p.z =
+		fVerts [3].p.z = fPos.p.z;
+
+		glBegin (GL_LINE_STRIP);
+		glVertex3fv ((GLfloat *) fVerts);
+		glVertex3fv ((GLfloat *) (fVerts + 1));
+		glVertex3fv ((GLfloat *) (fVerts + 2));
+		glVertex3fv ((GLfloat *) (fVerts + 3));
+		glEnd ();
+		fVerts [0].p.x = fVerts [3].p.x = fPos.p.x + r2;
+		fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + r;
+		glBegin (GL_LINE_STRIP);
+		glVertex3fv ((GLfloat *) fVerts);
+		glVertex3fv ((GLfloat *) (fVerts + 1));
+		glVertex3fv ((GLfloat *) (fVerts + 2));
+		glVertex3fv ((GLfloat *) (fVerts + 3));
+		glEnd ();
+		}
+	else {	//triangle
+		r2 = r / 3;
+		fVerts [0].p.x = fPos.p.x - r2;
+		fVerts [1].p.x = fPos.p.x + r2;
+		fVerts [2].p.x = fPos.p.x;
+		fVerts [0].p.y = fVerts [1].p.y = fPos.p.y + r;
+		fVerts [2].p.y = fPos.p.y + r - r2;
+		fVerts [0].p.z =
+		fVerts [1].p.z =
+		fVerts [2].p.z = fPos.p.z;
+		glBegin (GL_LINE_LOOP);
+		glVertex3fv ((GLfloat *) fVerts);
+		glVertex3fv ((GLfloat *) (fVerts + 1));
+		glVertex3fv ((GLfloat *) (fVerts + 2));
+		glEnd ();
+		if (EGI_FLAG (bDamageIndicators, 0, 0)) {
+			r3 = ObjectDamage (objP);
+			if (r3 < 1.0f) {
+				if (r3 < 0.0f)
+					r3 = 0.0f;
+				fVerts [0].p.x = fPos.p.x - r2 * r3;
+				fVerts [1].p.x = fPos.p.x + r2 * r3;
+				fVerts [2].p.x = fPos.p.x;
+				fVerts [0].p.y = fVerts [1].p.y = fPos.p.y + r - r2 * (1.0f - r3);
+				//fVerts [2].p.y = fPos.p.y + r - r2;
+				}
+			}
+		glBegin (GL_TRIANGLES);
+		glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
+		glVertex3fv ((GLfloat *) fVerts);
+		glVertex3fv ((GLfloat *) (fVerts + 1));
+		glVertex3fv ((GLfloat *) (fVerts + 2));
+		glEnd ();
+		}
 	}
 RenderDamageIndicator (objP, pc);
 }

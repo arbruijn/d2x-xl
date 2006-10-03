@@ -661,6 +661,8 @@ if (gameOpts->render.smoke.bSort) {
 	if (!(pCloud->pPartIdx = (tPartIdx *) d_malloc (nMaxParts * sizeof (tPartIdx))))
 		gameOpts->render.smoke.bSort = 0;
 	}
+else
+	pCloud->pPartIdx = NULL;
 pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
