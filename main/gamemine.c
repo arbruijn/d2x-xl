@@ -1120,7 +1120,7 @@ int ComputeNearestSegmentLights (int i)
 {
 	segment				*segP;
 	tOglLight			*pl;
-	int					h, j, k, l, n, nMaxLights;
+	int					h, j, l, n, nMaxLights;
 	vms_vector			center, dist;
 	struct tLightDist	*pDists;
 
@@ -1131,21 +1131,24 @@ if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDis
 	return 0;
 	}
 nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
-h = (nMaxLights < MAX_NEAREST_LIGHTS) ? nMaxLights : MAX_NEAREST_LIGHTS;
+if (nMaxLights > MAX_NEAREST_LIGHTS)
+	nMaxLights = MAX_NEAREST_LIGHTS;
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
-for (i = 0, segP = gameData.segs.segments + i; i < j; i++, segP++) {
+for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.ogl.lights;
 	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
 		VmVecSub (&dist, &center, &pl->vPos);
+		h = VmVecMag (&dist);
 		if ((pDists [n].nDist = VmVecMag (&dist)) <= F1_0 * 125) {
 			pDists [n].nIndex = l;
 			n++;
 			}
 		}
-	QSortLightDist (pDists, 0, n - 1);
-	k = (h < n) ? h : n;
-	for (l = 0; l < k; l++)
+	if (n)
+		QSortLightDist (pDists, 0, n - 1);
+	h = (nMaxLights < n) ? nMaxLights : n;
+	for (l = 0; l < h; l++)
 		gameData.render.lights.ogl.nNearestLights [i][l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.ogl.nNearestLights [i][l] = -1;
