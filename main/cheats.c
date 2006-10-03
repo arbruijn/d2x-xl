@@ -640,7 +640,7 @@ if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pChe
 				pCheat->pszCheat))
 	return 0;	// not this cheatcode
 #ifdef RELEASE
-if (pCheat->bPunish && (gameData.app.nGameMode & GM_MULTI) &&
+if (pCheat->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
 	return 1;

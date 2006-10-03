@@ -1485,6 +1485,7 @@ void NetworkSendExtraGameInfo (sequence_packet *their)
 	ubyte bFastPitch = extraGameInfo [1].bFastPitch;
 	ubyte bDarkMatch = extraGameInfo [1].bDarkMatch;
 	ubyte bTeamDoors = extraGameInfo [1].bTeamDoors;
+	ubyte bEnableCheats = extraGameInfo [1].bEnableCheats;
 	ubyte bTargetIndicators = extraGameInfo [1].bTargetIndicators;
 	ubyte bDamageIndicators = extraGameInfo [1].bDamageIndicators;
 	ubyte bDualMissileLaunch = extraGameInfo [1].bDualMissileLaunch;
@@ -1496,6 +1497,7 @@ extraGameInfo [1].bMouseLook = bMouseLook;
 extraGameInfo [1].bFastPitch = bFastPitch;
 extraGameInfo [1].bDarkMatch = bDarkMatch;
 extraGameInfo [1].bTeamDoors = bTeamDoors;
+extraGameInfo [1].bEnableCheats = bEnableCheats;
 extraGameInfo [1].bTargetIndicators = bTargetIndicators;
 extraGameInfo [1].bDamageIndicators = bDamageIndicators;
 extraGameInfo [1].bDualMissileLaunch = bDualMissileLaunch;
