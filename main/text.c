@@ -1589,6 +1589,7 @@ char *defaultGameTexts [][2] = {
 	{"kein Licht von ~Powerups", "no light from ~Powerups"},
 	{"Spot~Groesse: %s", "Sp~Ot size: %s"},
 	{"Nur ~Freundkennungen anzeigen", "show only ~Friendly tags"},
+	{"~Kennungen getarnter Objekte anzeigen", "show tags for ~Cloaked objects"},
 #if 0
 	{"", ""},
 #endif

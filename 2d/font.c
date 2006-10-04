@@ -1378,7 +1378,7 @@ grs_bitmap *CreateStringBitmap (
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
 	grs_bitmap	*bmP, *bmfP;
 	grs_rgba		hc, kc, *pc;
-	ubyte			*pf, *palP;
+	ubyte			*pf, *palP = NULL;
 	ubyte			c;
 	char			*text_ptr, *text_ptr1, *next_row;
 	int			letter;
