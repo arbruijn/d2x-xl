@@ -1285,7 +1285,7 @@ void RenderTowedFlag (object *objP)
 		float	u, v;
 	} uv;
 
-	static uv uvList [4] = {{0.0f, -0.3f},{1.0f, -0.3f},{1.0f,1.0f / 0.7f},{0.0f, 0.7f}};
+	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
 if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
 		vms_vector		vPos = objP->pos;
@@ -1386,12 +1386,12 @@ switch (objP->render_type) {
 			else
 				DrawPolygonObject (objP);
 			RenderPlayerShield (objP);
-			RenderTargetIndicator (objP, NULL, 0);
+			RenderTargetIndicator (objP, NULL);
 			RenderTowedFlag (objP);
 			}
 		else if (objP->type == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
-			RenderTargetIndicator (objP, NULL, 0);
+			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2) {

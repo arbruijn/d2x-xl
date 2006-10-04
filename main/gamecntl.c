@@ -1314,7 +1314,7 @@ int HandleSystemKey(int key)
 			if (!IsMultiGame || IsCoopGame)
 #endif			
 				gameStates.render.bExternalView = !gameStates.render.bExternalView;
-			ResetFlightPath (&externalView, -1);
+			ResetFlightPath (&externalView, -1, -1);
 			break;
 
 		case KEY_SHIFTED + KEY_F9:

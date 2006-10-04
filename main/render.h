@@ -170,7 +170,7 @@ void UpdateRenderedData (int window_num, object *viewer, int rear_view_flag, int
 
 extern tFlightPath externalView;
 
-void ResetFlightPath (tFlightPath *pPath, int nSize);
+void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
 void SetPathPoint (tFlightPath *pPath, object *objP);
 tPathPoint *GetPathPoint (tFlightPath *pPath);
 

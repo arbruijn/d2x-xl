@@ -610,7 +610,7 @@ switch (objtype) {
 			fix xLight = vcP->light_value;
 			int i, j;
 			grs_bitmap *bmP;
-#if 1
+#if 0
 			color->red =
 			color->green =
 			color->blue = 0.0f;

@@ -1223,7 +1223,7 @@ InitCamBots (0);
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (segment)* (gameData.segs.nLastSegment+1));
 ResetNetworkObjects ();
 ResetChildObjects ();
-ResetFlightPath (&externalView, -1);
+ResetFlightPath (&externalView, -1, -1);
 /*---*/LogErr ("   counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {

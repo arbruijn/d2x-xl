@@ -2483,9 +2483,10 @@ tFlightPath	externalView;
 
 //------------------------------------------------------------------------------
 
-void ResetFlightPath (tFlightPath *pPath, int nSize)
+void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS)
 {
 pPath->nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
+pPath->tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
 pPath->nStart =
 pPath->nEnd = 0;
 pPath->pPos = NULL;
@@ -2498,10 +2499,10 @@ void SetPathPoint (tFlightPath *pPath, object *objP)
 {
 	time_t	t = SDL_GetTicks () - pPath->tUpdate;
 
-if ((pPath->tUpdate < 0) || (t >= 1000 / 40)) {
+if ((pPath->tUpdate < 0) || (t >= pPath->tRefresh)) {
 	pPath->tUpdate = t;
 //	h = pPath->nEnd;
-	pPath->nEnd = (pPath->nEnd + 1) % MAX_PATH_POINTS;
+	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
 	pPath->path [pPath->nEnd].vOrgPos = objP->pos;
 	pPath->path [pPath->nEnd].vPos = objP->pos;
 	pPath->path [pPath->nEnd].mOrient = objP->orient;
@@ -2511,7 +2512,7 @@ if ((pPath->tUpdate < 0) || (t >= 1000 / 40)) {
 //		pPath->nEnd = h;
 //	else 
 	if (pPath->nEnd == pPath->nStart)
-		pPath->nStart = (pPath->nStart + 1) % MAX_PATH_POINTS;
+		pPath->nStart = (pPath->nStart + 1) % pPath->nSize;
 	}
 }
 
@@ -2529,7 +2530,7 @@ if (pPath->nStart == pPath->nEnd) {
 i = pPath->nEnd;
 do {
 	if (!i)
-		i = MAX_PATH_POINTS;
+		i = pPath->nSize;
 	i--;
 	if (VmVecDist (&pPath->path [i].vPos, p) >= i2f (15))
 		break;

@@ -1142,6 +1142,7 @@ typedef struct tFlightPath {
 	int					nSize;
 	int					nStart;
 	int					nEnd;
+	time_t				tRefresh;
 	time_t				tUpdate;
 } tFlightPath;
 #endif

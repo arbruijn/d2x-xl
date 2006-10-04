@@ -423,10 +423,10 @@ if (gameData.app.nGameMode & GM_NETWORK)
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	int i;
 	for (i = 0; i < gameData.multi.nMaxPlayers; i++) // Reset keys
-		gameData.multi.players [i].flags &= ~ (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY);
+		gameData.multi.players [i].flags &= ~(PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY);
 	}
 for (i = 0; i < gameData.multi.nMaxPlayers; i++)
-	gameData.multi.players [i].flags &= ~ (PLAYER_FLAGS_FLAG);  // Clear capture flag
+	gameData.multi.players [i].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
 
 #endif
 
@@ -3971,7 +3971,7 @@ if (bonus>PhallicLimit) {
 	PhallicMan = nPlayer;
 	PhallicLimit = bonus;
 	}
-gameData.multi.players [nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);  // Clear orb flag
+gameData.multi.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear orb flag
 multiData.kills.nTeam [GetTeam (nPlayer)] += bonus;
 gameData.multi.players [nPlayer].net_kills_total += bonus;
 gameData.multi.players [nPlayer].KillGoalCount += bonus;
@@ -4061,7 +4061,8 @@ else if (GetTeam (nPlayer) == TEAM_RED)
 	DigiStartSoundQueued (SOUND_HUD_RED_GOT_FLAG, F1_0*2);
 else
 	DigiStartSoundQueued (SOUND_HUD_BLUE_GOT_FLAG, F1_0*2);
-gameData.multi.players [nPlayer].flags|= PLAYER_FLAGS_FLAG;
+gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_FLAG;
+ResetFlightPath (&gameData.pig.flags [!GetTeam (nPlayer)].path, 10, -1);
 HUDInitMessage (TXT_PICKFLAG2, gameData.multi.players [nPlayer].callsign);
 }
 

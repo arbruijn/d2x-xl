@@ -465,7 +465,7 @@ if (LOCALPLAYER (nPlayer)) {
 		if (GetTeam ((char) gameData.multi.nLocalPlayer) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
-			ResetFlightPath (&gameData.pig.flags [nOtherTeam].path, 10);
+			ResetFlightPath (&gameData.pig.flags [nThisTeam].path, 10, -1);
 			MultiSendGotFlag ((char) gameData.multi.nLocalPlayer);
 			return 1;
 			}
