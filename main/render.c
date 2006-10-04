@@ -1732,10 +1732,10 @@ if (! cc.and) {		//all off screen?
 	//draw a little cross at the current vert
 	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
-	gr_line(pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT);
-	gr_line(pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT,pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy);
-	gr_line(pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT);
-	gr_line(pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT,pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy);
+	GrLine(pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT);
+	GrLine(pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT,pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy);
+	GrLine(pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT);
+	GrLine(pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT,pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy);
 	}
 }
 
@@ -1806,10 +1806,10 @@ void draw_window_box(unsigned int color,short left,short top,short right,short b
 	if (r>=grdCurCanv->cv_bitmap.bm_props.w) r=grdCurCanv->cv_bitmap.bm_props.w-1;
 	if (b>=grdCurCanv->cv_bitmap.bm_props.h) b=grdCurCanv->cv_bitmap.bm_props.h-1;
 
-	gr_line(i2f(l),i2f(t),i2f(r),i2f(t));
-	gr_line(i2f(r),i2f(t),i2f(r),i2f(b));
-	gr_line(i2f(r),i2f(b),i2f(l),i2f(b));
-	gr_line(i2f(l),i2f(b),i2f(l),i2f(t));
+	GrLine(i2f(l),i2f(t),i2f(r),i2f(t));
+	GrLine(i2f(r),i2f(t),i2f(r),i2f(b));
+	GrLine(i2f(r),i2f(b),i2f(l),i2f(b));
+	GrLine(i2f(l),i2f(b),i2f(l),i2f(t));
 
 }
 #endif
@@ -2479,91 +2479,77 @@ void BuildObjectLists(int n_segs)
 #define	PP_DELTAZ	-i2f(30)
 #define	PP_DELTAY	i2f (10)
 
-typedef struct tMovementPath {
-	vms_vector	pos, basePos;
-	vms_matrix	orient;
-} tMovementPath;
-
-#define MAX_PATH_POS		20
-
-int nPathStart = 0;
-int nPathEnd = 0;
-time_t mpUpdate;
-
-tMovementPath movementPath [MAX_PATH_POS];
-tMovementPath *pPathPos = NULL;
+tFlightPath	externalView;
 
 //------------------------------------------------------------------------------
 
-void ResetMovementPath (void)
+void ResetFlightPath (tFlightPath *pPath, int nSize)
 {
-nPathStart =
-nPathEnd = 0;
-mpUpdate = -1;
+pPath->nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
+pPath->nStart =
+pPath->nEnd = 0;
+pPath->pPos = NULL;
+pPath->tUpdate = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void SetPathPoint (void)
+void SetPathPoint (tFlightPath *pPath, object *objP)
 {
-	time_t	t = SDL_GetTicks () - mpUpdate;
+	time_t	t = SDL_GetTicks () - pPath->tUpdate;
 
-if ((mpUpdate < 0) || (t >= 1000 / 40)) {
-	mpUpdate = t;
-//	h = nPathEnd;
-	nPathEnd = (nPathEnd + 1) % MAX_PATH_POS;
-	movementPath [nPathEnd].basePos = gameData.objs.viewer->pos;
-	movementPath [nPathEnd].pos = gameData.objs.viewer->pos;
-	movementPath [nPathEnd].orient = gameData.objs.viewer->orient;
-	VmVecScaleInc (&movementPath [nPathEnd].pos, &gameData.objs.viewer->orient.fvec, 0);
-	VmVecScaleInc (&movementPath [nPathEnd].pos, &gameData.objs.viewer->orient.uvec, 0);
-//	if (!memcmp (movementPath + h, movementPath + nPathEnd, sizeof (tMovementPath)))
-//		nPathEnd = h;
+if ((pPath->tUpdate < 0) || (t >= 1000 / 40)) {
+	pPath->tUpdate = t;
+//	h = pPath->nEnd;
+	pPath->nEnd = (pPath->nEnd + 1) % MAX_PATH_POINTS;
+	pPath->path [pPath->nEnd].vOrgPos = objP->pos;
+	pPath->path [pPath->nEnd].vPos = objP->pos;
+	pPath->path [pPath->nEnd].mOrient = objP->orient;
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.fvec, 0);
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.uvec, 0);
+//	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
+//		pPath->nEnd = h;
 //	else 
-	if (nPathEnd == nPathStart)
-		nPathStart = (nPathStart + 1) % MAX_PATH_POS;
+	if (pPath->nEnd == pPath->nStart)
+		pPath->nStart = (pPath->nStart + 1) % MAX_PATH_POINTS;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+tPathPoint *GetPathPoint (tFlightPath *pPath)
+{
+	vms_vector		*p = &pPath->path [pPath->nEnd].vPos;
+	int				i;
+
+if (pPath->nStart == pPath->nEnd) {
+	pPath->pPos = NULL;
+	return NULL;
+	}
+i = pPath->nEnd;
+do {
+	if (!i)
+		i = MAX_PATH_POINTS;
+	i--;
+	if (VmVecDist (&pPath->path [i].vPos, p) >= i2f (15))
+		break;
+	}
+while (i != pPath->nStart);
+return pPath->pPos = pPath->path + i;
 }
 
 //------------------------------------------------------------------------------
 
 void GetViewPoint (void)
 {
-	vms_vector		*p = &movementPath [nPathEnd].pos;
-	int				i;
+	tPathPoint		*p = GetPathPoint (&externalView);
 
-if (nPathStart == nPathEnd) {
+if (!p)
 	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fvec, PP_DELTAZ);
-#if 1//ndef _DEBUG
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.uvec, PP_DELTAY);
-#endif
-	pPathPos = NULL;
-	}
 else {
-//	for (i = j = nPathStart; i != nPathEnd; j = i, i = (i + 1) % MAX_PATH_POS)
-	i = nPathEnd;
-	do {
-		if (!i)
-			i = MAX_PATH_POS;
-		i--;
-		if (VmVecDist (&movementPath [i].pos, p) >= i2f (15))
-			break;
-		}
-	while (i != nPathStart);
-/*
-	if (i != nPathEnd)
-		nPathStart = i = j;
-	else
-		i = nPathEnd;
-*/
-	pPathPos = movementPath + i;
-	viewerEye = pPathPos->pos;
-#if 0//def _DEBUG
-	VmVecScaleInc (&viewerEye, &pPathPos->orient.fvec, PP_DELTAZ / 3);
-#else
-	VmVecScaleInc (&viewerEye, &pPathPos->orient.fvec, PP_DELTAZ * 2 / 3);
-	VmVecScaleInc (&viewerEye, &pPathPos->orient.uvec, PP_DELTAY * 2 / 3);
-#endif
+	viewerEye = p->vPos;
+	VmVecScaleInc (&viewerEye, &p->mOrient.fvec, PP_DELTAZ * 2 / 3);
+	VmVecScaleInc (&viewerEye, &p->mOrient.uvec, PP_DELTAY * 2 / 3);
 	}
 }
 
@@ -2789,7 +2775,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 	viewerEye = gameData.objs.viewer->pos;
 #endif
 
-pPathPos = NULL;
+externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	startSegNum = gameData.objs.viewer->segnum;
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
@@ -2857,13 +2843,13 @@ else {
 			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame)) {
 #endif			 	
 #if 1
-			SetPathPoint ();
+			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
 #else
 			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fvec, -i2f (30));
 			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.uvec, i2f (10));
 #endif
-			G3SetViewMatrix (&viewerEye, pPathPos ? &pPathPos->orient : &gameData.objs.viewer->orient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 			}
 		else
 			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, fixdiv (nRenderZoom, gameStates.render.nZoomFactor));
@@ -2903,7 +2889,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 #else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame))
 #endif			 	
-			G3SetViewMatrix (&viewerEye, pPathPos ? &pPathPos->orient : &gameData.objs.viewer->orient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 		else
 			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, fixdiv (nRenderZoom, gameStates.render.nZoomFactor));
 		ApplyShadowMaps (startSegNum, nEyeOffset, nWindowNum);
@@ -2939,7 +2925,7 @@ G3EndFrame ();
 
 int nFirstTerminalSeg;
 
-void update_rendered_data(int nWindowNum, object *viewer, int rear_view_flag, int user)
+void UpdateRenderedData(int nWindowNum, object *viewer, int rear_view_flag, int user)
 {
 	Assert(nWindowNum < MAX_RENDERED_WINDOWS);
 	Window_rendered_data [nWindowNum].frame = gameData.app.nFrameCount;

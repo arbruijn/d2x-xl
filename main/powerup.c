@@ -189,6 +189,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "controls.h"
 #include "hudmsg.h"
 #include "kconfig.h"
+#include "render.h"
 
 #include "newdemo.h"
 #include "escort.h"
@@ -207,54 +208,69 @@ void CheckToUsePrimary (int);
 void MultiSendGotFlag (char);
 
 //------------------------------------------------------------------------------
+
+void UpdatePowerupClip (vclip *vcP, vclip_info *vciP, int nObject)
+{
+	static fix	xPowerupTime = 0;
+
+	int			nFrames = vcP->nFrameCount;
+	fix			xFudge = (xPowerupTime * (nObject & 3)) >> 4;
+	grs_bitmap	*bmP;
+	
+xPowerupTime += gameData.app.xFrameTime;
+
+if (vcP->flags & WCF_ALTFMT) {
+	if (vcP->flags & WCF_INITIALIZED) {
+		bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index);
+		nFrames = ((bmP->bm_type != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+		}
+	else {
+		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
+		if (!bmP)
+			vcP->flags &= ~WCF_ALTFMT;
+		else if (!gameOpts->ogl.bGlTexMerge)
+			vcP->flags &= ~WCF_ALTFMT;
+		else 
+			vcP->flags |= WCF_INITIALIZED;
+		}
+	}
+vciP->xFrameTime -= xPowerupTime + xFudge;
+while (vciP->xFrameTime < 0) {
+	vciP->xFrameTime += vcP->xFrameTime;
+	if (nObject & 1) {
+		if (0 > -- (vciP->nCurFrame))
+			vciP->nCurFrame = nFrames - 1;
+		}
+	else {
+		if (++ (vciP->nCurFrame) >= nFrames)
+			vciP->nCurFrame = 0;
+		}
+	}
+xPowerupTime = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void UpdateFlagClips (void)
+{
+UpdatePowerupClip (gameData.pig.flags [0].vcP, &gameData.pig.flags [0].vci, 0);
+UpdatePowerupClip (gameData.pig.flags [1].vcP, &gameData.pig.flags [1].vci, 0);
+}
+
+//------------------------------------------------------------------------------
 //process this powerup for this frame
 void DoPowerupFrame (object *objP)
 {
-	static fix	xPowerupTime = 0;
-	
-xPowerupTime += gameData.app.xFrameTime;
 //if (gameStates.app.b40fpsTick) 
-	{
-		vclip_info	*vci = &objP->rtype.vclip_info;
-		vclip			*vcP = gameData.eff.vClips [0] + vci->nClipIndex;
-		int			i = OBJ_IDX (objP);
-		int			nFrames = vcP->nFrameCount;
-		fix			xFudge = (xPowerupTime * (i & 3)) >> 4;
-		grs_bitmap	*bmP;
+	vclip_info	*vciP = &objP->rtype.vclip_info;
+	vclip			*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
+	int			i = OBJ_IDX (objP);
 
-	if (vcP->flags & WCF_ALTFMT) {
-		if (vcP->flags & WCF_INITIALIZED) {
-			bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index);
-			nFrames = ((bmP->bm_type != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
-			}
-		else {
-			bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
-			if (!bmP)
-				vcP->flags &= ~WCF_ALTFMT;
-			else if (!gameOpts->ogl.bGlTexMerge)
-				vcP->flags &= ~WCF_ALTFMT;
-			else 
-				vcP->flags |= WCF_INITIALIZED;
-			}
-		}
-	vci->xFrameTime -= xPowerupTime + xFudge;
-	while (vci->xFrameTime < 0) {
-		vci->xFrameTime += vcP->xFrameTime;
-		if (i & 1) {
-			if (0 > -- (vci->nCurFrame))
-				vci->nCurFrame = nFrames - 1;
-			}
-		else {
-			if (++ (vci->nCurFrame) >= nFrames)
-				vci->nCurFrame = 0;
-			}
-		}
-	if (objP->lifeleft <= 0) {
-		ObjectCreateExplosion (objP->segnum, &objP->pos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
-		if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num > -1)
-			DigiLinkSoundToObject ( gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num, OBJ_IDX (objP), 0, F1_0);
-		}
-	xPowerupTime = 0;
+UpdatePowerupClip (vcP, vciP, i);
+if (objP->lifeleft <= 0) {
+	ObjectCreateExplosion (objP->segnum, &objP->pos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num > -1)
+		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num, i, 0, F1_0);
 	}
 }
 
@@ -272,11 +288,11 @@ void DrawBlobOutline (void)
 
 	GrSetColorRGB (255, 255, 255, 255);
 
-	gr_line (blob_vertices[0], blob_vertices[1], blob_vertices[2], blob_vertices[3]);
-	gr_line (blob_vertices[2], blob_vertices[3], blob_vertices[4], blob_vertices[5]);
-	gr_line (blob_vertices[4], blob_vertices[5], v3x, v3y);
+	GrLine (blob_vertices[0], blob_vertices[1], blob_vertices[2], blob_vertices[3]);
+	GrLine (blob_vertices[2], blob_vertices[3], blob_vertices[4], blob_vertices[5]);
+	GrLine (blob_vertices[4], blob_vertices[5], v3x, v3y);
 
-	gr_line (v3x, v3y, blob_vertices[0], blob_vertices[1]);
+	GrLine (v3x, v3y, blob_vertices[0], blob_vertices[1]);
 }
 #endif
 
@@ -447,8 +463,9 @@ if (LOCALPLAYER (nPlayer)) {
 	player	*playerP = gameData.multi.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
 		if (GetTeam ((char) gameData.multi.nLocalPlayer) == nOtherTeam) {
-			PowerupBasic (15, 0, 15, 0, "BLUE FLAG!", nPlayer);
+			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
+			ResetFlightPath (&gameData.pig.flags [nOtherTeam].path, 10);
 			MultiSendGotFlag ((char) gameData.multi.nLocalPlayer);
 			return 1;
 			}

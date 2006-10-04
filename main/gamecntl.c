@@ -120,8 +120,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define Arcade_mode 0
 
-void ResetMovementPath ();
-
 #ifdef EDITOR
 #include "editor/editor.h"
 #endif
@@ -239,6 +237,7 @@ void TransferEnergyToShield(fix time)
 	gameData.multi.players [gameData.multi.nLocalPlayer].energy  -= e;
 	gameData.multi.players [gameData.multi.nLocalPlayer].shields += e/CONVERTER_SCALE;
 	MultiSendShields ();
+	gameStates.app.bUsingConverter = 1;
 	if (last_play_time > gameData.app.xGameTime)
 		last_play_time = 0;
 
@@ -1315,7 +1314,7 @@ int HandleSystemKey(int key)
 			if (!IsMultiGame || IsCoopGame)
 #endif			
 				gameStates.render.bExternalView = !gameStates.render.bExternalView;
-			ResetMovementPath ();
+			ResetFlightPath (&externalView, -1);
 			break;
 
 		case KEY_SHIFTED + KEY_F9:

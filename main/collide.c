@@ -2165,7 +2165,7 @@ void CollideRobotAndWeapon (object * robot, object * weapon, vms_vector *vHitPt)
 		 gameStates.app.cheats.bRobotsKillRobots || 
 		 (EGI_FLAG (bRobotsHitRobots, 0, 0))) && 
 		 !(robot->flags & OF_EXPLODING))	{	
-		object *expl_obj=NULL;
+		object *expl_obj = NULL;
 
 		if (weapon->ctype.laser_info.parent_num == gameData.multi.players [gameData.multi.nLocalPlayer].objnum) {
 			create_awareness_event (weapon, PA_WEAPON_ROBOT_COLLISION);			// object "weapon" can attract attention to player

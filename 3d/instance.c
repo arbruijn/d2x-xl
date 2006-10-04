@@ -88,7 +88,7 @@ else
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset   
-void G3StartInstanceMatrix(vms_vector *pos, vms_matrix *orient)
+void G3StartInstanceMatrix (vms_vector *pos, vms_matrix *orient)
 {
 if (gameStates.ogl.bUseTransform) {
 	vms_vector	h;

@@ -1590,6 +1590,7 @@ char *defaultGameTexts [][2] = {
 	{"Spot~Groesse: %s", "Sp~Ot size: %s"},
 	{"Nur ~Freundkennungen anzeigen", "show only ~Friendly tags"},
 	{"~Kennungen getarnter Objekte anzeigen", "show tags for ~Cloaked objects"},
+	{"~Flaggen schleppen", "tow ~Flags"},
 #if 0
 	{"", ""},
 #endif
@@ -2009,6 +2010,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, only target and damage indicators of team mates\nare displayed."},
 	{"Wenn angekreuzt, erhalten auch getarnte Objekte Ziel- und Schadens-\nanzeigen. Sonst erhalten getarnte Objekte diese Anzeigen nicht.", 
 	 "If checked, target and damage indicators are shown for cloaked\nobjects, too. Otherwise, cloaked objects do not have target\nor damage indicators."},
+	 {"Wenn angekreuzt, werden eroberte Flaggen hinter dem Schiff\nhergezogen.", 
+	  "If checked, captured flags are towed behind the player ships."},
 #if 0
 	{"", ""},
 #endif

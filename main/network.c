@@ -396,7 +396,11 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 		return 1;
 	}
 else if (gameStates.multi.nGameType == UDP_GAME) {
+#ifdef _DEBUG
+	if (memcmp (network1, network2, sizeof (network_info)))	//check the port too
+#else
 	if (memcmp (network1, network2, sizeof (network_info) - 2))
+#endif
 		return 1;
 	}
 else {
@@ -1481,22 +1485,24 @@ MultiSendMonsterball (1, 1);
 
 void NetworkSendExtraGameInfo (sequence_packet *their)
 {
-	extra_gameinfo	egi1save = extraGameInfo [1];
+	extra_gameinfo	egi1Save = extraGameInfo [1];
 
 extraGameInfo [1] = extraGameInfo [0];
-extraGameInfo [1].bMouseLook = egi1save.bMouseLook;
-extraGameInfo [1].bFastPitch = egi1save.bFastPitch;
-extraGameInfo [1].bTeamDoors = egi1save.bTeamDoors;
-extraGameInfo [1].bEnableCheats = egi1save.bEnableCheats;
-extraGameInfo [1].bTargetIndicators = egi1save.bTargetIndicators;
-extraGameInfo [1].bDamageIndicators = egi1save.bDamageIndicators;
-extraGameInfo [1].bDualMissileLaunch = egi1save.bDualMissileLaunch;
-extraGameInfo [1].bDisableReactor = egi1save.bDisableReactor;
-extraGameInfo [1].bRotateLevels = egi1save.bRotateLevels;
-extraGameInfo [1].bDarkMatch = egi1save.bDarkMatch;
-extraGameInfo [1].bHeadLights = egi1save.bHeadLights;
-extraGameInfo [1].bPowerupLights = egi1save.bPowerupLights;
-extraGameInfo [1].nSpotSize = egi1save.nSpotSize;
+extraGameInfo [1].bMouseLook = egi1Save.bMouseLook;
+extraGameInfo [1].bFastPitch = egi1Save.bFastPitch;
+extraGameInfo [1].bTeamDoors = egi1Save.bTeamDoors;
+extraGameInfo [1].bEnableCheats = egi1Save.bEnableCheats;
+extraGameInfo [1].bTargetIndicators = egi1Save.bTargetIndicators;
+extraGameInfo [1].bDamageIndicators = egi1Save.bDamageIndicators;
+extraGameInfo [1].bFriendlyIndicators = egi1Save.bFriendlyIndicators;
+extraGameInfo [1].bTowFlags = egi1Save.bTowFlags;
+extraGameInfo [1].bDualMissileLaunch = egi1Save.bDualMissileLaunch;
+extraGameInfo [1].bDisableReactor = egi1Save.bDisableReactor;
+extraGameInfo [1].bRotateLevels = egi1Save.bRotateLevels;
+extraGameInfo [1].bDarkMatch = egi1Save.bDarkMatch;
+extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
+extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
+extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
 extraGameInfo [1].bRadarEnabled = ((netGame.game_flags & NETGAME_FLAG_SHOW_MAP) != 0);
 extraGameInfo [1].type = PID_EXTRA_GAMEINFO;
 gameStates.app.bHaveExtraGameInfo [1] = 1;

@@ -414,7 +414,6 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 void ShowLevelIntro (int nLevel);
 int StartNewLevelSecret (int nLevel, int bPageInTextures);
 void InitPlayerPosition (int bRandom);
-void ResetMovementPath ();
 void LoadStars (bkg *bg, int bRedraw);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
@@ -1224,7 +1223,7 @@ InitCamBots (0);
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (segment)* (gameData.segs.nLastSegment+1));
 ResetNetworkObjects ();
 ResetChildObjects ();
-ResetMovementPath ();
+ResetFlightPath (&externalView, -1);
 /*---*/LogErr ("   counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {
@@ -1265,6 +1264,7 @@ gameStates.render.bViewDist = 1;
 gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
+gameStates.app.bUsingConverter = 0;
 if (gameOpts->ogl.bUseLighting)
 	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
@@ -2279,7 +2279,7 @@ gameData.objs.objects [i].rtype.vclip_info.xFrameTime =
 void FilterObjectsFromLevel ()
  {
   int i;
-
+return;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].type==OBJ_POWERUP)
 		if (gameData.objs.objects [i].id==POW_FLAG_RED || gameData.objs.objects [i].id==POW_FLAG_BLUE)
@@ -2292,7 +2292,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 struct {
 	int	nLevel;
 	char	movie_name [FILENAME_LEN];
-} intro_movie [] = { 	{ 1,"pla"},
+} intro_movie [] = { { 1,"pla"},
 							{ 5,"plb"},
 							{ 9,"plc"},
 							{13,"pld"},

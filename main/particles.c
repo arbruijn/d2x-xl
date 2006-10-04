@@ -95,7 +95,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		191 //128 //191
+#define SMOKE_START_ALPHA		128 //191
 
 //	-----------------------------------------------------------------------------
 
@@ -590,6 +590,7 @@ glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //glDisable (GL_DEPTH_TEST);
+glDepthMask (0);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
@@ -647,6 +648,7 @@ if (gameStates.render.bPointSprites) {
 	}
 #endif
 //glEnable (GL_DEPTH_TEST);
+glDepthMask (1);
 glDisable (GL_TEXTURE_2D);
 return 1;
 }

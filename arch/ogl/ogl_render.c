@@ -92,7 +92,7 @@ GLuint glExitTMU = 0;
 
 int OglBindBmTex (grs_bitmap *bm, int transp);
 void ogl_clean_texture_cache (void);
-/*inline*/ void SetTMapColor (uvl *uvl_list, int i, grs_bitmap *bm, int bResetColor);
+/*inline*/ void SetTMapColor (uvl *uvlList, int i, grs_bitmap *bm, int bResetColor);
 
 //------------------------------------------------------------------------------
 
@@ -406,7 +406,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPoly (int nv, g3s_point **pointlist)
+bool G3DrawPoly (int nv, g3s_point **pointList)
 {
 	int i;
 
@@ -414,9 +414,9 @@ r_polyc++;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < nv; i++, pointlist++) {
-//	glVertex3f (f2glf (pointlist [c]->p3_vec.x), f2glf (pointlist [c]->p3_vec.y), f2glf (pointlist [c]->p3_vec.z);
-	OglVertex3f (*pointlist);
+for (i = 0; i < nv; i++, pointList++) {
+//	glVertex3f (f2glf (pointList [c]->p3_vec.x), f2glf (pointList [c]->p3_vec.y), f2glf (pointList [c]->p3_vec.z);
+	OglVertex3f (*pointList);
 	}
 if (grdCurCanv->cv_color.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
@@ -426,7 +426,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nv, g3s_point **pointlist, 
+bool G3DrawPolyAlpha (int nv, g3s_point **pointList, 
 							 float red, float green, float blue, float alpha)
 {
 	int			c;
@@ -445,7 +445,7 @@ if (alpha < 0)
 glColor4f (red, green, blue, alpha);
 glBegin (GL_TRIANGLE_FAN);
 for (c = 0; c < nv; c++)
-	OglVertex3f (*pointlist++);
+	OglVertex3f (*pointList++);
 glEnd ();
 glDepthFunc (curFunc);
 return 0;
@@ -491,7 +491,7 @@ tFaceColor vertColors [8] = {
 // exceed 1.0. If so, all three color values are scaled so that their maximum multiplied
 // with the max. brightness does not exceed 1.0.
 
-inline void CapTMapColor (uvl *uvl_list, int nv, grs_bitmap *bm)
+inline void CapTMapColor (uvl *uvlList, int nv, grs_bitmap *bm)
 {
 #if 0
 	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
@@ -501,8 +501,8 @@ if (! (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) && color) {
 		double	h, l = 0;
 		int		i;
 
-	for (i = 0; i < nv; i++, uvl_list++) {
-		h = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvl_list->l);
+	for (i = 0; i < nv; i++, uvlList++) {
+		h = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvlList->l);
 		if (l < h)
 			l = h;
 		}
@@ -574,9 +574,9 @@ else {
 
 //------------------------------------------------------------------------------
 
-/*inline*/ void SetTMapColor (uvl *uvl_list, int i, grs_bitmap *bm, int bResetColor)
+/*inline*/ void SetTMapColor (uvl *uvlList, int i, grs_bitmap *bm, int bResetColor)
 {
-	float l = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvl_list->l);
+	float l = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
 	float s = 1.0f;
 
 if (!gameStates.render.nRenderPass)
@@ -622,26 +622,26 @@ else {
 
 //------------------------------------------------------------------------------
 
-inline void SetTexCoord (uvl *uvl_list, int orient, int multi)
+inline void SetTexCoord (uvl *uvlList, int orient, int multi)
 {
 	float u1, v1;
 
 switch (orient) {
 	case 1:
-		u1 = 1.0f - f2glf (uvl_list->v);
-		v1 = f2glf (uvl_list->u);
+		u1 = 1.0f - f2glf (uvlList->v);
+		v1 = f2glf (uvlList->u);
 		break;
 	case 2:
-		u1 = 1.0f - f2glf (uvl_list->u);
-		v1 = 1.0f - f2glf (uvl_list->v);
+		u1 = 1.0f - f2glf (uvlList->u);
+		v1 = 1.0f - f2glf (uvlList->v);
 		break;
 	case 3:
-		u1 = f2glf (uvl_list->v);
-		v1 = 1.0f - f2glf (uvl_list->u);
+		u1 = f2glf (uvlList->v);
+		v1 = 1.0f - f2glf (uvlList->u);
 		break;
 	default:
-		u1 = f2glf (uvl_list->u);
-		v1 = f2glf (uvl_list->v);
+		u1 = f2glf (uvlList->u);
+		v1 = f2glf (uvlList->v);
 		break;
 	}
 #if OGL_MULTI_TEXTURING
@@ -833,7 +833,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3Normal (g3s_point **pointlist, vms_vector *pvNormal)
+void G3Normal (g3s_point **pointList, vms_vector *pvNormal)
 {
 vms_vector	vNormal;
 
@@ -841,11 +841,11 @@ vms_vector	vNormal;
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
 		glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
-		//VmVecAdd (&vNormal, pvNormal, &pointlist [0]->p3_vec);
+		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		G3RotatePoint (&vNormal, pvNormal);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
-		//VmVecInc (&vNormal, &pointlist [0]->p3_vec);
+		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 	}
@@ -854,14 +854,14 @@ else
 	{
 	int	v [4];
 
-	v [0] = pointlist [0]->p3_index;
-	v [1] = pointlist [1]->p3_index;
-	v [2] = pointlist [2]->p3_index;
+	v [0] = pointList [0]->p3_index;
+	v [1] = pointList [1]->p3_index;
+	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
 		VmVecNormal (&vNormal, 
-						 &pointlist [0]->p3_vec,
-						 &pointlist [1]->p3_vec,
-						 &pointlist [2]->p3_vec);
+						 &pointList [0]->p3_vec,
+						 &pointList [1]->p3_vec,
+						 &pointList [2]->p3_vec);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
 	else {
@@ -874,7 +874,7 @@ else
 			VmVecNegate (&vNormal);
 		if (!gameStates.ogl.bUseTransform)
 			G3RotatePoint (&vNormal, &vNormal);
-		//VmVecInc (&vNormal, &pointlist [0]->p3_vec);
+		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
 	}
@@ -882,19 +882,19 @@ else
 
 //------------------------------------------------------------------------------
 
-void G3CalcNormal (g3s_point **pointlist, fVector3 *pvNormal)
+void G3CalcNormal (g3s_point **pointList, fVector3 *pvNormal)
 {
 	vms_vector	vNormal;
 	int	v [4];
 
-v [0] = pointlist [0]->p3_index;
-v [1] = pointlist [1]->p3_index;
-v [2] = pointlist [2]->p3_index;
+v [0] = pointList [0]->p3_index;
+v [1] = pointList [1]->p3_index;
+v [2] = pointList [2]->p3_index;
 if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
 	VmVecNormal (&vNormal, 
-					 &pointlist [0]->p3_vec,
-					 &pointlist [1]->p3_vec,
-					 &pointlist [2]->p3_vec);
+					 &pointList [0]->p3_vec,
+					 &pointList [1]->p3_vec,
+					 &pointList [2]->p3_vec);
 	}
 else {
 	int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
@@ -1085,10 +1085,10 @@ static GLhandleARB	tmProg = (GLhandleARB) 0;
 
 bool G3DrawTexPolyMulti (
 	int			nv, 
-	g3s_point	**pointlist, 
-	uvl			*uvl_list, 
+	g3s_point	**pointList, 
+	uvl			*uvlList, 
 #if LIGHTMAPS
-	uvl			*uvl_lMap, 
+	uvl			*uvlLMap, 
 #endif
 	grs_bitmap	*bmBot, 
 	grs_bitmap	*bmTop, 
@@ -1163,14 +1163,14 @@ if (gameStates.render.color.bLightMapsOk &&
 		glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
 #endif
 	glBegin (GL_TRIANGLE_FAN);
-	pp = pointlist;
-	//CapTMapColor (uvl_list, nv, bmBot);
+	pp = pointList;
+	//CapTMapColor (uvlList, nv, bmBot);
 	for (c = 0; c < nv; c++, pp++) {
-		SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
-		glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
+		SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
+		glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [c].u), f2glf (uvlList [c].v));
 		if (bmTop)
-			SetTexCoord (uvl_list + c, orient, 1);
-		glMultiTexCoord2f (GL_TEXTURE2_ARB, f2glf (uvl_lMap [c].u), f2glf (uvl_lMap [c].v));
+			SetTexCoord (uvlList + c, orient, 1);
+		glMultiTexCoord2f (GL_TEXTURE2_ARB, f2glf (uvlLMap [c].u), f2glf (uvlLMap [c].v));
 		//G3SetNormal (*pp, pvNormal);
 		OglVertex3f (*pp);
 		}
@@ -1187,7 +1187,7 @@ else
 		glDisable (GL_TEXTURE_2D);
 		glColor4f (0, 0, 0, 1.0f - (gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS));
 		glBegin (GL_TRIANGLE_FAN);
-		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+		for (c = 0, pp = pointList; c < nv; c++, pp++) {
 			//G3SetNormal (*pp, pvNormal);
 			OglVertex3f (*pp);
 			}
@@ -1281,34 +1281,34 @@ else
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			}
 #endif
-		//CapTMapColor (uvl_list, nv, bmBot);
+		//CapTMapColor (uvlList, nv, bmBot);
 #if USE_VERTNORMS
 		//if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && !pvNormal)
 		if (pvNormal)
 			VmsVecToFloat (&vNormal, pvNormal);
 		else
-			G3CalcNormal (pointlist, &vNormal);
+			G3CalcNormal (pointList, &vNormal);
 #else
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
-			G3Normal (pointlist, pvNormal);
+			G3Normal (pointList, pvNormal);
 #endif
 		glBegin (GL_TRIANGLE_FAN);
-		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+		for (c = 0, pp = pointList; c < nv; c++, pp++) {
 #if 1
 			if (gameOpts->ogl.bUseLighting)
 				G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index, NULL);
 			else
 #endif
-				SetTMapColor (uvl_list + c, c, bmBot, !bDrawBM);
-			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvl_list [c].u), f2glf (uvl_list [c].v));
+				SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
+			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [c].u), f2glf (uvlList [c].v));
 			if (bmTop && !bDrawBM)
-				SetTexCoord (uvl_list + c, orient, 1);
+				SetTexCoord (uvlList + c, orient, 1);
 			OglVertex3f (*pp);
 			}
 		glEnd ();
 #if 0 //draw the vertex normals
 		glColor3f (1.0f, 1.0f, 1.0f);
-		for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+		for (c = 0, pp = pointList; c < nv; c++, pp++) {
 			g3s_point pn;
 			pn = **pp;
 			if (!pn.p3_normal.nFaces)
@@ -1330,14 +1330,14 @@ else
 			bmTop = BmCurFrame (bmTop);
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			glBegin (GL_TRIANGLE_FAN);
-			for (c = 0, pp = pointlist; c < nv; c++, pp++) {
+			for (c = 0, pp = pointList; c < nv; c++, pp++) {
 #if 1
 				if (gameOpts->ogl.bUseLighting)
 					G3VertexColor (G3GetNormal (*pp, &vNormal), VmsVecToFloat (&vVertex, &((*pp)->p3_vec)), (*pp)->p3_index, NULL);
 				else
 #endif
-					SetTMapColor (uvl_list + c, c, bmTop, 1);
-				SetTexCoord (uvl_list + c, orient, 0);
+					SetTMapColor (uvlList + c, c, bmTop, 1);
+				SetTexCoord (uvlList + c, orient, 0);
 				OglVertex3f (*pp);
 				}
 			glEnd ();

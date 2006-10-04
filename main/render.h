@@ -166,6 +166,12 @@ void RenderShadow (float fDist);
 
 int RenderShadowMap (tLightInfo *pLight);
 
-void update_rendered_data(int window_num, object *viewer, int rear_view_flag, int user);
+void UpdateRenderedData (int window_num, object *viewer, int rear_view_flag, int user);
+
+extern tFlightPath externalView;
+
+void ResetFlightPath (tFlightPath *pPath, int nSize);
+void SetPathPoint (tFlightPath *pPath, object *objP);
+tPathPoint *GetPathPoint (tFlightPath *pPath);
 
 #endif /* _RENDER_H */

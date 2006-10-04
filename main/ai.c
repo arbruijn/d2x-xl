@@ -477,13 +477,13 @@ void InitAIFrame(void)
 {
 	int ab_state;
 
-	gameData.ai.nDistToLastPlayerPosFiredAt = VmVecDistQuick(&Last_fired_upon_player_pos, &gameData.ai.vBelievedPlayerPos);
-
-	ab_state = xAfterburnerCharge && Controls.afterburner_state && (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER);
-
-	if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) || ab_state) {
-		AIDoCloakStuff();
-	}
+gameData.ai.nDistToLastPlayerPosFiredAt = 
+	VmVecDistQuick (&Last_fired_upon_player_pos, &gameData.ai.vBelievedPlayerPos);
+ab_state = xAfterburnerCharge && Controls.afterburner_state && 
+			  (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER);
+if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) || 
+	 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) || ab_state)
+	AIDoCloakStuff();
 }
 
 // ----------------------------------------------------------------------------

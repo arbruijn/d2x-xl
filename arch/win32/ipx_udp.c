@@ -1077,11 +1077,11 @@ if (!(bTracker
 				return -1;
 				}
 			}
-#endif //UDP_SAFEMODE
 #ifdef _DEBUG
 		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
 						iptos (szIP, (char *) &fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
 #endif
+#endif //UDP_SAFEMODE
 		}
 	else
 		CBRK (1);

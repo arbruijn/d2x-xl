@@ -1499,7 +1499,7 @@ for (;;) {
 		}
 	else if (h == OP_TMAPPOLY) {
 		int nv = WORDVAL (p+2);
-		uvl *uvl_list;
+		uvl *uvlList;
 		Assert ( nv < MAX_POINTS_PER_POLY );
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
 			int i;
@@ -1516,9 +1516,9 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvl_list = (uvl *) (p+30+ ((nv&~1)+1)*2);
+			uvlList = (uvl *) (p+30+ ((nv&~1)+1)*2);
 			for (i = 0; i < nv; i++)
-				uvl_list [i].l = light;
+				uvlList [i].l = light;
 
 			if (objColorP) {
 				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bm_avgColor;
@@ -1529,7 +1529,7 @@ for (;;) {
 			p += 30;
 			for (i = 0; i < nv; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
-			G3DrawTexPoly (nv, pointList, uvl_list, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
+			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			}
 		else
 			p += 30;
@@ -1629,7 +1629,7 @@ for (;;) {
 
 		case OP_TMAPPOLY: {
 			int nv = WORDVAL (p+2);
-			uvl *uvl_list;
+			uvl *uvlList;
 			uvl morph_uvls [3];
 			int i, ntris;
 			fix light;
@@ -1644,20 +1644,20 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvl_list = (uvl *) (p+30+ ((nv&~1)+1)*2);
+			uvlList = (uvl *) (p+30+ ((nv&~1)+1)*2);
 			for (i=0;i<3;i++)
 				morph_uvls [i].l = light;
 			for (i=0;i<2;i++) {
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
-				morph_uvls [i].u = uvl_list [i].u;
-				morph_uvls [i].v = uvl_list [i].v;
+				morph_uvls [i].u = uvlList [i].u;
+				morph_uvls [i].v = uvlList [i].v;
 				}
 			for (ntris=nv-2;ntris;ntris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i];
-				morph_uvls [2].u = uvl_list [i].u;
-				morph_uvls [2].v = uvl_list [i].v;
+				morph_uvls [2].u = uvlList [i].u;
+				morph_uvls [2].v = uvlList [i].v;
 				i++;
-				G3CheckAndDrawTMap (3, pointList, uvl_list, modelBitmaps [WORDVAL (p+28)], NULL, NULL);
+				G3CheckAndDrawTMap (3, pointList, uvlList, modelBitmaps [WORDVAL (p+28)], NULL, NULL);
 				pointList [1] = pointList [2];
 				morph_uvls [1].u = morph_uvls [2].u;
 				morph_uvls [1].v = morph_uvls [2].v;

@@ -704,6 +704,8 @@ int DelObjChildP (object *pChild);
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
 tObjectRef *GetChildObjP (object *pParent, tObjectRef *pChildRef);
 
+void RenderTargetIndicator (object *objP, tRgbColorf *pc);
+
 object *ObjFindFirstOfType (int type);
 
 #define OBJ_CLOAKED(_objP)	((_objP)->ctype.ai_info.flags [6])

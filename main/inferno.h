@@ -319,6 +319,7 @@ typedef struct tGameplayStates {
 	int bHaveSmartMines;
 	int bMineDestroyed;
 	int bNoBotAI;
+	int bTagFlag;
 	int nShieldFlash;
 	fix nPlayerSpeed;
 	vms_vector vTgtDir;
@@ -614,6 +615,7 @@ typedef struct tApplicationStates {
 	int bAutoRunMission;
 	int bProgressBars;
 	int bLittleEndian;
+	int bUsingConverter;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
@@ -681,6 +683,7 @@ typedef struct tColorData {
 	tFaceColor	textures [MAX_WALL_TEXTURES];
 	tLightRef	visibleLights [MAX_SEGMENTS * 6];
 	int			nVisibleLights;
+	tRgbColorf	flagTag;
 } tColorData;
 
 typedef struct tPulseData {
@@ -1124,10 +1127,36 @@ typedef struct tShipData {
 	player_ship			*player;
 } tShipData;
 
+#define MAX_PATH_POINTS		20
+
+#if 1
+typedef struct tPathPoint {
+	vms_vector			vPos;
+	vms_vector			vOrgPos;
+	vms_matrix			mOrient;
+} tPathPoint;
+
+typedef struct tFlightPath {
+	tPathPoint			path [MAX_PATH_POINTS];
+	tPathPoint			*pPos;
+	int					nSize;
+	int					nStart;
+	int					nEnd;
+	time_t				tUpdate;
+} tFlightPath;
+#endif
+typedef struct tFlagData {
+	bitmap_index		bmi;
+	vclip					*vcP;
+	vclip_info			vci;
+	tFlightPath			path;
+} tFlagData;
+
 typedef struct tPigData {
 	tTextureData		tex;
 	tSoundData			snd;
 	tShipData			ship;
+	tFlagData			flags [2];
 } tPigData;
 
 #include "laser.h"

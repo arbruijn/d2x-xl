@@ -980,7 +980,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
-//dest CANNOT equal source
+
 fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, fMatrix3 *m)
 {
 	fVector3 h;

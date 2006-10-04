@@ -337,6 +337,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "gamepal.h"
 #include "kconfig.h"
+#include "object.h"
 
 #ifdef OGL
 #include "ogl_init.h"
@@ -1729,38 +1730,34 @@ void HUDShowOrbs (void)
 
 //	-----------------------------------------------------------------------------
 
-void HUDShowFlag(void)
+void HUDShowFlag (void)
 {
-	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
-		return;
-	if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) {
-		int x,y,icon;
+if (!gameOpts->render.cockpit.bHUD && 
+	 ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
+	return;
+if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) {
+	int x = 0, y = 0, icon;
 
-		x=y=0;
-
-		if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-			y = 2*Line_spacing;
-			x = 4*GAME_FONT->ft_w;
+	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+		y = 2*Line_spacing;
+		x = 4*GAME_FONT->ft_w;
 		}
-		else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-			y = Line_spacing;
-			x = GAME_FONT->ft_w;
+	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
+		y = Line_spacing;
+		x = GAME_FONT->ft_w;
 		}
-		else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-			y = 5*Line_spacing;
-			x = GAME_FONT->ft_w;
-			if (gameStates.render.fonts.bHires)
-				y += Line_spacing;
+	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
+				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
+		y = 5*Line_spacing;
+		x = GAME_FONT->ft_w;
+		if (gameStates.render.fonts.bHires)
+			y += Line_spacing;
 		}
-		else
-			Int3();		//what sort of cockpit?
-
-
-		icon = (GetTeam(gameData.multi.nLocalPlayer) == TEAM_BLUE)?FLAG_ICON_RED:FLAG_ICON_BLUE;
-
-		PAGE_IN_GAUGE( icon );
-		GrUBitmapM(x,y,gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(icon));
-
+	else
+		Int3();		//what sort of cockpit?
+	icon = (GetTeam (gameData.multi.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
+	PAGE_IN_GAUGE (icon);
+	GrUBitmapM (x, y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(icon));
 	}
 }
 #endif
@@ -2226,6 +2223,31 @@ if (bmpInventory) {
 
 //	-----------------------------------------------------------------------------
 
+int HUDEquipmentActive (int bFlag)
+{
+switch (bFlag) {
+	case PLAYER_FLAGS_AFTERBURNER:
+		return (xAfterburnerCharge && Controls.afterburner_state);
+	case PLAYER_FLAGS_CONVERTER:
+		return gameStates.app.bUsingConverter;
+	case PLAYER_FLAGS_HEADLIGHT:
+		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0;
+	case PLAYER_FLAGS_MAP_ALL:
+		return 0;
+	case PLAYER_FLAGS_AMMO_RACK:
+		return 0;
+	case PLAYER_FLAGS_QUAD_LASERS:
+		return 0;
+	case PLAYER_FLAGS_CLOAKED:
+		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) != 0;
+	case PLAYER_FLAGS_INVULNERABLE:
+		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) != 0;
+	}
+return 0;
+}
+
+//	-----------------------------------------------------------------------------
+
 void HUDShowInventoryIcons (void)
 {
 	grs_bitmap	*bm;
@@ -2264,27 +2286,34 @@ n = (gameOpts->gameplay.bInventory && !IsMultiGame) ? NUM_INV_ITEMS : NUM_INV_IT
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (grdCurScreen->sc_w - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {
-	int b, c;
+	int bHave, bArmed, bActive = HUDEquipmentActive (nInvFlags [j]);
 	bm = bmInvItems + j;
 	PA_DFX (pa_set_backbuffer_current());
 	HUDBitBlt (nIconScale * -(x + (w - bm->bm_props.w) / (2 * nIconScale)), nIconScale * -(y - hIcon), bm, nIconScale * F1_0, 0);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_INVUL) {
-		if (b = (gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls > 0))
+		if (bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls > 0))
 			sprintf (szCount, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls);
+		else
+			bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
 		}
 	else if (j == INV_ITEM_CLOAK) {
-		if (b = (gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks > 0))
+		if (bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks > 0))
 			sprintf (szCount, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks);
+		else
+			bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
 		}
 	else
-		b = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
-	c = (gameData.multi.players [gameData.multi.nLocalPlayer].energy > nEnergyType [j]);
-	if (b) {
+		bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
+	bArmed = (gameData.multi.players [gameData.multi.nLocalPlayer].energy > nEnergyType [j]);
+	if (bHave) {
 		//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 3;
-		if (c)
-			GrSetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
+		if (bArmed)
+			if (bActive)
+				GrSetColorRGB (255, 208, 0, (ubyte) (alpha * 16));
+			else
+				GrSetColorRGB (128, 128, 0, (ubyte) (alpha * 16));
 		else
 			GrSetColorRGB (128, 0, 0, (ubyte) (alpha * 16));
 		}
@@ -2293,9 +2322,12 @@ for (j = firstItem; j < n; j++) {
 		GrSetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	GrURect (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-	if (b)
-		if (c)
-			GrSetColorRGB (0, 160, 0, 255);
+	if (bHave)
+		if (bArmed)
+			if (bActive)
+				GrSetColorRGB (255, 208, 0, 255);
+			else
+				GrSetColorRGB (0, 160, 0, 255);
 		else
 			GrSetColorRGB (96, 0, 0, 255);
 	else
@@ -4235,16 +4267,14 @@ int CanSeeObject(int objnum, int bCheckObjs)
 
 	//see if we can see this player
 
-	fq.p0 					= &gameData.objs.viewer->pos;
-	fq.p1 					= &gameData.objs.objects[objnum].pos;
-	fq.rad 					= 0;
-	fq.thisobjnum			= gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
-	fq.flags 				= bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-	fq.startseg				= gameData.objs.viewer->segnum;
-	fq.ignore_obj_list	= NULL;
-
+	fq.p0 = &gameData.objs.viewer->pos;
+	fq.p1 = &gameData.objs.objects[objnum].pos;
+	fq.rad = 0;
+	fq.thisobjnum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
+	fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
+	fq.startseg = gameData.objs.viewer->segnum;
+	fq.ignore_obj_list = NULL;
 	hit_type = FindVectorIntersection(&fq, &hit_data);
-
 	return bCheckObjs ? (hit_type == HIT_OBJECT && hit_data.hit_object == objnum) : hit_type != HIT_WALL;
 }
 
@@ -4254,7 +4284,7 @@ int CanSeeObject(int objnum, int bCheckObjs)
 //show names of teammates & players carrying flags
 void ShowHUDNames()
 {
-	int show_team_names,show_all_names,show_flags,player_team;
+	int bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int p;
 	rgb *colorP;
 	static int nColor = 1, tColorChange = 0;
@@ -4267,99 +4297,83 @@ void ShowHUDNames()
 	int x1, y1;
 	int color_num;
 
-	show_all_names = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.ShowAllNames && multiData.bShowReticleName));
-	show_team_names = (((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) && multiData.bShowReticleName);
-	show_flags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
+bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
+						(netGame.ShowAllNames && multiData.bShowReticleName));
+bShowTeamNames = (multiData.bShowReticleName &&
+						((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)));
+bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
-//	if (! (show_all_names || show_team_names || show_flags))
-//		return;
+nTeam = GetTeam(gameData.multi.nLocalPlayer);
+for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 
-	player_team = GetTeam(gameData.multi.nLocalPlayer);
+	bShowName = (gameStates.multi.bPlayerIsTyping [p] || (bShowAllNames && !(gameData.multi.players[p].flags & PLAYER_FLAGS_CLOAKED)) || (bShowTeamNames && GetTeam(p)==nTeam));
+	bHasFlag = (gameData.multi.players[p].connected && gameData.multi.players[p].flags & PLAYER_FLAGS_FLAG);
 
-	for (p=0;p<gameData.multi.nPlayers;p++) {	//check all players
-		int objnum;
-		int show_name,has_flag;
-
-		show_name = (gameStates.multi.bPlayerIsTyping [p] || (show_all_names && !(gameData.multi.players[p].flags & PLAYER_FLAGS_CLOAKED)) || (show_team_names && GetTeam(p)==player_team));
-		has_flag = (gameData.multi.players[p].connected && gameData.multi.players[p].flags & PLAYER_FLAGS_FLAG);
-
-		if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-			//if this is a demo, the objnum in the player struct is wrong,
-			//so we search the object list for the objnum
-
-			for (objnum=0;objnum<=gameData.objs.nLastObject;objnum++)
-				if (gameData.objs.objects[objnum].type==OBJ_PLAYER && gameData.objs.objects[objnum].id == p)
-					break;
-			if (objnum > gameData.objs.nLastObject)		//not in list, thus not visible
-				show_name = (has_flag = 0);				//..so don't show name
+	if (gameData.demo.nState != ND_STATE_PLAYBACK) 
+		nObject = gameData.multi.players [p].objnum;
+	else {
+		//if this is a demo, the nObject in the player struct is wrong,
+		//so we search the object list for the nObject
+		for (nObject = 0;nObject <= gameData.objs.nLastObject; nObject++)
+			if (gameData.objs.objects[nObject].type==OBJ_PLAYER && 
+				 gameData.objs.objects[nObject].id == p)
+				break;
+		if (nObject > gameData.objs.nLastObject)		//not in list, thus not visible
+			bShowName = !bHasFlag;				//..so don't show name
 		}
-		else
-			objnum = gameData.multi.players[p].objnum;
 
-		if ((show_name || has_flag) && CanSeeObject(objnum, 1)) {
-			g3s_point player_point;
-			G3TransformAndEncodePoint(&player_point,&gameData.objs.objects[objnum].pos);
-			if (player_point.p3_codes == 0) {	//on screen
-				G3ProjectPoint(&player_point);
-				if (! (player_point.p3_flags & PF_OVERFLOW)) {
-					fix x,y;
-			
-					x = player_point.p3_sx;
-					y = player_point.p3_sy;
-			
-					if (show_name) {				// Draw callsign on HUD
-						if (gameStates.multi.bPlayerIsTyping [p]) {
-							int t = gameStates.app.nSDLTicks;
+	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
+		g3s_point vPlayerPos;
+		G3TransformAndEncodePoint (&vPlayerPos,&gameData.objs.objects[nObject].pos);
+		if (vPlayerPos.p3_codes == 0) {	//on screen
+			G3ProjectPoint (&vPlayerPos);
+			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
+				fix x = vPlayerPos.p3_sx;
+				fix y = vPlayerPos.p3_sy;
+				if (bShowName) {				// Draw callsign on HUD
+					if (gameStates.multi.bPlayerIsTyping [p]) {
+						int t = gameStates.app.nSDLTicks;
 
-							if (t - tColorChange > 333) {
-								tColorChange = t;
-								nColor = !nColor;
-								}
-							colorP = typingColors + nColor;
+						if (t - tColorChange > 333) {
+							tColorChange = t;
+							nColor = !nColor;
 							}
-						else {
-							color_num = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
-							colorP = player_rgb + color_num;
-							}
-
-						sprintf(s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multi.players[p].callsign);
-						GrGetStringSize(s, &w, &h, &aw );
-						GrSetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
-						x1 = f2i(x)-w/2;
-						y1 = f2i(y)-h/2;
-						GrString (x1, y1, s);
-					}
-		
-					if (has_flag) {				// Draw box on HUD
-						fix dx,dy,w,h;
-			
-						dy = -FixMulDiv(FixMul(gameData.objs.objects[objnum].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,player_point.p3_z);
-						dx = FixMul(dy,grdCurScreen->sc_aspect);
-	
-						w = dx/4;
-						h = dy/4;
-	
-						if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
-							GrSetColorRGBi ((GetTeam(p) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
-						else if (gameData.app.nGameMode & GM_HOARD)
-						{
-							if (gameData.app.nGameMode & GM_TEAM)
-								GrSetColorRGBi ((GetTeam(p) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
-							else
-								GrSetColorRGBi (MEDGREEN_RGBA);
+						colorP = typingColors + nColor;
+						}
+					else {
+						color_num = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
+						colorP = player_rgb + color_num;
 						}
 
-						gr_line(x+dx-w,y-dy,x+dx,y-dy);
-						gr_line(x+dx,y-dy,x+dx,y-dy+h);
+					sprintf(s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multi.players[p].callsign);
+					GrGetStringSize(s, &w, &h, &aw );
+					GrSetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
+					x1 = f2i(x)-w/2;
+					y1 = f2i(y)-h/2;
+					GrString (x1, y1, s);
+				}
 	
-						gr_line(x-dx,y-dy,x-dx+w,y-dy);
-						gr_line(x-dx,y-dy,x-dx,y-dy+h);
-	
-						gr_line(x+dx-w,y+dy,x+dx,y+dy);
-						gr_line(x+dx,y+dy,x+dx,y+dy-h);
-	
-						gr_line(x-dx,y+dy,x-dx+w,y+dy);
-						gr_line(x-dx,y+dy,x-dx,y+dy-h);
+				if (bHasFlag && !(EGI_FLAG (bTargetIndicators, 0, 0) || EGI_FLAG (bTowFlags, 0, 0))) { // Draw box on HUD
+					fix dy = -FixMulDiv(FixMul(gameData.objs.objects[nObject].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,vPlayerPos.p3_z);
+					fix dx = FixMul(dy,grdCurScreen->sc_aspect);
+					fix w = dx/4;
+					fix h = dy/4;
+					if (gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY))
+						GrSetColorRGBi ((GetTeam(p) == TEAM_BLUE) ? MEDRED_RGBA :  MEDBLUE_RGBA);
+					else if (gameData.app.nGameMode & GM_HOARD) {
+						if (gameData.app.nGameMode & GM_TEAM)
+							GrSetColorRGBi ((GetTeam(p) == TEAM_RED) ? MEDRED_RGBA :  MEDBLUE_RGBA);
+						else
+							GrSetColorRGBi (MEDGREEN_RGBA);
+						}
+					GrLine (x+dx-w,y-dy,x+dx,y-dy);
+					GrLine (x+dx,y-dy,x+dx,y-dy+h);
+					GrLine (x-dx,y-dy,x-dx+w,y-dy);
+					GrLine (x-dx,y-dy,x-dx,y-dy+h);
+					GrLine (x+dx-w,y+dy,x+dx,y+dy);
+					GrLine (x+dx,y+dy,x+dx,y+dy-h);
+					GrLine (x-dx,y+dy,x-dx+w,y+dy);
+					GrLine (x-dx,y+dy,x-dx,y+dy-h);
 					}
 				}
 			}
@@ -4713,7 +4727,7 @@ void DoCockpitWindowView(int win,object *viewer,int rear_view_flag,int user,char
 
 		return;
 	}
-	update_rendered_data(win+1, viewer, rear_view_flag, user);
+	UpdateRenderedData(win+1, viewer, rear_view_flag, user);
 	weapon_box_user[win] = user;						//say who's using window
 	gameData.objs.viewer = viewer;
 	gameStates.render.bRearView = rear_view_flag;

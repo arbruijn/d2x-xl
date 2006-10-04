@@ -193,5 +193,6 @@ extern rgb player_rgb[];
 void DoCockpitWindowView(int win, object *viewer, int rear_view_flag, int user, char *label);
 void FreeInventoryIcons (void);
 void HUDShowIcons (void);
+int CanSeeObject(int objnum, int bCheckObjs);
 
 #endif /* _GAUGES_H */

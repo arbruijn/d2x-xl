@@ -1401,7 +1401,7 @@ switch (type) {
 			objP->mtype.phys_info.drag = 512;	//1024;
 			objP->mtype.phys_info.mass = F1_0;
 			objP->mtype.phys_info.flags = PF_BOUNCE;
-			objP->rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info[objP->id].nClipIndex;
+			objP->rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 			objP->rtype.vclip_info.xFrameTime = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].xFrameTime;
 			objP->rtype.vclip_info.nCurFrame = 0;
 

@@ -1095,15 +1095,16 @@ static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
 
 if (pc)
 	return pc;
-if (objP->type == OBJ_ROBOT) {
-	if (!gameData.bots.pInfo [objP->id].companion)
-		return &botDefColor;
-	}
-else if (objP->type == OBJ_PLAYER) {
-	if (IsTeamGame)
-		return playerDefColors + GetTeam (objP->id) + 1;
-	return playerDefColors;
-	}
+if (objP)
+	if (objP->type == OBJ_ROBOT) {
+		if (!gameData.bots.pInfo [objP->id].companion)
+			return &botDefColor;
+		}
+	else if (objP->type == OBJ_PLAYER) {
+		if (IsTeamGame)
+			return playerDefColors + GetTeam (objP->id) + 1;
+		return playerDefColors;
+		}
 return &defaultColor;
 }
 
@@ -1176,10 +1177,13 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 {
 	fVector3		fPos, fVerts [4];
 	float			r, r2, r3;
+	int			nPlayer = (objP->type == OBJ_PLAYER) ? objP->id : -1;
 
+if (!CanSeeObject (OBJ_IDX (objP), 1))
+	return;
 if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
-	if (objP->type == OBJ_PLAYER) {
-		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+	if (nPlayer >= 0) {
+		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
 		}
 	else if (objP->type == OBJ_ROBOT) {
@@ -1188,8 +1192,11 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
 		}
 	}
 if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 0)) {
-	if (GetTeam (objP->id) != GetTeam (gameData.multi.nLocalPlayer))
-		return;
+	if (GetTeam (nPlayer) != GetTeam (gameData.multi.nLocalPlayer)) {
+		if (!(gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
+			return;
+		pc = ObjectFrameColor (NULL, NULL);
+		}
 	}
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
@@ -1265,6 +1272,72 @@ RenderDamageIndicator (objP, pc);
 
 // -----------------------------------------------------------------------------
 
+void RenderTowedFlag (object *objP)
+{
+	static fVector3 fVerts [4] = {
+		{0.0f, 2.0f / 3.0f, 0.0f},
+		{0.0f, 2.0f / 3.0f, -1.0f},
+		{0.0f, -(1.0f / 3.0f), -1.0f},
+		{0.0f, -(1.0f / 3.0f), 0.0f}
+	};
+
+	typedef struct uv {
+		float	u, v;
+	} uv;
+
+	static uv uvList [4] = {{0.0f, -0.3f},{1.0f, -0.3f},{1.0f,1.0f / 0.7f},{0.0f, 0.7f}};
+
+if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
+		vms_vector		vPos = objP->pos;
+		fVector3			vPosf;
+		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
+		tPathPoint		*pp = GetPathPoint (&pf->path);
+		int				i;
+		float				r;
+		grs_bitmap		*bmP;
+
+	if (pp) {
+		OglActiveTexture (GL_TEXTURE0_ARB);
+		glEnable (GL_TEXTURE_2D);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		PIGGY_PAGE_IN (pf->bmi, 0);
+		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
+		if (OglBindBmTex (bmP, 0))
+			return;
+		bmP = BmCurFrame (bmP);
+		OglTexWrap (bmP->glTexture, GL_REPEAT);
+		VmVecScaleInc (&vPos, &objP->orient.fvec, -objP->size);
+		r = f2fl (objP->size);
+		G3StartInstanceMatrix (&vPos, &pp->mOrient);
+		glBegin (GL_QUADS);
+		glColor3f (1.0f, 1.0f, 1.0f);
+		for (i = 0; i < 4; i++) {
+			vPosf.p.x = 0;
+			vPosf.p.y = fVerts [i].p.y * r;
+			vPosf.p.z = fVerts [i].p.z * r;
+			G3TransformPointf (&vPosf, &vPosf);
+			vPosf.p.z = -vPosf.p.z;
+			glTexCoord2fv ((GLfloat *) (uvList + i));
+			glVertex3fv ((GLfloat *) &vPosf);
+			}
+		for (i = 3; i >= 0; i--) {
+			vPosf.p.x = 0;
+			vPosf.p.y = fVerts [i].p.y * r;
+			vPosf.p.z = fVerts [i].p.z * r;
+			G3TransformPointf (&vPosf, &vPosf);
+			vPosf.p.z = -vPosf.p.z;
+			glTexCoord2fv ((GLfloat *) (uvList + i));
+			glVertex3fv ((GLfloat *) &vPosf);
+			}
+		glEnd ();
+		G3DoneInstance ();
+		OGL_BINDTEX (0);
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 bool G3DrawSphere3D  (g3s_point *p0, int nSides, int rad);
 
 void RenderObject (object *objP, int nWindowNum)
@@ -1313,11 +1386,12 @@ switch (objP->render_type) {
 			else
 				DrawPolygonObject (objP);
 			RenderPlayerShield (objP);
-			RenderTargetIndicator (objP, NULL);
+			RenderTargetIndicator (objP, NULL, 0);
+			RenderTowedFlag (objP);
 			}
 		else if (objP->type == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
-			RenderTargetIndicator (objP, NULL);
+			RenderTargetIndicator (objP, NULL, 0);
 			SetRobotLocationInfo (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2) {

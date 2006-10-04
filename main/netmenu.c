@@ -432,7 +432,7 @@ int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkMatch, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
-int optMouseLook, optFastPitch, optSafeUDP;
+int optMouseLook, optFastPitch, optSafeUDP, optTowFlags;
 
 //------------------------------------------------------------------------------
 
@@ -582,6 +582,8 @@ do {
 		optAutoTeams = opt++;
 		ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
 		optTeamDoors = opt++;
+		ADD_CHECK (opt, TXT_TOW_FLAGS, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_TOW_FLAGS);
+		optTowFlags = opt++;
 		ADD_CHECK (opt, TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
 		optMultiCheats = opt++;
 		ADD_CHECK (opt, TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE); 
@@ -716,6 +718,7 @@ if (optDarkMatch >= 0) {
 		extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
 		}
 	}
+extraGameInfo [1].bTowFlags = (ubyte) m [optTowFlags].value;
 extraGameInfo [1].bTeamDoors = (ubyte) m [optTeamDoors].value;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 extraGameInfo [1].bEnableCheats = (ubyte) m [optMultiCheats].value;

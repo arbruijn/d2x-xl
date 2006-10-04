@@ -2003,6 +2003,27 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void GetFlagData (char *bmName, bitmap_index bmi)
+{
+	int			i;
+	tFlagData	*pf;
+
+if (strstr (bmName, "flag01#0") == bmName)
+	i = 0;
+else if (strstr (bmName, "flag02#0") == bmName)
+	i = 1;
+else
+	return;
+pf = gameData.pig.flags + i;
+pf->bmi = bmi;
+pf->vcP = FindVClip (bmi.index);
+pf->vci.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
+pf->vci.xFrameTime = gameData.eff.vClips [0][pf->vci.nClipIndex].xFrameTime;
+pf->vci.nCurFrame = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void PiggyBitmapPageIn (bitmap_index bmi, int bD1)
 {
 	grs_bitmap		*bmP, *altBmP;
@@ -2046,11 +2067,11 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	StopTime ();
 	nSize = bmP->bm_props.h * bmP->bm_props.rowsize;
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
+	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "pwr02#0")) {
-		int i = 0;
+	if (strstr (bmName, "flag01#0")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
-					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+		*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
 	else
 #endif

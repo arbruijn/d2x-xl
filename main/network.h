@@ -334,7 +334,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_TRACKER_GET_SERVERLIST	'R'
 
 #ifdef _DEBUG
-#	define UDP_SAFEMODE	1
+#	define UDP_SAFEMODE	0
 #else
 #	define UDP_SAFEMODE	0
 #endif
@@ -478,6 +478,7 @@ typedef struct extra_gameinfo {
 	char		bDamageIndicators;
 	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
+	char		bTowFlags;
 	char		nSpotSize;
 	char		nSpotStrength;
 	monsterball_info	monsterball;

@@ -757,5 +757,6 @@ void SwitchTeam (int pnum, int bForce);
 void SetTeam (int pnum, int team);
 void MultiSendModemPing ();
 int MultiFindGoalTexture (short t);
+void MultiSetFlagPos (void);
 
 #endif /* _MULTI_H */

@@ -79,6 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsg.h"
 #include "gamepal.h"
 #include "banlist.h"
+#include "render.h"
 #include "multimsg.h"
 
 typedef void tMultiHandler (char *);
@@ -322,7 +323,7 @@ if ((local_objnum < 0) || (local_objnum > gameData.objs.nLastObject)) {
 *owner = multiData.nObjOwner [local_objnum];
 if (*owner == -1)
 	return (local_objnum);
-if ((*owner  >= gameData.multi.nPlayers) || (*owner < -1)) {
+if ((*owner >= gameData.multi.nPlayers) || (*owner < -1)) {
 	Int3 (); // Illegal!
 	*owner = -1;
 	return local_objnum;
@@ -377,6 +378,22 @@ memset (multiData.nObjOwner, -1, MAX_OBJECTS);
 //          of execution to either network or serial specific code based
 //          on the curretn gameData.app.nGameMode value.
 //
+
+// -----------------------------------------------------------------------------
+
+void MultiSetFlagPos (void)
+{
+	player	*playerP = gameData.multi.players;
+#if 1//ndef _DEBUG
+	int		i;
+
+for (i = 0; i < gameData.multi.nPlayers; i++, playerP++)
+	if (playerP->flags & PLAYER_FLAGS_FLAG)
+		SetPathPoint (&gameData.pig.flags [!GetTeam (i)].path, gameData.objs.objects + playerP->objnum);
+#else
+SetPathPoint (&gameData.pig.flags [0].path, gameData.objs.objects + playerP->objnum);
+#endif
+}
 
 //-----------------------------------------------------------------------------
 // Show a score list to end of net players

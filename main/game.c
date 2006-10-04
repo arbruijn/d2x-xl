@@ -3262,6 +3262,7 @@ if (Debug_slowdown) {
 		}
 //LogErr ("GameRenderFrame\n");
 		GameRenderFrame ();
+		gameStates.app.bUsingConverter = 0;
 		//show_extra_views ();		//missile view, buddy bot, etc.
 
 #ifndef RELEASE
@@ -3300,14 +3301,12 @@ if (Debug_slowdown) {
 		}
 	if (gameData.app.xGameTime < 0 || gameData.app.xGameTime > i2f (0x7fff - 600)) {
 		gameData.app.xGameTime = gameData.app.xFrameTime;	//wrap when goes negative, or gets within 10 minutes
-	}
-
+		}
 #ifndef NDEBUG
 	if (FindArg ("-checktime") != 0)
 		if (gameData.app.xGameTime >= i2f (600))		//wrap after 10 minutes
 			gameData.app.xGameTime = gameData.app.xFrameTime;
 #endif
-
 #ifdef NETWORK
    if ((gameData.app.nGameMode & GM_MULTI) && netGame.PlayTimeAllowed)
        ThisLevelTime +=gameData.app.xFrameTime;
@@ -3319,8 +3318,7 @@ if (Debug_slowdown) {
 		PowerupGrabCheatAll ();
 		DoSpecialEffects ();
 		return 1;					//skip everything else
-	}
-
+		}
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 //LogErr ("DoExplodingWallFrame\n");
 		DoExplodingWallFrame ();
@@ -3332,18 +3330,21 @@ if (Debug_slowdown) {
 		WallFrameProcess ();
 //LogErr ("TriggersFrameProcess\n");
 		TriggersFrameProcess ();
-	}
+		}
 	if (gameData.reactor.bDestroyed && (gameData.demo.nState==ND_STATE_RECORDING)) {
 			NDRecordControlCenterDestroyed ();
-	}
-//LogErr ("FlashFrame\n");
-	FlashFrame ();
-	if (gameData.demo.nState == ND_STATE_PLAYBACK)	{
-		NDPlayBackOneFrame ();
-		if (gameData.demo.nState != ND_STATE_PLAYBACK)		{
-			longjmp (gameExitPoint, 0);		// Go back to menu
 		}
-	} else { // Note the link to above!
+//LogErr ("FlashFrame\n");
+	UpdateFlagClips ();
+	MultiSetFlagPos ();
+	FlashFrame ();
+	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+		NDPlayBackOneFrame ();
+		if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+			longjmp (gameExitPoint, 0);		// Go back to menu
+			}
+		}
+	else { // Note the link to above!
 		gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
 //LogErr ("MoveAllObjects\n");
 		if (!MoveAllObjects ())
@@ -3366,7 +3367,8 @@ if (Debug_slowdown) {
 			else if (gameData.app.xGameTime + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
 				gameData.app.fusion.xAutoFireTime = 0;
 				gameData.app.nGlobalLaserFiringCount = 1;
-			} else {
+				}
+			else {
 				vms_vector	rand_vec;
 				fix			bump_amount;
 				static time_t t0 = 0;
@@ -3382,30 +3384,29 @@ if (Debug_slowdown) {
 				if (gameData.app.fusion.xCharge > F1_0*2)
 					bump_amount = gameData.app.fusion.xCharge*4;
 				BumpOneObject (gameData.objs.console, &rand_vec, bump_amount);
+				}
 			}
-		}
 		if (gameData.app.nGlobalLaserFiringCount) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.app.fusion.xCharge > F1_0*2)
 			// 	gameData.app.fusion.xCharge = F1_0*2;
 			gameData.app.nGlobalLaserFiringCount -= LaserFireLocalPlayer ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].objnum, gameData.weapons.nPrimary);
-		}
+			}
 		if (gameData.app.nGlobalLaserFiringCount < 0)
 			gameData.app.nGlobalLaserFiringCount = 0;
-	}
-if (gameStates.render.bDoAppearanceEffect) {
-	CreatePlayerAppearanceEffect (gameData.objs.console);
-	gameStates.render.bDoAppearanceEffect = 0;
+		}
+	if (gameStates.render.bDoAppearanceEffect) {
+		CreatePlayerAppearanceEffect (gameData.objs.console);
+		gameStates.render.bDoAppearanceEffect = 0;
 #ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime-i2f (27);
 		FakingInvul=1;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
-	}
+		}
 #endif
-
-}
+	}
 //LogErr ("OmegaChargeFrame \n");
 OmegaChargeFrame ();
 //LogErr ("SlideTextures \n");

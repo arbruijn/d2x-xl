@@ -37,11 +37,11 @@ static char rcsid[] = "$Id: draw.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #if 1
 tmap_drawer_fp tmap_drawer_ptr = draw_tmap;
 flat_drawer_fp flat_drawer_ptr = gr_upoly_tmap;
-line_drawer_fp line_drawer_ptr = gr_line;
+line_drawer_fp line_drawer_ptr = GrLine;
 #else
 void (*tmap_drawer_ptr) (grs_bitmap *bm, int nv, g3s_point **vertlist) = draw_tmap;
 void (*flat_drawer_ptr) (int nv, int *vertlist) = gr_upoly_tmap;
-int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = gr_line;
+int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = GrLine;
 #endif
 
 //------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer,
 {
 tmap_drawer_ptr = (tmap_drawer)?tmap_drawer:draw_tmap;
 flat_drawer_ptr = (flat_drawer)?flat_drawer:gr_upoly_tmap;
-line_drawer_ptr = (line_drawer)?line_drawer:gr_line;
+line_drawer_ptr = (line_drawer)?line_drawer:GrLine;
 }
 #ifndef OGL
 //deal with a clipped line

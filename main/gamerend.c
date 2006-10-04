@@ -575,7 +575,7 @@ void game_render_frame_stereo()
 
 		WIN(DDGRLOCK(dd_grd_curcanv); 	// Must lock DD canvas!!!
   		{
-			update_rendered_data(0, gameData.objs.viewer, 0, 0);
+			UpdateRenderedData(0, gameData.objs.viewer, 0, 0);
 			RenderFrame(0, 0);
 #if defined(POLY_ACC)
 			pa_dma_poll();
@@ -1123,7 +1123,7 @@ void GameRenderFrameMono(void)
 
 		WIN(DDGRLOCK(dd_grd_curcanv)); 	// Must lock DD canvas!!!
   		{
-			update_rendered_data(0, gameData.objs.viewer, 0, 0);
+			UpdateRenderedData(0, gameData.objs.viewer, 0, 0);
 			if (RenderCameras ()) {
 				if ( Game_double_buffer ) {
 					WINDOS(
@@ -1165,7 +1165,7 @@ void GameRenderFrameMono(void)
 			return;
 		 }
 		WIN(DDGRLOCK(dd_grd_curcanv)); 	// Must lock DD canvas!!!
-		update_rendered_data (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
+		UpdateRenderedData (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
 		if (RenderCameras ()) {
 			if ( Game_double_buffer ) {
 				WINDOS(

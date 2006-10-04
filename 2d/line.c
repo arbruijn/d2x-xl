@@ -306,7 +306,7 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 // Returns 0 if drawn with no clipping, 1 if drawn but clipped, and
 // 2 if not drawn at all.
 
-int gr_line(fix a1, fix b1, fix a2, fix b2)
+int GrLine(fix a1, fix b1, fix a2, fix b2)
 {
 	int x1, y1, x2, y2;
 	int clipped=0;

@@ -587,7 +587,7 @@ unsigned char gr_gpixel( grs_bitmap * bitmap, int x, int y );
 unsigned char gr_ugpixel( grs_bitmap * bitmap, int x, int y );
 
 // Draws a line into the current canvas in the current color and drawmode.
-int gr_line(fix x0, fix y0, fix x1, fix y1);
+int GrLine(fix x0, fix y0, fix x1, fix y1);
 int gr_uline(fix x0, fix y0, fix x1, fix y1);
 
 // Draws an anti-aliased line into the current canvas in the current color and drawmode.
