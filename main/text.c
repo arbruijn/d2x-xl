@@ -1588,6 +1588,7 @@ char *defaultGameTexts [][2] = {
 	{"keine Schein~Werfer", "no ~Headlights"},
 	{"kein Licht von ~Powerups", "no light from ~Powerups"},
 	{"Spot~Groesse: %s", "Sp~Ot size: %s"},
+	{"Nur ~Freundkennungen anzeigen", "show only ~Friendly tags"},
 #if 0
 	{"", ""},
 #endif
@@ -2000,9 +2001,13 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, stehen bei Darkmatch-Spielen keine\nScheinwerfer zur Verfügung.", 
 	 "If checked you cannot use headlights during darkmatch\ngames."},
 	{"Wenn angekreuzt, werfen Powerups in Darkmatch-Spielen\nkeinen Lichtschein.", 
-	 "If checked, powerups do not cast light in darkmatch\ngames."},
-	{"Hier koennen Reichweite und Oeffnungswinkel des\nScheinwerfer eingestellt werden.", 
+	 "If checked, powerups do not cast light in darkmatch games."},
+	{"Hier koennen Reichweite und Oeffnungswinkel des Scheinwerfer\neingestellt werden.", 
 	 "Adjust reach and width of headlight cone here."},
+	{"Wenn angekreuzt, werden nur die Ziel- und Schadensanzeigen\nvon Spielern des eigenen Teams angezeigt.", 
+	 "If checked, only target and damage indicators of team mates\nare displayed."},
+	{"Wenn angekreuzt, erhalten auch getarnte Objekte Ziel- und Schadens-\nanzeigen. Sonst erhalten getarnte Objekte diese Anzeigen nicht.", 
+	 "If checked, target and damage indicators are shown for cloaked\nobjects, too. Otherwise, cloaked objects do not have target\nor damage indicators."},
 #if 0
 	{"", ""},
 #endif

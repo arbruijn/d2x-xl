@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					120	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					121	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -1051,6 +1051,8 @@ for (j = 0; j < 2; j++) {
 		extraGameInfo [j].bDamageIndicators = CFReadByte (fp);
 		}
 	if (player_file_version >= 121) {
+		extraGameInfo [j].bCloakedIndicators = CFReadByte (fp);
+		extraGameInfo [j].bFriendlyIndicators = CFReadByte (fp);
 		extraGameInfo [j].bHeadLights = CFReadByte (fp);
 		extraGameInfo [j].bPowerupLights = CFReadByte (fp);
 		extraGameInfo [j].nSpotSize = CFReadByte (fp);
@@ -1472,6 +1474,8 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (extraGameInfo [j].bEnableCheats, fp);
 	CFWriteByte (extraGameInfo [j].bTargetIndicators, fp);
 	CFWriteByte (extraGameInfo [j].bDamageIndicators, fp);
+	CFWriteByte (extraGameInfo [j].bFriendlyIndicators, fp);
+	CFWriteByte (extraGameInfo [j].bCloakedIndicators, fp);
 	CFWriteByte (extraGameInfo [j].bHeadLights, fp);
 	CFWriteByte (extraGameInfo [j].bPowerupLights, fp);
 	CFWriteByte (extraGameInfo [j].nSpotSize, fp);

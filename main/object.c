@@ -1122,7 +1122,7 @@ return 1.0f;
 
 void RenderDamageIndicator (object *objP, tRgbColorf *pc)
 {
-	fVector3		fPos;
+	fVector3		fPos, fVerts [4];
 	float			r, r2, w;
 
 if (EGI_FLAG (bDamageIndicators, 0, 0) &&
@@ -1137,21 +1137,34 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	fPos.p.x -= r;
 	fPos.p.y += r;
 	fPos.p.z = -fPos.p.z;
+	fVerts [0].p.x = fVerts [3].p.x = fPos.p.x;
+	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
+	fVerts [0].p.y = fVerts [1].p.y = fPos.p.y;
+	fVerts [2].p.y = fVerts [3].p.y = fPos.p.y - r2;
+	fVerts [0].p.z = fVerts [0].p.z = fVerts [2].p.z = fVerts [3].p.z = fPos.p.z;
 	w *= ObjectDamage (objP);
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glBegin (GL_QUADS);
+#if 1
+	glVertex3fv ((GLfloat *) fVerts);
+	glVertex3fv ((GLfloat *) (fVerts + 1));
+	glVertex3fv ((GLfloat *) (fVerts + 2));
+	glVertex3fv ((GLfloat *) (fVerts + 3));
+#else
 	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
 	glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
 	glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
 	glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
+#endif
 	glEnd ();
 	w = 2 * r;
+	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
 	glColor3fv ((GLfloat *) pc);
 	glBegin (GL_LINE_LOOP);
-	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
-	glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
-	glVertex3f (fPos.p.x + w, fPos.p.y - r2, fPos.p.z);
-	glVertex3f (fPos.p.x, fPos.p.y - r2, fPos.p.z);
+	glVertex3fv ((GLfloat *) fVerts);
+	glVertex3fv ((GLfloat *) (fVerts + 1));
+	glVertex3fv ((GLfloat *) (fVerts + 2));
+	glVertex3fv ((GLfloat *) (fVerts + 3));
 	glEnd ();
 	glDisable (GL_TEXTURE_2D);
 	}
@@ -1173,6 +1186,10 @@ if (EGI_FLAG (bCloakedIndicators, 0, 0)) {
 		if (objP->ctype.ai_info.CLOAKED)
 			return;
 		}
+	}
+if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 0)) {
+	if (GetTeam (objP->id) != GetTeam (gameData.multi.nLocalPlayer))
+		return;
 	}
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);

@@ -168,10 +168,10 @@ static int
 	optVirLife, optVirStab, optRevRooms, optEnergyFill, optShieldFill, optShieldDmg, 
 	optOvrTex, optBrRooms, optFF, optSuicide, optPlrHand, optTogglesMenu, optTextureMenu;
 
-int opt_cinvul, opt_team_anarchy, opt_coop, opt_show_on_map, opt_closed, opt_maxnet, 
+int opt_cinvul, opt_team_anarchy, opt_coop, optPlayersOnMap, opt_closed, opt_maxnet, 
 	 opt_entropy, opt_monsterball, opt_entopts, opt_mballopts;
 int last_cinvul = 0, last_maxnet, opt_hoard, opt_team_hoard;
-int opt_refuse, opt_capture, opt_enhancedCTF;
+int opt_refuse, opt_capture, optEnhancedCTF;
 
 #define	WF(_f)	 ((short) (( (nFilter) & (1 << (_f))) != 0))
 
@@ -427,40 +427,50 @@ fix LastPTA;
 int LastKillGoal;
 
 // Jeez -- mac compiler can't handle all of these on the same decl line.
-int opt_setpower, opt_playtime, opt_killgoal, opt_socket, opt_marker_view, opt_light, opt_show_on_map;
-int opt_difficulty, opt_packets, opt_short_packets, opt_brightPlayers, opt_start_invul;
-int opt_darkMatch, opt_teamDoors, opt_multiCheats, optTgtInd, optDmgInd;
-int opt_headLights, opt_powerupLights, opt_spotSize;
-int opt_show_names, opt_enhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
+int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight, optPlayersOnMap;
+int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
+int optDarkMatch, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd;
+int optHeadlights, optPowerupLights, optSpotSize;
+int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP;
 
 //------------------------------------------------------------------------------
 
 void NetworkMoreOptionsPoll (int nitems, newmenu_item * menus, int * key, int citem)
 {
-	int	v;
+	int	v, j;
 
-v = menus [opt_darkMatch].value;
+v = menus [optDarkMatch].value;
 if (v != extraGameInfo [1].bDarkMatch) {
 	extraGameInfo [1].bDarkMatch = v;
 	*key = -2;
 	return;
 	}
-if (opt_headLights >= 0) {
-	v = menus [opt_headLights].value;
+v = menus [optTgtInd].value;
+if (v != (extraGameInfo [1].bTargetIndicators == 0)) {
+	for (j = 0; j < 3; j++)
+		if (menus [optTgtInd + j].value) {
+			extraGameInfo [1].bTargetIndicators = j;
+			break;
+			}
+	*key = -2;
+	return;
+	}
+if (optHeadlights >= 0) {
+	v = menus [optHeadlights].value;
 	if (v == extraGameInfo [1].bHeadLights) {
 		extraGameInfo [1].bHeadLights = !v;
 		*key = -2;
 		return;
 		}
 	}
-if (opt_spotSize >= 0) {
-	v = menus [opt_spotSize].value;
+if (optSpotSize >= 0) {
+	v = menus [optSpotSize].value;
 	if (v != extraGameInfo [1].nSpotSize) {
 		extraGameInfo [1].nSpotSize =
 		extraGameInfo [1].nSpotStrength = v;
-		sprintf (menus [opt_spotSize].text, TXT_SPOTSIZE, GT (664 + v));
-		menus [opt_spotSize].rebuild = 1;
+		sprintf (menus [optSpotSize].text, TXT_SPOTSIZE, GT (664 + v));
+		menus [optSpotSize].rebuild = 1;
 		return;
 		}
 	}
@@ -471,33 +481,33 @@ if (last_cinvul != menus [opt_cinvul].value)   {
 	menus [opt_cinvul].rebuild = 1;
    }
   
-if (menus [opt_playtime].value != LastPTA) {
+if (menus [optPlayTime].value != LastPTA) {
 #ifdef SHAREWARE
    LastPTA = 0;
    ExecMessageBox ("Sorry", 1, TXT_OK, "Registered version only!");
-   menus [opt_playtime].value = 0;
-   menus [opt_playtime].rebuild = 1;
+   menus [optPlayTime].value = 0;
+   menus [optPlayTime].rebuild = 1;
    return;
 #endif  
 
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	LastPTA = 0;
 	ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-	menus [opt_playtime].value = 0;
-	menus [opt_playtime].rebuild = 1;
+	menus [optPlayTime].value = 0;
+	menus [optPlayTime].rebuild = 1;
 	return;
 	}
 
-	mpParams.nMaxTime = netGame.PlayTimeAllowed = menus [opt_playtime].value;
-	sprintf (menus [opt_playtime].text, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
+	mpParams.nMaxTime = netGame.PlayTimeAllowed = menus [optPlayTime].value;
+	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 	LastPTA = netGame.PlayTimeAllowed;
-	menus [opt_playtime].rebuild = 1;
+	menus [optPlayTime].rebuild = 1;
 	}
-if (menus [opt_killgoal].value!= LastKillGoal) {
+if (menus [optKillGoal].value!= LastKillGoal) {
 	#ifdef SHAREWARE
 	ExecMessageBox ("Sorry", 1, TXT_OK, "Registered version only!");
-	menus [opt_killgoal].value = 0;
-	menus [opt_killgoal].rebuild = 1;
+	menus [optKillGoal].value = 0;
+	menus [optKillGoal].rebuild = 1;
 	LastKillGoal = 0;
 	return;
 	#endif         
@@ -505,16 +515,16 @@ if (menus [opt_killgoal].value!= LastKillGoal) {
 
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-	menus [opt_killgoal].value = 0;
-	menus [opt_killgoal].rebuild = 1;
+	menus [optKillGoal].value = 0;
+	menus [optKillGoal].rebuild = 1;
 	LastKillGoal = 0;
 	return;
 	}
 
-mpParams.nKillGoal = netGame.KillGoal = menus [opt_killgoal].value;
-	sprintf (menus [opt_killgoal].text, TXT_KILLGOAL, netGame.KillGoal*5);
+mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
+	sprintf (menus [optKillGoal].text, TXT_KILLGOAL, netGame.KillGoal*5);
 	LastKillGoal = netGame.KillGoal;
-	menus [opt_killgoal].rebuild = 1;
+	menus [optKillGoal].rebuild = 1;
 	}
 }
 
@@ -531,7 +541,7 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_SLIDER (opt, TXT_DIFFICULTY, mpParams.nDifficulty, 0, NDL - 1, KEY_D, HTX_GPLAY_DIFFICULTY); 
-	opt_difficulty = opt++;
+	optDifficulty = opt++;
 	sprintf (szInvul + 1, "%s: %d %s", TXT_REACTOR_LIFE, mpParams.nReactorLife * 5, TXT_MINUTES_ABBREV);
 	strupr (szInvul + 1);
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
@@ -540,23 +550,23 @@ do {
 	sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 	*szPlayTime = * (TXT_MAXTIME - 1);
 	ADD_SLIDER (opt, szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-	opt_playtime = opt++;
+	optPlayTime = opt++;
 	sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.KillGoal*5);
 	*szKillGoal = * (TXT_KILLGOAL - 1);
 	ADD_SLIDER (opt, szKillGoal + 1, mpParams.nKillGoal, 0, 10, KEY_K, HTX_MULTI2_KILLGOAL);
-	opt_killgoal = opt++;
+	optKillGoal = opt++;
 	ADD_CHECK (opt, TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL);
-	opt_start_invul = opt++;
+	optStartInvul = opt++;
 	ADD_CHECK (opt, TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
-	opt_marker_view = opt++;
+	optMarkerView = opt++;
 	ADD_CHECK (opt, TXT_KEEP_LIGHTS, mpParams.bAlwaysBright, KEY_L, HTX_MULTI2_KEEPLIGHTS);
-	opt_light = opt++;
+	optLight = opt++;
 	ADD_CHECK (opt, TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
-	opt_brightPlayers = opt++;
+	optBrightPlayers = opt++;
 	ADD_CHECK (opt, TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
-	opt_show_names = opt++;
+	optShowNames = opt++;
 	ADD_CHECK (opt, TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
-	opt_show_on_map = opt++;
+	optPlayersOnMap = opt++;
 	if (!gameStates.app.bNostalgia) {
 		ADD_CHECK (opt, TXT_FRIENDLY_FIRE, extraGameInfo [0].bFriendlyFire, KEY_F, HTX_MULTI2_FFIRE);
 		optFF = opt++;
@@ -571,9 +581,9 @@ do {
 		ADD_CHECK (opt, TXT_AUTOBALANCE, extraGameInfo [0].bAutoBalanceTeams, KEY_B, HTX_MULTI2_BALANCE);
 		optAutoTeams = opt++;
 		ADD_CHECK (opt, TXT_TEAMDOORS, mpParams.bTeamDoors, KEY_T, HTX_TEAMDOORS);
-		opt_teamDoors = opt++;
+		optTeamDoors = opt++;
 		ADD_CHECK (opt, TXT_MULTICHEATS, mpParams.bEnableCheats, KEY_T, HTX_MULTICHEATS);
-		opt_multiCheats = opt++;
+		optMultiCheats = opt++;
 		ADD_CHECK (opt, TXT_MSN_CYCLE, extraGameInfo [1].bRotateLevels, KEY_Y, HTX_MULTI2_MSNCYCLE); 
 		optRotateLevels = opt++;
 	#if 0
@@ -586,9 +596,9 @@ do {
 	#endif
 		}
 	ADD_CHECK (opt, TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
-	opt_short_packets = opt++;
+	optShortPkts = opt++;
 	if (gameStates.app.bNostalgia) 
-		opt_darkMatch =
+		optDarkMatch =
 		optTgtInd = -1;
 	else {
 		if (extraGameInfo [1].bDarkMatch) {
@@ -596,26 +606,26 @@ do {
 			opt++;
 			}	
 		ADD_CHECK (opt, TXT_DARKMATCH, extraGameInfo [1].bDarkMatch, KEY_D, HTX_DARKMATCH);
-		opt_darkMatch = opt++;
+		optDarkMatch = opt++;
 		if (extraGameInfo [1].bDarkMatch) {
 			ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
-			opt_powerupLights = opt++;
+			optPowerupLights = opt++;
 			ADD_CHECK (opt, TXT_HEADLIGHTS, !extraGameInfo [1].bHeadLights, KEY_H, HTX_HEADLIGHTS);
-			opt_headLights = opt++;
+			optHeadlights = opt++;
 			if (extraGameInfo [1].bHeadLights) {
 				sprintf (szSpotSize + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
 				strupr (szSpotSize + 1);
 				*szSpotSize = *(TXT_SPOTSIZE - 1);
 				ADD_SLIDER (opt, szSpotSize + 1, extraGameInfo [1].nSpotSize, 0, 2, KEY_O, HTX_SPOTSIZE); 
-				opt_spotSize = opt++;
+				optSpotSize = opt++;
 				}
 			else
-				opt_spotSize = -1;
+				optSpotSize = -1;
 			}
 		else
-			opt_headLights =
-			opt_powerupLights =
-			opt_spotSize = -1;
+			optHeadlights =
+			optPowerupLights =
+			optSpotSize = -1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
@@ -625,27 +635,34 @@ do {
 		ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
 		opt++;
 		m [optTgtInd + extraGameInfo [1].bTargetIndicators].value = 1;
-		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-		optDmgInd = opt++;
+		if (extraGameInfo [1].bTargetIndicators) {
+			ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+			optDmgInd = opt++;
+			ADD_CHECK (opt, TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
+			optFriendlyInd = opt++;
+			}
+		else
+			optDmgInd =
+			optFriendlyInd = -1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
 	ADD_MENU (opt, TXT_WAOBJECTS_MENU, KEY_O, HTX_MULTI2_OBJECTS);
-	opt_setpower = opt++;
+	optSetPower = opt++;
 
 	sprintf (socket_string, "%d", (gameStates.multi.nGameType == UDP_GAME) ? udpBasePort [1] + networkData.nSocket : networkData.nSocket);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		ADD_TEXT (opt, TXT_SOCKET2, KEY_N);
 		opt++;
 		ADD_INPUT (opt, socket_string, 5, HTX_MULTI2_SOCKET);
-		opt_socket = opt++;
+		optSocket = opt++;
 		}
 
 	sprintf (packstring, "%d", mpParams.nPPS);
 	ADD_TEXT (opt, TXT_PPS, KEY_P);
 	opt++;
 	ADD_INPUT (opt, packstring, 2, HTX_MULTI2_PPS);
-	opt_packets = opt++;
+	optPPS = opt++;
 
 	LastKillGoal = netGame.KillGoal;
 	LastPTA = mpParams.nMaxTime;
@@ -661,7 +678,7 @@ do {
 mpParams.nReactorLife = m [opt_cinvul].value;
 netGame.control_invul_time = mpParams.nReactorLife * 5 * F1_0 * 60;
 
-if (i == opt_setpower) {
+if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
 	GetAllAllowables ();
 	goto do_menu;
@@ -688,33 +705,33 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		}
 	}
 
-netGame.invul = m [opt_start_invul].value;	
+netGame.invul = m [optStartInvul].value;	
 mpParams.bInvul = (ubyte) netGame.invul;
-netGame.BrightPlayers = m [opt_brightPlayers].value ? 0 : 1;
+netGame.BrightPlayers = m [optBrightPlayers].value ? 0 : 1;
 mpParams.bBrightPlayers = (ubyte) netGame.BrightPlayers;
-extraGameInfo [1].bDarkMatch = (ubyte) m [opt_darkMatch].value;
-if (opt_darkMatch >= 0) {
+extraGameInfo [1].bDarkMatch = (ubyte) m [optDarkMatch].value;
+if (optDarkMatch >= 0) {
 	if (mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch) {
-		extraGameInfo [1].bHeadLights = m [opt_headLights].value;
-		extraGameInfo [1].bPowerupLights = m [opt_powerupLights].value;
+		extraGameInfo [1].bHeadLights = m [optHeadlights].value;
+		extraGameInfo [1].bPowerupLights = m [optPowerupLights].value;
 		}
 	}
-extraGameInfo [1].bTeamDoors = (ubyte) m [opt_teamDoors].value;
+extraGameInfo [1].bTeamDoors = (ubyte) m [optTeamDoors].value;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
-extraGameInfo [1].bEnableCheats = (ubyte) m [opt_multiCheats].value;
+extraGameInfo [1].bEnableCheats = (ubyte) m [optMultiCheats].value;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
-mpParams.bShortPackets = netGame.bShortPackets = m [opt_short_packets].value;
-netGame.ShowAllNames = m [opt_show_names].value;
+mpParams.bShortPackets = netGame.bShortPackets = m [optShortPkts].value;
+netGame.ShowAllNames = m [optShowNames].value;
 mpParams.bShowAllNames = (ubyte) netGame.ShowAllNames;
 NetworkAdjustMaxDataSize ();
-//  extraGameInfo [0].bEnhancedCTF = (m [opt_enhancedCTF].value != 0);
+//  extraGameInfo [0].bEnhancedCTF = (m [optEnhancedCTF].value != 0);
 
-netGame.Allow_marker_view = m [opt_marker_view].value;
+netGame.Allow_marker_view = m [optMarkerView].value;
 mpParams.bMarkerView = (ubyte) netGame.Allow_marker_view;
-netGame.AlwaysLighting = m [opt_light].value; 
+netGame.AlwaysLighting = m [optLight].value; 
 mpParams.bAlwaysBright = (ubyte) netGame.AlwaysLighting;
-mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [opt_difficulty].value;
-if (mpParams.bShowPlayersOnAutomap = m [opt_show_on_map].value)
+mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].value;
+if (mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].value)
 	netGame.game_flags |= NETGAME_FLAG_SHOW_MAP;
 else
 	netGame.game_flags &= ~NETGAME_FLAG_SHOW_MAP;
@@ -737,6 +754,7 @@ if (!gameStates.app.bNostalgia) {
 				break;
 				}
 		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
+		GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
 		}
 	}
 }
@@ -1175,7 +1193,7 @@ build_menu:
 	opt_capture = opt++;
 	if (!gameStates.app.bNostalgia) {
 		ADD_RADIO (opt, TXT_CTF_PLUS, 0, KEY_T, 0, HTX_MULTI_CTFPLUS);
-		opt_enhancedCTF = opt++;
+		optEnhancedCTF = opt++;
 		}
    
 	opt_entropy =
@@ -1343,7 +1361,7 @@ do_menu:
 		mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
 		extraGameInfo [0].bEnhancedCTF = 0;
 		}
-	else if (m [opt_enhancedCTF].value) {
+	else if (m [optEnhancedCTF].value) {
 		mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
 		extraGameInfo [0].bEnhancedCTF = 1;
 		}

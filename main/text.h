@@ -1735,9 +1735,9 @@ void LoadGameTexts(void);
 #define TXT_HEADLIGHTS				GT(790)
 #define TXT_POWERUPLIGHTS			GT(791)
 #define TXT_SPOTSIZE					GT(792)
+#define TXT_FRIENDLY_INDICATOR	GT(793)
+#define TXT_CLOAKED_INDICATOR		GT(794)
 #if 0
-#define TXT_				GT(793)
-#define TXT_				GT(794)
 #define TXT_				GT(795)
 #define TXT_				GT(796)
 #define TXT_				GT(797)
@@ -2068,10 +2068,11 @@ void LoadGameTexts(void);
 #define HTX_HEADLIGHTS			HT(205)				
 #define HTX_POWERUPLIGHTS		HT(206)				
 #define HTX_SPOTSIZE				HT(207)				
+#define HTX_FRIENDLY_INDICATOR	HT(208)				
+#define HTX_CLOAKED_INDICATOR	HT(208)				
 
 #if 0
 				
-#define HTX_				HT(208)				
 #define HTX_				HT(209)				
 #define HTX_				HT(210)				
 #define HTX_				HT(211)				

@@ -1295,15 +1295,26 @@ last_key++;		//kill warning
 //added/edited on 8/18/98 by Victor Rachels to set gameOpts->render.nMaxFPS always on, max=80
 //added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
 
-static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, optIconAlpha;
+static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, optIconAlpha, optTgtInd;
 
 static char *szCWS [4];
 
 void CockpitOptionsCallBack (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
-	int				v;
+	int				v, j;
 
+m = menus + optTgtInd;
+v = m->value;
+if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
+	for (j = 0; j < 3; j++)
+		if (m [optTgtInd + j].value) {
+			extraGameInfo [0].bTargetIndicators = j;
+			break;
+			}
+	*key = -2;
+	return;
+	}
 m = menus + optWeaponIcons;
 v = m->value;
 if (v != bShowWeaponIcons) {
@@ -1351,7 +1362,7 @@ void CockpitOptionsMenu ()
 	int	i, j, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
 			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
-			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optTgtInd, optDmgInd;
+			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optDmgInd, optCloakedInd;
 
 	char szCockpitWindowZoom [40];
 
@@ -1421,8 +1432,15 @@ do {
 	ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
 	opt++;
 	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
-	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-	optDmgInd = opt++;
+	if (extraGameInfo [0].bTargetIndicators) {
+		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+		optDmgInd = opt++;
+		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CLOAKED_INDICATOR);
+		optCloakedInd = opt++;
+		}
+	else
+		optDmgInd = 
+		optCloakedInd = -1;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1477,6 +1495,7 @@ do {
 				break;
 				}
 		GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
+		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
 		}
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);

@@ -476,6 +476,7 @@ typedef struct extra_gameinfo {
 	char		bEnableCheats;
 	char		bTargetIndicators;
 	char		bDamageIndicators;
+	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
 	char		nSpotSize;
 	char		nSpotStrength;
