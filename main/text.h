@@ -1732,10 +1732,10 @@ void LoadGameTexts(void);
 #define TXT_TGTIND_SQUARE			GT(787)
 #define TXT_TGTIND_TRIANGLE		GT(788)
 #define TXT_DMG_INDICATOR			GT(789)
+#define TXT_HEADLIGHTS				GT(790)
+#define TXT_POWERUPLIGHTS			GT(791)
+#define TXT_SPOTSIZE					GT(792)
 #if 0
-#define TXT_				GT(790)
-#define TXT_				GT(791)
-#define TXT_				GT(792)
 #define TXT_				GT(793)
 #define TXT_				GT(794)
 #define TXT_				GT(795)
@@ -2065,12 +2065,12 @@ void LoadGameTexts(void);
 #define HTX_MULTICHEATS			HT(202)				
 #define HTX_CPIT_TGTIND			HT(203)				
 #define HTX_CPIT_DMGIND			HT(204)				
+#define HTX_HEADLIGHTS			HT(205)				
+#define HTX_POWERUPLIGHTS		HT(206)				
+#define HTX_SPOTSIZE				HT(207)				
 
 #if 0
 				
-#define HTX_				HT(205)				
-#define HTX_				HT(206)				
-#define HTX_				HT(207)				
 #define HTX_				HT(208)				
 #define HTX_				HT(209)				
 #define HTX_				HT(210)				

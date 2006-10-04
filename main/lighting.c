@@ -383,13 +383,17 @@ void ApplyLight(
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
-		if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
-			RemoveOglHeadLight (objP);
-		else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
-			gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+		if (EGI_FLAG (bHeadLights, 0, 0)) {
+			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+				RemoveOglHeadLight (objP);
+			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
+				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+			}
 		if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
 			return;
 		}
+	else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0))
+		return;
 	AddOglLight (color, xObjIntensity, -1, -1, objnum);
 	return;
 	}
@@ -1718,6 +1722,9 @@ return psc;
 
 int AddOglHeadLight (object *objP)
 {
+	static float spotExps [] = {0.01f, 0.1f, 2.0f};
+	static float spotAngles [] = {0.8f, 0.5f, 0.25f};
+
 if (gameOpts->ogl.bUseLighting) {
 		tRgbColorf c = {1.0f, 1.0f, 1.0f};
 		tOglLight	*pl;
@@ -1728,8 +1735,8 @@ if (gameOpts->ogl.bUseLighting) {
 		pl = gameData.render.lights.ogl.lights + nLight;
 		pl->nPlayer = objP->id;
 		pl->bSpot = 1;
-		pl->spotAngle = 0.25f;
-		pl->spotExponent = 2.0f;
+		pl->spotAngle = spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+		pl->spotExponent = spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
 		}
 	return nLight;
 	}

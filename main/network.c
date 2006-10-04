@@ -1481,28 +1481,22 @@ MultiSendMonsterball (1, 1);
 
 void NetworkSendExtraGameInfo (sequence_packet *their)
 {
-	ubyte bMouseLook = extraGameInfo [1].bMouseLook;
-	ubyte bFastPitch = extraGameInfo [1].bFastPitch;
-	ubyte bDarkMatch = extraGameInfo [1].bDarkMatch;
-	ubyte bTeamDoors = extraGameInfo [1].bTeamDoors;
-	ubyte bEnableCheats = extraGameInfo [1].bEnableCheats;
-	ubyte bTargetIndicators = extraGameInfo [1].bTargetIndicators;
-	ubyte bDamageIndicators = extraGameInfo [1].bDamageIndicators;
-	ubyte bDualMissileLaunch = extraGameInfo [1].bDualMissileLaunch;
-	ubyte bDisableReactor = 0; //extraGameInfo [1].bDisableReactor;
-	ubyte bRotateLevels = extraGameInfo [1].bRotateLevels;
+	extra_gameinfo	egi1save = extraGameInfo [1];
 
 extraGameInfo [1] = extraGameInfo [0];
-extraGameInfo [1].bMouseLook = bMouseLook;
-extraGameInfo [1].bFastPitch = bFastPitch;
-extraGameInfo [1].bDarkMatch = bDarkMatch;
-extraGameInfo [1].bTeamDoors = bTeamDoors;
-extraGameInfo [1].bEnableCheats = bEnableCheats;
-extraGameInfo [1].bTargetIndicators = bTargetIndicators;
-extraGameInfo [1].bDamageIndicators = bDamageIndicators;
-extraGameInfo [1].bDualMissileLaunch = bDualMissileLaunch;
-extraGameInfo [1].bDisableReactor = bDisableReactor;
-extraGameInfo [1].bRotateLevels = bRotateLevels;
+extraGameInfo [1].bMouseLook = egi1save.bMouseLook;
+extraGameInfo [1].bFastPitch = egi1save.bFastPitch;
+extraGameInfo [1].bTeamDoors = egi1save.bTeamDoors;
+extraGameInfo [1].bEnableCheats = egi1save.bEnableCheats;
+extraGameInfo [1].bTargetIndicators = egi1save.bTargetIndicators;
+extraGameInfo [1].bDamageIndicators = egi1save.bDamageIndicators;
+extraGameInfo [1].bDualMissileLaunch = egi1save.bDualMissileLaunch;
+extraGameInfo [1].bDisableReactor = egi1save.bDisableReactor;
+extraGameInfo [1].bRotateLevels = egi1save.bRotateLevels;
+extraGameInfo [1].bDarkMatch = egi1save.bDarkMatch;
+extraGameInfo [1].bHeadLights = egi1save.bHeadLights;
+extraGameInfo [1].bPowerupLights = egi1save.bPowerupLights;
+extraGameInfo [1].nSpotSize = egi1save.nSpotSize;
 extraGameInfo [1].bRadarEnabled = ((netGame.game_flags & NETGAME_FLAG_SHOW_MAP) != 0);
 extraGameInfo [1].type = PID_EXTRA_GAMEINFO;
 gameStates.app.bHaveExtraGameInfo [1] = 1;
@@ -4421,6 +4415,8 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bEnableCheats = 0;
 	extraGameInfo [i].bTargetIndicators = 0;
 	extraGameInfo [i].bDamageIndicators = 0;
+	extraGameInfo [i].nSpotSize = 2 - i;
+	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
 	extraGameInfo [i].entropy.nShieldFillRate = 11;
 	extraGameInfo [i].entropy.nShieldDamageRate = 11;

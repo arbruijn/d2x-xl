@@ -1584,7 +1584,10 @@ char *defaultGameTexts [][2] = {
 	{"keine ~Zielanzeigen", "no T~Arget Indicators"},
 	{"~Rechteckige Zielanzeigen", "~Rectangular Target Indicators"},
 	{"~Dreieckige Zielanzeigen", "~Triangular Target Indicators"},
-	{"~Schadensnzeigen aktivieren", "show ~Damage Indicators"},
+	{"~Schadensanzeigen aktivieren", "show ~Damage Indicators"},
+	{"keine Schein~Werfer", "no ~Headlights"},
+	{"kein Licht von ~Powerups", "no light from ~Powerups"},
+	{"Spot~Groesse: %s", "Sp~Ot size: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -1994,9 +1997,13 @@ char *defaultHelpTexts [][2] = {
 	 "Here you can chose whether robots and player ships are marked\nwith square brackets surrounding, with a triangle or not at\nall. For triangles, the damage indicator is integrated\nin the triangle if active."},
 	{"Wenn angekreuzt, wird oberhalb von Roboter und Schiffen\nder Spieler eine Schadensanzeige eingeblendet.", 
 	 "If checked, a damage indicator is shown above robots\nand player ships."},
+	{"Wenn angekreuzt, stehen bei Darkmatch-Spielen keine\nScheinwerfer zur Verfügung.", 
+	 "If checked you cannot use headlights during darkmatch\ngames."},
+	{"Wenn angekreuzt, werfen Powerups in Darkmatch-Spielen\nkeinen Lichtschein.", 
+	 "If checked, powerups do not cast light in darkmatch\ngames."},
+	{"Hier koennen Reichweite und Oeffnungswinkel des\nScheinwerfer eingestellt werden.", 
+	 "Adjust reach and width of headlight cone here."},
 #if 0
-	{"", ""},
-	{"", ""},
 	{"", ""},
 #endif
 	};

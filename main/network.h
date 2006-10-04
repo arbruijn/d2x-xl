@@ -470,10 +470,14 @@ typedef struct extra_gameinfo {
 	char		bRenderShield;
 	char		bTeleporterCams;
 	char		bDarkMatch;
+	char		bHeadLights;
+	char		bPowerupLights;
 	char		bTeamDoors;
 	char		bEnableCheats;
 	char		bTargetIndicators;
 	char		bDamageIndicators;
+	char		nSpotSize;
+	char		nSpotStrength;
 	monsterball_info	monsterball;
 } __pack__ extra_gameinfo;
 

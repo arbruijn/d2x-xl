@@ -483,14 +483,14 @@ ubyte control_type_dos,control_type_win;
 //read in the player's saved games.  returns errno (0 == no error)
 int ReadPlayerFile(int bOnlyWindowSizes)
 {
-	char filename[FILENAME_LEN];
+	char	filename[FILENAME_LEN];
 	CFILE *fp;
-	int errno_ret = EZERO;
-	int id, h, i, j;
+	int	errno_ret = EZERO;
+	int	id, h, i, j;
 	short player_file_version;
-	int rewrite_it=0;
-	int swap = 0;
-	int gameOptsSize, nMaxControls;
+	int	rewrite_it=0;
+	int	swap = 0;
+	int	gameOptsSize, nMaxControls;
 
 Assert(gameData.multi.nLocalPlayer>=0 && gameData.multi.nLocalPlayer<MAX_PLAYERS);
 
@@ -720,10 +720,12 @@ if (player_file_version >= 97)
 for (j = 0; j < 2; j++) {
 	if (j && (gameOptsSize > sizeof (tGameOptions)))
 		CFSeek (fp, gameOptsSize - sizeof (tGameOptions), SEEK_CUR);
-	if (!j && (player_file_version >= 26))
-		extraGameInfo [0].bFixedRespawns = (int) CFReadByte (fp);
-	if (player_file_version >= 27)
-		/*extraGameInfo [0].bFriendlyFire = (int)*/ CFReadByte (fp);
+	if (!j) {
+		if (player_file_version >= 26)
+			extraGameInfo [0].bFixedRespawns = (int) CFReadByte (fp);
+		if (player_file_version >= 27)
+			/*extraGameInfo [0].bFriendlyFire = (int)*/ CFReadByte (fp);
+		}
 	if (player_file_version >= 28) {
 		gameOptions [j].render.nMaxFPS = (int) CFReadByte (fp);
 		if (gameOptions [j].render.nMaxFPS < 0) {
@@ -1047,6 +1049,12 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 120) {
 		extraGameInfo [j].bTargetIndicators = CFReadByte (fp);
 		extraGameInfo [j].bDamageIndicators = CFReadByte (fp);
+		}
+	if (player_file_version >= 121) {
+		extraGameInfo [j].bHeadLights = CFReadByte (fp);
+		extraGameInfo [j].bPowerupLights = CFReadByte (fp);
+		extraGameInfo [j].nSpotSize = CFReadByte (fp);
+		extraGameInfo [j].nSpotStrength = extraGameInfo [j].nSpotSize;
 		}
 	}
 mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch;
@@ -1464,6 +1472,9 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (extraGameInfo [j].bEnableCheats, fp);
 	CFWriteByte (extraGameInfo [j].bTargetIndicators, fp);
 	CFWriteByte (extraGameInfo [j].bDamageIndicators, fp);
+	CFWriteByte (extraGameInfo [j].bHeadLights, fp);
+	CFWriteByte (extraGameInfo [j].bPowerupLights, fp);
+	CFWriteByte (extraGameInfo [j].nSpotSize, fp);
 
 // end of D2X-XL stuff
 	}
