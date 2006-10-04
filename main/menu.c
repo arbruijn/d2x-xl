@@ -1435,7 +1435,7 @@ do {
 	if (extraGameInfo [0].bTargetIndicators) {
 		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 		optDmgInd = opt++;
-		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CLOAKED_INDICATOR);
+		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
 		optCloakedInd = opt++;
 		}
 	else

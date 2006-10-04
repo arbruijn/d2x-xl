@@ -1141,7 +1141,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
 	fVerts [0].p.y = fVerts [1].p.y = fPos.p.y;
 	fVerts [2].p.y = fVerts [3].p.y = fPos.p.y - r2;
-	fVerts [0].p.z = fVerts [0].p.z = fVerts [2].p.z = fVerts [3].p.z = fPos.p.z;
+	fVerts [0].p.z = fVerts [1].p.z = fVerts [2].p.z = fVerts [3].p.z = fPos.p.z;
 	w *= ObjectDamage (objP);
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glBegin (GL_QUADS);
@@ -1177,7 +1177,7 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 	fVector3		fPos, fVerts [4];
 	float			r, r2, r3;
 
-if (EGI_FLAG (bCloakedIndicators, 0, 0)) {
+if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
 	if (objP->type == OBJ_PLAYER) {
 		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
 			return;

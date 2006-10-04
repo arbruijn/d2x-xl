@@ -712,8 +712,8 @@ mpParams.bBrightPlayers = (ubyte) netGame.BrightPlayers;
 extraGameInfo [1].bDarkMatch = (ubyte) m [optDarkMatch].value;
 if (optDarkMatch >= 0) {
 	if (mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch) {
-		extraGameInfo [1].bHeadLights = m [optHeadlights].value;
-		extraGameInfo [1].bPowerupLights = m [optPowerupLights].value;
+		extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
+		extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
 		}
 	}
 extraGameInfo [1].bTeamDoors = (ubyte) m [optTeamDoors].value;
