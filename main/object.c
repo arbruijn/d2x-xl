@@ -1164,6 +1164,16 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 	fVector3		fPos, fVerts [4];
 	float			r, r2, r3;
 
+if (EGI_FLAG (bCloakedIndicators, 0, 0)) {
+	if (objP->type == OBJ_PLAYER) {
+		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+			return;
+		}
+	else if (objP->type == OBJ_ROBOT) {
+		if (objP->ctype.ai_info.CLOAKED)
+			return;
+		}
+	}
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->pos);

@@ -1276,7 +1276,8 @@ void move_around_player(object *objP, vms_vector *vec_to_player, int fast_flag)
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
 		dot = VmVecDot(vec_to_player, &objP->orient.fvec);
-		if ((dot > robptr->field_of_view[gameStates.app.nDifficultyLevel]) && !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
+		if ((dot > robptr->field_of_view[gameStates.app.nDifficultyLevel]) && 
+			 !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
 			if (robptr->strength)

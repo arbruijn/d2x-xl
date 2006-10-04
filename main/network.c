@@ -4415,6 +4415,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bEnableCheats = 0;
 	extraGameInfo [i].bTargetIndicators = 0;
 	extraGameInfo [i].bDamageIndicators = 0;
+	extraGameInfo [i].bCloakedIndicators = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
