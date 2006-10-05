@@ -962,7 +962,7 @@ int ChooseDropSegment(object *objP, int *pbFixedPos, int nDropState)
 	int			pnum = 0;
 	short			segnum = -1;
 	int			nCurDropDepth;
-	int			count;
+	int			special, count;
 	short			player_seg;
 	vms_vector	tempv, *player_pos;
 	fix			nDist;
@@ -1011,10 +1011,13 @@ while ((segnum == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		nCurDropDepth--;
 		continue;
 		}
-	if ((gameData.segs.segment2s [segnum].special == SEGMENT_IS_CONTROLCEN) ||
-		 (gameData.segs.segment2s [segnum].special == SEGMENT_IS_BLOCKED) ||
-		 (gameData.segs.segment2s [segnum].special == SEGMENT_IS_GOAL_BLUE) ||
-		 (gameData.segs.segment2s [segnum].special == SEGMENT_IS_GOAL_RED))
+	special = gameData.segs.segment2s [segnum].special;
+	if ((special == SEGMENT_IS_CONTROLCEN) ||
+		 (special == SEGMENT_IS_BLOCKED) ||
+		 (special == SEGMENT_IS_GOAL_BLUE) ||
+		 (special == SEGMENT_IS_GOAL_RED) ||
+		 (special == SEGMENT_IS_TEAM_BLUE) ||
+		 (special == SEGMENT_IS_TEAM_RED))
 		segnum = -1;
 	else {	//don't drop in any children of control centers
 		int i;

@@ -608,9 +608,9 @@ switch (objtype) {
 		if ((objP->id != 0xff) && (objP->render_type != RT_THRUSTER)) {
 			vclip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->light_value;
+#if 0
 			int i, j;
 			grs_bitmap *bmP;
-#if 0
 			color->red =
 			color->green =
 			color->blue = 0.0f;
