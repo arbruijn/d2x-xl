@@ -381,6 +381,7 @@ void ApplyLight(
 	int			vv, bUseColor, bForceColor;
 	int			vertnum;
 	int			bApplyLight;
+	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0);
 	vms_vector	*vertpos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	object		*objP = gameData.objs.objects + objnum;
@@ -393,7 +394,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
 			}
-		if (EGI_FLAG (bDarkness, 0, 0))
+		if (bDarkness)
 			return;
 		}
 	else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0))
@@ -404,7 +405,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity*64;
 	
-	if (EGI_FLAG (bDarkness, 0, 0)) {
+	if (bDarkness) {
 		if (objP->type == OBJ_PLAYER)
 			xObjIntensity = 0;
 		else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0)) 
@@ -498,7 +499,6 @@ if (xObjIntensity) {
 							dynamicLight [vertnum] += fixdiv(xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
-							int			bDarkness = EGI_FLAG (bDarkness, 0, 0);
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vms_vector	vecToPoint;
 
@@ -1167,7 +1167,7 @@ return 0xffffffff;
 
 void SetOglLightColor (short nLight, float red, float green, float blue, float brightness)
 {
-	tOglLight	*pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
+	tOglLight	*pl = gameData.render.lights.ogl.lights + nLight;
 	int			i;
 
 if (pl->nType ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {

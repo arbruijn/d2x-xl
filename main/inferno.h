@@ -1666,10 +1666,8 @@ static inline void OglVertex3f (g3s_point *p)
 {
 if (p->p3_index < 0)
 	glVertex3x (p->p3_vec.x, p->p3_vec.y, -p->p3_vec.z);
-else {
-	fVector3	*pv = gameData.render.pVerts + p->p3_index;
-	glVertex3f (pv->p.x, pv->p.y, pv->p.z);
-	}
+else
+	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }
 
 static inline double GrAlpha (void)

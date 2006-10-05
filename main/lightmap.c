@@ -87,7 +87,7 @@ char *lightMapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"}
 
 char *lightMapFS [3] = {
 	"uniform sampler2D btmTex,topTex,lMapTex;" \
-	"float maxC,r,g,b;" \
+	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
 	"btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));" \
@@ -101,7 +101,7 @@ char *lightMapFS [3] = {
 	"gl_FragColor = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a))*lMapColor;}"
 	,
 	"uniform sampler2D btmTex,topTex,lMapTex;" \
-	"float maxC,r,g,b;" \
+	"float maxC;" \
 	"vec4 btmColor,topColor,lMapColor;" \
 	"void main(void){" \
 	"topColor=texture2D(topTex,vec2(gl_TexCoord[1]));" \

@@ -1574,12 +1574,14 @@ void RenderOptionsCallBack (int nitems, newmenu_item * menus, int * key, int cit
 	newmenu_item * m;
 	int				v;
 
-m = menus + nLightMapsOpt;
-v = m->value;
-if (v != gameOpts->render.color.bUseLightMaps) {
-	gameOpts->render.color.bUseLightMaps = v;
-	*key = -2;
-	return;
+if (nLightMapsOpt >= 0) {
+	m = menus + nLightMapsOpt;
+	v = m->value;
+	if (v != gameOpts->render.color.bUseLightMaps) {
+		gameOpts->render.color.bUseLightMaps = v;
+		*key = -2;
+		return;
+		}
 	}
 m = menus + nGunColorOpt;
 v = m->value;
@@ -1677,19 +1679,23 @@ do {
 	nFPSopt = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	if (gameStates.render.color.bLightMapsOk) {
+	if (gameStates.render.color.bLightMapsOk && !gameOpts->ogl.bUseLighting) {
 		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
 		nLightMapsOpt = opt++;
 		}
+	else
+		nLightMapsOpt = -1;
 	if (gameStates.app.bGameRunning) 
 		nOglLightOpt = 
 		nOglMaxLightsOpt = 
 		optObjectLight = -1;
+	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+		nOglLightOpt = -1;
 	else {
 		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_L, HTX_OGL_LIGHTING);
 		nOglLightOpt = opt++;
 		}
-	if (gameOpts->ogl.bUseLighting) {
+	if (gameOpts->ogl.bUseLighting && (nOglLightOpt >= 0)) {
 		if (!gameStates.app.bGameRunning) {
 			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
 			optObjectLight = opt++;

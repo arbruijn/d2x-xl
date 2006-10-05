@@ -2215,7 +2215,7 @@ int NDReadDemoStart (int rnd_demo)
 {
 	sbyte i, version, game_type, laser_level;
 	char c, energy, shield;
-	char text [128], szCurrentMission [9];
+	char text [128], szCurrentMission [FILENAME_LEN];
 
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {

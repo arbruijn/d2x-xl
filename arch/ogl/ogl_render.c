@@ -939,6 +939,7 @@ void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFace
 	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
 	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
+	int				bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
 
@@ -980,7 +981,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		continue;
 	if (!(psl->bState && psl->nType))
 		continue;
-	if ((psl->nType == 1) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness)
+	if ((psl->nType == 1) && bDarkness)
 		continue;
 	lightColor = *((fVector3 *) &psl->color);
 	lightPos = psl->pos;
@@ -1177,6 +1178,8 @@ if (gameStates.render.color.bLightMapsOk &&
 	glEnd ();
 #if OGL_CLEANUP
 	ExitTMU ();
+	if (bShaderMerge)
+		glUseProgramObject (lmProg = 0);
 #endif
 	}
 else 
@@ -1353,7 +1356,7 @@ else
 			OGL_BINDTEX (0);
 			glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
-			glUseProgramObject (genShaderProg = 0);
+			glUseProgramObject (tmProg = 0);
 			}
 		}
 	else {
