@@ -743,18 +743,21 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it
 	//scale static light for destruction effect
+	if (EGI_FLAG (bDarkness, 0, 0))
+		propsP->uvls [i].l = 0;
+	else {
 #if LMAP_LIGHTADJUST
-	if (gameStates.render.color.bLightMapsOk && 
-			gameOpts->render.color.bAmbientLight && 
-			gameOpts->render.color.bUseLightMaps && 
-			!IsMultiGame) {
-		propsP->uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [propsP->segNum][propsP->sideNum];
-		if (propsP->uvls [i].l < 0)
-			propsP->uvls [i].l = 0;
-		}
+		if (USE_LIGHTMAPS) {
+			else {
+				propsP->uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [propsP->segNum][propsP->sideNum];
+				if (propsP->uvls [i].l < 0)
+					propsP->uvls [i].l = 0;
+				}
+			}
 #endif
-	if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
-		propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale,propsP->uvls [i].l);
+		if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
+			propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale,propsP->uvls [i].l);
+		}
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
 #ifdef _DEBUG

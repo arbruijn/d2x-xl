@@ -378,8 +378,12 @@ void ApplyLight(
 	int			objnum,
 	tRgbColorf	*color)
 {
-	int	vv, bUseColor, bForceColor;
-	object *objP = gameData.objs.objects + objnum;
+	int			vv, bUseColor, bForceColor;
+	int			vertnum;
+	int			bApplyLight;
+	vms_vector	*vertpos;
+	fix			dist, xOrigIntensity = xObjIntensity;
+	object		*objP = gameData.objs.objects + objnum;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
@@ -389,7 +393,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
 			}
-		if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
+		if (EGI_FLAG (bDarkness, 0, 0))
 			return;
 		}
 	else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0))
@@ -399,7 +403,13 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	}
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity*64;
-
+	
+	if (EGI_FLAG (bDarkness, 0, 0)) {
+		if (objP->type == OBJ_PLAYER)
+			xObjIntensity = 0;
+		else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0)) 
+			xObjIntensity = 0;
+		}
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = 0;
 	// for pretty dim sources, only process vertices in object's own segment.
@@ -407,14 +417,12 @@ if (xObjIntensity) {
 	if ((abs(obji_64) <= F1_0*8) || (objP->type == OBJ_MARKER)) {
 		short *vp = gameData.segs.segments [obj_seg].verts;
 
-		for (vv=0; vv<MAX_VERTICES_PER_SEGMENT; vv++) {
-			int			vertnum;
-			vms_vector	*vertpos;
-			fix			dist;
+		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
 
 			vertnum = vp [vv];
-#if FLICKERFIX == 0
-			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ ((vertnum ^ gameData.app.nFrameCount) & 1))
+#if !FLICKERFIX
+			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ 
+				 ((vertnum ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
 				vertpos = gameData.segs.vertices+vertnum;
@@ -424,20 +432,21 @@ if (xObjIntensity) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 
-					dynamicLight [vertnum] += fixdiv(xObjIntensity, dist);
+					dynamicLight [vertnum] += fixdiv (xObjIntensity, dist);
 					if (bUseColor)
 						SetDynColor (color, NULL, vertnum, NULL, 0);
+					}
 				}
 			}
 		}
-	} else {
-		int	headlight_shift = 0;
-		fix	max_headlight_dist = F1_0*200;
+	else {
+		int	headlightShift = 0;
+		fix	maxHeadlightDist = F1_0*200;
 
 		if (objP->type == OBJ_PLAYER)
 			if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
 				gameStates.render.bHeadlightOn = 1;
-				headlight_shift = 3;
+				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
 					color->red = color->green = color->blue = 1.0;
@@ -461,16 +470,12 @@ if (xObjIntensity) {
 					fate = FindVectorIntersection(&fq, &hit_data);
 					if (fate != HIT_NONE) {
 						VmVecSub(&tvec, &hit_data.hit_pnt, obj_pos);
-						max_headlight_dist = VmVecMagQuick(&tvec) + F1_0*4;
+						maxHeadlightDist = VmVecMagQuick(&tvec) + F1_0*4;
 					}
 				}
 			}
 		// -- for (vv=gameData.app.nFrameCount&1; vv<nRenderVertices; vv+=2) {
-		for (vv=0; vv<nRenderVertices; vv++) {
-			int			vertnum;
-			vms_vector	*vertpos;
-			fix			dist;
-			int			bApplyLight;
+		for (vv = 0; vv < nRenderVertices; vv++) {
 
 			vertnum = renderVertices [vv];
 #if FLICKERFIX == 0
@@ -478,44 +483,37 @@ if (xObjIntensity) {
 #endif
 			{
 				vertpos = gameData.segs.vertices + vertnum;
-				dist = VmVecDistQuick(obj_pos, vertpos);
+				dist = VmVecDistQuick (obj_pos, vertpos);
 				bApplyLight = 0;
 
-				if ((dist >> headlight_shift) < abs(obji_64)) {
+				if ((dist >> headlightShift) < abs(obji_64)) {
 
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
-
-					//if (Use_fvi_lighting) {
-					//	if (LightingCacheVisible(vertnum, obj_seg, objnum, obj_pos, obj_seg, vertpos)) {
-					//		ApplyLight = 1;
-					//	}
-					//} else
-						bApplyLight = 1;
-
+					bApplyLight = 1;
 					if (bApplyLight) {
 						if (bUseColor)
 							SetDynColor (color, NULL, vertnum, NULL, bForceColor);
-						if (headlight_shift) {
-							fix			dot;
-							vms_vector	vec_to_point;
-
-							VmVecSub(&vec_to_point, vertpos, obj_pos);
-							VmVecNormalizeQuick(&vec_to_point);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = VmVecDot(&vec_to_point, &objP->orient.fvec);
-							if (dot < F1_0/2)
-								dynamicLight [vertnum] += fixdiv(xObjIntensity, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
-							else {
-								if (gameData.app.nGameMode & GM_MULTI) {
-									if (dist < max_headlight_dist)
-										dynamicLight [vertnum] += FixMul(FixMul(dot, dot), xObjIntensity)/8;
-									}
-								else
-									dynamicLight [vertnum] += FixMul(FixMul(dot, dot), xObjIntensity)/8;
-								}
-							}
-						else
+						if (!headlightShift) 
 							dynamicLight [vertnum] += fixdiv(xObjIntensity, dist);
+						else {
+							fix			dot, maxDot;
+							int			bDarkness = EGI_FLAG (bDarkness, 0, 0);
+							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
+							vms_vector	vecToPoint;
+
+							VmVecSub(&vecToPoint, vertpos, obj_pos);
+							VmVecNormalizeQuick(&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							dot = VmVecDot(&vecToPoint, &objP->orient.fvec);
+							if (bDarkness)
+								maxDot = F1_0 / spotSize;
+							else
+								maxDot = F1_0 / 2;
+							if (dot < maxDot)
+								dynamicLight [vertnum] += fixdiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+							else if (!(gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
+								dynamicLight [vertnum] += FixMul(FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
+							}
 						}
 					}
 				}
