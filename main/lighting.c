@@ -389,7 +389,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
 			}
-		if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
+		if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
 			return;
 		}
 	else if ((objP->type == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0))

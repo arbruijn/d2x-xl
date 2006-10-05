@@ -1499,7 +1499,7 @@ extraGameInfo [1].bTowFlags = egi1Save.bTowFlags;
 extraGameInfo [1].bDualMissileLaunch = egi1Save.bDualMissileLaunch;
 extraGameInfo [1].bDisableReactor = egi1Save.bDisableReactor;
 extraGameInfo [1].bRotateLevels = egi1Save.bRotateLevels;
-extraGameInfo [1].bDarkMatch = egi1Save.bDarkMatch;
+extraGameInfo [1].bDarkness = egi1Save.bDarkness;
 extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
@@ -4416,7 +4416,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bShadows = 1;
 	extraGameInfo [i].bRenderShield = 1;
 	extraGameInfo [i].bTeleporterCams = 0;
-	extraGameInfo [i].bDarkMatch = 0;
+	extraGameInfo [i].bDarkness = 0;
 	extraGameInfo [i].bTeamDoors = 0;
 	extraGameInfo [i].bEnableCheats = 0;
 	extraGameInfo [i].bTargetIndicators = 0;
@@ -4527,7 +4527,7 @@ else {
 	LogErr ("   bSmartWeaponSwitch: %d\n", extraGameInfo [1].bSmartWeaponSwitch);
 	LogErr ("   bFluidPhysics: %d\n", extraGameInfo [1].bFluidPhysics);
 	LogErr ("   nWeaponDropMode: %d\n", extraGameInfo [1].nWeaponDropMode);
-	LogErr ("   bDarkMatch: %d\n", extraGameInfo [1].bDarkMatch);
+	LogErr ("   bDarkness: %d\n", extraGameInfo [1].bDarkness);
 	LogErr ("   bTeamDoors: %d\n", extraGameInfo [1].bTeamDoors);
 	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	LogErr ("   bRotateLevels: %d\n", extraGameInfo [1].bRotateLevels);

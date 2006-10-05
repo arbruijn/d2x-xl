@@ -1041,7 +1041,7 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].ogl.nMaxLights = CFReadInt (fp);
 		}
 	if (player_file_version >= 118)
-		extraGameInfo [j].bDarkMatch = CFReadByte (fp);
+		extraGameInfo [j].bDarkness = CFReadByte (fp);
 	if (player_file_version >= 119) {
 		extraGameInfo [j].bTeamDoors = CFReadByte (fp);
 		extraGameInfo [j].bEnableCheats = CFReadByte (fp);
@@ -1061,7 +1061,7 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 122)
 		extraGameInfo [j].bTowFlags = CFReadByte (fp);
 	}
-mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch;
+mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
 if (errno_ret == EZERO)
@@ -1471,7 +1471,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteInt (gameOptions [j].ogl.bUseLighting, fp);
 	CFWriteInt (gameOptions [j].ogl.bLightObjects, fp);
 	CFWriteInt (gameOptions [j].ogl.nMaxLights, fp);
-	CFWriteByte (extraGameInfo [j].bDarkMatch, fp);
+	CFWriteByte (extraGameInfo [j].bDarkness, fp);
 	CFWriteByte (extraGameInfo [j].bTeamDoors, fp);
 	CFWriteByte (extraGameInfo [j].bEnableCheats, fp);
 	CFWriteByte (extraGameInfo [j].bTargetIndicators, fp);

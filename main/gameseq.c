@@ -796,7 +796,7 @@ gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~
 											PLAYER_FLAGS_HEADLIGHT |
 											PLAYER_FLAGS_HEADLIGHT_ON |
 											PLAYER_FLAGS_FLAG);
-if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkMatch)
+if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_HEADLIGHT;
 gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = 0;
 gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;

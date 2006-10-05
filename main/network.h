@@ -469,7 +469,7 @@ typedef struct extra_gameinfo {
 	char		bShadows;
 	char		bRenderShield;
 	char		bTeleporterCams;
-	char		bDarkMatch;
+	char		bDarkness;
 	char		bHeadLights;
 	char		bPowerupLights;
 	char		bTeamDoors;
@@ -502,7 +502,7 @@ typedef struct tMpParams {
 	ubyte	bMarkerView;
 	ubyte	bAlwaysBright;
 	ubyte	bBrightPlayers;
-	ubyte bDarkMatch;
+	ubyte bDarkness;
 	ubyte bTeamDoors;
 	ubyte bEnableCheats;
 	ubyte	bShowAllNames;

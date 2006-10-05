@@ -2447,7 +2447,7 @@ void DropPlayerEggs (object *playerObjP)
 		if (playerP->flags & PLAYER_FLAGS_CONVERTER)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CONVERTER);
 		if ((playerP->flags & PLAYER_FLAGS_HEADLIGHT) && 
-			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame || extraGameInfo [1].bDarkMatch))
+			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame || extraGameInfo [1].bDarkness))
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HEADLIGHT);
 		// drop the other enemies flag if you have it
 

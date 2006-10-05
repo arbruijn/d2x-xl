@@ -429,7 +429,7 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight, optPlayersOnMap;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkMatch, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags;
@@ -440,9 +440,9 @@ void NetworkMoreOptionsPoll (int nitems, newmenu_item * menus, int * key, int ci
 {
 	int	v, j;
 
-v = menus [optDarkMatch].value;
-if (v != extraGameInfo [1].bDarkMatch) {
-	extraGameInfo [1].bDarkMatch = v;
+v = menus [optDarkness].value;
+if (v != extraGameInfo [1].bDarkness) {
+	extraGameInfo [1].bDarkness = v;
 	*key = -2;
 	return;
 	}
@@ -600,16 +600,16 @@ do {
 	ADD_CHECK (opt, TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
 	optShortPkts = opt++;
 	if (gameStates.app.bNostalgia) 
-		optDarkMatch =
+		optDarkness =
 		optTgtInd = -1;
 	else {
-		if (extraGameInfo [1].bDarkMatch) {
+		if (extraGameInfo [1].bDarkness) {
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			}	
-		ADD_CHECK (opt, TXT_DARKMATCH, extraGameInfo [1].bDarkMatch, KEY_D, HTX_DARKMATCH);
-		optDarkMatch = opt++;
-		if (extraGameInfo [1].bDarkMatch) {
+		ADD_CHECK (opt, TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS);
+		optDarkness = opt++;
+		if (extraGameInfo [1].bDarkness) {
 			ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
 			optPowerupLights = opt++;
 			ADD_CHECK (opt, TXT_HEADLIGHTS, !extraGameInfo [1].bHeadLights, KEY_H, HTX_HEADLIGHTS);
@@ -711,9 +711,9 @@ netGame.invul = m [optStartInvul].value;
 mpParams.bInvul = (ubyte) netGame.invul;
 netGame.BrightPlayers = m [optBrightPlayers].value ? 0 : 1;
 mpParams.bBrightPlayers = (ubyte) netGame.BrightPlayers;
-extraGameInfo [1].bDarkMatch = (ubyte) m [optDarkMatch].value;
-if (optDarkMatch >= 0) {
-	if (mpParams.bDarkMatch = extraGameInfo [1].bDarkMatch) {
+extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
+if (optDarkness >= 0) {
+	if (mpParams.bDarkness = extraGameInfo [1].bDarkness) {
 		extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
 		extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
 		}

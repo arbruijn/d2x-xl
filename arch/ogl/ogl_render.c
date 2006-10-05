@@ -980,7 +980,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		continue;
 	if (!(psl->bState && psl->nType))
 		continue;
-	if ((psl->nType == 1) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkMatch)
+	if ((psl->nType == 1) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness)
 		continue;
 	lightColor = *((fVector3 *) &psl->color);
 	lightPos = psl->pos;
