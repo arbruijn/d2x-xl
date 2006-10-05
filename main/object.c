@@ -1179,8 +1179,10 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 	float			r, r2, r3;
 	int			nPlayer = (objP->type == OBJ_PLAYER) ? objP->id : -1;
 
+#if 0
 if (!CanSeeObject (OBJ_IDX (objP), 1))
 	return;
+#endif
 if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
 	if (nPlayer >= 0) {
 		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
