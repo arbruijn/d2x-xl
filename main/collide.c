@@ -714,7 +714,8 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
 	vms_vector	vForce, v;
-	fixang		angle, mag;
+	fixang		angle;
+	fix			mag;
 	object		*t;
 
 	static int nCallDepth = 0;
@@ -2957,7 +2958,7 @@ void CollideWeaponAndPowerup (object * weapon, object * powerup, vms_vector *vHi
 {
 if (powerup->id != POW_MONSTERBALL)
 	return;
-if (weapon->ctype.laser_info.parent_type==OBJ_PLAYER) {	
+if (weapon->ctype.laser_info.parent_type == OBJ_PLAYER) {	
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT, weapon->segnum , 0, vHitPt, 0, F1_0);
 	if (weapon->id == EARTHSHAKER_ID)
 		ShakerRockStuff ();

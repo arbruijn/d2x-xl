@@ -1561,84 +1561,84 @@ int	Zbonkers = 0;
 
 int LaserFireLocalPlayer (void)
 {
-	player	*plp = gameData.multi.players + gameData.multi.nLocalPlayer;
+	player	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 	fix		xEnergyUsed;
-	int		ammo_used,primary_ammo;
-	int		weapon_index;
+	int		nAmmoUsed,nPrimaryAmmo;
+	int		nWeaponIndex;
 	int		rval = 0;
 	int 		nfires = 1;
 	fix		addval;
-	static int Spreadfire_toggle=0;
-	static int Helix_orientation = 0;
+	static int nSpreadfireToggle = 0;
+	static int nHelixOrient = 0;
 
-	if (gameStates.app.bPlayerIsDead)
-		return 0;
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.objects [plp->objnum].segnum].special == SEGMENT_IS_NODAMAGE))
-		return 0;
-	weapon_index = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
-	xEnergyUsed = WI_energy_usage (weapon_index);
-	if (gameData.weapons.nPrimary == OMEGA_INDEX)
-		xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
-	if (gameStates.app.nDifficultyLevel < 2)
-		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
-	//	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
-	if (weapon_index == HELIX_INDEX)
-		if (gameData.app.nGameMode & GM_MULTI)
-			xEnergyUsed *= 2;
-	ammo_used = WI_ammo_usage (weapon_index);
-	addval = 2*gameData.app.xFrameTime;
-	if (addval > F1_0)
-		addval = F1_0;
-	if ((Last_laser_fired_time + 2*gameData.app.xFrameTime < gameData.app.xGameTime) || (gameData.app.xGameTime < Last_laser_fired_time))
-		xNextLaserFireTime = gameData.app.xGameTime;
-	Last_laser_fired_time = gameData.app.xGameTime;
-	primary_ammo = (gameData.weapons.nPrimary == GAUSS_INDEX)? (plp->primary_ammo [VULCAN_INDEX]): (plp->primary_ammo [gameData.weapons.nPrimary]);
-	if	 (!((plp->energy >= xEnergyUsed) && (primary_ammo >= ammo_used)))
-		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+if (gameStates.app.bPlayerIsDead)
+	return 0;
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.objects [playerP->objnum].segnum].special == SEGMENT_IS_NODAMAGE))
+	return 0;
+nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+xEnergyUsed = WI_energy_usage (nWeaponIndex);
+if (gameData.weapons.nPrimary == OMEGA_INDEX)
+	xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
+if (gameStates.app.nDifficultyLevel < 2)
+	xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
+//	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
+if (nWeaponIndex == HELIX_INDEX)
+	if (gameData.app.nGameMode & GM_MULTI)
+		xEnergyUsed *= 2;
+nAmmoUsed = WI_ammo_usage (nWeaponIndex);
+addval = 2*gameData.app.xFrameTime;
+if (addval > F1_0)
+	addval = F1_0;
+if ((Last_laser_fired_time + 2 * gameData.app.xFrameTime < gameData.app.xGameTime) || (gameData.app.xGameTime < Last_laser_fired_time))
+	xNextLaserFireTime = gameData.app.xGameTime;
+Last_laser_fired_time = gameData.app.xGameTime;
+nPrimaryAmmo = (gameData.weapons.nPrimary == GAUSS_INDEX)? (playerP->primary_ammo [VULCAN_INDEX]): (playerP->primary_ammo [gameData.weapons.nPrimary]);
+if	 (!((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)))
+	AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
 if (Zbonkers) {
 	Zbonkers = 0;
 	gameData.app.xGameTime = 0;
-}
+	}
 
-	while (xNextLaserFireTime <= gameData.app.xGameTime) {
-		if	 ((plp->energy >= xEnergyUsed) && (primary_ammo >= ammo_used)) {
-			int	laser_level, flags;
-			if (gameStates.app.cheats.bLaserRapidFire!=0xBADA55)
-				xNextLaserFireTime += WI_fire_wait (weapon_index);
+while (xNextLaserFireTime <= gameData.app.xGameTime) {
+	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
+		int	nLaserLevel, flags = 0;
+		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
+			xNextLaserFireTime += F1_0/25;
+		else
+			xNextLaserFireTime += WI_fire_wait (nWeaponIndex);
+		nLaserLevel = gameData.multi.players [gameData.multi.nLocalPlayer].laser_level;
+		if (gameData.weapons.nPrimary == SPREADFIRE_INDEX) {
+			if (nSpreadfireToggle)
+				flags |= LASER_SPREADFIRE_TOGGLED;
+			nSpreadfireToggle = !nSpreadfireToggle;
+			}
+		if (gameData.weapons.nPrimary == HELIX_INDEX) {
+			nHelixOrient++;
+			flags |= ((nHelixOrient & LASER_HELIX_MASK) << LASER_HELIX_SHIFT);
+			}
+		if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
+			flags |= LASER_QUAD;
+		rval += LaserFireObject ((short) gameData.multi.players [gameData.multi.nLocalPlayer].objnum, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nfires);
+		playerP->energy -= (xEnergyUsed * rval) / gameData.weapons.info [nWeaponIndex].fire_count;
+		if (playerP->energy < 0)
+			playerP->energy = 0;
+		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
+			if (nAmmoUsed > playerP->primary_ammo [VULCAN_INDEX])
+				playerP->primary_ammo [VULCAN_INDEX] = 0;
 			else
-				xNextLaserFireTime += F1_0/25;
-			laser_level = gameData.multi.players [gameData.multi.nLocalPlayer].laser_level;
-			flags = 0;
-			if (gameData.weapons.nPrimary == SPREADFIRE_INDEX) {
-				if (Spreadfire_toggle)
-					flags |= LASER_SPREADFIRE_TOGGLED;
-				Spreadfire_toggle = !Spreadfire_toggle;
+				playerP->primary_ammo [VULCAN_INDEX] -= nAmmoUsed;
 			}
-			if (gameData.weapons.nPrimary == HELIX_INDEX) {
-				Helix_orientation++;
-				flags |= ((Helix_orientation & LASER_HELIX_MASK) << LASER_HELIX_SHIFT);
-			}
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-				flags |= LASER_QUAD;
-			rval += LaserFireObject ((short) gameData.multi.players [gameData.multi.nLocalPlayer].objnum, (ubyte) gameData.weapons.nPrimary, laser_level, flags, nfires);
-			plp->energy -= (xEnergyUsed * rval) / gameData.weapons.info [weapon_index].fire_count;
-			if (plp->energy < 0)
-				plp->energy = 0;
-			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-				if (ammo_used > plp->primary_ammo [VULCAN_INDEX])
-					plp->primary_ammo [VULCAN_INDEX] = 0;
-				else
-					plp->primary_ammo [VULCAN_INDEX] -= ammo_used;
-			}
-			AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
-		} else {
-			AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
-			xNextLaserFireTime = gameData.app.xGameTime;	//	Prevents shots-to-fire from building up.
-			break;	//	Couldn't fire weapon, so abort.
+		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+		}
+	else {
+		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+		xNextLaserFireTime = gameData.app.xGameTime;	//	Prevents shots-to-fire from building up.
+		break;	//	Couldn't fire weapon, so abort.
 		}
 	}
-	gameData.app.nGlobalLaserFiringCount = 0;	
-	return rval;
+gameData.app.nGlobalLaserFiringCount = 0;	
+return rval;
 }
 
 // -- #define	MAX_LIGHTNING_DISTANCE	 (F1_0*300)

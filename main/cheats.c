@@ -604,6 +604,7 @@ else {
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
 	}
 UpdateLaserWeaponInfo();
+SetLastSuperWeaponStates ();
 }
 
 //------------------------------------------------------------------------------

@@ -149,7 +149,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed auto selection of secondary weapons
  *
  * Revision 1.14  1994/10/08  23:37:54  matt
- * Don't pick up weapons you already have; also fixed auto_select bug
+ * Don't pick up weapons you already have; also fixed bAutoSelect bug
  * for seconary weapons
  *
  * Revision 1.13  1994/10/08  14:55:47  matt
@@ -295,7 +295,7 @@ ubyte nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255
 
 // bCycling weapon key pressed?
 
-ubyte bCycling=0;
+ubyte bCycling = 0;
 
 //allow player to reorder menus?
 
@@ -386,7 +386,7 @@ sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES] = {
 //		HAS_ENERGY_FLAG
 //		HAS_AMMO_FLAG	
 // See weapon.h for bit values
-int PlayerHasWeapon (int weapon_num, int secondary_flag, int nPlayer)
+int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer)
 {
 	int		return_value = 0;
 	int		nWeaponIndex;
@@ -394,56 +394,56 @@ int PlayerHasWeapon (int weapon_num, int secondary_flag, int nPlayer)
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
-if (gameStates.app.bD1Mission && (weapon_num >= SUPER_WEAPON))
+if (gameStates.app.bD1Mission && (nWeapon >= SUPER_WEAPON))
 	return 0;
 if (playerP->energy < 0)
 	playerP->energy = 0;
 
-if (!secondary_flag) {
-	nWeaponIndex = primaryWeaponToWeaponInfo[weapon_num];
+if (!bSecondary) {
+	nWeaponIndex = primaryWeaponToWeaponInfo[nWeapon];
 
-	if (weapon_num == SUPER_LASER_INDEX) {
+	if (nWeapon == SUPER_LASER_INDEX) {
 		if ((playerP->primary_weapon_flags & (1 << LASER_INDEX)) &&
 				(playerP->laser_level > MAX_LASER_LEVEL))
 			return_value |= HAS_WEAPON_FLAG;
 		}
-	else if (weapon_num == LASER_INDEX) {
+	else if (nWeapon == LASER_INDEX) {
 		if ((playerP->primary_weapon_flags & (1 << LASER_INDEX)) &&
-				(playerP->laser_level <= MAX_LASER_LEVEL))
+			 (playerP->laser_level <= MAX_LASER_LEVEL))
 			return_value |= HAS_WEAPON_FLAG;
 		}
-	else if (weapon_num == SPREADFIRE_INDEX) {
-		if ((playerP->primary_weapon_flags & (1 << weapon_num)) &&
+	else if (nWeapon == SPREADFIRE_INDEX) {
+		if ((playerP->primary_weapon_flags & (1 << nWeapon)) &&
 			!(extraGameInfo [0].bSmartWeaponSwitch && 
 				(playerP->primary_weapon_flags & (1 << HELIX_INDEX))))
 			return_value |= HAS_WEAPON_FLAG;
 		}
-	else if (weapon_num == VULCAN_INDEX) {
-		if ((playerP->primary_weapon_flags & (1 << weapon_num)) &&
+	else if (nWeapon == VULCAN_INDEX) {
+		if ((playerP->primary_weapon_flags & (1 << nWeapon)) &&
 			!(extraGameInfo [0].bSmartWeaponSwitch && 
 				(playerP->primary_weapon_flags & (1 << GAUSS_INDEX))))
 			return_value |= HAS_WEAPON_FLAG;
 		}
 	else {
-		if (playerP->primary_weapon_flags & (1 << weapon_num))
+		if (playerP->primary_weapon_flags & (1 << nWeapon))
 			return_value |= HAS_WEAPON_FLAG;
 		}
 
 	// Special case: Gauss cannon uses vulcan ammo.		
-	if (weapon_num == GAUSS_INDEX) {
+	if (nWeapon == GAUSS_INDEX) {
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primary_ammo [VULCAN_INDEX])
 			return_value |= HAS_AMMO_FLAG;
 		}
 	else
-		if (WI_ammo_usage (nWeaponIndex) <= playerP->primary_ammo [weapon_num])
+		if (WI_ammo_usage (nWeaponIndex) <= playerP->primary_ammo [nWeapon])
 			return_value |= HAS_AMMO_FLAG;
-	if (weapon_num == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
+	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
 		if (playerP->energy || xOmegaCharge)
 			return_value |= HAS_ENERGY_FLAG;
 		}
 	else {
 /*
-		if (weapon_num == SUPER_LASER_INDEX) {	
+		if (nWeapon == SUPER_LASER_INDEX) {	
 			if (playerP->energy || xOmegaCharge)
 				return_value |= HAS_ENERGY_FLAG;
 		}
@@ -453,12 +453,12 @@ if (!secondary_flag) {
 		}
 	}
 else {
-	nWeaponIndex = secondaryWeaponToWeaponInfo[weapon_num];
+	nWeaponIndex = secondaryWeaponToWeaponInfo[nWeapon];
 
-	if (playerP->secondary_weapon_flags & (1 << weapon_num))
+	if (playerP->secondary_weapon_flags & (1 << nWeapon))
 		return_value |= HAS_WEAPON_FLAG;
 
-	if (WI_ammo_usage (nWeaponIndex) <= playerP->secondary_ammo [weapon_num])
+	if (WI_ammo_usage (nWeaponIndex) <= playerP->secondary_ammo [nWeapon])
 		return_value |= HAS_AMMO_FLAG;
 
 	if (WI_energy_usage(nWeaponIndex) <= playerP->energy)
@@ -503,7 +503,7 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 //if message flag set, print message saying selected
-void SelectWeapon(int weapon_num, int secondary_flag, int print_message, int wait_for_rearm)
+void SelectWeapon(int weapon_num, int secondary_flag, int print_message, int bWaitForRearm)
 {
 	char	*weapon_name;
 
@@ -511,20 +511,20 @@ if (gameData.demo.nState==ND_STATE_RECORDING)
 	NDRecordPlayerWeapon(secondary_flag, weapon_num);
 if (!secondary_flag) {
 	if (gameData.weapons.nPrimary != weapon_num) {
-		if (wait_for_rearm) 
+		if (bWaitForRearm) 
 			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)	{
-			if (wait_for_rearm) 
+			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 #endif
-		xNextLaserFireTime = wait_for_rearm ? gameData.app.xGameTime + REARM_TIME : 0;
+		xNextLaserFireTime = bWaitForRearm ? gameData.app.xGameTime + REARM_TIME : 0;
 		gameData.app.nGlobalLaserFiringCount = 0;
 		} 
 	else {
 		// Select super version if available.
-		if (wait_for_rearm) {
+		if (bWaitForRearm) {
 			if (!bCycling)
 				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- DigiPlaySampleOnce( SOUND_ALREADY_SELECTED, F1_0);
 			else
@@ -554,19 +554,19 @@ if (!secondary_flag) {
 	}
 else {
 	if (gameData.weapons.nSecondary != weapon_num) {
-		if (wait_for_rearm) 
+		if (bWaitForRearm) 
 			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_SECONDARY, F1_0);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI) {
-			if (wait_for_rearm) 
+			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 #endif
-		xNextMissileFireTime = wait_for_rearm ? gameData.app.xGameTime + REARM_TIME : 0;
+		xNextMissileFireTime = bWaitForRearm ? gameData.app.xGameTime + REARM_TIME : 0;
 		gameData.app.nGlobalMissileFiringCount = 0;
 		}
 	else {
-		if (wait_for_rearm) {
+		if (bWaitForRearm) {
 		 if (!bCycling)
 			DigiPlaySampleOnce( SOUND_ALREADY_SELECTED, F1_0);
 		 else
@@ -590,64 +590,64 @@ if (print_message) {
 //flags whether the last time we use this weapon, it was the 'super' version
 //	------------------------------------------------------------------------------------
 //	Select a weapon, primary or secondary.
-void DoSelectWeapon(int weapon_num, int secondary_flag)
+void DoSelectWeapon(int nWeapon, int bSecondary)
 {
-	int	weapon_num_save=weapon_num;
+	int	weapon_num_save=nWeapon;
 	int	weapon_status,current,has_flag;
 	ubyte	last_was_super;
 
-if (!secondary_flag) {
+if (!bSecondary) {
 	current = gameData.weapons.nPrimary;
 	if ((current == LASER_INDEX) && (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level > MAX_LASER_LEVEL))
 		current = SUPER_LASER_INDEX;
-	last_was_super = bLastPrimaryWasSuper [weapon_num];
-	if ((weapon_num == LASER_INDEX) && (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level > MAX_LASER_LEVEL))
-		weapon_num = SUPER_LASER_INDEX;
+	last_was_super = bLastPrimaryWasSuper [nWeapon];
+	if ((nWeapon == LASER_INDEX) && (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level > MAX_LASER_LEVEL))
+		nWeapon = SUPER_LASER_INDEX;
 	has_flag = HAS_WEAPON_FLAG;
 	}
 else {
 	current = gameData.weapons.nSecondary;
-	last_was_super = bLastSecondaryWasSuper [weapon_num];
+	last_was_super = bLastSecondaryWasSuper [nWeapon];
 	has_flag = HAS_WEAPON_FLAG+HAS_AMMO_FLAG;
 	}
 
-if ((current == weapon_num) || (current == weapon_num + SUPER_WEAPON)) {
+if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
 	//already have this selected, so toggle to other of normal/super version
-	if (!secondary_flag && (current == SUPER_LASER_INDEX))
+	if (!bSecondary && (current == SUPER_LASER_INDEX))
 		return;
-	weapon_num %= SUPER_WEAPON;
+	nWeapon %= SUPER_WEAPON;
 	if (!last_was_super)
-		weapon_num += SUPER_WEAPON;
-	weapon_status = PlayerHasWeapon (weapon_num, secondary_flag, -1);
+		nWeapon += SUPER_WEAPON;
+	weapon_status = PlayerHasWeapon (nWeapon, bSecondary, -1);
 	}
 else {
 	//go to last-select version of requested missile
-	if (last_was_super && (weapon_num < SUPER_WEAPON))
-		weapon_num += SUPER_WEAPON;
-	weapon_status = PlayerHasWeapon (weapon_num, secondary_flag, -1);
+	if (last_was_super && (nWeapon < SUPER_WEAPON))
+		nWeapon += SUPER_WEAPON;
+	weapon_status = PlayerHasWeapon (nWeapon, bSecondary, -1);
 	//if don't have last-selected, try other version
 	if ((weapon_status & has_flag) != has_flag) {
-		weapon_num = 2 * weapon_num_save + SUPER_WEAPON - weapon_num;
-		weapon_status = PlayerHasWeapon(weapon_num, secondary_flag, -1);
+		nWeapon = 2 * weapon_num_save + SUPER_WEAPON - nWeapon;
+		weapon_status = PlayerHasWeapon(nWeapon, bSecondary, -1);
 		if ((weapon_status & has_flag) != has_flag)
-			weapon_num = 2 * weapon_num_save + SUPER_WEAPON - weapon_num;
+			nWeapon = 2 * weapon_num_save + SUPER_WEAPON - nWeapon;
 		}
 	}
 
 //if we don't have the weapon we're switching to, give error & bail
 if ((weapon_status & has_flag) != has_flag) {
-	if (!secondary_flag) {
-		if (weapon_num==SUPER_LASER_INDEX)
+	if (!bSecondary) {
+		if (nWeapon==SUPER_LASER_INDEX)
 			return; 		//no such thing as super laser, so no error
-		HUDInitMessage("%s %s!", TXT_DONT_HAVE, PRIMARY_WEAPON_NAMES(weapon_num));
+		HUDInitMessage("%s %s!", TXT_DONT_HAVE, PRIMARY_WEAPON_NAMES(nWeapon));
 		}
 	else
-		HUDInitMessage("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES(weapon_num), TXT_SX);
+		HUDInitMessage("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES(nWeapon), TXT_SX);
 	DigiPlaySample( SOUND_BAD_SELECTION, F1_0);
 	return;
 	}
 //now actually select the weapon
-SelectWeapon(weapon_num, secondary_flag, 1, 1);
+SelectWeapon(nWeapon, bSecondary, 1, 1);
 }
 
 //	----------------------------------------------------------------------------------------
@@ -656,25 +656,39 @@ inline int WeaponId (int w)
 {
 if (w != LASER_INDEX)
 	return w;
-else if ((gameData.multi.players [gameData.multi.nLocalPlayer].laser_level <= MAX_LASER_LEVEL) || !bLastPrimaryWasSuper [LASER_INDEX])
+else if ((gameData.multi.players [gameData.multi.nLocalPlayer].laser_level <= MAX_LASER_LEVEL) || 
+			!bLastPrimaryWasSuper [LASER_INDEX])
 	return LASER_INDEX;
 else
 	return SUPER_LASER_INDEX;
 }
 
 //	----------------------------------------------------------------------------------------
+
+void SetLastSuperWeaponStates (void)
+{
+	player	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	int		i, j;
+
+for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
+	bLastPrimaryWasSuper [i] = i ? playerP->primary_weapon_flags & j : playerP->laser_level > MAX_LASER_LEVEL;
+	bLastSecondaryWasSuper [i] = playerP->secondary_weapon_flags & j;
+	}
+}
+
+//	----------------------------------------------------------------------------------------
 //	Automatically select next best weapon if unable to fire current weapon.
 // Weapon type: 0==primary, 1==secondary
 
-void AutoSelectWeapon(int weapon_type, int auto_select)
+void AutoSelectWeapon(int nWeaponType, int bAutoSelect)
 {
 	int	r;
 	int	nCutPoint;
 	int	bLooped = 0;
 
-if (auto_select && !gameOpts->gameplay.nAutoSelectWeapon)
+if (bAutoSelect && !gameOpts->gameplay.nAutoSelectWeapon)
 	return;
-if (!weapon_type) {
+if (!nWeaponType) {
 	r = PlayerHasWeapon (WeaponId (gameData.weapons.nPrimary), 0, -1);
 	if ((r != HAS_ALL) || bCycling) {
 		int	bTryAgain = 1;
@@ -739,7 +753,7 @@ if (!weapon_type) {
 		}
 	} 
 else {
-	Assert(weapon_type==1);
+	Assert(nWeaponType==1);
 	r = PlayerHasWeapon(gameData.weapons.nSecondary, 1, -1);
 	if (r != HAS_ALL || bCycling) {
 		int	bTryAgain = 1;

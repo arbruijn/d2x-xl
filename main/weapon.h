@@ -441,5 +441,6 @@ extern ubyte nDefaultWeaponOrder [2][11];
 #define defaultSecondaryOrder	(nDefaultWeaponOrder [1])
 
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n);
+void SetLastSuperWeaponStates (void);
 
 #endif
