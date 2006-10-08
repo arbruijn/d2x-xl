@@ -117,9 +117,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int get_new_seg(vms_vector *p0,int startseg);
 
 typedef struct segmasks {
-   short facemask;     //which faces sphere pokes through (12 bits)
-   sbyte sidemask;     //which sides sphere pokes through (6 bits)
-   sbyte centermask;   //which sides center point is on back of (6 bits)
+   short faceMask;     //which faces sphere pokes through (12 bits)
+   sbyte sideMask;     //which sides sphere pokes through (6 bits)
+   sbyte centerMask;   //which sides center point is on back of (6 bits)
 } segmasks;
 
 

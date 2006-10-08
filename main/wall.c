@@ -925,7 +925,7 @@ int CheckPoke (int objnum,int segnum,short side)
 
 	//note: don't let gameData.objs.objects with zero size block door
 
-	if (objP->size && GetSegMasks(&objP->pos,segnum,objP->size).sidemask & (1<<side))
+	if (objP->size && GetSegMasks(&objP->pos,segnum,objP->size).sideMask & (1<<side))
 		return 1;		//pokes through side!
 	else
 		return 0;		//does not!

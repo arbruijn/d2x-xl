@@ -2178,12 +2178,14 @@ if (i) {
 	gameOptions [1].app.bDemoData = 0;
 	gameOptions [1].app.bSinglePlayer = 0;
 	gameOptions [1].app.bExpertMode = 0;
+	gameOptions [1].app.nScreenShotInterval = 0;
 	}
 else {
 	gameOptions [0].app.nVersionFilter = 2;
 	gameOptions [0].app.bDemoData = 1;
 	gameOptions [0].app.bSinglePlayer = 0;
 	gameOptions [0].app.bExpertMode = 1;
+	gameOptions [0].app.nScreenShotInterval = 0;
 	}
 }
 

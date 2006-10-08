@@ -1311,7 +1311,7 @@ int HandleSystemKey(int key)
 			
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
-			if (!IsMultiGame || IsCoopGame)
+			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0))
 #endif			
 				gameStates.render.bExternalView = !gameStates.render.bExternalView;
 			ResetFlightPath (&externalView, -1, -1);

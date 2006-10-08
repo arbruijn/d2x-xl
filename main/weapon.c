@@ -853,7 +853,7 @@ nPickedUp = count;
 if (playerP->secondary_ammo [nWeaponIndex] > max) {
 	nPickedUp = count - (playerP->secondary_ammo [nWeaponIndex] - max);
 	playerP->secondary_ammo [nWeaponIndex] = max;
-	if (nPickedUp < count) {
+	if ((nPickedUp < count) && (nWeaponIndex != PROXIMITY_INDEX) && (nWeaponIndex != SMART_MINE_INDEX)) {
 		short nObject = OBJ_IDX (objP);
 		CBRK (gameData.multi.leftoverPowerups [nObject].nCount);
 		gameData.multi.leftoverPowerups [nObject].nCount = count - nPickedUp;

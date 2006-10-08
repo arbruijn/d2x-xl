@@ -1184,9 +1184,9 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0) ||
 	MultiSendCreatePowerup (nPowerupType, segnum, objnum, &vNewPos);
 	if (!bFixedPos)
 		gameData.objs.objects[objnum].pos = vNewPos;
-	VmVecZero(&gameData.objs.objects[objnum].mtype.phys_info.velocity);
-	RelinkObject(objnum, segnum);
-	ObjectCreateExplosion(segnum, &vNewPos, i2f(5), VCLIP_POWERUP_DISAPPEARANCE);
+	VmVecZero (&gameData.objs.objects[objnum].mtype.phys_info.velocity);
+	RelinkObject (objnum, segnum);
+	ObjectCreateExplosion (segnum, &vNewPos, i2f(5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -2036,6 +2036,7 @@ if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vInitVel, &vSegCenter, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = gameData.objs.objects + nObject;
+		gameData.hoard.monsterballP->type = OBJ_MONSTERBALL;
 		gameData.hoard.monsterballP->mtype.phys_info.mass = F1_0 * 10;
 		gameData.hoard.nLastHitter = -1;
 		CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
@@ -2058,7 +2059,8 @@ gameData.hoard.monsterballP = NULL;
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
 for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP++)
-	if ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL)) {
+	if ((objP->type == OBJ_MONSTERBALL) || 
+		 ((objP->type == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0)
 			gameData.hoard.nMonsterballSeg = objP->segnum;
 		ReleaseObject (i);
@@ -2084,10 +2086,12 @@ if (!gameData.hoard.monsterballP)
 if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
 	return 0;
 special = gameData.segs.segment2s [gameData.hoard.monsterballP->segnum].special;
+if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
+	return 0;
 if ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
 	MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 else
-	return 0;
+	MultiSendCaptureBonus (-gameData.multi.nLocalPlayer - 1);
 CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 RemoveMonsterball ();
 CreateMonsterball ();

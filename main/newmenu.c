@@ -627,6 +627,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_init.h"
 #include "render.h"
 #include "input.h"
+#include "gameseq.h"
 
 #if defined (TACTILE)
  #include "tactile.h"

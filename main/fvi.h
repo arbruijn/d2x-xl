@@ -85,17 +85,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FVI_SEGS 100
 
+typedef struct fvi_hit_info {
+	int 			nType;						//what sort of intersection
+	short 		nSegment;					//what segment hit_pnt is in
+	short			nSegment2;
+	short 		nSide;						//if hit wall, which side
+	short 		nSideSegment;				//what segment the hit side is in
+	short 		nObject;						//if object hit, which object
+	vms_vector	vPoint;						//where we hit
+	vms_vector 	vNormal;						//if hit wall, ptr to its surface normal
+	int			nNestCount;
+} fvi_hit_info;
+
 //this data structure gets filled in by FindVectorIntersection()
 typedef struct fvi_info {
-	int hit_type;					//what sort of intersection
-	vms_vector hit_pnt;			//where we hit
-	short hit_seg;					//what segment hit_pnt is in
-	short hit_side;					//if hit wall, which side
-	short hit_side_seg;				//what segment the hit side is in
-	short hit_object;				//if object hit, which object
-	vms_vector hit_wallnorm;	//if hit wall, ptr to its surface normal
-	short n_segs;						//how many segs we went through
-	short seglist[MAX_FVI_SEGS];	//list of segs vector went through
+	fvi_hit_info	hit;
+	short 			nSegments;					//how many segs we went through
+	short 			segList [MAX_FVI_SEGS];	//list of segs vector went through
 } fvi_info;
 
 //flags for fvi query
@@ -109,11 +115,11 @@ typedef struct fvi_info {
 //this data contains the parms to fvi()
 typedef struct fvi_query {
 	vms_vector *p0,*p1;
-	short startseg;
-	fix rad;
-	short thisobjnum;
-	short *ignore_obj_list;
-	int flags;
+	short			startSeg;
+	fix			rad;
+	short			thisObjNum;
+	short			*ignoreObjList;
+	int			flags;
 } fvi_query;
 
 //Find out if a vector intersects with anything.

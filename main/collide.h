@@ -104,8 +104,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _COLLIDE_H
 
 void CollideInit();
-void CollideTwoObjects(object * A, object * B, vms_vector *collision_point);
-void CollideObjectWithWall(object * A, fix hitspeed, short hitseg, short hitwall, vms_vector * hitpt);
+int CollideTwoObjects(object * A, object * B, vms_vector *collision_point);
+int CollideObjectWithWall(object * A, fix hitspeed, short hitseg, short hitwall, vms_vector * hitpt);
 void ApplyDamageToPlayer(object *player, object *killer, fix damage);
 
 // Returns 1 if robot died, else 0.
@@ -113,17 +113,17 @@ int ApplyDamageToRobot(object *robot, fix damage, int killer_objnum);
 
 extern int Immaterial;
 
-void CollidePlayerAndWeapon(object * player, object * weapon, vms_vector *collision_point);
-void CollidePlayerAndMatCen(object *objp);
-void CollideRobotAndMatCen(object *objp);
+int CollidePlayerAndWeapon(object * player, object * weapon, vms_vector *collision_point);
+int CollidePlayerAndMatCen(object *objp);
+int CollideRobotAndMatCen(object *objp);
 
 void ScrapeObjectOnWall(object *obj, short hitseg, short hitwall, vms_vector * hitpt);
 int MaybeDetonateWeapon(object *obj0p, object *obj, vms_vector *pos);
 
-void CollidePlayerAndNastyRobot(object * player, object * robot, vms_vector *collision_point);
+int CollidePlayerAndNastyRobot(object * player, object * robot, vms_vector *collision_point);
 
 void NetDestroyReactor(object *controlcen);
-void CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *collision_point);
+int CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *collision_point);
 int CheckEffectBlowup(segment *seg,short side,vms_vector *pnt, object *blower, int force_blowup_flag);
 void ApplyDamageToReactor(object *controlcen, fix damage, short who);
 void BumpOneObject(object *obj0, vms_vector *hit_dir, fix damage);

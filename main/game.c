@@ -3134,11 +3134,14 @@ extern void OmegaChargeFrame (void);
 
 extern time_t t_current_time, t_saved_time;
 extern int flFrameTime;
+int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, 60};
 
 void FlickerLights ();
 
 int GameLoop (int RenderFlag, int ReadControlsFlag)
 {
+	int	h;
+
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 GetSlowTick ();
@@ -3414,6 +3417,16 @@ SlideTextures ();
 //LogErr ("FlickerLights \n");
 FlickerLights ();
 //LogErr ("\n");
+if (!(gameData.app.bGamePaused || gameStates.menus.nInMenu))
+	if (h = screenShotIntervals [gameOpts->app.nScreenShotInterval]) {
+		static	time_t	t0 = 0;
+
+		if (gameStates.app.nSDLTicks - t0 >= h * 1000) {
+			t0 = gameStates.app.nSDLTicks;
+			bSaveScreenShot = 1;
+			SaveScreenShot (0, 0);
+			}
+		}
 return 1;
 }
 
@@ -3551,7 +3564,7 @@ void FireLaser ()
 					DigiPlaySample (11, F1_0);
 					ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
 				} else {
-					create_awareness_event (gameData.objs.console, PA_WEAPON_ROBOT_COLLISION);
+					CreateAwarenessEvent (gameData.objs.console, PA_WEAPON_ROBOT_COLLISION);
 					DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
 					#ifdef NETWORK
 					if (gameData.app.nGameMode & GM_MULTI)

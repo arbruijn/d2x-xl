@@ -110,6 +110,8 @@ else {
 		nScale /= 3;
 	else if (h <= 50)
 		nScale /= 2;
+	else
+		nScale /= 1.5;
 	j = OBJ_IDX (objP);
 	if (nParts <= 0) {
 		nType = 2;
@@ -173,13 +175,15 @@ if (nParts > 0) {
 	else if (nShields < 1000)
 		nShields = 1000;
 	CreateDamageExplosion (nParts, i);
-	nParts *= nShields / 10;
+	//nParts *= nShields / 10;
 	nParts = 250;
 	nScale = 655360.0f / (float) objP->size * 1.5f;
 	if (h <= 25)
 		nScale /= 3;
 	else if (h <= 50)
 		nScale /= 2;
+	else
+		nScale /= 1.5;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, nScale,
@@ -213,7 +217,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts / 2, 2,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts / 2, 1.5,
 												 MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
@@ -279,7 +283,7 @@ void DoSmokeFrame (void)
 #ifdef _DEBUG
 if (!gameStates.render.bExternalView)
 #else
-if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame))
+if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
 RobotSmokeFrame ();

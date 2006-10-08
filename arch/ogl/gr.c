@@ -992,7 +992,7 @@ if (glErrCode == GL_NO_ERROR)
 	WriteScreenShot (szSaveName, grdCurScreen->sc_w, grdCurScreen->sc_h, buf, 0);
 if (bTmpBuf)
 	d_free (buf);
-KeyFlush ();
+//KeyFlush ();
 StartTime ();
 }
 

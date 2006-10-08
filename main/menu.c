@@ -2626,8 +2626,9 @@ else if (!song_playing)
 
 //------------------------------------------------------------------------------
 
-static int nDlTimeoutOpt, nAutoDlOpt, nExpModeOpt, nUseDefOpt, nCompSpeedOpt;
+static int nDlTimeoutOpt, nAutoDlOpt, nExpModeOpt, nUseDefOpt, nCompSpeedOpt, nScreenShotOpt;
 static char *pszCompSpeeds [5];
+extern int screenShotIntervals [];
 
 void MiscellaneousCallBack (int nitems, newmenu_item * menus, int * key, int citem)
 {
@@ -2648,6 +2649,18 @@ if (!gameStates.app.bNostalgia) {
 		if (gameStates.app.nCompSpeed != v)
 			sprintf (m->text, TXT_COMP_SPEED, pszCompSpeeds [v]);
 		m->rebuild = 1;
+		}
+	m = menus + nScreenShotOpt;
+	v = m->value;
+	if (gameOpts->app.nScreenShotInterval != v) {
+		gameOpts->app.nScreenShotInterval = v;
+		if (v)
+			sprintf (m->text, TXT_SCREENSHOTS, screenShotIntervals [v]);
+		else
+			strcpy (m->text, TXT_NO_SCREENSHOTS);
+		m->rebuild = 1;
+		*key = -2;
+		return;
 		}
 	}
 m = menus + nExpModeOpt;
@@ -2696,6 +2709,7 @@ void MiscellaneousMenu ()
 #endif
 	char  szDlTimeout [50];
 	char  szCompSpeed [50];
+	char	szScreenShots [50];
 
 pszCompSpeeds [0] = TXT_VERY_SLOW;
 pszCompSpeeds [1] = TXT_SLOW;
@@ -2763,6 +2777,15 @@ do {
 			ADD_SLIDER (opt, szDlTimeout + 1, GetDlTimeout (), 0, MaxDlTimeout (), KEY_T, HTX_MISC_AUTODLTO);  
 			nDlTimeoutOpt = opt++;
 			}
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		if (gameOpts->app.nScreenShotInterval)
+			sprintf (szScreenShots + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
+		else
+			strcpy (szScreenShots + 1, TXT_NO_SCREENSHOTS);
+		*szScreenShots = *(TXT_SCREENSHOTS - 1);
+		ADD_SLIDER (opt, szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+		nScreenShotOpt = opt++;
 		}
 	if (!gameStates.app.bNostalgia) {
 		if (gameStates.app.bUseDefaults || (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)) {
@@ -2778,6 +2801,7 @@ do {
 			nCompSpeedOpt = opt++;
 			}
 		}
+	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, opt, m, MiscellaneousCallBack, &choice);
 	} while (i >= 0);

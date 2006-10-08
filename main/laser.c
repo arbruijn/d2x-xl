@@ -1222,7 +1222,7 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
-	create_awareness_event (objP, PA_WEAPON_WALL_COLLISION);
+	CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 	// Find the initial position of the laser
 	pnt = gameData.pig.ship.player->gun_points [gun_num];
 	if (bLaserOffs)

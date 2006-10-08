@@ -1738,10 +1738,10 @@ void LoadGameTexts(void);
 #define TXT_FRIENDLY_INDICATOR	GT(793)
 #define TXT_CLOAKED_INDICATOR		GT(794)
 #define TXT_TOW_FLAGS				GT(795)
+#define TXT_SCREENSHOTS				GT(796)
+#define TXT_NO_SCREENSHOTS			GT(797)
+#define TXT_NO_HEADLIGHTS			GT(798)
 #if 0
-#define TXT_				GT(796)
-#define TXT_				GT(797)
-#define TXT_				GT(798)
 #define TXT_				GT(799)
 
 #define TXT_				GT(800)
@@ -2071,10 +2071,10 @@ void LoadGameTexts(void);
 #define HTX_FRIENDLY_INDICATOR	HT(208)				
 #define HTX_CLOAKED_INDICATOR	HT(209)				
 #define HTX_TOW_FLAGS			HT(210)				
+#define HTX_MISC_SCREENSHOTS	HT(211)				
 
 #if 0
 				
-#define HTX_				HT(211)				
 #define HTX_				HT(212)				
 #define HTX_				HT(213)				
 #define HTX_				HT(214)				

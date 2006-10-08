@@ -493,8 +493,6 @@ void ComputeSideCenter (vms_vector *vp, segment *segP, int side)
 	vms_vector h;
 	fix d;
 
-if (SEG_IDX (segP) == 120 && side == 1)
-	side = side;
 *vp = gameData.segs.vertices [segP->verts [*s2v++]];
 VmVecSub (&h, vp, gameData.segs.vertices + sv [*s2v++]);
 d = VmVecMag (&h);
@@ -768,9 +766,9 @@ segmasks GetSegMasks (vms_vector *checkp, int segnum, fix xRad)
 	side			*sideP;
 	segmasks		masks;
 
-masks.sidemask = 0;
-masks.facemask = 0;
-masks.centermask = 0;
+masks.sideMask = 0;
+masks.faceMask = 0;
+masks.centerMask = 0;
 if (segnum == -1) {
 	Error ("segnum == -1 in GetSegMasks ()");
 	return masks;
@@ -822,24 +820,24 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 				// check if the intersection of a line through the point that is orthogonal to the 
-				// plane the current triangle lies in is inside that triangle
+				// plane of the current triangle lies in is inside that triangle
 					nCenterCount++;
 			if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
-				masks.facemask |= faceBit;
+				masks.faceMask |= faceBit;
 				nSideCount++;
 				}
 			}
 		if (bSidePokesOut) {		//must be behind at least one face
 			if (nSideCount)
-				masks.sidemask |= sideBit;
+				masks.sideMask |= sideBit;
 			if (nCenterCount)
-				masks.centermask |= sideBit;
+				masks.centerMask |= sideBit;
 			}
 		else {							//must be behind both faces
 			if (nSideCount == 2)
-				masks.sidemask |= sideBit;
+				masks.sideMask |= sideBit;
 			if (nCenterCount == 2)
-				masks.centermask |= sideBit;
+				masks.centerMask |= sideBit;
 			}
 		}
 	else {				//only one face on this side
@@ -862,10 +860,10 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 		xDist = VmDistToPlane (checkp, sideP->normals, gameData.segs.vertices + nVertex);
 #endif
 		if (xDist < -PLANE_DIST_TOLERANCE)
-			masks.centermask |= sideBit;
+			masks.centerMask |= sideBit;
 		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
-			masks.facemask |= faceBit;
-			masks.sidemask |= sideBit;
+			masks.faceMask |= faceBit;
+			masks.sideMask |= sideBit;
 			}
 		faceBit <<= 2;
 		}
@@ -876,7 +874,7 @@ return masks;
 // -------------------------------------------------------------------------------
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each side, or zero if not behind
-//only gets centermask, and assumes zero rad
+//only gets centerMask, and assumes zero rad
 ubyte GetSideDists (vms_vector *checkp, int segnum, fix *xSideDists)
 {
 	int			sn, faceBit, sideBit;
@@ -894,7 +892,7 @@ segP = gameData.segs.segments + segnum;
 sideP = segP->sides;
 //check point against each side of segment. return bitmask
 mask = 0;
-for (sn = 0, faceBit = sideBit = 1;sn < 6; sn++, sideBit <<= 1, sideP++) {
+for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		int	bSidePokesOut;
 		int	fn;
 
@@ -1167,7 +1165,7 @@ int	bDoingLightingHack=0;
 //returns segment number, or -1 if can't find segment
 int TraceSegs (vms_vector *p0, int oldsegnum)
 {
-	int centermask, biggest_side;
+	int centerMask, biggest_side;
 	segment *seg;
 	fix xSideDists [6];
 	fix biggest_val;
@@ -1189,8 +1187,8 @@ if (visited [oldsegnum] || (gameData.segs.segment2s [oldsegnum].special == SEGME
 	return -1;
 Trace_SegCalls++;
 visited [oldsegnum] = 1;
-centermask = GetSideDists (p0, oldsegnum, xSideDists);		//check old segment
-if (centermask == 0) {		//we're in the old segment
+centerMask = GetSideDists (p0, oldsegnum, xSideDists);		//check old segment
+if (centerMask == 0) {		//we're in the old segment
 	Trace_SegCalls--;
 	return oldsegnum;		//..say so
 	}
@@ -1199,7 +1197,7 @@ for (;;) {
 	biggest_side = -1; 
 	biggest_val = 0;
 	for (sidenum = 0, bit = 1; sidenum < 6; sidenum ++, bit <<= 1)
-		if ((centermask & bit) && (seg->children [sidenum] > -1) && (xSideDists [sidenum] < biggest_val)) {
+		if ((centerMask & bit) && (seg->children [sidenum] > -1) && (xSideDists [sidenum] < biggest_val)) {
 			biggest_val = xSideDists [sidenum];
 			biggest_side = sidenum;
 			}
@@ -1250,7 +1248,7 @@ int FindSegByPoint (vms_vector *p, int segnum)
 #endif
 		for (newseg=0;newseg <= gameData.segs.nLastSegment;newseg++)
 			if ((gameData.segs.segment2s [newseg].special != SEGMENT_IS_SKYBOX) && 
-			    (GetSegMasks (p, newseg, 0).centermask == 0))
+			    (GetSegMasks (p, newseg, 0).centerMask == 0))
 				return newseg;
 	++Exhaustive_failed_count;
 #if TRACE

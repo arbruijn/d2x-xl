@@ -459,7 +459,7 @@ int bPrintObjectInfo = 0;
 
 window_rendered_data Window_rendered_data [MAX_RENDERED_WINDOWS];
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
 	"WALL    ", 
 	"FIREBALL", 
@@ -477,6 +477,8 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
 	"LIGHT   ", 
 	"COOP    ", 
 	"MARKER  ", 
+	"CAMBOT  ",
+	"M-BALL  "
 };
 #endif
 
@@ -1138,12 +1140,12 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	fPos.p.x -= r;
 	fPos.p.y += r;
 	fPos.p.z = -fPos.p.z;
+	w *= ObjectDamage (objP);
 	fVerts [0].p.x = fVerts [3].p.x = fPos.p.x;
 	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
 	fVerts [0].p.y = fVerts [1].p.y = fPos.p.y;
 	fVerts [2].p.y = fVerts [3].p.y = fPos.p.y - r2;
 	fVerts [0].p.z = fVerts [1].p.z = fVerts [2].p.z = fVerts [3].p.z = fPos.p.z;
-	w *= ObjectDamage (objP);
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glBegin (GL_QUADS);
 #if 1
@@ -1353,7 +1355,7 @@ if ((objP == gameData.objs.viewer) &&
 #ifdef _DEBUG
 	 (!gameStates.render.bExternalView || nWindowNum)) {
 #else	 
-	 ((IsMultiGame && !IsCoopGame) || !gameStates.render.bExternalView || nWindowNum)) {
+	 ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || !gameStates.render.bExternalView || nWindowNum)) {
 #endif	 	
 	DoPlayerSmoke (objP, -1);
 	return;		
@@ -1844,6 +1846,7 @@ for (i = 0; i<=gameData.objs.nLastObject; i++) {
 			case OBJ_LIGHT:
 			case OBJ_CAMERA:
 			case OBJ_POWERUP:
+			case OBJ_MONSTERBALL:
 				break;
 			}
 	}
@@ -1921,7 +1924,7 @@ if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
 Assert (ctype <= CT_CNTRLCEN);
 if (type == OBJ_DEBRIS && nDebrisObjectCount>=gameStates.render.detail.nMaxDebrisObjects)
 	return -1;
-if (GetSegMasks (pos, segnum, 0).centermask)
+if (GetSegMasks (pos, segnum, 0).centerMask)
 	if ((segnum=FindSegByPoint (pos, segnum))==-1) {
 #ifndef NDEBUG
 #	if TRACE				
@@ -2392,10 +2395,10 @@ Assert ((objnum >= 0) && (objnum <= gameData.objs.nLastObject));
 Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
 UnlinkObject (objnum);
 LinkObject (objnum, newsegnum);
-#ifndef NDEBUG
+#if 0//def _DEBUG
 #if TRACE				
 if (GetSegMasks (&gameData.objs.objects [objnum].pos, 
-					  gameData.objs.objects [objnum].segnum, 0).centermask)
+					  gameData.objs.objects [objnum].segnum, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
 #endif
@@ -2423,7 +2426,7 @@ extern void FuelCenCheckForGoal (segment *);
 
 //see if wall is volatile, and if so, cause damage to player
 //returns true if player is in lava
-int check_volatile_wall (object *objP, int segnum, int sidenum, vms_vector *hitpt);
+int CheckVolatileWall (object *objP, int segnum, int sidenum, vms_vector *hitpt);
 int CheckVolatileSegment (object *objP, int segnum);
 
 //	Time at which this object last created afterburner blobs.
@@ -2723,23 +2726,23 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 		}
 	}
 	{
-		int chkVolaSeg=1, type, sidemask, under_lavafall = 0;
+		int chkVolaSeg=1, type, sideMask, under_lavafall = 0;
 		static int lavafall_hiss_playing [MAX_PLAYERS]={0};
 
-		sidemask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sidemask;
-		if (sidemask) {
+		sideMask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sideMask;
+		if (sideMask) {
 			short sidenum, wall_num;
 			int bit;
 			side *pSide = gameData.segs.segments [objP->segnum].sides;
 			for (sidenum = 0, bit = 1; sidenum < 6; bit <<= 1, sidenum++, pSide++) {
-				if (!(sidemask & bit))
+				if (!(sideMask & bit))
 					continue;
 				wall_num=pSide->wall_num;
 				if (!IS_WALL (wall_num))
 					continue;
 				if (gameData.walls.walls [wall_num].type != WALL_ILLUSION)
 					continue;
-				if (type=check_volatile_wall (objP, objP->segnum, sidenum, &objP->pos)) {
+				if (type=CheckVolatileWall (objP, objP->segnum, sidenum, &objP->pos)) {
 					short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 					under_lavafall = 1;
 					chkVolaSeg = 0;

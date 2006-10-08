@@ -5,9 +5,9 @@
 
 //------------------------------------------------------------------------------
 
-#define	PLR_PART_LIFE	-2000
+#define	PLR_PART_LIFE	-4000
 #define	PLR_PART_SPEED	40
-#define	OBJ_PART_LIFE	-2000
+#define	OBJ_PART_LIFE	-4000
 #define	OBJ_PART_SPEED	40
 #define	MSL_PART_LIFE	-3000
 #define	MSL_PART_SPEED	30

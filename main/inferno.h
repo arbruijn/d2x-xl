@@ -284,6 +284,7 @@ typedef struct tApplicationOptions {
 	int bDemoData;
 	int bSinglePlayer;
 	int bExpertMode;
+	int nScreenShotInterval;
 } tApplicationOptions;
 
 typedef struct tGameOptions {
@@ -1452,8 +1453,8 @@ typedef struct tMenuData {
 	unsigned int		colorOverride;
 } tMenuData;
 
-#define MAX_FUEL_CENTERS    70
-#define MAX_ROBOT_CENTERS  20
+#define MAX_FUEL_CENTERS    350
+#define MAX_ROBOT_CENTERS   100
 
 #include "fuelcen.h"
 

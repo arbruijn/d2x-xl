@@ -1712,7 +1712,7 @@ int add_awareness_event(object *objP, int type)
 // ----------------------------------------------------------------------------------
 // Robots will become aware of the player based on something that occurred.
 // The object (probably player or weapon) which created the awareness is objP.
-void create_awareness_event(object *objP, int type)
+void CreateAwarenessEvent(object *objP, int type)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 	if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS)) {

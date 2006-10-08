@@ -2242,7 +2242,7 @@ void check_for_overlapping_segment(int segnum)
 	for (i=0;i<=gameData.segs.nLastSegment; i++) {
 		if (i != segnum) {
 			masks = GetSegMasks(&segcenter, i, 0);
-			if (masks.centermask == 0) {
+			if (masks.centerMask == 0) {
 #if TRACE
 				con_printf (CON_DEBUG, "Segment %i center is contained in segment %i\n", segnum, i);
 #endif
@@ -2255,7 +2255,7 @@ void check_for_overlapping_segment(int segnum)
 				VmVecSub(&pdel, &gameData.segs.vertices[gameData.segs.segments[segnum].verts[v]], &segcenter);
 				VmVecScaleAdd(&presult, &segcenter, &pdel, (F1_0*15)/16);
 				masks = GetSegMasks(&presult, i, 0);
-				if (masks.centermask == 0) {
+				if (masks.centerMask == 0) {
 #if TRACE
 					con_printf (CON_DEBUG, "Segment %i near vertex %i is contained in segment %i\n", segnum, v, i);
 #endif

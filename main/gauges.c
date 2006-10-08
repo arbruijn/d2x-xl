@@ -4034,7 +4034,7 @@ void ShowReticle(int force_big_one)
 #ifdef _DEBUG
 	if (gameStates.render.bExternalView)
 #else	
-	if (gameStates.render.bExternalView && !IsMultiGame)
+	if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif	
 		return;
 #ifdef OGL

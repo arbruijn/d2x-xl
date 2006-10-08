@@ -2357,10 +2357,10 @@ void BuildObjectLists(int n_segs)
 					segmasks m;
 					did_migrate = 0;
 					m = GetSegMasks(&objP->pos,new_segnum,objP->size);
-					if (m.sidemask) {
+					if (m.sideMask) {
 						short sn,sf;
 						for (sn=0,sf=1;sn<6;sn++,sf<<=1)
-							if (m.sidemask & sf) {
+							if (m.sideMask & sf) {
 								segment *seg = gameData.segs.segments+new_segnum;
 		
 								if (WALL_IS_DOORWAY (seg, sn, NULL) & WID_FLY_FLAG) {		//can explosion migrate through
@@ -2844,7 +2844,7 @@ else {
 #ifdef _DEBUG
 			 gameStates.render.bExternalView) {
 #else		
-			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame)) {
+			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0))) {
 #endif			 	
 #if 1
 			SetPathPoint (&externalView, gameData.objs.viewer);
@@ -2891,7 +2891,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 #ifdef _DEBUG
 		if (gameStates.render.bExternalView)
 #else		
-		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame))
+		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif			 	
 			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 		else

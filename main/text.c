@@ -1591,6 +1591,9 @@ char *defaultGameTexts [][2] = {
 	{"Nur ~Freundkennungen anzeigen", "show only ~Friendly tags"},
 	{"~Kennungen getarnter Objekte anzeigen", "show tags for ~Cloaked objects"},
 	{"~Flaggen schleppen", "tow ~Flags"},
+	{"~Bildschirmabzuege: alle %d s", "~Screenshots: every %d s"},
+	{"~Bildschirmabzuege: keine", "~Screenshots: none"},
+	{"Scheinwerfer nicht verfuegbar", "Headlights not available"},
 #if 0
 	{"", ""},
 #endif
@@ -1985,7 +1988,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Groesse des Monsterballs im Vergleich zur Schildkugel\neingestellt werden. Achtung: Ab einer Groesse von 4 passt\nder Ball nicht mehr in ein Standardsegment!", 
 	 "Here you can set the size of the Monsterball compared to a shield\norb. Beware: A ball of size 4 or bigger does not fit in a\nstandard segment any more!"},
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungsverfahren.\n\nD2X-XL emuliert die OpenGL-Beleuchtung wegen der grossen Anzahl\nbenoetigter Lichter per Software. Dadurch kann es dadurch zu\nstarken Leistungseinbussen kommen.\n\nDie Leistung dieser Beleuchtungsmethode haengt nicht von der\nGrafikkarte, sondern ausschliesslich von der Geschwindigkeit\nvon CPU und Speicher ab.", 
-	 "If checked, D2X-XL uses the OpenGL lighting methods.\n\nDue to the large number of lights in Descent, D2X-XL emulates\nOpenGL lighting by software. This can cause a strong\nperformance hit.\n\nThe speed of this lighting method does not depend on the graphics hardware, but exclusively on the CPU and memory speed."},
+	 "If checked, D2X-XL uses the OpenGL lighting methods.\n\nDue to the large number of lights in Descent, D2X-XL emulates\nOpenGL lighting by software. This can cause a strong\nperformance hit.\n\nThe speed of this lighting method does not depend on the graphics\nhardware, but exclusively on the CPU and memory speed."},
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungs-\nmethode auch fuer Hires-Objekte. Nur fuer sehr schnelle\nRechner empfohlen.\n\nWird diese Option ausgeschaltet, berechnet D2X-XL anhand der\ndurchschnittlichen Helligkeit am Ort des Objekts seine Beleuchtung.", 
 	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers.\n\nIf unchecked, D2X-XL computes the object's lighting depending on the average\nlight at the object's location."},
 	{"Hier kann die Anzahl nahegelegener Lichter eingestellt werden,\ndie die Beleuchtung eines gegebenen Punktes in der Mine be-\neinflussen. D2X-XL verwendet die hier eingestellte Anzahl der\njedem Segment am naechsten gelegenen Lichter, um das Segment\nzu beleuchten.",
@@ -2010,8 +2013,10 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, only target and damage indicators of team mates\nare displayed."},
 	{"Wenn angekreuzt, erhalten auch getarnte Objekte Ziel- und Schadens-\nanzeigen. Sonst erhalten getarnte Objekte diese Anzeigen nicht.", 
 	 "If checked, target and damage indicators are shown for cloaked\nobjects, too. Otherwise, cloaked objects do not have target\nor damage indicators."},
-	 {"Wenn angekreuzt, werden eroberte Flaggen hinter dem Schiff\nhergezogen.", 
-	  "If checked, captured flags are towed behind the player ships."},
+	{"Wenn angekreuzt, werden eroberte Flaggen hinter dem Schiff\nhergezogen.", 
+	 "If checked, captured flags are towed behind the player ships."},
+	{"D2X-XL kann in festen Zeitabstaenden automatisch Bildschirm-\nabzuege machen. Hier kann eingestellt werden, ob und mit welchem\nZeitabstand automatische Bildschirmabzuege erstellt werden sollen.", 
+	 "D2X-XL can automatically create screenshots in fixed time\nintervals. Here you can chose whether to enable automatic screenshots\nand adjust their time interval."},
 #if 0
 	{"", ""},
 #endif

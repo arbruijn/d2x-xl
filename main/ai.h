@@ -200,7 +200,7 @@ extern void ai_move_one(object *objp);
 extern void DoAIFrame(object *objp);
 extern void InitAIObject(short objnum, short initial_mode, short hide_segment);
 extern void update_player_awareness(object *objp, fix new_awareness);
-extern void create_awareness_event(object *objp, int type);         // object *objp can create awareness of player, amount based on "type"
+extern void CreateAwarenessEvent(object *objp, int type);         // object *objp can create awareness of player, amount based on "type"
 extern void DoAIFrameAll(void);
 extern void InitAISystem(void);
 extern void reset_ai_states(object *objp);
@@ -384,7 +384,7 @@ extern int  Robot_firing_enabled;
 // so we don't want to call it again (for this object) unless we have to.
 extern vms_vector   Hit_pos;
 extern int          Hit_type, Hit_seg;
-extern fvi_info     Hit_data;
+extern fvi_info     hitData;
 
 extern int              Num_awareness_events;
 extern awareness_event  Awareness_events[MAX_AWARENESS_EVENTS];

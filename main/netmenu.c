@@ -384,8 +384,8 @@ void NetworkGameParamPoll (int nitems, newmenu_item * menus, int * key, int cite
 {
 	static int oldmaxnet = 0;
 
-if ((menus [opt_entropy].value && (opt_entopts < 0)) ||
-	 (menus [opt_monsterball].value && (opt_mballopts < 0)))
+if ((menus [opt_entropy].value == (opt_entopts < 0)) ||
+	 (menus [opt_monsterball].value == (opt_mballopts < 0)))
 	*key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically

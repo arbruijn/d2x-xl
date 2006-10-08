@@ -2279,7 +2279,7 @@ gameData.objs.objects [i].rtype.vclip_info.xFrameTime =
 void FilterObjectsFromLevel ()
  {
   int i;
-return;
+
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].type==OBJ_POWERUP)
 		if (gameData.objs.objects [i].id==POW_FLAG_RED || gameData.objs.objects [i].id==POW_FLAG_BLUE)

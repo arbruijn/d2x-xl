@@ -55,7 +55,7 @@
 
 #define PARTICLE_FPS	30
 
-#define PARTICLE_RAD	(F1_0)
+#define PARTICLE_RAD	(F1_0 * 4)
 
 tSmoke	smoke [MAX_SMOKE];
 
@@ -580,7 +580,7 @@ if (nFrames > 1) {
 ;
 
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrames;
-	if (t - t0 > 50) {
+	if (t - t0 > 150) {
 		t0 = t;
 		iParticleFrames [gameStates.render.bPointSprites][nType] = (iFrames + 1) % nFrames;
 		}

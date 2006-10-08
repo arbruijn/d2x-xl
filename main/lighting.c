@@ -166,6 +166,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "maths.h"
 #include "network.h"
 #include "lightmap.h"
+#include "text.h"
 
 #define FLICKERFIX 0
 
@@ -385,14 +386,18 @@ void ApplyLight(
 	vms_vector	*vertpos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	object		*objP = gameData.objs.objects + objnum;
+	player		*playerP = gameData.multi.players + objP->id;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
-		if (EGI_FLAG (bHeadLights, 0, 0)) {
-			if (!(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0))
+			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
+		else if (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON) {
+			playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+			HUDInitMessage (TXT_NO_HEADLIGHTS);
 			}
 		if (bDarkness)
 			return;
@@ -529,11 +534,9 @@ if (xObjIntensity) {
 
 void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
 {
-	fix current_time;
 	int	i;
 	short	time_since_flash;
-
-	current_time = TimerGetFixedSeconds();
+	fix current_time = TimerGetFixedSeconds();
 
 	for (i=0; i<MUZZLE_QUEUE_MAX; i++) {
 		if (gameData.muzzle.info [i].create_time) {

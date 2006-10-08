@@ -1150,7 +1150,7 @@ player_led: ;
 	}
 #endif
 
-	create_awareness_event(objP, PA_NEARBY_ROBOT_FIRED);
+	CreateAwarenessEvent(objP, PA_NEARBY_ROBOT_FIRED);
 
 	set_next_fire_time(objP, ailp, robptr, gun_num);
 

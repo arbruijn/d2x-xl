@@ -121,7 +121,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fix 0 mag problem when object applies force to itself.
  *
  * Revision 1.188  1994/12/04  22:48:40  matt
- * Physics & FVI now only build seglist for player gameData.objs.objects, and they
+ * Physics & FVI now only build segList for player gameData.objs.objects, and they
  * responsilby deal with buffer full conditions
  *
  * Revision 1.187  1994/12/04  22:14:07  mike
@@ -452,7 +452,7 @@ void set_object_turnroll(object *objP)
 }
 
 //list of segments went through
-int phys_seglist[MAX_FVI_SEGS], n_phys_segs;
+int physSegList[MAX_FVI_SEGS], nPhysSegs;
 
 
 #define MAX_IGNORE_OBJS 100
@@ -587,32 +587,32 @@ extern vms_vector boostedVel, minBoostedVel, maxBoostedVel;
 //Simulate a physics object for this frame
 void DoPhysicsSim(object *objP)
 {
-	short ignore_obj_list[MAX_IGNORE_OBJS], n_ignore_objs;
-	int iseg;
-	int try_again;
-	int fate;
-	vms_vector frame_vec;			//movement in this frame
-	vms_vector new_pos, ipos;		//position after this frame
-	int count=0;
-	short objnum;
-	short WallHitSeg, WallHitSide;
-	fvi_info hit_info;
-	fvi_query fq;
-	vms_vector save_pos;
-	int save_seg;
-	fix drag;
-	fix sim_time, old_sim_time, time_scale;
-	vms_vector start_pos;
-	int obj_stopped=0;
-	fix moved_time;			//how long objected moved before hit something
-	vms_vector save_p0, save_p1;
-	physics_info *pi;
-	short orig_segnum = objP->segnum;
-	int bounced=0;
-	int bDoSpeedBoost = gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console);
+	short				ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
+	int				iseg;
+	int				try_again;
+	int				fate;
+	vms_vector		frame_vec;			//movement in this frame
+	vms_vector		new_pos, ipos;		//position after this frame
+	int				count=0;
+	short				objnum;
+	short				WallHitSeg, WallHitSide;
+	fvi_info			hit_info;
+	fvi_query		fq;
+	vms_vector		save_pos;
+	int				save_seg;
+	fix				drag;
+	fix				sim_time, old_sim_time, time_scale;
+	vms_vector		start_pos;
+	int				obj_stopped=0;
+	fix				moved_time;			//how long objected moved before hit something
+	vms_vector		save_p0, save_p1;
+	physics_info	*pi;
+	short				orig_segnum = objP->segnum;
+	int				bounced=0;
+	int				bDoSpeedBoost = gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console);
 
-	Assert(objP->type != OBJ_NONE);
-	Assert(objP->movement_type == MT_PHYSICS);
+Assert(objP->type != OBJ_NONE);
+Assert(objP->movement_type == MT_PHYSICS);
 
 #ifndef NDEBUG
 if (Dont_move_ai_objects)
@@ -628,7 +628,7 @@ if (Dont_move_ai_objects)
 			return;
 		}
 	objnum = OBJ_IDX (objP);
-	n_phys_segs = 0;
+	nPhysSegs = 0;
 	disable_new_fvi_stuff = (objP->type != OBJ_PLAYER);
 	sim_time = gameData.app.xFrameTime;
 //debugObjP = obj;
@@ -639,7 +639,7 @@ if (Dont_move_ai_objects)
 		//printf("  sim_time = %x\n", sim_time);
 	}
 	//check for correct object segment
-	if(GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
+	if(GetSegMasks(&objP->pos, objP->segnum, 0).centerMask!=0) {
 #if TRACE				
 		con_printf (CON_DEBUG, "Warning: object %d not in given seg!\n", objnum);
 #endif
@@ -656,7 +656,7 @@ if (Dont_move_ai_objects)
 	}
 	#endif
 	start_pos = objP->pos;
-	n_ignore_objs = 0;
+	nIgnoreObjs = 0;
 	Assert(objP->mtype.phys_info.brakes==0);		//brakes not used anymore?
 	//if uses thrust, cannot have zero drag
 	Assert(!(objP->mtype.phys_info.flags&PF_USES_THRUST) || objP->mtype.phys_info.drag!=0);
@@ -766,7 +766,7 @@ retryMove:
 		//if (objP == debugObjP)
 			//printf("   desired_pos = %x %x %x\n", XYZ(&new_pos));
 		#endif
-		ignore_obj_list[n_ignore_objs] = -1;
+		ignoreObjList[nIgnoreObjs] = -1;
 		#ifdef EXTRA_DEBUG
 		if (objP == debugObjP) {
 			//printf("   FVI parms: p0 = %8x %8x %8x, segnum=%x, size=%x\n", XYZ(&objP->pos), objP->segnum, objP->size);
@@ -777,11 +777,11 @@ retryMove:
 //iSegError:
 #endif
 		fq.p0 = &objP->pos;
-		fq.startseg = objP->segnum;
 		fq.p1 = &new_pos;
 		fq.rad = objP->size;
-		fq.thisobjnum = objnum;
-		fq.ignore_obj_list = ignore_obj_list;
+		fq.startSeg = objP->segnum;
+		fq.thisObjNum = objnum;
+		fq.ignoreObjList = ignoreObjList;
 		fq.flags = FQ_CHECK_OBJS;
 
 		if (objP->type == OBJ_WEAPON)
@@ -789,7 +789,7 @@ retryMove:
 		if (objP->type == OBJ_PLAYER)
 			fq.flags |= FQ_GET_SEGLIST;
 
-//@@			if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0)
+//@@			if (GetSegMasks(&objP->pos, objP->segnum, 0).centerMask!=0)
 //@@				Int3();
 
 save_p0 = *fq.p0;
@@ -799,8 +799,8 @@ save_p1 = *fq.p1;
 #ifdef _DEBUG
 		if (fate == HIT_BAD_P0) {
 			objP->segnum = FindSegByPoint (&objP->pos, objP->segnum);
-			if (fq.startseg != objP->segnum) {
-				fq.startseg = objP->segnum;
+			if (fq.startSeg != objP->segnum) {
+				fq.startSeg = objP->segnum;
 				fate = FindVectorIntersection(&fq, &hit_info);
 				}
 			}
@@ -809,13 +809,13 @@ save_p1 = *fq.p1;
 #endif
 		//	Matt: Mike's hack.
 		if (fate == HIT_OBJECT) {
-			object	*objP = gameData.objs.objects + hit_info.hit_object;
+			object	*objP = gameData.objs.objects + hit_info.hit.nObject;
 
 			if ((objP->type == OBJ_WEAPON) && ((objP->id == PROXIMITY_ID) || (objP->id == SUPERPROX_ID)))
 				count--;
 		}
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 		if (fate == HIT_BAD_P0) {
 #if TRACE				
 			con_printf (CON_DEBUG, "Warning: Bad p0 in physics!  Object = %i, type = %i [%s]\n", 
@@ -828,23 +828,23 @@ save_p1 = *fq.p1;
 		if (objP->type == OBJ_PLAYER) {
 			int i;
 
-			if (n_phys_segs && phys_seglist[n_phys_segs-1]==hit_info.seglist[0])
-				n_phys_segs--;
+			if (nPhysSegs && physSegList [nPhysSegs-1] == hit_info.segList [0])
+				nPhysSegs--;
 
-			for (i=0;(i<hit_info.n_segs) && (n_phys_segs<MAX_FVI_SEGS-1); )
-				phys_seglist[n_phys_segs++] = hit_info.seglist[i++];
-		}
+			for (i = 0; (i < hit_info.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); )
+				physSegList [nPhysSegs++] = hit_info.segList [i++];
+			}
 
-		ipos = hit_info.hit_pnt;
-		iseg = hit_info.hit_seg;
-		WallHitSide = hit_info.hit_side;
-		WallHitSeg = hit_info.hit_side_seg;
+		ipos = hit_info.hit.vPoint;
+		iseg = hit_info.hit.nSegment;
+		WallHitSide = hit_info.hit.nSide;
+		WallHitSeg = hit_info.hit.nSideSegment;
 		if (iseg==-1) {		//some sort of horrible error
 #ifdef _DEBUG
 #	if TRACE				
 			con_printf (1, "iseg==-1 in physics!  Object = %i, type = %i (%s)\n", 
 				OBJ_IDX (objP), objP->type, szObjectTypeNames[objP->type]);
-			fate = FindVectorIntersection(&fq, &hit_info);
+			fate = FindVectorIntersection (&fq, &hit_info);
 //			CBRK (1);
 //			goto iSegError;
 #	endif
@@ -861,7 +861,7 @@ save_p1 = *fq.p1;
 
 		Assert(!((fate==HIT_WALL) && ((WallHitSeg == -1) || (WallHitSeg > gameData.segs.nLastSegment))));
 
-		//if(!GetSegMasks(&hit_info.hit_pnt, hit_info.hit_seg, 0).centermask==0)
+		//if(!GetSegMasks(&hit_info.hit.vPoint, hit_info.hit.nSegment, 0).centerMask==0)
 		//	Int3();
 
 		save_pos = objP->pos;			//save the object's position
@@ -879,7 +879,7 @@ save_p1 = *fq.p1;
 			RelinkObject(objnum, iseg);
 
 		//if start point not in segment, move object to center of segment
-		if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
+		if (GetSegMasks(&objP->pos, objP->segnum, 0).centerMask!=0) {
 			int n;
 
 			if ((n=FindObjectSeg(objP))==-1) {
@@ -947,7 +947,7 @@ save_p1 = *fq.p1;
 					goto retryMove;
 					}
 				moved_time = 0;
-			}
+				}
 			else {
 //retryMove2:
 				//if (objP == debugObjP)
@@ -987,11 +987,11 @@ save_p1 = *fq.p1;
 //					break;
 
 				VmVecSub(&moved_v, &objP->pos, &save_pos);
-				wall_part = VmVecDot(&moved_v, &hit_info.hit_wallnorm);
+				wall_part = VmVecDot(&moved_v, &hit_info.hit.vNormal);
 				if (wall_part != 0 && moved_time>0 && (hit_speed=-fixdiv(wall_part, moved_time))>0)
-					CollideObjectWithWall(objP, hit_speed, WallHitSeg, WallHitSide, &hit_info.hit_pnt);
+					CollideObjectWithWall(objP, hit_speed, WallHitSeg, WallHitSide, &hit_info.hit.vPoint);
 				else
-					ScrapeObjectOnWall(objP, WallHitSeg, WallHitSide, &hit_info.hit_pnt);
+					ScrapeObjectOnWall(objP, WallHitSeg, WallHitSide, &hit_info.hit.vPoint);
 				Assert(WallHitSeg > -1);
 				Assert(WallHitSide > -1);
 				if (!(objP->flags&OF_SHOULD_BE_DEAD))	{
@@ -1004,39 +1004,39 @@ save_p1 = *fq.p1;
 						VmVecZero(&objP->mtype.phys_info.velocity);
 						obj_stopped = 1;
 						try_again = 0;
-					}
+						}
 					else {					// Slide object along wall
 						int check_vel=0;
 						//We're constrained by wall, so subtract wall part from
 						//velocity vector
-						wall_part = VmVecDot(&hit_info.hit_wallnorm, &objP->mtype.phys_info.velocity);
+						wall_part = VmVecDot(&hit_info.hit.vNormal, &objP->mtype.phys_info.velocity);
 						if (forcefield_bounce || (objP->mtype.phys_info.flags & PF_BOUNCE)) {		//bounce off wall
 							wall_part *= 2;	//Subtract out wall part twice to achieve bounce
 							if (forcefield_bounce) {
 								check_vel = 1;				//check for max velocity
 								if (objP->type == OBJ_PLAYER)
 									wall_part *= 2;		//player bounce twice as much
-							}
+								}
 							if (objP->mtype.phys_info.flags & PF_BOUNCES_TWICE) {
 								Assert(objP->mtype.phys_info.flags & PF_BOUNCE);
 								if (objP->mtype.phys_info.flags & PF_BOUNCED_ONCE)
 									objP->mtype.phys_info.flags &= ~(PF_BOUNCE+PF_BOUNCED_ONCE+PF_BOUNCES_TWICE);
 								else
 									objP->mtype.phys_info.flags |= PF_BOUNCED_ONCE;
-							}
+								}
 							bounced = 1;		//this object bounced
 						}
-						VmVecScaleInc(&objP->mtype.phys_info.velocity, &hit_info.hit_wallnorm, -wall_part);
+						VmVecScaleInc(&objP->mtype.phys_info.velocity, &hit_info.hit.vNormal, -wall_part);
 						if (check_vel) {
 							fix vel = VmVecMagQuick(&objP->mtype.phys_info.velocity);
 							if (vel > MAX_OBJECT_VEL)
 								VmVecScale(&objP->mtype.phys_info.velocity, fixdiv(MAX_OBJECT_VEL, vel));
-						}
+							}
 						if (bounced && objP->type == OBJ_WEAPON)
 							VmVector2Matrix(&objP->orient, &objP->mtype.phys_info.velocity, &objP->orient.uvec, NULL);
 						#ifdef EXTRA_DEBUG
 						if (objP == debugObjP) {
-							//printf("   sliding - wall_norm %x %x %x %x\n", wall_part, XYZ(&hit_info.hit_wallnorm));
+							//printf("   sliding - wall_norm %x %x %x %x\n", wall_part, XYZ(&hit_info.hit.vNormal));
 							//printf("   wall_part %x, new velocity = %x %x %x\n", wall_part, XYZ(&objP->mtype.phys_info.velocity));
 						}
 						#endif
@@ -1047,19 +1047,20 @@ save_p1 = *fq.p1;
 				break;
 			}
 
-			case HIT_OBJECT:		{
+			case HIT_OBJECT: {
 				vms_vector old_vel;
+				int			bCollision = 0;
 				// Mark the hit object so that on a retry the fvi code
 				// ignores this object.
 				//if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
 				//	break;
-				Assert(hit_info.hit_object != -1);
+				Assert(hit_info.hit.nObject != -1);
 				//	Calculcate the hit point between the two gameData.objs.objects.
 				{	vms_vector	*ppos0, *ppos1, pos_hit;
 					fix			size0, size1;
-					ppos0 = &gameData.objs.objects[hit_info.hit_object].pos;
+					ppos0 = &gameData.objs.objects[hit_info.hit.nObject].pos;
 					ppos1 = &objP->pos;
-					size0 = gameData.objs.objects[hit_info.hit_object].size;
+					size0 = gameData.objs.objects[hit_info.hit.nObject].size;
 					size1 = objP->size;
 					Assert(size0+size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 					//VmVecScale(VmVecSub(&pos_hit, ppos1, ppos0), fixdiv(size0, size0 + size1);
@@ -1067,24 +1068,28 @@ save_p1 = *fq.p1;
 					VmVecSub(&pos_hit, ppos1, ppos0);
 					VmVecScaleAdd(&pos_hit, ppos0, &pos_hit, fixdiv(size0, size0 + size1));
 					old_vel = objP->mtype.phys_info.velocity;
-					CollideTwoObjects (objP, gameData.objs.objects + hit_info.hit_object, &pos_hit);
-					if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
+					bCollision = CollideTwoObjects (objP, gameData.objs.objects + hit_info.hit.nObject, &pos_hit);
+					if (!bCollision || (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console)))
 						objP->mtype.phys_info.velocity = old_vel;
 				}
 
 				// Let object continue its movement
-				if (!(objP->flags&OF_SHOULD_BE_DEAD) )	{
+				if (!bCollision)
+					try_again = 0;
+				else if (!(objP->flags&OF_SHOULD_BE_DEAD)) {
 					//objP->pos = save_pos;
 
-					if (objP->mtype.phys_info.flags&PF_PERSISTENT || (old_vel.x == objP->mtype.phys_info.velocity.x && old_vel.y == objP->mtype.phys_info.velocity.y && old_vel.z == objP->mtype.phys_info.velocity.z)) {
-						//if (gameData.objs.objects[hit_info.hit_object].type == OBJ_POWERUP)
-							ignore_obj_list[n_ignore_objs++] = hit_info.hit_object;
+					if ((objP->mtype.phys_info.flags & PF_PERSISTENT) || 
+						 ((old_vel.x == objP->mtype.phys_info.velocity.x) && 
+						  (old_vel.y == objP->mtype.phys_info.velocity.y) && 
+						  (old_vel.z == objP->mtype.phys_info.velocity.z))) {
+						//if (gameData.objs.objects[hit_info.hit.nObject].type == OBJ_POWERUP)
+							ignoreObjList[nIgnoreObjs++] = hit_info.hit.nObject;
 						try_again = 1;
+						}
 					}
-				}
-
 				break;
-			}	
+				}	
 			case HIT_NONE:		
 			#ifdef TACTILE
 				if (TactileStick && obj==gameData.objs.console && !(gameData.app.nFrameCount & 15))
@@ -1092,7 +1097,7 @@ save_p1 = *fq.p1;
 			#endif
 				break;
 
-			#ifndef NDEBUG
+#ifdef _DEBUG
 			case HIT_BAD_P0:
 				Int3();		// Unexpected collision type: start point not in specified segment.
 #if TRACE				
@@ -1103,7 +1108,7 @@ save_p1 = *fq.p1;
 				// Unknown collision type returned from FindVectorIntersection!!
 				Int3();
 				break;
-			#endif
+#endif
 		}
 
 	} while (try_again);
@@ -1156,7 +1161,7 @@ save_p1 = *fq.p1;
 #endif
 	}
 
-	//Assert(check_point_in_seg(&objP->pos, objP->segnum, 0).centermask==0);
+	//Assert(check_point_in_seg(&objP->pos, objP->segnum, 0).centerMask==0);
 	//if (objP->control_type == CT_FLYING)
 	if (objP->mtype.phys_info.flags & PF_LEVELLING)
 		do_physics_align_object(objP);
@@ -1200,7 +1205,7 @@ save_p1 = *fq.p1;
 
 //--WE ALWYS WANT THIS IN, MATT AND MIKE DECISION ON 12/10/94, TWO MONTHS AFTER FINAL 	#ifndef NDEBUG
 	//if end point not in segment, move object to last pos, or segment center
-	if (GetSegMasks(&objP->pos, objP->segnum, 0).centermask!=0) {
+	if (GetSegMasks(&objP->pos, objP->segnum, 0).centerMask!=0) {
 		if (FindObjectSeg(objP)==-1) {
 			int n;
 
@@ -1240,7 +1245,7 @@ save_p1 = *fq.p1;
 //--unused-- 	fq.p1					 = &new_pos;
 //--unused-- 	fq.rad				 = objP->size;
 //--unused-- 	fq.thisobjnum		 = objnum;
-//--unused-- 	fq.ignore_obj_list = NULL;
+//--unused-- 	fq.ignoreObjList = NULL;
 //--unused-- 	fq.flags				 = fvi_flags;
 //--unused--
 //--unused-- 	fate = FindVectorIntersection(&fq, hit_info);
@@ -1248,7 +1253,7 @@ save_p1 = *fq.p1;
 //--unused-- 	if (fate != HIT_NONE) {
 //--unused-- 		fix dist, speed;
 //--unused--
-//--unused-- 		dist = VmVecDist(&objP->pos, &hit_info->hit_pnt);
+//--unused-- 		dist = VmVecDist(&objP->pos, &hit_info->hit.vPoint);
 //--unused--
 //--unused-- 		speed = VmVecMag(&objP->mtype.phys_info.velocity);
 //--unused--

@@ -315,30 +315,6 @@ if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (Cur_object_index == OBJ_I
 }
 
 //------------------------------------------------------------------------------
-//void mprintf_gameData.objs.pwrUp.Info (void)
-//{
-//	int		i;
-//for (i=0; i<5; i++) {
-//	char	has_text[12];
-//
-//	if (gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags & (1 << i))
-//		strcpy (has_text,"PRESENT");
-//	else
-//		strcpy (has_text,"NOPE   ");
-//	has_text[8] = 0;
-//
-//}
-//
-//for (i=0; i<5; i++) {
-//	char	has_text[12];
-//
-//	if (gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags & (1 << i))
-//		strcpy (has_text,"PRESENT");
-//	else
-//		strcpy (has_text,"NOPE   ");
-//
-//}
-//}
 
 void _CDECL_ PowerupBasic (int redAdd, int greenAdd, int blueAdd, int score, char *format, ...)
 {
@@ -918,7 +894,7 @@ switch (objP->id) {
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 		if (bUsed < 0) {
 			if (LOCALPLAYER (nPlayer)) {
-				if (gameOpts->gameplay.bHeadlightOn)
+				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0) || EGI_FLAG (bHeadLights, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 #ifdef NETWORK
 				if (gameData.app.nGameMode & GM_MULTI)

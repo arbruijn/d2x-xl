@@ -2758,7 +2758,8 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 			BashToShield (i, "Converter");
 		if (gameData.objs.objects [i].id == POW_AMMO_RACK && ng && !netGame.DoAmmoRack)
 			BashToShield (i, "Ammo rack");
-		if (gameData.objs.objects [i].id == POW_HEADLIGHT && ng && !netGame.DoHeadlight)
+		if (gameData.objs.objects [i].id == POW_HEADLIGHT && ng && 
+			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0) && !EGI_FLAG (bHeadLights, 0, 0))))
 			BashToShield (i, "Headlight");
 		if (gameData.objs.objects [i].id == POW_LASER && ng && !netGame.DoLaserUpgrade)
 			BashToShield (i, "Laser powerup");
@@ -3894,6 +3895,7 @@ else
 	DigiPlaySample (SOUND_HUD_BLUE_GOT_GOAL, F1_0*2);
 gameData.multi.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
 if (penalty) {
+#if 0
 	gameData.multi.players [nPlayer].net_kills_total -= bonus;
 	gameData.multi.players [nPlayer].KillGoalCount -= bonus;
 	if (netGame.KillGoal > 0) {
@@ -3905,6 +3907,7 @@ if (penalty) {
 			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
 			}		
 		}
+#endif
 	}
 else {
 	gameData.multi.players [nPlayer].net_kills_total += bonus;
@@ -4429,7 +4432,7 @@ void MultiSendFinishGame ()
 
 //-----------------------------------------------------------------------------
 
-extern void do_final_boss_hacks ();
+extern void DoFinalBossHacks ();
 
 void MultiDoFinishGame (char *buf)
 {
@@ -4437,7 +4440,7 @@ if (buf [0]!=MULTI_FINISH_GAME)
 	return;
 if (gameData.missions.nCurrentLevel!=gameData.missions.nLastLevel)
 	return;
-do_final_boss_hacks ();
+DoFinalBossHacks ();
 }
 
 //-----------------------------------------------------------------------------
