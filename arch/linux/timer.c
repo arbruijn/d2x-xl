@@ -10,7 +10,7 @@ fix TimerGetFixedSeconds(void)
 	fix x;
 	struct timeval tv_now;
 	gettimeofday(&tv_now, NULL);
-	x=i2f(tv_now.tv_sec - tv_old.tv_sec) + fixdiv(i2f((tv_now.tv_usec - tv_old.tv_usec)/1000), i2f(1000);
+	x=i2f(tv_now.tv_sec - tv_old.tv_sec) + FixDiv(i2f((tv_now.tv_usec - tv_old.tv_usec)/1000), i2f(1000);
 	return x;
 }
 

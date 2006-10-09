@@ -1023,7 +1023,7 @@ static int UDPReceivePacket
 	tDestListEntry			*pdl;
 	unsigned short			srcPort;
 #ifdef _DEBUG
-	char						szIP [30];
+	//char						szIP [30];
 #endif
 
 if (0 > (dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize))) {

@@ -1501,9 +1501,9 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		if (Controls.forward_thrust_time)
 			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fvec, Controls.forward_thrust_time*ZOOM_SPEED_FACTOR); 
 #endif
-		tangles.p += fixdiv (Controls.pitch_time, ROT_SPEED_DIVISOR);
-		tangles.h  += fixdiv (Controls.heading_time, ROT_SPEED_DIVISOR);
-		tangles.b  += fixdiv (Controls.bank_time, ROT_SPEED_DIVISOR*2);
+		tangles.p += FixDiv (Controls.pitch_time, ROT_SPEED_DIVISOR);
+		tangles.h  += FixDiv (Controls.heading_time, ROT_SPEED_DIVISOR);
+		tangles.b  += FixDiv (Controls.bank_time, ROT_SPEED_DIVISOR*2);
 
 		if (Controls.vertical_thrust_time || Controls.sideways_thrust_time)	{
 			vms_angvec	tangles1;
@@ -1712,7 +1712,7 @@ void DrawAllEdges ()
 		if (e->flags & EF_NO_FADE)	{
 			GrSetColorRGBi (e->color);
 		} else {
-			dist = F1_0 - fixdiv (dist, amData.nMaxDist);
+			dist = F1_0 - FixDiv (dist, amData.nMaxDist);
 			color = f2i (dist*31);
 			GrSetColorRGBi (RGBA_FADE (e->color, 32.0 / color));
 		}

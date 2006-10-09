@@ -355,13 +355,13 @@ if (VmVecMagQuick(&e) < F1_0/2)
 			fvi_info		hit_data;
 			int			hit_type;
 	
-			fq.p0						= &psegs[i].point;
-			fq.startseg				= psegs[i].segnum;
-			fq.p1						= &goal_pos;
-			fq.rad					= objP->size;
-			fq.thisobjnum			= OBJ_IDX (objP);
-			fq.ignore_obj_list	= NULL;
-			fq.flags					= 0;
+			fq.p0					= &psegs[i].point;
+			fq.startSeg			= psegs[i].segnum;
+			fq.p1					= &goal_pos;
+			fq.rad				= objP->size;
+			fq.thisObjNum		= OBJ_IDX (objP);
+			fq.ignoreObjList	= NULL;
+			fq.flags				= 0;
 	
 			hit_type = FindVectorIntersection(&fq, &hit_data);
 	
@@ -370,9 +370,9 @@ if (VmVecMagQuick(&e) < F1_0/2)
 			else {
 				if ((count == 3) && (hit_type == HIT_BAD_P0))
 					Int3();
-				goal_pos.x = (fq.p0->x + hit_data.hit_pnt.x)/2;
-				goal_pos.y = (fq.p0->y + hit_data.hit_pnt.y)/2;
-				goal_pos.z = (fq.p0->z + hit_data.hit_pnt.z)/2;
+				goal_pos.x = (fq.p0->x + hit_data.hit.vPoint.x)/2;
+				goal_pos.y = (fq.p0->y + hit_data.hit.vPoint.y)/2;
+				goal_pos.z = (fq.p0->z + hit_data.hit.vPoint.z)/2;
 				count--;
 				if (count == 0) {	//	Couldn't move towards outside, that's ok, sometimes things can't be moved.
 					goal_pos = psegs[i].point;
@@ -494,11 +494,11 @@ if ((objP->type == OBJ_ROBOT) && (objP->ctype.ai_info.behavior == AIB_RUN_FROM))
 					COMPUTE_SIDE_CENTER(&center_point, segp, snum);
 
 					fq.p0						= &objP->pos;
-					fq.startseg				= objP->segnum;
+					fq.startSeg				= objP->segnum;
 					fq.p1						= &center_point;
 					fq.rad					= objP->size;
-					fq.thisobjnum			= OBJ_IDX (objP);
-					fq.ignore_obj_list	= NULL;
+					fq.thisObjNum			= OBJ_IDX (objP);
+					fq.ignoreObjList	= NULL;
 					fq.flags					= 0;
 
 					hit_type = FindVectorIntersection(&fq, &hit_data);
@@ -666,11 +666,11 @@ int polish_path(object *objP, point_seg *psegs, int num_points)
 		int			hit_type;
 	
 		fq.p0						= &objP->pos;
-		fq.startseg				= objP->segnum;
+		fq.startSeg				= objP->segnum;
 		fq.p1						= &psegs[i].point;
 		fq.rad					= objP->size;
-		fq.thisobjnum			= OBJ_IDX (objP);
-		fq.ignore_obj_list	= NULL;
+		fq.thisObjNum			= OBJ_IDX (objP);
+		fq.ignoreObjList	= NULL;
 		fq.flags					= 0;
 
 		hit_type = FindVectorIntersection(&fq, &hit_data);
@@ -1093,11 +1093,11 @@ void move_object_to_goal(object *objP, vms_vector *goal_point, short goal_seg)
 // -- too much work -- 	kill_objp = &gameData.objs.objects[gameData.escort.nKillObject];
 // -- too much work --
 // -- too much work -- 	fq.p0						= &objP->pos;
-// -- too much work -- 	fq.startseg				= objP->segnum;
+// -- too much work -- 	fq.startSeg				= objP->segnum;
 // -- too much work -- 	fq.p1						= &kill_objP->pos;
 // -- too much work -- 	fq.rad					= objP->size;
-// -- too much work -- 	fq.thisobjnum			= OBJ_IDX (objP);
-// -- too much work -- 	fq.ignore_obj_list	= NULL;
+// -- too much work -- 	fq.thisObjNum			= OBJ_IDX (objP);
+// -- too much work -- 	fq.ignoreObjList	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
 // -- too much work -- 	fate = FindVectorIntersection(&fq,&hit_data);
@@ -1199,7 +1199,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 				if (distance_travellable >= dist_to_goal) {
 					move_object_to_goal(objP, &goal_point, goal_seg);
 				} else {
-					fix	prob = fixdiv(distance_travellable, dist_to_goal);
+					fix	prob = FixDiv(distance_travellable, dist_to_goal);
 	
 					int	rand_num = d_rand();
 					if ( (rand_num >> 1) < prob) {
@@ -1367,11 +1367,11 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 				opposite_end_point = &gameData.ai.pointSegs[aip->hide_index + opposite_end_index].point;
 
 				fq.p0						= &objP->pos;
-				fq.startseg				= objP->segnum;
+				fq.startSeg				= objP->segnum;
 				fq.p1						= opposite_end_point;
 				fq.rad					= objP->size;
-				fq.thisobjnum			= OBJ_IDX (objP);
-				fq.ignore_obj_list	= NULL;
+				fq.thisObjNum			= OBJ_IDX (objP);
+				fq.ignoreObjList	= NULL;
 				fq.flags					= 0; 				//what about trans walls???
 
 				fate = FindVectorIntersection(&fq,&hit_data);

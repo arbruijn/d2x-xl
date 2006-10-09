@@ -1298,12 +1298,12 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 									fvi_info		hit_data;
 									int			fate;
 
-									fq.startseg = gameData.objs.objects[i].segnum;
+									fq.startSeg = gameData.objs.objects[i].segnum;
 									fq.p0	= &gameData.objs.objects[i].pos;
 									fq.p1 = &gameData.objs.objects[j].pos;
 									fq.rad = 0;
-									fq.thisobjnum = i;
-									fq.ignore_obj_list = NULL;
+									fq.thisObjNum = i;
+									fq.ignoreObjList = NULL;
 									fq.flags	= 0;
 
 									fate = FindVectorIntersection(&fq, &hit_data);

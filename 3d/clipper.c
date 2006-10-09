@@ -85,7 +85,7 @@ g3s_point *clip_edge(int plane_flag,g3s_point *on_pnt,g3s_point *off_pnt)
 
 	tmp = get_temp_point();
 
-	psx_ratio = fixdiv( kn, kd );
+	psx_ratio = FixDiv( kn, kd );
 
 	
 // PSX_HACK!!!!

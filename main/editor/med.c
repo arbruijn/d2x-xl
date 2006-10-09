@@ -703,7 +703,7 @@ int SetPlayerFromCursegMinusOne()
 		if (labs(corner_p[i].p3_y) > max) max = labs(corner_p[i].p3_y);
 	}
 
-	view_dist = FixMul(view_dist,fixdiv(fixdiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
+	view_dist = FixMul(view_dist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
 	VmVecCopyScale(&view_vec2,&view_vec,view_dist);
 	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
 

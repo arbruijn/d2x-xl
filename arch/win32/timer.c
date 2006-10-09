@@ -35,7 +35,7 @@ fix TimerGetFixedSeconds()
    consecutive days? Thought not. */
 
         unsigned long tv_now=timeGetTime()-old_tv;
-        x=i2f(tv_now/1000) | fixdiv(i2f(tv_now % 1000),i2f(1000);
+        x=i2f(tv_now/1000) | FixDiv(i2f(tv_now % 1000),i2f(1000);
 	return x;
 }
 

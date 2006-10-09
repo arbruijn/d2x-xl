@@ -820,16 +820,16 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 		else
 			VmVecScaleInc (&tpnt, &gameData.objs.console->orient.fvec, d_rand ()*60);
 		//find hit point on wall
-		fq.p0 = &gameData.objs.console->pos;
-		fq.p1 = &tpnt;
-		fq.startseg = gameData.objs.console->segnum;
-		fq.rad = 0;
-		fq.thisobjnum = 0;
-		fq.ignore_obj_list = NULL;
-		fq.flags = 0;
+		fq.p0					= &gameData.objs.console->pos;
+		fq.p1					= &tpnt;
+		fq.startSeg			= gameData.objs.console->segnum;
+		fq.rad				= 0;
+		fq.thisObjNum		= 0;
+		fq.ignoreObjList	= NULL;
+		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
-		if (hit_data.hit_type==HIT_WALL && hit_data.hit_seg!=-1)
-			ObjectCreateExplosion ((short) hit_data.hit_seg, &hit_data.hit_pnt, i2f (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
+		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
+			ObjectCreateExplosion ((short) hit_data.hit.nSegment, &hit_data.hit.vPoint, i2f (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
 		}
 
@@ -987,7 +987,7 @@ slew_obj = gameData.objs.endLevelCamera;
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->orient, &camera_cur_angles);
 #endif
 		d = VmVecDistQuick (&gameData.objs.console->pos, &gameData.objs.endLevelCamera->pos);
-		speed_scale = fixdiv (d, i2f (0x20);
+		speed_scale = FixDiv (d, i2f (0x20);
 		if (d<f1_0) d=f1_0;
 		GetAnglesToObject (&player_dest_angles, &gameData.endLevel.station.vPos, &gameData.objs.console->pos);
 		ChaseAngles (&player_angles, &player_dest_angles);
@@ -1085,7 +1085,7 @@ if (eye_offset)
 	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.rvec, eye_offset);
 G3SetViewMatrix (&gameData.objs.viewer->pos, &gameData.objs.viewer->orient, nRenderZoom);
 GrClearCanvas (BLACK_RGBA);
-G3StartInstanceMatrix (&vmd_zero_vector, &surface_orient);
+G3StartInstanceMatrix (&vmdZeroVector, &surface_orient);
 DrawStars ();
 G3DoneInstance ();
 //draw satellite
@@ -1337,11 +1337,11 @@ if (flydata->first_time || objP->segnum != old_player_seg) {		//moved into new s
 	VmExtractAnglesMatrix (&dest_angles, &dest_orient);
 	if (flydata->first_time)
 		VmExtractAnglesMatrix (&flydata->angles, &objP->orient);
-	seg_time = fixdiv (step_size, flydata->speed);	//how long through seg
+	seg_time = FixDiv (step_size, flydata->speed);	//how long through seg
 	if (seg_time) {
-		flydata->angstep.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, fixdiv (DeltaAng (flydata->angles.p, dest_angles.p), seg_time)));
-		flydata->angstep.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, fixdiv (DeltaAng (flydata->angles.b, dest_angles.b), seg_time)));
-		flydata->angstep.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, fixdiv (DeltaAng (flydata->angles.h, dest_angles.h), seg_time)));
+		flydata->angstep.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (flydata->angles.p, dest_angles.p), seg_time)));
+		flydata->angstep.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (flydata->angles.b, dest_angles.b), seg_time)));
+		flydata->angstep.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (flydata->angles.h, dest_angles.h), seg_time)));
 		}
 	else {
 		flydata->angles = dest_angles;

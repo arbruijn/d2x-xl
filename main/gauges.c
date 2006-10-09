@@ -4262,7 +4262,7 @@ extern int Saving_movie_frames;
 int CanSeeObject(int objnum, int bCheckObjs)
 {
 	fvi_query fq;
-	int hit_type;
+	int nHitType;
 	fvi_info hit_data;
 
 	//see if we can see this player
@@ -4270,12 +4270,12 @@ int CanSeeObject(int objnum, int bCheckObjs)
 	fq.p0 = &gameData.objs.viewer->pos;
 	fq.p1 = &gameData.objs.objects[objnum].pos;
 	fq.rad = 0;
-	fq.thisobjnum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
+	fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
 	fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-	fq.startseg = gameData.objs.viewer->segnum;
-	fq.ignore_obj_list = NULL;
-	hit_type = FindVectorIntersection(&fq, &hit_data);
-	return bCheckObjs ? (hit_type == HIT_OBJECT && hit_data.hit_object == objnum) : hit_type != HIT_WALL;
+	fq.startSeg = gameData.objs.viewer->segnum;
+	fq.ignoreObjList = NULL;
+	nHitType = FindVectorIntersection(&fq, &hit_data);
+	return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == objnum) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------

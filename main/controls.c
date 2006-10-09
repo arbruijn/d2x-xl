@@ -395,7 +395,7 @@ void ReadFlyingControls(object *objP)
 #endif
 			ft = (gameData.pig.ship.player->max_thrust >> 15) + 1;
 		}
-		VmVecScale( &objP->mtype.phys_info.thrust, fixdiv(gameData.pig.ship.player->max_thrust,ft) );
+		VmVecScale( &objP->mtype.phys_info.thrust, FixDiv(gameData.pig.ship.player->max_thrust,ft) );
 
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->max_rotthrust)) {
 #if TRACE
@@ -403,7 +403,7 @@ void ReadFlyingControls(object *objP)
 #endif
 			ft = (gameData.pig.ship.player->max_thrust >> 15) + 1;
 		}
-		VmVecScale( &objP->mtype.phys_info.rotthrust, fixdiv(gameData.pig.ship.player->max_rotthrust,ft) );
+		VmVecScale( &objP->mtype.phys_info.rotthrust, FixDiv(gameData.pig.ship.player->max_rotthrust,ft) );
 	}
 
 }

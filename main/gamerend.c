@@ -215,7 +215,7 @@ void show_framerate()
 	t = SDL_GetTicks ();
 	if ((t0 < 0) || (t - t0 >= 500)) {
 		t0 = t;
-		rate = frame_time_total ? fixdiv(f1_0*8,frame_time_total) : 0;
+		rate = frame_time_total ? FixDiv(f1_0*8,frame_time_total) : 0;
 		}
 	GrSetCurFont( GAME_FONT );	
 	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);

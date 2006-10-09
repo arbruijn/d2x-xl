@@ -821,7 +821,7 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 				// check if the intersection of a line through the point that is orthogonal to the 
 				// plane of the current triangle lies in is inside that triangle
-					nCenterCount++;
+				nCenterCount++;
 			if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
 				masks.faceMask |= faceBit;
 				nSideCount++;
@@ -943,22 +943,18 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 #endif
 			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
 				nCenterCount++;
-				xSideDists [sn] += xDist;
 				}
+			xSideDists [sn] += xDist;
 			}
 		if (!bSidePokesOut) {		//must be behind both faces
-			if (nCenterCount == 2) {
+			if (nCenterCount == 2)
 				mask |= sideBit;
-				xSideDists [sn] /= 2;		//get average
-				}
 			}
 		else {							//must be behind at least one face
-			if (nCenterCount) {
+			if (nCenterCount)
 				mask |= sideBit;
-				if (nCenterCount == 2)
-					xSideDists [sn] /= 2;		//get average
-				}
 			}
+		xSideDists [sn] /= 2;		//get average
 		}
 	else {				//only one face on this side
 		fix xDist;
@@ -987,8 +983,8 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 #endif
 		if (xDist < -PLANE_DIST_TOLERANCE) {
 			mask |= sideBit;
-			xSideDists [sn] = xDist;
 			}
+		xSideDists [sn] = xDist;
 		faceBit <<= 2;
 		}
 	}
@@ -2199,7 +2195,7 @@ if (i == nChangedSegs) {
 
 	if (xDistToRSeg <= LIGHT_DISTANCE_THRESHOLD) {
 		fix	xLightAtPoint = (xDistToRSeg > F1_0) ? 
-									 fixdiv (MAGIC_LIGHT_CONSTANT, xDistToRSeg) :
+									 FixDiv (MAGIC_LIGHT_CONSTANT, xDistToRSeg) :
 									 MAGIC_LIGHT_CONSTANT;
 
 		if (xLightAtPoint >= 0) {

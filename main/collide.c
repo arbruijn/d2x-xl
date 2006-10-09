@@ -563,7 +563,7 @@ void ApplyForceDamage (object *objP, fix vForce, object *otherObjP)
 
 if (objP->flags & (OF_EXPLODING|OF_SHOULD_BE_DEAD))
 	return;		//already exploding or dead
-damage = fixdiv (vForce, objP->mtype.phys_info.mass) / 8;
+damage = FixDiv (vForce, objP->mtype.phys_info.mass) / 8;
 if ((otherObjP->type == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 	damage = 0x7fffffff;
 	switch (objP->type) {
@@ -1976,7 +1976,7 @@ int DoBossWeaponCollision (object *robot, object *weapon, vms_vector *vHitPt)
 
 					if (weapon->render_type == RT_POLYOBJ) {
 						newObjP->rtype.pobj_info.model_num = gameData.weapons.info [newObjP->id].model_num;
-						newObjP->size = fixdiv (gameData.models.polyModels [newObjP->rtype.pobj_info.model_num].rad, gameData.weapons.info [newObjP->id].po_len_to_width_ratio);
+						newObjP->size = FixDiv (gameData.models.polyModels [newObjP->rtype.pobj_info.model_num].rad, gameData.weapons.info [newObjP->id].po_len_to_width_ratio);
 					}
 
 					newObjP->mtype.phys_info.mass = WI_mass (weapon->type);

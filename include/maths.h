@@ -77,7 +77,7 @@ quadint;
 fix FixMul (fix a, fix b);
 
 //divide two fixes, return a fix
-fix fixdiv (fix a, fix b);
+fix FixDiv (fix a, fix b);
 
 //multiply two fixes, then divide by a third, return a fix
 fix FixMulDiv (fix a, fix b, fix c);
@@ -85,7 +85,7 @@ fix FixMulDiv (fix a, fix b, fix c);
 #else
 
 #define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * (_b)) / 65536))
-#define fixdiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / (_b)) : 1))
+#define FixDiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / (_b)) : 1))
 #define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * (_b)) / (_c)) : 1))
 
 #endif

@@ -728,11 +728,11 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 	xCloakDeltaTime = gameData.app.xGameTime - xCloakStartTime;
 	if (xCloakDeltaTime < xCloakFadeinDuration / 2) {
 
-		xLightScale = fixdiv (xCloakFadeinDuration / 2 - xCloakDeltaTime, xCloakFadeinDuration / 2);
+		xLightScale = FixDiv (xCloakFadeinDuration / 2 - xCloakDeltaTime, xCloakFadeinDuration / 2);
 		bFading = 1;
 	}
 	else if (xCloakDeltaTime < xCloakFadeinDuration) {
-		nCloakValue = f2i (fixdiv (xCloakDeltaTime - xCloakFadeinDuration / 2, xCloakFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
+		nCloakValue = f2i (FixDiv (xCloakDeltaTime - xCloakFadeinDuration / 2, xCloakFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
 	} else if (gameData.app.xGameTime < xCloakEndTime-xCloakFadeoutDuration) {
 		static int nCloakDelta = 0, nCloakDir = 1;
 		static fix xCloakTimer = 0;
@@ -748,9 +748,9 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 		}
 		nCloakValue = CLOAKED_FADE_LEVEL - nCloakDelta;
 	} else if (gameData.app.xGameTime < xCloakEndTime - xCloakFadeoutDuration / 2) {
-		nCloakValue = f2i (fixdiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
+		nCloakValue = f2i (FixDiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 	} else {
-		xLightScale = fixdiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
+		xLightScale = FixDiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
 		bFading = 1;
 	}
 
@@ -2138,10 +2138,10 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	if ((player_camera_vec.x == 0) && (player_camera_vec.y == 0) && (player_camera_vec.z == 0))
 		player_camera_vec.x += F1_0/16;
 
-	hit_data.hit_type = HIT_WALL;
+	hit_data.hit.nType = HIT_WALL;
 	xFarScale = F1_0;
 
-	while ((hit_data.hit_type != HIT_NONE) && (count++ < 6)) {
+	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
 		vms_vector	closer_p1;
 		VmVecNormalizeQuick (&player_camera_vec);
 		VmVecScale (&player_camera_vec, xCameraToPlayerDistGoal);
@@ -2151,15 +2151,15 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 		VmVecScale (&player_camera_vec, xFarScale);						//	...but find a point 50% further away...
 		VmVecAdd (&local_p1, &objP->pos, &player_camera_vec);		//	...so we won't have to do as many cuts.
 
-		fq.p1 = &local_p1;
-		fq.startseg = objP->segnum;
-		fq.rad = 0;
-		fq.thisobjnum = OBJ_IDX (objP);
-		fq.ignore_obj_list = NULL;
-		fq.flags = 0;
+		fq.p1					= &local_p1;
+		fq.startSeg			= objP->segnum;
+		fq.rad				= 0;
+		fq.thisObjNum		= OBJ_IDX (objP);
+		fq.ignoreObjList	= NULL;
+		fq.flags				= 0;
 		FindVectorIntersection (&fq, &hit_data);
 
-		if (hit_data.hit_type == HIT_NONE)
+		if (hit_data.hit.nType == HIT_NONE)
 			*camera_pos = closer_p1;
 		else {
 			MakeRandomVector (&player_camera_vec);
@@ -2704,14 +2704,14 @@ if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
 #ifdef NETWORK
 		int	old_level = gameData.missions.nCurrentLevel;
 #endif
-		for (i = 0; i < n_phys_segs - 1; i++) {
-			connect_side = FindConnectedSide (gameData.segs.segments + phys_seglist [i+1], gameData.segs.segments + phys_seglist [i]);
+		for (i = 0; i < nPhysSegs - 1; i++) {
+			connect_side = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
 			if (connect_side != -1)
-				CheckTrigger (gameData.segs.segments + phys_seglist [i], connect_side, OBJ_IDX (objP), 0);
+				CheckTrigger (gameData.segs.segments + physSegList [i], connect_side, OBJ_IDX (objP), 0);
 			#ifndef NDEBUG
 			else {	// segments are not directly connected, so do binary subdivision until you find connected segments.
 #if TRACE				
-				con_printf (1, "UNCONNECTED SEGMENTS %d, %d\n", phys_seglist [i+1], phys_seglist [i]);
+				con_printf (1, "UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
 #endif
 				// -- Unnecessary, MK, 09/04/95 -- Int3 ();
 			}
@@ -2807,7 +2807,7 @@ if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_
 	if (vel > F1_0*200)
 		delay = F1_0/16;
 	else if (vel > F1_0*40)
-		delay = fixdiv (F1_0*13, vel);
+		delay = FixDiv (F1_0*13, vel);
 	else
 		delay = DEG90;
 

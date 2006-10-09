@@ -31,7 +31,7 @@ QLONG TimerGetFixedSeconds(void)
 	QLONG tv_now = SDL_GetTicks();
 
 	s = i2f (tv_now / 1000);
-	ms = fixdiv (i2f (tv_now % 1000), i2f (1000));
+	ms = FixDiv (i2f (tv_now % 1000), i2f (1000));
 	x = s | ms;
 	if (x > (QLONG) 0xFFFFFFFF)
 		_asm int 3;
@@ -42,7 +42,7 @@ fix TimerGetFixedSeconds(void)
 {
 	fix x;
 	unsigned long tv_now = SDL_GetTicks();
-	x=i2f(tv_now/1000) | fixdiv(i2f(tv_now % 1000),i2f(1000));
+	x=i2f(tv_now/1000) | FixDiv(i2f(tv_now % 1000),i2f(1000));
 	return x;
 }
 #endif

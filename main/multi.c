@@ -3866,7 +3866,7 @@ void MultiDoCaptureBonus (char *buf)
 
 	char 	nPlayer = buf [1];
 	short	nTeam, nKillGoal, penalty = 0, bonus;
-	char	szTeam [20];
+	//char	szTeam [20];
 
 if (gameData.app.nGameMode & GM_HOARD)
 	bonus = 5;

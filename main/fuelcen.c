@@ -1293,7 +1293,7 @@ return amount;
 //--repair-- 		fix factor, p,b,h;	
 //--repair-- 		vms_angvec av;
 //--repair--
-//--repair-- 		factor = fixdiv (current_time,delta_time);
+//--repair-- 		factor = FixDiv (current_time,delta_time);
 //--repair--
 //--repair-- 		// Find object's current position
 //--repair-- 		objP->pos = delta_pos;

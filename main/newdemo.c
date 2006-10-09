@@ -3407,7 +3407,7 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 	object		*curObjP, *objP, *i, *j;
 
 static object curObjs [MAX_OBJECTS];
-factor = fixdiv (d_play, d_recorded);
+factor = FixDiv (d_play, d_recorded);
 if (factor > F1_0)
 	factor = F1_0;
 nCurObjs = gameData.objs.nLastObject;

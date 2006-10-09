@@ -537,7 +537,7 @@ void ai_turn_towards_vector(vms_vector *goal_vector, object *objP, fix rate)
 
 	if (dot < (F1_0 - gameData.app.xFrameTime/2)) {
 		fix	mag;
-		fix	new_scale = fixdiv(gameData.app.xFrameTime * AI_TURN_SCALE, rate);
+		fix	new_scale = FixDiv(gameData.app.xFrameTime * AI_TURN_SCALE, rate);
 		VmVecScale(&new_fvec, new_scale);
 		VmVecInc(&new_fvec, &objP->orient.fvec);
 		mag = VmVecNormalizeQuick(&new_fvec);
@@ -553,7 +553,7 @@ void ai_turn_towards_vector(vms_vector *goal_vector, object *objP, fix rate)
 		vms_vector	rand_vec;
 		fix			scale;
 		MakeRandomVector(&rand_vec);
-		scale = fixdiv(2*gameStates.gameplay.seismic.nMagnitude, gameData.bots.pInfo[objP->id].mass);
+		scale = FixDiv(2*gameStates.gameplay.seismic.nMagnitude, gameData.bots.pInfo[objP->id].mass);
 		VmVecScaleInc(&new_fvec, &rand_vec, scale);
 	}
 
@@ -614,30 +614,31 @@ int ObjectCanSeePlayer(object *objP, vms_vector *pos, fix field_of_view, vms_vec
 	if ((pos->x != objP->pos.x) || (pos->y != objP->pos.y) || (pos->z != objP->pos.z)) {
 		short segnum = FindSegByPoint(pos, objP->segnum);
 		if (segnum == -1) {
-			fq.startseg = objP->segnum;
+			fq.startSeg = objP->segnum;
 			*pos = objP->pos;
 #if TRACE	
 			con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
 			move_towards_segment_center(objP);
-		} else {
-			if (segnum != objP->segnum) {
+			} 
+		else {
+			if (segnum != objP->segnum)
 				objP->ctype.ai_info.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
+			fq.startSeg = segnum;
 			}
-			fq.startseg = segnum;
 		}
-	} else
-		fq.startseg			= objP->segnum;
-	fq.p1						= &gameData.ai.vBelievedPlayerPos;
-	fq.rad					= F1_0/4;
-	fq.thisobjnum			= OBJ_IDX (objP);
-	fq.ignore_obj_list	= NULL;
-	fq.flags					= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
+	else
+		fq.startSeg	= objP->segnum;
+	fq.p1					= &gameData.ai.vBelievedPlayerPos;
+	fq.rad				= F1_0/4;
+	fq.thisObjNum		= OBJ_IDX (objP);
+	fq.ignoreObjList	= NULL;
+	fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
 
 	gameData.ai.nHitType = FindVectorIntersection(&fq,&gameData.ai.hitData);
 
-	gameData.ai.vHitPos = gameData.ai.hitData.hit_pnt;
-	gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
+	gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
+	gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 
 	// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hit_object == gameData.multi.players[gameData.multi.nLocalPlayer].objnum))) {
 	if (gameData.ai.nHitType == HIT_NONE) {
@@ -925,7 +926,7 @@ void DoAiRobotHitAttack(object *robot, object *playerobjP, vms_vector *collision
 //	Computes point at which projectile fired by robot can hit player given positions, player vel, elapsed time
 fix compute_lead_component(fix player_pos, fix robot_pos, fix player_vel, fix elapsed_time)
 {
-	return fixdiv(player_pos - robot_pos, elapsed_time) + player_vel;
+	return FixDiv(player_pos - robot_pos, elapsed_time) + player_vel;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -986,7 +987,7 @@ int lead_player(object *objP, vms_vector *fire_point, vms_vector *believed_playe
 			max_weapon_speed *= (NDL-gameStates.app.nDifficultyLevel);
 	}
 
-	projected_time = fixdiv(dist_to_player, max_weapon_speed);
+	projected_time = FixDiv(dist_to_player, max_weapon_speed);
 
 	fire_vec->x = compute_lead_component(believed_player_pos->x, fire_point->x, gameData.objs.console->mtype.phys_info.velocity.x, projected_time);
 	fire_vec->y = compute_lead_component(believed_player_pos->y, fire_point->y, gameData.objs.console->mtype.phys_info.velocity.y, projected_time);
@@ -1053,7 +1054,7 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 		fix	cloak_time = gameData.ai.cloakInfo[objnum % MAX_AI_CLOAK_INFO].last_time;
 
 		if (gameData.app.xGameTime - cloak_time > CLOAK_TIME_MAX/4)
-			if (d_rand() > fixdiv(gameData.app.xGameTime - cloak_time, CLOAK_TIME_MAX)/2) {
+			if (d_rand() > FixDiv(gameData.app.xGameTime - cloak_time, CLOAK_TIME_MAX)/2) {
 				set_next_fire_time(objP, ailp, robptr, gun_num);
 				return;
 			}
@@ -1084,12 +1085,12 @@ void ai_fire_laser_at_player(object *objP, vms_vector *fire_point, int gun_num, 
 			fvi_info		hit_data;
 			int			fate;
 
-			fq.startseg				= objP->segnum;
+			fq.startSeg				= objP->segnum;
 			fq.p0						= &objP->pos;
 			fq.p1						= fire_point;
 			fq.rad					= 0;
-			fq.thisobjnum			= OBJ_IDX (objP);
-			fq.ignore_obj_list	= NULL;
+			fq.thisObjNum			= OBJ_IDX (objP);
+			fq.ignoreObjList	= NULL;
 			fq.flags					= FQ_TRANSWALL;
 
 			fate = FindVectorIntersection(&fq, &hit_data);
@@ -1281,7 +1282,7 @@ void move_around_player(object *objP, vms_vector *vec_to_player, int fast_flag)
 			fix	damage_scale;
 
 			if (robptr->strength)
-				damage_scale = fixdiv(objP->shields, robptr->strength);
+				damage_scale = FixDiv(objP->shields, robptr->strength);
 			else
 				damage_scale = F1_0;
 			if (damage_scale > F1_0)
@@ -2225,7 +2226,7 @@ int do_robot_dying_frame(object *objP, fix StartTime, fix roll_duration, sbyte *
 	if (!roll_duration)
 		roll_duration = F1_0/4;
 
-	roll_val = fixdiv(gameData.app.xGameTime - StartTime, roll_duration);
+	roll_val = FixDiv(gameData.app.xGameTime - StartTime, roll_duration);
 
 	fix_sincos(FixMul(roll_val, roll_val), &temp, &objP->mtype.phys_info.rotvel.x);
 	fix_sincos(roll_val, &temp, &objP->mtype.phys_info.rotvel.y);
@@ -2236,7 +2237,7 @@ int do_robot_dying_frame(object *objP, fix StartTime, fix roll_duration, sbyte *
 	objP->mtype.phys_info.rotvel.z = (gameData.app.xGameTime - StartTime)/7;
 
 	if (gameOpts->sound.digiSampleRate)
-		sound_duration = fixdiv(gameData.pig.snd.pSounds[DigiXlatSound(death_sound)].length, gameOpts->sound.digiSampleRate);
+		sound_duration = FixDiv(gameData.pig.snd.pSounds[DigiXlatSound(death_sound)].length, gameOpts->sound.digiSampleRate);
 	else
 		sound_duration = F1_0;
 

@@ -1041,13 +1041,13 @@ void draw_tmap(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
 		tvp->x2d = vp->p3_sx;
 		tvp->y2d = vp->p3_sy;
 
-		//	Check for overflow on fixdiv.  Will overflow on vp->z <= something small.  Allow only as low as 256.
+		//	Check for overflow on FixDiv.  Will overflow on vp->z <= something small.  Allow only as low as 256.
 		if (vp->p3_z < 256) {
 			vp->p3_z = 256;
 			// Int3();		// we would overflow if we divided!
 		}
 
-		tvp->z = fixdiv(F1_0*12, vp->p3_z);
+		tvp->z = FixDiv(F1_0*12, vp->p3_z);
 		tvp->u = vp->p3_u << 6; //* bp->bm_props.w;
 		tvp->v = vp->p3_v << 6; //* bp->bm_props.h;
 

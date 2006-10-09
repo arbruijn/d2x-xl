@@ -88,7 +88,7 @@ int GrSetMode(u_int32_t mode)
 	grdCurScreen->sc_mode = mode;
 	grdCurScreen->sc_w = w;
 	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = fixdiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
+	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;

@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * removed #ifdef NEWDEMO -- always in
  *
  * Revision 1.3  1995/07/28  15:39:51  allender
- * removed fixdiv thing
+ * removed FixDiv thing
  *
  * Revision 1.2  1995/07/28  15:21:23  allender
  * inverse magnitude fixup thing
@@ -246,16 +246,16 @@ while (nverts--) {
 	if (box_size) {
 		fix t;
 		k = 0x7fffffff;
-		if (vp->x && f2i (box_size->x)<abs (vp->x)/2 && (t = fixdiv (box_size->x, abs (vp->x))) < k) k=t;
-		if (vp->y && f2i (box_size->y)<abs (vp->y)/2 && (t = fixdiv (box_size->y, abs (vp->y))) < k) k=t;
-		if (vp->z && f2i (box_size->z)<abs (vp->z)/2 && (t = fixdiv (box_size->z, abs (vp->z))) < k) k=t;
+		if (vp->x && f2i (box_size->x)<abs (vp->x)/2 && (t = FixDiv (box_size->x, abs (vp->x))) < k) k=t;
+		if (vp->y && f2i (box_size->y)<abs (vp->y)/2 && (t = FixDiv (box_size->y, abs (vp->y))) < k) k=t;
+		if (vp->z && f2i (box_size->z)<abs (vp->z)/2 && (t = FixDiv (box_size->z, abs (vp->z))) < k) k=t;
 		if (k==0x7fffffff) k=0;
 		}
 	else
 		k=0;
 	VmVecCopyScale (&mdP->morph_vecs [i], vp, k);
 	dist = VmVecNormalizedDirQuick (&mdP->morph_deltas [i], vp, &mdP->morph_vecs [i]);
-	mdP->morph_times [i] = fixdiv (dist, gameData.render.morph.xRate);
+	mdP->morph_times [i] = FixDiv (dist, gameData.render.morph.xRate);
 	if (mdP->morph_times [i] != 0)
 		mdP->n_morphing_points [submodel_num]++;
 		VmVecScale (&mdP->morph_deltas [i], gameData.render.morph.xRate);

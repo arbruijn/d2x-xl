@@ -161,7 +161,7 @@ void DigiGetSoundLoc (
 
 		path_distance = FindConnectedDistance (listener_pos, listener_seg, sound_pos, sound_seg, num_search_segs, WID_RENDPAST_FLAG+WID_FLY_FLAG);
 		if (path_distance > -1)	{
-			*volume = max_volume - fixdiv (path_distance,max_distance);
+			*volume = max_volume - FixDiv (path_distance,max_distance);
 			////mprintf ((0, "Sound path distance %.2f, volume is %d / %d\n", f2fl (distance), *volume, max_volume));
 			if (*volume > 0)	{
 				angle_from_ear = VmVecDeltaAngNorm (&listener->rvec,&vector_to_sound,&listener->uvec);

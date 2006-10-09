@@ -324,7 +324,7 @@ objnum = CreateObject ((ubyte) OBJ_WEAPON, weapon_type, -1, segnum, position, NU
 objP = gameData.objs.objects + objnum;
 if (gameData.weapons.info [weapon_type].render_type == WEAPON_RENDER_POLYMODEL) {
 	objP->rtype.pobj_info.model_num = gameData.weapons.info [objP->id].model_num;
-	objP->size = fixdiv (gameData.models.polyModels [objP->rtype.pobj_info.model_num].rad,gameData.weapons.info [objP->id].po_len_to_width_ratio);
+	objP->size = FixDiv (gameData.models.polyModels [objP->rtype.pobj_info.model_num].rad,gameData.weapons.info [objP->id].po_len_to_width_ratio);
 	}
 objP->mtype.phys_info.mass = WI_mass (weapon_type);
 objP->mtype.phys_info.drag = WI_drag (weapon_type);
@@ -565,17 +565,17 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	MakeRandomVector (&vPerturb);
 	VmVecScaleAdd (&perturbed_fvec, &parentObjP->orient.fvec, &vPerturb, F1_0/16);
 	VmVecScaleAdd (&vGoalPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
-	fq.startseg = nFiringSeg;
+	fq.startSeg = nFiringSeg;
 	fq.p0 = vFiringPos;
 	fq.p1	= &vGoalPos;
 	fq.rad = 0;
-	fq.thisobjnum = OBJ_IDX (parentObjP);
-	fq.ignore_obj_list = NULL;
+	fq.thisObjNum = OBJ_IDX (parentObjP);
+	fq.ignoreObjList = NULL;
 	fq.flags = FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS;		//what about trans walls???
 	fate = FindVectorIntersection (&fq, &hit_data);
 	if (fate != HIT_NONE) {
-		Assert (hit_data.hit_seg != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
-		vGoalPos = hit_data.hit_pnt;
+		Assert (hit_data.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
+		vGoalPos = hit_data.hit.vPoint;
 		}
 	}
 //	This is where we create a pile of omega blobs!
@@ -804,7 +804,7 @@ int CreateNewLaser (
 		objP->mtype.phys_info.thrust = objP->mtype.phys_info.velocity;
 		VmVecScale (
 			&objP->mtype.phys_info.thrust, 
-			fixdiv (WI_thrust (objP->id), weapon_speed+parent_speed));
+			FixDiv (WI_thrust (objP->id), weapon_speed+parent_speed));
 	}
 
 	if ((objP->type == OBJ_WEAPON) && (objP->id == FLARE_ID))
@@ -830,19 +830,19 @@ int CreateNewLaserEasy (vms_vector * direction, vms_vector * position, short par
 	//	in the same segment as the source point.
 
 	fq.p0						= &parentObjP->pos;
-	fq.startseg				= parentObjP->segnum;
+	fq.startSeg				= parentObjP->segnum;
 	fq.p1						= position;
 	fq.rad					= 0;
-	fq.thisobjnum			= OBJ_IDX (parentObjP);
-	fq.ignore_obj_list	= NULL;
+	fq.thisObjNum			= OBJ_IDX (parentObjP);
+	fq.ignoreObjList	= NULL;
 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
 	fate = FindVectorIntersection (&fq, &hit_data);
-	if (fate != HIT_NONE  || hit_data.hit_seg==-1) {
+	if (fate != HIT_NONE  || hit_data.hit.nSegment==-1) {
 		return -1;
 	}
 
-	return CreateNewLaser (direction, &hit_data.hit_pnt, (short) hit_data.hit_seg, parent, weapon_type, make_sound);
+	return CreateNewLaser (direction, &hit_data.hit.vPoint, (short) hit_data.hit.nSegment, parent, weapon_type, make_sound);
 
 }
 
@@ -855,13 +855,13 @@ int ObjectToObjectVisibility (object *objP1, object *objP2, int trans_type)
 	fvi_info		hit_data;
 	int			fate;
 
-fq.p0						= &objP1->pos;
-fq.startseg				= objP1->segnum;
-fq.p1						= &objP2->pos;
-fq.rad					= 0x10;
-fq.thisobjnum			= OBJ_IDX (objP1);
-fq.ignore_obj_list	= NULL;
-fq.flags					= trans_type;
+fq.p0					= &objP1->pos;
+fq.startSeg			= objP1->segnum;
+fq.p1					= &objP2->pos;
+fq.rad				= 0x10;
+fq.thisObjNum		= OBJ_IDX (objP1);
+fq.ignoreObjList	= NULL;
+fq.flags				= trans_type;
 fate = FindVectorIntersection (&fq, &hit_data);
 if (fate == HIT_WALL)
 	return 0;
@@ -1239,14 +1239,14 @@ int LaserPlayerFireSpreadDelay (
 
 	//--------------- Find LaserPos and LaserSeg ------------------
 	fq.p0						= &objP->pos;
-	fq.startseg				= objP->segnum;
+	fq.startSeg				= objP->segnum;
 	fq.p1						= &LaserPos;
 	fq.rad					= 0x10;
-	fq.thisobjnum			= OBJ_IDX (objP);
-	fq.ignore_obj_list	= NULL;
+	fq.thisObjNum			= OBJ_IDX (objP);
+	fq.ignoreObjList	= NULL;
 	fq.flags					= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
 	Fate = FindVectorIntersection (&fq, &hit_data);
-	LaserSeg = hit_data.hit_seg;
+	LaserSeg = hit_data.hit.nSegment;
 	if (LaserSeg == -1) {	//some sort of annoying error
 		return -1;
 		}
@@ -1545,7 +1545,7 @@ void LaserDoWeaponSequence (object *objP)
 			if (WI_speed (objP->id,gameStates.app.nDifficultyLevel)) {
 				fix	scale_factor;
 
-				scale_factor = fixdiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), weapon_speed);
+				scale_factor = FixDiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), weapon_speed);
 				VmVecScale (&objP->mtype.phys_info.velocity, scale_factor);
 			}
 		}
@@ -1688,19 +1688,19 @@ return rval;
 // -- 	VmVecScaleAdd (&end_pos, start_pos, &norm_dir, MAX_LIGHTNING_DISTANCE);
 // -- 
 // -- 	fq.p0						= start_pos;
-// -- 	fq.startseg				= start_segnum;
+// -- 	fq.startSeg				= start_segnum;
 // -- 	fq.p1						= &end_pos;
 // -- 	fq.rad					= 0;
-// -- 	fq.thisobjnum			= parent;
-// -- 	fq.ignore_obj_list	= NULL;
+// -- 	fq.thisObjNum			= parent;
+// -- 	fq.ignoreObjList	= NULL;
 // -- 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;
 // -- 
 // -- 	fate = FindVectorIntersection (&fq, &hit_data);
-// -- 	if (hit_data.hit_seg == -1) {
+// -- 	if (hit_data.hit.nSegment == -1) {
 // -- 		return -1;
 // -- 	}
 // -- 
-// -- 	dist_to_hit_point = VmVecMag (VmVecSub (&tvec, &hit_data.hit_pnt, start_pos);
+// -- 	dist_to_hit_point = VmVecMag (VmVecSub (&tvec, &hit_data.hit.vPoint, start_pos);
 // -- 	num_blobs = dist_to_hit_point/LIGHTNING_BLOB_DISTANCE;
 // -- 
 // -- 	if (num_blobs > MAX_LIGHTNING_BLOBS)

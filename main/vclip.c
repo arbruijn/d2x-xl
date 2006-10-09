@@ -89,7 +89,7 @@ inline int CurFrame (int nClip, fix timeToLive)
 {
 vclip	*pvc = gameData.eff.vClips [0] + nClip;
 int nFrames = pvc->nFrameCount;
-//	iFrame = (nFrames - f2i (fixdiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
+//	iFrame = (nFrames - f2i (FixDiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
 int iFrame;
 if (timeToLive > pvc->xTotalTime)
 	timeToLive = timeToLive % pvc->xTotalTime;

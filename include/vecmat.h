@@ -257,7 +257,7 @@ vms_angvec *VmAngVecMake (vms_angvec * v, fixang p, fixang b, fixang h);
 
 //Global constants
 
-extern vms_vector vmd_zero_vector;
+extern vms_vector vmdZeroVector;
 
 extern vms_matrix vmdIdentityMatrix;
 

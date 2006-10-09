@@ -64,8 +64,8 @@ int CalcRodCorners (g3s_point *bot_point, fix bot_width, g3s_point *top_point, f
 //from eye to get perpendiclar
 VmVecSub (&delta_vec, &bot_point->p3_vec, &top_point->p3_vec);
 //unscale for aspect
-delta_vec.x = fixdiv (delta_vec.x, viewInfo.scale.x);
-delta_vec.y = fixdiv (delta_vec.y, viewInfo.scale.y);
+delta_vec.x = FixDiv (delta_vec.x, viewInfo.scale.x);
+delta_vec.y = FixDiv (delta_vec.y, viewInfo.scale.y);
 //calc perp vector
 //do lots of normalizing to prevent overflowing.  When this code works, 
 //it should be optimized

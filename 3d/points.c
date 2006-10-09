@@ -124,8 +124,8 @@ void G3Point2Vec(vms_vector *v,short sx,short sy)
 	vms_vector tempv;
 	vms_matrix tempm;
 
-	tempv.x =  FixMulDiv(fixdiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
-	tempv.y = -FixMulDiv(fixdiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
+	tempv.x =  FixMulDiv(FixDiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
+	tempv.y = -FixMulDiv(FixDiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
 	tempv.z = f1_0;
 
 	VmVecNormalize(&tempv);

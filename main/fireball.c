@@ -232,7 +232,7 @@ objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdent
 	
 						// Find where the point of impact is... (pos_hit)
 						VmVecSub(&pos_hit, &explObjP->pos, &obj0P->pos);
-						VmVecScale(&pos_hit, fixdiv (obj0P->size, obj0P->size + dist));
+						VmVecScale(&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
 	
 						switch (obj0P->type)	{
 							case OBJ_WEAPON:
@@ -253,7 +253,7 @@ objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdent
 								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 								if ((objP != NULL) && (!gameData.bots.pInfo[obj0P->id].boss_flag) && (gameData.weapons.info[objP->id].flash)) {
 									ai_static	*aip = &obj0P->ctype.ai_info;
-									int			force_val = f2i(fixdiv(VmVecMagQuick(&vforce) * gameData.weapons.info[objP->id].flash, gameData.app.xFrameTime)/128) + 2;
+									int			force_val = f2i(FixDiv(VmVecMagQuick(&vforce) * gameData.weapons.info[objP->id].flash, gameData.app.xFrameTime)/128) + 2;
 
 									if (explObjP->ctype.ai_info.SKIP_AI_COUNT * gameData.app.xFrameTime < F1_0) {
 										aip->SKIP_AI_COUNT += force_val;
@@ -1888,7 +1888,7 @@ void DoExplodingWallFrame()
 			short sidenum = gameData.walls.explWalls[i].sidenum;
 			fix oldfrac,newfrac;
 			int old_count,new_count,e;		//n,
-			oldfrac = fixdiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
+			oldfrac = FixDiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
 			gameData.walls.explWalls[i].time += gameData.app.xFrameTime;
 			if (gameData.walls.explWalls[i].time > EXPL_WALL_TIME)
 				gameData.walls.explWalls[i].time = EXPL_WALL_TIME;
@@ -1906,7 +1906,7 @@ void DoExplodingWallFrame()
 				if (cside >= 0)
 					gameData.walls.walls[WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
-			newfrac = fixdiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
+			newfrac = FixDiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
 			old_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(oldfrac,oldfrac));
 			new_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(newfrac,newfrac));
 			//n = new_count - old_count;

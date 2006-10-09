@@ -926,7 +926,7 @@ if (cursor_flag && !bRedraw) {
 }
 
 if (delay > 0)
-	delay=fixdiv (F1_0,i2f (15));
+	delay=FixDiv (F1_0,i2f (15));
 
 if ((delay > 0) && !bRedraw) {
 	if (Bitmap_name[0] != 0)

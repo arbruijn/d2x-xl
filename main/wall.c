@@ -1564,7 +1564,7 @@ void DoCloakingWallFrame(int cloaking_wall_num)
 		fix light_scale;
 		int i;
 
-		light_scale = fixdiv(CLOAKING_WALL_TIME/2-d->time,CLOAKING_WALL_TIME/2);
+		light_scale = FixDiv(CLOAKING_WALL_TIME/2-d->time,CLOAKING_WALL_TIME/2);
 
 		for (i=0;i<4;i++) {
 			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = FixMul(d->front_ls[i],light_scale);
@@ -1620,7 +1620,7 @@ void DoDecloakingWallFrame (int cloaking_wall_num)
 		if (wback)
 			wback->type = WALL_CLOSED;
 
-		light_scale = fixdiv(d->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
+		light_scale = FixDiv(d->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
 
 		for (i=0;i<4;i++) {
 			gameData.segs.segments[wfront->segnum].sides[wfront->sidenum].uvls[i].l = FixMul(d->front_ls[i],light_scale);

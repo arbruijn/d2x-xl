@@ -89,7 +89,7 @@ if (s <= f1_0) {	   //scale x
 	viewInfo.windowScale.y = f1_0;
 }
 else {
-	viewInfo.windowScale.y = fixdiv(f1_0,s);
+	viewInfo.windowScale.y = FixDiv(f1_0,s);
 	viewInfo.windowScale.x = f1_0;
 }
 viewInfo.windowScale.z = f1_0;		//always 1

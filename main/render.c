@@ -2801,7 +2801,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix(&mHead,&viewInfo.playerHeadAngles);
 		VmMatMul(&mView,&gameData.objs.viewer->orient,&mHead);
-		G3SetViewMatrix(&viewerEye,&mView,fixdiv(nRenderZoom,gameStates.render.nZoomFactor));
+		G3SetViewMatrix(&viewerEye,&mView,FixDiv(nRenderZoom,gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 #ifdef JOHN_ZOOM
@@ -2856,7 +2856,7 @@ else {
 			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 			}
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, fixdiv (nRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
 		}
 	else
 		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
@@ -2895,7 +2895,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 #endif			 	
 			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, fixdiv (nRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
 		ApplyShadowMaps (startSegNum, nEyeOffset, nWindowNum);
 		}
 	else if (gameStates.render.bAltShadows)

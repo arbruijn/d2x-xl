@@ -290,17 +290,17 @@ Cache_lookups++;
 		}
 		#endif
 
-		fq.p0						= obj_pos;
-		fq.startseg				= obj_seg;
-		fq.p1						= vertpos;
-		fq.rad					= 0;
-		fq.thisobjnum			= objnum;
-		fq.ignore_obj_list	= NULL;
-		fq.flags					= FQ_TRANSWALL;
+		fq.p0					= obj_pos;
+		fq.startSeg			= obj_seg;
+		fq.p1					= vertpos;
+		fq.rad				= 0;
+		fq.thisObjNum		= objnum;
+		fq.ignoreObjList	= NULL;
+		fq.flags				= FQ_TRANSWALL;
 
 		hit_type = FindVectorIntersection(&fq, &hit_data);
 
-		// gameData.ai.vHitPos = gameData.ai.hitData.hit_pnt;
+		// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 		// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
 
 		if (hit_type == HIT_OBJECT)
@@ -310,7 +310,7 @@ Cache_lookups++;
 			bApplyLight = 1;
 		else if (hit_type == HIT_WALL) {
 			fix	dist_dist;
-			dist_dist = VmVecDistQuick(&hit_data.hit_pnt, obj_pos);
+			dist_dist = VmVecDistQuick(&hit_data.hit.vPoint, obj_pos);
 			if (dist_dist < F1_0/4) {
 				bApplyLight = 1;
 				// -- Int3();	//	Curious, did fvi detect intersection with wall containing vertex?
@@ -438,7 +438,7 @@ if (xObjIntensity) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 
-					dynamicLight [vertnum] += fixdiv (xObjIntensity, dist);
+					dynamicLight [vertnum] += FixDiv (xObjIntensity, dist);
 					if (bUseColor)
 						SetDynColor (color, NULL, vertnum, NULL, 0);
 					}
@@ -465,17 +465,17 @@ if (xObjIntensity) {
 
 					VmVecScaleAdd(&tvec, obj_pos, &objP->orient.fvec, F1_0*200);
 
-					fq.startseg				= objP->segnum;
-					fq.p0						= obj_pos;
-					fq.p1						= &tvec;
-					fq.rad					= 0;
-					fq.thisobjnum			= objnum;
-					fq.ignore_obj_list	= NULL;
-					fq.flags					= FQ_TRANSWALL;
+					fq.startSeg			= objP->segnum;
+					fq.p0					= obj_pos;
+					fq.p1					= &tvec;
+					fq.rad				= 0;
+					fq.thisObjNum		= objnum;
+					fq.ignoreObjList	= NULL;
+					fq.flags				= FQ_TRANSWALL;
 
 					fate = FindVectorIntersection(&fq, &hit_data);
 					if (fate != HIT_NONE) {
-						VmVecSub(&tvec, &hit_data.hit_pnt, obj_pos);
+						VmVecSub(&tvec, &hit_data.hit.vPoint, obj_pos);
 						maxHeadlightDist = VmVecMagQuick(&tvec) + F1_0*4;
 					}
 				}
@@ -501,7 +501,7 @@ if (xObjIntensity) {
 						if (bUseColor)
 							SetDynColor (color, NULL, vertnum, NULL, bForceColor);
 						if (!headlightShift) 
-							dynamicLight [vertnum] += fixdiv(xObjIntensity, dist);
+							dynamicLight [vertnum] += FixDiv(xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
@@ -515,7 +515,7 @@ if (xObjIntensity) {
 							else
 								maxDot = F1_0 / 2;
 							if (dot < maxDot)
-								dynamicLight [vertnum] += fixdiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+								dynamicLight [vertnum] += FixDiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 							else if (!(gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
 								dynamicLight [vertnum] += FixMul(FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
 							}
@@ -643,7 +643,7 @@ switch (objtype) {
 				xLight /= 8;
 #endif
 			if (objP->lifeleft < F1_0*4)
-				return FixMul (fixdiv(objP->lifeleft, 
+				return FixMul (FixDiv(objP->lifeleft, 
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
 				return xLight;
@@ -867,7 +867,7 @@ fix compute_headlight_light_on_object(object *objP)
 			dot = VmVecDot(&lightObjP->orient.fvec, &vecToObj);
 
 			if (dot < F1_0/2)
-				light += fixdiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+				light += FixDiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 			else
 				light += FixMul(FixMul(dot, dot), HEADLIGHT_SCALE)/8;
 		}
@@ -919,7 +919,7 @@ fix compute_headlight_light_on_object(object *objP)
 // -- Unused -- 				fix beam_scale;
 // -- Unused --
 // -- Unused -- 				if (face_light > f1_0*3/4 && point->z > i2f(12)) {
-// -- Unused -- 					beam_scale = fixdiv(point->z,point_dist);
+// -- Unused -- 					beam_scale = FixDiv(point->z,point_dist);
 // -- Unused -- 					beam_scale = FixMul(beam_scale,beam_scale);	//square it
 // -- Unused -- 					light = FixMul(light,beam_scale);
 // -- Unused -- 				}
@@ -1015,11 +1015,11 @@ engine_glow_value [0] = f1_0/5;
 if (objP->movement_type == MT_PHYSICS) {
 	if ((objP->type==OBJ_PLAYER) && (objP->mtype.phys_info.flags & PF_USES_THRUST) && (objP->id==gameData.multi.nLocalPlayer)) {
 		fix thrust_mag = VmVecMagQuick(&objP->mtype.phys_info.thrust);
-		engine_glow_value [0] += (fixdiv(thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
+		engine_glow_value [0] += (FixDiv(thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
 	}
 	else {
 		fix speed = VmVecMagQuick(&objP->mtype.phys_info.velocity);
-		engine_glow_value [0] += (fixdiv(speed,MAX_VELOCITY)*3)/5;
+		engine_glow_value [0] += (FixDiv(speed,MAX_VELOCITY)*3)/5;
 		}
 	}
 //set value for player headlight

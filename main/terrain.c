@@ -486,7 +486,7 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 		if (lMin == lMax)
 			LIGHT (i, j) = l;// >> 8;
 		else {
-			l2 = fixdiv ((l - lMin), (lMax - lMin));
+			l2 = FixDiv ((l - lMin), (lMax - lMin));
 			if (l2 == f1_0)
 				l2--;
 			LIGHT (i, j) = l2;// >> 8;

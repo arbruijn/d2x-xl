@@ -33,7 +33,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * some routines are now in assembly
  *
  * Revision 1.2  1995/05/04  20:04:45  allender
- * use MPW fixdiv if compiling with MPW (why did I do this?)
+ * use MPW FixDiv if compiling with MPW (why did I do this?)
  *
  * Revision 1.1  1995/04/17  11:37:54  allender
  * Initial revision
@@ -140,7 +140,7 @@ return (fix)((((QLONG) a) * b) / 65536);
 
 // ------------------------------------------------------------------------
 
-fix fixdiv(fix a, fix b)
+fix FixDiv (fix a, fix b)
 {
 /*	  return (fix)(((double)a * 65536.0) / (double)b);*/
      return b ? (fix)((((QLONG)a) *65536/*<< 16*/)/b) : 1;

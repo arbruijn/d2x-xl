@@ -1011,7 +1011,7 @@ if (bGetSlideBank == 2) {
 #endif
 	for (i = 0; i < 4; i++)
 		if ((v = HaveKey (kc_keyboard, 38 + i)) < 255) 
-			*nCruiseSpeed += key_signs [i] * fixdiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcFrameTime);
+			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcFrameTime);
 	for (i = 0; i < 2; i++)
 		if (((v = HaveKey (kc_keyboard, 42 + i)) < 255) && keyDownCount (v))
 			*nCruiseSpeed = 0;

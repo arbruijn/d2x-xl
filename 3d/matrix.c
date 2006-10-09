@@ -86,7 +86,7 @@ viewInfo.scale = viewInfo.windowScale;
 if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
 	viewInfo.scale.z =  FixMul(viewInfo.scale.z,viewInfo.zoom);
 else {			//zoom out by scaling x&y
-	fix s = fixdiv(f1_0,viewInfo.zoom);
+	fix s = FixDiv(f1_0,viewInfo.zoom);
 
 	viewInfo.scale.x = FixMul(viewInfo.scale.x,s);
 	viewInfo.scale.y = FixMul(viewInfo.scale.y,s);

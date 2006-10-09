@@ -18,7 +18,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Old Log:
  * Revision 1.5  1995/10/30  11:08:16  allender
- * fix check_vec to return if vector is the NULL vector
+ * fix CheckVec to return if vector is the NULL vector
  *
  * Revision 1.4  1995/09/23  09:38:14  allender
  * removed calls for PPC that are now handled in asm
@@ -60,7 +60,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #define EXACT_VEC_MAG 1
 
 #ifndef ASM_VECMAT
-vms_vector vmd_zero_vector = {0, 0, 0};
+vms_vector vmdZeroVector = {0, 0, 0};
 vms_matrix vmdIdentityMatrix = {{f1_0, 0, 0}, 
                                 {0, f1_0, 0}, 
                                 {0, 0, f1_0}};
@@ -293,7 +293,7 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 
 // ------------------------------------------------------------------------
 
-fix vm_vec_dot3(fix x, fix y, fix z, vms_vector *v)
+fix VmVecDot3(fix x, fix y, fix z, vms_vector *v)
 {
 #if 1//def _WIN32
 if (gameOpts->render.nMathFormat == 2)
@@ -514,9 +514,9 @@ fix VmVecCopyNormalize (vms_vector *dest, vms_vector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
-	dest->x = fixdiv(src->x, m);
-	dest->y = fixdiv(src->y, m);
-	dest->z = fixdiv(src->z, m);
+	dest->x = FixDiv(src->x, m);
+	dest->y = FixDiv(src->y, m);
+	dest->z = FixDiv(src->z, m);
 	}
 return m;
 }
@@ -552,9 +552,9 @@ fix VmVecCopyNormalizeQuick(vms_vector *dest, vms_vector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
-	dest->x = fixdiv(src->x, m);
-	dest->y = fixdiv(src->y, m);
-	dest->z = fixdiv(src->z, m);
+	dest->x = FixDiv(src->x, m);
+	dest->y = FixDiv(src->y, m);
+	dest->z = FixDiv(src->z, m);
 	}
 return m;
 }
@@ -646,7 +646,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 //make sure a vector is reasonably sized to go into a cross product
-void check_vec(vms_vector *vp)
+void CheckVec(vms_vector *vp)
 {
 	fix check;
 	int cnt = 0;
@@ -768,8 +768,8 @@ vms_vector *VmVecPerp (vms_vector *dest, vms_vector *p0, vms_vector *p1, vms_vec
 
 VmVecSub(&t0, p1, p0);
 VmVecSub(&t1, p2, p1);
-check_vec(&t0);
-check_vec(&t1);
+CheckVec(&t0);
+CheckVec(&t1);
 return VmVecCrossProd(dest, &t0, &t1);
 }
 
@@ -803,7 +803,7 @@ return a;
 
 // ------------------------------------------------------------------------
 
-vms_matrix *sincos_2_matrix(vms_matrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
+vms_matrix *SinCos2Matrix(vms_matrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
 {
 	fix sbsh, cbch, cbsh, sbch;
 
@@ -831,7 +831,7 @@ fix sinp, cosp, sinb, cosb, sinh, cosh;
 fix_sincos(a->p, &sinp, &cosp);
 fix_sincos(a->b, &sinb, &cosb);
 fix_sincos(a->h, &sinh, &cosh);
-return sincos_2_matrix(m, sinp, cosp, sinb, cosb, sinh, cosh);
+return SinCos2Matrix(m, sinp, cosp, sinb, cosb, sinh, cosh);
 }
 
 // ------------------------------------------------------------------------
@@ -843,7 +843,7 @@ vms_matrix *VmVecAng2Matrix(vms_matrix *m, vms_vector *v, fixang a)
 fix_sincos(a, &sinb, &cosb);
 sinp = -v->y;
 cosp = fix_sqrt(f1_0 - FixMul(sinp, sinp));
-return sincos_2_matrix (m, sinp, cosp, sinb, cosb, fixdiv(v->x, cosp), fixdiv(v->z, cosp));
+return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z, cosp));
 }
 
 // ------------------------------------------------------------------------
@@ -1037,17 +1037,17 @@ vms_matrix *VmMatMul(vms_matrix *dest, vms_matrix *src0, vms_matrix *src1)
 {
 	Assert(dest!=src0 && dest!=src1);
 
-	dest->rvec.x = vm_vec_dot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->rvec);
-	dest->uvec.x = vm_vec_dot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->uvec);
-	dest->fvec.x = vm_vec_dot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->fvec);
+	dest->rvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->rvec);
+	dest->uvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->uvec);
+	dest->fvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->fvec);
 
-	dest->rvec.y = vm_vec_dot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->rvec);
-	dest->uvec.y = vm_vec_dot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->uvec);
-	dest->fvec.y = vm_vec_dot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->fvec);
+	dest->rvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->rvec);
+	dest->uvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->uvec);
+	dest->fvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->fvec);
 
-	dest->rvec.z = vm_vec_dot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->rvec);
-	dest->uvec.z = vm_vec_dot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->uvec);
-	dest->fvec.z = vm_vec_dot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->fvec);
+	dest->rvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->rvec);
+	dest->uvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->uvec);
+	dest->fvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->fvec);
 
 	return dest;
 }
@@ -1065,9 +1065,9 @@ else
 	a->h = fix_atan2(m->fvec.z, m->fvec.x);
 fix_sincos(a->h, &sinh, &cosh);
 if (abs(sinh) > abs(cosh))				//sine is larger, so use it
-	cosp = fixdiv(m->fvec.x, sinh);
+	cosp = FixDiv(m->fvec.x, sinh);
 else											//cosine is larger, so use it
-	cosp = fixdiv(m->fvec.z, cosh);
+	cosp = FixDiv(m->fvec.z, cosh);
 if (cosp==0 && m->fvec.y==0)
 	a->p = 0;
 else
@@ -1077,8 +1077,8 @@ if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no
 else {
 	fix sinb, cosb;
 
-	sinb = fixdiv(m->rvec.y, cosp);
-	cosb = fixdiv(m->uvec.y, cosp);
+	sinb = FixDiv(m->rvec.y, cosp);
+	cosb = FixDiv(m->uvec.y, cosp);
 	if (sinb==0 && cosb==0)
 		a->b = 0;
 	else
@@ -1089,7 +1089,7 @@ return a;
 
 // ------------------------------------------------------------------------
 //extract heading and pitch from a vector, assuming bank==0
-vms_angvec *vm_extract_angles_vector_normalized (vms_angvec *a, vms_vector *v)
+vms_angvec *VmExtractAnglesVecNorm (vms_angvec *a, vms_vector *v)
 {
 a->b = 0;		//always zero bank
 a->p = fix_asin (-v->y);
@@ -1104,7 +1104,7 @@ vms_angvec *VmExtractAnglesVector(vms_angvec *a, vms_vector *v)
 	vms_vector t;
 
 if (VmVecCopyNormalize(&t, v) != 0)
-	vm_extract_angles_vector_normalized(a, &t);
+	VmExtractAnglesVecNorm(a, &t);
 return a;
 }
 

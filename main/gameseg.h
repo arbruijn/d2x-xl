@@ -150,6 +150,7 @@ int FindConnectedSide(segment *base_seg, segment *con_seg);
 
 // Fill in array with four absolute point numbers for a given side
 void GetSideVerts(short *vertlist,int segnum,int sidenum);
+ubyte GetSideDists (vms_vector *checkp, int segnum, fix *xSideDists);
 
 //      Create all vertex lists (1 or 2) for faces on a side.
 //      Sets:
@@ -161,10 +162,10 @@ void GetSideVerts(short *vertlist,int segnum,int sidenum);
 // Note: these are not absolute vertex numbers, but are relative to the segment
 // Note:  for triagulated sides, the middle vertex of each trianle is the one NOT
 //   adjacent on the diagonal edge
-extern void create_all_vertex_lists(int *num_faces, int *vertices, int segnum, int sidenum);
+void CreateAllVertexLists (int *num_faces, int *vertices, int segnum, int sidenum);
 
 //like create_all_vertex_lists(), but generate absolute point numbers
-extern void CreateAbsVertexLists(int *num_faces, int *vertices, int segnum, int sidenum);
+void CreateAbsVertexLists(int *num_faces, int *vertices, int segnum, int sidenum);
 
 // -----------------------------------------------------------------------------------
 // Like create all vertex lists, but returns the vertnums (relative to

@@ -104,7 +104,7 @@ int GrSetMode(int mode)
 	grdCurScreen->sc_mode = mode;
 	grdCurScreen->sc_w = w;
 	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = fixdiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
+	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
 	GrInitCanvas(&grdCurScreen->sc_canvas, (unsigned char *)BM_D3D_DISPLAY, t, w, h);
 	GrSetCurrentCanvas(NULL);
 
