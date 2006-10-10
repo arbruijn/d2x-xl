@@ -2713,7 +2713,7 @@ void MiscellaneousMenu ()
 
 pszCompSpeeds [0] = TXT_VERY_SLOW;
 pszCompSpeeds [1] = TXT_SLOW;
-pszCompSpeeds [2] = TXT_VERY_SLOW;
+pszCompSpeeds [2] = TXT_MEDIUM;
 pszCompSpeeds [3] = TXT_FAST;
 pszCompSpeeds [4] = TXT_VERY_FAST;
 do {
