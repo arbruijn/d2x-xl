@@ -2029,7 +2029,7 @@ do {
 	optColoredWalls = opt++;
 	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
 	optTranspExpl = opt++;
-	ADD_CHECK (opt, TXT_RENDER_ALL, gameOpts->render.bAllSegs, KEY_M, HTX_ADVRND_ALLSEGS);
+	ADD_CHECK (opt, TXT_RENDER_ALL, gameOpts->render.bAllSegs, KEY_R, HTX_ADVRND_ALLSEGS);
 	optRenderAll = opt++;
 #if 0
 	ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);

@@ -103,29 +103,42 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 //----------------- Variables for video clips -------------------
 //draw an object which renders as a vclip
 
-#define	FIREBALL_ALPHA		0.7f
-#define	WEAPON_ALPHA		1.0f
+#define	FIREBALL_ALPHA		0.7
+#define	THRUSTER_ALPHA		(1.0 / 3.0)
+#define	WEAPON_ALPHA		1.0
 
 void DrawVClipObject(object *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
-	float		ta = 0,alpha = 0;
+	double	ta = 0, alpha = 0;
 	vclip		*pvc = gameData.eff.vClips [0] + vclip_num;
 	int		nFrames = pvc->nFrameCount;
 	int		iFrame = CurFrame (vclip_num, timeToLive);
+	int		bThruster = (objP->render_type == RT_THRUSTER) && (objP->mtype.phys_info.flags & PF_WIGGLE);
 
-	if (objP->type == OBJ_FIREBALL) {
-//		ta= (((double) iFrame - ((double)nFrames/2)) / ((double)nFrames/2));
-		ta = (float) iFrame / (float) nFrames * FIREBALL_ALPHA;
-		alpha = (ta >= 0)  ? FIREBALL_ALPHA - ta : FIREBALL_ALPHA + ta;
+if (objP->type == OBJ_FIREBALL) {
+	if (bThruster) {
+		alpha = THRUSTER_ALPHA;
+		//if (objP->mtype.phys_info.flags & PF_WIGGLE)	//player ship
+			iFrame = nFrames - iFrame - 1;	//render the other way round
 		}
-	else if (objP->type == OBJ_WEAPON)
-		alpha = WEAPON_ALPHA;
-	if (pvc->flags & VF_ROD)
-		DrawObjectRodTexPoly(objP, pvc->frames [iFrame],lighted);
-	else {
-		Assert(lighted==0);		//blob cannot now be lighted
-		DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, alpha);
+	else
+		alpha = FIREBALL_ALPHA;
+	ta = (double) iFrame / (double) nFrames * alpha;
+	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
+else if (objP->type == OBJ_WEAPON)
+	alpha = WEAPON_ALPHA;
+if (bThruster) {
+	glDepthMask (0);
+	}
+if (pvc->flags & VF_ROD)
+	DrawObjectRodTexPoly (objP, pvc->frames [iFrame], lighted);
+else {
+	Assert(lighted==0);		//blob cannot now be lighted
+	DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, (float) alpha);
+	}
+if (objP->render_type == RT_THRUSTER)
+	glDepthMask (1);
 }
 
 //------------------------------------------------------------------------------

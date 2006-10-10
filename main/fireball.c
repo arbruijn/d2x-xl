@@ -527,8 +527,8 @@ object *ObjectCreateDebris(object *parentObjP, int subobj_num)
 
 void DrawFireball(object *objP)
 {
-	if (objP->lifeleft > 0)
-		DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+if (objP->lifeleft > 0)
+	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 
 }
 
@@ -1969,43 +1969,32 @@ void DoExplodingWallFrame()
 
 //------------------------------------------------------------------------------
 //creates afterburner blobs behind the specified object
-void DropAfterburnerBlobs (object *objP, int count, fix size_scale, fix lifetime, object *pParent, int bThruster)
+void DropAfterburnerBlobs (object *objP, int count, fix xSizeScale, fix xLifeTime, 
+									object *pParent, int bThruster)
 {
-	vms_vector pos_left,pos_right;
-	short segnum;
-	object	*blobObjP;
+	vms_vector	vPos [2];
+	short			i, nSegment;
+	object		*blobObjP;
 
-	VmVecScaleAdd (&pos_left, &objP->pos, &objP->orient.fvec, -objP->size);
-	VmVecScaleInc (&pos_left, &objP->orient.rvec, -(8 * objP->size / 50));
-	VmVecScaleInc (&pos_left, &objP->orient.uvec, -(objP->size / 50));
-	VmVecScaleAdd (&pos_right, &pos_left, &objP->orient.rvec, 8 * objP->size / 25);
+VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
+VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
+VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 50));
+VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
 
-	if (count == 1)
-		VmVecAvg(&pos_left, &pos_left, &pos_right);
-	segnum = FindSegByPoint (&pos_left, objP->segnum);
-	if (segnum != -1)
-		if (blobObjP = ObjectCreateExplosion (segnum, &pos_left, size_scale, VCLIP_AFTERBURNER_BLOB)) {
-			if (lifetime != -1)
-				blobObjP->lifeleft = lifetime;
-			AddChildObjectP (pParent, blobObjP);
-			if (bThruster) {
-				blobObjP->render_type = RT_THRUSTER;
-				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
-				}
-			}
-
-	if (count > 1) {
-		segnum = FindSegByPoint(&pos_right, objP->segnum);
-		if (segnum != -1) {
-			if (blobObjP = ObjectCreateExplosion (segnum, &pos_right, size_scale, VCLIP_AFTERBURNER_BLOB)) {
-				if (lifetime != -1)
-					blobObjP->lifeleft = lifetime;
-			AddChildObjectP (pParent, blobObjP);
-			if (bThruster) {
-				blobObjP->render_type = RT_THRUSTER;
-				blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
-				}	
-			}
+if (count == 1)
+	VmVecAvg (vPos, vPos, vPos + 1);
+for (i = 0; i < count; i++) {
+	nSegment = FindSegByPoint (vPos + i, objP->segnum);
+	if (nSegment == -1)
+		continue;
+	if (!(blobObjP = ObjectCreateExplosion (nSegment, vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+		continue;
+	if (xLifeTime != -1)
+		blobObjP->lifeleft = xLifeTime;
+	AddChildObjectP (pParent, blobObjP);
+	blobObjP->render_type = RT_THRUSTER;
+	if (bThruster) {
+		blobObjP->mtype.phys_info.flags |= PF_WIGGLE;
 		}
 	}
 }

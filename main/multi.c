@@ -3715,7 +3715,7 @@ void MultiDoDropBlob (char *buf)
 {
 	char nPlayer = buf [1];
 	
-DropAfterburnerBlobs (&gameData.objs.objects [gameData.multi.players [nPlayer].objnum], 2, i2f (5)/2, -1, NULL, 0);
+DropAfterburnerBlobs (&gameData.objs.objects [gameData.multi.players [nPlayer].objnum], 2, i2f (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------

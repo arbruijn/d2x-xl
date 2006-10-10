@@ -568,7 +568,7 @@ void DrawObjectBlob (object *objP, bitmap_index bmi0, bitmap_index bmi, int iFra
 {
 	grs_bitmap	*bmP;
 	int			id, orientation = 0;
-	int			transp = (objP->type == OBJ_FIREBALL);
+	int			transp = (objP->type == OBJ_FIREBALL) && (objP->render_type != RT_THRUSTER);
 	int			bDepthInfo = 1; // (objP->type != OBJ_FIREBALL);
 	fix			xSize;
 
@@ -1420,7 +1420,7 @@ switch (objP->render_type) {
 		break;
 
 	case RT_THRUSTER: 
-		if (nWindowNum)
+		if (nWindowNum && (objP->mtype.phys_info.flags & PF_WIGGLE))
 			break;
 			
 	case RT_FIREBALL: 
