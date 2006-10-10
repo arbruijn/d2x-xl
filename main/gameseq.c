@@ -1121,7 +1121,7 @@ int LoadLevel (int nLevel, int bPageInTextures)
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
-gameStates.app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
+gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 #if 1
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
