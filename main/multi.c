@@ -1445,7 +1445,7 @@ void MultiDoInvul (char *buf)
 int nPlayer = (int) (buf [1]);
 Assert (nPlayer < gameData.multi.nPlayers);
 gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-gameData.multi.players [nPlayer].cloak_time = gameData.app.xGameTime;
+gameData.multi.players [nPlayer].cloak_time = gameData.time.xGame;
 #ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (nPlayer);
@@ -1468,7 +1468,7 @@ void MultiDoCloak (char *buf)
 int nPlayer = (int) (buf [1]);
 Assert (nPlayer < gameData.multi.nPlayers);
 gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
-gameData.multi.players [nPlayer].cloak_time = gameData.app.xGameTime;
+gameData.multi.players [nPlayer].cloak_time = gameData.time.xGame;
 AIDoCloakStuff ();
 #ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)

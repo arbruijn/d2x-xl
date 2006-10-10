@@ -110,7 +110,7 @@ else if (nRemOwner == gameData.multi.nLocalPlayer) { // Already my robot!
 		rval = 0;
 	else {
 		multiData.robots.agitation [slot_num] = agitation;
-		multiData.robots.lastMsgTime [slot_num] = gameData.app.xGameTime;
+		multiData.robots.lastMsgTime [slot_num] = gameData.time.xGame;
 		rval = 1;
 		}
 	}
@@ -132,11 +132,11 @@ void MultiCheckRobotTimeout (void)
 	static fix lastcheck = 0;
 	int i, nRemOwner;
 
-if (gameData.app.xGameTime > lastcheck + F1_0) {
-	lastcheck = gameData.app.xGameTime;
+if (gameData.time.xGame > lastcheck + F1_0) {
+	lastcheck = gameData.time.xGame;
 	for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		if ((multiData.robots.controlled [i] != -1) && 
-			 (multiData.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.app.xGameTime)) {
+			 (multiData.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.time.xGame)) {
 			nRemOwner = gameData.objs.objects [multiData.robots.controlled [i]].ctype.ai_info.REMOTE_OWNER;
 			if (nRemOwner != gameData.multi.nLocalPlayer) {		
 				multiData.robots.controlled [i] = -1;
@@ -214,7 +214,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		first_free_robot = i;
 		break;
 		}
-	if (multiData.robots.lastMsgTime [i] + ROBOT_TIMEOUT < gameData.app.xGameTime) {
+	if (multiData.robots.lastMsgTime [i] + ROBOT_TIMEOUT < gameData.time.xGame) {
 		if (multiData.robots.sendPending [i])
 			MultiSendRobotPosition (multiData.robots.controlled [i], 1);
 		MultiSendReleaseRobot (multiData.robots.controlled [i]);
@@ -223,7 +223,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		}
 	if ((multiData.robots.controlled [i] != -1) && 
 		 (multiData.robots.agitation [i] < lowest_agitation) && 
-		 (multiData.robots.controlledTime [i] + MIN_CONTROL_TIME < gameData.app.xGameTime)) {
+		 (multiData.robots.controlledTime [i] + MIN_CONTROL_TIME < gameData.time.xGame)) {
 			lowest_agitation = multiData.robots.agitation [i];
 			lowest_agitated_bot = i;
 		}
@@ -243,8 +243,8 @@ multiData.robots.controlled [i] = objnum;
 multiData.robots.agitation [i] = agitation;
 gameData.objs.objects [objnum].ctype.ai_info.REMOTE_OWNER = gameData.multi.nLocalPlayer;
 gameData.objs.objects [objnum].ctype.ai_info.REMOTE_SLOT_NUM = i;
-multiData.robots.controlledTime [i] = gameData.app.xGameTime;
-multiData.robots.lastSendTime [i] = multiData.robots.lastMsgTime [i] = gameData.app.xGameTime;
+multiData.robots.controlledTime [i] = gameData.time.xGame;
+multiData.robots.lastSendTime [i] = multiData.robots.lastMsgTime [i] = gameData.time.xGame;
 return 1;
 }	
 
@@ -400,7 +400,7 @@ if (gameData.objs.objects [objnum].ctype.ai_info.REMOTE_OWNER != gameData.multi.
 	return;
 //	gameData.objs.objects [objnum].phys_info.drag = gameData.bots.pInfo [gameData.objs.objects [objnum].id].drag; // Set drag to normal
 i = gameData.objs.objects [objnum].ctype.ai_info.REMOTE_SLOT_NUM;
-multiData.robots.lastSendTime [i] = gameData.app.xGameTime;
+multiData.robots.lastSendTime [i] = gameData.time.xGame;
 multiData.robots.sendPending [i] = 1+force;
 if (force & (gameData.app.nGameMode & GM_NETWORK))
 	networkData.bPacketUrgent = 1;
@@ -874,7 +874,7 @@ switch (action)  {
 			}
 		COMPUTE_SEGMENT_CENTER_I (&bossObjP->pos, nTeleportSeg);
 		RelinkObject (OBJ_IDX (bossObjP), nTeleportSeg);
-		gameData.boss.nLastTeleportTime = gameData.app.xGameTime;
+		gameData.boss.nLastTeleportTime = gameData.time.xGame;
 		VmVecSub (&boss_dir, &gameData.objs.objects [gameData.multi.players [nPlayer].objnum].pos, &bossObjP->pos);
 		VmVector2Matrix (&bossObjP->orient, &boss_dir, NULL, NULL);
 		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].sound_num, nTeleportSeg, 0, &bossObjP->pos, 0 , F1_0);
@@ -892,8 +892,8 @@ switch (action)  {
 
 	case 2: // Cloak
 		gameData.boss.nHitTime = -F1_0*10;
-		gameData.boss.nCloakStartTime = gameData.app.xGameTime;
-		gameData.boss.nCloakEndTime = gameData.app.xGameTime + gameData.boss.nCloakDuration;
+		gameData.boss.nCloakStartTime = gameData.time.xGame;
+		gameData.boss.nCloakEndTime = gameData.time.xGame + gameData.boss.nCloakDuration;
 		bossObjP->ctype.ai_info.CLOAKED = 1;
 		break;
 

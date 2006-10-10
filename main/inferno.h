@@ -489,6 +489,7 @@ typedef struct tRenderStates {
 	int bViewDist;
 	int bD2XLights;
 	int nFrameFlipFlop;
+	int nState;	//0: render geometry, 1: render objects
 	ubyte nRenderingType;
 	fix nFlashScale;
 	fix nFlashRate;
@@ -745,7 +746,7 @@ typedef struct tOglMaterial {
 typedef struct tShaderLight {
 #if 1
 	fVector4		color;
-	fVector3		pos;
+	fVector3		pos [2];
 	fVector3		dir;
 #endif
 	float			brightness;
@@ -766,7 +767,8 @@ typedef struct tShaderLightData {
 
 typedef struct tOglLightData {
 	tOglLight			lights [MAX_OGL_LIGHTS];
-	short					nNearestLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
+	short					nNearestSegLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
+	short					nNearestVertLights [MAX_VERTICES][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
 	short					owners [MAX_OBJECTS];
 	short					nLights;
 	short					nHeadLights [MAX_PLAYERS];
@@ -846,6 +848,8 @@ typedef struct tPaletteData {
 typedef struct tOglData {
 	GLubyte					texBuf [OGLTEXBUFSIZE];
 	ubyte						*palette;
+	GLenum					nSrcBlend;
+	GLenum					nDestBlend;
 } tOglData;
 
 #define TERRAIN_GRID_MAX_SIZE   64
@@ -1329,10 +1333,20 @@ typedef struct tFusionData {
 	fix	xLastSoundTime;
 } tFusionData;
 
+typedef struct tTimeData {
+	fix					xFrame;	//  since last frame, in seconds
+	fix					xRealFrame;
+	fix					xGame;	//	 in game, in seconds
+	fix					xLast;
+	fix					xSlack;
+	fix					xStarted;
+	fix					xStopped;
+	int					nPaused;
+	int					nStarts;
+	int					nStops;
+} tTimeData;
+
 typedef struct tApplicationData {
-	fix					xFrameTime;	// Time since last frame, in seconds
-	fix					xRealFrameTime;
-	fix					xGameTime;	//	Time in game, in seconds
 	int					nFrameCount;
 	int					nGameMode;
 	int					bGamePaused;
@@ -1606,6 +1620,7 @@ typedef struct tGameData {
 	tHoardData			hoard;
 	tHUDData				hud;
 	tTerrainData		terrain;
+	tTimeData			time;
 	tApplicationData	app;
 } tGameData;
 

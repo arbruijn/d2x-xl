@@ -253,9 +253,9 @@ objnum = CreateObject (OBJ_FIREBALL, vclip_type, -1, segnum, position, &vmdIdent
 								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 								if ((objP != NULL) && (!gameData.bots.pInfo[obj0P->id].boss_flag) && (gameData.weapons.info[objP->id].flash)) {
 									ai_static	*aip = &obj0P->ctype.ai_info;
-									int			force_val = f2i(FixDiv(VmVecMagQuick(&vforce) * gameData.weapons.info[objP->id].flash, gameData.app.xFrameTime)/128) + 2;
+									int			force_val = f2i(FixDiv(VmVecMagQuick(&vforce) * gameData.weapons.info[objP->id].flash, gameData.time.xFrame)/128) + 2;
 
-									if (explObjP->ctype.ai_info.SKIP_AI_COUNT * gameData.app.xFrameTime < F1_0) {
+									if (explObjP->ctype.ai_info.SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
 										aip->SKIP_AI_COUNT += force_val;
 										obj0P->mtype.phys_info.rotthrust.x = ((d_rand() - 16384) * force_val)/16;
 										obj0P->mtype.phys_info.rotthrust.y = ((d_rand() - 16384) * force_val)/16;
@@ -1889,7 +1889,7 @@ void DoExplodingWallFrame()
 			fix oldfrac,newfrac;
 			int old_count,new_count,e;		//n,
 			oldfrac = FixDiv(gameData.walls.explWalls[i].time,EXPL_WALL_TIME);
-			gameData.walls.explWalls[i].time += gameData.app.xFrameTime;
+			gameData.walls.explWalls[i].time += gameData.time.xFrame;
 			if (gameData.walls.explWalls[i].time > EXPL_WALL_TIME)
 				gameData.walls.explWalls[i].time = EXPL_WALL_TIME;
 			if (gameData.walls.explWalls[i].time>(EXPL_WALL_TIME*3)/4) {

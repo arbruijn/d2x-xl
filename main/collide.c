@@ -585,10 +585,10 @@ if ((otherObjP->type == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 			break;
 
 		case OBJ_PLAYER:
-			//	If colliding with a claw type robot, do damage proportional to gameData.app.xFrameTime because you can Collide with those
+			//	If colliding with a claw type robot, do damage proportional to gameData.time.xFrame because you can Collide with those
 			//	bots every frame since they don't move.
 			if ((otherObjP->type == OBJ_ROBOT) && (gameData.bots.pInfo [otherObjP->id].attack_type))
-				damage = FixMul (damage, gameData.app.xFrameTime*2);
+				damage = FixMul (damage, gameData.time.xFrame*2);
 			//	Make trainee easier.
 			if (gameStates.app.nDifficultyLevel == 0)
 				damage /= 2;
@@ -868,7 +868,7 @@ int CheckVolatileWall (object *objP, int segnum, int sidenum, vms_vector *vHitPt
 	if (d > 0 || water) {
 		if (objP->id == gameData.multi.nLocalPlayer) {
 			if (d > 0) {
-				fix damage = FixMul (d, gameData.app.xFrameTime);
+				fix damage = FixMul (d, gameData.time.xFrame);
 				if (gameStates.app.nDifficultyLevel == 0)
 					damage /= 2;
 				if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
@@ -919,7 +919,7 @@ int CheckVolatileSegment (object *objP, int segnum)
 		return 0;
 		}
 	if (d > 0) {
-		fix damage = FixMul (d, gameData.app.xFrameTime) / 2;
+		fix damage = FixMul (d, gameData.time.xFrame) / 2;
 		if (gameStates.app.nDifficultyLevel == 0)
 			damage /= 2;
 		if (objP->type == OBJ_PLAYER) {
@@ -959,11 +959,11 @@ void ScrapeObjectOnWall (object *objP, short hitseg, short hitside, vms_vector *
 				if (type!=0) {
 					vms_vector	hit_dir, rand_vec;
 
-					if ((gameData.app.xGameTime > Last_volatile_scrape_sound_time + F1_0/4) || 
-						 (gameData.app.xGameTime < Last_volatile_scrape_sound_time)) {
+					if ((gameData.time.xGame > Last_volatile_scrape_sound_time + F1_0/4) || 
+						 (gameData.time.xGame < Last_volatile_scrape_sound_time)) {
 						short sound = (type==1)?SOUND_VOLATILE_WALL_HISS:SOUND_SHIP_IN_WATER;
 
-						Last_volatile_scrape_sound_time = gameData.app.xGameTime;
+						Last_volatile_scrape_sound_time = gameData.time.xGame;
 
 						DigiLinkSoundToPos (sound, hitseg, 0, vHitPt, 0, F1_0);
 #ifdef NETWORK
@@ -1061,7 +1061,7 @@ int CheckEffectBlowup (segment *seg, short side, vms_vector *pnt, object *blower
 			//this can be blown up...did we hit it?
 
 			if (!bForceBlowup) {
-				find_hitpoint_uv (&u, &v, NULL, pnt, seg, side, 0);	//evil: always say face zero
+				FindHitPointUV (&u, &v, NULL, pnt, seg, side, 0);	//evil: always say face zero
 				bForceBlowup = !PixelTranspType (tm, u, v);
 				}
 			if (bForceBlowup) {		//not trans, thus on effect
@@ -1512,15 +1512,15 @@ if (playerObjP->id == gameData.multi.nLocalPlayer) {
 
 	if (gameData.bots.pInfo [robot->id].thief) {
 		if (gameData.ai.localInfo [OBJ_IDX (robot)].mode == AIM_THIEF_ATTACK) {
-			Last_thief_hit_time = gameData.app.xGameTime;
+			Last_thief_hit_time = gameData.time.xGame;
 			AttemptToStealItem (robot, playerObjP->id);
 			steal_attempt = 1;
 			} 
-		else if (gameData.app.xGameTime - Last_thief_hit_time < F1_0*2)
+		else if (gameData.time.xGame - Last_thief_hit_time < F1_0*2)
 			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with player if not stealing!
 							// NO! VERY DUMB! makes thief look very stupid if player hits him while cloaked!-AP
 		else
-			Last_thief_hit_time = gameData.app.xGameTime;
+			Last_thief_hit_time = gameData.time.xGame;
 		}
 	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// object robot can attract attention to player
 	DoAiRobotHitAttack (robot, playerObjP, vHitPt);
@@ -1735,7 +1735,7 @@ if (!gameData.reactor.bDestroyed)
 	return;
 if (nFinalBossCountdownTime == 0)
 	nFinalBossCountdownTime = F1_0*2;
-nFinalBossCountdownTime -= gameData.app.xFrameTime;
+nFinalBossCountdownTime -= gameData.time.xFrame;
 if (nFinalBossCountdownTime > 0)
 	return;
 GrPaletteFadeOut (NULL, 256, 0);
@@ -1755,7 +1755,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].shields <= 0)
 	gameData.multi.players [gameData.multi.nLocalPlayer].shields = 1;
 //	If you're not invulnerable, get invulnerable!
 if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime;
+	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame;
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 	SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 	}
@@ -1781,7 +1781,7 @@ if (robot->flags & OF_EXPLODING)
 if (robot->shields < 0) 
 	return 0;	//robot already dead...
 if (gameData.bots.pInfo [robot->id].boss_flag)
-	gameData.boss.nHitTime = gameData.app.xGameTime;
+	gameData.boss.nHitTime = gameData.time.xGame;
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
@@ -1910,7 +1910,7 @@ int DoBossWeaponCollision (object *robot, object *weapon, vms_vector *vHitPt)
 		    (!bKinetic && bossProps [gameStates.app.bD1Mission][d2_boss_index].bSpewBotsEnergy)) {
 			if (bossProps [gameStates.app.bD1Mission][d2_boss_index].bSpewMore && (d_rand () > 16384) &&
 				 (BossSpewRobot (robot, vHitPt) != -1))
-				gameData.boss.nLastGateTime = gameData.app.xGameTime - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
+				gameData.boss.nLastGateTime = gameData.time.xGame - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
 			BossSpewRobot (robot, vHitPt);
 		}
 	}
@@ -1938,11 +1938,11 @@ int DoBossWeaponCollision (object *robot, object *weapon, vms_vector *vHitPt)
 				Last_time_buddy_gave_hint = d_rand ()*32 + F1_0*16;
 
 			if (Buddy_gave_hint_count) {
-				if (Last_time_buddy_gave_hint + F1_0*20 < gameData.app.xGameTime) {
+				if (Last_time_buddy_gave_hint + F1_0*20 < gameData.time.xGame) {
 					int	sval;
 
 					Buddy_gave_hint_count--;
-					Last_time_buddy_gave_hint = gameData.app.xGameTime;
+					Last_time_buddy_gave_hint = gameData.time.xGame;
 					sval = (d_rand ()*4) >> 15;
 					switch (sval) {
 						case 0:	
@@ -2018,7 +2018,7 @@ if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
 if (rInfoP->boss_flag) {
-	gameData.boss.nHitTime = gameData.app.xGameTime;
+	gameData.boss.nHitTime = gameData.time.xGame;
 	if (rInfoP->boss_flag >= BOSS_D2) {
 		bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
 		boss_invul_flag = !bDamage;
@@ -2117,11 +2117,11 @@ if ((weapon->ctype.laser_info.parent_type == OBJ_PLAYER) && (rInfoP->energy_blob
 		if ((robot != NULL) && (!rInfoP->companion) && (!rInfoP->boss_flag) && (weapon->id == GAUSS_ID)) {
 			ai_static	*aip = &robot->ctype.ai_info;
 
-			if (aip->SKIP_AI_COUNT * gameData.app.xFrameTime < F1_0) {
+			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
 				aip->SKIP_AI_COUNT++;
-				robot->mtype.phys_info.rotthrust.x = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
-				robot->mtype.phys_info.rotthrust.y = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
-				robot->mtype.phys_info.rotthrust.z = FixMul ((d_rand () - 16384), gameData.app.xFrameTime * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robot->mtype.phys_info.rotthrust.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
 				robot->mtype.phys_info.flags |= PF_USES_THRUST;
 				}
 			}
@@ -2561,7 +2561,7 @@ void ApplyDamageToPlayer (object *playerObjP, object *killer, fix damage)
 			playerObjP->flags |= OF_SHOULD_BE_DEAD;
 			if (gameData.escort.nObjNum != -1)
 				if (killer && (killer->type == OBJ_ROBOT) && (gameData.bots.pInfo [killer->id].companion))
-					gameData.escort.xSorryTime = gameData.app.xGameTime;
+					gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 // -- removed, 09/06/95, MK --  else if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < LOSE_WEAPON_THRESHOLD) {
 // -- removed, 09/06/95, MK -- 			int	randnum = d_rand ();
@@ -2876,7 +2876,7 @@ int CollideWeaponAndDebris (object * weapon, object * debris, vms_vector *vHitPt
 
 	//	Hack! Prevent debris from causing bombs spewed at player death to detonate!
 if ((weapon->id == PROXIMITY_ID) || (weapon->id == SUPERPROX_ID)) {
-	if (weapon->ctype.laser_info.creation_time + F1_0/2 > gameData.app.xGameTime)
+	if (weapon->ctype.laser_info.creation_time + F1_0/2 > gameData.time.xGame)
 		return 1;
 	}
 if ((weapon->ctype.laser_info.parent_type==OBJ_PLAYER) && !(debris->flags & OF_EXPLODING))	{	

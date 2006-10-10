@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * remove anonymous unions from object structure
  *
  * Revision 1.49  1994/12/15  13:04:10  mike
- * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.48  1994/11/27  23:12:13  matt
  * Made changes for new con_printf calling convention
@@ -245,7 +245,7 @@ if ((gameStates.render.nShadowPass != 2) &&
 	fix swiggle;
 	int nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
 	object *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
-	fix_fastsincos (gameData.app.xGameTime, &swiggle, NULL);
+	fix_fastsincos (gameData.time.xGame, &swiggle, NULL);
 	if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 		swiggle = FixMul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 	if ((objP->type == OBJ_PLAYER) || !pParent)
@@ -279,9 +279,9 @@ void ReadFlyingControls(object *objP)
 	object *gmObjP;
 	int	bMulti;
 #if 0
-	Assert(gameData.app.xFrameTime > 0); 		//Get MATT if hit this!
+	Assert(gameData.time.xFrame > 0); 		//Get MATT if hit this!
 #else
-	if (gameData.app.xFrameTime <= 0)
+	if (gameData.time.xFrame <= 0)
 		return;
 #endif
 
@@ -338,9 +338,9 @@ void ReadFlyingControls(object *objP)
 	
 				//add in value from 0..1
 				afterburner_scale = f1_0 + min (f1_0/2, xAfterburnerCharge) * 2;
-				forward_thrust_time = FixMul (gameData.app.xFrameTime, afterburner_scale);	//based on full thrust
+				forward_thrust_time = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
 				old_count = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
-				xAfterburnerCharge -= gameData.app.xFrameTime / AFTERBURNER_USE_SECS;
+				xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
 				if (xAfterburnerCharge < 0)
 					xAfterburnerCharge = 0;
 				new_count = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
@@ -352,7 +352,7 @@ void ReadFlyingControls(object *objP)
 			fix cur_energy,charge_up;
 	
 			//charge up to full
-			charge_up = min(gameData.app.xFrameTime/8,f1_0 - xAfterburnerCharge);	//recharge over 8 seconds
+			charge_up = min(gameData.time.xFrame/8,f1_0 - xAfterburnerCharge);	//recharge over 8 seconds
 			cur_energy = gameData.multi.players [gameData.multi.nLocalPlayer].energy - i2f (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
@@ -373,20 +373,20 @@ void ReadFlyingControls(object *objP)
 	bMulti = IsMultiGame;
 	if ((objP->mtype.phys_info.flags & PF_WIGGLE) && !gameStates.gameplay.bSpeedBoost) {
 #if 1//ndef _DEBUG
-		wiggleTime = gameData.app.xFrameTime;
+		wiggleTime = gameData.time.xFrame;
 		WiggleObject (objP);
 #endif		
 	}
 	// As of now, objP->mtype.phys_info.thrust & objP->mtype.phys_info.rotthrust are 
-	// in units of time... In other words, if thrust==gameData.app.xFrameTime, that
+	// in units of time... In other words, if thrust==gameData.time.xFrame, that
 	// means that the user was holding down the Max_thrust key for the
 	// whole frame.  So we just scale them up by the max, and divide by
-	// gameData.app.xFrameTime to make them independant of framerate
+	// gameData.time.xFrame to make them independant of framerate
 
 	//	Prevent divide overflows on high frame rates.
 	//	In a signed divide, you get an overflow if num >= div<<15
 	{
-		fix	ft = gameData.app.xFrameTime;
+		fix	ft = gameData.time.xFrame;
 
 		//	Note, you must check for ft < F1_0/2, else you can get an overflow  on the << 15.
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->max_thrust)) {

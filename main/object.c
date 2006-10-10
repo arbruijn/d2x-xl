@@ -120,7 +120,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Took out slew stuff for release version
  *
  * Revision 1.312  1994/12/15  13:04:25  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.311  1994/12/15  11:01:04  mike
  * add Object_minus_one for debugging.
@@ -725,7 +725,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 			Int3 ();		//	Contact Mike: Unexpected object type in DrawCloakedObject.
 	}
 
-	xCloakDeltaTime = gameData.app.xGameTime - xCloakStartTime;
+	xCloakDeltaTime = gameData.time.xGame - xCloakStartTime;
 	if (xCloakDeltaTime < xCloakFadeinDuration / 2) {
 
 		xLightScale = FixDiv (xCloakFadeinDuration / 2 - xCloakDeltaTime, xCloakFadeinDuration / 2);
@@ -733,13 +733,13 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 	}
 	else if (xCloakDeltaTime < xCloakFadeinDuration) {
 		nCloakValue = f2i (FixDiv (xCloakDeltaTime - xCloakFadeinDuration / 2, xCloakFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
-	} else if (gameData.app.xGameTime < xCloakEndTime-xCloakFadeoutDuration) {
+	} else if (gameData.time.xGame < xCloakEndTime-xCloakFadeoutDuration) {
 		static int nCloakDelta = 0, nCloakDir = 1;
 		static fix xCloakTimer = 0;
 
 		//note, if more than one cloaked object is visible at once, the
 		//pulse rate will change!
-		xCloakTimer -= gameData.app.xFrameTime;
+		xCloakTimer -= gameData.time.xFrame;
 		while (xCloakTimer < 0) {
 			xCloakTimer += xCloakFadeoutDuration/12;
 			nCloakDelta += nCloakDir;
@@ -747,7 +747,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 				nCloakDir = -nCloakDir;
 		}
 		nCloakValue = CLOAKED_FADE_LEVEL - nCloakDelta;
-	} else if (gameData.app.xGameTime < xCloakEndTime - xCloakFadeoutDuration / 2) {
+	} else if (gameData.time.xGame < xCloakEndTime - xCloakFadeoutDuration / 2) {
 		nCloakValue = f2i (FixDiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 	} else {
 		xLightScale = FixDiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
@@ -857,7 +857,7 @@ else {
 		if (gameData.bots.pInfo [objP->id].boss_flag)
 			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss.nCloakStartTime, gameData.boss.nCloakEndTime);
 		else
-			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.app.xGameTime-F1_0*10, gameData.app.xGameTime+F1_0*10);
+			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame-F1_0*10, gameData.time.xGame+F1_0*10);
 		}
 	else {
 		bitmap_index *bmiAltTex = NULL;
@@ -877,8 +877,8 @@ else {
 #if OGL_ZBUF
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->pos, &objP->pos);
 			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 3.0f * 2.0f;
-				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+				gameStates.render.grAlpha = 2.0f;
+				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 				}
 #endif
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
@@ -904,7 +904,7 @@ else {
 #if OGL_ZBUF
 		if (bBlendPolys && !gameOpts->legacy.bRender) {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
 #endif
 		}
@@ -1047,7 +1047,7 @@ if (segnum != -1) {
 // -- mk, 02/05/95 -- // -----------------------------------------------------------------------------
 // -- mk, 02/05/95 -- void do_player_invulnerability_effect (object *objP)
 // -- mk, 02/05/95 -- {
-// -- mk, 02/05/95 -- 	if (d_rand () < gameData.app.xFrameTime*8) {
+// -- mk, 02/05/95 -- 	if (d_rand () < gameData.time.xFrame*8) {
 // -- mk, 02/05/95 -- 		CreateVClipOnObject (objP, F1_0, VCLIP_INVULNERABILITY_EFFECT);
 // -- mk, 02/05/95 -- 	}
 // -- mk, 02/05/95 -- }
@@ -1082,7 +1082,7 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 	else {
 		if (gameData.multi.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
-		DrawObjectSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
+		DrawObjectSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 300.0f);
 		}
 	}
 }
@@ -1367,6 +1367,7 @@ if ((objP->type==OBJ_NONE)/* || (objP->type==OBJ_CAMBOT)*/){
 	return;
 	}
 mld_save = gameStates.render.detail.nMaxLinearDepth;
+gameStates.render.nState = 1;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 SetNearestStaticLights (objP->segnum, 1);
 SetNearestDynamicLights (objP->segnum);
@@ -1991,12 +1992,12 @@ LinkObject (objnum, segnum);
 if (objP->type == OBJ_WEAPON) {
 	Assert (objP->control_type == CT_WEAPON);
 	objP->mtype.phys_info.flags |= WI_persistent (objP->id)*PF_PERSISTENT;
-	objP->ctype.laser_info.creation_time = gameData.app.xGameTime;
+	objP->ctype.laser_info.creation_time = gameData.time.xGame;
 	objP->ctype.laser_info.last_hitobj = -1;
 	objP->ctype.laser_info.multiplier = F1_0;
 	}
 if (objP->control_type == CT_POWERUP)
-	objP->ctype.powerup_info.creation_time = gameData.app.xGameTime;
+	objP->ctype.powerup_info.creation_time = gameData.time.xGame;
 else if (objP->control_type == CT_EXPLOSION)
 	objP->ctype.expl_info.next_attach = 
 	objP->ctype.expl_info.prev_attach = 
@@ -2182,7 +2183,7 @@ void DeadPlayerFrame (void)
 	vms_vector	fvec;
 
 if (gameStates.app.bPlayerIsDead) {
-	xTimeDead = gameData.app.xGameTime - gameStates.app.nPlayerTimeOfDeath;
+	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
 
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
@@ -2241,7 +2242,7 @@ if (gameStates.app.bPlayerIsDead) {
 			}
 		}
 	else {
-		if (d_rand () < gameData.app.xFrameTime*4) {
+		if (d_rand () < gameData.time.xFrame*4) {
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCreateExplosion (gameData.multi.nLocalPlayer);
@@ -2331,7 +2332,7 @@ gameStates.app.bPlayerIsDead = 1;
 //gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
 VmVecZero (&player->mtype.phys_info.rotthrust);
 VmVecZero (&player->mtype.phys_info.thrust);
-gameStates.app.nPlayerTimeOfDeath = gameData.app.xGameTime;
+gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 viewerSaveP = gameData.objs.viewer;
 if (objnum != -1)
@@ -2412,9 +2413,9 @@ void SpinObject (object *objP)
 	vms_matrix rotmat, new_pm;
 
 Assert (objP->movement_type == MT_SPINNING);
-rotangs.p = FixMul (objP->mtype.spin_rate.x, gameData.app.xFrameTime);
-rotangs.h = FixMul (objP->mtype.spin_rate.y, gameData.app.xFrameTime);
-rotangs.b = FixMul (objP->mtype.spin_rate.z, gameData.app.xFrameTime);
+rotangs.p = FixMul (objP->mtype.spin_rate.x, gameData.time.xFrame);
+rotangs.h = FixMul (objP->mtype.spin_rate.y, gameData.time.xFrame);
+rotangs.b = FixMul (objP->mtype.spin_rate.z, gameData.time.xFrame);
 VmAngles2Matrix (&rotmat, &rotangs);
 VmMatMul (&new_pm, &objP->orient, &rotmat);
 objP->orient = new_pm;
@@ -2457,7 +2458,7 @@ void StopPlayerMovement (void)
 if (!gameStates.gameplay.bSpeedBoost) {
 	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
 	memset (&player_thrust, 0, sizeof (player_thrust));
-//	gameData.app.xFrameTime = F1_0;
+//	gameData.time.xFrame = F1_0;
 	gameStates.gameplay.bSpeedBoost = 0;
 	}
 }
@@ -2580,8 +2581,8 @@ if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
 	//	Ok, this is a big hack by MK.
 	//	If you want an object to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
 	if (objP->lifeleft != ONE_FRAME_TIME)
-		if (gameData.app.xFrameTime != F1_0)
-			objP->lifeleft -= gameData.app.xFrameTime;		//...inevitable countdown towards death
+		if (gameData.time.xFrame != F1_0)
+			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
 }
 
 gameStates.render.bDropAfterburnerBlob = 0;
@@ -2817,10 +2818,10 @@ if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_
 		lifetime *= 2;
 	}
 
-	if ((Last_afterburner_time [objnum] + delay < gameData.app.xGameTime) || 
-		 (Last_afterburner_time [objnum] > gameData.app.xGameTime)) {
+	if ((Last_afterburner_time [objnum] + delay < gameData.time.xGame) || 
+		 (Last_afterburner_time [objnum] > gameData.time.xGame)) {
 		DropAfterburnerBlobs (objP, 1, i2f (gameData.weapons.info [objP->id].afterburner_size)/16, lifetime, NULL, 0);
-		Last_afterburner_time [objnum] = gameData.app.xGameTime;
+		Last_afterburner_time [objnum] = gameData.time.xGame;
 
 	}
 }

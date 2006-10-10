@@ -111,11 +111,11 @@ extern int bDoingLightingHack;
 
 //	Note, you don't need to change these constants.  You can control damage and energy consumption by changing the
 //	usual bitmaps.tbl parameters.
-#define	OMEGA_DAMAGE_SCALE			32				//	Controls how much damage is done.  This gets multiplied by gameData.app.xFrameTime and then again by the damage specified in bitmaps.tbl in the $WEAPON line.
-#define	OMEGA_ENERGY_CONSUMPTION	16				//	Controls how much energy is consumed.  This gets multiplied by gameData.app.xFrameTime and then again by the energy parameter from bitmaps.tbl.
+#define	OMEGA_DAMAGE_SCALE			32				//	Controls how much damage is done.  This gets multiplied by gameData.time.xFrame and then again by the damage specified in bitmaps.tbl in the $WEAPON line.
+#define	OMEGA_ENERGY_CONSUMPTION	16				//	Controls how much energy is consumed.  This gets multiplied by gameData.time.xFrame and then again by the energy parameter from bitmaps.tbl.
 
 #define	MIN_OMEGA_CHARGE	 (MAX_OMEGA_CHARGE/8)
-#define	OMEGA_CHARGE_SCALE	4			//	gameData.app.xFrameTime / OMEGA_CHARGE_SCALE added to xOmegaCharge every frame.
+#define	OMEGA_CHARGE_SCALE	4			//	gameData.time.xFrame / OMEGA_CHARGE_SCALE added to xOmegaCharge every frame.
 
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 ((F1_0 * 29) / 100)
@@ -226,9 +226,9 @@ if (objP1->type == OBJ_WEAPON)
 	if ((objP1->ctype.laser_info.parent_num == o2) && 
 		 (objP1->ctype.laser_info.parent_signature == objP2->signature))
 		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is player, they are related only if o1 < 2.0 seconds old
-		if ((id1 == PHOENIX_ID && (gameData.app.xGameTime > ct1 + F1_0/4)) || 
-		   (id1 == GUIDEDMISS_ID && (gameData.app.xGameTime > ct1 + F1_0*2)) || 
-		   (((id1 == PROXIMITY_ID) || (id1 == SUPERPROX_ID)) && (gameData.app.xGameTime > ct1 + F1_0*4)))
+		if ((id1 == PHOENIX_ID && (gameData.time.xGame > ct1 + F1_0/4)) || 
+		   (id1 == GUIDEDMISS_ID && (gameData.time.xGame > ct1 + F1_0*2)) || 
+		   (((id1 == PROXIMITY_ID) || (id1 == SUPERPROX_ID)) && (gameData.time.xGame > ct1 + F1_0*4)))
 			return 0;
 		else
 			return 1;
@@ -238,9 +238,9 @@ if (objP2->type == OBJ_WEAPON)
 	if ((objP2->ctype.laser_info.parent_num == o1) && 
 			 (objP2->ctype.laser_info.parent_signature == objP1->signature))
 		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is player, they are related only if o1 < 2.0 seconds old
-		if ((id2 == PHOENIX_ID && (gameData.app.xGameTime > ct2 + F1_0/4)) || 
-			  (id2 == GUIDEDMISS_ID && (gameData.app.xGameTime > ct2 + F1_0*2)) || 
-				 (((id2 == PROXIMITY_ID) || (id2 == SUPERPROX_ID)) && (gameData.app.xGameTime > ct2 + F1_0*4)))
+		if ((id2 == PHOENIX_ID && (gameData.time.xGame > ct2 + F1_0/4)) || 
+			  (id2 == GUIDEDMISS_ID && (gameData.time.xGame > ct2 + F1_0*2)) || 
+				 (((id2 == PROXIMITY_ID) || (id2 == SUPERPROX_ID)) && (gameData.time.xGame > ct2 + F1_0*4)))
 			return 0;
 		else
 			return 1;
@@ -256,7 +256,7 @@ if (objP1->ctype.laser_info.parent_signature==objP2->ctype.laser_info.parent_sig
 	if (id1 != PROXIMITY_ID  && id2 != PROXIMITY_ID && id1 != SUPERPROX_ID && id2 != SUPERPROX_ID)
 		return 1;
 	//	If neither is older than 1/2 second, then can't blow up!
-	if ((gameData.app.xGameTime > (ct1 + F1_0/2)) || (gameData.app.xGameTime > (ct2 + F1_0/2)))
+	if ((gameData.time.xGame > (ct1 + F1_0/2)) || (gameData.time.xGame > (ct2 + F1_0/2)))
 		return 0;
 	return 1;
 	}
@@ -443,7 +443,7 @@ for (i=0; i<nOmegaBlobs; i++) {
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		VmVecScale (&objP->mtype.phys_info.velocity, F1_0*4);
 		objP->size = gameData.weapons.info [objP->id].blob_size;
-		objP->shields = FixMul (OMEGA_DAMAGE_SCALE*gameData.app.xFrameTime, WI_strength (objP->id,gameStates.app.nDifficultyLevel));
+		objP->shields = FixMul (OMEGA_DAMAGE_SCALE*gameData.time.xFrame, WI_strength (objP->id,gameStates.app.nDifficultyLevel));
 		objP->ctype.laser_info.parent_type			= parentObjP->type;
 		objP->ctype.laser_info.parent_signature	= parentObjP->signature;
 		objP->ctype.laser_info.parent_num			= OBJ_IDX (parentObjP);
@@ -490,7 +490,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].energy) {
 	fix	xEnergyUsed;
 
 	xOldOmegaCharge = xOmegaCharge;
-	xOmegaCharge += gameData.app.xFrameTime/OMEGA_CHARGE_SCALE;
+	xOmegaCharge += gameData.time.xFrame/OMEGA_CHARGE_SCALE;
 	if (xOmegaCharge > MAX_OMEGA_CHARGE)
 		xOmegaCharge = MAX_OMEGA_CHARGE;
 	xDeltaCharge = xOmegaCharge - xOldOmegaCharge;
@@ -522,11 +522,11 @@ if (pnum == gameData.multi.nLocalPlayer) {
 		ReleaseObject (OBJ_IDX (weaponObjP));
 		return;
 		}
-	xOmegaCharge -= gameData.app.xFrameTime;
+	xOmegaCharge -= gameData.time.xFrame;
 	if (xOmegaCharge < 0)
 		xOmegaCharge = 0;
 	//	Ensure that the lightning cannon can be fired next frame.
-	xNextLaserFireTime = gameData.app.xGameTime+1;
+	xNextLaserFireTime = gameData.time.xGame+1;
 	nLastOmegaFireFrame = gameData.app.nFrameCount;
 	}
 
@@ -547,9 +547,9 @@ if (parentObjP == gameData.objs.viewer)
 else
 	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flash_sound, weaponObjP->segnum, 0, &weaponObjP->pos, 0, F1_0);
 
-// -- if ((Last_omega_muzzle_flash_time + F1_0/4 < gameData.app.xGameTime) || (Last_omega_muzzle_flash_time > gameData.app.xGameTime)) {
+// -- if ((Last_omega_muzzle_flash_time + F1_0/4 < gameData.time.xGame) || (Last_omega_muzzle_flash_time > gameData.time.xGame)) {
 // -- 	DoMuzzleStuff (nFiringSeg, vFiringPos);
-// -- 	Last_omega_muzzle_flash_time = gameData.app.xGameTime;
+// -- 	Last_omega_muzzle_flash_time = gameData.time.xGame;
 // -- }
 
 //	Delete the original object.  Its only purpose in life was to determine which object to home in on.
@@ -1376,7 +1376,7 @@ void HomingMissileTurnTowardsVelocity (object *objP, vms_vector *norm_vel)
 	fix frame_time;
 
 if (!gameStates.limitFPS.bHomers || gameOpts->legacy.bHomers)
-	frame_time = gameData.app.xFrameTime;
+	frame_time = gameData.time.xFrame;
 else {
 	if (!gameStates.app.b40fpsTick)
 		return;
@@ -1386,7 +1386,7 @@ else {
 		}
 	}
 new_fvec = *norm_vel;
-VmVecScale (&new_fvec, /*gameData.app.xFrameTime*/ frame_time * HOMING_MISSILE_SCALE);
+VmVecScale (&new_fvec, /*gameData.time.xFrame*/ frame_time * HOMING_MISSILE_SCALE);
 VmVecInc (&new_fvec, &objP->orient.fvec);
 VmVecNormalizeQuick (&new_fvec);
 //	if ((norm_vel->x == 0) && (norm_vel->y == 0) && (norm_vel->z == 0))
@@ -1470,7 +1470,7 @@ void LaserDoWeaponSequence (object *objP)
 		fix				speed, max_speed;
 
 		//	For first 1/2 second of life, missile flies straight.
-		if (objP->ctype.laser_info.creation_time + HOMING_MISSILE_STRAIGHT_TIME < gameData.app.xGameTime) {
+		if (objP->ctype.laser_info.creation_time + HOMING_MISSILE_STRAIGHT_TIME < gameData.time.xGame) {
 
 			int	nTrackGoal = objP->ctype.laser_info.track_goal;
 			int	id = objP->id;
@@ -1503,7 +1503,7 @@ void LaserDoWeaponSequence (object *objP)
 				speed = VmVecNormalizeQuick (&temp_vec);
 				max_speed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 				if (speed+F1_0 < max_speed) {
-					speed += FixMul (max_speed, gameData.app.xFrameTime/2);
+					speed += FixMul (max_speed, gameData.time.xFrame/2);
 					if (speed > max_speed)
 						speed = max_speed;
 				}
@@ -1524,7 +1524,7 @@ void LaserDoWeaponSequence (object *objP)
 				
 					absdot = abs (F1_0 - dot);
 				
-					lifelost = FixMul (absdot*32, gameData.app.xFrameTime);
+					lifelost = FixMul (absdot*32, gameData.time.xFrame);
 					objP->lifeleft -= lifelost;
 				}
 
@@ -1586,21 +1586,21 @@ if (nWeaponIndex == HELIX_INDEX)
 	if (gameData.app.nGameMode & GM_MULTI)
 		xEnergyUsed *= 2;
 nAmmoUsed = WI_ammo_usage (nWeaponIndex);
-addval = 2*gameData.app.xFrameTime;
+addval = 2*gameData.time.xFrame;
 if (addval > F1_0)
 	addval = F1_0;
-if ((Last_laser_fired_time + 2 * gameData.app.xFrameTime < gameData.app.xGameTime) || (gameData.app.xGameTime < Last_laser_fired_time))
-	xNextLaserFireTime = gameData.app.xGameTime;
-Last_laser_fired_time = gameData.app.xGameTime;
+if ((Last_laser_fired_time + 2 * gameData.time.xFrame < gameData.time.xGame) || (gameData.time.xGame < Last_laser_fired_time))
+	xNextLaserFireTime = gameData.time.xGame;
+Last_laser_fired_time = gameData.time.xGame;
 nPrimaryAmmo = (gameData.weapons.nPrimary == GAUSS_INDEX)? (playerP->primary_ammo [VULCAN_INDEX]): (playerP->primary_ammo [gameData.weapons.nPrimary]);
 if	 (!((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)))
 	AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
 if (Zbonkers) {
 	Zbonkers = 0;
-	gameData.app.xGameTime = 0;
+	gameData.time.xGame = 0;
 	}
 
-while (xNextLaserFireTime <= gameData.app.xGameTime) {
+while (xNextLaserFireTime <= gameData.time.xGame) {
 	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
 		int	nLaserLevel, flags = 0;
 		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
@@ -1633,7 +1633,7 @@ while (xNextLaserFireTime <= gameData.app.xGameTime) {
 		}
 	else {
 		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
-		xNextLaserFireTime = gameData.app.xGameTime;	//	Prevents shots-to-fire from building up.
+		xNextLaserFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
 		break;	//	Couldn't fire weapon, so abort.
 		}
 	}
@@ -1755,10 +1755,10 @@ return rval;
 // -- //	When the player releases the firing key, the blobs move forward.
 // -- void lightning_frame (void)
 // -- {
-// -- 	if ((gameData.app.xGameTime - Lightning_start_time < LIGHTNING_TIME) && (gameData.app.xGameTime - Lightning_start_time > 0)) {
-// -- 		if (gameData.app.xGameTime - Lightning_last_time > LIGHTNING_DELAY) {
+// -- 	if ((gameData.time.xGame - Lightning_start_time < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_start_time > 0)) {
+// -- 		if (gameData.time.xGame - Lightning_last_time > LIGHTNING_DELAY) {
 // -- 			create_lightning_blobs (&gameData.objs.console->orient.fvec, &gameData.objs.console->pos, gameData.objs.console->segnum, OBJ_IDX (gameData.objs.console));
-// -- 			Lightning_last_time = gameData.app.xGameTime;
+// -- 			Lightning_last_time = gameData.time.xGame;
 // -- 		}
 // -- 	}
 // -- }
@@ -1821,8 +1821,8 @@ int LaserFireObject (short objnum, ubyte nWeapon, int level, int flags, int nFir
 			LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
 			LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
 			if (nFires > 1) {
-				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.app.xFrameTime/2, 1, 0);
-				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.app.xFrameTime/2, 0, 0);
+				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
+				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
 			}
 			break;
 
@@ -1905,8 +1905,8 @@ int LaserFireObject (short objnum, ubyte nWeapon, int level, int flags, int nFir
 			LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
 			LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
 			if (nFires > 1) {
-				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.app.xFrameTime/2, 1, 0);
-				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.app.xFrameTime/2, 0, 0);
+				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
+				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
 			}
 			break;
 
@@ -2149,7 +2149,7 @@ Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
 if (gmP && (gmP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
 	ReleaseGuidedMissile (gameData.multi.nLocalPlayer);
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
-	xNextMissileFireTime = gameData.app.xGameTime + WI_fire_wait (i);
+	xNextMissileFireTime = gameData.time.xGame + WI_fire_wait (i);
 	return;
 	}
 
@@ -2158,9 +2158,9 @@ if (gameStates.app.bPlayerIsDead || (playerP->secondary_ammo [gameData.weapons.n
 
 nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
-	xNextMissileFireTime = gameData.app.xGameTime + WI_fire_wait (nWeaponId);
+	xNextMissileFireTime = gameData.time.xGame + WI_fire_wait (nWeaponId);
 else
-	xNextMissileFireTime = gameData.app.xGameTime + F1_0/25;
+	xNextMissileFireTime = gameData.time.xGame + F1_0/25;
 nWeaponGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
 h = (EGI_FLAG (bDualMissileLaunch, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondary_ammo [gameData.weapons.nSecondary] > 0); i++) {

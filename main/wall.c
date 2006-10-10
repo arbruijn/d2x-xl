@@ -1105,7 +1105,7 @@ for (p = 0; p < d->n_parts; p++) {
 	segment	*csegp, *seg;
 	int		wn;
 
-	d->time += gameData.app.xFrameTime;
+	d->time += gameData.time.xFrame;
 	w = gameData.walls.walls + d->front_wallnum [p];
 	KillStuckObjects (d->front_wallnum [p]);
 	KillStuckObjects (d->back_wallnum [p]);
@@ -1208,7 +1208,7 @@ for (p = 0; p < d->n_parts; p++) {
 				if (gameData.walls.pAnims[w->clip_num].close_sound  > -1 )
 					DigiLinkSoundToPos( (short) gameData.walls.pAnims[gameData.walls.walls[WallNumP (seg, side)].clip_num].close_sound, SEG_IDX (seg), side, &cp, 0, F1_0 );
 				}
-	d->time += gameData.app.xFrameTime;
+	d->time += gameData.time.xFrame;
 	bFlags &= AnimateClosingDoor (seg, side, d->time);
 	if (IS_WALL (WallNumP (csegp, cside)))
 		bFlags &= AnimateClosingDoor (csegp, cside, d->time);
@@ -1519,7 +1519,7 @@ void DoCloakingWallFrame(int cloaking_wall_num)
 	wfront = gameData.walls.walls + d->front_wallnum;
 	wback = IS_WALL (d->back_wallnum) ? gameData.walls.walls + d->back_wallnum : NULL;
 
-	d->time += gameData.app.xFrameTime;
+	d->time += gameData.time.xFrame;
 
 	if (d->time > CLOAKING_WALL_TIME) {
 		wfront->type = WALL_OPEN;
@@ -1592,7 +1592,7 @@ void DoDecloakingWallFrame (int cloaking_wall_num)
 	wfront = gameData.walls.walls + d->front_wallnum;
 	wback = IS_WALL (d->back_wallnum) ? gameData.walls.walls + d->back_wallnum : NULL;
 
-	d->time += gameData.app.xFrameTime;
+	d->time += gameData.time.xFrame;
 
 	if (d->time > CLOAKING_WALL_TIME) {
 		int i;
@@ -1659,7 +1659,7 @@ for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
 	else if (w->state == WALL_DOOR_CLOSING)
 		DoDoorClose (i);
 	else if (w->state == WALL_DOOR_WAITING) {
-		d->time += gameData.app.xFrameTime;
+		d->time += gameData.time.xFrame;
 
 		//set flags to fix occatsional netgame problem where door is
 		//waiting to close but open flag isn't set

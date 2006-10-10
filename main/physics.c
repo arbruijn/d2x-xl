@@ -287,7 +287,6 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 #include "network.h"
 #include "hudmsg.h"
 #include "gameseg.h"
-#include "vecmat2.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -396,7 +395,7 @@ void DoPhysicsAlignObject (object * objP)
 		if (abs (delta_ang) > DAMP_ANG) {
 			vms_matrix rotmat, new_pm;
 
-			roll_ang = FixMul (gameData.app.xFrameTime, ROLL_RATE);
+			roll_ang = FixMul (gameData.time.xFrame, ROLL_RATE);
 
 			if (abs (delta_ang) < roll_ang) roll_ang = delta_ang;
 			else if (delta_ang<0) roll_ang = -roll_ang;
@@ -421,7 +420,7 @@ void SetObjectTurnRoll (object *objP)
 	fixang desired_bank = -FixMul (objP->mtype.phys_info.rotvel.y, TURNROLL_SCALE);
 	if (objP->mtype.phys_info.turnroll != desired_bank) {
 		fixang delta_ang, max_roll;
-		max_roll = FixMul (ROLL_RATE, gameData.app.xFrameTime);
+		max_roll = FixMul (ROLL_RATE, gameData.time.xFrame);
 		delta_ang = desired_bank - objP->mtype.phys_info.turnroll;
 		if (labs (delta_ang) < max_roll)
 			max_roll = delta_ang;
@@ -468,9 +467,9 @@ void DoPhysicsSimRot (object *objP)
 	physics_info *pi;
 
 #if 0
-	Assert (gameData.app.xFrameTime > 0); 		//Get MATT if hit this!
+	Assert (gameData.time.xFrame > 0); 		//Get MATT if hit this!
 #else
-	if (gameData.app.xFrameTime <= 0)
+	if (gameData.time.xFrame <= 0)
 		return;
 #endif
 
@@ -484,8 +483,8 @@ void DoPhysicsSimRot (object *objP)
 		vms_vector accel;
 		fix xDrag, r, k;
 
-		count = gameData.app.xFrameTime / FT;
-		r = gameData.app.xFrameTime % FT;
+		count = gameData.time.xFrame / FT;
+		r = gameData.time.xFrame % FT;
 		k = FixDiv (r, FT);
 
 		xDrag = (objP->mtype.phys_info.drag*5)/2;
@@ -536,9 +535,9 @@ void DoPhysicsSimRot (object *objP)
 		objP->orient = new_pm;
 	}
 
-	tangles.p = FixMul (objP->mtype.phys_info.rotvel.x, gameData.app.xFrameTime);
-	tangles.h = FixMul (objP->mtype.phys_info.rotvel.y, gameData.app.xFrameTime);
-	tangles.b = FixMul (objP->mtype.phys_info.rotvel.z, gameData.app.xFrameTime);
+	tangles.p = FixMul (objP->mtype.phys_info.rotvel.x, gameData.time.xFrame);
+	tangles.h = FixMul (objP->mtype.phys_info.rotvel.y, gameData.time.xFrame);
+	tangles.b = FixMul (objP->mtype.phys_info.rotvel.z, gameData.time.xFrame);
 
 	VmAngles2Matrix (&rotmat, &tangles);
 	VmMatMul (&new_orient, &objP->orient, &rotmat);
@@ -612,7 +611,7 @@ if (!(pi->velocity.x || pi->velocity.y || pi->velocity.z)) {
 objnum = objP - gameData.objs.objects;
 nPhysSegs = 0;
 bSimpleFVI = (objP->type != OBJ_PLAYER);
-xSimTime = gameData.app.xFrameTime;
+xSimTime = gameData.time.xFrame;
 vStartPos = objP->pos;
 nIgnoreObjs = 0;
 Assert (objP->mtype.phys_info.brakes==0);		//brakes not used anymore?
@@ -986,7 +985,7 @@ vSaveP1 = *fq.p1;
 		vms_vector vMoved;
 		VmVecSub (&vMoved, &objP->pos, &vStartPos);
 		VmVecCopyScale (&objP->mtype.phys_info.velocity, &vMoved, 
-								 FixMulDiv (FixDiv (f1_0, gameData.app.xFrameTime), 100, xTimeScale));
+								 FixMulDiv (FixDiv (f1_0, gameData.time.xFrame), 100, xTimeScale));
 #ifdef BUMP_HACK
 		if (objP == gameData.objs.console && 
 			 objP->mtype.phys_info.velocity.x==0 && 
@@ -1121,7 +1120,7 @@ if (Dont_move_ai_objects)
 	objnum = OBJ_IDX (objP);
 	nPhysSegs = 0;
 	bSimpleFVI = (objP->type != OBJ_PLAYER);
-	xSimTime = gameData.app.xFrameTime;
+	xSimTime = gameData.time.xFrame;
 //debugObjP = obj;
 	vStartPos = objP->pos;
 	nIgnoreObjs = 0;
@@ -1555,9 +1554,9 @@ vSaveP1 = *fq.p1;
 		if (vMoved.x || vMoved.y || vMoved.z)
 			VmVecCopyScale (&objP->mtype.phys_info.velocity, &vMoved, 
 #if FLUID_PHYSICS
-				FixMulDiv (FixDiv (f1_0, gameData.app.xFrameTime), 100, xTimeScale)
+				FixMulDiv (FixDiv (f1_0, gameData.time.xFrame), 100, xTimeScale)
 #else
-				FixDiv (f1_0, gameData.app.xFrameTime)
+				FixDiv (f1_0, gameData.time.xFrame)
 #endif
 				);
 #ifdef BUMP_HACK
@@ -1752,8 +1751,8 @@ void PhysApplyRot (object *objP, vms_vector *vForce)
 				rate = F1_0/4;
 			//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
 			if (!gameData.bots.pInfo [objP->id].thief && !gameData.bots.pInfo [objP->id].attack_type) {
-				if (objP->ctype.ai_info.SKIP_AI_COUNT * gameData.app.xFrameTime < 3*F1_0/4) {
-					fix	tval = FixDiv (F1_0, 8*gameData.app.xFrameTime);
+				if (objP->ctype.ai_info.SKIP_AI_COUNT * gameData.time.xFrame < 3*F1_0/4) {
+					fix	tval = FixDiv (F1_0, 8*gameData.time.xFrame);
 					int	addval;
 
 					addval = f2i (tval);

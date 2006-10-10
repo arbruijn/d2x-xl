@@ -1380,7 +1380,7 @@ if (!gameStates.render.bShadowMaps) {
 
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.shadows.nNearestLights [objP->segnum];
+pnl = gameData.render.shadows.nNearestSegLights [objP->segnum];
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
 	  gameData.render.shadows.nLight++, pnl++) {

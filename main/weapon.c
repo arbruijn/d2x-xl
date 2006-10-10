@@ -519,7 +519,7 @@ if (!secondary_flag) {
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 #endif
-		xNextLaserFireTime = bWaitForRearm ? gameData.app.xGameTime + REARM_TIME : 0;
+		xNextLaserFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.app.nGlobalLaserFiringCount = 0;
 		} 
 	else {
@@ -562,7 +562,7 @@ else {
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 #endif
-		xNextMissileFireTime = bWaitForRearm ? gameData.app.xGameTime + REARM_TIME : 0;
+		xNextMissileFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.app.nGlobalMissileFiringCount = 0;
 		}
 	else {
@@ -1118,11 +1118,11 @@ void RockTheMineFrame(void)
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes[i] != 0) {
-		fix	delta_time = gameData.app.xGameTime - eshakerDetonateTimes[i];
+		fix	delta_time = gameData.time.xGame - eshakerDetonateTimes[i];
 		if (!gameStates.gameplay.seismic.bSound) {
 			DigiPlaySampleLooping((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
-			gameStates.gameplay.seismic.nNextSoundTime = gameData.app.xGameTime + d_rand()/2;
+			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
 		if (delta_time < ESHAKER_SHAKE_TIME) {
 			//	Control center destroyed, rock the player's ship.
@@ -1185,14 +1185,14 @@ int StartSeismicDisturbance(void)
 
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
-rval =  (2 * FixMul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.app.xFrameTime;
+rval =  (2 * FixMul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
 if (rval) {
-	gameStates.gameplay.seismic.nStartTime = gameData.app.xGameTime;
-	gameStates.gameplay.seismic.nEndTime = gameData.app.xGameTime + gameStates.gameplay.seismic.nShakeDuration;
+	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
+	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	if (!gameStates.gameplay.seismic.bSound) {
 		DigiPlaySampleLooping((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.app.xGameTime + d_rand()/2;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 		}
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -1207,9 +1207,9 @@ return rval;
 void SeismicDisturbanceFrame(void)
 {
 if (gameStates.gameplay.seismic.nShakeFrequency) {
-	if (((gameStates.gameplay.seismic.nStartTime < gameData.app.xGameTime) && 
-		  (gameStates.gameplay.seismic.nEndTime > gameData.app.xGameTime)) || StartSeismicDisturbance()) {
-		fix	delta_time = gameData.app.xGameTime - gameStates.gameplay.seismic.nStartTime;
+	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && 
+		  (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance()) {
+		fix	delta_time = gameData.time.xGame - gameStates.gameplay.seismic.nStartTime;
 		int	fc, rx, rz;
 		fix	h;
 
@@ -1244,11 +1244,11 @@ void ShakerRockStuff(void)
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes[i] + ESHAKER_SHAKE_TIME < gameData.app.xGameTime)
+	if (eshakerDetonateTimes[i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
 		eshakerDetonateTimes[i] = 0;
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes[i] == 0) {
-		eshakerDetonateTimes[i] = gameData.app.xGameTime;
+		eshakerDetonateTimes[i] = gameData.time.xGame;
 		break;
 		}
 }
@@ -1553,12 +1553,12 @@ if (stv_save != 0) {
 		gameStates.gameplay.seismic.bSound = 0;
 		}
 
-	if ((gameData.app.xGameTime > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
+	if ((gameData.time.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
 		int volume = gameStates.gameplay.seismic.nVolume * 2048;
 		if (volume > F1_0)
 			volume = F1_0;
 		DigiChangeLoopingVolume(volume);
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.app.xGameTime + d_rand()/4 + 8192;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/4 + 8192;
 		}
 	}
 }

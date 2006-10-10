@@ -95,7 +95,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		128 //191
+#define SMOKE_START_ALPHA		64
 
 //	-----------------------------------------------------------------------------
 
@@ -258,8 +258,10 @@ if (nLife < 0)
 pParticle->nOrient = randN (4);
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
-pParticle->nWidth = //nRad + randN (nRad);
-pParticle->nHeight = nRad + randN (nRad);
+pParticle->nRad = nRad + randN (nRad);
+pParticle->nWidth =
+pParticle->nHeight = pParticle->nRad / 2;
+pParticle->glColor.a /= 4;
 return 1;
 }
 
@@ -391,6 +393,16 @@ if ((1000 / PARTICLE_FPS) <= (t = nCurTime - pParticle->nMoved)) {
 			}
 		pParticle->dir = dir;
 		if (pParticle->nTTL >= 0) {
+			int nRad = pParticle->nRad;
+		if (pParticle->nWidth < nRad) {
+			pParticle->nWidth += nRad / 10;
+			pParticle->nHeight += nRad / 10;
+			if (pParticle->nWidth > nRad)
+				pParticle->nWidth = nRad;
+			if (pParticle->nHeight > nRad)
+				pParticle->nHeight = nRad;
+			pParticle->glColor.a *= 1.0725;
+			}
 #if 0
 			//VmVecScaleFrac (&pParticle->dir, t - ((t / 10) ? t / 10 : 1), t);
 			decay = 1.0 - (double) t / (double) pParticle->nTTL;
@@ -1176,7 +1188,7 @@ if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudDensity (pSmoke->pClouds + i, nMaxParts << gameOpts->render.smoke.nScale);
+			SetCloudDensity (pSmoke->pClouds + i, nMaxParts << (gameOpts->render.smoke.nScale + 1));
 	}
 }
 

@@ -1336,7 +1336,7 @@ void HUDShowScoreAdded()
 
 	GrSetCurFont( GAME_FONT );
 
-	score_time -= gameData.app.xFrameTime;
+	score_time -= gameData.time.xFrame;
 	if (score_time > 0) {
 		color = f2i(score_time * 20) + 12;
 		if (color < 10) 
@@ -1447,7 +1447,7 @@ void SBShowScoreAdded()
 WIN(DDGRLOCK(dd_grd_curcanv));
 	GrSetCurFont( GAME_FONT );
 
-	score_time -= gameData.app.xFrameTime;
+	score_time -= gameData.time.xFrame;
 	if (score_time > 0) {
 		if (score_display[VR_current_page] != last_score_display[VR_current_page] || frc) {
 			GrSetColorRGBi (RGBA_PAL (0,0,0));
@@ -1509,12 +1509,12 @@ void PlayHomingWarning(void)
 		else if (beep_delay < F1_0/8)
 			beep_delay = F1_0/8;
 
-		if (Last_warning_beep_time[VR_current_page] > gameData.app.xGameTime)
+		if (Last_warning_beep_time[VR_current_page] > gameData.time.xGame)
 			Last_warning_beep_time[VR_current_page] = 0;
 
-		if (gameData.app.xGameTime - Last_warning_beep_time[VR_current_page] > beep_delay/2) {
+		if (gameData.time.xGame - Last_warning_beep_time[VR_current_page] > beep_delay/2) {
 			DigiPlaySample( SOUND_HOMING_WARNING, F1_0 );
-			Last_warning_beep_time[VR_current_page] = gameData.app.xGameTime;
+			Last_warning_beep_time[VR_current_page] = gameData.time.xGame;
 		}
 	}
 }
@@ -1547,7 +1547,7 @@ void ShowHomingWarning(void)
 WIN(DDGRLOCK(dd_grd_curcanv))
 {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist >= 0) {
-		if (gameData.app.xGameTime & 0x4000) {
+		if (gameData.time.xGame & 0x4000) {
 			//if (Last_homing_warning_shown[VR_current_page] != 1) 
 			{
 				PAGE_IN_GAUGE( GAUGE_HOMING_WARNING_ON );
@@ -1594,7 +1594,7 @@ void HUDShowHomingWarning(void)
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 		return;
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist >= 0) {
-		if (gameData.app.xGameTime & 0x4000) {
+		if (gameData.time.xGame & 0x4000) {
 			int x=0x8000, y=grdCurCanv->cv_h-Line_spacing;
 
 			if (weapon_box_user[0] != WBU_WEAPON || weapon_box_user[1] != WBU_WEAPON) {
@@ -2470,7 +2470,7 @@ void HUDShowCloakInvul(void)
 		else
 			y -= 4*Line_spacing;
 
-		if ((gameData.multi.players[gameData.multi.nLocalPlayer].cloak_time+CLOAK_TIME_MAX - gameData.app.xGameTime > F1_0*3 ) || (gameData.app.xGameTime & 0x8000))
+		if ((gameData.multi.players[gameData.multi.nLocalPlayer].cloak_time+CLOAK_TIME_MAX - gameData.time.xGame > F1_0*3 ) || (gameData.time.xGame & 0x8000))
 			GrPrintF(2, y, "%s", TXT_CLOAKED);
 	}
 
@@ -2482,7 +2482,7 @@ void HUDShowCloakInvul(void)
 		else
 			y -= 5*Line_spacing;
 
-		if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time + INVULNERABLE_TIME_MAX - gameData.app.xGameTime) > F1_0*4) || (gameData.app.xGameTime & 0x8000))
+		if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000))
 			GrPrintF(2, y, "%s", TXT_INVULNERABLE);
 	}
 
@@ -3176,7 +3176,7 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 	
 
 	if (nCloakFadeState)
-		xCloakFadeTimer -= gameData.app.xFrameTime;
+		xCloakFadeTimer -= gameData.time.xFrame;
 
 	while (nCloakFadeState && xCloakFadeTimer < 0) {
 		xCloakFadeTimer += CLOAK_FADE_WAIT_TIME;
@@ -3571,7 +3571,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 		old_ammo_count[weapon_type][VR_current_page]=-1;
 		Old_Omega_charge[VR_current_page]=-1;
 		drew_flag=1;
-		weapon_box_fade_values[weapon_type] -= gameData.app.xFrameTime * FADE_SCALE;
+		weapon_box_fade_values[weapon_type] -= gameData.time.xFrame * FADE_SCALE;
 		if (weapon_box_fade_values[weapon_type] <= 0) {
 			weapon_box_states[weapon_type] = WS_FADING_IN;
 			old_weapon[weapon_type][VR_current_page] = weapon_num;
@@ -3590,7 +3590,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 			old_ammo_count[weapon_type][VR_current_page]=-1;
 			Old_Omega_charge[VR_current_page]=-1;
 			drew_flag=1;
-			weapon_box_fade_values[weapon_type] += gameData.app.xFrameTime * FADE_SCALE;
+			weapon_box_fade_values[weapon_type] += gameData.time.xFrame * FADE_SCALE;
 			if (weapon_box_fade_values[weapon_type] >= i2f(GR_ACTUAL_FADE_LEVELS-1)) {
 				weapon_box_states[weapon_type] = WS_SET;
 				old_weapon[weapon_type][!VR_current_page] = -1;		//force redraw (at full fade-in) of other page
@@ -3631,7 +3631,7 @@ void DrawStatic(int win)
 	int boxofs = (gameStates.render.cockpit.nMode==CM_STATUS_BAR)?SB_PRIMARY_BOX:COCKPIT_PRIMARY_BOX;
 	int x,y;
 
-	static_time[win] += gameData.app.xFrameTime;
+	static_time[win] += gameData.time.xFrame;
 	if (static_time[win] >= vc->xTotalTime) {
 		weapon_box_user[win] = WBU_WEAPON;
 		return;
@@ -3935,7 +3935,7 @@ WINDOS(
 );
 WIN(DDGRLOCK(dd_grd_curcanv));
 
-	if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time + INVULNERABLE_TIME_MAX - gameData.app.xGameTime) > F1_0*4) || (gameData.app.xGameTime & 0x8000)) {
+	if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000)) {
 
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)	{
 			PAGE_IN_GAUGE( GAUGE_INVULNERABLE+invulnerable_frame );
@@ -3951,7 +3951,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 			/*GrUBitmapM*/HUDBitBlt( SHIELD_GAUGE_X, SHIELD_GAUGE_Y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX(GAUGE_INVULNERABLE+invulnerable_frame)], F1_0, 0 );
 		}
 
-		time += gameData.app.xFrameTime;
+		time += gameData.time.xFrame;
 
 		while (time > INV_FRAME_TIME) {
 			time -= INV_FRAME_TIME;
@@ -4092,7 +4092,7 @@ void HUDShowKillList()
 if (bGetPing)
 	networkData.tLastPingStat = t;
 if (multiData.kills.xShowListTimer > 0) {
-	multiData.kills.xShowListTimer -= gameData.app.xFrameTime;
+	multiData.kills.xShowListTimer -= gameData.time.xFrame;
 	if (multiData.kills.xShowListTimer < 0)
 		multiData.kills.bShowList = 0;
 	}
@@ -4650,7 +4650,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
 	DrawPlayerShip(cloak,old_cloak[VR_current_page],SHIP_GAUGE_X,SHIP_GAUGE_Y);
 else if (frc || (cloak != old_cloak[VR_current_page]) || nCloakFadeState || 
-	(cloak && gameData.app.xGameTime>gameData.multi.players[gameData.multi.nLocalPlayer].cloak_time+CLOAK_TIME_MAX-i2f(3))) {
+	(cloak && gameData.time.xGame>gameData.multi.players[gameData.multi.nLocalPlayer].cloak_time+CLOAK_TIME_MAX-i2f(3))) {
 	DrawPlayerShip(cloak,old_cloak[VR_current_page],SB_SHIP_GAUGE_X,SB_SHIP_GAUGE_Y);
 
 	old_cloak[VR_current_page]=cloak;

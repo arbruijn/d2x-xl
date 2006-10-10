@@ -288,13 +288,13 @@ else
 vp = (vms_vector *) data;
 while (nverts--) {
 	if (mdP->morph_times [i]) {		//not done yet
-		if ((mdP->morph_times [i] -= gameData.app.xFrameTime) <= 0) {
+		if ((mdP->morph_times [i] -= gameData.time.xFrame) <= 0) {
 			 mdP->morph_vecs [i] = *vp;
 			 mdP->morph_times [i] = 0;
 			 mdP->n_morphing_points [submodel_num]--;
 			}
 		else
-			VmVecScaleInc (&mdP->morph_vecs [i], &mdP->morph_deltas [i], gameData.app.xFrameTime);
+			VmVecScaleInc (&mdP->morph_vecs [i], &mdP->morph_deltas [i], gameData.time.xFrame);
 		}
 	vp++; 
 	i++;

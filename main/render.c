@@ -589,7 +589,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.ogl.palAdd.blue > 10 )		//whiting out
 	return;
-//	flash_ang += FixMul(FLASH_CYCLE_RATE,gameData.app.xFrameTime);
+//	flash_ang += FixMul(FLASH_CYCLE_RATE,gameData.time.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix	added_flash;
 
@@ -597,12 +597,12 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 	if (added_flash < F1_0)
 		added_flash *= 16;
 
-	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.app.xFrameTime, added_flash+F1_0));
+	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, added_flash+F1_0));
 	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
 else {
-	flash_ang += FixMul(gameStates.render.nFlashRate,gameData.app.xFrameTime);
+	flash_ang += FixMul(gameStates.render.nFlashRate,gameData.time.xFrame);
 	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
 	if (gameStates.app.nDifficultyLevel == 0)
@@ -927,8 +927,12 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 3 && props.sideNum == 2)
+if (props.segNum == 592 && props.sideNum == 3)
 	props.segNum = props.segNum;
+#	if 0
+else
+	return;
+#	endif
 #endif
 
 #if APPEND_LAYERED_TEXTURES
@@ -1675,9 +1679,13 @@ if (!cc.and) {		//all off screen?
 	if (gameOpts->legacy.bZBuf)
 #endif
 	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->type!=OBJ_ROBOT))
-  	   bAutomapVisited [segnum]=1;
+  	   bAutomapVisited [segnum] = 1;
+#if 1
+	gameStates.render.nState = 0;
+#else
 	SetNearestStaticLights (segnum, 1);
 	SetNearestDynamicLights (segnum);
+#endif
 	if (gameStates.render.bQueryOcclusion) {
 			short		sideVerts [4];
 			double	sideDists [6];
@@ -2758,7 +2766,7 @@ if (gameStates.app.bEndLevelSequence) {
 #ifdef NEWDEMO
 if ( gameData.demo.nState == ND_STATE_RECORDING && nEyeOffset >= 0 )	{
    if (gameStates.render.nRenderingType==0)
-   	NDRecordStartFrame(gameData.app.nFrameCount, gameData.app.xFrameTime );
+   	NDRecordStartFrame(gameData.app.nFrameCount, gameData.time.xFrame );
    if (gameStates.render.nRenderingType!=255)
    	NDRecordViewerObject(gameData.objs.viewer);
 	}
@@ -2828,12 +2836,12 @@ else {
 					break;
 				case 2:
 					if (ZoomKeyPressed ()) {
-						gameStates.render.nZoomFactor += gameData.app.xFrameTime * 4;
+						gameStates.render.nZoomFactor += gameData.time.xFrame * 4;
 						if (gameStates.render.nZoomFactor > gameStates.render.nMaxZoomFactor) 
 							gameStates.render.nZoomFactor = gameStates.render.nMaxZoomFactor;
 						} 
 					else {
-						gameStates.render.nZoomFactor -= gameData.app.xFrameTime * 4;
+						gameStates.render.nZoomFactor -= gameData.time.xFrame * 4;
 						if (gameStates.render.nZoomFactor < gameStates.render.nMinZoomFactor) 
 							gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 						}

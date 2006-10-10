@@ -356,7 +356,7 @@ bytes=ogl_texture_stats ();
 while (bytes>ogl_mem_target){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
 		if (t->handle > 0) {
-			if (t->lastrend + f1_0 * time < gameData.app.xGameTime) {
+			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
 				OglFreeTexture (t);
 				bytes -= t->bytes;
 				if (bytes < ogl_mem_target)
@@ -442,7 +442,7 @@ else
 		}
 	OGL_BINDTEX (tex->handle);
 	}
-bmP->glTexture->lastrend = gameData.app.xGameTime;
+bmP->glTexture->lastrend = gameData.time.xGame;
 bmP->glTexture->numrend++;
 return 0;
 }

@@ -558,13 +558,12 @@ int	Speedtest_frame_start;
 int	Speedtest_count=0;				//	number of times to do the debug test.
 #endif
 
-static fix last_timer_value=0;
 fix ThisLevelTime=0;
 
 #if defined (TIMER_TEST) && !defined (NDEBUG)
 fix _timer_value,actual_last_timer_value,_last_frametime;
-int stop_count,start_count;
-int time_stopped,time_started;
+int gameData.time.xStops,gameData.time.xStarts;
+int gameData.time.xStopped,gameData.time.xStarted;
 #endif
 
 #ifndef MACINTOSH
@@ -1544,25 +1543,23 @@ int GrToggleFullScreenMenu (void)
 
 //------------------------------------------------------------------------------
 
-int nTimerPaused=0;
-
 void StopTime ()
 {
-if (++nTimerPaused == 1) {
-	fix time = TimerGetFixedSeconds ();
-	last_timer_value = time - last_timer_value;
-	if (last_timer_value < 0) {
+if (++gameData.time.nPaused == 1) {
+	fix xTime = TimerGetFixedSeconds ();
+	gameData.time.xSlack = xTime - gameData.time.xLast;
+	if (gameData.time.xSlack < 0) {
 #if defined (TIMER_TEST) && !defined (NDEBUG)
 		Int3 ();		//get Matt!!!!
 #endif
-		last_timer_value = 0;
+		gameData.time.xLast = 0;
 		}
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-	time_stopped = time;
+	gameData.time.xStopped = xTime;
 	#endif
 }
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-stop_count++;
+gameData.time.xStops++;
 #endif
 }
 
@@ -1570,20 +1567,20 @@ stop_count++;
 
 void StartTime ()
 {
-Assert (nTimerPaused > 0);
-if (!--nTimerPaused) {
-	fix time = TimerGetFixedSeconds ();
+Assert (gameData.time.nPaused > 0);
+if (!--gameData.time.nPaused) {
+	fix xTime = TimerGetFixedSeconds ();
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-	if (last_timer_value < 0)
+	if (gameData.time.xLast < 0)
 		Int3 ();		//get Matt!!!!
 #endif
-	last_timer_value = time - last_timer_value;
+	gameData.time.xLast = xTime - gameData.time.xSlack;
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-	time_started = time;
+	gameData.time.xStarted = time;
 #endif
 	}
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-start_count++;
+gameData.time.xStarts++;
 #endif
 }
 
@@ -1591,7 +1588,7 @@ start_count++;
 
 int TimeStopped (void)
 {
-return nTimerPaused > 0;
+return gameData.time.nPaused > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1619,8 +1616,7 @@ void GameFlushInputs ()
 
 void ResetTime ()
 {
-	last_timer_value = TimerGetFixedSeconds ();
-
+gameData.time.xLast = TimerGetFixedSeconds ();
 }
 
 //------------------------------------------------------------------------------
@@ -1637,13 +1633,13 @@ int Movie_fixed_frametime;
 void CalcFrameTime ()
 {
 	fix 	timer_value,
-			last_frametime = gameData.app.xFrameTime,
+			last_frametime = gameData.time.xFrame,
 			minFrameTime = (gameOpts->render.nMaxFPS ? f1_0 / gameOpts->render.nMaxFPS : 1);
 
 if (gameData.app.bGamePaused) {
-	last_timer_value = TimerGetFixedSeconds ();
-	gameData.app.xFrameTime = 0;
-	gameData.app.xRealFrameTime = 0;
+	gameData.time.xLast = TimerGetFixedSeconds ();
+	gameData.time.xFrame = 0;
+	gameData.time.xRealFrame = 0;
 	return;
 	}
 #if defined (TIMER_TEST) && !defined (NDEBUG)
@@ -1651,45 +1647,45 @@ _last_frametime = last_frametime;
 #endif
 do {
 	timer_value = TimerGetFixedSeconds ();
-   gameData.app.xFrameTime = timer_value - last_timer_value;
+   gameData.time.xFrame = timer_value - gameData.time.xLast;
 	timer_delay (1);
 	if (gameOpts->render.nMaxFPS < 2)
 		break;
-	} while (gameData.app.xFrameTime < minFrameTime);
+	} while (gameData.time.xFrame < minFrameTime);
 #if defined (TIMER_TEST) && !defined (NDEBUG)
 _timer_value = timer_value;
 #endif
 #ifdef _DEBUG
-if ((gameData.app.xFrameTime <= 0) || 
-	 (gameData.app.xFrameTime > F1_0) || 
+if ((gameData.time.xFrame <= 0) || 
+	 (gameData.time.xFrame > F1_0) || 
 	 (gameStates.app.nFunctionMode == FMODE_EDITOR) || 
 	 (gameData.demo.nState == ND_STATE_PLAYBACK)) {
 #if TRACE
-//con_printf (1,"Bad gameData.app.xFrameTime - value = %x\n",gameData.app.xFrameTime);
+//con_printf (1,"Bad gameData.time.xFrame - value = %x\n",gameData.time.xFrame);
 #endif
-if (gameData.app.xFrameTime == 0)
+if (gameData.time.xFrame == 0)
 	Int3 ();	//	Call Mike or Matt or John!  Your interrupts are probably trashed!
 	}
 #endif
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-actual_last_timer_value = last_timer_value;
+actual_last_timer_value = gameData.time.xLast;
 #endif
 if (gameStates.app.cheats.bTurboMode)
-	gameData.app.xFrameTime *= 2;
+	gameData.time.xFrame *= 2;
 // Limit frametime to be between 5 and 150 fps.
-gameData.app.xRealFrameTime = gameData.app.xFrameTime;
+gameData.time.xRealFrame = gameData.time.xFrame;
 #if 0
-if (gameData.app.xFrameTime < F1_0/150) 
-	gameData.app.xFrameTime = F1_0/150;
-if (gameData.app.xFrameTime > F1_0/5) 
-	gameData.app.xFrameTime = F1_0/5;
+if (gameData.time.xFrame < F1_0/150) 
+	gameData.time.xFrame = F1_0/150;
+if (gameData.time.xFrame > F1_0/5) 
+	gameData.time.xFrame = F1_0/5;
 #endif
-last_timer_value = timer_value;
-if (gameData.app.xFrameTime < 0)						//if bogus frametimed:\temp\dm_test.
-	gameData.app.xFrameTime = last_frametime;		//d:\temp\dm_test.then use time from last frame
+gameData.time.xLast = timer_value;
+if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
+	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
 #ifndef NDEBUG
 if (fixed_frametime) 
-	gameData.app.xFrameTime = fixed_frametime;
+	gameData.time.xFrame = fixed_frametime;
 #endif
 #ifndef NDEBUG
 // Pause here!!!
@@ -1701,23 +1697,23 @@ if (Debug_pause) {
 		Debug_pause = 0;
 		c = KeyInKey ();
 		}
-	last_timer_value = TimerGetFixedSeconds ();
+	gameData.time.xLast = TimerGetFixedSeconds ();
 	}
 #endif
 #if Arcade_mode
-gameData.app.xFrameTime /= 2;
+gameData.time.xFrame /= 2;
 #endif
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-stop_count = start_count = 0;
+gameData.time.xStops = gameData.time.xStarts = 0;
 #endif
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.
-if (gameData.app.xFrameTime <= F1_0/64)
+if (gameData.time.xFrame <= F1_0/64)
 	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (F1_0 - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
-else if (gameData.app.xFrameTime < F1_0/32)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.app.xFrameTime;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
-else if (gameData.app.xFrameTime < F1_0/4)
-	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/16 - gameData.app.xFrameTime;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.app.xFrameTime) + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < F1_0/32)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.time.xFrame;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < F1_0/4)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/16 - gameData.time.xFrame;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
 else
 	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - F1_0/8;
 }
@@ -2067,7 +2063,7 @@ void DoCloakStuff (void)
 	int i;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		if (gameData.multi.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-			if (gameData.app.xGameTime - gameData.multi.players[i].cloak_time > CLOAK_TIME_MAX) {
+			if (gameData.time.xGame - gameData.multi.players[i].cloak_time > CLOAK_TIME_MAX) {
 				gameData.multi.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 				if (i == gameData.multi.nLocalPlayer) {
 					DigiPlaySample (SOUND_CLOAK_OFF, F1_0);
@@ -2089,7 +2085,7 @@ int FakingInvul=0;
 void DoInvulnerableStuff (void)
 {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
-		if (gameData.app.xGameTime - gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time > INVULNERABLE_TIME_MAX) {
+		if (gameData.time.xGame - gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time > INVULNERABLE_TIME_MAX) {
 			gameData.multi.players[gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
 			if (FakingInvul==0)
 			{
@@ -2123,8 +2119,8 @@ int	Ab_scale = 4;
 //@@{
 //@@	int	rx, rz;
 //@@
-//@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.app.xGameTime + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.app.xGameTime*4) & 0xffff)))/16;
+//@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
 //@@	gameData.objs.console->mtype.phys_info.rotvel.x += rx;
 //@@	gameData.objs.console->mtype.phys_info.rotvel.z += rz;
@@ -2187,7 +2183,7 @@ void DoAfterburnerStuff (void)
 // -- void recharge_energy_frame (void)
 // -- {
 // -- 	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < gameData.weapons.info[0].energy_usage) {
-// -- 		gameData.multi.players[gameData.multi.nLocalPlayer].energy += gameData.app.xFrameTime/4;
+// -- 		gameData.multi.players[gameData.multi.nLocalPlayer].energy += gameData.time.xFrame/4;
 // --
 // -- 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy > gameData.weapons.info[0].energy_usage)
 // -- 			gameData.multi.players[gameData.multi.nLocalPlayer].energy = gameData.weapons.info[0].energy_usage;
@@ -2234,12 +2230,12 @@ void DiminishPaletteTowardsNormal (void)
 
 	//	Diminish at DIMINISH_RATE units/second.
 	//	For frame rates > DIMINISH_RATE Hz, use randomness to achieve this.
-	if (gameData.app.xFrameTime < F1_0/DIMINISH_RATE) {
-		if (d_rand () < gameData.app.xFrameTime*DIMINISH_RATE/2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
+	if (gameData.time.xFrame < F1_0/DIMINISH_RATE) {
+		if (d_rand () < gameData.time.xFrame*DIMINISH_RATE/2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
 			dec_amount = 1;
 		}
 	else {
-		dec_amount = f2i (gameData.app.xFrameTime*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
+		dec_amount = f2i (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
 		if (dec_amount == 0)
 			dec_amount++;						// make sure we decrement by something
 	}
@@ -2253,12 +2249,12 @@ void DiminishPaletteTowardsNormal (void)
 			gameStates.ogl.palAdd.red ^= 1;	//	Very Tricky!  In GrPaletteStepUp, if all stepups same as last time, won't do anything!
 		}
 
-		if ((gameData.render.xTimeFlashLastPlayed + F1_0/8 < gameData.app.xGameTime) || (gameData.render.xTimeFlashLastPlayed > gameData.app.xGameTime)) {
+		if ((gameData.render.xTimeFlashLastPlayed + F1_0/8 < gameData.time.xGame) || (gameData.render.xTimeFlashLastPlayed > gameData.time.xGame)) {
 			DigiPlaySample (SOUND_CLOAK_OFF, gameData.render.xFlashEffect/4);
-			gameData.render.xTimeFlashLastPlayed = gameData.app.xGameTime;
+			gameData.render.xTimeFlashLastPlayed = gameData.time.xGame;
 		}
 
-		gameData.render.xFlashEffect -= gameData.app.xFrameTime;
+		gameData.render.xFlashEffect -= gameData.time.xFrame;
 		if (gameData.render.xFlashEffect < 0)
 			gameData.render.xFlashEffect = 0;
 
@@ -2357,8 +2353,8 @@ int AllowedToFireLaser (void)
 		return 0;
 	//	Make sure enough time has elapsed to fire laser, but if it looks like it will
 	//	be a long while before laser can be fired, then there must be some mistake!
-	if (xNextLaserFireTime > gameData.app.xGameTime)
-		if (xNextLaserFireTime < gameData.app.xGameTime + 2*F1_0)
+	if (xNextLaserFireTime > gameData.time.xGame)
+		if (xNextLaserFireTime < gameData.time.xGame + 2*F1_0)
 			return 0;
 
 	return 1;
@@ -2371,13 +2367,13 @@ fix	Next_flare_fire_time = 0;
 
 int AllowedToFireFlare (void)
 {
-	if (Next_flare_fire_time > gameData.app.xGameTime)
-		if (Next_flare_fire_time < gameData.app.xGameTime + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
+	if (Next_flare_fire_time > gameData.time.xGame)
+		if (Next_flare_fire_time < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
 			return 0;
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
-		Next_flare_fire_time = gameData.app.xGameTime + F1_0/4;
+		Next_flare_fire_time = gameData.time.xGame + F1_0/4;
 	else
-		Next_flare_fire_time = gameData.app.xGameTime + FLARE_BIG_DELAY;
+		Next_flare_fire_time = gameData.time.xGame + FLARE_BIG_DELAY;
 
 	return 1;
 }
@@ -2390,8 +2386,8 @@ int AllowedToFireMissile (void)
 //	be a long while before missile can be fired, then there must be some mistake!
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->segnum].special == SEGMENT_IS_NODAMAGE))
 	return 0;
-if (xNextMissileFireTime > gameData.app.xGameTime) 
-	if (xNextMissileFireTime < gameData.app.xGameTime + 5 * F1_0)
+if (xNextMissileFireTime > gameData.time.xGame) 
+	if (xNextMissileFireTime < gameData.time.xGame + 5 * F1_0)
 		return 0;
 return 1;
 }
@@ -2645,7 +2641,7 @@ void GameSetup (void)
 	FlyInit (gameData.objs.console);
 	gameStates.app.bGameSuspended = 0;
 	ResetTime ();
-	gameData.app.xFrameTime = 0;			//make first frame zero
+	gameData.time.xFrame = 0;			//make first frame zero
 	#ifdef EDITOR
 	if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 		InitPlayerStatsGame ();
@@ -3110,7 +3106,7 @@ void DoAmbientSounds ()
 	else
 		return;
 
-	if (((d_rand () << 3) < gameData.app.xFrameTime)) {						//play the sound
+	if (((d_rand () << 3) < gameData.time.xFrame)) {						//play the sound
 		fix volume = d_rand () + f1_0/2;
 		DigiPlaySample (sound, volume);
 	}
@@ -3215,7 +3211,7 @@ if (Debug_slowdown) {
 
 	if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
 		static int turned_off=0;
-		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= (gameData.app.xFrameTime*3/8);
+		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= (gameData.time.xFrame*3/8);
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < i2f (10)) {
 			if (!turned_off) {
 				gameData.multi.players[gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
@@ -3299,20 +3295,20 @@ if (Debug_slowdown) {
 		memset (&Controls, 0, sizeof (Controls));
 //LogErr ("DropPowerups\n");
 	DropPowerups ();
-	gameData.app.xGameTime += gameData.app.xFrameTime;
-	if (f2i (gameData.app.xGameTime)/10 != f2i (gameData.app.xGameTime-gameData.app.xFrameTime)/10) {
+	gameData.time.xGame += gameData.time.xFrame;
+	if (f2i (gameData.time.xGame)/10 != f2i (gameData.time.xGame-gameData.time.xFrame)/10) {
 		}
-	if (gameData.app.xGameTime < 0 || gameData.app.xGameTime > i2f (0x7fff - 600)) {
-		gameData.app.xGameTime = gameData.app.xFrameTime;	//wrap when goes negative, or gets within 10 minutes
+	if (gameData.time.xGame < 0 || gameData.time.xGame > i2f (0x7fff - 600)) {
+		gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 		}
 #ifndef NDEBUG
 	if (FindArg ("-checktime") != 0)
-		if (gameData.app.xGameTime >= i2f (600))		//wrap after 10 minutes
-			gameData.app.xGameTime = gameData.app.xFrameTime;
+		if (gameData.time.xGame >= i2f (600))		//wrap after 10 minutes
+			gameData.time.xGame = gameData.time.xFrame;
 #endif
 #ifdef NETWORK
    if ((gameData.app.nGameMode & GM_MULTI) && netGame.PlayTimeAllowed)
-       ThisLevelTime +=gameData.app.xFrameTime;
+       ThisLevelTime +=gameData.time.xFrame;
 #endif
 //LogErr ("DigiSyncSounds\n");
 	DigiSyncSounds ();
@@ -3367,7 +3363,7 @@ if (Debug_slowdown) {
 		if (gameData.app.fusion.xAutoFireTime) {
 			if (gameData.weapons.nPrimary != FUSION_INDEX)
 				gameData.app.fusion.xAutoFireTime = 0;
-			else if (gameData.app.xGameTime + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
+			else if (gameData.time.xGame + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
 				gameData.app.fusion.xAutoFireTime = 0;
 				gameData.app.nGlobalLaserFiringCount = 1;
 				}
@@ -3404,7 +3400,7 @@ if (Debug_slowdown) {
 #ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime-i2f (27);
+		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame-i2f (27);
 		FakingInvul=1;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 		}
@@ -3502,8 +3498,8 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
-		slideU = FixMul (gameData.app.xFrameTime, slideU << 8);
-		slideV = FixMul (gameData.app.xFrameTime, slideV << 8);
+		slideU = FixMul (gameData.time.xFrame, slideU << 8);
+		slideV = FixMul (gameData.time.xFrame, slideV << 8);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {
@@ -3541,25 +3537,25 @@ void FireLaser ()
 		if ((gameData.multi.players[gameData.multi.nLocalPlayer].energy < F1_0*2) && (gameData.app.fusion.xAutoFireTime == 0)) {
 			gameData.app.nGlobalLaserFiringCount = 0;
 		} else {
-			flFrameTime += gameData.app.xFrameTime;
+			flFrameTime += gameData.time.xFrame;
 			if (gameData.app.fusion.xCharge == 0)
 				gameData.multi.players[gameData.multi.nLocalPlayer].energy -= F1_0*2;
 			gameData.app.fusion.xCharge += flFrameTime;
 			gameData.multi.players[gameData.multi.nLocalPlayer].energy -= flFrameTime;
 			if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
 				gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
-				gameData.app.fusion.xAutoFireTime = gameData.app.xGameTime -1;	//	Fire now!
+				gameData.app.fusion.xAutoFireTime = gameData.time.xGame -1;	//	Fire now!
 			} else
-				gameData.app.fusion.xAutoFireTime = gameData.app.xGameTime + flFrameTime/2 + 1;
+				gameData.app.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
 			if (gameStates.limitFPS.bFusion && !gameStates.app.b40fpsTick)
 				return;
 			if (gameData.app.fusion.xCharge < F1_0*2)
 				PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, 0, gameData.app.fusion.xCharge >> 11);
 			else
 				PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, gameData.app.fusion.xCharge >> 11, 0);
-			if (gameData.app.xGameTime < gameData.app.fusion.xLastSoundTime)		//gametime has wrapped
-				gameData.app.fusion.xNextSoundTime = gameData.app.fusion.xLastSoundTime = gameData.app.xGameTime;
-			if (gameData.app.fusion.xNextSoundTime < gameData.app.xGameTime) {
+			if (gameData.time.xGame < gameData.app.fusion.xLastSoundTime)		//gametime has wrapped
+				gameData.app.fusion.xNextSoundTime = gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
+			if (gameData.app.fusion.xNextSoundTime < gameData.time.xGame) {
 				if (gameData.app.fusion.xCharge > F1_0*2) {
 					DigiPlaySample (11, F1_0);
 					ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
@@ -3571,8 +3567,8 @@ void FireLaser ()
 						MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
 					#endif
 				}
-				gameData.app.fusion.xLastSoundTime = gameData.app.xGameTime;
-				gameData.app.fusion.xNextSoundTime = gameData.app.xGameTime + F1_0/8 + d_rand ()/4;
+				gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
+				gameData.app.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
 			}
 		flFrameTime = 0;
 		}

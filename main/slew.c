@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Reworked include files in an attempt to cut down on build times
  *
  * Revision 1.13  1993/12/01  11:44:14  matt
- * Chagned Frfract to gameData.app.xFrameTime
+ * Chagned Frfract to gameData.time.xFrame
  *
  * Revision 1.12  1993/11/08  16:21:42  john
  * made stop_slew or whatever return an int
@@ -226,11 +226,11 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 		if (abs(joy_y) < JOY_NULL) joy_y = 0;
 	
 		if (btns)
-			if (!rotang.p) rotang.p = FixMul(-joy_y * 512,gameData.app.xFrameTime); else;
+			if (!rotang.p) rotang.p = FixMul(-joy_y * 512,gameData.time.xFrame); else;
 		else
 			if (joyy_moved) objP->mtype.phys_info.velocity.z = -joy_y * 8192;
 	
-		if (!rotang.h) rotang.h = FixMul(joy_x * 512,gameData.app.xFrameTime);
+		if (!rotang.h) rotang.h = FixMul(joy_x * 512,gameData.time.xFrame);
 	
 		if (joyx_moved) old_joy_x = joy_x;
 		if (joyy_moved) old_joy_y = joy_y;
@@ -246,7 +246,7 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 	moved |= objP->mtype.phys_info.velocity.x | objP->mtype.phys_info.velocity.y | objP->mtype.phys_info.velocity.z;
 
 	svel = objP->mtype.phys_info.velocity;
-	VmVecScale(&svel,gameData.app.xFrameTime);		//movement in this frame
+	VmVecScale(&svel,gameData.time.xFrame);		//movement in this frame
 	VmVecRotate(&movement,&svel,&new_pm);
 
 //	objP->last_pos = objP->pos;

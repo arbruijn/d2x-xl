@@ -631,7 +631,7 @@ void DoAIFrame(object *objP)
 	vms_vector  gun_point;
 	vms_vector  vis_vec_pos;
 
-	ailp->next_action_time -= gameData.app.xFrameTime;
+	ailp->next_action_time -= gameData.time.xFrame;
 
 	if (aip->SKIP_AI_COUNT) {
 		aip->SKIP_AI_COUNT--;
@@ -689,16 +689,16 @@ void DoAIFrame(object *objP)
 	obj_ref = objnum ^ gameData.app.nFrameCount;
 
 	if (ailp->next_fire > -F1_0*8)
-		ailp->next_fire -= gameData.app.xFrameTime;
+		ailp->next_fire -= gameData.time.xFrame;
 
 	if (robptr->weapon_type2 != -1) {
 		if (ailp->next_fire2 > -F1_0*8)
-			ailp->next_fire2 -= gameData.app.xFrameTime;
+			ailp->next_fire2 -= gameData.time.xFrame;
 	} else
 		ailp->next_fire2 = F1_0*8;
 
 	if (ailp->time_since_processed < F1_0*256)
-		ailp->time_since_processed += gameData.app.xFrameTime;
+		ailp->time_since_processed += gameData.time.xFrame;
 
 	previous_visibility = ailp->previous_visibility;    //  Must get this before we toast the master copy!
 
@@ -785,7 +785,7 @@ _exit_cheat:
 	// Occasionally make non-still robots make a path to the player.  Based on agitation and distance from player.
 	if ((aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && !(gameData.app.nGameMode & GM_MULTI) && (robptr->companion != 1) && (robptr->thief != 1))
 		if (gameData.ai.nOverallAgitation > 70) {
-			if ((dist_to_player < F1_0*200) && (d_rand() < gameData.app.xFrameTime/4)) {
+			if ((dist_to_player < F1_0*200) && (d_rand() < gameData.time.xFrame/4)) {
 				if (d_rand() * (gameData.ai.nOverallAgitation - 40) > F1_0*5) {
 					create_path_to_player(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					return;
@@ -877,7 +877,7 @@ _exit_cheat:
 	// Decrease player awareness due to the passage of time.
 	if (ailp->player_awareness_type) {
 		if (ailp->player_awareness_time > 0) {
-			ailp->player_awareness_time -= gameData.app.xFrameTime;
+			ailp->player_awareness_time -= gameData.time.xFrame;
 			if (ailp->player_awareness_time <= 0) {
 				ailp->player_awareness_time = F1_0*2;   //new: 11/05/94
 				ailp->player_awareness_type--;          //new: 11/05/94
@@ -892,7 +892,7 @@ _exit_cheat:
 
 
 	if (gameStates.app.bPlayerIsDead && (ailp->player_awareness_type == 0))
-		if ((dist_to_player < F1_0*200) && (d_rand() < gameData.app.xFrameTime/8)) {
+		if ((dist_to_player < F1_0*200) && (d_rand() < gameData.time.xFrame/8)) {
 			if ((aip->behavior != AIB_STILL) && (aip->behavior != AIB_RUN_FROM)) {
 				if (!ai_multiplayer_awareness(objP, 30))
 					return;
@@ -931,7 +931,7 @@ _exit_cheat:
 		rval = d_rand();
 		sval = (dist_to_player * (gameStates.app.nDifficultyLevel+1))/64;
 
-		if ((FixMul(rval, sval) < gameData.app.xFrameTime) || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+		if ((FixMul(rval, sval) < gameData.time.xFrame) || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
 			ailp->player_awareness_type = PA_PLAYER_COLLISION;
 			ailp->player_awareness_time = F1_0*3;
 			ComputeVisAndVec(objP, &vis_vec_pos, ailp, &vec_to_player, &player_visibility, robptr, &visibility_and_vec_computed);
@@ -1014,7 +1014,7 @@ _exit_cheat:
 	// processed synchronously, else we get fast frames with the
 	// occasional very slow frame.
 	// AI_proc_time = ailp->time_since_processed;
-	ailp->time_since_processed = - ((objnum & 0x03) * gameData.app.xFrameTime ) / 2;
+	ailp->time_since_processed = - ((objnum & 0x03) * gameData.time.xFrame ) / 2;
 
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	//	Perform special ability
@@ -1182,7 +1182,7 @@ _exit_cheat:
 
 			if ((aip->CURRENT_STATE == AIS_REST) && (aip->GOAL_STATE == AIS_REST)) {
 				if (player_visibility) {
-					if (d_rand() < gameData.app.xFrameTime*player_visibility) {
+					if (d_rand() < gameData.time.xFrame*player_visibility) {
 						if (dist_to_player/256 < d_rand()*player_visibility) {
 							aip->GOAL_STATE = AIS_SRCH;
 							aip->CURRENT_STATE = AIS_SRCH;
@@ -1191,7 +1191,7 @@ _exit_cheat:
 				}
 			}
 
-			if (gameData.app.xGameTime - ailp->time_player_seen > CHASE_TIME_LENGTH) {
+			if (gameData.time.xGame - ailp->time_player_seen > CHASE_TIME_LENGTH) {
 
 				if (gameData.app.nGameMode & GM_MULTI)
 					if (!player_visibility && (dist_to_player > F1_0*70)) {
@@ -1337,7 +1337,7 @@ _exit_cheat:
 					ailp->mode = AIM_CHASE_OBJECT;
 				// This should not just be distance based, but also time-since-player-seen based.
 			} else if ((dist_to_player > F1_0*(20*(2*gameStates.app.nDifficultyLevel + robptr->pursuit)))
-						&& (gameData.app.xGameTime - ailp->time_player_seen > (F1_0/2*(gameStates.app.nDifficultyLevel+robptr->pursuit)))
+						&& (gameData.time.xGame - ailp->time_player_seen > (F1_0/2*(gameStates.app.nDifficultyLevel+robptr->pursuit)))
 						&& (player_visibility == 0)
 						&& (aip->behavior == AIB_NORMAL)
 						&& (ailp->mode == AIM_FOLLOW_PATH)) {
@@ -1673,7 +1673,7 @@ void AIDoCloakStuff(void)
 	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
 		gameData.ai.cloakInfo[i].last_position = gameData.objs.console->pos;
 		gameData.ai.cloakInfo[i].last_segment = gameData.objs.console->segnum;
-		gameData.ai.cloakInfo[i].last_time = gameData.app.xGameTime;
+		gameData.ai.cloakInfo[i].last_time = gameData.time.xGame;
 	}
 
 	// Make work for control centers.

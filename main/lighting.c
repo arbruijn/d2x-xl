@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * support light field for powerups.
  *
  * Revision 1.39  1994/12/15  13:04:19  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.38  1994/11/28  21:50:41  mike
  * optimizations.
@@ -591,7 +591,7 @@ switch (objtype) {
 
 		  	hoardlight=i2f(gameData.multi.players [objP->id].secondary_ammo [PROXIMITY_INDEX])/2; //i2f(12);
 			hoardlight++;
-		   fix_sincos ((gameData.app.xGameTime/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
+		   fix_sincos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
 			s>>=1;
 			hoardlight=FixMul (s,hoardlight);
@@ -665,7 +665,7 @@ switch (objtype) {
 				if (d_rand() > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
 		if (objP->id == FLARE_ID)
-			return 2* (min(tval, objP->lifeleft) + ((gameData.app.xGameTime ^ Obj_light_xlate [objnum&0x0f]) & 0x3fff));
+			return 2* (min(tval, objP->lifeleft) + ((gameData.time.xGame ^ Obj_light_xlate [objnum&0x0f]) & 0x3fff));
 		else
 			return tval;
 	}
@@ -986,7 +986,7 @@ fix ComputeObjectLight(object *objP,vms_vector *rotated_pnt)
 		fix delta_light,frame_delta;
 
 		delta_light = light - object_light [objnum];
-		frame_delta = FixMul(LIGHT_RATE,gameData.app.xFrameTime);
+		frame_delta = FixMul(LIGHT_RATE,gameData.time.xFrame);
 		if (abs(delta_light) <= frame_delta)
 			object_light [objnum] = light;		//we've hit the goal
 		else
@@ -1054,7 +1054,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 		continue;
 	if (flP->timer == 0x80000000)		//disabled
 		continue;
-	if ((flP->timer -= gameData.app.xFrameTime) < 0) {
+	if ((flP->timer -= gameData.time.xFrame) < 0) {
 		while (flP->timer < 0)
 			flP->timer += flP->delay;
 		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
@@ -1571,9 +1571,11 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 			continue;
 #endif
 		memcpy (&psl->color, &pl->color, sizeof (pl->color));
-		VmsVecToFloat (&psl->pos, &pl->vPos);
-		if (!gameStates.ogl.bUseTransform)
-			G3TransformPointf (&psl->pos, &psl->pos);
+		VmsVecToFloat (psl->pos, &pl->vPos);
+		if (gameStates.ogl.bUseTransform)
+			psl->pos [1] = psl->pos [0];
+		else
+			G3TransformPointf (psl->pos + 1, psl->pos);
 		psl->brightness = pl->brightness;
 		if (psl->bSpot = pl->bSpot) {
 			VmsVecToFloat (&psl->dir, &pl->vDir);
@@ -1609,10 +1611,26 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_RGBA,
 
 //------------------------------------------------------------------------------
 
+void SetNearestVertexLights (int nVertex, ubyte nType)
+{
+if (gameOpts->ogl.bUseLighting) {
+	short	*pnl = gameData.render.lights.ogl.nNearestVertLights [nVertex];
+	short	i;
+
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
+		if (*pnl < 0)
+			break;
+		gameData.render.lights.ogl.shader.lights [*pnl].nType = nType;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void SetNearestStaticLights (int nSegment, ubyte nType)
 {
 if (gameOpts->ogl.bUseLighting) {
-	short	*pnl = gameData.render.lights.ogl.nNearestLights [nSegment];
+	short	*pnl = gameData.render.lights.ogl.nNearestSegLights [nSegment];
 	short	i;
 
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
@@ -1790,9 +1808,9 @@ v.p.z = f2fl (pv->z);
 if (!gameStates.ogl.bUseTransform)
 	G3TransformPointf (&v, &v);
 for (i = gameData.render.lights.ogl.nLights; i; i--, pl++, psl++) {
-	d.p.x = v.p.x - psl->pos.p.x;
-	d.p.y = v.p.y - psl->pos.p.y;
-	d.p.z = v.p.z - psl->pos.p.z;
+	d.p.x = v.p.x - psl->pos [1].p.x;
+	d.p.y = v.p.y - psl->pos [1].p.y;
+	d.p.z = v.p.z - psl->pos [1].p.z;
 	l = (float) (sqrt (d.p.x * d.p.x + d.p.y * d.p.y + d.p.z * d.p.z) / 625.0);
 	psl->brightness = l / pl->brightness;
 	}

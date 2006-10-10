@@ -54,6 +54,7 @@
 #include "lightmap.h"
 #include "mouse.h"
 #include "gameseg.h"
+#include "lighting.h"
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -123,6 +124,15 @@ else {
 
 //------------------------------------------------------------------------------
 
+void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend)
+{
+gameData.render.ogl.nSrcBlend = nSrcBlend;
+gameData.render.ogl.nDestBlend = nDestBlend;
+glBlendFunc (nSrcBlend, nDestBlend);
+}
+
+//------------------------------------------------------------------------------
+
 void OglGrsColor (grs_color *pc)
 {
 	GLfloat	fc [4];
@@ -136,7 +146,7 @@ else if (pc->rgb) {
 	fc [3] = (float) (pc->color.alpha) / 255.0f;
 	if (fc [3] < 1.0f) {
 		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
 		}
 	glColor4fv (fc);
 	}
@@ -929,6 +939,8 @@ return vReflect;
 
 //------------------------------------------------------------------------------
 
+#define STATIC_LIGHT_TRANSFORM	1
+
 void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor)
 {
 	fVector3			lightDir, spotDir, vReflect;
@@ -937,6 +949,9 @@ void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFace
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
 	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
+#if !STATIC_LIGHT_TRANSFORM
+	fVector3			vertPos;
+#endif
 	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
 	int				bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
@@ -969,12 +984,26 @@ if (!bMatEmissive && (nVertex >= 0)) {
 		return;
 		}
 	}
-if (!gameStates.ogl.bUseTransform) {
-	G3RotatePointf (&vertNorm, pvVertNorm);
-	VmVecNormalizef (&vertNorm, &vertNorm);
+if (gameStates.ogl.bUseTransform) 
+	VmVecNormalizef (&vertNorm, pvVertNorm);
+else {
+#if !STATIC_LIGHT_TRANSFORM
+	if (!gameStates.render.nState)
+		VmVecNormalizef (&vertNorm, pvVertNorm);
+	else 
+#endif
+		{
+		G3RotatePointf (&vertNorm, pvVertNorm);
+		//VmVecNormalizef (&vertNorm, &vertNorm);
+		}
 	}
-else
-	vertNorm = *pvVertNorm;
+if (!gameStates.render.nState) {
+#if !STATIC_LIGHT_TRANSFORM
+	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
+	pVertPos = &vertPos;
+#endif
+	SetNearestVertexLights (nVertex, 1);
+	}
 //VmVecNegatef (&vertNorm);
 for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (i == nMatLight)
@@ -984,7 +1013,15 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if ((psl->nType == 1) && bDarkness)
 		continue;
 	lightColor = *((fVector3 *) &psl->color);
-	lightPos = psl->pos;
+#if STATIC_LIGHT_TRANSFORM
+#	ifdef _DEBUG
+	G3TransformPointf (&lightPos, psl->pos);
+#	else
+	lightPos = psl->pos [1];
+#	endif
+#else
+	lightPos = psl->pos [gameStates.render.nState];
+#endif
 	VmVecSubf (&lightDir, &lightPos, pVertPos);
 	//scaled quadratic fAttenuation depending on brightness
 	if (psl->brightness < 0)
@@ -1023,8 +1060,13 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		spotEffect = (float) pow (spotEffect, psl->spotExponent);
 		fAttenuation /= spotEffect;
 		}
-	//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
-	VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
+	else if (NdotL < 0) {
+		NdotL = 0;
+		vertColor = matAmbient;
+		}
+	else
+		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
+		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
 	if ((NdotL > 0.0) && bMatSpecular) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular

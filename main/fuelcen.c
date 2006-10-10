@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fix confusing precedence problems.
  *
  * Revision 1.149  1994/12/15  13:04:22  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.148  1994/12/15  03:05:18  matt
  * Added error checking for NULL return from ObjectCreateExplosion ()
@@ -85,9 +85,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.144  1994/12/11  23:18:04  john
  * Added -nomusic.
- * Added gameData.app.xRealFrameTime.
+ * Added gameData.time.xRealFrame.
  * Put in a pause when sound initialization error.
- * Made controlcen countdown and framerate use gameData.app.xRealFrameTime.
+ * Made controlcen countdown and framerate use gameData.time.xRealFrame.
  *
  * Revision 1.143  1994/12/11  14:10:16  mike
  * louder sounds.
@@ -254,7 +254,7 @@ static char rcsid [] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 #include "inferno.h"
 #include "fuelcen.h"
 #include "gameseg.h"
-#include "game.h"		// For gameData.app.xFrameTime
+#include "game.h"		// For gameData.time.xFrame
 #include "error.h"
 #include "mono.h"
 #include "gauges.h"
@@ -633,7 +633,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 		if (!robotcen->Enabled)
 			return;
 		if (robotcen->Disable_time > 0) {
-			robotcen->Disable_time -= gameData.app.xFrameTime;
+			robotcen->Disable_time -= gameData.time.xFrame;
 			if (robotcen->Disable_time <= 0) {
 #if TRACE
 				con_printf (CON_DEBUG, "Robot center #%i gets disabled due to time running out.\n", 
@@ -690,7 +690,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 		return;
 	}
 
-	robotcen->Timer += gameData.app.xFrameTime;
+	robotcen->Timer += gameData.time.xFrame;
 
 	switch (robotcen->Flag)	{
 	case 0:		// Wait until next robot can generate
@@ -876,7 +876,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 void FuelcenUpdateAll ()
 {
 	int i;
-	fix xAmountToReplenish = FixMul (gameData.app.xFrameTime,gameData.matCens.xFuelRefillSpeed);
+	fix xAmountToReplenish = FixMul (gameData.time.xFrame,gameData.matCens.xFuelRefillSpeed);
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
 		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER)	{
@@ -928,18 +928,18 @@ if (!segP)
 xsegP = gameData.segs.xSegments + SEG_IDX (segP);
 if ((xsegP->owner < 1) || (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1))
 	return 0;
-amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
+amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
 if (amount > MaxAmountCanGive)
 	amount = MaxAmountCanGive;
-if (last_play_time > gameData.app.xGameTime)
+if (last_play_time > gameData.time.xGame)
 	last_play_time = 0;
-if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
+if (gameData.time.xGame > last_play_time+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0/2);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0/2);
 #endif
-	last_play_time = gameData.app.xGameTime;
+	last_play_time = gameData.time.xGame;
 	}
 return amount;
 }
@@ -976,22 +976,22 @@ fix FuelCenGiveFuel (segment *segP, fix MaxAmountCanTake)
 			return 0;
 		}
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			amount = FixMul (gameData.app.xFrameTime, 
+			amount = FixMul (gameData.time.xFrame, 
 								  gameData.matCens.xFuelGiveAmount * 
 								  extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
 		else
-			amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount);
+			amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
 		if (amount > MaxAmountCanTake)
 			amount = MaxAmountCanTake;
-		if (last_play_time > gameData.app.xGameTime)
+		if (last_play_time > gameData.time.xGame)
 			last_play_time = 0;
-		if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
+		if (gameData.time.xGame > last_play_time+FUELCEN_SOUND_DELAY) {
 			DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #endif
-			last_play_time = gameData.app.xGameTime;
+			last_play_time = gameData.time.xGame;
 		}
 
 
@@ -1038,18 +1038,18 @@ if (seg2p->special != SEGMENT_IS_REPAIRCEN)
 if (MaxAmountCanTake <= 0)	{
 	return 0;
 }
-amount = FixMul (gameData.app.xFrameTime, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
+amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
 if (amount > MaxAmountCanTake)
 	amount = MaxAmountCanTake;
-if (last_play_time > gameData.app.xGameTime)
+if (last_play_time > gameData.time.xGame)
 	last_play_time = 0;
-if (gameData.app.xGameTime > last_play_time+FUELCEN_SOUND_DELAY) {
+if (gameData.time.xGame > last_play_time+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 #endif
-	last_play_time = gameData.app.xGameTime;
+	last_play_time = gameData.time.xGame;
 	}
 return amount;
 }
@@ -1245,13 +1245,13 @@ return amount;
 //--repair-- 	//update shields
 //--repair-- 	if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < MAX_SHIELDS) {	//if above max, don't mess with it
 //--repair--
-//--repair-- 		gameData.multi.players [gameData.multi.nLocalPlayer].shields += FixMul (gameData.app.xFrameTime,repair_rate);
+//--repair-- 		gameData.multi.players [gameData.multi.nLocalPlayer].shields += FixMul (gameData.time.xFrame,repair_rate);
 //--repair--
 //--repair-- 		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > MAX_SHIELDS)
 //--repair-- 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
 //--repair-- 	}
 //--repair--
-//--repair-- 	current_time += gameData.app.xFrameTime;
+//--repair-- 	current_time += gameData.time.xFrame;
 //--repair--
 //--repair-- 	if (current_time >= delta_time)	{
 //--repair-- 		vms_angvec av;

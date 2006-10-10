@@ -222,7 +222,7 @@ void DoReactorDeadFrame (void)
 if ((gameData.reactor.nDeadObj != -1) && 
 	 (gameData.objs.objects [gameData.reactor.nDeadObj].type == OBJ_CNTRLCEN) &&
 	 (gameData.reactor.countdown.nSecsLeft > 0))
-	if (d_rand () < gameData.app.xFrameTime * 4)
+	if (d_rand () < gameData.time.xFrame * 4)
 		CreateSmallFireballOnObject (&gameData.objs.objects[gameData.reactor.nDeadObj], F1_0, 1);
 if (gameData.reactor.bDestroyed && !gameStates.app.bEndLevelSequence)
 	DoCountdownFrame ();
@@ -242,7 +242,7 @@ if (!gameData.reactor.bDestroyed) {
 	cdtFrameTime = 0;
 	return;
 	}
-cdtFrameTime += gameData.app.xRealFrameTime;
+cdtFrameTime += gameData.time.xRealFrame;
 if (gameStates.limitFPS.bCountDown && !gameStates.app.b40fpsTick)
 	return;
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and SHAREWARE only
@@ -402,13 +402,13 @@ if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 
 //	Periodically, make the reactor fall asleep if player not visible.
 if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
-	if ((Last_time_cc_vis_check + F1_0*5 < gameData.app.xGameTime) || (Last_time_cc_vis_check > gameData.app.xGameTime)) {
+	if ((Last_time_cc_vis_check + F1_0*5 < gameData.time.xGame) || (Last_time_cc_vis_check > gameData.time.xGame)) {
 		vms_vector	vec_to_player;
 		fix			dist_to_player;
 
 		VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
 		dist_to_player = VmVecNormalizeQuick (&vec_to_player);
-		Last_time_cc_vis_check = gameData.app.xGameTime;
+		Last_time_cc_vis_check = gameData.time.xGame;
 		if (dist_to_player < F1_0*120) {
 			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
 			if (!gameData.reactor.bSeenPlayer)
@@ -417,7 +417,7 @@ if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
 		}
 	}
 
-if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.app.xGameTime > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
+if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
 		nBestGun = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
 	else
@@ -473,7 +473,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 		}
 	} 
 else
-	gameData.reactor.nNextFireTime -= gameData.app.xFrameTime;
+	gameData.reactor.nNextFireTime -= gameData.time.xFrame;
 }
 
 //	-----------------------------------------------------------------------------

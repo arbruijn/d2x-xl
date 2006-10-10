@@ -1538,7 +1538,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 
 		t2 = TimerGetFixedSeconds ();
 		if (pause_game)
-			gameData.app.xFrameTime=t2-t1;
+			gameData.time.xFrame=t2-t1;
 		t1 = t2;
 	}
 

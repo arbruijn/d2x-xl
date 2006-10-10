@@ -1126,7 +1126,8 @@ int ComputeNearestSegmentLights (int i)
 
 if (!gameData.render.lights.ogl.nLights)
 	return 0;
-if (! (pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
+if (!(pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
+	gameOpts->ogl.bUseLighting = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
@@ -1149,9 +1150,52 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.ogl.nNearestLights [i][l] = pDists [l].nIndex;
+		gameData.render.lights.ogl.nNearestSegLights [i][l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.ogl.nNearestLights [i][l] = -1;
+		gameData.render.lights.ogl.nNearestSegLights [i][l] = -1;
+	}
+d_free (pDists);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ComputeNearestVertexLights (int i)
+{
+	vms_vector			*vertP;
+	tOglLight			*pl;
+	int					h, j, l, n, nMaxLights;
+	vms_vector			dist;
+	struct tLightDist	*pDists;
+
+if (!gameData.render.lights.ogl.nLights)
+	return 0;
+if (!(pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
+	gameOpts->ogl.bUseLighting = 0;
+	gameData.render.shadows.nLights = 0;
+	return 0;
+	}
+nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
+if (nMaxLights > MAX_NEAREST_LIGHTS)
+	nMaxLights = MAX_NEAREST_LIGHTS;
+INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
+for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
+	pl = gameData.render.lights.ogl.lights;
+	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
+		VmVecSub (&dist, vertP, &pl->vPos);
+		h = VmVecMag (&dist);
+		if ((pDists [n].nDist = VmVecMag (&dist)) <= F1_0 * 125) {
+			pDists [n].nIndex = l;
+			n++;
+			}
+		}
+	if (n)
+		QSortLightDist (pDists, 0, n - 1);
+	h = (nMaxLights < n) ? nMaxLights : n;
+	for (l = 0; l < h; l++)
+		gameData.render.lights.ogl.nNearestVertLights [i][l] = pDists [l].nIndex;
+	for (; l < MAX_NEAREST_LIGHTS; l++)
+		gameData.render.lights.ogl.nNearestVertLights [i][l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1255,7 +1299,7 @@ for (segP = gameData.segs.segments + segnum;  segnum < lastSeg; segnum++, segP++
 				sideP->tmap_num = CFReadShort (loadFile);
 			if (gameData.segs.nLevelVersion <= 1)
 				sideP->tmap_num = convert_d1_tmap_num (sideP->tmap_num);
-			if (bNewFileFormat && ! (temp_ushort & 0x8000))
+			if (bNewFileFormat && !(temp_ushort & 0x8000))
 				sideP->tmap_num2 = 0;
 			else {
 				// Read short sideP->tmap_num2;
@@ -1493,9 +1537,23 @@ GrPaletteStepLoad (NULL);
 static void SortLightsPoll (int nItems, newmenu_item *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
-ComputeNearestSegmentLights (loadIdx);
-loadIdx += PROGRESS_INCR;
-if (loadIdx >= gameData.segs.nSegments) {
+if (loadOp == 0) {
+	ComputeNearestSegmentLights (loadIdx);
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nSegments) {
+		loadIdx = 0;
+		loadOp = 1;
+		}
+	}
+else if (loadOp == 1) {
+	ComputeNearestVertexLights (loadIdx);
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nVertices) {
+		loadIdx = 0;
+		loadOp = 2;
+		}
+	}
+else if (loadOp == 2) {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
 	return;
@@ -1537,7 +1595,8 @@ else {
 		i++;
 	}
 if (gameOpts->ogl.bUseLighting)
-	i += PROGRESS_STEPS (gameData.segs.nSegments * 10);
+	i += PROGRESS_STEPS (gameData.segs.nSegments * 10) +
+		  PROGRESS_STEPS (gameData.segs.nVertices * 10);
 return i;
 }
 
@@ -1560,8 +1619,10 @@ loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	NMProgressBar (TXT_PREP_DESCENT, LoadMineGaugeSize () - (gameData.segs.nSegments * 10 + PROGRESS_INCR - 1) / PROGRESS_INCR, 
 						LoadMineGaugeSize () + PagingGaugeSize (), SortLightsPoll); 
-else
+else {
 	ComputeNearestSegmentLights (-1);
+	ComputeNearestVertexLights (-1);
+	}
 }
 
 //------------------------------------------------------------------------------

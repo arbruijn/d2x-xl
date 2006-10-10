@@ -104,6 +104,7 @@ void TransformOglLights ();
 short FindOglLight (short nSegment, short nSide, short nObject);
 int ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
 void SetOglLightMaterial (short nSegment, short nSide, short nObject);
+void SetNearestVertexLights (int nVertex, ubyte nType);
 void SetNearestStaticLights (int nSegment, ubyte nType);
 void SetNearestDynamicLights (int nSegment);
 void InitLightingShaders (void);

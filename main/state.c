@@ -812,8 +812,8 @@ CFWrite (gameData.missions.list + gameData.missions.nCurrentMission, sizeof (cha
 //Save level info
 CFWrite (&gameData.missions.nCurrentLevel, sizeof (int), 1, fp);
 CFWrite (&gameData.missions.nNextLevel, sizeof (int), 1, fp);
-//Save gameData.app.xGameTime
-CFWrite (&gameData.app.xGameTime, sizeof (fix), 1, fp);
+//Save gameData.time.xGame
+CFWrite (&gameData.time.xGame, sizeof (fix), 1, fp);
 // If coop save, save all
 #ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
@@ -1081,8 +1081,8 @@ CFWriteInt (playerP->last_score, fp);             // Score at beginning of curre
 CFWriteInt (playerP->score, fp);                  // Current score.
 CFWriteFix (playerP->time_level, fp);             // Level time played
 CFWriteFix (playerP->time_total, fp);             // Game time played (high word = seconds)
-CFWriteFix (playerP->cloak_time, fp);             // Time cloaked
-CFWriteFix (playerP->invulnerable_time, fp);      // Time invulnerable
+CFWriteFix (gameData.time.xGame - playerP->cloak_time, fp);             // Time cloaked
+CFWriteFix (gameData.time.xGame - playerP->invulnerable_time, fp);      // Time invulnerable
 CFWriteShort (playerP->KillGoalCount, fp);          // Num of players killed this level
 CFWriteShort (playerP->net_killed_total, fp);       // Number of times killed total
 CFWriteShort (playerP->net_kills_total, fp);        // Number of net kills total
@@ -1345,8 +1345,8 @@ CFWrite (gameData.missions.list + gameData.missions.nCurrentMission, sizeof (cha
 //Save level info
 CFWriteInt (gameData.missions.nCurrentLevel, fp);
 CFWriteInt (gameData.missions.nNextLevel, fp);
-//Save gameData.app.xGameTime
-CFWriteFix (gameData.app.xGameTime, fp);
+//Save gameData.time.xGame
+CFWriteFix (gameData.time.xGame, fp);
 // If coop save, save all
 #ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
@@ -2107,9 +2107,9 @@ playerP->nCloaks = (ubyte) CFReadByte (fp);
 playerP->last_score = CFReadInt (fp);             // Score at beginning of current level.
 playerP->score = CFReadInt (fp);                  // Current score.
 playerP->time_level = CFReadFix (fp);             // Level time played
-playerP->time_total = CFReadFix (fp);             // Game time played (high word = seconds)
-playerP->cloak_time = CFReadFix (fp);             // Time cloaked
-playerP->invulnerable_time = CFReadFix (fp);      // Time invulnerable
+playerP->time_total = CFReadFix (fp);	// Game time played (high word = seconds)
+playerP->cloak_time = gameData.time.xGame + CFReadFix (fp); // Time cloaked
+playerP->invulnerable_time = gameData.time.xGame + CFReadFix (fp);      // Time invulnerable
 playerP->KillGoalCount = CFReadShort (fp);          // Num of players killed this level
 playerP->net_killed_total = CFReadShort (fp);       // Number of times killed total
 playerP->net_kills_total = CFReadShort (fp);        // Number of net kills total
@@ -2381,8 +2381,8 @@ if (!StateLoadMission (fp))
 //Read level info
 nCurrentLevel = CFReadInt (fp);
 nNextLevel = CFReadInt (fp);
-//Restore gameData.app.xGameTime
-gameData.app.xGameTime = CFReadFix (fp);
+//Restore gameData.time.xGame
+gameData.time.xGame = CFReadFix (fp);
 // Start new game....
 StateRestoreMultiGame (szOrgCallSign, bMulti, bSecretRestore);
 #ifdef NETWORK
@@ -2544,11 +2544,11 @@ if (!bBetweenLevels)	{
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	fpos = CFTell (fp);
 	//	Restore hacked up weapon system stuff.
-	gameData.app.fusion.xNextSoundTime = gameData.app.xGameTime;
+	gameData.app.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.app.fusion.xAutoFireTime = 0;
-	xNextLaserFireTime = gameData.app.xGameTime;
-	xNextMissileFireTime = gameData.app.xGameTime;
-	Last_laser_fired_time = gameData.app.xGameTime;
+	xNextLaserFireTime = gameData.time.xGame;
+	xNextMissileFireTime = gameData.time.xGame;
+	Last_laser_fired_time = gameData.time.xGame;
 	}
 gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) CFReadInt (fp);
@@ -2612,8 +2612,8 @@ if (!StateLoadMission (fp))
 //Read level info
 CFRead (&nCurrentLevel, sizeof (int), 1, fp);
 CFRead (&nNextLevel, sizeof (int), 1, fp);
-//Restore gameData.app.xGameTime
-CFRead (&gameData.app.xGameTime, sizeof (fix), 1, fp);
+//Restore gameData.time.xGame
+CFRead (&gameData.time.xGame, sizeof (fix), 1, fp);
 // Start new game....
 StateRestoreMultiGame (szOrgCallSign, bMulti, bSecretRestore);
 #ifdef NETWORK
@@ -2754,11 +2754,11 @@ if (!bBetweenLevels)	{
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 
 	//	Restore hacked up weapon system stuff.
-	gameData.app.fusion.xNextSoundTime = gameData.app.xGameTime;
+	gameData.app.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.app.fusion.xAutoFireTime = 0;
-	xNextLaserFireTime = gameData.app.xGameTime;
-	xNextMissileFireTime = gameData.app.xGameTime;
-	Last_laser_fired_time = gameData.app.xGameTime;
+	xNextLaserFireTime = gameData.time.xGame;
+	xNextMissileFireTime = gameData.time.xGame;
+	Last_laser_fired_time = gameData.time.xGame;
 
 }
 gameData.app.nStateGameId = 0;
@@ -2848,7 +2848,7 @@ int StateRestoreAllSub (char *filename, int bMulti, int bSecretRestore)
 	char			szDesc [DESC_LENGTH + 1];
 	char			id [5];
 	int			sgVersion, i;
-	fix			xOldGameTime = gameData.app.xGameTime;
+	fix			xOldGameTime = gameData.time.xGame;
 
 if (! (fp = CFOpen (filename, gameFolders.szSaveDir, "rb", 0)))
 	return 0;
@@ -2973,7 +2973,7 @@ int StateGetGameId (char *filename)
 	CFRead (&dumbint, sizeof (int), 1, fp);
 	CFRead (&dumbint, sizeof (int), 1, fp);
 
-//Restore gameData.app.xGameTime
+//Restore gameData.time.xGame
 	CFRead (&dumbint, sizeof (fix), 1, fp);
 
 	CFRead (&gameData.app.nStateGameId, sizeof (int), 1, fp);

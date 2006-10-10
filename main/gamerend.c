@@ -209,8 +209,8 @@ void show_framerate()
 	int x = 8, y = 5; // position measured from lower right corner
    //static int q;
 
-	frame_time_total += gameData.app.xRealFrameTime - frame_time_list[frame_time_cntr];
-	frame_time_list[frame_time_cntr] = gameData.app.xRealFrameTime;
+	frame_time_total += gameData.time.xRealFrame - frame_time_list[frame_time_cntr];
+	frame_time_list[frame_time_cntr] = gameData.time.xRealFrame;
 	frame_time_cntr = (frame_time_cntr+1)%8;
 	t = SDL_GetTicks ();
 	if ((t0 < 0) || (t - t0 >= 500)) {
@@ -237,7 +237,7 @@ void draw_window_label()
 	{
 		char *viewer_name,*control_name;
 		char	*viewer_id;
-		Show_view_text_timer -= gameData.app.xFrameTime;
+		Show_view_text_timer -= gameData.time.xFrame;
 		GrSetCurFont( GAME_FONT );
 
 		viewer_id = "";

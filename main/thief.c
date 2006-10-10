@@ -141,7 +141,7 @@ void RecreateThief(object *objP)
 
 	new_obj = CreateMorphRobot( &gameData.segs.segments[segnum], &center_point, objP->id);
 	InitAIObject(OBJ_IDX (new_obj), AIB_SNIPE, -1);
-	gameData.thief.xReInitTime = gameData.app.xGameTime + F1_0*10;		//	In 10 seconds, re-initialize thief.
+	gameData.thief.xReInitTime = gameData.time.xGame + F1_0*10;		//	In 10 seconds, re-initialize thief.
 }
 
 //	----------------------------------------------------------------------------
@@ -152,8 +152,8 @@ void DoThiefFrame(object *objP, fix dist_to_player, int player_visibility, vms_v
 	ai_local		*ailp = &gameData.ai.localInfo[objnum];
 	fix			connected_distance;
 
-	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.app.xGameTime)) {
-		if (gameData.thief.xReInitTime > gameData.app.xGameTime - F1_0*2)
+	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
+		if (gameData.thief.xReInitTime > gameData.time.xGame - F1_0*2)
 			InitThiefForLevel();
 		gameData.thief.xReInitTime = 0x3f000000;
 	}

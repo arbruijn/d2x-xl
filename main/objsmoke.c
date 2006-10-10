@@ -123,7 +123,7 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
+	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 200 : 100;
 	if (SHOW_SMOKE && gameOpts->render.smoke.bPlayers) {
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating player smoke\n");
@@ -213,7 +213,10 @@ i = (int) (objP - gameData.objs.objects);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
-	nParts = (objP->id == EARTHSHAKER_ID) ? 3000 : (objP->id == MEGA_ID) ? 2000 : 1000;
+	nParts = (objP->id == EARTHSHAKER_ID) ? 3000 : 
+				(objP->id == MEGA_ID) ? 2500 : 
+				(objP->id == SMART_ID) ? 2000 : 
+				1500;
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);

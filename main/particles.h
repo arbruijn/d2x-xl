@@ -29,6 +29,7 @@ typedef struct tParticle {
 	int			nMoved;			//time last moved
 	int			nWidth;
 	int			nHeight;
+	int			nRad;
 	short			nSegment;
 } tParticle;
 

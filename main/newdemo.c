@@ -826,7 +826,7 @@ static sbyte	bNDBadRead;
 
 #define ND_EVENT_EOF                0   // EOF
 #define ND_EVENT_START_DEMO         1   // Followed by 16 character, NULL terminated filename of .SAV file to use
-#define ND_EVENT_START_FRAME        2   // Followed by integer frame number, then a fix gameData.app.xFrameTime
+#define ND_EVENT_START_FRAME        2   // Followed by integer frame number, then a fix gameData.time.xFrame
 #define ND_EVENT_VIEWER_OBJECT      3   // Followed by an object structure
 #define ND_EVENT_RENDER_OBJECT      4   // Followed by an object structure
 #define ND_EVENT_SOUND              5   // Followed by int soundum
@@ -1466,8 +1466,8 @@ else {
 	}
 if (objP->type == OBJ_ROBOT) {
 	if (gameData.bots.pInfo [objP->id].boss_flag) {
-		if ((gameData.app.xGameTime > gameData.boss.nCloakStartTime) && 
-			 (gameData.app.xGameTime < gameData.boss.nCloakEndTime))
+		if ((gameData.time.xGame > gameData.boss.nCloakStartTime) && 
+			 (gameData.time.xGame < gameData.boss.nCloakEndTime))
 			NDWriteByte (1);
 		else
 			NDWriteByte (0);
@@ -1576,7 +1576,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte (DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
-NDWriteFix (gameData.app.xGameTime);
+NDWriteFix (gameData.time.xGame);
 #ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	NDWriteInt (gameData.app.nGameMode | (gameData.multi.nLocalPlayer << 16));
@@ -2268,9 +2268,9 @@ if (version < DEMO_VERSION) {
 		return 1;
 	}
 gameData.demo.bUseShortPos = (version == DEMO_VERSION);
-gameData.app.xGameTime = NDReadFix ();
+gameData.time.xGame = NDReadFix ();
 gameData.boss.nCloakStartTime =
-gameData.boss.nCloakEndTime = gameData.app.xGameTime;
+gameData.boss.nCloakEndTime = gameData.time.xGame;
 gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 #ifdef NETWORK
@@ -2335,11 +2335,11 @@ energy = NDReadByte ();
 shield = NDReadByte ();
 gameData.multi.players [gameData.multi.nLocalPlayer].flags = NDReadInt ();
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime - (CLOAK_TIME_MAX / 2);
+	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 	gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
 	}
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - (INVULNERABLE_TIME_MAX / 2);
+	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 gameData.weapons.nPrimary = NDReadByte ();
 gameData.weapons.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
@@ -2405,7 +2405,7 @@ while (!done) {
 	c = NDReadByte ();
 	CATCH_BAD_READ
 	switch (c) {
-		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.app.xFrameTime
+		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
 			short last_frame_length;
 
 			done=1;
@@ -2727,18 +2727,18 @@ while (!done) {
 					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multi.nLocalPlayer);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime - (CLOAK_TIME_MAX / 2);
+					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 					gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
 					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - (INVULNERABLE_TIME_MAX / 2);
+					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags = oflags;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime - (CLOAK_TIME_MAX / 2);
+					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 					gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
@@ -2746,7 +2746,7 @@ while (!done) {
 					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multi.nLocalPlayer);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - (INVULNERABLE_TIME_MAX / 2);
+					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
 					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = 0;
 				}
@@ -2924,7 +2924,7 @@ while (!done) {
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				gameData.multi.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloak_time = gameData.app.xGameTime  - (CLOAK_TIME_MAX / 2);
+				gameData.multi.players [pnum].cloak_time = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << pnum);
 				}
 			}
@@ -2935,7 +2935,7 @@ while (!done) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				gameData.multi.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloak_time = gameData.app.xGameTime  - (CLOAK_TIME_MAX / 2);
+				gameData.multi.players [pnum].cloak_time = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << pnum);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
@@ -3315,11 +3315,11 @@ gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (energy);
 gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (shield);
 gameData.multi.players [gameData.multi.nLocalPlayer].flags = NDReadInt ();
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime - (CLOAK_TIME_MAX / 2);
+	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 	gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
 	}
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - (INVULNERABLE_TIME_MAX / 2);
+	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 gameData.weapons.nPrimary = NDReadByte ();
 gameData.weapons.nSecondary = NDReadByte ();
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
@@ -3497,9 +3497,9 @@ void NDPlayBackOneFrame ()
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (gameData.demo.bPlayersCloaked &(1 << i))
-		gameData.multi.players [i].cloak_time = gameData.app.xGameTime - (CLOAK_TIME_MAX / 2);
+		gameData.multi.players [i].cloak_time = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - (INVULNERABLE_TIME_MAX / 2);
+	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 if (gameData.demo.nVcrState == ND_STATE_PAUSED)       // render a frame or not
 	return;
 if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
@@ -3573,11 +3573,11 @@ else {
 	if (gameData.demo.nFrameCount <= 0)
 		gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal;      // baseline total playback time
 	else
-		gameData.demo.xPlaybackTotal += gameData.app.xFrameTime;
+		gameData.demo.xPlaybackTotal += gameData.time.xFrame;
 	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) &&(gameData.demo.nFrameCount > 10))
 		if ((gameData.demo.xPlaybackTotal * INTERPOL_FACTOR) < gameData.demo.xRecordedTotal) {
 			gameData.demo.nPlaybackStyle = INTERPOLATE_PLAYBACK;
-			gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal + gameData.app.xFrameTime;  // baseline playback time
+			gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal + gameData.time.xFrame;  // baseline playback time
 			base_interpol_time = gameData.demo.xRecordedTotal;
 			d_recorded = gameData.demo.xRecordedTime;                      // baseline delta recorded
 			}
@@ -3587,9 +3587,9 @@ else {
 	if ((gameData.demo.nPlaybackStyle == INTERPOLATE_PLAYBACK) && gameData.demo.bInterpolate) {
 		fix d_play = 0;
 
-		if (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.app.xFrameTime) {
+		if (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
 			d_recorded = gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal;
-			while (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.app.xFrameTime) {
+			while (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
 				object *curObjs;
 				int i, j, num_objs, level;
 
@@ -3628,7 +3628,7 @@ else {
 					}
 				d_free (curObjs);
 				d_recorded += gameData.demo.xRecordedTime;
-				base_interpol_time = gameData.demo.xPlaybackTotal - gameData.app.xFrameTime;
+				base_interpol_time = gameData.demo.xPlaybackTotal - gameData.time.xFrame;
 				}
 			}
 		d_play = gameData.demo.xPlaybackTotal - base_interpol_time;
@@ -4082,10 +4082,10 @@ void DoJasonInterpolate (fix xRecordedTime)
 {
 	fix xDelay;
 
-gameData.demo.xJasonPlaybackTotal += gameData.app.xFrameTime;
+gameData.demo.xJasonPlaybackTotal += gameData.time.xFrame;
 if (!gameData.demo.bFirstTimePlayback) {
 	// get the difference between the recorded time and the playback time
-	xDelay = (xRecordedTime - gameData.app.xFrameTime);
+	xDelay = (xRecordedTime - gameData.time.xFrame);
 	if (xDelay >= f0_0) {
 		StopTime ();
 		timer_delay (xDelay);

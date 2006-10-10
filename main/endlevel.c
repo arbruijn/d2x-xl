@@ -665,7 +665,7 @@ if (alt_total_delta < total_delta) {
 	delta_angs = alt_delta_angs;
 }
 
-frame_turn = FixMul (gameData.app.xFrameTime, CHASE_TURN_RATE);
+frame_turn = FixMul (gameData.time.xFrame, CHASE_TURN_RATE);
 
 if (abs (delta_angs.p) < frame_turn) {
 	cur_angles->p = desired_angles->p;
@@ -741,7 +741,7 @@ MoveAllObjects ();
 gameData.objs.console->last_pos = save_last_pos;
 
 if (gameStates.render.bExtExplPlaying) {
-	external_explosion.lifeleft -= gameData.app.xFrameTime;
+	external_explosion.lifeleft -= gameData.time.xFrame;
 	DoExplosionSequence (&external_explosion);
 	if (external_explosion.lifeleft < ext_expl_halflife)
 		gameStates.gameplay.bMineDestroyed = 1;
@@ -751,7 +751,7 @@ if (gameStates.render.bExtExplPlaying) {
 
 if (gameData.endLevel.xCurFlightSpeed != gameData.endLevel.xDesiredFlightSpeed) {
 	fix delta = gameData.endLevel.xDesiredFlightSpeed - gameData.endLevel.xCurFlightSpeed;
-	fix frame_accel = FixMul (gameData.app.xFrameTime, FLY_ACCEL);
+	fix frame_accel = FixMul (gameData.time.xFrame, FLY_ACCEL);
 
 	if (abs (delta) < frame_accel)
 		gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed;
@@ -784,7 +784,7 @@ if (!gameStates.render.bOutsideMine) {
 		}
 
 	//do explosions chasing player
-	if ((explosion_wait1-=gameData.app.xFrameTime) < 0) {
+	if ((explosion_wait1-=gameData.time.xFrame) < 0) {
 		vms_vector	tpnt;
 		short			segnum;
 		object		*expl;
@@ -807,7 +807,7 @@ if (!gameStates.render.bOutsideMine) {
 
 //do little explosions on walls
 if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-	if ((explosion_wait2-=gameData.app.xFrameTime) < 0) {
+	if ((explosion_wait2-=gameData.time.xFrame) < 0) {
 		vms_vector tpnt;
 		fvi_query fq;
 		fvi_info hit_data;
@@ -877,7 +877,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		DoEndLevelFlyThrough (0);
 		DoEndLevelFlyThrough (1);
 		if (timer>0) {
-			timer -= gameData.app.xFrameTime;
+			timer -= gameData.time.xFrame;
 			if (timer < 0)		//reduce speed
 				fly_objects [1].speed = fly_objects [0].speed;
 			}
@@ -902,15 +902,15 @@ slew_obj = gameData.objs.endLevelCamera;
 #ifndef SLEW_ON
 		vms_angvec cam_angles;
 #endif
-		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.app.xFrameTime, gameData.endLevel.xCurFlightSpeed));
+		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
 #ifndef SLEW_ON
-		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.fvec, FixMul (gameData.app.xFrameTime, -2*gameData.endLevel.xCurFlightSpeed));
-		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.uvec, FixMul (gameData.app.xFrameTime, -gameData.endLevel.xCurFlightSpeed/10));
+		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.fvec, FixMul (gameData.time.xFrame, -2*gameData.endLevel.xCurFlightSpeed));
+		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.uvec, FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
 		VmExtractAnglesMatrix (&cam_angles, &gameData.objs.endLevelCamera->orient);
-		cam_angles.b += FixMul (bank_rate, gameData.app.xFrameTime);
+		cam_angles.b += FixMul (bank_rate, gameData.time.xFrame);
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->orient, &cam_angles);
 #endif
-		timer -= gameData.app.xFrameTime;
+		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 			gameStates.app.bEndLevelSequence = EL_STOPPED;
 			VmExtractAnglesMatrix (&player_angles, &gameData.objs.console->orient);
@@ -923,13 +923,13 @@ slew_obj = gameData.objs.endLevelCamera;
 		GetAnglesToObject (&player_dest_angles, &gameData.endLevel.station.vPos, &gameData.objs.console->pos);
 		ChaseAngles (&player_angles, &player_dest_angles);
 		VmAngles2Matrix (&gameData.objs.console->orient, &player_angles);
-		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.app.xFrameTime, gameData.endLevel.xCurFlightSpeed));
-		timer -= gameData.app.xFrameTime;
+		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
+		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 #ifdef SLEW_ON
 			slew_obj = gameData.objs.endLevelCamera;
 			DoSlewMovement (gameData.objs.endLevelCamera, 1, 1);
-			timer += gameData.app.xFrameTime;		//make time stop
+			timer += gameData.time.xFrame;		//make time stop
 			break;
 #else
 #	ifdef SHORT_SEQUENCE
@@ -955,7 +955,7 @@ slew_obj = gameData.objs.endLevelCamera;
 		GetAnglesToObject (&player_dest_angles, &gameData.endLevel.station.vPos, &gameData.objs.console->pos);
 		ChaseAngles (&player_angles, &player_dest_angles);
 		VmAngles2Matrix (&gameData.objs.console->orient, &player_angles);
-		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.app.xFrameTime, gameData.endLevel.xCurFlightSpeed);
+		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
 
 #ifdef SLEW_ON
 		DoSlewMovement (gameData.objs.endLevelCamera, 1, 1);
@@ -992,9 +992,9 @@ slew_obj = gameData.objs.endLevelCamera;
 		GetAnglesToObject (&player_dest_angles, &gameData.endLevel.station.vPos, &gameData.objs.console->pos);
 		ChaseAngles (&player_angles, &player_dest_angles);
 		VmAngles2Matrix (&gameData.objs.console->orient, &player_angles);
-		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.app.xFrameTime, gameData.endLevel.xCurFlightSpeed);
+		VmVecScaleInc (&gameData.objs.console->pos, &gameData.objs.console->orient.fvec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed);
 #ifndef SLEW_ON
-		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.fvec, FixMul (gameData.app.xFrameTime, FixMul (speed_scale, gameData.endLevel.xCurFlightSpeed));
+		VmVecScaleInc (&gameData.objs.endLevelCamera->pos, &gameData.objs.endLevelCamera->orient.fvec, FixMul (gameData.time.xFrame, FixMul (speed_scale, gameData.endLevel.xCurFlightSpeed));
 		if (VmVecDist (&gameData.objs.console->pos, &gameData.endLevel.station.vPos) < i2f (10))
 			StopEndLevelSequence ();
 #endif
@@ -1256,8 +1256,8 @@ old_player_seg = objP->segnum;
 //move the player for this frame
 
 if (!flydata->first_time) {
-	VmVecScaleInc (&objP->pos, &flydata->step, gameData.app.xFrameTime);
-	angvec_add2_scale (&flydata->angles, &flydata->angstep, gameData.app.xFrameTime);
+	VmVecScaleInc (&objP->pos, &flydata->step, gameData.time.xFrame);
+	angvec_add2_scale (&flydata->angles, &flydata->angstep, gameData.time.xFrame);
 	VmAngles2Matrix (&objP->orient, &flydata->angles);
 	}
 //check new player seg
@@ -1395,10 +1395,10 @@ if (check_joy && joy_present)	{
 	if (abs (joy_x) < JOY_NULL) joy_x = 0;
 	if (abs (joy_y) < JOY_NULL) joy_y = 0;
 	if (btns)
-		if (!rotang.pitch) rotang.pitch = FixMul (-joy_y * 512, gameData.app.xFrameTime); else;
+		if (!rotang.pitch) rotang.pitch = FixMul (-joy_y * 512, gameData.time.xFrame); else;
 	else
 		if (joyy_moved) objP->phys_info.velocity.z = -joy_y * 8192;
-	if (!rotang.head) rotang.head = FixMul (joy_x * 512, gameData.app.xFrameTime);
+	if (!rotang.head) rotang.head = FixMul (joy_x * 512, gameData.time.xFrame);
 	if (joyx_moved) 
 		old_joy_x = joy_x;
 	if (joyy_moved) 
@@ -1411,7 +1411,7 @@ objP->orient = new_pm;
 VmTransposeMatrix (&new_pm);		//make those columns rows
 moved |= objP->phys_info.velocity.x | objP->phys_info.velocity.y | objP->phys_info.velocity.z;
 svel = objP->phys_info.velocity;
-VmVecScale (&svel, gameData.app.xFrameTime);		//movement in this frame
+VmVecScale (&svel, gameData.time.xFrame);		//movement in this frame
 VmVecRotate (&movement, &svel, &new_pm);
 VmVecInc (&objP->pos, &movement);
 moved |= (movement.x || movement.y || movement.z);

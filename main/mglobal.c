@@ -67,7 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add xNextMissileFireTime.
  *
  * Revision 1.34  1994/08/31  19:25:34  mike
- * gameData.app.xGameTime and laser-firing limiting stuff added.
+ * gameData.time.xGame and laser-firing limiting stuff added.
  *
  * Revision 1.33  1994/08/11  18:58:53  mike
  * Add sideToVertsInt.
@@ -130,7 +130,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Reworked include files in an attempt to cut down on build times
  *
  * Revision 1.14  1993/12/01  11:44:11  matt
- * Chagned Frfract to gameData.app.xFrameTime
+ * Chagned Frfract to gameData.time.xFrame
  *
  * Revision 1.13  1993/12/01  00:27:11  yuan
  * Implemented new bitmap structure system...

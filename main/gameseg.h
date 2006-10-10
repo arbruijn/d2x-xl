@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * rip out local segments stuff.
  *
  * Revision 1.18  1994/10/09  23:51:07  matt
- * Made find_hitpoint_uv() work with triangulated sides
+ * Made FindHitPointUV() work with triangulated sides
  *
  * Revision 1.17  1994/10/06  14:08:22  matt
  * Added new function, ExtractOrientFromSegment()

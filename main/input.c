@@ -227,7 +227,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  *
  * Revision 1.72  1994/12/01  16:07:57  john
  * Fixed bug that disabled joystick in automap because it used gametime, which is
- * paused during automap. Fixed be used timer_Get_fixed_seconds instead of gameData.app.xGameTime.
+ * paused during automap. Fixed be used timer_Get_fixed_seconds instead of gameData.time.xGame.
  *
  * Revision 1.71  1994/12/01  12:30:49  john
  * Made Ctrl+D delete, not Ctrl+E
@@ -456,11 +456,11 @@ int AllowToToggle (int i)
 {
   //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
  
-	if (Next_toggle_time [i] > gameData.app.xGameTime)
-		if (Next_toggle_time [i] < gameData.app.xGameTime + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
+	if (Next_toggle_time [i] > gameData.time.xGame)
+		if (Next_toggle_time [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
 			return 0;
 
-	Next_toggle_time [i] = gameData.app.xGameTime + (F1_0/8);
+	Next_toggle_time [i] = gameData.time.xGame + (F1_0/8);
 
 	return 1;
 }
@@ -643,7 +643,7 @@ void ControlsSetFCSButton (int btn, int button)
 if (joy_get_button_state (btn)) {
 	if (btn==button) {
 		state = 1;
-		time_down = gameData.app.xFrameTime;
+		time_down = gameData.time.xFrame;
 		} 
 	else
 		upcount=1;
@@ -651,7 +651,7 @@ if (joy_get_button_state (btn)) {
 else {
 	if (btn==button) {
 		state = 1;
-		time_down = gameData.app.xFrameTime;
+		time_down = gameData.time.xFrame;
 		downcount=1;
 		}
 	else
@@ -1464,7 +1464,7 @@ if (gameStates.limitFPS.bControls) {
 	// check elapsed time since last call to ControlsReadAll
 	// if less than 25 ms (i.e. 40 fps) return
 	if (gameOpts->legacy.bMouse) 
-		gameStates.input.kcFrameTime = gameData.app.xFrameTime;
+		gameStates.input.kcFrameTime = gameData.time.xFrame;
 	else {
 		kcFrameCount++;
 		if (!gameStates.app.b40fpsTick)
@@ -1474,7 +1474,7 @@ if (gameStates.limitFPS.bControls) {
 		}
 	}
 else
-	gameStates.input.kcFrameTime = gameData.app.xFrameTime;
+	gameStates.input.kcFrameTime = gameData.time.xFrame;
 return 0;
 }
 
@@ -1682,12 +1682,12 @@ void CybermouseAdjust ()
 		}
 	}*/
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.app.xFrameTime);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.app.xFrameTime);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.app.xFrameTime);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.app.xFrameTime);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.app.xFrameTime);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.app.xFrameTime);
+	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
+	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
+	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
+	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
+	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
+	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
 //	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 //	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;

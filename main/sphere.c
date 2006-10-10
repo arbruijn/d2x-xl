@@ -266,8 +266,9 @@ return pSphere;
 int RenderSphere (tOOF_vector *pPos, tOOF_vector *pSphere, int nFaces, float fRad,
 					   float red, float green, float blue, float alpha)
 {
-	int			i;
-	tOOF_vector *pRotSphere = (tOOF_vector *) d_malloc (nFaces * (gameData.render.sphere.nFaceNodes + 1) * sizeof (tOOF_vector));
+	int			i, j;
+	tOOF_vector *ps,
+					*pRotSphere = (tOOF_vector *) d_malloc (nFaces * (gameData.render.sphere.nFaceNodes + 1) * sizeof (tOOF_vector));
 
 if (!pRotSphere)
 	return -1;
@@ -288,41 +289,46 @@ pSphere = (tOOF_vector *) RotateSphere (pSphere, pRotSphere, pPos, nFaces, fRad)
 pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, fRad), 0, nFaces - 1);
 #endif
 glDisable (GL_TEXTURE_2D);
+glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
+OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glDepthMask (0);
 if (alpha < 0)
-	alpha = (float) (1.0f - (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-if (bWireSphere)
-	glColor4f (1,1,1,1);
-else 
-	if (gameData.render.sphere.pPulse && gameData.render.sphere.pPulse->fScale)
-		glColor4f (red * gameData.render.sphere.pPulse->fScale, 
-					  green * gameData.render.sphere.pPulse->fScale, 
-					  blue * gameData.render.sphere.pPulse->fScale, 
-					  alpha);
-	else
-		glColor4f (red, green, blue, alpha);
+	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+if (gameData.render.sphere.pPulse && gameData.render.sphere.pPulse->fScale) {
+	red *= gameData.render.sphere.pPulse->fScale;
+	green *= gameData.render.sphere.pPulse->fScale;
+	blue *= gameData.render.sphere.pPulse->fScale; 
+	}
+glColor4f (red, green, blue, alpha / 2);
 if (gameData.render.sphere.nFaceNodes == 3) {
-	if (bWireSphere)
-		glBegin (GL_LINES);
-	else
-		glBegin (GL_TRIANGLES);
-	for (; nFaces; nFaces--, pSphere++) {
-		for (i = 0; i < 3; i++, pSphere++) 
-			glVertex3f (pSphere->x, pSphere->y, -pSphere->z);
-		}
+	glBegin (GL_LINES);
+	for (j = nFaces, ps = pSphere; j; j--, ps++)
+		for (i = 0; i < 3; i++, ps++) 
+			glVertex3f (ps->x, ps->y, -ps->z);
+	glEnd ();
+	glColor4f (red, green, blue, alpha);
+	glBegin (GL_TRIANGLES);
+	for (j = nFaces, ps = pSphere; j; j--, ps++)
+		for (i = 0; i < 3; i++, ps++) 
+			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	}
 else {
-	if (bWireSphere)
-		glBegin (GL_LINES);
-	else
-		glBegin (GL_QUADS);
-	for (; nFaces; nFaces--, pSphere++) {
-		for (i = 0; i < 4; i++, pSphere++) 
-			glVertex3f (pSphere->x, pSphere->y, -pSphere->z);
-		}
+	glBegin (GL_LINES);
+	for (j = nFaces, ps = pSphere; j; j--, ps++)
+		for (i = 0; i < 4; i++, ps++) 
+			glVertex3f (ps->x, ps->y, -ps->z);
+	glEnd ();
+	glColor4f (red, green, blue, alpha);
+	glBegin (GL_QUADS);
+	for (j = nFaces, ps = pSphere; j; j--, ps++)
+		for (i = 0; i < 4; i++, ps++) 
+			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	}
+glDepthMask (1);
+glDepthFunc (GL_LESS);
 d_free (pRotSphere);
 return 0;
 }

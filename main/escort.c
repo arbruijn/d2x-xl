@@ -366,8 +366,8 @@ void _CDECL_ BuddyMessage(char * format, ... )
 	if (gameData.app.nGameMode & GM_MULTI)
 		return;
 
-if ((gameData.escort.xLastMsgTime + F1_0 < gameData.app.xGameTime) || 
-	 (gameData.escort.xLastMsgTime > gameData.app.xGameTime)) {
+if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) || 
+	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
 	if (BuddyMayTalk()) {
 		char	gb_str[16], new_format[128];
 		va_list	args;
@@ -387,7 +387,7 @@ if ((gameData.escort.xLastMsgTime + F1_0 < gameData.app.xGameTime) ||
 		gb_str[t+3] = 0;
 
 		HUDInitMessage("%s %s", gb_str, new_format);
-		gameData.escort.xLastMsgTime = gameData.app.xGameTime;
+		gameData.escort.xLastMsgTime = gameData.time.xGame;
 		}
 	}
 }
@@ -494,7 +494,7 @@ void EscortSetSpecialGoal(int special_key)
 		}
 	}
 
-	gameData.escort.xLastMsgTime = gameData.app.xGameTime - 2*F1_0;	//	Allow next message to come through.
+	gameData.escort.xLastMsgTime = gameData.time.xGame - 2*F1_0;	//	Allow next message to come through.
 
 	SayEscortGoal(gameData.escort.nSpecialGoal);
 	// -- gameData.escort.nGoalObject = EscortSetGoalObject();
@@ -885,8 +885,8 @@ int TimeToVisitPlayer(object *objP, ai_local *ailp, ai_static *aip)
 {
 	//	Note: This one has highest priority because, even if already going towards player,
 	//	might be necessary to create a new path, as player can move.
-	if (gameData.app.xGameTime - Buddy_last_seen_player > MAX_ESCORT_TIME_AWAY)
-		if (gameData.app.xGameTime - Buddy_last_player_path_created > F1_0)
+	if (gameData.time.xGame - Buddy_last_seen_player > MAX_ESCORT_TIME_AWAY)
+		if (gameData.time.xGame - Buddy_last_player_path_created > F1_0)
 			return 1;
 
 	if (ailp->mode == AIM_GOTO_PLAYER)
@@ -994,15 +994,15 @@ void DoBuddyDudeStuff(void)
 	if (!BuddyMayTalk())
 		return;
 
-	if (Buddy_last_missile_time > gameData.app.xGameTime)
+	if (Buddy_last_missile_time > gameData.time.xGame)
 		Buddy_last_missile_time = 0;
 
-	if (Buddy_last_missile_time + F1_0*2 < gameData.app.xGameTime) {
+	if (Buddy_last_missile_time + F1_0*2 < gameData.time.xGame) {
 		//	See if a robot potentially in view cone
 		for (i=0; i<=gameData.objs.nLastObject; i++)
 			if ((gameData.objs.objects[i].type == OBJ_ROBOT) && !gameData.bots.pInfo[gameData.objs.objects[i].id].companion)
 				if (MaybeBuddyFireMega(i)) {
-					Buddy_last_missile_time = gameData.app.xGameTime;
+					Buddy_last_missile_time = gameData.time.xGame;
 					return;
 				}
 
@@ -1010,7 +1010,7 @@ void DoBuddyDudeStuff(void)
 		for (i=0; i<=gameData.objs.nLastObject; i++)
 			if ((gameData.objs.objects[i].type == OBJ_ROBOT) && !gameData.bots.pInfo[gameData.objs.objects[i].id].companion)
 				if (MaybeBuddyFireSmart(i)) {
-					Buddy_last_missile_time = gameData.app.xGameTime;
+					Buddy_last_missile_time = gameData.time.xGame;
 					return;
 				}
 
@@ -1028,7 +1028,7 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 	gameData.escort.nObjNum = OBJ_IDX (objP);
 
 	if (player_visibility) {
-		Buddy_last_seen_player = gameData.app.xGameTime;
+		Buddy_last_seen_player = gameData.time.xGame;
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
 			if (f2i(gameData.multi.players[gameData.multi.nLocalPlayer].energy) < 40)
 				if ((f2i(gameData.multi.players[gameData.multi.nLocalPlayer].energy)/2) & 2)
@@ -1040,9 +1040,9 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 	if (gameStates.app.cheats.bMadBuddy)
 		DoBuddyDudeStuff();
 
-	if (gameData.escort.xSorryTime + F1_0 > gameData.app.xGameTime) {
+	if (gameData.escort.xSorryTime + F1_0 > gameData.time.xGame) {
 		gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-		if (gameData.escort.xSorryTime < gameData.app.xGameTime + F1_0*2)
+		if (gameData.escort.xSorryTime < gameData.time.xGame + F1_0*2)
 			BuddyMessage(TXT_BUDDY_SORRY);
 		gameData.escort.xSorryTime = -F1_0*2;
 	}
@@ -1050,7 +1050,7 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 	//	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 	if (!gameData.escort.bMayTalk)
 		if (dist_to_player > F1_0*100)
-			aip->SKIP_AI_COUNT = (F1_0/4)/gameData.app.xFrameTime;
+			aip->SKIP_AI_COUNT = (F1_0/4)/gameData.time.xFrame;
 
 	//	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 	//	It means the object has been told to get lost and has come to the end of its path.
@@ -1063,12 +1063,12 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 
 	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 		if (player_visibility)
-			if (gameData.escort.xLastPathCreated + F1_0*3 < gameData.app.xGameTime) {
+			if (gameData.escort.xLastPathCreated + F1_0*3 < gameData.time.xGame) {
 #if TRACE
 				con_printf (CON_DEBUG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
 				create_n_segment_path(objP, 10 + d_rand() * 16, gameData.objs.console->segnum);
-				gameData.escort.xLastPathCreated = gameData.app.xGameTime;
+				gameData.escort.xLastPathCreated = gameData.time.xGame;
 			}
 
 		// -- Int3();
@@ -1076,21 +1076,21 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 	}
 
 	//	Force checking for new goal every 5 seconds, and create new path, if necessary.
-	if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*5) < gameData.app.xGameTime)) ||
-		((gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*15) < gameData.app.xGameTime))) {
+	if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*5) < gameData.time.xGame)) ||
+		((gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escort.xLastPathCreated + F1_0*15) < gameData.time.xGame))) {
 		gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
-		gameData.escort.xLastPathCreated = gameData.app.xGameTime;
+		gameData.escort.xLastPathCreated = gameData.time.xGame;
 	}
 
 	if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer(objP, ailp, aip)) {
 		int	max_len;
 
-		Buddy_last_player_path_created = gameData.app.xGameTime;
+		Buddy_last_player_path_created = gameData.time.xGame;
 		ailp->mode = AIM_GOTO_PLAYER;
 		if (!player_visibility) {
-			if ((Last_come_back_message_time + F1_0 < gameData.app.xGameTime) || (Last_come_back_message_time > gameData.app.xGameTime)) {
+			if ((Last_come_back_message_time + F1_0 < gameData.time.xGame) || (Last_come_back_message_time > gameData.time.xGame)) {
 				BuddyMessage(TXT_COMING_BACK);
-				Last_come_back_message_time = gameData.app.xGameTime;
+				Last_come_back_message_time = gameData.time.xGame;
 			}
 		}
 		//	No point in Buddy creating very long path if he's not allowed to talk.  Really kills framerate.
@@ -1100,7 +1100,7 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 		create_path_to_player(objP, max_len, 1);	//	MK!: Last parm used to be 1!
 		aip->path_length = polish_path(objP, &gameData.ai.pointSegs[aip->hide_index], aip->path_length);
 		ailp->mode = AIM_GOTO_PLAYER;
-	}	else if (gameData.app.xGameTime - Buddy_last_seen_player > MAX_ESCORT_TIME_AWAY) {
+	}	else if (gameData.time.xGame - Buddy_last_seen_player > MAX_ESCORT_TIME_AWAY) {
 		//	This is to prevent buddy from looking for a goal, which he will do because we only allow path creation once/second.
 		return;
 	} else if ((ailp->mode == AIM_GOTO_PLAYER) && (dist_to_player < MIN_ESCORT_DISTANCE)) {

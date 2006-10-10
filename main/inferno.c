@@ -327,9 +327,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.256  1994/12/11  23:17:54  john
  * Added -nomusic.
- * Added gameData.app.xRealFrameTime.
+ * Added gameData.time.xRealFrame.
  * Put in a pause when sound initialization error.
- * Made controlcen countdown and framerate use gameData.app.xRealFrameTime.
+ * Made controlcen countdown and framerate use gameData.time.xRealFrame.
  *
  * Revision 1.255  1994/12/10  00:56:51  matt
  * Added -nomusic to command-line help
@@ -2561,7 +2561,7 @@ gameData.missions.nLastSecretLevel = -1;
 gameData.marker.nHighlight = -1;
 gameData.missions.nEnteredFromLevel = -1;
 gameData.marker.fScale = 2.0f;
-gameData.app.xFrameTime = 0x1000;
+gameData.time.xFrame = 0x1000;
 gameData.app.nGameMode = GM_GAME_OVER;
 gameData.render.nPaletteGamma = -1;
 gameData.reactor.bDestroyed = 0;
@@ -2601,6 +2601,8 @@ gameData.escort.bMsgsSuppressed = 0;
 gameData.objs.nNextSignature = 1;
 memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissileSig));
 gameData.render.morph.xRate = MORPH_RATE;
+gameData.render.ogl.nSrcBlend = GL_SRC_ALPHA;
+gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
 memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
 gameData.render.lights.ogl.nLights = 0;
 gameData.models.nSimpleModelThresholdScale = 5;

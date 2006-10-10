@@ -2217,9 +2217,9 @@ int save_level_sub(char * filename, int compiled_version)
 	//Now write the damn data
 
 	//write the version 8 data (to make file unreadable by 1.0 & 1.1)
-	gs_write_int(gameData.app.xGameTime,SaveFile);
+	gs_write_int(gameData.time.xGame,SaveFile);
 	gs_write_short(gameData.app.nFrameCount,SaveFile);
-	gs_write_byte(gameData.app.xFrameTime,SaveFile);
+	gs_write_byte(gameData.time.xFrame,SaveFile);
 
 	// Write the palette file name
 	fprintf(SaveFile,"%s\n",szCurrentLevelPalette);

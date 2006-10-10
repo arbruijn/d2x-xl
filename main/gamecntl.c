@@ -238,12 +238,12 @@ void TransferEnergyToShield(fix time)
 	gameData.multi.players [gameData.multi.nLocalPlayer].shields += e/CONVERTER_SCALE;
 	MultiSendShields ();
 	gameStates.app.bUsingConverter = 1;
-	if (last_play_time > gameData.app.xGameTime)
+	if (last_play_time > gameData.time.xGame)
 		last_play_time = 0;
 
-	if (gameData.app.xGameTime > last_play_time+CONVERTER_SOUND_DELAY) {
+	if (gameData.time.xGame > last_play_time+CONVERTER_SOUND_DELAY) {
 		DigiPlaySampleOnce(SOUND_CONVERT_ENERGY, F1_0);
-		last_play_time = gameData.app.xGameTime;
+		last_play_time = gameData.time.xGame;
 	}
 
 }
@@ -1703,7 +1703,7 @@ void HandleTestKey(int key)
 						MultiSendCloak();
 					#endif
 					AIDoCloakStuff();
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime;
+					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame;
 #if TRACE
 					con_printf (CON_DEBUG, "You are cloaked!\n");
 #endif
@@ -1942,9 +1942,9 @@ void HandleTestKey(int key)
 		}
 
 		case KEY_DEBUGGED+KEY_ALTED+KEY_F5:
-			gameData.app.xGameTime = i2f(0x7fff - 840);		//will overflow in 14 minutes
+			gameData.time.xGame = i2f(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
-			con_printf (CON_DEBUG, "gameData.app.xGameTime bashed to %d secs\n", f2i(gameData.app.xGameTime));
+			con_printf (CON_DEBUG, "gameData.time.xGame bashed to %d secs\n", f2i(gameData.time.xGame));
 #endif
 			break;
 

@@ -227,7 +227,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  *
  * Revision 1.72  1994/12/01  16:07:57  john
  * Fixed bug that disabled joystick in automap because it used gametime, which is
- * paused during automap. Fixed be used timer_Get_fixed_seconds instead of gameData.app.xGameTime.
+ * paused during automap. Fixed be used timer_Get_fixed_seconds instead of gameData.time.xGame.
  *
  * Revision 1.71  1994/12/01  12:30:49  john
  * Made Ctrl+D delete, not Ctrl+E
@@ -1998,9 +1998,9 @@ read_head_tracker ()
 		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))	
 			yaw1 += F1_0;
 	
-		Controls.pitch_time	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [VR_sensitivity],gameData.app.xFrameTime);
-		Controls.heading_time+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [VR_sensitivity],gameData.app.xFrameTime);
-		Controls.bank_time	+= FixMul ((roll - Last_angles_b)*VR_sense_range [VR_sensitivity],gameData.app.xFrameTime);
+		Controls.pitch_time	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls.heading_time+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls.bank_time	+= FixMul ((roll - Last_angles_b)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
 	}
 	Last_angles_read = 1;
 	Last_angles_p = pitch;
@@ -2106,12 +2106,12 @@ void KCInitExternalControls (int intno, int address)
 		}
 	}
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.app.xFrameTime);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.app.xFrameTime);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.app.xFrameTime);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.app.xFrameTime);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.app.xFrameTime);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.app.xFrameTime);
+	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
+	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
+	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
+	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
+	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
+	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;
@@ -2224,12 +2224,12 @@ void KCReadExternalControls ()
 		}
 	}
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.app.xFrameTime);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.app.xFrameTime);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.app.xFrameTime);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.app.xFrameTime);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.app.xFrameTime);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.app.xFrameTime);
+	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
+	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
+	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
+	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
+	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
+	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;

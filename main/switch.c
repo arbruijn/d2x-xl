@@ -1126,7 +1126,7 @@ void TriggersFrameProcess()
 
 	for (i=0;i<gameData.trigs.nTriggers;i++)
 		if (gameData.trigs.triggers[i].time >= 0)
-			gameData.trigs.triggers[i].time -= gameData.app.xFrameTime;
+			gameData.trigs.triggers[i].time -= gameData.time.xFrame;
 }
 
 //------------------------------------------------------------------------------

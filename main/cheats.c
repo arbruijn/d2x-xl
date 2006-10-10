@@ -440,7 +440,7 @@ void InvulCheat (void)
 {
 gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
 HUDInitMessage("%s %s!", TXT_INVULNERABILITY, (gameData.multi.players [gameData.multi.nLocalPlayer].flags&PLAYER_FLAGS_INVULNERABLE)?TXT_ON:TXT_OFF);
-gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime+i2f(1000);
+gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame+i2f(1000);
 SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 }
 
@@ -824,7 +824,7 @@ void DoCheatMenu()
 	if (mmn > -1 )  {
 		if ( mm[0].value )  {
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-			gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime+i2f(1000);
+			gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame+i2f(1000);
 		} else
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if ( mm[1].value ) {
@@ -834,7 +834,7 @@ void DoCheatMenu()
 				MultiSendCloak();
 			#endif
 			AIDoCloakStuff();
-			gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime;
+			gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame;
 		}
 		else
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;

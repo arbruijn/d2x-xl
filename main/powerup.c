@@ -217,7 +217,7 @@ void UpdatePowerupClip (vclip *vcP, vclip_info *vciP, int nObject)
 	fix			xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 	grs_bitmap	*bmP;
 	
-xPowerupTime += gameData.app.xFrameTime;
+xPowerupTime += gameData.time.xFrame;
 
 if (vcP->flags & WCF_ALTFMT) {
 	if (vcP->flags & WCF_INITIALIZED) {
@@ -543,7 +543,7 @@ if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nInvuls--;
 if (LOCALPLAYER (nPlayer)) {
-	playerP->invulnerable_time = gameData.app.xGameTime;
+	playerP->invulnerable_time = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -572,7 +572,7 @@ if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nCloaks--;
 if (LOCALPLAYER (nPlayer)) {
-	playerP->cloak_time = gameData.app.xGameTime;	//	Not!changed by awareness events (like player fires laser).
+	playerP->cloak_time = gameData.time.xGame;	//	Not!changed by awareness events (like player fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
 #ifdef NETWORK
@@ -606,11 +606,11 @@ if (bLocalPlayer &&
 	  (gameData.objs.console->type == OBJ_GHOST) || 
 	  (playerP->shields < 0)))
 	return 0;
-if (objP->ctype.powerup_info.creation_time > gameData.app.xGameTime)		//gametime wrapped!
+if (objP->ctype.powerup_info.creation_time > gameData.time.xGame)		//gametime wrapped!
 	objP->ctype.powerup_info.creation_time = 0;				//allow player to pick up
 if ((objP->ctype.powerup_info.flags & PF_SPAT_BY_PLAYER) && 
 	 (objP->ctype.powerup_info.creation_time > 0) && 
-	 (gameData.app.xGameTime < objP->ctype.powerup_info.creation_time+i2f (2)))
+	 (gameData.time.xGame < objP->ctype.powerup_info.creation_time+i2f (2)))
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
 switch (objP->id) {

@@ -736,7 +736,7 @@ else if (gameStates.app.bD1Mission)
 	init_ammo_and_energy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 gameData.multi.players [gameData.multi.nLocalPlayer].homing_object_dist = -F1_0; // Added by RH
-Last_laser_fired_time = xNextLaserFireTime = gameData.app.xGameTime; // added by RH, solved demo playback bug
+Last_laser_fired_time = xNextLaserFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls.afterburner_state = 0;
 Last_afterburner_state = 0;
 DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
@@ -876,12 +876,12 @@ extern void do_save_game_menu ();
 //update various information about the player
 void UpdatePlayerStats ()
 {
-gameData.multi.players [gameData.multi.nLocalPlayer].time_level += gameData.app.xFrameTime;	//the never-ending march of time...
+gameData.multi.players [gameData.multi.nLocalPlayer].time_level += gameData.time.xFrame;	//the never-ending march of time...
 if (gameData.multi.players [gameData.multi.nLocalPlayer].time_level > i2f (3600))	{
 	gameData.multi.players [gameData.multi.nLocalPlayer].time_level -= i2f (3600);
 	gameData.multi.players [gameData.multi.nLocalPlayer].hours_level++;
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].time_total += gameData.app.xFrameTime;	//the never-ending march of time...
+gameData.multi.players [gameData.multi.nLocalPlayer].time_total += gameData.time.xFrame;	//the never-ending march of time...
 if (gameData.multi.players [gameData.multi.nLocalPlayer].time_total > i2f (3600))	{
 	gameData.multi.players [gameData.multi.nLocalPlayer].time_total -= i2f (3600);
 	gameData.multi.players [gameData.multi.nLocalPlayer].hours_total++;
@@ -1121,6 +1121,7 @@ int LoadLevel (int nLevel, int bPageInTextures)
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
+gameStates.app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 #if 1
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
@@ -1551,7 +1552,7 @@ if (gameData.demo.nState == ND_STATE_PAUSED)
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
-	NDRecordStartFrame (gameData.app.nFrameCount, gameData.app.xFrameTime);
+	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
 	} 
 else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	GrPaletteFadeOut (NULL, 32, 0);
@@ -1684,14 +1685,14 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_IN
 		fix	time_used;
 
 	time_used = old_gametime - gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time;
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.app.xGameTime - time_used;
+	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame - time_used;
 	}
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 		fix	time_used;
 
 	time_used = old_gametime - gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time;
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.app.xGameTime - time_used;
+	gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame - time_used;
 	}
 }
 
@@ -1722,7 +1723,7 @@ for (i = 0; i < -gameData.missions.nLastSecretLevel; i++)
 		}
 if (i >= -gameData.missions.nLastSecretLevel)		//didn't find level, so must be last
 	gameData.missions.nNextLevel = gameData.missions.nLastSecretLevel;
-old_gametime = gameData.app.xGameTime;
+old_gametime = gameData.time.xGame;
 StartNewLevelSecret (gameData.missions.nNextLevel, 1);
 // do_cloak_invul_stuff ();
 }
@@ -2127,7 +2128,7 @@ if (gameData.demo.nState == ND_STATE_PAUSED)
 	gameData.demo.nState = ND_STATE_RECORDING;
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
-	NDRecordStartFrame (gameData.app.nFrameCount, gameData.app.xFrameTime);
+	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
 	}
 if (gameData.app.nGameMode & GM_MULTI)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.

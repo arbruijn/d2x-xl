@@ -153,7 +153,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed mistake that caused odd pauses and occasional int3's
  *
  * Revision 1.47  1994/10/09  23:50:41  matt
- * Made find_hitpoint_uv () work with triangulated sides
+ * Made FindHitPointUV () work with triangulated sides
  *
  * Revision 1.46  1994/10/08  23:06:52  matt
  * TraceSegs () didn't know about external walls
@@ -1425,10 +1425,10 @@ fix FindConnectedDistance (vms_vector *p0, short seg0, vms_vector *p1, short seg
 	}
 
 	//	Periodically flush cache.
-	if ((gameData.app.xGameTime - Last_fcd_flush_time > F1_0*2) || 
-		 (gameData.app.xGameTime < Last_fcd_flush_time)) {
+	if ((gameData.time.xGame - Last_fcd_flush_time > F1_0*2) || 
+		 (gameData.time.xGame < Last_fcd_flush_time)) {
 		flush_fcd_cache ();
-		Last_fcd_flush_time = gameData.app.xGameTime;
+		Last_fcd_flush_time = gameData.time.xGame;
 	}
 
 	//	Can't quickly get distance, so see if in Fcd_cache.

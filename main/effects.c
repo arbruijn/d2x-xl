@@ -278,7 +278,7 @@ void DoSpecialEffects()
 {
 	static fix xEffectTime = 0;
 
-xEffectTime += gameData.app.xFrameTime;
+xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.b40fpsTick) 
 	{
 		grs_bitmap		*bmP;

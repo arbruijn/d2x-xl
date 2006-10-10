@@ -343,6 +343,7 @@ void OglSetupTransform ();
 void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grs_color *pc);
+void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20

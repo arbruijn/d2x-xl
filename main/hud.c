@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.23  1994/12/15  13:04:34  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.22  1994/12/13  12:55:12  mike
  * move press any key to continue pszMsg when you are dead to bottom of window.
@@ -272,7 +272,7 @@ if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 	Int3 (); // Get Rob!
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
-pMsgs->xTimer -= gameData.app.xFrameTime;
+pMsgs->xTimer -= gameData.time.xFrame;
 #ifdef WINDOWS
 if (bExtraClear)
 	ClearBackgroundMessages ();			//	If in status bar mode and no messages, then erase.
@@ -513,7 +513,7 @@ if (gameStates.app.bPlayerExploded) {
       GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cv_font->ft_h)/2 + h/8, TXT_GAME_OVER);
 #if 0
       // Automatically exit death after 10 secs
-      if ( gameData.app.xGameTime > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
+      if ( gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
                SetFunctionMode (FMODE_MENU);
                gameData.app.nGameMode = GM_GAME_OVER;
                longjmp ( gameExitPoint, 1);        // Exit out of game loop

@@ -3408,8 +3408,8 @@ if (NakedPacketLen) {
 	}
 if (WaitForRefuseAnswer && TimerGetApproxSeconds ()> (RefuseTimeLimit+ (F1_0*12)))
 	WaitForRefuseAnswer=0;
-xLastSendTime += gameData.app.xFrameTime;
-xLastTimeoutCheck += gameData.app.xFrameTime;
+xLastSendTime += gameData.time.xFrame;
+xLastTimeoutCheck += gameData.time.xFrame;
 
 // Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) || 

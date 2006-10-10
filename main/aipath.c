@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * deal with new ai_multiplayer_awareness which returns a value saying whether this object can be moved by this player.
  *
  * Revision 1.81  1994/12/15  13:04:30  mike
- * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.app.xGameTime.
+ * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
  *
  * Revision 1.80  1994/12/09  16:13:23  mike
  * remove debug code.
@@ -840,7 +840,7 @@ void create_path_to_player(object *objP, int max_length, int safety_flag)
 	if (max_length == -1)
 		max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 
-	ailp->time_player_seen = gameData.app.xGameTime;			//	Prevent from resetting path quickly.
+	ailp->time_player_seen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 	ailp->goal_segment = gameData.ai.nBelievedPlayerSeg;
 
 	start_seg = objP->segnum;
@@ -882,7 +882,7 @@ void CreatePathToSegment(object *objP, short goalseg, int max_length, int safety
 	if (max_length == -1)
 		max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 
-	ailp->time_player_seen = gameData.app.xGameTime;			//	Prevent from resetting path quickly.
+	ailp->time_player_seen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 	ailp->goal_segment = goalseg;
 
 	start_seg = objP->segnum;
@@ -924,7 +924,7 @@ void create_path_to_station(object *objP, int max_length)
 	if (max_length == -1)
 		max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 
-	ailp->time_player_seen = gameData.app.xGameTime;			//	Prevent from resetting path quickly.
+	ailp->time_player_seen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 
 	start_seg = objP->segnum;
 	end_seg = aip->hide_segment;
@@ -1189,7 +1189,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 		} else {
 			robot_info	*robptr = &gameData.bots.pInfo[objP->id];
 			fix	cur_speed = robptr->max_speed[gameStates.app.nDifficultyLevel]/2;
-			fix	distance_travellable = FixMul(gameData.app.xFrameTime, cur_speed);
+			fix	distance_travellable = FixMul(gameData.time.xFrame, cur_speed);
 
 			// int	connect_side = FindConnectedSide(objP->segnum, goal_seg);
 			//	Only move to goal if allowed to fly through the side.
@@ -1217,7 +1217,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 		if ((player_visibility == 0) && (ailp->player_awareness_type == 0)) {
 			fix	vel_scale;
 
-			vel_scale = F1_0 - gameData.app.xFrameTime/2;
+			vel_scale = F1_0 - gameData.time.xFrame/2;
 			if (vel_scale < F1_0/2)
 				vel_scale = F1_0/2;
 
@@ -1270,7 +1270,7 @@ void ai_follow_path(object *objP, int player_visibility, int previous_visibility
 	forced_break = 0;		//	Gets set for short paths.
 	original_dir = aip->PATH_DIR;
 	original_index = aip->cur_path_index;
-	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
+	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.time.xFrame)*2 + F1_0*2;
 
 	new_goal_point = gameData.ai.pointSegs[aip->hide_index + aip->cur_path_index].point;
 
@@ -1881,7 +1881,7 @@ void player_follow_path(object *objP)
 	forced_break = 0;		//	Gets set for short paths.
 	//original_dir = 1;
 	original_index = Player_cur_path_index;
-	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.app.xFrameTime)*2 + F1_0*2;
+	threshold_distance = FixMul(VmVecMagQuick(&objP->mtype.phys_info.velocity), gameData.time.xFrame)*2 + F1_0*2;
 
 	while ((dist_to_goal < threshold_distance) && !forced_break) {
 
