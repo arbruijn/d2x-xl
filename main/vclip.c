@@ -128,17 +128,20 @@ if (objP->type == OBJ_FIREBALL) {
 	}
 else if (objP->type == OBJ_WEAPON)
 	alpha = WEAPON_ALPHA;
-if (bThruster) {
+#if 0
+if (bThruster)
 	glDepthMask (0);
-	}
+#endif
 if (pvc->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, pvc->frames [iFrame], lighted);
 else {
 	Assert(lighted==0);		//blob cannot now be lighted
 	DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, (float) alpha);
 	}
-if (objP->render_type == RT_THRUSTER)
+#if 0
+if (bThruster)
 	glDepthMask (1);
+#endif
 }
 
 //------------------------------------------------------------------------------
