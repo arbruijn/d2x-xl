@@ -1439,10 +1439,17 @@ else {
 	fFade [1] = 0.7f;
 	}
 pt->fSpeed = fSpeed;
-HUDMessage (0, "%1.2f %1.2f", fLength, fSize);
-VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
-VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
-VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+if (gameOpts->render.bHiresModels) {
+	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
+	VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
+	VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+	}
+else {
+	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
+	VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
+	VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
+	VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
+	}
 CreateThrusterFlame ();
 glLineWidth (3);
 

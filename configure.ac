@@ -2,7 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],8)
-define([D2X_MICRO],17)
+define([D2X_MICRO],19)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
@@ -188,7 +188,7 @@ else
     CFLAGS="-pipe $CFLAGS"
 
     dnl Check for SDL
-    AM_PATH_SDL(1.2.10,
+    AM_PATH_SDL(1.2.8,
         :,
         AC_MSG_ERROR(SDL not found. Make sure sdl-config is in your PATH, or specify with --with-sdl-prefix)
     )

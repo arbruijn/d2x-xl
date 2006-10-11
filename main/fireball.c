@@ -1976,9 +1976,9 @@ void DropAfterburnerBlobs (object *objP, int count, fix xSizeScale, fix xLifeTim
 	short			i, nSegment;
 	object		*blobObjP;
 
-VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
-VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
-VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 50));
+VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
+VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 54));
+VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
 VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
 
 if (count == 1)
