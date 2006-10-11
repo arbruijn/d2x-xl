@@ -337,6 +337,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>	// for memset
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 
 #include "inferno.h"
 #include "game.h"
@@ -1074,7 +1075,7 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 			}
 		else if (gameStates.app.nSDLTicks - gameData.multi.nLastHitTime [i] >= 300) {
 			gameData.multi.bWasHit [i] = 0;
-			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
+			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.4f);
 			}
 		}
 	if (gameData.multi.bWasHit [i])
@@ -1185,7 +1186,7 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc)
 if (!CanSeeObject (OBJ_IDX (objP), 1))
 	return;
 #endif
-if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
+if (gameStates.app.bNostalgia || !EGI_FLAG (bCloakedIndicators, 0, 0)) {
 	if (nPlayer >= 0) {
 		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
@@ -1291,7 +1292,7 @@ void RenderTowedFlag (object *objP)
 
 	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
-if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
+if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
 		vms_vector		vPos = objP->pos;
 		fVector3			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
@@ -1337,6 +1338,170 @@ if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG))
 		G3DoneInstance ();
 		OGL_BINDTEX (0);
 		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+#define	RING_SIZE		16
+#define	THRUSTER_SEGS	12
+
+static fVector3	vFlame [THRUSTER_SEGS][RING_SIZE];
+static int			bHaveFlame = 0;
+
+void CreateThrusterFlame (void)
+{
+	static fVector3	vRing [RING_SIZE] = {
+		{-0.5f, -0.5f, 0.0f},
+		{-0.6533f, -0.2706f, 0.0f},
+		{-0.7071f, 0.0f, 0.0f},
+		{-0.6533f, 0.2706f, 0.0f},
+		{-0.5f, 0.5f, 0.0f},
+		{-0.2706f, 0.6533f, 0.0f},
+		{0.0f, 0.7071f, 0.0f},
+		{0.2706f, 0.6533f, 0.0f},
+		{0.5f, 0.5f, 0.0f},
+		{0.6533f, 0.2706f, 0.0f},
+		{0.7071f, 0.0f, 0.0f},
+		{0.6533f, -0.2706f, 0.0f},
+		{0.5f, -0.5f, 0.0f},
+		{0.2706f, -0.6533f, 0.0f},
+		{0.0f, -0.7071f, 0.0f},
+		{-0.2706f, -0.6533f, 0.0f}
+	};
+
+if (!bHaveFlame) {
+		fVector3		*pv;
+		int			i, j;
+		double		phi, sinPhi;
+		float			z = 0, 
+						fScale = 2.0f / 3.0f, 
+						fStep [2] = {1.0f / 4.0f, 1.0f / 3.0f};
+
+	pv = &vFlame [0][0];
+	for (i = 0, phi = 0; i < THRUSTER_SEGS / 3; i++, phi += Pi / 8, z -= fStep [0]) {
+		sinPhi = (1 + sin (phi) / 2) * fScale;
+		for (j = 0; j < RING_SIZE; j++, pv++) {
+			pv->p.x = vRing [j].p.x * (float) sinPhi;
+			pv->p.y = vRing [j].p.y * (float) sinPhi;
+			pv->p.z = z;
+			}
+		}
+	for (phi = Pi / 2 + Pi / 8; i < THRUSTER_SEGS; i++, phi += Pi / 8, z -= fStep [1]) {
+		sinPhi = (1 + sin (phi) / 2) * fScale;
+		for (j = 0; j < RING_SIZE; j++, pv++) {
+			pv->p.x = vRing [j].p.x * (float) sinPhi;
+			pv->p.y = vRing [j].p.y * (float) sinPhi;
+			pv->p.z = z;
+			}
+		}
+	bHaveFlame = 1;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RenderThrusterFlames (object *objP)
+{
+	static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
+	int				h, i, j, k, l;
+	tRgbaColorf		c [2];
+	vms_vector		vPos [2];
+	fVector3			v;
+	float				fSize, fLength, fSpeed, fPulse, fFade [2];
+	tThrusterData	*pt = gameData.render.thrusters + objP->id;
+	tPathPoint		*pp = GetPathPoint (&pt->path);
+
+if (!pp)
+	return;
+#ifndef _DEBUG
+if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
+	return;
+#endif
+if (gameStates.app.nSDLTicks - pt->tPulse > 10) {
+	pt->tPulse = gameStates.app.nSDLTicks;
+	if (pt->nPulse)
+		pt->nPulse--;
+	else
+		pt->nPulse = 10;
+	}
+fPulse = (float) pt->nPulse / 10.0f;
+fSpeed = f2fl (VmVecMag (&objP->mtype.phys_info.velocity));
+fLength = fSpeed / 60.0f;
+fSize = 0.5f + fLength * 0.5f;
+fLength += 0.2f;
+if (fSpeed >= pt->fSpeed) {
+	fFade [0] = 0.95f;
+	fFade [1] = 0.75f;
+	}
+else {
+	fFade [0] = 0.9f;
+	fFade [1] = 0.7f;
+	}
+pt->fSpeed = fSpeed;
+HUDMessage (0, "%1.2f %1.2f", fLength, fSize);
+VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
+VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
+VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+CreateThrusterFlame ();
+glLineWidth (3);
+
+for (h = 0; h < 2; h++) {
+	c [1].red = 0.5f + 0.05f * fPulse;
+	c [1].green = 0.45f + 0.045f * fPulse;
+	c [1].blue = 0.0f;
+	c [1].alpha = 0.9f;
+	G3StartInstanceMatrix (vPos + h, &pp->mOrient);
+	glDisable (GL_TEXTURE_2D);
+	glDepthMask (0);
+	glCullFace (GL_BACK);
+	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+		c [0] = c [1];
+		c [1].red *= 0.975f;
+		c [1].green *= 0.8f;
+		c [1].blue *= 0.95f;
+		c [1].alpha *= fFade [0];
+#if 1
+		glBegin (GL_QUAD_STRIP);
+		for (j = 0; j < RING_SIZE + 1; j++) {
+			for (l = 0; l < 2; l++) {
+				k = j % RING_SIZE;
+				v = vFlame [i + l][k];
+#if 1
+				v.p.x *= fSize;
+				v.p.y *= fSize;
+#endif
+#if 1
+				v.p.z *= fLength;
+#endif
+				G3TransformPointf (&v, &v);
+				v.p.z = -v.p.z;
+				glColor4f (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+				glVertex3fv ((GLfloat *) &v);
+				}
+			}
+		glEnd ();
+#else
+		glBegin (GL_LINE_LOOP);
+		for (j = 0; j < RING_SIZE; j++) {
+			G3TransformPointf (&v, vFlame [i] + j);
+			v.p.z = -v.p.z;
+			glVertex3fv ((GLfloat *) &v);
+			}
+		glEnd ();
+#endif
+		}
+	glBegin (GL_TRIANGLE_STRIP);
+	for (j = 0; j < RING_SIZE; j++) {
+		G3TransformPointf (&v, vFlame [0] + nStripIdx [j]);
+		v.p.z = -v.p.z;
+		glVertex3fv ((GLfloat *) &v);
+		}
+	glEnd ();
+	glLineWidth (1);
+	glCullFace (GL_FRONT);
+	glDepthMask (1);
+	G3DoneInstance ();
 	}
 }
 
@@ -1390,6 +1555,7 @@ switch (objP->render_type) {
 				}
 			else
 				DrawPolygonObject (objP);
+			RenderThrusterFlames (objP);
 			RenderPlayerShield (objP);
 			RenderTargetIndicator (objP, NULL);
 			RenderTowedFlag (objP);

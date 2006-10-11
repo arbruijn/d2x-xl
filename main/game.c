@@ -3336,6 +3336,7 @@ if (Debug_slowdown) {
 //LogErr ("FlashFrame\n");
 	UpdateFlagClips ();
 	MultiSetFlagPos ();
+	SetPlayerPaths ();
 	FlashFrame ();
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		NDPlayBackOneFrame ();

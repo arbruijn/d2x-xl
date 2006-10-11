@@ -758,5 +758,7 @@ void SetTeam (int pnum, int team);
 void MultiSendModemPing ();
 int MultiFindGoalTexture (short t);
 void MultiSetFlagPos (void);
+void ResetPlayerPaths (void);
+void SetPlayerPaths (void);
 
 #endif /* _MULTI_H */

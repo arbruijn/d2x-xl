@@ -389,7 +389,7 @@ char bUseGlobalColor = 0;
 #include "poly_acc.h"
 #endif
 
-//used for checking if points have been rotated
+//used for checking if points have been bRotated
 unsigned int	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
@@ -406,7 +406,7 @@ static int renderState = -1;
 fix nRenderZoom = 0x9000;					//the player's zoom factor
 fix Render_zoom_scale = 1;					//the player's zoom factor
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 ubyte bObjectRendered [MAX_OBJECTS];
 #endif
 
@@ -927,7 +927,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 592 && props.sideNum == 3)
+if (props.segNum == 154 && props.sideNum == 4)
 	props.segNum = props.segNum;
 #	if 0
 else
@@ -1103,7 +1103,7 @@ gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 # endif
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
 #endif
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (bOutLineMode) 
 		DrawOutline (props.nv, pointlist);
 #endif
@@ -1554,25 +1554,25 @@ if (!gameOpts->legacy.bZBuf) {
 
 // -----------------------------------------------------------------------------------
 
-#ifndef NDEBUG
-int	draw_boxes=0;
-int bWindowCheck=1,draw_edges=0,new_seg_sorting=1,pre_draw_segs=0;
-int no_migrate_segs=1,migrate_objects=1,behind_check=1;
+#ifdef _DEBUG
+int	bDrawBoxes=0;
+int bWindowCheck=1,draw_edges=0,bNewSegSorting=1,bPreDrawSegs=0;
+int no_migrate_segs=1,migrate_objects=1,bCheckBehind=1;
 int check_bWindowCheck=0;
 #else
-#define draw_boxes			0
+#define bDrawBoxes			0
 #define bWindowCheck			1
 #define draw_edges			0
-#define new_seg_sorting		1
-#define pre_draw_segs		0
+#define bNewSegSorting		1
+#define bPreDrawSegs		0
 #define no_migrate_segs		1
 #define migrate_objects		1
-#define behind_check			1
+#define bCheckBehind			1
 #define check_bWindowCheck	0
 #endif
 
 // -----------------------------------------------------------------------------------
-//increment counter for checking if points rotated
+//increment counter for checking if points bRotated
 //This must be called at the start of the frame if RotateList() will be used
 void RenderStartFrame()
 {
@@ -1583,7 +1583,7 @@ if (!++nRLFrameCount) {		//wrap!
 }
 
 // -----------------------------------------------------------------------------------
-//Given a list of point numbers, rotate any that haven't been rotated this frame
+//Given a list of point numbers, rotate any that haven't been bRotated this frame
 //cc.and and cc.or will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
 g3s_codes RotateList (int nv, short *pointNumList)
@@ -1724,7 +1724,7 @@ OglResetTransform ();
 #define CROSS_WIDTH  i2f(8)
 #define CROSS_HEIGHT i2f(8)
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 
 //------------------------------------------------------------------------------
 //draw outline for curside
@@ -1800,36 +1800,39 @@ ubyte code_window_point(fix x,fix y,window *w)
 
 //------------------------------------------------------------------------------
 
-#ifndef NDEBUG
-void draw_window_box(unsigned int color,short left,short top,short right,short bot)
+#ifdef _DEBUG
+void DrawWindowBox (unsigned int color,short left,short top,short right,short bot)
 {
 	short l,t,r,b;
 
-	GrSetColorRGBi (color);
+GrSetColorRGBi (color);
+l=left; 
+t=top; 
+r=right; 
+b=bot;
 
-	l=left; t=top; r=right; b=bot;
+if ( r<0 || b<0 || l>=grdCurCanv->cv_bitmap.bm_props.w || (t>=grdCurCanv->cv_bitmap.bm_props.h && b>=grdCurCanv->cv_bitmap.bm_props.h))
+	return;
 
-	if ( r<0 || b<0 || l>=grdCurCanv->cv_bitmap.bm_props.w || (t>=grdCurCanv->cv_bitmap.bm_props.h && b>=grdCurCanv->cv_bitmap.bm_props.h))
-		return;
+if (l<0) 
+	l=0;
+if (t<0) 
+	t=0;
+if (r>=grdCurCanv->cv_bitmap.bm_props.w) r=grdCurCanv->cv_bitmap.bm_props.w-1;
+if (b>=grdCurCanv->cv_bitmap.bm_props.h) b=grdCurCanv->cv_bitmap.bm_props.h-1;
 
-	if (l<0) l=0;
-	if (t<0) t=0;
-	if (r>=grdCurCanv->cv_bitmap.bm_props.w) r=grdCurCanv->cv_bitmap.bm_props.w-1;
-	if (b>=grdCurCanv->cv_bitmap.bm_props.h) b=grdCurCanv->cv_bitmap.bm_props.h-1;
-
-	GrLine(i2f(l),i2f(t),i2f(r),i2f(t));
-	GrLine(i2f(r),i2f(t),i2f(r),i2f(b));
-	GrLine(i2f(r),i2f(b),i2f(l),i2f(b));
-	GrLine(i2f(l),i2f(b),i2f(l),i2f(t));
-
+GrLine(i2f(l),i2f(t),i2f(r),i2f(t));
+GrLine(i2f(r),i2f(t),i2f(r),i2f(b));
+GrLine(i2f(r),i2f(b),i2f(l),i2f(b));
+GrLine(i2f(l),i2f(b),i2f(l),i2f(t));
 }
 #endif
 
 //------------------------------------------------------------------------------
 
-int matt_find_connect_side(int seg0,int seg1);
+int MattFindConnectedSide(int seg0,int seg1);
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 char visited2 [MAX_SEGMENTS];
 #endif
 
@@ -1842,20 +1845,20 @@ typedef struct tSegZRef {
 static tSegZRef segZRef [MAX_SEGMENTS];
 
 unsigned char bVisited [MAX_SEGMENTS];
-char nVisited;
+char	nVisited;
 short nRenderList [MAX_RENDER_SEGS];
-short Seg_depth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
-ubyte processed [MAX_RENDER_SEGS];		//whether each entry has been processed
-int	lcnt_save,scnt_save;
+short nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
+ubyte nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
+int	lCntSave, sCntSave;
 
 #define VISITED(_ch)	(bVisited [_ch] == nVisited)
 #define VISIT(_ch) (bVisited [_ch] = nVisited)
 //@@short *persp_ptr;
-short render_pos [MAX_SEGMENTS];	//where in render_list does this segment appear?
+short nRenderPos [MAX_SEGMENTS];	//where in render_list does this segment appear?
 //ubyte no_render_flag [MAX_RENDER_SEGS];
-window render_windows [MAX_RENDER_SEGS];
+window renderWindows [MAX_RENDER_SEGS];
 
-short render_obj_list [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
+short nRenderObjList [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
 
 //for gameData.objs.objects
 
@@ -2074,25 +2077,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int QuicksortSegChildren (segment *seg, short left, short right, short *child_list)
+int QuicksortSegChildren (segment *seg, short left, short right, short *childList)
 {
 	short	h,
 			l = left,
 			r = right,
 			m = (l + r) / 2,
-			median = child_list [m],
+			median = childList [m],
 			bSwap = 0;
 
 do {
-	while ((l < m) && CompareChildren (seg, child_list [l], median) >= 0)
+	while ((l < m) && CompareChildren (seg, childList [l], median) >= 0)
 		l++;
-	while ((r > m) && CompareChildren (seg, child_list [r], median) <= 0)
+	while ((r > m) && CompareChildren (seg, childList [r], median) <= 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			h = child_list [l];
-			child_list [l] = child_list [r];
-			child_list [r] = h;
+			h = childList [l];
+			childList [l] = childList [r];
+			childList [r] = h;
 			bSwap = 1;
 			}
 		l++;
@@ -2100,9 +2103,9 @@ do {
 		}
 	} while (l <= r);
 if (l < right)
-	bSwap |= QuicksortSegChildren (seg, l, right, child_list);
+	bSwap |= QuicksortSegChildren (seg, l, right, childList);
 if (left < r)
-	bSwap |= QuicksortSegChildren (seg, left, r, child_list);
+	bSwap |= QuicksortSegChildren (seg, left, r, childList);
 return bSwap;
 }
 
@@ -2112,12 +2115,12 @@ int ssc_total=0,ssc_swaps=0;
 
 //short the children of segment to render in the correct order
 //returns non-zero if swaps were made
-int SortSegChildren(segment *seg,int n_children,short *child_list)
+int SortSegChildren(segment *seg,int n_children,short *childList)
 {
 #if 1
 if (n_children < 2) 
 	return 0;
-return QuicksortSegChildren (seg, (short) 0, (short) (n_children - 1), child_list);
+return QuicksortSegChildren (seg, (short) 0, (short) (n_children - 1), childList);
 #else
 	int i,j;
 	int r;
@@ -2135,14 +2138,14 @@ do {
 	made_swaps = 0;
 
 	for (i=0;i<n_children-1;i++)
-		for (j=i+1;child_list [i]!=-1 && j<n_children;j++)
-			if (child_list [j]!=-1) {
-				r = CompareChildren(seg,child_list [i],child_list [j]);
+		for (j=i+1;childList [i]!=-1 && j<n_children;j++)
+			if (childList [j]!=-1) {
+				r = CompareChildren(seg,childList [i],childList [j]);
 
 				if (r == 1) {
-					int temp = child_list [i];
-					child_list [i] = child_list [j];
-					child_list [j] = temp;
+					int temp = childList [i];
+					childList [i] = childList [j];
+					childList [j] = temp;
 					made_swaps=1;
 				}
 			}
@@ -2163,9 +2166,9 @@ void AddObjectToSegList(int objnum,int listnum)
 	checkn = listnum;
 	//first, find a slot
 	do {
-		for (i=0;render_obj_list [checkn][i] >= 0;i++);
+		for (i=0;nRenderObjList [checkn][i] >= 0;i++);
 		Assert(i < OBJS_PER_SEG);
-		marker = render_obj_list [checkn][i];
+		marker = nRenderObjList [checkn][i];
 		if (marker != -1) {
 			checkn = -marker;
 			//Assert(checkn < MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS);
@@ -2182,15 +2185,15 @@ void AddObjectToSegList(int objnum,int listnum)
 
 	if (i != OBJS_PER_SEG-1) {
 
-		render_obj_list [checkn][i] = objnum;
-		render_obj_list [checkn][i+1] = -1;
+		nRenderObjList [checkn][i] = objnum;
+		nRenderObjList [checkn][i+1] = -1;
 	}
 	else {				//chain to additional list
 		int lookn;
 
 		//find an available sublist
 
-		for (lookn=MAX_RENDER_SEGS;render_obj_list [lookn][0]!=-1 && lookn<MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS;lookn++);
+		for (lookn=MAX_RENDER_SEGS;nRenderObjList [lookn][0]!=-1 && lookn<MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS;lookn++);
 
 		//Assert(lookn<MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS);
 		if (lookn >= MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS) {
@@ -2198,9 +2201,9 @@ void AddObjectToSegList(int objnum,int listnum)
 			return;
 		}
 
-		render_obj_list [checkn][i] = -lookn;
-		render_obj_list [lookn][0] = objnum;
-		render_obj_list [lookn][1] = -1;
+		nRenderObjList [checkn][i] = -lookn;
+		nRenderObjList [lookn][0] = objnum;
+		nRenderObjList [lookn][1] = -1;
 
 	}
 
@@ -2299,38 +2302,36 @@ typedef struct sort_item {
 	fix dist;
 } sort_item;
 
-sort_item sort_list [SORT_LIST_SIZE];
-int n_sort_items;
+sort_item sortList [SORT_LIST_SIZE];
+int nSortItems;
 
 //compare function for object sort. 
 int _CDECL_ sort_func(const sort_item *a,const sort_item *b)
 {
-	fix delta_dist;
+	fix xDeltaDist;
 	object *objAP,*objBP;
 
-	delta_dist = a->dist - b->dist;
+xDeltaDist = a->dist - b->dist;
+objAP = gameData.objs.objects + a->objnum;
+objBP = gameData.objs.objects + b->objnum;
 
-	objAP = gameData.objs.objects + a->objnum;
-	objBP = gameData.objs.objects + b->objnum;
+if (abs (xDeltaDist) < (objAP->size + objBP->size)) {		//same position
+	//these two objects are in the same position.  see if one is a fireball
+	//or laser or something that should plot on top.  Don't do this for
+	//the afterburner blobs, though.
 
-	if (abs(delta_dist) < (objAP->size + objBP->size)) {		//same position
-
-		//these two gameData.objs.objects are in the same position.  see if one is a fireball
-		//or laser or something that should plot on top.  Don't do this for
-		//the afterburner blobs, though.
-
-		if (objAP->type == OBJ_WEAPON || (objAP->type == OBJ_FIREBALL && objAP->id != VCLIP_AFTERBURNER_BLOB))
-			if (!(objBP->type == OBJ_WEAPON || objBP->type == OBJ_FIREBALL))
-				return -1;	//a is weapon, b is not, so say a is closer
-			else;				//both are weapons 
-		else
-			if (objBP->type == OBJ_WEAPON || (objBP->type == OBJ_FIREBALL && objBP->id != VCLIP_AFTERBURNER_BLOB))
-				return 1;	//b is weapon, a is not, so say a is farther
-
-		//no special case, fall through to normal return
+	if ((objAP->type == OBJ_WEAPON) || 
+		 (objAP->type == OBJ_FIREBALL && objAP->id != VCLIP_AFTERBURNER_BLOB)) {
+		if (!(objBP->type == OBJ_WEAPON || objBP->type == OBJ_FIREBALL))
+			return -1;	//a is weapon, b is not, so say a is closer
+		}
+	else {
+		if (objBP->type == OBJ_WEAPON || (objBP->type == OBJ_FIREBALL && objBP->id != VCLIP_AFTERBURNER_BLOB))
+			return 1;	//b is weapon, a is not, so say a is farther
+		}
+	//no special case, fall through to normal return
 	}
-
-	return delta_dist;	//return distance
+return xDeltaDist;	//return distance
 }
 
 //------------------------------------------------------------------------------
@@ -2340,7 +2341,7 @@ void BuildObjectLists(int n_segs)
 	int nn;
 
 	for (nn=0;nn<MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS;nn++)
-		render_obj_list [nn][0] = -1;
+		nRenderObjList [nn][0] = -1;
 
 	for (nn=0;nn<n_segs;nn++) {
 		short segnum;
@@ -2403,31 +2404,31 @@ void BuildObjectLists(int n_segs)
 			//first count the number of gameData.objs.objects & copy into sort list
 
 			lookn = nn;
-			i = n_sort_items = 0;
-			while ((t=render_obj_list [lookn][i++])!=-1)
+			i = nSortItems = 0;
+			while ((t=nRenderObjList [lookn][i++])!=-1)
 				if (t<0)
 					{lookn = -t; i=0;}
 				else
-					if (n_sort_items < SORT_LIST_SIZE-1) {		//add if room
-						sort_list [n_sort_items].objnum = t;
+					if (nSortItems < SORT_LIST_SIZE-1) {		//add if room
+						sortList [nSortItems].objnum = t;
 						//NOTE: maybe use depth, not dist - quicker computation
-						sort_list [n_sort_items].dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
-						n_sort_items++;
+						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
+						nSortItems++;
 					}
 					else {			//no room for object
 						int ii;
 
-						#ifndef NDEBUG
+						#ifdef _DEBUG
 						FILE *tfile=fopen("sortlist.out","wt");
 
 						//I find this strange, so I'm going to write out
 						//some information to look at later
 						if (tfile) {
 							for (ii=0;ii<SORT_LIST_SIZE;ii++) {
-								int objnum = sort_list [ii].objnum;
+								int objnum = sortList [ii].objnum;
 
 								fprintf(tfile,"Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n",
-									objnum,gameData.objs.objects [objnum].type,gameData.objs.objects [objnum].id,sort_list [ii].dist,gameData.objs.objects [objnum].segnum);
+									objnum,gameData.objs.objects [objnum].type,gameData.objs.objects [objnum].id,sortList [ii].dist,gameData.objs.objects [objnum].segnum);
 							}
 							fclose(tfile);
 						}
@@ -2439,7 +2440,7 @@ void BuildObjectLists(int n_segs)
 						//of an object we don't care about
 
 						for (ii=0;ii<SORT_LIST_SIZE;ii++) {
-							int objnum = sort_list [ii].objnum;
+							int objnum = sortList [ii].objnum;
 							object *objP = &gameData.objs.objects [objnum];
 							int type = objP->type;
 
@@ -2450,9 +2451,9 @@ void BuildObjectLists(int n_segs)
 								//don't replace same kind of object unless new 
 								//one is closer
 
-								if (gameData.objs.objects [t].type != type || dist < sort_list [ii].dist) {
-									sort_list [ii].objnum = t;
-									sort_list [ii].dist = dist;
+								if (gameData.objs.objects [t].type != type || dist < sortList [ii].dist) {
+									sortList [ii].objnum = t;
+									sortList [ii].dist = dist;
 									break;
 								}
 							}
@@ -2463,10 +2464,10 @@ void BuildObjectLists(int n_segs)
 
 			//now call qsort
 		#if defined(__WATCOMC__)
-			qsort(sort_list,n_sort_items,sizeof(*sort_list),
+			qsort(sortList,nSortItems,sizeof(*sortList),
 				   sort_func);
 		#else
-			qsort(sort_list,n_sort_items,sizeof(*sort_list),
+			qsort(sortList,nSortItems,sizeof(*sortList),
 					(int (_CDECL_ *)(const void*,const void*))sort_func);
 		#endif	
 
@@ -2474,13 +2475,13 @@ void BuildObjectLists(int n_segs)
 
 			lookn = nn;
 			i = 0;
-			n = n_sort_items;
-			while ((t=render_obj_list [lookn][i])!=-1 && n>0)
+			n = nSortItems;
+			while ((t=nRenderObjList [lookn][i])!=-1 && n>0)
 				if (t<0)
 					{lookn = -t; i=0;}
 				else
-					render_obj_list [lookn][i++] = sort_list [--n].objnum;
-			render_obj_list [lookn][i] = -1;	//mark (possibly new) end
+					nRenderObjList [lookn][i++] = sortList [--n].objnum;
+			nRenderObjList [lookn][i] = -1;	//mark (possibly new) end
 		}
 	}
 }
@@ -2877,7 +2878,7 @@ if (nClearWindow == 1) {
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
 	GrClearCanvas (nClearWindowColor);
 	}
-#ifndef NDEBUG
+#ifdef _DEBUG
 if (bShowOnlyCurSide)
 	GrClearCanvas (nClearWindowColor);
 #endif
@@ -3023,118 +3024,114 @@ nSegListSize = j;
 
 //------------------------------------------------------------------------------
 
-void BuildSegmentList(short startSegNum, int nWindowNum)
+void BuildSegmentList (short startSegNum, int nWindowNum)
 {
-	int	lcnt,scnt,ecnt;
-	int	l;
-	short	c;
-	short	ch;
-	short *sv;
-	sbyte *s2v;
+	int		lCnt, sCnt, eCnt, wid, nSide;
+	int		l, i;
+	short		c;
+	short		nChild;
+	short		*sv;
+	sbyte		*s2v;
+	ubyte		andCodes;
+	int		bRotated, segnum;
+	window	*checkWinP;
+	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
+	int		nChildren;										//how many sides in childList
+	segment	*segP;
 
-memset(bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
+memset (bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
 nVisited = 0;
-memset(render_pos, -1, sizeof(render_pos [0])*(gameData.segs.nLastSegment+1));
+memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_render_flag, 0, sizeof(no_render_flag [0])*(MAX_RENDER_SEGS);
-memset(processed, 0, sizeof(processed));
-memset(nRenderList, 0xff, sizeof (nRenderList));
+memset (nProcessed, 0, sizeof (nProcessed));
+memset (nRenderList, 0xff, sizeof (nRenderList));
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
 
-lcnt = scnt = 0;
-
-nRenderList [lcnt] = startSegNum; 
+nRenderList [0] = startSegNum; 
+nSegDepth [0] = 0;
 VISIT (startSegNum);
-Seg_depth [lcnt] = 0;
-lcnt++;
-ecnt = lcnt;
-render_pos [startSegNum] = 0;
+nRenderPos [startSegNum] = 0;
+sCnt = 0;
+lCnt = eCnt = 1;
 
-#ifndef NDEBUG
-if (pre_draw_segs)
+#ifdef _DEBUG
+if (bPreDrawSegs)
 	RenderSegment(startSegNum, nWindowNum);
 #endif
 
-render_windows [0].left =
-render_windows [0].top = 0;
-render_windows [0].right = grdCurCanv->cv_bitmap.bm_props.w - 1;
-render_windows [0].bot = grdCurCanv->cv_bitmap.bm_props.h - 1;
+renderWindows [0].left =
+renderWindows [0].top = 0;
+renderWindows [0].right = grdCurCanv->cv_bitmap.bm_props.w - 1;
+renderWindows [0].bot = grdCurCanv->cv_bitmap.bm_props.h - 1;
 
 //breadth-first renderer
 
 //build list
 for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
-	//while (scnt < ecnt) {
-	for (scnt = 0;scnt < ecnt; scnt++) {
-		int rotated,segnum;
-		window *check_w;
-		short child_list [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
-		int n_children;										//how many sides in child_list
-		segment *seg;
-		if (processed [scnt])
+	//while (sCnt < eCnt) {
+	for (sCnt = 0; sCnt < eCnt; sCnt++) {
+		if (nProcessed [sCnt])
 			continue;
-		processed [scnt]=1;
-		segnum = nRenderList [scnt];
-		check_w = render_windows+scnt;
-#ifndef NDEBUG
-		if (draw_boxes)
-			draw_window_box(RED_RGBA,check_w->left,check_w->top,check_w->right,check_w->bot);
+		nProcessed [sCnt] = 1;
+		segnum = nRenderList [sCnt];
+		checkWinP = renderWindows + sCnt;
+#ifdef _DEBUG
+		if (bDrawBoxes)
+			DrawWindowBox (RED_RGBA, checkWinP->left, checkWinP->top, checkWinP->right, checkWinP->bot);
 #endif
 		if (segnum == -1) 
 			continue;
-		seg = gameData.segs.segments + segnum;
-		sv = seg->verts;
-		rotated=0;
+		segP = gameData.segs.segments + segnum;
+		sv = segP->verts;
+		bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
-		for (c = n_children = 0; c < MAX_SIDES_PER_SEGMENT; c++) {		//build list of sides
-			int wid = WALL_IS_DOORWAY (seg, c, NULL);
-			ch=seg->children [c];
-			if ((bWindowCheck || ((ch > -1) && !VISITED (ch))) && (wid & WID_RENDPAST_FLAG)) {
-				if (behind_check) {
-					ubyte codes_and=0xff;
-					int i;
+		for (c = nChildren = 0; c < MAX_SIDES_PER_SEGMENT; c++) {		//build list of sides
+			wid = WALL_IS_DOORWAY (segP, c, NULL);
+			nChild = segP->children [c];
+			if ((bWindowCheck || ((nChild > -1) && !VISITED (nChild))) && (wid & WID_RENDPAST_FLAG)) {
+				if (bCheckBehind) {
+					andCodes = 0xff;
 					s2v = sideToVerts [c];
-					if (!rotated) {
-						RotateList (8, seg->verts);
-						rotated = 1;
+					if (!bRotated) {
+						RotateList (8, segP->verts);
+						bRotated = 1;
 						}
 					for (i = 0; i < 4; i++)
-						codes_and &= gameData.segs.points [sv [s2v [i]]].p3_codes;
-					if (codes_and & CC_BEHIND) 
+						andCodes &= gameData.segs.points [sv [s2v [i]]].p3_codes;
+					if (andCodes & CC_BEHIND) 
 						continue;
 					}
-				child_list [n_children++] = c;
+				childList [nChildren++] = c;
+				}
 			}
-		}
-
 		//now order the sides in some magical way
 #if 1
-		if (new_seg_sorting && (n_children > 1))
-			SortSegChildren(seg,n_children,child_list);
+		if (bNewSegSorting && (nChildren > 1))
+			SortSegChildren (segP, nChildren, childList);
 #endif
 		//for (c=0;c<MAX_SIDES_PER_SEGMENT;c++)	{
-		//	ch=seg->children [c];
-		for (c=0;c<n_children;c++) {
-			int siden;
-			siden = child_list [c];
-			ch=seg->children [siden];
-			//if ( (bWindowCheck || !bVisited [ch])&& (WALL_IS_DOORWAY(seg, c))) {
+		//	nChild=segP->children [c];
+		for ( c= 0; c < nChildren; c++) {
+			nSide = childList [c];
+			nChild=segP->children [nSide];
+			//if ( (bWindowCheck || !bVisited [nChild])&& (WALL_IS_DOORWAY(segP, c))) {
 			{
 				if (bWindowCheck) {
 					int i;
 					ubyte codes_and_3d,codes_and_2d;
 					short _x,_y,min_x=32767,max_x=-32767,min_y=32767,max_y=-32767;
 					int no_proj_flag=0;	//a point wasn't projected
-					if (rotated<2) {
-//							if (!rotated)
-//								RotateList(8,seg->verts);
-						ProjectList(8,seg->verts);
-						rotated=2;
+					if (bRotated<2) {
+//							if (!bRotated)
+//								RotateList(8,segP->verts);
+						ProjectList(8,segP->verts);
+						bRotated=2;
 					}
-					s2v = sideToVerts [siden];
+					s2v = sideToVerts [nSide];
 					for (i=0,codes_and_3d=codes_and_2d=0xff;i<4;i++) {
 						int p = sv [s2v [i]];
 						g3s_point *pnt = gameData.segs.points+p;
@@ -3145,13 +3142,13 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						_x = f2i(pnt->p3_sx);
 						_y = f2i(pnt->p3_sy);
 						codes_and_3d &= pnt->p3_codes;
-						codes_and_2d &= code_window_point(_x,_y,check_w);
-#ifndef NDEBUG
+						codes_and_2d &= code_window_point(_x,_y,checkWinP);
+#ifdef _DEBUG
 						if (draw_edges) {
 							GrSetColorRGB (128, 0, 128, 255);
 							gr_uline(pnt->p3_sx,pnt->p3_sy,
-								gameData.segs.points [seg->verts [sideToVerts [siden][(i+1)%4]]].p3_sx,
-								gameData.segs.points [seg->verts [sideToVerts [siden][(i+1)%4]]].p3_sy);
+								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sx,
+								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sy);
 						}
 #endif
 						if (_x < min_x) 
@@ -3163,26 +3160,26 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						if (_y > max_y) 
 							max_y = _y;
 					}
-#ifndef NDEBUG
-					if (draw_boxes)
-						draw_window_box(WHITE_RGBA,min_x,min_y,max_x,max_y);
+#ifdef _DEBUG
+					if (bDrawBoxes)
+						DrawWindowBox(WHITE_RGBA,min_x,min_y,max_x,max_y);
 #endif
 					if (no_proj_flag || (!codes_and_3d && !codes_and_2d)) {	//maybe add this segment
-						int rp = render_pos [ch];
-						window *new_w = render_windows + lcnt;
+						int rp = nRenderPos [nChild];
+						window *new_w = renderWindows + lCnt;
 
 						if (no_proj_flag) 
-							*new_w = *check_w;
+							*new_w = *checkWinP;
 						else {
-							new_w->left  = max(check_w->left,min_x);
-							new_w->right = min(check_w->right,max_x);
-							new_w->top   = max(check_w->top,min_y);
-							new_w->bot   = min(check_w->bot,max_y);
+							new_w->left  = max(checkWinP->left,min_x);
+							new_w->right = min(checkWinP->right,max_x);
+							new_w->top   = max(checkWinP->top,min_y);
+							new_w->bot   = min(checkWinP->bot,max_y);
 						}
-						//see if this seg already bVisited, and if so, does current window
+						//see if this segP already bVisited, and if so, does current window
 						//expand the old window?
 						if (rp != -1) {
-							window *rwP = render_windows + rp;
+							window *rwP = renderWindows + rp;
 							if (new_w->left < rwP->left ||
 								 new_w->top < rwP->top ||
 								 new_w->right > rwP->right ||
@@ -3192,10 +3189,10 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 								new_w->top   = min(new_w->top,rwP->top);
 								new_w->bot   = max(new_w->bot,rwP->bot);
 								if (no_migrate_segs) {
-									//no_render_flag [lcnt] = 1;
-									nRenderList [lcnt] = -1;
+									//no_render_flag [lCnt] = 1;
+									nRenderList [lCnt] = -1;
 									*rwP = *new_w;		//get updated window
-									processed [rp] = 0;		//force reprocess
+									nProcessed [rp] = 0;		//force reprocess
 									goto no_add;
 								}
 								else
@@ -3204,55 +3201,52 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							else 
 								goto no_add;
 						}
-#ifndef NDEBUG
-						if (draw_boxes)
-							draw_window_box(5,new_w->left,new_w->top,new_w->right,new_w->bot);
+#ifdef _DEBUG
+						if (bDrawBoxes)
+							DrawWindowBox(5,new_w->left,new_w->top,new_w->right,new_w->bot);
 #endif
-						render_pos [ch] = lcnt;
-						nRenderList [lcnt] = ch;
-						Seg_depth [lcnt] = l;
-						lcnt++;
-						if (lcnt >= MAX_RENDER_SEGS) {
+						nRenderPos [nChild] = lCnt;
+						nRenderList [lCnt] = nChild;
+						nSegDepth [lCnt] = l;
+						lCnt++;
+						if (lCnt >= MAX_RENDER_SEGS) {
 #if TRACE								
 							//con_printf (CON_DEBUG,"Too many segs in render list!!\n"); 
 #endif
 							goto done_list;
 							}
-						VISIT (ch);
+						VISIT (nChild);
 
-#ifndef NDEBUG
-						if (pre_draw_segs)
-							RenderSegment(ch, nWindowNum);
+#ifdef _DEBUG
+						if (bPreDrawSegs)
+							RenderSegment(nChild, nWindowNum);
 #endif
 no_add:
 ;
 					}
 				}
 				else {
-					nRenderList [lcnt] = ch;
-					Seg_depth [lcnt] = l;
-					lcnt++;
-					if (lcnt >= MAX_RENDER_SEGS) {
-#if TRACE								
-						//con_printf (CON_DEBUG,"Too many segs in render list!!\n"); 
-#endif
+					nRenderList [lCnt] = nChild;
+					nSegDepth [lCnt] = l;
+					lCnt++;
+					if (lCnt >= MAX_RENDER_SEGS) {
+						LogErr ("Too many segments in segment render list!!!\n"); 
 						goto done_list;
 						}
-					VISIT (ch);
+					VISIT (nChild);
 				}
 			}
 		}
 	}
-	scnt = ecnt;
-	ecnt = lcnt;
+	sCnt = eCnt;
+	eCnt = lCnt;
 }
 done_list:
 
-lcnt_save = lcnt;
-scnt_save = scnt;
-
-nFirstTerminalSeg = scnt;
-nRenderSegs = lcnt;
+lCntSave = lCnt;
+sCntSave = sCnt;
+nFirstTerminalSeg = sCnt;
+nRenderSegs = lCnt;
 }
 
 
@@ -3424,7 +3418,7 @@ if (migrate_objects) {
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 	gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 	for (;;) {
-		int objNum = render_obj_list [listnum][objnp];
+		int objNum = nRenderObjList [listnum][objnp];
 		if (objNum < 0) {
 			if (objNum == -1)
 				break;
@@ -3627,9 +3621,9 @@ if (nClearWindow == 2) {
 		if (nClearWindowColor == -1)
 			nClearWindowColor = BLACK_RGBA;
 		GrSetColor(nClearWindowColor);
-		for (i=nFirstTerminalSeg, rwP = render_windows; i < nRenderSegs; i++, rwP++) {
+		for (i=nFirstTerminalSeg, rwP = renderWindows; i < nRenderSegs; i++, rwP++) {
 			if (nRenderList [i] != -1) {
-#ifndef NDEBUG
+#ifdef _DEBUG
 				if ((rwP->left == -1) || 
 					 (rwP->top == -1) || 
 					 (rwP->right == -1) || 
@@ -3663,9 +3657,9 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 	nVisited++;
 	for (nn = nRenderSegs; nn; ) {
 		nn--;
-		rwP = render_windows + nn;
+		rwP = renderWindows + nn;
 		segnum = nRenderList [nn];
-		nCurrentSegDepth = Seg_depth [nn];
+		nCurrentSegDepth = nSegDepth [nn];
 		if ((segnum != -1) && !VISITED (segnum)) {
 #if 0
 			if (bWindowCheck) {

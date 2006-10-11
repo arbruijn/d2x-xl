@@ -91,11 +91,13 @@ if (gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED) {
 	KillObjectSmoke (i);
 	return;
 	}
+#if 0
 if (EGI_FLAG (bThrusterFlames, 0, 0)) {
 	fixang a = VmVecDeltaAng (&objP->orient.fvec, &objP->mtype.phys_info.thrust, NULL);
 	if ((a <= F1_0 / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
 		DropAfterburnerBlobs (objP, 2, i2f (1), -1, gameData.objs.console, 1); //F1_0 / 4);
 	}
+#endif
 if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multi.players [i].connected)
 	nParts = 0;
 else if (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))

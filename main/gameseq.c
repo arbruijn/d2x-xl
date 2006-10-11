@@ -1225,6 +1225,7 @@ networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeo
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);
+ResetPlayerPaths ();
 /*---*/LogErr ("   counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {

@@ -219,6 +219,17 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+//scales a vector and adds it to another
+//dest += k * src
+fVector3 *VmVecScaleIncf3 (fVector3 *dest, fVector3 *src, float scale)
+{
+dest->p.x += src->p.x * scale;
+dest->p.y += src->p.y * scale;
+dest->p.z += src->p.z * scale;
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d
 vms_vector *VmVecScaleFrac (vms_vector *dest, fix n, fix d)

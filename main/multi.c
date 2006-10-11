@@ -381,6 +381,28 @@ memset (multiData.nObjOwner, -1, MAX_OBJECTS);
 
 // -----------------------------------------------------------------------------
 
+void ResetPlayerPaths (void)
+{
+	player	*playerP = gameData.multi.players;
+	int		i;
+
+for (i = 0; i < MAX_PLAYERS; i++, playerP++)
+	ResetFlightPath (&gameData.render.thrusters [i].path, 10, 1);
+}
+
+// -----------------------------------------------------------------------------
+
+void SetPlayerPaths (void)
+{
+	player	*playerP = gameData.multi.players;
+	int		i;
+
+for (i = 0; i < gameData.multi.nPlayers; i++, playerP++)
+	SetPathPoint (&gameData.render.thrusters [i].path, gameData.objs.objects + playerP->objnum);
+}
+
+// -----------------------------------------------------------------------------
+
 void MultiSetFlagPos (void)
 {
 	player	*playerP = gameData.multi.players;

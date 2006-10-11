@@ -81,10 +81,12 @@ SDL_GL_SwapBuffers ();
 
 int OglVideoModeOK (int w, int h)
 {
-gameStates.ogl.nColorBits = 
-	SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
-LogErr ("SDL suggests %d bits/pixel\n", gameStates.ogl.nColorBits);
-return gameStates.ogl.nColorBits != 0;
+int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
+LogErr ("SDL suggests %d bits/pixel\n", nColorBits);
+if (!nColorBits)
+	return 0;
+gameStates.ogl.nColorBits = nColorBits;
+return 1;
 }
 
 //------------------------------------------------------------------------------

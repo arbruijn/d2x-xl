@@ -402,6 +402,7 @@ fVector3 *VmVecScaleAddf (fVector3 *dest, fVector3 *src1, fVector3 *src2, float 
 //scales a vector and adds it to another
 //dest += k * src
 vms_vector *VmVecScaleInc (vms_vector *dest, vms_vector *src, fix k);
+fVector3 *VmVecScaleIncf3 (fVector3 *dest, fVector3 *src, float scale);
 
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d

@@ -375,7 +375,7 @@ for (; i; i--)
 
 //------------------------------------------------------------------------------
 
-void gr_set_bitmap_flags (grs_bitmap *pbm, int flags)
+void GrSetBitmapFlags (grs_bitmap *pbm, int flags)
 {
 #ifdef D1XD3D
 	Assert (pbm->iMagic == BM_MAGIC_NUMBER);
@@ -396,9 +396,9 @@ void gr_set_bitmap_flags (grs_bitmap *pbm, int flags)
 void GrSetTransparent (grs_bitmap *pbm, int bTransparent)
 {
 if (bTransparent)
-	gr_set_bitmap_flags (pbm, pbm->bm_props.flags | BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bm_props.flags | BM_FLAG_TRANSPARENT);
 else
-	gr_set_bitmap_flags (pbm, pbm->bm_props.flags & ~BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bm_props.flags & ~BM_FLAG_TRANSPARENT);
 }
 
 //------------------------------------------------------------------------------
@@ -406,23 +406,23 @@ else
 void GrSetSuperTransparent (grs_bitmap *pbm, int bTransparent)
 {
 if (bTransparent)
-	gr_set_bitmap_flags (pbm, pbm->bm_props.flags & ~BM_FLAG_SUPER_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bm_props.flags & ~BM_FLAG_SUPER_TRANSPARENT);
 else
-	gr_set_bitmap_flags (pbm, pbm->bm_props.flags | BM_FLAG_SUPER_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bm_props.flags | BM_FLAG_SUPER_TRANSPARENT);
 }
 
 //------------------------------------------------------------------------------
 
-void GrSetPalette (grs_bitmap *bmP, ubyte *palette, int transparent_color, int super_transparent_color, int *freq)
+void GrSetPalette (grs_bitmap *bmP, ubyte *palette, int transparentColor, int superTranspColor, int *freq)
 {
-if ((transparent_color >= 0) && (transparent_color <= 255)) {
-	//palette [255] = transparent_color;
-	if (freq [transparent_color])
+if ((transparentColor >= 0) && (transparentColor <= 255)) {
+	//palette [255] = transparentColor;
+	if (freq [transparentColor])
 		GrSetTransparent (bmP, 1);
 	}
-if ((super_transparent_color >= 0) && (super_transparent_color <= 255)) {
-	//palette [254] = transparent_color;
-	if (freq [super_transparent_color])
+if ((superTranspColor >= 0) && (superTranspColor <= 255)) {
+	//palette [254] = transparentColor;
+	if (freq [superTranspColor])
 		GrSetSuperTransparent (bmP, 0);
 	}
 bmP->bm_palette = AddPalette (palette);
@@ -430,7 +430,7 @@ bmP->bm_palette = AddPalette (palette);
 
 //------------------------------------------------------------------------------
 
-void GrRemapBitmap (grs_bitmap * bmP, ubyte *palette, int transparent_color, int super_transparent_color)
+void GrRemapBitmap (grs_bitmap * bmP, ubyte *palette, int transparentColor, int superTranspColor)
 {
 	int freq [256];
 
@@ -440,12 +440,12 @@ if (!palette)
 if (!palette)
 	return;
 GrCountColors (bmP->bm_texBuf, bmP->bm_props.w * bmP->bm_props.h, freq);
-GrSetPalette (bmP, palette, transparent_color, super_transparent_color, freq);
+GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 }
 
 //------------------------------------------------------------------------------
 
-void GrRemapBitmapGood (grs_bitmap * bmP, ubyte *palette, int transparent_color, int super_transparent_color)
+void GrRemapBitmapGood (grs_bitmap * bmP, ubyte *palette, int transparentColor, int superTranspColor)
 {
 	int freq [256];
 
@@ -462,7 +462,7 @@ else {
 	for (y = bmP->bm_props.h; y; y--, p += bmP->bm_props.rowsize)
 		GrCountColors (p, bmP->bm_props.w, freq);
 	}
-GrSetPalette (bmP, palette, transparent_color, super_transparent_color, freq);
+GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 }
 
 //------------------------------------------------------------------------------

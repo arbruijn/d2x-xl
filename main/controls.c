@@ -344,7 +344,7 @@ void ReadFlyingControls(object *objP)
 				if (xAfterburnerCharge < 0)
 					xAfterburnerCharge = 0;
 				new_count = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
-				if (old_count != new_count)
+				if (gameStates.app.bNostalgia && (old_count != new_count))
 					gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
 			}
 		}

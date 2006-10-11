@@ -2069,9 +2069,9 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "flag01#0")) {
+	if (strstr (bmName, "rock098")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
-		*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
+					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
 	else
 #endif
@@ -2698,6 +2698,7 @@ if (fp) {
 			bm.bm_palette = gamePalette;
 			j = indices [i];
 			bm.bm_props = gameData.pig.tex.pBitmaps [j].bm_props;
+			GrRemapBitmapGood (&bm, gamePalette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bm_fromPog = 1;

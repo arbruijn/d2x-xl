@@ -654,6 +654,24 @@ extern tGameOptions	gameOptions [2];
 extern tGameStates	gameStates;
 extern tGameOptions	*gameOpts;
 
+#define MAX_PATH_POINTS		20
+
+typedef struct tPathPoint {
+	vms_vector			vPos;
+	vms_vector			vOrgPos;
+	vms_matrix			mOrient;
+} tPathPoint;
+
+typedef struct tFlightPath {
+	tPathPoint			path [MAX_PATH_POINTS];
+	tPathPoint			*pPos;
+	int					nSize;
+	int					nStart;
+	int					nEnd;
+	time_t				tRefresh;
+	time_t				tUpdate;
+} tFlightPath;
+
 #include "cameras.h"
 
 typedef struct tLightInfo {
@@ -869,6 +887,13 @@ typedef struct tTerrainRenderData {
 	int			nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
 } tTerrainRenderData;
 
+typedef struct tThrusterData {
+	tFlightPath				path;
+	float						fSpeed;
+	short						nPulse;
+	time_t					tPulse;
+} tThrusterData;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
@@ -884,6 +909,7 @@ typedef struct tRenderData {
 	tPaletteData			pal;
 	tOglData					ogl;
 	tTerrainRenderData	terrain;
+	tThrusterData			thrusters [MAX_PLAYERS];
 } tRenderData;
 
 typedef struct tSecretData {
@@ -1132,25 +1158,6 @@ typedef struct tShipData {
 	player_ship			*player;
 } tShipData;
 
-#define MAX_PATH_POINTS		20
-
-#if 1
-typedef struct tPathPoint {
-	vms_vector			vPos;
-	vms_vector			vOrgPos;
-	vms_matrix			mOrient;
-} tPathPoint;
-
-typedef struct tFlightPath {
-	tPathPoint			path [MAX_PATH_POINTS];
-	tPathPoint			*pPos;
-	int					nSize;
-	int					nStart;
-	int					nEnd;
-	time_t				tRefresh;
-	time_t				tUpdate;
-} tFlightPath;
-#endif
 typedef struct tFlagData {
 	bitmap_index		bmi;
 	vclip					*vcP;
