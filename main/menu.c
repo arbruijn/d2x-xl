@@ -205,7 +205,7 @@ dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 	{SM (1280, 1024), 1280, 1024, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (1600, 1200), 1600, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (2048, 1536), 2048, 1536, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 720,  480), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
+	{SM ( 720,  480),  720,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  768), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  800), 1280,  800, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  854), 1280,  854, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
@@ -997,6 +997,38 @@ gameStates.video.nScreenMode = -1;		//force screen reset
 
 static int wideScreenOpt, optCustRes, nDisplayMode;
 
+static int ScreenResMenuItemToMode(int menuItem)
+{
+	if ((wideScreenOpt >= 0) && (menuItem > wideScreenOpt))
+		menuItem--;
+
+	int j;
+	for (j = 0; j < NUM_DISPLAY_MODES; j++)
+		if (displayModeInfo[j].isAvailable)
+			if (--menuItem < 0)
+				break;
+
+	return j;
+}
+
+//------------------------------------------------------------------------------
+
+static int ScreenResModeToMenuItem(int mode)
+{
+	int j;
+	int item = 0;
+
+	for (j = 0; j < mode; j++)
+		if (displayModeInfo[j].isAvailable)
+			item++;
+
+	if ((wideScreenOpt >= 0) && (mode >= wideScreenOpt))
+		item++;
+
+	return item;
+}
+
+//------------------------------------------------------------------------------
 
 void ScreenResCallBack (int nItems, newmenu_item *m, int *last_key, int citem)
 {
@@ -1006,13 +1038,7 @@ if (m [optCustRes].value != (nDisplayMode == NUM_DISPLAY_MODES))
 	*last_key = -2;
 for (i = 0; i < optCustRes; i++)
 	if (m [i].value) {
-		if ((wideScreenOpt >= 0) && (i > wideScreenOpt))
-			i--;
-		j = 0;
-		for (j = 0; j < NUM_DISPLAY_MODES; j++)
-			if (displayModeInfo [j].isAvailable)
-				if (--i < 0)
-					break;
+		j = ScreenResMenuItemToMode(i);
 		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
 			SetDisplayMode (j);
 			nDisplayMode = gameStates.video.nDisplayMode;
@@ -1114,9 +1140,7 @@ do {
 		nCustWOpt =
 		nCustHOpt = -1;
 */
-	choice = nDisplayMode;
-	if (wideScreenOpt && (choice >= wideScreenOpt))
-		choice++;
+	choice = ScreenResModeToMenuItem(nDisplayMode);
 	m [choice].value = 1;
 
 	key = ExecMenu1 (NULL, TXT_SELECT_SCRMODE, opt, m, ScreenResCallBack, &choice);
@@ -1141,8 +1165,7 @@ do {
 		for (i = 0; i <= optCustRes; i++)
 			if (m [i].value) {
 				bStdRes = 1;
-				if (i > wideScreenOpt)
-					i--;
+				i = ScreenResMenuItemToMode(i);
 				break;
 				}
 			if (!bStdRes)
