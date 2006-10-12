@@ -1263,11 +1263,23 @@ if ((i = FindArg ("-userdir")) && GetAppFolder ("", gameFolders.szGameDir, Args 
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv ("DESCENT2"), D2X_APPNAME))
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
+if (gameFolders.szGameDir[0] == '\0') {
+	int j;
+	for (j = strlen(Args[0]) - 1; j >= 0; j--) {
+		if ((Args[0][j] == '\\') || (Args[0][j] == '/')) {
+			memcpy(gameFolders.szGameDir, Args[0], j+1);
+			gameFolders.szGameDir[j+1] = '\0';
+			break;
+		}
+	}
+}
+/*
 if (!*gameFolders.szGameDir && (psz = strstr (Args [0], "d2x-xl"))) {
 	i = (int) (psz - Args [0] - 1);
 	memcpy (gameFolders.szGameDir, Args [0], i);
 	gameFolders.szGameDir [i] = '\0';
 	}
+*/
 strcpy (szDataRootDir, gameFolders.szGameDir);
 #else // Linux, OS X
 #	ifdef __unix__
