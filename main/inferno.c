@@ -1250,9 +1250,9 @@ void GetAppFolders (void)
 #ifndef _WIN32
 	FFS	ffs;
 #endif
-	int	i;
+	int	i, j;
 	char	szDataRootDir [FILENAME_LEN];
-	char	*psz;
+	char	*psz, c;
   
 *gameFolders.szHomeDir =
 *gameFolders.szGameDir =
@@ -1263,23 +1263,17 @@ if ((i = FindArg ("-userdir")) && GetAppFolder ("", gameFolders.szGameDir, Args 
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv ("DESCENT2"), D2X_APPNAME))
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
-if (gameFolders.szGameDir[0] == '\0') {
-	int j;
-	for (j = strlen(Args[0]) - 1; j >= 0; j--) {
-		if ((Args[0][j] == '\\') || (Args[0][j] == '/')) {
-			memcpy(gameFolders.szGameDir, Args[0], j+1);
-			gameFolders.szGameDir[j+1] = '\0';
+if (!*gameFolders.szGameDir) {
+	psz = Args [0];
+	for (j = strlen (psz); j; ) {
+		c = psz [--j];
+		if ((c == '\\') || (c == '/')) {
+			memcpy (gameFolders.szGameDir, psz, ++j);
+			gameFolders.szGameDir [j] = '\0';
 			break;
+			}
 		}
 	}
-}
-/*
-if (!*gameFolders.szGameDir && (psz = strstr (Args [0], "d2x-xl"))) {
-	i = (int) (psz - Args [0] - 1);
-	memcpy (gameFolders.szGameDir, Args [0], i);
-	gameFolders.szGameDir [i] = '\0';
-	}
-*/
 strcpy (szDataRootDir, gameFolders.szGameDir);
 #else // Linux, OS X
 #	ifdef __unix__
@@ -1831,6 +1825,7 @@ if (i) {
 	gameOptions [1].render.smoke.bMissiles = 0;
 	gameOptions [1].render.smoke.bCollisions = 0;
 	gameOptions [1].render.smoke.bSort = 0;
+	gameOptions [1].render.smoke.bDecreaseLag = 0;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -1894,6 +1889,7 @@ else {
 	gameOptions [0].render.smoke.bMissiles = 1;
 	gameOptions [0].render.smoke.bCollisions = 1;
 	gameOptions [0].render.smoke.bSort = 0;
+	gameOptions [0].render.smoke.bDecreaseLag = 1;
 	}
 }
 

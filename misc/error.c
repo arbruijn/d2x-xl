@@ -263,7 +263,8 @@ if (fmt != NULL) {
 	va_start(arglist,fmt);
 	len = vsprintf(szExitMsg,fmt,arglist);
 	va_end(arglist);
-	if (len==-1 || len>MAX_MSG_LEN) Error("Message too long in error_init (len=%d, max=%d)",len,MAX_MSG_LEN);
+	if (len==-1 || len>MAX_MSG_LEN) 
+		Error("Message too long in error_init (len=%d, max=%d)",len,MAX_MSG_LEN);
 	}
 err_initialized=1;
 return 0;

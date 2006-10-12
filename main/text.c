@@ -1594,6 +1594,9 @@ char *defaultGameTexts [][2] = {
 	{"~Bildschirmabzuege: alle %d s", "~Screenshots: every %d s"},
 	{"~Bildschirmabzuege: keine", "~Screenshots: none"},
 	{"Scheinwerfer nicht verfuegbar", "Headlights not available"},
+	{"~Ruckeln durch Rauch reduzieren", "~Reduce smoke induced lag"},
+	{"~Raucheinstellungen...", "~Smoke Render Options..."},
+	{"Rauch-Einstellungen", "Smoke Render Options"},
 #if 0
 	{"", ""},
 #endif
@@ -2017,6 +2020,9 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, captured flags are towed behind the player ships."},
 	{"D2X-XL kann in festen Zeitabstaenden automatisch Bildschirm-\nabzuege machen. Hier kann eingestellt werden, ob und mit welchem\nZeitabstand automatische Bildschirmabzuege erstellt werden sollen.", 
 	 "D2X-XL can automatically create screenshots in fixed time\nintervals. Here you can chose whether to enable automatic screenshots\nand adjust their time interval."},
+	{"Wenn angekreuzt, wird beim rueckwaerts fliegen eventuell\nauftretendes Ruckeln verringert. Dadurch koennen Leistungseinbrueche\nauf langsameren Grafikkarten reduziert werden.", 
+	 "If checked, smoke induced lag while flying backwards will be\nreduced. That way you can decrease performance losses on slower\nvideo hardware."},
+	{"Hier koennen Raucheinstellungen vorgenommen werden.", "Adjust smoke settings here."},
 #if 0
 	{"", ""},
 #endif

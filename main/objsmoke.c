@@ -11,6 +11,7 @@
 #include <time.h>
 
 #include "inferno.h"
+#include "error.h"
 #include "particles.h"
 #include "laser.h"
 #include "fireball.h"
@@ -77,13 +78,16 @@ if (EGI_FLAG (bDamageExplosions, 0, 0) &&
 }
 
 //------------------------------------------------------------------------------
+extern tSmoke	smoke [];
 
 void DoPlayerSmoke (object *objP, int i)
 {
 	int			h, j, d, nParts, nType;
 	float			nScale;
 	tCloud		*pCloud;
-	vms_vector	pos;
+	vms_vector	pos, fn, mn;
+	static int	bForward = 1;
+	static int	nDens = 50;
 
 if (i < 0)
 	i = objP->id;
@@ -91,9 +95,32 @@ if (gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED) {
 	KillObjectSmoke (i);
 	return;
 	}
+j = OBJ_IDX (objP);
+if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multi.nLocalPlayer)) {
+	fn = objP->orient.fvec;
+	VmVecSub (&mn, &objP->pos, &objP->last_pos);
+	VmVecNormalize (&fn);
+	VmVecNormalize (&mn);
+	d = VmVecDot (&fn, &mn);
+	if (d >= -F1_0 / 2) 
+		bForward = 1;
+	else {
+		if (bForward) {
+			if (gameData.smoke.objects [i] >= 0) {
+				KillObjectSmoke (i);
+				DestroySmoke (gameData.smoke.objects [j]);
+				gameData.smoke.objects [j] = -1;
+				}
+			bForward = 0;
+			nDens = 0;
+			return;
+			}
+		}
+	if (gameStates.app.b40fpsTick && (nDens < 100))
+		nDens++;
+	}
 #if 0
 if (EGI_FLAG (bThrusterFlames, 0, 0)) {
-	fixang a = VmVecDeltaAng (&objP->orient.fvec, &objP->mtype.phys_info.thrust, NULL);
 	if ((a <= F1_0 / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
 		DropAfterburnerBlobs (objP, 2, i2f (1), -1, gameData.objs.console, 1); //F1_0 / 4);
 	}
@@ -114,7 +141,6 @@ else {
 		nScale /= 2;
 	else
 		nScale /= 1.5;
-	j = OBJ_IDX (objP);
 	if (nParts <= 0) {
 		nType = 2;
 		//nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
@@ -125,10 +151,12 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 200 : 100;
-	if (SHOW_SMOKE && gameOpts->render.smoke.bPlayers) {
+	nParts = ((gameStates.entropy.nTimeLastMoved < 0) ? 4 : 2) * nDens;
+	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating player smoke\n");
+			if (!bForward)
+				i = i;
 			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->segnum, 2, nParts, nScale,
 														  PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
 			}

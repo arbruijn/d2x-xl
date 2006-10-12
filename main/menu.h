@@ -225,7 +225,7 @@ typedef struct {
 	char	isAvailable;
 } dmi;
 
-#define NUM_DISPLAY_MODES	20
+#define NUM_DISPLAY_MODES	21
 
 extern dmi displayModeInfo [NUM_DISPLAY_MODES + 1];
 

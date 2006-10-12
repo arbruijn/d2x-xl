@@ -150,6 +150,7 @@ typedef struct tSmokeOptions {
 	int bMissiles;
 	int bCollisions;
 	int bSort;
+	int bDecreaseLag;	//only render if player is moving forward
 } tSmokeOptions;
 
 typedef struct tRenderOptions {

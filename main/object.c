@@ -1414,7 +1414,7 @@ void RenderThrusterFlames (object *objP)
 
 if (!pp)
 	return;
-#ifndef _DEBUG
+#if 1//ndef _DEBUG
 if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif

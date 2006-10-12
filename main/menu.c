@@ -205,7 +205,10 @@ dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 	{SM (1280, 1024), 1280, 1024, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (1600, 1200), 1600, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (2048, 1536), 2048, 1536, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 720,  480),  720,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
+	//test>>>
+	{SM (4096, 3072), 4096, 3072, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	//<<<test
+	{SM ( 720,  480), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  768), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  800), 1280,  800, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  854), 1280,  854, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
@@ -405,7 +408,7 @@ menu_choice [opt++] = MENU_SHOW_CREDITS;
 ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 menu_choice [opt++] = MENU_QUIT;
 #ifndef RELEASE
-if (! (gameData.app.nGameMode & GM_MULTI ))   {
+if (!(gameData.app.nGameMode & GM_MULTI ))   {
 	//m [opt].type=NM_TYPE_TEXT;
 	//m [opt++].text=" Debug options:";
 
@@ -502,7 +505,7 @@ for (h = j = 0; j < i; j++)
 		h += GetNumMovies (j);
 if (!h)
 	return;
-if (! (m = (char **) d_malloc (h * sizeof (char **))))
+if (!(m = (char **) d_malloc (h * sizeof (char **))))
 	return;
 for (i = j = 0; i < h; i++)
 	if (ps = CycleThroughMovies (i == 0, 0)) {
@@ -607,7 +610,7 @@ switch (select) {
 #endif
 	case MENU_QUIT:
 		#ifdef EDITOR
-		if (! SafetyCheck ()) break;
+		if (!SafetyCheck ()) break;
 		#endif
 		GrPaletteFadeOut (NULL, 32, 0);
 		SetFunctionMode (FMODE_EXIT);
@@ -853,7 +856,7 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-void CustomDetailsCallBack (int nitems, newmenu_item * items, int *last_key, int citem )
+void CustomDetailsCallback (int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	nitems = nitems;
 	*last_key = *last_key;
@@ -922,7 +925,7 @@ do {
 
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
 
-	i = ExecMenu1 (NULL, TXT_DETAIL_CUSTOM, opt, m, CustomDetailsCallBack, &choice);
+	i = ExecMenu1 (NULL, TXT_DETAIL_CUSTOM, opt, m, CustomDetailsCallback, &choice);
 } while (i > -1);
 InitCustomDetails ();
 }
@@ -997,18 +1000,17 @@ gameStates.video.nScreenMode = -1;		//force screen reset
 
 static int wideScreenOpt, optCustRes, nDisplayMode;
 
-static int ScreenResMenuItemToMode(int menuItem)
+static int ScreenResMenuItemToMode (int menuItem)
 {
-	if ((wideScreenOpt >= 0) && (menuItem > wideScreenOpt))
-		menuItem--;
-
 	int j;
-	for (j = 0; j < NUM_DISPLAY_MODES; j++)
-		if (displayModeInfo[j].isAvailable)
-			if (--menuItem < 0)
-				break;
 
-	return j;
+if ((wideScreenOpt >= 0) && (menuItem > wideScreenOpt))
+	menuItem--;
+for (j = 0; j < NUM_DISPLAY_MODES; j++)
+	if (displayModeInfo[j].isAvailable)
+		if (--menuItem < 0)
+			break;
+return j;
 }
 
 //------------------------------------------------------------------------------
@@ -1030,7 +1032,7 @@ static int ScreenResModeToMenuItem(int mode)
 
 //------------------------------------------------------------------------------
 
-void ScreenResCallBack (int nItems, newmenu_item *m, int *last_key, int citem)
+void ScreenResCallback (int nItems, newmenu_item *m, int *last_key, int citem)
 {
 	int	i, j;
 
@@ -1055,7 +1057,7 @@ int SwitchDisplayMode (int dir)
 	int	i, h = NUM_DISPLAY_MODES;
 
 for (i = 0; i < h; i++)
-	displayModeInfo [i].isAvailable = 
+	displayModeInfo [i].isAvailable =
 		 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].VGA_mode);
 i = gameStates.video.nDisplayMode;
 do {
@@ -1101,7 +1103,7 @@ do {
 	opt = 0;
 	memset (m, 0, sizeof (m));
 	for (i = 0, j = NUM_DISPLAY_MODES; i < j; i++) {
-		if (! (displayModeInfo [i].isAvailable = 
+		if (!(displayModeInfo [i].isAvailable = 
 				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].VGA_mode)))
 				continue;
 		if (displayModeInfo [i].isWideScreen && !displayModeInfo [i-1].isWideScreen) {
@@ -1143,7 +1145,7 @@ do {
 	choice = ScreenResModeToMenuItem(nDisplayMode);
 	m [choice].value = 1;
 
-	key = ExecMenu1 (NULL, TXT_SELECT_SCRMODE, opt, m, ScreenResCallBack, &choice);
+	key = ExecMenu1 (NULL, TXT_SELECT_SCRMODE, opt, m, ScreenResCallback, &choice);
 	if (key == -1)
 		return;
 	bStdRes = 0;
@@ -1322,7 +1324,7 @@ static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, op
 
 static char *szCWS [4];
 
-void CockpitOptionsCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void CockpitOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v, j;
@@ -1503,7 +1505,7 @@ do {
 		optIconAlpha = -1;
 	Assert (sizeofa (m) >= opt);
 	do {
-		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, opt, m, &CockpitOptionsCallBack, &choice);
+		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, opt, m, &CockpitOptionsCallback, &choice);
 	} while (i >= 0);
 	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissileView);
@@ -1580,7 +1582,7 @@ return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
 //added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
 
 static int	nFPSopt, nRSDopt, 
-				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, 
+				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt, nSmokeSizeOpt, nUseSmokeOpt, nUseCamOpt,
 				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt;
@@ -1592,7 +1594,7 @@ static char *pszRendQual [5];
 static char *pszAmount [5];
 static char *pszSize [4];
 
-void RenderOptionsCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void RenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v;
@@ -1671,13 +1673,14 @@ return j;
 //------------------------------------------------------------------------------
 
 void AdvancedRenderOptionsMenu ();
+void SmokeRenderOptionsMenu ();
 
 void RenderOptionsMenu ()
 {
 	newmenu_item m [50];
 	int	i, choice = 0;
 	int	opt;
-	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, 
+	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
 			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight;
 #if 0
 	int checks;
@@ -1761,15 +1764,22 @@ do {
 	if (gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
+		ADD_MENU (opt, TXT_SMOKE_RENDER_OPTS, KEY_S, HTX_RENDER_SMOKEOPTS);
+		optSmokeOpts = opt++;
 		ADD_MENU (opt, TXT_ADV_RENDER_OPTS, KEY_A, HTX_RENDER_ADVOPTS);
 		optAdvOpts = opt++;
 		}
+	else
+		optSmokeOpts =
+		optAdvOpts = -1;
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallBack, &choice);
+		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		if (gameOpts->app.bExpertMode) {
-			if (i == optAdvOpts)
+			if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
+				SmokeRenderOptionsMenu ();
+			if ((optAdvOpts >= 0) && (i == optAdvOpts))
 				AdvancedRenderOptionsMenu ();
 			}
 		} 
@@ -1829,7 +1839,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void AdvancedRenderOptionsCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void AdvancedRenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v;
@@ -1929,24 +1939,6 @@ if (nLMapRangeOpt >= 0) {
 		m->rebuild = 1;
 		}
 	}
-if (extraGameInfo [0].bUseSmoke) {
-	m = menus + nSmokeDensOpt;
-	v = m->value;
-	if (gameOpts->render.smoke.nScale != v) {
-		gameOpts->render.smoke.nScale = v;
-		sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale]);
-		m->rebuild = 1;
-		}
-	m = menus + nSmokeSizeOpt;
-	v = m->value;
-	if (gameOpts->render.smoke.nSize != v) {
-		gameOpts->render.smoke.nSize = v;
-		sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize]);
-		m->rebuild = 1;
-		}
-	}
-else
-	DestroyAllSmoke ();
 }
 
 //------------------------------------------------------------------------------
@@ -1958,8 +1950,7 @@ void AdvancedRenderOptionsMenu ()
 	int	opt;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
 	int	optTranspExpl, optRenderAll, optMixColors, 
-			optUseGamma, optColoredWalls, optFSCameras,
-			optTeleCams, optPlrSmoke, optBotSmoke, optMissSmoke, optSmokeColl;
+			optUseGamma, optColoredWalls, optFSCameras, optTeleCams;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
@@ -1973,8 +1964,6 @@ void AdvancedRenderOptionsMenu ()
 	char szRendQual [50];
 	char szTexQual [50];
 	char szCameraSpeed [50];
-	char szSmokeDens [50];
-	char szSmokeSize [50];
 	char szContrast [50];
 #if SHADOWS
 	char szMaxLights [50];
@@ -1993,16 +1982,6 @@ void AdvancedRenderOptionsMenu ()
 	pszTexQual [2] = TXT_QUALITY_HIGH;
 	pszTexQual [3] = TXT_QUALITY_MAX;
 
-	pszSize [0] = TXT_SMALL;
-	pszSize [1] = TXT_MEDIUM;
-	pszSize [2] = TXT_LARGE;
-	pszSize [3] = TXT_VERY_LARGE;
-
-	pszAmount [0] = TXT_QUALITY_LOW;
-	pszAmount [1] = TXT_QUALITY_MED;
-	pszAmount [2] = TXT_QUALITY_HIGH;
-	pszAmount [3] = TXT_VERY_HIGH;
-	pszAmount [4] = TXT_EXTREME;
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -2104,41 +2083,7 @@ do {
 		optFSCameras = -1;
 		nCamFpsOpt = -1;
 		nCamSpeedOpt = -1;
-		if (extraGameInfo [0].bUseSmoke && gameOpts->app.bExpertMode) {
-			ADD_TEXT (opt, "", 0);
-			opt++;
-			}
 		}
-
-	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
-	nUseSmokeOpt = opt++;
-	if (extraGameInfo [0].bUseSmoke) {
-		if (gameOpts->app.bExpertMode) {
-			ADD_CHECK (opt, TXT_SMOKE_PLAYERS, gameOpts->render.smoke.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
-			optPlrSmoke = opt++;
-			ADD_CHECK (opt, TXT_SMOKE_ROBOTS, gameOpts->render.smoke.bRobots, KEY_O, HTX_ADVRND_BOTSMOKE);
-			optBotSmoke = opt++;
-			ADD_CHECK (opt, TXT_SMOKE_MISSILES, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
-			optMissSmoke = opt++;
-			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
-			optSmokeColl = opt++;
-			sprintf (szSmokeDens + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nScale, 0, 4)]);
-			*szSmokeDens = *(TXT_SMOKE_DENS - 1);
-			ADD_SLIDER (opt, szSmokeDens + 1, gameOpts->render.smoke.nScale, 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
-			nSmokeDensOpt = opt++;
-			sprintf (szSmokeSize + 1, TXT_SMOKE_SIZE, pszSize [NMCLAMP (gameOpts->render.smoke.nSize, 0, 3)]);
-			*szSmokeSize = *(TXT_SMOKE_SIZE - 1);
-			ADD_SLIDER (opt, szSmokeSize + 1, gameOpts->render.smoke.nSize, 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
-			nSmokeSizeOpt = opt++;
-			ADD_TEXT (opt, "", 0);
-			opt++;
-			}
-		}
-	else
-		optPlrSmoke =
-		optBotSmoke =
-		optMissSmoke =
-		optSmokeColl = -1;
 
 #ifdef _DEBUG
 	m [opt].type = NM_TYPE_TEXT;   
@@ -2157,7 +2102,7 @@ do {
 #endif
 
 	do {
-		i = ExecMenu1 (NULL, TXT_ADV_RENDER_TITLE, opt, m, &AdvancedRenderOptionsCallBack, &choice);
+		i = ExecMenu1 (NULL, TXT_ADV_RENDER_TITLE, opt, m, &AdvancedRenderOptionsCallback, &choice);
 	} while (i >= 0);
 
 	if (extraGameInfo [0].bUseCameras = m [nUseCamOpt].value) {
@@ -2198,18 +2143,122 @@ do {
 		}
 	if (nRendQualSave != gameOpts->render.nQuality)
 		SetRenderQuality ();
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void SmokeRenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+{
+	newmenu_item * m;
+	int				v;
+
+if (extraGameInfo [0].bUseSmoke) {
+	m = menus + nPlrSmokeOpt;
+	v = m->value;
+	if (gameOpts->render.smoke.bPlayers != v) {
+		gameOpts->render.smoke.bPlayers = v;
+		*key = -2;
+		}
+	m = menus + nSmokeDensOpt;
+	v = m->value;
+	if (gameOpts->render.smoke.nScale != v) {
+		gameOpts->render.smoke.nScale = v;
+		sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale]);
+		m->rebuild = 1;
+		}
+	m = menus + nSmokeSizeOpt;
+	v = m->value;
+	if (gameOpts->render.smoke.nSize != v) {
+		gameOpts->render.smoke.nSize = v;
+		sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize]);
+		m->rebuild = 1;
+		}
+	}
+else
+	DestroyAllSmoke ();
+}
+
+//------------------------------------------------------------------------------
+
+void SmokeRenderOptionsMenu ()
+{
+	newmenu_item m [50];
+	int	i, choice = 0;
+	int	opt;
+	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optSmokeColl;
+
+	char szSmokeDens [50];
+	char szSmokeSize [50];
+
+	pszSize [0] = TXT_SMALL;
+	pszSize [1] = TXT_MEDIUM;
+	pszSize [2] = TXT_LARGE;
+	pszSize [3] = TXT_VERY_LARGE;
+
+	pszAmount [0] = TXT_QUALITY_LOW;
+	pszAmount [1] = TXT_QUALITY_MED;
+	pszAmount [2] = TXT_QUALITY_HIGH;
+	pszAmount [3] = TXT_VERY_HIGH;
+	pszAmount [4] = TXT_EXTREME;
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+
+	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
+	nUseSmokeOpt = opt++;
+	if (extraGameInfo [0].bUseSmoke) {
+		if (gameOpts->app.bExpertMode) {
+			ADD_CHECK (opt, TXT_SMOKE_PLAYERS, gameOpts->render.smoke.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
+			nPlrSmokeOpt = opt++;
+			if (gameOpts->render.smoke.bPlayers) {
+				ADD_CHECK (opt, TXT_SMOKE_DECREASE_LAG, gameOpts->render.smoke.bDecreaseLag, KEY_R, HTX_ADVREND_DECSMOKELAG);
+				nOptSmokeLag = opt++;
+				}
+			else
+				nOptSmokeLag = -1;
+			ADD_CHECK (opt, TXT_SMOKE_ROBOTS, gameOpts->render.smoke.bRobots, KEY_O, HTX_ADVRND_BOTSMOKE);
+			optBotSmoke = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_MISSILES, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
+			optMissSmoke = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
+			optSmokeColl = opt++;
+			sprintf (szSmokeDens + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nScale, 0, 4)]);
+			*szSmokeDens = *(TXT_SMOKE_DENS - 1);
+			ADD_SLIDER (opt, szSmokeDens + 1, gameOpts->render.smoke.nScale, 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
+			nSmokeDensOpt = opt++;
+			sprintf (szSmokeSize + 1, TXT_SMOKE_SIZE, pszSize [NMCLAMP (gameOpts->render.smoke.nSize, 0, 3)]);
+			*szSmokeSize = *(TXT_SMOKE_SIZE - 1);
+			ADD_SLIDER (opt, szSmokeSize + 1, gameOpts->render.smoke.nSize, 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
+			nSmokeSizeOpt = opt++;
+			ADD_TEXT (opt, "", 0);
+			opt++;
+			}
+		}
+	else
+		nOptSmokeLag =
+		nPlrSmokeOpt =
+		optBotSmoke =
+		optMissSmoke =
+		optSmokeColl = -1;
+
+	Assert (opt <= sizeof (m) / sizeof (m [0]));
+	do {
+		i = ExecMenu1 (NULL, TXT_SMOKE_RENDER_TITLE, opt, m, &SmokeRenderOptionsCallback, &choice);
+		} while (i >= 0);
 	if (extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value) {
-		GET_VAL (gameOpts->render.smoke.bPlayers, optPlrSmoke);
+		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
+		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
 		}	
 	} while (i == -2);
 }
 
 //------------------------------------------------------------------------------
 
-void GameplayOptionsCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void GameplayOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v;
@@ -2218,7 +2267,7 @@ m = menus + nDiffOpt;
 v = m->value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
-	if (! (gameData.app.nGameMode & GM_MULTI)) {
+	if (!(gameData.app.nGameMode & GM_MULTI)) {
 		gameStates.app.nDifficultyLevel = v;
 		gameData.boss.nGateInterval = F1_0*4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
 		}
@@ -2331,7 +2380,7 @@ opt++;
 m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].value = 1;
 m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].value = 1;
 do {
-	i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallBack, &choice);
+	i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
 } while (i >= 0);
 if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bFixedRespawns = m [optFixedSpawn].value;
@@ -2483,7 +2532,7 @@ WIN (static BOOL windigi_driver_off=FALSE);
 
 static int optDigiVol, optMusicVol, optRedbook;
 
-void SoundMenuCallBack (int nitems, newmenu_item * items, int *last_key, int citem )
+void SoundMenuCallback (int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	nitems=nitems;          
 	*last_key = *last_key;
@@ -2625,7 +2674,7 @@ do {
 
 	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = opt++;
-	i = ExecMenu1 ( NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallBack, &choice);
+	i = ExecMenu1 ( NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [optRedbook].value;
 	gameConfig.bReverseChannels = m [optReverse].value;
 } while (i > -1);
@@ -2653,7 +2702,7 @@ static int nDlTimeoutOpt, nAutoDlOpt, nExpModeOpt, nUseDefOpt, nCompSpeedOpt, nS
 static char *pszCompSpeeds [5];
 extern int screenShotIntervals [];
 
-void MiscellaneousCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void MiscellaneousCallback (int nitems, newmenu_item * menus, int * key, int citem)
 {
 	newmenu_item * m;
 	int				v;
@@ -2768,7 +2817,7 @@ do {
 #endif
 	ADD_CHECK (opt, TXT_USE_MACROS, gameOpts->multi.bUseMacros, KEY_M, HTX_MISC_USEMACROS);
 	optUseMacros = opt++;
-	if (! (gameStates.app.bNostalgia || gameStates.app.bGameRunning)) {
+	if (!(gameStates.app.bNostalgia || gameStates.app.bGameRunning)) {
 #if UDP_SAFEMODE
 		ADD_CHECK (opt, TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MISC_UDPQUAL);
 		optSafeUDP=opt++;
@@ -2826,7 +2875,7 @@ do {
 		}
 	Assert (sizeofa (m) >= opt);
 	do {
-		i = ExecMenu1 (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, opt, m, MiscellaneousCallBack, &choice);
+		i = ExecMenu1 (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, opt, m, MiscellaneousCallback, &choice);
 	} while (i >= 0);
 	gameOpts->gameplay.bAutoLeveling = m [0].value;
 	if (gameStates.app.bNostalgia) {
