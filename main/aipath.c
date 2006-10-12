@@ -298,10 +298,10 @@ void MoveTowardsOutside (point_seg *ptSegs, int *nPoints, object *objP, int bRan
 	fvi_info		hit_data;
 	int			nHitType;
 
-j = *nPoints - 1;
-if (!(newPtSegs = (point_seg *) d_malloc (j + 1)))
+j = *nPoints;
+if (!(newPtSegs = (point_seg *) d_malloc (j * sizeof (*newPtSegs))))
 	return;
-for (i = 1; i < j; i++) {
+for (i = 1, j--; i < j; i++) {
 	// -- ptSegs [i].nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].segnum);
 	Assert (nTempSeg != -1);
