@@ -1597,9 +1597,9 @@ char *defaultGameTexts [][2] = {
 	{"~Ruckeln durch Rauch reduzieren", "~Reduce smoke induced lag"},
 	{"~Raucheinstellungen...", "~Smoke Render Options..."},
 	{"Rauch-Einstellungen", "Smoke Render Options"},
-	{"   Spiel ~Verlassen   ", "   ~Quit Game   "},
-	{"   Spiel ~Laden...   ", "   ~Load Game...   "},
-	{"   Spiel ~Speichern...   ", "   ~Save Game...   "},
+	{"laufendes Spiel ~Verlassen", "~Quit From Game"},
+	{"gespeichertes Spiel ~Laden...", "~Load Saved Game..."},
+	{"aktuelles Spiel ~Speichern...", "~Save Current Game..."},
 #if 0
 	{"", ""},
 #endif
