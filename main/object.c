@@ -1468,6 +1468,8 @@ if (objP->type == OBJ_PLAYER) {
 		}
 	}
 else {
+	if (!gameData.weapons.info [objP->id].afterburner_size)
+		return;
 	if (gameStates.app.nSDLTicks - tPulse > 10) {
 		tPulse = gameStates.app.nSDLTicks;
 		nPulse = d_rand () % 11;
