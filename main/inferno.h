@@ -989,6 +989,7 @@ typedef struct tObjectData {
 	short					firstChild [MAX_OBJECTS];
 	object				init [MAX_OBJECTS];
 	tObjDropInfo		dropInfo [MAX_OBJECTS];
+	fix					xLastAfterburnerTime [MAX_OBJECTS];
 	short					nFirstDropped;
 	short					nLastDropped;
 	short					nFreeDropped;

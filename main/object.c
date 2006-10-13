@@ -437,7 +437,7 @@ short idToOOF [100];
 // -- Object stuff
 
 //info on the various types of gameData.objs.objects
-#ifndef NDEBUG
+#ifdef _DEBUG
 object	Object_minus_one;
 #endif
 
@@ -831,7 +831,7 @@ if (bLinearTMapPolyObjs)
 //set engine glow value
 ComputeEngineGlow (objP, xEngineGlow);
 if (objP->rtype.pobj_info.tmap_override != -1) {
-#ifndef NDEBUG
+#ifdef _DEBUG
 	polymodel *pm = gameData.models.polyModels + objP->rtype.pobj_info.model_num;
 #endif
 	bitmap_index bmiP [12];
@@ -1411,33 +1411,25 @@ if (!bHaveFlame) {
 void RenderThrusterFlames (object *objP)
 {
 	static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
-	int				h, i, j, k, l;
+	int				h, i, j, k, l, nThrusters;
 	tRgbaColorf		c [2];
 	vms_vector		vPos [2];
 	fVector3			v;
 	float				fSize, fLength, fSpeed, fPulse, fFade [4];
-	tThrusterData	*pt = gameData.render.thrusters + objP->id;
-	tPathPoint		*pp = GetPathPoint (&pt->path);
+	tThrusterData	*pt = NULL;
+	tPathPoint		*pp = NULL;
+	
+	static time_t	tPulse = 0;
+	static int		nPulse = 10;
 
-if (!pp)
-	return;
 #if 1//ndef _DEBUG
 if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif
-if (gameStates.app.nSDLTicks - pt->tPulse > 10) {
-	pt->tPulse = gameStates.app.nSDLTicks;
-	if (pt->nPulse)
-		pt->nPulse--;
-	else
-		pt->nPulse = 10;
-	}
-fPulse = (float) pt->nPulse / 10.0f;
 fSpeed = f2fl (VmVecMag (&objP->mtype.phys_info.velocity));
 fLength = fSpeed / 60.0f;
-fSize = 0.5f + fLength * 0.5f;
 fLength += 0.2f;
-if (fSpeed >= pt->fSpeed) {
+if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
 	fFade [2] = 0.75f;
@@ -1449,27 +1441,58 @@ else {
 	fFade [2] = 0.7f;
 	fFade [3] = 0.6f;
 	}
-pt->fSpeed = fSpeed;
-if (gameOpts->render.bHiresModels) {
-	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
-	VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
-	VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+if (pt)
+	pt->fSpeed = fSpeed;
+if (objP->type == OBJ_PLAYER) {
+		tThrusterData	*pt = gameData.render.thrusters + objP->id;
+		tPathPoint		*pp = GetPathPoint (&pt->path);
+
+	if (gameStates.app.nSDLTicks - pt->tPulse > 10) {
+		pt->tPulse = gameStates.app.nSDLTicks;
+		pt->nPulse = d_rand () % 11;
+		}
+	fPulse = (float) pt->nPulse / 10.0f;
+	fSize = 0.5f + fLength * 0.5f;
+	fLength = fSize = 1.0;
+	nThrusters = 2;
+	if (gameOpts->render.bHiresModels) {
+		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
+		VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+		}
+	else {
+		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
+		VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
+		VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
+		}
 	}
 else {
-	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
-	VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
-	VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
-	VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
+	if (gameStates.app.nSDLTicks - tPulse > 10) {
+		tPulse = gameStates.app.nSDLTicks;
+		nPulse = d_rand () % 11;
+		}
+	fPulse = (float) nPulse / 10.0f;
+	if (objP->id == EARTHSHAKER_ID)
+		fSize = 1.0f;
+	else if ((objP->id == MEGA_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
+		fSize = 0.8f;
+	else if (objP->id == SMART_ID)
+		fSize = 0.6f;
+	else
+		fSize = 0.5f;
+	nThrusters = 1;
+	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
 	}
 CreateThrusterFlame ();
 glLineWidth (3);
 
-for (h = 0; h < 2; h++) {
+for (h = 0; h < nThrusters; h++) {
 	c [1].red = 0.5f + 0.05f * fPulse;
 	c [1].green = 0.45f + 0.045f * fPulse;
 	c [1].blue = 0.0f;
 	c [1].alpha = 0.9f;
-	G3StartInstanceMatrix (vPos + h, &pp->mOrient);
+	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->orient);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
 	glCullFace (GL_BACK);
@@ -1478,7 +1501,7 @@ for (h = 0; h < 2; h++) {
 		c [0] = c [1];
 		c [1].red *= 0.975f;
 		c [1].green *= 0.8f;
-		//c [1].alpha *= fFade [i / 4];
+		c [1].alpha *= fFade [i / 4];
 		glBegin (GL_QUAD_STRIP);
 		for (j = 0; j < RING_SIZE + 1; j++) {
 			for (l = 0; l < 2; l++) {
@@ -1591,6 +1614,8 @@ switch (objP->render_type) {
 				}
 			else
 				DrawPolygonObject (objP);
+			if (objP->type == OBJ_WEAPON)
+				RenderThrusterFlames (objP);
 			}
 		break;
 
@@ -1802,7 +1827,7 @@ for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
 	count = 0;
 	for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
 		count++;
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 		if (count > MAX_OBJECTS)	{
 #if TRACE				
 			con_printf (1, "Object list in segment %d is circular.\n", segnum);
@@ -1811,7 +1836,7 @@ for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
 		}
 		#endif
 		if (gameData.objs.objects [objnum].segnum != segnum)	{
-			#ifndef NDEBUG
+			#ifdef _DEBUG
 #if TRACE				
 			con_printf (CON_DEBUG, "Removing object %d from segment %d.\n", objnum, segnum);
 #endif
@@ -1845,7 +1870,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].type != OBJ_NONE)	{
 		count = SearchAllSegsForObject (i);
 		if (count > 1)	{
-#ifndef NDEBUG
+#ifdef _DEBUG
 #	if TRACE				
 			con_printf (1, "Object %d is in %d segments!\n", i, count);
 #	endif
@@ -2107,7 +2132,7 @@ if (type == OBJ_DEBRIS && nDebrisObjectCount>=gameStates.render.detail.nMaxDebri
 	return -1;
 if (GetSegMasks (pos, segnum, 0).centerMask)
 	if ((segnum=FindSegByPoint (pos, segnum))==-1) {
-#ifndef NDEBUG
+#ifdef _DEBUG
 #	if TRACE				
 		con_printf (CON_DEBUG, "Bad segnum in CreateObject (type=%d)\n", type);
 #	endif
@@ -2182,7 +2207,7 @@ else if (objP->control_type == CT_EXPLOSION)
 	objP->ctype.expl_info.next_attach = 
 	objP->ctype.expl_info.prev_attach = 
 	objP->ctype.expl_info.attach_parent = -1;
-#ifndef NDEBUG
+#ifdef _DEBUG
 #if TRACE				
 if (bPrintObjectInfo)	
 	con_printf (CON_DEBUG, "Created object %d of type %d\n", objnum, objP->type);
@@ -2611,7 +2636,6 @@ int CheckVolatileWall (object *objP, int segnum, int sidenum, vms_vector *hitpt)
 int CheckVolatileSegment (object *objP, int segnum);
 
 //	Time at which this object last created afterburner blobs.
-fix	Last_afterburner_time [MAX_OBJECTS];
 
 //--------------------------------------------------------------------
 //reset object's movement info
@@ -2693,28 +2717,64 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 }
 
 //--------------------------------------------------------------------
-//move an object for the current frame
 
-int MoveOneObject (object * objP)
+void CheckObjectInVolatileWall (object *objP)
 {
-#ifndef DEMO_ONLY
+	int bChkVolaSeg = 1, type, sideMask, bUnderLavaFall = 0;
+	static int nLavaFallHissPlaying [MAX_PLAYERS]={0};
 
-	short	previous_segment = (short) objP->segnum;
+if (objP->type != OBJ_PLAYER)
+	return;
+sideMask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sideMask;
+if (sideMask) {
+	short nSide, nWall;
+	int bit;
+	side *pSide = gameData.segs.segments [objP->segnum].sides;
+	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, pSide++) {
+		if (!(sideMask & bit))
+			continue;
+		nWall = pSide->wall_num;
+		if (!IS_WALL (nWall))
+			continue;
+		if (gameData.walls.walls [nWall].type != WALL_ILLUSION)
+			continue;
+		if (type = CheckVolatileWall (objP, objP->segnum, nSide, &objP->pos)) {
+			short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+			bUnderLavaFall = 1;
+			bChkVolaSeg = 0;
+			if (!nLavaFallHissPlaying [objP->id]) {
+				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+				nLavaFallHissPlaying [objP->id] = 1;
+				}
+			}
+		}
+	}
+if (bChkVolaSeg) {
+	if (type=CheckVolatileSegment (objP, objP->segnum)) {
+		short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+		bUnderLavaFall = 1;
+		if (!nLavaFallHissPlaying [objP->id]) {
+			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+			nLavaFallHissPlaying [objP->id] = 1;
+			}
+		}
+	}
+if (!bUnderLavaFall && nLavaFallHissPlaying [objP->id]) {
+	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
+	nLavaFallHissPlaying [objP->id] = 0;
+	}
+}
 
-#if 0
-if (objP->type == OBJ_ROBOT)
-	return 1;
-if (objP->type == OBJ_CNTRLCEN)
-	return 1;
-#endif
-objP->last_pos = objP->pos;			// Save the current position
+//--------------------------------------------------------------------
 
-if ((objP->type==OBJ_PLAYER) && (gameData.multi.nLocalPlayer==objP->id))	{
+void HandleSpecialSegments (object *objP)
+{
 	fix fuel, shields;
 	segment *segP = gameData.segs.segments + objP->segnum;
 	xsegment *xsegP = gameData.segs.xSegments + objP->segnum;
 	player *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
-	
+
+if ((objP->type == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 #ifdef NETWORK
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 FuelCenCheckForGoal (segP);
@@ -2756,16 +2816,12 @@ if ((objP->type==OBJ_PLAYER) && (gameData.multi.nLocalPlayer==objP->id))	{
 			CheckConquerRoom (xsegP);
 		}
 	}
-
-if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
-	//	Ok, this is a big hack by MK.
-	//	If you want an object to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
-	if (objP->lifeleft != ONE_FRAME_TIME)
-		if (gameData.time.xFrame != F1_0)
-			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
 }
 
-gameStates.render.bDropAfterburnerBlob = 0;
+//--------------------------------------------------------------------
+
+int HandleObjectControl (object *objP)
+{
 switch (objP->control_type) {
 	case CT_NONE: 
 		break;
@@ -2816,13 +2872,6 @@ switch (objP->control_type) {
 #endif
 		break;	//ignore
 
-
-//		case CT_FLYTHROUGH:
-//			do_flythrough (objP, 0);			// HACK:do_flythrough should operate on an object!!!!
-//			//check_object_seg (objP);
-//			return;	// DON'T DO THE REST OF OBJECT STUFF SINCE THIS IS A SPECIAL CASE!!!
-//			break;
-
 	case CT_DEBRIS: 
 		DoDebrisFrame (objP);
 		break;
@@ -2840,29 +2889,19 @@ switch (objP->control_type) {
 		break;
 
 	default:
-
 #ifdef __DJGPP__
 		Error ("Unknown control type %d in object %li, sig/type/id = %i/%i/%i", objP->control_type, OBJ_IDX (objP), objP->signature, objP->type, objP->id);
 #else
 		Error ("Unknown control type %d in object %i, sig/type/id = %i/%i/%i", objP->control_type, OBJ_IDX (objP), objP->signature, objP->type, objP->id);
 #endif
-
-		break;
-
-}
-
-if (objP->lifeleft < 0) {		// We died of old age
-	objP->flags |= OF_SHOULD_BE_DEAD;
-	if (objP->type==OBJ_WEAPON && WI_damage_radius (objP->id))
-		ExplodeBadassWeapon (objP, &objP->pos);
-	else if (objP->type==OBJ_ROBOT)	//make robots explode
-		ExplodeObject (objP, 0);
-}
-
-if ((objP->type == OBJ_NONE) || (objP->flags&OF_SHOULD_BE_DEAD)) {
-	return 1;			//object has been deleted
 	}
+return 0;
+}
 
+//--------------------------------------------------------------------
+
+void HandleObjectMovement (object *objP)
+{
 switch (objP->movement_type) {
 	case MT_NONE:			
 		break;								//this doesn't move
@@ -2876,90 +2915,48 @@ switch (objP->movement_type) {
 		SpinObject (objP); 
 		break;
 	}
-
-//	If player and moved to another segment, see if hit any triggers.
-// also check in player under a lavafall
-if ((objP->type == OBJ_PLAYER) && (objP->movement_type == MT_PHYSICS)) {
-	if (previous_segment != objP->segnum) {
-		short	connect_side, i;
-#ifdef NETWORK
-		int	old_level = gameData.missions.nCurrentLevel;
-#endif
-		for (i = 0; i < nPhysSegs - 1; i++) {
-			connect_side = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
-			if (connect_side != -1)
-				CheckTrigger (gameData.segs.segments + physSegList [i], connect_side, OBJ_IDX (objP), 0);
-			#ifndef NDEBUG
-			else {	// segments are not directly connected, so do binary subdivision until you find connected segments.
-#if TRACE				
-				con_printf (1, "UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
-#endif
-				// -- Unnecessary, MK, 09/04/95 -- Int3 ();
-			}
-			#endif
-
-			//maybe we've gone on to the next level.  if so, bail!
-#ifdef NETWORK
-			if (gameData.missions.nCurrentLevel != old_level) {
-				return 0;
-				}
-#endif
-		}
-	}
-	{
-		int chkVolaSeg=1, type, sideMask, under_lavafall = 0;
-		static int lavafall_hiss_playing [MAX_PLAYERS]={0};
-
-		sideMask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sideMask;
-		if (sideMask) {
-			short sidenum, wall_num;
-			int bit;
-			side *pSide = gameData.segs.segments [objP->segnum].sides;
-			for (sidenum = 0, bit = 1; sidenum < 6; bit <<= 1, sidenum++, pSide++) {
-				if (!(sideMask & bit))
-					continue;
-				wall_num=pSide->wall_num;
-				if (!IS_WALL (wall_num))
-					continue;
-				if (gameData.walls.walls [wall_num].type != WALL_ILLUSION)
-					continue;
-				if (type=CheckVolatileWall (objP, objP->segnum, sidenum, &objP->pos)) {
-					short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-					under_lavafall = 1;
-					chkVolaSeg = 0;
-					if (!lavafall_hiss_playing [objP->id]) {
-						DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
-						lavafall_hiss_playing [objP->id] = 1;
-						}
-					}
-				}
-			}
-		if (chkVolaSeg) {
-			if (type=CheckVolatileSegment (objP, objP->segnum)) {
-				short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
-				under_lavafall = 1;
-				if (!lavafall_hiss_playing [objP->id]) {
-					DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
-					lavafall_hiss_playing [objP->id] = 1;
-					}
-				}
-			}
-
-		if (!under_lavafall && lavafall_hiss_playing [objP->id]) {
-			DigiKillSoundLinkedToObject (OBJ_IDX (objP));
-			lavafall_hiss_playing [objP->id] = 0;
-		}
-	}
 }
 
-//see if guided missile has flown through exit trigger
+//--------------------------------------------------------------------
+
+int CheckPlayerHitTriggers (object *objP, short nPrevSegment)
+{
+		short	nConnSide, i;
+		int	nOldLevel;
+
+if ((objP->type != OBJ_PLAYER) || (objP->movement_type != MT_PHYSICS) || (nPrevSegment == objP->segnum))
+	return 0;
+#ifdef NETWORK
+nOldLevel = gameData.missions.nCurrentLevel;
+#endif
+for (i = 0; i < nPhysSegs - 1; i++) {
+	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
+	if (nConnSide != -1)
+		CheckTrigger (gameData.segs.segments + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
+#ifdef _DEBUG
+	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
+		LogErr ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
+#endif
+	//maybe we've gone on to the next level.  if so, bail!
+#ifdef NETWORK
+	if (gameData.missions.nCurrentLevel != nOldLevel)
+		return 1;
+#endif
+	}
+return 0;
+}
+
+//--------------------------------------------------------------------
+
+void CheckGuidedMissileThroughExit (object *objP, short nPrevSegment)
+{
 if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) && 
 	 (objP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
-	if (previous_segment != objP->segnum) {
-		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->segnum, gameData.segs.segments+previous_segment);
+	if (nPrevSegment != objP->segnum) {
+		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->segnum, gameData.segs.segments+nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
-			nWall = WallNumI (previous_segment, nConnSide);
+			nWall = WallNumI (nPrevSegment, nConnSide);
 			if (IS_WALL (nWall)) {
 				nTrigger = gameData.walls.walls [nWall].trigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
@@ -2969,7 +2966,12 @@ if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) &&
 			}
 		}
 	}
+}
 
+//--------------------------------------------------------------------
+
+void CheckAfterburnerBlobDrop (object *objP)
+{
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
 	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
@@ -2978,7 +2980,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 		MultiSendDropBlobs ((char) gameData.multi.nLocalPlayer);
 #endif
 	gameStates.render.bDropAfterburnerBlob = 0;
-}
+	}
 
 if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_size)) {
 	int	objnum = OBJ_IDX (objP);
@@ -2996,23 +2998,64 @@ if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_
 	if (!(gameData.app.nGameMode & GM_MULTI)) {
 		delay /= 2;
 		lifetime *= 2;
-	}
+		}
 
-	if ((Last_afterburner_time [objnum] + delay < gameData.time.xGame) || 
-		 (Last_afterburner_time [objnum] > gameData.time.xGame)) {
+	if ((objP->type == OBJ_WEAPON) &&
+		 ((SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
+		  || gameStates.app.bNostalgia
+		 // || EGI_FLAG (bThrusterFlames, 0, 0)
+		 ))
+		return;
+	if ((gameData.objs.xLastAfterburnerTime [objnum] + delay < gameData.time.xGame) || 
+		 (gameData.objs.xLastAfterburnerTime [objnum] > gameData.time.xGame)) {
 		DropAfterburnerBlobs (objP, 1, i2f (gameData.weapons.info [objP->id].afterburner_size)/16, lifetime, NULL, 0);
-		Last_afterburner_time [objnum] = gameData.time.xGame;
-
+		gameData.objs.xLastAfterburnerTime [objnum] = gameData.time.xGame;
+		}
 	}
 }
 
-#else
-	objP++;		//kill warning
-#endif		//DEMO_ONLY
+//--------------------------------------------------------------------
+//move an object for the current frame
+
+int MoveOneObject (object * objP)
+{
+	short	nPrevSegment = (short) objP->segnum;
+
+objP->last_pos = objP->pos;			// Save the current position
+HandleSpecialSegments (objP);
+if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
+	//	Ok, this is a big hack by MK.
+	//	If you want an object to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
+	if (objP->lifeleft != ONE_FRAME_TIME)
+		if (gameData.time.xFrame != F1_0)
+			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
+}
+
+gameStates.render.bDropAfterburnerBlob = 0;
+if (HandleObjectControl (objP))
+	return 1;
+
+if (objP->lifeleft < 0) {		// We died of old age
+	objP->flags |= OF_SHOULD_BE_DEAD;
+	if (objP->type==OBJ_WEAPON && WI_damage_radius (objP->id))
+		ExplodeBadassWeapon (objP, &objP->pos);
+	else if (objP->type == OBJ_ROBOT)	//make robots explode
+		ExplodeObject (objP, 0);
+	}
+
+if ((objP->type == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
+	return 1;			//object has been deleted
+	}
+HandleObjectMovement (objP);
+if (CheckPlayerHitTriggers (objP, nPrevSegment))
+	return 0;
+CheckObjectInVolatileWall (objP);
+CheckGuidedMissileThroughExit (objP, nPrevSegment);
+CheckAfterburnerBlobDrop (objP);
 return 1;
 }
 
-int	Max_used_objects = MAX_OBJECTS - 20;
+int	nMaxUsedObjects = MAX_OBJECTS - 20;
 
 //--------------------------------------------------------------------
 //move all gameData.objs.objects for the current frame
@@ -3024,8 +3067,8 @@ int MoveAllObjects ()
 //	check_duplicate_objects ();
 //	RemoveIncorrectObjects ();
 
-	if (gameData.objs.nLastObject > Max_used_objects)
-		FreeObjectSlots (Max_used_objects);		//	Free all possible object slots.
+	if (gameData.objs.nLastObject > nMaxUsedObjects)
+		FreeObjectSlots (nMaxUsedObjects);		//	Free all possible object slots.
 
 	DeleteAllObjsThatShouldBeDead ();
 	if (gameOpts->gameplay.bAutoLeveling)
@@ -3222,7 +3265,7 @@ void clear_transient_objects (int clear_all)
 			   objP->type == OBJ_DEBRIS ||
 			   ((objP->type != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 
-			#ifndef NDEBUG
+			#ifdef _DEBUG
 #if TRACE				
 			if (gameData.objs.objects [objnum].lifeleft > i2f (2))
 				con_printf (CON_DEBUG, "Note: Clearing object %d (type=%d, id=%d) with lifeleft=%x\n", objnum, gameData.objs.objects [objnum].type, gameData.objs.objects [objnum].id, gameData.objs.objects [objnum].lifeleft);
@@ -3230,7 +3273,7 @@ void clear_transient_objects (int clear_all)
 			#endif
 			ReleaseObject (objnum);
 		}
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 #if TRACE				
 		 else if (gameData.objs.objects [objnum].type!=OBJ_NONE && gameData.objs.objects [objnum].lifeleft < i2f (2))
 			con_printf (CON_DEBUG, "Note: NOT clearing object %d (type=%d, id=%d) with lifeleft=%x\n", objnum, gameData.objs.objects [objnum].type, gameData.objs.objects [objnum].id, gameData.objs.objects [objnum].lifeleft);
