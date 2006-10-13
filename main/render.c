@@ -927,7 +927,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 599 && props.sideNum == 3)
+if (props.segNum == 45 && props.sideNum == 1)
 	props.segNum = props.segNum;
 #	if 0
 else

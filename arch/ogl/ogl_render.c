@@ -954,7 +954,8 @@ void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFace
 #endif
 	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, nType, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
-	int				bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
+	int				bInRad,
+						bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
 
@@ -1011,6 +1012,10 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		if (bDarkness)
 			continue;
 		}
+#if 0//def _DEBUG
+	else
+		continue;	//only render static lights
+#endif
 	if (i == nMatLight)
 		continue;
 	if (!psl->bState)
@@ -1023,15 +1028,25 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 #endif
 	VmVecSubf (&lightDir, &lightPos, pVertPos);
 	//scaled quadratic attenuation depending on brightness
+	bInRad = 0;
 	if (psl->brightness < 0)
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMagf (&lightDir) / 14.142f;
 #if 1
 		if (nType == 1) {
-			fLightDist -= 1.0f;	//make light brighter close to light source
-			if (fLightDist < 1.0f)
-				fLightDist = 1.0f;
+#	if 0
+			if (fLightDist <= psl->rad) {
+				bInRad = 1;
+				fLightDist *= fLightDist;
+				}
+#	else
+			fLightDist -= psl->rad;	//make light brighter close to light source
+			if (fLightDist < 1.0f) {
+				bInRad = 1;
+				fLightDist = 2.0f;
+				}
+#	endif
 			else {	//make it decay faster
 				fLightDist *= fLightDist;
 				fLightDist *= 2.0f;
@@ -1045,7 +1060,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (fAttenuation > 50.0)
 		continue;	//too far away
 	VmVecNormalizef (&lightDir, &lightDir);
-	NdotL = VmVecDotf (&vertNorm, &lightDir);
+	NdotL = bInRad ? 1 : VmVecDotf (&vertNorm, &lightDir);
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;

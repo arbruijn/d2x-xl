@@ -731,6 +731,7 @@ typedef struct tOglLight {
 	vms_vector	vDir;
 	tRgbColorf	color;
 	float			brightness;
+	float			rad;
 #if USE_OGL_LIGHTS
 	unsigned		handle;
 	fVector3		fAttenuation;	// constant, linear quadratic
@@ -767,6 +768,7 @@ typedef struct tShaderLight {
 	fVector4		color;
 	fVector3		pos [2];
 	fVector3		dir;
+	float			rad;
 #endif
 	float			brightness;
 	float			spotAngle;

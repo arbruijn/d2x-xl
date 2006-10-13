@@ -490,26 +490,42 @@ void ComputeSideCenter (vms_vector *vp, segment *segP, int side)
 {
 	sbyte	*s2v = sideToVerts [side];
 	short	*sv = segP->verts;
-	vms_vector h;
-	fix d;
 
-*vp = gameData.segs.vertices [segP->verts [*s2v++]];
-VmVecSub (&h, vp, gameData.segs.vertices + sv [*s2v++]);
-d = VmVecMag (&h);
+*vp = gameData.segs.vertices [sv [*s2v++]];
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v]);
 vp->x /= 4;
 vp->y /= 4;
 vp->z /= 4;
-VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][0]]);
-d = VmVecMag (&h);
-VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][1]]);
-d = VmVecMag (&h);
-VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][2]]);
-d = VmVecMag (&h);
-VmVecSub (&h, vp, gameData.segs.vertices + segP->verts [sideToVerts [side][3]]);
-d = VmVecMag (&h);
+}
+
+// ------------------------------------------------------------------------------------------
+// Compute the center point of a side of a segment.
+//	The center point is defined to be the average of the 4 points defining the side.
+void ComputeSideRads (short nSegment, short side, fix *prMin, fix *prMax)
+{
+	segment		*segP = gameData.segs.segments + nSegment;
+	sbyte			*s2v = sideToVerts [side];
+	short			*sv = segP->verts;
+	vms_vector	v, vCenter, *vp;
+	fix 			d, rMin = 0x7fffffff, rMax = 0;
+	int			i;
+
+COMPUTE_SIDE_CENTER (&vCenter, segP, side);
+for (i = 0; i < 4; i++) {
+	vp = gameData.segs.vertices + sv [*s2v++];
+	VmVecSub (&v, &vCenter, vp);
+	d = VmVecMag (&v);
+	if (rMin > d)
+		rMin = d;
+	if (rMax < d)
+		rMax = d;
+	}
+if (prMin)
+	*prMin = rMin;
+if (prMax)
+	*prMax = rMax;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -517,11 +533,11 @@ d = VmVecMag (&h);
 //	The center point is defined to be the average of the 8 points defining the segment.
 void ComputeSegmentCenter (vms_vector *vp, segment *segP)
 {
-	int v;
+	int i;
 	short	*sv = segP->verts;
 
 *vp = gameData.segs.vertices [*sv++];
-for (v = 7; v; v--)
+for (i = 7; i; i--)
 	VmVecInc (vp, gameData.segs.vertices + *sv++);
 vp->x /= 8;
 vp->y /= 8;

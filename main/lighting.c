@@ -1364,6 +1364,7 @@ int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 {
 	tOglLight	*pl;
 	short			h, i;
+	fix			rMin, rMax;
 #if USE_OGL_LIGHTS
 	GLint			nMaxLights;
 #endif
@@ -1406,14 +1407,14 @@ SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->bl
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].pos;
 else if (nSegment >= 0) {
-#if 0
+#if 1
 	vms_vector	vOffs;
 	side			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
-#if 0
-	VmVecScaleAdd (&vOffs, sideP->normals, sideP->normals + 1, 2);
-	VmVecScaleFrac (&vOffs, 1, 100);
+#if 1
+	VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
+	VmVecScaleFrac (&vOffs, 1, 2);
 	VmVecInc (&pl->vPos, &vOffs);
 #endif
 	}
@@ -1438,10 +1439,15 @@ glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #endif
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
-if (nObject >= 0)
+if (nObject >= 0) {
+	pl->rad = 0;
 	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
-else if (nSegment >= 0)
+	}
+else if (nSegment >= 0) {
+	ComputeSideRads (nSegment, nSide, &rMin, &rMax);
+	pl->rad = f2fl ((rMin + rMax) / 20);
 	RegisterLight (NULL, nSegment, nSide);
+	}
 return gameData.render.lights.ogl.nLights++;
 }
 
@@ -1537,7 +1543,7 @@ gameData.render.lights.ogl.material.bValid = 0;
 InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-		//if (i != 3 || j != 2) continue;
+		//if (i != 45 || j != 1) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1609,6 +1615,7 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 			}
 		psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 		psl->nType = pl->nType;
+		psl->rad = pl->rad;
 		gameData.render.lights.ogl.shader.nLights++;
 		psl++;
 #if 0

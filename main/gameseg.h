@@ -124,6 +124,7 @@ typedef struct segmasks {
 
 
 void ComputeSideCenter(vms_vector *vp,segment *sp,int side);
+void ComputeSideRads (short nSegment, short side, fix *prMin, fix *prMax);
 void ComputeSegmentCenter(vms_vector *vp,segment *sp);
 int FindConnectedSide(segment *base_seg, segment *con_seg);
 
