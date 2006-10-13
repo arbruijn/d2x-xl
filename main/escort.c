@@ -1217,7 +1217,7 @@ void DoEscortMenu(void)
 		StopTime();
 
 	PaletteSave();
-	apply_modified_palette();
+	ApplyModifiedPalette();
 	ResetPaletteAdd();
 
 	GameFlushInputs();

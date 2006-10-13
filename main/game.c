@@ -2397,7 +2397,7 @@ return 1;
 void FullPaletteSave (void)
 {
 	PaletteSave ();
-	apply_modified_palette ();
+	ApplyModifiedPalette ();
 	ResetPaletteAdd ();
 	GrPaletteStepLoad (NULL);
 }
@@ -2720,7 +2720,7 @@ while (1) {
 		if (!(gameData.app.nGameMode&GM_MULTI)) {
 			PaletteSave (); 
 			ResetPaletteAdd ();	
-			apply_modified_palette (); 
+			ApplyModifiedPalette (); 
 			GrPaletteStepLoad (NULL); 
 			}
 		OptionsMenu ();
@@ -2744,12 +2744,14 @@ while (1) {
 		last_drawn_cockpit[0] = -1;
 		last_drawn_cockpit[1] = -1;
 		}
-	if ((gameStates.app.nFunctionMode != FMODE_GAME) && gameData.demo.bAuto && (gameData.demo.nState != ND_STATE_NORMAL))	{
+	if ((gameStates.app.nFunctionMode != FMODE_GAME) && 
+		 gameData.demo.bAuto && 
+		 (gameData.demo.nState != ND_STATE_NORMAL))	{
 		int choice, fmode;
 		fmode = gameStates.app.nFunctionMode;
 		SetFunctionMode (FMODE_GAME);
 		PaletteSave ();
-		apply_modified_palette ();
+		ApplyModifiedPalette ();
 		ResetPaletteAdd ();
 		GrPaletteStepLoad (NULL);
 		choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
@@ -2765,21 +2767,25 @@ while (1) {
 		}
 	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&  
 		 (gameData.demo.nState != ND_STATE_PLAYBACK) &&  
-		 (gameStates.app.nFunctionMode!=FMODE_EDITOR)
+		 (gameStates.app.nFunctionMode != FMODE_EDITOR)
 	#ifdef NETWORK
 			&& !gameStates.multi.bIWasKicked
 	#endif
 			) {
+#if 1
+		int choice = QuitSaveLoadMenu ();
+#else
 			int choice, fmode = gameStates.app.nFunctionMode;
 			SetFunctionMode (FMODE_GAME);
 			PaletteSave ();
-			apply_modified_palette ();
+			ApplyModifiedPalette ();
 			ResetPaletteAdd ();
 			GrPaletteStepLoad (NULL);
-			gameStates.app.nExtGameStatus=GAMESTAT_ABORT_GAME;
-			choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			gameStates.app.nExtGameStatus = GAMESTAT_ABORT_GAME;
+			choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			PaletteRestore ();
 			SetFunctionMode (fmode);
+#endif
 			if (choice)
 				SetFunctionMode (FMODE_GAME);
 			}

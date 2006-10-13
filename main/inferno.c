@@ -3011,7 +3011,7 @@ if (*szAutoHogFile && *szAutoMission) {
 LoadGameTexts ();
 /*---*/LogErr ("Loading hires models\n");
 if (gameOpts->render.bHiresModels) {
-#if defined (_DEBUG) && SHADOWS
+#if 0 && defined (_DEBUG) && SHADOWS
 	if (OOF_ReadFile ("cube.oof", gameData.models.hiresModels))
 #else
 	if (OOF_ReadFile ("pyrogl.oof", gameData.models.hiresModels))

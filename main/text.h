@@ -1744,11 +1744,11 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_DECREASE_LAG	GT(799)
 #define TXT_SMOKE_RENDER_OPTS		GT(800)
 #define TXT_SMOKE_RENDER_TITLE	GT(801)
+#define TXT_QUIT_GAME				GT(802)
+#define TXT_LOAD_GAME2				GT(803)
+#define TXT_SAVE_GAME2				GT(804)
 #if 0
 
-#define TXT_				GT(802)
-#define TXT_				GT(803)
-#define TXT_				GT(804)
 #define TXT_				GT(805)
 #define TXT_				GT(806)
 #define TXT_				GT(807)
@@ -2176,6 +2176,9 @@ void LoadGameTexts(void);
 #define HTX_MISC_SCREENSHOTS		HT(211)				
 #define HTX_ADVREND_DECSMOKELAG	HT(212)				
 #define HTX_RENDER_SMOKEOPTS		HT(213)				
+#define HTX_QUIT_GAME				HT(214)				
+#define HTX_LOAD_GAME				HT(215)				
+#define HTX_SAVE_GAME				HT(216)				
 
 #if 0
 				

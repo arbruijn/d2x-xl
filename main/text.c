@@ -1597,6 +1597,9 @@ char *defaultGameTexts [][2] = {
 	{"~Ruckeln durch Rauch reduzieren", "~Reduce smoke induced lag"},
 	{"~Raucheinstellungen...", "~Smoke Render Options..."},
 	{"Rauch-Einstellungen", "Smoke Render Options"},
+	{"   Spiel ~Verlassen   ", "   ~Quit Game   "},
+	{"   Spiel ~Laden...   ", "   ~Load Game...   "},
+	{"   Spiel ~Speichern...   ", "   ~Save Game...   "},
 #if 0
 	{"", ""},
 #endif
@@ -2023,6 +2026,9 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird beim rueckwaerts fliegen eventuell\nauftretendes Ruckeln verringert. Dadurch koennen Leistungseinbrueche\nauf langsameren Grafikkarten reduziert werden.", 
 	 "If checked, smoke induced lag while flying backwards will be\nreduced. That way you can decrease performance losses on slower\nvideo hardware."},
 	{"Hier koennen Raucheinstellungen vorgenommen werden.", "Adjust smoke settings here."},
+	{"Spiel beenden und zum Hauptmenue zurueckkehren.", "Leave the game and return to the main menu."},
+	{"Gespeicherten Spielstand wiederherstellen.", "Restore a previously saved game."},
+	{"Aktuellen Spielstand abspeichern.", "Save the current game."},
 #if 0
 	{"", ""},
 #endif

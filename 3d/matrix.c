@@ -40,10 +40,11 @@ static char rcsid[] = "$Id: matrix.c,v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "inferno.h"
 #include "oof.h"
 
-void scale_matrix(void);
+void ScaleMatrix(void);
 
+//------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_set_view_*() 
-void g3_set_view_angles(vms_vector *view_pos,vms_angvec *view_orient,fix zoom)
+void G3SetViewAngles (vms_vector *view_pos, vms_angvec *view_orient, fix zoom)
 {
 viewInfo.zoom = zoom;
 viewInfo.position = *view_pos;
@@ -53,11 +54,12 @@ VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 #ifdef D1XD3D
 Win32_set_view_matrix ();
 #endif
-scale_matrix();
+ScaleMatrix();
 }
 
+//------------------------------------------------------------------------------
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_set_view_*() 
-void G3SetViewMatrix(vms_vector *view_pos, vms_matrix *view_matrix, fix zoom)
+void G3SetViewMatrix (vms_vector *view_pos, vms_matrix *view_matrix, fix zoom)
 {
 viewInfo.zoom = zoom;
 viewInfo.glZoom = (float) zoom / 65536.0f;
@@ -74,27 +76,30 @@ if (view_matrix) {
 #ifdef D1XD3D
 Win32_set_view_matrix ();
 #endif
-scale_matrix();
+ScaleMatrix();
 }
 
+//------------------------------------------------------------------------------
 //performs aspect scaling on global view matrix
-void scale_matrix(void)
+void ScaleMatrix (void)
 {
 	viewInfo.unscaledView = viewInfo.view;		//so we can use unscaled if we want
 
 viewInfo.scale = viewInfo.windowScale;
 if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
-	viewInfo.scale.z =  FixMul(viewInfo.scale.z,viewInfo.zoom);
+	viewInfo.scale.z =  FixMul (viewInfo.scale.z, viewInfo.zoom);
 else {			//zoom out by scaling x&y
-	fix s = FixDiv(f1_0,viewInfo.zoom);
+	fix s = FixDiv (f1_0, viewInfo.zoom);
 
-	viewInfo.scale.x = FixMul(viewInfo.scale.x,s);
-	viewInfo.scale.y = FixMul(viewInfo.scale.y,s);
-}
+	viewInfo.scale.x = FixMul (viewInfo.scale.x,s);
+	viewInfo.scale.y = FixMul (viewInfo.scale.y,s);
+	}
 //now scale matrix elements
-VmVecScale(&viewInfo.view.rvec,viewInfo.scale.x);
-VmVecScale(&viewInfo.view.uvec,viewInfo.scale.y);
-VmVecScale(&viewInfo.view.fvec,viewInfo.scale.z);
+VmVecScale (&viewInfo.view.rvec, viewInfo.scale.x);
+VmVecScale (&viewInfo.view.uvec, viewInfo.scale.y);
+VmVecScale (&viewInfo.view.fvec, viewInfo.scale.z);
 VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 }
 
+//------------------------------------------------------------------------------
+//eof

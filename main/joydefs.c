@@ -385,7 +385,7 @@ void joydefs_calibrate(void)
 	#endif
 
 	PaletteSave();
-	apply_modified_palette();
+	ApplyModifiedPalette();
 	ResetPaletteAdd();
 
 	GrPaletteStepLoad (NULL);

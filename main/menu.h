@@ -146,7 +146,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int CallMenu();
 void OptionsMenu();
 void RenderOptionsMenu ();
-void gameplay_options_menu();
+void GameplayOptionsMenu();
+int QuitSaveLoadMenu (void);
+
 
 #ifdef RELEASE  // read only from hog file
 #define MENU_PCX_MAC_SHARE ("\x01menub.pcx")

@@ -1346,7 +1346,7 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 // -----------------------------------------------------------------------------
 
 #define	RING_SIZE		16
-#define	THRUSTER_SEGS	12
+#define	THRUSTER_SEGS	14
 
 static fVector3	vFlame [THRUSTER_SEGS][RING_SIZE];
 static int			bHaveFlame = 0;
@@ -1374,14 +1374,14 @@ void CreateThrusterFlame (void)
 
 if (!bHaveFlame) {
 		fVector3		*pv;
-		int			i, j;
+		int			i, j, m, n;
 		double		phi, sinPhi;
 		float			z = 0, 
 						fScale = 2.0f / 3.0f, 
 						fStep [2] = {1.0f / 4.0f, 1.0f / 3.0f};
 
 	pv = &vFlame [0][0];
-	for (i = 0, phi = 0; i < THRUSTER_SEGS / 3; i++, phi += Pi / 8, z -= fStep [0]) {
+	for (i = 0, phi = 0; i < 5; i++, phi += Pi / 8, z -= fStep [0]) {
 		sinPhi = (1 + sin (phi) / 2) * fScale;
 		for (j = 0; j < RING_SIZE; j++, pv++) {
 			pv->p.x = vRing [j].p.x * (float) sinPhi;
@@ -1389,8 +1389,9 @@ if (!bHaveFlame) {
 			pv->p.z = z;
 			}
 		}
-	for (phi = Pi / 2 + Pi / 8; i < THRUSTER_SEGS; i++, phi += Pi / 8, z -= fStep [1]) {
-		sinPhi = (1 + sin (phi) / 2) * fScale;
+	m = n = THRUSTER_SEGS - i + 1;
+	for (phi = Pi / 2; i < THRUSTER_SEGS; i++, phi += Pi / 8, z -= fStep [1], m--) {
+		sinPhi = (1 + sin (phi) / 2) * fScale * m / n;
 		for (j = 0; j < RING_SIZE; j++, pv++) {
 			pv->p.x = vRing [j].p.x * (float) sinPhi;
 			pv->p.y = vRing [j].p.y * (float) sinPhi;
@@ -1410,7 +1411,7 @@ void RenderThrusterFlames (object *objP)
 	tRgbaColorf		c [2];
 	vms_vector		vPos [2];
 	fVector3			v;
-	float				fSize, fLength, fSpeed, fPulse, fFade [2];
+	float				fSize, fLength, fSpeed, fPulse, fFade [4];
 	tThrusterData	*pt = gameData.render.thrusters + objP->id;
 	tPathPoint		*pp = GetPathPoint (&pt->path);
 
@@ -1434,11 +1435,15 @@ fSize = 0.5f + fLength * 0.5f;
 fLength += 0.2f;
 if (fSpeed >= pt->fSpeed) {
 	fFade [0] = 0.95f;
-	fFade [1] = 0.75f;
+	fFade [1] = 0.85f;
+	fFade [2] = 0.75f;
+	fFade [3] = 0.65f;
 	}
 else {
 	fFade [0] = 0.9f;
-	fFade [1] = 0.7f;
+	fFade [1] = 0.8f;
+	fFade [2] = 0.7f;
+	fFade [3] = 0.6f;
 	}
 pt->fSpeed = fSpeed;
 if (gameOpts->render.bHiresModels) {
@@ -1465,24 +1470,19 @@ for (h = 0; h < 2; h++) {
 	glDepthMask (0);
 	glCullFace (GL_BACK);
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+#if 1
 		c [0] = c [1];
 		c [1].red *= 0.975f;
 		c [1].green *= 0.8f;
-		c [1].blue *= 0.95f;
-		c [1].alpha *= fFade [0];
-#if 1
+		//c [1].alpha *= fFade [i / 4];
 		glBegin (GL_QUAD_STRIP);
 		for (j = 0; j < RING_SIZE + 1; j++) {
 			for (l = 0; l < 2; l++) {
 				k = j % RING_SIZE;
 				v = vFlame [i + l][k];
-#if 1
 				v.p.x *= fSize;
 				v.p.y *= fSize;
-#endif
-#if 1
 				v.p.z *= fLength;
-#endif
 				G3TransformPointf (&v, &v);
 				v.p.z = -v.p.z;
 				glColor4f (c [l].red, c [l].green, c [l].blue, c [l].alpha);
@@ -1492,6 +1492,7 @@ for (h = 0; h < 2; h++) {
 		glEnd ();
 #else
 		glBegin (GL_LINE_LOOP);
+		glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
 		for (j = 0; j < RING_SIZE; j++) {
 			G3TransformPointf (&v, vFlame [i] + j);
 			v.p.z = -v.p.z;

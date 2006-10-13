@@ -1339,6 +1339,27 @@ return nLight;
 
 //------------------------------------------------------------------------------
 
+void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
+{
+if (!pc || pc->index) {
+	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
+#ifdef _DEBUG
+	vms_angvec	a;
+#endif
+	pli->nIndex = (int) nSegment * 6 + nSide;
+	COMPUTE_SIDE_CENTER_I (&pli->pos, nSegment, nSide);
+	OOF_VecVms2Gl (pli->glPos, &pli->pos);
+	pli->nSegNum = nSegment;
+	pli->nSideNum = (ubyte) nSide;
+#ifdef _DEBUG
+	VmExtractAnglesVector (&a, gameData.segs.segments [nSegment].sides [nSide].normals);
+	VmAngles2Matrix (&pli->orient, &a);
+#endif
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
 {
 	tOglLight	*pl;
@@ -1419,6 +1440,8 @@ LogErr ("adding light %d,%d\n",
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
 if (nObject >= 0)
 	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
+else if (nSegment >= 0)
+	RegisterLight (NULL, nSegment, nSide);
 return gameData.render.lights.ogl.nLights++;
 }
 

@@ -407,7 +407,7 @@ extern int Game_turbo_mode;
 // returns ptr to escort robot, or NULL
 object *find_escort();
 
-extern void apply_modified_palette(void);
+extern void ApplyModifiedPalette(void);
 
 int GrToggleFullScreenGame(void);
 

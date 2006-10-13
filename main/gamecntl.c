@@ -359,7 +359,7 @@ char *Pause_msg;
 extern void GameRenderFrame();
 extern void show_extra_views();
 
-void apply_modified_palette(void)
+void ApplyModifiedPalette(void)
 {
 //@@    int				k, x, y;
 //@@    grs_bitmap	*sbp;
@@ -468,7 +468,7 @@ int do_game_pause()
 	StopTime();
 
 	PaletteSave();
-	apply_modified_palette();
+	ApplyModifiedPalette();
 	ResetPaletteAdd();
 
 // -- Matt: This is a hacked-in test for the stupid menu/flash problem.
@@ -1192,7 +1192,7 @@ int HandleSystemKey(int key)
 
 				if (!(gameData.app.nGameMode&GM_MULTI)) {
 					PaletteSave(); 
-					apply_modified_palette(); 
+					ApplyModifiedPalette(); 
 					ResetPaletteAdd(); 
 					GrPaletteStepLoad (NULL); 
 					}

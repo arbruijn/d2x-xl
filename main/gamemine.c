@@ -1054,33 +1054,6 @@ void read_special (int segnum, ubyte bit_mask, CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void RegisterLight (tFaceColor *pc, int i)
-{
-if (!pc || pc->index) {
-	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
-	short			sideVerts [4];
-#ifdef _DEBUG
-	vms_angvec	a;
-#endif
-	pli->nIndex = i;
-	GetSideVerts (sideVerts, i / 6, i % 6);
-	VmVecAvg4 (&pli->pos, 
-					 gameData.segs.vertices + sideVerts [0], 
-					 gameData.segs.vertices + sideVerts [1], 
-					 gameData.segs.vertices + sideVerts [2], 
-					 gameData.segs.vertices + sideVerts [3]);
-	OOF_VecVms2Gl (pli->glPos, &pli->pos);
-	pli->nSegNum = i / 6;
-	pli->nSideNum = i % 6;
-#ifdef _DEBUG
-	VmExtractAnglesVector (&a, gameData.segs.segments [i / 6].sides [i % 6].normals);
-	VmAngles2Matrix (&pli->orient, &a);
-#endif
-	}
-}
-
-//------------------------------------------------------------------------------
-
 typedef struct tLightDist {
 	int		nIndex;
 	int		nDist;
@@ -1412,7 +1385,7 @@ if (gameStates.app.bD2XLevel) {
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
 #if SHADOWS
-		RegisterLight (pc, i);
+		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
 #endif
 		}
 	}
@@ -1430,7 +1403,7 @@ else {
 	for (i = 0; i < j; i++, segP++)
 		for (h = 0, sideP = segP->sides; h < 6; h++, sideP++)
 			if (IsLight (sideP->tmap_num) || IsLight (sideP->tmap_num2 & 0x3fff))
-				RegisterLight (NULL, i * 6 + h);
+				RegisterLight (NULL, (short) i, (short) h);
 #endif
 	}
 }
@@ -1617,7 +1590,10 @@ void SortLightsGauge (void)
 loadOp = 0;
 loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-	NMProgressBar (TXT_PREP_DESCENT, LoadMineGaugeSize () - (gameData.segs.nSegments * 10 + PROGRESS_INCR - 1) / PROGRESS_INCR, 
+	NMProgressBar (TXT_PREP_DESCENT, 
+						LoadMineGaugeSize () 
+						- PROGRESS_STEPS (gameData.segs.nSegments * 10) 
+						- PROGRESS_STEPS (gameData.segs.nVertices * 10), 
 						LoadMineGaugeSize () + PagingGaugeSize (), SortLightsPoll); 
 else {
 	ComputeNearestSegmentLights (-1);
@@ -1703,8 +1679,10 @@ if (gameOpts->ogl.bUseLighting) {
 	SortLightsGauge ();
 	}
 #if SHADOWS
-else
+else {
+	AddOglLights ();
 	SortLightsGauge ();
+	}
 #endif
 return 0;
 }

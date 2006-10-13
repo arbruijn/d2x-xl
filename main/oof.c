@@ -304,7 +304,7 @@ return OOF_Normalize (OOF_VecPerp (pvNormal, pv0, pv1, pv2));
 float OOF_Centroid (tOOF_vector *pvCentroid, tOOF_vector *pvSrc, int nv)
 {
 	tOOF_vector	vNormal, vCenter;
-	float			fArea,fTotalArea;
+	float			fArea, fTotalArea;
 	int			i;
 
 pvCentroid->x =
@@ -314,7 +314,7 @@ pvCentroid->z = 0.0f;
 // First figure out the total area of this polygon
 fTotalArea = OOF_VecMag (OOF_VecPerp (&vNormal, pvSrc, pvSrc + 1, pvSrc + 2)) / 2;
 for (i = 2; i < nv - 1; i++) {
-	fArea= OOF_VecMag (OOF_VecPerp (&vNormal, pvSrc, pvSrc + i, pvSrc + i + 1)) / 2;
+	fArea = OOF_VecMag (OOF_VecPerp (&vNormal, pvSrc, pvSrc + i, pvSrc + i + 1)) / 2;
 	fTotalArea += fArea;
 	}
 // Now figure out how much weight each triangle represents to the overall polygon
@@ -955,7 +955,7 @@ OOF_PrintLog ("reading face vertex\n");
 pfv->nIndex = OOF_ReadInt (fp, "nIndex");
 pfv->fu = OOF_ReadFloat (fp, "fu");
 pfv->fv = -OOF_ReadFloat (fp, "fv");
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/if (pfv->fu == 0.5) pfv->fu = 1.0;
 /*!!!*/if (pfv->fv == 0.5) pfv->fv = 1.0;
 /*!!!*/if (pfv->fu == -0.5) pfv->fu = 1.0;
@@ -1069,7 +1069,7 @@ return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex,
 
 //------------------------------------------------------------------------------
 
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/static int nTexId = 0;
 #endif
 
@@ -1087,7 +1087,7 @@ f.nVerts = OOF_ReadInt (fp, "nVerts");
 f.bTextured = OOF_ReadInt (fp, "bTextured");
 if (f.bTextured) {
 	f.texProps.nTexId = OOF_ReadInt (fp, "texProps.nTexId");
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/	f.texProps.nTexId = nTexId % 6;
 /*!!!*/	nTexId++;
 #endif
@@ -1342,7 +1342,7 @@ int OOF_ReadTextures (CFILE *fp, tOOF_object *po)
 nIndent += 2;
 OOF_PrintLog ("reading textures\n");
 o.textures.nTextures = OOF_ReadInt (fp, "nTextures");
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/o.textures.nTextures = 6;
 #endif
 if (!(o.textures.pszNames = (char **) d_malloc (o.textures.nTextures * sizeof (char **)))) {
@@ -1359,14 +1359,14 @@ memset (o.textures.pBitmaps, 0, i);
 for (i = 0; i < o.textures.nTextures; i++) {
 	if (bLogOOF)
 		sprintf (szId, "textures.pszId [%d]", i);
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/if (!i) {
 #endif
 	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId))) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
-#if defined(_DEBUG) && SHADOWS
+#if 0 && defined(_DEBUG) && SHADOWS
 /*!!!*/}else o.textures.pszNames [i] = d_malloc (20);
 /*!!!*/sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
@@ -1892,7 +1892,7 @@ tOOF_vector *OOF_CalcFacePerp (tOOF_subObject *pso, tOOF_face *pf)
 	tOOF_vector		*pv = pso->pvRotVerts;
 	tOOF_faceVert	*pfv = pf->pVerts;
 
-#if 1
+#if 0
 OOF_CalcFaceNormal (pso, pf);
 #endif
 return OOF_VecPerp (&pf->vNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex, pv + pfv [2].nIndex);
@@ -1902,15 +1902,23 @@ return OOF_VecPerp (&pf->vNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex, pv +
 
 int OOF_LitFace (tOOF_subObject *pso, tOOF_face *pf)
 {
-return pf->bFacingLight = OOF_FacingLight (pso->pvRotVerts + pf->pVerts->nIndex, //pf->vRotCenter, 
-														 OOF_CalcFacePerp (pso, pf)); //&pf->vRotNormal);
+return pf->bFacingLight = 
+#if 0
+	OOF_FacingLight (&pf->vRotCenter, &pf->vRotNormal); 
+#else
+	OOF_FacingLight (pso->pvRotVerts + pf->pVerts->nIndex, &pf->vRotNormal); //OOF_CalcFacePerp (pso, pf)); 
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 int OOF_FrontFace (tOOF_subObject *pso, tOOF_face *pf)
 {
-return OOF_FacingViewer (pso->pvRotVerts + pf->pVerts->nIndex, OOF_CalcFacePerp (pso, pf)); //&pf->vRotNormal);
+#if 0
+return OOF_FacingViewer (&pf->vRotCenter, &pf->vRotNormal);
+#else
+return OOF_FacingViewer (pso->pvRotVerts + pf->pVerts->nIndex, &pf->vRotNormal);	//OOF_CalcFacePerp (pso, pf));
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2082,7 +2090,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (!bRearCap)
 			continue;
 		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts + i; j; j--) {
+		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
 			--pfv;
 #if NORM_INF
 			OOF_VecScale (OOF_VecSub (&v0, pv + pfv->nIndex, &vrLightPos), INFINITY / OOF_VecMag (&v0));
@@ -2222,6 +2230,7 @@ for (i = pso->nVerts, pv = pso->pvVerts, prv = pso->pvRotVerts; i; i--, pv++, pr
 	OOF_RotVert (prv, pv, &vo);
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	OOF_RotVert (&pf->vRotNormal, &pf->vNormal, &vo);
+	OOF_VecNormalize (&pf->vRotNormal);
 	OOF_RotVert (&pf->vRotCenter, &pf->vCenter, &vo);
 	}
 }
@@ -2287,7 +2296,7 @@ return r;
 
 int OOF_RenderShadow (object *objP, tOOF_object *po, float *fLight)
 {
-	short			*pnl = gameData.render.shadows.nNearestLights [gameData.objs.console->segnum];
+	short			*pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->segnum];
 	vms_vector	h, vl;
 
 for (gameData.render.shadows.nLight = 0; 
@@ -2295,9 +2304,9 @@ for (gameData.render.shadows.nLight = 0;
 	  gameData.render.shadows.nLight++, pnl++) {
 	gameData.render.shadows.pLight = gameData.render.shadows.lightInfo + *pnl;
 #if 0
-	OOF_VecVms2Oof (&vrLightPos, &gameData.render.shadows.pLight->pos);
+	OOF_VecVms2Oof (&vrLightPos, &gameData.render.lights.ogl.lights [*pnl].vPos);
 #else
-	G3TransformPoint (&vl, &gameData.render.shadows.pLight->pos);
+	G3TransformPoint (&vl, &gameData.render.lights.ogl.lights [*pnl].vPos);
 	OOF_VecVms2Oof (&vrLightPos, &vl);
 #endif
 	if (!OOF_RenderModel (objP, po, fLight))
@@ -2350,7 +2359,7 @@ if (po->fAlpha < 0.01f)
 #if SHADOWS
 return (!gameStates.render.bShadowMaps && (gameStates.render.nShadowPass == 2)) ? 
 	OOF_RenderShadow (objP, po, fLight) :
-	OOF_RenderModel (objP, po, nSegment, fLight);
+	OOF_RenderModel (objP, po, fLight);
 #else
 return OOF_RenderModel (objP, po, fLight);
 #endif

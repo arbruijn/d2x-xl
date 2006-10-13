@@ -1853,13 +1853,6 @@ if (v != extraGameInfo [0].bShadows) {
 	return;
 	}
 #endif
-m = menus + nUseSmokeOpt;
-v = m->value;
-if (v != extraGameInfo [0].bUseSmoke) {
-	extraGameInfo [0].bUseSmoke = v;
-	*key = -2;
-	return;
-	}
 m = menus + nUseCamOpt;
 v = m->value;
 if (v != extraGameInfo [0].bUseCameras) {
@@ -2153,6 +2146,13 @@ void SmokeRenderOptionsCallback (int nitems, newmenu_item * menus, int * key, in
 	newmenu_item * m;
 	int				v;
 
+m = menus + nUseSmokeOpt;
+v = m->value;
+if (v != extraGameInfo [0].bUseSmoke) {
+	extraGameInfo [0].bUseSmoke = v;
+	*key = -2;
+	return;
+	}
 if (extraGameInfo [0].bUseSmoke) {
 	m = menus + nPlrSmokeOpt;
 	v = m->value;
@@ -3037,6 +3037,31 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			break;
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+int QuitSaveLoadMenu (void)
+{
+	newmenu_item m [5];
+	int	i, choice, opt, optQuit, optLoad, optSave;
+
+memset (m, 0, sizeof (m));
+opt = 0;
+ADD_MENU (opt, TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
+optQuit = opt++;
+ADD_MENU (opt, TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
+optLoad = opt++;
+ADD_MENU (opt, TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
+optSave = opt++;
+i = ExecMenu1 (NULL, TXT_ABORT_GAME, opt, m, NULL, &choice);
+if (!i)
+	return 0;
+if (i == optLoad)
+	StateRestoreAll(1, 0, NULL);
+else if (i == optSave)
+	StateSaveAll (0, 0, NULL);
+return 1;
 }
 
 //------------------------------------------------------------------------------

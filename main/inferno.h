@@ -829,7 +829,6 @@ typedef struct tShadowData {
 	short			nLights;
 	tLightInfo	*pLight;
 	tLightInfo	lightInfo [MAX_SEGMENTS * 6];
-	short			nNearestLights [MAX_SEGMENTS][8];	//the 8 nearest lights for every segment
 	short			nShadowMaps;
 	tCamera		shadowMaps [MAX_SHADOW_MAPS];
 	object		lightSource;

@@ -94,6 +94,7 @@ void ReadFlickeringLight(flickering_light *fl, CFILE *fp);
 
 void InitTextureBrightness (void);
 
+void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
 int RemoveOglLight (short nSegment, short nSide, short nObject);
 void AddOglLights (void);

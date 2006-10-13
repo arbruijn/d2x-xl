@@ -1380,7 +1380,7 @@ if (!gameStates.render.bShadowMaps) {
 
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.shadows.nNearestSegLights [objP->segnum];
+pnl = gameData.render.lights.ogl.nNearestSegLights [objP->segnum];
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
 	  gameData.render.shadows.nLight++, pnl++) {
@@ -1391,7 +1391,7 @@ for (gameData.render.shadows.nLight = 0;
 #if 0
 		vmsLightPos = gameData.render.shadows.pLight->pos;
 #else
-		G3TransformPoint (&vmsLightPos, &gameData.render.shadows.pLight->pos);
+		G3TransformPoint (&vmsLightPos, &gameData.render.lights.ogl.lights [*pnl].vPos);
 #endif
 		OOF_VecVms2Oof (&vLightPos, &vmsLightPos);
 		G3PolyModelVerts2Float (po);
