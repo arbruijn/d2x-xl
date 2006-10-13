@@ -220,9 +220,9 @@ else {
 	pParticle->glColor.a = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 	}
 #else
-pParticle->glColor.r =
-pParticle->glColor.g =
-pParticle->glColor.b = 1.0;//(double) (64 + randN (64)) / 255.0;
+pParticle->glColor.r = 1.0;
+pParticle->glColor.g = 0.0;
+pParticle->glColor.b = 0.0;//(double) (64 + randN (64)) / 255.0;
 pParticle->glColor.a = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 #	if 0
 pParticle->glColor.r =
@@ -503,6 +503,12 @@ if (gameOpts->render.smoke.bSort)
 	hp = pParticle->transPos;
 else
 	G3TransformPoint (&hp, &pParticle->pos);
+//if (pParticle->glColor.r < 1.0)
+//	pParticle->glColor.r += 0.1;
+if (pParticle->glColor.g < 1.0)
+	pParticle->glColor.g += 0.2;
+if (pParticle->glColor.b < 1.0)
+	pParticle->glColor.b += 0.1;
 pc = pParticle->glColor;
 if (gameOpts->ogl.bUseLighting) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);

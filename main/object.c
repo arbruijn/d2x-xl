@@ -1115,13 +1115,17 @@ return &defaultColor;
 
 static inline float ObjectDamage (object *objP)
 {
+	float	fDmg;
+
 if (objP->type == OBJ_PLAYER)
-	return f2fl (gameData.multi.players [objP->id].shields) / 100;
-if (objP->type != OBJ_ROBOT)
-	return 1.0f;
+	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
+else if (objP->type != OBJ_ROBOT)
+	fDmg = 1.0f;
+else
+	fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
 if (gameData.bots.pInfo [objP->id].companion)
-	return f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength) / 2;
-return f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	fDmg /= 2;
+return fDmg > 100.0f ? 100.0f : fDmg;
 }
 
 // -----------------------------------------------------------------------------
