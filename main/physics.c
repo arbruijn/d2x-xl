@@ -835,15 +835,21 @@ vSaveP1 = *fq.p1;
 			short nSegment;
 			// Find hit speed	
 
-			//HUDMessage (0, "HIT WALL");
+#if 1//def _DEBUG
+			HUDMessage (0, "HIT WALL");
+#endif
 			VmVecSub (&vMoved, &objP->pos, &vSavePos);
 			xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
 			if (xWallPart && (xMovedTime > 0) && (xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0) {
 				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
-				//HUDMessage (0, "HIT WALL");
+#if 1//def _DEBUG
+				HUDMessage (0, "BUMP!");
+#endif
 				}
 			else {
-				//HUDMessage (0, "SCREEEEEEEEEECH");
+#if 1//def _DEBUG
+				HUDMessage (0, "SCREEEEEEEEEECH");
+#endif
 				ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
 				}
 			Assert (nWallHitSeg > -1);
@@ -863,7 +869,9 @@ vSaveP1 = *fq.p1;
 				nSegment = FindSegByPoint (&objP->pos, objP->segnum);
 				if (nSegment != objP->segnum)
 					RelinkObject (OBJ_IDX (objP), nSegment);
-				//HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+#if 1//def _DEBUG
+				HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+#endif
 				bRetry = 1;
 				}
 			if (!(objP->flags & OF_SHOULD_BE_DEAD)) {

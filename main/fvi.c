@@ -1163,7 +1163,7 @@ if (orient == 0) {
 	bmx = ((unsigned) f2i (u * w)) % w;
 	bmy = ((unsigned) f2i (v * h)) % h;
 	}
-if (orient == 1) {
+else if (orient == 1) {
 	bmx = ((unsigned) f2i ((F1_0 - v) * w)) % w;
 	bmy = ((unsigned) f2i (u * h)) % h;
 	}

@@ -3026,6 +3026,12 @@ int MoveOneObject (object * objP)
 {
 	short	nPrevSegment = (short) objP->segnum;
 
+#if 1//def _DEBUG
+if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
+	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
+		HUDInitMessage ("Player should be dead but isn't!");
+	}
+#endif
 objP->last_pos = objP->pos;			// Save the current position
 HandleSpecialSegments (objP);
 if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
