@@ -3044,7 +3044,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 int QuitSaveLoadMenu (void)
 {
 	newmenu_item m [5];
-	int	i, choice, opt, optQuit, optLoad, optSave;
+	int	i, choice = 0, opt, optQuit, optLoad, optSave;
 
 memset (m, 0, sizeof (m));
 opt = 0;

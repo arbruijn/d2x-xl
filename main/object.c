@@ -1121,11 +1121,12 @@ if (objP->type == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
 else if (objP->type != OBJ_ROBOT)
 	fDmg = 1.0f;
-else
-	fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
-if (gameData.bots.pInfo [objP->id].companion)
-	fDmg /= 2;
-return fDmg > 100.0f ? 100.0f : fDmg;
+else {
+		fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	if (gameData.bots.pInfo [objP->id].companion)
+		fDmg /= 2;
+	}
+return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 }
 
 // -----------------------------------------------------------------------------

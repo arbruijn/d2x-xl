@@ -1113,7 +1113,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	pl = gameData.render.lights.ogl.lights;
 	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
 		VmVecSub (&dist, &center, &pl->vPos);
-		h = VmVecMag (&dist);
+		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
 		if ((pDists [n].nDist = VmVecMag (&dist)) <= F1_0 * 125) {
 			pDists [n].nIndex = l;
 			n++;
@@ -1156,7 +1156,7 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	pl = gameData.render.lights.ogl.lights;
 	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
 		VmVecSub (&dist, vertP, &pl->vPos);
-		h = VmVecMag (&dist);
+		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
 		if ((pDists [n].nDist = VmVecMag (&dist)) <= F1_0 * 125) {
 			pDists [n].nIndex = l;
 			n++;
