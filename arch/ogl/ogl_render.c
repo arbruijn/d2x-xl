@@ -1070,7 +1070,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		if (spotEffect <= psl->spotAngle)
 			continue;
 		spotEffect = (float) pow (spotEffect, psl->spotExponent);
-		fAttenuation /= spotEffect;
+		fAttenuation /= spotEffect * 10;
 		}
 	else if (NdotL < 0) {
 		NdotL = 0;

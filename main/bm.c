@@ -210,11 +210,14 @@ void BMSetAfterburnerSizes (void)
 {
 	sbyte	nSize = gameData.weapons.info [MERCURY_ID].afterburner_size;
 	
+//gameData.weapons.info [VULCAN_ID].afterburner_size = 
+//gameData.weapons.info [GAUSS_ID].afterburner_size = nSize / 8;
 gameData.weapons.info [CONCUSSION_ID].afterburner_size =
 gameData.weapons.info [HOMING_ID].afterburner_size =
 gameData.weapons.info [REGULAR_MECH_MISS].afterburner_size =
 gameData.weapons.info [FLASH_ID].afterburner_size =
 gameData.weapons.info [GUIDEDMISS_ID].afterburner_size =
+gameData.weapons.info [ROBOT_FLASH_ID].afterburner_size =
 gameData.weapons.info [ROBOT_MERCURY_ID].afterburner_size = nSize;
 gameData.weapons.info [SUPER_MECH_MISS].afterburner_size =
 gameData.weapons.info [SMART_ID].afterburner_size = 2 * nSize;

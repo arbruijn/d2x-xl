@@ -271,12 +271,8 @@ if (t == OBJ_PLAYER)
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
 else if (t == OBJ_WEAPON) {
-	int id = objP->id;
-	if ((id == CONCUSSION_ID) || (id == HOMING_ID) || (id == SMART_ID) || (id == MEGA_ID) ||
-		 (id == FLASH_ID) || (id == GUIDEDMISS_ID) || (id == MERCURY_ID) || (id == EARTHSHAKER_ID) ||
-		 (id == EARTHSHAKER_MEGA_ID) || (id == REGULAR_MECH_MISS) || (id == SUPER_MECH_MISS) || 
-		 (id == ROBOT_MERCURY_ID) || (id == ROBOT_MEGA_ID))
-	DoMissileSmoke (objP);
+	if (bIsMissile [objP->id])
+		DoMissileSmoke (objP);
 	}
 }
 

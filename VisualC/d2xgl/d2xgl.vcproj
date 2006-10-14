@@ -96,7 +96,7 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="3"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
@@ -122,7 +122,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -134,7 +134,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="d:\projekte\d2x\sdl-1.2.11\Release\sdl.lib D:\Projekte\SDL_mixer-1.2.7\VisualC\Release\SDL_mixer.lib"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>

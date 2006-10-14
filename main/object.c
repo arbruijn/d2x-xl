@@ -429,7 +429,7 @@ int FreeObjectSlots (int num_used);
  */
 
 ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
-
+ubyte bIsMissile [100];
 short idToOOF [100];
 
 //Data for gameData.objs.objects
@@ -1454,7 +1454,6 @@ if (objP->type == OBJ_PLAYER) {
 		}
 	fPulse = (float) pt->nPulse / 10.0f;
 	fSize = 0.5f + fLength * 0.5f;
-	fLength = fSize = 1.0;
 	nThrusters = 2;
 	if (gameOpts->render.bHiresModels) {
 		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
@@ -2119,6 +2118,10 @@ int CreateObject (ubyte type, ubyte id, short owner, short segnum, vms_vector *p
 	short objnum;
 	object *objP;
 
+#ifdef _DEBUG
+if (type == OBJ_WEAPON)
+	type = type;
+#endif
 if ((type == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
 #ifdef _DEBUG
@@ -3006,6 +3009,7 @@ if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_
 		}
 
 	if ((objP->type == OBJ_WEAPON) &&
+		 bIsMissile [objP->id] &&
 		 ((SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 		  || gameStates.app.bNostalgia
 		 // || EGI_FLAG (bThrusterFlames, 0, 0)
@@ -3029,7 +3033,7 @@ int MoveOneObject (object * objP)
 #if 1//def _DEBUG
 if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
 	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
-		HUDInitMessage ("Player should be dead but isn't!");
+		HUDInitMessage ("Player should be dead");
 	}
 #endif
 objP->last_pos = objP->pos;			// Save the current position
@@ -3549,6 +3553,28 @@ return (i < 0) ? NULL : gameData.objs.childObjs + i;
 tObjectRef *GetChildObjP (object *pParent, tObjectRef *pChildRef)
 {
 return GetChildObjN (OBJ_IDX (pParent), pChildRef);
+}
+
+//------------------------------------------------------------------------------
+
+void InitMissileFlags (void)
+{
+memset (bIsMissile, 0, sizeof (bIsMissile));
+bIsMissile [CONCUSSION_ID] = 1;
+bIsMissile [HOMING_ID] = 1;
+bIsMissile [SMART_ID] = 1;
+bIsMissile [MEGA_ID] = 1;
+bIsMissile [FLASH_ID] = 1;
+bIsMissile [GUIDEDMISS_ID] = 1;
+bIsMissile [MERCURY_ID] = 1;
+bIsMissile [EARTHSHAKER_ID] = 1;
+bIsMissile [EARTHSHAKER_MEGA_ID] = 1;
+bIsMissile [REGULAR_MECH_MISS] = 1;
+bIsMissile [SUPER_MECH_MISS] = 1;
+bIsMissile [ROBOT_FLASH_ID] = 1;
+bIsMissile [ROBOT_MERCURY_ID] = 1;
+bIsMissile [ROBOT_SMART_ID] = 1;
+bIsMissile [ROBOT_MEGA_ID] = 1;
 }
 
 //------------------------------------------------------------------------------

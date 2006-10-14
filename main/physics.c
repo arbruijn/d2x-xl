@@ -836,19 +836,23 @@ vSaveP1 = *fq.p1;
 			// Find hit speed	
 
 #if 1//def _DEBUG
-			HUDMessage (0, "HIT WALL");
+			if (objP->type == OBJ_PLAYER)
+				HUDMessage (0, "WALL CONTACT");
+			fate = FindVectorIntersection (&fq, &hit_info);
 #endif
 			VmVecSub (&vMoved, &objP->pos, &vSavePos);
 			xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
 			if (xWallPart && (xMovedTime > 0) && (xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0) {
 				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
 #if 1//def _DEBUG
-				HUDMessage (0, "BUMP!");
+				if (objP->type == OBJ_PLAYER)
+					HUDMessage (0, "BUMP!");
 #endif
 				}
 			else {
 #if 1//def _DEBUG
-				HUDMessage (0, "SCREEEEEEEEEECH");
+				if (objP->type == OBJ_PLAYER)
+					HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
 				ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
 				}
@@ -870,7 +874,8 @@ vSaveP1 = *fq.p1;
 				if (nSegment != objP->segnum)
 					RelinkObject (OBJ_IDX (objP), nSegment);
 #if 1//def _DEBUG
-				HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+				if (objP->type == OBJ_PLAYER)
+					HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
 #endif
 				bRetry = 1;
 				}

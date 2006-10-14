@@ -709,6 +709,10 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc);
 
 object *ObjFindFirstOfType (int type);
 
+void InitMissileFlags (void);
+
+extern ubyte bIsMissile [];
+
 #define OBJ_CLOAKED(_objP)	((_objP)->ctype.ai_info.flags [6])
 
 #endif

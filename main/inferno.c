@@ -767,6 +767,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "player.h"
 #include "text.h"
 #include "newdemo.h"
+#include "object.h"
 #ifdef NETWORK
 #	include "network.h"
 #	include "modem.h"
@@ -3117,6 +3118,7 @@ TexMergeInit (100);		// 100 cache bitmaps
 /*---*/LogErr ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
+InitMissileFlags ();
 InitGame ();
 return 0;
 }

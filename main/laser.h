@@ -220,8 +220,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SMART_MINE_HOMING_ID        47
 #define ROBOT_SMART_MINE_HOMING_ID  49
+#define ROBOT_FLASH_ID					50
 #define ROBOT_SUPERPROX_ID          53
 #define ROBOT_MERCURY_ID				55
+#define ROBOT_SMART_ID					57
 #define ROBOT_EARTHSHAKER_ID        58
 
 #define PMINE_ID                    51  //the mine that the designers can place

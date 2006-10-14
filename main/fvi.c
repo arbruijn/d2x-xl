@@ -738,7 +738,7 @@ if (masks.centerMask) {
 	return hitData->hit.nType;
 	}
 segsVisited [0] = fq->startSeg;
-nSegsVisited=1;
+nSegsVisited = 1;
 fviHitData.nNestCount = 0;
 nHitSegment2 = fviHitData.nSegment2 = -1;
 nHitType = fvi_sub (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, fq->rad, 
@@ -748,12 +748,6 @@ nHitType = fvi_sub (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq-
 if ((nHitSegment2 != -1) && !GetSegMasks(&vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
-#ifdef _DEBUG
-	if (nHitSegment2 == 55)
-	nHitType = fvi_sub (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, fq->rad, 
-							  (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
-							  hitData->segList, &hitData->nSegments, -2);
-#endif
 	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
@@ -924,15 +918,15 @@ if (endMask != 0) {                             //on the back of at least one fa
 						int childSide = segP->children [side];
 						wid_flag = WALL_IS_DOORWAY(segP, side, gameData.objs.objects + nThisObject);
 						if ((childSide >= 0) && 
-								(((gameData.segs.segment2s[childSide].special != SEGMENT_IS_BLOCKED) &&
-								(gameData.segs.segment2s[childSide].special != SEGMENT_IS_SKYBOX)) ||
-								(gameStates.gameplay.bSpeedBoost &&
-								((gameData.segs.segment2s[nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
-								   (gameData.segs.segment2s[childSide].special == SEGMENT_IS_SPEEDBOOST)))))
+								(((gameData.segs.segment2s [childSide].special != SEGMENT_IS_BLOCKED) &&
+								  (gameData.segs.segment2s [childSide].special != SEGMENT_IS_SKYBOX)) ||
+								  (gameStates.gameplay.bSpeedBoost &&
+								   ((gameData.segs.segment2s [nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
+								    (gameData.segs.segment2s [childSide].special == SEGMENT_IS_SPEEDBOOST)))))
  							wid_flag |= WID_FLY_FLAG;
 						}
 					else
-						wid_flag = WALL_IS_DOORWAY(segP, side, gameData.objs.objects + nThisObject);
+						wid_flag = WALL_IS_DOORWAY (segP, side, gameData.objs.objects + nThisObject);
 
 					if ((wid_flag & WID_FLY_FLAG) ||
 						(((wid_flag & WID_RENDER_FLAG) && (wid_flag & WID_RENDPAST_FLAG)) &&

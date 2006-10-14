@@ -390,14 +390,17 @@ void ApplyLight(
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
-		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0))
+		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.ogl.nHeadLights [objP->id] < 0)
 				gameData.render.lights.ogl.nHeadLights [objP->id] = AddOglHeadLight (objP);
-		else if (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON) {
-			playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-			HUDInitMessage (TXT_NO_HEADLIGHTS);
+			}
+		else {
+			if (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON) {
+				playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+				HUDInitMessage (TXT_NO_HEADLIGHTS);
+				}
 			}
 		if (bDarkness)
 			return;
