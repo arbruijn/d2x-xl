@@ -106,10 +106,9 @@ if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multi.nLocalPlayer)) {
 		bForward = 1;
 	else {
 		if (bForward) {
-			if (gameData.smoke.objects [i] >= 0) {
+			if ((h = gameData.smoke.objects [j]) >= 0) {
 				KillObjectSmoke (i);
-				DestroySmoke (gameData.smoke.objects [j]);
-				gameData.smoke.objects [j] = -1;
+				DestroySmoke (h);
 				}
 			bForward = 0;
 			nDens = 0;

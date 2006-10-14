@@ -51,16 +51,10 @@
 
 #define OGL_VERTEX_ARRAYS	1
 
-#define MAX_SMOKE 1000
-
 #define PARTICLE_FPS	30
 
 #define PARTICLE_RAD	(F1_0 * 4)
 
-tSmoke	smoke [MAX_SMOKE];
-
-static int iFreeSmoke = -1;
-static int iUsedSmoke = -1;
 static int bHavePartImg [2][3] = {{0, 0, 0},{0, 0, 0}};
 
 static grs_bitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
@@ -112,10 +106,10 @@ for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
 	}
 #endif
 for (i = 0, j = 1; j < MAX_SMOKE; i++, j++) 
-	smoke [i].nNext = j;
-smoke [i].nNext = -1;
-iFreeSmoke = 0;
-iUsedSmoke = -1;
+	gameData.smoke.smoke [i].nNext = j;
+gameData.smoke.smoke [i].nNext = -1;
+gameData.smoke.iFreeSmoke = 0;
+gameData.smoke.iUsedSmoke = -1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -973,7 +967,7 @@ int IsUsedSmoke (int iSmoke)
 {
 	int	i;
 
-for (i = iUsedSmoke; i >= 0; i = smoke [i].nNext)
+for (i = gameData.smoke.iUsedSmoke; i >= 0; i = gameData.smoke.smoke [i].nNext)
 	if (iSmoke == i)
 		return 1;
 return 0;
@@ -987,7 +981,7 @@ int RemoveCloud (int iSmoke, int iCloud)
 
 if (!IsUsedSmoke (iSmoke))
 	return -1;
-pSmoke = smoke + iSmoke;
+pSmoke = gameData.smoke.smoke + iSmoke;
 if ((pSmoke->pClouds) && (iCloud < pSmoke->nClouds)) {
 	DestroyCloud (pSmoke->pClouds + iCloud);
 	if (iCloud < --(pSmoke->nClouds))
@@ -1002,9 +996,9 @@ tSmoke *PrevSmoke (int iSmoke)
 {
 	int	i, j;
 
-for (i = iUsedSmoke; i >= 0; i = j)
-	if ((j = smoke [i].nNext) == iSmoke)
-		return smoke + i;
+for (i = gameData.smoke.iUsedSmoke; i >= 0; i = j)
+	if ((j = gameData.smoke.smoke [i].nNext) == iSmoke)
+		return gameData.smoke.smoke + i;
 return NULL;
 }
 
@@ -1019,19 +1013,19 @@ if (iSmoke < 0)
 	iSmoke = -iSmoke - 1;
 else if (!IsUsedSmoke (iSmoke))
 	return -1;
-pSmoke = smoke + iSmoke;
+pSmoke = gameData.smoke.smoke + iSmoke;
 if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);
 	d_free (pSmoke->pClouds);
 	pSmoke->pClouds = NULL;
 	i = pSmoke->nNext;
-	if (iUsedSmoke == iSmoke)
-		iUsedSmoke = i;
-	pSmoke->nNext = iFreeSmoke;
+	if (gameData.smoke.iUsedSmoke == iSmoke)
+		gameData.smoke.iUsedSmoke = i;
+	pSmoke->nNext = gameData.smoke.iFreeSmoke;
 	if (pSmoke = PrevSmoke (iSmoke))
 		pSmoke->nNext = i;
-	iFreeSmoke = iSmoke;
+	gameData.smoke.iFreeSmoke = iSmoke;
 	}
 return iSmoke;
 }
@@ -1042,8 +1036,8 @@ int DestroyAllSmoke (void)
 {
 	int	i, j;
 
-for (i = iUsedSmoke; i >= 0; i = j) {
-	j = smoke [i].nNext;
+for (i = gameData.smoke.iUsedSmoke; i >= 0; i = j) {
+	j = gameData.smoke.smoke [i].nNext;
 	DestroySmoke (-i - 1);
 	}
 FreeParticleImages ();
@@ -1058,10 +1052,10 @@ int CreateSmoke (vms_vector *pPos, short nSegment, int nMaxClouds, int nMaxParts
 {
 if (!(EGI_FLAG (bUseSmoke, 0, 0)))
 	return 0;
-else if (iFreeSmoke < 0)
+else if (gameData.smoke.iFreeSmoke < 0)
 	return 0;
 else if (!LoadParticleImage (nType)) {
-	//LogErr ("cannot create smoke\n");
+	//LogErr ("cannot create gameData.smoke.smoke\n");
 	return -1;
 	}
 else {
@@ -1072,29 +1066,30 @@ else {
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
-	pSmoke = smoke + iFreeSmoke;
+	pSmoke = gameData.smoke.smoke + gameData.smoke.iFreeSmoke;
 	if (!(pSmoke->pClouds = (tCloud *) d_malloc (nMaxClouds * sizeof (tCloud)))) {
-		//LogErr ("cannot create smoke\n");
+		//LogErr ("cannot create gameData.smoke.smoke\n");
 		return 0;
 		}
 	pSmoke->nObject = nObject;
+	pSmoke->nSignature = gameData.objs.objects [nObject].signature;
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
 		if (CreateCloud (pSmoke->pClouds + i, pPos, nSegment, nMaxParts, nPartScale, nLife, nSpeed, nType, t))
 			pSmoke->nClouds++;
 		else {
-			DestroySmoke (iFreeSmoke);
-			//LogErr ("cannot create smoke\n");
+			DestroySmoke (gameData.smoke.iFreeSmoke);
+			//LogErr ("cannot create gameData.smoke.smoke\n");
 			return -1;
 			}
 	pSmoke->nType = nType;
-	i = iFreeSmoke;
-	iFreeSmoke = pSmoke->nNext;
-	pSmoke->nNext = iUsedSmoke;
-	iUsedSmoke = i;
+	i = gameData.smoke.iFreeSmoke;
+	gameData.smoke.iFreeSmoke = pSmoke->nNext;
+	pSmoke->nNext = gameData.smoke.iUsedSmoke;
+	gameData.smoke.iUsedSmoke = i;
 	//LogErr ("CreateSmoke (%d) = %d,%d (%d)\n", nObject, i, nMaxClouds, nType);
-	return iUsedSmoke;
+	return gameData.smoke.iUsedSmoke;
 	}
 }
 
@@ -1110,17 +1105,19 @@ else {
 		tSmoke	*pSmoke;
 		tCloud	*pCloud;
 
-	for (i = iUsedSmoke; i >= 0; i = pSmoke->nNext) {
-		pSmoke = smoke + i;
+	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
+		pSmoke = gameData.smoke.smoke + i;
+#ifdef _DEBUG
 		if (gameData.objs.objects [pSmoke->nObject].type == 255)
 			i = i;
+#endif
 		if (pCloud = pSmoke->pClouds)
 			for (h = j = 0; j < pSmoke->nClouds; ) {
 				if (!pSmoke->pClouds)
 					return 0;
 				if (CloudIsDead (pCloud, t)) {
 					if (!RemoveCloud (i, j)) {
-						//LogErr ("killing smoke %d (%d)\n", i, pSmoke->nObject);
+						//LogErr ("killing gameData.smoke.smoke %d (%d)\n", i, pSmoke->nObject);
 						DestroySmoke (i);
 						return 0;
 						}
@@ -1147,13 +1144,13 @@ if (!EGI_FLAG (bUseSmoke, 0, 0))
 	return 0;
 else {
 		int		i, j;
-		tSmoke	*pSmoke = smoke;
+		tSmoke	*pSmoke = gameData.smoke.smoke;
 
 #if !EXTRA_VERTEX_ARRAYS
 	nBuffer = 0;
 #endif
-	for (i = iUsedSmoke; i >= 0; i = pSmoke->nNext) {
-		pSmoke = smoke + i;
+	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
+		pSmoke = gameData.smoke.smoke + i;
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
@@ -1172,14 +1169,14 @@ else {
 void SetSmokePos (int i, vms_vector *pos)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
 			SetCloudPos (pSmoke->pClouds, pos);
 #ifdef _DEBUG
 	else if (pSmoke->nObject >= 0) {
-		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
-		//LogErr ("no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
+		HUDMessage (0, "no gameData.smoke.smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
+		//LogErr ("no gameData.smoke.smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
 		pSmoke->nObject = -1;
 		}
 #endif
@@ -1191,7 +1188,7 @@ if (IsUsedSmoke (i)) {
 void SetSmokeDensity (int i, int nMaxParts)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
 			SetCloudDensity (pSmoke->pClouds + i, nMaxParts << (gameOpts->render.smoke.nScale + 1));
@@ -1203,7 +1200,7 @@ if (IsUsedSmoke (i)) {
 void SetSmokePartScale (int i, float nPartScale)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
 			SetCloudPartScale (pSmoke->pClouds + i, nPartScale);
@@ -1215,7 +1212,7 @@ if (IsUsedSmoke (i)) {
 void SetSmokeLife (int i, int nLife)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nLife != nLife)) {
 		//LogErr ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
 		for (i = 0; i < pSmoke->nClouds; i++)
@@ -1229,7 +1226,7 @@ if (IsUsedSmoke (i)) {
 void SetSmokeType (int i, int nType)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	pSmoke->nType = nType;
 	for (i = 0; i < pSmoke->nClouds; i++)
 		SetCloudType (pSmoke->pClouds + i, nType);
@@ -1240,7 +1237,7 @@ if (IsUsedSmoke (i)) {
 
 int GetSmokeType (int i)
 {
-return (IsUsedSmoke (i)) ? smoke [i].nType : -1;
+return (IsUsedSmoke (i)) ? gameData.smoke.smoke [i].nType : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1248,7 +1245,7 @@ return (IsUsedSmoke (i)) ? smoke [i].nType : -1;
 tCloud *GetCloud (int i, int j)
 {
 if (IsUsedSmoke (i)) {
-	tSmoke *pSmoke = smoke + i;
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	return (pSmoke->pClouds && (j < pSmoke->nClouds)) ? pSmoke->pClouds + j : NULL;
 	}
 else

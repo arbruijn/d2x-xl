@@ -1828,7 +1828,9 @@ void RemoveIncorrectObjects ()
 
 for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
 	count = 0;
-	for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
+	for (objnum = gameData.segs.segments [segnum].objects;
+		  objnum != -1;
+		  objnum=gameData.objs.objects [objnum].next) {
 		count++;
 		#ifdef _DEBUG
 		if (count > MAX_OBJECTS)	{
@@ -3172,7 +3174,7 @@ for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++) {
 	gameData.objs.objects [i].ctype.expl_info.attach_parent =
 	gameData.objs.objects [i].attached_obj = -1;
 	gameData.objs.objects [i].flags = 0;
-	KillObjectSmoke (i);
+	//KillObjectSmoke (i);
 	}
 gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 nDebrisObjectCount = 0;

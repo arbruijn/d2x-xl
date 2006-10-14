@@ -3,6 +3,8 @@
 
 #define EXTRA_VERTEX_ARRAYS	1
 
+#define MAX_SMOKE 1000
+
 typedef struct tPartColor {
 	double		r, g, b, a;
 } tPartColor;
@@ -59,6 +61,7 @@ typedef struct tCloud {
 typedef struct tSmoke {
 	int			nNext;
 	int			nObject;
+	int			nSignature;
 	int			nType;			//black or white
 	int			nLife;			//max. particle life time
 	int			nSpeed;			//initial particle speed

@@ -2631,6 +2631,8 @@ gameData.render.terrain.uvlList [1][1].v = f1_0;
 gameData.render.terrain.uvlList [1][2].v = f1_0;
 SetSpherePulse (&gameData.render.sphere.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.sphere.pulse);
+gameData.smoke.iFreeSmoke = -1;
+gameData.smoke.iUsedSmoke = -1;
 InitEndLevelData ();
 SetDataVersion (-1);
 }

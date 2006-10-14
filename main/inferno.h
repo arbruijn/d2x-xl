@@ -1529,9 +1529,14 @@ typedef struct tDemoData {
 	int				bFlyingGuided;
 } tDemoData;
 
+#include "particles.h"
+
 typedef struct tSmokeData {
-	int		objects [MAX_OBJECTS];
-	time_t	objExplTime [MAX_OBJECTS];
+	tSmoke			smoke [MAX_SMOKE];
+	short				objects [MAX_OBJECTS];
+	time_t			objExplTime [MAX_OBJECTS];
+	int				iFreeSmoke;
+	int				iUsedSmoke;
 } tSmokeData;
 
 #define GUIDEBOT_NAME_LEN 9

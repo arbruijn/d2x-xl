@@ -803,6 +803,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "controls.h"
 #include "d_io.h"
 #include "timer.h"
+#include "objsmoke.h"
 
 #include "findfile.h"
 
@@ -890,8 +891,7 @@ static sbyte	bNDBadRead;
 
 #define DEMO_MAX_LEVELS         29
 
-
-CFILE *infile;
+CFILE *infile = NULL;
 CFILE *outfile = NULL;
 
 //	-----------------------------------------------------------------------------
@@ -914,13 +914,11 @@ gameData.demo.xJasonPlaybackTotal = 0;
 
 int NDGetPercentDone () 
 {
-	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-		return (CFTell (infile) * 100) / gameData.demo.nSize;
-	}
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		return CFTell (outfile);
-	}
-	return 0;
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
+	return (CFTell (infile) * 100) / gameData.demo.nSize;
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	return CFTell (outfile);
+return 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -969,8 +967,8 @@ int NDFindObject (int signature)
 	int i;
 	object * objP = gameData.objs.objects;
 
-for (i=0; i <= gameData.objs.nLastObject; i++, objP++) {
-if ((objP->type != OBJ_NONE) &&(objP->signature == signature))
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+if ((objP->type != OBJ_NONE) && (objP->signature == signature))
 	return i;
 	}
 return -1;
@@ -1226,9 +1224,10 @@ if ((objP->id == VCLIP_MORPHING_ROBOT) &&
 	ExtractOrientFromSegment (&objP->orient, gameData.segs.segments + objP->segnum);
 }
 
+
 //	-----------------------------------------------------------------------------
 
-object *prevObjP=NULL;      //ptr to last object read in
+object *prevObjP = NULL;      //ptr to last object read in
 
 void NDReadObject (object *objP)
 {
@@ -1245,7 +1244,7 @@ objP->id = NDReadByte ();
 objP->flags = NDReadByte ();
 objP->signature = NDReadShort ();
 NDReadShortPos (objP);
-if ((objP->type == OBJ_ROBOT) &&(objP->id == SPECIAL_REACTOR_ROBOT))
+if ((objP->type == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 objP->attached_obj = -1;
 switch (objP->type) {
@@ -1299,7 +1298,7 @@ switch (objP->type) {
 	}
 
 NDReadVector (&objP->last_pos);
-if ((objP->type == OBJ_WEAPON) &&(objP->render_type == RT_WEAPON_VCLIP))
+if ((objP->type == OBJ_WEAPON) && (objP->render_type == RT_WEAPON_VCLIP))
 	objP->lifeleft = NDReadFix ();
 else {
 	ubyte b;
@@ -1307,7 +1306,7 @@ else {
 	b = NDReadByte ();
 	objP->lifeleft = (fix)b;
 	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->lifeleft);
-	objP->lifeleft = (fix) ((int)objP->lifeleft << 12);
+	objP->lifeleft = (fix) ((int) objP->lifeleft << 12);
 	}
 if (objP->type == OBJ_ROBOT) {
 	if (gameData.bots.pInfo [objP->id].boss_flag) {
@@ -2377,6 +2376,32 @@ for (i = 0; i < gameData.reactor.triggers.num_links; i++) {
 
 //	-----------------------------------------------------------------------------
 
+int NDUpdateSmoke (void)
+{
+if (!EGI_FLAG (bUseSmoke, 0, 0))
+	return 0;
+else {
+		int		i, nObject;
+		tSmoke	*pSmoke = gameData.smoke.smoke;
+
+	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
+		pSmoke = gameData.smoke.smoke + i;
+		nObject = NDFindObject (pSmoke->nSignature);
+		if (nObject < 0) {
+			gameData.smoke.objects [pSmoke->nObject] = -1;
+			SetSmokeLife (i, 0);
+			}
+		else {
+			gameData.smoke.objects [nObject] = i;
+			pSmoke->nObject = nObject;
+			}
+		}
+	return 1;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 #define N_PLAYER_SHIP_TEXTURES 6
 
 void NDRenderExtras (ubyte, object *);
@@ -2396,7 +2421,7 @@ int NDReadFrameInfo ()
 	done = 0;
 
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-	for (segnum=0; segnum <= gameData.segs.nLastSegment; segnum++)
+	for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++)
 		gameData.segs.segments [segnum].objects = -1;
 ResetObjects (1);
 gameData.multi.players [gameData.multi.nLocalPlayer].homing_object_dist = -F1_0;
@@ -2423,7 +2448,7 @@ while (!done) {
 			WhichWindow = NDReadByte ();
 			if (WhichWindow&15) {
 				NDReadObject (&extraobj);
-				if (gameData.demo.nVcrState!=ND_STATE_PAUSED) {
+				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
 					NDRenderExtras (WhichWindow, &extraobj);
 					}
@@ -2434,7 +2459,9 @@ while (!done) {
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
 					segnum = gameData.objs.viewer->segnum;
-					gameData.objs.viewer->next = gameData.objs.viewer->prev = gameData.objs.viewer->segnum = -1;
+					gameData.objs.viewer->next = 
+					gameData.objs.viewer->prev = 
+					gameData.objs.viewer->segnum = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
 					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a segment
@@ -3244,7 +3271,7 @@ while (!done) {
 			Int3 ();
 		}
 	}
-LastReadValue=c;
+LastReadValue = c;
 if (bNDBadRead) {
 	newmenu_item m [2];
 
@@ -3253,6 +3280,8 @@ if (bNDBadRead) {
 	m [1].type = NM_TYPE_TEXT; m [1].text = TXT_DEMO_OLD_CORRUPT;
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	}
+else
+	NDUpdateSmoke ();	
 return done;
 }
 
@@ -3590,24 +3619,25 @@ else {
 		if (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
 			d_recorded = gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal;
 			while (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
-				object *curObjs;
-				int i, j, num_objs, level;
+				object *curObjs, *objP;
+				int i, j, nObjects, nLevel, nSig;
 
-				num_objs = gameData.objs.nLastObject;
-				curObjs = (object *)d_malloc (sizeof (object) * (num_objs + 1));
-				if (curObjs == NULL) {
-					Warning (TXT_INTERPOLATE_BOTS, sizeof (object) * num_objs);
+				nObjects = gameData.objs.nLastObject;
+				curObjs = (object *) d_malloc (sizeof (object) * (nObjects + 1));
+				if (!
+					curObjs) {
+					Warning (TXT_INTERPOLATE_BOTS, sizeof (object) * nObjects);
 					break;
 					}
-				for (i = 0; i <= num_objs; i++)
-					memcpy (&(curObjs [i]), &(gameData.objs.objects [i]), sizeof (object));
-				level = gameData.missions.nCurrentLevel;
+				for (i = 0; i <= nObjects; i++)
+					memcpy (curObjs, gameData.objs.objects, (nObjects + 1) * sizeof (object));
+				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
 					d_free (curObjs);
 					NDStopPlayback ();
 					return;
 					}
-				if (level != gameData.missions.nCurrentLevel) {
+				if (nLevel != gameData.missions.nCurrentLevel) {
 					d_free (curObjs);
 					if (NDReadFrameInfo () == -1)
 						NDStopPlayback ();
@@ -3617,11 +3647,13 @@ else {
 				//  a corresponding object that we have been interpolating.  If so, then
 				//  copy that interpolated object to the new gameData.objs.objects array so that the
 				//  interpolated position and orientation can be preserved.
-				for (i = 0; i <= num_objs; i++) {
-					for (j = 0; j <= gameData.objs.nLastObject; j++) {
-						if (curObjs [i].signature == gameData.objs.objects [j].signature) {
-							memcpy (&(gameData.objs.objects [j].orient), &(curObjs [i].orient), sizeof (vms_matrix));
-							memcpy (&(gameData.objs.objects [j].pos), &(curObjs [i].pos), sizeof (vms_vector));
+				for (i = 0; i <= nObjects; i++) {
+					nSig = curObjs [i].signature;
+					objP = gameData.objs.objects;
+					for (j = 0; j <= gameData.objs.nLastObject; j++, objP++) {
+						if (nSig == objP->signature) {
+							objP->orient = curObjs [i].orient;
+							objP->pos = curObjs [i].pos;
 							break;
 							}
 						}
@@ -3674,14 +3706,14 @@ gameData.demo.bNoSpace=0;
 gameData.demo.nState = ND_STATE_RECORDING;
 outfile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 #ifndef _WIN32_WCE
-if (outfile == NULL && errno == ENOENT) {   //dir doesn't exist?
+if (!outfile && errno == ENOENT) {   //dir doesn't exist?
 #else
-if (outfile == NULL) {                      //dir doesn't exist and no errno on mac!
+if (!outfile) {                      //dir doesn't exist and no errno on mac!
 #endif
 	CFMkDir (gameFolders.szDemoDir); //try making directory
 	outfile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 	}
-if (outfile == NULL) {
+if (!outfile) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
 	gameData.demo.nState = ND_STATE_NORMAL;
 	}
@@ -3847,13 +3879,13 @@ CFRename (DEMO_FILENAME, fullname, gameFolders.szDemoDir);
 int NDCountDemos ()
 {
 	FFS	ffs;
-	int 	NumFiles=0;
+	int 	nFiles=0;
 	char	searchName [FILENAME_LEN];
 
 sprintf (searchName, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : "");
 if (!FFF (searchName, &ffs, 0)) {
 	do {
-		NumFiles++;
+		nFiles++;
 		} while (!FFN (&ffs, 0));
 	FFC (&ffs);
 	}
@@ -3861,12 +3893,12 @@ if (gameFolders.bAltHogDirInited) {
 	sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogDir, gameFolders.szDemoDir, gameFolders.szDemoDir ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
-			NumFiles++;
+			nFiles++;
 			} while (!FFN (&ffs, 0));
 		FFC (&ffs);
 		}
 	}
-return NumFiles;
+return nFiles;
 }
 
 //	-----------------------------------------------------------------------------
@@ -3882,44 +3914,43 @@ ChangePlayerNumTo (0);
 #endif
 *filename2 = '\0';
 InitDemoData ();
-gameData.demo.bFirstTimePlayback=1;
-gameData.demo.xJasonPlaybackTotal=0;
-
-if (filename==NULL) {
+gameData.demo.bFirstTimePlayback = 1;
+gameData.demo.xJasonPlaybackTotal = 0;
+if (!filename) {
 	// Randomly pick a filename
-	int NumFiles = 0, RandFileNum;
+	int nFiles = 0, nRandFiles;
 	rnd_demo = 1;
-	NumFiles = NDCountDemos ();
-	if (NumFiles == 0) {
+	nFiles = NDCountDemos ();
+	if (nFiles == 0) {
 		return;     // No files found!
 		}
-	RandFileNum = d_rand () % NumFiles;
-	NumFiles = 0;
+	nRandFiles = d_rand () % nFiles;
+	nFiles = 0;
 	sprintf (searchName, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
-			if (NumFiles==RandFileNum) {
+			if (nFiles==nRandFiles) {
 				filename = (char *)&ffs.name;
 				break;
 				}
-			NumFiles++;
+			nFiles++;
 			} while (!FFN (&ffs, 0));
 		FFC (&ffs);
 		}
-	if (filename == NULL && gameFolders.bAltHogDirInited) {
+	if (!filename && gameFolders.bAltHogDirInited) {
 		sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogDir, gameFolders.szDemoDir, gameFolders.szDemoDir ? "/" : "");
 		if (!FFF (searchName, &ffs, 0)) {
 			do {
-				if (NumFiles==RandFileNum) {
+				if (nFiles==nRandFiles) {
 					filename = (char *)&ffs.name;
 					break;
 					}
-				NumFiles++;
+				nFiles++;
 				} while (!FFN (&ffs, 0));
 			FFC (&ffs);
 			}
 		}
-		if (filename==NULL) 
+		if (!filename) 
 			return;
 	}
 if (!filename)
@@ -3992,7 +4023,7 @@ void NewDemoStripFrames (char *outname, int bytes_to_strip)
 bytes_done = 0;
 nTotalSize = CFLength (infile, 0);
 outfile = CFOpen (outname, "", "wb", 0);
-if (outfile == NULL) {
+if (!outfile) {
 	newmenu_item m [1];
 
 	memset (m, 0, sizeof (m));
@@ -4047,6 +4078,7 @@ CFSeek (outfile, 1, SEEK_CUR);
 CFWrite (&last_frame_length, 2, 1, outfile);
 CFClose (outfile);
 NDStopPlayback ();
+DestroyAllSmoke ();
 }
 
 #endif

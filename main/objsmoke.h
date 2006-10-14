@@ -15,8 +15,8 @@
 #define	SHOW_SMOKE	\
 	(extraGameInfo [0].bUseSmoke && \
 	 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && \
-	 extraGameInfo [IsMultiGame].bUseSmoke && \
-	 (gameData.demo.nState != ND_STATE_PLAYBACK))
+	 extraGameInfo [IsMultiGame].bUseSmoke /*&& \
+	 (gameData.demo.nState != ND_STATE_PLAYBACK)*/)
 
 //------------------------------------------------------------------------------
 
