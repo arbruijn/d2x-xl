@@ -2878,7 +2878,7 @@ if (sgVersion < 27)
 else
 	StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 CFClose (fp);
-//FixObjectSegs ();
+FixObjectSegs ();
 SetLastSuperWeaponStates ();
 #ifdef NETWORK
  // Get rid of ships that aren't connected in the restored game

@@ -2596,63 +2596,55 @@ void GameDisableCheats ()
 
 void GameSetup (void)
 {
-	//@@int demo_playing=0;
-	//@@int multi_game=0;
-	DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
-	DoLunacyOff ();		//	Restore true insane mode.
-	gameStates.app.bGameAborted = 0;
-	last_drawn_cockpit[0] = -1;				// Force cockpit to redraw next time a frame renders.
-	last_drawn_cockpit[1] = -1;				// Force cockpit to redraw next time a frame renders.
-	gameStates.app.bEndLevelSequence = 0;
-
-	//@@if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	//@@	demo_playing = 1;
-	//@@if (gameData.app.nGameMode & GM_MULTI)
-	//@@	multi_game = 1;
-	GrPaletteStepLoad (NULL);
-	SetScreenMode (SCREEN_GAME);
-	ResetPaletteAdd ();
-	SetWarnFunc (ShowInGameWarning);
+DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
+DoLunacyOff ();		//	Restore true insane mode.
+gameStates.app.bGameAborted = 0;
+last_drawn_cockpit[0] = -1;				// Force cockpit to redraw next time a frame renders.
+last_drawn_cockpit[1] = -1;				// Force cockpit to redraw next time a frame renders.
+gameStates.app.bEndLevelSequence = 0;
+GrPaletteStepLoad (NULL);
+SetScreenMode (SCREEN_GAME);
+ResetPaletteAdd ();
+SetWarnFunc (ShowInGameWarning);
 #if TRACE
-	//con_printf (CON_DEBUG, "   InitCockpit d:\temp\dm_test.\n");
+//con_printf (CON_DEBUG, "   InitCockpit d:\temp\dm_test.\n");
 #endif
-	InitCockpit ();
+InitCockpit ();
 #if TRACE
-	//con_printf (CON_DEBUG, "   InitGauges d:\temp\dm_test.\n");
+//con_printf (CON_DEBUG, "   InitGauges d:\temp\dm_test.\n");
 #endif
-	InitGauges ();
-	//DigiInitSounds ();
-	//keyd_repeat = 0;                // Don't allow repeat in game
-	keyd_repeat = 1;                // Do allow repeat in game
+InitGauges ();
+//DigiInitSounds ();
+//keyd_repeat = 0;                // Don't allow repeat in game
+keyd_repeat = 1;                // Do allow repeat in game
 #if !defined (WINDOWS) && !defined (MACINTOSH)
-	//_MARK_ ("start of game");
+//_MARK_ ("start of game");
 #endif
-	#ifdef EDITOR
-		if (gameData.segs.segments[gameData.objs.console->segnum].segnum == -1)      //segment no longer exists
-			RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
+#ifdef EDITOR
+	if (gameData.segs.segments[gameData.objs.console->segnum].segnum == -1)      //segment no longer exists
+		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
 
-		if (!check_obj_seg (gameData.objs.console))
-			MovePlayerToSegment (Cursegp,Curside);
-	#endif
-	gameData.objs.viewer = gameData.objs.console;
-#if TRACE
-	//con_printf (CON_DEBUG, "   FlyInit d:\temp\dm_test.\n");
+	if (!check_obj_seg (gameData.objs.console))
+		MovePlayerToSegment (Cursegp,Curside);
 #endif
-	FlyInit (gameData.objs.console);
-	gameStates.app.bGameSuspended = 0;
-	ResetTime ();
-	gameData.time.xFrame = 0;			//make first frame zero
-	#ifdef EDITOR
-	if (gameData.missions.nCurrentLevel == 0) {			//not a real level
-		InitPlayerStatsGame ();
-		InitAIObjects ();
-	}
-	#endif
+gameData.objs.viewer = gameData.objs.console;
 #if TRACE
-	//con_printf (CON_DEBUG, "   FixObjectSegs d:\temp\dm_test.\n");
+//con_printf (CON_DEBUG, "   FlyInit d:\temp\dm_test.\n");
 #endif
-	FixObjectSegs ();
-	GameFlushInputs ();
+FlyInit (gameData.objs.console);
+gameStates.app.bGameSuspended = 0;
+ResetTime ();
+gameData.time.xFrame = 0;			//make first frame zero
+#ifdef EDITOR
+if (gameData.missions.nCurrentLevel == 0) {			//not a real level
+	InitPlayerStatsGame ();
+	InitAIObjects ();
+}
+#endif
+#if TRACE
+//con_printf (CON_DEBUG, "   FixObjectSegs d:\temp\dm_test.\n");
+#endif
+GameFlushInputs ();
 }
 
 
