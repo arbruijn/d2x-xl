@@ -1427,6 +1427,8 @@ void RenderThrusterFlames (object *objP)
 if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif
+if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+	return;
 fSpeed = f2fl (VmVecMag (&objP->mtype.phys_info.velocity));
 fLength = fSpeed / 60.0f;
 fLength += 0.2f;

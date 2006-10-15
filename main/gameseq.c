@@ -361,6 +361,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "gamefont.h"
 #include "newmenu.h"
 #include "endlevel.h"
+#include "interp.h"
 #ifdef NETWORK
 #  include "multi.h"
 #  include "network.h"
@@ -393,6 +394,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "polyobj.h"
 #include "movie.h"
 #include "particles.h"
+#include "interp.h"
 
 #if defined (POLY_ACC)
 #include "poly_acc.h"
@@ -1137,6 +1139,8 @@ BMFreeExtraObjBitmaps ();
 PiggyFreeHiresAnimations ();
 /*---*/LogErr ("   freeing sound buffers\n");
 DigiFreeSoundBufs ();
+/*---*/LogErr ("   freeing auxiliary poly model data\n");
+G3FreeAllPolyModelItems ();
 /*---*/LogErr ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 if (gameData.bots.bReplacementsLoaded) {

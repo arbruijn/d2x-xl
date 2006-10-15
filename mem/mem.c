@@ -48,7 +48,7 @@ int bShowMemInfo = 0;
 
 #ifdef _DEBUG
 #	define CHECKID1 484
-#	define CHECKID2 2757
+#	define CHECKID2 2807
 #endif
 
 #ifdef D2X_MEM_HANDLER

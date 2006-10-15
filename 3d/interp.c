@@ -1791,4 +1791,15 @@ InitSubModel ((ubyte *) modelP);
 }
 
 //------------------------------------------------------------------------------
+
+void G3FreeAllPolyModelItems (void)
+{
+	int	i, j;
+
+for (i = 0; i < 2; i++)
+	for (j = 0; j < MAX_ROBOT_TYPES; j++)
+		G3FreePolyModelItems (gameData.bots.pofData [i] + j);
+}
+
+//------------------------------------------------------------------------------
 //eof

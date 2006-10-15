@@ -46,6 +46,8 @@ void g3_remap_interp_colors(void);
 
 G3CheckAndSwap (modelP);
 
+void G3FreeAllPolyModelItems (void);
+
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 // routine to convert little to big endian in polygon model data
 void swap_polygon_model_data(ubyte *data);

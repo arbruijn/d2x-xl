@@ -2856,6 +2856,8 @@ LogErr ("freeing sound buffers\n");
 DigiFreeSoundBufs ();
 LogErr ("unloading hoard data\n");
 FreeHoardData ();
+LogErr ("unloading auxiliary poly model data\n");
+G3FreeAllPolyModelItems ();
 LogErr ("unloading hires models\n");
 FreeHiresModels ();
 LogErr ("unloading tracker list\n");

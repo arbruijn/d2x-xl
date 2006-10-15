@@ -2210,7 +2210,7 @@ WIN (if (!_AppActive) {
 newmenu_hide_cursor ();
 if (nItems < 1)
 	return -1;
-SDL_EnableKeyRepeat(100, 30);
+SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
 WIN (mouse_set_mode (0));		//disable centering mode
 if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
@@ -3502,7 +3502,7 @@ RePaintNewmenuFile:
 	newmenu_show_cursor ();
 #endif
 
-	SDL_EnableKeyRepeat(100, 30);
+	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
 #ifdef WINDOWS
 		MSG msg;
@@ -4132,7 +4132,7 @@ RePaintNewmenuListbox:
 	newmenu_show_cursor ();
 #endif
 
-	SDL_EnableKeyRepeat(100, 30);
+	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
 #ifdef WINDOWS
 		MSG msg;
