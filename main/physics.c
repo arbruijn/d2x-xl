@@ -211,7 +211,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.160  1994/08/10  19:53:47  mike
  * Debug code (which is still in...)
- * and adapt to changed interface to create_path_to_player.
+ * and adapt to changed interface to CreatePathToPlayer.
  *
  * Revision 1.159  1994/08/08  21:38:43  matt
  * Cleaned up a code a little and optimized a little
@@ -231,7 +231,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.154  1994/08/04  16:33:57  mike
  * Kill a pile of RCS stuff.
- * Call create_path_to_player for a stuck object.
+ * Call CreatePathToPlayer for a stuck object.
  *
  * Revision 1.153  1994/08/04  00:21:02  matt
  * Cleaned up fvi & physics error handling; put in code to make sure gameData.objs.objects

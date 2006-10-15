@@ -900,12 +900,10 @@ return 1;
 
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n)
 {
-	ubyte		*f;
+	ubyte		f [MAX_PRIMSEC_WEAPONS];
 	int		i, s = (n + 1) * sizeof (ubyte);
 
 //check for validity
-if (!(f = (ubyte *) d_malloc (s)))
-	return;
 memset (f, 0, s);
 for (i = 0; i <= n; i++)
 	if (order [i] == 255)
@@ -917,7 +915,6 @@ for (i = 0; i <= n; i++)
 		memcpy (order, defaultOrder, s);
 		break;
 		}
-d_free (f);
 }
 
 //	-----------------------------------------------------------------------------

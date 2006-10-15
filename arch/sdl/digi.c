@@ -715,6 +715,20 @@ void DigiResumeMidi() {}
 #endif
 
 //------------------------------------------------------------------------------
+
+void DigiFreeSoundBufs (void)
+{
+	struct sound_slot *ssp;
+	int					i;
+
+for (ssp = SoundSlots, i = sizeofa (SoundSlots); i; i--, ssp++)
+	if (ssp->bResampled) {
+		d_free (ssp->samples);
+		ssp->bResampled = 0;
+		}
+}
+
+//------------------------------------------------------------------------------
 #ifndef NDEBUG
 void DigiDebug()
 {

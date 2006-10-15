@@ -555,7 +555,7 @@ void DoSnipeFrame(object *objP, fix dist_to_player, int player_visibility, vms_v
 
 			connected_distance = FindConnectedDistance(&objP->pos, objP->segnum, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
 			if (connected_distance < F1_0*500) {
-				create_path_to_player(objP, 30, 1);
+				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_SNIPE_ATTACK;
 				ailp->next_action_time = SNIPE_ATTACK_TIME;	//	have up to 10 seconds to find player.
 			}
@@ -787,7 +787,7 @@ _exit_cheat:
 		if (gameData.ai.nOverallAgitation > 70) {
 			if ((dist_to_player < F1_0*200) && (d_rand() < gameData.time.xFrame/4)) {
 				if (d_rand() * (gameData.ai.nOverallAgitation - 40) > F1_0*5) {
-					create_path_to_player(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
+					CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					return;
 				}
 			}
@@ -807,7 +807,7 @@ _exit_cheat:
 				case AIM_GOTO_PLAYER:
 					// -- Buddy_got_stuck = 1;
 					move_towards_segment_center(objP);
-					create_path_to_player(objP, 100, 1);
+					CreatePathToPlayer(objP, 100, 1);
 					// -- Buddy_got_stuck = 0;
 					break;
 				case AIM_GOTO_OBJECT:
@@ -819,7 +819,7 @@ _exit_cheat:
 					//}
 					break;
 				case AIM_CHASE_OBJECT:
-					create_path_to_player(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
+					CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					break;
 				case AIM_STILL:
 					if (robptr->attack_type)
@@ -905,7 +905,7 @@ _exit_cheat:
 						if (dist_to_player < F1_0*30)
 							create_n_segment_path(objP, 5, 1);
 						else
-							create_path_to_player(objP, 20, 1);
+							CreatePathToPlayer(objP, 20, 1);
 					}
 			}
 		}
@@ -1167,7 +1167,7 @@ _exit_cheat:
 						ai_do_actual_firing_stuff(objP, aip, ailp, robptr, &vec_to_player, dist_to_player, &gun_point, player_visibility, object_animates, aip->CURRENT_GUN);
 					return;
 				}
-				create_path_to_player(objP, 8, 1);
+				CreatePathToPlayer(objP, 8, 1);
 				ai_multi_send_robot_position(objnum, -1);
 			} else if ((player_visibility == 0) && (dist_to_player > F1_0*80) && (!(gameData.app.nGameMode & GM_MULTI))) {
 				// If pretty far from the player, player cannot be seen
@@ -1204,7 +1204,7 @@ _exit_cheat:
 						ai_do_actual_firing_stuff(objP, aip, ailp, robptr, &vec_to_player, dist_to_player, &gun_point, player_visibility, object_animates, aip->CURRENT_GUN);
 					return;
 				}
-				// -- bad idea, robots charge player they've never seen! -- create_path_to_player(objP, 10, 1);
+				// -- bad idea, robots charge player they've never seen! -- CreatePathToPlayer(objP, 10, 1);
 				// -- bad idea, robots charge player they've never seen! -- ai_multi_send_robot_position(objnum, -1);
 			} else if ((aip->CURRENT_STATE != AIS_REST) && (aip->GOAL_STATE != AIS_REST)) {
 				if (!ai_multiplayer_awareness(objP, 70)) {
@@ -1980,7 +1980,7 @@ int AIRestoreBinState (CFILE *fp, int version)
 	if (version >= 15) {
 		int temp;
 		CFRead(&temp, sizeof(int), 1, fp);
-		gameData.ai.freePointSegs = &gameData.ai.pointSegs[temp];
+		gameData.ai.freePointSegs = gameData.ai.pointSegs + temp;
 	} else
 		AIResetAllPaths();
 

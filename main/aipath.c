@@ -283,6 +283,8 @@ int	Ai_path_debug=0;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Move points halfway to outside of segment.
+static point_seg newPtSegs [MAX_SEGMENTS];
+
 void MoveTowardsOutside (point_seg *ptSegs, int *nPoints, object *objP, int bRandom)
 {
 	int			i, j;
@@ -293,14 +295,13 @@ void MoveTowardsOutside (point_seg *ptSegs, int *nPoints, object *objP, int bRan
 	vms_vector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	point_seg	*newPtSegs;
 	fvi_query	fq;
 	fvi_info		hit_data;
 	int			nHitType;
 
 j = *nPoints;
-if (!(newPtSegs = (point_seg *) d_malloc (j * sizeof (*newPtSegs))))
-	return;
+if (j > MAX_SEGMENTS)
+	j = MAX_SEGMENTS;
 for (i = 1, j--; i < j; i++) {
 	// -- ptSegs [i].nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].segnum);
@@ -390,7 +391,6 @@ for (i = 1, j--; i < j; i++) {
 		}
 	}
 memcpy (ptSegs + 1, newPtSegs + 1, j * sizeof (*ptSegs));
-d_free (newPtSegs);
 }
 
 
@@ -828,7 +828,7 @@ void validate_all_paths (void)
 //			objP->ctype.ai_info.path_length, 		length of path
 //			gameData.ai.freePointSegs				global pointer into gameData.ai.pointSegs array
 //	Change, 10/07/95: Used to create path to gameData.objs.console->pos.  Now creates path to gameData.ai.vBelievedPlayerPos.
-void create_path_to_player (object *objP, int max_length, int safety_flag)
+void CreatePathToPlayer (object *objP, int max_length, int safety_flag)
 {
 	ai_static	*aip = &objP->ctype.ai_info;
 	ai_local		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -853,7 +853,7 @@ void create_path_to_player (object *objP, int max_length, int safety_flag)
 		gameData.ai.freePointSegs += aip->path_length;
 		if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 			//Int3 ();	//	Contact Mike: This is stupid.  Should call maybe_ai_garbage_collect before the add.
-			//force_dump_ai_objects_all ("Error in create_path_to_player");
+			//force_dump_ai_objects_all ("Error in CreatePathToPlayer");
 			AIResetAllPaths ();
 			return;
 		}
@@ -1321,7 +1321,7 @@ void ai_follow_path (object *objP, int player_visibility, int previous_visibilit
 				}
 				return;
 			} else if (ailp->mode == AIM_FOLLOW_PATH) {
-				create_path_to_player (objP, 10, 1);
+				CreatePathToPlayer (objP, 10, 1);
 				if (aip->hide_segment != gameData.ai.pointSegs [aip->hide_index+aip->path_length-1].segnum) {
 					ailp->mode = AIM_STILL;
 					return;
@@ -1393,7 +1393,7 @@ void ai_follow_path (object *objP, int player_visibility, int previous_visibilit
 
 		//	If went all the way around to original point, in same direction, then get out of here!
 		if ((aip->cur_path_index == original_index) && (aip->PATH_DIR == original_dir)) {
-			create_path_to_player (objP, 3, 1);
+			CreatePathToPlayer (objP, 3, 1);
 			//--Int3_if (( (aip->cur_path_index >= 0) && (aip->cur_path_index < aip->path_length));
 			forced_break = 1;
 		}

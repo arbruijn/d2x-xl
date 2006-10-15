@@ -2860,6 +2860,8 @@ BMFreeExtraModels ();
 LogErr ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);
+LogErr ("freeing sound buffers\n");
+DigiFreeSoundBufs ();
 LogErr ("unloading hoard data\n");
 FreeHoardData ();
 LogErr ("unloading hires models\n");

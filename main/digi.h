@@ -131,17 +131,18 @@ extern int DigiStartSound (short soundnum, fix volume, int pan, int looping,
 // Stops all sounds that are playing
 void DigiStopAllChannels();
 
-extern void DigiEndSound( int channel );
-extern void DigiSetChannelPan( int channel, int pan );
-extern void DigiSetChannelVolume( int channel, int volume );
-extern int DigiIsChannelPlaying(int channel);
-extern void digi_pause_midi();
-extern void DigiDebug();
-extern void DigiStopCurrentSong();
+void DigiEndSound( int channel );
+void DigiSetChannelPan( int channel, int pan );
+void DigiSetChannelVolume( int channel, int volume );
+int DigiIsChannelPlaying(int channel);
+void digi_pause_midi();
+void DigiDebug();
+void DigiStopCurrentSong();
 
-extern void DigiPlaySampleLooping( short soundnum, fix max_volume,int loop_start, int loop_end );
-extern void DigiChangeLoopingVolume( fix volume );
-extern void DigiStopLoopingSound();
+void DigiPlaySampleLooping( short soundnum, fix max_volume,int loop_start, int loop_end );
+void DigiChangeLoopingVolume( fix volume );
+void DigiStopLoopingSound();
+void DigiFreeSoundBufs (void);
 
 // Plays a queued voice sound.
 extern void DigiStartSoundQueued( short soundnum, fix volume );

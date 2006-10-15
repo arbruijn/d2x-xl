@@ -2295,7 +2295,7 @@ gameStates.multi.bServer = 1;
 gameStates.multi.bTryAutoDL = 0;
 gameStates.multi.bHaveLocalAddress = 0;
 gameStates.multi.bSurfingNet = 0;
-gameStates.multi.bCheckPort = 0;
+gameStates.multi.bCheckPorts = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -3023,9 +3023,9 @@ if (gameOpts->render.bHiresModels) {
 	if (OOF_ReadFile ("pyrogl.oof", gameData.models.hiresModels))
 #endif
 		gameData.models.nHiresModels = 1;
+	if (OOF_ReadFile ("MegaMissile.oof", gameData.models.hiresModels + OOF_MEGA))
+		gameData.models.nHiresModels++;
 	}
-if (OOF_ReadFile ("MegaMissile.oof", gameData.models.hiresModels + OOF_MEGA))
-	gameData.models.nHiresModels++;
 /*---*/LogErr ("Loading ban list\n");
 LoadBanList ();
 PrintBanner ();

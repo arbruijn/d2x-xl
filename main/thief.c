@@ -168,7 +168,7 @@ void DoThiefFrame(object *objP, fix dist_to_player, int player_visibility, vms_v
 		case AIM_THIEF_WAIT:
 			if (ailp->player_awareness_type >= PA_PLAYER_COLLISION) {
 				ailp->player_awareness_type = 0;
-				create_path_to_player(objP, 30, 1);
+				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
 				ailp->next_action_time = THIEF_ATTACK_TIME/2;
 				return;
@@ -185,7 +185,7 @@ void DoThiefFrame(object *objP, fix dist_to_player, int player_visibility, vms_v
 
 			connected_distance = FindConnectedDistance(&objP->pos, objP->segnum, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
 			if (connected_distance < F1_0*500) {
-				create_path_to_player(objP, 30, 1);
+				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
 				ailp->next_action_time = THIEF_ATTACK_TIME;	//	have up to 10 seconds to find player.
 			}
@@ -237,7 +237,7 @@ void DoThiefFrame(object *objP, fix dist_to_player, int player_visibility, vms_v
 			} else if (ailp->next_action_time < 0) {
 				//	This forces him to create a new path every second.
 				ailp->next_action_time = F1_0;
-				create_path_to_player(objP, 100, 0);
+				CreatePathToPlayer(objP, 100, 0);
 				ailp->mode = AIM_THIEF_ATTACK;
 			} else {
 				if (player_visibility && (dist_to_player < F1_0*100)) {

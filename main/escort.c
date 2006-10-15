@@ -835,7 +835,7 @@ else {
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
 			dist_to_player = FindConnectedDistance(&objP->pos, objP->segnum, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
 			if (dist_to_player > MIN_ESCORT_DISTANCE)
-				create_path_to_player(objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
+				CreatePathToPlayer(objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
 				create_n_segment_path(objP, 8 + d_rand() * 8, -1);
 				aip->path_length = polish_path(objP, gameData.ai.pointSegs + aip->hide_index, aip->path_length);
@@ -1097,7 +1097,7 @@ void DoEscortFrame(object *objP, fix dist_to_player, int player_visibility)
 		max_len = gameData.escort.nMaxLength;
 		if (!gameData.escort.bMayTalk)
 			max_len = 3;
-		create_path_to_player(objP, max_len, 1);	//	MK!: Last parm used to be 1!
+		CreatePathToPlayer(objP, max_len, 1);	//	MK!: Last parm used to be 1!
 		aip->path_length = polish_path(objP, &gameData.ai.pointSegs[aip->hide_index], aip->path_length);
 		ailp->mode = AIM_GOTO_PLAYER;
 	}	else if (gameData.time.xGame - Buddy_last_seen_player > MAX_ESCORT_TIME_AWAY) {

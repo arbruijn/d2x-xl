@@ -309,6 +309,7 @@ typedef struct D2D1_weapon_info {
 
 #define MAX_PRIMARY_WEAPONS         10
 #define MAX_SECONDARY_WEAPONS       10
+#define MAX_PRIMSEC_WEAPONS         10
 
 #define MAX_D1_PRIMARY_WEAPONS      5
 #define MAX_D1_SECONDARY_WEAPONS    5

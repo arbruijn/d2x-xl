@@ -117,7 +117,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Adapt CreatePathPoints and create_n_segment_path prototypes to use avoid_seg for player evasion.
  *
  * Revision 1.30  1994/09/18  18:07:44  mike
- * Update prototypes for CreatePathPoints and create_path_to_player.
+ * Update prototypes for CreatePathPoints and CreatePathToPlayer.
  *
  * Revision 1.29  1994/09/15  16:34:08  mike
  * Prototype DoAiRobotHitAttack.
@@ -129,10 +129,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add some prototypes.
  *
  * Revision 1.26  1994/08/10  19:53:24  mike
- * Prototype create_path_to_player and InitRobotsForLevel.
+ * Prototype CreatePathToPlayer and InitRobotsForLevel.
  *
  * Revision 1.25  1994/08/04  16:32:58  mike
- * prototype create_path_to_player.
+ * prototype CreatePathToPlayer.
  *
  * Revision 1.24  1994/08/03  15:17:20  mike
  * Prototype MakeRandomVector.
@@ -225,7 +225,7 @@ extern void move_towards_player(object *objp, vms_vector *vec_to_player);
 
 // max_length is maximum depth of path to create.
 // If -1, use default: MAX_DEPTH_TO_SEARCH_FOR_PLAYER
-extern void create_path_to_player(object *objp, int max_length, int safety_flag);
+extern void CreatePathToPlayer(object *objp, int max_length, int safety_flag);
 extern void attempt_to_resume_path(object *objp);
 
 // When a robot and a player collide, some robots attack!

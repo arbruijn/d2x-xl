@@ -1135,6 +1135,8 @@ BMFreeExtraModels ();
 BMFreeExtraObjBitmaps ();
 /*---*/LogErr ("   unloading additional model textures\n");
 PiggyFreeHiresAnimations ();
+/*---*/LogErr ("   freeing sound buffers\n");
+DigiFreeSoundBufs ();
 /*---*/LogErr ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 if (gameData.bots.bReplacementsLoaded) {

@@ -1545,7 +1545,7 @@ void DoAiRobotHit(object *objP, int type)
 					r = d_rand();
 					//	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
 					if (r < 4096) {
-						create_path_to_player(objP, 10, 1);
+						CreatePathToPlayer(objP, 10, 1);
 						objP->ctype.ai_info.behavior = AIB_STATION;
 						objP->ctype.ai_info.hide_segment = objP->segnum;
 						gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
