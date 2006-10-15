@@ -971,12 +971,13 @@ i = (int) strlen (szSaveName);
 do {
 	sprintf (szSaveName + i, "scrn%04d.tga", nSaveNum++);
 	nSaveNum %= 9999;
-} while (!access (szSaveName, 0));
+	} while (!access (szSaveName, 0));
+#if 0
 sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 //end this section addition/change - Victor Rachels
-
+#endif
 if (!automap_flag)
-	HUDMessage(MSGC_GAME_FEEDBACK,szMessage);
+	HUDInitMessage (MSGC_GAME_FEEDBACK,szMessage);
 
 if (bTmpBuf = (buf == NULL)) {
 	buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);

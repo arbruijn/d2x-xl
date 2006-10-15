@@ -499,10 +499,16 @@ else
 	G3TransformPoint (&hp, &pParticle->pos);
 //if (pParticle->glColor.r < 1.0)
 //	pParticle->glColor.r += 0.1;
-if (pParticle->glColor.g < 1.0)
-	pParticle->glColor.g += 0.2;
-if (pParticle->glColor.b < 1.0)
-	pParticle->glColor.b += 0.1;
+if (pParticle->glColor.g < 1.0) {
+	pParticle->glColor.g += 1.0 / 3.0;
+	if (pParticle->glColor.g > 1.0)
+		pParticle->glColor.g = 1.0;
+	}
+if (pParticle->glColor.b < 1.0) {
+	pParticle->glColor.b += 1.0 / 6.0;
+	if (pParticle->glColor.b > 1.0)
+		pParticle->glColor.b = 1.0;
+	}
 pc = pParticle->glColor;
 if (gameOpts->ogl.bUseLighting) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
