@@ -900,7 +900,7 @@ return 1;
 
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n)
 {
-	ubyte		f [MAX_PRIMSEC_WEAPONS];
+	ubyte		f [MAX_PRIMSEC_WEAPONS + 1];
 	int		i, s = (n + 1) * sizeof (ubyte);
 
 //check for validity

@@ -1137,7 +1137,7 @@ void RenderDamageIndicator (object *objP, tRgbColorf *pc)
 	float			r, r2, w;
 
 if (EGI_FLAG (bDamageIndicators, 0, 0) &&
-	 (extraGameInfo [IsMultiGame].bTargetIndicators == 1)) {
+	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->pos);
 	G3TransformPointf (&fPos, &fPos);
