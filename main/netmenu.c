@@ -2308,7 +2308,10 @@ for (;;) {
 		if ((i == optServer) || (i == optPort)) {
 			if (gameStates.multi.bUseTracker || stoip (mpParams.szServerIpAddr, ipx_ServerAddress + 4)) {
 				stoport (szClientPort, &mpParams.udpClientPort, &nClientPortSign);
-				return 1;
+				if (gameStates.multi.bCheckPorts && !mpParams.udpClientPort)
+					ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
+				else
+					return 1;
 				}
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IP_INVALID);
 			}

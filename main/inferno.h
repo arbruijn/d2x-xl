@@ -367,6 +367,7 @@ typedef struct tMultiplayerStates {
 	int bTryAutoDL;
 	int nConnection;
 	int bIWasKicked;
+	int bCheckPorts;
 	ubyte bSurfingNet;
 	int bPlayerIsTyping [MAX_PLAYERS];
 } tMultiplayerStates;

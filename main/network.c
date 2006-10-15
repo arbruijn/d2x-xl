@@ -391,7 +391,8 @@ int NetworkHowManyConnected ()
 inline int CmpNetPlayers (char *callsign1, char *callsign2, 
 								  network_info *network1, network_info *network2)
 {
-if (gameStates.multi.nGameType == IPX_GAME) {
+if ((gameStates.multi.nGameType == IPX_GAME) ||
+	 ((gameStates.multi.nGameType == UDP_GAME) || gameStates.multi.bCheckPorts)) {
 	if (memcmp (network1, network2, sizeof (network_info)))
 		return 1;
 	}

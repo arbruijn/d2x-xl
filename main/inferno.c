@@ -1480,6 +1480,8 @@ if (t = FindArg ("-timeout"))
 	gameOptions [0].multi.bTimeoutPlayers = NumArg (t, 1);
 if (t = FindArg ("-noredundancy"))
 	gameOptions [0].multi.bNoRedundancy = NumArg (t, 1);
+if (t = FindArg ("-check_ports"))
+	gameStates.multi.bCheckPorts = NumArg (t, 1);
 EvalAutoNetGameArgs ();
 }
 
@@ -2293,6 +2295,7 @@ gameStates.multi.bServer = 1;
 gameStates.multi.bTryAutoDL = 0;
 gameStates.multi.bHaveLocalAddress = 0;
 gameStates.multi.bSurfingNet = 0;
+gameStates.multi.bCheckPort = 0;
 }
 
 // ----------------------------------------------------------------------------
