@@ -1458,14 +1458,13 @@ do {
 	opt++;
 	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
 	if (extraGameInfo [0].bTargetIndicators) {
-		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-		optDmgInd = opt++;
 		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
 		optCloakedInd = opt++;
 		}
 	else
-		optDmgInd = 
 		optCloakedInd = -1;
+	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+	optDmgInd = opt++;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1519,9 +1518,9 @@ do {
 				extraGameInfo [0].bTargetIndicators = j;
 				break;
 				}
-		GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
 		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
 		}
+	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
