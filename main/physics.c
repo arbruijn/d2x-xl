@@ -287,6 +287,8 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 #include "network.h"
 #include "hudmsg.h"
 #include "gameseg.h"
+#include "kconfig.h"
+#include "input.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -451,7 +453,7 @@ object *debugObjP=NULL;
 
 #ifdef _DEBUG
 int	Total_retries=0, Total_sims=0;
-int	Dont_move_ai_objects=0;
+int	bDontMoveAIObjects=0;
 #endif
 
 #define FT (f1_0/64)
@@ -595,8 +597,10 @@ void DoPhysicsSim (object *objP)
 
 Assert (objP->type != OBJ_NONE);
 Assert (objP->movement_type == MT_PHYSICS);
+if (objP->type == OBJ_PLAYER && Controls.heading_time)
+	objP = objP;
 #ifdef _DEBUG
-if (Dont_move_ai_objects)
+if (bDontMoveAIObjects)
 	if (objP->control_type == CT_AI)
 		return;
 #endif
@@ -770,22 +774,28 @@ vSaveP1 = *fq.p1;
 	if (iseg != objP->segnum)
 		RelinkObject (objnum, iseg);
 	//if start point not in segment, move object to center of segment
-	if (GetSegMasks (&objP->pos, objP->segnum, 0).centerMask) {
-		int n=FindObjectSeg (objP);
+	if (objP->type == OBJ_PLAYER)
+		objP = objP;
+	if (GetSegMasks (&objP->pos, objP->segnum, 0).centerMask) {	//object stuck
+		vms_vector	vCenter;
+		int n = FindObjectSeg (objP);
 
-		if (n==-1) {
-			//Int3 ();
-			if (objP->type==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->segnum))!=-1) {
-				objP->pos = objP->last_pos;
-				RelinkObject (objnum, n);
-				}
-			else {
-				COMPUTE_SEGMENT_CENTER_I (&objP->pos, objP->segnum);
-				objP->pos.x += objnum;
-				}
-			if (objP->type == OBJ_WEAPON)
+		if (n == -1) {
+			n = FindSegByPoint (&objP->last_pos, objP->segnum);
+			if (n == -1) {
 				objP->flags |= OF_SHOULD_BE_DEAD;
+				return;
+				}
 			}
+		objP->pos = objP->last_pos;
+		RelinkObject (objnum, n);
+		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->segnum);
+		VmVecDec (&vCenter, &objP->pos);
+		if (VmVecMag (&vCenter) > F1_0) {
+			VmVecNormalize (&vCenter);
+			VmVecScaleFrac (&vCenter, 1, 10);
+			}
+		VmVecDec (&objP->pos, &vCenter);
 		return;
 		}
 
@@ -835,7 +845,7 @@ vSaveP1 = *fq.p1;
 			short nSegment;
 			// Find hit speed	
 
-#if 1//def _DEBUG
+#ifdef _DEBUG
 			if (objP->type == OBJ_PLAYER)
 				HUDMessage (0, "WALL CONTACT");
 			fate = FindVectorIntersection (&fq, &hit_info);
@@ -844,13 +854,13 @@ vSaveP1 = *fq.p1;
 			xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
 			if (xWallPart && (xMovedTime > 0) && (xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0) {
 				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
-#if 1//def _DEBUG
+#ifdef _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "BUMP!");
 #endif
 				}
 			else {
-#if 1//def _DEBUG
+#ifdef _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
@@ -858,7 +868,7 @@ vSaveP1 = *fq.p1;
 				}
 			Assert (nWallHitSeg > -1);
 			Assert (nWallHitSide > -1);
-			GetSideDists (&objP->pos, nWallHitSeg, xSideDists);
+			GetSideDistsAll (&objP->pos, nWallHitSeg, xSideDists);
 			if ((xSideDist = xSideDists [nWallHitSide]) && (xSideDist < objP->size - objP->size / 100)) {
 #if 1
 				float r = 0.1f;
@@ -873,7 +883,7 @@ vSaveP1 = *fq.p1;
 				nSegment = FindSegByPoint (&objP->pos, objP->segnum);
 				if (nSegment != objP->segnum)
 					RelinkObject (OBJ_IDX (objP), nSegment);
-#if 1//def _DEBUG
+#ifdef _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
 #endif
@@ -1118,7 +1128,7 @@ Assert (objP->type != OBJ_NONE);
 Assert (objP->movement_type == MT_PHYSICS);
 
 #ifdef _DEBUG
-if (Dont_move_ai_objects)
+if (bDontMoveAIObjects)
 	if (objP->control_type == CT_AI)
 		return;
 #endif

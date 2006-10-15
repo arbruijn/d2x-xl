@@ -152,6 +152,7 @@ int FindConnectedSide(segment *base_seg, segment *con_seg);
 // Fill in array with four absolute point numbers for a given side
 void GetSideVerts(short *vertlist,int segnum,int sidenum);
 ubyte GetSideDists (vms_vector *checkp, int segnum, fix *xSideDists);
+ubyte GetSideDistsAll (vms_vector *checkp, int segnum, fix *xSideDists);
 
 //      Create all vertex lists (1 or 2) for faces on a side.
 //      Sets:

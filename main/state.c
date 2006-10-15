@@ -2870,7 +2870,7 @@ if (sgVersion < STATE_COMPATIBLE_VERSION)	{
 // Read description
 CFRead (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
 // Skip the current screen shot...
-CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW*THUMBNAIL_LH, SEEK_CUR);
+CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 // And now...skip the goddamn palette stuff that somebody forgot to add
 CFSeek (fp, 768, SEEK_CUR);
 if (sgVersion < 27)
@@ -2878,6 +2878,7 @@ if (sgVersion < 27)
 else
 	StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 CFClose (fp);
+//FixObjectSegs ();
 SetLastSuperWeaponStates ();
 #ifdef NETWORK
  // Get rid of ships that aren't connected in the restored game

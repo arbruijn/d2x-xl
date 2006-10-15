@@ -1083,7 +1083,7 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 	else {
 		if (gameData.multi.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
-		DrawObjectSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 300.0f);
+		DrawObjectSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
 		}
 	}
 }
@@ -3194,7 +3194,7 @@ nDebrisObjectCount = 0;
 //Tries to find a segment for an object, using FindSegByPoint ()
 int FindObjectSeg (object * objP)
 {
-	return FindSegByPoint (&objP->pos, objP->segnum);
+return FindSegByPoint (&objP->pos, objP->segnum);
 }
 
 
@@ -3220,14 +3220,14 @@ void FixObjectSegs ()
 {
 	int i;
 
-	for (i = 0;i<=gameData.objs.nLastObject;i++)
-		if (gameData.objs.objects [i].type != OBJ_NONE)
-			if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].type != OBJ_NONE)
+		if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {
 #if TRACE				
-				con_printf (1, "Cannot find segment for object %d in FixObjectSegs ()\n");
+			con_printf (1, "Cannot find segment for object %d in FixObjectSegs ()\n");
 #endif
-				Int3 ();
-				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].pos, gameData.objs.objects [i].segnum);
+			Int3 ();
+			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].pos, gameData.objs.objects [i].segnum);
 			}
 }
 

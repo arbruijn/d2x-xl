@@ -959,6 +959,130 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 #endif
 			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
 				nCenterCount++;
+				xSideDists [sn] += xDist;
+				}
+			}
+		if (!bSidePokesOut) {		//must be behind both faces
+			if (nCenterCount == 2) {
+				mask |= sideBit;
+				xSideDists [sn] /= 2;		//get average
+				}
+			}
+		else {							//must be behind at least one face
+			if (nCenterCount) {
+				mask |= sideBit;
+				if (nCenterCount == 2)
+					xSideDists [sn] /= 2;		//get average
+				}
+			}
+		}
+	else {				//only one face on this side
+		fix xDist;
+		int nVertex;
+#ifdef COMPACT_SEGS			
+		vms_vector normal;
+#endif
+		//use lowest point number
+		nVertex = vertexList [0];
+		if (nVertex > vertexList [1])
+			nVertex = vertexList [1];
+		if (nVertex > vertexList [2])
+			nVertex = vertexList [2];
+		if (nVertex > vertexList [3])
+			nVertex = vertexList [3];
+#ifdef _DEBUG
+		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
+			CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+#endif
+
+#ifdef COMPACT_SEGS
+		GetSideNormal (segP, sn, 0, &normal);
+		xDist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
+#else
+		xDist = VmDistToPlane (checkp, &sideP->normals [0], gameData.segs.vertices + nVertex);
+#endif
+		if (xDist < -PLANE_DIST_TOLERANCE) {
+			mask |= sideBit;
+			xSideDists [sn] = xDist;
+			}
+		faceBit <<= 2;
+		}
+	}
+return mask;
+}
+
+// -------------------------------------------------------------------------------
+//this was converted from GetSegMasks ()...it fills in an array of 6
+//elements for the distace behind each side, or zero if not behind
+//only gets centerMask, and assumes zero rad
+ubyte GetSideDistsAll (vms_vector *checkp, int segnum, fix *xSideDists)
+{
+	int			sn, faceBit, sideBit;
+	ubyte			mask;
+	int			nFaces;
+	int			vertexList [6];
+	segment		*segP;
+	side			*sideP;
+
+Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
+if (segnum == -1)
+	Error ("segnum == -1 in get_seg_dists ()");
+
+segP = gameData.segs.segments + segnum;
+sideP = segP->sides;
+//check point against each side of segment. return bitmask
+mask = 0;
+for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
+		int	bSidePokesOut;
+		int	fn;
+
+	xSideDists [sn] = 0;
+	// Get number of faces on this side, and at vertexList, store vertices.
+	//	If one face, then vertexList indicates a quadrilateral.
+	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
+	CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+	//ok...this is important.  If a side has 2 faces, we need to know if
+	//those faces form a concave or convex side.  If the side pokes out, 
+	//then a point is on the back of the side if it is behind BOTH faces, 
+	//but if the side pokes in, a point is on the back if behind EITHER face.
+
+	if (nFaces == 2) {
+		fix	xDist;
+		int	nCenterCount;
+		int	nVertex;
+#ifdef COMPACT_SEGS
+		vms_vector normals [2];
+#endif
+		nVertex = min (vertexList [0], vertexList [2]);
+#ifdef _DEBUG
+		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
+			CreateAbsVertexLists (&nFaces, vertexList, segnum, sn);
+#endif
+#ifdef COMPACT_SEGS
+		GetSideNormals (segP, sn, normals, normals + 1);
+#endif
+		if (vertexList [4] < vertexList [1])
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+#endif
+		else
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+#endif
+		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
+		nCenterCount = 0;
+		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
+#ifdef COMPACT_SEGS
+			xDist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
+#else
+			xDist = VmDistToPlane (checkp, sideP->normals + fn, gameData.segs.vertices + nVertex);
+#endif
+			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
+				nCenterCount++;
 				}
 			xSideDists [sn] += xDist;
 			}
@@ -1175,58 +1299,57 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns segment number, or -1 if can't find segment
-int TraceSegs (vms_vector *p0, int oldsegnum)
+int TraceSegs (vms_vector *p0, int nOldSeg)
 {
-	int centerMask, biggest_side;
-	segment *seg;
-	fix xSideDists [6];
-	fix biggest_val;
-	int sidenum, bit, check = -1;
-	static int Trace_SegCalls = 0;
-	static char visited [MAX_SEGMENTS];
+	int				centerMask, nMaxSide;
+	segment			*segP;
+	fix				xSideDists [6], xMaxDist;
+	int				sidenum, bit, check = -1;
+	static int		nTraceDepth = 0;
+	static char		bVisited [MAX_SEGMENTS];
 	
-Assert ((oldsegnum <= gameData.segs.nLastSegment) && (oldsegnum >= 0));
-if (Trace_SegCalls >= gameData.segs.nSegments) {
+Assert ((nOldSeg <= gameData.segs.nLastSegment) && (nOldSeg >= 0));
+if (nTraceDepth >= gameData.segs.nSegments) {
 #if TRACE
 	con_printf (CON_DEBUG, "TraceSegs: Segment not found\n");
 	con_printf (CON_DEBUG, "TraceSegs (gameseg.c) - Something went wrong - infinite loop\n");
 #endif
 	return -1;
 }
-if (!Trace_SegCalls)
-	memset (visited, 0, sizeof (visited));
-if (visited [oldsegnum] || (gameData.segs.segment2s [oldsegnum].special == SEGMENT_IS_SKYBOX))
+if (!nTraceDepth)
+	memset (bVisited, 0, sizeof (bVisited));
+if (bVisited [nOldSeg] || (gameData.segs.segment2s [nOldSeg].special == SEGMENT_IS_SKYBOX))
 	return -1;
-Trace_SegCalls++;
-visited [oldsegnum] = 1;
-centerMask = GetSideDists (p0, oldsegnum, xSideDists);		//check old segment
-if (centerMask == 0) {		//we're in the old segment
-	Trace_SegCalls--;
-	return oldsegnum;		//..say so
+nTraceDepth++;
+bVisited [nOldSeg] = 1;
+centerMask = GetSideDists (p0, nOldSeg, xSideDists);		//check old segment
+if (!centerMask) {		//we're in the old segment
+	nTraceDepth--;
+	return nOldSeg;		//..say so
 	}
+segP = gameData.segs.segments + nOldSeg;
 for (;;) {
-	seg = gameData.segs.segments+oldsegnum;
-	biggest_side = -1; 
-	biggest_val = 0;
+	nMaxSide = -1; 
+	xMaxDist = 0;
 	for (sidenum = 0, bit = 1; sidenum < 6; sidenum ++, bit <<= 1)
-		if ((centerMask & bit) && (seg->children [sidenum] > -1) && (xSideDists [sidenum] < biggest_val)) {
-			biggest_val = xSideDists [sidenum];
-			biggest_side = sidenum;
+		if ((centerMask & bit) && (segP->children [sidenum] > -1) && (xSideDists [sidenum] < xMaxDist)) {
+			xMaxDist = xSideDists [sidenum];
+			nMaxSide = sidenum;
 			}
-	if (biggest_side == -1)
+	if (nMaxSide == -1)
 		break;
-	xSideDists [biggest_side] = 0;
-	check = TraceSegs (p0, seg->children [biggest_side]);	//trace into adjacent segment
+	xSideDists [nMaxSide] = 0;
+	check = TraceSegs (p0, segP->children [nMaxSide]);	//trace into adjacent segment
 	if (check >= 0)
 		break;
 	}
-Trace_SegCalls--;
+nTraceDepth--;
 return check;		//we haven't found a segment
 }
 
 
 
-int	Exhaustive_count=0, Exhaustive_failed_count=0;
+int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 
 //Tries to find a segment for a point, in the following way:
 // 1. Check the given segment
@@ -1235,40 +1358,31 @@ int	Exhaustive_count=0, Exhaustive_failed_count=0;
 //Returns segnum if found, or -1
 int FindSegByPoint (vms_vector *p, int segnum)
 {
-	int newseg;
+int nNewSeg;
 
-	//allow segnum == -1, meaning we have no idea what segment point is in
-	Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= -1));
-
-	if (segnum != -1) {
-		newseg = TraceSegs (p, segnum);
-
-		if (newseg != -1)			//we found a segment!
-			return newseg;
+//allow segnum == -1, meaning we have no idea what segment point is in
+Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= -1));
+if (segnum != -1) {
+	nNewSeg = TraceSegs (p, segnum);
+	if (nNewSeg != -1)			//we found a segment!
+		return nNewSeg;
 	}
-
-	//couldn't find via attached segs, so search all segs
-
-	//	MK: 10/15/94
-	//	This bDoingLightingHack thing added by mk because the hundreds of scrolling messages were
-	//	slowing down lighting, and in about 98% of cases, it would just return -1 anyway.
-	//	Matt: This really should be fixed, though.  We're probably screwing up our lighting in a few places.
-	if (!bDoingLightingHack) {
-		++Exhaustive_count;
+//couldn't find via attached segs, so search all segs
+if (bDoingLightingHack)
+	return -1;
+++nExhaustiveCount;
 #if 0 //TRACE
-		con_printf (1, "Warning: doing exhaustive search to find point segment (%i times)\n", Exhaustive_count);
+con_printf (1, "Warning: doing exhaustive search to find point segment (%i times)\n", nExhaustiveCount);
 #endif
-		for (newseg=0;newseg <= gameData.segs.nLastSegment;newseg++)
-			if ((gameData.segs.segment2s [newseg].special != SEGMENT_IS_SKYBOX) && 
-			    (GetSegMasks (p, newseg, 0).centerMask == 0))
-				return newseg;
-	++Exhaustive_failed_count;
+for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
+	if ((gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) && 
+	    (!GetSegMasks (p, nNewSeg, 0).centerMask))
+		return nNewSeg;
+++nExhaustiveFailedCount;
 #if TRACE
-		con_printf (1, "Warning: could not find point segment (%i times)\n", Exhaustive_failed_count);
+con_printf (1, "Warning: could not find point segment (%i times)\n", nExhaustiveFailedCount);
 #endif
-		return -1;		//no segment found
-	} else
-		return -1;
+return -1;		//no segment found
 }
 
 
