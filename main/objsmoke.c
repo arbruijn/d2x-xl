@@ -182,7 +182,7 @@ KillObjectSmoke (i);
 
 void DoRobotSmoke (object *objP)
 {
-	int			h = -1, i, nShields, nParts;
+	int			h = -1, i, nShields = 0, nParts;
 	float			nScale;
 	vms_vector	pos;
 
@@ -216,7 +216,7 @@ if (nParts > 0) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, nScale,
-												OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
+																OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
@@ -224,6 +224,47 @@ if (nParts > 0) {
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size / 2);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
+	}
+else 
+	KillObjectSmoke (i);
+}
+
+//------------------------------------------------------------------------------
+
+void DoReactorSmoke (object *objP)
+{
+	int			h = -1, i, nShields = 0, nParts;
+	vms_vector	vDir, vPos;
+
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
+	return;
+i = (int) (objP - gameData.objs.objects);
+if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+	nParts = 0;
+else {
+	nShields = f2ir (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	h = f2ir (objP->shields) * 100 / nShields;
+	}
+if (h < 0)
+	h = 0;	
+nParts = 10 - h / 10;
+if (nParts > 0) {
+	nParts = 250;
+	if (gameData.smoke.objects [i] < 0) {
+		//LogErr ("creating robot %d smoke\n", i);
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, 1.0,
+																OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
+		}
+	else {
+		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
+		SetSmokeDensity (gameData.smoke.objects [i], nParts);
+		vDir.x = d_rand () - F1_0 / 4;
+		vDir.y = d_rand () - F1_0 / 4;
+		vDir.z = d_rand () - F1_0 / 4;
+		VmVecNormalize (&vDir);
+		VmVecScaleAdd (&vPos, &objP->pos, &vDir, -objP->size / 2);
+		SetSmokePos (gameData.smoke.objects [i], &vPos);
+		}
 	}
 else 
 	KillObjectSmoke (i);
@@ -261,6 +302,33 @@ else
 
 //------------------------------------------------------------------------------
 
+void DoDebrisSmoke (object *objP)
+{
+	int			nParts, i;
+	vms_vector	pos;
+
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris))
+	return;
+i = (int) (objP - gameData.objs.objects);
+if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+	nParts = 0;
+else 
+	nParts = -250;
+if (nParts) {
+	if (gameData.smoke.objects [i] < 0) {
+		//LogErr ("creating missile %d smoke\n", i);
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts / 2, 1.5,
+												 DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
+		}
+	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
+	SetSmokePos (gameData.smoke.objects [i], &pos);
+	}
+else 
+	KillObjectSmoke (i);
+}
+
+//------------------------------------------------------------------------------
+
 void DoObjectSmoke (object *objP)
 {
 int t = objP->type;
@@ -270,10 +338,14 @@ if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
+else if (t == OBJ_CNTRLCEN)
+	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
 	if (bIsMissile [objP->id])
 		DoMissileSmoke (objP);
 	}
+else if (t == OBJ_DEBRIS)
+	DoDebrisSmoke (objP);
 }
 
 //------------------------------------------------------------------------------

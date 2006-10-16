@@ -1043,9 +1043,9 @@ int CheckEffectBlowup (segment *seg, short side, vms_vector *pnt, object *blower
 		eclip *ecP;
 		int bOneShot;
 
-		tmf = tm&0xc000;		//tm flags
+		tmf = tm & 0xc000;		//tm flags
 		tm &= 0x3fff;			//tm without flags
-		ec=gameData.pig.tex.pTMapInfo [tm].eclip_num;
+		ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
 		ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
 		db = ecP ? ecP->dest_bm_num : -1;
 		bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
@@ -1054,28 +1054,24 @@ int CheckEffectBlowup (segment *seg, short side, vms_vector *pnt, object *blower
 			 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 			fix u, v;
 			grs_bitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
-			int x=0, y=0;
+			int x = 0, y = 0;
 
 			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm], gameStates.app.bD1Data);
-
 			//this can be blown up...did we hit it?
-
 			if (!bForceBlowup) {
 				FindHitPointUV (&u, &v, NULL, pnt, seg, side, 0);	//evil: always say face zero
-				bForceBlowup = !PixelTranspType (tm, u, v);
+				bForceBlowup = !PixelTranspType (tm | tmf, u, v);
 				}
 			if (bForceBlowup) {		//not trans, thus on effect
 				short sound_num, bPermaTrigger;
 				ubyte vc;
-				fix dest_size;
-
+				fix xDestSize;
 
 #ifdef NETWORK
 				if ((gameData.app.nGameMode & GM_MULTI) && netGame.AlwaysLighting)
 			   	if (ec == -1 || db == -1 || bOneShot)
 				   	return (0);
 #endif
-
 				//note: this must get called before the texture changes, 
 				//because we use the light value of the texture to change
 				//the static light in the segment
@@ -1091,29 +1087,22 @@ int CheckEffectBlowup (segment *seg, short side, vms_vector *pnt, object *blower
 					NDRecordEffectBlowup (SEG_IDX (seg), side, pnt);
 
 				if (ec!=-1) {
-					dest_size = ecP->dest_size;
+					xDestSize = ecP->dest_size;
 					vc = ecP->dest_vclip;
-				} else {
-					dest_size = i2f (20);
+					}
+				else {
+					xDestSize = i2f (20);
 					vc = 3;
-				}
-
-				ObjectCreateExplosion (SEG_IDX (seg), pnt, dest_size, vc);
-
+					}
+				ObjectCreateExplosion (SEG_IDX (seg), pnt, xDestSize, vc);
 				if ((ec!=-1) && (db!=-1) && !bOneShot) {
-
 					if ((sound_num = gameData.eff.pVClips [vc].sound_num) != -1)
 		  				DigiLinkSoundToPos (sound_num, SEG_IDX (seg), 0, pnt,  0, F1_0);
-
-					if ((sound_num=ecP->sound_num)!=-1)		//kill sound
+					if ((sound_num = ecP->sound_num) != -1)		//kill sound
 						DigiKillSoundLinkedToSegment (SEG_IDX (seg), side, sound_num);
-
-					if (!bPermaTrigger && ecP->dest_eclip!=-1 && gameData.eff.pEffects [ecP->dest_eclip].segnum==-1) {
-						int bm_num;
-						eclip *new_ec;
-					
-						new_ec = gameData.eff.pEffects + ecP->dest_eclip;
-						bm_num = new_ec->changing_wall_texture;
+					if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].segnum == -1)) {
+						eclip	*new_ec = gameData.eff.pEffects + ecP->dest_eclip;
+						int 	bm_num = new_ec->changing_wall_texture;
 #if TRACE
 						con_printf (CON_DEBUG, "bm_num = %d \n", bm_num);
 #endif

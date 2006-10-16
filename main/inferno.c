@@ -1789,6 +1789,7 @@ if (i) {
 	gameOptions [1].render.bWalls = 1;
 	gameOptions [1].render.bUseShaders = 1;
 	gameOptions [1].render.bHiresModels = 0;
+	gameOptions [0].render.bAutoTransparency = 0;
 	gameOptions [1].render.bOptimize = 0;
 	gameOptions [1].render.nMathFormat = 0;
 	gameOptions [1].render.nDefMathFormat = 0;
@@ -1826,6 +1827,7 @@ if (i) {
 	gameOptions [1].render.smoke.bPlayers = 0;
 	gameOptions [1].render.smoke.bRobots = 0;
 	gameOptions [1].render.smoke.bMissiles = 0;
+	gameOptions [1].render.smoke.bDebris = 0;
 	gameOptions [1].render.smoke.bCollisions = 0;
 	gameOptions [1].render.smoke.bSort = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
@@ -1845,6 +1847,7 @@ else {
 	gameOptions [0].render.bWalls = 1;
 	gameOptions [0].render.bUseShaders = 1;
 	gameOptions [0].render.bHiresModels = 1;
+	gameOptions [0].render.bAutoTransparency = 1;
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;
 #ifdef _DEBUG
@@ -1890,6 +1893,7 @@ else {
 	gameOptions [0].render.smoke.bPlayers = 1;
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
+	gameOptions [0].render.smoke.bDebris = 1;
 	gameOptions [0].render.smoke.bCollisions = 1;
 	gameOptions [0].render.smoke.bSort = 0;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;

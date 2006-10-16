@@ -1092,14 +1092,17 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 
 static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
 {
-	static tRgbColorf	defaultColor = {0,1.0f,0};
-	static tRgbColorf	botDefColor = {1.0f,0,0};
+	static tRgbColorf	defaultColor = {0, 1.0f, 0};
+	static tRgbColorf	botDefColor = {1.0f, 0, 0};
+	static tRgbColorf	reactorDefColor = {0.5f, 0, 0.5f};
 	static tRgbColorf	playerDefColors [] = {{0,1.0f,0},{0,0,1.0f},{1.0f,0,0}};
 
 if (pc)
 	return pc;
 if (objP)
-	if (objP->type == OBJ_ROBOT) {
+	if (objP->type == OBJ_CNTRLCEN)
+		return &reactorDefColor;
+	else if (objP->type == OBJ_ROBOT) {
 		if (!gameData.bots.pInfo [objP->id].companion)
 			return &botDefColor;
 		}
@@ -1119,13 +1122,13 @@ static inline float ObjectDamage (object *objP)
 
 if (objP->type == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
-else if (objP->type != OBJ_ROBOT)
-	fDmg = 1.0f;
-else {
-		fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+else if ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_CNTRLCEN)) {
+	fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
 	if (gameData.bots.pInfo [objP->id].companion)
 		fDmg /= 2;
 	}
+else
+	fDmg = 1.0f;
 return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 }
 
@@ -1620,6 +1623,8 @@ switch (objP->render_type) {
 				DrawPolygonObject (objP);
 			if (objP->type == OBJ_WEAPON)
 				RenderThrusterFlames (objP);
+			else if (objP->type == OBJ_CNTRLCEN)
+				RenderTargetIndicator (objP, NULL);
 			}
 		break;
 

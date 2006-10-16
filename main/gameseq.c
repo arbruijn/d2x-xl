@@ -1254,6 +1254,7 @@ memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segD
 /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
 #endif
+ComputeStaticOglLighting ();
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
 gameData.hoard.nMonsterballSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");

@@ -1068,7 +1068,10 @@ else {
 		int		i, t = gameStates.app.nSDLTicks;
 		tSmoke	*pSmoke;
 
-	nMaxParts <<= gameOpts->render.smoke.nScale;
+	if (nMaxParts < 0)	// don't scale
+		nMaxParts = -nMaxParts;
+	else
+		nMaxParts <<= gameOpts->render.smoke.nScale;
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
@@ -1193,11 +1196,15 @@ if (IsUsedSmoke (i)) {
 
 void SetSmokeDensity (int i, int nMaxParts)
 {
+if (nMaxParts < 0)
+	nMaxParts = -nMaxParts;
+else 
+	nMaxParts <<= (gameOpts->render.smoke.nScale + 1);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudDensity (pSmoke->pClouds + i, nMaxParts << (gameOpts->render.smoke.nScale + 1));
+			SetCloudDensity (pSmoke->pClouds + i, nMaxParts);
 	}
 }
 

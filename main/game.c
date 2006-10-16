@@ -517,6 +517,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "particles.h"
 #include "banlist.h"
 #include "input.h"
+#include "interp.h"
 
 u_int32_t VGA_current_mode;
 

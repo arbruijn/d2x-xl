@@ -706,7 +706,7 @@ if (gameOpts->ogl.bUseLighting) {
 	SetOglLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
 	}
-if (gameOpts->render.color.bAmbientLight && gameStates.app.bD2XLevel && !USE_LIGHTMAPS) { 
+if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) { 
 #if VERTEX_LIGHTING
 	int i, j = propsP->nv;
 	for (i = 0; i < j; i++)
@@ -849,6 +849,46 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static int IsLava (tFaceProps *propsP)
+{
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+
+return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
+}
+
+//------------------------------------------------------------------------------
+
+static int IsWater (tFaceProps *propsP)
+{
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+
+return ((nTexture >= 399) && (nTexture <= 403));
+}
+
+//------------------------------------------------------------------------------
+
+static int IsWaterOrLava (tFaceProps *propsP)
+{
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+
+return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
+}
+
+//------------------------------------------------------------------------------
+
+static int IsTransparent (tFaceProps *propsP)
+{
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+
+return (nTexture == 378) || 
+		 (nTexture == 353) || 
+		 (nTexture == 420) || 
+		 (nTexture == 432) || 
+		 ((nTexture >= 399) && (nTexture <= 409));
+}
+
+//------------------------------------------------------------------------------
+
 int RenderWall (tFaceProps *propsP, g3s_point **pointlist, int bIsMonitor)
 {
 short c, nWallNum = WallNumI (propsP->segNum, propsP->sideNum);
@@ -886,7 +926,9 @@ if (IS_WALL (nWallNum)) {
 		if (c && (c < GR_ACTUAL_FADE_LEVELS))
 			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
 		}
-	else	
+	else if (gameOpts->render.bAutoTransparency && IsTransparent (propsP))
+		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 10.0f * 8.0f;
+	else
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	}
 return 0;
@@ -927,7 +969,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 45 && props.sideNum == 1)
+if (props.segNum == 902 && props.sideNum == 1)
 	props.segNum = props.segNum;
 #	if 0
 else
@@ -1683,7 +1725,7 @@ if (!cc.and) {		//all off screen?
 #if 1
 	gameStates.render.nState = 0;
 #else
-	SetNearestStaticLights (segnum, 1);
+	//SetNearestStaticLights (segnum, 1);
 	SetNearestDynamicLights (segnum);
 #endif
 	if (gameStates.render.bQueryOcclusion) {
@@ -3568,7 +3610,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	 gameStates.render.bShadowMaps || 
 	 (gameStates.render.nShadowPass < 2)) {
 	RenderStartFrame ();
-	TransformOglLights ();
+	TransformOglLights (0, 1);
 #if defined(EDITOR) && !defined(NDEBUG)
 		if (bShowOnlyCurSide) {
 			RotateList (8, Cursegp->verts);

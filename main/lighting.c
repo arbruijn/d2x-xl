@@ -1037,23 +1037,53 @@ if (objP->type == OBJ_PLAYER) {
 
 //-----------------------------------------------------------------------------
 
+static int IsFlickeringLight (short nSegment, short nSide)
+{
+	flickering_light	*flP = gameData.render.lights.flicker.lights;
+	int					l;
+
+for (l = gameData.render.lights.flicker.nLights; l; l--, flP++)
+	if ((flP->segnum == nSegment) && (flP->sidenum == nSide))
+		return 1;
+return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+static int IsDestructibleLight (short nTexture)
+{
+if (!nTexture)
+	return 0;
+else {
+	short nClip = gameData.pig.tex.pTMapInfo [nTexture & 0x3fff].eclip_num;
+	eclip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
+	short	nDestBM = ecP ? ecP->dest_bm_num : -1;
+	ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
+
+	if (nClip == -1) 
+		return gameData.pig.tex.pTMapInfo [nTexture].destroyed != -1;
+	return (nDestBM != -1) && !bOneShot;
+	}
+}
+
+//-----------------------------------------------------------------------------
+
 void FlickerLights ()
 {
 	flickering_light	*flP = gameData.render.lights.flicker.lights;
-	segment				*segP;
-	side					*sideP;
 	int					l;
+	side					*sideP;
+	short					nSegment, nSide;
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
-	segP = gameData.segs.segments + flP->segnum;
 	//make sure this is actually a light
-	if (!(WALL_IS_DOORWAY (segP, flP->sidenum, NULL) & WID_RENDER_FLAG))
+	if (!(WALL_IS_DOORWAY (gameData.segs.segments + flP->segnum, flP->sidenum, NULL) & WID_RENDER_FLAG))
 		continue;
-	sideP = segP->sides + flP->sidenum;
-	if (!(gameData.pig.tex.brightness [sideP->tmap_num] ||
-			gameData.pig.tex.brightness [sideP->tmap_num2 & 0x3fff] ||
-		   (gameData.pig.tex.pTMapInfo [sideP->tmap_num].lighting | 
-			   gameData.pig.tex.pTMapInfo [sideP->tmap_num2 & 0x3fff].lighting)))
+	nSegment = flP->segnum;
+	nSide = flP->sidenum;
+	sideP = gameData.segs.segments [nSegment].sides + nSide;
+	if (!(gameData.pig.tex.brightness [sideP->tmap_num] || 
+		   gameData.pig.tex.brightness [sideP->tmap_num2 & 0x3fff]))
 		continue;
 	if (flP->timer == 0x80000000)		//disabled
 		continue;
@@ -1062,9 +1092,9 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 			flP->timer += flP->delay;
 		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
 		if (flP->mask & 1)
-			AddLight (flP->segnum, flP->sidenum);
+			AddLight (nSegment, nSide);
 		else
-			SubtractLight (flP->segnum, flP->sidenum);
+			SubtractLight (nSegment, nSide);
 		}
 	}
 }
@@ -1447,9 +1477,12 @@ if (nObject >= 0) {
 	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;
 	}
 else if (nSegment >= 0) {
+	int	t = gameData.segs.segments [nSegment].sides [nSide].tmap_num2 & 0x3fff;
+
 	ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 	pl->rad = f2fl ((rMin + rMax) / 20);
 	RegisterLight (NULL, nSegment, nSide);
+	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 	}
 return gameData.render.lights.ogl.nLights++;
 }
@@ -1543,10 +1576,9 @@ gameStates.ogl.bHaveLights = 1;
 //glEnable (GL_LIGHTING);
 gameData.render.lights.ogl.nLights = 0;
 gameData.render.lights.ogl.material.bValid = 0;
-InitTextureBrightness ();
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-		//if (i != 45 || j != 1) continue;
+		//if (i != 3 || j != 2) continue;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->wall_num))
 			continue;
 		t = sideP->tmap_num;
@@ -1555,9 +1587,10 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		pc = gameData.render.color.textures + t;
 		AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 		t = sideP->tmap_num2 & 0x3fff;
-		if ((t > 0) && (t < MAX_WALL_TEXTURES)) {
+		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
 			pc = gameData.render.color.textures + t;
-			AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+			if ((pc->color.red > 0.0f) || (pc->color.green > 0.0f) || (pc->color.blue > 0.0f))
+				AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 			}
 		//if (gameData.render.lights.ogl.nLights)
 		//	return;
@@ -1571,7 +1604,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 
 //------------------------------------------------------------------------------
 
-void TransformOglLights (void)
+void TransformOglLights (int bStatic, int bVariable)
 {
 	int			i;
 	tOglLight	*pl = gameData.render.lights.ogl.lights;
@@ -1595,35 +1628,37 @@ OglResetTransform ();
 gameData.render.lights.ogl.shader.nLights = 0;
 UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
-#if 0 //need to add all lights
-	if (pl->bState) {
-		if (pl->brightness == 0.0)
-			continue;
-		if (pl->color.red + pl->color.green + pl->color.blue == 0.0)
-			continue;
-#endif
-		memcpy (&psl->color, &pl->color, sizeof (pl->color));
-		VmsVecToFloat (psl->pos, &pl->vPos);
-		if (gameStates.ogl.bUseTransform)
-			psl->pos [1] = psl->pos [0];
-		else
-			G3TransformPointf (psl->pos + 1, psl->pos);
-		psl->brightness = pl->brightness;
-		if (psl->bSpot = pl->bSpot) {
-			VmsVecToFloat (&psl->dir, &pl->vDir);
-			if (!gameStates.ogl.bUseTransform)
-				G3RotatePointf (&psl->dir, &psl->dir);
-			psl->spotAngle = pl->spotAngle;
-			psl->spotExponent = pl->spotExponent;
-			}
-		psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
-		psl->nType = pl->nType;
-		psl->rad = pl->rad;
-		gameData.render.lights.ogl.shader.nLights++;
-		psl++;
-#if 0
+	memcpy (&psl->color, &pl->color, sizeof (pl->color));
+	VmsVecToFloat (psl->pos, &pl->vPos);
+	if (gameStates.ogl.bUseTransform)
+		psl->pos [1] = psl->pos [0];
+	else
+		G3TransformPointf (psl->pos + 1, psl->pos);
+	psl->brightness = pl->brightness;
+	if (psl->bSpot = pl->bSpot) {
+		VmsVecToFloat (&psl->dir, &pl->vDir);
+		if (!gameStates.ogl.bUseTransform)
+			G3RotatePointf (&psl->dir, &psl->dir);
+		psl->spotAngle = pl->spotAngle;
+		psl->spotExponent = pl->spotExponent;
 		}
-#endif
+	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
+	if (psl->bState) 
+		if (bStatic) {
+			if (pl->nType == 2)
+				psl->bState = 0;
+			if (!bVariable && pl->bVariable)
+				psl->bState = 0;
+			}
+		else {
+			if (pl->nType != 2) {
+				if (!(bVariable && pl->bVariable))
+					psl->bState = 0;
+				}
+			}
+	psl->rad = pl->rad;
+	gameData.render.lights.ogl.shader.nLights++;
+	psl++;
 	}
 #	if 0
 if (gameData.render.lights.ogl.shader.nTexHandle)
@@ -1644,16 +1679,24 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_RGBA,
 
 //------------------------------------------------------------------------------
 
-void SetNearestVertexLights (int nVertex, ubyte nType)
+void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable)
 {
 if (gameOpts->ogl.bUseLighting) {
 	short	*pnl = gameData.render.lights.ogl.nNearestVertLights [nVertex];
-	short	i;
+	short	i, j;
 
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
-		if (*pnl < 0)
+		if ((j = *pnl) < 0)
 			break;
-		gameData.render.lights.ogl.shader.lights [*pnl].nType = nType;
+		if (gameData.render.lights.ogl.lights [j].bVariable) {
+			if (!bVariable)
+				continue;
+			}
+		else {
+			if (!bStatic)
+				continue;
+			}
+		gameData.render.lights.ogl.shader.lights [j].nType = nType;
 		}
 	}
 }
@@ -1664,12 +1707,12 @@ void SetNearestStaticLights (int nSegment, ubyte nType)
 {
 if (gameOpts->ogl.bUseLighting) {
 	short	*pnl = gameData.render.lights.ogl.nNearestSegLights [nSegment];
-	short	i;
+	short	i, j;
 
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
-		if (*pnl < 0)
+		if ((j = *pnl) < 0)
 			break;
-		gameData.render.lights.ogl.shader.lights [*pnl].nType = nType;
+		gameData.render.lights.ogl.shader.lights [j].nType = nType;
 		}
 	}
 }
@@ -1821,6 +1864,22 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	pl->vPos = objP->pos;
 	pl->vDir = objP->orient.fvec;
 	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 2);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeStaticOglLighting ()
+{
+	int				i, bColorize = !(gameOpts->ogl.bUseLighting || gameStates.app.bD2XLevel);
+	tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+	fVector3			vVertex;
+
+TransformOglLights (1, bColorize);
+for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
+	VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
+	SetNearestVertexLights (i, 1, 1, bColorize);
+	G3VertexColor (&gameData.segs.points [i].p3_normal.vNormal, &vVertex, i, pf);
 	}
 }
 

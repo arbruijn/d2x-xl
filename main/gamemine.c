@@ -1471,14 +1471,13 @@ else if (loadOp == 3) {
 else if (loadOp == 4) {
 	LoadSideLightsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= ((gameStates.app.bD2XLevel && (bLightmaps || gameOpts->ogl.bUseLighting)) ? 
+	if (loadIdx >= (gameStates.app.bD2XLevel ? 
 						 gameData.segs.nSegments * 6 : bShadows ? gameData.segs.nSegments : 1)) {
 		loadIdx = 0;
 		loadOp = 5;
 		}
 	}
 else if (loadOp == 5) {
-	int i = CFTell (mineDataFile);
 	LoadTexColorsCompiled (loadIdx, mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
@@ -1553,7 +1552,7 @@ int LoadMineGaugeSize (void)
 #endif
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
-	if (bLightmaps || gameOpts->ogl.bUseLighting)
+	if (bLightmaps /*|| gameOpts->ogl.bUseLighting*/)
 		i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
 	else if (bShadows)
 		i += PROGRESS_STEPS (gameData.segs.nSegments);
@@ -1567,7 +1566,7 @@ else {
 	else
 		i++;
 	}
-if (gameOpts->ogl.bUseLighting)
+//if (gameOpts->ogl.bUseLighting)
 	i += PROGRESS_STEPS (gameData.segs.nSegments * 10) +
 		  PROGRESS_STEPS (gameData.segs.nVertices * 10);
 return i;
@@ -1674,7 +1673,8 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 ResetObjects (1);		//one object, the player
-if (gameOpts->ogl.bUseLighting) {
+//if (gameOpts->ogl.bUseLighting) 
+	{
 	AddOglLights ();
 	SortLightsGauge ();
 	}

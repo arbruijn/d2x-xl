@@ -101,13 +101,14 @@ void AddOglLights (void);
 void RemoveOglLights (void);
 void SetOglLightPos (short nObject);
 void MoveOglLight (short nObject);
-void TransformOglLights ();
+void TransformOglLights (int bStatic, int bVariable);
 short FindOglLight (short nSegment, short nSide, short nObject);
 int ToggleOglLight (short nSegment, short nSide, short nObject, int bState);
 void SetOglLightMaterial (short nSegment, short nSide, short nObject);
-void SetNearestVertexLights (int nVertex, ubyte nType);
+void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable);
 void SetNearestStaticLights (int nSegment, ubyte nType);
 void SetNearestDynamicLights (int nSegment);
+void ComputeStaticOglLighting (void);
 void InitLightingShaders (void);
 tFaceColor *AvgSgmColor (int nSegment, vms_vector *vPos);
 

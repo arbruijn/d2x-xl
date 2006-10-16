@@ -11,6 +11,8 @@
 #define	OBJ_PART_SPEED	40
 #define	MSL_PART_LIFE	-3000
 #define	MSL_PART_SPEED	30
+#define	DEBRIS_PART_LIFE	-2000
+#define	DEBRIS_PART_SPEED	30
 
 #define	SHOW_SMOKE	\
 	(extraGameInfo [0].bUseSmoke && \

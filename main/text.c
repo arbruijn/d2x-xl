@@ -1600,6 +1600,8 @@ char *defaultGameTexts [][2] = {
 	{"laufendes Spiel ~Verlassen", "~Quit From Game"},
 	{"gespeichertes Spiel ~Laden...", "~Load Saved Game..."},
 	{"aktuelles Spiel ~Speichern...", "~Save Current Game..."},
+	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
+	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 #if 0
 	{"", ""},
 #endif
@@ -2029,6 +2031,9 @@ char *defaultHelpTexts [][2] = {
 	{"Spiel beenden und zum Hauptmenue zurueckkehren.", "Leave the game and return to the main menu."},
 	{"Gespeicherten Spielstand wiederherstellen.", "Restore a previously saved game."},
 	{"Aktuellen Spielstand abspeichern.", "Save the current game."},
+	{"Wenn angekreuzt, erzeugen herumfliegende Truemmer eine\nRauchspur.", "If checked, debris from robots creates a smoke trail."},
+	{"Wenn angekreuzt, werden Lava, Wasser, Kraftfelder und Energie-\nfelder, die durchflogen werden koennen, leicht durchsichtig gemacht.", 
+	 If checked, lava, water, force fields and energy sparks that\ncan be crossed will be made slightly transparent.""},
 #if 0
 	{"", ""},
 #endif

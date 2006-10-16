@@ -807,7 +807,7 @@ int ObjectInList(short objnum, short *obj_list)
 
 //	-----------------------------------------------------------------------------
 
-int check_trans_wall (vms_vector *pnt, segment *seg, short sidenum, short facenum);
+int CheckTransWall (vms_vector *pnt, segment *seg, short sidenum, short facenum);
 
 int fvi_sub (vms_vector *vIntP, short *intS, vms_vector *p0, short nStartSeg, vms_vector *p1, 
 				 fix rad, short nThisObject, short *ignoreObjList, int flags, short *segList, 
@@ -930,7 +930,7 @@ if (endMask != 0) {                             //on the back of at least one fa
 
 					if ((wid_flag & WID_FLY_FLAG) ||
 						(((wid_flag & WID_RENDER_FLAG) && (wid_flag & WID_RENDPAST_FLAG)) &&
-							((flags & FQ_TRANSWALL) || (flags & FQ_TRANSPOINT && check_trans_wall(&vHitPoint, segP, side, face))))) {
+							((flags & FQ_TRANSWALL) || (flags & FQ_TRANSPOINT && CheckTransWall(&vHitPoint, segP, side, face))))) {
 
 						int newsegnum;
 						vms_vector subHitPoint;
@@ -1094,8 +1094,8 @@ if (abs(normal_array.xyz [1]) > abs(normal_array.xyz [biggest]))
 	biggest = 1;
 if (abs(normal_array.xyz [2]) > abs(normal_array.xyz [biggest])) 
 	biggest = 2;
-if (biggest == 0) ii=1; else ii=0;
-if (biggest == 2) jj=1; else jj=2;
+ii = (biggest == 0);
+jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection point
 //vec from 1 -> 0
 pnt_array = (vms_vector_array *)&gameData.segs.vertices [vertex_list [facenum*3+1]];
@@ -1193,7 +1193,7 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular point on a wall is a transparent pixel
 //returns 1 if can pass though the wall, else 0
-int check_trans_wall (vms_vector *pnt, segment *seg, short sidenum, short facenum)
+int CheckTransWall (vms_vector *pnt, segment *seg, short sidenum, short facenum)
 {
 	side *side = seg->sides + sidenum;
 	fix	u, v;
@@ -1220,53 +1220,38 @@ int SphereIntersectsWall(vms_vector *pnt, int segnum, fix rad)
 	int faceMask;
 	segment *seg;
 
-	segsVisited [nSegsVisited++] = segnum;
+segsVisited [nSegsVisited++] = segnum;
 
-	faceMask = GetSegMasks(pnt, segnum, rad).faceMask;
+faceMask = GetSegMasks(pnt, segnum, rad).faceMask;
 
-	seg = gameData.segs.segments + segnum;
+seg = gameData.segs.segments + segnum;
 
-	if (faceMask != 0) {				//on the back of at least one face
+if (faceMask != 0) {				//on the back of at least one face
+	int side, bit, face, child, i;
+	int nFaceHitType;      //in what way did we hit the face?
+	int num_faces, vertex_list [6];
 
-		int side, bit, face;
-
-		//for each face we are on the back of, check if intersected
-
-		for (side=0, bit=1;side<6 && faceMask>=bit;side++) {
-
-			for (face=0;face<2;face++, bit<<=1) {
-
-				if (faceMask & bit) {            //on the back of this face
-					int nFaceHitType;      //in what way did we hit the face?
-					int num_faces, vertex_list [6];
-
-					//did we go through this wall/door?
-
-					if ((SEG_IDX (seg))==-1)
-						Error("segnum == -1 in SphereIntersectsWall()");
-
-					CreateAbsVertexLists(&num_faces, vertex_list, SEG_IDX (seg), side);
-
-					nFaceHitType = CheckSphereToFace(pnt, &seg->sides [side], 
-										face, ((num_faces==1)?4:3), rad, vertex_list);
-
-					if (nFaceHitType) {            //through this wall/door
-						int child, i;
-
-						//if what we have hit is a door, check the adjoining seg
-
-						child = seg->children [side];
-
-						for (i=0;i<nSegsVisited && child!=segsVisited [i];i++);
-
-						if (i==nSegsVisited) {                //haven't visited here yet
-
-							if (!IS_CHILD(child))
+//for each face we are on the back of, check if intersected
+	for (side=0, bit=1;side<6 && faceMask>=bit;side++) {
+		for (face=0;face<2;face++, bit<<=1) {
+			if (faceMask & bit) {            //on the back of this face
+				//did we go through this wall/door?
+				if ((SEG_IDX (seg))==-1)
+					Error("segnum == -1 in SphereIntersectsWall()");
+				CreateAbsVertexLists(&num_faces, vertex_list, SEG_IDX (seg), side);
+				nFaceHitType = CheckSphereToFace(pnt, &seg->sides [side], 
+									face, ((num_faces==1)?4:3), rad, vertex_list);
+				if (nFaceHitType) {            //through this wall/door
+					//if what we have hit is a door, check the adjoining seg
+					child = seg->children [side];
+					for (i = 0; (i < nSegsVisited) && (child != segsVisited [i]); i++)
+						;
+					if (i == nSegsVisited) {                //haven't visited here yet
+						if (!IS_CHILD(child))
+							return 1;
+						else {
+							if (SphereIntersectsWall(pnt, child, rad))
 								return 1;
-							else {
-
-								if (SphereIntersectsWall(pnt, child, rad))
-									return 1;
 							}
 						}
 					}
@@ -1274,8 +1259,7 @@ int SphereIntersectsWall(vms_vector *pnt, int segnum, fix rad)
 			}
 		}
 	}
-
-	return 0;
+return 0;
 }
 
 //	-----------------------------------------------------------------------------

@@ -148,6 +148,7 @@ typedef struct tSmokeOptions {
 	int bPlayers;
 	int bRobots;
 	int bMissiles;
+	int bDebris;
 	int bCollisions;
 	int bSort;
 	int bDecreaseLag;	//only render if player is moving forward
@@ -165,6 +166,7 @@ typedef struct tRenderOptions {
 	int bTransparentEffects;
 	int bUseShaders;
 	int bHiresModels;
+	int bAutoTransparency;
 	int nMathFormat;
 	int nDefMathFormat;
 	short nMaxFPS;
@@ -702,6 +704,7 @@ typedef struct tColorData {
 	tFaceColor	sides [MAX_SEGMENTS][6];
 	tFaceColor	segments [MAX_SEGMENTS];
 	tFaceColor	vertices [MAX_VERTICES];
+	tFaceColor	ambient [MAX_VERTICES];	//static light values
 	tFaceColor	textures [MAX_WALL_TEXTURES];
 	tLightRef	visibleLights [MAX_SEGMENTS * 6];
 	int			nVisibleLights;
@@ -750,6 +753,7 @@ typedef struct tOglLight {
 	ubyte			bSpot;
 	ubyte			bState;
 	ubyte			nType;
+	ubyte			bVariable;
 } tOglLight;
 
 typedef struct tOglMaterial {

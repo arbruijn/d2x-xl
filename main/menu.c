@@ -1680,7 +1680,8 @@ void RenderOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
-			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight;
+			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight,
+			optAutoTransp;
 #if 0
 	int checks;
 #endif
@@ -1742,6 +1743,8 @@ do {
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
 	nGunColorOpt = opt++;
+	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_I, HTX_RENDER_AUTOTRANSP);
+	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
@@ -1799,6 +1802,7 @@ do {
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
 	if (nGunColorOpt >= 0)
 		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
 	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
@@ -2185,7 +2189,7 @@ void SmokeRenderOptionsMenu ()
 	newmenu_item m [50];
 	int	i, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optSmokeColl;
+	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optSmokeColl;
 
 	char szSmokeDens [50];
 	char szSmokeSize [50];
@@ -2220,6 +2224,8 @@ do {
 			optBotSmoke = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_MISSILES, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
 			optMissSmoke = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_DEBRIS, gameOpts->render.smoke.bDebris, KEY_D, HTX_ADVRND_DEBRISSMOKE);
+			optDebrisSmoke = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 			optSmokeColl = opt++;
 			sprintf (szSmokeDens + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nScale, 0, 4)]);

@@ -978,8 +978,8 @@ if (gameData.render.lights.ogl.material.bValid) {
 		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
 		}
 	}
-#if 1 //cache light values per frame
-if (!bMatEmissive && (nVertex >= 0)) {
+#if 0 //cache light values per frame
+if (!(bMatEmissive || pVertColor) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop) {
 		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
@@ -997,25 +997,23 @@ else {
 #endif
 		G3RotatePointf (&vertNorm, pvVertNorm);
 	}
-if (!gameStates.render.nState) {
+if (!(gameStates.render.nState || pVertColor)) {
 #if !STATIC_LIGHT_TRANSFORM
 	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
 	pVertPos = &vertPos;
 #endif
-	SetNearestVertexLights (nVertex, 1);
+	SetNearestVertexLights (nVertex, 1, 0, 1);
 	}
 //VmVecNegatef (&vertNorm);
 for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	nType = psl->nType;
+	if (!nType)
+		continue;
 	if (nType == 1) {
 		psl->nType = 0;
 		if (bDarkness)
 			continue;
 		}
-#if 0//def _DEBUG
-	else
-		continue;	//only render static lights
-#endif
 	if (i == nMatLight)
 		continue;
 	if (!psl->bState)
@@ -1032,7 +1030,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (psl->brightness < 0)
 		fAttenuation = 0.01f;
 	else {
-		fLightDist = VmVecMagf (&lightDir) / 14.142f;
+		fLightDist = VmVecMagf (&lightDir) / 10.0f;
 #if 1
 		if (nType == 1) {
 #	if 0
@@ -1057,8 +1055,6 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 			fLightDist *= fLightDist;
 		fAttenuation = fLightDist / psl->brightness;
 		}
-	if (fAttenuation > 50.0)
-		continue;	//too far away
 	VmVecNormalizef (&lightDir, &lightDir);
 	NdotL = bInRad ? 1 : VmVecDotf (&vertNorm, &lightDir);
 	if (psl->bSpot) {
@@ -1079,6 +1075,8 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	else
 		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
 		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
+	//if (fAttenuation > 50.0)
+	//	continue;	//too far away
 	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
 	if ((NdotL > 0.0) && bMatSpecular) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
@@ -1099,6 +1097,12 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		}
 	VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 	j++;
+	}
+if (!(gameStates.render.nState && bDarkness)) {
+	tRgbColorf	ambient = gameData.render.color.ambient [nVertex].color;
+	colorSum.c.r += ambient.red;
+	colorSum.c.g += ambient.green;
+	colorSum.c.b += ambient.blue;
 	}
 if (colorSum.c.r > 1.0)
 	colorSum.c.r = 1.0;
