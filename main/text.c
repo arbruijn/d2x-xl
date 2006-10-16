@@ -2033,7 +2033,7 @@ char *defaultHelpTexts [][2] = {
 	{"Aktuellen Spielstand abspeichern.", "Save the current game."},
 	{"Wenn angekreuzt, erzeugen herumfliegende Truemmer eine\nRauchspur.", "If checked, debris from robots creates a smoke trail."},
 	{"Wenn angekreuzt, werden Lava, Wasser, Kraftfelder und Energie-\nfelder, die durchflogen werden koennen, leicht durchsichtig gemacht.", 
-	 If checked, lava, water, force fields and energy sparks that\ncan be crossed will be made slightly transparent.""},
+	 "If checked, lava, water, force fields and energy sparks that\ncan be crossed will be made slightly transparent."},
 #if 0
 	{"", ""},
 #endif
