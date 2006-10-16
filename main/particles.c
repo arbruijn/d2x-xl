@@ -465,13 +465,13 @@ if (iBuffer) {
 inline void SetParticleTexCoord (GLdouble u, GLdouble v, char orient)
 {
 if (orient == 1)
-	glMultiTexCoord2d (GL_TEXTURE0_ARB, 1.0 - v, u);
+	glTexCoord2d (1.0 - v, u);
 else if (orient == 2)
-	glMultiTexCoord2d (GL_TEXTURE0_ARB, 1.0 - u, 1.0 - v);
+	glTexCoord2d (1.0 - u, 1.0 - v);
 else if (orient == 3)
-	glMultiTexCoord2d (GL_TEXTURE0_ARB, v, 1.0 - u);
+	glTexCoord2d (v, 1.0 - u);
 else 
-	glMultiTexCoord2d (GL_TEXTURE0_ARB, u, v);
+	glTexCoord2d (u, v);
 }
 
 //------------------------------------------------------------------------------

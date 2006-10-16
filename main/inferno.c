@@ -2586,7 +2586,8 @@ gameData.reactor.countdown.nTimer = 0;
 gameData.reactor.countdown.nSecsLeft = 0;
 gameData.reactor.countdown.nTotalTime = 0;
 gameData.render.transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
-gameData.render.sphere.nFaceNodes = 4; //tesselate using quads
+gameData.render.shield.nFaceNodes = 4; //tesselate using quads
+gameData.render.monsterball.nFaceNodes = 4; //tesselate using quads
 gameData.boss.nCloakStartTime = 0;
 gameData.boss.nCloakEndTime = 0;
 gameData.boss.nLastTeleportTime = 0;
@@ -2637,8 +2638,10 @@ gameData.render.terrain.uvlList [1][0].u = f1_0;
 gameData.render.terrain.uvlList [1][1].u = f1_0;
 gameData.render.terrain.uvlList [1][1].v = f1_0;
 gameData.render.terrain.uvlList [1][2].v = f1_0;
-SetSpherePulse (&gameData.render.sphere.pulse, 0.02f, 0.5f);
-UseSpherePulse (&gameData.render.sphere.pulse);
+SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
+//UseSpherePulse (&gameData.render.shield.pulse);
+SetSpherePulse (&gameData.render.monsterball.pulse, 0.01f, 0.8f);
+//UseSpherePulse (&gameData.render.monsterball.pulse);
 gameData.smoke.iFreeSmoke = -1;
 gameData.smoke.iUsedSmoke = -1;
 InitEndLevelData ();

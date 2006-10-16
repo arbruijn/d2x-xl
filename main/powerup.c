@@ -300,18 +300,21 @@ void DrawBlobOutline (void)
 
 void DrawPowerup (object *objP)
 {
-	bitmap_index	*frameP = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].frames;
-	int				iFrame = objP->rtype.vclip_info.nCurFrame;
+if (objP->type == OBJ_MONSTERBALL)
+	DrawMonsterball (objP, 1.0f, 0.8f, 0.0f, 1.0f);
+else {
+		bitmap_index	*frameP = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].frames;
+		int				iFrame = objP->rtype.vclip_info.nCurFrame;
 #ifdef EDITOR
-blob_vertices[0] = 0x80000;
+		blob_vertices[0] = 0x80000;
 #endif
-
-DrawObjectBlob (objP, *frameP, frameP [iFrame], iFrame, NULL, 0);
+	DrawObjectBlob (objP, *frameP, frameP [iFrame], iFrame, NULL, 0);
 #ifdef EDITOR
-if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (Cur_object_index == OBJ_IDX (objP)))
-	if (blob_vertices[0] != 0x80000)
-		DrawBlobOutline ();
+	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (Cur_object_index == OBJ_IDX (objP)))
+		if (blob_vertices[0] != 0x80000)
+			DrawBlobOutline ();
 #endif
+	}
 }
 
 //------------------------------------------------------------------------------

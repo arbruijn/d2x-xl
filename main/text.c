@@ -1597,7 +1597,7 @@ char *defaultGameTexts [][2] = {
 	{"~Ruckeln durch Rauch reduzieren", "~Reduce smoke induced lag"},
 	{"~Raucheinstellungen...", "~Smoke Render Options..."},
 	{"Rauch-Einstellungen", "Smoke Render Options"},
-	{"laufendes Spiel ~Verlassen", "~Quit From Game"},
+	{"laufendes Spiel ~Verlassen", "~Quit Playing Game"},
 	{"gespeichertes Spiel ~Laden...", "~Load Saved Game..."},
 	{"aktuelles Spiel ~Speichern...", "~Save Current Game..."},
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},

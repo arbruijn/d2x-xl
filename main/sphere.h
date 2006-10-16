@@ -7,18 +7,20 @@
 
 #include "oof.h"
 
-int CreateSphere (tOOF_vector **pSphere);
+int CreateSphere (tSphereData *sdP);
 
-int RenderSphere (tOOF_vector *pPos, tOOF_vector *pSphere, int nFaces, float fRad,
-					   float red, float green, float blue, float alpha);
+int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
+					   float red, float green, float blue, float alpha, grs_bitmap *bmP);
 
-void DrawObjectSphere (object *objP, float red, float green, float blue, float alpha);
+void DrawShieldSphere (object *objP, float red, float green, float blue, float alpha);
 
-void DestroySphere (void);
+void DrawMonsterball (object *objP, float red, float green, float blue, float alpha);
+
+void DestroySphere (tSphereData *sdP);
 
 void SetSpherePulse (tPulseData *pPulse, float fSpeed, float fMin);
 
-void UseSpherePulse (tPulseData *pPulse);
+void UseSpherePulse (tSphereData *sdP, tPulseData *pPulse);
 
 #endif //__SPHERE_H
 

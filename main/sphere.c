@@ -89,7 +89,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int BuildSphereTri (tOOF_triangle **buf, int *pnFaces)
+int BuildSphereTri (tOOF_triangle **buf, int *pnFaces, int nTessDepth)
 {
     int		i, j, nFaces = 0;
 	 float	l;
@@ -103,7 +103,7 @@ for (i = 0; i < 8; i++) {
 	OOF_TriangleCenter (buf [0] + i);
 	}
 nFaces = 8;
-for (i = 0, j = 1; i < gameData.render.sphere.nTessDepth; i++, nFaces *= 6, j = !j) {
+for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 6, j = !j) {
 	TesselateSphereTri (buf [j], buf [!j], nFaces);
 	}
 *pnFaces = nFaces;
@@ -160,7 +160,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int BuildSphereQuad (tOOF_quad **buf, int *pnFaces)
+int BuildSphereQuad (tOOF_quad **buf, int *pnFaces, int nTessDepth)
 {
     int		i, j, nFaces;
 	 float	l;
@@ -174,7 +174,7 @@ for (i = 0; i < 6; i++) {
 	OOF_QuadCenter (buf [0] + i);
 	}
 nFaces = 6;
-for (i = 0, j = 1; i < gameData.render.sphere.nTessDepth; i++, nFaces *= 4, j = !j) {
+for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 4, j = !j) {
 	TesselateSphereQuad (buf [j], buf [!j], nFaces);
 	}
 *pnFaces = nFaces;
@@ -183,12 +183,12 @@ return !j;
 
 //------------------------------------------------------------------------------
 
-int CreateSphere (tOOF_vector **pSphere)
+int CreateSphere (tSphereData *sdP)
 {
 	int			nFaces, i, j;
 	tOOF_vector	*buf [2];
 
-if (gameData.render.sphere.nFaceNodes == 3) {
+if (sdP->nFaceNodes == 3) {
 	nFaces = 8;
 	j = 6;
 	}
@@ -196,34 +196,36 @@ else {
 	nFaces = 6;
 	j = 4;
 	}
-for (i = 0; i < gameData.render.sphere.nTessDepth; i++)
+for (i = 0; i < sdP->nTessDepth; i++)
 	nFaces *= j;
 for (i = 0; i < 2; i++) {
-	if (!(buf [i] = (tOOF_vector *) d_malloc (nFaces * (gameData.render.sphere.nFaceNodes + 1) * sizeof (tOOF_vector)))) {
+	if (!(buf [i] = (tOOF_vector *) d_malloc (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)))) {
 		if (i)
 			d_free (buf [i - 1]);
 		return -1;
 		}
 	}
-j = (gameData.render.sphere.nFaceNodes == 3) ? 
-	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces) : 
-	 BuildSphereQuad ((tOOF_quad **) buf, &nFaces);
+j = (sdP->nFaceNodes == 3) ? 
+	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces, sdP->nTessDepth) : 
+	 BuildSphereQuad ((tOOF_quad **) buf, &nFaces, sdP->nTessDepth);
 d_free (buf [!j]);
-*pSphere = buf [j];
+sdP->pSphere = buf [j];
 return nFaces;
 }
 
 //------------------------------------------------------------------------------
 
-tOOF_triangle *RotateSphere (tOOF_vector *pSphere, tOOF_vector *pRotSphere, tOOF_vector *pPos, 
-									  int nFaces, float fRad)
+tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vector *pPos, float fRad)
 {
 	tOOF_matrix	m;
-	tOOF_vector	h, v, p, *s = pRotSphere;
+	tOOF_vector	h, v, p, 
+					*pSphere = sdP->pSphere,
+					*s = pRotSphere;
+	int			nFaces;
 
 OOF_MatVms2Oof (&m, &viewInfo.view);
 OOF_VecVms2Oof (&p, &viewInfo.position);
-for (nFaces *= (gameData.render.sphere.nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
+for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
 	OOF_VecScale (&v, fRad);
 	OOF_VecRot (pRotSphere, OOF_VecInc (OOF_VecSub (&h, &v, &p), pPos), &m);
@@ -263,55 +265,75 @@ return pSphere;
 
 //------------------------------------------------------------------------------
 
-int RenderSphere (tOOF_vector *pPos, tOOF_vector *pSphere, int nFaces, float fRad,
-					   float red, float green, float blue, float alpha)
+int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
+					   float red, float green, float blue, float alpha, grs_bitmap *bmP)
 {
-	int			i, j;
+	static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
+
+	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
-					*pRotSphere = (tOOF_vector *) d_malloc (nFaces * (gameData.render.sphere.nFaceNodes + 1) * sizeof (tOOF_vector));
+					*pSphere = sdP->pSphere, 
+					*pRotSphere = (tOOF_vector *) d_malloc (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
+	float			*tcP = fTexCoord [0];
 
 if (!pRotSphere)
 	return -1;
-if (gameData.render.sphere.pPulse && gameStates.app.b40fpsTick) {
-	gameData.render.sphere.pPulse->fScale += gameData.render.sphere.pPulse->fDir;
-	if (gameData.render.sphere.pPulse->fScale > 1.0f) {
-		gameData.render.sphere.pPulse->fScale = 1.0f;
-		gameData.render.sphere.pPulse->fDir = -gameData.render.sphere.pPulse->fSpeed;
+if (sdP->pPulse && gameStates.app.b40fpsTick) {
+	sdP->pPulse->fScale += sdP->pPulse->fDir;
+	if (sdP->pPulse->fScale > 1.0f) {
+		sdP->pPulse->fScale = 1.0f;
+		sdP->pPulse->fDir = -sdP->pPulse->fSpeed;
 		}
-	else if (gameData.render.sphere.pPulse->fScale < gameData.render.sphere.pPulse->fMin) {
-		gameData.render.sphere.pPulse->fScale = gameData.render.sphere.pPulse->fMin;
-		gameData.render.sphere.pPulse->fDir = gameData.render.sphere.pPulse->fSpeed;
+	else if (sdP->pPulse->fScale < sdP->pPulse->fMin) {
+		sdP->pPulse->fScale = sdP->pPulse->fMin;
+		sdP->pPulse->fDir = sdP->pPulse->fSpeed;
 		}
 	}
 #if 1
-pSphere = (tOOF_vector *) RotateSphere (pSphere, pRotSphere, pPos, nFaces, fRad);
+pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, fRad);
 #else
 pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, fRad), 0, nFaces - 1);
 #endif
-glDisable (GL_TEXTURE_2D);
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDepthMask (0);
+if (sdP->nFaceNodes == 3)
+	bmP = NULL;
+else if (bmP) {
+	OglActiveTexture (GL_TEXTURE0_ARB);
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmP, 1))
+		bmP = NULL;
+	else if (BM_CURFRAME (bmP))
+		bmP = BM_CURFRAME (bmP);
+	}
+if (!bmP) {
+	glDisable (GL_TEXTURE_2D);
+	glDepthMask (0);
+	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-if (gameData.render.sphere.pPulse && gameData.render.sphere.pPulse->fScale) {
-	red *= gameData.render.sphere.pPulse->fScale;
-	green *= gameData.render.sphere.pPulse->fScale;
-	blue *= gameData.render.sphere.pPulse->fScale; 
+if (sdP->pPulse && sdP->pPulse->fScale) {
+	red *= sdP->pPulse->fScale;
+	green *= sdP->pPulse->fScale;
+	blue *= sdP->pPulse->fScale; 
 	}
 glColor4f (red, green, blue, alpha / 2);
-if (gameData.render.sphere.nFaceNodes == 3) {
+if (sdP->nFaceNodes == 3) {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++) 
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
-	glColor4f (red, green, blue, alpha);
+	if (bmP)
+		glColor4f (1, 1, 1, alpha);
+	else
+		glColor4f (red, green, blue, alpha);
 	glBegin (GL_TRIANGLES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
-		for (i = 0; i < 3; i++, ps++) 
+		for (i = 0; i < 3; i++, ps++) {
 			glVertex3f (ps->x, ps->y, -ps->z);
+			}
 	glEnd ();
 	}
 else {
@@ -320,11 +342,17 @@ else {
 		for (i = 0; i < 4; i++, ps++) 
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
-	glColor4f (red, green, blue, alpha);
+	if (bmP)
+		glColor4f (1, 1, 1, alpha);
+	else
+		glColor4f (red, green, blue, alpha);
 	glBegin (GL_QUADS);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
-		for (i = 0; i < 4; i++, ps++) 
+		for (i = 0; i < 4; i++, ps++) {
+			if (bmP)
+				glTexCoord2f (fTexCoord [i][0], fTexCoord [i][1]);
 			glVertex3f (ps->x, ps->y, -ps->z);
+			}
 	glEnd ();
 	}
 glDepthMask (1);
@@ -335,39 +363,66 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DrawObjectSphere (object *objP, float red, float green, float blue, float alpha)
+void DrawShieldSphere (object *objP, float red, float green, float blue, float alpha)
 {
-if (gameData.render.sphere.nTessDepth != gameOpts->render.textures.nQuality + 2) {
-	if (gameData.render.sphere.pSphere)
-		DestroySphere ();
-	gameData.render.sphere.nTessDepth = gameOpts->render.textures.nQuality + 2;
+if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
+	if (gameData.render.shield.pSphere)
+		DestroySphere (&gameData.render.shield);
+	gameData.render.shield.nTessDepth = gameOpts->render.textures.nQuality + 2;
 	}
-if (!gameData.render.sphere.pSphere)
-	gameData.render.sphere.nFaces = CreateSphere (&gameData.render.sphere.pSphere);
-if (gameData.render.sphere.nFaces > 0) {
+if (!gameData.render.shield.pSphere)
+	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
+if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
-	RenderSphere ((tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos), gameData.render.sphere.pSphere, 
-					  gameData.render.sphere.nFaces, f2fl (objP->size) * 1.1f, 
-					  red, green, blue, alpha);
+	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos),
+					  f2fl (objP->size) * 1.1f, red, green, blue, alpha, NULL);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void DestroySphere (void)
+void DrawMonsterball (object *objP, float red, float green, float blue, float alpha)
 {
-if (gameData.render.sphere.pSphere) {
-	d_free (gameData.render.sphere.pSphere);
-	gameData.render.sphere.pSphere = NULL;
-	gameData.render.sphere.nFaces = 0;
+if (!gameData.render.monsterball.pSphere) {
+	gameData.render.monsterball.nTessDepth = 3;
+	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
+	}
+if (gameData.render.monsterball.nFaces > 0) {
+	tOOF_vector	p;
+	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos), 
+					  f2fl (objP->size), red, green, blue, alpha, &gameData.hoard.monsterball.bm);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void UseSpherePulse (tPulseData *pPulse)
+void DestroySphere (tSphereData *sdP)
 {
-gameData.render.sphere.pPulse = pPulse;
+if (sdP) {
+	d_free (sdP->pSphere);
+	sdP->nFaces = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void DestroyShieldSphere (void)
+{
+DestroySphere (&gameData.render.shield);
+}
+
+//------------------------------------------------------------------------------
+
+void DestroyMonsterball (void)
+{
+DestroySphere (&gameData.render.monsterball);
+}
+
+//------------------------------------------------------------------------------
+
+void UseSpherePulse (tSphereData *sdP, tPulseData *pPulse)
+{
+sdP->pPulse = pPulse;
 }
 
 //------------------------------------------------------------------------------

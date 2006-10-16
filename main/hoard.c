@@ -71,6 +71,7 @@ memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip],
 		  sizeof (vclip));
 altBmP = (grs_bitmap *) d_malloc (sizeof (grs_bitmap));
 if (altBmP && 
+	 !ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) &&
 	 (ReadTGA ("mballgold#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) ||
 	  ReadTGA ("mballred#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0))) {
 	vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];

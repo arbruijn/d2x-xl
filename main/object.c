@@ -1064,9 +1064,9 @@ void RenderPlayerShield (object *objP)
 
 if (EGI_FLAG (bRenderShield, 0, 0) &&
 	 !(gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
-	UseSpherePulse (gameData.multi.spherePulse + i);
+	UseSpherePulse (&gameData.render.shield, gameData.multi.spherePulse + i);
 	if (gameData.multi.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
-		DrawObjectSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
+		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 	else if (gameData.multi.bWasHit [i]) {
 		if (gameData.multi.bWasHit [i] < 0) {
 			gameData.multi.bWasHit [i] = 1;
@@ -1079,11 +1079,11 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 			}
 		}
 	if (gameData.multi.bWasHit [i])
-		DrawObjectSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
 	else {
 		if (gameData.multi.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
-		DrawObjectSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
+		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
 		}
 	}
 }

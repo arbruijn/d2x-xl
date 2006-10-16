@@ -904,7 +904,8 @@ typedef struct tThrusterData {
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
-	tSphereData				sphere;
+	tSphereData				shield;
+	tSphereData				monsterball;
 	int						nPaletteGamma;
 	int						nComputedColors;
 	fix						xFlashEffect;
