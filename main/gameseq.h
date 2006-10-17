@@ -233,7 +233,7 @@ void DoPlayerDead(void);
 // Secret levels are -1,-2,-3
 int LoadLevel(int level_num, int page_in_textures);
 
-extern void gameseq_remove_unused_players();
+extern void GameSeqRemoveUnusedPlayers();
 
 extern void ShowHelp();
 extern void UpdatePlayerStats();

@@ -564,6 +564,45 @@ void DoPhysicsSimRot (object *objP)
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void UnstickObject (object *objP)
+{
+	fvi_info			hi;
+	fvi_query		fq;
+	int				fate;
+	short				nSegment;
+	fix				xSideDist, xSideDists [6];
+
+fq.p0 = fq.p1 = &objP->pos;
+fq.startSeg = objP->segnum;
+fq.rad = objP->size;
+fq.thisObjNum = OBJ_IDX (objP);
+fate = FindVectorIntersection (&fq, &hi);
+if (!fate)
+	return;
+GetSideDistsAll (&objP->pos, hi.hit.nSideSegment, xSideDists);
+if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->size / 100)) {
+#if 1
+	float r = 0.25f;
+#else
+	float r;
+	xSideDist = objP->size - xSideDist;
+	r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
+#endif
+	objP->pos.x += (fix) ((float) hi.hit.vNormal.x * r);
+	objP->pos.y += (fix) ((float) hi.hit.vNormal.y * r);
+	objP->pos.z += (fix) ((float) hi.hit.vNormal.z * r);
+	nSegment = FindSegByPoint (&objP->pos, objP->segnum);
+	if (nSegment != objP->segnum)
+		RelinkObject (OBJ_IDX (objP), nSegment);
+#if 0//def _DEBUG
+	if (objP->type == OBJ_PLAYER)
+		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+#endif
+	}
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 extern object *monsterballP;
 extern vms_vector boostedVel, minBoostedVel, maxBoostedVel;
 
@@ -580,7 +619,7 @@ void DoPhysicsSim (object *objP)
 	int				count=0;
 	short				objnum;
 	short				nWallHitSeg, nWallHitSide;
-	fvi_info			hit_info;
+	fvi_info			hi;
 	fvi_query		fq;
 	vms_vector		vSavePos;
 	int				nSaveSeg;
@@ -606,12 +645,15 @@ if (bDontMoveAIObjects)
 #endif
 pi = &objP->mtype.phys_info;
 DoPhysicsSimRot (objP);
+#if 1
 if (!(pi->velocity.x || pi->velocity.y || pi->velocity.z)) {
+	UnstickObject (objP);
 	if (objP == gameData.objs.console)
 		gameStates.gameplay.bSpeedBoost = 0;
 	if (!(pi->thrust.x || pi->thrust.y || pi->thrust.z))
 		return;
 	}
+#endif
 objnum = objP - gameData.objs.objects;
 nPhysSegs = 0;
 bSimpleFVI = (objP->type != OBJ_PLAYER);
@@ -687,9 +729,11 @@ do {
 		&vFrame, 
 		&objP->mtype.phys_info.velocity, 
 		FixMulDiv (xSimTime, xTimeScale, 100));
-	if ((vFrame.x==0) && (vFrame.y==0) && (vFrame.z==0))	
+	if ((vFrame.x == 0) && (vFrame.y == 0) && (vFrame.z == 0))
 		break;
+
 retryMove:
+
 	count++;
 	//	If retry count is getting large, then we are trying to do something stupid.
 	if (count > 3) 	{
@@ -717,21 +761,16 @@ retryMove:
 	if (objP->type == OBJ_PLAYER)
 		fq.flags |= FQ_GET_SEGLIST;
 
-//@@			if (GetSegMasks (&objP->pos, objP->segnum, 0).centerMask)
-//@@				Int3 ();
-
-vSaveP0 = *fq.p0;
-vSaveP1 = *fq.p1;
-
-
-	fate = FindVectorIntersection (&fq, &hit_info);
+	vSaveP0 = *fq.p0;
+	vSaveP1 = *fq.p1;
+	fate = FindVectorIntersection (&fq, &hi);
 #ifdef _DEBUG
 	if (fate == HIT_WALL)
-		fate = FindVectorIntersection (&fq, &hit_info);
+		fate = FindVectorIntersection (&fq, &hi);
 #endif
 	//	Matt: Mike's hack.
 	if (fate == HIT_OBJECT) {
-		object	*objp = gameData.objs.objects + hit_info.hit.nObject;
+		object	*objp = gameData.objs.objects + hi.hit.nObject;
 
 		if ((objp->type == OBJ_WEAPON) && ((objp->id == PROXIMITY_ID) || (objp->id == SUPERPROX_ID)))
 			count--;
@@ -750,17 +789,17 @@ vSaveP1 = *fq.p1;
 	if (objP->type == OBJ_PLAYER) {
 		int i;
 
-		if (nPhysSegs && physSegList [nPhysSegs-1]==hit_info.segList [0])
+		if (nPhysSegs && physSegList [nPhysSegs-1]==hi.segList [0])
 			nPhysSegs--;
 
-		for (i=0; (i<hit_info.nSegments) && (nPhysSegs<MAX_FVI_SEGS-1); )
-			physSegList [nPhysSegs++] = hit_info.segList [i++];
+		for (i=0; (i < hi.nSegments) && (nPhysSegs<MAX_FVI_SEGS-1); )
+			physSegList [nPhysSegs++] = hi.segList [i++];
 	}
 
-	ipos = hit_info.hit.vPoint;
-	iseg = hit_info.hit.nSegment;
-	nWallHitSide = hit_info.hit.nSide;
-	nWallHitSeg = hit_info.hit.nSideSegment;
+	ipos = hi.hit.vPoint;
+	iseg = hi.hit.nSegment;
+	nWallHitSide = hi.hit.nSide;
+	nWallHitSeg = hi.hit.nSideSegment;
 	if (iseg==-1) {		//some sort of horrible error
 		if (objP->type == OBJ_WEAPON)
 			objP->flags |= OF_SHOULD_BE_DEAD;
@@ -796,7 +835,7 @@ vSaveP1 = *fq.p1;
 			VmVecScaleFrac (&vCenter, 1, 10);
 			}
 		VmVecDec (&objP->pos, &vCenter);
-		return;
+		//return;
 		}
 
 	//calulate new sim time
@@ -823,15 +862,10 @@ vSaveP1 = *fq.p1;
 			}
 		else {
 //retryMove2:
-			//if (objP == debugObjP)
-			//	//printf ("   vMoved = %x %x %x\n", XYZ (&vMoved);
 			attempted_dist = VmVecMag (&vFrame);
 			xSimTime = FixMulDiv (xSimTime, attempted_dist-actual_dist, attempted_dist);
 			xMovedTime = xOldSimTime - xSimTime;
 			if ((xSimTime < 0) || (xSimTime > xOldSimTime)) {
-#if TRACE				
-				con_printf (CON_DEBUG, "Bogus xSimTime = %x, old = %x\n", xSimTime, xOldSimTime);
-#endif
 				xSimTime = xOldSimTime;
 				xMovedTime = 0;
 				}
@@ -848,12 +882,12 @@ vSaveP1 = *fq.p1;
 #if 0//def _DEBUG
 			if (objP->type == OBJ_PLAYER)
 				HUDMessage (0, "WALL CONTACT");
-			fate = FindVectorIntersection (&fq, &hit_info);
+			fate = FindVectorIntersection (&fq, &hi);
 #endif
 			VmVecSub (&vMoved, &objP->pos, &vSavePos);
-			xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
+			xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
 			if (xWallPart && (xMovedTime > 0) && (xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0) {
-				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
+				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "BUMP!");
@@ -864,7 +898,7 @@ vSaveP1 = *fq.p1;
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
-				ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
+				ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 				}
 			Assert (nWallHitSeg > -1);
 			Assert (nWallHitSide > -1);
@@ -877,9 +911,9 @@ vSaveP1 = *fq.p1;
 				xSideDist = objP->size - xSideDist;
 				r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
 #endif
-				objP->pos.x += (fix) ((float) hit_info.hit.vNormal.x * r);
-				objP->pos.y += (fix) ((float) hit_info.hit.vNormal.y * r);
-				objP->pos.z += (fix) ((float) hit_info.hit.vNormal.z * r);
+				objP->pos.x += (fix) ((float) hi.hit.vNormal.x * r);
+				objP->pos.y += (fix) ((float) hi.hit.vNormal.y * r);
+				objP->pos.z += (fix) ((float) hi.hit.vNormal.z * r);
 				nSegment = FindSegByPoint (&objP->pos, objP->segnum);
 				if (nSegment != objP->segnum)
 					RelinkObject (OBJ_IDX (objP), nSegment);
@@ -904,7 +938,7 @@ vSaveP1 = *fq.p1;
 					int bCheckVel = 0;
 					//We're constrained by wall, so subtract wall part from
 					//velocity vector
-					xWallPart = VmVecDot (&hit_info.hit.vNormal, &objP->mtype.phys_info.velocity);
+					xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mtype.phys_info.velocity);
 					if (forcefield_bounce || (objP->mtype.phys_info.flags & PF_BOUNCE)) {		//bounce off wall
 						xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 						if (forcefield_bounce) {
@@ -921,7 +955,7 @@ vSaveP1 = *fq.p1;
 							}
 						bBounced = 1;		//this object bBounced
 						}
-					VmVecScaleInc (&objP->mtype.phys_info.velocity, &hit_info.hit.vNormal, -xWallPart);
+					VmVecScaleInc (&objP->mtype.phys_info.velocity, &hi.hit.vNormal, -xWallPart);
 					if (bCheckVel) {
 						fix vel = VmVecMag (&objP->mtype.phys_info.velocity);
 						if (vel > MAX_OBJECT_VEL)
@@ -943,10 +977,10 @@ vSaveP1 = *fq.p1;
 			// ignores this object.
 			//if (bSpeedBoost && (objP == gameData.objs.console))
 			//	break;
-			Assert (hit_info.hit.nObject != -1);
-			ppos0 = &gameData.objs.objects [hit_info.hit.nObject].pos;
+			Assert (hi.hit.nObject != -1);
+			ppos0 = &gameData.objs.objects [hi.hit.nObject].pos;
 			ppos1 = &objP->pos;
-			size0 = gameData.objs.objects [hit_info.hit.nObject].size;
+			size0 = gameData.objs.objects [hi.hit.nObject].size;
 			size1 = objP->size;
 			//	Calculcate the hit point between the two objects.
 			Assert (size0+size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
@@ -955,15 +989,15 @@ vSaveP1 = *fq.p1;
 			VmVecSub (&vHitPos, ppos1, ppos0);
 			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 			vOldVel = objP->mtype.phys_info.velocity;
-			CollideTwoObjects (objP, &gameData.objs.objects [hit_info.hit.nObject], &vHitPos);
+			CollideTwoObjects (objP, &gameData.objs.objects [hi.hit.nObject], &vHitPos);
 			if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
 				objP->mtype.phys_info.velocity = vOldVel;
 
 			// Let object continue its movement
 			if (!(objP->flags&OF_SHOULD_BE_DEAD) )	{
 				if (objP->mtype.phys_info.flags&PF_PERSISTENT || (vOldVel.x == objP->mtype.phys_info.velocity.x && vOldVel.y == objP->mtype.phys_info.velocity.y && vOldVel.z == objP->mtype.phys_info.velocity.z)) {
-					//if (gameData.objs.objects [hit_info.hit.nObject].type == OBJ_POWERUP)
-						ignoreObjList [nIgnoreObjs++] = hit_info.hit.nObject;
+					//if (gameData.objs.objects [hi.hit.nObject].type == OBJ_POWERUP)
+						ignoreObjList [nIgnoreObjs++] = hi.hit.nObject;
 					bRetry = 1;
 					}
 				}
@@ -1095,6 +1129,7 @@ vSaveP1 = *fq.p1;
 				objP->flags |= OF_SHOULD_BE_DEAD;
 		}
 	}
+UnstickObject (objP);
 }
 #else
 
@@ -1109,7 +1144,7 @@ void DoPhysicsSim (object *objP)
 	int				count=0;
 	short				objnum;
 	short				nWallHitSeg, nWallHitSide;
-	fvi_info			hit_info;
+	fvi_info			hi;
 	fvi_query		fq;
 	vms_vector		vSavePos;
 	int				nSaveSeg;
@@ -1266,21 +1301,21 @@ retryMove:
 vSaveP0 = *fq.p0;
 vSaveP1 = *fq.p1;
 
-		fate = FindVectorIntersection (&fq, &hit_info);
+		fate = FindVectorIntersection (&fq, &hi);
 #ifdef _DEBUG
 		if (fate == HIT_BAD_P0) {
 			objP->segnum = FindSegByPoint (&objP->pos, objP->segnum);
 			if (fq.startSeg != objP->segnum) {
 				fq.startSeg = objP->segnum;
-				fate = FindVectorIntersection (&fq, &hit_info);
+				fate = FindVectorIntersection (&fq, &hi);
 				}
 			}
 		else if (fate)// == HIT_WALL)
-			fate = FindVectorIntersection (&fq, &hit_info);
+			fate = FindVectorIntersection (&fq, &hi);
 #endif
 		//	Matt: Mike's hack.
 		if (fate == HIT_OBJECT) {
-			object	*objP = gameData.objs.objects + hit_info.hit.nObject;
+			object	*objP = gameData.objs.objects + hi.hit.nObject;
 
 			if ((objP->type == OBJ_WEAPON) && ((objP->id == PROXIMITY_ID) || (objP->id == SUPERPROX_ID)))
 				count--;
@@ -1299,23 +1334,23 @@ vSaveP1 = *fq.p1;
 		if (objP->type == OBJ_PLAYER) {
 			int i;
 
-			if (nPhysSegs && physSegList [nPhysSegs-1] == hit_info.segList [0])
+			if (nPhysSegs && physSegList [nPhysSegs-1] == hi.segList [0])
 				nPhysSegs--;
 
-			for (i = 0; (i < hit_info.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1);)
-				physSegList [nPhysSegs++] = hit_info.segList [i++];
+			for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1);)
+				physSegList [nPhysSegs++] = hi.segList [i++];
 			}
 
-		ipos = hit_info.hit.vPoint;
-		iseg = hit_info.hit.nSegment;
-		nWallHitSide = hit_info.hit.nSide;
-		nWallHitSeg = hit_info.hit.nSideSegment;
+		ipos = hi.hit.vPoint;
+		iseg = hi.hit.nSegment;
+		nWallHitSide = hi.hit.nSide;
+		nWallHitSeg = hi.hit.nSideSegment;
 		if (iseg==-1) {		//some sort of horrible error
 #ifdef _DEBUG
 #	if TRACE				
 			con_printf (1, "iseg==-1 in physics! Object = %i, type = %i (%s)\n", 
 				OBJ_IDX (objP), objP->type, szObjectTypeNames [objP->type]);
-			fate = FindVectorIntersection (&fq, &hit_info);
+			fate = FindVectorIntersection (&fq, &hi);
 //			CBRK (1);
 //			goto iSegError;
 #	endif
@@ -1439,11 +1474,11 @@ vSaveP1 = *fq.p1;
 //					break;
 
 				VmVecSub (&vMoved, &objP->pos, &vSavePos);
-				xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
+				xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
 				if (xWallPart != 0 && xMovedTime>0 && (xHitSpeed=-FixDiv (xWallPart, xMovedTime))>0)
-					CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
+					CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 				else
-					ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
+					ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 				Assert (nWallHitSeg > -1);
 				Assert (nWallHitSide > -1);
 				if (!(objP->flags&OF_SHOULD_BE_DEAD))	{
@@ -1461,7 +1496,7 @@ vSaveP1 = *fq.p1;
 						int bCheckVel=0;
 						//We're constrained by wall, so subtract wall part from
 						//velocity vector
-						xWallPart = VmVecDot (&hit_info.hit.vNormal, &objP->mtype.phys_info.velocity);
+						xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mtype.phys_info.velocity);
 						if (forcefield_bounce || (objP->mtype.phys_info.flags & PF_BOUNCE)) {		//bounce off wall
 							xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 							if (forcefield_bounce) {
@@ -1478,7 +1513,7 @@ vSaveP1 = *fq.p1;
 								}
 							bBounced = 1;		//this object bBounced
 						}
-						VmVecScaleInc (&objP->mtype.phys_info.velocity, &hit_info.hit.vNormal, -xWallPart);
+						VmVecScaleInc (&objP->mtype.phys_info.velocity, &hi.hit.vNormal, -xWallPart);
 						if (bCheckVel) {
 							fix vel = VmVecMagQuick (&objP->mtype.phys_info.velocity);
 							if (vel > MAX_OBJECT_VEL)
@@ -1498,13 +1533,13 @@ vSaveP1 = *fq.p1;
 				// ignores this object.
 				//if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
 				//	break;
-				Assert (hit_info.hit.nObject != -1);
+				Assert (hi.hit.nObject != -1);
 				//	Calculcate the hit point between the two gameData.objs.objects.
 				{	vms_vector	*ppos0, *ppos1, pos_hit;
 					fix			size0, size1;
-					ppos0 = &gameData.objs.objects [hit_info.hit.nObject].pos;
+					ppos0 = &gameData.objs.objects [hi.hit.nObject].pos;
 					ppos1 = &objP->pos;
-					size0 = gameData.objs.objects [hit_info.hit.nObject].size;
+					size0 = gameData.objs.objects [hi.hit.nObject].size;
 					size1 = objP->size;
 					Assert (size0+size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 					//VmVecScale (VmVecSub (&pos_hit, ppos1, ppos0), FixDiv (size0, size0 + size1);
@@ -1512,7 +1547,7 @@ vSaveP1 = *fq.p1;
 					VmVecSub (&pos_hit, ppos1, ppos0);
 					VmVecScaleAdd (&pos_hit, ppos0, &pos_hit, FixDiv (size0, size0 + size1));
 					vOldVel = objP->mtype.phys_info.velocity;
-					CollideTwoObjects (objP, gameData.objs.objects + hit_info.hit.nObject, &pos_hit);
+					CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &pos_hit);
 					if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console)))
 						objP->mtype.phys_info.velocity = vOldVel;
 				}
@@ -1527,8 +1562,8 @@ vSaveP1 = *fq.p1;
 						 ((vOldVel.x == objP->mtype.phys_info.velocity.x) && 
 						  (vOldVel.y == objP->mtype.phys_info.velocity.y) && 
 						  (vOldVel.z == objP->mtype.phys_info.velocity.z))) {
-						//if (gameData.objs.objects [hit_info.hit.nObject].type == OBJ_POWERUP)
-							ignoreObjList [nIgnoreObjs++] = hit_info.hit.nObject;
+						//if (gameData.objs.objects [hi.hit.nObject].type == OBJ_POWERUP)
+							ignoreObjList [nIgnoreObjs++] = hi.hit.nObject;
 						bRetry = 1;
 						}
 					}
@@ -1690,8 +1725,6 @@ if (!gameStates.gameplay.bSpeedBoost || (objP != gameData.objs.console))
 	VmVecScaleInc (&objP->mtype.phys_info.velocity, 
 						vForce, 
 						FixDiv (f1_0, objP->mtype.phys_info.mass));
-
-
 }
 
 //	----------------------------------------------------------------

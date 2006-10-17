@@ -713,15 +713,17 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 //the collision.
 int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
-	vms_vector	vForce, vh, v0, v1, vr;
+	vms_vector	vForce, v0, v1, vh, vr;
 #ifdef _DEBUG
 	vms_vector	vn0, vn1;
 #endif
 	fixang		angle;
-	fix			mag, dot;
+	fix			mag, dot, m0, m1;
 	object		*t;
 
-	static int nCallDepth = 0;
+#ifdef _DEBUG
+	static int nBumps = 0;
+#endif
 if (objP0->movement_type != MT_PHYSICS)
 	t = objP1;
 else if (objP1->movement_type != MT_PHYSICS)
@@ -743,8 +745,6 @@ v0 = objP0->mtype.phys_info.velocity;
 angle = VmVecDeltaAng (&vh, &v0, NULL);
 if (angle >= F1_0 / 4)
 	return 0;	// don't bump if moving away
-VmVecSub (&vh, vHitPt, &objP1->pos);
-//angle = VmVecDeltaAng (&vh, &v0, NULL);
 v1 = objP1->mtype.phys_info.velocity;
 VmVecSub (&vForce, &v0, &v1);
 #ifdef _DEBUG
@@ -752,32 +752,61 @@ vn0 = v0;
 VmVecNormalize (&vn0);
 vn1 = v1;
 VmVecNormalize (&vn1);
-HUDMessage (0, "%1.2f - %1.2f: %1.2f (%1.2f)", 
+m0 = objP0->mtype.phys_info.mass;
+m1 = objP1->mtype.phys_info.mass;
+nBumps++;
+HUDMessage (0, "%d:%1.2f - %d:%1.2f  v%1.2f (d%1.2f) m%d", 
+				objP0->type,
 				f2fl (VmVecMag (&v0)),
+				objP1->type,
 				f2fl (VmVecMag (&v1)),
 				f2fl (VmVecMag (&vForce)),
-				f2fl (VmVecDot (&vn0, &vn1)));
+				f2fl (VmVecDot (&vn0, &vn1)), 
+				m0 + m1);
+LogErr ("(%d) %d:%1.2f - %d:%1.2f  v%1.2f (d%1.2f) m%d\n", 
+		  nBumps,
+			objP0->type,
+			f2fl (VmVecMag (&v0)),
+			objP1->type,
+			f2fl (VmVecMag (&v1)),
+			f2fl (VmVecMag (&vForce)),
+			f2fl (VmVecDot (&vn0, &vn1)), 
+			m0 + m1);
 #endif
-VmVecScaleFrac (&vForce, 
-					 2 * FixMul (objP0->mtype.phys_info.mass, objP1->mtype.phys_info.mass), 
-					 objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass);
+VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
-if (mag < (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200)
+if (mag < (m0 + m1) / 200)
 	return 0;	// don't bump if force too low
 //HUDMessage (0, "%d %d", mag, (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200);
-VmVecNormalize (&vh);
-vr = vh;
-VmVecNegate (&vh);
-dot = VmVecDot (&v0, &vr);
-VmVecScale (&vh, mag);
-if (objP1->type == OBJ_PLAYER)
-	dot = dot;
-BumpThisObject (objP1, objP0, &vh, bDamage);
-VmVecScaleFrac (&vr, 2 * dot, F1_0);
-VmVecDec (&vr, &v0);
-VmVecScale (&vr, mag);
-VmVecNegate (&vr);
-BumpThisObject (objP0, objP1, &vr, bDamage);
+if (EGI_FLAG (bUseHitAngles, 0, 0)) {
+	// exert force in the direction of the hit point to the object's center
+	VmVecSub (&vh, vHitPt, &objP1->pos);
+	VmVecNormalize (&vh);
+	vr = vh;
+	VmVecNegate (&vh);
+	VmVecScale (&vh, mag);
+	BumpThisObject (objP1, objP0, &vh, bDamage);
+	if (VmVecMag (&objP0->mtype.phys_info.velocity) > 250)
+		mag = mag;
+	// compute reflection vector. The vector from the other object's center to the hit point serves as
+	// normal.
+	v1 = v0;
+	VmVecNormalize (&v1);
+	dot = VmVecDot (&v1, &vr);
+	VmVecScale (&vr, 2 * dot);
+	VmVecDec (&vr, &v0);
+	VmVecNormalize (&vr);
+	VmVecScale (&vr, mag);
+	VmVecNegate (&vr);
+	BumpThisObject (objP0, objP1, &vr, bDamage);
+	if (VmVecMag (&objP1->mtype.phys_info.velocity) > 250)
+		mag = mag;
+	}
+else {
+	BumpThisObject (objP1, objP0, &vForce, bDamage);
+	VmVecNegate (&vForce);
+	BumpThisObject (objP0, objP1, &vForce, bDamage);
+	}
 return 1;
 }
 

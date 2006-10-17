@@ -69,27 +69,28 @@ gameData.hoard.monsterball.nClip = gameData.eff.nClips [0]++;
 memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip], 
 		  &gameData.eff.vClips [0][gameData.hoard.orb.nClip],
 		  sizeof (vclip));
-altBmP = (grs_bitmap *) d_malloc (sizeof (grs_bitmap));
-if (altBmP && 
-	 !ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) &&
-	 (ReadTGA ("mballgold#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) ||
-	  ReadTGA ("mballred#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0))) {
-	vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];
-	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
-		Assert (nBitmap < MAX_BITMAP_FILES);
-		vcP->frames [i].index = nBitmap;
-		InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
-								gameData.hoard.monsterball.nWidth, 
-								gameData.hoard.monsterball.nHeight, 
-								BM_FLAG_TRANSPARENT, 
-								NULL);
+if (!ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0)) {
+	altBmP = (grs_bitmap *) d_malloc (sizeof (grs_bitmap));
+	if (altBmP && 
+		(ReadTGA ("mballgold#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) ||
+		ReadTGA ("mballred#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0))) {
+		vcP = &gameData.eff.vClips [0][gameData.hoard.monsterball.nClip];
+		for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
+			Assert (nBitmap < MAX_BITMAP_FILES);
+			vcP->frames [i].index = nBitmap;
+			InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
+									gameData.hoard.monsterball.nWidth, 
+									gameData.hoard.monsterball.nHeight, 
+									BM_FLAG_TRANSPARENT, 
+									NULL);
+			}
+		vcP->flags |= WCF_ALTFMT;
+		bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [0].index;
+		BM_OVERRIDE (bmP) = altBmP;
+		*altBmP = gameData.hoard.monsterball.bm;
+		altBmP->bm_type = BM_TYPE_ALT;
+		altBmP->bm_data.alt.bm_frameCount = altBmP->bm_props.h / altBmP->bm_props.w;
 		}
-	bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [0].index;
-	BM_OVERRIDE (bmP) = altBmP;
-	*altBmP = gameData.hoard.monsterball.bm;
-	altBmP->bm_type = BM_TYPE_ALT;
-	altBmP->bm_data.alt.bm_frameCount = altBmP->bm_props.h / altBmP->bm_props.w;
-	vcP->flags |= WCF_ALTFMT;
 	}
 //Create monsterball powerup
 ptP = gameData.objs.pwrUp.info + POW_MONSTERBALL;
@@ -261,6 +262,8 @@ gameData.hoard.orb.bm.glTexture = 0;
 gameData.hoard.goal.bm.glTexture = 0;
 if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
 	BM_OVERRIDE (&gameData.hoard.monsterball.bm)->glTexture = 0;
+else
+	gameData.hoard.monsterball.bm.glTexture = 0;
 for (i = 0; i < 2; i++)
 	gameData.hoard.icon [i].bm.glTexture = 0;
 }
@@ -269,7 +272,8 @@ for (i = 0; i < 2; i++)
 
 void FreeHoardData (void)
 {
-	int	i;
+	int			i;
+	grs_bitmap	*bmP;
 
 if (!gameData.hoard.bInitialized)
 	return;
@@ -277,10 +281,12 @@ d_free (gameData.hoard.orb.bm.bm_texBuf);
 gameData.hoard.orb.bm.bm_texBuf = NULL;
 d_free (gameData.hoard.goal.bm.bm_texBuf);
 gameData.hoard.goal.bm.bm_texBuf = NULL;
-if (BM_OVERRIDE (&gameData.hoard.monsterball.bm)) {
-	d_free (BM_OVERRIDE (&gameData.hoard.monsterball.bm));
-	memset (&gameData.hoard.orb.bm, 0, sizeof (grs_bitmap));
-	}
+bmP = &gameData.hoard.monsterball.bm;
+bmP = BM_OVERRIDE (&gameData.hoard.monsterball.bm) ? BM_OVERRIDE (&gameData.hoard.monsterball.bm) : &gameData.hoard.monsterball.bm;
+d_free (bmP->bm_texBuf);
+if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
+	d_free (bmP);
+memset (&gameData.hoard.orb.bm, 0, sizeof (grs_bitmap));
 for (i = 0; i < 2; i++) {
 	d_free (gameData.hoard.icon [i].bm.bm_texBuf);
 	gameData.hoard.icon [i].bm.bm_texBuf = NULL;

@@ -47,8 +47,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int bShowMemInfo = 0;
 
 #ifdef _DEBUG
-#	define CHECKID1 484
-#	define CHECKID2 2807
+#	define CHECKID1 1977
+#	define CHECKID2 1979
 #endif
 
 #ifdef D2X_MEM_HANDLER
@@ -319,7 +319,7 @@ if (!(buffer || bOutOfMemory))
 if (!buffer)	
 #endif
 	{
-	LogErr ("\nMEM_FREE_NULL: An attempt was made to free the null pointer.\n");
+	//LogErr ("\nMEM_FREE_NULL: An attempt was made to free the null pointer.\n");
 #ifdef _DEBUG
 	//Warning ("MEM: Freeing the NULL pointer!");
 #endif

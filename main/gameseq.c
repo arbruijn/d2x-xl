@@ -610,7 +610,7 @@ if (IS_MAC_SHARE && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCu
 
 //------------------------------------------------------------------------------
 
-void gameseq_remove_unused_players ()
+void GameSeqRemoveUnusedPlayers ()
 {
 	int i;
 
@@ -839,7 +839,7 @@ void editor_reset_stuff_on_level ()
 	VerifyConsoleObject ();
 	gameData.reactor.bDestroyed = 0;
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		gameseq_remove_unused_players ();
+		GameSeqRemoveUnusedPlayers ();
 	InitCockpit ();
 	InitRobotsForLevel ();
 	InitAIObjects ();
@@ -1585,7 +1585,7 @@ HUDClearMessages ();
 AutomapClearVisited ();
 // --	init_player_stats_level ();
 gameData.objs.viewer = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
-gameseq_remove_unused_players ();
+GameSeqRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 InitCockpit ();
@@ -2147,8 +2147,9 @@ if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
 GameSeqInitNetworkPlayers (); // Initialize the gameData.multi.players array for
-#if 0//def _DEBUG										  // this level
+#ifdef _DEBUG										  // this level
 InitHoardData ();
+SetMonsterballForces ();
 #endif
 //	gameData.objs.viewer = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
 if (gameData.multi.nPlayers > gameData.multi.nPlayerPositions) {
@@ -2199,7 +2200,7 @@ if (gameData.app.nGameMode & GM_MULTI)
 else
 	FindMonsterball (); //will simply remove all Monsterballs
 #endif
-gameseq_remove_unused_players ();
+GameSeqRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;

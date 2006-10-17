@@ -1749,9 +1749,9 @@ void LoadGameTexts(void);
 #define TXT_SAVE_GAME2				GT(804)
 #define TXT_SMOKE_DEBRIS			GT(805)
 #define TXT_AUTO_TRANSPARENCY		GT(806)
+#define TXT_USE_HITANGLES			GT(807)
 #if 0
 
-#define TXT_				GT(806)
 #define TXT_				GT(807)
 #define TXT_				GT(808)
 #define TXT_				GT(809)
@@ -2182,10 +2182,10 @@ void LoadGameTexts(void);
 #define HTX_SAVE_GAME				HT(216)				
 #define HTX_ADVRND_DEBRISSMOKE	HT(217)				
 #define HTX_RENDER_AUTOTRANSP		HT(218)				
+#define HTX_GPLAY_HITANGLES		HT(219)				
 
 #if 0
 				
-#define HTX_					HT(219)				
 #define HTX_					HT(220)				
 #define HTX_					HT(221)				
 #define HTX_					HT(222)				

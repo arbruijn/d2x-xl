@@ -262,15 +262,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //new_pnt is the found point on the plane
 //plane_pnt & plane_norm describe the plane
 //p0 & p1 are the ends of the line
-int FindPlaneLineIntersection(vms_vector *new_pnt, vms_vector *plane_pnt, vms_vector *plane_norm, vms_vector *p0, vms_vector *p1, fix rad)
+int FindPlaneLineIntersection(vms_vector *new_pnt, vms_vector *plane_pnt, vms_vector *plane_norm, 
+										vms_vector *p0, vms_vector *p1, fix rad)
 {
 	vms_vector d, w;
 	fix num, den, k;
 
 VmVecSub (&d, p1, p0);
 VmVecSub (&w, p0, plane_pnt);
-num =  VmVecDot(plane_norm, &w);
-den = -VmVecDot(plane_norm, &d);
+num =  VmVecDot (plane_norm, &w);
+den = -VmVecDot (plane_norm, &d);
 num -= rad;			//move point out by rad
 if (!den)
 	return 0;
@@ -291,6 +292,8 @@ VmVecScaleFrac (&d, num, den);
 VmVecAdd (new_pnt, p0, &d);
 return 1;
 }
+
+//	-----------------------------------------------------------------------------
 
 typedef struct vec2d {
 	fix i, j;
@@ -323,126 +326,102 @@ uint CheckPointToFace(vms_vector *checkp, side *s, int facenum, int nv, int *ver
 	uint edgemask;
 	fix check_i, check_j;
 	vms_vector_array *v0, *v1;
+	vec2d edgevec, checkvec;
+	fix d;
 
-	#ifdef COMPACT_SEGS
-		GetSideNormal(sp, s-sp->sides, facenum, (vms_vector *)&norm);
-	#else
-		memcpy(&norm, &s->normals [facenum], sizeof(vms_vector_array));
-	#endif
-	checkp_array = (vms_vector_array *)checkp;
+#ifdef COMPACT_SEGS
+GetSideNormal (sp, s-sp->sides, facenum, (vms_vector *)&norm);
+#else
+memcpy (&norm, &s->normals [facenum], sizeof(vms_vector_array));
+#endif
+checkp_array = (vms_vector_array *)checkp;
 
-	//now do 2d check to see if point is in side
+//now do 2d check to see if point is in side
+//project polygon onto plane by finding largest component of normal
+t.x = labs (norm.xyz [0]); 
+t.y = labs (norm.xyz [1]); 
+t.z = labs (norm.xyz [2]);
 
-	//project polygon onto plane by finding largest component of normal
-	t.x = labs(norm.xyz [0]); t.y = labs(norm.xyz [1]); t.z = labs(norm.xyz [2]);
-
-	if (t.x > t.y) if (t.x > t.z) biggest=0; else biggest=2;
-	else if (t.y > t.z) biggest=1; else biggest=2;
-
-	if (norm.xyz [biggest] > 0) {
-		i = ij_table [biggest][0];
-		j = ij_table [biggest][1];
+if (t.x > t.y) 
+	if (t.x > t.z) 
+		biggest=0; 
+	else 
+		biggest=2;
+	else if (t.y > t.z) 
+		biggest = 1; 
+	else 
+		biggest=2;
+if (norm.xyz [biggest] > 0) {
+	i = ij_table [biggest][0];
+	j = ij_table [biggest][1];
 	}
-	else {
-		i = ij_table [biggest][1];
-		j = ij_table [biggest][0];
+else {
+	i = ij_table [biggest][1];
+	j = ij_table [biggest][0];
 	}
-
-	//now do the 2d problem in the i, j plane
-
-	check_i = checkp_array->xyz [i];
-	check_j = checkp_array->xyz [j];
-
-	for (edge = edgemask = 0; edge < nv; edge++) {
-		vec2d edgevec, checkvec;
-		fix d;
-
-		v0 = (vms_vector_array *)&gameData.segs.vertices [vertex_list [facenum*3+edge]];
-		v1 = (vms_vector_array *)&gameData.segs.vertices [vertex_list [facenum*3+((edge+1)%nv)]];
-
-		edgevec.i = v1->xyz [i] - v0->xyz [i];
-		edgevec.j = v1->xyz [j] - v0->xyz [j];
-
-		checkvec.i = check_i - v0->xyz [i];
-		checkvec.j = check_j - v0->xyz [j];
-
-		d = FixMul(checkvec.i, edgevec.j) - FixMul(checkvec.j, edgevec.i);
-
-		if (d < 0)              		//we are outside of triangle
-			edgemask |= (1<<edge);
+//now do the 2d problem in the i, j plane
+check_i = checkp_array->xyz [i];
+check_j = checkp_array->xyz [j];
+for (edge = edgemask = 0; edge < nv; edge++) {
+	v0 = (vms_vector_array *) &gameData.segs.vertices [vertex_list [facenum * 3 + edge]];
+	v1 = (vms_vector_array *) &gameData.segs.vertices [vertex_list [facenum * 3 + ((edge + 1) % nv)]];
+	edgevec.i = v1->xyz [i] - v0->xyz [i];
+	edgevec.j = v1->xyz [j] - v0->xyz [j];
+	checkvec.i = check_i - v0->xyz [i];
+	checkvec.j = check_j - v0->xyz [j];
+	d = FixMul (checkvec.i, edgevec.j) - FixMul (checkvec.j, edgevec.i);
+	if (d < 0)              		//we are outside of triangle
+		edgemask |= (1 << edge);
 	}
-
-	return edgemask;
-
+return edgemask;
 }
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace(vms_vector *pnt, side *s, int facenum, int nv, fix rad, int *vertex_list)
+int CheckSphereToFace (vms_vector *pnt, side *s, int facenum, int nv, fix rad, int *vertex_list)
 {
-	vms_vector checkp=*pnt;
+	vms_vector checkp = *pnt;
+	vms_vector edgevec, checkvec;            //this time, real 3d vectors
+	vms_vector closest_point;
+	fix edgelen, d, dist;
+	vms_vector *v0, *v1;
+	int itype;
+	int edgenum;
 	uint edgemask;
 
-	//now do 2d check to see if point is in side
-
-	edgemask = CheckPointToFace(pnt, s, facenum, nv, vertex_list);
-
-	//we've gone through all the sides, are we inside?
-
-	if (edgemask == 0)
-		return IT_FACE;
-	else {
-		vms_vector edgevec, checkvec;            //this time, real 3d vectors
-		vms_vector closest_point;
-		fix edgelen, d, dist;
-		vms_vector *v0, *v1;
-		int itype;
-		int edgenum;
-
-		//get verts for edge we're behind
-
-		for (edgenum=0;!(edgemask&1);(edgemask>>=1), edgenum++);
-
-		v0 = &gameData.segs.vertices [vertex_list [facenum*3+edgenum]];
-		v1 = &gameData.segs.vertices [vertex_list [facenum*3+((edgenum+1)%nv)]];
-
-		//check if we are touching an edge or point
-
-		VmVecSub(&checkvec, &checkp, v0);
-		edgelen = VmVecNormalizedDir(&edgevec, v1, v0);
-		
-		//find point dist from planes of ends of edge
-
-		d = VmVecDot(&edgevec, &checkvec);
-
-		if (d+rad < 0) return IT_NONE;                  //too far behind start point
-
-		if (d-rad > edgelen) return IT_NONE;    //too far part end point
-
-		//find closest point on edge to check point
-
-		itype = IT_POINT;
-
-		if (d < 0) closest_point = *v0;
-		else if (d > edgelen) closest_point = *v1;
-		else {
-			itype = IT_EDGE;
-
-			//VmVecScale(&edgevec, d);
-			//VmVecAdd(&closest_point, v0, &edgevec);
-
-			VmVecScaleAdd(&closest_point, v0, &edgevec, d);
-		}
-
-		dist = VmVecDist(&checkp, &closest_point);
-
-		if (dist <= rad)
-			return (itype==IT_POINT)?IT_NONE:itype;
-		else
-			return IT_NONE;
+//now do 2d check to see if point is in side
+edgemask = CheckPointToFace (pnt, s, facenum, nv, vertex_list);
+//we've gone through all the sides, are we inside?
+if (edgemask == 0)
+	return IT_FACE;
+//get verts for edge we're behind
+for (edgenum = 0; !(edgemask & 1); (edgemask >>= 1), edgenum++)
+	;
+v0 = &gameData.segs.vertices [vertex_list [facenum * 3 + edgenum]];
+v1 = &gameData.segs.vertices [vertex_list [facenum * 3 + ((edgenum + 1) % nv)]];
+//check if we are touching an edge or point
+VmVecSub (&checkvec, &checkp, v0);
+edgelen = VmVecNormalizedDir (&edgevec, v1, v0);
+//find point dist from planes of ends of edge
+d = VmVecDot (&edgevec, &checkvec);
+if (d + rad < 0) 
+	return IT_NONE;                  //too far behind start point
+if (d - rad > edgelen) 
+	return IT_NONE;    //too far part end point
+//find closest point on edge to check point
+itype = IT_POINT;
+if (d < 0) 
+	closest_point = *v0;
+else if (d > edgelen) 
+	closest_point = *v1;
+else {
+	itype = IT_EDGE;
+	VmVecScaleAdd (&closest_point, v0, &edgevec, d);
 	}
-
-
+dist = VmVecDist (&checkp, &closest_point);
+if (dist <= rad)
+	return (itype == IT_POINT) ? IT_NONE : itype;
+return IT_NONE;
 }
 
 //	-----------------------------------------------------------------------------
@@ -450,64 +429,61 @@ int CheckSphereToFace(vms_vector *pnt, side *s, int facenum, int nv, fix rad, in
 //point on plane, whether or not line intersects side
 //facenum determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToFace(vms_vector *newp, vms_vector *p0, vms_vector *p1, segment *seg, int side, int facenum, int nv, fix rad)
+int CheckLineToFace(vms_vector *newp, vms_vector *p0, vms_vector *p1, segment *segP, int side, int facenum, int nv, fix rad)
 {
-	vms_vector checkp;
-	int pli;
-	struct side *s=&seg->sides [side];
-	int vertex_list [6];
-	int num_faces;
-	int vertnum;
-	vms_vector norm;
+	vms_vector	checkp, vNormal, v1;
+	struct side *sideP = segP->sides + side;
+	int			vertexList [6];
+	int			pli, nFaces, nVertex;
 
-	#ifdef COMPACT_SEGS
-		GetSideNormal(seg, side, facenum, &norm);
-	#else
-		norm = seg->sides [side].normals [facenum];
-	#endif
-
-	if ((SEG_IDX (seg))==-1)
-		Error("segnum == -1 in CheckLineToFace()");
-
-	CreateAbsVertexLists(&num_faces, vertex_list, SEG_IDX (seg), side);
-
-	//use lowest point number
-	if (num_faces==2) {
-		vertnum = min(vertex_list [0], vertex_list [2]);
+#ifdef COMPACT_SEGS
+GetSideNormal (segP, side, facenum, &vNormal);
+#else
+vNormal = sideP->normals [facenum];
+#endif
+if ((SEG_IDX (segP))==-1)
+	Error ("segnum == -1 in CheckLineToFace()");
+CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), side);
+//use lowest point number
+nVertex = vertexList [0];
+if (nVertex > vertexList [2])
+	nVertex = vertexList [2];
+if (nFaces == 1) {
+	if (nVertex > vertexList [1])
+		nVertex = vertexList [1];
+	if (nVertex > vertexList [3])
+		nVertex = vertexList [3];
 	}
-	else {
-		int i;
-		vertnum = vertex_list [0];
-		for (i=1;i<4;i++)
-			if (vertex_list [i] < vertnum)
-				vertnum = vertex_list [i];
+#if 1
+if (p1 == p0) {
+	v1 = vNormal;
+	VmVecNegate (&v1);
+	VmVecScale (&v1, rad);
+	VmVecInc (&v1, p0);
+	rad = 0;
+	p1 = &v1;
 	}
-
-	pli = FindPlaneLineIntersection(newp, gameData.segs.vertices + vertnum, &norm, p0, p1, rad);
-
-	if (!pli) return IT_NONE;
-
-	checkp = *newp;
-
-	//if rad != 0, project the point down onto the plane of the polygon
-
-	if (rad!=0)
-		VmVecScaleInc(&checkp, &norm, -rad);
-
-	return CheckSphereToFace(&checkp, s, facenum, nv, rad, vertex_list);
-
+#endif
+pli = FindPlaneLineIntersection (newp, gameData.segs.vertices + nVertex, &vNormal, p0, p1, rad);
+if (!pli) 
+	return IT_NONE;
+checkp = *newp;
+//if rad != 0, project the point down onto the plane of the polygon
+if (rad)
+	VmVecScaleInc (&checkp, &vNormal, -rad);
+return CheckSphereToFace (&checkp, sideP, facenum, nv, rad, vertexList);
 }
 
 //	-----------------------------------------------------------------------------
 //returns the value of a determinant
-fix CalcDetValue(vms_matrix *det)
+fix CalcDetValue (vms_matrix *det)
 {
-	return 	FixMul(det->rvec.x, FixMul(det->uvec.y, det->fvec.z)) -
-			 	FixMul(det->rvec.x, FixMul(det->uvec.z, det->fvec.y)) -
-			 	FixMul(det->rvec.y, FixMul(det->uvec.x, det->fvec.z)) +
-			 	FixMul(det->rvec.y, FixMul(det->uvec.z, det->fvec.x)) +
-			 	FixMul(det->rvec.z, FixMul(det->uvec.x, det->fvec.y)) -
-			 	FixMul(det->rvec.z, FixMul(det->uvec.y, det->fvec.x));
+return FixMul (det->rvec.x, FixMul (det->uvec.y, det->fvec.z)) -
+		 FixMul (det->rvec.x, FixMul (det->uvec.z, det->fvec.y)) -
+		 FixMul (det->rvec.y, FixMul (det->uvec.x, det->fvec.z)) +
+		 FixMul (det->rvec.y, FixMul (det->uvec.z, det->fvec.x)) +
+	 	 FixMul (det->rvec.z, FixMul (det->uvec.x, det->fvec.y)) -
+		 FixMul (det->rvec.z, FixMul (det->uvec.y, det->fvec.x));
 }
 
 //	-----------------------------------------------------------------------------
@@ -518,28 +494,22 @@ int CheckLineToLine(fix *t1, fix *t2, vms_vector *p1, vms_vector *v1, vms_vector
 	vms_matrix det;
 	fix d, cross_mag2;		//mag squared Cross product
 
-	VmVecSub(&det.rvec, p2, p1);
-	VmVecCross(&det.fvec, v1, v2);
-	cross_mag2 = VmVecDot(&det.fvec, &det.fvec);
-
-	if (cross_mag2 == 0)
-		return 0;			//lines are parallel
-
-	det.uvec = *v2;
-	d = CalcDetValue(&det);
-	if (oflow_check(d, cross_mag2))
-		return 0;
-	else
-		*t1 = FixDiv(d, cross_mag2);
-
-	det.uvec = *v1;
-	d = CalcDetValue(&det);
-	if (oflow_check(d, cross_mag2))
-		return 0;
-	else
-		*t2 = FixDiv(d, cross_mag2);
-
-	return 1;		//found point
+VmVecSub(&det.rvec, p2, p1);
+VmVecCross(&det.fvec, v1, v2);
+cross_mag2 = VmVecDot(&det.fvec, &det.fvec);
+if (!cross_mag2)
+	return 0;			//lines are parallel
+det.uvec = *v2;
+d = CalcDetValue(&det);
+if (oflow_check(d, cross_mag2))
+	return 0;
+*t1 = FixDiv(d, cross_mag2);
+det.uvec = *v1;
+d = CalcDetValue(&det);
+if (oflow_check(d, cross_mag2))
+	return 0;
+*t2 = FixDiv(d, cross_mag2);
+return 1;		//found point
 }
 
 #ifdef NEW_FVI_STUFF
@@ -692,7 +662,7 @@ fvi_hit_info fviHitData;
 
 //	-----------------------------------------------------------------------------
 
-int fvi_sub (vms_vector *intP, short *intS, vms_vector *p0, short nStartSeg, vms_vector *p1, 
+int FVICompute (vms_vector *intP, short *intS, vms_vector *p0, short nStartSeg, vms_vector *p1, 
 				 fix rad, short nThisObject, short *ignoreObjList, int flags, short *segList, 
 				 short *nSegments, int entrySegP);
 
@@ -741,11 +711,11 @@ segsVisited [0] = fq->startSeg;
 nSegsVisited = 1;
 fviHitData.nNestCount = 0;
 nHitSegment2 = fviHitData.nSegment2 = -1;
-nHitType = fvi_sub (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, fq->rad, 
+nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, fq->rad, 
 						  (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
 						  hitData->segList, &hitData->nSegments, -2);
 //!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg);
-if ((nHitSegment2 != -1) && !GetSegMasks(&vHitPoint, nHitSegment2, 0).centerMask)
+if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
 	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg);
@@ -762,7 +732,7 @@ if (nHitSegment == -1) {
 
 	//because of code that deal with object with non-zero radius has
 	//problems, try using zero radius and see if we hit a wall
-	nNewHitType = fvi_sub (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 
+	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 
 								  (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList, 
 								  &hitData->nSegments, -2);
 	if (nNewHitSeg2 != -1) {
@@ -809,7 +779,7 @@ int ObjectInList(short objnum, short *obj_list)
 
 int CheckTransWall (vms_vector *pnt, segment *seg, short sidenum, short facenum);
 
-int fvi_sub (vms_vector *vIntP, short *intS, vms_vector *p0, short nStartSeg, vms_vector *p1, 
+int FVICompute (vms_vector *vIntP, short *intS, vms_vector *p0, short nStartSeg, vms_vector *p1, 
 				 fix rad, short nThisObject, short *ignoreObjList, int flags, short *segList, 
 				 short *nSegments, int entrySegP)
 {
@@ -826,6 +796,10 @@ int fvi_sub (vms_vector *vIntP, short *intS, vms_vector *p0, short nStartSeg, vm
 	int			nHitNoneSegs = 0;
 	int			hitNoneSegList [MAX_FVI_SEGS];
 	int			nCurNestLevel = fviHitData.nNestCount;
+	int			nFudgedRad;
+	int			nThisType, nOtherType;
+	object		*otherObjP,
+					*thisObjP = (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject;
 
 	//fviHitData.nObject = -1;
 
@@ -835,60 +809,63 @@ if (flags & FQ_GET_SEGLIST)
 segP = gameData.segs.segments + nStartSeg;
 fviHitData.nNestCount++;
 //first, see if vector hit any objects in this segment
-if (flags & FQ_CHECK_OBJS)
-	for (objnum = segP->objects; objnum != -1; objnum = gameData.objs.objects [objnum].next)
-		if (!(gameData.objs.objects [objnum].flags & OF_SHOULD_BE_DEAD) &&
-				!(nThisObject == objnum) &&
-				(ignoreObjList==NULL || !ObjectInList(objnum, ignoreObjList)) &&
-				!LasersAreRelated (objnum, nThisObject) &&
-				!((nThisObject > -1) &&
-				(CollisionResult [gameData.objs.objects [nThisObject].type][gameData.objs.objects [objnum].type] == RESULT_NOTHING) &&
-			 	(CollisionResult [gameData.objs.objects [objnum].type][gameData.objs.objects [nThisObject].type] == RESULT_NOTHING))) {
-			int nFudgedRad = rad;
+nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].type;
+if (flags & FQ_CHECK_OBJS) {
+	for (objnum = segP->objects; objnum != -1; objnum = gameData.objs.objects [objnum].next) {
+		otherObjP = gameData.objs.objects + objnum;
+		nOtherType = otherObjP->type;
+		if (otherObjP->flags & OF_SHOULD_BE_DEAD)
+			continue;
+		if (nThisObject == objnum)
+			continue;
+		if (ignoreObjList && ObjectInList (objnum, ignoreObjList))
+			continue;
+		if (LasersAreRelated (objnum, nThisObject))
+			continue;
+		if (nThisObject > -1) {
+			if ((CollisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
+				 (CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+				continue;
+			}
+		nFudgedRad = rad;
 
-			//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
-			if (gameData.objs.objects [objnum].type == OBJ_POWERUP)
-				if (flags & FQ_IGNORE_POWERUPS)
-					continue;
-			//	If this is a robot:robot collision, only do it if both of them have attack_type != 0 (eg, green guy)
-			if (gameData.objs.objects [nThisObject].type == OBJ_ROBOT) {
-				if (gameData.objs.objects [objnum].type == OBJ_ROBOT)
-					// -- MK: 11/18/95, 4claws glomming together...this is easy.  -- if (!(gameData.bots.pInfo [gameData.objs.objects [objnum].id].attack_type && gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attack_type))
-						continue;
-				if (gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attack_type)
-					nFudgedRad = (rad*3)/4;
-					}
-			//if obj is player, and bumping into other player or a weapon of another coop player, reduce radius
-			if (gameData.objs.objects [nThisObject].type == OBJ_PLAYER &&
-					((gameData.objs.objects [objnum].type == OBJ_PLAYER) ||
-					((gameData.app.nGameMode&GM_MULTI_COOP) &&  gameData.objs.objects [objnum].type == OBJ_WEAPON && gameData.objs.objects [objnum].ctype.laser_info.parent_type == OBJ_PLAYER)))
-				nFudgedRad = rad/2;	//(rad*3)/4;
+		//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
+		if ((nOtherType == OBJ_POWERUP) && (flags & FQ_IGNORE_POWERUPS))
+			continue;
+		//	If this is a robot:robot collision, only do it if both of them have attack_type != 0 (eg, green guy)
+		if (nThisType == OBJ_ROBOT) {
+			if (nOtherType == OBJ_ROBOT)
+				continue;
+			if (gameData.bots.pInfo [thisObjP->id].attack_type)
+				nFudgedRad = (rad * 3) / 4;
+			}
+		//if obj is player, and bumping into other player or a weapon of another coop player, reduce radius
+		if ((nThisType == OBJ_PLAYER )&&
+			 ((nOtherType == OBJ_PLAYER) ||
+			  (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->ctype.laser_info.parent_type == OBJ_PLAYER))))
+			nFudgedRad = rad / 2;
 
-			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, gameData.objs.objects + objnum, 
-												&gameData.objs.objects [nThisObject]);
+		d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 
-			if (d)          //we have intersection
-				if (d < dMin) {
-					fviHitData.nObject = objnum;
-					Assert(fviHitData.nObject!=-1);
-					dMin = d;
-					vClosestHitPoint = vHitPoint;
-					nHitType = HIT_OBJECT;
-				}
+		if (d && (d < dMin)) {
+			fviHitData.nObject = objnum;
+			Assert(fviHitData.nObject!=-1);
+			dMin = d;
+			vClosestHitPoint = vHitPoint;
+			nHitType = HIT_OBJECT;
+			}
 		}
+	}
 
-if ((nThisObject > -1) && (CollisionResult [gameData.objs.objects [nThisObject].type][OBJ_WALL] == RESULT_NOTHING))
+if ((nThisObject > -1) && (CollisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	rad = 0;		//HACK - ignore when edges hit walls
 
 //now, check segment walls
-startMask = GetSegMasks (p0, nStartSeg, rad).faceMask;
+startMask = GetSegMasks (p0, nStartSeg, (p1 == p0) ? 0 : rad).faceMask;
 masks = GetSegMasks (p1, nStartSeg, rad);    //on back of which faces?
-endMask = masks.faceMask;
-//@@sideMask = masks.sideMask;
-centerMask = masks.centerMask;
-if (centerMask == 0) 
+if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
-if (endMask != 0) {                             //on the back of at least one face
+if (endMask = masks.faceMask) { //on the back of at least one face
 	short side, face, bit;
 
 	//for each face we are on the back of, check if intersected
@@ -903,11 +880,9 @@ if (endMask != 0) {                             //on the back of at least one fa
 				if (segP->children [side] == entrySegP)
 					continue;		//don't go back through entry side
 				//did we go through this wall/door?
-				//#ifdef NEW_FVI_STUFF
 				if (startMask & bit)		//start was also though.  Do extra check
 					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, segP, side, face, 5 - nFaces, rad);
 				else
-				//#endif
 					//NOTE LINK TO ABOVE!!
 					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, segP, side, face, 5 - nFaces, rad);
 				if (nFaceHitType) {            //through this wall/door
@@ -916,13 +891,13 @@ if (endMask != 0) {                             //on the back of at least one fa
 					if ((nThisObject == gameData.multi.players [gameData.multi.nLocalPlayer].objnum) && 
 							(gameStates.app.cheats.bPhysics==0xBADA55)) {
 						int childSide = segP->children [side];
+						int special = gameData.segs.segment2s [childSide].special;
 						wid_flag = WALL_IS_DOORWAY(segP, side, gameData.objs.objects + nThisObject);
 						if ((childSide >= 0) && 
-								(((gameData.segs.segment2s [childSide].special != SEGMENT_IS_BLOCKED) &&
-								  (gameData.segs.segment2s [childSide].special != SEGMENT_IS_SKYBOX)) ||
+								(((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
 								  (gameStates.gameplay.bSpeedBoost &&
 								   ((gameData.segs.segment2s [nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
-								    (gameData.segs.segment2s [childSide].special == SEGMENT_IS_SPEEDBOOST)))))
+								    (special == SEGMENT_IS_SPEEDBOOST)))))
  							wid_flag |= WID_FLY_FLAG;
 						}
 					else
@@ -932,25 +907,25 @@ if (endMask != 0) {                             //on the back of at least one fa
 						(((wid_flag & WID_RENDER_FLAG) && (wid_flag & WID_RENDPAST_FLAG)) &&
 							((flags & FQ_TRANSWALL) || (flags & FQ_TRANSPOINT && CheckTransWall(&vHitPoint, segP, side, face))))) {
 
-						int newsegnum;
+						int nNewSeg;
 						vms_vector subHitPoint;
 						int subHitType;
 						short subHitSeg;
-						vms_vector save_wall_norm = fviHitData.vNormal;
-						short save_hit_objnum = fviHitData.nObject;
+						vms_vector vSaveWallNorm = fviHitData.vNormal;
+						short nSaveHitObj = fviHitData.nObject;
 						int i;
 
 						//do the check recursively on the next segment.
 
-						newsegnum = segP->children [side];
-						for (i = 0; i < nSegsVisited && (newsegnum != segsVisited[i]); i++)
+						nNewSeg = segP->children [side];
+						for (i = 0; i < nSegsVisited && (nNewSeg != segsVisited[i]); i++)
 							;
 						if (i == nSegsVisited) {                //haven't visited here yet
 							short tempSegList [MAX_FVI_SEGS], nTempSegs;
-							segsVisited [nSegsVisited++] = newsegnum;
+							segsVisited [nSegsVisited++] = nNewSeg;
 							if (nSegsVisited >= MAX_SEGS_VISITED)
 								goto quit_looking;		//we've looked a long time, so give up
-							subHitType = fvi_sub (&subHitPoint, &subHitSeg, p0, (short) newsegnum, 
+							subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
 															p1, rad, nThisObject, ignoreObjList, flags, 
 															tempSegList, &nTempSegs, nStartSeg);
 							if (subHitType != HIT_NONE) {
@@ -963,26 +938,29 @@ if (endMask != 0) {                             //on the back of at least one fa
 										nHitSegment = subHitSeg;
 									//copy segList
 									if (flags & FQ_GET_SEGLIST) {
-										int i;
-										for (i = 0; (i < nTempSegs) && (*nSegments < MAX_FVI_SEGS - 1); i++)
-											segList [(*nSegments)++] = tempSegList [i];
+										int i = MAX_FVI_SEGS - 1 - *nSegments;
+										if (i > nTempSegs)
+											i = nTempSegs;
+										memcpy (segList + *nSegments, tempSegList, i * sizeof (*segList));
+										*nSegments += i;
 										}
-									Assert(*nSegments < MAX_FVI_SEGS);
+									Assert (*nSegments < MAX_FVI_SEGS);
 									}
 								else {
-									fviHitData.vNormal = save_wall_norm;     //global could be trashed
-									fviHitData.nObject = save_hit_objnum;
+									fviHitData.vNormal = vSaveWallNorm;     //global could be trashed
+									fviHitData.nObject = nSaveHitObj;
  									}
 								}
 							else {
-								fviHitData.vNormal = save_wall_norm;     //global could be trashed
-								if (subHitSeg!=-1) 
+								fviHitData.vNormal = vSaveWallNorm;     //global could be trashed
+								if (subHitSeg != -1) 
 									nHitNoneSegment = subHitSeg;
 								//copy segList
 								if (flags&FQ_GET_SEGLIST) {
-									int i;
-									for (i = 0; (i < nTempSegs) && (i < MAX_FVI_SEGS - 1); i++)
-										hitNoneSegList [i] = tempSegList [i];
+									int i = MAX_FVI_SEGS - 1;
+									if (i > nTempSegs)
+										i = nTempSegs;
+									memcpy (hitNoneSegList, tempSegList, i * sizeof (*hitNoneSegList));
 									}
 								nHitNoneSegs = nTempSegs;
 								}
@@ -1000,7 +978,7 @@ if (endMask != 0) {                             //on the back of at least one fa
 #else
 							fviHitData.vNormal = segP->sides [side].normals [face];	
 #endif
-							if (GetSegMasks(&vHitPoint, nStartSeg, rad).centerMask==0)
+							if (!GetSegMasks (&vHitPoint, nStartSeg, rad).centerMask)
 								nHitSegment = nStartSeg;             //hit in this segment
 							else
 								fviHitData.nSegment2 = nStartSeg;
@@ -1023,10 +1001,13 @@ if (nHitType == HIT_NONE) {     //didn't hit anything, return end point
 	*vIntP = *p1;
 	*intS = nHitNoneSegment;
 	if (nHitNoneSegment!=-1) {			//(centerMask == 0)
-		if (flags&FQ_GET_SEGLIST)
-			//copy segList
-			for (i=0;i<nHitNoneSegs && *nSegments<MAX_FVI_SEGS-1;)
-				segList [(*nSegments)++] = hitNoneSegList [i++];
+		if (flags & FQ_GET_SEGLIST) {
+			i = MAX_FVI_SEGS - 1 - *nSegments;
+			if (i > nHitNoneSegs)
+				i = nHitNoneSegs;
+			memcpy (segList + *nSegments, hitNoneSegList, i * sizeof (*segList));
+			*nSegments += i;
+			}
 		}
 	else
 		if (nCurNestLevel!=0)

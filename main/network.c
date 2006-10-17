@@ -4424,6 +4424,8 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageIndicators = 0;
 	extraGameInfo [i].bFriendlyIndicators = 0;
 	extraGameInfo [i].bCloakedIndicators = 0;
+	extraGameInfo [i].bTowFlags = 1;
+	extraGameInfo [i].bUseHitAngles = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
@@ -4546,6 +4548,10 @@ else {
 	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	LogErr ("   bTargetIndicators: %d\n", extraGameInfo [1].bTargetIndicators);
 	LogErr ("   bDamageIndicators: %d\n", extraGameInfo [1].bDamageIndicators);
+	LogErr ("   bFriendlyIndicators: %d\n", extraGameInfo [1].bFriendlyIndicators);
+	LogErr ("   bCloakedIndicators: %d\n", extraGameInfo [1].bCloakedIndicators);
+	LogErr ("   bTowFlags: %d\n", extraGameInfo [1].bTowFlags);
+	LogErr ("   bUseHitAngles: %d\n", extraGameInfo [1].bUseHitAngles);
 	LogErr ("entropy info data:\n");
 	LogErr ("   nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	LogErr ("   nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);

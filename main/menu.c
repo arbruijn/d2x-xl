@@ -2317,7 +2317,7 @@ void GameplayOptionsMenu ()
 	int	i, j, opt = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
-			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1;
+			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50];
 	char	szSpeedBoost [50];
@@ -2361,6 +2361,8 @@ if (gameOpts->app.bExpertMode) {
 	optMultiBosses = opt++;
 	ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
 	optFluidPhysics = opt++;
+	ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bFluidPhysics, KEY_A, HTX_GPLAY_HITANGLES);
+	optHitAngles = opt++;
 	ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 	optSmartWeaponSwitch = opt++;
 	}
@@ -2396,6 +2398,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bMultiBosses = m [optMultiBosses].value;
 	extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
+	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	}

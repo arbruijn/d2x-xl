@@ -1602,6 +1602,7 @@ char *defaultGameTexts [][2] = {
 	{"aktuelles Spiel ~Speichern...", "~Save Current Game..."},
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
+	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
 #if 0
 	{"", ""},
 #endif
@@ -2034,6 +2035,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erzeugen herumfliegende Truemmer eine\nRauchspur.", "If checked, debris from robots creates a smoke trail."},
 	{"Wenn angekreuzt, werden Lava, Wasser, Kraftfelder und Energie-\nfelder, die durchflogen werden koennen, leicht durchsichtig gemacht.", 
 	 "If checked, lava, water, force fields and energy sparks that\ncan be crossed will be made slightly transparent."},
+	{"Wenn angekreuzt, werden bei Kollisionen korrekte Winkel fuer\ndie Abprallrichtung berechnet.", 
+	 "If checked, proper reflection angles will be computed for\ncollisions."},
 #if 0
 	{"", ""},
 #endif

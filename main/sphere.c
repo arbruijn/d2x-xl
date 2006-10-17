@@ -228,7 +228,7 @@ OOF_VecVms2Oof (&p, &viewInfo.position);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
 	OOF_VecScale (&v, fRad);
-	OOF_VecRot (pRotSphere, OOF_VecInc (OOF_VecSub (&h, &v, &p), pPos), &m);
+	OOF_VecRot (pRotSphere, OOF_VecSub (&h, &v, &p), &m);
 	}
 return (tOOF_triangle *) s;
 }
@@ -274,20 +274,23 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
 	tOOF_vector *ps,
 					*pSphere = sdP->pSphere, 
 					*pRotSphere = (tOOF_vector *) d_malloc (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
-	float			*tcP = fTexCoord [0];
+	float			fScale = 1.0;
 
 if (!pRotSphere)
 	return -1;
-if (sdP->pPulse && gameStates.app.b40fpsTick) {
-	sdP->pPulse->fScale += sdP->pPulse->fDir;
-	if (sdP->pPulse->fScale > 1.0f) {
-		sdP->pPulse->fScale = 1.0f;
-		sdP->pPulse->fDir = -sdP->pPulse->fSpeed;
+if (sdP->pPulse) {
+	if (gameStates.app.b40fpsTick) {
+		sdP->pPulse->fScale += sdP->pPulse->fDir;
+		if (sdP->pPulse->fScale > 1.0f) {
+			sdP->pPulse->fScale = 1.0f;
+			sdP->pPulse->fDir = -sdP->pPulse->fSpeed;
+			}
+		else if (sdP->pPulse->fScale < sdP->pPulse->fMin) {
+			sdP->pPulse->fScale = sdP->pPulse->fMin;
+			sdP->pPulse->fDir = sdP->pPulse->fSpeed;
+			}
 		}
-	else if (sdP->pPulse->fScale < sdP->pPulse->fMin) {
-		sdP->pPulse->fScale = sdP->pPulse->fMin;
-		sdP->pPulse->fDir = sdP->pPulse->fSpeed;
-		}
+	fScale = sdP->pPulse->fScale;
 	}
 #if 1
 pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, fRad);
@@ -314,9 +317,9 @@ if (!bmP) {
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 if (sdP->pPulse && sdP->pPulse->fScale) {
-	red *= sdP->pPulse->fScale;
-	green *= sdP->pPulse->fScale;
-	blue *= sdP->pPulse->fScale; 
+	red *= fScale;
+	green *= fScale;
+	blue *= fScale; 
 	}
 glColor4f (red, green, blue, alpha / 2);
 if (sdP->nFaceNodes == 3) {
@@ -326,7 +329,7 @@ if (sdP->nFaceNodes == 3) {
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	if (bmP)
-		glColor4f (1, 1, 1, alpha);
+		glColor4f (fScale, fScale, fScale, alpha);
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_TRIANGLES);
@@ -343,7 +346,7 @@ else {
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	if (bmP)
-		glColor4f (1, 1, 1, alpha);
+		glColor4f (fScale, fScale, fScale, alpha);
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_QUADS);
@@ -374,8 +377,10 @@ if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
+	G3StartInstanceMatrix (&objP->pos, &objP->orient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos),
 					  f2fl (objP->size) * 1.1f, red, green, blue, alpha, NULL);
+	G3DoneInstance ();
 	}
 }
 
@@ -389,8 +394,10 @@ if (!gameData.render.monsterball.pSphere) {
 	}
 if (gameData.render.monsterball.nFaces > 0) {
 	tOOF_vector	p;
+	G3StartInstanceMatrix (&objP->pos, &objP->orient);
 	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos), 
 					  f2fl (objP->size), red, green, blue, alpha, &gameData.hoard.monsterball.bm);
+	G3DoneInstance ();
 	}
 }
 

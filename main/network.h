@@ -479,6 +479,7 @@ typedef struct extra_gameinfo {
 	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
 	char		bTowFlags;
+	char		bUseHitAngles;
 	char		nSpotSize;
 	char		nSpotStrength;
 	monsterball_info	monsterball;

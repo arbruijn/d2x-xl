@@ -2922,6 +2922,8 @@ switch (objP->movement_type) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
+		if (objP->type == 17)
+			objP = objP;
 		DoPhysicsSim (objP);	
 		SetOglLightPos (OBJ_IDX (objP));
 		break;	//move by physics
