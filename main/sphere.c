@@ -329,7 +329,7 @@ if (sdP->nFaceNodes == 3) {
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	if (bmP)
-		glColor4f (fScale, fScale, fScale, alpha);
+		glColor4f (fScale, fScale, fScale, 1.0f);
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_TRIANGLES);
@@ -346,7 +346,7 @@ else {
 			glVertex3f (ps->x, ps->y, -ps->z);
 	glEnd ();
 	if (bmP)
-		glColor4f (fScale, fScale, fScale, alpha);
+		glColor4f (fScale, fScale, fScale, 1.0f);
 	else
 		glColor4f (red, green, blue, alpha);
 	glBegin (GL_QUADS);

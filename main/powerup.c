@@ -301,7 +301,7 @@ void DrawBlobOutline (void)
 void DrawPowerup (object *objP)
 {
 if (objP->type == OBJ_MONSTERBALL)
-	DrawMonsterball (objP, 1.0f, 0.8f, 0.0f, 1.0f);
+	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 else {
 		bitmap_index	*frameP = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].frames;
 		int				iFrame = objP->rtype.vclip_info.nCurFrame;
