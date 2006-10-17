@@ -796,12 +796,12 @@ int FVICompute (vms_vector *vIntP, short *intS, vms_vector *p0, short nStartSeg,
 	int			nHitNoneSegs = 0;
 	int			hitNoneSegList [MAX_FVI_SEGS];
 	int			nCurNestLevel = fviHitData.nNestCount;
+#if 1
 	int			nFudgedRad;
 	int			nThisType, nOtherType;
 	object		*otherObjP,
 					*thisObjP = (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject;
-
-	//fviHitData.nObject = -1;
+#endif
 
 if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;
@@ -809,9 +809,55 @@ if (flags & FQ_GET_SEGLIST)
 segP = gameData.segs.segments + nStartSeg;
 fviHitData.nNestCount++;
 //first, see if vector hit any objects in this segment
+#if 0
+if (flags & FQ_CHECK_OBJS)
+	for (objnum = segP->objects; objnum != -1; objnum = gameData.objs.objects [objnum].next)
+		if (!(gameData.objs.objects [objnum].flags & OF_SHOULD_BE_DEAD) &&
+				!(nThisObject == objnum) &&
+				(ignoreObjList==NULL || !ObjectInList(objnum, ignoreObjList)) &&
+				!LasersAreRelated (objnum, nThisObject) &&
+				!((nThisObject > -1) &&
+				(CollisionResult [gameData.objs.objects [nThisObject].type][gameData.objs.objects [objnum].type] == RESULT_NOTHING) &&
+			 	(CollisionResult [gameData.objs.objects [objnum].type][gameData.objs.objects [nThisObject].type] == RESULT_NOTHING))) {
+			int nFudgedRad = rad;
+
+			//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
+			if (gameData.objs.objects [objnum].type == OBJ_POWERUP)
+				if (flags & FQ_IGNORE_POWERUPS)
+					continue;
+			//	If this is a robot:robot collision, only do it if both of them have attack_type != 0 (eg, green guy)
+			if (gameData.objs.objects [nThisObject].type == OBJ_ROBOT) {
+				if (gameData.objs.objects [objnum].type == OBJ_ROBOT)
+					// -- MK: 11/18/95, 4claws glomming together...this is easy.  -- if (!(gameData.bots.pInfo [gameData.objs.objects [objnum].id].attack_type && gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attack_type))
+						continue;
+				if (gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attack_type)
+					nFudgedRad = (rad*3)/4;
+					}
+			//if obj is player, and bumping into other player or a weapon of another coop player, reduce radius
+			if (gameData.objs.objects [nThisObject].type == OBJ_PLAYER &&
+					((gameData.objs.objects [objnum].type == OBJ_PLAYER) ||
+					((gameData.app.nGameMode&GM_MULTI_COOP) &&  gameData.objs.objects [objnum].type == OBJ_WEAPON && gameData.objs.objects [objnum].ctype.laser_info.parent_type == OBJ_PLAYER)))
+				nFudgedRad = rad/2;	//(rad*3)/4;
+
+			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, gameData.objs.objects + objnum, 
+												&gameData.objs.objects [nThisObject]);
+
+			if (d)          //we have intersection
+				if (d < dMin) {
+					fviHitData.nObject = objnum;
+					Assert(fviHitData.nObject!=-1);
+					dMin = d;
+					vClosestHitPoint = vHitPoint;
+					nHitType = HIT_OBJECT;
+				}
+		}
+
+if ((nThisObject > -1) && (CollisionResult [gameData.objs.objects [nThisObject].type][OBJ_WALL] == RESULT_NOTHING))
+	rad = 0;		//HACK - ignore when edges hit walls
+#else
 nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].type;
 if (flags & FQ_CHECK_OBJS) {
-	for (objnum = segP->objects; objnum != -1; objnum = gameData.objs.objects [objnum].next) {
+	for (objnum = segP->objects; objnum != -1; objnum = otherObjP->next) {
 		otherObjP = gameData.objs.objects + objnum;
 		nOtherType = otherObjP->type;
 		if (otherObjP->flags & OF_SHOULD_BE_DEAD)
@@ -859,7 +905,7 @@ if (flags & FQ_CHECK_OBJS) {
 
 if ((nThisObject > -1) && (CollisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	rad = 0;		//HACK - ignore when edges hit walls
-
+#endif
 //now, check segment walls
 startMask = GetSegMasks (p0, nStartSeg, (p1 == p0) ? 0 : rad).faceMask;
 masks = GetSegMasks (p1, nStartSeg, rad);    //on back of which faces?

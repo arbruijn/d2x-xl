@@ -1266,7 +1266,7 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv (
 #ifdef _WIN32
 if (!*gameFolders.szGameDir) {
 	psz = Args [0];
-	for (j = strlen (psz); j; ) {
+	for (j = (int) strlen (psz); j; ) {
 		c = psz [--j];
 		if ((c == '\\') || (c == '/')) {
 			memcpy (gameFolders.szGameDir, psz, ++j);
