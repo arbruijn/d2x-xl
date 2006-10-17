@@ -943,10 +943,10 @@ else {
 
 extern int bSaveScreenShot;
 
-void SaveScreenShot (unsigned char *buf, int automap_flag)
+void SaveScreenShot (unsigned char *buf, int bAutomap)
 {
 //	fix t1;
-	char				szMessage [100];
+//	char				szMessage [100];
 	char				szSaveName [FILENAME_LEN];
 	int				i, bTmpBuf;
 	static int		nSaveNum = 0;
@@ -955,12 +955,11 @@ void SaveScreenShot (unsigned char *buf, int automap_flag)
 if (!bSaveScreenShot)
 	return;
 bSaveScreenShot = 0;
-if (!gameOpts->ogl.bReadPixels){
-	if (!automap_flag)
-		HUDMessage(MSGC_GAME_FEEDBACK,"glReadPixels not supported on your configuration");
+if (!gameOpts->ogl.bReadPixels) {
+	if (!bAutomap)
+		HUDMessage (MSGC_GAME_FEEDBACK, "Screenshots not supported on your configuration");
 	return;
-}
-
+	}
 StopTime();
 if (*gameFolders.szScrShotDir)
 	sprintf (szSaveName, "%s/", gameFolders.szScrShotDir);
@@ -975,7 +974,7 @@ do {
 #if 0
 sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 //end this section addition/change - Victor Rachels
-if (!automap_flag)
+if (!bAutomap)
 	HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
 #endif
 

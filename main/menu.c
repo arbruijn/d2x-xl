@@ -2361,7 +2361,7 @@ if (gameOpts->app.bExpertMode) {
 	optMultiBosses = opt++;
 	ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
 	optFluidPhysics = opt++;
-	ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bFluidPhysics, KEY_A, HTX_GPLAY_HITANGLES);
+	ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_A, HTX_GPLAY_HITANGLES);
 	optHitAngles = opt++;
 	ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 	optSmartWeaponSwitch = opt++;

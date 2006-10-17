@@ -737,7 +737,6 @@ if (t) {
 	if (vForce.x || vForce.y || vForce.z)
 #endif
 	PhysApplyForce (t, &vForce);
-	//MoveOneObject (t);
 	return 1;
 	}
 VmVecSub (&vh, &objP1->pos, &objP0->pos);
@@ -747,13 +746,13 @@ if (angle >= F1_0 / 4)
 	return 0;	// don't bump if moving away
 v1 = objP1->mtype.phys_info.velocity;
 VmVecSub (&vForce, &v0, &v1);
+m0 = objP0->mtype.phys_info.mass;
+m1 = objP1->mtype.phys_info.mass;
 #ifdef _DEBUG
 vn0 = v0;
 VmVecNormalize (&vn0);
 vn1 = v1;
 VmVecNormalize (&vn1);
-m0 = objP0->mtype.phys_info.mass;
-m1 = objP1->mtype.phys_info.mass;
 nBumps++;
 HUDMessage (0, "%d:%1.2f - %d:%1.2f  v%1.2f (d%1.2f) m%d", 
 				objP0->type,
@@ -803,9 +802,9 @@ if (EGI_FLAG (bUseHitAngles, 0, 0)) {
 		mag = mag;
 	}
 else {
-	BumpThisObject (objP1, objP0, &vForce, bDamage);
+	BumpThisObject (objP1, objP0, &vForce, 0);
 	VmVecNegate (&vForce);
-	BumpThisObject (objP0, objP1, &vForce, bDamage);
+	BumpThisObject (objP0, objP1, &vForce, 0);
 	}
 return 1;
 }

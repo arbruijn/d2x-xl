@@ -299,6 +299,7 @@ typedef struct Edge_info {
 #define K_WALL_DOOR_RED         RGBA_PAL2 (31, 0, 0)
 #define K_WALL_REVEALED_COLOR   RGBA_PAL2 (0, 0, 25) //what you see when you have the full map powerup
 #define K_HOSTAGE_COLOR         RGBA_PAL2 (0, 31, 0)
+#define K_MONSTERBALL_COLOR     RGBA_PAL2 (31, 23, 0)
 #define K_FONT_COLOR_20         RGBA_PAL2 (20, 20, 20)
 #define K_GREEN_31              RGBA_PAL2 (0, 31, 0)
 
@@ -314,6 +315,7 @@ typedef struct amWallColors {
 typedef struct amColors {
 	amWallColors	walls;
 	unsigned int	nHostage;
+	unsigned int	nMonsterball;
 	unsigned int	nWhite;
 	unsigned int	nMedGreen;
 	unsigned int	nLgtBlue;
@@ -332,6 +334,7 @@ automapColors.walls.nDoorGold = K_WALL_DOOR_GOLD;
 automapColors.walls.nDoorRed = K_WALL_DOOR_RED;
 automapColors.walls.nRevealed = K_WALL_REVEALED_COLOR;
 automapColors.nHostage = K_HOSTAGE_COLOR;
+automapColors.nMonsterball = K_MONSTERBALL_COLOR;
 automapColors.nDkGray = RGBA_PAL2 (20,20,20);
 automapColors.nMedGreen = RGBA_PAL2 (0,31,0);
 automapColors.nWhite = RGBA_PAL2 (63,63,63);
@@ -847,11 +850,17 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	if (1) {//!bRadar) {
 		int size;
 		objP = gameData.objs.objects;
-		for (i=0;i<=gameData.objs.nLastObject;i++,objP++) {
+		for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 			size = objP->size;
 			switch (objP->type)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
+				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
+				G3DrawSphere (&spherePoint,size, !bRadar);	
+				break;
+
+			case OBJ_MONSTERBALL:
+				GrSetColorRGBi (automapColors.nMonsterball);
 				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
 				G3DrawSphere (&spherePoint,size, !bRadar);	
 				break;
