@@ -845,7 +845,7 @@ vSaveP1 = *fq.p1;
 			short nSegment;
 			// Find hit speed	
 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			if (objP->type == OBJ_PLAYER)
 				HUDMessage (0, "WALL CONTACT");
 			fate = FindVectorIntersection (&fq, &hit_info);
@@ -854,13 +854,13 @@ vSaveP1 = *fq.p1;
 			xWallPart = VmVecDot (&vMoved, &hit_info.hit.vNormal);
 			if (xWallPart && (xMovedTime > 0) && (xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0) {
 				CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hit_info.hit.vPoint);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "BUMP!");
 #endif
 				}
 			else {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "SCREEEEEEEEEECH");
 #endif
@@ -883,7 +883,7 @@ vSaveP1 = *fq.p1;
 				nSegment = FindSegByPoint (&objP->pos, objP->segnum);
 				if (nSegment != objP->segnum)
 					RelinkObject (OBJ_IDX (objP), nSegment);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 				if (objP->type == OBJ_PLAYER)
 					HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
 #endif

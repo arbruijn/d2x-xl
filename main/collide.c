@@ -687,13 +687,13 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->ctype.laser_info.parent_num;
-				mq = (double) nMonsterballForces [otherObjP->id] * ((double) F1_0 / (double) otherObjP->mtype.phys_info.mass) / 10.0;
+				mq = (double) nMonsterballForces [otherObjP->id] * ((double) F1_0 / (double) otherObjP->mtype.phys_info.mass) / 40.0;
 				}
 			vRotForce.x = (fix) ((double) vForce->x * mq);
 			vRotForce.y = (fix) ((double) vForce->y * mq);
 			vRotForce.z = (fix) ((double) vForce->z * mq);
 			PhysApplyForce (objP, &vRotForce);
-			//PhysApplyRot (objP, &vRotForce);
+			PhysApplyRot (objP, &vRotForce);
 			if (gameData.hoard.nLastHitter == gameData.multi.players [gameData.multi.nLocalPlayer].objnum)
 				MultiSendMonsterball (1, 0);
 			}
@@ -713,9 +713,12 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 //the collision.
 int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
-	vms_vector	vForce, v;
+	vms_vector	vForce, vh, v0, v1, vr;
+#ifdef _DEBUG
+	vms_vector	vn0, vn1;
+#endif
 	fixang		angle;
-	fix			mag;
+	fix			mag, dot;
 	object		*t;
 
 	static int nCallDepth = 0;
@@ -735,11 +738,26 @@ if (t) {
 	//MoveOneObject (t);
 	return 1;
 	}
-VmVecSub (&v, &objP1->pos, &objP0->pos);
-angle = VmVecDeltaAng (&v, &objP0->mtype.phys_info.velocity, NULL);
+VmVecSub (&vh, &objP1->pos, &objP0->pos);
+v0 = objP0->mtype.phys_info.velocity;
+angle = VmVecDeltaAng (&vh, &v0, NULL);
 if (angle >= F1_0 / 4)
 	return 0;	// don't bump if moving away
-VmVecSub (&vForce, &objP0->mtype.phys_info.velocity, &objP1->mtype.phys_info.velocity);
+VmVecSub (&vh, vHitPt, &objP1->pos);
+//angle = VmVecDeltaAng (&vh, &v0, NULL);
+v1 = objP1->mtype.phys_info.velocity;
+VmVecSub (&vForce, &v0, &v1);
+#ifdef _DEBUG
+vn0 = v0;
+VmVecNormalize (&vn0);
+vn1 = v1;
+VmVecNormalize (&vn1);
+HUDMessage (0, "%1.2f - %1.2f: %1.2f (%1.2f)", 
+				f2fl (VmVecMag (&v0)),
+				f2fl (VmVecMag (&v1)),
+				f2fl (VmVecMag (&vForce)),
+				f2fl (VmVecDot (&vn0, &vn1)));
+#endif
 VmVecScaleFrac (&vForce, 
 					 2 * FixMul (objP0->mtype.phys_info.mass, objP1->mtype.phys_info.mass), 
 					 objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass);
@@ -747,9 +765,19 @@ mag = VmVecMag (&vForce);
 if (mag < (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200)
 	return 0;	// don't bump if force too low
 //HUDMessage (0, "%d %d", mag, (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200);
-BumpThisObject (objP1, objP0, &vForce, bDamage);
-VmVecNegate (&vForce);
-BumpThisObject (objP0, objP1, &vForce, bDamage);
+VmVecNormalize (&vh);
+vr = vh;
+VmVecNegate (&vh);
+dot = VmVecDot (&v0, &vr);
+VmVecScale (&vh, mag);
+if (objP1->type == OBJ_PLAYER)
+	dot = dot;
+BumpThisObject (objP1, objP0, &vh, bDamage);
+VmVecScaleFrac (&vr, 2 * dot, F1_0);
+VmVecDec (&vr, &v0);
+VmVecScale (&vr, mag);
+VmVecNegate (&vr);
+BumpThisObject (objP0, objP1, &vr, bDamage);
 return 1;
 }
 
