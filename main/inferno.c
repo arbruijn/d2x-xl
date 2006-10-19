@@ -2634,6 +2634,7 @@ gameData.render.ogl.nSrcBlend = GL_SRC_ALPHA;
 gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
 memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
 gameData.render.lights.ogl.nLights = 0;
+gameData.render.lights.ogl.material.bValid = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
 gameData.models.nMarkerModel = -1;
 gameData.models.nCockpits = 0;

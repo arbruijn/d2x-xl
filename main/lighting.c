@@ -1255,7 +1255,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 
 short FindOglLight (short nSegment, short nSide, short nObject)
 {
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
+if (gameOpts->ogl.bUseLighting) {
 		tOglLight	*pl = gameData.render.lights.ogl.lights;
 		short			i;
 
@@ -1577,6 +1577,7 @@ void AddOglLights (void)
 
 gameStates.ogl.bHaveLights = 1;
 //glEnable (GL_LIGHTING);
+memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
 gameData.render.lights.ogl.nLights = 0;
 gameData.render.lights.ogl.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {

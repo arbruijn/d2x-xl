@@ -218,7 +218,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MERCURY_ID              		39
 #define EARTHSHAKER_ID          		40
 
-#define ROBOT_LASER_ID					42
+#define ROBOT_FIREBALL_ID				42
+#define ROBOT_LASER_ID					43
 
 #define SMART_MINE_HOMING_ID        47
 #define ROBOT_SMART_MINE_HOMING_ID  49
@@ -227,6 +228,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_MERCURY_ID				55
 #define ROBOT_SMART_ID					57
 #define ROBOT_EARTHSHAKER_ID        58
+#define ROBOT_SHAKER_MEGA_ID        59
 
 #define PMINE_ID                    51  //the mine that the designers can place
 

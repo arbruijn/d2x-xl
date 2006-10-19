@@ -1557,47 +1557,69 @@ void RenderLightTrail (object *objP)
 {
 if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
 	 (objP->type == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+		vms_vector		vPos;
 		fVector3			vPosf;
-		int				i, j, k;
-		float				r, l, alpha;
+		int				h, i, j, k, n;
+		float				r [4], l [4], alpha;
 		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
-	G3StartInstanceMatrix (&objP->pos, &objP->orient);
-	r = f2fl (objP->size);
-	l = (r < 1.0f) ? 25.0f : 50.0f;
-	alpha = (r < 3.0f) ? 0.3f : 0.5f;
+	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fvec, objP->size / 2);
+	G3StartInstanceMatrix (&vPos, &objP->orient);
+	r [3] = f2fl (objP->size);
+	if (r [3] >= 3.0f)
+		r [3] /= 1.5f;
+	else if (r [3] < 1)
+		r [3] *= 2;
+	else if (r [3] < 2)
+		r [3] *= 1.5f;
+	r [2] = r [3];
+	r [1] = r [2] / 4.0f * 3.0f;
+	r [0] = r [2] / 3;
+	l [3] = (r [3] < 1.0f) ? 25.0f : 50.0f;
+	l [2] = r [3] / 4;
+	l [1] = -r [3] / 6;
+	l [0] = -r [3] / 3;
+	alpha = 0.15f;
 	glDepthMask (0);
 	glDisable (GL_TEXTURE_2D);
-	glCullFace (GL_BACK);
-	glBegin (GL_QUAD_STRIP);
-	for (i = 0; i < RING_SIZE + 1; i++) {
-		j = i % RING_SIZE;
-		for (k = 0; k < 2; k++) {
-			glColor4f (pc->red, pc->green, pc->blue, k ? 0.0f : alpha);
-			vPosf = vRing [j];
-			vPosf.p.x *= r;
-			vPosf.p.y *= r;
-			vPosf.p.z = -k * l;
+	//glCullFace (GL_BACK);
+	glDisable (GL_CULL_FACE);		
+	for (h = 0; h < 3; h++) {
+		glBegin (GL_QUAD_STRIP);
+		for (i = 0; i < RING_SIZE + 1; i++) {
+			j = i % RING_SIZE;
+			for (k = 0; k < 2; k++) {
+				n = h + k;
+				glColor4f (pc->red, pc->green, pc->blue, (n == 3) ? 0.0f : alpha);
+				vPosf = vRing [j];
+				vPosf.p.x *= r [n];
+				vPosf.p.y *= r [n];
+				vPosf.p.z = -l [n];
+				G3TransformPointf (&vPosf, &vPosf);
+				vPosf.p.z = -vPosf.p.z;
+				glVertex3fv ((GLfloat *) &vPosf);
+				}
+			}
+		glEnd ();
+		}
+	glEnable (GL_CULL_FACE);		
+	for (h = 0; h < 3; h += 2) {
+		glCullFace (h ? GL_BACK : GL_FRONT);
+		glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
+		glBegin (GL_TRIANGLE_STRIP);
+		for (j = 0; j < RING_SIZE; j++) {
+			vPosf = vRing [nStripIdx [j]];
+			vPosf.p.x *= r [h];
+			vPosf.p.y *= r [h];
+			vPosf.p.z = -l [h];
 			G3TransformPointf (&vPosf, &vPosf);
 			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
+		glEnd ();
 		}
-	glEnd ();
-	glBegin (GL_TRIANGLE_STRIP);
-	glColor4f (pc->red, pc->green, pc->blue, 0.1f);
-	for (j = 0; j < RING_SIZE; j++) {
-		vPosf = vRing [nStripIdx [j]];
-		vPosf.p.x *= r;
-		vPosf.p.y *= r;
-		//vPosf.p.z = -r;
-		G3TransformPointf (&vPosf, &vPosf);
-		vPosf.p.z = -vPosf.p.z;
-		glVertex3fv ((GLfloat *) &vPosf);
-		}
-	glEnd ();
-	glCullFace (GL_FRONT);
 	glDepthMask (1);
+	glCullFace (GL_FRONT);
 	G3DoneInstance ();
 	}
 }
@@ -2192,8 +2214,11 @@ int CreateObject (ubyte type, ubyte id, short owner, short segnum, vms_vector *p
 	object *objP;
 
 #ifdef _DEBUG
-if (type == OBJ_WEAPON)
+if (type == OBJ_WEAPON) {
 	type = type;
+	if (gameData.objs.objects [owner].type == OBJ_ROBOT)
+		type = type;
+	}	
 #endif
 if ((type == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
@@ -3638,28 +3663,33 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 void InitWeaponFlags (void)
 {
 memset (bIsMissile, 0, sizeof (bIsMissile));
-bIsMissile [CONCUSSION_ID] = 1;
-bIsMissile [HOMING_ID] = 1;
-bIsMissile [SMART_ID] = 1;
-bIsMissile [MEGA_ID] = 1;
-bIsMissile [FLASH_ID] = 1;
-bIsMissile [GUIDEDMISS_ID] = 1;
-bIsMissile [MERCURY_ID] = 1;
-bIsMissile [EARTHSHAKER_ID] = 1;
-bIsMissile [EARTHSHAKER_MEGA_ID] = 1;
-bIsMissile [REGULAR_MECH_MISS] = 1;
-bIsMissile [SUPER_MECH_MISS] = 1;
-bIsMissile [ROBOT_FLASH_ID] = 1;
-bIsMissile [ROBOT_MERCURY_ID] = 1;
-bIsMissile [ROBOT_SMART_ID] = 1;
-bIsMissile [ROBOT_MEGA_ID] = 1;
+bIsMissile [CONCUSSION_ID] =
+bIsMissile [HOMING_ID] =
+bIsMissile [SMART_ID] =
+bIsMissile [MEGA_ID] =
+bIsMissile [FLASH_ID] =
+bIsMissile [GUIDEDMISS_ID] =
+bIsMissile [MERCURY_ID] =
+bIsMissile [EARTHSHAKER_ID] =
+bIsMissile [EARTHSHAKER_MEGA_ID] =
+bIsMissile [REGULAR_MECH_MISS] =
+bIsMissile [SUPER_MECH_MISS] =
+bIsMissile [ROBOT_FLASH_ID] =
+bIsMissile [ROBOT_MERCURY_ID] =
+bIsMissile [ROBOT_SMART_ID] =
+bIsMissile [ROBOT_MEGA_ID] =
+bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
 bIsWeapon [LASER_ID] =
+bIsWeapon [LASER_ID + 1] =
+bIsWeapon [LASER_ID + 2] =
+bIsWeapon [LASER_ID + 3] =
 bIsWeapon [SPREADFIRE_ID] =
 bIsWeapon [PLASMA_ID] =
 bIsWeapon [FUSION_ID] =
 bIsWeapon [SUPER_LASER_ID] =
+bIsWeapon [SUPER_LASER_ID + 1] =
 bIsWeapon [HELIX_ID] =
 bIsWeapon [PHOENIX_ID] =
 bIsWeapon [OMEGA_ID] =
