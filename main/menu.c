@@ -2192,19 +2192,23 @@ if (extraGameInfo [0].bUseSmoke) {
 		}
 	else {
 		for (i = 1; i < 4; i++) {
-			m = menus + nSmokeDensOpt [i];
-			v = m->value;
-			if (gameOpts->render.smoke.nScale [i] != v) {
-				gameOpts->render.smoke.nScale [i] = v;
-				sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale [i]]);
-				m->rebuild = 1;
+			if (nSmokeDensOpt [i] >= 0) {
+				m = menus + nSmokeDensOpt [i];
+				v = m->value;
+				if (gameOpts->render.smoke.nScale [i] != v) {
+					gameOpts->render.smoke.nScale [i] = v;
+					sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale [i]]);
+					m->rebuild = 1;
+					}
 				}
-			m = menus + nSmokeSizeOpt [i];
-			v = m->value;
-			if (gameOpts->render.smoke.nSize [i] != v) {
-				gameOpts->render.smoke.nSize [i] = v;
-				sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize [i]]);
-				m->rebuild = 1;
+			if (nSmokeSizeOpt [i] >= 0) {
+				m = menus + nSmokeSizeOpt [i];
+				v = m->value;
+				if (gameOpts->render.smoke.nSize [i] != v) {
+					gameOpts->render.smoke.nSize [i] = v;
+					sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize [i]]);
+					m->rebuild = 1;
+					}
 				}
 			}	
 		}
@@ -2256,6 +2260,9 @@ do {
 
 	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
 	nUseSmokeOpt = opt++;
+	for (j = 1; j < 4; j++)
+		nSmokeSizeOpt [j] =
+		nSmokeDensOpt [j] = -1;
 	if (extraGameInfo [0].bUseSmoke) {
 		if (gameOpts->app.bExpertMode) {
 			if (!gameOpts->render.smoke.bSyncSizes && gameOpts->render.smoke.bPlayers) {

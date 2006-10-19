@@ -378,7 +378,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_WEAPONS					76
 #define MULTI_MONSTERBALL				77
 #define MULTI_CHEATING					78
-#define MULTI_MAX_TYPE					78
+#define MULTI_TRIGGER_EXT				79
+#define MULTI_MAX_TYPE					79
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -421,7 +422,7 @@ void MultiSendCreatePowerup(int powerup_type, int segnum, int objnum, vms_vector
 void MultiSendPlaySound(int sound_num, fix volume);
 void MultiSendAudioTaunt(int taunt_num);
 void MultiSendScore(void);
-void MultiSendTrigger(int trigger);
+void MultiSendTrigger(int nTrigger, int nObject);
 void MultiSendObjTrigger(int trigger);
 void MultiSendHostageDoorStatus(int wallnum);
 void MultiSendNetPlayerStatsRequest(ubyte player_num);

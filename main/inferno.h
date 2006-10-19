@@ -779,6 +779,7 @@ typedef struct tShaderLight {
 	float			brightness;
 	float			spotAngle;
 	float			spotExponent;
+	ubyte			bVariable;
 	ubyte			bState;
 	ubyte			bSpot;
 	ubyte			nType;

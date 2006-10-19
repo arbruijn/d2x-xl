@@ -173,7 +173,7 @@ extern int Num_obj_triggers;
 
 extern void trigger_init();
 extern void CheckTrigger(segment *seg, short side, short objnum,int shot);
-extern int CheckTriggerSub(trigger *triggers, int num_triggers, int trigger_num, int player_num,int shot);
+extern int CheckTriggerSub (short nObject, trigger *triggers, int num_triggers, int trigger_num, int player_num,int shot);
 extern void TriggersFrameProcess();
 void ExecObjTriggers (short objnum);
 

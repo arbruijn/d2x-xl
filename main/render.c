@@ -3610,7 +3610,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	 gameStates.render.bShadowMaps || 
 	 (gameStates.render.nShadowPass < 2)) {
 	RenderStartFrame ();
-	TransformOglLights (0, 1);
+	TransformOglLights (1, 1);
 #if defined(EDITOR) && !defined(NDEBUG)
 		if (bShowOnlyCurSide) {
 			RotateList (8, Cursegp->verts);

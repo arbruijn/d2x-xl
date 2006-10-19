@@ -3002,16 +3002,20 @@ switch (objP->movement_type) {
 
 //--------------------------------------------------------------------
 
-int CheckPlayerHitTriggers (object *objP, short nPrevSegment)
+int CheckObjectHitTriggers (object *objP, short nPrevSegment)
 {
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if ((objP->type != OBJ_PLAYER) || (objP->movement_type != MT_PHYSICS) || (nPrevSegment == objP->segnum))
+if (objP->type == OBJ_MONSTERBALL)
+	objP = objP;
+if (/*(objP->type != OBJ_PLAYER) ||*/ (objP->movement_type != MT_PHYSICS) || (nPrevSegment == objP->segnum))
 	return 0;
 #ifdef NETWORK
 nOldLevel = gameData.missions.nCurrentLevel;
 #endif
+if (objP->type == OBJ_MONSTERBALL)
+	objP = objP;
 for (i = 0; i < nPhysSegs - 1; i++) {
 	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
 	if (nConnSide != -1)
@@ -3137,7 +3141,7 @@ if ((objP->type == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//object has been deleted
 	}
 HandleObjectMovement (objP);
-if (CheckPlayerHitTriggers (objP, nPrevSegment))
+if (CheckObjectHitTriggers (objP, nPrevSegment))
 	return 0;
 CheckObjectInVolatileWall (objP);
 CheckGuidedMissileThroughExit (objP, nPrevSegment);

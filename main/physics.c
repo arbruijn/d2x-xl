@@ -760,7 +760,7 @@ retryMove:
 
 	if (objP->type == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
-	if (objP->type == OBJ_PLAYER)
+	//if (objP->type == OBJ_PLAYER)
 		fq.flags |= FQ_GET_SEGLIST;
 
 	vSaveP0 = *fq.p0;
@@ -788,12 +788,12 @@ retryMove:
 	}
 #endif
 
-	if (objP->type == OBJ_PLAYER) {
+	//if (objP->type == OBJ_PLAYER) 
+	{
 		int i;
 
-		if (nPhysSegs && physSegList [nPhysSegs-1]==hi.segList [0])
+		if (nPhysSegs && physSegList [nPhysSegs-1] == hi.segList [0])
 			nPhysSegs--;
-
 		for (i=0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS - 1); )
 			physSegList [nPhysSegs++] = hi.segList [i++];
 	}
@@ -1333,7 +1333,8 @@ vSaveP1 = *fq.p1;
 		}
 #endif
 
-		if (objP->type == OBJ_PLAYER) {
+		//if (objP->type == OBJ_PLAYER) 
+		{
 			int i;
 
 			if (nPhysSegs && physSegList [nPhysSegs-1] == hi.segList [0])

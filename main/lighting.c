@@ -390,6 +390,7 @@ void ApplyLight(
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
+		return;
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
@@ -1644,20 +1645,14 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		psl->spotAngle = pl->spotAngle;
 		psl->spotExponent = pl->spotExponent;
 		}
+	psl->bVariable = pl->bVariable;
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
-	if (psl->bState) 
-		if (bStatic) {
-			if (pl->nType == 2)
-				psl->bState = 0;
-			if (!bVariable && pl->bVariable)
-				psl->bState = 0;
-			}
-		else {
-			if (pl->nType != 2) {
-				if (!(bVariable && pl->bVariable))
-					psl->bState = 0;
-				}
-			}
+	if (psl->bState) {
+		if (!bStatic && (pl->nType == 1) && !pl->bVariable)
+			psl->bState = 0;
+		if (!bVariable && ((pl->nType > 1)  || pl->bVariable))
+			psl->bState = 0;
+		}
 	psl->rad = pl->rad;
 	gameData.render.lights.ogl.shader.nLights++;
 	psl++;

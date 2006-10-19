@@ -1010,9 +1010,12 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (!nType)
 		continue;
 	if (nType == 1) {
-		psl->nType = 0;
+		if (!gameStates.render.nState)
+			psl->nType = 0;
 		if (bDarkness)
 			continue;
+		//if (!(gameStates.render.nState || psl->bVariable))
+		//	continue;
 		}
 	if (i == nMatLight)
 		continue;
@@ -1119,7 +1122,7 @@ if (!bMatEmissive && pc) {
 	pc->color.blue = colorSum.c.b;
 	}
 if (pVertColor) {
-	pVertColor->index = 1;
+	pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
 	pVertColor->color.red = colorSum.c.r;
 	pVertColor->color.green = colorSum.c.g;
 	pVertColor->color.blue = colorSum.c.b;

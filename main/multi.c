@@ -248,6 +248,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	29, // MULTI_WEAPONS
 	40, // MULTI_MONSTERBALL
 	2,  //MULTI_CHEATING
+	5   //MULTI_TRIGGER_EXT
 };
 
 void extract_netplayer_stats (netplayer_stats *ps, player * pd);
@@ -1666,6 +1667,7 @@ void MultiDoTrigger (char *buf)
 {
 	int nPlayer = (int) (buf [1]);
 	int trigger = (int) ((ubyte) buf [2]);
+	short nObject;
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multi.nPlayers) || (nPlayer == gameData.multi.nLocalPlayer)) {
 	Int3 (); // Got trigger from illegal playernum
@@ -1675,7 +1677,11 @@ if ((trigger < 0) || (trigger  >= gameData.trigs.nTriggers)) {
 	Int3 (); // Illegal trigger number in multiplayer
 	return;
 	}
-CheckTriggerSub (gameData.trigs.triggers, gameData.trigs.nTriggers, trigger, nPlayer, 0);
+if (gameStates.multi.nGameType == UDP_GAME)
+	nObject = GET_INTEL_SHORT (buf + 3);
+else
+	nObject = gameData.multi.players [nPlayer].objnum;
+CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, trigger, nPlayer, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1708,7 +1714,8 @@ if ((trigger < 0) || (trigger  >= gameData.trigs.nObjTriggers)) {
 	Int3 (); // Illegal trigger number in multiplayer
 	return;
 	}
-CheckTriggerSub (gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, trigger, nPlayer, 0);
+CheckTriggerSub (gameData.multi.players [nPlayer].objnum, gameData.trigs.objTriggers, 
+					  gameData.trigs.nObjTriggers, trigger, nPlayer, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -2563,18 +2570,23 @@ MultiSendData (multiData.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendTrigger (int triggernum)
+void MultiSendTrigger (int triggernum, int nObject)
 {
 	// Send an even to trigger something in the mine
 
-	int count = 0;
+	int count = 1;
 
-multiData.msg.buf [count] = MULTI_TRIGGER;                                
-count += 1;
 multiData.msg.buf [count] = gameData.multi.nLocalPlayer;                                   
 count += 1;
 multiData.msg.buf [count] = (ubyte)triggernum;            
 count += 1;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	multiData.msg.buf [0] = MULTI_TRIGGER_EXT;                                
+	PUT_INTEL_SHORT (multiData.msg.buf + count, nObject);
+	count += 2;
+	}	
+else
+	multiData.msg.buf [0] = MULTI_TRIGGER;                                
 MultiSendData (multiData.msg.buf, count, 1);
 //MultiSendData (multiData.msg.buf, count, 1); // twice?
 }

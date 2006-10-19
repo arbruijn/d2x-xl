@@ -1223,6 +1223,7 @@ if (so.nVerts) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
+	memset (so.pVertColors, 0, so.nVerts * sizeof (tFaceColor));
 	if (!(so.pvNormals = OOF_ReadVertList (fp, so.nVerts, NULL, NULL))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
@@ -2124,7 +2125,7 @@ int OOF_DrawSubObject (object *objP, tOOF_object *po, tOOF_subObject *pso, int b
 	tOOF_vector		*pv, *pvn, *phv;
 	tFaceColor		*pvc;
 	grs_bitmap		*bmP;
-	int				i, j;
+	int				h, i, j;
 	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
@@ -2133,7 +2134,7 @@ if (bShadowTest)
 pv = pso->pvRotVerts;
 pvn = pso->pvNormals;
 pvc = pso->pVertColors;
-memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
+//memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	pfv = pf->pVerts;
 #if 0
@@ -2171,15 +2172,12 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
-			phv = pv + pfv->nIndex;
+			phv = pv + (h = pfv->nIndex);
 			if (bOglLighting) {
-				if (pvc [pfv->nIndex].index)
-					OglColor4sf (pvc [pfv->nIndex].color.red, 
-									 pvc [pfv->nIndex].color.green, 
-									 pvc [pfv->nIndex].color.blue, 
-									 1.0);
+				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
+					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, 1.0);
 				else
-					G3VertexColor ((fVector3 *) (pvn + pfv->nIndex), (fVector3 *) phv, -1, pvc + pfv->nIndex);
+					G3VertexColor ((fVector3 *) (pvn + h), (fVector3 *) phv, -1, pvc + h);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3f (phv->x, phv->y, -phv->z);

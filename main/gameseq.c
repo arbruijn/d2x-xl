@@ -1505,7 +1505,7 @@ gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Da
 extern void SetPosFromReturnSegment (void);
 
 //	Returns true if secret level has been destroyed.
-int p_secret_level_destroyed (void)
+int PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.

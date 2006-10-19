@@ -2060,7 +2060,7 @@ for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP+
 			gameData.hoard.nMonsterballSeg = objP->segnum;
 		ReleaseObject (i);
 		}
-#ifdef _RELEASE
+#ifdef RELEASE
 if (!(NetworkIAmMaster() && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #endif
