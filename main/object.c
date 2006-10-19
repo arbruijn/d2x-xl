@@ -3658,7 +3658,8 @@ bIsWeapon [FUSION_ID] =
 bIsWeapon [SUPER_LASER_ID] =
 bIsWeapon [HELIX_ID] =
 bIsWeapon [PHOENIX_ID] =
-bIsWeapon [OMEGA_ID] = 1;
+bIsWeapon [OMEGA_ID] =
+bIsWeapon [ROBOT_LASER_ID] = 1;
 }
 
 //------------------------------------------------------------------------------
