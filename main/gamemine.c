@@ -1525,15 +1525,23 @@ else if (loadOp == 1) {
 		loadOp = 2;
 		}
 	}
-else if (loadOp == 2) {
+if (loadOp == 2) {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
 	return;
 	}
-m [0].value += 10;
+m [0].value++;
 m [0].rebuild = 1;
 *key = 0;
 GrPaletteStepLoad (NULL);
+}
+
+//------------------------------------------------------------------------------
+
+int SortLightsGaugeSize (void)
+{
+return PROGRESS_STEPS (gameData.segs.nSegments) +
+		 PROGRESS_STEPS (gameData.segs.nVertices);
 }
 
 //------------------------------------------------------------------------------
@@ -1552,12 +1560,7 @@ int LoadMineGaugeSize (void)
 #endif
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
-	if (bLightmaps /*|| gameOpts->ogl.bUseLighting*/)
-		i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
-	else if (bShadows)
-		i += PROGRESS_STEPS (gameData.segs.nSegments);
-	else
-		i++;
+	i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
 	}
 else {
 	i++;
@@ -1567,8 +1570,7 @@ else {
 		i++;
 	}
 //if (gameOpts->ogl.bUseLighting)
-	i += PROGRESS_STEPS (gameData.segs.nSegments * 10) +
-		  PROGRESS_STEPS (gameData.segs.nVertices * 10);
+	i += SortLightsGaugeSize ();
 return i;
 }
 
@@ -1590,9 +1592,7 @@ loadOp = 0;
 loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	NMProgressBar (TXT_PREP_DESCENT, 
-						LoadMineGaugeSize () 
-						- PROGRESS_STEPS (gameData.segs.nSegments * 10) 
-						- PROGRESS_STEPS (gameData.segs.nVertices * 10), 
+						LoadMineGaugeSize () - SortLightsGaugeSize (), 
 						LoadMineGaugeSize () + PagingGaugeSize (), SortLightsPoll); 
 else {
 	ComputeNearestSegmentLights (-1);

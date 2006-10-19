@@ -89,19 +89,8 @@ byte	gameData.objs.types.nType.nId [MAX_OBJTYPE];
 fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 #endif
 
-//for each model, a model number for dying & dead variants, or -1 if none
-int Dying_modelnums [MAX_POLYGON_MODELS];
-int Dead_modelnums [MAX_POLYGON_MODELS];
-
-//the polygon model number to use for the marker
-int	Marker_model_num = -1;
-
 //right now there's only one player ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
-
-//----------------- Miscellaneous bitmap pointers ---------------
-int             Num_cockpits = 0;
-bitmap_index    cockpit_bitmap [N_COCKPIT_BITMAPS];
 
 //---------------- Variables for wall textures ------------------
 static int	nTMaps [2];
@@ -234,115 +223,97 @@ void BMReadAll (CFILE * fp)
 {
 	int i,t;
 
-	gameData.pig.tex.nTextures [0] = CFReadInt (fp);
+gameData.pig.tex.nTextures [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
-	BitmapIndexReadN (gameData.pig.tex.bmIndex [0], gameData.pig.tex.nTextures [0], fp );
-	ReadTMapInfoN (gameData.pig.tex.tMapInfo [0], gameData.pig.tex.nTextures [0], fp);
+BitmapIndexReadN (gameData.pig.tex.bmIndex [0], gameData.pig.tex.nTextures [0], fp);
+ReadTMapInfoN (gameData.pig.tex.tMapInfo [0], gameData.pig.tex.nTextures [0], fp);
 
-	t = CFReadInt (fp);
+t = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d sound indices\n", t);
-	CFRead ( Sounds [0], sizeof (ubyte), t, fp );
-	CFRead ( AltSounds [0], sizeof (ubyte), t, fp );
+CFRead (Sounds [0], sizeof (ubyte), t, fp);
+CFRead (AltSounds [0], sizeof (ubyte), t, fp);
 
-	gameData.eff.nClips [0] = CFReadInt (fp);
+gameData.eff.nClips [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d animation clips\n", gameData.eff.nClips [0]);
-	vclip_read_n (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
+vclip_read_n (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
 
-	gameData.eff.nEffects [0] = CFReadInt (fp);
+gameData.eff.nEffects [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
-	EClipReadN (gameData.eff.effects [0], gameData.eff.nEffects [0], fp);
-	{
-	eclip	*ec = gameData.eff.effects [0];
-	int	i;
-	
-	for (i = gameData.eff.nEffects [0]; i; i--, ec++)
-		CBRK ((ec->flags & EF_ALTFMT) != 0);
-	}
-	gameData.walls.nAnims [0] = CFReadInt (fp);
+EClipReadN (gameData.eff.effects [0], gameData.eff.nEffects [0], fp);
+gameData.walls.nAnims [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d wall animations\n", gameData.walls.nAnims [0]);
-	wclip_read_n (gameData.walls.anims [0], gameData.walls.nAnims [0], fp);
+WClipReadN (gameData.walls.anims [0], gameData.walls.nAnims [0], fp);
 
-	gameData.bots.nTypes [0] = CFReadInt (fp);
+gameData.bots.nTypes [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
-	robot_info_read_n (gameData.bots.info [0], gameData.bots.nTypes [0], fp);
-	gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
-	memcpy (gameData.bots.defaultInfo, gameData.bots.info [0], gameData.bots.nTypes [0] * sizeof (*gameData.bots.defaultInfo));
+RobotInfoReadN (gameData.bots.info [0], gameData.bots.nTypes [0], fp);
+gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
+memcpy (gameData.bots.defaultInfo, gameData.bots.info [0], gameData.bots.nTypes [0] * sizeof (*gameData.bots.defaultInfo));
 
-	gameData.bots.nJoints = CFReadInt (fp);
+gameData.bots.nJoints = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
-	jointpos_read_n (gameData.bots.joints, gameData.bots.nJoints, fp);
-	gameData.bots.nDefaultJoints = gameData.bots.nJoints;
-	memcpy (gameData.bots.defaultJoints, gameData.bots.joints, gameData.bots.nJoints * sizeof (*gameData.bots.defaultJoints));
+JointPosReadN (gameData.bots.joints, gameData.bots.nJoints, fp);
+gameData.bots.nDefaultJoints = gameData.bots.nJoints;
+memcpy (gameData.bots.defaultJoints, gameData.bots.joints, gameData.bots.nJoints * sizeof (*gameData.bots.defaultJoints));
 
-	gameData.weapons.nTypes [0] = CFReadInt (fp);
+gameData.weapons.nTypes [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
-	WeaponInfoReadN (gameData.weapons.info, gameData.weapons.nTypes [0], fp, gameData.pig.tex.nHamFileVersion);
-	BMSetAfterburnerSizes ();
+WeaponInfoReadN (gameData.weapons.info, gameData.weapons.nTypes [0], fp, gameData.pig.tex.nHamFileVersion);
+BMSetAfterburnerSizes ();
 
-	gameData.objs.pwrUp.nTypes = CFReadInt (fp);
+gameData.objs.pwrUp.nTypes = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
-	PowerupTypeInfoReadN (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, fp);
+PowerupTypeInfoReadN (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, fp);
 
-	gameData.models.nPolyModels = CFReadInt (fp);
+gameData.models.nPolyModels = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d polymodel descriptions\n", gameData.models.nPolyModels);
-	PolyModelReadN (gameData.models.polyModels, gameData.models.nPolyModels, fp);
-	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
-	memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
+PolyModelReadN (gameData.models.polyModels, gameData.models.nPolyModels, fp);
+gameData.models.nDefPolyModels = gameData.models.nPolyModels;
+memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
 
 /*---*/LogErr ("      Loading polymodel data\n");
-	for (i = 0; i < gameData.models.nPolyModels; i++) {
-		gameData.models.polyModels [i].model_data = 
-		gameData.models.defPolyModels [i].model_data = NULL;
-		PolyModelDataRead (gameData.models.polyModels+i, gameData.models.defPolyModels+i,fp);
-		}
+for (i = 0; i < gameData.models.nPolyModels; i++) {
+	gameData.models.polyModels [i].model_data = 
+	gameData.models.defPolyModels [i].model_data = NULL;
+	PolyModelDataRead (gameData.models.polyModels+i, gameData.models.defPolyModels + i, fp);
+	}
 
-	for (i = 0; i < gameData.models.nPolyModels; i++)
-		Dying_modelnums [i] = CFReadInt (fp);
-	for (i = 0; i < gameData.models.nPolyModels; i++)
-		Dead_modelnums [i] = CFReadInt (fp);
+for (i = 0; i < gameData.models.nPolyModels; i++)
+	gameData.models.nDyingModels [i] = CFReadInt (fp);
+for (i = 0; i < gameData.models.nPolyModels; i++)
+	gameData.models.nDeadModels [i] = CFReadInt (fp);
 
-	t = CFReadInt (fp);
+t = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d cockpit gauges\n", t);
-	BitmapIndexReadN (Gauges, t, fp);
-	BitmapIndexReadN (Gauges_hires, t, fp);
+BitmapIndexReadN (Gauges, t, fp);
+BitmapIndexReadN (Gauges_hires, t, fp);
 
-	gameData.pig.tex.nObjBitmaps = CFReadInt (fp);
+gameData.pig.tex.nObjBitmaps = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d object bitmap indices\n", gameData.pig.tex.nObjBitmaps);
-	BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, fp);
-	for (i = 0;i < gameData.pig.tex.nObjBitmaps;i++)
-		gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
+BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, fp);
+for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
+	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 
 /*---*/LogErr ("      Loading player ship description\n");
-	player_ship_read (&gameData.pig.ship.only, fp);
+PlayerShipRead (&gameData.pig.ship.only, fp);
 
-	Num_cockpits = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d cockpit bitmaps\n", Num_cockpits);
-	BitmapIndexReadN (cockpit_bitmap, Num_cockpits, fp);
+gameData.models.nCockpits = CFReadInt (fp);
+/*---*/LogErr ("      Loading %d cockpit bitmaps\n", gameData.models.nCockpits);
+BitmapIndexReadN (gameData.pig.tex.cockpitBmIndex, gameData.models.nCockpits, fp);
+gameData.pig.tex.nFirstMultiBitmap = CFReadInt (fp);
 
-//@@	CFRead ( &gameData.objs.types.nCount, sizeof (int), 1, fp );
-//@@	CFRead ( gameData.objs.types.nType, sizeof (byte), gameData.objs.types.nCount, fp );
-//@@	CFRead ( gameData.objs.types.nType.nId, sizeof (byte), gameData.objs.types.nCount, fp );
-//@@	CFRead ( gameData.objs.types.nType.nStrength, sizeof (fix), gameData.objs.types.nCount, fp );
-
-	gameData.pig.tex.nFirstMultiBitmap = CFReadInt (fp);
-
-	gameData.reactor.nReactors = CFReadInt (fp);
+gameData.reactor.nReactors = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
-	ReactorReadN (gameData.reactor.reactors, gameData.reactor.nReactors, fp);
+ReactorReadN (gameData.reactor.reactors, gameData.reactor.nReactors, fp);
 
-	Marker_model_num = CFReadInt (fp);
-
-	//@@CFRead ( &N_controlcen_guns, sizeof (int), 1, fp );
-	//@@CFRead ( controlcen_gun_points, sizeof (vms_vector), N_controlcen_guns, fp );
-	//@@CFRead ( controlcen_gun_dirs, sizeof (vms_vector), N_controlcen_guns, fp );
-
-	if (gameData.pig.tex.nHamFileVersion < 3) {
-		gameData.endLevel.exit.nModel = CFReadInt (fp);
-		gameData.endLevel.exit.nDestroyedModel = CFReadInt (fp);
+gameData.models.nMarkerModel = CFReadInt (fp);
+if (gameData.pig.tex.nHamFileVersion < 3) {
+	gameData.endLevel.exit.nModel = CFReadInt (fp);
+	gameData.endLevel.exit.nDestroyedModel = CFReadInt (fp);
 	}
-	else
-		gameData.endLevel.exit.nModel = 
-		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels;
+else
+	gameData.endLevel.exit.nModel = 
+	gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels;
 }
 
 //------------------------------------------------------------------------------
@@ -369,7 +340,7 @@ void BMReadInfoFile (void)
 {
 	int i, bHaveBinTbl = 0;
 	char	szInput [LINEBUF_SIZE];
-	CFILE	*infoFile = CFOpen ( "BITMAPS.TBL", gameFolders.szDataDir, "rb", 0 );
+	CFILE	*infoFile = CFOpen ("BITMAPS.TBL", gameFolders.szDataDir, "rb", 0);
 
 if (infoFile == NULL) {
 	infoFile = CFOpen ("BITMAPS.BIN", gameFolders.szDataDir, "rb", 0);
@@ -379,7 +350,7 @@ if (infoFile == NULL) {
 	}
 linenum = 0;
 
-CFSeek ( infoFile, 0L, SEEK_SET);
+CFSeek (infoFile, 0L, SEEK_SET);
 
 while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 	int l;
@@ -417,14 +388,14 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 	if (strlen (szInput) == LINEBUF_SIZE-1)
 		Error ("Possible line truncation in BITMAPS.TBL on line %d\n",linenum);
 
-	arg = strtok ( szInput, space );
+	arg = strtok (szInput, space);
 	if (arg [0] == '@') {
 		arg++;
 		Registered_only = 1;
 	} else
 		Registered_only = 0;
 
-	while (arg != NULL )
+	while (arg != NULL)
 		{
 		// Check all possible flags and defines.
 		if (*arg == '$') bm_flag = BM_NONE; // reset to no flags as default.
@@ -451,11 +422,11 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("water")	 			gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_WATER;
 		else IFTOK ("force_field")		gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_FORCE_FIELD;
 		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [texture_count-1].slide_u = fl2f (get_float ())>>8; gameData.pig.tex.pTMapInfo [texture_count-1].slide_v = fl2f (get_float ())>>8;}
-		else IFTOK ("destroyed")	 		{int t=texture_count-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok ( NULL, space );}
+		else IFTOK ("destroyed")	 		{int t=texture_count-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
 		else IFTOK ("clip_num")			clip_num = get_int ();
-		else IFTOK ("dest_bm")			dest_bm = strtok ( NULL, space );
+		else IFTOK ("dest_bm")			dest_bm = strtok (NULL, space);
 		else IFTOK ("dest_vclip")		dest_vclip = get_int ();
 		else IFTOK ("dest_eclip")		dest_eclip = get_int ();
 		else IFTOK ("dest_size")			dest_size = fl2f (get_float ();
@@ -511,7 +482,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 
 		}
 
-		arg = strtok ( NULL, equal_space );
+		arg = strtok (NULL, equal_space);
 		continue;
    }
 }
@@ -521,7 +492,7 @@ nTMaps [gameStates.app.bD1Data] = tmap_count;
 
 gameData.pig.tex.pBmIndex [gameData.pig.tex.nTextures++].index = 0;		//entry for bogus tmap
 
-CFClose ( infoFile );
+CFClose (infoFile);
 }
 
 #endif
@@ -602,11 +573,11 @@ void BMReadGameDataD1 (CFILE * fp)
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
 CFSeek (fp, sizeof (int), SEEK_CUR);
-CFRead ( &gameData.pig.tex.nTextures [1], sizeof (int), 1, fp );
+CFRead (&gameData.pig.tex.nTextures [1], sizeof (int), 1, fp);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
 /*---*/LogErr ("         Loading %d texture indices\n", j);
-//CFRead ( gameData.pig.tex.bmIndex [1], sizeof (bitmap_index), D1_MAX_TEXTURES, fp );
-BitmapIndexReadN (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, fp );
+//CFRead (gameData.pig.tex.bmIndex [1], sizeof (bitmap_index), D1_MAX_TEXTURES, fp);
+BitmapIndexReadN (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, fp);
 /*---*/LogErr ("         Loading %d texture descriptions\n", j);
 for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	CFSeek (fp, sizeof (t.filename), SEEK_CUR);
@@ -655,7 +626,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	CFRead (pw->filename, sizeof (w.filename), 1, fp);
 	pw->pad = (char) CFReadByte (fp);
 	}
-CFRead (&gameData.bots.nTypes [1], sizeof (int), 1, fp );
+CFRead (&gameData.bots.nTypes [1], sizeof (int), 1, fp);
 /*---*/LogErr ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
 memcpy (gameData.bots.info [1], gameData.bots.info [0], MAX_ROBOT_TYPES * sizeof (robot_info));
 if (!gameOpts->sound.bUseD1Sounds)
@@ -881,71 +852,71 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	}
 #endif
 #if 0
-	CFRead ( &gameData.pig.tex.nTextures, sizeof (int), 1, fp );
-	CFRead ( gameData.pig.tex.bmIndex, sizeof (bitmap_index), MAX_TEXTURES, fp );
-	CFRead ( gameData.pig.tex.tMapInfo, sizeof (tmap_info), MAX_TEXTURES, fp );
+	CFRead (&gameData.pig.tex.nTextures, sizeof (int), 1, fp);
+	CFRead (gameData.pig.tex.bmIndex, sizeof (bitmap_index), MAX_TEXTURES, fp);
+	CFRead (gameData.pig.tex.tMapInfo, sizeof (tmap_info), MAX_TEXTURES, fp);
 	
-	CFRead ( Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp );
-	CFRead ( AltSounds, sizeof (ubyte), MAX_SOUNDS, fp );
+	CFRead (Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp);
+	CFRead (AltSounds, sizeof (ubyte), MAX_SOUNDS, fp);
 
-	CFRead ( &gameData.eff.nClips, sizeof (int), 1, fp );
-	CFRead ( gameData.eff.vClips, sizeof (vclip), VCLIP_MAXNUM, fp );
+	CFRead (&gameData.eff.nClips, sizeof (int), 1, fp);
+	CFRead (gameData.eff.vClips, sizeof (vclip), VCLIP_MAXNUM, fp);
 
-	CFRead ( &gameData.eff.nEffects, sizeof (int), 1, fp );
-	CFRead ( gameData.eff.effects, sizeof (eclip), MAX_EFFECTS, fp );
+	CFRead (&gameData.eff.nEffects, sizeof (int), 1, fp);
+	CFRead (gameData.eff.effects, sizeof (eclip), MAX_EFFECTS, fp);
 
-	CFRead ( &gameData.walls.nAnims, sizeof (int), 1, fp );
-	CFRead ( gameData.walls.anims, sizeof (wclip), MAX_WALL_ANIMS, fp );
+	CFRead (&gameData.walls.nAnims, sizeof (int), 1, fp);
+	CFRead (gameData.walls.anims, sizeof (wclip), MAX_WALL_ANIMS, fp);
 
-	CFRead ( &gameData.bots.nTypes, sizeof (int), 1, fp );
-	CFRead ( gameData.bots.info [0], sizeof (robot_info), MAX_ROBOT_TYPES, fp );
+	CFRead (&gameData.bots.nTypes, sizeof (int), 1, fp);
+	CFRead (gameData.bots.info [0], sizeof (robot_info), MAX_ROBOT_TYPES, fp);
 
-	CFRead ( &gameData.bots.nJoints, sizeof (int), 1, fp );
-	CFRead ( gameData.bots.joints, sizeof (jointpos), MAX_ROBOT_JOINTS, fp );
+	CFRead (&gameData.bots.nJoints, sizeof (int), 1, fp);
+	CFRead (gameData.bots.joints, sizeof (jointpos), MAX_ROBOT_JOINTS, fp);
 
-	CFRead ( &gameData.weapons.nTypes [0], sizeof (int), 1, fp );
-	CFRead ( gameData.weapons.info, sizeof (weapon_info), MAX_WEAPON_TYPES, fp );
+	CFRead (&gameData.weapons.nTypes [0], sizeof (int), 1, fp);
+	CFRead (gameData.weapons.info, sizeof (weapon_info), MAX_WEAPON_TYPES, fp);
 
-	CFRead ( &gameData.objs.pwrUp.nTypes, sizeof (int), 1, fp );
-	CFRead ( gameData.objs.pwrUp.info, sizeof (powerup_type_info), MAX_POWERUP_TYPES, fp );
+	CFRead (&gameData.objs.pwrUp.nTypes, sizeof (int), 1, fp);
+	CFRead (gameData.objs.pwrUp.info, sizeof (powerup_type_info), MAX_POWERUP_TYPES, fp);
 	
-	CFRead ( &gameData.models.nPolyModels, sizeof (int), 1, fp );
-	CFRead ( gameData.models.polyModels, sizeof (polymodel), gameData.models.nPolyModels, fp );
+	CFRead (&gameData.models.nPolyModels, sizeof (int), 1, fp);
+	CFRead (gameData.models.polyModels, sizeof (polymodel), gameData.models.nPolyModels, fp);
 
-	for (i=0;i<gameData.models.nPolyModels;i++ )	{
+	for (i=0;i<gameData.models.nPolyModels;i++)	{
 		gameData.models.polyModels [i].model_data = d_malloc (gameData.models.polyModels [i].model_data_size);
-		Assert ( gameData.models.polyModels [i].model_data != NULL );
-		CFRead ( gameData.models.polyModels [i].model_data, sizeof (ubyte), gameData.models.polyModels [i].model_data_size, fp );
+		Assert (gameData.models.polyModels [i].model_data != NULL);
+		CFRead (gameData.models.polyModels [i].model_data, sizeof (ubyte), gameData.models.polyModels [i].model_data_size, fp);
 	}
 
-	CFRead ( Gauges, sizeof (bitmap_index), MAX_GAUGE_BMS, fp );
+	CFRead (Gauges, sizeof (bitmap_index), MAX_GAUGE_BMS, fp);
 
-	CFRead ( Dying_modelnums, sizeof (int), MAX_POLYGON_MODELS, fp );
-	CFRead ( Dead_modelnums, sizeof (int), MAX_POLYGON_MODELS, fp );
+	CFRead (gameData.models.nDyingModels, sizeof (int), MAX_POLYGON_MODELS, fp);
+	CFRead (gameData.models.nDeadModels, sizeof (int), MAX_POLYGON_MODELS, fp);
 
-	CFRead ( gameData.pig.tex.objBmIndex, sizeof (bitmap_index), MAX_OBJ_BITMAPS, fp );
-	CFRead ( gameData.pig.tex.pObjBmIndex, sizeof (ushort), MAX_OBJ_BITMAPS, fp );
+	CFRead (gameData.pig.tex.objBmIndex, sizeof (bitmap_index), MAX_OBJ_BITMAPS, fp);
+	CFRead (gameData.pig.tex.pObjBmIndex, sizeof (ushort), MAX_OBJ_BITMAPS, fp);
 
-	CFRead ( &gameData.pig.ship.only, sizeof (player_ship), 1, fp );
+	CFRead (&gameData.pig.ship.only, sizeof (player_ship), 1, fp);
 
-	CFRead ( &Num_cockpits, sizeof (int), 1, fp );
-	CFRead ( cockpit_bitmap, sizeof (bitmap_index), N_COCKPIT_BITMAPS, fp );
+	CFRead (&gameData.models.nCockpits, sizeof (int), 1, fp);
+	CFRead (gameData.pig.tex.cockpitBmIndex, sizeof (bitmap_index), N_COCKPIT_BITMAPS, fp);
 
-	CFRead ( Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp );
-	CFRead ( AltSounds, sizeof (ubyte), MAX_SOUNDS, fp );
+	CFRead (Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp);
+	CFRead (AltSounds, sizeof (ubyte), MAX_SOUNDS, fp);
 
-	CFRead ( &gameData.objs.types.nCount, sizeof (int), 1, fp );
-	CFRead ( gameData.objs.types.nType, sizeof (byte), MAX_OBJTYPE, fp );
-	CFRead ( gameData.objs.types.nType.nId, sizeof (byte), MAX_OBJTYPE, fp );
-	CFRead ( gameData.objs.types.nType.nStrength, sizeof (fix), MAX_OBJTYPE, fp );
+	CFRead (&gameData.objs.types.nCount, sizeof (int), 1, fp);
+	CFRead (gameData.objs.types.nType, sizeof (byte), MAX_OBJTYPE, fp);
+	CFRead (gameData.objs.types.nType.nId, sizeof (byte), MAX_OBJTYPE, fp);
+	CFRead (gameData.objs.types.nType.nStrength, sizeof (fix), MAX_OBJTYPE, fp);
 
-	CFRead ( &gameData.pig.tex.nFirstMultiBitmap, sizeof (int), 1, fp );
+	CFRead (&gameData.pig.tex.nFirstMultiBitmap, sizeof (int), 1, fp);
 
-	CFRead ( &N_controlcen_guns, sizeof (int), 1, fp );
-	CFRead ( controlcen_gun_points, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp );
-	CFRead ( controlcen_gun_dirs, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp );
-	CFRead ( &gameData.endLevel.exit.nModel, sizeof (int), 1, fp );
-	CFRead ( &gameData.endLevel.exit.nDestroyedModel, sizeof (int), 1, fp );
+	CFRead (&N_controlcen_guns, sizeof (int), 1, fp);
+	CFRead (controlcen_gun_points, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp);
+	CFRead (controlcen_gun_dirs, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp);
+	CFRead (&gameData.endLevel.exit.nModel, sizeof (int), 1, fp);
+	CFRead (&gameData.endLevel.exit.nDestroyedModel, sizeof (int), 1, fp);
 #endif
 }
 
@@ -999,7 +970,7 @@ void BMReadAllD1 (CFILE * fp)
 	atexit (undo_bm_read_all_d1);
 
 	/*gameData.pig.tex.nTextures = */ CFReadInt (fp);
-	//BitmapIndexReadN (gameData.pig.tex.bmIndex, D1_MAX_TEXTURES, fp );
+	//BitmapIndexReadN (gameData.pig.tex.bmIndex, D1_MAX_TEXTURES, fp);
 	//for (i = 0;i < D1_MAX_TEXTURES;i++)
 	//	gameData.pig.tex.bmIndex [0][i].index = CFReadShort (fp) + 600;
 	//CFSeek (fp, D1_MAX_TEXTURES * sizeof (short), SEEK_CUR);
@@ -1014,8 +985,8 @@ void BMReadAllD1 (CFILE * fp)
 	CFSeek (fp, D1_MAX_TEXTURES * D1_TMAP_INFO_SIZE, SEEK_CUR);
 
 	/*
-	CFRead ( Sounds [0], sizeof (ubyte), D1_MAX_SOUNDS, fp );
-	CFRead ( AltSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp );
+	CFRead (Sounds [0], sizeof (ubyte), D1_MAX_SOUNDS, fp);
+	CFRead (AltSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp);
 	*/CFSeek (fp, D1_MAX_SOUNDS * 2, SEEK_CUR);
 
 	/*gameData.eff.nClips = */ CFReadInt (fp);
@@ -1032,11 +1003,11 @@ void BMReadAllD1 (CFILE * fp)
 
 	/*
 	gameData.bots.nTypes = CFReadInt (fp);
-	//robot_info_read_n (gameData.bots.info [0], D1_MAX_ROBOT_TYPES, fp);
+	//RobotInfoReadN (gameData.bots.info [0], D1_MAX_ROBOT_TYPES, fp);
 	CFSeek (fp, D1_MAX_ROBOT_TYPES * D1_ROBOT_INFO_SIZE, SEEK_CUR);
 
 	gameData.bots.nJoints = CFReadInt (fp);
-	jointpos_read_n (gameData.bots.joints, D1_MAX_ROBOT_JOINTS, fp);
+	JointPosReadN (gameData.bots.joints, D1_MAX_ROBOT_JOINTS, fp);
 
 	gameData.weapons.nTypes [0] = CFReadInt (fp);
 	//WeaponInfoReadN (gameData.weapons.info, D1_MAX_WEAPON_TYPES, fp, gameData.pig.tex.nHamFileVersion);
@@ -1049,7 +1020,7 @@ void BMReadAllD1 (CFILE * fp)
 	/* in the following code are bugs, solved by hack
 	gameData.models.nPolyModels = CFReadInt (fp);
 	PolyModelReadN (gameData.models.polyModels, gameData.models.nPolyModels, fp);
-	for (i=0;i<gameData.models.nPolyModels;i++ )
+	for (i=0;i<gameData.models.nPolyModels;i++)
 		PolyModelDataRead (&gameData.models.polyModels [i], fp);
 	*/CFSeek (fp, 521490-160, SEEK_SET);// OK, I admit, this is a dirty hack
 	//BitmapIndexReadN (Gauges, D1_MAX_GAUGE_BMS, fp);
@@ -1057,9 +1028,9 @@ void BMReadAllD1 (CFILE * fp)
 
 	/*
 	for (i = 0;i < D1_MAX_POLYGON_MODELS;i++)
-		Dying_modelnums [i] = CFReadInt (fp);
+		gameData.models.nDyingModels [i] = CFReadInt (fp);
 	for (i = 0;i < D1_MAX_POLYGON_MODELS;i++)
-		Dead_modelnums [i] = CFReadInt (fp);
+		gameData.models.nDeadModels [i] = CFReadInt (fp);
 	*/ CFSeek (fp, D1_MAX_POLYGON_MODELS * 8, SEEK_CUR);
 
 	//BitmapIndexReadN (gameData.pig.tex.objBmIndex, D1_MAX_OBJ_BITMAPS, fp);
@@ -1067,28 +1038,28 @@ void BMReadAllD1 (CFILE * fp)
 	for (i = 0;i < D1_MAX_OBJ_BITMAPS;i++)
 		CFSeek (fp, 2, SEEK_CUR);//gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 
-	//player_ship_read (&gameData.pig.ship.only, fp);
+	//PlayerShipRead (&gameData.pig.ship.only, fp);
 	CFSeek (fp, sizeof (player_ship), SEEK_CUR);
 
-	/*Num_cockpits = */ CFReadInt (fp);
-	//BitmapIndexReadN (cockpit_bitmap, D1_MAX_COCKPIT_BITMAPS, fp);
+	/*gameData.models.nCockpits = */ CFReadInt (fp);
+	//BitmapIndexReadN (gameData.pig.tex.cockpitBmIndex, D1_MAX_COCKPIT_BITMAPS, fp);
 	CFSeek (fp, D1_MAX_COCKPIT_BITMAPS * sizeof (bitmap_index), SEEK_CUR);
 
 	/*
-	CFRead ( Sounds [0], sizeof (ubyte), D1_MAX_SOUNDS, fp );
-	CFRead ( AltSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp );
+	CFRead (Sounds [0], sizeof (ubyte), D1_MAX_SOUNDS, fp);
+	CFRead (AltSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp);
 	*/CFSeek (fp, D1_MAX_SOUNDS * 2, SEEK_CUR);
 
-	/*gameData.objs.types.nCount = */ CFReadInt ( fp );
+	/*gameData.objs.types.nCount = */ CFReadInt (fp);
 	/*
-	CFRead ( gameData.objs.types.nType, sizeof (byte), D1_MAX_OBJTYPE, fp );
-	CFRead ( gameData.objs.types.nType.nId, sizeof (byte), D1_MAX_OBJTYPE, fp );
-	for (i=0;i<D1_MAX_OBJTYPE;i++ )
-		gameData.objs.types.nType.nStrength [i] = CFReadInt ( fp );
+	CFRead (gameData.objs.types.nType, sizeof (byte), D1_MAX_OBJTYPE, fp);
+	CFRead (gameData.objs.types.nType.nId, sizeof (byte), D1_MAX_OBJTYPE, fp);
+	for (i=0;i<D1_MAX_OBJTYPE;i++)
+		gameData.objs.types.nType.nStrength [i] = CFReadInt (fp);
 	*/ CFSeek (fp, D1_MAX_OBJTYPE * 6, SEEK_CUR);
 
 	/*gameData.pig.tex.nFirstMultiBitmap =*/ CFReadInt (fp);
-	/*gameData.reactor.reactors [0].n_guns = */ CFReadInt ( fp );
+	/*gameData.reactor.reactors [0].n_guns = */ CFReadInt (fp);
 	/*for (i=0;i<4;i++)
 		CFReadVector (& (gameData.reactor.reactors [0].gun_points [i]), fp);
 	for (i=0;i<4;i++)
@@ -1141,10 +1112,11 @@ while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
 	FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
 	FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
 	}
-while (gameData.models.nPolyModels > gameData.endLevel.exit.nModel) {
-	FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
-	FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
-	}
+if (!gameOpts->app.bDemoData)
+	while (gameData.models.nPolyModels > gameData.endLevel.exit.nModel) {
+		FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
+		FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1193,7 +1165,7 @@ t = CFReadInt (fp);
 gameData.bots.nTypes [0] = N_D2_ROBOT_TYPES + t;
 if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES)
 	Error ("Too many robots (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_TYPES-N_D2_ROBOT_TYPES);
-robot_info_read_n (gameData.bots.info [0] + N_D2_ROBOT_TYPES, t, fp);
+RobotInfoReadN (gameData.bots.info [0] + N_D2_ROBOT_TYPES, t, fp);
 if (bVertigoData) {
 	gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
 	memcpy (gameData.bots.defaultInfo + N_D2_ROBOT_TYPES, gameData.bots.info [0] + N_D2_ROBOT_TYPES, sizeof (*gameData.bots.info [0]) * t);
@@ -1203,7 +1175,7 @@ t = CFReadInt (fp);
 gameData.bots.nJoints = N_D2_ROBOT_JOINTS+t;
 if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS)
 	Error ("Too many robot joints (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_JOINTS-N_D2_ROBOT_JOINTS);
-jointpos_read_n (gameData.bots.joints + N_D2_ROBOT_JOINTS, t, fp);
+JointPosReadN (gameData.bots.joints + N_D2_ROBOT_JOINTS, t, fp);
 if (bVertigoData) {
 	gameData.bots.nDefaultJoints = gameData.bots.nJoints;
 	memcpy (gameData.bots.defaultJoints + N_D2_ROBOT_TYPES, gameData.bots.joints + N_D2_ROBOT_TYPES, sizeof (*gameData.bots.joints) * t);
@@ -1226,9 +1198,9 @@ for (i = j; i < gameData.models.nPolyModels; i++) {
 	PolyModelDataRead (gameData.models.polyModels + i, bVertigoData ? gameData.models.defPolyModels + i : NULL, fp);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
-	Dying_modelnums [i] = CFReadInt (fp);
+	gameData.models.nDyingModels [i] = CFReadInt (fp);
 for (i = j; i < gameData.models.nPolyModels; i++)
-	Dead_modelnums [i] = CFReadInt (fp);
+	gameData.models.nDeadModels [i] = CFReadInt (fp);
 
 t = CFReadInt (fp);
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS)
@@ -1246,7 +1218,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern void ChangeFilenameExtension ( char *dest, char *src, char *new_ext );
+extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 int LoadRobotReplacements (char *level_name, int bAddBots)
 {
@@ -1286,7 +1258,7 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
 			gameData.models.nPolyModels = nPolyModelSave;
 			return 0;
 			}
-		robot_info_read_n (gameData.bots.info [0] + i, 1, fp);
+		RobotInfoReadN (gameData.bots.info [0] + i, 1, fp);
 	}
 
 	t = CFReadInt (fp);			//read number of joints
@@ -1312,7 +1284,7 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
 			gameData.models.nPolyModels = nPolyModelSave;
 			return 0;
 			}
-		jointpos_read_n (gameData.bots.joints + i, 1, fp);
+		JointPosReadN (gameData.bots.joints + i, 1, fp);
 	}
 
 	t = CFReadInt (fp);			//read number of polygon models
@@ -1343,8 +1315,8 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
 		PolyModelRead (gameData.models.polyModels + i, fp);
 		PolyModelDataRead (gameData.models.polyModels + i, NULL, fp);
 
-		Dying_modelnums [i] = CFReadInt (fp);
-		Dead_modelnums [i] = CFReadInt (fp);
+		gameData.models.nDyingModels [i] = CFReadInt (fp);
+		gameData.models.nDeadModels [i] = CFReadInt (fp);
 	}
 
 	t = CFReadInt (fp);			//read number of objbitmaps
@@ -1390,14 +1362,14 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
  */
 
 // formerly exitmodel_bm_load_sub
-bitmap_index ReadExtraBitmapIFF ( char * filename )
+bitmap_index ReadExtraBitmapIFF (char * filename)
 {
 	bitmap_index bitmap_num;
 	grs_bitmap * newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 	int iff_error;		//reference parm to avoid warning message
 
 	bitmap_num.index = 0;
-	//MALLOC ( newBm, grs_bitmap, 1 );
+	//MALLOC (newBm, grs_bitmap, 1);
 	iff_error = iff_read_bitmap (filename,newBm,BM_LINEAR);
 	//newBm->bm_handle=0;
 	if (iff_error != IFF_NO_ERROR)		{
@@ -1408,14 +1380,14 @@ bitmap_index ReadExtraBitmapIFF ( char * filename )
 #endif			
 		return bitmap_num;
 	}
-	if ( iff_has_transparency )
-		GrRemapBitmapGood ( newBm, NULL, iff_transparent_color, 254 );
+	if (iff_has_transparency)
+		GrRemapBitmapGood (newBm, NULL, iff_transparent_color, 254);
 	else
-		GrRemapBitmapGood ( newBm, NULL, -1, 254 );
+		GrRemapBitmapGood (newBm, NULL, -1, 254);
 	newBm->bm_avgColor = ComputeAvgPixel (newBm);
 	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
 	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
-	//d_free ( new );
+	//d_free (new);
 	return bitmap_num;
 }
 

@@ -324,15 +324,16 @@ objnum = CreateObject ((ubyte) OBJ_WEAPON, weapon_type, -1, segnum, position, NU
 objP = gameData.objs.objects + objnum;
 if (gameData.weapons.info [weapon_type].render_type == WEAPON_RENDER_POLYMODEL) {
 	objP->rtype.pobj_info.model_num = gameData.weapons.info [objP->id].model_num;
-	objP->size = FixDiv (gameData.models.polyModels [objP->rtype.pobj_info.model_num].rad,gameData.weapons.info [objP->id].po_len_to_width_ratio);
+	objP->size = FixDiv (gameData.models.polyModels [objP->rtype.pobj_info.model_num].rad, 
+								gameData.weapons.info [objP->id].po_len_to_width_ratio);
 	}
 objP->mtype.phys_info.mass = WI_mass (weapon_type);
 objP->mtype.phys_info.drag = WI_drag (weapon_type);
 VmVecZero (&objP->mtype.phys_info.thrust);
-if (gameData.weapons.info [weapon_type].bounce==1)
+if (gameData.weapons.info [weapon_type].bounce == 1)
 	objP->mtype.phys_info.flags |= PF_BOUNCE;
-if (gameData.weapons.info [weapon_type].bounce==2 || gameStates.app.cheats.bBouncingWeapons)
-	objP->mtype.phys_info.flags |= PF_BOUNCE+PF_BOUNCES_TWICE;
+if ((gameData.weapons.info [weapon_type].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
+	objP->mtype.phys_info.flags |= PF_BOUNCE + PF_BOUNCES_TWICE;
 return objnum;
 }
 
@@ -723,7 +724,7 @@ int CreateNewLaser (
 	}
 	// Create orientation matrix so we can look from this pov
 	//	Homing missiles also need an orientation matrix so they know if they can make a turn.
-	if ((objP->render_type == RT_POLYOBJ) || (WI_homing_flag (objP->id)))
+	//if ((objP->render_type == RT_POLYOBJ) || (WI_homing_flag (objP->id)))
 		VmVector2Matrix (&objP->orient,direction, &gameData.objs.objects [parent].orient.uvec ,NULL);
 
 	if (((gameData.objs.objects + parent) != gameData.objs.viewer) && 
@@ -797,7 +798,7 @@ int CreateNewLaser (
 	if (WI_thrust (objP->id) != 0)
 		weapon_speed /= 2;
 
-	VmVecCopyScale (&objP->mtype.phys_info.velocity, direction, weapon_speed + parent_speed);
+	/*test*/VmVecCopyScale (&objP->mtype.phys_info.velocity, direction, (weapon_speed + parent_speed));
 
 	//	Set thrust 
 	if (WI_thrust (weapon_type) != 0) {

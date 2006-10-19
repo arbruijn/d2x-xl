@@ -525,10 +525,14 @@ fix VmVecCopyNormalize (vms_vector *dest, vms_vector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
-	dest->x = FixDiv(src->x, m);
-	dest->y = FixDiv(src->y, m);
-	dest->z = FixDiv(src->z, m);
+	dest->x = FixDiv (src->x, m);
+	dest->y = FixDiv (src->y, m);
+	dest->z = FixDiv (src->z, m);
 	}
+else
+	dest->x =
+	dest->y =
+	dest->z = 0;
 return m;
 }
 
@@ -612,9 +616,9 @@ return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
 fix VmVecCopyNormalizeQuick(vms_vector *dest, vms_vector *src)
 {
 fix im = VmVecInvMag(src);
-dest->x = FixMul(src->x, im);
-dest->y = FixMul(src->y, im);
-dest->z = FixMul(src->z, im);
+dest->x = FixMul (src->x, im);
+dest->y = FixMul (src->y, im);
+dest->z = FixMul (src->z, im);
 return im;
 }
 
@@ -701,7 +705,7 @@ v.z >>= cnt;
 //your inputs are ok.
 //#ifndef __powerc
 #if 0
-vms_vector *VmVecCrossProd(vms_vector *dest, vms_vector *src0, vms_vector *src1)
+vms_vector *VmVecCrossProd (vms_vector *dest, vms_vector *src0, vms_vector *src1)
 {
 	double d;
 	Assert(dest!=src0 && dest!=src1);
@@ -733,7 +737,7 @@ vms_vector *VmVecCrossProd(vms_vector *dest, vms_vector *src0, vms_vector *src1)
 
 // ------------------------------------------------------------------------
 
-vms_vector *VmVecCrossProd(vms_vector *dest, vms_vector *src0, vms_vector *src1)
+vms_vector *VmVecCrossProd (vms_vector *dest, vms_vector *src0, vms_vector *src1)
 {
 #if 1//def _WIN32
 QLONG q = mul64 (src0->y, src1->z);
@@ -814,22 +818,22 @@ return a;
 
 // ------------------------------------------------------------------------
 
-vms_matrix *SinCos2Matrix(vms_matrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
+vms_matrix *SinCos2Matrix (vms_matrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
 {
 	fix sbsh, cbch, cbsh, sbch;
 
-sbsh = FixMul(sinb, sinh);
-cbch = FixMul(cosb, cosh);
-cbsh = FixMul(cosb, sinh);
-sbch = FixMul(sinb, cosh);
-m->rvec.x = cbch + FixMul(sinp, sbsh);		//m1
-m->uvec.z = sbsh + FixMul(sinp, cbch);		//m8
-m->uvec.x = FixMul(sinp, cbsh) - sbch;		//m2
-m->rvec.z = FixMul(sinp, sbch) - cbsh;		//m7
-m->fvec.x = FixMul(sinh, cosp);				//m3
-m->rvec.y = FixMul(sinb, cosp);				//m4
-m->uvec.y = FixMul(cosb, cosp);				//m5
-m->fvec.z = FixMul(cosh, cosp);				//m9
+sbsh = FixMul (sinb, sinh);
+cbch = FixMul (cosb, cosh);
+cbsh = FixMul (cosb, sinh);
+sbch = FixMul (sinb, cosh);
+m->rvec.x = cbch + FixMul (sinp, sbsh);		//m1
+m->uvec.z = sbsh + FixMul (sinp, cbch);		//m8
+m->uvec.x = FixMul (sinp, cbsh) - sbch;		//m2
+m->rvec.z = FixMul (sinp, sbch) - cbsh;		//m7
+m->fvec.x = FixMul (sinh, cosp);				//m3
+m->rvec.y = FixMul (sinb, cosp);				//m4
+m->uvec.y = FixMul (cosb, cosp);				//m5
+m->fvec.z = FixMul (cosh, cosp);				//m9
 m->fvec.y = -sinp;								//m6
 return m;
 }
@@ -839,21 +843,21 @@ return m;
 vms_matrix *VmAngles2Matrix (vms_matrix *m, vms_angvec *a)
 {
 fix sinp, cosp, sinb, cosb, sinh, cosh;
-fix_sincos(a->p, &sinp, &cosp);
-fix_sincos(a->b, &sinb, &cosb);
-fix_sincos(a->h, &sinh, &cosh);
-return SinCos2Matrix(m, sinp, cosp, sinb, cosb, sinh, cosh);
+fix_sincos (a->p, &sinp, &cosp);
+fix_sincos (a->b, &sinb, &cosb);
+fix_sincos (a->h, &sinh, &cosh);
+return SinCos2Matrix (m, sinp, cosp, sinb, cosb, sinh, cosh);
 }
 
 // ------------------------------------------------------------------------
 //computes a matrix from a forward vector and an angle
-vms_matrix *VmVecAng2Matrix(vms_matrix *m, vms_vector *v, fixang a)
+vms_matrix *VmVecAng2Matrix (vms_matrix *m, vms_vector *v, fixang a)
 {
 	fix sinb, cosb, sinp, cosp;
 
-fix_sincos(a, &sinb, &cosb);
+fix_sincos (a, &sinb, &cosb);
 sinp = -v->y;
-cosp = fix_sqrt(f1_0 - FixMul(sinp, sinp));
+cosp = fix_sqrt (f1_0 - FixMul (sinp, sinp));
 return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z, cosp));
 }
 
@@ -863,7 +867,7 @@ return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z
 //the up vector is used.  If only the forward vector is passed, a bank of
 //zero is assumed
 //returns ptr to matrix
-vms_matrix *VmVector2Matrix(vms_matrix *m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec)
+vms_matrix *VmVector2Matrix (vms_matrix *m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec)
 {
 	vms_vector	*xvec = &m->rvec, 
 					*yvec = &m->uvec, 
@@ -917,7 +921,7 @@ return m;
 
 // ------------------------------------------------------------------------
 //quicker version of VmVector2Matrix() that takes normalized vectors
-vms_matrix *VmVector2MatrixNorm(vms_matrix *m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec)
+vms_matrix *VmVector2MatrixNorm (vms_matrix *m, vms_vector *fvec, vms_vector *uvec, vms_vector *rvec)
 {
 	vms_vector	*xvec = &m->rvec, 
 					*yvec = &m->uvec, 
@@ -1008,7 +1012,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 //transpose a matrix in place. returns ptr to matrix
-vms_matrix *VmTransposeMatrix(vms_matrix *m)
+vms_matrix *VmTransposeMatrix (vms_matrix *m)
 {
 	fix t;
 
@@ -1022,7 +1026,7 @@ vms_matrix *VmTransposeMatrix(vms_matrix *m)
 // ------------------------------------------------------------------------
 //copy and transpose a matrix. returns ptr to matrix
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
-vms_matrix *VmCopyTransposeMatrix(vms_matrix *dest, vms_matrix *src)
+vms_matrix *VmCopyTransposeMatrix (vms_matrix *dest, vms_matrix *src)
 {
 	Assert(dest != src);
 
@@ -1044,7 +1048,7 @@ vms_matrix *VmCopyTransposeMatrix(vms_matrix *dest, vms_matrix *src)
 // ------------------------------------------------------------------------
 //multiply 2 matrices, fill in dest.  returns ptr to dest
 //dest CANNOT equal either source
-vms_matrix *VmMatMul(vms_matrix *dest, vms_matrix *src0, vms_matrix *src1)
+vms_matrix *VmMatMul (vms_matrix *dest, vms_matrix *src0, vms_matrix *src1)
 {
 	Assert(dest!=src0 && dest!=src1);
 
@@ -1066,7 +1070,7 @@ vms_matrix *VmMatMul(vms_matrix *dest, vms_matrix *src0, vms_matrix *src1)
 
 // ------------------------------------------------------------------------
 //extract angles from a matrix 
-vms_angvec *VmExtractAnglesMatrix(vms_angvec *a, vms_matrix *m)
+vms_angvec *VmExtractAnglesMatrix (vms_angvec *a, vms_matrix *m)
 {
 	fix sinh, cosh, cosp;
 
@@ -1088,8 +1092,8 @@ if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no
 else {
 	fix sinb, cosb;
 
-	sinb = FixDiv(m->rvec.y, cosp);
-	cosb = FixDiv(m->uvec.y, cosp);
+	sinb = FixDiv (m->rvec.y, cosp);
+	cosb = FixDiv (m->uvec.y, cosp);
 	if (sinb==0 && cosb==0)
 		a->b = 0;
 	else
@@ -1110,12 +1114,12 @@ return a;
 
 // ------------------------------------------------------------------------
 //extract heading and pitch from a vector, assuming bank==0
-vms_angvec *VmExtractAnglesVector(vms_angvec *a, vms_vector *v)
+vms_angvec *VmExtractAnglesVector (vms_angvec *a, vms_vector *v)
 {
 	vms_vector t;
 
 if (VmVecCopyNormalize(&t, v) != 0)
-	VmExtractAnglesVecNorm(a, &t);
+	VmExtractAnglesVecNorm (a, &t);
 return a;
 }
 
@@ -1132,7 +1136,7 @@ return VmVecDot (VmVecSub (&t, checkp, planep), norm);
 
 // ------------------------------------------------------------------------
 
-vms_vector *VmVecMake(vms_vector *v, fix x, fix y, fix z)
+vms_vector *VmVecMake (vms_vector *v, fix x, fix y, fix z)
 {
 v->x = x; 
 v->y = y; 

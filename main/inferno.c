@@ -1822,8 +1822,14 @@ if (i) {
 	gameOptions [1].render.textures.nQuality = 0;
 	gameOptions [1].render.cockpit.bMissileView = 1;
 	gameOptions [1].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [1].render.smoke.nScale = 0;
-	gameOptions [1].render.smoke.nSize = 0;
+	gameOptions [1].render.smoke.nScale [0] =
+	gameOptions [1].render.smoke.nScale [1] =
+	gameOptions [1].render.smoke.nScale [2] =
+	gameOptions [1].render.smoke.nScale [3] = 0;
+	gameOptions [1].render.smoke.nSize [0] =
+	gameOptions [1].render.smoke.nSize [1] =
+	gameOptions [1].render.smoke.nSize [2] =
+	gameOptions [1].render.smoke.nSize [3] = 0;
 	gameOptions [1].render.smoke.bPlayers = 0;
 	gameOptions [1].render.smoke.bRobots = 0;
 	gameOptions [1].render.smoke.bMissiles = 0;
@@ -1888,8 +1894,14 @@ else {
 #endif
 	gameOptions [0].render.cockpit.bMissileView = 1;
 	gameOptions [0].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [0].render.smoke.nScale = 2;
-	gameOptions [0].render.smoke.nSize = 1;
+	gameOptions [1].render.smoke.nScale [0] =
+	gameOptions [1].render.smoke.nScale [1] =
+	gameOptions [1].render.smoke.nScale [2] =
+	gameOptions [1].render.smoke.nScale [3] = 2;
+	gameOptions [1].render.smoke.nSize [0] =
+	gameOptions [1].render.smoke.nSize [1] =
+	gameOptions [1].render.smoke.nSize [2] =
+	gameOptions [1].render.smoke.nSize [3] = 1;
 	gameOptions [0].render.smoke.bPlayers = 1;
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
@@ -2623,6 +2635,10 @@ gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
 memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
 gameData.render.lights.ogl.nLights = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
+gameData.models.nMarkerModel = -1;
+gameData.models.nCockpits = 0;
+memset (gameData.models.nDyingModels, 0xff, sizeof (gameData.models.nDyingModels));
+memset (gameData.models.nDeadModels, 0xff, sizeof (gameData.models.nDeadModels));
 gameData.pig.tex.nFirstMultiBitmap = -1;
 strcpy (gameData.escort.szName, "GUIDE-BOT");
 strcpy (gameData.escort.szRealName, "GUIDE-BOT");
@@ -3128,7 +3144,7 @@ TexMergeInit (100);		// 100 cache bitmaps
 /*---*/LogErr ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
-InitMissileFlags ();
+InitWeaponFlags ();
 InitGame ();
 return 0;
 }

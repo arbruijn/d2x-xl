@@ -1962,7 +1962,7 @@ int wclip_read_n_d1(wclip *wc, int n, CFILE *fp)
 /*
  * reads a wclip structure from a CFILE
  */
-int wclip_read_n(wclip *wc, int n, CFILE *fp)
+int WClipReadN(wclip *wc, int n, CFILE *fp)
 {
 	int i, j;
 

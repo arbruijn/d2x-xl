@@ -446,9 +446,13 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 #define DEFAULT_HAMFILE_REGISTERED      "descent2.ham"
 #define DEFAULT_HAMFILE_SHAREWARE       "d2demo.ham"
 
-#define DEFAULT_PIGFILE (CFExist (DEFAULT_PIGFILE_REGISTERED, gameFolders.szDataDir,0)?DEFAULT_PIGFILE_REGISTERED:DEFAULT_PIGFILE_SHAREWARE)
-#define DEFAULT_HAMFILE (CFExist (DEFAULT_HAMFILE_REGISTERED, gameFolders.szDataDir,0)?DEFAULT_HAMFILE_REGISTERED:DEFAULT_HAMFILE_SHAREWARE)
-#define DEFAULT_SNDFILE ((gameData.pig.tex.nHamFileVersion < 3)?DEFAULT_HAMFILE_SHAREWARE: (gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?"descent2.s22":"descent2.s11")
+#define DEFAULT_PIGFILE \
+		  (gameOpts->app.bDemoData ? DEFAULT_PIGFILE_SHAREWARE : DEFAULT_PIGFILE_REGISTERED)
+#define DEFAULT_HAMFILE \
+		  (gameOpts->app.bDemoData ? DEFAULT_HAMFILE_SHAREWARE : DEFAULT_HAMFILE_REGISTERED)
+#define DEFAULT_SNDFILE \
+		  ((gameData.pig.tex.nHamFileVersion < 3) ? DEFAULT_HAMFILE_SHAREWARE : \
+			(gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? "descent2.s22" : "descent2.s11")
 
 #define MAC_ALIEN1_PIGSIZE      5013035
 #define MAC_ALIEN2_PIGSIZE      4909916

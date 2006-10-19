@@ -4426,6 +4426,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bCloakedIndicators = 0;
 	extraGameInfo [i].bTowFlags = 1;
 	extraGameInfo [i].bUseHitAngles = 0;
+	extraGameInfo [i].bLightTrails = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
@@ -4552,6 +4553,7 @@ else {
 	LogErr ("   bCloakedIndicators: %d\n", extraGameInfo [1].bCloakedIndicators);
 	LogErr ("   bTowFlags: %d\n", extraGameInfo [1].bTowFlags);
 	LogErr ("   bUseHitAngles: %d\n", extraGameInfo [1].bUseHitAngles);
+	LogErr ("   bLightTrails: %d\n", extraGameInfo [1].bLightTrails);
 	LogErr ("entropy info data:\n");
 	LogErr ("   nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	LogErr ("   nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);

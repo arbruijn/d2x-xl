@@ -1605,8 +1605,8 @@ void ExplodePolyModel(object *obj)
 {
 	Assert(obj->render_type == RT_POLYOBJ);
 
-	if (Dying_modelnums[obj->rtype.pobj_info.model_num] != -1)
-		obj->rtype.pobj_info.model_num = Dying_modelnums[obj->rtype.pobj_info.model_num];
+	if (gameData.models.nDyingModels[obj->rtype.pobj_info.model_num] != -1)
+		obj->rtype.pobj_info.model_num = gameData.models.nDyingModels[obj->rtype.pobj_info.model_num];
 
 	if (gameData.models.polyModels[obj->rtype.pobj_info.model_num].n_models > 1) {
 		int i;
@@ -1624,8 +1624,8 @@ void ExplodePolyModel(object *obj)
 //if the object has a destroyed model, switch to it.  Otherwise, delete it.
 void MaybeDeleteObject(object *del_obj)
 {
-	if (Dead_modelnums[del_obj->rtype.pobj_info.model_num] != -1) {
-		del_obj->rtype.pobj_info.model_num = Dead_modelnums[del_obj->rtype.pobj_info.model_num];
+	if (gameData.models.nDeadModels[del_obj->rtype.pobj_info.model_num] != -1) {
+		del_obj->rtype.pobj_info.model_num = gameData.models.nDeadModels[del_obj->rtype.pobj_info.model_num];
 		del_obj->flags |= OF_DESTROYED;
 	}
 	else {		//normal, multi-stage explosion
@@ -2018,8 +2018,12 @@ int CreateMonsterball (void)
 	vms_vector	vInitVel = {0,0,0};
 
 RemoveMonsterball ();
+#ifdef _DEBUG
+nDropSeg = gameData.hoard.nMonsterballSeg;
+#else
 nDropSeg = (gameData.hoard.nMonsterballSeg >= 0) ? 
 			  gameData.hoard.nMonsterballSeg : ChooseDropSegment (NULL, NULL, EXEC_DROP);
+#endif
 if (nDropSeg >= 0) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nDropSeg);
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vInitVel, &vSegCenter, nDropSeg);
@@ -2032,7 +2036,9 @@ if (nDropSeg >= 0) {
 		return 1;
 		}
 	}
+#ifdef RELEASE
 Warning (TXT_NO_MONSTERBALL);
+#endif
 gameData.app.nGameMode &= ~GM_MONSTERBALL;
 return 0;
 }

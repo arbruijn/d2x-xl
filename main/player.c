@@ -19,7 +19,7 @@ static char rcsid[] = "$Id: player.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 /*
  * reads a player_ship structure from a CFILE
  */
-void player_ship_read(player_ship *ps, CFILE *fp)
+void PlayerShipRead(player_ship *ps, CFILE *fp)
 {
 	int i;
 

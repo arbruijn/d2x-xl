@@ -2034,11 +2034,11 @@ for (i = 0; i < 2; i++) {
 			h = 0;
 		else {
 #ifdef _DEBUG
-			h = gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? Num_cockpits / 2 : 0);
-			h = cockpit_bitmap [h].index;
+			h = gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0);
+			h = gameData.pig.tex.cockpitBmIndex [h].index;
 			h = gameData.pig.tex.bitmaps [0][h].bm_props.h;
 #else
-			h = gameData.pig.tex.bitmaps [0][cockpit_bitmap [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? Num_cockpits / 2 : 0)].index].bm_props.h;
+			h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index].bm_props.h;
 #endif
 			}
 		y = (grdCurCanv->cv_bitmap.bm_props.h - h - n * (hIcon + oy)) / 2 + hIcon;
@@ -3845,7 +3845,7 @@ void SBDrawShieldNum(int shield)
 	GrSetFontColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 
 	//erase old one
-	PIGGY_PAGE_IN( cockpit_bitmap[gameStates.render.cockpit.nMode+(gameStates.video.nDisplayMode?(Num_cockpits/2):0)], 0 );
+	PIGGY_PAGE_IN( gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+(gameStates.video.nDisplayMode?(gameData.models.nCockpits/2):0)], 0 );
 
 WIN(DDGRLOCK(dd_grd_curcanv));
    PA_DFX (pa_set_back_to_read());

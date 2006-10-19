@@ -113,8 +113,16 @@ void InitHoardData (void)
 	powerup_type_info	*ptP;
 	ubyte					*bmDataP;
 
-if (!(fp = CFOpen ("hoard.ham", gameFolders.szDataDir, "rb", 0)))
-	Error ("can't open <hoard.ham>");
+if (gameOpts->app.bDemoData) {
+#ifdef RELEASE
+	Warning ("Hoard data not available with demo data.");
+#endif
+	return;
+	}
+if (!(fp = CFOpen ("hoard.ham", gameFolders.szDataDir, "rb", 0))) {
+	Warning ("Cannot open hoard data file <hoard.ham>.");
+	return;
+	}
 
 gameData.hoard.orb.nFrames = CFReadShort (fp);
 gameData.hoard.orb.nWidth = CFReadShort (fp);

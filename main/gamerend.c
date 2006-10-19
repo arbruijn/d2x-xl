@@ -1365,7 +1365,7 @@ void ToggleCockpit()
 			new_mode = CM_STATUS_BAR;
 #if 0
 			{
-			int max_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[cockpit_bitmap[CM_STATUS_BAR+(gameStates.video.nDisplayMode?(Num_cockpits/2):0)].index].bm_props.h;
+			int max_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+(gameStates.video.nDisplayMode?(gameData.models.nCockpits/2):0)].index].bm_props.h;
 			if (Game_window_h > max_h)		//too big for statusbar
 				new_mode = CM_FULL_SCREEN;
 			else
@@ -1646,11 +1646,11 @@ void DrawCockpit (int h, int y)
 {
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 {
-	int i = cockpit_bitmap [h].index;
+	int i = gameData.pig.tex.cockpitBmIndex [h].index;
 	grs_bitmap *bm = gameData.pig.tex.bitmaps [0] + i; 
 	grs_color c;
 
-	PIGGY_PAGE_IN (cockpit_bitmap [h], 0);
+	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h], 0);
 	OglLoadBmTexture (bm, 1, 0);
 	WINDOS (DDGrSetCurrentCanvas(dd_VR_screen_pages+ VR_current_page),
 			  GrSetCurrentCanvas(VR_screen_pages + VR_current_page));
@@ -1687,7 +1687,7 @@ void update_cockpits(int force_redraw)
 	switch( gameStates.render.cockpit.nMode )	{
 	case CM_FULL_COCKPIT:
 #ifdef OGL
-		DrawCockpit (gameStates.video.nDisplayMode ? Num_cockpits / 2 : 0, 0);
+		DrawCockpit (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0, 0);
 		if (force_redraw)
 			return;
 		break;
@@ -1698,7 +1698,7 @@ void update_cockpits(int force_redraw)
 			DDGrSetCurrentCanvas(&dd_VR_screen_pages[VR_current_page]),
 			GrSetCurrentCanvas(&VR_screen_pages[VR_current_page])
 		);
-		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? Num_cockpits / 2 : 0), 0);
+		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0), 0);
 		if (force_redraw)
 			return;
 		break;
@@ -1710,7 +1710,7 @@ void update_cockpits(int force_redraw)
 		break;
 
 	case CM_STATUS_BAR:
-		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? Num_cockpits / 2 : 0), max_window_h);
+		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0), max_window_h);
 
 		Game_window_x = (max_window_w - Game_window_w)/2;
 		Game_window_y = (max_window_h - Game_window_h)/2;

@@ -1217,10 +1217,6 @@ if (!(bTracker
 				}
 			}
 #endif			
-#ifdef _DEBUG
-		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d\n", 
-						iptos (szIP, (char *) &fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
-#endif
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.players [gameData.multi.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);

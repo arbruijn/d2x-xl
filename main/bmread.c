@@ -482,7 +482,7 @@ int bm_init_use_tbl()
 	}
 
 	for (i=0;i<MAX_POLYGON_MODELS;i++)
-		Dying_modelnums[i] = Dead_modelnums[i] = -1;
+		gameData.models.nDyingModels[i] = gameData.models.nDeadModels[i] = -1;
 
 	Num_vclips = 0;
 	for (i=0; i<VCLIP_MAXNUM; i++ )	{
@@ -1621,9 +1621,9 @@ void bm_read_reactor()
 	model_num = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 
 	if ( model_name_dead )
-		Dead_modelnums[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
+		gameData.models.nDeadModels[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
 	else
-		Dead_modelnums[model_num] = -1;
+		gameData.models.nDeadModels[model_num] = -1;
 
 	if (type == -1)
 		Error("No object type specfied for object in BITMAPS.TBL on line %d\n",linenum);
@@ -1678,7 +1678,7 @@ void bm_read_marker()
 
 	n_normal_bitmaps = N_ObjBitmapPtrs-first_bitmap_num;
 
-	Marker_model_num = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
+	gameData.models.nMarkerModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 }
 
 #ifdef SHAREWARE
@@ -1730,9 +1730,9 @@ void bm_read_exitmodel()
 	model_num = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 
 	if ( model_name_dead )
-		Dead_modelnums[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
+		gameData.models.nDeadModels[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
 	else
-		Dead_modelnums[model_num] = -1;
+		gameData.models.nDeadModels[model_num] = -1;
 
 //@@	gameData.objs.types.nType[gameData.objs.types.nCount] = type;
 //@@	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = model_num;
@@ -1743,7 +1743,7 @@ void bm_read_exitmodel()
 //@@	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
 	gameData.endLevel.exit.nModel = model_num;
-	gameData.endLevel.exit.nDestroyedModel = Dead_modelnums[model_num];
+	gameData.endLevel.exit.nDestroyedModel = gameData.models.nDeadModels[model_num];
 
 }
 #endif
@@ -1861,7 +1861,7 @@ void bm_read_player_ship()
 
 	if ( model_name_dying ) {
 		Assert(n_models);
-		Dying_modelnums[Player_ship->model_num]  = LoadPolygonModel(model_name_dying,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
+		gameData.models.nDyingModels[Player_ship->model_num]  = LoadPolygonModel(model_name_dying,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
 	}
 
 	Assert(ri.n_guns == N_PLAYER_GUNS);
@@ -1907,8 +1907,8 @@ void bm_read_some_file()
 	case BM_COCKPIT:	{
 		bitmap_index bitmap;
 		bitmap = bm_load_sub(arg);
-		Assert( Num_cockpits < N_COCKPIT_BITMAPS );
-		cockpit_bitmap[Num_cockpits++] = bitmap;
+		Assert( gameData.models.nCockpits < N_COCKPIT_BITMAPS );
+		gameData.pig.tex.cockpitBmIndex[gameData.models.nCockpits++] = bitmap;
 		//bm_flag = BM_NONE;
 		return;
 		}
@@ -2425,10 +2425,10 @@ fprintf(tfile,"  Model %d, data size = %d\n",i,gameData.models.polyModels[i].mod
 	}
 fprintf(tfile,"Total model size = %d\n",bObjectRendered);
 
-	fwrite( Dying_modelnums, sizeof(int), t, fp );
-	fwrite( Dead_modelnums, sizeof(int), t, fp );
+	fwrite( gameData.models.nDyingModels, sizeof(int), t, fp );
+	fwrite( gameData.models.nDeadModels, sizeof(int), t, fp );
 
-fprintf(tfile,"Dying_modelnums array = %d, Dead_modelnums array = %d\n",sizeof(int)*t,sizeof(int)*t);
+fprintf(tfile,"gameData.models.nDyingModels array = %d, gameData.models.nDeadModels array = %d\n",sizeof(int)*t,sizeof(int)*t);
 
 	t = MAX_GAUGE_BMS;
 	fwrite( &t, sizeof(int), 1, fp );
@@ -2448,10 +2448,10 @@ fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gam
 
 fprintf(tfile,"player_ship size = %d\n",sizeof(player_ship);
 
-	fwrite( &Num_cockpits, sizeof(int), 1, fp );
-	fwrite( cockpit_bitmap, sizeof(bitmap_index), Num_cockpits, fp );
+	fwrite( &gameData.models.nCockpits, sizeof(int), 1, fp );
+	fwrite( gameData.pig.tex.cockpitBmIndex, sizeof(bitmap_index), gameData.models.nCockpits, fp );
 
-fprintf(tfile,"Num_cockpits = %d, cockpit_bitmaps array = %d\n",Num_cockpits,sizeof(bitmap_index)*Num_cockpits);
+fprintf(tfile,"gameData.models.nCockpits = %d, cockpit_bitmaps array = %d\n",gameData.models.nCockpits,sizeof(bitmap_index)*gameData.models.nCockpits);
 
 //@@	fwrite( &gameData.objs.types.nCount, sizeof(int), 1, fp );
 //@@	fwrite( gameData.objs.types.nType, sizeof(sbyte), gameData.objs.types.nCount, fp );
@@ -2467,7 +2467,7 @@ fprintf(tfile,"gameData.objs.types.nCount = %d, gameData.objs.types.nType array 
 
 fprintf(tfile,"Num_reactors = %d, Reactors array = %d\n",Num_reactors,sizeof(*Reactors)*Num_reactors);
 
-	fwrite( &Marker_model_num, sizeof(Marker_model_num), 1, fp);
+	fwrite( &gameData.models.nMarkerModel, sizeof(gameData.models.nMarkerModel), 1, fp);
 
 	//@@fwrite( &N_controlcen_guns, sizeof(int), 1, fp );
 	//@@fwrite( controlcen_gun_points, sizeof(vms_vector), N_controlcen_guns, fp );
@@ -2521,8 +2521,8 @@ void bm_write_extra_robots()
 		g3_init_polygon_model(gameData.models.polyModels[i].model_data);	//map colors again
 	}
 
-	fwrite( &Dying_modelnums[N_D2_POLYGON_MODELS], sizeof(int), t, fp );
-	fwrite( &Dead_modelnums[N_D2_POLYGON_MODELS], sizeof(int), t, fp );
+	fwrite( &gameData.models.nDyingModels[N_D2_POLYGON_MODELS], sizeof(int), t, fp );
+	fwrite( &gameData.models.nDeadModels[N_D2_POLYGON_MODELS], sizeof(int), t, fp );
 
 	t = gameData.pig.tex.nObjBitmaps - N_D2_OBJBITMAPS;
 	fwrite( &t, sizeof(int), 1, fp );

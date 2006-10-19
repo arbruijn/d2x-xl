@@ -330,6 +330,6 @@ typedef struct player16 {
 /*
  * reads a player_ship structure from a CFILE
  */
-void player_ship_read(player_ship *ps, CFILE *fp);
+void PlayerShipRead(player_ship *ps, CFILE *fp);
 
 #endif

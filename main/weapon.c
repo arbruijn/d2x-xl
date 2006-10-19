@@ -1533,7 +1533,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [nWeapon
 //	---------------------------------------------------------------------------------------
 //	Do seismic disturbance stuff including the looping sounds with changing volume.
 
-void DoSeismicStuff(void)
+void DoSeismicStuff (void)
 {
 	int		stv_save;
 
@@ -1554,8 +1554,8 @@ if (stv_save != 0) {
 		int volume = gameStates.gameplay.seismic.nVolume * 2048;
 		if (volume > F1_0)
 			volume = F1_0;
-		DigiChangeLoopingVolume(volume);
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/4 + 8192;
+		DigiChangeLoopingVolume (volume);
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand () / 4 + 8192;
 		}
 	}
 }
@@ -1605,46 +1605,38 @@ extern int WeaponInfoReadN(weapon_info *pwi, int n, CFILE *fp, int file_version)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++, pwi++) {
-		gameData.weapons.color [i].red =
-		gameData.weapons.color [i].green =
-		gameData.weapons.color [i].blue = 1.0;
-		pwi->render_type = CFReadByte(fp);
-		pwi->persistent = CFReadByte(fp);
-		pwi->model_num = CFReadShort(fp);
-		pwi->model_num_inner = CFReadShort(fp);
+for (i = 0; i < n; i++, pwi++) {
+	gameData.weapons.color [i].red =
+	gameData.weapons.color [i].green =
+	gameData.weapons.color [i].blue = 1.0;
+	pwi->render_type = CFReadByte (fp);
+	pwi->persistent = CFReadByte (fp);
+	pwi->model_num = CFReadShort (fp);
+	pwi->model_num_inner = CFReadShort (fp);
+	pwi->flash_vclip = CFReadByte (fp);
+	pwi->robot_hit_vclip = CFReadByte (fp);
+	pwi->flash_sound = CFReadShort (fp);
+	pwi->wall_hit_vclip = CFReadByte (fp);
+	pwi->fire_count = CFReadByte (fp);
+	pwi->robot_hit_sound = CFReadShort (fp);
+	pwi->ammo_usage = CFReadByte (fp);
+	pwi->weapon_vclip = CFReadByte (fp);
+	pwi->wall_hit_sound = CFReadShort (fp);
+	pwi->destroyable = CFReadByte (fp);
+	pwi->matter = CFReadByte (fp);
+	pwi->bounce = CFReadByte (fp);
+	pwi->homing_flag = CFReadByte (fp);
+	pwi->speedvar = CFReadByte (fp);
+	pwi->flags = CFReadByte (fp);
+	pwi->flash = CFReadByte (fp);
+	pwi->afterburner_size = CFReadByte (fp);
 
-		pwi->flash_vclip = CFReadByte(fp);
-		pwi->robot_hit_vclip = CFReadByte(fp);
-		pwi->flash_sound = CFReadShort(fp);
-
-		pwi->wall_hit_vclip = CFReadByte(fp);
-		pwi->fire_count = CFReadByte(fp);
-		pwi->robot_hit_sound = CFReadShort(fp);
-
-		pwi->ammo_usage = CFReadByte(fp);
-		pwi->weapon_vclip = CFReadByte(fp);
-		pwi->wall_hit_sound = CFReadShort(fp);
-
-		pwi->destroyable = CFReadByte(fp);
-		pwi->matter = CFReadByte(fp);
-		pwi->bounce = CFReadByte(fp);
-		pwi->homing_flag = CFReadByte(fp);
-
-		pwi->speedvar = CFReadByte(fp);
-		pwi->flags = CFReadByte(fp);
-		pwi->flash = CFReadByte(fp);
-		pwi->afterburner_size = CFReadByte(fp);
-
-		if (file_version >= 3)
-			pwi->children = CFReadByte(fp);
-		else
-			/* Set the type of children correctly when using old
-			 * datafiles.  In earlier descent versions this was simply
-			 * hard-coded in CreateSmartChildren().
-			 */
-			switch (i)
-			{
+	if (file_version >= 3)
+		pwi->children = CFReadByte (fp);
+	else
+		// Set the type of children correctly when using old datafiles.  
+		// In earlier descent versions this was simply hard-coded in CreateSmartChildren ().
+		switch (i) {
 			case SMART_ID:
 				pwi->children = PLAYER_SMART_HOMING_ID;
 				break;
@@ -1663,42 +1655,38 @@ extern int WeaponInfoReadN(weapon_info *pwi, int n, CFILE *fp, int file_version)
 				pwi->children = -1;
 				break;
 			}
-
-		pwi->energy_usage = CFReadFix(fp);
-		pwi->fire_wait = CFReadFix(fp);
-
-		if (file_version >= 3)
-			pwi->multi_damage_scale = CFReadFix(fp);
-		else /* FIXME: hack this to set the real values */
-			pwi->multi_damage_scale = F1_0;
-
-		BitmapIndexRead(&pwi->bitmap, fp);
-
-		pwi->blob_size = CFReadFix(fp);
-		pwi->flash_size = CFReadFix(fp);
-		pwi->impact_size = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			pwi->strength[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			pwi->speed[j] = CFReadFix(fp);
-		pwi->mass = CFReadFix(fp);
-		pwi->drag = CFReadFix(fp);
-		pwi->thrust = CFReadFix(fp);
-		pwi->po_len_to_width_ratio = CFReadFix(fp);
-		pwi->light = CFReadFix(fp);
-		if (i == SPREADFIRE_ID)
-			pwi->light = F1_0;
-		else if (i == HELIX_ID)
-			pwi->light = 3 * F1_0 / 2;
-		pwi->lifetime = CFReadFix(fp);
-		pwi->damage_radius = CFReadFix(fp);
-		BitmapIndexRead(&pwi->picture, fp);
-		if (file_version >= 3)
-			BitmapIndexRead(&pwi->hires_picture, fp);
-		else
-			pwi->hires_picture.index = pwi->picture.index;
+	pwi->energy_usage = CFReadFix (fp);
+	pwi->fire_wait = CFReadFix (fp);
+	if (file_version >= 3)
+		pwi->multi_damage_scale = CFReadFix (fp);
+	else /* FIXME: hack this to set the real values */
+		pwi->multi_damage_scale = F1_0;
+	BitmapIndexRead (&pwi->bitmap, fp);
+	pwi->blob_size = CFReadFix (fp);
+	pwi->flash_size = CFReadFix (fp);
+	pwi->impact_size = CFReadFix (fp);
+	for (j = 0; j < NDL; j++)
+		pwi->strength [j] = CFReadFix (fp);
+	for (j = 0; j < NDL; j++)
+		pwi->speed [j] = CFReadFix (fp);
+	pwi->mass = CFReadFix (fp);
+	pwi->drag = CFReadFix (fp);
+	pwi->thrust = CFReadFix (fp);
+	pwi->po_len_to_width_ratio = CFReadFix (fp);
+	pwi->light = CFReadFix (fp);
+	if (i == SPREADFIRE_ID)
+		pwi->light = F1_0;
+	else if (i == HELIX_ID)
+		pwi->light = 3 * F1_0 / 2;
+	pwi->lifetime = CFReadFix (fp);
+	pwi->damage_radius = CFReadFix (fp);
+	BitmapIndexRead (&pwi->picture, fp);
+	if (file_version >= 3)
+		BitmapIndexRead (&pwi->hires_picture, fp);
+	else
+		pwi->hires_picture.index = pwi->picture.index;
 	}
-	return i;
+return i;
 }
 //	-----------------------------------------------------------------------------
 //eof

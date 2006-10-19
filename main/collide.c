@@ -709,21 +709,15 @@ if (!(objP->mtype.phys_info.flags & PF_PERSISTENT)) {
 
 //	-----------------------------------------------------------------------------
 //deal with two gameData.objs.objects bumping into each other.  Apply vForce from collision
-//to each robot.  The flags tells whether the gameData.objs.objects should take damage from
+//to each robot.  The flags tells whether the objects should take damage from
 //the collision.
 int BumpTwoObjects (object *objP0, object *objP1, int bDamage, vms_vector *vHitPt)
 {
-	vms_vector	vForce, v0, v1, vh, vr;
-#ifdef _DEBUG
-	vms_vector	vn0, vn1;
-#endif
-	fixang		angle;
+	vms_vector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
 	fix			mag, dot, m0, m1;
 	object		*t;
+	int			bCollide = 0;
 
-#ifdef _DEBUG
-	static int nBumps = 0;
-#endif
 if (objP0->movement_type != MT_PHYSICS)
 	t = objP1;
 else if (objP1->movement_type != MT_PHYSICS)
@@ -739,73 +733,79 @@ if (t) {
 	PhysApplyForce (t, &vForce);
 	return 1;
 	}
-VmVecSub (&vh, &objP1->pos, &objP0->pos);
+p0 = objP0->pos;
+p1 = objP1->pos;
 v0 = objP0->mtype.phys_info.velocity;
-angle = VmVecDeltaAng (&vh, &v0, NULL);
-if (angle >= F1_0 / 4)
-	return 0;	// don't bump if moving away
 v1 = objP1->mtype.phys_info.velocity;
+m0 = VmVecCopyNormalize (&vn0, &v0);
+m1 = VmVecCopyNormalize (&vn1, &v1);
+if (m0 && m1)
+	if (m0 > m1) {
+		VmVecScaleFrac (&vn0, m1, m0);
+		VmVecScaleFrac (&vn1, m1, m0);
+		}
+	else {
+		VmVecScaleFrac (&vn0, m0, m1);
+		VmVecScaleFrac (&vn1, m0, m1);
+		}
+VmVecSub (&vh, &p0, &p1);
+m0 = VmVecMag (&vh);
+if (m0 > ((objP0->size + objP1->size) * 3) / 4) {
+	VmVecInc (&p0, &vn0);
+	VmVecInc (&p1, &vn1);
+	VmVecSub (&vh, &p0, &p1);
+	m1 = VmVecMag (&vh);
+	if (m1 > m0) {
+#ifdef _DEBUG
+		HUDMessage (0, "moving away (%d, %d)", m0, m1);
+#endif
+		return 0;
+		}
+	}
+#ifdef _DEBUG
+HUDMessage (0, "colliding (%1.2f, %1.2f)", f2fl (m0), f2fl (m1));
+#endif
 VmVecSub (&vForce, &v0, &v1);
 m0 = objP0->mtype.phys_info.mass;
 m1 = objP1->mtype.phys_info.mass;
-#ifdef _DEBUG
-vn0 = v0;
-VmVecNormalize (&vn0);
-vn1 = v1;
-VmVecNormalize (&vn1);
-nBumps++;
-HUDMessage (0, "%d:%1.2f - %d:%1.2f  v%1.2f (d%1.2f) m%d", 
-				objP0->type,
-				f2fl (VmVecMag (&v0)),
-				objP1->type,
-				f2fl (VmVecMag (&v1)),
-				f2fl (VmVecMag (&vForce)),
-				f2fl (VmVecDot (&vn0, &vn1)), 
-				m0 + m1);
-LogErr ("(%d) %d:%1.2f - %d:%1.2f  v%1.2f (d%1.2f) m%d\n", 
-		  nBumps,
-			objP0->type,
-			f2fl (VmVecMag (&v0)),
-			objP1->type,
-			f2fl (VmVecMag (&v1)),
-			f2fl (VmVecMag (&vForce)),
-			f2fl (VmVecDot (&vn0, &vn1)), 
-			m0 + m1);
-#endif
+if (!((m0 + m1) && FixMul (m0, m1))) {
+	HUDMessage (0, "Invalid Mass!!!");
+	return 0;
+	}
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
-if (mag < (m0 + m1) / 200)
+if (mag < (m0 + m1) / 200) {
+#ifdef _DEBUG
+	HUDMessage (0, "bump force too low");
+#endif
 	return 0;	// don't bump if force too low
+	}
 //HUDMessage (0, "%d %d", mag, (objP0->mtype.phys_info.mass + objP1->mtype.phys_info.mass) / 200);
 if (EGI_FLAG (bUseHitAngles, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	VmVecSub (&vh, vHitPt, &objP1->pos);
-	VmVecNormalize (&vh);
-	vr = vh;
-	VmVecNegate (&vh);
-	VmVecScale (&vh, mag);
-	BumpThisObject (objP1, objP0, &vh, bDamage);
-	if (VmVecMag (&objP0->mtype.phys_info.velocity) > 250)
-		mag = mag;
-	// compute reflection vector. The vector from the other object's center to the hit point serves as
-	// normal.
-	v1 = v0;
-	VmVecNormalize (&v1);
-	dot = VmVecDot (&v1, &vr);
-	VmVecScale (&vr, 2 * dot);
-	VmVecDec (&vr, &v0);
-	VmVecNormalize (&vr);
-	VmVecScale (&vr, mag);
-	VmVecNegate (&vr);
-	BumpThisObject (objP0, objP1, &vr, bDamage);
-	if (VmVecMag (&objP1->mtype.phys_info.velocity) > 250)
-		mag = mag;
+	if (VmVecNormalize (&vh) > F1_0 / 16) {
+		vr = vh;
+		VmVecNegate (&vh);
+		VmVecScale (&vh, mag);
+		BumpThisObject (objP1, objP0, &vh, bDamage);
+		// compute reflection vector. The vector from the other object's center to the hit point 
+		// serves as normal.
+		v1 = v0;
+		VmVecNormalize (&v1);
+		dot = VmVecDot (&v1, &vr);
+		VmVecScale (&vr, 2 * dot);
+		VmVecDec (&vr, &v0);
+		VmVecNormalize (&vr);
+		VmVecScale (&vr, mag);
+		VmVecNegate (&vr);
+		BumpThisObject (objP0, objP1, &vr, bDamage);
+		return 1;
+		}
 	}
-else {
-	BumpThisObject (objP1, objP0, &vForce, 0);
-	VmVecNegate (&vForce);
-	BumpThisObject (objP0, objP1, &vForce, 0);
-	}
+BumpThisObject (objP1, objP0, &vForce, 0);
+VmVecNegate (&vForce);
+BumpThisObject (objP0, objP1, &vForce, 0);
 return 1;
 }
 

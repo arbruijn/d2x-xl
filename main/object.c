@@ -430,6 +430,7 @@ int FreeObjectSlots (int num_used);
 
 ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 ubyte bIsMissile [100];
+ubyte bIsWeapon [100];
 short idToOOF [100];
 
 //Data for gameData.objs.objects
@@ -1359,27 +1360,29 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 static fVector3	vFlame [THRUSTER_SEGS][RING_SIZE];
 static int			bHaveFlame = 0;
 
+static fVector3	vRing [RING_SIZE] = {
+	{-0.5f, -0.5f, 0.0f},
+	{-0.6533f, -0.2706f, 0.0f},
+	{-0.7071f, 0.0f, 0.0f},
+	{-0.6533f, 0.2706f, 0.0f},
+	{-0.5f, 0.5f, 0.0f},
+	{-0.2706f, 0.6533f, 0.0f},
+	{0.0f, 0.7071f, 0.0f},
+	{0.2706f, 0.6533f, 0.0f},
+	{0.5f, 0.5f, 0.0f},
+	{0.6533f, 0.2706f, 0.0f},
+	{0.7071f, 0.0f, 0.0f},
+	{0.6533f, -0.2706f, 0.0f},
+	{0.5f, -0.5f, 0.0f},
+	{0.2706f, -0.6533f, 0.0f},
+	{0.0f, -0.7071f, 0.0f},
+	{-0.2706f, -0.6533f, 0.0f}
+};
+
+static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
+
 void CreateThrusterFlame (void)
 {
-	static fVector3	vRing [RING_SIZE] = {
-		{-0.5f, -0.5f, 0.0f},
-		{-0.6533f, -0.2706f, 0.0f},
-		{-0.7071f, 0.0f, 0.0f},
-		{-0.6533f, 0.2706f, 0.0f},
-		{-0.5f, 0.5f, 0.0f},
-		{-0.2706f, 0.6533f, 0.0f},
-		{0.0f, 0.7071f, 0.0f},
-		{0.2706f, 0.6533f, 0.0f},
-		{0.5f, 0.5f, 0.0f},
-		{0.6533f, 0.2706f, 0.0f},
-		{0.7071f, 0.0f, 0.0f},
-		{0.6533f, -0.2706f, 0.0f},
-		{0.5f, -0.5f, 0.0f},
-		{0.2706f, -0.6533f, 0.0f},
-		{0.0f, -0.7071f, 0.0f},
-		{-0.2706f, -0.6533f, 0.0f}
-	};
-
 if (!bHaveFlame) {
 		fVector3		*pv;
 		int			i, j, m, n;
@@ -1414,7 +1417,6 @@ if (!bHaveFlame) {
 
 void RenderThrusterFlames (object *objP)
 {
-	static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
 	int				h, i, j, k, l, nThrusters;
 	tRgbaColorf		c [2];
 	vms_vector		vPos [2];
@@ -1430,7 +1432,7 @@ void RenderThrusterFlames (object *objP)
 if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif
-if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = f2fl (VmVecMag (&objP->mtype.phys_info.velocity));
 fLength = fSpeed / 60.0f;
@@ -1473,7 +1475,7 @@ if (objP->type == OBJ_PLAYER) {
 		}
 	}
 else {
-	if (!gameData.weapons.info [objP->id].afterburner_size)
+	if (!bIsMissile [objP->id])
 		return;
 	if (gameStates.app.nSDLTicks - tPulse > 10) {
 		tPulse = gameStates.app.nSDLTicks;
@@ -1511,8 +1513,8 @@ for (h = 0; h < nThrusters; h++) {
 		c [1].alpha *= fFade [i / 4];
 		glBegin (GL_QUAD_STRIP);
 		for (j = 0; j < RING_SIZE + 1; j++) {
+			k = j % RING_SIZE;
 			for (l = 0; l < 2; l++) {
-				k = j % RING_SIZE;
 				v = vFlame [i + l][k];
 				v.p.x *= fSize;
 				v.p.y *= fSize;
@@ -1543,6 +1545,57 @@ for (h = 0; h < nThrusters; h++) {
 		}
 	glEnd ();
 	glLineWidth (1);
+	glCullFace (GL_FRONT);
+	glDepthMask (1);
+	G3DoneInstance ();
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RenderLightTrail (object *objP)
+{
+if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
+	 (objP->type == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+		fVector3			vPosf;
+		int				i, j, k;
+		float				r, l, alpha;
+		tRgbColorf		*pc = gameData.weapons.color + objP->id;
+
+	G3StartInstanceMatrix (&objP->pos, &objP->orient);
+	r = f2fl (objP->size);
+	l = (r < 1.0f) ? 25.0f : 50.0f;
+	alpha = (r < 3.0f) ? 0.3f : 0.5f;
+	glDepthMask (0);
+	glDisable (GL_TEXTURE_2D);
+	glCullFace (GL_BACK);
+	glBegin (GL_QUAD_STRIP);
+	for (i = 0; i < RING_SIZE + 1; i++) {
+		j = i % RING_SIZE;
+		for (k = 0; k < 2; k++) {
+			glColor4f (pc->red, pc->green, pc->blue, k ? 0.0f : alpha);
+			vPosf = vRing [j];
+			vPosf.p.x *= r;
+			vPosf.p.y *= r;
+			vPosf.p.z = -k * l;
+			G3TransformPointf (&vPosf, &vPosf);
+			vPosf.p.z = -vPosf.p.z;
+			glVertex3fv ((GLfloat *) &vPosf);
+			}
+		}
+	glEnd ();
+	glBegin (GL_TRIANGLE_STRIP);
+	glColor4f (pc->red, pc->green, pc->blue, 0.1f);
+	for (j = 0; j < RING_SIZE; j++) {
+		vPosf = vRing [nStripIdx [j]];
+		vPosf.p.x *= r;
+		vPosf.p.y *= r;
+		//vPosf.p.z = -r;
+		G3TransformPointf (&vPosf, &vPosf);
+		vPosf.p.z = -vPosf.p.z;
+		glVertex3fv ((GLfloat *) &vPosf);
+		}
+	glEnd ();
 	glCullFace (GL_FRONT);
 	glDepthMask (1);
 	G3DoneInstance ();
@@ -1621,8 +1674,12 @@ switch (objP->render_type) {
 				}
 			else
 				DrawPolygonObject (objP);
-			if (objP->type == OBJ_WEAPON)
-				RenderThrusterFlames (objP);
+			if (objP->type == OBJ_WEAPON) {
+				if (bIsMissile [objP->id])
+					RenderThrusterFlames (objP);
+				else
+					RenderLightTrail (objP);
+				}
 			else if (objP->type == OBJ_CNTRLCEN)
 				RenderTargetIndicator (objP, NULL);
 			}
@@ -1638,13 +1695,19 @@ switch (objP->render_type) {
 			break;
 			
 	case RT_FIREBALL: 
-		if (gameStates.render.nShadowPass != 2)
+		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
+			if (objP->type == OBJ_WEAPON)
+				RenderLightTrail (objP);
+			}
 		break;
 
 	case RT_WEAPON_VCLIP: 
-		if (gameStates.render.nShadowPass != 2)
+		if (gameStates.render.nShadowPass != 2) {
 			DrawWeaponVClip (objP); 
+			if (objP->type == OBJ_WEAPON)
+				RenderLightTrail (objP);
+			}
 		break;
 
 	case RT_HOSTAGE: 
@@ -1658,8 +1721,11 @@ switch (objP->render_type) {
 		break;
 
 	case RT_LASER: 
-		if (gameStates.render.nShadowPass != 2)
+		if (gameStates.render.nShadowPass != 2) {
 			RenderLaser (objP); 
+			if (objP->type == OBJ_WEAPON)
+				RenderLightTrail (objP);
+			}
 		break;
 
 	default: 
@@ -2143,10 +2209,10 @@ Assert (segnum >= 0);
 if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
 	return -1;
 Assert (ctype <= CT_CNTRLCEN);
-if (type == OBJ_DEBRIS && nDebrisObjectCount>=gameStates.render.detail.nMaxDebrisObjects)
+if ((type == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
 	return -1;
 if (GetSegMasks (pos, segnum, 0).centerMask)
-	if ((segnum=FindSegByPoint (pos, segnum))==-1) {
+	if ((segnum=FindSegByPoint (pos, segnum)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
 		con_printf (CON_DEBUG, "Bad segnum in CreateObject (type=%d)\n", type);
@@ -2174,7 +2240,7 @@ objP->flags = 0;
 objP->matcen_creator = (sbyte) owner;
 //@@if (orient != NULL)
 //@@	objP->orient = *orient;
-objP->orient = orient?*orient:vmdIdentityMatrix;
+objP->orient = orient ? *orient : vmdIdentityMatrix;
 objP->control_type = ctype;
 objP->movement_type = mtype;
 objP->render_type = rtype;
@@ -2203,15 +2269,15 @@ if (objP->movement_type == MT_PHYSICS) {
 	}
 if (objP->render_type == RT_POLYOBJ)
 	objP->rtype.pobj_info.tmap_override = -1;
-objP->shields = 20*F1_0;
+objP->shields = 20 * F1_0;
 segnum = FindSegByPoint (pos, segnum);		//find correct segment
-Assert (segnum!=-1);
+Assert (segnum != -1);
 objP->segnum = -1;					//set to zero by memset, above
 LinkObject (objnum, segnum);
 //	Set (or not) persistent bit in phys_info.
 if (objP->type == OBJ_WEAPON) {
 	Assert (objP->control_type == CT_WEAPON);
-	objP->mtype.phys_info.flags |= WI_persistent (objP->id)*PF_PERSISTENT;
+	objP->mtype.phys_info.flags |= WI_persistent (objP->id) * PF_PERSISTENT;
 	objP->ctype.laser_info.creation_time = gameData.time.xGame;
 	objP->ctype.laser_info.last_hitobj = -1;
 	objP->ctype.laser_info.multiplier = F1_0;
@@ -3102,12 +3168,11 @@ int MoveAllObjects ()
 
 	// Move all gameData.objs.objects
 	objP = gameData.objs.objects;
-
 #ifndef DEMO_ONLY
 	gameStates.entropy.bConquering = 0;
 	UpdatePlayerOrient ();
-	for (i = 0;i<=gameData.objs.nLastObject;i++) {
-		if ((objP->type != OBJ_NONE) && (!(objP->flags&OF_SHOULD_BE_DEAD)))	{
+	for (i = 0; i <= gameData.objs.nLastObject; i++) {
+		if ((objP->type != OBJ_NONE) && !(objP->flags & OF_SHOULD_BE_DEAD)) {
 			if (!MoveOneObject (objP))
 				return 0;
 		}
@@ -3375,12 +3440,12 @@ int DropMarkerObject (vms_vector *pos, short segnum, vms_matrix *orient, ubyte m
 {
 	short objnum;
 
-	Assert (Marker_model_num != -1);
+	Assert (gameData.models.nMarkerModel != -1);
 	objnum = CreateObject (OBJ_MARKER, marker_num, -1, segnum, pos, orient, 
-								  gameData.models.polyModels [Marker_model_num].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
+								  gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
 	if (objnum >= 0) {
 		object *objP = &gameData.objs.objects [objnum];
-		objP->rtype.pobj_info.model_num = Marker_model_num;
+		objP->rtype.pobj_info.model_num = gameData.models.nMarkerModel;
 		VmVecCopyScale (&objP->mtype.spin_rate, &objP->orient.uvec, F1_0 / 2);
 		//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
 		objP->lifeleft = IMMORTAL_TIME - 1;
@@ -3566,7 +3631,7 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 //------------------------------------------------------------------------------
 
-void InitMissileFlags (void)
+void InitWeaponFlags (void)
 {
 memset (bIsMissile, 0, sizeof (bIsMissile));
 bIsMissile [CONCUSSION_ID] = 1;
@@ -3584,6 +3649,16 @@ bIsMissile [ROBOT_FLASH_ID] = 1;
 bIsMissile [ROBOT_MERCURY_ID] = 1;
 bIsMissile [ROBOT_SMART_ID] = 1;
 bIsMissile [ROBOT_MEGA_ID] = 1;
+
+memset (bIsWeapon, 0, sizeof (bIsWeapon));
+bIsWeapon [LASER_ID] =
+bIsWeapon [SPREADFIRE_ID] =
+bIsWeapon [PLASMA_ID] =
+bIsWeapon [FUSION_ID] =
+bIsWeapon [SUPER_LASER_ID] =
+bIsWeapon [HELIX_ID] =
+bIsWeapon [PHOENIX_ID] =
+bIsWeapon [OMEGA_ID] = 1;
 }
 
 //------------------------------------------------------------------------------

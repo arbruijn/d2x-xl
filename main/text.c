@@ -1603,6 +1603,8 @@ char *defaultGameTexts [][2] = {
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
+	{"~Leuchtspuren zeichen", "render energy ~Trails"},
+	{"~Sammelregler verwenden", "Use ~Master Sliders"},
 #if 0
 	{"", ""},
 #endif
@@ -2037,6 +2039,9 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, lava, water, force fields and energy sparks that\ncan be crossed will be made slightly transparent."},
 	{"Wenn angekreuzt, werden bei Kollisionen korrekte Winkel fuer\ndie Abprallrichtung berechnet.", 
 	 "If checked, proper reflection angles will be computed for\ncollisions."},
+	{"Wenn angekreuzt, erzeugen Energiewaffen eine Leuchtspur.", "If checked, energy weapons have a light trail."},
+	{"Wenn angekreuzt, werden Dichte und Partikelgroesse des Rauchs\nmit zwei Sammelreglern eingestellt. Sonst koennen Rauchdichte\nund Partikelgroesse fuer Schiffe, Roboter und Raketen\nseparat eingestellt werden.", 
+	 "If checked, all smoke size and density settings are controlled\nusing two master sliders. If unchecked, smoke density and\nparticle sizes can be set separately for ships, robots and missiles."},
 #if 0
 	{"", ""},
 #endif

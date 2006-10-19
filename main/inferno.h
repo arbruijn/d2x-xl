@@ -143,8 +143,9 @@ typedef struct tTextureOptions {
 } tTextureOptions;
 
 typedef struct tSmokeOptions {
-	int nScale;
-	int nSize;
+	int nScale [4];
+	int nSize [4];
+	int bSyncSizes;
 	int bPlayers;
 	int bRobots;
 	int bMissiles;
@@ -1113,6 +1114,9 @@ typedef struct tSoundData {
 	digi_sound			*pSounds;
 } tSoundData;
 
+#define N_COCKPIT_BITMAPS 6
+#define D1_N_COCKPIT_BITMAPS 4
+
 typedef struct tTextureData {
 	BitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
 	grs_bitmap			bitmaps [2][MAX_BITMAP_FILES];
@@ -1122,6 +1126,7 @@ typedef struct tTextureData {
 	bitmap_index		bmIndex [2][MAX_TEXTURES];
 	bitmap_index		objBmIndex [MAX_OBJ_BITMAPS];
 	ushort				pObjBmIndex [MAX_OBJ_BITMAPS];
+	bitmap_index		cockpitBmIndex [N_COCKPIT_BITMAPS];
 	int					nBitmaps [2];
 	int					nObjBitmaps;
 	int					bPageFlushed;
@@ -1224,6 +1229,10 @@ typedef struct tModelData {
 	grs_bitmap			*textures [MAX_POLYOBJ_TEXTURES];
 	bitmap_index		textureIndex [MAX_POLYOBJ_TEXTURES];
 	int					nSimpleModelThresholdScale;
+	int					nMarkerModel;
+	int					nCockpits;
+	int					nDyingModels [MAX_POLYGON_MODELS];
+	int					nDeadModels [MAX_POLYGON_MODELS];
 } tModelData;
 
 #include "player.h"

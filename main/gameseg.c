@@ -902,7 +902,7 @@ ubyte GetSideDists (vms_vector *checkp, int segnum, fix *xSideDists)
 
 Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
 if (segnum == -1)
-	Error ("segnum == -1 in get_seg_dists ()");
+	Error ("segnum == -1 in GetSideDists ()");
 
 segP = gameData.segs.segments + segnum;
 sideP = segP->sides;
@@ -1026,7 +1026,7 @@ ubyte GetSideDistsAll (vms_vector *checkp, int segnum, fix *xSideDists)
 
 Assert ((segnum <= gameData.segs.nLastSegment) && (segnum >= 0));
 if (segnum == -1)
-	Error ("segnum == -1 in get_seg_dists ()");
+	Error ("segnum == -1 in GetSideDistsAll ()");
 
 segP = gameData.segs.segments + segnum;
 sideP = segP->sides;

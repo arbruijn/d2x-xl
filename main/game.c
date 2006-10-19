@@ -878,8 +878,8 @@ switch (gameStates.render.cockpit.nMode) {
 #ifndef OGL
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW: {
-		grs_bitmap *bm = &gameData.pig.tex.bitmaps[cockpit_bitmap[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (Num_cockpits/2):0)].index];
-		PIGGY_PAGE_IN (cockpit_bitmap[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (Num_cockpits/2):0)]);
+		grs_bitmap *bm = &gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index];
+		PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)]);
 
 #ifdef WINDOWS
 		DDGrSetCurrentCanvas (NULL);
@@ -948,7 +948,7 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_STATUS_BAR:
 		{
-		int h = gameData.pig.tex.bitmaps [0][cockpit_bitmap[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (Num_cockpits/2):0)].index].bm_props.h;
+		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index].bm_props.h;
 		if (grdCurScreen->sc_h > 480)
 			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
      	max_window_h = grdCurScreen->sc_h - h;
@@ -1391,7 +1391,7 @@ WIN (static int saved_window_h);
 #if 0
 			if (VR_screen_flags & VRF_ALLOW_COCKPIT) {
 				if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		      	max_window_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[cockpit_bitmap[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (Num_cockpits/2):0)].index].bm_props.h;
+		      	max_window_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index].bm_props.h;
 				}
 			else if (gameStates.render.cockpit.nMode != CM_LETTERBOX)
 				gameStates.render.cockpit.nMode = CM_FULL_SCREEN;

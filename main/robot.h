@@ -325,18 +325,18 @@ void calc_gun_point(vms_vector *gun_point,object *obj,int gun_num);
 extern int robot_get_anim_state(jointpos **jp_list_ptr,int robot_type,int gun_num,int state);
 
 #ifdef FAST_FILE_IO
-#define robot_info_read_n(ri, n, fp) CFRead(ri, sizeof(robot_info), n, fp)
-#define jointpos_read_n(jp, n, fp) CFRead(jp, sizeof(jointpos), n, fp)
+#define RobotInfoReadN(ri, n, fp) CFRead(ri, sizeof(robot_info), n, fp)
+#define JointPosReadN(jp, n, fp) CFRead(jp, sizeof(jointpos), n, fp)
 #else
 /*
  * reads n robot_info structs from a CFILE
  */
-extern int robot_info_read_n(robot_info *ri, int n, CFILE *fp);
+extern int RobotInfoReadN(robot_info *ri, int n, CFILE *fp);
 
 /*
  * reads n jointpos structs from a CFILE
  */
-extern int jointpos_read_n(jointpos *jp, int n, CFILE *fp);
+extern int JointPosReadN(jointpos *jp, int n, CFILE *fp);
 #endif
 
 #endif

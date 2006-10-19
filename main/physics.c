@@ -576,8 +576,10 @@ fq.p0 = fq.p1 = &objP->pos;
 fq.startSeg = objP->segnum;
 fq.rad = objP->size;
 fq.thisObjNum = OBJ_IDX (objP);
+fq.ignoreObjList = NULL;
+fq.flags = 0;
 fate = FindVectorIntersection (&fq, &hi);
-if (!fate)
+if (fate != HIT_WALL)
 	return;
 GetSideDistsAll (&objP->pos, hi.hit.nSideSegment, xSideDists);
 if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->size / 100)) {
@@ -792,7 +794,7 @@ retryMove:
 		if (nPhysSegs && physSegList [nPhysSegs-1]==hi.segList [0])
 			nPhysSegs--;
 
-		for (i=0; (i < hi.nSegments) && (nPhysSegs<MAX_FVI_SEGS-1); )
+		for (i=0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS - 1); )
 			physSegList [nPhysSegs++] = hi.segList [i++];
 	}
 
@@ -804,7 +806,7 @@ retryMove:
 		if (objP->type == OBJ_WEAPON)
 			objP->flags |= OF_SHOULD_BE_DEAD;
 		break;
-	}
+		}
 	Assert (!((fate==HIT_WALL) && ((nWallHitSeg == -1) || (nWallHitSeg > gameData.segs.nLastSegment))));
 	vSavePos = objP->pos;			//save the object's position
 	nSaveSeg = objP->segnum;
@@ -845,7 +847,7 @@ retryMove:
 		fix attempted_dist, actual_dist;
 		xOldSimTime = xSimTime;
 		actual_dist = VmVecNormalizedDir (&vMoveNormal, &objP->pos, &vSavePos);
-		if (fate==HIT_WALL && VmVecDot (&vMoveNormal, &vFrame) < 0) {		//moved backwards
+		if ((fate == HIT_WALL) && (VmVecDot (&vMoveNormal, &vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->pos = vSavePos;
 			//iseg = objP->segnum;		//don't change segment
@@ -989,7 +991,7 @@ retryMove:
 			VmVecSub (&vHitPos, ppos1, ppos0);
 			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 			vOldVel = objP->mtype.phys_info.velocity;
-			CollideTwoObjects (objP, &gameData.objs.objects [hi.hit.nObject], &vHitPos);
+			CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &vHitPos);
 			if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
 				objP->mtype.phys_info.velocity = vOldVel;
 

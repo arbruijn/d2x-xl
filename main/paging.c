@@ -368,8 +368,8 @@ void PagingTouchObject( object *objP )
 		break;
 	case OBJ_CNTRLCEN:
 		PagingTouchWeapon( CONTROLCEN_WEAPON_NUM );
-		if (Dead_modelnums[objP->rtype.pobj_info.model_num] != -1)	{
-			PagingTouchModel( Dead_modelnums[objP->rtype.pobj_info.model_num] );
+		if (gameData.models.nDeadModels[objP->rtype.pobj_info.model_num] != -1)	{
+			PagingTouchModel( gameData.models.nDeadModels[objP->rtype.pobj_info.model_num] );
 		}
 		break;
 	}

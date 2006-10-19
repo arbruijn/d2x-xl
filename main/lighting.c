@@ -1470,8 +1470,10 @@ glLightf (pl->handle, GL_CONSTANT_ATTENUATION, pl->fAttenuation [0]);
 glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #endif
+#if 0
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.ogl.nLights, pl - gameData.render.lights.ogl.lights);
+#endif		  
 if (nObject >= 0) {
 	pl->rad = 0;
 	gameData.render.lights.ogl.owners [nObject] = gameData.render.lights.ogl.nLights;

@@ -5,6 +5,11 @@
 
 #define MAX_SMOKE 1000
 
+#define PARTICLE_RAD	(F1_0 * 4)
+
+#define PARTICLE_SIZE(_nSize,_nScale) \
+		  ((float) (PARTICLE_RAD >> (3 - (_nSize))) / (_nScale) + 0.5f)
+
 typedef struct tPartColor {
 	double		r, g, b, a;
 } tPartColor;

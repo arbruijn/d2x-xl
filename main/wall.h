@@ -361,7 +361,7 @@ void StartWallDecloak(segment *seg, short side);
 
 extern int wclip_read_n_d1(wclip *wc, int n, CFILE *fp);
 #ifdef FAST_FILE_IO
-#define wclip_read_n(wc, n, fp) CFRead(wc, sizeof(wclip), n, fp)
+#define WClipReadN(wc, n, fp) CFRead(wc, sizeof(wclip), n, fp)
 #define v16_wall_read(w, fp) CFRead(w, sizeof(v16_wall), 1, fp)
 #define v19_wall_read(w, fp) CFRead(w, sizeof(v19_wall), 1, fp)
 #define wall_read(w, fp) CFRead(w, sizeof(wall), 1, fp)
@@ -371,7 +371,7 @@ extern int wclip_read_n_d1(wclip *wc, int n, CFILE *fp);
 /*
  * reads n wclip structs from a CFILE
  */
-extern int wclip_read_n(wclip *wc, int n, CFILE *fp);
+extern int WClipReadN(wclip *wc, int n, CFILE *fp);
 
 /*
  * reads a v16_wall structure from a CFILE

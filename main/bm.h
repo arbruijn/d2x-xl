@@ -261,13 +261,6 @@ typedef struct {
 	int			eclip_num;		//if not -1, the eclip that changes this   
 } D1_tmap_info;
 
-extern int Num_object_types;
-
-#define N_COCKPIT_BITMAPS 6
-#define D1_N_COCKPIT_BITMAPS 4
-extern int Num_cockpits;
-extern bitmap_index cockpit_bitmap[N_COCKPIT_BITMAPS];
-
 extern int Num_tmaps;
 #ifdef EDITOR
 extern int TmapList[MAX_TEXTURES];

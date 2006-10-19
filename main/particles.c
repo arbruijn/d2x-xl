@@ -53,8 +53,6 @@
 
 #define PARTICLE_FPS	30
 
-#define PARTICLE_RAD	(F1_0 * 4)
-
 static int bHavePartImg [2][3] = {{0, 0, 0},{0, 0, 0}};
 
 static grs_bitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
@@ -189,8 +187,12 @@ int CreateParticle (tParticle *pParticle, vms_vector *pPos, short nSegment, int 
 						  int nSpeed, int nType, float nScale, int nCurTime, int bStart)
 {
 	vms_vector	dir;
-	int			nRad = (int) ((float) (PARTICLE_RAD >> (3 - gameOpts->render.smoke.nSize)) / nScale + 0.5);
-
+	int			nRad;
+	
+if (gameOpts->render.smoke.bSyncSizes)
+	nRad = (int) PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale);
+else
+	nRad = (int) nScale;
 pParticle->nType = nType;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
@@ -618,8 +620,8 @@ if (gameStates.render.bPointSprites) {
 	glTexEnvf (GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
 	glEnable (GL_POINT_SPRITE_ARB);
    glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
-	if (maxSize > (float) (64 >> (3 - gameOpts->render.smoke.nSize)))
-		maxSize = (float) (64 >> (3 - gameOpts->render.smoke.nSize));
+	if (maxSize > (float) (64 >> (3 - gameOpts->render.smoke.nSize [0])))
+		maxSize = (float) (64 >> (3 - gameOpts->render.smoke.nSize [0]));
    glPointSize (maxSize);
 	glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
 	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, maxSize);
@@ -1071,7 +1073,7 @@ else {
 	if (nMaxParts < 0)	// don't scale
 		nMaxParts = -nMaxParts;
 	else
-		nMaxParts <<= gameOpts->render.smoke.nScale;
+		nMaxParts <<= gameOpts->render.smoke.nScale [0];
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
@@ -1199,7 +1201,7 @@ void SetSmokeDensity (int i, int nMaxParts)
 if (nMaxParts < 0)
 	nMaxParts = -nMaxParts;
 else 
-	nMaxParts <<= (gameOpts->render.smoke.nScale + 1);
+	nMaxParts <<= (gameOpts->render.smoke.nScale [0] + 1);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)

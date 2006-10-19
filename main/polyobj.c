@@ -635,92 +635,110 @@ void DrawPolygonModel (
 {
 	polymodel	*po;
 	int			i, j, nTextures;
-	PA_DFX (int save_light);
+	PA_DFX (int bSaveLight);
 
-   if (model_num >= gameData.models.nPolyModels)
-		return;
-	Assert (model_num < gameData.models.nPolyModels);
-	po = gameData.models.polyModels + model_num;
-	if (objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
-		G3SetModelPoints (gameData.models.polyModelPoints);
-		G3DrawPolyModelShadow (objP, po->model_data, anim_angles);
-		return;
+if (model_num >= gameData.models.nPolyModels)
+	return;
+Assert (model_num < gameData.models.nPolyModels);
+po = gameData.models.polyModels + model_num;
+if (objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
+	G3SetModelPoints (gameData.models.polyModelPoints);
+	G3DrawPolyModelShadow (objP, po->model_data, anim_angles);
+	return;
+	}
+//check if should use simple model (depending on detail level chosen)
+if (po->simpler_model)					//must have a simpler model
+	if (!flags) {							//can't switch if this is debris
+		int	cnt = 1;
+		fix depth = G3CalcPointDepth (pos);		//gets 3d depth
+		while (po->simpler_model && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
+			po = gameData.models.polyModels + po->simpler_model - 1;
 		}
-	//check if should use simple model (depending on detail level chosen)
-	if (po->simpler_model)					//must have a simpler model
-		if (!flags) {							//can't switch if this is debris
-			int	cnt = 1;
-			fix depth = G3CalcPointDepth (pos);		//gets 3d depth
-			while (po->simpler_model && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
-				po = gameData.models.polyModels + po->simpler_model - 1;
-			}
-	nTextures = po->n_textures;
-	if (altTextures) {
-		for (i = 0; i < nTextures; i++)	{
-			gameData.models.textureIndex [i] = altTextures [i];
-			gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
+nTextures = po->n_textures;
+if (altTextures) {
+	for (i = 0; i < nTextures; i++)	{
+		gameData.models.textureIndex [i] = altTextures [i];
+		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 #ifdef _3DFX
-         gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
-#endif
-			}
-		}
-	else {
-		for (i = 0, j = po->first_texture; i < nTextures; i++, j++) {
-			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
-			gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
-#ifdef _3DFX
-         gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
+      gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
 #endif
 		}
-   }
+	}
+else {
+	for (i = 0, j = po->first_texture; i < nTextures; i++, j++) {
+		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
+		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
+#ifdef _3DFX
+      gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
+#endif
+	}
+}
 
 #ifdef PIGGY_USE_PAGING
-	// Make sure the textures for this object are paged in...
+// Make sure the textures for this object are paged in...
+gameData.pig.tex.bPageFlushed = 0;
+for (i = 0; i < nTextures; i++)	
+	PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
+// Hmmm... cache got flushed in the middle of paging all these in, 
+// so we need to reread them all in.
+if (gameData.pig.tex.bPageFlushed)	{
 	gameData.pig.tex.bPageFlushed = 0;
 	for (i = 0; i < nTextures; i++)	
 		PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
-	// Hmmm... cache got flushed in the middle of paging all these in, 
-	// so we need to reread them all in.
-	if (gameData.pig.tex.bPageFlushed)	{
-		gameData.pig.tex.bPageFlushed = 0;
-		for (i = 0; i < nTextures; i++)	
-			PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
+}
+// Make sure that they can all fit in memory.
+Assert (gameData.pig.tex.bPageFlushed == 0);
+#endif
+G3StartInstanceMatrix (pos, orient);
+G3SetModelPoints (gameData.models.polyModelPoints);
+#ifdef _3DFX
+_3dfx_rendering_poly_obj = 1;
+#endif
+PA_DFX (bSaveLight = gameStates.render.nLighting);
+PA_DFX (gameStates.render.nLighting = 0);
+
+if (flags == 0)		//draw entire object
+	G3DrawPolyModel (objP, po->model_data, gameData.models.textures, anim_angles, light, glow_values, color, NULL);
+else {
+	int i;
+
+	for (i = 0; flags; flags >>= 1, i++)
+		if (flags & 1) {
+			vms_vector ofs;
+
+			Assert (i < po->n_models);
+			//if submodel, rotate around its center point, not pivot point
+			VmVecAvg (&ofs, &po->submodel_mins [i], &po->submodel_maxs [i]);
+			VmVecNegate (&ofs);
+			G3StartInstanceMatrix (&ofs, NULL);
+			G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, anim_angles, 
+									light, glow_values, color, NULL);
+			G3DoneInstance ();
+			}	
 	}
-	// Make sure that they can all fit in memory.
-	Assert (gameData.pig.tex.bPageFlushed == 0);
-#endif
-	G3StartInstanceMatrix (pos, orient);
-	G3SetModelPoints (gameData.models.polyModelPoints);
-#ifdef _3DFX
-   _3dfx_rendering_poly_obj = 1;
-#endif
-	PA_DFX (save_light = gameStates.render.nLighting);
-	PA_DFX (gameStates.render.nLighting = 0);
+G3DoneInstance ();
+#if 0
+{
+	g3s_point p0, p1;
 
-	if (flags == 0)		//draw entire object
-		G3DrawPolyModel (objP, po->model_data, gameData.models.textures, anim_angles, light, glow_values, color, NULL);
-	else {
-		int i;
-	
-		for (i = 0; flags; flags >>= 1, i++)
-			if (flags & 1) {
-				vms_vector ofs;
-
-				Assert (i < po->n_models);
-				//if submodel, rotate around its center point, not pivot point
-				VmVecAvg (&ofs, &po->submodel_mins [i], &po->submodel_maxs [i]);
-				VmVecNegate (&ofs);
-				G3StartInstanceMatrix (&ofs, NULL);
-				G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, anim_angles, 
-									 light, glow_values, color, NULL);
-				G3DoneInstance ();
-				}	
-		}
-	G3DoneInstance ();
-#ifdef _3DFX
-   _3dfx_rendering_poly_obj = 0;
+G3TransformPoint (&p0.p3_vec, &objP->pos);
+VmVecSub (&p1.p3_vec, &objP->pos, &objP->mtype.phys_info.velocity);
+G3TransformPoint (&p1.p3_vec, &p1.p3_vec);
+glLineWidth (20);
+glDisable (GL_TEXTURE_2D);
+glBegin (GL_LINES);
+glColor4d (1.0, 0.5, 0.0, 0.3);
+glVertex3x (p0.p3_vec.x, p0.p3_vec.y, -p0.p3_vec.z);
+glColor4d (1.0, 0.5, 0.0, 0.1);
+glVertex3x (p1.p3_vec.x, p1.p3_vec.y, -p1.p3_vec.z);
+glEnd ();
+glLineWidth (1);
+}
 #endif
-	PA_DFX (gameStates.render.nLighting = save_light);
+#ifdef _3DFX
+_3dfx_rendering_poly_obj = 0;
+#endif
+PA_DFX (gameStates.render.nLighting = bSaveLight);
 }
 
 //------------------------------------------------------------------------------
@@ -867,10 +885,10 @@ void DrawModelPicture (int mn, vms_angvec *orient_angles)
 	else
 		temp_pos.z = DEFAULT_VIEW_DIST;
 	VmAngles2Matrix (&temp_orient, orient_angles);
-	PA_DFX (save_light = gameStates.render.nLighting);
+	PA_DFX (bSaveLight = gameStates.render.nLighting);
 	PA_DFX (gameStates.render.nLighting = 0);
 	DrawPolygonModel (NULL, &temp_pos, &temp_orient, NULL, mn, 0, f1_0, NULL, NULL, NULL);
-	PA_DFX (gameStates.render.nLighting = save_light);
+	PA_DFX (gameStates.render.nLighting = bSaveLight);
 #if TEMP_CANV
 	GrSetCurrentCanvas (save_canv);
 	glDisable (GL_BLEND);

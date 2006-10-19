@@ -408,7 +408,7 @@ static int jointlist_read_n(jointlist *jl, int n, CFILE *fp)
 /*
  * reads n robot_info structs from a CFILE
  */
-int robot_info_read_n(robot_info *ri, int n, CFILE *fp)
+int RobotInfoReadN(robot_info *ri, int n, CFILE *fp)
 {
 	int i, j;
 
@@ -498,7 +498,7 @@ int robot_info_read_n(robot_info *ri, int n, CFILE *fp)
 /*
  * reads n jointpos structs from a CFILE
  */
-int jointpos_read_n(jointpos *jp, int n, CFILE *fp)
+int JointPosReadN(jointpos *jp, int n, CFILE *fp)
 {
 	int i;
 

@@ -709,7 +709,7 @@ void RenderTargetIndicator (object *objP, tRgbColorf *pc);
 
 object *ObjFindFirstOfType (int type);
 
-void InitMissileFlags (void);
+void InitWeaponFlags (void);
 
 extern ubyte bIsMissile [];
 

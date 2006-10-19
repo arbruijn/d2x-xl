@@ -935,7 +935,7 @@ fix compute_lead_component(fix player_pos, fix robot_pos, fix player_vel, fix el
 //		Player not cloaked
 //		Player must be moving at a speed >= MIN_LEAD_SPEED
 //		Player not farther away than MAX_LEAD_DISTANCE
-//		dot(vector_to_player, player_direction) must be in -LEAD_RANGEd:\temp\dm_testLEAD_RANGE
+//		dot(vector_to_player, player_direction) must be in -LEAD_RANGE,LEAD_RANGE
 //		if firing a matter weapon, less leading, based on skill level.
 int lead_player(object *objP, vms_vector *fire_point, vms_vector *believed_player_pos, int gun_num, vms_vector *fire_vec)
 {
