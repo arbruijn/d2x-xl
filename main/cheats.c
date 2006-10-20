@@ -546,8 +546,13 @@ else {
 
 void UnlockAllCheat (void)
 {
+#if 1//def _DEBUG
+UnlockAllWalls (!gameStates.app.cheats.nUnlockLevel);
+HUDInitMessage (!gameStates.app.cheats.nUnlockLevel ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
+#else
 UnlockAllWalls (gameStates.app.bD1Mission || !gameStates.app.cheats.nUnlockLevel);
 HUDInitMessage ((gameStates.app.bD1Mission || !gameStates.app.cheats.nUnlockLevel) ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
+#endif
 gameStates.app.cheats.nUnlockLevel = 1;
 }
 

@@ -1004,8 +1004,6 @@ void create_n_segment_path_to_door (object *objP, int path_length, short avoid_s
 	create_n_segment_path (objP, path_length, avoid_seg);
 }
 
-extern int Connected_segment_distance;
-
 #define Int3_if (cond) if (!cond) Int3 ();
 
 //	----------------------------------------------------------------------------------------------------
@@ -1024,10 +1022,10 @@ void move_object_to_goal (object *objP, vms_vector *goal_point, short goal_seg)
 		if (FindConnectedSide (&gameData.segs.segments [objP->segnum], &gameData.segs.segments [goal_seg]) == -1) {
 			fix	dist;
 			dist = FindConnectedDistance (&objP->pos, objP->segnum, goal_point, goal_seg, 30, WID_FLY_FLAG);
-			if (Connected_segment_distance > 2) {	//	This global is set in FindConnectedDistance
+			if (gameData.fcd.nConnSegDist > 2) {	//	This global is set in FindConnectedDistance
 				// -- Int3 ();
 #if TRACE
-				con_printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), Connected_segment_distance, f2fl (dist));
+				con_printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, f2fl (dist));
 #endif
 			}
 		}

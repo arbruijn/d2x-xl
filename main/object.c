@@ -1120,11 +1120,15 @@ return &defaultColor;
 static inline float ObjectDamage (object *objP)
 {
 	float	fDmg;
+	fix	xMaxShields;
 
 if (objP->type == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
 else if ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_CNTRLCEN)) {
-	fDmg = f2fl (objP->shields) / f2fl (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	xMaxShields = gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength;
+	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].boss_flag)
+		xMaxShields /= (NDL - gameStates.app.nDifficultyLevel);
+	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
 	if (gameData.bots.pInfo [objP->id].companion)
 		fDmg /= 2;
 	}
@@ -2216,7 +2220,7 @@ int CreateObject (ubyte type, ubyte id, short owner, short segnum, vms_vector *p
 #ifdef _DEBUG
 if (type == OBJ_WEAPON) {
 	type = type;
-	if (gameData.objs.objects [owner].type == OBJ_ROBOT)
+	if ((owner >= 0) && (gameData.objs.objects [owner].type == OBJ_ROBOT))
 		type = type;
 	}	
 #endif
@@ -2237,7 +2241,7 @@ Assert (ctype <= CT_CNTRLCEN);
 if ((type == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
 	return -1;
 if (GetSegMasks (pos, segnum, 0).centerMask)
-	if ((segnum=FindSegByPoint (pos, segnum)) == -1) {
+	if ((segnum = FindSegByPoint (pos, segnum)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
 		con_printf (CON_DEBUG, "Bad segnum in CreateObject (type=%d)\n", type);
@@ -3672,12 +3676,14 @@ bIsMissile [GUIDEDMISS_ID] =
 bIsMissile [MERCURY_ID] =
 bIsMissile [EARTHSHAKER_ID] =
 bIsMissile [EARTHSHAKER_MEGA_ID] =
-bIsMissile [REGULAR_MECH_MISS] =
-bIsMissile [SUPER_MECH_MISS] =
-bIsMissile [ROBOT_FLASH_ID] =
+bIsMissile [REGULAR_MECH_MISS_ID] =
+bIsMissile [SUPER_MECH_MISS_ID] =
+bIsMissile [ROBOT_FLASHMISS_ID] =
 bIsMissile [ROBOT_MERCURY_ID] =
+bIsMissile [ROBOT_VERTIGO_FLASHMISS_ID] =
 bIsMissile [ROBOT_SMART_ID] =
 bIsMissile [ROBOT_MEGA_ID] =
+bIsMissile [ROBOT_EARTHSHAKER_ID] =
 bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
@@ -3693,7 +3699,19 @@ bIsWeapon [SUPER_LASER_ID + 1] =
 bIsWeapon [HELIX_ID] =
 bIsWeapon [PHOENIX_ID] =
 bIsWeapon [OMEGA_ID] =
-bIsWeapon [ROBOT_LASER_ID] = 1;
+bIsWeapon [ROBOT_PLASMA_ID] =
+bIsWeapon [ROBOT_PHOENIX_ID] =
+bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
+bIsWeapon [ROBOT_VERTIGO_FLASHMISS_ID] =
+bIsWeapon [ROBOT_VERTIGO_FLASHMISS_ID + 1] =
+bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
+bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
+bIsWeapon [ROBOT_HELIX_ID] =
+bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
+bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
+bIsWeapon [ROBOT_BLUE_LASER_ID] =
+bIsWeapon [ROBOT_GREEN_LASER_ID] =
+bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
 }
 
 //------------------------------------------------------------------------------

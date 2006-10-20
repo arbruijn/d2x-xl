@@ -1769,7 +1769,7 @@ void RemoveObsoleteStuckObjects(void)
 
 //-----------------------------------------------------------------
 
-extern void flush_fcd_cache(void);
+extern void FlushFCDCache(void);
 
 //	----------------------------------------------------------------------------------------------------
 //	Door with wall index wallnum is opening, kill all gameData.objs.objects stuck in it.
@@ -1799,7 +1799,7 @@ void KillStuckObjects(int wallnum)
 			Num_stuck_objects++;
 		}
 	//	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
-	flush_fcd_cache();
+	FlushFCDCache();
 
 }
 

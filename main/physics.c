@@ -572,6 +572,10 @@ void UnstickObject (object *objP)
 	short				nSegment;
 	fix				xSideDist, xSideDists [6];
 
+if ((objP->type == OBJ_PLAYER) && 
+	 (objP->id == gameData.multi.nLocalPlayer) && 
+	 (gameStates.app.cheats.bPhysics == 0xBADA55))
+	return;
 fq.p0 = fq.p1 = &objP->pos;
 fq.startSeg = objP->segnum;
 fq.rad = objP->size;
@@ -815,8 +819,6 @@ retryMove:
 	if (iseg != objP->segnum)
 		RelinkObject (objnum, iseg);
 	//if start point not in segment, move object to center of segment
-	if (objP->type == OBJ_PLAYER)
-		objP = objP;
 	if (GetSegMasks (&objP->pos, objP->segnum, 0).centerMask) {	//object stuck
 		vms_vector	vCenter;
 		int n = FindObjectSeg (objP);

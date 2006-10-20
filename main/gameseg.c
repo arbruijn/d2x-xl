@@ -165,7 +165,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added new function, ExtractOrientFromSegment ()
  *
  * Revision 1.43  1994/10/04  16:24:11  mike
- * Set global Connected_segment_distance for debug reasons for aipath.c.
+ * Set global gameData.fcd.nConnSegDist for debug reasons for aipath.c.
  *
  * Revision 1.42  1994/10/04  09:18:42  mike
  * Comment out a variable definition, preventing a warning message.
@@ -1457,53 +1457,40 @@ return -1;		//no segment found
 
 #define	MAX_LOC_POINT_SEGS	64
 
-int	Connected_segment_distance;
-
 #define	MIN_CACHE_FCD_DIST	 (F1_0*80)	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
-#define	MAX_FCD_CACHE	8
-
-typedef struct {
-	int	seg0, seg1, csd;
-	fix	dist;
-} fcd_data;
-
-int	Fcd_index = 0;
-fcd_data Fcd_cache [MAX_FCD_CACHE];
-fix	Last_fcd_flush_time;
-
 //	----------------------------------------------------------------------------------------------------------
-void flush_fcd_cache (void)
+
+void FlushFCDCache (void)
 {
 	int	i;
 
-	Fcd_index = 0;
-
-	for (i=0; i<MAX_FCD_CACHE; i++)
-		Fcd_cache [i].seg0 = -1;
+gameData.fcd.nIndex = 0;
+for (i = 0; i < MAX_FCD_CACHE; i++)
+	gameData.fcd.cache [i].seg0 = -1;
 }
 
 //	----------------------------------------------------------------------------------------------------------
-void add_to_fcd_cache (int seg0, int seg1, int depth, fix dist)
+void AddToFCDCache (int seg0, int seg1, int depth, fix dist)
 {
 	if (dist > MIN_CACHE_FCD_DIST) {
-		Fcd_cache [Fcd_index].seg0 = seg0;
-		Fcd_cache [Fcd_index].seg1 = seg1;
-		Fcd_cache [Fcd_index].csd = depth;
-		Fcd_cache [Fcd_index].dist = dist;
+		gameData.fcd.cache [gameData.fcd.nIndex].seg0 = seg0;
+		gameData.fcd.cache [gameData.fcd.nIndex].seg1 = seg1;
+		gameData.fcd.cache [gameData.fcd.nIndex].csd = depth;
+		gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
 
-		Fcd_index++;
+		gameData.fcd.nIndex++;
 
-		if (Fcd_index >= MAX_FCD_CACHE)
-			Fcd_index = 0;
+		if (gameData.fcd.nIndex >= MAX_FCD_CACHE)
+			gameData.fcd.nIndex = 0;
 
 	} else {
 		//	If it's in the cache, remove it.
 		int	i;
 
 		for (i=0; i<MAX_FCD_CACHE; i++)
-			if (Fcd_cache [i].seg0 == seg0)
-				if (Fcd_cache [i].seg1 == seg1) {
-					Fcd_cache [Fcd_index].seg0 = -1;
+			if (gameData.fcd.cache [i].seg0 == seg0)
+				if (gameData.fcd.cache [i].seg1 == seg1) {
+					gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
 					break;
 				}
 	}
@@ -1516,157 +1503,141 @@ void add_to_fcd_cache (int seg0, int seg1, int depth, fix dist)
 //	Return the distance.
 fix FindConnectedDistance (vms_vector *p0, short seg0, vms_vector *p1, short seg1, int max_depth, int wid_flag)
 {
-	short		cur_seg;
-	short		sidenum;
-	int		qtail = 0, qhead = 0;
-	int		i;
-	sbyte   visited [MAX_SEGMENTS];
-	seg_seg	seg_queue [MAX_SEGMENTS];
-	short		depth [MAX_SEGMENTS];
-	int		cur_depth;
-	int		num_points;
-	point_seg	point_segs [MAX_LOC_POINT_SEGS];
-	fix		dist;
+	short				cur_seg, conn_side;
+	short				parent_seg, this_seg;
+	short				sidenum;
+	int				qTail = 0, qHead = 0;
+	int				i;
+	sbyte				visited [MAX_SEGMENTS];
+	seg_seg			seg_queue [MAX_SEGMENTS];
+	short				depth [MAX_SEGMENTS];
+	int				cur_depth;
+	int				nPoints;
+	point_seg		pointSegs [MAX_LOC_POINT_SEGS];
+	fix				dist;
+	segment			*segP;
+	tFCDCacheData	*pc;
 
-	//	If > this, will overrun point_segs buffer
+	//	If > this, will overrun pointSegs buffer
 #ifdef WINDOWS
-	if (max_depth == -1) 
-		max_depth = 200;
+if (max_depth == -1) 
+	max_depth = 200;
 #endif	
 
-	if (max_depth > MAX_LOC_POINT_SEGS-2) {
+if (max_depth > MAX_LOC_POINT_SEGS-2) {
 #if TRACE		
-		con_printf (1, "Warning: In FindConnectedDistance, max_depth = %i, limited to %i\n", max_depth, MAX_LOC_POINT_SEGS-2);
+	con_printf (1, "Warning: In FindConnectedDistance, max_depth = %i, limited to %i\n", max_depth, MAX_LOC_POINT_SEGS-2);
 #endif		
-		max_depth = MAX_LOC_POINT_SEGS-2;
+	max_depth = MAX_LOC_POINT_SEGS - 2;
+	}
+if (seg0 == seg1) {
+	gameData.fcd.nConnSegDist = 0;
+	return VmVecDistQuick (p0, p1);
+	}
+conn_side = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1);
+if ((conn_side != -1) &&
+	 (WALL_IS_DOORWAY (gameData.segs.segments + seg1, conn_side, NULL) & wid_flag)) {
+	gameData.fcd.nConnSegDist = 1;
+	return VmVecDistQuick (p0, p1);
+	}
+//	Periodically flush cache.
+if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) || 
+	 (gameData.time.xGame < gameData.fcd.xLastFlushTime)) {
+	FlushFCDCache ();
+	gameData.fcd.xLastFlushTime = gameData.time.xGame;
 	}
 
-	if (seg0 == seg1) {
-		Connected_segment_distance = 0;
-		return VmVecDistQuick (p0, p1);
-	} else {
-		short	conn_side;
-		if ((conn_side = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1)) != -1) {
-			if (WALL_IS_DOORWAY (gameData.segs.segments + seg1, conn_side, NULL) & wid_flag) {
-				Connected_segment_distance = 1;
-				return VmVecDistQuick (p0, p1);
-			}
-		}
-	}
+//	Can't quickly get distance, so see if in gameData.fcd.cache.
+for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
+	if ((pc->seg0 == seg0) && (pc->seg1 == seg1))
+		return gameData.fcd.nConnSegDist = pc->csd;
 
-	//	Periodically flush cache.
-	if ((gameData.time.xGame - Last_fcd_flush_time > F1_0*2) || 
-		 (gameData.time.xGame < Last_fcd_flush_time)) {
-		flush_fcd_cache ();
-		Last_fcd_flush_time = gameData.time.xGame;
-	}
+memset (visited, 0, gameData.segs.nLastSegment + 1);
+memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment + 1));
 
-	//	Can't quickly get distance, so see if in Fcd_cache.
-	for (i=0; i<MAX_FCD_CACHE; i++)
-		if ((Fcd_cache [i].seg0 == seg0) && (Fcd_cache [i].seg1 == seg1)) {
-			Connected_segment_distance = Fcd_cache [i].csd;
-			return Fcd_cache [i].dist;
-		}
+nPoints = 0;
+cur_seg = seg0;
+visited [cur_seg] = 1;
+cur_depth = 0;
 
-	num_points = 0;
+while (cur_seg != seg1) {
+	segP = gameData.segs.segments + cur_seg;
 
-	memset (visited, 0, gameData.segs.nLastSegment+1);
-	memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment+1));
-
-	cur_seg = seg0;
-	visited [cur_seg] = 1;
-	cur_depth = 0;
-
-	while (cur_seg != seg1) {
-		segment	*segp = &gameData.segs.segments [cur_seg];
-
-		for (sidenum = 0; sidenum < MAX_SIDES_PER_SEGMENT; sidenum++) {
-
-			short	snum = sidenum;
-
-			if (WALL_IS_DOORWAY (segp, snum, NULL) & wid_flag) {
-				short	this_seg = segp->children [snum];
-
-				if (!visited [this_seg]) {
-					seg_queue [qtail].start = cur_seg;
-					seg_queue [qtail].end = this_seg;
-					visited [this_seg] = 1;
-					depth [qtail++] = cur_depth+1;
-					if (max_depth != -1) {
-						if (depth [qtail-1] == max_depth) {
-							Connected_segment_distance = 1000;
-							add_to_fcd_cache (seg0, seg1, Connected_segment_distance, F1_0*1000);
-							return -1;
+	for (sidenum = 0; sidenum < MAX_SIDES_PER_SEGMENT; sidenum++) {
+		if (WALL_IS_DOORWAY (segP, sidenum, NULL) & wid_flag) {
+			this_seg = segP->children [sidenum];
+			Assert ((this_seg >= 0) && (this_seg < MAX_SEGMENTS));
+			Assert ((qTail >= 0) && (qTail < MAX_SEGMENTS - 1));
+			if (!visited [this_seg]) {
+				seg_queue [qTail].start = cur_seg;
+				seg_queue [qTail].end = this_seg;
+				visited [this_seg] = 1;
+				depth [qTail++] = cur_depth+1;
+				if (max_depth != -1) {
+					if (depth [qTail - 1] == max_depth) {
+						gameData.fcd.nConnSegDist = 1000;
+						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+						return -1;
 						}
-					} else if (this_seg == seg1) {
-						goto fcd_done1;
 					}
+				else if (this_seg == seg1) {
+					goto fcd_done1;
 				}
-
 			}
-		}	//	for (sidenum...
-
-		if (qhead >= qtail) {
-			Connected_segment_distance = 1000;
-			add_to_fcd_cache (seg0, seg1, Connected_segment_distance, F1_0*1000);
-			return -1;
 		}
+	}	//	for (sidenum...
 
-		cur_seg = seg_queue [qhead].end;
-		cur_depth = depth [qhead];
-		qhead++;
+	if (qHead >= qTail) {
+		gameData.fcd.nConnSegDist = 1000;
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+		return -1;
+		}
+	Assert ((qHead >= 0) && (qHead < MAX_SEGMENTS));
+	cur_seg = seg_queue [qHead].end;
+	cur_depth = depth [qHead];
+	qHead++;
 
 fcd_done1: ;
 	}	//	while (cur_seg ...
 
-	//	Set qtail to the segment which ends at the goal.
-	while (seg_queue [--qtail].end != seg1)
-		if (qtail < 0) {
-			Connected_segment_distance = 1000;
-			add_to_fcd_cache (seg0, seg1, Connected_segment_distance, F1_0*1000);
-			return -1;
+//	Set qTail to the segment which ends at the goal.
+while (seg_queue [--qTail].end != seg1)
+	if (qTail < 0) {
+		gameData.fcd.nConnSegDist = 1000;
+		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
+		return -1;
 		}
 
-	while (qtail >= 0) {
-		int	parent_seg, this_seg;
-
-		this_seg = seg_queue [qtail].end;
-		parent_seg = seg_queue [qtail].start;
-		point_segs [num_points].segnum = this_seg;
-		COMPUTE_SEGMENT_CENTER_I (&point_segs [num_points].point, this_seg);
-		num_points++;
-
-		if (parent_seg == seg0)
-			break;
-
-		while (seg_queue [--qtail].end != parent_seg)
-			Assert (qtail >= 0);
+while (qTail >= 0) {
+	this_seg = seg_queue [qTail].end;
+	parent_seg = seg_queue [qTail].start;
+	pointSegs [nPoints].segnum = this_seg;
+	COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, this_seg);
+	nPoints++;
+	if (parent_seg == seg0)
+		break;
+	while (seg_queue [--qTail].end != parent_seg)
+		Assert (qTail >= 0);
 	}
-
-	point_segs [num_points].segnum = seg0;
-	COMPUTE_SEGMENT_CENTER_I (&point_segs [num_points].point, seg0);
-	num_points++;
-
-	if (num_points == 1) {
-		Connected_segment_distance = num_points;
-		return VmVecDistQuick (p0, p1);
-	} else {
-		dist = VmVecDistQuick (p1, &point_segs [1].point);
-		dist += VmVecDistQuick (p0, &point_segs [num_points-2].point);
-
-		for (i=1; i<num_points-2; i++) {
-			fix	ndist;
-			ndist = VmVecDistQuick (&point_segs [i].point, &point_segs [i+1].point);
-			dist += ndist;
+pointSegs [nPoints].segnum = seg0;
+COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, seg0);
+nPoints++;
+if (nPoints == 1) {
+	gameData.fcd.nConnSegDist = nPoints;
+	return VmVecDistQuick (p0, p1);
+	} 
+else {
+	fix	ndist;
+	dist = VmVecDistQuick (p1, &pointSegs [1].point);
+	dist += VmVecDistQuick (p0, &pointSegs [nPoints-2].point);
+	for (i = 1; i < nPoints - 2; i++) {
+		ndist = VmVecDistQuick (&pointSegs [i].point, &pointSegs [i+1].point);
+		dist += ndist;
 		}
-
 	}
-
-	Connected_segment_distance = num_points;
-	add_to_fcd_cache (seg0, seg1, num_points, dist);
-
-	return dist;
-
+gameData.fcd.nConnSegDist = nPoints;
+AddToFCDCache (seg0, seg1, nPoints, dist);
+return dist;
 }
 
 // -------------------------------------------------------------------------------

@@ -291,10 +291,10 @@ i = (int) (objP - gameData.objs.objects);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
-	nParts = (objP->id == EARTHSHAKER_ID) ? 3000 : 
-				(objP->id == MEGA_ID) ? 2500 : 
+	nParts = (objP->id == EARTHSHAKER_ID) ? 2500 : 
+				(objP->id == MEGA_ID) ? 2250 : 
 				(objP->id == SMART_ID) ? 2000 : 
-				1500;
+				1750;
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);

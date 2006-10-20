@@ -2164,7 +2164,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			}
 		else if (!bOglLighting) {
 			tFaceColor *psc = AvgSgmColor (objP->segnum, &objP->pos);
-			if (psc->index != gameStates.render.nFrameFlipFlop)
+			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			else
 				glColor4f (psc->color.red * fl, psc->color.green * fl, psc->color.blue * fl,

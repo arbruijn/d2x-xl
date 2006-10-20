@@ -203,7 +203,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Got rid of obsolete hostage_info stuff
  *
  * Revision 1.155  1994/10/22  18:57:26  matt
- * Added call to check_segment_connections()
+ * Added call to CheckSegmentConnections()
  *
  * Revision 1.154  1994/10/21  12:19:23  matt
  * Clear transient gameData.objs.objects when saving (& loading) games
@@ -354,12 +354,12 @@ game_fileinfo	gameFileInfo;
 game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
-void read_object(object *objP, CFILE *f, int version);
+void ReadObject(object *objP, CFILE *f, int version);
 #ifdef EDITOR
 void write_object(object *objP, FILE *f);
-void do_load_save_levels(int save);
+void DoLoadSaveLevels(int save);
 #endif
-#ifndef NDEBUG
+#ifdef _DEBUG
 void dump_mine_info(void);
 #endif
 
@@ -381,11 +381,9 @@ int is_real_level(char *filename)
 {
 	int len = (int) strlen(filename);
 
-	if (len < 6)
-		return 0;
-
-	return !strnicmp(&filename[len-11], "level", 5);
-
+if (len < 6)
+	return 0;
+return !strnicmp(&filename[len-11], "level", 5);
 }
 #endif
 
@@ -395,22 +393,18 @@ void ChangeFilenameExtension(char *dest, char *src, char *new_ext)
 {
 	int i;
 
-	strcpy (dest, src);
-
-	if (new_ext[0]=='.')
-		new_ext++;
-
-	for (i=1; i < (int) strlen(dest); i++)
-		if (dest[i]=='.'||dest[i]==' '||dest[i]==0)
-			break;
-
-	if (i < 123) {
-		dest[i]='.';
-		dest[i+1]=new_ext[0];
-		dest[i+2]=new_ext[1];
-		dest[i+3]=new_ext[2];
-		dest[i+4]=0;
-		return;
+strcpy (dest, src);
+if (new_ext[0]=='.')
+	new_ext++;
+for (i=1; i < (int) strlen(dest); i++)
+	if (dest[i]=='.'||dest[i]==' '||dest[i]==0)
+		break;
+if (i < 123) {
+	dest[i]='.';
+	dest[i+1]=new_ext[0];
+	dest[i+2]=new_ext[1];
+	dest[i+3]=new_ext[2];
+	dest[i+4]=0;
 	}
 }
 
@@ -613,7 +607,7 @@ static void gs_write_angvec(vms_angvec *v,FILE *file)
 
 extern int MultiPowerupIs4Pack(int);
 //reads one object of the given version from the given file
-void read_object(object *objP,CFILE *f,int version)
+void ReadObject(object *objP,CFILE *f,int version)
 {
 
 	objP->type           = CFReadByte(f);
@@ -989,7 +983,7 @@ void write_object(object *objP,FILE *f)
 }
 #endif
 
-extern int remove_trigger_num(int trigger_num);
+extern int RemoveTriggerNum (int trigger_num);
 
 // -----------------------------------------------------------------------------
 
@@ -1089,601 +1083,599 @@ int LoadMineDataCompiled(CFILE *LoadFile, int bFileInfo)
 {
 	int i,j;
 	int start_offset;
+	int	l;
+	short	seg_num, side_num, wall_num;
 
-	start_offset = CFTell(LoadFile);
+start_offset = CFTell(LoadFile);
 
-	//===================== READ FILE INFO ========================
+//===================== READ FILE INFO ========================
 
 #if TRACE
-	con_printf(CON_DEBUG, "   \nloading game data ...\n");
+con_printf(CON_DEBUG, "   \nloading game data ...\n");
 #endif
-	// Set default values
-	gameFileInfo.level					=	-1;
-	gameFileInfo.player.offset		=	-1;
-	gameFileInfo.player.size		=	sizeof(player);
- 	gameFileInfo.object.offset		=	-1;
-	gameFileInfo.object.count		=	0;
-	gameFileInfo.object.size		=	sizeof(object);  
-	gameFileInfo.walls.offset			=	-1;
-	gameFileInfo.walls.count		=	0;
-	gameFileInfo.walls.size			=	sizeof(wall);  
-	gameFileInfo.doors.offset			=	-1;
-	gameFileInfo.doors.count		=	0;
-	gameFileInfo.doors.size			=	sizeof(active_door);  
-	gameFileInfo.triggers.offset		=	-1;
-	gameFileInfo.triggers.count	=	0;
-	gameFileInfo.triggers.size		=	sizeof(trigger);  
-	gameFileInfo.control.offset		=	-1;
-	gameFileInfo.control.count		=	0;
-	gameFileInfo.control.size		=	sizeof(reactor_triggers);
-	gameFileInfo.matcen.offset		=	-1;
-	gameFileInfo.matcen.count		=	0;
-	gameFileInfo.matcen.size		=	sizeof(matcen_info);
+// Set default values
+gameFileInfo.level					=	-1;
+gameFileInfo.player.offset		=	-1;
+gameFileInfo.player.size		=	sizeof(player);
+gameFileInfo.object.offset		=	-1;
+gameFileInfo.object.count		=	0;
+gameFileInfo.object.size		=	sizeof(object);  
+gameFileInfo.walls.offset			=	-1;
+gameFileInfo.walls.count		=	0;
+gameFileInfo.walls.size			=	sizeof(wall);  
+gameFileInfo.doors.offset			=	-1;
+gameFileInfo.doors.count		=	0;
+gameFileInfo.doors.size			=	sizeof(active_door);  
+gameFileInfo.triggers.offset		=	-1;
+gameFileInfo.triggers.count	=	0;
+gameFileInfo.triggers.size		=	sizeof(trigger);  
+gameFileInfo.control.offset		=	-1;
+gameFileInfo.control.count		=	0;
+gameFileInfo.control.size		=	sizeof(reactor_triggers);
+gameFileInfo.matcen.offset		=	-1;
+gameFileInfo.matcen.count		=	0;
+gameFileInfo.matcen.size		=	sizeof(matcen_info);
 
-	gameFileInfo.lightDeltaIndices.offset		=	-1;
-	gameFileInfo.lightDeltaIndices.count		=	0;
-	gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
+gameFileInfo.lightDeltaIndices.offset		=	-1;
+gameFileInfo.lightDeltaIndices.count		=	0;
+gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
 
-	gameFileInfo.lightDeltas.offset		=	-1;
-	gameFileInfo.lightDeltas.count		=	0;
-	gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
+gameFileInfo.lightDeltas.offset		=	-1;
+gameFileInfo.lightDeltas.count		=	0;
+gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
 
-	// Read in gameTopFileInfo to get size of saved fileinfo.
+// Read in gameTopFileInfo to get size of saved fileinfo.
 
-	if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
-		Error("Error seeking in gamesave.c"); 
+if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
+	Error("Error seeking in gamesave.c"); 
 
 //	if (CFRead(&gameTopFileInfo, sizeof(gameTopFileInfo), 1, LoadFile) != 1)
 //		Error("Error reading gameTopFileInfo in gamesave.c");
 
-	gameTopFileInfo.fileinfo_signature = CFReadShort(LoadFile);
-	gameTopFileInfo.fileinfo_version = CFReadShort(LoadFile);
-	gameTopFileInfo.fileinfo_sizeof = CFReadInt(LoadFile);
+gameTopFileInfo.fileinfo_signature = CFReadShort(LoadFile);
+gameTopFileInfo.fileinfo_version = CFReadShort(LoadFile);
+gameTopFileInfo.fileinfo_sizeof = CFReadInt(LoadFile);
 
-	gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfo_version >= 34);
-	// Check signature
-	if (gameTopFileInfo.fileinfo_signature != 0x6705)
-		return -1;
+gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfo_version >= 34);
+// Check signature
+if (gameTopFileInfo.fileinfo_signature != 0x6705)
+	return -1;
 
-	// Check version number
-	if (gameTopFileInfo.fileinfo_version < GAME_COMPATIBLE_VERSION)
-		return -1;
+// Check version number
+if (gameTopFileInfo.fileinfo_version < GAME_COMPATIBLE_VERSION)
+	return -1;
 
-	// Now, Read in the fileinfo
-	if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
-		Error("Error seeking to gameFileInfo in gamesave.c");
+// Now, Read in the fileinfo
+if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
+	Error("Error seeking to gameFileInfo in gamesave.c");
 
 //	if (CFRead(&gameFileInfo, gameTopFileInfo.fileinfo_sizeof, 1, LoadFile)!=1)
 //		Error("Error reading gameFileInfo in gamesave.c");
 
-	gameFileInfo.fileinfo_signature = CFReadShort(LoadFile);
-	gameFileInfo.fileinfo_version = CFReadShort(LoadFile);
-	gameFileInfo.fileinfo_sizeof = CFReadInt(LoadFile);
-	for(i=0; i<15; i++)
-		gameFileInfo.mine_filename[i] = CFReadByte(LoadFile);
-	gameFileInfo.level = CFReadInt(LoadFile);
-	gameFileInfo.player.offset = CFReadInt(LoadFile);				// Player info
-	gameFileInfo.player.size = CFReadInt(LoadFile);
-	gameFileInfo.object.offset = CFReadInt(LoadFile);				// Object info
-	gameFileInfo.object.count = CFReadInt(LoadFile);    	
-	gameFileInfo.object.size = CFReadInt(LoadFile);  
-	gameFileInfo.walls.offset = CFReadInt(LoadFile);
-	gameFileInfo.walls.count = CFReadInt(LoadFile);
-	gameFileInfo.walls.size = CFReadInt(LoadFile);
-	gameFileInfo.doors.offset = CFReadInt(LoadFile);
-	gameFileInfo.doors.count = CFReadInt(LoadFile);
-	gameFileInfo.doors.size = CFReadInt(LoadFile);
-	gameFileInfo.triggers.offset = CFReadInt(LoadFile);
-	gameFileInfo.triggers.count = CFReadInt(LoadFile);
-	gameFileInfo.triggers.size = CFReadInt(LoadFile);
-	gameFileInfo.links.offset = CFReadInt(LoadFile);
-	gameFileInfo.links.count = CFReadInt(LoadFile);
-	gameFileInfo.links.size = CFReadInt(LoadFile);
-	gameFileInfo.control.offset = CFReadInt(LoadFile);
-	gameFileInfo.control.count = CFReadInt(LoadFile);
-	gameFileInfo.control.size = CFReadInt(LoadFile);
-	gameFileInfo.matcen.offset = CFReadInt(LoadFile);
-	gameFileInfo.matcen.count = CFReadInt(LoadFile);
-	gameFileInfo.matcen.size = CFReadInt(LoadFile);
+gameFileInfo.fileinfo_signature = CFReadShort(LoadFile);
+gameFileInfo.fileinfo_version = CFReadShort(LoadFile);
+gameFileInfo.fileinfo_sizeof = CFReadInt(LoadFile);
+for(i=0; i<15; i++)
+	gameFileInfo.mine_filename[i] = CFReadByte(LoadFile);
+gameFileInfo.level = CFReadInt(LoadFile);
+gameFileInfo.player.offset = CFReadInt(LoadFile);				// Player info
+gameFileInfo.player.size = CFReadInt(LoadFile);
+gameFileInfo.object.offset = CFReadInt(LoadFile);				// Object info
+gameFileInfo.object.count = CFReadInt(LoadFile);    	
+gameFileInfo.object.size = CFReadInt(LoadFile);  
+gameFileInfo.walls.offset = CFReadInt(LoadFile);
+gameFileInfo.walls.count = CFReadInt(LoadFile);
+gameFileInfo.walls.size = CFReadInt(LoadFile);
+gameFileInfo.doors.offset = CFReadInt(LoadFile);
+gameFileInfo.doors.count = CFReadInt(LoadFile);
+gameFileInfo.doors.size = CFReadInt(LoadFile);
+gameFileInfo.triggers.offset = CFReadInt(LoadFile);
+gameFileInfo.triggers.count = CFReadInt(LoadFile);
+gameFileInfo.triggers.size = CFReadInt(LoadFile);
+gameFileInfo.links.offset = CFReadInt(LoadFile);
+gameFileInfo.links.count = CFReadInt(LoadFile);
+gameFileInfo.links.size = CFReadInt(LoadFile);
+gameFileInfo.control.offset = CFReadInt(LoadFile);
+gameFileInfo.control.count = CFReadInt(LoadFile);
+gameFileInfo.control.size = CFReadInt(LoadFile);
+gameFileInfo.matcen.offset = CFReadInt(LoadFile);
+gameFileInfo.matcen.count = CFReadInt(LoadFile);
+gameFileInfo.matcen.size = CFReadInt(LoadFile);
 
-	if (gameTopFileInfo.fileinfo_version >= 29) {
-		gameFileInfo.lightDeltaIndices.offset = CFReadInt(LoadFile);
-		gameFileInfo.lightDeltaIndices.count = CFReadInt(LoadFile);
-		gameFileInfo.lightDeltaIndices.size = CFReadInt(LoadFile);
+if (gameTopFileInfo.fileinfo_version >= 29) {
+	gameFileInfo.lightDeltaIndices.offset = CFReadInt(LoadFile);
+	gameFileInfo.lightDeltaIndices.count = CFReadInt(LoadFile);
+	gameFileInfo.lightDeltaIndices.size = CFReadInt(LoadFile);
 
-		gameFileInfo.lightDeltas.offset = CFReadInt(LoadFile);
-		gameFileInfo.lightDeltas.count = CFReadInt(LoadFile);
-		gameFileInfo.lightDeltas.size = CFReadInt(LoadFile);
+	gameFileInfo.lightDeltas.offset = CFReadInt(LoadFile);
+	gameFileInfo.lightDeltas.count = CFReadInt(LoadFile);
+	gameFileInfo.lightDeltas.size = CFReadInt(LoadFile);
+}
+if (gameTopFileInfo.fileinfo_version >= 31) { //load mine filename
+	// read newline-terminated string, not sure what version this changed.
+	CFGetS(gameData.missions.szCurrentLevel,sizeof(gameData.missions.szCurrentLevel),LoadFile);
+
+	if (gameData.missions.szCurrentLevel[strlen(gameData.missions.szCurrentLevel)-1] == '\n')
+		gameData.missions.szCurrentLevel[strlen(gameData.missions.szCurrentLevel)-1] = 0;
+}
+else if (gameTopFileInfo.fileinfo_version >= 14) { //load mine filename
+	// read null-terminated string
+	char *p=gameData.missions.szCurrentLevel;
+	//must do read one char at a time, since no CFGetS()
+	do {
+		*p = CFGetC (LoadFile);
+		} while (*p++);
+}
+else
+	gameData.missions.szCurrentLevel[0]=0;
+
+if (gameTopFileInfo.fileinfo_version >= 19) {	//load pof names
+	N_save_pof_names = CFReadShort(LoadFile);
+	if (N_save_pof_names != 0x614d && N_save_pof_names != 0x5547) { // "Ma"de w/DMB beta/"GU"ILE
+		Assert(N_save_pof_names < MAX_POLYGON_MODELS);
+		CFRead(Save_pof_names,N_save_pof_names,SHORT_FILENAME_LEN,LoadFile);
 	}
-	if (gameTopFileInfo.fileinfo_version >= 31) { //load mine filename
-		// read newline-terminated string, not sure what version this changed.
-		CFGetS(gameData.missions.szCurrentLevel,sizeof(gameData.missions.szCurrentLevel),LoadFile);
+}
 
-		if (gameData.missions.szCurrentLevel[strlen(gameData.missions.szCurrentLevel)-1] == '\n')
-			gameData.missions.szCurrentLevel[strlen(gameData.missions.szCurrentLevel)-1] = 0;
-	}
-	else if (gameTopFileInfo.fileinfo_version >= 14) { //load mine filename
-		// read null-terminated string
-		char *p=gameData.missions.szCurrentLevel;
-		//must do read one char at a time, since no CFGetS()
-		do {
-			*p = CFGetC (LoadFile);
-			} while (*p++);
-	}
-	else
-		gameData.missions.szCurrentLevel[0]=0;
+if (bFileInfo)
+	return 0;
 
-	if (gameTopFileInfo.fileinfo_version >= 19) {	//load pof names
-		N_save_pof_names = CFReadShort(LoadFile);
-		if (N_save_pof_names != 0x614d && N_save_pof_names != 0x5547) { // "Ma"de w/DMB beta/"GU"ILE
-			Assert(N_save_pof_names < MAX_POLYGON_MODELS);
-			CFRead(Save_pof_names,N_save_pof_names,SHORT_FILENAME_LEN,LoadFile);
-		}
-	}
+//===================== READ PLAYER INFO ==========================
+gameData.objs.nNextSignature = 0;
 
-	if (bFileInfo)
-		return 0;
+//===================== READ OBJECT INFO ==========================
 
-	//===================== READ PLAYER INFO ==========================
-	gameData.objs.nNextSignature = 0;
-
-	//===================== READ OBJECT INFO ==========================
-
-	Gamesave_num_org_robots = 0;
-	Gamesave_num_players = 0;
-	if (gameFileInfo.object.offset > -1) {
-		object	*objP = gameData.objs.objects;
+Gamesave_num_org_robots = 0;
+Gamesave_num_players = 0;
+if (gameFileInfo.object.offset > -1) {
+	object	*objP = gameData.objs.objects;
 #if TRACE
-		con_printf(CON_DEBUG, "   loading object data ...\n");
+	con_printf(CON_DEBUG, "   loading object data ...\n");
 #endif
-		if (CFSeek(LoadFile, gameFileInfo.object.offset, SEEK_SET))
-			Error("Error seeking to object.offset in gamesave.c");
-		for (i = 0; i < gameFileInfo.object.count; i++, objP++) {
-			read_object (objP, LoadFile, gameTopFileInfo.fileinfo_version);
+	if (CFSeek(LoadFile, gameFileInfo.object.offset, SEEK_SET))
+		Error("Error seeking to object.offset in gamesave.c");
+	for (i = 0; i < gameFileInfo.object.count; i++, objP++) {
+		ReadObject (objP, LoadFile, gameTopFileInfo.fileinfo_version);
 //			if ((objP->type == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
 //				objP = objP;
-			objP->signature = gameData.objs.nNextSignature++;
-			VerifyObject(objP);
-			gameData.objs.init [i] = *objP;
-		}
+		objP->signature = gameData.objs.nNextSignature++;
+		VerifyObject(objP);
+		gameData.objs.init [i] = *objP;
 	}
-	for (i = 0; i < MAX_OBJECTS - 1; i++)
-		gameData.objs.dropInfo [i].nNextPowerup = i + 1;
-	gameData.objs.dropInfo [i].nNextPowerup = -1;
-	gameData.objs.nFirstDropped =
-	gameData.objs.nLastDropped = -1;
-	gameData.objs.nFreeDropped = 0;
+}
+for (i = 0; i < MAX_OBJECTS - 1; i++)
+	gameData.objs.dropInfo [i].nNextPowerup = i + 1;
+gameData.objs.dropInfo [i].nNextPowerup = -1;
+gameData.objs.nFirstDropped =
+gameData.objs.nLastDropped = -1;
+gameData.objs.nFreeDropped = 0;
 
-	//===================== READ WALL INFO ============================
+//===================== READ WALL INFO ============================
 
-	if (gameFileInfo.walls.offset > -1) {
+if (gameFileInfo.walls.offset > -1) {
 #if TRACE
-		con_printf(CON_DEBUG, "   loading wall data ...\n");
+	con_printf(CON_DEBUG, "   loading wall data ...\n");
 #endif
-		if (!CFSeek(LoadFile, gameFileInfo.walls.offset,SEEK_SET))	{
-			for (i=0;i<gameFileInfo.walls.count;i++) {
+	if (!CFSeek(LoadFile, gameFileInfo.walls.offset,SEEK_SET))	{
+		for (i=0;i<gameFileInfo.walls.count;i++) {
 
-				if (gameTopFileInfo.fileinfo_version >= 20)
-					wall_read(&gameData.walls.walls[i], LoadFile); // v20 walls and up.
-				else if (gameTopFileInfo.fileinfo_version >= 17) {
-					v19_wall w;
+			if (gameTopFileInfo.fileinfo_version >= 20)
+				wall_read(&gameData.walls.walls[i], LoadFile); // v20 walls and up.
+			else if (gameTopFileInfo.fileinfo_version >= 17) {
+				v19_wall w;
 
-					v19_wall_read(&w, LoadFile);
-					gameData.walls.walls[i].segnum	   = w.segnum;
-					gameData.walls.walls[i].sidenum		= w.sidenum;
-					gameData.walls.walls[i].linked_wall	= w.linked_wall;
-					gameData.walls.walls[i].type			= w.type;
-					gameData.walls.walls[i].flags			= w.flags;
-					gameData.walls.walls[i].hps			= w.hps;
-					gameData.walls.walls[i].trigger		= w.trigger;
-					gameData.walls.walls[i].clip_num		= w.clip_num;
-					gameData.walls.walls[i].keys			= w.keys;
-					gameData.walls.walls[i].state			= WALL_DOOR_CLOSED;
-				} else {
-					v16_wall w;
+				v19_wall_read(&w, LoadFile);
+				gameData.walls.walls[i].segnum	   = w.segnum;
+				gameData.walls.walls[i].sidenum		= w.sidenum;
+				gameData.walls.walls[i].linked_wall	= w.linked_wall;
+				gameData.walls.walls[i].type			= w.type;
+				gameData.walls.walls[i].flags			= w.flags;
+				gameData.walls.walls[i].hps			= w.hps;
+				gameData.walls.walls[i].trigger		= w.trigger;
+				gameData.walls.walls[i].clip_num		= w.clip_num;
+				gameData.walls.walls[i].keys			= w.keys;
+				gameData.walls.walls[i].state			= WALL_DOOR_CLOSED;
+			} else {
+				v16_wall w;
 
-					v16_wall_read(&w, LoadFile);
-					gameData.walls.walls[i].segnum = gameData.walls.walls[i].sidenum = gameData.walls.walls[i].linked_wall = -1;
-					gameData.walls.walls[i].type		= w.type;
-					gameData.walls.walls[i].flags		= w.flags;
-					gameData.walls.walls[i].hps		= w.hps;
-					gameData.walls.walls[i].trigger	= w.trigger;
-					gameData.walls.walls[i].clip_num	= w.clip_num;
-					gameData.walls.walls[i].keys		= w.keys;
-				}
-
+				v16_wall_read(&w, LoadFile);
+				gameData.walls.walls[i].segnum = gameData.walls.walls[i].sidenum = gameData.walls.walls[i].linked_wall = -1;
+				gameData.walls.walls[i].type		= w.type;
+				gameData.walls.walls[i].flags		= w.flags;
+				gameData.walls.walls[i].hps		= w.hps;
+				gameData.walls.walls[i].trigger	= w.trigger;
+				gameData.walls.walls[i].clip_num	= w.clip_num;
+				gameData.walls.walls[i].keys		= w.keys;
 			}
+
 		}
 	}
+}
 
-	//===================== READ DOOR INFO ============================
+//===================== READ DOOR INFO ============================
 
-	if (gameFileInfo.doors.offset > -1) {
+if (gameFileInfo.doors.offset > -1) {
 #if TRACE
-		con_printf(CON_DEBUG, "   loading door data ...\n");
+	con_printf(CON_DEBUG, "   loading door data ...\n");
 #endif
-		if (!CFSeek(LoadFile, gameFileInfo.doors.offset,SEEK_SET))	{
-			for (i=0;i<gameFileInfo.doors.count;i++) {
-				if (gameTopFileInfo.fileinfo_version >= 20)
-					active_door_read(&gameData.walls.activeDoors[i], LoadFile); // version 20 and up
-				else {
-					v19_door d;
-					int p;
+	if (!CFSeek(LoadFile, gameFileInfo.doors.offset,SEEK_SET))	{
+		for (i=0;i<gameFileInfo.doors.count;i++) {
+			if (gameTopFileInfo.fileinfo_version >= 20)
+				active_door_read(&gameData.walls.activeDoors[i], LoadFile); // version 20 and up
+			else {
+				v19_door d;
+				int p;
 
-					v19_door_read(&d, LoadFile);
-					gameData.walls.activeDoors[i].n_parts = d.n_parts;
-					for (p=0;p<d.n_parts;p++) {
-						short cseg,cside;
+				v19_door_read(&d, LoadFile);
+				gameData.walls.activeDoors[i].n_parts = d.n_parts;
+				for (p=0;p<d.n_parts;p++) {
+					short cseg,cside;
 
-						cseg = gameData.segs.segments[d.seg[p]].children[d.side[p]];
-						cside = FindConnectedSide(gameData.segs.segments + d.seg[p], gameData.segs.segments + cseg);
-						gameData.walls.activeDoors[i].front_wallnum[p] = WallNumI (d.seg[p], d.side[p]);
-						gameData.walls.activeDoors[i].back_wallnum[p] = WallNumI (cseg, cside);
-					}
+					cseg = gameData.segs.segments[d.seg[p]].children[d.side[p]];
+					cside = FindConnectedSide(gameData.segs.segments + d.seg[p], gameData.segs.segments + cseg);
+					gameData.walls.activeDoors[i].front_wallnum[p] = WallNumI (d.seg[p], d.side[p]);
+					gameData.walls.activeDoors[i].back_wallnum[p] = WallNumI (cseg, cside);
 				}
-
 			}
+
 		}
 	}
+}
 
-	//==================== READ TRIGGER INFO ==========================
+//==================== READ TRIGGER INFO ==========================
 
 
 // for MACINTOSH -- assume all triggers >= verion 31 triggers.
 
-	if (gameFileInfo.triggers.offset > -1) {
+if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
-		con_printf(CON_DEBUG, "   loading trigger data ...\n");
+	con_printf(CON_DEBUG, "   loading trigger data ...\n");
 #endif
-		if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
-			for (i=0;i<gameFileInfo.triggers.count;i++) {
-				if (gameTopFileInfo.fileinfo_version >= 31) 
-					TriggerRead(gameData.trigs.triggers + i, LoadFile, 0);
-				else {
-					v30_trigger trig;
-					int t,type,flags;
+	if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
+		for (i=0;i<gameFileInfo.triggers.count;i++) {
+			if (gameTopFileInfo.fileinfo_version >= 31) 
+				TriggerRead(gameData.trigs.triggers + i, LoadFile, 0);
+			else {
+				v30_trigger trig;
+				int t,type,flags;
 
-					type=flags=0;
+				type=flags=0;
 
-					if (gameTopFileInfo.fileinfo_version < 30) {
-						v29_trigger trig29;
-						int t;
+				if (gameTopFileInfo.fileinfo_version < 30) {
+					v29_trigger trig29;
+					int t;
 
-						v29_trigger_read(&trig29, LoadFile);
+					v29_trigger_read(&trig29, LoadFile);
 
-						trig.flags		= trig29.flags;
-						trig.num_links	= (char) trig29.num_links;
-						trig.num_links	= (char) trig29.num_links;
-						trig.value		= trig29.value;
-						trig.time		= trig29.time;
-
-						for (t=0;t<trig.num_links;t++) {
-							trig.seg[t]  = trig29.seg[t];
-							trig.side[t] = trig29.side[t];
-						}
-					}
-					else
-						v30_trigger_read(&trig, LoadFile);
-
-					//Assert(trig.flags & TRIGGER_ON);
-					trig.flags &= ~TRIGGER_ON;
-
-					if (trig.flags & TRIGGER_CONTROL_DOORS)
-						type = TT_OPEN_DOOR;
-					else if (trig.flags & TRIGGER_SHIELD_DAMAGE)
-						type = TT_SHIELD_DAMAGE;
-					else if (trig.flags & TRIGGER_ENERGY_DRAIN)
-						type = TT_ENERGY_DRAIN;
-					else if (trig.flags & TRIGGER_EXIT)
-						type = TT_EXIT;
-					else if (trig.flags & TRIGGER_MATCEN)
-						type = TT_MATCEN;
-					else if (trig.flags & TRIGGER_ILLUSION_OFF)
-						type = TT_ILLUSION_OFF;
-					else if (trig.flags & TRIGGER_SECRET_EXIT)
-						type = TT_SECRET_EXIT;
-					else if (trig.flags & TRIGGER_ILLUSION_ON)
-						type = TT_ILLUSION_ON;
-					else if (trig.flags & TRIGGER_UNLOCK_DOORS)
-						type = TT_UNLOCK_DOOR;
-					else if (trig.flags & TRIGGER_OPEN_WALL)
-						type = TT_OPEN_WALL;
-					else if (trig.flags & TRIGGER_CLOSE_WALL)
-						type = TT_CLOSE_WALL;
-					else if (trig.flags & TRIGGER_ILLUSORY_WALL)
-						type = TT_ILLUSORY_WALL;
-					else
-						Int3();
-					if (trig.flags & TRIGGER_ONE_SHOT)
-						flags = TF_ONE_SHOT;
-
-					gameData.trigs.triggers[i].type        = type;
-					gameData.trigs.triggers[i].flags       = flags;
-					gameData.trigs.triggers[i].num_links   = trig.num_links;
-					gameData.trigs.triggers[i].num_links   = trig.num_links;
-					gameData.trigs.triggers[i].value       = trig.value;
-					gameData.trigs.triggers[i].time        = trig.time;
+					trig.flags		= trig29.flags;
+					trig.num_links	= (char) trig29.num_links;
+					trig.num_links	= (char) trig29.num_links;
+					trig.value		= trig29.value;
+					trig.time		= trig29.time;
 
 					for (t=0;t<trig.num_links;t++) {
-						gameData.trigs.triggers[i].seg[t] = trig.seg[t];
-						gameData.trigs.triggers[i].side[t] = trig.side[t];
+						trig.seg[t]  = trig29.seg[t];
+						trig.side[t] = trig29.side[t];
 					}
-				}
-			}
-		if (gameTopFileInfo.fileinfo_version >= 33) {
-			gameData.trigs.nObjTriggers = CFReadInt (LoadFile);
-			if (gameData.trigs.nObjTriggers) {
-				for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-					TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
-				for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
-					gameData.trigs.objTriggerRefs [i].prev = CFReadShort (LoadFile);
-					gameData.trigs.objTriggerRefs [i].next = CFReadShort (LoadFile);
-					gameData.trigs.objTriggerRefs [i].objnum = CFReadShort (LoadFile);
-					}
-				}
-			for (i = 0; i < MAX_OBJECTS_D2X; i++)
-				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
-			}
-		else {
-			gameData.trigs.nObjTriggers = 0;
-			memset (gameData.trigs.objTriggers, 0, sizeof (trigger) * MAX_OBJ_TRIGGERS);
-			memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (obj_trigger_ref) * MAX_OBJ_TRIGGERS);
-			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
-			}
-		}
-	}
-
-	//================ READ CONTROL CENTER TRIGGER INFO ===============
-
-	if (gameFileInfo.control.offset > -1) {
-#if TRACE
-		con_printf(CON_DEBUG, "   loading reactor data ...\n");
-#endif
-		if (!CFSeek(LoadFile, gameFileInfo.control.offset, SEEK_SET))
-		{
-			Assert(gameFileInfo.control.size == sizeof(reactor_triggers));
-			ControlCenterTriggersReadN(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
-		}
-	}	
-
-	//================ READ MATERIALIZATION CENTERS INFO ===============
-	if (gameFileInfo.matcen.offset > -1) {
-		int	j;
-
-#if TRACE
-		con_printf(CON_DEBUG, "   loading matcen data ...\n");
-#endif
-		if (!CFSeek(LoadFile, gameFileInfo.matcen.offset,SEEK_SET))	{
-			for (i=0;i<gameFileInfo.matcen.count;i++) {
-				if (gameTopFileInfo.fileinfo_version < 27) {
-					old_matcen_info m;
-
-					OldMatCenInfoRead(&m, LoadFile);
-
-					gameData.matCens.robotCenters[i].robot_flags[0] = m.robot_flags;
-					gameData.matCens.robotCenters[i].robot_flags[1] = 0;
-					gameData.matCens.robotCenters[i].hit_points = m.hit_points;
-					gameData.matCens.robotCenters[i].interval = m.interval;
-					gameData.matCens.robotCenters[i].segnum = m.segnum;
-					gameData.matCens.robotCenters[i].fuelcen_num = m.fuelcen_num;
 				}
 				else
-					MatCenInfoRead(&gameData.matCens.robotCenters[i], LoadFile);
+					v30_trigger_read(&trig, LoadFile);
 
-				//	Set links in gameData.matCens.robotCenters to gameData.matCens.fuelCenters array
+				//Assert(trig.flags & TRIGGER_ON);
+				trig.flags &= ~TRIGGER_ON;
 
-				for (j=0; j<=gameData.segs.nLastSegment; j++)
-					if (gameData.segs.segment2s[j].special == SEGMENT_IS_ROBOTMAKER)
-						if (gameData.segs.segment2s[j].matcen_num == i)
-							gameData.matCens.robotCenters[i].fuelcen_num = gameData.segs.segment2s[j].value;
+				if (trig.flags & TRIGGER_CONTROL_DOORS)
+					type = TT_OPEN_DOOR;
+				else if (trig.flags & TRIGGER_SHIELD_DAMAGE)
+					type = TT_SHIELD_DAMAGE;
+				else if (trig.flags & TRIGGER_ENERGY_DRAIN)
+					type = TT_ENERGY_DRAIN;
+				else if (trig.flags & TRIGGER_EXIT)
+					type = TT_EXIT;
+				else if (trig.flags & TRIGGER_MATCEN)
+					type = TT_MATCEN;
+				else if (trig.flags & TRIGGER_ILLUSION_OFF)
+					type = TT_ILLUSION_OFF;
+				else if (trig.flags & TRIGGER_SECRET_EXIT)
+					type = TT_SECRET_EXIT;
+				else if (trig.flags & TRIGGER_ILLUSION_ON)
+					type = TT_ILLUSION_ON;
+				else if (trig.flags & TRIGGER_UNLOCK_DOORS)
+					type = TT_UNLOCK_DOOR;
+				else if (trig.flags & TRIGGER_OPEN_WALL)
+					type = TT_OPEN_WALL;
+				else if (trig.flags & TRIGGER_CLOSE_WALL)
+					type = TT_CLOSE_WALL;
+				else if (trig.flags & TRIGGER_ILLUSORY_WALL)
+					type = TT_ILLUSORY_WALL;
+				else
+					Int3();
+				if (trig.flags & TRIGGER_ONE_SHOT)
+					flags = TF_ONE_SHOT;
+
+				gameData.trigs.triggers[i].type        = type;
+				gameData.trigs.triggers[i].flags       = flags;
+				gameData.trigs.triggers[i].num_links   = trig.num_links;
+				gameData.trigs.triggers[i].num_links   = trig.num_links;
+				gameData.trigs.triggers[i].value       = trig.value;
+				gameData.trigs.triggers[i].time        = trig.time;
+
+				for (t=0;t<trig.num_links;t++) {
+					gameData.trigs.triggers[i].seg[t] = trig.seg[t];
+					gameData.trigs.triggers[i].side[t] = trig.side[t];
+				}
 			}
 		}
+	if (gameTopFileInfo.fileinfo_version >= 33) {
+		gameData.trigs.nObjTriggers = CFReadInt (LoadFile);
+		if (gameData.trigs.nObjTriggers) {
+			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+				TriggerRead (gameData.trigs.objTriggers + i, LoadFile, 1);
+			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
+				gameData.trigs.objTriggerRefs [i].prev = CFReadShort (LoadFile);
+				gameData.trigs.objTriggerRefs [i].next = CFReadShort (LoadFile);
+				gameData.trigs.objTriggerRefs [i].objnum = CFReadShort (LoadFile);
+				}
+			}
+		for (i = 0; i < MAX_OBJECTS_D2X; i++)
+			gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
+		}
+	else {
+		gameData.trigs.nObjTriggers = 0;
+		memset (gameData.trigs.objTriggers, 0, sizeof (trigger) * MAX_OBJ_TRIGGERS);
+		memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (obj_trigger_ref) * MAX_OBJ_TRIGGERS);
+		memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+		}
 	}
+}
 
-	//================ READ DL_INDICES INFO ===============
+//================ READ CONTROL CENTER TRIGGER INFO ===============
 
-	gameData.render.lights.nStatic = 0;
+if (gameFileInfo.control.offset > -1) {
+#if TRACE
+	con_printf(CON_DEBUG, "   loading reactor data ...\n");
+#endif
+	if (!CFSeek(LoadFile, gameFileInfo.control.offset, SEEK_SET))
+	{
+		Assert(gameFileInfo.control.size == sizeof(reactor_triggers));
+		ControlCenterTriggersReadN(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
+	}
+}	
 
-	if (gameFileInfo.lightDeltaIndices.offset > -1) {
-		int	i;
+//================ READ MATERIALIZATION CENTERS INFO ===============
+if (gameFileInfo.matcen.offset > -1) {
+	int	j;
 
 #if TRACE
-		con_printf(CON_DEBUG, "   loading light index data ...\n");
+	con_printf(CON_DEBUG, "   loading matcen data ...\n");
 #endif
-		if (!CFSeek(LoadFile, gameFileInfo.lightDeltaIndices.offset, SEEK_SET))	{
-			gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
+	if (!CFSeek(LoadFile, gameFileInfo.matcen.offset,SEEK_SET))	{
+		for (i=0;i<gameFileInfo.matcen.count;i++) {
+			if (gameTopFileInfo.fileinfo_version < 27) {
+				old_matcen_info m;
+
+				OldMatCenInfoRead(&m, LoadFile);
+
+				gameData.matCens.robotCenters[i].robot_flags[0] = m.robot_flags;
+				gameData.matCens.robotCenters[i].robot_flags[1] = 0;
+				gameData.matCens.robotCenters[i].hit_points = m.hit_points;
+				gameData.matCens.robotCenters[i].interval = m.interval;
+				gameData.matCens.robotCenters[i].segnum = m.segnum;
+				gameData.matCens.robotCenters[i].fuelcen_num = m.fuelcen_num;
+			}
+			else
+				MatCenInfoRead(&gameData.matCens.robotCenters[i], LoadFile);
+
+			//	Set links in gameData.matCens.robotCenters to gameData.matCens.fuelCenters array
+
+			for (j=0; j<=gameData.segs.nLastSegment; j++)
+				if (gameData.segs.segment2s[j].special == SEGMENT_IS_ROBOTMAKER)
+					if (gameData.segs.segment2s[j].matcen_num == i)
+						gameData.matCens.robotCenters[i].fuelcen_num = gameData.segs.segment2s[j].value;
+		}
+	}
+}
+
+//================ READ DL_INDICES INFO ===============
+
+gameData.render.lights.nStatic = 0;
+
+if (gameFileInfo.lightDeltaIndices.offset > -1) {
+	int	i;
+
+#if TRACE
+	con_printf(CON_DEBUG, "   loading light index data ...\n");
+#endif
+	if (!CFSeek(LoadFile, gameFileInfo.lightDeltaIndices.offset, SEEK_SET))	{
+		gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
+		if (gameTopFileInfo.fileinfo_version < 29) {
+#if TRACE
+			con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+#endif
+			Int3();	//shouldn't be here!!!
+			}
+		else
+			for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
+				//LogErr ("reading DL index %d\n", i);
+				dl_index_read(gameData.render.lights.deltaIndices + i, LoadFile);
+				}
+		}
+	SortDLIndex ();
+	}
+
+//	Indicate that no light has been subtracted from any vertices.
+ClearLightSubtracted();
+
+//================ READ DELTA LIGHT INFO ===============
+
+if (gameFileInfo.lightDeltas.offset > -1) {
+	int	i;
+
+#if TRACE
+	con_printf(CON_DEBUG, "   loading light data ...\n");
+#endif
+	if (!CFSeek(LoadFile, gameFileInfo.lightDeltas.offset, SEEK_SET))	{
+		for (i=0; i<gameFileInfo.lightDeltas.count; i++) {
 			if (gameTopFileInfo.fileinfo_version < 29) {
 #if TRACE
-				con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+				con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
-				Int3();	//shouldn't be here!!!
-				}
-			else
-				for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-					//LogErr ("reading DL index %d\n", i);
-					dl_index_read(gameData.render.lights.deltaIndices + i, LoadFile);
-					}
-			}
-		SortDLIndex ();
+			} else
+				delta_light_read(&gameData.render.lights.deltas[i], LoadFile);
 		}
+	}
+}
 
-	//	Indicate that no light has been subtracted from any vertices.
-	ClearLightSubtracted();
+//========================= UPDATE VARIABLES ======================
 
-	//================ READ DELTA LIGHT INFO ===============
+ResetObjects(gameFileInfo.object.count);
 
-	if (gameFileInfo.lightDeltas.offset > -1) {
-		int	i;
+for (i=0; i<gameFileInfo.object.count/*MAX_OBJECTS*/; i++) {
+	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
+	if (gameData.objs.objects[i].type != OBJ_NONE) {
+		int objsegnum = gameData.objs.objects[i].segnum;
+		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus object
+			gameData.objs.objects[i].type = OBJ_NONE;
+		else {
+			gameData.objs.objects[i].segnum = -1;			//avoid Assert()
+			LinkObject(i,objsegnum);
+		}
+	}
+}
 
+clear_transient_objects(1);		//1 means clear proximity bombs
+
+// Make sure non-transparent doors are set correctly.
+for (i = 0; i < gameData.segs.nSegments; i++) {
+	side	*sidep = gameData.segs.segments [i].sides;
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sidep++) {
+		short wall_num = WallNumS (sidep);
+		wall  *w;
+		if (!IS_WALL (wall_num))
+			continue;
+		w = gameData.walls.walls + wall_num;
+		if (w->clip_num == -1)
+			continue;
+		if (gameData.walls.pAnims [w->clip_num].flags & WCF_TMAP1) {
+			sidep->tmap_num = gameData.walls.pAnims [w->clip_num].frames [0];
+			sidep->tmap_num2 = 0;
+			}
+		}
+	}
+
+gameData.walls.nWalls = gameFileInfo.walls.count;
+ResetWalls();
+
+gameData.walls.nOpenDoors = gameFileInfo.doors.count;
+gameData.trigs.nTriggers = gameFileInfo.triggers.count;
+
+//go through all walls, killing references to invalid triggers
+for (i=0;i<gameData.walls.nWalls;i++)
+	if (gameData.walls.walls[i].trigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf(CON_DEBUG, "   loading light data ...\n");
+		con_printf (CON_DEBUG,"Removing reference to invalid trigger %d from wall %d\n",gameData.walls.walls[i].trigger,i);
 #endif
-		if (!CFSeek(LoadFile, gameFileInfo.lightDeltas.offset, SEEK_SET))	{
-			for (i=0; i<gameFileInfo.lightDeltas.count; i++) {
-				if (gameTopFileInfo.fileinfo_version < 29) {
+		gameData.walls.walls[i].trigger = NO_TRIGGER;	//kill trigger
+	}
+
+//go through all triggers, killing unused ones
+for (i=0;i<gameData.trigs.nTriggers;) {
+	int w;
+
+	//	Find which wall this trigger is connected to.
+	for (w=0; w<gameData.walls.nWalls; w++)
+		if (gameData.walls.walls[w].trigger == i)
+			break;
+
+#ifdef EDITOR
+	if (w == gameData.walls.nWalls) {
 #if TRACE
-					con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading delta light info.\n");
+		con_printf (CON_DEBUG,"Removing unreferenced trigger %d\n",i);
 #endif
-				} else
-					delta_light_read(&gameData.render.lights.deltas[i], LoadFile);
-			}
-		}
+		RemoveTriggerNum(i);
 	}
-
-	//========================= UPDATE VARIABLES ======================
-
-	ResetObjects(gameFileInfo.object.count);
-
-	for (i=0; i<gameFileInfo.object.count/*MAX_OBJECTS*/; i++) {
-		gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
-		if (gameData.objs.objects[i].type != OBJ_NONE) {
-			int objsegnum = gameData.objs.objects[i].segnum;
-			if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus object
-				gameData.objs.objects[i].type = OBJ_NONE;
-			else {
-				gameData.objs.objects[i].segnum = -1;			//avoid Assert()
-				LinkObject(i,objsegnum);
-			}
-		}
-	}
-
-	clear_transient_objects(1);		//1 means clear proximity bombs
-
-	// Make sure non-transparent doors are set correctly.
-	for (i = 0; i < gameData.segs.nSegments; i++) {
-		side	*sidep = gameData.segs.segments [i].sides;
-		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sidep++) {
-			short wall_num = WallNumS (sidep);
-			wall  *w;
-			if (!IS_WALL (wall_num))
-				continue;
-			w = gameData.walls.walls + wall_num;
-			if (w->clip_num == -1)
-				continue;
-			if (gameData.walls.pAnims [w->clip_num].flags & WCF_TMAP1) {
-				sidep->tmap_num = gameData.walls.pAnims [w->clip_num].frames [0];
-				sidep->tmap_num2 = 0;
-				}
-			}
-		}
-
-	gameData.walls.nWalls = gameFileInfo.walls.count;
-	ResetWalls();
-
-	gameData.walls.nOpenDoors = gameFileInfo.doors.count;
-	gameData.trigs.nTriggers = gameFileInfo.triggers.count;
-
-	//go through all walls, killing references to invalid triggers
-	for (i=0;i<gameData.walls.nWalls;i++)
-		if (gameData.walls.walls[i].trigger >= gameData.trigs.nTriggers) {
-#if TRACE
-			con_printf (CON_DEBUG,"Removing reference to invalid trigger %d from wall %d\n",gameData.walls.walls[i].trigger,i);
-#endif
-			gameData.walls.walls[i].trigger = NO_TRIGGER;	//kill trigger
-		}
-
-	//go through all triggers, killing unused ones
-	for (i=0;i<gameData.trigs.nTriggers;) {
-		int w;
-
-		//	Find which wall this trigger is connected to.
-		for (w=0; w<gameData.walls.nWalls; w++)
-			if (gameData.walls.walls[w].trigger == i)
-				break;
-
-	#ifdef EDITOR
-		if (w == gameData.walls.nWalls) {
-#if TRACE
-			con_printf (CON_DEBUG,"Removing unreferenced trigger %d\n",i);
-#endif
-			remove_trigger_num(i);
-		}
-		else
-	#endif
-			i++;
-	}
-
-	//	MK, 10/17/95: Make walls point back at the triggers that control them.
-	//	Go through all triggers, stuffing controlling_trigger field in gameData.walls.walls.
-	{	int t;
-
-	for (i=0; i<gameData.walls.nWalls; i++)
-		gameData.walls.walls[i].controlling_trigger = -1;
-
-	for (t=0; t<gameData.trigs.nTriggers; t++) {
-		int	l;
-		for (l=0; l<gameData.trigs.triggers[t].num_links; l++) {
-			short	seg_num, side_num, wall_num;
-
-			seg_num = gameData.trigs.triggers[t].seg[l];
-			side_num = gameData.trigs.triggers[t].side[l];
-			wall_num = WallNumI (seg_num, side_num);
-
-			// -- if (gameData.walls.walls[wall_num].controlling_trigger != -1)
-			// -- 	Int3();
-
-			//check to see that if a trigger requires a wall that it has one,
-			//and if it requires a matcen that it has one
-
-			if (gameData.trigs.triggers[t].type == TT_MATCEN) {
-				if (gameData.segs.segment2s[seg_num].special != SEGMENT_IS_ROBOTMAKER)
-					Int3();		//matcen trigger doesn't point to matcen
-			}
-			else if (gameData.trigs.triggers[t].type != TT_LIGHT_OFF && gameData.trigs.triggers[t].type != TT_LIGHT_ON) {	//light triggers don't require walls
-				if (!IS_WALL (wall_num))
-					Int3();	//	This is illegal.  This trigger requires a wall
-				else
-					gameData.walls.walls[wall_num].controlling_trigger = t;
-			}
-		}
-	}
-	}
-
-	gameData.matCens.nRobotCenters = gameFileInfo.matcen.count;
-	//fix old wall structs
-	if (gameTopFileInfo.fileinfo_version < 17) {
-		short segnum,sidenum,wallnum;
-
-		for (segnum=0; segnum<=gameData.segs.nLastSegment; segnum++)
-			for (sidenum=0;sidenum<6;sidenum++)
-				if (IS_WALL (wallnum= WallNumI (segnum, sidenum))) {
-					gameData.walls.walls[wallnum].segnum = segnum;
-					gameData.walls.walls[wallnum].sidenum = sidenum;
-				}
-	}
-
-	#ifndef NDEBUG
-	{
-		short	sidenum;
-		for (sidenum=0; sidenum<6; sidenum++) {
-			short	wallnum = WallNumI (gameData.segs.nLastSegment, sidenum);
-			if (IS_WALL (wallnum))
-				if ((gameData.walls.walls[wallnum].segnum != gameData.segs.nLastSegment) || 
-					 (gameData.walls.walls[wallnum].sidenum != sidenum))
-					Int3();	//	Error.  Bogus walls in this segment.
-								// Consult Yuan or Mike.
-		}
-	}
-	#endif
-
-	//create_local_segment_data();
-
-	FixObjectSegs();
-
-	#ifndef NDEBUG
-	dump_mine_info();
-	#endif
-
-	if ((gameTopFileInfo.fileinfo_version < GAME_VERSION) && 
-		 ((gameTopFileInfo.fileinfo_version != 25) || (GAME_VERSION != 26)))
-		return 1;		//means old version
 	else
-		return 0;
+#endif
+		i++;
+}
+
+//	MK, 10/17/95: Make walls point back at the triggers that control them.
+//	Go through all triggers, stuffing controlling_trigger field in gameData.walls.walls.
+{	int t;
+
+for (i = 0; i < gameData.walls.nWalls; i++)
+	gameData.walls.walls [i].controlling_trigger = -1;
+
+for (t=0; t<gameData.trigs.nTriggers; t++) {
+	for (l = 0; l<gameData.trigs.triggers[t].num_links; l++) {
+
+		seg_num = gameData.trigs.triggers[t].seg[l];
+		side_num = gameData.trigs.triggers[t].side[l];
+		wall_num = WallNumI (seg_num, side_num);
+
+		// -- if (gameData.walls.walls[wall_num].controlling_trigger != -1)
+		// -- 	Int3();
+
+		//check to see that if a trigger requires a wall that it has one,
+		//and if it requires a matcen that it has one
+
+		if (gameData.trigs.triggers[t].type == TT_MATCEN) {
+			if (gameData.segs.segment2s[seg_num].special != SEGMENT_IS_ROBOTMAKER)
+				Int3();		//matcen trigger doesn't point to matcen
+		}
+		else if (gameData.trigs.triggers[t].type != TT_LIGHT_OFF && gameData.trigs.triggers[t].type != TT_LIGHT_ON) {	//light triggers don't require walls
+			if (!IS_WALL (wall_num))
+				Int3();	//	This is illegal.  This trigger requires a wall
+			else
+				gameData.walls.walls[wall_num].controlling_trigger = t;
+		}
+	}
+}
+}
+
+gameData.matCens.nRobotCenters = gameFileInfo.matcen.count;
+//fix old wall structs
+if (gameTopFileInfo.fileinfo_version < 17) {
+	short segnum,sidenum,wallnum;
+	for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++)
+		for (sidenum = 0; sidenum < 6; sidenum++)
+			if (IS_WALL (wallnum = WallNumI (segnum, sidenum))) {
+				gameData.walls.walls [wallnum].segnum = segnum;
+				gameData.walls.walls [wallnum].sidenum = sidenum;
+				}
+	}
+
+#ifdef _DEBUG
+{
+	short	sidenum;
+	for (sidenum=0; sidenum<6; sidenum++) {
+		short	wallnum = WallNumI (gameData.segs.nLastSegment, sidenum);
+		if (IS_WALL (wallnum))
+			if ((gameData.walls.walls[wallnum].segnum != gameData.segs.nLastSegment) || 
+					(gameData.walls.walls[wallnum].sidenum != sidenum))
+				Int3();	//	Error.  Bogus walls in this segment.
+							// Consult Yuan or Mike.
+	}
+}
+#endif
+
+//create_local_segment_data();
+
+FixObjectSegs();
+
+#ifdef _DEBUG
+dump_mine_info();
+#endif
+
+if ((gameTopFileInfo.fileinfo_version < GAME_VERSION) && 
+	 ((gameTopFileInfo.fileinfo_version != 25) || (GAME_VERSION != 26)))
+	return 1;		//means old version
+return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-int check_segment_connections(void);
+int CheckSegmentConnections(void);
 
 extern void	SetAmbientSoundFlags(void);
 
@@ -1929,7 +1921,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 #endif
 
 #ifdef EDITOR
-if (check_segment_connections())
+if (CheckSegmentConnections())
 	ExecMessageBox("ERROR", 1, "Ok", 
 			"Connectivity errors detected in\n"
 			"mine.  See monochrome screen for\n"
@@ -1940,7 +1932,7 @@ return 0;
 }
 
 #ifdef EDITOR
-void get_level_name()
+void GetLevelName()
 {
 //NO_UI!!!	UI_WINDOW 				*NameWindow = NULL;
 //NO_UI!!!	UI_GADGET_INPUTBOX	*NameText;
@@ -1991,7 +1983,8 @@ void get_level_name()
 int	Errors_in_mine;
 
 // -----------------------------------------------------------------------------
-int compute_num_delta_light_records(void)
+
+int CountDeltaLightRecords(void)
 {
 	int	i;
 	int	total = 0;
@@ -2006,7 +1999,7 @@ int compute_num_delta_light_records(void)
 
 // -----------------------------------------------------------------------------
 // Save game
-int save_game_data(FILE * SaveFile)
+int SaveGameData(FILE * SaveFile)
 {
 	int  player.offset, object.offset, walls.offset, doors.offset, triggers.offset, control.offset, matcen.offset; //, links.offset;
 	int	gameData.render.lights.deltaIndices.offset, deltaLight.offset;
@@ -2046,7 +2039,7 @@ int save_game_data(FILE * SaveFile)
 	gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
 
  	gameFileInfo.lightDeltas.offset		=	-1;
-	gameFileInfo.lightDeltas.count	=	compute_num_delta_light_records();
+	gameFileInfo.lightDeltas.count	=	CountDeltaLightRecords();
 	gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
 
 	// Write the fileinfo
@@ -2247,7 +2240,7 @@ int save_level_sub(char * filename, int compiled_version)
 	else
 		save_mine_data_compiled(SaveFile);
 	gamedata_offset = ftell(SaveFile);
-	save_game_data(SaveFile);
+	SaveGameData(SaveFile);
 
 	fseek(SaveFile,sizeof(sig)+sizeof(version),SEEK_SET);
 	gs_write_int(minedata_offset,SaveFile);
@@ -2264,6 +2257,8 @@ int save_level_sub(char * filename, int compiled_version)
 	return 0;
 
 }
+
+// -----------------------------------------------------------------------------
 
 #if 0 //dunno - 3rd party stuff?
 extern void compress_uv_coordinates_all(void);
@@ -2284,7 +2279,7 @@ int save_level(char * filename)
 
 #endif	//EDITOR
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 void dump_mine_info(void)
 {
 	int	segnum, sidenum;
@@ -2333,20 +2328,23 @@ void dump_mine_info(void)
 
 #ifdef EDITOR
 
+// -----------------------------------------------------------------------------
 //read in every level in mission and save out compiled version 
 void save_all_compiled_levels(void)
 {
-	do_load_save_levels(1);
+DoLoadSaveLevels(1);
 }
 
+// -----------------------------------------------------------------------------
 //read in every level in mission
-void load_all_levels(void)
+void LoadAllLevels(void)
 {
-	do_load_save_levels(0);
+DoLoadSaveLevels(0);
 }
 
+// -----------------------------------------------------------------------------
 
-void do_load_save_levels(int save)
+void DoLoadSaveLevels(int save)
 {
 	int level_num;
 
@@ -2362,11 +2360,11 @@ void do_load_save_levels(int save)
 			save_level_sub(gameData.missions.szLevelNames[level_num-1],1);
 	}
 
-	for (level_num=-1;level_num>=gameData.missions.nLastSecretLevel;level_num--) {
+	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
 		LoadLevelSub(gameData.missions.szSecretLevelNames[-level_num-1]);
 		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
-			save_level_sub(gameData.missions.szSecretLevelNames[-level_num-1],1);
+			save_level_sub (gameData.missions.szSecretLevelNames[-level_num-1],1);
 	}
 
 	no_old_level_file_error=0;

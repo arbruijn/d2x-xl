@@ -981,7 +981,7 @@ if (gameData.render.lights.ogl.material.bValid) {
 #if 1 //cache light values per frame
 if (!(bMatEmissive || pVertColor) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
-	if (pc->index == gameStates.render.nFrameFlipFlop) {
+	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
 		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
 		return;
 		}
@@ -1116,7 +1116,7 @@ if (colorSum.c.b > 1.0)
 OglColor4sf (colorSum.c.r, colorSum.c.g, colorSum.c.b, 1.0);
 #if 1
 if (!bMatEmissive && pc) {
-	pc->index = gameStates.render.nFrameFlipFlop;
+	pc->index = gameStates.render.nFrameFlipFlop + 1;
 	pc->color.red = colorSum.c.r;
 	pc->color.green = colorSum.c.g;
 	pc->color.blue = colorSum.c.b;

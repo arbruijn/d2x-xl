@@ -188,6 +188,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LASER_ID        				0   //0..3 are lasers
 #define CONCUSSION_ID   				8
 #define FLARE_ID        				9   //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
+#define ROBOT_BLUE_LASER_ID			10
 #define VULCAN_ID       				11  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define SPREADFIRE_ID   				12  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define PLASMA_ID       				13  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
@@ -196,39 +197,45 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PROXIMITY_ID    				16
 #define SMART_ID        				17
 #define MEGA_ID         				18
-
 #define PLAYER_SMART_HOMING_ID  		19
-#define SUPER_MECH_MISS         		21
-#define REGULAR_MECH_MISS      		22
+#define ROBOT_BLUE_ENERGY_ID			20
+#define SUPER_MECH_MISS_ID      		21
+#define REGULAR_MECH_MISS_ID    		22
 #define SILENT_SPREADFIRE_ID    		23
+#define ROBOT_GREEN_LASER_ID			25
+#define ROBOT_PLASMA_ID					26
+#define ROBOT_MEDIUM_FIREBALL_ID		27
 #define ROBOT_MEGA_ID			  		28
 #define ROBOT_SMART_HOMING_ID   		29
-#define EARTHSHAKER_MEGA_ID     		54
-
 #define SUPER_LASER_ID          		30  // 30,31 are super lasers (level 5,6)
-
 #define GAUSS_ID                		32  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define HELIX_ID                		33  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define PHOENIX_ID              		34  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define OMEGA_ID                		35  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
-
 #define FLASH_ID                		36
 #define GUIDEDMISS_ID           		37
 #define SUPERPROX_ID            		38
 #define MERCURY_ID              		39
 #define EARTHSHAKER_ID          		40
-
-#define ROBOT_FIREBALL_ID				42
-#define ROBOT_LASER_ID					43
-
+#define ROBOT_SMALL_FIREBALL_ID		42
+#define ROBOT_WHITE_LASER_ID			43
+#define ROBOT_PHOENIX_ID				44
+#define ROBOT_FAST_PHOENIX_ID			45
+#define ROBOT_HELIX_ID					46
 #define SMART_MINE_HOMING_ID        47
+#define ROBOT_PHASE_ENERGY_ID			48
 #define ROBOT_SMART_MINE_HOMING_ID  49
-#define ROBOT_FLASH_ID					50
+#define ROBOT_FLASHMISS_ID				50
 #define ROBOT_SUPERPROX_ID          53
+#define EARTHSHAKER_MEGA_ID     		54
 #define ROBOT_MERCURY_ID				55
 #define ROBOT_SMART_ID					57
 #define ROBOT_EARTHSHAKER_ID        58
 #define ROBOT_SHAKER_MEGA_ID        59
+#define ROBOT_WHITE_ENERGY_ID			60
+#define ROBOT_VERTIGO_FLASHMISS_ID	61
+#define ROBOT_VERTIGO_FIREBALL_ID	63
+#define ROBOT_VERTIGO_PHOENIX_ID		64
 
 #define PMINE_ID                    51  //the mine that the designers can place
 

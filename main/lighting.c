@@ -390,7 +390,9 @@ void ApplyLight(
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->type == OBJ_PLAYER) {
+#ifdef _DEBUG
 		return;
+#endif
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
@@ -1577,6 +1579,8 @@ void AddOglLights (void)
 
 gameStates.ogl.bHaveLights = 1;
 //glEnable (GL_LIGHTING);
+memset (&gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
+memset (&gameData.render.color.ambient, 0, sizeof (gameData.render.color.ambient));
 memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
 gameData.render.lights.ogl.nLights = 0;
 gameData.render.lights.ogl.material.bValid = 0;
@@ -1753,10 +1757,10 @@ tFaceColor *AvgSgmColor (int nSegment, vms_vector *pvPos)
 	float			d, ds;
 
 if (!gameOpts->ogl.bUseLighting) {
-	psc->index = !gameStates.render.nFrameFlipFlop;
+	psc->index = !gameStates.render.nFrameFlipFlop + 1;
 	return psc;
 	}
-if (psc->index == gameStates.render.nFrameFlipFlop)
+if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 	return psc;
 if (pvPos) {
 	COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
@@ -1770,7 +1774,7 @@ c.color.red = c.color.green = c.color.blue = 0.0f;
 c.index = 0;
 for (i = 0; i < 8; i++, pv++) {
 	pvc = gameData.render.color.vertices + *pv;
-	if (pvc->index == gameStates.render.nFrameFlipFlop) {
+	if (pvc->index == gameStates.render.nFrameFlipFlop + 1) {
 		if (pvPos) {
 			vVertex = gameData.segs.vertices [*pv];
 			//G3TransformPoint (&vVertex, &vVertex);
@@ -1806,7 +1810,7 @@ if (c.index) {
 	}
 else
 	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
-psc->index = gameStates.render.nFrameFlipFlop;
+psc->index = gameStates.render.nFrameFlipFlop + 1;
 return psc;
 }
 

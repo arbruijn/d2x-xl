@@ -514,7 +514,7 @@ if (pParticle->glColor.b < 1.0) {
 pc = pParticle->glColor;
 if (gameOpts->ogl.bUseLighting) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
-	if (psc->index == gameStates.render.nFrameFlipFlop) {
+	if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
 		pc.r *= (double) psc->color.red;
 		pc.g *= (double) psc->color.green;
 		pc.b *= (double) psc->color.blue;

@@ -1621,6 +1621,20 @@ typedef struct tHUDData {
 	int					bPlayerMessage;
 } tHUDData;
 
+typedef struct {
+	int	seg0, seg1, csd;
+	fix	dist;
+} tFCDCacheData;
+
+#define	MAX_FCD_CACHE	64
+
+typedef struct tFCDData {
+	int				nIndex;
+	tFCDCacheData	cache [MAX_FCD_CACHE];
+	fix				xLastFlushTime;
+	int				nConnSegDist;
+} tFCDData;
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -1652,6 +1666,7 @@ typedef struct tGameData {
 	tHUDData				hud;
 	tTerrainData		terrain;
 	tTimeData			time;
+	tFCDData				fcd;
 	tApplicationData	app;
 } tGameData;
 

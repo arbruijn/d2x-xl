@@ -1604,7 +1604,7 @@ char *defaultGameTexts [][2] = {
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
 	{"~Leuchtspuren zeichen", "render energy ~Trails"},
-	{"~Sammelregler verwenden", "Use ~Master Sliders"},
+	{"~Sammelregler verwenden    ",  "Use ~Master Sliders            "},
 #if 0
 	{"", ""},
 #endif
