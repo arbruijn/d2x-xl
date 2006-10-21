@@ -9,13 +9,13 @@
  *   winsock.h.
  *
  *   To open an IPX socket, call socket() with an address family of
- *   AF_IPX, a socket type of SOCK_DGRAM, and protocol NSPROTO_IPX.
+ *   AF_IPX, a socket nType of SOCK_DGRAM, and protocol NSPROTO_IPX.
  *   Note that the protocol value must be specified, it cannot be 0.
- *   All IPX packets are sent with the packet type field of the IPX
+ *   All IPX packets are sent with the packet nType field of the IPX
  *   header set to 0.
  *
  *   To open an SPX or SPXII socket, call socket() with an address
- *   family of AF_IPX, socket type of SOCK_SEQPACKET or SOCK_STREAM,
+ *   family of AF_IPX, socket nType of SOCK_SEQPACKET or SOCK_STREAM,
  *   and protocol of NSPROTO_SPX or NSPROTO_SPXII.  If SOCK_SEQPACKET
  *   is specified, then the end of message bit is respected, and
  *   recv() calls are not completed until a packet is received with

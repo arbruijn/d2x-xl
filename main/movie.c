@@ -37,7 +37,7 @@ static char rcsid[] = "$Id: movie.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#include <ctype.h>
+#include <cType.h>
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
@@ -152,14 +152,14 @@ CFILE *RoboFile = NULL;
 int RoboFilePos = 0;
 
 // Function Prototypes
-int RunMovie(char *filename, int highres_flag, int allow_abort,int dx,int dy);
+int RunMovie(char *filename, int highresFlag, int allow_abort,int dx,int dy);
 
 CFILE *OpenMovieFile(char *filename, int must_have);
 int ResetMovieFile(CFILE *handle);
 
 void change_filename_ext( char *dest, char *src, char *ext );
 void DecodeTextLine(char *p);
-void DrawSubTitles(int frame_num);
+void DrawSubTitles(int nFrame);
 
 // ----------------------------------------------------------------------
 
@@ -234,7 +234,7 @@ Assert(bufw == w && bufh == h);
 memset (&bmFrame, 0, sizeof (bmFrame));
 bmFrame.bm_props.w = bmFrame.bm_props.rowsize = bufw;
 bmFrame.bm_props.h = bufh;
-bmFrame.bm_props.type = BM_LINEAR;
+bmFrame.bm_props.nType = BM_LINEAR;
 bmFrame.bm_texBuf = buf;
 bmFrame.bm_palette = moviePalette;
 
@@ -358,12 +358,12 @@ void ClearPauseMessage()
 
 //-----------------------------------------------------------------------
 //returns status.  see movie.h
-int RunMovie(char *filename, int hires_flag, int must_have,int dx,int dy)
+int RunMovie(char *filename, int hiresFlag, int must_have,int dx,int dy)
 {
 	CFILE *filehndl;
 	int result=1,aborted=0;
 	int track = 0;
-	int frame_num;
+	int nFrame;
 	int key;
 
 	result=1;
@@ -382,7 +382,7 @@ int RunMovie(char *filename, int hires_flag, int must_have,int dx,int dy)
 	MVE_memCallbacks(MPlayAlloc, MPlayFree);
 	MVE_ioCallbacks(FileRead);
 #if 0//ndef _WIN32
-	if (hires_flag) {
+	if (hiresFlag) {
 		GrSetMode(SM(640,480));
 	} else {
 		GrSetMode(SM(320,200));
@@ -402,10 +402,10 @@ int RunMovie(char *filename, int hires_flag, int must_have,int dx,int dy)
 		Int3();
 		return MOVIE_NOT_PLAYED;
 	}
-	frame_num = 0;
-	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && hires_flag;
+	nFrame = 0;
+	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && hiresFlag;
 	while((result = MVE_rmStepMovie()) == 0) {
-		DrawSubTitles(frame_num);
+		DrawSubTitles(nFrame);
 		GrPaletteStepLoad(NULL); // moved this here because of flashing
 		GrUpdate (1);
 		key = KeyInKey();
@@ -429,7 +429,7 @@ int RunMovie(char *filename, int hires_flag, int must_have,int dx,int dy)
 			GrToggleFullScreen();
 #endif
 
-		frame_num++;
+		nFrame++;
 	}
 	Assert(aborted || result == MVE_ERR_EOF);	 ///movie should be over
     MVE_rmEndMovie();
@@ -629,14 +629,14 @@ void CloseSubTitles()
 
 //-----------------------------------------------------------------------
 //draw the subtitles for this frame
-void DrawSubTitles(int frame_num)
+void DrawSubTitles(int nFrame)
 {
 	static int active_subtitles[MAX_ACTIVE_SUBTITLES];
 	static int num_active_subtitles,next_subtitle,line_spacing;
 	int t,y;
 	int must_erase=0;
 
-	if (frame_num == 0) {
+	if (nFrame == 0) {
 		num_active_subtitles = 0;
 		next_subtitle = 0;
 		GrSetCurFont( GAME_FONT );
@@ -646,7 +646,7 @@ void DrawSubTitles(int frame_num)
 
 	//get rid of any subtitles that have expired
 	for (t=0;t<num_active_subtitles;)
-		if (frame_num > subTitles.captions[active_subtitles[t]].last_frame) {
+		if (nFrame > subTitles.captions[active_subtitles[t]].last_frame) {
 			int t2;
 			for (t2=t;t2<num_active_subtitles-1;t2++)
 				active_subtitles[t2] = active_subtitles[t2+1];
@@ -657,7 +657,7 @@ void DrawSubTitles(int frame_num)
 			t++;
 
 	//get any subtitles new for this frame 
-	while (next_subtitle < subTitles.nCaptions && frame_num >= subTitles.captions[next_subtitle].first_frame) {
+	while (next_subtitle < subTitles.nCaptions && nFrame >= subTitles.captions[next_subtitle].first_frame) {
 		if (num_active_subtitles >= MAX_ACTIVE_SUBTITLES)
 			Error("Too many active subtitles!");
 		active_subtitles[num_active_subtitles++] = next_subtitle;
@@ -828,7 +828,7 @@ int request_cd(void)
 
 //-----------------------------------------------------------------------
 
-void init_movie(char *filename, int libnum, int is_robots, int required)
+void init_movie(char *filename, int libnum, int isRobots, int required)
 {
 	int high_res, try;
 	char *res = strchr(filename, '.') - 1; // 'h' == high resolution, 'l' == low
@@ -841,7 +841,7 @@ void init_movie(char *filename, int libnum, int is_robots, int required)
 #endif
 
 	//for robots, load highres versions if highres menus set
-	high_res = is_robots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
+	high_res = isRobots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
 	if (high_res)
 		*res = 'h';
 	for (try = 0; (movie_libs[libnum] = InitMovieLib(filename)) == NULL; try++) {
@@ -881,7 +881,7 @@ void init_movie(char *filename, int libnum, int is_robots, int required)
 		}
 	}
 
-	if (is_robots && movie_libs[libnum]!=NULL)
+	if (isRobots && movie_libs[libnum]!=NULL)
 		gameStates.movies.nRobots = high_res?2:1;
 }
 
@@ -913,13 +913,13 @@ static int bMoviesInited = 0;
 void InitMovies()
 {
 	int i, j;
-	int is_robots;
+	int isRobots;
 
 	j = (gameStates.app.bHaveExtraMovies = !gameStates.app.bNostalgia) ? 
 		 N_BUILTIN_MOVIE_LIBS : FIRST_EXTRA_MOVIE_LIB;
 	for (i = 0; i < N_BUILTIN_MOVIE_LIBS; i++) {
-		is_robots = !strnicmp (movielib_files [i], "robot", 5);
-		init_movie (movielib_files [i], i, is_robots, 1);
+		isRobots = !strnicmp (movielib_files [i], "robot", 5);
+		init_movie (movielib_files [i], i, isRobots, 1);
 		if (movie_libs [i])
 			LogErr ("   found movie lib '%s'\n", movielib_files [i]);
 		else if ((i >= FIRST_EXTRA_MOVIE_LIB) && 

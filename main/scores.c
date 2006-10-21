@@ -200,7 +200,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * the high score screen can print "rookie" or whatever.
  *
  * Revision 1.61  1994/10/17  17:27:44  john
- * Added starting_level to high score system.
+ * Added startingLevel to high score system.
  *
  * Revision 1.60  1994/10/17  16:56:35  john
  * Added starting level to stats menu.
@@ -250,7 +250,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "scores.h"
 #include "error.h"
@@ -284,16 +284,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct stats_info {
   	char	name[CALLSIGN_LEN+1];
 	int		score;
-	sbyte   starting_level;
-	sbyte   ending_level;
-	sbyte   diff_level;
+	sbyte   startingLevel;
+	sbyte   endingLevel;
+	sbyte   diffLevel;
 	short 	kill_ratio;		// 0-100
 	short	hostage_ratio;  // 
 	int		seconds;		// How long it took in seconds...
 } stats_info;
 
 typedef struct all_scores {
-	char			signature[3];			// DHS
+	char			nSignature[3];			// DHS
 	sbyte           version;				// version
 	char			cool_saying[COOL_MESSAGE_LEN];
 	stats_info	stats[MAX_HIGH_SCORES];
@@ -379,7 +379,7 @@ void scores_read()
 	CFRead(&Scores, sizeof(all_scores), 1, fp);
 	CFClose(fp);
 
-	if ( (Scores.version!=VERSION_NUMBER)||(Scores.signature[0]!='D')||(Scores.signature[1]!='H')||(Scores.signature[2]!='S') )	{
+	if ( (Scores.version!=VERSION_NUMBER)||(Scores.nSignature[0]!='D')||(Scores.nSignature[1]!='H')||(Scores.nSignature[2]!='S') )	{
 		memset( &Scores, 0, sizeof(all_scores) );
 		return;
 	}
@@ -397,9 +397,9 @@ void scores_write()
 		return;
 	}
 
-	Scores.signature[0]='D';
-	Scores.signature[1]='H';
-	Scores.signature[2]='S';
+	Scores.nSignature[0]='D';
+	Scores.nSignature[1]='H';
+	Scores.nSignature[2]='S';
 	Scores.version = VERSION_NUMBER;
 	CFWrite(&Scores,sizeof(all_scores),1, fp);
 	CFClose(fp);
@@ -441,27 +441,27 @@ void scores_fill_struct(stats_info * stats)
 {
 		strcpy( stats->name, gameData.multi.players[gameData.multi.nLocalPlayer].callsign );
 		stats->score = gameData.multi.players[gameData.multi.nLocalPlayer].score;
-		stats->ending_level = gameData.multi.players[gameData.multi.nLocalPlayer].level;
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].num_robots_total > 0 )	
-			stats->kill_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].num_kills_total*100)/gameData.multi.players[gameData.multi.nLocalPlayer].num_robots_total;
+		stats->endingLevel = gameData.multi.players[gameData.multi.nLocalPlayer].level;
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].numRobotsTotal > 0 )	
+			stats->kill_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].numKillsTotal*100)/gameData.multi.players[gameData.multi.nLocalPlayer].numRobotsTotal;
 		else
 			stats->kill_ratio = 0;
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].hostages_total > 0 )	
-			stats->hostage_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].hostages_rescued_total*100)/gameData.multi.players[gameData.multi.nLocalPlayer].hostages_total;
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].hostagesTotal > 0 )	
+			stats->hostage_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].hostages_rescuedTotal*100)/gameData.multi.players[gameData.multi.nLocalPlayer].hostagesTotal;
 		else
 			stats->hostage_ratio = 0;
 
-		stats->seconds = f2i(gameData.multi.players[gameData.multi.nLocalPlayer].time_total)+(gameData.multi.players[gameData.multi.nLocalPlayer].hours_total*3600);
+		stats->seconds = f2i(gameData.multi.players[gameData.multi.nLocalPlayer].timeTotal)+(gameData.multi.players[gameData.multi.nLocalPlayer].hoursTotal*3600);
 
-		stats->diff_level = gameStates.app.nDifficultyLevel;
-		stats->starting_level = gameData.multi.players[gameData.multi.nLocalPlayer].starting_level;
+		stats->diffLevel = gameStates.app.nDifficultyLevel;
+		stats->startingLevel = gameData.multi.players[gameData.multi.nLocalPlayer].startingLevel;
 }
 
 //------------------------------------------------------------------------------
 //char * score_placement[10] = { TXT_1ST, TXT_2ND, TXT_3RD, TXT_4TH, TXT_5TH, TXT_6TH, TXT_7TH, TXT_8TH, TXT_9TH, TXT_10TH };
 
-void scores_maybe_add_player(int abort_flag)
+void scores_maybe_add_player(int abortFlag)
 {
 	char text1[COOL_MESSAGE_LEN+10];
 	newmenu_item m[10];
@@ -485,7 +485,7 @@ void scores_maybe_add_player(int abort_flag)
 	}
 	
 	if ( position == MAX_HIGH_SCORES ) {
-		if (abort_flag)
+		if (abortFlag)
 			return;
 		scores_fill_struct( &Last_game );
 	} else {
@@ -497,8 +497,8 @@ void scores_maybe_add_player(int abort_flag)
 		memset (m, 0, sizeof (m));
 		if ( position==0 )	{
 			strcpy( text1,  "" );
-			m[0].type = NM_TYPE_TEXT; m[0].text = TXT_COOL_SAYING;
-			m[1].type = NM_TYPE_INPUT; m[1].text = text1; m[1].text_len = COOL_MESSAGE_LEN-5;
+			m[0].nType = NM_TYPE_TEXT; m[0].text = TXT_COOL_SAYING;
+			m[1].nType = NM_TYPE_INPUT; m[1].text = text1; m[1].text_len = COOL_MESSAGE_LEN-5;
 			ExecMenu( TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST, 2, m, NULL, NULL );
 			strncpy( Scores.cool_saying, text1, COOL_MESSAGE_LEN );
 			if (strlen(Scores.cool_saying)<1)
@@ -572,16 +572,16 @@ void scores_draw_item( int  i, stats_info * stats )
 		int_to_string(stats->score, buffer);
 		scores_rprintf( 109+33+XX, y+YY, "%s", buffer );
 
-		GrPrintF( LHX(125+33+XX)+xOffs, LHY(y+YY)+yOffs, "%s", MENU_DIFFICULTY_TEXT(stats->diff_level) );
+		GrPrintF( LHX(125+33+XX)+xOffs, LHY(y+YY)+yOffs, "%s", MENU_DIFFICULTY_TEXT(stats->diffLevel) );
 
-		if ( (stats->starting_level > 0 ) && (stats->ending_level > 0 ))
-			scores_rprintf( 192+33+XX, y+YY, "%d-%d", stats->starting_level, stats->ending_level );
-		else if ( (stats->starting_level < 0 ) && (stats->ending_level > 0 ))
-			scores_rprintf( 192+33+XX, y+YY, "S%d-%d", -stats->starting_level, stats->ending_level );
-		else if ( (stats->starting_level < 0 ) && (stats->ending_level < 0 ))
-			scores_rprintf( 192+33+XX, y+YY, "S%d-S%d", -stats->starting_level, -stats->ending_level );
-		else if ( (stats->starting_level > 0 ) && (stats->ending_level < 0 ))
-			scores_rprintf( 192+33+XX, y+YY, "%d-S%d", stats->starting_level, -stats->ending_level );
+		if ( (stats->startingLevel > 0 ) && (stats->endingLevel > 0 ))
+			scores_rprintf( 192+33+XX, y+YY, "%d-%d", stats->startingLevel, stats->endingLevel );
+		else if ( (stats->startingLevel < 0 ) && (stats->endingLevel > 0 ))
+			scores_rprintf( 192+33+XX, y+YY, "S%d-%d", -stats->startingLevel, stats->endingLevel );
+		else if ( (stats->startingLevel < 0 ) && (stats->endingLevel < 0 ))
+			scores_rprintf( 192+33+XX, y+YY, "S%d-S%d", -stats->startingLevel, -stats->endingLevel );
+		else if ( (stats->startingLevel > 0 ) && (stats->endingLevel < 0 ))
+			scores_rprintf( 192+33+XX, y+YY, "%d-S%d", stats->startingLevel, -stats->endingLevel );
 
 		{
 			int h, m, s;

@@ -45,14 +45,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void KillAllRobots(void)
 {
 	int	i, dead_count=0;
-	object *objP;
+	tObject *objP;
 	//int	boss_index = -1;
 
 	// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 	for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-		if (objP->type == OBJ_ROBOT) {
+		if (objP->nType == OBJ_ROBOT) {
 			if (!gameData.bots.pInfo[objP->id].companion && 
-				 !gameData.bots.pInfo[objP->id].boss_flag) {
+				 !gameData.bots.pInfo[objP->id].bossFlag) {
 				dead_count++;
 				if (gameStates.app.bNostalgia)
 					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
@@ -73,7 +73,7 @@ void KillAllRobots(void)
 	// Toast the buddy if nothing else toasted!
 	if (dead_count == 0)
 		for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-			if (objP->type == OBJ_ROBOT)
+			if (objP->nType == OBJ_ROBOT)
 				if (gameData.bots.pInfo[objP->id].companion) {
 				if (gameStates.app.bNostalgia)
 					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
@@ -99,7 +99,7 @@ void KillEverything(void)
 	HUDInitMessage(TXT_KILL_ETC);
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		switch (gameData.objs.objects[i].type) {
+		switch (gameData.objs.objects[i].nType) {
 			case OBJ_ROBOT:
 				gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 				break;
@@ -114,11 +114,11 @@ void KillEverything(void)
 	DoReactorDestroyedStuff(NULL);
 
 	for (i=0; i<gameData.trigs.nTriggers; i++) {
-		if (gameData.trigs.triggers[i].type == TT_EXIT) {
+		if (gameData.trigs.triggers[i].nType == TT_EXIT) {
 			for (j=0; j<gameData.walls.nWalls; j++) {
-				if (gameData.walls.walls[j].trigger == i) {
-					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls[j].segnum);
-					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls[j].segnum);
+				if (gameData.walls.walls[j].tTrigger == i) {
+					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls[j].nSegment);
+					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls[j].nSegment);
 					goto kasf_done;
 				}
 			}
@@ -134,11 +134,11 @@ kasf_done: ;
 void KillThief(void)
 {
 	int     i;
-	object *objP;
+	tObject *objP;
 
 	//	Kill thief.
 for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-	if (objP->type == OBJ_ROBOT)
+	if (objP->nType == OBJ_ROBOT)
 		if (gameData.bots.pInfo[objP->id].thief) {
 			if (gameStates.app.bNostalgia)
 				objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
@@ -160,8 +160,8 @@ void KillAllSnipers(void)
 
 //	Kill all snipers.
 for (i=0; i<=gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects[i].type == OBJ_ROBOT)
-		if (gameData.objs.objects[i].ctype.ai_info.behavior == AIB_SNIPE) {
+	if (gameData.objs.objects[i].nType == OBJ_ROBOT)
+		if (gameData.objs.objects[i].cType.aiInfo.behavior == AIB_SNIPE) {
 			dead_count++;
 			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		}
@@ -178,7 +178,7 @@ void KillBuddy(void)
 
 	//	Kill buddy.
 for (i=0; i<=gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects[i].type == OBJ_ROBOT)
+	if (gameData.objs.objects[i].nType == OBJ_ROBOT)
 		if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion) {
 			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 			HUDInitMessage(TXT_BUDDY_TOASTED);
@@ -243,7 +243,7 @@ int MenuGetValue (char *pszMsg)
 	int				item;
 
 memset (&m, 0, sizeof (m));
-m.type = NM_TYPE_INPUT; 
+m.nType = NM_TYPE_INPUT; 
 m.text_len = 10; 
 m.text = text;
 item = ExecMenu (NULL, pszMsg, 1, &m, NULL, NULL);
@@ -357,8 +357,8 @@ void CubeWarpCheat (void)
 int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
 if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 	DoCheatPenalty ();
-	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].pos, nNewCube); 
-	RelinkObject (gameData.multi.players [gameData.multi.nLocalPlayer].objnum, nNewCube);
+	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].pos, nNewCube); 
+	RelinkObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject, nNewCube);
 	}
 }
 
@@ -427,8 +427,8 @@ if (!gameStates.app.cheats.bHomingWeapons) {
 
 	gameStates.app.cheats.bHomingWeapons = 1;
 	for (i = 0;i < 20;i++) {
-		OldHomingState [i] = WI_homing_flag (i);
-		WI_set_homing_flag (i, 1);
+		OldHomingState [i] = WI_homingFlag (i);
+		WI_set_homingFlag (i, 1);
 		}
 	HUDInitMessage (TXT_WPN_HOMING);
 	}
@@ -440,7 +440,7 @@ void InvulCheat (void)
 {
 gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
 HUDInitMessage("%s %s!", TXT_INVULNERABILITY, (gameData.multi.players [gameData.multi.nLocalPlayer].flags&PLAYER_FLAGS_INVULNERABLE)?TXT_ON:TXT_OFF);
-gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame+i2f(1000);
+gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame+i2f(1000);
 SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 }
 
@@ -478,10 +478,10 @@ ShakerRockStuff ();
 
 void LevelWarpCheat (void)
 {
-int new_level_num = MenuGetValue (TXT_WARP_TO_LEVEL);
-if ((new_level_num > 0) && (new_level_num <= gameData.missions.nLastLevel)) {
+int newLevel_num = MenuGetValue (TXT_WARP_TO_LEVEL);
+if ((newLevel_num > 0) && (newLevel_num <= gameData.missions.nLastLevel)) {
 	DoCheatPenalty ();
-	StartNewLevel (new_level_num, 0);
+	StartNewLevel (newLevel_num, 0);
 	}
 }
 
@@ -564,48 +564,48 @@ void WowieCheat (void)
 
 HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
+	gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
 	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo [i] = nMaxPrimaryAmmo [i];
+		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i];
 	for (i=0; i < MAX_D1_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[i] = nMaxSecondaryAmmo [i];
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i];
 	}
 else {
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
-		gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = ~((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG(SUPER_LASER_INDEX));
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = ~((1<<SMISSILE4_INDEX) | (1<<MEGA_INDEX) | (1<<SMISSILE5_INDEX));
+		gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = ~((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG(SUPER_LASER_INDEX));
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = ~((1<<SMISSILE4_INDEX) | (1<<MEGA_INDEX) | (1<<SMISSILE5_INDEX));
 		}
 	else {
-		gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = 0xffff;
+		gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = 0xffff;
 		}
 	for (i=0; i < MAX_PRIMARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo [i] = nMaxPrimaryAmmo [i];
+		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i];
 	for (i=0; i < MAX_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[i] = nMaxSecondaryAmmo [i];
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i];
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMISSILE4_INDEX] = 0;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMISSILE5_INDEX] = 0;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [MEGA_INDEX] = 0;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE4_INDEX] = 0;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE5_INDEX] = 0;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [MEGA_INDEX] = 0;
 		}
 
 	if (gameData.app.nGameMode & GM_HOARD)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX] = 12;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 12;
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX] = 5;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMART_MINE_INDEX] = 5;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 5;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX] = 5;
 		}
 	}
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel(gameData.multi.players [gameData.multi.nLocalPlayer].laser_level, MAX_LASER_LEVEL);
+	NDRecordLaserLevel(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
 
 gameData.multi.players [gameData.multi.nLocalPlayer].energy = MAX_ENERGY;
 if (gameStates.app.bD1Mission)
-	gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = MAX_LASER_LEVEL;
+	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_LASER_LEVEL;
 else {
-	gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = MAX_SUPER_LASER_LEVEL;
+	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
 	}
 UpdateLaserWeaponInfo();
@@ -787,49 +787,49 @@ void DoCheatMenu()
 	sprintf( score_text, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].score );
 
 	memset (mm, 0, sizeof (mm));
-	mm[0].type=NM_TYPE_CHECK; 
+	mm[0].nType=NM_TYPE_CHECK; 
 	mm[0].value=gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE; 
 	mm[0].text="Invulnerability";
-	mm[1].type=NM_TYPE_CHECK; 
+	mm[1].nType=NM_TYPE_CHECK; 
 	mm[1].value=gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED; 
 	mm[1].text="Cloaked";
-	mm[2].type=NM_TYPE_CHECK; 
+	mm[2].nType=NM_TYPE_CHECK; 
 	mm[2].value=0; 
 	mm[2].text="All keys";
-	mm[3].type=NM_TYPE_NUMBER; 
+	mm[3].nType=NM_TYPE_NUMBER; 
 	mm[3].value=f2i(gameData.multi.players [gameData.multi.nLocalPlayer].energy); 
-	mm[3].text="% Energy"; mm[3].min_value=0; 
-	mm[3].max_value=200;
-	mm[4].type=NM_TYPE_NUMBER; 
+	mm[3].text="% Energy"; mm[3].minValue=0; 
+	mm[3].maxValue=200;
+	mm[4].nType=NM_TYPE_NUMBER; 
 	mm[4].value=f2i(gameData.multi.players [gameData.multi.nLocalPlayer].shields); 
-	mm[4].text="% Shields"; mm[4].min_value=0; 
-	mm[4].max_value=200;
-	mm[5].type=NM_TYPE_TEXT; 
+	mm[4].text="% Shields"; mm[4].minValue=0; 
+	mm[4].maxValue=200;
+	mm[5].nType=NM_TYPE_TEXT; 
 	mm[5].text = "Score:";
-	mm[6].type=NM_TYPE_INPUT; 
+	mm[6].nType=NM_TYPE_INPUT; 
 	mm[6].text_len = 10; 
 	mm[6].text = score_text;
-	//mm[7].type=NM_TYPE_RADIO; mm[7].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laser_level==0); mm[7].group=0; mm[7].text="Laser level 1";
-	//mm[8].type=NM_TYPE_RADIO; mm[8].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laser_level==1); mm[8].group=0; mm[8].text="Laser level 2";
-	//mm[9].type=NM_TYPE_RADIO; mm[9].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laser_level==2); mm[9].group=0; mm[9].text="Laser level 3";
-	//mm[10].type=NM_TYPE_RADIO; mm[10].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laser_level==3); mm[10].group=0; mm[10].text="Laser level 4";
+	//mm[7].nType=NM_TYPE_RADIO; mm[7].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==0); mm[7].group=0; mm[7].text="Laser level 1";
+	//mm[8].nType=NM_TYPE_RADIO; mm[8].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==1); mm[8].group=0; mm[8].text="Laser level 2";
+	//mm[9].nType=NM_TYPE_RADIO; mm[9].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==2); mm[9].group=0; mm[9].text="Laser level 3";
+	//mm[10].nType=NM_TYPE_RADIO; mm[10].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==3); mm[10].group=0; mm[10].text="Laser level 4";
 
-	mm[7].type=NM_TYPE_NUMBER; 
-	mm[7].value=gameData.multi.players [gameData.multi.nLocalPlayer].laser_level+1; 
-	mm[7].text="Laser Level"; mm[7].min_value=0; 
-	mm[7].max_value=MAX_SUPER_LASER_LEVEL+1;
-	mm[8].type=NM_TYPE_NUMBER; 
-	mm[8].value=gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[CONCUSSION_INDEX]; 
+	mm[7].nType=NM_TYPE_NUMBER; 
+	mm[7].value=gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel+1; 
+	mm[7].text="Laser Level"; mm[7].minValue=0; 
+	mm[7].maxValue=MAX_SUPER_LASER_LEVEL+1;
+	mm[8].nType=NM_TYPE_NUMBER; 
+	mm[8].value=gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[CONCUSSION_INDEX]; 
 	mm[8].text="Missiles"; 
-	mm[8].min_value=0; 
-	mm[8].max_value=200;
+	mm[8].minValue=0; 
+	mm[8].maxValue=200;
 
 	mmn = ExecMenu("Wimp Menu", NULL, 9, mm, NULL, NULL );
 
 	if (mmn > -1 )  {
 		if ( mm[0].value )  {
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-			gameData.multi.players [gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame+i2f(1000);
+			gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame+i2f(1000);
 		} else
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if ( mm[1].value ) {
@@ -839,7 +839,7 @@ void DoCheatMenu()
 				MultiSendCloak();
 			#endif
 			AIDoCloakStuff();
-			gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame;
+			gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
 		}
 		else
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
@@ -848,12 +848,12 @@ void DoCheatMenu()
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy=i2f(mm[3].value);
 		gameData.multi.players [gameData.multi.nLocalPlayer].shields=i2f(mm[4].value);
 		gameData.multi.players [gameData.multi.nLocalPlayer].score = atoi(mm[6].text);
-		//if (mm[7].value) gameData.multi.players [gameData.multi.nLocalPlayer].laser_level=0;
-		//if (mm[8].value) gameData.multi.players [gameData.multi.nLocalPlayer].laser_level=1;
-		//if (mm[9].value) gameData.multi.players [gameData.multi.nLocalPlayer].laser_level=2;
-		//if (mm[10].value) gameData.multi.players [gameData.multi.nLocalPlayer].laser_level=3;
-		gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = mm[7].value-1;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[CONCUSSION_INDEX] = mm[8].value;
+		//if (mm[7].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=0;
+		//if (mm[8].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=1;
+		//if (mm[9].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=2;
+		//if (mm[10].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=3;
+		gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = mm[7].value-1;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[CONCUSSION_INDEX] = mm[8].value;
 		InitGauges();
 	}
 }

@@ -90,7 +90,7 @@ extern unsigned char * gr_video_memory;
 #define MINY    0
 #define MAXX    (GWIDTH-1)
 #define MAXY    (GHEIGHT-1)
-#define TYPE    grdCurCanv->cv_bitmap.bm_props.type
+#define TYPE    grdCurCanv->cv_bitmap.bm_props.nType
 #define XOFFSET grdCurCanv->cv_bitmap.bm_props.x
 #define YOFFSET grdCurCanv->cv_bitmap.bm_props.y
 #define ROWSIZE grdCurCanv->cv_bitmap.bm_props.rowsize

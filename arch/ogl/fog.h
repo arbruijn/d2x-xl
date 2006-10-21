@@ -28,7 +28,7 @@ typedef void (APIENTRY * PFNGLFOGCOORDFEXTPROC) (GLfloat coord);
 typedef void (APIENTRY * PFNGLFOGCOORDFVEXTPROC) (const GLfloat *coord);
 typedef void (APIENTRY * PFNGLFOGCOORDDEXTPROC) (GLdouble coord);
 typedef void (APIENTRY * PFNGLFOGCOORDDVEXTPROC) (const GLdouble *coord);
-typedef void (APIENTRY * PFNGLFOGCOORDPOINTEREXTPROC) (GLenum type, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * PFNGLFOGCOORDPOINTEREXTPROC) (GLenum nType, GLsizei stride, const GLvoid *pointer);
 #	endif
 
 #ifdef _WIN32

@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * New diagnostic code, levels.all stuff.
  *
  * Revision 1.23  1994/12/20  17:56:36  yuan
- * Multiplayer object capability.
+ * Multiplayer tObject capability.
  *
  * Revision 1.22  1994/11/27  23:12:19  matt
  * Made changes for new con_printf calling convention
@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Lotsa new stuff in this fine debug file.
  *
  * Revision 1.18  1994/11/17  14:58:09  mike
- * moved segment validation functions from editor to main.
+ * moved tSegment validation functions from editor to main.
  *
  * Revision 1.17  1994/11/15  21:43:02  mike
  * texture usage system.
@@ -154,21 +154,21 @@ extern ubyte bogus_data[1024*1024];
 extern grs_bitmap bogus_bitmap;
 
 // ----------------------------------------------------------------------------
-char	*object_types(int objnum)
+char	*objectTypes(int nObject)
 {
-	int	type = gameData.objs.objects[objnum].type;
+	int	nType = gameData.objs.objects[nObject].nType;
 
-	Assert((type >= 0) && (type < MAX_OBJECT_TYPES);
-	return	&szObjectTypeNames[type];
+	Assert((nType >= 0) && (nType < MAX_OBJECT_TYPES);
+	return	&szObjectTypeNames[nType];
 }
 
 // ----------------------------------------------------------------------------
-char	*object_ids(int objnum)
+char	*object_ids(int nObject)
 {
-	int	type = gameData.objs.objects[objnum].type;
-	int	id = gameData.objs.objects[objnum].id;
+	int	nType = gameData.objs.objects[nObject].nType;
+	int	id = gameData.objs.objects[nObject].id;
 
-	switch (type) {
+	switch (nType) {
 		case OBJ_ROBOT:
 			return &gameData.bots.names[id];
 			break;
@@ -220,20 +220,20 @@ void write_exit_text(FILE *my_file)
 	//	---------- Find exit triggers ----------
 	count=0;
 	for (i=0; i<gameData.trigs.nTriggers; i++)
-		if (gameData.trigs.triggers[i].type == TT_EXIT) {
+		if (gameData.trigs.triggers[i].nType == TT_EXIT) {
 			int	count2;
 
-			fprintf(my_file, "Trigger %2i, is an exit trigger with %i links.\n", i, gameData.trigs.triggers[i].num_links);
+			fprintf(my_file, "Trigger %2i, is an exit tTrigger with %i links.\n", i, gameData.trigs.triggers[i].nLinks);
 			count++;
-			if (gameData.trigs.triggers[i].num_links != 0)
-				err_printf(my_file, "Error: Exit triggers must have 0 links, this one has %i links.\n", gameData.trigs.triggers[i].num_links);
+			if (gameData.trigs.triggers[i].nLinks != 0)
+				err_printf(my_file, "Error: Exit triggers must have 0 links, this one has %i links.\n", gameData.trigs.triggers[i].nLinks);
 
-			//	Find wall pointing to this trigger.
+			//	Find wall pointing to this tTrigger.
 			count2 = 0;
 			for (j=0; j<gameData.walls.nWalls; j++)
-				if (gameData.walls.walls[j].trigger == i) {
+				if (gameData.walls.walls[j].tTrigger == i) {
 					count2++;
-					fprintf(my_file, "Exit trigger %i is in segment %i, on side %i, bound to wall %i\n", i, gameData.walls.walls[j].segnum, gameData.walls.walls[j].sidenum, j);
+					fprintf(my_file, "Exit tTrigger %i is in tSegment %i, on tSide %i, bound to wall %i\n", i, gameData.walls.walls[j].nSegment, gameData.walls.walls[j].nSide, j);
 				}
 			if (count2 == 0)
 				err_printf(my_file, "Error: Trigger %i is not bound to any wall.\n", i);
@@ -243,9 +243,9 @@ void write_exit_text(FILE *my_file)
 		}
 
 	if (count == 0)
-		err_printf(my_file, "Error: No exit trigger in this mine.\n");
+		err_printf(my_file, "Error: No exit tTrigger in this mine.\n");
 	else if (count != 1)
-		err_printf(my_file, "Error: More than one exit trigger in this mine.\n");
+		err_printf(my_file, "Error: More than one exit tTrigger in this mine.\n");
 	else
 		fprintf(my_file, "\n");
 
@@ -254,7 +254,7 @@ void write_exit_text(FILE *my_file)
 	for (i=0; i<=gameData.segs.nLastSegment; i++)
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
 			if (gameData.segs.segments[i].children[j] == -2) {
-				fprintf(my_file, "Segment %3i, side %i is an exit door.\n", i, j);
+				fprintf(my_file, "Segment %3i, tSide %i is an exit door.\n", i, j);
 				count++;
 			}
 
@@ -285,43 +285,43 @@ void write_key_text(FILE *my_file)
 
 	for (i=0; i<gameData.walls.nWalls; i++) {
 		if (gameData.walls.walls[i].keys & KEY_BLUE) {
-			fprintf(my_file, "Wall %i (seg=%i, side=%i) is keyed to the blue key.\n", i, gameData.walls.walls[i].segnum, gameData.walls.walls[i].sidenum);
+			fprintf(my_file, "Wall %i (seg=%i, tSide=%i) is keyed to the blue key.\n", i, gameData.walls.walls[i].nSegment, gameData.walls.walls[i].nSide);
 			if (blue_segnum == -1) {
-				blue_segnum = gameData.walls.walls[i].segnum;
-				blue_sidenum = gameData.walls.walls[i].sidenum;
+				blue_segnum = gameData.walls.walls[i].nSegment;
+				blue_sidenum = gameData.walls.walls[i].nSide;
 				blue_count++;
 			} else {
-				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].segnum], &gameData.segs.segments[blue_segnum]);
+				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[blue_segnum]);
 				if (connect_side != blue_sidenum) {
-					warning_printf(my_file, "Warning: This blue door at seg %i, is different than the one at seg %i, side %i\n", gameData.walls.walls[i].segnum, blue_segnum, blue_sidenum);
+					warning_printf(my_file, "Warning: This blue door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, blue_segnum, blue_sidenum);
 					blue_count++;
 				}
 			}
 		}
 		if (gameData.walls.walls[i].keys & KEY_RED) {
-			fprintf(my_file, "Wall %i (seg=%i, side=%i) is keyed to the red key.\n", i, gameData.walls.walls[i].segnum, gameData.walls.walls[i].sidenum);
+			fprintf(my_file, "Wall %i (seg=%i, tSide=%i) is keyed to the red key.\n", i, gameData.walls.walls[i].nSegment, gameData.walls.walls[i].nSide);
 			if (red_segnum == -1) {
-				red_segnum = gameData.walls.walls[i].segnum;
-				red_sidenum = gameData.walls.walls[i].sidenum;
+				red_segnum = gameData.walls.walls[i].nSegment;
+				red_sidenum = gameData.walls.walls[i].nSide;
 				red_count++;
 			} else {
-				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].segnum], &gameData.segs.segments[red_segnum]);
+				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[red_segnum]);
 				if (connect_side != red_sidenum) {
-					warning_printf(my_file, "Warning: This red door at seg %i, is different than the one at seg %i, side %i\n", gameData.walls.walls[i].segnum, red_segnum, red_sidenum);
+					warning_printf(my_file, "Warning: This red door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, red_segnum, red_sidenum);
 					red_count++;
 				}
 			}
 		}
 		if (gameData.walls.walls[i].keys & KEY_GOLD) {
-			fprintf(my_file, "Wall %i (seg=%i, side=%i) is keyed to the gold key.\n", i, gameData.walls.walls[i].segnum, gameData.walls.walls[i].sidenum);
+			fprintf(my_file, "Wall %i (seg=%i, tSide=%i) is keyed to the gold key.\n", i, gameData.walls.walls[i].nSegment, gameData.walls.walls[i].nSide);
 			if (gold_segnum == -1) {
-				gold_segnum = gameData.walls.walls[i].segnum;
-				gold_sidenum = gameData.walls.walls[i].sidenum;
+				gold_segnum = gameData.walls.walls[i].nSegment;
+				gold_sidenum = gameData.walls.walls[i].nSide;
 				gold_count++;
 			} else {
-				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].segnum], &gameData.segs.segments[gold_segnum]);
+				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[gold_segnum]);
 				if (connect_side != gold_sidenum) {
-					warning_printf(my_file, "Warning: This gold door at seg %i, is different than the one at seg %i, side %i\n", gameData.walls.walls[i].segnum, gold_segnum, gold_sidenum);
+					warning_printf(my_file, "Warning: This gold door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, gold_segnum, gold_sidenum);
 					gold_count++;
 				}
 			}
@@ -342,36 +342,36 @@ void write_key_text(FILE *my_file)
 	gold_count2 = 0;
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects[i].type == OBJ_POWERUP)
+		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_BLUE) {
-				fprintf(my_file, "The BLUE key is object %i in segment %i\n", i, gameData.objs.objects[i].segnum);
+				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
 				blue_count2++;
 			}
-		if (gameData.objs.objects[i].type == OBJ_POWERUP)
+		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_RED) {
-				fprintf(my_file, "The RED key is object %i in segment %i\n", i, gameData.objs.objects[i].segnum);
+				fprintf(my_file, "The RED key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
 				red_count2++;
 			}
-		if (gameData.objs.objects[i].type == OBJ_POWERUP)
+		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_GOLD) {
-				fprintf(my_file, "The GOLD key is object %i in segment %i\n", i, gameData.objs.objects[i].segnum);
+				fprintf(my_file, "The GOLD key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
 				gold_count2++;
 			}
 
-		if (gameData.objs.objects[i].contains_count) {
-			if (gameData.objs.objects[i].contains_type == OBJ_POWERUP) {
-				switch (gameData.objs.objects[i].contains_id) {
+		if (gameData.objs.objects[i].containsCount) {
+			if (gameData.objs.objects[i].containsType == OBJ_POWERUP) {
+				switch (gameData.objs.objects[i].containsId) {
 					case POW_KEY_BLUE:
-						fprintf(my_file, "The BLUE key is contained in object %i (a %s %s) in segment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].type], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].segnum);
-						blue_count2 += gameData.objs.objects[i].contains_count;
+						fprintf(my_file, "The BLUE key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
+						blue_count2 += gameData.objs.objects[i].containsCount;
 						break;
 					case POW_KEY_GOLD:
-						fprintf(my_file, "The GOLD key is contained in object %i (a %s %s) in segment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].type], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].segnum);
-						gold_count2 += gameData.objs.objects[i].contains_count;
+						fprintf(my_file, "The GOLD key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
+						gold_count2 += gameData.objs.objects[i].containsCount;
 						break;
 					case POW_KEY_RED:
-						fprintf(my_file, "The RED key is contained in object %i (a %s %s) in segment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].type], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].segnum);
-						red_count2 += gameData.objs.objects[i].contains_count;
+						fprintf(my_file, "The RED key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
+						red_count2 += gameData.objs.objects[i].containsCount;
 						break;
 					default:
 						break;
@@ -405,7 +405,7 @@ void write_key_text(FILE *my_file)
 // ----------------------------------------------------------------------------
 void write_control_center_text(FILE *my_file)
 {
-	int	i, count, objnum, count2;
+	int	i, count, nObject, count2;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Control Center stuff:\n");
@@ -415,17 +415,17 @@ void write_control_center_text(FILE *my_file)
 		if (gameData.segs.segment2s[i].special == SEGMENT_IS_CONTROLCEN) {
 			count++;
 			fprintf(my_file, "Segment %3i is a control center.\n", i);
-			objnum = gameData.segs.segments[i].objects;
+			nObject = gameData.segs.segments[i].objects;
 			count2 = 0;
-			while (objnum != -1) {
-				if (gameData.objs.objects[objnum].type == OBJ_CNTRLCEN)
+			while (nObject != -1) {
+				if (gameData.objs.objects[nObject].nType == OBJ_CNTRLCEN)
 					count2++;
-				objnum = gameData.objs.objects[objnum].next;
+				nObject = gameData.objs.objects[nObject].next;
 			}
 			if (count2 == 0)
-				fprintf(my_file, "No control center object in control center segment.\n");
+				fprintf(my_file, "No control center tObject in control center tSegment.\n");
 			else if (count2 != 1)
-				fprintf(my_file, "%i control center gameData.objs.objects in control center segment.\n", count2);
+				fprintf(my_file, "%i control center gameData.objs.objects in control center tSegment.\n", count2);
 		}
 
 	if (count == 0)
@@ -443,16 +443,16 @@ void write_fuelcen_text(FILE *my_file)
 	fprintf(my_file, "Fuel Center stuff: (Note: This means fuel, repair, materialize, control centers!)\n");
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++) {
-		fprintf(my_file, "Fuelcenter %i: Type=%i (%s), segment = %3i\n", i, gameData.matCens.fuelCenters[i].Type, Special_names[gameData.matCens.fuelCenters[i].Type], gameData.matCens.fuelCenters[i].segnum);
-		if (gameData.segs.segment2s[gameData.matCens.fuelCenters[i].segnum].special != gameData.matCens.fuelCenters[i].Type)
-			err_printf(my_file, "Error: Conflicting data: Segment %i has special type %i (%s), expected to be %i\n", gameData.matCens.fuelCenters[i].segnum, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].segnum].special, Special_names[gameData.segs.segment2s[gameData.matCens.fuelCenters[i].segnum].special], gameData.matCens.fuelCenters[i].Type);
+		fprintf(my_file, "Fuelcenter %i: Type=%i (%s), tSegment = %3i\n", i, gameData.matCens.fuelCenters[i].Type, Special_names[gameData.matCens.fuelCenters[i].Type], gameData.matCens.fuelCenters[i].nSegment);
+		if (gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].special != gameData.matCens.fuelCenters[i].Type)
+			err_printf(my_file, "Error: Conflicting data: Segment %i has special nType %i (%s), expected to be %i\n", gameData.matCens.fuelCenters[i].nSegment, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].special, Special_names[gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].special], gameData.matCens.fuelCenters[i].Type);
 	}
 }
 
 // ----------------------------------------------------------------------------
 void write_segment_text(FILE *my_file)
 {
-	int	i, objnum;
+	int	i, nObject;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Segment stuff:\n");
@@ -463,8 +463,8 @@ void write_segment_text(FILE *my_file)
 		if (gameData.segs.segment2s[i].special != 0)
 			fprintf(my_file, "special = %3i (%s), value = %3i ", gameData.segs.segment2s[i].special, Special_names[gameData.segs.segment2s[i].special], gameData.segs.segment2s[i].value);
 
-		if (gameData.segs.segment2s[i].matcen_num != -1)
-			fprintf(my_file, "matcen = %3i, ", gameData.segs.segment2s[i].matcen_num);
+		if (gameData.segs.segment2s[i].nMatCen != -1)
+			fprintf(my_file, "matcen = %3i, ", gameData.segs.segment2s[i].nMatCen);
 		
 		fprintf(my_file, "\n");
 	}
@@ -472,14 +472,14 @@ void write_segment_text(FILE *my_file)
 	for (i=0; i<=gameData.segs.nLastSegment; i++) {
 		int	depth;
 
-		objnum = gameData.segs.segments[i].objects;
+		nObject = gameData.segs.segments[i].objects;
 		fprintf(my_file, "Segment %4i: ", i);
 		depth=0;
-		if (objnum != -1) {
+		if (nObject != -1) {
 			fprintf(my_file, "gameData.objs.objects: ");
-			while (objnum != -1) {
-				fprintf(my_file, "[%8s %8s %3i] ", object_types(objnum), object_ids(objnum), objnum);
-				objnum = gameData.objs.objects[objnum].next;
+			while (nObject != -1) {
+				fprintf(my_file, "[%8s %8s %3i] ", objectTypes(nObject), object_ids(nObject), nObject);
+				nObject = gameData.objs.objects[nObject].next;
 				if (depth++ > 30) {
 					fprintf(my_file, "\nAborted after %i links\n", depth);
 					break;
@@ -492,7 +492,7 @@ void write_segment_text(FILE *my_file)
 
 // ----------------------------------------------------------------------------
 // This routine is bogus.  It assumes that all centers are matcens,
-// which is not true.  The setting of segnum is bogus.
+// which is not true.  The setting of nSegment is bogus.
 void write_matcen_text(FILE *my_file)
 {
 	int	i, j, k;
@@ -500,22 +500,22 @@ void write_matcen_text(FILE *my_file)
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Materialization centers:\n");
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		int	trigger_count=0, segnum, fuelcen_num;
+		int	trigger_count=0, nSegment, fuelcen_num;
 
-		fprintf(my_file, "fuelcen_info[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].segnum);
-		fprintf(my_file, "Segment2[%04i].matcen_num = %02i  ", gameData.matCens.fuelCenters[i].segnum, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].segnum].matcen_num);
+		fprintf(my_file, "fuelcen_info[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
+		fprintf(my_file, "Segment2[%04i].nMatCen = %02i  ", gameData.matCens.fuelCenters[i].nSegment, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].nMatCen);
 
 		fuelcen_num = gameData.matCens.robotCenters[i].fuelcen_num;
 		if (gameData.matCens.fuelCenters[fuelcen_num].Type != SEGMENT_IS_ROBOTMAKER)
-			err_printf(my_file, "Error: Matcen %i corresponds to gameData.matCens.fuelCenters %i, which has type %i (%s).\n", i, fuelcen_num, gameData.matCens.fuelCenters[fuelcen_num].Type, Special_names[gameData.matCens.fuelCenters[fuelcen_num].Type]);
+			err_printf(my_file, "Error: Matcen %i corresponds to gameData.matCens.fuelCenters %i, which has nType %i (%s).\n", i, fuelcen_num, gameData.matCens.fuelCenters[fuelcen_num].Type, Special_names[gameData.matCens.fuelCenters[fuelcen_num].Type]);
 
-		segnum = gameData.matCens.fuelCenters[fuelcen_num].segnum;
+		nSegment = gameData.matCens.fuelCenters[fuelcen_num].nSegment;
 
-		//	Find trigger for this materialization center.
+		//	Find tTrigger for this materialization center.
 		for (j=0; j<gameData.trigs.nTriggers; j++) {
-			if (gameData.trigs.triggers[j].type == TT_MATCEN) {
-				for (k=0; k<gameData.trigs.triggers[j].num_links; k++)
-					if (gameData.trigs.triggers[j].seg[k] == segnum) {
+			if (gameData.trigs.triggers[j].nType == TT_MATCEN) {
+				for (k=0; k<gameData.trigs.triggers[j].nLinks; k++)
+					if (gameData.trigs.triggers[j].seg[k] == nSegment) {
 						fprintf(my_file, "Trigger = %2i  ", j );
 						trigger_count++;
 					}
@@ -524,7 +524,7 @@ void write_matcen_text(FILE *my_file)
 		fprintf(my_file, "\n");
 
 		if (trigger_count == 0)
-			err_printf(my_file, "Error: Matcen %i in segment %i has no trigger!\n", i, segnum);
+			err_printf(my_file, "Error: Matcen %i in tSegment %i has no tTrigger!\n", i, nSegment);
 
 	}
 }
@@ -533,65 +533,65 @@ void write_matcen_text(FILE *my_file)
 void write_wall_text(FILE *my_file)
 {
 	int	i, j;
-	byte	wall_flags[MAX_WALLS];
-	segment *segp;
-	side *sidep;
+	byte	wallFlags[MAX_WALLS];
+	tSegment *segp;
+	tSide *sideP;
 	wall	*wallP;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.walls.walls:\n");
 	for (i=0, wallP = gameData.walls.walls; i<gameData.walls.nWalls; i++, wallP++) {
-		int	segnum, sidenum;
+		int	nSegment, nSide;
 
 		fprintf(my_file, 
-			"Wall %03i: seg=%3i, side=%2i, linked_wall=%3i, type=%s, flags=%4x, hps=%3i, trigger=%2i, clip_num=%2i, keys=%2i, state=%i\n", i,
-			wallP->segnum, 
-			wallP->sidenum, 
+			"Wall %03i: seg=%3i, tSide=%2i, linked_wall=%3i, nType=%s, flags=%4x, hps=%3i, tTrigger=%2i, clip_num=%2i, keys=%2i, state=%i\n", i,
+			wallP->nSegment, 
+			wallP->nSide, 
 			wallP->linked_wall, 
-			pszWallNames[wallP->type], 
+			pszWallNames[wallP->nType], 
 			wallP->flags, wallP->hps >> 16, 
-			wallP->trigger, 
+			wallP->tTrigger, 
 			wallP->clip_num, 
 			wallP->keys, 
 			wallP->state);
 
-		if (wallP->trigger >= gameData.trigs.nTriggers)
-			fprintf(my_file, "Wall %03d points to invalid trigger %d\n",i,wallP->trigger);
+		if (wallP->tTrigger >= gameData.trigs.nTriggers)
+			fprintf(my_file, "Wall %03d points to invalid tTrigger %d\n",i,wallP->tTrigger);
 
-		segnum = wallP->segnum;
-		sidenum = wallP->sidenum;
+		nSegment = wallP->nSegment;
+		nSide = wallP->nSide;
 
-		if (WallNumI (segnum, sidenum) != i)
-			err_printf(my_file, "Error: Wall %i points at segment %i, side %i, but that segment doesn't point back (it's wall_num = %i)\n", 
-							i, segnum, sidenum, WallNumI (segnum, sidenum));
+		if (WallNumI (nSegment, nSide) != i)
+			err_printf(my_file, "Error: Wall %i points at tSegment %i, tSide %i, but that tSegment doesn't point back (it's nWall = %i)\n", 
+							i, nSegment, nSide, WallNumI (nSegment, nSide));
 	}
 
 	for (i=0; i<MAX_WALLS; i++)
-		wall_flags[i] = 0;
+		wallFlags[i] = 0;
 
 	for (i=0, segp = gameData.segs.segments; i<=gameData.segs.nLastSegment; i++, segp++) {
-		for (j=0, sidep = segp->sides; j<MAX_SIDES_PER_SEGMENT; j++, sidep++) {
-			short wall_num = WallNumP (sideP);
-			if (IS_WALL (wall_num))
-				if (wall_flags[wall_num])
-					err_printf(my_file, "Error: Wall %i appears in two or more segments, including segment %i, side %i.\n", sidep->wall_num, i, j);
+		for (j=0, sideP = segp->sides; j<MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+			short nWall = WallNumP (sideP);
+			if (IS_WALL (nWall))
+				if (wallFlags[nWall])
+					err_printf(my_file, "Error: Wall %i appears in two or more segments, including tSegment %i, tSide %i.\n", sideP->nWall, i, j);
 				else
-					wall_flags[wall_num] = 1;
+					wallFlags[nWall] = 1;
 		}
 	}
 
 }
 
-//typedef struct trigger {
-//	byte		type;
+//typedef struct tTrigger {
+//	byte		nType;
 //	short		flags;
 //	fix		value;
 //	fix		time;
 //	byte		link_num;
-//	short 	num_links;
+//	short 	nLinks;
 //	short 	seg[MAX_WALLS_PER_LINK];
-//	short		side[MAX_WALLS_PER_LINK];
-//	} trigger;
+//	short		tSide[MAX_WALLS_PER_LINK];
+//	} tTrigger;
 
 // ----------------------------------------------------------------------------
 void write_player_text(FILE *my_file)
@@ -601,9 +601,9 @@ void write_player_text(FILE *my_file)
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.multi.players:\n");
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects[i].type == OBJ_PLAYER) {
+		if (gameData.objs.objects[i].nType == OBJ_PLAYER) {
 			num_players++;
-			fprintf(my_file, "Player %2i is object #%3i in segment #%3i.\n", gameData.objs.objects[i].id, i, gameData.objs.objects[i].segnum);
+			fprintf(my_file, "Player %2i is tObject #%3i in tSegment #%3i.\n", gameData.objs.objects[i].id, i, gameData.objs.objects[i].nSegment);
 		}
 	}
 
@@ -622,22 +622,22 @@ void write_trigger_text(FILE *my_file)
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.trigs.triggers:\n");
 	for (i=0; i<gameData.trigs.nTriggers; i++) {
-		fprintf(my_file, "Trigger %03i: type=%02x flags=%04x, value=%08x, time=%8x, num_links=%i ", i,
-			gameData.trigs.triggers[i].type, gameData.trigs.triggers[i].flags, gameData.trigs.triggers[i].value, gameData.trigs.triggers[i].time, gameData.trigs.triggers[i].num_links);
+		fprintf(my_file, "Trigger %03i: nType=%02x flags=%04x, value=%08x, time=%8x, nLinks=%i ", i,
+			gameData.trigs.triggers[i].nType, gameData.trigs.triggers[i].flags, gameData.trigs.triggers[i].value, gameData.trigs.triggers[i].time, gameData.trigs.triggers[i].nLinks);
 
-		for (j=0; j<gameData.trigs.triggers[i].num_links; j++)
-			fprintf(my_file, "[%03i:%i] ", gameData.trigs.triggers[i].seg[j], gameData.trigs.triggers[i].side[j]);
+		for (j=0; j<gameData.trigs.triggers[i].nLinks; j++)
+			fprintf(my_file, "[%03i:%i] ", gameData.trigs.triggers[i].seg[j], gameData.trigs.triggers[i].tSide[j]);
 
-		//	Find which wall this trigger is connected to.
+		//	Find which wall this tTrigger is connected to.
 		for (w=gameData.walls.nWalls, wallP = gameData.walls.walls; w; w--, wallP++)
-			if (wallP->trigger == i)
+			if (wallP->tTrigger == i)
 				break;
 
 		if (w == gameData.walls.nWalls)
 			err_printf(my_file, "\nError: Trigger %i is not connected to any wall, so it can never be triggered.\n", i);
 		else
-			fprintf(my_file, "Attached to seg:side = %i:%i, wall %i\n", 
-				wallP->segnum, wallP->sidenum, WallNumI (wallP->segnum, wallP->sidenum));
+			fprintf(my_file, "Attached to seg:tSide = %i:%i, wall %i\n", 
+				wallP->nSegment, wallP->nSide, WallNumI (wallP->nSegment, wallP->nSide));
 
 	}
 
@@ -674,8 +674,8 @@ void write_game_text_file(char *filename)
 		return;
 	}
 
-	dump_used_textures_level(my_file, 0);
-	say_totals(my_file, gameData.segs.szLevelFilename);
+	dump_used_texturesLevel(my_file, 0);
+	sayTotals(my_file, gameData.segs.szLevelFilename);
 
 	fprintf(my_file, "\nNumber of segments:   %4i\n", gameData.segs.nLastSegment+1);
 	fprintf(my_file, "Number of gameData.objs.objects:    %4i\n", gameData.objs.nLastObject+1);
@@ -699,7 +699,7 @@ void write_game_text_file(char *filename)
 
 	write_exit_text(my_file);
 
-	//	---------- Find control center segment ----------
+	//	---------- Find control center tSegment ----------
 	write_control_center_text(my_file);
 
 	//	---------- Show keyed walls ----------
@@ -715,100 +715,11 @@ void write_game_text_file(char *filename)
 }
 }
 
-// -- //	---------------
-// -- //	Note: This only works for a loaded level because the gameData.objs.objects array must be valid.
-// -- void determine_used_textures_robots(int *tmap_buf)
-// -- {
-// -- 	int	i, objnum;
-// -- 	polymodel	*po;
-// --
-// -- 	Assert(gameData.models.nPolyModels);
-// --
-// -- 	for (objnum=0; objnum <= gameData.objs.nLastObject; objnum++) {
-// -- 		int	model_num;
-// --
-// -- 		if (gameData.objs.objects[objnum].render_type == RT_POLYOBJ) {
-// -- 			model_num = gameData.objs.objects[objnum].rtype.pobj_info.model_num;
-// --
-// -- 			po=&gameData.models.polyModels[model_num];
-// --
-// -- 			for (i=0;i<po->n_textures;i++)	{
-// -- 				int	tli;
-// --
-// -- 				tli = gameData.pig.tex.objBmIndex[gameData.pig.tex.pObjBmIndex[po->first_texture+i]];
-// -- 				Assert((tli>=0) && (tli<= Num_tmaps);
-// -- 				tmap_buf[tli]++;
-// -- 			}
-// -- 		}
-// -- 	}
-// --
-// -- }
-
-// --05/17/95--//	-----------------------------------------------------------------------------
-// --05/17/95--void determine_used_textures_level(int load_level_flag, int shareware_flag, int level_num, int *tmap_buf, int *wall_buf, byte *level_tmap_buf, int max_tmap)
-// --05/17/95--{
-// --05/17/95--	int	segnum, sidenum;
-// --05/17/95--	int	i, j;
-// --05/17/95--
-// --05/17/95--	for (i=0; i<max_tmap; i++)
-// --05/17/95--		tmap_buf[i] = 0;
-// --05/17/95--
-// --05/17/95--	if (load_level_flag) {
-// --05/17/95--		if (shareware_flag)
-// --05/17/95--			LoadLevelSub(Shareware_level_names[level_num]);
-// --05/17/95--		else
-// --05/17/95--			LoadLevelSub(Registered_level_names[level_num]);
-// --05/17/95--	}
-// --05/17/95--
-// --05/17/95--	for (segnum=0; segnum<=gameData.segs.nLastSegment; segnum++) {
-// --05/17/95--		segment	*segp = &gameData.segs.segments[segnum];
-// --05/17/95--
-// --05/17/95--		for (sidenum=0; sidenum<MAX_SIDES_PER_SEGMENT; sidenum++) {
-// --05/17/95--			side	*sidep = &segp->sides[sidenum];
-// --05/17/95--
-// --05/17/95--			if (sidep->wall_num != -1) {
-// --05/17/95--				int clip_num = gameData.walls.walls[sidep->wall_num].clip_num;
-// --05/17/95--				if (clip_num != -1) {
-// --05/17/95--
-// --05/17/95--					int num_frames = gameData.walls.anims[clip_num].nFrameCount;
-// --05/17/95--
-// --05/17/95--					wall_buf[clip_num] = 1;
-// --05/17/95--
-// --05/17/95--					for (j=0; j<num_frames; j++) {
-// --05/17/95--						int	tmap_num;
-// --05/17/95--
-// --05/17/95--						tmap_num = gameData.walls.anims[clip_num].frames[j];
-// --05/17/95--						tmap_buf[tmap_num]++;
-// --05/17/95--						if (level_tmap_buf[tmap_num] == -1)
-// --05/17/95--							level_tmap_buf[tmap_num] = level_num + (!shareware_flag) * NUM_SHAREWARE_LEVELS;
-// --05/17/95--					}
-// --05/17/95--				}
-// --05/17/95--			}
-// --05/17/95--
-// --05/17/95--			if (sidep->tmap_num >= 0)
-// --05/17/95--				if (sidep->tmap_num < max_tmap) {
-// --05/17/95--					tmap_buf[sidep->tmap_num]++;
-// --05/17/95--					if (level_tmap_buf[sidep->tmap_num] == -1)
-// --05/17/95--						level_tmap_buf[sidep->tmap_num] = level_num + (!shareware_flag) * NUM_SHAREWARE_LEVELS;
-// --05/17/95--				} else
-// --05/17/95--					Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
-// --05/17/95--
-// --05/17/95--			if ((sidep->tmap_num2 & 0x3fff) != 0)
-// --05/17/95--				if ((sidep->tmap_num2 & 0x3fff) < max_tmap) {
-// --05/17/95--					tmap_buf[sidep->tmap_num2 & 0x3fff]++;
-// --05/17/95--					if (level_tmap_buf[sidep->tmap_num2 & 0x3fff] == -1)
-// --05/17/95--						level_tmap_buf[sidep->tmap_num2 & 0x3fff] = level_num + (!shareware_flag) * NUM_SHAREWARE_LEVELS;
-// --05/17/95--				} else
-// --05/17/95--					Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
-// --05/17/95--		}
-// --05/17/95--	}
-// --05/17/95--}
-
 //	Adam: Change NUM_ADAM_LEVELS to the number of levels.
 #define	NUM_ADAM_LEVELS	30
 
 //	Adam: Stick the names here.
-char *Adam_level_names[NUM_ADAM_LEVELS] = {
+char *AdamLevel_names[NUM_ADAM_LEVELS] = {
 	"D2LEVA-1.LVL",
 	"D2LEVA-2.LVL",
 	"D2LEVA-3.LVL",
@@ -855,27 +766,27 @@ extern BitmapFile gameData.pig.tex.bitmapFiles[ MAX_BITMAP_FILES ];
 int	Ignore_tmap_num2_error;
 
 // ----------------------------------------------------------------------------
-void determine_used_textures_level(int load_level_flag, int shareware_flag, int level_num, int *tmap_buf, int *wall_buf, byte *level_tmap_buf, int max_tmap)
+void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int level_num, int *tmap_buf, int *wall_buf, byte *level_tmap_buf, int max_tmap)
 {
-	int	segnum, sidenum, objnum=max_tmap;
+	int	nSegment, nSide, nObject=max_tmap;
 	int	i, j;
 
-	Assert(shareware_flag != -17);
+	Assert(sharewareFlag != -17);
 
 	for (i=0; i<MAX_BITMAP_FILES; i++)
 		tmap_buf[i] = 0;
 
-	if (load_level_flag) {
-		LoadLevelSub(Adam_level_names[level_num]);
+	if (loadLevelFlag) {
+		LoadLevelSub(AdamLevel_names[level_num]);
 	}
 
 
 	//	Process robots.
-	for (objnum=0; objnum<=gameData.objs.nLastObject; objnum++) {
-		object *objP = &gameData.objs.objects[objnum];
+	for (nObject=0; nObject<=gameData.objs.nLastObject; nObject++) {
+		tObject *objP = &gameData.objs.objects[nObject];
 
-		if (objP->render_type == RT_POLYOBJ) {
-			polymodel *po = &gameData.models.polyModels[objP->rtype.pobj_info.model_num];
+		if (objP->renderType == RT_POLYOBJ) {
+			polymodel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
 
 			for (i=0; i<po->n_textures; i++) {
 
@@ -894,15 +805,15 @@ void determine_used_textures_level(int load_level_flag, int shareware_flag, int 
 
 	Ignore_tmap_num2_error = 0;
 
-	//	Process walls and segment sides.
-	for (segnum=0; segnum<=gameData.segs.nLastSegment; segnum++) {
-		segment	*segp = &gameData.segs.segments[segnum];
+	//	Process walls and tSegment sides.
+	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
+		tSegment	*segp = &gameData.segs.segments[nSegment];
 
-		for (sidenum=0; sidenum<MAX_SIDES_PER_SEGMENT; sidenum++) {
-			side	*sidep = &segp->sides[sidenum];
+		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
+			tSide	*sideP = &segp->sides[nSide];
 
-			if (sidep->wall_num != -1) {
-				int clip_num = gameData.walls.walls[sidep->wall_num].clip_num;
+			if (sideP->nWall != -1) {
+				int clip_num = gameData.walls.walls[sideP->nWall].clip_num;
 				if (clip_num != -1) {
 
 					// -- int num_frames = gameData.walls.anims[clip_num].nFrameCount;
@@ -910,37 +821,38 @@ void determine_used_textures_level(int load_level_flag, int shareware_flag, int 
 					wall_buf[clip_num] = 1;
 
 					for (j=0; j<1; j++) {	//	Used to do through num_frames, but don't really want all the door01#3 stuff.
-						int	tmap_num;
+						int	nBaseTex;
 
-						tmap_num = gameData.pig.tex.pBmIndex[gameData.walls.anims[clip_num].frames[j]].index;
-						Assert((tmap_num >= 0) && (tmap_num < MAX_BITMAP_FILES);
-						tmap_buf[tmap_num]++;
-						if (level_tmap_buf[tmap_num] == -1)
-							level_tmap_buf[tmap_num] = level_num;
+						nBaseTex = gameData.pig.tex.pBmIndex[gameData.walls.anims[clip_num].frames[j]].index;
+						Assert((nBaseTex >= 0) && (nBaseTex < MAX_BITMAP_FILES);
+						tmap_buf[nBaseTex]++;
+						if (level_tmap_buf[nBaseTex] == -1)
+							level_tmap_buf[nBaseTex] = level_num;
 					}
 				}
-			} else if (segp->children[sidenum] == -1) {
+			} else if (segp->children[nSide] == -1) {
 
-				if (sidep->tmap_num >= 0)
-					if (sidep->tmap_num < MAX_BITMAP_FILES) {
-						Assert(gameData.pig.tex.pBmIndex[sidep->tmap_num].index < MAX_BITMAP_FILES);
-						tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num].index]++;
-						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num].index] == -1)
-							level_tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num].index] = level_num;
+				if (sideP->nBaseTex >= 0)
+					if (sideP->nBaseTex < MAX_BITMAP_FILES) {
+						Assert(gameData.pig.tex.pBmIndex[sideP->nBaseTex].index < MAX_BITMAP_FILES);
+						tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index]++;
+						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index] == -1)
+							level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nBaseTex].index] = level_num;
 					} else
 						Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
 
-				if ((sidep->tmap_num2 & 0x3fff) != 0)
-					if ((sidep->tmap_num2 & 0x3fff) < MAX_BITMAP_FILES) {
-						Assert(gameData.pig.tex.pBmIndex[sidep->tmap_num2 & 0x3fff].index < MAX_BITMAP_FILES);
-						tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num2 & 0x3fff].index]++;
-						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num2 & 0x3fff].index] == -1)
-							level_tmap_buf[gameData.pig.tex.pBmIndex[sidep->tmap_num2 & 0x3fff].index] = level_num;
+				if ((sideP->nOvlTex) != 0)
+					if ((sideP->nOvlTex) < MAX_BITMAP_FILES) {
+						Assert(gameData.pig.tex.pBmIndex[sideP->nOvlTex].index < MAX_BITMAP_FILES);
+						tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index]++;
+						if (level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index] == -1)
+							level_tmap_buf[gameData.pig.tex.pBmIndex[sideP->nOvlTex].index] = level_num;
 					} else {
 						if (!Ignore_tmap_num2_error)
 							Int3();	//	Error, bogus texture map.  Should not be greater than max_tmap.
 						Ignore_tmap_num2_error = 1;
-						sidep->tmap_num2 = 0;
+						sideP->nOvlTex = 0;
+						sideP->nOvlOrient = 0;
 					}
 			}
 		}
@@ -984,10 +896,10 @@ void say_used_tmaps(FILE *my_file, int *tb)
 // --05/17/95--			int	level_num = tb_lnum[i];
 // --05/17/95--			if (level_num >= NUM_SHAREWARE_LEVELS) {
 // --05/17/95--				Assert((level_num - NUM_SHAREWARE_LEVELS >= 0) && (level_num - NUM_SHAREWARE_LEVELS < NUM_REGISTERED_LEVELS);
-// --05/17/95--				level_name = Registered_level_names[level_num - NUM_SHAREWARE_LEVELS];
+// --05/17/95--				level_name = RegisteredLevel_names[level_num - NUM_SHAREWARE_LEVELS];
 // --05/17/95--			} else {
 // --05/17/95--				Assert((level_num >= 0) && (level_num < NUM_SHAREWARE_LEVELS);
-// --05/17/95--				level_name = Shareware_level_names[level_num];
+// --05/17/95--				level_name = SharewareLevel_names[level_num];
 // --05/17/95--			}
 // --05/17/95--
 // --05/17/95--			fprintf(my_file, "Texture %3i %8s used only once on level %s\n", i, gameData.pig.tex.pTMapInfo[i].filename, level_name);
@@ -1003,7 +915,7 @@ void say_used_once_tmaps(FILE *my_file, int *tb, byte *tb_lnum)
 	for (i=0; i<MAX_BITMAP_FILES; i++)
 		if (tb[i] == 1) {
 			int	level_num = tb_lnum[i];
-			level_name = Adam_level_names[level_num];
+			level_name = AdamLevel_names[level_num];
 
 			fprintf(my_file, "Texture %3i %8s used only once on level %s\n", i, gameData.pig.tex.bitmapFiles[i].name, level_name);
 		}
@@ -1041,53 +953,53 @@ void say_unused_walls(FILE *my_file, int *tb)
 }
 
 // ----------------------------------------------------------------------------
-say_totals(FILE *my_file, char *level_name)
+sayTotals(FILE *my_file, char *level_name)
 {
-	int	i;		//, objnum;
-	int	total_robots = 0;
+	int	i;		//, nObject;
+	int	totalRobots = 0;
 	int	objects_processed = 0;
 
-	int	used_objects[MAX_OBJECTS];
+	int	usedObjects[MAX_OBJECTS];
 
 	fprintf(my_file, "\nLevel %s\n", level_name);
 
 	for (i=0; i<MAX_OBJECTS; i++)
-		used_objects[i] = 0;
+		usedObjects[i] = 0;
 
 	while (objects_processed < gameData.objs.nLastObject+1) {
 		int	j, objtype, objid, objcount, cur_obj_val, min_obj_val, min_objnum;
 
-		//	Find new min objnum.
+		//	Find new min nObject.
 		min_obj_val = 0x7fff0000;
 		min_objnum = -1;
 
 		for (j=0; j<=gameData.objs.nLastObject; j++) {
-			if (!used_objects[j] && gameData.objs.objects[j].type!=OBJ_NONE) {
-				cur_obj_val = gameData.objs.objects[j].type * 1000 + gameData.objs.objects[j].id;
+			if (!usedObjects[j] && gameData.objs.objects[j].nType!=OBJ_NONE) {
+				cur_obj_val = gameData.objs.objects[j].nType * 1000 + gameData.objs.objects[j].id;
 				if (cur_obj_val < min_obj_val) {
 					min_objnum = j;
 					min_obj_val = cur_obj_val;
 				}
 			}
 		}
-		if ((min_objnum == -1) || (gameData.objs.objects[min_objnum].type == 255))
+		if ((min_objnum == -1) || (gameData.objs.objects[min_objnum].nType == 255))
 			break;
 
 		objcount = 0;
 
-		objtype = gameData.objs.objects[min_objnum].type;
+		objtype = gameData.objs.objects[min_objnum].nType;
 		objid = gameData.objs.objects[min_objnum].id;
 
 		for (i=0; i<=gameData.objs.nLastObject; i++) {
-			if (!used_objects[i]) {
+			if (!usedObjects[i]) {
 
-				if (((gameData.objs.objects[i].type == objtype) && (gameData.objs.objects[i].id == objid)) ||
-						((gameData.objs.objects[i].type == objtype) && (objtype == OBJ_PLAYER)) ||
-						((gameData.objs.objects[i].type == objtype) && (objtype == OBJ_COOP)) ||
-						((gameData.objs.objects[i].type == objtype) && (objtype == OBJ_HOSTAGE))) {
-					if (gameData.objs.objects[i].type == OBJ_ROBOT)
-						total_robots++;
-					used_objects[i] = 1;
+				if (((gameData.objs.objects[i].nType == objtype) && (gameData.objs.objects[i].id == objid)) ||
+						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_PLAYER)) ||
+						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_COOP)) ||
+						((gameData.objs.objects[i].nType == objtype) && (objtype == OBJ_HOSTAGE))) {
+					if (gameData.objs.objects[i].nType == OBJ_ROBOT)
+						totalRobots++;
+					usedObjects[i] = 1;
 					objcount++;
 					objects_processed++;
 				}
@@ -1096,18 +1008,18 @@ say_totals(FILE *my_file, char *level_name)
 
 		if (objcount) {
 			fprintf(my_file, "Object: ");
-			fprintf(my_file, "%8s %8s %3i\n", object_types(min_objnum), object_ids(min_objnum), objcount);
+			fprintf(my_file, "%8s %8s %3i\n", objectTypes(min_objnum), object_ids(min_objnum), objcount);
 		}
 	}
 
-	fprintf(my_file, "Total robots = %3i\n", total_robots);
+	fprintf(my_file, "Total robots = %3i\n", totalRobots);
 }
 
-int	First_dump_level = 0;
-int	Last_dump_level = NUM_ADAM_LEVELS-1;
+int	First_dumpLevel = 0;
+int	Last_dumpLevel = NUM_ADAM_LEVELS-1;
 
 // ----------------------------------------------------------------------------
-void say_totals_all(void)
+void sayTotals_all(void)
 {
 	int	i;
 	FILE	*my_file;
@@ -1125,29 +1037,29 @@ void say_totals_all(void)
 		return;
 	}
 
-	for (i=First_dump_level; i<=Last_dump_level; i++) {
+	for (i=First_dumpLevel; i<=Last_dumpLevel; i++) {
 #if TRACE
 		con_printf (CON_DEBUG, "Level %i\n", i+1);
 #endif
-		LoadLevelSub(Adam_level_names[i]);
-		say_totals(my_file, Adam_level_names[i]);
+		LoadLevelSub(AdamLevel_names[i]);
+		sayTotals(my_file, AdamLevel_names[i]);
 	}
 
 //--05/17/95--	for (i=0; i<NUM_SHAREWARE_LEVELS; i++) {
-//--05/17/95--		LoadLevelSub(Shareware_level_names[i]);
-//--05/17/95--		say_totals(my_file, Shareware_level_names[i]);
+//--05/17/95--		LoadLevelSub(SharewareLevel_names[i]);
+//--05/17/95--		sayTotals(my_file, SharewareLevel_names[i]);
 //--05/17/95--	}
 //--05/17/95--
 //--05/17/95--	for (i=0; i<NUM_REGISTERED_LEVELS; i++) {
-//--05/17/95--		LoadLevelSub(Registered_level_names[i]);
-//--05/17/95--		say_totals(my_file, Registered_level_names[i]);
+//--05/17/95--		LoadLevelSub(RegisteredLevel_names[i]);
+//--05/17/95--		sayTotals(my_file, RegisteredLevel_names[i]);
 //--05/17/95--	}
 
 	fclose(my_file);
 
 }
 
-void dump_used_textures_level(FILE *my_file, int level_num)
+void dump_used_texturesLevel(FILE *my_file, int level_num)
 {
 	int	i;
 	int	temp_tmap_buf[MAX_BITMAP_FILES];
@@ -1165,8 +1077,8 @@ void dump_used_textures_level(FILE *my_file, int level_num)
 		perm_wall_buf[i] = 0;
 	}
 
-	determine_used_textures_level(0, 1, level_num, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
-// -- 	determine_used_textures_robots(temp_tmap_buf);
+	determine_used_texturesLevel(0, 1, level_num, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
+// -- 	determine_used_texturesRobots(temp_tmap_buf);
 	fprintf(my_file, "\nTextures used in [%s]\n", gameData.segs.szLevelFilename);
 	say_used_tmaps(my_file, temp_tmap_buf);
 }
@@ -1183,7 +1095,7 @@ void dump_used_textures_all(void)
 	int	temp_wall_buf[MAX_BITMAP_FILES];
 	int	perm_wall_buf[MAX_BITMAP_FILES];
 
-say_totals_all();
+sayTotals_all();
 
 	my_file = fopen( "textures.dmp", "wt" );
 	if (!my_file)	{
@@ -1208,8 +1120,8 @@ say_totals_all();
 	}
 
 // --05/17/95--	for (i=0; i<NUM_SHAREWARE_LEVELS; i++) {
-// --05/17/95--		determine_used_textures_level(1, 1, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
-// --05/17/95--		fprintf(my_file, "\nTextures used in [%s]\n", Shareware_level_names[i]);
+// --05/17/95--		determine_used_texturesLevel(1, 1, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
+// --05/17/95--		fprintf(my_file, "\nTextures used in [%s]\n", SharewareLevel_names[i]);
 // --05/17/95--		say_used_tmaps(my_file, temp_tmap_buf);
 // --05/17/95--		merge_buffers(perm_tmap_buf, temp_tmap_buf, MAX_BITMAP_FILES);
 // --05/17/95--		merge_buffers(perm_wall_buf, temp_wall_buf, MAX_BITMAP_FILES);
@@ -1228,8 +1140,8 @@ say_totals_all();
 // --05/17/95--	say_unused_walls(my_file, perm_wall_buf);
 
 // --05/17/95--	for (i=0; i<NUM_REGISTERED_LEVELS; i++) {
-// --05/17/95--		determine_used_textures_level(1, 0, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
-// --05/17/95--		fprintf(my_file, "\nTextures used in [%s]\n", Registered_level_names[i]);
+// --05/17/95--		determine_used_texturesLevel(1, 0, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
+// --05/17/95--		fprintf(my_file, "\nTextures used in [%s]\n", RegisteredLevel_names[i]);
 // --05/17/95--		say_used_tmaps(my_file, temp_tmap_buf);
 // --05/17/95--		merge_buffers(perm_tmap_buf, temp_tmap_buf, MAX_BITMAP_FILES);
 // --05/17/95--	}
@@ -1240,9 +1152,9 @@ say_totals_all();
 // --05/17/95--	fprintf(my_file, "\nUnused textures in all (including registered) mines:\n");
 // --05/17/95--	say_unused_tmaps(my_file, perm_tmap_buf);
 
-	for (i=First_dump_level; i<=Last_dump_level; i++) {
-		determine_used_textures_level(1, 0, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
-		fprintf(my_file, "\nTextures used in [%s]\n", Adam_level_names[i]);
+	for (i=First_dumpLevel; i<=Last_dumpLevel; i++) {
+		determine_used_texturesLevel(1, 0, i, temp_tmap_buf, temp_wall_buf, level_tmap_buf, MAX_BITMAP_FILES);
+		fprintf(my_file, "\nTextures used in [%s]\n", AdamLevel_names[i]);
 		say_used_tmaps(my_file, temp_tmap_buf);
 		merge_buffers(perm_tmap_buf, temp_tmap_buf, MAX_BITMAP_FILES);
 	}

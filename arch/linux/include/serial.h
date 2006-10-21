@@ -12,7 +12,7 @@
 
 void com_done(void);
 int com_init(void);
-int com_read(char *buffer, int len, int timeout_value);
+int com_read(char *buffer, int len, int timeoutValue);
 int com_write(char *buffer, int len);
 void com_port_hangup();
 int com_getdcd();

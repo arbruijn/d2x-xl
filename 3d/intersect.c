@@ -159,7 +159,7 @@ int coplanar_tri_tri(float N[3],float V0[3],float V1[3],float V2[3],
         if(D0D1>0.0f) \
         { \
                 /* here we know that D0D2<=0.0 */ \
-            /* that is D0, D1 are on the same side, D2 on the other or on the plane */ \
+            /* that is D0, D1 are on the same tSide, D2 on the other or on the plane */ \
                 A=VV2; B=(VV0-VV2)*D2; C=(VV1-VV2)*D2; X0=D2-D0; X1=D2-D1; \
         } \
         else if(D0D2>0.0f)\

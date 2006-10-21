@@ -190,9 +190,9 @@ short CFReadShort (CFILE *file);
 sbyte CFReadByte (CFILE *file);
 fix CFReadFix (CFILE *file);
 fixang CFReadFixAng (CFILE *file);
-void CFReadVector (vms_vector *v, CFILE *file);
-void CFReadAngVec (vms_angvec *v, CFILE *file);
-void CFReadMatrix (vms_matrix *v, CFILE *file);
+void CFReadVector (vmsVector *v, CFILE *file);
+void CFReadAngVec (vmsAngVec *v, CFILE *file);
+void CFReadMatrix (vmsMatrix *v, CFILE *file);
 float CFReadFloat (CFILE *file);
 double CFReadDouble (CFILE *file);
 char *CFReadData (char *filename, char *folder, int bUseD1Hog);
@@ -207,9 +207,9 @@ int CFWriteInt (int i, CFILE *file);
 int CFWriteShort (short s, CFILE *file);
 int CFWriteByte (sbyte u, CFILE *file);
 int CFWriteFixAng (fixang a, CFILE *file);
-void CFWriteAngVec (vms_angvec *v, CFILE *file);
-void CFWriteVector (vms_vector *v, CFILE *file);
-void CFWriteMatrix (vms_matrix *m,CFILE *file);
+void CFWriteAngVec (vmsAngVec *v, CFILE *file);
+void CFWriteVector (vmsVector *v, CFILE *file);
+void CFWriteMatrix (vmsMatrix *m,CFILE *file);
 
 // writes variable length, null-termined string.
 int CFWriteString (char *buf, CFILE *file);

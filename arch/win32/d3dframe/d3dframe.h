@@ -38,7 +38,7 @@
 class CD3DFramework
 {
     // Internal variables for the framework class
-    HWND                 m_hWnd;             // The window object
+    HWND                 m_hWnd;             // The window tObject
     BOOL                 m_bIsFullscreen;    // Fullscreen vs. windowed
     RECT                 m_rcViewportRect;   // Offscreen rect for VPort
     LPDIRECTDRAWSURFACE4 m_pddsFrontBuffer;  // The primary surface
@@ -47,8 +47,8 @@ class CD3DFramework
     LPDIRECTDRAWSURFACE4 m_pddsZBuffer;      // The zbuffer surface
     LPDIRECT3DDEVICE3    m_pd3dDevice;       // The D3D device
     LPDIRECT3DVIEWPORT3  m_pvViewport;       // The D3D viewport
-    LPDIRECTDRAW4        m_pDD;              // The DirectDraw object
-    LPDIRECT3D3          m_pD3D;             // The Direct3D object
+    LPDIRECTDRAW4        m_pDD;              // The DirectDraw tObject
+    LPDIRECT3D3          m_pD3D;             // The Direct3D tObject
     D3DDEVICEDESC        m_ddDeviceDesc;
     DWORD                m_dwDeviceMemType;
     DDPIXELFORMAT        m_ddpfZBuffer;      // Enumerated zbuffer format
@@ -102,7 +102,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// Flags used for the Initialize() method of a CD3DFramework object
+// Flags used for the Initialize() method of a CD3DFramework tObject
 //-----------------------------------------------------------------------------
 #define D3DFW_FULLSCREEN    0x00000001 // Use fullscreen mode
 #define D3DFW_BACKBUFFER    0x00000002 // Create and use a backbuffer

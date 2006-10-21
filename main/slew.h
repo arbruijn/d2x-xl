@@ -28,10 +28,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made slew functions compile out for release versions
  *
  * Revision 1.4  1994/02/17  11:32:41  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.3  1994/01/05  10:53:42  john
- * New object code by John.
+ * New tObject code by John.
  *
  * Revision 1.2  1993/12/05  22:48:57  matt
  * Reworked include files in an attempt to cut down on build times
@@ -52,8 +52,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifndef RELEASE
 
-void slew_init(object *obj);                // say this is slew obj
-int slew_stop();                            // Stops object
+void slew_init(tObject *obj);                // say this is slew obj
+int slew_stop();                            // Stops tObject
 void slew_reset_orient();                   // Resets orientation
 int slew_frame(int dont_check_keys);        // Does slew frame
 

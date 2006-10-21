@@ -162,8 +162,8 @@ static int nCacheEntries = 0;
 static int nCacheHits = 0;
 static int nCacheMisses = 0;
 
-void MergeTextures (int type, grs_bitmap *bmBot, grs_bitmap *bmTop, grs_bitmap *dest_bmp, int bSuperTransp);
-void MergeTexturesNormal (int type, grs_bitmap *bmBot, grs_bitmap *bmTop, ubyte *dest_data);
+void MergeTextures (int nType, grs_bitmap *bmBot, grs_bitmap *bmTop, grs_bitmap *dest_bmp, int bSuperTransp);
+void MergeTexturesNormal (int nType, grs_bitmap *bmBot, grs_bitmap *bmTop, ubyte *dest_data);
 
 #if defined(POLY_ACC)       // useful to all of D2 I think.
 extern grs_bitmap * rle_get_id_sub( grs_bitmap * bmp );
@@ -246,14 +246,12 @@ nCacheEntries = 0;
 
 //-------------------------------------------------------------------------
 //--unused-- int info_printed = 0;
-grs_bitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop)
+grs_bitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 {
 	grs_bitmap		*bmTop, *bmBot, *bmP;
-	int				i, nOrient, nLowestFrame, nLRU;
+	int				i, nLowestFrame, nLRU;
 	TEXTURE_CACHE	*cacheP;
 
-nOrient = ((tMapTop & 0xC000) >> 14) & 3;
-tMapTop &= 0x3fff;
 nLRU = 0;
 nLowestFrame = texCache [0].last_frame_used;
 bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index);
@@ -345,7 +343,7 @@ return bmP;
 //-------------------------------------------------------------------------
 
 void MergeTexturesNormal (
-	int type, grs_bitmap * bmBot, grs_bitmap * bmTop, ubyte * dest_data )
+	int nType, grs_bitmap * bmBot, grs_bitmap * bmTop, ubyte * dest_data )
 {
 	ubyte * top_data, *bottom_data;
 	int scale;
@@ -370,7 +368,7 @@ void MergeTexturesNormal (
 
 //	Assert( bottom_data != top_data );
 
-	switch( type )	{
+	switch( nType )	{
 	case 0:
 		// Normal
 
@@ -446,7 +444,7 @@ return TexScale (y * w + x, s);
 
 
 void MergeTextures ( 
-	int type, grs_bitmap * bmBot, grs_bitmap * bmTop, grs_bitmap *dest_bmp, int bSuperTransp)
+	int nType, grs_bitmap * bmBot, grs_bitmap * bmTop, grs_bitmap *dest_bmp, int bSuperTransp)
 {
 	tRGBA		*c;
 	int		i, x, y, bw, bh, tw, th, dw, dh;
@@ -513,7 +511,7 @@ bBtmTGA = (bmBot->bm_props.flags & BM_FLAG_TGA) != 0;
 #ifdef _DEBUG
 memset (dest_data, 253, dest_bmp->bm_props.w * dest_bmp->bm_props.h * 4);
 #endif
-switch( type )	{
+switch( nType )	{
 	case 0:
 		// Normal
 		for (i = y = 0; y < dh; y++)

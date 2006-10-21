@@ -45,7 +45,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Recorded when a key was pressed for KeyInKeyTime.
  * 
  * Revision 1.13  1994/06/17  17:17:28  john
- * Added keyd_time_last_key_was_pressed or something like that.
+ * Added keydTime_last_key_was_pressed or something like that.
  * 
  * Revision 1.12  1994/04/29  12:14:19  john
  * Locked all memory used during interrupts so that program
@@ -61,7 +61,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  * 
  * Revision 1.8  1993/10/16  19:24:43  matt
- * Added new function key_clear_times() & key_clear_counts()
+ * Added new function key_clearTimes() & key_clear_counts()
  * 
  * Revision 1.7  1993/10/15  10:17:09  john
  * added keyd_last_key_pressed and released for use with recorder.
@@ -99,9 +99,9 @@ extern void _CDECL_ key_close();
 
 //==========================================================================
 // These are configuration parameters to setup how the buffer works.
-// set keyd_buffer_type to 0 for no key buffering.
+// set keyd_bufferType to 0 for no key buffering.
 // set it to 1 and it will buffer scancodes.
-extern unsigned char keyd_buffer_type;
+extern unsigned char keyd_bufferType;
 extern unsigned char keyd_repeat;	 // 1=allow repeating, 0=dont allow repeat
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
@@ -109,11 +109,11 @@ extern unsigned char keyd_repeat;	 // 1=allow repeating, 0=dont allow repeat
 extern unsigned char keyd_editor_mode;
 
 // Time in seconds when last key was pressed...
-extern volatile int keyd_time_when_last_pressed;
+extern volatile int keydTime_when_last_pressed;
 
 //==========================================================================
 // These are the "buffered" keypress routines.  Use them by setting the
-// "keyd_buffer_type" variable.
+// "keyd_bufferType" variable.
 
 extern void KeyFlush();    // Clears the 256 char buffer
 extern int key_checkch();   // Returns 1 if a char is waiting
@@ -146,7 +146,7 @@ extern unsigned int key_up_count(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();
-//void key_clear_times();
+//void key_clearTimes();
 //void key_clear_counts();
 
 extern char * key_text[256];

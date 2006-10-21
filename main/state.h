@@ -55,9 +55,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _STATE_H
 #define _STATE_H
 
-int StateSaveAll(int between_levels, int secret_save, char *filename_override);
+int StateSaveAll(int betweenLevels, int secret_save, char *filename_override);
 int StateRestoreAll(int in_game, int secret_restore, char *filename_override);
-int StateSaveAllSub(char *filename, char *desc, int between_levels);
+int StateSaveAllSub(char *filename, char *desc, int betweenLevels);
 int StateRestoreAllSub(char *filename, int multi, int secret_restore);
 int StateGetSaveFile(char *fname, char * dsc, int multi);
 int StateGetRestoreFile(char *fname, int multi);

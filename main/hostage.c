@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.65  1995/02/22  13:45:54  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.64  1995/02/13  20:34:57  john
  * Lintized
@@ -175,7 +175,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.19  1994/06/02  19:30:08  matt
  * Moved texture-mapped rod drawing stuff (used for hostage & now for the
- * materialization center) to object.c
+ * materialization center) to tObject.c
  *
  *
  */
@@ -207,14 +207,14 @@ static char rcsid[] = "$Id: hostage.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 
 //------------- Globaly used hostage variables --------------------------------
 
-int N_hostage_types = 0;		  			// Number of hostage types
+int N_hostageTypes = 0;		  			// Number of hostage types
 int Hostage_vclip_num[MAX_HOSTAGE_TYPES];	// vclip num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------
-void DrawHostage(object *objP)
+void DrawHostage(tObject *objP)
 {
-DrawObjectRodTexPoly(objP, gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].frames[objP->rtype.vclip_info.nCurFrame], 1);
+DrawObjectRodTexPoly(objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames[objP->rType.vClipInfo.nCurFrame], 1);
 }
 
 

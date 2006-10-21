@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.12  1994/10/14  12:14:47  john
  * Changed code so that by doing DEL+F12 saves the current KConfig
  * values as default. Added support for drop_bomb key.  Took out
- * unused slots for keyboard.  Made keyboard use control_type of 0
+ * unused slots for keyboard.  Made keyboard use controlType of 0
  * save slots.
  *
  * Revision 1.11  1994/10/13  19:21:33  john
@@ -119,12 +119,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	D2X_KEYS		1
 
 typedef struct _control_info {
-	fix pitch_time;
-	fix vertical_thrust_time;
-	fix heading_time;
-	fix sideways_thrust_time;
-	fix bank_time;
-	fix forward_thrust_time;
+	fix pitchTime;
+	fix vertical_thrustTime;
+	fix headingTime;
+	fix sideways_thrustTime;
+	fix bankTime;
+	fix forward_thrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -140,7 +140,7 @@ typedef struct _control_info {
 	ubyte automapDownCount;
 	ubyte automap_state;
 
-	//vms_angvec heading;
+	//vmsAngVec heading;
 	//char oem_message[64];
 
 	ubyte afterburner_state;
@@ -154,12 +154,12 @@ typedef struct _control_info {
 } control_info;
 
 typedef struct ext_control_info {
-	fix pitch_time;
-	fix vertical_thrust_time;
-	fix heading_time;
-	fix sideways_thrust_time;
-	fix bank_time;
-	fix forward_thrust_time;
+	fix pitchTime;
+	fix vertical_thrustTime;
+	fix headingTime;
+	fix sideways_thrustTime;
+	fix bankTime;
+	fix forward_thrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -175,11 +175,11 @@ typedef struct ext_control_info {
 	ubyte automapDownCount;
 	ubyte automap_state;
 
-	//vms_angvec heading;   	    // for version >=1.0
+	//vmsAngVec heading;   	    // for version >=1.0
 	//char oem_message[64];     	// for version >=1.0
 
-	//vms_vector ship_pos           // for version >=2.0
-	//vms_matrix ship_orient        // for version >=2.0
+	//vmsVector ship_pos           // for version >=2.0
+	//vmsMatrix ship_orient        // for version >=2.0
 
 	//ubyte cycle_primary_count     // for version >=3.0
 	//ubyte cycle_secondary_count   // for version >=3.0
@@ -190,13 +190,13 @@ typedef struct ext_control_info {
 
 	//ubyte headlight_state
 
-	//int primary_weapon_flags
-	//int secondary_weapon_flags
+	//int primaryWeaponFlags
+	//int secondaryWeaponFlags
 	//ubyte Primary_weapon_selected
 	//ubyte Secondary_weapon_selected
 
-	//vms_vector force_vector
-	//vms_matrix force_matrix
+	//vmsVector force_vector
+	//vmsMatrix force_matrix
 	//int joltinfo[3]
 	//int x_vibrate_info[2]
 	//int y_vibrate_info[2]
@@ -214,12 +214,12 @@ typedef struct ext_control_info {
 } ext_control_info;
 
 typedef struct advanced_ext_control_info {
-	fix pitch_time;
-	fix vertical_thrust_time;
-	fix heading_time;
-	fix sideways_thrust_time;
-	fix bank_time;
-	fix forward_thrust_time;
+	fix pitchTime;
+	fix vertical_thrustTime;
+	fix headingTime;
+	fix sideways_thrustTime;
+	fix bankTime;
+	fix forward_thrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -237,13 +237,13 @@ typedef struct advanced_ext_control_info {
 
 	// everything below this line is for version >=1.0
 
-	vms_angvec heading;
+	vmsAngVec heading;
 	char oem_message[64];
 
 	// everything below this line is for version >=2.0
 
-	vms_vector ship_pos;
-	vms_matrix ship_orient;
+	vmsVector ship_pos;
+	vmsMatrix ship_orient;
 
 	// everything below this line is for version >=3.0
 
@@ -254,13 +254,13 @@ typedef struct advanced_ext_control_info {
 
 	// everything below this line is for version >=4.0
 
-	int primary_weapon_flags;
-	int secondary_weapon_flags;
+	int primaryWeaponFlags;
+	int secondaryWeaponFlags;
 	ubyte current_primary_weapon;
 	ubyte current_secondary_weapon;
 
-	vms_vector force_vector;
-	vms_matrix force_matrix;
+	vmsVector force_vector;
+	vmsMatrix force_matrix;
 	int joltinfo[3];
 	int x_vibrate_info[2];
 	int y_vibrate_info[2];
@@ -289,7 +289,7 @@ typedef struct kc_item {
         //short text_num1;
    char 	*text;
 	int   textId;
-	ubyte type;
+	ubyte nType;
 	ubyte value;		// what key,button,etc
 } kc_item;
 
@@ -335,7 +335,7 @@ extern ubyte system_keys [];
 extern control_info Controls;
 extern tControlSettings controlSettings;
 extern kc_item kc_keyboard [NUM_KEY_CONTROLS];
-extern ubyte kc_kbd_flags [NUM_KEY_CONTROLS];
+extern ubyte kc_kbdFlags [NUM_KEY_CONTROLS];
 extern kc_item kc_joystick [NUM_JOY_CONTROLS];
 extern kc_item kc_mouse [NUM_MOUSE_CONTROLS];
 extern kc_item kc_superjoy [NUM_JOY_CONTROLS];

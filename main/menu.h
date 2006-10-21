@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added auto-leveling flag.
  *
  * Revision 1.33  1994/12/07  20:04:26  mike
- * set Max_debris_objects.
+ * set Max_debrisObjects.
  *
  * Revision 1.32  1994/11/14  17:23:19  rob
  * ADded extern for default difficulty settings.
@@ -81,7 +81,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * A bunch of new stuff by John
  *
  * Revision 1.18  1994/05/16  09:37:22  matt
- * Got rid of global continue_flag
+ * Got rid of global continueFlag
  *
  * Revision 1.17  1994/05/14  17:14:51  matt
  * Got rid of externs in source (non-header) files
@@ -168,13 +168,13 @@ int QuitSaveLoadMenu (void);
 			(CFExist(MENU_PCX_OEM,gameFolders.szDataDir,0)?MENU_PCX_OEM:\
 			CFExist(MENU_PCX_SHAREWARE,gameFolders.szDataDir,0)?MENU_PCX_SHAREWARE:MENU_PCX_MAC_SHARE))
 
-void InitDetailLevels(int detail_level);
+void InitDetailLevels(int detailLevel);
 
 int SwitchDisplayMode (int dir);
 
 extern char *menu_difficulty_text[];
 extern int Player_default_difficulty;
-extern int Max_debris_objects;
+extern int Max_debrisObjects;
 extern int Missile_view_enabled;
 extern int Escort_view_enabled;
 extern int Cockpit_rear_view;
@@ -185,19 +185,19 @@ extern int Cockpit_rear_view;
 #define NMBOOL(_v) ((_v) != 0)
 
 #define	ADD_CHECK(_n,_t,_v,_k,_h) \
-			m [_n].type = NM_TYPE_CHECK, m [_n].text = _t, m [_n].value = NMBOOL(_v), m [_n].key=_k, m [_n].szHelp = _h
+			m [_n].nType = NM_TYPE_CHECK, m [_n].text = _t, m [_n].value = NMBOOL(_v), m [_n].key=_k, m [_n].szHelp = _h
 #define	ADD_RADIO(_n,_t,_v,_k,_g,_h) \
-			m [_n].type = NM_TYPE_RADIO, m [_n].text = _t, m [_n].value = _v, m [_n].key=_k, m [_n].group=_g, m [_n].szHelp = _h
+			m [_n].nType = NM_TYPE_RADIO, m [_n].text = _t, m [_n].value = _v, m [_n].key=_k, m [_n].group=_g, m [_n].szHelp = _h
 #define	ADD_MENU(_n,_t,_k,_h) \
-			m [_n].type = NM_TYPE_MENU, m [_n].text = _t, m [_n].key = _k, m [_n].szHelp = _h
+			m [_n].nType = NM_TYPE_MENU, m [_n].text = _t, m [_n].key = _k, m [_n].szHelp = _h
 #define	ADD_TEXT(_n,_t,_k)  \
-			m [_n].type = NM_TYPE_TEXT, m [_n].text = _t, m [_n].key = _k
+			m [_n].nType = NM_TYPE_TEXT, m [_n].text = _t, m [_n].key = _k
 #define	ADD_SLIDER(_n,_t,_v,_min,_max,_k,_h) \
-			m [_n].type = NM_TYPE_SLIDER, m [_n].text = _t, m [_n].value = NMCLAMP(_v,_min,_max), m [_n].min_value = _min, m [_n].max_value = _max, m [_n].key = _k, m [_n].szHelp = _h
+			m [_n].nType = NM_TYPE_SLIDER, m [_n].text = _t, m [_n].value = NMCLAMP(_v,_min,_max), m [_n].minValue = _min, m [_n].maxValue = _max, m [_n].key = _k, m [_n].szHelp = _h
 #define	ADD_INPUT(_n,_t,_l,_h) \
-			m [_n].type = NM_TYPE_INPUT, m [_n].text = _t, m [_n].text_len = _l, m [_n].szHelp = _h
+			m [_n].nType = NM_TYPE_INPUT, m [_n].text = _t, m [_n].text_len = _l, m [_n].szHelp = _h
 #define	ADD_GAUGE(_n,_t,_v,_max) \
-			m [_n].type = NM_TYPE_GAUGE, m [_n].text = _t, m [_n].text_len = *_t ? (int) strlen (_t) : 20, m [_n].value = NMCLAMP(_v,0,_max), m [_n].max_value = _max
+			m [_n].nType = NM_TYPE_GAUGE, m [_n].text = _t, m [_n].text_len = *_t ? (int) strlen (_t) : 20, m [_n].value = NMCLAMP(_v,0,_max), m [_n].maxValue = _max
 
 #define GET_VAL(_v,_n)	if ((_n) >= 0) (_v) = m [_n].value
 

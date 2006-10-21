@@ -85,14 +85,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed Invulnerability to allow being hit.
  *
  * Revision 1.4  1994/05/13  20:28:02  john
- * Version II of John's new object code.
+ * Version II of John's new tObject code.
  *
  * Revision 1.3  1994/05/13  12:20:35  john
  * Fixed some potential problems with code using global variables
  * that are set in fvi.
  *
  * Revision 1.2  1994/05/12  23:20:32  john
- * Moved all object collision handling into collide.c.
+ * Moved all tObject collision handling into collide.c.
  *
  * Revision 1.1  1994/05/12  20:39:09  john
  * Initial revision
@@ -104,29 +104,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _COLLIDE_H
 
 void CollideInit();
-int CollideTwoObjects(object * A, object * B, vms_vector *collision_point);
-int CollideObjectWithWall(object * A, fix hitspeed, short hitseg, short hitwall, vms_vector * hitpt);
-void ApplyDamageToPlayer(object *player, object *killer, fix damage);
+int CollideTwoObjects(tObject * A, tObject * B, vmsVector *collision_point);
+int CollideObjectWithWall(tObject * A, fix hitspeed, short hitseg, short hitwall, vmsVector * hitpt);
+void ApplyDamageToPlayer(tObject *player, tObject *killer, fix damage);
 
 // Returns 1 if robot died, else 0.
-int ApplyDamageToRobot(object *robot, fix damage, int killer_objnum);
+int ApplyDamageToRobot(tObject *robot, fix damage, int nKillerObj);
 
 extern int Immaterial;
 
-int CollidePlayerAndWeapon(object * player, object * weapon, vms_vector *collision_point);
-int CollidePlayerAndMatCen(object *objp);
-int CollideRobotAndMatCen(object *objp);
+int CollidePlayerAndWeapon(tObject * player, tObject * weapon, vmsVector *collision_point);
+int CollidePlayerAndMatCen(tObject *objp);
+int CollideRobotAndMatCen(tObject *objp);
 
-void ScrapeObjectOnWall(object *obj, short hitseg, short hitwall, vms_vector * hitpt);
-int MaybeDetonateWeapon(object *obj0p, object *obj, vms_vector *pos);
+void ScrapeObjectOnWall(tObject *obj, short hitseg, short hitwall, vmsVector * hitpt);
+int MaybeDetonateWeapon(tObject *obj0p, tObject *obj, vmsVector *pos);
 
-int CollidePlayerAndNastyRobot(object * player, object * robot, vms_vector *collision_point);
+int CollidePlayerAndNastyRobot(tObject * player, tObject * robot, vmsVector *collision_point);
 
-void NetDestroyReactor(object *controlcen);
-int CollidePlayerAndPowerup(object * player, object * powerup, vms_vector *collision_point);
-int CheckEffectBlowup(segment *seg,short side,vms_vector *pnt, object *blower, int force_blowup_flag);
-void ApplyDamageToReactor(object *controlcen, fix damage, short who);
-void BumpOneObject(object *obj0, vms_vector *hit_dir, fix damage);
+void NetDestroyReactor(tObject *controlcen);
+int CollidePlayerAndPowerup(tObject * player, tObject * powerup, vmsVector *collision_point);
+int CheckEffectBlowup(tSegment *seg,short tSide,vmsVector *pnt, tObject *blower, int force_blowupFlag);
+void ApplyDamageToReactor(tObject *controlcen, fix damage, short who);
+void BumpOneObject(tObject *obj0, vmsVector *hit_dir, fix damage);
 void SetMonsterballForces (void);
 
 #endif /* _COLLIDE_H */

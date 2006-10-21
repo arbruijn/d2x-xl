@@ -128,7 +128,7 @@ struct mfi {
 	// Shakes every level_shake_frequency seconds
 	// for level_shake_duration seconds (on average, random).  In 16ths second.
 	int     secret_return_segment;
-	vms_matrix secret_return_orient;
+	vmsMatrix secret_return_orient;
 
 	int     dl_indices_offset;
 	int     dl_indices_howmany;
@@ -160,7 +160,7 @@ struct me {
 	int Groupside[10];
 	int num_groups;
 	int current_group;
-	//int num_objects;
+	//int numObjects;
 };
 
 extern struct mtfi mine_top_fileinfo;   // Should be same as first two fields below...
@@ -179,10 +179,10 @@ int LoadMineSegmentsCompiled(CFILE *LoadFile);
 extern short tmap_xlate_table[];
 extern fix Level_shake_frequency, Level_shake_duration;
 extern int Secret_return_segment;
-extern vms_matrix Secret_return_orient;
+extern vmsMatrix Secret_return_orient;
 
 /* stuff for loading descent.pig of descent 1 */
-extern short convert_d1_tmap_num(short d1_tmap_num);
+extern short ConvertD1Texture(short d1_tmap_num);
 extern int d1_tmap_num_unique(short d1_tmap_num); //is d1_tmap_num's texture only in d1?
 
 int LoadMineGaugeSize ();

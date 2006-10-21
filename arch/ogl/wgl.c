@@ -53,7 +53,7 @@ static int GLSTATE_width,GLSTATE_height;
 static bool GLPREF_windowed;
 
 static HGLRC GL_ResourceContext=NULL;
-//static WORD Saved_gamma_values[256*3];
+//static WORD Saved_gammaValues[256*3];
 bool OpenGL_Initialize(void);
 void OpenGL_Shutdown(void);
 
@@ -318,7 +318,7 @@ void OglClose(void){
 //		GLSTATE_width,GLSTATE_height: real width and height of screen
 //		hDC: device context of the window
 //		GL_ResourceContext: OpenGL resource context
-//		Saved_gamma_values: Initial gamma values
+//		Saved_gammaValues: Initial gamma values
 bool OpenGL_Initialize(void)
 {
 	char *errstr="";
@@ -482,7 +482,7 @@ bool OpenGL_Initialize(void)
 	// Save our gamma values because we'll probably be changing them,
 	// this way we can restore them on exit
 
-//	GetDeviceGammaRamp(hDC,(LPVOID)Saved_gamma_values);
+//	GetDeviceGammaRamp(hDC,(LPVOID)Saved_gammaValues);
 
 	return true;
 
@@ -511,7 +511,7 @@ void OpenGL_Shutdown(void)
 
 	// Restore gamma values
 
-//	SetDeviceGammaRamp(hDC,(LPVOID)Saved_gamma_values);
+//	SetDeviceGammaRamp(hDC,(LPVOID)Saved_gammaValues);
 	
 	ReleaseDC(g_hWnd,hDC);
 }

@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.41  1994/12/20  17:56:43  yuan
- * Multiplayer object capability.
+ * Multiplayer tObject capability.
  *
  * Revision 1.40  1994/12/02  15:04:42  matt
  * Fixed bogus weapon constants and arrays
@@ -37,18 +37,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up sequencing & game saving for secret levels
  *
  * Revision 1.37  1994/11/17  12:57:13  rob
- * Changed net_kills_level to net_killed_total.
+ * Changed netKillsLevel to netKilledTotal.
  *
  * Revision 1.36  1994/11/14  17:20:33  rob
  * Bumped player file version.
  *
  * Revision 1.35  1994/11/04  19:55:06  rob
  * Changed a previously unused pad character to represent whether or not
- * the player is connected to a net game (used to be objnum=-1 but we
- * want to keep the objnum info in case of re-joins)
+ * the player is connected to a net game (used to be nObject=-1 but we
+ * want to keep the nObject info in case of re-joins)
  *
  * Revision 1.34  1994/10/22  14:13:54  mike
- * Add homing_object_dist field to player struct.
+ * Add homingObjectDist field to player struct.
  *
  * Revision 1.33  1994/10/22  00:08:45  matt
  * Fixed up problems with bonus & game sequencing
@@ -67,7 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added hour variable.
  *
  * Revision 1.28  1994/10/17  17:24:48  john
- * Added starting_level to player struct.
+ * Added startingLevel to player struct.
  *
  * Revision 1.27  1994/10/13  15:42:02  mike
  * Remove afterburner.
@@ -82,7 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added difficulty level to player structure for game load/save
  *
  * Revision 1.23  1994/10/05  17:39:53  rob
- * Changed killer_objnum to a short (was char)
+ * Changed nKillerObj to a short (was char)
  *
  * Revision 1.22  1994/10/03  22:59:07  matt
  * Limit callsign to 8 chars long, so we can use it as filename
@@ -180,7 +180,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INITIAL_LIVES               3   // start off with 3 lives
 
 // Values for special flags
-#define PLAYER_FLAGS_INVULNERABLE   1       // Player is invincible
+#define PLAYER_FLAGS_INVULNERABLE   1       // Player is invulnerable
 #define PLAYER_FLAGS_BLUE_KEY       2       // Player has blue key
 #define PLAYER_FLAGS_RED_KEY        4       // Player has red key
 #define PLAYER_FLAGS_GOLD_KEY       8       // Player has gold key
@@ -216,11 +216,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct player {
 	// Who am I data
 	char    callsign[CALLSIGN_LEN+1];   // The callsign of this player, for net purposes.
-	ubyte   net_address[6];         // The network address of the player.
+	ubyte   netAddress[6];         // The network address of the player.
 	sbyte   connected;              // Is the player connected or not?
-	int     objnum;                 // What object number this player is. (made an int by mk because it's very often referenced)
-	int     n_packets_got;          // How many packets we got from them
-	int     n_packets_sent;         // How many packets we sent to them
+	int     nObject;                 // What tObject number this player is. (made an int by mk because it's very often referenced)
+	int     nPacketsGot;          // How many packets we got from them
+	int     nPacketsSent;         // How many packets we sent to them
 
 	//  -- make sure you're 4 byte aligned now!
 
@@ -230,44 +230,44 @@ typedef struct player {
 	fix     shields;                // shields remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
 	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
-	ubyte   laser_level;            // Current level of the laser.
-	sbyte   starting_level;         // What level the player started on.
-	short   killer_objnum;          // Who killed me.... (-1 if no one)
-	ushort  primary_weapon_flags;   // bit set indicates the player has this weapon.
-	ushort  secondary_weapon_flags; // bit set indicates the player has this weapon.
-	ushort  primary_ammo[MAX_PRIMARY_WEAPONS]; // How much ammo of each type.
-	ushort  secondary_ammo[MAX_SECONDARY_WEAPONS]; // How much ammo of each type.
+	ubyte   laserLevel;            // Current level of the laser.
+	sbyte   startingLevel;         // What level the player started on.
+	short   nKillerObj;          // Who killed me.... (-1 if no one)
+	ushort  primaryWeaponFlags;   // bit set indicates the player has this weapon.
+	ushort  secondaryWeaponFlags; // bit set indicates the player has this weapon.
+	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
+	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 #if 1 //for inventory system
 	ubyte	  nInvuls;
 	ubyte   nCloaks;
 #else
-	ushort  pad; // Pad because increased weapon_flags from byte to short -YW 3/22/95
+	ushort  pad; // Pad because increased weaponFlags from byte to short -YW 3/22/95
 #endif
 	//  -- make sure you're 4 byte aligned now
 
 	// Statistics...
 	int     last_score;             // Score at beginning of current level.
 	int     score;                  // Current score.
-	fix     time_level;             // Level time played
-	fix     time_total;             // Game time played (high word = seconds)
+	fix     timeLevel;             // Level time played
+	fix     timeTotal;             // Game time played (high word = seconds)
 
-	fix     cloak_time;             // Time cloaked
-	fix     invulnerable_time;      // Time invulnerable
+	fix     cloakTime;             // Time cloaked
+	fix     invulnerableTime;      // Time invulnerable
 
-	short   KillGoalCount;          // Num of players killed this level
-	short   net_killed_total;       // Number of times killed total
-	short   net_kills_total;        // Number of net kills total
-	short   num_kills_level;        // Number of kills this level
-	short   num_kills_total;        // Number of kills total
-	short   num_robots_level;       // Number of initial robots this level
-	short   num_robots_total;       // Number of robots total
-	ushort  hostages_rescued_total; // Total number of hostages rescued.
-	ushort  hostages_total;         // Total number of hostages.
+	short   nKillGoalCount;          // Num of players killed this level
+	short   netKilledTotal;       // Number of times killed total
+	short   netKillsTotal;        // Number of net kills total
+	short   numKillsLevel;        // Number of kills this level
+	short   numKillsTotal;        // Number of kills total
+	short   numRobotsLevel;       // Number of initial robots this level
+	short   numRobotsTotal;       // Number of robots total
+	ushort  hostages_rescuedTotal; // Total number of hostages rescued.
+	ushort  hostagesTotal;         // Total number of hostages.
 	ubyte   hostages_on_board;      // Number of hostages on ship.
-	ubyte   hostages_level;         // Number of hostages on this level.
-	fix     homing_object_dist;     // Distance of nearest homing object.
-	sbyte   hours_level;            // Hours played (since time_total can only go up to 9 hours)
-	sbyte   hours_total;            // Hours played (since time_total can only go up to 9 hours)
+	ubyte   hostagesLevel;         // Number of hostages on this level.
+	fix     homingObjectDist;     // Distance of nearest homing tObject.
+	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
+	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ player;
 
 
@@ -279,11 +279,11 @@ typedef struct player {
 typedef struct player16 {
 	// Who am I data
 	char    callsign[CALLSIGN_LEN+1]; // The callsign of this player, for net purposes.
-	ubyte   net_address[6];         // The network address of the player.
+	ubyte   netAddress[6];         // The network address of the player.
 	sbyte   connected;              // Is the player connected or not?
-	int     objnum;                 // What object number this player is. (made an int by mk because it's very often referenced)
-	int     n_packets_got;          // How many packets we got from them
-	int     n_packets_sent;         // How many packets we sent to them
+	int     nObject;                 // What tObject number this player is. (made an int by mk because it's very often referenced)
+	int     nPacketsGot;          // How many packets we got from them
+	int     nPacketsSent;         // How many packets we sent to them
 
 	//  -- make sure you're 4 byte aligned now!
 
@@ -293,38 +293,38 @@ typedef struct player16 {
 	fix     shields;                // shields remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
 	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
-	ubyte   laser_level;            // Current level of the laser.
-	sbyte   starting_level;         // What level the player started on.
-	short   killer_objnum;          // Who killed me.... (-1 if no one)
-	ubyte   primary_weapon_flags;   // bit set indicates the player has this weapon.
-	ubyte   secondary_weapon_flags; // bit set indicates the player has this weapon.
-	ushort  primary_ammo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each type.
-	ushort  secondary_ammo[MAX_SECONDARY_WEAPONS16];// How much ammo of each type.
+	ubyte   laserLevel;            // Current level of the laser.
+	sbyte   startingLevel;         // What level the player started on.
+	short   nKillerObj;          // Who killed me.... (-1 if no one)
+	ubyte   primaryWeaponFlags;   // bit set indicates the player has this weapon.
+	ubyte   secondaryWeaponFlags; // bit set indicates the player has this weapon.
+	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
+	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
 
 	//  -- make sure you're 4 byte aligned now
 
 	// Statistics...
 	int     last_score;             // Score at beginning of current level.
 	int     score;                  // Current score.
-	fix     time_level;             // Level time played
-	fix     time_total;             // Game time played (high word = seconds)
+	fix     timeLevel;             // Level time played
+	fix     timeTotal;             // Game time played (high word = seconds)
 
-	fix     cloak_time;             // Time cloaked
-	fix     invulnerable_time;      // Time invulnerable
+	fix     cloakTime;             // Time cloaked
+	fix     invulnerableTime;      // Time invulnerable
 
-	short   net_killed_total;       // Number of times killed total
-	short   net_kills_total;        // Number of net kills total
-	short   num_kills_level;        // Number of kills this level
-	short   num_kills_total;        // Number of kills total
-	short   num_robots_level;       // Number of initial robots this level
-	short   num_robots_total;       // Number of robots total
-	ushort  hostages_rescued_total; // Total number of hostages rescued.
-	ushort  hostages_total;         // Total number of hostages.
+	short   netKilledTotal;       // Number of times killed total
+	short   netKillsTotal;        // Number of net kills total
+	short   numKillsLevel;        // Number of kills this level
+	short   numKillsTotal;        // Number of kills total
+	short   numRobotsLevel;       // Number of initial robots this level
+	short   numRobotsTotal;       // Number of robots total
+	ushort  hostages_rescuedTotal; // Total number of hostages rescued.
+	ushort  hostagesTotal;         // Total number of hostages.
 	ubyte   hostages_on_board;      // Number of hostages on ship.
-	ubyte   hostages_level;         // Number of hostages on this level.
-	fix     homing_object_dist;     // Distance of nearest homing object.
-	sbyte   hours_level;            // Hours played (since time_total can only go up to 9 hours)
-	sbyte   hours_total;            // Hours played (since time_total can only go up to 9 hours)
+	ubyte   hostagesLevel;         // Number of hostages on this level.
+	fix     homingObjectDist;     // Distance of nearest homing tObject.
+	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
+	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ player16;
 
 /*

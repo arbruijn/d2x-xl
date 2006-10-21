@@ -119,10 +119,10 @@ grs_bitmap *ReadParticleImage (char *szFile)
 if (!(bmP = GrCreateBitmap (0, 0, 0)))
 	return NULL;
 if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
-	bmP->bm_type = BM_TYPE_ALT;
+	bmP->bmType = BM_TYPE_ALT;
 	return bmP;
 	}
-bmP->bm_type = BM_TYPE_ALT;
+bmP->bmType = BM_TYPE_ALT;
 GrFreeBitmap (bmP);
 return NULL;
 }
@@ -183,10 +183,10 @@ return n * n;
 
 //------------------------------------------------------------------------------
 
-int CreateParticle (tParticle *pParticle, vms_vector *pPos, short nSegment, int nLife, 
+int CreateParticle (tParticle *pParticle, vmsVector *pPos, short nSegment, int nLife, 
 						  int nSpeed, int nType, float nScale, int nCurTime, int bStart)
 {
-	vms_vector	dir;
+	vmsVector	dir;
 	int			nRad;
 	
 if (gameOpts->render.smoke.bSyncSizes)
@@ -289,17 +289,17 @@ static int nFaces [6];
 static int vertexList [6][6];
 static int bSidePokesOut [6];
 static int nVert [6];
-static vms_vector	*wallNorm;
+static vmsVector	*wallNorm;
 
 int CollideParticleAndWall (tParticle *pParticle)
 {
-	segment		*segP;
-	side			*sideP;
+	tSegment		*segP;
+	tSide			*sideP;
 	int			bInit, bRedo = 0, nSide, nVert, nChild, nFace, nInFront,
 					nRad = max (pParticle->nWidth, pParticle->nHeight) / 2;
 	fix			nDist;
 	int			*vlP;
-	vms_vector	pos = pParticle->pos;
+	vmsVector	pos = pParticle->pos;
 
 //redo:
 
@@ -354,7 +354,7 @@ int MoveParticle (tParticle *pParticle, int nCurTime)
 {
 	int			j;
 	fix			t, dot;
-	vms_vector	pos, dir;
+	vmsVector	pos, dir;
 
 if (pParticle->nLife <= 0)
 	return 0;
@@ -480,7 +480,7 @@ else
 
 int RenderParticle (tParticle *pParticle)
 {
-	vms_vector			hp;
+	vmsVector			hp;
 	GLdouble				u, v, x, y, z, h, w;
 	char					o;
 	grs_bitmap			*bmP;
@@ -675,7 +675,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vms_vector *pPos, short nSegment, int nMaxParts, float nPartScale, int nLife, int nSpeed, int nType, int nCurTime)
+int CreateCloud (tCloud *pCloud, vmsVector *pPos, short nSegment, int nMaxParts, float nPartScale, int nLife, int nSpeed, int nType, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -737,7 +737,7 @@ int MoveCloud (tCloud *pCloud, int nCurTime)
 	tCloud		c = *pCloud;
 	int			t, i, j = c.nParts, r = 0,
 					nInterpolatePos = 0;
-	vms_vector	d, p;
+	vmsVector	d, p;
 
 if ((t = nCurTime - c.nMoved) < (1000 / PARTICLE_FPS))
 	return 0;
@@ -908,7 +908,7 @@ return EndRenderSmoke (pCloud);
 
 //------------------------------------------------------------------------------
 
-void SetCloudPos (tCloud *pCloud, vms_vector *pos)
+void SetCloudPos (tCloud *pCloud, vmsVector *pos)
 {
 int nNewSeg = FindSegByPoint (pos, pCloud->nSegment);
 #if 0
@@ -1055,7 +1055,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateSmoke (vms_vector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
+int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nLife, int nSpeed, int nType, int nObject)
 {
 if (!(EGI_FLAG (bUseSmoke, 0, 0)))
@@ -1083,7 +1083,7 @@ else {
 		return 0;
 		}
 	pSmoke->nObject = nObject;
-	pSmoke->nSignature = gameData.objs.objects [nObject].signature;
+	pSmoke->nSignature = gameData.objs.objects [nObject].nSignature;
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
@@ -1119,7 +1119,7 @@ else {
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.smoke + i;
 #ifdef _DEBUG
-		if (gameData.objs.objects [pSmoke->nObject].type == 255)
+		if (gameData.objs.objects [pSmoke->nObject].nType == 255)
 			i = i;
 #endif
 		if (pCloud = pSmoke->pClouds)
@@ -1135,7 +1135,7 @@ else {
 					}
 				else {
 					//LogErr ("moving %d (%d)\n", i, pSmoke->nObject);
-					if ((pSmoke->nObject < 0) || (gameData.objs.objects [pSmoke->nObject].type == 255))
+					if ((pSmoke->nObject < 0) || (gameData.objs.objects [pSmoke->nObject].nType == 255))
 						SetCloudLife (pCloud, 0);
 					if (MoveCloud (pCloud, t))
 						h++;
@@ -1177,7 +1177,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void SetSmokePos (int i, vms_vector *pos)
+void SetSmokePos (int i, vmsVector *pos)
 {
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.smoke + i;

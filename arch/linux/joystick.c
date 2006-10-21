@@ -82,7 +82,7 @@ int j_Update_state () {
 			if (j_joystick[i].version) {
 				while (read (j_joystick[i].buffer, &current_event, sizeof (struct js_event)) > 0) {
 					num_processed++;
-					switch (current_event.type & ~JS_EVENT_INIT) {
+					switch (current_event.nType & ~JS_EVENT_INIT) {
 						case JS_EVENT_AXIS:
 							j_axis[j_axes_in_sticks[i] + current_event.number].value = current_event.value;
 							break;
@@ -153,12 +153,12 @@ ubyte joy_get_present_mask () {
 }
 
 
-void joy_set_timer_rate (int max_value) {
-	timer_rate = max_value;
+void joy_setTimer_rate (int maxValue) {
+	timer_rate = maxValue;
 }
 
 
-int joy_get_timer_rate () {
+int joy_getTimer_rate () {
 	return timer_rate;
 }
 
@@ -366,7 +366,7 @@ int joy_get_button_down_cnt (int btn) {
 
 
 //changed 6/24/99 to finally squish the timedown bug - Owen Evans
-fix joy_get_button_down_time(int btn)  {
+fix joy_get_button_downTime(int btn)  {
 	fix downtime;
 	j_Update_state ();
 

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "inferno.h"
 #include "u_mem.h"
@@ -418,7 +418,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 #endif
 			for (t = 0;t<gameData.multi.nPlayers;t++)
 				if (gameData.multi.players [t].connected)
-					MultiResetObjectTexture (gameData.objs.objects + gameData.multi.players [t].objnum);
+					MultiResetObjectTexture (gameData.objs.objects + gameData.multi.players [t].nObject);
 
 			NetworkSendNetgameUpdate ();
 			sprintf (multiData.msg.szMsg, TXT_TEAMCHANGE3, gameData.multi.players [i].callsign);
@@ -558,7 +558,7 @@ if (!(gameData.app.nGameMode & GM_MULTI))
 	return;
 multiData.msg.szMsg [0] = 0;             // Get rid of old contents
 memset (m, 0, sizeof (m));
-m [0].type = NM_TYPE_INPUT; 
+m [0].nType = NM_TYPE_INPUT; 
 m [0].text = multiData.msg.szMsg; 
 m [0].text_len = MAX_MESSAGE_LEN-1;
 choice = ExecMenu (NULL, TXT_SEND_MESSAGE, 1, m, NULL, NULL);

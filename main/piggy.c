@@ -115,7 +115,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.82  1995/02/03  17:06:48  john
  * Changed sound stuff to allow low memory usage.
- * Also, changed so that Sounds [gameStates.app.bD1Data] isn't an array of digi_sounds, it
+ * Also, changed so that Sounds [gameStates.app.bD1Data] isn't an array of digiSounds, it
  * is a ubyte pointing into gameData.pig.snd.sounds, this way the digi.c code that
  * locks sounds won't accidentally unlock a sound that is already playing, but
  * since it's Sounds [gameStates.app.bD1Data] [soundno] is different, it would erroneously be unlocked.
@@ -166,7 +166,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * y
  *
  * Revision 1.67  1995/01/17  12:14:39  john
- * Made walls, object explosion vclips load at level start.
+ * Made walls, tObject explosion vclips load at level start.
  *
  * Revision 1.66  1995/01/15  13:15:44  john
  * Made so that paging always happens, lowmem just loads less.
@@ -477,7 +477,7 @@ static short d2OpaqueDoors [] = {
 ubyte bogus_data [1024*1204];
 grs_bitmap bogus_bitmap;
 ubyte bogus_bitmap_initialized=0;
-digi_sound bogus_sound;
+digiSound bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
@@ -881,7 +881,7 @@ if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
 if (!(bmP->bm_props.flags & BM_FLAG_TGA))
 	return 0;
-if ((bmP->bm_type != BM_TYPE_ALT) || !bmP->bm_data.alt.bm_frames) {
+if ((bmP->bmType != BM_TYPE_ALT) || !bmP->bm_data.alt.bm_frames) {
 	if (bmP->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateSuperTranspMask (bmP) != NULL;
 	return 0;
@@ -974,9 +974,9 @@ void swap_0_255 (grs_bitmap *bmp)
 
 //------------------------------------------------------------------------------
 
-bitmap_index PiggyRegisterBitmap (grs_bitmap *bmP, char *name, int in_file)
+tBitmapIndex PiggyRegisterBitmap (grs_bitmap *bmP, char *name, int in_file)
 {
-	bitmap_index temp;
+	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
 
 temp.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
@@ -1002,14 +1002,14 @@ return temp;
 
 //------------------------------------------------------------------------------
 
-void PiggyInit_sound (void)
+void PiggyInitSound (void)
 {
 memset (gameData.pig.snd.sounds, 0, sizeof (gameData.pig.snd.sounds));
 }
 
 //------------------------------------------------------------------------------
 
-int piggy_register_sound (digi_sound * snd, char * name, int in_file)
+int piggy_registerSound (digiSound * snd, char * name, int in_file)
 {
 	int i;
 
@@ -1032,9 +1032,9 @@ return i;
 
 //------------------------------------------------------------------------------
 
-bitmap_index piggy_find_bitmap (char * name, int bD1Data)   
+tBitmapIndex piggy_find_bitmap (char * name, int bD1Data)   
 {
-	bitmap_index bmp;
+	tBitmapIndex bmp;
 	int i;
 	char *t;
 
@@ -1071,7 +1071,7 @@ bitmap_index piggy_find_bitmap (char * name, int bD1Data)
 
 //------------------------------------------------------------------------------
 
-int piggy_find_sound (char * name)     
+int piggy_findSound (char * name)     
 {
 	int i;
 
@@ -1192,7 +1192,7 @@ if (!Piggy_fp [gameStates.app.bD1Data]) {
 		Piggy_fp [gameStates.app.bD1Data] = copy_pigfile_from_cd (szPigName);
 #endif
 	}
-if (Piggy_fp [gameStates.app.bD1Data]) {                        //make sure pig is valid type file & is up-to-date
+if (Piggy_fp [gameStates.app.bD1Data]) {                        //make sure pig is valid nType file & is up-to-date
 	int pig_id = CFReadInt (Piggy_fp [gameStates.app.bD1Data]);
 	int pig_version = CFReadInt (Piggy_fp [gameStates.app.bD1Data]);
 	if (pig_id != PIGFILE_ID || pig_version != PIGFILE_VERSION) {
@@ -1309,7 +1309,7 @@ void piggy_new_pigfile (char *pigname)
 	if (!Piggy_fp [0])
 		Piggy_fp [0] = copy_pigfile_from_cd (pigname);
 	#endif
-	if (Piggy_fp [0]) {  //make sure pig is valid type file & is up-to-date
+	if (Piggy_fp [0]) {  //make sure pig is valid nType file & is up-to-date
 		int pig_id,pig_version;
 
 		pig_id = CFReadInt (Piggy_fp [0]);
@@ -1452,7 +1452,7 @@ void piggy_new_pigfile (char *pigname)
 
 		//@@Dont' do these things which are done when writing
 		//@@for (i=0; i < gameData.pig.tex.nBitmaps; i++) {
-		//@@    bitmap_index bi;
+		//@@    tBitmapIndex bi;
 		//@@    bi.index = i;
 		//@@    PIGGY_PAGE_IN (bi);
 		//@@}
@@ -1470,7 +1470,7 @@ void piggy_new_pigfile (char *pigname)
 int LoadSounds (CFILE *snd_fp, int nSoundNum, int sound_start)
 {
 	DiskSoundHeader	sndh;
-	digi_sound			temp_sound;
+	digiSound			tempSound;
 	int					i;
 	int					sbytes = 0;
 	int 					nHeaderSize = nSoundNum * sizeof (DiskSoundHeader);
@@ -1482,14 +1482,14 @@ CFSeek (snd_fp, sound_start, SEEK_SET);
 for (i=0; i<nSoundNum; i++) {
 		DiskSoundHeader_read (&sndh, snd_fp);
 		//size -= sizeof (DiskSoundHeader);
-		temp_sound.length = sndh.length;
-		temp_sound.data = (ubyte *) (size_t) (sndh.offset + nHeaderSize + sound_start);
+		tempSound.length = sndh.length;
+		tempSound.data = (ubyte *) (size_t) (sndh.offset + nHeaderSize + sound_start);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.snd.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + sound_start;
 		memcpy (temp_name_read, sndh.name, 8);
 		temp_name_read [8] = 0;
 //		CBRK (strstr (temp_name_read, "lava"));
 //		CBRK (strstr (temp_name_read, "water"));
-		piggy_register_sound (&temp_sound, temp_name_read, 1);
+		piggy_registerSound (&tempSound, temp_name_read, 1);
 		sbytes += sndh.length;
 	}
 
@@ -1530,7 +1530,7 @@ int ReadHamFile ()
 		return 0;
 	}
 
-	//make sure ham is valid type file & is up-to-date
+	//make sure ham is valid nType file & is up-to-date
 	ham_id = CFReadInt (ham_fp);
 	gameData.pig.tex.nHamFileVersion = CFReadInt (ham_fp);
 	if (ham_id != HAMFILE_ID)
@@ -1619,7 +1619,7 @@ int ReadSoundFile ()
 	if (snd_fp == NULL)
 		return 0;
 
-	//make sure soundfile is valid type file & is up-to-date
+	//make sure soundfile is valid nType file & is up-to-date
 	snd_id = CFReadInt (snd_fp);
 	snd_version = CFReadInt (snd_fp);
 	if (snd_id != SNDFILE_ID || snd_version != SNDFILE_VERSION) {
@@ -1680,8 +1680,8 @@ int PiggyInit (void)
 			bogus_data [i * 1024 + (1023 - i)] = c;
 			}
 		PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
-		bogus_sound.length = 1024*1024;
-		bogus_sound.data = bogus_data;
+		bogusSound.length = 1024*1024;
+		bogusSound.data = bogus_data;
 		bitmapOffsets [0][0] =
 		bitmapOffsets [1][0] = 0;
 	}
@@ -1751,7 +1751,7 @@ void PiggyReadSounds (void)
 	if (fp == NULL)
 		return;
 	for (i=0; i<gameData.pig.snd.nSoundFiles [gameStates.app.bD1Data]; i++) {
-		digi_sound *snd = gameData.pig.snd.pSounds + i;
+		digiSound *snd = gameData.pig.snd.pSounds + i;
 		if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 			if (PiggyIsNeeded (i)) {
 				CFSeek (fp, soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
@@ -1781,7 +1781,7 @@ extern unsigned descent_critical_deverror;
 extern unsigned descent_critical_errcode;
 
 char * crit_errors [13] = { "Write Protected", "Unknown Unit", "Drive Not Ready", "Unknown Command", "CRC Error", \
-"Bad struct length", "Seek Error", "Unknown media type", "Sector not found", "Printer out of paper", "Write Fault", \
+"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper", "Write Fault", \
 "Read fault", "General Failure" };
 
 void PiggyCriticalError ()
@@ -1816,12 +1816,12 @@ return -1;
 #define	CHANGING_TEXTURE(_eP)	\
 			(((_eP)->changing_wall_texture >= 0) ? \
 			 (_eP)->changing_wall_texture : \
-			 (_eP)->changing_object_texture)
+			 (_eP)->changingObject_texture)
 
 eclip *FindEffect (eclip *ecP, int tNum)
 {
 	int				h, i, j;
-	bitmap_index	*frameP;
+	tBitmapIndex	*frameP;
 
 if (ecP)
 	i = (int) (++ecP - gameData.eff.pEffects);
@@ -1896,7 +1896,7 @@ int PiggyFreeHiresFrame (grs_bitmap *bmP, int bD1)
 {
 BM_OVERRIDE (gameData.pig.tex.bitmaps [bD1] + bmP->bm_handle) = NULL;
 OglFreeBmTexture (bmP);
-bmP->bm_type = 0;
+bmP->bmType = 0;
 bmP->bm_texBuf = NULL;
 return 1;
 }
@@ -1911,10 +1911,10 @@ int PiggyFreeHiresAnimation (grs_bitmap *bmP, int bD1)
 if (!(altBmP = BM_OVERRIDE (bmP)))
 	return 0;
 BM_OVERRIDE (bmP) = NULL;
-if (altBmP->bm_type == BM_TYPE_FRAME)
+if (altBmP->bmType == BM_TYPE_FRAME)
 	if (!(altBmP = BM_PARENT (altBmP)))
 		return 1;
-if (altBmP->bm_type != BM_TYPE_ALT)
+if (altBmP->bmType != BM_TYPE_ALT)
 	return 0;	//actually this would be an error
 if (bmfP = BM_FRAMES (altBmP))
 	for (i = BM_FRAMECOUNT (altBmP); i; i--, bmfP++)
@@ -1924,7 +1924,7 @@ d_free (BM_FRAMES (altBmP));
 altBmP->bm_data.alt.bm_frameCount = 0;
 PiggyFreeBitmapData (altBmP);
 altBmP->bm_palette = NULL;
-altBmP->bm_type = 0;
+altBmP->bmType = 0;
 return 1;
 }
 
@@ -2007,7 +2007,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void GetFlagData (char *bmName, bitmap_index bmi)
+void GetFlagData (char *bmName, tBitmapIndex bmi)
 {
 	int			i;
 	tFlagData	*pf;
@@ -2028,7 +2028,7 @@ pf->vci.nCurFrame = 0;
 
 //------------------------------------------------------------------------------
 
-void PiggyBitmapPageIn (bitmap_index bmi, int bD1)
+void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
 {
 	grs_bitmap		*bmP, *altBmP;
 	int				i, org_i, temp, nSize, nOffset, nFrames, nShrinkFactor, 
@@ -2090,7 +2090,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 		LogErr ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 		bTGA = 1;
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + i;
-		altBmP->bm_type = BM_TYPE_ALT;
+		altBmP->bmType = BM_TYPE_ALT;
 		BM_OVERRIDE (bmP) = altBmP;
 		bmP = altBmP;
 		ReadTGAHeader (fp, &h, bmP);
@@ -2187,7 +2187,7 @@ reloadTextures:
 			}
 		else {
 			ReadTGAImage (fp, &h, bmP, -1, 1.0, 0, 0);
-			bmP->bm_type = BM_TYPE_ALT;
+			bmP->bmType = BM_TYPE_ALT;
 			if (IsOpaqueDoor (i)) {
 				bmP->bm_props.flags &= ~BM_FLAG_TRANSPARENT;
 				bmP->bm_data.alt.bm_transparentFrames [0] &= ~1;
@@ -2246,7 +2246,7 @@ void PiggyWritePigFile (char *filename)
 	char tname [SHORT_FILENAME_LEN];
 
 	for (i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++) {
-		bitmap_index bi;
+		tBitmapIndex bi;
 		bi.index = i;
 		PIGGY_PAGE_IN (bi);
 	}
@@ -2328,7 +2328,7 @@ void PiggyWritePigFile (char *filename)
 		bmh.wh_extra |= ((gameData.pig.tex.pBitmaps[i].bm_props.h >> 4) & 0xf0);
 		bmh.flags = gameData.pig.tex.pBitmaps[i].bm_props.flags;
 		if (PiggyIsSubstitutableBitmap (gameData.pig.tex.pBitmapFiles[i].name, subst_name)) {
-			bitmap_index other_bitmap;
+			tBitmapIndex other_bitmap;
 			other_bitmap = piggy_find_bitmap (subst_name, gameStates.app.bD1Data);
 			gameData.pig.tex.bitmapXlat [i] = other_bitmap.index;
 			bmh.flags |= BM_FLAG_PAGED_OUT;
@@ -2437,7 +2437,7 @@ void PiggyDumpAll ()
 		data_offset = sound_data_start;
 	
 		for (i=0; i < gameData.pig.snd.nSoundFiles [0]; i++) {
-			digi_sound *snd;
+			digiSound *snd;
 	
 			snd = &gameData.pig.snd.sounds [0][i];
 			strcpy (sndh.name, sounds [0][i].name);
@@ -2575,7 +2575,7 @@ int PiggyIsSubstitutableBitmap (char * name, char * subst_name)
 //		Page in a bitmap, if ddraw, then page it into a ddsurface in 
 //		'video' memory.  if that fails, page it in normally.
 
-void PiggyBitmapPageInW (bitmap_index bitmap, int ddraw)
+void PiggyBitmapPageInW (tBitmapIndex bitmap, int ddraw)
 {
 }
 
@@ -2656,7 +2656,7 @@ if (fp) {
 		if (offset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
 			break;
 		bm.bm_avgColor = bmh [i].bm_avgColor;
-		bm.bm_type = BM_TYPE_ALT;
+		bm.bmType = BM_TYPE_ALT;
 		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bTGA)))
 			break;
 		if (bTGA) {
@@ -2794,8 +2794,8 @@ GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, -1);
 #define D1_MAX_TMAP_NUM 1630 // 1621 in descent.pig Mac registered
 
 /* the inverse of the gameData.pig.tex.bmIndex array, for descent 1.
- * "gameData.pig.tex.bmIndex" looks up a d2 bitmap index given a d2 tmap_num
- * "d1_tmap_nums" looks up a d1 tmap_num given a d1 bitmap. "-1" means "None"
+ * "gameData.pig.tex.bmIndex" looks up a d2 bitmap index given a d2 nBaseTex
+ * "d1_tmap_nums" looks up a d1 nBaseTex given a d1 bitmap. "-1" means "None"
  */
 void _CDECL_ FreeD1TMapNums (void) 
 {
@@ -2838,7 +2838,7 @@ short D2IndexForD1Index (short d1_index)
 	Assert (d1_index >= 0 && d1_index < D1_MAX_TMAP_NUM);
 	if ((d1_tmap_num == -1) || !d1_tmap_num_unique (d1_tmap_num))
   		return -1;
-	return gameData.pig.tex.bmIndex [0][convert_d1_tmap_num (d1_tmap_num)].index;
+	return gameData.pig.tex.bmIndex [0][ConvertD1Texture (d1_tmap_num)].index;
 }
 
 //------------------------------------------------------------------------------
@@ -2967,12 +2967,12 @@ TexMergeFlush ();       //for re-merging with new textures
  * Find and load the named bitmap from descent.pig
  * similar to ReadExtraBitmapIFF
  */
-bitmap_index ReadExtraBitmapD1Pig (char *name)
+tBitmapIndex ReadExtraBitmapD1Pig (char *name)
 {
 	CFILE					*Piggy_fp;
 	DiskBitmapHeader	bmh;
 	int					i, nBmHdrOffs, nBmDataOffs, nBitmapNum;
-	bitmap_index		bmi;
+	tBitmapIndex		bmi;
 	grs_bitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 
 bmi.index = 0;
@@ -3011,18 +3011,18 @@ return bmi;
 
 #ifndef FAST_FILE_IO
 /*
- * reads a bitmap_index structure from a CFILE
+ * reads a tBitmapIndex structure from a CFILE
  */
-void BitmapIndexRead (bitmap_index *bi, CFILE *fp)
+void BitmapIndexRead (tBitmapIndex *bi, CFILE *fp)
 {
 	bi->index = CFReadShort (fp);
 }
 
 //------------------------------------------------------------------------------
 /*
- * reads n bitmap_index structs from a CFILE
+ * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN (bitmap_index *bi, int n, CFILE *fp)
+int BitmapIndexReadN (tBitmapIndex *bi, int n, CFILE *fp)
 {
 	int i;
 

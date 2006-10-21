@@ -18,7 +18,7 @@
 #include <unistd.h>
 #endif
 #include <stdlib.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -241,7 +241,7 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, ubyte *outbuf, int outbufs
 	memset(rd, 0, sizeof(*rd));
 	memcpy(rd->src_node, &fromaddr.sin_addr, 4);
 	// TODO: Include the port like in ipx_udp.c
-	rd->pkt_type = 0;
+	rd->pktType = 0;
 
 	return size;
 }

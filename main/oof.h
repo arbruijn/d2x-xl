@@ -34,7 +34,7 @@
 #define OOF_SOF_GLOW			0x0200000	// This subobject glows
 #define OOF_SOF_CUSTOM		0x0400000	// This subobject has textures/colors that are customizable
 #define OOF_SOF_THRUSTER	0x0800000   // This is a thruster subobject
-#define OOF_SOF_JITTER		0x01000000  // This object jitters by itself
+#define OOF_SOF_JITTER		0x01000000  // This tObject jitters by itself
 #define OOF_SOF_HEADLIGHT	0x02000000	// This suboject is a headlight
 
 #define OOF_MAX_GUNS_PER_MODEL	      64
@@ -85,7 +85,7 @@ typedef struct tOOF_frgb {
 } tOOF_frgb;
 
 typedef struct tOOF_chunkHeader {
-	tOOF_chunkType		type;
+	tOOF_chunkType		nType;
 	int					nLength;
 } tOOF_chunkHeader;
 
@@ -270,7 +270,7 @@ typedef struct tOOF_subObject {
 	tOOF_vector			vMod;
 } tOOF_subObject;
 
-typedef struct tOOF_object {
+typedef struct tOOFObject {
 	int					nVersion;
 	int					nFlags;
 	float					fMaxRadius;
@@ -289,20 +289,20 @@ typedef struct tOOF_object {
 	int					nCloakPulse;
 	int					nCloakChangedTime;
 	float					fAlpha;
-} tOOF_object;
+} tOOFObject;
 
 typedef float glVectorf [4];
 typedef float glMatrixf [4*4];
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOF_object *po);
-int OOF_FreeObject (tOOF_object *po);
-int OOF_Render (object *objP, tOOF_object *po, float *fLight, int bCloaked);
-float *OOF_MatVms2Gl (float *pDest, vms_matrix *pSrc);
-float *OOF_VecVms2Gl (float *pDest, vms_vector *pSrc);
-float *OOF_VecVms2Oof (tOOF_vector *pDest, vms_vector *pSrc);
-float *OOF_MatVms2Oof (tOOF_matrix *pDest, vms_matrix *pSrc);
+int OOF_ReadFile (char *pszFile, tOOFObject *po);
+int OOF_FreeObject (tOOFObject *po);
+int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked);
+float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc);
+float *OOF_VecVms2Gl (float *pDest, vmsVector *pSrc);
+float *OOF_VecVms2Oof (tOOF_vector *pDest, vmsVector *pSrc);
+float *OOF_MatVms2Oof (tOOF_matrix *pDest, vmsMatrix *pSrc);
 tOOF_vector *OOF_VecAdd (tOOF_vector *pvDest, tOOF_vector *pvSrc, tOOF_vector *pvAdd);
 tOOF_vector *OOF_VecSub (tOOF_vector *pvDest, tOOF_vector *pvMin, tOOF_vector *pvSub);
 tOOF_vector *OOF_VecInc (tOOF_vector *pvDest, tOOF_vector *pvSrc);

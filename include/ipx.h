@@ -60,7 +60,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added defines for SPX socketsx.
  *
  * Revision 1.11  1994/10/31  19:23:31  rob
- * Added a prototype for the new object send function.
+ * Added a prototype for the new tObject send function.
  *
  * Revision 1.10  1994/09/07  13:37:25  john
  * Changed default socket to 0x4000, because

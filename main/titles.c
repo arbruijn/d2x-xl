@@ -639,13 +639,13 @@ briefing_screen Briefing_screens[] = {
 int	Briefing_text_x, Briefing_text_y;
 
 grs_canvas	*Robot_canv = NULL;
-vms_angvec	Robot_angles;
+vmsAngVec	Robot_angles;
 
 char    Bitmap_name[32] = "";
 #define EXIT_DOOR_MAX   14
 #define OTHER_THING_MAX 10      //  Adam: This is the number of frames in your new animating thing.
 #define DOOR_DIV_INIT   6
-sbyte   Door_dir=1, Door_div_count=0, Animating_bitmap_type=0;
+sbyte   Door_dir=1, Door_div_count=0, Animating_bitmapType=0;
 
 //-----------------------------------------------------------------------------
 
@@ -689,7 +689,7 @@ void ShowBitmapFrame (int bRedraw)
 		int		num, dig1, dig2;
 
 		//	Set supertransparency color to black
-		switch (Animating_bitmap_type) {
+		switch (Animating_bitmapType) {
 			case 0: 
 				WINDOS (
 					bitmap_canv = DDGrCreateSubCanvas (dd_grd_curcanv, x, y, w, h);/*rescale_x (220), rescale_x (45), 64, 64);*/	break,
@@ -703,7 +703,7 @@ void ShowBitmapFrame (int bRedraw)
 
 			// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 			default:
-				Int3 (); // Impossible, illegal value for Animating_bitmap_type
+				Int3 (); // Impossible, illegal value for Animating_bitmapType
 			}
 
 		WINDOS (
@@ -721,7 +721,7 @@ void ShowBitmapFrame (int bRedraw)
 			else
 				num = (dig1-'0')*10 + (dig2-'0');
 
-			switch (Animating_bitmap_type) {
+			switch (Animating_bitmapType) {
 				case 0:
 					if (!Door_div_count) {
 						num += Door_dir;
@@ -756,7 +756,7 @@ void ShowBitmapFrame (int bRedraw)
 
 		LoadPalette ("", "", 0, 0, 1);
 		{
-		bitmap_index bi;
+		tBitmapIndex bi;
 		bi = piggy_find_bitmap (Bitmap_name, 0);
 		bitmap_ptr = gameData.pig.tex.bitmaps [0] + bi.index;
 		PIGGY_PAGE_IN (bi, 0);
@@ -768,8 +768,8 @@ void ShowBitmapFrame (int bRedraw)
 		//show_fullscr (bitmap_ptr);
 		{
 		#define DEFAULT_VIEW_DIST 0x60000
-		vms_vector	temp_pos=ZERO_VECTOR;
-		vms_matrix	temp_orient = IDENTITY_MATRIX;
+		vmsVector	temp_pos=ZERO_VECTOR;
+		vmsMatrix	temp_orient = IDENTITY_MATRIX;
 		GrClearCanvas (0);
 		G3StartFrame (0,0);
 		G3SetViewMatrix (&temp_pos,&temp_orient,0);
@@ -792,7 +792,7 @@ void ShowBitmapFrame (int bRedraw)
 #if 1
 		Door_div_count = DOOR_DIV_INIT;
 #else
-		switch (Animating_bitmap_type) {
+		switch (Animating_bitmapType) {
 			case 0:
 				if (num == EXIT_DOOR_MAX) {
 					Door_dir = -1;
@@ -851,16 +851,16 @@ void ShowSpinningRobotFrame (int robot_num)
 
 		curcanv_save = grdCurCanv;
 		grdCurCanv = Robot_canv;
-		Assert (gameData.bots.pInfo[robot_num].model_num != -1);
+		Assert (gameData.bots.pInfo[robot_num].nModel != -1);
 		if (bInitRobot) 
 			{
 //			GrPaletteStepLoad (robot_palette);
 			LoadPalette ("", "", 0, 0, 1);
-			OglCachePolyModelTextures (gameData.bots.pInfo[robot_num].model_num);
+			OglCachePolyModelTextures (gameData.bots.pInfo[robot_num].nModel);
 			GrPaletteStepLoad (NULL);
 			bInitRobot = 0;
 			}
- 		DrawModelPicture (gameData.bots.pInfo[robot_num].model_num, &Robot_angles);
+ 		DrawModelPicture (gameData.bots.pInfo[robot_num].nModel, &Robot_angles);
 		grdCurCanv = curcanv_save;
 	}
 
@@ -898,8 +898,8 @@ void InitSpinningRobot (void) // (int x,int y,int w,int h)
 
 //---------------------------------------------------------------------------
 // Returns char width.
-// If show_robot_flag set, then show a frame of the spinning robot.
-int show_char_delay (char the_char, int delay, int robot_num, int cursor_flag, int bRedraw)
+// If showRobotFlag set, then show a frame of the spinning robot.
+int show_char_delay (char the_char, int delay, int robot_num, int cursorFlag, int bRedraw)
 {
 	int w, h, aw;
 	char message[2];
@@ -916,7 +916,7 @@ GrGetStringSize (message, &w, &h, &aw);
 Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
-if (cursor_flag && !bRedraw) {
+if (cursorFlag && !bRedraw) {
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
 	GrPrintF (Briefing_text_x+1, Briefing_text_y, "_");
@@ -951,7 +951,7 @@ StartTime = TimerGetFixedSeconds ();
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 //	Erase cursor
-if (cursor_flag && (delay > 0) && !bRedraw) {
+if (cursorFlag && (delay > 0) && !bRedraw) {
 	GrSetFontColorRGBi (nEraseColor, 1, 0, 0);
 	GrPrintF (Briefing_text_x+1, Briefing_text_y, "_");
 	//	erase the character
@@ -1072,9 +1072,9 @@ if (*psz != 10)
 
 //-----------------------------------------------------------------------------
 
-void flash_cursor (int cursor_flag)
+void flash_cursor (int cursorFlag)
 {
-	if (cursor_flag == 0)
+	if (cursorFlag == 0)
 		return;
 
 WIN (DDGRLOCK (dd_grd_curcanv));
@@ -1325,7 +1325,7 @@ while (!done) {
 					StopBriefingSound (&bot_channel);
 					get_message_name (&message, Bitmap_name);
 					strcat (Bitmap_name, "#0");
-					Animating_bitmap_type = 0;
+					Animating_bitmapType = 0;
 					}
 				prev_ch = 10;
 				}
@@ -1337,7 +1337,7 @@ while (!done) {
 						}
 					get_message_name (&message, Bitmap_name);
 					strcat (Bitmap_name, "#0");
-					Animating_bitmap_type = 1;
+					Animating_bitmapType = 1;
 					}
 				prev_ch = 10;
 				}

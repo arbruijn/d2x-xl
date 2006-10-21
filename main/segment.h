@@ -14,14 +14,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Include file for functions which need to access segment data structure.
+ * Include file for functions which need to access tSegment data structure.
  *
  * Old Log:
  * Revision 1.4  1995/11/03  12:53:11  allender
  * shareware changes
  *
  * Revision 1.3  1995/07/26  16:53:45  allender
- * put sides and segment structure back the PC way for checksumming reasons
+ * put sides and tSegment structure back the PC way for checksumming reasons
  *
  * Revision 1.2  1995/06/19  07:55:22  allender
  * rearranged structure members for possible better alignment
@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Initial revision
  *
  * Revision 2.1  1995/03/20  18:15:22  john
- * Added code to not store the normals in the segment structure.
+ * Added code to not store the normals in the tSegment structure.
  *
  * Revision 2.0  1995/02/27  11:26:49  john
  * New version 2.0, which has no anonymous unions, builds with
@@ -52,14 +52,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Moved plane tolerance constant to gameseg.c, the only file that used it.
  *
  * Revision 1.84  1994/11/27  14:01:41  matt
- * Fixed segment structure so LVLs work
+ * Fixed tSegment structure so LVLs work
  *
  * Revision 1.83  1994/11/26  22:50:20  matt
- * Removed editor-only fields from segment structure when editor is compiled
- * out, and padded segment structure to even multiple of 4 bytes.
+ * Removed editor-only fields from tSegment structure when editor is compiled
+ * out, and padded tSegment structure to even multiple of 4 bytes.
  *
  * Revision 1.82  1994/11/21  11:43:36  mike
- * smaller segment and vertex buffers.
+ * smaller tSegment and vertex buffers.
  *
  * Revision 1.81  1994/11/17  11:39:35  matt
  * Ripped out code to load old mines
@@ -87,20 +87,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * new lsegment structure.
  *
  * Revision 1.73  1994/06/08  14:30:48  matt
- * Added static_light field to segment structure, and padded side struct
+ * Added static_light field to tSegment structure, and padded tSide struct
  * to be longword aligned.
  *
  * Revision 1.72  1994/05/19  23:25:17  mike
  * Change MINE_VERSION to 15, DEFAULT_LIGHTING to 0
  *
  * Revision 1.71  1994/05/12  14:45:54  mike
- * New segment data structure (!!), group, special, object, value = short.
+ * New tSegment data structure (!!), group, special, tObject, value = short.
  *
  * Revision 1.70  1994/05/03  11:06:46  mike
  * Remove constants VMAG and UMAG which are editor specific..
  *
  * Revision 1.69  1994/04/18  10:40:28  yuan
- * Increased segment limit to 1000
+ * Increased tSegment limit to 1000
  * (From 500)
  *
  *
@@ -120,11 +120,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
-#define SIDE_IS_QUAD    1   // render side as quadrilateral
-#define SIDE_IS_TRI_02  2   // render side as two triangles, triangulated along edge from 0 to 2
-#define SIDE_IS_TRI_13  3   // render side as two triangles, triangulated along edge from 1 to 3
+#define SIDE_IS_QUAD    1   // render tSide as quadrilateral
+#define SIDE_IS_TRI_02  2   // render tSide as two triangles, triangulated along edge from 0 to 2
+#define SIDE_IS_TRI_13  3   // render tSide as two triangles, triangulated along edge from 1 to 3
 
-// Set maximum values for segment and face data structures.
+// Set maximum values for tSegment and face data structures.
 #define MAX_VERTICES_PER_SEGMENT    8
 #define MAX_SIDES_PER_SEGMENT       6
 #define MAX_VERTICES_PER_POLY       4
@@ -148,7 +148,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define DEFAULT_LIGHTING        0   // (F1_0/2)
 
-#ifdef EDITOR   //verts for the new segment
+#ifdef EDITOR   //verts for the new tSegment
 # define NUM_NEW_SEG_VERTICES   8
 # define NEW_SEGMENT_VERTICES   (MAX_SEGMENT_VERTICES)
 # define MAX_VERTICES           (MAX_SEGMENT_VERTICES+NUM_NEW_SEG_VERTICES)
@@ -156,9 +156,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # define MAX_VERTICES           (MAX_SEGMENT_VERTICES)
 #endif
 
-// Returns true if segnum references a child, else returns false.
+// Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.
-#define IS_CHILD(segnum) (segnum > -1)
+#define IS_CHILD(nSegment) (nSegment > -1)
 
 #if 0
 //Structure for storing u,v,light values.
@@ -169,52 +169,44 @@ typedef struct uvl {
 #endif
 
 #ifdef COMPACT_SEGS
-typedef struct side {
-	sbyte   type;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+typedef struct tSide {
+	sbyte   nType;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
 	ubyte   pad;            //keep us longword alligned
-	short   wall_num;
-	short   tmap_num;
-	short   tmap_num2;
+	short   nWall;
+	short   nTexture [2];
 	uvl     uvls [4];
-	//vms_vector normals[2];  // 2 normals, if quadrilateral, both the same.
-} side;
+	//vmsVector normals[2];  // 2 normals, if quadrilateral, both the same.
+} tSide;
 #else
-typedef struct side {
-	sbyte   type;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-	sbyte   frame_num;      //keep us longword aligned
-	ushort  wall_num;
-	short   tmap_num;
-	short   tmap_num2;
-	uvl     uvls [4];
-	vms_vector normals [2];  // 2 normals, if quadrilateral, both the same.
-} side;
+typedef struct tSide {
+	sbyte   		nType;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+	sbyte   		nFrame;      //keep us longword aligned
+	ushort  		nWall;
+	short   		nBaseTex;
+	ushort		nOvlTex : 14;
+	ushort		nOvlOrient : 2;
+	uvl     		uvls [4];
+	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
+} tSide;
 #endif
 
-typedef struct segment {
+typedef struct tSegment {
 #ifdef EDITOR
-	short   segnum;     // segment number, not sure what it means
+	short   nSegment;     // tSegment number, not sure what it means
 #endif
-	side    sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 #ifdef EDITOR
-	short   group;      // group number to which the segment belongs.
-	short   objects;    // pointer to objects in this segment
+	short   group;      // group number to which the tSegment belongs.
+	short   objects;    // pointer to objects in this tSegment
 #else
-	int     objects;    // pointer to objects in this segment
+	int     objects;    // pointer to objects in this tSegment
 #endif
-	// -- Moved to segment2 to make this struct 512 bytes long --
-	//ubyte   special;    // what type of center this is
-	//sbyte   matcen_num; // which center segment is associated with.
-	//short   value;
-	//fix     static_light; //average static light in segment
-	//#ifndef EDITOR
-	//short   pad;        //make structure longword aligned
-	//#endif
-} segment;
+} tSegment;
 
 typedef struct xsegment {
-	char		owner;		  // team owning that segment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
+	char		owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
 	char		group;
 } xsegment;
 
@@ -224,9 +216,9 @@ typedef struct xsegment {
 
 typedef struct segment2 {
 	ubyte   special;
-	sbyte   matcen_num;
+	sbyte   nMatCen;
 	sbyte   value;
-	ubyte   s2_flags;
+	ubyte   s2Flags;
 	fix     static_light;
 } segment2;
 
@@ -249,20 +241,20 @@ typedef struct segment2 {
 #define MAX_CENTER_TYPES        15
 
 #ifdef COMPACT_SEGS
-extern void GetSideNormal(segment *sp, int sidenum, int normal_num, vms_vector * vm );
-extern void GetSideNormals(segment *sp, int sidenum, vms_vector * vm1, vms_vector *vm2 );
+extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, vmsVector * vm );
+extern void GetSideNormals(tSegment *sp, int nSide, vmsVector * vm1, vmsVector *vm2 );
 #endif
 
-// Local segment data.
-// This is stuff specific to a segment that does not need to get
+// Local tSegment data.
+// This is stuff specific to a tSegment that does not need to get
 // written to disk.  This is a handy separation because we can add to
 // this structure without obsoleting existing data on disk.
 
-#define SS_REPAIR_CENTER    0x01    // Bitmask for this segment being part of repair center.
+#define SS_REPAIR_CENTER    0x01    // Bitmask for this tSegment being part of repair center.
 
 //--repair-- typedef struct {
-//--repair-- 	int     special_type;
-//--repair-- 	short   special_segment; // if special_type indicates repair center, this is the base of the repair center
+//--repair-- 	int     specialType;
+//--repair-- 	short   special_segment; // if specialType indicates repair center, this is the base of the repair center
 //--repair-- } lsegment;
 
 typedef struct {
@@ -273,30 +265,30 @@ typedef struct {
 } group;
 
 // Globals from mglobal.c
-extern sbyte sideToVerts[MAX_SIDES_PER_SEGMENT][4];       // sideToVerts[my_side] is list of vertices forming side my_side.
-extern int  sideToVertsInt[MAX_SIDES_PER_SEGMENT][4];    // sideToVerts[my_side] is list of vertices forming side my_side.
-extern char sideOpposite[];                                // sideOpposite[my_side] returns side opposite cube from my_side.
+extern sbyte sideToVerts[MAX_SIDES_PER_SEGMENT][4];       // sideToVerts[my_side] is list of vertices forming tSide my_side.
+extern int  sideToVertsInt[MAX_SIDES_PER_SEGMENT][4];    // sideToVerts[my_side] is list of vertices forming tSide my_side.
+extern char sideOpposite[];                                // sideOpposite[my_side] returns tSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
-// Light cast upon vert_light vertices in segnum:sidenum by some light
+// Light cast upon vert_light vertices in nSegment:nSide by some light
 typedef struct {
-	short   segnum;
-	sbyte   sidenum;
+	short   nSegment;
+	sbyte   nSide;
 	sbyte   dummy;
 	ubyte   vert_light[4];
 } delta_light;
 
-// Light at segnum:sidenum casts light on count sides beginning at index (in array gameData.render.lightDeltas)
+// Light at nSegment:nSide casts light on count sides beginning at index (in array gameData.render.lightDeltas)
 typedef struct {
-	short   segnum;
-	ubyte   sidenum;
+	short   nSegment;
+	ubyte   nSide;
 	ubyte   count;
 	unsigned short   index;
 } dl_index_d2;
 
 typedef struct {
-	short   segnum;
-	unsigned short sidenum :3;
+	short   nSegment;
+	unsigned short nSide :3;
 	unsigned short count :13;
 	unsigned short   index;
 } dl_index_d2x;
@@ -314,38 +306,38 @@ typedef union {
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
-int SubtractLight(short segnum, short sidenum);
-int AddLight(short segnum, short sidenum);
+int SubtractLight(short nSegment, short nSide);
+int AddLight(short nSegment, short nSide);
 void restore_all_lights_in_mine(void);
 void ClearLightSubtracted(void);
 
 // ----------------------------------------------------------------------------
 // --------------------- Segment interrogation functions ----------------------
-// Do NOT read the segment data structure directly.  Use these
-// functions instead.  The segment data structure is GUARANTEED to
-// change MANY TIMES.  If you read the segment data structure
+// Do NOT read the tSegment data structure directly.  Use these
+// functions instead.  The tSegment data structure is GUARANTEED to
+// change MANY TIMES.  If you read the tSegment data structure
 // directly, your code will break, I PROMISE IT!
 
 // Return a pointer to the list of vertex indices for the current
-// segment in vp and the number of vertices in *nv.
-extern void med_get_vertex_list(segment *s,int *nv,short **vp);
+// tSegment in vp and the number of vertices in *nv.
+extern void med_get_vertex_list(tSegment *s,int *nv,short **vp);
 
 // Return a pointer to the list of vertex indices for face facenum in
 // vp and the number of vertices in *nv.
-extern void med_get_face_vertex_list(segment *s,int side, int facenum,int *nv,short **vp);
+extern void med_get_face_vertex_list(tSegment *s,int tSide, int facenum,int *nv,short **vp);
 
-// Set *nf = number of faces in segment s.
-extern void med_get_num_faces(segment *s,int *nf);
+// Set *nf = number of faces in tSegment s.
+extern void med_get_num_faces(tSegment *s,int *nf);
 
-void med_validate_segment_side(segment *sp, short side);
+void med_validate_segment_side(tSegment *sp, short tSide);
 
-// Delete segment function added for curves.c
-extern int med_delete_segment(segment *sp);
+// Delete tSegment function added for curves.c
+extern int med_delete_segment(tSegment *sp);
 
-// Delete segment from group
+// Delete tSegment from group
 extern void delete_segment_from_group(int segment_num, int group_num);
 
-// Add segment to group
+// Add tSegment to group
 extern void add_segment_to_group(int segment_num, int group_num);
 
 // Verify that all vertices are legal.

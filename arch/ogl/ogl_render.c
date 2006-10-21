@@ -175,12 +175,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDrawCircle2 (int nSides, int type, double xsc, double xo, double ysc, double yo)
+void OglDrawCircle2 (int nSides, int nType, double xsc, double xo, double ysc, double yo)
 {
 	int i;
 	double ang;
 
-glBegin (type);
+glBegin (nType);
 for (i = 0; i < nSides; i++) {
 	ang = 2.0 * M_PI * i / nSides;
 	glVertex2d (cos (ang) * xsc + xo, sin (ang) * ysc + yo);
@@ -190,11 +190,11 @@ glEnd ();
 
 //------------------------------------------------------------------------------
 
-void OglDrawCircle (int nSides, int type)
+void OglDrawCircle (int nSides, int nType)
 {
 	int i;
 	double ang;
-	glBegin (type);
+	glBegin (nType);
 	for (i = 0; i < nSides; i++) {
 		ang = 2.0 * M_PI * i / nSides;
 		glVertex2d (cos (ang), sin (ang));
@@ -204,12 +204,12 @@ void OglDrawCircle (int nSides, int type)
 
 //------------------------------------------------------------------------------
 
-int CircleListInit (int nSides, int type, int mode) 
+int CircleListInit (int nSides, int nType, int mode) 
 {
 	int hand=glGenLists (1);
 	glNewList (hand, mode);
 	/* draw a unit radius circle in xy plane centered on origin */
-	OglDrawCircle (nSides, type);
+	OglDrawCircle (nSides, nType);
 	glEndList ();
 	return hand;
 }
@@ -843,9 +843,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3Normal (g3s_point **pointList, vms_vector *pvNormal)
+void G3Normal (g3s_point **pointList, vmsVector *pvNormal)
 {
-vms_vector	vNormal;
+vmsVector	vNormal;
 
 #if 1
 if (pvNormal) {
@@ -894,7 +894,7 @@ else
 
 void G3CalcNormal (g3s_point **pointList, fVector3 *pvNormal)
 {
-	vms_vector	vNormal;
+	vmsVector	vNormal;
 	int	v [4];
 
 v [0] = pointList [0]->p3_index;
@@ -1157,7 +1157,7 @@ bool G3DrawTexPolyMulti (
 #if LIGHTMAPS
 	ogl_texture	*lightMap, 
 #endif
-	vms_vector	*pvNormal,
+	vmsVector	*pvNormal,
 	int orient, 
 	int bBlend)
 {
@@ -1455,7 +1455,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 bool G3DrawBitMap (
-	vms_vector	*pos, 
+	vmsVector	*pos, 
 	fix			width, 
 	fix			height, 
 	grs_bitmap	*bmP, 
@@ -1464,7 +1464,7 @@ bool G3DrawBitMap (
 	int			transp, 
 	int			bDepthInfo)
 {
-	vms_vector	pv, v1;
+	vmsVector	pv, v1;
 	GLfloat		h, w, u, v, x, y, z;
 	GLuint		depthFunc;
 

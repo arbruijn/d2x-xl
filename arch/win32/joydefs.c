@@ -37,7 +37,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "digi.h"
 #include "playsave.h"
 
-int joydefs_calibrate_flag=0;
+int joydefs_calibrateFlag=0;
 
 int Joy_is_Sidewinder=0; //not needed, but lots of main/* stuff use it
 
@@ -50,8 +50,8 @@ int joycal_message( char * title, char * text )
 {
 	int i;
 	newmenu_item	m[2];
-	m[0].type = NM_TYPE_TEXT; m[0].text = text;
-	m[1].type = NM_TYPE_MENU; m[1].text = TXT_OK;
+	m[0].nType = NM_TYPE_TEXT; m[0].text = text;
+	m[1].nType = NM_TYPE_MENU; m[1].text = TXT_OK;
 	i = ExecMenu( title, NULL, 2, m, NULL );
 	if ( i < 0 ) 
 		return 1;
@@ -67,7 +67,7 @@ void joydefs_calibrate()
 void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	int i;
-	int oc_type = gameConfig.nControlType;
+	int ocType = gameConfig.nControlType;
 
 	nitems = nitems;
 	last_key = last_key;
@@ -78,11 +78,11 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 
         if (gameConfig.nControlType == 2) gameConfig.nControlType = CONTROL_MOUSE;
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
 		ExecMessageBox( TXT_IMPORTANT_NOTE, 1, TXT_OK, TXT_FCS );
 	}
 
-	if (oc_type != gameConfig.nControlType) {
+	if (ocType != gameConfig.nControlType) {
 		switch (gameConfig.nControlType) {
 	//		case	CONTROL_NONE:
 			case	CONTROL_JOYSTICK:
@@ -91,7 +91,7 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 			case	CONTROL_GRAVIS_GAMEPAD:
 	//		case	CONTROL_MOUSE:
 	//		case	CONTROL_CYBERMAN:
-				joydefs_calibrate_flag = 1;
+				joydefs_calibrateFlag = 1;
 		}
 		KCSetControls();
 	}
@@ -107,14 +107,14 @@ void joydefs_config()
         newmenu_item m[13];
         int i, j, i1=0, nitems=7;
 
-            m[0].type = NM_TYPE_RADIO;
+            m[0].nType = NM_TYPE_RADIO;
             m[0].text = "KEYBOARD"; m[0].value = 0; m[0].group = 0; m [0].key = KEY_K;
-            m[1].type = NM_TYPE_RADIO; m[1].text = "JOYSTICK"; m[1].value = 0; m[1].group = 0; m [1].key = KEY_J;
-            m[2].type = NM_TYPE_RADIO; m[2].text = "MOUSE"; m[2].value = 0; m[2].group = 0; m [2].key = KEY_M;
-            m[3].type = NM_TYPE_TEXT; m[3].text="";
-            m[4].type = NM_TYPE_MENU; m[4].text="CUSTOMIZE ABOVE";  m [4].key = KEY_A;
-            m[5].type = NM_TYPE_MENU; m[5].text="CUSTOMIZE KEYBOARD"; m [5].key = KEY_C;
-            m[6].type = NM_TYPE_MENU; m[6].text="CUSTOMIZE D1X KEYS"; m [6].key = KEY_X;
+            m[1].nType = NM_TYPE_RADIO; m[1].text = "JOYSTICK"; m[1].value = 0; m[1].group = 0; m [1].key = KEY_J;
+            m[2].nType = NM_TYPE_RADIO; m[2].text = "MOUSE"; m[2].value = 0; m[2].group = 0; m [2].key = KEY_M;
+            m[3].nType = NM_TYPE_TEXT; m[3].text="";
+            m[4].nType = NM_TYPE_MENU; m[4].text="CUSTOMIZE ABOVE";  m [4].key = KEY_A;
+            m[5].nType = NM_TYPE_MENU; m[5].text="CUSTOMIZE KEYBOARD"; m [5].key = KEY_C;
+            m[6].nType = NM_TYPE_MENU; m[6].text="CUSTOMIZE D1X KEYS"; m [6].key = KEY_X;
 
             do {
                 i = gameConfig.nControlType;

@@ -27,7 +27,7 @@ typedef struct FILETIMESTRUCT {
 typedef struct FILEFINDSTRUCT {
 	char 		name [256];
 	char		szDir [256];
-	char 		type;
+	char 		nType;
 	DIR		*dirP;
 	regex_t	filter;
 } FILEFINDSTRUCT;

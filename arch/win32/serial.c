@@ -7,7 +7,7 @@ int com_init(void)
   return 0;
 }
 
-int com_read(char *buffer, int len, int timeout_value)
+int com_read(char *buffer, int len, int timeoutValue)
 {
   return -1;
 }
@@ -34,7 +34,7 @@ void com_setbaudrate(int rate)
 {
 }
 
-int com_readline(int timeout_value, char *input_buffer,int len)
+int com_readline(int timeoutValue, char *input_buffer,int len)
 {
  return 0;
 }

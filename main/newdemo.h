@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * added new record function to restore after in rearview mode
  *
  * Revision 1.34  1994/12/08  21:03:15  allender
- * added new param to record_player_flags
+ * added new param to record_playerFlags
  *
  * Revision 1.33  1994/12/08  13:47:01  allender
  * removed function call to record_rearview
@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * removed VCR_MODE stuff, and added monitor blowup effects
  *
  * Revision 1.21  1994/10/26  14:44:48  allender
- * completed hacked in vcr type demo playback states
+ * completed hacked in vcr nType demo playback states
  *
  * Revision 1.20  1994/10/26  13:40:38  allender
  * more vcr demo playback defines
@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.16  1994/07/21  13:11:26  matt
  * Ripped out remants of old demo system, and added demo only system that
- * disables object movement and game options from menu.
+ * disables tObject movement and game options from menu.
  *
  * Revision 1.15  1994/07/05  12:49:02  john
  * Put functionality of New Hostage spec into code.
@@ -149,7 +149,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.4  1994/06/14  20:42:19  john
  * Made robot matztn cntr not work until no robots or player are
- * in the segment.
+ * in the tSegment.
  *
  * Revision 1.3  1994/06/14  14:43:52  john
  * Made doors work with newdemo system.
@@ -183,20 +183,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Functions called during recording process...
 extern void NDRecordStartDemo();
-extern void NDRecordStartFrame(int frame_number, fix frame_time );
-extern void NDRecordRenderObject(object * obj);
-extern void NDRecordViewerObject(object * obj);
+extern void NDRecordStartFrame(int frame_number, fix frameTime );
+extern void NDRecordRenderObject(tObject * obj);
+extern void NDRecordViewerObject(tObject * obj);
 extern void NDRecordSound3D( int soundno, int angle, int volume );
 extern void NDRecordSound3DOnce( int soundno, int angle, int volume );
-extern void newdemo_record_sound_once( int soundno );
+extern void newdemo_recordSound_once( int soundno );
 extern void NDRecordSound( int soundno );
-extern void NDRecordWallHitProcess( int segnum, int side, int damage, int playernum );
-extern void NDRecordTrigger( int segnum, int side, int objnum,int shot );
+extern void NDRecordWallHitProcess( int nSegment, int tSide, int damage, int playernum );
+extern void NDRecordTrigger( int nSegment, int tSide, int nObject,int shot );
 extern void NDRecordHostageRescued( int hostage_num );
 extern void NDRecordMorphFrame();
 extern void newdemo_record_player_stats(int shields, int energy, int score );
 extern void NDRecordPlayerAfterburner(fix old_afterburner, fix afterburner);
-extern void NDRecordWallToggle(int segnum, int side );
+extern void NDRecordWallToggle(int nSegment, int tSide );
 extern void NDRecordControlCenterDestroyed();
 extern void NDRecordHUDMessage(char *s);
 extern void NDRecordPaletteEffect(short r, short g, short b);
@@ -204,13 +204,13 @@ extern void NDRecordPlayerEnergy(int, int);
 extern void NDRecordPlayerShields(int, int);
 extern void NDRecordPlayerFlags(uint, uint);
 extern void NDRecordPlayerWeapon(int, int);
-extern void NDRecordEffectBlowup(short, int, vms_vector *);
+extern void NDRecordEffectBlowup(short, int, vmsVector *);
 extern void NDRecordHomingDistance(fix);
 extern void NDRecordLetterbox(void);
 extern void NDRecordRearView(void);
 extern void NDRecordRestoreCockpit(void);
-extern void NDRecordWallSetTMapNum1(short seg,ubyte side,short cseg,ubyte cside,short tmap);
-extern void NDRecordWallSetTMapNum2(short seg,ubyte side,short cseg,ubyte cside,short tmap);
+extern void NDRecordWallSetTMapNum1(short seg,ubyte tSide,short cseg,ubyte cside,short tmap);
+extern void NDRecordWallSetTMapNum2(short seg,ubyte tSide,short cseg,ubyte cside,short tmap);
 extern void NDRecordMultiCloak(int pnum);
 extern void NDRecordMultiDeCloak(int pnum);
 extern void NDSetNewLevel(int level_num);
@@ -225,14 +225,14 @@ extern void NDRecordPlayerScore(int score);
 extern void NDRecordMultiScore(int pnum, int score);
 extern void NDRecordPrimaryAmmo(int old_ammo, int new_ammo);
 extern void NDRecordSecondaryAmmo(int old_ammo, int new_ammo);
-extern void NDRecordDoorOpening(int segnum, int side);
-extern void NDRecordLaserLevel(sbyte old_level, sbyte new_level);
-extern void NDRecordCloakingWall(int front_wall_num, int back_wall_num, ubyte type, ubyte state, fix cloak_value, fix l0, fix l1, fix l2, fix l3);
+extern void NDRecordDoorOpening(int nSegment, int tSide);
+extern void NDRecordLaserLevel(sbyte oldLevel, sbyte newLevel);
+extern void NDRecordCloakingWall(int front_wall_num, int back_wall_num, ubyte nType, ubyte state, fix cloakValue, fix l0, fix l1, fix l2, fix l3);
 extern void NDRecordSecretExitBlown(int truth);
 
 
 // Functions called during playback process...
-extern void newdemo_object_move_all();
+extern void newdemoObject_move_all();
 extern void NDPlayBackOneFrame();
 extern void NDGotoEnd();
 extern void NDGotoBeginning();
@@ -245,9 +245,9 @@ extern void NDStopRecording();
 
 extern int NDGetPercentDone();
 
-extern void NDRecordLinkSoundToObject3( int soundno, short objnum, fix max_volume, fix  max_distance, int loop_start, int loop_end );
-extern int NDFindObject( int signature );
-extern void NDRecordKillSoundLinkedToObject( int objnum );
+extern void NDRecordLinkSoundToObject3( int soundno, short nObject, fix max_volume, fix  maxDistance, int loop_start, int loop_end );
+extern int NDFindObject( int nSignature );
+extern void NDRecordKillSoundLinkedToObject( int nObject );
 
 #endif // NEWDEMO
 

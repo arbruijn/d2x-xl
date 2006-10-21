@@ -56,7 +56,7 @@ uvl uvl_list[4] = {
 //compute the corners of a rod.  fills in vertbuf.
 int CalcRodCorners (g3s_point *bot_point, fix bot_width, g3s_point *top_point, fix top_width)
 {
-	vms_vector	delta_vec, top, tempv, rod_norm;
+	vmsVector	delta_vec, top, tempv, rod_norm;
 	ubyte			codes_and;
 	int			i;
 
@@ -94,7 +94,7 @@ if (codes_and)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
 for (i = 0; i < 4; i++) {
-	rodPoints [i].p3_flags = 0;
+	rodPoints [i].p3Flags = 0;
 	rodPoints [i].p3_index = -1;
 	}
 return 0;
@@ -111,7 +111,7 @@ return G3DrawPoly (4, rodPointList);
 }
 
 //------------------------------------------------------------------------------
-//draw a bitmap object that is always facing you
+//draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
 bool G3DrawRodTexPoly (grs_bitmap *bitmap, g3s_point *bot_point, fix bot_width, g3s_point *top_point, fix top_width, fix light)
 {
@@ -132,7 +132,7 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c);
 #if (! (defined (D1XD3D) || defined (OGL)))
 //draws a bitmap with the specified 3d width & height 
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitMap (vms_vector *pos, fix width, fix height, grs_bitmap *bm, int orientation)
+bool G3DrawBitMap (vmsVector *pos, fix width, fix height, grs_bitmap *bm, int orientation)
 {
 #ifndef __powerc
 	g3s_point pnt;
@@ -143,7 +143,7 @@ bool G3DrawBitMap (vms_vector *pos, fix width, fix height, grs_bitmap *bm, int o
 
 	G3ProjectPoint (&pnt);
 
-	if (pnt.p3_flags & PF_OVERFLOW)
+	if (pnt.p3Flags & PF_OVERFLOW)
 		return 1;
 
 	if (CheckMulDiv (&t, width, xCanvW2, pnt.p3_z))
@@ -174,7 +174,7 @@ bool G3DrawBitMap (vms_vector *pos, fix width, fix height, grs_bitmap *bm, int o
 
 	G3ProjectPoint (&pnt);
 
-	if (pnt.p3_flags & PF_OVERFLOW)
+	if (pnt.p3Flags & PF_OVERFLOW)
 		return 1;
 
 	if (pnt.p3_z == 0)

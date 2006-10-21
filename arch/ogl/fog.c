@@ -33,7 +33,7 @@ glEnable (GL_FOG);
 
 //------------------------------------------------------------------------------
 
-void render_fog (vms_vector *pos)
+void render_fog (vmsVector *pos)
 {
 	glBegin( GL_LINES );
 		glNormal3f(0,1,0);

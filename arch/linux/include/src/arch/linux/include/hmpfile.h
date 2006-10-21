@@ -22,13 +22,13 @@ typedef struct hmp_track {
 	unsigned int len;
 	unsigned char *cur;
 	unsigned int left;
-	unsigned int cur_time;
+	unsigned int curTime;
 } hmp_track;
 
 typedef struct hmp_file {
 	int				num_trks;
 	hmp_track		trks[HMP_TRACKS];
-	unsigned int	cur_time;
+	unsigned int	curTime;
 	int				tempo;
 #ifdef _WIN32
 	MIDIHDR			*evbuf;

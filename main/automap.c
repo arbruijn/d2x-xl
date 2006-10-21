@@ -47,14 +47,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Ifdef'd out the NETWORK code.
  *
  * Revision 2.1  1995/03/20  18:16:06  john
- * Added code to not store the normals in the segment structure.
+ * Added code to not store the normals in the tSegment structure.
  *
  * Revision 2.0  1995/02/27  11:32:55  john
  * New version 2.0, which has no anonymous unions, builds with
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.117  1995/02/22  14:11:31  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.116  1995/02/22  13:24:39  john
  * Removed the vecmat anonymous unions.
@@ -81,7 +81,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Finalized the new automap partial viewer.
  *
  * Revision 1.108  1995/02/02  00:49:45  mike
- * new automap segment-depth functionality.
+ * new automap tSegment-depth functionality.
  *
  * Revision 1.107  1995/02/02  00:23:04  john
  * Half of the code for new connected distance stuff in automap.
@@ -169,11 +169,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Enable screen shots even when debugging is turned off
  *
  * Revision 1.80  1994/11/26  22:51:43  matt
- * Removed editor-only fields from segment structure when editor is compiled
- * out, and padded segment structure to even multiple of 4 bytes.
+ * Removed editor-only fields from tSegment structure when editor is compiled
+ * out, and padded tSegment structure to even multiple of 4 bytes.
  *
  * Revision 1.79  1994/11/26  16:22:48  matt
- * Reduced leave_time
+ * Reduced leaveTime
  *
  * Revision 1.78  1994/11/23  22:00:10  mike
  * show level number.
@@ -277,7 +277,7 @@ void ModexPrintF (int x,int y, char *s, grs_font *font, unsigned int color);
 typedef struct Edge_info {
 	short verts[2];     // 4 bytes
 	ubyte sides[4];     // 4 bytes
-	short segnum[4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a side.
+	short nSegment[4];    // 8 bytes  // This might not need to be stored... If you can access the normals of a tSide.
 	ubyte flags;        // 1 bytes  // See the EF_??? defines above.
 	unsigned int color; // 4 bytes
 	ubyte num_faces;    // 1 bytes  // 19 bytes...
@@ -395,8 +395,8 @@ typedef struct tAutomapData {
 	fix			nViewDist;
 	fix			nMaxDist;
 	fix			nZoom;
-	vms_vector	viewTarget;
-	vms_matrix	viewMatrix;
+	vmsVector	viewTarget;
+	vmsMatrix	viewMatrix;
 } tAutomapData;
 
 // Rendering variables
@@ -455,7 +455,7 @@ void DrawMarkerNumber (int num)
    GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
 
 
-G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.object[(gameData.multi.nLocalPlayer*2)+num]].pos);
+G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.tObject[(gameData.multi.nLocalPlayer*2)+num]].pos);
 fromPoint.p3_index =
 toPoint.p3_index =
 basePoint.p3_index = -1;
@@ -485,15 +485,15 @@ basePoint.p3_index = -1;
 void DropMarker (char player_marker_num)
 {
 	ubyte marker_num = (gameData.multi.nLocalPlayer*2)+player_marker_num;
-	object *playerp = &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum];
+	tObject *playerp = &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject];
 
 	gameData.marker.point[marker_num] = playerp->pos;
 
-	if (gameData.marker.object[marker_num] != -1)
-		ReleaseObject (gameData.marker.object[marker_num]);
+	if (gameData.marker.tObject[marker_num] != -1)
+		ReleaseObject (gameData.marker.tObject[marker_num]);
 
-	gameData.marker.object[marker_num] = 
-		DropMarkerObject (&playerp->pos, (short) playerp->segnum, &playerp->orient, marker_num);
+	gameData.marker.tObject[marker_num] = 
+		DropMarkerObject (&playerp->pos, (short) playerp->nSegment, &playerp->orient, marker_num);
 
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -504,7 +504,7 @@ void DropMarker (char player_marker_num)
 
 //------------------------------------------------------------------------------
 
-void DropBuddyMarker (object *objP)
+void DropBuddyMarker (tObject *objP)
 {
 	ubyte	marker_num;
 
@@ -517,10 +517,10 @@ void DropBuddyMarker (object *objP)
 
 	gameData.marker.point[marker_num] = objP->pos;
 
-	if (gameData.marker.object[marker_num] != -1 && gameData.marker.object[marker_num] !=0)
-		ReleaseObject (gameData.marker.object[marker_num]);
+	if (gameData.marker.tObject[marker_num] != -1 && gameData.marker.tObject[marker_num] !=0)
+		ReleaseObject (gameData.marker.tObject[marker_num]);
 
-	gameData.marker.object[marker_num] = DropMarkerObject (&objP->pos, (short) objP->segnum, &objP->orient, marker_num);
+	gameData.marker.tObject[marker_num] = DropMarkerObject (&objP->pos, (short) objP->nSegment, &objP->orient, marker_num);
 
 }
 
@@ -541,9 +541,9 @@ void DrawMarkers ()
 
 	spherePoint.p3_index = -1;
 	for (i=0;i<maxdrop;i++)
-		if (gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
+		if (gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
 
-			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i]].pos);
+			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i]].pos);
 
 			GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
 			G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE, 1);
@@ -581,7 +581,7 @@ void ClearMarkers ()
 
 	for (i=0;i<NUM_MARKERS;i++) {
 		gameData.marker.szMessage[i][0]=0;
-		gameData.marker.object[i]=-1;
+		gameData.marker.tObject[i]=-1;
 	}
  }
 
@@ -602,7 +602,7 @@ void AutomapClearVisited ()
 
 grs_canvas *name_canv_left,*name_canv_right;
 
-extern void OglDrawCircle2 (int nsides,int type,float xsc,float xo,float ysc,float yo);
+extern void OglDrawCircle2 (int nsides,int nType,float xsc,float xo,float ysc,float yo);
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -669,9 +669,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawPlayer (object * objP, int bRadar)
+void DrawPlayer (tObject * objP, int bRadar)
 {
-	vms_vector	arrow_pos, head_pos;
+	vmsVector	arrow_pos, head_pos;
 	g3s_point	spherePoint, arrowPoint, headPoint;
 	int size = objP->size * (bRadar ? 2 : 1);
 
@@ -683,7 +683,7 @@ G3TransformAndEncodePoint (&spherePoint, &objP->pos);
 G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
 //G3DrawSphere3D (&spherePoint, bRadar ? 8 : 20, objP->size * (bRadar + 1));
 
-if (bRadar && (OBJ_IDX (objP) != gameData.multi.players [gameData.multi.nLocalPlayer].objnum))
+if (bRadar && (OBJ_IDX (objP) != gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
 	return;
 // Draw shaft of arrow
 VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.fvec, size*3);
@@ -725,13 +725,13 @@ int automap_height = 480;
 void DrawAutomap (int bRadar)
 {
 	int			i, color;
-	object		*objP;
-	vms_vector	viewer_position;
+	tObject		*objP;
+	vmsVector	viewer_position;
 	g3s_point	spherePoint;
-	vms_matrix	vmRadar;
+	vmsMatrix	vmRadar;
 
 if (bRadar && gameStates.render.bTopDownRadar) {
-	vms_matrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].orient;
+	vmsMatrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].orient;
 	vmRadar.rvec.x = po->rvec.x;
 	vmRadar.rvec.y = po->rvec.y;
 	vmRadar.rvec.z = po->rvec.z;
@@ -815,7 +815,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		color = gameData.multi.nLocalPlayer;	// Note link to above if!
 
 	GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g,player_rgb [color].b));
-	DrawPlayer (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum, bRadar);
+	DrawPlayer (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject, bRadar);
 
 	if (!bRadar) {
 		DrawMarkers ();
@@ -830,18 +830,18 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	}				
 	// Draw player (s)...
 #ifdef NETWORK
-	if ( (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.game_flags & NETGAME_FLAG_SHOW_MAP))	{
+	if ( (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))	{
 		for (i = 0; i<gameData.multi.nPlayers; i++)		{
 			if ((i != gameData.multi.nLocalPlayer) && ((gameData.app.nGameMode & GM_MULTI_COOP) || 
 				 (GetTeam (gameData.multi.nLocalPlayer) == GetTeam (i)) || 
-				 (netGame.game_flags & NETGAME_FLAG_SHOW_MAP)))	{
-				if (gameData.objs.objects[gameData.multi.players[i].objnum].type == OBJ_PLAYER)	{
+				 (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP)))	{
+				if (gameData.objs.objects[gameData.multi.players[i].nObject].nType == OBJ_PLAYER)	{
 					if (gameData.app.nGameMode & GM_TEAM)
 						color = GetTeam (i);
 					else
 						color = i;
 					GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g, player_rgb [color].b));
-					DrawPlayer (gameData.objs.objects + gameData.multi.players[i].objnum, bRadar);
+					DrawPlayer (gameData.objs.objects + gameData.multi.players[i].nObject, bRadar);
 				}
 			}
 		}
@@ -852,7 +852,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		objP = gameData.objs.objects;
 		for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 			size = objP->size;
-			switch (objP->type)	{
+			switch (objP->nType)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
 				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
@@ -868,7 +868,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_ROBOT:
 				if (
 #if 1//ndef _DEBUG
-					 bAutomapVisited[objP->segnum] && 
+					 bAutomapVisited[objP->nSegment] && 
 #endif
 					 EGI_FLAG (bRobotsOnRadar, 0, 0)) {
 					static int c = 0;
@@ -896,7 +896,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_POWERUP:
 				if (EGI_FLAG (bPowerUpsOnRadar, 0, 0) && 
 					 !(gameData.app.nGameMode & GM_MULTI) && 
-					 (gameStates.render.bAllVisited || bAutomapVisited[objP->segnum]))	{
+					 (gameStates.render.bAllVisited || bAutomapVisited[objP->nSegment]))	{
 					//if ( (objP->id==POW_KEY_RED) || (objP->id==POW_KEY_BLUE) || (objP->id==POW_KEY_GOLD))	
 					{
 						switch (objP->id) {
@@ -914,7 +914,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							break;
 						default:
 							GrSetColorRGBi (ORANGE_RGBA); //orange
-							//Error ("Illegal key type: %i", objP->id);
+							//Error ("Illegal key nType: %i", objP->id);
 						}
 						G3TransformAndEncodePoint (&spherePoint,&objP->pos);
 						G3DrawSphere (&spherePoint,size, !bRadar);	
@@ -972,7 +972,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 //------------------------------------------------------------------------------
 
 //print to canvas & float height
-grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int double_flag)
+grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int doubleFlag)
 {
 	int y;
 	ubyte *data;
@@ -1007,7 +1007,7 @@ WINDOS (
 
 	//now float it, since we're drawing to 400-line modex screen
 
-	if (double_flag) {
+	if (doubleFlag) {
 		data = temp_canv->cv_bitmap.bm_texBuf;
 		rs = temp_canv->cv_bitmap.bm_props.rowsize;
 
@@ -1048,23 +1048,23 @@ char *system_name[] = {
 
 void create_name_canv ()
 {
-	char	name_level_left[128],name_level_right[128];
+	char	nameLevel_left[128],nameLevel_right[128];
 
 	if (gameData.missions.nCurrentLevel > 0)
-		sprintf (name_level_left, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
+		sprintf (nameLevel_left, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
 	else
-		sprintf (name_level_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
+		sprintf (nameLevel_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
 
 	if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel>0)		//built-in mission
-		sprintf (name_level_right,"%s %d: ",system_name[ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
+		sprintf (nameLevel_right,"%s %d: ",system_name[ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
 	else
-		strcpy (name_level_right, " ");
+		strcpy (nameLevel_right, " ");
 
-	strcat (name_level_right, gameData.missions.szCurrentLevel);
+	strcat (nameLevel_right, gameData.missions.szCurrentLevel);
 
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	name_canv_left = PrintToCanvas (name_level_left, SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
-	name_canv_right = PrintToCanvas (name_level_right,SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
+	name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
+	name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
 
 }
 
@@ -1084,16 +1084,16 @@ u_int32_t automap_mode = SM (640,480);
 void DoAutomap (int key_code, int bRadar)	
 {
 	int			done=0;
-	vms_matrix	tempm;
-	vms_angvec	tangles;
+	vmsMatrix	tempm;
+	vmsAngVec	tangles;
 	int			leave_mode=0;
-	int			first_time=1;
+	int			firstTime=1;
 	int			pcx_error;
 #if !defined (AUTOMAP_DIRECT_RENDER) || !defined (NDEBUG)
 	int			i;
 #endif
 	int			c, marker_num;
-	fix			entry_time;
+	fix			entryTime;
 	int			pause_game=1;		// Set to 1 if everything is paused during automap...No pause during net.
 	fix			t1, t2;
 	control_info saved_control_info;
@@ -1258,7 +1258,7 @@ WIN (if (!redraw_screen) {)
 		amData.nViewDist = ZOOM_DEFAULT;
 	else if (!amData.nViewDist)
 		amData.nViewDist = ZOOM_DEFAULT;
-	amData.viewMatrix = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].orient;
+	amData.viewMatrix = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient;
 
 	tangles.p = PITCH_DEFAULT;
 	tangles.h  = 0;
@@ -1266,12 +1266,12 @@ WIN (if (!redraw_screen) {)
 
 	done = 0;
 
-	amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].pos;
+	amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos;
 
-	t1 = entry_time = TimerGetFixedSeconds ();
+	t1 = entryTime = TimerGetFixedSeconds ();
 	t2 = t1;
 
-	//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum
+	//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
 	if (bRadar) {
 #ifdef RELEASE
 		if (! (gameData.app.nGameMode & GM_MULTI))
@@ -1281,7 +1281,7 @@ WIN (if (!redraw_screen) {)
 		}
 	Max_segments_away = 
 		SetSegmentDepths (
-			gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum, 
+			gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
 			bRadar ? bAutomapVisited : bAutomapVisited);
 	SegmentLimit = bRadar ? Max_segments_away : Max_segments_away;
 
@@ -1302,7 +1302,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		}
 
 	while (!done)	{
-		if (leave_mode==0 && Controls.automap_state && (TimerGetFixedSeconds ()-entry_time)>LEAVE_TIME)
+		if (leave_mode==0 && Controls.automap_state && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
 			leave_mode = 1;
 
 		if (!Controls.automap_state && (leave_mode==1))
@@ -1312,14 +1312,14 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			ushort old_wiggle;
 			saved_control_info = Controls;				// Save controls so we can zero them
 			memset (&Controls,0,sizeof (control_info));	// Clear everything...
-			old_wiggle = gameData.objs.console->mtype.phys_info.flags & PF_WIGGLE;	// Save old wiggle
-			gameData.objs.console->mtype.phys_info.flags &= ~PF_WIGGLE;		// Turn off wiggle
+			old_wiggle = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
+			gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 			#ifdef NETWORK
 			if (MultiMenuPoll ())
 				done = 1;
 			#endif
 //			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
-			gameData.objs.console->mtype.phys_info.flags |= old_wiggle;	// Restore wiggle
+			gameData.objs.console->mType.physInfo.flags |= old_wiggle;	// Restore wiggle
 			Controls = saved_control_info;
 		}
 
@@ -1388,7 +1388,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 				for (i=0; i<=gameData.segs.nLastSegment; i++)
 					bAutomapVisited[i] = 1;
 				AutomapBuildEdgeList ();
-				Max_segments_away = SetSegmentDepths (gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].segnum, bAutomapVisited);
+				Max_segments_away = SetSegmentDepths (gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, bAutomapVisited);
 				SegmentLimit = Max_segments_away;
 				adjust_segment_limit (SegmentLimit, bAutomapVisited);
 				}
@@ -1425,7 +1425,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			marker_num = c-KEY_1;
             if (marker_num<=maxdrop)
 				 {
-					if (gameData.marker.object[marker_num] != -1)
+					if (gameData.marker.tObject[marker_num] != -1)
 						gameData.marker.nHighlight=marker_num;
 				 }
 			  break;
@@ -1436,7 +1436,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 					DrawAutomap (0);	//..so switch from 1 to 0
 #endif
 
-				if (gameData.marker.nHighlight > -1 && gameData.marker.object[gameData.marker.nHighlight] != -1) {
+				if (gameData.marker.nHighlight > -1 && gameData.marker.tObject[gameData.marker.nHighlight] != -1) {
 #if AUTOMAP_DIRECT_RENDER == 0
 					WINDOS (
 						DDGrSetCurrentCanvas (&ddPages[current_page]),
@@ -1445,8 +1445,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 #endif
 
 					if (ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?") == 0) {
-						ReleaseObject (gameData.marker.object[gameData.marker.nHighlight]);
-						gameData.marker.object[gameData.marker.nHighlight]=-1;
+						ReleaseObject (gameData.marker.tObject[gameData.marker.nHighlight]);
+						gameData.marker.tObject[gameData.marker.nHighlight]=-1;
 						gameData.marker.szMessage[gameData.marker.nHighlight][0]=0;
 						gameData.marker.nHighlight = -1;
 					}					
@@ -1502,36 +1502,36 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			tangles.p = PITCH_DEFAULT;
 			tangles.h  = 0;
 			tangles.b  = 0;
-			amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].pos;
+			amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos;
 		}
 #if 0
-		amData.nViewDist -= Controls.forward_thrust_time*ZOOM_SPEED_FACTOR;
+		amData.nViewDist -= Controls.forward_thrustTime*ZOOM_SPEED_FACTOR;
 #else		
-		if (Controls.forward_thrust_time)
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fvec, Controls.forward_thrust_time*ZOOM_SPEED_FACTOR); 
+		if (Controls.forward_thrustTime)
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fvec, Controls.forward_thrustTime*ZOOM_SPEED_FACTOR); 
 #endif
-		tangles.p += FixDiv (Controls.pitch_time, ROT_SPEED_DIVISOR);
-		tangles.h  += FixDiv (Controls.heading_time, ROT_SPEED_DIVISOR);
-		tangles.b  += FixDiv (Controls.bank_time, ROT_SPEED_DIVISOR*2);
+		tangles.p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
+		tangles.h  += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
+		tangles.b  += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
 
-		if (Controls.vertical_thrust_time || Controls.sideways_thrust_time)	{
-			vms_angvec	tangles1;
-			vms_vector	old_vt;
+		if (Controls.vertical_thrustTime || Controls.sideways_thrustTime)	{
+			vmsAngVec	tangles1;
+			vmsVector	old_vt;
 			old_vt = amData.viewTarget;
 			tangles1 = tangles;
 			VmAngles2Matrix (&tempm,&tangles1);
-			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].orient,&tempm);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uvec, Controls.vertical_thrust_time*SLIDE_SPEED);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rvec, Controls.sideways_thrust_time*SLIDE_SPEED);
+			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uvec, Controls.vertical_thrustTime*SLIDE_SPEED);
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rvec, Controls.sideways_thrustTime*SLIDE_SPEED);
 #if 0
-			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].pos) > i2f (1000))	{
+			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos) > i2f (1000))	{
 				amData.viewTarget = old_vt;
 			}
 #endif
 		}
 
 		VmAngles2Matrix (&tempm,&tangles);
-		VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum].orient,&tempm);
+		VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient,&tempm);
 
 		if (amData.nViewDist < ZOOM_MIN_VALUE) 
 			amData.nViewDist = ZOOM_MIN_VALUE;
@@ -1540,8 +1540,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 
 		DrawAutomap (0);
 
-		if (first_time)	{
-			first_time = 0;
+		if (firstTime)	{
+			firstTime = 0;
 			GrPaletteStepLoad (NULL);
 		}
 
@@ -1591,7 +1591,7 @@ void adjust_segment_limit (int SegmentLimit, ubyte *pVisited)
 		e = Edges + i;
 		e->flags |= EF_TOO_FAR;
 		for (e1=0; e1<e->num_faces; e1++)	{
-			if (pVisited[e->segnum[e1]] <= SegmentLimit)	{
+			if (pVisited[e->nSegment[e1]] <= SegmentLimit)	{
 				e->flags &= (~EF_TOO_FAR);
 				break;
 			}
@@ -1608,9 +1608,9 @@ void DrawAllEdges ()
 	int i,j,nbright;
 	ubyte nfacing,nnfacing;
 	Edge_info *e;
-	vms_vector *tv1;
+	vmsVector *tv1;
 	fix distance;
-	fix min_distance = 0x7fffffff;
+	fix minDistance = 0x7fffffff;
 	g3s_point *p1, *p2;
 
 
@@ -1633,8 +1633,8 @@ void DrawAllEdges ()
 		cc=RotateList (2,e->verts);
 		distance = gameData.segs.points[e->verts[1]].p3_z;
 
-		if (min_distance>distance)
-			min_distance = distance;
+		if (minDistance>distance)
+			minDistance = distance;
 
 		if (!cc.and) 	{	//all off screen?
 			nfacing = nnfacing = 0;
@@ -1642,11 +1642,11 @@ void DrawAllEdges ()
 			j = 0;
 			while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
 #ifdef COMPACT_SEGS
-				vms_vector temp_v;
-				GetSideNormal (&gameData.segs.segments[e->segnum[j]], e->sides[j], 0, &temp_v);
+				vmsVector temp_v;
+				GetSideNormal (&gameData.segs.segments[e->nSegment[j]], e->sides[j], 0, &temp_v);
 				if (!G3CheckNormalFacing (tv1, &temp_v))
 #else
-				if (!G3CheckNormalFacing (tv1, &gameData.segs.segments[e->segnum[j]].sides[e->sides[j]].normals[0]))
+				if (!G3CheckNormalFacing (tv1, &gameData.segs.segments[e->nSegment[j]].sides[e->sides[j]].normals[0]))
 #endif
 					nfacing++;
 				else
@@ -1673,7 +1673,7 @@ void DrawAllEdges ()
 		}
 	}
 
-	if (min_distance < 0) min_distance = 0;
+	if (minDistance < 0) minDistance = 0;
 
 	// Sort the bright ones using a shell sort
 	{
@@ -1711,7 +1711,7 @@ void DrawAllEdges ()
 		e = Edges + DrawingListBright[i];
 		p1 = gameData.segs.points + e->verts[0];
 		p2 = gameData.segs.points + e->verts[1];
-		dist = p1->p3_z - min_distance;
+		dist = p1->p3_z - minDistance;
 		// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 		if (dist < 0) 
 			dist=0;
@@ -1774,7 +1774,7 @@ CBRK (hash > MAX_EDGES);
 
 //------------------------------------------------------------------------------
 
-void AddOneEdge (int va, int vb, unsigned int color, ubyte side, short segnum, 
+void AddOneEdge (int va, int vb, unsigned int color, ubyte tSide, short nSegment, 
 					  int hidden, int grate, int bNoFade)	
 {
 	int found;
@@ -1805,8 +1805,8 @@ if (found == -1) {
 	e->color = color;
 	e->num_faces = 1;
 	e->flags = EF_USED | EF_DEFINING;			// Assume a normal line
-	e->sides[0] = side;
-	e->segnum[0] = segnum;
+	e->sides[0] = tSide;
+	e->nSegment[0] = nSegment;
 	//Edge_used_list[Num_edges] = EDGE_IDX (e);
 	if ( EDGE_IDX (e) > Highest_edge_index)
 		Highest_edge_index = EDGE_IDX (e);
@@ -1818,8 +1818,8 @@ else {
 		if (color != automapColors.walls.nRevealed)
 			e->color = color;
 	if (e->num_faces < 4) {
-		e->sides[e->num_faces] = side;
-		e->segnum[e->num_faces] = segnum;
+		e->sides[e->num_faces] = tSide;
+		e->nSegment[e->num_faces] = nSegment;
 		e->num_faces++;
 		}
 	}
@@ -1853,16 +1853,16 @@ void AddOneUnknownEdge (int va, int vb)
 //------------------------------------------------------------------------------
 
 #ifndef _GAMESEQ_H
-extern obj_position gameData.multi.playerInit[];
+extern tObjPosition gameData.multi.playerInit[];
 #endif
 
-void AddSegmentEdges (segment *seg)
+void AddSegmentEdges (tSegment *seg)
 {
 	int		 		bIsGrate, bNoFade;
 	unsigned int	color;
 	int				wn;
 	ubyte				sn;
-	short				segnum = SEG_IDX (seg);
+	short				nSegment = SEG_IDX (seg);
 	int				bHidden;
 	int				ttype, nTrigger;
 
@@ -1875,7 +1875,7 @@ bNoFade = 0;
 color = WHITE_RGBA;
 if (seg->children[sn] == -1)
 	color = automapColors.walls.nNormal;
-switch (gameData.segs.segment2s[segnum].special)	{
+switch (gameData.segs.segment2s[nSegment].special)	{
 	case SEGMENT_IS_FUELCEN:
 		color = GOLD_RGBA;
 		break;
@@ -1901,14 +1901,14 @@ switch (gameData.segs.segment2s[segnum].special)	{
 
 if (IS_WALL (wn = WallNumP (seg, sn)))	{
 	wall	*wallP = gameData.walls.walls + wn;
-	nTrigger = wallP->trigger;
-	ttype = gameData.trigs.triggers[nTrigger].type;
+	nTrigger = wallP->tTrigger;
+	ttype = gameData.trigs.triggers[nTrigger].nType;
 	if (ttype==TT_SECRET_EXIT)	{
 	 	color = RGBA_PAL2 (29, 0, 31);
 		bNoFade=1;
 		goto addEdge;
 		}
-	switch (wallP->type)	{
+	switch (wallP->nType)	{
 		case WALL_DOOR:
 			if (wallP->keys == KEY_BLUE) {
 				bNoFade = 1;
@@ -1964,45 +1964,45 @@ if (IS_WALL (wn = WallNumP (seg, sn)))	{
 		}
 	}
 
-if (segnum == gameData.multi.playerInit[gameData.multi.nLocalPlayer].segnum)
+if (nSegment == gameData.multi.playerInit[gameData.multi.nLocalPlayer].nSegment)
 	color = RGBA_PAL2 (31,0,31);
 
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL) && 
-				!(gameStates.render.bAllVisited || bAutomapVisited[segnum]))
+				!(gameStates.render.bAllVisited || bAutomapVisited[nSegment]))
 			color = automapColors.walls.nRevealed;
 
 addEdge:
 
-		GetSideVerts (vertex_list,segnum,sn);
-		AddOneEdge (vertex_list[0], vertex_list[1], color, sn, segnum, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list[1], vertex_list[2], color, sn, segnum, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list[2], vertex_list[3], color, sn, segnum, bHidden, 0, bNoFade);
-		AddOneEdge (vertex_list[3], vertex_list[0], color, sn, segnum, bHidden, 0, bNoFade);
+		GetSideVerts (vertex_list,nSegment,sn);
+		AddOneEdge (vertex_list[0], vertex_list[1], color, sn, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (vertex_list[1], vertex_list[2], color, sn, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (vertex_list[2], vertex_list[3], color, sn, nSegment, bHidden, 0, bNoFade);
+		AddOneEdge (vertex_list[3], vertex_list[0], color, sn, nSegment, bHidden, 0, bNoFade);
 
 		if (bIsGrate) {
-			AddOneEdge (vertex_list[0], vertex_list[2], color, sn, segnum, bHidden, 1, bNoFade);
-			AddOneEdge (vertex_list[1], vertex_list[3], color, sn, segnum, bHidden, 1, bNoFade);
+			AddOneEdge (vertex_list[0], vertex_list[2], color, sn, nSegment, bHidden, 1, bNoFade);
+			AddOneEdge (vertex_list[1], vertex_list[3], color, sn, nSegment, bHidden, 1, bNoFade);
 			}
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-// Adds all the edges from a segment we haven't visited yet.
+// Adds all the edges from a tSegment we haven't visited yet.
 
-void AddUnknownSegmentEdges (segment *seg)
+void AddUnknownSegmentEdges (tSegment *seg)
 {
 	int sn;
-	int segnum = SEG_IDX (seg);
+	int nSegment = SEG_IDX (seg);
 
 	for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++) {
 		short	vertex_list[4];
 
 		// Only add edges that have no children
 		if (seg->children[sn] == -1) {
-			GetSideVerts (vertex_list,segnum,sn);
+			GetSideVerts (vertex_list,nSegment,sn);
 
 			AddOneUnknownEdge (vertex_list[0], vertex_list[1]);
 			AddOneUnknownEdge (vertex_list[1], vertex_list[2]);
@@ -2039,7 +2039,7 @@ void AutomapBuildEdgeList ()
 		// Cheating, add all edges as visited
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].segnum != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 			{
 				AddSegmentEdges (&gameData.segs.segments[s]);
@@ -2048,7 +2048,7 @@ void AutomapBuildEdgeList ()
 		// Not cheating, add visited edges, and then unvisited edges
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].segnum != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 				if (bAutomapVisited[s]) {
 					AddSegmentEdges (&gameData.segs.segments[s]);
@@ -2056,7 +2056,7 @@ void AutomapBuildEdgeList ()
 
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].segnum != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 				if (!bAutomapVisited[s]) {
 					AddUnknownSegmentEdges (&gameData.segs.segments[s]);
@@ -2071,14 +2071,14 @@ void AutomapBuildEdgeList ()
 
 		for (e1 = 0; e1 < e->num_faces; e1++)	{
 			for (e2 = 1; e2 < e->num_faces; e2++)	{
-				if ( (e1 != e2) && (e->segnum[e1] != e->segnum[e2]))	{
+				if ( (e1 != e2) && (e->nSegment[e1] != e->nSegment[e2]))	{
 					#ifdef COMPACT_SEGS
-					vms_vector v1, v2;
-					GetSideNormal (&gameData.segs.segments[e->segnum[e1]], e->sides[e1], 0, &v1);
-					GetSideNormal (&gameData.segs.segments[e->segnum[e2]], e->sides[e2], 0, &v2);
+					vmsVector v1, v2;
+					GetSideNormal (&gameData.segs.segments[e->nSegment[e1]], e->sides[e1], 0, &v1);
+					GetSideNormal (&gameData.segs.segments[e->nSegment[e2]], e->sides[e2], 0, &v2);
 					if (VmVecDot (&v1,&v2) > (F1_0- (F1_0/10)) )	{
 					#else
-					if (VmVecDot (&gameData.segs.segments[e->segnum[e1]].sides[e->sides[e1]].normals[0], &gameData.segs.segments[e->segnum[e2]].sides[e->sides[e2]].normals[0]) > (F1_0- (F1_0/10)) )	{
+					if (VmVecDot (&gameData.segs.segments[e->nSegment[e1]].sides[e->sides[e1]].normals[0], &gameData.segs.segments[e->nSegment[e2]].sides[e->sides[e2]].normals[0]) > (F1_0- (F1_0/10)) )	{
 					#endif
 						e->flags &= (~EF_DEFINING);
 						break;
@@ -2107,7 +2107,7 @@ if (gameData.app.nGameMode & GM_MULTI)
 else
    maxdrop=MAX_DROP_SINGLE;
 for (i=0;i<maxdrop;i++)
-	if (gameData.marker.object[ (gameData.multi.nLocalPlayer*2)+i] == -1)		//found d_free slot!
+	if (gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i] == -1)		//found d_free slot!
 		break;
 if (i == maxdrop) {		//no d_free slot
 	if (gameData.app.nGameMode & GM_MULTI)

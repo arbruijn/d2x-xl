@@ -132,7 +132,7 @@ int seq_init()
 			return (-1);
 		}
 		
-		if (card_info.synth_type == SYNTH_TYPE_SAMPLE)
+		if (card_info.synthType == SYNTH_TYPE_SAMPLE)
 		{    
 			synth_dev = i;
 			break;
@@ -149,7 +149,7 @@ int seq_init()
 			return (-1);
 		}
 		
-		if (card_info.synth_type==SYNTH_TYPE_SAMPLE
+		if (card_info.synthType==SYNTH_TYPE_SAMPLE
 		    &&card_info.synth_subtype==SAMPLE_TYPE_AWE32) {
 			synth_dev = i;
 			break;
@@ -169,13 +169,13 @@ int seq_init()
 		}
 		
 		// Just take first available for now.
-		card_info.synth_type=SYNTH_TYPE_MIDI;
+		card_info.synthType=SYNTH_TYPE_MIDI;
 		card_info.device=i;
 		synth_dev=i;
 		break;
 	}
 	
-	if (card_info.synth_type!=SYNTH_TYPE_MIDI) {
+	if (card_info.synthType!=SYNTH_TYPE_MIDI) {
 #endif
 		
 		card_info.device = synth_dev;
@@ -188,12 +188,12 @@ int seq_init()
 #ifdef WANT_MPU401
 	}
 	
-	if (card_info.synth_type==SYNTH_TYPE_MIDI) {
+	if (card_info.synthType==SYNTH_TYPE_MIDI) {
 		// Insert some sort of midi reset here later.
 	} else
 #endif
 #ifdef WANT_AWE32    
-	  if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	  if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	      && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		AWE_SET_CHANNEL_MODE(synth_dev,1);
@@ -224,7 +224,7 @@ void seq_close()
 void set_program(int channel, int pgm)
 {
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		SEQ_SET_PATCH(synth_dev,channel,pgm);
@@ -239,7 +239,7 @@ void start_note(int channel, int note, int vel)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		SEQ_START_NOTE(synth_dev,channel,note,vel);
@@ -272,7 +272,7 @@ void stop_note(int channel, int note, int vel)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		SEQ_STOP_NOTE(synth_dev,channel,note,vel);
@@ -297,7 +297,7 @@ void set_control(int channel,int ctrl,int value)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		SEQ_CONTROL(synth_dev,channel,ctrl,value);
@@ -317,7 +317,7 @@ void set_pitchbend(int channel, int bend)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		SEQ_BENDER(synth_dev,channel,bend);
@@ -339,7 +339,7 @@ void set_key_pressure(int channel, int note, int vel)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
 	{
 		AWE_KEY_PRESSURE(synth_dev,channel,note,vel);
@@ -358,7 +358,7 @@ void set_chn_pressure(int channel, int vel)
 	int i;
 	
 #ifdef WANT_AWE32
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)    
 	{
 		AWE_CHN_PRESSURE(synth_dev,channel,vel);
@@ -378,7 +378,7 @@ void stop_all()
 	
 #ifdef WANT_AWE32
 	int j;
-	if (card_info.synth_type == SYNTH_TYPE_SAMPLE
+	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)    
 	{
 		for (i=0; i<16;i++)
@@ -388,7 +388,7 @@ void stop_all()
 	else
 #endif
 #ifdef WANT_MPU401
-	  if (card_info.synth_type==SYNTH_TYPE_MIDI) {
+	  if (card_info.synthType==SYNTH_TYPE_MIDI) {
 	  } else
 #endif
 	{
@@ -438,7 +438,7 @@ int do_track_event(unsigned char *data, int *pos)
 	*pos +=1;
 	channel = buf[0] & 0xf;
 #ifdef WANT_MPU401
-	if (card_info.synth_type==SYNTH_TYPE_MIDI) {
+	if (card_info.synthType==SYNTH_TYPE_MIDI) {
 		switch((buf[0]&0xf0)) {
 		 case 0x80:
 		 case 0x90:
@@ -535,7 +535,7 @@ void send_ipc(char *message)
 		ipc_queue_id=msgget ((key_t) ('l'<<24) | ('d'<<16) | ('e'<<8) | 's', 
 				     IPC_CREAT | 0660);
 		snd=d_malloc(sizeof(long) + 32);
-		snd->mtype=1;
+		snd->mType=1;
 		player_thread=SDL_CreateThread(play_hmi, NULL);
 //		player_pid = play_hmi();
 	}    
@@ -641,7 +641,7 @@ void play_hmi (void * arg)
 //	signal(SIGTERM, my_quit);
 	rcv=d_malloc(sizeof(long) + 16);
 	
-	rcv->mtype=1;
+	rcv->mType=1;
 	rcv->mtext[0]='0';
 	
 	sleep(2);
@@ -708,7 +708,7 @@ void play_hmi (void * arg)
 			}
 			
 			//if (low_dtime < 0)
-			  //printf("Serious warning: d_time negative!!!!!!\n");
+			  //printf("Serious warning: dTime negative!!!!!!\n");
 			
 			csec = 0.86 * low_dtime;
 			

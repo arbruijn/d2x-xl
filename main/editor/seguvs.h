@@ -46,8 +46,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _SEGUVS_H
 #define _SEGUVS_H
 
-extern void assign_light_to_side(segment *sp, int sidenum);
+extern void assign_light_to_side(tSegment *sp, int nSide);
 extern void assign_default_lighting_all(void);
-extern void stretch_uvs_from_curedge(segment *segp, int side);
+extern void stretch_uvs_from_curedge(tSegment *segp, int tSide);
 
 #endif

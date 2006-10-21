@@ -145,7 +145,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Make global Global_laser_firing_count.
  *
  * Revision 1.44  1994/08/31  19:26:57  mike
- * Prototypes for xNextLaserFireTime, Laser_delay_time.
+ * Prototypes for xNextLaserFireTime, Laser_delayTime.
  *
  * Revision 1.43  1994/08/18  10:47:22  john
  * Cleaned up game sequencing and player death stuff
@@ -181,7 +181,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.34  1994/05/20  11:56:45  matt
  * Cleaned up FindVectorIntersection() interface
- * Killed check_point_in_seg(), check_player_seg(), check_object_seg()
+ * Killed check_point_in_seg(), check_player_seg(), checkObject_seg()
  *
  * Revision 1.33  1994/05/19  21:45:21  matt
  * Removed unused prototypes
@@ -225,14 +225,14 @@ extern cockpit_span_line win_cockpit_mask[480];
 
 // from mglobal.c
 extern fix xNextLaserFireTime;    // Time at which player can next fire his selected laser.
-extern fix Last_laser_fired_time;
+extern fix Last_laser_firedTime;
 extern fix xNextMissileFireTime;  // Time at which player can next fire his selected missile.
-extern fix Laser_delay_time;        // Delay between laser fires.
+extern fix Laser_delayTime;        // Delay between laser fires.
 extern int Cheats_enabled;
 
 extern int Missile_view_enabled;
 
-extern object *Missile_viewer;
+extern tObject *Missile_viewer;
 
 #define CV_NONE             0
 #define CV_ESCORT           1
@@ -274,7 +274,7 @@ extern int ft_preference;
 #define GM_MONSTERBALL	4096	  // Similar to Descent 3's monsterball game mode
 
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
-#define GM_MULTI        38      // You are in some type of multiplayer game
+#define GM_MULTI        38      // You are in some nType of multiplayer game
 
 #define IsMultiGame	((gameData.app.nGameMode & GM_MULTI) != 0)
 #define IsTeamGame	((gameData.app.nGameMode & GM_TEAM) != 0)
@@ -320,16 +320,16 @@ void _CDECL_ CloseGame(void);
 void InitCockpit(void);
 void CalcFrameTime(void);
 
-int do_flythrough(object *obj,int first_time);
+int do_flythrough(tObject *obj,int firstTime);
 
 extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
-extern int Difficulty_level;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
+extern int DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
 extern int nPlayerDifficultyLevel;
-extern int Detail_level;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
+extern int DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
 extern int Global_laser_firing_count;
 extern int Global_missile_firing_count;
 extern int Render_depth;
-extern fix Auto_fire_fusion_cannon_time, Fusion_charge;
+extern fix Auto_fire_fusion_cannonTime, Fusion_charge;
 
 #define MAX_PALETTE_ADD 30
 
@@ -357,7 +357,7 @@ void StartTime(void);
 void ResetTime(void);       // called when starting level
 int TimeStopped (void);
 
-// If automap_flag == 1, then call automap routine to write message.
+// If automapFlag == 1, then call automap routine to write message.
 
 #ifndef WINDOWS
 extern grs_canvas * GetCurrentGameScreen();
@@ -377,7 +377,7 @@ extern int Game_window_w,       // width and height of player's game window
 extern int Rear_view;           // if true, looking back.
 
 // initalize flying
-void FlyInit(object *obj);
+void FlyInit(tObject *obj);
 
 // selects a given cockpit (or lack of one).
 void SelectCockpit(int mode);
@@ -405,7 +405,7 @@ void ResetRearView(void);
 extern int Game_turbo_mode;
 
 // returns ptr to escort robot, or NULL
-object *find_escort();
+tObject *find_escort();
 
 extern void ApplyModifiedPalette(void);
 

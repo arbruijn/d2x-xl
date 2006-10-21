@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * shareware stuff
  *
  * Revision 1.6  1995/10/21  22:25:45  allender
- * put in creator code and file type for saved games.
+ * put in creator code and file nType for saved games.
  * put save games in players folder
  *
  * Revision 1.5  1995/10/20  00:51:21  allender
@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed bug with previous.
  *
  * Revision 2.9  1995/03/31  12:24:40  john
- * I had changed alt_textures from a pointer to a byte. This hosed old
+ * I had changed nAltTextures from a pointer to a byte. This hosed old
  * saved games, so I restored it to an int.
  *
  * Revision 2.8  1995/03/28  11:22:47  john
@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.43  1995/02/22  14:32:41  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.42  1995/02/13  20:34:33  john
  * Lintized
@@ -330,7 +330,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 2 - Added gameStates.app.cheats.bEnabled flag
 // 3 - Added between levels save.
 // 4 - Added mission support
-// 5 - Mike changed ai and object structure.
+// 5 - Mike changed ai and tObject structure.
 // 6 - Added buggin' cheat save
 // 7 - Added other cheat saves and game_id.
 // 8 - Added AI stuff for escort and thief.
@@ -357,7 +357,7 @@ void SetFunctionMode (int);
 void InitPlayerStatsNewShip (void);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
-void copy_defaults_to_robot (object *objP);
+void copy_defaults_toRobot (tObject *objP);
 void MultiInitiateSaveGame ();
 void MultiInitiateRestoreGame ();
 void ApplyAllChangedLight (void);
@@ -398,7 +398,7 @@ if (citem < 2)
 	return;
 /*
 for (citem = -1; i; i--)
-	if (items [i].type == NM_TYPE_MENU)
+	if (items [i].nType == NM_TYPE_MENU)
 		citem++;
 */
 if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, szTime [i])) {
@@ -501,7 +501,7 @@ for (i = 0; i < NUM_SAVES; i++)	{
 		}
 	if (!valid)
 		strcpy (szDesc [i], TXT_EMPTY);
-	m [i].type = NM_TYPE_INPUT_MENU; 
+	m [i].nType = NM_TYPE_INPUT_MENU; 
 	m [i].text = szDesc [i]; 
 	m [i].text_len = DESC_LENGTH-1;
 	}
@@ -538,7 +538,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	nsaves=0;
 	memset (m, 0, sizeof (m));
 	for (i = 0; i < NM_IMG_SPACE; i++) {
-		m [i].type = NM_TYPE_TEXT; 
+		m [i].nType = NM_TYPE_TEXT; 
 		m [i].text = "";	
 		m [i].noscroll = 1;
 		}
@@ -563,7 +563,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 					// Read description
 					CFRead (szDesc [j], sizeof (char)*DESC_LENGTH, 1, fp);
 					//rpad_string (szDesc [i], DESC_LENGTH-1);
-					m [j+NM_IMG_SPACE].type = NM_TYPE_MENU; 
+					m [j+NM_IMG_SPACE].nType = NM_TYPE_MENU; 
 					m [j+NM_IMG_SPACE].text = szDesc [j];
 					// Read thumbnail
 					if (sgVersion < 26) {
@@ -608,7 +608,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 		else {
 			strcpy (szDesc [j], TXT_EMPTY);
 			//rpad_string (szDesc [i], DESC_LENGTH-1);
-			m [j+NM_IMG_SPACE].type = NM_TYPE_MENU; 
+			m [j+NM_IMG_SPACE].nType = NM_TYPE_MENU; 
 			m [j+NM_IMG_SPACE].text = szDesc [j];
 		}
 	}
@@ -622,7 +622,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	}
 
 	if (gameStates.video.nDisplayMode == 1)	//restore menu won't fit on 640x400
-		VR_screen_flags ^= VRF_COMPATIBLE_MENUS;
+		VR_screenFlags ^= VRF_COMPATIBLE_MENUS;
 
 	sc_last_item = -1;
 
@@ -804,7 +804,8 @@ return rval;
 
 void StateSaveBinGameData (CFILE *fp, int bBetweenLevels)
 {
-	int	i, j;
+	int		i, j;
+	ushort	nWall, nTexture;
 // Save the Between levels flag...
 CFWrite (&bBetweenLevels, sizeof (int), 1, fp);
 // Save the mission info...
@@ -838,32 +839,32 @@ CFWrite (&gameStates.app.cheats.bEnabled, sizeof (int), 1, fp);
 if (!bBetweenLevels)	{
 //Finish all morph gameData.objs.objects
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].type == OBJ_NONE) 
+		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
-		if (gameData.objs.objects [i].type == OBJ_CAMERA)
+		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
 			gameData.objs.objects [i].orient = cameras [gameData.objs.cameraRef [i]].orient;
-		else if (gameData.objs.objects [i].render_type==RT_MORPH) {
-			morph_data *md = MorphFindData (gameData.objs.objects + i);
+		else if (gameData.objs.objects [i].renderType==RT_MORPH) {
+			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
-				object *objP = md->objP;
-				objP->control_type = md->morph_save_control_type;
-				objP->movement_type = md->morph_save_movement_type;
-				objP->render_type = RT_POLYOBJ;
-				objP->mtype.phys_info = md->morph_save_phys_info;
+				tObject *objP = md->objP;
+				objP->controlType = md->saveControlType;
+				objP->movementType = md->saveMovementType;
+				objP->renderType = RT_POLYOBJ;
+				objP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
 				gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
-				gameData.objs.objects [i].render_type = RT_POLYOBJ;
-				gameData.objs.objects [i].control_type = CT_NONE;
-				gameData.objs.objects [i].movement_type = MT_NONE;
+				gameData.objs.objects [i].renderType = RT_POLYOBJ;
+				gameData.objs.objects [i].controlType = CT_NONE;
+				gameData.objs.objects [i].movementType = MT_NONE;
 				}
 			}
 		}
-//Save object info
+//Save tObject info
 	i = gameData.objs.nLastObject + 1;
 	CFWrite (&i, sizeof (int), 1, fp);
-	CFWrite (gameData.objs.objects, sizeof (object), i, fp);
+	CFWrite (gameData.objs.objects, sizeof (tObject), i, fp);
 //Save wall info
 	i = gameData.walls.nWalls;
 	CFWrite (&i, sizeof (int), 1, fp);
@@ -880,20 +881,21 @@ if (!bBetweenLevels)	{
 	i = gameData.walls.nCloaking;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.cloaking, sizeof (cloaking_wall), i, fp);
-//Save trigger info
+//Save tTrigger info
 	CFWrite (&gameData.trigs.nTriggers, sizeof (int), 1, fp);
-	CFWrite (gameData.trigs.triggers, sizeof (trigger), gameData.trigs.nTriggers, fp);
+	CFWrite (gameData.trigs.triggers, sizeof (tTrigger), gameData.trigs.nTriggers, fp);
 	CFWrite (&gameData.trigs.nObjTriggers, sizeof (int), 1, fp);
-	CFWrite (gameData.trigs.objTriggers, sizeof (trigger), gameData.trigs.nObjTriggers, fp);
-	CFWrite (gameData.trigs.objTriggerRefs, sizeof (obj_trigger_ref), gameData.trigs.nObjTriggers, fp);
+	CFWrite (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, fp);
+	CFWrite (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, fp);
 	CFWrite (gameData.trigs.firstObjTrigger, sizeof (short), MAX_OBJECTS_D2X, fp);
 //Save tmap info
-	for (i=0; i<=gameData.segs.nLastSegment; i++) {
-		for (j=0; j<6; j++)	{
-			ushort wall_num = WallNumI ((short) i, (short) j);
-			CFWrite (&wall_num, sizeof (short), 1, fp);
-			CFWrite (&gameData.segs.segments [i].sides [j].tmap_num, sizeof (short), 1, fp);
-			CFWrite (&gameData.segs.segments [i].sides [j].tmap_num2, sizeof (short), 1, fp);
+	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+		for (j = 0; j < 6; j++)	{
+			nWall = WallNumI ((short) i, (short) j);
+			CFWrite (&nWall, sizeof (short), 1, fp);
+			CFWrite (&gameData.segs.segments [i].sides [j].nBaseTex, sizeof (short), 1, fp);
+			nTexture = gameData.segs.segments [i].sides [j].nOvlTex | (gameData.segs.segments [i].sides [j].nOvlOrient << 14);
+			CFWrite (&nTexture, sizeof (short), 1, fp);
 		}
 	}
 // Save the fuelcen info
@@ -901,7 +903,7 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.reactor.countdown.nTimer, sizeof (int), 1, fp);
 	CFWrite (&gameData.matCens.nRobotCenters, sizeof (int), 1, fp);
 	CFWrite (gameData.matCens.robotCenters, sizeof (matcen_info), gameData.matCens.nRobotCenters, fp);
-	CFWrite (&gameData.reactor.triggers, sizeof (reactor_triggers), 1, fp);
+	CFWrite (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	CFWrite (&gameData.matCens.nFuelCenters, sizeof (int), 1, fp);
 	CFWrite (gameData.matCens.fuelCenters, sizeof (fuelcen_info), gameData.matCens.nFuelCenters, fp);
 // Save the control cen info
@@ -922,7 +924,7 @@ CFWrite (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1, fp);
 CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);
 // Save automap marker info
-CFWrite (gameData.marker.object, sizeof (gameData.marker.object), 1, fp);
+CFWrite (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 CFWrite (&xAfterburnerCharge, sizeof (fix), 1, fp);
@@ -946,7 +948,7 @@ void StateSaveNetGame (CFILE *fp)
 {
 	int	i, j;
 
-CFWriteByte (netGame.type, fp);
+CFWriteByte (netGame.nType, fp);
 CFWriteInt (netGame.Security, fp);
 CFWrite (netGame.game_name, 1, NETGAME_NAME_LEN + 1, fp);
 CFWrite (netGame.mission_title, 1, MISSION_NAME_LEN + 1, fp);
@@ -959,7 +961,7 @@ CFWriteByte ((sbyte) netGame.game_status, fp);
 CFWriteByte ((sbyte) netGame.numplayers, fp);
 CFWriteByte ((sbyte) netGame.max_numplayers, fp);
 CFWriteByte ((sbyte) netGame.numconnected, fp);
-CFWriteByte ((sbyte) netGame.game_flags, fp);
+CFWriteByte ((sbyte) netGame.gameFlags, fp);
 CFWriteByte ((sbyte) netGame.protocol_version, fp);
 CFWriteByte ((sbyte) netGame.version_major, fp);
 CFWriteByte ((sbyte) netGame.version_minor, fp);
@@ -1005,20 +1007,20 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		CFWriteShort (netGame.kills [i] [j], fp);			// 128 bytes
 CFWriteShort (netGame.segments_checksum, fp);				// 2 bytes
 for (i = 0; i < 2; i++)
-	CFWriteShort (netGame.team_kills [i], fp);				// 4 bytes
+	CFWriteShort (netGame.teamKills [i], fp);				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteShort (netGame.killed [i], fp);					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	CFWriteShort (netGame.player_kills [i], fp);			// 16 bytes
+	CFWriteShort (netGame.playerKills [i], fp);			// 16 bytes
 CFWriteInt (netGame.KillGoal, fp);							// 4 bytes
 CFWriteFix (netGame.PlayTimeAllowed, fp);					// 4 bytes
-CFWriteFix (netGame.level_time, fp);							// 4 bytes
-CFWriteInt (netGame.control_invul_time, fp);				// 4 bytes
+CFWriteFix (netGame.levelTime, fp);							// 4 bytes
+CFWriteInt (netGame.control_invulTime, fp);				// 4 bytes
 CFWriteInt (netGame.monitor_vector, fp);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (netGame.player_score [i], fp);				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	CFWriteByte ((sbyte) netGame.player_flags [i], fp);	// 8 bytes
+	CFWriteByte ((sbyte) netGame.playerFlags [i], fp);	// 8 bytes
 CFWriteShort (netGame.nPacketsPerSec, fp);					// 2 bytes
 CFWriteByte ((sbyte) netGame.bShortPackets, fp);			// 1 bytes
 // 279 bytes
@@ -1032,7 +1034,7 @@ void StateSaveNetPlayers (CFILE *fp)
 {
 	int	i;
 
-CFWriteByte ((sbyte) netPlayers.type, fp);
+CFWriteByte ((sbyte) netPlayers.nType, fp);
 CFWriteInt (netPlayers.Security, fp);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFWrite (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, fp);
@@ -1040,7 +1042,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFWrite (netPlayers.players [i].network.ipx.node, 1, 6, fp);
 	CFWriteByte ((sbyte) netPlayers.players [i].version_major, fp);
 	CFWriteByte ((sbyte) netPlayers.players [i].version_minor, fp);
-	CFWriteByte ((sbyte) netPlayers.players [i].computer_type, fp);
+	CFWriteByte ((sbyte) netPlayers.players [i].computerType, fp);
 	CFWriteByte (netPlayers.players [i].connected, fp);
 	CFWriteShort ((short) netPlayers.players [i].socket, fp);
 	CFWriteByte ((sbyte) netPlayers.players [i].rank, fp);
@@ -1054,143 +1056,143 @@ void StateSavePlayer (player *playerP, CFILE *fp)
 	int	i;
 
 CFWrite (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this player, for net purposes.
-CFWrite (playerP->net_address, 1, 6, fp);					// The network address of the player.
+CFWrite (playerP->netAddress, 1, 6, fp);					// The network address of the player.
 CFWriteByte (playerP->connected, fp);            // Is the player connected or not?
-CFWriteInt (playerP->objnum, fp);                // What object number this player is. (made an int by mk because it's very often referenced)
-CFWriteInt (playerP->n_packets_got, fp);         // How many packets we got from them
-CFWriteInt (playerP->n_packets_sent, fp);        // How many packets we sent to them
+CFWriteInt (playerP->nObject, fp);                // What tObject number this player is. (made an int by mk because it's very often referenced)
+CFWriteInt (playerP->nPacketsGot, fp);         // How many packets we got from them
+CFWriteInt (playerP->nPacketsSent, fp);        // How many packets we sent to them
 CFWriteInt ((int) playerP->flags, fp);           // Powerup flags, see below...
 CFWriteFix (playerP->energy, fp);                // Amount of energy remaining.
 CFWriteFix (playerP->shields, fp);               // shields remaining (protection)
 CFWriteByte (playerP->lives, fp);                // Lives remaining, 0 = game over.
 CFWriteByte (playerP->level, fp);                // Current level player is playing. (must be signed for secret levels)
-CFWriteByte ((sbyte) playerP->laser_level, fp);  // Current level of the laser.
-CFWriteByte (playerP->starting_level, fp);       // What level the player started on.
-CFWriteShort (playerP->killer_objnum, fp);       // Who killed me.... (-1 if no one)
-CFWriteShort ((short) playerP->primary_weapon_flags, fp);   // bit set indicates the player has this weapon.
-CFWriteShort ((short) playerP->secondary_weapon_flags, fp); // bit set indicates the player has this weapon.
+CFWriteByte ((sbyte) playerP->laserLevel, fp);  // Current level of the laser.
+CFWriteByte (playerP->startingLevel, fp);       // What level the player started on.
+CFWriteShort (playerP->nKillerObj, fp);       // Who killed me.... (-1 if no one)
+CFWriteShort ((short) playerP->primaryWeaponFlags, fp);   // bit set indicates the player has this weapon.
+CFWriteShort ((short) playerP->secondaryWeaponFlags, fp); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	CFWriteShort ((short) playerP->primary_ammo [i], fp); // How much ammo of each type.
+	CFWriteShort ((short) playerP->primaryAmmo [i], fp); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	CFWriteShort ((short) playerP->secondary_ammo [i], fp); // How much ammo of each type.
+	CFWriteShort ((short) playerP->secondaryAmmo [i], fp); // How much ammo of each nType.
 #if 1 //for inventory system
 CFWriteByte ((sbyte) playerP->nInvuls, fp);
 CFWriteByte ((sbyte) playerP->nCloaks, fp);
 #endif
 CFWriteInt (playerP->last_score, fp);             // Score at beginning of current level.
 CFWriteInt (playerP->score, fp);                  // Current score.
-CFWriteFix (playerP->time_level, fp);             // Level time played
-CFWriteFix (playerP->time_total, fp);             // Game time played (high word = seconds)
-CFWriteFix (gameData.time.xGame - playerP->cloak_time, fp);             // Time cloaked
-CFWriteFix (gameData.time.xGame - playerP->invulnerable_time, fp);      // Time invulnerable
-CFWriteShort (playerP->KillGoalCount, fp);          // Num of players killed this level
-CFWriteShort (playerP->net_killed_total, fp);       // Number of times killed total
-CFWriteShort (playerP->net_kills_total, fp);        // Number of net kills total
-CFWriteShort (playerP->num_kills_level, fp);        // Number of kills this level
-CFWriteShort (playerP->num_kills_total, fp);        // Number of kills total
-CFWriteShort (playerP->num_robots_level, fp);       // Number of initial robots this level
-CFWriteShort (playerP->num_robots_total, fp);       // Number of robots total
-CFWriteShort ((short) playerP->hostages_rescued_total, fp); // Total number of hostages rescued.
-CFWriteShort ((short) playerP->hostages_total, fp);         // Total number of hostages.
+CFWriteFix (playerP->timeLevel, fp);             // Level time played
+CFWriteFix (playerP->timeTotal, fp);             // Game time played (high word = seconds)
+CFWriteFix (gameData.time.xGame - playerP->cloakTime, fp);             // Time cloaked
+CFWriteFix (gameData.time.xGame - playerP->invulnerableTime, fp);      // Time invulnerable
+CFWriteShort (playerP->nKillGoalCount, fp);          // Num of players killed this level
+CFWriteShort (playerP->netKilledTotal, fp);       // Number of times killed total
+CFWriteShort (playerP->netKillsTotal, fp);        // Number of net kills total
+CFWriteShort (playerP->numKillsLevel, fp);        // Number of kills this level
+CFWriteShort (playerP->numKillsTotal, fp);        // Number of kills total
+CFWriteShort (playerP->numRobotsLevel, fp);       // Number of initial robots this level
+CFWriteShort (playerP->numRobotsTotal, fp);       // Number of robots total
+CFWriteShort ((short) playerP->hostages_rescuedTotal, fp); // Total number of hostages rescued.
+CFWriteShort ((short) playerP->hostagesTotal, fp);         // Total number of hostages.
 CFWriteByte ((sbyte) playerP->hostages_on_board, fp);      // Number of hostages on ship.
-CFWriteByte ((sbyte) playerP->hostages_level, fp);         // Number of hostages on this level.
-CFWriteFix (playerP->homing_object_dist, fp);     // Distance of nearest homing object.
-CFWriteByte (playerP->hours_level, fp);            // Hours played (since time_total can only go up to 9 hours)
-CFWriteByte (playerP->hours_total, fp);            // Hours played (since time_total can only go up to 9 hours)
+CFWriteByte ((sbyte) playerP->hostagesLevel, fp);         // Number of hostages on this level.
+CFWriteFix (playerP->homingObjectDist, fp);     // Distance of nearest homing tObject.
+CFWriteByte (playerP->hoursLevel, fp);            // Hours played (since timeTotal can only go up to 9 hours)
+CFWriteByte (playerP->hoursTotal, fp);            // Hours played (since timeTotal can only go up to 9 hours)
 }
 
 //------------------------------------------------------------------------------
 
-void StateSaveObject (object *objP, CFILE *fp)
+void StateSaveObject (tObject *objP, CFILE *fp)
 {
-CFWriteInt (objP->signature, fp);      
-CFWriteByte ((sbyte) objP->type, fp); 
+CFWriteInt (objP->nSignature, fp);      
+CFWriteByte ((sbyte) objP->nType, fp); 
 CFWriteByte ((sbyte) objP->id, fp);
 CFWriteShort (objP->next, fp);
 CFWriteShort (objP->prev, fp);
-CFWriteByte ((sbyte) objP->control_type, fp);
-CFWriteByte ((sbyte) objP->movement_type, fp);
-CFWriteByte ((sbyte) objP->render_type, fp);
+CFWriteByte ((sbyte) objP->controlType, fp);
+CFWriteByte ((sbyte) objP->movementType, fp);
+CFWriteByte ((sbyte) objP->renderType, fp);
 CFWriteByte ((sbyte) objP->flags, fp);
-CFWriteShort (objP->segnum, fp);
-CFWriteShort (objP->attached_obj, fp);
+CFWriteShort (objP->nSegment, fp);
+CFWriteShort (objP->attachedObj, fp);
 CFWriteVector (&objP->pos, fp);     
 CFWriteMatrix (&objP->orient, fp);  
 CFWriteFix (objP->size, fp); 
 CFWriteFix (objP->shields, fp);
 CFWriteVector (&objP->last_pos, fp);  
-CFWriteByte (objP->contains_type, fp); 
-CFWriteByte (objP->contains_id, fp);   
-CFWriteByte (objP->contains_count, fp);
-CFWriteByte (objP->matcen_creator, fp);
+CFWriteByte (objP->containsType, fp); 
+CFWriteByte (objP->containsId, fp);   
+CFWriteByte (objP->containsCount, fp);
+CFWriteByte (objP->matCenCreator, fp);
 CFWriteFix (objP->lifeleft, fp);   
-if (objP->movement_type == MT_PHYSICS) {
-	CFWriteVector (&objP->mtype.phys_info.velocity, fp);   
-	CFWriteVector (&objP->mtype.phys_info.thrust, fp);     
-	CFWriteFix (objP->mtype.phys_info.mass, fp);       
-	CFWriteFix (objP->mtype.phys_info.drag, fp);       
-	CFWriteFix (objP->mtype.phys_info.brakes, fp);     
-	CFWriteVector (&objP->mtype.phys_info.rotvel, fp);     
-	CFWriteVector (&objP->mtype.phys_info.rotthrust, fp);  
-	CFWriteFixAng (objP->mtype.phys_info.turnroll, fp);   
-	CFWriteShort ((short) objP->mtype.phys_info.flags, fp);      
+if (objP->movementType == MT_PHYSICS) {
+	CFWriteVector (&objP->mType.physInfo.velocity, fp);   
+	CFWriteVector (&objP->mType.physInfo.thrust, fp);     
+	CFWriteFix (objP->mType.physInfo.mass, fp);       
+	CFWriteFix (objP->mType.physInfo.drag, fp);       
+	CFWriteFix (objP->mType.physInfo.brakes, fp);     
+	CFWriteVector (&objP->mType.physInfo.rotVel, fp);     
+	CFWriteVector (&objP->mType.physInfo.rotThrust, fp);  
+	CFWriteFixAng (objP->mType.physInfo.turnRoll, fp);   
+	CFWriteShort ((short) objP->mType.physInfo.flags, fp);      
 	}
-else if (objP->movement_type == MT_SPINNING) {
-	CFWriteVector (&objP->mtype.spin_rate, fp);  
+else if (objP->movementType == MT_SPINNING) {
+	CFWriteVector (&objP->mType.spinRate, fp);  
 	}
-switch (objP->control_type) {
+switch (objP->controlType) {
 	case CT_WEAPON:
-		CFWriteShort (objP->ctype.laser_info.parent_type, fp);
-		CFWriteShort (objP->ctype.laser_info.parent_num, fp);
-		CFWriteInt (objP->ctype.laser_info.parent_signature, fp);
-		CFWriteFix (objP->ctype.laser_info.creation_time, fp);
-		CFWriteShort (objP->ctype.laser_info.last_hitobj, fp);
-		CFWriteShort (objP->ctype.laser_info.track_goal, fp);
-		CFWriteFix (objP->ctype.laser_info.multiplier, fp);
+		CFWriteShort (objP->cType.laserInfo.parentType, fp);
+		CFWriteShort (objP->cType.laserInfo.nParentObj, fp);
+		CFWriteInt (objP->cType.laserInfo.nParentSig, fp);
+		CFWriteFix (objP->cType.laserInfo.creationTime, fp);
+		CFWriteShort (objP->cType.laserInfo.nLastHitObj, fp);
+		CFWriteShort (objP->cType.laserInfo.nTrackGoal, fp);
+		CFWriteFix (objP->cType.laserInfo.multiplier, fp);
 		break;
 
 	case CT_EXPLOSION:
-		CFWriteFix (objP->ctype.expl_info.spawn_time, fp);
-		CFWriteFix (objP->ctype.expl_info.delete_time, fp);
-		CFWriteShort (objP->ctype.expl_info.delete_objnum, fp);
-		CFWriteShort (objP->ctype.expl_info.attach_parent, fp);
-		CFWriteShort (objP->ctype.expl_info.prev_attach, fp);
-		CFWriteShort (objP->ctype.expl_info.next_attach, fp);
+		CFWriteFix (objP->cType.explInfo.nSpawnTime, fp);
+		CFWriteFix (objP->cType.explInfo.nDeleteTime, fp);
+		CFWriteShort (objP->cType.explInfo.nDeleteObj, fp);
+		CFWriteShort (objP->cType.explInfo.nAttachParent, fp);
+		CFWriteShort (objP->cType.explInfo.nPrevAttach, fp);
+		CFWriteShort (objP->cType.explInfo.nNextAttach, fp);
 		break;
 
 	case CT_AI:
-		CFWriteByte ((sbyte) objP->ctype.ai_info.behavior, fp);
-		CFWrite (objP->ctype.ai_info.flags, 1, MAX_AI_FLAGS, fp);
-		CFWriteShort (objP->ctype.ai_info.hide_segment, fp);
-		CFWriteShort (objP->ctype.ai_info.hide_index, fp);
-		CFWriteShort (objP->ctype.ai_info.path_length, fp);
-		CFWriteByte (objP->ctype.ai_info.cur_path_index, fp);
-		CFWriteByte (objP->ctype.ai_info.dying_sound_playing, fp);
-		CFWriteShort (objP->ctype.ai_info.danger_laser_num, fp);
-		CFWriteInt (objP->ctype.ai_info.danger_laser_signature, fp);
-		CFWriteFix (objP->ctype.ai_info.dying_start_time, fp);
+		CFWriteByte ((sbyte) objP->cType.aiInfo.behavior, fp);
+		CFWrite (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS, fp);
+		CFWriteShort (objP->cType.aiInfo.hide_segment, fp);
+		CFWriteShort (objP->cType.aiInfo.hide_index, fp);
+		CFWriteShort (objP->cType.aiInfo.path_length, fp);
+		CFWriteByte (objP->cType.aiInfo.cur_path_index, fp);
+		CFWriteByte (objP->cType.aiInfo.dyingSound_playing, fp);
+		CFWriteShort (objP->cType.aiInfo.danger_laser_num, fp);
+		CFWriteInt (objP->cType.aiInfo.danger_laser_signature, fp);
+		CFWriteFix (objP->cType.aiInfo.dying_startTime, fp);
 		break;
 
 	case CT_LIGHT:
-		CFWriteFix (objP->ctype.light_info.intensity, fp);
+		CFWriteFix (objP->cType.lightInfo.intensity, fp);
 		break;
 
 	case CT_POWERUP:
-		CFWriteInt (objP->ctype.powerup_info.count, fp);
-		CFWriteFix (objP->ctype.powerup_info.creation_time, fp);
-		CFWriteInt (objP->ctype.powerup_info.flags, fp);
+		CFWriteInt (objP->cType.powerupInfo.count, fp);
+		CFWriteFix (objP->cType.powerupInfo.creationTime, fp);
+		CFWriteInt (objP->cType.powerupInfo.flags, fp);
 		break;
 	}
-switch (objP->render_type) {
+switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		CFWriteInt (objP->rtype.pobj_info.model_num, fp);
+		CFWriteInt (objP->rType.polyObjInfo.nModel, fp);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFWriteAngVec (objP->rtype.pobj_info.anim_angles + i, fp);
-		CFWriteInt (objP->rtype.pobj_info.subobj_flags, fp);
-		CFWriteInt (objP->rtype.pobj_info.tmap_override, fp);
-		CFWriteInt (objP->rtype.pobj_info.alt_textures, fp);
+			CFWriteAngVec (objP->rType.polyObjInfo.animAngles + i, fp);
+		CFWriteInt (objP->rType.polyObjInfo.nSubObjFlags, fp);
+		CFWriteInt (objP->rType.polyObjInfo.nTexOverride, fp);
+		CFWriteInt (objP->rType.polyObjInfo.nAltTextures, fp);
 		break;
 		}
 	case RT_WEAPON_VCLIP:
@@ -1198,9 +1200,9 @@ switch (objP->render_type) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		CFWriteInt (objP->rtype.vclip_info.nClipIndex, fp);
-		CFWriteFix (objP->rtype.vclip_info.xFrameTime, fp);
-		CFWriteByte (objP->rtype.vclip_info.nCurFrame, fp);
+		CFWriteInt (objP->rType.vClipInfo.nClipIndex, fp);
+		CFWriteFix (objP->rType.vClipInfo.xFrameTime, fp);
+		CFWriteByte (objP->rType.vClipInfo.nCurFrame, fp);
 		break;
 
 	case RT_LASER:
@@ -1212,26 +1214,26 @@ switch (objP->render_type) {
 
 void StateSaveWall (wall *wallP, CFILE *fp)
 {
-CFWriteInt (wallP->segnum, fp);
-CFWriteInt (wallP->sidenum, fp);
+CFWriteInt (wallP->nSegment, fp);
+CFWriteInt (wallP->nSide, fp);
 CFWriteFix (wallP->hps, fp);    
 CFWriteInt (wallP->linked_wall, fp);
-CFWriteByte ((sbyte) wallP->type, fp);       
+CFWriteByte ((sbyte) wallP->nType, fp);       
 CFWriteByte ((sbyte) wallP->flags, fp);      
 CFWriteByte ((sbyte) wallP->state, fp);      
-CFWriteByte ((sbyte) wallP->trigger, fp);    
+CFWriteByte ((sbyte) wallP->tTrigger, fp);    
 CFWriteByte (wallP->clip_num, fp);   
 CFWriteByte ((sbyte) wallP->keys, fp);       
 CFWriteByte (wallP->controlling_trigger, fp);
-CFWriteByte (wallP->cloak_value, fp); 
+CFWriteByte (wallP->cloakValue, fp); 
 }
 
 //------------------------------------------------------------------------------
 
 void StateSaveExplWall (expl_wall *wallP, CFILE *fp)
 {
-CFWriteInt (wallP->segnum, fp);
-CFWriteInt (wallP->sidenum, fp);
+CFWriteInt (wallP->nSegment, fp);
+CFWriteInt (wallP->nSide, fp);
 CFWriteFix (wallP->time, fp);    
 }
 
@@ -1266,28 +1268,28 @@ CFWriteFix (doorP->time, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveTrigger (trigger *triggerP, CFILE *fp)
+void StateSaveTrigger (tTrigger *triggerP, CFILE *fp)
 {
 	int	i;
 
-CFWriteByte ((sbyte) triggerP->type, fp); 
+CFWriteByte ((sbyte) triggerP->nType, fp); 
 CFWriteByte ((sbyte) triggerP->flags, fp); 
-CFWriteByte (triggerP->num_links, fp);
+CFWriteByte (triggerP->nLinks, fp);
 CFWriteFix (triggerP->value, fp);
 CFWriteFix (triggerP->time, fp);
 for (i = 0; i < MAX_WALLS_PER_LINK; i++) {
-	CFWriteShort (triggerP->seg [i], fp);
-	CFWriteShort (triggerP->side [i], fp);
+	CFWriteShort (triggerP->nSegment [i], fp);
+	CFWriteShort (triggerP->nSide [i], fp);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void StateSaveObjTriggerRef (obj_trigger_ref *refP, CFILE *fp)
+void StateSaveObjTriggerRef (tObjTriggerRef *refP, CFILE *fp)
 {
 CFWriteShort (refP->prev, fp);
 CFWriteShort (refP->next, fp);
-CFWriteShort (refP->objnum, fp);
+CFWriteShort (refP->nObject, fp);
 }
 
 //------------------------------------------------------------------------------
@@ -1297,10 +1299,10 @@ void StateSaveMatCen (matcen_info *matcenP, CFILE *fp)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	CFWriteInt (matcenP->robot_flags [i], fp);
+	CFWriteInt (matcenP->robotFlags [i], fp);
 CFWriteFix (matcenP->hit_points, fp);
 CFWriteFix (matcenP->interval, fp);
-CFWriteShort (matcenP->segnum, fp);
+CFWriteShort (matcenP->nSegment, fp);
 CFWriteShort (matcenP->fuelcen_num, fp);
 }
 
@@ -1309,27 +1311,27 @@ CFWriteShort (matcenP->fuelcen_num, fp);
 void StateSaveFuelCen (fuelcen_info *fuelcenP, CFILE *fp)
 {
 CFWriteInt (fuelcenP->Type, fp);
-CFWriteInt (fuelcenP->segnum, fp);
+CFWriteInt (fuelcenP->nSegment, fp);
 CFWriteByte (fuelcenP->Flag, fp);
 CFWriteByte (fuelcenP->Enabled, fp);
 CFWriteByte (fuelcenP->Lives, fp);
 CFWriteFix (fuelcenP->Capacity, fp);
 CFWriteFix (fuelcenP->MaxCapacity, fp);
 CFWriteFix (fuelcenP->Timer, fp);
-CFWriteFix (fuelcenP->Disable_time, fp);
+CFWriteFix (fuelcenP->DisableTime, fp);
 CFWriteVector (&fuelcenP->Center, fp);
 }
 
 //------------------------------------------------------------------------------
 
-void StateSaveReactorTrigger (reactor_triggers *triggerP, CFILE *fp)
+void StateSaveReactorTrigger (tReactorTriggers *triggerP, CFILE *fp)
 {
 	int	i;
 
-CFWriteShort (triggerP->num_links, fp);
+CFWriteShort (triggerP->nLinks, fp);
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	CFWriteShort (triggerP->seg [i], fp);
-	CFWriteShort (triggerP->side [i], fp);
+	CFWriteShort (triggerP->nSegment [i], fp);
+	CFWriteShort (triggerP->nSide [i], fp);
 	}
 }
 
@@ -1374,30 +1376,30 @@ CFWriteInt (gameStates.app.cheats.bEnabled, fp);
 if (!bBetweenLevels)	{
 //Finish all morph gameData.objs.objects
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].type == OBJ_NONE) 
+		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
-		if (gameData.objs.objects [i].type == OBJ_CAMERA)
+		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
 			gameData.objs.objects [i].orient = cameras [gameData.objs.cameraRef [i]].orient;
-		else if (gameData.objs.objects [i].render_type == RT_MORPH) {
-			morph_data *md = MorphFindData (gameData.objs.objects + i);
+		else if (gameData.objs.objects [i].renderType == RT_MORPH) {
+			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
-				object *objP = md->objP;
-				objP->control_type = md->morph_save_control_type;
-				objP->movement_type = md->morph_save_movement_type;
-				objP->render_type = RT_POLYOBJ;
-				objP->mtype.phys_info = md->morph_save_phys_info;
+				tObject *objP = md->objP;
+				objP->controlType = md->saveControlType;
+				objP->movementType = md->saveMovementType;
+				objP->renderType = RT_POLYOBJ;
+				objP->mType.physInfo = md->savePhysInfo;
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
 				gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
-				gameData.objs.objects [i].render_type = RT_POLYOBJ;
-				gameData.objs.objects [i].control_type = CT_NONE;
-				gameData.objs.objects [i].movement_type = MT_NONE;
+				gameData.objs.objects [i].renderType = RT_POLYOBJ;
+				gameData.objs.objects [i].controlType = CT_NONE;
+				gameData.objs.objects [i].movementType = MT_NONE;
 				}
 			}
 		}
 	fpos = CFTell (fp);
-//Save object info
+//Save tObject info
 	i = gameData.objs.nLastObject + 1;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
@@ -1427,7 +1429,7 @@ if (!bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		StateSaveCloakingWall (gameData.walls.cloaking + j, fp);
 	fpos = CFTell (fp);
-//Save trigger info
+//Save tTrigger info
 	CFWriteInt (gameData.trigs.nTriggers, fp);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		StateSaveTrigger (gameData.trigs.triggers + i, fp);
@@ -1442,10 +1444,10 @@ if (!bBetweenLevels)	{
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 		for (j = 0; j < 6; j++)	{
-			ushort wall_num = WallNumI ((short) i, (short) j);
-			CFWriteShort (wall_num, fp);
-			CFWriteShort (gameData.segs.segments [i].sides [j].tmap_num, fp);
-			CFWriteShort (gameData.segs.segments [i].sides [j].tmap_num2, fp);
+			ushort nWall = WallNumI ((short) i, (short) j);
+			CFWriteShort (nWall, fp);
+			CFWriteShort (gameData.segs.segments [i].sides [j].nBaseTex, fp);
+			CFWriteShort (gameData.segs.segments [i].sides [j].nOvlTex | (gameData.segs.segments [i].sides [j].nOvlOrient << 14), fp);
 			}
 		}
 	fpos = CFTell (fp);
@@ -1481,7 +1483,7 @@ CFWriteInt (gameStates.app.bLunacy, fp);		//	Yes, writing this twice.  Removed t
 CFWriteInt (gameStates.app.bLunacy, fp);
 // Save automap marker info
 for (i = 0; i < NUM_MARKERS; i++)
-	CFWriteShort (gameData.marker.object [i], fp);
+	CFWriteShort (gameData.marker.tObject [i], fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 CFWriteFix (xAfterburnerCharge, fp);
@@ -1566,11 +1568,11 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 		PA_DFX (pa_set_front_to_read ();
 		if (sgVersion < 26) {
 			GrInitSubCanvas (&cnv2, &VR_render_buffer [0], 0, 0, THUMBNAIL_W, THUMBNAIL_H);
-			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_W, THUMBNAIL_H, cnv2.cv_bitmap.bm_props.type);
+			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_W, THUMBNAIL_H, cnv2.cv_bitmap.bm_props.nType);
 			}
 		else {
 			GrInitSubCanvas (&cnv2, &VR_render_buffer [0], 0, 0, THUMBNAIL_LW, THUMBNAIL_LH);
-			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_LW, THUMBNAIL_LH, cnv2.cv_bitmap.bm_props.type);
+			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_LW, THUMBNAIL_LH, cnv2.cv_bitmap.bm_props.nType);
 			}
 		GrSetCurrentCanvas (save_cnv2);
 		PA_DFX (pa_set_front_to_read ();
@@ -1675,7 +1677,7 @@ return 1;
 //	Set the player's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (void)
 {
-	int	plobjnum = gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+	int	plobjnum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 
 COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [plobjnum].pos, 
 							     gameData.segs.secret.nReturnSegment);
@@ -1713,7 +1715,7 @@ StopTime ();
 gameData.app.bGamePaused = 1;
 if (pszFilenameOverride) {
 	strcpy (filename, pszFilenameOverride);
-	filenum = NUM_SAVES+1;		//	So we don't trigger autosave
+	filenum = NUM_SAVES+1;		//	So we don't tTrigger autosave
 	}
 else if (! (filenum = StateGetRestoreFile (filename, 0)))	{
 	gameData.app.bGamePaused = 0;
@@ -1809,7 +1811,7 @@ else {
 	strcpy (pszOrgCallSign, gameData.multi.players [0].callsign);
 	gameData.multi.nPlayers = 1;
 	if (!bSecretRestore) {
-		InitMultiPlayerObject ();	//make sure player's object set up
+		InitMultiPlayerObject ();	//make sure player's tObject set up
 		InitPlayerStatsGame ();		//clear all stats
 		}
 	}
@@ -1837,8 +1839,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 				}
 		}
 	if (nServerPlayer > 0) {
-		nOtherObjNum = restore_players [0].objnum;
-		nServerObjNum = restore_players [nServerPlayer].objnum;
+		nOtherObjNum = restore_players [0].nObject;
+		nServerObjNum = restore_players [nServerPlayer].nObject;
 		{
 		netplayer_info h = netPlayers.players [0];
 		netPlayers.players [0] = netPlayers.players [nServerPlayer];
@@ -1895,18 +1897,18 @@ if (NetworkIAmMaster ()) {
 void StateFixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
-	object h = gameData.objs.objects [nServerObjNum];
+	tObject h = gameData.objs.objects [nServerObjNum];
 	gameData.objs.objects [nServerObjNum] = gameData.objs.objects [nOtherObjNum];
 	gameData.objs.objects [nOtherObjNum] = h;
 	gameData.objs.objects [nServerObjNum].id = nServerObjNum;
 	gameData.objs.objects [nOtherObjNum].id = 0;
 	if (gameData.multi.nLocalPlayer == nServerObjNum) {
-		gameData.objs.objects [nServerObjNum].control_type = CT_FLYING;
-		gameData.objs.objects [nOtherObjNum].control_type = CT_REMOTE;
+		gameData.objs.objects [nServerObjNum].controlType = CT_FLYING;
+		gameData.objs.objects [nOtherObjNum].controlType = CT_REMOTE;
 		}
 	else if (gameData.multi.nLocalPlayer == nOtherObjNum) {
-		gameData.objs.objects [nServerObjNum].control_type = CT_REMOTE;
-		gameData.objs.objects [nOtherObjNum].control_type = CT_FLYING;
+		gameData.objs.objects [nServerObjNum].controlType = CT_REMOTE;
+		gameData.objs.objects [nOtherObjNum].controlType = CT_FLYING;
 		}
 	}
 }
@@ -1915,26 +1917,26 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 void StateFixObjects (void)
 {
-	object	*objP = gameData.objs.objects;
-	int		i, segnum;
+	tObject	*objP = gameData.objs.objects;
+	int		i, nSegment;
 	
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
-	objP->rtype.pobj_info.alt_textures = -1;
-	segnum = objP->segnum;
+	objP->rType.polyObjInfo.nAltTextures = -1;
+	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix
 	if (objP->shields < 0)
-		objP->type = OBJ_NONE;
-	objP->next = objP->prev = objP->segnum = -1;
-	if (objP->type != OBJ_NONE) {
-		LinkObject (i,segnum);
-		if (objP->signature > gameData.objs.nNextSignature)
-			gameData.objs.nNextSignature = objP->signature;
+		objP->nType = OBJ_NONE;
+	objP->next = objP->prev = objP->nSegment = -1;
+	if (objP->nType != OBJ_NONE) {
+		LinkObject (i,nSegment);
+		if (objP->nSignature > gameData.objs.nNextSignature)
+			gameData.objs.nNextSignature = objP->nSignature;
 		}
 	//look for, and fix, boss with bogus shields
-	if (objP->type == OBJ_ROBOT && gameData.bots.pInfo [objP->id].boss_flag) {
+	if (objP->nType == OBJ_ROBOT && gameData.bots.pInfo [objP->id].bossFlag) {
 		fix save_shields = objP->shields;
-		copy_defaults_to_robot (objP);		//calculate starting shields
+		copy_defaults_toRobot (objP);		//calculate starting shields
 		//if in valid range, use loaded shield value
 		if (save_shields > 0 && (save_shields <= objP->shields))
 			objP->shields = save_shields;
@@ -1951,17 +1953,17 @@ void StateAwardReturningPlayer (player *retPlayerP, fix xOldGameTime)
 player *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 playerP->level = retPlayerP->level;
 playerP->last_score = retPlayerP->last_score;
-playerP->time_level = retPlayerP->time_level;
+playerP->timeLevel = retPlayerP->timeLevel;
 playerP->flags |= (retPlayerP->flags & PLAYER_FLAGS_ALL_KEYS);
-playerP->num_robots_level = retPlayerP->num_robots_level;
-playerP->num_robots_total = retPlayerP->num_robots_total;
-playerP->hostages_rescued_total = retPlayerP->hostages_rescued_total;
-playerP->hostages_total = retPlayerP->hostages_total;
+playerP->numRobotsLevel = retPlayerP->numRobotsLevel;
+playerP->numRobotsTotal = retPlayerP->numRobotsTotal;
+playerP->hostages_rescuedTotal = retPlayerP->hostages_rescuedTotal;
+playerP->hostagesTotal = retPlayerP->hostagesTotal;
 playerP->hostages_on_board = retPlayerP->hostages_on_board;
-playerP->hostages_level = retPlayerP->hostages_level;
-playerP->homing_object_dist = retPlayerP->homing_object_dist;
-playerP->hours_level = retPlayerP->hours_level;
-playerP->hours_total = retPlayerP->hours_total;
+playerP->hostagesLevel = retPlayerP->hostagesLevel;
+playerP->homingObjectDist = retPlayerP->homingObjectDist;
+playerP->hoursLevel = retPlayerP->hoursLevel;
+playerP->hoursTotal = retPlayerP->hoursTotal;
 //playerP->nCloaks = retPlayerP->nCloaks;
 //playerP->nInvuls = retPlayerP->nInvuls;
 DoCloakInvulSecretStuff (xOldGameTime);
@@ -1973,7 +1975,7 @@ void StateRestoreNetGame (CFILE *fp)
 {
 	int	i, j;
 
-netGame.type = CFReadByte (fp);
+netGame.nType = CFReadByte (fp);
 netGame.Security = CFReadInt (fp);
 CFRead (netGame.game_name, 1, NETGAME_NAME_LEN + 1, fp);
 CFRead (netGame.mission_title, 1, MISSION_NAME_LEN + 1, fp);
@@ -1986,7 +1988,7 @@ netGame.game_status = (ubyte) CFReadByte (fp);
 netGame.numplayers = (ubyte) CFReadByte (fp);
 netGame.max_numplayers = (ubyte) CFReadByte (fp);
 netGame.numconnected = (ubyte) CFReadByte (fp);
-netGame.game_flags = (ubyte) CFReadByte (fp);
+netGame.gameFlags = (ubyte) CFReadByte (fp);
 netGame.protocol_version = (ubyte) CFReadByte (fp);
 netGame.version_major = (ubyte) CFReadByte (fp);
 netGame.version_minor = (ubyte) CFReadByte (fp);
@@ -2032,20 +2034,20 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		netGame.kills [i] [j] = CFReadShort (fp);			// 128 bytes
 netGame.segments_checksum = CFReadShort (fp);				// 2 bytes
 for (i = 0; i < 2; i++)
-	netGame.team_kills [i] = CFReadShort (fp);				// 4 bytes
+	netGame.teamKills [i] = CFReadShort (fp);				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.killed [i] = CFReadShort (fp);					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.player_kills [i] = CFReadShort (fp);			// 16 bytes
+	netGame.playerKills [i] = CFReadShort (fp);			// 16 bytes
 netGame.KillGoal = CFReadInt (fp);							// 4 bytes
 netGame.PlayTimeAllowed = CFReadFix (fp);					// 4 bytes
-netGame.level_time = CFReadFix (fp);							// 4 bytes
-netGame.control_invul_time = CFReadInt (fp);				// 4 bytes
+netGame.levelTime = CFReadFix (fp);							// 4 bytes
+netGame.control_invulTime = CFReadInt (fp);				// 4 bytes
 netGame.monitor_vector = CFReadInt (fp);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.player_score [i] = CFReadInt (fp);				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.player_flags [i] = (ubyte) CFReadByte (fp);	// 8 bytes
+	netGame.playerFlags [i] = (ubyte) CFReadByte (fp);	// 8 bytes
 netGame.nPacketsPerSec = CFReadShort (fp);					// 2 bytes
 netGame.bShortPackets = (ubyte) CFReadByte (fp);			// 1 bytes
 // 279 bytes
@@ -2059,7 +2061,7 @@ void StateRestoreNetPlayers (CFILE *fp)
 {
 	int	i;
 
-netPlayers.type = (ubyte) CFReadByte (fp);
+netPlayers.nType = (ubyte) CFReadByte (fp);
 netPlayers.Security = CFReadInt (fp);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFRead (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, fp);
@@ -2067,7 +2069,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFRead (netPlayers.players [i].network.ipx.node, 1, 6, fp);
 	netPlayers.players [i].version_major = (ubyte) CFReadByte (fp);
 	netPlayers.players [i].version_minor = (ubyte) CFReadByte (fp);
-	netPlayers.players [i].computer_type = (ubyte) CFReadByte (fp);
+	netPlayers.players [i].computerType = (ubyte) CFReadByte (fp);
 	netPlayers.players [i].connected = CFReadByte (fp);
 	netPlayers.players [i].socket = (ushort) CFReadShort (fp);
 	netPlayers.players [i].rank = (ubyte) CFReadByte (fp);
@@ -2081,143 +2083,143 @@ void StateRestorePlayer (player *playerP, CFILE *fp)
 	int	i;
 
 CFRead (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this player, for net purposes.
-CFRead (playerP->net_address, 1, 6, fp);					// The network address of the player.
+CFRead (playerP->netAddress, 1, 6, fp);					// The network address of the player.
 playerP->connected = CFReadByte (fp);            // Is the player connected or not?
-playerP->objnum = CFReadInt (fp);                // What object number this player is. (made an int by mk because it's very often referenced)
-playerP->n_packets_got = CFReadInt (fp);         // How many packets we got from them
-playerP->n_packets_sent = CFReadInt (fp);        // How many packets we sent to them
+playerP->nObject = CFReadInt (fp);                // What tObject number this player is. (made an int by mk because it's very often referenced)
+playerP->nPacketsGot = CFReadInt (fp);         // How many packets we got from them
+playerP->nPacketsSent = CFReadInt (fp);        // How many packets we sent to them
 playerP->flags = (uint) CFReadInt (fp);           // Powerup flags, see below...
 playerP->energy = CFReadFix (fp);                // Amount of energy remaining.
 playerP->shields = CFReadFix (fp);               // shields remaining (protection)
 playerP->lives = CFReadByte (fp);                // Lives remaining, 0 = game over.
 playerP->level = CFReadByte (fp);                // Current level player is playing. (must be signed for secret levels)
-playerP->laser_level = (ubyte) CFReadByte (fp);  // Current level of the laser.
-playerP->starting_level = CFReadByte (fp);       // What level the player started on.
-playerP->killer_objnum = CFReadShort (fp);       // Who killed me.... (-1 if no one)
-playerP->primary_weapon_flags = (ushort) CFReadShort (fp);   // bit set indicates the player has this weapon.
-playerP->secondary_weapon_flags = (ushort) CFReadShort (fp); // bit set indicates the player has this weapon.
+playerP->laserLevel = (ubyte) CFReadByte (fp);  // Current level of the laser.
+playerP->startingLevel = CFReadByte (fp);       // What level the player started on.
+playerP->nKillerObj = CFReadShort (fp);       // Who killed me.... (-1 if no one)
+playerP->primaryWeaponFlags = (ushort) CFReadShort (fp);   // bit set indicates the player has this weapon.
+playerP->secondaryWeaponFlags = (ushort) CFReadShort (fp); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	playerP->primary_ammo [i] = (ushort) CFReadShort (fp); // How much ammo of each type.
+	playerP->primaryAmmo [i] = (ushort) CFReadShort (fp); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	playerP->secondary_ammo [i] = (ushort) CFReadShort (fp); // How much ammo of each type.
+	playerP->secondaryAmmo [i] = (ushort) CFReadShort (fp); // How much ammo of each nType.
 #if 1 //for inventory system
 playerP->nInvuls = (ubyte) CFReadByte (fp);
 playerP->nCloaks = (ubyte) CFReadByte (fp);
 #endif
 playerP->last_score = CFReadInt (fp);             // Score at beginning of current level.
 playerP->score = CFReadInt (fp);                  // Current score.
-playerP->time_level = CFReadFix (fp);             // Level time played
-playerP->time_total = CFReadFix (fp);	// Game time played (high word = seconds)
-playerP->cloak_time = gameData.time.xGame + CFReadFix (fp); // Time cloaked
-playerP->invulnerable_time = gameData.time.xGame + CFReadFix (fp);      // Time invulnerable
-playerP->KillGoalCount = CFReadShort (fp);          // Num of players killed this level
-playerP->net_killed_total = CFReadShort (fp);       // Number of times killed total
-playerP->net_kills_total = CFReadShort (fp);        // Number of net kills total
-playerP->num_kills_level = CFReadShort (fp);        // Number of kills this level
-playerP->num_kills_total = CFReadShort (fp);        // Number of kills total
-playerP->num_robots_level = CFReadShort (fp);       // Number of initial robots this level
-playerP->num_robots_total = CFReadShort (fp);       // Number of robots total
-playerP->hostages_rescued_total = (ushort) CFReadShort (fp); // Total number of hostages rescued.
-playerP->hostages_total = (ushort) CFReadShort (fp);         // Total number of hostages.
+playerP->timeLevel = CFReadFix (fp);             // Level time played
+playerP->timeTotal = CFReadFix (fp);	// Game time played (high word = seconds)
+playerP->cloakTime = gameData.time.xGame + CFReadFix (fp); // Time cloaked
+playerP->invulnerableTime = gameData.time.xGame + CFReadFix (fp);      // Time invulnerable
+playerP->nKillGoalCount = CFReadShort (fp);          // Num of players killed this level
+playerP->netKilledTotal = CFReadShort (fp);       // Number of times killed total
+playerP->netKillsTotal = CFReadShort (fp);        // Number of net kills total
+playerP->numKillsLevel = CFReadShort (fp);        // Number of kills this level
+playerP->numKillsTotal = CFReadShort (fp);        // Number of kills total
+playerP->numRobotsLevel = CFReadShort (fp);       // Number of initial robots this level
+playerP->numRobotsTotal = CFReadShort (fp);       // Number of robots total
+playerP->hostages_rescuedTotal = (ushort) CFReadShort (fp); // Total number of hostages rescued.
+playerP->hostagesTotal = (ushort) CFReadShort (fp);         // Total number of hostages.
 playerP->hostages_on_board = (ubyte) CFReadByte (fp);      // Number of hostages on ship.
-playerP->hostages_level = (ubyte) CFReadByte (fp);         // Number of hostages on this level.
-playerP->homing_object_dist = CFReadFix (fp);     // Distance of nearest homing object.
-playerP->hours_level = CFReadByte (fp);            // Hours played (since time_total can only go up to 9 hours)
-playerP->hours_total = CFReadByte (fp);            // Hours played (since time_total can only go up to 9 hours)
+playerP->hostagesLevel = (ubyte) CFReadByte (fp);         // Number of hostages on this level.
+playerP->homingObjectDist = CFReadFix (fp);     // Distance of nearest homing tObject.
+playerP->hoursLevel = CFReadByte (fp);            // Hours played (since timeTotal can only go up to 9 hours)
+playerP->hoursTotal = CFReadByte (fp);            // Hours played (since timeTotal can only go up to 9 hours)
 }
 
 //------------------------------------------------------------------------------
 
-void StateRestoreObject (object *objP, CFILE *fp)
+void StateRestoreObject (tObject *objP, CFILE *fp)
 {
-objP->signature = CFReadInt (fp);      
-objP->type = (ubyte) CFReadByte (fp); 
+objP->nSignature = CFReadInt (fp);      
+objP->nType = (ubyte) CFReadByte (fp); 
 objP->id = (ubyte) CFReadByte (fp);
 objP->next = CFReadShort (fp);
 objP->prev = CFReadShort (fp);
-objP->control_type = (ubyte) CFReadByte (fp);
-objP->movement_type = (ubyte) CFReadByte (fp);
-objP->render_type = (ubyte) CFReadByte (fp);
+objP->controlType = (ubyte) CFReadByte (fp);
+objP->movementType = (ubyte) CFReadByte (fp);
+objP->renderType = (ubyte) CFReadByte (fp);
 objP->flags = (ubyte) CFReadByte (fp);
-objP->segnum = CFReadShort (fp);
-objP->attached_obj = CFReadShort (fp);
+objP->nSegment = CFReadShort (fp);
+objP->attachedObj = CFReadShort (fp);
 CFReadVector (&objP->pos, fp);     
 CFReadMatrix (&objP->orient, fp);  
 objP->size = CFReadFix (fp); 
 objP->shields = CFReadFix (fp);
 CFReadVector (&objP->last_pos, fp);  
-objP->contains_type = CFReadByte (fp); 
-objP->contains_id = CFReadByte (fp);   
-objP->contains_count = CFReadByte (fp);
-objP->matcen_creator = CFReadByte (fp);
+objP->containsType = CFReadByte (fp); 
+objP->containsId = CFReadByte (fp);   
+objP->containsCount = CFReadByte (fp);
+objP->matCenCreator = CFReadByte (fp);
 objP->lifeleft = CFReadFix (fp);   
-if (objP->movement_type == MT_PHYSICS) {
-	CFReadVector (&objP->mtype.phys_info.velocity, fp);   
-	CFReadVector (&objP->mtype.phys_info.thrust, fp);     
-	objP->mtype.phys_info.mass = CFReadFix (fp);       
-	objP->mtype.phys_info.drag = CFReadFix (fp);       
-	objP->mtype.phys_info.brakes = CFReadFix (fp);     
-	CFReadVector (&objP->mtype.phys_info.rotvel, fp);     
-	CFReadVector (&objP->mtype.phys_info.rotthrust, fp);  
-	objP->mtype.phys_info.turnroll = CFReadFixAng (fp);   
-	objP->mtype.phys_info.flags = (ushort) CFReadShort (fp);      
+if (objP->movementType == MT_PHYSICS) {
+	CFReadVector (&objP->mType.physInfo.velocity, fp);   
+	CFReadVector (&objP->mType.physInfo.thrust, fp);     
+	objP->mType.physInfo.mass = CFReadFix (fp);       
+	objP->mType.physInfo.drag = CFReadFix (fp);       
+	objP->mType.physInfo.brakes = CFReadFix (fp);     
+	CFReadVector (&objP->mType.physInfo.rotVel, fp);     
+	CFReadVector (&objP->mType.physInfo.rotThrust, fp);  
+	objP->mType.physInfo.turnRoll = CFReadFixAng (fp);   
+	objP->mType.physInfo.flags = (ushort) CFReadShort (fp);      
 	}
-else if (objP->movement_type == MT_SPINNING) {
-	CFReadVector (&objP->mtype.spin_rate, fp);  
+else if (objP->movementType == MT_SPINNING) {
+	CFReadVector (&objP->mType.spinRate, fp);  
 	}
-switch (objP->control_type) {
+switch (objP->controlType) {
 	case CT_WEAPON:
-		objP->ctype.laser_info.parent_type = CFReadShort (fp);
-		objP->ctype.laser_info.parent_num = CFReadShort (fp);
-		objP->ctype.laser_info.parent_signature = CFReadInt (fp);
-		objP->ctype.laser_info.creation_time = CFReadFix (fp);
-		objP->ctype.laser_info.last_hitobj = CFReadShort (fp);
-		objP->ctype.laser_info.track_goal = CFReadShort (fp);
-		objP->ctype.laser_info.multiplier = CFReadFix (fp);
+		objP->cType.laserInfo.parentType = CFReadShort (fp);
+		objP->cType.laserInfo.nParentObj = CFReadShort (fp);
+		objP->cType.laserInfo.nParentSig = CFReadInt (fp);
+		objP->cType.laserInfo.creationTime = CFReadFix (fp);
+		objP->cType.laserInfo.nLastHitObj = CFReadShort (fp);
+		objP->cType.laserInfo.nTrackGoal = CFReadShort (fp);
+		objP->cType.laserInfo.multiplier = CFReadFix (fp);
 		break;
 
 	case CT_EXPLOSION:
-		objP->ctype.expl_info.spawn_time = CFReadFix (fp);
-		objP->ctype.expl_info.delete_time = CFReadFix (fp);
-		objP->ctype.expl_info.delete_objnum = CFReadShort (fp);
-		objP->ctype.expl_info.attach_parent = CFReadShort (fp);
-		objP->ctype.expl_info.prev_attach = CFReadShort (fp);
-		objP->ctype.expl_info.next_attach = CFReadShort (fp);
+		objP->cType.explInfo.nSpawnTime = CFReadFix (fp);
+		objP->cType.explInfo.nDeleteTime = CFReadFix (fp);
+		objP->cType.explInfo.nDeleteObj = CFReadShort (fp);
+		objP->cType.explInfo.nAttachParent = CFReadShort (fp);
+		objP->cType.explInfo.nPrevAttach = CFReadShort (fp);
+		objP->cType.explInfo.nNextAttach = CFReadShort (fp);
 		break;
 
 	case CT_AI:
-		objP->ctype.ai_info.behavior = (ubyte) CFReadByte (fp);
-		CFRead (objP->ctype.ai_info.flags, 1, MAX_AI_FLAGS, fp);
-		objP->ctype.ai_info.hide_segment = CFReadShort (fp);
-		objP->ctype.ai_info.hide_index = CFReadShort (fp);
-		objP->ctype.ai_info.path_length = CFReadShort (fp);
-		objP->ctype.ai_info.cur_path_index = CFReadByte (fp);
-		objP->ctype.ai_info.dying_sound_playing = CFReadByte (fp);
-		objP->ctype.ai_info.danger_laser_num = CFReadShort (fp);
-		objP->ctype.ai_info.danger_laser_signature = CFReadInt (fp);
-		objP->ctype.ai_info.dying_start_time = CFReadFix (fp);
+		objP->cType.aiInfo.behavior = (ubyte) CFReadByte (fp);
+		CFRead (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS, fp);
+		objP->cType.aiInfo.hide_segment = CFReadShort (fp);
+		objP->cType.aiInfo.hide_index = CFReadShort (fp);
+		objP->cType.aiInfo.path_length = CFReadShort (fp);
+		objP->cType.aiInfo.cur_path_index = CFReadByte (fp);
+		objP->cType.aiInfo.dyingSound_playing = CFReadByte (fp);
+		objP->cType.aiInfo.danger_laser_num = CFReadShort (fp);
+		objP->cType.aiInfo.danger_laser_signature = CFReadInt (fp);
+		objP->cType.aiInfo.dying_startTime = CFReadFix (fp);
 		break;
 
 	case CT_LIGHT:
-		objP->ctype.light_info.intensity = CFReadFix (fp);
+		objP->cType.lightInfo.intensity = CFReadFix (fp);
 		break;
 
 	case CT_POWERUP:
-		objP->ctype.powerup_info.count = CFReadInt (fp);
-		objP->ctype.powerup_info.creation_time = CFReadFix (fp);
-		objP->ctype.powerup_info.flags = CFReadInt (fp);
+		objP->cType.powerupInfo.count = CFReadInt (fp);
+		objP->cType.powerupInfo.creationTime = CFReadFix (fp);
+		objP->cType.powerupInfo.flags = CFReadInt (fp);
 		break;
 	}
-switch (objP->render_type) {
+switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		objP->rtype.pobj_info.model_num = CFReadInt (fp);
+		objP->rType.polyObjInfo.nModel = CFReadInt (fp);
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			CFReadAngVec (objP->rtype.pobj_info.anim_angles + i, fp);
-		objP->rtype.pobj_info.subobj_flags = CFReadInt (fp);
-		objP->rtype.pobj_info.tmap_override = CFReadInt (fp);
-		objP->rtype.pobj_info.alt_textures = CFReadInt (fp);
+			CFReadAngVec (objP->rType.polyObjInfo.animAngles + i, fp);
+		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt (fp);
+		objP->rType.polyObjInfo.nTexOverride = CFReadInt (fp);
+		objP->rType.polyObjInfo.nAltTextures = CFReadInt (fp);
 		break;
 		}
 	case RT_WEAPON_VCLIP:
@@ -2225,9 +2227,9 @@ switch (objP->render_type) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		objP->rtype.vclip_info.nClipIndex = CFReadInt (fp);
-		objP->rtype.vclip_info.xFrameTime = CFReadFix (fp);
-		objP->rtype.vclip_info.nCurFrame = CFReadByte (fp);
+		objP->rType.vClipInfo.nClipIndex = CFReadInt (fp);
+		objP->rType.vClipInfo.xFrameTime = CFReadFix (fp);
+		objP->rType.vClipInfo.nCurFrame = CFReadByte (fp);
 		break;
 
 	case RT_LASER:
@@ -2239,26 +2241,26 @@ switch (objP->render_type) {
 
 void StateRestoreWall (wall *wallP, CFILE *fp)
 {
-wallP->segnum = CFReadInt (fp);
-wallP->sidenum = CFReadInt (fp);
+wallP->nSegment = CFReadInt (fp);
+wallP->nSide = CFReadInt (fp);
 wallP->hps = CFReadFix (fp);    
 wallP->linked_wall = CFReadInt (fp);
-wallP->type = (ubyte) CFReadByte (fp);       
+wallP->nType = (ubyte) CFReadByte (fp);       
 wallP->flags = (ubyte) CFReadByte (fp);      
 wallP->state = (ubyte) CFReadByte (fp);      
-wallP->trigger = (ubyte) CFReadByte (fp);    
+wallP->tTrigger = (ubyte) CFReadByte (fp);    
 wallP->clip_num = CFReadByte (fp);   
 wallP->keys = (ubyte) CFReadByte (fp);       
 wallP->controlling_trigger = CFReadByte (fp);
-wallP->cloak_value = CFReadByte (fp); 
+wallP->cloakValue = CFReadByte (fp); 
 }
 
 //------------------------------------------------------------------------------
 
 void StateRestoreExplWall (expl_wall *wallP, CFILE *fp)
 {
-wallP->segnum = CFReadInt (fp);
-wallP->sidenum = CFReadInt (fp);
+wallP->nSegment = CFReadInt (fp);
+wallP->nSide = CFReadInt (fp);
 wallP->time = CFReadFix (fp);    
 }
 
@@ -2293,28 +2295,28 @@ doorP->time = CFReadFix (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreTrigger (trigger *triggerP, CFILE *fp)
+void StateRestoreTrigger (tTrigger *triggerP, CFILE *fp)
 {
 	int	i;
 
-triggerP->type = (ubyte) CFReadByte (fp); 
+triggerP->nType = (ubyte) CFReadByte (fp); 
 triggerP->flags = (ubyte) CFReadByte (fp); 
-triggerP->num_links = CFReadByte (fp);
+triggerP->nLinks = CFReadByte (fp);
 triggerP->value = CFReadFix (fp);
 triggerP->time = CFReadFix (fp);
 for (i = 0; i < MAX_WALLS_PER_LINK; i++) {
-	triggerP->seg [i] = CFReadShort (fp);
-	triggerP->side [i] = CFReadShort (fp);
+	triggerP->nSegment [i] = CFReadShort (fp);
+	triggerP->nSide [i] = CFReadShort (fp);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void StateRestoreObjTriggerRef (obj_trigger_ref *refP, CFILE *fp)
+void StateRestoreObjTriggerRef (tObjTriggerRef *refP, CFILE *fp)
 {
 refP->prev = CFReadShort (fp);
 refP->next = CFReadShort (fp);
-refP->objnum = CFReadShort (fp);
+refP->nObject = CFReadShort (fp);
 }
 
 //------------------------------------------------------------------------------
@@ -2324,10 +2326,10 @@ void StateRestoreMatCen (matcen_info *matcenP, CFILE *fp)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	matcenP->robot_flags [i] = CFReadInt (fp);
+	matcenP->robotFlags [i] = CFReadInt (fp);
 matcenP->hit_points = CFReadFix (fp);
 matcenP->interval = CFReadFix (fp);
-matcenP->segnum = CFReadShort (fp);
+matcenP->nSegment = CFReadShort (fp);
 matcenP->fuelcen_num = CFReadShort (fp);
 }
 
@@ -2336,27 +2338,27 @@ matcenP->fuelcen_num = CFReadShort (fp);
 void StateRestoreFuelCen (fuelcen_info *fuelcenP, CFILE *fp)
 {
 fuelcenP->Type = CFReadInt (fp);
-fuelcenP->segnum = CFReadInt (fp);
+fuelcenP->nSegment = CFReadInt (fp);
 fuelcenP->Flag = CFReadByte (fp);
 fuelcenP->Enabled = CFReadByte (fp);
 fuelcenP->Lives = CFReadByte (fp);
 fuelcenP->Capacity = CFReadFix (fp);
 fuelcenP->MaxCapacity = CFReadFix (fp);
 fuelcenP->Timer = CFReadFix (fp);
-fuelcenP->Disable_time = CFReadFix (fp);
+fuelcenP->DisableTime = CFReadFix (fp);
 CFReadVector (&fuelcenP->Center, fp);
 }
 
 //------------------------------------------------------------------------------
 
-void StateRestoreReactorTrigger (reactor_triggers *triggerP, CFILE *fp)
+void StateRestoreReactorTrigger (tReactorTriggers *triggerP, CFILE *fp)
 {
 	int	i;
 
-triggerP->num_links = CFReadShort (fp);
+triggerP->nLinks = CFReadShort (fp);
 for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
-	triggerP->seg [i] = CFReadShort (fp);
-	triggerP->side [i] = CFReadShort (fp);
+	triggerP->nSegment [i] = CFReadShort (fp);
+	triggerP->nSide [i] = CFReadShort (fp);
 	}
 }
 
@@ -2372,6 +2374,7 @@ int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRe
 	wall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		h, i, j, fpos;
+	short		nTexture;
 
 bBetweenLevels = CFReadInt (fp);
 Assert (bBetweenLevels == 0);	//between levels save ripped out
@@ -2413,7 +2416,7 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 if (bSecretRestore != 1)	//either no secret restore, or player died in scret level
 	StateRestorePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
 else {
@@ -2421,7 +2424,7 @@ else {
 	StateRestorePlayer (&retPlayer, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].objnum = nLocalObjNum;
+gameData.multi.players [gameData.multi.nLocalPlayer].nObject = nLocalObjNum;
 strcpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
@@ -2467,8 +2470,8 @@ if (!bBetweenLevels)	{
 		return 0;
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 		StateRestoreWall (wallP, fp);
-		if (wallP->type == WALL_OPEN)
-			DigiKillSoundLinkedToSegment ((short) wallP->segnum, (short) wallP->sidenum, -1);	//-1 means kill any sound
+		if (wallP->nType == WALL_OPEN)
+			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
 	fpos = CFTell (fp);
 	//Restore exploding wall info
@@ -2488,13 +2491,13 @@ if (!bBetweenLevels)	{
 	for (i = 0; i < gameData.walls.nCloaking; i++)
 		StateRestoreCloakingWall (gameData.walls.cloaking + i, fp);
 	fpos = CFTell (fp);
-	//Restore trigger info
+	//Restore tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers, fp))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		StateRestoreTrigger (gameData.trigs.triggers + i, fp);
 	fpos = CFTell (fp);
-	//Restore object trigger info
+	//Restore tObject tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers, fp))
 		return 0;
 	if (gameData.trigs.nObjTriggers > 0) {
@@ -2511,9 +2514,11 @@ if (!bBetweenLevels)	{
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
 		for (j = 0; j < 6; j++)	{
-			gameData.segs.segments [i].sides [j].wall_num = CFReadShort (fp);
-			gameData.segs.segments [i].sides [j].tmap_num = CFReadShort (fp);
-			gameData.segs.segments [i].sides [j].tmap_num2 = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nWall = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nBaseTex = CFReadShort (fp);
+			nTexture = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nOvlTex = nTexture & 0x3fff;
+			gameData.segs.segments [i].sides [j].nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
 	fpos = CFTell (fp);
@@ -2548,7 +2553,7 @@ if (!bBetweenLevels)	{
 	gameData.app.fusion.xAutoFireTime = 0;
 	xNextLaserFireTime = gameData.time.xGame;
 	xNextMissileFireTime = gameData.time.xGame;
-	Last_laser_fired_time = gameData.time.xGame;
+	Last_laser_firedTime = gameData.time.xGame;
 	}
 gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) CFReadInt (fp);
@@ -2558,7 +2563,7 @@ gameStates.app.bLunacy = CFReadInt (fp);
 if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
-CFRead (gameData.marker.object, sizeof (gameData.marker.object), 1, fp);
+CFRead (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
 CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 
@@ -2603,6 +2608,7 @@ int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRe
 	wall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		i, j;
+	short		nTexture;
 
 CFRead (&bBetweenLevels, sizeof (int), 1, fp);
 Assert (bBetweenLevels == 0);	//between levels save ripped out
@@ -2639,7 +2645,7 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 if (bSecretRestore != 1)	//either no secret restore, or player died in scret level
 	CFRead (gameData.multi.players + gameData.multi.nLocalPlayer, sizeof (player), 1, fp);
 else {
@@ -2647,7 +2653,7 @@ else {
 	CFRead (&retPlayer, sizeof (player), 1, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].objnum = nLocalObjNum;
+gameData.multi.players [gameData.multi.nLocalPlayer].nObject = nLocalObjNum;
 strcpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
@@ -2671,7 +2677,7 @@ if (!bBetweenLevels)	{
 	//Read objects, and pop 'em into their respective segments.
 	CFRead (&i, sizeof (int), 1, fp);
 	gameData.objs.nLastObject = i - 1;
-	CFRead (gameData.objs.objects, sizeof (object), i, fp);
+	CFRead (gameData.objs.objects, sizeof (tObject), i, fp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	StateFixObjects ();
 	SpecialResetObjects ();
@@ -2691,8 +2697,8 @@ if (!bBetweenLevels)	{
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++)
-		if (wallP->type == WALL_OPEN)
-			DigiKillSoundLinkedToSegment ((short) wallP->segnum, (short) wallP->sidenum, -1);	//-1 means kill any sound
+		if (wallP->nType == WALL_OPEN)
+			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info
 	if (sgVersion >= 10) {
 		CFRead (&i, sizeof (int), 1, fp);
@@ -2707,17 +2713,17 @@ if (!bBetweenLevels)	{
 			return 0;
 		CFRead (gameData.walls.cloaking, sizeof (cloaking_wall), gameData.walls.nCloaking, fp);
 		}
-	//Restore trigger info
+	//Restore tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers, fp))
 		return 0;
-	CFRead (gameData.trigs.triggers, sizeof (trigger), gameData.trigs.nTriggers, fp);
+	CFRead (gameData.trigs.triggers, sizeof (tTrigger), gameData.trigs.nTriggers, fp);
 	if (sgVersion >= 26) {
-		//Restore object trigger info
+		//Restore tObject tTrigger info
 
 		CFRead (&gameData.trigs.nObjTriggers, sizeof (gameData.trigs.nObjTriggers), 1, fp);
 		if (gameData.trigs.nObjTriggers > 0) {
-			CFRead (gameData.trigs.objTriggers, sizeof (trigger), gameData.trigs.nObjTriggers, fp);
-			CFRead (gameData.trigs.objTriggerRefs, sizeof (obj_trigger_ref), gameData.trigs.nObjTriggers, fp);
+			CFRead (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, fp);
+			CFRead (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, fp);
 			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), MAX_OBJECTS_D2X, fp);
 			}
 		else
@@ -2726,9 +2732,11 @@ if (!bBetweenLevels)	{
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
 		for (j = 0; j < 6; j++)	{
-			gameData.segs.segments [i].sides [j].wall_num = CFReadShort (fp);
-			gameData.segs.segments [i].sides [j].tmap_num = CFReadShort (fp);
-			gameData.segs.segments [i].sides [j].tmap_num2 = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nWall = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nBaseTex = CFReadShort (fp);
+			nTexture = CFReadShort (fp);
+			gameData.segs.segments [i].sides [j].nOvlTex = nTexture & 0x3fff;
+			gameData.segs.segments [i].sides [j].nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
 //Restore the fuelcen info
@@ -2737,7 +2745,7 @@ if (!bBetweenLevels)	{
 	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nRobotCenters, fp))
 		return 0;
 	CFRead (gameData.matCens.robotCenters, sizeof (matcen_info), gameData.matCens.nRobotCenters, fp);
-	CFRead (&gameData.reactor.triggers, sizeof (reactor_triggers), 1, fp);
+	CFRead (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	if (CFReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters, fp))
 		return 0;
 	CFRead (gameData.matCens.fuelCenters, sizeof (fuelcen_info), gameData.matCens.nFuelCenters, fp);
@@ -2758,7 +2766,7 @@ if (!bBetweenLevels)	{
 	gameData.app.fusion.xAutoFireTime = 0;
 	xNextLaserFireTime = gameData.time.xGame;
 	xNextMissileFireTime = gameData.time.xGame;
-	Last_laser_fired_time = gameData.time.xGame;
+	Last_laser_firedTime = gameData.time.xGame;
 
 }
 gameData.app.nStateGameId = 0;
@@ -2773,7 +2781,7 @@ if (sgVersion >= 7)	{
 }
 
 if (sgVersion >= 17) {
-	CFRead (gameData.marker.object, sizeof (gameData.marker.object), 1, fp);
+	CFRead (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
 	CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 	CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 }
@@ -2783,9 +2791,9 @@ else {
 	// skip dummy info
 	CFRead (&num, sizeof (int), 1, fp);       //was NumOfMarkers
 	CFRead (&dummy, sizeof (int), 1, fp);     //was CurMarker
-	CFSeek (fp, num * (sizeof (vms_vector) + 40), SEEK_CUR);
+	CFSeek (fp, num * (sizeof (vmsVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
-		gameData.marker.object [num] = -1;
+		gameData.marker.tObject [num] = -1;
 }
 
 if (sgVersion >= 11) {
@@ -2817,7 +2825,7 @@ if (sgVersion >= 12) {
 if (sgVersion >= 16) {
 	CFRead (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	ApplyAllChangedLight ();
-	//ComputeAllStaticLight ();	//	set static_light field in segment struct.  See note at that function.
+	//ComputeAllStaticLight ();	//	set static_light field in tSegment struct.  See note at that function.
 	}
 else
 	memset (gameData.render.lights.subtracted, 0, sizeof (gameData.render.lights.subtracted));
@@ -2886,14 +2894,14 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
 	  if (gameData.multi.players [i].connected != 1) {
 			NetworkDisconnectPlayer (i);
-  			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [i].objnum);
+  			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [i].nObject);
 	      }
 		}
 	}
 #endif
 gameData.objs.viewer = 
 gameData.objs.console = 
-	gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+	gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 StartTime ();
 return 1;
 }
@@ -2907,14 +2915,14 @@ return 1;
 void ComputeAllStaticLight (void)
 {
 	int		h, i, j, k;
-	segment	*segP;
-	side		*sideP;
+	tSegment	*segP;
+	tSide		*sideP;
 	fix		total_light;
 
 	for (i=0, segP = gameData.segs.segments; i<=gameData.segs.nLastSegment; i++, segP++) {
 		total_light = 0;
 		for (h = j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-			if ((segP->children [j] < 0) || IS_WALL (sideP->wall_num)) {
+			if ((segP->children [j] < 0) || IS_WALL (sideP->nWall)) {
 				h++;
 				for (k = 0; k < 4; k++)
 					total_light += sideP->uvls [k].l;

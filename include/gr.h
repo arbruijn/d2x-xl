@@ -166,7 +166,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * added gr_change_mode
  *
  * Revision 1.3  1993/09/08  13:56:03  matt
- * Put 'if' block around body of file; added bitmap type BM_RGB15
+ * Put 'if' block around body of file; added bitmap nType BM_RGB15
  *
  * Revision 1.2  1993/09/08  13:02:14  john
  * Changed structure definitions a bit.
@@ -305,7 +305,7 @@ typedef struct _grs_bmProps {
 	short   x, y;		// Offset from parent's origin
 	short   w, h;		// width, height
 	short   rowsize;	// unsigned char offset to next row
-	sbyte	  type;		// 0=Linear, 1=ModeX, 2=SVGA
+	sbyte	  nType;		// 0=Linear, 1=ModeX, 2=SVGA
 	sbyte	  flags;			
 } grs_bmProps;
 
@@ -340,7 +340,7 @@ typedef struct _grs_bitmap {
 	tRgbColorb		bm_avgRGB;
 	ubyte				bm_wallAnim :1;
 	ubyte				bm_fromPog :1;
-	ubyte				bm_type :3;
+	ubyte				bmType :3;
 
 	struct _ogl_texture	*glTexture;
 	union {
@@ -358,14 +358,14 @@ typedef struct _grs_bitmap {
 
 static inline grs_bitmap *BmCurFrame (grs_bitmap *bmP)
 {
-return ((bmP->bm_type == BM_TYPE_ALT) && BM_CURFRAME (bmP)) ? BM_CURFRAME (bmP) : bmP;
+return ((bmP->bmType == BM_TYPE_ALT) && BM_CURFRAME (bmP)) ? BM_CURFRAME (bmP) : bmP;
 }
 
 static inline grs_bitmap *BmOverride (grs_bitmap *bmP)
 {
 if (!bmP)
 	return bmP;
-if (bmP->bm_type == BM_TYPE_STD) {
+if (bmP->bmType == BM_TYPE_STD) {
 	if (!BM_OVERRIDE (bmP))
 		return bmP;
 	bmP = BM_OVERRIDE (bmP);
@@ -377,7 +377,7 @@ return BmCurFrame (bmP);
 typedef struct _grs_font {
 	short       ft_w;           // Width in pixels
 	short       ft_h;           // Height in pixels
-	short       ft_flags;       // Proportional?
+	short       ftFlags;       // Proportional?
 	short       ft_baseline;    //
 	ubyte       ft_minchar;     // First char defined by this font
 	ubyte       ft_maxchar;     // Last char defined by this font
@@ -468,7 +468,7 @@ void _CDECL_ GrClose(void);
 
 grs_canvas *GrCreateCanvas(int w, int h);
 #if defined(POLY_ACC)
-grs_canvas *GrCreateCanvas2(int w, int h, int type);
+grs_canvas *GrCreateCanvas2(int w, int h, int nType);
 #endif /* def POLY_ACC */
 
 // Creates a canvas that is part of another canvas.  this can be used to make
@@ -508,8 +508,8 @@ grs_bitmap *GrCreateBitmap(int w, int h, int bTGA);
 grs_bitmap *GrCreateBitmapSub (int w, int h, unsigned char * raw_data, int bTGA );
 
 #if defined(POLY_ACC)
-// Allocates a bitmap of a specific type. data is either NULL or raw data.
-grs_bitmap *GrCreateBitmap2(int w, int h, int type, void *data );
+// Allocates a bitmap of a specific nType. data is either NULL or raw data.
+grs_bitmap *GrCreateBitmap2(int w, int h, int nType, void *data );
 #endif /* def POLY_ACC */
 
 // Creates a bitmap which is part of another bitmap
@@ -680,7 +680,7 @@ grs_bitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int n
 int GetCenteredX (char *s);
 
 //  From roller.c
-void RotateBitmap(grs_bitmap *bp, grs_point *vertbuf, int light_value);
+void RotateBitmap(grs_bitmap *bp, grs_point *vertbuf, int lightValue);
 
 // From scale.c
 void scale_bitmap(grs_bitmap *bp, grs_point *vertbuf, int orientation );
@@ -710,7 +710,7 @@ extern void gr_vesa_update( grs_bitmap * source1, grs_bitmap * dest, grs_bitmap 
 extern void gr_snow_out(int num_dots);
 
 extern void TestRotateBitmap(void);
-extern void RotateBitmap(grs_bitmap *bp, grs_point *vertbuf, int light_value);
+extern void RotateBitmap(grs_bitmap *bp, grs_point *vertbuf, int lightValue);
 
 extern ubyte grFadeTable[256*GR_FADE_LEVELS];
 extern ubyte grInverseTable[32*32*32];
@@ -769,7 +769,7 @@ void GrMergeTextures2( ubyte * lower, ubyte * upper, ubyte * dest, ushort width,
 void GrMergeTextures3( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale );
 
 void GrUpdate (int bClear);
-void SaveScreenShot (unsigned char *buf, int automap_flag);
+void SaveScreenShot (unsigned char *buf, int automapFlag);
 
 extern int bSaveScreenShot;
 /*

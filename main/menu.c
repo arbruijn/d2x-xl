@@ -159,7 +159,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //ADD_MENU ("Start netgame...", MENU_START_NETGAME, -1 );
 //ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1 );
 
-//unused - extern int last_joy_time;               //last time the joystick was used
+//unused - extern int last_joyTime;               //last time the joystick was used
 #ifndef NDEBUG
 extern int Speedtest_on;
 #else
@@ -306,8 +306,8 @@ if (*last_key==KEY_ESC)
 
 if ( bAllowAutoDemo ) {
 	curtime = TimerGetApproxSeconds ();
-	//if (( (keyd_time_when_last_pressed+i2f (20)) < curtime) && ((last_joy_time+i2f (20)) < curtime) && (!Speedtest_on)  ) {
-	if (( (keyd_time_when_last_pressed+i2f (25)) < curtime) && (!Speedtest_on)  ) {
+	//if (( (keydTime_when_last_pressed+i2f (20)) < curtime) && ((last_joyTime+i2f (20)) < curtime) && (!Speedtest_on)  ) {
+	if (( (keydTime_when_last_pressed+i2f (25)) < curtime) && (!Speedtest_on)  ) {
 		int n_demos;
 
 		n_demos = NDCountDemos ();
@@ -335,7 +335,7 @@ try_again:;
 			}
 		else {
 			WIN (HideCursorW ());
-			keyd_time_when_last_pressed = curtime;                  // Reset timer so that disk won't thrash if no demos.
+			keydTime_when_last_pressed = curtime;                  // Reset timer so that disk won't thrash if no demos.
 			NDStartPlayback (NULL);           // Randomly pick a file
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				SetFunctionMode (FMODE_GAME);
@@ -349,7 +349,7 @@ try_again:;
 }
 
 //------------------------------------------------------------------------------
-//static int First_time = 1;
+//static int FirstTime = 1;
 static int main_menu_choice = 0;
 
 int nD1Opt = -1, nD2Opt = -1;
@@ -409,7 +409,7 @@ ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 menu_choice [opt++] = MENU_QUIT;
 #ifndef RELEASE
 if (!(gameData.app.nGameMode & GM_MULTI ))   {
-	//m [opt].type=NM_TYPE_TEXT;
+	//m [opt].nType=NM_TYPE_TEXT;
 	//m [opt++].text=" Debug options:";
 
 //		ADD_MENU ("  Load level...", MENU_LOAD_LEVEL , KEY_N);
@@ -467,7 +467,7 @@ if (gameData.multi.autoNG.bValid) {
 
 do {
 	CreateMainMenu (m, menu_choice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
-	keyd_time_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
+	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (main_menu_choice < 0 )
 		main_menu_choice = 0;
 	gameStates.menus.bDrawCopyright = 1;
@@ -635,14 +635,14 @@ switch (select) {
 	case MENU_LOAD_LEVEL: {
 		newmenu_item m;
 		char text[10]="";
-		int new_level_num;
+		int newLevel_num;
 
-		m.type=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
+		m.nType=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
 		ExecMenu ( NULL, "Enter level to load", 1, &m, NULL, NULL );
-		new_level_num = atoi (m.text);
-		if (new_level_num!=0 && new_level_num>=gameData.missions.nLastSecretLevel && new_level_num<=gameData.missions.nLastLevel)  {
+		newLevel_num = atoi (m.text);
+		if (newLevel_num!=0 && newLevel_num>=gameData.missions.nLastSecretLevel && newLevel_num<=gameData.missions.nLastLevel)  {
 			GrPaletteFadeOut (NULL, 32, 0 );
-			StartNewGame (new_level_num);
+			StartNewGame (newLevel_num);
 		}
 
 		break;
@@ -753,11 +753,11 @@ int DifficultyMenu ()
 	newmenu_item m [5];
 
 memset (m, 0, sizeof (m));
-m [0].type=NM_TYPE_MENU; m [0].text=MENU_DIFFICULTY_TEXT (0);
-m [1].type=NM_TYPE_MENU; m [1].text=MENU_DIFFICULTY_TEXT (1);
-m [2].type=NM_TYPE_MENU; m [2].text=MENU_DIFFICULTY_TEXT (2);
-m [3].type=NM_TYPE_MENU; m [3].text=MENU_DIFFICULTY_TEXT (3);
-m [4].type=NM_TYPE_MENU; m [4].text=MENU_DIFFICULTY_TEXT (4);
+m [0].nType=NM_TYPE_MENU; m [0].text=MENU_DIFFICULTY_TEXT (0);
+m [1].nType=NM_TYPE_MENU; m [1].text=MENU_DIFFICULTY_TEXT (1);
+m [2].nType=NM_TYPE_MENU; m [2].text=MENU_DIFFICULTY_TEXT (2);
+m [3].nType=NM_TYPE_MENU; m [3].text=MENU_DIFFICULTY_TEXT (3);
+m [4].nType=NM_TYPE_MENU; m [4].text=MENU_DIFFICULTY_TEXT (4);
 i = ExecMenu1 ( NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
 
 if (i <= -1)
@@ -776,11 +776,11 @@ return 1;
 ubyte   Render_depths[NUM_DETAIL_LEVELS-1] =                        {15, 31, 63, 127, 255};
 sbyte   Max_perspective_depths[NUM_DETAIL_LEVELS-1] =               { 1,  2,  3,  5,  8};
 sbyte   Max_linear_depths[NUM_DETAIL_LEVELS-1] =                    { 3,  5,  7, 10, 50};
-sbyte   Max_linear_depths_objects[NUM_DETAIL_LEVELS-1] =            { 1,  2,  3,  7, 20};
-sbyte   Max_debris_objects_list[NUM_DETAIL_LEVELS-1] =              { 2,  4,  7, 10, 15};
-sbyte   Max_objects_onscreen_detailed_list[NUM_DETAIL_LEVELS-1] =   { 2,  4,  7, 10, 15};
+sbyte   Max_linear_depthsObjects[NUM_DETAIL_LEVELS-1] =            { 1,  2,  3,  7, 20};
+sbyte   Max_debrisObjects_list[NUM_DETAIL_LEVELS-1] =              { 2,  4,  7, 10, 15};
+sbyte   MaxObjects_onscreen_detailed_list[NUM_DETAIL_LEVELS-1] =   { 2,  4,  7, 10, 15};
 sbyte   Smts_list[NUM_DETAIL_LEVELS-1] =                            { 2,  4,  8, 16, 50};   //      threshold for models to go to lower detail model, gets multiplied by objP->size
-sbyte   Max_sound_channels[NUM_DETAIL_LEVELS-1] =                   { 2,  4,  8, 12, 16};
+sbyte   MaxSound_channels[NUM_DETAIL_LEVELS-1] =                   { 2,  4,  8, 12, 16};
 
 //      -----------------------------------------------------------------------------
 //      Set detail level based stuff.
@@ -793,11 +793,11 @@ if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
 	gameStates.render.detail.nRenderDepth = Render_depths[nDetailLevel];
 	gameStates.render.detail.nMaxPerspectiveDepth = Max_perspective_depths[nDetailLevel];
 	gameStates.render.detail.nMaxLinearDepth = Max_linear_depths[nDetailLevel];
-	gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depths_objects[nDetailLevel];
-	gameStates.render.detail.nMaxDebrisObjects = Max_debris_objects_list[nDetailLevel];
-	gameStates.render.detail.nMaxObjectsOnScreenDetailed = Max_objects_onscreen_detailed_list[nDetailLevel];
+	gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depthsObjects[nDetailLevel];
+	gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[nDetailLevel];
+	gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[nDetailLevel];
 	gameData.models.nSimpleModelThresholdScale = Smts_list[nDetailLevel];
-	DigiSetMaxChannels ( Max_sound_channels[ nDetailLevel ] );
+	DigiSetMaxChannels ( MaxSound_channels[ nDetailLevel ] );
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
 	gameStates.render.detail.nWallRenderDepth = nDetailLevel;
@@ -881,11 +881,11 @@ void InitCustomDetails (void)
 gameStates.render.detail.nRenderDepth = Render_depths[gameStates.render.detail.nWallRenderDepth];
 gameStates.render.detail.nMaxPerspectiveDepth = Max_perspective_depths[gameStates.render.detail.nWallDetail];
 gameStates.render.detail.nMaxLinearDepth = Max_linear_depths[gameStates.render.detail.nWallDetail];
-gameStates.render.detail.nMaxDebrisObjects = Max_debris_objects_list[gameStates.render.detail.nDebrisAmount];
-gameStates.render.detail.nMaxObjectsOnScreenDetailed = Max_objects_onscreen_detailed_list[gameStates.render.detail.nObjectComplexity];
+gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[gameStates.render.detail.nDebrisAmount];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[gameStates.render.detail.nObjectComplexity];
 gameData.models.nSimpleModelThresholdScale = Smts_list[gameStates.render.detail.nObjectComplexity];
-gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depths_objects[gameStates.render.detail.nObjectDetail];
-DigiSetMaxChannels ( Max_sound_channels[gameStates.sound.nMaxSoundChannels ] );
+gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depthsObjects[gameStates.render.detail.nObjectDetail];
+DigiSetMaxChannels ( MaxSound_channels[gameStates.sound.nMaxSoundChannels ] );
 }
 
 #define	DL_MAX	10
@@ -1077,7 +1077,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 #define ADD_RES_OPT(_t) {ADD_RADIO (opt, _t, 0, -1, 0, NULL); opt++;}
-//{m [opt].type = NM_TYPE_RADIO; m [opt].text = (_t); m [opt].key = -1; m [opt].value = 0; opt++;}
+//{m [opt].nType = NM_TYPE_RADIO; m [opt].text = (_t); m [opt].key = -1; m [opt].value = 0; opt++;}
 
 extern int VGA_current_mode;
 
@@ -1200,7 +1200,7 @@ do {
 
 void NewGameMenu ()
 {
-	int new_level_num, player_highest_level;
+	int newLevel_num, player_highestLevel;
 	int n_missions;
 	char * m [MAX_MISSIONS];
 	int i, nFolder, default_mission = 0;
@@ -1242,15 +1242,15 @@ void NewGameMenu ()
 	}
 	gameStates.app.bD1Mission = (gameData.missions.list [nMission].descent_version == 1);
 	gameData.missions.nLastMission = nMission;
-	new_level_num = 1;
+	newLevel_num = 1;
 
 	LogErr ("   getting highest level allowed to play\n");
-	player_highest_level = GetHighestLevel ();
+	player_highestLevel = GetHighestLevel ();
 
-	if (player_highest_level > gameData.missions.nLastLevel)
-		player_highest_level = gameData.missions.nLastLevel;
+	if (player_highestLevel > gameData.missions.nLastLevel)
+		player_highestLevel = gameData.missions.nLastLevel;
 
-	if (player_highest_level > 1) {
+	if (player_highestLevel > 1) {
 		newmenu_item m [4];
 		char info_text[80];
 		char num_text[10];
@@ -1258,20 +1258,20 @@ void NewGameMenu ()
 		int nItems;
 
 try_again:
-		sprintf (info_text, "%s %d", TXT_START_ANY_LEVEL, player_highest_level);
+		sprintf (info_text, "%s %d", TXT_START_ANY_LEVEL, player_highestLevel);
 
 		memset (m, 0, sizeof (m));
-		m [0].type=NM_TYPE_TEXT; 
+		m [0].nType=NM_TYPE_TEXT; 
 		m [0].text = info_text;
-		m [1].type=NM_TYPE_INPUT; 
+		m [1].nType=NM_TYPE_INPUT; 
 		m [1].text_len = 10; 
 		m [1].text = num_text;
 		nItems = 2;
 
 #ifdef WINDOWS
-		m [2].type = NM_TYPE_TEXT; 
+		m [2].nType = NM_TYPE_TEXT; 
 		m [2].text = "";
-		m [3].type = NM_TYPE_MENU; 
+		m [3].nType = NM_TYPE_MENU; 
 		m [3].text = "          Ok";
 		nItems = 4;
 #endif
@@ -1280,8 +1280,8 @@ try_again:
 		choice = ExecMenu ( NULL, TXT_SELECT_START_LEV, nItems, m, NULL, NULL );
 		if (choice==-1 || m [1].text[0]==0)
 			return;
-		new_level_num = atoi (m [1].text);
-		if ((new_level_num <= 0) || (new_level_num > player_highest_level)) {
+		newLevel_num = atoi (m [1].text);
+		if ((newLevel_num <= 0) || (newLevel_num > player_highestLevel)) {
 			m [0].text = TXT_ENTER_TO_CONT;
 			ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 			goto try_again;
@@ -1292,7 +1292,7 @@ try_again:
 	if (!DifficultyMenu ())
 		return;
 	GrPaletteFadeOut (NULL, 32, 0 );
-	if (!StartNewGame (new_level_num))
+	if (!StartNewGame (newLevel_num))
 		SetFunctionMode (FMODE_MENU);
 }
 
@@ -2086,7 +2086,7 @@ do {
 		}
 
 #ifdef _DEBUG
-	m [opt].type = NM_TYPE_TEXT;   
+	m [opt].nType = NM_TYPE_TEXT;   
 	m [opt++].text="";
 	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
 	optWireFrame = opt++;
@@ -3354,9 +3354,9 @@ void DoNewIPAddress ()
   int choice;
 
   	memset (m, 0, sizeof (m));
-	m [0].type=NM_TYPE_TEXT; 
+	m [0].nType=NM_TYPE_TEXT; 
   m [0].text = "Enter an address or hostname:";
-  m [1].type=NM_TYPE_INPUT; 
+  m [1].nType=NM_TYPE_INPUT; 
   m [1].text_len = 50; 
   m [1].text = IPText;
   IPText[0]=0;

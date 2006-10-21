@@ -675,7 +675,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.152  1994/07/21  13:11:19  matt
  * Ripped out remants of old demo system, and added demo only system that
- * disables object movement and game options from menu.
+ * disables tObject movement and game options from menu.
  *
  * Revision 1.151  1994/07/20  15:58:27  john
  * First installment of ipx stuff.
@@ -713,7 +713,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPORATION";
 
-#include <ctype.h>
+#include <cType.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1092,7 +1092,7 @@ void print_commandline_help ()
 	con_printf ((int) con_threshold.value, "  -legacyhomers     %s\n", "Turn off frame-rate independant homing missile turn rate");
 	con_printf ((int) con_threshold.value, "  -legacyinput      %s\n", "Turn off enhanced input handling");
 	con_printf ((int) con_threshold.value, "  -legacymouse      %s\n", "Turn off frame-rate independant mouse sensitivity");
-	con_printf ((int) con_threshold.value, "  -legacyrender     %s\n", "Turn off colored segment rendering");
+	con_printf ((int) con_threshold.value, "  -legacyrender     %s\n", "Turn off colored tSegment rendering");
 	con_printf ((int) con_threshold.value, "  -legacyzbuf       %s\n", "Turn off OpenGL depth buffer");
 	con_printf ((int) con_threshold.value, "  -legacyswitches   %s\n", "Turn off fault-tolerant switch handling");
 	con_printf ((int) con_threshold.value, "  -legacywalls      %s\n", "Turn off fault-tolerant wall handling");
@@ -1399,7 +1399,7 @@ if ((t = FindArg ("-ng_mission")) && (p = Args [t+1])) {
 	strncpy (gameData.multi.autoNG.szMission, Args [t+1], 12);
 	gameData.multi.autoNG.szMission [12] = '\0';
 	}
-if (t = FindArg ("-ng_level"))
+if (t = FindArg ("-ngLevel"))
 	gameData.multi.autoNG.nLevel = NumArg (t, 1);
 else
 	gameData.multi.autoNG.nLevel = 1;
@@ -1421,7 +1421,7 @@ if ((t = FindArg ("-ng_join")) && (p = Args [t+1])) {
 	strlwr (p);
 	gameData.multi.autoNG.bHost = !strcmp (p, "host");
 	}
-if ((t = FindArg ("-ng_type")) && (p = Args [t+1])) {
+if ((t = FindArg ("-ngType")) && (p = Args [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (!strcmp (p, pszTypes [t])) {
@@ -2974,7 +2974,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 #endif
 			if (gameStates.app.nFunctionMode == FMODE_GAME) {
 				gameData.app.nGameMode = GM_EDITOR;
-				editor_reset_stuff_on_level ();
+				editor_reset_stuff_onLevel ();
 				gameData.multi.nPlayers = 1;
 				}
 			break;

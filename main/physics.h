@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * New function (untested), set_thrust_from_velocity()
  *
  * Revision 1.28  1994/12/04  22:14:20  mike
- * apply instantaneous rotation to an object due to a force blow.
+ * apply instantaneous rotation to an tObject due to a force blow.
  *
  * Revision 1.27  1994/08/01  13:29:42  matt
  * Made fvi() check holes in transparent walls, and changed fvi() calling
@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.25  1994/07/13  21:48:05  matt
  * FVI() and physics now keep lists of segments passed through which the
- * trigger code uses.
+ * tTrigger code uses.
  *
  * Revision 1.24  1994/06/30  19:01:55  matt
  * Moved flying controls code from physics.c to controls.c
@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added new parm, ignore_obj, to FindVectorIntersection()
  *
  * Revision 1.20  1994/05/20  15:16:58  matt
- * Added new fvi return type; took out some troublesome (and troubling) asserts
+ * Added new fvi return nType; took out some troublesome (and troubling) asserts
  *
  *
  *
@@ -80,26 +80,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern int physSegList [MAX_FVI_SEGS], nPhysSegs;
 
 // Read contrls and set physics vars
-void ReadFlyingControls(object *obj);
+void ReadFlyingControls(tObject *obj);
 
-// Simulate a physics object for this frame
-void DoPhysicsSim(object *obj);
+// Simulate a physics tObject for this frame
+void DoPhysicsSim(tObject *obj);
 
-// tell us what the given object will do (as far as hiting walls) in
+// tell us what the given tObject will do (as far as hiting walls) in
 // the given time (in seconds) t.  Igores acceleration (sorry)
-// if check_objects is set, check with objects, else just with walls
-// returns fate, fills in hit time.  If fate==HIT_NONE, hit_time undefined
+// if checkObjects is set, check with objects, else just with walls
+// returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
 // Stuff hit_info with fvi data as set by FindVectorIntersection.
-// for fvi_flags, refer to fvi.h for the fvi query flags
-int physics_lookahead(object *obj, fix t, int fvi_flags, fix *hit_time, fvi_info *hit_info);
+// for fviFlags, refer to fvi.h for the fvi query flags
+int physics_lookahead(tObject *obj, fix t, int fviFlags, fix *hitTime, fvi_info *hit_info);
 
-// Applies an instantaneous force on an object, resulting in an instantaneous
+// Applies an instantaneous force on an tObject, resulting in an instantaneous
 // change in velocity.
-void PhysApplyForce(object *obj, vms_vector *force_vec);
-void PhysApplyRot(object *obj, vms_vector *force_vec);
+void PhysApplyForce(tObject *obj, vmsVector *force_vec);
+void PhysApplyRot(tObject *obj, vmsVector *force_vec);
 
-// this routine will set the thrust for an object to a value that will
-// (hopefully) maintain the object's current velocity
-void set_thrust_from_velocity(object *obj);
+// this routine will set the thrust for an tObject to a value that will
+// (hopefully) maintain the tObject's current velocity
+void set_thrust_from_velocity(tObject *obj);
 
 #endif /* _PHYSICS_H */

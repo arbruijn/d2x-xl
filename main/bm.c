@@ -127,7 +127,7 @@ int ComputeAvgPixel (grs_bitmap *newBm)
 	return GrFindClosestColor (palette, total_red, total_green, total_blue);
 }
 
-//---------------- Variables for object textures ----------------
+//---------------- Variables for tObject textures ----------------
 
 #ifdef FAST_FILE_IO
 #define ReadTMapInfoN(ti, n, fp) CFRead (ti, sizeof (tmap_info), n, fp)
@@ -291,7 +291,7 @@ BitmapIndexReadN (Gauges, t, fp);
 BitmapIndexReadN (Gauges_hires, t, fp);
 
 gameData.pig.tex.nObjBitmaps = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d object bitmap indices\n", gameData.pig.tex.nObjBitmaps);
+/*---*/LogErr ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, fp);
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
@@ -400,20 +400,20 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 	while (arg != NULL)
 		{
 		// Check all possible flags and defines.
-		if (*arg == '$') bm_flag = BM_NONE; // reset to no flags as default.
+		if (*arg == '$') bmFlag = BM_NONE; // reset to no flags as default.
 
-		IFTOK ("$COCKPIT") 			bm_flag = BM_COCKPIT;
-		else IFTOK ("$GAUGES")		{bm_flag = BM_GAUGES;   clip_count = 0;}
-		else IFTOK ("$GAUGES_HIRES"){bm_flag = BM_GAUGES_HIRES; clip_count = 0;}
-		else IFTOK ("$SOUND") 		bm_read_sound ();
-		else IFTOK ("$DOOR_ANIMS")	bm_flag = BM_WALL_ANIMS;
-		else IFTOK ("$WALL_ANIMS")	bm_flag = BM_WALL_ANIMS;
-		else IFTOK ("$TEXTURES") 	bm_flag = BM_TEXTURES;
-		else IFTOK ("$VCLIP")			{bm_flag = BM_VCLIP;		vlighting = 0;	clip_count = 0;}
-		else IFTOK ("$ECLIP")			{bm_flag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; crit_flag=0; sound_num=-1;}
-		else IFTOK ("$WCLIP")			{bm_flag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_open_sound=wall_close_sound=-1; tmap1_flag=0; wall_hidden=0;}
+		IFTOK ("$COCKPIT") 			bmFlag = BM_COCKPIT;
+		else IFTOK ("$GAUGES")		{bmFlag = BM_GAUGES;   clip_count = 0;}
+		else IFTOK ("$GAUGES_HIRES"){bmFlag = BM_GAUGES_HIRES; clip_count = 0;}
+		else IFTOK ("$SOUND") 		bm_readSound ();
+		else IFTOK ("$DOOR_ANIMS")	bmFlag = BM_WALL_ANIMS;
+		else IFTOK ("$WALL_ANIMS")	bmFlag = BM_WALL_ANIMS;
+		else IFTOK ("$TEXTURES") 	bmFlag = BM_TEXTURES;
+		else IFTOK ("$VCLIP")			{bmFlag = BM_VCLIP;		vlighting = 0;	clip_count = 0;}
+		else IFTOK ("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
+		else IFTOK ("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
-		else IFTOK ("$EFFECTS")		{bm_flag = BM_EFFECTS;	clip_num = 0;}
+		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	clip_num = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
 		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [texture_count-1].lighting = fl2f (get_float ();
@@ -433,28 +433,28 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("dest_eclip")		dest_eclip = get_int ();
 		else IFTOK ("dest_size")			dest_size = fl2f (get_float ();
 		else IFTOK ("crit_clip")			crit_clip = get_int ();
-		else IFTOK ("crit_flag")			crit_flag = get_int ();
-		else IFTOK ("sound_num") 		sound_num = get_int ();
+		else IFTOK ("critFlag")			critFlag = get_int ();
+		else IFTOK ("nSound") 		nSound = get_int ();
 		else IFTOK ("frames") 			frames = get_int ();
 		else IFTOK ("time") 				time = get_float ();
 		else IFTOK ("obj_eclip")			obj_eclip = get_int ();
-		else IFTOK ("hit_sound") 		hit_sound = get_int ();
-		else IFTOK ("abm_flag")			abm_flag = get_int ();
-		else IFTOK ("tmap1_flag")		tmap1_flag = get_int ();
+		else IFTOK ("hitSound") 		hitSound = get_int ();
+		else IFTOK ("abmFlag")			abmFlag = get_int ();
+		else IFTOK ("tmap1Flag")		tmap1Flag = get_int ();
 		else IFTOK ("vlighting")			vlighting = get_float ();
-		else IFTOK ("rod_flag")			rod_flag = get_int ();
+		else IFTOK ("rodFlag")			rodFlag = get_int ();
 		else IFTOK ("superx") 			get_int ();
-		else IFTOK ("open_sound") 		wall_open_sound = get_int ();
-		else IFTOK ("close_sound") 		wall_close_sound = get_int ();
+		else IFTOK ("openSound") 		wall_openSound = get_int ();
+		else IFTOK ("closeSound") 		wall_closeSound = get_int ();
 		else IFTOK ("explodes")	 		wall_explodes = get_int ();
 		else IFTOK ("blastable")	 		wall_blastable = get_int ();
 		else IFTOK ("hidden")	 			wall_hidden = get_int ();
-		else IFTOK ("$ROBOT_AI") 		bm_read_robot_ai ();
+		else IFTOK ("$ROBOT_AI") 		bm_readRobot_ai ();
 
 		else IFTOK ("$POWERUP")			{bm_read_powerup (0);		continue;}
 		else IFTOK ("$POWERUP_UNUSED")	{bm_read_powerup (1);		continue;}
 		else IFTOK ("$HOSTAGE")			{bm_read_hostage ();		continue;}
-		else IFTOK ("$ROBOT")				{bm_read_robot ();			continue;}
+		else IFTOK ("$ROBOT")				{bm_readRobot ();			continue;}
 		else IFTOK ("$WEAPON")			{bm_read_weapon (0);		continue;}
 		else IFTOK ("$WEAPON_UNUSED")	{bm_read_weapon (1);		continue;}
 		else IFTOK ("$REACTOR")			{bm_read_reactor ();		continue;}
@@ -503,23 +503,23 @@ void BMReadWeaponInfoD1N (CFILE * fp, int i)
 {
 	D1_weapon_info	*wiP = gameData.weapons.infoD1 + i;
 
-wiP->render_type = CFReadByte (fp);	
-wiP->model_num = CFReadByte (fp);
+wiP->renderType = CFReadByte (fp);	
+wiP->nModel = CFReadByte (fp);
 wiP->model_num_inner = CFReadByte (fp);	
 wiP->persistent = CFReadByte (fp);	
 wiP->flash_vclip = CFReadByte (fp);
-wiP->flash_sound = CFReadShort (fp);
+wiP->flashSound = CFReadShort (fp);
 wiP->robot_hit_vclip = CFReadByte (fp);
-wiP->robot_hit_sound = CFReadShort (fp);
+wiP->robot_hitSound = CFReadShort (fp);
 wiP->wall_hit_vclip = CFReadByte (fp);
-wiP->wall_hit_sound = CFReadShort (fp);
+wiP->wall_hitSound = CFReadShort (fp);
 wiP->fire_count = CFReadByte (fp);
 wiP->ammo_usage = CFReadByte (fp);	
 wiP->weapon_vclip = CFReadByte (fp);
 wiP->destroyable = CFReadByte (fp);
 wiP->matter = CFReadByte (fp);
 wiP->bounce = CFReadByte (fp);
-wiP->homing_flag = CFReadByte (fp);
+wiP->homingFlag = CFReadByte (fp);
 wiP->dum1 = CFReadByte (fp); 
 wiP->dum2 = CFReadByte (fp);
 wiP->dum3 = CFReadByte (fp);
@@ -566,11 +566,11 @@ void BMReadGameDataD1 (CFILE * fp)
 #if 1
 	D1_wclip			w;
 	D1_tmap_info	t;
-//	D1_robot_info	r;
+//	D1Robot_info	r;
 #endif
 	wclip				*pw;
 	tmap_info		*pt;
-	robot_info		*pr;
+	tRobotInfo		*pr;
 	polymodel		pm;
 	ubyte				tmpSounds [D1_MAX_SOUNDS];
 
@@ -578,7 +578,7 @@ CFSeek (fp, sizeof (int), SEEK_CUR);
 CFRead (&gameData.pig.tex.nTextures [1], sizeof (int), 1, fp);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
 /*---*/LogErr ("         Loading %d texture indices\n", j);
-//CFRead (gameData.pig.tex.bmIndex [1], sizeof (bitmap_index), D1_MAX_TEXTURES, fp);
+//CFRead (gameData.pig.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES, fp);
 BitmapIndexReadN (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, fp);
 /*---*/LogErr ("         Loading %d texture descriptions\n", j);
 for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
@@ -622,15 +622,15 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	pw->nFrameCount = CFReadShort (fp);
 	for (j = 0; j < D1_MAX_CLIP_FRAMES; j++)
 		pw->frames [j] = CFReadShort (fp);
-	pw->open_sound = CFReadShort (fp);
-	pw->close_sound = CFReadShort (fp);
+	pw->openSound = CFReadShort (fp);
+	pw->closeSound = CFReadShort (fp);
 	pw->flags = CFReadShort (fp);
 	CFRead (pw->filename, sizeof (w.filename), 1, fp);
 	pw->pad = (char) CFReadByte (fp);
 	}
 CFRead (&gameData.bots.nTypes [1], sizeof (int), 1, fp);
 /*---*/LogErr ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
-memcpy (gameData.bots.info [1], gameData.bots.info [0], MAX_ROBOT_TYPES * sizeof (robot_info));
+memcpy (gameData.bots.info [1], gameData.bots.info [0], MAX_ROBOT_TYPES * sizeof (tRobotInfo));
 if (!gameOpts->sound.bUseD1Sounds)
 	return;
 #if 1
@@ -638,7 +638,7 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 	//CFRead (&r, sizeof (r), 1, fp);
 	CFSeek (fp,
 		sizeof (int) * 3 + 
-		 (sizeof (vms_vector) + sizeof (ubyte)) * MAX_GUNS + 
+		 (sizeof (vmsVector) + sizeof (ubyte)) * MAX_GUNS + 
 		sizeof (short) * 5 +
 		sizeof (sbyte) * 7 +
 		sizeof (fix) * 4 +
@@ -646,31 +646,31 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 		sizeof (sbyte) * 2 * NDL,
 		SEEK_CUR);
 
-	pr->see_sound = (ubyte) CFReadByte (fp);
-	pr->attack_sound = (ubyte) CFReadByte (fp);
-	pr->claw_sound = (ubyte) CFReadByte (fp);
+	pr->seeSound = (ubyte) CFReadByte (fp);
+	pr->attackSound = (ubyte) CFReadByte (fp);
+	pr->clawSound = (ubyte) CFReadByte (fp);
 	CFSeek (fp,
 		JOINTLIST_SIZE * (MAX_GUNS + 1) * N_ANIM_STATES +
 		sizeof (int),
 		SEEK_CUR);
 #if 0
-	pr->taunt_sound = 0;
-	pr->model_num = r.model_num;
+	pr->tauntSound = 0;
+	pr->nModel = r.nModel;
 	memcpy (pr->gun_points, r.gun_points, sizeof (r.gun_points));
 	memcpy (pr->gun_submodels, r.gun_submodels, sizeof (r.gun_submodels));
-	pr->exp1_vclip_num = r.exp1_vclip_num;
-	pr->exp1_sound_num = r.exp1_sound_num;
-	pr->exp2_vclip_num = r.exp2_vclip_num;
-	pr->exp2_sound_num = r.exp2_sound_num;
-	pr->weapon_type = r.weapon_type;
-	pr->weapon_type2 = 0;
-	pr->n_guns = r.n_guns;
-	pr->contains_id = r.contains_id;
-	pr->contains_count = r.contains_count;
-	pr->contains_prob = r.contains_prob;
-	pr->contains_type = r.contains_type;
+	pr->nExp1VClip = r.nExp1VClip;
+	pr->nExp1Sound = r.nExp1Sound;
+	pr->nExp2VClip = r.nExp2VClip;
+	pr->nExp2Sound = r.nExp2Sound;
+	pr->nWeaponType = r.nWeaponType;
+	pr->nSecWeaponType = 0;
+	pr->nGuns = r.nGuns;
+	pr->containsId = r.containsId;
+	pr->containsCount = r.containsCount;
+	pr->containsProb = r.containsProb;
+	pr->containsType = r.containsType;
 	pr->kamikaze = 0;
-	pr->score_value = r.score_value;
+	pr->scoreValue = r.scoreValue;
 	pr->badass = 0;
 	pr->energy_drain = 0;
 	pr->lighting = r.lighting;
@@ -680,14 +680,14 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 	memcpy (pr->field_of_view, r.field_of_view, sizeof (r.field_of_view));
 	memcpy (pr->firing_wait, r.firing_wait, sizeof (r.firing_wait));
 	memset (pr->firing_wait2, 0, sizeof (pr->firing_wait2));
-	memcpy (pr->turn_time, r.turn_time, sizeof (r.turn_time));
+	memcpy (pr->turnTime, r.turnTime, sizeof (r.turnTime));
 	memcpy (pr->max_speed, r.max_speed, sizeof (r.max_speed));
-	memcpy (pr->circle_distance, r.circle_distance, sizeof (r.circle_distance));
+	memcpy (pr->circleDistance, r.circleDistance, sizeof (r.circleDistance));
 	memcpy (pr->rapidfire_count, r.rapidfire_count, sizeof (r.rapidfire_count));
 	memcpy (pr->evade_speed, r.evade_speed, sizeof (r.evade_speed));
-	pr->cloak_type = r.cloak_type;
-	pr->attack_type = r.attack_type;
-	pr->boss_flag = r.boss_flag;
+	pr->cloakType = r.cloakType;
+	pr->attackType = r.attackType;
+	pr->bossFlag = r.bossFlag;
 	pr->companion = 0;
 	pr->smart_blobs = 0;
 	pr->energy_blobs = 0;
@@ -696,7 +696,7 @@ for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) 
 	pr->lightcast = 0;
 	pr->death_roll = r.death_roll;
 	pr->flags = r.flags;
-	pr->deathroll_sound = r.deathroll_sound;
+	pr->deathrollSound = r.deathrollSound;
 	pr->glow = r.glow;
 	pr->behavior = r.behavior;
 	pr->aim = r.aim;
@@ -724,13 +724,13 @@ for (h = 0; i; i--) {
 	}
 CFSeek (fp, 
 	h +
-	sizeof (bitmap_index) * D1_MAX_GAUGE_BMS +
+	sizeof (tBitmapIndex) * D1_MAX_GAUGE_BMS +
 	sizeof (int) * 2 * D1_MAX_POLYGON_MODELS +
-	sizeof (bitmap_index) * D1_MAX_OBJ_BITMAPS +
+	sizeof (tBitmapIndex) * D1_MAX_OBJ_BITMAPS +
 	sizeof (ushort) * D1_MAX_OBJ_BITMAPS +
 	PLAYER_SHIP_SIZE +
 	sizeof (int) +
-	sizeof (bitmap_index) * D1_N_COCKPIT_BITMAPS,
+	sizeof (tBitmapIndex) * D1_N_COCKPIT_BITMAPS,
 	SEEK_CUR);
 /*---*/LogErr ("         Loading sound data\n", i);
 CFRead (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp);
@@ -738,41 +738,41 @@ CFRead (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp);
 pr = gameData.bots.info [1] + 17;
 /*---*/LogErr ("         Initializing sound data\n", i);
 for (i = 0; i < D1_MAX_SOUNDS; i++)	{
-	if (Sounds [1][i] == tmpSounds [pr->see_sound])
-		pr->see_sound = i;
-	if (Sounds [1][i] == tmpSounds [pr->attack_sound])
-		pr->attack_sound = i;
-	if (Sounds [1][i] == tmpSounds [pr->claw_sound])
-		pr->claw_sound = i;
+	if (Sounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
 	}
 pr = gameData.bots.info [1] + 23;
 for (i = 0; i < D1_MAX_SOUNDS; i++)	{
-	if (Sounds [1][i] == tmpSounds [pr->see_sound])
-		pr->see_sound = i;
-	if (Sounds [1][i] == tmpSounds [pr->attack_sound])
-		pr->attack_sound = i;
-	if (Sounds [1][i] == tmpSounds [pr->claw_sound])
-		pr->claw_sound = i;
+	if (Sounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (Sounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
 	}
 CFRead (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS, fp);
 //	for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) {
 pr = gameData.bots.info [1] + 17;
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
-	if (AltSounds [1][i] == tmpSounds [pr->see_sound])
-		pr->see_sound = i;
-	if (AltSounds [1][i] == tmpSounds [pr->attack_sound])
-		pr->attack_sound = i;
-	if (AltSounds [1][i] == tmpSounds [pr->claw_sound])
-		pr->claw_sound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
 	}
 pr = gameData.bots.info [1] + 23;
 for (i = 0; i < D1_MAX_SOUNDS; i++)	{
-	if (AltSounds [1][i] == tmpSounds [pr->see_sound])
-		pr->see_sound = i;
-	if (AltSounds [1][i] == tmpSounds [pr->attack_sound])
-		pr->attack_sound = i;
-	if (AltSounds [1][i] == tmpSounds [pr->claw_sound])
-		pr->claw_sound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
+		pr->seeSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->attackSound])
+		pr->attackSound = i;
+	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
+		pr->clawSound = i;
 	}
 #else
 CFSeek (fp, 
@@ -798,7 +798,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 		fp, 
 		sizeof (int) +
 		sizeof (int) +
-		sizeof (bitmap_index) * D1_MAX_TEXTURES +
+		sizeof (tBitmapIndex) * D1_MAX_TEXTURES +
 		sizeof (D1_tmap_info) * D1_MAX_TEXTURES +
 		sizeof (ubyte) * D1_MAX_SOUNDS +
 		sizeof (ubyte) * D1_MAX_SOUNDS +
@@ -809,7 +809,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 		sizeof (int) +
 		sizeof (D1_wclip) * D1_MAX_WALL_ANIMS +
 		sizeof (int) +
-		sizeof (D1_robot_info) * D1_MAX_ROBOT_TYPES +
+		sizeof (D1Robot_info) * D1_MAX_ROBOT_TYPES +
 		sizeof (int) +
 		sizeof (jointpos) * D1_MAX_ROBOT_JOINTS,
 		SEEK_CUR);
@@ -831,7 +831,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 			gameData.weapons.infoD1 [i].destroyable,
 			gameData.weapons.infoD1 [i].matter,		
 			gameData.weapons.infoD1 [i].bounce,		
-			gameData.weapons.infoD1 [i].homing_flag,
+			gameData.weapons.infoD1 [i].homingFlag,
 			gameData.weapons.infoD1 [i].energy_usage,
 			gameData.weapons.infoD1 [i].fire_wait);
 		for (j = 0;j < NDL;j++)
@@ -855,7 +855,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 #endif
 #if 0
 	CFRead (&gameData.pig.tex.nTextures, sizeof (int), 1, fp);
-	CFRead (gameData.pig.tex.bmIndex, sizeof (bitmap_index), MAX_TEXTURES, fp);
+	CFRead (gameData.pig.tex.bmIndex, sizeof (tBitmapIndex), MAX_TEXTURES, fp);
 	CFRead (gameData.pig.tex.tMapInfo, sizeof (tmap_info), MAX_TEXTURES, fp);
 	
 	CFRead (Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp);
@@ -871,7 +871,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.walls.anims, sizeof (wclip), MAX_WALL_ANIMS, fp);
 
 	CFRead (&gameData.bots.nTypes, sizeof (int), 1, fp);
-	CFRead (gameData.bots.info [0], sizeof (robot_info), MAX_ROBOT_TYPES, fp);
+	CFRead (gameData.bots.info [0], sizeof (tRobotInfo), MAX_ROBOT_TYPES, fp);
 
 	CFRead (&gameData.bots.nJoints, sizeof (int), 1, fp);
 	CFRead (gameData.bots.joints, sizeof (jointpos), MAX_ROBOT_JOINTS, fp);
@@ -880,7 +880,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.weapons.info, sizeof (weapon_info), MAX_WEAPON_TYPES, fp);
 
 	CFRead (&gameData.objs.pwrUp.nTypes, sizeof (int), 1, fp);
-	CFRead (gameData.objs.pwrUp.info, sizeof (powerup_type_info), MAX_POWERUP_TYPES, fp);
+	CFRead (gameData.objs.pwrUp.info, sizeof (powerupType_info), MAX_POWERUP_TYPES, fp);
 	
 	CFRead (&gameData.models.nPolyModels, sizeof (int), 1, fp);
 	CFRead (gameData.models.polyModels, sizeof (polymodel), gameData.models.nPolyModels, fp);
@@ -891,18 +891,18 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 		CFRead (gameData.models.polyModels [i].model_data, sizeof (ubyte), gameData.models.polyModels [i].model_data_size, fp);
 	}
 
-	CFRead (Gauges, sizeof (bitmap_index), MAX_GAUGE_BMS, fp);
+	CFRead (Gauges, sizeof (tBitmapIndex), MAX_GAUGE_BMS, fp);
 
 	CFRead (gameData.models.nDyingModels, sizeof (int), MAX_POLYGON_MODELS, fp);
 	CFRead (gameData.models.nDeadModels, sizeof (int), MAX_POLYGON_MODELS, fp);
 
-	CFRead (gameData.pig.tex.objBmIndex, sizeof (bitmap_index), MAX_OBJ_BITMAPS, fp);
+	CFRead (gameData.pig.tex.objBmIndex, sizeof (tBitmapIndex), MAX_OBJ_BITMAPS, fp);
 	CFRead (gameData.pig.tex.pObjBmIndex, sizeof (ushort), MAX_OBJ_BITMAPS, fp);
 
 	CFRead (&gameData.pig.ship.only, sizeof (player_ship), 1, fp);
 
 	CFRead (&gameData.models.nCockpits, sizeof (int), 1, fp);
-	CFRead (gameData.pig.tex.cockpitBmIndex, sizeof (bitmap_index), N_COCKPIT_BITMAPS, fp);
+	CFRead (gameData.pig.tex.cockpitBmIndex, sizeof (tBitmapIndex), N_COCKPIT_BITMAPS, fp);
 
 	CFRead (Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp);
 	CFRead (AltSounds, sizeof (ubyte), MAX_SOUNDS, fp);
@@ -915,8 +915,8 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (&gameData.pig.tex.nFirstMultiBitmap, sizeof (int), 1, fp);
 
 	CFRead (&N_controlcen_guns, sizeof (int), 1, fp);
-	CFRead (controlcen_gun_points, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp);
-	CFRead (controlcen_gun_dirs, sizeof (vms_vector), MAX_CONTROLCEN_GUNS, fp);
+	CFRead (controlcen_gun_points, sizeof (vmsVector), MAX_CONTROLCEN_GUNS, fp);
+	CFRead (controlcen_gun_dirs, sizeof (vmsVector), MAX_CONTROLCEN_GUNS, fp);
 	CFRead (&gameData.endLevel.exit.nModel, sizeof (int), 1, fp);
 	CFRead (&gameData.endLevel.exit.nDestroyedModel, sizeof (int), 1, fp);
 #endif
@@ -1026,7 +1026,7 @@ void BMReadAllD1 (CFILE * fp)
 		PolyModelDataRead (&gameData.models.polyModels [i], fp);
 	*/CFSeek (fp, 521490-160, SEEK_SET);// OK, I admit, this is a dirty hack
 	//BitmapIndexReadN (Gauges, D1_MAX_GAUGE_BMS, fp);
-	CFSeek (fp, D1_MAX_GAUGE_BMS * sizeof (bitmap_index), SEEK_CUR);
+	CFSeek (fp, D1_MAX_GAUGE_BMS * sizeof (tBitmapIndex), SEEK_CUR);
 
 	/*
 	for (i = 0;i < D1_MAX_POLYGON_MODELS;i++)
@@ -1036,7 +1036,7 @@ void BMReadAllD1 (CFILE * fp)
 	*/ CFSeek (fp, D1_MAX_POLYGON_MODELS * 8, SEEK_CUR);
 
 	//BitmapIndexReadN (gameData.pig.tex.objBmIndex, D1_MAX_OBJ_BITMAPS, fp);
-	CFSeek (fp, D1_MAX_OBJ_BITMAPS * sizeof (bitmap_index), SEEK_CUR);
+	CFSeek (fp, D1_MAX_OBJ_BITMAPS * sizeof (tBitmapIndex), SEEK_CUR);
 	for (i = 0;i < D1_MAX_OBJ_BITMAPS;i++)
 		CFSeek (fp, 2, SEEK_CUR);//gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 
@@ -1045,7 +1045,7 @@ void BMReadAllD1 (CFILE * fp)
 
 	/*gameData.models.nCockpits = */ CFReadInt (fp);
 	//BitmapIndexReadN (gameData.pig.tex.cockpitBmIndex, D1_MAX_COCKPIT_BITMAPS, fp);
-	CFSeek (fp, D1_MAX_COCKPIT_BITMAPS * sizeof (bitmap_index), SEEK_CUR);
+	CFSeek (fp, D1_MAX_COCKPIT_BITMAPS * sizeof (tBitmapIndex), SEEK_CUR);
 
 	/*
 	CFRead (Sounds [0], sizeof (ubyte), D1_MAX_SOUNDS, fp);
@@ -1061,7 +1061,7 @@ void BMReadAllD1 (CFILE * fp)
 	*/ CFSeek (fp, D1_MAX_OBJTYPE * 6, SEEK_CUR);
 
 	/*gameData.pig.tex.nFirstMultiBitmap =*/ CFReadInt (fp);
-	/*gameData.reactor.reactors [0].n_guns = */ CFReadInt (fp);
+	/*gameData.reactor.reactors [0].nGuns = */ CFReadInt (fp);
 	/*for (i=0;i<4;i++)
 		CFReadVector (& (gameData.reactor.reactors [0].gun_points [i]), fp);
 	for (i=0;i<4;i++)
@@ -1123,8 +1123,8 @@ if (!gameOpts->app.bDemoData)
 
 //------------------------------------------------------------------------------
 
-//type==1 means 1.1, type==2 means 1.2 (with weapons)
-int BMReadExtraRobots (char *fname, char *folder, int type)
+//nType==1 means 1.1, nType==2 means 1.2 (with weapons)
+int BMReadExtraRobots (char *fname, char *folder, int nType)
 {
 	CFILE *fp;
 	int t,i,j;
@@ -1142,7 +1142,7 @@ if (!fp)
 	BMFreeExtraObjBitmaps ();
 	}
 
-if (type > 1) {
+if (nType > 1) {
 	int sig;
 
 	sig = CFReadInt (fp);
@@ -1206,12 +1206,12 @@ for (i = j; i < gameData.models.nPolyModels; i++)
 
 t = CFReadInt (fp);
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS)
-	Error ("Too many object bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
+	Error ("Too many tObject bitmaps (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPS);
 BitmapIndexReadN (&gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], t, fp);
 
 t = CFReadInt (fp);
 if (N_D2_OBJBITMAPPTRS+t >= MAX_OBJ_BITMAPS)
-	Error ("Too many object bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
+	Error ("Too many tObject bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
 for (i = N_D2_OBJBITMAPPTRS;i < (N_D2_OBJBITMAPPTRS + t);i++)
 	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 CFClose (fp);
@@ -1364,9 +1364,9 @@ int LoadRobotReplacements (char *level_name, int bAddBots)
  */
 
 // formerly exitmodel_bm_load_sub
-bitmap_index ReadExtraBitmapIFF (char * filename)
+tBitmapIndex ReadExtraBitmapIFF (char * filename)
 {
-	bitmap_index bitmap_num;
+	tBitmapIndex bitmap_num;
 	grs_bitmap * newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 	int iff_error;		//reference parm to avoid warning message
 
@@ -1399,7 +1399,7 @@ extern int GrAvgColor (grs_bitmap *bm);
 grs_bitmap *BMLoadExtraBitmap (char *name)
 {
 	int i;
-	bitmap_index	*bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
+	tBitmapIndex	*bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
 	Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 
 *bip = ReadExtraBitmapIFF (name);

@@ -21,7 +21,7 @@
  * 0.99.2 - commented a bit :-) 
  *        - now adds to broadcast list each host it gets some packet from
  *          which is already not covered by local physical ethernet broadcast
- *        - implemented short-signature packet format
+ *        - implemented short-nSignature packet format
  *        - compatibility mode for old D1X releases due to the previous bullet
  *
  * Configuration:
@@ -92,7 +92,7 @@ establishing the communication. This always works, as the client knows the serve
 (containing the server IP + port after the game data) and thus gets to know its IP + port. It 
 replies to the client, and puts the client's IP + port after the end of the game data.
 
-There is a message type where the server tells all participants about all other participants; 
+There is a message nType where the server tells all participants about all other participants; 
 that's how clients find out about each other in a game.
 
 When the server receives a participation request from a client, it adds its IP + port to a table 
@@ -143,7 +143,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <cType.h>
 #include <malloc.h>
 
 #ifdef _WIN32
@@ -170,7 +170,7 @@ unsigned char ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','
 
 #define PORTSHIFT_TOLERANCE	0x100
 
-/* Packet format: first is the signature { 0xD1,'X' } which can be also
+/* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
  * Then follows virtual socket number (as changed during PgDOWN/PgUP)
  * in network-byte-order as 2 bytes (u_short). After such 4/8 byte header
@@ -254,7 +254,7 @@ return 1;
 
 #define IF_REQFLAGS (IFF_UP|IFF_RUNNING)
 
-/* We reject any interfaces declared as LOOPBACK type.
+/* We reject any interfaces declared as LOOPBACK nType.
  */
 #define IF_NOTFLAGS (IFF_LOOPBACK)
 
@@ -441,10 +441,10 @@ static int addiflist(void)
 			closesocket(sock);
 			FAIL("ioctl(udp,\"%s\",SIOCGIFFLAGS) error.",ifconf.ifc_req[i].ifr_name);
 			}
-		if (((ifconf.ifc_req[i].ifr_flags&IF_REQFLAGS)!=IF_REQFLAGS)||
-				 (ifconf.ifc_req[i].ifr_flags&IF_NOTFLAGS))
+		if (((ifconf.ifc_req[i].ifrFlags&IF_REQFLAGS)!=IF_REQFLAGS)||
+				 (ifconf.ifc_req[i].ifrFlags&IF_NOTFLAGS))
 			continue;
-		if (ioctl(sock,(ifconf.ifc_req[i].ifr_flags&IFF_BROADCAST?SIOCGIFBRDADDR:SIOCGIFDSTADDR),ifconf.ifc_req+i)) {
+		if (ioctl(sock,(ifconf.ifc_req[i].ifrFlags&IFF_BROADCAST?SIOCGIFBRDADDR:SIOCGIFDSTADDR),ifconf.ifc_req+i)) {
 			closesocket(sock);
 			FAIL("ioctl(udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error.",ifconf.ifc_req[i].ifr_name);
 			}
@@ -1098,7 +1098,7 @@ else
 memset (rd->src_network, 0, 4);
 memcpy (rd->src_node, &fromAddr.sin_addr, 4);
 memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
-rd->pkt_type = 0;
+rd->pktType = 0;
 #if 1//def UDPDEBUG
 //printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
 con_printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 

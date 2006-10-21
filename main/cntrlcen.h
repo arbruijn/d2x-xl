@@ -59,38 +59,38 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_CONTROLCEN_LINKS    10
 
-typedef struct reactor_triggers {
-	short   num_links;
-	short   seg[MAX_CONTROLCEN_LINKS];
-	short   side[MAX_CONTROLCEN_LINKS];
-} __pack__ reactor_triggers;
+typedef struct tReactorTriggers {
+	short   nLinks;
+	short   nSegment [MAX_CONTROLCEN_LINKS];
+	short   nSide [MAX_CONTROLCEN_LINKS];
+} __pack__ tReactorTriggers;
 
 typedef struct reactor {
-	int model_num;
-	int n_guns;
-	vms_vector gun_points[MAX_CONTROLCEN_GUNS];
-	vms_vector gun_dirs[MAX_CONTROLCEN_GUNS];
+	int nModel;
+	int nGuns;
+	vmsVector gun_points[MAX_CONTROLCEN_GUNS];
+	vmsVector gun_dirs[MAX_CONTROLCEN_GUNS];
 } __pack__ reactor;
 
 #define MAX_REACTORS 7
 
-//@@extern vms_vector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
-//@@extern vms_vector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
-extern vms_vector Gun_pos[MAX_CONTROLCEN_GUNS];
+//@@extern vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
+//@@extern vmsVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
+extern vmsVector Gun_pos[MAX_CONTROLCEN_GUNS];
 
 // do whatever this thing does in a frame
-extern void DoReactorFrame(object *obj);
+extern void DoReactorFrame(tObject *obj);
 
 // Initialize control center for a level.
 // Call when a new level is started.
 extern void InitReactorForLevel(void);
 
-extern void DoReactorDestroyedStuff(object *objp);
+extern void DoReactorDestroyedStuff(tObject *objp);
 extern void DoReactorDeadFrame(void);
 
 #ifdef FAST_FILE_IO
 #define ReactorReadN(r, n, fp) CFRead(r, sizeof(reactor), n, fp)
-#define ControlCenterTriggersReadN(cct, n, fp) CFRead(cct, sizeof(reactor_triggers), n, fp)
+#define ControlCenterTriggersReadN(cct, n, fp) CFRead(cct, sizeof(tReactorTriggers), n, fp)
 #else
 /*
  * reads n reactor structs from a CFILE
@@ -98,9 +98,9 @@ extern void DoReactorDeadFrame(void);
 extern int ReactorReadN(reactor *r, int n, CFILE *fp);
 
 /*
- * reads n reactor_triggers structs from a CFILE
+ * reads n tReactorTriggers structs from a CFILE
  */
-extern int ControlCenterTriggersReadN(reactor_triggers *cct, int n, CFILE *fp);
+extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFILE *fp);
 #endif
 
 #endif /* _CNTRLCEN_H */

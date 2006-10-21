@@ -425,7 +425,7 @@ if (!stricmp (command,"$rotate=")) { // constant rotation for a subobject
 	return;
 	}
 
-if (!strnicmp (command,"$jitter",7)) {	// this subobject is a jittery object
+if (!strnicmp (command,"$jitter",7)) {	// this subobject is a jittery tObject
 	pso->nFlags |= OOF_SOF_JITTER;
 	return;
 	}
@@ -482,10 +482,10 @@ if (!stricmp (command,"$thruster=")) {
 if (!stricmp (command,"$fov=")) {
 	float fov_angle;
 	float turret_spr;
-	float reaction_time;
+	float reactionTime;
 	int nValues;
 
-	nValues = sscanf(data, " %f, %f, %f", &fov_angle, &turret_spr, &reaction_time);
+	nValues = sscanf(data, " %f, %f, %f", &fov_angle, &turret_spr, &reactionTime);
 	Assert(nValues == 3);
 	if (fov_angle < 0.0f || fov_angle > 360.0f) { // Bad data
 		Assert(0);
@@ -497,15 +497,15 @@ if (!stricmp (command,"$fov=")) {
 		turret_spr = 1.0f;
 		}
 	// 10 seconds is really slow and really arbitrary
-	if (reaction_time < 0.0f || reaction_time > 10.0f) { // Bad data
+	if (reactionTime < 0.0f || reactionTime > 10.0f) { // Bad data
 		Assert(0);
-		reaction_time = 10.0;
+		reactionTime = 10.0;
 		}
 	pso->nFlags |= OOF_SOF_TURRET;
 	pso->fFOV = fov_angle/720.0f; // 720 = 360 * 2 and we want to make fov the amount we can move in either direction
 	                             // it has a minimum value of (0.0) to [0.5]
 	pso->fRPS = 1.0f / turret_spr;  // convert spr to rps (rotations per second)
-	pso->fUpdate = reaction_time;
+	pso->fUpdate = reactionTime;
 	return;
 	}
 
@@ -554,7 +554,7 @@ if (!stricmp (command,"$viewer")) { // this subobject is a viewer
 	return;
 	}
 
-if (!stricmp (command,"$layer")) { // this subobject is a layer to be drawn after original object.
+if (!stricmp (command,"$layer")) { // this subobject is a layer to be drawn after original tObject.
 	pso->nFlags |= OOF_SOF_LAYER;
 	return;
 	}
@@ -588,7 +588,7 @@ return pv;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFrameInfo (CFILE *fp, tOOF_object *po, tOOF_frameInfo *pfi, int bTimed)
+int OOF_ReadFrameInfo (CFILE *fp, tOOFObject *po, tOOF_frameInfo *pfi, int bTimed)
 {
 nIndent += 2;
 OOF_PrintLog ("reading frame info\n");
@@ -636,7 +636,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadRotAnim (CFILE *fp, tOOF_object *po, tOOF_rotAnim *pa, int bTimed)
+int OOF_ReadRotAnim (CFILE *fp, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
 {
 	tOOF_rotAnim a;
 	int	i;
@@ -681,7 +681,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPosAnim (CFILE *fp, tOOF_object *po, tOOF_posAnim *pa, int bTimed)
+int OOF_ReadPosAnim (CFILE *fp, tOOFObject *po, tOOF_posAnim *pa, int bTimed)
 {
 	tOOF_posAnim a;
 	int	i;
@@ -1169,7 +1169,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadSubObject (CFILE *fp, tOOF_object *po)
+int OOF_ReadSubObject (CFILE *fp, tOOFObject *po)
 {
 	tOOF_subObject	so;
 	tOOF_faceVert	*pfv = NULL;
@@ -1180,7 +1180,7 @@ int OOF_ReadSubObject (CFILE *fp, tOOF_object *po)
 	char				szId [20] = "";
 
 nIndent += 2;
-OOF_PrintLog ("reading sub object\n");
+OOF_PrintLog ("reading sub tObject\n");
 memset (&so, 0, sizeof (so));
 so.nIndex = OOF_ReadInt (fp, "nIndex");
 if (so.nIndex >= OOF_MAX_SUBOBJECTS) {
@@ -1289,7 +1289,7 @@ return 1;
 
 int OOF_ReleaseTextures (void)
 {
-	tOOF_object *po;
+	tOOFObject *po;
 	int			i, j;
 
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
@@ -1303,7 +1303,7 @@ return 0;
 
 int OOF_ReloadTextures (void)
 {
-	tOOF_object *po;
+	tOOFObject *po;
 	int			i, j;
 
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
@@ -1316,7 +1316,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_FreeTextures (tOOF_object *po)
+int OOF_FreeTextures (tOOFObject *po)
 {
 	int	i;
 
@@ -1334,9 +1334,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTextures (CFILE *fp, tOOF_object *po)
+int OOF_ReadTextures (CFILE *fp, tOOFObject *po)
 {
-	tOOF_object	o = *po;
+	tOOFObject	o = *po;
 	int			i;
 	char			szId [30];
 
@@ -1382,7 +1382,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_FreeObject (tOOF_object *po)
+int OOF_FreeObject (tOOFObject *po)
 {
 	int	i;
 
@@ -1405,12 +1405,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadObject (CFILE *fp, tOOF_object *po)
+int OOF_ReadObject (CFILE *fp, tOOFObject *po)
 {
-	tOOF_object	o = *po;
+	tOOFObject	o = *po;
 
 nIndent += 2;
-OOF_PrintLog ("reading object\n");
+OOF_PrintLog ("reading tObject\n");
 o.nVersion = po->nVersion;
 o.nSubObjects = OOF_ReadInt (fp, "nSubObjects");
 if (o.nSubObjects >= OOF_MAX_SUBOBJECTS) {
@@ -1470,7 +1470,7 @@ pm->f.y = i - j;
 
 //------------------------------------------------------------------------------
 
-void BuildAnimMatrices (tOOF_object *po)
+void BuildAnimMatrices (tOOFObject *po)
 {
 	tOOF_subObject *pso;
 	tOOF_matrix		mBase, mDest, mTemp;
@@ -1492,7 +1492,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void AssignChildren (tOOF_object *po)
+void AssignChildren (tOOFObject *po)
 {
 	tOOF_subObject *pso, *pParent;
 	int				i;
@@ -1510,7 +1510,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++) {
 
 //------------------------------------------------------------------------------
 
-inline void RecursiveAssignBatt (tOOF_object *po, int iObject, int iBatt)
+inline void RecursiveAssignBatt (tOOFObject *po, int iObject, int iBatt)
 {
 	tOOF_subObject	*pso = po->pSubObjects + iObject;
 	int				i, nFlags = iBatt << OOF_WB_INDEX_SHIFT;
@@ -1522,7 +1522,7 @@ for (i = 0; i < pso->nChildren; i++)
 
 //------------------------------------------------------------------------------
 
-void AssignBatteries (tOOF_object *po)
+void AssignBatteries (tOOFObject *po)
 {
 	tOOF_subObject	*pso;
 	tOOF_battery	*pb;
@@ -1544,7 +1544,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++) {
 
 //------------------------------------------------------------------------------
 
-void BuildPosTickRemapList (tOOF_object *po)
+void BuildPosTickRemapList (tOOFObject *po)
 {
 	int				i, j, k, t, nTicks;
 	tOOF_subObject	*pso;
@@ -1563,7 +1563,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void BuildRotTickRemapList (tOOF_object *po)
+void BuildRotTickRemapList (tOOFObject *po)
 {
 	int				i, j, k, t, nTicks;
 	tOOF_subObject	*pso;
@@ -1582,7 +1582,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void ConfigureSubObjects (tOOF_object *po)
+void ConfigureSubObjects (tOOFObject *po)
 {
 	int				i, j;
 	tOOF_subObject	*pso;
@@ -1617,7 +1617,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void GetSubObjectBounds (tOOF_object *po, tOOF_subObject *pso, tOOF_vector vo)
+void GetSubObjectBounds (tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo)
 {
 	int	i;
 
@@ -1642,7 +1642,7 @@ for (i = 0; i < pso->nChildren; i++)
 
 //------------------------------------------------------------------------------
 
-void GetObjectBounds (tOOF_object *po)
+void GetObjectBounds (tOOFObject *po)
 {
 	tOOF_subObject	*pso;
 	tOOF_vector		vo;
@@ -1657,11 +1657,11 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOF_object *po)
+int OOF_ReadFile (char *pszFile, tOOFObject *po)
 {
 	CFILE				*fp;
 	char				fileId [4];
-	tOOF_object		o;
+	tOOFObject		o;
 	int				i, nLength, nFrames, bTimed = 0;
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
@@ -1798,7 +1798,7 @@ return pm;
 
 //------------------------------------------------------------------------------
 
-float *OOF_VecVms2Gl (float *pDest, vms_vector *pSrc)
+float *OOF_VecVms2Gl (float *pDest, vmsVector *pSrc)
 {
 pDest [0] = (float) pSrc->x / 65536.0f;
 pDest [1] = (float) pSrc->y / 65536.0f;
@@ -1809,7 +1809,7 @@ return pDest;
 
 //------------------------------------------------------------------------------
 
-float *OOF_MatVms2Gl (float *pDest, vms_matrix *pSrc)
+float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
 {
 OOF_GlIdent (pDest);
 pDest [0] = ((float) pSrc->rvec.x) / 65536.0f;
@@ -1826,7 +1826,7 @@ return pDest;
 
 //------------------------------------------------------------------------------
 
-float *OOF_VecVms2Oof (tOOF_vector *pDest, vms_vector *pSrc)
+float *OOF_VecVms2Oof (tOOF_vector *pDest, vmsVector *pSrc)
 {
 pDest->x = (float) pSrc->x / 65536.0f;
 pDest->y = (float) pSrc->y / 65536.0f;
@@ -1836,7 +1836,7 @@ return (float *) pDest;
 
 //------------------------------------------------------------------------------
 
-float *OOF_MatVms2Oof (tOOF_matrix *pDest, vms_matrix *pSrc)
+float *OOF_MatVms2Oof (tOOF_matrix *pDest, vmsMatrix *pSrc)
 {
 OOF_VecVms2Oof (&pDest->f, &pSrc->fvec);
 OOF_VecVms2Oof (&pDest->u, &pSrc->uvec);
@@ -1995,7 +1995,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadowVolume (tOOF_object *po, tOOF_subObject *pso, int bCullFront)
+int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_edge		*pe;
 	tOOF_vector		*pv, v0, v1;
@@ -2059,7 +2059,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadowCaps (tOOF_object *po, tOOF_subObject *pso, int bCullFront)
+int OOF_DrawShadowCaps (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
@@ -2111,14 +2111,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadow (tOOF_object *po, tOOF_subObject *pso, int bCullFront)
+int OOF_DrawShadow (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 return OOF_DrawShadowVolume (po, pso, bCullFront) && OOF_DrawShadowCaps (po, pso, bCullFront); 
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawSubObject (object *objP, tOOF_object *po, tOOF_subObject *pso, int bFacing, float *fLight)
+int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, int bFacing, float *fLight)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
@@ -2163,7 +2163,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
 		else if (!bOglLighting) {
-			tFaceColor *psc = AvgSgmColor (objP->segnum, &objP->pos);
+			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->pos);
 			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			else
@@ -2235,7 +2235,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderSubObject (object *objP, tOOF_object *po, tOOF_subObject *pso, tOOF_vector vo, 
+int OOF_RenderSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo, 
 								 int nIndex, int bFacing, float *fLight)
 {
 	tOOF_subObject	*psc;
@@ -2264,7 +2264,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderModel (object *objP, tOOF_object *po, float *fLight)
+int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
 {
 	tOOF_subObject	*pso;
 	int				r = 1, i, bFacing;
@@ -2292,10 +2292,10 @@ return r;
 
 //------------------------------------------------------------------------------
 
-int OOF_RenderShadow (object *objP, tOOF_object *po, float *fLight)
+int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			*pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->segnum];
-	vms_vector	h, vl;
+	short			*pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->nSegment];
+	vmsVector	h, vl;
 
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
@@ -2317,7 +2317,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_Render (object *objP, tOOF_object *po, float *fLight, int bCloaked)
+int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked)
 {
 	float	dt;
 

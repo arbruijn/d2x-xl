@@ -73,7 +73,7 @@ typedef struct tGameConfig {
 
 extern tGameConfig gameConfig;
 
-//values for Config_control_type
+//values for Config_controlType
 #define CONTROL_NONE 0
 #define CONTROL_JOYSTICK 1
 #define CONTROL_FLIGHTSTICK_PRO 2

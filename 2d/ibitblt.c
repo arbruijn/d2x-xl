@@ -330,7 +330,7 @@ void move_and_draw( int dsource, int ddest, int ecx )
 //-----------------------------------------------------------------------------------------
 // Given bitmap, bmp, finds the size of the code
 
-int gr_ibitblt_find_code_size_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int dest_type )
+int gr_ibitblt_find_code_size_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -344,7 +344,7 @@ int gr_ibitblt_find_code_size_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw
 
 	Code_counter = 0;
 
-	if ( dest_type == BM_SVGA ) {
+	if ( destType == BM_SVGA ) {
 		Code_counter += 1+4;    // move ebx, gr_vesa_set_page
 		Code_counter += 1+4;    // move eax, 0
 		Code_counter += 2;      // call ebx
@@ -422,7 +422,7 @@ int gr_ibitblt_find_code_size_svga( grs_bitmap * mask_bmp, int sx, int sy, int s
 // Given bitmap, bmp, create code that transfers a bitmap of size sw*sh to position
 // (sx,sy) on top of bmp, only overwritting transparent pixels of the bitmap.
 
-ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int dest_type )
+ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -437,7 +437,7 @@ ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw
 
 	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
 
-	if ( dest_type == BM_SVGA )
+	if ( destType == BM_SVGA )
 		code_size = gr_ibitblt_find_code_size_svga( mask_bmp, sx, sy, sw, sh, srowsize );
 	else
 		code_size = gr_ibitblt_find_code_size( mask_bmp, sx, sy, sw, sh, srowsize );
@@ -448,7 +448,7 @@ ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw
 
 	Code_pointer = code;
 
-	if ( dest_type == BM_SVGA ) {
+	if ( destType == BM_SVGA ) {
 		// MOV EBX, gr_vesa_setpage
 		*Code_pointer++ = OPCODE_MOV_EBX;
 		temp = (uint)gr_vesa_setpage;
@@ -549,7 +549,7 @@ ubyte   *gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int s
 	int pass, x, y, n;
 	ushort *s;
 
-	Assert(mask_bmp->bm_props.type == BM_LINEAR15);
+	Assert(mask_bmp->bm_props.nType == BM_LINEAR15);
 
 	srowsize /= PA_BPP;
 
@@ -600,7 +600,7 @@ void gr_ibitblt_do_asm(char *start_si, char *start_di, ubyte * code);
 void gr_ibitblt(grs_bitmap * source_bmp, grs_bitmap * dest_bmp, ubyte * mask )
 {
 #if defined(POLY_ACC)
-    Assert(source_bmp->bm_props.type == BM_LINEAR15);
+    Assert(source_bmp->bm_props.nType == BM_LINEAR15);
     pa_ibitblt(source_bmp->bm_texBuf, dest_bmp->bm_texBuf, mask);
 #else
 	if (mask != NULL )
@@ -621,7 +621,7 @@ void    gr_ibitblt_find_hole_size( grs_bitmap * mask_bmp, int *minx, int *miny, 
 	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
 
 #if defined(POLY_ACC)
-	Assert(mask_bmp->bm_props.type == BM_LINEAR15);
+	Assert(mask_bmp->bm_props.nType == BM_LINEAR15);
 	pa_flush();
 #endif
 
@@ -773,7 +773,7 @@ void gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int sw, i
 	int pass, x, y, n;
 	ushort *s;
 
-	Assert(mask_bmp->bm_props.type == BM_LINEAR15);
+	Assert(mask_bmp->bm_props.nType == BM_LINEAR15);
 
 	srowsize /= PA_BPP;
 
@@ -851,7 +851,7 @@ void gr_ibitblt_find_hole_size_pa( grs_bitmap * mask_bmp, int *minx, int *miny, 
 
 	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
 
-	Assert(mask_bmp->bm_props.type == BM_LINEAR15);
+	Assert(mask_bmp->bm_props.nType == BM_LINEAR15);
 	while(!pa_idle();
 
 	*minx = mask_bmp->bm_props.w-1;

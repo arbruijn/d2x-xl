@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 unsigned char gr_ugpixel( grs_bitmap * bitmap, int x, int y )
 {
 #ifdef __DJGPP__
-	switch(bitmap->bm_props.type)
+	switch(bitmap->bm_props.nType)
 	{
 	case BM_LINEAR:
 #endif
@@ -55,7 +55,7 @@ unsigned char gr_gpixel( grs_bitmap * bitmap, int x, int y )
 {
 	if ((x<0) || (y<0) || (x>=bitmap->bm_props.w) || (y>=bitmap->bm_props.h)) return 0;
 #ifdef __DJGPP__
-	switch(bitmap->bm_props.type)
+	switch(bitmap->bm_props.nType)
 	{
 	case BM_LINEAR:
 #endif

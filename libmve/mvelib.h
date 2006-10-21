@@ -35,28 +35,28 @@ MVEFILE *mvefile_open(void *stream);
 void mvefile_close(MVEFILE *movie);
 
 /*
- * get size of next segment in chunk (-1 if no more segments in chunk)
+ * get size of next tSegment in chunk (-1 if no more segments in chunk)
  */
 int mvefile_get_next_segment_size(MVEFILE *movie);
 
 /*
- * get type of next segment in chunk (0xff if no more segments in chunk)
+ * get nType of next tSegment in chunk (0xff if no more segments in chunk)
  */
 unsigned char mvefile_get_next_segment_major(MVEFILE *movie);
 
 /*
- * get subtype (version) of next segment in chunk (0xff if no more segments in
+ * get subtype (version) of next tSegment in chunk (0xff if no more segments in
  * chunk)
  */
 unsigned char mvefile_get_next_segment_minor(MVEFILE *movie);
 
 /*
- * see next segment (return NULL if no next segment)
+ * see next tSegment (return NULL if no next tSegment)
  */
 unsigned char *mvefile_get_next_segment(MVEFILE *movie);
 
 /*
- * advance to next segment
+ * advance to next tSegment
  */
 void mvefile_advance_segment(MVEFILE *movie);
 
@@ -66,7 +66,7 @@ void mvefile_advance_segment(MVEFILE *movie);
 int mvefile_fetch_next_chunk(MVEFILE *movie);
 
 /*
- * callback for segment type
+ * callback for tSegment nType
  */
 typedef int (*MVESEGMENTHANDLER)(unsigned char major, unsigned char minor, unsigned char *data, int len, void *context);
 
@@ -96,12 +96,12 @@ void mve_close(MVESTREAM *movie);
 void mve_reset(MVESTREAM *movie);
 
 /*
- * set segment type handler
+ * set tSegment nType handler
  */
 void mve_set_handler(MVESTREAM *movie, unsigned char major, MVESEGMENTHANDLER handler);
 
 /*
- * set segment handler context
+ * set tSegment handler context
  */
 void mve_set_handler_context(MVESTREAM *movie, void *context);
 

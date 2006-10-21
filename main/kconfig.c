@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * get mouse stuff working right this time?
  *
  * Revision 1.15  1995/10/23  14:50:50  allender
- * corrected values for control type in KCSetControls
+ * corrected values for control nType in KCSetControls
  *
  * Revision 1.14  1995/10/21  16:36:54  allender
  * fix up mouse read time
@@ -116,7 +116,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.105  1995/02/22  14:11:58  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.104  1995/02/13  12:01:56  john
  * Fixed bug with buggin not mmaking player faster.
@@ -179,7 +179,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  *
  * Revision 1.87  1994/12/13  14:43:02  john
  * Took out the code in KConfig to build direction array.
- * Called KCSetControls after selecting a new control type.
+ * Called KCSetControls after selecting a new control nType.
  *
  * Revision 1.86  1994/12/13  01:11:32  john
  * Fixed bug with message clearing overwriting
@@ -322,7 +322,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * Revision 1.42  1994/10/14  12:16:03  john
  * Changed code so that by doing DEL+F12 saves the current KConfig
  * values as default. Added support for drop_bomb key.  Took out
- * unused slots for keyboard.  Made keyboard use control_type of 0
+ * unused slots for keyboard.  Made keyboard use controlType of 0
  * save slots.
  *
  * Revision 1.41  1994/10/13  21:27:02  john
@@ -357,7 +357,7 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <cType.h>
 #include <time.h>
 #include <math.h>
 
@@ -614,7 +614,7 @@ kc_item kc_keyboard [NUM_KEY_CONTROLS] = {
 	{ 63, 15,189,100, 26, 61,  1, 62,  0,"Use Invul", 752,BT_KEY, 255 }
 };
 
-ubyte kc_kbd_flags [NUM_KEY_CONTROLS];
+ubyte kc_kbdFlags [NUM_KEY_CONTROLS];
 
 kc_item kc_joystick [NUM_JOY_CONTROLS] = {
 	{  0, 25, 46, 85, 26, 15,  1, 24,  5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
@@ -731,7 +731,7 @@ kc_item kc_superjoy [NUM_JOY_CONTROLS] = {
 #ifdef D2X_KEYS
 //added on 2/4/99 by Victor Rachels to add d1x new keys
 kc_item kc_d2x [NUM_D2X_CONTROLS] = {
-//        id,x,y,w1,w2,u,d,l,r,text_num1,type,value
+//        id,x,y,w1,w2,u,d,l,r,text_num1,nType,value
 	{  0, 15, 49, 71, 26, 27,  2, 27,  1, "WEAPON 1", 306, BT_KEY, 255 },
 	{  1, 15, 49,100, 26, 26,  3,  0,  2, "WEAPON 1", 306, BT_JOY_BUTTON, 255 },
 	{  2, 15, 57, 71, 26,  0,  4,  1,  3, "WEAPON 2", 307, BT_KEY, 255 },
@@ -770,8 +770,8 @@ static int xOffs = 0, yOffs = 0;
 
 static int start_axis [JOY_MAX_AXES];
 
-vms_vector ExtForceVec;
-vms_matrix ExtApplyForceMatrix;
+vmsVector ExtForceVec;
+vmsMatrix ExtApplyForceMatrix;
 
 int ExtJoltInfo [3]={0,0,0};
 int ExtXVibrateInfo [2]={0,0};
@@ -801,7 +801,7 @@ int KCIsAxisUsed (int axis)
 	int i;
 
 for (i = 0; i < NUM_JOY_CONTROLS; i++) {
-	if ((kc_joystick [i].type == BT_JOY_AXIS) && (kc_joystick [i].value == axis))
+	if ((kc_joystick [i].nType == BT_JOY_AXIS) && (kc_joystick [i].value == axis))
 		return 1;
 	}
 return 0;
@@ -921,7 +921,7 @@ int KCGetItemHeight (kc_item *item)
 	if (item->value==255) {
 		strcpy (btext, "");
 	} else {
-		switch (item->type)	{
+		switch (item->nType)	{
 			case BT_KEY:
 				strncpy (btext, key_text [item->value], 10); 
 				break;
@@ -1107,15 +1107,15 @@ gameStates.menus.nInMenu--;
 
 //------------------------------------------------------------------------------
 
-inline int KCAssignControl (kc_item *item, int type, ubyte code)
+inline int KCAssignControl (kc_item *item, int nType, ubyte code)
 {
 	int	i, n;
 
 if (code == 255)
-	return type;
+	return nType;
 
 for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
-	if ((i != n) && (All_items [i].type == type) && (All_items [i].value == code)) {
+	if ((i != n) && (All_items [i].nType == nType) && (All_items [i].value == code)) {
 		All_items [i].value = 255;
 		if (curDrawBuffer == GL_FRONT)
 			KCDrawItem (All_items + i, 0);
@@ -1162,8 +1162,8 @@ if (curDrawBuffer != GL_BACK)
 
 //------------------------------------------------------------------------------
 
-typedef ubyte kc_ctrlfunc_type (void);
-typedef kc_ctrlfunc_type *kc_ctrlfunc_ptr;
+typedef ubyte kc_ctrlfuncType (void);
+typedef kc_ctrlfuncType *kc_ctrlfunc_ptr;
 
 //------------------------------------------------------------------------------
 
@@ -1292,7 +1292,7 @@ return code;
 
 //------------------------------------------------------------------------------
 
-int KCChangeControl (kc_item *item, int type, kc_ctrlfunc_ptr ctrlfunc, char *pszMsg)
+int KCChangeControl (kc_item *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *pszMsg)
 {
 	int k = 255;
 	ubyte code = 255;
@@ -1328,7 +1328,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 		timer_delay (f0_1 / 10);
 	KCDrawQuestion (item);
 	}
-return KCAssignControl (item, type, ctrlfunc ());
+return KCAssignControl (item, nType, ctrlfunc ());
 }
 
 //------------------------------------------------------------------------------
@@ -1610,7 +1610,7 @@ newmenu_show_cursor ();
 			break;
 		case KEY_ENTER:	
 		case KEY_PADENTER:	
-			nChangeMode = items [citem].type;
+			nChangeMode = items [citem].nType;
 			GameFlushInputs ();
 			break;
 		case -2:	
@@ -1657,22 +1657,22 @@ newmenu_show_cursor ();
 				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 					kc_keyboard [i].id, kc_keyboard [i].x, kc_keyboard [i].y, kc_keyboard [i].w1, kc_keyboard [i].w2,
 					kc_keyboard [i].u, kc_keyboard [i].d, kc_keyboard [i].l, kc_keyboard [i].r,
-													 34, kc_keyboard [i].text, 34, btype_text [kc_keyboard [i].type]);
+													 34, kc_keyboard [i].text, 34, btype_text [kc_keyboard [i].nType]);
 				}
 			fprintf (fp, "};");
 
 			fprintf (fp, "\nkc_item kc_joystick [NUM_JOY_CONTROLS] = {\n");
 			for (i=0; i<NUM_JOY_CONTROLS; i++)	{
-				if (kc_joystick [i].type == BT_JOY_BUTTON)
+				if (kc_joystick [i].nType == BT_JOY_BUTTON)
 					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 						kc_joystick [i].id, kc_joystick [i].x, kc_joystick [i].y, kc_joystick [i].w1, kc_joystick [i].w2,
 						kc_joystick [i].u, kc_joystick [i].d, kc_joystick [i].l, kc_joystick [i].r,
-														 34, kc_joystick [i].text, 34, btype_text [kc_joystick [i].type]);
+														 34, kc_joystick [i].text, 34, btype_text [kc_joystick [i].nType]);
 				else
 					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 						kc_joystick [i].id, kc_joystick [i].x, kc_joystick [i].y, kc_joystick [i].w1, kc_joystick [i].w2,
 						kc_joystick [i].u, kc_joystick [i].d, kc_joystick [i].l, kc_joystick [i].r,
-														 34, kc_joystick [i].text, 34, btype_text [kc_joystick [i].type]);
+														 34, kc_joystick [i].text, 34, btype_text [kc_joystick [i].nType]);
 				}
 			fprintf (fp, "};");
 
@@ -1681,7 +1681,7 @@ newmenu_show_cursor ();
 				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
 					kc_mouse [i].id, kc_mouse [i].x, kc_mouse [i].y, kc_mouse [i].w1, kc_mouse [i].w2,
 					kc_mouse [i].u, kc_mouse [i].d, kc_mouse [i].l, kc_mouse [i].r,
-													 34, kc_mouse [i].text, 34, btype_text [kc_mouse [i].type]);
+													 34, kc_mouse [i].text, 34, btype_text [kc_mouse [i].nType]);
 				}
 			fprintf (fp, "};");
 			fclose (fp);
@@ -1731,7 +1731,7 @@ newmenu_show_cursor ();
 			y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [citem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-				nChangeMode = items [citem].type;
+				nChangeMode = items [citem].nType;
 				GameFlushInputs ();
 			} else {
 				x1 = grdCurCanv->cv_bitmap.bm_props.x + close_x + LHX (1);
@@ -1777,7 +1777,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 	*btext = '\0';
 	if (item->value != 255) {
-		switch (item->type)	{
+		switch (item->nType)	{
 			case BT_KEY:
 				strncat (btext, key_text [item->value], 10); 
 				break;
@@ -1889,7 +1889,7 @@ void KConfig (int n, char * title)
 	WIN (DDGrSetCurrentCanvas (NULL));
 #if defined (POLY_ACC)
 	bmSave = GrCreateBitmap2 (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h, 
-										grdCurCanv->cv_bitmap.bm_props.type, NULL);
+										grdCurCanv->cv_bitmap.bm_props.nType, NULL);
 #else
 	bmSave = GrCreateBitmap (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h, 0);
 #endif
@@ -1998,9 +1998,9 @@ read_head_tracker ()
 		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))	
 			yaw1 += F1_0;
 	
-		Controls.pitch_time	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
-		Controls.heading_time+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
-		Controls.bank_time	+= FixMul ((roll - Last_angles_b)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls.pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls.headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls.bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
 	}
 	Last_angles_read = 1;
 	Last_angles_p = pitch;
@@ -2052,21 +2052,21 @@ void KCInitExternalControls (int intno, int address)
 	if (kc_external_version == 0) 
 		memset (kc_external_control, 0, sizeof (control_info);
 	else if (kc_external_version > 0) 	{
-		memset (kc_external_control, 0, sizeof (control_info)+sizeof (vms_angvec) + 64);
+		memset (kc_external_control, 0, sizeof (control_info)+sizeof (vmsAngVec) + 64);
 		if (kc_external_version > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = (ubyte *)kc_external_control;
-			vms_vector *ship_pos;
-			vms_matrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (control_info)+sizeof (vms_angvec) + 64 + sizeof (vms_vector)+sizeof (vms_matrix);
-			temp_ptr += sizeof (control_info)+sizeof (vms_angvec) + 64;
-			ship_pos = (vms_vector *)temp_ptr;
-			temp_ptr += sizeof (vms_vector);
-			ship_orient = (vms_matrix *)temp_ptr;
+			vmsVector *ship_pos;
+			vmsMatrix *ship_orient;
+			memset (kc_external_control, 0, sizeof (control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix);
+			temp_ptr += sizeof (control_info)+sizeof (vmsAngVec) + 64;
+			ship_pos = (vmsVector *)temp_ptr;
+			temp_ptr += sizeof (vmsVector);
+			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].pos;
+			*ship_pos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].pos;
 			// Fill in ship orientation...
-			*ship_orient = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient;
+			*ship_orient = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient;
 		}
 	}
 
@@ -2084,34 +2084,34 @@ void KCInitExternalControls (int intno, int address)
 #endif
 
 	if (gameData.multi.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest side.
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
-			vms_matrix tempm, ViewMatrix;
-			vms_angvec * Kconfig_abs_movement;
+			vmsMatrix tempm, ViewMatrix;
+			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 	
-			Kconfig_abs_movement = (vms_angvec *) ((uint)kc_external_control + sizeof (control_info);
+			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (control_info);
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient,&tempm);
-				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient = ViewMatrix;		
 			}
-			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vms_angvec);
+			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
 	}
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
+	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
+	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
+	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;
@@ -2140,32 +2140,32 @@ void KCReadExternalControls ()
 		if (kc_external_version>=4)
 			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
       else if (kc_external_version>0)     
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vms_angvec) + 64);
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64);
 		else if (kc_external_version>2)
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vms_angvec) + 64 + sizeof (vms_vector) + sizeof (vms_matrix) +4);
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix) +4);
 
 		if (kc_external_version > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = (ubyte *)kc_external_control;
-			vms_vector *ship_pos;
-			vms_matrix *ship_orient;
-			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vms_angvec) + 64 + sizeof (vms_vector)+sizeof (vms_matrix));
-			temp_ptr += sizeof (ext_control_info) + sizeof (vms_angvec) + 64;
-			ship_pos = (vms_vector *)temp_ptr;
-			temp_ptr += sizeof (vms_vector);
-			ship_orient = (vms_matrix *)temp_ptr;
+			vmsVector *ship_pos;
+			vmsMatrix *ship_orient;
+			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector)+sizeof (vmsMatrix));
+			temp_ptr += sizeof (ext_control_info) + sizeof (vmsAngVec) + 64;
+			ship_pos = (vmsVector *)temp_ptr;
+			temp_ptr += sizeof (vmsVector);
+			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].pos;
+			*ship_pos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].pos;
 			// Fill in ship orientation...
-			*ship_orient = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient;
+			*ship_orient = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient;
 		}
     if (kc_external_version>=4)
 	  {
 	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
  
       temp_ptr->headlight_state= (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON);
-		temp_ptr->primary_weapon_flags=gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags;
-		temp_ptr->secondary_weapon_flags=gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags;
+		temp_ptr->primaryWeaponFlags=gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags;
+		temp_ptr->secondaryWeaponFlags=gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags;
       temp_ptr->current_primary_weapon=gameData.weapons.nPrimary;
       temp_ptr->current_secondary_weapon=gameData.weapons.nSecondary;
 
@@ -2180,8 +2180,8 @@ void KCReadExternalControls ()
 		temp_ptr->x_vibrate_clear=ExtXVibrateClear;
  	   temp_ptr->game_status=gameStates.app.nExtGameStatus;
    
-      memset ((void *)&ExtForceVec,0,sizeof (vms_vector));
-      memset ((void *)&ExtApplyForceMatrix,0,sizeof (vms_matrix));
+      memset ((void *)&ExtForceVec,0,sizeof (vmsVector));
+      memset ((void *)&ExtApplyForceMatrix,0,sizeof (vmsMatrix));
       
       for (i=0;i<3;i++)
 		 ExtJoltInfo [i]=0;
@@ -2202,34 +2202,34 @@ void KCReadExternalControls ()
   #endif 
 
 	if (gameData.multi.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest side.
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
-			vms_matrix tempm, ViewMatrix;
-			vms_angvec * Kconfig_abs_movement;
+			vmsMatrix tempm, ViewMatrix;
+			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 	
-			Kconfig_abs_movement = (vms_angvec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
+			Kconfig_abs_movement = (vmsAngVec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient,&tempm);
-				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient = ViewMatrix;		
 			}
-			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vms_angvec));
+			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
 	}
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
+	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
+	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
+	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;
@@ -2244,7 +2244,7 @@ void KCReadExternalControls ()
    if (kc_external_version>=3)
 	 {
 		ubyte *temp_ptr = (ubyte *)kc_external_control;
-		temp_ptr += (sizeof (ext_control_info) + sizeof (vms_angvec) + 64 + sizeof (vms_vector) + sizeof (vms_matrix));
+		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix));
   
 	   if (* (temp_ptr))
 		 Controls.cycle_primary_count= (* (temp_ptr));
@@ -2290,7 +2290,7 @@ for (i=0; i < NUM_KEY_CONTROLS; i++)
 if (gameOpts->input.bUseJoystick) {
 	for (i = 0; i < NUM_JOY_CONTROLS; i++) {
 		kc_joystick [i].value = controlSettings.custom [gameStates.input.nJoyType][i];
-		if (kc_joystick [i].type == BT_INVERT)	{
+		if (kc_joystick [i].nType == BT_INVERT)	{
 			if (kc_joystick [i].value != 1)
 				kc_joystick [i].value = 0;
 			controlSettings.custom [gameStates.input.nJoyType][i] = kc_joystick [i].value;
@@ -2301,7 +2301,7 @@ if (gameOpts->input.bUseJoystick) {
 if (gameOpts->input.bUseMouse) {
 	for (i=0; i < NUM_MOUSE_CONTROLS; i++)	{
 		kc_mouse [i].value = controlSettings.custom [gameStates.input.nMouseType][i];
-		if (kc_mouse [i].type == BT_INVERT)	{
+		if (kc_mouse [i].nType == BT_INVERT)	{
 			if (kc_mouse [i].value != 1)
 				kc_mouse [i].value = 0;
 			controlSettings.custom [gameStates.input.nMouseType][i] = kc_mouse [i].value;
@@ -2312,7 +2312,7 @@ if (gameOpts->input.bUseMouse) {
 if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
 	for (i=0; i<NUM_JOY_CONTROLS; i++) {
 		kc_superjoy [i].value = controlSettings.custom [gameConfig.nControlType][i];
-		if (kc_superjoy [i].type == BT_INVERT)	{
+		if (kc_superjoy [i].nType == BT_INVERT)	{
 			if (kc_superjoy [i].value!=1)
 				kc_superjoy [i].value	= 0;
 			controlSettings.custom [gameConfig.nControlType][i] = kc_superjoy [i].value;

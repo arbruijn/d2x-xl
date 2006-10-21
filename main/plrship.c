@@ -1,4 +1,4 @@
-defPlayerShip.model_num = 108;
+defPlayerShip.nModel = 108;
 defPlayerShip.expl_vclip_num = 58;
 defPlayerShip.mass = F1_0 * 4;
 defPlayerShip.drag = 2162;

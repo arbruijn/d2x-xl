@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added function to set joystick for slow reading
  *
  * Revision 1.13  1994/10/13  11:36:06  john
- * Made joy_down_time be kept track of in fixed seconds,
+ * Made joy_downTime be kept track of in fixed seconds,
  * not ticks.
  *
  * Revision 1.12  1994/10/12  17:03:16  john
@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  *
  * Revision 1.8  1994/08/29  21:02:24  john
- * Added joy_set_cal_values...
+ * Added joy_set_calValues...
  *
  * Revision 1.7  1994/08/29  20:51:52  john
  * Added better cyberman support; also, joystick calibration
@@ -222,21 +222,21 @@ extern int joy_get_button_down_cnt(int btn);
 // buttons has been held down since the last call to this function.
 // It is the total time... say you pressed it down for 3 ticks, released
 // it, and held it down for 6 more ticks. The time returned would be 9.
-extern fix joy_get_button_down_time(int btn);
+extern fix joy_get_button_downTime(int btn);
 
 extern unsigned long joy_read_raw_buttons();
 extern unsigned long joystick_read_raw_axis(unsigned long mask, int *axis);
 extern void joy_flush();
 extern ubyte joy_get_present_mask();
-extern void joy_set_timer_rate(int max_value);
-extern int joy_get_timer_rate();
+extern void joy_setTimer_rate(int maxValue);
+extern int joy_getTimer_rate();
 
 extern int joy_get_button_state(int btn);
 extern void joy_set_cen_fake(int channel);
 extern ubyte joy_read_stick(ubyte masks, int *axis);
 extern void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max);
 extern void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_btn_values(int btn, int state, fix timedown, int downcount, int upcount);
+extern void joy_set_btnValues(int btn, int state, fix timedown, int downcount, int upcount);
 extern int joy_get_scaled_reading(int raw, int axn);
 extern void joy_set_slow_reading(int flag);
 extern int set_joy_deadzone (int nRelZone, int nAxis);

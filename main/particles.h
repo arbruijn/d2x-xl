@@ -23,9 +23,9 @@ typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		glPos;
 #endif
-	vms_vector	pos;				//position
-	vms_vector	transPos;		//transformed position
-	vms_vector	dir;				//movement direction
+	vmsVector	pos;				//position
+	vmsVector	transPos;		//transformed position
+	vmsVector	dir;				//movement direction
 	char			nType;			//black or white
 	char			nOrient;
 	char			nRotDir;
@@ -56,8 +56,8 @@ typedef struct tCloud {
 	float			nPartScale;
 	int			nMoved;			//time last moved
 	short			nSegment;
-	vms_vector	pos;				//initial particle position
-	vms_vector	prevPos;			//initial particle position
+	vmsVector	pos;				//initial particle position
+	vmsVector	prevPos;			//initial particle position
 	int			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
 	tPartIdx		*pPartIdx;
@@ -75,7 +75,7 @@ typedef struct tSmoke {
 	tCloud		*pClouds;		//list of active clouds
 } tSmoke;
 
-int CreateSmoke (vms_vector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
+int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nLife, int nSpeed, int nType, int nObject);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
@@ -83,13 +83,13 @@ int RenderSmoke ();
 int DestroyAllSmoke (void);
 void SetSmokeDensity (int i, int nMaxParts);
 void SetSmokePartScale (int i, float nPartScale);
-void SetSmokePos (int i, vms_vector *pos);
+void SetSmokePos (int i, vmsVector *pos);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
 tCloud *GetCloud (int i, int j);
 int GetSmokeType (int i);
 void FreeParticleImages (void);
-void SetCloudPos (tCloud *pCloud, vms_vector *pos);
+void SetCloudPos (tCloud *pCloud, vmsVector *pos);
 void InitSmoke (void);
 
 extern int bUseSmoke;

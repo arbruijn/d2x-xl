@@ -73,7 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define DEFAULT_DIFFICULTY		1
 
-#define DEFAULT_CONTROL_CENTER_EXPLOSION_TIME 30    // Note: Usually uses Alan_pavlish_reactor_times, but can be overridden in editor.
+#define DEFAULT_CONTROL_CENTER_EXPLOSION_TIME 30    // Note: Usually uses Alan_pavlish_reactorTimes, but can be overridden in editor.
 
 #define MAX_PLAYERS 8
 #define MAX_MULTI_PLAYERS MAX_PLAYERS+3
@@ -327,7 +327,7 @@ typedef struct tGameplayStates {
 	int bTagFlag;
 	int nShieldFlash;
 	fix nPlayerSpeed;
-	vms_vector vTgtDir;
+	vmsVector vTgtDir;
 	int nDirSteps;
 	tSeismicStates seismic;
 } tGameplayStates;
@@ -662,9 +662,9 @@ extern tGameOptions	*gameOpts;
 #define MAX_PATH_POINTS		20
 
 typedef struct tPathPoint {
-	vms_vector			vPos;
-	vms_vector			vOrgPos;
-	vms_matrix			mOrient;
+	vmsVector			vPos;
+	vmsVector			vOrgPos;
+	vmsMatrix			mOrient;
 } tPathPoint;
 
 typedef struct tFlightPath {
@@ -682,13 +682,13 @@ typedef struct tFlightPath {
 typedef struct tLightInfo {
 	short			nIndex;
 	float			glPos [4];
-	vms_vector	pos;
+	vmsVector	pos;
 	short			nShadowMap;
 	short			nSegNum;
 	ubyte			nSideNum;
 	ubyte			nShadowFrame;	//set per frame when scene as seen from a light source has been rendered
 #ifdef _DEBUG
-	vms_matrix	orient;
+	vmsMatrix	orient;
 #endif
 } tLightInfo;
 
@@ -732,8 +732,8 @@ typedef struct tSphereData {
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
 
 typedef struct tOglLight {
-	vms_vector	vPos;
-	vms_vector	vDir;
+	vmsVector	vPos;
+	vmsVector	vDir;
 	tRgbColorf	color;
 	float			brightness;
 	float			rad;
@@ -795,8 +795,8 @@ typedef struct tShaderLightData {
 
 typedef struct tOglLightData {
 	tOglLight			lights [MAX_OGL_LIGHTS];
-	short					nNearestSegLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
-	short					nNearestVertLights [MAX_VERTICES][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every segment
+	short					nNearestSegLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
+	short					nNearestVertLights [MAX_VERTICES][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
 	short					owners [MAX_OBJECTS];
 	short					nLights;
 	short					nHeadLights [MAX_PLAYERS];
@@ -809,8 +809,8 @@ extern int nMaxNearestLights [21];
 
 //Flickering light system
 typedef struct flickering_light {
-	short				segnum;
-	short				sidenum;
+	short				nSegment;
+	short				nSide;
 	unsigned long	mask;     // determines flicker pattern
 	fix				timer;    // time until next change
 	fix				delay;    // time between changes
@@ -840,14 +840,14 @@ typedef struct tShadowData {
 	tLightInfo	lightInfo [MAX_SEGMENTS * 6];
 	short			nShadowMaps;
 	tCamera		shadowMaps [MAX_SHADOW_MAPS];
-	object		lightSource;
+	tObject		lightSource;
 	ubyte			nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 } tShadowData;
 
 #include "morph.h"
 
 typedef struct tMorphData {
-	morph_data	objects [MAX_MORPH_OBJECTS];
+	tMorphInfo	objects [MAX_MORPH_OBJECTS];
 	fix			xRate;
 } tMorphData;
 
@@ -888,7 +888,7 @@ typedef struct tTerrainRenderData {
 	fix			*pLightMap;
 	grs_bitmap	*bmP;
 	g3s_point	saveRow [TERRAIN_GRID_MAX_SIZE];
-	vms_vector	vStartPoint;
+	vmsVector	vStartPoint;
 	uvl			uvlList [2][3];
 	int			bOutline;
 	int			nGridW, nGridH;
@@ -924,7 +924,7 @@ typedef struct tRenderData {
 
 typedef struct tSecretData {
 	int			nReturnSegment;
-	vms_matrix	returnOrient;
+	vmsMatrix	returnOrient;
 
 } tSecretData;
 
@@ -934,14 +934,14 @@ typedef struct tSlideSegs {
 } tSlideSegs;
 
 typedef struct tSegmentData {
-	vms_vector			vertices [MAX_VERTICES];
+	vmsVector			vertices [MAX_VERTICES];
 	fVector3				fVertices [MAX_VERTICES];
-	segment				segments [MAX_SEGMENTS];
+	tSegment				segments [MAX_SEGMENTS];
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
 	g3s_point			points [MAX_VERTICES];
-	vms_vector			segCenters [MAX_SEGMENTS];
-	vms_vector			sideCenters [MAX_SEGMENTS * 6];
+	vmsVector			segCenters [MAX_SEGMENTS];
+	vmsVector			sideCenters [MAX_SEGMENTS * 6];
 	int					nVertices;
 	int					nLastVertex;
 	short					nSegments;
@@ -969,9 +969,9 @@ typedef struct tWallData {
 } tWallData;
 
 typedef struct tTriggerData {
-	trigger				triggers [MAX_TRIGGERS];
-	trigger				objTriggers [MAX_TRIGGERS];
-	obj_trigger_ref	objTriggerRefs [MAX_OBJ_TRIGGERS];
+	tTrigger				triggers [MAX_TRIGGERS];
+	tTrigger				objTriggers [MAX_TRIGGERS];
+	tObjTriggerRef	objTriggerRefs [MAX_OBJ_TRIGGERS];
 	short					firstObjTrigger [MAX_OBJECTS_D2X];
 	long					delay [MAX_TRIGGERS];
 	int					nTriggers;
@@ -979,7 +979,7 @@ typedef struct tTriggerData {
 } tTriggerData;
 
 typedef struct tPowerupData {
-	powerup_type_info info [MAX_POWERUP_TYPES];
+	powerupType_info info [MAX_POWERUP_TYPES];
 	int					nTypes;
 } tPowerupData;
 
@@ -992,12 +992,12 @@ typedef struct tObjTypeData {
 
 typedef struct tObjectData {
 	tObjTypeData		types;
-	object				objects [MAX_OBJECTS];
+	tObject				objects [MAX_OBJECTS];
 	short					freeList [MAX_OBJECTS];
 	short					parentObjs [MAX_OBJECTS];
 	tObjectRef			childObjs [MAX_OBJECTS];
 	short					firstChild [MAX_OBJECTS];
-	object				init [MAX_OBJECTS];
+	tObject				init [MAX_OBJECTS];
 	tObjDropInfo		dropInfo [MAX_OBJECTS];
 	fix					xLastAfterburnerTime [MAX_OBJECTS];
 	short					nFirstDropped;
@@ -1005,13 +1005,13 @@ typedef struct tObjectData {
 	short					nFreeDropped;
 	short					nDropped;
 	ushort				cameraRef [MAX_OBJECTS];
-	object				*guidedMissile [MAX_PLAYERS];
+	tObject				*guidedMissile [MAX_PLAYERS];
 	int					guidedMissileSig [MAX_PLAYERS];
-	object				*console;
-	object				*viewer;
-	object				*missileViewer;
-	object				*deadPlayerCamera;
-	object				*endLevelCamera;
+	tObject				*console;
+	tObject				*viewer;
+	tObject				*missileViewer;
+	tObject				*deadPlayerCamera;
+	tObject				*endLevelCamera;
 	int					nObjects;
 	int					nLastObject;
 	int					nObjectLimit;
@@ -1028,9 +1028,9 @@ typedef struct tObjectData {
 typedef struct tPOF_face {
 	short					nVerts;
 	short					*pVerts;
-	vms_vector			vPlane;
-	vms_vector			vNorm;
-	vms_vector			vRotNorm;
+	vmsVector			vPlane;
+	vmsVector			vNorm;
+	vmsVector			vRotNorm;
 	tOOF_vector			vNormf;
 	ubyte					bFacingLight;
 	ubyte					bGlow :1;
@@ -1068,14 +1068,14 @@ typedef struct tPOF_subObjList {
 	tPOF_subObject		*pSubObjs;
 } tPOF_subObjList;
 
-typedef struct tPOF_object {
+typedef struct tPOFObject {
 	tPOF_subObjList	subObjs;
 	short					nVerts;
-	vms_vector			*pvVerts;
+	vmsVector			*pvVerts;
 	tOOF_vector			*pvVertsf;
 	g3s_normal			*pVertNorms;
-	vms_vector			vCenter;
-	vms_vector			*pvRotVerts;
+	vmsVector			vCenter;
+	vmsVector			*pvRotVerts;
 	tPOF_faceList		faces;
 	tPOF_edgeList		edges;
 	short					*pFaceVerts;
@@ -1085,7 +1085,7 @@ typedef struct tPOF_object {
 	short					iFace;
 	short					iFaceVert;
 	char					nState;
-} tPOF_object;
+} tPOFObject;
 
 //------------------------------------------------------------------------------
 
@@ -1093,9 +1093,9 @@ typedef struct tPOF_object {
 
 typedef struct tRobotData {
 	char					*robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];
-	robot_info			info [2][MAX_ROBOT_TYPES];
-	robot_info			defaultInfo [MAX_ROBOT_TYPES];
-	tPOF_object			pofData [2][MAX_ROBOT_TYPES];
+	tRobotInfo			info [2][MAX_ROBOT_TYPES];
+	tRobotInfo			defaultInfo [MAX_ROBOT_TYPES];
+	tPOFObject			pofData [2][MAX_ROBOT_TYPES];
 	jointpos				joints [MAX_ROBOT_JOINTS];
 	jointpos				defaultJoints [MAX_ROBOT_JOINTS];
 	int					nJoints;
@@ -1105,14 +1105,14 @@ typedef struct tRobotData {
 	int					nTypes [2];
 	int					nDefaultTypes;
 	int					bReplacementsLoaded;
-	robot_info			*pInfo;
-	tPOF_object			*pPofData;
+	tRobotInfo			*pInfo;
+	tPOFObject			*pPofData;
 } tRobotData;
 
 typedef struct tSoundData {
-	digi_sound			sounds [2][MAX_SOUND_FILES];
+	digiSound			sounds [2][MAX_SOUND_FILES];
 	int					nSoundFiles [2];
-	digi_sound			*pSounds;
+	digiSound			*pSounds;
 } tSoundData;
 
 #define N_COCKPIT_BITMAPS 6
@@ -1124,10 +1124,10 @@ typedef struct tTextureData {
 	grs_bitmap			altBitmaps [2][MAX_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
 	alias					aliases [MAX_ALIASES];
-	bitmap_index		bmIndex [2][MAX_TEXTURES];
-	bitmap_index		objBmIndex [MAX_OBJ_BITMAPS];
+	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
+	tBitmapIndex		objBmIndex [MAX_OBJ_BITMAPS];
 	ushort				pObjBmIndex [MAX_OBJ_BITMAPS];
-	bitmap_index		cockpitBmIndex [N_COCKPIT_BITMAPS];
+	tBitmapIndex		cockpitBmIndex [N_COCKPIT_BITMAPS];
 	int					nBitmaps [2];
 	int					nObjBitmaps;
 	int					bPageFlushed;
@@ -1140,7 +1140,7 @@ typedef struct tTextureData {
 	BitmapFile			*pBitmapFiles;
 	grs_bitmap			*pBitmaps;
 	grs_bitmap			*pAltBitmaps;
-	bitmap_index		*pBmIndex;
+	tBitmapIndex		*pBmIndex;
 	tmap_info			*pTMapInfo;
 	int					brightness [MAX_WALL_TEXTURES];
 } tTextureData;
@@ -1157,7 +1157,7 @@ typedef struct tEffectData {
 #define N_PLAYER_GUNS 8
 
 typedef struct player_ship {
-	int					model_num;
+	int					nModel;
 	int					expl_vclip_num;
 	fix					mass,drag;
 	fix					max_thrust,
@@ -1165,7 +1165,7 @@ typedef struct player_ship {
 							brakes;
 	fix					wiggle;
 	fix					max_rotthrust;
-	vms_vector			gun_points [N_PLAYER_GUNS];
+	vmsVector			gun_points [N_PLAYER_GUNS];
 } player_ship;
 
 typedef struct tShipData {
@@ -1174,9 +1174,9 @@ typedef struct tShipData {
 } tShipData;
 
 typedef struct tFlagData {
-	bitmap_index		bmi;
+	tBitmapIndex		bmi;
 	vclip					*vcP;
-	vclip_info			vci;
+	tVClipInfo			vci;
 	tFlightPath			path;
 } tFlagData;
 
@@ -1219,7 +1219,7 @@ typedef struct tWeaponData {
 
 typedef struct tModelData {
 	int					nHiresModels;
-	tOOF_object			hiresModels [MAX_HIRES_MODELS];
+	tOOFObject			hiresModels [MAX_HIRES_MODELS];
 	ubyte					bHaveHiresModel [MAX_HIRES_MODELS];
 	polymodel			polyModels [MAX_POLYGON_MODELS];
 	polymodel			defPolyModels [MAX_POLYGON_MODELS];
@@ -1228,7 +1228,7 @@ typedef struct tModelData {
 	g3s_point			polyModelPoints [MAX_POLYGON_VERTS];
 	fVector3				fPolyModelVerts [MAX_POLYGON_VERTS];
 	grs_bitmap			*textures [MAX_POLYOBJ_TEXTURES];
-	bitmap_index		textureIndex [MAX_POLYOBJ_TEXTURES];
+	tBitmapIndex		textureIndex [MAX_POLYOBJ_TEXTURES];
 	int					nSimpleModelThresholdScale;
 	int					nMarkerModel;
 	int					nCockpits;
@@ -1254,7 +1254,7 @@ typedef struct tAutoNetGame {
 } tAutoNetGame;
 
 typedef struct tLeftoverPowerup {
-	object				*spitterP;
+	tObject				*spitterP;
 	ubyte					nCount;
 	ubyte					nType;
 } tLeftoverPowerup;
@@ -1265,7 +1265,7 @@ typedef struct tMultiplayerData {
 	int 					nLocalPlayer;					
 	int					nPlayerPositions;
 	player				players [MAX_PLAYERS + 4];                   
-	obj_position		playerInit [MAX_PLAYERS];
+	tObjPosition		playerInit [MAX_PLAYERS];
 	short					nVirusCapacity [MAX_PLAYERS];
 	int					nLastHitTime [MAX_PLAYERS];
 	char					bWasHit [MAX_PLAYERS];
@@ -1325,7 +1325,7 @@ typedef struct tCountdownData {
 
 typedef struct tReactorData {
 	reactor				reactors [MAX_REACTORS];
-	reactor_triggers	triggers;
+	tReactorTriggers	triggers;
 	int					nReactors;
 	int					bPresent;
 	int					bDisabled;
@@ -1342,10 +1342,10 @@ typedef struct tReactorData {
 #define MARKER_MESSAGE_LEN  40
 
 typedef struct tMarkerData {
-	vms_vector			point [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
+	vmsVector			point [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
 	char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 	char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
-	short					object [NUM_MARKERS];
+	short					tObject [NUM_MARKERS];
 	int					nHighlight;
 	float					fScale;
 	ubyte					nDefiningMsg;
@@ -1416,14 +1416,14 @@ typedef struct tAIData {
 	int					bEvaded;
 	int					bEnableAnimation;
 	int					bInfoEnabled;
-	vms_vector			vHitPos;
+	vmsVector			vHitPos;
 	int					nHitType;
 	int					nHitSeg;
 	fvi_info				hitData;
 	short					nBelievedPlayerSeg;
-	vms_vector			vBelievedPlayerPos;
+	vmsVector			vBelievedPlayerPos;
 	fix					nDistToLastPlayerPosFiredAt;
-	ai_local				localInfo [MAX_OBJECTS];
+	tAILocal				localInfo [MAX_OBJECTS];
 	ai_cloak_info		cloakInfo [MAX_AI_CLOAK_INFO];
 	point_seg			pointSegs [MAX_POINT_SEGS];
 	point_seg			*freePointSegs;
@@ -1434,14 +1434,14 @@ typedef struct tAIData {
 typedef struct tSatelliteData {
 	grs_bitmap			bmInstance;
 	grs_bitmap			*bmP;
-	vms_vector			vPos;
-	vms_vector			vUp;
+	vmsVector			vPos;
+	vmsVector			vUp;
 } tSatelliteData;
 
 typedef struct tStationData {
 	grs_bitmap			*bmP;
 	grs_bitmap			**bmList [1];
-	vms_vector			vPos;
+	vmsVector			vPos;
 	int					nModel;
 } tStationData;
 
@@ -1453,10 +1453,10 @@ typedef struct tTerrainData {
 typedef struct tExitData {
 	int					nModel;
 	int					nDestroyedModel;
-	vms_vector			vMineExit;
-	vms_vector			vGroundExit;
-	vms_vector			vSideExit;
-	vms_matrix			mOrient;
+	vmsVector			vMineExit;
+	vmsVector			vGroundExit;
+	vmsVector			vSideExit;
+	vmsMatrix			mOrient;
 	short					nSegNum;
 	short					nTransitSegNum;
 } tExitData;
@@ -1508,7 +1508,7 @@ typedef struct tMatCenData {
 	matcen_info		robotCenters [MAX_ROBOT_CENTERS];
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];
-	segment			*playerSegP;
+	tSegment			*playerSegP;
 } tMatCenData;
 
 typedef struct tDemoData {
@@ -1601,7 +1601,7 @@ typedef struct tHoardData {
 	tHoardItem	goal;
 	tHoardItem	monsterball;
 	short			nMonsterballSeg;
-	object		*monsterballP;
+	tObject		*monsterballP;
 	short			nLastHitter;
 } tHoardData;
 
@@ -1688,9 +1688,9 @@ extern tBossProps bossProps [2][NUM_D2_BOSSES];
 extern char szAutoMission [255];
 extern char szAutoHogFile [255];
 
-static inline ushort WallNumS (side *sideP) { return (sideP)->wall_num; }
-static inline ushort WallNumP (segment *segP, short sidenum) { return WallNumS ((segP)->sides + (sidenum)); }
-static inline ushort WallNumI (short segnum, short sidenum) { return WallNumP(gameData.segs.segments + (segnum), sidenum); }
+static inline ushort WallNumS (tSide *sideP) { return (sideP)->nWall; }
+static inline ushort WallNumP (tSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
+static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(gameData.segs.segments + (nSegment), nSide); }
 
 #define	NO_WALL		(gameStates.app.bD2XLevel ? 2047 : 255)
 #define  IS_WALL(_wallnum)	((ushort) (_wallnum) < NO_WALL)
@@ -1704,7 +1704,7 @@ static inline ushort WallNumI (short segnum, short sidenum) { return WallNumP(ga
 
 #ifdef PIGGY_USE_PAGING
 
-static inline void PIGGY_PAGE_IN (bitmap_index bmi, int bD1) 
+static inline void PIGGY_PAGE_IN (tBitmapIndex bmi, int bD1) 
 {
 grs_bitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi.index;
 if (!bmP->bm_texBuf || (bmP->bm_props.flags & BM_FLAG_PAGED_OUT))

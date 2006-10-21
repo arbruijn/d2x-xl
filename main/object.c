@@ -1,4 +1,4 @@
-/* $Id: object.c, v 1.9 2003/10/04 03:14:47 btb Exp $ */
+/* $Id: tObject.c, v 1.9 2003/10/04 03:14:47 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * object rendering
+ * tObject rendering
  *
  * Old Log:
  * Revision 1.5  1995/10 / 26  14:08:03  allender
@@ -48,13 +48,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.335  1995/02 / 22  12:57:30  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.334  1995/02/09  22:04:40  mike
  * fix lifeleft on badass weapons.
  *
  * Revision 1.333  1995/02/08  12:54:00  matt
- * Fixed object freeing code which was deleting some explosions it shouldn't
+ * Fixed tObject freeing code which was deleting some explosions it shouldn't
  *
  * Revision 1.332  1995/02/08  11:37:26  mike
  * Check for failures in call to CreateObject.
@@ -94,17 +94,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Moved matrix check to avoid orthogonalizing an uninitialize matrix
  *
  * Revision 1.320  1995/01 / 25  12:11:35  matt
- * Make sure orient matrix is orthogonal when resetting player object
+ * Make sure orient matrix is orthogonal when resetting player tObject
  *
  * Revision 1.319  1995/01 / 21  21:46:22  mike
  * Optimize code in Assert (and prevent warning message).
  *
  * Revision 1.318  1995/01 / 21  21:22:16  rob
  * Removed HUD clear messages.
- * Added more Asserts to try and find illegal control type bug.
+ * Added more Asserts to try and find illegal control nType bug.
  *
  * Revision 1.317  1995/01/15  15:34:30  matt
- * When freeing object slots, don't d_free fireballs that will be deleting
+ * When freeing tObject slots, don't d_free fireballs that will be deleting
  * other gameData.objs.objects.
  *
  * Revision 1.316  1995/01/14  19:16:48  john
@@ -114,13 +114,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed parameter passing error.
  *
  * Revision 1.314  1995/01/12  12:09:47  yuan
- * Added coop object capability.
+ * Added coop tObject capability.
  *
  * Revision 1.313  1994/12/15  16:45:44  matt
  * Took out slew stuff for release version
  *
  * Revision 1.312  1994/12/15  13:04:25  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
  *
  * Revision 1.311  1994/12/15  11:01:04  mike
  * add Object_minus_one for debugging.
@@ -144,7 +144,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added command-line option, -nolevel, which turns off player ship levelling
  *
  * Revision 1.304  1994/12/11  22:03:23  mike
- * d_free up object slots as necessary.
+ * d_free up tObject slots as necessary.
  *
  * Revision 1.303  1994/12/11  14:09:31  mike
  * make boss explosion sounds softer.
@@ -168,24 +168,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *   2.  Only record dodging information if the player fired in a frame
  *
  * Revision 1.297  1994/12/09  14:59:12  matt
- * Added system to attach a fireball to another object for rendering purposes, 
- * so the fireball always renders on top of (after) the object.
+ * Added system to attach a fireball to another tObject for rendering purposes, 
+ * so the fireball always renders on top of (after) the tObject.
  *
  * Revision 1.296  1994/12/08  20:05:07  matt
  * Removed unneeded debug message
  *
  * Revision 1.295  1994/12/08  12:36:02  matt
- * Added new object allocation & deallocation functions so other code
- * could stop messing around with internal object data structures.
+ * Added new tObject allocation & deallocation functions so other code
+ * could stop messing around with internal tObject data structures.
  *
  * Revision 1.294  1994/12/07  20:13:37  matt
- * Added debris object limiter
+ * Added debris tObject limiter
  *
  * Revision 1.293  1994/12/06  16:58:38  matt
  * Killed warnings
  *
  * Revision 1.292  1994/12/05  22:34:35  matt
- * Make tmap_override gameData.objs.objects use override texture as alt texture.  This
+ * Make nTexOverride gameData.objs.objects use override texture as alt texture.  This
  * should have the effect of making simpler models use the override texture.
  *
  * Revision 1.291  1994/12/05  12:23:53  mike
@@ -239,7 +239,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Hacked in support for player ships with different textures
  *
  * Revision 1.275  1994/11/08  12:19:08  mike
- * Make a generally useful function for putting small explosions on any object.
+ * Make a generally useful function for putting small explosions on any tObject.
  *
  * Revision 1.274  1994/11/04  19:55:54  rob
  * Changed calls to player_explode to accomodate new parameter.
@@ -266,7 +266,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Boss cloaking effect.
  *
  * Revision 1.266  1994/10 / 27  11:33:42  mike
- * Add gameData.objs.nObjectLimit -- high water mark in object creation.
+ * Add gameData.objs.nObjectLimit -- high water mark in tObject creation.
  *
  * Revision 1.265  1994/10 / 25  10:51:12  matt
  * Vulcan cannon powerups now contain ammo count
@@ -281,7 +281,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Use new constant IMMORTAL_TIME.
  *
  * Revision 1.261  1994/10/19  16:50:35  matt
- * If out of segment, put player in center of segment when checking gameData.objs.objects
+ * If out of tSegment, put player in center of tSegment when checking gameData.objs.objects
  *
  *
  * Revision 1.260  1994/10/17  23:21:55  mike
@@ -319,7 +319,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed cloaking routine.
  *
  * Revision 1.249  1994/10/07  22:17:27  mike
- * Asserts on valid segnum.
+ * Asserts on valid nSegment.
  *
  * Revision 1.248  1994/10/07  19:11:14  matt
  * Added cool cloak transition effect
@@ -417,11 +417,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
-extern vms_vector player_thrust;
+extern vmsVector player_thrust;
 extern int bSpeedBost;
 
-void DetachAllObjects (object *parent);
-void DetachOneObject (object *sub);
+void DetachAllObjects (tObject *parent);
+void DetachOneObject (tObject *sub);
 int FreeObjectSlots (int num_used);
 
 /*
@@ -439,7 +439,7 @@ short idToOOF [100];
 
 //info on the various types of gameData.objs.objects
 #ifdef _DEBUG
-object	Object_minus_one;
+tObject	Object_minus_one;
 #endif
 
 //------------------------------------------------------------------------------
@@ -450,16 +450,16 @@ object	Object_minus_one;
 
 // char *gameData.bots.names [MAX_ROBOT_TYPES];		//name of each robot
 
-//--unused-- int Num_robot_types = 0;
+//--unused-- int NumRobotTypes = 0;
 
 int bPrintObjectInfo = 0;
 //@@int Object_viewer = 0;
 
-//object * Slew_object = NULL;	// Object containing slew object info.
+//tObject * SlewObject = NULL;	// Object containing slew tObject info.
 
-//--unused-- int Player_controller_type = 0;
+//--unused-- int Player_controllerType = 0;
 
-window_rendered_data Window_rendered_data [MAX_RENDERED_WINDOWS];
+tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
 #ifdef _DEBUG
 char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
@@ -485,76 +485,76 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
 #endif
 
 #ifndef RELEASE
-//set viewer object to next object in array
+//set viewer tObject to next tObject in array
 void ObjectGotoNextViewer ()
 {
 	int i, nStartObj = 0;
 
-	nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer object number
+	nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer tObject number
 	for (i = 0;i<=gameData.objs.nLastObject;i++) {
 		nStartObj++;
 		if (nStartObj > gameData.objs.nLastObject) nStartObj = 0;
 
-		if (gameData.objs.objects [nStartObj].type != OBJ_NONE)	{
+		if (gameData.objs.objects [nStartObj].nType != OBJ_NONE)	{
 			gameData.objs.viewer = gameData.objs.objects + nStartObj;
 			return;
 		}
 	}
-	Error ("Couldn't find a viewer object!");
+	Error ("Couldn't find a viewer tObject!");
 }
 
 //------------------------------------------------------------------------------
-//set viewer object to next object in array
+//set viewer tObject to next tObject in array
 void ObjectGotoPrevViewer ()
 {
 	int i, nStartObj = 0;
 
-	nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer object number
+	nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer tObject number
 	for (i = 0; i<=gameData.objs.nLastObject; i++) {
 		nStartObj--;
 		if (nStartObj < 0) nStartObj = gameData.objs.nLastObject;
-		if (gameData.objs.objects [nStartObj].type != OBJ_NONE)	{
+		if (gameData.objs.objects [nStartObj].nType != OBJ_NONE)	{
 			gameData.objs.viewer = gameData.objs.objects + nStartObj;
 			return;
 		}
 	}
-	Error ("Couldn't find a viewer object!");
+	Error ("Couldn't find a viewer tObject!");
 }
 #endif
 
 //------------------------------------------------------------------------------
 
-object *ObjFindFirstOfType (int type)
+tObject *ObjFindFirstOfType (int nType)
  {
   int i;
-  object	*objP = gameData.objs.objects;
+  tObject	*objP = gameData.objs.objects;
 
   for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->type==type)
+	if (objP->nType==nType)
 	 return (objP);
-  return ((object *)NULL);
+  return ((tObject *)NULL);
  }
 
 
-int obj_return_num_of_type (int type)
+int obj_return_num_ofType (int nType)
  {
   int i, count = 0;
-	object *objP = gameData.objs.objects;
+	tObject *objP = gameData.objs.objects;
 
   for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->type==type)
+	if (objP->nType==nType)
 	 count++;
   return (count);
  }
 
 
-int obj_return_num_of_typeid (int type, int id)
+int obj_return_num_ofTypeid (int nType, int id)
  {
   int i, count = 0;
-	object	*objP = gameData.objs.objects;
+	tObject	*objP = gameData.objs.objects;
 
   for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->type==type && objP->id==id)
+	if (objP->nType==nType && objP->id==id)
 	 count++;
   return (count);
  }
@@ -562,23 +562,23 @@ int obj_return_num_of_typeid (int type, int id)
 int global_orientation = 0;
 
 //------------------------------------------------------------------------------
-//draw an object that has one bitmap & doesn't rotate
+//draw an tObject that has one bitmap & doesn't rotate
 
 extern tRgbColorf bitmapColors [MAX_BITMAP_FILES];
 
-void DrawObjectBlob (object *objP, bitmap_index bmi0, bitmap_index bmi, int iFrame, tRgbColorf *color, float alpha)
+void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbColorf *color, float alpha)
 {
 	grs_bitmap	*bmP;
 	int			id, orientation = 0;
-	int			transp = (objP->type == OBJ_FIREBALL) && (objP->render_type != RT_THRUSTER);
-	int			bDepthInfo = 1; // (objP->type != OBJ_FIREBALL);
+	int			transp = (objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
+	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
 	if (transp)
 		alpha = 1.0;
 	else if (!alpha) {
-		if (objP->type == OBJ_POWERUP) {
+		if (objP->nType == OBJ_POWERUP) {
 			id = objP->id;
 			if ((id == POW_EXTRA_LIFE) ||
 				 (id == POW_ENERGY) ||
@@ -591,7 +591,7 @@ if (gameOpts->render.bTransparentEffects) {
 				alpha = 1.0f;
 			orientation = OBJ_IDX (objP) & 7;
 			}
-		else if (objP->type != OBJ_FIREBALL)
+		else if (objP->nType != OBJ_FIREBALL)
 			alpha = 1.0f;
 		else {
 			orientation = (OBJ_IDX (objP)) & 7;
@@ -606,7 +606,7 @@ else {
 orientation = global_orientation;
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-if ((bmP->bm_type == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
+if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	bmP = BM_OVERRIDE (bmP);
 	if (BM_FRAMES (bmP))
 		bmP = BM_FRAMES (bmP) + iFrame;
@@ -650,12 +650,12 @@ if (color) {
 }
 
 //------------------------------------------------------------------------------
-//draw an object that is a texture-mapped rod
-void DrawObjectRodTexPoly (object *objP, bitmap_index bmi, int lighted)
+//draw an tObject that is a texture-mapped rod
+void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int lighted)
 {
 	grs_bitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
-	vms_vector delta, top_v, bot_v;
+	vmsVector delta, top_v, bot_v;
 	g3s_point top_p, bot_p;
 
 PIGGY_PAGE_IN (bmi, 0);
@@ -703,7 +703,7 @@ extern fix Max_thrust;
 
 //------------------------------------------------------------------------------
 //do special cloaked render
-void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
+void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
 	fix	xCloakDeltaTime, xTotalCloakedTime;
 	fix	xLightScale = F1_0;
@@ -714,7 +714,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 
 
 	xTotalCloakedTime = xCloakEndTime - xCloakStartTime;
-	switch (objP->type) {
+	switch (objP->nType) {
 		case OBJ_PLAYER:
 			xCloakFadeinDuration = CLOAK_FADEIN_DURATION_PLAYER;
 			xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_PLAYER;
@@ -724,7 +724,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 			xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_ROBOT;
 			break;
 		default:
-			Int3 ();		//	Contact Mike: Unexpected object type in DrawCloakedObject.
+			Int3 ();		//	Contact Mike: Unexpected tObject nType in DrawCloakedObject.
 	}
 
 	xCloakDeltaTime = gameData.time.xGame - xCloakStartTime;
@@ -739,7 +739,7 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 		static int nCloakDelta = 0, nCloakDir = 1;
 		static fix xCloakTimer = 0;
 
-		//note, if more than one cloaked object is visible at once, the
+		//note, if more than one cloaked tObject is visible at once, the
 		//pulse rate will change!
 		xCloakTimer -= gameData.time.xFrame;
 		while (xCloakTimer < 0) {
@@ -758,22 +758,22 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 
 	if (bFading) {
 		fix xNewLight, xSaveGlow;
-		bitmap_index * alt_textures = NULL;
+		tBitmapIndex * nAltTextures = NULL;
 
 #ifdef NETWORK
-		if (objP->rtype.pobj_info.alt_textures > 0)
-			alt_textures = multi_player_textures [objP->rtype.pobj_info.alt_textures-1];
+		if (objP->rType.polyObjInfo.nAltTextures > 0)
+			nAltTextures = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
 #endif
 		xNewLight = FixMul (light, xLightScale);
 		xSaveGlow = glow [0];
 		glow [0] = FixMul (glow [0], xLightScale);
 		DrawPolygonModel (objP, &objP->pos, 
 				   &objP->orient, 
-				   (vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-				   objP->rtype.pobj_info.model_num, objP->rtype.pobj_info.subobj_flags, 
+				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 				   xNewLight, 
 				   glow, 
-				   alt_textures, 
+				   nAltTextures, 
 					NULL);
 		glow [0] = xSaveGlow;
 	}
@@ -783,8 +783,8 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 		G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
 		DrawPolygonModel (objP, &objP->pos, 
 				   &objP->orient, 
-				   (vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-				   objP->rtype.pobj_info.model_num, objP->rtype.pobj_info.subobj_flags, 
+				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 				   light, 
 				   glow, 
 				   NULL, 
@@ -795,8 +795,8 @@ void DrawCloakedObject (object *objP, fix light, fix *glow, fix xCloakStartTime,
 }
 
 //------------------------------------------------------------------------------
-//draw an object which renders as a polygon model
-void DrawPolygonObject (object *objP)
+//draw an tObject which renders as a polygon model
+void DrawPolygonObject (tObject *objP)
 {
 	fix xLight;
 	int imSave;
@@ -808,72 +808,72 @@ void DrawPolygonObject (object *objP)
 
 	//	If option set for bright players in netgame, brighten them!
 #ifdef NETWORK
-if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->type == OBJ_PLAYER))
+if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
 	xLight = F1_0;
 else
 #endif
 xLight = ComputeObjectLight (objP, NULL);
 //make robots brighter according to robot glow field
-if (objP->type == OBJ_ROBOT) {
+if (objP->nType == OBJ_ROBOT) {
 #ifdef _DEBUG
 	xLight = ComputeObjectLight (objP, NULL);
 #endif
 	xLight += (gameData.bots.pInfo [objP->id].glow<<12);		//convert 4:4 to 16:16
 	}
-else if (objP->type == OBJ_WEAPON) {
+else if (objP->nType == OBJ_WEAPON) {
 	if (objP->id == FLARE_ID)
 		xLight += F1_0 * 2;
 	}
-else if (objP->type == OBJ_MARKER)
+else if (objP->nType == OBJ_MARKER)
  	xLight += F1_0 * 2;
 imSave = gameStates.render.nInterpolationMethod;
 if (bLinearTMapPolyObjs)
 	gameStates.render.nInterpolationMethod = 1;
 //set engine glow value
 ComputeEngineGlow (objP, xEngineGlow);
-if (objP->rtype.pobj_info.tmap_override != -1) {
+if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #ifdef _DEBUG
-	polymodel *pm = gameData.models.polyModels + objP->rtype.pobj_info.model_num;
+	polymodel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
-	bitmap_index bmiP [12];
+	tBitmapIndex bmiP [12];
 	int i;
 
 	Assert (pm->n_textures <= 12);
 	for (i = 0;i<12;i++)		//fill whole array, in case simple model needs more
-		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rtype.pobj_info.tmap_override];
+		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride];
 
 	DrawPolygonModel (objP, &objP->pos, 
 				&objP->orient, 
-				(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-				objP->rtype.pobj_info.model_num, 
-				objP->rtype.pobj_info.subobj_flags, 
+				(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+				objP->rType.polyObjInfo.nModel, 
+				objP->rType.polyObjInfo.nSubObjFlags, 
 				xLight, 
 				xEngineGlow, 
 				bmiP, 
 				NULL);
 }
 else {
-	if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloak_time, gameData.multi.players [objP->id].cloak_time+CLOAK_TIME_MAX);
-	else if ((objP->type == OBJ_ROBOT) && (objP->ctype.ai_info.CLOAKED)) {
-		if (gameData.bots.pInfo [objP->id].boss_flag)
+	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime+CLOAK_TIME_MAX);
+	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
+		if (gameData.bots.pInfo [objP->id].bossFlag)
 			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss.nCloakStartTime, gameData.boss.nCloakEndTime);
 		else
 			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame-F1_0*10, gameData.time.xGame+F1_0*10);
 		}
 	else {
-		bitmap_index *bmiAltTex = NULL;
+		tBitmapIndex *bmiAltTex = NULL;
 		#ifdef NETWORK
-		if (objP->rtype.pobj_info.alt_textures > 0)
-			bmiAltTex = multi_player_textures [objP->rtype.pobj_info.alt_textures-1];
+		if (objP->rType.polyObjInfo.nAltTextures > 0)
+			bmiAltTex = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
 		#endif
 
 		//	Snipers get bright when they fire.
 		if (gameData.ai.localInfo [OBJ_IDX (objP)].next_fire < F1_0/8) {
-			if (objP->ctype.ai_info.behavior == AIB_SNIPE)
+			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 				xLight = 2*xLight + F1_0;
 		}
-		bBlendPolys = (objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].model_num_inner > -1);
+		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].model_num_inner > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 		if (bBlendPolys) {
 #if OGL_ZBUF
@@ -886,9 +886,9 @@ else {
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
 				DrawPolygonModel (
 					objP, &objP->pos, &objP->orient, 
-					(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
+					(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 					gameData.weapons.info [objP->id].model_num_inner, 
-					objP->rtype.pobj_info.subobj_flags, 
+					objP->rType.polyObjInfo.nSubObjFlags, 
 					bBrightPolys ? F1_0 : xLight, 
 					xEngineGlow, 
 					bmiAltTex, 
@@ -896,13 +896,13 @@ else {
 			}
 		DrawPolygonModel (
 			objP, &objP->pos, &objP->orient, 
-			(vms_angvec *)&objP->rtype.pobj_info.anim_angles, 
-			objP->rtype.pobj_info.model_num, 
-			objP->rtype.pobj_info.subobj_flags, 
+			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+			objP->rType.polyObjInfo.nModel, 
+			objP->rType.polyObjInfo.nSubObjFlags, 
 			bBrightPolys ? F1_0 : xLight, 
 			xEngineGlow, 
 			bmiAltTex, 
-			(objP->type == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+			(objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 #if OGL_ZBUF
 		if (bBlendPolys && !gameOpts->legacy.bRender) {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
@@ -916,27 +916,27 @@ gameStates.render.nInterpolationMethod = imSave;
 
 //------------------------------------------------------------------------------
 // These variables are used to keep a list of the 3 closest robots to the viewer.
-// The code works like this: Every time render object is called with a polygon model, 
+// The code works like this: Every time render tObject is called with a polygon model, 
 // it finds the distance of that robot to the viewer.  If this distance if within 10
 // segments of the viewer, it does the following: If there aren't already 3 robots in
-// the closet-robots list, it just sticks that object into the list along with its distance.
+// the closet-robots list, it just sticks that tObject into the list along with its distance.
 // If the list already contains 3 robots, then it finds the robot in that list that is
-// farthest from the viewer. If that object is farther than the object currently being
-// rendered, then the new object takes over that far object's slot.  *Then* after all
+// farthest from the viewer. If that tObject is farther than the tObject currently being
+// rendered, then the new tObject takes over that far tObject's slot.  *Then* after all
 // gameData.objs.objects are rendered, object_render_targets is called an it draws a target on top
 // of all the gameData.objs.objects.
 
 //091494: #define MAX_CLOSE_ROBOTS 3
 //--unused-- static int Object_draw_lock_boxes = 0;
 //091494: static int Object_num_close = 0;
-//091494: static object * Object_close_ones [MAX_CLOSE_ROBOTS];
-//091494: static fix Object_close_distance [MAX_CLOSE_ROBOTS];
+//091494: static tObject * Object_close_ones [MAX_CLOSE_ROBOTS];
+//091494: static fix Object_closeDistance [MAX_CLOSE_ROBOTS];
 
-//091494: set_close_objects (object *objP)
+//091494: set_closeObjects (tObject *objP)
 //091494: {
 //091494: 	fix dist;
 //091494:
-//091494: 	if ((objP->type != OBJ_ROBOT) || (Object_draw_lock_boxes == 0))	
+//091494: 	if ((objP->nType != OBJ_ROBOT) || (Object_draw_lock_boxes == 0))	
 //091494: 		return;
 //091494:
 //091494: 	// The following code keeps a list of the 10 closest robots to the
@@ -945,25 +945,25 @@ gameStates.render.nInterpolationMethod = imSave;
 //091494: 	if (dist < i2f (20*10))	{				
 //091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
 //091494: 			Object_close_ones [Object_num_close] = obj;
-//091494: 			Object_close_distance [Object_num_close] = dist;
+//091494: 			Object_closeDistance [Object_num_close] = dist;
 //091494: 			Object_num_close++;
 //091494: 		} else {
-//091494: 			int i, farthest_robot;
-//091494: 			fix farthest_distance;
+//091494: 			int i, farthestRobot;
+//091494: 			fix farthestDistance;
 //091494: 			// Find the farthest robot in the list
-//091494: 			farthest_robot = 0;
-//091494: 			farthest_distance = Object_close_distance [0];
+//091494: 			farthestRobot = 0;
+//091494: 			farthestDistance = Object_closeDistance [0];
 //091494: 			for (i=1; i<Object_num_close; i++)	{
-//091494: 				if (Object_close_distance [i] > farthest_distance)	{
-//091494: 					farthest_distance = Object_close_distance [i];
-//091494: 					farthest_robot = i;
+//091494: 				if (Object_closeDistance [i] > farthestDistance)	{
+//091494: 					farthestDistance = Object_closeDistance [i];
+//091494: 					farthestRobot = i;
 //091494: 				}
 //091494: 			}
-//091494: 			// If this object is closer to the viewer than
-//091494: 			// the farthest in the list, replace the farthest with this object.
-//091494: 			if (farthest_distance > dist)	{
-//091494: 				Object_close_ones [farthest_robot] = obj;
-//091494: 				Object_close_distance [farthest_robot] = dist;
+//091494: 			// If this tObject is closer to the viewer than
+//091494: 			// the farthest in the list, replace the farthest with this tObject.
+//091494: 			if (farthestDistance > dist)	{
+//091494: 				Object_close_ones [farthestRobot] = obj;
+//091494: 				Object_closeDistance [farthestRobot] = dist;
 //091494: 			}
 //091494: 		}
 //091494: 	}
@@ -973,7 +973,7 @@ gameStates.render.nInterpolationMethod = imSave;
 // -----------------------------------------------------------------------------
 //this routine checks to see if an robot rendered near the middle of
 //the screen, and if so and the player had fired, "warns" the robot
-void SetRobotLocationInfo (object *objP)
+void SetRobotLocationInfo (tObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	g3s_point temp;
@@ -981,37 +981,37 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	G3TransformAndEncodePoint (&temp, &objP->pos);
 	if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
 		return;
-	//the code below to check for object near the center of the screen
+	//the code below to check for tObject near the center of the screen
 	//completely ignores z, which may not be good
 	if ((abs (temp.p3_x) < F1_0*4) && (abs (temp.p3_y) < F1_0*4)) {
-		objP->ctype.ai_info.danger_laser_num = gameStates.app.bPlayerFiredLaserThisFrame;
-		objP->ctype.ai_info.danger_laser_signature = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].signature;
+		objP->cType.aiInfo.danger_laser_num = gameStates.app.bPlayerFiredLaserThisFrame;
+		objP->cType.aiInfo.danger_laser_signature = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}
 	}
 }
 
 //	------------------------------------------------------------------------------------------------------------------
 
-void CreateSmallFireballOnObject (object *objP, fix size_scale, int bSound)
+void CreateSmallFireballOnObject (tObject *objP, fix size_scale, int bSound)
 {
 	fix			size;
-	vms_vector	pos, rand_vec;
-	short			segnum;
+	vmsVector	pos, rand_vec;
+	short			nSegment;
 
 pos = objP->pos;
 MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 / 2 + d_rand ()*4 / 2);
-segnum = FindSegByPoint (&pos, objP->segnum);
-if (segnum != -1) {
-	object *explObjP = ObjectCreateExplosion (segnum, &pos, size, VCLIP_SMALL_EXPLOSION);
+nSegment = FindSegByPoint (&pos, objP->nSegment);
+if (nSegment != -1) {
+	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
 	if (d_rand () < 8192) {
 		fix	vol = F1_0 / 2;
-		if (objP->type == OBJ_ROBOT)
+		if (objP->nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
 			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, OBJ_IDX (objP), 0, vol);
@@ -1020,34 +1020,34 @@ if (segnum != -1) {
 }
 
 //	------------------------------------------------------------------------------------------------------------------
-void CreateVClipOnObject (object *objP, fix size_scale, ubyte vclip_num)
+void CreateVClipOnObject (tObject *objP, fix size_scale, ubyte vclip_num)
 {
 	fix			size;
-	vms_vector	pos, rand_vec;
-	short			segnum;
+	vmsVector	pos, rand_vec;
+	short			nSegment;
 
 pos = objP->pos;
 MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
-segnum = FindSegByPoint (&pos, objP->segnum);
-if (segnum != -1) {
-	object *explObjP = ObjectCreateExplosion (segnum, &pos, size, vclip_num);
+nSegment = FindSegByPoint (&pos, objP->nSegment);
+if (nSegment != -1) {
+	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, vclip_num);
 	if (!explObjP)
 		return;
 
-	explObjP->movement_type = MT_PHYSICS;
-	explObjP->mtype.phys_info.velocity.x = objP->mtype.phys_info.velocity.x / 2;
-	explObjP->mtype.phys_info.velocity.y = objP->mtype.phys_info.velocity.y / 2;
-	explObjP->mtype.phys_info.velocity.z = objP->mtype.phys_info.velocity.z / 2;
+	explObjP->movementType = MT_PHYSICS;
+	explObjP->mType.physInfo.velocity.x = objP->mType.physInfo.velocity.x / 2;
+	explObjP->mType.physInfo.velocity.y = objP->mType.physInfo.velocity.y / 2;
+	explObjP->mType.physInfo.velocity.z = objP->mType.physInfo.velocity.z / 2;
 	}
 }
 
 // -- mk, 02/05/95 -- #define	VCLIP_INVULNERABILITY_EFFECT	VCLIP_SMALL_EXPLOSION
 // -- mk, 02/05/95 --
 // -- mk, 02/05/95 -- // -----------------------------------------------------------------------------
-// -- mk, 02/05/95 -- void do_player_invulnerability_effect (object *objP)
+// -- mk, 02/05/95 -- void do_player_invulnerability_effect (tObject *objP)
 // -- mk, 02/05/95 -- {
 // -- mk, 02/05/95 -- 	if (d_rand () < gameData.time.xFrame*8) {
 // -- mk, 02/05/95 -- 		CreateVClipOnObject (objP, F1_0, VCLIP_INVULNERABILITY_EFFECT);
@@ -1055,11 +1055,11 @@ if (segnum != -1) {
 // -- mk, 02/05/95 -- }
 
 // -----------------------------------------------------------------------------
-//	Render an object.  Calls one of several routines based on type
+//	Render an tObject.  Calls one of several routines based on nType
 
 // -----------------------------------------------------------------------------
 
-void RenderPlayerShield (object *objP)
+void RenderPlayerShield (tObject *objP)
 {
 	int i = objP->id;
 
@@ -1091,7 +1091,7 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
+static inline tRgbColorf *ObjectFrameColor (tObject *objP, tRgbColorf *pc)
 {
 	static tRgbColorf	defaultColor = {0, 1.0f, 0};
 	static tRgbColorf	botDefColor = {1.0f, 0, 0};
@@ -1101,13 +1101,13 @@ static inline tRgbColorf *ObjectFrameColor (object *objP, tRgbColorf *pc)
 if (pc)
 	return pc;
 if (objP)
-	if (objP->type == OBJ_CNTRLCEN)
+	if (objP->nType == OBJ_CNTRLCEN)
 		return &reactorDefColor;
-	else if (objP->type == OBJ_ROBOT) {
+	else if (objP->nType == OBJ_ROBOT) {
 		if (!gameData.bots.pInfo [objP->id].companion)
 			return &botDefColor;
 		}
-	else if (objP->type == OBJ_PLAYER) {
+	else if (objP->nType == OBJ_PLAYER) {
 		if (IsTeamGame)
 			return playerDefColors + GetTeam (objP->id) + 1;
 		return playerDefColors;
@@ -1117,16 +1117,16 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
-static inline float ObjectDamage (object *objP)
+static inline float ObjectDamage (tObject *objP)
 {
 	float	fDmg;
 	fix	xMaxShields;
 
-if (objP->type == OBJ_PLAYER)
+if (objP->nType == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
-else if ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_CNTRLCEN)) {
+else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN)) {
 	xMaxShields = gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength;
-	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].boss_flag)
+	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].bossFlag)
 		xMaxShields /= (NDL - gameStates.app.nDifficultyLevel);
 	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
 	if (gameData.bots.pInfo [objP->id].companion)
@@ -1139,7 +1139,7 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 
 // -----------------------------------------------------------------------------
 
-void RenderDamageIndicator (object *objP, tRgbColorf *pc)
+void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector3		fPos, fVerts [4];
 	float			r, r2, w;
@@ -1191,11 +1191,11 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 
 // -----------------------------------------------------------------------------
 
-void RenderTargetIndicator (object *objP, tRgbColorf *pc)
+void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector3		fPos, fVerts [4];
 	float			r, r2, r3;
-	int			nPlayer = (objP->type == OBJ_PLAYER) ? objP->id : -1;
+	int			nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
 #if 0
 if (!CanSeeObject (OBJ_IDX (objP), 1))
@@ -1206,8 +1206,8 @@ if (gameStates.app.bNostalgia || !EGI_FLAG (bCloakedIndicators, 0, 0)) {
 		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
 		}
-	else if (objP->type == OBJ_ROBOT) {
-		if (objP->ctype.ai_info.CLOAKED)
+	else if (objP->nType == OBJ_ROBOT) {
+		if (objP->cType.aiInfo.CLOAKED)
 			return;
 		}
 	}
@@ -1292,7 +1292,7 @@ RenderDamageIndicator (objP, pc);
 
 // -----------------------------------------------------------------------------
 
-void RenderTowedFlag (object *objP)
+void RenderTowedFlag (tObject *objP)
 {
 	static fVector3 fVerts [4] = {
 		{0.0f, 2.0f / 3.0f, 0.0f},
@@ -1308,7 +1308,7 @@ void RenderTowedFlag (object *objP)
 	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
 if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
-		vms_vector		vPos = objP->pos;
+		vmsVector		vPos = objP->pos;
 		fVector3			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
 		tPathPoint		*pp = GetPathPoint (&pf->path);
@@ -1419,11 +1419,11 @@ if (!bHaveFlame) {
 
 // -----------------------------------------------------------------------------
 
-void RenderThrusterFlames (object *objP)
+void RenderThrusterFlames (tObject *objP)
 {
 	int				h, i, j, k, l, nThrusters;
 	tRgbaColorf		c [2];
-	vms_vector		vPos [2];
+	vmsVector		vPos [2];
 	fVector3			v;
 	float				fSize, fLength, fSpeed, fPulse, fFade [4];
 	tThrusterData	*pt = NULL;
@@ -1436,9 +1436,9 @@ void RenderThrusterFlames (object *objP)
 if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif
-if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
-fSpeed = f2fl (VmVecMag (&objP->mtype.phys_info.velocity));
+fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
 fLength = fSpeed / 60.0f;
 fLength += 0.2f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
@@ -1455,7 +1455,7 @@ else {
 	}
 if (pt)
 	pt->fSpeed = fSpeed;
-if (objP->type == OBJ_PLAYER) {
+if (objP->nType == OBJ_PLAYER) {
 		tThrusterData	*pt = gameData.render.thrusters + objP->id;
 		tPathPoint		*pp = GetPathPoint (&pt->path);
 
@@ -1557,11 +1557,11 @@ for (h = 0; h < nThrusters; h++) {
 
 // -----------------------------------------------------------------------------
 
-void RenderLightTrail (object *objP)
+void RenderLightTrail (tObject *objP)
 {
 if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
-	 (objP->type == OBJ_WEAPON) && bIsWeapon [objP->id]) {
-		vms_vector		vPos;
+	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+		vmsVector		vPos;
 		fVector3			vPosf;
 		int				h, i, j, k, n;
 		float				r [4], l [4], alpha;
@@ -1632,7 +1632,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 
 bool G3DrawSphere3D  (g3s_point *p0, int nSides, int rad);
 
-void RenderObject (object *objP, int nWindowNum)
+void RenderObject (tObject *objP, int nWindowNum)
 {
 	int	mld_save, oofIdx;
 	float fLight [3];
@@ -1648,18 +1648,18 @@ if ((objP == gameData.objs.viewer) &&
 	DoPlayerSmoke (objP, -1);
 	return;		
 	}
-if ((objP->type==OBJ_NONE)/* || (objP->type==OBJ_CAMBOT)*/){
+if ((objP->nType==OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
-	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->segnum);
+	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
 #endif
 	return;
 	}
 mld_save = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-SetNearestStaticLights (objP->segnum, 1);
-SetNearestDynamicLights (objP->segnum);
-switch (objP->render_type) {
+SetNearestStaticLights (objP->nSegment, 1);
+SetNearestDynamicLights (objP->nSegment);
+switch (objP->renderType) {
 	case RT_NONE:	
 		break;		//doesn't render, like the player
 
@@ -1667,7 +1667,7 @@ switch (objP->render_type) {
 		if (!(extraGameInfo [0].bShadows && extraGameInfo [IsMultiGame].bShadows) || 
 			 (gameStates.render.nShadowPass == 3))
 			DoObjectSmoke (objP);
-		if (objP->type == OBJ_PLAYER) {
+		if (objP->nType == OBJ_PLAYER) {
 			if (gameData.models.bHaveHiresModel [0]) {
 				ComputeEngineGlow (objP, nGlow);
 				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
@@ -1683,7 +1683,7 @@ switch (objP->render_type) {
 			RenderTargetIndicator (objP, NULL);
 			RenderTowedFlag (objP);
 			}
-		else if (objP->type == OBJ_ROBOT) {
+		else if (objP->nType == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
@@ -1700,13 +1700,13 @@ switch (objP->render_type) {
 				}
 			else
 				DrawPolygonObject (objP);
-			if (objP->type == OBJ_WEAPON) {
+			if (objP->nType == OBJ_WEAPON) {
 				if (bIsMissile [objP->id])
 					RenderThrusterFlames (objP);
 				else
 					RenderLightTrail (objP);
 				}
-			else if (objP->type == OBJ_CNTRLCEN)
+			else if (objP->nType == OBJ_CNTRLCEN)
 				RenderTargetIndicator (objP, NULL);
 			}
 		break;
@@ -1717,13 +1717,13 @@ switch (objP->render_type) {
 		break;
 
 	case RT_THRUSTER: 
-		if (nWindowNum && (objP->mtype.phys_info.flags & PF_WIGGLE))
+		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
 			
 	case RT_FIREBALL: 
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
-			if (objP->type == OBJ_WEAPON)
+			if (objP->nType == OBJ_WEAPON)
 				RenderLightTrail (objP);
 			}
 		break;
@@ -1731,7 +1731,7 @@ switch (objP->render_type) {
 	case RT_WEAPON_VCLIP: 
 		if (gameStates.render.nShadowPass != 2) {
 			DrawWeaponVClip (objP); 
-			if (objP->type == OBJ_WEAPON)
+			if (objP->nType == OBJ_WEAPON)
 				RenderLightTrail (objP);
 			}
 		break;
@@ -1749,18 +1749,18 @@ switch (objP->render_type) {
 	case RT_LASER: 
 		if (gameStates.render.nShadowPass != 2) {
 			RenderLaser (objP); 
-			if (objP->type == OBJ_WEAPON)
+			if (objP->nType == OBJ_WEAPON)
 				RenderLightTrail (objP);
 			}
 		break;
 
 	default: 
-		Error ("Unknown render_type <%d>", objP->render_type);
+		Error ("Unknown renderType <%d>", objP->renderType);
 	}
-SetNearestStaticLights (objP->segnum, 0);
+SetNearestStaticLights (objP->nSegment, 0);
 
 #ifdef NEWDEMO
-if (objP->render_type != RT_NONE)
+if (objP->renderType != RT_NONE)
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (!gameData.demo.bWasRecorded [OBJ_IDX (objP)]) {
 			NDRecordRenderObject (objP);
@@ -1773,7 +1773,7 @@ gameStates.render.detail.nMaxLinearDepth = mld_save;
 
 //------------------------------------------------------------------------------
 
-void CheckAndFixMatrix (vms_matrix *m);
+void CheckAndFixMatrix (vmsMatrix *m);
 
 #define VmAngVecZero(v) (v)->p= (v)->b= (v)->h = 0
 
@@ -1782,21 +1782,21 @@ void ResetPlayerObject ()
 	int i;
 
 //Init physics
-VmVecZero (&gameData.objs.console->mtype.phys_info.velocity);
-VmVecZero (&gameData.objs.console->mtype.phys_info.thrust);
-VmVecZero (&gameData.objs.console->mtype.phys_info.rotvel);
-VmVecZero (&gameData.objs.console->mtype.phys_info.rotthrust);
-gameData.objs.console->mtype.phys_info.brakes = gameData.objs.console->mtype.phys_info.turnroll = 0;
-gameData.objs.console->mtype.phys_info.mass = gameData.pig.ship.player->mass;
-gameData.objs.console->mtype.phys_info.drag = gameData.pig.ship.player->drag;
-gameData.objs.console->mtype.phys_info.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
+VmVecZero (&gameData.objs.console->mType.physInfo.velocity);
+VmVecZero (&gameData.objs.console->mType.physInfo.thrust);
+VmVecZero (&gameData.objs.console->mType.physInfo.rotVel);
+VmVecZero (&gameData.objs.console->mType.physInfo.rotThrust);
+gameData.objs.console->mType.physInfo.brakes = gameData.objs.console->mType.physInfo.turnRoll = 0;
+gameData.objs.console->mType.physInfo.mass = gameData.pig.ship.player->mass;
+gameData.objs.console->mType.physInfo.drag = gameData.pig.ship.player->drag;
+gameData.objs.console->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 //Init render info
-gameData.objs.console->render_type = RT_POLYOBJ;
-gameData.objs.console->rtype.pobj_info.model_num = gameData.pig.ship.player->model_num;		//what model is this?
-gameData.objs.console->rtype.pobj_info.subobj_flags = 0;		//zero the flags
-gameData.objs.console->rtype.pobj_info.tmap_override = -1;		//no tmap override!
+gameData.objs.console->renderType = RT_POLYOBJ;
+gameData.objs.console->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
+gameData.objs.console->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
+gameData.objs.console->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (i = 0; i < MAX_SUBMODELS; i++)
-	VmAngVecZero (gameData.objs.console->rtype.pobj_info.anim_angles + i);
+	VmAngVecZero (gameData.objs.console->rType.polyObjInfo.animAngles + i);
 // Clear misc
 gameData.objs.console->flags = 0;
 }
@@ -1805,14 +1805,14 @@ gameData.objs.console->flags = 0;
 //make object0 the player, setting all relevant fields
 void InitPlayerObject ()
 {
-gameData.objs.console->type = OBJ_PLAYER;
+gameData.objs.console->nType = OBJ_PLAYER;
 gameData.objs.console->id = 0;					//no sub-types for player
-gameData.objs.console->signature = 0;			//player has zero, others start at 1
-gameData.objs.console->size = gameData.models.polyModels [gameData.pig.ship.player->model_num].rad;
-gameData.objs.console->control_type = CT_SLEW;			//default is player slewing
-gameData.objs.console->movement_type = MT_PHYSICS;		//change this sometime
+gameData.objs.console->nSignature = 0;			//player has zero, others start at 1
+gameData.objs.console->size = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
+gameData.objs.console->controlType = CT_SLEW;			//default is player slewing
+gameData.objs.console->movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.console->lifeleft = IMMORTAL_TIME;
-gameData.objs.console->attached_obj = -1;
+gameData.objs.console->attachedObj = -1;
 ResetPlayerObject ();
 }
 
@@ -1829,17 +1829,17 @@ idToOOF [MEGA_ID] = OOF_MEGA;
 void InitObjects ()
 {
 	int i;
-	segment *pSeg;
+	tSegment *pSeg;
 
 CollideInit ();
 for (i = 0; i < MAX_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
-	gameData.objs.objects [i].type = OBJ_NONE;
-	gameData.objs.objects [i].segnum =
-	gameData.objs.objects [i].ctype.expl_info.next_attach =
-	gameData.objs.objects [i].ctype.expl_info.prev_attach =
-	gameData.objs.objects [i].ctype.expl_info.attach_parent =
-	gameData.objs.objects [i].attached_obj = -1;
+	gameData.objs.objects [i].nType = OBJ_NONE;
+	gameData.objs.objects [i].nSegment =
+	gameData.objs.objects [i].cType.explInfo.nNextAttach =
+	gameData.objs.objects [i].cType.explInfo.nPrevAttach =
+	gameData.objs.objects [i].cType.explInfo.nAttachParent =
+	gameData.objs.objects [i].attachedObj = -1;
 	gameData.objs.objects [i].flags = 0;
 	}
 for (i = 0, pSeg = gameData.segs.segments;i<MAX_SEGMENTS;i++, pSeg++)
@@ -1848,15 +1848,15 @@ gameData.objs.console =
 gameData.objs.viewer = 
 gameData.objs.objects;
 InitPlayerObject ();
-LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in segment 0
+LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in tSegment 0
 gameData.objs.nObjects = 1;						//just the player
 gameData.objs.nLastObject = 0;
 InitIdToOOF ();
 }
 
 //------------------------------------------------------------------------------
-//after calling init_object (), the network code has grabbed specific
-//object slots without allocating them.  Go though the gameData.objs.objects & build
+//after calling initObject (), the network code has grabbed specific
+//tObject slots without allocating them.  Go though the gameData.objs.objects & build
 //the d_free list, then set the apporpriate globals
 void SpecialResetObjects (void)
 {
@@ -1864,9 +1864,9 @@ void SpecialResetObjects (void)
 
 gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject = 0;
-Assert (gameData.objs.objects [0].type != OBJ_NONE);		//0 should be used
+Assert (gameData.objs.objects [0].nType != OBJ_NONE);		//0 should be used
 for (i=MAX_OBJECTS;i--;)
-	if (gameData.objs.objects [i].type == OBJ_NONE)
+	if (gameData.objs.objects [i].nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
 	else
 		if (i > gameData.objs.nLastObject)
@@ -1875,41 +1875,41 @@ for (i=MAX_OBJECTS;i--;)
 
 //------------------------------------------------------------------------------
 #ifdef _DEBUG
-int IsObjectInSeg (int segnum, int objn)
+int IsObjectInSeg (int nSegment, int objn)
 {
-	int objnum, count = 0;
+	int nObject, count = 0;
 
-for (objnum=gameData.segs.segments [segnum].objects;objnum!=-1;objnum=gameData.objs.objects [objnum].next)	{
+for (nObject=gameData.segs.segments [nSegment].objects;nObject!=-1;nObject=gameData.objs.objects [nObject].next)	{
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
 		return count;
 		}
-	if (objnum==objn) count++;
+	if (nObject==objn) count++;
 	}
  return count;
 }
 
 //------------------------------------------------------------------------------
 
-int SearchAllSegsForObject (int objnum)
+int SearchAllSegsForObject (int nObject)
 {
 	int i;
 	int count = 0;
 
 	for (i = 0; i<=gameData.segs.nLastSegment; i++) {
-		count += IsObjectInSeg (i, objnum);
+		count += IsObjectInSeg (i, nObject);
 	}
 	return count;
 }
 
 //------------------------------------------------------------------------------
 
-void JohnsObjUnlink (int segnum, int objnum)
+void JohnsObjUnlink (int nSegment, int nObject)
 {
-	object  *objP = gameData.objs.objects+objnum;
-	segment *seg = gameData.segs.segments+segnum;
+	tObject  *objP = gameData.objs.objects+nObject;
+	tSegment *seg = gameData.segs.segments+nSegment;
 
-Assert (objnum != -1);
+Assert (nObject != -1);
 if (objP->prev == -1)
 	seg->objects = objP->next;
 else
@@ -1922,30 +1922,30 @@ if (objP->next != -1)
 
 void RemoveIncorrectObjects ()
 {
-	int segnum, objnum, count;
+	int nSegment, nObject, count;
 
-for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
+for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	count = 0;
-	for (objnum = gameData.segs.segments [segnum].objects;
-		  objnum != -1;
-		  objnum=gameData.objs.objects [objnum].next) {
+	for (nObject = gameData.segs.segments [nSegment].objects;
+		  nObject != -1;
+		  nObject=gameData.objs.objects [nObject].next) {
 		count++;
 		#ifdef _DEBUG
 		if (count > MAX_OBJECTS)	{
 #if TRACE				
-			con_printf (1, "Object list in segment %d is circular.\n", segnum);
+			con_printf (1, "Object list in tSegment %d is circular.\n", nSegment);
 #endif
 			Int3 ();
 		}
 		#endif
-		if (gameData.objs.objects [objnum].segnum != segnum)	{
+		if (gameData.objs.objects [nObject].nSegment != nSegment)	{
 			#ifdef _DEBUG
 #if TRACE				
-			con_printf (CON_DEBUG, "Removing object %d from segment %d.\n", objnum, segnum);
+			con_printf (CON_DEBUG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
 #endif
 			Int3 ();
 			#endif
-			JohnsObjUnlink (segnum, objnum);
+			JohnsObjUnlink (nSegment, nObject);
 			}
 		}
 	}
@@ -1953,24 +1953,24 @@ for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
 
 //------------------------------------------------------------------------------
 
-void RemoveAllObjectsBut (int segnum, int objnum)
+void RemoveAllObjectsBut (int nSegment, int nObject)
 {
 	int i;
 
 for (i = 0; i <= gameData.segs.nLastSegment; i++)
-	if (segnum != i)
-		if (IsObjectInSeg (i, objnum))
-			JohnsObjUnlink (i, objnum);
+	if (nSegment != i)
+		if (IsObjectInSeg (i, nObject))
+			JohnsObjUnlink (i, nObject);
 }
 
 //------------------------------------------------------------------------------
 
-int check_duplicate_objects ()
+int check_duplicateObjects ()
 {
 	int i, count = 0;
 	
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].type != OBJ_NONE)	{
+	if (gameData.objs.objects [i].nType != OBJ_NONE)	{
 		count = SearchAllSegsForObject (i);
 		if (count > 1)	{
 #ifdef _DEBUG
@@ -1979,7 +1979,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 #	endif
 			Int3 ();
 #endif
-			RemoveAllObjectsBut (gameData.objs.objects [i].segnum,  i);
+			RemoveAllObjectsBut (gameData.objs.objects [i].nSegment,  i);
 			return count;
 			}
 		}
@@ -1989,13 +1989,13 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 
 //------------------------------------------------------------------------------
 
-void list_seg_objects (int segnum)
+void list_segObjects (int nSegment)
 {
-	int objnum, count = 0;
+	int nObject, count = 0;
 
-for (objnum = gameData.segs.segments [segnum].objects;
-	  objnum != -1;
-	  objnum = gameData.objs.objects [objnum].next) {
+for (nObject = gameData.segs.segments [nSegment].objects;
+	  nObject != -1;
+	  nObject = gameData.objs.objects [nObject].next) {
 	count++;
 	if (count > MAX_OBJECTS) 	{
 		Int3 ();
@@ -2008,24 +2008,24 @@ return;
 
 //------------------------------------------------------------------------------
 
-//link the object into the list for its segment
-void LinkObject (int objnum, int segnum)
+//link the tObject into the list for its tSegment
+void LinkObject (int nObject, int nSegment)
 {
-	object *objP;
+	tObject *objP;
 	
-Assert (objnum != -1);
-objP = gameData.objs.objects + objnum;
-Assert (objP->segnum == -1);
-Assert (segnum >= 0 && segnum <= gameData.segs.nLastSegment);
-objP->segnum = segnum;
-objP->next = gameData.segs.segments [segnum].objects;
+Assert (nObject != -1);
+objP = gameData.objs.objects + nObject;
+Assert (objP->nSegment == -1);
+Assert (nSegment >= 0 && nSegment <= gameData.segs.nLastSegment);
+objP->nSegment = nSegment;
+objP->next = gameData.segs.segments [nSegment].objects;
 objP->prev = -1;
-gameData.segs.segments [segnum].objects = objnum;
+gameData.segs.segments [nSegment].objects = nObject;
 if (objP->next != -1)
-		gameData.objs.objects [objP->next].prev = objnum;
+		gameData.objs.objects [objP->next].prev = nObject;
 
-//list_seg_objects (segnum);
-//check_duplicate_objects ();
+//list_segObjects (nSegment);
+//check_duplicateObjects ();
 
 Assert (gameData.objs.objects [0].next != 0);
 if (gameData.objs.objects [0].next == 0)
@@ -2038,19 +2038,19 @@ if (gameData.objs.objects [0].prev == 0)
 
 //------------------------------------------------------------------------------
 
-void UnlinkObject (int objnum)
+void UnlinkObject (int nObject)
 {
-	object  *objP = gameData.objs.objects+objnum;
-	segment *segP= gameData.segs.segments+objP->segnum;
+	tObject  *objP = gameData.objs.objects+nObject;
+	tSegment *segP= gameData.segs.segments+objP->nSegment;
 
-Assert (objnum != -1);
+Assert (nObject != -1);
 if (objP->prev == -1)
 	segP->objects = objP->next;
 else
 	gameData.objs.objects [objP->prev].next = objP->next;
 if (objP->next != -1) 
 	gameData.objs.objects [objP->next].prev = objP->prev;
-objP->segnum = -1;
+objP->nSegment = -1;
 Assert (gameData.objs.objects [0].next != 0);
 Assert (gameData.objs.objects [0].prev != 0);
 }
@@ -2060,63 +2060,63 @@ Assert (gameData.objs.objects [0].prev != 0);
 int nDebrisObjectCount = 0;
 int nUnusedObjectsSlots;
 
-//returns the number of a d_free object, updating gameData.objs.nLastObject.
-//Generally, CreateObject () should be called to get an object, since it
+//returns the number of a d_free tObject, updating gameData.objs.nLastObject.
+//Generally, CreateObject () should be called to get an tObject, since it
 //fills in important fields and does the linking.
 //returns -1 if no d_free gameData.objs.objects
 int AllocObject (void)
 {
-	int objnum;
-	object *objP;
+	int nObject;
+	tObject *objP;
 
 if (gameData.objs.nObjects >= MAX_OBJECTS - 2)
 	FreeObjectSlots (MAX_OBJECTS - 10);
 if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
-objnum = gameData.objs.freeList [gameData.objs.nObjects++];
-if (objnum > gameData.objs.nLastObject) {
-	gameData.objs.nLastObject = objnum;
+nObject = gameData.objs.freeList [gameData.objs.nObjects++];
+if (nObject > gameData.objs.nLastObject) {
+	gameData.objs.nLastObject = nObject;
 	if (gameData.objs.nLastObject > gameData.objs.nObjectLimit)
 		gameData.objs.nObjectLimit = gameData.objs.nLastObject;
 	}
-objP = gameData.objs.objects + objnum;
+objP = gameData.objs.objects + nObject;
 objP->flags = 0;
-objP->attached_obj =
-objP->ctype.expl_info.next_attach =
-objP->ctype.expl_info.prev_attach =
-objP->ctype.expl_info.attach_parent = -1;
-return objnum;
+objP->attachedObj =
+objP->cType.explInfo.nNextAttach =
+objP->cType.explInfo.nPrevAttach =
+objP->cType.explInfo.nAttachParent = -1;
+return nObject;
 }
 
 //------------------------------------------------------------------------------
-//frees up an object.  Generally, ReleaseObject () should be called to get
-//rid of an object.  This function deallocates the object entry after
-//the object has been unlinked
-void FreeObject (int objnum)
+//frees up an tObject.  Generally, ReleaseObject () should be called to get
+//rid of an tObject.  This function deallocates the tObject entry after
+//the tObject has been unlinked
+void FreeObject (int nObject)
 {
-	int id = gameData.objs.objects [objnum].id;
+	int id = gameData.objs.objects [nObject].id;
 
-DelObjChildrenN (objnum);
-DelObjChildN (objnum);
-KillObjectSmoke (objnum);
-RemoveOglLight (-1, -1, objnum);
-if (gameData.objs.objects [objnum].type == OBJ_ROBOT)
-	id = gameData.objs.objects [objnum].id;
-gameData.objs.freeList [--gameData.objs.nObjects] = objnum;
+DelObjChildrenN (nObject);
+DelObjChildN (nObject);
+KillObjectSmoke (nObject);
+RemoveOglLight (-1, -1, nObject);
+if (gameData.objs.objects [nObject].nType == OBJ_ROBOT)
+	id = gameData.objs.objects [nObject].id;
+gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
-if (objnum == gameData.objs.nLastObject)
-	while (gameData.objs.objects [--gameData.objs.nLastObject].type == OBJ_NONE);
+if (nObject == gameData.objs.nLastObject)
+	while (gameData.objs.objects [--gameData.objs.nLastObject].nType == OBJ_NONE);
 }
 
 //-----------------------------------------------------------------------------
-//	Scan the object list, freeing down to num_used gameData.objs.objects
+//	Scan the tObject list, freeing down to num_used gameData.objs.objects
 //	Returns number of slots freed.
 int FreeObjectSlots (int num_used)
 {
 	int		i, olind;
 	int		objList [MAX_OBJECTS];
 	int		nAlreadyFree, nToFree, nOrgNumToFree;
-	object	*objP;
+	tObject	*objP;
 
 olind = 0;
 nAlreadyFree = MAX_OBJECTS - gameData.objs.nLastObject - 1;
@@ -2131,7 +2131,7 @@ for (i = 0; i<=gameData.objs.nLastObject; i++) {
 			return nAlreadyFree;
 		}
 	else
-		switch (gameData.objs.objects [i].type) {
+		switch (gameData.objs.objects [i].nType) {
 			case OBJ_NONE:
 				nAlreadyFree++;
 				if (MAX_OBJECTS - nAlreadyFree < num_used)
@@ -2139,7 +2139,7 @@ for (i = 0; i<=gameData.objs.nLastObject; i++) {
 				break;
 			case OBJ_WALL:
 			case OBJ_FLARE:
-				Int3 ();		//	This is curious.  What is an object that is a wall?
+				Int3 ();		//	This is curious.  What is an tObject that is a wall?
 				break;
 			case OBJ_FIREBALL:
 			case OBJ_WEAPON:
@@ -2170,7 +2170,7 @@ if (nToFree > olind) {
 	}
 for (i = 0; i<nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
-	if (objP->type == OBJ_DEBRIS) {
+	if (objP->nType == OBJ_DEBRIS) {
 		nToFree--;
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		}
@@ -2179,7 +2179,7 @@ if (!nToFree)
 	return nOrgNumToFree;
 for (i = 0; i<nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
-	if ((objP->type == OBJ_FIREBALL)  && (objP->ctype.expl_info.delete_objnum==-1)) {
+	if ((objP->nType == OBJ_FIREBALL)  && (objP->cType.explInfo.nDeleteObj==-1)) {
 		nToFree--;
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		}
@@ -2188,7 +2188,7 @@ if (!nToFree)
 	return nOrgNumToFree;
 for (i = 0; i<nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
-	if ((objP->type == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
+	if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
 		nToFree--;
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		}
@@ -2197,7 +2197,7 @@ if (!nToFree)
 	return nOrgNumToFree;
 for (i = 0; i<nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
-	if ((objP->type == OBJ_WEAPON) && (objP->id != FLARE_ID)) {
+	if ((objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID)) {
 		nToFree--;
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		}
@@ -2206,25 +2206,25 @@ return nOrgNumToFree - nToFree;
 }
 
 //-----------------------------------------------------------------------------
-//initialize a new object.  adds to the list for the given segment
-//note that segnum is really just a suggestion, since this routine actually
-//searches for the correct segment
-//returns the object number
-int CreateObject (ubyte type, ubyte id, short owner, short segnum, vms_vector *pos, 
-					   vms_matrix *orient, fix size, ubyte ctype, ubyte mtype, ubyte rtype,
+//initialize a new tObject.  adds to the list for the given tSegment
+//note that nSegment is really just a suggestion, since this routine actually
+//searches for the correct tSegment
+//returns the tObject number
+int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos, 
+					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
 {
-	short objnum;
-	object *objP;
+	short nObject;
+	tObject *objP;
 
 #ifdef _DEBUG
-if (type == OBJ_WEAPON) {
-	type = type;
-	if ((owner >= 0) && (gameData.objs.objects [owner].type == OBJ_ROBOT))
-		type = type;
+if (nType == OBJ_WEAPON) {
+	nType = nType;
+	if ((owner >= 0) && (gameData.objs.objects [owner].nType == OBJ_ROBOT))
+		nType = nType;
 	}	
 #endif
-if ((type == OBJ_POWERUP) && !bIgnoreLimits) {
+if ((nType == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
 #ifdef _DEBUG
 		HUDInitMessage ("%c%cDiscarding excess powerup!", 1, 
@@ -2233,124 +2233,124 @@ if ((type == OBJ_POWERUP) && !bIgnoreLimits) {
 		return -2;
 		}
 	}
-Assert (segnum <= gameData.segs.nLastSegment);
-Assert (segnum >= 0);
-if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
+Assert (nSegment <= gameData.segs.nLastSegment);
+Assert (nSegment >= 0);
+if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return -1;
-Assert (ctype <= CT_CNTRLCEN);
-if ((type == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
+Assert (cType <= CT_CNTRLCEN);
+if ((nType == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
 	return -1;
-if (GetSegMasks (pos, segnum, 0).centerMask)
-	if ((segnum = FindSegByPoint (pos, segnum)) == -1) {
+if (GetSegMasks (pos, nSegment, 0).centerMask)
+	if ((nSegment = FindSegByPoint (pos, nSegment)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
-		con_printf (CON_DEBUG, "Bad segnum in CreateObject (type=%d)\n", type);
+		con_printf (CON_DEBUG, "Bad nSegment in CreateObject (nType=%d)\n", nType);
 #	endif
 #endif
-		return -1;		//don't create this object
+		return -1;		//don't create this tObject
 	}
-// Find next d_free object
-objnum = AllocObject ();
-if (objnum == -1)		//no d_free gameData.objs.objects
+// Find next d_free tObject
+nObject = AllocObject ();
+if (nObject == -1)		//no d_free gameData.objs.objects
 	return -1;
-Assert (gameData.objs.objects [objnum].type == OBJ_NONE);		//make sure unused
-objP = gameData.objs.objects + objnum;
-Assert (objP->segnum == -1);
-// Zero out object structure to keep weird bugs from happening
+Assert (gameData.objs.objects [nObject].nType == OBJ_NONE);		//make sure unused
+objP = gameData.objs.objects + nObject;
+Assert (objP->nSegment == -1);
+// Zero out tObject structure to keep weird bugs from happening
 // in uninitialized fields.
-memset (objP, 0, sizeof (object));
-objP->signature = gameData.objs.nNextSignature++;
-objP->type = type;
+memset (objP, 0, sizeof (tObject));
+objP->nSignature = gameData.objs.nNextSignature++;
+objP->nType = nType;
 objP->id = id;
 objP->last_pos = *pos;
 objP->pos = *pos;
 objP->size = size;
 objP->flags = 0;
-objP->matcen_creator = (sbyte) owner;
+objP->matCenCreator = (sbyte) owner;
 //@@if (orient != NULL)
 //@@	objP->orient = *orient;
 objP->orient = orient ? *orient : vmdIdentityMatrix;
-objP->control_type = ctype;
-objP->movement_type = mtype;
-objP->render_type = rtype;
-objP->contains_type = -1;
-if ((gameData.app.nGameMode & GM_ENTROPY) && (type == OBJ_POWERUP) && (id == POW_HOARD_ORB))
+objP->controlType = cType;
+objP->movementType = mType;
+objP->renderType = rType;
+objP->containsType = -1;
+if ((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (id == POW_HOARD_ORB))
 	objP->lifeleft = (extraGameInfo [1].entropy.nVirusLifespan <= 0) ? 
 									IMMORTAL_TIME : i2f (extraGameInfo [1].entropy.nVirusLifespan);
 else
 	objP->lifeleft = IMMORTAL_TIME;		//assume immortal
-objP->attached_obj = -1;
+objP->attachedObj = -1;
 
-if (objP->control_type == CT_POWERUP)
-	objP->ctype.powerup_info.count = 1;
+if (objP->controlType == CT_POWERUP)
+	objP->cType.powerupInfo.count = 1;
 
-// Init physics info for this object
-if (objP->movement_type == MT_PHYSICS) {
-	VmVecZero (&objP->mtype.phys_info.velocity);
-	VmVecZero (&objP->mtype.phys_info.thrust);
-	VmVecZero (&objP->mtype.phys_info.rotvel);
-	VmVecZero (&objP->mtype.phys_info.rotthrust);
-	objP->mtype.phys_info.mass = 0;
-	objP->mtype.phys_info.drag = 0;
-	objP->mtype.phys_info.brakes = 0;
-	objP->mtype.phys_info.turnroll = 0;
-	objP->mtype.phys_info.flags = 0;
+// Init physics info for this tObject
+if (objP->movementType == MT_PHYSICS) {
+	VmVecZero (&objP->mType.physInfo.velocity);
+	VmVecZero (&objP->mType.physInfo.thrust);
+	VmVecZero (&objP->mType.physInfo.rotVel);
+	VmVecZero (&objP->mType.physInfo.rotThrust);
+	objP->mType.physInfo.mass = 0;
+	objP->mType.physInfo.drag = 0;
+	objP->mType.physInfo.brakes = 0;
+	objP->mType.physInfo.turnRoll = 0;
+	objP->mType.physInfo.flags = 0;
 	}
-if (objP->render_type == RT_POLYOBJ)
-	objP->rtype.pobj_info.tmap_override = -1;
+if (objP->renderType == RT_POLYOBJ)
+	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;
-segnum = FindSegByPoint (pos, segnum);		//find correct segment
-Assert (segnum != -1);
-objP->segnum = -1;					//set to zero by memset, above
-LinkObject (objnum, segnum);
-//	Set (or not) persistent bit in phys_info.
-if (objP->type == OBJ_WEAPON) {
-	Assert (objP->control_type == CT_WEAPON);
-	objP->mtype.phys_info.flags |= WI_persistent (objP->id) * PF_PERSISTENT;
-	objP->ctype.laser_info.creation_time = gameData.time.xGame;
-	objP->ctype.laser_info.last_hitobj = -1;
-	objP->ctype.laser_info.multiplier = F1_0;
+nSegment = FindSegByPoint (pos, nSegment);		//find correct tSegment
+Assert (nSegment != -1);
+objP->nSegment = -1;					//set to zero by memset, above
+LinkObject (nObject, nSegment);
+//	Set (or not) persistent bit in physInfo.
+if (objP->nType == OBJ_WEAPON) {
+	Assert (objP->controlType == CT_WEAPON);
+	objP->mType.physInfo.flags |= WI_persistent (objP->id) * PF_PERSISTENT;
+	objP->cType.laserInfo.creationTime = gameData.time.xGame;
+	objP->cType.laserInfo.nLastHitObj = -1;
+	objP->cType.laserInfo.multiplier = F1_0;
 	}
-if (objP->control_type == CT_POWERUP)
-	objP->ctype.powerup_info.creation_time = gameData.time.xGame;
-else if (objP->control_type == CT_EXPLOSION)
-	objP->ctype.expl_info.next_attach = 
-	objP->ctype.expl_info.prev_attach = 
-	objP->ctype.expl_info.attach_parent = -1;
+if (objP->controlType == CT_POWERUP)
+	objP->cType.powerupInfo.creationTime = gameData.time.xGame;
+else if (objP->controlType == CT_EXPLOSION)
+	objP->cType.explInfo.nNextAttach = 
+	objP->cType.explInfo.nPrevAttach = 
+	objP->cType.explInfo.nAttachParent = -1;
 #ifdef _DEBUG
 #if TRACE				
 if (bPrintObjectInfo)	
-	con_printf (CON_DEBUG, "Created object %d of type %d\n", objnum, objP->type);
+	con_printf (CON_DEBUG, "Created tObject %d of nType %d\n", nObject, objP->nType);
 #endif
 #endif
-if (objP->type == OBJ_DEBRIS)
+if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount++;
-if (IsMultiGame && (type == OBJ_POWERUP) && PowerupClass (id)) {
+if (IsMultiGame && (nType == OBJ_POWERUP) && PowerupClass (id)) {
 	gameData.multi.powerupsInMine [(int) id]++;
 	if (MultiPowerupIs4Pack (id))
 		gameData.multi.powerupsInMine [(int) id - 1] += 4;
 	}
-return objnum;
+return nObject;
 }
 
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
-//create a copy of an object. returns new object number
-int CreateObjectCopy (int objnum, vms_vector *new_pos, int newsegnum)
+//create a copy of an tObject. returns new tObject number
+int CreateObjectCopy (int nObject, vmsVector *new_pos, int newsegnum)
 {
-	object *objP;
+	tObject *objP;
 	int newObjNum = AllocObject ();
 
-// Find next d_free object
+// Find next d_free tObject
 if (newObjNum == -1)
 	return -1;
 obj = gameData.objs.objects + newObjNum;
-*objP = gameData.objs.objects [objnum];
+*objP = gameData.objs.objects [nObject];
 objP->pos = objP->last_pos = *new_pos;
-objP->next = objP->prev = objP->segnum = -1;
+objP->next = objP->prev = objP->nSegment = -1;
 LinkObject (newObjNum, newsegnum);
-objP->signature = gameData.objs.nNextSignature++;
+objP->nSignature = gameData.objs.nNextSignature++;
 //we probably should initialize sub-structures here
 return newObjNum;
 }
@@ -2360,20 +2360,20 @@ return newObjNum;
 
 extern void NDRecordGuidedEnd ();
 
-//remove object from the world
-void ReleaseObject (short objnum)
+//remove tObject from the world
+void ReleaseObject (short nObject)
 {
 	int pnum;
-	object *objP = gameData.objs.objects + objnum;
+	tObject *objP = gameData.objs.objects + nObject;
 
-Assert (objnum != -1);
-Assert (objnum != 0);
-Assert (objP->type != OBJ_NONE);
+Assert (nObject != -1);
+Assert (nObject != 0);
+Assert (objP->nType != OBJ_NONE);
 Assert (objP != gameData.objs.console);
-if (objP->type == OBJ_WEAPON) {
-	RespawnDestroyedWeapon (objnum);
+if (objP->nType == OBJ_WEAPON) {
+	RespawnDestroyedWeapon (nObject);
 	if (objP->id == GUIDEDMISS_ID) {
-		pnum=gameData.objs.objects [objP->ctype.laser_info.parent_num].id;
+		pnum=gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
 		if (pnum!=gameData.multi.nLocalPlayer)
 			gameData.objs.guidedMissile [pnum]=NULL;
 		else if (gameData.demo.nState==ND_STATE_RECORDING)
@@ -2382,21 +2382,21 @@ if (objP->type == OBJ_WEAPON) {
 	}
 if (objP == gameData.objs.viewer)		//deleting the viewer?
 	gameData.objs.viewer = gameData.objs.console;						//..make the player the viewer
-if (objP->flags & OF_ATTACHED)		//detach this from object
+if (objP->flags & OF_ATTACHED)		//detach this from tObject
 	DetachOneObject (objP);
-if (objP->attached_obj != -1)		//detach all gameData.objs.objects from this
+if (objP->attachedObj != -1)		//detach all gameData.objs.objects from this
 	DetachAllObjects (objP);
-if (objP->type == OBJ_DEBRIS)
+if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
-UnlinkObject (objnum);
+UnlinkObject (nObject);
 Assert (gameData.objs.objects [0].next != 0);
-if (objP->type == OBJ_ROBOT)
-	ExecObjTriggers (objnum);
-objP->type = OBJ_NONE;		//unused!
-objP->signature = -1;
-objP->segnum=-1;				// zero it!
-FreeObject (objnum);
-SpawnLeftoverPowerups (objnum);
+if (objP->nType == OBJ_ROBOT)
+	ExecObjTriggers (nObject);
+objP->nType = OBJ_NONE;		//unused!
+objP->nSignature = -1;
+objP->nSegment=-1;				// zero it!
+FreeObject (nObject);
+SpawnLeftoverPowerups (nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -2404,7 +2404,7 @@ SpawnLeftoverPowerups (objnum);
 #define	DEATH_SEQUENCE_LENGTH			 (F1_0*5)
 #define	DEATH_SEQUENCE_EXPLODE_TIME	 (F1_0*2)
 
-object	*viewerSaveP;
+tObject	*viewerSaveP;
 int		nPlayerFlagsSave;
 fix		xCameraToPlayerDistGoal=F1_0*4;
 ubyte		nControlTypeSave, nRenderTypeSave;
@@ -2424,11 +2424,11 @@ gameData.objs.deadPlayerCamera = NULL;
 SelectCockpit (gameStates.render.cockpit.nModeSave);
 gameStates.render.cockpit.nModeSave = -1;
 gameData.objs.viewer = viewerSaveP;
-gameData.objs.console->type = OBJ_PLAYER;
+gameData.objs.console->nType = OBJ_PLAYER;
 gameData.objs.console->flags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
-gameData.objs.console->control_type = nControlTypeSave;
-gameData.objs.console->render_type = nRenderTypeSave;
+gameData.objs.console->controlType = nControlTypeSave;
+gameData.objs.console->renderType = nRenderTypeSave;
 gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 gameStates.app.bPlayerEggsDropped = 0;
 }
@@ -2436,7 +2436,7 @@ gameStates.app.bPlayerEggsDropped = 0;
 //------------------------------------------------------------------------------
 
 //	Camera is less than size of player away from
-void SetCameraPos (vms_vector *camera_pos, object *objP)
+void SetCameraPos (vmsVector *camera_pos, tObject *objP)
 {
 	int	count = 0;
 	fix	xCameraPlayerDist;
@@ -2444,11 +2444,11 @@ void SetCameraPos (vms_vector *camera_pos, object *objP)
 
 xCameraPlayerDist = VmVecDistQuick (camera_pos, &objP->pos);
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
-	//	Camera is too close to player object, so move it away.
-	vms_vector	player_camera_vec;
+	//	Camera is too close to player tObject, so move it away.
+	vmsVector	player_camera_vec;
 	fvi_query	fq;
 	fvi_info		hit_data;
-	vms_vector	local_p1;
+	vmsVector	local_p1;
 
 	VmVecSub (&player_camera_vec, camera_pos, &objP->pos);
 	if ((player_camera_vec.x == 0) && (player_camera_vec.y == 0) && (player_camera_vec.z == 0))
@@ -2458,7 +2458,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	xFarScale = F1_0;
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
-		vms_vector	closer_p1;
+		vmsVector	closer_p1;
 		VmVecNormalizeQuick (&player_camera_vec);
 		VmVecScale (&player_camera_vec, xCameraToPlayerDistGoal);
 
@@ -2468,7 +2468,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 		VmVecAdd (&local_p1, &objP->pos, &player_camera_vec);		//	...so we won't have to do as many cuts.
 
 		fq.p1					= &local_p1;
-		fq.startSeg			= objP->segnum;
+		fq.startSeg			= objP->nSegment;
 		fq.rad				= 0;
 		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
@@ -2487,32 +2487,32 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 
 //------------------------------------------------------------------------------
 
-extern void DropPlayerEggs (object *objP);
-//extern int GetExplosionVClip (object *objP, int stage);
+extern void DropPlayerEggs (tObject *objP);
+//extern int GetExplosionVClip (tObject *objP, int stage);
 extern void MultiCapObjects ();
 extern int Proximity_dropped, Smartmines_dropped;
 
 void DeadPlayerFrame (void)
 {
 	fix			xTimeDead;
-	vms_vector	fvec;
+	vmsVector	fvec;
 
 if (gameStates.app.bPlayerIsDead) {
 	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
 
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
-		object *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
-		int objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, 
+		tObject *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->pos, &player->orient, 0, 
 											CT_NONE, MT_NONE, RT_NONE, 1);
-		if (objnum != -1)
-			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + objnum;
+		if (nObject != -1)
+			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
 		else
 			Int3 ();
 		}		
-	gameData.objs.console->mtype.phys_info.rotvel.x = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/4;
-	gameData.objs.console->mtype.phys_info.rotvel.y = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead) / 2;
-	gameData.objs.console->mtype.phys_info.rotvel.z = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/3;
+	gameData.objs.console->mType.physInfo.rotVel.x = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/4;
+	gameData.objs.console->mType.physInfo.rotVel.y = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead) / 2;
+	gameData.objs.console->mType.physInfo.rotVel.z = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/3;
 	xCameraToPlayerDistGoal = min (xTimeDead*8, F1_0*20) + gameData.objs.console->size;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->pos, gameData.objs.console);
 	VmVecSub (&fvec, &gameData.objs.console->pos, &gameData.objs.deadPlayerCamera->pos);
@@ -2547,8 +2547,8 @@ if (gameStates.app.bPlayerIsDead) {
 			//is this next line needed, given the badass call above?
 			ExplodeObject (gameData.objs.console, 0);
 			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill player
-			gameData.objs.console->render_type = RT_NONE;				//..just make him disappear
-			gameData.objs.console->type = OBJ_GHOST;						//..and kill intersections
+			gameData.objs.console->renderType = RT_NONE;				//..just make him disappear
+			gameData.objs.console->nType = OBJ_GHOST;						//..and kill intersections
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)
@@ -2594,9 +2594,9 @@ void AdjustMineSpawn ()
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX]+=Proximity_dropped;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=Proximity_dropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMART_MINE_INDEX]+=Smartmines_dropped;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=Smartmines_dropped;
 Proximity_dropped = 0;
 Smartmines_dropped = 0;
 }
@@ -2609,9 +2609,9 @@ extern char bMultiSuicide;
 
 //	------------------------------------------------------------------------
 
-void StartPlayerDeathSequence (object *player)
+void StartPlayerDeathSequence (tObject *player)
 {
-	int	objnum;
+	int	nObject;
 	
 gameStates.gameplay.bSpeedBoost = 0;
 Assert (player == gameData.objs.console);
@@ -2628,14 +2628,14 @@ nKilledObjNum = OBJ_IDX (player);
 gameStates.app.bDeathSequenceAborted = 0;
 #ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendKill (gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
+	MultiSendKill (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 //		If Hoard, increase number of orbs by 1
 //    Only if you haven't killed yourself
 //		This prevents cheating
 	if (gameData.app.nGameMode & GM_HOARD)
 		if (!bMultiSuicide)
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX]<12)
-				gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX]++;
+			if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]<12)
+				gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]++;
 	}
 #endif
 gameStates.ogl.palAdd.red = 40;
@@ -2645,13 +2645,13 @@ gameStates.app.bPlayerIsDead = 1;
 	Buffeting (70);
 #endif
 //gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-VmVecZero (&player->mtype.phys_info.rotthrust);
-VmVecZero (&player->mtype.phys_info.thrust);
+VmVecZero (&player->mType.physInfo.rotThrust);
+VmVecZero (&player->mType.physInfo.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-objnum = CreateObject (OBJ_CAMERA, 0, -1, player->segnum, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
+nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 viewerSaveP = gameData.objs.viewer;
-if (objnum != -1)
-	gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + objnum;
+if (nObject != -1)
+	gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
 else {
 	Int3 ();
 	gameData.objs.deadPlayerCamera = gameData.objs.viewer;
@@ -2662,11 +2662,11 @@ SelectCockpit (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();
 nPlayerFlagsSave = player->flags;
-nControlTypeSave = player->control_type;
-nRenderTypeSave = player->render_type;
+nControlTypeSave = player->controlType;
+nRenderTypeSave = player->renderType;
 player->flags &= ~OF_SHOULD_BE_DEAD;
 //	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-player->control_type = CT_NONE;
+player->controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
 	player->shields = F1_0*1000;
 	MultiSendShields ();
@@ -2679,14 +2679,14 @@ PALETTE_FLASH_SET (0, 0, 0);
 void DeleteAllObjsThatShouldBeDead ()
 {
 	int		i;
-	object	*objP;
+	tObject	*objP;
 	int		nLocalDeadPlayerObj = -1;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	objP = gameData.objs.objects + i;
-	if ((objP->type != OBJ_NONE) && (objP->flags & OF_SHOULD_BE_DEAD)) {
-		Assert ((objP->type != OBJ_FIREBALL) || (objP->ctype.expl_info.delete_time == -1));
-		if (objP->type != OBJ_PLAYER) 
+	if ((objP->nType != OBJ_NONE) && (objP->flags & OF_SHOULD_BE_DEAD)) {
+		Assert ((objP->nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
+		if (objP->nType != OBJ_PLAYER) 
 			ReleaseObject ((short) i);
 		else {
 			if (objP->id == gameData.multi.nLocalPlayer) {
@@ -2703,34 +2703,34 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 }
 
 //--------------------------------------------------------------------
-//when an object has moved into a new segment, this function unlinks it
-//from its old segment, and links it into the new segment
-void RelinkObject (int objnum, int newsegnum)
+//when an tObject has moved into a new tSegment, this function unlinks it
+//from its old tSegment, and links it into the new tSegment
+void RelinkObject (int nObject, int newsegnum)
 {
-Assert ((objnum >= 0) && (objnum <= gameData.objs.nLastObject));
+Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject));
 Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
-UnlinkObject (objnum);
-LinkObject (objnum, newsegnum);
+UnlinkObject (nObject);
+LinkObject (nObject, newsegnum);
 #if 0//def _DEBUG
 #if TRACE				
-if (GetSegMasks (&gameData.objs.objects [objnum].pos, 
-					  gameData.objs.objects [objnum].segnum, 0).centerMask)
+if (GetSegMasks (&gameData.objs.objects [nObject].pos, 
+					  gameData.objs.objects [nObject].nSegment, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
 #endif
 }
 
 //--------------------------------------------------------------------
-//process a continuously-spinning object
-void SpinObject (object *objP)
+//process a continuously-spinning tObject
+void SpinObject (tObject *objP)
 {
-	vms_angvec rotangs;
-	vms_matrix rotmat, new_pm;
+	vmsAngVec rotangs;
+	vmsMatrix rotmat, new_pm;
 
-Assert (objP->movement_type == MT_SPINNING);
-rotangs.p = FixMul (objP->mtype.spin_rate.x, gameData.time.xFrame);
-rotangs.h = FixMul (objP->mtype.spin_rate.y, gameData.time.xFrame);
-rotangs.b = FixMul (objP->mtype.spin_rate.z, gameData.time.xFrame);
+Assert (objP->movementType == MT_SPINNING);
+rotangs.p = FixMul (objP->mType.spinRate.x, gameData.time.xFrame);
+rotangs.h = FixMul (objP->mType.spinRate.y, gameData.time.xFrame);
+rotangs.b = FixMul (objP->mType.spinRate.z, gameData.time.xFrame);
 VmAngles2Matrix (&rotmat, &rotangs);
 VmMatMul (&new_pm, &objP->orient, &rotmat);
 objP->orient = new_pm;
@@ -2738,31 +2738,31 @@ CheckAndFixMatrix (&objP->orient);
 }
 
 extern void MultiSendDropBlobs (char);
-extern void FuelCenCheckForGoal (segment *);
+extern void FuelCenCheckForGoal (tSegment *);
 
 //see if wall is volatile, and if so, cause damage to player
 //returns true if player is in lava
-int CheckVolatileWall (object *objP, int segnum, int sidenum, vms_vector *hitpt);
-int CheckVolatileSegment (object *objP, int segnum);
+int CheckVolatileWall (tObject *objP, int nSegment, int nSide, vmsVector *hitpt);
+int CheckVolatileSegment (tObject *objP, int nSegment);
 
-//	Time at which this object last created afterburner blobs.
+//	Time at which this tObject last created afterburner blobs.
 
 //--------------------------------------------------------------------
-//reset object's movement info
+//reset tObject's movement info
 //--------------------------------------------------------------------
 
-void StopObjectMovement (object *objP)
+void StopObjectMovement (tObject *objP)
 {
-Controls.heading_time = 0;
-Controls.pitch_time = 0;
-Controls.bank_time = 0;
-Controls.vertical_thrust_time = 0;
-Controls.sideways_thrust_time = 0;
-Controls.forward_thrust_time = 0;
-VmVecZero (&objP->mtype.phys_info.rotthrust);
-VmVecZero (&objP->mtype.phys_info.thrust);
-VmVecZero (&objP->mtype.phys_info.velocity);
-VmVecZero (&objP->mtype.phys_info.rotvel);
+Controls.headingTime = 0;
+Controls.pitchTime = 0;
+Controls.bankTime = 0;
+Controls.vertical_thrustTime = 0;
+Controls.sideways_thrustTime = 0;
+Controls.forward_thrustTime = 0;
+VmVecZero (&objP->mType.physInfo.rotThrust);
+VmVecZero (&objP->mType.physInfo.thrust);
+VmVecZero (&objP->mType.physInfo.velocity);
+VmVecZero (&objP->mType.physInfo.rotVel);
 }
 
 //--------------------------------------------------------------------
@@ -2770,7 +2770,7 @@ VmVecZero (&objP->mtype.phys_info.rotvel);
 void StopPlayerMovement (void)
 {
 if (!gameStates.gameplay.bSpeedBoost) {
-	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum);
+	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 	memset (&player_thrust, 0, sizeof (player_thrust));
 //	gameData.time.xFrame = F1_0;
 	gameStates.gameplay.bSpeedBoost = 0;
@@ -2779,7 +2779,7 @@ if (!gameStates.gameplay.bSpeedBoost) {
 
 //--------------------------------------------------------------------
 
-void MoveCamera (object *objP)
+void MoveCamera (tObject *objP)
 {
 
 #define	DEG90		 (F1_0 / 4)		
@@ -2797,9 +2797,9 @@ void MoveCamera (object *objP)
 
 if ((t0 < 0) || (t - t0 >= 1000 / 90)) 
 #endif
-	if (objP->ctype.ai_info.behavior == AIB_NORMAL) {
-		vms_angvec	a;
-		vms_matrix	r;
+	if (objP->cType.aiInfo.behavior == AIB_NORMAL) {
+		vmsAngVec	a;
+		vmsMatrix	r;
 
 		int	h = abs (curDelta);
 		int	d = DEG1 / (gameOpts->render.cameras.nSpeed / 1000);
@@ -2808,7 +2808,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	if (h != d)
 		curDelta = s * d;
 #if 1
-	objP->mtype.phys_info.brakes = (fix) t;
+	objP->mType.physInfo.brakes = (fix) t;
 #endif
 	if ((curAngle >= DEG45) || (curAngle <= -DEG45)) {
 		if (curAngle * s - DEG45 >= curDelta * s)
@@ -2828,28 +2828,28 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 
 //--------------------------------------------------------------------
 
-void CheckObjectInVolatileWall (object *objP)
+void CheckObjectInVolatileWall (tObject *objP)
 {
-	int bChkVolaSeg = 1, type, sideMask, bUnderLavaFall = 0;
+	int bChkVolaSeg = 1, nType, sideMask, bUnderLavaFall = 0;
 	static int nLavaFallHissPlaying [MAX_PLAYERS]={0};
 
-if (objP->type != OBJ_PLAYER)
+if (objP->nType != OBJ_PLAYER)
 	return;
-sideMask = GetSegMasks (&objP->pos, objP->segnum, objP->size).sideMask;
+sideMask = GetSegMasks (&objP->pos, objP->nSegment, objP->size).sideMask;
 if (sideMask) {
 	short nSide, nWall;
 	int bit;
-	side *pSide = gameData.segs.segments [objP->segnum].sides;
+	tSide *pSide = gameData.segs.segments [objP->nSegment].sides;
 	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, pSide++) {
 		if (!(sideMask & bit))
 			continue;
-		nWall = pSide->wall_num;
+		nWall = pSide->nWall;
 		if (!IS_WALL (nWall))
 			continue;
-		if (gameData.walls.walls [nWall].type != WALL_ILLUSION)
+		if (gameData.walls.walls [nWall].nType != WALL_ILLUSION)
 			continue;
-		if (type = CheckVolatileWall (objP, objP->segnum, nSide, &objP->pos)) {
-			short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+		if (nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->pos)) {
+			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
 			if (!nLavaFallHissPlaying [objP->id]) {
@@ -2860,8 +2860,8 @@ if (sideMask) {
 		}
 	}
 if (bChkVolaSeg) {
-	if (type=CheckVolatileSegment (objP, objP->segnum)) {
-		short sound = (type==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
+	if (nType=CheckVolatileSegment (objP, objP->nSegment)) {
+		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {
 			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
@@ -2877,23 +2877,23 @@ if (!bUnderLavaFall && nLavaFallHissPlaying [objP->id]) {
 
 //--------------------------------------------------------------------
 
-void HandleSpecialSegments (object *objP)
+void HandleSpecialSegments (tObject *objP)
 {
 	fix fuel, shields;
-	segment *segP = gameData.segs.segments + objP->segnum;
-	xsegment *xsegP = gameData.segs.xSegments + objP->segnum;
+	tSegment *segP = gameData.segs.segments + objP->nSegment;
+	xsegment *xsegP = gameData.segs.xSegments + objP->nSegment;
 	player *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 
-if ((objP->type == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
+if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 #ifdef NETWORK
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 FuelCenCheckForGoal (segP);
    else if (gameData.app.nGameMode & GM_HOARD)
 		 FuelCenCheckForHoardGoal (segP);
    else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if (Controls.forward_thrust_time || 
-			 Controls.vertical_thrust_time || 
-			 Controls.sideways_thrust_time ||
+		if (Controls.forward_thrustTime || 
+			 Controls.vertical_thrustTime || 
+			 Controls.sideways_thrustTime ||
 			 (xsegP->owner < 0) ||
 			 (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1)) {
 			StopConquerWarning ();
@@ -2930,9 +2930,9 @@ if ((objP->type == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 
 //--------------------------------------------------------------------
 
-int HandleObjectControl (object *objP)
+int HandleObjectControl (tObject *objP)
 {
-switch (objP->control_type) {
+switch (objP->controlType) {
 	case CT_NONE: 
 		break;
 
@@ -3000,9 +3000,9 @@ switch (objP->control_type) {
 
 	default:
 #ifdef __DJGPP__
-		Error ("Unknown control type %d in object %li, sig/type/id = %i/%i/%i", objP->control_type, OBJ_IDX (objP), objP->signature, objP->type, objP->id);
+		Error ("Unknown control nType %d in tObject %li, sig/nType/id = %i/%i/%i", objP->controlType, OBJ_IDX (objP), objP->nSignature, objP->nType, objP->id);
 #else
-		Error ("Unknown control type %d in object %i, sig/type/id = %i/%i/%i", objP->control_type, OBJ_IDX (objP), objP->signature, objP->type, objP->id);
+		Error ("Unknown control nType %d in tObject %i, sig/nType/id = %i/%i/%i", objP->controlType, OBJ_IDX (objP), objP->nSignature, objP->nType, objP->id);
 #endif
 	}
 return 0;
@@ -3010,14 +3010,14 @@ return 0;
 
 //--------------------------------------------------------------------
 
-void HandleObjectMovement (object *objP)
+void HandleObjectMovement (tObject *objP)
 {
-switch (objP->movement_type) {
+switch (objP->movementType) {
 	case MT_NONE:			
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
-		if (objP->type == 17)
+		if (objP->nType == 17)
 			objP = objP;
 		DoPhysicsSim (objP);	
 		SetOglLightPos (OBJ_IDX (objP));
@@ -3031,19 +3031,19 @@ switch (objP->movement_type) {
 
 //--------------------------------------------------------------------
 
-int CheckObjectHitTriggers (object *objP, short nPrevSegment)
+int CheckObjectHitTriggers (tObject *objP, short nPrevSegment)
 {
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if (objP->type == OBJ_MONSTERBALL)
+if (objP->nType == OBJ_MONSTERBALL)
 	objP = objP;
-if (/*(objP->type != OBJ_PLAYER) ||*/ (objP->movement_type != MT_PHYSICS) || (nPrevSegment == objP->segnum))
+if (/*(objP->nType != OBJ_PLAYER) ||*/ (objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
 #ifdef NETWORK
 nOldLevel = gameData.missions.nCurrentLevel;
 #endif
-if (objP->type == OBJ_MONSTERBALL)
+if (objP->nType == OBJ_MONSTERBALL)
 	objP = objP;
 for (i = 0; i < nPhysSegs - 1; i++) {
 	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
@@ -3064,19 +3064,19 @@ return 0;
 
 //--------------------------------------------------------------------
 
-void CheckGuidedMissileThroughExit (object *objP, short nPrevSegment)
+void CheckGuidedMissileThroughExit (tObject *objP, short nPrevSegment)
 {
 if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) && 
-	 (objP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
-	if (nPrevSegment != objP->segnum) {
-		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->segnum, gameData.segs.segments+nPrevSegment);
+	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
+	if (nPrevSegment != objP->nSegment) {
+		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments+nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
 			if (IS_WALL (nWall)) {
-				nTrigger = gameData.walls.walls [nWall].trigger;
+				nTrigger = gameData.walls.walls [nWall].tTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
-					 (gameData.trigs.triggers [nTrigger].type == TT_EXIT))
+					 (gameData.trigs.triggers [nTrigger].nType == TT_EXIT))
 					gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]->lifeleft = 0;
 				}
 			}
@@ -3086,7 +3086,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) &&
 
 //--------------------------------------------------------------------
 
-void CheckAfterburnerBlobDrop (object *objP)
+void CheckAfterburnerBlobDrop (tObject *objP)
 {
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
@@ -3098,9 +3098,9 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_size)) {
-	int	objnum = OBJ_IDX (objP);
-	fix	vel = VmVecMagQuick (&objP->mtype.phys_info.velocity);
+if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_size)) {
+	int	nObject = OBJ_IDX (objP);
+	fix	vel = VmVecMagQuick (&objP->mType.physInfo.velocity);
 	fix	delay, lifetime;
 
 	if (vel > F1_0*200)
@@ -3116,30 +3116,30 @@ if ((objP->type == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_
 		lifetime *= 2;
 		}
 
-	if ((objP->type == OBJ_WEAPON) &&
+	if ((objP->nType == OBJ_WEAPON) &&
 		 bIsMissile [objP->id] &&
 		 ((SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 		  || gameStates.app.bNostalgia
 		 // || EGI_FLAG (bThrusterFlames, 0, 0)
 		 ))
 		return;
-	if ((gameData.objs.xLastAfterburnerTime [objnum] + delay < gameData.time.xGame) || 
-		 (gameData.objs.xLastAfterburnerTime [objnum] > gameData.time.xGame)) {
+	if ((gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 
+		 (gameData.objs.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
 		DropAfterburnerBlobs (objP, 1, i2f (gameData.weapons.info [objP->id].afterburner_size)/16, lifetime, NULL, 0);
-		gameData.objs.xLastAfterburnerTime [objnum] = gameData.time.xGame;
+		gameData.objs.xLastAfterburnerTime [nObject] = gameData.time.xGame;
 		}
 	}
 }
 
 //--------------------------------------------------------------------
-//move an object for the current frame
+//move an tObject for the current frame
 
-int MoveOneObject (object * objP)
+int MoveOneObject (tObject * objP)
 {
-	short	nPrevSegment = (short) objP->segnum;
+	short	nPrevSegment = (short) objP->nSegment;
 
 #if 1//def _DEBUG
-if ((objP->type == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
+if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
 	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
 		HUDInitMessage ("Player should be dead");
 	}
@@ -3148,7 +3148,7 @@ objP->last_pos = objP->pos;			// Save the current position
 HandleSpecialSegments (objP);
 if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
 	//	Ok, this is a big hack by MK.
-	//	If you want an object to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
+	//	If you want an tObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
 	if (objP->lifeleft != ONE_FRAME_TIME)
 		if (gameData.time.xFrame != F1_0)
 			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
@@ -3160,14 +3160,14 @@ if (HandleObjectControl (objP))
 
 if (objP->lifeleft < 0) {		// We died of old age
 	objP->flags |= OF_SHOULD_BE_DEAD;
-	if (objP->type==OBJ_WEAPON && WI_damage_radius (objP->id))
+	if (objP->nType==OBJ_WEAPON && WI_damage_radius (objP->id))
 		ExplodeBadassWeapon (objP, &objP->pos);
-	else if (objP->type == OBJ_ROBOT)	//make robots explode
+	else if (objP->nType == OBJ_ROBOT)	//make robots explode
 		ExplodeObject (objP, 0);
 	}
 
-if ((objP->type == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
-	return 1;			//object has been deleted
+if ((objP->nType == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
+	return 1;			//tObject has been deleted
 	}
 HandleObjectMovement (objP);
 if (CheckObjectHitTriggers (objP, nPrevSegment))
@@ -3185,19 +3185,19 @@ int	nMaxUsedObjects = MAX_OBJECTS - 20;
 int MoveAllObjects ()
 {
 	int i;
-	object *objP;
+	tObject *objP;
 
-//	check_duplicate_objects ();
+//	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
 
 	if (gameData.objs.nLastObject > nMaxUsedObjects)
-		FreeObjectSlots (nMaxUsedObjects);		//	Free all possible object slots.
+		FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
 
 	DeleteAllObjsThatShouldBeDead ();
 	if (gameOpts->gameplay.bAutoLeveling)
-		gameData.objs.console->mtype.phys_info.flags |= PF_LEVELLING;
+		gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;
 	else
-		gameData.objs.console->mtype.phys_info.flags &= ~PF_LEVELLING;
+		gameData.objs.console->mType.physInfo.flags &= ~PF_LEVELLING;
 
 	// Move all gameData.objs.objects
 	objP = gameData.objs.objects;
@@ -3205,7 +3205,7 @@ int MoveAllObjects ()
 	gameStates.entropy.bConquering = 0;
 	UpdatePlayerOrient ();
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if ((objP->type != OBJ_NONE) && !(objP->flags & OF_SHOULD_BE_DEAD)) {
+		if ((objP->nType != OBJ_NONE) && !(objP->flags & OF_SHOULD_BE_DEAD)) {
 			if (!MoveOneObject (objP))
 				return 0;
 		}
@@ -3215,7 +3215,7 @@ int MoveAllObjects ()
 		i = 0;	//kill warning
 #endif
 return 1;
-//	check_duplicate_objects ();
+//	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
 
 }
@@ -3226,44 +3226,44 @@ return 1;
 //--unused-- int find_last_obj (int i)
 //--unused-- {
 //--unused-- 	for (i=MAX_OBJECTS;--i >= 0;)
-//--unused-- 		if (gameData.objs.objects [i].type != OBJ_NONE) break;
+//--unused-- 		if (gameData.objs.objects [i].nType != OBJ_NONE) break;
 //--unused--
 //--unused-- 	return i;
 //--unused--
 //--unused-- }
 
 
-//make object array non-sparse
-void compress_objects (void)
+//make tObject array non-sparse
+void compressObjects (void)
 {
 	int start_i;	//, last_i;
 
 	//last_i = find_last_obj (MAX_OBJECTS);
 
 	//	Note: It's proper to do < (rather than <=) gameData.objs.nLastObject here because we
-	//	are just removing gaps, and the last object can't be a gap.
+	//	are just removing gaps, and the last tObject can't be a gap.
 	for (start_i = 0;start_i<gameData.objs.nLastObject;start_i++)
 
-		if (gameData.objs.objects [start_i].type == OBJ_NONE) {
+		if (gameData.objs.objects [start_i].nType == OBJ_NONE) {
 
 			int	segnum_copy;
 
-			segnum_copy = gameData.objs.objects [gameData.objs.nLastObject].segnum;
+			segnum_copy = gameData.objs.objects [gameData.objs.nLastObject].nSegment;
 
 			UnlinkObject (gameData.objs.nLastObject);
 
 			gameData.objs.objects [start_i] = gameData.objs.objects [gameData.objs.nLastObject];
 
 			#ifdef EDITOR
-			if (Cur_object_index == gameData.objs.nLastObject)
-				Cur_object_index = start_i;
+			if (CurObject_index == gameData.objs.nLastObject)
+				CurObject_index = start_i;
 			#endif
 
-			gameData.objs.objects [gameData.objs.nLastObject].type = OBJ_NONE;
+			gameData.objs.objects [gameData.objs.nLastObject].nType = OBJ_NONE;
 
 			LinkObject (start_i, segnum_copy);
 
-			while (gameData.objs.objects [--gameData.objs.nLastObject].type == OBJ_NONE);
+			while (gameData.objs.objects [--gameData.objs.nLastObject].nType == OBJ_NONE);
 
 			//last_i = find_last_obj (last_i);
 			
@@ -3284,12 +3284,12 @@ gameData.objs.nObjects = n_objs;
 Assert (gameData.objs.nObjects > 0);
 for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
-	gameData.objs.objects [i].type = OBJ_NONE;
-	gameData.objs.objects [i].segnum =
-	gameData.objs.objects [i].ctype.expl_info.next_attach =
-	gameData.objs.objects [i].ctype.expl_info.prev_attach =
-	gameData.objs.objects [i].ctype.expl_info.attach_parent =
-	gameData.objs.objects [i].attached_obj = -1;
+	gameData.objs.objects [i].nType = OBJ_NONE;
+	gameData.objs.objects [i].nSegment =
+	gameData.objs.objects [i].cType.explInfo.nNextAttach =
+	gameData.objs.objects [i].cType.explInfo.nPrevAttach =
+	gameData.objs.objects [i].cType.explInfo.nAttachParent =
+	gameData.objs.objects [i].attachedObj = -1;
 	gameData.objs.objects [i].flags = 0;
 	//KillObjectSmoke (i);
 	}
@@ -3298,75 +3298,75 @@ nDebrisObjectCount = 0;
 }
 
 //------------------------------------------------------------------------------
-//Tries to find a segment for an object, using FindSegByPoint ()
-int FindObjectSeg (object * objP)
+//Tries to find a tSegment for an tObject, using FindSegByPoint ()
+int FindObjectSeg (tObject * objP)
 {
-return FindSegByPoint (&objP->pos, objP->segnum);
+return FindSegByPoint (&objP->pos, objP->nSegment);
 }
 
 
 //------------------------------------------------------------------------------
-//If an object is in a segment, set its segnum field and make sure it's
-//properly linked.  If not in any segment, returns 0, else 1.
+//If an tObject is in a tSegment, set its nSegment field and make sure it's
+//properly linked.  If not in any tSegment, returns 0, else 1.
 //callers should generally use FindVectorIntersection ()
-int UpdateObjectSeg (object * objP)
+int UpdateObjectSeg (tObject * objP)
 {
 	int newseg;
 
 newseg = FindObjectSeg (objP);
 if (newseg == -1)
 	return 0;
-if (newseg != objP->segnum)
+if (newseg != objP->nSegment)
 	RelinkObject (OBJ_IDX (objP), newseg);
 return 1;
 }
 
 //------------------------------------------------------------------------------
-//go through all gameData.objs.objects and make sure they have the correct segment numbers
+//go through all gameData.objs.objects and make sure they have the correct tSegment numbers
 void FixObjectSegs ()
 {
 	int i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].type != OBJ_NONE)
+	if (gameData.objs.objects [i].nType != OBJ_NONE)
 		if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {
 #if TRACE				
-			con_printf (1, "Cannot find segment for object %d in FixObjectSegs ()\n");
+			con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
 #endif
 			Int3 ();
-			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].pos, gameData.objs.objects [i].segnum);
+			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].pos, gameData.objs.objects [i].nSegment);
 			}
 }
 
 
-//--unused-- void object_use_new_object_list (object * new_list)
+//--unused-- void object_use_newObject_list (tObject * new_list)
 //--unused-- {
-//--unused-- 	int i, segnum;
-//--unused-- 	object *objP;
+//--unused-- 	int i, nSegment;
+//--unused-- 	tObject *objP;
 //--unused--
 //--unused-- 	// First, unlink all the old gameData.objs.objects for the segments array
-//--unused-- 	for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
-//--unused-- 		gameData.segs.segments [segnum].objects = -1;
+//--unused-- 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
+//--unused-- 		gameData.segs.segments [nSegment].objects = -1;
 //--unused-- 	}
 //--unused-- 	// Then, erase all the gameData.objs.objects
 //--unused-- 	ResetObjects (1);
 //--unused--
-//--unused-- 	// Fill in the object array
-//--unused-- 	memcpy (gameData.objs.objects, new_list, sizeof (object)*MAX_OBJECTS);
+//--unused-- 	// Fill in the tObject array
+//--unused-- 	memcpy (gameData.objs.objects, new_list, sizeof (tObject)*MAX_OBJECTS);
 //--unused--
 //--unused-- 	gameData.objs.nLastObject=-1;
 //--unused--
 //--unused-- 	// Relink 'em
 //--unused-- 	for (i = 0; i<MAX_OBJECTS; i++)	{
 //--unused-- 		obj = &gameData.objs.objects [i];
-//--unused-- 		if (objP->type != OBJ_NONE)	{
+//--unused-- 		if (objP->nType != OBJ_NONE)	{
 //--unused-- 			gameData.objs.nObjects++;
 //--unused-- 			gameData.objs.nLastObject = i;
-//--unused-- 			segnum = objP->segnum;
-//--unused-- 			objP->next = objP->prev = objP->segnum = -1;
-//--unused-- 			LinkObject (i, segnum);
+//--unused-- 			nSegment = objP->nSegment;
+//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
+//--unused-- 			LinkObject (i, nSegment);
 //--unused-- 		} else {
-//--unused-- 			objP->next = objP->prev = objP->segnum = -1;
+//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
 //--unused-- 		}
 //--unused-- 	}
 //--unused-- 	
@@ -3375,116 +3375,116 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 //delete gameData.objs.objects, such as weapons & explosions, that shouldn't stay between levels
 //	Changed by MK on 10/15/94, don't remove proximity bombs.
 //if clear_all is set, clear even proximity bombs
-void clear_transient_objects (int clear_all)
+void clear_transientObjects (int clear_all)
 {
-	short objnum;
-	object *objP;
+	short nObject;
+	tObject *objP;
 
-	for (objnum = 0, objP = gameData.objs.objects; objnum <= gameData.objs.nLastObject; objnum++, objP++)
-		if (((objP->type == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXIMITY_ID) && (objP->id != SUPERPROX_ID)))) ||
-			   objP->type == OBJ_FIREBALL ||
-			   objP->type == OBJ_DEBRIS ||
-			   objP->type == OBJ_DEBRIS ||
-			   ((objP->type != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
+	for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++)
+		if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXIMITY_ID) && (objP->id != SUPERPROX_ID)))) ||
+			   objP->nType == OBJ_FIREBALL ||
+			   objP->nType == OBJ_DEBRIS ||
+			   objP->nType == OBJ_DEBRIS ||
+			   ((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 
 			#ifdef _DEBUG
 #if TRACE				
-			if (gameData.objs.objects [objnum].lifeleft > i2f (2))
-				con_printf (CON_DEBUG, "Note: Clearing object %d (type=%d, id=%d) with lifeleft=%x\n", objnum, gameData.objs.objects [objnum].type, gameData.objs.objects [objnum].id, gameData.objs.objects [objnum].lifeleft);
+			if (gameData.objs.objects [nObject].lifeleft > i2f (2))
+				con_printf (CON_DEBUG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
 #endif
 			#endif
-			ReleaseObject (objnum);
+			ReleaseObject (nObject);
 		}
 		#ifdef _DEBUG
 #if TRACE				
-		 else if (gameData.objs.objects [objnum].type!=OBJ_NONE && gameData.objs.objects [objnum].lifeleft < i2f (2))
-			con_printf (CON_DEBUG, "Note: NOT clearing object %d (type=%d, id=%d) with lifeleft=%x\n", objnum, gameData.objs.objects [objnum].type, gameData.objs.objects [objnum].id, gameData.objs.objects [objnum].lifeleft);
+		 else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
+			con_printf (CON_DEBUG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
 #endif
 		#endif
 }
 
 //------------------------------------------------------------------------------
-//attaches an object, such as a fireball, to another object, such as a robot
-void AttachObject (object *parent, object *sub)
+//attaches an tObject, such as a fireball, to another tObject, such as a robot
+void AttachObject (tObject *parent, tObject *sub)
 {
-	Assert (sub->type == OBJ_FIREBALL);
-	Assert (sub->control_type == CT_EXPLOSION);
+	Assert (sub->nType == OBJ_FIREBALL);
+	Assert (sub->controlType == CT_EXPLOSION);
 
-	Assert (sub->ctype.expl_info.next_attach==-1);
-	Assert (sub->ctype.expl_info.prev_attach==-1);
+	Assert (sub->cType.explInfo.nNextAttach==-1);
+	Assert (sub->cType.explInfo.nPrevAttach==-1);
 
-	Assert (parent->attached_obj == -1 || 
-			 gameData.objs.objects [parent->attached_obj].ctype.expl_info.prev_attach==-1);
+	Assert (parent->attachedObj == -1 || 
+			 gameData.objs.objects [parent->attachedObj].cType.explInfo.nPrevAttach==-1);
 
-	sub->ctype.expl_info.next_attach = parent->attached_obj;
+	sub->cType.explInfo.nNextAttach = parent->attachedObj;
 
-	if (sub->ctype.expl_info.next_attach != -1)
-		gameData.objs.objects [sub->ctype.expl_info.next_attach].ctype.expl_info.prev_attach = OBJ_IDX (sub);
+	if (sub->cType.explInfo.nNextAttach != -1)
+		gameData.objs.objects [sub->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach = OBJ_IDX (sub);
 
-	parent->attached_obj = OBJ_IDX (sub);
+	parent->attachedObj = OBJ_IDX (sub);
 
-	sub->ctype.expl_info.attach_parent = OBJ_IDX (parent);
+	sub->cType.explInfo.nAttachParent = OBJ_IDX (parent);
 	sub->flags |= OF_ATTACHED;
 
-	Assert (sub->ctype.expl_info.next_attach != OBJ_IDX (sub));
-	Assert (sub->ctype.expl_info.prev_attach != OBJ_IDX (sub));
+	Assert (sub->cType.explInfo.nNextAttach != OBJ_IDX (sub));
+	Assert (sub->cType.explInfo.nPrevAttach != OBJ_IDX (sub));
 }
 
 //------------------------------------------------------------------------------
-//dettaches one object
-void DetachOneObject (object *sub)
+//dettaches one tObject
+void DetachOneObject (tObject *sub)
 {
 	Assert (sub->flags & OF_ATTACHED);
-	Assert (sub->ctype.expl_info.attach_parent != -1);
+	Assert (sub->cType.explInfo.nAttachParent != -1);
 
-if ((gameData.objs.objects [sub->ctype.expl_info.attach_parent].type != OBJ_NONE) &&
-	 (gameData.objs.objects [sub->ctype.expl_info.attach_parent].attached_obj != -1)) {
-	if (sub->ctype.expl_info.next_attach != -1) {
-		Assert (gameData.objs.objects [sub->ctype.expl_info.next_attach].ctype.expl_info.prev_attach=OBJ_IDX (sub));
-		gameData.objs.objects [sub->ctype.expl_info.next_attach].ctype.expl_info.prev_attach = sub->ctype.expl_info.prev_attach;
+if ((gameData.objs.objects [sub->cType.explInfo.nAttachParent].nType != OBJ_NONE) &&
+	 (gameData.objs.objects [sub->cType.explInfo.nAttachParent].attachedObj != -1)) {
+	if (sub->cType.explInfo.nNextAttach != -1) {
+		Assert (gameData.objs.objects [sub->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach=OBJ_IDX (sub));
+		gameData.objs.objects [sub->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach = sub->cType.explInfo.nPrevAttach;
 		}
-	if (sub->ctype.expl_info.prev_attach != -1) {
-		Assert (gameData.objs.objects [sub->ctype.expl_info.prev_attach].ctype.expl_info.next_attach=OBJ_IDX (sub));
-		gameData.objs.objects [sub->ctype.expl_info.prev_attach].ctype.expl_info.next_attach = 
-			sub->ctype.expl_info.next_attach;
+	if (sub->cType.explInfo.nPrevAttach != -1) {
+		Assert (gameData.objs.objects [sub->cType.explInfo.nPrevAttach].cType.explInfo.nNextAttach=OBJ_IDX (sub));
+		gameData.objs.objects [sub->cType.explInfo.nPrevAttach].cType.explInfo.nNextAttach = 
+			sub->cType.explInfo.nNextAttach;
 		}
 	else {
-		Assert (gameData.objs.objects [sub->ctype.expl_info.attach_parent].attached_obj=OBJ_IDX (sub));
-		gameData.objs.objects [sub->ctype.expl_info.attach_parent].attached_obj = sub->ctype.expl_info.next_attach;
+		Assert (gameData.objs.objects [sub->cType.explInfo.nAttachParent].attachedObj=OBJ_IDX (sub));
+		gameData.objs.objects [sub->cType.explInfo.nAttachParent].attachedObj = sub->cType.explInfo.nNextAttach;
 		}
 	}
-sub->ctype.expl_info.next_attach = 
-sub->ctype.expl_info.prev_attach =
-sub->ctype.expl_info.attach_parent = -1;
+sub->cType.explInfo.nNextAttach = 
+sub->cType.explInfo.nPrevAttach =
+sub->cType.explInfo.nAttachParent = -1;
 sub->flags &= ~OF_ATTACHED;
 }
 
 //------------------------------------------------------------------------------
-//dettaches all gameData.objs.objects from this object
-void DetachAllObjects (object *parent)
+//dettaches all gameData.objs.objects from this tObject
+void DetachAllObjects (tObject *parent)
 {
-while (parent->attached_obj != -1)
-	DetachOneObject (gameData.objs.objects + parent->attached_obj);
+while (parent->attachedObj != -1)
+	DetachOneObject (gameData.objs.objects + parent->attachedObj);
 }
 
 //------------------------------------------------------------------------------
-//creates a marker object in the world.  returns the object number
-int DropMarkerObject (vms_vector *pos, short segnum, vms_matrix *orient, ubyte marker_num)
+//creates a marker tObject in the world.  returns the tObject number
+int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num)
 {
-	short objnum;
+	short nObject;
 
 	Assert (gameData.models.nMarkerModel != -1);
-	objnum = CreateObject (OBJ_MARKER, marker_num, -1, segnum, pos, orient, 
+	nObject = CreateObject (OBJ_MARKER, marker_num, -1, nSegment, pos, orient, 
 								  gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
-	if (objnum >= 0) {
-		object *objP = &gameData.objs.objects [objnum];
-		objP->rtype.pobj_info.model_num = gameData.models.nMarkerModel;
-		VmVecCopyScale (&objP->mtype.spin_rate, &objP->orient.uvec, F1_0 / 2);
+	if (nObject >= 0) {
+		tObject *objP = &gameData.objs.objects [nObject];
+		objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
+		VmVecCopyScale (&objP->mType.spinRate, &objP->orient.uvec, F1_0 / 2);
 		//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
 		objP->lifeleft = IMMORTAL_TIME - 1;
 	}
 
-	return objnum;	
+	return nObject;	
 }
 
 //------------------------------------------------------------------------------
@@ -3493,12 +3493,12 @@ extern int nAiLastMissileCamera;
 
 //	*viewer is a viewer, probably a missile.
 //	wake up all robots that were rendered last frame subject to some constraints.
-void WakeupRenderedObjects (object *viewer, int window_num)
+void WakeupRenderedObjects (tObject *viewer, int window_num)
 {
 	int	i;
 
 	//	Make sure that we are processing current data.
-	if (gameData.app.nFrameCount != Window_rendered_data [window_num].frame) {
+	if (gameData.app.nFrameCount != windowRenderedData [window_num].frame) {
 #if TRACE				
 		con_printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
 #endif
@@ -3507,22 +3507,22 @@ void WakeupRenderedObjects (object *viewer, int window_num)
 
 	nAiLastMissileCamera = OBJ_IDX (viewer);
 
-	for (i = 0; i<Window_rendered_data [window_num].num_objects; i++) {
-		int	objnum;
-		object *objP;
+	for (i = 0; i<windowRenderedData [window_num].numObjects; i++) {
+		int	nObject;
+		tObject *objP;
 		int	fcval = gameData.app.nFrameCount & 3;
 
-		objnum = Window_rendered_data [window_num].rendered_objects [i];
-		if ((objnum & 3) == fcval) {
-			objP = &gameData.objs.objects [objnum];
+		nObject = windowRenderedData [window_num].renderedObjects [i];
+		if ((nObject & 3) == fcval) {
+			objP = &gameData.objs.objects [nObject];
 	
-			if (objP->type == OBJ_ROBOT) {
+			if (objP->nType == OBJ_ROBOT) {
 				if (VmVecDistQuick (&viewer->pos, &objP->pos) < F1_0*100) {
-					ai_local		*ailp = &gameData.ai.localInfo [objnum];
-					if (ailp->player_awareness_type == 0) {
-						objP->ctype.ai_info.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-						ailp->player_awareness_type = PA_WEAPON_ROBOT_COLLISION;
-						ailp->player_awareness_time = F1_0*3;
+					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
+					if (ailp->player_awarenessType == 0) {
+						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
+						ailp->player_awarenessType = PA_WEAPON_ROBOT_COLLISION;
+						ailp->player_awarenessTime = F1_0*3;
 						ailp->previous_visibility = 2;
 					}
 				}
@@ -3585,10 +3585,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int AddChildObjectP (object *pParent, object *pChild)
+int AddChildObjectP (tObject *pParent, tObject *pChild)
 {
 return pParent ? AddChildObjectN (OBJ_IDX (pParent), OBJ_IDX (pChild)) : 0;
-//return (pParent->type == OBJ_PLAYER) ? AddChildObjectN (OBJ_IDX (pParent), OBJ_IDX (pChild)) : 0;
+//return (pParent->nType == OBJ_PLAYER) ? AddChildObjectN (OBJ_IDX (pParent), OBJ_IDX (pChild)) : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -3608,7 +3608,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int DelObjChildrenP (object *pParent)
+int DelObjChildrenP (tObject *pParent)
 {
 return DelObjChildrenN (OBJ_IDX (pParent));
 }
@@ -3641,7 +3641,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int DelObjChildP (object *pChild)
+int DelObjChildP (tObject *pChild)
 {
 return DelObjChildN (OBJ_IDX (pChild));
 }
@@ -3657,7 +3657,7 @@ return (i < 0) ? NULL : gameData.objs.childObjs + i;
 
 //------------------------------------------------------------------------------
 
-tObjectRef *GetChildObjP (object *pParent, tObjectRef *pChildRef)
+tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef)
 {
 return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 }

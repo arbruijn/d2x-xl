@@ -27,13 +27,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * shareware stuff
  *
  * Revision 1.8  1995/10/23  14:50:11  allender
- * set control type for new player *before* calling KCSetControls
+ * set control nType for new player *before* calling KCSetControls
  *
  * Revision 1.7  1995/10/21  22:25:31  allender
  * *** empty log message ***
  *
  * Revision 1.6  1995/10/17  15:57:42  allender
- * removed line setting wrong COnfig_control_type
+ * removed line setting wrong COnfig_controlType
  *
  * Revision 1.5  1995/10/17  13:16:44  allender
  * new controller support
@@ -135,7 +135,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added assert for valid player number when loading game
  *
  * Revision 1.35  1994/12/08  10:53:07  rob
- * Fixed a bug in highest_level tracking.
+ * Fixed a bug in highestLevel tracking.
  *
  * Revision 1.34  1994/12/08  10:01:36  john
  * Changed the way the player callsign stuff works.
@@ -224,7 +224,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added hours field to player structure.
  *
  * Revision 1.8  1994/10/17  17:24:34  john
- * Added starting_level to player struct.
+ * Added startingLevel to player struct.
  *
  * Revision 1.7  1994/10/17  13:07:15  john
  * Moved the descent.cfg info into the player config file.
@@ -260,7 +260,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -369,16 +369,16 @@ RetrySelection:
 		memset (m, 0, sizeof (m));
 		#if !defined(WINDOWS)
 		for (i=0; i<mct; i++ )	{
-			m[i].type = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i); m[i].key = -1;
+			m[i].nType = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i); m[i].key = -1;
 		}
 		#elif defined(WINDOWS)
-			m[0].type = NM_TYPE_MENU; m[0].text = CONTROL_TEXT(0);
-	 		m[1].type = NM_TYPE_MENU; m[1].text = CONTROL_TEXT(5);
-			m[2].type = NM_TYPE_MENU; m[2].text = CONTROL_TEXT(7);
+			m[0].nType = NM_TYPE_MENU; m[0].text = CONTROL_TEXT(0);
+	 		m[1].nType = NM_TYPE_MENU; m[1].text = CONTROL_TEXT(5);
+			m[2].nType = NM_TYPE_MENU; m[2].text = CONTROL_TEXT(7);
 		 	i = 3;
 		#else
 		for (i = 0; i < 6; i++) {
-			m[i].type = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i);
+			m[i].nType = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i);
 		}
 		m[4].text = "Gravis Firebird/Mousestick II";
 		m[3].text = "Thrustmaster";
@@ -478,7 +478,7 @@ return 1;
 #define GUIDEBOT_NAME_LEN 9
 WIN(extern char win95_current_joyname[]);
 
-ubyte control_type_dos,control_type_win;
+ubyte controlType_dos,controlType_win;
 
 //read in the player's saved games.  returns errno (0 == no error)
 int ReadPlayerFile(int bOnlyWindowSizes)
@@ -601,17 +601,17 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 
 	if (CFRead (controlSettings.custom, nMaxControls * nControlTypes, 1, fp ) != 1)
 		errno_ret = errno;
-	else if (CFRead((ubyte *)&control_type_dos, sizeof (ubyte), 1, fp ) != 1)
+	else if (CFRead((ubyte *)&controlType_dos, sizeof (ubyte), 1, fp ) != 1)
 		errno_ret = errno;
-	else if (player_file_version >= 21 && CFRead ((ubyte *) &control_type_win, sizeof (ubyte), 1, fp ) != 1)
+	else if (player_file_version >= 21 && CFRead ((ubyte *) &controlType_win, sizeof (ubyte), 1, fp ) != 1)
 		errno_ret = errno;
 	else if (CFRead (gameOptions [0].input.joySensitivity, sizeof (ubyte), 1, fp ) != 1)
 		errno_ret = errno;
 
 	#ifdef WINDOWS
-	gameConfig.nControlType = control_type_win;
+	gameConfig.nControlType = controlType_win;
 	#else
-	gameConfig.nControlType = control_type_dos;
+	gameConfig.nControlType = controlType_dos;
 	#endif
 
 	for (i=0;i<11;i++) {
@@ -1138,19 +1138,19 @@ WritePlayerFile();
 int GetHighestLevel(void)
 {
 	int i;
-	int highest_saturn_level = 0;
+	int highest_saturnLevel = 0;
 
 ReadPlayerFile(0);
 #ifndef SATURN
 if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename) == 0)	{
 	for (i = 0; i < nHighestLevels; i++)
 		if (!stricmp(highestLevels [i].shortname, "DESTSAT")) 	//	Destination Saturn.
-		 	highest_saturn_level	= highestLevels[i].level_num; 
+		 	highest_saturnLevel	= highestLevels[i].level_num; 
 }
 #endif
 i = highestLevels [FindHLIEntry()].level_num;
-if (highest_saturn_level > i)
-   i = highest_saturn_level;
+if (highest_saturnLevel > i)
+   i = highest_saturnLevel;
 return i;
 }
 
@@ -1231,16 +1231,16 @@ int WritePlayerFile()
 	{
 
 		#ifdef WINDOWS
-		control_type_win = gameConfig.nControlType;
+		controlType_win = gameConfig.nControlType;
 		#else
-		control_type_dos = gameConfig.nControlType;
+		controlType_dos = gameConfig.nControlType;
 		#endif
 
 		if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
 			errno_ret=errno;
-		else if (CFWrite(&control_type_dos, sizeof(ubyte), 1, fp) != 1)
+		else if (CFWrite(&controlType_dos, sizeof(ubyte), 1, fp) != 1)
 			errno_ret=errno;
-		else if (CFWrite(&control_type_win, sizeof(ubyte), 1, fp ) != 1)
+		else if (CFWrite(&controlType_win, sizeof(ubyte), 1, fp ) != 1)
 			errno_ret=errno;
 		else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
 			errno_ret=errno;

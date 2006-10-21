@@ -35,7 +35,7 @@ void mem_init();
 #define d_free(ptr)         { mem_free(ptr); ptr=NULL; } 
 #define d_strdup(str)       mem_strdup((str),"Unknown",__FILE__,__LINE__)
 
-#define MALLOC( var, type, count )   (var=(type *)mem_malloc((count)*sizeof(type),#var, __FILE__,__LINE__,0 ))
+#define MALLOC( var, nType, count )   (var=(nType *)mem_malloc((count)*sizeof(nType),#var, __FILE__,__LINE__,0 ))
 
 // Checks to see if any blocks are overwritten
 void mem_validate_heap();
@@ -48,6 +48,6 @@ void mem_validate_heap();
 #define d_free(ptr)         { free(ptr); ptr=NULL; }
 #define d_strdup(str)       strdup(str)
 
-#define MALLOC( var, type, count )   (var=(type *)malloc((count)*sizeof(type)))
+#define MALLOC( var, nType, count )   (var=(nType *)malloc((count)*sizeof(nType)))
 
 #endif

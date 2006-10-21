@@ -20,7 +20,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "pstypes.h"
 #include "inferno.h"
@@ -230,7 +230,7 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsi
 	memset(rd, 0, sizeof(*rd));
 	memcpy(rd->src_node, &fromaddr.sin_addr, 4);
 	// TODO: Include the port like in ipx_udp.c
-	rd->pkt_type = 0;
+	rd->pktType = 0;
 
 	return size;
 }

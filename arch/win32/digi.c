@@ -72,10 +72,10 @@ static int digi_atexit_initialised=0;
 static int gameStates.sound.digi.nMaxChannels = 16;
 static int next_handle = 0;
 int SampleHandles[32];
-void reset_sounds_on_channel(int channel);
+void resetSounds_on_channel(int channel);
 //end edit by adb
 
-void digi_reset_digi_sounds(void);
+void digi_reset_digiSounds(void);
 
 void DigiReset() { }
 
@@ -83,7 +83,7 @@ void DigiClose(void)
 {
 	if(gameStates.sound.digi.bInitialized)
 	{
-		digi_reset_digi_sounds();
+		digi_reset_digiSounds();
 		IDirectSound_Release(lpds);
 	}
 	gameStates.sound.digi.bInitialized = 0;
@@ -267,7 +267,7 @@ TryNextChannel:
 	IDirectSoundBuffer_Play(SoundSlots[slot].lpsb, 0, 0, 0);
 
 	// added on 980905 by adb to add sound kill system from original sos digi.c
-	reset_sounds_on_channel(slot);
+	resetSounds_on_channel(slot);
 	SampleHandles[next_handle] = slot;
 	next_handle++;
 	if (next_handle >= gameStates.sound.digi.nMaxChannels)
@@ -298,7 +298,7 @@ int DigiFindChannel(int soundno)
 }
 
  //added on 980905 by adb to add sound kill system from original sos digi.c
-void reset_sounds_on_channel( int channel )
+void resetSounds_on_channel( int channel )
 {
  int i;
 
@@ -357,7 +357,7 @@ void DigiSetMaxChannels(int n) {
 
 	if ( !gameStates.sound.digi.bInitialized ) return;
 
-	digi_reset_digi_sounds();
+	digi_reset_digiSounds();
 }
 
 int DigiGetMaxChannels() { 
@@ -365,7 +365,7 @@ int DigiGetMaxChannels() {
 }
 // end edit by adb
 
-void digi_reset_digi_sounds() {
+void digi_reset_digiSounds() {
  int i;
 
  for (i=0; i< MAX_SOUND_SLOTS; i++) {
@@ -524,6 +524,6 @@ void DigiDebug()
 	}
 
 	mprintf_at((0, 2, 0, "DIGI: Active Sound Channels: %d/%d (HMI says %d/32)      ", n_voices, gameStates.sound.digi.nMaxChannels, -1));
-	//mprintf_at((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digi_total_locks ));
+	//mprintf_at((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digiTotal_locks ));
 }
 #endif

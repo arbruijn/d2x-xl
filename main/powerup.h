@@ -128,7 +128,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.2  1994/04/01  11:15:22  yuan
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
- * Hostages and powerups are implemented in the object system,
+ * Hostages and powerups are implemented in the tObject system,
  * just need to finish function call to "affect" player.
  *
  * Revision 1.1  1994/03/31  17:01:43  yuan
@@ -222,26 +222,26 @@ extern char Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 
 extern int Headlight_active_default;    // is headlight on when picked up?
 
-typedef struct powerup_type_info {
+typedef struct powerupType_info {
 	int nClipIndex;
-	int hit_sound;
+	int hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
-} __pack__ powerup_type_info;
+} __pack__ powerupType_info;
 
-extern int N_powerup_types;
-extern powerup_type_info Powerup_info[MAX_POWERUP_TYPES];
+extern int N_powerupTypes;
+extern powerupType_info Powerup_info[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
 
-void DrawPowerup(object *objP);
+void DrawPowerup(tObject *objP);
 
 //returns true if powerup consumed
-int DoPowerup(object *objP, int nPlayer);
+int DoPowerup(tObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
-void DoPowerupFrame(object *objP);
-void UpdatePowerupClip (vclip *vcP, vclip_info *vciP, int nObject);
+void DoPowerupFrame(tObject *objP);
+void UpdatePowerupClip (vclip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 
 // Diminish shields and energy towards max in case they exceeded it.
@@ -252,12 +252,12 @@ void DoMegaWowPowerup(int quantity);
 void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, char *format, ...);
 
 #ifdef FAST_FILE_IO
-#define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(powerup_type_info), n, fp)
+#define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(powerupType_info), n, fp)
 #else
 /*
- * reads n powerup_type_info structs from a CFILE
+ * reads n powerupType_info structs from a CFILE
  */
-extern int PowerupTypeInfoReadN(powerup_type_info *pti, int n, CFILE *fp);
+extern int PowerupTypeInfoReadN(powerupType_info *pti, int n, CFILE *fp);
 #endif
 int ApplyCloak (int bForce, int nPlayer);
 int ApplyInvul (int bForce, int nPlayer);

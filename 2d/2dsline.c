@@ -87,7 +87,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #if !defined(NO_ASM) && defined(__WATCOMC__)
 
-void gr_linear_darken( ubyte * dest, int darkening_level, int count, ubyte * fade_table );
+void gr_linear_darken( ubyte * dest, int darkeningLevel, int count, ubyte * fade_table );
 #pragma aux gr_linear_darken parm [edi] [eax] [ecx] [edx] modify exact [eax ebx ecx edx edi] = \
 "               xor ebx, ebx                "   \
 "               mov bh, al                  "   \
@@ -100,7 +100,7 @@ void gr_linear_darken( ubyte * dest, int darkening_level, int count, ubyte * fad
 
 #elif !defined(NO_ASM) && defined(__GNUC__)
 
-static inline void gr_linear_darken( ubyte * dest, int darkening_level, int count, ubyte * fade_table ) {
+static inline void gr_linear_darken( ubyte * dest, int darkeningLevel, int count, ubyte * fade_table ) {
    int dummy[4];
    __asm__ __volatile__ (
 "               xorl %%ebx, %%ebx;"
@@ -112,17 +112,17 @@ static inline void gr_linear_darken( ubyte * dest, int darkening_level, int coun
 "               decl %%ecx;"
 "               jnz 0b"
    : "=D" (dummy[0]), "=a" (dummy[1]), "=c" (dummy[2]), "=d" (dummy[3])
-   : "0" (dest), "1" (darkening_level), "2" (count), "3" (fade_table)
+   : "0" (dest), "1" (darkeningLevel), "2" (count), "3" (fade_table)
    : "%ebx");
 }
 
 #elif !defined(NO_ASM) && defined(_MSC_VER)
 
-__inline void gr_linear_darken( ubyte * dest, int darkening_level, int count, ubyte * fade_table )
+__inline void gr_linear_darken( ubyte * dest, int darkeningLevel, int count, ubyte * fade_table )
 {
 	__asm {
     mov edi,[dest]
-    mov eax,[darkening_level]
+    mov eax,[darkeningLevel]
     mov ecx,[count]
     mov edx,[fade_table]
     xor ebx, ebx
@@ -139,12 +139,12 @@ gld_loop:
 
 #else // Unknown compiler, or no assembler. So we use C.
 
-void gr_linear_darken(ubyte * dest, int darkening_level, int count, ubyte * fade_table) {
+void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_table) {
 	register int i;
 
 	for (i=0;i<count;i++)
 	{
-		*dest = fade_table[(*dest)+(darkening_level*256)];
+		*dest = fade_table[(*dest)+(darkeningLevel*256)];
 		dest++;
 	}
 }
@@ -179,23 +179,23 @@ memset(dest, color->index, nbytes);
 
 #if defined(POLY_ACC)
 //$$ Note that this code WAS a virtual clone of the mac code and any changes to mac should be reflected here.
-void gr_linear15_darken( short * dest, int darkening_level, int count, ubyte * fade_table )
+void gr_linear15_darken( short * dest, int darkeningLevel, int count, ubyte * fade_table )
 {
     //$$ this routine is a prime candidate for using the alpha blender.
     int i;
     unsigned short rt[32], gt[32], bt[32];
-    unsigned long level, int_level, dlevel;
+    unsigned long level, intLevel, dlevel;
 
-    dlevel = (darkening_level << 16) / GR_FADE_LEVELS;
-    level = int_level = 0;
+    dlevel = (darkeningLevel << 16) / GR_FADE_LEVELS;
+    level = intLevel = 0;
     for(i = 0; i != 32; ++i)
     {
-        rt[i] = int_level << 10;
-        gt[i] = int_level << 5;
-        bt[i] = int_level;
+        rt[i] = intLevel << 10;
+        gt[i] = intLevel << 5;
+        bt[i] = intLevel;
 
         level += dlevel;
-        int_level = level >> 16;
+        intLevel = level >> 16;
     }
 
     pa_flush();

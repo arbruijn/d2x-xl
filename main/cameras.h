@@ -8,8 +8,8 @@
 #define MAX_CAMERAS	100
 
 typedef struct tCamera {
-	object		obj;
-	object		*objP;
+	tObject		obj;
+	tObject		*objP;
 	short			segNum;
 	short			sideNum;
 	grs_bitmap	texBuf;
@@ -32,7 +32,7 @@ typedef struct tCamera {
 	ogl_fbuffer	fb;
 	ogl_texture	glTex;
 #endif
-	vms_matrix	orient;
+	vmsMatrix	orient;
 	fixang		curAngle;
 	fixang		curDelta;
 	time_t		t0;
@@ -53,7 +53,7 @@ void GetCameraUVL (tCamera *pc, uvl *uvlCopy);
 int OglCamBufAvail (tCamera *pc, int bCheckTexture);
 #endif
 int CreateCamera (tCamera *pc, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-						object *objP, int bShadowMap, int bTeleport);
+						tObject *objP, int bShadowMap, int bTeleport);
 void DestroyCamera (tCamera *pc);
 
 #endif // _cameras_h

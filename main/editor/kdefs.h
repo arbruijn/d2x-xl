@@ -58,7 +58,7 @@ int GroupSegment();
 int Degroup();
 int RotateGroup();
 
-// In segment.c
+// In tSegment.c
 void ToggleBottom();
 void make_curside_bottom_side();
 int select_segment_by_number();
@@ -197,7 +197,7 @@ int	TexStretchUp();
 int	TexChangeAll();
 int	TexChangeAll2();
 
-//	object.c
+//	tObject.c
 int	ObjectPlaceObject();
 int	ObjectMakeCoop();
 int	ObjectPlaceObjectTmap();
@@ -270,7 +270,7 @@ int GameZoomIn();
 int medtmp_set_page();
 
 // In objpage.c
-int objpage_goto_next_object();
+int objpage_goto_nextObject();
 
 // In medsel.c
 extern int SortSelectedList(void);
@@ -328,8 +328,8 @@ extern int goal_blue_create_from_curseg();
 extern int goal_red_create_from_curseg();
 
 // In editor\robot.c
-extern int do_robot_dialog();
-extern int do_object_dialog();
+extern int doRobot_dialog();
+extern int doObject_dialog();
 
 // In editor\hostage.c
 extern int do_hostage_dialog();

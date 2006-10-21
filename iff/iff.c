@@ -148,7 +148,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added mem.h
  *
  * Revision 1.3  1993/09/22  19:16:57  matt
- * Added new error type, IFF_CORRUPT, for internally bad IFF files.
+ * Added new error nType, IFF_CORRUPT, for internally bad IFF files.
  *
  * Revision 1.2  1993/09/08  19:24:16  matt
  * Fixed bug in RLE compression
@@ -210,7 +210,7 @@ typedef struct pal_entry {
 typedef struct iff_bitmap_header {
 	short w,h;						//width and height of this bitmap
 	short x,y;						//generally unused
-	short type;						//see types above
+	short nType;						//see types above
 	short transparentcolor;		//which color is transparent (if any)
 	short pagewidth,pageheight; //width & height of source screen
 	sbyte nplanes;              //number of planes (8 for 256 color image)
@@ -437,10 +437,10 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 	if (len&1)
 		end_pos++;
 
-	if (bmheader->type == TYPE_PBM) {
+	if (bmheader->nType == TYPE_PBM) {
 		width=bmheader->w;
 		depth=1;
-	} else if (bmheader->type == TYPE_ILBM) {
+	} else if (bmheader->nType == TYPE_ILBM) {
 		width = (bmheader->w+7)/8;
 		depth=bmheader->nplanes;
 	}
@@ -628,7 +628,7 @@ void skip_chunk(FFILE *ifile,long len)
 
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int iff_parse_ilbm_pbm(FFILE *ifile,long form_type,iff_bitmap_header *bmheader,int form_len,grs_bitmap *prev_bm)
+int iff_parse_ilbm_pbm(FFILE *ifile,long formType,iff_bitmap_header *bmheader,int form_len,grs_bitmap *prev_bm)
 {
 	long sig,len;
 	//char ignore=0;
@@ -638,13 +638,13 @@ int iff_parse_ilbm_pbm(FFILE *ifile,long form_type,iff_bitmap_header *bmheader,i
 	end_pos = start_pos-4+form_len;
 
 //      //printf(" %ld ",form_len);
-//      printsig(form_type);
+//      printsig(formType);
 //      //printf("\n");
 
-			if (form_type == pbm_sig)
-				bmheader->type = TYPE_PBM;
+			if (formType == pbm_sig)
+				bmheader->nType = TYPE_PBM;
 			else
-				bmheader->type = TYPE_ILBM;
+				bmheader->nType = TYPE_ILBM;
 
 			while ((ifile->position < end_pos) && (sig=get_sig(ifile)) != EOF) {
 
@@ -691,7 +691,7 @@ int iff_parse_ilbm_pbm(FFILE *ifile,long form_type,iff_bitmap_header *bmheader,i
 
 						bmheader->w = prev_bm->bm_props.w;
 						bmheader->h = prev_bm->bm_props.h;
-						bmheader->type = prev_bm->bm_props.type;
+						bmheader->nType = prev_bm->bm_props.nType;
 
 						MALLOC( bmheader->raw_data, ubyte, bmheader->w * bmheader->h );
 
@@ -793,7 +793,7 @@ int convert_ilbm_to_pbm(iff_bitmap_header *bmheader)
 	d_free(bmheader->raw_data);
 	bmheader->raw_data = new_data;
 
-	bmheader->type = TYPE_PBM;
+	bmheader->nType = TYPE_PBM;
 
 	return IFF_NO_ERROR;
 }
@@ -860,7 +860,7 @@ void copy_iff_to_grs(grs_bitmap *bm,iff_bitmap_header *bmheader)
 	bm->bm_props.x = bm->bm_props.y = 0;
 	bm->bm_props.w = bmheader->w;
 	bm->bm_props.h = bmheader->h;
-	bm->bm_props.type = (char) bmheader->type;
+	bm->bm_props.nType = (char) bmheader->nType;
 	bm->bm_props.rowsize = bmheader->w;
 	bm->bm_texBuf = bmheader->raw_data;
 	bm->bm_props.flags = 0;
@@ -870,12 +870,12 @@ void copy_iff_to_grs(grs_bitmap *bm,iff_bitmap_header *bmheader)
 
 //if bm->bm_texBuf is set, use it (making sure w & h are correct), else
 //allocate the memory
-int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmap_type, grs_bitmap *prev_bm)
+int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmapType, grs_bitmap *prev_bm)
 {
 	int ret;			//return code
 	iff_bitmap_header bmheader;
 	long sig,form_len;
-	long form_type;
+	long formType;
 
 	bmheader.raw_data = bm->bm_texBuf;
 
@@ -892,12 +892,12 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmap_type, grs_bitmap *
 
 	form_len = get_long(ifile);
 
-	form_type = get_sig(ifile);
+	formType = get_sig(ifile);
 
-	if (form_type == anim_sig)
+	if (formType == anim_sig)
 		ret = IFF_FORM_ANIM;
-	else if ((form_type == pbm_sig) || (form_type == ilbm_sig))
-		ret = iff_parse_ilbm_pbm(ifile,form_type,&bmheader,form_len,prev_bm);
+	else if ((formType == pbm_sig) || (formType == ilbm_sig))
+		ret = iff_parse_ilbm_pbm(ifile,formType,&bmheader,form_len,prev_bm);
 	else
 		ret = IFF_UNKNOWN_FORM;
 
@@ -907,7 +907,7 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmap_type, grs_bitmap *
 	}
 
 	//If IFF file is ILBM, convert to PPB
-	if (bmheader.type == TYPE_ILBM) {
+	if (bmheader.nType == TYPE_ILBM) {
 
 		ret = convert_ilbm_to_pbm(&bmheader);
 
@@ -923,7 +923,7 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmap_type, grs_bitmap *
 
 	//Now do post-process if required
 
-	if (bitmap_type == BM_RGB15) {
+	if (bitmapType == BM_RGB15) {
 		ret = convert_rgb15(bm,&bmheader);
 		if (ret != IFF_NO_ERROR)
 			return ret;
@@ -933,8 +933,8 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmap_type, grs_bitmap *
 
 }
 
-//returns error codes - see IFF.H.  see GR.H for bitmap_type
-int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmap_type)
+//returns error codes - see IFF.H.  see GR.H for bitmapType
+int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -942,7 +942,7 @@ int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmap_type)
 	ret = open_fake_file(ifilename,&ifile);		//read in entire file
 	if (ret == IFF_NO_ERROR) {
 		bm->bm_texBuf = NULL;
-		ret = iff_parse_bitmap(&ifile,bm,bitmap_type,NULL);
+		ret = iff_parse_bitmap(&ifile,bm,bitmapType,NULL);
 	}
 	if (ifile.data) 
 		d_free(ifile.data);
@@ -959,7 +959,7 @@ int iff_read_into_bitmap(char *ifilename, grs_bitmap *bm)
 
 	ret = open_fake_file(ifilename,&ifile);		//read in entire file
 	if (ret == IFF_NO_ERROR) {
-		ret = iff_parse_bitmap(&ifile,bm,bm->bm_props.type,NULL);
+		ret = iff_parse_bitmap(&ifile,bm,bm->bm_props.nType,NULL);
 	}
 
 	if (ifile.data) d_free(ifile.data);
@@ -1236,7 +1236,7 @@ int iff_write_bitmap(char *ofilename,grs_bitmap *bm, ubyte *palette)
 	int ret;
 	int compression_on;
 
-	if (bm->bm_props.type == BM_RGB15) return IFF_BAD_BM_TYPE;
+	if (bm->bm_props.nType == BM_RGB15) return IFF_BAD_BM_TYPE;
 
 #if COMPRESS
 	compression_on = (bm->bm_props.w>=MIN_COMPRESS_WIDTH);
@@ -1249,7 +1249,7 @@ int iff_write_bitmap(char *ofilename,grs_bitmap *bm, ubyte *palette)
 	bmheader.x = bmheader.y = 0;
 	bmheader.w = bm->bm_props.w;
 	bmheader.h = bm->bm_props.h;
-	bmheader.type = TYPE_PBM;
+	bmheader.nType = TYPE_PBM;
 	bmheader.transparentcolor = iff_transparent_color;
 	bmheader.pagewidth = bm->bm_props.w;	//I don't think it matters what I write
 	bmheader.pageheight = bm->bm_props.h;
@@ -1287,7 +1287,7 @@ int iff_read_animbrush(char *ifilename,grs_bitmap **bm_list,int max_bitmaps,int 
 	FFILE ifile;
 	iff_bitmap_header bmheader;
 	long sig,form_len;
-	long form_type;
+	long formType;
 
 	*n_bitmaps=0;
 
@@ -1304,11 +1304,11 @@ int iff_read_animbrush(char *ifilename,grs_bitmap **bm_list,int max_bitmaps,int 
 		goto done;
 	}
 
-	form_type = get_sig(&ifile);
+	formType = get_sig(&ifile);
 
-	if ((form_type == pbm_sig) || (form_type == ilbm_sig))
+	if ((formType == pbm_sig) || (formType == ilbm_sig))
 		ret = IFF_FORM_BITMAP;
-	else if (form_type == anim_sig) {
+	else if (formType == anim_sig) {
 		int anim_end = ifile.position + form_len - 4;
 
 		while (ifile.position < anim_end && *n_bitmaps < max_bitmaps) {
@@ -1320,7 +1320,7 @@ int iff_read_animbrush(char *ifilename,grs_bitmap **bm_list,int max_bitmaps,int 
 			MALLOC(bm_list[*n_bitmaps] , grs_bitmap, 1 );
 			bm_list[*n_bitmaps]->bm_texBuf = NULL;
 
-			ret = iff_parse_bitmap(&ifile,bm_list[*n_bitmaps],form_type,prev_bm);
+			ret = iff_parse_bitmap(&ifile,bm_list[*n_bitmaps],formType,prev_bm);
 
 			if (ret != IFF_NO_ERROR)
 				goto done;
@@ -1347,15 +1347,15 @@ done:
 char error_messages[] = {
 	"No error.\0"
 	"Not enough mem for loading or processing bitmap.\0"
-	"IFF file has unknown FORM type.\0"
+	"IFF file has unknown FORM nType.\0"
 	"Not an IFF file.\0"
 	"Cannot open file.\0"
-	"Tried to save invalid type, like BM_RGB15.\0"
+	"Tried to save invalid nType, like BM_RGB15.\0"
 	"Bad data in file.\0"
 	"ANIM file cannot be loaded with normal bitmap loader.\0"
 	"Normal bitmap file cannot be loaded with anim loader.\0"
 	"Array not big enough on anim brush read.\0"
-	"Unknown mask type in bitmap header.\0"
+	"Unknown mask nType in bitmap header.\0"
 	"Error reading file.\0"
 };
 

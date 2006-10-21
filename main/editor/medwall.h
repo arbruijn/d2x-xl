@@ -36,7 +36,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Allow two doors to be linked together
  * 
  * Revision 1.7  1994/06/20  22:30:10  yuan
- * Fixed crazy runaway trigger bug that Adam found
+ * Fixed crazy runaway tTrigger bug that Adam found
  * 
  * Revision 1.6  1994/05/30  20:22:58  yuan
  * New triggers.
@@ -46,7 +46,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Wall interface complete, but triggers are still in progress.
  * 
  * Revision 1.4  1994/05/18  18:22:04  yuan
- * Fixed delete segment and walls bug.
+ * Fixed delete tSegment and walls bug.
  * 
  * Revision 1.3  1994/03/17  18:08:41  yuan
  * New wall stuff... Cut out switches....
@@ -74,7 +74,7 @@ extern int wall_add_removable();
 extern int wall_restore_all();
 
 // Reset a wall.
-extern void WallReset(segment *seg, short side);
+extern void WallReset(tSegment *seg, short tSide);
 
 // Adds a removable wall (medwall.c)
 extern int wall_add_removable();
@@ -90,13 +90,13 @@ extern int wall_remove_blastable();
 
 // Adds a wall. (visually)
 extern int wall_add_to_curside();
-extern int wall_add_to_markedside(byte type);
+extern int wall_add_to_markedside(byte nType);
  
 // Removes a wall. (visually)
 extern int wall_remove();
 
-// Removes a specific side.
-int wall_remove_side(segment *seg, short side);
+// Removes a specific tSide.
+int wall_remove_side(tSegment *seg, short tSide);
 
 extern int bind_wall_to_control_center();
 

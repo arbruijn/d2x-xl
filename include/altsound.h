@@ -2,14 +2,14 @@
 #ifndef _ALTSOUND_H
 #define _ALTSOUND_H
  
-extern int use_alt_sounds;
+extern int use_altSounds;
 extern int use_altsound[MAX_SOUNDS];
-extern digi_sound altsound_list[MAX_SOUNDS];
+extern digiSound altsound_list[MAX_SOUNDS];
 
-void load_alt_sounds(char *fname);
-void free_alt_sounds();
+void load_altSounds(char *fname);
+void free_altSounds();
  
-digi_sound *Sounddat(int soundnum);
+digiSound *Sounddat(int soundnum);
 int DigiXlatSound(short soundnum);
 
 #endif // _ALTSOUND_H

@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * object system definitions
+ * tObject system definitions
  *
  * Old Log:
  * Revision 1.6  1995/09/20  14:24:45  allender
@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Initial revision
  *
  * Revision 2.1  1995/03/31  12:24:10  john
- * I had changed alt_textures from a pointer to a byte. This hosed old
+ * I had changed nAltTextures from a pointer to a byte. This hosed old
  * saved games, so I restored it to an int.
  *
  * Revision 2.0  1995/02/27  11:26:47  john
@@ -63,24 +63,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Boost MAX_OBJECTS from 250 to 350.
  *
  * Revision 1.116  1995/01/13  19:39:51  rob
- * Removed outdated remote_info structure.  (looking for cause of bugs
+ * Removed outdated remoteInfo structure.  (looking for cause of bugs
  *
  * Revision 1.115  1995/01/12  12:09:38  yuan
- * Added coop object capability.
+ * Added coop tObject capability.
  *
  * Revision 1.114  1994/12/15  13:04:20  mike
- * Replace Players[nLocalPlayer].time_total references with GameTime.
+ * Replace Players[nLocalPlayer].timeTotal references with GameTime.
  *
  * Revision 1.113  1994/12/12  17:18:09  mike
  * make boss cloak/teleport when get hit, make quad laser 3/4 as powerful.
  *
  * Revision 1.112  1994/12/09  14:58:42  matt
- * Added system to attach a fireball to another object for rendering purposes,
- * so the fireball always renders on top of (after) the object.
+ * Added system to attach a fireball to another tObject for rendering purposes,
+ * so the fireball always renders on top of (after) the tObject.
  *
  * Revision 1.111  1994/12/08  12:35:35  matt
- * Added new object allocation & deallocation functions so other code
- * could stop messing around with internal object data structures.
+ * Added new tObject allocation & deallocation functions so other code
+ * could stop messing around with internal tObject data structures.
  *
  * Revision 1.110  1994/11/21  17:30:21  matt
  * Increased max number of objects
@@ -107,10 +107,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added support for new Control Center/Main Reactor
  *
  * Revision 1.102  1994/10/14  18:12:28  mike
- * Make egg dropping return object number.
+ * Make egg dropping return tObject number.
  *
  * Revision 1.101  1994/10/12  21:07:19  matt
- * Killed unused field in object structure
+ * Killed unused field in tObject structure
  *
  * Revision 1.100  1994/10/12  10:38:24  mike
  * Add field OF_SILENT to obj->flags.
@@ -122,30 +122,30 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added velocity to shortpos strucutre.
  *
  * Revision 1.97  1994/09/30  18:24:00  rob
- * Added new control type CT_REMOTE for remote controlled objects.
- * Also added a union struct 'remote_info' for this type.
+ * Added new control nType CT_REMOTE for remote controlled objects.
+ * Also added a union struct 'remoteInfo' for this nType.
  *
  * Revision 1.96  1994/09/28  09:23:05  mike
- * Prototype Object_type_names.
+ * Prototype ObjectType_names.
  *
  * Revision 1.95  1994/09/25  23:32:37  matt
- * Changed the object load & save code to read/write the structure fields one
+ * Changed the tObject load & save code to read/write the structure fields one
  * at a time (rather than the whole structure at once).  This mean that the
- * object structure can be changed without breaking the load/save functions.
- * As a result of this change, the local_object data can be and has been
- * incorporated into the object array.  Also, timeleft is now a property
- * of all objects, and the object structure has been otherwise cleaned up.
+ * tObject structure can be changed without breaking the load/save functions.
+ * As a result of this change, the localObject data can be and has been
+ * incorporated into the tObject array.  Also, timeleft is now a property
+ * of all objects, and the tObject structure has been otherwise cleaned up.
  *
  * Revision 1.94  1994/09/25  15:45:28  matt
- * Added OBJ_LIGHT, a type of object that casts light
- * Added generalized lifeleft, and moved it to local_object
+ * Added OBJ_LIGHT, a nType of tObject that casts light
+ * Added generalized lifeleft, and moved it to localObject
  *
  * Revision 1.93  1994/09/24  17:41:19  mike
- * Add stuff to Local_object structure for materialization centers.
+ * Add stuff to LocalObject structure for materialization centers.
  *
  * Revision 1.92  1994/09/24  13:16:50  matt
  * Added (hacked in, really) support for overriding the bitmaps used on to
- * texture map a polygon object, and using a new bitmap for all the faces.
+ * texture map a polygon tObject, and using a new bitmap for all the faces.
  *
  * Revision 1.91  1994/09/22  19:02:14  mike
  * Prototype functions ExtractShortPos and CreateShortPos which reside in
@@ -165,19 +165,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add vclips for weapons.
  *
  * Revision 1.86  1994/09/09  14:20:54  matt
- * Added flag that says object uses thrust
+ * Added flag that says tObject uses thrust
  *
  * Revision 1.85  1994/09/08  14:51:32  mike
- * Make a crucial name change to a field of local_object struct.
+ * Make a crucial name change to a field of localObject struct.
  *
  * Revision 1.84  1994/09/07  19:16:45  mike
  * Homing missile.
  *
  * Revision 1.83  1994/09/06  17:05:43  matt
- * Added new type for dead player
+ * Added new nType for dead player
  *
  * Revision 1.82  1994/09/02  11:56:09  mike
- * Add persistency (PF_PERSISTENT) to physics_info.
+ * Add persistency (PF_PERSISTENT) to physicsInfo.
  *
  * Revision 1.81  1994/08/28  19:10:28  mike
  * Add Player_is_dead.
@@ -219,7 +219,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype new FindObjectSeg and UpdateObjectSeg.
  *
  * Revision 1.69  1994/07/19  15:26:39  mike
- * New ai_static structure.
+ * New tAIStatic structure.
  *
  * Revision 1.68  1994/07/13  00:15:06  matt
  * Moved all (or nearly all) of the values that affect player movement to
@@ -257,8 +257,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECTS     	3500 // increased on 01/24/95 for multiplayer. --MK;  total number of objects in world
 
 // Object types
-#define OBJ_NONE        255 // unused object
-#define OBJ_WALL        0   // A wall... not really an object, but used for collisions
+#define OBJ_NONE        255 // unused tObject
+#define OBJ_WALL        0   // A wall... not really an tObject, but used for collisions
 #define OBJ_FIREBALL    1   // a fireball, part of an explosion
 #define OBJ_ROBOT       2   // an evil enemy
 #define OBJ_HOSTAGE     3   // a hostage you need to rescue
@@ -272,20 +272,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_CLUTTER     11  // misc objects
 #define OBJ_GHOST       12  // what the player turns into when dead
 #define OBJ_LIGHT       13  // a light source, & not much else
-#define OBJ_COOP        14  // a cooperative player object.
+#define OBJ_COOP        14  // a cooperative player tObject.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
 
-// WARNING!! If you add a type here, add its name to Object_type_names
-// in object.c
+// WARNING!! If you add a nType here, add its name to ObjectType_names
+// in tObject.c
 #define MAX_OBJECT_TYPES    18
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision
 #define RESULT_CHECK    1   // Check for this collision
 
-// Control types - what tells this object what do do
+// Control types - what tells this tObject what do do
 #define CT_NONE         0   // doesn't move (or change movement)
 #define CT_AI           1   // driven by AI
 #define CT_EXPLOSION    2   // explosion sequencer
@@ -294,7 +294,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_FLYTHROUGH   6   // the flythrough system
 #define CT_WEAPON       9   // laser, etc.
 #define CT_REPAIRCEN    10  // under the control of the repair center
-#define CT_MORPH        11  // this object is being morphed
+#define CT_MORPH        11  // this tObject is being morphed
 #define CT_DEBRIS       12  // this is a piece of debris
 #define CT_POWERUP      13  // animating powerup blob
 #define CT_LIGHT        14  // doesn't actually do anything
@@ -305,7 +305,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Movement types
 #define MT_NONE         0   // doesn't move
 #define MT_PHYSICS      1   // moves by physics
-#define MT_SPINNING     3   // this object doesn't move, just sits and spins
+#define MT_SPINNING     3   // this tObject doesn't move, just sits and spins
 
 // Render types
 #define RT_NONE         0   // does not render
@@ -318,14 +318,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a vclip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 
-// misc object flags
-#define OF_EXPLODING        1   // this object is exploding
-#define OF_SHOULD_BE_DEAD   2   // this object should be dead, so next time we can, we should delete this object.
+// misc tObject flags
+#define OF_EXPLODING        1   // this tObject is exploding
+#define OF_SHOULD_BE_DEAD   2   // this tObject should be dead, so next time we can, we should delete this tObject.
 #define OF_DESTROYED        4   // this has been killed, and is showing the dead version
 #define OF_SILENT           8   // this makes no sound when it hits a wall.  Added by MK for weapons, if you extend it to other types, do it completely!
-#define OF_ATTACHED         16  // this object is a fireball attached to another object
-#define OF_HARMLESS         32  // this object does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
-#define OF_PLAYER_DROPPED   64  // this object was dropped by the player...
+#define OF_ATTACHED         16  // this tObject is a fireball attached to another tObject
+#define OF_HARMLESS         32  // this tObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
+#define OF_PLAYER_DROPPED   64  // this tObject was dropped by the player...
 #define OF_ARMAGEDDON		 128 // destroyed by cheat
 
 // Different Weapon ID types...
@@ -338,14 +338,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // physics flags
 #define PF_TURNROLL         0x01    // roll when turning
-#define PF_LEVELLING        0x02    // level object with closest side
+#define PF_LEVELLING        0x02    // level tObject with closest tSide
 #define PF_BOUNCE           0x04    // bounce (not slide) when hit will
 #define PF_WIGGLE           0x08    // wiggle while flying
-#define PF_STICK            0x10    // object sticks (stops moving) when hits wall
-#define PF_PERSISTENT       0x20    // object keeps going even after it hits another object (eg, fusion cannon)
-#define PF_USES_THRUST      0x40    // this object uses its thrust
+#define PF_STICK            0x10    // tObject sticks (stops moving) when hits wall
+#define PF_PERSISTENT       0x20    // tObject keeps going even after it hits another tObject (eg, fusion cannon)
+#define PF_USES_THRUST      0x40    // this tObject uses its thrust
 #define PF_BOUNCED_ONCE     0x80    // Weapon has bounced once.
-#define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this object
+#define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this tObject
 #define PF_BOUNCES_TWICE    0x200   // This weapon bounces twice, then dies
 
 #define IMMORTAL_TIME   0x3fffffff  // Time assigned to immortal objects, about 32768 seconds, or about 9 hours.
@@ -368,7 +368,7 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][9];
 typedef struct shortpos {
 	sbyte   bytemat[9];
 	short   xo,yo,zo;
-	short   segment;
+	short   tSegment;
 	short   velx, vely, velz;
 } __pack__ shortpos;
 
@@ -377,135 +377,130 @@ typedef struct shortpos {
 #define MATRIX_PRECISION    9
 #define MATRIX_MAX          0x7f    // This is based on MATRIX_PRECISION, 9 => 0x7f
 
-// information for physics sim for an object
-typedef struct physics_info {
-	vms_vector  velocity;   // velocity vector of this object
-	vms_vector  thrust;     // constant force applied to this object
-	fix         mass;       // the mass of this object
+// information for physics sim for an tObject
+typedef struct tPhysicsInfo {
+	vmsVector	velocity;   // velocity vector of this tObject
+	vmsVector	thrust;     // constant force applied to this tObject
+	fix         mass;       // the mass of this tObject
 	fix         drag;       // how fast this slows down
 	fix         brakes;     // how much brakes applied
-	vms_vector  rotvel;     // rotational velecity (angles)
-	vms_vector  rotthrust;  // rotational acceleration
-	fixang      turnroll;   // rotation caused by turn banking
+	vmsVector	rotVel;     // rotational velecity (angles)
+	vmsVector	rotThrust;  // rotational acceleration
+	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
-} __pack__ physics_info;
+} __pack__ tPhysicsInfo;
 
 // stuctures for different kinds of simulation
 
-typedef struct laser_info {
-	short   parent_type;        // The type of the parent of this object
-	short   parent_num;         // The object's parent's number
-	int     parent_signature;   // The object's parent's signature...
-	fix     creation_time;      // Absolute time of creation.
-	short   last_hitobj;        // For persistent weapons (survive object collision), object it most recently hit.
-	short   track_goal;         // Object this object is tracking.
+typedef struct tLaserInfo  {
+	short   parentType;        // The nType of the parent of this tObject
+	short   nParentObj;         // The tObject's parent's number
+	int     nParentSig;			// The tObject's parent's nSignature...
+	fix     creationTime;      // Absolute time of creation.
+	short   nLastHitObj;        // For persistent weapons (survive tObject collision), tObject it most recently hit.
+	short   nTrackGoal;         // Object this tObject is tracking.
 	fix     multiplier;         // Power if this is a fusion bolt (or other super weapon to be added).
-} __pack__ laser_info;
+} __pack__ tLaserInfo;
 
-typedef struct explosion_info {
-    fix     spawn_time;         // when lifeleft is < this, spawn another
-    fix     delete_time;        // when to delete object
-    short   delete_objnum;      // and what object to delete
-    short   attach_parent;      // explosion is attached to this object
-    short   prev_attach;        // previous explosion in attach list
-    short   next_attach;        // next explosion in attach list
-} __pack__ explosion_info;
+typedef struct tExplosionInfo {
+    fix     nSpawnTime;         // when lifeleft is < this, spawn another
+    fix     nDeleteTime;        // when to delete tObject
+    short   nDeleteObj;      // and what tObject to delete
+    short   nAttachParent;      // explosion is attached to this tObject
+    short   nPrevAttach;        // previous explosion in attach list
+    short   nNextAttach;        // next explosion in attach list
+} __pack__ tExplosionInfo;
 
-typedef struct light_info {
+typedef struct tObjLightInfo {
     fix     intensity;          // how bright the light is
-} __pack__ light_info;
+} __pack__ tObjLightInfo;
 
 #define PF_SPAT_BY_PLAYER   1   //this powerup was spat by the player
 
-typedef struct powerup_info {
+typedef struct tPowerupInfo {
 	int     count;          // how many/much we pick up (vulcan cannon only?)
-	fix     creation_time;  // Absolute time of creation.
+	fix     creationTime;  // Absolute time of creation.
 	int     flags;          // spat by player?
-} __pack__ powerup_info;
+} __pack__ tPowerupInfo;
 
-typedef struct vclip_info {
+typedef struct tVClipInfo {
 	int     nClipIndex;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
-} __pack__ vclip_info;
+} __pack__ tVClipInfo;
 
 // structures for different kinds of rendering
 
-typedef struct polyobj_info {
-	int     model_num;          // which polygon model
-	vms_angvec anim_angles[MAX_SUBMODELS]; // angles for each subobject
-	int     subobj_flags;       // specify which subobjs to draw
-	int     tmap_override;      // if this is not -1, map all face to this
-	int     alt_textures;       // if not -1, use these textures instead
-} __pack__ polyobj_info;
+typedef struct tPolyObjInfo {
+	int     		nModel;          // which polygon model
+	vmsAngVec 	animAngles[MAX_SUBMODELS]; // angles for each subobject
+	int     		nSubObjFlags;       // specify which subobjs to draw
+	int     		nTexOverride;      // if this is not -1, map all face to this
+	int     		nAltTextures;       // if not -1, use these textures instead
+} __pack__ tPolyObjInfo;
 
-typedef struct object {
-	int     signature;      // Every object ever has a unique signature...
-	ubyte   type;           // what type of object this is... robot, weapon, hostage, powerup, fireball
-	ubyte   id;             // which form of object...which powerup, robot, etc.
+typedef struct tObject {
+	int     		nSignature;      // Every tObject ever has a unique nSignature...
+	ubyte   		nType;           // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
+	ubyte   		id;             // which form of tObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
-	short   pad;
+	short   		pad;
 #endif
-	short   next,prev;      // id of next and previous connected object in Objects, -1 = no connection
-	ubyte   control_type;   // how this object is controlled
-	ubyte   movement_type;  // how this object moves
-	ubyte   render_type;    // how this object renders
-	ubyte   flags;          // misc flags
-	short   segnum;         // segment number containing object
-	short   attached_obj;   // number of attached fireball object
-	vms_vector pos;         // absolute x,y,z coordinate of center of object
-	vms_matrix orient;      // orientation of object in world
-	fix     size;           // 3d size of object - for collision detection
-	fix     shields;        // Starts at maximum, when <0, object dies..
-	vms_vector last_pos;    // where object was last frame
-	sbyte   contains_type;  // Type of object this object contains (eg, spider contains powerup)
-	sbyte   contains_id;    // ID of object this object contains (eg, id = blue type = key)
-	sbyte   contains_count; // number of objects of type:id this object contains
-	sbyte   matcen_creator; // Materialization center that created this object, high bit set if matcen-created
-	fix     lifeleft;       // how long until goes away, or 7fff if immortal
-	// -- Removed, MK, 10/16/95, using lifeleft instead: int     lightlevel;
-
+	short   		next, prev;    // id of next and previous connected tObject in Objects, -1 = no connection
+	ubyte   		controlType;   // how this tObject is controlled
+	ubyte   		movementType;  // how this tObject moves
+	ubyte   		renderType;    // how this tObject renders
+	ubyte   		flags;         // misc flags
+	short   		nSegment;      // tSegment number containing tObject
+	short   		attachedObj;   // number of attached fireball tObject
+	vmsVector 	pos;				// absolute x,y,z coordinate of center of tObject
+	vmsMatrix 	orient;			// orientation of tObject in world
+	fix     		size;          // 3d size of tObject - for collision detection
+	fix     		shields;       // Starts at maximum, when <0, tObject dies..
+	vmsVector 	last_pos;		// where tObject was last frame
+	sbyte   		containsType;  // Type of tObject this tObject contains (eg, spider contains powerup)
+	sbyte   		containsId;    // ID of tObject this tObject contains (eg, id = blue nType = key)
+	sbyte   		containsCount; // number of objects of nType:id this tObject contains
+	sbyte   		matCenCreator; // Materialization center that created this tObject, high bit set if matcen-created
+	fix     		lifeleft;      // how long until goes away, or 7fff if immortal
 	// movement info, determined by MOVEMENT_TYPE
 	union {
-		physics_info phys_info; // a physics object
-		vms_vector   spin_rate; // for spinning objects
-	} mtype __pack__ ;
-
+		tPhysicsInfo	physInfo; // a physics tObject
+		vmsVector   	spinRate; // for spinning objects
+		} mType __pack__ ;
 	// control info, determined by CONTROL_TYPE
 	union {
-		laser_info      laser_info;
-		explosion_info  expl_info;      // NOTE: debris uses this also
-		ai_static       ai_info;
-		light_info      light_info;     // why put this here?  Didn't know what else to do with it.
-		powerup_info    powerup_info;
-	} ctype __pack__ ;
-
+		tLaserInfo      laserInfo;
+		tExplosionInfo  explInfo;      // NOTE: debris uses this also
+		tAIStatic       aiInfo;
+		tObjLightInfo   lightInfo;     // why put this here?  Didn't know what else to do with it.
+		tPowerupInfo    powerupInfo;
+		} cType __pack__ ;
 	// render info, determined by RENDER_TYPE
 	union {
-		polyobj_info    pobj_info;      // polygon model
-		vclip_info      vclip_info;     // vclip
-	} rtype __pack__ ;
-
+		tPolyObjInfo   polyObjInfo;      // polygon model
+		tVClipInfo     vClipInfo;     // vclip
+		} rType __pack__ ;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-} __pack__ object;
+	} __pack__ tObject;
 
-typedef struct obj_position {
-	vms_vector  pos;        // absolute x,y,z coordinate of center of object
-	vms_matrix  orient;     // orientation of object in world
-	short       segnum;     // segment number containing object
-	short			segtype;		// type of segment
-} obj_position;
+typedef struct tObjPosition {
+	vmsVector  pos;        // absolute x,y,z coordinate of center of tObject
+	vmsMatrix  orient;     // orientation of tObject in world
+	short       nSegment;     // tSegment number containing tObject
+	short			nSegType;		// nType of tSegment
+} tObjPosition;
 
 typedef struct {
 	int     frame;
-	object  *viewer;
+	tObject *viewer;
 	int     rear_view;
 	int     user;
-	int     num_objects;
-	short   rendered_objects[MAX_RENDERED_OBJECTS];
-} window_rendered_data;
+	int     numObjects;
+	short   renderedObjects[MAX_RENDERED_OBJECTS];
+} tWindowRenderedData;
 
 typedef struct tObjDropInfo {
 	time_t	nDropTime;
@@ -522,7 +517,7 @@ typedef struct tObjectRef {
 
 #define MAX_RENDERED_WINDOWS    3
 
-extern window_rendered_data Window_rendered_data[MAX_RENDERED_WINDOWS];
+extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 
 /*
  * VARIABLES
@@ -533,7 +528,7 @@ extern ubyte CollisionResult[MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 
 extern char *robot_names[];         // name of each robot
 
-extern object Follow;
+extern tObject Follow;
 
 /*
  * FUNCTIONS
@@ -543,52 +538,52 @@ extern object Follow;
 // do whatever setup needs to be done
 void InitObjects();
 
-// returns segment number object is in.  Searches out from object's current
-// seg, so this shouldn't be called if the object has "jumped" to a new seg
-int obj_get_new_seg(object *obj);
+// returns tSegment number tObject is in.  Searches out from tObject's current
+// seg, so this shouldn't be called if the tObject has "jumped" to a new seg
+int obj_get_new_seg(tObject *obj);
 
-// when an object has moved into a new segment, this function unlinks it
-// from its old segment, and links it into the new segment
-void RelinkObject(int objnum,int newsegnum);
+// when an tObject has moved into a new tSegment, this function unlinks it
+// from its old tSegment, and links it into the new tSegment
+void RelinkObject(int nObject,int newsegnum);
 
-// move an object from one segment to another. unlinks & relinks
-void obj_set_new_seg(int objnum,int newsegnum);
+// move an tObject from one tSegment to another. unlinks & relinks
+void obj_set_new_seg(int nObject,int newsegnum);
 
-// links an object into a segment's list of objects.
-// takes object number and segment number
-void LinkObject(int objnum,int segnum);
+// links an tObject into a tSegment's list of objects.
+// takes tObject number and tSegment number
+void LinkObject(int nObject,int nSegment);
 
-// unlinks an object from a segment's list of objects
-void UnlinkObject(int objnum);
+// unlinks an tObject from a tSegment's list of objects
+void UnlinkObject(int nObject);
 
-// initialize a new object.  adds to the list for the given segment
-// returns the object number
-int CreateObject(ubyte type, ubyte id, short owner, short segnum, vms_vector *pos,
-               vms_matrix *orient, fix size,
+// initialize a new tObject.  adds to the list for the given tSegment
+// returns the tObject number
+int CreateObject(ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos,
+               vmsMatrix *orient, fix size,
                ubyte ctype, ubyte mtype, ubyte rtype, int bIgnoreLimits);
 
-// make a copy of an object. returs num of new object
-int CreateObjectCopy(int objnum, vms_vector *new_pos, int newsegnum);
+// make a copy of an tObject. returs num of new tObject
+int CreateObjectCopy(int nObject, vmsVector *new_pos, int newsegnum);
 
-// remove object from the world
-void ReleaseObject(short objnum);
+// remove tObject from the world
+void ReleaseObject(short nObject);
 
 // called after load.  Takes number of objects, and objects should be
 // compressed
 void ResetObjects(int n_objs);
 
-// make object array non-sparse
-void compress_objects(void);
+// make tObject array non-sparse
+void compressObjects(void);
 
-// Render an object.  Calls one of several routines based on type
-void RenderObject(object *obj, int nWindowNum);
+// Render an tObject.  Calls one of several routines based on nType
+void RenderObject(tObject *obj, int nWindowNum);
 
-// Draw a blob-type object, like a fireball
-void DrawObjectBlob(object *obj, bitmap_index bmi0, bitmap_index bmi, int iFrame,
+// Draw a blob-nType tObject, like a fireball
+void DrawObjectBlob(tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame,
 						  tRgbColorf *color, float alpha);
 
-// draw an object that is a texture-mapped rod
-void DrawObjectRodTexPoly(object *obj, bitmap_index bitmap, int lighted);
+// draw an tObject that is a texture-mapped rod
+void DrawObjectRodTexPoly(tObject *obj, tBitmapIndex bitmap, int lighted);
 
 // Deletes all objects that have been marked for death.
 void DeleteAllObjsThatShouldBeDead();
@@ -599,89 +594,89 @@ void object_toggle_lock_targets();
 // move all objects for the current frame
 int MoveAllObjects();     // moves all objects
 
-// set viewer object to next object in array
+// set viewer tObject to next tObject in array
 void object_goto_next_viewer();
 
 // draw target boxes for nearby robots
 void object_render_targets(void);
 
-// move an object for the current frame
-int MoveOneObject(object * obj);
+// move an tObject for the current frame
+int MoveOneObject(tObject * obj);
 
 // make object0 the player, setting all relevant fields
 void InitPlayerObject();
 
-// check if object is in object->segnum.  if not, check the adjacent
-// segs.  if not any of these, returns false, else sets obj->segnum &
+// check if tObject is in tObject->nSegment.  if not, check the adjacent
+// segs.  if not any of these, returns false, else sets obj->nSegment &
 // returns true callers should really use FindVectorIntersection()
 // Note: this function is in gameseg.c
-extern int UpdateObjectSeg(struct object *obj);
+extern int UpdateObjectSeg(tObject *obj);
 
 
-// Finds what segment *obj is in, returns segment number.  If not in
-// any segment, returns -1.  Note: This function is defined in
+// Finds what tSegment *obj is in, returns tSegment number.  If not in
+// any tSegment, returns -1.  Note: This function is defined in
 // gameseg.h, but object.h depends on gameseg.h, and object.h is where
-// object is defined...get it?
-extern int FindObjectSeg(object * obj );
+// tObject is defined...get it?
+extern int FindObjectSeg(tObject * obj);
 
-// go through all objects and make sure they have the correct segment
+// go through all objects and make sure they have the correct tSegment
 // numbers used when debugging is on
 void FixObjectSegs();
 
 // Drops objects contained in objp.
-int ObjectCreateEgg(object *objp);
+int ObjectCreateEgg(tObject *objp);
 
-// Interface to ObjectCreateEgg, puts count objects of type type, id
+// Interface to ObjectCreateEgg, puts count objects of nType nType, id
 // = id in objp and then drops them.
-int CallObjectCreateEgg(object *objp, int count, int type, int id);
+int CallObjectCreateEgg(tObject *objp, int count, int nType, int id);
 
 extern void DeadPlayerEnd(void);
 
-// Extract information from an object (objp->orient, objp->pos,
-// objp->segnum), stuff in a shortpos structure.  See typedef
+// Extract information from an tObject (objp->orient, objp->pos,
+// objp->nSegment), stuff in a shortpos structure.  See typedef
 // shortpos.
-extern void CreateShortPos(shortpos *spp, object *objp, int swap_bytes);
+extern void CreateShortPos(shortpos *spp, tObject *objp, int swap_bytes);
 
 // Extract information from a shortpos, stuff in objp->orient
-// (matrix), objp->pos, objp->segnum
-extern void ExtractShortPos(object *objp, shortpos *spp, int swap_bytes);
+// (matrix), objp->pos, objp->nSegment
+extern void ExtractShortPos(tObject *objp, shortpos *spp, int swap_bytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs
-void clear_transient_objects(int clear_all);
+void clear_transientObjects(int clear_all);
 
-// returns the number of a free object, updating Highest_object_index.
-// Generally, CreateObject() should be called to get an object, since it
+// returns the number of a free tObject, updating HighestObject_index.
+// Generally, CreateObject() should be called to get an tObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(void);
 
-// frees up an object.  Generally, ReleaseObject() should be called to
-// get rid of an object.  This function deallocates the object entry
-// after the object has been unlinked
-void FreeObject(int objnum);
+// frees up an tObject.  Generally, ReleaseObject() should be called to
+// get rid of an tObject.  This function deallocates the tObject entry
+// after the tObject has been unlinked
+void FreeObject(int nObject);
 
-// after calling init_object(), the network code has grabbed specific
-// object slots without allocating them.  Go though the objects &
+// after calling initObject(), the network code has grabbed specific
+// tObject slots without allocating them.  Go though the objects &
 // build the free list, then set the apporpriate globals Don't call
 // this function if you don't know what you're doing.
 void SpecialResetObjects(void);
 
-// attaches an object, such as a fireball, to another object, such as
+// attaches an tObject, such as a fireball, to another tObject, such as
 // a robot
-void AttachObject(object *parent,object *sub);
+void AttachObject(tObject *parent,tObject *sub);
 
-extern void CreateSmallFireballOnObject(object *objp, fix size_scale, int sound_flag);
+extern void CreateSmallFireballOnObject(tObject *objp, fix size_scale, int soundFlag);
 
-// returns object number
-int DropMarkerObject(vms_vector *pos, short segnum, vms_matrix *orient, ubyte marker_num);
+// returns tObject number
+int DropMarkerObject(vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num);
 
-extern void WakeupRenderedObjects(object *gmissp, int window_num);
+extern void WakeupRenderedObjects(tObject *gmissp, int window_num);
 
 extern void AdjustMineSpawn();
 
 void ResetPlayerObject(void);
-void StopObjectMovement (object *obj);
+void StopObjectMovement (tObject *obj);
 void StopPlayerMovement (void);
 
 void DoSmokeFrame (void);
@@ -696,23 +691,23 @@ void KillPlayerSmoke (int i);
 
 void ResetChildObjects (void);
 int AddChildObjectN (int nParent, int nChild);
-int AddChildObjectP (object *pParent, object *pChild);
+int AddChildObjectP (tObject *pParent, tObject *pChild);
 int DelObjChildrenN (int nParent);
-int DelObjChildrenP (object *pParent);
+int DelObjChildrenP (tObject *pParent);
 int DelObjChildN (int nChild);
-int DelObjChildP (object *pChild);
+int DelObjChildP (tObject *pChild);
 
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
-tObjectRef *GetChildObjP (object *pParent, tObjectRef *pChildRef);
+tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
 
-void RenderTargetIndicator (object *objP, tRgbColorf *pc);
+void RenderTargetIndicator (tObject *objP, tRgbColorf *pc);
 
-object *ObjFindFirstOfType (int type);
+tObject *ObjFindFirstOfType (int nType);
 
 void InitWeaponFlags (void);
 
 extern ubyte bIsMissile [];
 
-#define OBJ_CLOAKED(_objP)	((_objP)->ctype.ai_info.flags [6])
+#define OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
 
 #endif

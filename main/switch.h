@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Matcen triggers.
  *
  * Revision 1.15  1994/08/15  18:06:39  yuan
- * Added external trigger.
+ * Added external tTrigger.
  *
  * Revision 1.14  1994/06/16  16:20:52  john
  * Made player start out in physics mode; Neatend up game loop a bit.
@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Trigger problem fixed (seg pointer is replaced by index now.)
  *
  * Revision 1.9  1994/04/26  11:19:01  yuan
- * Make it so a trigger can only be triggered every 5 seconds.
+ * Make it so a tTrigger can only be triggered every 5 seconds.
  *
  */
 
@@ -100,33 +100,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //could also use flags for one-shots
 
 #define TF_NO_MESSAGE       1   // Don't show a message when triggered
-#define TF_ONE_SHOT         2   // Only trigger once
+#define TF_ONE_SHOT         2   // Only tTrigger once
 #define TF_DISABLED         4   // Set after one-shot fires
 #define TF_PERMANENT			 8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
 
-//old trigger structs
+//old tTrigger structs
 
 typedef struct v29_trigger {
-	sbyte   type;
+	sbyte   nType;
 	short   flags;
 	fix     value;
 	fix     time;
 	sbyte   link_num;
-	short   num_links;
-	short   seg[MAX_WALLS_PER_LINK];
-	short   side[MAX_WALLS_PER_LINK];
+	short   nLinks;
+	short   nSegment [MAX_WALLS_PER_LINK];
+	short   nSide [MAX_WALLS_PER_LINK];
 } __pack__ v29_trigger;
 
 typedef struct v30_trigger {
 	short   flags;
-	sbyte   num_links;
+	sbyte   nLinks;
 	sbyte   pad;                        //keep alignment
 	fix     value;
 	fix     time;
-	short   seg[MAX_WALLS_PER_LINK];
-	short   side[MAX_WALLS_PER_LINK];
+	short   nSegment [MAX_WALLS_PER_LINK];
+	short   nSide [MAX_WALLS_PER_LINK];
 } __pack__ v30_trigger;
 
 //flags for V30 & below triggers
@@ -137,50 +137,50 @@ typedef struct v30_trigger {
 #define TRIGGER_ON                16    // Whether Trigger is active
 #define TRIGGER_ONE_SHOT          32    // If Trigger can only be triggered once
 #define TRIGGER_MATCEN            64    // Trigger for materialization centers
-#define TRIGGER_ILLUSION_OFF     128    // Switch Illusion OFF trigger
+#define TRIGGER_ILLUSION_OFF     128    // Switch Illusion OFF tTrigger
 #define TRIGGER_SECRET_EXIT      256    // Exit to secret level
-#define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON trigger
+#define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON tTrigger
 #define TRIGGER_UNLOCK_DOORS    1024    // Unlocks a door
 #define TRIGGER_OPEN_WALL       2048    // Makes a wall open
 #define TRIGGER_CLOSE_WALL      4096    // Makes a wall closed
 #define TRIGGER_ILLUSORY_WALL   8192    // Makes a wall illusory
 
-//the trigger really should have both a type & a flags, since most of the
+//the tTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
-typedef struct trigger {
-	ubyte   type;       //what this trigger does
+typedef struct tTrigger {
+	ubyte   nType;       //what this tTrigger does
 	short   flags;      //currently unused
-	sbyte   num_links;  //how many doors, etc. linked to this
+	sbyte   nLinks;  //how many doors, etc. linked to this
 	fix     value;
 	fix     time;
-	short   seg[MAX_WALLS_PER_LINK];
-	short   side[MAX_WALLS_PER_LINK];
-} __pack__ trigger;
+	short   nSegment [MAX_WALLS_PER_LINK];
+	short   nSide [MAX_WALLS_PER_LINK];
+} __pack__ tTrigger;
 
-typedef struct obj_trigger_ref {
+typedef struct tObjTriggerRef {
 	short		prev;
 	short		next;
-	short		objnum;
-} obj_trigger_ref;
+	short		nObject;
+} tObjTriggerRef;
 
 
-extern trigger Triggers[MAX_TRIGGERS];
+extern tTrigger Triggers[MAX_TRIGGERS];
 extern int Num_triggers;
-extern trigger ObjTriggers[MAX_TRIGGERS];
-extern obj_trigger_ref ObjTriggerRefs[MAX_OBJ_TRIGGERS];
+extern tTrigger ObjTriggers[MAX_TRIGGERS];
+extern tObjTriggerRef ObjTriggerRefs[MAX_OBJ_TRIGGERS];
 extern short FirstObjTrigger [MAX_OBJECTS_D2X];
 extern int Num_obj_triggers;
 
 extern void trigger_init();
-extern void CheckTrigger(segment *seg, short side, short objnum,int shot);
-extern int CheckTriggerSub (short nObject, trigger *triggers, int num_triggers, int trigger_num, int player_num,int shot);
+extern void CheckTrigger(tSegment *seg, short tSide, short nObject,int shot);
+extern int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int trigger_num, int player_num,int shot);
 extern void TriggersFrameProcess();
-void ExecObjTriggers (short objnum);
+void ExecObjTriggers (short nObject);
 
 #ifdef FAST_FILE_IO
 #define v29_trigger_read(t, fp) CFRead(t, sizeof(v29_trigger), 1, fp)
 #define v30_trigger_read(t, fp) CFRead(t, sizeof(v30_trigger), 1, fp)
-#define TriggerRead(t, fp) CFRead(t, sizeof(trigger), 1, fp)
+#define TriggerRead(t, fp) CFRead(t, sizeof(tTrigger), 1, fp)
 #else
 /*
  * reads a v29_trigger structure from a CFILE
@@ -193,20 +193,20 @@ void v29_trigger_read(v29_trigger *t, CFILE *fp);
 void v30_trigger_read(v30_trigger *t, CFILE *fp);
 
 /*
- * reads a trigger structure from a CFILE
+ * reads a tTrigger structure from a CFILE
  */
-void TriggerRead(trigger *t, CFILE *fp, int bObjTrigger);
+void TriggerRead(tTrigger *t, CFILE *fp, int bObjTrigger);
 #endif
 
-void SetSpeedBoostVelocity (short objnum, fix speed, 
+void SetSpeedBoostVelocity (short nObject, fix speed, 
 									 short srcSegnum, short srcSidenum,
 									 short destSegnum, short destSidenum,
-									 vms_vector *pSrcPt, vms_vector *pDestPt,
+									 vmsVector *pSrcPt, vmsVector *pDestPt,
 									 int bSetOrient);
 
-void TriggerSetObjPos (short objnum, short segnum);
+void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 
-extern vms_vector	speedBoostSrc, speedBoostDest;
+extern vmsVector	speedBoostSrc, speedBoostDest;
 
 #endif

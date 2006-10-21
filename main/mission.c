@@ -117,7 +117,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 #include <limits.h>
 
 #include "pstypes.h"
@@ -428,7 +428,7 @@ gameData.missions.list [count].descent_version = (t [3] == '2') ? 2 : 1;
 *t = '\0';
 // look if it's .mn2 or .msn
 strcpy( gameData.missions.list [count].filename, temp);
-gameData.missions.list [count].anarchy_only_flag = 0;
+gameData.missions.list [count].anarchy_onlyFlag = 0;
 gameData.missions.list [count].location = location;
 
 p = GetParmValue("name",fp);
@@ -464,10 +464,10 @@ else {
 	CFClose(fp);
 	return 0;
 	}
-p = GetParmValue("type",fp);
-//get mission type
+p = GetParmValue("nType",fp);
+//get mission nType
 if (p)
-	gameData.missions.list [count].anarchy_only_flag = MsnIsTok (p,"anarchy");
+	gameData.missions.list [count].anarchy_onlyFlag = MsnIsTok (p,"anarchy");
 CFClose(fp);
 return 1;
 }
@@ -487,13 +487,13 @@ void add_d1_builtin_mission_to_list(int *count)
 	case D1_MAC_SHARE_MISSION_HOGSIZE:
 		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
 		strcpy(gameData.missions.list [*count].mission_name, D1_SHAREWARE_MISSION_NAME);
-		gameData.missions.list [*count].anarchy_only_flag = 0;
+		gameData.missions.list [*count].anarchy_onlyFlag = 0;
 		break;
 	case D1_OEM_MISSION_HOGSIZE:
 	case D1_OEM_10_MISSION_HOGSIZE:
 		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
 		strcpy(gameData.missions.list [*count].mission_name, D1_OEM_MISSION_NAME);
-		gameData.missions.list [*count].anarchy_only_flag = 0;
+		gameData.missions.list [*count].anarchy_onlyFlag = 0;
 		break;
 	default:
 #ifdef _DEBUG
@@ -511,14 +511,14 @@ void add_d1_builtin_mission_to_list(int *count)
 			strcpy(gameData.missions.list [*count].mission_name, "[1] " D1_MISSION_NAME);
 		else
 			strcpy(gameData.missions.list [*count].mission_name, D1_MISSION_NAME);
-		gameData.missions.list [*count].anarchy_only_flag = 0;
+		gameData.missions.list [*count].anarchy_onlyFlag = 0;
 		gameData.missions.list [*count].location = ML_MISSIONDIR;
 		break;
 	}
 
 	strcpy(gameData.missions.szD1BuiltinMissionFilename, gameData.missions.list [*count].filename);
 	gameData.missions.list [*count].descent_version = 1;
-	gameData.missions.list [*count].anarchy_only_flag = 0;
+	gameData.missions.list [*count].anarchy_onlyFlag = 0;
 	gameData.missions.list [*count].location = ML_DATADIR;
 	++(*count);
 }
@@ -534,7 +534,7 @@ if (CFExist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 	else
 		strcpy (gameData.missions.list [*count].mission_name,"Descent 2: Vertigo");
 	gameData.missions.list [*count].descent_version = 2;
-	gameData.missions.list [*count].anarchy_only_flag = 0;
+	gameData.missions.list [*count].anarchy_onlyFlag = 0;
 	gameData.missions.list [*count].location = ML_MSNROOTDIR;
 	++(*count);
 	}
@@ -555,12 +555,12 @@ switch (gameData.missions.nBuiltinHogSize) {
 	case MAC_SHARE_MISSION_HOGSIZE:
 		strcpy(gameData.missions.list [*count].filename,SHAREWARE_MISSION_FILENAME);
 		strcpy(gameData.missions.list [*count].mission_name,SHAREWARE_MISSION_NAME);
-		gameData.missions.list [*count].anarchy_only_flag = 0;
+		gameData.missions.list [*count].anarchy_onlyFlag = 0;
 		break;
 	case OEM_MISSION_HOGSIZE:
 		strcpy(gameData.missions.list [*count].filename,OEM_MISSION_FILENAME);
 		strcpy(gameData.missions.list [*count].mission_name,OEM_MISSION_NAME);
-		gameData.missions.list [*count].anarchy_only_flag = 0;
+		gameData.missions.list [*count].anarchy_onlyFlag = 0;
 		break;
 	case FULL_MISSION_HOGSIZE:
 	case FULL_10_MISSION_HOGSIZE:
@@ -578,7 +578,7 @@ switch (gameData.missions.nBuiltinHogSize) {
 	}
 strcpy(gameData.missions.szBuiltinMissionFilename, gameData.missions.list [*count].filename);
 gameData.missions.list [*count].descent_version = 2;
-gameData.missions.list [*count].anarchy_only_flag = 0;
+gameData.missions.list [*count].anarchy_onlyFlag = 0;
 gameData.missions.list [*count].location = ML_DATADIR;
 ++(*count);
 }
@@ -631,7 +631,7 @@ void AddMissionsToList
 						memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
 					if (!CFExist (lvlName, "", 0)) {
 						if (ReadMissionFile (ffs.name, c, nLocation) &&
-							 (anarchy_mode || !gameData.missions.list [c].anarchy_only_flag))
+							 (anarchy_mode || !gameData.missions.list [c].anarchy_onlyFlag))
 							c++;
 						}
 					}

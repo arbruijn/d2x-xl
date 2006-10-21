@@ -47,6 +47,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Texture stuff... in mglobal.c
 
 extern int NumTextures [2];
-extern bitmap_index Textures [2][MAX_TEXTURES]; // Array of all texture tmaps.
+extern tBitmapIndex Textures [2][MAX_TEXTURES]; // Array of all texture tmaps.
 
 #endif /* _TEXTURES_H */

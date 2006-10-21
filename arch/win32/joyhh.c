@@ -66,9 +66,9 @@ typedef struct Joy_info {
 	int			joyid;
 	ubyte			present_mask;
 	ubyte			slow_read;
-	int			max_timer;
+	int			maxTimer;
 	int			read_count;
-	ubyte			last_value;
+	ubyte			lastValue;
 	Button_info	buttons[MAX_BUTTONS];
         int                     axis_min[JOY_NUM_AXES];    //changed 
         int                     axis_center[JOY_NUM_AXES]; //changed --orulz
@@ -106,12 +106,12 @@ ubyte joy_get_present_mask()	{
 	return joystick.present_mask;
 }
 
-void joy_set_timer_rate(int max_value )	{
-	joystick.max_timer = max_value;
+void joy_setTimer_rate(int maxValue )	{
+	joystick.maxTimer = maxValue;
 }
 
-int joy_get_timer_rate()	{
-	return joystick.max_timer;
+int joy_getTimer_rate()	{
+	return joystick.maxTimer;
 }
 
 void joy_flush()	{
@@ -132,7 +132,7 @@ void joy_flush()	{
 
 //Repalces joy_handler
 //Since Windows calls us directly, we have to get our time difference since last time ourselves
-//while in DOS we got it with the paramter ticks_this_time
+//while in DOS we got it with the paramter ticks_thisTime
 LRESULT joy_handler32(HWND hWnd, UINT joymsg, UINT wParam, LPARAM lParam)
 {
 	DWORD time_diff, time_now;
@@ -180,7 +180,7 @@ LRESULT joy_handler32(HWND hWnd, UINT joymsg, UINT wParam, LPARAM lParam)
 
 			if ( button->last_state == state )	{
 				if (state) {
-					button->timedown += time_diff;	//ticks_this_time;
+					button->timedown += time_diff;	//ticks_thisTime;
 				}
 			} else {
 				if (state)	{
@@ -305,9 +305,9 @@ int joy_init(int joyid) //HH: added joyid parameter
 	if ( !joy_installed )   {
                 joy_present = 0;
                 joy_installed = 1;
-                joystick.max_timer = 65536;
+                joystick.maxTimer = 65536;
                 joystick.read_count = 0;
-                joystick.last_value = 0;
+                joystick.lastValue = 0;
 	}
 
 
@@ -334,7 +334,7 @@ int joy_init(int joyid) //HH: added joyid parameter
 		return 0;
 	}
 
-        joystick.max_timer      = pjc.wPeriodMax;
+        joystick.maxTimer      = pjc.wPeriodMax;
 	joystick.axis_min[0]	= pjc.wXmin;
 	joystick.axis_min[1]	= pjc.wYmin;
 //orulz:
@@ -595,7 +595,7 @@ int joy_get_button_down_cnt( int btn )
 	return count;
 }
 
-fix joy_get_button_down_time( int btn ) 
+fix joy_get_button_downTime( int btn ) 
 {
         fix count;
 
@@ -625,7 +625,7 @@ void joy_get_btn_up_cnt( int *btn0, int *btn1 )
 	joystick.buttons[1].upcount = 0;
 }
 
-void joy_set_btn_values( int btn, int state, fix timedown, int downcount, int upcount )
+void joy_set_btnValues( int btn, int state, fix timedown, int downcount, int upcount )
 {
 	joystick.buttons[btn].ignore = 1;
 	joystick.buttons[btn].state = state;

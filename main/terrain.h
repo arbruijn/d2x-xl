@@ -41,6 +41,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _TERRAIN_H
 
 void LoadTerrain(char *filename);
-void RenderTerrain(vms_vector *org, int org_i, int org_j);
+void RenderTerrain(vmsVector *org, int org_i, int org_j);
 
 #endif /* _TERRAIN_H */

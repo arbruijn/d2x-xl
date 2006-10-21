@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made some mine structures read in with no structure packing problems.
  *
  * Revision 2.1  1995/03/20  18:15:43  john
- * Added code to not store the normals in the segment structure.
+ * Added code to not store the normals in the tSegment structure.
  *
  * Revision 2.0  1995/02/27  11:29:50  john
  * New version 2.0, which has no anonymous unions, builds with
@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fixed some things that I missed
  *
  * Revision 1.205  1995/02/22  13:31:38  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.204  1995/02/01  20:58:08  john
  * Made editor check hog.
@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Change fgets to CFGetS.  fgets was getting a pointer mismatch warning.
  *
  * Revision 1.197  1994/12/12  01:20:03  matt
- * Took out object size hack for green claw guys
+ * Took out tObject size hack for green claw guys
  *
  * Revision 1.196  1994/12/11  13:19:37  matt
  * Restored calls to FixObjectSegs() when debugging is turned off, since
@@ -78,8 +78,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fix editor bug that was converting transparent walls into rock.
  *
  * Revision 1.194  1994/12/09  14:59:27  matt
- * Added system to attach a fireball to another object for rendering purposes,
- * so the fireball always renders on top of (after) the object.
+ * Added system to attach a fireball to another tObject for rendering purposes,
+ * so the fireball always renders on top of (after) the tObject.
  *
  * Revision 1.193  1994/12/08  17:19:02  yuan
  * Cfiling stuff.
@@ -156,13 +156,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added new compiled level format.
  *
  * Revision 1.170  1994/11/17  14:57:21  mike
- * moved segment validation functions from editor to main.
+ * moved tSegment validation functions from editor to main.
  *
  * Revision 1.169  1994/11/17  11:39:21  matt
  * Ripped out code to load old mines
  *
  * Revision 1.168  1994/11/16  11:24:53  matt
- * Made attack-type robots have smaller radius, so they get closer to player
+ * Made attack-nType robots have smaller radius, so they get closer to player
  *
  * Revision 1.167  1994/11/15  21:42:47  mike
  * better error messages.
@@ -236,17 +236,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fix bug, maybe, having to do with something or other, ...
  *
  * Revision 1.144  1994/10/12  21:07:33  matt
- * Killed unused field in object structure
+ * Killed unused field in tObject structure
  *
  * Revision 1.143  1994/10/06  14:52:55  mike
- * Put check in to detect possibly bogus walls in last segment which leaked through an earlier check
+ * Put check in to detect possibly bogus walls in last tSegment which leaked through an earlier check
  * due to misuse of gameData.segs.nLastSegment.
  *
  * Revision 1.142  1994/10/05  22:12:44  mike
  * Put in cleanup for matcen/fuelcen links.
  *
  * Revision 1.141  1994/10/03  11:30:05  matt
- * Make sure player in a valid segment before saving
+ * Make sure player in a valid tSegment before saving
  *
  * Revision 1.140  1994/09/28  11:14:41  mike
  * Better error messaging on bogus mines: Only bring up dialog box if a "real" (level??.*) level.
@@ -273,12 +273,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed inconsistancies in lifeleft for immortal gameData.objs.objects
  *
  * Revision 1.132  1994/09/25  23:41:10  matt
- * Changed the object load & save code to read/write the structure fields one
+ * Changed the tObject load & save code to read/write the structure fields one
  * at a time (rather than the whole structure at once).  This mean that the
- * object structure can be changed without breaking the load/save functions.
- * As a result of this change, the local_object data can be and has been
- * incorporated into the object array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the object structure has been otherwise cleaned up.
+ * tObject structure can be changed without breaking the load/save functions.
+ * As a result of this change, the localObject data can be and has been
+ * incorporated into the tObject array.  Also, timeleft is now a property
+ * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
  *
  */
 
@@ -343,9 +343,9 @@ char gamesave_rcsid[] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 //version 28->29  add delta light support
 //version 27->28  controlcen id now is reactor number, not model number
 //version 28->29  ??
-//version 29->30  changed trigger structure
-//version 30->31  changed trigger structure some more
-//version 31->32  change segment structure, make it 512 bytes w/o editor, add gameData.segs.segment2s array.
+//version 29->30  changed tTrigger structure
+//version 30->31  changed tTrigger structure some more
+//version 31->32  change tSegment structure, make it 512 bytes w/o editor, add gameData.segs.segment2s array.
 
 #define MENU_CURSOR_X_MIN       MENU_X
 #define MENU_CURSOR_X_MAX       MENU_X+6
@@ -354,9 +354,9 @@ game_fileinfo	gameFileInfo;
 game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
-void ReadObject(object *objP, CFILE *f, int version);
+void ReadObject(tObject *objP, CFILE *f, int version);
 #ifdef EDITOR
-void write_object(object *objP, FILE *f);
+void writeObject(tObject *objP, FILE *f);
 void DoLoadSaveLevels(int save);
 #endif
 #ifdef _DEBUG
@@ -370,14 +370,14 @@ extern int save_mine_data_compiled(FILE * SaveFile);
 //--unused-- char mine_filename[128];
 #endif
 
-int Gamesave_num_org_robots = 0;
+int Gamesave_num_orgRobots = 0;
 //--unused-- grs_bitmap * Gamesave_saved_bitmap = NULL;
 
 //------------------------------------------------------------------------------
 #ifdef EDITOR
 // Return true if this level has a name of the form "level??"
 // Note that a pathspec can appear at the beginning of the filename.
-int is_real_level(char *filename)
+int is_realLevel(char *filename)
 {
 	int len = (int) strlen(filename);
 
@@ -409,7 +409,7 @@ if (i < 123) {
 }
 
 //------------------------------------------------------------------------------
-//--unused-- vms_angvec zero_angles={0,0,0};
+//--unused-- vmsAngVec zero_angles={0,0,0};
 
 #define VmAngVecZero(v) do {(v)->p=(v)->b=(v)->h=0;} while (0)
 
@@ -418,19 +418,19 @@ int Gamesave_num_players=0;
 int N_save_pof_names;
 char Save_pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-void CheckAndFixMatrix(vms_matrix *m);
+void CheckAndFixMatrix(vmsMatrix *m);
 
-void VerifyObject(object * objP)	{
+void VerifyObject(tObject * objP)	{
 
-objP->lifeleft = IMMORTAL_TIME;		//all loaded object are immortal, for now
-if (objP->type == OBJ_ROBOT) {
-	Gamesave_num_org_robots++;
+objP->lifeleft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
+if (objP->nType == OBJ_ROBOT) {
+	Gamesave_num_orgRobots++;
 	// Make sure valid id...
 	if (objP->id >= gameData.bots.nTypes [gameStates.app.bD1Data])
 		objP->id %= gameData.bots.nTypes [0];
 	// Make sure model number & size are correct...
-	if (objP->render_type == RT_POLYOBJ) {
-		Assert(gameData.bots.pInfo[objP->id].model_num != -1);
+	if (objP->renderType == RT_POLYOBJ) {
+		Assert(gameData.bots.pInfo[objP->id].nModel != -1);
 			//if you fail this assert, it means that a robot in this level
 			//hasn't been loaded, possibly because he's marked as
 			//non-shareware.  To see what robot number, print objP->id.
@@ -439,35 +439,35 @@ if (objP->type == OBJ_ROBOT) {
 			//a robot in this level hasn't been loaded, possibly because
 			//it's marked as non-shareware.  To see what robot number,
 			//print objP->id.
-		objP->rtype.pobj_info.model_num = gameData.bots.pInfo[objP->id].model_num;
-		objP->size = gameData.models.polyModels[objP->rtype.pobj_info.model_num].rad;
+		objP->rType.polyObjInfo.nModel = gameData.bots.pInfo[objP->id].nModel;
+		objP->size = gameData.models.polyModels[objP->rType.polyObjInfo.nModel].rad;
 		}
 	if (objP->id == 65)						//special "reactor" robots
-		objP->movement_type = MT_NONE;
-	if (objP->movement_type == MT_PHYSICS) {
-		objP->mtype.phys_info.mass = gameData.bots.pInfo[objP->id].mass;
-		objP->mtype.phys_info.drag = gameData.bots.pInfo[objP->id].drag;
+		objP->movementType = MT_NONE;
+	if (objP->movementType == MT_PHYSICS) {
+		objP->mType.physInfo.mass = gameData.bots.pInfo[objP->id].mass;
+		objP->mType.physInfo.drag = gameData.bots.pInfo[objP->id].drag;
 		}
 	}
 else {		//Robots taken care of above
-	if (objP->render_type == RT_POLYOBJ) {
+	if (objP->renderType == RT_POLYOBJ) {
 		int i;
-		char *name = Save_pof_names[objP->rtype.pobj_info.model_num];
+		char *name = Save_pof_names[objP->rType.polyObjInfo.nModel];
 		for (i=0;i<gameData.models.nPolyModels;i++)
 			if (!stricmp(Pof_names[i],name)) {		//found it!	
-				objP->rtype.pobj_info.model_num = i;
+				objP->rType.polyObjInfo.nModel = i;
 				break;
 				}
 		}
 	}
-if (objP->type == OBJ_POWERUP) {
+if (objP->nType == OBJ_POWERUP) {
 	if (objP->id >= gameData.objs.pwrUp.nTypes) {
 		objP->id = 0;
-		Assert(objP->render_type != RT_POLYOBJ);
+		Assert(objP->renderType != RT_POLYOBJ);
 		}
-	objP->control_type = CT_POWERUP;
+	objP->controlType = CT_POWERUP;
 	objP->size = gameData.objs.pwrUp.info[objP->id].size;
-	objP->ctype.powerup_info.creation_time = 0;
+	objP->cType.powerupInfo.creationTime = 0;
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_NETWORK) {
 	  if (MultiPowerupIs4Pack(objP->id)) {
@@ -484,27 +484,27 @@ if (objP->type == OBJ_POWERUP) {
 		}
 #endif
 	}
-if (objP->type == OBJ_WEAPON)	{
+if (objP->nType == OBJ_WEAPON)	{
 	if (objP->id >= gameData.weapons.nTypes [0])	{
 		objP->id = 0;
-		Assert(objP->render_type != RT_POLYOBJ);
+		Assert(objP->renderType != RT_POLYOBJ);
 		}
 	if (objP->id == PMINE_ID) {		//make sure pmines have correct values
-		objP->mtype.phys_info.mass = gameData.weapons.info[objP->id].mass;
-		objP->mtype.phys_info.drag = gameData.weapons.info[objP->id].drag;
-		objP->mtype.phys_info.flags |= PF_FREE_SPINNING;
+		objP->mType.physInfo.mass = gameData.weapons.info[objP->id].mass;
+		objP->mType.physInfo.drag = gameData.weapons.info[objP->id].drag;
+		objP->mType.physInfo.flags |= PF_FREE_SPINNING;
 		// Make sure model number & size are correct...		
-		Assert(objP->render_type == RT_POLYOBJ);
-		objP->rtype.pobj_info.model_num = gameData.weapons.info[objP->id].model_num;
-		objP->size = gameData.models.polyModels[objP->rtype.pobj_info.model_num].rad;
+		Assert(objP->renderType == RT_POLYOBJ);
+		objP->rType.polyObjInfo.nModel = gameData.weapons.info[objP->id].nModel;
+		objP->size = gameData.models.polyModels[objP->rType.polyObjInfo.nModel].rad;
 		}
 	}
-if (objP->type == OBJ_CNTRLCEN) {
-	objP->render_type = RT_POLYOBJ;
-	objP->control_type = CT_CNTRLCEN;
+if (objP->nType == OBJ_CNTRLCEN) {
+	objP->renderType = RT_POLYOBJ;
+	objP->controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
 		objP->id = 0;                         // used to be only one kind of reactor
-		objP->rtype.pobj_info.model_num = gameData.reactor.reactors[0].model_num;// descent 1 reactor
+		objP->rType.polyObjInfo.nModel = gameData.reactor.reactors[0].nModel;// descent 1 reactor
 		}
 #ifdef EDITOR
 	{
@@ -519,21 +519,21 @@ if (objP->type == OBJ_CNTRLCEN) {
 		}
 #endif
 	}
-if (objP->type == OBJ_PLAYER)	{
+if (objP->nType == OBJ_PLAYER)	{
 	if (objP == gameData.objs.console)		
 		InitPlayerObject();
 	else
-		if (objP->render_type == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
-			objP->rtype.pobj_info.model_num = gameData.pig.ship.player->model_num;
+		if (objP->renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
+			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
 	CheckAndFixMatrix(&objP->orient);
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = Gamesave_num_players++;
 	}
-if (objP->type == OBJ_HOSTAGE) {
-	objP->render_type = RT_HOSTAGE;
-	objP->control_type = CT_POWERUP;
+if (objP->nType == OBJ_HOSTAGE) {
+	objP->renderType = RT_HOSTAGE;
+	objP->controlType = CT_POWERUP;
 	}
 }
 
@@ -580,21 +580,21 @@ static void gs_write_byte(byte b,FILE *file)
 
 }
 
-static void gr_write_vector(vms_vector *v,FILE *file)
+static void gr_write_vector(vmsVector *v,FILE *file)
 {
 	gs_write_fix(v->x,file);
 	gs_write_fix(v->y,file);
 	gs_write_fix(v->z,file);
 }
 
-static void gs_write_matrix(vms_matrix *m,FILE *file)
+static void gs_write_matrix(vmsMatrix *m,FILE *file)
 {
 	gr_write_vector(&m->rvec,file);
 	gr_write_vector(&m->uvec,file);
 	gr_write_vector(&m->fvec,file);
 }
 
-static void gs_write_angvec(vms_angvec *v,FILE *file)
+static void gs_write_angvec(vmsAngVec *v,FILE *file)
 {
 	gs_write_fixang(v->p,file);
 	gs_write_fixang(v->b,file);
@@ -606,20 +606,20 @@ static void gs_write_angvec(vms_angvec *v,FILE *file)
 //------------------------------------------------------------------------------
 
 extern int MultiPowerupIs4Pack(int);
-//reads one object of the given version from the given file
-void ReadObject(object *objP,CFILE *f,int version)
+//reads one tObject of the given version from the given file
+void ReadObject(tObject *objP,CFILE *f,int version)
 {
 
-	objP->type           = CFReadByte(f);
+	objP->nType           = CFReadByte(f);
 	objP->id             = CFReadByte(f);
 
-	objP->control_type   = CFReadByte(f);
-	objP->movement_type  = CFReadByte(f);
-	objP->render_type    = CFReadByte(f);
+	objP->controlType   = CFReadByte(f);
+	objP->movementType  = CFReadByte(f);
+	objP->renderType    = CFReadByte(f);
 	objP->flags          = CFReadByte(f);
 
-	objP->segnum         = CFReadShort(f);
-	objP->attached_obj   = -1;
+	objP->nSegment         = CFReadShort(f);
+	objP->attachedObj   = -1;
 
 	CFReadVector(&objP->pos,f);
 	CFReadMatrix(&objP->orient,f);
@@ -629,32 +629,32 @@ void ReadObject(object *objP,CFILE *f,int version)
 
 	CFReadVector(&objP->last_pos,f);
 
-	objP->contains_type  = CFReadByte(f);
-	objP->contains_id    = CFReadByte(f);
-	objP->contains_count = CFReadByte(f);
+	objP->containsType  = CFReadByte(f);
+	objP->containsId    = CFReadByte(f);
+	objP->containsCount = CFReadByte(f);
 
-	switch (objP->movement_type) {
+	switch (objP->movementType) {
 
 		case MT_PHYSICS:
 
-			CFReadVector(&objP->mtype.phys_info.velocity,f);
-			CFReadVector(&objP->mtype.phys_info.thrust,f);
+			CFReadVector(&objP->mType.physInfo.velocity,f);
+			CFReadVector(&objP->mType.physInfo.thrust,f);
 
-			objP->mtype.phys_info.mass		= CFReadFix(f);
-			objP->mtype.phys_info.drag		= CFReadFix(f);
-			objP->mtype.phys_info.brakes	= CFReadFix(f);
+			objP->mType.physInfo.mass		= CFReadFix(f);
+			objP->mType.physInfo.drag		= CFReadFix(f);
+			objP->mType.physInfo.brakes	= CFReadFix(f);
 
-			CFReadVector(&objP->mtype.phys_info.rotvel,f);
-			CFReadVector(&objP->mtype.phys_info.rotthrust,f);
+			CFReadVector(&objP->mType.physInfo.rotVel,f);
+			CFReadVector(&objP->mType.physInfo.rotThrust,f);
 
-			objP->mtype.phys_info.turnroll	= CFReadFixAng(f);
-			objP->mtype.phys_info.flags		= CFReadShort(f);
+			objP->mType.physInfo.turnRoll	= CFReadFixAng(f);
+			objP->mType.physInfo.flags		= CFReadShort(f);
 
 			break;
 
 		case MT_SPINNING:
 
-			CFReadVector(&objP->mtype.spin_rate,f);
+			CFReadVector(&objP->mType.spinRate,f);
 			break;
 
 		case MT_NONE:
@@ -664,24 +664,24 @@ void ReadObject(object *objP,CFILE *f,int version)
 			Int3();
 	}
 
-	switch (objP->control_type) {
+	switch (objP->controlType) {
 
 		case CT_AI: {
 			int i;
 
-			objP->ctype.ai_info.behavior = CFReadByte(f);
+			objP->cType.aiInfo.behavior = CFReadByte(f);
 
 			for (i=0;i<MAX_AI_FLAGS;i++)
-				objP->ctype.ai_info.flags[i] = CFReadByte(f);
+				objP->cType.aiInfo.flags[i] = CFReadByte(f);
 
-			objP->ctype.ai_info.hide_segment = CFReadShort(f);
-			objP->ctype.ai_info.hide_index = CFReadShort(f);
-			objP->ctype.ai_info.path_length = CFReadShort(f);
-			objP->ctype.ai_info.cur_path_index = (char) CFReadShort(f);
+			objP->cType.aiInfo.hide_segment = CFReadShort(f);
+			objP->cType.aiInfo.hide_index = CFReadShort(f);
+			objP->cType.aiInfo.path_length = CFReadShort(f);
+			objP->cType.aiInfo.cur_path_index = (char) CFReadShort(f);
 
 			if (version <= 25) {
-				CFReadShort(f);	//				objP->ctype.ai_info.follow_path_start_seg	= 
-				CFReadShort(f);	//				objP->ctype.ai_info.follow_path_end_seg		= 
+				CFReadShort(f);	//				objP->cType.aiInfo.follow_path_start_seg	= 
+				CFReadShort(f);	//				objP->cType.aiInfo.follow_path_end_seg		= 
 			}
 
 			break;
@@ -689,10 +689,10 @@ void ReadObject(object *objP,CFILE *f,int version)
 
 		case CT_EXPLOSION:
 
-			objP->ctype.expl_info.spawn_time		= CFReadFix(f);
-			objP->ctype.expl_info.delete_time		= CFReadFix(f);
-			objP->ctype.expl_info.delete_objnum	= CFReadShort(f);
-			objP->ctype.expl_info.next_attach = objP->ctype.expl_info.prev_attach = objP->ctype.expl_info.attach_parent = -1;
+			objP->cType.explInfo.nSpawnTime		= CFReadFix(f);
+			objP->cType.explInfo.nDeleteTime		= CFReadFix(f);
+			objP->cType.explInfo.nDeleteObj	= CFReadShort(f);
+			objP->cType.explInfo.nNextAttach = objP->cType.explInfo.nPrevAttach = objP->cType.explInfo.nAttachParent = -1;
 
 			break;
 
@@ -700,32 +700,32 @@ void ReadObject(object *objP,CFILE *f,int version)
 
 			//do I really need to read these?  Are they even saved to disk?
 
-			objP->ctype.laser_info.parent_type		= CFReadShort(f);
-			objP->ctype.laser_info.parent_num		= CFReadShort(f);
-			objP->ctype.laser_info.parent_signature	= CFReadInt(f);
+			objP->cType.laserInfo.parentType		= CFReadShort(f);
+			objP->cType.laserInfo.nParentObj		= CFReadShort(f);
+			objP->cType.laserInfo.nParentSig	= CFReadInt(f);
 
 			break;
 
 		case CT_LIGHT:
 
-			objP->ctype.light_info.intensity = CFReadFix(f);
+			objP->cType.lightInfo.intensity = CFReadFix(f);
 			break;
 
 		case CT_POWERUP:
 
 			if (version >= 25)
-				objP->ctype.powerup_info.count = CFReadInt(f);
+				objP->cType.powerupInfo.count = CFReadInt(f);
 			else
-				objP->ctype.powerup_info.count = 1;
+				objP->cType.powerupInfo.count = 1;
 
 			if (objP->id == POW_VULCAN_WEAPON)
-					objP->ctype.powerup_info.count = VULCAN_WEAPON_AMMO_AMOUNT;
+					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 
 			if (objP->id == POW_GAUSS_WEAPON)
-					objP->ctype.powerup_info.count = VULCAN_WEAPON_AMMO_AMOUNT;
+					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 
 			if (objP->id == POW_OMEGA_WEAPON)
-					objP->ctype.powerup_info.count = MAX_OMEGA_CHARGE;
+					objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 
 			break;
 
@@ -749,7 +749,7 @@ void ReadObject(object *objP,CFILE *f,int version)
 	
 	}
 
-	switch (objP->render_type) {
+	switch (objP->renderType) {
 
 		case RT_NONE:
 			break;
@@ -758,34 +758,34 @@ void ReadObject(object *objP,CFILE *f,int version)
 		case RT_POLYOBJ: {
 			int i,tmo;
 
-			objP->rtype.pobj_info.model_num		= CFReadInt(f);
+			objP->rType.polyObjInfo.nModel		= CFReadInt(f);
 
 			for (i=0;i<MAX_SUBMODELS;i++)
-				CFReadAngVec(&objP->rtype.pobj_info.anim_angles[i],f);
+				CFReadAngVec(&objP->rType.polyObjInfo.animAngles[i],f);
 
-			objP->rtype.pobj_info.subobj_flags	= CFReadInt(f);
+			objP->rType.polyObjInfo.nSubObjFlags	= CFReadInt(f);
 
 			tmo = CFReadInt(f);
 
 			#ifndef EDITOR
-			objP->rtype.pobj_info.tmap_override	= tmo;
+			objP->rType.polyObjInfo.nTexOverride	= tmo;
 			#else
 			if (tmo==-1)
-				objP->rtype.pobj_info.tmap_override	= -1;
+				objP->rType.polyObjInfo.nTexOverride	= -1;
 			else {
 				int xlated_tmo = tmap_xlate_table[tmo];
 				if (xlated_tmo < 0)	{
 #if TRACE
-					con_printf (CON_DEBUG, "Couldn't find texture for demo object, model_num = %d\n", objP->rtype.pobj_info.model_num);
+					con_printf (CON_DEBUG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
 #endif
 					Int3();
 					xlated_tmo = 0;
 				}
-				objP->rtype.pobj_info.tmap_override	= xlated_tmo;
+				objP->rType.polyObjInfo.nTexOverride	= xlated_tmo;
 			}
 			#endif
 
-			objP->rtype.pobj_info.alt_textures	= 0;
+			objP->rType.polyObjInfo.nAltTextures	= 0;
 
 			break;
 		}
@@ -795,9 +795,9 @@ void ReadObject(object *objP,CFILE *f,int version)
 		case RT_POWERUP:
 		case RT_FIREBALL:
 
-			objP->rtype.vclip_info.nClipIndex	= CFReadInt(f);
-			objP->rtype.vclip_info.xFrameTime	= CFReadFix(f);
-			objP->rtype.vclip_info.nCurFrame	= CFReadByte(f);
+			objP->rType.vClipInfo.nClipIndex	= CFReadInt(f);
+			objP->rType.vClipInfo.xFrameTime	= CFReadFix(f);
+			objP->rType.vClipInfo.nCurFrame	= CFReadByte(f);
 
 			break;
 
@@ -815,18 +815,18 @@ void ReadObject(object *objP,CFILE *f,int version)
 //------------------------------------------------------------------------------
 #ifdef EDITOR
 
-//writes one object to the given file
-void write_object(object *objP,FILE *f)
+//writes one tObject to the given file
+void writeObject(tObject *objP,FILE *f)
 {
-	gs_write_byte(objP->type,f);
+	gs_write_byte(objP->nType,f);
 	gs_write_byte(objP->id,f);
 
-	gs_write_byte(objP->control_type,f);
-	gs_write_byte(objP->movement_type,f);
-	gs_write_byte(objP->render_type,f);
+	gs_write_byte(objP->controlType,f);
+	gs_write_byte(objP->movementType,f);
+	gs_write_byte(objP->renderType,f);
 	gs_write_byte(objP->flags,f);
 
-	gs_write_short(objP->segnum,f);
+	gs_write_short(objP->nSegment,f);
 
 	gr_write_vector(&objP->pos,f);
 	gs_write_matrix(&objP->orient,f);
@@ -836,32 +836,32 @@ void write_object(object *objP,FILE *f)
 
 	gr_write_vector(&objP->last_pos,f);
 
-	gs_write_byte(objP->contains_type,f);
-	gs_write_byte(objP->contains_id,f);
-	gs_write_byte(objP->contains_count,f);
+	gs_write_byte(objP->containsType,f);
+	gs_write_byte(objP->containsId,f);
+	gs_write_byte(objP->containsCount,f);
 
-	switch (objP->movement_type) {
+	switch (objP->movementType) {
 
 		case MT_PHYSICS:
 
-	 		gr_write_vector(&objP->mtype.phys_info.velocity,f);
-			gr_write_vector(&objP->mtype.phys_info.thrust,f);
+	 		gr_write_vector(&objP->mType.physInfo.velocity,f);
+			gr_write_vector(&objP->mType.physInfo.thrust,f);
 
-			gs_write_fix(objP->mtype.phys_info.mass,f);
-			gs_write_fix(objP->mtype.phys_info.drag,f);
-			gs_write_fix(objP->mtype.phys_info.brakes,f);
+			gs_write_fix(objP->mType.physInfo.mass,f);
+			gs_write_fix(objP->mType.physInfo.drag,f);
+			gs_write_fix(objP->mType.physInfo.brakes,f);
 
-			gr_write_vector(&objP->mtype.phys_info.rotvel,f);
-			gr_write_vector(&objP->mtype.phys_info.rotthrust,f);
+			gr_write_vector(&objP->mType.physInfo.rotVel,f);
+			gr_write_vector(&objP->mType.physInfo.rotThrust,f);
 
-			gs_write_fixang(objP->mtype.phys_info.turnroll,f);
-			gs_write_short(objP->mtype.phys_info.flags,f);
+			gs_write_fixang(objP->mType.physInfo.turnRoll,f);
+			gs_write_short(objP->mType.physInfo.flags,f);
 
 			break;
 
 		case MT_SPINNING:
 
-			gr_write_vector(&objP->mtype.spin_rate,f);
+			gr_write_vector(&objP->mType.spinRate,f);
 			break;
 
 		case MT_NONE:
@@ -871,32 +871,32 @@ void write_object(object *objP,FILE *f)
 			Int3();
 	}
 
-	switch (objP->control_type) {
+	switch (objP->controlType) {
 
 		case CT_AI: {
 			int i;
 
-			gs_write_byte(objP->ctype.ai_info.behavior,f);
+			gs_write_byte(objP->cType.aiInfo.behavior,f);
 
 			for (i=0;i<MAX_AI_FLAGS;i++)
-				gs_write_byte(objP->ctype.ai_info.flags[i],f);
+				gs_write_byte(objP->cType.aiInfo.flags[i],f);
 
-			gs_write_short(objP->ctype.ai_info.hide_segment,f);
-			gs_write_short(objP->ctype.ai_info.hide_index,f);
-			gs_write_short(objP->ctype.ai_info.path_length,f);
-			gs_write_short(objP->ctype.ai_info.cur_path_index,f);
+			gs_write_short(objP->cType.aiInfo.hide_segment,f);
+			gs_write_short(objP->cType.aiInfo.hide_index,f);
+			gs_write_short(objP->cType.aiInfo.path_length,f);
+			gs_write_short(objP->cType.aiInfo.cur_path_index,f);
 
-			// -- unused! mk, 08/13/95 -- gs_write_short(objP->ctype.ai_info.follow_path_start_seg,f);
-			// -- unused! mk, 08/13/95 -- gs_write_short(objP->ctype.ai_info.follow_path_end_seg,f);
+			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_start_seg,f);
+			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_end_seg,f);
 
 			break;
 		}
 
 		case CT_EXPLOSION:
 
-			gs_write_fix(objP->ctype.expl_info.spawn_time,f);
-			gs_write_fix(objP->ctype.expl_info.delete_time,f);
-			gs_write_short(objP->ctype.expl_info.delete_objnum,f);
+			gs_write_fix(objP->cType.explInfo.nSpawnTime,f);
+			gs_write_fix(objP->cType.explInfo.nDeleteTime,f);
+			gs_write_short(objP->cType.explInfo.nDeleteObj,f);
 
 			break;
 
@@ -904,20 +904,20 @@ void write_object(object *objP,FILE *f)
 
 			//do I really need to write these gameData.objs.objects?
 
-			gs_write_short(objP->ctype.laser_info.parent_type,f);
-			gs_write_short(objP->ctype.laser_info.parent_num,f);
-			gs_write_int(objP->ctype.laser_info.parent_signature,f);
+			gs_write_short(objP->cType.laserInfo.parentType,f);
+			gs_write_short(objP->cType.laserInfo.nParentObj,f);
+			gs_write_int(objP->cType.laserInfo.nParentSig,f);
 
 			break;
 
 		case CT_LIGHT:
 
-			gs_write_fix(objP->ctype.light_info.intensity,f);
+			gs_write_fix(objP->cType.lightInfo.intensity,f);
 			break;
 
 		case CT_POWERUP:
 
-			gs_write_int(objP->ctype.powerup_info.count,f);
+			gs_write_int(objP->cType.powerupInfo.count,f);
 			break;
 
 		case CT_NONE:
@@ -929,7 +929,7 @@ void write_object(object *objP,FILE *f)
 			break;
 
 		case CT_CNTRLCEN:
-			break;			//control center object.
+			break;			//control center tObject.
 
 		case CT_MORPH:
 		case CT_REPAIRCEN:
@@ -939,7 +939,7 @@ void write_object(object *objP,FILE *f)
 	
 	}
 
-	switch (objP->render_type) {
+	switch (objP->renderType) {
 
 		case RT_NONE:
 			break;
@@ -948,14 +948,14 @@ void write_object(object *objP,FILE *f)
 		case RT_POLYOBJ: {
 			int i;
 
-			gs_write_int(objP->rtype.pobj_info.model_num,f);
+			gs_write_int(objP->rType.polyObjInfo.nModel,f);
 
 			for (i=0;i<MAX_SUBMODELS;i++)
-				gs_write_angvec(&objP->rtype.pobj_info.anim_angles[i],f);
+				gs_write_angvec(&objP->rType.polyObjInfo.animAngles[i],f);
 
-			gs_write_int(objP->rtype.pobj_info.subobj_flags,f);
+			gs_write_int(objP->rType.polyObjInfo.nSubObjFlags,f);
 
-			gs_write_int(objP->rtype.pobj_info.tmap_override,f);
+			gs_write_int(objP->rType.polyObjInfo.nTexOverride,f);
 
 			break;
 		}
@@ -965,9 +965,9 @@ void write_object(object *objP,FILE *f)
 		case RT_POWERUP:
 		case RT_FIREBALL:
 
-			gs_write_int(objP->rtype.vclip_info.nClipIndex,f);
-			gs_write_fix(objP->rtype.vclip_info.xFrameTime,f);
-			gs_write_byte(objP->rtype.vclip_info.nCurFrame,f);
+			gs_write_int(objP->rType.vClipInfo.nClipIndex,f);
+			gs_write_fix(objP->rType.vClipInfo.xFrameTime,f);
+			gs_write_byte(objP->rType.vClipInfo.nCurFrame,f);
 
 			break;
 
@@ -994,18 +994,18 @@ void SortDLIndexD2X (int left, int right)
 	int	l = left,
 			r = right,
 			m = (left + right) / 2;
-	short	mSeg = DLIndex (m)->d2x.segnum, 
-			mSide = DLIndex (m)->d2x.sidenum;
+	short	mSeg = DLIndex (m)->d2x.nSegment, 
+			mSide = DLIndex (m)->d2x.nSide;
 	dl_index	*pl, *pr;
 
 do {
 	pl = DLIndex (l);
-	while ((pl->d2x.segnum < mSeg) || ((pl->d2x.segnum == mSeg) && (pl->d2x.sidenum < mSide))) {
+	while ((pl->d2x.nSegment < mSeg) || ((pl->d2x.nSegment == mSeg) && (pl->d2x.nSide < mSide))) {
 		pl++;
 		l++;
 		}
 	pr = DLIndex (r);
-	while ((pr->d2x.segnum > mSeg) || ((pr->d2x.segnum == mSeg) && (pr->d2x.sidenum > mSide))) {
+	while ((pr->d2x.nSegment > mSeg) || ((pr->d2x.nSegment == mSeg) && (pr->d2x.nSide > mSide))) {
 		pr--;
 		r--;
 		}
@@ -1032,18 +1032,18 @@ void SortDLIndexD2 (int left, int right)
 	int	l = left,
 			r = right,
 			m = (left + right) / 2;
-	short	mSeg = DLIndex (m)->d2.segnum, 
-			mSide = DLIndex (m)->d2.sidenum;
+	short	mSeg = DLIndex (m)->d2.nSegment, 
+			mSide = DLIndex (m)->d2.nSide;
 	dl_index	*pl, *pr;
 
 do {
 	pl = DLIndex (l);
-	while ((pl->d2.segnum < mSeg) || ((pl->d2.segnum == mSeg) && (pl->d2.sidenum < mSide))) {
+	while ((pl->d2.nSegment < mSeg) || ((pl->d2.nSegment == mSeg) && (pl->d2.nSide < mSide))) {
 		pl++;
 		l++;
 		}
 	pr = DLIndex (r);
-	while ((pr->d2.segnum > mSeg) || ((pr->d2.segnum == mSeg) && (pr->d2.sidenum > mSide))) {
+	while ((pr->d2.nSegment > mSeg) || ((pr->d2.nSegment == mSeg) && (pr->d2.nSide > mSide))) {
 		pr--;
 		r--;
 		}
@@ -1084,7 +1084,7 @@ int LoadMineDataCompiled(CFILE *LoadFile, int bFileInfo)
 	int i,j;
 	int start_offset;
 	int	l;
-	short	seg_num, side_num, wall_num;
+	short	seg_num, side_num, nWall;
 
 start_offset = CFTell(LoadFile);
 
@@ -1097,9 +1097,9 @@ con_printf(CON_DEBUG, "   \nloading game data ...\n");
 gameFileInfo.level					=	-1;
 gameFileInfo.player.offset		=	-1;
 gameFileInfo.player.size		=	sizeof(player);
-gameFileInfo.object.offset		=	-1;
-gameFileInfo.object.count		=	0;
-gameFileInfo.object.size		=	sizeof(object);  
+gameFileInfo.tObject.offset		=	-1;
+gameFileInfo.tObject.count		=	0;
+gameFileInfo.tObject.size		=	sizeof(tObject);  
 gameFileInfo.walls.offset			=	-1;
 gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(wall);  
@@ -1108,10 +1108,10 @@ gameFileInfo.doors.count		=	0;
 gameFileInfo.doors.size			=	sizeof(active_door);  
 gameFileInfo.triggers.offset		=	-1;
 gameFileInfo.triggers.count	=	0;
-gameFileInfo.triggers.size		=	sizeof(trigger);  
+gameFileInfo.triggers.size		=	sizeof(tTrigger);  
 gameFileInfo.control.offset		=	-1;
 gameFileInfo.control.count		=	0;
-gameFileInfo.control.size		=	sizeof(reactor_triggers);
+gameFileInfo.control.size		=	sizeof(tReactorTriggers);
 gameFileInfo.matcen.offset		=	-1;
 gameFileInfo.matcen.count		=	0;
 gameFileInfo.matcen.size		=	sizeof(matcen_info);
@@ -1137,7 +1137,7 @@ gameTopFileInfo.fileinfo_version = CFReadShort(LoadFile);
 gameTopFileInfo.fileinfo_sizeof = CFReadInt(LoadFile);
 
 gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfo_version >= 34);
-// Check signature
+// Check nSignature
 if (gameTopFileInfo.fileinfo_signature != 0x6705)
 	return -1;
 
@@ -1160,9 +1160,9 @@ for(i=0; i<15; i++)
 gameFileInfo.level = CFReadInt(LoadFile);
 gameFileInfo.player.offset = CFReadInt(LoadFile);				// Player info
 gameFileInfo.player.size = CFReadInt(LoadFile);
-gameFileInfo.object.offset = CFReadInt(LoadFile);				// Object info
-gameFileInfo.object.count = CFReadInt(LoadFile);    	
-gameFileInfo.object.size = CFReadInt(LoadFile);  
+gameFileInfo.tObject.offset = CFReadInt(LoadFile);				// Object info
+gameFileInfo.tObject.count = CFReadInt(LoadFile);    	
+gameFileInfo.tObject.size = CFReadInt(LoadFile);  
 gameFileInfo.walls.offset = CFReadInt(LoadFile);
 gameFileInfo.walls.count = CFReadInt(LoadFile);
 gameFileInfo.walls.size = CFReadInt(LoadFile);
@@ -1225,20 +1225,20 @@ gameData.objs.nNextSignature = 0;
 
 //===================== READ OBJECT INFO ==========================
 
-Gamesave_num_org_robots = 0;
+Gamesave_num_orgRobots = 0;
 Gamesave_num_players = 0;
-if (gameFileInfo.object.offset > -1) {
-	object	*objP = gameData.objs.objects;
+if (gameFileInfo.tObject.offset > -1) {
+	tObject	*objP = gameData.objs.objects;
 #if TRACE
-	con_printf(CON_DEBUG, "   loading object data ...\n");
+	con_printf(CON_DEBUG, "   loading tObject data ...\n");
 #endif
-	if (CFSeek(LoadFile, gameFileInfo.object.offset, SEEK_SET))
-		Error("Error seeking to object.offset in gamesave.c");
-	for (i = 0; i < gameFileInfo.object.count; i++, objP++) {
+	if (CFSeek(LoadFile, gameFileInfo.tObject.offset, SEEK_SET))
+		Error("Error seeking to tObject.offset in gamesave.c");
+	for (i = 0; i < gameFileInfo.tObject.count; i++, objP++) {
 		ReadObject (objP, LoadFile, gameTopFileInfo.fileinfo_version);
-//			if ((objP->type == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
+//			if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
 //				objP = objP;
-		objP->signature = gameData.objs.nNextSignature++;
+		objP->nSignature = gameData.objs.nNextSignature++;
 		VerifyObject(objP);
 		gameData.objs.init [i] = *objP;
 	}
@@ -1265,13 +1265,13 @@ if (gameFileInfo.walls.offset > -1) {
 				v19_wall w;
 
 				v19_wall_read(&w, LoadFile);
-				gameData.walls.walls[i].segnum	   = w.segnum;
-				gameData.walls.walls[i].sidenum		= w.sidenum;
+				gameData.walls.walls[i].nSegment	   = w.nSegment;
+				gameData.walls.walls[i].nSide		= w.nSide;
 				gameData.walls.walls[i].linked_wall	= w.linked_wall;
-				gameData.walls.walls[i].type			= w.type;
+				gameData.walls.walls[i].nType			= w.nType;
 				gameData.walls.walls[i].flags			= w.flags;
 				gameData.walls.walls[i].hps			= w.hps;
-				gameData.walls.walls[i].trigger		= w.trigger;
+				gameData.walls.walls[i].tTrigger		= w.tTrigger;
 				gameData.walls.walls[i].clip_num		= w.clip_num;
 				gameData.walls.walls[i].keys			= w.keys;
 				gameData.walls.walls[i].state			= WALL_DOOR_CLOSED;
@@ -1279,11 +1279,11 @@ if (gameFileInfo.walls.offset > -1) {
 				v16_wall w;
 
 				v16_wall_read(&w, LoadFile);
-				gameData.walls.walls[i].segnum = gameData.walls.walls[i].sidenum = gameData.walls.walls[i].linked_wall = -1;
-				gameData.walls.walls[i].type		= w.type;
+				gameData.walls.walls[i].nSegment = gameData.walls.walls[i].nSide = gameData.walls.walls[i].linked_wall = -1;
+				gameData.walls.walls[i].nType		= w.nType;
 				gameData.walls.walls[i].flags		= w.flags;
 				gameData.walls.walls[i].hps		= w.hps;
-				gameData.walls.walls[i].trigger	= w.trigger;
+				gameData.walls.walls[i].tTrigger	= w.tTrigger;
 				gameData.walls.walls[i].clip_num	= w.clip_num;
 				gameData.walls.walls[i].keys		= w.keys;
 			}
@@ -1311,9 +1311,9 @@ if (gameFileInfo.doors.offset > -1) {
 				for (p=0;p<d.n_parts;p++) {
 					short cseg,cside;
 
-					cseg = gameData.segs.segments[d.seg[p]].children[d.side[p]];
+					cseg = gameData.segs.segments[d.seg[p]].children[d.tSide[p]];
 					cside = FindConnectedSide(gameData.segs.segments + d.seg[p], gameData.segs.segments + cseg);
-					gameData.walls.activeDoors[i].front_wallnum[p] = WallNumI (d.seg[p], d.side[p]);
+					gameData.walls.activeDoors[i].front_wallnum[p] = WallNumI (d.seg[p], d.tSide[p]);
 					gameData.walls.activeDoors[i].back_wallnum[p] = WallNumI (cseg, cside);
 				}
 			}
@@ -1329,7 +1329,7 @@ if (gameFileInfo.doors.offset > -1) {
 
 if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
-	con_printf(CON_DEBUG, "   loading trigger data ...\n");
+	con_printf(CON_DEBUG, "   loading tTrigger data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.triggers.count;i++) {
@@ -1337,9 +1337,9 @@ if (gameFileInfo.triggers.offset > -1) {
 				TriggerRead(gameData.trigs.triggers + i, LoadFile, 0);
 			else {
 				v30_trigger trig;
-				int t,type,flags;
+				int t,nType,flags;
 
-				type=flags=0;
+				nType=flags=0;
 
 				if (gameTopFileInfo.fileinfo_version < 30) {
 					v29_trigger trig29;
@@ -1347,15 +1347,15 @@ if (gameFileInfo.triggers.offset > -1) {
 
 					v29_trigger_read(&trig29, LoadFile);
 
-					trig.flags		= trig29.flags;
-					trig.num_links	= (char) trig29.num_links;
-					trig.num_links	= (char) trig29.num_links;
-					trig.value		= trig29.value;
-					trig.time		= trig29.time;
+					trig.flags = trig29.flags;
+					trig.nLinks	= (char) trig29.nLinks;
+					trig.nLinks	= (char) trig29.nLinks;
+					trig.value = trig29.value;
+					trig.time = trig29.time;
 
-					for (t=0;t<trig.num_links;t++) {
-						trig.seg[t]  = trig29.seg[t];
-						trig.side[t] = trig29.side[t];
+					for (t = 0; t < trig.nLinks; t++) {
+						trig.nSegment [t]  = trig29.nSegment [t];
+						trig.nSide [t] = trig29.nSide [t];
 					}
 				}
 				else
@@ -1365,44 +1365,44 @@ if (gameFileInfo.triggers.offset > -1) {
 				trig.flags &= ~TRIGGER_ON;
 
 				if (trig.flags & TRIGGER_CONTROL_DOORS)
-					type = TT_OPEN_DOOR;
+					nType = TT_OPEN_DOOR;
 				else if (trig.flags & TRIGGER_SHIELD_DAMAGE)
-					type = TT_SHIELD_DAMAGE;
+					nType = TT_SHIELD_DAMAGE;
 				else if (trig.flags & TRIGGER_ENERGY_DRAIN)
-					type = TT_ENERGY_DRAIN;
+					nType = TT_ENERGY_DRAIN;
 				else if (trig.flags & TRIGGER_EXIT)
-					type = TT_EXIT;
+					nType = TT_EXIT;
 				else if (trig.flags & TRIGGER_MATCEN)
-					type = TT_MATCEN;
+					nType = TT_MATCEN;
 				else if (trig.flags & TRIGGER_ILLUSION_OFF)
-					type = TT_ILLUSION_OFF;
+					nType = TT_ILLUSION_OFF;
 				else if (trig.flags & TRIGGER_SECRET_EXIT)
-					type = TT_SECRET_EXIT;
+					nType = TT_SECRET_EXIT;
 				else if (trig.flags & TRIGGER_ILLUSION_ON)
-					type = TT_ILLUSION_ON;
+					nType = TT_ILLUSION_ON;
 				else if (trig.flags & TRIGGER_UNLOCK_DOORS)
-					type = TT_UNLOCK_DOOR;
+					nType = TT_UNLOCK_DOOR;
 				else if (trig.flags & TRIGGER_OPEN_WALL)
-					type = TT_OPEN_WALL;
+					nType = TT_OPEN_WALL;
 				else if (trig.flags & TRIGGER_CLOSE_WALL)
-					type = TT_CLOSE_WALL;
+					nType = TT_CLOSE_WALL;
 				else if (trig.flags & TRIGGER_ILLUSORY_WALL)
-					type = TT_ILLUSORY_WALL;
+					nType = TT_ILLUSORY_WALL;
 				else
 					Int3();
 				if (trig.flags & TRIGGER_ONE_SHOT)
 					flags = TF_ONE_SHOT;
 
-				gameData.trigs.triggers[i].type        = type;
-				gameData.trigs.triggers[i].flags       = flags;
-				gameData.trigs.triggers[i].num_links   = trig.num_links;
-				gameData.trigs.triggers[i].num_links   = trig.num_links;
-				gameData.trigs.triggers[i].value       = trig.value;
-				gameData.trigs.triggers[i].time        = trig.time;
+				gameData.trigs.triggers[i].nType = nType;
+				gameData.trigs.triggers[i].flags = flags;
+				gameData.trigs.triggers[i].nLinks = trig.nLinks;
+				gameData.trigs.triggers[i].nLinks = trig.nLinks;
+				gameData.trigs.triggers[i].value = trig.value;
+				gameData.trigs.triggers[i].time = trig.time;
 
-				for (t=0;t<trig.num_links;t++) {
-					gameData.trigs.triggers[i].seg[t] = trig.seg[t];
-					gameData.trigs.triggers[i].side[t] = trig.side[t];
+				for (t=0;t<trig.nLinks;t++) {
+					gameData.trigs.triggers[i].nSegment [t] = trig.nSegment [t];
+					gameData.trigs.triggers[i].nSide [t] = trig.nSide [t];
 				}
 			}
 		}
@@ -1414,7 +1414,7 @@ if (gameFileInfo.triggers.offset > -1) {
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
 				gameData.trigs.objTriggerRefs [i].prev = CFReadShort (LoadFile);
 				gameData.trigs.objTriggerRefs [i].next = CFReadShort (LoadFile);
-				gameData.trigs.objTriggerRefs [i].objnum = CFReadShort (LoadFile);
+				gameData.trigs.objTriggerRefs [i].nObject = CFReadShort (LoadFile);
 				}
 			}
 		for (i = 0; i < MAX_OBJECTS_D2X; i++)
@@ -1422,8 +1422,8 @@ if (gameFileInfo.triggers.offset > -1) {
 		}
 	else {
 		gameData.trigs.nObjTriggers = 0;
-		memset (gameData.trigs.objTriggers, 0, sizeof (trigger) * MAX_OBJ_TRIGGERS);
-		memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (obj_trigger_ref) * MAX_OBJ_TRIGGERS);
+		memset (gameData.trigs.objTriggers, 0, sizeof (tTrigger) * MAX_OBJ_TRIGGERS);
+		memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (tObjTriggerRef) * MAX_OBJ_TRIGGERS);
 		memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
 		}
 	}
@@ -1437,7 +1437,7 @@ if (gameFileInfo.control.offset > -1) {
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.control.offset, SEEK_SET))
 	{
-		Assert(gameFileInfo.control.size == sizeof(reactor_triggers));
+		Assert(gameFileInfo.control.size == sizeof(tReactorTriggers));
 		ControlCenterTriggersReadN(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
 	}
 }	
@@ -1456,11 +1456,11 @@ if (gameFileInfo.matcen.offset > -1) {
 
 				OldMatCenInfoRead(&m, LoadFile);
 
-				gameData.matCens.robotCenters[i].robot_flags[0] = m.robot_flags;
-				gameData.matCens.robotCenters[i].robot_flags[1] = 0;
+				gameData.matCens.robotCenters[i].robotFlags[0] = m.robotFlags;
+				gameData.matCens.robotCenters[i].robotFlags[1] = 0;
 				gameData.matCens.robotCenters[i].hit_points = m.hit_points;
 				gameData.matCens.robotCenters[i].interval = m.interval;
-				gameData.matCens.robotCenters[i].segnum = m.segnum;
+				gameData.matCens.robotCenters[i].nSegment = m.nSegment;
 				gameData.matCens.robotCenters[i].fuelcen_num = m.fuelcen_num;
 			}
 			else
@@ -1470,7 +1470,7 @@ if (gameFileInfo.matcen.offset > -1) {
 
 			for (j=0; j<=gameData.segs.nLastSegment; j++)
 				if (gameData.segs.segment2s[j].special == SEGMENT_IS_ROBOTMAKER)
-					if (gameData.segs.segment2s[j].matcen_num == i)
+					if (gameData.segs.segment2s[j].nMatCen == i)
 						gameData.matCens.robotCenters[i].fuelcen_num = gameData.segs.segment2s[j].value;
 		}
 	}
@@ -1528,37 +1528,37 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 
 //========================= UPDATE VARIABLES ======================
 
-ResetObjects(gameFileInfo.object.count);
+ResetObjects(gameFileInfo.tObject.count);
 
-for (i=0; i<gameFileInfo.object.count/*MAX_OBJECTS*/; i++) {
+for (i=0; i<gameFileInfo.tObject.count/*MAX_OBJECTS*/; i++) {
 	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
-	if (gameData.objs.objects[i].type != OBJ_NONE) {
-		int objsegnum = gameData.objs.objects[i].segnum;
-		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus object
-			gameData.objs.objects[i].type = OBJ_NONE;
+	if (gameData.objs.objects[i].nType != OBJ_NONE) {
+		int objsegnum = gameData.objs.objects[i].nSegment;
+		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus tObject
+			gameData.objs.objects[i].nType = OBJ_NONE;
 		else {
-			gameData.objs.objects[i].segnum = -1;			//avoid Assert()
+			gameData.objs.objects[i].nSegment = -1;			//avoid Assert()
 			LinkObject(i,objsegnum);
 		}
 	}
 }
 
-clear_transient_objects(1);		//1 means clear proximity bombs
+clear_transientObjects(1);		//1 means clear proximity bombs
 
 // Make sure non-transparent doors are set correctly.
 for (i = 0; i < gameData.segs.nSegments; i++) {
-	side	*sidep = gameData.segs.segments [i].sides;
+	tSide	*sidep = gameData.segs.segments [i].sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sidep++) {
-		short wall_num = WallNumS (sidep);
+		short nWall = WallNumS (sidep);
 		wall  *w;
-		if (!IS_WALL (wall_num))
+		if (!IS_WALL (nWall))
 			continue;
-		w = gameData.walls.walls + wall_num;
+		w = gameData.walls.walls + nWall;
 		if (w->clip_num == -1)
 			continue;
 		if (gameData.walls.pAnims [w->clip_num].flags & WCF_TMAP1) {
-			sidep->tmap_num = gameData.walls.pAnims [w->clip_num].frames [0];
-			sidep->tmap_num2 = 0;
+			sidep->nBaseTex = gameData.walls.pAnims [w->clip_num].frames [0];
+			sidep->nOvlTex = 0;
 			}
 		}
 	}
@@ -1571,26 +1571,26 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 
 //go through all walls, killing references to invalid triggers
 for (i=0;i<gameData.walls.nWalls;i++)
-	if (gameData.walls.walls[i].trigger >= gameData.trigs.nTriggers) {
+	if (gameData.walls.walls[i].tTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing reference to invalid trigger %d from wall %d\n",gameData.walls.walls[i].trigger,i);
+		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls[i].tTrigger,i);
 #endif
-		gameData.walls.walls[i].trigger = NO_TRIGGER;	//kill trigger
+		gameData.walls.walls[i].tTrigger = NO_TRIGGER;	//kill tTrigger
 	}
 
 //go through all triggers, killing unused ones
 for (i=0;i<gameData.trigs.nTriggers;) {
 	int w;
 
-	//	Find which wall this trigger is connected to.
+	//	Find which wall this tTrigger is connected to.
 	for (w=0; w<gameData.walls.nWalls; w++)
-		if (gameData.walls.walls[w].trigger == i)
+		if (gameData.walls.walls[w].tTrigger == i)
 			break;
 
 #ifdef EDITOR
 	if (w == gameData.walls.nWalls) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing unreferenced trigger %d\n",i);
+		con_printf (CON_DEBUG,"Removing unreferenced tTrigger %d\n",i);
 #endif
 		RemoveTriggerNum(i);
 	}
@@ -1607,27 +1607,27 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 	gameData.walls.walls [i].controlling_trigger = -1;
 
 for (t=0; t<gameData.trigs.nTriggers; t++) {
-	for (l = 0; l<gameData.trigs.triggers[t].num_links; l++) {
+	for (l = 0; l<gameData.trigs.triggers[t].nLinks; l++) {
 
-		seg_num = gameData.trigs.triggers[t].seg[l];
-		side_num = gameData.trigs.triggers[t].side[l];
-		wall_num = WallNumI (seg_num, side_num);
+		seg_num = gameData.trigs.triggers[t].nSegment [l];
+		side_num = gameData.trigs.triggers[t].nSide [l];
+		nWall = WallNumI (seg_num, side_num);
 
-		// -- if (gameData.walls.walls[wall_num].controlling_trigger != -1)
+		// -- if (gameData.walls.walls[nWall].controlling_trigger != -1)
 		// -- 	Int3();
 
-		//check to see that if a trigger requires a wall that it has one,
+		//check to see that if a tTrigger requires a wall that it has one,
 		//and if it requires a matcen that it has one
 
-		if (gameData.trigs.triggers[t].type == TT_MATCEN) {
+		if (gameData.trigs.triggers[t].nType == TT_MATCEN) {
 			if (gameData.segs.segment2s[seg_num].special != SEGMENT_IS_ROBOTMAKER)
-				Int3();		//matcen trigger doesn't point to matcen
+				Int3();		//matcen tTrigger doesn't point to matcen
 		}
-		else if (gameData.trigs.triggers[t].type != TT_LIGHT_OFF && gameData.trigs.triggers[t].type != TT_LIGHT_ON) {	//light triggers don't require walls
-			if (!IS_WALL (wall_num))
-				Int3();	//	This is illegal.  This trigger requires a wall
+		else if (gameData.trigs.triggers[t].nType != TT_LIGHT_OFF && gameData.trigs.triggers[t].nType != TT_LIGHT_ON) {	//light triggers don't require walls
+			if (!IS_WALL (nWall))
+				Int3();	//	This is illegal.  This tTrigger requires a wall
 			else
-				gameData.walls.walls[wall_num].controlling_trigger = t;
+				gameData.walls.walls[nWall].controlling_trigger = t;
 		}
 	}
 }
@@ -1636,24 +1636,24 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 gameData.matCens.nRobotCenters = gameFileInfo.matcen.count;
 //fix old wall structs
 if (gameTopFileInfo.fileinfo_version < 17) {
-	short segnum,sidenum,wallnum;
-	for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++)
-		for (sidenum = 0; sidenum < 6; sidenum++)
-			if (IS_WALL (wallnum = WallNumI (segnum, sidenum))) {
-				gameData.walls.walls [wallnum].segnum = segnum;
-				gameData.walls.walls [wallnum].sidenum = sidenum;
+	short nSegment,nSide,wallnum;
+	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+		for (nSide = 0; nSide < 6; nSide++)
+			if (IS_WALL (wallnum = WallNumI (nSegment, nSide))) {
+				gameData.walls.walls [wallnum].nSegment = nSegment;
+				gameData.walls.walls [wallnum].nSide = nSide;
 				}
 	}
 
 #ifdef _DEBUG
 {
-	short	sidenum;
-	for (sidenum=0; sidenum<6; sidenum++) {
-		short	wallnum = WallNumI (gameData.segs.nLastSegment, sidenum);
+	short	nSide;
+	for (nSide=0; nSide<6; nSide++) {
+		short	wallnum = WallNumI (gameData.segs.nLastSegment, nSide);
 		if (IS_WALL (wallnum))
-			if ((gameData.walls.walls[wallnum].segnum != gameData.segs.nLastSegment) || 
-					(gameData.walls.walls[wallnum].sidenum != sidenum))
-				Int3();	//	Error.  Bogus walls in this segment.
+			if ((gameData.walls.walls[wallnum].nSegment != gameData.segs.nLastSegment) || 
+					(gameData.walls.walls[wallnum].nSide != nSide))
+				Int3();	//	Error.  Bogus walls in this tSegment.
 							// Consult Yuan or Mike.
 	}
 }
@@ -1697,14 +1697,14 @@ char *Level_being_loaded=NULL;
 extern void ncache_flush();
 #endif
 
-int no_old_level_file_error=0;
+int no_oldLevel_file_error=0;
 
 //loads a level (.LVL) file from disk
 //returns 0 if success, else error code
 int LoadLevelSub(char * filename_passed)
 {
 #ifdef EDITOR
-	int use_compiled_level=1;
+	int use_compiledLevel=1;
 #endif
 	CFILE * LoadFile;
 	char filename[128];
@@ -1738,11 +1738,11 @@ strcpy(filename,filename_passed);
 	//if we don't have the editor, we just use what was passed
 
 	ChangeFilenameExtension(filename,filename_passed,".lvl");
-	use_compiled_level = 0;
+	use_compiledLevel = 0;
 
 	if (!CFExist(filename))	{
 		ChangeFilenameExtension(filename,filename,".rl2");
-		use_compiled_level = 1;
+		use_compiledLevel = 1;
 	}		
 #endif
 
@@ -1843,7 +1843,7 @@ if (gameData.segs.nLevelVersion < 6) {
 
 SetDataVersion (-1);
 #ifdef EDITOR
-if (!use_compiled_level) {
+if (!use_compiledLevel) {
 	CFSeek(LoadFile,minedata_offset,SEEK_SET);
 	mine_err = load_mine_data(LoadFile);
 #if 0 // get from d1src if needed
@@ -1880,7 +1880,7 @@ SetAmbientSoundFlags();
 #ifdef EDITOR
 write_game_text_file(filename);
 if (Errors_in_mine) {
-	if (is_real_level(filename)) {
+	if (is_realLevel(filename)) {
 		char  ErrorMessage[200];
 
 		sprintf(ErrorMessage, TXT_MINE_ERRORS, Errors_in_mine, Level_being_loaded);
@@ -1898,7 +1898,7 @@ if (Errors_in_mine) {
 
 #ifdef EDITOR
 //If an old version, ask the use if he wants to save as new version
-if (!no_old_level_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) && 
+if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) && 
     (((LEVEL_FILE_VERSION > 3) && gameData.segs.nLevelVersion < LEVEL_FILE_VERSION) || mine_err == 1 || game_err == 1)) {
 	char  ErrorMessage[200];
 
@@ -1910,7 +1910,7 @@ if (!no_old_level_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) &
 	StopTime();
 	GrPaletteStepLoad (NULL);
 	if (ExecMessageBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
-		save_level(filename);
+		saveLevel(filename);
 	StartTime();
 }
 #endif
@@ -1966,9 +1966,9 @@ void GetLevelName()
 	newmenu_item m[2];
 
 	memset (m, 0, sizeof (m));
-	m[0].type = NM_TYPE_TEXT; 
+	m[0].nType = NM_TYPE_TEXT; 
 	m[0].text = "Please enter a name for this mine:";
-	m[1].type = NM_TYPE_INPUT; 
+	m[1].nType = NM_TYPE_INPUT; 
 	m[1].text = gameData.missions.szCurrentLevel; 
 	m[1].text_len = LEVEL_NAME_LEN;
 
@@ -2001,7 +2001,7 @@ int CountDeltaLightRecords(void)
 // Save game
 int SaveGameData(FILE * SaveFile)
 {
-	int  player.offset, object.offset, walls.offset, doors.offset, triggers.offset, control.offset, matcen.offset; //, links.offset;
+	int  player.offset, tObject.offset, walls.offset, doors.offset, triggers.offset, control.offset, matcen.offset; //, links.offset;
 	int	gameData.render.lights.deltaIndices.offset, deltaLight.offset;
 	int start_offset,end_offset;
 
@@ -2015,9 +2015,9 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.fileinfo_sizeof		=	sizeof(gameFileInfo);
 	gameFileInfo.player.offset		=	-1;
 	gameFileInfo.player.size		=	sizeof(player);
-	gameFileInfo.object.offset		=	-1;
-	gameFileInfo.object.count		=	gameData.objs.nLastObject+1;
-	gameFileInfo.object.size		=	sizeof(object);
+	gameFileInfo.tObject.offset		=	-1;
+	gameFileInfo.tObject.count		=	gameData.objs.nLastObject+1;
+	gameFileInfo.tObject.size		=	sizeof(tObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
 	gameFileInfo.walls.size			=	sizeof(wall);
@@ -2026,10 +2026,10 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.doors.size			=	sizeof(active_door);
 	gameFileInfo.triggers.offset		=	-1;
 	gameFileInfo.triggers.count	=	gameData.trigs.nTriggers;
-	gameFileInfo.triggers.size		=	sizeof(trigger);
+	gameFileInfo.triggers.size		=	sizeof(tTrigger);
 	gameFileInfo.control.offset		=	-1;
 	gameFileInfo.control.count		=  1;
-	gameFileInfo.control.size		=  sizeof(reactor_triggers);
+	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
  	gameFileInfo.matcen.offset		=	-1;
 	gameFileInfo.matcen.count		=	gameData.matCens.nRobotCenters;
 	gameFileInfo.matcen.size		=	sizeof(matcen_info);
@@ -2058,12 +2058,12 @@ int SaveGameData(FILE * SaveFile)
 
 	//==================== SAVE OBJECT INFO ===========================
 
-	object.offset = ftell(SaveFile);
-	//fwrite(&gameData.objs.objects, sizeof(object), gameFileInfo.object.count, SaveFile);
+	tObject.offset = ftell(SaveFile);
+	//fwrite(&gameData.objs.objects, sizeof(tObject), gameFileInfo.tObject.count, SaveFile);
 	{
 		int i;
-		for (i=0;i<gameFileInfo.object.count;i++)
-			write_object(&gameData.objs.objects[i],SaveFile);
+		for (i=0;i<gameFileInfo.tObject.count;i++)
+			writeObject(&gameData.objs.objects[i],SaveFile);
 	}
 
 	//==================== SAVE WALL INFO =============================
@@ -2079,12 +2079,12 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE TRIGGER INFO =============================
 
 	triggers.offset = ftell(SaveFile);
-	fwrite(gameData.trigs.triggers, sizeof(trigger), gameFileInfo.triggers.count, SaveFile);
+	fwrite(gameData.trigs.triggers, sizeof(tTrigger), gameFileInfo.triggers.count, SaveFile);
 
 	//================ SAVE CONTROL CENTER TRIGGER INFO ===============
 
 	control.offset = ftell(SaveFile);
-	fwrite(&gameData.reactor.triggers, sizeof(reactor_triggers), 1, SaveFile);
+	fwrite(&gameData.reactor.triggers, sizeof(tReactorTriggers), 1, SaveFile);
 
 
 	//================ SAVE MATERIALIZATION CENTER TRIGGER INFO ===============
@@ -2103,7 +2103,7 @@ int SaveGameData(FILE * SaveFile)
 
 	// Update the offset fields
 	gameFileInfo.player.offset		=	player.offset;
-	gameFileInfo.object.offset		=	object.offset;
+	gameFileInfo.tObject.offset		=	tObject.offset;
 	gameFileInfo.walls.offset			=	walls.offset;
 	gameFileInfo.doors.offset			=	doors.offset;
 	gameFileInfo.triggers.offset		=	triggers.offset;
@@ -2129,7 +2129,7 @@ int save_mine_data(FILE * SaveFile);
 
 // -----------------------------------------------------------------------------
 // Save game
-int save_level_sub(char * filename, int compiled_version)
+int saveLevel_sub(char * filename, int compiled_version)
 {
 	FILE * SaveFile;
 	char temp_filename[128];
@@ -2140,7 +2140,7 @@ int save_level_sub(char * filename, int compiled_version)
 		write_game_text_file(filename);
 
 		if (Errors_in_mine) {
-			if (is_real_level(filename)) {
+			if (is_realLevel(filename)) {
 				char  ErrorMessage[200];
 	
 				sprintf(ErrorMessage, TXT_MINE_ERRORS2, Errors_in_mine);
@@ -2185,15 +2185,15 @@ int save_level_sub(char * filename, int compiled_version)
 	if (gameData.missions.szCurrentLevel[0] == 0)
 		strcpy(gameData.missions.szCurrentLevel,"Untitled");
 
-	clear_transient_objects(1);		//1 means clear proximity bombs
+	clear_transientObjects(1);		//1 means clear proximity bombs
 
-	compress_objects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
+	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
 
-	//make sure player is in a segment
-	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].objnum]) == 0) {
-		if (gameData.objs.console->segnum > gameData.segs.nLastSegment)
-			gameData.objs.console->segnum = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,&(gameData.segs.segments[gameData.objs.console->segnum]);
+	//make sure player is in a tSegment
+	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].nObject]) == 0) {
+		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
+			gameData.objs.console->nSegment = 0;
+		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
 	}
  
 	FixObjectSegs();
@@ -2264,15 +2264,15 @@ int save_level_sub(char * filename, int compiled_version)
 extern void compress_uv_coordinates_all(void);
 #endif
 
-int save_level(char * filename)
+int saveLevel(char * filename)
 {
 	int r1;
 
 	// Save normal version...
-	r1 = save_level_sub(filename, 0);
+	r1 = saveLevel_sub(filename, 0);
 
 	// Save compiled version...
-	save_level_sub(filename, 1);
+	saveLevel_sub(filename, 1);
 
 	return r1;
 }
@@ -2282,7 +2282,7 @@ int save_level(char * filename)
 #ifdef _DEBUG
 void dump_mine_info(void)
 {
-	int	segnum, sidenum;
+	int	nSegment, nSide;
 	fix	min_u, max_u, min_v, max_v, min_l, max_l, max_sl;
 
 	min_u = F1_0*1000;
@@ -2295,13 +2295,13 @@ void dump_mine_info(void)
 
 	max_sl = 0;
 
-	for (segnum=0; segnum<=gameData.segs.nLastSegment; segnum++) {
-		for (sidenum=0; sidenum<MAX_SIDES_PER_SEGMENT; sidenum++) {
+	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
+		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
 			int	vertnum;
-			side	*sidep = &gameData.segs.segments[segnum].sides[sidenum];
+			tSide	*sidep = &gameData.segs.segments[nSegment].sides[nSide];
 
-			if (gameData.segs.segment2s[segnum].static_light > max_sl)
-				max_sl = gameData.segs.segment2s[segnum].static_light;
+			if (gameData.segs.segment2s[nSegment].static_light > max_sl)
+				max_sl = gameData.segs.segment2s[nSegment].static_light;
 
 			for (vertnum=0; vertnum<4; vertnum++) {
 				if (sidep->uvls[vertnum].u < min_u)
@@ -2330,7 +2330,7 @@ void dump_mine_info(void)
 
 // -----------------------------------------------------------------------------
 //read in every level in mission and save out compiled version 
-void save_all_compiled_levels(void)
+void save_all_compiledLevels(void)
 {
 DoLoadSaveLevels(1);
 }
@@ -2351,23 +2351,23 @@ void DoLoadSaveLevels(int save)
 	if (! SafetyCheck())
 		return;
 
-	no_old_level_file_error=1;
+	no_oldLevel_file_error=1;
 
 	for (level_num=1;level_num<=gameData.missions.nLastLevel;level_num++) {
 		LoadLevelSub(gameData.missions.szLevelNames[level_num-1]);
 		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
-			save_level_sub(gameData.missions.szLevelNames[level_num-1],1);
+			saveLevel_sub(gameData.missions.szLevelNames[level_num-1],1);
 	}
 
 	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
 		LoadLevelSub(gameData.missions.szSecretLevelNames[-level_num-1]);
 		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
-			save_level_sub (gameData.missions.szSecretLevelNames[-level_num-1],1);
+			saveLevel_sub (gameData.missions.szSecretLevelNames[-level_num-1],1);
 	}
 
-	no_old_level_file_error=0;
+	no_oldLevel_file_error=0;
 
 }
 

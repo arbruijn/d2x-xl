@@ -919,7 +919,7 @@ else
 #define SECONDARY_WEAPON_NAMES_SHORT(weapon_num)	GAMETEXT (134 + weapon_num)
 
 //  Control configuration strings.
-#define CONTROL_TEXT(control_type)			GAMETEXT (162 + control_type)
+#define CONTROL_TEXT(controlType)			GAMETEXT (162 + controlType)
 
 // Network connect states
 #define CONNECT_STATES(state_num)			GAMETEXT (426 + state_num)

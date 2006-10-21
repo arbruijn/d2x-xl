@@ -39,11 +39,11 @@ fix TimerGetFixedSeconds()
 	return x;
 }
 
-void delay(int d_time)
+void delay(int dTime)
 {
 	fix t, total;
 	
-	total = (F1_0 * d_time) / 1000;
+	total = (F1_0 * dTime) / 1000;
 	t = TimerGetFixedSeconds();
 	while (TimerGetFixedSeconds() - t < total) ;
 }

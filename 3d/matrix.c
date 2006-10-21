@@ -44,7 +44,7 @@ void ScaleMatrix(void);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_set_view_*() 
-void G3SetViewAngles (vms_vector *view_pos, vms_angvec *view_orient, fix zoom)
+void G3SetViewAngles (vmsVector *view_pos, vmsAngVec *view_orient, fix zoom)
 {
 viewInfo.zoom = zoom;
 viewInfo.position = *view_pos;
@@ -59,7 +59,7 @@ ScaleMatrix();
 
 //------------------------------------------------------------------------------
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_set_view_*() 
-void G3SetViewMatrix (vms_vector *view_pos, vms_matrix *view_matrix, fix zoom)
+void G3SetViewMatrix (vmsVector *view_pos, vmsMatrix *view_matrix, fix zoom)
 {
 viewInfo.zoom = zoom;
 viewInfo.glZoom = (float) zoom / 65536.0f;

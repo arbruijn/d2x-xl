@@ -120,7 +120,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 #include <stdarg.h>
 
 #include "pa_enabl.h"       //$$POLY_ACC
@@ -158,7 +158,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)
 
-int kmatrix_kills_changed = 0;
+int kmatrixKills_changed = 0;
 char ConditionLetters []={' ','P','E','D','E','E','V','W'};
 char WaitingForOthers=0;
 
@@ -218,13 +218,13 @@ for (j=0; j<gameData.multi.nPlayers; j++) {
 		}
 	}
 
-if (gameData.multi.players [sorted [i]].net_killed_total + gameData.multi.players [sorted [i]].net_kills_total==0)
+if (gameData.multi.players [sorted [i]].netKilledTotal + gameData.multi.players [sorted [i]].netKillsTotal==0)
 	sprintf (temp,"N/A");
 else
-   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multi.players [sorted [i]].net_kills_total/ ((double)gameData.multi.players [sorted [i]].net_killed_total+ (double)gameData.multi.players [sorted [i]].net_kills_total))*100.0));		
+   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multi.players [sorted [i]].netKillsTotal/ ((double)gameData.multi.players [sorted [i]].netKilledTotal+ (double)gameData.multi.players [sorted [i]].netKillsTotal))*100.0));		
 x = LHX (60 + CENTERING_OFFSET (gameData.multi.nPlayers) + gameData.multi.nPlayers*25) + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
-GrPrintF (x ,y,"%4d/%s",gameData.multi.players [sorted [i]].net_kills_total,temp);
+GrPrintF (x ,y,"%4d/%s",gameData.multi.players [sorted [i]].netKillsTotal,temp);
 }
 
 //-----------------------------------------------------------------------------
@@ -241,7 +241,7 @@ GrSetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
 GrPrintF (x, y, "%d", gameData.multi.players [sorted [i]].score);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
-GrPrintF (x, y, "%d", gameData.multi.players [sorted [i]].net_killed_total);
+GrPrintF (x, y, "%d", gameData.multi.players [sorted [i]].netKilledTotal);
 }
 
 //-----------------------------------------------------------------------------
@@ -344,7 +344,7 @@ x = CENTERSCREEN+LHX (50) + xOffs;
 GrPrintF (x, y, TXT_DEATHS);
 for (j=0; j<gameData.multi.nPlayers; j++) {
 	x = CENTERSCREEN+LHX (50) + xOffs;
-	GrPrintF (x, y, "%d", gameData.multi.players [sorted [j]].net_killed_total);
+	GrPrintF (x, y, "%d", gameData.multi.players [sorted [j]].netKilledTotal);
 	}
 y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
@@ -535,7 +535,7 @@ extern void NetworkEndLevelPoll3 (int nitems, struct newmenu_item * menus, int *
 void kmatrix_view (int network)
 {											 
    int i, k, done,choice;
-	fix entry_time = TimerGetApproxSeconds ();
+	fix entryTime = TimerGetApproxSeconds ();
 	int key;
    int oldstates [MAX_PLAYERS];
    int previous_seconds_left=-1;
@@ -550,7 +550,7 @@ memset (&bg, 0, sizeof (bg));
 network=gameData.app.nGameMode & GM_NETWORK;
 
 for (i=0;i<MAX_NUM_NET_PLAYERS;i++)
-DigiKillSoundLinkedToObject (gameData.multi.players [i].objnum);
+DigiKillSoundLinkedToObject (gameData.multi.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
 WaitingForOthers=0;
@@ -567,7 +567,7 @@ while (!done) {
 		kmatrix_redraw ();
 		bRedraw = 1;
 		}
-	kmatrix_kills_changed = 0;
+	kmatrixKills_changed = 0;
 	for (i = 0; i < 4; i++)
 		if (joy_get_button_down_cnt (i)) {
 			if (LAST_OEM_LEVEL) {
@@ -620,7 +620,7 @@ while (!done) {
 					KMatrixQuit (&bg, 1, network);
 					return;
 					}
-				kmatrix_kills_changed=1;
+				kmatrixKills_changed=1;
 				break;
 
 		case KEY_PRINT_SCREEN:
@@ -634,7 +634,7 @@ while (!done) {
 		default:
 			break;
 		}
-	if ((TimerGetApproxSeconds () >= entry_time + MAX_VIEW_TIME) && 
+	if ((TimerGetApproxSeconds () >= entryTime + MAX_VIEW_TIME) && 
 		 (gameData.multi.players [gameData.multi.nLocalPlayer].connected != 7)) {
 		if (LAST_OEM_LEVEL) {
 			KMatrixQuit (&bg, 1, network);
@@ -663,7 +663,7 @@ while (!done) {
 			}
 		if (gameData.multi.players [i].connected!=oldstates [i]) {
 			if (ConditionLetters [gameData.multi.players [i].connected] != ConditionLetters [oldstates [i]])
-				kmatrix_kills_changed = 1;
+				kmatrixKills_changed = 1;
 				oldstates [i] = gameData.multi.players [i].connected;
 				NetworkSendEndLevelPacket ();
 				}
@@ -678,11 +678,11 @@ while (!done) {
 			gameData.reactor.countdown.nSecsLeft = -1;
 		if (previous_seconds_left != gameData.reactor.countdown.nSecsLeft) {
 			previous_seconds_left = gameData.reactor.countdown.nSecsLeft;
-			kmatrix_kills_changed=1;
+			kmatrixKills_changed=1;
 			}
-		if (kmatrix_kills_changed) {
+		if (kmatrixKills_changed) {
 			kmatrix_redraw ();
-			kmatrix_kills_changed = 0;
+			kmatrixKills_changed = 0;
 			}
 		}
 	}

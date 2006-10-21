@@ -59,7 +59,7 @@ bool must_clip_line (g3s_point *p0, g3s_point *p1, ubyte codes_or)
 {
 	bool ret;
 
-	if ((p0->p3_flags&PF_TEMP_POINT) || (p1->p3_flags&PF_TEMP_POINT))
+	if ((p0->p3Flags&PF_TEMP_POINT) || (p1->p3Flags&PF_TEMP_POINT))
 
 		ret = 0;		//line has already been clipped, so give up
 
@@ -72,10 +72,10 @@ bool must_clip_line (g3s_point *p0, g3s_point *p1, ubyte codes_or)
 
 	//d_free temp points
 
-	if (p0->p3_flags & PF_TEMP_POINT)
+	if (p0->p3Flags & PF_TEMP_POINT)
 		free_temp_point (p0);
 
-	if (p1->p3_flags & PF_TEMP_POINT)
+	if (p1->p3Flags & PF_TEMP_POINT)
 		free_temp_point (p1);
 
 	return ret;
@@ -95,17 +95,17 @@ bool G3DrawLine (g3s_point *p0, g3s_point *p1)
 	if (codes_or & CC_BEHIND)
 		return must_clip_line (p0, p1, codes_or);
 
-	if (! (p0->p3_flags&PF_PROJECTED))
+	if (! (p0->p3Flags&PF_PROJECTED))
 		G3ProjectPoint (p0);
 
-	if (p0->p3_flags&PF_OVERFLOW)
+	if (p0->p3Flags&PF_OVERFLOW)
 		return must_clip_line (p0, p1, codes_or);
 
 
-	if (! (p1->p3_flags&PF_PROJECTED))
+	if (! (p1->p3Flags&PF_PROJECTED))
 		G3ProjectPoint (p1);
 
-	if (p1->p3_flags&PF_OVERFLOW)
+	if (p1->p3Flags&PF_OVERFLOW)
 		return must_clip_line (p0, p1, codes_or);
 
 	return (bool) (*line_drawer_ptr) (p0->p3_sx, p0->p3_sy, p1->p3_sx, p1->p3_sy);
@@ -115,22 +115,22 @@ bool G3DrawLine (g3s_point *p0, g3s_point *p1)
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface 
 //normal of the plane, and a point on it.  The normal need not be normalized
-bool G3CheckNormalFacing (vms_vector *pv, vms_vector *pnorm)
+bool G3CheckNormalFacing (vmsVector *pv, vmsVector *pnorm)
 {
-vms_vector v;
+vmsVector v;
 return (VmVecDot (VmVecSub (&v, &viewInfo.position, pv), pnorm) > 0);
 }
 
 //------------------------------------------------------------------------------
 
-bool DoFacingCheck (vms_vector *norm, g3s_point **vertlist, vms_vector *p)
+bool DoFacingCheck (vmsVector *norm, g3s_point **vertlist, vmsVector *p)
 {
 if (norm) {		//have normal
 	Assert (norm->x || norm->y || norm->z);
 	return G3CheckNormalFacing (p, norm);
 	}
 else {	//normal not specified, so must compute
-	vms_vector tempv;
+	vmsVector tempv;
 	//get three points (rotated) and compute normal
 	VmVecPerp (&tempv, &vertlist[0]->p3_vec, &vertlist[1]->p3_vec, &vertlist[2]->p3_vec);
 	return (VmVecDot (&tempv, &vertlist[1]->p3_vec) < 0);
@@ -144,7 +144,7 @@ else {	//normal not specified, so must compute
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-bool G3CheckAndDrawPoly (int nv, g3s_point **pointlist, vms_vector *norm, vms_vector *pnt)
+bool G3CheckAndDrawPoly (int nv, g3s_point **pointlist, vmsVector *norm, vmsVector *pnt)
 {
 	if (DoFacingCheck (norm, pointlist, pnt))
 		return G3DrawPoly (nv, pointlist);
@@ -155,7 +155,7 @@ bool G3CheckAndDrawPoly (int nv, g3s_point **pointlist, vms_vector *norm, vms_ve
 //------------------------------------------------------------------------------
 
 bool G3CheckAndDrawTMap (
-	int nv, g3s_point **pointlist, uvl *uvl_list, grs_bitmap *bm, vms_vector *norm, vms_vector *pnt)
+	int nv, g3s_point **pointlist, uvl *uvl_list, grs_bitmap *bm, vmsVector *norm, vmsVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1);
@@ -178,10 +178,10 @@ bool MustClipFlatFace (int nv, g3s_codes cc)
 		for (i=0;i<nv;i++) {
 			g3s_point *p = bufptr[i];
 	
-			if (! (p->p3_flags&PF_PROJECTED))
+			if (! (p->p3Flags&PF_PROJECTED))
 				G3ProjectPoint (p);
 	
-			if (p->p3_flags&PF_OVERFLOW) {
+			if (p->p3Flags&PF_OVERFLOW) {
 				ret = 1;
 				goto free_points;
 			}
@@ -200,7 +200,7 @@ free_points:
 	;
 
 	for (i=0;i<nv;i++)
-		if (Vbuf1[i]->p3_flags & PF_TEMP_POINT)
+		if (Vbuf1[i]->p3Flags & PF_TEMP_POINT)
 			free_temp_point (Vbuf1[i]);
 
 //	Assert (free_point_num==0);
@@ -234,9 +234,9 @@ if (cc.or)
 //now make list of 2d coords (& check for overflow)
 for (i=0;i<nv;i++) {
 	p = bufptr[i];
-	if (! (p->p3_flags&PF_PROJECTED))
+	if (! (p->p3Flags&PF_PROJECTED))
 		G3ProjectPoint (p);
-	if (p->p3_flags&PF_OVERFLOW)
+	if (p->p3Flags&PF_OVERFLOW)
 		return MustClipFlatFace (nv, cc);
 	polyVertList[i*2] = p->p3_sx;
 	polyVertList[i*2+1] = p->p3_sy;
@@ -251,7 +251,7 @@ bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list, vms_vector *norm, grs_bitmap *bm)
+bool G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list, vmsVector *norm, grs_bitmap *bm)
 {
 	int i;
 	g3s_point **bufptr, *p;
@@ -267,7 +267,7 @@ for (i=0;i<nv;i++) {
 	p->p3_u = uvl_list[i].u;
 	p->p3_v = uvl_list[i].v;
 	p->p3_l = uvl_list[i].l;
-	p->p3_flags |= PF_UVS + PF_LS;
+	p->p3Flags |= PF_UVS + PF_LS;
 	}
 if (cc.and)
 	return 1;	//all points off screen
@@ -276,9 +276,9 @@ if (cc.or)
 //now make list of 2d coords (& check for overflow)
 for (i=0;i<nv;i++) {
 	p = bufptr[i];
-	if (! (p->p3_flags&PF_PROJECTED))
+	if (! (p->p3Flags&PF_PROJECTED))
 		G3ProjectPoint (p);
-	if (p->p3_flags&PF_OVERFLOW) {
+	if (p->p3Flags&PF_OVERFLOW) {
 		Int3 ();		//should not overflow after clip
 		return 255;
 		}
@@ -302,10 +302,10 @@ bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm)
 		for (i=0;i<nv;i++) {
 			g3s_point *p = bufptr[i];
 
-			if (! (p->p3_flags&PF_PROJECTED))
+			if (! (p->p3Flags&PF_PROJECTED))
 				G3ProjectPoint (p);
 	
-			if (p->p3_flags&PF_OVERFLOW) {
+			if (p->p3Flags&PF_OVERFLOW) {
 				Int3 ();		//should not overflow after clip
 				goto free_points;
 			}
@@ -318,7 +318,7 @@ free_points:
 	;
 
 	for (i=0;i<nv;i++)
-		if (bufptr[i]->p3_flags & PF_TEMP_POINT)
+		if (bufptr[i]->p3Flags & PF_TEMP_POINT)
 			free_temp_point (bufptr[i]);
 
 //	Assert (free_point_num==0);
@@ -340,7 +340,7 @@ int G3DrawSphere (g3s_point *pnt, fix rad)
 {
 	if (! (pnt->p3_codes & CC_BEHIND)) {
 
-		if (! (pnt->p3_flags & PF_PROJECTED))
+		if (! (pnt->p3Flags & PF_PROJECTED))
 			G3ProjectPoint (pnt);
 
 		if (! (pnt->p3_codes & PF_OVERFLOW)) {

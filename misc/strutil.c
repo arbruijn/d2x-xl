@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <cType.h>
 #include <string.h>
 
 #include "u_mem.h"

@@ -18,7 +18,7 @@ struct ipx_recv_data {
 	u_char src_node[6];
 	u_short src_socket;
 	u_short dst_socket;
-	int pkt_type;
+	int pktType;
 };
 
 struct ipx_helper {

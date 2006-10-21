@@ -30,7 +30,7 @@
 #define POF_SOF_GLOW			0x0200000	// This subobject glows
 #define POF_SOF_CUSTOM		0x0400000	// This subobject has textures/colors that are customizable
 #define POF_SOF_THRUSTER	0x0800000   // This is a thruster subobject
-#define POF_SOF_JITTER		0x01000000  // This object jitters by itself
+#define POF_SOF_JITTER		0x01000000  // This tObject jitters by itself
 #define POF_SOF_HEADLIGHT	0x02000000	// This suboject is a headlight
 
 #define POF_MAX_GUNS_PER_MODEL	      64
@@ -55,7 +55,7 @@ typedef struct tPOF_rgb {
 } tPOF_rgb;
 
 typedef struct tPOF_chunkHeader {
-	tPOF_chunkType		type;
+	tPOF_chunkType		nType;
 	int					nLength;
 } tPOF_chunkHeader;
 
@@ -199,18 +199,18 @@ typedef struct tPOF_edgeList {
 typedef struct tPOF_subObject {
 	short					nIndex;
 	short					nParent;
-	vms_vector			vClipPlaneNormal;
-	vms_vector			vClipPlanePoint;
+	vmsVector			vClipPlaneNormal;
+	vmsVector			vClipPlanePoint;
 	int					nRadius;
 	int					nOffset;
 } tPOF_subObject;
 
-typedef struct tPOF_object {
+typedef struct tPOFObject {
 	int					nVersion;
 	int					nFlags;
 	int					nRadius;
-	vms_vector			vMin;
-	vms_vector			vMax;
+	vmsVector			vMin;
+	vmsVector			vMax;
 	int					nDetailLevels;
 	int					nSubObjects;
 	tPOF_subObject		*pSubObjects;
@@ -220,13 +220,13 @@ typedef struct tPOF_object {
 	tPOF_armament		armament;
 	tPOF_textures		textures;
 	tPOF_frameInfo		frameInfo;
-} tPOF_object;
+} tPOFObject;
 
-int POF_ReadFile (char *pszFile, tPOF_object *po);
-int POF_FreeObject (tPOF_object *po);
-int POF_Render (tPOF_object *po, vms_vector *vPos, vms_matrix *mOrient, float *fLight);
-float *POF_MatVms2Gl (float *pDest, vms_matrix *pSrc);
-float *POF_VecVms2Gl (float *pDest, vms_vector *pSrc);
+int POF_ReadFile (char *pszFile, tPOFObject *po);
+int POF_FreeObject (tPOFObject *po);
+int POF_Render (tPOFObject *po, vmsVector *vPos, vmsMatrix *mOrient, float *fLight);
+float *POF_MatVms2Gl (float *pDest, vmsMatrix *pSrc);
+float *POF_VecVms2Gl (float *pDest, vmsVector *pSrc);
 tPOF_vector *POF_VecSub (tPOF_vector *pvDest, tPOF_vector *pvMin, tPOF_vector *pvSub);
 float POF_VecMag (tPOF_vector *pv);
 float *POF_GlIdent (float *pm);

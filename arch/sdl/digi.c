@@ -324,7 +324,7 @@ void DigiStopAllChannels()
 
 //------------------------------------------------------------------------------
 
-int DigiResampleSound (digi_sound *gsp, struct sound_slot *ssp, int bD1Sound)
+int DigiResampleSound (digiSound *gsp, struct sound_slot *ssp, int bD1Sound)
 {
 	int h, i, j, l;
 
@@ -350,7 +350,7 @@ return ssp->length = l;
 
 //------------------------------------------------------------------------------
 
-int DigiSpeedupSound (digi_sound *gsp, struct sound_slot *ssp, int speed)
+int DigiSpeedupSound (digiSound *gsp, struct sound_slot *ssp, int speed)
 {
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
@@ -407,7 +407,7 @@ int DigiStartSound (short soundnum, fix volume, int pan, int looping,
 {
 	int i, starting_channel;
 	struct sound_slot *ssp;
-	digi_sound *gsp;
+	digiSound *gsp;
 
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
@@ -742,7 +742,7 @@ for (i = 0; i < gameStates.sound.digi.nMaxChannels; i++) {
 		n_voices++;
 	}
 //mprintf_at((0, 2, 0, "DIGI: Active Sound Channels: %d/%d (HMI says %d/32)      ", n_voices, gameStates.sound.digi.nMaxChannels, -1));
-////mprintf_at((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digi_total_locks ));
+////mprintf_at((0, 3, 0, "DIGI: Number locked sounds:  %d                          ", digiTotal_locks ));
 }
 #endif
 

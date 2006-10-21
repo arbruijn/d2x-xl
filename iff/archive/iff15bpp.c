@@ -11,7 +11,7 @@ extern int parse_iff(FILE *ifile,struct bitmap_header *bitmap_header);
 
 int x,y,pl,bc;
 int bytes_per_row,color;
-int mask,first_bit_value;
+int mask,first_bitValue;
 FILE *ifile;
 struct bitmap_header iff_bitmap_header;
 
@@ -54,13 +54,13 @@ BITMAP15 * IFF_To_15BPP(char * ifilename)
 	new->Height = Process_height;
 
 	////printf("Process_width = %i, Process_height = %i\n",Process_width,Process_height);
-	first_bit_value = 1 << (my_bh->nplanes-1);
+	first_bitValue = 1 << (my_bh->nplanes-1);
 	bytes_per_row = 2*((my_bh->w+15)/16);
 	for (y=0; y<Process_height; y++) {
 		bc = Process_width;
 		p = &my_bh->raw_data[y*bytes_per_row*my_bh->nplanes];
 
-		switch (my_bh->type) {
+		switch (my_bh->nType) {
 			case PBM_TYPE:
 				for (x=0; x<my_bh->w; x++) {
 					new->Data[newptr++] = INDEX_TO_15BPP(my_bh->raw_data[y*my_bh->w+x]);
@@ -73,7 +73,7 @@ BITMAP15 * IFF_To_15BPP(char * ifilename)
 						for (pl=0; pl<my_bh->nplanes; pl++) {
 							color /= 2;
 							if ( p[pl*bytes_per_row+x] & mask)
-								color += first_bit_value;
+								color += first_bitValue;
 						}
 						new->Data[newptr++] = INDEX_TO_15BPP(color);
 						bc--;

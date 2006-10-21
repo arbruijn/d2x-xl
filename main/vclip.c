@@ -28,16 +28,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.8  1994/09/25  23:40:52  matt
- * Changed the object load & save code to read/write the structure fields one
+ * Changed the tObject load & save code to read/write the structure fields one
  * at a time (rather than the whole structure at once).  This mean that the
- * object structure can be changed without breaking the load/save functions.
- * As a result of this change, the local_object data can be and has been
- * incorporated into the object array.  Also, timeToLive is now a property
- * of all gameData.objs.objects, and the object structure has been otherwise cleaned up.
+ * tObject structure can be changed without breaking the load/save functions.
+ * As a result of this change, the localObject data can be and has been
+ * incorporated into the tObject array.  Also, timeToLive is now a property
+ * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
  *
  * Revision 1.7  1994/09/25  15:45:26  matt
- * Added OBJ_LIGHT, a type of object that casts light
- * Added generalized lifeleft, and moved it to local_object
+ * Added OBJ_LIGHT, a nType of tObject that casts light
+ * Added generalized lifeleft, and moved it to localObject
  *
  * Revision 1.6  1994/09/09  20:05:57  mike
  * Add vclips for weapons.
@@ -101,24 +101,24 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
 //----------------- Variables for video clips -------------------
-//draw an object which renders as a vclip
+//draw an tObject which renders as a vclip
 
 #define	FIREBALL_ALPHA		0.7
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
 #define	WEAPON_ALPHA		1.0
 
-void DrawVClipObject(object *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
+void DrawVClipObject(tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
 	double	ta = 0, alpha = 0;
 	vclip		*pvc = gameData.eff.vClips [0] + vclip_num;
 	int		nFrames = pvc->nFrameCount;
 	int		iFrame = CurFrame (vclip_num, timeToLive);
-	int		bThruster = (objP->render_type == RT_THRUSTER) && (objP->mtype.phys_info.flags & PF_WIGGLE);
+	int		bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
-if (objP->type == OBJ_FIREBALL) {
+if (objP->nType == OBJ_FIREBALL) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
-		//if (objP->mtype.phys_info.flags & PF_WIGGLE)	//player ship
+		//if (objP->mType.physInfo.flags & PF_WIGGLE)	//player ship
 			iFrame = nFrames - iFrame - 1;	//render the other way round
 		}
 	else
@@ -126,7 +126,7 @@ if (objP->type == OBJ_FIREBALL) {
 	ta = (double) iFrame / (double) nFrames * alpha;
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
-else if (objP->type == OBJ_WEAPON)
+else if (objP->nType == OBJ_WEAPON)
 	alpha = WEAPON_ALPHA;
 #if 1
 if (bThruster)
@@ -146,32 +146,32 @@ if (bThruster)
 
 //------------------------------------------------------------------------------
 
-void DrawWeaponVClip(object *objP)
+void DrawWeaponVClip(tObject *objP)
 {
 	int	vclip_num;
-	fix	modtime,play_time;
+	fix	modtime,playTime;
 
-	Assert(objP->type == OBJ_WEAPON);
+	Assert(objP->nType == OBJ_WEAPON);
 	vclip_num = gameData.weapons.info[objP->id].weapon_vclip;
 	modtime = objP->lifeleft;
-	play_time = gameData.eff.pVClips[vclip_num].xTotalTime;
+	playTime = gameData.eff.pVClips[vclip_num].xTotalTime;
 	//	Special values for modtime were causing enormous slowdown for omega blobs.
 	if (modtime == IMMORTAL_TIME)
-		modtime = play_time;
+		modtime = playTime;
 	//	Should cause Omega blobs (which live for one frame) to not always be the same.
 	if (modtime == ONE_FRAME_TIME)
 		modtime = d_rand();
 	if (objP->id == PROXIMITY_ID) {		//make prox bombs spin out of sync
-		int objnum = OBJ_IDX (objP);
-		modtime += (modtime * (objnum&7)) / 16;	//add variance to spin rate
-		while (modtime > play_time)
-			modtime -= play_time;
-		if ((objnum&1) ^ ((objnum>>1)&1))			//make some spin other way
-			modtime = play_time - modtime;
+		int nObject = OBJ_IDX (objP);
+		modtime += (modtime * (nObject&7)) / 16;	//add variance to spin rate
+		while (modtime > playTime)
+			modtime -= playTime;
+		if ((nObject&1) ^ ((nObject>>1)&1))			//make some spin other way
+			modtime = playTime - modtime;
 	}
 	else {
-		while (modtime > play_time)
-			modtime -= play_time;
+		while (modtime > playTime)
+			modtime -= playTime;
 	}
 
 	DrawVClipObject(objP, modtime, 0, vclip_num, gameData.weapons.color + objP->id);
@@ -192,10 +192,10 @@ int vclip_read_n(vclip *vc, int n, CFILE *fp)
 		vc[i].nFrameCount = CFReadInt(fp);
 		vc[i].xFrameTime = CFReadFix(fp);
 		vc[i].flags = CFReadInt(fp);
-		vc[i].sound_num = CFReadShort(fp);
+		vc[i].nSound = CFReadShort(fp);
 		for (j = 0; j < VCLIP_MAX_FRAMES; j++)
 			vc[i].frames[j].index = CFReadShort(fp);
-		vc[i].light_value = CFReadFix(fp);
+		vc[i].lightValue = CFReadFix(fp);
 	}
 	return i;
 }

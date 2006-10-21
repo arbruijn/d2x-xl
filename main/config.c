@@ -115,7 +115,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "inferno.h"
 #include "game.h"
@@ -164,7 +164,7 @@ static char *pszJoystickMax = "JoystickMax";
 static char *pszJoystickCen = "JoystickCen";
 static char *pszLastPlayer = "LastPlayer";
 static char *pszLastMission = "LastMission";
-static char *pszVrType = "VR_type";
+static char *pszVrType = "VRType";
 static char *pszVrResolution = "VR_resolution";
 static char *pszVrTracking = "VR_tracking";
 static char *pszHiresMovies = "Hires Movies";
@@ -253,14 +253,14 @@ int bRedbookEnabledSave;
 void CheckMovieAttributes()
 {
 		HKEY hKey;
-		DWORD len, type, val;
+		DWORD len, nType, val;
 		long lres;
  
 		lres = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Parallax\\Descent II\\1.1\\INSTALL",
 							0, KEY_READ, &hKey);
 		if (lres == ERROR_SUCCESS) {
 			len = sizeof(val);
-			lres = RegQueryValueEx(hKey, "HIRES", NULL, &type, &val, &len);
+			lres = RegQueryValueEx(hKey, "HIRES", NULL, &nType, &val, &len);
 			if (lres == ERROR_SUCCESS) {
 				gameOpts->movies.bHires = val;
 				logentry("HIRES=%d\n", val);
@@ -302,7 +302,7 @@ int ReadConfigFile()
 	digi_driver_irq = 0;
 	digi_driver_dma = 0;
 
-	digi_midi_type = 0;
+	digi_midiType = 0;
 	digi_midi_port = 0;*/
 
 	gameConfig.nDigiVolume = 8;
@@ -350,7 +350,7 @@ int ReadConfigFile()
 			else*/ if (!strcmp(token, pszDigiVolume))
 				gameConfig.nDigiVolume = (ubyte) strtol(value, NULL, 10);
 			else/* if (!strcmp(token, midi_dev_str))
-				digi_midi_type = strtol(value, NULL, 16);
+				digi_midiType = strtol(value, NULL, 16);
 			else if (!strcmp(token, midi_port_str))
 				digi_midi_port = strtol(value, NULL, 16);
 			else*/ if (!strcmp(token, pszMidiVolume))
@@ -455,12 +455,12 @@ int ReadConfigFile()
 	//printf( "DigiPort: 0x%x\n", digi_driver_port		);
 	//printf( "DigiIrq: 0x%x\n",  digi_driver_irq		);
 	//printf( "DigiDma: 0x%x\n",	digi_driver_dma	);
-	//printf( "MidiDeviceID: 0x%x\n", digi_midi_type	);
+	//printf( "MidiDeviceID: 0x%x\n", digi_midiType	);
 	//printf( "MidiPort: 0x%x\n", digi_midi_port		);
   	key_getch();
 */
 
-	/*gameConfig.nMidiType = digi_midi_type;
+	/*gameConfig.nMidiType = digi_midiType;
 	gameConfig.nDigiType = digi_driver_board;
 	gameConfig.nDigiDMA = digi_driver_dma;*/
 

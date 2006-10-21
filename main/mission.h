@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct mle {
 	char    filename[FILENAME_LEN];                // path and filename without extension
 	char    mission_name[MISSION_NAME_LEN+5];
-	ubyte   anarchy_only_flag;          // if true, mission is anarchy only
+	ubyte   anarchy_onlyFlag;          // if true, mission is anarchy only
 	ubyte   location;                   // see defines below
 	ubyte   descent_version;            // descent 1 or descent 2?
 } mle;

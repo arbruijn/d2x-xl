@@ -183,9 +183,9 @@ void game_draw_multi_message()
 #define cv_w  cv_bitmap.bm_props.w
 #define cv_h  cv_bitmap.bm_props.h
 
-fix frame_time_list[8] = {0,0,0,0,0,0,0,0};
-fix frame_time_total=0;
-int frame_time_cntr=0;
+fix frameTime_list[8] = {0,0,0,0,0,0,0,0};
+fix frameTimeTotal=0;
+int frameTime_cntr=0;
 
 void ftoa(char *string, fix f)
 {
@@ -209,13 +209,13 @@ void show_framerate()
 	int x = 8, y = 5; // position measured from lower right corner
    //static int q;
 
-	frame_time_total += gameData.time.xRealFrame - frame_time_list[frame_time_cntr];
-	frame_time_list[frame_time_cntr] = gameData.time.xRealFrame;
-	frame_time_cntr = (frame_time_cntr+1)%8;
+	frameTimeTotal += gameData.time.xRealFrame - frameTime_list[frameTime_cntr];
+	frameTime_list[frameTime_cntr] = gameData.time.xRealFrame;
+	frameTime_cntr = (frameTime_cntr+1)%8;
 	t = SDL_GetTicks ();
 	if ((t0 < 0) || (t - t0 >= 500)) {
 		t0 = t;
-		rate = frame_time_total ? FixDiv(f1_0*8,frame_time_total) : 0;
+		rate = frameTimeTotal ? FixDiv(f1_0*8,frameTimeTotal) : 0;
 		}
 	GrSetCurFont( GAME_FONT );	
 	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
@@ -229,19 +229,19 @@ void show_framerate()
 //------------------------------------------------------------------------------
 #ifndef NDEBUG
 
-fix Show_view_text_timer = -1;
+fix Show_view_textTimer = -1;
 
 void draw_window_label()
 {
-	if ( Show_view_text_timer > 0 )
+	if ( Show_view_textTimer > 0 )
 	{
 		char *viewer_name,*control_name;
 		char	*viewer_id;
-		Show_view_text_timer -= gameData.time.xFrame;
+		Show_view_textTimer -= gameData.time.xFrame;
 		GrSetCurFont( GAME_FONT );
 
 		viewer_id = "";
-		switch( gameData.objs.viewer->type )
+		switch( gameData.objs.viewer->nType )
 		{
 			case OBJ_FIREBALL:	viewer_name = "Fireball"; break;
 			case OBJ_ROBOT:		viewer_name = "Robot";
@@ -263,7 +263,7 @@ void draw_window_label()
 			default:					viewer_name = "Unknown"; break;
 		}
 
-		switch ( gameData.objs.viewer->control_type) {
+		switch ( gameData.objs.viewer->controlType) {
 			case CT_NONE:			control_name = "Stopped"; break;
 			case CT_AI:				control_name = "AI"; break;
 			case CT_FLYING:		control_name = "Flying"; break;
@@ -385,7 +385,7 @@ void game_draw_hud_stuff()
 
 	if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 		render_countdown_gauge();
-		if ( gameData.multi.nLocalPlayer > -1 && gameData.objs.viewer->type==OBJ_PLAYER && gameData.objs.viewer->id==gameData.multi.nLocalPlayer )	{
+		if ( gameData.multi.nLocalPlayer > -1 && gameData.objs.viewer->nType==OBJ_PLAYER && gameData.objs.viewer->id==gameData.multi.nLocalPlayer )	{
 			int	x = 3;
 			int	y = grdCurCanv->cv_bitmap.bm_props.h;
 
@@ -558,17 +558,17 @@ void game_render_frame_stereo()
 	}
 
 	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->type==OBJ_WEAPON && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		actual_eye_offset = 0;
 
 	GrSetCurrentCanvas(&RenderCanvas[0]);
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->type==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
+	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";
-		object *viewer_save = gameData.objs.viewer;
+		tObject *viewer_save = gameData.objs.viewer;
 		int w,h,aw;
 
 		gameData.objs.viewer = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
@@ -650,9 +650,9 @@ void game_render_frame_stereo()
 	GrSetCurrentCanvas(&RenderCanvas[1]);
 
 	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->type==OBJ_WEAPON && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		GrBitmap(0,0,&RenderCanvas[0].cv_bitmap);
 	else {
@@ -709,7 +709,7 @@ void game_render_frame_stereo()
 		height = RenderCanvas[0].cv_bitmap.bm_props.h;
 		quarter = width / 4;
 
-		// black out left-hand side of left page
+		// black out left-hand tSide of left page
 
 		// draw registration code for left eye
 		if ( VR_eye_switch )
@@ -732,7 +732,7 @@ void game_render_frame_stereo()
    }
 
  		// Copy left eye, then right eye
-	if ( VR_screen_flags&VRF_USE_PAGING )
+	if ( VR_screenFlags&VRF_USE_PAGING )
 		VR_current_page = !VR_current_page;
 	else 
 		VR_current_page = 0;
@@ -774,14 +774,14 @@ void game_render_frame_stereo()
 
 	gr_bitblt_dest_step_shift = 0;
 
-	//if ( Game_vfx_flag )
+	//if ( Game_vfxFlag )
 	//	vfx_set_page(VR_current_page);		// 0 or 1
 	//else 
-		if ( VR_screen_flags&VRF_USE_PAGING )	{
+		if ( VR_screenFlags&VRF_USE_PAGING )	{
 			gr_wait_for_retrace = 0;
 
 //	Added by Samir from John's code
-		if ( (VR_screen_pages[VR_current_page].cv_bitmap.bm_props.type == BM_MODEX) && (Game_3dmax_flag==3) )	{
+		if ( (VR_screen_pages[VR_current_page].cv_bitmap.bm_props.nType == BM_MODEX) && (Game_3dmaxFlag==3) )	{
 			int old_x, old_y, new_x;
 			old_x = VR_screen_pages[VR_current_page].cv_bitmap.bm_props.x;
 			old_y = VR_screen_pages[VR_current_page].cv_bitmap.bm_props.y;
@@ -789,9 +789,9 @@ void game_render_frame_stereo()
 			new_x += old_x/4;
 			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.x = new_x;
 			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.y = 0;
-			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.type = BM_SVGA;
+			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.nType = BM_SVGA;
 			GrShowCanvas( &VR_screen_pages[VR_current_page] );
-			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.type = BM_MODEX;
+			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.nType = BM_MODEX;
 			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.x = old_x;
 			VR_screen_pages[VR_current_page].cv_bitmap.bm_props.y = old_y;
 		} else {
@@ -804,7 +804,7 @@ void game_render_frame_stereo()
 #endif
 ubyte DemoDoingRight=0,DemoDoingLeft=0;
 extern ubyte DemoDoRight,DemoDoLeft;
-extern object DemoRightExtra,DemoLeftExtra;
+extern tObject DemoRightExtra,DemoLeftExtra;
 
 char DemoWBUType[]={0,WBU_MISSILE,WBU_MISSILE,WBU_REAR,WBU_ESCORT,WBU_MARKER,WBU_MISSILE};
 char DemoRearCheck[]={0,0,0,1,0,0,0};
@@ -848,7 +848,7 @@ void show_extra_views()
    	return;
     } 
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->type==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer]) {
+	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer]) {
 		if (gameOpts->render.cockpit.bGuidedInMainView)
 		 {
 			gameStates.render.nRenderingType=6+(1<<4);
@@ -873,11 +873,11 @@ void show_extra_views()
 		if (gameData.objs.missileViewer && !gameStates.render.bExternalView) {		//do missile view
 			static int mv_sig=-1;
 			if (mv_sig == -1)
-				mv_sig = gameData.objs.missileViewer->signature;
+				mv_sig = gameData.objs.missileViewer->nSignature;
 			if (/*!gameStates.app.bD1Mission && */ //allow in D1 levels
 				 gameOpts->render.cockpit.bMissileView && 
-				 (gameData.objs.missileViewer->type!=OBJ_NONE) && 
-				 (gameData.objs.missileViewer->signature == mv_sig)) {
+				 (gameData.objs.missileViewer->nType!=OBJ_NONE) && 
+				 (gameData.objs.missileViewer->nSignature == mv_sig)) {
   				gameStates.render.nRenderingType=2+(1<<4);
 				DoCockpitWindowView(1,gameData.objs.missileViewer,0,WBU_MISSILE,"MISSILE");
 				did_missile_view=1;
@@ -913,7 +913,7 @@ void show_extra_views()
 				}
 			 	break;
 			case CV_ESCORT: {
-				object *buddy;
+				tObject *buddy;
 				buddy = find_escort();
 				if (buddy == NULL) {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
@@ -932,7 +932,7 @@ void show_extra_views()
 	         gameStates.render.nRenderingType=255; // don't handle coop stuff			
 				
 				if (player!=-1 && gameData.multi.players[player].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(player) == GetTeam(gameData.multi.nLocalPlayer)))))
-					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[Coop_view_player[w]].objnum],0,WBU_COOP,gameData.multi.players[Coop_view_player[w]].callsign);
+					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[Coop_view_player[w]].nObject],0,WBU_COOP,gameData.multi.players[Coop_view_player[w]].callsign);
 				else {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
 					Cockpit_3d_view[w] = CV_NONE;
@@ -943,12 +943,12 @@ void show_extra_views()
 			case CV_MARKER: {
 				char label[10];
 				gameStates.render.nRenderingType=5+(w<<4);
-				if (Marker_viewer_num[w] == -1 || gameData.marker.object[Marker_viewer_num[w]] == -1) {
+				if (Marker_viewer_num[w] == -1 || gameData.marker.tObject[Marker_viewer_num[w]] == -1) {
 					Cockpit_3d_view[w] = CV_NONE;
 					break;
 				}
 				sprintf(label,"Marker %d",Marker_viewer_num[w]+1);
-				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.object[Marker_viewer_num[w]],0,WBU_MARKER,label);
+				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.tObject[Marker_viewer_num[w]],0,WBU_MARKER,label);
 				break;
 			}
 			case CV_RADAR_TOPDOWN:
@@ -960,7 +960,7 @@ void show_extra_views()
 					Cockpit_3d_view[w] = CV_NONE;
 				break;
 			default:
-				Int3();		//invalid window type
+				Int3();		//invalid window nType
 		}
 	}
 	gameStates.render.nRenderingType=0;
@@ -979,7 +979,7 @@ void DrawGuidedCrosshair(void);
 //			which all leads to the dd_VR_offscreen_buffer
 void GameRenderFrameMono(void)
 {
-	object *gm;
+	tObject *gm;
 
 	WINDOS (
 		dd_grs_canvas Screen_3d_window,
@@ -1019,9 +1019,9 @@ void GameRenderFrameMono(void)
 
 	gm = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
     if (gm && 
-		  gm->type==OBJ_WEAPON && 
+		  gm->nType==OBJ_WEAPON && 
 		  gm->id==GUIDEDMISS_ID && 
-		  gm->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+		  gm->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		  gameOpts->render.cockpit.bGuidedInMainView)
         no_draw_hud = 1;
 
@@ -1046,7 +1046,7 @@ void GameRenderFrameMono(void)
 
 	if ( Game_double_buffer ) {		//copy to visible screen
 		if ( !Game_cockpit_copy_code )	{
-			if ( VR_screen_flags&VRF_USE_PAGING )	{
+			if ( VR_screenFlags&VRF_USE_PAGING )	{
 				VR_current_page = !VR_current_page;
                     GrSetCurrentCanvas( &VR_screen_pages[VR_current_page] );
 					GrBmUBitBlt( VR_render_sub_buffer[0].cv_w, VR_render_sub_buffer[0].cv_h, VR_render_sub_buffer[0].cv_bitmap.bm_props.x, VR_render_sub_buffer[0].cv_bitmap.bm_props.y, 0, 0, &VR_render_sub_buffer[0].cv_bitmap, &VR_screen_pages[VR_current_page].cv_bitmap );
@@ -1103,12 +1103,12 @@ void GameRenderFrameMono(void)
 
 	gm = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
 	if (gm && 
-		 gm->type==OBJ_WEAPON && 
+		 gm->nType==OBJ_WEAPON && 
 		 gm->id==GUIDEDMISS_ID && 
-		 gm->signature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+		 gm->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";
-		object *viewer_save = gameData.objs.viewer;
+		tObject *viewer_save = gameData.objs.viewer;
 		int w,h,aw;
 
       if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT)
@@ -1235,7 +1235,7 @@ void GameRenderFrameMono(void)
 
 	if ( Game_double_buffer ) {		//copy to visible screen
 		if ( !Game_cockpit_copy_code )	{
-			if ( VR_screen_flags&VRF_USE_PAGING )	{	
+			if ( VR_screenFlags&VRF_USE_PAGING )	{	
 				VR_current_page = !VR_current_page;
 				#ifdef WINDOWS
 					DDGrSetCurrentCanvas(&dd_VR_screen_pages[VR_current_page]);
@@ -1342,9 +1342,9 @@ else
 #endif
 #if 0
 	HUDMessage (0, "%d %d %d",
-		gameData.objs.console->mtype.phys_info.velocity.x / F1_0,
-		gameData.objs.console->mtype.phys_info.velocity.y / F1_0,
-		gameData.objs.console->mtype.phys_info.velocity.z / F1_0);
+		gameData.objs.console->mType.physInfo.velocity.x / F1_0,
+		gameData.objs.console->mType.physInfo.velocity.y / F1_0,
+		gameData.objs.console->mType.physInfo.velocity.z / F1_0);
 #endif
 	con_update();
 #ifdef OGL
@@ -1423,7 +1423,7 @@ void grow_window()
 		return;
 	}
 
-	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (VR_screen_flags & VRF_ALLOW_COCKPIT)) {
+	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (VR_screenFlags & VRF_ALLOW_COCKPIT)) {
 		StartTime ();
 		return;
 		}
@@ -1546,7 +1546,7 @@ void fill_background()
 	}
 #endif
 
-	if (VR_screen_flags & VRF_USE_PAGING) {
+	if (VR_screenFlags & VRF_USE_PAGING) {
 		WINDOS(	DDGrSetCurrentCanvas(&dd_VR_screen_pages[!VR_current_page]),
 					GrSetCurrentCanvas(&VR_screen_pages[!VR_current_page])
 		);
@@ -1577,7 +1577,7 @@ void shrink_window()
 	#endif
 	
 	StopTime ();
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (VR_screen_flags & VRF_ALLOW_COCKPIT)) {
+	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (VR_screenFlags & VRF_ALLOW_COCKPIT)) {
 		Game_window_h = max_window_h;
 		Game_window_w = max_window_w;
 		//!!ToggleCockpit();
@@ -1591,7 +1591,7 @@ void shrink_window()
 		return;
 	}
 
-	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (VR_screen_flags & VRF_ALLOW_COCKPIT))
+	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (VR_screenFlags & VRF_ALLOW_COCKPIT))
 	{
 		//Game_window_w = max_window_w;
 		//Game_window_h = max_window_h;
@@ -1601,7 +1601,7 @@ void shrink_window()
 		return;
 	}
 
-	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (VR_screen_flags & VRF_ALLOW_COCKPIT)) {
+	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (VR_screenFlags & VRF_ALLOW_COCKPIT)) {
 		StartTime ();
 		return;
 		}
@@ -1725,7 +1725,7 @@ void update_cockpits(int force_redraw)
 					GrClearCanvas (BLACK_RGBA));
 
 		// In a modex mode, clear the other buffer.
-		if (grdCurCanv->cv_bitmap.bm_props.type == BM_MODEX) {
+		if (grdCurCanv->cv_bitmap.bm_props.nType == BM_MODEX) {
 			GrSetCurrentCanvas(&VR_screen_pages[VR_current_page^1]);
 			GrClearCanvas(BLACK_RGBA);
 			GrSetCurrentCanvas(&VR_screen_pages[VR_current_page]);
@@ -1835,7 +1835,7 @@ void ShowBoxedMessage(char *msg)
 	bg.x=x; bg.y=y; bg.w=w; bg.h=h;
 	if (!gameOpts->menus.nStyle) {
 #if defined(POLY_ACC)
-	   bg.bmp = GrCreateBitmap2( w+BOX_BORDER, h+BOX_BORDER, grdCurCanv->cv_bitmap.bm_props.type, NULL );
+	   bg.bmp = GrCreateBitmap2( w+BOX_BORDER, h+BOX_BORDER, grdCurCanv->cv_bitmap.bm_props.nType, NULL );
 #else
 		bg.bmp = GrCreateBitmap( w+BOX_BORDER, h+BOX_BORDER, 0 );
 #endif

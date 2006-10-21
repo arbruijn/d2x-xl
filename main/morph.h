@@ -32,10 +32,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.8  1995/01/03  20:38:44  john
- * Externed MAX_MORPH_OBJECTS
+ * Externed MAX_OBJECTS
  *
  * Revision 1.7  1994/09/26  17:28:33  matt
- * Made new multiple-object morph code work with the demo system
+ * Made new multiple-tObject morph code work with the demo system
  *
  * Revision 1.6  1994/09/26  15:40:17  matt
  * Allow multiple simultaneous morphing objects
@@ -60,41 +60,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  */
 
 
-#ifndef _MORPH_H
-#define _MORPH_H
+#ifndef _H
+#define _H
 
 #include "object.h"
 
 #define MAX_VECS 200
 
-typedef struct morph_data {
-	object *objP;                                // object which is morphing
-	vms_vector morph_vecs[MAX_VECS];
-	vms_vector morph_deltas[MAX_VECS];
-	fix morph_times[MAX_VECS];
-	int submodel_active[MAX_SUBMODELS];         // which submodels are active
-	int n_morphing_points[MAX_SUBMODELS];       // how many active points in each part
-	int submodel_startpoints[MAX_SUBMODELS];    // first point for each submodel
-	int n_submodels_active;
-	ubyte morph_save_control_type;
-	ubyte morph_save_movement_type;
-	physics_info morph_save_phys_info;
-	int Morph_sig;
-} morph_data;
+typedef struct tMorphInfo {
+	tObject			*objP;                                // tObject which is morphing
+	vmsVector		vecs [MAX_VECS];
+	vmsVector		deltas [MAX_VECS];
+	fix				times [MAX_VECS];
+	int				submodelActive [MAX_SUBMODELS];         // which submodels are active
+	int				nMorphingPoints [MAX_SUBMODELS];       // how many active points in each part
+	int				submodelStartPoints [MAX_SUBMODELS];    // first point for each submodel
+	int				nSubmodelsActive;
+	ubyte				saveControlType;
+	ubyte				saveMovementType;
+	tPhysicsInfo	savePhysInfo;
+	int				nSignature;
+} tMorphInfo;
 
 #define MAX_MORPH_OBJECTS 50
 
 #define MORPH_RATE (f1_0*3)
 
-void MorphStart(object *obj);
-void MorphDrawObject(object *obj);
+void MorphStart(tObject *obj);
+void MorphDrawObject(tObject *obj);
 
-//process the morphing object for one frame
-void DoMorphFrame(object *obj);
+//process the morphing tObject for one frame
+void DoMorphFrame(tObject *obj);
 
 //called at the start of a level
 void MorphInit();
 
-extern morph_data *MorphFindData (object *obj);
+extern tMorphInfo *MorphFindData (tObject *obj);
 
-#endif /* _MORPH_H */
+#endif /* _H */

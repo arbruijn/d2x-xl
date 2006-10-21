@@ -129,8 +129,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 #define D1_MAX_GAUGE_BMS 80   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 
-extern bitmap_index Gauges[MAX_GAUGE_BMS];      // Array of all gauge bitmaps.
-extern bitmap_index Gauges_hires[MAX_GAUGE_BMS];    // hires gauges
+extern tBitmapIndex Gauges[MAX_GAUGE_BMS];      // Array of all gauge bitmaps.
+extern tBitmapIndex Gauges_hires[MAX_GAUGE_BMS];    // hires gauges
 
 // Flags for gauges/hud stuff
 extern ubyte Reticle_on;
@@ -186,13 +186,13 @@ extern rgb player_rgb[];
 #define WBU_RADAR_HEADSUP 9
 
 // draws a 3d view into one of the cockpit windows.  win is 0 for
-// left, 1 for right.  viewer is object.  NULL object means give up
-// window user is one of the WBU_ constants.  If rear_view_flag is
+// left, 1 for right.  viewer is tObject.  NULL tObject means give up
+// window user is one of the WBU_ constants.  If rear_viewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void DoCockpitWindowView(int win, object *viewer, int rear_view_flag, int user, char *label);
+void DoCockpitWindowView(int win, tObject *viewer, int rear_viewFlag, int user, char *label);
 void FreeInventoryIcons (void);
 void HUDShowIcons (void);
-int CanSeeObject(int objnum, int bCheckObjs);
+int CanSeeObject(int nObject, int bCheckObjs);
 
 #endif /* _GAUGES_H */

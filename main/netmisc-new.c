@@ -69,7 +69,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "netmisc.h"
 #include "error.h"
 
-static ubyte nmDataBuf [IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending object data
+static ubyte nmDataBuf [IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending tObject data
 static ubyte *nmBufP = NULL;
 
 extern struct ipx_recv_data ipx_udpSrc;
@@ -119,13 +119,13 @@ ushort BECalcSegmentCheckSum (void)
 sum1 = sum2 = 0;
 for (i = 0; i < gameData.segs.nLastSegment + 1; i++) {
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].type), 1, &sum1, &sum2);
-		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].frame_num), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (&(gameData.segs.segments [i].sides [j].nFrame), 1, &sum1, &sum2);
 		s = INTEL_SHORT (WallNumI (i, j));
 		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].tmap_num);
+		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].nBaseTex);
 		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].tmap_num2);
+		s = INTEL_SHORT (gameData.segs.segments [i].sides [j].nOvlTex);
 		BEDoCheckSumCalc ((ubyte *)&s, 2, &sum1, &sum2);
 		for (k = 0; k < 4; k++) {
 			t = INTEL_INT (((int) gameData.segs.segments [i].sides [j].uvls [k].u));
@@ -174,7 +174,7 @@ BE_GET_BYTES (info->network.ipx.server, 4);
 BE_GET_BYTES (info->network.ipx.node, 6);         
 BE_GET_BYTE (info->version_major);                            
 BE_GET_BYTE (info->version_minor);                            
-BE_GET_BYTE (info->computer_type);            
+BE_GET_BYTE (info->computerType);            
 BE_GET_BYTE (info->connected);
 //BE_GET_SHORT (info->socket);
 info->socket = *((short *) (data + nmBufI));	//don't swap!
@@ -192,7 +192,7 @@ nmBufP = nmDataBuf;
 #ifdef _DEBUG
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
-BE_SET_BYTE (netPlayers.type);                            
+BE_SET_BYTE (netPlayers.nType);                            
 BE_SET_INT (netPlayers.Security);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BE_SET_BYTES (netPlayers.players [i].callsign, CALLSIGN_LEN + 1); 
@@ -200,7 +200,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BE_SET_BYTES (netPlayers.players [i].network.ipx.node, 6);      
 	BE_SET_BYTE (netPlayers.players [i].version_major);      
 	BE_SET_BYTE (netPlayers.players [i].version_minor);      
-	BE_SET_BYTE (netPlayers.players [i].computer_type);      
+	BE_SET_BYTE (netPlayers.players [i].computerType);      
 	BE_SET_BYTE (netPlayers.players [i].connected);          
 	BE_SET_SHORT (netPlayers.players [i].socket);
 	BE_SET_BYTE (netPlayers.players [i].rank);               
@@ -218,7 +218,7 @@ void BEReceiveNetPlayersPacket (ubyte *data, allNetPlayers_info *pinfo)
 	int i, nmBufI = 0;
 
 nmBufP = data;
-BE_GET_BYTE (pinfo->type);                            
+BE_GET_BYTE (pinfo->nType);                            
 BE_GET_INT (pinfo->Security);        
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BEReceiveNetPlayerInfo (data + nmBufI, pinfo->players + i);
@@ -228,7 +228,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void BESendSequencePacket (sequence_packet seq, ubyte *server, ubyte *node, ubyte *net_address)
+void BESendSequencePacket (sequence_packet seq, ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	int nmBufI = 0;
 
@@ -236,7 +236,7 @@ nmBufP = nmDataBuf;
 #ifdef _DEBUG
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
-BE_SET_BYTE (seq.type);                                       
+BE_SET_BYTE (seq.nType);                                       
 BE_SET_INT (seq.Security);                           
 nmBufI += 3;
 BE_SET_BYTES (seq.player.callsign, CALLSIGN_LEN + 1);
@@ -244,12 +244,12 @@ BE_SET_BYTES (seq.player.network.ipx.server, 4);
 BE_SET_BYTES (seq.player.network.ipx.node, 6);     
 BE_SET_BYTE (seq.player.version_major);                     
 BE_SET_BYTE (seq.player.version_minor);                     
-BE_SET_BYTE (seq.player.computer_type);                     
+BE_SET_BYTE (seq.player.computerType);                     
 BE_SET_BYTE (seq.player.connected);                         
 BE_SET_SHORT (seq.player.socket);                           
 BE_SET_BYTE (seq.player.rank);                                
-if (net_address)
-	IPXSendPacketData (nmBufP, nmBufI, server, node, net_address);
+if (netAddress)
+	IPXSendPacketData (nmBufP, nmBufI, server, node, netAddress);
 else if (!server && !node)
 	IPXSendBroadcastData (nmBufP, nmBufI);
 else
@@ -263,7 +263,7 @@ void BEReceiveSequencePacket (ubyte *data, sequence_packet *seq)
 	int nmBufI = 0;
 
 nmBufP = data;
-BE_GET_BYTE (seq->type);                        
+BE_GET_BYTE (seq->nType);                        
 BE_GET_INT (seq->Security);  
 nmBufI += 3;   // +3 for pad bytes
 BEReceiveNetPlayerInfo (data + nmBufI, &(seq->player));
@@ -271,7 +271,7 @@ BEReceiveNetPlayerInfo (data + nmBufI, &(seq->player));
 
 //------------------------------------------------------------------------------
 
-void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *net_address, int bLiteData)
+void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *netAddress, int bLiteData)
 {
 	int	i;
 	short	*ps;
@@ -281,7 +281,7 @@ nmBufP = nmDataBuf;
 #ifdef _DEBUG
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
-BE_SET_BYTE (netGame.type);                 
+BE_SET_BYTE (netGame.nType);                 
 BE_SET_INT (netGame.Security);                           
 BE_SET_BYTES (netGame.game_name, NETGAME_NAME_LEN + 1);  
 BE_SET_BYTES (netGame.mission_title, MISSION_NAME_LEN + 1);  
@@ -294,7 +294,7 @@ BE_SET_BYTE (netGame.game_status);
 BE_SET_BYTE (netGame.numplayers);           
 BE_SET_BYTE (netGame.max_numplayers);       
 BE_SET_BYTE (netGame.numconnected);         
-BE_SET_BYTE (netGame.game_flags);           
+BE_SET_BYTE (netGame.gameFlags);           
 BE_SET_BYTE (netGame.protocol_version);     
 BE_SET_BYTE (netGame.version_major);        
 BE_SET_BYTE (netGame.version_minor);        
@@ -322,30 +322,30 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 }
 #endif
 BE_SET_SHORT (netGame.segments_checksum);
-BE_SET_SHORT (netGame.team_kills [0]);
-BE_SET_SHORT (netGame.team_kills [1]);
+BE_SET_SHORT (netGame.teamKills [0]);
+BE_SET_SHORT (netGame.teamKills [1]);
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_SHORT (netGame.killed [i]);
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	BE_SET_SHORT (netGame.player_kills [i]);
+	BE_SET_SHORT (netGame.playerKills [i]);
 	}
 BE_SET_INT (netGame.KillGoal);
 BE_SET_INT (netGame.PlayTimeAllowed);
-BE_SET_INT (netGame.level_time);
-BE_SET_INT (netGame.control_invul_time);
+BE_SET_INT (netGame.levelTime);
+BE_SET_INT (netGame.control_invulTime);
 BE_SET_INT (netGame.monitor_vector);
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_INT (netGame.player_score[i]);
 	}
-BE_SET_BYTES (netGame.player_flags, MAX_PLAYERS);
+BE_SET_BYTES (netGame.playerFlags, MAX_PLAYERS);
 BE_SET_SHORT (netGame.nPacketsPerSec);
 BE_SET_BYTE (netGame.bShortPackets); 
 
 do_send:
 
-if (net_address)
-	IPXSendPacketData(nmBufP, nmBufI, server, node, net_address);
+if (netAddress)
+	IPXSendPacketData(nmBufP, nmBufI, server, node, netAddress);
 else if (!server && !node)
 	IPXSendBroadcastData(nmBufP, nmBufI);
 else
@@ -361,7 +361,7 @@ void BEReceiveNetGamePacket (ubyte *data, netgame_info *netgame, int bLiteData)
 	int	nmBufI = 0;
 
 nmBufP = data;
-BE_GET_BYTE (netgame->type);                      
+BE_GET_BYTE (netgame->nType);                      
 BE_GET_INT (netgame->Security);                  
 BE_GET_BYTES (netgame->game_name, NETGAME_NAME_LEN + 1);   
 BE_GET_BYTES (netgame->mission_title, MISSION_NAME_LEN + 1); 
@@ -374,7 +374,7 @@ BE_GET_BYTE (netgame->game_status);
 BE_GET_BYTE (netgame->numplayers);                
 BE_GET_BYTE (netgame->max_numplayers);            
 BE_GET_BYTE (netgame->numconnected);              
-BE_GET_BYTE (netgame->game_flags);                
+BE_GET_BYTE (netgame->gameFlags);                
 BE_GET_BYTE (netgame->protocol_version);          
 BE_GET_BYTE (netgame->version_major);             
 BE_GET_BYTE (netgame->version_minor);             
@@ -401,23 +401,23 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	}
 #endif
 BE_GET_SHORT (netgame->segments_checksum);         
-BE_GET_SHORT (netgame->team_kills [0]);             
-BE_GET_SHORT (netgame->team_kills [1]);             
+BE_GET_SHORT (netgame->teamKills [0]);             
+BE_GET_SHORT (netgame->teamKills [1]);             
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_SHORT (netgame->killed [i]);             
 	}
 for (i = 0; i < MAX_PLAYERS; i++) {
-	BE_GET_SHORT (netgame->player_kills [i]);       
+	BE_GET_SHORT (netgame->playerKills [i]);       
 	}
 BE_GET_INT (netgame->KillGoal);                  
 BE_GET_INT (netgame->PlayTimeAllowed);           
-BE_GET_INT (netgame->level_time);                
-BE_GET_INT (netgame->control_invul_time);        
+BE_GET_INT (netgame->levelTime);                
+BE_GET_INT (netgame->control_invulTime);        
 BE_GET_INT (netgame->monitor_vector);            
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_INT (netgame->player_score [i]);       
 	}
-BE_GET_BYTES (netgame->player_flags, MAX_PLAYERS);
+BE_GET_BYTES (netgame->playerFlags, MAX_PLAYERS);
 BE_GET_SHORT (netgame->nPacketsPerSec);             
 BE_GET_BYTE (netgame->bShortPackets);              
 }
@@ -436,7 +436,7 @@ BE_GET_BYTE (netgame->bShortPackets);
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]._m = INTEL_INT (*((int *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))));
 	
-void BESendExtraGameInfo (ubyte *server, ubyte *node, ubyte *net_address)
+void BESendExtraGameInfo (ubyte *server, ubyte *node, ubyte *netAddress)
 {
 nmBufP = nmDataBuf;
 memcpy (nmBufP, &extraGameInfo [1], sizeof (extraGameInfo [0]));
@@ -445,8 +445,8 @@ EGI_INTEL_SHORT_2BUF (entropy.nEnergyFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldDamageRate);
 EGI_INTEL_INT_2BUF (nSpawnDelay);
-if (net_address)
-	IPXSendPacketData (nmBufP, sizeof (extraGameInfo [0]), server, node, net_address);
+if (netAddress)
+	IPXSendPacketData (nmBufP, sizeof (extraGameInfo [0]), server, node, netAddress);
 else if (!server && !node)
 	IPXSendBroadcastData (nmBufP, sizeof (extraGameInfo [0]));
 else
@@ -468,88 +468,88 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 
 //------------------------------------------------------------------------------
 
-void BESwapObject ( object *objP)
+void BESwapObject ( tObject *objP)
 {
-// swap the short and int entries for this object
-objP->signature = INTEL_INT (objP->signature);
+// swap the short and int entries for this tObject
+objP->nSignature = INTEL_INT (objP->nSignature);
 objP->next = INTEL_SHORT (objP->next);
 objP->prev = INTEL_SHORT (objP->prev);
-objP->segnum = INTEL_SHORT (objP->segnum);
+objP->nSegment = INTEL_SHORT (objP->nSegment);
 INTEL_VECTOR (&objP->pos);
 INTEL_MATRIX (&objP->orient);
 objP->size = INTEL_INT (objP->size);
 objP->shields = INTEL_INT (objP->shields);
 INTEL_VECTOR (&objP->last_pos);
 objP->lifeleft = INTEL_INT (objP->lifeleft);
-switch (objP->movement_type) {
+switch (objP->movementType) {
 	case MT_PHYSICS:
-		INTEL_VECTOR (&objP->mtype.phys_info.velocity);
-		INTEL_VECTOR (&objP->mtype.phys_info.thrust);
-		objP->mtype.phys_info.mass = INTEL_INT (objP->mtype.phys_info.mass);
-		objP->mtype.phys_info.drag = INTEL_INT (objP->mtype.phys_info.drag);
-		objP->mtype.phys_info.brakes = INTEL_INT (objP->mtype.phys_info.brakes);
-		INTEL_VECTOR (&objP->mtype.phys_info.rotvel);
-		INTEL_VECTOR (&objP->mtype.phys_info.rotthrust);
-		objP->mtype.phys_info.turnroll = INTEL_INT (objP->mtype.phys_info.turnroll);
-		objP->mtype.phys_info.flags = INTEL_SHORT (objP->mtype.phys_info.flags);
+		INTEL_VECTOR (&objP->mType.physInfo.velocity);
+		INTEL_VECTOR (&objP->mType.physInfo.thrust);
+		objP->mType.physInfo.mass = INTEL_INT (objP->mType.physInfo.mass);
+		objP->mType.physInfo.drag = INTEL_INT (objP->mType.physInfo.drag);
+		objP->mType.physInfo.brakes = INTEL_INT (objP->mType.physInfo.brakes);
+		INTEL_VECTOR (&objP->mType.physInfo.rotVel);
+		INTEL_VECTOR (&objP->mType.physInfo.rotThrust);
+		objP->mType.physInfo.turnRoll = INTEL_INT (objP->mType.physInfo.turnRoll);
+		objP->mType.physInfo.flags = INTEL_SHORT (objP->mType.physInfo.flags);
 		break;
 
 	case MT_SPINNING:
-		INTEL_VECTOR (&objP->mtype.spin_rate);
+		INTEL_VECTOR (&objP->mType.spinRate);
 		break;
 	}
 
-switch (objP->control_type) {
+switch (objP->controlType) {
 	case CT_WEAPON:
-		objP->ctype.laser_info.parent_type = INTEL_SHORT (objP->ctype.laser_info.parent_type);
-		objP->ctype.laser_info.parent_num = INTEL_SHORT (objP->ctype.laser_info.parent_num);
-		objP->ctype.laser_info.parent_signature = INTEL_INT (objP->ctype.laser_info.parent_signature);
-		objP->ctype.laser_info.creation_time = INTEL_INT (objP->ctype.laser_info.creation_time);
-		objP->ctype.laser_info.last_hitobj = INTEL_SHORT (objP->ctype.laser_info.last_hitobj);
-		objP->ctype.laser_info.track_goal = INTEL_SHORT (objP->ctype.laser_info.track_goal);
-		objP->ctype.laser_info.multiplier = INTEL_INT (objP->ctype.laser_info.multiplier);
+		objP->cType.laserInfo.parentType = INTEL_SHORT (objP->cType.laserInfo.parentType);
+		objP->cType.laserInfo.nParentObj = INTEL_SHORT (objP->cType.laserInfo.nParentObj);
+		objP->cType.laserInfo.nParentSig = INTEL_INT (objP->cType.laserInfo.nParentSig);
+		objP->cType.laserInfo.creationTime = INTEL_INT (objP->cType.laserInfo.creationTime);
+		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT (objP->cType.laserInfo.nLastHitObj);
+		objP->cType.laserInfo.nTrackGoal = INTEL_SHORT (objP->cType.laserInfo.nTrackGoal);
+		objP->cType.laserInfo.multiplier = INTEL_INT (objP->cType.laserInfo.multiplier);
 		break;
 
 	case CT_EXPLOSION:
-		objP->ctype.expl_info.spawn_time = INTEL_INT (objP->ctype.expl_info.spawn_time);
-		objP->ctype.expl_info.delete_time = INTEL_INT (objP->ctype.expl_info.delete_time);
-		objP->ctype.expl_info.delete_objnum = INTEL_SHORT (objP->ctype.expl_info.delete_objnum);
-		objP->ctype.expl_info.attach_parent = INTEL_SHORT (objP->ctype.expl_info.attach_parent);
-		objP->ctype.expl_info.prev_attach = INTEL_SHORT (objP->ctype.expl_info.prev_attach);
-		objP->ctype.expl_info.next_attach = INTEL_SHORT (objP->ctype.expl_info.next_attach);
+		objP->cType.explInfo.nSpawnTime = INTEL_INT (objP->cType.explInfo.nSpawnTime);
+		objP->cType.explInfo.nDeleteTime = INTEL_INT (objP->cType.explInfo.nDeleteTime);
+		objP->cType.explInfo.nDeleteObj = INTEL_SHORT (objP->cType.explInfo.nDeleteObj);
+		objP->cType.explInfo.nAttachParent = INTEL_SHORT (objP->cType.explInfo.nAttachParent);
+		objP->cType.explInfo.nPrevAttach = INTEL_SHORT (objP->cType.explInfo.nPrevAttach);
+		objP->cType.explInfo.nNextAttach = INTEL_SHORT (objP->cType.explInfo.nNextAttach);
 		break;
 
 	case CT_AI:
-		objP->ctype.ai_info.hide_segment = INTEL_SHORT (objP->ctype.ai_info.hide_segment);
-		objP->ctype.ai_info.hide_index = INTEL_SHORT (objP->ctype.ai_info.hide_index);
-		objP->ctype.ai_info.path_length = INTEL_SHORT (objP->ctype.ai_info.path_length);
-		objP->ctype.ai_info.danger_laser_num = INTEL_SHORT (objP->ctype.ai_info.danger_laser_num);
-		objP->ctype.ai_info.danger_laser_signature = INTEL_INT (objP->ctype.ai_info.danger_laser_signature);
-		objP->ctype.ai_info.dying_start_time = INTEL_INT (objP->ctype.ai_info.dying_start_time);
+		objP->cType.aiInfo.hide_segment = INTEL_SHORT (objP->cType.aiInfo.hide_segment);
+		objP->cType.aiInfo.hide_index = INTEL_SHORT (objP->cType.aiInfo.hide_index);
+		objP->cType.aiInfo.path_length = INTEL_SHORT (objP->cType.aiInfo.path_length);
+		objP->cType.aiInfo.danger_laser_num = INTEL_SHORT (objP->cType.aiInfo.danger_laser_num);
+		objP->cType.aiInfo.danger_laser_signature = INTEL_INT (objP->cType.aiInfo.danger_laser_signature);
+		objP->cType.aiInfo.dying_startTime = INTEL_INT (objP->cType.aiInfo.dying_startTime);
 		break;
 
 	case CT_LIGHT:
-		objP->ctype.light_info.intensity = INTEL_INT (objP->ctype.light_info.intensity);
+		objP->cType.lightInfo.intensity = INTEL_INT (objP->cType.lightInfo.intensity);
 		break;
 
 	case CT_POWERUP:
-		objP->ctype.powerup_info.count = INTEL_INT (objP->ctype.powerup_info.count);
-		objP->ctype.powerup_info.creation_time = INTEL_INT (objP->ctype.powerup_info.creation_time);
+		objP->cType.powerupInfo.count = INTEL_INT (objP->cType.powerupInfo.count);
+		objP->cType.powerupInfo.creationTime = INTEL_INT (objP->cType.powerupInfo.creationTime);
 		break;
 	}
 
-switch (objP->render_type) {
+switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
 
-		objP->rtype.pobj_info.model_num = INTEL_INT (objP->rtype.pobj_info.model_num);
+		objP->rType.polyObjInfo.nModel = INTEL_INT (objP->rType.polyObjInfo.nModel);
 
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			INTEL_ANGVEC (objP->rtype.pobj_info.anim_angles + i);
-		objP->rtype.pobj_info.subobj_flags = INTEL_INT (objP->rtype.pobj_info.subobj_flags);
-		objP->rtype.pobj_info.tmap_override = INTEL_INT (objP->rtype.pobj_info.tmap_override);
-		objP->rtype.pobj_info.alt_textures = INTEL_INT (objP->rtype.pobj_info.alt_textures);
+			INTEL_ANGVEC (objP->rType.polyObjInfo.animAngles + i);
+		objP->rType.polyObjInfo.nSubObjFlags = INTEL_INT (objP->rType.polyObjInfo.nSubObjFlags);
+		objP->rType.polyObjInfo.nTexOverride = INTEL_INT (objP->rType.polyObjInfo.nTexOverride);
+		objP->rType.polyObjInfo.nAltTextures = INTEL_INT (objP->rType.polyObjInfo.nAltTextures);
 		break;
 	}
 
@@ -558,8 +558,8 @@ switch (objP->render_type) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		objP->rtype.vclip_info.nClipIndex = INTEL_INT (objP->rtype.vclip_info.nClipIndex);
-		objP->rtype.vclip_info.xFrameTime = INTEL_INT (objP->rtype.vclip_info.xFrameTime);
+		objP->rType.vClipInfo.nClipIndex = INTEL_INT (objP->rType.vClipInfo.nClipIndex);
+		objP->rType.vClipInfo.xFrameTime = INTEL_INT (objP->rType.vClipInfo.xFrameTime);
 		break;
 
 	case RT_LASER:

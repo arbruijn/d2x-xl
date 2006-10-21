@@ -132,31 +132,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Got rid of externs in source (non-header) files
  *
  * Revision 1.15  1994/05/13  20:27:39  john
- * Version II of John's new object code.
+ * Version II of John's new tObject code.
  *
  * Revision 1.14  1994/04/20  15:06:47  john
  * Neatend laser code and fixed some laser bugs.
  *
  * Revision 1.13  1994/04/01  13:35:15  matt
- * Cleaned up laser code a bit; moved some code here object.c to laser.c
+ * Cleaned up laser code a bit; moved some code here tObject.c to laser.c
  *
  * Revision 1.12  1994/04/01  11:14:24  yuan
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
- * Hostages and powerups are implemented in the object system,
+ * Hostages and powerups are implemented in the tObject system,
  * just need to finish function call to "affect" player.
  *
  * Revision 1.11  1994/03/31  09:10:09  matt
  * Added #define to turn crosshair off
  *
  * Revision 1.10  1994/02/17  11:33:15  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.9  1994/01/06  11:56:01  john
  * Made lasers be lines, not purple blobs
  *
  * Revision 1.8  1994/01/05  10:53:35  john
- * New object code by John.
+ * New tObject code by John.
  *
  * Revision 1.7  1993/12/08  14:21:36  john
  * Added ExplodeObject
@@ -271,51 +271,51 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTime
 
-void RenderLaser(object *obj);
-void find_goal_texture(object * obj, ubyte type, int gun_num, int make_sound, int harmless_flag);
-void LaserDoWeaponSequence(object *obj);
-void CreateFlare(object *obj);
+void RenderLaser(tObject *obj);
+void find_goal_texture(tObject * obj, ubyte nType, int gun_num, int makeSound, int harmlessFlag);
+void LaserDoWeaponSequence(tObject *obj);
+void CreateFlare(tObject *obj);
 int LasersAreRelated(int o1, int o2);
-int LaserPlayerFireSpreadDelay (object *objP, ubyte laser_type, int gun_num, fix spreadr, 
-										  fix spreadu, fix delay_time, int make_sound, int harmless);
+int LaserPlayerFireSpreadDelay (tObject *objP, ubyte laserType, int gun_num, fix spreadr, 
+										  fix spreadu, fix delayTime, int makeSound, int harmless);
 
 int LaserFireLocalPlayer(void);
 void DoMissileFiring(int do_autoselect);
 void NetMissileFiring(int player, int weapon, int flags);
 
-int CreateNewLaser(vms_vector * direction, vms_vector * position, short segnum, short parent, ubyte type, int make_sound);
+int CreateNewLaser(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
 
-// Fires a laser-type weapon (a Primary weapon)
-// Fires from object objnum, weapon type weapon_id.
-// Assumes that it is firing from a player object, so it knows which
+// Fires a laser-nType weapon (a Primary weapon)
+// Fires from tObject nObject, weapon nType weapon_id.
+// Assumes that it is firing from a player tObject, so it knows which
 // gun to fire from.
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,
 // such as vulcan or plasma are fired.
-extern int LaserFireObject(short objnum, ubyte weapon_id, int level, int flags, int nfires);
+extern int LaserFireObject(short nObject, ubyte weapon_id, int level, int flags, int nfires);
 
 // Easier to call than CreateNewLaser because it determines the
-// segment containing the firing point and deals with it being stuck
-// in an object or through a wall.
-// Fires a laser of type "weapon_type" from an object (parent) in the
+// tSegment containing the firing point and deals with it being stuck
+// in an tObject or through a wall.
+// Fires a laser of nType "weaponType" from an tObject (parent) in the
 // direction "direction" from the position "position"
-// Returns object number of laser fired or -1 if not possible to fire
+// Returns tObject number of laser fired or -1 if not possible to fire
 // laser.
-int CreateNewLaserEasy(vms_vector * direction, vms_vector * position, short parent, ubyte weapon_type, int make_sound);
+int CreateNewLaserEasy(vmsVector * direction, vmsVector * position, short parent, ubyte weaponType, int makeSound);
 
-// creates a weapon object
-int CreateWeaponObject(ubyte weapon_type, short segnum,vms_vector *position);
+// creates a weapon tObject
+int CreateWeaponObject(ubyte weaponType, short nSegment,vmsVector *position);
 
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
 
-extern void CreateSmartChildren(object *objp, int count);
-extern int ObjectToObjectVisibility(object *obj1, object *obj2, int trans_type);
+extern void CreateSmartChildren(tObject *objp, int count);
+extern int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
 
 typedef struct muzzle_info {
-	fix         create_time;
-	short       segnum;
-	vms_vector  pos;
+	fix         createTime;
+	short       nSegment;
+	vmsVector  pos;
 } muzzle_info;
 
 // Omega cannon stuff.
@@ -325,16 +325,16 @@ extern fix xOmegaCharge;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int LaserPlayerFireSpread (object *objP, ubyte laser_type, int gun_num, fix spreadr, fix spreadu, int make_sound, int harmless)
+static int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int gun_num, fix spreadr, fix spreadu, int makeSound, int harmless)
 {
-return LaserPlayerFireSpreadDelay (objP, laser_type, gun_num, spreadr, spreadu, 0, make_sound, harmless);
+return LaserPlayerFireSpreadDelay (objP, laserType, gun_num, spreadr, spreadu, 0, makeSound, harmless);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int LaserPlayerFire (object *objP, ubyte laser_type, int gun_num, int make_sound, int harmless)
+static int LaserPlayerFire (tObject *objP, ubyte laserType, int gun_num, int makeSound, int harmless)
 {
-return LaserPlayerFireSpread (objP, laser_type, gun_num, 0, 0, make_sound, harmless);
+return LaserPlayerFireSpread (objP, laserType, gun_num, 0, 0, makeSound, harmless);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

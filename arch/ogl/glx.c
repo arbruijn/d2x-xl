@@ -100,7 +100,7 @@ void set_mwm_border( Display *dpy, Window w, unsigned long dflags,unsigned long 
 
 	/* not sure this is correct, seems to work, XA_WM_HINTS didn't work */   proptype = prop;
 
-	XChangeProperty( dpy, w, /* display, window */ prop, proptype, /* property, type */ 
+	XChangeProperty( dpy, w, /* display, window */ prop, proptype, /* property, nType */ 
 			32, /* format: 32-bit datums */ PropModeReplace, /* mode */
 			(unsigned char *) &motif_hints, /* data */ PROP_MOTIF_WM_HINTS_ELEMENTS /* nelements */);
 }

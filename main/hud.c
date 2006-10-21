@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.23  1994/12/15  13:04:34  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
+ * Replace gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
  *
  * Revision 1.22  1994/12/13  12:55:12  mike
  * move press any key to continue pszMsg when you are dead to bottom of window.
@@ -187,7 +187,7 @@ int bExtraClear=0;
 extern int max_window_h;
 extern int max_window_w;
 
-extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int double_flag);
+extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
 
@@ -328,7 +328,7 @@ if (pMsgs->nMessages > 0) {
 			GrSetCurFont (SMALL_FONT);
 			GrGetStringSize (pszMsg, &w, &h, &aw);
 			ClearBackgroundMessages ();
-			if (grdCurCanv->cv_bitmap.bm_props.type == BM_MODEX) {
+			if (grdCurCanv->cv_bitmap.bm_props.nType == BM_MODEX) {
 				WIN (Int3 ());    // No no no no ....
 				ycrd -= h;
 				h *= 2;
@@ -372,11 +372,11 @@ if (pMsgs->nMessages > 0) {
 		} else
 			yStart = SMALL_FONT->ft_h / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			object *gmP = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
+			tObject *gmP = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
 			if (gmP && 
-				 (gmP->type == OBJ_WEAPON) && 
+				 (gmP->nType == OBJ_WEAPON) && 
 				 (gmP->id == GUIDEDMISS_ID) &&
-			    (gmP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]))
+			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]))
 				yStart += SMALL_FONT->ft_h + 3;
 			}
 
@@ -403,7 +403,7 @@ if (pMsgs->nMessages > 0) {
 		}
 	}
 #ifndef WINDOWS
-else if (GetCurrentGameScreen ()->cv_bitmap.bm_props.type == BM_MODEX) {
+else if (GetCurrentGameScreen ()->cv_bitmap.bm_props.nType == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
 		nModexHUDMsgs--;

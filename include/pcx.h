@@ -50,7 +50,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int pcx_get_dimensions( char *filename, int *width, int *height);
 
-extern int pcx_read_bitmap( char * filename, grs_bitmap * bmp, int bitmap_type, int bD1Mission );
+extern int pcx_read_bitmap( char * filename, grs_bitmap * bmp, int bitmapType, int bD1Mission );
 
 // Writes the bitmap bmp to filename, using palette. Returns error code.
 

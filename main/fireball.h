@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.13  1995/01/17  12:14:38  john
- * Made walls, object explosion vclips load at level start.
+ * Made walls, tObject explosion vclips load at level start.
  *
  * Revision 1.12  1995/01/13  15:41:52  rob
  * Added prototype for MaybeReplacePowerupWithEnergy
@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up/change badass explosion calls
  *
  * Revision 1.8  1994/09/07  16:00:34  mike
- * Add object pointer to parameter list of ObjectCreateBadassExplosion.
+ * Add tObject pointer to parameter list of ObjectCreateBadassExplosion.
  *
  * Revision 1.7  1994/09/02  14:00:39  matt
  * Simplified ExplodeObject() & mutliple-stage explosions
@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added multiple-stage explosions
  *
  * Revision 1.2  1994/02/17  11:33:32  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.1  1994/02/16  22:41:15  matt
  * Initial revision
@@ -82,42 +82,42 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CHECK_DROP	2
 #define EXEC_DROP		3
 
-object *ObjectCreateExplosion(short segnum, vms_vector *position, fix size, ubyte vclip_type);
-object *ObjectCreateMuzzleFlash(short segnum, vms_vector *position, fix size, ubyte vclip_type);
+tObject *ObjectCreateExplosion(short nSegment, vmsVector *position, fix size, ubyte vclipType);
+tObject *ObjectCreateMuzzleFlash(short nSegment, vmsVector *position, fix size, ubyte vclipType);
 
-object *ObjectCreateBadassExplosion(object *objp, short segnum,
-		vms_vector *position, fix size, ubyte vclip_type,
+tObject *ObjectCreateBadassExplosion(tObject *objp, short nSegment,
+		vmsVector *position, fix size, ubyte vclipType,
 		fix maxdamage, fix maxdistance, fix maxforce, short parent);
 
 // blows up a badass weapon, creating the badass explosion
-// return the explosion object
-object *ExplodeBadassWeapon(object *obj,vms_vector *pos);
+// return the explosion tObject
+tObject *ExplodeBadassWeapon(tObject *obj,vmsVector *pos);
 
 // blows up the player with a badass explosion
-// return the explosion object
-object *ExplodeBadassPlayer(object *obj);
+// return the explosion tObject
+tObject *ExplodeBadassPlayer(tObject *obj);
 
-void ExplodeObject(object *obj,fix delay_time);
-void DoExplosionSequence(object *obj);
-void DoDebrisFrame(object *obj);      // deal with debris for this frame
+void ExplodeObject(tObject *obj,fix delayTime);
+void DoExplosionSequence(tObject *obj);
+void DoDebrisFrame(tObject *obj);      // deal with debris for this frame
 
-void DrawFireball(object *obj);
+void DrawFireball(tObject *obj);
 
-void ExplodeWall(short segnum, short sidenum);
+void ExplodeWall(short nSegment, short nSide);
 void DoExplodingWallFrame(void);
 void InitExplodingWalls(void);
-int MaybeDropNetPowerup(short objnum, int powerup_type, int nDropState);
+int MaybeDropNetPowerup(short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
-void MaybeReplacePowerupWithEnergy(object *del_obj);
+void MaybeReplacePowerupWithEnergy(tObject *del_obj);
 void DropPowerups();
 
-short GetExplosionVClip(object *obj, int stage);
-int DropPowerup(ubyte type, ubyte id, short owner, int num, vms_vector *init_vel, vms_vector *pos, short segnum);
+short GetExplosionVClip(tObject *obj, int stage);
+int DropPowerup(ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment);
 
-// creates afterburner blobs behind the specified object
-void DropAfterburnerBlobs(object *obj, int count, fix size_scale, fix lifetime, object *pParent, int bThruster);
+// creates afterburner blobs behind the specified tObject
+void DropAfterburnerBlobs(tObject *obj, int count, fix size_scale, fix lifetime, tObject *pParent, int bThruster);
 
-int ReturnFlagHome (object *pObj);
+int ReturnFlagHome (tObject *pObj);
 int CountRooms (void);
 int GatherFlagGoals (void);
 int CheckConquerRoom (xsegment *segP);

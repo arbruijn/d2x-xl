@@ -189,7 +189,7 @@ if (gameStates.render.color.bLightMapsOk) {
 
 //------------------------------------------------------------------------------
 
-inline void FindOffset (vms_vector *outvec, vms_vector vec1, vms_vector vec2, double f_offset)
+inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, double f_offset)
 {
 outvec->x = (fix) (f_offset * (vec2.x - vec1.x)); 
 outvec->y = (fix) (f_offset * (vec2.y - vec1.y)); 
@@ -299,8 +299,8 @@ int CountLights (void)
 {
 	int		nLights = 0;
 	short		segNum, sideNum; 
-	segment	*segP;
-	side		*sideP;
+	tSegment	*segP;
+	tSide		*sideP;
 
 if (!(gameOpts->render.color.bUseLightMaps && gameStates.render.color.bLightMapsOk))
 	return 0;
@@ -316,8 +316,7 @@ for (segNum = 0, segP = gameData.segs.segments;
 			 !IS_WALL (WallNumI (segNum, sideNum)))
 			continue; 	//skip open sides
 #endif
-		if (IsLight (sideP->tmap_num & 0x3fff) ||
-			 IsLight (sideP->tmap_num2 & 0x3fff) ||
+		if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex) ||
 			 (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum][sideNum].index)) {
 			nLights++;
 #ifdef _DEBUG
@@ -337,7 +336,7 @@ double SideRad (int segNum, int sideNum)
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
 	short			sideVerts [4];
-	vms_vector	*v;
+	vmsVector	*v;
 
 GetSideVerts (sideVerts, segNum, sideNum); 
 xMin = yMin = zMin = 1e300;
@@ -721,14 +720,14 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++)	{
 #endif
 		bIsLight = 0; 
 		sideRad = 0;
-		tMapNum = gameData.segs.segments [segNum].sides [sideNum].tmap_num2 & 0x3fff;
+		tMapNum = gameData.segs.segments [segNum].sides [sideNum].nOvlTex;
 		if (GetColor (tMapNum, &tempLight)) {
 			bIsLight = 1;
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
 			}
 		//then look at the base - will override an overlaying lightopTex.
-		tMapNum = gameData.segs.segments [segNum].sides [sideNum].tmap_num & 0x3fff;
+		tMapNum = gameData.segs.segments [segNum].sides [sideNum].nBaseTex;
 		if (GetColor (tMapNum, &tempLight)) {
 			bIsLight = 1;
 			//if (IsBigLight (tMapNum))
@@ -767,7 +766,7 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++)	{
 			lightData [numLightMaps].range = tempLight.range; 
 			lightData [numLightMaps].refside = segNum * 6 + sideNum; 
 
-			//find light direction, currently based on first 3 points of side, not always right.
+			//find light direction, currently based on first 3 points of tSide, not always right.
 			VmVecNormal (
 				&lightData [numLightMaps].dir, 
 				gameData.segs.vertices + sideVerts [0], 
@@ -816,8 +815,8 @@ for (i = 512; i; i--, brightMap++)
 
 void ComputeLightMaps (int segNum)
 {
-	segment		*segP; 
-	side			*sideP; 
+	tSegment		*segP; 
+	tSide			*sideP; 
 	tLightMap	*lmapP; 
 	int			sideNum, lastSeg, mapNum; 
 	short			sideVerts [4]; 
@@ -840,7 +839,7 @@ void ComputeLightMaps (int segNum)
 #endif
 	int			l, s, nMethod, sideRad; 
 	GLfloat		tempBright = 0; 
-	vms_vector	OffsetU, OffsetV, pixelPos [Xs][Ys], *pPixelPos, rayVec, faceNorm, sidePos; 
+	vmsVector	OffsetU, OffsetV, pixelPos [Xs][Ys], *pPixelPos, rayVec, faceNorm, sidePos; 
 	double		brightPrct, pixelDist; 
 	double		delta; 
 	double		f_offset [8] = {
@@ -885,7 +884,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-		nMethod = (sideP->type == SIDE_IS_QUAD) || (sideP->type == SIDE_IS_TRI_02);
+		nMethod = (sideP->nType == SIDE_IS_QUAD) || (sideP->nType == SIDE_IS_TRI_02);
 		pPixelPos = &pixelPos [0][0];
 		for (x = 0; x < Xs; x++) {
 			for (y = 0; y < Ys; y++, pPixelPos++) {
@@ -965,7 +964,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 		for (l = 0, lmapP = lightData; l < numLightMaps; l++, lmapP++) {
 #if LMAP_REND2TEX
 			nMinDist = 0x7FFFFFFF;
-			// get the distances of all 4 side corners to the light source center 
+			// get the distances of all 4 tSide corners to the light source center 
 			// scaled by the light source range
 			for (i = 0; i < 4; i++) {
 				int svi = sideVerts [i];

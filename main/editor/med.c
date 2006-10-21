@@ -93,7 +93,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up game sequencing.
  * 
  * Revision 1.174  1994/08/16  18:11:04  yuan
- * Maded C place you in the center of a segment.
+ * Maded C place you in the center of a tSegment.
  * 
  * Revision 1.173  1994/08/10  19:55:05  john
  * Changed font stuff.
@@ -106,7 +106,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed problem I said I fixed last time
  * 
  * Revision 1.170  1994/08/04  00:27:57  matt
- * When viewing a wall, update the gameData.objs.objects segnum if moved out of the segment
+ * When viewing a wall, update the gameData.objs.objects nSegment if moved out of the tSegment
  * 
  * Revision 1.169  1994/08/02  14:18:12  mike
  * Clean up dialog boxes.
@@ -133,7 +133,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Don't re-init player stats when going from editor -> game
  * 
  * Revision 1.161  1994/07/21  12:47:53  mike
- * Add tilde key functionality for object movement.
+ * Add tilde key functionality for tObject movement.
  * 
  * Revision 1.160  1994/07/18  10:44:55  mike
  * One-click access to keypads.
@@ -158,7 +158,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Init stats when you go to game from editor
  * 
  * Revision 1.153  1994/06/21  12:57:14  yuan
- * Remove center from segment function added to menu.
+ * Remove center from tSegment function added to menu.
  * 
  */
 
@@ -255,7 +255,7 @@ grs_canvas *Pad_text_canvas;		// Keypad text
 grs_font *editor_font=NULL;
 
 //where the editor is looking
-vms_vector Ed_view_target={0,0,0};
+vmsVector Ed_view_target={0,0,0};
 
 int gamestate_not_restored = 0;
 
@@ -318,7 +318,7 @@ void print_diagnostic( char message[DIAGNOSTIC_MESSAGE_MAX] ) {
 
 static char status_line[DIAGNOSTIC_MESSAGE_MAX];
 
-struct tm	Editor_status_last_time;
+struct tm	Editor_status_lastTime;
 
 void editor_status( const char *format, ... )
 {
@@ -330,7 +330,7 @@ void editor_status( const char *format, ... )
 
 	print_status_bar(status_line);
 
-	Editor_status_last_time = Editor_time_of_day;
+	Editor_status_lastTime = EditorTime_of_day;
 
 }
 
@@ -346,10 +346,10 @@ void editor_status( const char *format, ... )
 
 void clear_editor_status(void)
 {
-	int cur_time = Editor_time_of_day.tm_hour * 3600 + Editor_time_of_day.tm_min*60 + Editor_time_of_day.tm_sec;
-	int erase_time = Editor_status_last_time.tm_hour * 3600 + Editor_status_last_time.tm_min*60 + Editor_status_last_time.tm_sec + EDITOR_STATUS_MESSAGE_DURATION;
+	int curTime = EditorTime_of_day.tm_hour * 3600 + EditorTime_of_day.tm_min*60 + EditorTime_of_day.tm_sec;
+	int eraseTime = Editor_status_lastTime.tm_hour * 3600 + Editor_status_lastTime.tm_min*60 + Editor_status_lastTime.tm_sec + EDITOR_STATUS_MESSAGE_DURATION;
 
-	if (cur_time > erase_time) {
+	if (curTime > eraseTime) {
 		int	i;
 		char	message[DIAGNOSTIC_MESSAGE_MAX];
 
@@ -358,7 +358,7 @@ void clear_editor_status(void)
 
 		message[i] = 0;
 		print_status_bar(message);
-		Editor_status_last_time.tm_hour = 99;
+		Editor_status_lastTime.tm_hour = 99;
 	}
 }
 
@@ -429,14 +429,14 @@ int	GotoGameCommon(int mode) {
 //@@
 //@@	gameData.multi.playerInit.pos = Player->pos;
 //@@	gameData.multi.playerInit.orient = Player->orient;
-//@@	gameData.multi.playerInit.segnum = Player->segnum;	
+//@@	gameData.multi.playerInit.nSegment = Player->nSegment;	
 	
 // -- must always save gamesave.sav because the restore-gameData.objs.objects code relies on it
 // -- that code could be made smarter and use the original file, if appropriate.
 //	if (mine_changed) 
 	if (gamestate_not_restored == 0) {
 		gamestate_not_restored = 1;
-		save_level("GAMESAVE.LVL");
+		saveLevel("GAMESAVE.LVL");
 		editor_status("Gamestate saved.\n");
 	}
 
@@ -532,7 +532,7 @@ void init_editor()
 	ui_pad_read( 1, "segsize.pad" );
 	ui_pad_read( 2, "curve.pad" );
 	ui_pad_read( 3, "texture.pad" );
-	ui_pad_read( 4, "object.pad" );
+	ui_pad_read( 4, "tObject.pad" );
 	ui_pad_read( 5, "objmov.pad" );
 	ui_pad_read( 6, "group.pad" );
 	ui_pad_read( 7, "lighting.pad" );
@@ -563,12 +563,12 @@ int ShowAbout()
 	return 0;
 }
 
-void MovePlayerToSegment(segment *seg,int side);
+void MovePlayerToSegment(tSegment *seg,int tSide);
 
 int SetPlayerFromCurseg()
 {
 	MovePlayerToSegment(Cursegp,Curside);
-	Update_flags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
@@ -612,41 +612,41 @@ int fuelcen_delete_from_curseg() {
 }
 
 
-//@@//this routine places the viewer in the center of the side opposite to curside,
+//@@//this routine places the viewer in the center of the tSide opposite to curside,
 //@@//with the view toward the center of curside
 //@@int SetPlayerFromCursegMinusOne()
 //@@{
-//@@	vms_vector vp;
+//@@	vmsVector vp;
 //@@
 //@@//	int newseg,newside;
 //@@//	get_previous_segment(SEG_PTR_2_NUM(Cursegp),Curside,&newseg,&newside);
 //@@//	MovePlayerToSegment(&gameData.segs.segments[newseg],newside);
 //@@
-//@@	med_compute_center_point_on_side(&Player->obj_position,Cursegp,sideOpposite[Curside]);
+//@@	med_compute_center_point_on_side(&Player->tObjPosition,Cursegp,sideOpposite[Curside]);
 //@@	med_compute_center_point_on_side(&vp,Cursegp,Curside);
 //@@	VmVecDec(&vp,&Player->position);
 //@@	VmVector2Matrix(&Player->orient,&vp,NULL,NULL);
 //@@
 //@@	Player->seg = SEG_PTR_2_NUM(Cursegp);
 //@@
-//@@	Update_flags |= UF_GAME_VIEW_CHANGED;
+//@@	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 //@@	return 1;
 //@@}
 
 //this constant determines how much of the window will be occupied by the
-//viewed side when SetPlayerFromCursegMinusOne() is called.  It actually
+//viewed tSide when SetPlayerFromCursegMinusOne() is called.  It actually
 //determine how from from the center of the window the farthest point will be
 #define SIDE_VIEW_FRAC (f1_0*8/10)	//80%
 
 
-void move_player_2_segment_and_rotate(segment *seg,int side)
+void move_player_2_segment_and_rotate(tSegment *seg,int tSide)
 {
-	vms_vector vp;
-	vms_vector	upvec;
+	vmsVector vp;
+	vmsVector	upvec;
         static int edgenum=0;
 
 	COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,seg);
-	COMPUTE_SIDE_CENTER(&vp,seg,side);
+	COMPUTE_SIDE_CENTER(&vp,seg,tSide);
 	VmVecDec(&vp,&gameData.objs.console->pos);
 
 	VmVecSub(&upvec, &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][edgenum%4]]], &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][(edgenum+3)%4]]]);
@@ -662,7 +662,7 @@ void move_player_2_segment_and_rotate(segment *seg,int side)
 int SetPlayerFromCursegAndRotate()
 {
 	move_player_2_segment_and_rotate(Cursegp,Curside);
-	Update_flags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
@@ -671,12 +671,12 @@ int SetPlayerFromCursegAndRotate()
 //far enough away to see all of curside
 int SetPlayerFromCursegMinusOne()
 {
-	vms_vector view_vec,view_vec2,side_center;
-	vms_vector corner_v[4];
-	vms_vector	upvec;
+	vmsVector view_vec,view_vec2,side_center;
+	vmsVector corner_v[4];
+	vmsVector	upvec;
 	g3s_point corner_p[4];
 	int i;
-	fix max,view_dist=f1_0*10;
+	fix max,viewDist=f1_0*10;
         static int edgenum=0;
 	int newseg;
 
@@ -684,7 +684,7 @@ int SetPlayerFromCursegMinusOne()
 	VmVecNegate(&view_vec);
 
 	COMPUTE_SIDE_CENTER(&side_center,Cursegp,Curside);
-	VmVecCopyScale(&view_vec2,&view_vec,view_dist);
+	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
 	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
 
 	VmVecSub(&upvec, &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][edgenum%4]]], &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][(edgenum+3)%4]]]);
@@ -703,8 +703,8 @@ int SetPlayerFromCursegMinusOne()
 		if (labs(corner_p[i].p3_y) > max) max = labs(corner_p[i].p3_y);
 	}
 
-	view_dist = FixMul(view_dist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
-	VmVecCopyScale(&view_vec2,&view_vec,view_dist);
+	viewDist = FixMul(viewDist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
+	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
 	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
 
 	//RelinkObject(OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(Cursegp) );
@@ -714,7 +714,7 @@ int SetPlayerFromCursegMinusOne()
 	if (newseg != -1)
 		RelinkObject(OBJ_IDX (gameData.objs.console),newseg);
 
-	Update_flags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_ED_STATE_CHANGED | UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
@@ -727,7 +727,7 @@ int ToggleLighting(void)
 	if (gameStates.render.nLighting >= 2)
 		gameStates.render.nLighting = 0;
 
-	Update_flags |= UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 
 	if (last_keypress == KEY_L + KEY_SHIFTED)
 		chindex = 0;
@@ -760,7 +760,7 @@ int FindConcaveSegs()
 {
 	find_concave_segs();
 
-	Update_flags |= UF_ED_STATE_CHANGED;		//list may have changed
+	UpdateFlags |= UF_ED_STATE_CHANGED;		//list may have changed
 
 	return 1;
 }
@@ -821,7 +821,7 @@ int ToggleOutlineMode()
 			diagnostic_message("Outline Mode OFF.");
          }
 
-	Update_flags |= UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 	return mode;
 }
 
@@ -829,7 +829,7 @@ int ToggleOutlineMode()
 //@@{
 //@@	slew_reset_orient(SlewObj);
 //@@
-//@@	Update_flags |= UF_GAME_VIEW_CHANGED;
+//@@	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 //@@
 //@@	* (ubyte *) 0x417 &= ~0x20;
 //@@
@@ -839,14 +839,14 @@ int ToggleOutlineMode()
 int GameZoomOut()
 {
 	nRenderZoom = FixMul(nRenderZoom,68985);
-	Update_flags |= UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
 int GameZoomIn()
 {
 	nRenderZoom = FixMul(nRenderZoom,62259);
-	Update_flags |= UF_GAME_VIEW_CHANGED;
+	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
@@ -977,7 +977,7 @@ void init_editor_screen()
 	//  GrSetColor( CGREY);
 	//  GrRect( 530, 2, 799, 20);
 
-	Update_flags = UF_ALL;
+	UpdateFlags = UF_ALL;
 	initializing = 0;
 	editor_screen_open = 1;
 }
@@ -1087,7 +1087,7 @@ void add_found_segments_to_selected_list(void) {
 
 void gamestate_restore_check() {
 	char Message[DIAGNOSTIC_MESSAGE_MAX];
-	obj_position Save_position;
+	tObjPosition Save_position;
 
 	if (gamestate_not_restored) {
 		sprintf( Message, "Do you wish to restore game state?\n");
@@ -1097,19 +1097,19 @@ void gamestate_restore_check() {
 			// Save current position
 			Save_position.pos = gameData.objs.console->pos;
 			Save_position.orient = gameData.objs.console->orient;
-			Save_position.segnum = gameData.objs.console->segnum;
+			Save_position.nSegment = gameData.objs.console->nSegment;
 
 			LoadLevelSub("GAMESAVE.LVL");
 
 			// Restore current position
-			if (Save_position.segnum <= gameData.segs.nLastSegment) {
+			if (Save_position.nSegment <= gameData.segs.nLastSegment) {
 				gameData.objs.console->pos = Save_position.pos;
 				gameData.objs.console->orient = Save_position.orient;
-				RelinkObject(OBJ_IDX (gameData.objs.console),Save_position.segnum);
+				RelinkObject(OBJ_IDX (gameData.objs.console),Save_position.nSegment);
 			}
 
 			gamestate_not_restored = 0;
-			Update_flags |= UF_WORLD_CHANGED;	
+			UpdateFlags |= UF_WORLD_CHANGED;	
 			}
 		else
 			gamestate_not_restored = 1;
@@ -1122,7 +1122,7 @@ int RestoreGameState() {
 
 	editor_status("Gamestate restored.\n");
 
-	Update_flags |= UF_WORLD_CHANGED;
+	UpdateFlags |= UF_WORLD_CHANGED;
 	return 0;
 }
 
@@ -1137,7 +1137,7 @@ void editor(void)
 	grs_bitmap * savedbitmap;
 	editor_view *new_cv;
         static int padnum=0;
-	vms_matrix	MouseRotMat,tempm;
+	vmsMatrix	MouseRotMat,tempm;
 	//@@short camera_objnum;			//a camera for viewing
 
 	init_editor();
@@ -1167,7 +1167,7 @@ void editor(void)
 	ui_reset_idle_seconds();
 	gameData.objs.viewer = gameData.objs.console;
 	slew_init(gameData.objs.console);
-	Update_flags = UF_ALL;
+	UpdateFlags = UF_ALL;
 	medlisp_update_screen();
 
 	//set the wire-frame window to be the current view
@@ -1218,8 +1218,8 @@ void editor(void)
 		ui_mega_process();
 		last_keypress &= ~KEY_DEBUGGED;		//	mask off delete key bit which has no function in editor.
 		ui_window_do_gadgets(EditorWindow);
-		do_robot_window();
-		do_object_window();
+		doRobot_window();
+		doObject_window();
 		do_wall_window();
 		do_trigger_window();
 		do_hostage_window();
@@ -1228,7 +1228,7 @@ void editor(void)
 		Assert(gameData.walls.nWalls>=0);
 
 		if (Gameview_lockstep) {
-			static segment *old_cursegp=NULL;
+			static tSegment *old_cursegp=NULL;
 			static int old_curside=-1;
 
 			if (old_cursegp!=Cursegp || old_curside!=Curside) {
@@ -1249,7 +1249,7 @@ void editor(void)
 //		med_check_all_vertices();
 		clear_editor_status();		// if enough time elapsed, clear editor status message
 		TimedAutosave(mine_filename);
-		set_editor_time_of_day();
+		set_editorTime_of_day();
 		GrSetCurrentCanvas( GameViewBox->canvas );
 		
 		// Remove keys used for slew
@@ -1303,7 +1303,7 @@ void editor(void)
 			break;
 		case KEY_F1:
 			render_3d_in_big_window = !render_3d_in_big_window;
-			Update_flags |= UF_ALL;
+			UpdateFlags |= UF_ALL;
 			break;			
 		default:
 			{
@@ -1361,11 +1361,11 @@ void editor(void)
 
 		CalcFrameTime();
 		if (slew_frame(0)) {		//do movement and check keys
-			Update_flags |= UF_GAME_VIEW_CHANGED;
+			UpdateFlags |= UF_GAME_VIEW_CHANGED;
 			if (Gameview_lockstep) {
-				Cursegp = &gameData.segs.segments[gameData.objs.console->segnum];
+				Cursegp = &gameData.segs.segments[gameData.objs.console->nSegment];
 				med_create_new_segment_from_cursegp();
-				Update_flags |= UF_ED_STATE_CHANGED;
+				UpdateFlags |= UF_ED_STATE_CHANGED;
 			}
 		}
 
@@ -1383,7 +1383,7 @@ void editor(void)
 
 			find_segments(xcrd,ycrd,LargeViewBox->canvas,&LargeView,Cursegp,Big_depth);	// Sets globals N_found_segs, Found_segs
 
-			// If shift is down, then add segment to found list
+			// If shift is down, then add tSegment to found list
 			if (keyd_pressed[ KEY_LSHIFT ] || keyd_pressed[ KEY_RSHIFT ])
 				subtract_found_segments_from_selected_list();
 			else
@@ -1399,7 +1399,7 @@ void editor(void)
 					set_view_target_from_segment(Cursegp);
 			}
 
-			Update_flags |= UF_ED_STATE_CHANGED | UF_VIEWPOINT_MOVED;
+			UpdateFlags |= UF_ED_STATE_CHANGED | UF_VIEWPOINT_MOVED;
 		}
 
 		if (GameViewBox->mouse_onme && GameViewBox->b1_dragging) {
@@ -1415,14 +1415,14 @@ void editor(void)
 
 		}
 		
-		// Set current segment and side by clicking on a polygon in game window.
-		//	If ctrl pressed, also assign current texture map to that side.
+		// Set current tSegment and tSide by clicking on a polygon in game window.
+		//	If ctrl pressed, also assign current texture map to that tSide.
 		//if (GameViewBox->mouse_onme && (GameViewBox->b1_done_dragging || GameViewBox->b1_clicked)) {
 		if ((GameViewBox->mouse_onme && GameViewBox->b1_clicked && !render_3d_in_big_window) ||
 			(LargeViewBox->mouse_onme && LargeViewBox->b1_clicked && render_3d_in_big_window)) {
 
 			int	xcrd,ycrd;
-			int seg,side,face,poly,tmap;
+			int seg,tSide,face,poly,tmap;
 
 			if (render_3d_in_big_window) {
 				xcrd = LargeViewBox->b1_drag_x1;
@@ -1435,41 +1435,41 @@ void editor(void)
 	
 			//Int3();
 
-			if (find_seg_side_face(xcrd,ycrd,&seg,&side,&face,&poly)) {
+			if (find_seg_side_face(xcrd,ycrd,&seg,&tSide,&face,&poly)) {
 
 
-				if (seg<0) {							//found an object
+				if (seg<0) {							//found an tObject
 
-					Cur_object_index = -seg-1;
-					editor_status("Object %d selected.",Cur_object_index);
+					CurObject_index = -seg-1;
+					editor_status("Object %d selected.",CurObject_index);
 
-					Update_flags |= UF_ED_STATE_CHANGED;
+					UpdateFlags |= UF_ED_STATE_CHANGED;
 				}
 				else {
 
 					//	See if either shift key is down and, if so, assign texture map
 					if (keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) {
 						Cursegp = &gameData.segs.segments[seg];
-						Curside = side;
+						Curside = tSide;
 						AssignTexture();
 						med_create_new_segment_from_cursegp();
 						editor_status("Texture assigned");
 					} else if (keyd_pressed[KEY_G])	{
-						tmap = gameData.segs.segments[seg].sides[side].tmap_num;
+						tmap = gameData.segs.segments[seg].sides[tSide].nBaseTex;
 						texpage_grab_current(tmap);
 						editor_status( "Texture grabbed." );
 					} else if (keyd_pressed[ KEY_LAPOSTRO] ) {
 						ui_mouse_hide();
-						move_object_to_mouse_click();
+						moveObject_to_mouse_click();
 					} else {
 						Cursegp = &gameData.segs.segments[seg];
-						Curside = side;
+						Curside = tSide;
 						med_create_new_segment_from_cursegp();
 						editor_status("Curseg and curside selected");
 					}
 				}
 
-				Update_flags |= UF_ED_STATE_CHANGED;
+				UpdateFlags |= UF_ED_STATE_CHANGED;
 			}
 			else 
 				editor_status("Click on non-texture ingored");
@@ -1493,7 +1493,7 @@ void editor(void)
 		if ( keyd_pressed[ KEY_Z ] ) {
 			ui_mouse_hide();
 			if ( Mouse.dy!=0 ) {
-				current_view->ev_dist += Mouse.dy*10000;
+				current_view->evDist += Mouse.dy*10000;
 				current_view->ev_changed = 1;
 			}
 		} else {
@@ -1506,7 +1506,7 @@ void editor(void)
 
 	ClearWarnFunc(med_show_warning);
 
-	//kill our camera object
+	//kill our camera tObject
 
 	gameData.objs.viewer = gameData.objs.console;					//reset viewer
 	//@@ReleaseObject(camera_objnum);

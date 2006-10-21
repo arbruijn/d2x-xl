@@ -113,7 +113,7 @@ int ipx_kali_ReceivePacket(ipx_socket_t *s, char *outbuf, int outbufsize,
 	rd->src_socket = ntohs(fromaddr.sa_socket);
 	memcpy(rd->src_node, fromaddr.sa_nodenum, sizeof(fromaddr.sa_nodenum));
 	memset(rd->src_network, 0, 4);
-	rd->pkt_type = 0;
+	rd->pktType = 0;
 
 	return size;
 }

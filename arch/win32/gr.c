@@ -68,7 +68,7 @@ static char *DDerror(int code)
 			error = "Exception encountered";
 			break;
 		case DDERR_INVALIDOBJECT:
-			error = "Invalid object";
+			error = "Invalid tObject";
 			break;
 /*                case DDERR_INVALIDPARAMS:
 			error = "Invalid parameters";
@@ -101,7 +101,7 @@ static char *DDerror(int code)
 			error = "DirectDraw is still drawing";
 			break;
 		case DDERR_INVALIDSURFACETYPE:
-			error = "Invalid surface type";
+			error = "Invalid surface nType";
 			break;
 		case DDERR_NOEXCLUSIVEMODE:
 			error = "Not in exclusive access mode";
@@ -305,7 +305,7 @@ int GrSetMode(u_int32_t mode)
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-       grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_LINEAR;
+       grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 
        backbuffer = d_malloc(w*h);
        memset(backbuffer, 0, w*h);

@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "pstypes.h"
 #include "inferno.h"
@@ -111,7 +111,7 @@ extern player_ship only_player_ship;		// In bm.c
 
 short		gameData.pig.tex.nObjBitmaps=0;
 short		N_ObjBitmapPtrs=0;
-static int			Num_robot_ais = 0;
+static int			NumRobot_ais = 0;
 int	TmapList[MAX_TEXTURES];
 char	Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 char	Robot_names[MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];
@@ -125,14 +125,14 @@ static short 		tmap_count = 0;
 static short 		texture_count = 0;
 static short 		clip_count = 0;
 static short 		clip_num;
-static short 		sound_num;
+static short 		nSound;
 static short 		frames;
 static double 		time;
-static int			hit_sound = -1;
-static sbyte 		bm_flag = BM_NONE;
-static int 			abm_flag = 0;
-static int 			rod_flag = 0;
-static short		wall_open_sound, wall_close_sound,wall_explodes,wall_blastable, wall_hidden;
+static int			hitSound = -1;
+static sbyte 		bmFlag = BM_NONE;
+static int 			abmFlag = 0;
+static int 			rodFlag = 0;
+static short		wall_openSound, wall_closeSound,wall_explodes,wall_blastable, wall_hidden;
 double		vlighting=0;
 static int			obj_eclip;
 static char 		*dest_bm;		//clip number to play when destroyed
@@ -140,9 +140,9 @@ static int			dest_vclip;		//what vclip to play when exploding
 static int			dest_eclip;		//what eclip to play when exploding
 static fix			dest_size;		//3d size of explosion
 static int			crit_clip;		//clip number to play when destroyed
-static int			crit_flag;		//flag if this is a destroyed eclip
-static int			tmap1_flag;		//flag if this is used as tmap_num (not tmap_num2)
-static int			num_sounds=0;
+static int			critFlag;		//flag if this is a destroyed eclip
+static int			tmap1Flag;		//flag if this is used as nBaseTex (not nOvlTex)
+static int			numSounds=0;
 
 int	linenum;		//line int table currently being parsed
 
@@ -160,17 +160,17 @@ char *equal_space = { " \t=" };
 //	For the sake of LINT, defining prototypes to module'bObjectRendered functions
 void bm_read_alias(void);
 void bm_read_marker(void);
-void bm_read_robot_ai(void);
-void bm_read_powerup(int unused_flag);
+void bm_readRobot_ai(void);
+void bm_read_powerup(int unusedFlag);
 void bm_read_hostage(void);
-void bm_read_robot(void);
-void bm_read_weapon(int unused_flag);
+void bm_readRobot(void);
+void bm_read_weapon(int unusedFlag);
 void bm_read_reactor(void);
 void bm_read_exitmodel(void);
 void bm_read_player_ship(void);
 void bm_read_some_file(void);
-void bm_read_sound(void);
-void bm_write_extra_robots(void);
+void bm_readSound(void);
+void bm_write_extraRobots(void);
 void clear_to_end_of_line(void);
 void verify_textures(void);
 
@@ -217,9 +217,9 @@ int ComputeAvgPixel(grs_bitmap *newBm)
 // Loads a bitmap from either the piggy file, a r64 file, or a
 // whatever extension is passed.
 
-bitmap_index bm_load_sub( char * filename )
+tBitmapIndex bm_load_sub( char * filename )
 {
-	bitmap_index bitmap_num;
+	tBitmapIndex bitmap_num;
 	grs_bitmap * new;
 	ubyte newpal[256*3];
 	int iff_error;		//reference parm to avoid warning message
@@ -264,12 +264,12 @@ bitmap_index bm_load_sub( char * filename )
 
 extern grs_bitmap bogus_bitmap;
 extern ubyte bogus_bitmap_initialized;
-extern digi_sound bogus_sound;
+extern digiSound bogusSound;
 
-void ab_load( char * filename, bitmap_index bmp[], int *nframes )
+void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 {
 	grs_bitmap * bm[MAX_BITMAPS_PER_BRUSH];
-	bitmap_index bi;
+	tBitmapIndex bi;
 	int i;
 	int iff_error;		//reference parm to avoid warning message
 	ubyte newpal[768];
@@ -305,7 +305,7 @@ void ab_load( char * filename, bitmap_index bmp[], int *nframes )
 	}
 
 //	Note that last argument passes an address to the array newpal (which is a pointer).
-//	type mismatch found using lint, will substitute this line with an adjusted
+//	nType mismatch found using lint, will substitute this line with an adjusted
 //	one.  If fatal error, then it can be easily changed.
 //	iff_error = iff_read_animbrush(filename,bm,MAX_BITMAPS_PER_BRUSH,nframes,&newpal);
    iff_error = iff_read_animbrush(filename,bm,MAX_BITMAPS_PER_BRUSH,nframes,newpal);
@@ -317,7 +317,7 @@ void ab_load( char * filename, bitmap_index bmp[], int *nframes )
 	}
 
 	for (i=0;i< *nframes; i++)	{
-		bitmap_index new_bmp;
+		tBitmapIndex new_bmp;
 		sprintf( tempname, "%bObjectRendered#%d", fname, i );
 		if ( iff_has_transparency )
 			GrRemapBitmapGood( bm[i], newpal, iff_transparent_color, SuperX );
@@ -344,20 +344,20 @@ void ab_load( char * filename, bitmap_index bmp[], int *nframes )
 int ds_load( char * filename )	{
 	int i;
 	CFILE * cfp;
-	digi_sound new;
+	digiSound new;
 	char fname[20];
 	char rawname[100];
 
 #ifdef SHAREWARE
 	if (Registered_only) {
-		return 0;	//don't know what I should return here		//&bogus_sound;
+		return 0;	//don't know what I should return here		//&bogusSound;
 	}
 #endif
 
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 	_makepath( rawname, NULL, NULL,fname, (gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?".R22":".RAW" );
 
-	i=piggy_find_sound( fname );
+	i=piggy_findSound( fname );
 	if (i!=255)	{
 		return i;
 	}
@@ -375,7 +375,7 @@ int ds_load( char * filename )	{
 #endif
 		return 255;
 	}
-	i = piggy_register_sound( &new, fname, 0 );
+	i = piggy_registerSound( &new, fname, 0 );
 	return i;
 }
 
@@ -470,14 +470,14 @@ int bm_init_use_tbl()
 	}
 
 	for (i=0;i<MAX_REACTORS;i++)
-		Reactors[i].model_num = -1;
+		Reactors[i].nModel = -1;
 
 	Num_effects = 0;
 	for (i=0; i<MAX_EFFECTS; i++ ) {
 		//Effects [gameStates.app.bD1Data][i].bm_ptr = (grs_bitmap **) -1;
 		Effects [gameStates.app.bD1Data][i].changing_wall_texture = -1;
-		Effects [gameStates.app.bD1Data][i].changing_object_texture = -1;
-		Effects [gameStates.app.bD1Data][i].segnum = -1;
+		Effects [gameStates.app.bD1Data][i].changingObject_texture = -1;
+		Effects [gameStates.app.bD1Data][i].nSegment = -1;
 		Effects [gameStates.app.bD1Data][i].vc.nFrameCount = -1;		//another mark of being unused
 	}
 
@@ -579,20 +579,20 @@ int bm_init_use_tbl()
 		while (arg != NULL )
 			{
 			// Check all possible flags and defines.
-			if (*arg == '$') bm_flag = BM_NONE; // reset to no flags as default.
+			if (*arg == '$') bmFlag = BM_NONE; // reset to no flags as default.
 
-			IFTOK("$COCKPIT") 			bm_flag = BM_COCKPIT;
-			else IFTOK("$GAUGES")		{bm_flag = BM_GAUGES;   clip_count = 0;}
-			else IFTOK("$GAUGES_HIRES"){bm_flag = BM_GAUGES_HIRES; clip_count = 0;}
-			else IFTOK("$SOUND") 		bm_read_sound();
-			else IFTOK("$DOOR_ANIMS")	bm_flag = BM_WALL_ANIMS;
-			else IFTOK("$WALL_ANIMS")	bm_flag = BM_WALL_ANIMS;
-			else IFTOK("$TEXTURES") 	bm_flag = BM_TEXTURES;
-			else IFTOK("$VCLIP")			{bm_flag = BM_VCLIP;		vlighting = 0;	clip_count = 0;}
-			else IFTOK("$ECLIP")			{bm_flag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; crit_flag=0; sound_num=-1;}
-			else IFTOK("$WCLIP")			{bm_flag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_open_sound=wall_close_sound=-1; tmap1_flag=0; wall_hidden=0;}
+			IFTOK("$COCKPIT") 			bmFlag = BM_COCKPIT;
+			else IFTOK("$GAUGES")		{bmFlag = BM_GAUGES;   clip_count = 0;}
+			else IFTOK("$GAUGES_HIRES"){bmFlag = BM_GAUGES_HIRES; clip_count = 0;}
+			else IFTOK("$SOUND") 		bm_readSound();
+			else IFTOK("$DOOR_ANIMS")	bmFlag = BM_WALL_ANIMS;
+			else IFTOK("$WALL_ANIMS")	bmFlag = BM_WALL_ANIMS;
+			else IFTOK("$TEXTURES") 	bmFlag = BM_TEXTURES;
+			else IFTOK("$VCLIP")			{bmFlag = BM_VCLIP;		vlighting = 0;	clip_count = 0;}
+			else IFTOK("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
+			else IFTOK("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
-			else IFTOK("$EFFECTS")		{bm_flag = BM_EFFECTS;	clip_num = 0;}
+			else IFTOK("$EFFECTS")		{bmFlag = BM_EFFECTS;	clip_num = 0;}
 			else IFTOK("$ALIAS")			bm_read_alias();
 
 			#ifdef EDITOR
@@ -618,28 +618,28 @@ int bm_init_use_tbl()
 			else IFTOK("dest_eclip")		dest_eclip = get_int();
 			else IFTOK("dest_size")			dest_size = fl2f(get_float();
 			else IFTOK("crit_clip")			crit_clip = get_int();
-			else IFTOK("crit_flag")			crit_flag = get_int();
-			else IFTOK("sound_num") 		sound_num = get_int();
+			else IFTOK("critFlag")			critFlag = get_int();
+			else IFTOK("nSound") 		nSound = get_int();
 			else IFTOK("frames") 			frames = get_int();
 			else IFTOK("time") 				time = get_float();
 			else IFTOK("obj_eclip")			obj_eclip = get_int();
-			else IFTOK("hit_sound") 		hit_sound = get_int();
-			else IFTOK("abm_flag")			abm_flag = get_int();
-			else IFTOK("tmap1_flag")		tmap1_flag = get_int();
+			else IFTOK("hitSound") 		hitSound = get_int();
+			else IFTOK("abmFlag")			abmFlag = get_int();
+			else IFTOK("tmap1Flag")		tmap1Flag = get_int();
 			else IFTOK("vlighting")			vlighting = get_float();
-			else IFTOK("rod_flag")			rod_flag = get_int();
+			else IFTOK("rodFlag")			rodFlag = get_int();
 			else IFTOK("superx") 			get_int();
-			else IFTOK("open_sound") 		wall_open_sound = get_int();
-			else IFTOK("close_sound") 		wall_close_sound = get_int();
+			else IFTOK("openSound") 		wall_openSound = get_int();
+			else IFTOK("closeSound") 		wall_closeSound = get_int();
 			else IFTOK("explodes")	 		wall_explodes = get_int();
 			else IFTOK("blastable")	 		wall_blastable = get_int();
 			else IFTOK("hidden")	 			wall_hidden = get_int();
-			else IFTOK("$ROBOT_AI") 		bm_read_robot_ai();
+			else IFTOK("$ROBOT_AI") 		bm_readRobot_ai();
 
 			else IFTOK("$POWERUP")			{bm_read_powerup(0);		continue;}
 			else IFTOK("$POWERUP_UNUSED")	{bm_read_powerup(1);		continue;}
 			else IFTOK("$HOSTAGE")			{bm_read_hostage();		continue;}
-			else IFTOK("$ROBOT")				{bm_read_robot();			continue;}
+			else IFTOK("$ROBOT")				{bm_readRobot();			continue;}
 			else IFTOK("$WEAPON")			{bm_read_weapon(0);		continue;}
 			else IFTOK("$WEAPON_UNUSED")	{bm_read_weapon(1);		continue;}
 			else IFTOK("$REACTOR")			{bm_read_reactor();		continue;}
@@ -683,7 +683,7 @@ int bm_init_use_tbl()
 
 	atexit(BMClose);
 
-	Assert(N_robot_types == Num_robot_ais);		//should be one ai info per robot
+	Assert(NRobotTypes == NumRobot_ais);		//should be one ai info per robot
 
 	#ifdef SHAREWARE
 	InitEndLevel();		//this is here so endlevel bitmaps go into pig
@@ -695,22 +695,22 @@ int bm_init_use_tbl()
 	for (i=0; i<MAX_EFFECTS; i++ )
 		if (	(
 				  (Effects [gameStates.app.bD1Data][i].changing_wall_texture!=-1) ||
-				  (Effects [gameStates.app.bD1Data][i].changing_object_texture!=-1)
+				  (Effects [gameStates.app.bD1Data][i].changingObject_texture!=-1)
              )
 			 && (Effects [gameStates.app.bD1Data][i].vc.nFrameCount==-1) )
-			Error("EClip %d referenced (by polygon object?), but not defined",i);
+			Error("EClip %d referenced (by polygon tObject?), but not defined",i);
 
 	#ifndef NDEBUG
 	{
 		int used;
-		for (i=used=0; i<num_sounds; i++ )
+		for (i=used=0; i<numSounds; i++ )
 			if (Sounds [gameStates.app.bD1Data][i] != 255)
 				used++;
 #if TRACE
-		con_printf (CON_DEBUG,"Sound slots used: %d of %d, highest index %d\n",used,MAX_SOUNDS,num_sounds);
+		con_printf (CON_DEBUG,"Sound slots used: %d of %d, highest index %d\n",used,MAX_SOUNDS,numSounds);
 #endif
 		//make sure all alt sounds refer to valid main sounds
-		for (i=used=0; i<num_sounds; i++ ) {
+		for (i=used=0; i<numSounds; i++ ) {
 			int alt = AltSounds[i];
 			Assert(alt==0 || alt==-1 || Sounds [gameStates.app.bD1Data][alt]!=255);
 		}
@@ -746,10 +746,10 @@ void verify_textures()
 		Error("%d textures were not 64x64.  See mono screen for list.",j);
 
 	for (i=0;i<Num_effects;i++)
-		if (Effects [gameStates.app.bD1Data][i].changing_object_texture != -1)
-			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changing_object_texture].index].bm_props.w!=64 || 
-				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changing_object_texture].index].bm_props.h!=64)
-				Error("Effect %d is used on object, but is not 64x64",i);
+		if (Effects [gameStates.app.bD1Data][i].changingObject_texture != -1)
+			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObject_texture].index].bm_props.w!=64 || 
+				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObject_texture].index].bm_props.h!=64)
+				Error("Effect %d is used on tObject, but is not 64x64",i);
 
 }
 
@@ -794,7 +794,7 @@ void BMClose()
  	}
 }
 
-void set_lighting_flag(sbyte *bp)
+void set_lightingFlag(sbyte *bp)
 {
 	if (vlighting < 0)
 		*bp |= BM_FLAG_NO_LIGHTING;
@@ -810,7 +810,7 @@ void set_texture_name(char *name)
 
 void bm_read_eclip()
 {
-	bitmap_index bitmap;
+	tBitmapIndex bitmap;
 	int dest_bm_num = 0;
 
 	Assert(clip_num < MAX_EFFECTS);
@@ -843,7 +843,7 @@ void bm_read_eclip()
 		dest_bm_num = i;
 	}
 
-	if (!abm_flag)	{
+	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 
 		Effects [gameStates.app.bD1Data][clip_num].vc.xTotalTime = fl2f(time);
@@ -852,10 +852,10 @@ void bm_read_eclip()
 
 		Assert(clip_count < frames);
 		Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bitmap;
-		set_lighting_flag(&GameBitmaps[bitmap.index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
 
 		Assert(!obj_eclip);		//obj eclips for non-abm files not supported!
-		Assert(crit_flag==0);
+		Assert(critFlag==0);
 
 		if (clip_count == 0) {
 			Effects [gameStates.app.bD1Data][clip_num].changing_wall_texture = texture_count;
@@ -872,8 +872,8 @@ void bm_read_eclip()
 		clip_count++;
 
 	} else {
-		bitmap_index bm[MAX_BITMAPS_PER_BRUSH];
-		abm_flag = 0;
+		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
+		abmFlag = 0;
 
 		ab_load( arg, bm, &Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount );
 
@@ -882,10 +882,10 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][clip_num].vc.xFrameTime = Effects [gameStates.app.bD1Data][clip_num].vc.xTotalTime/Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount;
 
 		clip_count = 0;	
-		set_lighting_flag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
+		set_lightingFlag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
 		Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bm[clip_count];
 
-		if (!obj_eclip && !crit_flag) {
+		if (!obj_eclip && !critFlag) {
 			Effects [gameStates.app.bD1Data][clip_num].changing_wall_texture = texture_count;
 			Assert(tmap_count < MAX_TEXTURES);
   			TmapList[tmap_count++] = texture_count;
@@ -899,25 +899,25 @@ void bm_read_eclip()
 
 		if (obj_eclip) {
 
-			if (Effects [gameStates.app.bD1Data][clip_num].changing_object_texture == -1) {		//first time referenced
-				Effects [gameStates.app.bD1Data][clip_num].changing_object_texture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
+			if (Effects [gameStates.app.bD1Data][clip_num].changingObject_texture == -1) {		//first time referenced
+				Effects [gameStates.app.bD1Data][clip_num].changingObject_texture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
 				gameData.pig.tex.nObjBitmaps++;
 			}
 
-			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][clip_num].changing_object_texture] = Effects [gameStates.app.bD1Data][clip_num].vc.frames[0];
+			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][clip_num].changingObject_texture] = Effects [gameStates.app.bD1Data][clip_num].vc.frames[0];
 		}
 
-		//if for an object, Effects_bm_ptrs set in object load
+		//if for an tObject, Effects_bm_ptrs set in tObject load
 
 		for(clip_count=1;clip_count < Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount; clip_count++) {
-			set_lighting_flag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
+			set_lightingFlag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
 			Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bm[clip_count];
 		}
 
 	}
 
 	Effects [gameStates.app.bD1Data][clip_num].crit_clip = crit_clip;
-	Effects [gameStates.app.bD1Data][clip_num].sound_num = sound_num;
+	Effects [gameStates.app.bD1Data][clip_num].nSound = nSound;
 
 	if (dest_bm) {			//deal with bitmap for blown up clip
 
@@ -938,24 +938,24 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][clip_num].dest_eclip = -1;
 	}
 
-	if (crit_flag)
+	if (critFlag)
 		Effects [gameStates.app.bD1Data][clip_num].flags |= EF_CRITICAL;
 }
 
 
 void bm_read_gauges()
 {
-	bitmap_index bitmap;
+	tBitmapIndex bitmap;
 	int i, num_abm_frames;
 
-	if (!abm_flag)	{
+	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 		Assert(clip_count < MAX_GAUGE_BMS);
 		Gauges[clip_count] = bitmap;
 		clip_count++;
 	} else {
-		bitmap_index bm[MAX_BITMAPS_PER_BRUSH];
-		abm_flag = 0;
+		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
+		abmFlag = 0;
 		ab_load( arg, bm, &num_abm_frames );
 		for (i=clip_count; i<clip_count+num_abm_frames; i++) {
 			Assert(i < MAX_GAUGE_BMS);
@@ -967,17 +967,17 @@ void bm_read_gauges()
 
 void bm_read_gauges_hires()
 {
-	bitmap_index bitmap;
+	tBitmapIndex bitmap;
 	int i, num_abm_frames;
 
-	if (!abm_flag)	{
+	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 		Assert(clip_count < MAX_GAUGE_BMS);
 		Gauges_hires[clip_count] = bitmap;
 		clip_count++;
 	} else {
-		bitmap_index bm[MAX_BITMAPS_PER_BRUSH];
-		abm_flag = 0;
+		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
+		abmFlag = 0;
 		ab_load( arg, bm, &num_abm_frames );
 		for (i=clip_count; i<clip_count+num_abm_frames; i++) {
 			Assert(i < MAX_GAUGE_BMS);
@@ -989,7 +989,7 @@ void bm_read_gauges_hires()
 
 void bm_read_wclip()
 {
-	bitmap_index bitmap;
+	tBitmapIndex bitmap;
 	Assert(clip_num < MAX_WALL_ANIMS);
 
 	WallAnims[clip_num].flags = 0;
@@ -997,9 +997,9 @@ void bm_read_wclip()
 	if (wall_explodes)	WallAnims[clip_num].flags |= WCF_EXPLODES;
 	if (wall_blastable)	WallAnims[clip_num].flags |= WCF_BLASTABLE;
 	if (wall_hidden)		WallAnims[clip_num].flags |= WCF_HIDDEN;
-	if (tmap1_flag)		WallAnims[clip_num].flags |= WCF_TMAP1;
+	if (tmap1Flag)		WallAnims[clip_num].flags |= WCF_TMAP1;
 
-	if (!abm_flag)	{
+	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 		if ( (WallAnims[clip_num].nFrameCount>-1) && (clip_count==0) )
 			Error( "Wall Clip %d is already used!", clip_num );
@@ -1008,41 +1008,41 @@ void bm_read_wclip()
 		//WallAnims[clip_num].xFrameTime = fl2f(time)/frames;
 		Assert(clip_count < frames);
 		WallAnims[clip_num].frames[clip_count++] = texture_count;
-		WallAnims[clip_num].open_sound = wall_open_sound;
-		WallAnims[clip_num].close_sound = wall_close_sound;
+		WallAnims[clip_num].openSound = wall_openSound;
+		WallAnims[clip_num].closeSound = wall_closeSound;
 		Textures [gameStates.app.bD1Data][texture_count] = bitmap;
-		set_lighting_flag(&GameBitmaps[bitmap.index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
 		set_texture_name( arg );
 		Assert(texture_count < MAX_TEXTURES);
 		texture_count++;
 		NumTextures = texture_count;
 		if (clip_num >= Num_wall_anims) Num_wall_anims = clip_num+1;
 	} else {
-		bitmap_index bm[MAX_BITMAPS_PER_BRUSH];
+		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
 		int nframes;
 		if ( (WallAnims[clip_num].nFrameCount>-1)  )
 			Error( "AB_Wall clip %d is already used!", clip_num );
-		abm_flag = 0;
+		abmFlag = 0;
 		ab_load( arg, bm, &nframes );
 		WallAnims[clip_num].nFrameCount = nframes;
 		////printf("WC");
 		WallAnims[clip_num].xTotalTime = fl2f(time);
 		//WallAnims[clip_num].xFrameTime = fl2f(time)/nframes;
-		WallAnims[clip_num].open_sound = wall_open_sound;
-		WallAnims[clip_num].close_sound = wall_close_sound;
+		WallAnims[clip_num].openSound = wall_openSound;
+		WallAnims[clip_num].closeSound = wall_closeSound;
 
-		WallAnims[clip_num].close_sound = wall_close_sound;
+		WallAnims[clip_num].closeSound = wall_closeSound;
 		strcpy(WallAnims[clip_num].filename, arg);
 		REMOVE_DOTS(WallAnims[clip_num].filename);	
 
 		if (clip_num >= Num_wall_anims) Num_wall_anims = clip_num+1;
 
-		set_lighting_flag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 
 		for (clip_count=0;clip_count < WallAnims[clip_num].nFrameCount; clip_count++)	{
 			////printf("%d", clip_count);
 			Textures [gameStates.app.bD1Data][texture_count] = bm[clip_count];
-			set_lighting_flag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
+			set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 			WallAnims[clip_num].frames[clip_count] = texture_count;
 			REMOVE_DOTS(arg);
 			sprintf( TmapInfo [gameStates.app.bD1Data][texture_count].filename, "%bObjectRendered#%d", arg, clip_count);
@@ -1055,51 +1055,51 @@ void bm_read_wclip()
 
 void bm_read_vclip()
 {
-	bitmap_index bi;
+	tBitmapIndex bi;
 	Assert(clip_num < VCLIP_MAXNUM);
 
 	if (clip_num >= Num_vclips)
 		Num_vclips = clip_num+1;
 
-	if (!abm_flag)	{
+	if (!abmFlag)	{
 		if ( (Vclip [gameStates.app.bD1Data][clip_num].nFrameCount>-1) && (clip_count==0)  )
 			Error( "Vclip %d is already used!", clip_num );
 		bi = bm_load_sub(arg);
 		Vclip [gameStates.app.bD1Data][clip_num].xTotalTime = fl2f(time);
 		Vclip [gameStates.app.bD1Data][clip_num].nFrameCount = frames;
 		Vclip [gameStates.app.bD1Data][clip_num].xFrameTime = fl2f(time)/frames;
-		Vclip [gameStates.app.bD1Data][clip_num].light_value = fl2f(vlighting);
-		Vclip [gameStates.app.bD1Data][clip_num].sound_num = sound_num;
-		set_lighting_flag(&GameBitmaps[bi.index].bm_props.flags);
+		Vclip [gameStates.app.bD1Data][clip_num].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][clip_num].nSound = nSound;
+		set_lightingFlag(&GameBitmaps[bi.index].bm_props.flags);
 		Assert(clip_count < frames);
 		Vclip [gameStates.app.bD1Data][clip_num].frames[clip_count++] = bi;
-		if (rod_flag) {
-			rod_flag=0;
+		if (rodFlag) {
+			rodFlag=0;
 			Vclip [gameStates.app.bD1Data][clip_num].flags |= VF_ROD;
 		}			
 
 	} else	{
-		bitmap_index bm[MAX_BITMAPS_PER_BRUSH];
-		abm_flag = 0;
+		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
+		abmFlag = 0;
 		if ( (Vclip [gameStates.app.bD1Data][clip_num].nFrameCount>-1)  )
 			Error( "AB_Vclip %d is already used!", clip_num );
 		ab_load( arg, bm, &Vclip [gameStates.app.bD1Data][clip_num].nFrameCount );
 
-		if (rod_flag) {
+		if (rodFlag) {
 			//int i;
-			rod_flag=0;
+			rodFlag=0;
 			Vclip [gameStates.app.bD1Data][clip_num].flags |= VF_ROD;
 		}			
 		////printf("VC");
 		Vclip [gameStates.app.bD1Data][clip_num].xTotalTime = fl2f(time);
 		Vclip [gameStates.app.bD1Data][clip_num].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][clip_num].nFrameCount;
-		Vclip [gameStates.app.bD1Data][clip_num].light_value = fl2f(vlighting);
-		Vclip [gameStates.app.bD1Data][clip_num].sound_num = sound_num;
-		set_lighting_flag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
+		Vclip [gameStates.app.bD1Data][clip_num].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][clip_num].nSound = nSound;
+		set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 
 		for (clip_count=0;clip_count < Vclip [gameStates.app.bD1Data][clip_num].nFrameCount; clip_count++) {
 			////printf("%d", clip_count);
-			set_lighting_flag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
+			set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 			Vclip [gameStates.app.bD1Data][clip_num].frames[clip_count] = bm[clip_count];
 		}
 	}
@@ -1159,71 +1159,71 @@ void clear_to_end_of_line(void)
 		arg = strtok( NULL, space );
 }
 
-void bm_read_sound()
+void bm_readSound()
 {
-	int sound_num;
-	int alt_sound_num;
+	int nSound;
+	int altSound_num;
 
-	sound_num = get_int();
-	alt_sound_num = get_int();
+	nSound = get_int();
+	altSound_num = get_int();
 
-	if ( sound_num>=MAX_SOUNDS )
+	if ( nSound>=MAX_SOUNDS )
 		Error( "Too many sound files.\n" );
 
-	if (sound_num >= num_sounds)
-		num_sounds = sound_num+1;
+	if (nSound >= numSounds)
+		numSounds = nSound+1;
 
-	if (Sounds [gameStates.app.bD1Data][sound_num] != 255)
-		Error("Sound num %d already used, bitmaps.tbl, line %d\n",sound_num,linenum);
+	if (Sounds [gameStates.app.bD1Data][nSound] != 255)
+		Error("Sound num %d already used, bitmaps.tbl, line %d\n",nSound,linenum);
 
 	arg = strtok(NULL, space);
 
-	Sounds [gameStates.app.bD1Data][sound_num] = ds_load(arg);
+	Sounds [gameStates.app.bD1Data][nSound] = ds_load(arg);
 
-	if ( alt_sound_num == 0 )
-		AltSounds[sound_num] = sound_num;
-	else if (alt_sound_num < 0 )
-		AltSounds[sound_num] = 255;
+	if ( altSound_num == 0 )
+		AltSounds[nSound] = nSound;
+	else if (altSound_num < 0 )
+		AltSounds[nSound] = 255;
 	else
-		AltSounds[sound_num] = alt_sound_num;
+		AltSounds[nSound] = altSound_num;
 
-	if (Sounds [gameStates.app.bD1Data][sound_num] == 255)
+	if (Sounds [gameStates.app.bD1Data][nSound] == 255)
 		Error("Can't load soundfile <%bObjectRendered>",arg);
 }
 
 // ------------------------------------------------------------------------------
-void bm_read_robot_ai()	
+void bm_readRobot_ai()	
 {
 	char			*robotnum_text;
 	int			robotnum;
-	robot_info	*robptr;
+	tRobotInfo	*robptr;
 
 	robotnum_text = strtok(NULL, space);
 	robotnum = atoi(robotnum_text);
 	Assert(robotnum < MAX_ROBOT_TYPES);
 	robptr = &Robot_info [gameStates.app.bD1Data][robotnum];
 
-	Assert(robotnum == Num_robot_ais);		//make sure valid number
+	Assert(robotnum == NumRobot_ais);		//make sure valid number
 
 #ifdef SHAREWARE
 	if (Registered_only) {
-		Num_robot_ais++;
+		NumRobot_ais++;
 		clear_to_end_of_line();
 		return;
 	}
 #endif
 
-	Num_robot_ais++;
+	NumRobot_ais++;
 
 	get4fix(robptr->field_of_view);
 	get4fix(robptr->firing_wait);
 	get4fix(robptr->firing_wait2);
 	get4byte(robptr->rapidfire_count);
-	get4fix(robptr->turn_time);
+	get4fix(robptr->turnTime);
 //	get4fix(robptr->fire_power);
 //	get4fix(robptr->shield);
 	get4fix(robptr->max_speed);
-	get4fix(robptr->circle_distance);
+	get4fix(robptr->circleDistance);
 	get4byte(robptr->evade_speed);
 
 	robptr->always_0xabcd	= 0xabcd;
@@ -1247,12 +1247,12 @@ grs_bitmap *load_polymodel_bitmap(char *name)
 
 		eclip_num = atoi(name+1);
 
-		if (Effects [gameStates.app.bD1Data][eclip_num].changing_object_texture == -1) {		//first time referenced
-			Effects [gameStates.app.bD1Data][eclip_num].changing_object_texture = gameData.pig.tex.nObjBitmaps;
+		if (Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture == -1) {		//first time referenced
+			Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.nObjBitmaps++;
 		} else {
-			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][eclip_num].changing_object_texture;
+			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture;
 		}
 		Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 		Assert(N_ObjBitmapPtrs < MAX_OBJ_BITMAPS);
@@ -1273,44 +1273,44 @@ grs_bitmap *load_polymodel_bitmap(char *name)
 #define MAX_MODEL_VARIANTS	4
 
 // ------------------------------------------------------------------------------
-void bm_read_robot()	
+void bm_readRobot()	
 {
 	char			*model_name[MAX_MODEL_VARIANTS];
 	int			n_models,i;
 	int			first_bitmap_num[MAX_MODEL_VARIANTS];
 	char			*equal_ptr;
-	int 			exp1_vclip_num=-1;
-	int			exp1_sound_num=-1;
-	int 			exp2_vclip_num=-1;
-	int			exp2_sound_num=-1;
+	int 			nExp1VClip=-1;
+	int			nExp1Sound=-1;
+	int 			nExp2VClip=-1;
+	int			nExp2Sound=-1;
 	fix			lighting = F1_0/2;		// Default
 	fix			strength = F1_0*10;		// Default strength
 	fix			mass = f1_0*4;
 	fix			drag = f1_0/2;
-	short 		weapon_type = 0, weapon_type2 = -1;
+	short 		nWeaponType = 0, nSecWeaponType = -1;
 	int			g,bObjectRendered;
 	char			name[ROBOT_NAME_LENGTH];
-	int			contains_count=0, contains_id=0, contains_prob=0, contains_type=0, behavior=AIB_NORMAL;
+	int			containsCount=0, containsId=0, containsProb=0, containsType=0, behavior=AIB_NORMAL;
 	int			companion = 0, smart_blobs=0, energy_blobs=0, badass=0, energy_drain=0, kamikaze=0, thief=0, pursuit=0, lightcast=0, death_roll=0;
 	fix			glow=0, aim=F1_0;
-	int			deathroll_sound = SOUND_BOSS_SHARE_DIE;	//default
-	int			score_value=1000;
-	int			cloak_type=0;		//	Default = this robot does not cloak
-	int			attack_type=0;		//	Default = this robot attacks by firing (1=lunge)
-	int			boss_flag=0;				//	Default = robot is not a boss.
-	int			see_sound = ROBOT_SEE_SOUND_DEFAULT;
-	int			attack_sound = ROBOT_ATTACK_SOUND_DEFAULT;
-	int			claw_sound = ROBOT_CLAW_SOUND_DEFAULT;
-	int			taunt_sound = ROBOT_SEE_SOUND_DEFAULT;
+	int			deathrollSound = SOUND_BOSS_SHARE_DIE;	//default
+	int			scoreValue=1000;
+	int			cloakType=0;		//	Default = this robot does not cloak
+	int			attackType=0;		//	Default = this robot attacks by firing (1=lunge)
+	int			bossFlag=0;				//	Default = robot is not a boss.
+	int			seeSound = ROBOT_SEE_SOUND_DEFAULT;
+	int			attackSound = ROBOT_ATTACK_SOUND_DEFAULT;
+	int			clawSound = ROBOT_CLAW_SOUND_DEFAULT;
+	int			tauntSound = ROBOT_SEE_SOUND_DEFAULT;
 	ubyte flags=0;
 
-	Assert(N_robot_types < MAX_ROBOT_TYPES);
+	Assert(NRobotTypes < MAX_ROBOT_TYPES);
 
 #ifdef SHAREWARE
 	if (Registered_only) {
-		Robot_info [gameStates.app.bD1Data][N_robot_types].model_num = -1;
-		N_robot_types++;
-		Assert(N_robot_types < MAX_ROBOT_TYPES);
+		Robot_info [gameStates.app.bD1Data][NRobotTypes].nModel = -1;
+		NRobotTypes++;
+		Assert(NRobotTypes < MAX_ROBOT_TYPES);
 		gameData.objs.types.nCount++;
 		Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 		clear_to_end_of_line();
@@ -1323,7 +1323,7 @@ void bm_read_robot()
 	n_models = 1;
 
 	// Process bitmaps
-	bm_flag=BM_ROBOT;
+	bmFlag=BM_ROBOT;
 	arg = strtok( NULL, space );
 	while (arg!=NULL)	{
 		equal_ptr = strchr( arg, '=' );
@@ -1332,13 +1332,13 @@ void bm_read_robot()
 			equal_ptr++;
 			// if we have john=cool, arg is 'john' and equal_ptr is 'cool'
 			if (!stricmp( arg, "exp1_vclip" ))	{
-				exp1_vclip_num = atoi(equal_ptr);
+				nExp1VClip = atoi(equal_ptr);
 			} else if (!stricmp( arg, "exp2_vclip" ))	{
-				exp2_vclip_num = atoi(equal_ptr);
-			} else if (!stricmp( arg, "exp1_sound" ))	{
-				exp1_sound_num = atoi(equal_ptr);
-			} else if (!stricmp( arg, "exp2_sound" ))	{
-				exp2_sound_num = atoi(equal_ptr);
+				nExp2VClip = atoi(equal_ptr);
+			} else if (!stricmp( arg, "exp1Sound" ))	{
+				nExp1Sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "exp2Sound" ))	{
+				nExp2Sound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
 				lighting = fl2f(atof(equal_ptr);
 				if ( (lighting < 0) || (lighting > F1_0 )) {
@@ -1347,22 +1347,22 @@ void bm_read_robot()
 #endif
 					Error( "In bitmaps.tbl, lighting value of %.2f is out of range 0..1.\n", f2fl(lighting);
 				}
-			} else if (!stricmp( arg, "weapon_type" )) {
-				weapon_type = atoi(equal_ptr);
-			} else if (!stricmp( arg, "weapon_type2" )) {
-				weapon_type2 = atoi(equal_ptr);
+			} else if (!stricmp( arg, "nWeaponType" )) {
+				nWeaponType = atoi(equal_ptr);
+			} else if (!stricmp( arg, "nSecWeaponType" )) {
+				nSecWeaponType = atoi(equal_ptr);
 			} else if (!stricmp( arg, "strength" )) {
 				strength = i2f(atoi(equal_ptr);
 			} else if (!stricmp( arg, "mass" )) {
 				mass = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "drag" )) {
 				drag = fl2f(atof(equal_ptr);
-			} else if (!stricmp( arg, "contains_id" )) {
-				contains_id = atoi(equal_ptr);
-			} else if (!stricmp( arg, "contains_type" )) {
-				contains_type = atoi(equal_ptr);
-			} else if (!stricmp( arg, "contains_count" )) {
-				contains_count = atoi(equal_ptr);
+			} else if (!stricmp( arg, "containsId" )) {
+				containsId = atoi(equal_ptr);
+			} else if (!stricmp( arg, "containsType" )) {
+				containsType = atoi(equal_ptr);
+			} else if (!stricmp( arg, "containsCount" )) {
+				containsCount = atoi(equal_ptr);
 			} else if (!stricmp( arg, "companion" )) {
 				companion = atoi(equal_ptr);
 			} else if (!stricmp( arg, "badass" )) {
@@ -1373,8 +1373,8 @@ void bm_read_robot()
 				glow = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "death_roll" )) {
 				death_roll = atoi(equal_ptr);
-			} else if (!stricmp( arg, "deathroll_sound" )) {
-				deathroll_sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "deathrollSound" )) {
+				deathrollSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "thief" )) {
 				thief = atoi(equal_ptr);
 			} else if (!stricmp( arg, "kamikaze" )) {
@@ -1387,24 +1387,24 @@ void bm_read_robot()
 				energy_blobs = atoi(equal_ptr);
 			} else if (!stricmp( arg, "energy_drain" )) {
 				energy_drain = atoi(equal_ptr);
-			} else if (!stricmp( arg, "contains_prob" )) {
-				contains_prob = atoi(equal_ptr);
-			} else if (!stricmp( arg, "cloak_type" )) {
-				cloak_type = atoi(equal_ptr);
-			} else if (!stricmp( arg, "attack_type" )) {
-				attack_type = atoi(equal_ptr);
+			} else if (!stricmp( arg, "containsProb" )) {
+				containsProb = atoi(equal_ptr);
+			} else if (!stricmp( arg, "cloakType" )) {
+				cloakType = atoi(equal_ptr);
+			} else if (!stricmp( arg, "attackType" )) {
+				attackType = atoi(equal_ptr);
 			} else if (!stricmp( arg, "boss" )) {
-				boss_flag = atoi(equal_ptr);
-			} else if (!stricmp( arg, "score_value" )) {
-				score_value = atoi(equal_ptr);
-			} else if (!stricmp( arg, "see_sound" )) {
-				see_sound = atoi(equal_ptr);
-			} else if (!stricmp( arg, "attack_sound" )) {
-				attack_sound = atoi(equal_ptr);
-			} else if (!stricmp( arg, "claw_sound" )) {
-				claw_sound = atoi(equal_ptr);
-			} else if (!stricmp( arg, "taunt_sound" )) {
-				taunt_sound = atoi(equal_ptr);
+				bossFlag = atoi(equal_ptr);
+			} else if (!stricmp( arg, "scoreValue" )) {
+				scoreValue = atoi(equal_ptr);
+			} else if (!stricmp( arg, "seeSound" )) {
+				seeSound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "attackSound" )) {
+				attackSound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "clawSound" )) {
+				clawSound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "tauntSound" )) {
+				tauntSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "aim" )) {
 				aim = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "big_radius" )) {
@@ -1426,7 +1426,7 @@ void bm_read_robot()
 				else if (!stricmp(equal_ptr, "FOLLOW"))
 					behavior = AIB_FOLLOW;
 				else
-					Int3();	//	Error.  Illegal behavior type for current robot.
+					Int3();	//	Error.  Illegal behavior nType for current robot.
 			} else if (!stricmp( arg, "name" )) {
 				Assert(strlen(equal_ptr) < ROBOT_NAME_LENGTH);	//	Oops, name too long.
 				strcpy(name, &equal_ptr[1]);
@@ -1451,88 +1451,88 @@ void bm_read_robot()
 	//clear out anim info
 	for (g=0;g<MAX_GUNS+1;g++)
 		for (bObjectRendered=0;bObjectRendered<N_ANIM_STATES;bObjectRendered++)
-			Robot_info [gameStates.app.bD1Data][N_robot_types].anim_states[g][bObjectRendered].n_joints = 0;	//inialize to zero
+			Robot_info [gameStates.app.bD1Data][NRobotTypes].anim_states[g][bObjectRendered].n_joints = 0;	//inialize to zero
 
 	first_bitmap_num[n_models] = N_ObjBitmapPtrs;
 
 	for (i=0;i<n_models;i++) {
 		int n_textures;
-		int model_num,last_model_num=0;
+		int nModel,last_model_num=0;
 
 		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		model_num = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&Robot_info [gameStates.app.bD1Data][N_robot_types]:NULL);
-		Assert (model_num < gameData.models.nPolyModels);
+		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&Robot_info [gameStates.app.bD1Data][NRobotTypes]:NULL);
+		Assert (nModel < gameData.models.nPolyModels);
 		if (i==0)
-			Robot_info [gameStates.app.bD1Data][N_robot_types].model_num = model_num;
+			Robot_info [gameStates.app.bD1Data][NRobotTypes].nModel = nModel;
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = model_num+1;
+			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
 
-		last_model_num = model_num;
+		last_model_num = nModel;
 	}
 
 	if ((glow > i2f(15)) || (glow < 0) || (glow != 0 && glow < 0x1000)) {
 #if TRACE
-		con_printf (CON_DEBUG,"Invalid glow value %x for robot %d\n",glow,N_robot_types);
+		con_printf (CON_DEBUG,"Invalid glow value %x for robot %d\n",glow,NRobotTypes);
 #endif
 		Int3();
 	}
 
 	gameData.objs.types.nType[gameData.objs.types.nCount] = OL_ROBOT;
-	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = N_robot_types;
+	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = NRobotTypes;
 
-	Robot_info [gameStates.app.bD1Data][N_robot_types].exp1_vclip_num = exp1_vclip_num;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].exp2_vclip_num = exp2_vclip_num;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].exp1_sound_num = exp1_sound_num;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].exp2_sound_num = exp2_sound_num;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].lighting = lighting;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].weapon_type = weapon_type;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].weapon_type2 = weapon_type2;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].strength = strength;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].mass = mass;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].drag = drag;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].cloak_type = cloak_type;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].attack_type = attack_type;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].boss_flag = boss_flag;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nExp1VClip = nExp1VClip;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nExp2VClip = nExp2VClip;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nExp1Sound = nExp1Sound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nExp2Sound = nExp2Sound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].lighting = lighting;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nWeaponType = nWeaponType;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].nSecWeaponType = nSecWeaponType;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].strength = strength;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].mass = mass;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].drag = drag;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].cloakType = cloakType;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].attackType = attackType;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].bossFlag = bossFlag;
 
-	Robot_info [gameStates.app.bD1Data][N_robot_types].contains_id = contains_id;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].contains_count = contains_count;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].contains_prob = contains_prob;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].companion = companion;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].badass = badass;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].lightcast = lightcast;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].glow = (glow>>12);		//convert to 4:4
-	Robot_info [gameStates.app.bD1Data][N_robot_types].death_roll = death_roll;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].deathroll_sound = deathroll_sound;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].thief = thief;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].flags = flags;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].kamikaze = kamikaze;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].pursuit = pursuit;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].smart_blobs = smart_blobs;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].energy_blobs = energy_blobs;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].energy_drain = energy_drain;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].score_value = score_value;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].see_sound = see_sound;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].attack_sound = attack_sound;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].claw_sound = claw_sound;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].taunt_sound = taunt_sound;
-	Robot_info [gameStates.app.bD1Data][N_robot_types].behavior = behavior;		//	Default behavior for this robot, if coming out of matcen.
-	Robot_info [gameStates.app.bD1Data][N_robot_types].aim = min(f2i(aim*255), 255);		//	how well this robot type can aim.  255=perfect
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].containsId = containsId;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].containsCount = containsCount;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].containsProb = containsProb;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].companion = companion;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].badass = badass;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].lightcast = lightcast;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].glow = (glow>>12);		//convert to 4:4
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].death_roll = death_roll;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].deathrollSound = deathrollSound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].thief = thief;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].flags = flags;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].kamikaze = kamikaze;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].pursuit = pursuit;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].smart_blobs = smart_blobs;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].energy_blobs = energy_blobs;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].energy_drain = energy_drain;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].scoreValue = scoreValue;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].seeSound = seeSound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].attackSound = attackSound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].clawSound = clawSound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].tauntSound = tauntSound;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].behavior = behavior;		//	Default behavior for this robot, if coming out of matcen.
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].aim = min(f2i(aim*255), 255);		//	how well this robot nType can aim.  255=perfect
 
-	if (contains_type)
-		Robot_info [gameStates.app.bD1Data][N_robot_types].contains_type = OBJ_ROBOT;
+	if (containsType)
+		Robot_info [gameStates.app.bD1Data][NRobotTypes].containsType = OBJ_ROBOT;
 	else
-		Robot_info [gameStates.app.bD1Data][N_robot_types].contains_type = OBJ_POWERUP;
+		Robot_info [gameStates.app.bD1Data][NRobotTypes].containsType = OBJ_POWERUP;
 
-	strcpy(Robot_names[N_robot_types], name);
+	strcpy(Robot_names[NRobotTypes], name);
 
-	N_robot_types++;
+	NRobotTypes++;
 	gameData.objs.types.nCount++;
 
-	Assert(N_robot_types < MAX_ROBOT_TYPES);
+	Assert(NRobotTypes < MAX_ROBOT_TYPES);
 	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
-	bm_flag = BM_NONE;
+	bmFlag = BM_NONE;
 }
 
 //read a reactor model
@@ -1541,11 +1541,11 @@ void bm_read_reactor()
 	char *model_name, *model_name_dead=NULL;
 	int first_bitmap_num, first_bitmap_num_dead=0, n_normal_bitmaps;
 	char *equal_ptr;
-	short model_num;
+	short nModel;
 	short explosion_vclip_num = -1;
-	short explosion_sound_num = SOUND_ROBOT_DESTROYED;
+	short explosionSound_num = SOUND_ROBOT_DESTROYED;
 	fix	lighting = F1_0/2;		// Default
-	int type=-1;
+	int nType=-1;
 	fix strength=0;
 
 	Assert(Num_reactors < MAX_REACTORS);
@@ -1561,11 +1561,11 @@ void bm_read_reactor()
 	model_name = strtok( NULL, space );
 
 	// Process bitmaps
-	bm_flag = BM_NONE;
+	bmFlag = BM_NONE;
 	arg = strtok( NULL, space );
 	first_bitmap_num = N_ObjBitmapPtrs;
 
-	type = OL_CONTROL_CENTER;
+	nType = OL_CONTROL_CENTER;
 
 	while (arg!=NULL)	{
 
@@ -1577,11 +1577,11 @@ void bm_read_reactor()
 
 			// if we have john=cool, arg is 'john' and equal_ptr is 'cool'
 
-			//@@if (!stricmp(arg,"type")) {
+			//@@if (!stricmp(arg,"nType")) {
 			//@@	if (!stricmp(equal_ptr,"controlcen"))
-			//@@		type = OL_CONTROL_CENTER;
+			//@@		nType = OL_CONTROL_CENTER;
 			//@@	else if (!stricmp(equal_ptr,"clutter"))
-			//@@		type = OL_CLUTTER;
+			//@@		nType = OL_CLUTTER;
 			//@@}
 
 			if (!stricmp( arg, "exp_vclip" ))	{
@@ -1589,8 +1589,8 @@ void bm_read_reactor()
 			} else if (!stricmp( arg, "dead_pof" ))	{
 				model_name_dead = equal_ptr;
 				first_bitmap_num_dead=N_ObjBitmapPtrs;
-			} else if (!stricmp( arg, "exp_sound" ))	{
-				explosion_sound_num = atoi(equal_ptr);
+			} else if (!stricmp( arg, "expSound" ))	{
+				explosionSound_num = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
 				lighting = fl2f(atof(equal_ptr);
 				if ( (lighting < 0) || (lighting > F1_0 )) {
@@ -1618,31 +1618,31 @@ void bm_read_reactor()
 	else
 		n_normal_bitmaps = N_ObjBitmapPtrs-first_bitmap_num;
 
-	model_num = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
+	nModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 
 	if ( model_name_dead )
-		gameData.models.nDeadModels[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
+		gameData.models.nDeadModels[nModel]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
 	else
-		gameData.models.nDeadModels[model_num] = -1;
+		gameData.models.nDeadModels[nModel] = -1;
 
-	if (type == -1)
-		Error("No object type specfied for object in BITMAPS.TBL on line %d\n",linenum);
+	if (nType == -1)
+		Error("No tObject nType specfied for tObject in BITMAPS.TBL on line %d\n",linenum);
 
-	Reactors[Num_reactors].model_num = model_num;
-	Reactors[Num_reactors].n_guns = read_model_guns(model_name,Reactors[Num_reactors].gun_points,Reactors[Num_reactors].gun_dirs,NULL);
+	Reactors[Num_reactors].nModel = nModel;
+	Reactors[Num_reactors].nGuns = read_model_guns(model_name,Reactors[Num_reactors].gun_points,Reactors[Num_reactors].gun_dirs,NULL);
 
-	gameData.objs.types.nType[gameData.objs.types.nCount] = type;
+	gameData.objs.types.nType[gameData.objs.types.nCount] = nType;
 	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = Num_reactors;
 	gameData.objs.types.nType.nStrength[gameData.objs.types.nCount] = strength;
 	
-	////printf( "Object type %d is a control center\n", gameData.objs.types.nCount );
+	////printf( "Object nType %d is a control center\n", gameData.objs.types.nCount );
 	gameData.objs.types.nCount++;
 	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
 	Num_reactors++;
 }
 
-//read the marker object
+//read the marker tObject
 void bm_read_marker()
 {
 	char *model_name;
@@ -1652,7 +1652,7 @@ void bm_read_marker()
 	model_name = strtok( NULL, space );
 
 	// Process bitmaps
-	bm_flag = BM_NONE;
+	bmFlag = BM_NONE;
 	arg = strtok( NULL, space );
 	first_bitmap_num = N_ObjBitmapPtrs;
 
@@ -1688,12 +1688,12 @@ void bm_read_exitmodel()
 	char *model_name, *model_name_dead=NULL;
 	int first_bitmap_num, first_bitmap_num_dead, n_normal_bitmaps;
 	char *equal_ptr;
-	short model_num;
+	short nModel;
 
 	model_name = strtok( NULL, space );
 
 	// Process bitmaps
-	bm_flag = BM_NONE;
+	bmFlag = BM_NONE;
 	arg = strtok( NULL, space );
 	first_bitmap_num = N_ObjBitmapPtrs;
 
@@ -1727,23 +1727,23 @@ void bm_read_exitmodel()
 	else
 		n_normal_bitmaps = N_ObjBitmapPtrs-first_bitmap_num;
 
-	model_num = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
+	nModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 
 	if ( model_name_dead )
-		gameData.models.nDeadModels[model_num]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
+		gameData.models.nDeadModels[nModel]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
 	else
-		gameData.models.nDeadModels[model_num] = -1;
+		gameData.models.nDeadModels[nModel] = -1;
 
-//@@	gameData.objs.types.nType[gameData.objs.types.nCount] = type;
-//@@	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = model_num;
+//@@	gameData.objs.types.nType[gameData.objs.types.nCount] = nType;
+//@@	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = nModel;
 //@@	gameData.objs.types.nType.nStrength[gameData.objs.types.nCount] = strength;
 //@@	
-//@@	////printf( "Object type %d is a control center\n", gameData.objs.types.nCount );
+//@@	////printf( "Object nType %d is a control center\n", gameData.objs.types.nCount );
 //@@	gameData.objs.types.nCount++;
 //@@	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
-	gameData.endLevel.exit.nModel = model_num;
-	gameData.endLevel.exit.nDestroyedModel = gameData.models.nDeadModels[model_num];
+	gameData.endLevel.exit.nModel = nModel;
+	gameData.endLevel.exit.nDestroyedModel = gameData.models.nDeadModels[nModel];
 
 }
 #endif
@@ -1755,11 +1755,11 @@ void bm_read_player_ship()
 	int	n_models=0,i;
 	int	first_bitmap_num[MAX_MODEL_VARIANTS];
 	char *equal_ptr;
-	robot_info ri;
+	tRobotInfo ri;
 	int last_multi_bitmap_num=-1;
 
 	// Process bitmaps
-	bm_flag = BM_NONE;
+	bmFlag = BM_NONE;
 
 	arg = strtok( NULL, space );
 
@@ -1845,40 +1845,40 @@ void bm_read_player_ship()
 
 	for (i=0;i<n_models;i++) {
 		int n_textures;
-		int model_num,last_model_num=0;
+		int nModel,last_model_num=0;
 
 		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		model_num = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&ri:NULL);
+		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&ri:NULL);
 
 		if (i==0)
-			Player_ship->model_num = model_num;
+			Player_ship->nModel = nModel;
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = model_num+1;
+			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
 
-		last_model_num = model_num;
+		last_model_num = nModel;
 	}
 
 	if ( model_name_dying ) {
 		Assert(n_models);
-		gameData.models.nDyingModels[Player_ship->model_num]  = LoadPolygonModel(model_name_dying,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
+		gameData.models.nDyingModels[Player_ship->nModel]  = LoadPolygonModel(model_name_dying,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
 	}
 
-	Assert(ri.n_guns == N_PLAYER_GUNS);
+	Assert(ri.nGuns == N_PLAYER_GUNS);
 
 	//calc player gun positions
 
 	{
 		polymodel *pm;
-		robot_info *r;
-		vms_vector pnt;
+		tRobotInfo *r;
+		vmsVector pnt;
 		int mn;				//submodel number
 		int gun_num;
 	
 		r = &ri;
-		pm = &gameData.models.polyModels[Player_ship->model_num];
+		pm = &gameData.models.polyModels[Player_ship->nModel];
 
-		for (gun_num=0;gun_num<r->n_guns;gun_num++) {
+		for (gun_num=0;gun_num<r->nGuns;gun_num++) {
 
 			pnt = r->gun_points[gun_num];
 			mn = r->gun_submodels[gun_num];
@@ -1900,16 +1900,16 @@ void bm_read_player_ship()
 void bm_read_some_file()
 {
 
-	switch (bm_flag) {
+	switch (bmFlag) {
 	case BM_NONE:
-		Error("Trying to read bitmap <%bObjectRendered> with bm_flag==BM_NONE on line %d of BITMAPS.TBL",arg,linenum);
+		Error("Trying to read bitmap <%bObjectRendered> with bmFlag==BM_NONE on line %d of BITMAPS.TBL",arg,linenum);
 		break;
 	case BM_COCKPIT:	{
-		bitmap_index bitmap;
+		tBitmapIndex bitmap;
 		bitmap = bm_load_sub(arg);
 		Assert( gameData.models.nCockpits < N_COCKPIT_BITMAPS );
 		gameData.pig.tex.cockpitBmIndex[gameData.models.nCockpits++] = bitmap;
-		//bm_flag = BM_NONE;
+		//bmFlag = BM_NONE;
 		return;
 		}
 		break;
@@ -1934,7 +1934,7 @@ void bm_read_some_file()
 		return;
 		break;
 	case BM_TEXTURES:			{
-		bitmap_index bitmap;
+		tBitmapIndex bitmap;
 		bitmap = bm_load_sub(arg);
 		Assert(tmap_count < MAX_TEXTURES);
   		TmapList[tmap_count++] = texture_count;
@@ -1952,12 +1952,12 @@ void bm_read_some_file()
 		break;
 	}
 
-	Error("Trying to read bitmap <%bObjectRendered> with unknown bm_flag <%x> on line %d of BITMAPS.TBL",arg,bm_flag,linenum);
+	Error("Trying to read bitmap <%bObjectRendered> with unknown bmFlag <%x> on line %d of BITMAPS.TBL",arg,bmFlag,linenum);
 }
 
 // ------------------------------------------------------------------------------
-//	If unused_flag is set, then this is just a placeholder.  Don't actually reference vclips or load bbms.
-void bm_read_weapon(int unused_flag)
+//	If unusedFlag is set, then this is just a placeholder.  Don't actually reference vclips or load bbms.
+void bm_read_weapon(int unusedFlag)
 {
 	int	i,n;
 	int	n_models=0;
@@ -1967,13 +1967,13 @@ void bm_read_weapon(int unused_flag)
 	int	first_bitmap_num[MAX_MODEL_VARIANTS];
 	int	lighted;					//flag for whether is a texture is lighted
 
-	Assert(N_weapon_types < MAX_WEAPON_TYPES);
+	Assert(N_weaponTypes < MAX_WEAPON_TYPES);
 
-	n = N_weapon_types;
-	N_weapon_types++;
-	Assert(N_weapon_types <= MAX_WEAPON_TYPES);
+	n = N_weaponTypes;
+	N_weaponTypes++;
+	Assert(N_weaponTypes <= MAX_WEAPON_TYPES);
 
-	if (unused_flag) {
+	if (unusedFlag) {
 		clear_to_end_of_line();
 		return;
 	}
@@ -1986,18 +1986,18 @@ void bm_read_weapon(int unused_flag)
 #endif
 
 	// Initialize weapon array
-	Weapon_info[n].render_type = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=object
+	Weapon_info[n].renderType = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=tObject
 	Weapon_info[n].bitmap.index = 0;
-	Weapon_info[n].model_num = -1;
+	Weapon_info[n].nModel = -1;
 	Weapon_info[n].model_num_inner = -1;
 	Weapon_info[n].blob_size = 0x1000;									// size of blob
 	Weapon_info[n].flash_vclip = -1;
-	Weapon_info[n].flash_sound = SOUND_LASER_FIRED;
+	Weapon_info[n].flashSound = SOUND_LASER_FIRED;
 	Weapon_info[n].flash_size = 0;
 	Weapon_info[n].robot_hit_vclip = -1;
-	Weapon_info[n].robot_hit_sound = -1;
+	Weapon_info[n].robot_hitSound = -1;
 	Weapon_info[n].wall_hit_vclip = -1;
-	Weapon_info[n].wall_hit_sound = -1;
+	Weapon_info[n].wall_hitSound = -1;
 	Weapon_info[n].impact_size = 0;
 	for (i=0; i<NDL; i++) {
 		Weapon_info[n].strength[i] = F1_0;
@@ -2026,7 +2026,7 @@ void bm_read_weapon(int unused_flag)
 
 	Weapon_info[n].picture.index = 0;
 	Weapon_info[n].hires_picture.index = 0;
-	Weapon_info[n].homing_flag = 0;
+	Weapon_info[n].homingFlag = 0;
 
 	Weapon_info[n].flash = 0;
 	Weapon_info[n].multi_damage_scale = F1_0;
@@ -2050,23 +2050,23 @@ void bm_read_weapon(int unused_flag)
 				// Load bitmap with name equal_ptr
 
 				Weapon_info[n].bitmap = bm_load_sub(equal_ptr);		//load_polymodel_bitmap(equal_ptr);
-				Weapon_info[n].render_type = WEAPON_RENDER_LASER;
+				Weapon_info[n].renderType = WEAPON_RENDER_LASER;
 
 			} else if (!stricmp( arg, "blob_bmp" ))	{
 				// Load bitmap with name equal_ptr
 
 				Weapon_info[n].bitmap = bm_load_sub(equal_ptr);		//load_polymodel_bitmap(equal_ptr);
-				Weapon_info[n].render_type = WEAPON_RENDER_BLOB;
+				Weapon_info[n].renderType = WEAPON_RENDER_BLOB;
 
 			} else if (!stricmp( arg, "weapon_vclip" ))	{
 				// Set vclip to play for this weapon.
 				Weapon_info[n].bitmap.index = 0;
-				Weapon_info[n].render_type = WEAPON_RENDER_VCLIP;
+				Weapon_info[n].renderType = WEAPON_RENDER_VCLIP;
 				Weapon_info[n].weapon_vclip = atoi(equal_ptr);
 
 			} else if (!stricmp( arg, "none_bmp" )) {
 				Weapon_info[n].bitmap = bm_load_sub(equal_ptr);
-				Weapon_info[n].render_type = WEAPON_RENDER_NONE;
+				Weapon_info[n].renderType = WEAPON_RENDER_NONE;
 
 			} else if (!stricmp( arg, "weapon_pof" ))	{
 				// Load pof file
@@ -2108,20 +2108,20 @@ void bm_read_weapon(int unused_flag)
 				Weapon_info[n].speedvar = (atoi(equal_ptr) * 128) / 100;
 			} else if (!stricmp( arg, "flash_vclip" ))	{
 				Weapon_info[n].flash_vclip = atoi(equal_ptr);
-			} else if (!stricmp( arg, "flash_sound" ))	{
-				Weapon_info[n].flash_sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "flashSound" ))	{
+				Weapon_info[n].flashSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "flash_size" ))	{
 				Weapon_info[n].flash_size = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "blob_size" ))	{
 				Weapon_info[n].blob_size = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "robot_hit_vclip" ))	{
 				Weapon_info[n].robot_hit_vclip = atoi(equal_ptr);
-			} else if (!stricmp( arg, "robot_hit_sound" ))	{
-				Weapon_info[n].robot_hit_sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "robot_hitSound" ))	{
+				Weapon_info[n].robot_hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "wall_hit_vclip" ))	{
 				Weapon_info[n].wall_hit_vclip = atoi(equal_ptr);
-			} else if (!stricmp( arg, "wall_hit_sound" ))	{
-				Weapon_info[n].wall_hit_sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "wall_hitSound" ))	{
+				Weapon_info[n].wall_hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "impact_size" ))	{
 				Weapon_info[n].impact_size = fl2f(atof(equal_ptr);
 			} else if (!stricmp( arg, "lighted" ))	{
@@ -2153,7 +2153,7 @@ void bm_read_weapon(int unused_flag)
 			} else if (!stricmp(arg, "hires_picture" )) {
 				Weapon_info[n].hires_picture = bm_load_sub(equal_ptr);
 			} else if (!stricmp(arg, "homing" )) {
-				Weapon_info[n].homing_flag = !!atoi(equal_ptr);
+				Weapon_info[n].homingFlag = !!atoi(equal_ptr);
 			} else if (!stricmp(arg, "flash" )) {
 				Weapon_info[n].flash = atoi(equal_ptr);
 			} else if (!stricmp(arg, "multi_damage_scale" )) {
@@ -2193,20 +2193,20 @@ void bm_read_weapon(int unused_flag)
 
 	for (i=0;i<n_models;i++) {
 		int n_textures;
-		int model_num,last_model_num=0;
+		int nModel,last_model_num=0;
 
 		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		model_num = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],NULL);
+		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],NULL);
 
 		if (i==0) {
-			Weapon_info[n].render_type = WEAPON_RENDER_POLYMODEL;
-			Weapon_info[n].model_num = model_num;
+			Weapon_info[n].renderType = WEAPON_RENDER_POLYMODEL;
+			Weapon_info[n].nModel = nModel;
 		}
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = model_num+1;
+			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
 
-		last_model_num = model_num;
+		last_model_num = nModel;
 	}
 
 	if ( pof_file_inner )	{
@@ -2218,7 +2218,7 @@ void bm_read_weapon(int unused_flag)
 #if TRACE
 		con_printf (1, "Warning: Weapon %i has ammo and energy usage of 0.\n", n);
 #endif
-// -- render type of none is now legal --	Assert( Weapon_info[n].render_type != WEAPON_RENDER_NONE );
+// -- render nType of none is now legal --	Assert( Weapon_info[n].renderType != WEAPON_RENDER_NONE );
 }
 
 
@@ -2228,17 +2228,17 @@ void bm_read_weapon(int unused_flag)
 // ------------------------------------------------------------------------------
 #define DEFAULT_POWERUP_SIZE i2f(3)
 
-void bm_read_powerup(int unused_flag)
+void bm_read_powerup(int unusedFlag)
 {
 	int n;
 	char 	*equal_ptr;
 
-	Assert(N_powerup_types < MAX_POWERUP_TYPES);
+	Assert(N_powerupTypes < MAX_POWERUP_TYPES);
 
-	n = N_powerup_types;
-	N_powerup_types++;
+	n = N_powerupTypes;
+	N_powerupTypes++;
 
-	if (unused_flag) {
+	if (unusedFlag) {
 		clear_to_end_of_line();
 		return;
 	}
@@ -2246,7 +2246,7 @@ void bm_read_powerup(int unused_flag)
 	// Initialize powerup array
 	Powerup_info[n].light = F1_0/3;		//	Default lighting value.
 	Powerup_info[n].nClipIndex = -1;
-	Powerup_info[n].hit_sound = -1;
+	Powerup_info[n].hitSound = -1;
 	Powerup_info[n].size = DEFAULT_POWERUP_SIZE;
 	Powerup_names[n][0] = 0;
 
@@ -2263,8 +2263,8 @@ void bm_read_powerup(int unused_flag)
 				Powerup_info[n].nClipIndex = atoi(equal_ptr);
 			} else if (!stricmp( arg, "light" ))	{
 				Powerup_info[n].light = fl2f(atof(equal_ptr);
-			} else if (!stricmp( arg, "hit_sound" ))	{
-				Powerup_info[n].hit_sound = atoi(equal_ptr);
+			} else if (!stricmp( arg, "hitSound" ))	{
+				Powerup_info[n].hitSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "name" )) {
 				Assert(strlen(equal_ptr) < POWERUP_NAME_LENGTH);	//	Oops, name too long.
 				strcpy(Powerup_names[n], &equal_ptr[1]);
@@ -2288,7 +2288,7 @@ void bm_read_powerup(int unused_flag)
 
 	gameData.objs.types.nType[gameData.objs.types.nCount] = OL_POWERUP;
 	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = n;
-	////printf( "Object type %d is a powerup\n", gameData.objs.types.nCount );
+	////printf( "Object nType %d is a powerup\n", gameData.objs.types.nCount );
 	gameData.objs.types.nCount++;
 	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
@@ -2299,10 +2299,10 @@ void bm_read_hostage()
 	int n;
 	char 	*equal_ptr;
 
-	Assert(N_hostage_types < MAX_HOSTAGE_TYPES);
+	Assert(N_hostageTypes < MAX_HOSTAGE_TYPES);
 
-	n = N_hostage_types;
-	N_hostage_types++;
+	n = N_hostageTypes;
+	N_hostageTypes++;
 
 	// Process arguments
 	arg = strtok( NULL, space );
@@ -2335,7 +2335,7 @@ void bm_read_hostage()
 
 	gameData.objs.types.nType[gameData.objs.types.nCount] = OL_HOSTAGE;
 	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = n;
-	////printf( "Object type %d is a hostage\n", gameData.objs.types.nCount );
+	////printf( "Object nType %d is a hostage\n", gameData.objs.types.nCount );
 	gameData.objs.types.nCount++;
 	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
 
@@ -2360,11 +2360,11 @@ tfile = fopen("hamfile.lst","wt");
 
 	t = NumTextures-1;	//don't save bogus texture
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Textures, sizeof(bitmap_index), t, fp );
+	fwrite( Textures, sizeof(tBitmapIndex), t, fp );
 	for (i=0;i<t;i++)
 		fwrite( &TmapInfo [gameStates.app.bD1Data][i], sizeof(*TmapInfo)-sizeof(TmapInfo->filename)-sizeof(TmapInfo->pad2), 1, fp );
 
-fprintf(tfile,"NumTextures = %d, Textures array = %d, TmapInfo array = %d\n",NumTextures,sizeof(bitmap_index)*NumTextures,sizeof(tmap_info)*NumTextures);
+fprintf(tfile,"NumTextures = %d, Textures array = %d, TmapInfo array = %d\n",NumTextures,sizeof(tBitmapIndex)*NumTextures,sizeof(tmap_info)*NumTextures);
 
 	t = MAX_SOUNDS;
 	fwrite( &t, sizeof(int), 1, fp );
@@ -2390,26 +2390,26 @@ fprintf(tfile,"Num_wall_anims = %d, WallAnims array = %d\n",Num_wall_anims,sizeo
 
 	t = N_D2_ROBOT_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Robot_info [gameStates.app.bD1Data], sizeof(robot_info), t, fp );
+	fwrite( Robot_info [gameStates.app.bD1Data], sizeof(tRobotInfo), t, fp );
 
-fprintf(tfile,"N_robot_types = %d, Robot_info [gameStates.app.bD1Data] array = %d\n",t,sizeof(robot_info)*N_robot_types);
+fprintf(tfile,"NRobotTypes = %d, Robot_info [gameStates.app.bD1Data] array = %d\n",t,sizeof(tRobotInfo)*NRobotTypes);
 
 	t = N_D2_ROBOT_JOINTS;
 	fwrite( &t, sizeof(int), 1, fp );
 	fwrite( Robot_joints, sizeof(jointpos), t, fp );
 
-fprintf(tfile,"N_robot_joints = %d, Robot_joints array = %d\n",t,sizeof(jointpos)*N_robot_joints);
+fprintf(tfile,"NRobot_joints = %d, Robot_joints array = %d\n",t,sizeof(jointpos)*NRobot_joints);
 
 	t = N_D2_WEAPON_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
 	fwrite( Weapon_info, sizeof(weapon_info), t, fp );
 
-fprintf(tfile,"N_weapon_types = %d, Weapon_info array = %d\n",N_weapon_types,sizeof(weapon_info)*N_weapon_types);
+fprintf(tfile,"N_weaponTypes = %d, Weapon_info array = %d\n",N_weaponTypes,sizeof(weapon_info)*N_weaponTypes);
 
-	fwrite( &N_powerup_types, sizeof(int), 1, fp );
-	fwrite( Powerup_info, sizeof(powerup_type_info), N_powerup_types, fp );
+	fwrite( &N_powerupTypes, sizeof(int), 1, fp );
+	fwrite( Powerup_info, sizeof(powerupType_info), N_powerupTypes, fp );
 	
-fprintf(tfile,"N_powerup_types = %d, Powerup_info array = %d\n",N_powerup_types,sizeof(powerup_info)*N_powerup_types);
+fprintf(tfile,"N_powerupTypes = %d, Powerup_info array = %d\n",N_powerupTypes,sizeof(powerupInfo)*N_powerupTypes);
 
 	t = N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );
@@ -2432,26 +2432,26 @@ fprintf(tfile,"gameData.models.nDyingModels array = %d, gameData.models.nDeadMod
 
 	t = MAX_GAUGE_BMS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Gauges, sizeof(bitmap_index), t, fp );
-	fwrite( Gauges_hires, sizeof(bitmap_index), t, fp );
+	fwrite( Gauges, sizeof(tBitmapIndex), t, fp );
+	fwrite( Gauges_hires, sizeof(tBitmapIndex), t, fp );
 
-fprintf(tfile,"Num gauge bitmaps = %d, Gauges array = %d, Gauges_hires array = %d\n",t,sizeof(bitmap_index)*t,sizeof(bitmap_index)*t);
+fprintf(tfile,"Num gauge bitmaps = %d, Gauges array = %d, Gauges_hires array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(tBitmapIndex)*t);
 
 	t = MAX_OBJ_BITMAPS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( gameData.pig.tex.objBmIndex, sizeof(bitmap_index), t, fp );
+	fwrite( gameData.pig.tex.objBmIndex, sizeof(tBitmapIndex), t, fp );
 	fwrite( gameData.pig.tex.pObjBmIndex, sizeof(ushort), t, fp );
 
-fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gameData.pig.tex.pObjBmIndex array = %d\n",t,sizeof(bitmap_index)*t,sizeof(ushort)*t);
+fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gameData.pig.tex.pObjBmIndex array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(ushort)*t);
 
 	fwrite( &only_player_ship, sizeof(player_ship), 1, fp );
 
 fprintf(tfile,"player_ship size = %d\n",sizeof(player_ship);
 
 	fwrite( &gameData.models.nCockpits, sizeof(int), 1, fp );
-	fwrite( gameData.pig.tex.cockpitBmIndex, sizeof(bitmap_index), gameData.models.nCockpits, fp );
+	fwrite( gameData.pig.tex.cockpitBmIndex, sizeof(tBitmapIndex), gameData.models.nCockpits, fp );
 
-fprintf(tfile,"gameData.models.nCockpits = %d, cockpit_bitmaps array = %d\n",gameData.models.nCockpits,sizeof(bitmap_index)*gameData.models.nCockpits);
+fprintf(tfile,"gameData.models.nCockpits = %d, cockpit_bitmaps array = %d\n",gameData.models.nCockpits,sizeof(tBitmapIndex)*gameData.models.nCockpits);
 
 //@@	fwrite( &gameData.objs.types.nCount, sizeof(int), 1, fp );
 //@@	fwrite( gameData.objs.types.nType, sizeof(sbyte), gameData.objs.types.nCount, fp );
@@ -2470,8 +2470,8 @@ fprintf(tfile,"Num_reactors = %d, Reactors array = %d\n",Num_reactors,sizeof(*Re
 	fwrite( &gameData.models.nMarkerModel, sizeof(gameData.models.nMarkerModel), 1, fp);
 
 	//@@fwrite( &N_controlcen_guns, sizeof(int), 1, fp );
-	//@@fwrite( controlcen_gun_points, sizeof(vms_vector), N_controlcen_guns, fp );
-	//@@fwrite( controlcen_gun_dirs, sizeof(vms_vector), N_controlcen_guns, fp );
+	//@@fwrite( controlcen_gun_points, sizeof(vmsVector), N_controlcen_guns, fp );
+	//@@fwrite( controlcen_gun_dirs, sizeof(vmsVector), N_controlcen_guns, fp );
 
 	#ifdef SHAREWARE
 	fwrite( &gameData.endLevel.exit.nModel, sizeof(int), 1, fp );
@@ -2480,10 +2480,10 @@ fprintf(tfile,"Num_reactors = %d, Reactors array = %d\n",Num_reactors,sizeof(*Re
 
 fclose(tfile);
 
-	bm_write_extra_robots();
+	bm_write_extraRobots();
 }
 
-void bm_write_extra_robots()
+void bm_write_extraRobots()
 {
 	FILE *fp;
 	u_int32_t t;
@@ -2497,17 +2497,17 @@ void bm_write_extra_robots()
 	fwrite( &t, sizeof(int), 1, fp );
 
 	//write weapon info
-	t = N_weapon_types - N_D2_WEAPON_TYPES;
+	t = N_weaponTypes - N_D2_WEAPON_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
 	fwrite( &Weapon_info[N_D2_WEAPON_TYPES], sizeof(weapon_info), t, fp );
 
 	//now write robot info
 
-	t = N_robot_types - N_D2_ROBOT_TYPES;
+	t = NRobotTypes - N_D2_ROBOT_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &Robot_info [gameStates.app.bD1Data][N_D2_ROBOT_TYPES], sizeof(robot_info), t, fp );
+	fwrite( &Robot_info [gameStates.app.bD1Data][N_D2_ROBOT_TYPES], sizeof(tRobotInfo), t, fp );
 
-	t = N_robot_joints - N_D2_ROBOT_JOINTS;
+	t = NRobot_joints - N_D2_ROBOT_JOINTS;
 	fwrite( &t, sizeof(int), 1, fp );
 	fwrite( &Robot_joints[N_D2_ROBOT_JOINTS], sizeof(jointpos), t, fp );
 
@@ -2526,7 +2526,7 @@ void bm_write_extra_robots()
 
 	t = gameData.pig.tex.nObjBitmaps - N_D2_OBJBITMAPS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &gameData.pig.tex.objBmIndex[N_D2_OBJBITMAPS], sizeof(bitmap_index), t, fp );
+	fwrite( &gameData.pig.tex.objBmIndex[N_D2_OBJBITMAPS], sizeof(tBitmapIndex), t, fp );
 
 	t = N_ObjBitmapPtrs - N_D2_OBJBITMAPPTRS;
 	fwrite( &t, sizeof(int), 1, fp );

@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Old Log:
  * Revision 1.10  1995/10/18  22:21:21  allender
  * fixed bug with gravis mousestick and call KeyFlush when
- * calibrating joystick since it used keystrokes for the trigger
+ * calibrating joystick since it used keystrokes for the tTrigger
  * (at least most of them do)
  *
  * Revision 1.9  1995/10/17  13:12:32  allender
@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * added close box on controls menu
  *
  * Revision 1.4  1995/08/18  10:22:47  allender
- * if thrustmaster choosen, set joystick at thrustmaster type
+ * if thrustmaster choosen, set joystick at thrustmaster nType
  * for proper reading in joyc.c
  *
  * Revision 1.3  1995/07/26  17:00:34  allender
@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.64  1994/12/13  14:43:35  john
  * Took out the code in KConfig to build direction array.
- * Called KCSetControls after selecting a new control type.
+ * Called KCSetControls after selecting a new control nType.
  *
  * Revision 1.63  1994/12/10  12:08:47  john
  * Changed some delays to use TICKER instead of TimerGetFixedSeconds.
@@ -338,7 +338,7 @@ static char rcsid[] = "$Id: joydefs.c,v 1.2 2003/10/10 09:36:35 btb Exp $";
 #include "digi.h"
 #include "playsave.h"
 
-int joydefs_calibrate_flag = 0;
+int joydefs_calibrateFlag = 0;
 
 #ifdef MACINTOSH
 ubyte joydefs_calibrating = 0;		// stupid hack all because of silly mouse cursor emulation
@@ -361,9 +361,9 @@ int joycal_message( char * title, char * text )
 	newmenu_item	m[2];
 	MAC(joydefs_calibrating = 1;)
 	memset (m, 0, sizeof (m));
-	m[0].type = NM_TYPE_TEXT; 
+	m[0].nType = NM_TYPE_TEXT; 
 	m[0].text = text;
-	m[1].type = NM_TYPE_MENU; 
+	m[1].nType = NM_TYPE_MENU; 
 	m[1].text = TXT_OK;
 	i = ExecMenu( title, NULL, 2, m, NULL );
 	MAC(joydefs_calibrating = 0;)
@@ -412,17 +412,17 @@ void joydefs_calibrate2()
 	int axis_cen[4] = { 0, 0, 0, 0 };
 	int axis_max[4] = { 0, 0, 0, 0 };
 
-	int temp_values[4];
+	int tempValues[4];
 	char title[50];
 	char text[50];
 	int nsticks = 0;
 
-	joydefs_calibrate_flag = 0;
+	joydefs_calibrateFlag = 0;
 
 	joy_get_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 
 	joy_set_cen();
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
 
 	if (!joy_present)	{
 		ExecMessageBox( NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
@@ -455,9 +455,9 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_min[0] = temp_values[0];
-	axis_min[1] = temp_values[1];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_min[0] = tempValues[0];
+	axis_min[1] = tempValues[1];
 	joy_delay();
 
 	if ( nsticks == 2 )	{
@@ -471,9 +471,9 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_max[0] = temp_values[0];
-	axis_max[1] = temp_values[1];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_max[0] = tempValues[0];
+	axis_max[1] = tempValues[1];
 	joy_delay();
 
 	if ( nsticks == 2 )	{
@@ -487,10 +487,10 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_cen[0] = temp_values[0];
-	axis_cen[1] = temp_values[1];
-	axis_cen[2] = temp_values[2];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_cen[0] = tempValues[0];
+	axis_cen[1] = tempValues[1];
+	axis_cen[2] = tempValues[2];
 	joy_delay();
 
 	// The fcs uses axes 3 for hat, so don't calibrate it.
@@ -498,8 +498,8 @@ void joydefs_calibrate2()
 	#ifndef WINDOWS
 		//set Y2 axis, which is hat
 		axis_min[3] = 0;
-		axis_cen[3] = temp_values[3]/2;
-		axis_max[3] = temp_values[3];
+		axis_cen[3] = tempValues[3]/2;
+		axis_max[3] = tempValues[3];
 		joy_delay();
 
 		//if X2 exists, calibrate it (for Sidewinder Pro)
@@ -510,9 +510,9 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_min[2] = temp_values[2];
-			axis_min[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_min[2] = tempValues[2];
+			axis_min[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "Joystick X2 axis\nRIGHT");
@@ -521,9 +521,9 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_max[2] = temp_values[2];
-			axis_max[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_max[2] = tempValues[2];
+			axis_max[3] = tempValues[3];
 			joy_delay();
 		}
 	#endif
@@ -538,9 +538,9 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_min[2] = temp_values[2];
-				axis_min[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_min[2] = tempValues[2];
+				axis_min[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_LOWER_RIGHT);
@@ -549,9 +549,9 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_max[2] = temp_values[2];
-				axis_max[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_max[2] = tempValues[2];
+				axis_max[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_CENTER);
@@ -560,9 +560,9 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_cen[2] = temp_values[2];
-				axis_cen[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_cen[2] = tempValues[2];
+				axis_cen[3] = tempValues[3];
 				joy_delay();
 			}
 		}
@@ -575,8 +575,8 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_min[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_min[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_REVERSE);
@@ -584,8 +584,8 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_max[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_max[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_CENTER);
@@ -593,8 +593,8 @@ void joydefs_calibrate2()
 					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-				axis_cen[3] = temp_values[3];
+				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				axis_cen[3] = tempValues[3];
 				joy_delay();
 			}
 		}
@@ -616,12 +616,12 @@ void joydefs_calibrate2()
 	int axis_cen[4] = { 0, 0, 0, 0 };
 	int axis_max[4] = { 0, 0, 0, 0 };
 
-	int temp_values[4];
+	int tempValues[4];
 	char title[50];
 	char text[50];
 	int i, nsticks = 0;
 
-	joydefs_calibrate_flag = 0;
+	joydefs_calibrateFlag = 0;
 
 	if ( gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) {
 		axis_cen[0] = axis_cen[1] = axis_cen[2] = 0;
@@ -640,7 +640,7 @@ void joydefs_calibrate2()
 	joy_get_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 
 	joy_set_cen();
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
 
 	if (!joy_present)	{
 		ExecMessageBox( NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
@@ -669,9 +669,9 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_min[0] = temp_values[0];
-	axis_min[1] = temp_values[1];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_min[0] = tempValues[0];
+	axis_min[1] = tempValues[1];
 	joy_delay();
 
 	if ( nsticks == 2 )	{
@@ -685,9 +685,9 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_max[0] = temp_values[0];
-	axis_max[1] = temp_values[1];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_max[0] = tempValues[0];
+	axis_max[1] = tempValues[1];
 	joy_delay();
 
 	if ( nsticks == 2 )	{
@@ -701,10 +701,10 @@ void joydefs_calibrate2()
 		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-	axis_cen[0] = temp_values[0];
-	axis_cen[1] = temp_values[1];
-	axis_cen[2] = temp_values[2];
+	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	axis_cen[0] = tempValues[0];
+	axis_cen[1] = tempValues[1];
+	axis_cen[2] = tempValues[2];
 	joy_delay();
 
 	masks = joy_get_present_mask();
@@ -717,9 +717,9 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_min[2] = temp_values[2];
-			axis_min[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_min[2] = tempValues[2];
+			axis_min[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_LOWER_RIGHT);
@@ -728,9 +728,9 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_max[2] = temp_values[2];
-			axis_max[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_max[2] = tempValues[2];
+			axis_max[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_CENTER);
@@ -739,9 +739,9 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_cen[2] = temp_values[2];
-			axis_cen[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_cen[2] = tempValues[2];
+			axis_cen[3] = tempValues[3];
 			joy_delay();
 		}
 	} else {
@@ -752,8 +752,8 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_min[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_min[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_REVERSE);
@@ -761,8 +761,8 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_max[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_max[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_CENTER);
@@ -770,8 +770,8 @@ void joydefs_calibrate2()
 				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, temp_values );
-			axis_cen[3] = temp_values[3];
+			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			axis_cen[3] = tempValues[3];
 			joy_delay();
 		}
 	}
@@ -791,7 +791,7 @@ void joydefs_calibrate2()
 void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	int i;
-	int oc_type = gameConfig.nControlType;
+	int ocType = gameConfig.nControlType;
 
 	nitems = nitems;
 	last_key = last_key;
@@ -800,11 +800,11 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 	for (i=0; i<CONTROL_MAX_TYPES_DOS; i++ )
 		if (items[i].value) gameConfig.nControlType = i;
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
 		ExecMessageBox( TXT_IMPORTANT_NOTE, 1, TXT_OK, TXT_FCS );
 	}
 
-	if (oc_type != gameConfig.nControlType) {
+	if (ocType != gameConfig.nControlType) {
 		switch (gameConfig.nControlType) {
 	//		case	CONTROL_NONE:
 			case	CONTROL_JOYSTICK:
@@ -813,7 +813,7 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 	//		case	CONTROL_GRAVIS_GAMEPAD:
 	//		case	CONTROL_MOUSE:
 	//		case	CONTROL_CYBERMAN:
-				joydefs_calibrate_flag = 1;
+				joydefs_calibrateFlag = 1;
 		}
 		KCSetControls();
 	}
@@ -832,7 +832,7 @@ char *joy_warning = "Please use your joystick's\ncontrol panel to customize the\
 void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	int i;
-	int oc_type = gameConfig.nControlType;
+	int ocType = gameConfig.nControlType;
 	char *warning_text = NULL;
 
 	nitems = nitems;
@@ -842,15 +842,15 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 	for (i=0; i<MAX_MAC_CONTROL_TYPES; i++ )
 		if (items[i].value) gameConfig.nControlType = i;
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_FLIGHTSTICK_PRO ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_FLIGHTSTICK_PRO ) )	{
 		warning_text = ch_warning;
 	}
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
 		warning_text = tm_warning;
 	}
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_GRAVIS_GAMEPAD ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_GRAVIS_GAMEPAD ) )	{
 		warning_text = ms_warning;
 	}
 
@@ -860,16 +860,16 @@ void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem
 		show_cursor();
 	}
 
-	if (oc_type != gameConfig.nControlType) {
+	if (ocType != gameConfig.nControlType) {
 		switch (gameConfig.nControlType) {
 			case	CONTROL_JOYSTICK:
 			case	CONTROL_FLIGHTSTICK_PRO:
 			case	CONTROL_THRUSTMASTER_FCS:
 			case	CONTROL_GRAVIS_GAMEPAD:		// this really means a firebird or mousestick
-				joydefs_calibrate_flag = 1;
+				joydefs_calibrateFlag = 1;
 		}
 		KCSetControls();
-		joydefs_set_type( gameConfig.nControlType );
+		joydefs_setType( gameConfig.nControlType );
 	}
 
 }
@@ -894,22 +894,22 @@ void joydefs_config()
 
 	do {
 		memset (m, 0, sizeof (m));
-		m[0].type = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
-		m[1].type = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
-		m[2].type = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
-		m[3].type = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
+		m[0].nType = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
+		m[1].nType = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
+		m[2].nType = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
+		m[3].nType = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
 // change the text for the thrustmaster
 		m[3].text = "Thrustmaster";
-		m[4].type = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
+		m[4].nType = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
 // change the text of the gravis gamepad to be the mac gravis sticks
 		m[4].text = "Gravis Firebird/MouseStick II";
-		m[5].type = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
+		m[5].nType = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
 
-		m[6].type = NM_TYPE_MENU;   m[6].text=TXT_CUST_ABOVE;
-		m[7].type = NM_TYPE_TEXT;   m[7].text="";
-		m[8].type = NM_TYPE_SLIDER; m[8].text=TXT_JOYS_SENSITIVITY; m[8].value=gameOpts->input.joySensitivity; m[8].min_value =0; m[8].max_value = 8;
-		m[9].type = NM_TYPE_TEXT;   m[9].text="";
-		m[10].type = NM_TYPE_MENU;  m[10].text=TXT_CUST_KEYBOARD;
+		m[6].nType = NM_TYPE_MENU;   m[6].text=TXT_CUST_ABOVE;
+		m[7].nType = NM_TYPE_TEXT;   m[7].text="";
+		m[8].nType = NM_TYPE_SLIDER; m[8].text=TXT_JOYS_SENSITIVITY; m[8].value=gameOpts->input.joySensitivity; m[8].minValue =0; m[8].maxValue = 8;
+		m[9].nType = NM_TYPE_TEXT;   m[9].text="";
+		m[10].nType = NM_TYPE_MENU;  m[10].text=TXT_CUST_KEYBOARD;
 		nitems=11;
 
 		m[gameConfig.nControlType].value = 1;
@@ -959,7 +959,7 @@ void joydefs_config()
 					{
 						for (i=0; i<4; i++ )	{
 							if ( (masks&(1<<i)) && (!(old_masks&(1<<i))))
-								joydefs_calibrate_flag = 1;
+								joydefs_calibrateFlag = 1;
 						}
 					}
 					break;
@@ -978,29 +978,29 @@ void joydefs_config()
 //	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
 	case	CONTROL_GRAVIS_GAMEPAD:
-		if ( joydefs_calibrate_flag )
+		if ( joydefs_calibrateFlag )
 			joydefs_calibrate();
 		break;
 	}
 
 }
 
-// silly routine to tell the joystick handler which type of control
+// silly routine to tell the joystick handler which nType of control
 // we are using
-void joydefs_set_type(ubyte type)
+void joydefs_setType(ubyte nType)
 {
-	ubyte joy_type;
+	ubyte joyType;
 
-	switch (type)
+	switch (nType)
 	{
-		case	CONTROL_NONE:				joy_type = JOY_AS_NONE;					break;
-		case	CONTROL_JOYSTICK:			joy_type = JOY_AS_MOUSE;				break;
-		case	CONTROL_FLIGHTSTICK_PRO:	joy_type = JOY_AS_JOYMANAGER;			break;
-		case	CONTROL_THRUSTMASTER_FCS:	joy_type = JOY_AS_THRUSTMASTER;			break;
-		case	CONTROL_GRAVIS_GAMEPAD:		joy_type = JOY_AS_MOUSESTICK;			break;
-		case	CONTROL_MOUSE:				joy_type = JOY_AS_MOUSE;				break;
+		case	CONTROL_NONE:				joyType = JOY_AS_NONE;					break;
+		case	CONTROL_JOYSTICK:			joyType = JOY_AS_MOUSE;				break;
+		case	CONTROL_FLIGHTSTICK_PRO:	joyType = JOY_AS_JOYMANAGER;			break;
+		case	CONTROL_THRUSTMASTER_FCS:	joyType = JOY_AS_THRUSTMASTER;			break;
+		case	CONTROL_GRAVIS_GAMEPAD:		joyType = JOY_AS_MOUSESTICK;			break;
+		case	CONTROL_MOUSE:				joyType = JOY_AS_MOUSE;				break;
 	}
-	joy_set_type(joy_type);
+	joy_setType(joyType);
 }
 
 #else		// #ifdef MACINTOSH
@@ -1016,29 +1016,29 @@ void joydefs_config()
 	do {
 		nitems=12;
 		memset (m, 0, sizeof (m));
-		m[0].type = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
-		m[1].type = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
-		m[2].type = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
-		m[3].type = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
-		m[4].type = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
-		m[5].type = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
-		m[6].type = NM_TYPE_RADIO; m[6].text = CONTROL_TEXT(6); m[6].value = 0; m[6].group = 0;
+		m[0].nType = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
+		m[1].nType = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
+		m[2].nType = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
+		m[3].nType = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
+		m[4].nType = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
+		m[5].nType = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
+		m[6].nType = NM_TYPE_RADIO; m[6].text = CONTROL_TEXT(6); m[6].value = 0; m[6].group = 0;
 
-		m[ 7].type = NM_TYPE_MENU;		m[ 7].text=TXT_CUST_ABOVE;
-		m[ 8].type = NM_TYPE_TEXT;		m[ 8].text="";
-		m[ 9].type = NM_TYPE_SLIDER;	m[ 9].text=TXT_JOYS_SENSITIVITY; m[9].value=gameOpts->input.joySensitivity; m[9].min_value =0; m[9].max_value = 8;
-		m[10].type = NM_TYPE_TEXT;		m[10].text="";
-		m[11].type = NM_TYPE_MENU;		m[11].text=TXT_CUST_KEYBOARD;
+		m[ 7].nType = NM_TYPE_MENU;		m[ 7].text=TXT_CUST_ABOVE;
+		m[ 8].nType = NM_TYPE_TEXT;		m[ 8].text="";
+		m[ 9].nType = NM_TYPE_SLIDER;	m[ 9].text=TXT_JOYS_SENSITIVITY; m[9].value=gameOpts->input.joySensitivity; m[9].minValue =0; m[9].maxValue = 8;
+		m[10].nType = NM_TYPE_TEXT;		m[10].text="";
+		m[11].nType = NM_TYPE_MENU;		m[11].text=TXT_CUST_KEYBOARD;
 
 		m[gameConfig.nControlType].value = 1;
 
 		if ( kc_use_external_control )	{
 			sprintf( xtext, "Enable %s", kc_external_name );
-			m[12].type = NM_TYPE_CHECK; m[12].text = xtext; m[12].value = kc_enable_external_control;
+			m[12].nType = NM_TYPE_CHECK; m[12].text = xtext; m[12].value = kc_enable_external_control;
 			nitems++;
 		}
 
-		m[nitems].type = NM_TYPE_MENU; m[nitems].text="CUSTOMIZE D2X KEYS"; nitems++;
+		m[nitems].nType = NM_TYPE_MENU; m[nitems].text="CUSTOMIZE D2X KEYS"; nitems++;
 
 		i1 = ExecMenu1( NULL, TXT_CONTROLS, nitems, m, joydef_menuset_1, i1 );
 		gameOpts->input.mouseSensitivity =
@@ -1071,7 +1071,7 @@ void joydefs_config()
 					{
 						for (i=0; i<4; i++ )	{
 							if ( (masks&(1<<i)) && (!(old_masks&(1<<i))))
-								joydefs_calibrate_flag = 1;
+								joydefs_calibrateFlag = 1;
 						}
 					}
 					break;
@@ -1096,7 +1096,7 @@ void joydefs_config()
 	case	CONTROL_JOYSTICK:
 	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
-		if ( joydefs_calibrate_flag )
+		if ( joydefs_calibrateFlag )
 			joydefs_calibrate();
 		break;
 	}
@@ -1110,7 +1110,7 @@ void joydefs_config()
 void joydef_menuset_win(int nitems, newmenu_item * items, int *last_key, int citem )
 {
 	int i;
-	int oc_type = gameConfig.nControlType;
+	int ocType = gameConfig.nControlType;
 
 	Int3();	//need to make this code work for windows
 
@@ -1121,11 +1121,11 @@ void joydef_menuset_win(int nitems, newmenu_item * items, int *last_key, int cit
 	for (i=0; i<CONTROL_MAX_TYPES; i++ )
 		if (items[i].value) gameConfig.nControlType = i;
 
-	if ( (oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
+	if ( (ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS ) )	{
 		ExecMessageBox( TXT_IMPORTANT_NOTE, 1, TXT_OK, TXT_FCS );
 	}
 
-	if (oc_type != gameConfig.nControlType) {
+	if (ocType != gameConfig.nControlType) {
 		switch (gameConfig.nControlType) {
 	//		case	CONTROL_NONE:
 			case	CONTROL_JOYSTICK:
@@ -1134,7 +1134,7 @@ void joydef_menuset_win(int nitems, newmenu_item * items, int *last_key, int cit
 	//		case	CONTROL_GRAVIS_GAMEPAD:
 	//		case	CONTROL_MOUSE:
 	//		case	CONTROL_CYBERMAN:
-				joydefs_calibrate_flag = 1;
+				joydefs_calibrateFlag = 1;
 		}
 		KCSetControls();
 	}
@@ -1154,26 +1154,26 @@ void joydefs_config()
 	do {
 		nitems=13;
 		memset (m, 0, sizeof (m));
-		m[0].type = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
-		m[1].type = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
-		m[2].type = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
-		m[3].type = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
-		m[4].type = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
-		m[5].type = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
-		m[6].type = NM_TYPE_RADIO; m[6].text = CONTROL_TEXT(6); m[6].value = 0; m[6].group = 0;
-		m[7].type = NM_TYPE_RADIO; m[7].text = CONTROL_TEXT(7); m[7].value = 0; m[7].group = 0;
+		m[0].nType = NM_TYPE_RADIO; m[0].text = CONTROL_TEXT(0); m[0].value = 0; m[0].group = 0;
+		m[1].nType = NM_TYPE_RADIO; m[1].text = CONTROL_TEXT(1); m[1].value = 0; m[1].group = 0;
+		m[2].nType = NM_TYPE_RADIO; m[2].text = CONTROL_TEXT(2); m[2].value = 0; m[2].group = 0;
+		m[3].nType = NM_TYPE_RADIO; m[3].text = CONTROL_TEXT(3); m[3].value = 0; m[3].group = 0;
+		m[4].nType = NM_TYPE_RADIO; m[4].text = CONTROL_TEXT(4); m[4].value = 0; m[4].group = 0;
+		m[5].nType = NM_TYPE_RADIO; m[5].text = CONTROL_TEXT(5); m[5].value = 0; m[5].group = 0;
+		m[6].nType = NM_TYPE_RADIO; m[6].text = CONTROL_TEXT(6); m[6].value = 0; m[6].group = 0;
+		m[7].nType = NM_TYPE_RADIO; m[7].text = CONTROL_TEXT(7); m[7].value = 0; m[7].group = 0;
 
-		m[8].type = NM_TYPE_MENU; m[8].text=TXT_CUST_ABOVE;
-		m[9].type = NM_TYPE_TEXT;   m[9].text="";
-		m[10].type = NM_TYPE_SLIDER; m[10].text=TXT_JOYS_SENSITIVITY; m[10].value=gameOpts->input.joySensitivity; m[10].min_value =0; m[10].max_value = 8;
-		m[11].type = NM_TYPE_TEXT;   m[11].text="";
-		m[12].type = NM_TYPE_MENU; m[12].text=TXT_CUST_KEYBOARD;
+		m[8].nType = NM_TYPE_MENU; m[8].text=TXT_CUST_ABOVE;
+		m[9].nType = NM_TYPE_TEXT;   m[9].text="";
+		m[10].nType = NM_TYPE_SLIDER; m[10].text=TXT_JOYS_SENSITIVITY; m[10].value=gameOpts->input.joySensitivity; m[10].minValue =0; m[10].maxValue = 8;
+		m[11].nType = NM_TYPE_TEXT;   m[11].text="";
+		m[12].nType = NM_TYPE_MENU; m[12].text=TXT_CUST_KEYBOARD;
 
 		m[gameConfig.nControlType].value = 1;
 
 		if ( kc_use_external_control )	{
 			sprintf( xtext, "Enable %s", kc_external_name );
-			m[13].type = NM_TYPE_CHECK; m[13].text = xtext; m[13].value = kc_enable_external_control;
+			m[13].nType = NM_TYPE_CHECK; m[13].text = xtext; m[13].value = kc_enable_external_control;
 			nitems++;
 		}
 
@@ -1209,7 +1209,7 @@ void joydefs_config()
 					{
 						for (i=0; i<4; i++ )	{
 							if ( (masks&(1<<i)) && (!(old_masks&(1<<i))))
-								joydefs_calibrate_flag = 1;
+								joydefs_calibrateFlag = 1;
 						}
 					}
 					break;
@@ -1231,7 +1231,7 @@ void joydefs_config()
 	case	CONTROL_JOYSTICK:
 	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
-		if ( joydefs_calibrate_flag )
+		if ( joydefs_calibrateFlag )
 			joydefs_calibrate();
 		break;
 	}

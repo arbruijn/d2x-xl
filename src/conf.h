@@ -50,10 +50,10 @@
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
-/* Define to 1 if the system has the type `struct timespec'. */
+/* Define to 1 if the system has the nType `struct timespec'. */
 #define HAVE_STRUCT_TIMESPEC 1
 
-/* Define to 1 if the system has the type `struct timeval'. */
+/* Define to 1 if the system has the nType `struct timeval'. */
 #define HAVE_STRUCT_TIMEVAL 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */

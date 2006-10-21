@@ -23,7 +23,7 @@ void PlayerShipRead(player_ship *ps, CFILE *fp)
 {
 	int i;
 
-	ps->model_num = CFReadInt(fp);
+	ps->nModel = CFReadInt(fp);
 	ps->expl_vclip_num = CFReadInt(fp);
 	ps->mass = CFReadFix(fp);
 	ps->drag = CFReadFix(fp);

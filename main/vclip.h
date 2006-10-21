@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  *
  * Revision 1.27  1994/09/10  17:30:57  mike
- * move a prototype here, had been defined in object.c
+ * move a prototype here, had been defined in tObject.c
  *
  * Revision 1.26  1994/09/09  20:04:25  mike
  * Add weapon_vclip.
@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * and puts them into bitmaps.tbl.
  *
  * Revision 1.17  1994/06/08  12:49:01  mike
- * Add light_value to vclip.
+ * Add lightValue to vclip.
  *
  * Revision 1.16  1994/06/08  11:43:28  mike
  * Allow 20 vclips, I think (anyway, more than it used to be, probably 12).
@@ -166,17 +166,17 @@ typedef struct {
 	int             nFrameCount;
 	fix             xFrameTime;         // time (in seconds) of each frame
 	int             flags;
-	short           sound_num;
-	bitmap_index    frames[VCLIP_MAX_FRAMES];
-	fix             light_value;
+	short           nSound;
+	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
+	fix             lightValue;
 } __pack__ vclip;
 
 extern int Num_vclips [2];
 extern vclip Vclip [2][VCLIP_MAXNUM];
 
-// draw an object which renders as a vclip.
-void DrawVClipObject(object *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
-extern void DrawWeaponVClip(object *obj);
+// draw an tObject which renders as a vclip.
+void DrawVClipObject(tObject *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
+extern void DrawWeaponVClip(tObject *obj);
 
 #ifdef FAST_FILE_IO
 #define vclip_read_n(vc, n, fp) CFRead(vc, sizeof(vclip), n, fp)

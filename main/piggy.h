@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.10  1995/02/03  17:08:29  john
  * Changed sound stuff to allow low memory usage.
- * Also, changed so that Sounds [gameStates.app.bD1Mission] isn't an array of digi_sounds, it
+ * Also, changed so that Sounds [gameStates.app.bD1Mission] isn't an array of digiSounds, it
  * is a ubyte pointing into GameSounds [gameStates.app.bD1Mission], this way the digi.c code that
  * locks sounds won't accidentally unlock a sound that is already playing, but
  * since it's Sounds [gameStates.app.bD1Mission][soundno] is different, it would erroneously be unlocked.
@@ -90,9 +90,9 @@ typedef struct alias {
 } alias;
 
 // an index into the bitmap collection of the piggy file
-typedef struct bitmap_index {
+typedef struct tBitmapIndex {
 	ushort index;
-} __pack__ bitmap_index;
+} __pack__ tBitmapIndex;
 
 typedef struct BitmapFile {
 	char    name [15];
@@ -107,15 +107,15 @@ int PiggyInit();
 void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll();
-bitmap_index PiggyRegisterBitmap( grs_bitmap * bmp, char * name, int in_file );
-int piggy_register_sound( digi_sound * snd, char * name, int in_file );
-bitmap_index piggy_find_bitmap( char * name, int bD1Data );
-int piggy_find_sound( char * name );
+tBitmapIndex PiggyRegisterBitmap( grs_bitmap * bmp, char * name, int in_file );
+int piggy_registerSound( digiSound * snd, char * name, int in_file );
+tBitmapIndex piggy_find_bitmap( char * name, int bD1Data );
+int piggy_findSound( char * name );
 
 typedef struct {
     char  identSize;          // size of ID field that follows 18 char header (0 usually)
-    char  colorMapType;      // type of colour map 0=none, 1=has palette
-    char  imageType;          // type of image 0=none,1=indexed,2=rgb,3=grey,+8=rle packed
+    char  colorMapType;      // nType of colour map 0=none, 1=has palette
+    char  imageType;          // nType of image 0=none,1=indexed,2=rgb,3=grey,+8=rle packed
 
     short colorMapStart;     // first colour map entry in palette
     short colorMapLength;    // number of colours in palette
@@ -157,7 +157,7 @@ int ReadTGA (char *pszFile, char *pszFolder, grs_bitmap *pb, int alpha,
 extern int Pigfile_initialized;
 
 void piggy_read_bitmap_data(grs_bitmap * bmp);
-void piggy_read_sound_data(digi_sound *snd);
+void piggy_readSound_data(digiSound *snd);
 
 void PiggyLoadLevelData();
 
@@ -167,7 +167,7 @@ void PiggyLoadLevelData();
 #define MAX_SOUND_FILES     MAX_SOUNDS
 
 #ifdef PIGGY_USE_PAGING
-void PiggyBitmapPageIn (bitmap_index bmp, int bD1);
+void PiggyBitmapPageIn (tBitmapIndex bmp, int bD1);
 void PiggyBitmapPageOutAll(int bAll);
 #endif
 
@@ -183,24 +183,24 @@ void LoadBitmapReplacements(char *level_name);
 void LoadD1BitmapReplacements();
 
 #ifdef FAST_FILE_IO
-#define BitmapIndexRead(bi, fp) CFRead(bi, sizeof(bitmap_index), 1, fp)
-#define BitmapIndexReadN(bi, n, fp) CFRead(bi, sizeof(bitmap_index), n, fp)
+#define BitmapIndexRead(bi, fp) CFRead(bi, sizeof(tBitmapIndex), 1, fp)
+#define BitmapIndexReadN(bi, n, fp) CFRead(bi, sizeof(tBitmapIndex), n, fp)
 #else
 /*
- * reads a bitmap_index structure from a CFILE
+ * reads a tBitmapIndex structure from a CFILE
  */
-void BitmapIndexRead(bitmap_index *bi, CFILE *fp);
+void BitmapIndexRead(tBitmapIndex *bi, CFILE *fp);
 
 /*
- * reads n bitmap_index structs from a CFILE
+ * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN(bitmap_index *bi, int n, CFILE *fp);
+int BitmapIndexReadN(tBitmapIndex *bi, int n, CFILE *fp);
 #endif // FAST_FILE_IO
 
 /*
  * Find and load the named bitmap from descent.pig
  */
-bitmap_index ReadExtraBitmapD1Pig(char *name);
+tBitmapIndex ReadExtraBitmapD1Pig(char *name);
 
 grs_bitmap *PiggyLoadBitmap (char *pszFile);
 void PiggyFreeBitmap (grs_bitmap *bmP, int i, int bD1);

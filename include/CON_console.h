@@ -72,8 +72,8 @@ extern "C" {
 		int VChars;			//! The number of visible characters in one console line (autocalculated)
 		char* Prompt;			//! Prompt displayed in command line
 		char Command[CON_CHARS_PER_LINE];	//! current command in command line = lcommand + rcommand
-		char RCommand[CON_CHARS_PER_LINE];	//! left hand side of cursor
-		char LCommand[CON_CHARS_PER_LINE];	//! right hand side of cursor
+		char RCommand[CON_CHARS_PER_LINE];	//! left hand tSide of cursor
+		char LCommand[CON_CHARS_PER_LINE];	//! right hand tSide of cursor
 		char VCommand[CON_CHARS_PER_LINE];	//! current visible command line
 		int CursorPos;			//! Current cursor position in CurrentCommand
 		int Offset;			//! CommandOffset (first visible char of command) - if command is too long to fit into console
@@ -183,7 +183,7 @@ extern "C" {
 	void Cursor_Del(ConsoleInformation *console);
 	/*! Internal: Called if you press BACKSPACE (deletes character left of cursor) */
 	void Cursor_BSpace(ConsoleInformation *console);
-	/*! Internal: Called if you type in a character (add the char to the command) */
+	/*! Internal: Called if you nType in a character (add the char to the command) */
 	void Cursor_Add(ConsoleInformation *console, int event);
 
 	/*! Internal: Called if you press Ctrl-C (deletes the commandline) */

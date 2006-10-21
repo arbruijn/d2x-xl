@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EZERO 0
 #endif
 
-extern int Default_leveling_on;
+extern int DefaultLeveling_on;
 
 // update the player's highest level.  returns errno (0 == no error)
 int update_player_file();

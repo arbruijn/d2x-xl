@@ -32,10 +32,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.50  1995/02/22  14:11:19  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.49  1994/12/15  13:04:10  mike
- * Replace gameData.multi.players[gameData.multi.nLocalPlayer].time_total references with gameData.time.xGame.
+ * Replace gameData.multi.players[gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
  *
  * Revision 1.48  1994/11/27  23:12:13  matt
  * Made changes for new con_printf calling convention
@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added int3's to try to trap bug
  *
  * Revision 1.44  1994/10/14  16:18:12  john
- * Made Assert that the object was player just nicely exit
+ * Made Assert that the tObject was player just nicely exit
  * the function.
  *
  * Revision 1.43  1994/10/13  11:35:25  john
@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Put pitch bak like it was.
  *
  * Revision 1.34  1994/08/31  18:59:35  john
- * Made rotthrust back like it was.
+ * Made rotThrust back like it was.
  *
  * Revision 1.33  1994/08/31  18:49:17  john
  * Slowed Maxrothrust a bit,
@@ -238,26 +238,26 @@ static char rcsid[] = "$Id: controls.c,v 1.5 2003/08/02 20:36:12 btb Exp $";
 
 static fix wiggleTime;
 
-void WiggleObject (object *objP)
+void WiggleObject (tObject *objP)
 {
 if ((gameStates.render.nShadowPass != 2) &&
 	 (EGI_FLAG (bWiggle, 0, 1))) {
 	fix swiggle;
 	int nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
-	object *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
+	tObject *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix_fastsincos (gameData.time.xGame, &swiggle, NULL);
 	if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 		swiggle = FixMul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
-	if ((objP->type == OBJ_PLAYER) || !pParent)
-		VmVecScaleInc (&objP->mtype.phys_info.velocity,
+	if ((objP->nType == OBJ_PLAYER) || !pParent)
+		VmVecScaleInc (&objP->mType.physInfo.velocity,
 								 &objP->orient.uvec,
 								 FixMul (swiggle, gameData.pig.ship.player->wiggle));
 #if 1
 	else {
-		VmVecScaleInc (&objP->mtype.phys_info.velocity,
+		VmVecScaleInc (&objP->mType.physInfo.velocity,
 								&pParent->orient.uvec,
 								FixMul (swiggle, gameData.pig.ship.player->wiggle));
-		VmVecScaleInc (&objP->pos, &objP->mtype.phys_info.velocity, wiggleTime);
+		VmVecScaleInc (&objP->pos, &objP->mType.physInfo.velocity, wiggleTime);
 		}
 #endif
 	}
@@ -265,18 +265,18 @@ if ((gameStates.render.nShadowPass != 2) &&
 
 // ----------------------------------------------------------------------------
 //look at keyboard, mouse, joystick, CyberMan, whatever, and set 
-//physics vars rotvel, velocity
+//physics vars rotVel, velocity
 
 fix xAfterburnerCharge=f1_0;
-vms_vector player_thrust;
+vmsVector player_thrust;
 
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
 
-void ReadFlyingControls(object *objP)
+void ReadFlyingControls(tObject *objP)
 {
-	fix	forward_thrust_time;
-	object *gmObjP;
+	fix	forward_thrustTime;
+	tObject *gmObjP;
 	int	bMulti;
 #if 0
 	Assert(gameData.time.xFrame > 0); 		//Get MATT if hit this!
@@ -289,34 +289,34 @@ void ReadFlyingControls(object *objP)
 		StopPlayerMovement ();
 		FlushInput ();
 /*
-		VmVecZero(&objP->mtype.phys_info.rotthrust);
-		VmVecZero(&objP->mtype.phys_info.thrust);
-		VmVecZero(&objP->mtype.phys_info.velocity);
+		VmVecZero(&objP->mType.physInfo.rotThrust);
+		VmVecZero(&objP->mType.physInfo.thrust);
+		VmVecZero(&objP->mType.physInfo.velocity);
 */		
 		gameStates.app.bEnterGame--;
 		return;
 	}
 
-	if ((objP->type!=OBJ_PLAYER) || (objP->id!=gameData.multi.nLocalPlayer)) 
+	if ((objP->nType!=OBJ_PLAYER) || (objP->id!=gameData.multi.nLocalPlayer)) 
 		return;	//references to player_ship require that this obj be the player
 
 	gmObjP = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
-	if (gmObjP && (gmObjP->signature == gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer])) {
-		vms_angvec rotangs;
-		vms_matrix rotmat,tempm;
+	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer])) {
+		vmsAngVec rotangs;
+		vmsMatrix rotmat,tempm;
 		fix speed;
 
 		//this is a horrible hack.  guided missile stuff should not be
 		//handled in the middle of a routine that is dealing with the player
-		VmVecZero(&objP->mtype.phys_info.rotthrust);
-		rotangs.p = Controls.pitch_time / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		rotangs.b = Controls.bank_time / 2 + gameStates.gameplay.seismic.nMagnitude/16;
-		rotangs.h = Controls.heading_time / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+		VmVecZero(&objP->mType.physInfo.rotThrust);
+		rotangs.p = Controls.pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+		rotangs.b = Controls.bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
+		rotangs.h = Controls.headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		VmAngles2Matrix(&rotmat,&rotangs);
 		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->orient,&rotmat);
 		gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->orient = tempm;
 		speed = WI_speed (gmObjP->id,gameStates.app.nDifficultyLevel);
-		VmVecCopyScale(&gmObjP->mtype.phys_info.velocity, &gmObjP->orient.fvec,speed);
+		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->orient.fvec,speed);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendGuidedInfo (gmObjP, 0);
@@ -324,21 +324,21 @@ void ReadFlyingControls(object *objP)
 
 	}
 	else {
-		objP->mtype.phys_info.rotthrust.x = Controls.pitch_time;
-		objP->mtype.phys_info.rotthrust.y = Controls.heading_time;
-		objP->mtype.phys_info.rotthrust.z = Controls.bank_time;
+		objP->mType.physInfo.rotThrust.x = Controls.pitchTime;
+		objP->mType.physInfo.rotThrust.y = Controls.headingTime;
+		objP->mType.physInfo.rotThrust.z = Controls.bankTime;
 	}
-	forward_thrust_time = Controls.forward_thrust_time;
+	forward_thrustTime = Controls.forward_thrustTime;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{
 		if (Controls.afterburner_state) {			//player has key down
-			//if (forward_thrust_time >= 0) { 		//..and isn't moving backward
+			//if (forward_thrustTime >= 0) { 		//..and isn't moving backward
 			{
 				fix afterburner_scale;
 				int old_count,new_count;
 	
 				//add in value from 0..1
 				afterburner_scale = f1_0 + min (f1_0/2, xAfterburnerCharge) * 2;
-				forward_thrust_time = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
+				forward_thrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
 				old_count = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 				xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
 				if (xAfterburnerCharge < 0)
@@ -361,23 +361,23 @@ void ReadFlyingControls(object *objP)
 			gameData.multi.players [gameData.multi.nLocalPlayer].energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
 		}
 	}
-	// Set object's thrust vector for forward/backward
-	VmVecCopyScale (&objP->mtype.phys_info.thrust, &objP->orient.fvec, forward_thrust_time);
+	// Set tObject's thrust vector for forward/backward
+	VmVecCopyScale (&objP->mType.physInfo.thrust, &objP->orient.fvec, forward_thrustTime);
 	// slide left/right
-	VmVecScaleInc (&objP->mtype.phys_info.thrust, &objP->orient.rvec, Controls.sideways_thrust_time);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.rvec, Controls.sideways_thrustTime);
 	// slide up/down
-	VmVecScaleInc (&objP->mtype.phys_info.thrust, &objP->orient.uvec, Controls.vertical_thrust_time);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.uvec, Controls.vertical_thrustTime);
 	if (!gameStates.input.bSkipControls)
-		memcpy (&player_thrust, &objP->mtype.phys_info.thrust, sizeof (player_thrust));
+		memcpy (&player_thrust, &objP->mType.physInfo.thrust, sizeof (player_thrust));
 	//HUDMessage (0, "%d %d %d", player_thrust.x, player_thrust.y, player_thrust.z);
 	bMulti = IsMultiGame;
-	if ((objP->mtype.phys_info.flags & PF_WIGGLE) && !gameStates.gameplay.bSpeedBoost) {
+	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameStates.gameplay.bSpeedBoost) {
 #if 1//ndef _DEBUG
 		wiggleTime = gameData.time.xFrame;
 		WiggleObject (objP);
 #endif		
 	}
-	// As of now, objP->mtype.phys_info.thrust & objP->mtype.phys_info.rotthrust are 
+	// As of now, objP->mType.physInfo.thrust & objP->mType.physInfo.rotThrust are 
 	// in units of time... In other words, if thrust==gameData.time.xFrame, that
 	// means that the user was holding down the Max_thrust key for the
 	// whole frame.  So we just scale them up by the max, and divide by
@@ -395,7 +395,7 @@ void ReadFlyingControls(object *objP)
 #endif
 			ft = (gameData.pig.ship.player->max_thrust >> 15) + 1;
 		}
-		VmVecScale( &objP->mtype.phys_info.thrust, FixDiv(gameData.pig.ship.player->max_thrust,ft) );
+		VmVecScale( &objP->mType.physInfo.thrust, FixDiv(gameData.pig.ship.player->max_thrust,ft) );
 
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->max_rotthrust)) {
 #if TRACE
@@ -403,7 +403,7 @@ void ReadFlyingControls(object *objP)
 #endif
 			ft = (gameData.pig.ship.player->max_thrust >> 15) + 1;
 		}
-		VmVecScale( &objP->mtype.phys_info.rotthrust, FixDiv(gameData.pig.ship.player->max_rotthrust,ft) );
+		VmVecScale( &objP->mType.physInfo.rotThrust, FixDiv(gameData.pig.ship.player->max_rotthrust,ft) );
 	}
 
 }

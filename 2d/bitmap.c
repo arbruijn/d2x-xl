@@ -175,15 +175,15 @@ return GrCreateBitmapSub (w, h, GrAllocBitmapData (w, h, bTGA), bTGA);
 
 #if defined(POLY_ACC)
 //
-//  Creates a bitmap of the requested size and type.
+//  Creates a bitmap of the requested size and nType.
 //    w, and h are in pixels.
-//    type is a BM_... and is used to set the rowsize.
+//    nType is a BM_... and is used to set the rowsize.
 //    if data is NULL, memory is allocated, otherwise data is used for bm_texBuf.
 //
 //  This function is used only by the polygon accelerator code to handle the mixture of 15bit and
 //  8bit bitmaps.
 //
-grs_bitmap *GrCreateBitmap2 (int w, int h, int type, void *data)
+grs_bitmap *GrCreateBitmap2 (int w, int h, int nType, void *data)
 {
 	grs_bitmap *newBM;
 
@@ -193,8 +193,8 @@ newBM->bm_props.y = 0;
 newBM->bm_props.w = w;
 newBM->bm_props.h = h;
 newBM->bm_props.flags = 0;
-newBM->bm_props.type = type;
-switch(type) {
+newBM->bm_props.nType = nType;
+switch(nType) {
    case BM_LINEAR:     
 		newBM->bm_props.rowsize = w;            
 		break;
@@ -202,7 +202,7 @@ switch(type) {
 		newBM->bm_props.rowsize = w*PA_BPP;     
 		break;
       default: 
-		Int3();    // unsupported type.
+		Int3();    // unsupported nType.
 	   }
 if(data)
    newBM->bm_texBuf = data;
@@ -227,7 +227,7 @@ bmP->bm_props.x = x;
 bmP->bm_props.y = y;
 bmP->bm_props.w = w;
 bmP->bm_props.h = h;
-bmP->bm_props.type = mode;
+bmP->bm_props.nType = mode;
 bmP->bm_props.rowsize = bTGA ? nBytesPerLine * 4 : nBytesPerLine;
 #ifdef D1XD3D
 bmP->iMagic = BM_MAGIC_NUMBER;
@@ -327,7 +327,7 @@ bmP->bm_props.y = y + bmParent->bm_props.y;
 bmP->bm_props.w = w;
 bmP->bm_props.h = h;
 bmP->bm_props.flags = bmParent->bm_props.flags;
-bmP->bm_props.type = bmParent->bm_props.type;
+bmP->bm_props.nType = bmParent->bm_props.nType;
 bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
 #ifdef OGL
 bmP->glTexture = bmParent->glTexture;
@@ -338,7 +338,7 @@ BM_PARENT (bmP) = bmParent;
 Assert (bmParent->iMagic == BM_MAGIC_NUMBER);
 bmP->iMagic = BM_MAGIC_NUMBER;
 bmP->pvSurface = bmParent->pvSurface;
-if (bmP->bm_props.type == BM_DIRECTX)
+if (bmP->bm_props.nType == BM_DIRECTX)
 	bmP->bm_texBuf = bmParent->bm_texBuf;
 else
 #endif

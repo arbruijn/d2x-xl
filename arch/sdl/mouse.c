@@ -108,14 +108,14 @@ void mouse_motion_handler(SDL_MouseMotionEvent *mme)
 void mouse_flush()	// clears all mice events...
 {
 	int i;
-	fix current_time;
+	fix currentTime;
 
 	event_poll(SDL_MOUSEEVENTMASK);
 
-	current_time = TimerGetFixedSeconds();
+	currentTime = TimerGetFixedSeconds();
 	for (i=0; i<MOUSE_MAX_BUTTONS; i++) {
 		mouseData.buttons[i].pressed=0;
-		mouseData.buttons[i].time_went_down=current_time;
+		mouseData.buttons[i].time_went_down=currentTime;
 		mouseData.buttons[i].time_held_down=0;
 		mouseData.buttons[i].num_ups=0;
 		mouseData.buttons[i].num_downs=0;

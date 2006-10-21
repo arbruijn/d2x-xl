@@ -248,7 +248,7 @@ void OglClose (void);//one time shutdown
 //#define OGLTEXBUFSIZE (1024*1024*4)
 
 //void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int width,int height,int twidth,int theight);
-void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int truewidth,int width,int height,int dxo,int dyo,int twidth,int theight,int type,int nTransp,int bSuperTransp);
+void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int truewidth,int width,int height,int dxo,int dyo,int twidth,int theight,int nType,int nTransp,int bSuperTransp);
 #if RENDER2TEXTURE == 1
 int OglLoadBmTextureM (grs_bitmap *bm, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb);
 #elif RENDER2TEXTURE == 2
@@ -303,7 +303,7 @@ bool G3DrawTexPolyMulti (
 #if LIGHTMAPS
 	ogl_texture *lightMap,
 #endif
-	vms_vector	*pvNormal,
+	vmsVector	*pvNormal,
 	int orient,
 	int bBlend);
 void OglDrawReticle (int cross,int primary,int secondary);
@@ -369,7 +369,7 @@ return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
 }
 
 static inline int G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list,
-											grs_bitmap *bm, vms_vector *pvNormal, int bBlend)
+											grs_bitmap *bm, vmsVector *pvNormal, int bBlend)
 {
 #if LIGHTMAPS
 return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);

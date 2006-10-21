@@ -106,7 +106,7 @@ BOOL DSGetWaveResource(HMODULE hModule, LPCTSTR lpName,
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// HSNDOBJ             Handle to a SNDOBJ object.
+// HSNDOBJ             Handle to a SNDOBJ tObject.
 //
 //  SNDOBJs are implemented in dsutil as an example layer built on top
 //      of DirectSound.

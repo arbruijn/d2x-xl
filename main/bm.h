@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * create debris.
  *
  * Revision 1.51  1994/08/26  15:35:57  matt
- * Made eclips usable on more than one object at a time
+ * Made eclips usable on more than one tObject at a time
  *
  * Revision 1.50  1994/08/23  16:59:51  john
  * Added 3 cockpuits
@@ -89,17 +89,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * in the cockpit is just bigger.
  *
  * Revision 1.40  1994/05/26  21:08:59  matt
- * Moved robot stuff out of polygon model and into robot_info struct
+ * Moved robot stuff out of polygon model and into tRobotInfo struct
  * Made new file, robot.c, to deal with robots
  *
  * Revision 1.39  1994/05/18  11:00:05  mike
- * Add robot_info stuff.
+ * Add tRobotInfo stuff.
  *
  * Revision 1.38  1994/05/17  14:44:56  mike
- * Get object type and id from ObjType and ObjId.
+ * Get tObject nType and id from ObjType and ObjId.
  *
  * Revision 1.37  1994/05/17  12:04:45  mike
- * Deal with little known fact that polygon object != robot.
+ * Deal with little known fact that polygon tObject != robot.
  *
  * Revision 1.36  1994/05/16  16:17:35  john
  * Bunch of stuff on my Inferno Task list May16-23
@@ -113,7 +113,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.33  1994/04/01  11:15:05  yuan
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
- * Hostages and powerups are implemented in the object system,
+ * Hostages and powerups are implemented in the tObject system,
  * just need to finish function call to "affect" player.
  *
  * Revision 1.32  1994/03/25  17:30:37  yuan
@@ -123,7 +123,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Removed switch code... Now we just have Walls, Triggers, and Links...
  *
  * Revision 1.30  1994/03/15  17:03:51  yuan
- * Added Robot/object bitmap capability
+ * Added Robot/tObject bitmap capability
  *
  * Revision 1.29  1994/03/15  16:32:58  yuan
  * Cleaned up bm-loading code.
@@ -164,7 +164,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * moved bmd_palette to gr_palette
  *
  * Revision 1.17  1993/12/06  18:40:37  matt
- * Changed object loading & handling
+ * Changed tObject loading & handling
  *
  * Revision 1.16  1993/12/05  23:05:03  matt
  * Added include of gr.h
@@ -177,7 +177,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Asserts.
  *
  * Revision 1.13  1993/12/02  17:22:54  yuan
- * New global var. Num_object_types
+ * New global var. NumObjectTypes
  *
  * Revision 1.12  1993/12/02  16:34:39  yuan
  * Added fireball hack stuff.
@@ -187,7 +187,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * for the new bitmaps.tbl format.
  *
  * Revision 1.10  1993/12/01  11:25:11  yuan
- * Changed MALLOC'd buffers for filename and type in
+ * Changed MALLOC'd buffers for filename and nType in
  * the bmd_bitmap structure into arrays... Saves time
  * at load up.
  *
@@ -270,7 +270,7 @@ extern int TmapList[MAX_TEXTURES];
 extern int Dying_modelnums[];
 extern int Dead_modelnums[];
 
-//the model number of the marker object
+//the model number of the marker tObject
 extern int Marker_model_num;
 
 // Initializes the palette, bitmap system...
@@ -285,7 +285,7 @@ void InitTextures();
 #define OL_POWERUP          3
 #define OL_CONTROL_CENTER   4
 #define OL_PLAYER           5
-#define OL_CLUTTER          6   //some sort of misc object
+#define OL_CLUTTER          6   //some sort of misc tObject
 #define OL_EXIT             7   //the exit model for external scenes
 #define OL_WEAPON           8   //a weapon that can be placed
 
@@ -305,7 +305,7 @@ int ComputeAvgPixel(grs_bitmap *newBm);
 
 void LoadTextureBrightness (char *pszLevel);
 int LoadExitModels();
-int BMReadExtraRobots (char *fname, char *folder, int type);
+int BMReadExtraRobots (char *fname, char *folder, int nType);
 int LoadRobotReplacements (char *level_name, int bAddBots);
 void BMFreeExtraModels (void);
 void _CDECL_ BMFreeExtraObjBitmaps (void);

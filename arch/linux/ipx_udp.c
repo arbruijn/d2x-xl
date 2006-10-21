@@ -21,7 +21,7 @@
  * 0.99.2 - commented a bit :-) 
  *        - now adds to broadcast list each host it gets some packet from
  *          which is already not covered by local physical ethernet broadcast
- *        - implemented short-signature packet format
+ *        - implemented short-nSignature packet format
  *        - compatibility mode for old D1X releases due to the previous bullet
  *
  * Configuration:
@@ -92,7 +92,7 @@ establishing the communication. This always works, as the client knows the serve
 (containing the server IP + port after the game data) and thus gets to know its IP + port. It 
 replies to the client, and puts the client's IP + port after the end of the game data.
 
-There is a message type where the server tells all participants about all other participants; 
+There is a message nType where the server tells all participants about all other participants; 
 that's how clients find out about each other in a game.
 
 When the server receives a participation request from a client, it adds its IP + port to a table 
@@ -154,7 +154,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #  include <sys/sockio.h>
 #endif
 #include <net/if.h>
-#include <ctype.h>
+#include <cType.h>
 
 #ifdef __macosx__
 #include <ifaddrs.h>
@@ -182,7 +182,7 @@ unsigned char ipx_LocalAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','
 unsigned char ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 int udpBasePort [2] = {UDP_BASEPORT, UDP_BASEPORT};
 
-/* Packet format: first is the signature { 0xD1,'X' } which can be also
+/* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
  * Then follows virtual socket number (as changed during PgDOWN/PgUP) 
  * in network-byte-order as 2 bytes (u_short). After such 4/8 byte header
@@ -275,7 +275,7 @@ int Fail (const char *fmt, ...);
 #define IF_REQFLAGS (IFF_UP|IFF_RUNNING)
 #endif
 
-/* We reject any interfaces declared as LOOPBACK type.
+/* We reject any interfaces declared as LOOPBACK nType.
  */
 #define IF_NOTFLAGS (IFF_LOOPBACK)
 
@@ -502,7 +502,7 @@ if (getifaddrs (&ifap) != 0)
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only count the address if it meets our criteria.
-	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (ifa->ifaFlags & IF_NOTFLAGS || !((ifa->ifaFlags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	}
@@ -512,7 +512,7 @@ chk (broads = d_malloc (j * sizeof (*broads)));
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only copy the address if it meets our criteria.
-	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (ifa->ifaFlags & IF_NOTFLAGS || !((ifa->ifaFlags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	sinp = (struct sockaddr_in *) ifa->ifa_broadaddr;
@@ -540,10 +540,10 @@ for (i = j = 0; i < cnt; i++) {
 		close (sock);
 		FAIL ("ioctl (udp,\"%s\",SIOCGIFFLAGS) error: %m", ifconf.ifc_req [i].ifr_name);
 		}
-	if (((ifconf.ifc_req [i].ifr_flags & IF_REQFLAGS) != IF_REQFLAGS) ||
-		  (ifconf.ifc_req [i].ifr_flags & IF_NOTFLAGS))
+	if (((ifconf.ifc_req [i].ifrFlags & IF_REQFLAGS) != IF_REQFLAGS) ||
+		  (ifconf.ifc_req [i].ifrFlags & IF_NOTFLAGS))
 		continue;
-	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifr_flags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
+	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifrFlags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
 		close (sock);
 		FAIL ("ioctl (udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error: %m",ifconf.ifc_req [i].ifr_name);
 		}
@@ -613,7 +613,7 @@ static void setupHints (struct addrinfo *hints) {
     hints->ai_family = PF_INET;
     hints->ai_protocol = IPPROTO_UDP;
     hints->ai_socktype = 0;
-    hints->ai_flags = 0;
+    hints->aiFlags = 0;
     hints->ai_addrlen = 0;
     hints->ai_addr = NULL;
     hints->ai_canonname = NULL;
@@ -1230,7 +1230,7 @@ else
 memset (rd->src_network, 0, 4);
 memcpy (rd->src_node, &fromAddr.sin_addr, 4);
 memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
-rd->pkt_type = 0;
+rd->pktType = 0;
 #if UDPDEBUG
 //printf (MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
 //dumpraddr (rd->src_node);

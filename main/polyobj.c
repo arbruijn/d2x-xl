@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added code to remap polygon model numbers by matching filenames
  *
  * Revision 1.45  1994/08/26  15:35:58  matt
- * Made eclips usable on more than one object at a time
+ * Made eclips usable on more than one tObject at a time
  *
  * Revision 1.44  1994/08/25  18:11:58  matt
  * Made player's weapons and flares fire from the positions on the 3d model.
@@ -166,7 +166,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 
 #define ID_OHDR 0x5244484f // 'RDHO'  //Object header
 #define ID_SOBJ 0x4a424f53 // 'JBOS'  //Subobject header
-#define ID_GUNS 0x534e5547 // 'SNUG'  //List of guns on this object
+#define ID_GUNS 0x534e5547 // 'SNUG'  //List of guns on this tObject
 #define ID_ANIM 0x4d494e41 // 'MINA'  //Animation data
 #define ID_IDTA 0x41544449 // 'ATDI'  //Interpreter data
 #define ID_TXTR 0x52545854 // 'RTXT'  //Texture filename list
@@ -175,15 +175,15 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 
 #define TEMP_CANV	0
 
-#define pof_CFSeek(_buf, _len, _type) _pof_CFSeek ((_len), (_type))
+#define pof_CFSeek(_buf, _len, Type) _pof_CFSeek ((_len), (Type))
 #define new_pof_read_int(i, f) pof_cfread (& (i), sizeof (i), 1, (f))
 
 int	Pof_file_end;
 int	Pof_addr;
 
-void _pof_CFSeek (int len, int type)
+void _pof_CFSeek (int len, int nType)
 {
-	switch (type) {
+	switch (nType) {
 		case SEEK_SET:	Pof_addr = len;	break;
 		case SEEK_CUR:	Pof_addr += len;	break;
 		case SEEK_END:
@@ -205,7 +205,7 @@ int pof_read_int (ubyte *bufp)
 	return INTEL_INT (i);
 
 //	if (CFRead (&i, sizeof (i), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading object");
+//		Error ("Unexpected end-of-file while reading tObject");
 //
 //	return i;
 }
@@ -233,7 +233,7 @@ short pof_read_short (ubyte *bufp)
 	Pof_addr += 2;
 	return INTEL_SHORT (s);
 //	if (CFRead (&s, sizeof (s), 1, f) != 1)
-//		Error ("Unexpected end-of-file while reading object");
+//		Error ("Unexpected end-of-file while reading tObject");
 //
 //	return s;
 }
@@ -251,9 +251,9 @@ void pof_read_string (char *buf, int max_char, ubyte *bufp)
 
 }
 
-void pof_read_vecs (vms_vector *vecs, int n, ubyte *bufp)
+void pof_read_vecs (vmsVector *vecs, int n, ubyte *bufp)
 {
-//	CFRead (vecs, sizeof (vms_vector), n, f);
+//	CFRead (vecs, sizeof (vmsVector), n, f);
 
 	memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
 	Pof_addr += n*sizeof (*vecs);
@@ -267,7 +267,7 @@ void pof_read_vecs (vms_vector *vecs, int n, ubyte *bufp)
 		Int3 ();
 }
 
-void pof_read_angs (vms_angvec *angs, int n, ubyte *bufp)
+void pof_read_angs (vmsAngVec *angs, int n, ubyte *bufp)
 {
 	memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
 	Pof_addr += n*sizeof (*angs);
@@ -282,13 +282,13 @@ void pof_read_angs (vms_angvec *angs, int n, ubyte *bufp)
 }
 
 #ifdef DRIVE
-#define robot_info void
+#define tRobotInfo void
 #else
-vms_angvec anim_angs [N_ANIM_STATES][MAX_SUBMODELS];
+vmsAngVec anim_angs [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void robot_set_angles (robot_info *r, polymodel *pm, vms_angvec angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void robot_set_angles (tRobotInfo *r, polymodel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
@@ -385,12 +385,12 @@ void AlignPolyModelData (polymodel *pm)
 
 //------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
-polymodel *ReadModelFile (polymodel *pm, char *filename, robot_info *r)
+polymodel *ReadModelFile (polymodel *pm, char *filename, tRobotInfo *r)
 {
 	CFILE *ifile;
 	short version;
 	int id, len, next_chunk;
-	int anim_flag = 0;
+	int animFlag = 0;
 	ubyte *model_buf;
 
 if (!(model_buf = (ubyte *)d_malloc (MODEL_BUF_SIZE * sizeof (ubyte))))
@@ -416,14 +416,14 @@ while (new_pof_read_int (id, model_buf) == 1) {
 	next_chunk = Pof_addr + len;
 	switch (id) {
 		case ID_OHDR: {		//Object header
-			vms_vector pmmin, pmmax;
+			vmsVector pmmin, pmmax;
 			pm->n_models = pof_read_int (model_buf);
 			pm->rad = pof_read_int (model_buf);
 			Assert (pm->n_models <= MAX_SUBMODELS);
 			pof_read_vecs (&pmmin, 1, model_buf);
 			pof_read_vecs (&pmmax, 1, model_buf);
 			if (FindArg ("-bspgen")) {
-				vms_vector v;
+				vmsVector v;
 				fix l;
 				VmVecSub (&v, &pmmax, &pmmin);
 				l = v.x;
@@ -439,7 +439,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 		case ID_SOBJ: {		//Subobject header
 			int n = pof_read_short (model_buf);
 			Assert (n < MAX_SUBMODELS);
-			anim_flag++;
+			animFlag++;
 			pm->submodel_parents [n] = (char) pof_read_short (model_buf);
 			pof_read_vecs (&pm->submodel_norms [n], 1, model_buf);
 			pof_read_vecs (&pm->submodel_pnts [n], 1, model_buf);
@@ -450,20 +450,20 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			}
 
 #ifndef DRIVE
-		case ID_GUNS: {		//List of guns on this object
+		case ID_GUNS: {		//List of guns on this tObject
 			if (r) {
 				int i;
-				vms_vector gun_dir;
+				vmsVector gun_dir;
 				ubyte gun_used [MAX_GUNS];
-				r->n_guns = pof_read_int (model_buf);
-				if (r->n_guns)
-					anim_flag++;
-				Assert (r->n_guns <= MAX_GUNS);
-				for (i = 0; i < r->n_guns; i++)
+				r->nGuns = pof_read_int (model_buf);
+				if (r->nGuns)
+					animFlag++;
+				Assert (r->nGuns <= MAX_GUNS);
+				for (i = 0; i < r->nGuns; i++)
 					gun_used [i] = 0;
-				for (i = 0; i < r->n_guns; i++) {
+				for (i = 0; i < r->nGuns; i++) {
 					int id = pof_read_short (model_buf);
-					Assert (id < r->n_guns);
+					Assert (id < r->nGuns);
 					Assert (gun_used [id] == 0);
 					gun_used [id] = 1;
 					r->gun_submodels [id] = (char) pof_read_short (model_buf);
@@ -479,7 +479,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			}
 
 		case ID_ANIM:		//Animation data
-			anim_flag++;
+			animFlag++;
 			if (r) {
 				int f, m, n_frames = pof_read_short (model_buf);
 				Assert (n_frames == N_ANIM_STATES);
@@ -519,7 +519,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 if (FindArg ("-bspgen")) {
 	char *p = strchr (filename, '.');
 	*p = 0;
-	//if (anim_flag > 1)
+	//if (animFlag > 1)
 	//printf (" -a");
 	//printf (" %s.3ds\n", filename);
 	*p = '.';
@@ -538,12 +538,12 @@ return pm;
 //------------------------------------------------------------------------------
 //reads the gun information for a model
 //fills in arrays gun_points & gun_dirs, returns the number of guns read
-int read_model_guns (char *filename, vms_vector *gun_points, vms_vector *gun_dirs, int *gun_submodels)
+int read_model_guns (char *filename, vmsVector *gun_points, vmsVector *gun_dirs, int *gun_submodels)
 {
 	CFILE *ifile;
 	short version;
 	int id, len;
-	int n_guns=0;
+	int nGuns=0;
 	ubyte	*model_buf;
 
 	model_buf = (ubyte *)d_malloc (MODEL_BUF_SIZE * sizeof (ubyte));
@@ -576,13 +576,13 @@ int read_model_guns (char *filename, vms_vector *gun_points, vms_vector *gun_dir
 		//id  = pof_read_int (model_buf);
 		len = pof_read_int (model_buf);
 
-		if (id == ID_GUNS) {		//List of guns on this object
+		if (id == ID_GUNS) {		//List of guns on this tObject
 
 			int i;
 
-			n_guns = pof_read_int (model_buf);
+			nGuns = pof_read_int (model_buf);
 
-			for (i=0;i<n_guns;i++) {
+			for (i=0;i<nGuns;i++) {
 				int id, sm;
 
 				id = pof_read_short (model_buf);
@@ -604,7 +604,7 @@ int read_model_guns (char *filename, vms_vector *gun_points, vms_vector *gun_dir
 
 	d_free (model_buf);
 	
-	return n_guns;
+	return nGuns;
 }
 
 //------------------------------------------------------------------------------
@@ -622,28 +622,28 @@ if (po->model_data) {
 //draw a polygon model
 extern int nInstanceDepth;
 void DrawPolygonModel (
-	object			*objP, 
-	vms_vector		*pos, 
-	vms_matrix		*orient, 
-	vms_angvec		*anim_angles, 
-	int				model_num, 
+	tObject			*objP, 
+	vmsVector		*pos, 
+	vmsMatrix		*orient, 
+	vmsAngVec		*animAngles, 
+	int				nModel, 
 	int				flags, 
 	fix				light, 
-	fix				*glow_values, 
-	bitmap_index	altTextures [], 
+	fix				*glowValues, 
+	tBitmapIndex	altTextures [], 
 	tRgbColorf		*color)
 {
 	polymodel	*po;
 	int			i, j, nTextures;
 	PA_DFX (int bSaveLight);
 
-if (model_num >= gameData.models.nPolyModels)
+if (nModel >= gameData.models.nPolyModels)
 	return;
-Assert (model_num < gameData.models.nPolyModels);
-po = gameData.models.polyModels + model_num;
-if (objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
+Assert (nModel < gameData.models.nPolyModels);
+po = gameData.models.polyModels + nModel;
+if (objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
 	G3SetModelPoints (gameData.models.polyModelPoints);
-	G3DrawPolyModelShadow (objP, po->model_data, anim_angles);
+	G3DrawPolyModelShadow (objP, po->model_data, animAngles);
 	return;
 	}
 //check if should use simple model (depending on detail level chosen)
@@ -675,7 +675,7 @@ else {
 }
 
 #ifdef PIGGY_USE_PAGING
-// Make sure the textures for this object are paged in...
+// Make sure the textures for this tObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)	
 	PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
@@ -697,22 +697,22 @@ _3dfx_rendering_poly_obj = 1;
 PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
-if (flags == 0)		//draw entire object
-	G3DrawPolyModel (objP, po->model_data, gameData.models.textures, anim_angles, light, glow_values, color, NULL);
+if (flags == 0)		//draw entire tObject
+	G3DrawPolyModel (objP, po->model_data, gameData.models.textures, animAngles, light, glowValues, color, NULL);
 else {
 	int i;
 
 	for (i = 0; flags; flags >>= 1, i++)
 		if (flags & 1) {
-			vms_vector ofs;
+			vmsVector ofs;
 
 			Assert (i < po->n_models);
 			//if submodel, rotate around its center point, not pivot point
 			VmVecAvg (&ofs, &po->submodel_mins [i], &po->submodel_maxs [i]);
 			VmVecNegate (&ofs);
 			G3StartInstanceMatrix (&ofs, NULL);
-			G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, anim_angles, 
-									light, glow_values, color, NULL);
+			G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, animAngles, 
+									light, glowValues, color, NULL);
 			G3DoneInstance ();
 			}	
 	}
@@ -722,7 +722,7 @@ G3DoneInstance ();
 	g3s_point p0, p1;
 
 G3TransformPoint (&p0.p3_vec, &objP->pos);
-VmVecSub (&p1.p3_vec, &objP->pos, &objP->mtype.phys_info.velocity);
+VmVecSub (&p1.p3_vec, &objP->pos, &objP->mType.physInfo.velocity);
 G3TransformPoint (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
 glDisable (GL_TEXTURE_2D);
@@ -746,27 +746,27 @@ PA_DFX (gameStates.render.nLighting = bSaveLight);
 void polyobj_find_min_max (polymodel *pm)
 {
 	ushort nverts;
-	vms_vector *vp;
-	ushort *data, type;
+	vmsVector *vp;
+	ushort *data, nType;
 	int m;
-	vms_vector *big_mn, *big_mx;
+	vmsVector *big_mn, *big_mx;
 	
 	big_mn = &pm->mins;
 	big_mx = &pm->maxs;
 
 	for (m = 0; m < pm->n_models; m++) {
-		vms_vector *mn, *mx, *ofs;
+		vmsVector *mn, *mx, *ofs;
 
 		mn = pm->submodel_mins + m;
 		mx = pm->submodel_maxs + m;
 		ofs= pm->submodel_offsets + m;
 		data = (ushort *) (pm->model_data + pm->submodel_ptrs [m]);
-		type = *data++;
-		Assert (type == 7 || type == 1);
+		nType = *data++;
+		Assert (nType == 7 || nType == 1);
 		nverts = *data++;
-		if (type==7)
+		if (nType==7)
 			data+=2;		//skip start & pad
-		vp = (vms_vector *) data;
+		vp = (vmsVector *) data;
 		*mn = *mx = *vp++; 
 		nverts--;
 		if (m == 0)
@@ -802,7 +802,7 @@ char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 //returns the number of this model
 #ifndef DRIVE
-int LoadPolygonModel (char *filename, int n_textures, int first_texture, robot_info *r)
+int LoadPolygonModel (char *filename, int n_textures, int first_texture, tRobotInfo *r)
 #else
 int LoadPolygonModel (char *filename, int n_textures, grs_bitmap ***textures)
 #endif
@@ -862,10 +862,10 @@ void InitPolygonModels ()
 //into an off-screen canvas that it creates, then copies to the current
 //canvas.
 
-void DrawModelPicture (int mn, vms_angvec *orient_angles)
+void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 {
-	vms_vector	temp_pos=ZERO_VECTOR;
-	vms_matrix	temp_orient = IDENTITY_MATRIX;
+	vmsVector	temp_pos=ZERO_VECTOR;
+	vmsMatrix	temp_orient = IDENTITY_MATRIX;
 #if TEMP_CANV
 	grs_canvas	*save_canv = grdCurCanv, *temp_canv;
 #endif

@@ -33,14 +33,14 @@
 static unsigned char bInstalled = 0;
 
 //-------- Variable accessed by outside functions ---------
-unsigned char 		keyd_buffer_type;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+unsigned char 		keyd_bufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
 unsigned char 		keyd_repeat;
 unsigned char 		keyd_editor_mode;
 volatile unsigned char 	keyd_last_pressed;
 volatile unsigned char 	keyd_last_released;
 volatile unsigned char	keyd_pressed[256];
-volatile unsigned char	keyd_flags[256];
-volatile int		keyd_time_when_last_pressed;
+volatile unsigned char	keydFlags[256];
+volatile int		keydTime_when_last_pressed;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -64,8 +64,8 @@ static keyboard key_data;
 
 typedef struct key_props {
 	char *key_text;
-	unsigned char ascii_value;
-	unsigned char shifted_ascii_value;
+	unsigned char asciiValue;
+	unsigned char shifted_asciiValue;
 	SDLKey sym;
 } key_props;
 
@@ -359,7 +359,7 @@ unsigned char KeyToASCII(int keycode )
 
 shifted = keycode & KEY_SHIFTED;
 keycode &= 0xFF;
-return shifted ? key_properties [keycode].shifted_ascii_value : key_properties [keycode].ascii_value;
+return shifted ? key_properties [keycode].shifted_asciiValue : key_properties [keycode].asciiValue;
 }
 
 void key_handler(SDL_KeyboardEvent *event)
@@ -386,7 +386,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			if (state) {
 				key->counter++;
 				keyd_last_pressed = keycode;
-				keyd_time_when_last_pressed = TimerGetFixedSeconds();
+				keydTime_when_last_pressed = TimerGetFixedSeconds();
 				key->flags = 0;
 				if (keyd_pressed [KEY_LSHIFT] || keyd_pressed [KEY_RSHIFT])
 					key->flags |= (ubyte) (KEY_SHIFTED / 256);
@@ -399,7 +399,7 @@ void key_handler(SDL_KeyboardEvent *event)
 		else {
 			if (state) {
 				keyd_last_pressed = keycode;
-				key->timewentdown = keyd_time_when_last_pressed = TimerGetFixedSeconds();
+				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
 				key_data.keys [keycode].timehelddown = 0;
 				keyd_pressed [keycode] = 1;
 				key->downcount += state;
@@ -412,7 +412,7 @@ void key_handler(SDL_KeyboardEvent *event)
 					key->flags |= (ubyte) (KEY_ALTED / 256);
 				if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
 					key->flags |= (ubyte) (KEY_CTRLED / 256);
-//				key->timewentdown = keyd_time_when_last_pressed = TimerGetFixedSeconds();
+//				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
 			} else {	
 				keyd_pressed [keycode] = 0;
 				keyd_last_released = keycode;
@@ -437,7 +437,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
 				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = keyd_time_when_last_pressed;
+				key_data.time_pressed[key_data.keytail] = keydTime_when_last_pressed;
 				key_data.keytail = temp;
 			}
 		}
@@ -458,8 +458,8 @@ void key_init()
 
   bInstalled=1;
 
-  keyd_time_when_last_pressed = TimerGetFixedSeconds();
-  keyd_buffer_type = 1;
+  keydTime_when_last_pressed = TimerGetFixedSeconds();
+  keyd_bufferType = 1;
   keyd_repeat = 1;
   
   for(i=0; i<256; i++)
@@ -601,7 +601,7 @@ unsigned int key_get_shift_status()
 // Returns the number of seconds this key has been down since last call.
 fix KeyDownTime(int scancode)
 {
-	static fix last_time = -1;
+	static fix lastTime = -1;
 	fix time_down, time, slack = 0;
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
@@ -626,12 +626,12 @@ if (!bFastPoll)
 		if (gameStates.input.bKeepSlackTime && (time_down > gameStates.input.kcFrameTime)) {
 			slack = (fix) (time_down - gameStates.input.kcFrameTime);
 			time -= slack + slack / 10;	// there is still some slack, so add an extra 10%
-			if (time < last_time)
-				time = last_time;
+			if (time < lastTime)
+				time = lastTime;
 			time_down = (fix) gameStates.input.kcFrameTime;
 			}
 		key_data.keys[scancode].timewentdown = time;
-		last_time = time;
+		lastTime = time;
 if (time_down && time_down < gameStates.input.kcFrameTime)
 	time_down = (fix) gameStates.input.kcFrameTime;
 	}
@@ -653,7 +653,7 @@ if (!bFastPoll)
 	return n;
 }
 
-ubyte key_flags (int scancode)
+ubyte keyFlags (int scancode)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)

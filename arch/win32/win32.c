@@ -113,7 +113,7 @@ int GrSetMode(int mode)
 		return 1;
 
 	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = backbuffer;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_LINEAR;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
@@ -174,7 +174,7 @@ void gr_upixel( int x, int y )
 
 void gr_bm_upixel( grs_bitmap * bm, int x, int y, unsigned char color )
 {
-	switch (bm->bm_props.type)
+	switch (bm->bm_props.nType)
 	{
 	case BM_LINEAR:
 		bm->bm_texBuf[ bm->bm_props.rowsize*y+x ] = color;

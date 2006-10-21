@@ -109,7 +109,7 @@ void mvefile_reset(MVEFILE *file)
 }
 
 /*
- * get the size of the next segment
+ * get the size of the next tSegment
  */
 int mvefile_get_next_segment_size(MVEFILE *movie)
 {
@@ -117,7 +117,7 @@ int mvefile_get_next_segment_size(MVEFILE *movie)
     if (movie->cur_chunk == NULL  ||  movie->next_segment >= movie->cur_fill)
         return -1;
 
-    /* if we don't have enough data to get a segment, fail */
+    /* if we don't have enough data to get a tSegment, fail */
     if (movie->cur_fill - movie->next_segment < 4)
         return -1;
 
@@ -126,7 +126,7 @@ int mvefile_get_next_segment_size(MVEFILE *movie)
 }
 
 /*
- * get type of next segment in chunk (0xff if no more segments in chunk)
+ * get nType of next tSegment in chunk (0xff if no more segments in chunk)
  */
 unsigned char mvefile_get_next_segment_major(MVEFILE *movie)
 {
@@ -134,7 +134,7 @@ unsigned char mvefile_get_next_segment_major(MVEFILE *movie)
     if (movie->cur_chunk == NULL  ||  movie->next_segment >= movie->cur_fill)
         return 0xff;
 
-    /* if we don't have enough data to get a segment, fail */
+    /* if we don't have enough data to get a tSegment, fail */
     if (movie->cur_fill - movie->next_segment < 4)
         return 0xff;
 
@@ -143,7 +143,7 @@ unsigned char mvefile_get_next_segment_major(MVEFILE *movie)
 }
 
 /*
- * get subtype (version) of next segment in chunk (0xff if no more segments in
+ * get subtype (version) of next tSegment in chunk (0xff if no more segments in
  * chunk)
  */
 unsigned char mvefile_get_next_segment_minor(MVEFILE *movie)
@@ -152,7 +152,7 @@ unsigned char mvefile_get_next_segment_minor(MVEFILE *movie)
     if (movie->cur_chunk == NULL  ||  movie->next_segment >= movie->cur_fill)
         return 0xff;
 
-    /* if we don't have enough data to get a segment, fail */
+    /* if we don't have enough data to get a tSegment, fail */
     if (movie->cur_fill - movie->next_segment < 4)
         return 0xff;
 
@@ -161,7 +161,7 @@ unsigned char mvefile_get_next_segment_minor(MVEFILE *movie)
 }
 
 /*
- * see next segment (return NULL if no next segment)
+ * see next tSegment (return NULL if no next tSegment)
  */
 unsigned char *mvefile_get_next_segment(MVEFILE *movie)
 {
@@ -169,7 +169,7 @@ unsigned char *mvefile_get_next_segment(MVEFILE *movie)
     if (movie->cur_chunk == NULL  ||  movie->next_segment >= movie->cur_fill)
         return NULL;
 
-    /* if we don't have enough data to get a segment, fail */
+    /* if we don't have enough data to get a tSegment, fail */
     if (movie->cur_fill - movie->next_segment < 4)
         return NULL;
 
@@ -178,7 +178,7 @@ unsigned char *mvefile_get_next_segment(MVEFILE *movie)
 }
 
 /*
- * advance to next segment
+ * advance to next tSegment
  */
 void mvefile_advance_segment(MVEFILE *movie)
 {
@@ -186,11 +186,11 @@ void mvefile_advance_segment(MVEFILE *movie)
     if (movie->cur_chunk == NULL  ||  movie->next_segment >= movie->cur_fill)
         return;
 
-    /* if we don't have enough data to get a segment, fail */
+    /* if we don't have enough data to get a tSegment, fail */
     if (movie->cur_fill - movie->next_segment < 4)
         return;
 
-    /* else, advance to next segment */
+    /* else, advance to next tSegment */
     movie->next_segment +=
         (4 + _mve_get_ushort(movie->cur_chunk + movie->next_segment));
 }
@@ -244,7 +244,7 @@ void mve_reset(MVESTREAM *movie)
 }
 
 /*
- * set segment type handler
+ * set tSegment nType handler
  */
 void mve_set_handler(MVESTREAM *movie, unsigned char major, MVESEGMENTHANDLER handler)
 {
@@ -253,7 +253,7 @@ void mve_set_handler(MVESTREAM *movie, unsigned char major, MVESEGMENTHANDLER ha
 }
 
 /*
- * set segment handler context
+ * set tSegment handler context
  */
 void mve_set_handler_context(MVESTREAM *movie, void *context)
 {
@@ -273,7 +273,7 @@ int mve_play_next_chunk(MVESTREAM *movie)
     major = mvefile_get_next_segment_major(movie->movie);
     while (major != 0xff)
     {
-        /* check whether to handle the segment */
+        /* check whether to handle the tSegment */
         if (major < 32  &&  movie->handlers[major] != NULL)
         {
             minor = mvefile_get_next_segment_minor(movie->movie);
@@ -284,7 +284,7 @@ int mve_play_next_chunk(MVESTREAM *movie)
                 return 0;
         }
 
-        /* advance to next segment */
+        /* advance to next tSegment */
         mvefile_advance_segment(movie->movie);
         major = mvefile_get_next_segment_major(movie->movie);
     }
@@ -338,7 +338,7 @@ static void _mvefile_free(MVEFILE *movie)
 }
 
 /*
- * open the file stream in thie object
+ * open the file stream in thie tObject
  */
 static int _mvefile_open(MVEFILE *file, void *stream)
 {
@@ -377,7 +377,7 @@ static int _mvefile_read_header(MVEFILE *movie)
     if (! mve_read(movie->stream, buffer, 26))
         return 0;
 
-    /* check the signature */
+    /* check the nSignature */
     if (memcmp(buffer, MVE_HEADER, 20))
         return 0;
 
@@ -430,7 +430,7 @@ static int _mvefile_fetch_next_chunk(MVEFILE *movie)
     if (! movie->stream)
         return 0;
 
-    /* fail if we can't read the next segment descriptor */
+    /* fail if we can't read the next tSegment descriptor */
     if (! mve_read(movie->stream, buffer, 4))
         return 0;
 
@@ -498,7 +498,7 @@ static void _mvestream_free(MVESTREAM *movie)
 }
 
 /*
- * open an MVESTREAM object
+ * open an MVESTREAM tObject
  */
 static int _mvestream_open(MVESTREAM *movie, void *stream)
 {

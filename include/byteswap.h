@@ -203,7 +203,7 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
-static inline vms_vector *SwapVector (vms_vector *v, int bEndian) 
+static inline vmsVector *SwapVector (vmsVector *v, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
 	v->x = (fix) SWAPINT ((int) v->x);
@@ -215,7 +215,7 @@ return v;
 
 // ----------------------------------------------------------------------------
 
-static inline vms_angvec *SwapAngVec (vms_angvec *v, int bEndian) 
+static inline vmsAngVec *SwapAngVec (vmsAngVec *v, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
 	v->p = (fixang) SWAPSHORT ((short) v->p);
@@ -227,7 +227,7 @@ return v;
 
 // ----------------------------------------------------------------------------
 
-static inline vms_matrix *SwapMatrix (vms_matrix *m, int bEndian) 
+static inline vmsMatrix *SwapMatrix (vmsMatrix *m, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
 	SwapVector (&m->rvec, bEndian);

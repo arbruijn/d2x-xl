@@ -118,7 +118,7 @@ int GrSetMode(u_int32_t mode)
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = rowsize;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_LINEAR;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = framebuffer;
 	GrSetCurrentCanvas(NULL);
 	
@@ -216,7 +216,7 @@ void GrPaletteStepUp (int r, int g, int b)
 }
 
 //added on 980913 by adb to fix palette problems
-// need a min without side effects...
+// need a min without tSide effects...
 #undef min
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb

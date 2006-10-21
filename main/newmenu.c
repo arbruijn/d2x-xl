@@ -584,7 +584,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <cType.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -906,7 +906,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		bmp = GrCreateBitmap (width, height, 0);
 		Assert (bmp != NULL);
 		}
-	pcx_error = pcx_read_bitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.type, 0);
+	pcx_error = pcx_read_bitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.nType, 0);
 	Assert (pcx_error == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
@@ -1075,7 +1075,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 		if (!gameOpts->menus.nStyle) {
 			if (!bg->background) {
 #if defined (POLY_ACC)
-				bg->background = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.type, NULL);
+				bg->background = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
 #else
 				bg->background = GrCreateBitmap (w, h, 1);
 #endif
@@ -1111,7 +1111,7 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 #endif
 	if (!(gameOpts->menus.nStyle || bg->saved)) {
 #if defined (POLY_ACC)
-		bg->saved = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.type, NULL);
+		bg->saved = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
 #else
 		bg->saved = GrCreateBitmap (w, h, 0);
 #endif
@@ -1190,7 +1190,7 @@ else {
 	else
 		grdCurCanv->cv_font = NORMAL_FONT;
 #ifdef WINDOWS
-	if (bIsCurrent && item->type == NM_TYPE_TEXT) 
+	if (bIsCurrent && item->nType == NM_TYPE_TEXT) 
 		grdCurCanv->cv_font = NORMAL_FONT;
 #endif
 //	if (!bIsCurrent && (gameOpts->menus.altBg.bHave > 0))
@@ -1515,7 +1515,7 @@ void NMUpdateCursor (newmenu_item *item)
 	int x, y;
 	char * text = item->text;
 
-	Assert (item->type==NM_TYPE_INPUT_MENU || item->type==NM_TYPE_INPUT);
+	Assert (item->nType==NM_TYPE_INPUT_MENU || item->nType==NM_TYPE_INPUT);
 
 	while (*text)	{
 		GrGetStringSize (text, &w, &h, &aw);
@@ -1593,7 +1593,7 @@ if (item->rebuild) {
 	item->rebuild = 0;
 	}
 WIN (DDGRLOCK (dd_grd_curcanv));	
-	switch (item->type)	{
+	switch (item->nType)	{
 	case NM_TYPE_TEXT:
       // grdCurCanv->cv_font=TEXT_FONT;
 		// fall through on purpose
@@ -1606,19 +1606,19 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		int h, l;
 		char *psz = item->saved_text;
 
-		if (item->value < item->min_value) 
-			item->value = item->min_value;
-		else if (item->value > item->max_value) 
-			item->value = item->max_value;
+		if (item->value < item->minValue) 
+			item->value = item->minValue;
+		else if (item->value > item->maxValue) 
+			item->value = item->maxValue;
 		sprintf (psz, "%s\t%s", item->text, SLIDER_LEFT);
 #if 1
 		l = (int) strlen (psz);
-		h = item->max_value - item->min_value + 1;
+		h = item->maxValue - item->minValue + 1;
 		memset (psz + l, SLIDER_MIDDLE [0], h);
 		psz [l + h] = SLIDER_RIGHT [0];
 		psz [l + h + 1] = '\0';
 #else
-		for (j = 0; j < (item->max_value - item->min_value + 1); j++) {
+		for (j = 0; j < (item->maxValue - item->minValue + 1); j++) {
 			sprintf (psz, "%s%s", psz, SLIDER_MIDDLE);
 			}
 		sprintf (item->saved_text, "%s%s", item->saved_text, SLIDER_RIGHT);
@@ -1640,7 +1640,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		break;
 
 	case NM_TYPE_GAUGE:
-		NMGauge (b, item->w, item->x, item->y, item->value, item->max_value, bIsCurrent);
+		NMGauge (b, item->w, item->x, item->y, item->value, item->maxValue, bIsCurrent);
 		break;
 
 	case NM_TYPE_CHECK:
@@ -1662,10 +1662,10 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	case NM_TYPE_NUMBER:	
 		{
 		char text [10];
-		if (item->value < item->min_value) 
-			item->value=item->min_value;
-		if (item->value > item->max_value) 
-			item->value=item->max_value;
+		if (item->value < item->minValue) 
+			item->value=item->minValue;
+		if (item->value > item->maxValue) 
+			item->value=item->maxValue;
 		NMString (item, b, bIsCurrent, bTiny);
 		sprintf (text, "%d", item->value);
 		NMRString (item, b, bIsCurrent, bTiny, text);
@@ -1807,7 +1807,7 @@ int NMCheckButtonPress ()
 
 		break;
 	default:
-		Error ("Bad control type (gameConfig.nControlType):%i", gameConfig.nControlType);
+		Error ("Bad control nType (gameConfig.nControlType):%i", gameConfig.nControlType);
 	}
 
 	return 0;
@@ -1904,21 +1904,21 @@ for (i = 0; i < nItems; i++) {
 		nStringHeight+=LHY (3);
 
 	item [i].saved_text [0] = '\0';
-	if (item [i].type == NM_TYPE_SLIDER) {
+	if (item [i].nType == NM_TYPE_SLIDER) {
 		int w1, h1, aw1;
 		(*nOthers)++;
 		sprintf (item [i].saved_text, "%s", SLIDER_LEFT);
-		for (j=0; j< (item [i].max_value-item [i].min_value+1); j++)	{
+		for (j=0; j< (item [i].maxValue-item [i].minValue+1); j++)	{
 			sprintf (item [i].saved_text, "%s%s", item [i].saved_text, SLIDER_MIDDLE);
 			}
 		sprintf (item [i].saved_text, "%s%s", item [i].saved_text, SLIDER_RIGHT);
 		GrGetStringSize (item [i].saved_text, &w1, &h1, &aw1);
 		string_width += w1 + *aw;
 		}
-	else if (item [i].type == NM_TYPE_MENU)	{
+	else if (item [i].nType == NM_TYPE_MENU)	{
 		(*nMenus)++;
 		}
-	else if (item [i].type == NM_TYPE_CHECK)	{
+	else if (item [i].nType == NM_TYPE_CHECK)	{
 		int w1, h1, aw1;
 		(*nOthers)++;
 		GrGetStringSize (NORMAL_CHECK_BOX, &w1, &h1, &aw1);
@@ -1927,7 +1927,7 @@ for (i = 0; i < nItems; i++) {
 		if (w1 > item [i].right_offset)
 			item [i].right_offset = w1;
 		}
-	else if (item [i].type == NM_TYPE_RADIO) {
+	else if (item [i].nType == NM_TYPE_RADIO) {
 		int w1, h1, aw1;
 		(*nOthers)++;
 		GrGetStringSize (NORMAL_RADIO_BOX, &w1, &h1, &aw1);
@@ -1936,19 +1936,19 @@ for (i = 0; i < nItems; i++) {
 		if (w1 > item [i].right_offset)
 			item [i].right_offset = w1;
 		}
-	else if  (item [i].type==NM_TYPE_NUMBER)	{
+	else if  (item [i].nType==NM_TYPE_NUMBER)	{
 		int w1, h1, aw1;
 		char test_text [20];
 		(*nOthers)++;
-		sprintf (test_text, "%d", item [i].max_value);
+		sprintf (test_text, "%d", item [i].maxValue);
 		GrGetStringSize (test_text, &w1, &h1, &aw1);
 		item [i].right_offset = w1;
-		sprintf (test_text, "%d", item [i].min_value);
+		sprintf (test_text, "%d", item [i].minValue);
 		GrGetStringSize (test_text, &w1, &h1, &aw1);
 		if (w1 > item [i].right_offset)
 			item [i].right_offset = w1;
 		}
-	else if (item [i].type == NM_TYPE_INPUT)	{
+	else if (item [i].nType == NM_TYPE_INPUT)	{
 		Assert (strlen (item [i].text) < NM_MAX_TEXT_LEN);
 		strncpy (item [i].saved_text, item [i].text, NM_MAX_TEXT_LEN);
 		(*nOthers)++;
@@ -1957,7 +1957,7 @@ for (i = 0; i < nItems; i++) {
 			string_width = MAX_TEXT_WIDTH;
 		item [i].value = -1;
 		}
-	else if (item [i].type == NM_TYPE_INPUT_MENU)	{
+	else if (item [i].nType == NM_TYPE_INPUT_MENU)	{
 		Assert (strlen (item [i].text) < NM_MAX_TEXT_LEN);
 		strncpy (item [i].saved_text, item [i].text, NM_MAX_TEXT_LEN);
 		(*nMenus)++;
@@ -1993,10 +1993,10 @@ for (i = 0; i < nItems; i++)	{
 	item [i].y += yOffs;
 	item [i].xSave = item [i].x;
 	item [i].ySave = item [i].y;
-	if (item [i].type == NM_TYPE_RADIO)	{
+	if (item [i].nType == NM_TYPE_RADIO)	{
 		int fm = -1;	// ffs first marked one
 		for (j = 0; j < nItems; j++)	{
-			if ((item [j].type == NM_TYPE_RADIO) && (item [j].group == item [i].group)) {
+			if ((item [j].nType == NM_TYPE_RADIO) && (item [j].group == item [i].group)) {
 				if ((fm == -1) && item [j].value)
 					fm = j;
 				item [j].value = 0;
@@ -2250,7 +2250,7 @@ else {
 #ifdef NEWMENU_MOUSE
 	bDblClick = 1;
 #endif
-	while (item [choice].type == NM_TYPE_TEXT) {
+	while (item [choice].nType == NM_TYPE_TEXT) {
 		choice++;
 		if (choice >= nItems)
 			choice = 0; 
@@ -2264,7 +2264,7 @@ else {
 
 done = 0;
 topChoice = 0;
-while (item [topChoice].type == NM_TYPE_TEXT) {
+while (item [topChoice].nType == NM_TYPE_TEXT) {
 	topChoice++;
 	if (topChoice >= nItems)
 		topChoice = 0; 
@@ -2485,10 +2485,10 @@ if (k && con_events(k))
             	else if (choice < 0) 
 						choice = nItems - 1;
            		}
-				} while (item [choice].type == NM_TYPE_TEXT);
-			if ((item [choice].type==NM_TYPE_INPUT) &&(choice!=old_choice))	
+				} while (item [choice].nType == NM_TYPE_TEXT);
+			if ((item [choice].nType==NM_TYPE_INPUT) &&(choice!=old_choice))	
 				item [choice].value = -1;
-			if ((old_choice>-1) &&(item [old_choice].type==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
 				item [old_choice].group=0;
 				strcpy (item [old_choice].text, item [old_choice].saved_text);
 				item [old_choice].value = -1;
@@ -2526,11 +2526,11 @@ if (k && con_events(k))
            		else if (choice >= nItems) 
 						choice=0;
            		}
-				} while (item [choice].type==NM_TYPE_TEXT);
+				} while (item [choice].nType==NM_TYPE_TEXT);
                                                       
-			if ((item [choice].type == NM_TYPE_INPUT) && (choice != old_choice))	
+			if ((item [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))	
 				item [choice].value = -1;
-			if ((old_choice>-1) &&(item [old_choice].type==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
 				item [old_choice].group=0;
 				strcpy (item [old_choice].text, item [old_choice].saved_text);	
 				item [old_choice].value = -1;
@@ -2543,7 +2543,7 @@ if (k && con_events(k))
 checkOption:
 radioOption:
 			if (choice > -1)	{
-				switch (item [choice].type)	{
+				switch (item [choice].nType)	{
 				case NM_TYPE_MENU:
 				case NM_TYPE_INPUT:
 				case NM_TYPE_INPUT_MENU:
@@ -2564,7 +2564,7 @@ radioOption:
 					break;
 				case NM_TYPE_RADIO:
 					for (i=0; i<nItems; i++)	{
-						if ((i!=choice) &&(item [i].type==NM_TYPE_RADIO) &&(item [i].group==item [choice].group) &&(item [i].value))	{
+						if ((i!=choice) &&(item [i].nType==NM_TYPE_RADIO) &&(item [i].group==item [choice].group) &&(item [i].value))	{
 							item [i].value = 0;
 							item [i].redraw = 1;
 						}
@@ -2627,7 +2627,7 @@ radioOption:
 		case KEY_ENTER:
 		case KEY_PADENTER:
 launchOption:
-			if ((choice>-1) &&(item [choice].type==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
+			if ((choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
 				item [choice].group = 1;
 				item [choice].redraw = 1;
 				if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
@@ -2646,7 +2646,7 @@ launchOption:
 			break;
 
 		case KEY_ESC:
-			if ((choice>-1) &&(item [choice].type==NM_TYPE_INPUT_MENU) &&(item [choice].group==1))	{
+			if ((choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==1))	{
 				item [choice].group=0;
 				strcpy (item [choice].text, item [choice].saved_text);	
 				item [choice].redraw=1;
@@ -2673,7 +2673,7 @@ launchOption:
 
 		#ifndef NDEBUG
 		case KEY_BACKSP:	
-			if ((choice>-1) &&(item [choice].type!=NM_TYPE_INPUT)&&(item [choice].type!=NM_TYPE_INPUT_MENU))
+			if ((choice>-1) &&(item [choice].nType!=NM_TYPE_INPUT)&&(item [choice].nType!=NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
 		#endif
@@ -2699,7 +2699,7 @@ launchOption:
 					
 					choice = i + ctrl.nScrollOffset - ctrl.nMaxNoScroll;
 					if (choice >= 0 && choice < nItems)
-						switch (item [choice].type)	{
+						switch (item [choice].nType)	{
 							case NM_TYPE_CHECK:
 								item [choice].value = !item [choice].value;
 								item [choice].redraw=1;
@@ -2708,7 +2708,7 @@ launchOption:
 								break;
 							case NM_TYPE_RADIO:
 								for (i=0; i<nItems; i++)	{
-									if ((i!=choice) &&(item [i].type==NM_TYPE_RADIO) &&(item [i].group==item [choice].group) &&(item [i].value))	{
+									if ((i!=choice) &&(item [i].nType==NM_TYPE_RADIO) &&(item [i].group==item [choice].group) &&(item [i].value))	{
 										item [i].value = 0;
 										item [i].redraw = 1;
 									}
@@ -2774,7 +2774,7 @@ launchOption:
 				y1 = grdCurCanv->cv_bitmap.bm_props.y + item [i].y;
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 				y2 = y1 + item [i].h;
-				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(item [i].type != NM_TYPE_TEXT)) {
+				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(item [i].nType != NM_TYPE_TEXT)) {
 					if (i /*+ ctrl.nScrollOffset - ctrl.nMaxNoScroll*/ != choice) {
 						if (Hack_DblClick_MenuMode) 
 							bDblClick = 0; 
@@ -2782,7 +2782,7 @@ launchOption:
 
 					choice = i/* + ctrl.nScrollOffset - ctrl.nMaxNoScroll*/;
 
-					if (item [choice].type == NM_TYPE_SLIDER) {
+					if (item [choice].nType == NM_TYPE_SLIDER) {
 						char slider_text [NM_MAX_TEXT_LEN+1], *p, *s1;
 						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
 						
@@ -2800,20 +2800,20 @@ launchOption:
 
 							x1 = grdCurCanv->cv_bitmap.bm_props.x + item [choice].x + item [choice].w - slider_width;
 							x2 = x1 + slider_width + sright_width;
-							if ((mx > x1) &&(mx < (x1 + sleft_width)) &&(item [choice].value != item [choice].min_value)) {
-								item [choice].value = item [choice].min_value;
+							if ((mx > x1) &&(mx < (x1 + sleft_width)) &&(item [choice].value != item [choice].minValue)) {
+								item [choice].value = item [choice].minValue;
 								item [choice].redraw = 2;
-							} else if ((mx < x2) &&(mx > (x2 - sright_width)) &&(item [choice].value != item [choice].max_value)) {
-								item [choice].value = item [choice].max_value;
+							} else if ((mx < x2) &&(mx > (x2 - sright_width)) &&(item [choice].value != item [choice].maxValue)) {
+								item [choice].value = item [choice].maxValue;
 								item [choice].redraw = 2;
 							} else if ((mx > (x1 + sleft_width)) &&(mx < (x2 - sright_width))) {
-								int num_values, value_width, new_value;
+								int numValues, value_width, newValue;
 								
-								num_values = item [choice].max_value - item [choice].min_value + 1;
-								value_width = (slider_width - sleft_width - sright_width) / num_values;
-								new_value = (mx - x1 - sleft_width) / value_width;
-								if (item [choice].value != new_value) {
-									item [choice].value = new_value;
+								numValues = item [choice].maxValue - item [choice].minValue + 1;
+								value_width = (slider_width - sleft_width - sright_width) / numValues;
+								newValue = (mx - x1 - sleft_width) / value_width;
+								if (item [choice].value != newValue) {
+									item [choice].value = newValue;
 									item [choice].redraw = 2;
 								}
 							}
@@ -2822,9 +2822,9 @@ launchOption:
 					}
 					if (choice == old_choice)
 						break;
-					if ((item [choice].type==NM_TYPE_INPUT) &&(choice!=old_choice))	
+					if ((item [choice].nType==NM_TYPE_INPUT) &&(choice!=old_choice))	
 						item [choice].value = -1;
-					if ((old_choice>-1) &&(item [old_choice].type==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+					if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
 						item [old_choice].group=0;
 						strcpy (item [old_choice].text, item [old_choice].saved_text);
 						item [old_choice].value = -1;
@@ -2837,7 +2837,7 @@ launchOption:
 			}
 		}
 		
-		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(item [choice].type == NM_TYPE_MENU)) {
+		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(item [choice].nType == NM_TYPE_MENU)) {
 			mouse_get_pos (&mx, &my);
 			x1 = grdCurCanv->cv_bitmap.bm_props.x + item [choice].x;
 			x2 = x1 + item [choice].w;
@@ -2863,7 +2863,7 @@ launchOption:
 			}
 		}
 		
-		if (!done && !nMouseState && nOldMouseState &&(choice>-1) &&(item [choice].type==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
+		if (!done && !nMouseState && nOldMouseState &&(choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
 			item [choice].group = 1;
 			item [choice].redraw = 1;
 			if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
@@ -2896,7 +2896,7 @@ launchOption:
 		if (choice > -1)	{
 			int ascii;
 
-			if (((item [choice].type==NM_TYPE_INPUT)|| ((item [choice].type==NM_TYPE_INPUT_MENU)&&(item [choice].group==1)))&&(old_choice==choice))	{
+			if (((item [choice].nType==NM_TYPE_INPUT)|| ((item [choice].nType==NM_TYPE_INPUT_MENU)&&(item [choice].group==1)))&&(old_choice==choice))	{
 				if (k==KEY_LEFT || k==KEY_BACKSP || k==KEY_PAD4)	{
 					if (item [choice].value==-1) 
 						item [choice].value = (int) strlen (item [choice].text);
@@ -2925,7 +2925,7 @@ launchOption:
 						}
 					}
 				}
-			else if ((item [choice].type!=NM_TYPE_INPUT) && (item [choice].type!=NM_TYPE_INPUT_MENU)) {
+			else if ((item [choice].nType!=NM_TYPE_INPUT) && (item [choice].nType!=NM_TYPE_INPUT_MENU)) {
 				ascii = KeyToASCII (k);
 				if (ascii < 255) {
 					int choice1 = choice;
@@ -2935,7 +2935,7 @@ launchOption:
 
 						if (++choice1 >= nItems) 
 							choice1=0;
-						t = item [choice1].type;
+						t = item [choice1].nType;
 						if (item [choice1].key > 0)
 							ch = MENU_KEY (item [choice1].key, 0);
 						else if (item [choice1].key < 0) //skip any leading blanks
@@ -2980,7 +2980,7 @@ launchOption:
 				}	
 			}
 
-			if ((item [choice].type==NM_TYPE_NUMBER) || (item [choice].type==NM_TYPE_SLIDER)) 	{
+			if ((item [choice].nType==NM_TYPE_NUMBER) || (item [choice].nType==NM_TYPE_SLIDER)) 	{
 				int ov=item [choice].value;
 				switch (k) {
 				case KEY_PAD4:
@@ -3051,8 +3051,8 @@ launchOption:
 	            item [i].y += ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 	        	}   
          if ((i == choice) && 
-				 ((item [i].type == NM_TYPE_INPUT) || 
-				 ((item [i].type == NM_TYPE_INPUT_MENU) && item [i].group)))
+				 ((item [i].nType == NM_TYPE_INPUT) || 
+				 ((item [i].nType == NM_TYPE_INPUT_MENU) && item [i].group)))
 				NMUpdateCursor (&item [i]);
 			}
 #endif
@@ -3143,7 +3143,7 @@ int _CDECL_ ExecMessageBox1 (
 	memset (nmMsgItems, 0, sizeof (nmMsgItems));
 	for (i=0; i<nChoices; i++)	{
       s = va_arg (args, char *);
-      nmMsgItems [i].type = NM_TYPE_MENU; 
+      nmMsgItems [i].nType = NM_TYPE_MENU; 
 		nmMsgItems [i].text = s;
 		nmMsgItems [i].key = -1;
 	}
@@ -3187,9 +3187,9 @@ for (i = l = 0; i < nChoices; i++) {
 		break;
 	l += h;
 	if (!bTiny || i) 
-		nmMsgItems [i].type = NM_TYPE_MENU; 
+		nmMsgItems [i].nType = NM_TYPE_MENU; 
 	else {
-		nmMsgItems [i].type = NM_TYPE_TEXT; 
+		nmMsgItems [i].nType = NM_TYPE_TEXT; 
 		nmMsgItems [i].unavailable = 1; 
 		}
 	nmMsgItems [i].text = s;
@@ -3257,7 +3257,7 @@ void DeletePlayerSavedGames (char * name)
 
 int MakeNewPlayerFile (int allow_abort);
 
-int ExecMenuFileSelector (char * title, char * filespec, char * filename, int allow_abort_flag)
+int ExecMenuFileSelector (char * title, char * filespec, char * filename, int allow_abortFlag)
 {
 	int i;
 	FFS ffs;
@@ -3270,7 +3270,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int demo_mode=0;
 	int demos_deleted=0;
 	int initialized = 0;
-	int exit_value = 0;
+	int exitValue = 0;
 	int w_x, w_y, w_w, w_h, title_height;
 	int box_x, box_y, box_w, box_h;
 	bkg bg;		// background under listbox
@@ -3355,12 +3355,12 @@ ReadFileNames:
 	}
 
 	if ((NumFiles < 1) && demos_deleted)	{
-		exit_value = 0;
+		exitValue = 0;
 		goto ExitFileMenu;
 	}
 	if ((NumFiles < 1) && demo_mode) {
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
-		exit_value = 0;
+		exitValue = 0;
 		goto ExitFileMenu;
 	}
 
@@ -3376,7 +3376,7 @@ ReadFileNames:
 		#ifndef APPLE_DEMO
 			ExecMessageBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
 		#endif
-		exit_value = 0;
+		exitValue = 0;
 		goto ExitFileMenu;
 	}
 
@@ -3451,7 +3451,7 @@ RePaintNewmenuFile:
 			else
 #endif
 #if defined (POLY_ACC)
-				bg.background = GrCreateBitmap2 (w_w, w_h, grdCurCanv->cv_bitmap.bm_props.type, NULL);
+				bg.background = GrCreateBitmap2 (w_w, w_h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
 #else
 				bg.background = GrCreateBitmap (w_w, w_h, 0);
 #endif
@@ -3647,7 +3647,7 @@ RePaintNewmenuFile:
 			cItem -= NumFiles_displayed;
 			break;
 		case KEY_ESC:
-			if (allow_abort_flag) {
+			if (allow_abortFlag) {
 				cItem = -1;
 				done = 1;
 			}
@@ -3923,9 +3923,9 @@ RePaintNewmenuFile:
 //ExitFileMenuEarly:
 	if (cItem > -1)	{
 		strncpy (filename, (&filenames [cItem* (FILENAME_LEN+1)])+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0), FILENAME_LEN);
-		exit_value = 1;
+		exitValue = 1;
 	} else {
-		exit_value = 0;
+		exitValue = 0;
 	}											 
 
 ExitFileMenu:
@@ -3965,7 +3965,7 @@ ExitFileMenu:
 	WIN (newmenu_hide_cursor ());
 
 	SDL_EnableKeyRepeat(0, 0);
-	return exit_value;
+	return exitValue;
 
 }
 
@@ -3995,14 +3995,14 @@ ExitFileMenu:
 
 #define LB_ITEMS_ON_SCREEN 8
 
-int ExecMenuListBox (char * title, int nItems, char * items [], int allow_abort_flag, int (*listbox_callback) (int * cItem, int *nItems, char * items [], int *keypress))
+int ExecMenuListBox (char * title, int nItems, char * items [], int allow_abortFlag, int (*listbox_callback) (int * cItem, int *nItems, char * items [], int *keypress))
 {
-return ExecMenuListBox1 (title, nItems, items, allow_abort_flag, 0, listbox_callback);
+return ExecMenuListBox1 (title, nItems, items, allow_abortFlag, 0, listbox_callback);
 }
 
 //------------------------------------------------------------------------------
 
-int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort_flag, int default_item, int (*listbox_callback) (int * cItem, int *nItems, char * items [], int *keypress))
+int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abortFlag, int default_item, int (*listbox_callback) (int * cItem, int *nItems, char * items [], int *keypress))
 {
 	int i;
 	int done, ocitem, cItem, ofirst_item, first_item, key, redraw;
@@ -4086,7 +4086,7 @@ RePaintNewmenuListbox:
 #endif
 			//bg.background = GrCreateBitmap (width, (height + title_height));
 #if defined (POLY_ACC)
-			bg.background = GrCreateBitmap2 (total_width, total_height, grdCurCanv->cv_bitmap.bm_props.type, NULL);
+			bg.background = GrCreateBitmap2 (total_width, total_height, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
 #else
 			bg.background = GrCreateBitmap (total_width, total_height, 0);
 #endif
@@ -4234,7 +4234,7 @@ RePaintNewmenuListbox:
 			cItem -= nItemsOnScreen;
 			break;
 		case KEY_ESC:
-			if (allow_abort_flag) {
+			if (allow_abortFlag) {
 				cItem = -1;
 				done = 1;
 			}
@@ -4422,7 +4422,7 @@ RePaintNewmenuListbox:
 			}		
 
 				
-			// If Win95 port, draw up/down arrows on left side of menu
+			// If Win95 port, draw up/down arrows on left tSide of menu
 #ifdef WINDOWS   
 				grdCurCanv->cv_font = NORMAL_FONT;
 			if (show_up_arrow)
@@ -4579,7 +4579,7 @@ int _CDECL_ NMMsgBoxFixedFont (char *title, int nChoices, ...)
 	memset (nmMsgItems, 0, sizeof (nmMsgItems));
 	for (i=0; i<nChoices; i++)	{
 		s = va_arg (args, char *);
-		nmMsgItems [i].type = NM_TYPE_MENU; nmMsgItems [i].text = s;
+		nmMsgItems [i].nType = NM_TYPE_MENU; nmMsgItems [i].text = s;
 	}
 	format = va_arg (args, char *);
 	//sprintf (	  nm_text, ""); // adb: ?
@@ -4608,7 +4608,7 @@ if (choice >= networkData.nActiveGames)
 memset (m, 0, sizeof (m));
 for (i = 0; i < 5; i++) {
 	m [i].text = (char *) (mtext + i);
-	m [i].type = NM_TYPE_TEXT;		
+	m [i].nType = NM_TYPE_TEXT;		
 	}
 sprintf (mtext [opt], TXT_NGI_GAME, activeNetGames [choice].game_name); 
 opt++;

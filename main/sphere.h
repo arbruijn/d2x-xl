@@ -12,9 +12,9 @@ int CreateSphere (tSphereData *sdP);
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
 					   float red, float green, float blue, float alpha, grs_bitmap *bmP);
 
-void DrawShieldSphere (object *objP, float red, float green, float blue, float alpha);
+void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha);
 
-void DrawMonsterball (object *objP, float red, float green, float blue, float alpha);
+void DrawMonsterball (tObject *objP, float red, float green, float blue, float alpha);
 
 void DestroySphere (tSphereData *sdP);
 

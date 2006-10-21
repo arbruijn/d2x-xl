@@ -123,7 +123,7 @@ void hmp_close(hmp_file *hmp)
 
 //------------------------------------------------------------------------------
 /*
- * read a HMI type variable length number
+ * read a HMI nType variable length number
  */
 static int get_var_num_hmi(unsigned char *data, int datalen, unsigned long *value) 
 {
@@ -146,7 +146,7 @@ static int get_var_num_hmi(unsigned char *data, int datalen, unsigned long *valu
 
 //------------------------------------------------------------------------------
 /*
- * read a MIDI type variable length number
+ * read a MIDI nType variable length number
  */
 static int get_var_num(unsigned char *data, int datalen, unsigned long *value) 
 {
@@ -184,7 +184,7 @@ static int get_event(hmp_file *hmp, event *ev)
 			trk->left = 0;
 			continue;
 		}
-        delta += trk->cur_time - hmp->cur_time;
+        delta += trk->curTime - hmp->curTime;
 		if (delta < mindelta) {
 			mindelta = delta;
 			fndtrk = trk;
@@ -195,9 +195,9 @@ static int get_event(hmp_file *hmp, event *ev)
 
 	got = get_var_num_hmi(trk->cur, trk->left, &delta);
 
-	trk->cur_time += delta;
-	ev->delta = trk->cur_time - hmp->cur_time;
-	hmp->cur_time = trk->cur_time;
+	trk->curTime += delta;
+	ev->delta = trk->curTime - hmp->curTime;
+	hmp->curTime = trk->curTime;
 
 	if ((trk->left -= got) < 3)
 			return HMP_INVALID_FILE;
@@ -303,9 +303,9 @@ static void reset_tracks(struct hmp_file *hmp)
 	for (i = 0; i < hmp->num_trks; i++) {
 		hmp->trks [i].cur = hmp->trks [i].data;
 		hmp->trks [i].left = hmp->trks [i].len;
-		hmp->trks [i].cur_time = 0;
+		hmp->trks [i].curTime = 0;
 	}
-	hmp->cur_time=0;
+	hmp->curTime=0;
 }
 
 //------------------------------------------------------------------------------
@@ -527,7 +527,7 @@ int hmp_to_midi (hmp_file *hmp, char *pszFn)
 
 if (!(f = fopen (pszFn, "wb")))
 	return 0;
-// midi signature & header
+// midi nSignature & header
 fwrite ("MThd", 4, 1, f);
 i = BE_INT (6);
 fwrite (&i, sizeof (i), 1, f);
@@ -541,7 +541,7 @@ fwrite (&s, sizeof (s), 1, f);	//tempo
 fwrite (midiSetTempo, sizeof (midiSetTempo), 1, f);
 
 for (j = 1; j < hmp->num_trks; j++) {
-	// midi signature & track length & track data
+	// midi nSignature & track length & track data
 	fwrite ("MTrk", 4, 1, f);
 	nLenPos = ftell (f);
 	i = 0;

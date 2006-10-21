@@ -366,7 +366,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DrawShieldSphere (object *objP, float red, float green, float blue, float alpha)
+void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha)
 {
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
 	if (gameData.render.shield.pSphere)
@@ -386,7 +386,7 @@ if (gameData.render.shield.nFaces > 0) {
 
 //------------------------------------------------------------------------------
 
-void DrawMonsterball (object *objP, float red, float green, float blue, float alpha)
+void DrawMonsterball (tObject *objP, float red, float green, float blue, float alpha)
 {
 if (!gameData.render.monsterball.pSphere) {
 	gameData.render.monsterball.nTessDepth = 3;

@@ -68,7 +68,7 @@ void gr_pixel( int x, int y )
 inline void gr_bm_upixel( grs_bitmap * bm, int x, int y, unsigned char color )
 {
 	grs_color c;
-	switch (bm->bm_props.type)
+	switch (bm->bm_props.nType)
 	{
 #ifdef OGL
 	case BM_OGL:

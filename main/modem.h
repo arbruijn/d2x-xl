@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Starting working on secret level fix for modem games.
  *
  * Revision 1.17  1994/11/17  16:43:17  rob
- * Added prototype for com_level_sync function.
+ * Added prototype for comLevel_sync function.
  *
  * Revision 1.16  1994/11/15  21:30:32  rob
  * Added prototype for new menu hook.
@@ -49,13 +49,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Tried to fix modem to work with new multi stuff.  Still a bit jacked up, tho.
  *
  * Revision 1.12  1994/10/05  19:14:50  rob
- * Exported macros and arrays to support network object mapping.
+ * Exported macros and arrays to support network tObject mapping.
  *
  * Revision 1.11  1994/10/05  17:48:59  rob
- * Several changes, most to end_of_level sequencing.
+ * Several changes, most to end_ofLevel sequencing.
  *
  * Revision 1.10  1994/10/05  14:22:54  rob
- * Added com_end_level.
+ * Added com_endLevel.
  *
  * Revision 1.9  1994/09/30  18:37:22  rob
  * Another day's worth of work.  Mostly menus, error checking.  Added
@@ -105,7 +105,7 @@ void com_main_menu(void);
 void com_endlevel(int *secret);
 void com_abort(void);
 void com_send_data(char *buf, int len, int repeat);
-int com_level_sync(void);
+int comLevel_sync(void);
 
 
 extern int com_port_num;

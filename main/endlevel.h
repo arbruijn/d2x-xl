@@ -63,8 +63,8 @@ void render_external_scene();
 void DrawExitModel();
 void InitEndLevel();
 
-//@@extern vms_vector mine_exit_point;
-//@@extern object external_explosion;
+//@@extern vmsVector mine_exit_point;
+//@@extern tObject external_explosion;
 //@@extern int ext_expl_playing;
 
 //called for each level to load & setup the exit sequence

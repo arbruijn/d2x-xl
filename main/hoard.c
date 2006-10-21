@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "inferno.h"
 #include "u_mem.h"
@@ -41,7 +41,7 @@ bmP->bm_props.y = 0;
 bmP->bm_props.w = 
 bmP->bm_props.rowsize = w;
 bmP->bm_props.h = h;
-bmP->bm_props.type = BM_LINEAR;
+bmP->bm_props.nType = BM_LINEAR;
 bmP->bm_props.flags = flags;
 if (data)
 	bmP->bm_texBuf = data;
@@ -61,7 +61,7 @@ int InitMonsterball (int nBitmap)
 {
 	grs_bitmap			*bmP, *altBmP;
 	vclip					*vcP;
-	powerup_type_info	*ptP;
+	powerupType_info	*ptP;
 	int					i;
 
 memcpy (&gameData.hoard.monsterball, &gameData.hoard.orb, sizeof (tHoardItem));
@@ -88,14 +88,14 @@ if (!ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.m
 		bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [0].index;
 		BM_OVERRIDE (bmP) = altBmP;
 		*altBmP = gameData.hoard.monsterball.bm;
-		altBmP->bm_type = BM_TYPE_ALT;
+		altBmP->bmType = BM_TYPE_ALT;
 		altBmP->bm_data.alt.bm_frameCount = altBmP->bm_props.h / altBmP->bm_props.w;
 		}
 	}
 //Create monsterball powerup
 ptP = gameData.objs.pwrUp.info + POW_MONSTERBALL;
 ptP->nClipIndex = gameData.hoard.monsterball.nClip;
-ptP->hit_sound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hit_sound;
+ptP->hitSound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
 ptP->size = (gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [1].monsterball.nSizeMod) / 2;
 ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
 return nBitmap;
@@ -110,7 +110,7 @@ void InitHoardData (void)
 	int					i, fPos, nBitmap;
 	vclip					*vcP;
 	eclip					*ecP;
-	powerup_type_info	*ptP;
+	powerupType_info	*ptP;
 	ubyte					*bmDataP;
 
 if (gameOpts->app.bDemoData) {
@@ -146,8 +146,8 @@ if (!gameData.hoard.bInitialized) {
 	vcP->nFrameCount = gameData.hoard.orb.nFrames;
 	vcP->xFrameTime = vcP->xTotalTime / vcP->nFrameCount;
 	vcP->flags = 0;
-	vcP->sound_num = -1;
-	vcP->light_value = F1_0;
+	vcP->nSound = -1;
+	vcP->lightValue = F1_0;
 	bmDataP = gameData.hoard.orb.bm.bm_texBuf = (ubyte *) d_malloc (gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
@@ -162,7 +162,7 @@ if (!gameData.hoard.bInitialized) {
 	//Create hoard orb powerup
 	ptP = gameData.objs.pwrUp.info + POW_HOARD_ORB;
 	ptP->nClipIndex = gameData.hoard.orb.nClip;
-	ptP->hit_sound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hit_sound;
+	ptP->hitSound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
 	ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
 	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
 	//Create orb goal wall effect

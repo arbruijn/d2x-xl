@@ -46,8 +46,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_INSTANCE_DEPTH	10
 
 struct instance_context {
-	vms_matrix m;
-	vms_vector p;
+	vmsMatrix m;
+	vmsVector p;
 } instanceStack[MAX_INSTANCE_DEPTH];
 
 int nInstanceDepth = 0;
@@ -68,7 +68,7 @@ glMultMatrixf (pm);
 
 //------------------------------------------------------------------------------
 
-void VmsMove (vms_vector *pv)
+void VmsMove (vmsVector *pv)
 {
 glVectorf p;
 OglMove (OOF_VecVms2Gl (p, pv));
@@ -76,7 +76,7 @@ OglMove (OOF_VecVms2Gl (p, pv));
 
 //------------------------------------------------------------------------------
 
-inline void VmsRot (vms_matrix *pm)
+inline void VmsRot (vmsMatrix *pm)
 {
 glMatrixf m;
 if (nInstanceDepth)
@@ -88,10 +88,10 @@ else
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset   
-void G3StartInstanceMatrix (vms_vector *pos, vms_matrix *orient)
+void G3StartInstanceMatrix (vmsVector *pos, vmsMatrix *orient)
 {
 if (gameStates.ogl.bUseTransform) {
-	vms_vector	h;
+	vmsVector	h;
 
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
@@ -114,8 +114,8 @@ if (gameStates.ogl.bUseTransform) {
 		glScalef (1.0f, 1.0f, -1.0f);
 	}
 	{
-	vms_vector tempv;
-	vms_matrix tempm,tempm2;
+	vmsVector tempv;
+	vmsMatrix tempm,tempm2;
 
 #ifdef D1XD3D
 	Win32_start_instance_matrix (pos, orient);
@@ -126,12 +126,12 @@ if (gameStates.ogl.bUseTransform) {
 	instanceStack [nInstanceDepth].m = viewInfo.view;
 	instanceStack [nInstanceDepth].p = viewInfo.position;
 	nInstanceDepth++;
-	//step 1: subtract object position from view position
+	//step 1: subtract tObject position from view position
 	VmVecSub (&tempv, &viewInfo.position, pos);
 	if (orient) {
-		//step 2: rotate view vector through object matrix
+		//step 2: rotate view vector through tObject matrix
 		VmVecRotate (&viewInfo.position, &tempv, orient);
-		//step 3: rotate object matrix through view_matrix (vm = ob * vm)
+		//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
 		VmCopyTransposeMatrix (&tempm2, orient);
 		VmMatMul (&tempm, &tempm2, &viewInfo.view);
 		viewInfo.view = tempm;
@@ -144,9 +144,9 @@ if (gameStates.ogl.bUseTransform) {
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles(vms_vector *pos,vms_angvec *angles)
+void G3StartInstanceAngles(vmsVector *pos,vmsAngVec *angles)
 {
-	vms_matrix tm;
+	vmsMatrix tm;
 
 if (!angles) {
 	G3StartInstanceMatrix (pos, NULL);

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.94  1995/02/22  13:46:03  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.93  1995/02/06  15:52:51  mike
  * add mini megawow powerup for giving reasonable weapons.
@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fix up powerups in some way.
  *
  * Revision 1.70  1994/10/19  11:16:25  mike
- * Limit amount of each type of ammo player can hold.
+ * Limit amount of each nType of ammo player can hold.
  *
  * Revision 1.69  1994/10/17  14:12:11  matt
  * Added sound for powerup disappearance effect
@@ -201,7 +201,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/editor.h"
 #endif
 
-int ReturnFlagHome (object *pObj);
+int ReturnFlagHome (tObject *pObj);
 void InvalidateEscortGoal (void);
 char GetKeyValue (char);
 void CheckToUsePrimary (int);
@@ -209,7 +209,7 @@ void MultiSendGotFlag (char);
 
 //------------------------------------------------------------------------------
 
-void UpdatePowerupClip (vclip *vcP, vclip_info *vciP, int nObject)
+void UpdatePowerupClip (vclip *vcP, tVClipInfo *vciP, int nObject)
 {
 	static fix	xPowerupTime = 0;
 
@@ -222,7 +222,7 @@ xPowerupTime += gameData.time.xFrame;
 if (vcP->flags & WCF_ALTFMT) {
 	if (vcP->flags & WCF_INITIALIZED) {
 		bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index);
-		nFrames = ((bmP->bm_type != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+		nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
 		}
 	else {
 		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
@@ -261,18 +261,18 @@ if (!gameOpts->app.bDemoData) {
 
 //------------------------------------------------------------------------------
 //process this powerup for this frame
-void DoPowerupFrame (object *objP)
+void DoPowerupFrame (tObject *objP)
 {
 //if (gameStates.app.b40fpsTick) 
-	vclip_info	*vciP = &objP->rtype.vclip_info;
+	tVClipInfo	*vciP = &objP->rType.vClipInfo;
 	vclip			*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);
 
 UpdatePowerupClip (vcP, vciP, i);
 if (objP->lifeleft <= 0) {
-	ObjectCreateExplosion (objP->segnum, &objP->pos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
-	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num > -1)
-		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].sound_num, i, 0, F1_0);
+	ObjectCreateExplosion (objP->nSegment, &objP->pos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
+		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0);
 	}
 }
 
@@ -300,19 +300,19 @@ void DrawBlobOutline (void)
 
 //------------------------------------------------------------------------------
 
-void DrawPowerup (object *objP)
+void DrawPowerup (tObject *objP)
 {
-if (objP->type == OBJ_MONSTERBALL)
+if (objP->nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 else {
-		bitmap_index	*frameP = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].frames;
-		int				iFrame = objP->rtype.vclip_info.nCurFrame;
+		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
+		int				iFrame = objP->rType.vClipInfo.nCurFrame;
 #ifdef EDITOR
 		blob_vertices[0] = 0x80000;
 #endif
 	DrawObjectBlob (objP, *frameP, frameP [iFrame], iFrame, NULL, 0);
 #ifdef EDITOR
-	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (Cur_object_index == OBJ_IDX (objP)))
+	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (CurObject_index == OBJ_IDX (objP)))
 		if (blob_vertices[0] != 0x80000)
 			DrawBlobOutline ();
 #endif
@@ -344,25 +344,25 @@ void DoMegaWowPowerup (int quantity)
 	int i;
 
 PowerupBasic (30, 0, 30, 1, "MEGA-WOWIE-ZOWIE!");
-gameData.multi.players [gameData.multi.nLocalPlayer].primary_weapon_flags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
-gameData.multi.players [gameData.multi.nLocalPlayer].secondary_weapon_flags = 0xffff;
+gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
+gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = 0xffff;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].primary_ammo[i] = VULCAN_AMMO_MAX;
+	gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo[i] = VULCAN_AMMO_MAX;
 for (i = 0; i < 3; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[i] = quantity;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = quantity;
 for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[i] = quantity/5;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laser_level, MAX_LASER_LEVEL);
+	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
 gameData.multi.players [gameData.multi.nLocalPlayer].energy = F1_0 * 200;
 gameData.multi.players [gameData.multi.nLocalPlayer].shields = F1_0 * 200;
 MultiSendShields ();
 gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
-gameData.multi.players [gameData.multi.nLocalPlayer].laser_level = MAX_SUPER_LASER_LEVEL;
+gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX] = 12;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo[PROXIMITY_INDEX] = 15;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 15;
 UpdateLaserWeaponInfo ();
 }
 //#endif
@@ -417,7 +417,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupKey (object *objP, int nKey, char *pszKey, int nPlayer)
+int PickupKey (tObject *objP, int nKey, char *pszKey, int nPlayer)
 {
 if (LOCALPLAYER (nPlayer)) {
 	player	*playerP = gameData.multi.players + nPlayer;
@@ -425,9 +425,9 @@ if (LOCALPLAYER (nPlayer)) {
 	if (playerP->flags & nKey)
 		return 0;
 #ifdef NETWORK
-	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hit_sound, F1_0);
+	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 #endif
-	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->id].hit_sound, F1_0);
+	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->id].hitSound, F1_0);
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
@@ -438,7 +438,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupFlag (object *objP, int nThisTeam, int nOtherTeam, char *pszFlag, int nPlayer)
+int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, char *pszFlag, int nPlayer)
 {
 if (LOCALPLAYER (nPlayer)) {
 	player	*playerP = gameData.multi.players + nPlayer;
@@ -460,7 +460,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int PickupEquipment (object *objP, int nEquipment, char *pszHave, char *pszGot, int nPlayer)
+int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot, int nPlayer)
 {
 	player	*playerP = gameData.multi.players + nPlayer;
 	int		bUsed = 0;
@@ -475,9 +475,9 @@ else {
 	playerP->flags |= nEquipment;
 	if (LOCALPLAYER (nPlayer)) {
 #ifdef NETWORK
-		MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hit_sound, F1_0);
+		MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 #endif
-		DigiPlaySample ((short) gameData.objs.pwrUp.info [objP->id].hit_sound, F1_0);
+		DigiPlaySample ((short) gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
 	bUsed = -1;
@@ -520,14 +520,14 @@ void UsePowerup (int id)
 
 if (bApply = (id < 0))
 	id = -id;
-if (gameData.objs.pwrUp.info [id].hit_sound > -1) {
+if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && !IsMultiGame) && ((id == POW_CLOAK) || (id == POW_INVULNERABILITY)))
 		id = POW_SHIELD_BOOST;
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI) // Added by Rob, take this out if it turns out to be not good for net games!
-		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hit_sound, F1_0);
+		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
 #endif
-	DigiPlaySample ((short) gameData.objs.pwrUp.info[id].hit_sound, F1_0 );
+	DigiPlaySample ((short) gameData.objs.pwrUp.info[id].hitSound, F1_0 );
 	}
 MultiSendWeapons (1);
 }
@@ -548,7 +548,7 @@ if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nInvuls--;
 if (LOCALPLAYER (nPlayer)) {
-	playerP->invulnerable_time = gameData.time.xGame;
+	playerP->invulnerableTime = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -577,7 +577,7 @@ if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nCloaks--;
 if (LOCALPLAYER (nPlayer)) {
-	playerP->cloak_time = gameData.time.xGame;	//	Not!changed by awareness events (like player fires laser).
+	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like player fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
 #ifdef NETWORK
@@ -593,7 +593,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 //	returns true if powerup consumed
-int DoPowerup (object *objP, int nPlayer)
+int DoPowerup (tObject *objP, int nPlayer)
 {
 	player	*playerP;
 	int		bUsed = 0;
@@ -608,14 +608,14 @@ playerP = gameData.multi.players + nPlayer;
 bLocalPlayer = (nPlayer == gameData.multi.nLocalPlayer);
 if (bLocalPlayer &&
 	 ((gameStates.app.bPlayerIsDead) || 
-	  (gameData.objs.console->type == OBJ_GHOST) || 
+	  (gameData.objs.console->nType == OBJ_GHOST) || 
 	  (playerP->shields < 0)))
 	return 0;
-if (objP->ctype.powerup_info.creation_time > gameData.time.xGame)		//gametime wrapped!
-	objP->ctype.powerup_info.creation_time = 0;				//allow player to pick up
-if ((objP->ctype.powerup_info.flags & PF_SPAT_BY_PLAYER) && 
-	 (objP->ctype.powerup_info.creation_time > 0) && 
-	 (gameData.time.xGame < objP->ctype.powerup_info.creation_time+i2f (2)))
+if (objP->cType.powerupInfo.creationTime > gameData.time.xGame)		//gametime wrapped!
+	objP->cType.powerupInfo.creationTime = 0;				//allow player to pick up
+if ((objP->cType.powerupInfo.flags & PF_SPAT_BY_PLAYER) && 
+	 (objP->cType.powerupInfo.creationTime > 0) && 
+	 (gameData.time.xGame < objP->cType.powerupInfo.creationTime+i2f (2)))
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
 switch (objP->id) {
@@ -635,16 +635,16 @@ switch (objP->id) {
 		break;
 
 	case POW_LASER:
-		if (playerP->laser_level >= MAX_LASER_LEVEL) {
-			//playerP->laser_level = MAX_LASER_LEVEL;
+		if (playerP->laserLevel >= MAX_LASER_LEVEL) {
+			//playerP->laserLevel = MAX_LASER_LEVEL;
 			if (bLocalPlayer)
 				HUDInitMessage (TXT_MAXED_OUT, TXT_LASER);
 			}
 		else {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordLaserLevel ((sbyte) playerP->laser_level, (sbyte) playerP->laser_level + 1);
-			playerP->laser_level++;
-			PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->laser_level+1);
+				NDRecordLaserLevel ((sbyte) playerP->laserLevel, (sbyte) playerP->laserLevel + 1);
+			playerP->laserLevel++;
+			PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->laserLevel+1);
 			UpdateLaserWeaponInfo ();
 			PickupPrimary (LASER_INDEX, nPlayer);
 			bUsed = 1;
@@ -688,7 +688,7 @@ switch (objP->id) {
 
 	case	POW_VULCAN_WEAPON:
 	case	POW_GAUSS_WEAPON: {
-		int ammo = objP->ctype.powerup_info.count;
+		int ammo = objP->cType.powerupInfo.count;
 
 		bUsed = PickupPrimary ((objP->id == POW_VULCAN_WEAPON) ? VULCAN_INDEX : GAUSS_INDEX, nPlayer);
 
@@ -701,13 +701,13 @@ switch (objP->id) {
 				ammo -= VULCAN_AMMO_AMOUNT;	//don't let take all ammo
 		if (ammo > 0) {
 			int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, ammo, nPlayer);
-			objP->ctype.powerup_info.count -= nAmmoUsed;
+			objP->cType.powerupInfo.count -= nAmmoUsed;
 			if (LOCALPLAYER (nPlayer)) {
 				if (!bUsed && nAmmoUsed) {
 					PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
 					bSpecialUsed = 1;
 					id = POW_VULCAN_AMMO;		//set new id for making sound at end of this function
-					if (objP->ctype.powerup_info.count == 0)
+					if (objP->cType.powerupInfo.count == 0)
 						bUsed = 1;		//say bUsed if all ammo taken
 					}
 				}
@@ -748,7 +748,7 @@ switch (objP->id) {
 	case	POW_OMEGA_WEAPON:
 		bUsed = PickupPrimary (OMEGA_INDEX, nPlayer);
 		if (bUsed)
-			xOmegaCharge = objP->ctype.powerup_info.count;
+			xOmegaCharge = objP->cType.powerupInfo.count;
 		else if (!(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
@@ -858,20 +858,20 @@ switch (objP->id) {
 		break;
 
 	case POW_SUPER_LASER:
-		if (playerP->laser_level >= MAX_SUPER_LASER_LEVEL) {
-			playerP->laser_level = MAX_SUPER_LASER_LEVEL;
+		if (playerP->laserLevel >= MAX_SUPER_LASER_LEVEL) {
+			playerP->laserLevel = MAX_SUPER_LASER_LEVEL;
 			HUDInitMessage (TXT_LASER_MAXEDOUT);
 			} 
 		else {
-			ubyte nOldLevel = playerP->laser_level;
+			ubyte nOldLevel = playerP->laserLevel;
 
-			if (playerP->laser_level <= MAX_LASER_LEVEL)
-				playerP->laser_level = MAX_LASER_LEVEL;
-			playerP->laser_level++;
+			if (playerP->laserLevel <= MAX_LASER_LEVEL)
+				playerP->laserLevel = MAX_LASER_LEVEL;
+			playerP->laserLevel++;
 			if (LOCALPLAYER (nPlayer)) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordLaserLevel (nOldLevel, playerP->laser_level);
-				PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->laser_level + 1, nPlayer);
+					NDRecordLaserLevel (nOldLevel, playerP->laserLevel);
+				PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->laserLevel + 1, nPlayer);
 				UpdateLaserWeaponInfo ();
 				if (gameData.weapons.nPrimary != LASER_INDEX)
 				   CheckToUsePrimary (SUPER_LASER_INDEX);
@@ -920,31 +920,31 @@ switch (objP->id) {
 
 	case POW_HOARD_ORB:
 		if (gameData.app.nGameMode & GM_HOARD) {	
-			if (playerP->secondary_ammo [PROXIMITY_INDEX] < 12) {
+			if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 12) {
 				if (LOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 					}
-				playerP->secondary_ammo [PROXIMITY_INDEX]++;
+				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
 				playerP->flags |= PLAYER_FLAGS_FLAG;
 				bUsed = 1;
 				}
 			}
 		else if (gameData.app.nGameMode & GM_ENTROPY) {
-			if (objP->matcen_creator != GetTeam ((char) gameData.multi.nLocalPlayer) + 1) {
+			if (objP->matCenCreator != GetTeam ((char) gameData.multi.nLocalPlayer) + 1) {
 				if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 						 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-						 ((gameData.segs.xSegments [objP->segnum].owner != objP->matcen_creator) ||
-						 (gameData.segs.segment2s [objP->segnum].special != SEGMENT_IS_ROBOTMAKER))))
+						 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
+						 (gameData.segs.segment2s [objP->nSegment].special != SEGMENT_IS_ROBOTMAKER))))
 					objP->lifeleft = -1;	//make orb disappear if touched by opposing team player
 				}
-			else  if (playerP->secondary_ammo [PROXIMITY_INDEX] < 
-						 playerP->secondary_ammo [SMART_MINE_INDEX]) {
+			else  if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 
+						 playerP->secondaryAmmo [SMART_MINE_INDEX]) {
 				if (LOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 					}
-				playerP->secondary_ammo [PROXIMITY_INDEX]++;
+				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
 				playerP->flags |= PLAYER_FLAGS_FLAG;
 				bUsed = 1;
 				}
@@ -971,18 +971,18 @@ void SpawnLeftoverPowerups (short nObject)
 {
 	ubyte		nLeft = gameData.multi.leftoverPowerups [nObject].nCount;
 	short		i;
-	object	*objP;
+	tObject	*objP;
 
 if (nLeft) {	//leave powerups that cannot be picked up in mine
 	ubyte nType = gameData.multi.leftoverPowerups [nObject].nType;
-	object spitter = *gameData.multi.leftoverPowerups [nObject].spitterP;
-	spitter.mtype.phys_info.velocity.x =
-	spitter.mtype.phys_info.velocity.y =
-	spitter.mtype.phys_info.velocity.z = 0;
+	tObject spitter = *gameData.multi.leftoverPowerups [nObject].spitterP;
+	spitter.mType.physInfo.velocity.x =
+	spitter.mType.physInfo.velocity.y =
+	spitter.mType.physInfo.velocity.z = 0;
 	for (; nLeft; nLeft--) {
 		i = SpitPowerup (&spitter, nType, d_rand ());
 		objP = gameData.objs.objects + i;
-		MultiSendCreatePowerup (nType, objP->segnum, i, &objP->pos);
+		MultiSendCreatePowerup (nType, objP->nSegment, i, &objP->pos);
 		}
 	gameData.multi.powerupsInMine [nType] += nLeft;
 	memset (gameData.multi.leftoverPowerups + nObject, 0, sizeof (gameData.multi.leftoverPowerups [nObject]));
@@ -1144,19 +1144,19 @@ for (h = i = 0; i < gameData.multi.nPlayers; i++, playerP++) {
 	if (!playerP->connected)
 		continue;
 	if (nType == 2)
-		h += playerP->secondary_ammo [nWeapon];
+		h += playerP->secondaryAmmo [nWeapon];
 	else {
 		if (nWeapon == LASER_INDEX) {
-			if (playerP->laser_level > MAX_LASER_LEVEL)
+			if (playerP->laserLevel > MAX_LASER_LEVEL)
 				h = MAX_LASER_LEVEL + 1;
 			else
-				h += playerP->laser_level + 1;
+				h += playerP->laserLevel + 1;
 			}
 		else if (nWeapon == SUPER_LASER_INDEX) {
-			if (playerP->laser_level > MAX_LASER_LEVEL)
-				h += playerP->laser_level - MAX_LASER_LEVEL;
+			if (playerP->laserLevel > MAX_LASER_LEVEL)
+				h += playerP->laserLevel - MAX_LASER_LEVEL;
 			}
-		else if (playerP->primary_weapon_flags & (1 << nWeapon))
+		else if (playerP->primaryWeaponFlags & (1 << nWeapon))
 			h++;
 		}
 	}
@@ -1166,15 +1166,15 @@ return h;
 //------------------------------------------------------------------------------
 #ifndef FAST_FILE_IO
 /*
- * reads n powerup_type_info structs from a CFILE
+ * reads n powerupType_info structs from a CFILE
  */
-extern int PowerupTypeInfoReadN (powerup_type_info *pti, int n, CFILE *fp)
+extern int PowerupTypeInfoReadN (powerupType_info *pti, int n, CFILE *fp)
 {
 	int i;
 
 	for (i = 0; i < n; i++) {
 		pti[i].nClipIndex = CFReadInt (fp);
-		pti[i].hit_sound = CFReadInt (fp);
+		pti[i].hitSound = CFReadInt (fp);
 		pti[i].size = CFReadFix (fp);
 		pti[i].light = CFReadFix (fp);
 	}

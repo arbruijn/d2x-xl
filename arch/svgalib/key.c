@@ -38,13 +38,13 @@
 static unsigned char Installed = 0;
 
 //-------- Variable accessed by outside functions ---------
-unsigned char 		keyd_buffer_type;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+unsigned char 		keyd_bufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
 unsigned char 		keyd_repeat;
 unsigned char 		keyd_editor_mode;
 volatile unsigned char 	keyd_last_pressed;
 volatile unsigned char 	keyd_last_released;
 volatile unsigned char	keyd_pressed[256];
-volatile int		keyd_time_when_last_pressed;
+volatile int		keydTime_when_last_pressed;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -152,7 +152,7 @@ void key_handler(int scancode, int press)
 			if (state) {
 				key->counter++;
 				keyd_last_pressed = keycode;
-				keyd_time_when_last_pressed = TimerGetFixedSeconds();
+				keydTime_when_last_pressed = TimerGetFixedSeconds();
 			}
 		} else {
 			if (state)	{
@@ -160,7 +160,7 @@ void key_handler(int scancode, int press)
 				keyd_pressed[keycode] = 1;
 				key->downcount += state;
 				key->state = 1;
-				key->timewentdown = keyd_time_when_last_pressed = TimerGetFixedSeconds();
+				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
 				key->counter++;
 			} else {	
 				keyd_pressed[keycode] = 0;
@@ -184,7 +184,7 @@ void key_handler(int scancode, int press)
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
 				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = keyd_time_when_last_pressed;
+				key_data.time_pressed[key_data.keytail] = keydTime_when_last_pressed;
 				key_data.keytail = temp;
 			}
 		}
@@ -205,8 +205,8 @@ void key_init()
 	Installed=1;
 
 	keyboard_seteventhandler (key_handler);
-	keyd_time_when_last_pressed = TimerGetFixedSeconds();
-	keyd_buffer_type = 1;
+	keydTime_when_last_pressed = TimerGetFixedSeconds();
+	keyd_bufferType = 1;
 	keyd_repeat = 1;
 
 // Clear the keyboard array

@@ -71,9 +71,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //Prototypes for IFF library functions
 
-int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmap_type);
+int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType);
 	//reads an IFF file into a grs_bitmap structure. fills in palette if not null
-	//returns error codes - see IFF.H.  see GR.H for bitmap_type
+	//returns error codes - see IFF.H.  see GR.H for bitmapType
 	//MEM DETAILS:  This routines assumes that you already have the grs_bitmap
 	//structure allocated, but that you don't have the data for this bitmap
 	//allocated. In other words, do this:
@@ -112,12 +112,12 @@ char *iff_errormsg(int error_number);
 #define IFF_UNKNOWN_FORM    2   //IFF file, but not a bitmap
 #define IFF_NOT_IFF         3   //this isn't even an IFF file
 #define IFF_NO_FILE         4   //cannot find or open file
-#define IFF_BAD_BM_TYPE     5   //tried to save invalid type, like BM_RGB15
+#define IFF_BAD_BM_TYPE     5   //tried to save invalid nType, like BM_RGB15
 #define IFF_CORRUPT         6   //bad data in file
 #define IFF_FORM_ANIM       7   //this is an anim, with non-anim load rtn
 #define IFF_FORM_BITMAP     8   //this is not an anim, with anim load rtn
 #define IFF_TOO_MANY_BMS    9   //anim read had more bitmaps than room for
-#define IFF_UNKNOWN_MASK    10  //unknown masking type
+#define IFF_UNKNOWN_MASK    10  //unknown masking nType
 #define IFF_READ_ERROR      11  //error reading from file
 #define IFF_BM_MISMATCH     12  //bm being loaded doesn't match bm loaded into
 

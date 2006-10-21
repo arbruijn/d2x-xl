@@ -253,7 +253,7 @@ if (gameOpts->legacy.bInput)
 
 //------------------------------------------------------------------------------
 
-fix joy_get_button_down_time(int btn)
+fix joy_get_button_downTime(int btn)
 {
 	fix time = F0_0;
 

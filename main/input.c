@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * get mouse stuff working right this time?
  *
  * Revision 1.15  1995/10/23  14:50:50  allender
- * corrected values for control type in KCSetControls
+ * corrected values for control nType in KCSetControls
  *
  * Revision 1.14  1995/10/21  16:36:54  allender
  * fix up mouse read time
@@ -116,7 +116,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.105  1995/02/22  14:11:58  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.104  1995/02/13  12:01:56  john
  * Fixed bug with buggin not mmaking player faster.
@@ -179,7 +179,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  *
  * Revision 1.87  1994/12/13  14:43:02  john
  * Took out the code in KConfig to build direction array.
- * Called KCSetControls after selecting a new control type.
+ * Called KCSetControls after selecting a new control nType.
  *
  * Revision 1.86  1994/12/13  01:11:32  john
  * Fixed bug with message clearing overwriting
@@ -322,7 +322,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
  * Revision 1.42  1994/10/14  12:16:03  john
  * Changed code so that by doing DEL+F12 saves the current KConfig
  * values as default. Added support for drop_bomb key.  Took out
- * unused slots for keyboard.  Made keyboard use control_type of 0
+ * unused slots for keyboard.  Made keyboard use controlType of 0
  * save slots.
  *
  * Revision 1.41  1994/10/13  21:27:02  john
@@ -357,7 +357,7 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <cType.h>
 #include <time.h>
 #include <math.h>
 
@@ -450,17 +450,17 @@ fix	joy_axis [JOY_MAX_AXES];
 
 #ifndef WINDOWS
 
-fix Next_toggle_time [3]={0,0,0};
+fix Next_toggleTime [3]={0,0,0};
 
 int AllowToToggle (int i)
 {
   //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
  
-	if (Next_toggle_time [i] > gameData.time.xGame)
-		if (Next_toggle_time [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
+	if (Next_toggleTime [i] > gameData.time.xGame)
+		if (Next_toggleTime [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
 			return 0;
 
-	Next_toggle_time [i] = gameData.time.xGame + (F1_0/8);
+	Next_toggleTime [i] = gameData.time.xGame + (F1_0/8);
 
 	return 1;
 }
@@ -657,7 +657,7 @@ else {
 	else
 		upcount=1;
 	}				
-joy_set_btn_values (btn, state, time_down, downcount, upcount);
+joy_set_btnValues (btn, state, time_down, downcount, upcount);
 					
 }
 
@@ -739,7 +739,7 @@ inline int HaveD2XKey (kc_item *k, int i)
 
 if (v == 255)
 	return 0;
-if (key_flags (v))
+if (keyFlags (v))
 	return 0;
 #ifdef _DEBUG
 if (v = keyDownCount (v))
@@ -843,10 +843,10 @@ if (! (gameOpts->input.bLimitTurnRate || (gameData.app.nGameMode & GM_MULTI)) /*
 if (gameStates.app.bAutoMap || 
 	 gameOpts->input.bJoyMouse ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 0))) {
-	KCCLAMP (Controls.pitch_time, MAX_PITCH);
-	KCCLAMP (Controls.heading_time, MAX_PITCH);
+	KCCLAMP (Controls.pitchTime, MAX_PITCH);
+	KCCLAMP (Controls.headingTime, MAX_PITCH);
 	}
-KCCLAMP (Controls.bank_time, MAX_PITCH);
+KCCLAMP (Controls.bankTime, MAX_PITCH);
 return 1;
 }
 
@@ -856,12 +856,12 @@ void KCToggleBomb (void)
 {
 int bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
 if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
-	 (!gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [PROXIMITY_INDEX] &&
-	  !gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [SMART_MINE_INDEX])) {
+	 (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] &&
+	  !gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX])) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 	HUDInitMessage (TXT_NOBOMBS);
 	}
-else if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [bomb]) {
+else if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb]) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 	HUDInitMessage (TXT_NOBOMB_ANY, (bomb==SMART_MINE_INDEX)? TXT_SMART_MINES : TXT_PROX_BOMBS);
 	}
@@ -933,35 +933,35 @@ if (bGetSlideBank == 2) {
 
 	for (i = 0; i < 2; i++) {
 #ifdef DELTACTRL
-		Controls.sideways_thrust_time -= DELTACTRL (10 + i, 2);
-		Controls.sideways_thrust_time += DELTACTRL (12 + i, 2);
-		Controls.vertical_thrust_time += DELTACTRL (14 + i, 2);
-		Controls.vertical_thrust_time -= DELTACTRL (16 + i, 2);
-		Controls.bank_time += DELTACTRL (20 + i, 1);
-		Controls.bank_time -= DELTACTRL (22 + i, 1);
-		Controls.forward_thrust_time += DELTACTRL (30 + i, 0);
-		Controls.forward_thrust_time -= DELTACTRL (32 + i, 0);
+		Controls.sideways_thrustTime -= DELTACTRL (10 + i, 2);
+		Controls.sideways_thrustTime += DELTACTRL (12 + i, 2);
+		Controls.vertical_thrustTime += DELTACTRL (14 + i, 2);
+		Controls.vertical_thrustTime -= DELTACTRL (16 + i, 2);
+		Controls.bankTime += DELTACTRL (20 + i, 1);
+		Controls.bankTime -= DELTACTRL (22 + i, 1);
+		Controls.forward_thrustTime += DELTACTRL (30 + i, 0);
+		Controls.forward_thrustTime -= DELTACTRL (32 + i, 0);
 #else
 		if ((v = HaveKey (kc_keyboard, 14 + i)) < 255) {
 			h = speedFactor * KeyDownTime (v);
 			if (gameOpts->input.bRampKeys [1])
 				h /= key_ramp (v);
-			Controls.vertical_thrust_time += h;
+			Controls.vertical_thrustTime += h;
 			}
 		if ((v = HaveKey (kc_keyboard, 16 + i)) < 255) 
-			Controls.vertical_thrust_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.vertical_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 10 + i)) < 255) 
-			Controls.sideways_thrust_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.sideways_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 12 + i)) < 255) 
-			Controls.sideways_thrust_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.sideways_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 20 + i)) < 255) 
-			Controls.bank_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 22 + i)) < 255) 
-			Controls.bank_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 30 + i)) < 255) 
-			Controls.forward_thrust_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.forward_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 32 + i)) < 255) 
-			Controls.forward_thrust_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.forward_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 #endif
 		if ((v = HaveKey (kc_keyboard, 46 + i)) < 255) 
 			Controls.afterburner_state |= keyd_pressed [v];
@@ -1026,19 +1026,19 @@ if (*slide_on) {
 	if (bGetSlideBank == 2) {
 		for (i = 0; i < 2; i++) {
 #ifdef DELTACTRL
-			Controls.vertical_thrust_time += DELTACTRL (i, 2);
-			Controls.vertical_thrust_time -= DELTACTRL (2 + i, 2);
-			Controls.sideways_thrust_time -= DELTACTRL (4 + i, 2);
-			Controls.sideways_thrust_time += DELTACTRL (6 + i, 2);
+			Controls.vertical_thrustTime += DELTACTRL (i, 2);
+			Controls.vertical_thrustTime -= DELTACTRL (2 + i, 2);
+			Controls.sideways_thrustTime -= DELTACTRL (4 + i, 2);
+			Controls.sideways_thrustTime += DELTACTRL (6 + i, 2);
 #else
 			if ((v = HaveKey (kc_keyboard, 0 + i)) < 255) 
-				Controls.vertical_thrust_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+				Controls.vertical_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 			if ((v = HaveKey (kc_keyboard, 2 + i)) < 255) 
-				Controls.vertical_thrust_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+				Controls.vertical_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 			if ((v = HaveKey (kc_keyboard, 4 + i)) < 255) 
-				Controls.sideways_thrust_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+				Controls.sideways_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 			if ((v = HaveKey (kc_keyboard, 6 + i)) < 255) 
-				Controls.sideways_thrust_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+				Controls.sideways_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 #endif
 			}
 		}
@@ -1064,18 +1064,18 @@ if (*bank_on) {
 	if (bGetSlideBank == 2) {
 #ifdef DELTACTRL
 		for (i = 4; i < 6; i++)
-			Controls.bank_time += DELTACTRL (i, 1);
+			Controls.bankTime += DELTACTRL (i, 1);
 		for (i = 6; i < 8; i++)
-			Controls.bank_time -= DELTACTRL (i, 1);
+			Controls.bankTime -= DELTACTRL (i, 1);
 #else
 		if ((v = HaveKey (kc_keyboard, 4)) < 255) 
-			Controls.bank_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 5)) < 255) 
-			Controls.bank_time += speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 6)) < 255) 
-			Controls.bank_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 		if ((v = HaveKey (kc_keyboard, 7)) < 255) 
-			Controls.bank_time -= speedFactor * KeyDownTime (v) / key_ramp (v);
+			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
 #endif
 		}
 	}
@@ -1139,23 +1139,23 @@ if (bGetSlideBank == 2) {
 		Controls.fire_secondaryDownCount += joy_get_button_down_cnt (v);
 		}
 	if ((v = kc_joystick [2].value) < 255) 
-		Controls.forward_thrust_time += joy_get_button_down_time (v);
+		Controls.forward_thrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [3].value) < 255) 
-		Controls.forward_thrust_time -= joy_get_button_down_time (v);
+		Controls.forward_thrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [4].value) < 255) 
 		Controls.fire_flareDownCount += joy_get_button_down_cnt (v);
 	if ((v = kc_joystick [6].value) < 255) 
-		Controls.sideways_thrust_time -= joy_get_button_down_time (v);
+		Controls.sideways_thrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [7].value) < 255) 
-		Controls.sideways_thrust_time += joy_get_button_down_time (v);
+		Controls.sideways_thrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [8].value) < 255) 
-		Controls.vertical_thrust_time += joy_get_button_down_time (v);
+		Controls.vertical_thrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [9].value) < 255) 
-		Controls.vertical_thrust_time -= joy_get_button_down_time (v);
+		Controls.vertical_thrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [11].value) < 255) 
-		Controls.bank_time += joy_get_button_down_time (v);
+		Controls.bankTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [12].value) < 255) 
-		Controls.bank_time -= joy_get_button_down_time (v);
+		Controls.bankTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [25].value) < 255) {
 		Controls.rear_viewDownCount += joy_get_button_down_cnt (v);
 		Controls.rear_view_down_state |= joy_get_button_state (v);
@@ -1180,58 +1180,58 @@ if (bGetSlideBank == 2) {
 	// Axis movements
 	if ((v = kc_joystick [17].value) < 255)
 		if (kc_joystick [18].value)		// If inverted...
-			Controls.sideways_thrust_time += joy_axis [v];
+			Controls.sideways_thrustTime += joy_axis [v];
 		else
-			Controls.sideways_thrust_time -= joy_axis [v];
+			Controls.sideways_thrustTime -= joy_axis [v];
 	if ((v = kc_joystick [19].value) < 255)
 		if (kc_joystick [20].value)		// If inverted...
-			Controls.vertical_thrust_time -= joy_axis [v];
+			Controls.vertical_thrustTime -= joy_axis [v];
 		else
-			Controls.vertical_thrust_time += joy_axis [v];
+			Controls.vertical_thrustTime += joy_axis [v];
 	if ((v = kc_joystick [21].value) < 255)
 		if (kc_joystick [22].value)		// If inverted...
-			Controls.bank_time += joy_axis [v];
+			Controls.bankTime += joy_axis [v];
 		else
-			Controls.bank_time -= joy_axis [v];
+			Controls.bankTime -= joy_axis [v];
 	if ((v = kc_joystick [23].value) < 255)
 		if (kc_joystick [24].value)		// If inverted...
-			Controls.forward_thrust_time += joy_axis [v];
+			Controls.forward_thrustTime += joy_axis [v];
 		else
-			Controls.forward_thrust_time -= joy_axis [v];
+			Controls.forward_thrustTime -= joy_axis [v];
 
 	// special continuous slide & bank handling
 	if (*slide_on) {
 		if ((v = kc_joystick [13].value) < 255)
 			if (kc_joystick [14].value)		// If inverted...
-				Controls.vertical_thrust_time -= joy_axis [v];
+				Controls.vertical_thrustTime -= joy_axis [v];
 			else
-				Controls.vertical_thrust_time += joy_axis [v];
+				Controls.vertical_thrustTime += joy_axis [v];
 		if ((v = kc_joystick [15].value) < 255)
 			if (kc_joystick [16].value)		// If inverted...
-				Controls.sideways_thrust_time -= joy_axis [v];
+				Controls.sideways_thrustTime -= joy_axis [v];
 			else
-				Controls.sideways_thrust_time += joy_axis [v];
+				Controls.sideways_thrustTime += joy_axis [v];
 		}
 	else {
 		if ((v = kc_joystick [13].value) < 255)
 			if (kc_joystick [14].value)		// If inverted...
-				Controls.pitch_time += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
+				Controls.pitchTime += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
 			else 
-				Controls.pitch_time -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
+				Controls.pitchTime -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
 		if (!*bank_on) {
 			if ((v = kc_joystick [15].value) < 255)
 				if (kc_joystick [16].value)		// If inverted...
-					Controls.heading_time -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod); //kcFrameCount;
+					Controls.headingTime -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod); //kcFrameCount;
 				else
-					Controls.heading_time += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod); // kcFrameCount;
+					Controls.headingTime += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod); // kcFrameCount;
 			}
 		}
 	if (*bank_on) {
 		if ((v = kc_joystick [15].value) < 255)
 			if (kc_joystick [16].value)		// If inverted...
-				Controls.bank_time += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
+				Controls.bankTime += DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
 			else
-				Controls.bank_time -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
+				Controls.bankTime -= DeltaAxis (v); // (joy_axis [v] * 16 / joy_sens_mod);
 		}
 	}
 }
@@ -1262,23 +1262,23 @@ if (bGetSlideBank == 2) {
 		Controls.fire_secondaryDownCount += MouseButtonDownCount (v);
 		}
 	if ((v = kc_mouse [2].value) < 255) 
-		Controls.forward_thrust_time += MouseButtonDownTime (v);
+		Controls.forward_thrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [3].value) < 255) 
-		Controls.forward_thrust_time -= MouseButtonDownTime (v);
+		Controls.forward_thrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [4].value) < 255) 
 		Controls.fire_flareDownCount += MouseButtonDownCount (v);
 	if ((v = kc_mouse [6].value) < 255) 
-		Controls.sideways_thrust_time -= MouseButtonDownTime (v);
+		Controls.sideways_thrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [7].value) < 255) 
-		Controls.sideways_thrust_time += MouseButtonDownTime (v);
+		Controls.sideways_thrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [8].value) < 255) 
-		Controls.vertical_thrust_time += MouseButtonDownTime (v);
+		Controls.vertical_thrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [9].value) < 255) 
-		Controls.vertical_thrust_time -= MouseButtonDownTime (v);
+		Controls.vertical_thrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [11].value) < 255) 
-		Controls.bank_time += MouseButtonDownTime (v);
+		Controls.bankTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [12].value) < 255) 
-		Controls.bank_time -= MouseButtonDownTime (v);
+		Controls.bankTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [25].value) < 255) {
 		Controls.rear_viewDownCount += MouseButtonDownCount (v);
 		Controls.rear_view_down_state |= MouseButtonState (v);
@@ -1296,36 +1296,36 @@ if (bGetSlideBank == 2) {
 	// Axis movements
 	if ((v = kc_mouse [17].value) < 255)
 		if (kc_mouse [18].value)		// If inverted...
-			Controls.sideways_thrust_time -= mouse_axis [v];
+			Controls.sideways_thrustTime -= mouse_axis [v];
 		else
-			Controls.sideways_thrust_time += mouse_axis [v];
+			Controls.sideways_thrustTime += mouse_axis [v];
 	if ((v = kc_mouse [19].value) < 255)
 		if (kc_mouse [20].value)		// If inverted...
-			Controls.vertical_thrust_time -= mouse_axis [v];
+			Controls.vertical_thrustTime -= mouse_axis [v];
 		else
-			Controls.vertical_thrust_time += mouse_axis [v];
+			Controls.vertical_thrustTime += mouse_axis [v];
 	if ((v = kc_mouse [21].value) < 255)
 		if (kc_mouse [22].value)		// If inverted...
-			Controls.bank_time -= mouse_axis [v];
+			Controls.bankTime -= mouse_axis [v];
 		else
-			Controls.bank_time += mouse_axis [v];
+			Controls.bankTime += mouse_axis [v];
 	if ((v = kc_mouse [23].value) < 255)
 		if (kc_mouse [24].value)		// If inverted...
-			Controls.forward_thrust_time += mouse_axis [v];
+			Controls.forward_thrustTime += mouse_axis [v];
 		else
-			Controls.forward_thrust_time -= mouse_axis [v];
+			Controls.forward_thrustTime -= mouse_axis [v];
 	// special continuous slide & bank handling
 	if (*slide_on) {
 		if ((v = kc_mouse [13].value) < 255)
 			if (kc_mouse [14].value)		// If inverted...
-				Controls.vertical_thrust_time += mouse_axis [v];
+				Controls.vertical_thrustTime += mouse_axis [v];
 			else
-				Controls.vertical_thrust_time -= mouse_axis [v];
+				Controls.vertical_thrustTime -= mouse_axis [v];
 		if ((v = kc_mouse [15].value) < 255)	
 			if (kc_mouse [16].value)		// If inverted...
-				Controls.sideways_thrust_time -= mouse_axis [v];
+				Controls.sideways_thrustTime -= mouse_axis [v];
 			else
-				Controls.sideways_thrust_time += mouse_axis [v];
+				Controls.sideways_thrustTime += mouse_axis [v];
 		}
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
@@ -1341,21 +1341,21 @@ if (bGetSlideBank == 2) {
 					dx = 0;
 				else
 					dx -= 16;
-			Controls.heading_time += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
+			Controls.headingTime += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
 			}
 		else {
 			if ((v = kc_mouse [13].value) < 255)
 				if (kc_mouse [14].value)		// If inverted...
-					Controls.pitch_time += (mouse_axis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
+					Controls.pitchTime += (mouse_axis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
 				else
-					Controls.pitch_time -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
+					Controls.pitchTime -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
 			}
 		if (*bank_on) {
 			if ((v = kc_mouse [15].value) < 255)
 				if (kc_mouse [16].value)		// If inverted...
-					Controls.bank_time -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
+					Controls.bankTime -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
 				else
-					Controls.bank_time += (mouse_axis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
+					Controls.bankTime += (mouse_axis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
 			}
 		else {
 			if (gameOpts->input.bJoyMouse) {
@@ -1370,14 +1370,14 @@ if (bGetSlideBank == 2) {
 						dy = 0;
 					else
 						dy -= 16;
-				Controls.pitch_time += (dy * gameOpts->input.mouseSensitivity [1]); // mouse_sens_mod;
+				Controls.pitchTime += (dy * gameOpts->input.mouseSensitivity [1]); // mouse_sens_mod;
 				}
 			else {
 				if ((v = kc_mouse [15].value) < 255 && mouse_axis [v])
 					if (kc_mouse [16].value)		// If inverted...
-						Controls.heading_time -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
+						Controls.headingTime -= (mouse_axis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
 					else
-						Controls.heading_time += (mouse_axis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
+						Controls.headingTime += (mouse_axis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
 				}
 			}
 		}
@@ -1385,17 +1385,17 @@ if (bGetSlideBank == 2) {
 
 if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 	if (bGetSlideBank == 2) {
-		Controls.vertical_thrust_time += MouseButtonDownTime (D2_MB_Z_UP)/2;
-		Controls.vertical_thrust_time -= MouseButtonDownTime (D2_MB_Z_DOWN)/2;
-		Controls.bank_time += MouseButtonDownTime (D2_MB_BANK_LEFT);
-		Controls.bank_time -= MouseButtonDownTime (D2_MB_BANK_RIGHT);
+		Controls.vertical_thrustTime += MouseButtonDownTime (D2_MB_Z_UP)/2;
+		Controls.vertical_thrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN)/2;
+		Controls.bankTime += MouseButtonDownTime (D2_MB_BANK_LEFT);
+		Controls.bankTime -= MouseButtonDownTime (D2_MB_BANK_RIGHT);
 		}
 	if (*slide_on) {
 		if (bGetSlideBank == 2) {
-			Controls.vertical_thrust_time -= MouseButtonDownTime (D2_MB_PITCH_FORWARD);
-			Controls.vertical_thrust_time += MouseButtonDownTime (D2_MB_PITCH_BACKWARD);
-			Controls.sideways_thrust_time -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
-			Controls.sideways_thrust_time += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
+			Controls.vertical_thrustTime -= MouseButtonDownTime (D2_MB_PITCH_FORWARD);
+			Controls.vertical_thrustTime += MouseButtonDownTime (D2_MB_PITCH_BACKWARD);
+			Controls.sideways_thrustTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
+			Controls.sideways_thrustTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
 			}
 		}
 	else if (bGetSlideBank == 1) {
@@ -1408,8 +1408,8 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 		}
 	if (*bank_on) {
 		if (bGetSlideBank == 2) {
-			Controls.bank_time -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
-			Controls.bank_time += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
+			Controls.bankTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
+			Controls.bankTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
 			}
 		}
 	}
@@ -1420,35 +1420,35 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 void ControlsDoSlideBank (int slide_on, int bank_on, fix kp, fix kh)
 {
 if (slide_on) 
-	Controls.heading_time =
-	Controls.pitch_time = 0;
+	Controls.headingTime =
+	Controls.pitchTime = 0;
 else {
 	if (kp == 0)
-		Controls.pitch_time = 0;
+		Controls.pitchTime = 0;
 	else {
 		if (kp > 0) {
-			if (Controls.pitch_time < 0)
-				Controls.pitch_time = 0;
+			if (Controls.pitchTime < 0)
+				Controls.pitchTime = 0;
 			}
 		else {// kp < 0
-			if (Controls.pitch_time > 0)
-				Controls.pitch_time = 0;
+			if (Controls.pitchTime > 0)
+				Controls.pitchTime = 0;
 			}
-		Controls.pitch_time += kp;
+		Controls.pitchTime += kp;
 		}
 	if (!bank_on) {
 		if (kh == 0)
-			Controls.heading_time = 0;
+			Controls.headingTime = 0;
 		else {
 			if (kh > 0) {
-				if (Controls.heading_time < 0)
-					Controls.heading_time = 0;
+				if (Controls.headingTime < 0)
+					Controls.headingTime = 0;
 				}
 			else {
-				if (Controls.heading_time > 0)
-					Controls.heading_time = 0;
+				if (Controls.headingTime > 0)
+					Controls.headingTime = 0;
 				}
-			Controls.heading_time += kh;
+			Controls.headingTime += kh;
 			}
 		}
 	}
@@ -1482,11 +1482,11 @@ return 0;
 
 void ControlsResetControls (void)
 {
-fix ht = Controls.heading_time;
-fix pt = Controls.pitch_time;
+fix ht = Controls.headingTime;
+fix pt = Controls.pitchTime;
 memset (&Controls, 0, sizeof (control_info));
-//Controls.heading_time = ht;
-//Controls.pitch_time = pt;
+//Controls.headingTime = ht;
+//Controls.pitchTime = pt;
 ControlsLimitTurnRate (gameOpts->input.bUseMouse && !gameStates.input.bCybermouseActive);
 }
 
@@ -1518,9 +1518,9 @@ int ControlsReadAll (void)
 	int	mouse_buttons;
 	int	bUseMouse, use_joystick;
 
-Controls.vertical_thrust_time = 0;
-Controls.sideways_thrust_time = 0;
-Controls.forward_thrust_time = 0;
+Controls.vertical_thrustTime = 0;
+Controls.sideways_thrustTime = 0;
+Controls.forward_thrustTime = 0;
 Controls.cycle_primary_count = 0;
 Controls.cycle_secondary_count = 0;
 Controls.toggle_icons_count = 0;
@@ -1582,13 +1582,13 @@ if (gameStates.input.nCruiseSpeed > i2f (100))
 	gameStates.input.nCruiseSpeed = i2f (100);
 else if (gameStates.input.nCruiseSpeed < 0) 
 	gameStates.input.nCruiseSpeed = 0;
-if (!Controls.forward_thrust_time)
-	Controls.forward_thrust_time = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcFrameTime)/100;
+if (!Controls.forward_thrustTime)
+	Controls.forward_thrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcFrameTime)/100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (bank_sens_mod > 2) {
-	Controls.bank_time *= 2;
-	Controls.bank_time /= bank_sens_mod;
+	Controls.bankTime *= 2;
+	Controls.bankTime /= bank_sens_mod;
 	}
 #endif
 
@@ -1600,34 +1600,34 @@ if (gameStates.input.kcFrameTime > F1_0) {
 	gameStates.input.kcFrameTime = F1_0;
 	}
 
-KCCLAMP (Controls.vertical_thrust_time, gameStates.input.kcFrameTime);
-KCCLAMP (Controls.sideways_thrust_time, gameStates.input.kcFrameTime);
-KCCLAMP (Controls.forward_thrust_time, gameStates.input.kcFrameTime);
+KCCLAMP (Controls.vertical_thrustTime, gameStates.input.kcFrameTime);
+KCCLAMP (Controls.sideways_thrustTime, gameStates.input.kcFrameTime);
+KCCLAMP (Controls.forward_thrustTime, gameStates.input.kcFrameTime);
 if (!ControlsLimitTurnRate (bUseMouse)) {
-	KCCLAMP (Controls.heading_time, gameStates.input.kcFrameTime);
-	KCCLAMP (Controls.pitch_time, gameStates.input.kcFrameTime);
-	KCCLAMP (Controls.bank_time, gameStates.input.kcFrameTime);
+	KCCLAMP (Controls.headingTime, gameStates.input.kcFrameTime);
+	KCCLAMP (Controls.pitchTime, gameStates.input.kcFrameTime);
+	KCCLAMP (Controls.bankTime, gameStates.input.kcFrameTime);
 	}
 if (gameStates.render.nZoomFactor > F1_0) {
 		int r = (gameStates.render.nZoomFactor * 100) / F1_0;
 
-	Controls.heading_time = (Controls.heading_time * 100) / r;
-	Controls.pitch_time = (Controls.pitch_time * 100) / r;
-	Controls.bank_time = (Controls.bank_time * 100) / r;
+	Controls.headingTime = (Controls.headingTime * 100) / r;
+	Controls.pitchTime = (Controls.pitchTime * 100) / r;
+	Controls.bankTime = (Controls.bankTime * 100) / r;
 #ifdef _DEBUG
 	r = (int) ((double) gameStates.render.nZoomFactor * 100.0 / (double) F1_0);
 	HUDMessage (0, "x %d.%02d", r / 100, r % 100);
 #endif
 	}
-//	KCCLAMP (Controls.afterburner_time, gameStates.input.kcFrameTime);
+//	KCCLAMP (Controls.afterburnerTime, gameStates.input.kcFrameTime);
 #ifdef _DEBUG
 if (keyd_pressed [KEY_DELETE])
 	memset (&Controls, 0, sizeof (control_info));
 #endif
 gameStates.input.bKeepSlackTime = 0;
 kcFrameCount = 0;
-if (Controls.forward_thrust_time)
-	Controls.forward_thrust_time = Controls.forward_thrust_time;
+if (Controls.forward_thrustTime)
+	Controls.forward_thrustTime = Controls.forward_thrustTime;
 return 0;
 }
 #endif
@@ -1660,34 +1660,34 @@ void kconfig_center_headset ()
 void CybermouseAdjust ()
  {
 /*	if (gameData.multi.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].mtype.phys_info.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest side.
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
-			vms_matrix tempm, ViewMatrix;
-			vms_angvec * Kconfig_abs_movement;
+			vmsMatrix tempm, ViewMatrix;
+			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
 	
-			Kconfig_abs_movement = (vms_angvec *) ((uint)kc_external_control + sizeof (control_info);
+			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (control_info);
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient,&tempm);
-				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].orient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].orient = ViewMatrix;		
 			}
-			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vms_angvec);
+			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
 				HUDInitMessage (oem_message);
 		}
 	}*/
 
-	Controls.pitch_time += FixMul (kc_external_control->pitch_time,gameData.time.xFrame);						
-	Controls.vertical_thrust_time += FixMul (kc_external_control->vertical_thrust_time,gameData.time.xFrame);
-	Controls.heading_time += FixMul (kc_external_control->heading_time,gameData.time.xFrame);
-	Controls.sideways_thrust_time += FixMul (kc_external_control->sideways_thrust_time ,gameData.time.xFrame);
-	Controls.bank_time += FixMul (kc_external_control->bank_time ,gameData.time.xFrame);
-	Controls.forward_thrust_time += FixMul (kc_external_control->forward_thrust_time ,gameData.time.xFrame);
+	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
+	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
+	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
 //	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 //	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;

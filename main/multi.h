@@ -37,16 +37,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added prototype for reset function.
  *
  * Revision 1.72  1995/02/05  14:37:42  rob
- * Made object mapping more efficient.
+ * Made tObject mapping more efficient.
  *
  * Revision 1.71  1995/02/01  18:07:36  rob
- * Change object mapping to int functions.
+ * Change tObject mapping to int functions.
  *
  * Revision 1.70  1995/02/01  12:55:00  rob
- * Changed message type.
+ * Changed message nType.
  *
  * Revision 1.69  1995/01/31  12:46:12  rob
- * Fixed a bug with object overflow handling.
+ * Fixed a bug with tObject overflow handling.
  *
  * Revision 1.68  1995/01/27  11:15:13  rob
  * removed extern of variable no longer in multi.c
@@ -67,13 +67,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added new message for hostage door sync.
  *
  * Revision 1.62  1995/01/14  18:39:57  rob
- * Added new message type for dropping robot powerups.
+ * Added new message nType for dropping robot powerups.
  *
  * Revision 1.61  1995/01/12  21:41:13  rob
  * Fixed incompat. with 1.0 and 1.1.
  *
  * Revision 1.60  1995/01/04  21:40:55  rob
- * Added new type for boss actions in coop.
+ * Added new nType for boss actions in coop.
  *
  * Revision 1.59  1995/01/04  11:38:09  rob
  * Fixed problem with lost character in messages.
@@ -82,7 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made max message length in shareware = 40.
  *
  * Revision 1.57  1995/01/03  14:27:25  rob
- * ADded trigger messages.
+ * ADded tTrigger messages.
  *
  * Revision 1.56  1995/01/02  20:08:21  rob
  * Added robot creation.
@@ -91,14 +91,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added score syncing.
  *
  * Revision 1.54  1994/12/21  21:02:01  rob
- * Added new message type for ROBOT_FIRE
+ * Added new message nType for ROBOT_FIRE
  *
  * Revision 1.53  1994/12/21  17:27:25  rob
  * Changed the format for send_create_powerup messages.
  *
  *
  * Revision 1.52  1994/12/20  20:41:39  rob
- * ADded robot release message type.
+ * ADded robot release message nType.
  *
  * Revision 1.51  1994/12/19  19:00:12  rob
  * Changed buf to multibuf so it can be safely externed.
@@ -201,29 +201,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixing endlevel stuff.
  *
  * Revision 1.18  1994/11/07  17:49:07  rob
- * Changed prototype for object mapping funcs.
+ * Changed prototype for tObject mapping funcs.
  *
  * Revision 1.17  1994/11/07  15:46:32  rob
- * Changed the way remote object number mapping works, and it was a real
+ * Changed the way remote tObject number mapping works, and it was a real
  * pain in the ass..  I think it will work more reliably now.
  *
  * Revision 1.16  1994/11/04  19:53:01  rob
- * Added a new message type for Player_leave 'explosions'.
+ * Added a new message nType for Player_leave 'explosions'.
  * Added a prototype for function moved over from network.c
  *
  * Revision 1.15  1994/11/02  18:02:33  rob
- * Added message type for control center firing.
+ * Added message nType for control center firing.
  *
  * Revision 1.14  1994/11/02  11:38:00  rob
  * Added player-in-process-of-dying explosions to network game.
  *
  * Revision 1.13  1994/11/01  19:31:44  rob
- * Bumped max_net_create_objects to 20 to accomodate a fully equipped
+ * Bumped max_net_createObjects to 20 to accomodate a fully equipped
  * character blowing up.
  *
  * Revision 1.12  1994/10/31  13:48:02  rob
  * Fixed bug in opening doors over network/modem.  Added a new message
- * type to multi.c that communicates door openings across the net.
+ * nType to multi.c that communicates door openings across the net.
  * Changed includes in multi.c and wall.c to accomplish this.
  *
  * Revision 1.11  1994/10/09  20:08:20  rob
@@ -244,7 +244,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added MultiDoDeath to multi.c.
  *
  * Revision 1.6  1994/10/07  16:14:32  rob
- * Added new message type for player reappear
+ * Added new message nType for player reappear
  *
  * Revision 1.5  1994/10/07  12:58:17  rob
  * Added MultiLeaveGame.
@@ -390,10 +390,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int ObjnumRemoteToLocal (int remote_obj, int owner);
 int ObjnumLocalToRemote (int local_obj, sbyte *owner);
 void MapObjnumLocalToRemote (int local, int remote, int owner);
-void MapObjnumLocalToLocal (int objnum);
+void MapObjnumLocalToLocal (int nObject);
 void ResetNetworkObjects();
 
-void multi_init_objects(void);
+void multi_initObjects(void);
 void MultiShowPlayerList(void);
 void MultiDoFrame(void);
 
@@ -402,34 +402,34 @@ void MultiSendFlags(char);
 void MultiSendWeapons (int bForce);
 void MultiSendMonsterball (int bForce, int bCreate);
 void MultiSendFire(void);
-void MultiSendDestroyReactor(int objnum, int player);
+void MultiSendDestroyReactor(int nObject, int player);
 void MultiSendEndLevelStart(int);
-void MultiSendPlayerExplode(char type);
+void MultiSendPlayerExplode(char nType);
 void MultiSendMessage(void);
-void MultiSendPosition(int objnum);
+void MultiSendPosition(int nObject);
 void MultiSendReappear();
-void MultiSendKill(int objnum);
-void MultiSendRemObj(int objnum);
+void MultiSendKill(int nObject);
+void MultiSendRemObj(int nObject);
 void MultiSendQuit(int why);
-void MultiSendDoorOpen(int segnum, int side,ubyte flag);
+void MultiSendDoorOpen(int nSegment, int tSide,ubyte flag);
 void MultiSendCreateExplosion(int player_num);
-void MultiSendCtrlcenFire(vms_vector *to_target, int gun_num, int objnum);
+void MultiSendCtrlcenFire(vmsVector *to_target, int gun_num, int nObject);
 void MultiSendInvul(void);
 void MultiSendDeInvul(void);
 void MultiSendCloak(void);
 void MultiSendDeCloak(void);
-void MultiSendCreatePowerup(int powerup_type, int segnum, int objnum, vms_vector *pos);
-void MultiSendPlaySound(int sound_num, fix volume);
+void MultiSendCreatePowerup(int powerupType, int nSegment, int nObject, vmsVector *pos);
+void MultiSendPlaySound(int nSound, fix volume);
 void MultiSendAudioTaunt(int taunt_num);
 void MultiSendScore(void);
 void MultiSendTrigger(int nTrigger, int nObject);
-void MultiSendObjTrigger(int trigger);
+void MultiSendObjTrigger(int tTrigger);
 void MultiSendHostageDoorStatus(int wallnum);
 void MultiSendNetPlayerStatsRequest(ubyte player_num);
-void MultiSendDropWeapon (int objnum,int seed);
-void MultiSendDropMarker (int player,vms_vector position,char messagenum,char text[]);
-void MultiSendGuidedInfo (object *miss,char);
-void MultiSendReturnFlagHome(short objnum);
+void MultiSendDropWeapon (int nObject,int seed);
+void MultiSendDropMarker (int player,vmsVector position,char messagenum,char text[]);
+void MultiSendGuidedInfo (tObject *miss,char);
+void MultiSendReturnFlagHome(short nObject);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShields (void);
 void MultiSendCheating (void);
@@ -441,11 +441,11 @@ int MultiMenuPoll(void);
 void MultiLeaveGame(void);
 void MultiProcessData(char *dat, int len);
 void MultiProcessBigData(char *buf, int len);
-void MultiDoDeath(int objnum);
+void MultiDoDeath(int nObject);
 void MultiSendMsgDialog(void);
 int MultiDeleteExtraObjects(void);
-void MultiMakeGhostPlayer(int objnum);
-void MultiMakePlayerGhost(int objnum);
+void MultiMakeGhostPlayer(int nObject);
+void MultiMakePlayerGhost(int nObject);
 void MultiDefineMacro(int key);
 void MultiSendMacro(int key);
 int MultiGetKillList(int *plist);
@@ -467,7 +467,7 @@ short GetTeam(int pnum);
 
 
 extern int Network_active;
-extern int Netlife_kills,Netlife_killed;
+extern int NetlifeKills,NetlifeKilled;
 
 extern int bUseMacros;
 
@@ -486,13 +486,13 @@ extern void MultiSendOrbBonus( char pnum );
 extern void MultiSendGotOrb( char pnum );
 extern void MultiAddLifetimeKills(void);
 
-extern void MultiSendTeleport (char pnum, short segnum, char sidenum);
+extern void MultiSendTeleport (char pnum, short nSegment, char nSide);
 
-extern int control_invul_time;
+extern int control_invulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
-extern bitmap_index multi_player_textures[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
+extern tBitmapIndex multi_player_textures[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 #define NETGAME_FLAG_CLOSED            1
 #define NETGAME_FLAG_SHOW_ID           2
@@ -507,7 +507,7 @@ extern bitmap_index multi_player_textures[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEX
 #define NETGAME_NAME_LEN                15
 #define NETGAME_AUX_SIZE                20  // Amount of extra data for the network protocol to store in the netgame packet
 
-enum comp_type {DOS,WIN_32,WIN_95,MAC} __pack__ ;
+enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 
 // sigh...the socket structure member was moved away from it's friends.
 // I'll have to create a union for appletalk network info with just
@@ -537,9 +537,9 @@ typedef struct netplayer_info {
 	ubyte   version_major;
 	ubyte   version_minor;
 #ifdef _WIN32
-	ubyte   computer_type;
+	ubyte   computerType;
 #else	
-	enum comp_type computer_type;
+	enum compType computerType;
 #endif
 	sbyte    connected;
 	ushort  socket;
@@ -549,13 +549,13 @@ typedef struct netplayer_info {
 
 typedef struct allNetPlayers_info
 {
-	char    type;
+	char    nType;
 	int     Security;
 	struct netplayer_info players [MAX_PLAYERS+4];
 } __pack__ allNetPlayers_info;
 
 typedef struct netgame_info {
-	ubyte   type;
+	ubyte   nType;
 	int     Security;
 	char    game_name[NETGAME_NAME_LEN+1];
 	char    mission_title[MISSION_NAME_LEN+1];
@@ -568,7 +568,7 @@ typedef struct netgame_info {
 	ubyte   numplayers;
 	ubyte   max_numplayers;
 	ubyte   numconnected;
-	ubyte   game_flags;
+	ubyte   gameFlags;
 	ubyte   protocol_version;
 	ubyte   version_major;
 	ubyte   version_minor;
@@ -650,16 +650,16 @@ typedef struct netgame_info {
 	int     locations[MAX_PLAYERS];				// 32 bytes
 	short   kills[MAX_PLAYERS][MAX_PLAYERS];	// 128 bytes
 	ushort  segments_checksum;						// 2 bytes
-	short   team_kills[2];							// 4 bytes
+	short   teamKills[2];							// 4 bytes
 	short   killed[MAX_PLAYERS];					// 16 bytes
-	short   player_kills[MAX_PLAYERS];			// 16 bytes
+	short   playerKills[MAX_PLAYERS];			// 16 bytes
 	int     KillGoal;									// 4 bytes
 	fix     PlayTimeAllowed;						// 4 bytes
-	fix     level_time;								// 4 bytes
-	int     control_invul_time;					// 4 bytes
+	fix     levelTime;								// 4 bytes
+	int     control_invulTime;					// 4 bytes
 	int     monitor_vector;							// 4 bytes
 	int     player_score[MAX_PLAYERS];			// 32 bytes
-	ubyte   player_flags[MAX_PLAYERS];			// 8 bytes
+	ubyte   playerFlags[MAX_PLAYERS];			// 8 bytes
 	short   nPacketsPerSec;							// 2 bytes
 	ubyte   bShortPackets;							// 1 bytes
 // 279 bytes
@@ -729,9 +729,9 @@ typedef struct tMultiData {
 	tMultiMenuData		menu;
 	tMultiKillData		kills;
 	tMultiRobotData	robots;
-	short					remoteToLocal [MAX_NUM_NET_PLAYERS][MAX_OBJECTS];  // Remote object number for each local object
+	short					remoteToLocal [MAX_NUM_NET_PLAYERS][MAX_OBJECTS];  // Remote tObject number for each local tObject
 	short					localToRemote [MAX_OBJECTS];
-	sbyte					nObjOwner [MAX_OBJECTS];   // Who created each object in my universe, -1 = loaded at start
+	sbyte					nObjOwner [MAX_OBJECTS];   // Who created each tObject in my universe, -1 = loaded at start
 	int					bGotoSecret;
 } tMultiData;
 
@@ -742,7 +742,7 @@ extern struct allNetPlayers_info netPlayers;
 int NetworkIAmMaster(void);
 void ChangePlayerNumTo(int new_pnum);
 
-void ChangeSegmentTexture (int segnum, int oldOwner);
+void ChangeSegmentTexture (int nSegment, int oldOwner);
 
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100

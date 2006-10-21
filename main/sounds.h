@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.41  1995/02/03  17:08:28  john
  * Changed sound stuff to allow low memory usage.
- * Also, changed so that Sounds [gameStates.app.bD1Mission] isn't an array of digi_sounds, it
+ * Also, changed so that Sounds [gameStates.app.bD1Mission] isn't an array of digiSounds, it
  * is a ubyte pointing into GameSounds [gameStates.app.bD1Mission], this way the digi.c code that
  * locks sounds won't accidentally unlock a sound that is already playing, but
  * since it's Sounds [gameStates.app.bD1Mission][soundno] is different, it would erroneously be unlocked.

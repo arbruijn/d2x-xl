@@ -250,13 +250,13 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 for (k = 0; k < 2; k++) {
 	bmP = gameData.pig.tex.bitmaps [k];
 	for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
-		if (bmP->bm_type == BM_TYPE_STD) {
+		if (bmP->bmType == BM_TYPE_STD) {
 			if (!BM_OVERRIDE (bmP))
 				UnlinkTexture (bmP);
 			else {
 				altBmP = BM_OVERRIDE (bmP);
 				UnlinkTexture (altBmP);
-				if ((altBmP->bm_type == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
+				if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
 					h = BM_FRAMECOUNT (altBmP);
 					if (h > 1)
 						for (j = 0; j < h; j++)
@@ -531,7 +531,7 @@ void OglCachePolyModelTextures (int nModel)
 {
 	polymodel		*po = gameData.models.polyModels + nModel;
 	int				h, i, j;
-	bitmap_index	bmi;
+	tBitmapIndex	bmi;
 
 for (i = po->n_textures, j = po->first_texture; i; i--, j++) {
 //		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [po->first_texture+i]];
@@ -563,10 +563,10 @@ void OglCacheWeaponTextures (weapon_info *w)
 	OglCacheVClipTexturesN (w->flash_vclip, 1);
 	OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
 	OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
-	if (w->render_type == WEAPON_RENDER_VCLIP)
+	if (w->renderType == WEAPON_RENDER_VCLIP)
 		OglCacheVClipTexturesN (w->weapon_vclip, 0);
-	else if (w->render_type == WEAPON_RENDER_POLYMODEL)
-		OglCachePolyModelTextures (w->model_num);
+	else if (w->renderType == WEAPON_RENDER_POLYMODEL)
+		OglCachePolyModelTextures (w->nModel);
 }
 
 //------------------------------------------------------------------------------
@@ -610,20 +610,20 @@ void CacheSideTextures (int nSeg)
 {
 	short			nSide, tMap1, tMap2;
 	grs_bitmap	*bmP, *bm2, *bmm;
-	struct side	*sideP;
+	struct tSide	*sideP;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	sideP = gameData.segs.segments [nSeg].sides + nSide;
-	tMap1 = sideP->tmap_num;
+	tMap1 = sideP->nBaseTex;
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
-	bmP = LoadFaceBitmap (tMap1, sideP->frame_num);
-	if (tMap2 = sideP->tmap_num2) {
-		bm2 = LoadFaceBitmap (tMap1, sideP->frame_num);
+	bmP = LoadFaceBitmap (tMap1, sideP->nFrame);
+	if (tMap2 = sideP->nOvlTex) {
+		bm2 = LoadFaceBitmap (tMap1, sideP->nFrame);
 		if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 			OglLoadBmTexture (bm2, 1, 0);
-		else if (bmm = TexMergeGetCachedBitmap (tMap1, tMap2))
+		else if (bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient))
 			bmP = bmm;
 		else
 			OglLoadBmTexture (bm2, 1, 0);
@@ -644,8 +644,8 @@ else if (nObj == -2)
 	OglCacheWeaponTextures (gameData.weapons.info + primaryWeaponToWeaponInfo [LASER_INDEX]);
 else if (nObj == -1)
 	OglCacheWeaponTextures (gameData.weapons.info + secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]);
-else if (gameData.objs.objects [nObj].render_type == RT_POWERUP) {
-	OglCacheVClipTexturesN (gameData.objs.objects [nObj].rtype.vclip_info.nClipIndex, 0);
+else if (gameData.objs.objects [nObj].renderType == RT_POWERUP) {
+	OglCacheVClipTexturesN (gameData.objs.objects [nObj].rType.vClipInfo.nClipIndex, 0);
 	switch (gameData.objs.objects [nObj].id){
 /*					case POW_LASER:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [LASER_INDEX]]);
@@ -683,8 +683,8 @@ else if (gameData.objs.objects [nObj].render_type == RT_POWERUP) {
 			break;
 		}
 	}
-else if (gameData.objs.objects [nObj].render_type == RT_POLYOBJ)
-	OglCachePolyModelTextures (gameData.objs.objects [nObj].rtype.pobj_info.model_num);
+else if (gameData.objs.objects [nObj].renderType == RT_POLYOBJ)
+	OglCachePolyModelTextures (gameData.objs.objects [nObj].rType.polyObjInfo.nModel);
 }
 
 //------------------------------------------------------------------------------
@@ -730,14 +730,14 @@ return 1;
 
 int OglCacheLevelTextures (void)
 {
-	int			i, bD1;
-	eclip			*ec;
-	int			max_efx=0,ef;
+	int				i, bD1;
+	eclip				*ec;
+	int				max_efx=0,ef;
 #if 1
-	int			seg,side;
-	short			tmap1,tmap2;
-	grs_bitmap	*bmP,*bm2, *bmm;
-	struct side *sidep;
+	int				seg, side;
+	short				tmap1,tmap2;
+	grs_bitmap		*bmP,*bm2, *bmm;
+	struct tSide	*sideP;
 #endif
 
 OglResetTextureStatsInternal ();//loading a new lev should reset textures
@@ -746,14 +746,14 @@ TexMergeInit (100);
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1];i++,ec++) {
-		if ((ec->changing_wall_texture == -1) && (ec->changing_object_texture == -1))
+		if ((ec->changing_wall_texture == -1) && (ec->changingObject_texture == -1))
 			continue;
 		if (ec->vc.nFrameCount > max_efx)
 			max_efx = ec->vc.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
 		for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ec++) {
-			if ((ec->changing_wall_texture == -1) && (ec->changing_object_texture == -1))
+			if ((ec->changing_wall_texture == -1) && (ec->changingObject_texture == -1))
 				continue;
 	//			if (ec->vc.nFrameCount>max_efx)
 	//				max_efx=ec->vc.nFrameCount;
@@ -767,17 +767,17 @@ OglCacheTextures ();
 #else
 for (seg = 0; seg < gameData.segs.nSegments; seg++) {
 	for (side = 0; side < MAX_SIDES_PER_SEGMENT; side++) {
-		sidep = gameData.segs.segments [seg].sides + side;
-		tmap1 = sidep->tmap_num;
+		sideP = gameData.segs.segments [seg].sides + side;
+		tmap1 = sideP->nBaseTex;
 		if ((tmap1 < 0) || (tmap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
-		bmP = LoadFaceBitmap (tmap1, sidep->frame_num);
-		if (tmap2 = sidep->tmap_num2) {
-			bm2 = LoadFaceBitmap (tmap1, sidep->frame_num);
+		bmP = LoadFaceBitmap (tmap1, sideP->nFrame);
+		if (tmap2 = sideP->nOvlTex) {
+			bm2 = LoadFaceBitmap (tmap1, sideP->nFrame);
 			if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				OglLoadBmTexture (bm2, 1, 0);
-			else if (bmm = TexMergeGetCachedBitmap (tmap1, tmap2))
+			else if (bmm = TexMergeGetCachedBitmap (tmap1, tmap2, sideP->nOvlOrient))
 				bmP = bmm;
 			else
 				OglLoadBmTexture (bm2, 1, 0);
@@ -793,8 +793,8 @@ InitSpecialEffects ();
 	OglCacheWeaponTextures (gameData.weapons.info + primaryWeaponToWeaponInfo [LASER_INDEX]);
 	OglCacheWeaponTextures (gameData.weapons.info + secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]);
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].render_type == RT_POWERUP) {
-			OglCacheVClipTexturesN (gameData.objs.objects [i].rtype.vclip_info.nClipIndex, 0);
+		if (gameData.objs.objects [i].renderType == RT_POWERUP) {
+			OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
 			switch (gameData.objs.objects [i].id) {
 /*					case POW_LASER:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [LASER_INDEX]]);
@@ -803,7 +803,7 @@ InitSpecialEffects ();
 					break;*/
 #ifdef _DEBUG
 				case POW_HOARD_ORB:
-					OglCacheVClipTexturesN (gameData.objs.objects [i].rtype.vclip_info.nClipIndex, 0);
+					OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
 					break;
 #endif
 				case POW_VULCAN_WEAPON:
@@ -839,8 +839,8 @@ InitSpecialEffects ();
 					break;
 				}
 			}
-		else if (gameData.objs.objects [i].render_type == RT_POLYOBJ)
-			OglCachePolyModelTextures (gameData.objs.objects [i].rtype.pobj_info.model_num);
+		else if (gameData.objs.objects [i].renderType == RT_POLYOBJ)
+			OglCachePolyModelTextures (gameData.objs.objects [i].rType.polyObjInfo.nModel);
 		}
 	}
 #endif
@@ -921,7 +921,7 @@ void OglFillTexBuf (
 	int dyo,
 	int twidth,
 	int theight,
-	int type,
+	int nType,
 	int nTransp,
 	int superTransp)
 {
@@ -947,7 +947,7 @@ void OglFillTexBuf (
 			else
 				c = TRANSPARENCY_COLOR;//fill the pad space with transparancy
 			if ((int) c == TRANSPARENCY_COLOR) {
-				switch (type) {
+				switch (nType) {
 					case GL_LUMINANCE:
 						 (*(texp++)) = 0;
 						break;
@@ -975,7 +975,7 @@ void OglFillTexBuf (
 //				 (*(tex++)) = 0;
 				}
 			else {
-				switch (type) {
+				switch (nType) {
 					case GL_LUMINANCE://these could prolly be done to make the intensity based upon the intensity of the resulting color, but its not needed for anything (yet?) so no point. :)
 						 (*(texp++)) = 255;
 						break;
@@ -1270,7 +1270,7 @@ int OglLoadBmTextureM (grs_bitmap *bmP, int bMipMap, int nTransp, int bMask, voi
 	ogl_texture		*t;
 	grs_bitmap		*bmParent;
 
-while ((bmP->bm_type == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent != bmP))
+while ((bmP->bmType == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent != bmP))
 	bmP = bmParent;
 buf = bmP->bm_texBuf;
 if (!(t = bmP->glTexture)) {
@@ -1356,7 +1356,7 @@ h = bmP->bm_props.h;
 w = bmP->bm_props.w;
 if (!(h * w))
 	return 1;
-nFrames = (bmP->bm_type == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
+nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
 if (!(bmP->bm_props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (OglLoadBmTextureM (bmP, bDoMipMap, nTransp, 0, NULL))
 		return 1;
@@ -1371,7 +1371,7 @@ else if (!BM_FRAMES (bmP)) {
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		BM_CURFRAME (bmP) = bmfP;
 		GrInitSubBitmap (bmfP, bmP, 0, i * w, w, w);
-		bmfP->bm_type = BM_TYPE_FRAME;
+		bmfP->bmType = BM_TYPE_FRAME;
 		bmfP->bm_props.y = 0;
 		BM_PARENT (bmfP) = bmP;
 		if (bmP->bm_data.alt.bm_transparentFrames [i / 32] & (1 << (i % 32)))
@@ -1411,7 +1411,7 @@ void OglFreeBmTexture (grs_bitmap *bmP)
 {
 	ogl_texture	*t;
 
-while ((bmP->bm_type != BM_TYPE_ALT) && BM_PARENT (bmP) && (bmP != BM_PARENT (bmP)))
+while ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP) && (bmP != BM_PARENT (bmP)))
 	bmP = BM_PARENT (bmP);
 if (BM_FRAMES (bmP)) {
 	int i, nFrames = bmP->bm_props.h / bmP->bm_props.w;
@@ -1604,7 +1604,7 @@ if (*progP)
 *progP = glCreateProgramObject (); 
 if (*progP)
 	return 1;
-LogErr ("   Couldn't create shader program object\n");
+LogErr ("   Couldn't create shader program tObject\n");
 return 0; 
 }
 
@@ -1795,7 +1795,7 @@ if (!gameOpts->render.bUseShaders ||
 	 !bMultiTexturingOk || 
 	 !pszOglExtensions ||
 	 !strstr (pszOglExtensions, "GL_ARB_shading_language_100") || 
-	 !strstr (pszOglExtensions, "GL_ARB_shader_objects")) 
+	 !strstr (pszOglExtensions, "GL_ARB_shaderObjects")) 
 	gameStates.ogl.bShadersOk = 0;
 else {
 #ifndef GL_VERSION_20

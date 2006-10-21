@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Player can now only enter valid chars for his name
  *
  * Revision 1.18  1994/11/18  16:17:13  mike
- * prototype Max_linear_depth_objects.
+ * prototype Max_linear_depthObjects.
  *
  * Revision 1.17  1994/11/08  14:51:17  john
  * Added ExecMessageBox1, (like the original, only you can pass a function).
@@ -127,17 +127,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define NM_TYPE_CHECK       2   // A check box. Set and get its status by looking at flags field (1=on, 0=off)
 #define NM_TYPE_RADIO       3   // Same as check box, but only 1 in a group can be set at a time. Set group fields.
 #define NM_TYPE_TEXT        4   // A line of text that does nothing.
-#define NM_TYPE_NUMBER      5   // A numeric entry counter.  Changes value from min_value to max_value;
+#define NM_TYPE_NUMBER      5   // A numeric entry counter.  Changes value from minValue to maxValue;
 #define NM_TYPE_INPUT_MENU  6   // A inputbox that you hit Enter to edit, when done, hit enter and menu leaves.
-#define NM_TYPE_SLIDER      7   // A slider from min_value to max_value. Draws with text_len chars.
-#define NM_TYPE_GAUGE       8   // A slider from min_value to max_value. Draws with text_len chars.
+#define NM_TYPE_SLIDER      7   // A slider from minValue to maxValue. Draws with text_len chars.
+#define NM_TYPE_GAUGE       8   // A slider from minValue to maxValue. Draws with text_len chars.
 
 #define NM_MAX_TEXT_LEN     50
 
 typedef struct newmenu_item {
-	int			type;           // What kind of item this is, see NM_TYPE_????? defines
+	int			nType;           // What kind of item this is, see NM_TYPE_????? defines
 	int			value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
-	int			min_value, max_value;   // For sliders and number bars.
+	int			minValue, maxValue;   // For sliders and number bars.
 	int			group;          // What group this belongs to for radio buttons.
 	int			text_len;       // The maximum length of characters that can be entered by this inputboxes
 	char			*text;          // The text associated with this item.
@@ -216,16 +216,16 @@ int _CDECL_ ExecMessageBox1 (
 void NMRestoreBackground( int sx, int sy, int dx, int dy, int w, int h);
 
 // Returns 0 if no file selected, else filename is filled with selected file.
-int ExecMenuFileSelector(char *title, char *filespec, char *filename, int allow_abort_flag);
+int ExecMenuFileSelector(char *title, char *filespec, char *filename, int allow_abortFlag);
 
 // in menu.c
-extern int Max_linear_depth_objects;
+extern int Max_linear_depthObjects;
 
 extern char *nmAllowedChars;
 
-int ExecMenuListBox(char *title, int nitems, char *items[], int allow_abort_flag, 
+int ExecMenuListBox(char *title, int nitems, char *items[], int allow_abortFlag, 
 						  int (*listbox_callback)(int *citem, int *nitems, char *items[], int *keypress));
-int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abort_flag, int default_item, 
+int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abortFlag, int default_item, 
 							int (*listbox_callback)(int *citem, int *nitems, char *items[], int *keypress));
 
 int ExecMenuFileList(char *title, char *filespace, char *filename);

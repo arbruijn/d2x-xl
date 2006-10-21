@@ -498,7 +498,7 @@ else {
 	for (i=0; i<gameData.multi.nPlayers; i++) {
 		if (gameData.multi.players [i].connected && (i != gameData.multi.nLocalPlayer))
 			IPXSendPacketData (data, datasize, netPlayers.players[i].network.ipx.server, 
-									 netPlayers.players[i].network.ipx.node, gameData.multi.players[i].net_address);
+									 netPlayers.players[i].network.ipx.node, gameData.multi.players[i].netAddress);
 		}
 	return datasize;
 	}

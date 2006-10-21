@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Header for polyobj.c, the polygon object code
+ * Header for polyobj.c, the polygon tObject code
  *
  * Old Log:
  * Revision 1.2  1995/09/14  14:10:30  allender
@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added code to remap polygon model numbers by matching filenames
  *
  * Revision 1.20  1994/08/26  15:36:00  matt
- * Made eclips usable on more than one object at a time
+ * Made eclips usable on more than one tObject at a time
  *
  * Revision 1.19  1994/07/22  20:44:23  matt
  * Killed unused fields in polygon model structure
@@ -75,11 +75,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * limited life; debris can now be blown up.
  *
  * Revision 1.14  1994/06/07  16:51:57  matt
- * Made object lighting work correctly; changed name of Ambient_light to
- * Dynamic_light; cleaned up polygobj object rendering a little.
+ * Made tObject lighting work correctly; changed name of Ambient_light to
+ * Dynamic_light; cleaned up polygobj tObject rendering a little.
  *
  * Revision 1.13  1994/05/26  21:08:59  matt
- * Moved robot stuff out of polygon model and into robot_info struct
+ * Moved robot stuff out of polygon model and into tRobotInfo struct
  * Made new file, robot.c, to deal with robots
  *
  * Revision 1.12  1994/05/18  19:35:05  matt
@@ -143,24 +143,24 @@ typedef struct polymodel {
 	int			n_models;
 	int			model_data_size;
 	ubyte			*model_data;
-	int			submodel_ptrs[MAX_SUBMODELS];
-	vms_vector	submodel_offsets[MAX_SUBMODELS];
-	vms_vector	submodel_norms[MAX_SUBMODELS];   // norm for sep plane
-	vms_vector	submodel_pnts[MAX_SUBMODELS];    // point on sep plane
-	fix			submodel_rads[MAX_SUBMODELS];       // radius for each submodel
-	ubyte			submodel_parents[MAX_SUBMODELS];    // what is parent for each submodel
-	vms_vector	submodel_mins[MAX_SUBMODELS];
-	vms_vector	submodel_maxs[MAX_SUBMODELS];
-	vms_vector	mins,maxs;                       // min,max for whole model
+	int			submodel_ptrs [MAX_SUBMODELS];
+	vmsVector	submodel_offsets [MAX_SUBMODELS];
+	vmsVector	submodel_norms [MAX_SUBMODELS];   // norm for sep plane
+	vmsVector	submodel_pnts [MAX_SUBMODELS];    // point on sep plane
+	fix			submodel_rads [MAX_SUBMODELS];       // radius for each submodel
+	ubyte			submodel_parents [MAX_SUBMODELS];    // what is parent for each submodel
+	vmsVector	submodel_mins [MAX_SUBMODELS];
+	vmsVector	submodel_maxs [MAX_SUBMODELS];
+	vmsVector	mins,maxs;                       // min,max for whole model
 	fix			rad;
 	ubyte			n_textures;
 	ushort		first_texture;
-	ubyte			simpler_model;                      // alternate model with less detail (0 if none, model_num+1 else)
-	//vms_vector min,max;
+	ubyte			simpler_model;                      // alternate model with less detail (0 if none, nModel+1 else)
+	//vmsVector min,max;
 } __pack__ polymodel;
 
 // array of pointers to polygon objects
-// switch to simpler model when the object has depth
+// switch to simpler model when the tObject has depth
 // greater than this value times its radius.
 extern int nSimpleModelThresholdScale;
 
@@ -171,22 +171,22 @@ extern char Pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 void InitPolygonModels();
 
 #ifndef DRIVE
-int LoadPolygonModel(char *filename,int n_textures,int first_texture,robot_info *r);
+int LoadPolygonModel(char *filename,int n_textures,int first_texture,tRobotInfo *r);
 #else
 int LoadPolygonModel(char *filename,int n_textures,grs_bitmap ***textures);
 #endif
 
 // draw a polygon model
-void DrawPolygonModel(object *objP, vms_vector *pos,vms_matrix *orient,vms_angvec *anim_angles,int model_num,int flags,fix light,fix *glow_values,bitmap_index alt_textures[], tRgbColorf *obj_color);
+void DrawPolygonModel(tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles,int nModel,int flags,fix light,fix *glowValues,tBitmapIndex nAltTextures[], tRgbColorf *obj_color);
 
 // fills in arrays gun_points & gun_dirs, returns the number of guns read
-int read_model_guns(char *filename,vms_vector *gun_points, vms_vector *gun_dirs, int *gun_submodels);
+int read_model_guns(char *filename,vmsVector *gun_points, vmsVector *gun_dirs, int *gun_submodels);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders
 // into an off-screen canvas that it creates, then copies to the current
 // canvas.
-void DrawModelPicture(int mn,vms_angvec *orient_angles);
+void DrawModelPicture(int mn,vmsAngVec *orient_angles);
 
 // free up a model, getting rid of all its memory
 void FreeModel (polymodel *po);

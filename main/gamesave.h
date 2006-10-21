@@ -43,10 +43,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up editor/game interactions some more.
  *
  * Revision 1.5  1994/07/20  13:38:14  matt
- * Added get_level_name() prototype
+ * Added getLevel_name() prototype
  *
  * Revision 1.4  1994/06/20  22:19:41  john
- * Added Gamesave_num_org_robots.
+ * Added Gamesave_num_orgRobots.
  *
  * Revision 1.3  1994/06/14  11:32:49  john
  * Made Newdemo record & restore the current mine.
@@ -84,7 +84,7 @@ typedef struct {
 	int     level;
 #if 1
 	game_item_info	player;
-	game_item_info	object;
+	game_item_info	tObject;
 	game_item_info	walls;
 	game_item_info	doors;
 	game_item_info	triggers;
@@ -129,16 +129,16 @@ typedef struct {
 
 void LoadGame(void);
 void SaveGame(void);
-void get_level_name(void);
+void getLevel_name(void);
 
 extern int LoadLevelSub(char *filename);
-extern int save_level(char *filename);
+extern int saveLevel(char *filename);
 
 // called in place of load_game() to only load the .min data
 extern void load_mine_only(char * filename);
 
 extern char Gamesave_current_filename[];
-extern int Gamesave_num_org_robots;
+extern int Gamesave_num_orgRobots;
 
 // In dumpmine.c
 extern void write_game_text_file(char *filename);

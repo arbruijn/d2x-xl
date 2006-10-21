@@ -82,13 +82,13 @@ ushort BECalcSegmentCheckSum()
 	sum1 = sum2 = 0;
 	for (i = 0; i < gameData.segs.nLastSegment + 1; i++) {
 		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].type), 1, &sum1, &sum2);
-			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].frame_num), 1, &sum1, &sum2);
+			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].nType), 1, &sum1, &sum2);
+			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].nFrame), 1, &sum1, &sum2);
 			s = INTEL_SHORT(WallNumI (i, j));
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].tmap_num);
+			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].nBaseTex);
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].tmap_num2);
+			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].nOvlTex);
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
 			for (k = 0; k < 4; k++) {
 				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].uvls[k].u));
@@ -145,7 +145,7 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 #include "powerup.h"
 #include "error.h"
 
-sbyte out_buffer[IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending object data
+sbyte out_buffer[IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending tObject data
 
 extern struct ipx_recv_data ipx_udpSrc;
 
@@ -163,7 +163,7 @@ void BEReceiveNetPlayerInfo(ubyte *data, netplayer_info *info)
 	loc++;
 	info->version_minor = data[loc];                            
 	loc++;
-	memcpy(&(info->computer_type), data + loc, 1);            
+	memcpy(&(info->computerType), data + loc, 1);            
 	loc++;      // memcpy to avoid compile time warning about enum
 	info->connected = data[loc];                                
 	loc++;
@@ -182,7 +182,7 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 	short tmps;
 
 	memset(out_buffer, 0, sizeof(out_buffer));
-	out_buffer[0] = netPlayers.type;                            loc++;
+	out_buffer[0] = netPlayers.nType;                            loc++;
 	tmpi = INTEL_INT(netPlayers.Security);
 	memcpy(out_buffer + loc, &tmpi, 4);                       loc += 4;
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
@@ -191,7 +191,7 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      loc += 6;
 		memcpy(out_buffer + loc, &(netPlayers.players[i].version_major), 1);      loc++;
 		memcpy(out_buffer + loc, &(netPlayers.players[i].version_minor), 1);      loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].computer_type), 1);      loc++;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      loc++;
 		memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);          loc++;
 		tmps = INTEL_SHORT(netPlayers.players[i].socket);
 		memcpy(out_buffer + loc, &tmps, 2);                                       loc += 2;
@@ -209,7 +209,7 @@ void BEReceiveNetPlayersPacket(ubyte *data, allNetPlayers_info *pinfo)
 {
 	int i, loc = 0;
 
-	pinfo->type = data[loc];                            
+	pinfo->nType = data[loc];                            
 	loc++;
 	memcpy(&(pinfo->Security), data + loc, 4);        
 	loc += 4;
@@ -220,14 +220,14 @@ void BEReceiveNetPlayersPacket(ubyte *data, allNetPlayers_info *pinfo)
 	}
 }
 
-void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte *net_address)
+void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	short tmps;
 	int loc, tmpi;
 
 	loc = 0;
 	memset(out_buffer, 0, sizeof(out_buffer));
-	out_buffer[0] = seq.type;                                       
+	out_buffer[0] = seq.nType;                                       
 	loc++;
 	tmpi = INTEL_INT(seq.Security);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
@@ -243,7 +243,7 @@ void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte
 	loc++;
 	out_buffer[loc] = seq.player.version_minor;                     
 	loc++;
-	out_buffer[loc] = seq.player.computer_type;                     
+	out_buffer[loc] = seq.player.computerType;                     
 	loc++;
 	out_buffer[loc] = seq.player.connected;                         
 	loc++;
@@ -252,8 +252,8 @@ void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte
 	loc += 2;
 	out_buffer[loc]=seq.player.rank;                                
 	loc++;      // for pad byte
-	if (net_address != NULL)
-		IPXSendPacketData(out_buffer, loc, server, node, net_address);
+	if (netAddress != NULL)
+		IPXSendPacketData(out_buffer, loc, server, node, netAddress);
 	else if (!server && !node)
 		IPXSendBroadcastData(out_buffer, loc);
 	else
@@ -264,13 +264,13 @@ void BEReceiveSequencePacket(ubyte *data, sequence_packet *seq)
 {
 	int loc = 0;
 
-	seq->type = data[0];                        loc++;
+	seq->nType = data[0];                        loc++;
 	memcpy(&(seq->Security), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
 	seq->Security = INTEL_INT(seq->Security);
 	BEReceiveNetPlayerInfo(data + loc, &(seq->player));
 }
 
-void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lite_flag)     // lite says shorter netgame packets
+void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int liteFlag)     // lite says shorter netgame packets
 {
 	uint tmpi;
 	ushort tmps; // p;
@@ -278,7 +278,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	int loc = 0;
 
 	memset(out_buffer, 0, IPX_MAX_DATA_SIZE);
-	memcpy(out_buffer + loc, &(netGame.type), 1);                 
+	memcpy(out_buffer + loc, &(netGame.nType), 1);                 
 	loc++;
 	tmpi = INTEL_INT(netGame.Security);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
@@ -306,7 +306,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.numconnected), 1);         
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.game_flags), 1);           
+	memcpy(out_buffer + loc, &(netGame.gameFlags), 1);           
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.protocol_version), 1);     
 	loc++;
@@ -317,11 +317,11 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	memcpy(out_buffer + loc, &(netGame.team_vector), 1);          
 	loc++;
 
-	if (lite_flag)
+	if (liteFlag)
 		goto do_send;
 
 // will this work -- damn bitfields -- totally bogus when trying to do
-// this type of stuff
+// this nType of stuff
 // Watcom makes bitfields from left to right.  CW7 on the mac goes
 // from right to left.  then they are endian swapped
 
@@ -374,10 +374,10 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	tmps = INTEL_SHORT(netGame.segments_checksum);
 	memcpy(out_buffer + loc, &tmps, 2);           
 	loc += 2;   // SWAP_HERE
-	tmps = INTEL_SHORT(netGame.team_kills[0]);
+	tmps = INTEL_SHORT(netGame.teamKills[0]);
 	memcpy(out_buffer + loc, &tmps, 2);           
 	loc += 2;   // SWAP_HERE
-	tmps = INTEL_SHORT(netGame.team_kills[1]);
+	tmps = INTEL_SHORT(netGame.teamKills[1]);
 	memcpy(out_buffer + loc, &tmps, 2);           
 	loc += 2;   // SWAP_HERE
 	for (i = 0; i < MAX_PLAYERS; i++) {
@@ -386,7 +386,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 		loc += 2;   // SWAP HERE!!!
 	}
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		tmps = INTEL_SHORT(netGame.player_kills[i]);
+		tmps = INTEL_SHORT(netGame.playerKills[i]);
 		memcpy(out_buffer + loc, &tmps, 2);       
 		loc += 2;   // SWAP HERE!!!
 	}
@@ -397,10 +397,10 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	tmpi = INTEL_INT(netGame.PlayTimeAllowed);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.level_time);
+	tmpi = INTEL_INT(netGame.levelTime);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.control_invul_time);
+	tmpi = INTEL_INT(netGame.control_invulTime);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
 	tmpi = INTEL_INT(netGame.monitor_vector);
@@ -412,7 +412,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 		loc += 4;   // SWAP_HERE
 	}
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		memcpy(out_buffer + loc, &(netGame.player_flags[i]), 1); loc++;
+		memcpy(out_buffer + loc, &(netGame.playerFlags[i]), 1); loc++;
 	}
 	tmps = INTEL_SHORT(netGame.nPacketsPerSec);
 	memcpy(out_buffer + loc, &tmps, 2);                   
@@ -421,21 +421,21 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *net_address, int lit
 	loc++;
 
 do_send:
-	if (net_address != NULL)
-		IPXSendPacketData(out_buffer, loc, server, node, net_address);
+	if (netAddress != NULL)
+		IPXSendPacketData(out_buffer, loc, server, node, netAddress);
 	else if ((server == NULL) && (node == NULL))
 		IPXSendBroadcastData(out_buffer, loc);
 	else
 		IPXSendInternetPacketData(out_buffer, loc, server, node);
 }
 
-void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
+void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int liteFlag)
 {
 	int i, j;
 	int loc = 0;
 	short bitfield; // new_field;
 
-	memcpy(&(netgame->type), data + loc, 1);                      
+	memcpy(&(netgame->nType), data + loc, 1);                      
 	loc++;
 	memcpy(&(netgame->Security), data + loc, 4);                  
 	loc += 4;
@@ -463,7 +463,7 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 	loc++;
 	memcpy(&(netgame->numconnected), data + loc, 1);              
 	loc++;
-	memcpy(&(netgame->game_flags), data + loc, 1);                
+	memcpy(&(netgame->gameFlags), data + loc, 1);                
 	loc++;
 	memcpy(&(netgame->protocol_version), data + loc, 1);          
 	loc++;
@@ -474,7 +474,7 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 	memcpy(&(netgame->team_vector), data + loc, 1);               
 	loc++;
 
-	if (lite_flag)
+	if (liteFlag)
 		return;
 
 	memcpy(&bitfield, data + loc, 2);                             
@@ -528,21 +528,21 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 	memcpy(&(netgame->segments_checksum), data + loc, 2);         
 	loc += 2;
 	netgame->segments_checksum = INTEL_SHORT(netgame->segments_checksum);
-	memcpy(&(netgame->team_kills[0]), data + loc, 2);             
+	memcpy(&(netgame->teamKills[0]), data + loc, 2);             
 	loc += 2;
-	netgame->team_kills[0] = INTEL_SHORT(netgame->team_kills[0]);
-	memcpy(&(netgame->team_kills[1]), data + loc, 2);             
+	netgame->teamKills[0] = INTEL_SHORT(netgame->teamKills[0]);
+	memcpy(&(netgame->teamKills[1]), data + loc, 2);             
 	loc += 2;
-	netgame->team_kills[1] = INTEL_SHORT(netgame->team_kills[1]);
+	netgame->teamKills[1] = INTEL_SHORT(netgame->teamKills[1]);
 	for (i = 0; i < MAX_PLAYERS; i++) {
 		memcpy(&(netgame->killed[i]), data + loc, 2);             
 		loc += 2;
 		netgame->killed[i] = INTEL_SHORT(netgame->killed[i]);
 	}
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		memcpy(&(netgame->player_kills[i]), data + loc, 2);       
+		memcpy(&(netgame->playerKills[i]), data + loc, 2);       
 		loc += 2;
-		netgame->player_kills[i] = INTEL_SHORT(netgame->player_kills[i]);
+		netgame->playerKills[i] = INTEL_SHORT(netgame->playerKills[i]);
 	}
 	memcpy(&(netgame->KillGoal), data + loc, 4);                  
 	loc += 4;
@@ -551,12 +551,12 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 	loc += 4;
 	netgame->PlayTimeAllowed = INTEL_INT(netgame->PlayTimeAllowed);
 
-	memcpy(&(netgame->level_time), data + loc, 4);                
+	memcpy(&(netgame->levelTime), data + loc, 4);                
 	loc += 4;
-	netgame->level_time = INTEL_INT(netgame->level_time);
-	memcpy(&(netgame->control_invul_time), data + loc, 4);        
+	netgame->levelTime = INTEL_INT(netgame->levelTime);
+	memcpy(&(netgame->control_invulTime), data + loc, 4);        
 	loc += 4;
-	netgame->control_invul_time = INTEL_INT(netgame->control_invul_time);
+	netgame->control_invulTime = INTEL_INT(netgame->control_invulTime);
 	memcpy(&(netgame->monitor_vector), data + loc, 4);            
 	loc += 4;
 	netgame->monitor_vector = INTEL_INT(netgame->monitor_vector);
@@ -566,7 +566,7 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 		netgame->player_score[i] = INTEL_INT(netgame->player_score[i]);
 	}
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		memcpy(&(netgame->player_flags[i]), data + loc, 1);       
+		memcpy(&(netgame->playerFlags[i]), data + loc, 1);       
 		loc++;
 	}
 	memcpy(&(netgame->nPacketsPerSec), data + loc, 2);             
@@ -589,7 +589,7 @@ void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int lite_flag)
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]. _m = INTEL_INT (*((int *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))));
 	
-void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *net_address)
+void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress)
 {
 memcpy (out_buffer, &extraGameInfo [1], sizeof (extra_gameinfo));
 EGI_INTEL_SHORT_2BUF (entropy.nMaxVirusCapacity);
@@ -597,8 +597,8 @@ EGI_INTEL_SHORT_2BUF (entropy.nEnergyFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldDamageRate);
 EGI_INTEL_INT_2BUF (nSpawnDelay);
-if (net_address != NULL)
-	IPXSendPacketData(out_buffer, sizeof (extra_gameinfo), server, node, net_address);
+if (netAddress != NULL)
+	IPXSendPacketData(out_buffer, sizeof (extra_gameinfo), server, node, netAddress);
 else if ((server == NULL) && (node == NULL))
 	IPXSendBroadcastData(out_buffer, sizeof (extra_gameinfo));
 else
@@ -617,13 +617,13 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 }
 
 
-void BESwapObject(object *objP)
+void BESwapObject(tObject *objP)
 {
-	// swap the short and int entries for this object
-	objP->signature     = INTEL_INT(objP->signature);
+	// swap the short and int entries for this tObject
+	objP->nSignature     = INTEL_INT(objP->nSignature);
 	objP->next          = INTEL_SHORT(objP->next);
 	objP->prev          = INTEL_SHORT(objP->prev);
-	objP->segnum        = INTEL_SHORT(objP->segnum);
+	objP->nSegment        = INTEL_SHORT(objP->nSegment);
 	objP->pos.x         = INTEL_INT(objP->pos.x);
 	objP->pos.y         = INTEL_INT(objP->pos.y);
 	objP->pos.z         = INTEL_INT(objP->pos.z);
@@ -647,105 +647,105 @@ void BESwapObject(object *objP)
 
 	objP->lifeleft      = INTEL_INT(objP->lifeleft);
 
-	switch (objP->movement_type) {
+	switch (objP->movementType) {
 
 	case MT_PHYSICS:
 
-		objP->mtype.phys_info.velocity.x = INTEL_INT(objP->mtype.phys_info.velocity.x);
-		objP->mtype.phys_info.velocity.y = INTEL_INT(objP->mtype.phys_info.velocity.y);
-		objP->mtype.phys_info.velocity.z = INTEL_INT(objP->mtype.phys_info.velocity.z);
+		objP->mType.physInfo.velocity.x = INTEL_INT(objP->mType.physInfo.velocity.x);
+		objP->mType.physInfo.velocity.y = INTEL_INT(objP->mType.physInfo.velocity.y);
+		objP->mType.physInfo.velocity.z = INTEL_INT(objP->mType.physInfo.velocity.z);
 
-		objP->mtype.phys_info.thrust.x   = INTEL_INT(objP->mtype.phys_info.thrust.x);
-		objP->mtype.phys_info.thrust.y   = INTEL_INT(objP->mtype.phys_info.thrust.y);
-		objP->mtype.phys_info.thrust.z   = INTEL_INT(objP->mtype.phys_info.thrust.z);
+		objP->mType.physInfo.thrust.x   = INTEL_INT(objP->mType.physInfo.thrust.x);
+		objP->mType.physInfo.thrust.y   = INTEL_INT(objP->mType.physInfo.thrust.y);
+		objP->mType.physInfo.thrust.z   = INTEL_INT(objP->mType.physInfo.thrust.z);
 
-		objP->mtype.phys_info.mass       = INTEL_INT(objP->mtype.phys_info.mass);
-		objP->mtype.phys_info.drag       = INTEL_INT(objP->mtype.phys_info.drag);
-		objP->mtype.phys_info.brakes     = INTEL_INT(objP->mtype.phys_info.brakes);
+		objP->mType.physInfo.mass       = INTEL_INT(objP->mType.physInfo.mass);
+		objP->mType.physInfo.drag       = INTEL_INT(objP->mType.physInfo.drag);
+		objP->mType.physInfo.brakes     = INTEL_INT(objP->mType.physInfo.brakes);
 
-		objP->mtype.phys_info.rotvel.x   = INTEL_INT(objP->mtype.phys_info.rotvel.x);
-		objP->mtype.phys_info.rotvel.y   = INTEL_INT(objP->mtype.phys_info.rotvel.y);
-		objP->mtype.phys_info.rotvel.z   = INTEL_INT(objP->mtype.phys_info.rotvel.z);
+		objP->mType.physInfo.rotVel.x   = INTEL_INT(objP->mType.physInfo.rotVel.x);
+		objP->mType.physInfo.rotVel.y   = INTEL_INT(objP->mType.physInfo.rotVel.y);
+		objP->mType.physInfo.rotVel.z   = INTEL_INT(objP->mType.physInfo.rotVel.z);
 
-		objP->mtype.phys_info.rotthrust.x = INTEL_INT(objP->mtype.phys_info.rotthrust.x);
-		objP->mtype.phys_info.rotthrust.y = INTEL_INT(objP->mtype.phys_info.rotthrust.y);
-		objP->mtype.phys_info.rotthrust.z = INTEL_INT(objP->mtype.phys_info.rotthrust.z);
+		objP->mType.physInfo.rotThrust.x = INTEL_INT(objP->mType.physInfo.rotThrust.x);
+		objP->mType.physInfo.rotThrust.y = INTEL_INT(objP->mType.physInfo.rotThrust.y);
+		objP->mType.physInfo.rotThrust.z = INTEL_INT(objP->mType.physInfo.rotThrust.z);
 
-		objP->mtype.phys_info.turnroll   = INTEL_INT(objP->mtype.phys_info.turnroll);
-		objP->mtype.phys_info.flags      = INTEL_SHORT(objP->mtype.phys_info.flags);
+		objP->mType.physInfo.turnRoll   = INTEL_INT(objP->mType.physInfo.turnRoll);
+		objP->mType.physInfo.flags      = INTEL_SHORT(objP->mType.physInfo.flags);
 
 		break;
 
 	case MT_SPINNING:
 
-		objP->mtype.spin_rate.x = INTEL_INT(objP->mtype.spin_rate.x);
-		objP->mtype.spin_rate.y = INTEL_INT(objP->mtype.spin_rate.y);
-		objP->mtype.spin_rate.z = INTEL_INT(objP->mtype.spin_rate.z);
+		objP->mType.spinRate.x = INTEL_INT(objP->mType.spinRate.x);
+		objP->mType.spinRate.y = INTEL_INT(objP->mType.spinRate.y);
+		objP->mType.spinRate.z = INTEL_INT(objP->mType.spinRate.z);
 		break;
 	}
 
-	switch (objP->control_type) {
+	switch (objP->controlType) {
 
 	case CT_WEAPON:
-		objP->ctype.laser_info.parent_type       = INTEL_SHORT(objP->ctype.laser_info.parent_type);
-		objP->ctype.laser_info.parent_num        = INTEL_SHORT(objP->ctype.laser_info.parent_num);
-		objP->ctype.laser_info.parent_signature  = INTEL_INT(objP->ctype.laser_info.parent_signature);
-		objP->ctype.laser_info.creation_time     = INTEL_INT(objP->ctype.laser_info.creation_time);
-		objP->ctype.laser_info.last_hitobj       = INTEL_SHORT(objP->ctype.laser_info.last_hitobj);
-		objP->ctype.laser_info.track_goal        = INTEL_SHORT(objP->ctype.laser_info.track_goal);
-		objP->ctype.laser_info.multiplier        = INTEL_INT(objP->ctype.laser_info.multiplier);
+		objP->cType.laserInfo.parentType       = INTEL_SHORT(objP->cType.laserInfo.parentType);
+		objP->cType.laserInfo.nParentObj        = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
+		objP->cType.laserInfo.nParentSig  = INTEL_INT(objP->cType.laserInfo.nParentSig);
+		objP->cType.laserInfo.creationTime     = INTEL_INT(objP->cType.laserInfo.creationTime);
+		objP->cType.laserInfo.nLastHitObj       = INTEL_SHORT(objP->cType.laserInfo.nLastHitObj);
+		objP->cType.laserInfo.nTrackGoal        = INTEL_SHORT(objP->cType.laserInfo.nTrackGoal);
+		objP->cType.laserInfo.multiplier        = INTEL_INT(objP->cType.laserInfo.multiplier);
 		break;
 
 	case CT_EXPLOSION:
-		objP->ctype.expl_info.spawn_time     = INTEL_INT(objP->ctype.expl_info.spawn_time);
-		objP->ctype.expl_info.delete_time    = INTEL_INT(objP->ctype.expl_info.delete_time);
-		objP->ctype.expl_info.delete_objnum  = INTEL_SHORT(objP->ctype.expl_info.delete_objnum);
-		objP->ctype.expl_info.attach_parent  = INTEL_SHORT(objP->ctype.expl_info.attach_parent);
-		objP->ctype.expl_info.prev_attach    = INTEL_SHORT(objP->ctype.expl_info.prev_attach);
-		objP->ctype.expl_info.next_attach    = INTEL_SHORT(objP->ctype.expl_info.next_attach);
+		objP->cType.explInfo.nSpawnTime     = INTEL_INT(objP->cType.explInfo.nSpawnTime);
+		objP->cType.explInfo.nDeleteTime    = INTEL_INT(objP->cType.explInfo.nDeleteTime);
+		objP->cType.explInfo.nDeleteObj  = INTEL_SHORT(objP->cType.explInfo.nDeleteObj);
+		objP->cType.explInfo.nAttachParent  = INTEL_SHORT(objP->cType.explInfo.nAttachParent);
+		objP->cType.explInfo.nPrevAttach    = INTEL_SHORT(objP->cType.explInfo.nPrevAttach);
+		objP->cType.explInfo.nNextAttach    = INTEL_SHORT(objP->cType.explInfo.nNextAttach);
 		break;
 
 	case CT_AI:
-		objP->ctype.ai_info.hide_segment         = INTEL_SHORT(objP->ctype.ai_info.hide_segment);
-		objP->ctype.ai_info.hide_index           = INTEL_SHORT(objP->ctype.ai_info.hide_index);
-		objP->ctype.ai_info.path_length          = INTEL_SHORT(objP->ctype.ai_info.path_length);
-		objP->ctype.ai_info.danger_laser_num     = INTEL_SHORT(objP->ctype.ai_info.danger_laser_num);
-		objP->ctype.ai_info.danger_laser_signature = INTEL_INT(objP->ctype.ai_info.danger_laser_signature);
-		objP->ctype.ai_info.dying_start_time     = INTEL_INT(objP->ctype.ai_info.dying_start_time);
+		objP->cType.aiInfo.hide_segment         = INTEL_SHORT(objP->cType.aiInfo.hide_segment);
+		objP->cType.aiInfo.hide_index           = INTEL_SHORT(objP->cType.aiInfo.hide_index);
+		objP->cType.aiInfo.path_length          = INTEL_SHORT(objP->cType.aiInfo.path_length);
+		objP->cType.aiInfo.danger_laser_num     = INTEL_SHORT(objP->cType.aiInfo.danger_laser_num);
+		objP->cType.aiInfo.danger_laser_signature = INTEL_INT(objP->cType.aiInfo.danger_laser_signature);
+		objP->cType.aiInfo.dying_startTime     = INTEL_INT(objP->cType.aiInfo.dying_startTime);
 		break;
 
 	case CT_LIGHT:
-		objP->ctype.light_info.intensity = INTEL_INT(objP->ctype.light_info.intensity);
+		objP->cType.lightInfo.intensity = INTEL_INT(objP->cType.lightInfo.intensity);
 		break;
 
 	case CT_POWERUP:
-		objP->ctype.powerup_info.count = INTEL_INT(objP->ctype.powerup_info.count);
-		objP->ctype.powerup_info.creation_time = INTEL_INT(objP->ctype.powerup_info.creation_time);
+		objP->cType.powerupInfo.count = INTEL_INT(objP->cType.powerupInfo.count);
+		objP->cType.powerupInfo.creationTime = INTEL_INT(objP->cType.powerupInfo.creationTime);
 		// Below commented out 5/2/96 by Matt.  I asked Allender why it was
 		// here, and he didn't know, and it looks like it doesn't belong.
 		// if (objP->id == POW_VULCAN_WEAPON)
-		// objP->ctype.powerup_info.count = VULCAN_WEAPON_AMMO_AMOUNT;
+		// objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 		break;
 
 	}
 
-	switch (objP->render_type) {
+	switch (objP->renderType) {
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
 
-		objP->rtype.pobj_info.model_num      = INTEL_INT(objP->rtype.pobj_info.model_num);
+		objP->rType.polyObjInfo.nModel      = INTEL_INT(objP->rType.polyObjInfo.nModel);
 
 		for (i=0;i<MAX_SUBMODELS;i++) {
-			objP->rtype.pobj_info.anim_angles[i].p = INTEL_INT(objP->rtype.pobj_info.anim_angles[i].p);
-			objP->rtype.pobj_info.anim_angles[i].b = INTEL_INT(objP->rtype.pobj_info.anim_angles[i].b);
-			objP->rtype.pobj_info.anim_angles[i].h = INTEL_INT(objP->rtype.pobj_info.anim_angles[i].h);
+			objP->rType.polyObjInfo.animAngles[i].p = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].p);
+			objP->rType.polyObjInfo.animAngles[i].b = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].b);
+			objP->rType.polyObjInfo.animAngles[i].h = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].h);
 		}
 
-		objP->rtype.pobj_info.subobj_flags   = INTEL_INT(objP->rtype.pobj_info.subobj_flags);
-		objP->rtype.pobj_info.tmap_override  = INTEL_INT(objP->rtype.pobj_info.tmap_override);
-		objP->rtype.pobj_info.alt_textures   = INTEL_INT(objP->rtype.pobj_info.alt_textures);
+		objP->rType.polyObjInfo.nSubObjFlags   = INTEL_INT(objP->rType.polyObjInfo.nSubObjFlags);
+		objP->rType.polyObjInfo.nTexOverride  = INTEL_INT(objP->rType.polyObjInfo.nTexOverride);
+		objP->rType.polyObjInfo.nAltTextures   = INTEL_INT(objP->rType.polyObjInfo.nAltTextures);
 		break;
 	}
 
@@ -754,8 +754,8 @@ void BESwapObject(object *objP)
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		objP->rtype.vclip_info.nClipIndex = INTEL_INT(objP->rtype.vclip_info.nClipIndex);
-		objP->rtype.vclip_info.xFrameTime = INTEL_INT(objP->rtype.vclip_info.xFrameTime);
+		objP->rType.vClipInfo.nClipIndex = INTEL_INT(objP->rType.vClipInfo.nClipIndex);
+		objP->rType.vClipInfo.xFrameTime = INTEL_INT(objP->rType.vClipInfo.xFrameTime);
 		break;
 
 	case RT_LASER:

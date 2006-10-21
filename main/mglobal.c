@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.31  1994/07/21  13:11:24  matt
  * Ripped out remants of old demo system, and added demo only system that
- * disables object movement and game options from menu.
+ * disables tObject movement and game options from menu.
  *
  * Revision 1.30  1994/06/17  18:06:48  matt
  * Made password be treated as lowercase, since cmdline parsing converts
@@ -88,7 +88,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * (Fixed structures too)
  *
  * Revision 1.28  1994/02/17  11:32:45  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.27  1994/02/16  17:08:43  matt
  * Added needed include of 3d.h
@@ -124,7 +124,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Explosion bitmap array
  *
  * Revision 1.16  1993/12/06  18:40:35  matt
- * Changed object loading & handling
+ * Changed tObject loading & handling
  *
  * Revision 1.15  1993/12/05  22:47:48  matt
  * Reworked include files in an attempt to cut down on build times
@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * overall bitmap scheme still needs some work.
  *
  * Revision 1.12  1993/11/19  17:21:59  matt
- * Changed the bitmap number of object class UNICLASS
+ * Changed the bitmap number of tObject class UNICLASS
  * Removed static initialization for gameData.objs.objects
  *
  * Revision 1.11  1993/11/18  13:51:47  mike
@@ -200,7 +200,7 @@ static char rcsid[] = "$Id: mglobal.c,v 1.4 2003/10/10 09:36:35 btb Exp $";
 //lsegment	Lsegments[MAX_SEGMENTS];
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
-//	Translate table to get opposite side of a face on a segment.
+//	Translate table to get opposite tSide of a face on a tSegment.
 char	sideOpposite[MAX_SIDES_PER_SEGMENT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
 #define TOLOWER(c) ((((c)>='A') && ((c)<='Z'))?((c)+('a'-'A')):(c))
@@ -237,4 +237,4 @@ int sideToVertsInt[MAX_SIDES_PER_SEGMENT][4] = {
 
 fix	xNextLaserFireTime;			//	Time at which player can next fire his selected laser.
 fix	xNextMissileFireTime;			//	Time at which player can next fire his selected missile.
-//--unused-- fix	Laser_delay_time = F1_0/6;		//	Delay between laser fires.
+//--unused-- fix	Laser_delayTime = F1_0/6;		//	Delay between laser fires.

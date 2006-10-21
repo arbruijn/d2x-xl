@@ -646,7 +646,7 @@ void DrawCommandLine() {
 	CurrentFont = Topmost->ConsoleSurface->cv_font;
 #endif
 
-	//Concatenate the left and right side to command
+	//Concatenate the left and right tSide to command
 	strcpy(Topmost->Command, Topmost->LCommand);
 	strncat(Topmost->Command, Topmost->RCommand, strlen(Topmost->RCommand));
 

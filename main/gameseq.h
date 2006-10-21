@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made level name len a multiple of 4 for alignment
  *
  * Revision 1.32  1994/11/29  16:33:29  rob
- * Added new defines for last_secret_level based on shareware or not shareware.
+ * Added new defines for last_secretLevel based on shareware or not shareware.
  *
  * Revision 1.31  1994/11/26  15:30:20  matt
  * Allow escape out of change pilot menu
@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.25  1994/11/07  17:50:57  rob
- * Added extern prototype for init_player_stats_level called for
+ * Added extern prototype for init_player_statsLevel called for
  * network games.
  *
  * Revision 1.24  1994/10/25  15:40:03  yuan
@@ -145,7 +145,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up editor/game interactions some more.
  *
  * Revision 1.7  1994/07/19  20:15:33  matt
- * Name for each level now saved in the .SAV file & stored in Current_level_name
+ * Name for each level now saved in the .SAV file & stored in CurrentLevel_name
  *
  * Revision 1.6  1994/07/02  13:49:33  matt
  * Cleaned up includes
@@ -181,20 +181,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SUPER_SMARTBOMB     2
 #define SUPER_SHOCKWAVE     3
 
-extern int Last_level, Last_secret_level, Last_mission;   //set by mission code
+extern int LastLevel, Last_secretLevel, Last_mission;   //set by mission code
 
 
-// Current_level_num starts at 1 for the first level
+// CurrentLevel_num starts at 1 for the first level
 // -1,-2,-3 are secret levels
 // 0 means not a real level loaded
-extern int Current_level_num, Next_level_num;
-extern char Current_level_name[LEVEL_NAME_LEN];
-extern obj_position Player_init[MAX_PLAYERS];
+extern int CurrentLevel_num, NextLevel_num;
+extern char CurrentLevel_name[LEVEL_NAME_LEN];
+extern tObjPosition Player_init[MAX_PLAYERS];
 extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
 
 // This is the highest level the player has ever reached
-extern int Player_highest_level;
+extern int Player_highestLevel;
 
 //
 // New game sequencing functions
@@ -204,27 +204,27 @@ extern int Player_highest_level;
 int SelectPlayer();
 
 // Inputs the player's name, without putting up the background screen
-int SelectPlayerSub(int allow_abort_flag);
+int SelectPlayerSub(int allow_abortFlag);
 
 // starts a new game on the given level
-int StartNewGame(int start_level);
+int StartNewGame(int startLevel);
 
 // starts the next level
-int StartNewLevel(int level_num, int secret_flag);
-void StartLevel(int random_flag);
+int StartNewLevel(int level_num, int secretFlag);
+void StartLevel(int randomFlag);
 
 // Actually does the work to start new level
-int StartNewLevelSub(int level_num, int page_in_textures, int secret_flag);
+int StartNewLevelSub(int level_num, int page_in_textures, int secretFlag);
 
-void InitMultiPlayerObject();            //make sure player's object set up
+void InitMultiPlayerObject();            //make sure player's tObject set up
 void InitPlayerStatsGame();      //clear all stats
 
 // starts a resumed game loaded from disk
-void ResumeSavedGame(int start_level);
+void ResumeSavedGame(int startLevel);
 
 // called when the player has finished a level
 // if secret flag is true, advance to secret level, else next normal level
-void PlayerFinishedLevel(int secret_flag);
+void PlayerFinishedLevel(int secretFlag);
 
 // called when the player has died
 void DoPlayerDead(void);
@@ -245,19 +245,19 @@ extern void draw_high_scores(int place);
 extern int add_player_to_high_scores(player *pp);
 extern void input_name (int place);
 extern int reset_high_scores();
-extern void init_player_stats_level(int secret_flag);
+extern void init_player_statsLevel(int secretFlag);
 
 void open_message_window(void);
 void close_message_window(void);
 
 // create flash for player appearance
-extern void CreatePlayerAppearanceEffect(object *player_obj);
+extern void CreatePlayerAppearanceEffect(tObject *player_obj);
 
 // goto whatever secrect level is appropriate given the current level
-extern void goto_secret_level();
+extern void goto_secretLevel();
 
 // reset stuff so game is semi-normal when playing from editor
-void editor_reset_stuff_on_level();
+void editor_reset_stuff_onLevel();
 
 // Show endlevel bonus scores
 extern void DoEndLevelScoreGlitz(int network);

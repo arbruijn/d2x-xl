@@ -24,7 +24,7 @@
 
 void KillPlayerSmoke (int i)
 {
-KillObjectSmoke (gameData.multi.players [i].objnum);
+KillObjectSmoke (gameData.multi.players [i].nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -80,12 +80,12 @@ if (EGI_FLAG (bDamageExplosions, 0, 0) &&
 //------------------------------------------------------------------------------
 extern tSmoke	smoke [];
 
-void DoPlayerSmoke (object *objP, int i)
+void DoPlayerSmoke (tObject *objP, int i)
 {
 	int			h, j, d, nParts, nType;
 	float			nScale;
 	tCloud		*pCloud;
-	vms_vector	pos, fn, mn;
+	vmsVector	pos, fn, mn;
 	static int	bForward = 1;
 
 if (i < 0)
@@ -158,7 +158,7 @@ else {
 			//LogErr ("creating player smoke\n");
 			if (!bForward)
 				i = i;
-			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->segnum, 2, nParts, nScale,
+			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->nSegment, 2, nParts, nScale,
 														  PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
 			}
 		else {
@@ -182,11 +182,11 @@ KillObjectSmoke (i);
 
 //------------------------------------------------------------------------------
 
-void DoRobotSmoke (object *objP)
+void DoRobotSmoke (tObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
 	float			nScale;
-	vms_vector	pos;
+	vmsVector	pos;
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
 	return;
@@ -222,7 +222,7 @@ if (nParts > 0) {
 			nParts = -nParts;
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [2], nScale);
 			}
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, nScale,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts, nScale,
 																OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
 		}
 	else {
@@ -238,10 +238,10 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoReactorSmoke (object *objP)
+void DoReactorSmoke (tObject *objP)
 {
 	int			h = -1, i, nShields = 0, nParts;
-	vms_vector	vDir, vPos;
+	vmsVector	vDir, vPos;
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
 	return;
@@ -259,7 +259,7 @@ if (nParts > 0) {
 	nParts = 250;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts, 1.0,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts, 1.0,
 																OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
 		}
 	else {
@@ -279,11 +279,11 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoMissileSmoke (object *objP)
+void DoMissileSmoke (tObject *objP)
 {
 	int			nParts, i;
 	float			nScale = 1.5f;
-	vms_vector	pos;
+	vmsVector	pos;
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles))
 	return;
@@ -303,7 +303,7 @@ if (nParts) {
 		nParts = -nParts;
 		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
 		}
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts / 2, nScale,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts / 2, nScale,
 												 MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
@@ -315,10 +315,10 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoDebrisSmoke (object *objP)
+void DoDebrisSmoke (tObject *objP)
 {
 	int			nParts, i;
-	vms_vector	pos;
+	vmsVector	pos;
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris))
 	return;
@@ -330,7 +330,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->segnum, 1, nParts / 2, 1.5,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts / 2, 1.5,
 												 DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
@@ -342,9 +342,9 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoObjectSmoke (object *objP)
+void DoObjectSmoke (tObject *objP)
 {
-int t = objP->type;
+int t = objP->nType;
 if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
 	return;
 if (t == OBJ_PLAYER)
@@ -370,7 +370,7 @@ void PlayerSmokeFrame (void)
 if (!gameOpts->render.smoke.bPlayers)
 	return;
 for (i = 0; i < gameData.multi.nPlayers; i++)
-	DoPlayerSmoke (gameData.objs.objects + gameData.multi.players [i].objnum, i);
+	DoPlayerSmoke (gameData.objs.objects + gameData.multi.players [i].nObject, i);
 }
 
 //------------------------------------------------------------------------------
@@ -378,14 +378,14 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 void RobotSmokeFrame (void)
 {
 	int		i;
-	object	*objP;
+	tObject	*objP;
 
 if (!SHOW_SMOKE)
 	return;
 if (!gameOpts->render.smoke.bRobots)
 	return;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if (objP->type == OBJ_NONE)
+	if (objP->nType == OBJ_NONE)
 		KillObjectSmoke (i);
 }
 

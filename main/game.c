@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * cannot go to finder in networkd:\temp\dm_testadded cmd-q for quit
  *
  * Revision 1.21  1995/09/22  15:05:18  allender
- * *more* hud and font type stuff (messages)
+ * *more* hud and font nType stuff (messages)
  *
  * Revision 1.20  1995/09/22  14:39:57  allender
  * ved framerate counter up
@@ -87,7 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * better handling of PICT screen shots
  *
  * Revision 1.17  1995/09/14  15:27:41  allender
- * fixed function type on message_box routiens
+ * fixed function nType on message_box routiens
  *
  * Revision 1.16  1995/09/13  11:37:47  allender
  * put in call to dump PICT file instead of PCX
@@ -261,7 +261,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.770  1995/02/22  12:45:15  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.769  1995/02/15  10:06:25  allender
  * make pause pause game during demo playback
@@ -418,7 +418,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <cType.h>
 #include <time.h>
 
 #ifdef MACINTOSH
@@ -552,7 +552,7 @@ int	Speedtest_on = 0;
 
 #ifndef NDEBUG
 int	Mark_count = 0;                 // number of debugging marks set
-int	Speedtest_start_time;
+int	Speedtest_startTime;
 int	Speedtest_segnum;
 int	Speedtest_sidenum;
 int	Speedtest_frame_start;
@@ -562,7 +562,7 @@ int	Speedtest_count=0;				//	number of times to do the debug test.
 fix ThisLevelTime=0;
 
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-fix _timer_value,actual_last_timer_value,_last_frametime;
+fix TimerValue,actual_lastTimerValue,_last_frametime;
 int gameData.time.xStops,gameData.time.xStarts;
 int gameData.time.xStopped,gameData.time.xStarted;
 #endif
@@ -576,7 +576,7 @@ ubyte Scanline_double = 1;
 
 u_int32_t	VR_screen_mode			= 0;
 u_int32_t   bScreenModeOverride = 0;
-ubyte			VR_screen_flags	= 0;		//see values in screens.h
+ubyte			VR_screenFlags	= 0;		//see values in screens.h
 ubyte			VR_current_page	= 0;
 fix			VR_eye_width		= F1_0;
 int			VR_render_mode		= VR_NONE;
@@ -840,7 +840,7 @@ if (gameData.demo.nState==ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nMode);
 if (VR_render_mode != VR_NONE)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-//if (!(VR_screen_flags & VRF_ALLOW_COCKPIT) && (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR || gameStates.render.cockpit.nMode==CM_REAR_VIEW))
+//if (!(VR_screenFlags & VRF_ALLOW_COCKPIT) && (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR || gameStates.render.cockpit.nMode==CM_REAR_VIEW))
 //	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
@@ -937,9 +937,9 @@ switch (gameStates.render.cockpit.nMode) {
 #endif
 	case CM_FULL_SCREEN:
 		max_window_h = grdCurScreen->sc_h;
-//		if (Game_window_h > max_window_h || VR_screen_flags&VRF_ALLOW_COCKPIT)
+//		if (Game_window_h > max_window_h || VR_screenFlags&VRF_ALLOW_COCKPIT)
 			Game_window_h = max_window_h;
-//		if (Game_window_w > max_window_w || VR_screen_flags&VRF_ALLOW_COCKPIT)
+//		if (Game_window_w > max_window_w || VR_screenFlags&VRF_ALLOW_COCKPIT)
 			Game_window_w = max_window_w;
 		Game_window_x = (max_window_w - Game_window_w)/2;
 		Game_window_y = (max_window_h - Game_window_h)/2;
@@ -952,9 +952,9 @@ switch (gameStates.render.cockpit.nMode) {
 		if (grdCurScreen->sc_h > 480)
 			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
      	max_window_h = grdCurScreen->sc_h - h;
-//		if (Game_window_h > max_window_h || VR_screen_flags&VRF_ALLOW_COCKPIT)
+//		if (Game_window_h > max_window_h || VR_screenFlags&VRF_ALLOW_COCKPIT)
 			Game_window_h = max_window_h;
-//		if (Game_window_w > max_window_w || VR_screen_flags&VRF_ALLOW_COCKPIT)
+//		if (Game_window_w > max_window_w || VR_screenFlags&VRF_ALLOW_COCKPIT)
 			Game_window_w = max_window_w;
 		Game_window_x = (max_window_w - Game_window_w)/2;
 		Game_window_y = (max_window_h - Game_window_h)/2;
@@ -1082,7 +1082,7 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 		render_h = GRMODEINFO (rh);
 	}
 	VR_screen_mode		= screen_mode;
-	VR_screen_flags	=  flags;
+	VR_screenFlags	=  flags;
 	VRResetParams ();
 	VR_render_mode 	= render_method;
 	Game_window_w 		= render_w;
@@ -1144,7 +1144,7 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 //		Error ("Cannot set requested video mode");
 
 	VR_screen_mode		=	screen_mode;
-	VR_screen_flags	=  flags;
+	VR_screenFlags	=  flags;
 //NEWVR
 	VRResetParams ();
 	VR_render_mode 	= render_method;
@@ -1188,7 +1188,7 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
         }
 
 #ifdef OGL
-		VR_offscreen_buffer->cv_bitmap.bm_props.type = BM_OGL;
+		VR_offscreen_buffer->cv_bitmap.bm_props.nType = BM_OGL;
 #endif
 
 		GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
@@ -1211,7 +1211,7 @@ void SetPopupScreenMode (void)
 #ifdef OGL // always have to switch to menu mode
 	if (!gameOpts->menus.nStyle || (gameStates.video.nScreenMode < 0))
 #else
-	if (!(VR_screen_flags & VRF_COMPATIBLE_MENUS))
+	if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS))
 #endif
 	{
 //		gameStates.video.nLastScreenMode = -1;
@@ -1271,7 +1271,7 @@ WIN (static int saved_window_h);
 		#ifdef WINDOWS
 			//mouse_set_mode (0);
 			//ShowCursorW ();
-			if (!(VR_screen_flags & VRF_COMPATIBLE_MENUS)) {
+			if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS)) {
 			// HACK!!!  Meant to save window size when switching from
 			// non-compat menu mode to menu mode.
 				saved_window_w = Game_window_w;
@@ -1362,7 +1362,7 @@ WIN (static int saved_window_h);
 #endif
 			GameInitRenderBuffers (W95DisplayMode,
 					GRMODEINFO (rw), GRMODEINFO (rh),
-					VR_render_mode, VR_screen_flags);
+					VR_render_mode, VR_screenFlags);
 
 			ResetCockpit ();
 		}
@@ -1389,7 +1389,7 @@ WIN (static int saved_window_h);
 			max_window_w = grdCurScreen->sc_w;
 			max_window_h = grdCurScreen->sc_h;
 #if 0
-			if (VR_screen_flags & VRF_ALLOW_COCKPIT) {
+			if (VR_screenFlags & VRF_ALLOW_COCKPIT) {
 				if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		      	max_window_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index].bm_props.h;
 				}
@@ -1417,13 +1417,13 @@ WIN (static int saved_window_h);
 
 
 	//	Define screen pages for game mode
-	// If we designate through screen_flags to use paging, then do so.
+	// If we designate through screenFlags to use paging, then do so.
 		WINDOS (
 			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
 			GrInitSubCanvas (&VR_screen_pages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
 		);
 
-		if (VR_screen_flags&VRF_USE_PAGING) {
+		if (VR_screenFlags&VRF_USE_PAGING) {
 		WINDOS (
 			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_backcanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
 			GrInitSubCanvas (&VR_screen_pages[1], &grdCurScreen->sc_canvas, 0, grdCurScreen->sc_h, grdCurScreen->sc_w, grdCurScreen->sc_h)
@@ -1485,7 +1485,7 @@ WIN (static int saved_window_h);
 		GrSetCurrentCanvas (&VR_screen_pages[VR_current_page])
 	);
 
-	if (VR_screen_flags&VRF_USE_PAGING)	{
+	if (VR_screenFlags&VRF_USE_PAGING)	{
 	WINDOS (
 		dd_gr_flip (),
 		GrShowCanvas (&VR_screen_pages[VR_current_page])
@@ -1633,7 +1633,7 @@ int Movie_fixed_frametime;
 
 void CalcFrameTime ()
 {
-	fix 	timer_value,
+	fix 	timerValue,
 			last_frametime = gameData.time.xFrame,
 			minFrameTime = (gameOpts->render.nMaxFPS ? f1_0 / gameOpts->render.nMaxFPS : 1);
 
@@ -1647,14 +1647,14 @@ if (gameData.app.bGamePaused) {
 _last_frametime = last_frametime;
 #endif
 do {
-	timer_value = TimerGetFixedSeconds ();
-   gameData.time.xFrame = timer_value - gameData.time.xLast;
+	timerValue = TimerGetFixedSeconds ();
+   gameData.time.xFrame = timerValue - gameData.time.xLast;
 	timer_delay (1);
 	if (gameOpts->render.nMaxFPS < 2)
 		break;
 	} while (gameData.time.xFrame < minFrameTime);
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-_timer_value = timer_value;
+TimerValue = timerValue;
 #endif
 #ifdef _DEBUG
 if ((gameData.time.xFrame <= 0) || 
@@ -1669,7 +1669,7 @@ if (gameData.time.xFrame == 0)
 	}
 #endif
 #if defined (TIMER_TEST) && !defined (NDEBUG)
-actual_last_timer_value = gameData.time.xLast;
+actual_lastTimerValue = gameData.time.xLast;
 #endif
 if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
@@ -1681,7 +1681,7 @@ if (gameData.time.xFrame < F1_0/150)
 if (gameData.time.xFrame > F1_0/5) 
 	gameData.time.xFrame = F1_0/5;
 #endif
-gameData.time.xLast = timer_value;
+gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
 #ifndef NDEBUG
@@ -1723,12 +1723,12 @@ else
 
 //--unused-- int Auto_flythrough=0;  //if set, start flythough automatically
 
-void MovePlayerToSegment (segment *segP,int side)
+void MovePlayerToSegment (tSegment *segP,int tSide)
 {
-	vms_vector vp;
+	vmsVector vp;
 
 COMPUTE_SEGMENT_CENTER (&gameData.objs.console->pos,segP);
-COMPUTE_SIDE_CENTER (&vp,segP,side);
+COMPUTE_SIDE_CENTER (&vp,segP,tSide);
 VmVecDec (&vp,&gameData.objs.console->pos);
 VmVector2Matrix (&gameData.objs.console->orient, &vp, NULL, NULL);
 RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (segP));
@@ -1860,11 +1860,11 @@ end:
 
 //------------------------------------------------------------------------------
 
-//automap_flag is now unused, since we just check if the screen we're
+//automapFlag is now unused, since we just check if the screen we're
 //writing to is modex
 //if called from automap, current canvas is set to visible screen
 #ifndef OGL
-void SaveScreenShot (NULL, int automap_flag)
+void SaveScreenShot (NULL, int automapFlag)
 {
 #if defined (WINDOWS)
 #if TRACE
@@ -1883,7 +1883,7 @@ void SaveScreenShot (NULL, int automap_flag)
         char savename[FILENAME_LEN],savename2[FILENAME_LEN];
 	ubyte pal[768];
 	int w,h,aw,x,y;
-	int modex_flag;
+	int modexFlag;
 	int stereo=0;
 
 	temp_canv2=NULL;
@@ -1896,7 +1896,7 @@ void SaveScreenShot (NULL, int automap_flag)
 
 	save_canv = grdCurCanv;
 
-	if (VR_render_mode != VR_NONE && !automap_flag && gameStates.app.nFunctionMode==FMODE_GAME && gameStates.video.nScreenMode==SCREEN_GAME)
+	if (VR_render_mode != VR_NONE && !automapFlag && gameStates.app.nFunctionMode==FMODE_GAME && gameStates.video.nScreenMode==SCREEN_GAME)
 		stereo = 1;
 
 	if (stereo) {
@@ -1931,10 +1931,10 @@ void SaveScreenShot (NULL, int automap_flag)
 		sprintf (message, "%s '%s'", TXT_DUMPING_SCREEN, savename);
 	}
 
-	if (!automap_flag)		//if from automap, curcanv is already visible canv
+	if (!automapFlag)		//if from automap, curcanv is already visible canv
 		GrSetCurrentCanvas (NULL);
-	modex_flag = (grdCurCanv->cv_bitmap.bm_props.type==BM_MODEX);
-	if (!automap_flag && modex_flag)
+	modexFlag = (grdCurCanv->cv_bitmap.bm_props.nType==BM_MODEX);
+	if (!automapFlag && modexFlag)
 		GrSetCurrentCanvas (&VR_screen_pages[VR_current_page]);
 
 	save_font = grdCurCanv->cv_font;
@@ -1942,7 +1942,7 @@ void SaveScreenShot (NULL, int automap_flag)
 	GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	GrGetStringSize (message,&w,&h,&aw);
 
-	if (modex_flag)
+	if (modexFlag)
 		h *= 2;
 
 	//I changed how these coords were calculated for the high-res automap. -MT
@@ -1951,7 +1951,7 @@ void SaveScreenShot (NULL, int automap_flag)
 	x = (grdCurCanv->cv_w-w)/2;
 	y = (grdCurCanv->cv_h-h)/2;
 
-	if (modex_flag) {
+	if (modexFlag) {
 		modex_clear_box (x-2,y-2,w+4,h+4);
 		modex_printf (x, y, message,GAME_FONT,GrFindClosestColorCurrent (0,31,0);
 	} else {
@@ -1971,7 +1971,7 @@ void SaveScreenShot (NULL, int automap_flag)
 
 	GrSetCurrentCanvas (screen_canv);
 
-	if (grdCurCanv->cv_bitmap.bm_props.type!=BM_MODEX && !stereo)
+	if (grdCurCanv->cv_bitmap.bm_props.nType!=BM_MODEX && !stereo)
 		gr_ubitmap (0,0,&temp_canv->cv_bitmap);
 
 	GrFreeCanvas (temp_canv);
@@ -2012,7 +2012,7 @@ void SaveScreenShot (NULL, int automap_flag)
 
 	GrSetCurrentCanvas (screen_canv);
 
-//	if (!automap_flag)
+//	if (!automapFlag)
 		gr_ubitmap (0, 0, &temp_canv->cv_bitmap);
 
 	GrFreeCanvas (temp_canv);
@@ -2028,15 +2028,15 @@ shot_done:
 //------------------------------------------------------------------------------
 
 //initialize flying
-void FlyInit (object *objP)
+void FlyInit (tObject *objP)
 {
-	objP->control_type = CT_FLYING;
-	objP->movement_type = MT_PHYSICS;
+	objP->controlType = CT_FLYING;
+	objP->movementType = MT_PHYSICS;
 
-	VmVecZero (&objP->mtype.phys_info.velocity);
-	VmVecZero (&objP->mtype.phys_info.thrust);
-	VmVecZero (&objP->mtype.phys_info.rotvel);
-	VmVecZero (&objP->mtype.phys_info.rotthrust);
+	VmVecZero (&objP->mType.physInfo.velocity);
+	VmVecZero (&objP->mType.physInfo.thrust);
+	VmVecZero (&objP->mType.physInfo.rotVel);
+	VmVecZero (&objP->mType.physInfo.rotThrust);
 }
 
 //void morph_test (), morph_step ();
@@ -2064,7 +2064,7 @@ void DoCloakStuff (void)
 	int i;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		if (gameData.multi.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-			if (gameData.time.xGame - gameData.multi.players[i].cloak_time > CLOAK_TIME_MAX) {
+			if (gameData.time.xGame - gameData.multi.players[i].cloakTime > CLOAK_TIME_MAX) {
 				gameData.multi.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 				if (i == gameData.multi.nLocalPlayer) {
 					DigiPlaySample (SOUND_CLOAK_OFF, F1_0);
@@ -2086,7 +2086,7 @@ int FakingInvul=0;
 void DoInvulnerableStuff (void)
 {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
-		if (gameData.time.xGame - gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time > INVULNERABLE_TIME_MAX) {
+		if (gameData.time.xGame - gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
 			gameData.multi.players[gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
 			if (FakingInvul==0)
 			{
@@ -2123,8 +2123,8 @@ int	Ab_scale = 4;
 //@@	rx = (Ab_scale * FixMul (d_rand () - 16384, F1_0/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
 //@@	rz = (Ab_scale * FixMul (d_rand () - 16384, F1_0/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
-//@@	gameData.objs.console->mtype.phys_info.rotvel.x += rx;
-//@@	gameData.objs.console->mtype.phys_info.rotvel.z += rz;
+//@@	gameData.objs.console->mType.physInfo.rotVel.x += rx;
+//@@	gameData.objs.console->mType.physInfo.rotVel.z += rz;
 //@@
 //@@}
 
@@ -2140,7 +2140,7 @@ void DoAfterburnerStuff (void)
 
 	if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead)
 		{
-		 if (DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].objnum))
+		 if (DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject))
 #ifdef NETWORK
 			MultiSendSoundFunction (0,0)
 #endif
@@ -2151,7 +2151,7 @@ void DoAfterburnerStuff (void)
 		 (Last_afterburner_state && (Last_afterburner_charge && !xAfterburnerCharge))) {
 		if (xAfterburnerCharge && Controls.afterburner_state && 
 			 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
-			DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].objnum, 1, F1_0, 
+			DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 1, F1_0, 
 												 i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
@@ -2159,8 +2159,8 @@ void DoAfterburnerStuff (void)
 #endif
 			}
 		else {
-			DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].objnum);
-			DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multi.players[gameData.multi.nLocalPlayer].objnum, 0, F1_0, 
+			DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
+			DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 0, F1_0, 
 												 i2f (256));
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
@@ -2350,7 +2350,7 @@ int AllowedToFireLaser (void)
 		gameData.app.nGlobalMissileFiringCount = 0;
 		return 0;
 	}
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->segnum].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 		return 0;
 	//	Make sure enough time has elapsed to fire laser, but if it looks like it will
 	//	be a long while before laser can be fired, then there must be some mistake!
@@ -2363,18 +2363,18 @@ int AllowedToFireLaser (void)
 
 //------------------------------------------------------------------------------
 
-fix	Next_flare_fire_time = 0;
+fix	Next_flare_fireTime = 0;
 #define	FLARE_BIG_DELAY	 (F1_0*2)
 
 int AllowedToFireFlare (void)
 {
-	if (Next_flare_fire_time > gameData.time.xGame)
-		if (Next_flare_fire_time < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
+	if (Next_flare_fireTime > gameData.time.xGame)
+		if (Next_flare_fireTime < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
 			return 0;
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
-		Next_flare_fire_time = gameData.time.xGame + F1_0/4;
+		Next_flare_fireTime = gameData.time.xGame + F1_0/4;
 	else
-		Next_flare_fire_time = gameData.time.xGame + FLARE_BIG_DELAY;
+		Next_flare_fireTime = gameData.time.xGame + FLARE_BIG_DELAY;
 
 	return 1;
 }
@@ -2385,7 +2385,7 @@ int AllowedToFireMissile (void)
 {
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->segnum].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 if (xNextMissileFireTime > gameData.time.xGame) 
 	if (xNextMissileFireTime < gameData.time.xGame + 5 * F1_0)
@@ -2405,7 +2405,7 @@ void FullPaletteSave (void)
 
 //------------------------------------------------------------------------------
 
-#define ADD_HELP_OPT(_text)	m [opt].type = NM_TYPE_TEXT; m [opt++].text = (_text);
+#define ADD_HELP_OPT(_text)	m [opt].nType = NM_TYPE_TEXT; m [opt++].text = (_text);
 
 void ShowHelp ()
 {
@@ -2470,7 +2470,7 @@ void ShowHelp ()
 //------------------------------------------------------------------------------
 
 //temp function until Matt cleans up game sequencing
-extern void temp_reset_stuff_on_level ();
+extern void temp_reset_stuff_onLevel ();
 
 //deal with rear view - switch it on, or off, or whatever
 void CheckRearView ()
@@ -2479,7 +2479,7 @@ void CheckRearView ()
 	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
 
 	static int leave_mode;
-	static fix entry_time;
+	static fix entryTime;
 #ifdef _DEBUG
 	if (Controls.rear_viewDownCount) {		//key/button has gone down
 #else
@@ -2497,7 +2497,7 @@ void CheckRearView ()
 		else {
 			gameStates.render.bRearView = 1;
 			leave_mode = 0;		//means wait for another key
-			entry_time = TimerGetFixedSeconds ();
+			entryTime = TimerGetFixedSeconds ();
 			if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 				gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
 				SelectCockpit (CM_REAR_VIEW);
@@ -2509,7 +2509,7 @@ void CheckRearView ()
 	else
 		if (Controls.rear_view_down_state) {
 
-			if (leave_mode==0 && (TimerGetFixedSeconds ()-entry_time)>LEAVE_TIME)
+			if (leave_mode==0 && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
 				leave_mode = 1;
 		}
 		else {
@@ -2565,7 +2565,7 @@ void TurnCheatsOff ()
 
 	if (gameStates.app.cheats.bHomingWeapons)
 		for (i=0;i<20;i++)
-			WI_set_homing_flag (i, OldHomingState[i]);
+			WI_set_homingFlag (i, OldHomingState[i]);
 
 	if (gameStates.app.cheats.bAcid)
 	{
@@ -2622,7 +2622,7 @@ keyd_repeat = 1;                // Do allow repeat in game
 //_MARK_ ("start of game");
 #endif
 #ifdef EDITOR
-	if (gameData.segs.segments[gameData.objs.console->segnum].segnum == -1)      //segment no longer exists
+	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
 		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.console))
@@ -2681,11 +2681,11 @@ while (1) {
 		// GAME LOOP!
 	gameStates.app.bAutoMap = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum]) {
+	if (gameData.objs.console != &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]) {
 #if TRACE
-	    //con_printf (CON_DEBUG,"gameData.multi.nLocalPlayer=%d objnum=%d",gameData.multi.nLocalPlayer,gameData.multi.players[gameData.multi.nLocalPlayer].objnum);
+	    //con_printf (CON_DEBUG,"gameData.multi.nLocalPlayer=%d nObject=%d",gameData.multi.nLocalPlayer,gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
 #endif
-	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].objnum]);
+	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]);
 		}
 	player_shields = gameData.multi.players[gameData.multi.nLocalPlayer].shields;
 #ifdef WINDOWS
@@ -2788,7 +2788,7 @@ while (1) {
 	if (gameStates.app.nFunctionMode != FMODE_GAME)
 		longjmp (gameExitPoint,0);
 #ifdef APPLE_DEMO
-		if ((keyd_time_when_last_pressed + (F1_0 * 60)) < TimerGetFixedSeconds ())		// idle in game for 1 minutes means exit
+		if ((keydTime_when_last_pressed + (F1_0 * 60)) < TimerGetFixedSeconds ())		// idle in game for 1 minutes means exit
 		longjmp (gameExitPoint,0);
 #endif
 		}
@@ -2943,7 +2943,7 @@ Uint32 Debug_slowdown=0;
 #endif
 
 #ifdef EDITOR
-extern void player_follow_path (object *objP);
+extern void player_follow_path (tObject *objP);
 extern void check_create_player_path (void);
 
 #endif
@@ -2953,12 +2953,12 @@ int Coop_view_player[2]={-1,-1};
 int Cockpit_3d_view[2]={CV_NONE,CV_NONE};
 
 //returns ptr to escort robot, or NULL
-object *find_escort ()
+tObject *find_escort ()
 {
 	int i;
 
 	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects[i].type == OBJ_ROBOT)
+		if (gameData.objs.objects[i].nType == OBJ_ROBOT)
 			if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion)
 				return &gameData.objs.objects[i];
 
@@ -3027,7 +3027,7 @@ void toggle_movie_saving ()
 		newmenu_item m[1];
 
 		memset (m, 0, sizeof (m));
-		m[0].type=NM_TYPE_INPUT; 
+		m[0].nType=NM_TYPE_INPUT; 
 		m[0].text_len = 50; 
 		m[0].text = movie_path;
 		exit = ExecMenu (NULL, "Directory for movie frames?" , 1, & (m[0]), NULL, NULL);
@@ -3055,7 +3055,7 @@ void toggle_movie_saving ()
 			bmMovie.bm_props.x = bmMovie.bm_props.y = 0;
 			bmMovie.bm_props.w = 320;
 			bmMovie.bm_props.h = 200;
-			bmMovie.bm_props.type = BM_LINEAR;
+			bmMovie.bm_props.nType = BM_LINEAR;
 			bmMovie.bm_props.flags = 0;
 			bmMovie.bm_props.rowsize = 320;
 			//bmMovie.bm_handle = 0;
@@ -3097,8 +3097,8 @@ void DoAmbientSounds ()
 	int has_water,has_lava;
 	short sound;
 
-	has_lava = (gameData.segs.segment2s[gameData.objs.console->segnum].s2_flags & S2F_AMBIENT_LAVA);
-	has_water = (gameData.segs.segment2s[gameData.objs.console->segnum].s2_flags & S2F_AMBIENT_WATER);
+	has_lava = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_LAVA);
+	has_water = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_WATER);
 
 	if (has_lava) {							//has lava
 		sound = SOUND_AMBIENT_LAVA;
@@ -3132,7 +3132,7 @@ if (gameStates.app.b40fpsTick = (gameStates.app.nDeltaTime >= 25))
 void GameRenderFrame ();
 extern void OmegaChargeFrame (void);
 
-extern time_t t_current_time, t_saved_time;
+extern time_t t_currentTime, t_savedTime;
 extern int flFrameTime;
 int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, 60};
 
@@ -3172,8 +3172,8 @@ if (Debug_slowdown) {
 		if (!(--desc_dead_countdown)) {// if so, at zero, then pull the plug
 			char time_str[32], time_str2[32];
 
-			_ctime (&t_saved_time, time_str);
-			_ctime (&t_current_time, time_str2);
+			_ctime (&t_savedTime, time_str);
+			_ctime (&t_currentTime, time_str2);
 
 			Error ("EXPIRES %s.  YOUR TIME %s.\n", time_str, time_str2);
 			Error ("Loading overlay -- error number: %d\n", (int)desc_id_exit_num);
@@ -3349,7 +3349,7 @@ if (Debug_slowdown) {
 			}
 		}
 	else { // Note the link to above!
-		gameData.multi.players[gameData.multi.nLocalPlayer].homing_object_dist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
+		gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
 //LogErr ("MoveAllObjects\n");
 		if (!MoveAllObjects ())
 			return 0;
@@ -3373,7 +3373,7 @@ if (Debug_slowdown) {
 				gameData.app.nGlobalLaserFiringCount = 1;
 				}
 			else {
-				vms_vector	rand_vec;
+				vmsVector	rand_vec;
 				fix			bump_amount;
 				static time_t t0 = 0;
 				time_t t = SDL_GetTicks ();
@@ -3381,8 +3381,8 @@ if (Debug_slowdown) {
 					return 1;
 				t0 = t;
 				gameData.app.nGlobalLaserFiringCount = 0;
-				gameData.objs.console->mtype.phys_info.rotvel.x += (d_rand () - 16384)/8;
-				gameData.objs.console->mtype.phys_info.rotvel.z += (d_rand () - 16384)/8;
+				gameData.objs.console->mType.physInfo.rotVel.x += (d_rand () - 16384)/8;
+				gameData.objs.console->mType.physInfo.rotVel.z += (d_rand () - 16384)/8;
 				MakeRandomVector (&rand_vec);
 				bump_amount = F1_0*4;
 				if (gameData.app.fusion.xCharge > F1_0*2)
@@ -3394,7 +3394,7 @@ if (Debug_slowdown) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.app.fusion.xCharge > F1_0*2)
 			// 	gameData.app.fusion.xCharge = F1_0*2;
-			gameData.app.nGlobalLaserFiringCount -= LaserFireLocalPlayer ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].objnum, gameData.weapons.nPrimary);
+			gameData.app.nGlobalLaserFiringCount -= LaserFireLocalPlayer ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject, gameData.weapons.nPrimary);
 			}
 		if (gameData.app.nGlobalLaserFiringCount < 0)
 			gameData.app.nGlobalLaserFiringCount = 0;
@@ -3405,7 +3405,7 @@ if (Debug_slowdown) {
 #ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerable_time = gameData.time.xGame-i2f (27);
+		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
 		FakingInvul=1;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 		}
@@ -3457,21 +3457,21 @@ return 1;
 
 void ComputeSlideSegs (void)
 {
-	int	segnum, sidenum, bIsSlideSeg, tmn;
+	int	nSegment, nSide, bIsSlideSeg, tmn;
 
 gameData.segs.nSlideSegs = 0;
-for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++) {
+for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	bIsSlideSeg = 0;
-	for (sidenum = 0; sidenum < 6; sidenum++) {
-		tmn = gameData.segs.segments [segnum].sides [sidenum].tmap_num;
+	for (nSide = 0; nSide < 6; nSide++) {
+		tmn = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
 		if (gameData.pig.tex.pTMapInfo [tmn].slide_u  || 
 			 gameData.pig.tex.pTMapInfo [tmn].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
-				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = segnum;
+				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides = 0;
 				}	
-			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << sidenum);
+			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << nSide);
 			}
 		}
 	if (bIsSlideSeg)
@@ -3484,21 +3484,21 @@ gameData.segs.bHaveSlideSegs = 1;
 
 void SlideTextures (void)
 {
-	int	segnum, sidenum, h, i, j, tmn;
+	int	nSegment, nSide, h, i, j, tmn;
 	ubyte	sides;
-	side	*sideP;
+	tSide	*sideP;
 	uvl	*uvlP;
 	fix	slideU, slideV;
 
 if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
 for (h = 0; h < gameData.segs.nSlideSegs; h++) {
-	segnum = gameData.segs.slideSegs [h].nSegment;
+	nSegment = gameData.segs.slideSegs [h].nSegment;
 	sides = gameData.segs.slideSegs [h].nSides;
-	for (sidenum = 0, sideP = gameData.segs.segments [segnum].sides; sidenum < 6; sidenum++, sideP++) {
-		if (!(sides & (1 << sidenum)))
+	for (nSide = 0, sideP = gameData.segs.segments [nSegment].sides; nSide < 6; nSide++, sideP++) {
+		if (!(sides & (1 << nSide)))
 			continue;
-		tmn = sideP->tmap_num;
+		tmn = sideP->nBaseTex;
 		slideU = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_u;
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
@@ -3582,47 +3582,47 @@ void FireLaser ()
 
 
 //	-------------------------------------------------------------------------------------------------------
-//	If player is close enough to objnum, which ought to be a powerup, pick it up!
+//	If player is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void powerup_grab_cheat (object *player, int objnum)
+void powerup_grab_cheat (tObject *player, int nObject)
 {
 	fix	powerup_size;
 	fix	player_size;
 	fix	dist;
 
-	Assert (gameData.objs.objects[objnum].type == OBJ_POWERUP);
+	Assert (gameData.objs.objects[nObject].nType == OBJ_POWERUP);
 
-	powerup_size = gameData.objs.objects[objnum].size;
+	powerup_size = gameData.objs.objects[nObject].size;
 	player_size = player->size;
 
-	dist = VmVecDistQuick (&gameData.objs.objects[objnum].pos, &player->pos);
+	dist = VmVecDistQuick (&gameData.objs.objects[nObject].pos, &player->pos);
 
-	if ((dist < 2* (powerup_size + player_size)) && !(gameData.objs.objects[objnum].flags & OF_SHOULD_BE_DEAD)) {
-		vms_vector	collision_point;
+	if ((dist < 2* (powerup_size + player_size)) && !(gameData.objs.objects[nObject].flags & OF_SHOULD_BE_DEAD)) {
+		vmsVector	collision_point;
 
-		VmVecAvg (&collision_point, &gameData.objs.objects[objnum].pos, &player->pos);
-		CollidePlayerAndPowerup (player, &gameData.objs.objects[objnum], &collision_point);
+		VmVecAvg (&collision_point, &gameData.objs.objects[nObject].pos, &player->pos);
+		CollidePlayerAndPowerup (player, &gameData.objs.objects[nObject], &collision_point);
 	}
 }
 
 //	-------------------------------------------------------------------------------------------------------
 //	Make it easier to pick up powerups.
-//	For all powerups in this segment, pick them up at up to twice pickuppable distance based on dot product
+//	For all powerups in this tSegment, pick them up at up to twice pickuppable distance based on dot product
 //	from player to powerup and player's forward vector.
 //	This has the effect of picking them up more easily left/right and up/down, but not making them disappear
 //	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
-	segment	*segp;
-	int		objnum;
+	tSegment	*segp;
+	int		nObject;
 
-	segp = gameData.segs.segments + gameData.objs.console->segnum;
-	objnum = segp->objects;
+	segp = gameData.segs.segments + gameData.objs.console->nSegment;
+	nObject = segp->objects;
 
-	while (objnum != -1) {
-		if (gameData.objs.objects[objnum].type == OBJ_POWERUP)
-			powerup_grab_cheat (gameData.objs.console, objnum);
-		objnum = gameData.objs.objects[objnum].next;
+	while (nObject != -1) {
+		if (gameData.objs.objects[nObject].nType == OBJ_POWERUP)
+			powerup_grab_cheat (gameData.objs.console, nObject);
+		nObject = gameData.objs.objects[nObject].next;
 	}
 
 }
@@ -3632,12 +3632,12 @@ int	nLastLevelPathCreated = -1;
 #ifdef SHOW_EXIT_PATH
 
 //	------------------------------------------------------------------------------------------------------------------
-//	Create path for player from current segment to goal segment.
+//	Create path for player from current tSegment to goal tSegment.
 //	Return true if path created, else return false.
-int mark_player_path_to_segment (int segnum)
+int mark_player_path_to_segment (int nSegment)
 {
 	int		i;
-	object	*objP = gameData.objs.console;
+	tObject	*objP = gameData.objs.console;
 	short		player_path_length=0;
 	int		player_hide_index=-1;
 
@@ -3647,7 +3647,7 @@ int mark_player_path_to_segment (int segnum)
 
 	nLastLevelPathCreated = gameData.missions.nCurrentLevel;
 
-	if (CreatePathPoints (objP, objP->segnum, segnum, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
+	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
 		//con_printf (CON_DEBUG, "Unable to form path of length %i for myself\n", 100);
 #endif
@@ -3666,27 +3666,27 @@ int mark_player_path_to_segment (int segnum)
 	}
 
 	for (i=1; i<player_path_length; i++) {
-		short			segnum, objnum;
-		vms_vector	seg_center;
-		object		*obj;
+		short			nSegment, nObject;
+		vmsVector	seg_center;
+		tObject		*obj;
 
-		segnum = gameData.ai.pointSegs[player_hide_index+i].segnum;
+		nSegment = gameData.ai.pointSegs[player_hide_index+i].nSegment;
 #if TRACE
-		//con_printf (CON_DEBUG, "%3i ", segnum);
+		//con_printf (CON_DEBUG, "%3i ", nSegment);
 #endif
 		seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
 
-		objnum = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, segnum, &seg_center, &vmdIdentityMatrix,
+		nObject = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, nSegment, &seg_center, &vmdIdentityMatrix,
 									  gameData.objs.pwrUp.info[POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
-		if (objnum == -1) {
+		if (nObject == -1) {
 			Int3 ();		//	Unable to drop energy powerup for path
 			return 1;
 		}
 
-		obj = &gameData.objs.objects[objnum];
-		objP->rtype.vclip_info.nClipIndex = gameData.objs.pwrUp.info[objP->id].nClipIndex;
-		objP->rtype.vclip_info.xFrameTime = gameData.eff.vClips [0][objP->rtype.vclip_info.nClipIndex].xFrameTime;
-		objP->rtype.vclip_info.nCurFrame = 0;
+		obj = &gameData.objs.objects[nObject];
+		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info[objP->id].nClipIndex;
+		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+		objP->rType.vClipInfo.nCurFrame = 0;
 		objP->lifeleft = F1_0*100 + d_rand () * 4;
 	}
 #if TRACE
@@ -3706,7 +3706,7 @@ int create_special_path (void)
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
 			if (gameData.segs.segments[i].children[j] == -2) {
 #if TRACE
-				//con_printf (CON_DEBUG, "Exit at segment %i\n", i);
+				//con_printf (CON_DEBUG, "Exit at tSegment %i\n", i);
 #endif
 				return mark_player_path_to_segment (i);
 			}
@@ -3722,7 +3722,7 @@ int create_special_path (void)
 int	Max_obj_count_mike = 0;
 
 //	Shows current number of used gameData.objs.objects.
-void show_free_objects (void)
+void show_freeObjects (void)
 {
 	if (!(gameData.app.nFrameCount & 8)) {
 		int	i;
@@ -3732,7 +3732,7 @@ void show_free_objects (void)
 		//con_printf (CON_DEBUG, "gameData.objs.nLastObject = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject, MAX_OBJECTS);
 #endif
 		for (i=0; i<=gameData.objs.nLastObject; i++)
-			if (gameData.objs.objects[i].type != OBJ_NONE)
+			if (gameData.objs.objects[i].nType != OBJ_NONE)
 				count++;
 #if TRACE
 		//con_printf (CON_DEBUG, "%3i", count);
@@ -3815,12 +3815,12 @@ void game_win_init_cockpit_mask (int sram)
 //@@	{
 //@@		if (W95DisplayMode == SM95_640x480x8) {
 //@@			pcx_error=pcx_read_bitmap ("MASKB.PCX", &grdCurCanv->cv_bitmap,
-//@@				grdCurCanv->cv_bitmap.bm_props.type,
+//@@				grdCurCanv->cv_bitmap.bm_props.nType,
 //@@				title_pal);
 //@@		}
 //@@		else {
 //@@			pcx_error=pcx_read_bitmap ("MASK.PCX", &grdCurCanv->cv_bitmap,
-//@@				grdCurCanv->cv_bitmap.bm_props.type,
+//@@				grdCurCanv->cv_bitmap.bm_props.nType,
 //@@				title_pal);
 //@@		}
 //@@	}
@@ -3838,8 +3838,8 @@ void game_win_init_cockpit_mask (int sram)
  */
 void ReadFlickeringLight (flickering_light *fl, CFILE *fp)
 {
-	fl->segnum = CFReadShort (fp);
-	fl->sidenum = CFReadShort (fp);
+	fl->nSegment = CFReadShort (fp);
+	fl->nSide = CFReadShort (fp);
 	fl->mask = CFReadInt (fp);
 	fl->timer = CFReadFix (fp);
 	fl->delay = CFReadFix (fp);

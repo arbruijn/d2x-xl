@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 #include "serial.h"
 //added 02/06/99 Matt Mueller - allow selection of different devices
 #include "args.h"
@@ -88,23 +88,23 @@ int com_init(void)
 }
 
 //edited 03/05/99 Matt Mueller - allow reading from different device
-int com_read(char *buffer, int len, int timeout_value)
+int com_read(char *buffer, int len, int timeoutValue)
 {
  struct timeval timeout;
  fd_set set;
  int i;
 
  if (!commlib_initialised) return -1;
- if (timeout_value==0) return read(rfd,buffer,len);
+ if (timeoutValue==0) return read(rfd,buffer,len);
 
  /* Initialise the file descriptor set */
  FD_ZERO(&set);
  FD_SET (rfd, &set);
 
  /* Initialise the timeout timer value */
- timeout.tv_sec=timeout_value / 1000;
+ timeout.tv_sec=timeoutValue / 1000;
 //edited 02/06/99 Matt Mueller - microseconds, not milliseconds
- timeout.tv_usec=(timeout_value % 1000) * 1000;
+ timeout.tv_usec=(timeoutValue % 1000) * 1000;
 //end edit -MM
 
  i=select(FD_SETSIZE, &set, NULL, NULL, &timeout);
@@ -176,7 +176,7 @@ void com_setbaudrate(int rate)
  tcsetattr(fd, TCSANOW, &temp);
 }
 
-int com_readline(int timeout_value, char *input_buffer,int len)
+int com_readline(int timeoutValue, char *input_buffer,int len)
 {
  char c;
  int j;
@@ -184,7 +184,7 @@ int com_readline(int timeout_value, char *input_buffer,int len)
  struct timeval timeout;
  fd_set set;
 
- if (timeout_value>0) {
+ if (timeoutValue>0) {
  /* Initialise the file descriptor set */
  FD_ZERO(&set);
 //edited 03/05/99 Matt Mueller - allow reading from different device
@@ -192,9 +192,9 @@ int com_readline(int timeout_value, char *input_buffer,int len)
 //end edit -MM
 
  /* Initialise the timeout timer value */
- timeout.tv_sec=timeout_value / 1000;
+ timeout.tv_sec=timeoutValue / 1000;
 //edited 02/06/99 Matt Mueller - microseconds, not milliseconds
- timeout.tv_usec=(timeout_value % 1000) * 1000;
+ timeout.tv_usec=(timeoutValue % 1000) * 1000;
 //end edit -MM
 	 
  j=select(FD_SETSIZE, &set, NULL, NULL, &timeout);
@@ -203,7 +203,7 @@ int com_readline(int timeout_value, char *input_buffer,int len)
  
  do {
 //  j=com_read(&c,1,0);
-  j=com_read(&c,1,timeout_value);
+  j=com_read(&c,1,timeoutValue);
   if (isprint(c) && (j>0)) {
    input_buffer[i++]=c;
    if (i>=len) return i;

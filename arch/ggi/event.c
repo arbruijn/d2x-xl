@@ -62,7 +62,7 @@ void event_poll()
 	while (n-- > 0) 
 	{
 		giiEventRead(inputs, &event, emAll);
-		switch (event.any.type)
+		switch (event.any.nType)
 		{
 			case evKeyPress:
 				keyboard_handler(event.key.label, 1);
@@ -108,7 +108,7 @@ void init_gii_xwin(Display *disp,Window win){
 		gii_xwin_cmddata_setparam *giiargs=(gii_xwin_cmddata_setparam *) &ev.cmd.data;
 		memset(&ev,0,sizeof(gii_cmd_nodata_event)+sizeof(gii_xwin_cmddata_setparam);
 		ev.cmd.code=GII_CMDCODE_XWINSETPARAM;
-		ev.any.type = evCommand;
+		ev.any.nType = evCommand;
 		ev.any.size=sizeof(gii_cmd_nodata_event)+sizeof(gii_xwin_cmddata_setparam);
 		giiargs->win=win;
 		giiargs->ptralwaysrel=1;

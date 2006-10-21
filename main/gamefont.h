@@ -89,6 +89,6 @@ extern grs_font *Gamefonts[MAX_FONTS];
 
 void GameFontInit();
 void _CDECL_ GameFontClose(void);
-int get_font_total_width(grs_font * font);
+int get_fontTotal_width(grs_font * font);
 
 #endif /* _GAMEFONT_H */

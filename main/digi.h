@@ -45,12 +45,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef ALLEGRO
 #include "allg_snd.h"
-typedef SAMPLE digi_sound;
+typedef SAMPLE digiSound;
 #else
-typedef struct digi_sound       {
+typedef struct digiSound       {
 	int length;
 	ubyte * data;
-} digi_sound;
+} digiSound;
 #endif
 
 #define SOUND_MAX_VOLUME (F1_0 / 2)
@@ -64,7 +64,7 @@ extern int digi_driver_board;
 extern int digi_driver_port;
 extern int digi_driver_irq;
 extern int digi_driver_dma;
-extern int digi_midi_type;
+extern int digi_midiType;
 extern int digi_midi_port;
 #endif
 
@@ -81,13 +81,13 @@ int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed, int nLoops);
 int DigiPlaySample( short soundnum, fix max_volume );
 int DigiPlaySampleLooped (short soundno, fix max_volume, int nLoops);
 void DigiPlaySampleOnce( short soundnum, fix max_volume );
-int DigiLinkSoundToObject( short soundnum, short objnum, int forever, fix max_volume );
-int DigiLinkSoundToPos( short soundnum, short segnum, short sidenum, vms_vector * pos, int forever, fix max_volume );
-// Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for max_distance.
-int DigiLinkSoundToObject2( short soundnum, short objnum, int forever, fix max_volume, fix  max_distance );
-int DigiLinkSoundToPos2( short soundnum, short segnum, short sidenum, vms_vector * pos, int forever, fix max_volume, fix max_distance );
+int DigiLinkSoundToObject( short soundnum, short nObject, int forever, fix max_volume );
+int DigiLinkSoundToPos( short soundnum, short nSegment, short nSide, vmsVector * pos, int forever, fix max_volume );
+// Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
+int DigiLinkSoundToObject2( short soundnum, short nObject, int forever, fix max_volume, fix  maxDistance );
+int DigiLinkSoundToPos2( short soundnum, short nSegment, short nSide, vmsVector * pos, int forever, fix max_volume, fix maxDistance );
 
-int DigiLinkSoundToObject3( short org_soundnum, short objnum, int forever, fix max_volume, fix  max_distance, int loop_start, int loop_end );
+int DigiLinkSoundToObject3( short orgSoundnum, short nObject, int forever, fix max_volume, fix  maxDistance, int loop_start, int loop_end );
 
 void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song );
 
@@ -95,8 +95,8 @@ void DigiPlaySample3D( short soundnum, int angle, int volume, int no_dups ); // 
 
 void DigiInitSounds();
 void DigiSyncSounds();
-int  DigiKillSoundLinkedToSegment( short segnum, short sidenum, short soundnum );
-int  DigiKillSoundLinkedToObject( int objnum );
+int  DigiKillSoundLinkedToSegment( short nSegment, short nSide, short soundnum );
+int  DigiKillSoundLinkedToObject( int nObject );
 
 void DigiSetMidiVolume( int mvolume );
 void DigiSetFxVolume( int dvolume );

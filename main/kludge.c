@@ -25,7 +25,7 @@ int nWindowClipLeft,nWindowClipTop,nWindowClipRight,nWindowClipBot;
 char CDROM_dir[40] = ".";
 
 #ifndef __DJGPP__
-void joy_set_btn_values( int btn, int state, int time_down, int downcount, int upcount )
+void joy_set_btnValues( int btn, int state, int time_down, int downcount, int upcount )
 {
 
 }
@@ -61,7 +61,7 @@ int com_init(void)
 	return 0;
 }
 
-void com_level_sync(void)
+void comLevel_sync(void)
 {
 
 }

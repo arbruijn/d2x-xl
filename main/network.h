@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * shareware stuff
  *
  * Revision 1.6  1995/09/21  14:31:18  allender
- * new appltalk type packet which contains shortpos
+ * new appltalk nType packet which contains shortpos
  *
  * Revision 1.5  1995/09/18  08:07:08  allender
  * added function prototype to remove netgame NBP
@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * ADded team kill syncing.
  *
  * Revision 1.42  1994/12/01  21:21:27  rob
- * Added new system for object sync on rejoin.
+ * Added new system for tObject sync on rejoin.
  *
  * Revision 1.41  1994/11/29  13:07:33  rob
  * Changed structure defs to .h files.
@@ -211,10 +211,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Boosted MAX_CREATE_OBJECTS to 15.
  *
  * Revision 1.20  1994/09/30  18:19:51  rob
- * Added two new variables for tracking object creation.
+ * Added two new variables for tracking tObject creation.
  *
  * Revision 1.19  1994/09/27  15:03:18  rob
- * Added prototype for network_delete_extra_objects used by modem.c
+ * Added prototype for network_delete_extraObjects used by modem.c
  *
  * Revision 1.18  1994/09/27  14:36:45  rob
  * Added two new varaibles for network/serial weapon firing.
@@ -344,11 +344,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define APPLETALK_GAME  1
 #define IPX_GAME        2
 #define UDP_GAME			3
-extern int Network_game_type;
+extern int Network_gameType;
 extern int Network_game_subtype;
 
 typedef struct sequence_packet {
-	ubyte           type;
+	ubyte           nType;
 	int             Security;
 	ubyte           pad1[3];
 	netplayer_info  player;
@@ -365,17 +365,17 @@ typedef struct sequence_packet {
 //      ints on even byte boundries
 
 typedef struct frame_info {
-	ubyte       type;                   // What type of packet
+	ubyte       nType;                   // What nType of packet
 	ubyte       pad[3];                 // Pad out length of frame_info packet
 	int         numpackets;
-	vms_vector  obj_pos;
-	vms_matrix  obj_orient;
-	vms_vector  phys_velocity;
-	vms_vector  phys_rotvel;
+	vmsVector  obj_pos;
+	vmsMatrix  obj_orient;
+	vmsVector  phys_velocity;
+	vmsVector  phys_rotvel;
 	short       obj_segnum;
 	ushort      data_size;          // Size of data appended to the net packet
 	ubyte       playernum;
-	ubyte       obj_render_type;
+	ubyte       obj_renderType;
 	ubyte       level_num;
 	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ frame_info;
@@ -385,13 +385,13 @@ typedef struct frame_info {
 // to stay in current form.
 
 typedef struct short_frame_info {
-	ubyte       type;                   // What type of packet
+	ubyte       nType;                   // What nType of packet
 	ubyte       pad[3];                 // Pad out length of frame_info packet
 	int         numpackets;
 	shortpos    thepos;
 	ushort      data_size;          // Size of data appended to the net packet
 	ubyte       playernum;
-	ubyte       obj_render_type;
+	ubyte       obj_renderType;
 	ubyte       level_num;
 	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ short_frame_info;
@@ -430,7 +430,7 @@ typedef struct monsterball_info {
 } monsterball_info;
 
 typedef struct extra_gameinfo {
-	ubyte   	type;
+	ubyte   	nType;
 	char		bFriendlyFire;
 	char		bInhibitSuicide;
 	char		bFixedRespawns;
@@ -610,10 +610,10 @@ int NetworkListen();
 int NetworkLevelSync();
 void NetworkSendEndLevelPacket();
 
-int network_delete_extra_objects();
+int network_delete_extraObjects();
 int network_find_max_net_players();
-int NetworkObjnumIsPast(int objnum);
-char * NetworkGetPlayerName(int objnum);
+int NetworkObjnumIsPast(int nObject);
+char * NetworkGetPlayerName(int nObject);
 void NetworkSendEndLevelSub(int player_num);
 void NetworkDisconnectPlayer(int playernum);
 
@@ -623,7 +623,7 @@ extern void NetworkSendNetgameUpdate();
 extern int GetMyNetRanking();
 
 extern int NetGameType;
-extern int Network_send_objects;
+extern int Network_sendObjects;
 extern int Network_send_objnum;
 extern int PacketUrgent;
 extern int Network_rejoined;
@@ -690,7 +690,7 @@ int InitAutoNetGame (void);
 // me for info.
 
 typedef struct endlevel_info {
-	ubyte                               type;
+	ubyte                               nType;
 	ubyte                               player_num;
 	sbyte                               connected;
 	ubyte                               seconds_left;
@@ -700,7 +700,7 @@ typedef struct endlevel_info {
 } endlevel_info;
 
 typedef struct endlevel_info_short {
-	ubyte                               type;
+	ubyte                               nType;
 	ubyte                               player_num;
 	sbyte                               connected;
 	ubyte                               seconds_left;
@@ -714,7 +714,7 @@ typedef struct endlevel_info_short {
 // code for macintosh in netmisc.c
 
 typedef struct lite_info {
-	ubyte                           type;
+	ubyte                           nType;
 	int                             Security;
 	char                            game_name [NETGAME_NAME_LEN+1];
 	char                            mission_title [MISSION_NAME_LEN+1];
@@ -727,7 +727,7 @@ typedef struct lite_info {
 	ubyte                           numplayers;
 	ubyte                           max_numplayers;
 	ubyte                           numconnected;
-	ubyte                           game_flags;
+	ubyte                           gameFlags;
 	ubyte                           protocol_version;
 	ubyte                           version_major;
 	ubyte                           version_minor;

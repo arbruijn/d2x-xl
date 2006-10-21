@@ -340,7 +340,7 @@ static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, unsigned int num_pix
 //------------------------------------------------------------------------------
 
 static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
-													ubyte fade_value, ubyte *srcPalette, ubyte *destPalette);
+													ubyte fadeValue, ubyte *srcPalette, ubyte *destPalette);
 
 #if !defined(NO_ASM) && defined(__WATCOMC__)
 
@@ -362,7 +362,7 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int n
 #elif !defined(NO_ASM) && defined(__GNUC__)
 
 /* #pragma aux gr_linear_rep_movsdm_faded parm [esi] [edi] [ecx] [ebx] modify exact [ecx esi edi eax ebx] */
-static inline void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, ubyte fade_value) {
+static inline void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, ubyte fadeValue) {
 	int dummy[4];
  __asm__ __volatile__ (
 "  xorl   %%eax, %%eax;"
@@ -383,19 +383,19 @@ static inline void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigne
 "  decl   %%ecx;"
 "  jne    0b"
  : "=S" (dummy[0]), "=D" (dummy[1]), "=c" (dummy[2]), "=b" (dummy[3])
- : "0" (src), "1" (dest), "2" (num_pixels), "3" (fade_value)
+ : "0" (src), "1" (dest), "2" (num_pixels), "3" (fadeValue)
  : "%eax");
 }
 
 #elif !defined(NO_ASM) && defined(_MSC_VER)
 
-__inline void gr_linear_rep_movsdm_faded(void * src, void * dest, unsigned int num_pixels, ubyte fade_value)
+__inline void gr_linear_rep_movsdm_faded(void * src, void * dest, unsigned int num_pixels, ubyte fadeValue)
 {
  __asm {
   mov esi, [src]
   mov edi, [dest]
   mov ecx, [num_pixels]
-  movzx ebx, byte ptr [fade_value]
+  movzx ebx, byte ptr [fadeValue]
   xor eax, eax
   mov ah, bl
   nextpixel:
@@ -415,16 +415,16 @@ __inline void gr_linear_rep_movsdm_faded(void * src, void * dest, unsigned int n
 #else
 
 static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, unsigned int num_pixels, 
-													ubyte fade_value, ubyte *srcPalette, ubyte *destPalette)
+													ubyte fadeValue, ubyte *srcPalette, ubyte *destPalette)
 {
 	int	i;
 	short c;
 	ubyte *fade_base;
-	float fade = (float) fade_value / 31.0f;
+	float fade = (float) fadeValue / 31.0f;
 
 	if (!destPalette)
 		destPalette = srcPalette;
-	fade_base = grFadeTable + (fade_value * 256);
+	fade_base = grFadeTable + (fadeValue * 256);
 	for (i=num_pixels; i != 0; i--) {
 		c= (short) *src;
 		if ((ubyte) c != (ubyte) TRANSPARENCY_COLOR) {
@@ -1665,7 +1665,7 @@ void GrBmUBitBlt(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src,
 {
 	register int x1, y1;
 
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_LINEAR)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_LINEAR)) {
 	if (src->bm_props.flags & BM_FLAG_RLE)
 		gr_bm_ubitblt00_rle(w, h, dx, dy, sx, sy, src, dest);
 	else
@@ -1674,51 +1674,51 @@ if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_LINEAR)) {
 	}
 
 #ifdef OGL
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_OGL)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_OGL)) {
 	OglUBitBlt(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
-if ((src->bm_props.type == BM_OGL) && (dest->bm_props.type == BM_LINEAR)) {
+if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_LINEAR)) {
 	OglUBitBltToLinear(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
-if ((src->bm_props.type == BM_OGL) && (dest->bm_props.type == BM_OGL)) {
+if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_OGL)) {
 	OglUBitBltCopy(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
 #endif
 
 #ifdef D1XD3D
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_DIRECTX)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_DIRECTX)) {
 	Assert ((int)dest->bm_texBuf == BM_D3D_RENDER || (int)dest->bm_texBuf == BM_D3D_DISPLAY);
 	Win32_BlitLinearToDirectX_bm (src, sx, sy, w, h, dx, dy, 0);
 	return;
 	}
-if ((src->bm_props.type == BM_DIRECTX) && (dest->bm_props.type == BM_LINEAR))
+if ((src->bm_props.nType == BM_DIRECTX) && (dest->bm_props.nType == BM_LINEAR))
 	return;
-if ((src->bm_props.type == BM_DIRECTX) && (dest->bm_props.type == BM_DIRECTX))
+if ((src->bm_props.nType == BM_DIRECTX) && (dest->bm_props.nType == BM_DIRECTX))
 	return;
 #endif
-if ((src->bm_props.flags & BM_FLAG_RLE) && (src->bm_props.type == BM_LINEAR)) {
+if ((src->bm_props.flags & BM_FLAG_RLE) && (src->bm_props.nType == BM_LINEAR)) {
 	gr_bm_ubitblt0x_rle(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
 #ifdef __MSDOS__
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_SVGA)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_SVGA)) {
 	gr_bm_ubitblt02(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
-if ((src->bm_props.type == BM_SVGA) && (dest->bm_props.type == BM_LINEAR)) {
+if ((src->bm_props.nType == BM_SVGA) && (dest->bm_props.nType == BM_LINEAR)) {
 	gr_bm_ubitblt20(w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_MODEX)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_MODEX)) {
 	gr_bm_ubitblt01(w, h, dx+XOFFSET, dy+YOFFSET, sx, sy, src, dest);
 	return;
 	}
 #endif
 #if defined(POLY_ACC)
-if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_LINEAR15)) {
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_LINEAR15)) {
 	ubyte *s = src->bm_texBuf + sy * src->bm_props.rowsize + sx;
 	ushort *t = (ushort *)(dest->bm_texBuf + dy * dest->bm_props.rowsize + dx * PA_BPP);
 	int x;
@@ -1731,7 +1731,7 @@ if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_LINEAR15)) {
 		}
 	return;
 	}
-if ((src->bm_props.type == BM_LINEAR15) && (dest->bm_props.type == BM_LINEAR15)) {
+if ((src->bm_props.nType == BM_LINEAR15) && (dest->bm_props.nType == BM_LINEAR15)) {
 	pa_blit(dest, dx, dy, src, sx, sy, w, h);
 	return;
 	}
@@ -1809,7 +1809,7 @@ void gr_ubitmap(int x, int y, grs_bitmap *bmP)
 {
 	int source, dest;
 
-	source = bmP->bm_props.type;
+	source = bmP->bm_props.nType;
 	dest = TYPE;
 
 	if (source==BM_LINEAR) {
@@ -1867,7 +1867,7 @@ void GrUBitmapM(int x, int y, grs_bitmap *bmP)
 {
 	int source, dest;
 
-	source = bmP->bm_props.type;
+	source = bmP->bm_props.nType;
 	dest = TYPE;
 
 	Assert(x+bmP->bm_props.w <= grdCurCanv->cv_w);
@@ -1964,7 +1964,7 @@ void GrBitmapM(int x, int y, grs_bitmap *bmP)
 		dy2 = grdCurCanv->cv_bitmap.bm_props.h-1; 
 	// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
 
-	if ((bmP->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_LINEAR)) {
+	if ((bmP->bm_props.nType == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.nType == BM_LINEAR)) {
 		if (bmP->bm_props.flags & BM_FLAG_RLE)
 			gr_bm_ubitblt00m_rle(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 		else
@@ -1972,7 +1972,7 @@ void GrBitmapM(int x, int y, grs_bitmap *bmP)
 		return;
 	}
 #ifdef __MSDOS__
-	else if ((bmP->bm_props.type == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.type == BM_SVGA))
+	else if ((bmP->bm_props.nType == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.nType == BM_SVGA))
 	{
 		gr_bm_ubitblt02m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
 		return;
@@ -1991,22 +1991,22 @@ void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src
 	ubyte c;
 
 #ifdef OGL
-	if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_OGL))
+	if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_OGL))
 		OglUBitBlt(w, h, dx, dy, sx, sy, src, dest);
-	else if ((src->bm_props.type == BM_OGL) && (dest->bm_props.type == BM_LINEAR))
+	else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_LINEAR))
 		OglUBitBltToLinear(w, h, dx, dy, sx, sy, src, dest);
-	else if ((src->bm_props.type == BM_OGL) && (dest->bm_props.type == BM_OGL))
+	else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_OGL))
 		OglUBitBltCopy(w, h, dx, dy, sx, sy, src, dest);
 	else
 #endif
 #ifdef D1XD3D
-	if ((src->bm_props.type == BM_LINEAR) && (dest->bm_props.type == BM_DIRECTX))
+	if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_DIRECTX))
 	{
 		Assert ((int)dest->bm_texBuf == BM_D3D_RENDER || (int)dest->bm_texBuf == BM_D3D_DISPLAY);
 		Win32_BlitLinearToDirectX_bm (src, sx, sy, w, h, dx, dy, 1);
 		return;
 	}
-	if ((src->bm_props.type == BM_DIRECTX) && (dest->bm_props.type == BM_DIRECTX))
+	if ((src->bm_props.nType == BM_DIRECTX) && (dest->bm_props.nType == BM_DIRECTX))
 	{
 		Assert ((int)src->bm_texBuf == BM_D3D_RENDER || (int)src->bm_texBuf == BM_D3D_DISPLAY);
 		//Win32_BlitDirectXToDirectX (w, h, dx, dy, sx, sy, src->bm_texBuf, dest->bm_texBuf, 0);
@@ -2014,7 +2014,7 @@ void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src
 	}
 #endif
 #if defined(POLY_ACC)
-	if(src->bm_props.type == BM_LINEAR && dest->bm_props.type == BM_LINEAR15)
+	if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_LINEAR15)
 	{
 		ubyte *s;
 		ushort *d;
@@ -2038,9 +2038,9 @@ void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src
 		}
 	}
 
-	if(src->bm_props.type == BM_LINEAR15)
+	if(src->bm_props.nType == BM_LINEAR15)
 	{
-		Assert(src->bm_props.type == dest->bm_props.type);         // I don't support 15 to 8 yet.
+		Assert(src->bm_props.nType == dest->bm_props.nType);         // I don't support 15 to 8 yet.
 		pa_blit_transparent(dest, dx, dy, src, sx, sy, w, h);
 		return;
 	}
@@ -2110,7 +2110,7 @@ void show_fullscr(grs_bitmap *src)
 	grs_bitmap * const dest = &grdCurCanv->cv_bitmap;
 
 #ifdef OGL
-if(src->bm_props.type == BM_LINEAR && dest->bm_props.type == BM_OGL) {
+if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
 	if (!gameStates.render.bBlendBackground)
 		glDisable(GL_BLEND);
 	OglUBitBltI (dest->bm_props.w, dest->bm_props.h, 0, 0, src->bm_props.w, src->bm_props.h, 0, 0, src, dest, 0);//use opengl to scale, faster and saves ram. -MPM
@@ -2119,7 +2119,7 @@ if(src->bm_props.type == BM_LINEAR && dest->bm_props.type == BM_OGL) {
 	return;
 	}
 #endif
-if(dest->bm_props.type != BM_LINEAR) {
+if(dest->bm_props.nType != BM_LINEAR) {
 	grs_bitmap *tmp = GrCreateBitmap (dest->bm_props.w, dest->bm_props.h, 0);
 	GrBitmapScaleTo(src, tmp);
 	GrBitmap(0, 0, tmp);

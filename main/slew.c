@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.34  1995/02/22  14:23:28  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.33  1995/02/22  13:24:26  john
  * Removed the vecmat anonymous unions.
@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made slew go faster.
  *
  * Revision 1.29  1994/08/29  19:16:38  matt
- * Made slew object not have physics movement type, so slew gameData.objs.objects don't
+ * Made slew tObject not have physics movement nType, so slew gameData.objs.objects don't
  * get bumped.
  *
  * Revision 1.28  1994/08/24  18:59:59  john
@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.26  1994/05/20  11:56:33  matt
  * Cleaned up FindVectorIntersection() interface
- * Killed check_point_in_seg(), check_player_seg(), check_object_seg()
+ * Killed check_point_in_seg(), check_player_seg(), checkObject_seg()
  *
  * Revision 1.25  1994/05/19  12:08:41  matt
  * Use new vecmat macros and globals
@@ -61,21 +61,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Got rid of externs in source (non-header) files
  *
  * Revision 1.23  1994/05/03  12:26:38  matt
- * Removed use of physics_info var rotvel, which wasn't used for rotational
+ * Removed use of tPhysicsInfo var rotVel, which wasn't used for rotational
  * velocity at all.
  *
  * Revision 1.22  1994/02/17  11:32:34  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.21  1994/01/18  14:03:53  john
  * made joy_get_pos use the new ints instead of
  * shorts.
  *
  * Revision 1.20  1994/01/10  17:11:35  mike
- * Add prototype for check_object_seg
+ * Add prototype for checkObject_seg
  *
  * Revision 1.19  1994/01/05  10:53:38  john
- * New object code by John.
+ * New tObject code by John.
  *
  * Revision 1.18  1993/12/22  15:32:50  john
  * took out previos code that attempted to make
@@ -129,7 +129,7 @@ static char rcsid[] = "$Id: slew.c,v 1.4 2003/10/10 09:36:35 btb Exp $";
 
 //variables for slew system
 
-object *slewObjP=NULL;	//what object is slewing, or NULL if none
+tObject *slewObjP=NULL;	//what tObject is slewing, or NULL if none
 
 #define JOY_NULL 15
 #define ROT_SPEED 8		//rate of rotation while key held down
@@ -142,13 +142,13 @@ int slew_stop(void);
 
 
 // -------------------------------------------------------------------
-//say start slewing with this object
-void slew_init(object *objP)
+//say start slewing with this tObject
+void slew_init(tObject *objP)
 {
 	slewObjP = objP;
 	
-	slewObjP->control_type = CT_SLEW;
-	slewObjP->movement_type = MT_NONE;
+	slewObjP->controlType = CT_SLEW;
+	slewObjP->movementType = MT_NONE;
 
 	slew_stop();		//make sure not moving
 }
@@ -156,15 +156,15 @@ void slew_init(object *objP)
 
 int slew_stop()
 {
-	if (!slewObjP || slewObjP->control_type!=CT_SLEW) return 0;
+	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return 0;
 
-	VmVecZero(&slewObjP->mtype.phys_info.velocity);
+	VmVecZero(&slewObjP->mType.physInfo.velocity);
 	return 1;
 }
 
 void slew_reset_orient()
 {
-	if (!slewObjP || slewObjP->control_type!=CT_SLEW) return;
+	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return;
 
 	slewObjP->orient.rvec.x = slewObjP->orient.uvec.y = slewObjP->orient.fvec.z = f1_0;
 
@@ -173,25 +173,25 @@ void slew_reset_orient()
 
 }
 
-int do_slew_movement(object *objP, int check_keys, int check_joy )
+int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 {
 	int moved = 0;
-	vms_vector svel, movement;				//scaled velocity (per this frame)
-	vms_matrix rotmat,new_pm;
+	vmsVector svel, movement;				//scaled velocity (per this frame)
+	vmsMatrix rotmat,new_pm;
 	int joy_x,joy_y,btns;
 	int joyx_moved,joyy_moved;
-	vms_angvec rotang;
+	vmsAngVec rotang;
 
-	if (!slewObjP || slewObjP->control_type!=CT_SLEW) return 0;
+	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return 0;
 
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
 			if (FindArg("-jasen"))
-				objP->mtype.phys_info.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
+				objP->mType.physInfo.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
 			else
-				objP->mtype.phys_info.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
-			objP->mtype.phys_info.velocity.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
-			objP->mtype.phys_info.velocity.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
+				objP->mType.physInfo.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
+			objP->mType.physInfo.velocity.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
+			objP->mType.physInfo.velocity.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
 
 			rotang.p = (KeyDownTime(KEY_LBRACKET) - KeyDownTime(KEY_RBRACKET))/ROT_SPEED ;
 			if (FindArg("-jasen"))
@@ -201,13 +201,13 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 			rotang.h  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mtype.phys_info.velocity.x += VEL_SPEED * Controls.sideways_thrust_time;
-			objP->mtype.phys_info.velocity.y += VEL_SPEED * Controls.vertical_thrust_time;
-			objP->mtype.phys_info.velocity.z += VEL_SPEED * Controls.forward_thrust_time;
+			objP->mType.physInfo.velocity.x += VEL_SPEED * Controls.sideways_thrustTime;
+			objP->mType.physInfo.velocity.y += VEL_SPEED * Controls.vertical_thrustTime;
+			objP->mType.physInfo.velocity.z += VEL_SPEED * Controls.forward_thrustTime;
 
-			rotang.p = Controls.pitch_time/ROT_SPEED ;
-			rotang.b  = Controls.bank_time/ROT_SPEED;
-			rotang.h  = Controls.heading_time/ROT_SPEED;
+			rotang.p = Controls.pitchTime/ROT_SPEED ;
+			rotang.b  = Controls.bankTime/ROT_SPEED;
+			rotang.h  = Controls.headingTime/ROT_SPEED;
 		}
 	}
 	else
@@ -228,7 +228,7 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 		if (btns)
 			if (!rotang.p) rotang.p = FixMul(-joy_y * 512,gameData.time.xFrame); else;
 		else
-			if (joyy_moved) objP->mtype.phys_info.velocity.z = -joy_y * 8192;
+			if (joyy_moved) objP->mType.physInfo.velocity.z = -joy_y * 8192;
 	
 		if (!rotang.h) rotang.h = FixMul(joy_x * 512,gameData.time.xFrame);
 	
@@ -243,9 +243,9 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 	objP->orient = new_pm;
 	VmTransposeMatrix(&new_pm);		//make those columns rows
 
-	moved |= objP->mtype.phys_info.velocity.x | objP->mtype.phys_info.velocity.y | objP->mtype.phys_info.velocity.z;
+	moved |= objP->mType.physInfo.velocity.x | objP->mType.physInfo.velocity.y | objP->mType.physInfo.velocity.z;
 
-	svel = objP->mtype.phys_info.velocity;
+	svel = objP->mType.physInfo.velocity;
 	VmVecScale(&svel,gameData.time.xFrame);		//movement in this frame
 	VmVecRotate(&movement,&svel,&new_pm);
 
@@ -255,7 +255,7 @@ int do_slew_movement(object *objP, int check_keys, int check_joy )
 	moved |= (movement.x || movement.y || movement.z);
 
 	if (moved)
-		UpdateObjectSeg(objP);	//update segment id
+		UpdateObjectSeg(objP);	//update tSegment id
 
 	return moved;
 }

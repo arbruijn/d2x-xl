@@ -31,7 +31,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * like timer_get_milliseconds, etc.
  *
  * Revision 1.4  1994/04/28  23:50:08  john
- * Changed calling for init_timer.  Made the function that the
+ * Changed calling for initTimer.  Made the function that the
  * timer calls be a far function. All of this was done to make
  * our timer system compatible with the HMI sound stuff.
  *

@@ -831,7 +831,7 @@ return INTEL_FLOAT (f);
 
 // ----------------------------------------------------------------------------
 //Read and return a double (64 bits)
-//Throws an exception of type (nCFileError *) if the OS returns an error on read
+//Throws an exception of nType (nCFileError *) if the OS returns an error on read
 double CFReadDouble (CFILE *file)
 {
 	double d;
@@ -868,7 +868,7 @@ return (fixang) INTEL_SHORT ((int) f);
 
 // ----------------------------------------------------------------------------
 
-void CFReadVector (vms_vector *v, CFILE *file)
+void CFReadVector (vmsVector *v, CFILE *file)
 {
 v->x = CFReadFix (file);
 v->y = CFReadFix (file);
@@ -877,7 +877,7 @@ v->z = CFReadFix (file);
 
 // ----------------------------------------------------------------------------
 
-void CFReadAngVec(vms_angvec *v, CFILE *file)
+void CFReadAngVec(vmsAngVec *v, CFILE *file)
 {
 v->p = CFReadFixAng (file);
 v->b = CFReadFixAng (file);
@@ -886,7 +886,7 @@ v->h = CFReadFixAng (file);
 
 // ----------------------------------------------------------------------------
 
-void CFReadMatrix(vms_matrix *m,CFILE *file)
+void CFReadMatrix(vmsMatrix *m,CFILE *file)
 {
 CFReadVector (&m->rvec,file);
 CFReadVector (&m->uvec,file);
@@ -943,7 +943,7 @@ return CFWrite (&f, sizeof (f), 1, file);
 
 // ----------------------------------------------------------------------------
 //Read and return a double (64 bits)
-//Throws an exception of type (nCFileError *) if the OS returns an error on read
+//Throws an exception of nType (nCFileError *) if the OS returns an error on read
 int cfile_write_double (double d, CFILE *file)
 {
 d = INTEL_DOUBLE (d);
@@ -968,7 +968,7 @@ return CFWrite (&a, sizeof (a), 1, file);
 
 // ----------------------------------------------------------------------------
 
-void CFWriteVector (vms_vector *v, CFILE *file)
+void CFWriteVector (vmsVector *v, CFILE *file)
 {
 CFWriteFix (v->x, file);
 CFWriteFix (v->y, file);
@@ -977,7 +977,7 @@ CFWriteFix (v->z, file);
 
 // ----------------------------------------------------------------------------
 
-void CFWriteAngVec (vms_angvec *v, CFILE *file)
+void CFWriteAngVec (vmsAngVec *v, CFILE *file)
 {
 CFWriteFixAng (v->p, file);
 CFWriteFixAng (v->b, file);
@@ -986,7 +986,7 @@ CFWriteFixAng (v->h, file);
 
 // ----------------------------------------------------------------------------
 
-void CFWriteMatrix (vms_matrix *m,CFILE *file)
+void CFWriteMatrix (vmsMatrix *m,CFILE *file)
 {
 CFWriteVector (&m->rvec, file);
 CFWriteVector (&m->uvec, file);

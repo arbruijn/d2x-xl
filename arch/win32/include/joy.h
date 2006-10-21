@@ -96,21 +96,21 @@ extern int joy_get_button_down_cnt( int btn );
 // buttons has been held down since the last call to this function.
 // It is the total time... say you pressed it down for 3 ticks, released
 // it, and held it down for 6 more ticks. The time returned would be 9.
-extern fix joy_get_button_down_time( int btn );
+extern fix joy_get_button_downTime( int btn );
 
 extern ubyte joy_read_raw_buttons();
 extern ubyte joystick_read_raw_axis( ubyte mask, int * axis );
 extern void joy_flush();
 extern ubyte joy_get_present_mask();
-extern void joy_set_timer_rate(int max_value );
-extern int joy_get_timer_rate();
+extern void joy_setTimer_rate(int maxValue );
+extern int joy_getTimer_rate();
 
 extern int joy_get_button_state( int btn );
 extern void joy_set_cen_fake(int channel);
 extern ubyte joy_read_stick( ubyte masks, int *axis );
 extern void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max);
 extern void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_btn_values( int btn, int state, fix timedown, int downcount, int upcount );
+extern void joy_set_btnValues( int btn, int state, fix timedown, int downcount, int upcount );
 extern int joy_get_scaled_reading( int raw, int axn );
 extern void joy_set_slow_reading( int flag );
 extern int set_joy_deadzone (int nRelZone);

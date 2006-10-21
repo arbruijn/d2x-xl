@@ -17,7 +17,7 @@
 #ifndef _WIN32_WCE
 #include <fcntl.h>
 #endif
-#include <ctype.h>
+#include <cType.h>
 #ifdef __macosx__
 # include <SDL/SDL.h>
 #else

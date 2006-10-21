@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern char szCurrentLevelPalette[SHORT_FILENAME_LEN];
 
 // load a palette by name. returns 1 if new palette loaded, else 0
-// if used_for_level is set, load pig, etc.
+// if used_forLevel is set, load pig, etc.
 // if no_change_screen is set, the current screen does not get
 // remapped, and the hardware palette does not get changed
 ubyte *LoadPalette (char *pszPaletteName, char *pszLevelName, int nUsedForLevel, 

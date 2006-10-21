@@ -71,7 +71,7 @@ void c_tmap_scanline_shaded(void)
 
 	dest = (ubyte *)(write_buffer + fx_xleft + (bytes_per_row * fx_y)  );
 
-	fade = tmap_flat_shade_value<<8;
+	fade = tmap_flat_shadeValue<<8;
 	for (x= fx_xright-fx_xleft+1 ; x > 0; --x ) {
 		tmp = *dest;
 		*dest++ = grFadeTable[ fade |(tmp)];
@@ -963,9 +963,9 @@ void (*cur_tmap_scanline_shaded)(void);
 
 //runtime selection of optimized tmappers.  12/07/99  Matthew Mueller
 //the reason I did it this way rather than having a *tmap_funcs that then points to a c_tmap or fp_tmap struct thats already filled in, is to avoid a second pointer dereference.
-void select_tmap(char *type)
+void select_tmap(char *nType)
 {
-	if (!type){
+	if (!nType){
 #ifndef NO_ASM
 #if defined(__pentiumpro__)
 		select_tmap("ppro");
@@ -980,7 +980,7 @@ void select_tmap(char *type)
 		return;
 	}
 #ifndef NO_ASM
-	if (stricmp(type,"i386")==0){
+	if (stricmp(nType,"i386")==0){
 		cur_tmap_scanline_per=asm_tmap_scanline_per;
 		cur_tmap_scanline_per_nolight=asm_tmap_scanline_per;
 		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
@@ -988,7 +988,7 @@ void select_tmap(char *type)
 		cur_tmap_scanline_flat=asm_tmap_scanline_flat;
 		cur_tmap_scanline_shaded=asm_tmap_scanline_shaded;
 	}
-	else if (stricmp(type,"pent")==0){
+	else if (stricmp(nType,"pent")==0){
 		cur_tmap_scanline_per=asm_pent_tmap_scanline_per;
 		cur_tmap_scanline_per_nolight=asm_pent_tmap_scanline_per;
 		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
@@ -996,7 +996,7 @@ void select_tmap(char *type)
 		cur_tmap_scanline_flat=asm_tmap_scanline_flat;
 		cur_tmap_scanline_shaded=asm_tmap_scanline_shaded;
 	}
-	else if (stricmp(type,"ppro")==0){
+	else if (stricmp(nType,"ppro")==0){
 		cur_tmap_scanline_per=asm_ppro_tmap_scanline_per;
 		cur_tmap_scanline_per_nolight=asm_ppro_tmap_scanline_per;
 		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
@@ -1006,7 +1006,7 @@ void select_tmap(char *type)
 	}
 	else
 #endif
-	if (stricmp(type,"fp")==0){
+	if (stricmp(nType,"fp")==0){
 		cur_tmap_scanline_per=c_fp_tmap_scanline_per;
 		cur_tmap_scanline_per_nolight=c_fp_tmap_scanline_per_nolight;
 		cur_tmap_scanline_lin=c_tmap_scanline_lin;

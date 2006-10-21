@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * prototype nClearWindow.
  *
  * Revision 1.16  1994/11/02  16:19:52  matt
- * Increased size of extra object buffer
+ * Increased size of extra tObject buffer
  *
  * Revision 1.15  1994/07/25  00:02:49  matt
  * Various changes to accomodate new 3d, which no longer takes point numbers
@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Got rid of externs in source (non-header) files
  *
  * Revision 1.6  1994/02/17  11:32:41  matt
- * Changes in object system
+ * Changes in tObject system
  *
  * Revision 1.5  1994/01/21  17:31:48  matt
  * Moved code from RenderFrame() to caller, making code cleaner
@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed Player_zoom to nRenderZoom
  *
  * Revision 1.2  1994/01/05  10:53:43  john
- * New object code by John.
+ * New tObject code by John.
  *
  * Revision 1.1  1993/11/04  14:01:43  matt
  * Initial revision
@@ -105,7 +105,7 @@ void RenderFrame (fix eye_offset, int window_num);  //draws the world into the c
 // cycle the flashing light for when mine destroyed
 void FlashFrame();
 
-int find_seg_side_face(short x,short y,int *seg,int *side,int *face,int *poly);
+int find_seg_side_face(short x,short y,int *seg,int *tSide,int *face,int *poly);
 
 // these functions change different rendering parameters
 // all return the new value of the parameter
@@ -125,7 +125,7 @@ int ToggleOutlineMode(void);
 int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
-// should access Render_viewer_object members.
+// should access Render_viewerObject members.
 extern fix nRenderZoom;     // the player's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
@@ -144,7 +144,7 @@ extern int Render_only_bottom;
 extern int bUsePlayerHeadAngles;
 
 // If the above flag is set, these angles specify the orientation of the head
-extern vms_angvec Player_head_angles;
+extern vmsAngVec Player_head_angles;
 
 //
 // Routines for conditionally rotating & projecting points
@@ -166,12 +166,12 @@ void RenderShadow (float fDist);
 
 int RenderShadowMap (tLightInfo *pLight);
 
-void UpdateRenderedData (int window_num, object *viewer, int rear_view_flag, int user);
+void UpdateRenderedData (int window_num, tObject *viewer, int rear_viewFlag, int user);
 
 extern tFlightPath externalView;
 
 void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
-void SetPathPoint (tFlightPath *pPath, object *objP);
+void SetPathPoint (tFlightPath *pPath, tObject *objP);
 tPathPoint *GetPathPoint (tFlightPath *pPath);
 
 #endif /* _RENDER_H */

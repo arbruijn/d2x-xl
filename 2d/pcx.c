@@ -61,7 +61,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid);
 int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp);
 
-/* PCX Header data type */
+/* PCX Header data nType */
 typedef struct {
 	ubyte   Manufacturer;
 	ubyte   Version;
@@ -139,7 +139,7 @@ int pcx_get_dimensions( char *filename, int *width, int *height)
 
 //------------------------------------------------------------------------------
 
-int pcx_read_bitmap (char * filename, grs_bitmap * bmP, int bitmap_type, int bD1Mission)
+int pcx_read_bitmap (char * filename, grs_bitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader header;
 	CFILE * PCXfile;
@@ -172,7 +172,7 @@ ysize = header.Ymax - header.Ymin + 1;
 
 #if defined(POLY_ACC)
    // Read the extended palette at the end of PCX file
-   if(bitmap_type == BM_LINEAR15)      // need palette for conversion from 8bit pcx to 15bit.
+   if(bitmapType == BM_LINEAR15)      // need palette for conversion from 8bit pcx to 15bit.
 #else
 	if (palette && !bmP)
 #endif
@@ -191,13 +191,13 @@ ysize = header.Ymax - header.Ymin + 1;
 #endif
     }
 
-	if ( bitmap_type == BM_LINEAR )	{
+	if ( bitmapType == BM_LINEAR )	{
 		if ( bmP->bm_texBuf == NULL )	{
-			GrInitBitmapAlloc (bmP, bitmap_type, 0, 0, xsize, ysize, xsize, 0);
+			GrInitBitmapAlloc (bmP, bitmapType, 0, 0, xsize, ysize, xsize, 0);
 		}
 	}
 
-	if ( bmP->bm_props.type == BM_LINEAR )	{
+	if ( bmP->bm_props.nType == BM_LINEAR )	{
 		for (row=0; row< ysize ; row++)      {
 			pixdata = &bmP->bm_texBuf [bmP->bm_props.rowsize*row];
 			for (col=0; col< xsize ; )      {
@@ -221,7 +221,7 @@ ysize = header.Ymax - header.Ymin + 1;
 			}
 		}
 #if defined(POLY_ACC)
-    } else if( bmP->bm_props.type == BM_LINEAR15 )    {
+    } else if( bmP->bm_props.nType == BM_LINEAR15 )    {
         ushort *pixdata2, pix15;
         PA_DFX (pa_set_backbuffer_current();
 		  PA_DFX (pa_set_write_mode(0);

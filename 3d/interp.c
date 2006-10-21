@@ -14,7 +14,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Polygon object interpreter
+ * Polygon tObject interpreter
  *
  * Old Log:
  * Revision 1.4  1995/10/10  22:20:09  allender
@@ -67,7 +67,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 extern tRgbaColorf shadowColor, modelColor;
 
 static tOOF_vector vLightPos, vCenter;
-static vms_vector vmsLightPos;
+static vmsVector vmsLightPos;
 
 #define OP_EOF          0   //eof
 #define OP_DEFPOINTS    1   //defpoints
@@ -100,7 +100,7 @@ static int bIntrinsicFacing = 0;
 static int bFlatPolys = 1;
 static int bTexPolys = 1;
 
-vms_angvec zeroAngles = {0, 0, 0};
+vmsAngVec zeroAngles = {0, 0, 0};
 
 g3s_point *pointList [MAX_POINTS_PER_POLY];
 
@@ -116,11 +116,11 @@ modelPointList = pointlist;
 #define WORDVAL(p)	(*((short *) (p)))
 #define WORDPTR(p)	((short *) (p))
 #define FIXPTR(p)		((fix *) (p))
-#define VECPTR(p)		((vms_vector *) (p))
+#define VECPTR(p)		((vmsVector *) (p))
 
 //------------------------------------------------------------------------------
 
-void RotatePointList (g3s_point *dest, vms_vector *src, g3s_normal *norms, int n, int o)
+void RotatePointList (g3s_point *dest, vmsVector *src, g3s_normal *norms, int n, int o)
 {
 	fVector3	*pfv = (fVector3 *) (gameData.models.fPolyModelVerts + o);
 
@@ -157,7 +157,7 @@ while (n--) {
 
 //------------------------------------------------------------------------------
 
-inline void RotatePointListToVec (vms_vector *dest, vms_vector *src, int n)
+inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
 {
 while (n--)
 	G3TransformPoint (dest++, src++);
@@ -181,7 +181,7 @@ inline void FixSwap (fix *f)
 
 //------------------------------------------------------------------------------
 
-inline void VmsVectorSwap (vms_vector *v)
+inline void VmsVectorSwap (vmsVector *v)
 {
 FixSwap (FIXPTR (&v->x));
 FixSwap (FIXPTR (&v->y));
@@ -197,7 +197,7 @@ inline void FixAngSwap (fixang *f)
 
 //------------------------------------------------------------------------------
 
-inline void VmsAngVecSwap (vms_angvec *v)
+inline void VmsAngVecSwap (vmsAngVec *v)
 {
 FixAngSwap (&v->p);
 FixAngSwap (&v->b);
@@ -223,8 +223,8 @@ for (;;) {
 			ShortSwap (WORDPTR (p + 2));
 			n = WORDVAL (p+2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (VECPTR ((p + 4) + (i * sizeof (vms_vector))));
-			p += n*sizeof (struct vms_vector) + 4;
+				VmsVectorSwap (VECPTR ((p + 4) + (i * sizeof (vmsVector))));
+			p += n*sizeof (struct vmsVector) + 4;
 			break;
 
 		case OP_DEFP_START:
@@ -232,8 +232,8 @@ for (;;) {
 			ShortSwap (WORDPTR (p + 4));
 			n = WORDVAL (p+2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (VECPTR ((p + 8) + (i * sizeof (vms_vector))));
-			p += n*sizeof (struct vms_vector) + 8;
+				VmsVectorSwap (VECPTR ((p + 8) + (i * sizeof (vmsVector))));
+			p += n*sizeof (struct vmsVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -333,11 +333,11 @@ for (;;) {
 			return p + 2 - data;
 		case OP_DEFPOINTS:
 			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (struct vms_vector) + 4;
+			p += n*sizeof (struct vmsVector) + 4;
 			break;
 		case OP_DEFP_START:
 			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (struct vms_vector) + 8;
+			p += n*sizeof (struct vmsVector) + 8;
 			break;
 		case OP_FLATPOLY:
 			n = INTEL_SHORT (WORDVAL (p+2));
@@ -383,11 +383,11 @@ for (;;) {
 			return;
 		case OP_DEFPOINTS:
 			n = (WORDVAL (p+2));
-			p += n*sizeof (struct vms_vector) + 4;
+			p += n*sizeof (struct vmsVector) + 4;
 			break;
 		case OP_DEFP_START:
 			n = (WORDVAL (p+2));
-			p += n*sizeof (struct vms_vector) + 8;
+			p += n*sizeof (struct vmsVector) + 8;
 			break;
 		case OP_FLATPOLY:
 			n = (WORDVAL (p+2));
@@ -434,13 +434,13 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-//calls the object interpreter to render an object.  The object renderer
+//calls the tObject interpreter to render an tObject.  The tObject renderer
 //is really a seperate pipeline. returns true if drew
 fix G3PolyModelSize (void *modelP)
 {
 	ubyte			*p = modelP;
 	int			i, n, nv;
-	vms_vector	*v, 
+	vmsVector	*v, 
 					pMin = {0x7fffffff, 0x7fffffff, 0x7fffffff}, 
 					pMax = {-0x7fffffff, -0x7fffffff, -0x7fffffff};
 
@@ -466,7 +466,7 @@ for (;;)
 				else if (pMax.z < v->z)
 					pMax.z = v->z;
 				}
-			p += n * sizeof (struct vms_vector) + 4;
+			p += n * sizeof (struct vmsVector) + 4;
 			break;
 
 		case OP_DEFP_START: 
@@ -486,7 +486,7 @@ for (;;)
 				else if (pMax.z < v->z)
 					pMax.z = v->z;
 				}
-			p += n * sizeof (struct vms_vector) + 8;
+			p += n * sizeof (struct vmsVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -546,14 +546,14 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			(*pnVerts) += n;
-			p += n * sizeof (struct vms_vector) + 4;
+			p += n * sizeof (struct vmsVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			p += n * sizeof (struct vms_vector) + 8;
+			p += n * sizeof (struct vmsVector) + 8;
 			*pnVerts += n;
 			break;
 			}
@@ -654,14 +654,14 @@ return (tOOF_vector *) OOF_VecVms2Oof (&pf->vNormf, G3TransformPoint (&pf->vRotN
 					
 //------------------------------------------------------------------------------
 
-inline int G3FaceIsLit (tPOF_object *po, tPOF_face *pf)
+inline int G3FaceIsLit (tPOFObject *po, tPOF_face *pf)
 {
 return pf->bFacingLight = G3CheckLightFacing (po->pvVertsf + *pf->pVerts, &pf->vNormf);
 }
 
 //------------------------------------------------------------------------------
 
-short G3FindPolyModelVert (vms_vector *pVerts, vms_vector *pv, int nVerts)
+short G3FindPolyModelVert (vmsVector *pVerts, vmsVector *pv, int nVerts)
 {
 	int	i;
 
@@ -673,7 +673,7 @@ return nVerts;
 
 //------------------------------------------------------------------------------
 
-short G3FindPolyModelFace (tPOF_object *po, tPOF_face *pf)
+short G3FindPolyModelFace (tPOFObject *po, tPOF_face *pf)
 {
 	int			h, i, j, k, l;
 	tPOF_face	*pfh;
@@ -694,10 +694,10 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void G3CalcFaceNormal (tPOF_object *po, tPOF_face *pf)
+void G3CalcFaceNormal (tPOFObject *po, tPOF_face *pf)
 {
 #if 0
-	vms_vector	*pv = po->pvVerts;
+	vmsVector	*pv = po->pvVerts;
 	short			*pfv = pf->pVerts;
 
 VmVecNormal (&pf->vNorm, pv + pfv [0], pv + pfv [1], pv + pfv [2]);
@@ -707,9 +707,9 @@ OOF_VecVms2Oof (&pf->vNormf, &pf->vNorm);
 
 //------------------------------------------------------------------------------
 
-inline void G3AddPolyModelTri (tPOF_object *po, tPOF_face *pf, short v0, short v1, short v2)
+inline void G3AddPolyModelTri (tPOFObject *po, tPOF_face *pf, short v0, short v1, short v2)
 {
-	vms_vector	*pv = po->pvVerts;
+	vmsVector	*pv = po->pvVerts;
 	short *pfv = po->pFaceVerts + po->iFaceVert;
 
 pf->pVerts = pfv;
@@ -723,11 +723,11 @@ G3CalcFaceNormal (po, pf);
 
 //------------------------------------------------------------------------------
 
-tPOF_face *G3AddPolyModelFace (tPOF_object *po, tPOF_subObject *pso, tPOF_face *pf, 
-										 vms_vector *pn, ubyte *p, int bShadowData)
+tPOF_face *G3AddPolyModelFace (tPOFObject *po, tPOF_subObject *pso, tPOF_face *pf, 
+										 vmsVector *pn, ubyte *p, int bShadowData)
 {
 	short			nv = WORDVAL (p+2);
-	vms_vector	*pv = po->pvVerts;
+	vmsVector	*pv = po->pvVerts;
 	short			*pfv;
 	short			i, v0;
 
@@ -752,10 +752,10 @@ if (bShadowData) {
 		pf->bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 #if 0
-		if (memcmp (&pf->vPlane, po->pvVerts + *pv, sizeof (vms_vector))) //make sure we have a vertex from the face
+		if (memcmp (&pf->vPlane, po->pvVerts + *pv, sizeof (vmsVector))) //make sure we have a vertex from the face
 			pf->vPlane = po->pvVerts [*pv];
 		VmVecNormal (&n, po->pvVerts + pv [0], po->pvVerts + pv [1], po->pvVerts + pv [2]); //check the precomputed normal
-		if (memcmp (&pf->vNorm, &n, sizeof (vms_vector)))
+		if (memcmp (&pf->vNorm, &n, sizeof (vmsVector)))
 			pf->vNorm = n;
 #endif
 #if 0
@@ -811,7 +811,7 @@ return pf;
 
 //------------------------------------------------------------------------------
 
-void G3RotatePolyModelNormals (tPOF_object *po)
+void G3RotatePolyModelNormals (tPOFObject *po)
 {
 	tPOF_face	*pf;
 	int			i;
@@ -823,10 +823,10 @@ for (i = po->faces.nFaces, pf = po->faces.pFaces; i; i--, pf++)
 
 //------------------------------------------------------------------------------
 
-tOOF_vector *G3PolyModelVerts2Float (tPOF_object *po)
+tOOF_vector *G3PolyModelVerts2Float (tPOFObject *po)
 {
 	int			i;
-	vms_vector	*pv;
+	vmsVector	*pv;
 	tOOF_vector	*pvf;
 
 for (i = po->nVerts, pv = po->pvVerts, pvf = po->pvVertsf; i; i--, pv++, pvf++) {
@@ -893,7 +893,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int G3GetPolyModelEdges (tPOF_object *po)
+int G3GetPolyModelEdges (tPOFObject *po)
 {
 	short				i, j, k, v0, v1, v2 = -1;
 	tPOF_subObject	*pso = po->subObjs.pSubObjs;
@@ -932,7 +932,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool G3GetPolyModelItems (void *modelP, vms_angvec	*pAnimAngles, tPOF_object *po, 
+bool G3GetPolyModelItems (void *modelP, vmsAngVec	*pAnimAngles, tPOFObject *po, 
 								  int bInitModel, int bShadowData)
 {
 	ubyte *p = modelP;
@@ -952,11 +952,11 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			if (bInitModel)
-				memcpy (po->pvVerts, VECPTR (p+4), n * sizeof (vms_vector));
+				memcpy (po->pvVerts, VECPTR (p+4), n * sizeof (vmsVector));
 			else
 				RotatePointListToVec (po->pvVerts, VECPTR (p+4), n);
 			po->nVerts += n;
-			p += n * sizeof (struct vms_vector) + 4;
+			p += n * sizeof (struct vmsVector) + 4;
 			break;
 			}
 
@@ -964,11 +964,11 @@ for (;;)
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			if (bInitModel)
-				memcpy (po->pvVerts + s, VECPTR (p+8), n * sizeof (vms_vector));
+				memcpy (po->pvVerts + s, VECPTR (p+8), n * sizeof (vmsVector));
 			else
 				RotatePointListToVec (po->pvVerts + s, VECPTR (p+8), n);
 			po->nVerts += n;
-			p += n * sizeof (struct vms_vector) + 8;
+			p += n * sizeof (struct vmsVector) + 8;
 			break;
 			}
 
@@ -1006,7 +1006,7 @@ for (;;)
 			break;
 
 		case OP_SUBCALL: {
-			vms_angvec *a;
+			vmsAngVec *a;
 
 			if (pAnimAngles)
 				a = &pAnimAngles [WORDVAL (p+2)];
@@ -1037,7 +1037,7 @@ return 1;
 
 #define pof_free(_p)	if (_p) {d_free (_p); (_p) = NULL; }
 
-int G3FreePolyModelItems (tPOF_object *po)
+int G3FreePolyModelItems (tPOFObject *po)
 {
 pof_free (po->subObjs.pSubObjs);
 pof_free (po->pvVerts);
@@ -1052,7 +1052,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3AllocPolyModelItems (void *modelP, tPOF_object *po, int bShadowData)
+int G3AllocPolyModelItems (void *modelP, tPOFObject *po, int bShadowData)
 {
 	short	nFaceVerts = 0;
 	int	h;
@@ -1064,7 +1064,7 @@ h = po->subObjs.nSubObjs * sizeof (tPOF_subObject);
 if (!(po->subObjs.pSubObjs = (tPOF_subObject *) d_malloc (h)))
 	return G3FreePolyModelItems (po);
 memset (po->subObjs.pSubObjs, 0, h);
-if (!(po->pvVerts = (vms_vector *) d_malloc (po->nVerts * sizeof (vms_vector))))
+if (!(po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector))))
 	return G3FreePolyModelItems (po);
 if (bShadowData) {
 	if (!(po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face))))
@@ -1089,7 +1089,7 @@ return po->nState = 1;
 
 //------------------------------------------------------------------------------
 
-tOOF_vector *G3CalcFaceCenter (tPOF_object *po, tPOF_face *pf)
+tOOF_vector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
 	tOOF_vector	*pv = po->pvVertsf;
 	short			*pfv = pf->pVerts;
@@ -1105,7 +1105,7 @@ return &c;
 
 //------------------------------------------------------------------------------
 
-int G3CalcModelFacing (tPOF_object *po, tPOF_subObject *pso)
+int G3CalcModelFacing (tPOFObject *po, tPOF_subObject *pso)
 {
 	short				i;
 	tPOF_face		*pf;
@@ -1118,7 +1118,7 @@ return pso->faces.nFaces;
 
 //------------------------------------------------------------------------------
 
-int G3GetPolyModelSilhouette (tPOF_object *po, tPOF_subObject *pso)
+int G3GetPolyModelSilhouette (tPOFObject *po, tPOF_subObject *pso)
 {
 	short				h, i, j, k;
 	tPOF_edge		*pe;
@@ -1181,7 +1181,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3RenderSubModelShadowVolume (tPOF_object *po, tPOF_subObject *pso, int nCullFace)
+int G3RenderSubModelShadowVolume (tPOFObject *po, tPOF_subObject *pso, int nCullFace)
 {
 	tOOF_vector	*pvf, fv0, fv1;
 	tPOF_edge	*pe;
@@ -1240,7 +1240,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3RenderSubModelShadowCaps (tPOF_object *po, tPOF_subObject *pso, int nCullFace)
+int G3RenderSubModelShadowCaps (tPOFObject *po, tPOF_subObject *pso, int nCullFace)
 {
 	tOOF_vector	*pvf, *phvf, fv0;
 	tPOF_face	*pf;
@@ -1294,7 +1294,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3DrawSubModelShadow (tPOF_object *po, tPOF_subObject *pso, int bCullFront)
+int G3DrawSubModelShadow (tPOFObject *po, tPOF_subObject *pso, int bCullFront)
 {
 	int	h, i;
 
@@ -1326,11 +1326,11 @@ return
 
 //------------------------------------------------------------------------------
 
-int G3GatherPolyModelItems (object *objP, void *modelP, vms_angvec *pAnimAngles, tPOF_object *po,
+int G3GatherPolyModelItems (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po,
 									 int bShadowData)
 {
 	int			j;
-	vms_vector	*pv;
+	vmsVector	*pv;
 	tOOF_vector	*pvf;
 
 if (!(po->nState || G3AllocPolyModelItems (modelP, po, bShadowData)))
@@ -1366,12 +1366,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3DrawPolyModelShadow (object *objP, void *modelP, vms_angvec *pAnimAngles)
+int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 {
 #if SHADOWS
 	short			*pnl;
 	int			bCullFront, bCalcCenter = 0;
-	tPOF_object *po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
+	tPOFObject *po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 
 if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
@@ -1380,7 +1380,7 @@ if (!gameStates.render.bShadowMaps) {
 
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.lights.ogl.nNearestSegLights [objP->segnum];
+pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
 	  gameData.render.shadows.nLight++, pnl++) {
@@ -1407,14 +1407,14 @@ return 1;
 //------------------------------------------------------------------------------
 
 bool G3DrawPolyModel (
-	object		*objP, 
+	tObject		*objP, 
 	void			*modelP, 
 	grs_bitmap	**modelBitmaps, 
-	vms_angvec	*pAnimAngles, 
+	vmsAngVec	*pAnimAngles, 
 	fix			xModelLight, 
 	fix			*xGlowValues, 
 	tRgbColorf	*objColorP,
-	tPOF_object *po)
+	tPOFObject *po)
 {
 	ubyte *p = modelP;
 	short	h;
@@ -1427,7 +1427,7 @@ if (bShadowTest > 1)
 #endif
 G3CheckAndSwap (modelP);
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && 
-	 objP && ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) && !po) {
+	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
 	po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
@@ -1441,7 +1441,7 @@ for (;;) {
 		int n = WORDVAL (p+2);
 
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->pVertNorms : NULL, n, 0);
-		p += n * sizeof (struct vms_vector) + 4;
+		p += n * sizeof (struct vmsVector) + 4;
 		break;
 		}
 	else if (h == OP_DEFP_START) {
@@ -1449,7 +1449,7 @@ for (;;) {
 		int s = WORDVAL (p+4);
 
 		RotatePointList (modelPointList, VECPTR (p+8), po ? po->pVertNorms : NULL, n, s);
-		p += n * sizeof (struct vms_vector) + 8;
+		p += n * sizeof (struct vmsVector) + 8;
 		}
 	else if (h == OP_FLATPOLY) {
 		int nv = WORDVAL (p+2);
@@ -1555,7 +1555,7 @@ for (;;) {
 		p+=36;
 		}
 	else if (h == OP_SUBCALL) {
-		vms_angvec *a;
+		vmsAngVec *a;
 
 		if (pAnimAngles)
 			a = pAnimAngles + WORDVAL (p+2);
@@ -1582,9 +1582,9 @@ int nest_count;
 #endif
 
 //------------------------------------------------------------------------------
-//alternate interpreter for morphing object
-bool G3DrawMorphingModel (void *modelP, grs_bitmap **modelBitmaps, vms_angvec *pAnimAngles, 
-								  fix xModelLight, vms_vector *new_points)
+//alternate interpreter for morphing tObject
+bool G3DrawMorphingModel (void *modelP, grs_bitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
+								  fix xModelLight, vmsVector *new_points)
 {
 	ubyte *p = modelP;
 	fix *xGlowValues = NULL;
@@ -1600,7 +1600,7 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			RotatePointList (modelPointList, new_points, NULL, n, 0);
-			p += n*sizeof (struct vms_vector) + 4;
+			p += n*sizeof (struct vmsVector) + 4;
 			break;
 			}
 
@@ -1608,7 +1608,7 @@ for (;;) {
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			RotatePointList (modelPointList, new_points, NULL, n, s);
-			p += n*sizeof (struct vms_vector) + 8;
+			p += n*sizeof (struct vmsVector) + 8;
 			break;
 			}
 
@@ -1690,7 +1690,7 @@ for (;;) {
 			}
 
 		case OP_SUBCALL: {
-			vms_angvec *a;
+			vmsAngVec *a;
 			if (pAnimAngles)
 				a = &pAnimAngles [WORDVAL (p+2)];
 			else
@@ -1724,13 +1724,13 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
-			p += n*sizeof (struct vms_vector) + 4;
+			p += n*sizeof (struct vmsVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			p += n*sizeof (struct vms_vector) + 8;
+			p += n*sizeof (struct vmsVector) + 8;
 			break;
 			}
 

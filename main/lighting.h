@@ -28,8 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * optimizations.
  *
  * Revision 1.5  1994/06/07  16:51:58  matt
- * Made object lighting work correctly; changed name of Ambient_light to
- * Dynamic_light; cleaned up polygobj object rendering a little.
+ * Made tObject lighting work correctly; changed name of Ambient_light to
+ * Dynamic_light; cleaned up polygobj tObject rendering a little.
  *
  * Revision 1.4  1994/05/31  18:41:35  matt
  * Added comments
@@ -65,30 +65,30 @@ extern void SetDynamicLight(void);
 //  point - the 3d coords of the point
 //  face_light - a scale factor derived from the surface normal of the face
 // If no surface normal effect is wanted, pass F1_0 for face_light
-fix compute_headlight_light(vms_vector *point,fix face_light);
+fix compute_headlight_light(vmsVector *point,fix face_light);
 
-// compute the average dynamic light in a segment.  Takes the segment number
-fix compute_seg_dynamic_light(int segnum);
+// compute the average dynamic light in a tSegment.  Takes the tSegment number
+fix compute_seg_dynamic_light(int nSegment);
 
-// compute the lighting for an object.  Takes a pointer to the object,
+// compute the lighting for an tObject.  Takes a pointer to the tObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
-// object's center point is rotated.
-fix ComputeObjectLight(object *obj,vms_vector *rotated_pnt);
-void ComputeEngineGlow (object *obj, fix *engine_glow_value);
+// tObject's center point is rotated.
+fix ComputeObjectLight(tObject *obj,vmsVector *rotated_pnt);
+void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
 // turn headlight boost on & off
 void toggle_headlight_active(void);
 
 // returns ptr to flickering light structure, or NULL if can't find
-flickering_light *FindFlicker(int segnum, int sidenum);
+flickering_light *FindFlicker(int nSegment, int nSide);
 
 // turn flickering off (because light has been turned off)
-void DisableFlicker(int segnum, int sidenum);
+void DisableFlicker(int nSegment, int nSide);
 
 // turn flickering off (because light has been turned on)
-void EnableFlicker(int segnum, int sidenum);
+void EnableFlicker(int nSegment, int nSide);
 
 // returns 1 if ok, 0 if error
-int AddFlicker(int segnum, int sidenum, fix delay, unsigned long mask);
+int AddFlicker(int nSegment, int nSide, fix delay, unsigned long mask);
 
 void ReadFlickeringLight(flickering_light *fl, CFILE *fp);
 
@@ -110,6 +110,6 @@ void SetNearestStaticLights (int nSegment, ubyte nType);
 void SetNearestDynamicLights (int nSegment);
 void ComputeStaticOglLighting (void);
 void InitLightingShaders (void);
-tFaceColor *AvgSgmColor (int nSegment, vms_vector *vPos);
+tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 
 #endif /* _LIGHTING_H */

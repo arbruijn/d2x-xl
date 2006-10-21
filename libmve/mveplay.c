@@ -89,7 +89,7 @@ static unsigned int unhandled_chunks[32*256];
 static int default_seg_handler(unsigned char major, unsigned char minor, unsigned char *data, int len, void *context)
 {
 	unhandled_chunks[major<<8|minor]++;
-	//fprintf(stderr, "unknown chunk type %02x/%02x\n", major, minor);
+	//fprintf(stderr, "unknown chunk nType %02x/%02x\n", major, minor);
 	return 1;
 }
 
@@ -147,7 +147,7 @@ int gettimeofday(struct timeval *tv, void *tz)
 #endif
 
 
-static int create_timer_handler(unsigned char major, unsigned char minor, unsigned char *data, int len, void *context)
+static int createTimer_handler(unsigned char major, unsigned char minor, unsigned char *data, int len, void *context)
 {
 
 #ifndef _WIN32 //FIXME
@@ -194,7 +194,7 @@ static void timer_start(void)
 	timer_started=1;
 }
 
-static void do_timer_wait(void)
+static void doTimer_wait(void)
 {
 	int nsec=0;
 	struct timespec ts;
@@ -658,7 +658,7 @@ int MVE_rmPrepMovie(void *src, int x, int y, int track)
 
 	mve_set_handler(mve, MVE_OPCODE_ENDOFSTREAM, end_movie_handler);
 	mve_set_handler(mve, MVE_OPCODE_ENDOFCHUNK, end_chunk_handler);
-	mve_set_handler(mve, MVE_OPCODE_CREATETIMER, create_timer_handler);
+	mve_set_handler(mve, MVE_OPCODE_CREATETIMER, createTimer_handler);
 	mve_set_handler(mve, MVE_OPCODE_INITAUDIOBUFFERS, create_audiobuf_handler);
 	mve_set_handler(mve, MVE_OPCODE_STARTSTOPAUDIO, play_audio_handler);
 	mve_set_handler(mve, MVE_OPCODE_INITVIDEOBUFFERS, create_videobuf_handler);
@@ -694,7 +694,7 @@ void MVE_getVideoSpec(MVE_videoSpec *vSpec)
 
 int MVE_rmStepMovie()
 {
-	static int init_timer=0;
+	static int initTimer=0;
 	int cont=1;
 
 	if (!timer_started)
@@ -703,12 +703,12 @@ int MVE_rmStepMovie()
 	while (cont && !g_frameUpdated) // make a "step" be a frame, not a chunk...
 		cont = mve_play_next_chunk(mve);
 	g_frameUpdated = 0;
-	if (micro_frame_delay  && !init_timer) {
+	if (micro_frame_delay  && !initTimer) {
 		timer_start();
-		init_timer = 1;
+		initTimer = 1;
 	}
 
-	do_timer_wait();
+	doTimer_wait();
 
 	if (cont)
 		return 0;

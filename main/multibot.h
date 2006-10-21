@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Ooops.. fixed a bug..
  *
  * Revision 1.7  1994/12/29  12:51:38  rob
- * ADded proto for multi_robot_explode_sub
+ * ADded proto for multiRobot_explode_sub
  *
  * Revision 1.6  1994/12/21  21:08:32  rob
  * Added new functions for robot firing.
@@ -97,13 +97,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _MULTIBOT_H
 #define _MULTIBOT_H
 
-int MultiCanRemoveRobot(int objnum, int agitation);
-void MultiSendRobotPosition(int objnum, int fired);
-void MultiSendRobotFire(int objnum, int gun_num, vms_vector *fire);
-void MultiSendClaimRobot(int objnum);
+int MultiCanRemoveRobot(int nObject, int agitation);
+void MultiSendRobotPosition(int nObject, int fired);
+void MultiSendRobotFire(int nObject, int gun_num, vmsVector *fire);
+void MultiSendClaimRobot(int nObject);
 void MultiSendRobotExplode(int,int,char);
-void MultiSendCreateRobot(int robotcen, int objnum, int type);
-void MultiSendBossActions(int bossobjnum, int action, int secondary, int objnum);
+void MultiSendCreateRobot(int robotcen, int nObject, int nType);
+void MultiSendBossActions(int bossobjnum, int action, int secondary, int nObject);
 int MultiSendRobotFrame(int sent);
 
 void MultiDoRobotExplode(char *buf);
@@ -117,12 +117,12 @@ void MultiDoCreateRobotPowerups(char *buf);
 
 int MultiExplodeRobotSub(int botnum, int killer,char);
 
-void MultiDropRobotPowerups(int objnum);
+void MultiDropRobotPowerups(int nObject);
 void MultiDumpRobots(void);
 
 void MultiStripRobots(int playernum);
 void MultiCheckRobotTimeout(void);
 
-void MultiRobotRequestChange(object *robot, int playernum);
+void MultiRobotRequestChange(tObject *robot, int playernum);
 
 #endif /* _MULTIBOT_H */

@@ -124,13 +124,13 @@ int gr_wait_for_retrace = 1;
 void GrShowCanvas( grs_canvas *canv )
 {
 #ifdef __DJGPP__
-	if (canv->cv_bitmap.bm_props.type == BM_MODEX )
+	if (canv->cv_bitmap.bm_props.nType == BM_MODEX )
 		gr_modex_setstart( canv->cv_bitmap.bm_props.x, canv->cv_bitmap.bm_props.y, gr_wait_for_retrace );
 
-	else if (canv->cv_bitmap.bm_props.type == BM_SVGA )
+	else if (canv->cv_bitmap.bm_props.nType == BM_SVGA )
 		gr_vesa_setstart( canv->cv_bitmap.bm_props.x, canv->cv_bitmap.bm_props.y );
 #endif
-		//	else if (canv->cv_bitmap.bm_props.type == BM_LINEAR )
+		//	else if (canv->cv_bitmap.bm_props.nType == BM_LINEAR )
 		// Int3();		// Get JOHN!
 		//gr_linear_movsd( canv->cv_bitmap.bm_texBuf, (void *)gr_video_memory, 320*200);
 }

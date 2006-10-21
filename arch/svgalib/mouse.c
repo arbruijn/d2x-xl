@@ -119,15 +119,15 @@ mouse_set_limits( int x1, int y1, int x2, int y2 )
 void mouse_flush()	// clears all mice events...
 {
  int i;
- fix current_time;
+ fix currentTime;
 
  event_poll();
 
- current_time = TimerGetFixedSeconds();
+ currentTime = TimerGetFixedSeconds();
  for (i=0; i<MOUSE_MAX_BUTTONS; i++)
  {
    Mouse.buttons[i].pressed=0;
-   Mouse.buttons[i].time_went_down=current_time;
+   Mouse.buttons[i].time_went_down=currentTime;
    Mouse.buttons[i].time_held_down=0;
    Mouse.buttons[i].num_ups=0;
    Mouse.buttons[i].num_downs=0;

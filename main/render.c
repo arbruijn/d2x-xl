@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made stereo mode only record 1 eye in demo.
  *
  * Revision 2.4  1995/03/20  18:15:53  john
- * Added code to not store the normals in the segment structure.
+ * Added code to not store the normals in the tSegment structure.
  *
  * Revision 2.3  1995/03/13  16:11:05  john
  * Maybe fixed bug that lighting didn't work with vr helmets.
@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.252  1995/02/22  13:49:38  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.251  1995/02/11  15:07:26  matt
  * Took out code which was mostly intended as part of a larger renderer
@@ -112,17 +112,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added floating reticle for VR helments.
  *
  * Revision 1.238  1994/12/13  14:07:50  matt
- * Fixed tmap_num2 bug in search mode
+ * Fixed nOvlTex bug in search mode
  *
  * Revision 1.237  1994/12/11  00:45:53  matt
- * Fixed problem when object sort buffer got full
+ * Fixed problem when tObject sort buffer got full
  *
  * Revision 1.236  1994/12/09  18:46:06  matt
  * Added a little debugging
  *
  * Revision 1.235  1994/12/09  14:59:16  matt
- * Added system to attach a fireball to another object for rendering purposes,
- * so the fireball always renders on top of (after) the object.
+ * Added system to attach a fireball to another tObject for rendering purposes,
+ * so the fireball always renders on top of (after) the tObject.
  *
  * Revision 1.234  1994/12/08  15:46:54  matt
  * Fixed buffer overflow that caused seg depth screwup
@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed an assert to an int3 & return
  *
  * Revision 1.230  1994/12/04  17:28:04  matt
- * Got rid of unused no_render_flag array, and took out box clear when searching
+ * Got rid of unused no_renderFlag array, and took out box clear when searching
  *
  * Revision 1.229  1994/12/04  15:51:14  matt
  * Fixed linear tmap transition for gameData.objs.objects
@@ -168,7 +168,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made changes for new //con_printf calling convention
  *
  * Revision 1.220  1994/11/20  15:58:55  matt
- * Don't migrate the control center, since it doesn't move out of its segment
+ * Don't migrate the control center, since it doesn't move out of its tSegment
  *
  * Revision 1.219  1994/11/19  23:54:36  mike
  * change window colors.
@@ -219,7 +219,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * forward.
  *
  * Revision 1.204  1994/10/05  16:07:38  mike
- * Don't detriangulate sides if in player's segment.  Prevents player going behind a wall,
+ * Don't detriangulate sides if in player's tSegment.  Prevents player going behind a wall,
  * though there are cases in which it would be ok to detriangulate these.
  *
  * Revision 1.203  1994/10/03  12:44:05  matt
@@ -229,20 +229,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Zoom stuff back in, but ifdef'd it out.
  *
  * Revision 1.201  1994/09/25  23:41:49  matt
- * Changed the object load & save code to read/write the structure fields one
+ * Changed the tObject load & save code to read/write the structure fields one
  * at a time (rather than the whole structure at once).  This mean that the
- * object structure can be changed without breaking the load/save functions.
- * As a result of this change, the local_object data can be and has been
- * incorporated into the object array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the object structure has been otherwise cleaned up.
+ * tObject structure can be changed without breaking the load/save functions.
+ * As a result of this change, the localObject data can be and has been
+ * incorporated into the tObject array.  Also, timeleft is now a property
+ * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
  *
  * Revision 1.200  1994/09/25  15:50:10  mike
  * Integrate my debug changes which shows how many textures were rendered
  * this frame.
  *
  * Revision 1.199  1994/09/25  15:45:22  matt
- * Added OBJ_LIGHT, a type of object that casts light
- * Added generalized lifeleft, and moved it to local_object
+ * Added OBJ_LIGHT, a nType of tObject that casts light
+ * Added generalized lifeleft, and moved it to localObject
  *
  * Revision 1.198  1994/09/15  21:23:32  matt
  * Changed system to keep track of whether & what cockpit is up
@@ -291,7 +291,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.184  1994/08/04  00:21:14  matt
  * Cleaned up fvi & physics error handling; put in code to make sure gameData.objs.objects
- * are in correct segment; simplified segment finding for gameData.objs.objects and points
+ * are in correct tSegment; simplified tSegment finding for gameData.objs.objects and points
  *
  * Revision 1.183  1994/08/02  19:04:28  matt
  * Cleaned up vertex list functions
@@ -304,7 +304,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * the editor
  *
  * Revision 1.180  1994/07/29  10:04:34  mike
- * Update Cursegp when an object is selected.
+ * Update Cursegp when an tObject is selected.
  *
  * Revision 1.179  1994/07/25  00:02:50  matt
  * Various changes to accomodate new 3d, which no longer takes point numbers
@@ -314,7 +314,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added angles for player head
  *
  * Revision 1.177  1994/07/20  19:08:07  matt
- * If in editor, don't move eye from center of viewer object
+ * If in editor, don't move eye from center of viewer tObject
  *
  *
  */
@@ -379,7 +379,7 @@ extern tRgbColorf globalDynColor;
 extern char bGotGlobalDynColor;
 char bUseGlobalColor = 0;
 
-#define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in segment of occurence (of light emission)
+#define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in tSegment of occurence (of light emission)
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -398,7 +398,7 @@ int nRotatedLast [MAX_VERTICES];
 
 // When any render function needs to know what's looking at it, it should 
 // access gameData.objs.viewer members.
-vms_vector viewerEye;  //valid during render
+vmsVector viewerEye;  //valid during render
 
 int	nRenderSegs;
 static int renderState = -1;
@@ -424,7 +424,7 @@ fix	Face_reflectivity = (F1_0/2);
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
-int bSearchMode = 0;			//true if looking for curseg,side,face
+int bSearchMode = 0;			//true if looking for curseg,tSide,face
 short _search_x,_search_y;	//pixel we're looking at
 int found_seg,found_side,found_face,found_poly;
 #else
@@ -455,7 +455,7 @@ void DrawOutline (int nv, g3s_point **pointlist)
 	int i;
 	GLint depthFunc; 
 	g3s_point center, normal;
-	vms_vector n;
+	vmsVector n;
 	fVector3 *nf;
 
 #if 1 //def RELEASE
@@ -515,7 +515,7 @@ void Draw3DReticle (fix nEyeOffset)
 	uvl			uvl [4];
 	g3s_point	*pointlist [4];
 	int 			i;
-	vms_vector	v1, v2;
+	vmsVector	v1, v2;
 	grs_canvas	*saved_canvas;
 	int			saved_interp_method;
 
@@ -612,17 +612,17 @@ else {
 
 // ----------------------------------------------------------------------------
 //	Render a face.
-//	It would be nice to not have to pass in segnum and sidenum, but
+//	It would be nice to not have to pass in nSegment and nSide, but
 //	they are used for our hideously hacked in headlight system.
 //	vp is a pointer to vertex ids.
 //	tmap1, tmap2 are texture map ids.  tmap2 is the pasty one.
 
-int RenderColoredSegment (int segnum, int sidenum, int nv, g3s_point **pointlist)
+int RenderColoredSegment (int nSegment, int nSide, int nv, g3s_point **pointlist)
 {
-	short csegnum = gameData.segs.segments [segnum].children [sidenum];
+	short csegnum = gameData.segs.segments [nSegment].children [nSide];
 	int	funcRes = 1;
-	int	owner = gameData.segs.xSegments [segnum].owner;
-	int	special = gameData.segs.segment2s [segnum].special;
+	int	owner = gameData.segs.xSegments [nSegment].owner;
+	int	special = gameData.segs.segment2s [nSegment].special;
 
 gameStates.render.grAlpha = 6;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (owner > 0)) {
@@ -651,13 +651,13 @@ return funcRes;
 
 typedef struct tFaceProps {
 	short			segNum, sideNum;
-	short			tMap1, tMap2;
+	short			nBaseTex, nOvlTex, nOvlOrient;
 	uvl			uvls [4];
 	short			vp [4];
 #if LIGHTMAPS
 	uvl			uvl_lMaps [4];
 #endif
-	vms_vector	vNormal;
+	vmsVector	vNormal;
 	ubyte			nv;
 	ubyte			widFlags;
 	char			renderState;
@@ -715,7 +715,7 @@ if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) {
 else
 	memset (vertColors, 0, sizeof (vertColors));
 #else
-	tFaceColor *colorP = gameData.render.color.sides [segnum] + sidenum;
+	tFaceColor *colorP = gameData.render.color.sides [nSegment] + nSide;
 	if (colorP->index)
 		lightColor = *colorP;
 	else
@@ -851,7 +851,7 @@ return 1;
 
 static int IsLava (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
 return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 }
@@ -860,7 +860,7 @@ return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 
 static int IsWater (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
 return ((nTexture >= 399) && (nTexture <= 403));
 }
@@ -869,7 +869,7 @@ return ((nTexture >= 399) && (nTexture <= 403));
 
 static int IsWaterOrLava (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
 return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 }
@@ -878,7 +878,7 @@ return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 
 static int IsTransparent (tFaceProps *propsP)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].tmap_num;
+	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
 return (nTexture == 378) || 
 		 (nTexture == 353) || 
@@ -897,7 +897,7 @@ if (IS_WALL (nWallNum)) {
 	if (propsP->widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
 		if (!bIsMonitor) {
 			if (!RenderColoredSegment (propsP->segNum, propsP->sideNum, propsP->nv, pointlist)) {
-				c = gameData.walls.walls [nWallNum].cloak_value;
+				c = gameData.walls.walls [nWallNum].cloakValue;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < GR_ACTUAL_FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
@@ -922,7 +922,7 @@ if (IS_WALL (nWallNum)) {
 			}
 		}
 	else if (gameStates.app.bD2XLevel) {
-		c = gameData.walls.walls [nWallNum].cloak_value;
+		c = gameData.walls.walls [nWallNum].cloakValue;
 		if (c && (c < GR_ACTUAL_FADE_LEVELS))
 			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
 		}
@@ -948,7 +948,7 @@ void RenderFace (tFaceProps *propsP, int offs, int bRender)
 {
 	tFaceProps	props;
 
-if (propsP->tMap1 < 0)
+if (propsP->nBaseTex < 0)
 	return;
 #if 1
 props = *propsP;
@@ -957,8 +957,9 @@ memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
 #else
 props.segNum = propsP->segNum;
 props.sideNum = propsP->sideNum;
-props.tMap1 = propsP->tMap1;
-props.tMap2 = propsP->tMap2;
+props.nBaseTex = propsP->nBaseTex;
+props.nOvlTex = propsP->nOvlTex;
+props.nOvlOrient = propsP->nOvlOrient;
 props.nv = propsP->nv;
 memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
 memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
@@ -991,8 +992,8 @@ if (!bRender)
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
 	g3s_point	*pointlist [8];
-	segment		*segP = gameData.segs.segments + props.segNum;
-	side			*sideP = segP->sides + props.sideNum;
+	tSegment		*segP = gameData.segs.segments + props.segNum;
+	tSide			*sideP = segP->sides + props.sideNum;
 	tCamera		*pc = NULL;
 
 Assert(props.nv <= 4);
@@ -1040,35 +1041,35 @@ Assert(props.nv <= 4);
 	if (RenderWall (&props, pointlist, bIsMonitor))
 		return;
 	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->orient.fvec,norm);
-	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, sidenum) == WID_NO_WALL)
-		if (props.tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
+	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
+		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 #if TRACE	
 			//con_printf (CON_DEBUG,"Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n",tmap1,gameData.pig.tex.nTextures);
 #endif
 #ifndef RELEASE
 			Int3();
 #endif
-		sideP->tmap_num = 0;
+		sideP->nBaseTex = 0;
 		}
 	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
 		if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 
-			bmBot = LoadFaceBitmap (props.tMap1, sideP->frame_num);
-			if (props.tMap2)
-				bmTop = LoadFaceBitmap ((short) (props.tMap2 & 0x3fff), sideP->frame_num);
+			bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
+			if (props.nOvlTex)
+				bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
 			}
 		else
 			// New code for overlapping textures...
-			if (props.tMap2 != 0) {
-				bmBot = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
+			if (props.nOvlTex != 0) {
+				bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
 #ifdef _DEBUG
 				if (!bmBot)
-					bmBot = TexMergeGetCachedBitmap (props.tMap1, props.tMap2);
+					bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
 #endif
 				}
 			else {
-				bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.tMap1].index;
-				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.tMap1], gameStates.app.bD1Mission);
+				bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.nBaseTex].index;
+				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.nBaseTex], gameStates.app.bD1Mission);
 				}
 //		Assert(!(bmBot->bm_props.flags & BM_FLAG_PAGED_OUT));
 		}
@@ -1085,14 +1086,14 @@ Assert(props.nv <= 4);
 			gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
 #endif
 			}
-		else if (gameOpts->render.cameras.bFitToWall || (props.tMap2 > 0))
+		else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
 			bmBot = &pc->texBuf;
 		else
 			bmTop = &pc->texBuf;
 		}
 	SetFaceLight (&props);
 #ifdef EDITOR
-	if (Render_only_bottom && (sidenum == WBOTTOM))
+	if (Render_only_bottom && (nSide == WBOTTOM))
 		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index,1);
 	else
 #endif
@@ -1110,8 +1111,8 @@ Assert(props.nv <= 4);
 			lightMaps + props.segNum * 6 + props.sideNum, 
 #endif
 			&props.vNormal,
-			(props.tMap2 >> 14) & 3, 
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor || (bmBot->bm_props.flags & BM_FLAG_TGA))); //((tmap2&0xC000)>>14) & 3);
+			props.nOvlOrient, 
+			!bIsMonitor || bIsTeleCam); 
 	else
 #endif
 #if LIGHTMAPS == 0
@@ -1121,7 +1122,7 @@ Assert(props.nv <= 4);
 			props.uvls, 
 			bmBot, 
 			&props.vNormal,
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
+			!bIsMonitor || bIsTeleCam); 
 #else
 		G3DrawTexPolyMulti (
 			props.nv,
@@ -1138,8 +1139,8 @@ Assert(props.nv <= 4);
 		}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #ifdef OGL
-		// render the segment the player is in with a transparent color if it is a water or lava segment
-		//if (segnum == gameData.objs.objects->segnum) 
+		// render the tSegment the player is in with a transparent color if it is a water or lava tSegment
+		//if (nSegment == gameData.objs.objects->nSegment) 
 # ifdef OGL_ZBUF
 	if (gameOpts->legacy.bZBuf && !gameOpts->legacy.bRender)
 # endif
@@ -1156,10 +1157,10 @@ drawWireFrame:
 else {
 	tFaceListEntry	*flp = faceList + nFaceListSize;
 #if APPEND_LAYERED_TEXTURES
-	short				t = props.tMap1;
-	if (!props.tMap2 || (faceListRoots [props.tMap1] < 0)) {
+	short				t = props.nBaseTex;
+	if (!props.nOvlTex || (faceListRoots [props.nBaseTex] < 0)) {
 #else
-	short				t = props.tMap2 ? props.tMap2 & 0x3fff : props.tMap1;
+	short				t = props.nOvlTex ? props.nOvlTex : props.nBaseTex;
 #endif
 		flp->nextFace = faceListRoots [t];
 		if (faceListTails [t] < 0)
@@ -1183,7 +1184,7 @@ else {
 // ----------------------------------------------------------------------------
 //	Only called if editor active.
 //	Used to determine which face was clicked on.
-void CheckFace(int segnum, int sidenum, int facenum, int nv, short *vp, int tmap1, int tmap2, uvl *uvlp)
+void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap1, int tmap2, uvl *uvlp)
 {
 	int	i;
 
@@ -1194,7 +1195,7 @@ void CheckFace(int segnum, int sidenum, int facenum, int nv, short *vp, int tmap
 		g3s_point *pointlist [4];
 
 		if (tmap2 > 0 )
-			bm = TexMergeGetCachedBitmap( tmap1, tmap2 );
+			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient );
 		else
 			bm = gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [tmap1].index;
 
@@ -1213,8 +1214,8 @@ void CheckFace(int segnum, int sidenum, int facenum, int nv, short *vp, int tmap
  gameStates.render.nLighting = save_lighting;
 
 		if (gr_ugpixel(&grdCurCanv->cv_bitmap,_search_x,_search_y) == 1) {
-			found_seg = segnum;
-			found_side = sidenum;
+			found_seg = nSegment;
+			found_side = nSide;
 			found_face = facenum;
 		}
 	}
@@ -1225,27 +1226,27 @@ fix	Tulate_min_dot = (F1_0/4);
 //--unused-- fix	Tulate_min_ratio = (2*F1_0);
 fix	Min_n0_n1_dot	= (F1_0*15/16);
 
-extern int contains_flare(segment *segP, int sidenum);
+extern int contains_flare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
 
 // -----------------------------------------------------------------------------------
-//	Render a side.
-//	Check for normal facing.  If so, render faces on side dictated by sideP->type.
+//	Render a tSide.
+//	Check for normal facing.  If so, render faces on tSide dictated by sideP->nType.
 
 #undef LMAP_LIGHTADJUST
 #define LMAP_LIGHTADJUST 0
 
-void RenderSide (segment *segP, short sidenum)
+void RenderSide (tSegment *segP, short nSide)
 {
 //	short			props.vp [4];
-//	short			segnum = SEG_IDX (segP);
-	side			*sideP = segP->sides + sidenum;
-	vms_vector	tvec;
+//	short			nSegment = SEG_IDX (segP);
+	tSide			*sideP = segP->sides + nSide;
+	vmsVector	tvec;
 	fix			v_dot_n0, v_dot_n1;
 //	uvl			temp_uvls [4];
 	fix			min_dot, max_dot;
-	vms_vector  normals [2];
-//	ubyte			wid_flags = WALL_IS_DOORWAY (segP, sidenum, NULL);
+	vmsVector  normals [2];
+//	ubyte			widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
 	int			bDoLightMaps = gameStates.render.color.bLightMapsOk && 
 										gameOpts->render.color.bUseLightMaps && 
 										gameOpts->render.color.bAmbientLight && 
@@ -1264,7 +1265,7 @@ void RenderSide (segment *segP, short sidenum)
 #endif
 
 	props.segNum = SEG_IDX (segP);
-	props.sideNum = sidenum;
+	props.sideNum = nSide;
 	props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
 	if (!(gameOpts->render.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
 		return;
@@ -1310,13 +1311,14 @@ if (bDoLightMaps) {
 	props.uvl_lMaps [3].v = fl2f (1-h);
 	}
 #endif
-props.tMap1 = sideP->tmap_num;
-props.tMap2 = sideP->tmap_num2;
+props.nBaseTex = sideP->nBaseTex;
+props.nOvlTex = sideP->nOvlTex;
+props.nOvlOrient = sideP->nOvlOrient;
 
 	//	========== Mark: Here is the change...beginning here: ==========
 
 GetSideVerts (props.vp, props.segNum, props.sideNum);
-if (sideP->type == SIDE_IS_QUAD) {
+if (sideP->nType == SIDE_IS_QUAD) {
 	VmVecSub (&tvec, &viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
 	v_dot_n0 = VmVecDot (&tvec, normals);
 	if (v_dot_n0 < 0)
@@ -1334,18 +1336,18 @@ if (sideP->type == SIDE_IS_QUAD) {
 	props.vNormal = normals [0];
 	RenderFace (&props, 0, 0);
 #ifdef EDITOR
-	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 	} 
 else {
-	//	Regardless of whether this side is comprised of a single quad, or two triangles, we need to know one normal, so
+	//	Regardless of whether this tSide is comprised of a single quad, or two triangles, we need to know one normal, so
 	//	deal with it, get the dot product.
-	VmVecNormalizedDirQuick (&tvec, &viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][sideP->type == SIDE_IS_TRI_13]]);
+	VmVecNormalizedDirQuick (&tvec, &viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][sideP->nType == SIDE_IS_TRI_13]]);
 	v_dot_n0 = VmVecDot (&tvec, normals);
 
 	//	========== Mark: The change ends here. ==========
 
-	//	Although this side has been triangulated, because it is not planar, see if it is acceptable
+	//	Although this tSide has been triangulated, because it is not planar, see if it is acceptable
 	//	to render it as a single quadrilateral.  This is a function of how far away the viewer is, how non-planar
 	//	the face is, how normal to the surfaces the view is.
 	//	Now, if both dot products are close to 1.0, then render two triangles as a single quad.
@@ -1359,8 +1361,8 @@ else {
 		min_dot = v_dot_n1;
 		max_dot = v_dot_n0;
 		}
-	//	Determine whether to detriangulate side: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
-	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->segnum != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
+	//	Determine whether to detriangulate tSide: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
+	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
 		//	The other detriangulation code doesn't deal well with badly non-planar sides.
 		fix	n0_dot_n1 = VmVecDot(normals, normals + 1);
 		if (n0_dot_n1 < Min_n0_n1_dot)
@@ -1379,7 +1381,7 @@ else {
 			props.vNormal = normals [0];
 			RenderFace (&props, 0, 0);
 #ifdef EDITOR
-			CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+			CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 			}
 		}
@@ -1388,7 +1390,7 @@ else {
 		{
 im_so_ashamed: ;
 		props.nv = 3;
-		if (sideP->type == SIDE_IS_TRI_02) {
+		if (sideP->nType == SIDE_IS_TRI_02) {
 			if (v_dot_n0 >= 0) {
 				memcpy (props.uvls, sideP->uvls, sizeof (uvl) * 3);
 #if LIGHTMAPS
@@ -1402,7 +1404,7 @@ im_so_ashamed: ;
 				props.vNormal = normals [0];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 				}
 
@@ -1419,15 +1421,15 @@ im_so_ashamed: ;
 					}
 #endif
 				props.vp [1] = props.vp [2];	
-				props.vp [2] = props.vp [3];	// want to render from vertices 0, 2, 3 on side
+				props.vp [2] = props.vp [3];	// want to render from vertices 0, 2, 3 on tSide
 				props.vNormal = normals [1];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 				}
 			}
-		else if (sideP->type == SIDE_IS_TRI_13) {
+		else if (sideP->nType == SIDE_IS_TRI_13) {
 			if (v_dot_n1 >= 0) {
 				memcpy (props.uvls + 1, sideP->uvls + 1, sizeof (uvl) * 3);
 #if LIGHTMAPS
@@ -1441,7 +1443,7 @@ im_so_ashamed: ;
 				props.vNormal = normals [0];
 				RenderFace (&props, 1, 0);
 #ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 				}
 
@@ -1463,12 +1465,12 @@ im_so_ashamed: ;
 				props.vNormal = normals [1];
 				RenderFace (&props, 0, 0);
 #ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->tmap_num, sideP->tmap_num2, sideP->uvls);
+				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 				}
 			}
 		else {
-			Error("Illegal side type in RenderSide, type = %i, segment # = %i, side # = %i\n", sideP->type, SEG_IDX (segP), props.sideNum);
+			Error("Illegal tSide nType in RenderSide, nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
 			return;
 			}
 		}
@@ -1478,13 +1480,13 @@ im_so_ashamed: ;
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
-void render_object_search(object *objP)
+void renderObject_search(tObject *objP)
 {
 	int changed=0;
 
-	//note that we draw each pixel object twice, since we cannot control
-	//what color the object draws in, so we try color 0, then color 1,
-	//in case the object itself is rendering color 0
+	//note that we draw each pixel tObject twice, since we cannot control
+	//what color the tObject draws in, so we try color 0, then color 1,
+	//in case the tObject itself is rendering color 0
 
 	GrSetColor(0);
 	gr_pixel(_search_x,_search_y);	//set our search pixel to color zero
@@ -1499,8 +1501,8 @@ void render_object_search(object *objP)
 		changed=1;
 
 	if (changed) {
-		if (objP->segnum != -1)
-			Cursegp = gameData.segs.segments+objP->segnum;
+		if (objP->nSegment != -1)
+			Cursegp = gameData.segs.segments+objP->nSegment;
 		found_seg = -(OBJ_IDX (objP)+1);
 	}
 }
@@ -1509,13 +1511,13 @@ void render_object_search(object *objP)
 //------------------------------------------------------------------------------
 
 extern ubyte DemoDoingRight,DemoDoingLeft;
-void DoRenderObject(int objnum, int nWindowNum)
+void DoRenderObject(int nObject, int nWindowNum)
 {
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
-	object *objP = gameData.objs.objects+objnum, *hObj;
-	window_rendered_data *wrd = Window_rendered_data + nWindowNum;
+	tObject *objP = gameData.objs.objects+nObject, *hObj;
+	tWindowRenderedData *wrd = windowRenderedData + nWindowNum;
 	int count = 0;
 	int n;
 
@@ -1531,16 +1533,16 @@ if (!gameOpts->legacy.bZBuf) {
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 #endif
-	Assert(objnum < MAX_OBJECTS);
+	Assert(nObject < MAX_OBJECTS);
 #ifdef _DEBUG
-	if (bObjectRendered [objnum]) {		//already rendered this...
+	if (bObjectRendered [nObject]) {		//already rendered this...
 		Int3();		//get Matt!!!
 		return;
 	}
-	bObjectRendered [objnum] = 1;
+	bObjectRendered [nObject] = 1;
 #endif
    if (gameData.demo.nState==ND_STATE_PLAYBACK) {
-	  if ((DemoDoingLeft==6 || DemoDoingRight==6) && objP->type==OBJ_PLAYER) {
+	  if ((DemoDoingLeft==6 || DemoDoingRight==6) && objP->nType==OBJ_PLAYER) {
 			// A nice fat hack: keeps the player ship from showing up in the
 			// small extra view when guiding a missile in the big window
 #if TRACE	
@@ -1552,44 +1554,44 @@ if (!gameOpts->legacy.bZBuf) {
 	//	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
 	//	that the guided missile system will know what gameData.objs.objects to look at.
 	//	I didn't know we had guided missiles before the release of D1. --MK
-	if ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) {
-		//Assert(Window_rendered_data [nWindowNum].rendered_objects < MAX_RENDERED_OBJECTS);
+	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
+		//Assert(windowRenderedData [nWindowNum].renderedObjects < MAX_RENDERED_OBJECTS);
 		//	This peculiar piece of code makes us keep track of the most recently rendered gameData.objs.objects, which
 		//	are probably the higher priority gameData.objs.objects, without overflowing the buffer
-		if (wrd->num_objects >= MAX_RENDERED_OBJECTS) {
+		if (wrd->numObjects >= MAX_RENDERED_OBJECTS) {
 			Int3();
-			wrd->num_objects /= 2;
+			wrd->numObjects /= 2;
 		}
-		wrd->rendered_objects [wrd->num_objects++] = objnum;
+		wrd->renderedObjects [wrd->numObjects++] = nObject;
 	}
-	if ((count++ > MAX_OBJECTS) || (objP->next == objnum)) {
+	if ((count++ > MAX_OBJECTS) || (objP->next == nObject)) {
 		Int3();					// infinite loop detected
 		objP->next = -1;		// won't this clean things up?
 		return;					// get out of this infinite loop!
 	}
-	//g3_draw_object(objP->class_id,&objP->pos,&objP->orient,objP->size);
-	//check for editor object
+	//g3_drawObject(objP->class_id,&objP->pos,&objP->orient,objP->size);
+	//check for editor tObject
 #ifdef EDITOR
-	if (gameStates.app.nFunctionMode==FMODE_EDITOR && objnum==Cur_object_index) {
+	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index) {
 		save_3d_outline = g3d_interp_outline;
 		g3d_interp_outline=1;
 	}
 	if (bSearchMode)
-		render_object_search(objP);
+		renderObject_search(objP);
 	else
 #endif
 		//NOTE LINK TO ABOVE
 		RenderObject(objP, nWindowNum);
 
-	for (n=objP->attached_obj; n != -1; n = hObj->ctype.expl_info.next_attach) {
+	for (n=objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
 		hObj = gameData.objs.objects + n;
-		Assert(hObj->type == OBJ_FIREBALL);
-		Assert(hObj->control_type == CT_EXPLOSION);
+		Assert(hObj->nType == OBJ_FIREBALL);
+		Assert(hObj->controlType == CT_EXPLOSION);
 		Assert(hObj->flags & OF_ATTACHED);
 		RenderObject(hObj, nWindowNum);
 	}
 #ifdef EDITOR
-	if (gameStates.app.nFunctionMode==FMODE_EDITOR && objnum==Cur_object_index)
+	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index)
 		g3d_interp_outline = save_3d_outline;
 #endif
 }
@@ -1599,7 +1601,7 @@ if (!gameOpts->legacy.bZBuf) {
 #ifdef _DEBUG
 int	bDrawBoxes=0;
 int bWindowCheck=1,draw_edges=0,bNewSegSorting=1,bPreDrawSegs=0;
-int no_migrate_segs=1,migrate_objects=1,bCheckBehind=1;
+int no_migrate_segs=1,migrateObjects=1,bCheckBehind=1;
 int check_bWindowCheck=0;
 #else
 #define bDrawBoxes			0
@@ -1608,7 +1610,7 @@ int check_bWindowCheck=0;
 #define bNewSegSorting		1
 #define bPreDrawSegs		0
 #define no_migrate_segs		1
-#define migrate_objects		1
+#define migrateObjects		1
 #define bCheckBehind			1
 #define check_bWindowCheck	0
 #endif
@@ -1663,7 +1665,7 @@ void ProjectList (int nv,short *pointNumList)
 
 for (i=0;i<nv;i++) {
 	pnum = pointNumList [i];
-	if (!(gameData.segs.points [pnum].p3_flags & PF_PROJECTED))
+	if (!(gameData.segs.points [pnum].p3Flags & PF_PROJECTED))
 		G3ProjectPoint (gameData.segs.points + pnum);
 	}
 }
@@ -1703,14 +1705,14 @@ if (r > left)
 
 // -----------------------------------------------------------------------------------
 
-void RenderSegment(short segnum, int nWindowNum)
+void RenderSegment(short nSegment, int nWindowNum)
 {
-	segment		*seg = gameData.segs.segments+segnum;
+	tSegment		*seg = gameData.segs.segments+nSegment;
 	g3s_codes 	cc;
 	short			sn;
 
-Assert(segnum!=-1 && segnum <= gameData.segs.nLastSegment);
-if ((segnum < 0) || (segnum > gameData.segs.nLastSegment))
+Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
+if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return;
 OglSetupTransform ();
 cc = RotateList (8, seg->verts);
@@ -1720,13 +1722,13 @@ if (!cc.and) {		//all off screen?
 #ifdef OGL_ZBUF
 	if (gameOpts->legacy.bZBuf)
 #endif
-	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->type!=OBJ_ROBOT))
-  	   bAutomapVisited [segnum] = 1;
+	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->nType!=OBJ_ROBOT))
+  	   bAutomapVisited [nSegment] = 1;
 #if 1
 	gameStates.render.nState = 0;
 #else
-	//SetNearestStaticLights (segnum, 1);
-	SetNearestDynamicLights (segnum);
+	//SetNearestStaticLights (nSegment, 1);
+	SetNearestDynamicLights (nSegment);
 #endif
 	if (gameStates.render.bQueryOcclusion) {
 			short		sideVerts [4];
@@ -1734,11 +1736,11 @@ if (!cc.and) {		//all off screen?
 			char		sideNums [6];
 			int		i; 
 			double	d, dMin, dx, dy, dz;
-			object	*objP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+			tObject	*objP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 			sideNums [sn] = (char) sn;
-			GetSideVerts (sideVerts, segnum, sn);
+			GetSideVerts (sideVerts, nSegment, sn);
 			dMin = 1e300;
 			for (i = 0; i < 4; i++) {
 				dx = objP->pos.x - gameData.segs.vertices [sideVerts [i]].x;
@@ -1758,7 +1760,7 @@ if (!cc.and) {		//all off screen?
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sn);
 		}
-	SetNearestStaticLights (segnum, 0);
+	SetNearestStaticLights (nSegment, 0);
 	}
 OglResetTransform ();
 }
@@ -1770,14 +1772,14 @@ OglResetTransform ();
 
 //------------------------------------------------------------------------------
 //draw outline for curside
-void OutlineSegSide(segment *seg,int _side,int edge,int vert)
+void OutlineSegSide(tSegment *seg,int _side,int edge,int vert)
 {
 	g3s_codes cc;
 
 cc=RotateList(8,seg->verts);
 if (! cc.and) {		//all off screen?
 	g3s_point *pnt;
-	side *s = seg->sides+_side;
+	tSide *s = seg->sides+_side;
 	//render curedge of curside of curseg in green
 	GrSetColorRGB (0, 255, 0, 255);
 	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
@@ -1881,7 +1883,7 @@ char visited2 [MAX_SEGMENTS];
 typedef struct tSegZRef {
 	fix	z;
 	fix	d;
-	short	segnum;
+	short	nSegment;
 } tSegZRef;
 
 static tSegZRef segZRef [MAX_SEGMENTS];
@@ -1896,15 +1898,15 @@ int	lCntSave, sCntSave;
 #define VISITED(_ch)	(bVisited [_ch] == nVisited)
 #define VISIT(_ch) (bVisited [_ch] = nVisited)
 //@@short *persp_ptr;
-short nRenderPos [MAX_SEGMENTS];	//where in render_list does this segment appear?
-//ubyte no_render_flag [MAX_RENDER_SEGS];
+short nRenderPos [MAX_SEGMENTS];	//where in render_list does this tSegment appear?
+//ubyte no_renderFlag [MAX_RENDER_SEGS];
 window renderWindows [MAX_RENDER_SEGS];
 
 short nRenderObjList [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
 
 //for gameData.objs.objects
 
-//Given two sides of segment, tell the two verts which form the 
+//Given two sides of tSegment, tell the two verts which form the 
 //edge between them
 short edgeBetweenTwoSides [6][6][2] = {
 	{ {-1,-1}, {3,7}, {-1,-1}, {2,6}, {6,7}, {2,3} },
@@ -1947,9 +1949,9 @@ int edgeToSides [8][8][2] = {
 
 
 //------------------------------------------------------------------------------
-//given an edge and one side adjacent to that edge, return the other adjacent side
+//given an edge and one tSide adjacent to that edge, return the other adjacent tSide
 
-int FindOtherSideOnEdge (segment *seg, short *verts, int notside)
+int FindOtherSideOnEdge (tSegment *seg, short *verts, int notside)
 {
 	int	i;
 	int	vv0 = -1, vv1 = -1;
@@ -1995,15 +1997,15 @@ return side1;
 //the sides of those segments the abut. 
 
 typedef struct tSideNormData {
-	vms_vector	n [2];
-	vms_vector	*p;
+	vmsVector	n [2];
+	vmsVector	*p;
 	short			t;
 } tSideNormData;
 
-int FindAdjacentSideNorms (segment *seg, short s0, short s1, tSideNormData *s)
+int FindAdjacentSideNorms (tSegment *seg, short s0, short s1, tSideNormData *s)
 {
-	segment	*seg0, *seg1;
-	side		*side0, *side1;
+	tSegment	*seg0, *seg1;
+	tSide		*side0, *side1;
 	short		edge_verts [2];
 	int		notside0, notside1;
 	int		edgeside0, edgeside1;
@@ -2029,7 +2031,7 @@ int FindAdjacentSideNorms (segment *seg, short s0, short s1, tSideNormData *s)
 	//deal with the case where an edge is shared by more than two segments
 
 //@@	if (IS_CHILD(seg0->children [edgeside0])) {
-//@@		segment *seg00;
+//@@		tSegment *seg00;
 //@@		int notside00;
 //@@
 //@@		seg00 = &gameData.segs.segments [seg0->children [edgeside0]];
@@ -2046,7 +2048,7 @@ int FindAdjacentSideNorms (segment *seg, short s0, short s1, tSideNormData *s)
 //@@	}
 //@@
 //@@	if (IS_CHILD(seg1->children [edgeside1])) {
-//@@		segment *seg11;
+//@@		tSegment *seg11;
 //@@		int notside11;
 //@@
 //@@		seg11 = &gameData.segs.segments [seg1->children [edgeside1]];
@@ -2070,21 +2072,21 @@ side1 = seg1->sides + edgeside1;
 GetSideNormals (seg0, edgeside0, s [0].n, s [0].n + 1);
 GetSideNormals (seg1, edgeside1, s [1].n, s [1].n + 1);
 #else 
-memcpy (s [0].n, side0->normals, 2 * sizeof (vms_vector));
-memcpy (s [1].n, side1->normals, 2 * sizeof (vms_vector));
+memcpy (s [0].n, side0->normals, 2 * sizeof (vmsVector));
+memcpy (s [1].n, side1->normals, 2 * sizeof (vmsVector));
 #endif
-s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [edgeside0][(s [0].t = side0->type) == 3]];
-s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [edgeside1][(s [1].t = side1->type) == 3]];
+s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [edgeside0][(s [0].t = side0->nType) == 3]];
+s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [edgeside1][(s [1].t = side1->nType) == 3]];
 return 1;
 }
 
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-static int CompareChildren (segment *seg,short c0,short c1)
+static int CompareChildren (tSegment *seg,short c0,short c1)
 {
 	tSideNormData	s [2];
-	vms_vector		temp;
+	vmsVector		temp;
 	fix				d0, d1;
 
 if (sideOpposite [c0] == c1) 
@@ -2119,7 +2121,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int QuicksortSegChildren (segment *seg, short left, short right, short *childList)
+int QuicksortSegChildren (tSegment *seg, short left, short right, short *childList)
 {
 	short	h,
 			l = left,
@@ -2153,11 +2155,11 @@ return bSwap;
 
 //------------------------------------------------------------------------------
 
-int ssc_total=0,ssc_swaps=0;
+int sscTotal=0,ssc_swaps=0;
 
-//short the children of segment to render in the correct order
+//short the children of tSegment to render in the correct order
 //returns non-zero if swaps were made
-int SortSegChildren(segment *seg,int n_children,short *childList)
+int SortSegChildren(tSegment *seg,int n_children,short *childList)
 {
 #if 1
 if (n_children < 2) 
@@ -2170,7 +2172,7 @@ return QuicksortSegChildren (seg, (short) 0, (short) (n_children - 1), childList
 
 if (n_children < 2) 
 	return 0;
-ssc_total++;
+sscTotal++;
 	//for each child,  compare with other children and see if order matters
 	//if order matters, fix if wrong
 
@@ -2201,7 +2203,7 @@ return count;
 
 //------------------------------------------------------------------------------
 
-void AddObjectToSegList(int objnum,int listnum)
+void AddObjectToSegList(int nObject,int listnum)
 {
 	int i,checkn,marker;
 
@@ -2223,11 +2225,11 @@ void AddObjectToSegList(int objnum,int listnum)
 	} while (marker != -1);
 
 
-	//now we have found a slot.  put object in it
+	//now we have found a slot.  put tObject in it
 
 	if (i != OBJS_PER_SEG-1) {
 
-		nRenderObjList [checkn][i] = objnum;
+		nRenderObjList [checkn][i] = nObject;
 		nRenderObjList [checkn][i+1] = -1;
 	}
 	else {				//chain to additional list
@@ -2244,7 +2246,7 @@ void AddObjectToSegList(int objnum,int listnum)
 		}
 
 		nRenderObjList [checkn][i] = -lookn;
-		nRenderObjList [lookn][0] = objnum;
+		nRenderObjList [lookn][0] = nObject;
 		nRenderObjList [lookn][1] = -1;
 
 	}
@@ -2340,35 +2342,35 @@ void qsort(void *basep, size_t nelems, size_t size,
 #define SORT_LIST_SIZE 100
 
 typedef struct sort_item {
-	int objnum;
+	int nObject;
 	fix dist;
 } sort_item;
 
 sort_item sortList [SORT_LIST_SIZE];
 int nSortItems;
 
-//compare function for object sort. 
+//compare function for tObject sort. 
 int _CDECL_ sort_func(const sort_item *a,const sort_item *b)
 {
 	fix xDeltaDist;
-	object *objAP,*objBP;
+	tObject *objAP,*objBP;
 
 xDeltaDist = a->dist - b->dist;
-objAP = gameData.objs.objects + a->objnum;
-objBP = gameData.objs.objects + b->objnum;
+objAP = gameData.objs.objects + a->nObject;
+objBP = gameData.objs.objects + b->nObject;
 
 if (abs (xDeltaDist) < (objAP->size + objBP->size)) {		//same position
 	//these two objects are in the same position.  see if one is a fireball
 	//or laser or something that should plot on top.  Don't do this for
 	//the afterburner blobs, though.
 
-	if ((objAP->type == OBJ_WEAPON) || 
-		 (objAP->type == OBJ_FIREBALL && objAP->id != VCLIP_AFTERBURNER_BLOB)) {
-		if (!(objBP->type == OBJ_WEAPON || objBP->type == OBJ_FIREBALL))
+	if ((objAP->nType == OBJ_WEAPON) || 
+		 (objAP->nType == OBJ_FIREBALL && objAP->id != VCLIP_AFTERBURNER_BLOB)) {
+		if (!(objBP->nType == OBJ_WEAPON || objBP->nType == OBJ_FIREBALL))
 			return -1;	//a is weapon, b is not, so say a is closer
 		}
 	else {
-		if (objBP->type == OBJ_WEAPON || (objBP->type == OBJ_FIREBALL && objBP->id != VCLIP_AFTERBURNER_BLOB))
+		if (objBP->nType == OBJ_WEAPON || (objBP->nType == OBJ_FIREBALL && objBP->id != VCLIP_AFTERBURNER_BLOB))
 			return 1;	//b is weapon, a is not, so say a is farther
 		}
 	//no special case, fall through to normal return
@@ -2386,24 +2388,24 @@ void BuildObjectLists(int n_segs)
 		nRenderObjList [nn][0] = -1;
 
 	for (nn=0;nn<n_segs;nn++) {
-		short segnum;
-		segnum = nRenderList [nn];
-		if (segnum != -1) {
-			int objnum;
-			object *objP;
-			for (objnum = gameData.segs.segments [segnum].objects; objnum != -1; objnum = objP->next) {
+		short nSegment;
+		nSegment = nRenderList [nn];
+		if (nSegment != -1) {
+			int nObject;
+			tObject *objP;
+			for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = objP->next) {
 				int new_segnum,did_migrate,list_pos;
-				objP = gameData.objs.objects+objnum;
+				objP = gameData.objs.objects+nObject;
 
-				Assert( objP->segnum == segnum );
+				Assert( objP->nSegment == nSegment );
 
 				if (objP->flags & OF_ATTACHED)
-					continue;		//ignore this object
+					continue;		//ignore this tObject
 
-				new_segnum = segnum;
+				new_segnum = nSegment;
 				list_pos = nn;
 
-				if (objP->type != OBJ_CNTRLCEN && !(objP->type==OBJ_ROBOT && objP->id==65))		//don't migrate controlcen
+				if (objP->nType != OBJ_CNTRLCEN && !(objP->nType==OBJ_ROBOT && objP->id==65))		//don't migrate controlcen
 				do {
 					segmasks m;
 					did_migrate = 0;
@@ -2412,7 +2414,7 @@ void BuildObjectLists(int n_segs)
 						short sn,sf;
 						for (sn=0,sf=1;sn<6;sn++,sf<<=1)
 							if (m.sideMask & sf) {
-								segment *seg = gameData.segs.segments+new_segnum;
+								tSegment *seg = gameData.segs.segments+new_segnum;
 		
 								if (WALL_IS_DOORWAY (seg, sn, NULL) & WID_FLY_FLAG) {		//can explosion migrate through
 									int child = seg->children [sn];
@@ -2429,18 +2431,18 @@ void BuildObjectLists(int n_segs)
 					}
 	
 				} while (0);	//while (did_migrate);
-				AddObjectToSegList(objnum,list_pos);
+				AddObjectToSegList(nObject,list_pos);
 			}
 		}
 	}
 
-	//now that there's a list for each segment, sort the items in those lists
+	//now that there's a list for each tSegment, sort the items in those lists
 	for (nn=0;nn<n_segs;nn++) {
-		int segnum;
+		int nSegment;
 
-		segnum = nRenderList [nn];
+		nSegment = nRenderList [nn];
 
-		if (segnum != -1) {
+		if (nSegment != -1) {
 			int t,lookn,i,n;
 
 			//first count the number of gameData.objs.objects & copy into sort list
@@ -2452,12 +2454,12 @@ void BuildObjectLists(int n_segs)
 					{lookn = -t; i=0;}
 				else
 					if (nSortItems < SORT_LIST_SIZE-1) {		//add if room
-						sortList [nSortItems].objnum = t;
+						sortList [nSortItems].nObject = t;
 						//NOTE: maybe use depth, not dist - quicker computation
 						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
 						nSortItems++;
 					}
-					else {			//no room for object
+					else {			//no room for tObject
 						int ii;
 
 						#ifdef _DEBUG
@@ -2467,10 +2469,10 @@ void BuildObjectLists(int n_segs)
 						//some information to look at later
 						if (tfile) {
 							for (ii=0;ii<SORT_LIST_SIZE;ii++) {
-								int objnum = sortList [ii].objnum;
+								int nObject = sortList [ii].nObject;
 
 								fprintf(tfile,"Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n",
-									objnum,gameData.objs.objects [objnum].type,gameData.objs.objects [objnum].id,sortList [ii].dist,gameData.objs.objects [objnum].segnum);
+									nObject,gameData.objs.objects [nObject].nType,gameData.objs.objects [nObject].id,sortList [ii].dist,gameData.objs.objects [nObject].nSegment);
 							}
 							fclose(tfile);
 						}
@@ -2478,23 +2480,23 @@ void BuildObjectLists(int n_segs)
 
 						Int3();	//Get Matt!!!
 
-						//Now try to find a place for this object by getting rid
-						//of an object we don't care about
+						//Now try to find a place for this tObject by getting rid
+						//of an tObject we don't care about
 
 						for (ii=0;ii<SORT_LIST_SIZE;ii++) {
-							int objnum = sortList [ii].objnum;
-							object *objP = &gameData.objs.objects [objnum];
-							int type = objP->type;
+							int nObject = sortList [ii].nObject;
+							tObject *objP = &gameData.objs.objects [nObject];
+							int nType = objP->nType;
 
 							//replace debris & fireballs
-							if (type == OBJ_DEBRIS || type == OBJ_FIREBALL) {
+							if (nType == OBJ_DEBRIS || nType == OBJ_FIREBALL) {
 								fix dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
 
-								//don't replace same kind of object unless new 
+								//don't replace same kind of tObject unless new 
 								//one is closer
 
-								if (gameData.objs.objects [t].type != type || dist < sortList [ii].dist) {
-									sortList [ii].objnum = t;
+								if (gameData.objs.objects [t].nType != nType || dist < sortList [ii].dist) {
+									sortList [ii].nObject = t;
 									sortList [ii].dist = dist;
 									break;
 								}
@@ -2522,7 +2524,7 @@ void BuildObjectLists(int n_segs)
 				if (t<0)
 					{lookn = -t; i=0;}
 				else
-					nRenderObjList [lookn][i++] = sortList [--n].objnum;
+					nRenderObjList [lookn][i++] = sortList [--n].nObject;
 			nRenderObjList [lookn][i] = -1;	//mark (possibly new) end
 		}
 	}
@@ -2549,7 +2551,7 @@ pPath->tUpdate = -1;
 
 //------------------------------------------------------------------------------
 
-void SetPathPoint (tFlightPath *pPath, object *objP)
+void SetPathPoint (tFlightPath *pPath, tObject *objP)
 {
 	time_t	t = SDL_GetTicks () - pPath->tUpdate;
 
@@ -2574,7 +2576,7 @@ if ((pPath->tUpdate < 0) || (t >= pPath->tRefresh)) {
 
 tPathPoint *GetPathPoint (tFlightPath *pPath)
 {
-	vms_vector		*p = &pPath->path [pPath->nEnd].vPos;
+	vmsVector		*p = &pPath->path [pPath->nEnd].vPos;
 	int				i;
 
 if (pPath->nStart == pPath->nEnd) {
@@ -2633,7 +2635,7 @@ extern int Num_tmaps_drawn;
 extern int nTotalPixels;
 //--unused-- int Total_num_tmaps_drawn=0;
 
-void StartLightingFrame (object *viewer);
+void StartLightingFrame (tObject *viewer);
 
 #ifndef JOHN_ZOOM
 #	define JOHN_ZOOM
@@ -2694,22 +2696,22 @@ return 1;
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
-//segment visible to the player is computed. If there is a los to any of these 
-//segments, the object's shadow is rendered. Far from perfect solution though. :P
+//tSegment visible to the player is computed. If there is a los to any of these 
+//segments, the tObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)
 {
-	object		*objP = gameData.objs.objects;
+	tObject		*objP = gameData.objs.objects;
 	int			i, j, bSee;
-	object		fakePlayerPos = *gameData.objs.viewer;
+	tObject		fakePlayerPos = *gameData.objs.viewer;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP == gameData.objs.console)
 		RenderObject (objP, 0);
-	else if ((objP->type == OBJ_ROBOT) || (objP->type == OBJ_PLAYER)) {
+	else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
 		for (j = nRenderSegs; j--;) {
-			fakePlayerPos.segnum = nRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.pos, fakePlayerPos.segnum);
+			fakePlayerPos.nSegment = nRenderList [j];
+			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.pos, fakePlayerPos.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0);
@@ -2832,21 +2834,21 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	startSegNum = gameData.objs.viewer->segnum;
+	startSegNum = gameData.objs.viewer->nSegment;
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
 	}
 else {
-	startSegNum = FindSegByPoint (&viewerEye,gameData.objs.viewer->segnum);
+	startSegNum = FindSegByPoint (&viewerEye,gameData.objs.viewer->nSegment);
 	if (startSegNum == -1)
-		startSegNum = gameData.objs.viewer->segnum;
+		startSegNum = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
-		vms_matrix mHead, mView;
+		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead,&viewInfo.playerHeadAngles);
 		VmMatMul (&mView,&gameData.objs.viewer->orient,&mHead);
 		G3SetViewMatrix(&viewerEye,&mView,nRenderZoom );
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
-		vms_matrix mHead, mView;
+		vmsMatrix mHead, mView;
 		viewInfo.playerHeadAngles.p = 
 		viewInfo.playerHeadAngles.b = 0;
 		viewInfo.playerHeadAngles.h = 0x7fff;
@@ -2980,13 +2982,13 @@ G3EndFrame ();
 
 int nFirstTerminalSeg;
 
-void UpdateRenderedData(int nWindowNum, object *viewer, int rear_view_flag, int user)
+void UpdateRenderedData(int nWindowNum, tObject *viewer, int rear_viewFlag, int user)
 {
 	Assert(nWindowNum < MAX_RENDERED_WINDOWS);
-	Window_rendered_data [nWindowNum].frame = gameData.app.nFrameCount;
-	Window_rendered_data [nWindowNum].viewer = viewer;
-	Window_rendered_data [nWindowNum].rear_view = rear_view_flag;
-	Window_rendered_data [nWindowNum].user = user;
+	windowRenderedData [nWindowNum].frame = gameData.app.nFrameCount;
+	windowRenderedData [nWindowNum].viewer = viewer;
+	windowRenderedData [nWindowNum].rear_view = rear_viewFlag;
+	windowRenderedData [nWindowNum].user = user;
 }
 
 //------------------------------------------------------------------------------
@@ -3022,9 +3024,9 @@ if (left < r)
 }
 
 //------------------------------------------------------------------------------
-// sort segments by distance from player segment, where distance is the minimal
-// number of segments that have to be traversed to reach a segment, starting at
-// the player segment. If the entire mine is to be rendered, segments will then
+// sort segments by distance from player tSegment, where distance is the minimal
+// number of segments that have to be traversed to reach a tSegment, starting at
+// the player tSegment. If the entire mine is to be rendered, segments will then
 // be rendered in reverse order (furthest first), to achieve proper rendering of
 // transparent walls layered in a view axis.
 
@@ -3038,10 +3040,10 @@ static short nSegListSize;
 void BuildSegList (void)
 {
 	int		h, i, j, segNum, childNum, sideNum, nDist = 0;
-	segment	*segP;
+	tSegment	*segP;
 
 memset (segDist, 0xFF, sizeof (segDist));
-segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].objnum].segnum;
+segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
 i = j = 0;
 segDist [segNum] = 0;
 segList [j++] = segNum;
@@ -3075,16 +3077,16 @@ void BuildSegmentList (short startSegNum, int nWindowNum)
 	short		*sv;
 	sbyte		*s2v;
 	ubyte		andCodes;
-	int		bRotated, segnum;
+	int		bRotated, nSegment;
 	window	*checkWinP;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int		nChildren;										//how many sides in childList
-	segment	*segP;
+	tSegment	*segP;
 
 memset (bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
 nVisited = 0;
 memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
-//memset(no_render_flag, 0, sizeof(no_render_flag [0])*(MAX_RENDER_SEGS);
+//memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
 memset (nProcessed, 0, sizeof (nProcessed));
 memset (nRenderList, 0xff, sizeof (nRenderList));
 
@@ -3118,18 +3120,18 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		if (nProcessed [sCnt])
 			continue;
 		nProcessed [sCnt] = 1;
-		segnum = nRenderList [sCnt];
+		nSegment = nRenderList [sCnt];
 		checkWinP = renderWindows + sCnt;
 #ifdef _DEBUG
 		if (bDrawBoxes)
 			DrawWindowBox (RED_RGBA, checkWinP->left, checkWinP->top, checkWinP->right, checkWinP->bot);
 #endif
-		if (segnum == -1) 
+		if (nSegment == -1) 
 			continue;
-		segP = gameData.segs.segments + segnum;
+		segP = gameData.segs.segments + nSegment;
 		sv = segP->verts;
 		bRotated = 0;
-		//look at all sides of this segment.
+		//look at all sides of this tSegment.
 		//tricky code to look at sides in correct order follows
 		for (c = nChildren = 0; c < MAX_SIDES_PER_SEGMENT; c++) {		//build list of sides
 			wid = WALL_IS_DOORWAY (segP, c, NULL);
@@ -3166,7 +3168,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					int i;
 					ubyte codes_and_3d,codes_and_2d;
 					short _x,_y,min_x=32767,max_x=-32767,min_y=32767,max_y=-32767;
-					int no_proj_flag=0;	//a point wasn't projected
+					int no_projFlag=0;	//a point wasn't projected
 					if (bRotated<2) {
 //							if (!bRotated)
 //								RotateList(8,segP->verts);
@@ -3177,8 +3179,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					for (i=0,codes_and_3d=codes_and_2d=0xff;i<4;i++) {
 						int p = sv [s2v [i]];
 						g3s_point *pnt = gameData.segs.points+p;
-						if (!(pnt->p3_flags&PF_PROJECTED)) {
-							no_proj_flag=1; 
+						if (!(pnt->p3Flags&PF_PROJECTED)) {
+							no_projFlag=1; 
 							break;
 							}
 						_x = f2i(pnt->p3_sx);
@@ -3206,11 +3208,11 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					if (bDrawBoxes)
 						DrawWindowBox(WHITE_RGBA,min_x,min_y,max_x,max_y);
 #endif
-					if (no_proj_flag || (!codes_and_3d && !codes_and_2d)) {	//maybe add this segment
+					if (no_projFlag || (!codes_and_3d && !codes_and_2d)) {	//maybe add this tSegment
 						int rp = nRenderPos [nChild];
 						window *new_w = renderWindows + lCnt;
 
-						if (no_proj_flag) 
+						if (no_projFlag) 
 							*new_w = *checkWinP;
 						else {
 							new_w->left  = max(checkWinP->left,min_x);
@@ -3231,7 +3233,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 								new_w->top   = min(new_w->top,rwP->top);
 								new_w->bot   = max(new_w->bot,rwP->bot);
 								if (no_migrate_segs) {
-									//no_render_flag [lCnt] = 1;
+									//no_renderFlag [lCnt] = 1;
 									nRenderList [lCnt] = -1;
 									*rwP = *new_w;		//get updated window
 									nProcessed [rp] = 0;		//force reprocess
@@ -3272,7 +3274,7 @@ no_add:
 					nSegDepth [lCnt] = l;
 					lCnt++;
 					if (lCnt >= MAX_RENDER_SEGS) {
-						LogErr ("Too many segments in segment render list!!!\n"); 
+						LogErr ("Too many segments in tSegment render list!!!\n"); 
 						goto done_list;
 						}
 					VISIT (nChild);
@@ -3293,7 +3295,7 @@ nRenderSegs = lCnt;
 
 
 /*
-void gl_build_object_list (void)
+void gl_buildObject_list (void)
 {
 }
 */
@@ -3303,10 +3305,10 @@ void gl_build_object_list (void)
 int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWindowNum)
 {
 #if 0
-	short		segnum;
+	short		nSegment;
 #endif
 #if OGL_QUERY
-	int		i, di, dj, bRenderLayer, objnum;
+	int		i, di, dj, bRenderLayer, nObject;
 	GLint		fragC;
 
 	static GLuint	segFragC [MAX_SEGMENTS],
@@ -3326,7 +3328,7 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 		memset (bSidesRendered, 0, sizeof (bSidesRendered));
 		}
 	// the following code tries to determine segments up to which distance (in segments) from the 
-	// start segment need to be rendered. To do that, the occlusion query OpenGL extension is used.
+	// start tSegment need to be rendered. To do that, the occlusion query OpenGL extension is used.
 	// If segments in three subsequents distances do not get rendered, it is assumed that all
 	// visible segments have been rendered.
 	for (gameStates.render.bQueryOcclusion = bOccQuery; gameStates.render.bQueryOcclusion >= 0; gameStates.render.bQueryOcclusion--) {
@@ -3347,8 +3349,8 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 			fragC = grdCurCanv->cv_bitmap.bm_props.w * grdCurCanv->cv_bitmap.bm_props.h;
 			bRenderLayer = 4;
 			for (i = 0; i < nSegListSize; i++) {
-				segnum = segList [i];
-				dj = segDist [segnum];
+				nSegment = segList [i];
+				dj = segDist [nSegment];
 				if (di != dj) {
 #if 1
 					if (di && !bRenderLayer)
@@ -3357,28 +3359,28 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 					di = dj;
 					bRenderLayer--;
 					}
-		      glBeginQuery (GL_SAMPLES_PASSED_ARB, glSegOccQuery [segnum]);
-				RenderSegment (segnum, nWindowNum);
+		      glBeginQuery (GL_SAMPLES_PASSED_ARB, glSegOccQuery [nSegment]);
+				RenderSegment (nSegment, nWindowNum);
 		      glEndQuery (GL_SAMPLES_PASSED_ARB);
-				glGetQueryObjectuiv (glSegOccQuery [segnum], GL_QUERY_RESULT_ARB, segFragC + segnum);
+				glGetQueryObjectuiv (glSegOccQuery [nSegment], GL_QUERY_RESULT_ARB, segFragC + nSegment);
 #if 1
-				if (segFragC [segnum] > 500) { // || !bSidesRendered [segnum]) {
+				if (segFragC [nSegment] > 500) { // || !bSidesRendered [nSegment]) {
 #	if 0
-					fragC -= segFragC [segnum];
+					fragC -= segFragC [nSegment];
 					if (fragC <= 0)
 						break;
 #	endif
 					bRenderLayer = 3;
-					for (objnum = gameData.segs.segments [segnum].objects; objnum != -1; objnum = gameData.objs.objects [objnum].next)
-						objFragC [objnum] = 1;
+					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
+						objFragC [nObject] = 1;
 					}
 #	if 0
 				else {
-					for (objnum = gameData.segs.segments [segnum].objects; objnum != -1; objnum = gameData.objs.objects [objnum].next) {
-				      glBeginQuery (GL_SAMPLES_PASSED_ARB, glObjOccQuery [objnum]);
-						DoRenderObject (objnum, nWindowNum);
+					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
+				      glBeginQuery (GL_SAMPLES_PASSED_ARB, glObjOccQuery [nObject]);
+						DoRenderObject (nObject, nWindowNum);
 				      glEndQuery (GL_SAMPLES_PASSED_ARB);
-						glGetQueryObjectuiv (glObjOccQuery [objnum], GL_QUERY_RESULT_ARB, objFragC + objnum);
+						glGetQueryObjectuiv (glObjOccQuery [nObject], GL_QUERY_RESULT_ARB, objFragC + nObject);
 						}
 					}
 #	endif
@@ -3387,20 +3389,20 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 			}
 		else 
 			for (i = nSegListSize; i;) {
-				segnum = segList [--i];
+				nSegment = segList [--i];
 #if 1
 				if (bOcclusionQuery) {
-					if (segDist [segnum] > di)
+					if (segDist [nSegment] > di)
 						continue;
 					}
 #endif
-				RenderSegment (segnum, nWindowNum);
+				RenderSegment (nSegment, nWindowNum);
 #if 1
-				if (gameOpts->render.bAllSegs && !nWindowNum && !renderState && bRenderSegObjs [segnum])
-					for (objnum = gameData.segs.segments [segnum].objects; objnum != -1; objnum = gameData.objs.objects [objnum].next)
-						//if (objFragC [objnum])
-						if (bRenderObjs [objnum])
-							DoRenderObject (objnum, nWindowNum);
+				if (gameOpts->render.bAllSegs && !nWindowNum && !renderState && bRenderSegObjs [nSegment])
+					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
+						//if (objFragC [nObject])
+						if (bRenderObjs [nObject])
+							DoRenderObject (nObject, nWindowNum);
 #endif
 				}
 		}
@@ -3425,8 +3427,8 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 				break;
 			}
 #if 0
-	for (segnum = 0; segnum < gameData.segs.nSegments; segnum++)
-		RenderSegment (segnum, nWindowNum);
+	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++)
+		RenderSegment (nSegment, nWindowNum);
 #else
 	while (nnRenderSegs)
 		RenderSegment (nRenderList [--nnRenderSegs], nWindowNum);
@@ -3455,7 +3457,7 @@ if (gameOpts->render.bOptimize) {
 
 void RenderObjList (int listnum, int nWindowNum)
 {
-if (migrate_objects) {
+if (migrateObjects) {
 	int objnp = 0;
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 	gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
@@ -3469,12 +3471,12 @@ if (migrate_objects) {
 			}					
 		else {
 #ifdef LASER_HACK
-			object *objP = gameData.objs.objects + objNum;
-			if ((objP->type == OBJ_WEAPON) && 								//if its a weapon
-				 (objP->lifeleft == Laser_max_time ) && 	//  and its in it's first frame
+			tObject *objP = gameData.objs.objects + objNum;
+			if ((objP->nType == OBJ_WEAPON) && 								//if its a weapon
+				 (objP->lifeleft == Laser_maxTime ) && 	//  and its in it's first frame
 				 (Hack_nlasers < MAX_HACKED_LASERS) && 									//  and we have space for it
-				 (objP->laser_info.parent_num > -1) &&					//  and it has a parent
-				 ((OBJ_IDX (gameData.objs.viewer)) == objP->laser_info.parent_num)	//  and it's parent is the viewer
+				 (objP->laserInfo.nParentObj > -1) &&					//  and it has a parent
+				 ((OBJ_IDX (gameData.objs.viewer)) == objP->laserInfo.nParentObj)	//  and it's parent is the viewer
 				 ) {
 				Hack_laser_list [Hack_nlasers++] = objNum;								//then make it draw after everything else.
 				}
@@ -3514,8 +3516,8 @@ void RenderFaceList (int nWindowNum)
 #if APPEND_LAYERED_TEXTURES
 if (gameOpts->render.bOptimize) {
 		int				i, j;
-		segment			*segP;
-		side				*sideP;
+		tSegment			*segP;
+		tSide				*sideP;
 		tFaceListEntry	*flp = faceList;
 
 	for (renderState = 0; renderState < 5; renderState++) {
@@ -3569,14 +3571,14 @@ void GatherVisibleLights (void)
 {
 	int	i;
 	short	nSegment, nSide;
-	side	*sideP;
+	tSide	*sideP;
 
 gameData.render.color.nVisibleLights = 0;
 for (i = 0; i < nRenderSegs;i++) {
 	nSegment = nRenderList [i];
 	for (nSide = 0, sideP = gameData.segs.segments [nSegment].sides; nSide < 6; nSide++, sideP++) {
-		AddVisibleLight (nSegment, nSide, sideP->tmap_num, 1);
-		AddVisibleLight (nSegment, nSide, sideP->tmap_num, 0);
+		AddVisibleLight (nSegment, nSide, sideP->nBaseTex, 1);
+		AddVisibleLight (nSegment, nSide, sideP->nBaseTex, 0);
 		}
 	}
 }
@@ -3587,7 +3589,7 @@ for (i = 0; i < nRenderSegs;i++) {
 void RenderMine (short startSegNum, fix nEyeOffset, int nWindowNum)
 {
 	int		nn;
-	short		segnum;
+	short		nSegment;
 	int		rsMin, rsMax;
 	ubyte		bSetAutomapVisited;
 	window	*rwP;
@@ -3596,7 +3598,7 @@ void RenderMine (short startSegNum, fix nEyeOffset, int nWindowNum)
 #endif
 
 	//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
-	Window_rendered_data [nWindowNum].num_objects = 0;
+	windowRenderedData [nWindowNum].numObjects = 0;
 
 #ifdef LASER_HACK
 	Hack_nlasers = 0;
@@ -3642,12 +3644,12 @@ if (gameStates.render.nRenderPass <= 0) {
 		nWindowClipBot   = grdCurCanv->cv_bitmap.bm_props.h-1;
 		}
 	for (i = 0; i < nRenderSegs;i++) {
-		short segnum = nRenderList [i];
-		if (segnum != -1)
-			if (visited2 [segnum])
+		short nSegment = nRenderList [i];
+		if (nSegment != -1)
+			if (visited2 [nSegment])
 				Int3();		//get Matt
 			else
-				visited2 [segnum] = 1;
+				visited2 [nSegment] = 1;
 		}
 #endif
 	if (gameStates.render.nRenderPass <= 0) {
@@ -3692,7 +3694,7 @@ else
 bSetAutomapVisited =
 	!((extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3)) || 
 	  gameStates.render.cameras.bActive) && 
-	 (gameData.objs.viewer->type != OBJ_ROBOT);
+	 (gameData.objs.viewer->nType != OBJ_ROBOT);
 InitFaceList ();
 for (renderState = rsMin; renderState <= rsMax; renderState++) {
 	//memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nSegments));
@@ -3700,9 +3702,9 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 	for (nn = nRenderSegs; nn; ) {
 		nn--;
 		rwP = renderWindows + nn;
-		segnum = nRenderList [nn];
+		nSegment = nRenderList [nn];
 		nCurrentSegDepth = nSegDepth [nn];
-		if ((segnum != -1) && !VISITED (segnum)) {
+		if ((nSegment != -1) && !VISITED (nSegment)) {
 #if 0
 			if (bWindowCheck) {
 				nWindowClipLeft = rwP->left;
@@ -3712,7 +3714,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				}
 #endif
 			if (gameStates.render.nShadowPass != 2)
-				RenderSegment (segnum, nWindowNum);
+				RenderSegment (nSegment, nWindowNum);
 #if APPEND_LAYERED_TEXTURES
 			if (!(renderState || gameOpts->render.bAllSegs) || gameOpts->render.bOptimize)
 #else
@@ -3721,9 +3723,9 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				continue;
 #ifdef OGL_ZBUF
 			if (!gameOpts->legacy.bZBuf)
-  	   		bAutomapVisited [segnum] = bSetAutomapVisited;
+  	   		bAutomapVisited [nSegment] = bSetAutomapVisited;
 #endif
-			VISIT (segnum);
+			VISIT (nSegment);
 
 			if (bWindowCheck) {		//reset for gameData.objs.objects
 				nWindowClipLeft = nWindowClipTop = 0;
@@ -3750,21 +3752,21 @@ if (bOutLineMode)
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bHaveSkyBox = 0;
 	renderState = 4;
-	for (segnum = 0; segnum <= gameData.segs.nLastSegment; segnum++)
-		if (gameData.segs.segment2s [segnum].special == SEGMENT_IS_SKYBOX) {
+	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
 			gameStates.render.bHaveSkyBox = 1;
-			RenderSegment (segnum, nWindowNum);
+			RenderSegment (nSegment, nWindowNum);
 			}
 	}
 renderState = 1;
 if (gameOpts->render.bAllSegs) {
 	nVisited++;
 	for (nn = nRenderSegs; nn; ) {
-		segnum = nRenderList [--nn];
-		if ((segnum != -1) && !VISITED (segnum)) {
-			VISIT (segnum);
+		nSegment = nRenderList [--nn];
+		if ((nSegment != -1) && !VISITED (nSegment)) {
+			VISIT (nSegment);
 			if (gameStates.render.nShadowPass != 2)
-				RenderSegment (segnum, nWindowNum);
+				RenderSegment (nSegment, nWindowNum);
 			RenderObjList (nn, nWindowNum);
 			}
 		}
@@ -3780,10 +3782,10 @@ RenderFaceList (nWindowNum);
 
 extern int render_3d_in_big_window;
 
-//finds what segment is at a given x&y -  seg,side,face are filled in
+//finds what tSegment is at a given x&y -  seg,tSide,face are filled in
 //works on last frame rendered. returns true if found
-//if seg<0, then an object was found, and the object number is -seg-1
-int find_seg_side_face(short x,short y,int *seg,int *side,int *face,int *poly)
+//if seg<0, then an tObject was found, and the tObject number is -seg-1
+int find_seg_side_face(short x,short y,int *seg,int *tSide,int *face,int *poly)
 {
 	bSearchMode = -1;
 	_search_x = x; _search_y = y;
@@ -3802,7 +3804,7 @@ int find_seg_side_face(short x,short y,int *seg,int *side,int *face,int *poly)
 	}
 	bSearchMode = 0;
 	*seg = found_seg;
-	*side = found_side;
+	*tSide = found_side;
 	*face = found_face;
 	*poly = found_poly;
 	return (found_seg!=-1);

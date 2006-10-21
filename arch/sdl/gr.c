@@ -31,7 +31,7 @@
 # define LANDSCAPE
 #endif
 
-int sdl_video_flags = SDL_SWSURFACE | SDL_HWPALETTE;
+int sdl_videoFlags = SDL_SWSURFACE | SDL_HWPALETTE;
 //end addition -MM
 
 SDL_Surface *screen;
@@ -148,7 +148,7 @@ int GrVideoModeOK(u_int32_t mode)
 	w = SM_W(mode);
 	h = SM_H(mode);
 
-	return SDL_VideoModeOK(w, h, 8, sdl_video_flags) != 0;
+	return SDL_VideoModeOK(w, h, 8, sdl_videoFlags) != 0;
 }
 
 
@@ -173,7 +173,7 @@ int GrSetMode(u_int32_t mode)
 
 //added on 11/06/98 by Matt Mueller to set the title bar. (moved from below)
 //sekmu: might wanna copy this litte blurb to one of the text files or something
-//we want to set it here so that X window manager "Style" type commands work
+//we want to set it here so that X window manager "Style" nType commands work
 //for example, in fvwm2 or fvwm95:
 //Style "D1X*"  NoTitle, NoHandles, BorderWidth 0
 //if you can't use -fullscreen like me (crashes X), this is a big help in
@@ -193,10 +193,10 @@ int GrSetMode(u_int32_t mode)
         // changed by someone on 980923 to add SDL_FULLSCREEN
 
 #ifdef LANDSCAPE
-	real_screen = SDL_SetVideoMode(h, w, 0, sdl_video_flags);
+	real_screen = SDL_SetVideoMode(h, w, 0, sdl_videoFlags);
 	screen = CreateRotatedSurface(real_screen);
 #else
-	screen = SDL_SetVideoMode(w, h, 8, sdl_video_flags);
+	screen = SDL_SetVideoMode(w, h, 8, sdl_videoFlags);
 #endif
 		// end changes by someone
         // end changes by adb
@@ -215,7 +215,7 @@ int GrSetMode(u_int32_t mode)
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_LINEAR;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
 	GrSetCurrentCanvas(NULL);
 	//gr_enable_default_palette_loading();
@@ -233,14 +233,14 @@ int GrSetMode(u_int32_t mode)
 
 int GrCheckFullScreen(void)
 {
-	return (sdl_video_flags & SDL_FULLSCREEN)?1:0;
+	return (sdl_videoFlags & SDL_FULLSCREEN)?1:0;
 }
 
 int GrToggleFullScreen(void)
 {
-	sdl_video_flags^=SDL_FULLSCREEN;
+	sdl_videoFlags^=SDL_FULLSCREEN;
 	SDL_WM_ToggleFullScreen(screen);
-	return (sdl_video_flags & SDL_FULLSCREEN)?1:0;
+	return (sdl_videoFlags & SDL_FULLSCREEN)?1:0;
 }
 
 int GrInit(void)
@@ -258,11 +258,11 @@ int GrInit(void)
 
 //added 10/05/98 by Matt Mueller - make fullscreen mode optional
 	if (FindArg("-fullscreen"))
-	     sdl_video_flags|=SDL_FULLSCREEN;
+	     sdl_videoFlags|=SDL_FULLSCREEN;
 //end addition -MM
 	//added 05/19/99 Matt Mueller - make HW surface optional
 	if (FindArg("-hwsurface"))
-	     sdl_video_flags|=SDL_HWSURFACE;
+	     sdl_videoFlags|=SDL_HWSURFACE;
 	//end addition -MM
 
 	grdCurScreen->sc_canvas.cv_color = 0;
@@ -356,7 +356,7 @@ void GrPaletteStepUp( int r, int g, int b )
 }
 
 //added on 980913 by adb to fix palette problems
-// need a min without side effects...
+// need a min without tSide effects...
 #undef min
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb

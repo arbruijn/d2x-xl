@@ -4,12 +4,12 @@
 #include "ogl_init.h"
 
 typedef struct tLightMap {
-	vms_vector	pos;
+	vmsVector	pos;
 	GLfloat		color[4];
 	//float		bright;
 	double		range;
-	vms_vector  dir;  //currently based on face normals
-	int			refside;  //(seg*6)+side ie which side the light is on
+	vmsVector  dir;  //currently based on face normals
+	int			refside;  //(seg*6)+tSide ie which tSide the light is on
 } tLightMap;
 
 #ifndef GL_VERSION_20

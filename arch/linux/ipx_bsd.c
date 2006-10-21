@@ -136,7 +136,7 @@ static int ipx_bsd_OpenSocket(ipx_socket_t *sk, int port)
 		return -1;
 	}
 #ifdef DOSEMU
-	/* allow setting the type field in the IPX header */
+	/* allow setting the nType field in the IPX header */
 	opt = 1;
 #if 0 /* this seems to be wrong: IPX_TYPE can only be set on level SOL_IPX */
 	if (setsockopt(sock, SOL_SOCKET, IPX_TYPE, &opt, sizeof(opt)) == -1) {
@@ -150,7 +150,7 @@ static int ipx_bsd_OpenSocket(ipx_socket_t *sk, int port)
 	if (setsockopt(sock, SOL_IPX, IPX_TYPE, &opt, sizeof(opt)) == -1) {
 #endif
 		leave_priv_setting();
-		FAIL("IPX: could not set socket option for type.\n");
+		FAIL("IPX: could not set socket option for nType.\n");
 		return -1;
 	}
 #endif
@@ -206,7 +206,7 @@ static int ipx_bsd_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	}
 	memcpy(&ipxs.sipx_node, IPXHeader->Destination.Node, 6);
 	memcpy(&ipxs.sipx_port, IPXHeader->Destination.Socket, 2);
-	ipxs.sipx_type = IPXHeader->PacketType;
+	ipxs.sipxType = IPXHeader->PacketType;
 	/*	ipxs.sipx_port=htons(0x452); */
 	return sendto(mysock->fd, data, dataLen, 0,
 	              (struct sockaddr *) &ipxs, sizeof(ipxs));
@@ -225,7 +225,7 @@ static int ipx_bsd_ReceivePacket(ipx_socket_t *s, char *buffer, int bufsize,
 	memcpy(rd->src_node, ipxs.sipx_node, 6);
 	rd->src_socket = ipxs.sipx_port;
 	rd->dst_socket = s->socket;
-	rd->pkt_type = ipxs.sipx_type;
+	rd->pktType = ipxs.sipxType;
 
 	return size;
 }

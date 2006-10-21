@@ -59,12 +59,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add GOALSIDE to aip.
  *
  * Revision 1.25  1994/09/25  23:41:08  matt
- * Changed the object load & save code to read/write the structure fields one
+ * Changed the tObject load & save code to read/write the structure fields one
  * at a time (rather than the whole structure at once).  This mean that the
- * object structure can be changed without breaking the load/save functions.
- * As a result of this change, the local_object data can be and has been
- * incorporated into the object array.  Also, timeleft is now a property
- * of all objects, and the object structure has been otherwise cleaned up.
+ * tObject structure can be changed without breaking the load/save functions.
+ * As a result of this change, the localObject data can be and has been
+ * incorporated into the tObject array.  Also, timeleft is now a property
+ * of all objects, and the tObject structure has been otherwise cleaned up.
  *
  * Revision 1.24  1994/09/21  12:28:11  mike
  * Change AI behavior for when player cloaked
@@ -73,26 +73,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add follow_path_start_seg and follow_path_end_seg to aistruct.h.
  *
  * Revision 1.22  1994/09/18  18:06:14  mike
- * Add Last_uncloaked_time and Last_uncloaked_position variables.
+ * Add Last_uncloakedTime and Last_uncloaked_position variables.
  *
  * Revision 1.21  1994/09/15  16:31:38  mike
  * Define GREEN_GUY
- * Add previous_visibility to ai_local struct.
+ * Add previous_visibility to tAILocal struct.
  *
  * Revision 1.20  1994/09/12  19:12:45  mike
- * Change some bytes to ints in ai_local so I could set watchpoints.
+ * Change some bytes to ints in tAILocal so I could set watchpoints.
  *
  * Revision 1.19  1994/08/25  21:53:31  mike
  * Add behavior, taking place of what used to be mode.
  *
  * Revision 1.18  1994/08/23  16:38:09  mike
- * rapidfire_count in ai_local.
+ * rapidfire_count in tAILocal.
  *
  * Revision 1.17  1994/08/19  17:38:23  mike
  * *** empty log message ***
  *
  * Revision 1.16  1994/08/17  22:18:58  mike
- * add time_since_processed to ai_local.
+ * add time_since_processed to tAILocal.
  *
  * Revision 1.15  1994/08/10  19:52:25  mike
  * Add nOverallAgitation.
@@ -104,7 +104,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Move constants from ai.c
  *
  * Revision 1.12  1994/07/19  15:26:24  mike
- * New ai_static and ai_local structures.
+ * New tAIStatic and tAILocal structures.
  *
  * Revision 1.11  1994/07/15  15:17:19  matt
  * Changes MAX_AI_FLAGS for better alignment
@@ -132,7 +132,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Constants indicating currently moving forward or backward through
 // path.  Note that you can add aip->direction to aip_path_index to
-// get next segment on path.
+// get next tSegment on path.
 #define AI_DIR_FORWARD  1
 #define AI_DIR_BACKWARD (-AI_DIR_FORWARD)
 
@@ -203,7 +203,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	short   mode;               //
 //	short   counter;            // kind of a hack, frame countdown until switch modes
 //	opath   paths[2];
-//	vms_vector movement_vector; // movement vector for one second
+//	vmsVector movement_vector; // movement vector for one second
 //} oai_state;
 
 #define SUB_FLAGS_GUNSEG        0x01
@@ -211,73 +211,73 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at player.  Can look real stupid!
 
 //  Constants defining meaning of flags in ai_state
-#define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in ai_static, allowing for one byte mode
+#define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStatic, allowing for one byte mode
 
-#define CURRENT_GUN     flags[0]    // This is the last gun the object fired from
+#define CURRENT_GUN     flags[0]    // This is the last gun the tObject fired from
 #define CURRENT_STATE   flags[1]    // current behavioral state
 #define GOAL_STATE      flags[2]    // goal state
 #define PATH_DIR        flags[3]    // direction traveling path, 1 = forward, -1 = backward, other = error!
-#define SUB_FLAGS       flags[4]    // bit 0: Set -> Robot's current gun in different segment than robot's center.
-#define GOALSIDE        flags[5]    // for guys who open doors, this is the side they are going after.
+#define SUB_FLAGS       flags[4]    // bit 0: Set -> Robot's current gun in different tSegment than robot's center.
+#define GOALSIDE        flags[5]    // for guys who open doors, this is the tSide they are going after.
 #define CLOAKED         flags[6]    // Cloaked now.
 #define SKIP_AI_COUNT   flags[7]    // Skip AI this frame, but decrement in DoAIFrame.
-#define  REMOTE_OWNER   flags[8]    // Who is controlling this remote AI object (multiplayer use only)
+#define  REMOTE_OWNER   flags[8]    // Who is controlling this remote AI tObject (multiplayer use only)
 #define  REMOTE_SLOT_NUM flags[9]   // What slot # is this robot in for remote control purposes (multiplayer use only)
 #define  MULTI_ANGER    flags[10]   // How angry is a robot in multiplayer mode
 
-// This is the stuff that is permanent for an AI object and is
+// This is the stuff that is permanent for an AI tObject and is
 // therefore saved to disk.
-typedef struct ai_static {
+typedef struct tAIStatic {
 	ubyte   behavior;               //
 	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
 	short   hide_segment;           // Segment to go to for hiding.
 	short   hide_index;             // Index in Path_seg_points
 	short   path_length;            // Length of hide path.
 	sbyte   cur_path_index;         // Current index in path.
-	sbyte   dying_sound_playing;    // !0 if this robot is playing its dying sound.
+	sbyte   dyingSound_playing;    // !0 if this robot is playing its dying sound.
 
-	// -- not needed! -- short   follow_path_start_seg;  // Start segment for robot which follows path.
-	// -- not needed! -- short   follow_path_end_seg;    // End segment for robot which follows path.
+	// -- not needed! -- short   follow_path_start_seg;  // Start tSegment for robot which follows path.
+	// -- not needed! -- short   follow_path_end_seg;    // End tSegment for robot which follows path.
 
 	short   danger_laser_num;
 	int     danger_laser_signature;
-	fix     dying_start_time;       // Time at which this robot started dying.
+	fix     dying_startTime;       // Time at which this robot started dying.
 
 	//sbyte   extras[28];             // 32 extra bytes for storing stuff so we don't have to change versions on disk
-} __pack__ ai_static;
+} __pack__ tAIStatic;
 
 // This is the stuff which doesn't need to be saved to disk.
-typedef struct ai_local {
+typedef struct tAILocal {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
-// player_awareness_type..rapidfire_count used to be bytes
+// player_awarenessType..rapidfire_count used to be bytes
 // goal_segment used to be short.
-	int     player_awareness_type;  // type of awareness of player
-	int     retry_count;            // number of retries in physics last time this object got moved.
+	int     player_awarenessType;  // nType of awareness of player
+	int     retry_count;            // number of retries in physics last time this tObject got moved.
 	int     consecutive_retries;    // number of retries in consecutive frames (ie, without a retry_count of 0)
 	int     mode;                   // current mode within behavior
 	int     previous_visibility;    // Visibility of player last time we checked.
 	int     rapidfire_count;        // number of shots fired rapidly
-	int     goal_segment;           // goal segment for current path
+	int     goal_segment;           // goal tSegment for current path
 
-	// -- MK, 10/21/95, unused -- fix     last_see_time, last_attack_time; // For sound effects, time at which player last seen, attacked
+	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which player last seen, attacked
 
-	fix     next_action_time;           // time in seconds until something happens, mode dependent
+	fix     next_actionTime;           // time in seconds until something happens, mode dependent
 	fix     next_fire;                  // time in seconds until can fire again
 	fix     next_fire2;                 // time in seconds until can fire again from second weapon
-	fix     player_awareness_time;      // time in seconds robot will be aware of player, 0 means not aware of player
+	fix     player_awarenessTime;      // time in seconds robot will be aware of player, 0 means not aware of player
 	fix     time_player_seen;           // absolute time in seconds at which player was last seen, might cause to go into follow_path mode
-	fix     time_player_sound_attacked; // absolute time in seconds at which player was last seen with visibility of 2.
-	fix     next_misc_sound_time;       // absolute time in seconds at which this robot last made an angry or lurking sound.
+	fix     time_playerSound_attacked; // absolute time in seconds at which player was last seen with visibility of 2.
+	fix     next_miscSoundTime;       // absolute time in seconds at which this robot last made an angry or lurking sound.
 	fix     time_since_processed;       // time since this robot last processed in DoAIFrame
-	vms_angvec goal_angles[MAX_SUBMODELS];  // angles for each subobject
-	vms_angvec delta_angles[MAX_SUBMODELS]; // angles for each subobject
-	sbyte   goal_state[MAX_SUBMODELS];      // Goal state for this sub-object
+	vmsAngVec goal_angles[MAX_SUBMODELS];  // angles for each subobject
+	vmsAngVec delta_angles[MAX_SUBMODELS]; // angles for each subobject
+	sbyte   goal_state[MAX_SUBMODELS];      // Goal state for this sub-tObject
 	sbyte   achieved_state[MAX_SUBMODELS];  // Last achieved state
-} ai_local;
+} tAILocal;
 
 typedef struct {
-	int         segnum;
-	vms_vector  point;
+	int         nSegment;
+	vmsVector  point;
 } point_seg;
 
 typedef struct {
@@ -295,8 +295,8 @@ extern int          nOverallAgitation;
 // the player last time he wasn't cloaked, and the time at which he
 // was uncloaked.  We should store this for each robot, but that's
 // memory expensive.
-//extern fix        Last_uncloaked_time;
-//extern vms_vector Last_uncloaked_position;
+//extern fix        Last_uncloakedTime;
+//extern vmsVector Last_uncloaked_position;
 
 extern void AIDoCloakStuff(void);
 

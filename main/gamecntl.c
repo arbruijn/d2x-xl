@@ -155,7 +155,7 @@ extern char WaitForRefuseAnswer, RefuseThisPlayer, RefuseTeam;
 
 #ifndef NDEBUG
 extern int	Mark_count;
-extern int	Speedtest_start_time;
+extern int	Speedtest_startTime;
 extern int	Speedtest_segnum;
 extern int	Speedtest_sidenum;
 extern int	Speedtest_frame_start;
@@ -166,7 +166,7 @@ extern int	*Toggle_var;
 extern int	last_drawn_cockpit[2];
 extern int	Debug_pause;
 
-extern fix	Show_view_text_timer;
+extern fix	Show_view_textTimer;
 
 //	Function prototypes --------------------------------------------------------
 
@@ -181,7 +181,7 @@ extern int	AllowedToFireMissile(void);
 extern int	AllowedToFireFlare(void);
 extern void	CheckRearView(void);
 extern int	create_special_path(void);
-extern void MovePlayerToSegment(segment *seg, int side);
+extern void MovePlayerToSegment(tSegment *seg, int tSide);
 extern void	kconfig_center_headset(void);
 extern void GameRenderFrameMono(void);
 extern void NewDemoStripFrames(char *, int);
@@ -204,8 +204,8 @@ void HandleVRKey(int key);
 
 void speedtest_init(void);
 void speedtest_frame(void);
-void advance_sound(void);
-void play_test_sound(void);
+void advanceSound(void);
+void play_testSound(void);
 
 #define key_isfunc(k) (((k&0xff)>=KEY_F1 && (k&0xff)<=KEY_F10) || (k&0xff)==KEY_F11 || (k&0xff)==KEY_F12)
 #define key_ismod(k)  ((k&0xff)==KEY_LALT || (k&0xff)==KEY_RALT || (k&0xff)==KEY_LSHIFT || (k&0xff)==KEY_RSHIFT || (k&0xff)==KEY_LCTRL || (k&0xff)==KEY_RCTRL)
@@ -220,7 +220,7 @@ void play_test_sound(void);
 void TransferEnergyToShield(fix time)
 {
 	fix e;		//how much energy gets transfered
-	static fix last_play_time=0;
+	static fix last_playTime=0;
 
 	if (time <= 0)
 		return;
@@ -238,12 +238,12 @@ void TransferEnergyToShield(fix time)
 	gameData.multi.players [gameData.multi.nLocalPlayer].shields += e/CONVERTER_SCALE;
 	MultiSendShields ();
 	gameStates.app.bUsingConverter = 1;
-	if (last_play_time > gameData.time.xGame)
-		last_play_time = 0;
+	if (last_playTime > gameData.time.xGame)
+		last_playTime = 0;
 
-	if (gameData.time.xGame > last_play_time+CONVERTER_SOUND_DELAY) {
+	if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
 		DigiPlaySampleOnce(SOUND_CONVERT_ENERGY, F1_0);
-		last_play_time = gameData.time.xGame;
+		last_playTime = gameData.time.xGame;
 	}
 
 }
@@ -256,7 +256,7 @@ void do_weapon_stuff(void);
 //------------------------------------------------------------------------------
 // Control Functions
 
-fix newdemo_single_frame_time;
+fix newdemo_single_frameTime;
 
 void update_vcr_state(void)
 {
@@ -264,9 +264,9 @@ void update_vcr_state(void)
 		gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
 	else if ((keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) && keyd_pressed[KEY_LEFT])
 		gameData.demo.nVcrState = ND_STATE_REWINDING;
-	else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frame_time) >= F1_0))
+	else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-	else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frame_time) >= F1_0))
+	else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 	else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))
 		gameData.demo.nVcrState = ND_STATE_PLAYBACK;
@@ -289,8 +289,8 @@ if (gameData.app.nGameMode & GM_HOARD)
 bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? SMART_MINE_INDEX : PROXIMITY_INDEX;
 otherBomb = SMART_MINE_INDEX + PROXIMITY_INDEX - bomb;
 
-if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [bomb] &&
-	 gameData.multi.players [gameData.multi.nLocalPlayer].secondary_ammo [otherBomb]) {
+if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb] &&
+	 gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [otherBomb]) {
 	bomb = otherBomb;
 	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMART_MINE_INDEX);
 	}
@@ -334,7 +334,7 @@ if (gameData.app.nGlobalMissileFiringCount < 0)
 	gameData.app.nGlobalMissileFiringCount = 0;
 //	Drop proximity bombs.
 if (Controls.drop_bombDownCount) {
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->segnum].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 		Controls.drop_bombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
@@ -416,7 +416,7 @@ void ApplyModifiedPalette(void)
 
 //------------------------------------------------------------------------------
 
-void format_time(char *str, int secs_int)
+void formatTime(char *str, int secs_int)
 {
 	int h, m, s;
 
@@ -436,7 +436,7 @@ int do_game_pause()
 {
 	int key;
 	char msg[1000];
-	char total_time[9], level_time[9];
+	char totalTime[9], levelTime[9];
 
 	key=0;
 
@@ -489,12 +489,12 @@ int do_game_pause()
 	SetPopupScreenMode();
 	GrPaletteStepLoad (NULL);
 
-	format_time(total_time, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].time_total) + gameData.multi.players [gameData.multi.nLocalPlayer].hours_total*3600);
-	format_time(level_time, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].time_level) + gameData.multi.players [gameData.multi.nLocalPlayer].hours_level*3600);
+	formatTime(totalTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursTotal*3600);
+	formatTime(levelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
 
    if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 		sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, level_time, total_time);
+				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, levelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
 				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board);
@@ -512,7 +512,7 @@ int do_game_pause()
 
 #if defined (WINDOWS)
 
-		if (!(VR_screen_flags & VRF_COMPATIBLE_MENUS)) {
+		if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS)) {
 			ShowBoxedMessage(msg);
 		}
 
@@ -527,7 +527,7 @@ int do_game_pause()
 				con_printf (CON_DEBUG, "Redrawing paused screen.\n");
 #endif
 				_RedrawScreen = FALSE;
-				if (VR_screen_flags & VRF_COMPATIBLE_MENUS) 
+				if (VR_screenFlags & VRF_COMPATIBLE_MENUS) 
 					GameRenderFrame();
 				gameStates.video.nScreenMode = -1;
 				SetPopupScreenMode();
@@ -582,7 +582,7 @@ int do_game_pause()
 		}
 	}
 	GrabMouse (1, 0);
-	if (VR_screen_flags & VRF_COMPATIBLE_MENUS) {
+	if (VR_screenFlags & VRF_COMPATIBLE_MENUS) {
 		ClearBoxedMessage();
 	}
 
@@ -618,7 +618,7 @@ void do_show_netgame_help()
    for (i=0;i<30;i++)
 	{
 	 m[i].text=(char *)&mtext[i];
-    m[i].type=NM_TYPE_TEXT;
+    m[i].nType=NM_TYPE_TEXT;
 	}
 
    sprintf (mtext[num], TXT_INFO_GAME, netGame.game_name); num++;
@@ -794,13 +794,13 @@ void HandleDeathKey(int key)
 
 inline int GuidedInMainView (void)
 {
-	object *gmP;
+	tObject *gmP;
 
 return gameOpts->render.cockpit.bGuidedInMainView &&
 		 (gmP = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]) && 
-		 (gmP->type == OBJ_WEAPON) && 
+		 (gmP->nType == OBJ_WEAPON) && 
 		 (gmP->id == GUIDEDMISS_ID) && 
-		 (gmP->signature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]);
+		 (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]);
 }
 
 //------------------------------------------------------------------------------
@@ -852,11 +852,11 @@ void HandleDemoKey(int key)
 			gameData.demo.nVcrState = ND_STATE_PAUSED;
 			break;
 		case KEY_LEFT:
-			newdemo_single_frame_time = TimerGetFixedSeconds();
+			newdemo_single_frameTime = TimerGetFixedSeconds();
 			gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 			break;
 		case KEY_RIGHT:
-			newdemo_single_frame_time = TimerGetFixedSeconds();
+			newdemo_single_frameTime = TimerGetFixedSeconds();
 			gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
 			break;
 		case KEY_CTRLED + KEY_RIGHT:
@@ -905,9 +905,9 @@ void HandleDemoKey(int key)
 
 			filename[0] = '\0';
 			memset (m, 0, sizeof (m));
-			m[0].type = NM_TYPE_TEXT; 
+			m[0].nType = NM_TYPE_TEXT; 
 			m[0].text = "output file name";
-			m[1].type = NM_TYPE_INPUT;
+			m[1].nType = NM_TYPE_INPUT;
 			m[1].text_len = 8; 
 			m[1].text = filename;
 			c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
@@ -915,8 +915,8 @@ void HandleDemoKey(int key)
 				break;
 			strcat(filename, ".dem");
 			num[0] = '\0';
-			m[ 0].type = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
-			m[ 1].type = NM_TYPE_INPUT;m[ 1].text_len = 16; m[1].text = num;
+			m[ 0].nType = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
+			m[ 1].nType = NM_TYPE_INPUT;m[ 1].text_len = 16; m[1].text = num;
 			c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
 			if (c == -2)
 				break;
@@ -944,13 +944,13 @@ int select_next_window_function(int w)
 			break;
 		case CV_REAR:
 			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.game_flags & NETGAME_FLAG_SHOW_MAP))) {
+			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
 			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.game_flags & NETGAME_FLAG_SHOW_MAP))) {
+			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_HEADSUP;
 				break;
 				}
@@ -1015,22 +1015,22 @@ void songs_goto_prev_song();
 #ifdef DOOR_DEBUGGING
 dump_door_debugging_info()
 {
-	object *objP;
-	vms_vector new_pos;
+	tObject *objP;
+	vmsVector new_pos;
 	fvi_query fq;
 	fvi_info hit_info;
 	int fate;
 	FILE *dfile;
 	int wall_numn;
 
-	obj = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+	obj = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 	VmVecScaleAdd(&new_pos, &objP->pos, &objP->orient.fvec, i2f(100);
 
 	fq.p0						= &objP->pos;
-	fq.startseg				= objP->segnum;
+	fq.startseg				= objP->nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
-	fq.thisobjnum			= gameData.multi.players [gameData.multi.nLocalPlayer].objnum;
+	fq.thisobjnum			= gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 	fq.ignore_obj_list	= NULL;
 	fq.flags					= 0;
 
@@ -1038,7 +1038,7 @@ dump_door_debugging_info()
 
 	dfile = fopen("door.out", "at");
 
-	fprintf(dfile, "FVI hit_type = %d\n", fate);
+	fprintf(dfile, "FVI hitType = %d\n", fate);
 	fprintf(dfile, "    hit_seg = %d\n", hit_info.hit_seg);
 	fprintf(dfile, "    hit_side = %d\n", hit_info.hit_side);
 	fprintf(dfile, "    hit_side_seg = %d\n", hit_info.hit_side_seg);
@@ -1046,34 +1046,34 @@ dump_door_debugging_info()
 
 	if (fate == HIT_WALL) {
 
-		wall_num = WallNumI (hit_info.hit_seg, hit_info.hit_side);
-		fprintf(dfile, "wall_num = %d\n", wall_num);
+		nWall = WallNumI (hit_info.hit_seg, hit_info.hit_side);
+		fprintf(dfile, "nWall = %d\n", nWall);
 	
-		if (IS_WALL (wall_num)) {
-			wall *wall = gameData.walls.walls + wall_num;
+		if (IS_WALL (nWall)) {
+			wall *wall = gameData.walls.walls + nWall;
 			active_door *d;
 			int i;
 	
-			fprintf(dfile, "    segnum = %d\n", wall->segnum);
-			fprintf(dfile, "    sidenum = %d\n", wall->sidenum);
+			fprintf(dfile, "    nSegment = %d\n", wall->nSegment);
+			fprintf(dfile, "    nSide = %d\n", wall->nSide);
 			fprintf(dfile, "    hps = %x\n", wall->hps);
 			fprintf(dfile, "    linked_wall = %d\n", wall->linked_wall);
-			fprintf(dfile, "    type = %d\n", wall->type);
+			fprintf(dfile, "    nType = %d\n", wall->nType);
 			fprintf(dfile, "    flags = %x\n", wall->flags);
 			fprintf(dfile, "    state = %d\n", wall->state);
-			fprintf(dfile, "    trigger = %d\n", wall->trigger);
+			fprintf(dfile, "    tTrigger = %d\n", wall->tTrigger);
 			fprintf(dfile, "    clip_num = %d\n", wall->clip_num);
 			fprintf(dfile, "    keys = %x\n", wall->keys);
 			fprintf(dfile, "    controlling_trigger = %d\n", wall->controlling_trigger);
-			fprintf(dfile, "    cloak_value = %d\n", wall->cloak_value);
+			fprintf(dfile, "    cloakValue = %d\n", wall->cloakValue);
 			fprintf(dfile, "\n");
 	
 	
 			for (i=0;i<gameData.walls.nOpenDoors;i++) {		//find door
 				d = &gameData.walls.activeDoors[i];
-				if (d->front_wallnum[0]==wall_num || 
-					 d->back_wallnum[0]==wall_num || 
-					 (d->n_parts==2 && (d->front_wallnum[1]==wall_num || d->back_wallnum[1]==wall_num)))
+				if (d->front_wallnum[0]==nWall || 
+					 d->back_wallnum[0]==nWall || 
+					 (d->n_parts==2 && (d->front_wallnum[1]==nWall || d->back_wallnum[1]==nWall)))
 					break;
 			} 
 	
@@ -1209,7 +1209,7 @@ int HandleSystemKey(int key)
 		case KEY_F3:
 			#ifdef WINDOWS		// HACK! these shouldn't work in 320x200 pause or in letterbox.
 				if (gameStates.app.bPlayerIsDead) break;
-				if (!(VR_screen_flags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
+				if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
 					screen_changed = -1;
 					break;
 				}
@@ -1235,7 +1235,7 @@ int HandleSystemKey(int key)
 		#ifdef WINDOWS
 			if (gameStates.app.bPlayerIsDead) 
 				break;
-			if (!(VR_screen_flags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
+			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
 				screen_changed = -1;
 				break;
 			}
@@ -1250,7 +1250,7 @@ int HandleSystemKey(int key)
 		#ifdef WINDOWS
 			if (gameStates.app.bPlayerIsDead) 
 				break;
-			if (!(VR_screen_flags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
+			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
 				screen_changed = -1;
 				break;
 			}
@@ -1703,7 +1703,7 @@ void HandleTestKey(int key)
 						MultiSendCloak();
 					#endif
 					AIDoCloakStuff();
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloak_time = gameData.time.xGame;
+					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
 #if TRACE
 					con_printf (CON_DEBUG, "You are cloaked!\n");
 #endif
@@ -1765,11 +1765,11 @@ void HandleTestKey(int key)
 
 #ifndef NDEBUG
 		case KEY_DEBUGGED+KEY_LAPOSTRO: 
-			Show_view_text_timer = 0x30000; 
+			Show_view_textTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
 			break;
 		case KEY_DEBUGGED+KEY_CTRLED+KEY_LAPOSTRO: 
-			Show_view_text_timer = 0x30000; 
+			Show_view_textTimer = 0x30000; 
 			ObjectGotoPrevViewer(); 
 			break;
 #endif
@@ -1801,18 +1801,18 @@ void HandleTestKey(int key)
 
 #ifndef NDEBUG
 		case KEY_DEBUGGED + KEY_F11: 
-			play_test_sound(); 
+			play_testSound(); 
 			break;
 		case KEY_DEBUGGED + KEY_SHIFTED+KEY_F11: 
-			advance_sound(); 
-			play_test_sound(); 
+			advanceSound(); 
+			play_testSound(); 
 			break;
 #endif
 
 		case KEY_DEBUGGED +KEY_F4: {
 			//fvi_info hit_data;
-			//vms_vector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
-			//vms_vector p1 = {-0x217865, -0x1b20000, 0x187de3e};
+			//vmsVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
+			//vmsVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
 			//FindVectorIntersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
 			break;
 		}
@@ -1856,7 +1856,7 @@ void HandleTestKey(int key)
 		case KEY_DEBUGGED+KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
 			slew_stop();
 			GameFlushInputs();
-			if ( gameData.objs.console->control_type != CT_FLYING ) {
+			if ( gameData.objs.console->controlType != CT_FLYING ) {
 				FlyInit(gameData.objs.console);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
@@ -1920,7 +1920,7 @@ void HandleTestKey(int key)
 			char text[FILENAME_LEN]="";
 			int item;
 			memset (&m, 0, sizeof (m));
-			m.type=NM_TYPE_INPUT; 
+			m.nType=NM_TYPE_INPUT; 
 			m.text_len = FILENAME_LEN; 
 			m.text = text;
 			item = ExecMenu( NULL, "Briefing to play?", 1, &m, NULL, NULL );
@@ -1965,7 +1965,7 @@ char OldHomingState[20];
 #ifndef NDEBUG
 void speedtest_init(void)
 {
-	Speedtest_start_time = TimerGetFixedSeconds();
+	Speedtest_startTime = TimerGetFixedSeconds();
 	Speedtest_on = 1;
 	Speedtest_segnum = 0;
 	Speedtest_sidenum = 0;
@@ -1979,7 +1979,7 @@ void speedtest_init(void)
 
 void speedtest_frame(void)
 {
-	vms_vector	view_dir, center_point;
+	vmsVector	view_dir, center_point;
 
 	Speedtest_sidenum=Speedtest_segnum % MAX_SIDES_PER_SEGMENT;
 
@@ -2003,8 +2003,8 @@ void speedtest_frame(void)
 
 		sprintf(msg, TXT_SPEEDTEST, 
 			gameData.app.nFrameCount-Speedtest_frame_start, 
-			f2fl(TimerGetFixedSeconds() - Speedtest_start_time), 
-			(double) (gameData.app.nFrameCount-Speedtest_frame_start) / f2fl(TimerGetFixedSeconds() - Speedtest_start_time));
+			f2fl(TimerGetFixedSeconds() - Speedtest_startTime), 
+			(double) (gameData.app.nFrameCount-Speedtest_frame_start) / f2fl(TimerGetFixedSeconds() - Speedtest_startTime));
 #if TRACE
 		con_printf (CON_DEBUG, "%s", msg);
 #endif
@@ -2022,29 +2022,29 @@ void speedtest_frame(void)
 //------------------------------------------------------------------------------
 //	Sounds [gameStates.app.bD1Data] for testing
 
-int test_sound_num = 0;
+int testSound_num = 0;
 int sound_nums[] = {10, 11, 20, 21, 30, 31, 32, 33, 40, 41, 50, 51, 60, 61, 62, 70, 80, 81, 82, 83, 90, 91};
 
 #define N_TEST_SOUNDS (sizeof(sound_nums) / sizeof(*sound_nums))
 
 //------------------------------------------------------------------------------
 
-void advance_sound()
+void advanceSound()
 {
-	if (++test_sound_num == N_TEST_SOUNDS)
-		test_sound_num=0;
+	if (++testSound_num == N_TEST_SOUNDS)
+		testSound_num=0;
 
 }
 
 //------------------------------------------------------------------------------
 
-short Test_sound = 251;
+short TestSound = 251;
 
-void play_test_sound()
+void play_testSound()
 {
 
-	// -- DigiPlaySample(sound_nums[test_sound_num], F1_0);
-	DigiPlaySample(Test_sound, F1_0);
+	// -- DigiPlaySample(sound_nums[testSound_num], F1_0);
+	DigiPlaySample(TestSound, F1_0);
 }
 
 #endif  //ifndef NDEBUG
@@ -2054,8 +2054,8 @@ void play_test_sound()
 int ReadControls()
 {
 	int key, skipControls = 0;
-	fix key_time;
-	static ubyte exploding_flag=0;
+	fix keyTime;
+	static ubyte explodingFlag=0;
 
 	gameStates.app.bPlayerFiredLaserThisFrame=-1;
 
@@ -2086,8 +2086,8 @@ int ReadControls()
 
 	if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
 
-		if (exploding_flag==0)  {
-			exploding_flag = 1;			// When player starts exploding, clear all input devices...
+		if (explodingFlag==0)  {
+			explodingFlag = 1;			// When player starts exploding, clear all input devices...
 			GameFlushInputs();
 		} else {
 			int i;
@@ -2110,13 +2110,13 @@ int ReadControls()
 				GameFlushInputs();
 		}
 	} else {
-		exploding_flag=0;
+		explodingFlag=0;
 	}
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK )
 		update_vcr_state();
 
-	while ((key=KeyInKeyTime(&key_time)) != 0)    {
+	while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 
 		if (gameData.marker.nDefiningMsg)
 		 {

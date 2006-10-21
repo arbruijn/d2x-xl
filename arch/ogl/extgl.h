@@ -86,7 +86,7 @@ GL_ARB_texture_cube_map
 GL_ARB_texture_mirrored_repeat
 GL_ARB_transpose_matrix
 GL_ARB_vertex_blend
-GL_ARB_vertex_buffer_object
+GL_ARB_vertex_bufferObject
 GL_ARB_vertex_program
 GL_ARB_window_pos
 GL_EXT_abgr
@@ -117,15 +117,15 @@ GL_ATI_draw_buffers
 GL_ATI_element_array
 GL_ATI_envmap_bumpmap
 GL_ATI_fragment_shader
-GL_ATI_map_object_buffer
+GL_ATI_mapObject_buffer
 GL_ATI_pn_triangles
 GL_ATI_separate_stencil
 GL_ATI_text_fragment_shader
 GL_ATI_texture_env_combine3
 GL_ATI_texture_float
 GL_ATI_texture_mirror_once
-GL_ATI_vertex_array_object;
-GL_ATI_vertex_attrib_array_object
+GL_ATI_vertex_arrayObject;
+GL_ATI_vertex_attrib_arrayObject
 GL_ATI_vertex_streams
 GL_ATIX_point_sprites
 GL_ATIX_texture_env_route
@@ -137,7 +137,7 @@ GL_NV_element_array
 GL_NV_evaluators
 GL_NV_fence
 GL_NV_float_buffer
-GL_NV_fog_distance
+GL_NV_fogDistance
 GL_NV_fragment_program
 GL_NV_half_float
 GL_NV_light_max_exponent
@@ -190,7 +190,7 @@ CHANGES
 
 24.03.03 I'm starting version numbering and protocolling the changes here from this release on. 
 This version will be 1.01. The additions in this version will be 
-ARB_vertex_buffer_object and hopefully cygwin support. Fixed a typo in a license.
+ARB_vertex_bufferObject and hopefully cygwin support. Fixed a typo in a license.
 */
 #ifndef __EXTGL_H__
 #define __EXTGL_H__
@@ -232,7 +232,7 @@ extern "C" {
 #endif
 
 /* stuff for NV_half_float extension (datatype and conversion functions) 
-   I hope this type will be reused for other 2 byte float extensions */
+   I hope this nType will be reused for other 2 byte float extensions */
 
 union ieee_half /* ieee-like 16 bit float */ 
 {
@@ -245,7 +245,7 @@ union ieee_half /* ieee-like 16 bit float */
     } ieee;
 };
 
-union ieee_single /* ieee-754 single floating point type */
+union ieee_single /* ieee-754 single floating point nType */
 {
     float f;
     struct 
@@ -942,7 +942,7 @@ WINGDIAPI void APIENTRY glBindTexture (GLenum target, GLuint texture);
 WINGDIAPI void APIENTRY glBitmap (GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, const GLubyte *bitmap);
 WINGDIAPI void APIENTRY glBlendFunc (GLenum sfactor, GLenum dfactor);
 WINGDIAPI void APIENTRY glCallList (GLuint list);
-WINGDIAPI void APIENTRY glCallLists (GLsizei n, GLenum type, const GLvoid *lists);
+WINGDIAPI void APIENTRY glCallLists (GLsizei n, GLenum nType, const GLvoid *lists);
 WINGDIAPI void APIENTRY glClear (GLbitfield mask);
 WINGDIAPI void APIENTRY glClearAccum (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 WINGDIAPI void APIENTRY glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
@@ -984,8 +984,8 @@ WINGDIAPI void APIENTRY glColor4us (GLushort red, GLushort green, GLushort blue,
 WINGDIAPI void APIENTRY glColor4usv (const GLushort *v);
 WINGDIAPI void APIENTRY glColorMask (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 WINGDIAPI void APIENTRY glColorMaterial (GLenum face, GLenum mode);
-WINGDIAPI void APIENTRY glColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
-WINGDIAPI void APIENTRY glCopyPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum type);
+WINGDIAPI void APIENTRY glColorPointer (GLint size, GLenum nType, GLsizei stride, const GLvoid *pointer);
+WINGDIAPI void APIENTRY glCopyPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum nType);
 WINGDIAPI void APIENTRY glCopyTexImage1D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border);
 WINGDIAPI void APIENTRY glCopyTexImage2D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
 WINGDIAPI void APIENTRY glCopyTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width);
@@ -1000,8 +1000,8 @@ WINGDIAPI void APIENTRY glDisable (GLenum cap);
 WINGDIAPI void APIENTRY glDisableClientState (GLenum array);
 WINGDIAPI void APIENTRY glDrawArrays (GLenum mode, GLint first, GLsizei count);
 WINGDIAPI void APIENTRY glDrawBuffer (GLenum mode);
-WINGDIAPI void APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum type, const GLvoid *indices);
-WINGDIAPI void APIENTRY glDrawPixels (GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+WINGDIAPI void APIENTRY glDrawElements (GLenum mode, GLsizei count, GLenum nType, const GLvoid *indices);
+WINGDIAPI void APIENTRY glDrawPixels (GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *pixels);
 WINGDIAPI void APIENTRY glEdgeFlag (GLboolean flag);
 WINGDIAPI void APIENTRY glEdgeFlagPointer (GLsizei stride, const GLvoid *pointer);
 WINGDIAPI void APIENTRY glEdgeFlagv (const GLboolean *flag);
@@ -1021,7 +1021,7 @@ WINGDIAPI void APIENTRY glEvalMesh1 (GLenum mode, GLint i1, GLint i2);
 WINGDIAPI void APIENTRY glEvalMesh2 (GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
 WINGDIAPI void APIENTRY glEvalPoint1 (GLint i);
 WINGDIAPI void APIENTRY glEvalPoint2 (GLint i, GLint j);
-WINGDIAPI void APIENTRY glFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
+WINGDIAPI void APIENTRY glFeedbackBuffer (GLsizei size, GLenum nType, GLfloat *buffer);
 WINGDIAPI void APIENTRY glFinish (void);
 WINGDIAPI void APIENTRY glFlush (void);
 WINGDIAPI void APIENTRY glFogf (GLenum pname, GLfloat param);
@@ -1056,14 +1056,14 @@ WINGDIAPI void APIENTRY glGetTexEnviv (GLenum target, GLenum pname, GLint *param
 WINGDIAPI void APIENTRY glGetTexGendv (GLenum coord, GLenum pname, GLdouble *params);
 WINGDIAPI void APIENTRY glGetTexGenfv (GLenum coord, GLenum pname, GLfloat *params);
 WINGDIAPI void APIENTRY glGetTexGeniv (GLenum coord, GLenum pname, GLint *params);
-WINGDIAPI void APIENTRY glGetTexImage (GLenum target, GLint level, GLenum format, GLenum type, GLvoid *pixels);
+WINGDIAPI void APIENTRY glGetTexImage (GLenum target, GLint level, GLenum format, GLenum nType, GLvoid *pixels);
 WINGDIAPI void APIENTRY glGetTexLevelParameterfv (GLenum target, GLint level, GLenum pname, GLfloat *params);
 WINGDIAPI void APIENTRY glGetTexLevelParameteriv (GLenum target, GLint level, GLenum pname, GLint *params);
 WINGDIAPI void APIENTRY glGetTexParameterfv (GLenum target, GLenum pname, GLfloat *params);
 WINGDIAPI void APIENTRY glGetTexParameteriv (GLenum target, GLenum pname, GLint *params);
 WINGDIAPI void APIENTRY glHint (GLenum target, GLenum mode);
 WINGDIAPI void APIENTRY glIndexMask (GLuint mask);
-WINGDIAPI void APIENTRY glIndexPointer (GLenum type, GLsizei stride, const GLvoid *pointer);
+WINGDIAPI void APIENTRY glIndexPointer (GLenum nType, GLsizei stride, const GLvoid *pointer);
 WINGDIAPI void APIENTRY glIndexd (GLdouble c);
 WINGDIAPI void APIENTRY glIndexdv (const GLdouble *c);
 WINGDIAPI void APIENTRY glIndexf (GLfloat c);
@@ -1121,7 +1121,7 @@ WINGDIAPI void APIENTRY glNormal3i (GLint nx, GLint ny, GLint nz);
 WINGDIAPI void APIENTRY glNormal3iv (const GLint *v);
 WINGDIAPI void APIENTRY glNormal3s (GLshort nx, GLshort ny, GLshort nz);
 WINGDIAPI void APIENTRY glNormal3sv (const GLshort *v);
-WINGDIAPI void APIENTRY glNormalPointer (GLenum type, GLsizei stride, const GLvoid *pointer);
+WINGDIAPI void APIENTRY glNormalPointer (GLenum nType, GLsizei stride, const GLvoid *pointer);
 WINGDIAPI void APIENTRY glOrtho (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
 WINGDIAPI void APIENTRY glPassThrough (GLfloat token);
 WINGDIAPI void APIENTRY glPixelMapfv (GLenum map, GLsizei mapsize, const GLfloat *values);
@@ -1171,7 +1171,7 @@ WINGDIAPI void APIENTRY glRasterPos4iv (const GLint *v);
 WINGDIAPI void APIENTRY glRasterPos4s (GLshort x, GLshort y, GLshort z, GLshort w);
 WINGDIAPI void APIENTRY glRasterPos4sv (const GLshort *v);
 WINGDIAPI void APIENTRY glReadBuffer (GLenum mode);
-WINGDIAPI void APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels);
+WINGDIAPI void APIENTRY glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum nType, GLvoid *pixels);
 WINGDIAPI void APIENTRY glRectd (GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2);
 WINGDIAPI void APIENTRY glRectdv (const GLdouble *v1, const GLdouble *v2);
 WINGDIAPI void APIENTRY glRectf (GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
@@ -1223,7 +1223,7 @@ WINGDIAPI void APIENTRY glTexCoord4i (GLint s, GLint t, GLint r, GLint q);
 WINGDIAPI void APIENTRY glTexCoord4iv (const GLint *v);
 WINGDIAPI void APIENTRY glTexCoord4s (GLshort s, GLshort t, GLshort r, GLshort q);
 WINGDIAPI void APIENTRY glTexCoord4sv (const GLshort *v);
-WINGDIAPI void APIENTRY glTexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+WINGDIAPI void APIENTRY glTexCoordPointer (GLint size, GLenum nType, GLsizei stride, const GLvoid *pointer);
 WINGDIAPI void APIENTRY glTexEnvf (GLenum target, GLenum pname, GLfloat param);
 WINGDIAPI void APIENTRY glTexEnvfv (GLenum target, GLenum pname, const GLfloat *params);
 WINGDIAPI void APIENTRY glTexEnvi (GLenum target, GLenum pname, GLint param);
@@ -1234,14 +1234,14 @@ WINGDIAPI void APIENTRY glTexGenf (GLenum coord, GLenum pname, GLfloat param);
 WINGDIAPI void APIENTRY glTexGenfv (GLenum coord, GLenum pname, const GLfloat *params);
 WINGDIAPI void APIENTRY glTexGeni (GLenum coord, GLenum pname, GLint param);
 WINGDIAPI void APIENTRY glTexGeniv (GLenum coord, GLenum pname, const GLint *params);
-WINGDIAPI void APIENTRY glTexImage1D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
-WINGDIAPI void APIENTRY glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+WINGDIAPI void APIENTRY glTexImage1D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum nType, const GLvoid *pixels);
+WINGDIAPI void APIENTRY glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum nType, const GLvoid *pixels);
 WINGDIAPI void APIENTRY glTexParameterf (GLenum target, GLenum pname, GLfloat param);
 WINGDIAPI void APIENTRY glTexParameterfv (GLenum target, GLenum pname, const GLfloat *params);
 WINGDIAPI void APIENTRY glTexParameteri (GLenum target, GLenum pname, GLint param);
 WINGDIAPI void APIENTRY glTexParameteriv (GLenum target, GLenum pname, const GLint *params);
-WINGDIAPI void APIENTRY glTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid *pixels);
-WINGDIAPI void APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *pixels);
+WINGDIAPI void APIENTRY glTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum nType, const GLvoid *pixels);
+WINGDIAPI void APIENTRY glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *pixels);
 WINGDIAPI void APIENTRY glTranslated (GLdouble x, GLdouble y, GLdouble z);
 WINGDIAPI void APIENTRY glTranslatef (GLfloat x, GLfloat y, GLfloat z);
 WINGDIAPI void APIENTRY glVertex2d (GLdouble x, GLdouble y);
@@ -1268,7 +1268,7 @@ WINGDIAPI void APIENTRY glVertex4i (GLint x, GLint y, GLint z, GLint w);
 WINGDIAPI void APIENTRY glVertex4iv (const GLint *v);
 WINGDIAPI void APIENTRY glVertex4s (GLshort x, GLshort y, GLshort z, GLshort w);
 WINGDIAPI void APIENTRY glVertex4sv (const GLshort *v);
-WINGDIAPI void APIENTRY glVertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+WINGDIAPI void APIENTRY glVertexPointer (GLint size, GLenum nType, GLsizei stride, const GLvoid *pointer);
 WINGDIAPI void APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
 
 /* OpenGL 1.2 */
@@ -1393,20 +1393,20 @@ WINGDIAPI void APIENTRY glViewport (GLint x, GLint y, GLsizei width, GLsizei hei
 #define GL_CONSTANT_ALPHA                                       0x8003
 #define GL_ONE_MINUS_CONSTANT_ALPHA                             0x8004
 
-typedef void (APIENTRY * glColorTablePROC) (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
-typedef void (APIENTRY * glColorSubTablePROC) (GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, const GLvoid *data );
+typedef void (APIENTRY * glColorTablePROC) (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum nType, const GLvoid *table );
+typedef void (APIENTRY * glColorSubTablePROC) (GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum nType, const GLvoid *data );
 typedef void (APIENTRY * glColorTableParameterivPROC) (GLenum target, GLenum pname, const GLint *params);
 typedef void (APIENTRY * glColorTableParameterfvPROC) (GLenum target, GLenum pname, const GLfloat *params);
 typedef void (APIENTRY * glCopyColorSubTablePROC) (GLenum target, GLsizei start, GLint x, GLint y, GLsizei width );
 typedef void (APIENTRY * glCopyColorTablePROC) (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width );
-typedef void (APIENTRY * glGetColorTablePROC) (GLenum target, GLenum format, GLenum type, GLvoid *table );
+typedef void (APIENTRY * glGetColorTablePROC) (GLenum target, GLenum format, GLenum nType, GLvoid *table );
 typedef void (APIENTRY * glGetColorTableParameterfvPROC) (GLenum target, GLenum pname, GLfloat *params );
 typedef void (APIENTRY * glGetColorTableParameterivPROC) (GLenum target, GLenum pname, GLint *params );
 typedef void (APIENTRY * glBlendEquationPROC) (GLenum mode );
 typedef void (APIENTRY * glBlendColorPROC) (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
 typedef void (APIENTRY * glHistogramPROC) (GLenum target, GLsizei width, GLenum internalformat, GLboolean sink );
 typedef void (APIENTRY * glResetHistogramPROC) (GLenum target );
-typedef void (APIENTRY * glGetHistogramPROC) (GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid *values );
+typedef void (APIENTRY * glGetHistogramPROC) (GLenum target, GLboolean reset, GLenum format, GLenum nType, GLvoid *values );
 typedef void (APIENTRY * glGetHistogramParameterfvPROC) (GLenum target, GLenum pname, GLfloat *params );
 typedef void (APIENTRY * glGetHistogramParameterivPROC) (GLenum target, GLenum pname, GLint *params );
 typedef void (APIENTRY * glMinmaxPROC) (GLenum target, GLenum internalformat, GLboolean sink );
@@ -1414,22 +1414,22 @@ typedef void (APIENTRY * glResetMinmaxPROC) (GLenum target );
 typedef void (APIENTRY * glGetMinmaxPROC) (GLenum target, GLboolean reset, GLenum format, GLenum types, GLvoid *values );
 typedef void (APIENTRY * glGetMinmaxParameterfvPROC) (GLenum target, GLenum pname, GLfloat *params );
 typedef void (APIENTRY * glGetMinmaxParameterivPROC) (GLenum target, GLenum pname, GLint *params );
-typedef void (APIENTRY * glConvolutionFilter1DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *image );
-typedef void (APIENTRY * glConvolutionFilter2DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *image );
+typedef void (APIENTRY * glConvolutionFilter1DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum nType, const GLvoid *image );
+typedef void (APIENTRY * glConvolutionFilter2DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *image );
 typedef void (APIENTRY * glConvolutionParameterfPROC) (GLenum target, GLenum pname, GLfloat params );
 typedef void (APIENTRY * glConvolutionParameterfvPROC) (GLenum target, GLenum pname, const GLfloat *params );
 typedef void (APIENTRY * glConvolutionParameteriPROC) (GLenum target, GLenum pname, GLint params );
 typedef void (APIENTRY * glConvolutionParameterivPROC) (GLenum target, GLenum pname, const GLint *params );
 typedef void (APIENTRY * glCopyConvolutionFilter1DPROC) (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width );
 typedef void (APIENTRY * glCopyConvolutionFilter2DPROC) (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height);
-typedef void (APIENTRY * glGetConvolutionFilterPROC) (GLenum target, GLenum format, GLenum type, GLvoid *image );
+typedef void (APIENTRY * glGetConvolutionFilterPROC) (GLenum target, GLenum format, GLenum nType, GLvoid *image );
 typedef void (APIENTRY * glGetConvolutionParameterfvPROC) (GLenum target, GLenum pname, GLfloat *params );
 typedef void (APIENTRY * glGetConvolutionParameterivPROC) (GLenum target, GLenum pname, GLint *params );
-typedef void (APIENTRY * glSeparableFilter2DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *row, const GLvoid *column );
-typedef void (APIENTRY * glGetSeparableFilterPROC) (GLenum target, GLenum format, GLenum type, GLvoid *row, GLvoid *column, GLvoid *span );
-typedef void (APIENTRY * glDrawRangeElementsPROC) (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
-typedef void (APIENTRY * glTexImage3DPROC) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
-typedef void (APIENTRY * glTexSubImage3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
+typedef void (APIENTRY * glSeparableFilter2DPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *row, const GLvoid *column );
+typedef void (APIENTRY * glGetSeparableFilterPROC) (GLenum target, GLenum format, GLenum nType, GLvoid *row, GLvoid *column, GLvoid *span );
+typedef void (APIENTRY * glDrawRangeElementsPROC) (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum nType, const GLvoid *indices );
+typedef void (APIENTRY * glTexImage3DPROC) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum nType, const GLvoid *pixels );
+typedef void (APIENTRY * glTexSubImage3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum nType, const GLvoid *pixels);
 typedef void (APIENTRY * glCopyTexSubImage3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height );
 
 #if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
@@ -1475,20 +1475,20 @@ extern glCopyTexSubImage3DPROC glCopyTexSubImage3D;
 
 #else
 
-extern void APIENTRY glColorTable (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *table );
-extern void APIENTRY glColorSubTable (GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, const GLvoid *data );
+extern void APIENTRY glColorTable (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum nType, const GLvoid *table );
+extern void APIENTRY glColorSubTable (GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum nType, const GLvoid *data );
 extern void APIENTRY glColorTableParameteriv (GLenum target, GLenum pname, const GLint *params);
 extern void APIENTRY glColorTableParameterfv (GLenum target, GLenum pname, const GLfloat *params);
 extern void APIENTRY glCopyColorSubTable (GLenum target, GLsizei start, GLint x, GLint y, GLsizei width );
 extern void APIENTRY glCopyColorTable (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width );
-extern void APIENTRY glGetColorTable (GLenum target, GLenum format, GLenum type, GLvoid *table );
+extern void APIENTRY glGetColorTable (GLenum target, GLenum format, GLenum nType, GLvoid *table );
 extern void APIENTRY glGetColorTableParameterfv (GLenum target, GLenum pname, GLfloat *params );
 extern void APIENTRY glGetColorTableParameteriv (GLenum target, GLenum pname, GLint *params );
 extern void APIENTRY glBlendEquation (GLenum mode );
 extern void APIENTRY glBlendColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha );
 extern void APIENTRY glHistogram (GLenum target, GLsizei width, GLenum internalformat, GLboolean sink );
 extern void APIENTRY glResetHistogram (GLenum target );
-extern void APIENTRY glGetHistogram (GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid *values );
+extern void APIENTRY glGetHistogram (GLenum target, GLboolean reset, GLenum format, GLenum nType, GLvoid *values );
 extern void APIENTRY glGetHistogramParameterfv (GLenum target, GLenum pname, GLfloat *params );
 extern void APIENTRY glGetHistogramParameteriv (GLenum target, GLenum pname, GLint *params );
 extern void APIENTRY glMinmax (GLenum target, GLenum internalformat, GLboolean sink );
@@ -1496,22 +1496,22 @@ extern void APIENTRY glResetMinmax (GLenum target );
 extern void APIENTRY glGetMinmax (GLenum target, GLboolean reset, GLenum format, GLenum types, GLvoid *values );
 extern void APIENTRY glGetMinmaxParameterfv (GLenum target, GLenum pname, GLfloat *params );
 extern void APIENTRY glGetMinmaxParameteriv (GLenum target, GLenum pname, GLint *params );
-extern void APIENTRY glConvolutionFilter1D (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, const GLvoid *image );
-extern void APIENTRY glConvolutionFilter2D (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *image );
+extern void APIENTRY glConvolutionFilter1D (GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum nType, const GLvoid *image );
+extern void APIENTRY glConvolutionFilter2D (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *image );
 extern void APIENTRY glConvolutionParameterf (GLenum target, GLenum pname, GLfloat params );
 extern void APIENTRY glConvolutionParameterfv (GLenum target, GLenum pname, const GLfloat *params );
 extern void APIENTRY glConvolutionParameteri (GLenum target, GLenum pname, GLint params );
 extern void APIENTRY glConvolutionParameteriv (GLenum target, GLenum pname, const GLint *params );
 extern void APIENTRY glCopyConvolutionFilter1D (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width );
 extern void APIENTRY glCopyConvolutionFilter2D (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height);
-extern void APIENTRY glGetConvolutionFilter (GLenum target, GLenum format, GLenum type, GLvoid *image );
+extern void APIENTRY glGetConvolutionFilter (GLenum target, GLenum format, GLenum nType, GLvoid *image );
 extern void APIENTRY glGetConvolutionParameterfv (GLenum target, GLenum pname, GLfloat *params );
 extern void APIENTRY glGetConvolutionParameteriv (GLenum target, GLenum pname, GLint *params );
-extern void APIENTRY glSeparableFilter2D (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid *row, const GLvoid *column );
-extern void APIENTRY glGetSeparableFilter (GLenum target, GLenum format, GLenum type, GLvoid *row, GLvoid *column, GLvoid *span );
-extern void APIENTRY glDrawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
-extern void APIENTRY glTexImage3D (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *pixels );
-extern void APIENTRY glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid *pixels);
+extern void APIENTRY glSeparableFilter2D (GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum nType, const GLvoid *row, const GLvoid *column );
+extern void APIENTRY glGetSeparableFilter (GLenum target, GLenum format, GLenum nType, GLvoid *row, GLvoid *column, GLvoid *span );
+extern void APIENTRY glDrawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum nType, const GLvoid *indices );
+extern void APIENTRY glTexImage3D (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum nType, const GLvoid *pixels );
+extern void APIENTRY glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum nType, const GLvoid *pixels);
 extern void APIENTRY glCopyTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height );
 
 #endif /* WIN32 */
@@ -1840,9 +1840,9 @@ typedef void (APIENTRY * glFogCoordfPROC) (GLfloat coord);
 typedef void (APIENTRY * glFogCoordfvPROC) (const GLfloat *coord);
 typedef void (APIENTRY * glFogCoorddPROC) (GLdouble coord);
 typedef void (APIENTRY * glFogCoorddvPROC) (const GLdouble *coord);
-typedef void (APIENTRY * glFogCoordPointerPROC) (GLenum type, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * glFogCoordPointerPROC) (GLenum nType, GLsizei stride, const GLvoid *pointer);
 typedef void (APIENTRY * glMultiDrawArraysPROC) (GLenum mode, GLint *first, GLsizei *count, GLsizei primcount);
-typedef void (APIENTRY * glMultiDrawElementsPROC) (GLenum mode, GLsizei *count, GLenum type, const GLvoid **indices, GLsizei primcount);
+typedef void (APIENTRY * glMultiDrawElementsPROC) (GLenum mode, GLsizei *count, GLenum nType, const GLvoid **indices, GLsizei primcount);
 typedef void (APIENTRY * glPointParameterfPROC) (GLenum pname, GLfloat param);
 typedef void (APIENTRY * glPointParameterfvPROC) (GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glSecondaryColor3bPROC) (GLbyte red, GLbyte green, GLbyte blue);
@@ -1861,7 +1861,7 @@ typedef void (APIENTRY * glSecondaryColor3uiPROC) (GLuint red, GLuint green, GLu
 typedef void (APIENTRY * glSecondaryColor3uivPROC) (const GLuint *v);
 typedef void (APIENTRY * glSecondaryColor3usPROC) (GLushort red, GLushort green, GLushort blue);
 typedef void (APIENTRY * glSecondaryColor3usvPROC) (const GLushort *v);
-typedef void (APIENTRY * glSecondaryColorPointerPROC) (GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+typedef void (APIENTRY * glSecondaryColorPointerPROC) (GLint size, GLenum nType, GLsizei stride, GLvoid *pointer);
 typedef void (APIENTRY * glBlendFuncSeparatePROC) (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
 typedef void (APIENTRY * glWindowPos2dPROC) (GLdouble x, GLdouble y);
 typedef void (APIENTRY * glWindowPos2fPROC) (GLfloat x, GLfloat y);
@@ -1937,9 +1937,9 @@ extern void APIENTRY glFogCoordf (GLfloat coord);
 extern void APIENTRY glFogCoordfv (const GLfloat *coord);
 extern void APIENTRY glFogCoordd (GLdouble coord);
 extern void APIENTRY glFogCoorddv (const GLdouble *coord);
-extern void APIENTRY glFogCoordPointer (GLenum type, GLsizei stride, const GLvoid *pointer);
+extern void APIENTRY glFogCoordPointer (GLenum nType, GLsizei stride, const GLvoid *pointer);
 extern void APIENTRY glMultiDrawArrays (GLenum mode, GLint *first, GLsizei *count, GLsizei primcount);
-extern void APIENTRY glMultiDrawElements (GLenum mode, GLsizei *count, GLenum type, const GLvoid **indices, GLsizei primcount);
+extern void APIENTRY glMultiDrawElements (GLenum mode, GLsizei *count, GLenum nType, const GLvoid **indices, GLsizei primcount);
 extern void APIENTRY glPointParameterf (GLenum pname, GLfloat param);
 extern void APIENTRY glPointParameterfv (GLenum pname, GLfloat *params);
 extern void APIENTRY glSecondaryColor3b (GLbyte red, GLbyte green, GLbyte blue);
@@ -1958,7 +1958,7 @@ extern void APIENTRY glSecondaryColor3ui (GLuint red, GLuint green, GLuint blue)
 extern void APIENTRY glSecondaryColor3uiv (const GLuint *v);
 extern void APIENTRY glSecondaryColor3us (GLushort red, GLushort green, GLushort blue);
 extern void APIENTRY glSecondaryColor3usv (const GLushort *v);
-extern void APIENTRY glSecondaryColorPointer (GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+extern void APIENTRY glSecondaryColorPointer (GLint size, GLenum nType, GLsizei stride, GLvoid *pointer);
 extern void APIENTRY glBlendFuncSeparate (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
 extern void APIENTRY glWindowPos2d (GLdouble x, GLdouble y);
 extern void APIENTRY glWindowPos2f (GLfloat x, GLfloat y);
@@ -2363,7 +2363,7 @@ typedef void (APIENTRY * glSecondaryColor3uiEXTPROC) (GLuint red, GLuint green, 
 typedef void (APIENTRY * glSecondaryColor3uivEXTPROC) (const GLuint *v);
 typedef void (APIENTRY * glSecondaryColor3usEXTPROC) (GLushort red, GLushort green, GLushort blue);
 typedef void (APIENTRY * glSecondaryColor3usvEXTPROC) (const GLushort *v);
-typedef void (APIENTRY * glSecondaryColorPointerEXTPROC) (GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+typedef void (APIENTRY * glSecondaryColorPointerEXTPROC) (GLint size, GLenum nType, GLsizei stride, GLvoid *pointer);
 
 extern glSecondaryColor3bEXTPROC glSecondaryColor3bEXT;
 extern glSecondaryColor3bvEXTPROC glSecondaryColor3bvEXT;
@@ -2405,7 +2405,7 @@ typedef void (APIENTRY * glFogCoordfEXTPROC) (GLfloat coord);
 typedef void (APIENTRY * glFogCoordfvEXTPROC) (const GLfloat *coord);
 typedef void (APIENTRY * glFogCoorddEXTPROC) (GLdouble coord);
 typedef void (APIENTRY * glFogCoorddvEXTPROC) (const GLdouble *coord);
-typedef void (APIENTRY * glFogCoordPointerEXTPROC) (GLenum type, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * glFogCoordPointerEXTPROC) (GLenum nType, GLsizei stride, const GLvoid *pointer);
 
 extern glFogCoordfEXTPROC glFogCoordfEXT;
 extern glFogCoordfvEXTPROC glFogCoordfvEXT;
@@ -2719,14 +2719,14 @@ extern glSampleCoverageARBPROC glSampleCoverageARB;
 /*------------NV_FOG_DISTANCE----------------------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_NV_fog_distance
-#define GL_NV_fog_distance 1
+#ifndef GL_NV_fogDistance
+#define GL_NV_fogDistance 1
 
 #define GL_FOG_DISTANCE_MODE_NV                                 0x855A
 #define GL_EYE_RADIAL_NV                                        0x855B
 #define GL_EYE_PLANE_ABSOLUTE_NV                                0x855C
 
-#endif /* GL_NV_fog_distance */
+#endif /* GL_NV_fogDistance */
 
 /*-------------------------------------------------------------------*/
 /*------------EXT_TEXTURE_FILTER_ANISOTROPIC-------------------------*/
@@ -2787,7 +2787,7 @@ extern glSampleCoverageARBPROC glSampleCoverageARB;
 
 typedef void (APIENTRY * glVertexWeightfEXTPROC) (GLfloat weight);
 typedef void (APIENTRY * glVertexWeightfvEXTPROC) (const GLfloat *weight);
-typedef void (APIENTRY * glVertexWeightPointerEXTPROC) (GLsizei size, GLenum type, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * glVertexWeightPointerEXTPROC) (GLsizei size, GLenum nType, GLsizei stride, const GLvoid *pointer);
 
 extern glVertexWeightfEXTPROC glVertexWeightfEXT;
 extern glVertexWeightfvEXTPROC glVertexWeightfvEXT;
@@ -2910,7 +2910,7 @@ typedef void (APIENTRY * glProgramParameter4fvNVPROC) (GLenum target, GLuint ind
 typedef void (APIENTRY * glProgramParameters4dvNVPROC) (GLenum target, GLuint index, GLuint num, const GLdouble *params);
 typedef void (APIENTRY * glProgramParameters4fvNVPROC) (GLenum target, GLuint index, GLuint num, const GLfloat *params);
 typedef void (APIENTRY * glTrackMatrixNVPROC) (GLenum target, GLuint address, GLenum matrix, GLenum transform);
-typedef void (APIENTRY * glVertexAttribPointerNVPROC) (GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * glVertexAttribPointerNVPROC) (GLuint index, GLint size, GLenum nType, GLsizei stride, const GLvoid *pointer);
 typedef void (APIENTRY * glVertexAttrib1sNVPROC) (GLuint index, GLshort x);
 typedef void (APIENTRY * glVertexAttrib1fNVPROC) (GLuint index, GLfloat x);
 typedef void (APIENTRY * glVertexAttrib1dNVPROC) (GLuint index, GLdouble x);
@@ -3203,10 +3203,10 @@ extern glGetCombinerStageParameterfvNVPROC glGetCombinerStageParameterfvNV;
 #define GL_MAX_MAP_TESSELLATION_NV                              0x86D6
 #define GL_MAX_RATIONAL_EVAL_ORDER_NV                           0x86D7
 
-typedef void (APIENTRY * glMapControlPointsNVPROC) (GLenum target, GLuint index, GLenum type, GLsizei ustride, GLsizei vstride, GLint uorder, GLint vorder, GLboolean packed, const GLvoid *points);
+typedef void (APIENTRY * glMapControlPointsNVPROC) (GLenum target, GLuint index, GLenum nType, GLsizei ustride, GLsizei vstride, GLint uorder, GLint vorder, GLboolean packed, const GLvoid *points);
 typedef void (APIENTRY * glMapParameterivNVPROC) (GLenum target, GLenum pname, const GLint *params);
 typedef void (APIENTRY * glMapParameterfvNVPROC) (GLenum target, GLenum pname, const GLfloat *params);
-typedef void (APIENTRY * glGetMapControlPointsNVPROC) (GLenum target, GLuint index, GLenum type, GLsizei ustride, GLsizei vstride, GLboolean packed, GLvoid *points);
+typedef void (APIENTRY * glGetMapControlPointsNVPROC) (GLenum target, GLuint index, GLenum nType, GLsizei ustride, GLsizei vstride, GLboolean packed, GLvoid *points);
 typedef void (APIENTRY * glGetMapParameterivNVPROC) (GLenum target, GLenum pname, GLint *params);
 typedef void (APIENTRY * glGetMapParameterfvNVPROC) (GLenum target, GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glGetMapAttribParameterivNVPROC) (GLenum target, GLuint index, GLenum pname, GLint *params);
@@ -3349,7 +3349,7 @@ typedef void (APIENTRY * glWeightdvARBPROC) (GLint size, GLdouble *weights);
 typedef void (APIENTRY * glWeightubvARBPROC) (GLint size, GLubyte *weights);
 typedef void (APIENTRY * glWeightusvARBPROC) (GLint size, GLushort *weights);
 typedef void (APIENTRY * glWeightuivARBPROC) (GLint size, GLuint *weights);
-typedef void (APIENTRY * glWeightPointerARBPROC) (GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+typedef void (APIENTRY * glWeightPointerARBPROC) (GLint size, GLenum nType, GLsizei stride, GLvoid *pointer);
 typedef void (APIENTRY * glVertexBlendARBPROC) (GLint count);
 
 extern glWeightbvARBPROC glWeightbvARB;
@@ -3373,7 +3373,7 @@ extern glVertexBlendARBPROC glVertexBlendARB;
 #define GL_EXT_multi_draw_arrays 1
 
 typedef void (APIENTRY * glMultiDrawArraysEXTPROC) (GLenum mode, GLint *first, GLsizei *count, GLsizei primcount);
-typedef void (APIENTRY * glMultiDrawElementsEXTPROC) (GLenum mode, GLsizei *count, GLenum type, const GLvoid **indices, GLsizei primcount);
+typedef void (APIENTRY * glMultiDrawElementsEXTPROC) (GLenum mode, GLsizei *count, GLenum nType, const GLvoid **indices, GLsizei primcount);
 
 extern glMultiDrawArraysEXTPROC glMultiDrawArraysEXT;
 extern glMultiDrawElementsEXTPROC glMultiDrawElementsEXT;
@@ -3402,7 +3402,7 @@ typedef void (APIENTRY * glCurrentPaletteMatrixARBPROC) (GLint index);
 typedef void (APIENTRY * glMatrixIndexubvARBPROC) (GLint size, GLubyte *indices);
 typedef void (APIENTRY * glMatrixIndexusvARBPROC) (GLint size, GLushort *indices);
 typedef void (APIENTRY * glMatrixIndexuivARBPROC) (GLint size, GLuint *indices);
-typedef void (APIENTRY * glMatrixIndexPointerARBPROC) (GLint size, GLenum type, GLsizei stride, GLvoid *pointer);
+typedef void (APIENTRY * glMatrixIndexPointerARBPROC) (GLint size, GLenum nType, GLsizei stride, GLvoid *pointer);
 
 extern glCurrentPaletteMatrixARBPROC glCurrentPaletteMatrixARB;
 extern glMatrixIndexubvARBPROC glMatrixIndexubvARB;
@@ -3543,8 +3543,8 @@ typedef void (APIENTRY * glWriteMaskEXTPROC) (GLuint res, GLuint in, GLenum outX
 typedef void (APIENTRY * glInsertComponentEXTPROC) (GLuint res, GLuint src, GLuint num);
 typedef void (APIENTRY * glExtractComponentEXTPROC) (GLuint res, GLuint src, GLuint num);
 typedef GLuint (APIENTRY * glGenSymbolsEXTPROC) (GLenum dataType, GLenum storageType, GLenum range, GLuint components);
-typedef void (APIENTRY * glSetInvariantEXTPROC) (GLuint id, GLenum type, GLvoid *addr);
-typedef void (APIENTRY * glSetLocalConstantEXTPROC) (GLuint id, GLenum type, GLvoid *addr);
+typedef void (APIENTRY * glSetInvariantEXTPROC) (GLuint id, GLenum nType, GLvoid *addr);
+typedef void (APIENTRY * glSetLocalConstantEXTPROC) (GLuint id, GLenum nType, GLvoid *addr);
 typedef void (APIENTRY * glVariantbvEXTPROC) (GLuint id, GLbyte *addr);
 typedef void (APIENTRY * glVariantsvEXTPROC) (GLuint id, GLshort *addr);
 typedef void (APIENTRY * glVariantivEXTPROC) (GLuint id, GLint *addr);
@@ -3553,7 +3553,7 @@ typedef void (APIENTRY * glVariantdvEXTPROC) (GLuint id, GLdouble *addr);
 typedef void (APIENTRY * glVariantubvEXTPROC) (GLuint id, GLubyte *addr);
 typedef void (APIENTRY * glVariantusvEXTPROC) (GLuint id, GLushort *addr);
 typedef void (APIENTRY * glVariantuivEXTPROC) (GLuint id, GLuint *addr);
-typedef void (APIENTRY * glVariantPointerEXTPROC) (GLuint id, GLenum type, GLuint stride, GLvoid *addr);
+typedef void (APIENTRY * glVariantPointerEXTPROC) (GLuint id, GLenum nType, GLuint stride, GLvoid *addr);
 typedef void (APIENTRY * glEnableVariantClientStateEXTPROC) (GLuint id);
 typedef void (APIENTRY * glDisableVariantClientStateEXTPROC) (GLuint id);
 typedef GLuint (APIENTRY * glBindLightParameterEXTPROC) (GLenum light, GLenum value);
@@ -3813,7 +3813,7 @@ extern glSetFragmentShaderConstantATIPROC glSetFragmentShaderConstantATI;
 #define GL_ELEMENT_ARRAY_TYPE_ATI                               0x8769
 #define GL_ELEMENT_ARRAY_POINTER_ATI                            0x876A
 
-typedef void (APIENTRY * glElementPointerATIPROC) (GLenum type, const GLvoid *pointer);
+typedef void (APIENTRY * glElementPointerATIPROC) (GLenum nType, const GLvoid *pointer);
 typedef void (APIENTRY * glDrawElementArrayATIPROC) (GLenum mode, GLsizei count);
 typedef void (APIENTRY * glDrawRangeElementArrayATIPROC) (GLenum mode, GLuint start, GLuint end, GLsizei count);
 
@@ -3924,8 +3924,8 @@ extern glNormalStream3dvATIPROC glNormalStream3dvATI;
 /*------------ATI_VERTEX_ARRAY_OBJECT--------------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_ATI_vertex_array_object
-#define GL_ATI_vertex_array_object 1
+#ifndef GL_ATI_vertex_arrayObject
+#define GL_ATI_vertex_arrayObject 1
 
 #define GL_STATIC_ATI                                           0x8760
 #define GL_DYNAMIC_ATI                                          0x8761
@@ -3942,10 +3942,10 @@ typedef void (APIENTRY * glUpdateObjectBufferATIPROC) (GLuint buffer, GLuint off
 typedef void (APIENTRY * glGetObjectBufferfvATIPROC) (GLuint buffer, GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glGetObjectBufferivATIPROC) (GLuint buffer, GLenum pname, GLint *params);
 typedef void (APIENTRY * glFreeObjectBufferATIPROC) (GLuint buffer);
-typedef void (APIENTRY * glArrayObjectATIPROC) (GLenum array, GLint size, GLenum type, GLsizei stride, GLuint buffer, GLuint offset);
+typedef void (APIENTRY * glArrayObjectATIPROC) (GLenum array, GLint size, GLenum nType, GLsizei stride, GLuint buffer, GLuint offset);
 typedef void (APIENTRY * glGetArrayObjectfvATIPROC) (GLenum array, GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glGetArrayObjectivATIPROC) (GLenum array, GLenum pname, GLint *params);
-typedef void (APIENTRY * glVariantArrayObjectATIPROC) (GLuint id, GLenum type, GLsizei stride, GLuint buffer, GLuint offset);
+typedef void (APIENTRY * glVariantArrayObjectATIPROC) (GLuint id, GLenum nType, GLsizei stride, GLuint buffer, GLuint offset);
 typedef void (APIENTRY * glGetVariantArrayObjectfvATIPROC) (GLuint id, GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glGetVariantArrayObjectivATIPROC) (GLuint id, GLenum pname, GLint *params);
 
@@ -3962,7 +3962,7 @@ extern glVariantArrayObjectATIPROC glVariantArrayObjectATI;
 extern glGetVariantArrayObjectfvATIPROC glGetVariantArrayObjectfvATI;
 extern glGetVariantArrayObjectivATIPROC glGetVariantArrayObjectivATI;
 
-#endif /* GL_ATI_vertex_array_object */
+#endif /* GL_ATI_vertex_arrayObject */
 
 /*-------------------------------------------------------------------*/
 /*------------HP_OCCLUSION_TEST--------------------------------------*/
@@ -4216,7 +4216,7 @@ extern glWindowPos3svARBPROC glWindowPos3svARB;
 #ifndef GL_EXT_draw_range_elements
 #define GL_EXT_draw_range_elements 1
 
-typedef void (APIENTRY * glDrawRangeElementsEXTPROC) ( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices);
+typedef void (APIENTRY * glDrawRangeElementsEXTPROC) ( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum nType, const GLvoid *indices);
 
 extern glDrawRangeElementsEXTPROC glDrawRangeElementsEXT;
 
@@ -4298,7 +4298,7 @@ typedef void (APIENTRY * glVertexAttrib4NivARBPROC) (GLuint index, const GLint *
 typedef void (APIENTRY * glVertexAttrib4NubvARBPROC) (GLuint index, const GLubyte *v);
 typedef void (APIENTRY * glVertexAttrib4NusvARBPROC) (GLuint index, const GLushort *v);
 typedef void (APIENTRY * glVertexAttrib4NuivARBPROC) (GLuint index, const GLuint *v);
-typedef void (APIENTRY * glVertexAttribPointerARBPROC) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer);
+typedef void (APIENTRY * glVertexAttribPointerARBPROC) (GLuint index, GLint size, GLenum nType, GLboolean normalized, GLsizei stride, const GLvoid *pointer);
 typedef void (APIENTRY * glEnableVertexAttribArrayARBPROC) (GLuint index);
 typedef void (APIENTRY * glDisableVertexAttribArrayARBPROC) (GLuint index);
 typedef void (APIENTRY * glProgramStringARBPROC) (GLenum target, GLenum format, GLsizei len, const GLvoid *string); 
@@ -4556,7 +4556,7 @@ extern glBlendFuncSeparateEXTPROC glBlendFuncSeparateEXT;
 #define GL_ELEMENT_ARRAY_TYPE_NV                                0x8769
 #define GL_ELEMENT_ARRAY_POINTER_NV                             0x876A
 
-typedef void (APIENTRY * glElementPointerNVPROC) (GLenum type, const GLvoid *pointer);
+typedef void (APIENTRY * glElementPointerNVPROC) (GLenum nType, const GLvoid *pointer);
 typedef void (APIENTRY * glDrawElementArrayNVPROC) (GLenum mode, GLint first, GLsizei count);
 typedef void (APIENTRY * glDrawRangeElementArrayNVPROC) (GLenum mode, GLuint start, GLuint end, GLint first, GLsizei count);
 typedef void (APIENTRY * glMultiDrawElementArrayNVPROC) (GLenum mode, const GLint *first, const GLsizei *count, GLsizei primcount);
@@ -4979,8 +4979,8 @@ extern glFlushPixelDataRangeNVPROC glFlushPixelDataRangeNV;
 /*------------GL_ATI_MAP_OBJECT_BUFFER-------------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_ATI_map_object_buffer
-#define GL_ATI_map_object_buffer 1
+#ifndef GL_ATI_mapObject_buffer
+#define GL_ATI_mapObject_buffer 1
 
 typedef void (APIENTRY * glMapObjectBufferATIPROC) (GLuint buffer);
 typedef void (APIENTRY * glUnmapObjectBufferATIPROC) (GLuint buffer);
@@ -4988,7 +4988,7 @@ typedef void (APIENTRY * glUnmapObjectBufferATIPROC) (GLuint buffer);
 extern glMapObjectBufferATIPROC glMapObjectBufferATI;
 extern glUnmapObjectBufferATIPROC glUnmapObjectBufferATI;
 
-#endif /* GL_ATI_map_object_buffer */ 
+#endif /* GL_ATI_mapObject_buffer */ 
 
 /*-------------------------------------------------------------------*/
 /*------------GL_ATI_SEPARATE_STENCIL--------------------------------*/
@@ -5014,10 +5014,10 @@ extern glStencilFuncSeparateATIPROC glStencilFuncSeparateATI;
 /*------------GL_ATI_VERTEX_ATTRIB_ARRAY_OBJECT----------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_ATI_vertex_attrib_array_object
-#define GL_ATI_vertex_attrib_array_object 1
+#ifndef GL_ATI_vertex_attrib_arrayObject
+#define GL_ATI_vertex_attrib_arrayObject 1
 
-typedef void (APIENTRY * glVertexAttribArrayObjectATIPROC) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLuint buffer, GLuint offset);
+typedef void (APIENTRY * glVertexAttribArrayObjectATIPROC) (GLuint index, GLint size, GLenum nType, GLboolean normalized, GLsizei stride, GLuint buffer, GLuint offset);
 typedef void (APIENTRY * glGetVertexAttribArrayObjectfvATIPROC) (GLuint index, GLenum pname, GLfloat *params);
 typedef void (APIENTRY * glGetVertexAttribArrayObjectivATIPROC) (GLuint index, GLenum pname, GLint *params);
 
@@ -5025,7 +5025,7 @@ extern glVertexAttribArrayObjectATIPROC glVertexAttribArrayObjectATI;
 extern glGetVertexAttribArrayObjectfvATIPROC glGetVertexAttribArrayObjectfvATI;
 extern glGetVertexAttribArrayObjectivATIPROC glGetVertexAttribArrayObjectivATI;
 
-#endif /* GL_ATI_vertex_attrib_array_object */
+#endif /* GL_ATI_vertex_attrib_arrayObject */
 
 /*-------------------------------------------------------------------*/
 /*------------GL_EXT_BLEND_COLOR-------------------------------------*/
@@ -5080,8 +5080,8 @@ extern glBlendEquationEXTPROC glBlendEquationEXT;
 /*------------GL_ARB_VERTEX_BUFFER_OBJECT----------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_ARB_vertex_buffer_object
-#define GL_ARB_vertex_buffer_object 1
+#ifndef GL_ARB_vertex_bufferObject
+#define GL_ARB_vertex_bufferObject 1
 
 typedef int GLintptrARB;
 typedef int GLsizeiptrARB;
@@ -5142,7 +5142,7 @@ extern glUnmapBufferARBPROC glUnmapBufferARB;
 extern glGetBufferParameterivARBPROC glGetBufferParameterivARB;
 extern glGetBufferPointervARBPROC glGetBufferPointervARB;
 
-#endif /* GL_ARB_vertex_buffer_object */
+#endif /* GL_ARB_vertex_bufferObject */
 
 /*-------------------------------------------------------------------*/
 /*------------GL_EXT_TEXTURE_RECTANGLE-------------------------------*/
@@ -5537,7 +5537,7 @@ struct ExtensionTypes
     int ARB_texture_mirrored_repeat;
     int ARB_transpose_matrix;
     int ARB_vertex_blend;
-    int ARB_vertex_buffer_object;
+    int ARB_vertex_bufferObject;
     int ARB_vertex_program;
     int ARB_window_pos;
     int EXT_abgr;
@@ -5569,7 +5569,7 @@ struct ExtensionTypes
     int ATI_element_array;
     int ATI_envmap_bumpmap;
     int ATI_fragment_shader;
-    int ATI_map_object_buffer;
+    int ATI_mapObject_buffer;
     int ATI_pn_triangles;
     int ATI_point_cull_mode;
     int ATI_separate_stencil;
@@ -5577,8 +5577,8 @@ struct ExtensionTypes
     int ATI_texture_env_combine3;
     int ATI_texture_float;
     int ATI_texture_mirror_once;
-    int ATI_vertex_array_object;
-    int ATI_vertex_attrib_array_object;
+    int ATI_vertex_arrayObject;
+    int ATI_vertex_attrib_arrayObject;
     int ATI_vertex_streams;
     int ATIX_point_sprites;
     int ATIX_texture_env_route;
@@ -5590,7 +5590,7 @@ struct ExtensionTypes
     int NV_evaluators;
     int NV_fence;
     int NV_float_buffer;
-    int NV_fog_distance;
+    int NV_fogDistance;
     int NV_fragment_program;
     int NV_half_float;
     int NV_light_max_exponent;

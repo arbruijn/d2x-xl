@@ -44,7 +44,7 @@ establishing the communication. This always works, as the client knows the serve
 (containing the server IP + port after the game data) and thus gets to know its IP + port. It 
 replies to the client, and puts the client's IP + port after the end of the game data.
 
-There is a message type where the server tells all participants about all other participants; 
+There is a message nType where the server tells all participants about all other participants; 
 that's how clients find out about each other in a game.
 
 When the server receives a participation request from a client, it adds its IP + port to a table 
@@ -484,7 +484,7 @@ else {
 				data, datasize, 
 				netPlayers.players [i].network.ipx.server, 
 				netPlayers.players [i].network.ipx.node,
-				gameData.multi.players [i].net_address);
+				gameData.multi.players [i].netAddress);
 		}
 	return datasize;
 	}

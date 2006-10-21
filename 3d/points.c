@@ -87,25 +87,25 @@ void G3ProjectPoint(g3s_point *p)
 #ifndef __powerc
 	fix tx,ty;
 
-	if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
+	if ((p->p3Flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 		return;
 
 	if (CheckMulDiv (&tx, p->p3_x, xCanvW2, p->p3_z) && 
 		 CheckMulDiv (&ty, p->p3_y, xCanvH2, p->p3_z)) {
 		p->p3_sx = xCanvW2 + tx;
 		p->p3_sy = xCanvH2 - ty;
-		p->p3_flags |= PF_PROJECTED;
+		p->p3Flags |= PF_PROJECTED;
 	}
 	else
-		p->p3_flags |= PF_OVERFLOW;
+		p->p3Flags |= PF_OVERFLOW;
 #else
 	double fz;
 	
-	if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
+	if ((p->p3Flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 		return;
 	
 	if ( p->p3_z <= 0 )	{
-		p->p3_flags |= PF_OVERFLOW;
+		p->p3Flags |= PF_OVERFLOW;
 		return;
 	}
 
@@ -113,16 +113,16 @@ void G3ProjectPoint(g3s_point *p)
 	p->p3_sx = fl2f(fxCanvW2 + (f2fl(p->p3_x)*fxCanvW2 / fz);
 	p->p3_sy = fl2f(fxCanvH2 - (f2fl(p->p3_y)*fxCanvH2 / fz);
 
-	p->p3_flags |= PF_PROJECTED;
+	p->p3Flags |= PF_PROJECTED;
 #endif
 }
 
 // -----------------------------------------------------------------------------------
 //from a 2d point, compute the vector through that point
-void G3Point2Vec(vms_vector *v,short sx,short sy)
+void G3Point2Vec(vmsVector *v,short sx,short sy)
 {
-	vms_vector tempv;
-	vms_matrix tempm;
+	vmsVector tempv;
+	vmsMatrix tempm;
 
 	tempv.x =  FixMulDiv(FixDiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
 	tempv.y = -FixMulDiv(FixDiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
@@ -138,7 +138,7 @@ void G3Point2Vec(vms_vector *v,short sx,short sy)
 
 // -----------------------------------------------------------------------------------
 //delta rotation functions
-vms_vector *G3RotateDeltaX(vms_vector *dest,fix dx)
+vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 {
 	dest->x = FixMul(viewInfo.view.rvec.x,dx);
 	dest->y = FixMul(viewInfo.view.uvec.x,dx);
@@ -149,7 +149,7 @@ vms_vector *G3RotateDeltaX(vms_vector *dest,fix dx)
 
 // -----------------------------------------------------------------------------------
 
-vms_vector *G3RotateDeltaY(vms_vector *dest,fix dy)
+vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 {
 	dest->x = FixMul(viewInfo.view.rvec.y,dy);
 	dest->y = FixMul(viewInfo.view.uvec.y,dy);
@@ -160,7 +160,7 @@ vms_vector *G3RotateDeltaY(vms_vector *dest,fix dy)
 
 // -----------------------------------------------------------------------------------
 
-vms_vector *G3RotateDeltaZ(vms_vector *dest,fix dz)
+vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 {
 	dest->x = FixMul(viewInfo.view.rvec.z,dz);
 	dest->y = FixMul(viewInfo.view.uvec.z,dz);
@@ -171,23 +171,23 @@ vms_vector *G3RotateDeltaZ(vms_vector *dest,fix dz)
 
 // -----------------------------------------------------------------------------------
 
-vms_vector *G3RotateDeltaVec(vms_vector *dest,vms_vector *src)
+vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src)
 {
 	return VmVecRotate(dest,src,&viewInfo.view);
 }
 
 // -----------------------------------------------------------------------------------
 
-ubyte G3AddDeltaVec (g3s_point *dest, g3s_point *src, vms_vector *vDelta)
+ubyte G3AddDeltaVec (g3s_point *dest, g3s_point *src, vmsVector *vDelta)
 {
 VmVecAdd (&dest->p3_vec, &src->p3_vec, vDelta);
-dest->p3_flags = 0;		//not projected
+dest->p3Flags = 0;		//not projected
 return G3EncodePoint (dest);
 }
 
 // -----------------------------------------------------------------------------------
 //calculate the depth of a point - returns the z coord of the rotated point
-fix G3CalcPointDepth(vms_vector *pnt)
+fix G3CalcPointDepth(vmsVector *pnt)
 {
 #ifdef _WIN32
 	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view.fvec.x);

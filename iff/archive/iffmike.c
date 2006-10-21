@@ -274,7 +274,7 @@ void skip_chunk(FILE *ifile,long len)
 // Pass pointer to opened file, and to empty bitmap header.
 int parse_iff(FILE *ifile,struct bitmap_header *bitmap_header)
 {
-	long sig,form_len,len,form_type;
+	long sig,form_len,len,formType;
 	char	ignore;
 
 	sig=get_sig(ifile);
@@ -286,18 +286,18 @@ int parse_iff(FILE *ifile,struct bitmap_header *bitmap_header)
 		form_len = get_long(ifile);
 		form_len++;		/* get rid of never used message */
 
-		form_type = get_sig(ifile);
+		formType = get_sig(ifile);
 
 //		//printf(" %ld ",form_len);
-//		printsig(form_type);
+//		printsig(formType);
 //		//printf("\n");
 
-		if ((form_type == pbm_sig) || (form_type == ilbm_sig)) {
+		if ((formType == pbm_sig) || (formType == ilbm_sig)) {
 
-			if (form_type == pbm_sig)
-				bitmap_header->type = PBM_TYPE;
+			if (formType == pbm_sig)
+				bitmap_header->nType = PBM_TYPE;
 			else
-				bitmap_header->type = ILBM_TYPE;
+				bitmap_header->nType = ILBM_TYPE;
 
 			while ((sig=get_sig(ifile)) != EOF) {
 
@@ -338,7 +338,7 @@ int parse_iff(FILE *ifile,struct bitmap_header *bitmap_header)
 					case body_sig:
 					{
 						int r;
-						switch (form_type) {
+						switch (formType) {
 							case pbm_sig:
 								if (!(r=parse_body_pbm(ifile,len,bitmap_header))) return r;
 								break;

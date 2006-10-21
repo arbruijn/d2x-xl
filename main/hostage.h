@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.3  1994/04/01  11:15:14  yuan
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
- * Hostages and powerups are implemented in the object system,
+ * Hostages and powerups are implemented in the tObject system,
  * just need to finish function call to "affect" player.
  *
  * Revision 1.2  1994/03/31  12:04:35  matt
@@ -113,11 +113,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_HOSTAGE_TYPES   1       //only one hostage bitmap
 
-extern int N_hostage_types;
+extern int N_hostageTypes;
 
-extern int Hostage_vclip_num[MAX_HOSTAGE_TYPES];    // for each type of hostage
+extern int Hostage_vclip_num[MAX_HOSTAGE_TYPES];    // for each nType of hostage
 
-void DrawHostage(object *obj);
+void DrawHostage(tObject *obj);
 void hostage_rescue(int hostage_num);
 
 #endif /* _HOSTAGE_H */

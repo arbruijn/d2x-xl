@@ -186,18 +186,18 @@ if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 
 //-----------------------------------------------------------------------------
 
-vms_vector yCache [256];
+vmsVector yCache [256];
 ubyte ycFlags [256];
 
-extern vms_matrix surface_orient;
+extern vmsMatrix surface_orient;
 
-vms_vector *get_dy_vec (int h)
+vmsVector *get_dy_vec (int h)
 {
-	vms_vector *dyp;
+	vmsVector *dyp;
 
 dyp = yCache + h;
 if (!ycFlags [h]) {
-	vms_vector tv;
+	vmsVector tv;
 	VmVecCopyScale (&tv, &surface_orient.uvec, h * TERRAIN_HEIGHT_SCALE);
 	G3RotateDeltaVec (dyp, &tv);
 	ycFlags [h] = 1;
@@ -209,9 +209,9 @@ return dyp;
 
 int im=1;
 
-void RenderTerrain (vms_vector *vOrgPoint, int org_2dx, int org_2dy)
+void RenderTerrain (vmsVector *vOrgPoint, int org_2dx, int org_2dy)
 {
-	vms_vector	tv, delta_i, delta_j;		//delta_y;
+	vmsVector	tv, delta_i, delta_j;		//delta_y;
 	g3s_point	p, p2, pLast, p2Last, pLowSave, pHighSave;
 	int			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
 
@@ -392,7 +392,7 @@ BuildTerrainLightMap ();
 
 //-----------------------------------------------------------------------------
 
-static void GetTerrainPoint (vms_vector *p, int i, int j)
+static void GetTerrainPoint (vmsVector *p, int i, int j)
 {
 if (i < 0)
 	i = 0;
@@ -409,11 +409,11 @@ p->y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
 
 //-----------------------------------------------------------------------------
 
-vms_vector light = {0x2e14, 0xe8f5, 0x5eb8};
+vmsVector light = {0x2e14, 0xe8f5, 0x5eb8};
 
-static fix GetTerrainFaceLight (vms_vector *p0, vms_vector *p1, vms_vector *p2)
+static fix GetTerrainFaceLight (vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
-	vms_vector norm;
+	vmsVector norm;
 
 VmVecNormal (&norm, p0, p1, p2);
 return -VmVecDot (&norm, &light);
@@ -423,7 +423,7 @@ return -VmVecDot (&norm, &light);
 
 fix GetAvgTerrainLight (int i, int j)
 {
-	vms_vector pp, p [6];
+	vmsVector pp, p [6];
 	fix sum, light;
 	int f;
 

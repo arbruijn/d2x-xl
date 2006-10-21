@@ -149,13 +149,13 @@ char nSideCameras [MAX_SEGMENTS][6];
 tCamera cameras [MAX_CAMERAS];
 
 int CreateCamera (tCamera *pc, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-						object *objP, int bShadowMap, int bTeleport)
+						tObject *objP, int bShadowMap, int bTeleport)
 {
-	vms_angvec	a;
+	vmsAngVec	a;
 	int			h, i;
 #if 0
 	short			sideVerts [4];
-	vms_vector	*pv;
+	vmsVector	*pv;
 #endif
 
 memset (pc, 0, sizeof (tCamera));
@@ -213,7 +213,7 @@ if (objP) {
 else {
 	pc->objP = &pc->obj;
 	if (bTeleport) {
-		vms_vector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
+		vmsVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
 		n.x = -n.x;
 		n.y = -n.y;
 		n.z = -n.z;
@@ -239,9 +239,9 @@ else {
 	pc->obj.pos.y /= 4;
 	pc->obj.pos.z /= 4;
 #endif
-	pc->obj.segnum = srcSeg;
+	pc->obj.nSegment = srcSeg;
 	}
-//pc->obj.sidenum = srcSide;
+//pc->obj.nSide = srcSide;
 pc->segNum = tgtSeg;
 pc->sideNum = tgtSide;
 pc->bTeleport = (char) bTeleport;
@@ -255,26 +255,26 @@ int CreateCameras (void)
 	int		h, i, j, k;
 	ubyte		t;
 	wall		*wallP;
-	object	*objP;
-	trigger	*triggerP;
+	tObject	*objP;
+	tTrigger	*triggerP;
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
 memset (nSideCameras, 0xFF, sizeof (nSideCameras));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
-	t = wallP->trigger;
+	t = wallP->tTrigger;
 	if (t >= gameData.trigs.nTriggers)
 		continue;
 	triggerP = gameData.trigs.triggers + t;
-	if (triggerP->type == TT_CAMERA) {
-		for (j = 0; j < triggerP->num_links; j++)
-			if (CreateCamera (cameras + nCameras, (short) wallP->segnum, (short) wallP->sidenum, triggerP->seg [j], triggerP->side [j], NULL, 0, 0))
-				nSideCameras [triggerP->seg [j]][triggerP->side [j]] = (char) nCameras++;
+	if (triggerP->nType == TT_CAMERA) {
+		for (j = 0; j < triggerP->nLinks; j++)
+			if (CreateCamera (cameras + nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->nSegment [j], triggerP->nSide [j], NULL, 0, 0))
+				nSideCameras [triggerP->nSegment [j]][triggerP->nSide [j]] = (char) nCameras++;
 		}
 #if TELEPORT_CAMERAS
-	else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->type == TT_TELEPORT)) {
-		if (CreateCamera (cameras + nCameras, triggerP->seg [0], triggerP->side [0], (short) wallP->segnum, (short) wallP->sidenum, NULL, 0, 1))
-			nSideCameras [wallP->segnum][wallP->sidenum] = (char) nCameras++;
+	else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->nType == TT_TELEPORT)) {
+		if (CreateCamera (cameras + nCameras, triggerP->nSegment [0], triggerP->nSide [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+			nSideCameras [wallP->nSegment][wallP->nSide] = (char) nCameras++;
 		}
 #endif
 	}
@@ -282,10 +282,10 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	j = gameData.trigs.firstObjTrigger [i];
 	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h; j = gameData.trigs.objTriggerRefs [j].next, h--) {
 		triggerP = gameData.trigs.objTriggers + j;
-		if (triggerP->type == TT_CAMERA) {
-			for (k = 0; k < triggerP->num_links; k++)
-				if (CreateCamera (cameras + nCameras, -1, -1, triggerP->seg [k], triggerP->side [k], objP, 0, 0))
-					nSideCameras [triggerP->seg [k]][triggerP->side [k]] = (char) nCameras++;
+		if (triggerP->nType == TT_CAMERA) {
+			for (k = 0; k < triggerP->nLinks; k++)
+				if (CreateCamera (cameras + nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))
+					nSideCameras [triggerP->nSegment [k]][triggerP->nSide [k]] = (char) nCameras++;
 			}
 		}
 	}
@@ -608,7 +608,7 @@ int RenderCameras (void)
 {
 	int		i;
 	tCamera	*pc = cameras, *pCurCam = NULL;
-	object	*viewerSave = gameData.objs.viewer;
+	tObject	*viewerSave = gameData.objs.viewer;
 	time_t	t;
 	int		nCamsRendered;
 	int		cm = gameStates.render.cockpit.nMode;

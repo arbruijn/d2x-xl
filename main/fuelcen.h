@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * rip out repair center stuff.
  *
  * Revision 1.24  1994/10/03  23:36:36  mike
- * Add segnum and fuelcen_num (renaming dest_seg and *path) in matcen_info struct.
+ * Add nSegment and fuelcen_num (renaming dest_seg and *path) in matcen_info struct.
  *
  * Revision 1.23  1994/09/30  00:37:44  mike
  * Change fuelcen_info struct.
@@ -64,7 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made control centers destroy better; made automap use Tab key.
  *
  * Revision 1.13  1994/07/13  10:45:33  john
- * Made control center object switch when dead.
+ * Made control center tObject switch when dead.
  *
  * Revision 1.12  1994/07/09  17:36:44  mike
  * Add extern for find_connected_repair_seg.
@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * New triggers.
  *
  * Revision 1.8  1994/05/05  16:41:14  matt
- * Cleaned up repair center code, and moved some from object.c to fuelcen.c
+ * Cleaned up repair center code, and moved some from tObject.c to fuelcen.c
  *
  * Revision 1.7  1994/04/21  20:41:21  yuan
  * Added extern.
@@ -113,8 +113,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 
 //------------------------------------------------------------
-// A refueling center is one segment... to identify it in the
-// segment structure, the "special" field is set to
+// A refueling center is one tSegment... to identify it in the
+// tSegment structure, the "special" field is set to
 // SEGMENT_IS_FUELCEN.  The "value" field is then used for how
 // much fuel the center has left, with a maximum value of 100.
 
@@ -122,60 +122,60 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // To hook into Inferno:
 // * When all segents are deleted or before a new mine is created
 //   or loaded, call FuelCenReset().
-// * Add call to FuelCenCreate(segment * segp) to make a segment
+// * Add call to FuelCenCreate(tSegment * segp) to make a tSegment
 //   which isn't a fuel center be a fuel center.
 // * When a mine is loaded call fuelcen_activate(segp) with each
-//   new segment as it loads. Always do this.
-// * When a segment is deleted, always call FuelCenDelete(segp).
+//   new tSegment as it loads. Always do this.
+// * When a tSegment is deleted, always call FuelCenDelete(segp).
 // * Call FuelCenReplenishAll() to fill 'em all up, like when
 //   a new game is started.
-// * When an object that needs to be refueled is in a segment, call
+// * When an tObject that needs to be refueled is in a tSegment, call
 //   FuelCenGiveFuel(segp) to get fuel. (Call once for any refueling
-//   object once per frame with the object's current segment.) This
+//   tObject once per frame with the tObject's current tSegment.) This
 //   will return a value between 0 and 100 that tells how much fuel
 //   he got.
 
 
-// Destroys all fuel centers, clears segment backpointer array.
+// Destroys all fuel centers, clears tSegment backpointer array.
 void FuelCenReset();
 // Create materialization center
-void MatCenCreate ( segment * segp, int oldType );
-// Makes a segment a fuel center.
-void FuelCenCreate( segment * segp, int oldType );
+void MatCenCreate ( tSegment * segp, int oldType );
+// Makes a tSegment a fuel center.
+void FuelCenCreate( tSegment * segp, int oldType );
 // Makes a fuel center active... needs to be called when
-// a segment is loaded from disk.
-void FuelCenActivate( segment * segp, int station_type );
-// Deletes a segment as a fuel center.
-void FuelCenDelete( segment * segp );
+// a tSegment is loaded from disk.
+void FuelCenActivate( tSegment * segp, int stationType );
+// Deletes a tSegment as a fuel center.
+void FuelCenDelete( tSegment * segp );
 
 // Charges all fuel centers to max capacity.
 void FuelCenReplenishAll();
 
 // Create a matcen robot
-object *CreateMorphRobot (segment *segp, vms_vector *object_pos, ubyte object_id);
+tObject *CreateMorphRobot (tSegment *segp, vmsVector *object_pos, ubyte object_id);
 
-// Returns the amount of fuel this segment can give up.
+// Returns the amount of fuel this tSegment can give up.
 // Can be from 0 to 100.
-fix FuelCenGiveFuel(segment *segp, fix MaxAmountCanTake );
-fix RepairCenGiveShields(segment *segp, fix MaxAmountCanTake );
-fix HostileRoomDamageShields (segment *segp, fix MaxAmountCanGive);
+fix FuelCenGiveFuel(tSegment *segp, fix MaxAmountCanTake );
+fix RepairCenGiveShields(tSegment *segp, fix MaxAmountCanTake );
+fix HostileRoomDamageShields (tSegment *segp, fix MaxAmountCanGive);
 
 // Call once per frame.
 void FuelcenUpdateAll();
 
 // Called when hit by laser.
-void FuelCenDamage(segment *segp, fix AmountOfDamage );
+void FuelCenDamage(tSegment *segp, fix AmountOfDamage );
 
-// Called to repair an object
-//--repair-- int refuel_do_repair_effect( object * obj, int first_time, int repair_seg );
+// Called to repair an tObject
+//--repair-- int refuel_do_repair_effect( tObject * obj, int firstTime, int repair_seg );
 
 extern char Special_names[MAX_CENTER_TYPES][11];
 
 //--repair-- //do the repair center for this frame
-//--repair-- void do_repair_sequence(object *obj);
+//--repair-- void do_repair_sequence(tObject *obj);
 //--repair--
 //--repair-- //see if we should start the repair center
-//--repair-- void check_start_repair_center(object *obj);
+//--repair-- void check_start_repair_center(tObject *obj);
 //--repair--
 //--repair-- //if repairing, cut it short
 //--repair-- abort_repair_center();
@@ -183,7 +183,7 @@ extern char Special_names[MAX_CENTER_TYPES][11];
 // An array of pointers to segments with fuel centers.
 typedef struct fuelcen_info {
 	int     Type;
-	int     segnum;
+	int     nSegment;
 	sbyte   Flag;
 	sbyte   Enabled;
 	sbyte   Lives;          // Number of times this can be enabled.
@@ -191,43 +191,43 @@ typedef struct fuelcen_info {
 	fix     Capacity;
 	fix     MaxCapacity;
 	fix     Timer;          // used in matcen for when next robot comes out
-	fix     Disable_time;   // Time until center disabled.
-	//object  *last_created_obj;
+	fix     DisableTime;   // Time until center disabled.
+	//tObject  *last_created_obj;
 	//int     last_created_sig;
-	vms_vector Center;
+	vmsVector Center;
 } __pack__ fuelcen_info;
 
 // The max number of robot centers per mine.
 
 typedef struct  {
-	int     robot_flags;    // Up to 32 different robots
+	int     robotFlags;    // Up to 32 different robots
 	fix     hit_points;     // How hard it is to destroy this particular matcen
 	fix     interval;       // Interval between materialogrifizations
-	short   segnum;         // Segment this is attached to.
+	short   nSegment;         // Segment this is attached to.
 	short   fuelcen_num;    // Index in fuelcen array.
 } __pack__ old_matcen_info;
 
 typedef struct matcen_info {
-	int     robot_flags[2]; // Up to 64 different robots
+	int     robotFlags[2]; // Up to 64 different robots
 	fix     hit_points;     // How hard it is to destroy this particular matcen
 	fix     interval;       // Interval between materialogrifizations
-	short   segnum;         // Segment this is attached to.
+	short   nSegment;         // Segment this is attached to.
 	short   fuelcen_num;    // Index in fuelcen array.
 } __pack__ matcen_info;
 
 extern matcen_info RobotCenters[MAX_ROBOT_CENTERS];
 
-//--repair-- extern object *RepairObj;  // which object getting repaired, or NULL
+//--repair-- extern tObject *RepairObj;  // which tObject getting repaired, or NULL
 
 // Called when a materialization center gets triggered by the player
-// flying through some trigger!
-void MatCenTrigger (short segnum);
+// flying through some tTrigger!
+void MatCenTrigger (short nSegment);
 
 void DisableMatCens (void);
 
 void InitAllMatCens (void);
 
-void FuelCenCheckForHoardGoal(segment *segp);
+void FuelCenCheckForHoardGoal(tSegment *segp);
 
 #ifdef FAST_FILE_IO
 #define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_matcen_info), 1, fp)

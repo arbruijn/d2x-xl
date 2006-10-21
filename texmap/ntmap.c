@@ -159,7 +159,7 @@ g3ds_tmap Tmap1;
 grs_bitmap Texmap_ptrs[NUM_TMAPS];
 grs_bitmap Texmap4_ptrs[NUM_TMAPS];
 
-int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current segment (& thus texture) is
+int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current tSegment (& thus texture) is
 
 extern int nWindowClipLeft, nWindowClipBot, nWindowClipRight, nWindowClipTop;
 
@@ -187,11 +187,11 @@ int	bFixRecipTableComputed=0;
 fix fx_l, fx_u, fx_v, fx_z, fx_du_dx, fx_dv_dx, fx_dz_dx, fx_dl_dx;
 int fx_xleft, fx_xright, fx_y;
 unsigned char * pixptr;
-int per2_flag = 0;
+int per2Flag = 0;
 
 ubyte * tmap_flat_cthru_table;
 ubyte tmap_flat_color;
-ubyte tmap_flat_shade_value;
+ubyte tmap_flat_shadeValue;
 
 
 
@@ -437,7 +437,7 @@ fix compute_dz_dy(g3ds_tmap *t, int top_vertex,int bottom_vertex, fix recip_dy)
 	return FixMul(t->verts[bottom_vertex].z - t->verts[top_vertex].z, recip_dy);
 
 }
-int Skip_short_flag=0;
+int Skip_shortFlag=0;
 
 // -------------------------------------------------------------------------------------
 //	Texture map current scanline in perspective.
@@ -1064,22 +1064,22 @@ void draw_tmap(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
 	if (gameStates.render.nLighting) {
 		switch (gameStates.render.nInterpolationMethod) {	// 0 = choose, 1 = linear, 2 = /8 perspective, 3 = full perspective
 			case 0:								// choose best interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				if (nCurrentSegDepth > gameStates.render.detail.nMaxPerspectiveDepth)
 					ntexture_map_lighted_linear(bp, &Tmap1);
 				else
 					ntexture_map_lighted(bp, &Tmap1);
 				break;
 			case 1:								// linear interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				ntexture_map_lighted_linear(bp, &Tmap1);
 				break;
 			case 2:								// perspective every 8th pixel interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				ntexture_map_lighted(bp, &Tmap1);
 				break;
 			case 3:								// perspective every pixel interpolation
-				per2_flag = 0;					// this hack means do divide every pixel
+				per2Flag = 0;					// this hack means do divide every pixel
 				ntexture_map_lighted(bp, &Tmap1);
 				break;
 			default:
@@ -1088,22 +1088,22 @@ void draw_tmap(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
 	} else {
 		switch (gameStates.render.nInterpolationMethod) {	// 0 = choose, 1 = linear, 2 = /8 perspective, 3 = full perspective
 			case 0:								// choose best interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				if (nCurrentSegDepth > gameStates.render.detail.nMaxPerspectiveDepth)
 					ntexture_map_lighted_linear(bp, &Tmap1);
 				else
 					ntexture_map_lighted(bp, &Tmap1);
 				break;
 			case 1:								// linear interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				ntexture_map_lighted_linear(bp, &Tmap1);
 				break;
 			case 2:								// perspective every 8th pixel interpolation
-				per2_flag = 1;
+				per2Flag = 1;
 				ntexture_map_lighted(bp, &Tmap1);
 				break;
 			case 3:								// perspective every pixel interpolation
-				per2_flag = 0;					// this hack means do divide every pixel
+				per2Flag = 0;					// this hack means do divide every pixel
 				ntexture_map_lighted(bp, &Tmap1);
 				break;
 			default:

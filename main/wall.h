@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  *
  * Revision 1.34  1994/09/10  13:31:53  matt
- * Made exploding walls a type of blastable walls.
+ * Made exploding walls a nType of blastable walls.
  * Cleaned up blastable walls, making them tmap2 bitmaps.
  *
  * Revision 1.33  1994/08/17  12:55:34  matt
@@ -119,9 +119,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WALL_BLASTABLE          1   // Removable (by shooting) wall
 #define WALL_DOOR               2   // Door
 #define WALL_ILLUSION           3   // Wall that appears to be there, but you can fly thru
-#define WALL_OPEN               4   // Just an open side. (Trigger)
+#define WALL_OPEN               4   // Just an open tSide. (Trigger)
 #define WALL_CLOSED             5   // Wall.  Used for transparent walls.
-#define WALL_OVERLAY            6   // Goes over an actual solid side.  For triggers
+#define WALL_OVERLAY            6   // Goes over an actual solid tSide.  For triggers
 #define WALL_CLOAKED            7   // Can see it, and see through it
 #define WALL_TRANSPARENT        8   // like cloaked, but fixed transparency and colored
 
@@ -180,27 +180,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_STUCK_OBJECTS   32
 
 typedef struct stuckobj {
-	short   objnum, wallnum;
-	int     signature;
+	short   nObject, wallnum;
+	int     nSignature;
 } stuckobj;
 
 //Start old wall structures
 
 typedef struct v16_wall {
-	sbyte   type;               // What kind of special wall.
+	sbyte   nType;               // What kind of special wall.
 	sbyte   flags;              // Flags for the wall.
 	fix     hps;                // "Hit points" of the wall.
-	sbyte   trigger;            // Which trigger is associated with the wall.
+	sbyte   tTrigger;            // Which tTrigger is associated with the wall.
 	sbyte   clip_num;           // Which animation associated with the wall.
 	sbyte   keys;
 } __pack__ v16_wall;
 
 typedef struct v19_wall {
-	int     segnum,sidenum;     // Seg & side for this wall
-	sbyte   type;               // What kind of special wall.
+	int     nSegment,nSide;     // Seg & tSide for this wall
+	sbyte   nType;               // What kind of special wall.
 	sbyte   flags;              // Flags for the wall.
 	fix     hps;                // "Hit points" of the wall.
-	sbyte   trigger;            // Which trigger is associated with the wall.
+	sbyte   tTrigger;            // Which tTrigger is associated with the wall.
 	sbyte   clip_num;           // Which animation associated with the wall.
 	sbyte   keys;
 	int linked_wall;            // number of linked wall
@@ -209,26 +209,26 @@ typedef struct v19_wall {
 typedef struct v19_door {
 	int     n_parts;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
-	short   side[2];            // Side number of door.
-	short   type[2];            // What kind of door animation.
+	short   tSide[2];            // Side number of door.
+	short   nType[2];            // What kind of door animation.
 	fix     open;               // How long it has been open.
 } __pack__ v19_door;
 
 //End old wall structures
 
 typedef struct wall {
-	int     segnum,sidenum;     // Seg & side for this wall
+	int     nSegment,nSide;     // Seg & tSide for this wall
 	fix     hps;                // "Hit points" of the wall.
 	int     linked_wall;        // number of linked wall
-	ubyte   type;               // What kind of special wall.
+	ubyte   nType;               // What kind of special wall.
 	ubyte   flags;              // Flags for the wall.
 	ubyte   state;              // Opening, closing, etc.
-	ubyte   trigger;            // Which trigger is associated with the wall.
+	ubyte   tTrigger;            // Which tTrigger is associated with the wall.
 	sbyte   clip_num;           // Which animation associated with the wall.
 	ubyte   keys;               // which keys are required
-	sbyte   controlling_trigger;// which trigger causes something to happen here.  Not like "trigger" above, which is the trigger on this wall.
+	sbyte   controlling_trigger;// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this wall.
                                 //  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
-	sbyte   cloak_value;        // if this wall is cloaked, the fade value
+	sbyte   cloakValue;        // if this wall is cloaked, the fade value
 } __pack__ wall;
 
 typedef struct active_door {
@@ -240,7 +240,7 @@ typedef struct active_door {
 
 // data for exploding walls (such as hostage door)
 typedef struct expl_wall {
-	int	segnum, sidenum;
+	int	nSegment, nSide;
 	fix	time;
 } expl_wall;
 
@@ -265,19 +265,19 @@ typedef struct {
 	fix     xTotalTime;
 	short   nFrameCount;
 	short   frames[MAX_CLIP_FRAMES];
-	short   open_sound;
-	short   close_sound;
+	short   openSound;
+	short   closeSound;
 	short   flags;
 	char    filename[13];
 	char    pad;
 } __pack__ wclip;
 
 typedef struct {
-	fix     play_time;
+	fix     playTime;
 	short   num_frames;
 	short   frames[D1_MAX_CLIP_FRAMES];
-	short   open_sound;
-	short   close_sound;
+	short   openSound;
+	short   closeSound;
 	short   flags;
 	char    filename[13];
 	char    pad;
@@ -285,25 +285,25 @@ typedef struct {
 
 extern char pszWallNames[7][10];
 
-//#define WALL_IS_DOORWAY(seg,side) WallIsDoorWay(seg, side)
+//#define WALL_IS_DOORWAY(seg,tSide) WallIsDoorWay(seg, tSide)
 
-extern int WALL_IS_DOORWAY (segment *seg, short side, object *objP);
+extern int WALL_IS_DOORWAY (tSegment *seg, short tSide, tObject *objP);
 
 // Initializes all walls (i.e. no special walls.)
 extern void WallInit();
 
 // Automatically checks if a there is a doorway (i.e. can fly through)
-extern int WallIsDoorWay ( segment *seg, short side );
+extern int WallIsDoorWay ( tSegment *seg, short tSide );
 
 // Deteriorate appearance of wall. (Changes bitmap (paste-ons))
-extern void WallDamage(segment *seg, short side, fix damage);
+extern void WallDamage(tSegment *seg, short tSide, fix damage);
 
 // Destroys a blastable wall. (So it is an opening afterwards)
-extern void WallDestroy(segment *seg, short side);
+extern void WallDestroy(tSegment *seg, short tSide);
 
-void WallIllusionOn(segment *seg, short side);
+void WallIllusionOn(tSegment *seg, short tSide);
 
-void WallIllusionOff(segment *seg, short side);
+void WallIllusionOff(tSegment *seg, short tSide);
 
 // Opens a door, including animation and other processing.
 void DoDoorOpen(int door_num);
@@ -312,10 +312,10 @@ void DoDoorOpen(int door_num);
 void DoDoorClose(int door_num);
 
 // Opens a door
-extern void WallOpenDoor(segment *seg, short side);
+extern void WallOpenDoor(tSegment *seg, short tSide);
 
 // Closes a door
-extern void WallCloseDoor(segment *seg, short side);
+extern void WallCloseDoor(tSegment *seg, short tSide);
 
 //return codes for WallHitProcess()
 #define WHP_NOT_SPECIAL     0       //wasn't a quote-wall-unquote
@@ -326,11 +326,11 @@ extern void WallCloseDoor(segment *seg, short side);
 int AnimFrameCount (wclip *anim);
 
 // Determines what happens when a wall is shot
-//obj is the object that hit...either a weapon or the player himself
-extern int WallHitProcess(segment *seg, short side, fix damage, int playernum, object *obj );
+//obj is the tObject that hit...either a weapon or the player himself
+extern int WallHitProcess(tSegment *seg, short tSide, fix damage, int playernum, tObject *obj );
 
 // Opens/destroys specified door.
-extern void WallToggle(segment *seg, short side);
+extern void WallToggle(tSegment *seg, short tSide);
 
 // Tidy up Walls array for load/save purposes.
 extern void ResetWalls();
@@ -340,15 +340,15 @@ extern void UnlockAllWalls (int bOnlyDoors);
 // Called once per frame..
 void WallFrameProcess();
 
-extern stuckobj Stuck_objects[MAX_STUCK_OBJECTS];
+extern stuckobj StuckObjects[MAX_STUCK_OBJECTS];
 
-//  An object got stuck in a door (like a flare).
+//  An tObject got stuck in a door (like a flare).
 //  Add global entry.
-extern void AddStuckObject(object *objp, short segnum, short sidenum);
+extern void AddStuckObject(tObject *objp, short nSegment, short nSide);
 extern void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a wall/door
-extern void WallSetTMapNum(segment *seg,short side,segment *csegp, short cside,int anim_num,int frame_num);
+extern void WallSetTMapNum(tSegment *seg,short tSide,tSegment *csegp, short cside,int anim_num,int nFrame);
 
 extern void InitDoorAnims (void);
 
@@ -356,8 +356,8 @@ extern void InitDoorAnims (void);
 void KillStuckObjects(int wallnum);
 
 //start wall open <-> closed transitions
-void StartWallCloak(segment *seg, short side);
-void StartWallDecloak(segment *seg, short side);
+void StartWallCloak(tSegment *seg, short tSide);
+void StartWallDecloak(tSegment *seg, short tSide);
 
 extern int wclip_read_n_d1(wclip *wc, int n, CFILE *fp);
 #ifdef FAST_FILE_IO

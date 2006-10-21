@@ -178,7 +178,7 @@ static int pollEvents()
 
 	while (SDL_PollEvent(&event))
 	{
-		switch(event.type)
+		switch(event.nType)
 		{
 		case SDL_QUIT:
 		case SDL_MOUSEBUTTONDOWN:

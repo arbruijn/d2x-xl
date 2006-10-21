@@ -25,7 +25,7 @@ typedef struct {
 typedef struct
 {
 	unsigned int frame;
-	int type;
+	int nType;
 	int data;
 } UI_EVENT;
 
@@ -98,7 +98,7 @@ typedef struct  {
 	short           position;
 	short           oldposition;
 	short           pressed;
-	short           first_time;
+	short           firstTime;
 } UI_GADGET_INPUTBOX;
 
 typedef struct  {

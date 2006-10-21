@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.19  1995/02/22  13:58:09  allender
- * remove anonymous unions from object structure
+ * remove anonymous unions from tObject structure
  *
  * Revision 1.18  1995/01/27  11:17:06  rob
  * Avoid problems with illegal gun num.
@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.8  1994/06/01  14:59:25  matt
  * Fixed calc_gun_position(), which was rotating the wrong way for the
- * object orientation.
+ * tObject orientation.
  *
  * Revision 1.7  1994/06/01  12:44:04  matt
  * Added flinch state for test robot
@@ -71,18 +71,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed test robot angles
  *
  * Revision 1.5  1994/05/30  19:43:50  mike
- * Call set_test_robot.
+ * Call set_testRobot.
  *
  *
  * Revision 1.4  1994/05/30  00:02:44  matt
- * Got rid of robot render type, and generally cleaned up polygon model
+ * Got rid of robot render nType, and generally cleaned up polygon model
  * render gameData.objs.objects.
  *
  * Revision 1.3  1994/05/29  18:46:15  matt
  * Added stuff for getting robot animation info for different states
  *
  * Revision 1.2  1994/05/26  21:09:15  matt
- * Moved robot stuff out of polygon model and into robot_info struct
+ * Moved robot stuff out of polygon model and into tRobotInfo struct
  * Made new file, robot.c, to deal with robots
  *
  * Revision 1.1  1994/05/26  18:02:04  matt
@@ -165,38 +165,38 @@ jointpos test_joints [MAX_ROBOT_JOINTS] = {
 };
 
 //	-----------------------------------------------------------------------------------------------------------
-//given an object and a gun number, return position in 3-space of gun
+//given an tObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-void calc_gun_point(vms_vector *gun_point,object *objP,int gun_num)
+void calc_gun_point(vmsVector *gun_point,tObject *objP,int gun_num)
 {
 	polymodel *pm;
-	robot_info *r;
-	vms_vector pnt;
-	vms_matrix m;
+	tRobotInfo *r;
+	vmsVector pnt;
+	vmsMatrix m;
 	int mn;				//submodel number
 
-	Assert(objP->render_type==RT_POLYOBJ || objP->render_type==RT_MORPH);
+	Assert(objP->renderType==RT_POLYOBJ || objP->renderType==RT_MORPH);
 	Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
 	r = &gameData.bots.pInfo[objP->id];
-	pm =&gameData.models.polyModels [r->model_num];
+	pm =&gameData.models.polyModels [r->nModel];
 
-	if (gun_num >= r->n_guns)
+	if (gun_num >= r->nGuns)
 	{
 		//Int3();
 		gun_num = 0;
 	}
 
-//	Assert(gun_num < r->n_guns);
+//	Assert(gun_num < r->nGuns);
 
 	pnt = r->gun_points[gun_num];
 	mn = r->gun_submodels[gun_num];
 
 	//instance up the tree for this gun
 	while (mn != 0) {
-		vms_vector tpnt;
+		vmsVector tpnt;
 
-		VmAngles2Matrix(&m,&objP->rtype.pobj_info.anim_angles[mn]);
+		VmAngles2Matrix(&m,&objP->rType.polyObjInfo.animAngles[mn]);
 		VmTransposeMatrix(&m);
 		VmVecRotate(&tpnt,&pnt,&m);
 
@@ -205,7 +205,7 @@ void calc_gun_point(vms_vector *gun_point,object *objP,int gun_num)
 		mn = pm->submodel_parents[mn];
 	}
 
-	//now instance for the entire object
+	//now instance for the entire tObject
 
 	VmCopyTransposeMatrix(&m,&objP->orient);
 	VmVecRotate(gun_point,&pnt,&m);
@@ -215,32 +215,32 @@ void calc_gun_point(vms_vector *gun_point,object *objP,int gun_num)
 
 //	-----------------------------------------------------------------------------------------------------------
 //fills in ptr to list of joints, and returns the number of joints in list
-//takes the robot type (object id), gun number, and desired state
-int robot_get_anim_state(jointpos **jp_list_ptr,int robot_type,int gun_num,int state)
+//takes the robot nType (tObject id), gun number, and desired state
+int robot_get_anim_state(jointpos **jp_list_ptr,int robotType,int gun_num,int state)
 {
 
-	Assert(gun_num <= gameData.bots.pInfo[robot_type].n_guns);
+	Assert(gun_num <= gameData.bots.pInfo[robotType].nGuns);
 
-	*jp_list_ptr = &gameData.bots.joints[gameData.bots.pInfo[robot_type].anim_states[gun_num][state].offset];
+	*jp_list_ptr = &gameData.bots.joints[gameData.bots.pInfo[robotType].anim_states[gun_num][state].offset];
 
-	return gameData.bots.pInfo[robot_type].anim_states[gun_num][state].n_joints;
+	return gameData.bots.pInfo[robotType].anim_states[gun_num][state].n_joints;
 
 }
 
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void set_robot_state(object *objP,int state)
+void setRobot_state(tObject *objP,int state)
 {
 	int g,j,jo;
-	robot_info *ri;
+	tRobotInfo *ri;
 	jointlist *jl;
 
-	Assert(objP->type == OBJ_ROBOT);
+	Assert(objP->nType == OBJ_ROBOT);
 
 	ri = &gameData.bots.pInfo[objP->id];
 
-	for (g=0;g<ri->n_guns+1;g++) {
+	for (g=0;g<ri->nGuns+1;g++) {
 
 		jl = &ri->anim_states[g][state];
 
@@ -251,7 +251,7 @@ void set_robot_state(object *objP,int state)
 
 			jn = gameData.bots.joints[jo].jointnum;
 
-			objP->rtype.pobj_info.anim_angles[jn] = gameData.bots.joints[jo].angles;
+			objP->rType.polyObjInfo.animAngles[jn] = gameData.bots.joints[jo].angles;
 
 		}
 	}
@@ -264,7 +264,7 @@ void set_robot_state(object *objP,int state)
 
 //--unused-- test_anim_states()
 //--unused-- {
-//--unused-- 	set_robot_state(&gameData.objs.objects[1],cur_state);
+//--unused-- 	setRobot_state(&gameData.objs.objects[1],cur_state);
 //--unused--
 //--unused--
 //--unused-- 	cur_state = (cur_state+1)%N_ANIM_STATES;
@@ -273,17 +273,17 @@ void set_robot_state(object *objP,int state)
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void robot_set_angles(robot_info *r,polymodel *pm,vms_angvec angs[N_ANIM_STATES][MAX_SUBMODELS])
+void robot_set_angles(tRobotInfo *r,polymodel *pm,vmsAngVec angs[N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int m,g,state;
 	int gun_nums[MAX_SUBMODELS];			//which gun each submodel is part of
 
 	for (m=0;m<pm->n_models;m++)
-		gun_nums[m] = r->n_guns;		//assume part of body...
+		gun_nums[m] = r->nGuns;		//assume part of body...
 
 	gun_nums[0] = -1;		//body never animates, at least for now
 
-	for (g=0;g<r->n_guns;g++) {
+	for (g=0;g<r->nGuns;g++) {
 		m = r->gun_submodels[g];
 
 		while (m != 0) {
@@ -292,7 +292,7 @@ void robot_set_angles(robot_info *r,polymodel *pm,vms_angvec angs[N_ANIM_STATES]
 		}
 	}
 
-	for (g=0;g<r->n_guns+1;g++) {
+	for (g=0;g<r->nGuns+1;g++) {
 
 		for (state=0;state<N_ANIM_STATES;state++) {
 
@@ -318,60 +318,60 @@ void robot_set_angles(robot_info *r,polymodel *pm,vms_angvec angs[N_ANIM_STATES]
 
 void InitCamBots (int bReset)
 {
-	object		*objP = gameData.objs.objects;
+	tObject		*objP = gameData.objs.objects;
 	int			i;
-	vms_vector	av = {DEG90,DEG90,DEG90};
+	vmsVector	av = {DEG90,DEG90,DEG90};
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
-gameData.bots.info [0][gameData.bots.nCamBotId].model_num = gameData.bots.nCamBotModel;
-gameData.bots.info [0][gameData.bots.nCamBotId].attack_type = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].contains_id = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].contains_count = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].contains_prob = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].contains_type = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].score_value = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].nModel = gameData.bots.nCamBotModel;
+gameData.bots.info [0][gameData.bots.nCamBotId].attackType = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].containsId = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].containsCount = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].containsProb = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].containsType = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].scoreValue = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].strength = -1;
 gameData.bots.info [0][gameData.bots.nCamBotId].mass = F1_0 / 2;
 gameData.bots.info [0][gameData.bots.nCamBotId].drag = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].see_sound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].attack_sound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].claw_sound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].taunt_sound = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].seeSound = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].attackSound = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].clawSound = 0;
+gameData.bots.info [0][gameData.bots.nCamBotId].tauntSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_STILL;
 gameData.bots.info [0][gameData.bots.nCamBotId].aim = AIM_STILL;
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].turn_time, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].turn_time));
+memset (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].max_speed, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].max_speed));
-memset (gameData.bots.info [0][gameData.bots.nCamBotId].circle_distance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circle_distance));
+memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].rapidfire_count, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].rapidfire_count));
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-	if (objP->type == OBJ_CAMBOT) {
-		//objP->type = OBJ_ROBOT;
+	if (objP->nType == OBJ_CAMBOT) {
+		//objP->nType = OBJ_ROBOT;
 		objP->id	= gameData.bots.nCamBotId;
 		objP->size = G3PolyModelSize (gameData.models.polyModels [gameData.bots.nCamBotModel].model_data);
 		objP->lifeleft = IMMORTAL_TIME;
-		objP->control_type = CT_CAMERA;
-		objP->movement_type = MT_NONE;
-		objP->rtype.pobj_info.model_num = gameData.bots.nCamBotModel;
+		objP->controlType = CT_CAMERA;
+		objP->movementType = MT_NONE;
+		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
 #if 0
 		VmExtractAnglesMatrix (&a, &objP->orient);
 		av.x = a.h;
 		av.y = a.b;
 		av.z = a.p;
 		G3StartInstanceMatrix (&objP->pos, &objP->orient);
-		VmVecRotate (&objP->mtype.spin_rate, &av, &objP->orient);
+		VmVecRotate (&objP->mType.spinRate, &av, &objP->orient);
 		G3DoneInstance ();
 		h = a.b + a.p;
-		objP->mtype.spin_rate.x = a.p; //(a.h < 0) ? (a.b < 0) ? -h : h : (a.b < 0) ? h : -h;
-		objP->mtype.spin_rate.y = a.h; //(a.b < 0) ? -(DEG90 + a.b) : DEG90 - a.b;
-		objP->mtype.spin_rate.z = a.b; //(a.p < 0) ? -(DEG90 + a.p) : DEG90 - a.p;
-		objP->mtype.phys_info.brakes = -1;	// used as timeout counter
+		objP->mType.spinRate.x = a.p; //(a.h < 0) ? (a.b < 0) ? -h : h : (a.b < 0) ? h : -h;
+		objP->mType.spinRate.y = a.h; //(a.b < 0) ? -(DEG90 + a.b) : DEG90 - a.b;
+		objP->mType.spinRate.z = a.b; //(a.p < 0) ? -(DEG90 + a.p) : DEG90 - a.p;
+		objP->mType.physInfo.brakes = -1;	// used as timeout counter
 		//if (!bReset) 
 			{
-			objP->mtype.phys_info.turnroll = 0;	// used as current heading angle rel. to start pos
-			objP->mtype.phys_info.velocity.x = 0;
+			objP->mType.physInfo.turnRoll = 0;	// used as current heading angle rel. to start pos
+			objP->mType.physInfo.velocity.x = 0;
 			}
-		//objP->ctype.ai_info.behavior = AIB_NORMAL; //AIB_STILL;
+		//objP->cType.aiInfo.behavior = AIB_NORMAL; //AIB_STILL;
 #endif
 		gameData.ai.localInfo [i].mode = AIM_STILL;
 		}
@@ -406,35 +406,35 @@ static int jointlist_read_n(jointlist *jl, int n, CFILE *fp)
 
 //	-----------------------------------------------------------------------------------------------------------
 /*
- * reads n robot_info structs from a CFILE
+ * reads n tRobotInfo structs from a CFILE
  */
-int RobotInfoReadN(robot_info *ri, int n, CFILE *fp)
+int RobotInfoReadN(tRobotInfo *ri, int n, CFILE *fp)
 {
 	int i, j;
 
 	for (i = 0; i < n; i++) {
-		ri[i].model_num = CFReadInt(fp);
+		ri[i].nModel = CFReadInt(fp);
 		for (j = 0; j < MAX_GUNS; j++)
 			CFReadVector(&(ri[i].gun_points[j]), fp);
 		CFRead(ri[i].gun_submodels, MAX_GUNS, 1, fp);
 
-		ri[i].exp1_vclip_num = CFReadShort(fp);
-		ri[i].exp1_sound_num = CFReadShort(fp);
+		ri[i].nExp1VClip = CFReadShort(fp);
+		ri[i].nExp1Sound = CFReadShort(fp);
 
-		ri[i].exp2_vclip_num = CFReadShort(fp);
-		ri[i].exp2_sound_num = CFReadShort(fp);
+		ri[i].nExp2VClip = CFReadShort(fp);
+		ri[i].nExp2Sound = CFReadShort(fp);
 
-		ri[i].weapon_type = CFReadByte(fp);
-		ri[i].weapon_type2 = CFReadByte(fp);
-		ri[i].n_guns = CFReadByte(fp);
-		ri[i].contains_id = CFReadByte(fp);
+		ri[i].nWeaponType = CFReadByte(fp);
+		ri[i].nSecWeaponType = CFReadByte(fp);
+		ri[i].nGuns = CFReadByte(fp);
+		ri[i].containsId = CFReadByte(fp);
 
-		ri[i].contains_count = CFReadByte(fp);
-		ri[i].contains_prob = CFReadByte(fp);
-		ri[i].contains_type = CFReadByte(fp);
+		ri[i].containsCount = CFReadByte(fp);
+		ri[i].containsProb = CFReadByte(fp);
+		ri[i].containsType = CFReadByte(fp);
 		ri[i].kamikaze = CFReadByte(fp);
 
-		ri[i].score_value = CFReadShort(fp);
+		ri[i].scoreValue = CFReadShort(fp);
 		ri[i].badass = CFReadByte(fp);
 		ri[i].energy_drain = CFReadByte(fp);
 
@@ -451,24 +451,24 @@ int RobotInfoReadN(robot_info *ri, int n, CFILE *fp)
 		for (j = 0; j < NDL; j++)
 			ri[i].firing_wait2[j] = CFReadFix(fp);
 		for (j = 0; j < NDL; j++)
-			ri[i].turn_time[j] = CFReadFix(fp);
+			ri[i].turnTime[j] = CFReadFix(fp);
 		for (j = 0; j < NDL; j++)
 			ri[i].max_speed[j] = CFReadFix(fp);
 		for (j = 0; j < NDL; j++)
-			ri[i].circle_distance[j] = CFReadFix(fp);
+			ri[i].circleDistance[j] = CFReadFix(fp);
 		CFRead(ri[i].rapidfire_count, NDL, 1, fp);
 
 		CFRead(ri[i].evade_speed, NDL, 1, fp);
 
-		ri[i].cloak_type = CFReadByte(fp);
-		ri[i].attack_type = CFReadByte(fp);
+		ri[i].cloakType = CFReadByte(fp);
+		ri[i].attackType = CFReadByte(fp);
 
-		ri[i].see_sound = CFReadByte(fp);
-		ri[i].attack_sound = CFReadByte(fp);
-		ri[i].claw_sound = CFReadByte(fp);
-		ri[i].taunt_sound = CFReadByte(fp);
+		ri[i].seeSound = CFReadByte(fp);
+		ri[i].attackSound = CFReadByte(fp);
+		ri[i].clawSound = CFReadByte(fp);
+		ri[i].tauntSound = CFReadByte(fp);
 
-		ri[i].boss_flag = CFReadByte(fp);
+		ri[i].bossFlag = CFReadByte(fp);
 		ri[i].companion = CFReadByte(fp);
 		ri[i].smart_blobs = CFReadByte(fp);
 		ri[i].energy_blobs = CFReadByte(fp);
@@ -481,7 +481,7 @@ int RobotInfoReadN(robot_info *ri, int n, CFILE *fp)
 		ri[i].flags = CFReadByte(fp);
 		CFRead(ri[i].pad, 3, 1, fp);
 
-		ri[i].deathroll_sound = CFReadByte(fp);
+		ri[i].deathrollSound = CFReadByte(fp);
 		ri[i].glow = CFReadByte(fp);
 		ri[i].behavior = CFReadByte(fp);
 		ri[i].aim = CFReadByte(fp);

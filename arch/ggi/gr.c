@@ -77,7 +77,7 @@ int GrSetMode(u_int32_t mode)
 	else
 	{	
 		dbuffer = ggiDBGetBuffer(screenvis, 0);
-		if (!(dbuffer->type & GGI_DB_SIMPLE_PLB))
+		if (!(dbuffer->nType & GGI_DB_SIMPLE_PLB))
 			use_directbuffer = 0;
 		else
 			use_directbuffer = 1;
@@ -93,7 +93,7 @@ int GrSetMode(u_int32_t mode)
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_LINEAR;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 
 	if (use_directbuffer)
 	{
@@ -205,7 +205,7 @@ void GrPaletteStepUp (int r, int g, int b)
 }
 
 //added on 980913 by adb to fix palette problems
-// need a min without side effects...
+// need a min without tSide effects...
 #undef min
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb

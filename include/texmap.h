@@ -57,7 +57,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * 
  * Revision 1.11  1994/05/19  23:26:14  mike
  * Add constants NUM_LIGHTING_VALUES, MAX_LIGHTING_VALUE, MIN_LIGHTING_VALUE,
- * all part of new lighting_values_in_0_to_1 system.
+ * all part of new lightingValues_in_0_to_1 system.
  * 
  * Revision 1.10  1994/05/14  17:19:21  matt
  * Added externs
@@ -78,7 +78,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * prototype for texture_map_lin_lin_sky
  * 
  * Revision 1.4  1993/11/30  17:09:46  mike
- * prototype for compute_lighting_value.
+ * prototype for compute_lightingValue.
  * 
  * Revision 1.3  1993/11/22  10:50:38  matt
  * Add ifndef around body of file
@@ -106,7 +106,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FIX_RECIP_TABLE_SIZE	641 //increased from 321 to 641, since this res is now quite achievable.. slight fps boost -MM
 // -------------------------------------------------------------------------------------------------------
-extern fix compute_lighting_value(g3s_point *vertptr);
+extern fix compute_lightingValue(g3s_point *vertptr);
 
 // -------------------------------------------------------------------------------------------------------
 // This is the main texture mapper call.
@@ -145,11 +145,11 @@ extern	int	Interpolation_method;
 // Set Lighting_on to 0/1/2 for no lighting/intensity lighting/rgb lighting
 extern	int	Lighting_on;
 
-// HACK INTERFACE: how far away the current segment (& thus texture) is
+// HACK INTERFACE: how far away the current tSegment (& thus texture) is
 extern	int	nCurrentSegDepth;		
-extern	int	Max_perspective_depth;		//	Deepest segment at which perspective interpolation will be used.
-extern	int	Max_linear_depth;				//	Deepest segment at which linear interpolation will be used.
-extern	int	Max_flat_depth;				//	Deepest segment at which flat shading will be used. (If not flat shading, then what?)
+extern	int	Max_perspective_depth;		//	Deepest tSegment at which perspective interpolation will be used.
+extern	int	Max_linear_depth;				//	Deepest tSegment at which linear interpolation will be used.
+extern	int	Max_flat_depth;				//	Deepest tSegment at which flat shading will be used. (If not flat shading, then what?)
 
 //	These are pointers to texture maps.  If you want to render texture map #7, then you will render
 //	the texture map defined by Texmap_ptrs[7].
@@ -171,7 +171,7 @@ void gr_upoly_tmap(int nverts, int *vert );
 //function with ylr values
 void gr_upoly_tmap_ylr(int nverts, int *vert, void (*ylr_func)(int, fix, fix) );
 
-extern int Transparency_on,per2_flag;
+extern int Transparency_on,per2Flag;
 
 //	Set to !0 to enable Sim City 2000 (or Eric's Drive Through, or Eric's Game) specific code.
 extern	int	SC2000;

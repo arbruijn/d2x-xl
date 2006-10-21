@@ -24,14 +24,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Initial revision
  *
  * Revision 2.1  1995/03/20  18:15:58  john
- * Added code to not store the normals in the segment structure.
+ * Added code to not store the normals in the tSegment structure.
  *
  * Revision 2.0  1995/02/27  11:32:02  john
  * New version 2.0, which has no anonymous unions, builds with
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.10  1995/02/02  14:07:58  matt
- * Fixed confusion about which segment you are touching when you're
+ * Fixed confusion about which tSegment you are touching when you're
  * touching a wall.  This manifested itself in spurious lava burns.
  *
  * Revision 1.9  1994/12/04  22:48:04  matt
@@ -54,11 +54,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.4  1994/07/13  21:47:59  matt
  * FVI() and physics now keep lists of segments passed through which the
- * trigger code uses.
+ * tTrigger code uses.
  *
  * Revision 1.3  1994/07/08  14:27:26  matt
  * Non-needed powerups don't get picked up now; this required changing FVI to
- * take a list of ingore objects rather than just one ignore object.
+ * take a list of ingore objects rather than just one ignore tObject.
  *
  * Revision 1.2  1994/06/09  09:58:39  matt
  * Moved FindVectorIntersection() from physics.c to new file fvi.c
@@ -80,20 +80,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //return values for FindVectorIntersection() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
 #define HIT_WALL		1		//we hit - guess - a wall
-#define HIT_OBJECT	2		//we hit an object - which one?  no way to tell...
-#define HIT_BAD_P0	3		//start point not is specified segment
+#define HIT_OBJECT	2		//we hit an tObject - which one?  no way to tell...
+#define HIT_BAD_P0	3		//start point not is specified tSegment
 
 #define MAX_FVI_SEGS 100
 
 typedef struct fvi_hit_info {
 	int 			nType;						//what sort of intersection
-	short 		nSegment;					//what segment hit_pnt is in
+	short 		nSegment;					//what tSegment hit_pnt is in
 	short			nSegment2;
-	short 		nSide;						//if hit wall, which side
-	short 		nSideSegment;				//what segment the hit side is in
-	short 		nObject;						//if object hit, which object
-	vms_vector	vPoint;						//where we hit
-	vms_vector 	vNormal;						//if hit wall, ptr to its surface normal
+	short 		nSide;						//if hit wall, which tSide
+	short 		nSideSegment;				//what tSegment the hit tSide is in
+	short 		nObject;						//if tObject hit, which tObject
+	vmsVector	vPoint;						//where we hit
+	vmsVector 	vNormal;						//if hit wall, ptr to its surface normal
 	int			nNestCount;
 } fvi_hit_info;
 
@@ -114,7 +114,7 @@ typedef struct fvi_info {
 
 //this data contains the parms to fvi()
 typedef struct fvi_query {
-	vms_vector *p0,*p1;
+	vmsVector *p0,*p1;
 	short			startSeg;
 	fix			rad;
 	short			thisObjNum;
@@ -128,20 +128,20 @@ typedef struct fvi_query {
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
 //  rad 					the radius of the cylinder
-//  thisobjnum 		used to prevent an object with colliding with itself
+//  thisobjnum 		used to prevent an tObject with colliding with itself
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
-//  check_obj_flag	determines whether collisions with objects are checked
-//Returns the hit_data->hit_type
+//  check_objFlag	determines whether collisions with objects are checked
+//Returns the hit_data->hitType
 int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data);
 
-//finds the uv coords of the given point on the given seg & side
+//finds the uv coords of the given point on the given seg & tSide
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV(fix *u,fix *v,fix *l, vms_vector *pnt,segment *seg,int sidenum,int facenum);
+void FindHitPointUV(fix *u,fix *v,fix *l, vmsVector *pnt,tSegment *seg,int nSide,int facenum);
 
-//Returns true if the object is through any walls
-int ObjectIntersectsWall(object *objp);
+//Returns true if the tObject is through any walls
+int ObjectIntersectsWall(tObject *objp);
 
-int PixelTranspType (short nTexture, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
+int PixelTranspType (short nTexture, short nOrient, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
 #endif
 

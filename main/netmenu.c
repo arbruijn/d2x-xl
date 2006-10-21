@@ -75,7 +75,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
 /* the following are the possible packet identificators.
- * they are stored in the "type" field of the packet structs.
+ * they are stored in the "nType" field of the packet structs.
  * they are offset 4 bytes from the beginning of the raw IPX data
  * because of the "driver's" ipx_packetnum (see linuxnet.c).
  */
@@ -396,12 +396,12 @@ if (menus [opt_coop].value) {
 		menus [opt_maxnet].value = 2;
 		menus [opt_maxnet].redraw = 1;
 		}
-	if (menus [opt_maxnet].max_value>2) {
-		menus [opt_maxnet].max_value = 2;
+	if (menus [opt_maxnet].maxValue>2) {
+		menus [opt_maxnet].maxValue = 2;
 		menus [opt_maxnet].redraw = 1;
 		}
-	if (!(netGame.game_flags & NETGAME_FLAG_SHOW_MAP))
-		netGame.game_flags |= NETGAME_FLAG_SHOW_MAP;
+	if (!(netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
+		netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
 	if (netGame.PlayTimeAllowed || netGame.KillGoal) {
 		netGame.PlayTimeAllowed = 0;
 		netGame.KillGoal = 0;
@@ -411,7 +411,7 @@ else {// if !Coop game
 	if (oldmaxnet) {
 		oldmaxnet = 0;
 		menus [opt_maxnet].value = 6;
-		menus [opt_maxnet].max_value = 6;
+		menus [opt_maxnet].maxValue = 6;
 		}
 	}         
 if (last_maxnet != menus [opt_maxnet].value)  {
@@ -678,7 +678,7 @@ do {
 
    //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 mpParams.nReactorLife = m [opt_cinvul].value;
-netGame.control_invul_time = mpParams.nReactorLife * 5 * F1_0 * 60;
+netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
@@ -735,9 +735,9 @@ netGame.AlwaysLighting = m [optLight].value;
 mpParams.bAlwaysBright = (ubyte) netGame.AlwaysLighting;
 mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].value;
 if (mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].value)
-	netGame.game_flags |= NETGAME_FLAG_SHOW_MAP;
+	netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
 else
-	netGame.game_flags &= ~NETGAME_FLAG_SHOW_MAP;
+	netGame.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
 if (!gameStates.app.bNostalgia) {
 	extraGameInfo [0].bFriendlyFire = m [optFF].value;
 	extraGameInfo [0].bInhibitSuicide = m [optSuicide].value;
@@ -765,30 +765,30 @@ if (!gameStates.app.bNostalgia) {
 //------------------------------------------------------------------------------
 
 #define SetTextOpt(_text) \
-	m [opt].type = NM_TYPE_TEXT; \
+	m [opt].nType = NM_TYPE_TEXT; \
 	m [opt++].text = _text
 
-#define SetInputOpt(_label, _text, _value, _len) \
+#define SetInputOpt(_label, _text, Value, _len) \
 	SetTextOpt (_label); \
-	m [opt].type = NM_TYPE_INPUT; \
-	sprintf (_text, "%d", _value); \
+	m [opt].nType = NM_TYPE_INPUT; \
+	sprintf (_text, "%d", Value); \
 	m [opt].text = _text; \
-	m [opt].value = _value; \
+	m [opt].value = Value; \
 	m [opt].text_len = _len; \
 	m [opt].szHelp = HTX_ONLINE_MANUAL
 
 #define SetRadioOpt(_text, _group, _key) \
-	m [opt].type = NM_TYPE_RADIO; \
+	m [opt].nType = NM_TYPE_RADIO; \
 	m [opt].text = _text; \
 	m [opt].value = 0; \
 	m [opt].group = _group; \
 	m [opt++].key = _key; \
 	m [opt].szHelp = HTX_ONLINE_MANUAL
 
-#define SetCheckOpt(_text, _value, _key) \
-	m [opt].type = NM_TYPE_CHECK; \
+#define SetCheckOpt(_text, Value, _key) \
+	m [opt].nType = NM_TYPE_CHECK; \
 	m [opt].text = _text; \
-	m [opt].value = _value; \
+	m [opt].value = Value; \
 	m [opt].key = _key; \
 	m [opt].szHelp = HTX_ONLINE_MANUAL
 
@@ -894,11 +894,11 @@ optShieldDmg = opt++;
 
 SetTextOpt ("");
 optTogglesMenu = opt;
-m [opt].type = NM_TYPE_MENU;  
+m [opt].nType = NM_TYPE_MENU;  
 m [opt].text = TXT_ENT_TGLMENU; 
 m [opt++].key = KEY_E;
 optTextureMenu = opt;
-m [opt].type = NM_TYPE_MENU;  
+m [opt].nType = NM_TYPE_MENU;  
 m [opt].text = TXT_ENT_TEXMENU; 
 m [opt++].key = KEY_T;
 Assert (sizeofa (m) >= opt);
@@ -1106,7 +1106,7 @@ extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].value + 2;
 int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
-	int opt, opt_name, opt_level, opt_level_num, opt_mode, opt_moreopts, 
+	int opt, opt_name, optLevel, optLevel_num, opt_mode, opt_moreopts, 
 		 opt_access, opt_mission, opt_mission_name;
 	newmenu_item m [35];
 	char name [NETGAME_NAME_LEN+1];
@@ -1122,7 +1122,7 @@ int NetworkGetGameParams (int bAutoRun)
 	networkData.nNamesInfoSecurity = -1;
 
 	if (nNewMission >= 0)
-		bAnarchyOnly = gameData.missions.list[nNewMission].anarchy_only_flag;
+		bAnarchyOnly = gameData.missions.list[nNewMission].anarchy_onlyFlag;
 	for (i = 0;i<MAX_PLAYERS;i++)
 		if (i!= gameData.multi.nLocalPlayer)
 			gameData.multi.players [i].callsign [0] = 0;
@@ -1178,11 +1178,11 @@ build_menu:
 
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 		ADD_TEXT (opt, level_text, 0); 
-		opt_level_num = opt++;
+		optLevel_num = opt++;
 		ADD_INPUT (opt, szLevel, 4, HTX_MULTI_LEVEL);
-		opt_level = opt++;
+		optLevel = opt++;
 		}
-//	m [opt].type = NM_TYPE_TEXT; m [opt].text = TXT_OPTIONS; opt++;
+//	m [opt].nType = NM_TYPE_TEXT; m [opt].text = TXT_OPTIONS; opt++;
 	
 	ADD_RADIO (opt, TXT_ANARCHY, 0, KEY_A, 0, HTX_MULTI_ANARCHY);
 	opt_mode = opt++;
@@ -1227,7 +1227,7 @@ build_menu:
 
 	m [opt_access + NMCLAMP (mpParams.nGameAccess, 0, 2)].value = 1;
 
-//      m [opt].type = NM_TYPE_CHECK; m [opt].text = TXT_SHOW_IDS; m [opt].value = 0; opt++;
+//      m [opt].nType = NM_TYPE_CHECK; m [opt].text = TXT_SHOW_IDS; m [opt].value = 0; opt++;
 
 	ADD_TEXT (opt, "", 0);
 	opt++; 
@@ -1265,7 +1265,7 @@ do_menu:
 		if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 			sprintf (level_text, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
 			Assert (strlen (level_text) < 32);
-			m [opt_level_num].rebuild = 1;
+			m [optLevel_num].rebuild = 1;
 			}
 		mpParams.nLevel = 1;
 		}
@@ -1390,7 +1390,7 @@ do_menu:
 	else Int3 (); // Invalid mode -- see Rob
 #endif
 	if (m [opt_closed].value)
-		netGame.game_flags |= NETGAME_FLAG_CLOSED;
+		netGame.gameFlags |= NETGAME_FLAG_CLOSED;
 	}
 	if (key == -2)
 		goto build_menu;
@@ -1402,7 +1402,7 @@ do_menu:
 
 	netGame.mission_name [sizeof (netGame.mission_name) - 1] = '\0';
 	strcpy (netGame.mission_title, gameData.missions.list [nNewMission].mission_name + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
-	netGame.control_invul_time = mpParams.nReactorLife * 5 * F1_0 * 60;
+	netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 	IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 	return key;
 }
@@ -1485,7 +1485,7 @@ do_menu:
 
 	memset (m, 0, sizeof (m));
 
-	m [0].type = NM_TYPE_INPUT; 
+	m [0].nType = NM_TYPE_INPUT; 
 	m [0].text = team_names [0]; 
 	m [0].text_len = CALLSIGN_LEN; 
 
@@ -1494,14 +1494,14 @@ do_menu:
 	{
 		if (!(team_vector & (1 << i)))
 		{
-			m [opt].type = NM_TYPE_MENU; 
+			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
 			pnums [opt] = i; 
 			opt++;
 		}
 	}
 	opt_team_b = opt;
-	m [opt].type = NM_TYPE_INPUT; 
+	m [opt].nType = NM_TYPE_INPUT; 
 	m [opt].text = team_names [1]; 
 	m [opt].text_len = CALLSIGN_LEN; 
 	opt++;
@@ -1509,16 +1509,16 @@ do_menu:
 	{
 		if (team_vector & (1 << i))
 		{
-			m [opt].type = NM_TYPE_MENU; 
+			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
 			pnums [opt] = i; 
 			opt++;
 		}
 	}
-	m [opt].type = NM_TYPE_TEXT; 
+	m [opt].nType = NM_TYPE_TEXT; 
 	m [opt].text = ""; 
 	opt++;
-	m [opt].type = NM_TYPE_MENU; 
+	m [opt].nType = NM_TYPE_MENU; 
 	m [opt].text = TXT_ACCEPT; 
 	m [opt].key = KEY_A;
 	opt++;
@@ -1574,7 +1574,7 @@ if (bAutoRun)
 memset (m, 0, sizeof (m));
 for (i = 0; i< MAX_PLAYERS+4; i++) {
 	sprintf (text [i], "%d.  %-20s", i+1, "");
-	m [i].type = NM_TYPE_CHECK; 
+	m [i].nType = NM_TYPE_CHECK; 
 	m [i].text = text [i]; 
 	m [i].value = 0;
 	}
@@ -1713,7 +1713,7 @@ void InitNetgameMenuOption (newmenu_item *m, int j)
 m += j;
 if (!m->text) {
 	m->text = szNMTextBuffer [j];
-	m->type = NM_TYPE_MENU;
+	m->nType = NM_TYPE_MENU;
 	}
 sprintf (m->text, "%2d.                                                     ", 
 			j - 1 - gameStates.multi.bUseTracker);
@@ -1959,7 +1959,7 @@ if (!bAutoRun) {
 	GrSetFontColorRGBi (RGBA_PAL (15, 15, 23), 1, 0, 0);
 	memset (m, 0, sizeof (m));
 	m [0].text = szNMTextBuffer [0];
-	m [0].type = NM_TYPE_TEXT;
+	m [0].nType = NM_TYPE_TEXT;
 	m [0].noscroll = 1;
 	m [0].x = (short) 0x8000;
 	//m [0].x = (short) 0x8000;
@@ -1971,7 +1971,7 @@ if (!bAutoRun) {
 			*m [0].text = '\0';
 	i = 1;
 	if (gameStates.multi.bUseTracker) {
-		m [i].type = NM_TYPE_TEXT;
+		m [i].nType = NM_TYPE_TEXT;
 		m [i].text = szNMTextBuffer [i];
 		strcpy (m [i].text, TXT_0TRACKERS);
 		m [i].x = (short) 0x8000;
@@ -1979,7 +1979,7 @@ if (!bAutoRun) {
 		i++;
 		}
 	m [i].text = szNMTextBuffer [i];
-	m [i].type = NM_TYPE_TEXT;
+	m [i].nType = NM_TYPE_TEXT;
 	strcpy (m [i].text, TXT_GAME_BROWSER);
 	m [i].noscroll = 1;
 	InitNetgameMenu (m, 0);
@@ -2129,21 +2129,21 @@ int choice, opt = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {  
 #if 0
 	memset (m, 0, sizeof (m));
-	m [opt].type = NM_TYPE_MENU;  
+	m [opt].nType = NM_TYPE_MENU;  
 	m [opt].text = "Local Subnet"; 
 	opt++;
-	m [opt].type = NM_TYPE_MENU;  
+	m [opt].nType = NM_TYPE_MENU;  
 	m [opt].text = "14.4 modem over Internet"; 
 	opt++;
-	m [opt].type = NM_TYPE_MENU;  
+	m [opt].nType = NM_TYPE_MENU;  
 	m [opt].text = "28.8 modem over Internet"; 
 	opt++;
-	m [opt].type = NM_TYPE_MENU;  
+	m [opt].nType = NM_TYPE_MENU;  
 	m [opt].text = "ISDN or T1 over Internet"; 
 	opt++;
 
 	Assert (sizeofa (m) >= opt);
-	choice = ExecMenu1 (NULL, "Choose connection type", opt, m, NULL, 0);
+	choice = ExecMenu1 (NULL, "Choose connection nType", opt, m, NULL, 0);
 
 	if (choice<0)
 		return (NULL);
@@ -2278,10 +2278,10 @@ if (!gameStates.multi.bUseTracker) {
 	ADD_INPUT (opt, mpParams.szServerIpAddr, sizeof (mpParams.szServerIpAddr) - 1, HTX_GETIP_SERVER);
 	optServer = opt++;
 	/*
-	m [opt].type = NM_TYPE_TEXT;  
+	m [opt].nType = NM_TYPE_TEXT;  
 	m [opt].text = "\nServer IP address:";
 	opt++;
-	m [opt].type = NM_TYPE_INPUT; 
+	m [opt].nType = NM_TYPE_INPUT; 
 	m [opt].text = szLocalIpAddr; 
 	m [opt].text_len = sizeof (szLocalIpAddr)-1;         
 	opt++;

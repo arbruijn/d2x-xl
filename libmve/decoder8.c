@@ -305,7 +305,7 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 		break;
 
 	case 0x6:
-		/* I can't figure out how any file containing a block of this type
+		/* I can't figure out how any file containing a block of this nType
 		   could still be playable, since it appears that it would leave the
 		   internal bookkeeping in an inconsistent state in the BG player
 		   code.  Ahh, well.  Perhaps it was a bug in the BG player code that
@@ -573,7 +573,7 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 		   Now, if P0 <= P1  AND  P2 <= P3, we get 16 bytes of pattern, each
 		   2 bits representing a 1x1 pixel (00=P0, 01=P1, 10=P2, 11=P3).  The
 		   ordering is again left to right and top to bottom.  The most
-		   significant bits represent the left side at the top, and so on.
+		   significant bits represent the left tSide at the top, and so on.
 
 		   If P0 <= P1  AND  P2 > P3, we get 4 bytes of pattern, each 2 bits
 		   representing a 2x2 pixel.  Ordering is left to right and top to
@@ -684,7 +684,7 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 
 		Each 2 bits represent a 1x1 pixel (00=P0, 01=P1, 10=P2, 11=P3).
 		The ordering is again left to right and top to bottom.  The most
-		significant bits represent the right side at the top, and so on.
+		significant bits represent the right tSide at the top, and so on.
 
 		If P0 > P1 then the next data on the data stream is:
 

@@ -42,9 +42,9 @@ extern void _CDECL_ key_close(void);
 
 //==========================================================================
 // These are configuration parameters to setup how the buffer works.
-// set keyd_buffer_type to 0 for no key buffering.
+// set keyd_bufferType to 0 for no key buffering.
 // set it to 1 and it will buffer scancodes.
-extern unsigned char keyd_buffer_type;
+extern unsigned char keyd_bufferType;
 extern unsigned char keyd_repeat;     // 1=allow repeating, 0=dont allow repeat
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
@@ -52,11 +52,11 @@ extern unsigned char keyd_repeat;     // 1=allow repeating, 0=dont allow repeat
 extern unsigned char keyd_editor_mode;		
 
 // Time in seconds when last key was pressed...
-extern volatile int keyd_time_when_last_pressed;
+extern volatile int keydTime_when_last_pressed;
 
 //==========================================================================
 // These are the "buffered" keypress routines.  Use them by setting the
-// "keyd_buffer_type" variable.
+// "keyd_bufferType" variable.
 
 extern void key_putkey (unsigned short); // simulates a keystroke
 extern void KeyFlush();    // Clears the 256 char buffer
@@ -75,7 +75,7 @@ extern void key_debug();    // Does an INT3
 
 // Set to 1 if the key is currently down, else 0
 extern volatile unsigned char keyd_pressed[];
-extern volatile unsigned char keyd_flags[];
+extern volatile unsigned char keydFlags[];
 extern volatile unsigned char keyd_last_pressed;
 extern volatile unsigned char keyd_last_released;
 
@@ -85,13 +85,13 @@ extern fix KeyDownTime(int scancode);
 // Returns number of times key has went from up to down since last call.
 extern unsigned int keyDownCount(int scancode);
 
-extern ubyte key_flags(int scancode);
+extern ubyte keyFlags(int scancode);
 // Returns number of times key has went from down to up since last call.
 extern unsigned int key_up_count(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();
-//void key_clear_times();
+//void key_clearTimes();
 //void key_clear_counts();
 
 extern char * key_text[256];

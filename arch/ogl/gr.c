@@ -374,7 +374,7 @@ return 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_palette = defaultPalette; //just need some valid palette here
 	//grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.type = BM_OGL;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_OGL;
 	//grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = d_realloc(gr_bm_data,w*h);
 	GrSetCurrentCanvas(NULL);
@@ -807,7 +807,7 @@ gameStates.render.bPaletteFadedOut = 1;
 //------------------------------------------------------------------------------
 
 //added on 980913 by adb to fix palette problems
-// need a min without side effects...
+// need a min without tSide effects...
 #undef min
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb

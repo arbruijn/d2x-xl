@@ -21,7 +21,7 @@
  * 0.99.2 - commented a bit :-) 
  *        - now adds to broadcast list each host it gets some packet from
  *          which is already not covered by local physical ethernet broadcast
- *        - implemented short-signature packet format
+ *        - implemented short-nSignature packet format
  *        - compatibility mode for old D1X releases due to the previous bullet
  *
  * Configuration:
@@ -78,7 +78,7 @@
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <cType.h>
 #include <malloc.h>
 
 #include <winsock2.h>
@@ -96,7 +96,7 @@ extern int gameStates.multi.bServer;
 #define PORTSHIFT_TOLERANCE 0x100
 #define MAX_PACKETSIZE 8192
 
-/* Packet format: first is the signature { 0xD1,'X' } which can be also
+/* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
  * Then follows virtual socket number (as changed during PgDOWN/PgUP)
  * in network-byte-order as 2 bytes (u_short). After such 4/8 byte header
@@ -180,7 +180,7 @@ static void chk(void *p)
 
 #define IF_REQFLAGS (IFF_UP|IFF_RUNNING)
 
-/* We reject any interfaces declared as LOOPBACK type.
+/* We reject any interfaces declared as LOOPBACK nType.
  */
 #define IF_NOTFLAGS (IFF_LOOPBACK)
 
@@ -244,10 +244,10 @@ static int addiflist(void)
 			closesocket(sock);
 			FAIL("ioctl(udp,\"%s\",SIOCGIFFLAGS) error: %m",ifconf.ifc_req[i].ifr_name);
 			}
-		if (((ifconf.ifc_req[i].ifr_flags&IF_REQFLAGS)!=IF_REQFLAGS)||
-				 (ifconf.ifc_req[i].ifr_flags&IF_NOTFLAGS))
+		if (((ifconf.ifc_req[i].ifrFlags&IF_REQFLAGS)!=IF_REQFLAGS)||
+				 (ifconf.ifc_req[i].ifrFlags&IF_NOTFLAGS))
 			continue;
-		if (ioctl(sock,(ifconf.ifc_req[i].ifr_flags&IFF_BROADCAST?SIOCGIFBRDADDR:SIOCGIFDSTADDR),ifconf.ifc_req+i)) {
+		if (ioctl(sock,(ifconf.ifc_req[i].ifrFlags&IFF_BROADCAST?SIOCGIFBRDADDR:SIOCGIFDSTADDR),ifconf.ifc_req+i)) {
 			closesocket(sock);
 			FAIL("ioctl(udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error: %m",ifconf.ifc_req[i].ifr_name);
 			}
@@ -661,7 +661,7 @@ static int UDPReceivePacket(ipx_socket_t *s, char *outbuf, int outbufsize,
 	ports=htons(ntohs(fromaddr.sin_port)-UDP_BASEPORT);
 	memcpy(rd->src_node+4,&ports,2);
 	memset(rd->src_network, 0, 4);
-	rd->pkt_type = 0;
+	rd->pktType = 0;
 #ifndef _WIN32
 #	ifdef UDPDEBUG
 	////printf(MSGHDR "ReceivePacket: size=%d,from=",size);

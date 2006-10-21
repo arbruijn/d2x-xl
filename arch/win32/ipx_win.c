@@ -212,7 +212,7 @@ static int ipx_win_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
   }
   memcpy(&ipxs.sa_nodenum, IPXHeader->Destination.Node, 6);
   memcpy(&ipxs.sa_socket, IPXHeader->Destination.Socket, 2);
-//  ipxs.sa_type = IPXHeader->PacketType;
+//  ipxs.saType = IPXHeader->PacketType;
   /*	ipxs.sipx_port=htons(0x452); */
   return sendto(mysock->fd, data, dataLen, 0,
 	     (struct sockaddr *) &ipxs, sizeof(ipxs));
@@ -232,7 +232,7 @@ static int ipx_win_ReceivePacket(ipx_socket_t *s, ubyte *buffer, int bufsize,
 	memcpy(rd->src_node, ipxs.sa_nodenum, 6);
 	rd->src_socket = ipxs.sa_socket;
 	rd->dst_socket = s->socket;
-//	rd->pkt_type = ipxs.sipx_type;
+//	rd->pktType = ipxs.sipxType;
   
 	return size;
 }

@@ -40,13 +40,13 @@ char szJoyAxis [UNIQUE_JOY_AXES] = {'X', 'Y', 'R', 'T', 'Z'};
 
 char joyHotkeys [UNIQUE_JOY_AXES] = {KEY_X, KEY_Y, KEY_R, KEY_T, KEY_Z};
 
-int joydefs_calibrate_flag = 0;
+int joydefs_calibrateFlag = 0;
 
 //------------------------------------------------------------------------------
 
 void joydefs_calibrate()
 {
-	joydefs_calibrate_flag = 0;
+	joydefs_calibrateFlag = 0;
 
 	if (!gameOpts->input.nJoysticks) {
 		ExecMessageBox( NULL, NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
@@ -60,7 +60,7 @@ void joydefs_calibrate()
 void joydef_menu_callback (int nitems, newmenu_item * items, int *last_key, int citem)
 {
 	int h, i, v;
-	int oc_type = gameConfig.nControlType;
+	int ocType = gameConfig.nControlType;
 	newmenu_item * m;
 /*
 	for (i=0; i<3; i++ )
@@ -71,11 +71,11 @@ void joydef_menu_callback (int nitems, newmenu_item * items, int *last_key, int 
 		gameConfig.nControlType = CONTROL_MOUSE;
 */
 	SetControlType ();
-	if ((oc_type != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
+	if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
 		ExecMessageBox( TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS );
 	}
 
-	if (oc_type != gameConfig.nControlType) {
+	if (ocType != gameConfig.nControlType) {
 		switch (gameConfig.nControlType) {
 	//		case	CONTROL_NONE:
 			case	CONTROL_JOYSTICK:
@@ -84,7 +84,7 @@ void joydef_menu_callback (int nitems, newmenu_item * items, int *last_key, int 
 			case	CONTROL_GRAVIS_GAMEPAD:
 	//		case	CONTROL_MOUSE:
 	//		case	CONTROL_CYBERMAN:
-				joydefs_calibrate_flag = 1;
+				joydefs_calibrateFlag = 1;
 		}
 		KCSetControls();
 	}

@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <cType.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -176,14 +176,14 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 void songs_stop_redbook(void)
 {
 	int old_volume = gameConfig.nRedbookVolume*REDBOOK_VOLUME_SCALE/8;
-	fix old_time = TimerGetFixedSeconds();
+	fix oldTime = TimerGetFixedSeconds();
 
 	if (gameStates.sound.bRedbookPlaying) {		//fade out volume
 		int new_volume;
 		do {
 			fix t = TimerGetFixedSeconds();
 
-			new_volume = FixMulDiv(old_volume,(FADE_TIME - (t-old_time)),FADE_TIME);
+			new_volume = FixMulDiv(old_volume,(FADE_TIME - (t-oldTime)),FADE_TIME);
 			if (new_volume < 0)
 				new_volume = 0;
 			RBASetVolume(new_volume);
@@ -404,13 +404,13 @@ void PlayLevelSong( int levelnum )
 //this should be called regularly to check for redbook restart
 void songs_check_redbook_repeat()
 {
-	static fix last_check_time;
-	fix current_time;
+	static fix last_checkTime;
+	fix currentTime;
 
 	if (!gameStates.sound.bRedbookPlaying || gameConfig.nRedbookVolume==0) return;
 
-	current_time = TimerGetFixedSeconds();
-	if (current_time < last_check_time || (current_time - last_check_time) >= F2_0) {
+	currentTime = TimerGetFixedSeconds();
+	if (currentTime < last_checkTime || (currentTime - last_checkTime) >= F2_0) {
 		if (!RBAPeekPlayStatus()) {
 			StopTime();
 			// if title ends, start credit music
@@ -427,7 +427,7 @@ void songs_check_redbook_repeat()
 			}
 			StartTime();
 		}
-		last_check_time = current_time;
+		last_checkTime = currentTime;
 	}
 }
 

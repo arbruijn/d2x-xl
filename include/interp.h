@@ -22,14 +22,14 @@ fix G3PolyModelSize (void *model_ptr);
 //gives the interpreter an array of points to use
 void G3SetModelPoints(g3s_point *pointlist);
 
-//calls the object interpreter to render an object.  The object renderer
+//calls the tObject interpreter to render an tObject.  The tObject renderer
 //is really a seperate pipeline. returns true if drew
-bool G3DrawPolyModel (object *objP, void *model_ptr,grs_bitmap **model_bitmaps,vms_angvec *anim_angles,
-							 fix light,fix *glow_values, tRgbColorf *obj_colors, tPOF_object *po);
+bool G3DrawPolyModel (tObject *objP, void *model_ptr,grs_bitmap **model_bitmaps,vmsAngVec *animAngles,
+							 fix light,fix *glowValues, tRgbColorf *obj_colors, tPOFObject *po);
 
-int G3DrawPolyModelShadow (object *objP, void *modelP, vms_angvec *pAnimAngles);
+int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles);
 
-int G3FreePolyModelItems (tPOF_object *po);
+int G3FreePolyModelItems (tPOFObject *po);
 
 //init code for bitmap models
 void G3InitPolyModel(void *model_ptr);
@@ -37,8 +37,8 @@ void G3InitPolyModel(void *model_ptr);
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
 
-//alternate interpreter for morphing object
-bool G3DrawMorphingModel(void *model_ptr,grs_bitmap **model_bitmaps,vms_angvec *anim_angles,fix light,vms_vector *new_points);
+//alternate interpreter for morphing tObject
+bool G3DrawMorphingModel(void *model_ptr,grs_bitmap **model_bitmaps,vmsAngVec *animAngles,fix light,vmsVector *new_points);
 
 //this remaps the 15bpp colors for the models into a new palette.  It should
 //be called whenever the palette changes
@@ -52,8 +52,8 @@ void G3FreeAllPolyModelItems (void);
 // routine to convert little to big endian in polygon model data
 void swap_polygon_model_data(ubyte *data);
 //routines to convert little to big endian in vectors
-void VmsVectorSwap(vms_vector *v);
-void VmsAngVecSwap(vms_angvec *v);
+void VmsVectorSwap(vmsVector *v);
+void VmsAngVecSwap(vmsAngVec *v);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT

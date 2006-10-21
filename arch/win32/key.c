@@ -23,7 +23,7 @@ extern void PumpMessages(void);
 
 extern void PumpMessages(void);
 
-volatile int keyd_time_when_last_pressed;
+volatile int keydTime_when_last_pressed;
 volatile unsigned char 	keyd_last_pressed;
 volatile unsigned char 	keyd_last_released;
 volatile unsigned char	keyd_pressed [256];
@@ -241,9 +241,9 @@ void UpdateState (DIDEVICEOBJECTDATA *pdidod)
 	{
 		keyd_pressed [kcKey] = 1;
 		keyd_last_pressed = kcKey;
-                g_rgtimeDown [kcKey] = keyd_time_when_last_pressed = timeNow;
+                g_rgtimeDown [kcKey] = keydTime_when_last_pressed = timeNow;
                 g_rgcDowns [kcKey] ++;
-		PushKey (kcKey, keyd_time_when_last_pressed);
+		PushKey (kcKey, keydTime_when_last_pressed);
 	}
 	else
 	{

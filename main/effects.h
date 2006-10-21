@@ -97,15 +97,15 @@ typedef struct eclip {
 	fix     time_left;      //for sequencing
 	int     nCurFrame;      //for sequencing
 	short   changing_wall_texture;      //Which element of Textures array to replace.
-	short   changing_object_texture;    //Which element of ObjBitmapPtrs array to replace.
+	short   changingObject_texture;    //Which element of ObjBitmapPtrs array to replace.
 	int     flags;          //see above
 	int     crit_clip;      //use this clip instead of above one when mine critical
 	int     dest_bm_num;    //use this bitmap when monitor destroyed
 	int     dest_vclip;     //what vclip to play when exploding
 	int     dest_eclip;     //what eclip to play when exploding
 	fix     dest_size;      //3d size of explosion
-	int     sound_num;      //what sound this makes
-	int     segnum,sidenum; //what seg & side, for one-shot clips
+	int     nSound;      //what sound this makes
+	int     nSegment,nSide; //what seg & tSide, for one-shot clips
 } __pack__ eclip;
 
 typedef eclip D1_eclip;

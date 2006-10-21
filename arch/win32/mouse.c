@@ -131,7 +131,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FACILITY_WIN32                   7
 #endif
 #ifndef FIELD_OFFSET
-#define FIELD_OFFSET(type, field)    ((LONG)&(((type *)0)->field))
+#define FIELD_OFFSET(nType, field)    ((LONG)&(((nType *)0)->field))
 #endif
 
 #define ME_CURSOR_MOVED	(1<<0)
@@ -177,7 +177,7 @@ typedef struct mouse_info {
 } mouse_info;
 
 typedef struct cyberman_info {
-	ubyte device_type;
+	ubyte deviceType;
 	ubyte major_version;
 	ubyte minor_version;
 	ubyte x_descriptor;

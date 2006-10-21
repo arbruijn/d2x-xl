@@ -185,7 +185,7 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <cType.h>
 
 #include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
@@ -227,7 +227,7 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #define NUM_LINES_HIRES 21
 #define NUM_LINES (gameStates.menus.bHires?NUM_LINES_HIRES:20)
 
-ubyte fade_values[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
+ubyte fadeValues[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
 11,11,12,12,12,13,13,14,14,15,15,15,16,16,17,17,17,18,18,19,19,19,20,20,
 20,21,21,22,22,22,23,23,23,24,24,24,24,25,25,25,26,26,26,26,27,27,27,27,
 28,28,28,28,28,29,29,29,29,29,29,30,30,30,30,30,30,30,30,30,31,31,31,31,
@@ -237,7 +237,7 @@ ubyte fade_values[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
 17,16,16,15,15,15,14,14,13,13,12,12,12,11,11,10,10,9,9,8,8,8,7,7,6,6,5,
 5,4,4,3,3,2,2,1 };
 
-ubyte fade_values_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
+ubyte fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 5,5,5,6,6,6,6,6,7,7,7,7,7,8,8,8,8,8,9,9,9,9,9,10,10,10,10,10,10,11,11,11,11,11,12,12,12,12,12,12,
 13,13,13,13,13,14,14,14,14,14,14,15,15,15,15,15,15,16,16,16,16,16,17,17,17,17,17,17,18,18,
 18,18,18,18,18,19,19,19,19,19,19,20,20,20,20,20,20,20,21,21,21,21,21,21,22,22,22,22,22,22,
@@ -293,7 +293,7 @@ void credits_show(char *credits_filename)
 	grs_bitmap bmBackdrop;
 	int pcx_error;
 	int buffer_line = 0;
-	fix last_time;
+	fix lastTime;
 //	fix time_delay = 4180;			// ~ F1_0 / 12.9
 //	fix time_delay = 1784;
 	fix time_delay = 2800;
@@ -374,7 +374,7 @@ CreditsPaint:
 	bmBackdrop.bm_palette = NULL;
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
-//MWA  be linear, so we can't rely on grdCurCanv->cv_bitmap->bm_props.type.
+//MWA  be linear, so we can't rely on grdCurCanv->cv_bitmap->bm_props.nType.
 
 	pcx_error = pcx_read_bitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 	if (pcx_error != PCX_ERROR_NONE) {
@@ -433,7 +433,7 @@ KeyFlush();
 	if (!credinit)	
 #endif
 	{
-		last_time = TimerGetFixedSeconds();
+		lastTime = TimerGetFixedSeconds();
 		done = 0;
 		first_line_offset = 0;
 	}
@@ -521,7 +521,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			} 
 		else
 			grdCurCanv->cv_font = names_font;
-		grBitBltFadeTable = (gameStates.menus.bHires ? fade_values_hires : fade_values);
+		grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 		tempp = strchr (s, '\t');
 		if (tempp)	{
 		//	Wacky Credits thing
@@ -610,8 +610,8 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 //@@			GrBmUBitBlt(grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(CreditsOffscreenBuf->cv_bitmap), &(grdCurScreen->sc_canvas.cv_bitmap));
 //@@		);
 
-			while(TimerGetFixedSeconds() < last_time+time_delay);
-			last_time = TimerGetFixedSeconds();
+			while(TimerGetFixedSeconds() < lastTime+time_delay);
+			lastTime = TimerGetFixedSeconds();
 		
 		#ifdef WINDOWS
 			{
