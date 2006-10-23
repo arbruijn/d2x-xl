@@ -206,7 +206,7 @@ static int ipx_bsd_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	}
 	memcpy(&ipxs.sipx_node, IPXHeader->Destination.Node, 6);
 	memcpy(&ipxs.sipx_port, IPXHeader->Destination.Socket, 2);
-	ipxs.sipxType = IPXHeader->PacketType;
+	ipxs.sipx_type = IPXHeader->PacketType;
 	/*	ipxs.sipx_port=htons(0x452); */
 	return sendto(mysock->fd, data, dataLen, 0,
 	              (struct sockaddr *) &ipxs, sizeof(ipxs));
@@ -225,7 +225,7 @@ static int ipx_bsd_ReceivePacket(ipx_socket_t *s, char *buffer, int bufsize,
 	memcpy(rd->src_node, ipxs.sipx_node, 6);
 	rd->src_socket = ipxs.sipx_port;
 	rd->dst_socket = s->socket;
-	rd->pktType = ipxs.sipxType;
+	rd->pktType = ipxs.sipx_type;
 
 	return size;
 }

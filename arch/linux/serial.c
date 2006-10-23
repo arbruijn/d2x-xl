@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 #include "serial.h"
 //added 02/06/99 Matt Mueller - allow selection of different devices
 #include "args.h"

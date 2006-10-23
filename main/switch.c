@@ -653,15 +653,13 @@ wall *TriggerParentWall (short trigger_num)
 	int	i;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (gameData.walls.walls [i].tTrigger == trigger_num)
+	if (gameData.walls.walls [i].nTrigger == trigger_num)
 		return gameData.walls.walls + i;
 return NULL;
 }
 
 //------------------------------------------------------------------------------
 
-vmsVector	boostedVel, minBoostedVel, maxBoostedVel;
-vmsVector	speedBoostSrc, speedBoostDest;
 fix			speedBoostSpeed = 0;
 
 void SetSpeedBoostVelocity (short nObject, fix speed, 
@@ -670,9 +668,10 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 									 vmsVector *pSrcPt, vmsVector *pDestPt,
 									 int bSetOrient)
 {
-	vmsVector	n, h;
-	tObject		*objP = gameData.objs.objects + nObject;
-	int			v;
+	vmsVector			n, h;
+	tObject				*objP = gameData.objs.objects + nObject;
+	int					v;
+	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 
 if (speed < 0)
 	speed = speedBoostSpeed;
@@ -680,16 +679,16 @@ if ((speed <= 0) || (speed > 10))
 	speed = 10;
 speedBoostSpeed = speed;
 v = 60 + extraGameInfo [IsMultiGame].nSpeedBoost * 4 * speed;
-if (gameStates.gameplay.bSpeedBoost) {
+if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
 		VmVecSub (&n, pDestPt, pSrcPt);
 		VmVecNormalize (&n);
 		}
 	else if (srcSegnum >= 0) {
-		COMPUTE_SIDE_CENTER (&speedBoostSrc, gameData.segs.segments + srcSegnum, srcSidenum);
-		COMPUTE_SIDE_CENTER (&speedBoostDest, gameData.segs.segments + destSegnum, destSidenum);
-		if (memcmp (&speedBoostSrc, &speedBoostDest, sizeof (vmsVector))) {
-			VmVecSub (&n, &speedBoostDest, &speedBoostSrc);
+		COMPUTE_SIDE_CENTER (&sbd.vSrc, gameData.segs.segments + srcSegnum, srcSidenum);
+		COMPUTE_SIDE_CENTER (&sbd.vDest, gameData.segs.segments + destSegnum, destSidenum);
+		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (vmsVector))) {
+			VmVecSub (&n, &sbd.vDest, &sbd.vSrc);
 			VmVecNormalize (&n);
 			}
 		else {
@@ -720,9 +719,9 @@ if (gameStates.gameplay.bSpeedBoost) {
 		n.y = -n.y;
 		n.z = -n.z;
 		}
-	boostedVel.x = n.x * v;
-	boostedVel.y = n.y * v;
-	boostedVel.z = n.z * v;
+	sbd.vVel.x = n.x * v;
+	sbd.vVel.y = n.y * v;
+	sbd.vVel.z = n.z * v;
 #if 0
 	d = (double) (labs (n.x) + labs (n.y) + labs (n.z)) / ((double) F1_0 * 60.0);
 	h.x = n.x ? (fix) ((double) n.x / d) : 0;
@@ -739,44 +738,45 @@ if (gameStates.gameplay.bSpeedBoost) {
 	h.z = (n.z ? n.z : F1_0) * 60;
 #	endif
 #endif
-	VmVecSub (&minBoostedVel, &boostedVel, &h);
+	VmVecSub (&sbd.vMinVel, &sbd.vVel, &h);
 /*
-	if (!minBoostedVel.x)
-		minBoostedVel.x = F1_0 * -60;
-	if (!minBoostedVel.y)
-		minBoostedVel.y = F1_0 * -60;
-	if (!minBoostedVel.z)
-		minBoostedVel.z = F1_0 * -60;
+	if (!sbd.vMinVel.x)
+		sbd.vMinVel.x = F1_0 * -60;
+	if (!sbd.vMinVel.y)
+		sbd.vMinVel.y = F1_0 * -60;
+	if (!sbd.vMinVel.z)
+		sbd.vMinVel.z = F1_0 * -60;
 */
-	VmVecAdd (&maxBoostedVel, &boostedVel, &h);
+	VmVecAdd (&sbd.vMaxVel, &sbd.vVel, &h);
 /*
-	if (!maxBoostedVel.x)
-		maxBoostedVel.x = F1_0 * 60;
-	if (!maxBoostedVel.y)
-		maxBoostedVel.y = F1_0 * 60;
-	if (!maxBoostedVel.z)
-		maxBoostedVel.z = F1_0 * 60;
+	if (!sbd.vMaxVel.x)
+		sbd.vMaxVel.x = F1_0 * 60;
+	if (!sbd.vMaxVel.y)
+		sbd.vMaxVel.y = F1_0 * 60;
+	if (!sbd.vMaxVel.z)
+		sbd.vMaxVel.z = F1_0 * 60;
 */
-	if (minBoostedVel.x > maxBoostedVel.x) {
-		fix h = minBoostedVel.x;
-		minBoostedVel.x = maxBoostedVel.x;
-		maxBoostedVel.x = h;
+	if (sbd.vMinVel.x > sbd.vMaxVel.x) {
+		fix h = sbd.vMinVel.x;
+		sbd.vMinVel.x = sbd.vMaxVel.x;
+		sbd.vMaxVel.x = h;
 		}
-	if (minBoostedVel.y > maxBoostedVel.y) {
-		fix h = minBoostedVel.y;
-		minBoostedVel.y = maxBoostedVel.y;
-		maxBoostedVel.y = h;
+	if (sbd.vMinVel.y > sbd.vMaxVel.y) {
+		fix h = sbd.vMinVel.y;
+		sbd.vMinVel.y = sbd.vMaxVel.y;
+		sbd.vMaxVel.y = h;
 		}
-	if (minBoostedVel.z > maxBoostedVel.z) {
-		fix h = minBoostedVel.z;
-		minBoostedVel.z = maxBoostedVel.z;
-		maxBoostedVel.z = h;
+	if (sbd.vMinVel.z > sbd.vMaxVel.z) {
+		fix h = sbd.vMinVel.z;
+		sbd.vMinVel.z = sbd.vMaxVel.z;
+		sbd.vMaxVel.z = h;
 		}
-	objP->mType.physInfo.velocity = boostedVel;
+	objP->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
 		TriggerSetObjOrient (nObject, destSegnum, destSidenum, 0, -1);
 		gameStates.gameplay.nDirSteps = MAX_ORIENT_STEPS - 1;
 		}
+	gameData.objs.speedBoost [nObject] = sbd;
 	}
 else {
 	objP->mType.physInfo.velocity.x = objP->mType.physInfo.velocity.x / v * 60;
@@ -799,7 +799,7 @@ void DoSpeedBoost (tTrigger *trigP, short nObject)
 {
 if (extraGameInfo [IsMultiGame].nSpeedBoost) {
 	wall *w = TriggerParentWall (TRIG_IDX (trigP));
-	gameStates.gameplay.bSpeedBoost = (trigP->value && (trigP->nLinks > 0));
+	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, trigP->value, 
 								  (short) (w ? w->nSegment : -1), (short) (w ? w->nSide : -1),
 								  trigP->nSegment [0], trigP->nSide [0], NULL, NULL, (trigP->flags & TF_SET_ORIENT) != 0);
@@ -826,7 +826,7 @@ return (i > 0);
 
 //------------------------------------------------------------------------------
 
-int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int nTrigger, int pnum, int shot)
+int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int nTrigger, int pnum, int shot, int bBotTrigger)
 {
 	tTrigger	*trigP;
 	tObject	*objP = gameData.objs.objects + nObject;
@@ -842,7 +842,7 @@ if (bIsPlayer) {
 		return 1;
 	}
 else if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-	if ((objP->nType != OBJ_ROBOT) || !gameData.bots.pInfo [objP->id].companion)
+	if ((objP->nType != OBJ_ROBOT) || !(bBotTrigger || gameData.bots.pInfo [objP->id].companion))
 		return 1;
 	}
 #if 1
@@ -1047,7 +1047,7 @@ void ExecObjTriggers (short nObject)
 	short i = gameData.trigs.firstObjTrigger [nObject];
 
 while (i >= 0) {
-	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, gameData.multi.nLocalPlayer, 1);
+	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, gameData.multi.nLocalPlayer, 1, 1);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendObjTrigger (i);
@@ -1058,19 +1058,20 @@ while (i >= 0) {
 
 //-----------------------------------------------------------------
 // Checks for a tTrigger whenever an tObject hits a tTrigger tSide.
-void CheckTrigger (tSegment *seg, short tSide, short nObject, int shot)
+void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
 {
 	int 	nWall;
 	ubyte	nTrigger;	//, cnTrigger;
 
-nWall = WallNumP (seg, tSide);
+nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 
 	return;
-nTrigger = gameData.walls.walls [nWall].tTrigger;
-if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, nTrigger, gameData.multi.nLocalPlayer,shot))
+nTrigger = gameData.walls.walls [nWall].nTrigger;
+if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, nTrigger, 
+							gameData.multi.nLocalPlayer, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-NDRecordTrigger (SEG_IDX (seg), tSide, nObject, shot);
+	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);
 #ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiSendTrigger (nTrigger, nObject);
@@ -1189,9 +1190,9 @@ trigP->nLinks = CFReadByte (fp);
 CFReadByte (fp);
 trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSide [i] = CFReadShort (fp);
 }
 #endif

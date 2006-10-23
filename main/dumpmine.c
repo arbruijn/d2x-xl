@@ -231,7 +231,7 @@ void write_exit_text(FILE *my_file)
 			//	Find wall pointing to this tTrigger.
 			count2 = 0;
 			for (j=0; j<gameData.walls.nWalls; j++)
-				if (gameData.walls.walls[j].tTrigger == i) {
+				if (gameData.walls.walls[j].nTrigger == i) {
 					count2++;
 					fprintf(my_file, "Exit tTrigger %i is in tSegment %i, on tSide %i, bound to wall %i\n", i, gameData.walls.walls[j].nSegment, gameData.walls.walls[j].nSide, j);
 				}
@@ -544,19 +544,19 @@ void write_wall_text(FILE *my_file)
 		int	nSegment, nSide;
 
 		fprintf(my_file, 
-			"Wall %03i: seg=%3i, tSide=%2i, linked_wall=%3i, nType=%s, flags=%4x, hps=%3i, tTrigger=%2i, clip_num=%2i, keys=%2i, state=%i\n", i,
+			"Wall %03i: seg=%3i, tSide=%2i, nLinkedWall=%3i, nType=%s, flags=%4x, hps=%3i, tTrigger=%2i, nClip=%2i, keys=%2i, state=%i\n", i,
 			wallP->nSegment, 
 			wallP->nSide, 
-			wallP->linked_wall, 
+			wallP->nLinkedWall, 
 			pszWallNames[wallP->nType], 
 			wallP->flags, wallP->hps >> 16, 
-			wallP->tTrigger, 
-			wallP->clip_num, 
+			wallP->nTrigger, 
+			wallP->nClip, 
 			wallP->keys, 
 			wallP->state);
 
-		if (wallP->tTrigger >= gameData.trigs.nTriggers)
-			fprintf(my_file, "Wall %03d points to invalid tTrigger %d\n",i,wallP->tTrigger);
+		if (wallP->nTrigger >= gameData.trigs.nTriggers)
+			fprintf(my_file, "Wall %03d points to invalid tTrigger %d\n",i,wallP->nTrigger);
 
 		nSegment = wallP->nSegment;
 		nSide = wallP->nSide;
@@ -626,11 +626,11 @@ void write_trigger_text(FILE *my_file)
 			gameData.trigs.triggers[i].nType, gameData.trigs.triggers[i].flags, gameData.trigs.triggers[i].value, gameData.trigs.triggers[i].time, gameData.trigs.triggers[i].nLinks);
 
 		for (j=0; j<gameData.trigs.triggers[i].nLinks; j++)
-			fprintf(my_file, "[%03i:%i] ", gameData.trigs.triggers[i].seg[j], gameData.trigs.triggers[i].tSide[j]);
+			fprintf(my_file, "[%03i:%i] ", gameData.trigs.triggers[i].seg[j], gameData.trigs.triggers[i].nSide[j]);
 
 		//	Find which wall this tTrigger is connected to.
 		for (w=gameData.walls.nWalls, wallP = gameData.walls.walls; w; w--, wallP++)
-			if (wallP->tTrigger == i)
+			if (wallP->nTrigger == i)
 				break;
 
 		if (w == gameData.walls.nWalls)
@@ -813,17 +813,17 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 			tSide	*sideP = &segp->sides[nSide];
 
 			if (sideP->nWall != -1) {
-				int clip_num = gameData.walls.walls[sideP->nWall].clip_num;
-				if (clip_num != -1) {
+				int nClip = gameData.walls.walls[sideP->nWall].nClip;
+				if (nClip != -1) {
 
-					// -- int num_frames = gameData.walls.anims[clip_num].nFrameCount;
+					// -- int num_frames = gameData.walls.anims[nClip].nFrameCount;
 
-					wall_buf[clip_num] = 1;
+					wall_buf[nClip] = 1;
 
 					for (j=0; j<1; j++) {	//	Used to do through num_frames, but don't really want all the door01#3 stuff.
 						int	nBaseTex;
 
-						nBaseTex = gameData.pig.tex.pBmIndex[gameData.walls.anims[clip_num].frames[j]].index;
+						nBaseTex = gameData.pig.tex.pBmIndex[gameData.walls.anims[nClip].frames[j]].index;
 						Assert((nBaseTex >= 0) && (nBaseTex < MAX_BITMAP_FILES);
 						tmap_buf[nBaseTex]++;
 						if (level_tmap_buf[nBaseTex] == -1)

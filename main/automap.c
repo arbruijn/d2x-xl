@@ -1901,7 +1901,7 @@ switch (gameData.segs.segment2s[nSegment].special)	{
 
 if (IS_WALL (wn = WallNumP (seg, sn)))	{
 	wall	*wallP = gameData.walls.walls + wn;
-	nTrigger = wallP->tTrigger;
+	nTrigger = wallP->nTrigger;
 	ttype = gameData.trigs.triggers[nTrigger].nType;
 	if (ttype==TT_SECRET_EXIT)	{
 	 	color = RGBA_PAL2 (29, 0, 31);
@@ -1922,7 +1922,7 @@ if (IS_WALL (wn = WallNumP (seg, sn)))	{
 				bNoFade = 1;
 				color = automapColors.walls.nDoorRed;
 				}
-			else if (! (gameData.walls.pAnims[wallP->clip_num].flags & WCF_HIDDEN)) {
+			else if (! (gameData.walls.pAnims[wallP->nClip].flags & WCF_HIDDEN)) {
 				short	connected_seg = seg->children [sn];
 				if (connected_seg != -1) {
 					short connected_side = FindConnectedSide (seg, &gameData.segs.segments[connected_seg]);

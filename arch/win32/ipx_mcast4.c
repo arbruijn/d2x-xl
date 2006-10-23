@@ -18,7 +18,7 @@
 #include <unistd.h>
 #endif
 #include <stdlib.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include <winsock2.h>
 #include <ws2tcpip.h>

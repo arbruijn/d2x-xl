@@ -145,7 +145,7 @@ extern void SetFunctionMode (int);
 
 // Global Variables -----------------------------------------------------------
 
-int	redbook_volume = 255;
+int	redbookVolume = 255;
 
 
 //	External Variables ---------------------------------------------------------
@@ -1057,23 +1057,23 @@ dump_door_debugging_info()
 			fprintf(dfile, "    nSegment = %d\n", wall->nSegment);
 			fprintf(dfile, "    nSide = %d\n", wall->nSide);
 			fprintf(dfile, "    hps = %x\n", wall->hps);
-			fprintf(dfile, "    linked_wall = %d\n", wall->linked_wall);
+			fprintf(dfile, "    nLinkedWall = %d\n", wall->nLinkedWall);
 			fprintf(dfile, "    nType = %d\n", wall->nType);
 			fprintf(dfile, "    flags = %x\n", wall->flags);
 			fprintf(dfile, "    state = %d\n", wall->state);
-			fprintf(dfile, "    tTrigger = %d\n", wall->tTrigger);
-			fprintf(dfile, "    clip_num = %d\n", wall->clip_num);
+			fprintf(dfile, "    tTrigger = %d\n", wall->nTrigger);
+			fprintf(dfile, "    nClip = %d\n", wall->nClip);
 			fprintf(dfile, "    keys = %x\n", wall->keys);
-			fprintf(dfile, "    controlling_trigger = %d\n", wall->controlling_trigger);
+			fprintf(dfile, "    controllingTrigger = %d\n", wall->controllingTrigger);
 			fprintf(dfile, "    cloakValue = %d\n", wall->cloakValue);
 			fprintf(dfile, "\n");
 	
 	
 			for (i=0;i<gameData.walls.nOpenDoors;i++) {		//find door
 				d = &gameData.walls.activeDoors[i];
-				if (d->front_wallnum[0]==nWall || 
-					 d->back_wallnum[0]==nWall || 
-					 (d->n_parts==2 && (d->front_wallnum[1]==nWall || d->back_wallnum[1]==nWall)))
+				if (d->nFrontWall[0]==nWall || 
+					 d->nBackWall[0]==nWall || 
+					 (d->n_parts==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
 					break;
 			} 
 	
@@ -1082,8 +1082,8 @@ dump_door_debugging_info()
 			else {
 				fprintf(dfile, "Active door %d:\n", i);
 				fprintf(dfile, "    n_parts = %d\n", d->n_parts);
-				fprintf(dfile, "    front_wallnum = %d, %d\n", d->front_wallnum[0], d->front_wallnum[1]);
-				fprintf(dfile, "    back_wallnum = %d, %d\n", d->back_wallnum[0], d->back_wallnum[1]);
+				fprintf(dfile, "    nFrontWall = %d, %d\n", d->nFrontWall[0], d->nFrontWall[1]);
+				fprintf(dfile, "    nBackWall = %d, %d\n", d->nBackWall[0], d->nBackWall[1]);
 				fprintf(dfile, "    time = %x\n", d->time);
 			}
 	
@@ -2077,7 +2077,9 @@ int ReadControls()
 		CheckRearView();
 
 		//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
-		if ( Controls.automapDownCount && !gameStates.gameplay.bSpeedBoost && !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
+		if (Controls.automapDownCount && 
+			 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
+			 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 			gameStates.app.bAutoMap = 1;
 
 		do_weapon_stuff();

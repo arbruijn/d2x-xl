@@ -9,7 +9,7 @@ extern digiSound altsound_list[MAX_SOUNDS];
 void load_altSounds(char *fname);
 void free_altSounds();
  
-digiSound *Sounddat(int soundnum);
-int DigiXlatSound(short soundnum);
+digiSound *Sounddat(int nSound);
+int DigiXlatSound(short nSound);
 
 #endif // _ALTSOUND_H

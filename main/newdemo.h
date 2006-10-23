@@ -245,7 +245,7 @@ extern void NDStopRecording();
 
 extern int NDGetPercentDone();
 
-extern void NDRecordLinkSoundToObject3( int soundno, short nObject, fix max_volume, fix  maxDistance, int loop_start, int loop_end );
+extern void NDRecordLinkSoundToObject3( int soundno, short nObject, fix maxVolume, fix  maxDistance, int loop_start, int loop_end );
 extern int NDFindObject( int nSignature );
 extern void NDRecordKillSoundLinkedToObject( int nObject );
 

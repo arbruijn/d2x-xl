@@ -464,7 +464,7 @@ fix fix_sqrt(fix a)
 //either of the pointers can be NULL
 //with interpolation
 
-void fix_sincos(fix a,fix *s,fix *c)
+void FixSinCos(fix a,fix *s,fix *c)
 {
 if (gameOpts->render.nMathFormat == 2) {
 	double d = (double) (a * 2.0 * Pi) / F1_0;

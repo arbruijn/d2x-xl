@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -85,7 +85,7 @@ extern int CD_blast_mixer();
 #define REDBOOK_VOLUME_SCALE  (255/3)		//255 is MAX
 
 //takes volume in range 0..8
-void set_redbook_volume(int volume)
+void set_redbookVolume(int volume)
 {
 	RBASetVolume(0);		// makes the macs sound really funny
 	RBASetVolume(volume*REDBOOK_VOLUME_SCALE/8);
@@ -161,7 +161,7 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 
 				if (RBAEnabled())
 			{
-				set_redbook_volume(gameConfig.nRedbookVolume);
+				set_redbookVolume(gameConfig.nRedbookVolume);
 				RBARegisterCD();
 			}
 		}
@@ -175,22 +175,22 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 //stop the redbook, so we can read off the CD
 void songs_stop_redbook(void)
 {
-	int old_volume = gameConfig.nRedbookVolume*REDBOOK_VOLUME_SCALE/8;
+	int oldVolume = gameConfig.nRedbookVolume*REDBOOK_VOLUME_SCALE/8;
 	fix oldTime = TimerGetFixedSeconds();
 
 	if (gameStates.sound.bRedbookPlaying) {		//fade out volume
-		int new_volume;
+		int newVolume;
 		do {
 			fix t = TimerGetFixedSeconds();
 
-			new_volume = FixMulDiv(old_volume,(FADE_TIME - (t-oldTime)),FADE_TIME);
-			if (new_volume < 0)
-				new_volume = 0;
-			RBASetVolume(new_volume);
-		} while (new_volume > 0);
+			newVolume = FixMulDiv(oldVolume,(FADE_TIME - (t-oldTime)),FADE_TIME);
+			if (newVolume < 0)
+				newVolume = 0;
+			RBASetVolume(newVolume);
+		} while (newVolume > 0);
 	}
 	RBAStop();              	// Stop CD, if playing
-	RBASetVolume(old_volume);	//restore volume
+	RBASetVolume(oldVolume);	//restore volume
 	gameStates.sound.bRedbookPlaying = 0;		
 }
 
@@ -213,7 +213,7 @@ void reinit_redbook()
 
 	if (RBAEnabled())
 	{
-		set_redbook_volume(gameConfig.nRedbookVolume);
+		set_redbookVolume(gameConfig.nRedbookVolume);
 		RBARegisterCD();
 		force_rb_register=0;
 	}

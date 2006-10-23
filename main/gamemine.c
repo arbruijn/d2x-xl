@@ -1541,8 +1541,12 @@ GrPaletteStepLoad (NULL);
 
 int SortLightsGaugeSize (void)
 {
-return PROGRESS_STEPS (gameData.segs.nSegments) +
-		 PROGRESS_STEPS (gameData.segs.nVertices);
+return
+#if !SHADOWS
+	(!gameOpts->ogl.bUseLighting && gameStates.app.bD2XLevel) ? 0 :
+#endif
+	PROGRESS_STEPS (gameData.segs.nSegments) +
+	PROGRESS_STEPS (gameData.segs.nVertices);
 }
 
 //------------------------------------------------------------------------------
@@ -1674,17 +1678,13 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 ResetObjects (1);		//one tObject, the player
-//if (gameOpts->ogl.bUseLighting) 
+#if !SHADOWS
+if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) 
+#endif
 	{
 	AddOglLights ();
 	SortLightsGauge ();
 	}
-#if SHADOWS
-else {
-	AddOglLights ();
-	SortLightsGauge ();
-	}
-#endif
 return 0;
 }
 

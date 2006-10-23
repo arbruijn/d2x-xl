@@ -390,9 +390,6 @@ void ApplyLight(
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->nType == OBJ_PLAYER) {
-#ifdef _DEBUG
-		return;
-#endif
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
@@ -597,7 +594,7 @@ switch (objtype) {
 
 		  	hoardlight=i2f(gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f(12);
 			hoardlight++;
-		   fix_sincos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
+		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
 			s>>=1;
 			hoardlight=FixMul (s,hoardlight);
@@ -981,7 +978,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	int nObject = OBJ_IDX (objP);
 
 	if (!rotated_pnt) {
-		G3TransformAndEncodePoint(&objpnt,&objP->pos);
+		G3TransformAndEncodePoint (&objpnt,&objP->pos);
 		rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
@@ -1489,6 +1486,7 @@ else if (nSegment >= 0) {
 	RegisterLight (NULL, nSegment, nSide);
 	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 	}
+pl->bTransform = 1;
 return gameData.render.lights.ogl.nLights++;
 }
 
@@ -1645,7 +1643,7 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	psl->brightness = pl->brightness;
 	if (psl->bSpot = pl->bSpot) {
 		VmsVecToFloat (&psl->dir, &pl->vDir);
-		if (!gameStates.ogl.bUseTransform)
+		if (pl->bTransform && !gameStates.ogl.bUseTransform)
 			G3RotatePointf (&psl->dir, &psl->dir);
 		psl->spotAngle = pl->spotAngle;
 		psl->spotExponent = pl->spotExponent;
@@ -1819,14 +1817,16 @@ return psc;
 
 int AddOglHeadLight (tObject *objP)
 {
-	static float spotExps [] = {0.01f, 0.1f, 2.0f};
-	static float spotAngles [] = {0.8f, 0.5f, 0.25f};
+	static float spotExps [] = {3.0f, 5.0f, 10.0f};
+	static float spotAngles [] = {0.95f, 0.825f, 0.25f};
 
 if (gameOpts->ogl.bUseLighting) {
 		tRgbColorf c = {1.0f, 1.0f, 1.0f};
 		tOglLight	*pl;
 		int			nLight;
 
+	extraGameInfo [IsMultiGame].nSpotSize = (extraGameInfo [IsMultiGame].nSpotSize + 1) % 3;
+	extraGameInfo [IsMultiGame].nSpotStrength = extraGameInfo [IsMultiGame].nSpotSize;
 	nLight = AddOglLight (&c, F1_0 * 50, -1, -1, -1);
 	if (nLight >= 0) {
 		pl = gameData.render.lights.ogl.lights + nLight;
@@ -1834,6 +1834,7 @@ if (gameOpts->ogl.bUseLighting) {
 		pl->bSpot = 1;
 		pl->spotAngle = spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
 		pl->spotExponent = spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+		pl->bTransform = 0;
 		}
 	return nLight;
 	}
@@ -1865,7 +1866,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	objP = gameData.objs.objects + gameData.multi.players [nPlayer].nObject;
 	pl->vPos = objP->pos;
 	pl->vDir = objP->orient.fvec;
-	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 2);
+	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 3);
 	}
 }
 

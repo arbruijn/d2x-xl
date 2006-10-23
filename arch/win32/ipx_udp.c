@@ -143,7 +143,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
-#include <cType.h>
+#include <ctype.h>
 #include <malloc.h>
 
 #ifdef _WIN32

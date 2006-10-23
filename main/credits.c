@@ -185,7 +185,7 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"

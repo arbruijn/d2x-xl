@@ -1723,14 +1723,14 @@ int PiggyInit (void)
 
 //------------------------------------------------------------------------------
 
-int PiggyIsNeeded (int soundnum)
+int PiggyIsNeeded (int nSound)
 {
 	int i;
 
 	if (!gameStates.sound.digi.bLoMem) return 1;
 
 	for (i=0; i<MAX_SOUNDS; i++) {
-		if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data] [AltSounds [gameStates.app.bD1Data][i]] == soundnum))
+		if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data] [AltSounds [gameStates.app.bD1Data][i]] == nSound))
 			return 1;
 	}
 	return 0;

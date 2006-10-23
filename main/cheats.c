@@ -116,7 +116,7 @@ void KillEverything(void)
 	for (i=0; i<gameData.trigs.nTriggers; i++) {
 		if (gameData.trigs.triggers[i].nType == TT_EXIT) {
 			for (j=0; j<gameData.walls.nWalls; j++) {
-				if (gameData.walls.walls[j].tTrigger == i) {
+				if (gameData.walls.walls[j].nTrigger == i) {
 					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls[j].nSegment);
 					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls[j].nSegment);
 					goto kasf_done;

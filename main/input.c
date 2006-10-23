@@ -357,7 +357,7 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <cType.h>
+#include <ctype.h>
 #include <time.h>
 #include <math.h>
 

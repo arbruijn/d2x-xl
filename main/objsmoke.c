@@ -20,6 +20,12 @@
 #include "object.h"
 #include "objsmoke.h"
 
+#define SHIP_MAX_PARTS		50
+#define BOT_MAX_PARTS		50
+#define REACTOR_MAX_PARTS	50
+#define DEBRIS_MAX_PARTS	50
+#define MSL_MAX_PARTS		500
+
 //------------------------------------------------------------------------------
 
 void KillPlayerSmoke (int i)
@@ -147,24 +153,25 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 200 : 100;
+	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? SHIP_MAX_PARTS * 2 : SHIP_MAX_PARTS;
 	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
 		if (!gameOpts->render.smoke.bSyncSizes) {
-			nParts <<= gameOpts->render.smoke.nScale [1];
-			nParts = -nParts;
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating player smoke\n");
 			if (!bForward)
 				i = i;
-			h = gameData.smoke.objects [j] = CreateSmoke (&objP->pos, objP->nSegment, 2, nParts, nScale,
-														  PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
+			h = gameData.smoke.objects [j] = 
+				CreateSmoke (&objP->pos, objP->nSegment, 2, nParts, nScale,
+								 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
+								 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
 			}
 		else {
 			SetSmokeType (h, nType);
 			SetSmokePartScale (h, nScale);
-			SetSmokeDensity (h, nParts);
+			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
 			}
 		d = 8 * objP->size / 40;
 		for (j = 0; j < 2; j++)
@@ -195,6 +202,8 @@ if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
 	nShields = f2ir (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
+	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].bossFlag)
+		nShields /= (NDL - gameStates.app.nDifficultyLevel);
 	h = f2ir (objP->shields) * 100 / nShields;
 	}
 if (h < 0)
@@ -207,7 +216,7 @@ if (nParts > 0) {
 		nShields = 1000;
 	CreateDamageExplosion (nParts, i);
 	//nParts *= nShields / 10;
-	nParts = 250;
+	nParts = BOT_MAX_PARTS;
 	nScale = 655360.0f / (float) objP->size * 1.5f;
 	if (h <= 25)
 		nScale /= 3;
@@ -218,16 +227,16 @@ if (nParts > 0) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		if (!gameOpts->render.smoke.bSyncSizes) {
-			nParts <<= gameOpts->render.smoke.nScale [2];
-			nParts = -nParts;
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [2]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [2], nScale);
 			}
 		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts, nScale,
-																OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
+																gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
+																1, OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
-		SetSmokeDensity (gameData.smoke.objects [i], nParts);
+		SetSmokeDensity (gameData.smoke.objects [i], nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2]);
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size / 2);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -256,15 +265,15 @@ if (h < 0)
 	h = 0;	
 nParts = 10 - h / 10;
 if (nParts > 0) {
-	nParts = 250;
+	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts, 1.0,
-																OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
+																-1, 1, OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
-		SetSmokeDensity (gameData.smoke.objects [i], nParts);
+		SetSmokeDensity (gameData.smoke.objects [i], nParts, -1);
 		vDir.x = d_rand () - F1_0 / 4;
 		vDir.y = d_rand () - F1_0 / 4;
 		vDir.z = d_rand () - F1_0 / 4;
@@ -291,21 +300,29 @@ i = (int) (objP - gameData.objs.objects);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
-	nParts = (objP->id == EARTHSHAKER_ID) ? 2500 : 
-				(objP->id == MEGA_ID) ? 2250 : 
-				(objP->id == SMART_ID) ? 2000 : 
-				1750;
+#if 1
+	nParts = MSL_MAX_PARTS;
+#else
+	nParts = (objP->id == EARTHSHAKER_ID) ? 1500 : 
+				(objP->id == MEGA_ID) ? 1400 : 
+				(objP->id == SMART_ID) ? 1300 : 
+				1200;
+#endif
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);
 	if (!gameOpts->render.smoke.bSyncSizes) {
-		nParts <<= gameOpts->render.smoke.nScale [3];
-		nParts = -nParts;
+		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [3]);
 		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
 		}
-		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts / 2, nScale,
-												 MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
-		}
+	HUDMessage (0, "%d: %d %1.2f", 
+					gameOpts->render.smoke.nDens [0], 
+					MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [0]),
+					f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
+	gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts, nScale,
+															gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
+															1, MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
+	}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
 	}
@@ -326,12 +343,12 @@ i = (int) (objP - gameData.objs.objects);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
-	nParts = -250;
+	nParts = -DEBRIS_MAX_PARTS;
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->pos, objP->nSegment, 1, nParts / 2, 1.5,
-												 DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
+																-1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
 		}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fvec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);

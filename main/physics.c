@@ -610,35 +610,35 @@ if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->s
 //	-----------------------------------------------------------------------------------------------------------
 
 extern tObject *monsterballP;
-extern vmsVector boostedVel, minBoostedVel, maxBoostedVel;
 
 //Simulate a physics tObject for this frame
 #if 1
 void DoPhysicsSim (tObject *objP)
 {
-	short				ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
-	int				iseg;
-	int				bRetry;
-	int				fate;
-	vmsVector		vFrame;			//movement in this frame
-	vmsVector		vNewPos, ipos;		//position after this frame
-	int				count=0;
-	short				nObject;
-	short				nWallHitSeg, nWallHitSide;
-	fvi_info			hi;
-	fvi_query		fq;
-	vmsVector		vSavePos;
-	int				nSaveSeg;
-	fix				xDrag;
-	fix				xSimTime, xOldSimTime, xTimeScale;
-	vmsVector		vStartPos;
-	int				bObjStopped=0;
-	fix				xMovedTime;			//how long objected moved before hit something
-	vmsVector		vSaveP0, vSaveP1;
-	tPhysicsInfo	*pi;
-	short				nOrigSegment = objP->nSegment;
-	int				bBounced=0;
-	int				bDoSpeedBoost = gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console);
+	short					ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
+	int					iseg;
+	int					bRetry;
+	int					fate;
+	vmsVector			vFrame;			//movement in this frame
+	vmsVector			vNewPos, ipos;		//position after this frame
+	int					count=0;
+	short					nObject = OBJ_IDX (objP);
+	short					nWallHitSeg, nWallHitSide;
+	fvi_info				hi;
+	fvi_query			fq;
+	vmsVector			vSavePos;
+	int					nSaveSeg;
+	fix					xDrag;
+	fix					xSimTime, xOldSimTime, xTimeScale;
+	vmsVector			vStartPos;
+	int					bObjStopped=0;
+	fix					xMovedTime;			//how long objected moved before hit something
+	vmsVector			vSaveP0, vSaveP1;
+	tPhysicsInfo		*pi;
+	short					nOrigSegment = objP->nSegment;
+	int					bBounced = 0;
+	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
+	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.console);
 
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
@@ -655,12 +655,11 @@ DoPhysicsSimRot (objP);
 if (!(pi->velocity.x || pi->velocity.y || pi->velocity.z)) {
 	UnstickObject (objP);
 	if (objP == gameData.objs.console)
-		gameStates.gameplay.bSpeedBoost = 0;
+		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
 	if (!(pi->thrust.x || pi->thrust.y || pi->thrust.z))
 		return;
 	}
 #endif
-nObject = objP - gameData.objs.objects;
 nPhysSegs = 0;
 bSimpleFVI = (objP->nType != OBJ_PLAYER);
 xSimTime = gameData.time.xFrame;
@@ -683,7 +682,7 @@ if (xDrag = objP->mType.physInfo.drag) {
 		VmVecCopyScale (&accel, &objP->mType.physInfo.thrust, FixDiv (f1_0, objP->mType.physInfo.mass));
 		a = (accel.x || accel.y || accel.z);
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
-			*vel = boostedVel;
+			*vel = sbd.vVel;
 		else {
 			while (count--) {
 				if (a)
@@ -694,18 +693,18 @@ if (xDrag = objP->mType.physInfo.drag) {
 			VmVecScaleInc (vel, &accel, k);
 			VmVecScale (vel, f1_0 - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
-				if (vel->x < minBoostedVel.x)
-					vel->x = minBoostedVel.x;
-				else if (vel->x > maxBoostedVel.x)
-					vel->x = maxBoostedVel.x;
-				if (vel->y < minBoostedVel.y)
-					vel->y = minBoostedVel.y;
-				else if (vel->y > maxBoostedVel.y)
-					vel->y = maxBoostedVel.y;
-				if (vel->z < minBoostedVel.z)
-					vel->z = minBoostedVel.z;
-				else if (vel->z > maxBoostedVel.z)
-					vel->z = maxBoostedVel.z;
+				if (vel->x < sbd.vMinVel.x)
+					vel->x = sbd.vMinVel.x;
+				else if (vel->x > sbd.vMaxVel.x)
+					vel->x = sbd.vMaxVel.x;
+				if (vel->y < sbd.vMinVel.y)
+					vel->y = sbd.vMinVel.y;
+				else if (vel->y > sbd.vMaxVel.y)
+					vel->y = sbd.vMaxVel.y;
+				if (vel->z < sbd.vMinVel.z)
+					vel->z = sbd.vMinVel.z;
+				else if (vel->z > sbd.vMaxVel.z)
+					vel->z = sbd.vMaxVel.z;
 				}
 			}
 		}
@@ -745,8 +744,8 @@ retryMove:
 	if (count > 3) 	{
 		if (objP->nType == OBJ_PLAYER) {
 			if (count > 8) {
-				if (gameStates.gameplay.bSpeedBoost)
-					gameStates.gameplay.bSpeedBoost = 0;
+				if (sbd.bBoosted)
+					sbd.bBoosted = 0;
 				break;
 			}
 		} else
@@ -858,8 +857,8 @@ retryMove:
 			if (bDoSpeedBoost) {
 //					int h = FindSegByPoint (&vNewPos, -1);
 				objP->pos = vStartPos;
-				SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &speedBoostDest, 0);
-				VmVecCopyScale (&vFrame, &boostedVel, xSimTime);
+				SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
+				VmVecCopyScale (&vFrame, &sbd.vVel, xSimTime);
 				goto retryMove;
 				}
 			xMovedTime = 0;
@@ -994,7 +993,7 @@ retryMove:
 			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 			vOldVel = objP->mType.physInfo.velocity;
 			CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &vHitPos);
-			if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
+			if (sbd.bBoosted && (objP == gameData.objs.console))
 				objP->mType.physInfo.velocity = vOldVel;
 
 			// Let tObject continue its movement
@@ -1042,7 +1041,7 @@ retryMove:
 	//I'm not sure why we do this.  I wish there were a comment that
 	//explained it.  I think maybe it only needs to be done if the tObject
 	//is sliding, but I don't know
-	if (!(gameStates.gameplay.bSpeedBoost || bObjStopped || bBounced))	{	//Set velocity from actual movement
+	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
 		VmVecSub (&vMoved, &objP->pos, &vStartPos);
 		VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
@@ -1161,7 +1160,7 @@ void DoPhysicsSim (tObject *objP)
 	tPhysicsInfo	*pi;
 	short				nOrigSegment = objP->nSegment;
 	int				bBounced=0;
-	int				bDoSpeedBoost = gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console);
+	int				bDoSpeedBoost = sbd.bBoosted && (objP == gameData.objs.console);
 
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
@@ -1175,7 +1174,7 @@ if (bDontMoveAIObjects)
 	DoPhysicsSimRot (objP);
 	if (!(pi->velocity.x || pi->velocity.y || pi->velocity.z)) {
 		if (objP == gameData.objs.console)
-			gameStates.gameplay.bSpeedBoost = 0;
+			sbd.bBoosted = 0;
 		if (!(pi->thrust.x || pi->thrust.y || pi->thrust.z))
 			return;
 		}
@@ -1206,7 +1205,7 @@ if (bDontMoveAIObjects)
 				VmVecCopyScale (&accel, &objP->mType.physInfo.thrust, FixDiv (f1_0, objP->mType.physInfo.mass));
 				a = (accel.x || accel.y || accel.z);
 				if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
-					*vel = boostedVel;
+					*vel = sbd.vVel;
 				else {
 					while (count--) {
 						if (a)
@@ -1217,18 +1216,18 @@ if (bDontMoveAIObjects)
 					VmVecScaleInc (vel, &accel, k);
 					VmVecScale (vel, f1_0 - FixMul (k, xDrag));
 					if (bDoSpeedBoost) {
-						if (vel->x < minBoostedVel.x)
-							vel->x = minBoostedVel.x;
-						else if (vel->x > maxBoostedVel.x)
-							vel->x = maxBoostedVel.x;
-						if (vel->y < minBoostedVel.y)
-							vel->y = minBoostedVel.y;
-						else if (vel->y > maxBoostedVel.y)
-							vel->y = maxBoostedVel.y;
-						if (vel->z < minBoostedVel.z)
-							vel->z = minBoostedVel.z;
-						else if (vel->z > maxBoostedVel.z)
-							vel->z = maxBoostedVel.z;
+						if (vel->x < sbd.vMinVel.x)
+							vel->x = sbd.vMinVel.x;
+						else if (vel->x > sbd.vMaxVel.x)
+							vel->x = sbd.vMaxVel.x;
+						if (vel->y < sbd.vMinVel.y)
+							vel->y = sbd.vMinVel.y;
+						else if (vel->y > sbd.vMaxVel.y)
+							vel->y = sbd.vMaxVel.y;
+						if (vel->z < sbd.vMinVel.z)
+							vel->z = sbd.vMinVel.z;
+						else if (vel->z > sbd.vMaxVel.z)
+							vel->z = sbd.vMaxVel.z;
 					}
 				}
 			}
@@ -1274,8 +1273,8 @@ retryMove:
 		if (count > 3) 	{
 			if (objP->nType == OBJ_PLAYER) {
 				if (count > 8) {
-					if (gameStates.gameplay.bSpeedBoost)
-						gameStates.gameplay.bSpeedBoost = 0;
+					if (sbd.bBoosted)
+						sbd.bBoosted = 0;
 					break;
 				}
 			} else
@@ -1418,8 +1417,8 @@ vSaveP1 = *fq.p1;
 //					int h = FindSegByPoint (&vNewPos, -1);
 #if 1
 					objP->pos = vStartPos;
-					SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &speedBoostDest, 0);
-					VmVecCopyScale (&vFrame, &boostedVel, xSimTime);
+					SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
+					VmVecCopyScale (&vFrame, &sbd.vVel, xSimTime);
 #else
 #	if 0
 					vmsVector	v;
@@ -1430,7 +1429,7 @@ vSaveP1 = *fq.p1;
 #	else
 #		if 1
 
-					VmVecCopyScale (&vFrame, &boostedVel, 
+					VmVecCopyScale (&vFrame, &sbd.vVel, 
 #			if FLUID_PHYSICS
 						FixMulDiv (xSimTime, xTimeScale, 100)
 #			else
@@ -1438,10 +1437,10 @@ vSaveP1 = *fq.p1;
 #			endif
 						);
 #		else
-					vFrame = boostedVel;
+					vFrame = sbd.vVel;
 #		endif
 #	endif
-					objP->mType.physInfo.velocity = boostedVel;
+					objP->mType.physInfo.velocity = sbd.vVel;
 #endif
 					goto retryMove;
 					}
@@ -1475,7 +1474,7 @@ vSaveP1 = *fq.p1;
 				fix xHitSpeed, xWallPart;
 	
 				// Find hit speed	
-//				if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
+//				if (sbd.bBoosted && (objP == gameData.objs.console))
 //					break;
 
 				VmVecSub (&vMoved, &objP->pos, &vSavePos);
@@ -1536,7 +1535,7 @@ vSaveP1 = *fq.p1;
 				vmsVector vOldVel;
 				// Mark the hit tObject so that on a retry the fvi code
 				// ignores this tObject.
-				//if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console))
+				//if (sbd.bBoosted && (objP == gameData.objs.console))
 				//	break;
 				Assert (hi.hit.nObject != -1);
 				//	Calculcate the hit point between the two gameData.objs.objects.
@@ -1553,7 +1552,7 @@ vSaveP1 = *fq.p1;
 					VmVecScaleAdd (&pos_hit, ppos0, &pos_hit, FixDiv (size0, size0 + size1));
 					vOldVel = objP->mType.physInfo.velocity;
 					CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &pos_hit);
-					if (gameStates.gameplay.bSpeedBoost && (objP == gameData.objs.console)))
+					if (sbd.bBoosted && (objP == gameData.objs.console)))
 						objP->mType.physInfo.velocity = vOldVel;
 				}
 
@@ -1611,7 +1610,7 @@ vSaveP1 = *fq.p1;
 	//I'm not sure why we do this.  I wish there were a comment that
 	//explained it.  I think maybe it only needs to be done if the tObject
 	//is sliding, but I don't know
-	if (!(gameStates.gameplay.bSpeedBoost || bObjStopped || bBounced))	{	//Set velocity from actual movement
+	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
 		VmVecSub (&vMoved, &objP->pos, &vStartPos);
 		if (vMoved.x || vMoved.y || vMoved.z)
@@ -1726,7 +1725,7 @@ if (objP->movementType != MT_PHYSICS)
 	Tactile_apply_force (vForce, &objP->orient);
 #endif
 //Add in acceleration due to force
-if (!gameStates.gameplay.bSpeedBoost || (objP != gameData.objs.console))
+if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
 	VmVecScaleInc (&objP->mType.physInfo.velocity, 
 						vForce, 
 						FixDiv (f1_0, objP->mType.physInfo.mass));

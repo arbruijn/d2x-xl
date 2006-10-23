@@ -737,7 +737,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _WIN32_WCE
 #include <errno.h>
 #endif
-#include <cType.h>      /* for isdigit */
+#include <ctype.h>      /* for isdigit */
 #include <limits.h>
 #if defined (__unix__) || defined (__macosx__)
 #include <sys/stat.h>
@@ -1727,13 +1727,13 @@ StartTime ();
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordLinkSoundToObject3 (int soundno, short nObject, fix max_volume, fix  maxDistance, int loop_start, int loop_end)
+void NDRecordLinkSoundToObject3 (int soundno, short nObject, fix maxVolume, fix  maxDistance, int loop_start, int loop_end)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
 NDWriteInt (soundno);
 NDWriteInt (gameData.objs.objects [nObject].nSignature);
-NDWriteInt (max_volume);
+NDWriteInt (maxVolume);
 NDWriteInt (maxDistance);
 NDWriteInt (loop_start);
 NDWriteInt (loop_end);
@@ -2363,7 +2363,7 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 	side = gameData.reactor.triggers.nSide [i];
 	csegp = gameData.segs.segments + seg->children [side];
 	cside = FindConnectedSide (seg, csegp);
-	anim_num = gameData.walls.walls [WallNumP (seg, side)].clip_num;
+	anim_num = gameData.walls.walls [WallNumP (seg, side)].nClip;
 	n = gameData.walls.pAnims [anim_num].nFrameCount;
 	if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
 		seg->sides [side].nBaseTex = 
@@ -2540,18 +2540,18 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_LINK_SOUND_TO_OBJ: {
-				int soundno, nObject, max_volume, maxDistance, loop_start, loop_end;
+				int soundno, nObject, maxVolume, maxDistance, loop_start, loop_end;
 				int nSignature;
 
 			soundno = NDReadInt ();
 			nSignature = NDReadInt ();
-			max_volume = NDReadInt ();
+			maxVolume = NDReadInt ();
 			maxDistance = NDReadInt ();
 			loop_start = NDReadInt ();
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				DigiLinkSoundToObject3 ((short) soundno, (short) nObject, 1, max_volume, maxDistance, loop_start, loop_end);
+				DigiLinkSoundToObject3 ((short) soundno, (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
 			}
 			break;
 
@@ -2586,7 +2586,7 @@ while (!bDone) {
 			shot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				if (gameData.trigs.triggers [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].tTrigger].nType == TT_SECRET_EXIT) {
+				if (gameData.trigs.triggers [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
 					int truth;
 
 					c = NDReadByte ();
@@ -3139,7 +3139,7 @@ while (!bDone) {
 				segp = gameData.segs.segments + nSegment;
 				csegp = gameData.segs.segments + segp->children [nSide];
 				cside = FindConnectedSide (segp, csegp);
-				anim_num = gameData.walls.walls [WallNumP (segp, nSide)].clip_num;
+				anim_num = gameData.walls.walls [WallNumP (segp, nSide)].nClip;
 				if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
 					segp->sides [nSide].nBaseTex = csegp->sides [cside].nBaseTex =
 						gameData.walls.pAnims [anim_num].frames [0];

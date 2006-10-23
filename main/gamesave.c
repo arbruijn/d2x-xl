@@ -1266,25 +1266,25 @@ if (gameFileInfo.walls.offset > -1) {
 
 				v19_wall_read(&w, LoadFile);
 				gameData.walls.walls[i].nSegment	   = w.nSegment;
-				gameData.walls.walls[i].nSide		= w.nSide;
-				gameData.walls.walls[i].linked_wall	= w.linked_wall;
+				gameData.walls.walls[i].nSide			= w.nSide;
+				gameData.walls.walls[i].nLinkedWall	= w.nLinkedWall;
 				gameData.walls.walls[i].nType			= w.nType;
 				gameData.walls.walls[i].flags			= w.flags;
 				gameData.walls.walls[i].hps			= w.hps;
-				gameData.walls.walls[i].tTrigger		= w.tTrigger;
-				gameData.walls.walls[i].clip_num		= w.clip_num;
+				gameData.walls.walls[i].nTrigger		= w.nTrigger;
+				gameData.walls.walls[i].nClip			= w.nClip;
 				gameData.walls.walls[i].keys			= w.keys;
 				gameData.walls.walls[i].state			= WALL_DOOR_CLOSED;
 			} else {
 				v16_wall w;
 
 				v16_wall_read(&w, LoadFile);
-				gameData.walls.walls[i].nSegment = gameData.walls.walls[i].nSide = gameData.walls.walls[i].linked_wall = -1;
+				gameData.walls.walls[i].nSegment = gameData.walls.walls[i].nSide = gameData.walls.walls[i].nLinkedWall = -1;
 				gameData.walls.walls[i].nType		= w.nType;
 				gameData.walls.walls[i].flags		= w.flags;
 				gameData.walls.walls[i].hps		= w.hps;
-				gameData.walls.walls[i].tTrigger	= w.tTrigger;
-				gameData.walls.walls[i].clip_num	= w.clip_num;
+				gameData.walls.walls[i].nTrigger	= w.nTrigger;
+				gameData.walls.walls[i].nClip		= w.nClip;
 				gameData.walls.walls[i].keys		= w.keys;
 			}
 
@@ -1311,10 +1311,10 @@ if (gameFileInfo.doors.offset > -1) {
 				for (p=0;p<d.n_parts;p++) {
 					short cseg,cside;
 
-					cseg = gameData.segs.segments[d.seg[p]].children[d.tSide[p]];
+					cseg = gameData.segs.segments[d.seg[p]].children[d.nSide[p]];
 					cside = FindConnectedSide(gameData.segs.segments + d.seg[p], gameData.segs.segments + cseg);
-					gameData.walls.activeDoors[i].front_wallnum[p] = WallNumI (d.seg[p], d.tSide[p]);
-					gameData.walls.activeDoors[i].back_wallnum[p] = WallNumI (cseg, cside);
+					gameData.walls.activeDoors[i].nFrontWall[p] = WallNumI (d.seg[p], d.nSide[p]);
+					gameData.walls.activeDoors[i].nBackWall[p] = WallNumI (cseg, cside);
 				}
 			}
 
@@ -1554,10 +1554,10 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 		if (!IS_WALL (nWall))
 			continue;
 		w = gameData.walls.walls + nWall;
-		if (w->clip_num == -1)
+		if (w->nClip == -1)
 			continue;
-		if (gameData.walls.pAnims [w->clip_num].flags & WCF_TMAP1) {
-			sidep->nBaseTex = gameData.walls.pAnims [w->clip_num].frames [0];
+		if (gameData.walls.pAnims [w->nClip].flags & WCF_TMAP1) {
+			sidep->nBaseTex = gameData.walls.pAnims [w->nClip].frames [0];
 			sidep->nOvlTex = 0;
 			}
 		}
@@ -1571,11 +1571,11 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 
 //go through all walls, killing references to invalid triggers
 for (i=0;i<gameData.walls.nWalls;i++)
-	if (gameData.walls.walls[i].tTrigger >= gameData.trigs.nTriggers) {
+	if (gameData.walls.walls[i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls[i].tTrigger,i);
+		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls[i].nTrigger,i);
 #endif
-		gameData.walls.walls[i].tTrigger = NO_TRIGGER;	//kill tTrigger
+		gameData.walls.walls[i].nTrigger = NO_TRIGGER;	//kill tTrigger
 	}
 
 //go through all triggers, killing unused ones
@@ -1584,7 +1584,7 @@ for (i=0;i<gameData.trigs.nTriggers;) {
 
 	//	Find which wall this tTrigger is connected to.
 	for (w=0; w<gameData.walls.nWalls; w++)
-		if (gameData.walls.walls[w].tTrigger == i)
+		if (gameData.walls.walls[w].nTrigger == i)
 			break;
 
 #ifdef EDITOR
@@ -1600,11 +1600,11 @@ for (i=0;i<gameData.trigs.nTriggers;) {
 }
 
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
-//	Go through all triggers, stuffing controlling_trigger field in gameData.walls.walls.
+//	Go through all triggers, stuffing controllingTrigger field in gameData.walls.walls.
 {	int t;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	gameData.walls.walls [i].controlling_trigger = -1;
+	gameData.walls.walls [i].controllingTrigger = -1;
 
 for (t=0; t<gameData.trigs.nTriggers; t++) {
 	for (l = 0; l<gameData.trigs.triggers[t].nLinks; l++) {
@@ -1613,7 +1613,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 		side_num = gameData.trigs.triggers[t].nSide [l];
 		nWall = WallNumI (seg_num, side_num);
 
-		// -- if (gameData.walls.walls[nWall].controlling_trigger != -1)
+		// -- if (gameData.walls.walls[nWall].controllingTrigger != -1)
 		// -- 	Int3();
 
 		//check to see that if a tTrigger requires a wall that it has one,
@@ -1627,7 +1627,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 			if (!IS_WALL (nWall))
 				Int3();	//	This is illegal.  This tTrigger requires a wall
 			else
-				gameData.walls.walls[nWall].controlling_trigger = t;
+				gameData.walls.walls[nWall].controllingTrigger = t;
 		}
 	}
 }

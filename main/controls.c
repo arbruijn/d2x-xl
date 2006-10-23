@@ -371,7 +371,7 @@ void ReadFlyingControls(tObject *objP)
 		memcpy (&player_thrust, &objP->mType.physInfo.thrust, sizeof (player_thrust));
 	//HUDMessage (0, "%d %d %d", player_thrust.x, player_thrust.y, player_thrust.z);
 	bMulti = IsMultiGame;
-	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameStates.gameplay.bSpeedBoost) {
+	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted) {
 #if 1//ndef _DEBUG
 		wiggleTime = gameData.time.xFrame;
 		WiggleObject (objP);

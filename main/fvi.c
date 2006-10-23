@@ -996,7 +996,7 @@ if (endMask = masks.faceMask) { //on the back of at least one face
 						if (childSide >= 0) {
 							int special = gameData.segs.segment2s [childSide].special;
 							if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
-								 (gameStates.gameplay.bSpeedBoost &&
+								 (gameData.objs.speedBoost [nThisObject].bBoosted &&
 								  ((gameData.segs.segment2s [nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
 								   (special == SEGMENT_IS_SPEEDBOOST))))
  								widFlag |= WID_FLY_FLAG;

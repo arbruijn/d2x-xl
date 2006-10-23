@@ -401,7 +401,7 @@ extern void SoundQEnd();
 int VerifySoundChannelFree(int channel);
 
 // Volume 0-F1_0
-int DigiStartSound (short soundnum, fix volume, int pan, int looping, 
+int DigiStartSound (short nSound, fix volume, int pan, int looping, 
 						  int loop_start, int loop_end, int soundobj, int speed, 
 						  char *pszWAV)
 {
@@ -412,9 +412,9 @@ int DigiStartSound (short soundnum, fix volume, int pan, int looping,
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
 if (!(pszWAV && gameOpts->sound.bUseSDLMixer)) {
-	if (soundnum < 0)
+	if (nSound < 0)
 		return -1;
-	gsp = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound] + soundnum % gameData.pig.snd.nSoundFiles [gameOpts->sound.bD1Sound];
+	gsp = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound] + nSound % gameData.pig.snd.nSoundFiles [gameOpts->sound.bD1Sound];
 	if (!(gsp->data && gsp->length))
 		return -1;
 	Assert(gsp->data != (void *) -1);
@@ -423,7 +423,7 @@ starting_channel = gameStates.sound.digi.nNextChannel;
 #if 0 //USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	do {
-		if ((SoundSlots [gameStates.sound.digi.nNextChannel].soundno == soundnum) &&
+		if ((SoundSlots [gameStates.sound.digi.nNextChannel].soundno == nSound) &&
 			 SoundSlots [gameStates.sound.digi.nNextChannel].persistent)
 			 goto foundChannel;
 		gameStates.sound.digi.nNextChannel++;
@@ -526,7 +526,7 @@ ssp->pan = pan;
 ssp->position = 0;
 ssp->soundobj = soundobj;
 ssp->looped = looping;
-ssp->soundno = soundnum;
+ssp->soundno = nSound;
 ssp->persistent = 0;
 ssp->playing = 1;
 ssp->persistent = (soundobj > -1) || looping || (volume > F1_0);
@@ -575,7 +575,7 @@ void DigiMidiVolume( int dvolume, int mvolume )
 {
 DigiSetFxVolume(dvolume);
 DigiSetMidiVolume(mvolume);
-//      //mprintf(( 1, "Volume: 0x%x and 0x%x\n", gameStates.sound.digi.nVolume, midi_volume ));
+//      //mprintf(( 1, "Volume: 0x%x and 0x%x\n", gameStates.sound.digi.nVolume, midiVolume ));
 }
 
 //------------------------------------------------------------------------------
@@ -710,7 +710,7 @@ void DigiStopCurrentSong()
         send_ipc(buf);
 #endif
 }
-void digi_pause_midi() {}
+void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 #endif
 

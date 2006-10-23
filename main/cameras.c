@@ -262,7 +262,7 @@ if (!gameStates.app.bD2XLevel)
 	return 0;
 memset (nSideCameras, 0xFF, sizeof (nSideCameras));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
-	t = wallP->tTrigger;
+	t = wallP->nTrigger;
 	if (t >= gameData.trigs.nTriggers)
 		continue;
 	triggerP = gameData.trigs.triggers + t;

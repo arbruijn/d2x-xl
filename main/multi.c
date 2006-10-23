@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "inferno.h"
 #include "u_mem.h"
@@ -1681,7 +1681,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	nObject = GET_INTEL_SHORT (buf + 3);
 else
 	nObject = gameData.multi.players [nPlayer].nObject;
-CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, tTrigger, nPlayer, 0);
+CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, tTrigger, nPlayer, 0, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1715,7 +1715,7 @@ if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nObjTriggers)) {
 	return;
 	}
 CheckTriggerSub (gameData.multi.players [nPlayer].nObject, gameData.trigs.objTriggers, 
-					  gameData.trigs.nObjTriggers, tTrigger, nPlayer, 0);
+					  gameData.trigs.nObjTriggers, tTrigger, nPlayer, 0, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3793,10 +3793,10 @@ count += sizeof (active_door);
 {
 active_door *ad = (active_door *) (multiData.msg.buf + 3);
 ad->n_parts = INTEL_INT (ad->n_parts);
-ad->front_wallnum [0] = INTEL_SHORT (ad->front_wallnum [0]);
-ad->front_wallnum [1] = INTEL_SHORT (ad->front_wallnum [1]);
-ad->back_wallnum [0] = INTEL_SHORT (ad->back_wallnum [0]);
-ad->back_wallnum [1] = INTEL_SHORT (ad->back_wallnum [1]);
+ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
+ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
+ad->nBackWall [0] = INTEL_SHORT (ad->nBackWall [0]);
+ad->nBackWall [1] = INTEL_SHORT (ad->nBackWall [1]);
 ad->time = INTEL_INT (ad->time);
 }
 #endif
@@ -3817,10 +3817,10 @@ memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct active_door)
 {
 active_door *ad = gameData.walls.activeDoors + i;
 ad->n_parts = INTEL_INT (ad->n_parts);
-ad->front_wallnum [0] = INTEL_SHORT (ad->front_wallnum [0]);
-ad->front_wallnum [1] = INTEL_SHORT (ad->front_wallnum [1]);
-ad->back_wallnum [0] = INTEL_SHORT (ad->back_wallnum [0]);
-ad->back_wallnum [1] = INTEL_SHORT (ad->back_wallnum [1]);
+ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
+ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
+ad->nBackWall [0] = INTEL_SHORT (ad->nBackWall [0]);
+ad->nBackWall [1] = INTEL_SHORT (ad->nBackWall [1]);
 ad->time = INTEL_INT (ad->time);
 }
 #endif //WORDS_BIGENDIAN

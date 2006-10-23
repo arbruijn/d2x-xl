@@ -19,7 +19,7 @@ Mix_Music *mixMusic = NULL;
 
 hmp_file *hmp = NULL;
 
-int midi_volume = 255;
+int midiVolume = 255;
 int digi_midi_song_playing = 0;
 
 //------------------------------------------------------------------------------
@@ -27,27 +27,27 @@ int digi_midi_song_playing = 0;
 void DigiSetMidiVolume(int n)
 {
 if (n < 0)
-	midi_volume = 0;
+	midiVolume = 0;
 else if (n > 127)
-	midi_volume = 127;
+	midiVolume = 127;
 else
-	midi_volume = n;
+	midiVolume = n;
 
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
-	Mix_VolumeMusic (midi_volume);
+	Mix_VolumeMusic (midiVolume);
 #endif
 #if defined (_WIN32)
 #	if USE_SDL_MIXER
 else 
 #	endif
 if (hmp) {
-	int mm_volume;
+	int mmVolume;
 
 	// scale up from 0-127 to 0-0xffff
-	mm_volume = (midi_volume << 1) | (midi_volume & 1);
-	mm_volume |= (mm_volume << 8);
-	n = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mm_volume | (mm_volume << 16));
+	mmVolume = (midiVolume << 1) | (midiVolume & 1);
+	mmVolume |= (mmVolume << 8);
+	n = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #endif
 }
@@ -57,9 +57,9 @@ if (hmp) {
 void DigiStopCurrentSong()
 {
 if (digi_midi_song_playing) {
-	int h = midi_volume;	// preserve it for another song being started
+	int h = midiVolume;	// preserve it for another song being started
 	DigiSetMidiVolume(0);
-	midi_volume = h;
+	midiVolume = h;
 
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer) {
@@ -93,7 +93,7 @@ if (!gameStates.sound.digi.bInitialized)
 DigiStopCurrentSong();
 if (filename == NULL)
 	return;
-if (midi_volume < 1)
+if (midiVolume < 1)
 	return;
 if (hmp = hmp_open (filename, bD1Song)) {
 #if USE_SDL_MIXER
@@ -104,7 +104,7 @@ if (hmp = hmp_open (filename, bD1Song)) {
 		if (hmp_to_midi (hmp, fnMusic) && (mixMusic = Mix_LoadMUS (fnMusic))) {
 			if (Mix_PlayMusic (mixMusic, loop ? -1 : 1) != -1) {
 				digi_midi_song_playing = 1;
-				DigiSetMidiVolume (midi_volume);
+				DigiSetMidiVolume (midiVolume);
 				}
 			}
 		}
@@ -116,7 +116,7 @@ else
 		{
 		hmp_play(hmp, loop);
 		digi_midi_song_playing = 1;
-		DigiSetMidiVolume(midi_volume);
+		DigiSetMidiVolume(midiVolume);
 		}
 #endif
 	}
@@ -126,7 +126,7 @@ else
 
 int sound_paused = 0;
 
-void digi_pause_midi()
+void DigiPauseMidi()
 {
 #if 0
 	if (!gameStates.sound.digi.bInitialized)

@@ -418,7 +418,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <cType.h>
+#include <ctype.h>
 #include <time.h>
 
 #ifdef MACINTOSH

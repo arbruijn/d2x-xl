@@ -1217,14 +1217,14 @@ void StateSaveWall (wall *wallP, CFILE *fp)
 CFWriteInt (wallP->nSegment, fp);
 CFWriteInt (wallP->nSide, fp);
 CFWriteFix (wallP->hps, fp);    
-CFWriteInt (wallP->linked_wall, fp);
+CFWriteInt (wallP->nLinkedWall, fp);
 CFWriteByte ((sbyte) wallP->nType, fp);       
 CFWriteByte ((sbyte) wallP->flags, fp);      
 CFWriteByte ((sbyte) wallP->state, fp);      
-CFWriteByte ((sbyte) wallP->tTrigger, fp);    
-CFWriteByte (wallP->clip_num, fp);   
+CFWriteByte ((sbyte) wallP->nTrigger, fp);    
+CFWriteByte (wallP->nClip, fp);   
 CFWriteByte ((sbyte) wallP->keys, fp);       
-CFWriteByte (wallP->controlling_trigger, fp);
+CFWriteByte (wallP->controllingTrigger, fp);
 CFWriteByte (wallP->cloakValue, fp); 
 }
 
@@ -1243,8 +1243,8 @@ void StateSaveCloakingWall (cloaking_wall *wallP, CFILE *fp)
 {
 	int	i;
 
-CFWriteShort (wallP->front_wallnum, fp);
-CFWriteShort (wallP->back_wallnum, fp); 
+CFWriteShort (wallP->nFrontWall, fp);
+CFWriteShort (wallP->nBackWall, fp); 
 for (i = 0; i < 4; i++) {
 	CFWriteFix (wallP->front_ls [i], fp); 
 	CFWriteFix (wallP->back_ls [i], fp);
@@ -1260,8 +1260,8 @@ void StateSaveActiveDoor (active_door *doorP, CFILE *fp)
 
 CFWriteInt (doorP->n_parts, fp);
 for (i = 0; i < 2; i++) {
-	CFWriteShort (doorP->front_wallnum [i], fp);
-	CFWriteShort (doorP->back_wallnum [i], fp);
+	CFWriteShort (doorP->nFrontWall [i], fp);
+	CFWriteShort (doorP->nBackWall [i], fp);
 	}
 CFWriteFix (doorP->time, fp);    
 }
@@ -2244,14 +2244,14 @@ void StateRestoreWall (wall *wallP, CFILE *fp)
 wallP->nSegment = CFReadInt (fp);
 wallP->nSide = CFReadInt (fp);
 wallP->hps = CFReadFix (fp);    
-wallP->linked_wall = CFReadInt (fp);
+wallP->nLinkedWall = CFReadInt (fp);
 wallP->nType = (ubyte) CFReadByte (fp);       
 wallP->flags = (ubyte) CFReadByte (fp);      
 wallP->state = (ubyte) CFReadByte (fp);      
-wallP->tTrigger = (ubyte) CFReadByte (fp);    
-wallP->clip_num = CFReadByte (fp);   
+wallP->nTrigger = (ubyte) CFReadByte (fp);    
+wallP->nClip = CFReadByte (fp);   
 wallP->keys = (ubyte) CFReadByte (fp);       
-wallP->controlling_trigger = CFReadByte (fp);
+wallP->controllingTrigger = CFReadByte (fp);
 wallP->cloakValue = CFReadByte (fp); 
 }
 
@@ -2270,8 +2270,8 @@ void StateRestoreCloakingWall (cloaking_wall *wallP, CFILE *fp)
 {
 	int	i;
 
-wallP->front_wallnum = CFReadShort (fp);
-wallP->back_wallnum = CFReadShort (fp); 
+wallP->nFrontWall = CFReadShort (fp);
+wallP->nBackWall = CFReadShort (fp); 
 for (i = 0; i < 4; i++) {
 	wallP->front_ls [i] = CFReadFix (fp); 
 	wallP->back_ls [i] = CFReadFix (fp);
@@ -2287,8 +2287,8 @@ void StateRestoreActiveDoor (active_door *doorP, CFILE *fp)
 
 doorP->n_parts = CFReadInt (fp);
 for (i = 0; i < 2; i++) {
-	doorP->front_wallnum [i] = CFReadShort (fp);
-	doorP->back_wallnum [i] = CFReadShort (fp);
+	doorP->nFrontWall [i] = CFReadShort (fp);
+	doorP->nBackWall [i] = CFReadShort (fp);
 	}
 doorP->time = CFReadFix (fp);    
 }

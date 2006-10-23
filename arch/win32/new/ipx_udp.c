@@ -78,7 +78,7 @@
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
-#include <cType.h>
+#include <ctype.h>
 #include <malloc.h>
 
 #include <winsock2.h>

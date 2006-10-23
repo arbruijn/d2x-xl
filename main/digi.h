@@ -69,7 +69,7 @@ extern int digi_midi_port;
 #endif
 
 extern int digi_sample_rate;
-extern int digi_volume;
+extern int digiVolume;
 
 int digi_get_settings();
 int DigiInit();
@@ -77,32 +77,32 @@ void DigiReset();
 void _CDECL_ DigiClose(void);
 
 // Volume is max at F1_0.
-int DigiPlaySampleSpeed (short soundno, fix max_volume, int nSpeed, int nLoops);
-int DigiPlaySample( short soundnum, fix max_volume );
-int DigiPlaySampleLooped (short soundno, fix max_volume, int nLoops);
-void DigiPlaySampleOnce( short soundnum, fix max_volume );
-int DigiLinkSoundToObject( short soundnum, short nObject, int forever, fix max_volume );
-int DigiLinkSoundToPos( short soundnum, short nSegment, short nSide, vmsVector * pos, int forever, fix max_volume );
+int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops);
+int DigiPlaySample( short nSound, fix maxVolume );
+int DigiPlaySampleLooped (short soundno, fix maxVolume, int nLoops);
+void DigiPlaySampleOnce( short nSound, fix maxVolume );
+int DigiLinkSoundToObject( short nSound, short nObject, int forever, fix maxVolume );
+int DigiLinkSoundToPos( short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume );
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
-int DigiLinkSoundToObject2( short soundnum, short nObject, int forever, fix max_volume, fix  maxDistance );
-int DigiLinkSoundToPos2( short soundnum, short nSegment, short nSide, vmsVector * pos, int forever, fix max_volume, fix maxDistance );
+int DigiLinkSoundToObject2( short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance );
+int DigiLinkSoundToPos2( short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance );
 
-int DigiLinkSoundToObject3( short orgSoundnum, short nObject, int forever, fix max_volume, fix  maxDistance, int loop_start, int loop_end );
+int DigiLinkSoundToObject3( short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end );
 
 void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song );
 
-void DigiPlaySample3D( short soundnum, int angle, int volume, int no_dups ); // Volume from 0-0x7fff
+void DigiPlaySample3D( short nSound, int angle, int volume, int no_dups ); // Volume from 0-0x7fff
 
 void DigiInitSounds();
 void DigiSyncSounds();
-int  DigiKillSoundLinkedToSegment( short nSegment, short nSide, short soundnum );
+int  DigiKillSoundLinkedToSegment( short nSegment, short nSide, short nSound );
 int  DigiKillSoundLinkedToObject( int nObject );
 
 void DigiSetMidiVolume( int mvolume );
 void DigiSetFxVolume( int dvolume );
 void DigiMidiVolume( int dvolume, int mvolume );
 
-int DigiIsSoundPlaying(short soundnum);
+int DigiIsSoundPlaying(short nSound);
 
 void DigiPauseAll();
 void DigiResumeAll();
@@ -115,16 +115,16 @@ int DigiGetMaxChannels();
 
 extern int digi_lomem;
 
-short DigiXlatSound(short soundnum);
+short DigiXlatSound(short nSound);
 
 extern void DigiStopSound (int channel);
 
 // Returns the channel a sound number is playing on, or
 // -1 if none.
-extern int DigiFindChannel(short soundnum);
+extern int DigiFindChannel(short nSound);
 
 // Volume 0-F1_0
-extern int DigiStartSound (short soundnum, fix volume, int pan, int looping, 
+extern int DigiStartSound (short nSound, fix volume, int pan, int looping, 
 								   int loop_start, int loop_end, int soundobj, int speed, 
 								   char *pszWAV);
 
@@ -135,16 +135,16 @@ void DigiEndSound( int channel );
 void DigiSetChannelPan( int channel, int pan );
 void DigiSetChannelVolume( int channel, int volume );
 int DigiIsChannelPlaying(int channel);
-void digi_pause_midi();
+void DigiPauseMidi();
 void DigiDebug();
 void DigiStopCurrentSong();
 
-void DigiPlaySampleLooping( short soundnum, fix max_volume,int loop_start, int loop_end );
+void DigiPlaySampleLooping( short nSound, fix maxVolume,int loop_start, int loop_end );
 void DigiChangeLoopingVolume( fix volume );
 void DigiStopLoopingSound();
 void DigiFreeSoundBufs (void);
 
 // Plays a queued voice sound.
-extern void DigiStartSoundQueued( short soundnum, fix volume );
+extern void DigiStartSoundQueued( short nSound, fix volume );
 
 #endif

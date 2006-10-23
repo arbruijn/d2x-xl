@@ -187,29 +187,29 @@ typedef struct stuckobj {
 //Start old wall structures
 
 typedef struct v16_wall {
-	sbyte   nType;               // What kind of special wall.
-	sbyte   flags;              // Flags for the wall.
-	fix     hps;                // "Hit points" of the wall.
-	sbyte   tTrigger;            // Which tTrigger is associated with the wall.
-	sbyte   clip_num;           // Which animation associated with the wall.
+	sbyte   nType;             // What kind of special wall.
+	sbyte   flags;             // Flags for the wall.
+	fix     hps;               // "Hit points" of the wall.
+	sbyte   nTrigger;          // Which tTrigger is associated with the wall.
+	sbyte   nClip;					// Which animation associated with the wall.
 	sbyte   keys;
 } __pack__ v16_wall;
 
 typedef struct v19_wall {
 	int     nSegment,nSide;     // Seg & tSide for this wall
-	sbyte   nType;               // What kind of special wall.
+	sbyte   nType;              // What kind of special wall.
 	sbyte   flags;              // Flags for the wall.
 	fix     hps;                // "Hit points" of the wall.
-	sbyte   tTrigger;            // Which tTrigger is associated with the wall.
-	sbyte   clip_num;           // Which animation associated with the wall.
+	sbyte   nTrigger;            // Which tTrigger is associated with the wall.
+	sbyte   nClip;           // Which animation associated with the wall.
 	sbyte   keys;
-	int linked_wall;            // number of linked wall
+	int nLinkedWall;            // number of linked wall
 } __pack__ v19_wall;
 
 typedef struct v19_door {
 	int     n_parts;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
-	short   tSide[2];            // Side number of door.
+	short   nSide[2];            // Side number of door.
 	short   nType[2];            // What kind of door animation.
 	fix     open;               // How long it has been open.
 } __pack__ v19_door;
@@ -217,24 +217,24 @@ typedef struct v19_door {
 //End old wall structures
 
 typedef struct wall {
-	int     nSegment,nSide;     // Seg & tSide for this wall
-	fix     hps;                // "Hit points" of the wall.
-	int     linked_wall;        // number of linked wall
-	ubyte   nType;               // What kind of special wall.
-	ubyte   flags;              // Flags for the wall.
-	ubyte   state;              // Opening, closing, etc.
-	ubyte   tTrigger;            // Which tTrigger is associated with the wall.
-	sbyte   clip_num;           // Which animation associated with the wall.
-	ubyte   keys;               // which keys are required
-	sbyte   controlling_trigger;// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this wall.
-                                //  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
-	sbyte   cloakValue;        // if this wall is cloaked, the fade value
+	int     nSegment, nSide;		// Seg & tSide for this wall
+	fix     hps;						// "Hit points" of the wall.
+	int     nLinkedWall;				// number of linked wall
+	ubyte   nType;						// What kind of special wall.
+	ubyte   flags;						// Flags for the wall.
+	ubyte   state;						// Opening, closing, etc.
+	ubyte   nTrigger;					// Which tTrigger is associated with the wall.
+	sbyte   nClip;						// Which animation associated with the wall.
+	ubyte   keys;						// which keys are required
+	sbyte   controllingTrigger;	// which tTrigger causes something to happen here.  Not like "tTrigger" above, which is the tTrigger on this wall.
+											//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
+	sbyte   cloakValue;				// if this wall is cloaked, the fade value
 } __pack__ wall;
 
 typedef struct active_door {
 	int     n_parts;            // for linked walls
-	short   front_wallnum[2];   // front wall numbers for this door
-	short   back_wallnum[2];    // back wall numbers for this door
+	short   nFrontWall[2];   // front wall numbers for this door
+	short   nBackWall[2];    // back wall numbers for this door
 	fix     time;               // how long been opening, closing, waiting
 } __pack__ active_door;
 
@@ -245,8 +245,8 @@ typedef struct expl_wall {
 } expl_wall;
 
 typedef struct cloaking_wall {
-	short   front_wallnum;  // front wall numbers for this door
-	short   back_wallnum;   // back wall numbers for this door
+	short   nFrontWall;			 // front wall numbers for this door
+	short   nBackWall;			 // back wall numbers for this door
 	fix     front_ls[4];        // front wall saved light values
 	fix     back_ls[4];         // back wall saved light values
 	fix     time;               // how long been cloaking or decloaking

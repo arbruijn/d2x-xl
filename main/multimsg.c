@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "inferno.h"
 #include "u_mem.h"

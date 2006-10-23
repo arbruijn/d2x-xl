@@ -948,7 +948,7 @@ void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFace
 	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
 	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
 	fVector3			lightColor, lightPos;
-	fVector3			vertNorm, vertColor, colorSum = {0.0f, 0.0f, 0.0f};
+	fVector3			vertNorm, vertColor = {0.0f, 0.0f, 0.0f}, colorSum = {0.0f, 0.0f, 0.0f};
 #if !STATIC_LIGHT_TRANSFORM
 	fVector3			vertPos;
 #endif
@@ -1012,7 +1012,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (nType == 1) {
 		if (!gameStates.render.nState)
 			psl->nType = 0;
-		if (bDarkness)
+		//if (bDarkness)
 			continue;
 		//if (!(gameStates.render.nState || psl->bVariable))
 		//	continue;
@@ -1060,6 +1060,8 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		}
 	VmVecNormalizef (&lightDir, &lightDir);
 	NdotL = bInRad ? 1 : VmVecDotf (&vertNorm, &lightDir);
+	if (!psl->bSpot)
+		continue;
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -1070,10 +1072,11 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 			continue;
 		spotEffect = (float) pow (spotEffect, psl->spotExponent);
 		fAttenuation /= spotEffect * 10;
+		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 		}
 	else if (NdotL < 0) {
 		NdotL = 0;
-		vertColor = matAmbient;
+		VmVecIncf (&vertColor, &matAmbient);
 		}
 	else
 		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);

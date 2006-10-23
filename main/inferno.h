@@ -143,7 +143,7 @@ typedef struct tTextureOptions {
 } tTextureOptions;
 
 typedef struct tSmokeOptions {
-	int nScale [4];
+	int nDens [4];
 	int nSize [4];
 	int bSyncSizes;
 	int bPlayers;
@@ -318,7 +318,6 @@ typedef struct tSeismicStates {
 } tSeismicStates;
 
 typedef struct tGameplayStates {
-	int bSpeedBoost;
 	int bMultiBosses;
 	int bFinalBossIsDead;
 	int bHaveSmartMines;
@@ -755,6 +754,7 @@ typedef struct tOglLight {
 	ubyte			bState;
 	ubyte			nType;
 	ubyte			bVariable;
+	ubyte			bTransform;
 } tOglLight;
 
 typedef struct tOglMaterial {
@@ -990,6 +990,15 @@ typedef struct tObjTypeData {
 	fix					nStrength [MAX_OBJTYPE];   
 } tObjTypeData;
 
+typedef struct tSpeedBoostData {
+	int					bBoosted;
+	vmsVector			vVel;
+	vmsVector			vMinVel;
+	vmsVector			vMaxVel;
+	vmsVector			vSrc;
+	vmsVector			vDest;
+} tSpeedBoostData;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				objects [MAX_OBJECTS];
@@ -999,6 +1008,7 @@ typedef struct tObjectData {
 	short					firstChild [MAX_OBJECTS];
 	tObject				init [MAX_OBJECTS];
 	tObjDropInfo		dropInfo [MAX_OBJECTS];
+	tSpeedBoostData	speedBoost [MAX_OBJECTS];
 	fix					xLastAfterburnerTime [MAX_OBJECTS];
 	short					nFirstDropped;
 	short					nLastDropped;

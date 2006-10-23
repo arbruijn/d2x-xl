@@ -303,7 +303,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -369,7 +369,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #  include "modem.h"
 #endif
 #include "playsave.h"
-#include "cType.h"
+#include "ctype.h"
 #include "fireball.h"
 #include "kconfig.h"
 #include "config.h"
@@ -1277,6 +1277,7 @@ gameStates.app.bUsingConverter = 0;
 if (gameOpts->ogl.bUseLighting)
 	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
+memset (gameData.objs.speedBoost, 0, sizeof (gameData.objs.speedBoost));
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 #endif

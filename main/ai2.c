@@ -1526,7 +1526,7 @@ int	Cvv_lastTime [MAX_OBJECTS];
 int	Gun_point_hack=0;
 #endif
 
-int		RobotSound_volume=DEFAULT_ROBOT_SOUND_VOLUME;
+int		RobotSoundVolume=DEFAULT_ROBOT_SOUND_VOLUME;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely ObjectCanSeePlayer would benefit from the
@@ -1561,7 +1561,7 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 
 			if ((ailp->next_miscSoundTime < gameData.time.xGame) && ((ailp->next_fire < F1_0) || (ailp->next_fire2 < F1_0)) && (dist < F1_0*20)) {
 				ailp->next_miscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
-				DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+				DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
@@ -1586,17 +1586,17 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 				if (ailp->previous_visibility == 0) {
 					if (ailp->time_player_seen + F1_0/2 < gameData.time.xGame) {
 						// -- if (gameStates.app.bPlayerExploded)
-						// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+						// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 						// -- else
-							DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+							DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 						ailp->time_playerSound_attacked = gameData.time.xGame;
 						ailp->next_miscSoundTime = gameData.time.xGame + F1_0 + d_rand ()*4;
 					}
 				} else if (ailp->time_playerSound_attacked + F1_0/4 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
-					// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+					// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 					// -- else
-						DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+						DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 					ailp->time_playerSound_attacked = gameData.time.xGame;
 				}
 			} 
@@ -1604,9 +1604,9 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 			if ((*player_visibility == 2) && (ailp->next_miscSoundTime < gameData.time.xGame)) {
 				ailp->next_miscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
 				// -- if (gameStates.app.bPlayerExploded)
-				// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+				// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 				// -- else
-					DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSound_volume);
+					DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 			}
 			ailp->previous_visibility = *player_visibility;
 		}
@@ -1777,12 +1777,12 @@ if ((objP == NULL) || (gameData.bots.pInfo [objP->id].companion == 1)) {
 		}
 		// -- }
 
-	if ((ailp_mode != AIM_GOTO_PLAYER) && (wallP->controlling_trigger != -1)) {
-		int	clip_num = wallP->clip_num;
+	if ((ailp_mode != AIM_GOTO_PLAYER) && (wallP->controllingTrigger != -1)) {
+		int	nClip = wallP->nClip;
 
-		if (clip_num == -1)
+		if (nClip == -1)
 			return 1;
-		else if (gameData.walls.pAnims [clip_num].flags & WCF_HIDDEN) {
+		else if (gameData.walls.pAnims [nClip].flags & WCF_HIDDEN) {
 			if (wallP->state == WALL_DOOR_CLOSED)
 				return 0;
 			else
@@ -1796,12 +1796,12 @@ if ((objP == NULL) || (gameData.bots.pInfo [objP->id].companion == 1)) {
 		if (wallP->nType == WALL_BLASTABLE)
 			return 1;
 		else {
-			int	clip_num = wallP->clip_num;
+			int	nClip = wallP->nClip;
 
-			if (clip_num == -1)
+			if (nClip == -1)
 				return 1;
 			//	Buddy allowed to go through secret doors to get to player.
-			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.walls.pAnims [clip_num].flags & WCF_HIDDEN)) {
+			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.walls.pAnims [nClip].flags & WCF_HIDDEN)) {
 				if (wallP->state == WALL_DOOR_CLOSED)
 					return 0;
 				else
@@ -1842,7 +1842,7 @@ int openable_doors_in_segment (short nSegment)
 				 (wallP->keys == KEY_NONE) && 
 				 (wallP->state == WALL_DOOR_CLOSED) && 
 				 !(wallP->flags & WALL_DOOR_LOCKED) && 
-				 !(gameData.walls.pAnims [wallP->clip_num].flags & WCF_HIDDEN))
+				 !(gameData.walls.pAnims [wallP->nClip].flags & WCF_HIDDEN))
 				return i;
 		}
 	}
@@ -2188,9 +2188,9 @@ int doRobot_dying_frame (tObject *objP, fix StartTime, fix roll_duration, sbyte 
 
 	roll_val = FixDiv (gameData.time.xGame - StartTime, roll_duration);
 
-	fix_sincos (FixMul (roll_val, roll_val), &temp, &objP->mType.physInfo.rotVel.x);
-	fix_sincos (roll_val, &temp, &objP->mType.physInfo.rotVel.y);
-	fix_sincos (roll_val-F1_0/8, &temp, &objP->mType.physInfo.rotVel.z);
+	FixSinCos (FixMul (roll_val, roll_val), &temp, &objP->mType.physInfo.rotVel.x);
+	FixSinCos (roll_val, &temp, &objP->mType.physInfo.rotVel.y);
+	FixSinCos (roll_val-F1_0/8, &temp, &objP->mType.physInfo.rotVel.z);
 
 	objP->mType.physInfo.rotVel.x = (gameData.time.xGame - StartTime)/9;
 	objP->mType.physInfo.rotVel.y = (gameData.time.xGame - StartTime)/5;

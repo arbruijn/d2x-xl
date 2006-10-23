@@ -1456,8 +1456,8 @@ else {
 if (pt)
 	pt->fSpeed = fSpeed;
 if (objP->nType == OBJ_PLAYER) {
-		tThrusterData	*pt = gameData.render.thrusters + objP->id;
-		tPathPoint		*pp = GetPathPoint (&pt->path);
+		pt = gameData.render.thrusters + objP->id;
+		pp = GetPathPoint (&pt->path);
 
 	if (gameStates.app.nSDLTicks - pt->tPulse > 10) {
 		pt->tPulse = gameStates.app.nSDLTicks;
@@ -2613,8 +2613,8 @@ void StartPlayerDeathSequence (tObject *player)
 {
 	int	nObject;
 	
-gameStates.gameplay.bSpeedBoost = 0;
 Assert (player == gameData.objs.console);
+gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
 if ((gameStates.app.bPlayerIsDead != 0) || (gameData.objs.deadPlayerCamera != NULL))
 	return;
 StopConquerWarning ();
@@ -2769,11 +2769,11 @@ VmVecZero (&objP->mType.physInfo.rotVel);
 
 void StopPlayerMovement (void)
 {
-if (!gameStates.gameplay.bSpeedBoost) {
+if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
 	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 	memset (&player_thrust, 0, sizeof (player_thrust));
 //	gameData.time.xFrame = F1_0;
-	gameStates.gameplay.bSpeedBoost = 0;
+	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
 	}
 }
 
@@ -3074,7 +3074,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) &&
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
 			if (IS_WALL (nWall)) {
-				nTrigger = gameData.walls.walls [nWall].tTrigger;
+				nTrigger = gameData.walls.walls [nWall].nTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
 					 (gameData.trigs.triggers [nTrigger].nType == TT_EXIT))
 					gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]->lifeleft = 0;

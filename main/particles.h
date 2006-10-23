@@ -5,10 +5,12 @@
 
 #define MAX_SMOKE 1000
 
-#define PARTICLE_RAD	(F1_0 * 4)
+#define PARTICLE_RAD	(F1_0 * 8)
 
 #define PARTICLE_SIZE(_nSize,_nScale) \
 		  ((float) (PARTICLE_RAD >> (3 - (_nSize))) / (_nScale) + 0.5f)
+
+#define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
 
 typedef struct tPartColor {
 	double		r, g, b, a;
@@ -52,6 +54,8 @@ typedef struct tCloud {
 	int			nSpeed;			//initial particle speed
 	int			nParts;			//curent no. of particles
 	int			nMaxParts;		//max. no. of particles
+	int			nDensity;		//density (opaqueness) of smoke cloud
+	int			nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
 	int			nPartLimit;		//highest max. part. no ever set for this cloud
 	float			nPartScale;
 	int			nMoved;			//time last moved
@@ -76,12 +80,12 @@ typedef struct tSmoke {
 } tSmoke;
 
 int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nLife, int nSpeed, int nType, int nObject);
+					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nObject);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
 int RenderSmoke ();
 int DestroyAllSmoke (void);
-void SetSmokeDensity (int i, int nMaxParts);
+void SetSmokeDensity (int i, int nMaxParts, int nDensity);
 void SetSmokePartScale (int i, float nPartScale);
 void SetSmokePos (int i, vmsVector *pos);
 void SetSmokeLife (int i, int nLife);
@@ -91,6 +95,7 @@ int GetSmokeType (int i);
 void FreeParticleImages (void);
 void SetCloudPos (tCloud *pCloud, vmsVector *pos);
 void InitSmoke (void);
+int MaxParticles (int nParts, int nDens);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

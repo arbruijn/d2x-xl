@@ -19,11 +19,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Old Log:
  * Revision 1.8  1995/10/27  10:52:20  allender
- * call digi_set_master_volume when prefs are read in to
+ * call digi_set_masterVolume when prefs are read in to
  * set the master volume of the mac
  *
  * Revision 1.7  1995/10/24  17:08:39  allender
- * Config_master_volume added for saving sound manager volume
+ * Config_masterVolume added for saving sound manager volume
  * across games
  *
  * Revision 1.6  1995/10/20  00:49:31  allender
@@ -115,7 +115,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "inferno.h"
 #include "game.h"

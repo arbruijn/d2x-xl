@@ -1522,7 +1522,7 @@ extern "C" {
 #define GL_TEXTURE_INDEX_SIZE_EXT         0x80ED
 #endif
 
-#ifndef GL_EXT_clip_volume_hint
+#ifndef GL_EXT_clipVolume_hint
 #define GL_CLIP_VOLUME_CLIPPING_HINT_EXT  0x80F0
 #endif
 
@@ -4683,8 +4683,8 @@ typedef void (APIENTRYP PFNGLGETCOLORTABLEPARAMETERIVEXTPROC) (GLenum target, GL
 typedef void (APIENTRYP PFNGLGETCOLORTABLEPARAMETERFVEXTPROC) (GLenum target, GLenum pname, GLfloat *params);
 #endif
 
-#ifndef GL_EXT_clip_volume_hint
-#define GL_EXT_clip_volume_hint 1
+#ifndef GL_EXT_clipVolume_hint
+#define GL_EXT_clipVolume_hint 1
 #endif
 
 #ifndef GL_SGIX_list_priority

@@ -20,7 +20,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "pstypes.h"
 #include "inferno.h"

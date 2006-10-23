@@ -71,7 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added assert to gameseg.c.
  *
  * Revision 1.73  1995/02/02  00:49:26  mike
- * new automap tSegment-depth functionality.
+ * new automap tSegment-nDepth functionality.
  *
  * Revision 1.72  1995/01/16  21:06:51  mike
  * Move function pick_random_point_in_segment from fireball.c to gameseg.c.
@@ -1470,12 +1470,13 @@ for (i = 0; i < MAX_FCD_CACHE; i++)
 }
 
 //	----------------------------------------------------------------------------------------------------------
-void AddToFCDCache (int seg0, int seg1, int depth, fix dist)
+
+void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
 {
 	if (dist > MIN_CACHE_FCD_DIST) {
 		gameData.fcd.cache [gameData.fcd.nIndex].seg0 = seg0;
 		gameData.fcd.cache [gameData.fcd.nIndex].seg1 = seg1;
-		gameData.fcd.cache [gameData.fcd.nIndex].csd = depth;
+		gameData.fcd.cache [gameData.fcd.nIndex].csd = nDepth;
 		gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
 
 		gameData.fcd.nIndex++;
@@ -1499,20 +1500,18 @@ void AddToFCDCache (int seg0, int seg1, int depth, fix dist)
 
 //	----------------------------------------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
-//	Search up to a maximum depth of max_depth.
+//	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
-fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1, int max_depth, int widFlag)
+fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1, int nMaxDepth, int widFlag)
 {
-	short				cur_seg, conn_side;
-	short				parent_seg, this_seg;
+	short				nConnSide;
+	short				nCurSeg, nParentSeg, nThisSeg;
 	short				nSide;
 	int				qTail = 0, qHead = 0;
-	int				i;
+	int				i, nCurDepth, nPoints;
 	sbyte				visited [MAX_SEGMENTS];
-	seg_seg			seg_queue [MAX_SEGMENTS];
-	short				depth [MAX_SEGMENTS];
-	int				cur_depth;
-	int				nPoints;
+	seg_seg			segmentQ [MAX_SEGMENTS];
+	short				nDepth [MAX_SEGMENTS];
 	point_seg		pointSegs [MAX_LOC_POINT_SEGS];
 	fix				dist;
 	tSegment			*segP;
@@ -1520,23 +1519,23 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 
 	//	If > this, will overrun pointSegs buffer
 #ifdef WINDOWS
-if (max_depth == -1) 
-	max_depth = 200;
+if (nMaxDepth == -1) 
+	nMaxDepth = 200;
 #endif	
 
-if (max_depth > MAX_LOC_POINT_SEGS-2) {
+if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 #if TRACE		
-	con_printf (1, "Warning: In FindConnectedDistance, max_depth = %i, limited to %i\n", max_depth, MAX_LOC_POINT_SEGS-2);
+	con_printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
 #endif		
-	max_depth = MAX_LOC_POINT_SEGS - 2;
+	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
 if (seg0 == seg1) {
 	gameData.fcd.nConnSegDist = 0;
 	return VmVecDistQuick (p0, p1);
 	}
-conn_side = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1);
-if ((conn_side != -1) &&
-	 (WALL_IS_DOORWAY (gameData.segs.segments + seg1, conn_side, NULL) & widFlag)) {
+nConnSide = FindConnectedSide (gameData.segs.segments + seg0, gameData.segs.segments + seg1);
+if ((nConnSide != -1) &&
+	 (WALL_IS_DOORWAY (gameData.segs.segments + seg1, nConnSide, NULL) & widFlag)) {
 	gameData.fcd.nConnSegDist = 1;
 	return VmVecDistQuick (p0, p1);
 	}
@@ -1549,38 +1548,40 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
-	if ((pc->seg0 == seg0) && (pc->seg1 == seg1))
-		return gameData.fcd.nConnSegDist = pc->csd;
+	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
+		gameData.fcd.nConnSegDist = pc->csd;
+		return pc->dist;
+		}
 
 memset (visited, 0, gameData.segs.nLastSegment + 1);
-memset (depth, 0, sizeof (depth [0]) * (gameData.segs.nLastSegment + 1));
+memset (nDepth, 0, sizeof (nDepth [0]) * (gameData.segs.nLastSegment + 1));
 
 nPoints = 0;
-cur_seg = seg0;
-visited [cur_seg] = 1;
-cur_depth = 0;
+nCurSeg = seg0;
+visited [nCurSeg] = 1;
+nCurDepth = 0;
 
-while (cur_seg != seg1) {
-	segP = gameData.segs.segments + cur_seg;
+while (nCurSeg != seg1) {
+	segP = gameData.segs.segments + nCurSeg;
 
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (WALL_IS_DOORWAY (segP, nSide, NULL) & widFlag) {
-			this_seg = segP->children [nSide];
-			Assert ((this_seg >= 0) && (this_seg < MAX_SEGMENTS));
+			nThisSeg = segP->children [nSide];
+			Assert ((nThisSeg >= 0) && (nThisSeg < MAX_SEGMENTS));
 			Assert ((qTail >= 0) && (qTail < MAX_SEGMENTS - 1));
-			if (!visited [this_seg]) {
-				seg_queue [qTail].start = cur_seg;
-				seg_queue [qTail].end = this_seg;
-				visited [this_seg] = 1;
-				depth [qTail++] = cur_depth+1;
-				if (max_depth != -1) {
-					if (depth [qTail - 1] == max_depth) {
+			if (!visited [nThisSeg]) {
+				segmentQ [qTail].start = nCurSeg;
+				segmentQ [qTail].end = nThisSeg;
+				visited [nThisSeg] = 1;
+				nDepth [qTail++] = nCurDepth+1;
+				if (nMaxDepth != -1) {
+					if (nDepth [qTail - 1] == nMaxDepth) {
 						gameData.fcd.nConnSegDist = 1000;
 						AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
 						return -1;
 						}
 					}
-				else if (this_seg == seg1) {
+				else if (nThisSeg == seg1) {
 					goto fcd_done1;
 				}
 			}
@@ -1593,15 +1594,15 @@ while (cur_seg != seg1) {
 		return -1;
 		}
 	Assert ((qHead >= 0) && (qHead < MAX_SEGMENTS));
-	cur_seg = seg_queue [qHead].end;
-	cur_depth = depth [qHead];
+	nCurSeg = segmentQ [qHead].end;
+	nCurDepth = nDepth [qHead];
 	qHead++;
 
 fcd_done1: ;
-	}	//	while (cur_seg ...
+	}	//	while (nCurSeg ...
 
 //	Set qTail to the tSegment which ends at the goal.
-while (seg_queue [--qTail].end != seg1)
+while (segmentQ [--qTail].end != seg1)
 	if (qTail < 0) {
 		gameData.fcd.nConnSegDist = 1000;
 		AddToFCDCache (seg0, seg1, gameData.fcd.nConnSegDist, F1_0*1000);
@@ -1609,14 +1610,14 @@ while (seg_queue [--qTail].end != seg1)
 		}
 
 while (qTail >= 0) {
-	this_seg = seg_queue [qTail].end;
-	parent_seg = seg_queue [qTail].start;
-	pointSegs [nPoints].nSegment = this_seg;
-	COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, this_seg);
+	nThisSeg = segmentQ [qTail].end;
+	nParentSeg = segmentQ [qTail].start;
+	pointSegs [nPoints].nSegment = nThisSeg;
+	COMPUTE_SEGMENT_CENTER_I (&pointSegs [nPoints].point, nThisSeg);
 	nPoints++;
-	if (parent_seg == seg0)
+	if (nParentSeg == seg0)
 		break;
-	while (seg_queue [--qTail].end != parent_seg)
+	while (segmentQ [--qTail].end != nParentSeg)
 		Assert (qTail >= 0);
 	}
 pointSegs [nPoints].nSegment = seg0;
@@ -2217,18 +2218,18 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 
 
 //	----------------------------------------------------------------------------------------------------------
-//	Set the tSegment depth of all segments from nStartSeg in *segbuf.
-//	Returns maximum depth value.
+//	Set the tSegment nDepth of all segments from nStartSeg in *segbuf.
+//	Returns maximum nDepth value.
 int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
 {
 	int	i, curseg;
 	ubyte	visited [MAX_SEGMENTS];
 	int	queue [MAX_SEGMENTS];
 	int	head, tail;
-	int	depth;
+	int	nDepth;
 	int	parent_depth=0;
 
-	depth = 1;
+	nDepth = 1;
 	head = 0;
 	tail = 0;
 
@@ -2243,10 +2244,10 @@ int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
 
 	queue [tail++] = nStartSeg;
 	visited [nStartSeg] = 1;
-	segbuf [nStartSeg] = depth++;
+	segbuf [nStartSeg] = nDepth++;
 
-	if (depth == 0)
-		depth = 255;
+	if (nDepth == 0)
+		nDepth = 255;
 
 	while (head < tail) {
 		curseg = queue [head++];
@@ -2508,24 +2509,24 @@ memset (gameData.render.lights.subtracted, 0,
 
 //	-----------------------------------------------------------------------------
 
-fix FindConnectedDistanceSegments (short seg0, short seg1, int depth, int widFlag)
+fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFlag)
 {
 	vmsVector	p0, p1;
 
 COMPUTE_SEGMENT_CENTER_I (&p0, seg0);
 COMPUTE_SEGMENT_CENTER_I (&p1, seg1);
-return FindConnectedDistance (&p0, seg0, &p1, seg1, depth, widFlag);
+return FindConnectedDistance (&p0, seg0, &p1, seg1, nDepth, widFlag);
 }
 
 #define	AMBIENT_SEGMENT_DEPTH		5
 
 //	-----------------------------------------------------------------------------
 //	Do a bfs from nSegment, marking slots in marked_segs if the tSegment is reachable.
-void AmbientMarkBfs (short nSegment, sbyte *marked_segs, int depth)
+void AmbientMarkBfs (short nSegment, sbyte *marked_segs, int nDepth)
 {
 	short	i, child;
 
-if (depth < 0)
+if (nDepth < 0)
 	return;
 marked_segs [nSegment] = 1;
 for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
@@ -2533,7 +2534,7 @@ for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 	if (IS_CHILD (child) && 
 	    (WALL_IS_DOORWAY (gameData.segs.segments + nSegment, i, NULL) & WID_RENDPAST_FLAG) && 
 		 !marked_segs [child])
-		AmbientMarkBfs (child, marked_segs, depth-1);
+		AmbientMarkBfs (child, marked_segs, nDepth-1);
 	}
 }
 

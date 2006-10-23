@@ -1830,7 +1830,7 @@ do {
 		gameOpts->render.smoke.bRobots =
 		gameOpts->render.smoke.bMissiles = 1;
 		gameOpts->render.smoke.bCollisions = 0;
-		gameOpts->render.smoke.nScale = 2;
+		gameOpts->render.smoke.nDens = 2;
 		gameOpts->render.smoke.nSize = 3;
 		gameOpts->render.cameras.bFitToWall = 0;
 		gameOpts->render.cameras.nSpeed = 5000;
@@ -2177,9 +2177,9 @@ if (extraGameInfo [0].bUseSmoke) {
 	if (gameOpts->render.smoke.bSyncSizes) {
 		m = menus + nSmokeDensOpt [0];
 		v = m->value;
-		if (gameOpts->render.smoke.nScale [0] != v) {
-			gameOpts->render.smoke.nScale [0] = v;
-			sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale [0]]);
+		if (gameOpts->render.smoke.nDens [0] != v) {
+			gameOpts->render.smoke.nDens [0] = v;
+			sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nDens [0]]);
 			m->rebuild = 1;
 			}
 		m = menus + nSmokeSizeOpt [0];
@@ -2195,9 +2195,9 @@ if (extraGameInfo [0].bUseSmoke) {
 			if (nSmokeDensOpt [i] >= 0) {
 				m = menus + nSmokeDensOpt [i];
 				v = m->value;
-				if (gameOpts->render.smoke.nScale [i] != v) {
-					gameOpts->render.smoke.nScale [i] = v;
-					sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nScale [i]]);
+				if (gameOpts->render.smoke.nDens [i] != v) {
+					gameOpts->render.smoke.nDens [i] = v;
+					sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nDens [i]]);
 					m->rebuild = 1;
 					}
 				}
@@ -2224,9 +2224,9 @@ static char szSmokeSize [4][50];
 
 int AddSmokeSliders (newmenu_item *m, int opt, int i)
 {
-sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nScale [i], 0, 4)]);
+sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nDens [i], 0, 4)]);
 *szSmokeDens [i] = *(TXT_SMOKE_DENS - 1);
-ADD_SLIDER (opt, szSmokeDens [i] + 1, gameOpts->render.smoke.nScale [i], 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
+ADD_SLIDER (opt, szSmokeDens [i] + 1, gameOpts->render.smoke.nDens [i], 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
 nSmokeDensOpt [i] = opt++;
 sprintf (szSmokeSize [i] + 1, TXT_SMOKE_SIZE, pszSize [NMCLAMP (gameOpts->render.smoke.nSize [i], 0, 3)]);
 *szSmokeSize [i] = *(TXT_SMOKE_SIZE - 1);
@@ -2318,7 +2318,7 @@ do {
 				opt = AddSmokeSliders (m, opt, 0);
 				for (j = 1; j < 4; j++) {
 					gameOpts->render.smoke.nSize [j] = gameOpts->render.smoke.nSize [0];
-					gameOpts->render.smoke.nScale [j] = gameOpts->render.smoke.nScale [0];
+					gameOpts->render.smoke.nDens [j] = gameOpts->render.smoke.nDens [0];
 					}
 				}
 			else {
@@ -2348,7 +2348,7 @@ do {
 		if (gameOpts->render.smoke.bSyncSizes) {
 			for (j = 1; j < 4; j++) {
 				gameOpts->render.smoke.nSize [j] = gameOpts->render.smoke.nSize [0];
-				gameOpts->render.smoke.nScale [j] = gameOpts->render.smoke.nScale [0];
+				gameOpts->render.smoke.nDens [j] = gameOpts->render.smoke.nDens [0];
 				}
 			}
 		}	
@@ -2627,7 +2627,7 @@ WritePlayerFile ();
 
 //------------------------------------------------------------------------------
 
-void set_redbook_volume (int volume);
+void set_redbookVolume (int volume);
 
 WIN (extern int RBCDROM_State);
 WIN (static BOOL windigi_driver_off=FALSE);
@@ -2704,7 +2704,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 if (gameStates.sound.bRedbookEnabled) {
 	if (gameConfig.nRedbookVolume != items [optMusicVol].value )   {
 		gameConfig.nRedbookVolume = items[optMusicVol].value;
-		set_redbook_volume (gameConfig.nRedbookVolume);
+		set_redbookVolume (gameConfig.nRedbookVolume);
 		}
 	}
 else 
@@ -3061,10 +3061,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bRobots = 1;
 			gameOpts->render.smoke.bMissiles = 1;
 			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.smoke.nScale [0] =
-			gameOpts->render.smoke.nScale [1] =
-			gameOpts->render.smoke.nScale [2] =
-			gameOpts->render.smoke.nScale [3] = 0;
+			gameOpts->render.smoke.nDens [0] =
+			gameOpts->render.smoke.nDens [1] =
+			gameOpts->render.smoke.nDens [2] =
+			gameOpts->render.smoke.nDens [3] = 0;
 			gameOpts->render.smoke.nSize [0] =
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
@@ -3087,10 +3087,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bRobots = 1;
 			gameOpts->render.smoke.bMissiles = 1;
 			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.smoke.nScale [0] =
-			gameOpts->render.smoke.nScale [1] =
-			gameOpts->render.smoke.nScale [2] =
-			gameOpts->render.smoke.nScale [3] = 1;
+			gameOpts->render.smoke.nDens [0] =
+			gameOpts->render.smoke.nDens [1] =
+			gameOpts->render.smoke.nDens [2] =
+			gameOpts->render.smoke.nDens [3] = 1;
 			gameOpts->render.smoke.nSize [0] =
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
@@ -3114,10 +3114,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bRobots = 1;
 			gameOpts->render.smoke.bMissiles = 1;
 			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.smoke.nScale [0] =
-			gameOpts->render.smoke.nScale [1] =
-			gameOpts->render.smoke.nScale [2] =
-			gameOpts->render.smoke.nScale [3] = 2;
+			gameOpts->render.smoke.nDens [0] =
+			gameOpts->render.smoke.nDens [1] =
+			gameOpts->render.smoke.nDens [2] =
+			gameOpts->render.smoke.nDens [3] = 2;
 			gameOpts->render.smoke.nSize [0] =
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
@@ -3141,10 +3141,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bRobots = 1;
 			gameOpts->render.smoke.bMissiles = 1;
 			gameOpts->render.smoke.bCollisions = 1;
-			gameOpts->render.smoke.nScale [0] =
-			gameOpts->render.smoke.nScale [1] =
-			gameOpts->render.smoke.nScale [2] =
-			gameOpts->render.smoke.nScale [3] = 3;
+			gameOpts->render.smoke.nDens [0] =
+			gameOpts->render.smoke.nDens [1] =
+			gameOpts->render.smoke.nDens [2] =
+			gameOpts->render.smoke.nDens [3] = 3;
 			gameOpts->render.smoke.nSize [0] =
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =

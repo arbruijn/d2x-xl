@@ -254,7 +254,7 @@ static char rcsid [] = "$Id: endlevel.c, v 1.20 2003/10/12 09:38:48 btb Exp $";
 
 #include <stdio.h>
 #include <string.h>
-#include <cType.h> // for isspace
+#include <ctype.h> // for isspace
 
 #include "inferno.h"
 #include "fix.h"

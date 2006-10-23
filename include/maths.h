@@ -121,7 +121,7 @@ fix fix_sqrt (fix a);
 
 //compute sine and cosine of an angle, filling in the variables
 //either of the pointers can be NULL
-void fix_sincos (fix a, fix * s, fix * c);	//with interpolation
+void FixSinCos (fix a, fix * s, fix * c);	//with interpolation
 
 void fix_fastsincos (fix a, fix * s, fix * c);	//no interpolation
 

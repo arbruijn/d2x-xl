@@ -571,8 +571,10 @@ else {
 
 if (!fp) {
 	if (fp = CFFindLibFile (filename, &length, bUseD1Hog)) 
-		if (stricmp (mode, "rb"))
+		if (stricmp (mode, "rb")) {
 			Error ("Cannot read hog file\n(wrong file io mode).\n");
+			return NULL;
+			}
 	}
 if (fp) {
 	if (!(cfile = d_malloc (sizeof (CFILE))))

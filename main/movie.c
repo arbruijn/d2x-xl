@@ -37,7 +37,7 @@ static char rcsid[] = "$Id: movie.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
-#include <cType.h>
+#include <ctype.h>
 
 #ifdef __macosx__
 # include <SDL/SDL.h>

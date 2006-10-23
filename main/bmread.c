@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "pstypes.h"
 #include "inferno.h"
@@ -124,7 +124,7 @@ static char 		*arg;
 static short 		tmap_count = 0;
 static short 		texture_count = 0;
 static short 		clip_count = 0;
-static short 		clip_num;
+static short 		nClip;
 static short 		nSound;
 static short 		frames;
 static double 		time;
@@ -592,7 +592,7 @@ int bm_init_use_tbl()
 			else IFTOK("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
 			else IFTOK("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
-			else IFTOK("$EFFECTS")		{bmFlag = BM_EFFECTS;	clip_num = 0;}
+			else IFTOK("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 			else IFTOK("$ALIAS")			bm_read_alias();
 
 			#ifdef EDITOR
@@ -612,7 +612,7 @@ int bm_init_use_tbl()
 			else IFTOK("destroyed")	 		{int t=texture_count-1; TmapInfo [gameStates.app.bD1Data][t].destroyed = get_texture(strtok( NULL, space );}
 			//else IFTOK("Num_effects")		Num_effects = get_int();
 			else IFTOK("Num_wall_anims")	Num_wall_anims = get_int();
-			else IFTOK("clip_num")			clip_num = get_int();
+			else IFTOK("nClip")			nClip = get_int();
 			else IFTOK("dest_bm")			dest_bm = strtok( NULL, space );
 			else IFTOK("dest_vclip")		dest_vclip = get_int();
 			else IFTOK("dest_eclip")		dest_eclip = get_int();
@@ -813,12 +813,12 @@ void bm_read_eclip()
 	tBitmapIndex bitmap;
 	int dest_bm_num = 0;
 
-	Assert(clip_num < MAX_EFFECTS);
+	Assert(nClip < MAX_EFFECTS);
 
-	if (clip_num+1 > Num_effects)
-		Num_effects = clip_num+1;
+	if (nClip+1 > Num_effects)
+		Num_effects = nClip+1;
 
-	Effects [gameStates.app.bD1Data][clip_num].flags = 0;
+	Effects [gameStates.app.bD1Data][nClip].flags = 0;
 
 	//load the dest bitmap first, so that after this routine, the last-loaded
 	//texture will be the monitor, so that lighting parameter will be applied
@@ -846,26 +846,26 @@ void bm_read_eclip()
 	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 
-		Effects [gameStates.app.bD1Data][clip_num].vc.xTotalTime = fl2f(time);
-		Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount = frames;
-		Effects [gameStates.app.bD1Data][clip_num].vc.xFrameTime = fl2f(time)/frames;
+		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = fl2f(time);
+		Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount = frames;
+		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = fl2f(time)/frames;
 
 		Assert(clip_count < frames);
-		Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bitmap;
+		Effects [gameStates.app.bD1Data][nClip].vc.frames[clip_count] = bitmap;
 		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
 
 		Assert(!obj_eclip);		//obj eclips for non-abm files not supported!
 		Assert(critFlag==0);
 
 		if (clip_count == 0) {
-			Effects [gameStates.app.bD1Data][clip_num].changing_wall_texture = texture_count;
+			Effects [gameStates.app.bD1Data][nClip].changing_wall_texture = texture_count;
 			Assert(tmap_count < MAX_TEXTURES);
 	  		TmapList[tmap_count++] = texture_count;
 			Textures [gameStates.app.bD1Data][texture_count] = bitmap;
 			set_texture_name(arg);
 			Assert(texture_count < MAX_TEXTURES);
 			texture_count++;
-			TmapInfo [gameStates.app.bD1Data][texture_count].eclip_num = clip_num;
+			TmapInfo [gameStates.app.bD1Data][texture_count].eclip_num = nClip;
 			NumTextures = texture_count;
 		}
 
@@ -875,71 +875,71 @@ void bm_read_eclip()
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
 		abmFlag = 0;
 
-		ab_load( arg, bm, &Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount );
+		ab_load( arg, bm, &Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount );
 
-		////printf("EC%d.", clip_num);
-		Effects [gameStates.app.bD1Data][clip_num].vc.xTotalTime = fl2f(time);
-		Effects [gameStates.app.bD1Data][clip_num].vc.xFrameTime = Effects [gameStates.app.bD1Data][clip_num].vc.xTotalTime/Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount;
+		////printf("EC%d.", nClip);
+		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = fl2f(time);
+		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime/Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount;
 
 		clip_count = 0;	
 		set_lightingFlag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
-		Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bm[clip_count];
+		Effects [gameStates.app.bD1Data][nClip].vc.frames[clip_count] = bm[clip_count];
 
 		if (!obj_eclip && !critFlag) {
-			Effects [gameStates.app.bD1Data][clip_num].changing_wall_texture = texture_count;
+			Effects [gameStates.app.bD1Data][nClip].changing_wall_texture = texture_count;
 			Assert(tmap_count < MAX_TEXTURES);
   			TmapList[tmap_count++] = texture_count;
 			Textures [gameStates.app.bD1Data][texture_count] = bm[clip_count];
 			set_texture_name( arg );
 			Assert(texture_count < MAX_TEXTURES);
-			TmapInfo [gameStates.app.bD1Data][texture_count].eclip_num = clip_num;
+			TmapInfo [gameStates.app.bD1Data][texture_count].eclip_num = nClip;
 			texture_count++;
 			NumTextures = texture_count;
 		}
 
 		if (obj_eclip) {
 
-			if (Effects [gameStates.app.bD1Data][clip_num].changingObject_texture == -1) {		//first time referenced
-				Effects [gameStates.app.bD1Data][clip_num].changingObject_texture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
+			if (Effects [gameStates.app.bD1Data][nClip].changingObject_texture == -1) {		//first time referenced
+				Effects [gameStates.app.bD1Data][nClip].changingObject_texture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
 				gameData.pig.tex.nObjBitmaps++;
 			}
 
-			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][clip_num].changingObject_texture] = Effects [gameStates.app.bD1Data][clip_num].vc.frames[0];
+			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][nClip].changingObject_texture] = Effects [gameStates.app.bD1Data][nClip].vc.frames[0];
 		}
 
 		//if for an tObject, Effects_bm_ptrs set in tObject load
 
-		for(clip_count=1;clip_count < Effects [gameStates.app.bD1Data][clip_num].vc.nFrameCount; clip_count++) {
+		for(clip_count=1;clip_count < Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount; clip_count++) {
 			set_lightingFlag( &GameBitmaps[bm[clip_count].index].bm_props.flags);
-			Effects [gameStates.app.bD1Data][clip_num].vc.frames[clip_count] = bm[clip_count];
+			Effects [gameStates.app.bD1Data][nClip].vc.frames[clip_count] = bm[clip_count];
 		}
 
 	}
 
-	Effects [gameStates.app.bD1Data][clip_num].crit_clip = crit_clip;
-	Effects [gameStates.app.bD1Data][clip_num].nSound = nSound;
+	Effects [gameStates.app.bD1Data][nClip].crit_clip = crit_clip;
+	Effects [gameStates.app.bD1Data][nClip].nSound = nSound;
 
 	if (dest_bm) {			//deal with bitmap for blown up clip
 
-		Effects [gameStates.app.bD1Data][clip_num].dest_bm_num = dest_bm_num;
+		Effects [gameStates.app.bD1Data][nClip].dest_bm_num = dest_bm_num;
 
 		if (dest_vclip==-1)
 			Error("Desctruction vclip missing on line %d",linenum);
 		if (dest_size==-1)
 			Error("Desctruction vclip missing on line %d",linenum);
 
-		Effects [gameStates.app.bD1Data][clip_num].dest_vclip = dest_vclip;
-		Effects [gameStates.app.bD1Data][clip_num].dest_size = dest_size;
+		Effects [gameStates.app.bD1Data][nClip].dest_vclip = dest_vclip;
+		Effects [gameStates.app.bD1Data][nClip].dest_size = dest_size;
 
-		Effects [gameStates.app.bD1Data][clip_num].dest_eclip = dest_eclip;
+		Effects [gameStates.app.bD1Data][nClip].dest_eclip = dest_eclip;
 	}
 	else {
-		Effects [gameStates.app.bD1Data][clip_num].dest_bm_num = -1;
-		Effects [gameStates.app.bD1Data][clip_num].dest_eclip = -1;
+		Effects [gameStates.app.bD1Data][nClip].dest_bm_num = -1;
+		Effects [gameStates.app.bD1Data][nClip].dest_eclip = -1;
 	}
 
 	if (critFlag)
-		Effects [gameStates.app.bD1Data][clip_num].flags |= EF_CRITICAL;
+		Effects [gameStates.app.bD1Data][nClip].flags |= EF_CRITICAL;
 }
 
 
@@ -990,60 +990,60 @@ void bm_read_gauges_hires()
 void bm_read_wclip()
 {
 	tBitmapIndex bitmap;
-	Assert(clip_num < MAX_WALL_ANIMS);
+	Assert(nClip < MAX_WALL_ANIMS);
 
-	WallAnims[clip_num].flags = 0;
+	WallAnims[nClip].flags = 0;
 
-	if (wall_explodes)	WallAnims[clip_num].flags |= WCF_EXPLODES;
-	if (wall_blastable)	WallAnims[clip_num].flags |= WCF_BLASTABLE;
-	if (wall_hidden)		WallAnims[clip_num].flags |= WCF_HIDDEN;
-	if (tmap1Flag)		WallAnims[clip_num].flags |= WCF_TMAP1;
+	if (wall_explodes)	WallAnims[nClip].flags |= WCF_EXPLODES;
+	if (wall_blastable)	WallAnims[nClip].flags |= WCF_BLASTABLE;
+	if (wall_hidden)		WallAnims[nClip].flags |= WCF_HIDDEN;
+	if (tmap1Flag)		WallAnims[nClip].flags |= WCF_TMAP1;
 
 	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
-		if ( (WallAnims[clip_num].nFrameCount>-1) && (clip_count==0) )
-			Error( "Wall Clip %d is already used!", clip_num );
-		WallAnims[clip_num].xTotalTime = fl2f(time);
-		WallAnims[clip_num].nFrameCount = frames;
-		//WallAnims[clip_num].xFrameTime = fl2f(time)/frames;
+		if ( (WallAnims[nClip].nFrameCount>-1) && (clip_count==0) )
+			Error( "Wall Clip %d is already used!", nClip );
+		WallAnims[nClip].xTotalTime = fl2f(time);
+		WallAnims[nClip].nFrameCount = frames;
+		//WallAnims[nClip].xFrameTime = fl2f(time)/frames;
 		Assert(clip_count < frames);
-		WallAnims[clip_num].frames[clip_count++] = texture_count;
-		WallAnims[clip_num].openSound = wall_openSound;
-		WallAnims[clip_num].closeSound = wall_closeSound;
+		WallAnims[nClip].frames[clip_count++] = texture_count;
+		WallAnims[nClip].openSound = wall_openSound;
+		WallAnims[nClip].closeSound = wall_closeSound;
 		Textures [gameStates.app.bD1Data][texture_count] = bitmap;
 		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
 		set_texture_name( arg );
 		Assert(texture_count < MAX_TEXTURES);
 		texture_count++;
 		NumTextures = texture_count;
-		if (clip_num >= Num_wall_anims) Num_wall_anims = clip_num+1;
+		if (nClip >= Num_wall_anims) Num_wall_anims = nClip+1;
 	} else {
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
 		int nframes;
-		if ( (WallAnims[clip_num].nFrameCount>-1)  )
-			Error( "AB_Wall clip %d is already used!", clip_num );
+		if ( (WallAnims[nClip].nFrameCount>-1)  )
+			Error( "AB_Wall clip %d is already used!", nClip );
 		abmFlag = 0;
 		ab_load( arg, bm, &nframes );
-		WallAnims[clip_num].nFrameCount = nframes;
+		WallAnims[nClip].nFrameCount = nframes;
 		////printf("WC");
-		WallAnims[clip_num].xTotalTime = fl2f(time);
-		//WallAnims[clip_num].xFrameTime = fl2f(time)/nframes;
-		WallAnims[clip_num].openSound = wall_openSound;
-		WallAnims[clip_num].closeSound = wall_closeSound;
+		WallAnims[nClip].xTotalTime = fl2f(time);
+		//WallAnims[nClip].xFrameTime = fl2f(time)/nframes;
+		WallAnims[nClip].openSound = wall_openSound;
+		WallAnims[nClip].closeSound = wall_closeSound;
 
-		WallAnims[clip_num].closeSound = wall_closeSound;
-		strcpy(WallAnims[clip_num].filename, arg);
-		REMOVE_DOTS(WallAnims[clip_num].filename);	
+		WallAnims[nClip].closeSound = wall_closeSound;
+		strcpy(WallAnims[nClip].filename, arg);
+		REMOVE_DOTS(WallAnims[nClip].filename);	
 
-		if (clip_num >= Num_wall_anims) Num_wall_anims = clip_num+1;
+		if (nClip >= Num_wall_anims) Num_wall_anims = nClip+1;
 
 		set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 
-		for (clip_count=0;clip_count < WallAnims[clip_num].nFrameCount; clip_count++)	{
+		for (clip_count=0;clip_count < WallAnims[nClip].nFrameCount; clip_count++)	{
 			////printf("%d", clip_count);
 			Textures [gameStates.app.bD1Data][texture_count] = bm[clip_count];
 			set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
-			WallAnims[clip_num].frames[clip_count] = texture_count;
+			WallAnims[nClip].frames[clip_count] = texture_count;
 			REMOVE_DOTS(arg);
 			sprintf( TmapInfo [gameStates.app.bD1Data][texture_count].filename, "%bObjectRendered#%d", arg, clip_count);
 			Assert(texture_count < MAX_TEXTURES);
@@ -1056,51 +1056,51 @@ void bm_read_wclip()
 void bm_read_vclip()
 {
 	tBitmapIndex bi;
-	Assert(clip_num < VCLIP_MAXNUM);
+	Assert(nClip < VCLIP_MAXNUM);
 
-	if (clip_num >= Num_vclips)
-		Num_vclips = clip_num+1;
+	if (nClip >= Num_vclips)
+		Num_vclips = nClip+1;
 
 	if (!abmFlag)	{
-		if ( (Vclip [gameStates.app.bD1Data][clip_num].nFrameCount>-1) && (clip_count==0)  )
-			Error( "Vclip %d is already used!", clip_num );
+		if ( (Vclip [gameStates.app.bD1Data][nClip].nFrameCount>-1) && (clip_count==0)  )
+			Error( "Vclip %d is already used!", nClip );
 		bi = bm_load_sub(arg);
-		Vclip [gameStates.app.bD1Data][clip_num].xTotalTime = fl2f(time);
-		Vclip [gameStates.app.bD1Data][clip_num].nFrameCount = frames;
-		Vclip [gameStates.app.bD1Data][clip_num].xFrameTime = fl2f(time)/frames;
-		Vclip [gameStates.app.bD1Data][clip_num].lightValue = fl2f(vlighting);
-		Vclip [gameStates.app.bD1Data][clip_num].nSound = nSound;
+		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = fl2f(time);
+		Vclip [gameStates.app.bD1Data][nClip].nFrameCount = frames;
+		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/frames;
+		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
 		set_lightingFlag(&GameBitmaps[bi.index].bm_props.flags);
 		Assert(clip_count < frames);
-		Vclip [gameStates.app.bD1Data][clip_num].frames[clip_count++] = bi;
+		Vclip [gameStates.app.bD1Data][nClip].frames[clip_count++] = bi;
 		if (rodFlag) {
 			rodFlag=0;
-			Vclip [gameStates.app.bD1Data][clip_num].flags |= VF_ROD;
+			Vclip [gameStates.app.bD1Data][nClip].flags |= VF_ROD;
 		}			
 
 	} else	{
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
 		abmFlag = 0;
-		if ( (Vclip [gameStates.app.bD1Data][clip_num].nFrameCount>-1)  )
-			Error( "AB_Vclip %d is already used!", clip_num );
-		ab_load( arg, bm, &Vclip [gameStates.app.bD1Data][clip_num].nFrameCount );
+		if ( (Vclip [gameStates.app.bD1Data][nClip].nFrameCount>-1)  )
+			Error( "AB_Vclip %d is already used!", nClip );
+		ab_load( arg, bm, &Vclip [gameStates.app.bD1Data][nClip].nFrameCount );
 
 		if (rodFlag) {
 			//int i;
 			rodFlag=0;
-			Vclip [gameStates.app.bD1Data][clip_num].flags |= VF_ROD;
+			Vclip [gameStates.app.bD1Data][nClip].flags |= VF_ROD;
 		}			
 		////printf("VC");
-		Vclip [gameStates.app.bD1Data][clip_num].xTotalTime = fl2f(time);
-		Vclip [gameStates.app.bD1Data][clip_num].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][clip_num].nFrameCount;
-		Vclip [gameStates.app.bD1Data][clip_num].lightValue = fl2f(vlighting);
-		Vclip [gameStates.app.bD1Data][clip_num].nSound = nSound;
+		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = fl2f(time);
+		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][nClip].nFrameCount;
+		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
+		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
 		set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
 
-		for (clip_count=0;clip_count < Vclip [gameStates.app.bD1Data][clip_num].nFrameCount; clip_count++) {
+		for (clip_count=0;clip_count < Vclip [gameStates.app.bD1Data][nClip].nFrameCount; clip_count++) {
 			////printf("%d", clip_count);
 			set_lightingFlag(&GameBitmaps[bm[clip_count].index].bm_props.flags);
-			Vclip [gameStates.app.bD1Data][clip_num].frames[clip_count] = bm[clip_count];
+			Vclip [gameStates.app.bD1Data][nClip].frames[clip_count] = bm[clip_count];
 		}
 	}
 }
@@ -1148,7 +1148,7 @@ void adjust_field_of_view(fix *fovp)
 		}
 		ff = ff/360;
 		tt = fl2f(ff);
-		fix_sincos(tt, &temp, &fovp[i]);
+		FixSinCos(tt, &temp, &fovp[i]);
 	}
 }
 

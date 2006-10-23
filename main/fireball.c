@@ -1897,7 +1897,7 @@ void DoExplodingWallFrame()
 				short cside, n;
 				ubyte	a;
 				seg = gameData.segs.segments + nSegment;
-				a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].clip_num;
+				a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
 				n = AnimFrameCount (gameData.walls.pAnims + a);
 				csegp = gameData.segs.segments + seg->children[nSide];
 				cside = FindConnectedSide(seg, csegp);

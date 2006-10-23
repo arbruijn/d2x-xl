@@ -260,7 +260,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <string.h>
-#include <cType.h>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -964,9 +964,9 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 100) {
 		if (!j)
 			extraGameInfo [0].bUseSmoke = (int) CFReadByte (fp);
-		gameOptions [j].render.smoke.nScale [0] = CFReadInt (fp);
+		gameOptions [j].render.smoke.nDens [0] = CFReadInt (fp);
 		gameOptions [j].render.smoke.nSize [0] = CFReadInt (fp);
-		NMCLAMP (gameOptions [j].render.smoke.nScale [0], 0, 4);
+		NMCLAMP (gameOptions [j].render.smoke.nDens [0], 0, 4);
 		NMCLAMP (gameOptions [j].render.smoke.nSize [0], 0, 3);
 		gameOptions [j].render.smoke.bPlayers = (int) CFReadByte (fp);
 		gameOptions [j].render.smoke.bRobots = (int) CFReadByte (fp);
@@ -1073,7 +1073,7 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 126) {
 		gameOptions [j].render.smoke.bSyncSizes = CFReadInt (fp);
 		for (i = 1; i < 4; i++) {
-			gameOptions [j].render.smoke.nScale [i] = CFReadInt (fp);
+			gameOptions [j].render.smoke.nDens [i] = CFReadInt (fp);
 			gameOptions [j].render.smoke.nSize [i] = CFReadInt (fp);
 			}
 		}
@@ -1445,7 +1445,7 @@ for (j = 0; j < 2; j++) {
 		CFWriteInt (gameStates.multi.nConnection, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bUseSmoke, fp);
 		}
-	CFWriteInt (gameOptions [j].render.smoke.nScale [0], fp);
+	CFWriteInt (gameOptions [j].render.smoke.nDens [0], fp);
 	CFWriteInt (gameOptions [j].render.smoke.nSize [0], fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bPlayers, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bRobots, fp);
@@ -1507,7 +1507,7 @@ for (j = 0; j < 2; j++) {
 		}
 	CFWriteInt (gameOptions [j].render.smoke.bSyncSizes, fp);
 	for (i = 1; i < 4; i++) {
-		CFWriteInt (gameOptions [j].render.smoke.nScale [i], fp);
+		CFWriteInt (gameOptions [j].render.smoke.nDens [i], fp);
 		CFWriteInt (gameOptions [j].render.smoke.nSize [i], fp);
 		}
 // end of D2X-XL stuff

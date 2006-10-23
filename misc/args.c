@@ -63,7 +63,7 @@ static char rcsid [] = "$Id: args.c,v 1.10 2003/11/26 12:26:33 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <cType.h>
+#include <ctype.h>
 
 #include "cfile.h"
 #include "u_mem.h"

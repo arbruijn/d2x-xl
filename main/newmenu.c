@@ -584,7 +584,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <cType.h>
+#include <ctype.h>
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif

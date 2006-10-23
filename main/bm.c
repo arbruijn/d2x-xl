@@ -413,7 +413,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
 		else IFTOK ("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
-		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	clip_num = 0;}
+		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
 		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [texture_count-1].lighting = fl2f (get_float ();
@@ -427,7 +427,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("destroyed")	 		{int t=texture_count-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
-		else IFTOK ("clip_num")			clip_num = get_int ();
+		else IFTOK ("nClip")			nClip = get_int ();
 		else IFTOK ("dest_bm")			dest_bm = strtok (NULL, space);
 		else IFTOK ("dest_vclip")		dest_vclip = get_int ();
 		else IFTOK ("dest_eclip")		dest_eclip = get_int ();

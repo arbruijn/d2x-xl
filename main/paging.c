@@ -467,8 +467,8 @@ void PagingTouchWall (wall *wallP)
 	int	j;
 	wclip *anim;
 
-if (wallP->clip_num > -1)	{
-	anim = gameData.walls.pAnims + wallP->clip_num;
+if (wallP->nClip > -1)	{
+	anim = gameData.walls.pAnims + wallP->nClip;
 	for (j=0; j < anim->nFrameCount; j++)
 		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [anim->frames [j]], gameStates.app.bD1Data);
 	}

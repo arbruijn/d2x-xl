@@ -60,7 +60,7 @@ struct sound_slot {
 } SoundSlots[MAX_SOUND_SLOTS];
 
 
-int midi_volume = 255;
+int midiVolume = 255;
 int digi_midi_song_playing = 0;
 int digi_last_midi_song = 0;
 int digi_last_midi_song_loop = 0;
@@ -187,7 +187,7 @@ int D1vol2DSvol(fix d1v){
 }
 
 // Volume 0-F1_0
-int DigiStartSound(short soundnum, fix volume, int pan, int looping, int loop_start, int loop_end, int soundobj)
+int DigiStartSound(short nSound, fix volume, int pan, int looping, int loop_start, int loop_end, int soundobj)
 {
  int ntries;
  int slot;
@@ -221,9 +221,9 @@ TryNextChannel:
 	if (slot < 0)
 		return -1;
 
-	SoundSlots[slot].soundno = soundnum;
-	SoundSlots[slot].samples = Sounddat(soundnum)->data;
-	SoundSlots[slot].length = Sounddat(soundnum)->length;
+	SoundSlots[slot].soundno = nSound;
+	SoundSlots[slot].samples = Sounddat(nSound)->data;
+	SoundSlots[slot].length = Sounddat(nSound)->length;
 	SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, volume);
 	SoundSlots[slot].pan = pan;
 	SoundSlots[slot].position = 0;
@@ -232,9 +232,9 @@ TryNextChannel:
 
 	memset(&waveformat, 0, sizeof(waveformat));
 	waveformat.wFormatTag = WAVE_FORMAT_PCM;
-	waveformat.wBitsPerSample = Sounddat(soundnum)->bits;
+	waveformat.wBitsPerSample = Sounddat(nSound)->bits;
 	waveformat.nChannels = 1;
-	waveformat.nSamplesPerSec = Sounddat(soundnum)->freq; //gameOpts->sound.digiSampleRate;
+	waveformat.nSamplesPerSec = Sounddat(nSound)->freq; //gameOpts->sound.digiSampleRate;
 	waveformat.nBlockAlign = waveformat.nChannels * (waveformat.wBitsPerSample / 8);
 	waveformat.nAvgBytesPerSec = waveformat.nSamplesPerSec * waveformat.nBlockAlign;
 
@@ -256,9 +256,9 @@ TryNextChannel:
 		void *ptr1, *ptr2;
 		DWORD len1, len2;
 
-		IDirectSoundBuffer_Lock(SoundSlots[slot].lpsb, 0, Sounddat(soundnum)->length,
+		IDirectSoundBuffer_Lock(SoundSlots[slot].lpsb, 0, Sounddat(nSound)->length,
 		                        &ptr1, &len1, &ptr2, &len2, 0);
-		memcpy(ptr1, Sounddat(soundnum)->data, MIN(len1, Sounddat(soundnum)->length));
+		memcpy(ptr1, Sounddat(nSound)->data, MIN(len1, Sounddat(nSound)->length));
 		IDirectSoundBuffer_Unlock(SoundSlots[slot].lpsb, ptr1, len1, ptr2, len2);
 	}
 
@@ -430,7 +430,7 @@ void DigiEndSound(int channel)
 #else
 int digi_midi_song_playing = 0;
 static int gameStates.sound.digi.bInitialized = 0;
-int midi_volume = 255;
+int midiVolume = 255;
 
 int digi_get_settings() { return 0; }
 int DigiInit() { gameStates.sound.digi.bInitialized = 1; return 0; }
@@ -461,21 +461,21 @@ void DigiStopCurrentSong()
 
 void DigiSetMidiVolume( int n )
 {
-	int mm_volume;
+	int mmVolume;
 
 	if (n < 0)
-		midi_volume = 0;
+		midiVolume = 0;
 	else if (n > 127)
-		midi_volume = 127;
+		midiVolume = 127;
 	else
-		midi_volume = n;
+		midiVolume = n;
 
 	// scale up from 0-127 to 0-0xffff
-	mm_volume = (midi_volume << 1) | (midi_volume & 1);
-	mm_volume |= (mm_volume << 8);
+	mmVolume = (midiVolume << 1) | (midiVolume & 1);
+	mmVolume |= (mmVolume << 8);
 
 	if (hmp)
-		midiOutSetVolume((HMIDIOUT)hmp->hmidi, mm_volume | mm_volume << 16);
+		midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | mmVolume << 16);
 }
 
 void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop )
@@ -486,25 +486,25 @@ void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, i
 
        //added on 5/20/99 by Victor Rachels to fix crash/etc
         if(filename == NULL) return;
-        if(midi_volume < 1) return;
+        if(midiVolume < 1) return;
        //end this section addition - VR
 
 	if ((hmp = hmp_open(filename))) {
 	    hmp_play(hmp);
 	    digi_midi_song_playing = 1;
-	    DigiSetMidiVolume(midi_volume);
+	    DigiSetMidiVolume(midiVolume);
 	}
 	//else
 		//printf("hmp_open failed\n");
 }
-void digi_pause_midi() {}
+void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 
 #else
 void DigiStopCurrentSong() {}
 void DigiSetMidiVolume( int n ) {}
 void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {}
-void digi_pause_midi() {}
+void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 #endif
 

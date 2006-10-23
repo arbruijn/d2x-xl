@@ -154,7 +154,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #  include <sys/sockio.h>
 #endif
 #include <net/if.h>
-#include <cType.h>
+#include <ctype.h>
 
 #ifdef __macosx__
 #include <ifaddrs.h>
@@ -540,10 +540,10 @@ for (i = j = 0; i < cnt; i++) {
 		close (sock);
 		FAIL ("ioctl (udp,\"%s\",SIOCGIFFLAGS) error: %m", ifconf.ifc_req [i].ifr_name);
 		}
-	if (((ifconf.ifc_req [i].ifrFlags & IF_REQFLAGS) != IF_REQFLAGS) ||
-		  (ifconf.ifc_req [i].ifrFlags & IF_NOTFLAGS))
+	if (((ifconf.ifc_req [i].ifr_flags & IF_REQFLAGS) != IF_REQFLAGS) ||
+		  (ifconf.ifc_req [i].ifr_flags & IF_NOTFLAGS))
 		continue;
-	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifrFlags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
+	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifr_flags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
 		close (sock);
 		FAIL ("ioctl (udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error: %m",ifconf.ifc_req [i].ifr_name);
 		}

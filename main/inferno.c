@@ -713,7 +713,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPORATION";
 
-#include <cType.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1822,10 +1822,10 @@ if (i) {
 	gameOptions [1].render.textures.nQuality = 0;
 	gameOptions [1].render.cockpit.bMissileView = 1;
 	gameOptions [1].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [1].render.smoke.nScale [0] =
-	gameOptions [1].render.smoke.nScale [1] =
-	gameOptions [1].render.smoke.nScale [2] =
-	gameOptions [1].render.smoke.nScale [3] = 0;
+	gameOptions [1].render.smoke.nDens [0] =
+	gameOptions [1].render.smoke.nDens [1] =
+	gameOptions [1].render.smoke.nDens [2] =
+	gameOptions [1].render.smoke.nDens [3] = 0;
 	gameOptions [1].render.smoke.nSize [0] =
 	gameOptions [1].render.smoke.nSize [1] =
 	gameOptions [1].render.smoke.nSize [2] =
@@ -1894,10 +1894,10 @@ else {
 #endif
 	gameOptions [0].render.cockpit.bMissileView = 1;
 	gameOptions [0].render.cockpit.bGuidedInMainView = 1;
-	gameOptions [1].render.smoke.nScale [0] =
-	gameOptions [1].render.smoke.nScale [1] =
-	gameOptions [1].render.smoke.nScale [2] =
-	gameOptions [1].render.smoke.nScale [3] = 2;
+	gameOptions [1].render.smoke.nDens [0] =
+	gameOptions [1].render.smoke.nDens [1] =
+	gameOptions [1].render.smoke.nDens [2] =
+	gameOptions [1].render.smoke.nDens [3] = 2;
 	gameOptions [1].render.smoke.nSize [0] =
 	gameOptions [1].render.smoke.nSize [1] =
 	gameOptions [1].render.smoke.nSize [2] =
@@ -2243,7 +2243,6 @@ InitGameplayOptions (i);
 
 void InitGameplayStates (void)
 {
-gameStates.gameplay.bSpeedBoost = 0;
 gameStates.gameplay.bFinalBossIsDead = 0;
 gameStates.gameplay.bHaveSmartMines = 1;
 gameStates.gameplay.bMineDestroyed = 0;

@@ -843,9 +843,9 @@ return m;
 vmsMatrix *VmAngles2Matrix (vmsMatrix *m, vmsAngVec *a)
 {
 fix sinp, cosp, sinb, cosb, sinh, cosh;
-fix_sincos (a->p, &sinp, &cosp);
-fix_sincos (a->b, &sinb, &cosb);
-fix_sincos (a->h, &sinh, &cosh);
+FixSinCos (a->p, &sinp, &cosp);
+FixSinCos (a->b, &sinb, &cosb);
+FixSinCos (a->h, &sinh, &cosh);
 return SinCos2Matrix (m, sinp, cosp, sinb, cosb, sinh, cosh);
 }
 
@@ -855,7 +855,7 @@ vmsMatrix *VmVecAng2Matrix (vmsMatrix *m, vmsVector *v, fixang a)
 {
 	fix sinb, cosb, sinp, cosp;
 
-fix_sincos (a, &sinb, &cosb);
+FixSinCos (a, &sinb, &cosb);
 sinp = -v->y;
 cosp = fix_sqrt (f1_0 - FixMul (sinp, sinp));
 return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z, cosp));
@@ -1078,7 +1078,7 @@ if (m->fvec.x==0 && m->fvec.z==0)		//zero head
 	a->h = 0;
 else
 	a->h = fix_atan2(m->fvec.z, m->fvec.x);
-fix_sincos(a->h, &sinh, &cosh);
+FixSinCos(a->h, &sinh, &cosh);
 if (abs(sinh) > abs(cosh))				//sine is larger, so use it
 	cosp = FixDiv(m->fvec.x, sinh);
 else											//cosine is larger, so use it

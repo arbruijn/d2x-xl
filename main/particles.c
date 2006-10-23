@@ -675,7 +675,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vmsVector *pPos, short nSegment, int nMaxParts, float nPartScale, int nLife, int nSpeed, int nType, int nCurTime)
+int CreateCloud (tCloud *pCloud, vmsVector *pPos, short nSegment, int nMaxParts, float nPartScale, 
+					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -697,6 +698,8 @@ pCloud->nMoved = nCurTime;
 pCloud->nPartLimit =
 pCloud->nMaxParts = nMaxParts;
 pCloud->nPartScale = nPartScale;
+pCloud->nDensity = nDensity;
+pCloud->nPartsPerPos = nPartsPerPos;
 pCloud->nSegment = nSegment;
 return 1;
 }
@@ -735,9 +738,11 @@ return !(CloudLives (pCloud, nCurTime) || pCloud->nParts);
 int MoveCloud (tCloud *pCloud, int nCurTime)
 {
 	tCloud		c = *pCloud;
-	int			t, i, j = c.nParts, r = 0,
-					nInterpolatePos = 0;
-	vmsVector	d, p;
+	int			t, h, i, j = c.nParts,
+					nDens, nInterpolatePos = 0;
+	float			fDist;
+	vmsVector	vDelta, vPos;
+	fVector3		vDeltaf, vPosf;
 
 if ((t = nCurTime - c.nMoved) < (1000 / PARTICLE_FPS))
 	return 0;
@@ -748,12 +753,18 @@ for (i = 0; i < j; )
 	else if (i < --j)
 		c.pParticles [i] = c.pParticles [j];
 if (CloudLives (pCloud, nCurTime)) {
-	int h = c.nMaxParts / abs (c.nLife) * t;
+	fDist = f2fl (VmVecMag (VmVecSub (&vDelta, &c.pos, &c.prevPos)));
+	nDens = ((pCloud->nDensity < 0) ? gameOpts->render.smoke.nDens [0] : pCloud->nDensity) + 1;
+	if (c.bHavePrevPos && (fDist > 0))
+		h = (int) (fDist + 0.5) * nDens * c.nPartsPerPos;
+	else
+		h = (c.nMaxParts * t) / abs (c.nLife);
 	if (!h)
 		h = 1;
 	if (h > c.nMaxParts - i)
 		h = c.nMaxParts - i;
-	//LogErr ("   creating %d particles\n", h);
+	//LogErr ("   creating %vDelta particles\n", h);
+	//HUDMessage (0, "have %d/%d particles, creating %d, moved %1.2f\n", i, c.nMaxParts, h, fDist);
 	if (!h)
 		return c.nMaxParts;
 	else if (h == 1)
@@ -762,42 +773,29 @@ if (CloudLives (pCloud, nCurTime)) {
 	if (c.prevPos.x == c.pos.x && c.prevPos.y == c.pos.y && c.prevPos.z == c.pos.z)
 		c.bHavePrevPos = 0;
 #endif
-	if (c.bHavePrevPos && (h > 1)) {
+	if (c.bHavePrevPos && (fDist > 0)) {
 		nInterpolatePos = 2;
-		p = c.prevPos;
-		VmVecSub (&d, &c.pos, &p);
-		r = abs (d.x);
-		if (d.y && (!r || (r > abs (d.y))))
-			r = abs (d.y);
-		if (d.z && (!r || (r > abs (d.z))))
-			r = abs (d.z);
-		if (!r)
-			nInterpolatePos = 0;
-		else {
-			if (r > h)
-				r = h;
-#if 1
-			d.x /= r;
-			d.y /= r;
-			d.z /= r;
-#endif
-			r = h / r;
-			}
+		VmsVecToFloat (&vPosf, &c.prevPos);
+		VmsVecToFloat (&vDeltaf, &vDelta);
+		vDeltaf.p.x /= (float) h;
+		vDeltaf.p.y /= (float) h;
+		vDeltaf.p.z /= (float) h;
 		}
-	if (!nInterpolatePos) {
-		p = c.pos;
-		d.x = d.y = d.z = 0;
+	else {
+		nInterpolatePos = 0;
+		VmsVecToFloat (&vPosf, &c.pos);
+		vDeltaf.p.x =
+		vDeltaf.p.y =
+		vDeltaf.p.z = 0.0f;
 		}
-	for (j = 0; h; i++, h--, j--) {
-		if (!j) {
-			j = r;
-			if (h > r)
-				VmVecInc (&p, &d);
-			else
-				p = c.pos;
-			}
-		CreateParticle (c.pParticles + i, &p, c.nSegment, c.nLife, 
+	for (; h; h--, i++) {
+		VmVecIncf (&vPosf, &vDeltaf);
+		vPos.x = (fix) (vPosf.p.x * 65336.0f);
+		vPos.y = (fix) (vPosf.p.y * 65336.0f);
+		vPos.z = (fix) (vPosf.p.z * 65336.0f);
+		CreateParticle (c.pParticles + i, &vPos, c.nSegment, c.nLife, 
 							 c.nSpeed, c.nType, c.nPartScale, nCurTime, nInterpolatePos);
+		nInterpolatePos = (h > 0);
 		}
 	}
 pCloud->nMoved = nCurTime;
@@ -940,7 +938,7 @@ pCloud->nType = nType;
 
 //------------------------------------------------------------------------------
 
-int SetCloudDensity (tCloud *pCloud, int nMaxParts)
+int SetCloudDensity (tCloud *pCloud, int nMaxParts, int nDensity)
 {
 	tParticle	*p;
 
@@ -956,6 +954,7 @@ if (nMaxParts > pCloud->nPartLimit) {
 		}
 	pCloud->pParticles = p;
 	}
+pCloud->nDensity = nDensity;
 pCloud->nMaxParts = nMaxParts;
 if (pCloud->nParts > nMaxParts)
 	pCloud->nParts = nMaxParts;
@@ -1056,7 +1055,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nLife, int nSpeed, int nType, int nObject)
+					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nObject)
 {
 if (!(EGI_FLAG (bUseSmoke, 0, 0)))
 	return 0;
@@ -1070,10 +1069,7 @@ else {
 		int		i, t = gameStates.app.nSDLTicks;
 		tSmoke	*pSmoke;
 
-	if (nMaxParts < 0)	// don't scale
-		nMaxParts = -nMaxParts;
-	else
-		nMaxParts <<= gameOpts->render.smoke.nScale [0];
+	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
@@ -1087,7 +1083,8 @@ else {
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
-		if (CreateCloud (pSmoke->pClouds + i, pPos, nSegment, nMaxParts, nPartScale, nLife, nSpeed, nType, t))
+		if (CreateCloud (pSmoke->pClouds + i, pPos, nSegment, nMaxParts, nPartScale, nDensity, 
+							  nPartsPerPos, nLife, nSpeed, nType, t))
 			pSmoke->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFreeSmoke);
@@ -1196,17 +1193,14 @@ if (IsUsedSmoke (i)) {
 
 //------------------------------------------------------------------------------
 
-void SetSmokeDensity (int i, int nMaxParts)
+void SetSmokeDensity (int i, int nMaxParts, int nDensity)
 {
-if (nMaxParts < 0)
-	nMaxParts = -nMaxParts;
-else 
-	nMaxParts <<= (gameOpts->render.smoke.nScale [0] + 1);
+nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudDensity (pSmoke->pClouds + i, nMaxParts);
+			SetCloudDensity (pSmoke->pClouds + i, nMaxParts, nDensity);
 	}
 }
 
@@ -1265,6 +1259,13 @@ if (IsUsedSmoke (i)) {
 	}
 else
 	return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+int MaxParticles (int nParts, int nDens)
+{
+return (nParts < 0) ? -nParts : nParts * (nDens + 1); //(int) (nParts * pow (1.2, nDens));
 }
 
 //------------------------------------------------------------------------------

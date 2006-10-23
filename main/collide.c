@@ -756,26 +756,28 @@ if (m0 > ((objP0->size + objP1->size) * 3) / 4) {
 	VmVecSub (&vh, &p0, &p1);
 	m1 = VmVecMag (&vh);
 	if (m1 > m0) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		HUDMessage (0, "moving away (%d, %d)", m0, m1);
 #endif
 		return 0;
 		}
 	}
-#ifdef _DEBUG
+#if 0//def _DEBUG
 HUDMessage (0, "colliding (%1.2f, %1.2f)", f2fl (m0), f2fl (m1));
 #endif
 VmVecSub (&vForce, &v0, &v1);
 m0 = objP0->mType.physInfo.mass;
 m1 = objP1->mType.physInfo.mass;
 if (!((m0 + m1) && FixMul (m0, m1))) {
+#if 0//def _DEBUG
 	HUDMessage (0, "Invalid Mass!!!");
+#endif
 	return 0;
 	}
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
 if (mag < (m0 + m1) / 200) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	HUDMessage (0, "bump force too low");
 #endif
 	return 0;	// don't bump if force too low
@@ -1085,7 +1087,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 			int	nWall;
 			nWall = WallNumP (seg, tSide);
 			if (IS_WALL (nWall)) {
-				if (gameData.walls.walls [nWall].tTrigger < gameData.trigs.nTriggers)
+				if (gameData.walls.walls [nWall].nTrigger < gameData.trigs.nTriggers)
 					return 0;
 			}
 		}
@@ -1131,7 +1133,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 				nWall = WallNumP (seg, tSide);
 				bPermaTrigger = 
 					IS_WALL (nWall) && 
-					 ((trig_num = gameData.walls.walls [nWall].tTrigger) != NO_TRIGGER) &&
+					 ((trig_num = gameData.walls.walls [nWall].nTrigger) != NO_TRIGGER) &&
 					 (gameData.trigs.triggers [trig_num].flags & TF_PERMANENT);
 				if (!bPermaTrigger)
 					SubtractLight (SEG_IDX (seg), tSide);
