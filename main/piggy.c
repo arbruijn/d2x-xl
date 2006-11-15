@@ -12,374 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions for managing the pig files.
- *
- * Old Log:
- * Revision 1.16  1995/11/09  17:27:47  allender
- * put in missing quote on new gauge name
- *
- * Revision 1.15  1995/11/08  17:28:03  allender
- * add PC gauges to gauge list of non-substitutatble bitmaps
- *
- * Revision 1.14  1995/11/08  15:14:49  allender
- * fixed horrible bug where the piggy cache size was incorrect
- * for mac shareware
- *
- * Revision 1.13  1995/11/03  12:53:37  allender
- * shareware changes
- *
- * Revision 1.12  1995/10/21  22:25:14  allender
- * added bald guy cheat
- *
- * Revision 1.11  1995/10/20  22:42:15  allender
- * changed load path of descent.pig to :data:descent.pig
- *
- * Revision 1.10  1995/10/20  00:08:01  allender
- * put in event loop calls when loading data (hides it nicely
- * from user) so TM can get it's strokes stuff
- *
- * Revision 1.9  1995/09/13  08:48:01  allender
- * added lower memory requirement to load alternate bitmaps
- *
- * Revision 1.8  1995/08/16  09:39:13  allender
- * moved "loading" text up a little
- *
- * Revision 1.7  1995/08/08  13:54:26  allender
- * added macsys header file
- *
- * Revision 1.6  1995/07/12  12:49:56  allender
- * total hack for bitmaps > 512 bytes wide -- check these by name
- *
- * Revision 1.5  1995/07/05  16:47:05  allender
- * kitchen stuff
- *
- * Revision 1.4  1995/06/23  08:55:28  allender
- * make "loading data" text y loc based off of curcanv
- *
- * Revision 1.3  1995/06/08  14:08:52  allender
- * PPC aligned data sets
- *
- * Revision 1.2  1995/05/26  06:54:27  allender
- * removed refences to sound data at end of pig file (since they will
- * now be Macintosh snd resources for effects
- *
- * Revision 1.1  1995/05/16  15:29:51  allender
- * Initial revision
- *
- * Revision 2.10  1995/10/07  13:17:26  john
- * Made all bitmaps paged out by default.
- *
- * Revision 2.9  1995/04/14  14:05:24  john
- * *** empty log message ***
- *
- * Revision 2.8  1995/04/12  13:39:37  john
- * Fixed bug with -lowmem not working.
- *
- * Revision 2.7  1995/03/29  23:23:17  john
- * Fixed major bug with sounds not building into pig right.
- *
- * Revision 2.6  1995/03/28  18:05:00  john
- * Fixed it so you don't have to delete pig after changing bitmaps.tbl
- *
- * Revision 2.5  1995/03/16  23:13:06  john
- * Fixed bug with piggy paging in bitmap not checking for disk
- * error, hence bogifying textures if you pull the CD out.
- *
- * Revision 2.4  1995/03/14  16:22:27  john
- * Added cdrom alternate directory stuff.
- *
- * Revision 2.3  1995/03/06  15:23:20  john
- * New screen techniques.
- *
- * Revision 2.2  1995/02/27  13:13:40  john
- * Removed floating point.
- *
- * Revision 2.1  1995/02/27  12:31:25  john
- * Made work without editor.
- *
- * Revision 2.0  1995/02/27  11:28:02  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.85  1995/02/09  12:54:24  john
- * Made paged out bitmaps have bm_texBuf be a valid pointer
- * instead of NULL, in case anyone accesses it.
- *
- * Revision 1.84  1995/02/09  12:50:59  john
- * Bullet-proofed the piggy loading code.
- *
- * Revision 1.83  1995/02/07  17:08:51  john
- * Added some error handling stuff instead of asserts.
- *
- * Revision 1.82  1995/02/03  17:06:48  john
- * Changed sound stuff to allow low memory usage.
- * Also, changed so that Sounds [gameStates.app.bD1Data] isn't an array of digiSounds, it
- * is a ubyte pointing into gameData.pig.snd.sounds, this way the digi.c code that
- * locks sounds won't accidentally unlock a sound that is already playing, but
- * since it's Sounds [gameStates.app.bD1Data] [soundno] is different, it would erroneously be unlocked.
- *
- * Revision 1.81  1995/02/02  21:56:39  matt
- * Added data for new gauge bitmaps
- *
- * Revision 1.80  1995/02/01  23:31:57  john
- * Took out loading bar.
- *
- * Revision 1.79  1995/01/28  15:13:18  allender
- * bumped up bitmapCacheSize
- *
- * Revision 1.78  1995/01/26  12:30:43  john
- * Took out prev.
- *
- * Revision 1.77  1995/01/26  12:12:17  john
- * Made buffer be big for bitmaps.
- *
- * Revision 1.76  1995/01/25  20:15:38  john
- * Made editor allocate all mem.
- *
- * Revision 1.75  1995/01/25  14:52:56  john
- * Made bitmap buffer be 1.5 MB.
- *
- * Revision 1.74  1995/01/22  16:03:19  mike
- * localization.
- *
- * Revision 1.73  1995/01/22  15:58:36  mike
- * localization
- *
- * Revision 1.72  1995/01/18  20:51:20  john
- * Took out warnings.
- *
- * Revision 1.71  1995/01/18  20:47:21  john
- * Added code to allocate sounds & bitmaps into diff
- * buffers, also made sounds not be compressed for registered.
- *
- * Revision 1.70  1995/01/18  15:08:41  john
- * Added start/stop time around paging.
- * Made paging clear screen around globe.
- *
- * Revision 1.69  1995/01/18  10:07:51  john
- *
- * Took out debugging mprintfs.
- *
- * Revision 1.68  1995/01/17  14:27:42  john
- * y
- *
- * Revision 1.67  1995/01/17  12:14:39  john
- * Made walls, tObject explosion vclips load at level start.
- *
- * Revision 1.66  1995/01/15  13:15:44  john
- * Made so that paging always happens, lowmem just loads less.
- * Also, make KB load print to hud.
- *
- * Revision 1.65  1995/01/15  11:56:28  john
- * Working version of paging.
- *
- * Revision 1.64  1995/01/14  19:17:07  john
- * First version of new bitmap paging code.
- *
- * Revision 1.63  1994/12/15  12:26:44  john
- * Added -nolowmem function.
- *
- * Revision 1.62  1994/12/14  21:12:26  john
- * Fixed bug with page fault when exiting and using
- * -nosound.
- *
- * Revision 1.61  1994/12/14  11:35:31  john
- * Evened out thermometer for pig read.
- *
- * Revision 1.60  1994/12/14  10:51:00  john
- * Sped up sound loading.
- *
- * Revision 1.59  1994/12/14  10:12:08  john
- * Sped up pig loading.
- *
- * Revision 1.58  1994/12/13  09:14:47  john
- * *** empty log message ***
- *
- * Revision 1.57  1994/12/13  09:12:57  john
- * Made the bar always fill up.
- *
- * Revision 1.56  1994/12/13  03:49:08  john
- * Made -lowmem not load the unnecessary bitmaps.
- *
- * Revision 1.55  1994/12/06  16:06:35  john
- * Took out piggy sorting.
- *
- * Revision 1.54  1994/12/06  15:11:14  john
- * Fixed bug with reading pigs.
- *
- * Revision 1.53  1994/12/06  14:14:47  john
- * Added code to set low mem based on memory.
- *
- * Revision 1.52  1994/12/06  14:01:10  john
- * Fixed bug that was causing -lowmem all the time..
- *
- * Revision 1.51  1994/12/06  13:33:48  john
- * Added lowmem option.
- *
- * Revision 1.50  1994/12/05  19:40:10  john
- * If -nosound or no sound card selected, don't load sounds from pig.
- *
- * Revision 1.49  1994/12/05  12:17:44  john
- * Added code that locks/unlocks digital sounds on demand.
- *
- * Revision 1.48  1994/12/05  11:39:03  matt
- * Fixed little mistake
- *
- * Revision 1.47  1994/12/05  09:29:22  john
- * Added clength to the sound field.
- *
- * Revision 1.46  1994/12/04  15:27:15  john
- * Fixed my stupid bug that looked at -nosound instead of digi_driver_card
- * to see whether or not to lock down sound memory.
- *
- * Revision 1.45  1994/12/03  14:17:00  john
- * Took out my debug con_printf.
- *
- * Revision 1.44  1994/12/03  13:32:37  john
- * Fixed bug with offscreen bitmap.
- *
- * Revision 1.43  1994/12/03  13:07:13  john
- * Made the pig read/write compressed sounds.
- *
- * Revision 1.42  1994/12/03  11:48:51  matt
- * Added option to not dump sounds to pigfile
- *
- * Revision 1.41  1994/12/02  20:02:20  matt
- * Made sound files constant match constant for table
- *
- * Revision 1.40  1994/11/29  11:03:09  adam
- * upped # of sounds
- *
- * Revision 1.39  1994/11/27  23:13:51  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.38  1994/11/20  18:40:34  john
- * MAde the piggy.lst and piggy.all not dump for release.
- *
- * Revision 1.37  1994/11/19  23:54:45  mike
- * up number of bitmaps for shareware version.
- *
- * Revision 1.36  1994/11/19  19:53:05  mike
- * change MAX_BITMAP_FILES
- *
- * Revision 1.35  1994/11/19  10:42:56  matt
- * Increased number of bitmaps for non-shareware version
- *
- * Revision 1.34  1994/11/19  09:11:52  john
- * Added bm_avgColor to bitmaps saved in pig.
- *
- * Revision 1.33  1994/11/19  00:07:05  john
- * Fixed bug with 8 char sound filenames not getting read from pig.
- *
- * Revision 1.32  1994/11/18  22:24:54  john
- * Added -bigpig command line that doesn't rle your pig.
- *
- * Revision 1.31  1994/11/18  21:56:53  john
- * Added a better, leaner pig format.
- *
- * Revision 1.30  1994/11/16  12:06:16  john
- * Fixed bug with calling .bbms abms.
- *
- * Revision 1.29  1994/11/16  12:00:56  john
- * Added piggy.all dump.
- *
- * Revision 1.28  1994/11/10  21:16:02  adam
- * nothing important
- *
- * Revision 1.27  1994/11/10  13:42:00  john
- * Made sounds not lock down if using -nosound.
- *
- * Revision 1.26  1994/11/09  19:55:40  john
- * Added full rle support with texture rle caching.
- *
- * Revision 1.25  1994/11/09  16:36:42  john
- * First version with RLE bitmaps in Pig.
- *
- * Revision 1.24  1994/10/27  19:42:59  john
- * Disable the piglet option.
- *
- * Revision 1.23  1994/10/27  18:51:40  john
- * Added -piglet option that only loads needed textures for a
- * mine.  Only saved ~1MB, and code still doesn't d_free textures
- * before you load a new mine.
- *
- * Revision 1.22  1994/10/25  13:11:42  john
- * Made the sounds sort. Dumped piggy.lst.
- *
- * Revision 1.21  1994/10/06  17:06:23  john
- * Took out rle stuff.
- *
- * Revision 1.20  1994/10/06  15:45:36  adam
- * bumped MAX_BITMAP_FILES again!
- *
- * Revision 1.19  1994/10/06  11:01:17  yuan
- * Upped MAX_BITMAP_FILES
- *
- * Revision 1.18  1994/10/06  10:44:45  john
- * Added diagnostic message and psuedo run-length-encoder
- * to see how much memory we would save by storing bitmaps
- * in a RLE method.  Also, I commented out the code that
- * stores 4K bitmaps on a 4K boundry to reduce pig size
- * a bit.
- *
- * Revision 1.17  1994/10/04  20:03:13  matt
- * Upped maximum number of bitmaps
- *
- * Revision 1.16  1994/10/03  18:04:20  john
- * Fixed bug with data_offset not set right for bitmaps
- * that are 64x64 and not aligned on a 4k boundry.
- *
- * Revision 1.15  1994/09/28  11:30:55  john
- * changed inferno.pig to descent.pig, changed the way it
- * is read.
- *
- * Revision 1.14  1994/09/22  16:14:17  john
- * Redid intro sequecing.
- *
- * Revision 1.13  1994/09/19  14:42:47  john
- * Locked down sounds with Virtual memory.
- *
- * Revision 1.12  1994/09/10  17:31:52  mike
- * Increase number of loadable bitmaps.
- *
- * Revision 1.11  1994/09/01  19:32:49  mike
- * Boost texture map allocation.
- *
- * Revision 1.10  1994/08/16  11:51:02  john
- * Added grwased pigs.
- *
- * Revision 1.9  1994/07/06  09:18:03  adam
- * upped bitmap #s
- *
- * Revision 1.8  1994/06/20  22:02:15  matt
- * Fixed bug from last change
- *
- * Revision 1.7  1994/06/20  21:33:18  matt
- * Made bm.h not include sounds.h, to reduce dependencies
- *
- * Revision 1.6  1994/06/20  16:52:19  john
- * cleaned up init output a bit.
- *
- * Revision 1.5  1994/06/08  14:20:57  john
- * Made piggy dump before going into game.
- *
- * Revision 1.4  1994/06/02  18:59:22  matt
- * Clear selector field of bitmap loaded from pig file
- *
- * Revision 1.3  1994/05/06  15:31:41  john
- * Made name field a bit longer.
- *
- * Revision 1.2  1994/05/06  13:02:44  john
- * Added piggy stuff; worked on supertransparency
- *
- * Revision 1.1  1994/05/06  11:47:26  john
- * Initial revision
- *
- *
- */
-
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -475,9 +107,9 @@ static short d2OpaqueDoors [] = {
 	-1};
 
 ubyte bogus_data [1024*1204];
-grs_bitmap bogus_bitmap;
+grsBitmap bogus_bitmap;
 ubyte bogus_bitmap_initialized=0;
-digiSound bogusSound;
+tDigiSound bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
@@ -553,7 +185,7 @@ return 0;
 
 //---------------------------------------------------------------
 
-int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grs_bitmap *bmP, int alpha, 
+int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
 	int				i, j, n, nFrames;
@@ -697,7 +329,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grs_bitmap *bmP)
+int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
 {
 	tTgaHeader	h;
 
@@ -730,7 +362,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int LoadTGA (CFILE *fp, grs_bitmap *bmP, int alpha, double brightness, 
+int LoadTGA (CFILE *fp, grsBitmap *bmP, int alpha, double brightness, 
 				 int bGrayScale, int bReverse)
 {
 	tTgaHeader	h;
@@ -741,7 +373,7 @@ return ReadTGAHeader (fp, &h, bmP) &&
 
 //---------------------------------------------------------------
 
-int ReadTGA (char *pszFile, char *pszFolder, grs_bitmap *bmP, int alpha, 
+int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *bmP, int alpha, 
 				 double brightness, int bGrayScale, int bReverse)
 {
 	CFILE	*fp;
@@ -764,7 +396,7 @@ return r;
 
 //---------------------------------------------------------------
 
-int ShrinkTGA (grs_bitmap *bmP, int xFactor, int yFactor, int bRealloc, int nColorBytes)
+int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc, int nColorBytes)
 {
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
 	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
@@ -854,7 +486,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-grs_bitmap *CreateSuperTranspMask (grs_bitmap *bmP)
+grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
 {
 	int	i = bmP->bm_props.w * bmP->bm_props.h;
 	ubyte	*pm, *pi;
@@ -873,7 +505,7 @@ return bmP->bm_data.std.bm_mask;
 
 //------------------------------------------------------------------------------
 
-int CreateSuperTranspMasks (grs_bitmap *bmP)
+int CreateSuperTranspMasks (grsBitmap *bmP)
 {
 	int	nMasks, i, nFrames;
 
@@ -959,7 +591,7 @@ void PiggyWritePigFile (char *filename);
 static void write_int (int i,FILE *file);
 #endif
 
-void swap_0_255 (grs_bitmap *bmp)
+void swap_0_255 (grsBitmap *bmp)
 {
 	int i;
 	ubyte	*p;
@@ -974,7 +606,7 @@ void swap_0_255 (grs_bitmap *bmp)
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyRegisterBitmap (grs_bitmap *bmP, char *name, int in_file)
+tBitmapIndex PiggyRegisterBitmap (grsBitmap *bmP, char *name, int in_file)
 {
 	tBitmapIndex temp;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
@@ -1009,7 +641,7 @@ memset (gameData.pig.snd.sounds, 0, sizeof (gameData.pig.snd.sounds));
 
 //------------------------------------------------------------------------------
 
-int piggy_registerSound (digiSound * snd, char * name, int in_file)
+int piggy_registerSound (tDigiSound * snd, char * name, int in_file)
 {
 	int i;
 
@@ -1085,7 +717,7 @@ int piggy_findSound (char * name)
 
 //------------------------------------------------------------------------------
 
-CFILE * Piggy_fp [2] = {NULL, NULL};
+CFILE * piggyFP [2] = {NULL, NULL};
 
 char szCurrentPigFile [2][SHORT_FILENAME_LEN] = {"",""};
 
@@ -1094,9 +726,9 @@ void PiggyCloseFile (void)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	if (Piggy_fp [i]) {
-		CFClose (Piggy_fp [i]);
-		Piggy_fp [i] = NULL;
+	if (piggyFP [i]) {
+		CFClose (piggyFP [i]);
+		piggyFP [i] = NULL;
 		szCurrentPigFile [i][0] = 0;
 		}
 }
@@ -1173,7 +805,7 @@ void PiggyInitPigFile (char *filename)
 	char					temp_name [16];
 	char					temp_name_read [16];
 	char					szPigName [FILENAME_LEN];
-	grs_bitmap			bmTemp;
+	grsBitmap			bmTemp;
 	DiskBitmapHeader	bmh;
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 
@@ -1184,23 +816,23 @@ if (stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) == 0 &&
 	 !CFExist (szPigName, gameFolders.szDataDir,0))
 	strcpy (szPigName, DEFAULT_PIGFILE_SHAREWARE);
 	strlwr (szPigName);
-	Piggy_fp [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
-if (!Piggy_fp [gameStates.app.bD1Data]) {
+	piggyFP [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
+if (!piggyFP [gameStates.app.bD1Data]) {
 #ifdef EDITOR
 		return;         //if editor, ok to not have pig, because we'll build one
 #else
-		Piggy_fp [gameStates.app.bD1Data] = copy_pigfile_from_cd (szPigName);
+		piggyFP [gameStates.app.bD1Data] = copy_pigfile_from_cd (szPigName);
 #endif
 	}
-if (Piggy_fp [gameStates.app.bD1Data]) {                        //make sure pig is valid nType file & is up-to-date
-	int pig_id = CFReadInt (Piggy_fp [gameStates.app.bD1Data]);
-	int pig_version = CFReadInt (Piggy_fp [gameStates.app.bD1Data]);
+if (piggyFP [gameStates.app.bD1Data]) {                        //make sure pig is valid nType file & is up-to-date
+	int pig_id = CFReadInt (piggyFP [gameStates.app.bD1Data]);
+	int pig_version = CFReadInt (piggyFP [gameStates.app.bD1Data]);
 	if (pig_id != PIGFILE_ID || pig_version != PIGFILE_VERSION) {
-		CFClose (Piggy_fp [gameStates.app.bD1Data]);              //out of date pig
-		Piggy_fp [gameStates.app.bD1Data] = NULL;                 //..so pretend it's not here
+		CFClose (piggyFP [gameStates.app.bD1Data]);              //out of date pig
+		piggyFP [gameStates.app.bD1Data] = NULL;                 //..so pretend it's not here
 		}
 	}
-if (!Piggy_fp [gameStates.app.bD1Data]) {
+if (!piggyFP [gameStates.app.bD1Data]) {
 	#ifdef EDITOR
 		return;         //if editor, ok to not have pig, because we'll build one
 	#else
@@ -1209,20 +841,20 @@ if (!Piggy_fp [gameStates.app.bD1Data]) {
 	#endif
 	}
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
-nBitmapNum = CFReadInt (Piggy_fp [gameStates.app.bD1Data]);
+nBitmapNum = CFReadInt (piggyFP [gameStates.app.bD1Data]);
 nHeaderSize = nBitmapNum * sizeof (DiskBitmapHeader);
-nDataStart = nHeaderSize + CFTell (Piggy_fp [gameStates.app.bD1Data]);
-nDataSize = CFLength (Piggy_fp [gameStates.app.bD1Data], 0) - nDataStart;
+nDataStart = nHeaderSize + CFTell (piggyFP [gameStates.app.bD1Data]);
+nDataSize = CFLength (piggyFP [gameStates.app.bD1Data], 0) - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
 for (i = 0; i < nBitmapNum; i++) {
-	DiskBitmapHeaderRead (&bmh, Piggy_fp [gameStates.app.bD1Data]);
+	DiskBitmapHeaderRead (&bmh, piggyFP [gameStates.app.bD1Data]);
 	memcpy (temp_name_read, bmh.name, 8);
 	temp_name_read [8] = 0;
 	if (bmh.dflags & DBM_FLAG_ABM)        
 		sprintf (temp_name, "%s#%d", temp_name_read, bmh.dflags & DBM_NUM_FRAMES);
 	else
 		strcpy (temp_name, temp_name_read);
-	memset (&bmTemp, 0, sizeof (grs_bitmap));
+	memset (&bmTemp, 0, sizeof (grsBitmap));
 	bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
 	bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
 	bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
@@ -1272,7 +904,7 @@ bPigFileInitialized = 1;
 #define SHORT_FILENAME_LEN 13
 #define MAX_BITMAPS_PER_BRUSH 30
 
-extern int ComputeAvgPixel (grs_bitmap *new);
+extern int ComputeAvgPixel (grsBitmap *new);
 
 //reads in a new pigfile (for new palette)
 //returns the size of all the bitmap data
@@ -1281,7 +913,7 @@ void piggy_new_pigfile (char *pigname)
 	int i;
 	char temp_name [16];
 	char temp_name_read [16];
-	grs_bitmap bmTemp;
+	grsBitmap bmTemp;
 	DiskBitmapHeader bmh;
 	int nHeaderSize, nBitmapNum, nDataSize, nDataStart;
 	int must_rewrite_pig = 0;
@@ -1303,34 +935,34 @@ void piggy_new_pigfile (char *pigname)
 		PiggyCloseFile ();             //close old pig if still open
 	bitmapCacheNext [0] = 0;            //d_free up cache
 	strncpy (szCurrentPigFile[0],pigname,sizeof (szCurrentPigFile));
-	Piggy_fp [0] = CFOpen (pigname, gameFolders.szDataDir, "rb", 0);
+	piggyFP [0] = CFOpen (pigname, gameFolders.szDataDir, "rb", 0);
 
 	#ifndef EDITOR
-	if (!Piggy_fp [0])
-		Piggy_fp [0] = copy_pigfile_from_cd (pigname);
+	if (!piggyFP [0])
+		piggyFP [0] = copy_pigfile_from_cd (pigname);
 	#endif
-	if (Piggy_fp [0]) {  //make sure pig is valid nType file & is up-to-date
+	if (piggyFP [0]) {  //make sure pig is valid nType file & is up-to-date
 		int pig_id,pig_version;
 
-		pig_id = CFReadInt (Piggy_fp [0]);
-		pig_version = CFReadInt (Piggy_fp [0]);
+		pig_id = CFReadInt (piggyFP [0]);
+		pig_version = CFReadInt (piggyFP [0]);
 		if (pig_id != PIGFILE_ID || pig_version != PIGFILE_VERSION) {
-			CFClose (Piggy_fp [0]);              //out of date pig
-			Piggy_fp [0] = NULL;                        //..so pretend it's not here
+			CFClose (piggyFP [0]);              //out of date pig
+			piggyFP [0] = NULL;                        //..so pretend it's not here
 		}
 	}
 
 #ifndef EDITOR
-	if (!Piggy_fp [0])
+	if (!piggyFP [0])
 		Error ("Cannot open correct version of <%s>", pigname);
 #endif
-	if (Piggy_fp [0]) {
-		nBitmapNum = CFReadInt (Piggy_fp [0]);
+	if (piggyFP [0]) {
+		nBitmapNum = CFReadInt (piggyFP [0]);
 		nHeaderSize = nBitmapNum * sizeof (DiskBitmapHeader);
-		nDataStart = nHeaderSize + CFTell (Piggy_fp [0]);
-		nDataSize = CFLength (Piggy_fp [0],0) - nDataStart;
+		nDataStart = nHeaderSize + CFTell (piggyFP [0]);
+		nDataSize = CFLength (piggyFP [0],0) - nDataStart;
 		for (i = 1; i <= nBitmapNum; i++) {
-			DiskBitmapHeaderRead (&bmh, Piggy_fp [0]);
+			DiskBitmapHeaderRead (&bmh, piggyFP [0]);
 			memcpy (temp_name_read, bmh.name, 8);
 			temp_name_read [8] = 0;
 			if (bmh.dflags & DBM_FLAG_ABM)        
@@ -1343,7 +975,7 @@ void piggy_new_pigfile (char *pigname)
 				must_rewrite_pig=1;
 			}
 			strcpy (gameData.pig.tex.bitmapFiles [0][i].name,temp_name);
-			memset (&bmTemp, 0, sizeof (grs_bitmap));
+			memset (&bmTemp, 0, sizeof (grsBitmap));
 			bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 			bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
 			bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
@@ -1370,7 +1002,7 @@ void piggy_new_pigfile (char *pigname)
 			if (p) {   // this is an ABM == animated bitmap
 				char abmname [SHORT_FILENAME_LEN];
 				int fnum;
-				grs_bitmap * bm [MAX_BITMAPS_PER_BRUSH];
+				grsBitmap * bm [MAX_BITMAPS_PER_BRUSH];
 				int iff_error;          //reference parm to avoid warning message
 				ubyte newpal [768];
 				char basename [SHORT_FILENAME_LEN];
@@ -1414,12 +1046,12 @@ void piggy_new_pigfile (char *pigname)
 				i += nframes - 1;         //filled in multiple bitmaps
 			}
 			else {          //this is a BBM
-				grs_bitmap * newBm;
+				grsBitmap * newBm;
 				ubyte newpal [256*3];
 				int iff_error;
 				char bbmname [SHORT_FILENAME_LEN];
 				int SuperX;
-				MALLOC (newBm, grs_bitmap, 1);
+				MALLOC (newBm, grsBitmap, 1);
 				sprintf (bbmname, "%s.bbm", gameData.pig.tex.bitmapFiles [0][i].name);
 				iff_error = iff_read_bitmap (bbmname,newBm,BM_LINEAR,newpal);
 				newBm->bm_handle=0;
@@ -1470,7 +1102,7 @@ void piggy_new_pigfile (char *pigname)
 int LoadSounds (CFILE *snd_fp, int nSoundNum, int sound_start)
 {
 	DiskSoundHeader	sndh;
-	digiSound			tempSound;
+	tDigiSound			tempSound;
 	int					i;
 	int					sbytes = 0;
 	int 					nHeaderSize = nSoundNum * sizeof (DiskSoundHeader);
@@ -1575,20 +1207,20 @@ int ReadHamFile ()
 #if 1
 /*---*/LogErr ("      Looking for Descent 1 data files\n");
 		strcpy (D1_piggy_fn, "descent.pig");
-		if (!Piggy_fp [1])
-			Piggy_fp [1] = CFOpen (D1_piggy_fn, gameFolders.szDataDir, "rb", 0);
-		if (Piggy_fp [1]) {
+		if (!piggyFP [1])
+			piggyFP [1] = CFOpen (D1_piggy_fn, gameFolders.szDataDir, "rb", 0);
+		if (piggyFP [1]) {
 			gameStates.app.bHaveD1Data = 1;
 /*---*/LogErr ("      Loading Descent 1 data\n");
-			BMReadGameDataD1 (Piggy_fp [1]);
-			//CFClose (Piggy_fp);
+			BMReadGameDataD1 (piggyFP [1]);
+			//CFClose (piggyFP);
 			}
 #else
 		strcpy (D1_piggy_fn, "descent.pig");
-		Piggy_fp = CFOpen (D1_piggy_fn, gameFolders.szDataDir, "rb", 0);
-		if (Piggy_fp != NULL) {
-			BMReadWeaponInfoD1 (Piggy_fp);
-			CFClose (Piggy_fp);
+		piggyFP = CFOpen (D1_piggy_fn, gameFolders.szDataDir, "rb", 0);
+		if (piggyFP != NULL) {
+			BMReadWeaponInfoD1 (piggyFP);
+			CFClose (piggyFP);
 			}
 		else {
 			int	i;
@@ -1665,7 +1297,7 @@ int PiggyInit (void)
 		ubyte c;
 /*---*/LogErr ("   Initializing placeholder bitmap\n");
 		bogus_bitmap_initialized = 1;
-		memset (&bogus_bitmap, 0, sizeof (grs_bitmap));
+		memset (&bogus_bitmap, 0, sizeof (grsBitmap));
 		bogus_bitmap.bm_props.w = 
 		bogus_bitmap.bm_props.h = 
 		bogus_bitmap.bm_props.rowsize = 64;
@@ -1751,7 +1383,7 @@ void PiggyReadSounds (void)
 	if (fp == NULL)
 		return;
 	for (i=0; i<gameData.pig.snd.nSoundFiles [gameStates.app.bD1Data]; i++) {
-		digiSound *snd = gameData.pig.snd.pSounds + i;
+		tDigiSound *snd = gameData.pig.snd.pSounds + i;
 		if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 			if (PiggyIsNeeded (i)) {
 				CFSeek (fp, soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
@@ -1845,10 +1477,10 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-vclip *FindVClip (int tNum)
+tVideoClip *FindVClip (int tNum)
 {
 	int	h, i, j;
-	vclip *vcP = gameData.eff.vClips [0];
+	tVideoClip *vcP = gameData.eff.vClips [0];
 
 for (i = gameData.eff.nClips [0]; i; i--, vcP++) {
 	for (h = vcP->nFrameCount, j = 0; j < h; j++)
@@ -1861,10 +1493,10 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-wclip *FindWallAnim (int tNum)
+tWallClip *FindWallAnim (int tNum)
 {
 	int	h, i, j;
-	wclip *wcP = gameData.walls.pAnims;
+	tWallClip *wcP = gameData.walls.pAnims;
 
 for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wcP++)
 	for (h = wcP->nFrameCount, j = 0; j < h; j++)
@@ -1875,7 +1507,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-inline void PiggyFreeBitmapData (grs_bitmap *bmP)
+inline void PiggyFreeBitmapData (grsBitmap *bmP)
 {
 if (bmP->bm_texBuf) {
 #ifdef _DEBUG
@@ -1892,7 +1524,7 @@ if (bmP->bm_texBuf) {
 
 //------------------------------------------------------------------------------
 
-int PiggyFreeHiresFrame (grs_bitmap *bmP, int bD1)
+int PiggyFreeHiresFrame (grsBitmap *bmP, int bD1)
 {
 BM_OVERRIDE (gameData.pig.tex.bitmaps [bD1] + bmP->bm_handle) = NULL;
 OglFreeBmTexture (bmP);
@@ -1903,9 +1535,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int PiggyFreeHiresAnimation (grs_bitmap *bmP, int bD1)
+int PiggyFreeHiresAnimation (grsBitmap *bmP, int bD1)
 {
-	grs_bitmap	*altBmP, *bmfP;
+	grsBitmap	*altBmP, *bmfP;
 	int			i;
 
 if (!(altBmP = BM_OVERRIDE (bmP)))
@@ -1933,7 +1565,7 @@ return 1;
 void PiggyFreeHiresAnimations (void)
 {
 	int			i, bD1;
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 
 for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1]; bD1 < 2; bD1++)
 	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++)
@@ -1942,7 +1574,7 @@ for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1]; bD1 < 2; bD1++)
 
 //------------------------------------------------------------------------------
 
-void PiggyFreeBitmap (grs_bitmap *bmP, int i, int bD1)
+void PiggyFreeBitmap (grsBitmap *bmP, int i, int bD1)
 {
 if (!bmP)
 	bmP = gameData.pig.tex.bitmaps [bD1] + i;
@@ -1961,7 +1593,7 @@ PiggyFreeBitmapData (bmP);
 void PiggyBitmapPageOutAll (int bAll)
 {
 	int			i, bD1;
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	
 #if TRACE				
 con_printf (CON_VERBOSE, "Flushing piggy bitmap cache\n");
@@ -1986,8 +1618,8 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 
 int IsMacDataFile (CFILE *fp, int bD1)
 {
-if (fp == Piggy_fp [bD1])
-	switch (CFLength (Piggy_fp [bD1], 0)) {
+if (fp == piggyFP [bD1])
+	switch (CFLength (piggyFP [bD1], 0)) {
 		default:
 			if (!FindArg ("-macdata"))
 				break;
@@ -2030,7 +1662,7 @@ pf->vci.nCurFrame = 0;
 
 void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
 {
-	grs_bitmap		*bmP, *altBmP;
+	grsBitmap		*bmP, *altBmP;
 	int				i, org_i, temp, nSize, nOffset, nFrames, nShrinkFactor, 
 						bRedone = 0, bTGA;
 	CFILE				*fp = NULL;
@@ -2102,8 +1734,8 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 		bitmapFlags [bD1][i] |= BM_FLAG_TGA;
 		if (bmP->bm_props.h > bmP->bm_props.w) {
 			eclip	*ecP = NULL;
-			wclip *wcP;
-			vclip *vcP;
+			tWallClip *wcP;
+			tVideoClip *vcP;
 			while (ecP = FindEffect (ecP, i)) {
 				//e->vc.nFrameCount = nFrames;
 				ecP->flags |= EF_ALTFMT;
@@ -2123,7 +1755,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 					LogErr ("   couldn't find animation for '%s'\n", bmName);
 #else
 					CFClose (fp);
-					fp = Piggy_fp [bD1];
+					fp = piggyFP [bD1];
 					nOffset = bitmapOffsets [bD1][i];
 #endif
 					}
@@ -2131,7 +1763,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			}
 		}
 	else {
-		fp = Piggy_fp [bD1];
+		fp = piggyFP [bD1];
 		nOffset = bitmapOffsets [bD1][i];
 		}
 
@@ -2178,7 +1810,7 @@ reloadTextures:
 		}
 	else {
 		nDescentCriticalError = 0;
-		if (fp == Piggy_fp [bD1]) {
+		if (fp == piggyFP [bD1]) {
 			temp = (int) CFRead (bmP->bm_texBuf, 1, nSize, fp);
 			if (bD1)
 				GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
@@ -2215,7 +1847,7 @@ if (bLowMemory) {
 		}
 	}
 gameData.pig.tex.bitmaps [bD1][i].bm_props.flags &= ~BM_FLAG_PAGED_OUT;
-if (fp && (fp != Piggy_fp [bD1]))
+if (fp && (fp != piggyFP [bD1]))
 	CFClose (fp);
 }
 
@@ -2274,7 +1906,7 @@ void PiggyWritePigFile (char *filename)
 
 	for (i = 1, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++) {
 		int *size;
-		grs_bitmap *bmp;
+		grsBitmap *bmp;
 
 		{               
 			char * p, *p1;
@@ -2362,7 +1994,7 @@ static void write_int (int i,FILE *file)
 
 void PiggyDumpAll ()
 {
-	int i, xlat_offset;
+	int i, xlatOffset;
 	FILE * ham_fp;
 	int org_offset,data_offset=0;
 	DiskSoundHeader sndh;
@@ -2394,7 +2026,7 @@ void PiggyDumpAll ()
 		write_int (HAMFILE_VERSION,ham_fp);
 	
 		bm_write_all (ham_fp);
-		xlat_offset = ftell (ham_fp);
+		xlatOffset = ftell (ham_fp);
 		fwrite (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1, ham_fp);
 		//Dump bitmaps
 	
@@ -2406,7 +2038,7 @@ void PiggyDumpAll ()
 			d_free (gameData.pig.tex.bitmaps [i].bm_texBuf);
 	
 		//next thing must be done after pig written
-		fseek (ham_fp, xlat_offset, SEEK_SET);
+		fseek (ham_fp, xlatOffset, SEEK_SET);
 		fwrite (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1, ham_fp);
 	
 		fclose (ham_fp);
@@ -2437,7 +2069,7 @@ void PiggyDumpAll ()
 		data_offset = sound_data_start;
 	
 		for (i=0; i < gameData.pig.snd.nSoundFiles [0]; i++) {
-			digiSound *snd;
+			tDigiSound *snd;
 	
 			snd = &gameData.pig.snd.sounds [0][i];
 			strcpy (sndh.name, sounds [0][i].name);
@@ -2609,7 +2241,7 @@ void LoadBitmapReplacements (char *level_name)
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			*fp;
 	int			i, j, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
-	grs_bitmap	bm;
+	grsBitmap	bm;
 
 	//first, d_free up data allocated for old bitmaps
 LogErr ("   loading replacement textures\n");
@@ -2644,7 +2276,7 @@ if (fp) {
 
 	for (i = 0; i < nBitmapNum; i++) {
 		offset = bmh [i].offset;
-		memset (&bm, 0, sizeof (grs_bitmap));
+		memset (&bm, 0, sizeof (grsBitmap));
 		bm.bm_props.flags |= bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA);
 		bm.bm_props.w = bm.bm_props.rowsize = bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8);
 		if ((bTGA = (bm.bm_props.flags & BM_FLAG_TGA)) && (bm.bm_props.w > 256))
@@ -2674,8 +2306,8 @@ if (fp) {
 			bm.bm_data.alt.bm_frameCount = (ubyte) nFrames;
 			if (nFrames > 1) {
 				eclip	*ecP = NULL;
-				wclip *wcP;
-				vclip *vcP;
+				tWallClip *wcP;
+				tVideoClip *vcP;
 				while (ecP = FindEffect (ecP, indices [i])) {
 					//e->vc.nFrameCount = nFrames;
 					ecP->flags |= EF_ALTFMT | EF_FROMPOG;
@@ -2742,8 +2374,8 @@ return d1Palette = AddPalette (palette);
 //------------------------------------------------------------------------------
 
 void PiggyBitmapReadD1 (
-	grs_bitmap			*bmP, /* read into this bmP */
-   CFILE					*Piggy_fp, /* read from this file */
+	grsBitmap			*bmP, /* read into this bmP */
+   CFILE					*piggyFP, /* read from this file */
 	int					nBmDataOffs, /* specific to file */
    DiskBitmapHeader	*bmh, /* header info for bmP */
    ubyte					**pNextBmP, /* where to write it (if 0, use d_malloc) */
@@ -2752,16 +2384,16 @@ void PiggyBitmapReadD1 (
 {
 	int zSize, bSwap0255;
 
-memset (bmP, 0, sizeof (grs_bitmap));
+memset (bmP, 0, sizeof (grsBitmap));
 bmP->bm_props.w = bmP->bm_props.rowsize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
 bmP->bm_props.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
 bmP->bm_avgColor = bmh->bm_avgColor;
 bmP->bm_props.flags |= bmh->flags & BM_FLAGS_TO_COPY;
 
-CFSeek (Piggy_fp , nBmDataOffs + bmh->offset, SEEK_SET);
+CFSeek (piggyFP , nBmDataOffs + bmh->offset, SEEK_SET);
 if (bmh->flags & BM_FLAG_RLE) {
-	zSize = CFReadInt (Piggy_fp);
-	CFSeek (Piggy_fp, -4, SEEK_CUR);
+	zSize = CFReadInt (piggyFP);
+	CFSeek (piggyFP, -4, SEEK_CUR);
 	}
 else
 	zSize = bmP->bm_props.h * bmP->bm_props.w;
@@ -2774,9 +2406,9 @@ else {
 	bmP->bm_texBuf = d_malloc (bmP->bm_props.h * bmP->bm_props.rowsize);
 	bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
 	}
-CFRead (bmP->bm_texBuf, 1, zSize, Piggy_fp);
+CFRead (bmP->bm_texBuf, 1, zSize, piggyFP);
 bSwap0255 = 0;
-switch (CFLength (Piggy_fp,0)) {
+switch (CFLength (piggyFP,0)) {
 	case D1_MAC_PIGSIZE:
 	case D1_MAC_SHARE_PIGSIZE:
 		if (bmh->flags & BM_FLAG_RLE)
@@ -2838,7 +2470,7 @@ short D2IndexForD1Index (short d1_index)
 	Assert (d1_index >= 0 && d1_index < D1_MAX_TMAP_NUM);
 	if ((d1_tmap_num == -1) || !d1_tmap_num_unique (d1_tmap_num))
   		return -1;
-	return gameData.pig.tex.bmIndex [0][ConvertD1Texture (d1_tmap_num)].index;
+	return gameData.pig.tex.bmIndex [0][ConvertD1Texture (d1_tmap_num, 0)].index;
 }
 
 //------------------------------------------------------------------------------
@@ -2895,8 +2527,10 @@ if (pSoundNum)
 
 static int bHaveD1Sounds = 0;
 
-	grs_bitmap			bmTemp;
+grsBitmap bmTemp;
+
 #define D1_BITMAPS_SIZE (128 * 1024 * 1024)
+
 void LoadD1BitmapReplacements ()
 {
 	DiskBitmapHeader	bmh;
@@ -2904,17 +2538,16 @@ void LoadD1BitmapReplacements ()
 	char					temp_name_read [16];
 	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum, nTMapNum = 0;
 
-if (Piggy_fp [1])
-	CFSeek (Piggy_fp [1], 0, SEEK_SET);
+if (piggyFP [1])
+	CFSeek (piggyFP [1], 0, SEEK_SET);
 else
-	Piggy_fp [1] = CFOpen (D1_PIGFILE, gameFolders.szDataDir, "rb", 0);
+	piggyFP [1] = CFOpen (D1_PIGFILE, gameFolders.szDataDir, "rb", 0);
 
-if (!Piggy_fp [1]) {
+if (!piggyFP [1]) {
 	Warning (D1_PIG_LOAD_FAILED);
 	return;
 	}
-
-	//first, d_free up data allocated for old bitmaps
+//first, free up data allocated for old bitmaps
 FreeBitmapReplacements ();
 #ifdef _DEBUG
 Assert (LoadD1Palette () != NULL);
@@ -2922,27 +2555,27 @@ Assert (LoadD1Palette () != NULL);
 LoadD1Palette ();
 #endif
 
-LoadD1PigHeader (Piggy_fp [1], &nSoundNum, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 1);
+LoadD1PigHeader (piggyFP [1], &nSoundNum, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 1);
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.bHaveD1Textures) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	if (!bHaveD1Sounds) {
-		LoadSounds (Piggy_fp [1], nSoundNum, nBmHdrOffs + nBitmapNum * DISKBITMAPHEADER_D1_SIZE);
+		LoadSounds (piggyFP [1], nSoundNum, nBmHdrOffs + nBitmapNum * DISKBITMAPHEADER_D1_SIZE);
 		PiggyReadSounds ();
 		bHaveD1Sounds = 1;
 		}
-	CFSeek (Piggy_fp [1], nBmHdrOffs, SEEK_SET);
+	CFSeek (piggyFP [1], nBmHdrOffs, SEEK_SET);
 	gameData.pig.tex.nBitmaps [1] = 0;
 	PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
 	for (i = 0; i < nBitmapNum; i++) {
-		DiskBitmapHeader_d1_read (&bmh, Piggy_fp [1]);
+		DiskBitmapHeader_d1_read (&bmh, piggyFP [1]);
 		memcpy (temp_name_read, bmh.name, 8);
 		temp_name_read [8] = 0;
 		if (bmh.dflags & DBM_FLAG_ABM)        
 			sprintf (temp_name, "%s#%d", temp_name_read, bmh.dflags & DBM_NUM_FRAMES);
 		else
 			strcpy (temp_name, temp_name_read);
-		memset (&bmTemp, 0, sizeof (grs_bitmap));
+		memset (&bmTemp, 0, sizeof (grsBitmap));
 		bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
 		bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
 		bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
@@ -2956,7 +2589,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		}
 	gameStates.app.bHaveD1Textures = 1;
 	}
-//CFClose (Piggy_fp [1]);
+//CFClose (piggyFP [1]);
 szLastPalettePig [0]= 0;  //force pig re-load
 TexMergeFlush ();       //for re-merging with new textures
 }
@@ -2969,14 +2602,14 @@ TexMergeFlush ();       //for re-merging with new textures
  */
 tBitmapIndex ReadExtraBitmapD1Pig (char *name)
 {
-	CFILE					*Piggy_fp;
+	CFILE					*piggyFP;
 	DiskBitmapHeader	bmh;
 	int					i, nBmHdrOffs, nBmDataOffs, nBitmapNum;
 	tBitmapIndex		bmi;
-	grs_bitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	grsBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 
 bmi.index = 0;
-if (!(Piggy_fp = CFOpen (D1_PIGFILE, gameFolders.szDataDir, "rb", 0))) {
+if (!(piggyFP = CFOpen (D1_PIGFILE, gameFolders.szDataDir, "rb", 0))) {
 	Warning (D1_PIG_LOAD_FAILED);
 	return bmi;
 	}
@@ -2987,9 +2620,9 @@ Assert (LoadD1Palette () != NULL);
 LoadD1Palette ();
 #endif
 }
-LoadD1PigHeader (Piggy_fp, NULL, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 0);
+LoadD1PigHeader (piggyFP, NULL, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 0);
 for (i = 0; i < nBitmapNum; i++) {
-	DiskBitmapHeader_d1_read (&bmh, Piggy_fp);
+	DiskBitmapHeader_d1_read (&bmh, piggyFP);
 	if (!strnicmp (bmh.name, name, 8))
 		break;
 	}
@@ -2999,8 +2632,8 @@ if (i >= nBitmapNum) {
 #endif
 	return bmi;
 	}
-PiggyBitmapReadD1 (newBm, Piggy_fp, nBmDataOffs, &bmh, 0, d1Palette, d1ColorMap);
-CFClose (Piggy_fp);
+PiggyBitmapReadD1 (newBm, piggyFP, nBmDataOffs, &bmh, 0, d1Palette, d1ColorMap);
+CFClose (piggyFP);
 newBm->bm_avgColor = 0;	//ComputeAvgPixel (newBm);
 bmi.index = gameData.pig.tex.nExtraBitmaps;
 gameData.pig.tex.pBitmaps[gameData.pig.tex.nExtraBitmaps++] = *newBm;
@@ -3056,10 +2689,10 @@ typedef struct tBitmapInfoHeader {
 	unsigned int biClrImportant;
 } tBitmapInfoHeader;
 
-grs_bitmap *PiggyLoadBitmap (char *pszFile)
+grsBitmap *PiggyLoadBitmap (char *pszFile)
 {
 	CFILE					*fp;
-	grs_bitmap			*bmp;
+	grsBitmap			*bmp;
 	tBitmapFileHeader	bfh;
 	tBitmapInfoHeader	bih;
 

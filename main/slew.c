@@ -166,10 +166,10 @@ void slew_reset_orient()
 {
 	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return;
 
-	slewObjP->orient.rvec.x = slewObjP->orient.uvec.y = slewObjP->orient.fvec.z = f1_0;
+	slewObjP->orient.rVec.x = slewObjP->orient.uVec.y = slewObjP->orient.fVec.z = f1_0;
 
-	slewObjP->orient.rvec.y = slewObjP->orient.rvec.z = slewObjP->orient.uvec.x =
-   slewObjP->orient.uvec.z = slewObjP->orient.fvec.x = slewObjP->orient.fvec.y = 0;
+	slewObjP->orient.rVec.y = slewObjP->orient.rVec.z = slewObjP->orient.uVec.x =
+   slewObjP->orient.uVec.z = slewObjP->orient.fVec.x = slewObjP->orient.fVec.y = 0;
 
 }
 

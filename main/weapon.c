@@ -921,7 +921,7 @@ for (i = 0; i <= n; i++)
 
 void ReorderPrimary ()
 {
-	newmenu_item	m [MAX_PRIMARY_WEAPONS + 2];
+	tMenuItem	m [MAX_PRIMARY_WEAPONS + 2];
 	int				i;
 
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
@@ -946,7 +946,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 
 void ReorderSecondary ()
 {
-	newmenu_item m[MAX_SECONDARY_WEAPONS + 2];
+	tMenuItem m[MAX_SECONDARY_WEAPONS + 2];
 	int i;
 
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
@@ -1337,7 +1337,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 d_srand(seed);
 VmVecScaleAdd (&new_velocity,
 					&spitter->mType.physInfo.velocity,
-					&spitter->orient.fvec,
+					&spitter->orient.fVec,
 					i2f (SPIT_SPEED));
 new_velocity.x += (d_rand() - 16384) * SPIT_SPEED * 2;
 new_velocity.y += (d_rand() - 16384) * SPIT_SPEED * 2;
@@ -1349,7 +1349,7 @@ if ((gameData.app.nGameMode & GM_MULTI) && (id >= POW_KEY_BLUE) && (id <= POW_KE
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-VmVecScaleAdd(&new_pos,&spitter->pos,&spitter->orient.fvec,spitter->size);
+VmVecScaleAdd(&new_pos,&spitter->pos,&spitter->orient.fVec,spitter->size);
 #ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
@@ -1599,9 +1599,9 @@ if (TactileStick) {
 //	-----------------------------------------------------------------------------
 
 /*
- * reads n weapon_info structs from a CFILE
+ * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(weapon_info *pwi, int n, CFILE *fp, int file_version)
+extern int WeaponInfoReadN(tWeaponInfo *pwi, int n, CFILE *fp, int file_version)
 {
 	int i, j;
 

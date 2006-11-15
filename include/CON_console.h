@@ -80,8 +80,8 @@ extern "C" {
 		int InsMode;			//! Insert or Overwrite characters?
 		grs_canvas *ConsoleSurface;	//! Canvas of the console
 		grs_screen *OutputScreen;	//! This is the screen to draw the console to
-		grs_bitmap *BackgroundImage;	//! Background image for the console
-		grs_bitmap *InputBackground;	//! Dirty rectangle to draw over behind the users background
+		grsBitmap *BackgroundImage;	//! Background image for the console
+		grsBitmap *InputBackground;	//! Dirty rectangle to draw over behind the users background
 		int DispX, DispY;		//! The top left x and y coords of the console on the display screen
 #if 0
 		unsigned char ConsoleAlpha;	//! The consoles alpha level
@@ -123,7 +123,7 @@ extern "C" {
 	void CON_AlphaGL(SDL_Surface *s, int alpha);
 	/*! Sets a background image for the console */
 #endif
-	int CON_Background(ConsoleInformation *console, grs_bitmap *image);
+	int CON_Background(ConsoleInformation *console, grsBitmap *image);
 	/*! Sets font info for the console */
 	void CON_Font(ConsoleInformation *console, grs_font *font, unsigned int fg, unsigned int bg);
 	/*! Changes current position of the console */

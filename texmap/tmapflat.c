@@ -244,7 +244,7 @@ typedef struct pnt2d {
 #endif
 
 //this takes the same partms as draw_tmap, but draws a flat-shaded polygon
-void DrawTexPolyFlat(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
+void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 {
 	pnt2d	points[MAX_TMAP_VERTS];
 	int	i;

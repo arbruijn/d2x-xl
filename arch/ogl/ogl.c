@@ -192,7 +192,7 @@ for (; n; n--, lp++) {
 
 //------------------------------------------------------------------------------
 
-inline void UnlinkTexture (grs_bitmap *bmP)
+inline void UnlinkTexture (grsBitmap *bmP)
 {
 if (bmP->glTexture && (bmP->glTexture->handle == -1)) {
 	bmP->glTexture->handle = 0;
@@ -206,7 +206,7 @@ void OglSmashTextureListInternal (void)
 {
 	int			h, i, j, k;
 	ogl_texture *t;
-	grs_bitmap	*bmP, *altBmP;
+	grsBitmap	*bmP, *altBmP;
 
 OglDeleteLists (&bsphereh, 1);
 OglDeleteLists (&ssphereh, 1);
@@ -413,7 +413,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglBindBmTex (grs_bitmap *bmP, int nTransp)
+int OglBindBmTex (grsBitmap *bmP, int nTransp)
 {
 	ogl_texture	*tex;
 #if RENDER2TEXTURE
@@ -435,7 +435,7 @@ else
 			return 1;
 		bmP = BmOverride (bmP);
 		tex = bmP->glTexture;
-#ifdef _DEBUG
+#if 1//def _DEBUG
 		if (!tex)
 			OglLoadBmTexture (bmP, 1, nTransp);
 #endif
@@ -451,7 +451,7 @@ return 0;
 
 tRgbColorf bitmapColors [MAX_BITMAP_FILES];
 
-tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bufP)
+tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
 {
 	int c, h, i, j = 0, r = 0, g = 0, b = 0;
 	tRgbColorf *color;
@@ -499,7 +499,7 @@ return color;
 
 //------------------------------------------------------------------------------
 
-int GrAvgColor (grs_bitmap *bmP)
+int GrAvgColor (grsBitmap *bmP)
 {
 if (bmP->bm_texBuf && !bmP->bm_avgColor) {
 		int c, h, i, j = 0, r = 0, g = 0, b = 0;
@@ -529,7 +529,7 @@ return 0;
 
 void OglCachePolyModelTextures (int nModel)
 {
-	polymodel		*po = gameData.models.polyModels + nModel;
+	tPolyModel		*po = gameData.models.polyModels + nModel;
 	int				h, i, j;
 	tBitmapIndex	bmi;
 
@@ -544,7 +544,7 @@ for (i = po->n_textures, j = po->first_texture; i; i--, j++) {
 
 //------------------------------------------------------------------------------
 
-void OglCacheVClipTextures (vclip *vc, int nTransp)
+void OglCacheVClipTextures (tVideoClip *vc, int nTransp)
 {
 	int i;
 
@@ -558,7 +558,7 @@ for (i = 0; i < vc->nFrameCount; i++) {
 
 #define OglCacheVClipTexturesN(i,t) OglCacheVClipTextures (gameData.eff.vClips [0] + i, t)
 
-void OglCacheWeaponTextures (weapon_info *w)
+void OglCacheWeaponTextures (tWeaponInfo *w)
 {
 	OglCacheVClipTexturesN (w->flash_vclip, 1);
 	OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
@@ -571,16 +571,16 @@ void OglCacheWeaponTextures (weapon_info *w)
 
 //------------------------------------------------------------------------------
 
-void OglResetFrames (grs_bitmap *bmP)
+void OglResetFrames (grsBitmap *bmP)
 {
 OglFreeBmTexture (bmP);
 }
 
 //------------------------------------------------------------------------------
 
-grs_bitmap *LoadFaceBitmap (short tMapNum, short nFrameNum)
+grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum)
 {
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	int			nFrames;
 
 PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapNum], gameStates.app.bD1Mission);
@@ -609,7 +609,7 @@ return bmP;
 void CacheSideTextures (int nSeg)
 {
 	short			nSide, tMap1, tMap2;
-	grs_bitmap	*bmP, *bm2, *bmm;
+	grsBitmap	*bmP, *bm2, *bmm;
 	struct tSide	*sideP;
 
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
@@ -692,7 +692,7 @@ else if (gameData.objs.objects [nObj].renderType == RT_POLYOBJ)
 static int nCacheSeg = 0;
 static int nCacheObj = -3;
 
-static void TexCachePoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void TexCachePoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 if (nCacheSeg < gameData.segs.nSegments)
 	CacheSideTextures (nCacheSeg++);
@@ -712,7 +712,7 @@ return;
 
 int OglCacheTextures (void)
 {
-	newmenu_item	m [3];
+	tMenuItem	m [3];
 	int i;
 
 memset (m, 0, sizeof (m));
@@ -736,7 +736,7 @@ int OglCacheLevelTextures (void)
 #if 1
 	int				seg, side;
 	short				tmap1,tmap2;
-	grs_bitmap		*bmP,*bm2, *bmm;
+	grsBitmap		*bmP,*bm2, *bmm;
 	struct tSide	*sideP;
 #endif
 
@@ -801,7 +801,7 @@ InitSpecialEffects ();
 //						if (laserlev<4)
 //							laserlev++;
 					break;*/
-#ifdef _DEBUG
+#if 1//def _DEBUG
 				case POW_HOARD_ORB:
 					OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
 					break;
@@ -912,7 +912,7 @@ return (minColor + maxColor) / 2;
 //------------------------------------------------------------------------------
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
 void OglFillTexBuf (
-	grs_bitmap *bmP,
+	grsBitmap *bmP,
 	GLubyte *texp,
 	int truewidth,
 	int width,
@@ -1153,7 +1153,7 @@ TexSetSizeSub (tex, bi , a, w, h);
 //In theory this could be a problem for repeating textures, but all real
 //textures (not sprites, etc) in descent are 64x64, so we are ok.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int OglLoadTexture (grs_bitmap *bmP, int dxo, int dyo, ogl_texture *tex, int nTransp, int superTransp)
+int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *tex, int nTransp, int superTransp)
 {
 	unsigned char *data = bmP->bm_texBuf;
 	GLubyte	*bufP = gameData.render.ogl.texBuf;
@@ -1259,16 +1259,16 @@ return 0;
 unsigned char decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grs_bitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb)
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grs_bitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_fbuffer *fb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_fbuffer *fb)
 #else
-int OglLoadBmTextureM (grs_bitmap *bmP, int bMipMap, int nTransp, int bMask, void *pb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, void *pb)
 #endif
 {
 	unsigned char	*buf;
 	ogl_texture		*t;
-	grs_bitmap		*bmParent;
+	grsBitmap		*bmParent;
 
 while ((bmP->bmType == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent != bmP))
 	bmP = bmParent;
@@ -1347,7 +1347,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglLoadBmTexture (grs_bitmap *bmP, int bDoMipMap, int nTransp)
+int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp)
 {
 	int			i, h, w, nFrames;
 
@@ -1364,9 +1364,9 @@ if (!(bmP->bm_props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 		return 1;
 	}
 else if (!BM_FRAMES (bmP)) {
-	grs_bitmap	*bmfP;
-	bmfP = (grs_bitmap *) d_malloc (nFrames * sizeof (struct _grs_bitmap));
-	memset (bmfP, 0, nFrames * sizeof (struct _grs_bitmap));
+	grsBitmap	*bmfP;
+	bmfP = (grsBitmap *) d_malloc (nFrames * sizeof (struct _grsBitmap));
+	memset (bmfP, 0, nFrames * sizeof (struct _grsBitmap));
 	BM_FRAMES (bmP) = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		BM_CURFRAME (bmP) = bmfP;
@@ -1407,7 +1407,7 @@ if (t) {
 
 //------------------------------------------------------------------------------
 
-void OglFreeBmTexture (grs_bitmap *bmP)
+void OglFreeBmTexture (grsBitmap *bmP)
 {
 	ogl_texture	*t;
 
@@ -1641,7 +1641,7 @@ if (*vsP) {
 	}
 vs = glCreateShaderObject (GL_VERTEX_SHADER_ARB); 
 fs = glCreateShaderObject (GL_FRAGMENT_SHADER_ARB); 
-#ifdef _DEBUG	
+#ifdef DBG_SHADERS	
 if (bFromFile) {
 	vsName = LoadShader (vsName); 
 	fsName = LoadShader (fsName); 
@@ -1651,7 +1651,7 @@ if (bFromFile) {
 #endif
 glShaderSource (vs, 1, (const GLcharARB **) &vsName, NULL); 
 glShaderSource (fs, 1, (const GLcharARB **) &fsName, NULL); 
-#ifdef _DEBUG	
+#ifdef DBG_SHADERS	
 if (bFromFile) {
 	d_free (vsName); 
 	d_free (fsName); 
@@ -1795,7 +1795,7 @@ if (!gameOpts->render.bUseShaders ||
 	 !bMultiTexturingOk || 
 	 !pszOglExtensions ||
 	 !strstr (pszOglExtensions, "GL_ARB_shading_language_100") || 
-	 !strstr (pszOglExtensions, "GL_ARB_shaderObjects")) 
+	 !strstr (pszOglExtensions, "GL_ARB_shader_objects")) 
 	gameStates.ogl.bShadersOk = 0;
 else {
 #ifndef GL_VERSION_20

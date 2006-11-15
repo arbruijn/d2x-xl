@@ -91,9 +91,9 @@ GLuint secondary_lh [5]={0, 0, 0, 0, 0};
 GLuint glInitTMU [4]= {0, 0, 0, 0};
 GLuint glExitTMU = 0;
 
-int OglBindBmTex (grs_bitmap *bm, int transp);
+int OglBindBmTex (grsBitmap *bm, int transp);
 void ogl_clean_texture_cache (void);
-/*inline*/ void SetTMapColor (uvl *uvlList, int i, grs_bitmap *bm, int bResetColor);
+/*inline*/ void SetTMapColor (uvl *uvlList, int i, grsBitmap *bm, int bResetColor);
 
 //------------------------------------------------------------------------------
 
@@ -160,7 +160,7 @@ int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
 
 #define f2glf(x) (f2fl (x))
 
-bool G3DrawLine (g3s_point *p0, g3s_point *p1)
+bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
@@ -357,7 +357,7 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-int G3DrawSphere (g3s_point *pnt, fix rad, int bBigSphere)
+int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 {
 	double r;
 
@@ -416,7 +416,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPoly (int nv, g3s_point **pointList)
+bool G3DrawPoly (int nv, g3sPoint **pointList)
 {
 	int i;
 
@@ -436,7 +436,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nv, g3s_point **pointList, 
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, 
 							 float red, float green, float blue, float alpha)
 {
 	int			c;
@@ -466,16 +466,16 @@ return 0;
 void gr_upoly_tmap (int nverts, int *vert )
 {
 #if TRACE	
-		con_printf (CON_DEBUG, "gr_upoly_tmap: unhandled\n");//should never get called
+con_printf (CON_DEBUG, "gr_upoly_tmap: unhandled\n");//should never get called
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void DrawTexPolyFlat (grs_bitmap *bm, int nv, g3s_point **vertlist)
+void DrawTexPolyFlat (grsBitmap *bm, int nv, g3sPoint **vertlist)
 {
 #if TRACE	
-		con_printf (CON_DEBUG, "DrawTexPolyFlat: unhandled\n");//should never get called
+con_printf (CON_DEBUG, "DrawTexPolyFlat: unhandled\n");//should never get called
 #endif
 }
 
@@ -501,7 +501,7 @@ tFaceColor vertColors [8] = {
 // exceed 1.0. If so, all three color values are scaled so that their maximum multiplied
 // with the max. brightness does not exceed 1.0.
 
-inline void CapTMapColor (uvl *uvlList, int nv, grs_bitmap *bm)
+inline void CapTMapColor (uvl *uvlList, int nv, grsBitmap *bm)
 {
 #if 0
 	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
@@ -584,7 +584,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-/*inline*/ void SetTMapColor (uvl *uvlList, int i, grs_bitmap *bm, int bResetColor)
+/*inline*/ void SetTMapColor (uvl *uvlList, int i, grsBitmap *bm, int bResetColor)
 {
 	float l = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
 	float s = 1.0f;
@@ -823,7 +823,7 @@ else
 typedef void tInitTMU (void);
 typedef tInitTMU *pInitTMU;
 
-inline int G3BindTex (grs_bitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId, 
+inline int G3BindTex (grsBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId, 
 						    pInitTMU initTMU, int bShaderMerge)
 {
 if (bmP || (nTexId >= 0)) {
@@ -843,7 +843,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3Normal (g3s_point **pointList, vmsVector *pvNormal)
+void G3Normal (g3sPoint **pointList, vmsVector *pvNormal)
 {
 vmsVector	vNormal;
 
@@ -892,7 +892,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void G3CalcNormal (g3s_point **pointList, fVector3 *pvNormal)
+void G3CalcNormal (g3sPoint **pointList, fVector *pvNormal)
 {
 	vmsVector	vNormal;
 	int	v [4];
@@ -920,14 +920,14 @@ VmsVecToFloat (pvNormal, &vNormal);
 
 //------------------------------------------------------------------------------
 
-inline fVector3 *G3GetNormal (g3s_point *pPoint, fVector3 *pvNormal)
+inline fVector *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
 {
 return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
 }
 
 //------------------------------------------------------------------------------
 
-fVector3 *G3Reflect (fVector3 *vReflect, fVector3 *vLight, fVector3 *vNormal)
+fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal)
 {
 //2 * n * (l dot n) - l
 	float		LdotN = VmVecDotf (vLight, vNormal);
@@ -941,16 +941,16 @@ return vReflect;
 
 #define STATIC_LIGHT_TRANSFORM	0
 
-void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor)
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor)
 {
-	fVector3			lightDir, spotDir, vReflect;
-	fVector3			matDiffuse = {1.0f, 1.0f, 1.0f};
-	fVector3			matAmbient = {0.01f, 0.01f, 0.01f};
-	fVector3			matSpecular = {0.0f, 0.0f, 0.0f};
-	fVector3			lightColor, lightPos;
-	fVector3			vertNorm, vertColor = {0.0f, 0.0f, 0.0f}, colorSum = {0.0f, 0.0f, 0.0f};
+	fVector			lightDir, spotDir, vReflect;
+	fVector			matDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
+	fVector			matAmbient = {0.01f, 0.01f, 0.01f, 1.0f};
+	fVector			matSpecular = {0.0f, 0.0f, 0.0f, 1.0f};
+	fVector			lightColor, lightPos;
+	fVector			vertNorm, vertColor = {0.0f, 0.0f, 0.0f, 1.0f}, colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
 #if !STATIC_LIGHT_TRANSFORM
-	fVector3			vertPos;
+	fVector			vertPos;
 #endif
 	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, nType, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
@@ -1012,7 +1012,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (nType == 1) {
 		if (!gameStates.render.nState)
 			psl->nType = 0;
-		//if (bDarkness)
+		if (bDarkness)
 			continue;
 		//if (!(gameStates.render.nState || psl->bVariable))
 		//	continue;
@@ -1021,7 +1021,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		continue;
 	if (!psl->bState)
 		continue;
-	lightColor = *((fVector3 *) &psl->color);
+	lightColor = *((fVector *) &psl->color);
 #if STATIC_LIGHT_TRANSFORM
 	lightPos = psl->pos [1];
 #else
@@ -1060,8 +1060,6 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		}
 	VmVecNormalizef (&lightDir, &lightDir);
 	NdotL = bInRad ? 1 : VmVecDotf (&vertNorm, &lightDir);
-	if (!psl->bSpot)
-		continue;
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -1083,7 +1081,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
 	//if (fAttenuation > 50.0)
 	//	continue;	//too far away
-	VmVecMulf (&vertColor, &vertColor, (fVector3 *) &lightColor);
+	VmVecMulf (&vertColor, &vertColor, (fVector *) &lightColor);
 	if ((NdotL > 0.0) && bMatSpecular) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
@@ -1143,20 +1141,20 @@ if (pVertColor) {
 			OglTexWrap ((_bm)->glTexture, GL_REPEAT);
 
 
-extern void (*tmap_drawer_ptr) (grs_bitmap *bm, int nv, g3s_point **vertlist);
+extern void (*tmap_drawer_ptr) (grsBitmap *bm, int nv, g3sPoint **vertlist);
 
 static GLhandleARB	lmProg = (GLhandleARB) 0;
 static GLhandleARB	tmProg = (GLhandleARB) 0;
 
 bool G3DrawTexPolyMulti (
 	int			nv, 
-	g3s_point	**pointList, 
+	g3sPoint	**pointList, 
 	uvl			*uvlList, 
 #if LIGHTMAPS
 	uvl			*uvlLMap, 
 #endif
-	grs_bitmap	*bmBot, 
-	grs_bitmap	*bmTop, 
+	grsBitmap	*bmBot, 
+	grsBitmap	*bmTop, 
 #if LIGHTMAPS
 	ogl_texture	*lightMap, 
 #endif
@@ -1165,10 +1163,10 @@ bool G3DrawTexPolyMulti (
 	int bBlend)
 {
 	int			c, tmType, nFrame, bDrawBM = 0;
-	grs_bitmap	*bmP, *bmMask;
-	g3s_point	*pl, **ppl;
+	grsBitmap	*bmP, *bmMask;
+	g3sPoint	*pl, **ppl;
 #if USE_VERTNORMS
-	fVector3		vNormal, vVertex;
+	fVector		vNormal, vVertex;
 #endif
 
 if (!bmBot)
@@ -1376,8 +1374,8 @@ else
 		glColor3f (1.0f, 1.0f, 1.0f);
 		glLineWidth (2);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
-			g3s_point *pl = *ppl;
-			fVector3	v [2], vn;
+			g3sPoint *pl = *ppl;
+			fVector	v [2], vn;
 			if (!pl->p3_normal.nFaces)
 				VmVecNormalizef (&vn, &vNormal);
 			else
@@ -1461,7 +1459,7 @@ bool G3DrawBitMap (
 	vmsVector	*pos, 
 	fix			width, 
 	fix			height, 
-	grs_bitmap	*bmP, 
+	grsBitmap	*bmP, 
 	int			orientation, 
 	float			alpha, 
 	int			transp, 
@@ -1537,7 +1535,7 @@ switch (orient) {
 
 //------------------------------------------------------------------------------
 
-bool OglUBitMapMC (int x, int y, int dw, int dh, grs_bitmap *bmP, grs_color *c, int scale, int orient)
+bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grs_color *c, int scale, int orient)
 {
 	GLint curFunc;
 	GLfloat xo, yo, xf, yf;
@@ -1639,7 +1637,7 @@ return 0;
 bool OglUBitBltI (
 	int dw, int dh, int dx, int dy, 
 	int sw, int sh, int sx, int sy, 
-	grs_bitmap *src, grs_bitmap *dest, 
+	grsBitmap *src, grsBitmap *dest, 
 	int wantmip)
 {
 	GLdouble xo, yo, xs, ys;
@@ -1705,7 +1703,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 bool OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy, 
-								 grs_bitmap * src, grs_bitmap * dest)
+								 grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char *d, *s;
 	int i, j;
@@ -1767,7 +1765,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 #if 0 //just seems to cause a mess.
 	GLdouble xo, yo;//, xs, ys;

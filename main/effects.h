@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_INITIALIZED	32
 
 typedef struct eclip {
-	vclip   vc;             //embedded vclip
+	tVideoClip   vc;             //embedded tVideoClip
 	fix     time_left;      //for sequencing
 	int     nCurFrame;      //for sequencing
 	short   changing_wall_texture;      //Which element of Textures array to replace.
@@ -101,7 +101,7 @@ typedef struct eclip {
 	int     flags;          //see above
 	int     crit_clip;      //use this clip instead of above one when mine critical
 	int     dest_bm_num;    //use this bitmap when monitor destroyed
-	int     dest_vclip;     //what vclip to play when exploding
+	int     dest_vclip;     //what tVideoClip to play when exploding
 	int     dest_eclip;     //what eclip to play when exploding
 	fix     dest_size;      //3d size of explosion
 	int     nSound;      //what sound this makes
@@ -143,7 +143,7 @@ void RestartEffect(int effect_num);
 extern int EClipReadN(eclip *ec, int n, CFILE *fp);
 #endif
 
-grs_bitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
+grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
 void ResetPogEffects (void);
 
 #endif /* _EFFECTS_H */

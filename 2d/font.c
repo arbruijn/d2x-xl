@@ -1036,7 +1036,7 @@ int GrInternalString5m(int x, int y, char *s)
 
 #ifndef OGL
 //a bitmap for the character
-grs_bitmap char_bm = {
+grsBitmap char_bm = {
 				0,0,0,0,						//x,y,w,h
 				BM_LINEAR,					//nType
 				BM_FLAG_TRANSPARENT,		//flags
@@ -1225,8 +1225,8 @@ void ogl_init_font(grs_font * font)
 	font->ft_parent_bitmap.bm_palette = palette;
 	if (!(font->ftFlags & FT_COLOR))
 		font->ft_parent_bitmap.glTexture=OglGetFreeTexture();
-	font->ft_bitmaps=(grs_bitmap*)d_malloc(nchars * sizeof(grs_bitmap));
-	memset (font->ft_bitmaps, 0, nchars * sizeof(grs_bitmap));
+	font->ft_bitmaps=(grsBitmap*)d_malloc(nchars * sizeof(grsBitmap));
+	memset (font->ft_bitmaps, 0, nchars * sizeof(grsBitmap));
 #if TRACE	
 //	con_printf (CON_DEBUG,"ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n",
 //		(font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth",(font->ftFlags & FT_COLOR)?"color":"mono",nchars,tw,th);
@@ -1322,7 +1322,7 @@ int OglInternalString (int x, int y, char *s)
 	int xx, yy;
 	int orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	ubyte c;
-	grs_bitmap *bmf;
+	grsBitmap *bmf;
 
 next_row = s;
 yy = y;
@@ -1371,12 +1371,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-grs_bitmap *CreateStringBitmap (
+grsBitmap *CreateStringBitmap (
 	char *s, int nKey, unsigned int nKeyColor, int nTabs [], int bCentered, int nMaxWidth)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
-	grs_bitmap	*bmP, *bmfP;
+	grsBitmap	*bmP, *bmfP;
 	grs_rgba		hc, kc, *pc;
 	ubyte			*pf, *palP = NULL;
 	ubyte			c;
@@ -1698,7 +1698,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ gr_uprintf(int x, int y, char * format, ...)
+int _CDECL_ GrUPrintf(int x, int y, char * format, ...)
 {
 	char buffer[1000];
 	va_list args;
@@ -1722,7 +1722,7 @@ int _CDECL_ GrPrintF(int x, int y, char * format, ...)
 
 //------------------------------------------------------------------------------
 
-void gr_close_font(grs_font * font)
+void GrCloseFont(grs_font * font)
 {
 	if (font)
 	{
@@ -1730,31 +1730,27 @@ void gr_close_font(grs_font * font)
 		char * font_data;
 
 		//find font in list
-		for (fontnum=0;fontnum<MAX_OPEN_FONTS && open_font[fontnum].ptr!=font;fontnum++);
-		Assert(fontnum<MAX_OPEN_FONTS);	//did we find slot?
-
-		font_data = open_font[fontnum].dataptr;
-		d_free(font_data);
-
-		open_font[fontnum].ptr = NULL;
-		open_font[fontnum].dataptr = NULL;
-
-		if (font->ft_chars) {
-			d_free(font->ft_chars);
-			font->ft_chars = NULL;
-			}
+	for (fontnum=0;fontnum<MAX_OPEN_FONTS && open_font[fontnum].ptr!=font;fontnum++)
+		;
+	Assert(fontnum<MAX_OPEN_FONTS);	//did we find slot?
+	font_data = open_font[fontnum].dataptr;
+	d_free(font_data);
+	open_font[fontnum].ptr = NULL;
+	open_font[fontnum].dataptr = NULL;
+	if (font->ft_chars) {
+		d_free(font->ft_chars);
+		font->ft_chars = NULL;
+		}
 #ifdef OGL
-		if (font->ft_bitmaps) {
-			d_free(font->ft_bitmaps);
-			font->ft_bitmaps = NULL;
-			}
-		GrFreeBitmapData(&font->ft_parent_bitmap);
+	if (font->ft_bitmaps) {
+		d_free(font->ft_bitmaps);
+		font->ft_bitmaps = NULL;
+		}
+	GrFreeBitmapData(&font->ft_parent_bitmap);
 //		OglFreeBmTexture(&font->ft_parent_bitmap);
 #endif
-		d_free(font);
-		font = NULL;
-
-
+	d_free(font);
+	font = NULL;
 	}
 }
 

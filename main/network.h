@@ -478,9 +478,12 @@ typedef struct extra_gameinfo {
 	char		bDamageIndicators;
 	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
+	char		bHitIndicators;
 	char		bTowFlags;
 	char		bUseHitAngles;
 	char		bLightTrails;
+	char		bTracers;
+	char		bShockwaves;
 	char		nSpotSize;
 	char		nSpotStrength;
 	monsterball_info	monsterball;
@@ -602,7 +605,7 @@ int NetworkStartGame();
 void NetworkRejoinGame();
 void NetworkLeaveGame();
 int NetworkEndLevel(int *secret);
-void NetworkEndLevelPoll2(int nitems, struct newmenu_item * menus, int * key, int citem);
+void NetworkEndLevelPoll2(int nitems, struct tMenuItem * menus, int * key, int citem);
 
 extern extra_gameinfo extraGameInfo [2];
 
@@ -757,7 +760,7 @@ int  NetworkWaitForAllInfo(int choice);
 void NetworkSetGameMode(int gamemode);
 void NetworkAdjustMaxDataSize();
 int CanJoinNetgame(netgame_info *game,allNetPlayers_info *people);
-void RestartNetSearching(newmenu_item * m);
+void RestartNetSearching(tMenuItem * m);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (monsterball_info *monsterballP);
 char *iptos (char *pszIP, char *addr);

@@ -324,7 +324,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					126	//increment this every time the player file changes
+#define PLAYER_FILE_VERSION					129	//increment this every time the player file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -356,7 +356,7 @@ int new_player_config()
 {
 	int nitems;
 	int i,j,choice;
-	newmenu_item m[8];
+	tMenuItem m[8];
    int mct=CONTROL_MAX_TYPES;
  
    #ifndef WINDOWS
@@ -440,7 +440,7 @@ RetrySelection:
 	}
 #endif
 	
-Player_default_difficulty = 1;
+playerDefaultDifficulty = 1;
 gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1;
 nHighestLevels = 1;
 highestLevels[0].shortname[0] = 0;			//no name for mission 0
@@ -541,7 +541,7 @@ if (bOnlyWindowSizes) {
 	return 0;
 	}
 
-Player_default_difficulty = CFReadByte (fp);
+playerDefaultDifficulty = CFReadByte (fp);
 gameOpts->gameplay.bDefaultLeveling = CFReadByte (fp);
 gameOpts->render.cockpit.bReticle = CFReadByte (fp);
 gameStates.render.cockpit.nMode = CFReadByte (fp);
@@ -1077,6 +1077,16 @@ for (j = 0; j < 2; j++) {
 			gameOptions [j].render.smoke.nSize [i] = CFReadInt (fp);
 			}
 		}
+	if (!j) {
+		if (player_file_version >= 127) {
+			extraGameInfo [j].bTracers = CFReadByte (fp);
+			extraGameInfo [j].bShockwaves = CFReadByte (fp);
+			}
+		}
+	if (player_file_version >= 128)
+		gameOptions [j].render.smoke.bDisperse = (int) CFReadByte (fp);
+	if (player_file_version >= 129)
+		extraGameInfo [j].bHitIndicators = (int) CFReadByte (fp);
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -1196,7 +1206,7 @@ int WritePlayerFile()
 	CFWriteShort((short) Game_window_w, fp);
 	CFWriteShort((short) Game_window_h, fp);
 
-	CFWriteByte ((sbyte) Player_default_difficulty, fp);
+	CFWriteByte ((sbyte) playerDefaultDifficulty, fp);
 	CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
 	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
 	CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
@@ -1510,6 +1520,12 @@ for (j = 0; j < 2; j++) {
 		CFWriteInt (gameOptions [j].render.smoke.nDens [i], fp);
 		CFWriteInt (gameOptions [j].render.smoke.nSize [i], fp);
 		}
+	if (!j) {
+		CFWriteByte (extraGameInfo [j].bTracers, fp);
+		CFWriteByte (extraGameInfo [j].bShockwaves, fp);
+		}
+	CFWriteByte (gameOptions [j].render.smoke.bDisperse, fp);
+	CFWriteByte (extraGameInfo [j].bHitIndicators, fp);
 // end of D2X-XL stuff
 	}
 

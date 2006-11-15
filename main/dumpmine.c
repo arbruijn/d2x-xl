@@ -151,7 +151,7 @@ static char rcsid[] = "$Id: dumpmine.c,v 1.4 2003/10/10 09:36:34 btb Exp $";
 #ifdef EDITOR
 
 extern ubyte bogus_data[1024*1024];
-extern grs_bitmap bogus_bitmap;
+extern grsBitmap bogus_bitmap;
 
 // ----------------------------------------------------------------------------
 char	*objectTypes(int nObject)
@@ -502,7 +502,7 @@ void write_matcen_text(FILE *my_file)
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
 		int	trigger_count=0, nSegment, fuelcen_num;
 
-		fprintf(my_file, "fuelcen_info[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
+		fprintf(my_file, "tFuelCenInfo[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
 		fprintf(my_file, "Segment2[%04i].nMatCen = %02i  ", gameData.matCens.fuelCenters[i].nSegment, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].nMatCen);
 
 		fuelcen_num = gameData.matCens.robotCenters[i].fuelcen_num;
@@ -786,7 +786,7 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 		tObject *objP = &gameData.objs.objects[nObject];
 
 		if (objP->renderType == RT_POLYOBJ) {
-			polymodel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
+			tPolyModel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
 
 			for (i=0; i<po->n_textures; i++) {
 
@@ -816,11 +816,11 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 				int nClip = gameData.walls.walls[sideP->nWall].nClip;
 				if (nClip != -1) {
 
-					// -- int num_frames = gameData.walls.anims[nClip].nFrameCount;
+					// -- int nFrameCount = gameData.walls.anims[nClip].nFrameCount;
 
 					wall_buf[nClip] = 1;
 
-					for (j=0; j<1; j++) {	//	Used to do through num_frames, but don't really want all the door01#3 stuff.
+					for (j=0; j<1; j++) {	//	Used to do through nFrameCount, but don't really want all the door01#3 stuff.
 						int	nBaseTex;
 
 						nBaseTex = gameData.pig.tex.pBmIndex[gameData.walls.anims[nClip].frames[j]].index;

@@ -228,7 +228,7 @@ return i;
 
 static time_t	nQueryTimeout;
 
-void TrackerPoll (int nItems, newmenu_item *m, int *key, int cItem)
+void TrackerPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 	time_t t;
 
@@ -253,7 +253,7 @@ return;
 
 int QueryTrackers (void)
 {
-	newmenu_item	m [3];
+	tMenuItem	m [3];
 	int i;
 
 if (!RequestServerListFromTracker ())

@@ -551,7 +551,7 @@ switch (key) {
 
 void MultiSendMsgDialog (void)
 {
-	newmenu_item m [1];
+	tMenuItem m [1];
 	int choice;
 
 if (!(gameData.app.nGameMode & GM_MULTI))

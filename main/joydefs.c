@@ -358,7 +358,7 @@ void joy_delay()
 int joycal_message( char * title, char * text )
 {
 	int i;
-	newmenu_item	m[2];
+	tMenuItem	m[2];
 	MAC(joydefs_calibrating = 1;)
 	memset (m, 0, sizeof (m));
 	m[0].nType = NM_TYPE_TEXT; 
@@ -788,7 +788,7 @@ void joydefs_calibrate2()
 
 #define CONTROL_MAX_TYPES_DOS	(CONTROL_MAX_TYPES-1)	//last item is windows only
 
-void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
+void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
 	int ocType = gameConfig.nControlType;
@@ -829,7 +829,7 @@ char *tm_warning = "Choosing this option might\ncause settings in the Thrustmast
 char *ms_warning = "When using a Mousestick II,\nbe sure that there is not a stick\nset active for Descent II.\nHaving a stick set active might cause\nundesirable joystick and\nkeyboard behavior.  See\nthe readme for detals.";
 char *joy_warning = "Please use your joystick's\ncontrol panel to customize the\nbuttons and axis for Descent II.\nSee the joystick's manual for\ninstructions.";
 
-void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
+void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
 	int ocType = gameConfig.nControlType;
@@ -888,7 +888,7 @@ extern ubyte *kc_external_name;
 void joydefs_config()
 {
 	int i, old_masks, masks,nitems;
-	newmenu_item m[14];
+	tMenuItem m[14];
 	int i1=11;
 	char xtext[128];
 
@@ -1009,7 +1009,7 @@ void joydefs_setType(ubyte nType)
 void joydefs_config()
 {
 	int i, old_masks, masks,nitems;
-	newmenu_item m[14];
+	tMenuItem m[14];
 	int i1=11;
 	char xtext[128];
 
@@ -1107,7 +1107,7 @@ void joydefs_config()
 
 #else 	//ifndef WINDOWS
 
-void joydef_menuset_win(int nitems, newmenu_item * items, int *last_key, int citem )
+void joydef_menuset_win(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
 	int ocType = gameConfig.nControlType;
@@ -1145,7 +1145,7 @@ void joydef_menuset_win(int nitems, newmenu_item * items, int *last_key, int cit
 void joydefs_config()
 {
 	int i, old_masks, masks,nitems;
-	newmenu_item m[14];
+	tMenuItem m[14];
 	int i1=11;
 	char xtext[128];
 

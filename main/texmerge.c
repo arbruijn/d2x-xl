@@ -145,12 +145,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_NUM_CACHE_BITMAPS 50
 #endif
 
-//static grs_bitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
+//static grsBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 
 typedef struct	{
-	grs_bitmap * bitmap;
-	grs_bitmap * bmBot;
-	grs_bitmap * bmTop;
+	grsBitmap * bitmap;
+	grsBitmap * bmBot;
+	grsBitmap * bmTop;
 	int 		nOrient;
 	int		last_frame_used;
 } TEXTURE_CACHE;
@@ -162,23 +162,23 @@ static int nCacheEntries = 0;
 static int nCacheHits = 0;
 static int nCacheMisses = 0;
 
-void MergeTextures (int nType, grs_bitmap *bmBot, grs_bitmap *bmTop, grs_bitmap *dest_bmp, int bSuperTransp);
-void MergeTexturesNormal (int nType, grs_bitmap *bmBot, grs_bitmap *bmTop, ubyte *dest_data);
+void MergeTextures (int nType, grsBitmap *bmBot, grsBitmap *bmTop, grsBitmap *dest_bmp, int bSuperTransp);
+void MergeTexturesNormal (int nType, grsBitmap *bmBot, grsBitmap *bmTop, ubyte *dest_data);
 
 #if defined(POLY_ACC)       // useful to all of D2 I think.
-extern grs_bitmap * rle_get_id_sub( grs_bitmap * bmp );
+extern grsBitmap * rle_get_id_sub(grsBitmap * bmp);
 
 //----------------------------------------------------------------------
 // Given pointer to a bitmap returns a unique value that describes the bitmap.
 // Returns 0xFFFFFFFF if this bitmap isn't a texmerge'd bitmap.
-uint texmerge_get_unique_id( grs_bitmap * bmp )
+uint TexMergeGetUniqueId (grsBitmap * bmp)
 {
     int i,n;
     uint tmp;
-    grs_bitmap * tmpbmp;
+    grsBitmap * tmpbmp;
 
 // Check in texmerge cache
-for (i = 0; i < nCacheEntries; i++ ) {
+for (i = 0; i < nCacheEntries; i++) {
    if ((texCache [i].last_frame_used > -1) && (texCache [i].bitmap == bmp)) {
       tmp = (uint)texCache [i].nOrient<<30;
       tmp |= ((uint)(texCache [i].bmTop - gameData.pig.tex.bitmaps)) << 16;
@@ -187,7 +187,7 @@ for (i = 0; i < nCacheEntries; i++ ) {
       }
    }
 // Check in rle cache
-tmpbmp = rle_get_id_sub( bmp );
+tmpbmp = rle_get_id_sub(bmp);
 if (tmpbmp)
 	return (uint)(tmpbmp-gameData.pig.tex.bitmaps);
 // Must be a normal bitmap
@@ -210,7 +210,7 @@ for (i = 0; i < nCacheEntries; i++, cacheP++) {
 	cacheP->bitmap = NULL;
 	cacheP->nOrient = -1;
 	}
-atexit( TexMergeClose );
+atexit(TexMergeClose);
 return 1;
 }
 
@@ -246,9 +246,9 @@ nCacheEntries = 0;
 
 //-------------------------------------------------------------------------
 //--unused-- int info_printed = 0;
-grs_bitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
+grsBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 {
-	grs_bitmap		*bmTop, *bmBot, *bmP;
+	grsBitmap		*bmTop, *bmBot, *bmP;
 	int				i, nLowestFrame, nLRU;
 	TEXTURE_CACHE	*cacheP;
 
@@ -260,10 +260,10 @@ bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapB
 for (i = 0, cacheP = texCache; i < nCacheEntries; i++,cacheP++) {
 #if 1//ndef _DEBUG
 	if ((cacheP->last_frame_used > -1) && 
-			(cacheP->bmTop == bmTop) && 
-			(cacheP->bmBot == bmBot) && 
-			(cacheP->nOrient == nOrient) &&
-			cacheP->bitmap) {
+		 (cacheP->bmTop == bmTop) && 
+		 (cacheP->bmBot == bmBot) && 
+		 (cacheP->nOrient == nOrient) &&
+		  cacheP->bitmap) {
 		nCacheHits++;
 		cacheP->last_frame_used = gameData.app.nFrameCount;
 		return cacheP->bitmap;
@@ -342,46 +342,39 @@ return bmP;
 
 //-------------------------------------------------------------------------
 
-void MergeTexturesNormal (
-	int nType, grs_bitmap * bmBot, grs_bitmap * bmTop, ubyte * dest_data )
+void MergeTexturesNormal (int nType, grsBitmap * bmBot, grsBitmap * bmTop, ubyte * dest_data)
 {
 	ubyte * top_data, *bottom_data;
 	int scale;
 
-	if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
-		return;
-	if ( bmTop->bm_props.flags & BM_FLAG_RLE )
-		bmTop = rle_expand_texture(bmTop);
-
-	if ( bmBot->bm_props.flags & BM_FLAG_RLE )
-		bmBot = rle_expand_texture(bmBot);
-
-//	Assert( bmBot != bmTop );
-
-	top_data = bmTop->bm_texBuf;
-	bottom_data = bmBot->bm_texBuf;
-	scale = bmBot->bm_props.w / bmTop->bm_props.w;
-	if (!scale)
-		scale = 1;
-	if (scale > 1)
-		scale = scale;
-
-//	Assert( bottom_data != top_data );
-
-	switch( nType )	{
+if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
+	return;
+if (bmTop->bm_props.flags & BM_FLAG_RLE)
+	bmTop = rle_expand_texture(bmTop);
+if (bmBot->bm_props.flags & BM_FLAG_RLE)
+	bmBot = rle_expand_texture(bmBot);
+//	Assert(bmBot != bmTop);
+top_data = bmTop->bm_texBuf;
+bottom_data = bmBot->bm_texBuf;
+scale = bmBot->bm_props.w / bmTop->bm_props.w;
+if (!scale)
+	scale = 1;
+if (scale > 1)
+	scale = scale;
+//	Assert(bottom_data != top_data);
+switch(nType)	{
 	case 0:
 		// Normal
-
-		GrMergeTextures( bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale );
+		GrMergeTextures(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
 		break;
 	case 1:
-		GrMergeTextures1( bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale );
+		GrMergeTextures1(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
 		break;
 	case 2:
-		GrMergeTextures2( bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale );
+		GrMergeTextures2(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
 		break;
 	case 3:
-		GrMergeTextures3( bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale );
+		GrMergeTextures3(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
 		break;
 	}
 }
@@ -443,8 +436,8 @@ return TexScale (y * w + x, s);
 #define BTMIDX	TexIdx (x, y, bw, btmScale)
 
 
-void MergeTextures ( 
-	int nType, grs_bitmap * bmBot, grs_bitmap * bmTop, grs_bitmap *dest_bmp, int bSuperTransp)
+void MergeTextures (
+	int nType, grsBitmap * bmBot, grsBitmap * bmTop, grsBitmap *dest_bmp, int bSuperTransp)
 {
 	tRGBA		*c;
 	int		i, x, y, bw, bh, tw, th, dw, dh;
@@ -464,14 +457,14 @@ if (bmTop->bm_props.flags & BM_FLAG_RLE)
 if (bmBot->bm_props.flags & BM_FLAG_RLE)
 	bmBot = rle_expand_texture (bmBot);
 
-//	Assert( bmBot != bmTop );
+//	Assert(bmBot != bmTop);
 
 top_data = bmTop->bm_texBuf;
 bottom_data = bmBot->bm_texBuf;
 top_pal = bmTop->bm_palette;
 btmPalette = bmBot->bm_palette;
 
-//	Assert( bottom_data != top_data );
+//	Assert(bottom_data != top_data);
 
 //Int3();
 bh =
@@ -511,7 +504,7 @@ bBtmTGA = (bmBot->bm_props.flags & BM_FLAG_TGA) != 0;
 #ifdef _DEBUG
 memset (dest_data, 253, dest_bmp->bm_props.w * dest_bmp->bm_props.h * 4);
 #endif
-switch( nType )	{
+switch(nType)	{
 	case 0:
 		// Normal
 		for (i = y = 0; y < dh; y++)
@@ -561,7 +554,7 @@ GLhandleARB tmShaderProgs [3] = {0,0,0};
 GLhandleARB tmf [3] = {0,0,0}; 
 GLhandleARB tmv [3] = {0,0,0}; 
 
-#ifdef _DEBUG
+#ifdef DBG_SHADERS
 
 char *texMergeFS [3] = {"texmerge1.frag", "texmerge2.frag","texmerge3.frag"};
 char *texMergeVS [3] = {"texmerge12.vert", "texmerge12.vert", "texmerge3.vert"};

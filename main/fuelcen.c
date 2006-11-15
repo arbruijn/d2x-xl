@@ -140,7 +140,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * debug code for morphing.
  *
  * Revision 1.127  1994/11/21  12:33:50  matt
- * For control center explosions, use small fireball, not pseudo-random vclip
+ * For control center explosions, use small fireball, not pseudo-random tVideoClip
  *
  * Revision 1.126  1994/11/20  22:12:15  mike
  * Fix bug in initializing materialization centers.
@@ -161,7 +161,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Make time to exit mine after control center destruction diff level dependent.
  *
  * Revision 1.120  1994/10/09  22:03:26  mike
- * Adapt to new create_n_segment_path parameters.
+ * Adapt to new CreateNSegmentPath parameters.
  *
  * Revision 1.119  1994/10/06  14:52:42  mike
  * Remove last of ability to damage fuel centers.
@@ -393,7 +393,7 @@ void FuelCenCreate (tSegment *segP, int oldType)
 		gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
 		i = seg2p->nMatCen;
 		if (i < --gameData.matCens.nRobotCenters)
-			memcpy (gameData.matCens.robotCenters + i, gameData.matCens.robotCenters + i + 1, (gameData.matCens.nRobotCenters - i) * sizeof (fuelcen_info));
+			memcpy (gameData.matCens.robotCenters + i, gameData.matCens.robotCenters + i + 1, (gameData.matCens.nRobotCenters - i) * sizeof (tFuelCenInfo));
 		}
 //	if (stationType == SEGMENT_IS_ROBOTMAKER)
 //		gameData.matCens.fuelCenters [gameData.matCens.nFuelCenters].Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
@@ -470,7 +470,7 @@ void MatCenTrigger (short nSegment)
 	// -- tSegment		*segP = &gameData.segs.segments [nSegment];
 	segment2		*seg2p = &gameData.segs.segment2s [nSegment];
 	vmsVector	pos, delta;
-	fuelcen_info	*robotcen;
+	tFuelCenInfo	*robotcen;
 	int			nObject;
 
 #if TRACE
@@ -516,7 +516,7 @@ void MatCenTrigger (short nSegment)
 #ifdef EDITOR
 //------------------------------------------------------------
 // Takes away a tSegment's fuel center properties.
-//	Deletes the tSegment point entry in the fuelcen_info list.
+//	Deletes the tSegment point entry in the tFuelCenInfo list.
 void FuelCenDelete (tSegment * segP)
 {
 	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
@@ -595,7 +595,7 @@ tObject * CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id
 	objP->shields = gameData.bots.pInfo [objP->id].strength;
 	default_behavior = gameData.bots.pInfo [objP->id].behavior;
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-	create_n_segment_path (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
+	CreateNSegmentPath (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
 	gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
 	return objP;
 }
@@ -608,7 +608,7 @@ int	FrameCount_last_msg = 0;
 
 //	----------------------------------------------------------------------------------------------------------
 
-void MatCenHandler (fuelcen_info * robotcen)
+void MatCenHandler (tFuelCenInfo * robotcen)
 {
 	fix			dist_to_player;
 	vmsVector	curObject_loc; //, direction;
@@ -621,7 +621,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 #else
 	int			bMakeVirus = (gameData.app.nGameMode & GM_ENTROPY) != 0;
 #endif
-	ubyte			vclip = bMakeVirus ? VCLIP_POWERUP_DISAPPEARANCE : VCLIP_MORPHING_ROBOT;
+	ubyte			tVideoClip = bMakeVirus ? VCLIP_POWERUP_DISAPPEARANCE : VCLIP_MORPHING_ROBOT;
 
 	if (bMakeVirus) {
 #if 1//def RELEASE
@@ -768,13 +768,13 @@ void MatCenHandler (fuelcen_info * robotcen)
 
 			COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
 			// HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
-			objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, i2f (10), vclip);
+			objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, i2f (10), tVideoClip);
 
 			if (objP)
 				ExtractOrientFromSegment (&objP->orient,gameData.segs.segments + robotcen->nSegment);
 
-			if (gameData.eff.vClips [0] [vclip].nSound > -1) {
-				DigiLinkSoundToPos (gameData.eff.vClips [0] [vclip].nSound, (short) robotcen->nSegment,
+			if (gameData.eff.vClips [0] [tVideoClip].nSound > -1) {
+				DigiLinkSoundToPos (gameData.eff.vClips [0] [tVideoClip].nSound, (short) robotcen->nSegment,
 												0, &curObject_loc, 0, F1_0);
 			}
 			robotcen->Flag	= 1;
@@ -783,7 +783,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 		break;
 
 	case 1:			// Wait until 1/2 second after VCLIP started.
-		if (robotcen->Timer > (gameData.eff.vClips [0] [vclip].xTotalTime / 2))	{
+		if (robotcen->Timer > (gameData.eff.vClips [0] [tVideoClip].xTotalTime / 2))	{
 			if (!bMakeVirus)
 				robotcen->Capacity -= gameData.matCens.xEnergyToCreateOneRobot;
 			robotcen->Flag = 0;
@@ -854,7 +854,7 @@ void MatCenHandler (fuelcen_info * robotcen)
 						objP->matCenCreator = (FUELCEN_IDX (robotcen)) | 0x80;
 						// Make tObject faces player...
 						VmVecSub (&direction, &gameData.objs.console->pos,&objP->pos);
-						VmVector2Matrix (&objP->orient, &direction, &objP->orient.uvec, NULL);
+						VmVector2Matrix (&objP->orient, &direction, &objP->orient.uVec, NULL);
 						MorphStart (objP);
 						//robotcen->last_created_obj = obj;
 						//robotcen->last_created_sig = robotcen->last_created_objP->nSignature;
@@ -1131,7 +1131,7 @@ return amount;
 //--unused-- }
 
 //	----------------------------------------------------------------------------------------------------------
-//--unused-- vmsAngVec start_angles, delta_angles, goal_angles;
+//--unused-- vmsAngVec start_angles, deltaAngles, goalAngles;
 //--unused-- vmsVector start_pos, delta_pos, goal_pos;
 //--unused-- int FuelStationSeg;
 //--unused-- fix currentTime,deltaTime;
@@ -1173,7 +1173,7 @@ return amount;
 //--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
 //--repair-- 	
 //--repair-- 	// Find start angles
-//--repair-- 	//angles_from_vector (&start_angles,&objP->orient.fvec);
+//--repair-- 	//angles_from_vector (&start_angles,&objP->orient.fVec);
 //--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->orient);
 //--repair-- 	
 //--repair-- 	// Find delta angles to get to goal orientation
@@ -1186,10 +1186,10 @@ return amount;
 //--repair-- 		headuvec = &gameData.segs.segments [repair_seg].sides [SideUpVector [next_side]].normals [0];
 //--repair--
 //--repair-- 	VmVector2Matrix (&goal_orient,&headfvec,headuvec,NULL);
-//--repair-- 	VmExtractAnglesMatrix (&goal_angles,&goal_orient);
-//--repair-- 	delta_angles.p = my_delta_ang (start_angles.p,goal_angles.p);
-//--repair-- 	delta_angles.b = my_delta_ang (start_angles.b,goal_angles.b);
-//--repair-- 	delta_angles.h = my_delta_ang (start_angles.h,goal_angles.h);
+//--repair-- 	VmExtractAnglesMatrix (&goalAngles,&goal_orient);
+//--repair-- 	deltaAngles.p = my_delta_ang (start_angles.p,goalAngles.p);
+//--repair-- 	deltaAngles.b = my_delta_ang (start_angles.b,goalAngles.b);
+//--repair-- 	deltaAngles.h = my_delta_ang (start_angles.h,goalAngles.h);
 //--repair-- 	currentTime = 0;
 //--repair-- 	Repairing = 0;
 //--repair-- }
@@ -1256,7 +1256,7 @@ return amount;
 //--repair-- 	if (currentTime >= deltaTime)	{
 //--repair-- 		vmsAngVec av;
 //--repair-- 		objP->pos = goal_pos;
-//--repair-- 		av	= goal_angles;
+//--repair-- 		av	= goalAngles;
 //--repair-- 		VmAngles2Matrix (&objP->orient,&av);
 //--repair--
 //--repair-- 		if (side_index >= 5)	
@@ -1301,9 +1301,9 @@ return amount;
 //--repair-- 		VmVecInc (&objP->pos, &start_pos);
 //--repair-- 			
 //--repair-- 		// Find tObject's current orientation
-//--repair-- 		p	= FixMul (delta_angles.p,factor);
-//--repair-- 		b	= FixMul (delta_angles.b,factor);
-//--repair-- 		h	= FixMul (delta_angles.h,factor);
+//--repair-- 		p	= FixMul (deltaAngles.p,factor);
+//--repair-- 		b	= FixMul (deltaAngles.b,factor);
+//--repair-- 		h	= FixMul (deltaAngles.h,factor);
 //--repair-- 		av.p = (fixang)p + start_angles.p;
 //--repair-- 		av.b = (fixang)b + start_angles.b;
 //--repair-- 		av.h = (fixang)h + start_angles.h;
@@ -1334,7 +1334,7 @@ return amount;
 //--repair-- 		//the two lines below will spit the player out of the rapair center,
 //--repair-- 		//but what happen is that the ship just bangs into the door
 //--repair-- 		//if (objP->movementType == MT_PHYSICS)
-//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->orient.fvec,i2f (200);
+//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->orient.fVec,i2f (200);
 //--repair-- 	}
 //--repair--
 //--repair-- }
@@ -1351,7 +1351,7 @@ return amount;
 //--repair-- 			//have just entered repair center
 //--repair--
 //--repair-- 			RepairObj = obj;
-//--repair-- 			repair_save_uvec = objP->orient.uvec;
+//--repair-- 			repair_save_uvec = objP->orient.uVec;
 //--repair--
 //--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multi.players [gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
 //--repair--
@@ -1567,9 +1567,9 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
 //--------------------------------------------------------------------
 #ifndef FAST_FILE_IO
 /*
- * reads an old_matcen_info structure from a CFILE
+ * reads an old_tMatCenInfo structure from a CFILE
  */
-void OldMatCenInfoRead (old_matcen_info *mi, CFILE *fp)
+void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
 {
 	mi->robotFlags = CFReadInt (fp);
 	mi->hit_points = CFReadFix (fp);
@@ -1579,9 +1579,9 @@ void OldMatCenInfoRead (old_matcen_info *mi, CFILE *fp)
 }
 
 /*
- * reads a matcen_info structure from a CFILE
+ * reads a tMatCenInfo structure from a CFILE
  */
-void MatCenInfoRead (matcen_info *mi, CFILE *fp)
+void MatCenInfoRead (tMatCenInfo *mi, CFILE *fp)
 {
 	mi->robotFlags [0] = CFReadInt (fp);
 	mi->robotFlags [1] = CFReadInt (fp);

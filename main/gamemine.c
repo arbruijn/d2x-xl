@@ -263,7 +263,7 @@ int CreateDefaultNewSegment ();
 
 int bNewFileFormat = 1; // "new file format" is everything newer than d1 shareware
 
-int d1_pig_present = 0; // can descent.pig from descent 1 be loaded?
+int bD1PigPresent = 0; // can descent.pig from descent 1 be loaded?
 
 /* returns nonzero if nD1Texture references a texture which isn't available in d2. */
 int d1_tmap_num_unique (short nD1Texture) 
@@ -315,7 +315,7 @@ typedef struct nD1ToD2Texture {
 	short	repl [2];
 } nD1ToD2Texture;
 
-short ConvertD1Texture (short nD1Texture) 
+short ConvertD1Texture (short nD1Texture, int bForce) 
 {
 	int h, i;
 
@@ -477,7 +477,7 @@ short ConvertD1Texture (short nD1Texture)
 		{371, 374, {-1, 64}}
 		};
 
-	if (gameStates.app.bHaveD1Data)
+	if (gameStates.app.bHaveD1Data && !bForce)
 		return nD1Texture;
 	if ((nD1Texture > 370) && (nD1Texture < 584)) {
 		if (bNewFileFormat) {
@@ -509,16 +509,16 @@ short ConvertD1Texture (short nD1Texture)
 			if (nD1ToD2Texture [i].repl [0] == -1)	// -> repl [1] contains an offset
 				return nD1Texture + nD1ToD2Texture [i].repl [1];
 			else
-				return nD1ToD2Texture [i].repl [d1_pig_present];
+				return nD1ToD2Texture [i].repl [bForce ? 0 : bD1PigPresent];
 			}
 
 	{ // handle rare case where orientation != 0
 		short nTexture = nD1Texture &  TMAP_NUM_MASK;
 		short orient = nD1Texture & ~TMAP_NUM_MASK;
 	if (orient)
-		return orient | ConvertD1Texture (nTexture);
-	Warning (TXT_D1TEXTURE, nTexture);
-		return nD1Texture;
+		return orient | ConvertD1Texture (nTexture, bForce);
+	//Warning (TXT_D1TEXTURE, nTexture);
+	return nD1Texture;
 	}
 }
 
@@ -538,7 +538,7 @@ int load_mine_data (CFILE *loadFile)
 	int 	translate;
 	char 	*temptr;
 	int	mine_start = CFTell (loadFile);
-	d1_pig_present = CFExist (D1_PIGFILE);
+	bD1PigPresent = CFExist (D1_PIGFILE);
 
 	oldsizeadjust= (sizeof (int)*2)+sizeof (vmsMatrix);
 	FuelCenReset ();
@@ -1181,7 +1181,7 @@ void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 	tSegment		*segP;
 	tSide			*sideP;
 	short			temp_short;
-	ushort		temp_ushort = 0;
+	ushort		nWall, temp_ushort = 0;
 	ubyte			bit_mask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
@@ -1239,7 +1239,6 @@ for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, 
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		sideP->nWall = NO_WALL;
 		if (bit_mask & (1 << nSide)) {
-			ushort nWall;
 			if (gameData.segs.nLevelVersion >= 13)
 				nWall = (ushort) CFReadShort (loadFile);
 			else
@@ -1270,7 +1269,7 @@ for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, 
 			else
 				sideP->nBaseTex = CFReadShort (loadFile);
 			if (gameData.segs.nLevelVersion <= 1)
-				sideP->nBaseTex = ConvertD1Texture (sideP->nBaseTex);
+				sideP->nBaseTex = ConvertD1Texture (sideP->nBaseTex, 0);
 			if (bNewFileFormat && !(temp_ushort & 0x8000))
 				sideP->nOvlTex = 0;
 			else {
@@ -1279,7 +1278,7 @@ for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, 
 				sideP->nOvlTex = h & 0x3fff;
 				sideP->nOvlOrient = (h >> 14) & 3;
 				if ((gameData.segs.nLevelVersion <= 1) && sideP->nOvlTex)
-					sideP->nOvlTex = ConvertD1Texture (sideP->nOvlTex);
+					sideP->nOvlTex = ConvertD1Texture (sideP->nOvlTex, 0);
 				}
 
 			// Read uvl sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
@@ -1348,7 +1347,7 @@ void InitTexColors (void)
 // get the default colors
 memset (gameData.render.color.textures, 0, sizeof (gameData.render.color.textures));
 for (i = 0; i < MAX_WALL_TEXTURES; i++) {
-	if (GetColor (i, &lm)) {
+	if (GetLightColor (i, &lm)) {
 		gameData.render.color.textures [i].index = 1;
 		gameData.render.color.textures [i].color.red = lm.color [0];
 		gameData.render.color.textures [i].color.green = lm.color [1];
@@ -1432,7 +1431,7 @@ static short loadIdx = 0;
 static int loadOp = 0;
 static CFILE *mineDataFile;
 
-static void LoadSegmentsPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void LoadSegmentsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 	int	bLightmaps = 0, bShadows = 0;
 
@@ -1507,7 +1506,7 @@ GrPaletteStepLoad (NULL);
 
 //------------------------------------------------------------------------------
 
-static void SortLightsPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void SortLightsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
@@ -1614,7 +1613,7 @@ int LoadMineSegmentsCompiled (CFILE *loadFile)
 	ushort		temp_ushort = 0;
 	char			*psz;
 
-d1_pig_present = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
+bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
 
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");

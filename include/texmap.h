@@ -106,14 +106,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FIX_RECIP_TABLE_SIZE	641 //increased from 321 to 641, since this res is now quite achievable.. slight fps boost -MM
 // -------------------------------------------------------------------------------------------------------
-extern fix compute_lightingValue(g3s_point *vertptr);
+extern fix compute_lightingValue(g3sPoint *vertptr);
 
 // -------------------------------------------------------------------------------------------------------
 // This is the main texture mapper call.
 //	tmap_num references a texture map defined in Texmap_ptrs.
 //	nverts = number of vertices
 //	vertbuf is a pointer to an array of vertex pointers
-extern void draw_tmap(grs_bitmap *bp, int nverts, g3s_point **vertbuf);
+extern void draw_tmap(grsBitmap *bp, int nverts, g3sPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------------------------
 // Texture map vertex.
@@ -153,15 +153,15 @@ extern	int	Max_flat_depth;				//	Deepest tSegment at which flat shading will be 
 
 //	These are pointers to texture maps.  If you want to render texture map #7, then you will render
 //	the texture map defined by Texmap_ptrs[7].
-extern	grs_bitmap Texmap_ptrs[];
-extern	grs_bitmap Texmap4_ptrs[];
+extern	grsBitmap Texmap_ptrs[];
+extern	grsBitmap Texmap4_ptrs[];
 
 // Interface for sky renderer
-void texture_map_lin_lin_sky(grs_bitmap *srcb, g3ds_tmap *t);
-void texture_map_lin_lin_sky_v(grs_bitmap *srcb, g3ds_tmap *t);
-void texture_map_hyp_lin_v(grs_bitmap *srcb, g3ds_tmap *t);
+void texture_map_lin_lin_sky(grsBitmap *srcb, g3ds_tmap *t);
+void texture_map_lin_lin_sky_v(grsBitmap *srcb, g3ds_tmap *t);
+void texture_map_hyp_lin_v(grsBitmap *srcb, g3ds_tmap *t);
 
-void ntexture_map_lighted_linear(grs_bitmap *srcb, g3ds_tmap *t);
+void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t);
 
 //	This is the gr_upoly-like interface to the texture mapper which uses texture-mapper compatible
 //	(ie, avoids cracking) edge/delta computation.

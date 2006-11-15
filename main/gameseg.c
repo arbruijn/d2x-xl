@@ -171,7 +171,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Comment out a variable definition, preventing a warning message.
  *
  * Revision 1.41  1994/10/03  23:43:42  mike
- * Put in a warning for overrunning point_segs buffer.
+ * Put in a warning for overrunning tPointSegs buffer.
  *
  * Revision 1.40  1994/10/03  20:55:43  rob
  * Added velocity to shortpos.
@@ -1510,9 +1510,9 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 	int				qTail = 0, qHead = 0;
 	int				i, nCurDepth, nPoints;
 	sbyte				visited [MAX_SEGMENTS];
-	seg_seg			segmentQ [MAX_SEGMENTS];
+	segQueueEntry	segmentQ [MAX_SEGMENTS];
 	short				nDepth [MAX_SEGMENTS];
-	point_seg		pointSegs [MAX_LOC_POINT_SEGS];
+	tPointSeg		pointSegs [MAX_LOC_POINT_SEGS];
 	fix				dist;
 	tSegment			*segP;
 	tFCDCacheData	*pc;
@@ -1666,15 +1666,15 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 	vmsMatrix orient = objP->orient;
 	sbyte   *segP = spp->bytemat;
 
-	*segP++ = convert_to_byte (orient.rvec.x);
-	*segP++ = convert_to_byte (orient.uvec.x);
-	*segP++ = convert_to_byte (orient.fvec.x);
-	*segP++ = convert_to_byte (orient.rvec.y);
-	*segP++ = convert_to_byte (orient.uvec.y);
-	*segP++ = convert_to_byte (orient.fvec.y);
-	*segP++ = convert_to_byte (orient.rvec.z);
-	*segP++ = convert_to_byte (orient.uvec.z);
-	*segP++ = convert_to_byte (orient.fvec.z);
+	*segP++ = convert_to_byte (orient.rVec.x);
+	*segP++ = convert_to_byte (orient.uVec.x);
+	*segP++ = convert_to_byte (orient.fVec.x);
+	*segP++ = convert_to_byte (orient.rVec.y);
+	*segP++ = convert_to_byte (orient.uVec.y);
+	*segP++ = convert_to_byte (orient.fVec.y);
+	*segP++ = convert_to_byte (orient.rVec.z);
+	*segP++ = convert_to_byte (orient.uVec.z);
+	*segP++ = convert_to_byte (orient.fVec.z);
 
 	spp->xo = (objP->pos.x - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].x) >> RELPOS_PRECISION;
 	spp->yo = (objP->pos.y - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].y) >> RELPOS_PRECISION;
@@ -1708,15 +1708,15 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 
 	segP = spp->bytemat;
 
-	objP->orient.rvec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.uvec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.fvec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.rvec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.uvec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.fvec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.rvec.z = *segP++ << MATRIX_PRECISION;
-	objP->orient.uvec.z = *segP++ << MATRIX_PRECISION;
-	objP->orient.fvec.z = *segP++ << MATRIX_PRECISION;
+	objP->orient.rVec.x = *segP++ << MATRIX_PRECISION;
+	objP->orient.uVec.x = *segP++ << MATRIX_PRECISION;
+	objP->orient.fVec.x = *segP++ << MATRIX_PRECISION;
+	objP->orient.rVec.y = *segP++ << MATRIX_PRECISION;
+	objP->orient.uVec.y = *segP++ << MATRIX_PRECISION;
+	objP->orient.fVec.y = *segP++ << MATRIX_PRECISION;
+	objP->orient.rVec.z = *segP++ << MATRIX_PRECISION;
+	objP->orient.uVec.z = *segP++ << MATRIX_PRECISION;
+	objP->orient.fVec.z = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->xo = INTEL_SHORT (spp->xo);
@@ -1783,13 +1783,13 @@ void extract_vector_from_segment (tSegment *segP, vmsVector *vp, int start, int 
 //create a matrix that describes the orientation of the given tSegment
 void ExtractOrientFromSegment (vmsMatrix *m, tSegment *seg)
 {
-	vmsVector fvec, uvec;
+	vmsVector fVec, uVec;
 
-	extract_vector_from_segment (seg, &fvec, WFRONT, WBACK);
-	extract_vector_from_segment (seg, &uvec, WBOTTOM, WTOP);
+	extract_vector_from_segment (seg, &fVec, WFRONT, WBACK);
+	extract_vector_from_segment (seg, &uVec, WBOTTOM, WTOP);
 
 	//vector to matrix does normalizations and orthogonalizations
-	VmVector2Matrix (m, &fvec, &uvec, NULL);
+	VmVector2Matrix (m, &fVec, &uVec, NULL);
 }
 
 #ifdef EDITOR
@@ -2007,7 +2007,7 @@ return 0;
 
 void AddToVertexNormal (int nVertex, vmsVector *pvNormal)
 {
-	g3s_normal	*pn = &gameData.segs.points [nVertex].p3_normal;
+	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
 pn->nFaces++;
 pn->vNormal.p.x += f2fl (pvNormal->x);
@@ -2127,7 +2127,7 @@ extern int check_for_degenerate_segment (tSegment *segP);
 void ComputeVertexNormals (void)
 {
 	int			i;
-	g3s_point	*pp;
+	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {
 	pp->p3_normal.vNormal.p.x /= pp->p3_normal.nFaces;

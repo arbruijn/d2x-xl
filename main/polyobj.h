@@ -139,7 +139,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define D1_MAX_POLYGON_MODELS 300
 
 //used to describe a polygon model
-typedef struct polymodel {
+typedef struct tPolyModel {
 	int			n_models;
 	int			model_data_size;
 	ubyte			*model_data;
@@ -157,7 +157,7 @@ typedef struct polymodel {
 	ushort		first_texture;
 	ubyte			simpler_model;                      // alternate model with less detail (0 if none, nModel+1 else)
 	//vmsVector min,max;
-} __pack__ polymodel;
+} __pack__ tPolyModel;
 
 // array of pointers to polygon objects
 // switch to simpler model when the tObject has depth
@@ -173,14 +173,14 @@ void InitPolygonModels();
 #ifndef DRIVE
 int LoadPolygonModel(char *filename,int n_textures,int first_texture,tRobotInfo *r);
 #else
-int LoadPolygonModel(char *filename,int n_textures,grs_bitmap ***textures);
+int LoadPolygonModel(char *filename,int n_textures,grsBitmap ***textures);
 #endif
 
 // draw a polygon model
 void DrawPolygonModel(tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles,int nModel,int flags,fix light,fix *glowValues,tBitmapIndex nAltTextures[], tRgbColorf *obj_color);
 
-// fills in arrays gun_points & gun_dirs, returns the number of guns read
-int read_model_guns(char *filename,vmsVector *gun_points, vmsVector *gun_dirs, int *gun_submodels);
+// fills in arrays gunPoints & gun_dirs, returns the number of guns read
+int read_model_guns(char *filename,vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders
@@ -189,28 +189,28 @@ int read_model_guns(char *filename,vmsVector *gun_points, vmsVector *gun_dirs, i
 void DrawModelPicture(int mn,vmsAngVec *orient_angles);
 
 // free up a model, getting rid of all its memory
-void FreeModel (polymodel *po);
+void FreeModel (tPolyModel *po);
 
 #define MAX_POLYOBJ_TEXTURES 100
 
 #ifdef FAST_FILE_IO
-#define PolyModelRead(pm, fp) CFRead(pm, sizeof(polymodel), 1, fp)
-#define PolyModelReadN(pm, n, fp) CFRead(pm, sizeof(polymodel), n, fp)
+#define PolyModelRead(pm, fp) CFRead(pm, sizeof(tPolyModel), 1, fp)
+#define PolyModelReadN(pm, n, fp) CFRead(pm, sizeof(tPolyModel), n, fp)
 #else
 /*
- * reads a polymodel structure from a CFILE
+ * reads a tPolyModel structure from a CFILE
  */
-extern void PolyModelRead(polymodel *pm, CFILE *fp);
+extern void PolyModelRead(tPolyModel *pm, CFILE *fp);
 
 /*
- * reads n polymodel structs from a CFILE
+ * reads n tPolyModel structs from a CFILE
  */
-extern int PolyModelReadN(polymodel *pm, int n, CFILE *fp);
+extern int PolyModelReadN(tPolyModel *pm, int n, CFILE *fp);
 #endif
 
 /*
- * routine which allocates, reads, and inits a polymodel's model_data
+ * routine which allocates, reads, and inits a tPolyModel's model_data
  */
-void PolyModelDataRead(polymodel *pm, polymodel *pdm, CFILE *fp);
+void PolyModelDataRead(tPolyModel *pm, tPolyModel *pdm, CFILE *fp);
 
 #endif /* _POLYOBJ_H */

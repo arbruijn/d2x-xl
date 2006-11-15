@@ -323,7 +323,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "gr.h"
 #endif
 
-#define STATE_VERSION 27
+#define STATE_VERSION				28
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -365,7 +365,7 @@ void DoLunacyOn (void);
 void DoLunacyOff (void);
 
 int sc_last_item= 0;
-grs_bitmap *sc_bmp [NUM_SAVES+1];
+grsBitmap *sc_bmp [NUM_SAVES+1];
 
 char dgss_id [4] = "DGSS";
 
@@ -388,7 +388,7 @@ void GameRenderFrame (void);
 
 static int bShowTime = 1;
 
-void state_callback (int nitems, newmenu_item *items, int *last_key, int citem)
+void state_callback (int nitems, tMenuItem *items, int *last_key, int citem)
 {
 	int x, y, i = citem - NM_IMG_SPACE;
 
@@ -471,7 +471,7 @@ int StateGetSaveFile (char * fname, char * dsc, int bMulti)
 {
 	CFILE *fp;
 	int i, menuRes, choice, sgVersion;
-	newmenu_item m [NUM_SAVES+2];
+	tMenuItem m [NUM_SAVES+2];
 	char filename [NUM_SAVES+1] [30];
 	char id [5];
 	int valid=0;
@@ -530,7 +530,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 {
 	CFILE				*fp;
 	int				i, j, choice = -1, sgVersion, nsaves;
-	newmenu_item	m [NUM_SAVES + NM_IMG_SPACE + 1];
+	tMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
 	char				filename [NUM_SAVES+1] [30];
 	char				id [5];
 	int				valid;
@@ -729,7 +729,7 @@ if (gameStates.gameplay.bFinalBossIsDead)		//don't allow save while final boss i
 	return 0;
 //	If this is a secret save and the control center has been destroyed, don't allow
 //	return to the base level.
-if (bSecretSave && (gameData.reactor.bDestroyed)) {
+if (bSecretSave && gameData.reactor.bDestroyed) {
 	CFDelete (SECRETB_FILENAME, gameFolders.szSaveDir);
 	return 0;
 	}
@@ -876,11 +876,11 @@ if (!bBetweenLevels)	{
 //Save door info
 	i = gameData.walls.nOpenDoors;
 	CFWrite (&i, sizeof (int), 1, fp);
-	CFWrite (gameData.walls.activeDoors, sizeof (active_door), i, fp);
+	CFWrite (gameData.walls.activeDoors, sizeof (tActiveDoor), i, fp);
 //Save cloaking wall info
 	i = gameData.walls.nCloaking;
 	CFWrite (&i, sizeof (int), 1, fp);
-	CFWrite (gameData.walls.cloaking, sizeof (cloaking_wall), i, fp);
+	CFWrite (gameData.walls.cloaking, sizeof (tCloakingWall), i, fp);
 //Save tTrigger info
 	CFWrite (&gameData.trigs.nTriggers, sizeof (int), 1, fp);
 	CFWrite (gameData.trigs.triggers, sizeof (tTrigger), gameData.trigs.nTriggers, fp);
@@ -902,10 +902,10 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.reactor.bDestroyed, sizeof (int), 1, fp);
 	CFWrite (&gameData.reactor.countdown.nTimer, sizeof (int), 1, fp);
 	CFWrite (&gameData.matCens.nRobotCenters, sizeof (int), 1, fp);
-	CFWrite (gameData.matCens.robotCenters, sizeof (matcen_info), gameData.matCens.nRobotCenters, fp);
+	CFWrite (gameData.matCens.robotCenters, sizeof (tMatCenInfo), gameData.matCens.nRobotCenters, fp);
 	CFWrite (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	CFWrite (&gameData.matCens.nFuelCenters, sizeof (int), 1, fp);
-	CFWrite (gameData.matCens.fuelCenters, sizeof (fuelcen_info), gameData.matCens.nFuelCenters, fp);
+	CFWrite (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters, fp);
 // Save the control cen info
 	CFWrite (&gameData.reactor.bHit, sizeof (int), 1, fp);
 	CFWrite (&gameData.reactor.bSeenPlayer, sizeof (int), 1, fp);
@@ -1083,8 +1083,11 @@ CFWriteInt (playerP->last_score, fp);             // Score at beginning of curre
 CFWriteInt (playerP->score, fp);                  // Current score.
 CFWriteFix (playerP->timeLevel, fp);             // Level time played
 CFWriteFix (playerP->timeTotal, fp);             // Game time played (high word = seconds)
-CFWriteFix (gameData.time.xGame - playerP->cloakTime, fp);             // Time cloaked
-CFWriteFix (gameData.time.xGame - playerP->invulnerableTime, fp);      // Time invulnerable
+CFWriteFix (playerP->cloakTime - gameData.time.xGame, fp);             // Time cloaked
+if (playerP->invulnerableTime == 0x7fffffff)		// invul cheat active
+	CFWriteFix (playerP->invulnerableTime, fp);      // Time invulnerable
+else
+	CFWriteFix (playerP->invulnerableTime - gameData.time.xGame, fp);      // Time invulnerable
 CFWriteShort (playerP->nKillGoalCount, fp);          // Num of players killed this level
 CFWriteShort (playerP->netKilledTotal, fp);       // Number of times killed total
 CFWriteShort (playerP->netKillsTotal, fp);        // Number of net kills total
@@ -1163,14 +1166,14 @@ switch (objP->controlType) {
 	case CT_AI:
 		CFWriteByte ((sbyte) objP->cType.aiInfo.behavior, fp);
 		CFWrite (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS, fp);
-		CFWriteShort (objP->cType.aiInfo.hide_segment, fp);
-		CFWriteShort (objP->cType.aiInfo.hide_index, fp);
-		CFWriteShort (objP->cType.aiInfo.path_length, fp);
-		CFWriteByte (objP->cType.aiInfo.cur_path_index, fp);
-		CFWriteByte (objP->cType.aiInfo.dyingSound_playing, fp);
-		CFWriteShort (objP->cType.aiInfo.danger_laser_num, fp);
-		CFWriteInt (objP->cType.aiInfo.danger_laser_signature, fp);
-		CFWriteFix (objP->cType.aiInfo.dying_startTime, fp);
+		CFWriteShort (objP->cType.aiInfo.nHideSegment, fp);
+		CFWriteShort (objP->cType.aiInfo.nHideIndex, fp);
+		CFWriteShort (objP->cType.aiInfo.nPathLength, fp);
+		CFWriteByte (objP->cType.aiInfo.nCurPathIndex, fp);
+		CFWriteByte (objP->cType.aiInfo.bDyingSoundPlaying, fp);
+		CFWriteShort (objP->cType.aiInfo.nDangerLaser, fp);
+		CFWriteInt (objP->cType.aiInfo.nDangerLaserSig, fp);
+		CFWriteFix (objP->cType.aiInfo.xDyingStartTime, fp);
 		break;
 
 	case CT_LIGHT:
@@ -1230,7 +1233,7 @@ CFWriteByte (wallP->cloakValue, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveExplWall (expl_wall *wallP, CFILE *fp)
+void StateSaveExplWall (tExplWall *wallP, CFILE *fp)
 {
 CFWriteInt (wallP->nSegment, fp);
 CFWriteInt (wallP->nSide, fp);
@@ -1239,7 +1242,7 @@ CFWriteFix (wallP->time, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveCloakingWall (cloaking_wall *wallP, CFILE *fp)
+void StateSaveCloakingWall (tCloakingWall *wallP, CFILE *fp)
 {
 	int	i;
 
@@ -1254,11 +1257,11 @@ CFWriteFix (wallP->time, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveActiveDoor (active_door *doorP, CFILE *fp)
+void StateSaveActiveDoor (tActiveDoor *doorP, CFILE *fp)
 {
 	int	i;
 
-CFWriteInt (doorP->n_parts, fp);
+CFWriteInt (doorP->nPartCount, fp);
 for (i = 0; i < 2; i++) {
 	CFWriteShort (doorP->nFrontWall [i], fp);
 	CFWriteShort (doorP->nBackWall [i], fp);
@@ -1294,7 +1297,7 @@ CFWriteShort (refP->nObject, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveMatCen (matcen_info *matcenP, CFILE *fp)
+void StateSaveMatCen (tMatCenInfo *matcenP, CFILE *fp)
 {
 	int	i;
 
@@ -1308,7 +1311,7 @@ CFWriteShort (matcenP->fuelcen_num, fp);
 
 //------------------------------------------------------------------------------
 
-void StateSaveFuelCen (fuelcen_info *fuelcenP, CFILE *fp)
+void StateSaveFuelCen (tFuelCenInfo *fuelcenP, CFILE *fp)
 {
 CFWriteInt (fuelcenP->Type, fp);
 CFWriteInt (fuelcenP->nSegment, fp);
@@ -1499,6 +1502,8 @@ CFWriteShort (gameStates.ogl.palAdd.blue, fp);
 CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS, fp);
 CFWriteInt (gameStates.app.bFirstSecretVisit, fp);
 CFWriteFix (xOmegaCharge, fp);
+CFWriteShort (gameData.missions.nEnteredFromLevel, fp);
+
 }
 
 //------------------------------------------------------------------------------
@@ -1545,7 +1550,7 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 	if (cnv)	{
 #ifdef OGL
 		ubyte			*buf;
-		grs_bitmap	tmp;
+		grsBitmap	tmp;
 		int			k, x, y;
 #endif
 		#ifdef WINDOWS
@@ -1688,7 +1693,7 @@ gameData.objs.objects [plobjnum].orient = gameData.segs.secret.returnOrient;
 
 //	-----------------------------------------------------------------------------------
 
-int StateRestoreAll (int in_game, int bSecretRestore, char *pszFilenameOverride)
+int StateRestoreAll (int bInGame, int bSecretRestore, char *pszFilenameOverride)
 {
 	char filename [128];
 	int	i, filenum = -1;
@@ -1698,12 +1703,6 @@ if (gameData.app.nGameMode & GM_MULTI)	{
 #	ifdef MULTI_SAVE
 	MultiInitiateRestoreGame ();
 #	endif
-	return 0;
-	}
-#endif
-#if 0
-if (!gameOpts->gameplay.bSecretSave && in_game && (gameData.missions.nCurrentLevel < 0) && (bSecretRestore == 0)) {
-	HUDInitMessage (TXT_SECRET_LOAD_ERROR);
 	return 0;
 	}
 #endif
@@ -1727,7 +1726,7 @@ else if (! (filenum = StateGetRestoreFile (filename, 0)))	{
 //	If Nsecret.sgc (where N = filenum) exists, then copy it to secret.sgc.
 //	If it doesn't exist, then delete secret.sgc
 
-if (!bSecretRestore && ! (gameData.app.nGameMode & GM_MULTI)) {
+if (!bSecretRestore && !(gameData.app.nGameMode & GM_MULTI)) {
 	int	rval;
 	char	temp_fname [32], fc;
 
@@ -1746,12 +1745,12 @@ if (!bSecretRestore && ! (gameData.app.nGameMode & GM_MULTI)) {
 		}
 	}
 	//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
-if ((filenum != (NUM_SAVES + 1)) && in_game) {
+if ((filenum != (NUM_SAVES + 1)) && bInGame) {
 	char	temp_filename [128];
 	sprintf (temp_filename, "%s.sg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, NUM_SAVES);
-	StateSaveAll (!in_game, bSecretRestore, temp_filename);
+	StateSaveAll (!bInGame, bSecretRestore, temp_filename);
 	}
-if (!bSecretRestore && in_game) {
+if (!bSecretRestore && bInGame) {
 	int choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 	if (choice != 0) {
 		gameData.app.bGamePaused = 0;
@@ -2111,7 +2110,9 @@ playerP->score = CFReadInt (fp);                  // Current score.
 playerP->timeLevel = CFReadFix (fp);             // Level time played
 playerP->timeTotal = CFReadFix (fp);	// Game time played (high word = seconds)
 playerP->cloakTime = gameData.time.xGame + CFReadFix (fp); // Time cloaked
-playerP->invulnerableTime = gameData.time.xGame + CFReadFix (fp);      // Time invulnerable
+playerP->invulnerableTime = CFReadFix (fp);      // Time invulnerable
+if (playerP->invulnerableTime != 0x7fffffff)
+	playerP->invulnerableTime += gameData.time.xGame;
 playerP->nKillGoalCount = CFReadShort (fp);          // Num of players killed this level
 playerP->netKilledTotal = CFReadShort (fp);       // Number of times killed total
 playerP->netKillsTotal = CFReadShort (fp);        // Number of net kills total
@@ -2190,14 +2191,14 @@ switch (objP->controlType) {
 	case CT_AI:
 		objP->cType.aiInfo.behavior = (ubyte) CFReadByte (fp);
 		CFRead (objP->cType.aiInfo.flags, 1, MAX_AI_FLAGS, fp);
-		objP->cType.aiInfo.hide_segment = CFReadShort (fp);
-		objP->cType.aiInfo.hide_index = CFReadShort (fp);
-		objP->cType.aiInfo.path_length = CFReadShort (fp);
-		objP->cType.aiInfo.cur_path_index = CFReadByte (fp);
-		objP->cType.aiInfo.dyingSound_playing = CFReadByte (fp);
-		objP->cType.aiInfo.danger_laser_num = CFReadShort (fp);
-		objP->cType.aiInfo.danger_laser_signature = CFReadInt (fp);
-		objP->cType.aiInfo.dying_startTime = CFReadFix (fp);
+		objP->cType.aiInfo.nHideSegment = CFReadShort (fp);
+		objP->cType.aiInfo.nHideIndex = CFReadShort (fp);
+		objP->cType.aiInfo.nPathLength = CFReadShort (fp);
+		objP->cType.aiInfo.nCurPathIndex = CFReadByte (fp);
+		objP->cType.aiInfo.bDyingSoundPlaying = CFReadByte (fp);
+		objP->cType.aiInfo.nDangerLaser = CFReadShort (fp);
+		objP->cType.aiInfo.nDangerLaserSig = CFReadInt (fp);
+		objP->cType.aiInfo.xDyingStartTime = CFReadFix (fp);
 		break;
 
 	case CT_LIGHT:
@@ -2257,7 +2258,7 @@ wallP->cloakValue = CFReadByte (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreExplWall (expl_wall *wallP, CFILE *fp)
+void StateRestoreExplWall (tExplWall *wallP, CFILE *fp)
 {
 wallP->nSegment = CFReadInt (fp);
 wallP->nSide = CFReadInt (fp);
@@ -2266,7 +2267,7 @@ wallP->time = CFReadFix (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreCloakingWall (cloaking_wall *wallP, CFILE *fp)
+void StateRestoreCloakingWall (tCloakingWall *wallP, CFILE *fp)
 {
 	int	i;
 
@@ -2281,11 +2282,11 @@ wallP->time = CFReadFix (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreActiveDoor (active_door *doorP, CFILE *fp)
+void StateRestoreActiveDoor (tActiveDoor *doorP, CFILE *fp)
 {
 	int	i;
 
-doorP->n_parts = CFReadInt (fp);
+doorP->nPartCount = CFReadInt (fp);
 for (i = 0; i < 2; i++) {
 	doorP->nFrontWall [i] = CFReadShort (fp);
 	doorP->nBackWall [i] = CFReadShort (fp);
@@ -2321,7 +2322,7 @@ refP->nObject = CFReadShort (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreMatCen (matcen_info *matcenP, CFILE *fp)
+void StateRestoreMatCen (tMatCenInfo *matcenP, CFILE *fp)
 {
 	int	i;
 
@@ -2335,7 +2336,7 @@ matcenP->fuelcen_num = CFReadShort (fp);
 
 //------------------------------------------------------------------------------
 
-void StateRestoreFuelCen (fuelcen_info *fuelcenP, CFILE *fp)
+void StateRestoreFuelCen (tFuelCenInfo *fuelcenP, CFILE *fp)
 {
 fuelcenP->Type = CFReadInt (fp);
 fuelcenP->nSegment = CFReadInt (fp);
@@ -2593,6 +2594,8 @@ if (bSecretRestore != 1)
 	xOmegaCharge = CFReadFix (fp);
 else
 	CFReadFix (fp);
+if (sgVersion > 27)
+	gameData.missions.nEnteredFromLevel = CFReadShort (fp);
 return 1;
 }
 
@@ -2707,11 +2710,11 @@ if (!bBetweenLevels)	{
 	//Restore door info
 	if (CFReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors, fp))
 		return 0;
-	CFRead (gameData.walls.activeDoors, sizeof (active_door), gameData.walls.nOpenDoors, fp);
+	CFRead (gameData.walls.activeDoors, sizeof (tActiveDoor), gameData.walls.nOpenDoors, fp);
 	if (sgVersion >= 14) {		//Restore cloaking wall info
 		if (CFReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking, fp))
 			return 0;
-		CFRead (gameData.walls.cloaking, sizeof (cloaking_wall), gameData.walls.nCloaking, fp);
+		CFRead (gameData.walls.cloaking, sizeof (tCloakingWall), gameData.walls.nCloaking, fp);
 		}
 	//Restore tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers, fp))
@@ -2744,11 +2747,11 @@ if (!bBetweenLevels)	{
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
 	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nRobotCenters, fp))
 		return 0;
-	CFRead (gameData.matCens.robotCenters, sizeof (matcen_info), gameData.matCens.nRobotCenters, fp);
+	CFRead (gameData.matCens.robotCenters, sizeof (tMatCenInfo), gameData.matCens.nRobotCenters, fp);
 	CFRead (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	if (CFReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters, fp))
 		return 0;
-	CFRead (gameData.matCens.fuelCenters, sizeof (fuelcen_info), gameData.matCens.nFuelCenters, fp);
+	CFRead (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters, fp);
 
 	// Restore the control cen info
 	gameData.reactor.bHit = CFReadInt (fp);

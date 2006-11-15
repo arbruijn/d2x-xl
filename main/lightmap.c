@@ -38,6 +38,7 @@ there I just had it exit instead.
 #include "newmenu.h"
 #include "text.h"
 #include "gamepal.h"
+#include "gamemine.h"
 
 //------------------------------------------------------------------------------
 
@@ -78,7 +79,7 @@ int InitLightData (void);
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#ifdef DBG_SHADERS
 
 char *lightMapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
 char *lightMapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
@@ -200,6 +201,8 @@ outvec->z = (fix) (f_offset * (vec2.z - vec1.z));
 
 int IsLight (int tMapNum) 
 {
+if (gameStates.app.bD1Mission)
+	tMapNum = ConvertD1Texture (tMapNum, 1);
 switch (tMapNum) {
 	case 275:
 	case 276:
@@ -385,6 +388,8 @@ if (lightData) { //! =  NULL, comparison not explicitly required
 
 int IsBigLight (int tMapNum)
 {
+if (gameStates.app.bD1Mission)
+	tMapNum = ConvertD1Texture (tMapNum, 1);
 switch (tMapNum) {
 	case 302:
 	case 378:
@@ -418,12 +423,21 @@ return BASERANGE + (double) gameOpts->render.color.nLightMapRange * 6.5;
 
 //------------------------------------------------------------------------------
 
-int GetColor (int tMapNum, tLightMap *pTempLight)
+int GetLightColor (int tMapNum, tLightMap *pTempLight)
 {
 	tLightMap	tempLight;
 	int			bIsLight = 0;
 	double		baseRange = LightMapRange ();
 
+if (gameStates.app.bD1Mission) {
+#ifdef _DEBUG
+	if (tMapNum == 328)
+		tMapNum = tMapNum;
+	else if (tMapNum == 281)
+		tMapNum = tMapNum;
+#endif
+	tMapNum = ConvertD1Texture (tMapNum, 1);
+	}
 switch (tMapNum) {
 	case 275:
 	case 276:
@@ -721,14 +735,14 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++)	{
 		bIsLight = 0; 
 		sideRad = 0;
 		tMapNum = gameData.segs.segments [segNum].sides [sideNum].nOvlTex;
-		if (GetColor (tMapNum, &tempLight)) {
+		if (GetLightColor (tMapNum, &tempLight)) {
 			bIsLight = 1;
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
 			}
 		//then look at the base - will override an overlaying lightopTex.
 		tMapNum = gameData.segs.segments [segNum].sides [sideNum].nBaseTex;
-		if (GetColor (tMapNum, &tempLight)) {
+		if (GetLightColor (tMapNum, &tempLight)) {
 			bIsLight = 1;
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
@@ -1070,7 +1084,7 @@ return (lightData != NULL);
 
 static int segNum = 0;
 
-static void CreateLightMapsPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void CreateLightMapsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (segNum < gameData.segs.nSegments) {

@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made PlayerHasWeapon() public and moved constants to header file
  *
  * Revision 1.24  1994/09/30  21:50:49  mike
- * Add homingFlag and 3 dummy bytes to weapon_info.
+ * Add homingFlag and 3 dummy bytes to tWeaponInfo.
  *
  * Revision 1.23  1994/09/30  13:47:41  mike
  * Make speed and strength be difficulty level based.
@@ -108,10 +108,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added cockpit weapon displays
  *
  * Revision 1.18  1994/09/11  15:50:34  mike
- * Add matter and bounce to weapon_info.
+ * Add matter and bounce to tWeaponInfo.
  *
  * Revision 1.17  1994/09/10  17:32:17  mike
- * Add thrust to weapon_info.
+ * Add thrust to tWeaponInfo.
  *
  * Revision 1.16  1994/09/09  20:04:54  mike
  * Add vclips for weapons.
@@ -144,17 +144,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // weapon info flags
 #define WIF_PLACABLE        1   // can be placed by level designer
 
-typedef struct weapon_info {
+typedef struct tWeaponInfo {
 	sbyte   renderType;        // How to draw 0=laser, 1=blob, 2=tObject
 	sbyte   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 	short   nModel;          // Model num if rendertype==2.
 	short   model_num_inner;    // Model num of inner part if rendertype==2.
 
-	sbyte   flash_vclip;        // What vclip to use for muzzle flash
-	sbyte   robot_hit_vclip;    // What vclip for impact with robot
+	sbyte   flash_vclip;        // What tVideoClip to use for muzzle flash
+	sbyte   robot_hit_vclip;    // What tVideoClip for impact with robot
 	short   flashSound;        // What sound to play when fired
 
-	sbyte   wall_hit_vclip;     // What vclip for impact with wall
+	sbyte   wall_hit_vclip;     // What tVideoClip for impact with wall
 	sbyte   fire_count;         // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fire_count shots will be fired.
 	short   robot_hitSound;    // What sound for impact with robot
 
@@ -202,20 +202,20 @@ typedef struct weapon_info {
 	tBitmapIndex    picture;    // a picture of the weapon for the cockpit
 	/* not present in shareware datafiles */
 	tBitmapIndex    hires_picture;  // a hires picture of the above
-} __pack__ weapon_info;
+} __pack__ tWeaponInfo;
 
-typedef struct D1_weapon_info {
+typedef struct tD1WeaponInfo {
 	sbyte	renderType;				// How to draw 0=laser, 1=blob, 2=tObject
 	sbyte	nModel;					// Model num if rendertype==2.
 	sbyte	model_num_inner;			// Model num of inner part if rendertype==2.
 	sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 
-	sbyte	flash_vclip;				// What vclip to use for muzzle flash
+	sbyte	flash_vclip;				// What tVideoClip to use for muzzle flash
 	short	flashSound;				// What sound to play when fired
-	sbyte	robot_hit_vclip;			// What vclip for impact with robot
+	sbyte	robot_hit_vclip;			// What tVideoClip for impact with robot
 	short	robot_hitSound;			// What sound for impact with robot
 
-	sbyte	wall_hit_vclip;			// What vclip for impact with wall
+	sbyte	wall_hit_vclip;			// What tVideoClip for impact with wall
 	short	wall_hitSound;			// What sound for impact with wall
 	sbyte	fire_count;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fire_count shots will be fired.
 	sbyte	ammo_usage;					//	How many units of ammunition it uses.
@@ -248,7 +248,7 @@ typedef struct D1_weapon_info {
 //-- unused--	fix	damage_force;				//	Force of damage caused by weapon, used for missiles (not lasers) to apply to damage to things it did not hit
 // damage_force was a real mess.  Wasn't DifficultyLevel based, and was being applied instead of weapon's actual strength.  Now use 2*strength instead. --MK, 01/19/95
 	tBitmapIndex	picture;				// a picture of the weapon for the cockpit
-} D1_weapon_info;
+} tD1WeaponInfo;
 
 typedef struct D2D1_weapon_info {
 	sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
@@ -428,9 +428,9 @@ extern void InitShakerDetonates(void);
 extern void tactile_set_button_jolt (void);
 
 /*
- * reads n weapon_info structs from a CFILE
+ * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(weapon_info *wi, int n, CFILE *fp, int file_version);
+extern int WeaponInfoReadN(tWeaponInfo *wi, int n, CFILE *fp, int file_version);
 
 extern ubyte nWeaponOrder [2][11];
 extern ubyte nDefaultWeaponOrder [2][11];

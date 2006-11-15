@@ -250,12 +250,12 @@ if ((gameStates.render.nShadowPass != 2) &&
 		swiggle = FixMul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 	if ((objP->nType == OBJ_PLAYER) || !pParent)
 		VmVecScaleInc (&objP->mType.physInfo.velocity,
-								 &objP->orient.uvec,
+								 &objP->orient.uVec,
 								 FixMul (swiggle, gameData.pig.ship.player->wiggle));
 #if 1
 	else {
 		VmVecScaleInc (&objP->mType.physInfo.velocity,
-								&pParent->orient.uvec,
+								&pParent->orient.uVec,
 								FixMul (swiggle, gameData.pig.ship.player->wiggle));
 		VmVecScaleInc (&objP->pos, &objP->mType.physInfo.velocity, wiggleTime);
 		}
@@ -298,7 +298,7 @@ void ReadFlyingControls(tObject *objP)
 	}
 
 	if ((objP->nType!=OBJ_PLAYER) || (objP->id!=gameData.multi.nLocalPlayer)) 
-		return;	//references to player_ship require that this obj be the player
+		return;	//references to tPlayerShip require that this obj be the player
 
 	gmObjP = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
 	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer])) {
@@ -316,7 +316,7 @@ void ReadFlyingControls(tObject *objP)
 		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->orient,&rotmat);
 		gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->orient = tempm;
 		speed = WI_speed (gmObjP->id,gameStates.app.nDifficultyLevel);
-		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->orient.fvec,speed);
+		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->orient.fVec,speed);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendGuidedInfo (gmObjP, 0);
@@ -362,11 +362,11 @@ void ReadFlyingControls(tObject *objP)
 		}
 	}
 	// Set tObject's thrust vector for forward/backward
-	VmVecCopyScale (&objP->mType.physInfo.thrust, &objP->orient.fvec, forward_thrustTime);
+	VmVecCopyScale (&objP->mType.physInfo.thrust, &objP->orient.fVec, forward_thrustTime);
 	// slide left/right
-	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.rvec, Controls.sideways_thrustTime);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.rVec, Controls.sideways_thrustTime);
 	// slide up/down
-	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.uvec, Controls.vertical_thrustTime);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->orient.uVec, Controls.vertical_thrustTime);
 	if (!gameStates.input.bSkipControls)
 		memcpy (&player_thrust, &objP->mType.physInfo.thrust, sizeof (player_thrust));
 	//HUDMessage (0, "%d %d %d", player_thrust.x, player_thrust.y, player_thrust.z);

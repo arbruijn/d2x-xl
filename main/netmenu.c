@@ -93,7 +93,7 @@ extern unsigned char ipx_MyAddress [10];
 void NetworkSetWeaponsAllowed (void)
  {
   int opt = 0, choice, opt_primary, opt_second, opt_power;
-  newmenu_item m [40];
+  tMenuItem m [40];
   
   opt_primary = opt;
   memset (m, 0, sizeof (m));
@@ -168,9 +168,9 @@ static int
 	optVirLife, optVirStab, optRevRooms, optEnergyFill, optShieldFill, optShieldDmg, 
 	optOvrTex, optBrRooms, optFF, optSuicide, optPlrHand, optTogglesMenu, optTextureMenu;
 
-int opt_cinvul, opt_team_anarchy, opt_coop, optPlayersOnMap, opt_closed, opt_maxnet, 
-	 opt_entropy, opt_monsterball, opt_entopts, opt_mballopts;
-int last_cinvul = 0, last_maxnet, opt_hoard, opt_team_hoard;
+int opt_cinvul, opt_team_anarchy, opt_coop, optPlayersOnMap, opt_closed, optMaxNet, 
+	 optEntropy, opt_monsterball, optEntOpts, optMBallOpts;
+int last_cinvul = 0, lastMaxNet, opt_hoard, opt_team_hoard;
 int opt_refuse, opt_capture, optEnhancedCTF;
 
 #define	WF(_f)	 ((short) (( (nFilter) & (1 << (_f))) != 0))
@@ -255,7 +255,7 @@ WF (netGame.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  (F1_0*2)
 #define ENDLEVEL_IDLE_TIME      (F1_0*20)
 
-void NetworkEndLevelPoll2 (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	// Polling loop for End-of-level menu
 
@@ -289,7 +289,7 @@ if (num_ready == gameData.multi.nPlayers) {// All players have checked in or are
 
 //------------------------------------------------------------------------------
 
-void NetworkEndLevelPoll3 (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkEndLevelPoll3 (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
@@ -306,7 +306,7 @@ if (num_ready == gameData.multi.nPlayers) // All players have checked in or are 
 
 //------------------------------------------------------------------------------
 
-void NetworkStartPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkStartPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	int i, n, nm;
 
@@ -380,25 +380,25 @@ else if (n > netGame.numplayers) {
 
 //------------------------------------------------------------------------------
 
-void NetworkGameParamPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkGameParamPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	static int oldmaxnet = 0;
 
-if ((menus [opt_entropy].value == (opt_entopts < 0)) ||
-	 (menus [opt_monsterball].value == (opt_mballopts < 0)))
+if ((menus [optEntropy].value == (optEntOpts < 0)) ||
+	 (menus [opt_monsterball].value == (optMBallOpts < 0)))
 	*key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
 //even in a match and progress, and allows players to switch teams
 if (menus [opt_coop].value) {
 	oldmaxnet = 1;
-	if (menus [opt_maxnet].value>2)  {
-		menus [opt_maxnet].value = 2;
-		menus [opt_maxnet].redraw = 1;
+	if (menus [optMaxNet].value>2)  {
+		menus [optMaxNet].value = 2;
+		menus [optMaxNet].redraw = 1;
 		}
-	if (menus [opt_maxnet].maxValue>2) {
-		menus [opt_maxnet].maxValue = 2;
-		menus [opt_maxnet].redraw = 1;
+	if (menus [optMaxNet].maxValue>2) {
+		menus [optMaxNet].maxValue = 2;
+		menus [optMaxNet].redraw = 1;
 		}
 	if (!(netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
@@ -410,14 +410,14 @@ if (menus [opt_coop].value) {
 else {// if !Coop game
 	if (oldmaxnet) {
 		oldmaxnet = 0;
-		menus [opt_maxnet].value = 6;
-		menus [opt_maxnet].maxValue = 6;
+		menus [optMaxNet].value = 6;
+		menus [optMaxNet].maxValue = 6;
 		}
 	}         
-if (last_maxnet != menus [opt_maxnet].value)  {
-	sprintf (menus [opt_maxnet].text, TXT_MAX_PLAYERS, menus [opt_maxnet].value+2);
-	last_maxnet = menus [opt_maxnet].value;
-	menus [opt_maxnet].rebuild = 1;
+if (lastMaxNet != menus [optMaxNet].value)  {
+	sprintf (menus [optMaxNet].text, TXT_MAX_PLAYERS, menus [optMaxNet].value+2);
+	lastMaxNet = menus [optMaxNet].value;
+	menus [optMaxNet].rebuild = 1;
 	}               
  }
 
@@ -429,14 +429,14 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight, optPlayersOnMap;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd, optHitInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags;
 
 //------------------------------------------------------------------------------
 
-void NetworkMoreOptionsPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkMoreOptionsPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	int	v, j;
 
@@ -453,6 +453,12 @@ if (v != (extraGameInfo [1].bTargetIndicators == 0)) {
 			extraGameInfo [1].bTargetIndicators = j;
 			break;
 			}
+	*key = -2;
+	return;
+	}
+v = menus [optDmgInd].value;
+if (v != extraGameInfo [1].bDamageIndicators) {
+	extraGameInfo [1].bDamageIndicators = v;
 	*key = -2;
 	return;
 	}
@@ -532,10 +538,10 @@ mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
 
 void NetworkMoreGameOptions ()
  {
-  int		opt = 0, i, j;
+  int		opt = 0, i, j, choice = 0;
   char	szPlayTime [80], szKillGoal [80], szInvul [50], szSpotSize [50],
 			socket_string [6], packstring [6];
-  newmenu_item m [40];
+  tMenuItem m [40];
 
 do {
 	memset (m, 0, sizeof (m));
@@ -638,14 +644,19 @@ do {
 		opt++;
 		m [optTgtInd + extraGameInfo [1].bTargetIndicators].value = 1;
 		if (extraGameInfo [1].bTargetIndicators) {
-			ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-			optDmgInd = opt++;
 			ADD_CHECK (opt, TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
 			optFriendlyInd = opt++;
 			}
 		else
-			optDmgInd =
 			optFriendlyInd = -1;
+		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+		optDmgInd = opt++;
+		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators) {
+			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
+			optHitInd = opt++;
+			}
+		else
+			optHitInd = -1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
@@ -669,11 +680,11 @@ do {
 	LastKillGoal = netGame.KillGoal;
 	LastPTA = mpParams.nMaxTime;
 
-	do_menu:
+	doMenu:
 
 	gameStates.app.nExtGameStatus = GAMESTAT_MORE_NETGAME_OPTIONS; 
 	Assert (sizeofa (m) >= opt);
-	i = ExecMenu1 (NULL, TXT_MORE_MPOPTIONS, opt, m, NetworkMoreOptionsPoll, 0);
+	i = ExecMenu1 (NULL, TXT_MORE_MPOPTIONS, opt, m, NetworkMoreOptionsPoll, &choice);
 	} while (i == -2);
 
    //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
@@ -683,7 +694,7 @@ netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
 	GetAllAllowables ();
-	goto do_menu;
+	goto doMenu;
 	}
 mpParams.nPPS = atoi (packstring);
 if (mpParams.nPPS>20) {
@@ -756,9 +767,10 @@ if (!gameStates.app.bNostalgia) {
 				extraGameInfo [1].bTargetIndicators = j;
 				break;
 				}
-		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
 		GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
 		}
+	GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
+	GET_VAL (extraGameInfo [1].bHitIndicators, optHitInd);
 	}
 }
 
@@ -794,11 +806,11 @@ if (!gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------
 
-void NetworkDummyCallback (int nitems, newmenu_item * menus, int * key, int citem) {}
+void NetworkDummyCallback (int nitems, tMenuItem * menus, int * key, int citem) {}
   
 void NetworkEntropyToggleOptions ()
 {
-	newmenu_item	m [12];
+	tMenuItem	m [12];
 	int				opt = 0;
 
 memset (m, 0, sizeof (m));
@@ -834,7 +846,7 @@ for (extraGameInfo [0].entropy.nVirusStability = 0;
 
 void NetworkEntropyTextureOptions ()
 {
-	newmenu_item	m [7];
+	tMenuItem	m [7];
 	int				opt = 0;
 
 memset (m, 0, sizeof (m));
@@ -863,7 +875,7 @@ for (extraGameInfo [0].entropy.nOverrideTextures = 0;
 
 void NetworkEntropyOptions (void)
 {
-	newmenu_item	m [25];
+	tMenuItem	m [25];
 	int				i, opt = 0;
 	char				szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
 						szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
@@ -928,9 +940,9 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
-void MonsterballMenuCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v;
 
 m = menus + nPyroForceOpt;
@@ -1038,7 +1050,7 @@ extern short nMonsterballPyroForce;
 
 void NetworkMonsterballOptions (void)
 {
-	newmenu_item		m [35];
+	tMenuItem		m [35];
 	int					h, i, j, opt = 0, optDefaultForces;
 	char					szBonus [60], szSize [60], szPyroForce [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
@@ -1106,11 +1118,11 @@ extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].value + 2;
 int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
-	int opt, opt_name, optLevel, optLevel_num, opt_mode, opt_moreopts, 
-		 opt_access, opt_mission, opt_mission_name;
-	newmenu_item m [35];
+	int opt, opt_name, optLevel, optLevelText, opt_mode, optMoreOpts, 
+		 opt_access, opt_mission, optMissionName;
+	tMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
-	char level_text [32];
+	char szLevelText [32];
 	char szMaxNet [50];
 	char szIpAddr [80];
 	char szLevel [5];
@@ -1122,8 +1134,8 @@ int NetworkGetGameParams (int bAutoRun)
 	networkData.nNamesInfoSecurity = -1;
 
 	if (nNewMission >= 0)
-		bAnarchyOnly = gameData.missions.list[nNewMission].anarchy_onlyFlag;
-	for (i = 0;i<MAX_PLAYERS;i++)
+		bAnarchyOnly = gameData.missions.list [nNewMission].bAnarchyOnly;
+	for (i = 0; i < MAX_PLAYERS; i++)
 		if (i!= gameData.multi.nLocalPlayer)
 			gameData.multi.players [i].callsign [0] = 0;
 
@@ -1169,16 +1181,16 @@ build_menu:
 	opt_mission = opt++;
 	ADD_TEXT (opt, "", 0);
 	m [opt].rebuild = 1; 
-	opt_mission_name = opt++;
+	optMissionName = opt++;
 
 //      if (gameData.missions.nLastSecretLevel < -1)
-//              sprintf (level_text+strlen (level_text)-1, ", S1-S%d)", -gameData.missions.nLastSecretLevel);
+//              sprintf (szLevelText+strlen (szLevelText)-1, ", S1-S%d)", -gameData.missions.nLastSecretLevel);
 //      else if (gameData.missions.nLastSecretLevel == -1)
-//              sprintf (level_text+strlen (level_text)-1, ", S1)");
+//              sprintf (szLevelText+strlen (szLevelText)-1, ", S1)");
 
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
-		ADD_TEXT (opt, level_text, 0); 
-		optLevel_num = opt++;
+		ADD_TEXT (opt, szLevelText, 0); 
+		optLevelText = opt++;
 		ADD_INPUT (opt, szLevel, 4, HTX_MULTI_LEVEL);
 		optLevel = opt++;
 		}
@@ -1199,7 +1211,7 @@ build_menu:
 		optEnhancedCTF = opt++;
 		}
    
-	opt_entropy =
+	optEntropy =
 	opt_monsterball = -1;
 	if (HoardEquipped ()) {
 		ADD_RADIO (opt, TXT_HOARD, 0, KEY_H, 0, HTX_MULTI_HOARD);
@@ -1208,7 +1220,7 @@ build_menu:
 		opt_team_hoard = opt++;
 		if (!gameStates.app.bNostalgia) {
 			ADD_RADIO (opt, TXT_ENTROPY, 0, KEY_Y, 0, HTX_MULTI_ENTROPY);
-			opt_entropy = opt++;
+			optEntropy = opt++;
 			ADD_RADIO (opt, TXT_MONSTERBALL, 0, KEY_B, 0, HTX_MULTI_MONSTERBALL);
 			opt_monsterball = opt++;
 			}
@@ -1233,39 +1245,39 @@ build_menu:
 	opt++; 
    sprintf (szMaxNet + 1, TXT_MAX_PLAYERS, gameData.multi.nMaxPlayers);
 	*szMaxNet = * (TXT_MAX_PLAYERS - 1);
-   last_maxnet = gameData.multi.nMaxPlayers - 2;
-   ADD_SLIDER (opt, szMaxNet + 1, last_maxnet, 0, last_maxnet, KEY_X, HTX_MULTI_MAXPLRS); 
-   opt_maxnet = opt++;
+   lastMaxNet = gameData.multi.nMaxPlayers - 2;
+   ADD_SLIDER (opt, szMaxNet + 1, lastMaxNet, 0, lastMaxNet, KEY_X, HTX_MULTI_MAXPLRS); 
+   optMaxNet = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++; 
    ADD_MENU (opt, TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
-   opt_moreopts = opt++;
-	opt_entopts =
-	opt_mballopts = -1;
+   optMoreOpts = opt++;
+	optEntOpts =
+	optMBallOpts = -1;
 	if (!gameStates.app.bNostalgia) {
-		if (m [opt_entropy].value) {
+		if (m [optEntropy].value) {
 			ADD_MENU (opt, TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
-			opt_entopts = opt++;
+			optEntOpts = opt++;
 			}
 		if (m [opt_monsterball].value) {
 		   ADD_MENU (opt, TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
-			opt_mballopts = opt++;
+			optMBallOpts = opt++;
 			}
 		}
 
-do_menu:
-	if (m [opt_mission_name].rebuild) {
+doMenu:
+	if (m [optMissionName].rebuild) {
 		strncpy (netGame.mission_name, 
-					 (nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
+					(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
 					sizeof (netGame.mission_name) - 1);
-		m [opt_mission_name].text = 
+		m [optMissionName].text = 
 			 (nNewMission < 0) ? 
 			TXT_NONE_SELECTED : 
 			gameData.missions.list [nNewMission].mission_name;
 		if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
-			sprintf (level_text, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
-			Assert (strlen (level_text) < 32);
-			m [optLevel_num].rebuild = 1;
+			sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
+			Assert (strlen (szLevelText) < 32);
+			m [optLevelText].rebuild = 1;
 			}
 		mpParams.nLevel = 1;
 		}
@@ -1277,7 +1289,7 @@ do_menu:
 									//TXT_NETGAME_SETUP
 	if (key == -1)
 		return -1;
-   else if (choice == opt_moreopts) {
+   else if (choice == optMoreOpts) {
 		if (m [opt_mode+3].value)
 			gameData.app.nGameMode = GM_MULTI_COOP;
 			NetworkMoreGameOptions ();
@@ -1290,22 +1302,22 @@ do_menu:
 				ipx_MyAddress [7], 
 				udpBasePort [1]);
 				}
-		  goto do_menu;
+		  goto doMenu;
 		}
-	else if (!gameStates.app.bNostalgia && (opt_entopts >= 0) && (choice == opt_entopts)) {
+	else if (!gameStates.app.bNostalgia && (optEntOpts >= 0) && (choice == optEntOpts)) {
 		NetworkEntropyOptions ();
-		goto do_menu;
+		goto doMenu;
 		}
-	else if (!gameStates.app.bNostalgia && (opt_mballopts >= 0) && (choice == opt_mballopts)) {
+	else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBallOpts)) {
 		NetworkMonsterballOptions ();
-		goto do_menu;
+		goto doMenu;
 		}
 	else if (choice == opt_mission) {
-		int h = MultiChooseMission (&bAnarchyOnly);
+		int h = SelectAndLoadMission (1, &bAnarchyOnly);
 		if (h < 0)
-			goto do_menu;
+			goto doMenu;
 		gameData.missions.nLastMission = nNewMission = h;
-		m [opt_mission_name].rebuild = 1;
+		m [optMissionName].rebuild = 1;
 		goto build_menu;
 		}
   netGame.RefusePlayers = m [opt_refuse].value;
@@ -1313,20 +1325,20 @@ do_menu:
 	if (key != -1) {
 		int j;
 		      
-   gameData.multi.nMaxPlayers = m [opt_maxnet].value+2;
+   gameData.multi.nMaxPlayers = m [optMaxNet].value+2;
    netGame.max_numplayers = gameData.multi.nMaxPlayers;
 				
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].game_name, name)) {
 			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
-			goto do_menu;
+			goto doMenu;
 		}
 	strncpy (mpParams.szGameName, name, sizeof (mpParams.szGameName));
 	mpParams.nLevel = atoi (szLevel);
 	if ((gameData.missions.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > gameData.missions.nLastLevel))) {
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
 		sprintf (szLevel, "1");
-		goto do_menu;
+		goto doMenu;
 	}
 
 	for (i = opt_mode; i < opt_access; i++)
@@ -1335,7 +1347,7 @@ do_menu:
 			break;
 			}
 
-	for (i = opt_access; i < opt_maxnet; i++)
+	for (i = opt_access; i < optMaxNet; i++)
 		if (m [i].value) {
 			mpParams.nGameAccess = i - opt_access;
 			break;
@@ -1354,7 +1366,7 @@ do_menu:
 			m [opt_mode+4].value = 0;
 
 		m [opt_mode].value = 1;
-		goto do_menu;
+		goto doMenu;
 		}
 #else
 	else if (m [opt_mode+1].value) {
@@ -1372,7 +1384,7 @@ do_menu:
 		mpParams.nGameMode = NETGAME_HOARD;
 	else if (HoardEquipped () && m [opt_team_hoard].value)
 		mpParams.nGameMode = NETGAME_TEAM_HOARD;
-	else if (HoardEquipped () && m [opt_entropy].value)
+	else if (HoardEquipped () && m [optEntropy].value)
 		mpParams.nGameMode = NETGAME_ENTROPY;
 	else if (HoardEquipped () && m [opt_monsterball].value)
 		mpParams.nGameMode = NETGAME_MONSTERBALL;
@@ -1381,7 +1393,7 @@ do_menu:
 		m [opt_mode+2].value = 0;
 		m [opt_mode+3].value = 0;
 		m [opt_mode].value = 1;
-		goto do_menu;
+		goto doMenu;
 		}               
 	else if (m [opt_mode+2].value) 
 		mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
@@ -1397,7 +1409,7 @@ do_menu:
 
 	if (nNewMission < 0) {
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Please chose a mission");
-		goto do_menu;
+		goto doMenu;
 		}
 
 	netGame.mission_name [sizeof (netGame.mission_name) - 1] = '\0';
@@ -1411,7 +1423,7 @@ do_menu:
 
 static time_t	nQueryTimeout;
 
-static void QueryPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void QueryPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 	time_t t;
 
@@ -1436,7 +1448,7 @@ return;
 
 int NetworkFindGame (void)
 {
-	newmenu_item	m [3];
+	tMenuItem	m [3];
 	int i;
 
 if (gameStates.multi.nGameType > IPX_GAME)
@@ -1463,7 +1475,7 @@ return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 int NetworkSelectTeams (void)
 {
 #ifndef SHAREWARE
-	newmenu_item m [MAX_PLAYERS+4];
+	tMenuItem m [MAX_PLAYERS+4];
 	int choice, opt, opt_team_b;
 	ubyte team_vector = 0;
 	char team_names [2] [CALLSIGN_LEN+1];
@@ -1481,7 +1493,7 @@ int NetworkSelectTeams (void)
 	sprintf (team_names [1], "%s", TXT_RED);
 
 	// Here comes da menu
-do_menu:
+doMenu:
 
 	memset (m, 0, sizeof (m));
 
@@ -1533,7 +1545,7 @@ do_menu:
 		{
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 #if 0//def RELEASE
-				goto do_menu;
+				goto doMenu;
 #endif
 		}
 		
@@ -1551,7 +1563,7 @@ do_menu:
 	}
 	else if (choice == -1)
 		return 0;
-	goto do_menu;
+	goto doMenu;
 #else
 	return 0;
 #endif
@@ -1562,10 +1574,10 @@ do_menu:
 int NetworkSelectPlayers (int bAutoRun)
 {
 	int i, j, choice = 1;
-   newmenu_item m [MAX_PLAYERS+4];
+   tMenuItem m [MAX_PLAYERS+4];
    char text [MAX_PLAYERS+4] [45];
 	char title [50];
-	int save_nplayers;              //how may people would like to join
+	int nSavePlayers;              //how may people would like to join
 
 NetworkAddPlayer (&networkData.mySeq);
 if (bAutoRun)
@@ -1590,13 +1602,13 @@ GetPlayersAgain:
 gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
 Assert (sizeofa (m) >= MAX_PLAYERS + 4);
 j = ExecMenu1 (NULL, title, MAX_PLAYERS + 4, m, NetworkStartPoll, &choice);
-save_nplayers = gameData.multi.nPlayers;
+nSavePlayers = gameData.multi.nPlayers;
 if (j < 0) {
 	// Aborted!                                     
 	// Dump all players and go back to menu mode
 
 abort:
-	for (i = 1; i<save_nplayers; i++) {
+	for (i = 1; i < nSavePlayers; i++) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
 				netPlayers.players [i].network.ipx.server, 
@@ -1612,20 +1624,20 @@ abort:
 	}
 // Count number of players chosen
 gameData.multi.nPlayers = 0;
-for (i = 0; i<save_nplayers; i++) {
+for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].value) 
 		gameData.multi.nPlayers++;
 	}
 if (gameData.multi.nPlayers > netGame.max_numplayers) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
-	gameData.multi.nPlayers = save_nplayers;
+	gameData.multi.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 	}
 #ifdef RELEASE
 if (gameData.multi.nPlayers < 2) {
 	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
-	gameData.multi.nPlayers = save_nplayers;
+	gameData.multi.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 #	endif
 	}
@@ -1633,11 +1645,11 @@ if (gameData.multi.nPlayers < 2) {
 
 #ifdef RELEASE
 if ((netGame.gamemode == NETGAME_TEAM_ANARCHY ||
-		netGame.gamemode == NETGAME_CAPTURE_FLAG || 
-		netGame.gamemode == NETGAME_TEAM_HOARD) && 
-		(gameData.multi.nPlayers < 2)) {
+	  netGame.gamemode == NETGAME_CAPTURE_FLAG || 
+	  netGame.gamemode == NETGAME_TEAM_HOARD) && 
+	 (gameData.multi.nPlayers < 2)) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
-	gameData.multi.nPlayers = save_nplayers;
+	gameData.multi.nPlayers = nSavePlayers;
 #if 0		
 	goto GetPlayersAgain;
 #endif		
@@ -1646,7 +1658,7 @@ if ((netGame.gamemode == NETGAME_TEAM_ANARCHY ||
 
 // Remove players that aren't marked.
 gameData.multi.nPlayers = 0;
-for (i = 0; i<save_nplayers; i++) {
+for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].value) {
 		if (i > gameData.multi.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -1708,7 +1720,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenuOption (newmenu_item *m, int j)
+void InitNetgameMenuOption (tMenuItem *m, int j)
 {
 m += j;
 if (!m->text) {
@@ -1723,7 +1735,7 @@ m->rebuild = 1;
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenu (newmenu_item *m, int i)
+void InitNetgameMenu (tMenuItem *m, int i)
 {
 	int j;
 
@@ -1783,7 +1795,7 @@ char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-void NetworkJoinPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
@@ -1925,7 +1937,7 @@ int NetworkBrowseGames (void)
 {
 	int choice, i, bAutoRun = gameData.multi.autoNG.bValid;
 	bkg bg;
-	newmenu_item m [MAX_ACTIVE_NETGAMES + 5];
+	tMenuItem m [MAX_ACTIVE_NETGAMES + 5];
 
 //LogErr ("launching netgame browser\n");
 memset (&bg, 0, sizeof (bg));
@@ -1986,7 +1998,7 @@ if (!bAutoRun) {
 	}
 networkData.bGamesChanged = 1;    
 
-do_menu:
+doMenu:
 
 gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
 if (bAutoRun) {
@@ -2017,13 +2029,13 @@ if (choice == -1) {
 choice -= (2 + gameStates.multi.bUseTracker);
 if (choice >= networkData.nActiveGames) {
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
-	goto do_menu;
+	goto doMenu;
 	}
 
 // Choice has been made and looks legit
 if (activeNetGames [choice].game_status == NETSTAT_ENDLEVEL) {
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
-	goto do_menu;
+	goto doMenu;
 	}
 if (activeNetGames [choice].protocol_version != MULTI_PROTO_VERSION) {
 	if (activeNetGames [choice].protocol_version == 3) {
@@ -2043,7 +2055,7 @@ if (activeNetGames [choice].protocol_version != MULTI_PROTO_VERSION) {
 		sprintf (szError, szFmt, MULTI_PROTO_VERSION, activeNetGames [choice].protocol_version);
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
 		}
-	goto do_menu;
+	goto doMenu;
 	}
 
 if (gameStates.multi.bUseTracker) {
@@ -2059,21 +2071,21 @@ if (!(LoadMissionByName (activeNetGames [choice].mission_name, -1) ||
 		 (DownloadMission (activeNetGames [choice].mission_name) &&
 		 LoadMissionByName (activeNetGames [choice].mission_name, -1)))) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
-	goto do_menu;
+	goto doMenu;
 	}
 #endif
 if (IS_D2_OEM && (activeNetGames [choice].levelnum > 8)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
-	goto do_menu;
+	goto doMenu;
 	}
 if (IS_MAC_SHARE && (activeNetGames [choice].levelnum > 4)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
-	goto do_menu;
+	goto doMenu;
 	}
 if (!NetworkWaitForAllInfo (choice)) {
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_JOIN_ERROR);
 	networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-	goto do_menu;
+	goto doMenu;
 	}       
 
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
@@ -2082,7 +2094,7 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
 	else
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
-	goto do_menu;
+	goto doMenu;
 	}
 // Choice is valid, prepare to join in
 memcpy (&netGame, activeNetGames + choice, sizeof (netgame_info));
@@ -2095,7 +2107,7 @@ ChangePlayerNumTo (1);
 // which the driver subscribes.
 if (IpxHandleNetGameAuxData (netGame.AuxData) < 0) {
 	networkData.nStatus = NETSTAT_BROWSING;
-	goto do_menu;
+	goto doMenu;
 	}
 NetworkSetGameMode (netGame.gamemode);
 NetworkAdjustMaxDataSize ();
@@ -2123,7 +2135,7 @@ return 1;
 int NetworkChooseConnect ()
 {
 #if 0
-newmenu_item m [16];
+tMenuItem m [16];
 int choice, opt = 0;
 #endif
 if (gameStates.multi.nGameType >= IPX_GAME) {  
@@ -2233,7 +2245,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void IpAddrMenuCallBack (int nitems, newmenu_item * menus, int * key, int citem)
+void IpAddrMenuCallBack (int nitems, tMenuItem * menus, int * key, int citem)
 {
 }
 
@@ -2241,7 +2253,7 @@ void IpAddrMenuCallBack (int nitems, newmenu_item * menus, int * key, int citem)
 
 int NetworkGetIpAddr (void)
 {
-	newmenu_item m [9];
+	tMenuItem m [9];
 	int i, choice = 0;
 	int opt = 0, optServer = -1, optPort = -1;
 	int commands;

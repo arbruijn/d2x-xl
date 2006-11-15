@@ -156,6 +156,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define D2X_MENU_GAP 0
 
+//------------------------------------------------------------------------------
+
+static int	nFPSopt, nRSDopt, 
+				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
+				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
+				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nUseSmokeOpt, nUseCamOpt,
+				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt,
+				nSyncSmokeSizes;
+
+static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
+
+static char *pszTexQual [4];
+static char *pszRendQual [5];
+static char *pszAmount [5];
+static char *pszSize [4];
+
+//------------------------------------------------------------------------------
+
 //ADD_MENU ("Start netgame...", MENU_START_NETGAME, -1 );
 //ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1 );
 
@@ -178,7 +196,7 @@ ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo start
 #else
 ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
 #endif
-int Player_default_difficulty; // Last difficulty level chosen by the player
+int playerDefaultDifficulty; // Last difficulty level chosen by the player
 
 // Function Prototypes added after LINTING
 void ExecMenuOption (int select);
@@ -295,7 +313,7 @@ void PrintVersionInfo (void)
 
 // ------------------------------------------------------------------------
 
-void autodemo_menu_check (int nitems, newmenu_item * items, int *last_key, int citem )
+void autodemo_menu_check (int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int curtime;
 
@@ -355,7 +373,7 @@ static int main_menu_choice = 0;
 int nD1Opt = -1, nD2Opt = -1;
 
 //      Create the main menu.
-void CreateMainMenu (newmenu_item *m, int *menu_choice, int *callers_num_options)
+void CreateMainMenu (tMenuItem *m, int *nMenuChoice, int *nCallerOptions)
 {
 	int     opt = 0;
 
@@ -370,43 +388,43 @@ ADD_TEXT (opt, "", 0);
 m [opt++].noscroll = 1;
 #endif
 ADD_MENU (opt, TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
-menu_choice [opt++] = MENU_NEW_GAME;
+nMenuChoice [opt++] = MENU_NEW_GAME;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
-	menu_choice [opt++] = MENU_NEW_SP_GAME;
+	nMenuChoice [opt++] = MENU_NEW_SP_GAME;
 	}
 ADD_MENU (opt, TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
-menu_choice [opt++] = MENU_LOAD_GAME;
+nMenuChoice [opt++] = MENU_LOAD_GAME;
 #ifdef NETWORK
 ADD_MENU (opt, TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
-menu_choice [opt++] = MENU_MULTIPLAYER;
+nMenuChoice [opt++] = MENU_MULTIPLAYER;
 #endif
 if (gameStates.app.bNostalgia)
 	ADD_MENU (opt, TXT_OPTIONS_, KEY_O, HTX_MAIN_CONF);
 else
 	ADD_MENU (opt, TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
-menu_choice [opt++] = MENU_CONFIG;
+nMenuChoice [opt++] = MENU_CONFIG;
 ADD_MENU (opt, TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
-menu_choice [opt++] = MENU_NEW_PLAYER;
+nMenuChoice [opt++] = MENU_NEW_PLAYER;
 ADD_MENU (opt, TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
-menu_choice [opt++] = MENU_DEMO_PLAY;
+nMenuChoice [opt++] = MENU_DEMO_PLAY;
 ADD_MENU (opt, TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
-menu_choice [opt++] = MENU_VIEW_SCORES;
+nMenuChoice [opt++] = MENU_VIEW_SCORES;
 if (CFExist ("orderd2.pcx", gameFolders.szDataDir, 0)) { /* SHAREWARE */
 	ADD_MENU (opt, TXT_ORDERING_INFO, -1, NULL);
-	menu_choice [opt++] = MENU_ORDER_INFO;
+	nMenuChoice [opt++] = MENU_ORDER_INFO;
 	}
 ADD_MENU (opt, TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
-menu_choice [opt++] = MENU_PLAY_MOVIE;
+nMenuChoice [opt++] = MENU_PLAY_MOVIE;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
-	menu_choice [opt++] = MENU_PLAY_SONG;
+	nMenuChoice [opt++] = MENU_PLAY_SONG;
 	}
 ADD_MENU (opt, TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
-menu_choice [opt++] = MENU_SHOW_CREDITS;
+nMenuChoice [opt++] = MENU_SHOW_CREDITS;
 #endif
 ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
-menu_choice [opt++] = MENU_QUIT;
+nMenuChoice [opt++] = MENU_QUIT;
 #ifndef RELEASE
 if (!(gameData.app.nGameMode & GM_MULTI ))   {
 	//m [opt].nType=NM_TYPE_TEXT;
@@ -415,7 +433,7 @@ if (!(gameData.app.nGameMode & GM_MULTI ))   {
 //		ADD_MENU ("  Load level...", MENU_LOAD_LEVEL , KEY_N);
 	#ifdef EDITOR
 	ADD_MENU (opt, "  Editor", KEY_E, NULL);
-	menu_choice [opt++] = MENU_EDITOR;
+	nMenuChoice [opt++] = MENU_EDITOR;
 	#endif
 }
 
@@ -425,11 +443,11 @@ if (!gameStates.app.bNostalgia) {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	menu_choice [nD2Opt = opt++] = MENU_D2_MISSIONS;
+	nMenuChoice [nD2Opt = opt++] = MENU_D2_MISSIONS;
 	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	menu_choice [nD1Opt = opt++] = MENU_D2_MISSIONS;
+	nMenuChoice [nD1Opt = opt++] = MENU_D2_MISSIONS;
 	}
-*callers_num_options = opt;
+*nCallerOptions = opt;
 }
 
 //------------------------------------------------------------------------------
@@ -441,12 +459,12 @@ extern unsigned char ipx_LocalAddress[10];
 //returns number of item chosen
 int CallMenu () 
 {
-	int menu_choice[25];
-	newmenu_item m [25];
+	int nMenuChoice[25];
+	tMenuItem m [25];
 	int i, num_options = 0;
 
 IpxClose ();
-memset (menu_choice, 0, sizeof (menu_choice));
+memset (nMenuChoice, 0, sizeof (nMenuChoice));
 memset (m, 0, sizeof (m));
 //LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
@@ -466,7 +484,7 @@ if (gameData.multi.autoNG.bValid) {
 	}
 
 do {
-	CreateMainMenu (m, menu_choice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
+	CreateMainMenu (m, nMenuChoice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
 	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (main_menu_choice < 0 )
 		main_menu_choice = 0;
@@ -482,8 +500,8 @@ do {
 			gameOpts->app.nVersionFilter |= 1;
 		}
 	WritePlayerFile ();
-	if ((i > -1) && (menu_choice[main_menu_choice] <= MENU_QUIT))
-		ExecMenuOption (menu_choice[main_menu_choice]);
+	if ((i > -1) && (nMenuChoice[main_menu_choice] <= MENU_QUIT))
+		ExecMenuOption (nMenuChoice[main_menu_choice]);
 } while ( gameStates.app.nFunctionMode==FMODE_MENU);
 if ( gameStates.app.nFunctionMode==FMODE_GAME )
 	GrPaletteFadeOut (NULL, 32, 0 );
@@ -633,16 +651,16 @@ switch (select) {
 
 #ifndef RELEASE
 	case MENU_LOAD_LEVEL: {
-		newmenu_item m;
+		tMenuItem m;
 		char text[10]="";
-		int newLevel_num;
+		int nNewLevel;
 
 		m.nType=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
 		ExecMenu ( NULL, "Enter level to load", 1, &m, NULL, NULL );
-		newLevel_num = atoi (m.text);
-		if (newLevel_num!=0 && newLevel_num>=gameData.missions.nLastSecretLevel && newLevel_num<=gameData.missions.nLastLevel)  {
+		nNewLevel = atoi (m.text);
+		if (nNewLevel!=0 && nNewLevel>=gameData.missions.nLastSecretLevel && nNewLevel<=gameData.missions.nLastLevel)  {
 			GrPaletteFadeOut (NULL, 32, 0 );
-			StartNewGame (newLevel_num);
+			StartNewGame (nNewLevel);
 		}
 
 		break;
@@ -750,7 +768,7 @@ switch (select) {
 int DifficultyMenu ()
 {
 	int i, choice = gameStates.app.nDifficultyLevel;
-	newmenu_item m [5];
+	tMenuItem m [5];
 
 memset (m, 0, sizeof (m));
 m [0].nType=NM_TYPE_MENU; m [0].text=MENU_DIFFICULTY_TEXT (0);
@@ -763,7 +781,7 @@ i = ExecMenu1 ( NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
 if (i <= -1)
 	return 0;
 if (choice != gameStates.app.nDifficultyLevel) {       
-	Player_default_difficulty = choice;
+	playerDefaultDifficulty = choice;
 	WritePlayerFile ();
 	}
 gameOpts->gameplay.nPlayerDifficultyLevel =
@@ -816,7 +834,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
 void DetailLevelMenu (void)
 {
 	int i, choice = gameStates.app.nDetailLevel;
-	newmenu_item m [8];
+	tMenuItem m [8];
 
 #if 1
 	char szMenuDetails [5][20];
@@ -856,7 +874,7 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-void CustomDetailsCallback (int nitems, newmenu_item * items, int *last_key, int citem )
+void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	nitems = nitems;
 	*last_key = *last_key;
@@ -896,7 +914,7 @@ void CustomDetailsMenu (void)
 {
 	int	opt;
 	int	i, choice = 0;
-	newmenu_item m [DL_MAX];
+	tMenuItem m [DL_MAX];
 	#if defined (POLY_ACC)
 	int filtering_id;
 	#endif
@@ -1032,7 +1050,7 @@ static int ScreenResModeToMenuItem(int mode)
 
 //------------------------------------------------------------------------------
 
-void ScreenResCallback (int nItems, newmenu_item *m, int *last_key, int citem)
+void ScreenResCallback (int nItems, tMenuItem *m, int *last_key, int citem)
 {
 	int	i, j;
 
@@ -1085,7 +1103,7 @@ void ScreenResMenu ()
 {
 #	define N_SCREENRES_ITEMS (NUM_DISPLAY_MODES + 4)
 
-	newmenu_item	m [N_SCREENRES_ITEMS];
+	tMenuItem	m [N_SCREENRES_ITEMS];
 	int				choice;
 	int				i, j, key, opt = 0, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
 	char				szMode [NUM_DISPLAY_MODES][20];
@@ -1198,13 +1216,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-void NewGameMenu ()
+int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 {
-	int newLevel_num, player_highestLevel;
-	int n_missions;
-	char * m [MAX_MISSIONS];
-	int i, nFolder, default_mission = 0;
-	static int nMission = -1;
+	int	i, nMissions, nDefaultMission, nNewMission = -1;
+	char	*szMsnNames [MAX_MISSIONS];
+
 	static char* menuTitles [4];
 	
 	menuTitles [0] = TXT_NEW_GAME;
@@ -1212,88 +1228,148 @@ void NewGameMenu ()
 	menuTitles [2] = TXT_NEW_D2GAME;
 	menuTitles [3] = TXT_NEW_GAME;
 
-	gameStates.app.bD1Mission = 0;
-	gameStates.app.bD1Data = 0;
-	SetDataVersion (-1);
-	if ((nMission < 0) || gameOpts->app.bSinglePlayer)
-		gameFolders.szMsnSubFolder [0] = '\0';
-	nFolder = -1;
-	CFUseAltHogFile ("");
-	do {
-		n_missions = BuildMissionList (0, nFolder);
-		if (n_missions < 1)
-			return;
-		for (i = 0; i < n_missions; i++) {
-			m [i] = gameData.missions.list[i].mission_name;
-			if (!stricmp (m [i], gameConfig.szLastMission))
-				default_mission = i;
-			}
-		nMission = ExecMenuListBox1 (menuTitles [gameOpts->app.nVersionFilter], n_missions, m, 1, default_mission, NULL);
-		GameFlushInputs ();
-		if (nMission == -1)
-			return;         //abort!
-		nFolder = nMission;
+if (bAnarchyOnly)
+	*bAnarchyOnly = 0;
+do {
+	nMissions = BuildMissionList (1, nNewMission);
+	if (nMissions < 1)
+		return -1;
+	nDefaultMission = 0;
+	for (i = 0; i < nMissions; i++) {
+		szMsnNames [i] = gameData.missions.list [i].mission_name;
+		if (!stricmp (szMsnNames [i], gameConfig.szLastMission))
+			nDefaultMission = i;
 		}
-	while (!gameData.missions.list [nMission].descent_version);
-	strcpy (gameConfig.szLastMission, m [nMission]);
-	if (!LoadMission (nMission)) {
-		ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
-		return;
+	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;
+	nNewMission = ExecMenuListBox1 (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], 
+											  nMissions, szMsnNames, 1, nDefaultMission, NULL);
+	GameFlushInputs ();
+	if (nNewMission == -1)
+		return -1;      //abort!
+	} while (!gameData.missions.list [nNewMission].descent_version);
+strcpy (gameConfig.szLastMission, szMsnNames [nNewMission]);
+if (!LoadMission (nNewMission)) {
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
+	return -1;
 	}
-	gameStates.app.bD1Mission = (gameData.missions.list [nMission].descent_version == 1);
-	gameData.missions.nLastMission = nMission;
-	newLevel_num = 1;
+gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].descent_version == 1);
+gameData.missions.nLastMission = nNewMission;
+if (bAnarchyOnly)
+	*bAnarchyOnly = gameData.missions.list [nNewMission].bAnarchyOnly;
+return nNewMission;
+}
 
-	LogErr ("   getting highest level allowed to play\n");
-	player_highestLevel = GetHighestLevel ();
+//------------------------------------------------------------------------------
 
-	if (player_highestLevel > gameData.missions.nLastLevel)
-		player_highestLevel = gameData.missions.nLastLevel;
+void NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int				v;
 
-	if (player_highestLevel > 1) {
-		newmenu_item m [4];
-		char info_text[80];
-		char num_text[10];
-		int choice;
-		int nItems;
+m = menus + nDiffOpt;
+v = m->value;
+if (gameStates.app.nDifficultyLevel != v) {
+	gameStates.app.nDifficultyLevel = 
+	gameOpts->gameplay.nPlayerDifficultyLevel = v;
+	gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
+	m->rebuild = 1;
+	}
+}
 
-try_again:
-		sprintf (info_text, "%s %d", TXT_START_ANY_LEVEL, player_highestLevel);
+//------------------------------------------------------------------------------
 
-		memset (m, 0, sizeof (m));
-		m [0].nType=NM_TYPE_TEXT; 
-		m [0].text = info_text;
-		m [1].nType=NM_TYPE_INPUT; 
-		m [1].text_len = 10; 
-		m [1].text = num_text;
-		nItems = 2;
+void NewGameMenu ()
+{
+	tMenuItem	m [10];
+	int				opt, optSelMsn, optMsnName, optLevelText, optLevel;
+	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
+	int				i, choice = 0, nDefaultMission = 0;
+	char				szDifficulty [50];
+	char				szLevelText [32];
+	char				szLevel [5];
 
-#ifdef WINDOWS
-		m [2].nType = NM_TYPE_TEXT; 
-		m [2].text = "";
-		m [3].nType = NM_TYPE_MENU; 
-		m [3].text = "          Ok";
-		nItems = 4;
-#endif
+	static int		nPlayerMaxLevel = 1;
+	static int		nLevel = 1;
+	
+gameStates.app.bD1Mission = 0;
+gameStates.app.bD1Data = 0;
+SetDataVersion (-1);
+if ((nMission < 0) || gameOpts->app.bSinglePlayer)
+	gameFolders.szMsnSubFolder [0] = '\0';
+CFUseAltHogFile ("");
+for (;;) {
+	memset (m, 0, sizeof (m));
+	opt = 0;
 
-		strcpy (num_text, "1");
-		choice = ExecMenu ( NULL, TXT_SELECT_START_LEV, nItems, m, NULL, NULL );
-		if (choice==-1 || m [1].text[0]==0)
-			return;
-		newLevel_num = atoi (m [1].text);
-		if ((newLevel_num <= 0) || (newLevel_num > player_highestLevel)) {
-			m [0].text = TXT_ENTER_TO_CONT;
-			ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
-			goto try_again;
+	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	optSelMsn = opt++;
+	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].mission_name, 0);	
+	optMsnName = opt++;
+	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
+		Assert (strlen (szLevelText) < 32);
+		ADD_TEXT (opt, szLevelText, 0); 
+		m [opt].rebuild = 1;
+		optLevelText = opt++;
+		sprintf (szLevel, "%d", nLevel);
+		ADD_INPUT (opt, szLevel, 4, HTX_MULTI_LEVEL);
+		optLevel = opt++;
 		}
-	}
+	else
+		optLevel = -1;
+	ADD_TEXT (opt, "                              ", 0);
+	opt++;
+	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
+	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	nDiffOpt = opt++;
 
-	gameStates.app.nDifficultyLevel = Player_default_difficulty;
-	if (!DifficultyMenu ())
-		return;
-	GrPaletteFadeOut (NULL, 32, 0 );
-	if (!StartNewGame (newLevel_num))
+	i = ExecMenu1 (NULL, TXT_SELECT_START_LEV, opt, m, &NewGameMenuCallback, &choice);
+	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
+		return;
+		}
+	if (choice == optSelMsn) {
+		i = SelectAndLoadMission (0, NULL);
+		if (i >= 0) {
+			bMsnLoaded = 1;
+			nMission = i;
+			nLevel = 1;
+			LogErr ("   getting highest level allowed to play\n");
+			nPlayerMaxLevel = GetHighestLevel ();
+			if (nPlayerMaxLevel > gameData.missions.nLastLevel)
+				nPlayerMaxLevel = gameData.missions.nLastLevel;
+			}
+		}
+	else if (choice == optLevel) {
+		i = atoi (m [optLevel].text);
+		if ((i <= 0) || (i > nPlayerMaxLevel))
+			ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+		else if (nLevel == i)
+			break;
+		else
+			nLevel = i;
+		}
+	else if (nMission >= 0)
+		break;
+	}
+
+i = m [nDiffOpt].value;
+if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
+	gameOpts->gameplay.nPlayerDifficultyLevel = i;
+	gameStates.app.nDifficultyLevel = i;
+	gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	}
+if (optLevel > 0)
+	nLevel = atoi (m [optLevel].text);
+GrPaletteFadeOut (NULL, 32, 0);
+if (!bMsnLoaded)
+	LoadMission (nMission);
+if (!StartNewGame (nLevel))
+	SetFunctionMode (FMODE_MENU);
 }
 
 //------------------------------------------------------------------------------
@@ -1305,7 +1381,7 @@ static int optContrast = -1;
 
 //------------------------------------------------------------------------------
 
-void options_menuset (int nitems, newmenu_item * items, int *last_key, int citem )
+void options_menuset (int nitems, tMenuItem * items, int *last_key, int citem )
 {
 if (gameStates.app.bNostalgia) {
 	if (citem == optBrightness)
@@ -1320,13 +1396,14 @@ last_key++;		//kill warning
 //added/edited on 8/18/98 by Victor Rachels to set gameOpts->render.nMaxFPS always on, max=80
 //added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
 
-static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, optIconAlpha, optTgtInd;
+static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, optIconAlpha, 
+				optTgtInd, optDmgInd, optHitInd;
 
 static char *szCWS [4];
 
-void CockpitOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v, j;
 
 m = menus + optTgtInd;
@@ -1337,6 +1414,13 @@ if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
 			extraGameInfo [0].bTargetIndicators = j;
 			break;
 			}
+	*key = -2;
+	return;
+	}
+m = menus + optDmgInd;
+v = m->value;
+if (v != extraGameInfo [0].bDamageIndicators) {
+	extraGameInfo [0].bDamageIndicators = v;
 	*key = -2;
 	return;
 	}
@@ -1383,11 +1467,11 @@ if (gameOpts->app.bExpertMode) {
 
 void CockpitOptionsMenu ()
 {
-	newmenu_item m [35];
+	tMenuItem m [35];
 	int	i, j, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
 			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
-			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optDmgInd, optCloakedInd;
+			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optCloakedInd;
 
 	char szCockpitWindowZoom [40];
 
@@ -1465,6 +1549,12 @@ do {
 		optCloakedInd = -1;
 	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 	optDmgInd = opt++;
+	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators) {
+		ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [0].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
+		optHitInd = opt++;
+		}
+	else
+		optHitInd = -1;
 	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1521,6 +1611,7 @@ do {
 		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
 		}
 	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
+	GET_VAL (extraGameInfo [0].bHitIndicators, optHitInd);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
@@ -1580,23 +1671,9 @@ return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
 //added/edited on 8/18/98 by Victor Rachels to set gameOpts->render.nMaxFPS always on, max=80
 //added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
 
-static int	nFPSopt, nRSDopt, 
-				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
-				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
-				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nUseSmokeOpt, nUseCamOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt,
-				nSyncSmokeSizes;
-
-static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
-
-static char *pszTexQual [4];
-static char *pszRendQual [5];
-static char *pszAmount [5];
-static char *pszSize [4];
-
-void RenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v;
 
 if (nLightMapsOpt >= 0) {
@@ -1673,16 +1750,16 @@ return j;
 //------------------------------------------------------------------------------
 
 void AdvancedRenderOptionsMenu ();
-void SmokeRenderOptionsMenu ();
+void SmokeOptionsMenu ();
 
 void RenderOptionsMenu ()
 {
-	newmenu_item m [50];
+	tMenuItem m [50];
 	int	i, choice = 0;
 	int	opt;
 	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
 			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight,
-			optAutoTransp, optLightTrails;
+			optAutoTransp, optLightTrails, optTracers, optShockwaves;
 #if 0
 	int checks;
 #endif
@@ -1744,8 +1821,12 @@ do {
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
 	nGunColorOpt = opt++;
-	ADD_CHECK (opt, TXT_LIGHT_TRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
 	optLightTrails = opt++;
+	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
+	optTracers = opt++;
+	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_T, HTX_RENDER_SHKWAVES);
+	optShockwaves = opt++;
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_I, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
@@ -1783,7 +1864,7 @@ do {
 			break;
 		if (gameOpts->app.bExpertMode) {
 			if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
-				SmokeRenderOptionsMenu ();
+				SmokeOptionsMenu ();
 			if ((optAdvOpts >= 0) && (i == optAdvOpts))
 				AdvancedRenderOptionsMenu ();
 			}
@@ -1807,6 +1888,8 @@ do {
 		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
+	extraGameInfo [0].bTracers = m [optTracers].value;
+	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
 	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
@@ -1830,6 +1913,7 @@ do {
 		gameOpts->render.smoke.bRobots =
 		gameOpts->render.smoke.bMissiles = 1;
 		gameOpts->render.smoke.bCollisions = 0;
+		gameOpts->render.smoke.bDisperse = 0;
 		gameOpts->render.smoke.nDens = 2;
 		gameOpts->render.smoke.nSize = 3;
 		gameOpts->render.cameras.bFitToWall = 0;
@@ -1846,9 +1930,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-void AdvancedRenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v;
 
 #if SHADOWS
@@ -1945,7 +2029,7 @@ if (nLMapRangeOpt >= 0) {
 
 void AdvancedRenderOptionsMenu ()
 {
-	newmenu_item m [50];
+	tMenuItem m [50];
 	int	h, i, choice = 0;
 	int	opt;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
@@ -2148,9 +2232,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-void SmokeRenderOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				i, v;
 
 m = menus + nUseSmokeOpt;
@@ -2222,7 +2306,7 @@ else
 static char szSmokeDens [4][50];
 static char szSmokeSize [4][50];
 
-int AddSmokeSliders (newmenu_item *m, int opt, int i)
+int AddSmokeSliders (tMenuItem *m, int opt, int i)
 {
 sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nDens [i], 0, 4)]);
 *szSmokeDens [i] = *(TXT_SMOKE_DENS - 1);
@@ -2237,12 +2321,12 @@ return opt;
 
 //------------------------------------------------------------------------------
 
-void SmokeRenderOptionsMenu ()
+void SmokeOptionsMenu ()
 {
-	newmenu_item m [50];
+	tMenuItem m [20];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optSmokeColl;
+	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optSmokeColl, optSmokeDisp;
 
 	pszSize [0] = TXT_SMALL;
 	pszSize [1] = TXT_MEDIUM;
@@ -2310,6 +2394,8 @@ do {
 			optDebrisSmoke = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 			optSmokeColl = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
+			optSmokeDisp = opt++;
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			ADD_CHECK (opt, TXT_SYNC_SIZES, gameOpts->render.smoke.bSyncSizes, KEY_M, HTX_ADVRND_SYNCSIZES);
@@ -2332,17 +2418,19 @@ do {
 		nPlrSmokeOpt =
 		optBotSmoke =
 		optMissSmoke =
-		optSmokeColl = -1;
+		optSmokeColl =
+		optSmokeDisp = -1;
 
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
 	do {
-		i = ExecMenu1 (NULL, TXT_SMOKE_RENDER_TITLE, opt, m, &SmokeRenderOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_SMOKE_RENDER_TITLE, opt, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);
 	if (extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value) {
 		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
+		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
 		//GET_VAL (gameOpts->render.smoke.bSyncSizes, nSyncSmokeSizes);
 		if (gameOpts->render.smoke.bSyncSizes) {
@@ -2357,9 +2445,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-void GameplayOptionsCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v;
 
 m = menus + nDiffOpt;
@@ -2368,7 +2456,7 @@ if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
 	if (!(gameData.app.nGameMode & GM_MULTI)) {
 		gameStates.app.nDifficultyLevel = v;
-		gameData.boss.nGateInterval = F1_0*4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+		gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
 		}
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
 	m->rebuild = 1;
@@ -2407,7 +2495,7 @@ if (gameOpts->app.bExpertMode) {
 
 void GameplayOptionsMenu ()
 {
-	newmenu_item m [35];
+	tMenuItem m [35];
 	int	i, j, opt = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
@@ -2526,7 +2614,7 @@ for (j = 0; j < 3; j++)
 
 void OptionsMenu ()
 {
-	newmenu_item m [20];
+	tMenuItem m [20];
 	int i, opt, choice = 0;
 	int optSound, optConfig, optJoyCal, optDetails, optScrRes, optReorderPrim, optReorderSec, 
 		 optToggles, optRender, optGameplay, optCockpit;
@@ -2634,7 +2722,7 @@ WIN (static BOOL windigi_driver_off=FALSE);
 
 static int optDigiVol, optMusicVol, optRedbook;
 
-void SoundMenuCallback (int nitems, newmenu_item * items, int *last_key, int citem )
+void SoundMenuCallback (int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	nitems=nitems;          
 	*last_key = *last_key;
@@ -2737,7 +2825,7 @@ citem++;		//kill warning
 
 void SoundMenu ()
 {
-   newmenu_item m [6];
+   tMenuItem m [6];
 	int	i, opt, choice = 0, 
 			optReverse,
 			song_playing = (gameConfig.nMidiVolume > 0);
@@ -2804,9 +2892,9 @@ static int nDlTimeoutOpt, nAutoDlOpt, nExpModeOpt, nUseDefOpt, nCompSpeedOpt, nS
 static char *pszCompSpeeds [5];
 extern int screenShotIntervals [];
 
-void MiscellaneousCallback (int nitems, newmenu_item * menus, int * key, int citem)
+void MiscellaneousCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	newmenu_item * m;
+	tMenuItem * m;
 	int				v;
 
 if (!gameStates.app.bNostalgia) {
@@ -2870,7 +2958,7 @@ else
 
 void MiscellaneousMenu ()
 {
-	newmenu_item m [20];
+	tMenuItem m [20];
 	int	i, opt, choice,
 #if 0
 			optFastResp, 
@@ -3169,13 +3257,15 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 
 int QuitSaveLoadMenu (void)
 {
-	newmenu_item m [5];
-	int	i, choice = 0, opt, optQuit, optLoad, optSave;
+	tMenuItem m [5];
+	int	i, choice = 0, opt, optQuit, optOptions, optLoad, optSave;
 
 memset (m, 0, sizeof (m));
 opt = 0;
 ADD_MENU (opt, TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
 optQuit = opt++;
+ADD_MENU (opt, TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+optOptions = opt++;
 ADD_MENU (opt, TXT_LOAD_GAME2, KEY_L, HTX_LOAD_GAME);
 optLoad = opt++;
 ADD_MENU (opt, TXT_SAVE_GAME2, KEY_S, HTX_SAVE_GAME);
@@ -3183,8 +3273,10 @@ optSave = opt++;
 i = ExecMenu1 (NULL, TXT_ABORT_GAME, opt, m, NULL, &choice);
 if (!i)
 	return 0;
-if (i == optLoad)
-	StateRestoreAll(1, 0, NULL);
+if (i == optOptions)
+	OptionsMenu ();
+else if (i == optLoad)
+	StateRestoreAll (1, 0, NULL);
 else if (i == optSave)
 	StateSaveAll (0, 0, NULL);
 return 1;
@@ -3195,8 +3287,8 @@ return 1;
 #ifdef NETWORK
 void MultiplayerMenu ()
 {
-	int menu_choice [11];
-	newmenu_item m [11];
+	int nMenuChoice [11];
+	tMenuItem m [11];
 	int choice = 0, opt = 0, i, optCreate, optJoin, optConn, nConnections;
 	int old_game_mode;
 	static int choiceMap [5][2] = {
@@ -3244,41 +3336,41 @@ else {
 		else {
 	#ifdef NATIVE_IPX
 			ADD_MENU (opt, TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
-			menu_choice [opt++] = MENU_START_IPX_NETGAME;
+			nMenuChoice [opt++] = MENU_START_IPX_NETGAME;
 			ADD_MENU (opt, TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
-			menu_choice [opt++] = MENU_JOIN_IPX_NETGAME;
+			nMenuChoice [opt++] = MENU_JOIN_IPX_NETGAME;
 	#endif //NATIVE_IPX
 			//ADD_MENU (TXT_START_TCP_NET_GAME, MENU_START_TCP_NETGAME, -1);
 			//ADD_MENU (TXT_JOIN_TCP_NET_GAME, MENU_JOIN_TCP_NETGAME, -1);
 	#if 0
 			ADD_MENU (opt, TXT_UDP_START, KEY_U, HTX_NETWORK_UDP);
-			menu_choice [opt++] = MENU_START_UPD_NETGAME;
+			nMenuChoice [opt++] = MENU_START_UPD_NETGAME;
 			ADD_MENU (opt, TXT_UDP_JOIN, KEY_O, HTX_NETWORK_UDP);
-			menu_choice [opt++] = MENU_JOIN_UDP_NETGAME;
+			nMenuChoice [opt++] = MENU_JOIN_UDP_NETGAME;
 			ADD_MENU (opt, TXT_TRACKER_START, KEY_T, HTX_NETWORK_TRACKER);
-			menu_choice [opt++] = MENU_START_UDP_TRACKER_NETGAME;
+			nMenuChoice [opt++] = MENU_START_UDP_TRACKER_NETGAME;
 			ADD_MENU (opt, TXT_TRACKER_JOIN, KEY_R, HTX_NETWORK_TRACKER);
-			menu_choice [opt++] = MENU_JOIN_UDP_TRACKER_NETGAME;
+			nMenuChoice [opt++] = MENU_JOIN_UDP_TRACKER_NETGAME;
 	#endif
 			ADD_MENU (opt, TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
-			menu_choice [opt++] = MENU_START_MCAST4_NETGAME;
+			nMenuChoice [opt++] = MENU_START_MCAST4_NETGAME;
 			ADD_MENU (opt, TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
-			menu_choice [opt++] = MENU_JOIN_MCAST4_NETGAME;
+			nMenuChoice [opt++] = MENU_JOIN_MCAST4_NETGAME;
 	#ifdef KALINIX
 			ADD_MENU (opt, TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
-			menu_choice [opt++] = MENU_START_KALI_NETGAME;
+			nMenuChoice [opt++] = MENU_START_KALI_NETGAME;
 			ADD_MENU (opt, TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
-			menu_choice [opt++] = MENU_JOIN_KALI_NETGAME;
+			nMenuChoice [opt++] = MENU_JOIN_KALI_NETGAME;
 	#endif // KALINIX
 			if (gameStates.app.bNostalgia > 2) {
 				ADD_MENU (opt, TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
-				menu_choice [opt++] = MENU_START_SERIAL;
+				nMenuChoice [opt++] = MENU_START_SERIAL;
 				}
 			}
 		i = ExecMenu1 (NULL, TXT_MULTIPLAYER, opt, m, NULL, &choice);
 		if (i > -1) {      
 			if (gameStates.app.bNostalgia > 1)
-				i = menu_choice [choice];
+				i = nMenuChoice [choice];
 			else {
 				for (gameStates.multi.nConnection = 0; 
 					  gameStates.multi.nConnection < nConnections; 
@@ -3349,7 +3441,7 @@ else {
 
 void DoNewIPAddress ()
  {
-  newmenu_item m [4];
+  tMenuItem m [4];
   char IPText[30];
   int choice;
 

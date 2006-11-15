@@ -400,7 +400,7 @@ int gr_rle_getsize (int org_size, ubyte *src)
 
 //------------------------------------------------------------------------------
 
-int gr_bitmap_rle_compress (grs_bitmap * bmP)
+int gr_bitmap_rle_compress (grsBitmap * bmP)
 {
 	int y, d1, d;
 	int doffset;
@@ -452,9 +452,9 @@ int gr_bitmap_rle_compress (grs_bitmap * bmP)
 #define MAX_CACHE_BITMAPS 32
 
 typedef struct rle_cache_element {
-	grs_bitmap * rle_bitmap;
+	grsBitmap * rle_bitmap;
 	ubyte * rle_data;
-	grs_bitmap * expanded_bitmap;
+	grsBitmap * expanded_bitmap;
 	int last_used;
 } rle_cache_element;
 
@@ -505,7 +505,7 @@ void RLECacheFlush ()
 
 //------------------------------------------------------------------------------
 
-void rle_expand_texture_sub (grs_bitmap * bmP, grs_bitmap * rle_temp_bitmap_1)
+void rle_expand_texture_sub (grsBitmap * bmP, grsBitmap * rle_temp_bitmap_1)
 {
 	unsigned char * dbits;
 	unsigned char * sbits;
@@ -533,7 +533,7 @@ for (i=0; i < bmP->bm_props.h; i++) {
 //------------------------------------------------------------------------------
 
 #if defined (POLY_ACC)
-grs_bitmap *rle_get_id_sub (grs_bitmap *bmP)
+grsBitmap *rle_get_id_sub (grsBitmap *bmP)
 {
 	int i;
 
@@ -546,7 +546,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-grs_bitmap *rle_expand_texture (grs_bitmap * bmP)
+grsBitmap *rle_expand_texture (grsBitmap * bmP)
 {
 	int i;
 	int lowest_count, lc;
@@ -592,7 +592,7 @@ return rle_cache[least_recently_used].expanded_bitmap;
 
 //------------------------------------------------------------------------------
 
-void gr_rle_expand_scanline_generic (grs_bitmap * dest, int dx, int dy, ubyte *src, int x1, int x2)
+void gr_rle_expand_scanline_generic (grsBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2)
 {
 	int i = 0, j;
 	int count;
@@ -654,7 +654,7 @@ void gr_rle_expand_scanline_generic (grs_bitmap * dest, int dx, int dy, ubyte *s
 
 //------------------------------------------------------------------------------
 
-void gr_rle_expand_scanline_generic_masked (grs_bitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 )
+void gr_rle_expand_scanline_generic_masked (grsBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 )
 {
 	int i = 0, j;
 	int count;
@@ -728,7 +728,7 @@ void gr_rle_expand_scanline_generic_masked (grs_bitmap * dest, int dx, int dy, u
 //------------------------------------------------------------------------------
 // swaps entries 0 and 255 in an RLE bitmap without uncompressing it
 
-void rle_swap_0_255 (grs_bitmap *bmP)
+void rle_swap_0_255 (grsBitmap *bmP)
 {
 	int h, i, j, len, rle_big;
 	unsigned char *ptr, *ptr2, *temp, *start;
@@ -787,7 +787,7 @@ d_free (temp);
 //------------------------------------------------------------------------------
 // remaps all entries using colorMap in an RLE bitmap without uncompressing it
 
-int rle_remap (grs_bitmap *bmP, ubyte *colorMap, int maxLen)
+int rle_remap (grsBitmap *bmP, ubyte *colorMap, int maxLen)
 {
 	int				h, i, j, len, bBigRLE;
 	unsigned char	*pSrc, *pDest, *remapBuf, *start;
@@ -839,7 +839,7 @@ return len;
 
 //------------------------------------------------------------------------------
 
-int rle_expand (grs_bitmap *bmP, ubyte *colorMap, int bSwap0255)
+int rle_expand (grsBitmap *bmP, ubyte *colorMap, int bSwap0255)
 {
 	ubyte				*expandBuf, *pSrc, *pDest;
 	ubyte				c, h;

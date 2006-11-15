@@ -427,7 +427,7 @@ ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte
 sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
 //char * invert_text [2] = { "N", "Y" };
-//char * joybutton_text [28] = { "TRIG", "BTN 1", "BTN 2", "BTN 3", "BTN 4", "", "LEFT", "HAT ", "RIGHT", "", "", "HAT €", "MID", "", "", "HAT ", "", "", "", "HAT ‚", "TRIG", "LEFT", "RIGHT", "", "UP","DOWN","LEFT", "RIGHT" };
+//char * joybutton_text [28] = { "TRIG", "BTN 1", "BTN 2", "BTN 3", "BTN 4", "", "LEFT", "HAT ", "RIGHT", "", "", "HAT ", "MID", "", "", "HAT ", "", "", "", "HAT ", "TRIG", "LEFT", "RIGHT", "", "UP","DOWN","LEFT", "RIGHT" };
 //char * JOYAXIS_TEXT [4] = { "X1", "Y1", "X2", "Y2" };
 //char * mouseaxis_text [2] = { "L/R", "F/B" };
 //char * mousebutton_text [3] = { "Left", "Right", "Mid" };
@@ -472,7 +472,7 @@ char * mousebutton_textra [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M1
 char * key_text [256] = {         \
 "","ESC","1","2","3","4","5","6","7","8","9","0","-", 			\
 "=","BSPC","TAB","Q","W","E","R","T","Y","U","I","O",				\
-"P"," [","]","ƒ","LCTRL","A","S","D","F",        \
+"P"," [","]","","LCTRL","A","S","D","F",        \
 "G","H","J","K","L",";","'","`",        \
 "LSHFT","\\","Z","X","C","V","B","N","M",",",      \
 ".","/","RSHFT","PAD*","LALT","SPC",      \
@@ -483,10 +483,10 @@ char * key_text [256] = {         \
 "","","","","","","","","","","","","","","","","","","","",     \
 "","","","","","","","","","","","","","","","","","","","",     \
 "","","","","","","","","","","","","","","","","","",           \
-"PADƒ","RCTRL","","","","","","","","","","","","","", \
+"PAD","RCTRL","","","","","","","","","","","","","", \
 "","","","","","","","","","","PAD/","","","RALT","",      \
-"","","","","","","","","","","","","","HOME","‚","PGUP",     \
-"","","","","","END","€","PGDN","INS",       \
+"","","","","","","","","","","","","","HOME","","PGUP",     \
+"","","","","","END","","PGDN","INS",       \
 "DEL","","","","","","","","","","","","","","","","","",     \
 "","","","","","","","","","","","","","","","","","","","",     \
 "","","","","","","" };
@@ -1091,12 +1091,9 @@ void KCQuitMenu (grs_canvas *save_canvas, grs_font *save_font, bkg *bg, int time
 {
 grdCurCanv->cv_font	= save_font;
 WIN (DEFINE_SCREEN (old_bg_pcx));
-WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
-		  GrFreeSubCanvas (bg->menu_canvas));
-WINDOS (
-	DDGrSetCurrentCanvas (save_canvas),
-	GrSetCurrentCanvas (save_canvas)
-	);			
+//WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), GrFreeSubCanvas (bg->menu_canvas));
+//bg->menu_canvas = NULL;
+WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));			
 GameFlushInputs ();
 NMRemoveBackground (bg);
 newmenu_hide_cursor ();
@@ -1401,66 +1398,50 @@ WIN (char *old_bg_pcx);
 WIN (old_bg_pcx = _SCRContext.bkg_filename);
 WIN (DEFINE_SCREEN (NULL));
 
-	All_items = items;
-	Num_items = nitems;
-	memset (&bg, 0, sizeof (bg));
-	bg.bIgnoreBg = 1;
-	gameStates.menus.nInMenu++;
-	memset (start_axis, 0, sizeof (start_axis));
+All_items = items;
+Num_items = nitems;
+memset (&bg, 0, sizeof (bg));
+bg.bIgnoreBg = 1;
+gameStates.menus.nInMenu++;
+memset (start_axis, 0, sizeof (start_axis));
 
-	if (! ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))
-	{
-		time_stopped = 1;
-		StopTime ();
+if (!(gameData.app.nGameMode & GM_MULTI) || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.app.bEndLevelSequence) {
+	time_stopped = 1;
+	StopTime ();
 	}
 
-//	if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
-//		WINDOS (
-//			joydefsw_win_joyselect (title2); title = title2,
-//			Int3 ()
-//		);												// Get Samir...
-//	}
-
-WINDOS (
-	save_canvas = dd_grd_curcanv,
-	save_canvas = grdCurCanv
-);
-
-
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-);		
-	save_font = grdCurCanv->cv_font;
+WINDOS (save_canvas = dd_grd_curcanv, save_canvas = grdCurCanv);
+WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
+save_font = grdCurCanv->cv_font;
 
 #ifdef WINDOWS
 KConfigPaint:
 #endif
-	FlushInput ();
-	NMDrawBackground (&bg, xOffs, yOffs, 
-		xOffs + 639 /*grdCurCanv->cv_bitmap.bm_props.w - 1*/, 
-		yOffs + 479 /*grdCurCanv->cv_bitmap.bm_props.h - 1*/, 0);
-   GrPaletteStepLoad (NULL);
+FlushInput ();
+NMDrawBackground (&bg, xOffs, yOffs, 
+	xOffs + 639 /*grdCurCanv->cv_bitmap.bm_props.w - 1*/, 
+	yOffs + 479 /*grdCurCanv->cv_bitmap.bm_props.h - 1*/, 0);
+GrPaletteStepLoad (NULL);
 
 citem = 0;
 newmenu_show_cursor ();
 #ifdef NEWMENU_MOUSE
 	mouse_state = omouse_state = 0;
 #endif
-	while (1) {
-	//	Windows addendum to allow for KConfig input.
-	#if defined (WINDOWS)
-		{
-			MSG msg;
-			DoMessageStuff (&msg);
-			if (_RedrawScreen) {
-				_RedrawScreen = FALSE;
-				DDGrSetCurrentCanvas (NULL);	
-				goto KConfigPaint;
-			}
-			DDGRRESTORE;
-	 	}
-	#endif
+for (;;) {
+//	Windows addendum to allow for KConfig input.
+#if defined (WINDOWS)
+	{
+		MSG msg;
+		DoMessageStuff (&msg);
+		if (_RedrawScreen) {
+			_RedrawScreen = FALSE;
+			DDGrSetCurrentCanvas (NULL);	
+			goto KConfigPaint;
+		}
+		DDGRRESTORE;
+	}
+#endif
 	do {
 		if (gameOpts->menus.nStyle || !bRedraw) {
 			bRedraw = 1;
@@ -1513,24 +1494,23 @@ newmenu_show_cursor ();
 		GrUpdate (0);
 		} while (nChangeMode != BT_NONE);
 		//see if redbook song needs to be restarted
-		songs_check_redbook_repeat ();
+	SongsCheckRedbookRepeat ();
 
-
-		k = KeyInKey ();
-		MultiDoFrame();
+	k = KeyInKey ();
+	MultiDoFrame();
 #ifdef NEWMENU_MOUSE
-		omouse_state = mouse_state;
-		mouse_state = MouseButtonState (0);
+	omouse_state = mouse_state;
+	mouse_state = MouseButtonState (0);
 #endif
 
-		if (!time_stopped) {
-			#ifdef NETWORK
-			if (MultiMenuPoll () == -1)
-				k = -2;
-			#endif
+	if (!time_stopped) {
+#ifdef NETWORK
+		if (MultiMenuPoll () == -1)
+			k = -2;
+#endif
 		}
-		ocitem = citem;
-		switch (k)	{
+	ocitem = citem;
+	switch (k)	{
 		case KEY_BACKSP:
 			Int3 ();
 			break;
@@ -1871,7 +1851,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 void KConfig (int n, char * title)
 {
 	int i;
-	grs_bitmap *bmSave;
+	grsBitmap *bmSave;
 	int	b = gameOpts->legacy.bInput;
 
 	xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
@@ -1899,33 +1879,26 @@ void KConfig (int n, char * title)
 	GrBmBitBlt (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.w, 
 					 0, 0, 0, 0, &grdCurCanv->cv_bitmap, bmSave);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	switch (n)	{
-	case 0:
+	if (n == 0)
 		KConfigSub (kc_keyboard, NUM_KEY_CONTROLS, title);
-		break;
-	case 1:
+	else if (n == 1)
 		KConfigSub (kc_joystick, NUM_JOY_CONTROLS, title);
-		break;
-	case 2:
+	else if (n == 2)
 		KConfigSub (kc_mouse, NUM_MOUSE_CONTROLS, title); 
-		break;
 #if 0
-	case 3:
+	else if (n == 3)
 		KConfigSub (kc_superjoy, NUM_JOY_CONTROLS, title); 
-		break;
 #endif
 #ifdef D2X_KEYS
-	//added on 2/4/99 by Victor Rachels for new keys menu
-	case 4:
+	else if (n == 4)
 		KConfigSub (kc_d2x, NUM_D2X_CONTROLS, title); 
-		break;
 	//end this section addition - VR
 #endif
- 	default:
+ 	else {
 		Int3 ();
 		gameOpts->legacy.bInput = b;
 		return;
-	}
+		}
 
 	//restore screen
 	WIN (mouse_set_mode (1));
@@ -1936,24 +1909,30 @@ void KConfig (int n, char * title)
 	GrFreeBitmap (bmSave);
 	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...
-	for (i = 0; i < NUM_KEY_CONTROLS; i++)	
-		controlSettings.custom [0][i] = kc_keyboard [i].value;
-	if (gameOpts->input.bUseJoystick) { 
-		for (i = 0; i < NUM_JOY_CONTROLS; i++)	
-			controlSettings.custom [gameStates.input.nJoyType][i] = kc_joystick [i].value;
+	if (n == 0) {
+		for (i = 0; i < NUM_KEY_CONTROLS; i++)	
+			controlSettings.custom [0][i] = kc_keyboard [i].value;
 		}
-	if (gameOpts->input.bUseMouse) {
-		for (i = 0; i < NUM_MOUSE_CONTROLS; i++)	
-			controlSettings.custom [gameStates.input.nMouseType][i] = kc_mouse [i].value;
+	else if (n == 1) {
+		if (gameOpts->input.bUseJoystick)
+			for (i = 0; i < NUM_JOY_CONTROLS; i++)	
+				controlSettings.custom [gameStates.input.nJoyType][i] = kc_joystick [i].value;
 		}
-	if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
-		for (i = 0; i < NUM_JOY_CONTROLS; i++)	
-			controlSettings.custom [gameConfig.nControlType][i] = kc_superjoy [i].value;
-	}
-
+	else if (n == 2) {
+		if (gameOpts->input.bUseMouse)
+			for (i = 0; i < NUM_MOUSE_CONTROLS; i++)	
+				controlSettings.custom [gameStates.input.nMouseType][i] = kc_mouse [i].value;
+		}
+	else if (n == 3) {
+		if (gameConfig.nControlType == CONTROL_WINJOYSTICK)
+			for (i = 0; i < NUM_JOY_CONTROLS; i++)	
+				controlSettings.custom [gameConfig.nControlType][i] = kc_superjoy [i].value;
+		}
 #ifdef D2X_KEYS
-	for (i=0; i < NUM_D2X_CONTROLS; i++)
-		controlSettings.d2xCustom [i] = kc_d2x [i].value;
+	else if (n == 4) {
+		for (i=0; i < NUM_D2X_CONTROLS; i++)
+			controlSettings.d2xCustom [i] = kc_d2x [i].value;
+		}
 #endif
 gameOpts->legacy.bInput = b;
 }

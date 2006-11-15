@@ -91,15 +91,15 @@ glClientActiveTextureARB =  (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress(
 
 bool G3DrawTexPolyMulti (
 	int nv,
-	g3s_point **pointlist,
+	g3sPoint **pointlist,
 	uvl *uvl_list,
-	grs_bitmap *bmbot,
-	grs_bitmap *bm,
+	grsBitmap *bmbot,
+	grsBitmap *bm,
 	int orient)
 {
 	bool lightmapping=0;
 	int c;
-	g3s_point *p, **pp;
+	g3sPoint *p, **pp;
 	GLint depthFunc;
 
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -140,7 +140,7 @@ if (lightmapping) {//lightmapping enabled
 	glDisable(GL_TEXTURE_2D);
 	}
 else {//lightmapping disabled - render old way
-	g3s_point *p;
+	g3sPoint *p;
 
 	if (tmap_drawer_ptr==DrawTexPolyFlat){
 		glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -210,14 +210,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPoly (int nv,g3s_point **pointlist,uvl *uvl_list,grs_bitmap *bm)
+bool G3DrawTexPoly (int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm)
 {
 return g4_draw_tmap_2 (nv, pointlist, uvl_list, bm, NULL, 0);
 }
 
 //------------------------------------------------------------------------------
 
-bool G3DrawBitMap(vmsVector *pos,fix width,fix height,grs_bitmap *bm, int orientation)
+bool G3DrawBitMap(vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation)
 {
 	vmsVector pv,v1;
 	int i;
@@ -271,7 +271,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool OglUBitMapMC(int x, int y,grs_bitmap *bm,int c)
+bool OglUBitMapMC(int x, int y,grsBitmap *bm,int c)
 {
 	GLint curFunc;
 	GLdouble xo,yo,xf,yf;

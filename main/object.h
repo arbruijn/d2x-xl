@@ -155,7 +155,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype DeadPlayerEnd().
  *
  * Revision 1.89  1994/09/15  16:34:47  mike
- * Add danger_laser_num and danger_laser_signature to object_local to
+ * Add nDangerLaser and nDangerLaserSig to object_local to
  * enable robots to efficiently (too efficiently!) avoid player fire.
  *
  * Revision 1.88  1994/09/11  22:46:19  mike
@@ -315,7 +315,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_HOSTAGE      4   // a hostage
 #define RT_POWERUP      5   // a powerup
 #define RT_MORPH        6   // a robot being morphed
-#define RT_WEAPON_VCLIP 7   // a weapon that renders as a vclip
+#define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 
 // misc tObject flags
@@ -479,7 +479,7 @@ typedef struct tObject {
 	// render info, determined by RENDER_TYPE
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
-		tVClipInfo     vClipInfo;     // vclip
+		tVClipInfo     vClipInfo;     // tVideoClip
 		} rType __pack__ ;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;

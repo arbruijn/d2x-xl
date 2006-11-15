@@ -71,7 +71,7 @@ void joy_delay()
 int joycal_message( char * title, char * text )
 {
 	int i;
-	newmenu_item	m[2];
+	tMenuItem	m[2];
 	memset (m, 0, sizeof (m));
 	m[0].nType = NM_TYPE_TEXT; 
 	m[0].text = text;
@@ -141,7 +141,7 @@ void joydefs_calibrate()
 
 //char *control_text[CONTROL_MAX_TYPES] = { "Keyboard only", "Joystick", "Flightstick Pro", "Thrustmaster FCS", "Gravis Gamepad", "Mouse", "Cyberman" };
 
-void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
+void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
 	int ocType = gameConfig.nControlType;
@@ -188,7 +188,7 @@ void joydefs_config()
 //added/changed/killed on 10/17/98 by Hans de Goede for joystick/mouse # fix
 //-killed-        char xtext[128];
 //-killed-        int i, old_masks, masks;
-        newmenu_item m[13];
+        tMenuItem m[13];
 //-killed-        int i1=5;
 //-killed-        int nitems;
 //-killed-

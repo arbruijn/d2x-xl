@@ -71,14 +71,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //Prototypes for IFF library functions
 
-int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType);
-	//reads an IFF file into a grs_bitmap structure. fills in palette if not null
+int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType);
+	//reads an IFF file into a grsBitmap structure. fills in palette if not null
 	//returns error codes - see IFF.H.  see GR.H for bitmapType
-	//MEM DETAILS:  This routines assumes that you already have the grs_bitmap
+	//MEM DETAILS:  This routines assumes that you already have the grsBitmap
 	//structure allocated, but that you don't have the data for this bitmap
 	//allocated. In other words, do this:
-	//   grs_bitmap * MyPicture;
-	//   MALLOC( MyPicture, grs_bitmap, 1);
+	//   grsBitmap * MyPicture;
+	//   MALLOC( MyPicture, grsBitmap, 1);
 	//   iff_read_bitmap( filename, MyPicture, BM_LINEAR, NULL );
 	//   ...do whatever with your bitmap ...
 	//   GrFreeBitmap( MyPicture );
@@ -86,19 +86,19 @@ int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType);
 
 //like iff_read_bitmap(), but reads into a bitmap that already exists,
 //without allocating memory for the bitmap.
-int iff_read_into_bitmap(char *ifilename,grs_bitmap *bm);
+int iff_read_into_bitmap(char *ifilename,grsBitmap *bm);
 
 //read in animator brush (.abm) file
 //fills in array of pointers, and n_bitmaps.
 //returns iff error codes. max_bitmaps is size of array.
-int iff_read_animbrush(char *ifilename,grs_bitmap **bm,int max_bitmaps,int *n_bitmaps);
+int iff_read_animbrush(char *ifilename,grsBitmap **bm,int max_bitmaps,int *n_bitmaps);
 
 // After a read
 extern ubyte iff_transparent_color;
 extern ubyte iff_has_transparency;	// 0=no transparency, 1=iff_transparent_color is valid
 
-int iff_write_bitmap(char *ofilename,grs_bitmap *bm, ubyte *palette);
-	//writes an IFF file from a grs_bitmap structure. writes palette if not null
+int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette);
+	//writes an IFF file from a grsBitmap structure. writes palette if not null
 	//returns error codes - see IFF.H.
 
 //function to return pointer to error message

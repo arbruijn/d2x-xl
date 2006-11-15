@@ -43,8 +43,8 @@ static char rcsid[] = "$Id: rod.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "ogl_init.h"
 
 grs_point blob_vertices[4];
-g3s_point rodPoints[4];
-g3s_point *rodPointList[] = {&rodPoints[0], &rodPoints[1], &rodPoints[2], &rodPoints[3]};
+g3sPoint rodPoints[4];
+g3sPoint *rodPointList[] = {&rodPoints[0], &rodPoints[1], &rodPoints[2], &rodPoints[3]};
 
 uvl uvl_list[4] = {
 	{ 0x0200, 0x0200, 0 }, 
@@ -54,7 +54,7 @@ uvl uvl_list[4] = {
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.
-int CalcRodCorners (g3s_point *bot_point, fix bot_width, g3s_point *top_point, fix top_width)
+int CalcRodCorners (g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width)
 {
 	vmsVector	delta_vec, top, tempv, rod_norm;
 	ubyte			codes_and;
@@ -103,7 +103,7 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodPoly (g3s_point *bot_point, fix bot_width, g3s_point *top_point, fix top_width)
+bool G3DrawRodPoly (g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width)
 {
 if (CalcRodCorners (bot_point, bot_width, top_point, top_width))
 	return 0;
@@ -113,7 +113,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly (grs_bitmap *bitmap, g3s_point *bot_point, fix bot_width, g3s_point *top_point, fix top_width, fix light)
+bool G3DrawRodTexPoly (grsBitmap *bitmap, g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width, fix light)
 {
 if (CalcRodCorners (bot_point, bot_width, top_point, top_width))
 	return 0;
@@ -132,10 +132,10 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c);
 #if (! (defined (D1XD3D) || defined (OGL)))
 //draws a bitmap with the specified 3d width & height 
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitMap (vmsVector *pos, fix width, fix height, grs_bitmap *bm, int orientation)
+bool G3DrawBitMap (vmsVector *pos, fix width, fix height, grsBitmap *bm, int orientation)
 {
 #ifndef __powerc
-	g3s_point pnt;
+	g3sPoint pnt;
 	fix t, w, h;
 
 	if (G3TransformAndEncodePoint (&pnt, pos) & CC_BEHIND)
@@ -165,7 +165,7 @@ bool G3DrawBitMap (vmsVector *pos, fix width, fix height, grs_bitmap *bm, int or
 
 	return 0;
 #else
-	g3s_point pnt;
+	g3sPoint pnt;
 	fix w, h;
 	double fz;
 

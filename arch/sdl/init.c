@@ -32,22 +32,25 @@ extern void d_mouse_init();
 void _CDECL_ sdl_close(void)
 {
 LogErr ("shutting down SDL\n");
+#if 1//!defined (__unix__) || defined (_DEBUG)
 SDL_Quit();
+#endif
 }
 
 void arch_sdl_init()
 {
 #if defined(SDL_VIDEO) || defined(SDL_GL_VIDEO)
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		Error(TXT_SDL_INIT_VIDEO,SDL_GetError());
+#	if 0 //done in gr.c::GrInit()
+if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	Error(TXT_SDL_INIT_VIDEO,SDL_GetError());
 	}
+#	endif
 #endif
 #ifdef SDL_INPUT
-	if (!FindArg("-nomouse"))
-		d_mouse_init();
+if (!FindArg("-nomouse"))
+	d_mouse_init();
 #endif
 //	if (!FindArg("-nosound"))
 //		DigiInit();
-	atexit(sdl_close);
+atexit(sdl_close);
 }

@@ -68,7 +68,7 @@ typedef struct tReactorTriggers {
 typedef struct reactor {
 	int nModel;
 	int nGuns;
-	vmsVector gun_points[MAX_CONTROLCEN_GUNS];
+	vmsVector gunPoints[MAX_CONTROLCEN_GUNS];
 	vmsVector gun_dirs[MAX_CONTROLCEN_GUNS];
 } __pack__ reactor;
 
@@ -79,14 +79,13 @@ typedef struct reactor {
 extern vmsVector Gun_pos[MAX_CONTROLCEN_GUNS];
 
 // do whatever this thing does in a frame
-extern void DoReactorFrame(tObject *obj);
-
+void DoReactorFrame(tObject *obj);
 // Initialize control center for a level.
 // Call when a new level is started.
-extern void InitReactorForLevel(void);
-
-extern void DoReactorDestroyedStuff(tObject *objp);
-extern void DoReactorDeadFrame(void);
+void InitReactorForLevel(void);
+void DoReactorDestroyedStuff(tObject *objp);
+void DoReactorDeadFrame(void);
+fix ReactorStrength (void);
 
 #ifdef FAST_FILE_IO
 #define ReactorReadN(r, n, fp) CFRead(r, sizeof(reactor), n, fp)

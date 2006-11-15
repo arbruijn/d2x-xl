@@ -654,7 +654,7 @@ extern void med_extract_right_vector_from_segment_side(tSegment *sp, int nSide, 
 extern void med_extract_forward_vector_from_segment_side(tSegment *sp, int nSide, vmsVector *vp);
 
 //	In medmisc.c
-extern void draw_world_from_game(void);
+extern void DrawWorldFromGame(void);
 
 //	In medrobot.c
 extern void close_all_windows(void);

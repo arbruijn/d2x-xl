@@ -628,15 +628,15 @@ void BESwapObject(tObject *objP)
 	objP->pos.y         = INTEL_INT(objP->pos.y);
 	objP->pos.z         = INTEL_INT(objP->pos.z);
 
-	objP->orient.rvec.x = INTEL_INT(objP->orient.rvec.x);
-	objP->orient.rvec.y = INTEL_INT(objP->orient.rvec.y);
-	objP->orient.rvec.z = INTEL_INT(objP->orient.rvec.z);
-	objP->orient.fvec.x = INTEL_INT(objP->orient.fvec.x);
-	objP->orient.fvec.y = INTEL_INT(objP->orient.fvec.y);
-	objP->orient.fvec.z = INTEL_INT(objP->orient.fvec.z);
-	objP->orient.uvec.x = INTEL_INT(objP->orient.uvec.x);
-	objP->orient.uvec.y = INTEL_INT(objP->orient.uvec.y);
-	objP->orient.uvec.z = INTEL_INT(objP->orient.uvec.z);
+	objP->orient.rVec.x = INTEL_INT(objP->orient.rVec.x);
+	objP->orient.rVec.y = INTEL_INT(objP->orient.rVec.y);
+	objP->orient.rVec.z = INTEL_INT(objP->orient.rVec.z);
+	objP->orient.fVec.x = INTEL_INT(objP->orient.fVec.x);
+	objP->orient.fVec.y = INTEL_INT(objP->orient.fVec.y);
+	objP->orient.fVec.z = INTEL_INT(objP->orient.fVec.z);
+	objP->orient.uVec.x = INTEL_INT(objP->orient.uVec.x);
+	objP->orient.uVec.y = INTEL_INT(objP->orient.uVec.y);
+	objP->orient.uVec.z = INTEL_INT(objP->orient.uVec.z);
 
 	objP->size          = INTEL_INT(objP->size);
 	objP->shields       = INTEL_INT(objP->shields);
@@ -706,12 +706,12 @@ void BESwapObject(tObject *objP)
 		break;
 
 	case CT_AI:
-		objP->cType.aiInfo.hide_segment         = INTEL_SHORT(objP->cType.aiInfo.hide_segment);
-		objP->cType.aiInfo.hide_index           = INTEL_SHORT(objP->cType.aiInfo.hide_index);
-		objP->cType.aiInfo.path_length          = INTEL_SHORT(objP->cType.aiInfo.path_length);
-		objP->cType.aiInfo.danger_laser_num     = INTEL_SHORT(objP->cType.aiInfo.danger_laser_num);
-		objP->cType.aiInfo.danger_laser_signature = INTEL_INT(objP->cType.aiInfo.danger_laser_signature);
-		objP->cType.aiInfo.dying_startTime     = INTEL_INT(objP->cType.aiInfo.dying_startTime);
+		objP->cType.aiInfo.nHideSegment         = INTEL_SHORT(objP->cType.aiInfo.nHideSegment);
+		objP->cType.aiInfo.nHideIndex           = INTEL_SHORT(objP->cType.aiInfo.nHideIndex);
+		objP->cType.aiInfo.nPathLength          = INTEL_SHORT(objP->cType.aiInfo.nPathLength);
+		objP->cType.aiInfo.nDangerLaser     = INTEL_SHORT(objP->cType.aiInfo.nDangerLaser);
+		objP->cType.aiInfo.nDangerLaserSig = INTEL_INT(objP->cType.aiInfo.nDangerLaserSig);
+		objP->cType.aiInfo.xDyingStartTime     = INTEL_INT(objP->cType.aiInfo.xDyingStartTime);
 		break;
 
 	case CT_LIGHT:

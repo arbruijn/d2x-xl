@@ -160,7 +160,7 @@ static char rcsid[] = "$Id: wall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 
 #define CLOAKING_WALL_TIME f1_0
 
-//--unused-- grs_bitmap *wall_title_bms[MAX_WALL_ANIMS];
+//--unused-- grsBitmap *wall_title_bms[MAX_WALL_ANIMS];
 
 //#define BM_FLAG_TRANSPARENT			1
 //#define BM_FLAG_SUPER_TRANSPARENT	2
@@ -184,15 +184,15 @@ void KillStuckObjects(int wallnum);
 
 //-----------------------------------------------------------------
 
-int AnimFrameCount (wclip *anim)
+int AnimFrameCount (tWallClip *anim)
 {
-grs_bitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
+grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
 return ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? BM_FRAMECOUNT (bmP) : anim->nFrameCount;
 }
 
 //-----------------------------------------------------------------
 
-fix AnimPlayTime (wclip *anim)
+fix AnimPlayTime (tWallClip *anim)
 {
 int nFrames = AnimFrameCount (anim);
 fix pt = anim->xTotalTime;
@@ -210,7 +210,7 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 int CheckTransparency (tSegment *segP, short nSide)
 {
 	tSide *sideP = segP->sides + nSide;
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 
 if (sideP->nOvlTex) {
 	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nOvlTex].index);
@@ -426,9 +426,9 @@ w->nLinkedWall = NO_WALL;
 //set the nBaseTex or nOvlTex field for a wall/door
 void WallSetTMapNum (tSegment *seg, short tSide, tSegment *csegp, short cside, int anim_num, int nFrame)
 {
-wclip *anim = gameData.walls.pAnims + anim_num;
+tWallClip *anim = gameData.walls.pAnims + anim_num;
 short tmap = anim->frames [(anim->flags & WCF_ALTFMT) ? 0 : nFrame];
-grs_bitmap *bmP;
+grsBitmap *bmP;
 int nFrames;
 
 //if (gameData.demo.nState == ND_STATE_PLAYBACK) 
@@ -607,7 +607,7 @@ else {
 void WallOpenDoor (tSegment *seg, short tSide)
 {
 	wall *w;
-	active_door *d;
+	tActiveDoor *d;
 	short  Connectside, nWall, cwall_num;
 	tSegment *csegp;
 
@@ -630,7 +630,7 @@ if (w->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 
 	d = gameData.walls.activeDoors;
 	for (i = 0; i < gameData.walls.nOpenDoors; i++, d++) {		//find door
-		for (j = 0; j < d->n_parts; j++)
+		for (j = 0; j < d->nPartCount; j++)
 			if ((d->nFrontWall[j]==nWall) || (d->nBackWall[j]==nWall))
 				goto foundDoor;
 		}
@@ -703,12 +703,12 @@ if (IS_WALL (w->nLinkedWall) && IS_WALL (cwall_num) && (w->nLinkedWall == cwall_
 	if (IS_WALL (cwall_num))
 		gameData.walls.walls[cwall_num].state = WALL_DOOR_OPENING;
 
-	d->n_parts = 2;
+	d->nPartCount = 2;
 	d->nFrontWall[1] = w->nLinkedWall;
 	d->nBackWall[1] = cwall_num;
 	}
 else
-	d->n_parts = 1;
+	d->nPartCount = 1;
 
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
@@ -725,7 +725,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 void StartWallCloak (tSegment *seg, short tSide)
 {
 	wall *w;
-	cloaking_wall *d;
+	tCloakingWall *d;
 	short Connectside;
 	tSegment *csegp;
 	int i;
@@ -805,7 +805,7 @@ void StartWallCloak (tSegment *seg, short tSide)
 void StartWallDecloak (tSegment *seg, short tSide)
 {
 	wall *w;
-	cloaking_wall *d;
+	tCloakingWall *d;
 	short Connectside;
 	tSegment *csegp;
 	int i;
@@ -891,11 +891,11 @@ if (--gameData.walls.nOpenDoors > nDoor)
 void WallCloseDoorNum (int nDoor)
 {
 	int p;
-	active_door *d;
+	tActiveDoor *d;
 	short cwall_num;
 
 d = gameData.walls.activeDoors + nDoor;
-for (p = 0; p < d->n_parts; p++) {
+for (p = 0; p < d->nPartCount; p++) {
 	wall *w;
 	short Connectside, tSide;
 	tSegment *csegp, *seg;
@@ -969,7 +969,7 @@ int IsDoorFree (tSegment *seg,short tSide)
 void WallCloseDoor(tSegment *seg, short tSide)
 {
 	wall *w;
-	active_door *d;
+	tActiveDoor *d;
 	short Connectside, nWall, cwall_num;
 	tSegment *csegp;
 
@@ -992,7 +992,7 @@ void WallCloseDoor(tSegment *seg, short tSide)
 		d = gameData.walls.activeDoors;
 		for (i=0;i<gameData.walls.nOpenDoors;i++, d++) {		//find door
 			if (d->nFrontWall[0]==nWall || d->nBackWall[0]==nWall ||
-				 (d->n_parts==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
+				 (d->nPartCount==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
 				break;
 		}
 		if (i >= gameData.walls.nOpenDoors)	//no matching open door found
@@ -1036,7 +1036,7 @@ void WallCloseDoor(tSegment *seg, short tSide)
 		Int3();		//don't think we ever used linked walls
 	}
 	else
-		d->n_parts = 1;
+		d->nPartCount = 1;
 
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
@@ -1094,12 +1094,12 @@ return 0;
 void DoDoorOpen(int nDoor)
 {
 	int			p, bFlags = 3;
-	active_door *d;
+	tActiveDoor *d;
 
 	Assert(nDoor != -1);		//Trying to DoDoorOpen on illegal door
 
 d = gameData.walls.activeDoors + nDoor;
-for (p = 0; p < d->n_parts; p++) {
+for (p = 0; p < d->nPartCount; p++) {
 	wall		*w;
 	short		cside, tSide;
 	tSegment	*csegp, *seg;
@@ -1160,7 +1160,7 @@ return 0;
 // Called from the game loop.
 void DoDoorClose (int nDoor)
 {
-	active_door *d;
+	tActiveDoor *d;
 	wall			*w;
 	int			p, bFlags = 1;
 
@@ -1176,7 +1176,7 @@ if (w->flags & WALL_DOOR_AUTO)
 		return;
 		}
 
-for (p = 0; p < d->n_parts; p++) {
+for (p = 0; p < d->nPartCount; p++) {
 	short		cside, tSide;
 	tSegment	*csegp, *seg;
 
@@ -1332,7 +1332,7 @@ void InitDoorAnims (void)
 	int		h, i;
 	wall		*w;
 	tSegment	*segP;
-	wclip		*animP;
+	tWallClip		*animP;
 
 for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 	if (w->nType == WALL_DOOR) {
@@ -1391,7 +1391,7 @@ Assert(playernum > -1);
 //	Determine whether player is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->nType == OBJ_PLAYER)
-	show_message = (VmVecDot(&objP->orient.fvec, &objP->mType.physInfo.velocity) > 0);
+	show_message = (VmVecDot(&objP->orient.fVec, &objP->mType.physInfo.velocity) > 0);
 else if (objP->nType == OBJ_ROBOT)
 	show_message = 0;
 else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
@@ -1509,7 +1509,7 @@ void ResetWalls()
 
 void DoCloakingWallFrame(int cloaking_wall_num)
 {
-	cloaking_wall *d;
+	tCloakingWall *d;
 	wall *wfront,*wback;
 
 	if (gameData.demo.nState==ND_STATE_PLAYBACK) 
@@ -1582,7 +1582,7 @@ void DoCloakingWallFrame(int cloaking_wall_num)
 
 void DoDecloakingWallFrame (int cloaking_wall_num)
 {
-	cloaking_wall *d;
+	tCloakingWall *d;
 	wall *wfront,*wback;
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) 
@@ -1647,8 +1647,8 @@ void DoDecloakingWallFrame (int cloaking_wall_num)
 void WallFrameProcess ()
 {
 	int i;
-	cloaking_wall *cw;
-	active_door *d = gameData.walls.activeDoors;
+	tCloakingWall *cw;
+	tActiveDoor *d = gameData.walls.activeDoors;
 
 for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
 	wall	*wb = NULL,
@@ -1663,7 +1663,7 @@ for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
 
 		//set flags to fix occatsional netgame problem where door is
 		//waiting to close but open flag isn't set
-//			Assert(d->n_parts == 1);
+//			Assert(d->nPartCount == 1);
 		if (IS_WALL (d->nBackWall [0]))
 			wb = gameData.walls.walls + d->nBackWall [0];
 		if ((d->time > DOOR_WAIT_TIME) && 
@@ -1937,9 +1937,9 @@ void BlastNearbyGlass(tObject *objP, fix damage)
 #define MAX_CLIP_FRAMES_D1 20
 
 /*
- * reads a wclip structure from a CFILE
+ * reads a tWallClip structure from a CFILE
  */
-int wclip_read_n_d1(wclip *wc, int n, CFILE *fp)
+int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp)
 {
 	int i, j;
 
@@ -1959,9 +1959,9 @@ int wclip_read_n_d1(wclip *wc, int n, CFILE *fp)
 
 #ifndef FAST_FILE_IO
 /*
- * reads a wclip structure from a CFILE
+ * reads a tWallClip structure from a CFILE
  */
-int WClipReadN(wclip *wc, int n, CFILE *fp)
+int WClipReadN(tWallClip *wc, int n, CFILE *fp)
 {
 	int i, j;
 
@@ -2032,7 +2032,7 @@ extern void wall_read(wall *w, CFILE *fp)
  */
 extern void v19_door_read(v19_door *d, CFILE *fp)
 {
-	d->n_parts = CFReadInt(fp);
+	d->nPartCount = CFReadInt(fp);
 	d->seg[0] = CFReadShort(fp);
 	d->seg[1] = CFReadShort(fp);
 	d->nSide[0] = CFReadShort(fp);
@@ -2043,11 +2043,11 @@ extern void v19_door_read(v19_door *d, CFILE *fp)
 }
 
 /*
- * reads an active_door structure from a CFILE
+ * reads an tActiveDoor structure from a CFILE
  */
-extern void active_door_read(active_door *ad, CFILE *fp)
+extern void active_door_read(tActiveDoor *ad, CFILE *fp)
 {
-	ad->n_parts = CFReadInt(fp);
+	ad->nPartCount = CFReadInt(fp);
 	ad->nFrontWall[0] = CFReadShort(fp);
 	ad->nFrontWall[1] = CFReadShort(fp);
 	ad->nBackWall[0] = CFReadShort(fp);

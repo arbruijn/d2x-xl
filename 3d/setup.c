@@ -11,29 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Setup for 3d library
- * 
- * Old Log:
- *
- * Revision 1.4  1995/10/11  00:27:04  allender
- * bash free_num_points to 0
- *
- * Revision 1.3  1995/09/13  11:31:58  allender
- * calc for fxCanvW2 and fxCanvH2
- *
- * Revision 1.2  1995/06/25  21:57:57  allender
- * *** empty log message ***
- *
- * Revision 1.1  1995/05/05  08:52:54  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  03:59:01  matt
- * Initial revision
- * 
- * 
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>

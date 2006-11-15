@@ -48,8 +48,8 @@ typedef struct tViewInfo {
 	vmsMatrix	unscaledView;
 	vmsVector	scale;
 	vmsVector	windowScale;		//scaling for window aspect
-	fVector3		posf;
-	fMatrix3		viewf;
+	fVector		posf;
+	fMatrix		viewf;
 	fix			zoom;
 	float			glZoom;
 	float			glPosf [4];

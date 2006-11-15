@@ -134,7 +134,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define NM_MAX_TEXT_LEN     50
 
-typedef struct newmenu_item {
+typedef struct tMenuItem {
 	int			nType;           // What kind of item this is, see NM_TYPE_????? defines
 	int			value;          // For checkboxes and radio buttons, this is 1 if marked initially, else 0
 	int			minValue, maxValue;   // For sliders and number bars.
@@ -154,16 +154,16 @@ typedef struct newmenu_item {
 	ubyte			unavailable;
 	ubyte			centered;
 	char			saved_text[NM_MAX_TEXT_LEN+1];
-	grs_bitmap	*text_bm [2];
+	grsBitmap	*text_bm [2];
 	char			*szHelp;
-} newmenu_item;
+} tMenuItem;
 
 typedef struct bkg {
 	short			x, y, w, h;			// The location of the menu.
 	grs_canvas	*menu_canvas;
-	grs_bitmap	*saved;			// The background under the menu.
-	grs_bitmap	*background;
-	grs_bitmap	*bmp;
+	grsBitmap	*saved;			// The background under the menu.
+	grsBitmap	*background;
+	grsBitmap	*bmp;
 	char			bIgnoreBg;
 	char			bIgnoreCanv;
 	char			*pszPrevBg;
@@ -176,23 +176,23 @@ typedef struct bkg {
 // change the text of an item.  Just pass NULL if you don't want this.
 // Title draws big, Subtitle draw medium sized.  You can pass NULL for
 // either/both of these if you don't want them.
-int ExecMenu(char * title, char * subtitle, int nitems, newmenu_item *item, 
-					void (*subfunction)(int nitems, newmenu_item *items, int *last_key, int citem),
+int ExecMenu(char * title, char * subtitle, int nitems, tMenuItem *item, 
+					void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem),
 					char *filename);
 
 // Same as above, only you can pass through what item is initially selected.
-int ExecMenu1(char *title, char *subtitle, int nitems, newmenu_item *item, 
-					 void (*subfunction)(int nitems, newmenu_item *items, int *last_key, int citem), 
+int ExecMenu1(char *title, char *subtitle, int nitems, tMenuItem *item, 
+					 void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem), 
 					 int *pcitem);
 
 // Same as above, only you can pass through what background bitmap to use.
-int ExecMenu2(char *title, char *subtitle, int nitems, newmenu_item *item, 
-					 void (*subfunction)(int nitems, newmenu_item *items, int *last_key, int citem), 
+int ExecMenu2(char *title, char *subtitle, int nitems, tMenuItem *item, 
+					 void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem), 
 					 int *pcitem, char *filename);
 
 // Same as above, only you can pass through the width & height
-int ExecMenu3(char *title, char *subtitle, int nitems, newmenu_item *item, 
-					 void (*subfunction)(int nitems, newmenu_item *items, int *last_key, int citem), 
+int ExecMenu3(char *title, char *subtitle, int nitems, tMenuItem *item, 
+					 void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem), 
 					 int *pcitem, char *filename, int width, int height);
 
 void NMLoadBackground (char * filename, bkg *bg, int bReload);
@@ -210,7 +210,7 @@ int _CDECL_ ExecMessageBox(char *title, char *filename, int nchoices, ...);
 // Same as above, but you can pass a function
 int _CDECL_ ExecMessageBox1 (
 					char *title,
-					void (*subfunction)(int nitems, newmenu_item *items, int *last_key, int citem), 
+					void (*subfunction)(int nitems, tMenuItem *items, int *last_key, int citem), 
 					char *filename, int nchoices, ...);
 
 void NMRestoreBackground( int sx, int sy, int dx, int dy, int w, int h);
@@ -230,14 +230,14 @@ int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abortFlag
 
 int ExecMenuFileList(char *title, char *filespace, char *filename);
 
-int ExecMenutiny (char * title, char * subtitle, int nItems, newmenu_item * item, 
-						 void (*subfunction) (int nItems, newmenu_item * items, int * last_key, int citem));
+int ExecMenutiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
+						 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int citem));
 
-int ExecMenutiny2 (char * title, char * subtitle, int nitems, newmenu_item * item, 
-							void (*subfunction) (int nitems,newmenu_item * items, int * last_key, int citem));
+int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, 
+							void (*subfunction) (int nitems,tMenuItem * items, int * last_key, int citem));
 
 void NMProgressBar (char *szCaption, int nCurProgress, int nMaxProgress, 
-						  void (*doProgress) (int nItems, newmenu_item *items, int *last_key, int cItem));
+						  void (*doProgress) (int nItems, tMenuItem *items, int *last_key, int cItem));
 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
 int _CDECL_ NMMsgBoxFixedFont(char *title, int nchoices, ...);

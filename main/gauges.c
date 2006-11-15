@@ -368,8 +368,8 @@ grs_canvas *Canv_NumericalGauge;
 #define INV_ITEM_CLOAK			6
 #define INV_ITEM_INVUL			7
 
-grs_bitmap	*bmpInventory = NULL;
-grs_bitmap	bmInvItems [NUM_INV_ITEMS];
+grsBitmap	*bmpInventory = NULL;
+grsBitmap	bmInvItems [NUM_INV_ITEMS];
 int bHaveInvBms = -1;
 
 //Flags for gauges/hud stuff
@@ -1088,7 +1088,7 @@ static double xScale, yScale;
 
 //	-----------------------------------------------------------------------------
 
-inline void HUDBitBlt (int x, int y, grs_bitmap *bmP, int scale, int orient)
+inline void HUDBitBlt (int x, int y, grsBitmap *bmP, int scale, int orient)
 {
 OglUBitMapMC (
 	(x < 0) ? -x : HUD_SCALE_X (x), 
@@ -1104,7 +1104,7 @@ OglUBitMapMC (
 
 //	-----------------------------------------------------------------------------
 
-inline void HUDStretchBlt (int x, int y, grs_bitmap *bmP, int scale, int orient, double xScale, double yScale)
+inline void HUDStretchBlt (int x, int y, grsBitmap *bmP, int scale, int orient, double xScale, double yScale)
 {
 OglUBitMapMC (
 	(x < 0) ? -x : HUD_SCALE_X (x), 
@@ -1160,7 +1160,7 @@ void CopyGaugeBox(gauge_box *box,dd_grs_canvas *cv)
 		int cnt,y;
 
 		if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT && cv->sram) {
-			grs_bitmap *bm;
+			grsBitmap *bm;
 
 			Assert(cv->sram);
 		DDGRLOCK(cv);
@@ -1199,7 +1199,7 @@ void CopyGaugeBox(gauge_box *box,dd_grs_canvas *cv)
 
 //	-----------------------------------------------------------------------------
 
-void CopyGaugeBox(gauge_box *box,grs_bitmap *bm)
+void CopyGaugeBox(gauge_box *box,grsBitmap *bm)
 {
 	return;
 	if (box->spanlist) {
@@ -1649,7 +1649,7 @@ void HUDShowOrbs (void)
 		return;
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 		int x,y;
-		grs_bitmap *bmP;
+		grsBitmap *bmP;
 
 		x=y=0;
 
@@ -1989,7 +1989,7 @@ for (i = 0; i < Controls.toggle_icons_count; i++)
 
 void HUDShowWeaponIcons (void)
 {
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	int	nWeaponIcons = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? 3 : extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
@@ -2000,7 +2000,8 @@ void HUDShowWeaponIcons (void)
 			oy = 6,
 			x, dx, y, dy;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
-	char	szAmmo [5];
+	unsigned int nAmmoColor;
+	char	szAmmo [10];
 	int	nLvlMap [2][10] = {{9,4,8,3,7,2,6,1,5,0},{4,3,2,1,0,4,3,2,1,0}};
 	static int	wIcon = 0, 
 					hIcon = 0;
@@ -2102,6 +2103,7 @@ for (i = 0; i < 2; i++) {
 		HUDBitBlt (nIconScale * -(x + (w - bmP->bm_props.w) / (2 * nIconScale)), 
 					  nIconScale * -(y - hIcon), bmP, nIconScale * F1_0, 0);
 		*szAmmo = '\0';
+		nAmmoColor = GREEN_RGBA;
 		if (bHave && ammoType [i][l]) {
 			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [(l == 6) ? 1 : l]);
 			bLoaded = (nAmmo > 0);
@@ -2111,8 +2113,10 @@ for (i = 0; i < 2; i++) {
 #if 0
 					sprintf (szAmmo, "%d.%d", nAmmo / 1000, (nAmmo % 1000) / 100);
 #else
-					if (nAmmo < 1000)
+					if (nAmmo && (nAmmo < 1000)) {
 						sprintf (szAmmo, ".%d", nAmmo / 100);
+						nAmmoColor = RED_RGBA;
+						}
 					else
 						sprintf (szAmmo, "%d", nAmmo / 1000);
 #endif
@@ -2174,8 +2178,11 @@ for (i = 0; i < 2; i++) {
 		else
 			GrSetColorRGB (64, 64, 64, 255);
 		GrUBox (x - 1, y - hIcon - 1, x + wIcon + 2, y + 2);
-		if (*szAmmo)
+		if (*szAmmo) {
+			GrSetFontColorRGBi (nAmmoColor, 1, 0, 0);
 			GrString (x + wIcon + 2 - fw, y - fh, szAmmo);
+			GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+			}
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 		if (nWeaponIcons > 2)
 			y += hIcon + oy;
@@ -2250,7 +2257,7 @@ return 0;
 
 void HUDShowInventoryIcons (void)
 {
-	grs_bitmap	*bm;
+	grsBitmap	*bm;
 	char	szCount [4];
 	int nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) ? 3 : 2;
 	int nIconPos = extraGameInfo [0].nWeaponIcons & 1;
@@ -2575,7 +2582,7 @@ void HUDShowLives()
 		GrPrintF(10, 3, "%s: %d", TXT_DEATHS, gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal);
 	} 
 	else if (gameData.multi.players[gameData.multi.nLocalPlayer].lives > 1)  {
-		grs_bitmap *bm;
+		grsBitmap *bm;
 		GrSetCurFont( GAME_FONT );
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		PAGE_IN_GAUGE( GAUGE_LIVES );
@@ -2591,7 +2598,7 @@ void HUDShowLives()
 void SBShowLives()
 {
 	int x,y;
-	grs_bitmap * bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_LIVES);
+	grsBitmap * bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_LIVES);
    int frc=0;
 	x = SB_LIVES_X;
 	y = SB_LIVES_Y;
@@ -2847,7 +2854,7 @@ void InitGauges()
 
 void DrawEnergyBar(int energy)
 {
-	grs_bitmap *bm;
+	grsBitmap *bm;
 	int energy0;
 	int x1, x2, y, yMax, i;
 	int h0 = HUD_SCALE_X (LEFT_ENERGY_GAUGE_H - 1);
@@ -3085,7 +3092,7 @@ void DrawAfterburnerBar(int afterburner)
 {
 	int not_afterburner;
 	int i, j, y, yMax;
-	grs_bitmap *bm;
+	grsBitmap *bm;
 	ubyte *pabt = gameStates.video.nDisplayMode ? afterburner_bar_table_hires : afterburner_bar_table;
 
 	// Draw afterburner bar
@@ -3144,7 +3151,7 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 	static fix xCloakFadeTimer=0;
 	static int nCloakFadeValue=GR_ACTUAL_FADE_LEVELS-1;
 	static int refade = 0;
-	grs_bitmap *bm = NULL;
+	grsBitmap *bm = NULL;
 
 	if (gameData.app.nGameMode & GM_TEAM)	{
 		#ifdef NETWORK
@@ -3355,7 +3362,7 @@ WIN(DDGRUNLOCK(dd_grd_curcanv));
 void DrawWeaponInfoSub(int info_index,gauge_box *box,int pic_x,int pic_y,char *name,int text_x,
 								  int text_y, int orient)
 {
-	grs_bitmap *bmP;
+	grsBitmap *bmP;
 	char *p;
 
 	//clear the window
@@ -3625,8 +3632,8 @@ fix staticTime[2];
 
 void DrawStatic(int win)
 {
-	vclip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
-	grs_bitmap *bmp;
+	tVideoClip *vc = gameData.eff.vClips [0] + VCLIP_MONITOR_STATIC;
+	grsBitmap *bmp;
 	int framenum;
 	int boxofs = (gameStates.render.cockpit.nMode==CM_STATUS_BAR)?SB_PRIMARY_BOX:COCKPIT_PRIMARY_BOX;
 	int x,y;
@@ -3888,7 +3895,7 @@ WIN(DDGRUNLOCK(dd_grd_curcanv));
 
 void SBDrawKeys()
 {
-	grs_bitmap * bm;
+	grsBitmap * bm;
 	int flags = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 
 WINDOS(
@@ -3967,7 +3974,7 @@ WIN(DDGRUNLOCK(dd_grd_curcanv));
 
 //	-----------------------------------------------------------------------------
 
-extern int Missile_gun;
+extern int nMissileGun;
 extern int AllowedToFireLaser(void);
 extern int AllowedToFireMissile(void);
 
@@ -4023,7 +4030,7 @@ void ShowReticle(int force_big_one)
 
 	if (secondaryWeaponToGunNum[gameData.weapons.nSecondary]==7)
 		nSecondaryBm += 3;		//now value is 0,1 or 3,4
-	else if (nSecondaryBm && !(Missile_gun&1))
+	else if (nSecondaryBm && !(nMissileGun&1))
 			nSecondaryBm++;
 
 	nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
@@ -4323,7 +4330,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 		}
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
-		g3s_point vPlayerPos;
+		g3sPoint vPlayerPos;
 		G3TransformAndEncodePoint (&vPlayerPos,&gameData.objs.objects[nObject].pos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);

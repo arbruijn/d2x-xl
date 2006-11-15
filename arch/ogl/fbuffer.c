@@ -82,6 +82,8 @@ switch (fb->nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {
 
 int OglCreateFBuffer (ogl_fbuffer *fb, int nWidth, int nHeight, int bDepth)
 {
+	GLenum	nError;
+
 if (!bRender2TextureOk)
 	return 0;
 glGenFramebuffersEXT (1, &fb->hBuf);
@@ -109,11 +111,15 @@ glGenerateMipmapEXT (GL_TEXTURE_2D);
 glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->texId, 0);
 glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hDepthRb);
 glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, fb->nWidth, fb->nHeight);
+if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
+	return 0;
 glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthRb);
 if (OglFBufferAvail (fb) < 0)
-	return fb->nStatus;
+	return 0;
 glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->texId, 0);
 glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthRb);
+if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
+	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return 1;
 }

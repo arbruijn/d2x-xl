@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#include "gr.h"
 #include "vesa.h"
 
-draw_ubitmap(int x,int y,grs_bitmap *bm)
+draw_ubitmap(int x,int y,grsBitmap *bm)
 {
 	int xx,yy;
 	short *data15 = (short *) bm->bm_texBuf;
@@ -38,7 +38,7 @@ draw_ubitmap(int x,int y,grs_bitmap *bm)
 main(int argc,char **argv)
 {
 	int ret;
-	grs_bitmap my_bitmap;
+	grsBitmap my_bitmap;
 	ubyte my_palette[256*3];
 
 	ret = iff_read_bitmap(argv[1],&my_bitmap,BM_RGB15,&my_palette);

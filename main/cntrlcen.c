@@ -147,7 +147,7 @@ static char rcsid[] = "$Id: cntrlcen.c,v 1.14 2003/11/26 12:26:29 btb Exp $";
 //@@vmsVector controlcen_gun_points[MAX_CONTROLCEN_GUNS];
 //@@vmsVector controlcen_gun_dirs[MAX_CONTROLCEN_GUNS];
 
-int	N_controlcen_guns;
+int	nReactorGuns;
 
 vmsVector	Gun_pos[MAX_CONTROLCEN_GUNS], Gun_dir[MAX_CONTROLCEN_GUNS];
 
@@ -155,61 +155,51 @@ void DoCountdownFrame ();
 
 //	-----------------------------------------------------------------------------
 //return the position & orientation of a gun on the control center tObject
-void CalcReactorGunPoint (vmsVector *gun_point,vmsVector *gun_dir,tObject *objP,int gun_num)
+void CalcReactorGunPoint (vmsVector *gun_point,vmsVector *vGunDir,tObject *objP,int gun_num)
 {
 	reactor *reactor;
 	vmsMatrix m;
 
-	Assert (objP->nType == OBJ_CNTRLCEN);
-	Assert (objP->renderType==RT_POLYOBJ);
-
-	reactor = &gameData.reactor.reactors[objP->id];
-
-	Assert (gun_num < reactor->nGuns);
-
-	//instance gun position & orientation
-
-	VmCopyTransposeMatrix (&m,&objP->orient);
-
-	VmVecRotate (gun_point,&reactor->gun_points[gun_num],&m);
-	VmVecInc (gun_point,&objP->pos);
-	VmVecRotate (gun_dir,&reactor->gun_dirs[gun_num],&m);
+Assert (objP->nType == OBJ_CNTRLCEN);
+Assert (objP->renderType==RT_POLYOBJ);
+reactor = &gameData.reactor.reactors[objP->id];
+Assert (gun_num < reactor->nGuns);
+//instance gun position & orientation
+VmCopyTransposeMatrix (&m,&objP->orient);
+VmVecRotate (gun_point,&reactor->gunPoints[gun_num],&m);
+VmVecInc (gun_point,&objP->pos);
+VmVecRotate (vGunDir,&reactor->gun_dirs[gun_num],&m);
 }
 
 //	-----------------------------------------------------------------------------
 //	Look at control center guns, find best one to fire at *objP.
 //	Return best gun number (one whose direction dotted with vector to player is largest).
 //	If best gun has negative dot, return -1, meaning no gun is good.
-int CalcBestReactorGun (int num_guns, vmsVector *gun_pos, vmsVector *gun_dir, vmsVector *objpos)
+int CalcBestReactorGun (int nGunCount, vmsVector *vGunPos, vmsVector *vGunDir, vmsVector *vObjPos)
 {
 	int	i;
-	fix	best_dot;
-	int	best_gun;
+	fix	xBestDot;
+	int	nBestGun;
 
-	best_dot = -F1_0*2;
-	best_gun = -1;
+xBestDot = -F1_0*2;
+nBestGun = -1;
 
-	for (i=0; i<num_guns; i++) {
-		fix			dot;
-		vmsVector	gun_vec;
+for (i = 0; i < nGunCount; i++) {
+	fix			dot;
+	vmsVector	gun_vec;
 
-		VmVecSub (&gun_vec, objpos, &gun_pos[i]);
-		VmVecNormalizeQuick (&gun_vec);
-		dot = VmVecDot (&gun_dir[i], &gun_vec);
-
-		if (dot > best_dot) {
-			best_dot = dot;
-			best_gun = i;
+	VmVecSub (&gun_vec, vObjPos, &vGunPos[i]);
+	VmVecNormalizeQuick (&gun_vec);
+	dot = VmVecDot (vGunDir + i, &gun_vec);
+	if (dot > xBestDot) {
+		xBestDot = dot;
+		nBestGun = i;
 		}
 	}
-
-	Assert (best_gun != -1);		// Contact Mike.  This is impossible.  Or maybe you're getting an unnormalized vector somewhere.
-
-	if (best_dot < 0)
-		return -1;
-	else
-		return best_gun;
-
+Assert (nBestGun != -1);		// Contact Mike.  This is impossible.  Or maybe you're getting an unnormalized vector somewhere.
+if (xBestDot < 0)
+	return -1;
+return nBestGun;
 }
 
 //how long to blow up on insane
@@ -356,7 +346,7 @@ void DoReactorFrame (tObject *objP)
 if (!gameData.reactor.bPresent)
 	return;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 if (!gameStates.app.cheats.bRobotsFiring || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
 	return;
 #else
@@ -366,10 +356,10 @@ if (!gameStates.app.cheats.bRobotsFiring)
 
 if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 	if (!(gameData.app.nFrameCount % 8)) {		//	Do every so often...
-		vmsVector	vec_to_player;
-		fix			dist_to_player;
+		vmsVector	vecToPlayer;
+		fix			xDistToPlayer;
 		int			i;
-		tSegment		*segp = &gameData.segs.segments[objP->nSegment];
+		tSegment		*segP = gameData.segs.segments + objP->nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know to deal with cloaked dudes.  It
@@ -385,32 +375,32 @@ if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
 		for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
-			if (IS_CHILD (segp->children[i]))
+			if (IS_CHILD (segP->children[i]))
 				break;
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;
 
-		VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
-		dist_to_player = VmVecNormalizeQuick (&vec_to_player);
-		if (dist_to_player < F1_0*200) {
-			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
+		VmVecSub (&vecToPlayer, &gameData.objs.console->pos, &objP->pos);
+		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
+		if (xDistToPlayer < F1_0*200) {
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vecToPlayer);
 			gameData.reactor.nNextFireTime = 0;
 			}
 		}			
-		return;
+	return;
 	}
 
 //	Periodically, make the reactor fall asleep if player not visible.
 if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
 	if ((LastTime_cc_vis_check + F1_0*5 < gameData.time.xGame) || (LastTime_cc_vis_check > gameData.time.xGame)) {
-		vmsVector	vec_to_player;
-		fix			dist_to_player;
+		vmsVector	vecToPlayer;
+		fix			xDistToPlayer;
 
-		VmVecSub (&vec_to_player, &gameData.objs.console->pos, &objP->pos);
-		dist_to_player = VmVecNormalizeQuick (&vec_to_player);
+		VmVecSub (&vecToPlayer, &gameData.objs.console->pos, &objP->pos);
+		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
 		LastTime_cc_vis_check = gameData.time.xGame;
-		if (dist_to_player < F1_0*120) {
-			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vec_to_player);
+		if (xDistToPlayer < F1_0*120) {
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vecToPlayer);
 			if (!gameData.reactor.bSeenPlayer)
 				gameData.reactor.bHit = 0;
 			}
@@ -419,61 +409,73 @@ if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
 
 if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
-		nBestGun = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
+		nBestGun = CalcBestReactorGun (nReactorGuns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
 	else
-		nBestGun = CalcBestReactorGun (N_controlcen_guns, Gun_pos, Gun_dir, &gameData.objs.console->pos);
+		nBestGun = CalcBestReactorGun (nReactorGuns, Gun_pos, Gun_dir, &gameData.objs.console->pos);
 
 	if (nBestGun != -1) {
-		int			rand_prob, count;
-		vmsVector	vec_to_goal;
-		fix			dist_to_player;
-		fix			delta_fireTime;
+		int			nRandProb, count;
+		vmsVector	vecToGoal;
+		fix			xDistToPlayer;
+		fix			xDeltaFireTime;
 
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-			VmVecSub (&vec_to_goal, &gameData.ai.vBelievedPlayerPos, &Gun_pos[nBestGun]);
-			dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
+			VmVecSub (&vecToGoal, &gameData.ai.vBelievedPlayerPos, &Gun_pos[nBestGun]);
+			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			} 
 		else {
-			VmVecSub (&vec_to_goal, &gameData.objs.console->pos, &Gun_pos[nBestGun]);
-			dist_to_player = VmVecNormalizeQuick (&vec_to_goal);
+			VmVecSub (&vecToGoal, &gameData.objs.console->pos, &Gun_pos[nBestGun]);
+			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			}
-		if (dist_to_player > F1_0*300) {
+		if (xDistToPlayer > F1_0*300) {
 			gameData.reactor.bHit = 0;
 			gameData.reactor.bSeenPlayer = 0;
 			return;
 			}
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendCtrlcenFire (&vec_to_goal, nBestGun, OBJ_IDX (objP));	
+			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));	
 #endif
-		CreateNewLaserEasy (&vec_to_goal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
+		CreateNewLaserEasy (&vecToGoal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.
-		rand_prob = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
+		nRandProb = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
 		count = 0;
-		while ((d_rand () > rand_prob) && (count < 4)) {
-			vmsVector	randvec;
+		while ((d_rand () > nRandProb) && (count < 4)) {
+			vmsVector	vRand;
 
-			MakeRandomVector (&randvec);
-			VmVecScaleInc (&vec_to_goal, &randvec, F1_0/6);
-			VmVecNormalizeQuick (&vec_to_goal);
+			MakeRandomVector (&vRand);
+			VmVecScaleInc (&vecToGoal, &vRand, F1_0/6);
+			VmVecNormalizeQuick (&vecToGoal);
 			#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendCtrlcenFire (&vec_to_goal, nBestGun, OBJ_IDX (objP));
+				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			#endif
-			CreateNewLaserEasy (&vec_to_goal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
+			CreateNewLaserEasy (&vecToGoal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}
-
-		delta_fireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
+		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
 		if (gameStates.app.nDifficultyLevel == 0)
-			delta_fireTime += F1_0/2;
+			xDeltaFireTime += F1_0/2;
 		if (gameData.app.nGameMode & GM_MULTI) // slow down rate of fire in multi player
-			delta_fireTime *= 2;
-		gameData.reactor.nNextFireTime = delta_fireTime;
+			xDeltaFireTime *= 2;
+		gameData.reactor.nNextFireTime = xDeltaFireTime;
 		}
 	} 
 else
 	gameData.reactor.nNextFireTime -= gameData.time.xFrame;
+}
+
+//	-----------------------------------------------------------------------------
+
+fix ReactorStrength (void)
+{
+if (gameData.reactor.nStrength == -1) {		//use old defaults
+	//	Boost control center strength at higher levels.
+	if (gameData.missions.nCurrentLevel >= 0)
+		return F1_0 * 200 + F1_0 * 50 * gameData.missions.nCurrentLevel;
+	return F1_0 * 200 - gameData.missions.nCurrentLevel * F1_0 * 150;
+	}
+return i2f (gameData.reactor.nStrength);
 }
 
 //	-----------------------------------------------------------------------------
@@ -484,37 +486,37 @@ void InitReactorForLevel (void)
 {
 	int		i;
 	tObject	*objP;
-	short		cntrlcen_objnum=-1, boss_objnum=-1;
+	short		nReactorObj=-1, nBossObj=-1;
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0);
 extraGameInfo [0].nBossCount = 0;
-for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	if (objP->nType == OBJ_CNTRLCEN) {
-		if (cntrlcen_objnum != -1) {
+		if (nReactorObj != -1) {
 #if TRACE
-			con_printf (1, "Warning: Two or more control centers including %i and %i\n", i, cntrlcen_objnum);
+			con_printf (1, "Warning: Two or more control centers including %i and %i\n", i, nReactorObj);
 #endif
 			}				
 		else {
-			cntrlcen_objnum = i;
+			nReactorObj = i;
 			extraGameInfo [0].nBossCount++;
 			}
 		}
 
-	if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo[objP->id].bossFlag)) {
+	if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag)) {
 		extraGameInfo [0].nBossCount++;
-		if (boss_objnum != -1) {
+		if (nBossObj != -1) {
 #if TRACE
-			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, boss_objnum);
+			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, nBossObj);
 #endif
 			}				
 		else
-			boss_objnum = i;
+			nBossObj = i;
 		}
 	}
 
-#ifndef NDEBUG
-if (cntrlcen_objnum == -1) {
+#ifdef _DEBUG
+if (nReactorObj == -1) {
 #if TRACE
 	con_printf (1, "Warning: No control center.\n");
 #endif
@@ -523,35 +525,25 @@ if (cntrlcen_objnum == -1) {
 #endif
 
 if (EGI_FLAG (bDisableReactor, 0, 0) ||
-	 ((boss_objnum != -1) && (cntrlcen_objnum != -1) && 
+	 ((nBossObj != -1) && (nReactorObj != -1) && 
 	  !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))) {
-	BashToShield (cntrlcen_objnum, "reactor");
+	BashToShield (nReactorObj, "reactor");
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
-	cntrlcen_objnum = -1;
+	nReactorObj = -1;
 	extraGameInfo [0].nBossCount--;
 	}
 else
 	gameData.reactor.bDisabled = 0;
-if (cntrlcen_objnum != -1) {
+if (nReactorObj != -1) {
 //	Compute all gun positions.
-	objP = gameData.objs.objects + cntrlcen_objnum;
-	N_controlcen_guns = gameData.reactor.reactors [objP->id].nGuns;
-	for (i=0; i<N_controlcen_guns; i++)
+	objP = gameData.objs.objects + nReactorObj;
+	nReactorGuns = gameData.reactor.reactors [objP->id].nGuns;
+	for (i = 0; i < nReactorGuns; i++)
 		CalcReactorGunPoint (Gun_pos+  i, Gun_dir + i, objP, i);
 	gameData.reactor.bPresent = 1;
-
-	if (gameData.reactor.nStrength == -1) {		//use old defaults
-//	Boost control center strength at higher levels.
-		if (gameData.missions.nCurrentLevel >= 0)
-			objP->shields = F1_0*200 + (F1_0*200/4) * gameData.missions.nCurrentLevel;
-		else
-			objP->shields = F1_0*200 - gameData.missions.nCurrentLevel*F1_0*150;
-		}
-	else {
-		objP->shields = i2f (gameData.reactor.nStrength);
+	objP->shields = ReactorStrength ();
 	}
-}
 //	Say the control center has not yet been hit.
 gameData.reactor.bHit = 0;
 gameData.reactor.bSeenPlayer = 0;
@@ -585,7 +577,7 @@ for (i = 0; i < n; i++) {
 	r[i].nModel = CFReadInt (fp);
 	r[i].nGuns = CFReadInt (fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r[i].gun_points + j, fp);
+		CFReadVector (r[i].gunPoints + j, fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
 		CFReadVector (r[i].gun_dirs + j, fp);
 	}

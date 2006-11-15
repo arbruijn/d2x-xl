@@ -364,7 +364,7 @@ void NMBlueBox (int x1, int y1, int x2, int y2);
 
 void CON_DrawConsole(ConsoleInformation *console) {
 	grs_canvas *canv_save;
-	grs_bitmap *clip;
+	grsBitmap *clip;
 
 	if(!console)
 		return;
@@ -798,7 +798,7 @@ void CON_Alpha(ConsoleInformation *console, unsigned char alpha) {
 
 //------------------------------------------------------------------------------
 /* Adds  background image to the console, scaled to size of console*/
-int CON_Background(ConsoleInformation *console, grs_bitmap *image)
+int CON_Background(ConsoleInformation *console, grsBitmap *image)
 {
 	if(!console)
 		return 1;

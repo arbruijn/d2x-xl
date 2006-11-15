@@ -241,7 +241,7 @@ int DoPowerup(tObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
 void DoPowerupFrame(tObject *objP);
-void UpdatePowerupClip (vclip *vcP, tVClipInfo *vciP, int nObject);
+void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 
 // Diminish shields and energy towards max in case they exceeded it.

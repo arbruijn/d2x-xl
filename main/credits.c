@@ -290,7 +290,7 @@ void credits_show(char *credits_filename)
 	int i, j, l, done;
 	CFILE * file;
 	char buffer[NUM_LINES_HIRES][80];
-	grs_bitmap bmBackdrop;
+	grsBitmap bmBackdrop;
 	int pcx_error;
 	int buffer_line = 0;
 	fix lastTime;
@@ -566,7 +566,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 
 		{	// Wacky Fast Credits Thing
 		box	*new_box;
-		grs_bitmap *tempbmp;
+		grsBitmap *tempbmp;
 
 		for (j=0; j<NUM_LINES; j++) {
 			new_box = dirty_box + j;
@@ -622,9 +622,9 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 				if (_RedrawScreen) {
 					_RedrawScreen = FALSE;
 
-					gr_close_font(header_font);
-					gr_close_font(title_font);
-					gr_close_font(names_font);
+					GrCloseFont(header_font);
+					GrCloseFont(title_font);
+					GrCloseFont(names_font);
 
 					d_free(bmBackdrop.bm_texBuf);
 					GrFreeCanvas(CreditsOffscreenBuf);
@@ -637,7 +637,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 		#endif
 
 			//see if redbook song needs to be restarted
-			songs_check_redbook_repeat();
+			SongsCheckRedbookRepeat();
 
 			k = KeyInKey();
 
@@ -660,9 +660,9 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 				}
 
 			else if ((k == KEY_ESC)||(done>NUM_LINES))	{
-					gr_close_font(header_font);
-					gr_close_font(title_font);
-					gr_close_font(names_font);
+					GrCloseFont(header_font);
+					GrCloseFont(title_font);
+					GrCloseFont(names_font);
 					GrPaletteFadeOut(NULL, 32, 0);
 					GrUsePaletteTable(D2_DEFAULT_PALETTE, NULL);
 					d_free(bmBackdrop.bm_texBuf);

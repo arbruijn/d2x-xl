@@ -65,7 +65,7 @@ void KillAllRobots(void)
 
 // --		// Now, if more than boss and buddy left, un-kill boss.
 // --		if ((dead_count > 2) && (boss_index != -1)) {
-// --			gameData.objs.objects[boss_index].flags &= ~(OF_EXPLODING|OF_SHOULD_BE_DEAD);
+// --			gameData.objs.objects [boss_index].flags &= ~(OF_EXPLODING|OF_SHOULD_BE_DEAD);
 // --			dead_count--;
 // --		} else if (boss_index != -1)
 // --			HUDInitMessage("Toasted the BOSS!");
@@ -99,9 +99,9 @@ void KillEverything(void)
 	HUDInitMessage(TXT_KILL_ETC);
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		switch (gameData.objs.objects[i].nType) {
+		switch (gameData.objs.objects [i].nType) {
 			case OBJ_ROBOT:
-				gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+				gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 				break;
 			case OBJ_POWERUP:
 				DoPowerup (gameData.objs.objects + i, -1);
@@ -114,11 +114,11 @@ void KillEverything(void)
 	DoReactorDestroyedStuff(NULL);
 
 	for (i=0; i<gameData.trigs.nTriggers; i++) {
-		if (gameData.trigs.triggers[i].nType == TT_EXIT) {
+		if (gameData.trigs.triggers [i].nType == TT_EXIT) {
 			for (j=0; j<gameData.walls.nWalls; j++) {
-				if (gameData.walls.walls[j].nTrigger == i) {
-					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls[j].nSegment);
-					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls[j].nSegment);
+				if (gameData.walls.walls [j].nTrigger == i) {
+					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls [j].nSegment);
+					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
 					goto kasf_done;
 				}
 			}
@@ -160,10 +160,10 @@ void KillAllSnipers(void)
 
 //	Kill all snipers.
 for (i=0; i<=gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects[i].nType == OBJ_ROBOT)
-		if (gameData.objs.objects[i].cType.aiInfo.behavior == AIB_SNIPE) {
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
 			dead_count++;
-			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		}
 HUDInitMessage(TXT_BOTS_TOASTED, dead_count);
 }
@@ -177,10 +177,10 @@ void KillBuddy(void)
 	int     i;
 
 	//	Kill buddy.
-for (i=0; i<=gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects[i].nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion) {
-			gameData.objs.objects[i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+for (i=0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		if (gameData.bots.pInfo[gameData.objs.objects [i].id].companion) {
+			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			HUDInitMessage(TXT_BUDDY_TOASTED);
 		}
 }
@@ -238,7 +238,7 @@ return 0;
 
 int MenuGetValue (char *pszMsg)
 {
-	newmenu_item	m;
+	tMenuItem	m;
 	char				text[10] = "";
 	int				item;
 
@@ -438,9 +438,15 @@ if (!gameStates.app.cheats.bHomingWeapons) {
 
 void InvulCheat (void)
 {
-gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
-HUDInitMessage("%s %s!", TXT_INVULNERABILITY, (gameData.multi.players [gameData.multi.nLocalPlayer].flags&PLAYER_FLAGS_INVULNERABLE)?TXT_ON:TXT_OFF);
-gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame+i2f(1000);
+	int	bInvul;
+
+if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+else if (gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime == 0x7fffffff)
+	gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
+bInvul = (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) != 0;
+HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
+gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
 SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 }
 
@@ -560,7 +566,7 @@ gameStates.app.cheats.nUnlockLevel = 1;
 
 void WowieCheat (void)
 {
-	int	i;
+	int	h, i;
 
 HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
@@ -580,10 +586,11 @@ else {
 		gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = 0xffff;
 		}
-	for (i=0; i < MAX_PRIMARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i];
-	for (i=0; i < MAX_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i];
+	h = (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1;
+	for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
+		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i] * h;
+	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i] * h;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE4_INDEX] = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE5_INDEX] = 0;
@@ -593,13 +600,13 @@ else {
 	if (gameData.app.nGameMode & GM_HOARD)
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 12;
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 5;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX] = 5;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 5 * h;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX] = 5 * h;
 		}
 	}
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
+	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
 
 gameData.multi.players [gameData.multi.nLocalPlayer].energy = MAX_ENERGY;
 if (gameStates.app.bD1Mission)
@@ -781,7 +788,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 void DoCheatMenu()
 {
 	int mmn;
-	newmenu_item mm[16];
+	tMenuItem mm[16];
 	char score_text[21];
 
 	sprintf( score_text, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].score );

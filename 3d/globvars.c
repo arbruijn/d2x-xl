@@ -54,8 +54,8 @@ double		fxCanvH2;
 #endif
 
 //vertex buffers for polygon drawing and clipping
-g3s_point * Vbuf0[MAX_POINTS_IN_POLY];
-g3s_point *Vbuf1[MAX_POINTS_IN_POLY];
+g3sPoint * Vbuf0[MAX_POINTS_IN_POLY];
+g3sPoint *Vbuf1[MAX_POINTS_IN_POLY];
 
 //list of 2d coords
 fix polyVertList [MAX_POINTS_IN_POLY*2];

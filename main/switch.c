@@ -358,13 +358,13 @@ void DoUnlockDoors (tTrigger *trigP)
 
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
-short nSegment,nSide, wallnum;
+short nSegment,nSide, nWall;
 for (i = trigP->nLinks; i; i--, segs++, sides++) {
 	nSegment = *segs;
 	nSide = *sides;
-	wallnum=WallNumI (nSegment, nSide);
-	gameData.walls.walls [wallnum].flags &= ~WALL_DOOR_LOCKED;
-	gameData.walls.walls [wallnum].keys = KEY_NONE;
+	nWall=WallNumI (nSegment, nSide);
+	gameData.walls.walls [nWall].flags &= ~WALL_DOOR_LOCKED;
+	gameData.walls.walls [nWall].keys = KEY_NONE;
 }
 }
 
@@ -372,15 +372,16 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 // Return tTrigger number if door is controlled by a wall switch, else return -1.
 int DoorIsWallSwitched (int nWall)
 {
-	int i, trigger_num;
+	int i, nTrigger;
 	tTrigger *trigP = gameData.trigs.triggers;
+	short *segs, *sides;
 
-for (trigger_num=0; trigger_num<gameData.trigs.nTriggers; trigger_num++,trigP++) {
-	short *segs = trigP->nSegment;
-	short *sides = trigP->nSide;
+for (nTrigger=0; nTrigger < gameData.trigs.nTriggers; nTrigger++, trigP++) {
+	segs = trigP->nSegment;
+	sides = trigP->nSide;
 	for (i = trigP->nLinks; i; i--, segs++, sides++) {
 		if (WallNumI (*segs, *sides) == nWall) {
-			return trigger_num;
+			return nTrigger;
 			}
 	  	}
 	}
@@ -415,90 +416,96 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 // Changes walls pointed to by a tTrigger. returns true if any walls changed
 int DoChangeWalls (tTrigger *trigP)
 {
-	int i,ret=0;
-	short *segs = trigP->nSegment;
-	short *sides = trigP->nSide;
+	int 		i,ret=0;
+	short 	*segs = trigP->nSegment;
+	short 	*sides = trigP->nSide;
+	short 	nSide,nConnSide,nWall,nConnWall;
+	int 		nNewWallType;
+	tSegment *segP,*cSegP;
 
 for (i = trigP->nLinks; i; i--, segs++, sides++) {
-	tSegment *segp,*csegp;
-	short tSide,cside,wallnum,cwallnum;
-	int new_wallType;
 
-	segp = gameData.segs.segments+*segs;
-	tSide = *sides;
+	segP = gameData.segs.segments + *segs;
+	nSide = *sides;
 
-	if (segp->children [tSide] < 0) {
+	if (segP->children [nSide] < 0) {
 		if (gameOpts->legacy.bSwitches)
-			Warning (TXT_TRIG_SINGLE,
-				*segs, tSide, TRIG_IDX (trigP));
-		csegp = NULL;
-		cside = -1;
+			Warning (TXT_TRIG_SINGLE, *segs, nSide, TRIG_IDX (trigP));
+		cSegP = NULL;
+		nConnSide = -1;
 		}
 	else {
-		csegp = gameData.segs.segments + segp->children [tSide];
-		cside = FindConnectedSide (segp, csegp);
+		cSegP = gameData.segs.segments + segP->children [nSide];
+		nConnSide = FindConnectedSide (segP, cSegP);
 		}
 	switch (trigP->nType) {
 		case TT_OPEN_WALL:
-			new_wallType = WALL_OPEN; 
+			nNewWallType = WALL_OPEN; 
 			break;
 		case TT_CLOSE_WALL:		
-			new_wallType = WALL_CLOSED; 
+			nNewWallType = WALL_CLOSED; 
 			break;
 		case TT_ILLUSORY_WALL:	
-			new_wallType = WALL_ILLUSION; 
+			nNewWallType = WALL_ILLUSION; 
 			break;
-			default:
-			Assert (0); /* new_wallType unset */
-			return (0);
+		default:
+			Assert (0); /* nNewWallType unset */
+			return 0;
 			break;
 		}
-	wallnum = WallNumP (segp, tSide);
-	cwallnum = (cside < 0) ? NO_WALL : WallNumP (csegp, cside);
-	if ((gameData.walls.walls [wallnum].nType == new_wallType) &&
-			(!IS_WALL (cwallnum) || (gameData.walls.walls [cwallnum].nType == new_wallType)))
+	nWall = WallNumP (segP, nSide);
+	if (!IS_WALL (nWall)) {
+#ifdef _DEBUG
+		LogErr ("WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", 
+				  trigP - gameData.trigs.triggers, SEG_IDX (segP), nSide);
+#endif
+		continue;
+		}
+	nConnWall = (nConnSide < 0) ? NO_WALL : WallNumP (cSegP, nConnSide);
+	if ((gameData.walls.walls [nWall].nType == nNewWallType) &&
+		 (!IS_WALL (nConnWall) || (gameData.walls.walls [nConnWall].nType == nNewWallType)))
 		continue;		//already in correct state, so skip
 	ret = 1;
 	switch (trigP->nType) {
 		case TT_OPEN_WALL:
-			if ((gameData.pig.tex.pTMapInfo [segp->sides [tSide].nBaseTex].flags & TMI_FORCE_FIELD)) {
+			if (!(gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
+				StartWallCloak (segP,nSide);
+			else {
 				vmsVector pos;
-				COMPUTE_SIDE_CENTER (&pos, segp, tSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, SEG_IDX (segp), tSide, &pos, 0, F1_0);
-				gameData.walls.walls [wallnum].nType = new_wallType;
-				DigiKillSoundLinkedToSegment (SEG_IDX (segp),tSide,SOUND_FORCEFIELD_HUM);
-				if (IS_WALL (cwallnum)) {
-					gameData.walls.walls [cwallnum].nType = new_wallType;
-					DigiKillSoundLinkedToSegment (SEG_IDX (csegp),cside,SOUND_FORCEFIELD_HUM);
+				COMPUTE_SIDE_CENTER (&pos, segP, nSide);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_OFF, SEG_IDX (segP), nSide, &pos, 0, F1_0);
+				gameData.walls.walls [nWall].nType = nNewWallType;
+				DigiKillSoundLinkedToSegment (SEG_IDX (segP),nSide,SOUND_FORCEFIELD_HUM);
+				if (IS_WALL (nConnWall)) {
+					gameData.walls.walls [nConnWall].nType = nNewWallType;
+					DigiKillSoundLinkedToSegment (SEG_IDX (cSegP),nConnSide,SOUND_FORCEFIELD_HUM);
 					}
 				}
-			else
-				StartWallCloak (segp,tSide);
 			ret = 1;
 			break;
 
 		case TT_CLOSE_WALL:
-			if ((gameData.pig.tex.pTMapInfo [segp->sides [tSide].nBaseTex].flags & TMI_FORCE_FIELD)) {
+			if (!(gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].flags & TMI_FORCE_FIELD)) 
+				StartWallDecloak (segP,nSide);
+			else {
 				vmsVector pos;
-				COMPUTE_SIDE_CENTER (&pos, segp, tSide);
-				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, SEG_IDX (segp),tSide,&pos,1, F1_0/2);
-				gameData.walls.walls [wallnum].nType = new_wallType;
-				if (IS_WALL (cwallnum))
-					gameData.walls.walls [cwallnum].nType = new_wallType;
+				COMPUTE_SIDE_CENTER (&pos, segP, nSide);
+				DigiLinkSoundToPos (SOUND_FORCEFIELD_HUM, SEG_IDX (segP),nSide,&pos,1, F1_0/2);
+				gameData.walls.walls [nWall].nType = nNewWallType;
+				if (IS_WALL (nConnWall))
+					gameData.walls.walls [nConnWall].nType = nNewWallType;
 				}
-			else
-				StartWallDecloak (segp,tSide);
 			break;
 
 		case TT_ILLUSORY_WALL:
-			gameData.walls.walls [WallNumP (segp, tSide)].nType = new_wallType;
-			if (IS_WALL (cwallnum))
-				gameData.walls.walls [cwallnum].nType = new_wallType;
+			gameData.walls.walls [WallNumP (segP, nSide)].nType = nNewWallType;
+			if (IS_WALL (nConnWall))
+				gameData.walls.walls [nConnWall].nType = nNewWallType;
 			break;
 		}
-	KillStuckObjects (WallNumP (segp, tSide));
-	if (IS_WALL (cwallnum))
-		KillStuckObjects (cwallnum);
+	KillStuckObjects (WallNumP (segP, nSide));
+	if (IS_WALL (nConnWall))
+		KillStuckObjects (nConnWall);
   	}
 return ret;
 }
@@ -585,7 +592,7 @@ if (nStep <= 0) {
 	}
 else
 	n = gameStates.gameplay.vTgtDir;
-// turn the ship so that it is facing the destination tSide of the destination tSegment
+// turn the ship so that it is facing the destination nSide of the destination tSegment
 // invert the normal as it points into the tSegment
 // compute angles from the normal
 VmExtractAnglesVector (&an, &n);
@@ -638,7 +645,7 @@ if (trigP->nLinks > 0) {
 	i = d_rand () % trigP->nLinks;
 	nSegment = trigP->nSegment [i];
 	nSide = trigP->nSide [i];
-	// set new player direction, facing the destination tSide
+	// set new player direction, facing the destination nSide
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
 	gameStates.render.bDoAppearanceEffect = 1;
@@ -648,12 +655,12 @@ if (trigP->nLinks > 0) {
 
 //------------------------------------------------------------------------------
 
-wall *TriggerParentWall (short trigger_num)
+wall *TriggerParentWall (short nTrigger)
 {
 	int	i;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (gameData.walls.walls [i].nTrigger == trigger_num)
+	if (gameData.walls.walls [i].nTrigger == nTrigger)
 		return gameData.walls.walls + i;
 return NULL;
 }
@@ -700,7 +707,7 @@ if (sbd.bBoosted) {
 #else
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 #endif
-		// turn the ship so that it is facing the destination tSide of the destination tSegment
+		// turn the ship so that it is facing the destination nSide of the destination tSegment
 		// invert the normal as it points into the tSegment
 			n.x = -n.x;
 			n.y = -n.y;
@@ -713,7 +720,7 @@ if (sbd.bBoosted) {
 #else
 		memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 #endif
-	// turn the ship so that it is facing the destination tSide of the destination tSegment
+	// turn the ship so that it is facing the destination nSide of the destination tSegment
 	// invert the normal as it points into the tSegment
 		n.x = -n.x;
 		n.y = -n.y;
@@ -846,7 +853,8 @@ else if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 		return 1;
 	}
 #if 1
-if ((triggers == gameData.trigs.triggers) && (trigP->nType != TT_SPEEDBOOST)) {
+if ((triggers == gameData.trigs.triggers) && 
+	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 	long trigP = gameStates.app.nSDLTicks;
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (trigP - gameData.trigs.delay [nTrigger] < 1000))
 		return 1;
@@ -1057,7 +1065,7 @@ while (i >= 0) {
 }
 
 //-----------------------------------------------------------------
-// Checks for a tTrigger whenever an tObject hits a tTrigger tSide.
+// Checks for a tTrigger whenever an tObject hits a tTrigger nSide.
 void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
 {
 	int 	nWall;

@@ -97,7 +97,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.185  1995/02/14  11:25:48  allender
  * save cockpit mode and restore after playback.  get orientation for morph
- * effect when tObject is morph vclip
+ * effect when tObject is morph tVideoClip
  *
  * Revision 1.184  1995/02/13  12:18:14  allender
  * change to decide about interpolating or not
@@ -931,15 +931,15 @@ void my_extract_shortpos (tObject *objP, shortpos *spp)
 	sbyte *sp;
 
 sp = spp->bytemat;
-objP->orient.rvec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.uvec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.fvec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.rvec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.uvec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.fvec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.rvec.z = *sp++ << MATRIX_PRECISION;
-objP->orient.uvec.z = *sp++ << MATRIX_PRECISION;
-objP->orient.fvec.z = *sp++ << MATRIX_PRECISION;
+objP->orient.rVec.x = *sp++ << MATRIX_PRECISION;
+objP->orient.uVec.x = *sp++ << MATRIX_PRECISION;
+objP->orient.fVec.x = *sp++ << MATRIX_PRECISION;
+objP->orient.rVec.y = *sp++ << MATRIX_PRECISION;
+objP->orient.uVec.y = *sp++ << MATRIX_PRECISION;
+objP->orient.fVec.y = *sp++ << MATRIX_PRECISION;
+objP->orient.rVec.z = *sp++ << MATRIX_PRECISION;
+objP->orient.uVec.z = *sp++ << MATRIX_PRECISION;
+objP->orient.fVec.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->tSegment;
 objP->nSegment = nSegment;
 objP->pos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
@@ -2218,7 +2218,7 @@ int NDReadDemoStart (int rnd_demo)
 
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
-	newmenu_item m [1];
+	tMenuItem m [1];
 
 	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
 	memset (m, 0, sizeof (m));
@@ -2230,7 +2230,7 @@ if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 version = NDReadByte ();
 gameType = NDReadByte ();
 if (gameType < DEMO_GAME_TYPE) {
-	newmenu_item m [2];
+	tMenuItem m [2];
 
 	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	memset (m, 0, sizeof (m));
@@ -2243,7 +2243,7 @@ if (gameType < DEMO_GAME_TYPE) {
 	return 1;
 	}
 if (gameType != DEMO_GAME_TYPE) {
-	newmenu_item m [2];
+	tMenuItem m [2];
 
 	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	memset (m, 0, sizeof (m));
@@ -2257,7 +2257,7 @@ if (gameType != DEMO_GAME_TYPE) {
 	}
 if (version < DEMO_VERSION) {
 	if (!rnd_demo) {
-		newmenu_item m [1];
+		tMenuItem m [1];
 		sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
 		memset (m, 0, sizeof (m));
 		m [0].nType = NM_TYPE_TEXT; 
@@ -2318,7 +2318,7 @@ if (laserLevel != gameData.multi.players [gameData.multi.nLocalPlayer].laserLeve
 NDReadString (szCurrentMission);
 if (!LoadMissionByName (szCurrentMission, -1)) {
 	if (!rnd_demo) {
-		newmenu_item m [1];
+		tMenuItem m [1];
 
 		sprintf (text, TXT_NOMISSION4DEMO, szCurrentMission);
 		memset (m, 0, sizeof (m));
@@ -3227,7 +3227,7 @@ while (!bDone) {
 				}
 			if ((loadedLevel < gameData.missions.nLastSecretLevel) || 
 				 (loadedLevel > gameData.missions.nLastLevel)) {
-				newmenu_item m [3];
+				tMenuItem m [3];
 
 				memset (m, 0, sizeof (m));
 				m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_CANT_PLAYBACK;
@@ -3276,7 +3276,7 @@ while (!bDone) {
 	}
 LastReadValue = c;
 if (bNDBadRead) {
-	newmenu_item m [2];
+	tMenuItem m [2];
 
 	memset (m, 0, sizeof (m));
 	m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_DEMO_ERR_READING;
@@ -3316,7 +3316,7 @@ void NDGotoEnd ()
 CFSeek (infile, -2, SEEK_END);
 level = NDReadByte ();
 if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.nLastLevel)) {
-	newmenu_item m [3];
+	tMenuItem m [3];
 
 	memset (m, 0, sizeof (m));
 	m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_CANT_PLAYBACK;
@@ -3461,23 +3461,23 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 			//fix delta_p, delta_h, delta_b;
 			//vmsAngVec cur_angles, dest_angles;
 			//  Extract the angles from the tObject orientation matrix.
-			//  Some of this code taken from ai_turn_towards_vector
+			//  Some of this code taken from AITurnTowardsVector
 			//  Don't do the interpolation on certain render types which don't use an orientation matrix
 			if ((renderType != RT_LASER) &&
 				 (renderType != RT_FIREBALL) && 
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->orient.fvec;
+				fvec1 = curObjP->orient.fVec;
 				VmVecScale (&fvec1, F1_0-factor);
-				fvec2 = objP->orient.fvec;
+				fvec2 = objP->orient.fVec;
 				VmVecScale (&fvec2, factor);
 				VmVecInc (&fvec1, &fvec2);
 				mag1 = VmVecNormalizeQuick (&fvec1);
 				if (mag1 > F1_0/256) {
-					rvec1 = curObjP->orient.rvec;
+					rvec1 = curObjP->orient.rVec;
 					VmVecScale (&rvec1, F1_0-factor);
-					rvec2 = objP->orient.rvec;
+					rvec2 = objP->orient.rVec;
 					VmVecScale (&rvec2, factor);
 					VmVecInc (&rvec1, &rvec2);
 					VmVecNormalizeQuick (&rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
@@ -3729,7 +3729,7 @@ else
 char demoname_allowed_chars [] = "azAZ09__--";
 void NDStopRecording ()
 {
-	newmenu_item m [6];
+	tMenuItem m [6];
 	int l, exit;
 	static char filename [15] = "", *s;
 	static ubyte tmpcnt = 0;
@@ -4027,7 +4027,7 @@ bytes_done = 0;
 nTotalSize = CFLength (infile, 0);
 outfile = CFOpen (outname, "", "wb", 0);
 if (!outfile) {
-	newmenu_item m [1];
+	tMenuItem m [1];
 
 	memset (m, 0, sizeof (m));
 	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't open output file";
@@ -4037,7 +4037,7 @@ if (!outfile) {
 	}
 buf = d_malloc (BUF_SIZE);
 if (buf == NULL) {
-	newmenu_item m [1];
+	tMenuItem m [1];
 
 	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't d_malloc output buffer";
 	ExecMenu (NULL, NULL, 1, m, NULL, NULL);

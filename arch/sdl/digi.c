@@ -128,7 +128,7 @@ static const Uint8 mix8[] =
 
 static SDL_AudioSpec WaveSpec;
 
-struct sound_slot {
+struct tSoundSlot {
 	int				soundno;
 	int				playing;   // Is there a sample playing on this channel?
 	int				looped;    // Play this sample looped?
@@ -151,7 +151,7 @@ struct sound_slot {
 
 //------------------------------------------------------------------------------
 
-static void MixSoundSlot (struct sound_slot *sl, Uint8 *sldata, Uint8 *stream, int len)
+static void MixSoundSlot (struct tSoundSlot *sl, Uint8 *sldata, Uint8 *stream, int len)
 {
 	Uint8 *streamend = stream + len;
 	Uint8 *slend = sldata - sl->position + sl->length;
@@ -193,13 +193,11 @@ sl->position = (int) (sldata - sl->samples);
 static void _CDECL_ AudioMixCallback(void *userdata, Uint8 *stream, int len)
 {
 	Uint8 *streamend = stream + len;
-	struct sound_slot *sl;
+	struct tSoundSlot *sl;
 
 if (!gameStates.sound.digi.bInitialized)
 	return;
-
 memset(stream, 0x80, len); // fix "static" sound bug on Mac OS X
-
 for (sl = SoundSlots; sl < SoundSlots + MAX_SOUND_SLOTS; sl++) {
 	if (sl->playing && sl->samples && sl->length) {
 #if 0
@@ -249,9 +247,12 @@ int DigiInit()
 	int i;
 	i = 0;
 
-if (SDL_InitSubSystem(SDL_INIT_AUDIO)<0) {
+if (!gameStates.app.bUseSound)
+	return 1;
+if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	LogErr (TXT_SDL_INIT_AUDIO, SDL_GetError()); LogErr ("\n");
-	Error(TXT_SDL_INIT_AUDIO,SDL_GetError());
+	Error (TXT_SDL_INIT_AUDIO, SDL_GetError());
+	return 1;
 	}
 memset (SoundSlots, 0, sizeof (SoundSlots));	
 if (gameOpts->app.bDemoData)
@@ -324,7 +325,7 @@ void DigiStopAllChannels()
 
 //------------------------------------------------------------------------------
 
-int DigiResampleSound (digiSound *gsp, struct sound_slot *ssp, int bD1Sound)
+int DigiResampleSound (tDigiSound *gsp, struct tSoundSlot *ssp, int bD1Sound)
 {
 	int h, i, j, l;
 
@@ -350,7 +351,7 @@ return ssp->length = l;
 
 //------------------------------------------------------------------------------
 
-int DigiSpeedupSound (digiSound *gsp, struct sound_slot *ssp, int speed)
+int DigiSpeedupSound (tDigiSound *gsp, struct tSoundSlot *ssp, int speed)
 {
 	int	h, i, j, l;
 	ubyte	*pDest, *pSrc;
@@ -406,8 +407,8 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 						  char *pszWAV)
 {
 	int i, starting_channel;
-	struct sound_slot *ssp;
-	digiSound *gsp;
+	struct tSoundSlot *ssp;
+	tDigiSound *gsp;
 
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
@@ -662,7 +663,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 void DigiStopSound(int channel)
 {
-	struct sound_slot *ssp = SoundSlots + channel;
+	struct tSoundSlot *ssp = SoundSlots + channel;
 		
 ssp->playing = 0;
 ssp->soundobj = -1;
@@ -718,7 +719,7 @@ void DigiResumeMidi() {}
 
 void DigiFreeSoundBufs (void)
 {
-	struct sound_slot *ssp;
+	struct tSoundSlot *ssp;
 	int					i;
 
 for (ssp = SoundSlots, i = sizeofa (SoundSlots); i; i--, ssp++)

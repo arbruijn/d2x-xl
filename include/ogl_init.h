@@ -21,10 +21,12 @@
 #	define OGL_QUERY				0
 #endif
 
-#ifdef _WIN32
-#	define LIGHTMAPS 1
+#define LIGHTMAPS 1
+
+#ifdef _DEBUG
+#	define DBG_SHADERS	1
 #else
-#	define LIGHTMAPS 1
+#	define DBG_SHADERS	0
 #endif
 
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
@@ -129,7 +131,7 @@ void OglDoFullScreenInternal(int);
 int OglSetBrightnessInternal (void);
 void InitGammaRamp (void);
 
-int OglBindBmTex (grs_bitmap *bm, int nTransp);
+int OglBindBmTex (grsBitmap *bm, int nTransp);
 
 extern int ogl_brightness_ok;
 extern int ogl_brightness_r, ogl_brightness_g, ogl_brightness_b;
@@ -250,17 +252,17 @@ void OglClose (void);//one time shutdown
 //void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int width,int height,int twidth,int theight);
 void ogl_filltexbuf(unsigned char *data,GLubyte *texp,int truewidth,int width,int height,int dxo,int dyo,int twidth,int theight,int nType,int nTransp,int bSuperTransp);
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grs_bitmap *bm, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb);
+int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb);
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grs_bitmap *bm, int bMipMap, int nTransp, int bMask, ogl_fbuffer *pb);
+int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, ogl_fbuffer *pb);
 #else
-int OglLoadBmTextureM (grs_bitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
+int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
 #endif
-int OglLoadBmTexture (grs_bitmap *bm, int bMipMap, int nTransp);
+int OglLoadBmTexture (grsBitmap *bm, int bMipMap, int nTransp);
 //void ogl_loadtexture(unsigned char * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
-int OglLoadTexture (grs_bitmap *bmP, int dxo,int dyo, ogl_texture *tex, int nTransp, int bSuperTransp);
+int OglLoadTexture (grsBitmap *bmP, int dxo,int dyo, ogl_texture *tex, int nTransp, int bSuperTransp);
 void OglFreeTexture (ogl_texture *glTexture);
-void OglFreeBmTexture (grs_bitmap *bm);
+void OglFreeBmTexture (grsBitmap *bm);
 void OglDoPalFx (void);
 void OglStartFrame (int bFlat, int bResetColorBuf);
 void OglEndFrame (void);
@@ -269,17 +271,17 @@ void OglSetScreenMode (void);
 int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
-bool OglUBitMapMC (int x, int y, int dw, int dh, grs_bitmap *bm, grs_color *c, int scale, int orient);
-bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grs_bitmap * src, grs_bitmap * dest, int wantmip);
-bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest);
-bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest);
+bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grs_color *c, int scale, int orient);
+bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int wantmip);
+bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 void OglUPixelC (int x, int y, grs_color *c);
 void OglULineC (int left,int top,int right,int bot, grs_color *c);
 void OglUPolyC (int left, int top, int right, int bot, grs_color *c);
 void OglTexWrap (ogl_texture *tex, int state);
 void RebuildGfxFx (int bGame, int bCameras);
 
-tRgbColorf *BitmapColor (grs_bitmap *bmP, ubyte *bufP);
+tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP);
 
 extern ubyte *defaultPalette;
 extern ubyte *fadePalette;
@@ -289,17 +291,17 @@ extern GLenum curDrawBuffer;
 
 #include "3d.h"
 
-bool G3DrawPolyAlpha (int nv, g3s_point **pointlist, float red, float green, float blue, float alpha);
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, float red, float green, float blue, float alpha);
 
 bool G3DrawTexPolyMulti (
 	int nv,
-	g3s_point **pointlist,
+	g3sPoint **pointlist,
 	uvl *uvl_list,
 #if LIGHTMAPS
 	uvl *uvl_lMap,
 #endif
-	grs_bitmap *bmbot,
-	grs_bitmap *bm,
+	grsBitmap *bmbot,
+	grsBitmap *bm,
 #if LIGHTMAPS
 	ogl_texture *lightMap,
 #endif
@@ -338,7 +340,7 @@ int LinkShaderProg (GLhandleARB *progP);
 void DeleteShaderProg (GLhandleARB *progP);
 void InitShaders ();
 void SetRenderQuality ();
-void DrawTexPolyFlat (grs_bitmap *bm,int nv,g3s_point **vertlist);
+void DrawTexPolyFlat (grsBitmap *bm,int nv,g3sPoint **vertlist);
 void OglSetupTransform ();
 void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
@@ -358,18 +360,18 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture;
 
 //------------------------------------------------------------------------------
 
-static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, grs_bitmap *src, grs_bitmap *dest)
+static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, grsBitmap *src, grsBitmap *dest)
 {
 return OglUBitBltI (w,h,dx,dy,w,h,sx,sy,src,dest, 0);
 }
 
-static inline int OglUBitMapM (int x, int y,grs_bitmap *bm)
+static inline int OglUBitMapM (int x, int y,grsBitmap *bm)
 {
 return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
 }
 
-static inline int G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list,
-											grs_bitmap *bm, vmsVector *pvNormal, int bBlend)
+static inline int G3DrawTexPoly (int nv, g3sPoint **pointlist, uvl *uvl_list,
+											grsBitmap *bm, vmsVector *pvNormal, int bBlend)
 {
 #if LIGHTMAPS
 return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);
@@ -378,7 +380,7 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlen
 #endif
 }
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector3 *pvVertNorm, fVector3 *pVertPos, int nVertex, tFaceColor *pVertColor);
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor);
 
 #define BINDTEX_OPT 0
 

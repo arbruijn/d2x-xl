@@ -5,12 +5,8 @@
 
 #define MAX_SMOKE 1000
 
-#define PARTICLE_RAD	(F1_0 * 8)
-
-#define PARTICLE_SIZE(_nSize,_nScale) \
-		  ((float) (PARTICLE_RAD >> (3 - (_nSize))) / (_nScale) + 0.5f)
-
 #define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
+#define PARTICLE_SIZE(_nSize,_nScale)	ParticleSize (_nSize, _nScale)
 
 typedef struct tPartColor {
 	double		r, g, b, a;
@@ -60,9 +56,11 @@ typedef struct tCloud {
 	float			nPartScale;
 	int			nMoved;			//time last moved
 	short			nSegment;
+	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position
-	int			bHavePrevPos;	//valid previous position set?
+	ubyte			bHaveDir;		//movement direction given?
+	ubyte			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
 	tPartIdx		*pPartIdx;
 } tCloud;
@@ -79,8 +77,10 @@ typedef struct tSmoke {
 	tCloud		*pClouds;		//list of active clouds
 } tSmoke;
 
-int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nObject);
+int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
+					  short nSegment, int nMaxClouds, int nMaxParts, 
+					  float nPartScale, int nDensity, int nPartsPerPos, 
+					  int nLife, int nSpeed, int nType, int nObject);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
 int RenderSmoke ();
@@ -88,6 +88,7 @@ int DestroyAllSmoke (void);
 void SetSmokeDensity (int i, int nMaxParts, int nDensity);
 void SetSmokePartScale (int i, float nPartScale);
 void SetSmokePos (int i, vmsVector *pos);
+void SetSmokeDir (int i, vmsVector *pDir);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
 tCloud *GetCloud (int i, int j);
@@ -96,6 +97,7 @@ void FreeParticleImages (void);
 void SetCloudPos (tCloud *pCloud, vmsVector *pos);
 void InitSmoke (void);
 int MaxParticles (int nParts, int nDens);
+float ParticleSize (int nSize, float nScale);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

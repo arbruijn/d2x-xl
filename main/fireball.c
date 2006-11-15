@@ -408,8 +408,8 @@ tObject *ObjectCreateBadassExplosion(
 		CreateSmartChildren(objP, NUM_SMART_CHILDREN);
 
 // -- 	if (objP->nType == OBJ_ROBOT)
-// -- 		if (gameData.bots.pInfo[objP->id].smart_blobs)
-// -- 			CreateSmartChildren(objP, gameData.bots.pInfo[objP->id].smart_blobs);
+// -- 		if (gameData.bots.pInfo[objP->id].smartBlobs)
+// -- 			CreateSmartChildren(objP, gameData.bots.pInfo[objP->id].smartBlobs);
 
 	return rval;
 }
@@ -419,7 +419,7 @@ tObject *ObjectCreateBadassExplosion(
 //return the explosion tObject
 tObject *ExplodeBadassWeapon(tObject *objP,vmsVector *pos)
 {
-	weapon_info *wi = &gameData.weapons.info[objP->id];
+	tWeaponInfo *wi = &gameData.weapons.info[objP->id];
 
 	Assert(wi->damage_radius);
 
@@ -470,7 +470,7 @@ tObject *ObjectCreateDebris(tObject *parentObjP, int subobj_num)
 {
 	int nObject;
 	tObject *debrisObjP;
-	polymodel *po;
+	tPolyModel *po;
 
 	Assert((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
 
@@ -777,7 +777,7 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 	tSegment		*segP;
 	xsegment		*xsegP;
 	tObject		*objP;
-	fuelcen_info	*fuelP;
+	tFuelCenInfo	*fuelP;
 	short			virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
@@ -1468,8 +1468,8 @@ switch (nType) {
 			objP->mType.physInfo.flags |= (PF_LEVELLING);
 			objP->shields = gameData.bots.pInfo[objP->id].strength;
 			objP->cType.aiInfo.behavior = AIB_NORMAL;
-			gameData.ai.localInfo[OBJ_IDX (objP)].player_awarenessType = PA_WEAPON_ROBOT_COLLISION;
-			gameData.ai.localInfo[OBJ_IDX (objP)].player_awarenessTime = F1_0*3;
+			gameData.ai.localInfo[OBJ_IDX (objP)].playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
+			gameData.ai.localInfo[OBJ_IDX (objP)].playerAwarenessTime = F1_0*3;
 			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
 			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
@@ -1582,7 +1582,7 @@ return ObjectCreateEgg (objP);
 }
 
 //------------------------------------------------------------------------------
-//what vclip does this explode with?
+//what tVideoClip does this explode with?
 short GetExplosionVClip(tObject *obj,int stage)
 {
 	if (obj->nType==OBJ_ROBOT) {
@@ -1976,10 +1976,10 @@ void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTi
 	short			i, nSegment;
 	tObject		*blobObjP;
 
-VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
-VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 54));
-VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
-VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
+VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size / 10 * 9);
+VmVecScaleInc (vPos, &objP->orient.rVec, -(8 * objP->size / 54));
+VmVecScaleInc (vPos, &objP->orient.uVec, -(objP->size / 20));
+VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rVec, 8 * objP->size / 25);
 
 if (count == 1)
 	VmVecAvg (vPos, vPos, vPos + 1);

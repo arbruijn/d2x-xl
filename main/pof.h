@@ -8,8 +8,8 @@
 #define POF_PMF_TIMED			2			// Uses new timed animation
 #define POF_PMF_ALPHA			4			// Has alpha per vertex qualities
 #define POF_PMF_FACING			8			// Has a submodel that is always facing
-#define POF_PMF_NOT_RESIDENT	16			// This polymodel is not in memory
-#define POF_PMF_SIZE_COMPUTED	32			// This polymodel's size is computed
+#define POF_PMF_NOT_RESIDENT	16			// This tPolyModel is not in memory
+#define POF_PMF_SIZE_COMPUTED	32			// This tPolyModel's size is computed
 
 #define POF_SOF_ROTATE		0x01			// This subobject is a rotator
 #define POF_SOF_TURRET		0x02			//	This subobject is a turret that tracks
@@ -64,7 +64,7 @@ typedef tPOF_string	char [9];
 typedef struct tPOF_textures {
 	int					nTextures;
 	tPOF_string			*pszNames;
-	grs_bitmap			*pBitmaps;
+	grsBitmap			*pBitmaps;
 } tPOF_textures;
 
 typedef struct tPOF_faceVert {

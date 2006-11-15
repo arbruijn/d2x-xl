@@ -522,9 +522,9 @@ OglInitLoadLibrary();
 #endif
 /***/LogErr ("   initializing SDL\n");
 #ifdef _DEBUG
-if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
+if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 #else
-if (SDL_Init(SDL_INIT_VIDEO) < 0)
+if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 #endif	
 {
 	LogErr ("SDL library video initialisation failed: %s.\n", SDL_GetError());
@@ -545,35 +545,35 @@ if (t = FindArg("-fullscreen")) {
 #if 1	// use generalized render quality settings instead of allowing detailled settings
 SetRenderQuality ();
 #else
-if ((glt=FindArg("-gl_mipmap"))){
+if ((glt=FindArg ("-gl_mipmap"))){
 	gameStates.ogl.texMagFilter=GL_LINEAR;
 	gameStates.ogl.texMinFilter=GL_LINEAR_MIPMAP_NEAREST;
 	}
-if ((glt=FindArg("-gl_trilinear"))) {
+if ((glt=FindArg ("-gl_trilinear"))) {
 	gameStates.ogl.texMagFilter = GL_LINEAR;
 	gameStates.ogl.texMinFilter = GL_LINEAR_MIPMAP_LINEAR;
 	}
-if ((t=FindArg("-gl_simple"))) {
+if ((t=FindArg ("-gl_simple"))) {
 	if (t>=glt){//allow overriding of earlier args
 		glt=t;
 		gameStates.ogl.texMagFilter=GL_NEAREST;
 		gameStates.ogl.texMinFilter=GL_NEAREST;
 		}
 	}
-if ((t=FindArg("-gl_texmagfilt")) || (t=FindArg("-gl_texmagfilter"))){
+if ((t=FindArg ("-gl_texmagfilt")) || (t=FindArg("-gl_texmagfilter"))){
 	if (t>=glt)//allow overriding of earlier args
 		gameStates.ogl.texMagFilter=ogl_atotexfilti(Args[t+1],0);
 	}
-if ((t=FindArg("-gl_texminfilt")) || (t=FindArg("-gl_texminfilter"))){
+if ((t=FindArg ("-gl_texminfilt")) || (t=FindArg("-gl_texminfilter"))){
 	if (t>=glt)//allow overriding of earlier args
 		gameStates.ogl.texMinFilter=ogl_atotexfilti(Args[t+1],1);
 	}
 gameStates.ogl.bNeedMipMaps=ogl_testneedmipmaps (gameStates.ogl.texMinFilter);
 #endif
-if ((t=FindArg("-gl_vidmem"))){
+if ((t=FindArg ("-gl_vidmem"))){
 	ogl_mem_target=atoi(Args[t+1])*1024*1024;
 }
-if ((t=FindArg("-gl_reticle"))){
+if ((t=FindArg ("-gl_reticle"))){
 	gameStates.ogl.nReticle=atoi(Args[t+1]);
 }
 /***/LogErr ("   initializing internal texture list\n");
@@ -619,8 +619,8 @@ LogErr ("shutting down graphics subsystem\n");
 OglClose();//platform specific code
 if (grdCurScreen) {
 	if (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf)
-		d_free(grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf);
-	d_free(grdCurScreen);
+		d_free (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf);
+	d_free (grdCurScreen);
 	}
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)

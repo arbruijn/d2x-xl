@@ -12,313 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Rendering Stuff
- *
- * Old Log:
- * Revision 1.9  1995/11/20  17:17:48  allender
- * *** empty log message ***
- *
- * Revision 1.8  1995/10/26  14:08:35  allender
- * added assigment for physics optimization
- *
- * Revision 1.7  1995/09/22  14:28:46  allender
- * changed render_zoom to make game match PC aspect
- *
- * Revision 1.6  1995/08/14  14:35:54  allender
- * change transparency to 0
- *
- * Revision 1.5  1995/08/12  11:32:02  allender
- * removed #ifdef NEWDEMO -- always in
- *
- * Revision 1.4  1995/07/05  16:48:31  allender
- * kitchen stuff
- *
- * Revision 1.3  1995/06/23  10:22:54  allender
- * fix outline mode
- *
- * Revision 1.2  1995/06/16  16:11:18  allender
- * changed sort func to accept const parameters
- *
- * Revision 1.1  1995/05/16  15:30:24  allender
- * Initial revision
- *
- * Revision 2.5  1995/12/19  15:31:36  john
- * Made stereo mode only record 1 eye in demo.
- *
- * Revision 2.4  1995/03/20  18:15:53  john
- * Added code to not store the normals in the tSegment structure.
- *
- * Revision 2.3  1995/03/13  16:11:05  john
- * Maybe fixed bug that lighting didn't work with vr helmets.
- *
- * Revision 2.2  1995/03/09  15:33:49  john
- * Fixed bug with iglasses timeout too long, and gameData.objs.objects
- * disappearing from left eye.
- *
- * Revision 2.1  1995/03/06  15:23:59  john
- * New screen techniques.
- *
- * Revision 2.0  1995/02/27  11:31:01  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.252  1995/02/22  13:49:38  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.251  1995/02/11  15:07:26  matt
- * Took out code which was mostly intended as part of a larger renderer
- * change which never happened.  This new code was causing problems with
- * the level 4 control center.
- *
- * Revision 1.250  1995/02/07  16:28:53  matt
- * Fixed problem with new code
- *
- * Revision 1.249  1995/02/06  14:38:58  matt
- * Took out some code that didn't compile when editor in
- *
- * Revision 1.248  1995/02/06  13:45:25  matt
- * Structural changes, plus small sorting improvements
- *
- * Revision 1.247  1995/02/02  15:59:26  matt
- * Changed assert to int3.
- *
- * Revision 1.246  1995/02/01  21:02:27  matt
- * Added partial fix for rendering bugs
- * Ripped out laser hack system
- *
- * Revision 1.245  1995/01/20  15:14:30  matt
- * Added parens to fix precedence bug
- *
- * Revision 1.244  1995/01/14  19:16:59  john
- * First version of new bitmap paging code.
- *
- * Revision 1.243  1995/01/03  20:19:25  john
- * Pretty good working version of game save.
- *
- * Revision 1.242  1994/12/29  13:51:05  john
- * Made the floating reticle draw in the spot
- * regardless of the eye offset.
- *
- * Revision 1.241  1994/12/23  15:02:55  john
- * Tweaked floating reticle.
- *
- * Revision 1.240  1994/12/23  14:27:45  john
- * Changed offset of floating reticle to line up with
- * lasers a bit better.
- *
- * Revision 1.239  1994/12/23  14:22:50  john
- * Added floating reticle for VR helments.
- *
- * Revision 1.238  1994/12/13  14:07:50  matt
- * Fixed nOvlTex bug in search mode
- *
- * Revision 1.237  1994/12/11  00:45:53  matt
- * Fixed problem when tObject sort buffer got full
- *
- * Revision 1.236  1994/12/09  18:46:06  matt
- * Added a little debugging
- *
- * Revision 1.235  1994/12/09  14:59:16  matt
- * Added system to attach a fireball to another tObject for rendering purposes,
- * so the fireball always renders on top of (after) the tObject.
- *
- * Revision 1.234  1994/12/08  15:46:54  matt
- * Fixed buffer overflow that caused seg depth screwup
- *
- * Revision 1.233  1994/12/08  11:51:53  matt
- * Took out some unused stuff
- *
- * Revision 1.232  1994/12/06  16:31:48  mike
- * fix detriangulation problems.
- *
- * Revision 1.231  1994/12/05  15:32:51  matt
- * Changed an assert to an int3 & return
- *
- * Revision 1.230  1994/12/04  17:28:04  matt
- * Got rid of unused no_renderFlag array, and took out box clear when searching
- *
- * Revision 1.229  1994/12/04  15:51:14  matt
- * Fixed linear tmap transition for gameData.objs.objects
- *
- * Revision 1.228  1994/12/03  20:16:50  matt
- * Turn off window clip for gameData.objs.objects
- *
- * Revision 1.227  1994/12/03  14:48:00  matt
- * Restored some default settings
- *
- * Revision 1.226  1994/12/03  14:44:32  matt
- * Fixed another difficult bug in the window clip system
- *
- * Revision 1.225  1994/12/02  13:19:56  matt
- * Fixed rect clears at terminus of rendering
- * Made a bunch of debug code compile out
- *
- * Revision 1.224  1994/12/02  11:58:21  matt
- * Fixed window clip bug
- *
- * Revision 1.223  1994/11/28  21:50:42  mike
- * optimizations.
- *
- * Revision 1.222  1994/11/28  01:32:15  mike
- * turn off window clearing.
- *
- * Revision 1.221  1994/11/27  23:11:52  matt
- * Made changes for new //con_printf calling convention
- *
- * Revision 1.220  1994/11/20  15:58:55  matt
- * Don't migrate the control center, since it doesn't move out of its tSegment
- *
- * Revision 1.219  1994/11/19  23:54:36  mike
- * change window colors.
- *
- * Revision 1.218  1994/11/19  15:20:25  mike
- * rip out unused code and data
- *
- * Revision 1.217  1994/11/18  13:21:24  mike
- * Clear only view portals into rest of world based on value of nClearWindow.
- *
- * Revision 1.216  1994/11/15  17:02:10  matt
- * Re-added accidentally deleted variable
- *
- * Revision 1.215  1994/11/15  16:51:50  matt
- * Made rear view only switch to rear cockpit if cockpit on in front view
- *
- * Revision 1.214  1994/11/14  20:47:57  john
- * Attempted to strip out all the code in the game
- * directory that uses any ui code.
- *
- * Revision 1.213  1994/11/11  15:37:07  mike
- * write orange for background to show render bugs.
- *
- * Revision 1.212  1994/11/09  22:57:18  matt
- * Keep tract of depth of segments rendered, for detail level optimization
- *
- * Revision 1.211  1994/11/01  23:40:14  matt
- * Elegantly handler buffer getting full
- *
- * Revision 1.210  1994/10/31  22:28:13  mike
- * Fix detriangulation bug.
- *
- * Revision 1.209  1994/10/31  11:48:56  mike
- * Optimize detriangulation, speedup of about 4% in many cases, 0% in many.
- *
- * Revision 1.208  1994/10/30  20:08:34  matt
- * For endlevel: added big explosion at tunnel exit; made lights in tunnel
- * go out; made more explosions on walls.
- *
- * Revision 1.207  1994/10/27  14:14:35  matt
- * Don't do light flash during endlevel sequence
- *
- * Revision 1.206  1994/10/11  12:05:42  mike
- * Improve detriangulation.
- *
- * Revision 1.205  1994/10/07  15:27:00  john
- * Commented out the code that moves your eye
- * forward.
- *
- * Revision 1.204  1994/10/05  16:07:38  mike
- * Don't detriangulate sides if in player's tSegment.  Prevents player going behind a wall,
- * though there are cases in which it would be ok to detriangulate these.
- *
- * Revision 1.203  1994/10/03  12:44:05  matt
- * Took out unreferenced code
- *
- * Revision 1.202  1994/09/28  14:08:45  john
- * Added Zoom stuff back in, but ifdef'd it out.
- *
- * Revision 1.201  1994/09/25  23:41:49  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
- *
- * Revision 1.200  1994/09/25  15:50:10  mike
- * Integrate my debug changes which shows how many textures were rendered
- * this frame.
- *
- * Revision 1.199  1994/09/25  15:45:22  matt
- * Added OBJ_LIGHT, a nType of tObject that casts light
- * Added generalized lifeleft, and moved it to localObject
- *
- * Revision 1.198  1994/09/15  21:23:32  matt
- * Changed system to keep track of whether & what cockpit is up
- *
- * Revision 1.197  1994/09/15  16:30:12  mike
- * Comment out call to object_render_targets, which did nothing.
- *
- * Revision 1.196  1994/09/07  22:25:51  matt
- * Don't migrate through semi-transparent walls
- *
- * Revision 1.195  1994/09/07  19:16:21  mike
- * Homing missile.
- *
- * Revision 1.194  1994/08/31  20:54:17  matt
- * Don't do flash effect while whiting out
- *
- * Revision 1.193  1994/08/23  17:20:12  john
- * Added rear-view cockpit.
- *
- * Revision 1.192  1994/08/22  14:36:35  john
- * Made R key make a "reverse" view render.
- *
- * Revision 1.191  1994/08/19  20:09:26  matt
- * Added end-of-level cut scene with external scene
- *
- * Revision 1.190  1994/08/10  19:56:17  john
- * Changed font stuff; Took out old menu; messed up lots of
- * other stuff like game sequencing messages, etc.
- *
- * Revision 1.189  1994/08/10  14:45:05  john
- * *** empty log message ***
- *
- * Revision 1.188  1994/08/09  16:04:06  john
- * Added network players to editor.
- *
- * Revision 1.187  1994/08/05  17:07:05  john
- * Made lasers be two gameData.objs.objects, one drawing after the other
- * all the time.
- *
- * Revision 1.186  1994/08/05  10:07:57  matt
- * Disable window check checking (i.e., always use window check)
- *
- * Revision 1.185  1994/08/04  19:11:30  matt
- * Changed a bunch of vecmat calls to use multiple-function routines, and to
- * allow the use of C macros for some functions
- *
- * Revision 1.184  1994/08/04  00:21:14  matt
- * Cleaned up fvi & physics error handling; put in code to make sure gameData.objs.objects
- * are in correct tSegment; simplified tSegment finding for gameData.objs.objects and points
- *
- * Revision 1.183  1994/08/02  19:04:28  matt
- * Cleaned up vertex list functions
- *
- * Revision 1.182  1994/07/29  15:13:33  matt
- * When window check turned off, cut render depth in half
- *
- * Revision 1.181  1994/07/29  11:03:50  matt
- * Use highest_segment_index instead of num_segments so render works from
- * the editor
- *
- * Revision 1.180  1994/07/29  10:04:34  mike
- * Update Cursegp when an tObject is selected.
- *
- * Revision 1.179  1994/07/25  00:02:50  matt
- * Various changes to accomodate new 3d, which no longer takes point numbers
- * as parms, and now only takes pointers to points.
- *
- * Revision 1.178  1994/07/24  14:37:49  matt
- * Added angles for player head
- *
- * Revision 1.177  1994/07/20  19:08:07  matt
- * If in editor, don't move eye from center of viewer tObject
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -450,13 +143,13 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-void DrawOutline (int nv, g3s_point **pointlist)
+void DrawOutline (int nv, g3sPoint **pointlist)
 {
 	int i;
 	GLint depthFunc; 
-	g3s_point center, normal;
+	g3sPoint center, normal;
 	vmsVector n;
-	fVector3 *nf;
+	fVector *nf;
 
 #if 1 //def RELEASE
 	if (gameStates.render.bQueryOcclusion) {
@@ -511,9 +204,9 @@ extern void ShowReticle(int force_big);
 // Draw the reticle in 3D for head tracking
 void Draw3DReticle (fix nEyeOffset)
 {
-	g3s_point 	reticlePoints [4];
+	g3sPoint 	reticlePoints [4];
 	uvl			uvl [4];
-	g3s_point	*pointlist [4];
+	g3sPoint	*pointlist [4];
 	int 			i;
 	vmsVector	v1, v2;
 	grs_canvas	*saved_canvas;
@@ -535,23 +228,23 @@ uvl [2].u =
 uvl [2].v =
 uvl [3].v = F1_0;
 
-VmVecScaleAdd( &v1,&gameData.objs.viewer->pos, &gameData.objs.viewer->orient.fvec, F1_0*4 );
-VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rvec,nEyeOffset);
+VmVecScaleAdd( &v1,&gameData.objs.viewer->pos, &gameData.objs.viewer->orient.fVec, F1_0*4 );
+VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rVec,nEyeOffset);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, -F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, F1_0*1 );
 G3TransformAndEncodePoint(reticlePoints,&v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, F1_0*1 );
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, +F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, F1_0*1 );
 G3TransformAndEncodePoint(reticlePoints + 1,&v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, +F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, +F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, -F1_0*1 );
 G3TransformAndEncodePoint(reticlePoints + 2,&v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rvec, -F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uvec, -F1_0*1 );
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, -F1_0*1 );
+VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, -F1_0*1 );
 G3TransformAndEncodePoint(reticlePoints + 3,&v2);
 
 if ( reticle_canvas == NULL )	{
@@ -617,7 +310,7 @@ else {
 //	vp is a pointer to vertex ids.
 //	tmap1, tmap2 are texture map ids.  tmap2 is the pasty one.
 
-int RenderColoredSegment (int nSegment, int nSide, int nv, g3s_point **pointlist)
+int RenderColoredSegment (int nSegment, int nSide, int nv, g3sPoint **pointlist)
 {
 	short csegnum = gameData.segs.segments [nSegment].children [nSide];
 	int	funcRes = 1;
@@ -889,7 +582,7 @@ return (nTexture == 378) ||
 
 //------------------------------------------------------------------------------
 
-int RenderWall (tFaceProps *propsP, g3s_point **pointlist, int bIsMonitor)
+int RenderWall (tFaceProps *propsP, g3sPoint **pointlist, int bIsMonitor)
 {
 short c, nWallNum = WallNumI (propsP->segNum, propsP->sideNum);
 
@@ -936,7 +629,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-grs_bitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
+grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 
 #if LIGHTMAPS
 #	define LMAP_LIGHTADJUST	1
@@ -970,7 +663,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 0 && props.sideNum == 5)
+if (props.segNum == 35 && props.sideNum == 1)
 	props.segNum = props.segNum;
 #	if 0
 else
@@ -985,13 +678,13 @@ if (!bRender)
 #endif
 {
 	// -- Using new headlight system...fix			face_light;
-	grs_bitmap  *bmBot = NULL;
+	grsBitmap  *bmBot = NULL;
 #ifdef OGL
-	grs_bitmap  *bmTop = NULL;
+	grsBitmap  *bmTop = NULL;
 #endif
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
-	g3s_point	*pointlist [8];
+	g3sPoint	*pointlist [8];
 	tSegment		*segP = gameData.segs.segments + props.segNum;
 	tSide			*sideP = segP->sides + props.sideNum;
 	tCamera		*pc = NULL;
@@ -1040,7 +733,7 @@ Assert(props.nv <= 4);
 		pc->bVisible = 1;
 	if (RenderWall (&props, pointlist, bIsMonitor))
 		return;
-	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->orient.fvec,norm);
+	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->orient.fVec,norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
 		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 #if TRACE	
@@ -1190,9 +883,9 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 
 	if (bSearchMode) {
 		int save_lighting;
-		grs_bitmap *bm;
+		grsBitmap *bm;
 		uvl uvlCopy [8];
-		g3s_point *pointlist [4];
+		g3sPoint *pointlist [4];
 
 		if (tmap2 > 0 )
 			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient );
@@ -1633,7 +1326,7 @@ if (!++nRLFrameCount) {		//wrap!
 g3s_codes RotateList (int nv, short *pointNumList)
 {
 	int i,pnum;
-	g3s_point *pnt;
+	g3sPoint *pnt;
 	g3s_codes cc;
 
 cc.and = 0xff;  
@@ -1778,7 +1471,7 @@ void OutlineSegSide(tSegment *seg,int _side,int edge,int vert)
 
 cc=RotateList(8,seg->verts);
 if (! cc.and) {		//all off screen?
-	g3s_point *pnt;
+	g3sPoint *pnt;
 	tSide *s = seg->sides+_side;
 	//render curedge of curside of curseg in green
 	GrSetColorRGB (0, 255, 0, 255);
@@ -2562,8 +2255,8 @@ if ((pPath->tUpdate < 0) || (t >= pPath->tRefresh)) {
 	pPath->path [pPath->nEnd].vOrgPos = objP->pos;
 	pPath->path [pPath->nEnd].vPos = objP->pos;
 	pPath->path [pPath->nEnd].mOrient = objP->orient;
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.fvec, 0);
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.uvec, 0);
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.fVec, 0);
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.uVec, 0);
 //	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
 //		pPath->nEnd = h;
 //	else 
@@ -2602,11 +2295,11 @@ void GetViewPoint (void)
 	tPathPoint		*p = GetPathPoint (&externalView);
 
 if (!p)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fvec, PP_DELTAZ);
+	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fVec, PP_DELTAZ);
 else {
 	viewerEye = p->vPos;
-	VmVecScaleInc (&viewerEye, &p->mOrient.fvec, PP_DELTAZ * 2 / 3);
-	VmVecScaleInc (&viewerEye, &p->mOrient.uvec, PP_DELTAY * 2 / 3);
+	VmVecScaleInc (&viewerEye, &p->mOrient.fVec, PP_DELTAZ * 2 / 3);
+	VmVecScaleInc (&viewerEye, &p->mOrient.uVec, PP_DELTAY * 2 / 3);
 	}
 }
 
@@ -2825,7 +2518,7 @@ if (!gameOpts->legacy.bZBuf)
 G3StartFrame (0, !(nWindowNum || gameStates.render.cameras.bActive));
 viewerEye = gameData.objs.viewer->pos;
 if (nEyeOffset) {
-	VmVecScaleInc(&viewerEye,&gameData.objs.viewer->orient.rvec,nEyeOffset);
+	VmVecScaleInc(&viewerEye,&gameData.objs.viewer->orient.rVec,nEyeOffset);
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
@@ -2903,8 +2596,8 @@ else {
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
 #else
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fvec, -i2f (30));
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.uvec, i2f (10));
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fVec, -i2f (30));
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.uVec, i2f (10));
 #endif
 			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
 			}
@@ -3178,7 +2871,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					s2v = sideToVerts [nSide];
 					for (i=0,codes_and_3d=codes_and_2d=0xff;i<4;i++) {
 						int p = sv [s2v [i]];
-						g3s_point *pnt = gameData.segs.points+p;
+						g3sPoint *pnt = gameData.segs.points+p;
 						if (!(pnt->p3Flags&PF_PROJECTED)) {
 							no_projFlag=1; 
 							break;

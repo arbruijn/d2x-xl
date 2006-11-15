@@ -20,8 +20,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 
 #include "u_mem.h"
-
-
 #include "console.h"
 #include "inferno.h"
 #include "grdef.h"
@@ -106,14 +104,17 @@ void GrInitSubCanvas(grs_canvas *newCanv, grs_canvas *src, int x, int y, int w, 
 
 void GrFreeCanvas(grs_canvas *canv)
 {
-	GrFreeBitmapData(&canv->cv_bitmap);
-    d_free(canv);
+if (canv) {
+	GrFreeBitmapData (&canv->cv_bitmap);
+	d_free(canv);
+	}
 }
 
 //	-----------------------------------------------------------------------------
 
 void GrFreeSubCanvas(grs_canvas *canv)
 {
+if (canv)
     d_free(canv);
 }
 

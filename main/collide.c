@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Initial revision
  *
  * Revision 2.5  1995/07/26  12:07:46  john
- * Made code that pages in weapon_info->robot_hit_vclip not
+ * Made code that pages in tWeaponInfo->robot_hit_vclip not
  * page in unless it is a badass weapon.  Took out old functionallity
  * of using this if no robot exp1_vclip, since all robots have these.
  *
@@ -1108,7 +1108,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 		if (((ec != -1) && (db != -1) && !bOneShot) ||	
 			 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 			fix u, v;
-			grs_bitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
+			grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
 			int x = 0, y = 0;
 
 			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm], gameStates.app.bD1Data);
@@ -1242,7 +1242,7 @@ int CollideWeaponAndWall (
 {
 	tSegment *segP = gameData.segs.segments + hitseg;
 	tSide *sideP = segP->sides + hitwall;
-	weapon_info *wInfoP = gameData.weapons.info + weapon->id;
+	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 	tObject *wObjP = gameData.objs.objects + weapon->cType.laserInfo.nParentObj;
 
 	int bBlewUp;
@@ -1256,7 +1256,7 @@ if (weapon->id == OMEGA_ID)
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weapon->id == GUIDEDMISS_ID) {
-	fix dot = VmVecDot (&weapon->orient.fvec, sideP->normals);
+	fix dot = VmVecDot (&weapon->orient.fVec, sideP->normals);
 #if TRACE
 	con_printf (CON_DEBUG, "Guided missile dot = %7.3f \n", f2fl (dot));
 #endif
@@ -1332,18 +1332,18 @@ wallType = WallHitProcess (segP, hitwall, weapon->shields, playernum, weapon);
 if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) || 
 		(sideP->nOvlTex && 
 		(gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_VOLATILE))) {
-	ubyte vclip;
+	ubyte tVideoClip;
 	//we've hit a volatile wall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, hitseg, 0, vHitPt, 0, F1_0);
-	//for most weapons, use volatile wall hit.  For mega, use its special vclip
-	vclip = (weapon->id == MEGA_ID)?wInfoP->robot_hit_vclip:VCLIP_VOLATILE_WALL_HIT;
+	//for most weapons, use volatile wall hit.  For mega, use its special tVideoClip
+	tVideoClip = (weapon->id == MEGA_ID)?wInfoP->robot_hit_vclip:VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
 	if (wInfoP->damage_radius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
 		ExplodeBadassWeapon (weapon, vHitPt);
 	else
 		ObjectCreateBadassExplosion (weapon, hitseg, vHitPt, 
 			wInfoP->impact_size + VOLATILE_WALL_IMPACT_SIZE, 
-			vclip, 
+			tVideoClip, 
 			wInfoP->strength [gameStates.app.nDifficultyLevel]/4+VOLATILE_WALL_EXPL_STRENGTH, 	//	diminished by mk on 12/08/94, i was doing 70 damage hitting lava on lvl 1.
 			wInfoP->damage_radius+VOLATILE_WALL_DAMAGE_RADIUS, 
 			wInfoP->strength [gameStates.app.nDifficultyLevel]/2+VOLATILE_WALL_DAMAGE_FORCE, 
@@ -1577,7 +1577,7 @@ else
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the robot stole.
-if ((!steal_attempt) && !gameData.bots.pInfo [robot->id].energy_drain)
+if ((!steal_attempt) && !gameData.bots.pInfo [robot->id].energyDrain)
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 BumpTwoObjects (robot, playerObjP, 1, vHitPt);
 return 1; 
@@ -1624,8 +1624,9 @@ if (whotype != OBJ_PLAYER) {
 if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP) && 
 	 (gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel < netGame.control_invulTime)) {
 	if (gameData.objs.objects [who].id == gameData.multi.nLocalPlayer) {
-		int secs = f2i (netGame.control_invulTime-gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) % 60;
-		int mins = f2i (netGame.control_invulTime-gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) / 60;
+		int t = netGame.control_invulTime - gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel;
+		int secs = f2i (t) % 60;
+		int mins = f2i (t) / 60;
 		HUDInitMessage ("%s %d:%02d.", TXT_CNTRLCEN_INVUL, mins, secs);
 		}
 	return;
@@ -1899,14 +1900,14 @@ if (robot->shields < 0) {
 	if (gameData.bots.pInfo [robot->id].bossFlag) {
 		start_boss_death_sequence (robot);	//DoReactorDestroyedStuff (NULL);
 		}
-	else if (gameData.bots.pInfo [robot->id].death_roll) {
+	else if (gameData.bots.pInfo [robot->id].bDeathRoll) {
 		StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
 		}
 	else {
 		if (robot->id == SPECIAL_REACTOR_ROBOT)
 			SpecialReactorStuff ();
-	//if (gameData.bots.pInfo [robot->id].smart_blobs)
-	//	CreateSmartChildren (robot, gameData.bots.pInfo [robot->id].smart_blobs);
+	//if (gameData.bots.pInfo [robot->id].smartBlobs)
+	//	CreateSmartChildren (robot, gameData.bots.pInfo [robot->id].smartBlobs);
 	//if (gameData.bots.pInfo [robot->id].badass)
 	//	ExplodeBadassObject (robot, F1_0*gameData.bots.pInfo [robot->id].badass, F1_0*40, F1_0*150);
 		ExplodeObject (robot, gameData.bots.pInfo [robot->id].kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
@@ -1925,9 +1926,9 @@ extern int BossSpewRobot (tObject *objP, vmsVector *pos);
 //--ubyte	Boss_spews_bots_matter [NUM_D2_BOSSES] = 	{0, 0, 1, 0, 1, 1};		//	Set byte if boss spews bots when hit by matter weapon.
 //--ubyte	Boss_invulnerable_energy [NUM_D2_BOSSES] = {0, 0, 1, 1, 0, 0};		//	Set byte if boss is invulnerable to energy weapons.
 //--ubyte	Boss_invulnerable_matter [NUM_D2_BOSSES] = {0, 0, 0, 1, 0, 0};		//	Set byte if boss is invulnerable to matter weapons.
-//--ubyte	Boss_invulnerable_spot [NUM_D2_BOSSES] = 	{0, 0, 0, 0, 1, 1};		//	Set byte if boss is invulnerable in all but a certain spot. (Dot product fvec|vec_to_collision < BOSS_INVULNERABLE_DOT)
+//--ubyte	Boss_invulnerable_spot [NUM_D2_BOSSES] = 	{0, 0, 0, 0, 1, 1};		//	Set byte if boss is invulnerable in all but a certain spot. (Dot product fVec|vec_to_collision < BOSS_INVULNERABLE_DOT)
 
-//#define	BOSS_INVULNERABLE_DOT	0		//	If a boss is invulnerable over most of his body, fvec (dot)vec_to_collision must be less than this for damage to occur.
+//#define	BOSS_INVULNERABLE_DOT	0		//	If a boss is invulnerable over most of his body, fVec (dot)vec_to_collision must be less than this for damage to occur.
 int	Boss_invulnerable_dot = 0;
 
 int	Buddy_gave_hint_count = 5;
@@ -1966,7 +1967,7 @@ int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 		//	Boss only vulnerable in back.  See if hit there.
 		VmVecSub (&tvec1, vHitPt, &robot->pos);
 		VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-		dot = VmVecDot (&tvec1, &robot->orient.fvec);
+		dot = VmVecDot (&tvec1, &robot->orient.fVec);
 #if TRACE
 		con_printf (CON_DEBUG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
@@ -2056,7 +2057,7 @@ int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
 	int	bDamage=1;
 	int	boss_invulFlag=0;
 	tRobotInfo *rInfoP = gameData.bots.pInfo + robot->id;
-	weapon_info *wInfoP = gameData.weapons.info + weapon->id;
+	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
@@ -2087,11 +2088,11 @@ if (weapon->cType.laserInfo.nParentSig == robot->nSignature)
 	return 1;
 //	Changed, 10/04/95, put out blobs based on skill level and power of weapon doing damage.
 //	Also, only a weapon hit from a player weapon causes smart blobs.
-if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energy_blobs))
+if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 	if ((robot->shields > 0) && bIsEnergyWeapon [weapon->id]) {
 		int	num_blobs;
 		fix	probval = (gameStates.app.nDifficultyLevel+2) * min (weapon->shields, robot->shields);
-		probval = rInfoP->energy_blobs * probval/ (NDL*32);
+		probval = rInfoP->energyBlobs * probval/ (NDL*32);
 		num_blobs = probval >> 16;
 		if (2*d_rand () < (probval & 0xffff))
 			num_blobs++;
@@ -2702,7 +2703,7 @@ return 1;
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
 int CollidePlayerAndNastyRobot (tObject * playerObjP, tObject * robot, vmsVector *vHitPt)
 {
-//	if (!(gameData.bots.pInfo [robot->id].energy_drain && gameData.multi.players [playerObjP->id].energy))
+//	if (!(gameData.bots.pInfo [robot->id].energyDrain && gameData.multi.players [playerObjP->id].energy))
 ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (playerObjP, robot, 0, vHitPt))	{//no damage from bump
 	DigiLinkSoundToPos (gameData.bots.pInfo [robot->id].clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);

@@ -12,51 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * "PC" Version:
- * Rountines to copy a bitmap on top of another bitmap, but
- * only copying to pixels that are transparent.
- * "Mac" Version:
- * Routines to to inverse bitblitting -- well not really.
- * We don't inverse bitblt like in the PC, but this code
- * does set up a structure that blits around the cockpit
- *
- * d2x uses the "Mac" version for everything except __MSDOS__
- *
- * Old Log:
- * Revision 1.3  1995/09/13  11:43:22  allender
- * start on optimizing cockpit copy code
- *
- * Revision 1.2  1995/09/07  10:16:57  allender
- * fixed up cockpit and rearview hole blitting
- *
- * Revision 1.1  1995/08/18  15:50:48  allender
- * Initial revision
- *
- * Revision 1.6  1994/11/28  17:07:29  john
- * Took out some unused functions in linear.asm, moved
- * gr_linear_movsd from linear.asm to bitblt.c, made sure that
- * the code in ibiblt.c sets the direction flags before rep movsing.
- *
- * Revision 1.5  1994/11/18  22:50:22  john
- * Changed shorts to ints in parameters.
- *
- * Revision 1.4  1994/11/09  16:35:16  john
- * First version with working RLE bitmaps.
- *
- * Revision 1.3  1994/10/03  17:18:05  john
- * Fixed bug with edi not getting intialized to zero
- * in create_mask.
- *
- * Revision 1.2  1994/05/31  11:10:55  john
- * *** empty log message ***
- *
- * Revision 1.1  1994/05/30  16:08:27  john
- * Initial revision
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -330,7 +285,7 @@ void move_and_draw( int dsource, int ddest, int ecx )
 //-----------------------------------------------------------------------------------------
 // Given bitmap, bmp, finds the size of the code
 
-int gr_ibitblt_find_code_size_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
+int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -408,12 +363,12 @@ int gr_ibitblt_find_code_size_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw
 	return Code_counter;
 }
 
-int gr_ibitblt_find_code_size( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+int gr_ibitblt_find_code_size( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_LINEAR );
 }
 
-int gr_ibitblt_find_code_size_svga( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+int gr_ibitblt_find_code_size_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_SVGA );
 }
@@ -422,7 +377,7 @@ int gr_ibitblt_find_code_size_svga( grs_bitmap * mask_bmp, int sx, int sy, int s
 // Given bitmap, bmp, create code that transfers a bitmap of size sw*sh to position
 // (sx,sy) on top of bmp, only overwritting transparent pixels of the bitmap.
 
-ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
+ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -523,7 +478,7 @@ ubyte	*gr_ibitblt_create_mask_sub( grs_bitmap * mask_bmp, int sx, int sy, int sw
 	return code;
 }
 
-ubyte   *gr_ibitblt_create_mask( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+ubyte   *gr_ibitblt_create_mask( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_LINEAR );
 }
@@ -543,7 +498,7 @@ unsigned long *pa_emit_blit(int gencode, unsigned long *buf, int w, int h, int s
 	return buf + 3;
 }
 
-ubyte   *gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+ubyte   *gr_ibitblt_create_mask_pa( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	unsigned long *ret, *code = 0;
 	int pass, x, y, n;
@@ -582,7 +537,7 @@ ubyte   *gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int s
 }
 
 #else
-ubyte   *gr_ibitblt_create_mask_svga( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+ubyte   *gr_ibitblt_create_mask_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_SVGA );
 }
@@ -597,7 +552,7 @@ void gr_ibitblt_do_asm(char *start_si, char *start_di, ubyte * code);
     "popa"
 
 
-void gr_ibitblt(grs_bitmap * source_bmp, grs_bitmap * dest_bmp, ubyte * mask )
+void gr_ibitblt(grsBitmap * source_bmp, grsBitmap * dest_bmp, ubyte * mask )
 {
 #if defined(POLY_ACC)
     Assert(source_bmp->bm_props.nType == BM_LINEAR15);
@@ -609,7 +564,7 @@ void gr_ibitblt(grs_bitmap * source_bmp, grs_bitmap * dest_bmp, ubyte * mask )
 }
 
 
-void    gr_ibitblt_find_hole_size( grs_bitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy )
+void    gr_ibitblt_find_hole_size( grsBitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy )
 {
 	int x, y, count=0;
 #if defined(POLY_ACC)
@@ -677,7 +632,7 @@ static short start_points[MAX_SCANLINES][MAX_HOLES];
 static short hole_length[MAX_SCANLINES][MAX_HOLES];
 static double *scanline = NULL;
 
-void gr_ibitblt(grs_bitmap *src_bmp, grs_bitmap *dest_bmp, ubyte pixel_double)
+void gr_ibitblt(grsBitmap *src_bmp, grsBitmap *dest_bmp, ubyte pixel_double)
 {
 	int x, y, sw, sh, srowsize, drowsize, dstart, sy, dy;
 	ubyte *src, *dest;
@@ -767,7 +722,7 @@ unsigned long *pa_emit_blit(int gencode, unsigned long *buf, int w, int h, int s
 	return buf + 3;
 }
 
-void gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+void gr_ibitblt_create_mask_pa( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
 {
 	unsigned long *ret, *code = 0;
 	int pass, x, y, n;
@@ -806,7 +761,7 @@ void gr_ibitblt_create_mask_pa( grs_bitmap * mask_bmp, int sx, int sy, int sw, i
 }
 #endif
 
-void gr_ibitblt_create_mask(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize)
+void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize)
 {
 	int x, y;
 	ubyte mode;
@@ -844,7 +799,7 @@ void gr_ibitblt_create_mask(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh
 
 #if defined(POLY_ACC)
 
-void gr_ibitblt_find_hole_size_pa( grs_bitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy )
+void gr_ibitblt_find_hole_size_pa( grsBitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy )
 {
 	int x, y, count=0;
 	short c;
@@ -877,7 +832,7 @@ void gr_ibitblt_find_hole_size_pa( grs_bitmap * mask_bmp, int *minx, int *miny, 
 }
 #endif
 
-void gr_ibitblt_find_hole_size(grs_bitmap *mask_bmp, int *minx, int *miny, int *maxx, int *maxy)
+void gr_ibitblt_find_hole_size(grsBitmap *mask_bmp, int *minx, int *miny, int *maxx, int *maxy)
 {
 	ubyte c;
 	int x, y, count = 0;

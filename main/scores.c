@@ -464,7 +464,7 @@ void scores_fill_struct(stats_info * stats)
 void scores_maybe_add_player(int abortFlag)
 {
 	char text1[COOL_MESSAGE_LEN+10];
-	newmenu_item m[10];
+	tMenuItem m[10];
 	int i,position;
 
 	#ifdef APPLE_DEMO		// no high scores in apple oem version
@@ -698,7 +698,7 @@ ReshowScores:
 			if (MouseButtonDownCount(i)>0) done=1;
 
 		//see if redbook song needs to be restarted
-		songs_check_redbook_repeat();
+		SongsCheckRedbookRepeat();
 
 	#ifdef WINDOWS
 		{

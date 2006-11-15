@@ -11,23 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Instancing routines
- * 
- * Old Log:
- *
- * Revision 1.2  1995/06/12  12:36:57  allender
- * fixed bug where G3StartInstanceAngles recursively called itself
- *
- * Revision 1.1  1995/05/05  08:51:27  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  06:43:29  matt
- * Initial revision
- * 
- * 
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>

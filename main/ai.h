@@ -106,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype some door functions.
  *
  * Revision 1.33  1994/10/12  21:28:51  mike
- * Prototype create_n_segment_path_to_door
+ * Prototype CreateNSegmentPathToDoor
  * Prototype ai_open_doors_in_segment
  * Prototype AIDoorIsOpenable.
  *
@@ -114,7 +114,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype Robot_firing_enabled.
  *
  * Revision 1.31  1994/10/09  22:02:48  mike
- * Adapt CreatePathPoints and create_n_segment_path prototypes to use avoid_seg for player evasion.
+ * Adapt CreatePathPoints and CreateNSegmentPath prototypes to use avoid_seg for player evasion.
  *
  * Revision 1.30  1994/09/18  18:07:44  mike
  * Update prototypes for CreatePathPoints and CreatePathToPlayer.
@@ -182,7 +182,7 @@ extern ubyte Boss_spews_bots_energy[NUM_D2_BOSSES];     // Set byte if boss spew
 extern ubyte Boss_spews_bots_matter[NUM_D2_BOSSES];     // Set byte if boss spews bots when hit by matter weapon.
 extern ubyte Boss_invulnerable_energy[NUM_D2_BOSSES];   // Set byte if boss is invulnerable to energy weapons.
 extern ubyte Boss_invulnerable_matter[NUM_D2_BOSSES];   // Set byte if boss is invulnerable to matter weapons.
-extern ubyte Boss_invulnerable_spot[NUM_D2_BOSSES];     // Set byte if boss is invulnerable in all but a certain spot.  (Dot product fvec|vec_to_collision < BOSS_INVULNERABLE_DOT)
+extern ubyte Boss_invulnerable_spot[NUM_D2_BOSSES];     // Set byte if boss is invulnerable in all but a certain spot.  (Dot product fVec|vec_to_collision < BOSS_INVULNERABLE_DOT)
 
 #endif
 
@@ -194,33 +194,33 @@ extern void move_towards_segment_center(tObject *objp);
 extern int GateInRobot(short nObject, ubyte nType, short nSegment);
 extern void do_ai_movement(tObject *objp);
 extern void ai_move_to_new_segment( tObject * obj, short newseg, int firstTime );
-// extern void ai_follow_path( tObject * obj, short newseg, int firstTime );
+// extern void AIFollowPath( tObject * obj, short newseg, int firstTime );
 extern void ai_recover_from_wall_hit(tObject *obj, int nSegment);
 extern void ai_move_one(tObject *objp);
 extern void DoAIFrame(tObject *objp);
-extern void InitAIObject(short nObject, short initial_mode, short hide_segment);
+extern void InitAIObject(short nObject, short initial_mode, short nHideSegment);
 extern void update_player_awareness(tObject *objp, fix new_awareness);
 extern void CreateAwarenessEvent(tObject *objp, int nType);         // tObject *objp can create awareness of player, amount based on "nType"
 extern void DoAIFrameAll(void);
 extern void InitAISystem(void);
 extern void reset_ai_states(tObject *objp);
-extern int CreatePathPoints(tObject *objp, int start_seg, int end_seg, point_seg *point_segs, short *num_points, int max_depth, int randomFlag, int safetyFlag, int avoid_seg);
+extern int CreatePathPoints(tObject *objp, int start_seg, int end_seg, tPointSeg *tPointSegs, short *num_points, int max_depth, int randomFlag, int safetyFlag, int avoid_seg);
 extern void create_all_paths(void);
-extern void create_path_to_station(tObject *objp, int max_length);
-extern void ai_follow_path(tObject *objp, int player_visibility, int previous_visibility, vmsVector *vec_to_player);
-extern void ai_turn_towards_vector(vmsVector *vec_to_player, tObject *obj, fix rate);
+extern void CreatePathToStation(tObject *objp, int max_length);
+extern void AIFollowPath(tObject *objp, int player_visibility, int previousVisibility, vmsVector *vec_to_player);
+extern void AITurnTowardsVector(vmsVector *vec_to_player, tObject *obj, fix rate);
 extern void ai_turn_towards_vel_vec(tObject *objp, fix rate);
 extern void InitAIObjects(void);
 extern void DoAiRobotHit(tObject *robot, int nType);
-extern void create_n_segment_path(tObject *objp, int path_length, short avoid_seg);
-extern void create_n_segment_path_to_door(tObject *objp, int path_length, short avoid_seg);
+extern void CreateNSegmentPath(tObject *objp, int nPathLength, short avoid_seg);
+extern void CreateNSegmentPathToDoor(tObject *objp, int nPathLength, short avoid_seg);
 extern void MakeRandomVector(vmsVector *vec);
 extern void InitRobotsForLevel(void);
 extern int AIBehaviorToMode(int behavior);
 extern int Robot_firing_enabled;
 extern void CreatePathToSegment(tObject *objp, short goalseg, int max_length, int safetyFlag);
 extern int ready_to_fire(tRobotInfo *robptr, tAILocal *ailp);
-extern int polish_path(tObject *objp, point_seg *psegs, int num_points);
+extern int SmoothPath(tObject *objp, tPointSeg *psegs, int num_points);
 extern void move_towards_player(tObject *objp, vmsVector *vec_to_player);
 
 // max_length is maximum depth of path to create.
@@ -232,7 +232,7 @@ extern void attempt_to_resume_path(tObject *objp);
 extern void DoAiRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_point);
 extern void ai_open_doors_in_segment(tObject *robot);
 extern int AIDoorIsOpenable(tObject *objp, tSegment *segp, short nSide);
-extern int ObjectCanSeePlayer(tObject *objp, vmsVector *pos, fix field_of_view, vmsVector *vec_to_player);
+extern int ObjectCanSeePlayer(tObject *objp, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player);
 extern void AIResetAllPaths(void);   // Reset all paths.  Call at the start of a level.
 extern int ai_multiplayer_awareness(tObject *objp, int awarenessLevel);
 
@@ -263,7 +263,7 @@ typedef struct {
 	fix         lastTime;
 	int         last_segment;
 	vmsVector  last_position;
-} ai_cloak_info;
+} tAICloakInfo;
 
 #define CHASE_TIME_LENGTH   (F1_0*8)
 #define DEFAULT_ROBOT_SOUND_VOLUME F1_0
@@ -273,11 +273,11 @@ extern vmsVector Last_fired_upon_player_pos;
 extern int Laser_rapid_fire;
 
 #define MAX_AWARENESS_EVENTS 64
-typedef struct awareness_event {
+typedef struct tAwarenessEvent {
 	short       nSegment; // tSegment the event occurred in
 	short       nType;   // nType of event, defines behavior
 	vmsVector  pos;    // absolute 3 space location of event
-} awareness_event;
+} tAwarenessEvent;
 
 #define AIS_MAX 8
 #define AIE_MAX 4
@@ -365,9 +365,9 @@ extern int	 boss_obj_num [MAX_BOSS_COUNT];
 extern int              Ai_initialized;
 extern int              nOverallAgitation;
 extern tAILocal         Ai_local_info[MAX_OBJECTS];
-extern point_seg        Point_segs[MAX_POINT_SEGS];
-extern point_seg        *Point_segs_free_ptr;
-extern ai_cloak_info    Ai_cloak_info[MAX_AI_CLOAK_INFO];
+extern tPointSeg        Point_segs[MAX_POINT_SEGS];
+extern tPointSeg        *Point_segs_free_ptr;
+extern tAICloakInfo    Ai_cloak_info[MAX_AI_CLOAK_INFO];
 // -- extern int              Boss_been_hit;
 // ------ John: End of variables which must be saved as part of gamesave. -----
 
@@ -386,8 +386,8 @@ extern vmsVector   Hit_pos;
 extern int          HitType, Hit_seg;
 extern fvi_info     hitData;
 
-extern int              Num_awareness_events;
-extern awareness_event  Awareness_events[MAX_AWARENESS_EVENTS];
+extern int              Num_tAwarenessEvents;
+extern tAwarenessEvent  Awareness_events[MAX_AWARENESS_EVENTS];
 
 extern vmsVector       Believed_player_pos;
 
@@ -418,7 +418,7 @@ extern int maybe_ai_do_actual_firing_stuff(tObject *obj, tAIStatic *aip);
 extern void ai_do_actual_firing_stuff(tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int gun_num);
 extern void do_super_boss_stuff(tObject *objp, fix dist_to_player, int player_visibility);
 extern void do_boss_stuff(tObject *objp, int player_visibility);
-// -- unused, 08/07/95 -- extern void ai_turn_randomly(vmsVector *vec_to_player, tObject *obj, fix rate, int previous_visibility);
+// -- unused, 08/07/95 -- extern void ai_turn_randomly(vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
 extern void ai_move_relative_to_player(tObject *objp, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
 extern void move_away_from_player(tObject *objp, vmsVector *vec_to_player, int attackType);
 extern void move_towards_vector(tObject *objp, vmsVector *vec_goal, int dot_based);

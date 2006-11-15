@@ -890,9 +890,9 @@ v->h = CFReadFixAng (file);
 
 void CFReadMatrix(vmsMatrix *m,CFILE *file)
 {
-CFReadVector (&m->rvec,file);
-CFReadVector (&m->uvec,file);
-CFReadVector (&m->fvec,file);
+CFReadVector (&m->rVec,file);
+CFReadVector (&m->uVec,file);
+CFReadVector (&m->fVec,file);
 }
 
 
@@ -990,9 +990,9 @@ CFWriteFixAng (v->h, file);
 
 void CFWriteMatrix (vmsMatrix *m,CFILE *file)
 {
-CFWriteVector (&m->rvec, file);
-CFWriteVector (&m->uvec, file);
-CFWriteVector (&m->fvec, file);
+CFWriteVector (&m->rVec, file);
+CFWriteVector (&m->uVec, file);
+CFWriteVector (&m->fVec, file);
 }
 
 

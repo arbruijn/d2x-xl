@@ -47,13 +47,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_NUM_SONGS           100
 
-typedef struct song_info {
+typedef struct tSongInfo {
 	char    filename[16];
 	char    melodic_bank_file[16];
 	char    drum_bank_file[16];
-} song_info;
+} tSongInfo;
 
-extern song_info Songs[MAX_NUM_SONGS];
+extern tSongInfo Songs[MAX_NUM_SONGS];
 
 #define SONG_D2_TITLE            0
 #define SONG_D2_BRIEFING         1
@@ -95,7 +95,7 @@ void songs_stop_redbook(void);
 void SongsStopAll(void);
 
 // this should be called regularly to check for redbook restart
-void songs_check_redbook_repeat(void);
+void SongsCheckRedbookRepeat(void);
 
 void songs_play_current_song(int repeat);
 

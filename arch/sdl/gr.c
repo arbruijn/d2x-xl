@@ -34,9 +34,9 @@
 int sdl_videoFlags = SDL_SWSURFACE | SDL_HWPALETTE;
 //end addition -MM
 
-SDL_Surface *screen;
+SDL_Surface *screen = NULL;
 #ifdef LANDSCAPE
-static SDL_Surface *real_screen, *screen2;
+static SDL_Surface *real_screen = NULL, *screen2 = NULL;
 #endif
 
 int gameStates.gfx.bInstalled = 0;

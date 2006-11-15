@@ -156,8 +156,8 @@ static char rcsid[] = "$Id: ntmap.c,v 1.8 2003/03/19 19:21:34 btb Exp $";
 // Temporary texture map, interface from Matt's 3d system to Mike's texture mapper.
 g3ds_tmap Tmap1;
 
-grs_bitmap Texmap_ptrs[NUM_TMAPS];
-grs_bitmap Texmap4_ptrs[NUM_TMAPS];
+grsBitmap Texmap_ptrs[NUM_TMAPS];
+grsBitmap Texmap4_ptrs[NUM_TMAPS];
 
 int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current tSegment (& thus texture) is
 
@@ -215,7 +215,7 @@ void init_fix_recip_table(void)
 //	not at all.  I'm pretty sure these variables are only being used for range checking.
 void init_interface_vars_to_assembler(void)
 {
-	grs_bitmap	*bp;
+	grsBitmap	*bp;
 
 	bp = &grdCurCanv->cv_bitmap;
 
@@ -442,7 +442,7 @@ int Skip_shortFlag=0;
 // -------------------------------------------------------------------------------------
 //	Texture map current scanline in perspective.
 // -------------------------------------------------------------------------------------
-void ntmap_scanline_lighted(grs_bitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix zleft, fix zright, fix lleft, fix lright)
+void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix zleft, fix zright, fix lleft, fix lright)
 {
 	fix	dx,recip_dx;
 
@@ -536,7 +536,7 @@ int	Break_on_flat=0;
 // -------------------------------------------------------------------------------------
 //	Render a texture map with lighting using perspective interpolation in inner and outer loops.
 // -------------------------------------------------------------------------------------
-void ntexture_map_lighted(grs_bitmap *srcb, g3ds_tmap *t)
+void ntexture_map_lighted(grsBitmap *srcb, g3ds_tmap *t)
 {
 	int	vlt,vrt,vlb,vrb;	// vertex left top, vertex right top, vertex left bottom, vertex right bottom
 	int	topy,boty,y, dy;
@@ -726,7 +726,7 @@ void ntexture_map_lighted(grs_bitmap *srcb, g3ds_tmap *t)
 // -------------------------------------------------------------------------------------
 //	Texture map current scanline using linear interpolation.
 // -------------------------------------------------------------------------------------
-void ntmap_scanline_lighted_linear(grs_bitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix lleft, fix lright)
+void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright, fix uleft, fix uright, fix vleft, fix vright, fix lleft, fix lright)
 {
 	fix	u,v,l;
 	fix	dx,recip_dx;
@@ -819,7 +819,7 @@ void ntmap_scanline_lighted_linear(grs_bitmap *srcb, int y, fix xleft, fix xrigh
 // -------------------------------------------------------------------------------------
 //	Render a texture map with lighting using perspective interpolation in inner and outer loops.
 // -------------------------------------------------------------------------------------
-void ntexture_map_lighted_linear(grs_bitmap *srcb, g3ds_tmap *t)
+void ntexture_map_lighted_linear(grsBitmap *srcb, g3ds_tmap *t)
 {
 	int	vlt,vrt,vlb,vrb;	// vertex left top, vertex right top, vertex left bottom, vertex right bottom
 	int	topy,boty,y, dy;
@@ -993,12 +993,12 @@ void ntexture_map_lighted_linear(grs_bitmap *srcb, g3ds_tmap *t)
 
 // fix	DivNum = F1_0*12;
 
-extern void DrawTexPolyFlat(grs_bitmap *bp,int nverts,g3s_point **vertbuf);
+extern void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------
 // Interface from Matt's data structures to Mike's texture mapper.
 // -------------------------------------------------------------------------------------
-void draw_tmap(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
+void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 {
 	int	i;
 
@@ -1036,7 +1036,7 @@ void draw_tmap(grs_bitmap *bp,int nverts,g3s_point **vertbuf)
 
 	for (i=0; i<nverts; i++) {
 		g3ds_vertex	*tvp = &Tmap1.verts[i];
-		g3s_point	*vp = vertbuf[i];
+		g3sPoint	*vp = vertbuf[i];
 
 		tvp->x2d = vp->p3_sx;
 		tvp->y2d = vp->p3_sy;

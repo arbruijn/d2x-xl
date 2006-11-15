@@ -200,6 +200,8 @@ if (!OglCreateCamBuf (pc))
 			}
 		}	
 	memset (pc->texBuf.bm_texBuf, 0, pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4);
+#else
+	return 0;
 #endif
 	}
 if (objP) {

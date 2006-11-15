@@ -166,6 +166,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "maths.h"
 #include "network.h"
 #include "lightmap.h"
+#include "gamemine.h"
 #include "text.h"
 
 #define FLICKERFIX 0
@@ -198,7 +199,7 @@ typedef struct {
   int		nBrightness;
 } tTexBright;
 
-#define	NUM_LIGHTS_D1     48
+#define	NUM_LIGHTS_D1     49
 #define	NUM_LIGHTS_D2     85
 #define	MAX_BRIGHTNESS		F2_0
 
@@ -208,13 +209,14 @@ tTexBright texBrightD1 [NUM_LIGHTS_D1] = {
 	{279, 0x014cccL}, {280, 0x011999L}, {281, 0x014666L}, {282, 0x011999L},
 	{283, 0x0107aeL}, {284, 0x0107aeL}, {285, 0x011999L}, {286, 0x014666L},
 	{287, 0x014666L}, {288, 0x014666L}, {289, 0x014666L}, {292, 0x010cccL},
-	{293, 0x010000L}, {294, 0x013333L}, {330, 0x010000L}, {333, 0x010000L}, 
-	{341, 0x010000L}, {343, 0x010000L}, {345, 0x010000L}, {347, 0x010000L}, 
-	{349, 0x010000L}, {351, 0x010000L}, {352, 0x010000L}, {354, 0x010000L}, 
-	{355, 0x010000L}, {356, 0x020000L}, {357, 0x020000L}, {358, 0x020000L}, 
-	{359, 0x020000L}, {360, 0x020000L}, {361, 0x020000L}, {362, 0x020000L}, 
-	{363, 0x020000L}, {364, 0x020000L}, {365, 0x020000L}, {366, 0x020000L}, 
-	{367, 0x020000L}, {368, 0x020000L}, {369, 0x020000L}, {370, 0x020000L}
+	{293, 0x010000L}, {294, 0x013333L}, {328, 0x011333L}, {330, 0x010000L}, 
+	{333, 0x010000L}, {341, 0x010000L}, {343, 0x010000L}, {345, 0x010000L}, 
+	{347, 0x010000L}, {349, 0x010000L}, {351, 0x010000L}, {352, 0x010000L}, 
+	{354, 0x010000L}, {355, 0x010000L}, {356, 0x020000L}, {357, 0x020000L}, 
+	{358, 0x020000L}, {359, 0x020000L}, {360, 0x020000L}, {361, 0x020000L}, 
+	{362, 0x020000L}, {363, 0x020000L}, {364, 0x020000L}, {365, 0x020000L}, 
+	{366, 0x020000L}, {367, 0x020000L}, {368, 0x020000L}, {369, 0x020000L}, 
+	{370, 0x020000L}
 };
 
 tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
@@ -250,12 +252,16 @@ void UpdateOglHeadLight (void);
 
 void InitTextureBrightness (void)
 {
-	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2 ;
-	int			i = (gameStates.app.bD1Mission ? sizeof (texBrightD1) : sizeof (texBrightD2)) / sizeof (tTexBright);
+	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
+	int			i, j, h = (gameStates.app.bD1Mission ? sizeof (texBrightD1) : sizeof (texBrightD2)) / sizeof (tTexBright);
 
 memset (gameData.pig.tex.brightness, 0, sizeof (gameData.pig.tex.brightness));
-while (i) {
-	--i;
+for (i = 0; i < MAX_WALL_TEXTURES; i++) {
+	j = gameStates.app.bD1Mission ? ConvertD1Texture (i, 1) : i;
+	if (gameData.pig.tex.pTMapInfo [j].lighting)
+		gameData.pig.tex.brightness [j] = gameData.pig.tex.pTMapInfo [j].lighting;
+	}
+for (i = h; --i; ) {
 	gameData.pig.tex.brightness [ptb [i].nTexture] = 
 		((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
 	}
@@ -405,7 +411,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 		if (bDarkness)
 			return;
 		}
-	else if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0))
+	else if ((objP->nType == OBJ_POWERUP) && bDarkness && !EGI_FLAG (bPowerupLights, 0, 0))
 		return;
 	AddOglLight (color, xObjIntensity, -1, -1, nObject);
 	return;
@@ -466,7 +472,7 @@ if (xObjIntensity) {
 					fvi_info		hit_data;
 					int			fate;
 
-					VmVecScaleAdd(&tvec, obj_pos, &objP->orient.fvec, F1_0*200);
+					VmVecScaleAdd(&tvec, obj_pos, &objP->orient.fVec, F1_0*200);
 
 					fq.startSeg			= objP->nSegment;
 					fq.p0					= obj_pos;
@@ -512,7 +518,7 @@ if (xObjIntensity) {
 
 							VmVecSub(&vecToPoint, vertpos, obj_pos);
 							VmVecNormalizeQuick(&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = VmVecDot(&vecToPoint, &objP->orient.fvec);
+							dot = VmVecDot(&vecToPoint, &objP->orient.fVec);
 							if (bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -574,7 +580,11 @@ fix ComputeLightIntensity (int nObject, tRgbColorf *color, char *pbGotColor)
 {
 	tObject		*objP = gameData.objs.objects+nObject;
 	int			objtype = objP->nType;
-   fix hoardlight,s;
+   fix			hoardlight, s;
+
+	static tRgbColorf powerupColors [9] = {
+		{0,1,0}, {1, 0.8f, 0}, {0,0,1}, {1,1,1}, {0,0,1}, {1,0,0}, {1, 0.8f, 0}, {0,1,0}, {1, 0.8f, 0}
+	};
 
 color->red =
 color->green =
@@ -610,11 +620,11 @@ switch (objtype) {
 
 	case OBJ_FIREBALL:
 		if ((objP->id != 0xff) && (objP->renderType != RT_THRUSTER)) {
-			vclip *vcP = gameData.eff.vClips [0] + objP->id;
+			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->lightValue;
 #if 0
 			int i, j;
-			grs_bitmap *bmP;
+			grsBitmap *bmP;
 			color->red =
 			color->green =
 			color->blue = 0.0f;
@@ -681,14 +691,19 @@ switch (objtype) {
 			objP->lifeleft += F1_0;	//	Make sure this tObject doesn't go out.
 		color->red = 0.1f;
 		color->green = 1.0f;
-		color->blue = 0.25f;
+		color->blue = 0.1f;
 		*pbGotColor = 1;
 		return lightval;
 	}
 
 	case OBJ_POWERUP:
+		if (objP->id < 9) {
+			*color = powerupColors [objP->id];
+			*pbGotColor = 1;
+			}
 		return gameData.objs.pwrUp.info [objP->id].light;
 		break;
+
 	case OBJ_DEBRIS:
 		return F1_0/4;
 		break;
@@ -867,7 +882,7 @@ fix compute_headlight_light_onObject(tObject *objP)
 		VmVecSub(&vecToObj, &objP->pos, &lightObjP->pos);
 		dist = VmVecNormalizeQuick(&vecToObj);
 		if (dist > 0) {
-			dot = VmVecDot(&lightObjP->orient.fvec, &vecToObj);
+			dot = VmVecDot(&lightObjP->orient.fVec, &vecToObj);
 
 			if (dot < F1_0/2)
 				light += FixDiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
@@ -974,7 +989,7 @@ old_viewer = viewer;
 fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 {
 	fix light;
-	g3s_point objpnt;
+	g3sPoint objpnt;
 	int nObject = OBJ_IDX (objP);
 
 	if (!rotated_pnt) {
@@ -1148,8 +1163,8 @@ int AddFlicker (int nSegment, int nSide, fix delay, unsigned long mask)
 
 	flP = gameData.render.lights.flicker.lights;
 
-	for (l=0;l<gameData.render.lights.flicker.nLights;l++,flP++)
-		if (flP->nSegment == nSegment && flP->nSide == nSide)	//found it!
+	for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
+		if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
 			break;
 
 	if (mask==0) {		//clearing entry
@@ -1555,8 +1570,8 @@ void SetOglLightMaterial (short nSegment, short nSide, short nObject)
 if (nLight >= 0) {
 	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
 	if (pl->bState) {
-		gameData.render.lights.ogl.material.emissive = *((fVector3 *) &pl->fEmissive);
-		gameData.render.lights.ogl.material.specular = *((fVector3 *) &pl->fEmissive);
+		gameData.render.lights.ogl.material.emissive = *((fVector *) &pl->fEmissive);
+		gameData.render.lights.ogl.material.specular = *((fVector *) &pl->fEmissive);
 		gameData.render.lights.ogl.material.shininess = 96;
 		gameData.render.lights.ogl.material.bValid = 1;
 		gameData.render.lights.ogl.material.nLight = nLight;
@@ -1650,6 +1665,7 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		}
 	psl->bVariable = pl->bVariable;
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
+	psl->nType = pl->nType;
 	if (psl->bState) {
 		if (!bStatic && (pl->nType == 1) && !pl->bVariable)
 			psl->bState = 0;
@@ -1681,7 +1697,8 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_RGBA,
 
 void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable)
 {
-if (gameOpts->ogl.bUseLighting) {
+//if (gameOpts->ogl.bUseLighting) 
+	{
 	short	*pnl = gameData.render.lights.ogl.nNearestVertLights [nVertex];
 	short	i, j;
 
@@ -1825,8 +1842,6 @@ if (gameOpts->ogl.bUseLighting) {
 		tOglLight	*pl;
 		int			nLight;
 
-	extraGameInfo [IsMultiGame].nSpotSize = (extraGameInfo [IsMultiGame].nSpotSize + 1) % 3;
-	extraGameInfo [IsMultiGame].nSpotStrength = extraGameInfo [IsMultiGame].nSpotSize;
 	nLight = AddOglLight (&c, F1_0 * 50, -1, -1, -1);
 	if (nLight >= 0) {
 		pl = gameData.render.lights.ogl.lights + nLight;
@@ -1865,7 +1880,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nHeadLights [nPlayer];
 	objP = gameData.objs.objects + gameData.multi.players [nPlayer].nObject;
 	pl->vPos = objP->pos;
-	pl->vDir = objP->orient.fvec;
+	pl->vDir = objP->orient.fVec;
 	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 3);
 	}
 }
@@ -1874,15 +1889,17 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 void ComputeStaticOglLighting ()
 {
-	int				i, bColorize = !(gameOpts->ogl.bUseLighting || gameStates.app.bD2XLevel);
-	tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
-	fVector3			vVertex;
+if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) {
+		int				i, bColorize = !(gameOpts->ogl.bUseLighting || gameStates.app.bD2XLevel);
+		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+		fVector			vVertex;
 
-TransformOglLights (1, bColorize);
-for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
-	VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
-	SetNearestVertexLights (i, 1, 1, bColorize);
-	G3VertexColor (&gameData.segs.points [i].p3_normal.vNormal, &vVertex, i, pf);
+	TransformOglLights (1, bColorize);
+	for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
+		VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
+		SetNearestVertexLights (i, 1, 1, bColorize);
+		G3VertexColor (&gameData.segs.points [i].p3_normal.vNormal, &vVertex, i, pf);
+		}
 	}
 }
 
@@ -1894,7 +1911,7 @@ void CalcOglLightAttenuation (vmsVector *pv)
 	int				i;
 	tOglLight		*pl = gameData.render.lights.ogl.lights;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
-	fVector3			v, d;
+	fVector			v, d;
 	float				l;
 
 v.p.x = f2fl (pv->x);

@@ -266,7 +266,7 @@ return pSphere;
 //------------------------------------------------------------------------------
 
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
-					   float red, float green, float blue, float alpha, grs_bitmap *bmP)
+					   float red, float green, float blue, float alpha, grsBitmap *bmP)
 {
 	static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 

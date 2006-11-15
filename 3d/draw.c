@@ -39,7 +39,7 @@ tmap_drawer_fp tmap_drawer_ptr = draw_tmap;
 flat_drawer_fp flat_drawer_ptr = gr_upoly_tmap;
 line_drawer_fp line_drawer_ptr = GrLine;
 #else
-void (*tmap_drawer_ptr) (grs_bitmap *bm, int nv, g3s_point **vertlist) = draw_tmap;
+void (*tmap_drawer_ptr) (grsBitmap *bm, int nv, g3sPoint **vertlist) = draw_tmap;
 void (*flat_drawer_ptr) (int nv, int *vertlist) = gr_upoly_tmap;
 int (*line_drawer_ptr) (fix x0, fix y0, fix x1, fix y1) = GrLine;
 #endif
@@ -55,7 +55,7 @@ line_drawer_ptr = (line_drawer)?line_drawer:GrLine;
 }
 #ifndef OGL
 //deal with a clipped line
-bool must_clip_line (g3s_point *p0, g3s_point *p1, ubyte codes_or)
+bool must_clip_line (g3sPoint *p0, g3sPoint *p1, ubyte codes_or)
 {
 	bool ret;
 
@@ -83,7 +83,7 @@ bool must_clip_line (g3s_point *p0, g3s_point *p1, ubyte codes_or)
 
 //------------------------------------------------------------------------------
 //draws a line. takes two points.  returns true if drew
-bool G3DrawLine (g3s_point *p0, g3s_point *p1)
+bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 	ubyte codes_or;
 
@@ -123,7 +123,7 @@ return (VmVecDot (VmVecSub (&v, &viewInfo.position, pv), pnorm) > 0);
 
 //------------------------------------------------------------------------------
 
-bool DoFacingCheck (vmsVector *norm, g3s_point **vertlist, vmsVector *p)
+bool DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have normal
 	Assert (norm->x || norm->y || norm->z);
@@ -144,7 +144,7 @@ else {	//normal not specified, so must compute
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-bool G3CheckAndDrawPoly (int nv, g3s_point **pointlist, vmsVector *norm, vmsVector *pnt)
+bool G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVector *pnt)
 {
 	if (DoFacingCheck (norm, pointlist, pnt))
 		return G3DrawPoly (nv, pointlist);
@@ -155,7 +155,7 @@ bool G3CheckAndDrawPoly (int nv, g3s_point **pointlist, vmsVector *norm, vmsVect
 //------------------------------------------------------------------------------
 
 bool G3CheckAndDrawTMap (
-	int nv, g3s_point **pointlist, uvl *uvl_list, grs_bitmap *bm, vmsVector *norm, vmsVector *pnt)
+	int nv, g3sPoint **pointlist, uvl *uvl_list, grsBitmap *bm, vmsVector *norm, vmsVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1);
@@ -169,14 +169,14 @@ bool MustClipFlatFace (int nv, g3s_codes cc)
 {
 	int i;
         bool ret=0;
-	g3s_point **bufptr;
+	g3sPoint **bufptr;
 
 	bufptr = clip_polygon (Vbuf0, Vbuf1, &nv, &cc);
 
 	if (nv>0 && ! (cc.or&CC_BEHIND) && !cc.and) {
 
 		for (i=0;i<nv;i++) {
-			g3s_point *p = bufptr[i];
+			g3sPoint *p = bufptr[i];
 	
 			if (! (p->p3Flags&PF_PROJECTED))
 				G3ProjectPoint (p);
@@ -213,10 +213,10 @@ free_points:
 #if (! (defined (D1XD3D) || defined (OGL)))
 //draw a flat-shaded face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawPoly (int nv, g3s_point **pointlist)
+bool G3DrawPoly (int nv, g3sPoint **pointlist)
 {
 	int i;
-	g3s_point **bufptr, *p;
+	g3sPoint **bufptr, *p;
 	g3s_codes cc;
 
 cc.or = 0; 
@@ -247,14 +247,14 @@ return 0;	//say it drew
 
 //------------------------------------------------------------------------------
 
-bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm);
+bool must_clip_tmap_face (int nv, g3s_codes cc, grsBitmap *bm);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTexPoly (int nv, g3s_point **pointlist, uvl *uvl_list, vmsVector *norm, grs_bitmap *bm)
+bool G3DrawTexPoly (int nv, g3sPoint **pointlist, uvl *uvl_list, vmsVector *norm, grsBitmap *bm)
 {
 	int i;
-	g3s_point **bufptr, *p;
+	g3sPoint **bufptr, *p;
 	g3s_codes cc;
 
 cc.or = 0; 
@@ -290,9 +290,9 @@ return 0;	//say it drew
 
 //------------------------------------------------------------------------------
 
-bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm)
+bool must_clip_tmap_face (int nv, g3s_codes cc, grsBitmap *bm)
 {
-	g3s_point **bufptr;
+	g3sPoint **bufptr;
 	int i;
 
 	bufptr = clip_polygon (Vbuf0, Vbuf1, &nv, &cc);
@@ -300,7 +300,7 @@ bool must_clip_tmap_face (int nv, g3s_codes cc, grs_bitmap *bm)
 	if (nv && ! (cc.or&CC_BEHIND) && !cc.and) {
 
 		for (i=0;i<nv;i++) {
-			g3s_point *p = bufptr[i];
+			g3sPoint *p = bufptr[i];
 
 			if (! (p->p3Flags&PF_PROJECTED))
 				G3ProjectPoint (p);
@@ -336,7 +336,7 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c);
 #ifndef OGL
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
-int G3DrawSphere (g3s_point *pnt, fix rad)
+int G3DrawSphere (g3sPoint *pnt, fix rad)
 {
 	if (! (pnt->p3_codes & CC_BEHIND)) {
 

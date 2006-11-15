@@ -141,16 +141,16 @@ void DigiGetSoundLoc (
 	vmsMatrix * mListener, vmsVector * vListenerPos, short nListenerSeg, vmsVector * vSoundPos, 
 	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance)	
 {	  
-	vmsVector	vector_toSound;
-	fix angle_from_ear, cosang,sinang;
-	fix distance;
-	fix pathDistance;
+	vmsVector	vecToSound;
+	fix 			angleFromEar, cosang,sinang;
+	fix 			distance;
+	fix 			pathDistance;
 
 *volume = 0;
 *pan = 0;
 maxDistance = (maxDistance*5)/4;		// Make all sounds travel 1.25 times as far.
 //	Warning: Made the VmVecNormalizedDir be VmVecNormalizedDirQuick and got illegal values to acos in the fang computation.
-distance = VmVecNormalizedDirQuick (&vector_toSound, vSoundPos, vListenerPos);
+distance = VmVecNormalizedDirQuick (&vecToSound, vSoundPos, vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = f2i (maxDistance / 20);
 	if (nSearchSegs < 1)
@@ -158,20 +158,14 @@ if (distance < maxDistance) {
 	pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG + WID_FLY_FLAG);
 	if (pathDistance > -1) {
 		*volume = maxVolume - FixDiv (pathDistance, maxDistance);
-#ifdef _DEBUG
-		pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG + WID_FLY_FLAG);
-#endif
-		////mprintf ((0, "Sound path distance %.2f, volume is %d / %d\n", f2fl (distance), *volume, maxVolume));
-		if (*volume > 0) {
-			angle_from_ear = VmVecDeltaAngNorm (&mListener->rvec, &vector_toSound, &mListener->uvec);
-			FixSinCos (angle_from_ear, &sinang, &cosang);
-			////mprintf ((0, "volume is %.2f\n", f2fl (*volume)));
+		if (*volume <= 0) 
+			*volume = 0;
+		else {
+			angleFromEar = VmVecDeltaAngNorm (&mListener->rVec, &vecToSound, &mListener->uVec);
+			FixSinCos (angleFromEar, &sinang, &cosang);
 			if (gameConfig.bReverseChannels) 
 				cosang = -cosang;
 			*pan = (cosang + F1_0) / 2;
-			}
-		else {
-			*volume = 0;
 			}
 		}
 	}																					  

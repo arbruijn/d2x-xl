@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add difficulty levels.
  *
  * Revision 1.15  1994/09/15  16:34:16  mike
- * Change rapidfire_count to a byte, add evade_speed, dum1, dum2.
+ * Change nRapidFireCount to a byte, add evadeSpeed, dum1, dum2.
  *
  * Revision 1.14  1994/09/09  14:21:58  matt
  * Increased maximum number of games
@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Also added support for quad lasers.
  *
  * Revision 1.12  1994/08/23  16:37:24  mike
- * Add rapidfire_count to tRobotInfo.
+ * Add nRapidFireCount to tRobotInfo.
  *
  * Revision 1.11  1994/07/27  19:45:01  mike
  * Objects containing objects.
@@ -133,10 +133,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_CLOAKED_EXCEPT_FIRING    2
 
 //describes the position of a certain joint
-typedef struct jointpos {
+typedef struct tJointPos {
 	short jointnum;
 	vmsAngVec angles;
-} __pack__ jointpos;
+} __pack__ tJointPos;
 
 //describes a list of joint positions
 typedef struct jointlist {
@@ -151,8 +151,8 @@ typedef struct jointlist {
 //  Robot information
 typedef struct tRobotInfo {
 	int     nModel;                  // which polygon model?
-	vmsVector  gun_points[MAX_GUNS];   // where each gun model is
-	ubyte   gun_submodels[MAX_GUNS];    // which submodel is each gun in?
+	vmsVector  gunPoints[MAX_GUNS];   // where each gun model is
+	ubyte   gunSubModels[MAX_GUNS];    // which submodel is each gun in?
 
 	short   nExp1VClip;
 	short   nExp1Sound;
@@ -168,22 +168,22 @@ typedef struct tRobotInfo {
 	sbyte   kamikaze;       //  !0 means commits suicide when hits you, strength thereof. 0 means no.
 	short   scoreValue;    //  Score from this robot.
 	sbyte   badass;         //  Dies with badass explosion, and strength thereof, 0 means NO.
-	sbyte   energy_drain;   //  Points of energy drained at each collision.
+	sbyte   energyDrain;   //  Points of energy drained at each collision.
 	fix     lighting;       // should this be here or with polygon model?
 	fix     strength;       // Initial shields of robot
 	fix     mass;           // how heavy is this thing?
 	fix     drag;           // how much drag does it have?
-	fix     field_of_view[NDL]; // compare this value with forward_vector.dot.vector_to_player, if field_of_view <, then robot can see player
-	fix     firing_wait[NDL];   //  time in seconds between shots
-	fix     firing_wait2[NDL];  //  time in seconds between shots
+	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
+	fix     primaryFiringWait[NDL];   //  time in seconds between shots
+	fix     secondaryFiringWait[NDL];  //  time in seconds between shots
 	fix     turnTime[NDL];     // time in seconds to rotate 360 degrees in a dimension
 // -- unused, mk, 05/25/95  fix fire_power[NDL];    //  damage done by a hit from this robot
 // -- unused, mk, 05/25/95  fix shield[NDL];        //  shield strength of this robot
-	fix     max_speed[NDL];         //  maximum speed attainable by this robot
+	fix     xMaxSpeed[NDL];         //  maximum speed attainable by this robot
 	fix     circleDistance[NDL];   //  distance at which robot circles player
 
-	sbyte   rapidfire_count[NDL];   //  number of shots fired rapidly
-	sbyte   evade_speed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
+	sbyte   nRapidFireCount[NDL];   //  number of shots fired rapidly
+	sbyte   evadeSpeed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte   cloakType;     //  0=never, 1=always, 2=except-when-firing
 	sbyte   attackType;    //  0=firing, 1=charge (like green guy)
 
@@ -194,13 +194,13 @@ typedef struct tRobotInfo {
 
 	sbyte   bossFlag;      //  0 = not boss, 1 = boss.  Is that surprising?
 	sbyte   companion;      //  Companion robot, leads you to things.
-	sbyte   smart_blobs;    //  how many smart blobs are emitted when this guy dies!
-	sbyte   energy_blobs;   //  how many smart blobs are emitted when this guy gets hit by energy weapon!
+	sbyte   smartBlobs;    //  how many smart blobs are emitted when this guy dies!
+	sbyte   energyBlobs;   //  how many smart blobs are emitted when this guy gets hit by energy weapon!
 
 	sbyte   thief;          //  !0 means this guy can steal when he collides with you!
 	sbyte   pursuit;        //  !0 means pursues player after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
 	sbyte   lightcast;      //  Amount of light cast. 1 is default.  10 is very large.
-	sbyte   death_roll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
+	sbyte   bDeathRoll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
 
 	//bossFlag, companion, thief, & pursuit probably should also be bits in the flags byte.
 	ubyte   flags;          // misc properties
@@ -212,7 +212,7 @@ typedef struct tRobotInfo {
 	ubyte   aim;                //  255 = perfect, less = more likely to miss.  0 != random, would look stupid.  0=45 degree spread.  Specify in bitmaps.tbl in range 0.0..1.0
 
 	//animation info
-	jointlist anim_states[MAX_GUNS+1][N_ANIM_STATES];
+	jointlist animStates[MAX_GUNS+1][N_ANIM_STATES];
 
 	int     always_0xabcd;      // debugging
 
@@ -221,8 +221,8 @@ typedef struct tRobotInfo {
 typedef struct D1Robot_info {
 	int			nModel;							// which polygon model?
 	int			nGuns;								// how many different gun positions
-	vmsVector	gun_points[MAX_GUNS];			// where each gun model is
-	ubyte			gun_submodels[MAX_GUNS];		// which submodel is each gun in?
+	vmsVector	gunPoints[MAX_GUNS];			// where each gun model is
+	ubyte			gunSubModels[MAX_GUNS];		// which submodel is each gun in?
 	short 		exp1_vclip_num;
 	short			exp1Sound_num;
 	short 		exp2_vclip_num;
@@ -239,16 +239,16 @@ typedef struct D1Robot_info {
 	fix		mass;										// how heavy is this thing?
 	fix		drag;										// how much drag does it have?
 
-	fix		field_of_view[NDL];					// compare this value with forward_vector.dot.vector_to_player, if field_of_view <, then robot can see player
-	fix		firing_wait[NDL];						//	time in seconds between shots
+	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
+	fix		primaryFiringWait[NDL];						//	time in seconds between shots
 	fix		turnTime[NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
-	fix		max_speed[NDL];						//	maximum speed attainable by this robot
+	fix		xMaxSpeed[NDL];						//	maximum speed attainable by this robot
 	fix		circleDistance[NDL];				//	distance at which robot circles player
 
-	sbyte		rapidfire_count[NDL];				//	number of shots fired rapidly
-	sbyte		evade_speed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
+	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
+	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte		cloakType;								//	0=never, 1=always, 2=except-when-firing
 	sbyte		attackType;							//	0=firing, 1=charge (like green guy)
 	sbyte		bossFlag;								//	0 = not boss, 1 = boss.  Is that surprising?
@@ -257,7 +257,7 @@ typedef struct D1Robot_info {
 	ubyte		clawSound;								//	sound robot makes as it claws you (attackType should be 1)
 
 	//animation info
-	jointlist anim_states[MAX_GUNS+1][N_ANIM_STATES];
+	jointlist animStates[MAX_GUNS+1][N_ANIM_STATES];
 
 	int		always_0xabcd;							// debugging
 
@@ -282,8 +282,8 @@ extern  int N_DefRobotTypes;
 //test data for one robot
 #define MAX_ROBOT_JOINTS 1600
 #define D1_MAX_ROBOT_JOINTS 600
-extern jointpos Robot_joints[MAX_ROBOT_JOINTS];
-extern jointpos DefRobotJoints [MAX_ROBOT_JOINTS];
+extern tJointPos Robot_joints[MAX_ROBOT_JOINTS];
+extern tJointPos DefRobotJoints [MAX_ROBOT_JOINTS];
 extern int  NRobot_joints;
 extern int  N_DefRobotJoints;
 extern int nCamBotId;
@@ -315,11 +315,11 @@ void calc_gun_point(vmsVector *gun_point,tObject *obj,int gun_num);
 //  On exit:
 //      Returns number of joints in list.
 //      jp_list_ptr is stuffed with a pointer to a static array of joint positions.  This pointer is valid forever.
-extern int robot_get_anim_state(jointpos **jp_list_ptr,int robotType,int gun_num,int state);
+extern int robot_get_anim_state(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
 
 #ifdef FAST_FILE_IO
 #define RobotInfoReadN(ri, n, fp) CFRead(ri, sizeof(tRobotInfo), n, fp)
-#define JointPosReadN(jp, n, fp) CFRead(jp, sizeof(jointpos), n, fp)
+#define JointPosReadN(jp, n, fp) CFRead(jp, sizeof(tJointPos), n, fp)
 #else
 /*
  * reads n tRobotInfo structs from a CFILE
@@ -327,9 +327,9 @@ extern int robot_get_anim_state(jointpos **jp_list_ptr,int robotType,int gun_num
 extern int RobotInfoReadN(tRobotInfo *ri, int n, CFILE *fp);
 
 /*
- * reads n jointpos structs from a CFILE
+ * reads n tJointPos structs from a CFILE
  */
-extern int JointPosReadN(jointpos *jp, int n, CFILE *fp);
+extern int JointPosReadN(tJointPos *jp, int n, CFILE *fp);
 #endif
 
 #endif

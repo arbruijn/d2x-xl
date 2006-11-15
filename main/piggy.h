@@ -107,8 +107,8 @@ int PiggyInit();
 void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll();
-tBitmapIndex PiggyRegisterBitmap( grs_bitmap * bmp, char * name, int in_file );
-int piggy_registerSound( digiSound * snd, char * name, int in_file );
+tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, char * name, int in_file );
+int piggy_registerSound( tDigiSound * snd, char * name, int in_file );
 tBitmapIndex piggy_find_bitmap( char * name, int bD1Data );
 int piggy_findSound( char * name );
 
@@ -145,19 +145,19 @@ typedef struct tARGB {
 	ubyte	a, r, g, b;
 } tARGB;
 
-int ShrinkTGA (grs_bitmap *bm, int xFactor, int yFactor, int bRealloc, int nColorBytes);
-int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grs_bitmap *pb);
-int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grs_bitmap *pb, int alpha, 
+int ShrinkTGA (grsBitmap *bm, int xFactor, int yFactor, int bRealloc, int nColorBytes);
+int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *pb);
+int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *pb, int alpha, 
 						double brightness, int bGrayScale, int bRedBlueFlip);
-int LoadTGA (CFILE *fp, grs_bitmap *pb, int alpha, double brightness, 
+int LoadTGA (CFILE *fp, grsBitmap *pb, int alpha, double brightness, 
 				 int bGrayScale, int bRedBlueFlip);
-int ReadTGA (char *pszFile, char *pszFolder, grs_bitmap *pb, int alpha, 
+int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *pb, int alpha, 
 				 double brightness, int bGrayScale, int bRedBlueFlip);
 
 extern int Pigfile_initialized;
 
-void piggy_read_bitmap_data(grs_bitmap * bmp);
-void piggy_readSound_data(digiSound *snd);
+void piggy_read_bitmap_data(grsBitmap * bmp);
+void piggy_readSound_data(tDigiSound *snd);
 
 void PiggyLoadLevelData();
 
@@ -202,11 +202,11 @@ int BitmapIndexReadN(tBitmapIndex *bi, int n, CFILE *fp);
  */
 tBitmapIndex ReadExtraBitmapD1Pig(char *name);
 
-grs_bitmap *PiggyLoadBitmap (char *pszFile);
-void PiggyFreeBitmap (grs_bitmap *bmP, int i, int bD1);
-int CreateSuperTranspMasks (grs_bitmap *bmP);
+grsBitmap *PiggyLoadBitmap (char *pszFile);
+void PiggyFreeBitmap (grsBitmap *bmP, int i, int bD1);
+int CreateSuperTranspMasks (grsBitmap *bmP);
 
-int PiggyFreeHiresAnimation (grs_bitmap *bmP, int bD1);
+int PiggyFreeHiresAnimation (grsBitmap *bmP, int bD1);
 void PiggyFreeHiresAnimations (void);
 
 ubyte *LoadD1Palette (void);

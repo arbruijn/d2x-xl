@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _IBITBLT_H
 
 // Finds location/size of the largest "hole" in bitmap mask_bmp
-void gr_ibitblt_find_hole_size ( grs_bitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy );
+void gr_ibitblt_find_hole_size ( grsBitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy );
 
 // Creates a code mask that will copy data from a bitmap that is sw by
 // sh starting from location sx, sy with a rowsize of srowsize onto
@@ -40,21 +40,21 @@ void gr_ibitblt_find_hole_size ( grs_bitmap * mask_bmp, int *minx, int *miny, in
 // defined as transparent in bitmap bmp.
 
 #ifdef __MSDOS__
-ubyte * gr_ibitblt_create_mask(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-ubyte * gr_ibitblt_create_mask_svga(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-ubyte * gr_ibitblt_create_mask_pa( grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
+ubyte * gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
+ubyte * gr_ibitblt_create_mask_svga(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
+ubyte * gr_ibitblt_create_mask_pa( grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
 #else
-void gr_ibitblt_create_mask_pa(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-void gr_ibitblt_create_mask(grs_bitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
+void gr_ibitblt_create_mask_pa(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
+void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
 #endif
 
 // Copy source bitmap onto destination bitmap, not copying pixels that
 // are defined transparent by the mask
 
 #ifdef __MSDOS__
-void gr_ibitblt(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, ubyte *mask);
+void gr_ibitblt(grsBitmap *source_bmp, grsBitmap *dest_bmp, ubyte *mask);
 #else
-void gr_ibitblt(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, ubyte pixel_double);
+void gr_ibitblt(grsBitmap *source_bmp, grsBitmap *dest_bmp, ubyte pixel_double);
 #endif
 
 #endif

@@ -328,8 +328,8 @@ typedef struct player16 {
 } __pack__ player16;
 
 /*
- * reads a player_ship structure from a CFILE
+ * reads a tPlayerShip structure from a CFILE
  */
-void PlayerShipRead(player_ship *ps, CFILE *fp);
+void PlayerShipRead(tPlayerShip *ps, CFILE *fp);
 
 #endif

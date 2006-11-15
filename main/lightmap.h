@@ -84,7 +84,7 @@ void CreateLightMaps (void);
 void DestroyLightMaps (void);
 int HaveLightMaps (void);
 int IsLight (int tMapNum);
-int GetColor (int tMapNum, tLightMap *pTempLight);
+int GetLightColor (int tMapNum, tLightMap *pTempLight);
 
 #define	USE_LIGHTMAPS \
 			(gameStates.render.color.bLightMapsOk && \

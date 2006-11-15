@@ -180,7 +180,7 @@ extern void shrink_window(void);
 extern int	AllowedToFireMissile(void);
 extern int	AllowedToFireFlare(void);
 extern void	CheckRearView(void);
-extern int	create_special_path(void);
+extern int	CreateSpecialPath(void);
 extern void MovePlayerToSegment(tSegment *seg, int tSide);
 extern void	kconfig_center_headset(void);
 extern void GameRenderFrameMono(void);
@@ -362,7 +362,7 @@ extern void show_extra_views();
 void ApplyModifiedPalette(void)
 {
 //@@    int				k, x, y;
-//@@    grs_bitmap	*sbp;
+//@@    grsBitmap	*sbp;
 //@@    grs_canvas	*save_canv;
 //@@    int				color_xlate[256];
 //@@
@@ -432,7 +432,7 @@ void formatTime(char *str, int secs_int)
 void do_show_netgame_help();
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
-int do_game_pause()
+int DoGamePause()
 {
 	int key;
 	char msg[1000];
@@ -508,7 +508,7 @@ int do_game_pause()
 	GrabMouse (0, 0);
 	while (gameData.app.bGamePaused) 
 	{
-		int screen_changed;
+		int bScreenChanged;
 
 #if defined (WINDOWS)
 
@@ -559,10 +559,10 @@ int do_game_pause()
 		HandleTestKey(key);
 #endif
 		
-		screen_changed = HandleSystemKey(key);
+		bScreenChanged = HandleSystemKey(key);
 
 	#ifdef WINDOWS
-		if (screen_changed == -1) {
+		if (bScreenChanged == -1) {
 			ExecMessageBox(NULL, 1, TXT_OK, "Unable to do this\noperation while paused under\n320x200 mode"); 
 			goto SkipPauseStuff;
 		}
@@ -570,7 +570,7 @@ int do_game_pause()
 
 		HandleVRKey(key);
 
-		if (screen_changed) {
+		if (bScreenChanged) {
 			GameRenderFrame();
 			WIN(SetPopupScreenMode());
 			ShowBoxedMessage(msg);
@@ -606,7 +606,7 @@ extern int PhallicLimit, PhallicMan;
 #ifdef NETWORK
 void do_show_netgame_help()
  {
-	newmenu_item m[30];
+	tMenuItem m[30];
    char mtext[30][60];
 	int i, num=0, eff;
 #ifndef RELEASE
@@ -720,10 +720,10 @@ void HandleEndlevelKey(int key)
 		SaveScreenShot (NULL, 0);
 
 	if ( key == (KEY_COMMAND+KEY_P) )
-		key = do_game_pause();
+		key = DoGamePause();
 
 	if (key == KEY_PAUSE)
-		key = do_game_pause();		//so esc from pause will end level
+		key = DoGamePause();		//so esc from pause will end level
 
 	if (key == KEY_ESC) {
 		StopEndLevelSequence();
@@ -761,12 +761,12 @@ void HandleDeathKey(int key)
 	}
 
 	if ( key == (KEY_COMMAND+KEY_P) ) {
-//		key = do_game_pause();
+//		key = DoGamePause();
 		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
 
 	if (key == KEY_PAUSE)   {
-//		key = do_game_pause();		//so esc from pause will end level
+//		key = DoGamePause();		//so esc from pause will end level
 		gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	}
 
@@ -869,7 +869,7 @@ void HandleDemoKey(int key)
 		case KEY_COMMAND+KEY_P:
 		case KEY_CTRLED+KEY_P:
 		case KEY_PAUSE:
-			do_game_pause();
+			DoGamePause();
 			break;
 
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
@@ -901,7 +901,7 @@ void HandleDemoKey(int key)
 		case KEY_DEBUGGED + KEY_K: {
 			int how_many, c;
 			char filename[FILENAME_LEN], num[16];
-			newmenu_item m[6];
+			tMenuItem m[6];
 
 			filename[0] = '\0';
 			memset (m, 0, sizeof (m));
@@ -1003,14 +1003,14 @@ int select_next_window_function(int w)
 	}
 	WritePlayerFile();
 
-	return 1;	 //screen_changed
+	return 1;	 //bScreenChanged
 }
 
 //------------------------------------------------------------------------------
 
 
-void songs_goto_next_song();
-void songs_goto_prev_song();
+void SongsGotoNextSong();
+void SongsGotoPrevSong();
 
 #ifdef DOOR_DEBUGGING
 dump_door_debugging_info()
@@ -1024,7 +1024,7 @@ dump_door_debugging_info()
 	int wall_numn;
 
 	obj = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-	VmVecScaleAdd(&new_pos, &objP->pos, &objP->orient.fvec, i2f(100);
+	VmVecScaleAdd(&new_pos, &objP->pos, &objP->orient.fVec, i2f(100);
 
 	fq.p0						= &objP->pos;
 	fq.startseg				= objP->nSegment;
@@ -1051,7 +1051,7 @@ dump_door_debugging_info()
 	
 		if (IS_WALL (nWall)) {
 			wall *wall = gameData.walls.walls + nWall;
-			active_door *d;
+			tActiveDoor *d;
 			int i;
 	
 			fprintf(dfile, "    nSegment = %d\n", wall->nSegment);
@@ -1073,7 +1073,7 @@ dump_door_debugging_info()
 				d = &gameData.walls.activeDoors[i];
 				if (d->nFrontWall[0]==nWall || 
 					 d->nBackWall[0]==nWall || 
-					 (d->n_parts==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
+					 (d->nPartCount==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
 					break;
 			} 
 	
@@ -1081,7 +1081,7 @@ dump_door_debugging_info()
 				fprintf(dfile, "No active door.\n");
 			else {
 				fprintf(dfile, "Active door %d:\n", i);
-				fprintf(dfile, "    n_parts = %d\n", d->n_parts);
+				fprintf(dfile, "    nPartCount = %d\n", d->nPartCount);
 				fprintf(dfile, "    nFrontWall = %d, %d\n", d->nFrontWall[0], d->nFrontWall[1]);
 				fprintf(dfile, "    nBackWall = %d, %d\n", d->nBackWall[0], d->nBackWall[1]);
 				fprintf(dfile, "    time = %x\n", d->time);
@@ -1105,7 +1105,7 @@ extern int bSaveScreenShot;
 //returns 1 if screen changed
 int HandleSystemKey(int key)
 {
-	int screen_changed=0;
+	int bScreenChanged=0;
 	int bStopPlayerMovement = 1;
 
 	//if (gameStates.gameplay.bSpeedBoost)
@@ -1131,22 +1131,22 @@ int HandleSystemKey(int key)
 				break;
 
 			case KEY_SHIFTED+KEY_F1:
-				screen_changed = select_next_window_function(0);
+				bScreenChanged = select_next_window_function(0);
 				break;
 			case KEY_SHIFTED+KEY_F2:
-				screen_changed = select_next_window_function(1);
+				bScreenChanged = select_next_window_function(1);
 				break;
 			case KEY_SHIFTED+KEY_F3:
 				gameOpts->render.cockpit.nWindowSize = (gameOpts->render.cockpit.nWindowSize + 1) % 4;
-				screen_changed = 1; //select_next_window_function(1);
+				bScreenChanged = 1; //select_next_window_function(1);
 				break;
 			case KEY_CTRLED+KEY_F3:
 				gameOpts->render.cockpit.nWindowPos = (gameOpts->render.cockpit.nWindowPos + 1) % 6;
-				screen_changed = 1; //select_next_window_function(1);
+				bScreenChanged = 1; //select_next_window_function(1);
 				break;
 			case KEY_SHIFTED+KEY_CTRLED+KEY_F3:
 				gameOpts->render.cockpit.nWindowZoom = (gameOpts->render.cockpit.nWindowZoom + 1) % 4;
-				screen_changed = 1; //select_next_window_function(1);
+				bScreenChanged = 1; //select_next_window_function(1);
 				break;
 		}
 
@@ -1173,7 +1173,7 @@ int HandleSystemKey(int key)
 		case KEY_COMMAND+KEY_P: 
 		case KEY_CTRLED+KEY_P: 
 		case KEY_PAUSE: 
-			do_game_pause();				
+			DoGamePause();				
 			break;
 
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
@@ -1210,7 +1210,7 @@ int HandleSystemKey(int key)
 			#ifdef WINDOWS		// HACK! these shouldn't work in 320x200 pause or in letterbox.
 				if (gameStates.app.bPlayerIsDead) break;
 				if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-					screen_changed = -1;
+					bScreenChanged = -1;
 					break;
 				}
 			#endif
@@ -1220,7 +1220,7 @@ int HandleSystemKey(int key)
 
 			if (!GuidedInMainView ()) {
 				ToggleCockpit();	
-				screen_changed=1;
+				bScreenChanged=1;
 			}
 			break;
 
@@ -1236,13 +1236,13 @@ int HandleSystemKey(int key)
 			if (gameStates.app.bPlayerIsDead) 
 				break;
 			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-				screen_changed = -1;
+				bScreenChanged = -1;
 				break;
 			}
 		#endif
 
 			shrink_window(); 
-			screen_changed=1; 
+			bScreenChanged=1; 
 			break;
 
 		case KEY_SHIFTED+KEY_EQUAL:
@@ -1251,13 +1251,13 @@ int HandleSystemKey(int key)
 			if (gameStates.app.bPlayerIsDead) 
 				break;
 			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-				screen_changed = -1;
+				bScreenChanged = -1;
 				break;
 			}
 		#endif
 
 			grow_window();  
-			screen_changed=1; 
+			bScreenChanged=1; 
 			break;
 
 #if 1//ndef _DEBUG
@@ -1348,7 +1348,7 @@ int HandleSystemKey(int key)
 				FullPaletteSave();
 				StateRestoreAll(1, 0, NULL);
 				if (gameData.app.bGamePaused)
-					do_game_pause();
+					DoGamePause();
 			}
 			break;
 
@@ -1363,11 +1363,11 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_MINUS + KEY_ALTED:     
-			songs_goto_prev_song(); 
+			SongsGotoPrevSong(); 
 			break;
 
 		case KEY_EQUAL + KEY_ALTED:     
-			songs_goto_next_song(); 
+			SongsGotoNextSong(); 
 			break;
 
 //added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
@@ -1405,13 +1405,13 @@ int HandleSystemKey(int key)
 //end addition -MM
 
 		default:
-			return screen_changed;
+			return bScreenChanged;
 	}	 //switch (key)
 if (bStopPlayerMovement) {
 	StopPlayerMovement ();
 	gameStates.app.bEnterGame = 2;
 	}
-return screen_changed;
+return bScreenChanged;
 }
 
 //------------------------------------------------------------------------------
@@ -1638,10 +1638,13 @@ void HandleTestKey(int key)
 {
 	switch (key) {
 
-		case KEY_DEBUGGED+KEY_0:	ShowWeaponStatus();   break;
+		case KEY_DEBUGGED+KEY_0:	
+			ShowWeaponStatus();   break;
 
 		#ifdef SHOW_EXIT_PATH
-		case KEY_DEBUGGED+KEY_1:	create_special_path();  break;
+		case KEY_DEBUGGED+KEY_1:	
+			CreateSpecialPath();  
+			break;
 		#endif
 
 		case KEY_DEBUGGED+KEY_Y:
@@ -1664,15 +1667,16 @@ void HandleTestKey(int key)
 		case KEY_SHIFTED+KEY_ALTED+KEY_BACKSP:
 		case KEY_SHIFTED+KEY_CTRLED+KEY_BACKSP:
 		case KEY_SHIFTED+KEY_CTRLED+KEY_ALTED+KEY_BACKSP:
-
-				Int3(); break;
+			Int3(); 
+			break;
 
 		case KEY_CTRLED+KEY_ALTED+KEY_ENTER:
-				exit (0);
-				break;
+			exit (0);
+			break;
 
 		case KEY_DEBUGGED+KEY_S:				
-			DigiReset(); break;
+			DigiReset(); 
+			break;
 
 		case KEY_DEBUGGED+KEY_P:
 			if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
@@ -1682,18 +1686,20 @@ void HandleTestKey(int key)
 			break;
 
 
-
 		case KEY_DEBUGGED+KEY_K:	
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = 1;	
 			MultiSendShields ();
-			break;							//	a virtual kill
+			break;				
+						//	a virtual kill
 		case KEY_DEBUGGED+KEY_SHIFTED + KEY_K:  
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
+			
 		case KEY_DEBUGGED+KEY_X: 
 			gameData.multi.players [gameData.multi.nLocalPlayer].lives++; 
 			break; // Extra life cheat key.
+			
 		case KEY_DEBUGGED+KEY_H:
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
@@ -1752,7 +1758,8 @@ void HandleTestKey(int key)
 
 
 		case KEY_DEBUGGED+KEY_W:	
-			draw_world_from_game(); break;
+			DrawWorldFromGame(); 
+			break;
 
 		#endif  //#ifdef EDITOR
 
@@ -1916,7 +1923,7 @@ void HandleTestKey(int key)
 		#endif
 
 		case KEY_DEBUGGED+KEY_B: {
-			newmenu_item m;
+			tMenuItem m;
 			char text[FILENAME_LEN]="";
 			int item;
 			memset (&m, 0, sizeof (m));

@@ -3,7 +3,7 @@
 #define _BITMAP_H
 
 void GrCountColors (ubyte *data, int i, int *freq);
-void GrSetPalette (grs_bitmap *bmP, ubyte *palette, int transparent_color, int super_transparent_color, int *freq);
+void GrSetPalette (grsBitmap *bmP, ubyte *palette, int transparent_color, int super_transparent_color, int *freq);
 void decode_data_asm (ubyte *data, int num_pixels, ubyte * colormap, int * count);
 
 

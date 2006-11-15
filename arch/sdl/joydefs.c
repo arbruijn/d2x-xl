@@ -57,11 +57,11 @@ void joydefs_calibrate()
 
 //------------------------------------------------------------------------------
 
-void joydef_menu_callback (int nitems, newmenu_item * items, int *last_key, int citem)
+void joydef_menu_callback (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
-	newmenu_item * m;
+	tMenuItem * m;
 /*
 	for (i=0; i<3; i++ )
 		if (items[i].value) 
@@ -203,7 +203,7 @@ if (gameOpts->app.bExpertMode) {
 
 void joydefs_config()
 {
-	newmenu_item m [40];
+	tMenuItem m [40];
 	int	h, i, j, opt = 0, choice = 0;
 	int	nCustKbdOpt, nCustMouseOpt, nCustJoyOpt, nCustHotKeysOpt, nMouseTypeOpt, nJoyTypeOpt, 
 			nFastPitchOpt, nJoyMouseOpt;

@@ -526,7 +526,7 @@ else if (!a)
 	return 0;
 else {
 		double	d;
-#ifdef _DEBUG
+#ifndef RELEASE
 		double	p, h, e;
 #endif
 

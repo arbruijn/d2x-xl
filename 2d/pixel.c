@@ -65,7 +65,7 @@ void gr_pixel( int x, int y )
 }
 
 #ifndef D1XD3D
-inline void gr_bm_upixel( grs_bitmap * bm, int x, int y, unsigned char color )
+inline void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
 	grs_color c;
 	switch (bm->bm_props.nType)
@@ -95,7 +95,7 @@ inline void gr_bm_upixel( grs_bitmap * bm, int x, int y, unsigned char color )
 }
 #endif
 
-void gr_bm_pixel( grs_bitmap * bm, int x, int y, unsigned char color )
+void gr_bm_pixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
 	if ((x<0) || (y<0) || (x>=bm->bm_props.w) || (y>=bm->bm_props.h)) return;
 	gr_bm_upixel (bm, x, y, color);

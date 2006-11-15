@@ -37,12 +37,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added PSX debugging stuff that builds .PAG files.
  *
  * Revision 2.4  1995/08/24  13:40:03  john
- * Added code to page in vclip for powerup disapperance and to
+ * Added code to page in tVideoClip for powerup disapperance and to
  * fix bug that made robot makers not page in the correct bot
  * textures.
  *
  * Revision 2.3  1995/07/26  12:09:19  john
- * Made code that pages in weapon_info->robot_hit_vclip not
+ * Made code that pages in tWeaponInfo->robot_hit_vclip not
  * page in unless it is a badass weapon.  Took out old functionallity
  * of using this if no robot exp1_vclip, since all robots have these.
  *
@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Clear the boxed message to fix a mem leakage
  *
  * Revision 1.12  1995/01/23  13:00:46  john
- * Added hostage vclip paging.
+ * Added hostage tVideoClip paging.
  *
  * Revision 1.11  1995/01/23  12:29:52  john
  * Added code to page in eclip on robots, dead control center,
@@ -170,7 +170,7 @@ static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 //------------------------------------------------------------------------------
 
 #ifdef WINDOWS
-void PagingTouchVClipW (vclip * vc)
+void PagingTouchVClipW (tVideoClip * vc)
 {
 	int i;
 
@@ -184,7 +184,7 @@ void PagingTouchVClipW (vclip * vc)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchVClip (vclip * vc, int bD1)
+void PagingTouchVClip (tVideoClip * vc, int bD1)
 {
 	int i;
 
@@ -206,7 +206,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 		if (ecP->dest_bm_num > -1)
 			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->dest_bm_num], gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->dest_vclip > -1)
-			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what vclip to play when exploding
+			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)
 			PagingTouchVClip (&gameData.eff.pEffects [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what eclip to play when exploding
 		if (ecP->crit_clip > -1)
@@ -233,7 +233,7 @@ void PagingTouchModel (int modelnum)
 {
 	int		i, j;
 	ushort	*pi;
-	polymodel *pm = gameData.models.polyModels + modelnum;
+	tPolyModel *pm = gameData.models.polyModels + modelnum;
 
 for (i = pm->n_textures, pi = gameData.pig.tex.pObjBmIndex + pm->first_texture; i; i--, pi++) {
 	j = *pi;
@@ -465,7 +465,7 @@ void PagingTouchSegment (tSegment * segp)
 void PagingTouchWall (wall *wallP)
 {
 	int	j;
-	wclip *anim;
+	tWallClip *anim;
 
 if (wallP->nClip > -1)	{
 	anim = gameData.walls.pAnims + wallP->nClip;
@@ -571,7 +571,7 @@ void PagingTouchAllSub ()
 		FILE * fp;
 		char fname [128];
 		int i, bPageIn;
-		grs_bitmap *bmP;
+		grsBitmap *bmP;
 
 		if (gameData.missions.nCurrentLevel<0)                //secret level
 			strcpy (fname, gameData.missions.szSecretLevelNames [-gameData.missions.nCurrentLevel-1]);
@@ -680,7 +680,7 @@ static int nTouchPowerup1 = 0;
 static int nTouchPowerup2 = 0;
 static int nTouchGauge = 0;
 
-static void PagingTouchPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void PagingTouchPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 	int	i;
 

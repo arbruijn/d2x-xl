@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * on thrust/speed, without regard to direction.
  *
  * Revision 1.326  1995/01 / 29  14:46:24  rob
- * Fixed invul. vclip to only appear on player who is invul.
+ * Fixed invul. tVideoClip to only appear on player who is invul.
  *
  * Revision 1.325  1995/01 / 29  13:48:16  mike
  * Add invulnerability graphical effect viewable by other players.
@@ -443,7 +443,7 @@ tObject	Object_minus_one;
 #endif
 
 //------------------------------------------------------------------------------
-// grs_bitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
+// grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
 
 // int robot_bm_nums [MAX_ROBOT_TYPES];		//starting bitmap num for each robot
 // int robot_n_bitmaps [MAX_ROBOT_TYPES];		//how many bitmaps for each robot
@@ -568,7 +568,7 @@ extern tRgbColorf bitmapColors [MAX_BITMAP_FILES];
 
 void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbColorf *color, float alpha)
 {
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	int			id, orientation = 0;
 	int			transp = (objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
 	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
@@ -653,15 +653,15 @@ if (color) {
 //draw an tObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int lighted)
 {
-	grs_bitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
 	vmsVector delta, top_v, bot_v;
-	g3s_point top_p, bot_p;
+	g3sPoint top_p, bot_p;
 
 PIGGY_PAGE_IN (bmi, 0);
 bmP = BmOverride (bmP);
 //bmP->bm_handle = bmi.index;
-VmVecCopyScale (&delta, &objP->orient.uvec, objP->size);
+VmVecCopyScale (&delta, &objP->orient.uVec, objP->size);
 VmVecAdd (&top_v, &objP->pos, &delta);
 VmVecSub (&bot_v, &objP->pos, &delta);
 G3TransformAndEncodePoint (&top_p, &top_v);
@@ -833,7 +833,7 @@ if (bLinearTMapPolyObjs)
 ComputeEngineGlow (objP, xEngineGlow);
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #ifdef _DEBUG
-	polymodel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
 	tBitmapIndex bmiP [12];
 	int i;
@@ -869,7 +869,7 @@ else {
 		#endif
 
 		//	Snipers get bright when they fire.
-		if (gameData.ai.localInfo [OBJ_IDX (objP)].next_fire < F1_0/8) {
+		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0/8) {
 			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 				xLight = 2*xLight + F1_0;
 		}
@@ -976,7 +976,7 @@ gameStates.render.nInterpolationMethod = imSave;
 void SetRobotLocationInfo (tObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
-	g3s_point temp;
+	g3sPoint temp;
 
 	G3TransformAndEncodePoint (&temp, &objP->pos);
 	if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
@@ -984,8 +984,8 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	//the code below to check for tObject near the center of the screen
 	//completely ignores z, which may not be good
 	if ((abs (temp.p3_x) < F1_0*4) && (abs (temp.p3_y) < F1_0*4)) {
-		objP->cType.aiInfo.danger_laser_num = gameStates.app.bPlayerFiredLaserThisFrame;
-		objP->cType.aiInfo.danger_laser_signature = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
+		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
+		objP->cType.aiInfo.nDangerLaserSig = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}
 	}
 }
@@ -1124,7 +1124,7 @@ static inline float ObjectDamage (tObject *objP)
 
 if (objP->nType == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
-else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN)) {
+else if (objP->nType == OBJ_ROBOT) {
 	xMaxShields = gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength;
 	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].bossFlag)
 		xMaxShields /= (NDL - gameStates.app.nDifficultyLevel);
@@ -1132,6 +1132,8 @@ else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN)) {
 	if (gameData.bots.pInfo [objP->id].companion)
 		fDmg /= 2;
 	}
+else if (objP->nType == OBJ_CNTRLCEN)
+	fDmg = f2fl (objP->shields) / f2fl (ReactorStrength ());
 else
 	fDmg = 1.0f;
 return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
@@ -1141,7 +1143,7 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 
 void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 {
-	fVector3		fPos, fVerts [4];
+	fVector		fPos, fVerts [4];
 	float			r, r2, w;
 
 if (EGI_FLAG (bDamageIndicators, 0, 0) &&
@@ -1193,7 +1195,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
-	fVector3		fPos, fVerts [4];
+	fVector		fPos, fVerts [4];
 	float			r, r2, r3;
 	int			nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
@@ -1218,6 +1220,8 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 0)) {
 		pc = ObjectFrameColor (NULL, NULL);
 		}
 	}
+if (EGI_FLAG (bHitIndicators, 0, 0) && (ObjectDamage (objP) >= 1.0f))
+	return;
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->pos);
@@ -1294,11 +1298,11 @@ RenderDamageIndicator (objP, pc);
 
 void RenderTowedFlag (tObject *objP)
 {
-	static fVector3 fVerts [4] = {
-		{0.0f, 2.0f / 3.0f, 0.0f},
-		{0.0f, 2.0f / 3.0f, -1.0f},
-		{0.0f, -(1.0f / 3.0f), -1.0f},
-		{0.0f, -(1.0f / 3.0f), 0.0f}
+	static fVector fVerts [4] = {
+		{0.0f, 2.0f / 3.0f, 0.0f, 1.0f},
+		{0.0f, 2.0f / 3.0f, -1.0f, 1.0f},
+		{0.0f, -(1.0f / 3.0f), -1.0f, 1.0f},
+		{0.0f, -(1.0f / 3.0f), 0.0f, 1.0f}
 	};
 
 	typedef struct uv {
@@ -1309,12 +1313,12 @@ void RenderTowedFlag (tObject *objP)
 
 if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
 		vmsVector		vPos = objP->pos;
-		fVector3			vPosf;
+		fVector			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
 		tPathPoint		*pp = GetPathPoint (&pf->path);
 		int				i;
 		float				r;
-		grs_bitmap		*bmP;
+		grsBitmap		*bmP;
 
 	if (pp) {
 		OglActiveTexture (GL_TEXTURE0_ARB);
@@ -1326,7 +1330,7 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			return;
 		bmP = BmCurFrame (bmP);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		VmVecScaleInc (&vPos, &objP->orient.fvec, -objP->size);
+		VmVecScaleInc (&vPos, &objP->orient.fVec, -objP->size);
 		r = f2fl (objP->size);
 		G3StartInstanceMatrix (&vPos, &pp->mOrient);
 		glBegin (GL_QUADS);
@@ -1361,26 +1365,26 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 #define	RING_SIZE		16
 #define	THRUSTER_SEGS	14
 
-static fVector3	vFlame [THRUSTER_SEGS][RING_SIZE];
+static fVector	vFlame [THRUSTER_SEGS][RING_SIZE];
 static int			bHaveFlame = 0;
 
-static fVector3	vRing [RING_SIZE] = {
-	{-0.5f, -0.5f, 0.0f},
-	{-0.6533f, -0.2706f, 0.0f},
-	{-0.7071f, 0.0f, 0.0f},
-	{-0.6533f, 0.2706f, 0.0f},
-	{-0.5f, 0.5f, 0.0f},
-	{-0.2706f, 0.6533f, 0.0f},
-	{0.0f, 0.7071f, 0.0f},
-	{0.2706f, 0.6533f, 0.0f},
-	{0.5f, 0.5f, 0.0f},
-	{0.6533f, 0.2706f, 0.0f},
-	{0.7071f, 0.0f, 0.0f},
-	{0.6533f, -0.2706f, 0.0f},
-	{0.5f, -0.5f, 0.0f},
-	{0.2706f, -0.6533f, 0.0f},
-	{0.0f, -0.7071f, 0.0f},
-	{-0.2706f, -0.6533f, 0.0f}
+static fVector	vRing [RING_SIZE] = {
+	{-0.5f, -0.5f, 0.0f, 1.0f},
+	{-0.6533f, -0.2706f, 0.0f, 1.0f},
+	{-0.7071f, 0.0f, 0.0f, 1.0f},
+	{-0.6533f, 0.2706f, 0.0f, 1.0f},
+	{-0.5f, 0.5f, 0.0f, 1.0f},
+	{-0.2706f, 0.6533f, 0.0f, 1.0f},
+	{0.0f, 0.7071f, 0.0f, 1.0f},
+	{0.2706f, 0.6533f, 0.0f, 1.0f},
+	{0.5f, 0.5f, 0.0f, 1.0f},
+	{0.6533f, 0.2706f, 0.0f, 1.0f},
+	{0.7071f, 0.0f, 0.0f, 1.0f},
+	{0.6533f, -0.2706f, 0.0f, 1.0f},
+	{0.5f, -0.5f, 0.0f, 1.0f},
+	{0.2706f, -0.6533f, 0.0f, 1.0f},
+	{0.0f, -0.7071f, 0.0f, 1.0f},
+	{-0.2706f, -0.6533f, 0.0f, 1.0f}
 };
 
 static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
@@ -1388,7 +1392,7 @@ static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
 void CreateThrusterFlame (void)
 {
 if (!bHaveFlame) {
-		fVector3		*pv;
+		fVector		*pv;
 		int			i, j, m, n;
 		double		phi, sinPhi;
 		float			z = 0, 
@@ -1424,7 +1428,7 @@ void RenderThrusterFlames (tObject *objP)
 	int				h, i, j, k, l, nThrusters;
 	tRgbaColorf		c [2];
 	vmsVector		vPos [2];
-	fVector3			v;
+	fVector			v;
 	float				fSize, fLength, fSpeed, fPulse, fFade [4];
 	tThrusterData	*pt = NULL;
 	tPathPoint		*pp = NULL;
@@ -1467,15 +1471,15 @@ if (objP->nType == OBJ_PLAYER) {
 	fSize = 0.5f + fLength * 0.5f;
 	nThrusters = 2;
 	if (gameOpts->render.bHiresModels) {
-		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
-		VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 44));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 22);
+		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size);
+		VmVecScaleInc (vPos, &objP->orient.rVec, -(8 * objP->size / 44));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rVec, 8 * objP->size / 22);
 		}
 	else {
-		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size / 10 * 9);
-		VmVecScaleInc (vPos, &objP->orient.rvec, -(8 * objP->size / 50));
-		VmVecScaleInc (vPos, &objP->orient.uvec, -(objP->size / 20));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rvec, 8 * objP->size / 25);
+		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size / 10 * 9);
+		VmVecScaleInc (vPos, &objP->orient.rVec, -(8 * objP->size / 50));
+		VmVecScaleInc (vPos, &objP->orient.uVec, -(objP->size / 20));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rVec, 8 * objP->size / 25);
 		}
 	}
 else {
@@ -1495,7 +1499,7 @@ else {
 	else
 		fSize = 0.5f;
 	nThrusters = 1;
-	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fvec, -objP->size);
+	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size);
 	}
 CreateThrusterFlame ();
 glLineWidth (3);
@@ -1557,18 +1561,22 @@ for (h = 0; h < nThrusters; h++) {
 
 // -----------------------------------------------------------------------------
 
-void RenderLightTrail (tObject *objP)
+void RenderShockwave (tObject *objP)
 {
-if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
+if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) && 
 	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
-		fVector3			vPosf;
+		fVector			vPosf;
 		int				h, i, j, k, n;
 		float				r [4], l [4], alpha;
 		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
-	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fvec, objP->size / 2);
+	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fVec, objP->size / 2);
 	G3StartInstanceMatrix (&vPos, &objP->orient);
+	glDepthMask (0);
+	glDisable (GL_TEXTURE_2D);
+	//glCullFace (GL_BACK);
+	glDisable (GL_CULL_FACE);		
 	r [3] = f2fl (objP->size);
 	if (r [3] >= 3.0f)
 		r [3] /= 1.5f;
@@ -1579,15 +1587,11 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 	r [2] = r [3];
 	r [1] = r [2] / 4.0f * 3.0f;
 	r [0] = r [2] / 3;
-	l [3] = (r [3] < 1.0f) ? 25.0f : 50.0f;
+	l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
 	l [2] = r [3] / 4;
 	l [1] = -r [3] / 6;
 	l [0] = -r [3] / 3;
 	alpha = 0.15f;
-	glDepthMask (0);
-	glDisable (GL_TEXTURE_2D);
-	//glCullFace (GL_BACK);
-	glDisable (GL_CULL_FACE);		
 	for (h = 0; h < 3; h++) {
 		glBegin (GL_QUAD_STRIP);
 		for (i = 0; i < RING_SIZE + 1; i++) {
@@ -1630,7 +1634,117 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 
 // -----------------------------------------------------------------------------
 
-bool G3DrawSphere3D  (g3s_point *p0, int nSides, int rad);
+void RenderTracers (tObject *objP)
+{
+if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
+	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
+		fVector			vPosf;
+		short				h;
+		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
+
+	glDepthMask (0);
+	glEnable (GL_LINE_STIPPLE);
+	h = d_rand () % 4;
+	glLineStipple ((h + 1) * 4, patterns [h]);
+	glLineWidth (3);
+	glBegin (GL_LINES);
+	glColor4d (1, 1, 1, 1.0 / 3.0);
+	VmsVecToFloat (&vPosf, &objP->pos);
+	G3TransformPointf (&vPosf, &vPosf);
+	vPosf.p.z = -vPosf.p.z;
+	glVertex3fv ((GLfloat *) &vPosf);
+	vPosf.p.x =
+	vPosf.p.y =
+	vPosf.p.z = -100;
+	VmsVecToFloat (&vPosf, &objP->last_pos);
+	G3TransformPointf (&vPosf, &vPosf);
+	vPosf.p.z = -vPosf.p.z;
+	glVertex3fv ((GLfloat *) &vPosf);
+	glEnd ();
+	glLineWidth (1);
+	glDisable (GL_LINE_STIPPLE);
+	glDepthMask (1);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+static fVector vTrailVerts [2][4] = {{{0,0,0},{0,-1,-5},{0,-1,-50},{0,0,-50}},
+												  {{0,0,0},{0,1,-5},{0,1,-50},{0,0,-50}}};
+
+void RenderLightTrail (tObject *objP)
+{
+if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
+	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+		vmsVector		vPos;
+		fVector			vPosf, *vTrail;
+		int				i, j;
+		float				h, r = f2fl (objP->size);
+		tRgbColorf		*pc = gameData.weapons.color + objP->id;
+
+	if (r <= 1)
+		h = 1;
+	else if (r >= 3)
+		h = 2;
+	else
+		h = 1.5f;
+	if (r >= 3.0f)
+		r /= 1.5f;
+	else if (r < 1)
+		r *= 2;
+	else if (r < 2)
+		r *= 1.5f;
+	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fVec, objP->size / 2);
+	G3StartInstanceMatrix (&vPos, &objP->orient);
+	glDepthMask (0);
+	glDisable (GL_TEXTURE_2D);
+	glDisable (GL_CULL_FACE);		
+	for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++, vTrail++) {
+			if (i)
+				glColor4f (0,0,0,0);
+			else
+				glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+			vPosf.p.x = 0;
+			vPosf.p.y = vTrail->p.y * r;
+			vPosf.p.z = vTrail->p.z;
+			if (vPosf.p.z == -50)
+				vPosf.p.z *= h;
+			G3TransformPointf (&vPosf, &vPosf);
+			vPosf.p.z = -vPosf.p.z;
+			glVertex3fv ((GLfloat *) &vPosf);
+			}
+		glEnd ();
+		}
+	for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++, vTrail++) {
+			if (i)
+				glColor4f (0,0,0,0);
+			else
+				glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+			vPosf.p.y = 0;
+			vPosf.p.x = vTrail->p.y * r;
+			vPosf.p.z = vTrail->p.z;
+			if (vPosf.p.z == -50)
+				vPosf.p.z *= h;
+			G3TransformPointf (&vPosf, &vPosf);
+			vPosf.p.z = -vPosf.p.z;
+			glVertex3fv ((GLfloat *) &vPosf);
+			}
+		glEnd ();
+		}
+	glDepthMask (1);
+	glCullFace (GL_FRONT);
+	G3DoneInstance ();
+	RenderShockwave (objP);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 void RenderObject (tObject *objP, int nWindowNum)
 {
@@ -1638,14 +1752,15 @@ void RenderObject (tObject *objP, int nWindowNum)
 	float fLight [3];
 	fix	nGlow [2];
 
-if ((objP == gameData.objs.viewer) && 
+if ((objP == gameData.objs.viewer) && (objP->nType == OBJ_PLAYER) &&
 	 (gameStates.render.nShadowPass != 2) && 
 #ifdef _DEBUG
 	 (!gameStates.render.bExternalView || nWindowNum)) {
 #else	 
 	 ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || !gameStates.render.bExternalView || nWindowNum)) {
 #endif	 	
-	DoPlayerSmoke (objP, -1);
+	if (gameOpts->render.smoke.bPlayers)
+		DoPlayerSmoke (objP, -1);
 	return;		
 	}
 if ((objP->nType==OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
@@ -1661,6 +1776,7 @@ SetNearestStaticLights (objP->nSegment, 1);
 SetNearestDynamicLights (objP->nSegment);
 switch (objP->renderType) {
 	case RT_NONE:	
+		RenderTracers (objP);
 		break;		//doesn't render, like the player
 
 	case RT_POLYOBJ:
@@ -2223,6 +2339,8 @@ if (nType == OBJ_WEAPON) {
 	if ((owner >= 0) && (gameData.objs.objects [owner].nType == OBJ_ROBOT))
 		nType = nType;
 	}	
+else if (nType == OBJ_CNTRLCEN)
+	nType = nType;
 #endif
 if ((nType == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
@@ -2490,12 +2608,12 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 extern void DropPlayerEggs (tObject *objP);
 //extern int GetExplosionVClip (tObject *objP, int stage);
 extern void MultiCapObjects ();
-extern int Proximity_dropped, Smartmines_dropped;
+extern int nProximityDropped, nSmartminesDropped;
 
 void DeadPlayerFrame (void)
 {
 	fix			xTimeDead;
-	vmsVector	fvec;
+	vmsVector	fVec;
 
 if (gameStates.app.bPlayerIsDead) {
 	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
@@ -2515,8 +2633,8 @@ if (gameStates.app.bPlayerIsDead) {
 	gameData.objs.console->mType.physInfo.rotVel.z = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/3;
 	xCameraToPlayerDistGoal = min (xTimeDead*8, F1_0*20) + gameData.objs.console->size;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->pos, gameData.objs.console);
-	VmVecSub (&fvec, &gameData.objs.console->pos, &gameData.objs.deadPlayerCamera->pos);
-	VmVector2Matrix (&gameData.objs.deadPlayerCamera->orient, &fvec, NULL, NULL);
+	VmVecSub (&fVec, &gameData.objs.console->pos, &gameData.objs.deadPlayerCamera->pos);
+	VmVector2Matrix (&gameData.objs.deadPlayerCamera->orient, &fVec, NULL, NULL);
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board > 1)
@@ -2594,11 +2712,11 @@ void AdjustMineSpawn ()
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=Proximity_dropped;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=Smartmines_dropped;
-Proximity_dropped = 0;
-Smartmines_dropped = 0;
+	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
+nProximityDropped = 0;
+nSmartminesDropped = 0;
 }
 
 
@@ -3036,16 +3154,16 @@ int CheckObjectHitTriggers (tObject *objP, short nPrevSegment)
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if (objP->nType == OBJ_MONSTERBALL)
-	objP = objP;
 if (/*(objP->nType != OBJ_PLAYER) ||*/ (objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
 #ifdef NETWORK
 nOldLevel = gameData.missions.nCurrentLevel;
 #endif
-if (objP->nType == OBJ_MONSTERBALL)
-	objP = objP;
 for (i = 0; i < nPhysSegs - 1; i++) {
+#ifdef _DEBUG
+	if (physSegList [i] > gameData.segs.nLastSegment)
+		LogErr ("invalid segment in physSegList\n");
+#endif
 	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
 	if (nConnSide != -1)
 		CheckTrigger (gameData.segs.segments + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
@@ -3479,7 +3597,7 @@ int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte m
 	if (nObject >= 0) {
 		tObject *objP = &gameData.objs.objects [nObject];
 		objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-		VmVecCopyScale (&objP->mType.spinRate, &objP->orient.uvec, F1_0 / 2);
+		VmVecCopyScale (&objP->mType.spinRate, &objP->orient.uVec, F1_0 / 2);
 		//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
 		objP->lifeleft = IMMORTAL_TIME - 1;
 	}
@@ -3519,11 +3637,11 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 			if (objP->nType == OBJ_ROBOT) {
 				if (VmVecDistQuick (&viewer->pos, &objP->pos) < F1_0*100) {
 					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
-					if (ailp->player_awarenessType == 0) {
+					if (ailp->playerAwarenessType == 0) {
 						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-						ailp->player_awarenessType = PA_WEAPON_ROBOT_COLLISION;
-						ailp->player_awarenessTime = F1_0*3;
-						ailp->previous_visibility = 2;
+						ailp->playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
+						ailp->playerAwarenessTime = F1_0*3;
+						ailp->previousVisibility = 2;
 					}
 				}
 			}
@@ -3687,6 +3805,8 @@ bIsMissile [ROBOT_EARTHSHAKER_ID] =
 bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
+bIsWeapon [VULCAN_ID] =
+bIsWeapon [GAUSS_ID] = 0;
 bIsWeapon [LASER_ID] =
 bIsWeapon [LASER_ID + 1] =
 bIsWeapon [LASER_ID + 2] =

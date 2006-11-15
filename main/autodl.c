@@ -522,7 +522,7 @@ return 1;
 #define PROGRESS_ITEM	2
 #define PERCENT_ITEM		1
 
-void DownloadPoll (int nItems, newmenu_item *m, int *key, int cItem)
+void DownloadPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 if (*key == KEY_ESC) {
 	m [PERCENT_ITEM].text = "download aborted";
@@ -572,7 +572,7 @@ m [PERCENT_ITEM].redraw = 1;
 
 int DownloadMission (char *pszMission)
 {
-	newmenu_item	m [3];
+	tMenuItem	m [3];
 	char				szTitle [30];
 	char				szProgress [30];
 	int				i;

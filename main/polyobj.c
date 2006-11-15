@@ -288,7 +288,7 @@ vmsAngVec anim_angs [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void robot_set_angles (tRobotInfo *r, polymodel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void robot_set_angles (tRobotInfo *r, tPolyModel *pm, vmsAngVec angs [N_ANIM_STATES][MAX_SUBMODELS]);
 #endif
 
 #ifdef WORDS_NEED_ALIGNMENT
@@ -323,7 +323,7 @@ int get_first_chunks_index (chunk *chunk_list, int no_chunks)
 
 //------------------------------------------------------------------------------
 
-void AlignPolyModelData (polymodel *pm)
+void AlignPolyModelData (tPolyModel *pm)
 {
 	int i, chunk_len;
 	int total_correction = 0;
@@ -385,7 +385,7 @@ void AlignPolyModelData (polymodel *pm)
 
 //------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
-polymodel *ReadModelFile (polymodel *pm, char *filename, tRobotInfo *r)
+tPolyModel *ReadModelFile (tPolyModel *pm, char *filename, tRobotInfo *r)
 {
 	CFILE *ifile;
 	short version;
@@ -466,9 +466,9 @@ while (new_pof_read_int (id, model_buf) == 1) {
 					Assert (id < r->nGuns);
 					Assert (gun_used [id] == 0);
 					gun_used [id] = 1;
-					r->gun_submodels [id] = (char) pof_read_short (model_buf);
-					Assert (r->gun_submodels [id] != 0xff);
-					pof_read_vecs (&r->gun_points [id], 1, model_buf);
+					r->gunSubModels [id] = (char) pof_read_short (model_buf);
+					Assert (r->gunSubModels [id] != 0xff);
+					pof_read_vecs (&r->gunPoints [id], 1, model_buf);
 					if (version >= 7)
 						pof_read_vecs (&gun_dir, 1, model_buf);
 					}
@@ -537,8 +537,8 @@ return pm;
 
 //------------------------------------------------------------------------------
 //reads the gun information for a model
-//fills in arrays gun_points & gun_dirs, returns the number of guns read
-int read_model_guns (char *filename, vmsVector *gun_points, vmsVector *gun_dirs, int *gun_submodels)
+//fills in arrays gunPoints & gun_dirs, returns the number of guns read
+int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
 {
 	CFILE *ifile;
 	short version;
@@ -587,11 +587,11 @@ int read_model_guns (char *filename, vmsVector *gun_points, vmsVector *gun_dirs,
 
 				id = pof_read_short (model_buf);
 				sm = pof_read_short (model_buf);
-				if (gun_submodels)
-					gun_submodels [id] = sm;
+				if (gunSubModels)
+					gunSubModels [id] = sm;
 				else if (sm!=0)
 					Error ("Invalid gun submodel in file <%s>", filename);
-				pof_read_vecs (&gun_points [id], 1, model_buf);
+				pof_read_vecs (&gunPoints [id], 1, model_buf);
 
 				pof_read_vecs (&gun_dirs [id], 1, model_buf);
 			}
@@ -609,7 +609,7 @@ int read_model_guns (char *filename, vmsVector *gun_points, vmsVector *gun_dirs,
 
 //------------------------------------------------------------------------------
 //d_free up a model, getting rid of all its memory
-void FreeModel (polymodel *po)
+void FreeModel (tPolyModel *po)
 {
 if (po->model_data) {
 	d_free (po->model_data);
@@ -633,7 +633,7 @@ void DrawPolygonModel (
 	tBitmapIndex	altTextures [], 
 	tRgbColorf		*color)
 {
-	polymodel	*po;
+	tPolyModel	*po;
 	int			i, j, nTextures;
 	PA_DFX (int bSaveLight);
 
@@ -719,7 +719,7 @@ else {
 G3DoneInstance ();
 #if 0
 {
-	g3s_point p0, p1;
+	g3sPoint p0, p1;
 
 G3TransformPoint (&p0.p3_vec, &objP->pos);
 VmVecSub (&p1.p3_vec, &objP->pos, &objP->mType.physInfo.velocity);
@@ -743,7 +743,7 @@ PA_DFX (gameStates.render.nLighting = bSaveLight);
 
 //------------------------------------------------------------------------------
 
-void polyobj_find_min_max (polymodel *pm)
+void polyobj_find_min_max (tPolyModel *pm)
 {
 	ushort nverts;
 	vmsVector *vp;
@@ -804,7 +804,7 @@ char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 #ifndef DRIVE
 int LoadPolygonModel (char *filename, int n_textures, int first_texture, tRobotInfo *r)
 #else
-int LoadPolygonModel (char *filename, int n_textures, grs_bitmap ***textures)
+int LoadPolygonModel (char *filename, int n_textures, grsBitmap ***textures)
 #endif
 {
 	#ifdef DRIVE
@@ -905,9 +905,9 @@ void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 
 #ifndef FAST_FILE_IO
 /*
- * reads a polymodel structure from a CFILE
+ * reads a tPolyModel structure from a CFILE
  */
-extern void PolyModelRead (polymodel *pm, CFILE *fp)
+extern void PolyModelRead (tPolyModel *pm, CFILE *fp)
 {
 	int i;
 
@@ -940,9 +940,9 @@ pm->simpler_model = CFReadByte (fp);
 
 //------------------------------------------------------------------------------
 /*
- * reads n polymodel structs from a CFILE
+ * reads n tPolyModel structs from a CFILE
  */
-extern int PolyModelReadN (polymodel *pm, int n, CFILE *fp)
+extern int PolyModelReadN (tPolyModel *pm, int n, CFILE *fp)
 {
 	int i;
 
@@ -954,9 +954,9 @@ return i;
 
 //------------------------------------------------------------------------------
 /*
- * routine which allocates, reads, and inits a polymodel's model_data
+ * routine which allocates, reads, and inits a tPolyModel's model_data
  */
-void PolyModelDataRead (polymodel *pm, polymodel *pdm, CFILE *fp)
+void PolyModelDataRead (tPolyModel *pm, tPolyModel *pdm, CFILE *fp)
 {
 	if (pm->model_data)
 		d_free (pm->model_data);

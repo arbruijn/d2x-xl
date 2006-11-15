@@ -371,7 +371,7 @@ extern int save_mine_data_compiled(FILE * SaveFile);
 #endif
 
 int Gamesave_num_orgRobots = 0;
-//--unused-- grs_bitmap * Gamesave_saved_bitmap = NULL;
+//--unused-- grsBitmap * Gamesave_saved_bitmap = NULL;
 
 //------------------------------------------------------------------------------
 #ifdef EDITOR
@@ -589,9 +589,9 @@ static void gr_write_vector(vmsVector *v,FILE *file)
 
 static void gs_write_matrix(vmsMatrix *m,FILE *file)
 {
-	gr_write_vector(&m->rvec,file);
-	gr_write_vector(&m->uvec,file);
-	gr_write_vector(&m->fvec,file);
+	gr_write_vector(&m->rVec,file);
+	gr_write_vector(&m->uVec,file);
+	gr_write_vector(&m->fVec,file);
 }
 
 static void gs_write_angvec(vmsAngVec *v,FILE *file)
@@ -674,10 +674,10 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 			for (i=0;i<MAX_AI_FLAGS;i++)
 				objP->cType.aiInfo.flags[i] = CFReadByte(f);
 
-			objP->cType.aiInfo.hide_segment = CFReadShort(f);
-			objP->cType.aiInfo.hide_index = CFReadShort(f);
-			objP->cType.aiInfo.path_length = CFReadShort(f);
-			objP->cType.aiInfo.cur_path_index = (char) CFReadShort(f);
+			objP->cType.aiInfo.nHideSegment = CFReadShort(f);
+			objP->cType.aiInfo.nHideIndex = CFReadShort(f);
+			objP->cType.aiInfo.nPathLength = CFReadShort(f);
+			objP->cType.aiInfo.nCurPathIndex = (char) CFReadShort(f);
 
 			if (version <= 25) {
 				CFReadShort(f);	//				objP->cType.aiInfo.follow_path_start_seg	= 
@@ -881,10 +881,10 @@ void writeObject(tObject *objP,FILE *f)
 			for (i=0;i<MAX_AI_FLAGS;i++)
 				gs_write_byte(objP->cType.aiInfo.flags[i],f);
 
-			gs_write_short(objP->cType.aiInfo.hide_segment,f);
-			gs_write_short(objP->cType.aiInfo.hide_index,f);
-			gs_write_short(objP->cType.aiInfo.path_length,f);
-			gs_write_short(objP->cType.aiInfo.cur_path_index,f);
+			gs_write_short(objP->cType.aiInfo.nHideSegment,f);
+			gs_write_short(objP->cType.aiInfo.nHideIndex,f);
+			gs_write_short(objP->cType.aiInfo.nPathLength,f);
+			gs_write_short(objP->cType.aiInfo.nCurPathIndex,f);
 
 			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_start_seg,f);
 			// -- unused! mk, 08/13/95 -- gs_write_short(objP->cType.aiInfo.follow_path_end_seg,f);
@@ -1105,7 +1105,7 @@ gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(wall);  
 gameFileInfo.doors.offset			=	-1;
 gameFileInfo.doors.count		=	0;
-gameFileInfo.doors.size			=	sizeof(active_door);  
+gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
 gameFileInfo.triggers.offset		=	-1;
 gameFileInfo.triggers.count	=	0;
 gameFileInfo.triggers.size		=	sizeof(tTrigger);  
@@ -1114,7 +1114,7 @@ gameFileInfo.control.count		=	0;
 gameFileInfo.control.size		=	sizeof(tReactorTriggers);
 gameFileInfo.matcen.offset		=	-1;
 gameFileInfo.matcen.count		=	0;
-gameFileInfo.matcen.size		=	sizeof(matcen_info);
+gameFileInfo.matcen.size		=	sizeof(tMatCenInfo);
 
 gameFileInfo.lightDeltaIndices.offset		=	-1;
 gameFileInfo.lightDeltaIndices.count		=	0;
@@ -1307,8 +1307,8 @@ if (gameFileInfo.doors.offset > -1) {
 				int p;
 
 				v19_door_read(&d, LoadFile);
-				gameData.walls.activeDoors[i].n_parts = d.n_parts;
-				for (p=0;p<d.n_parts;p++) {
+				gameData.walls.activeDoors[i].nPartCount = d.nPartCount;
+				for (p=0;p<d.nPartCount;p++) {
 					short cseg,cside;
 
 					cseg = gameData.segs.segments[d.seg[p]].children[d.nSide[p]];
@@ -1452,7 +1452,7 @@ if (gameFileInfo.matcen.offset > -1) {
 	if (!CFSeek(LoadFile, gameFileInfo.matcen.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.matcen.count;i++) {
 			if (gameTopFileInfo.fileinfo_version < 27) {
-				old_matcen_info m;
+				old_tMatCenInfo m;
 
 				OldMatCenInfoRead(&m, LoadFile);
 
@@ -1819,26 +1819,26 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient.rvec.x = F1_0;
-	gameData.segs.secret.returnOrient.rvec.y = 0;
-	gameData.segs.secret.returnOrient.rvec.z = 0;
-	gameData.segs.secret.returnOrient.fvec.x = 0;
-	gameData.segs.secret.returnOrient.fvec.y = F1_0;
-	gameData.segs.secret.returnOrient.fvec.z = 0;
-	gameData.segs.secret.returnOrient.uvec.x = 0;
-	gameData.segs.secret.returnOrient.uvec.y = 0;
-	gameData.segs.secret.returnOrient.uvec.z = F1_0;
+	gameData.segs.secret.returnOrient.rVec.x = F1_0;
+	gameData.segs.secret.returnOrient.rVec.y = 0;
+	gameData.segs.secret.returnOrient.rVec.z = 0;
+	gameData.segs.secret.returnOrient.fVec.x = 0;
+	gameData.segs.secret.returnOrient.fVec.y = F1_0;
+	gameData.segs.secret.returnOrient.fVec.z = 0;
+	gameData.segs.secret.returnOrient.uVec.x = 0;
+	gameData.segs.secret.returnOrient.uVec.y = 0;
+	gameData.segs.secret.returnOrient.uVec.z = F1_0;
 } else {
 	gameData.segs.secret.nReturnSegment = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rvec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rvec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rvec.z = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fvec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fvec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fvec.z = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uvec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uvec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uvec.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.z = CFReadInt(LoadFile);
 }
 
 SetDataVersion (-1);
@@ -1963,7 +1963,7 @@ void GetLevelName()
 //NO_UI!!!	}
 //NO_UI!!!
 
-	newmenu_item m[2];
+	tMenuItem m[2];
 
 	memset (m, 0, sizeof (m));
 	m[0].nType = NM_TYPE_TEXT; 
@@ -2023,7 +2023,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.walls.size			=	sizeof(wall);
 	gameFileInfo.doors.offset			=	-1;
 	gameFileInfo.doors.count		=	gameData.walls.nOpenDoors;
-	gameFileInfo.doors.size			=	sizeof(active_door);
+	gameFileInfo.doors.size			=	sizeof(tActiveDoor);
 	gameFileInfo.triggers.offset		=	-1;
 	gameFileInfo.triggers.count	=	gameData.trigs.nTriggers;
 	gameFileInfo.triggers.size		=	sizeof(tTrigger);
@@ -2032,7 +2032,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
  	gameFileInfo.matcen.offset		=	-1;
 	gameFileInfo.matcen.count		=	gameData.matCens.nRobotCenters;
-	gameFileInfo.matcen.size		=	sizeof(matcen_info);
+	gameFileInfo.matcen.size		=	sizeof(tMatCenInfo);
 
  	gameFileInfo.lightDeltaIndices.offset		=	-1;
 	gameFileInfo.lightDeltaIndices.count		=	gameData.render.lights.nStatic;
@@ -2074,7 +2074,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE DOOR INFO =============================
 
 	doors.offset = ftell(SaveFile);
-	fwrite(gameData.walls.activeDoors, sizeof(active_door), gameFileInfo.doors.count, SaveFile);
+	fwrite(gameData.walls.activeDoors, sizeof(tActiveDoor), gameFileInfo.doors.count, SaveFile);
 
 	//==================== SAVE TRIGGER INFO =============================
 
@@ -2090,7 +2090,7 @@ int SaveGameData(FILE * SaveFile)
 	//================ SAVE MATERIALIZATION CENTER TRIGGER INFO ===============
 
 	matcen.offset = ftell(SaveFile);
-	fwrite(gameData.matCens.robotCenters, sizeof(matcen_info), gameFileInfo.matcen.count, SaveFile);
+	fwrite(gameData.matCens.robotCenters, sizeof(tMatCenInfo), gameFileInfo.matcen.count, SaveFile);
 
 	//================ SAVE DELTA LIGHT INFO ===============
 	gameData.render.lights.deltaIndices.offset = ftell(SaveFile);
@@ -2224,15 +2224,15 @@ int saveLevel_sub(char * filename, int compiled_version)
 	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
 	
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rvec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rvec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rvec.z, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fvec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fvec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fvec.z, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uvec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uvec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uvec.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.z, SaveFile);
 
 	minedata_offset = ftell(SaveFile);
 	if (!compiled_version)	

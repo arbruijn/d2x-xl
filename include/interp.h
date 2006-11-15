@@ -20,11 +20,11 @@
 fix G3PolyModelSize (void *model_ptr);
 
 //gives the interpreter an array of points to use
-void G3SetModelPoints(g3s_point *pointlist);
+void G3SetModelPoints(g3sPoint *pointlist);
 
 //calls the tObject interpreter to render an tObject.  The tObject renderer
 //is really a seperate pipeline. returns true if drew
-bool G3DrawPolyModel (tObject *objP, void *model_ptr,grs_bitmap **model_bitmaps,vmsAngVec *animAngles,
+bool G3DrawPolyModel (tObject *objP, void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles,
 							 fix light,fix *glowValues, tRgbColorf *obj_colors, tPOFObject *po);
 
 int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles);
@@ -38,13 +38,13 @@ void G3InitPolyModel(void *model_ptr);
 void g3_uninit_polygon_model(void *model_ptr);
 
 //alternate interpreter for morphing tObject
-bool G3DrawMorphingModel(void *model_ptr,grs_bitmap **model_bitmaps,vmsAngVec *animAngles,fix light,vmsVector *new_points);
+bool G3DrawMorphingModel(void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles,fix light,vmsVector *new_points);
 
 //this remaps the 15bpp colors for the models into a new palette.  It should
 //be called whenever the palette changes
 void g3_remap_interp_colors(void);
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (void *modelP);
 
 void G3FreeAllPolyModelItems (void);
 

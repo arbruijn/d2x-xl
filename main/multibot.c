@@ -737,7 +737,7 @@ if (gameData.bots.pInfo [robotP->id].bossFlag) {
 		return 0;
 	start_boss_death_sequence (robotP);	
 	}
-else if (gameData.bots.pInfo [robotP->id].death_roll)
+else if (gameData.bots.pInfo [robotP->id].bDeathRoll)
 	StartRobotDeathSequence (robotP);
 else {
 	if (robotP->id == SPECIAL_REACTOR_ROBOT)
@@ -785,7 +785,7 @@ void MultiDoCreateRobot (char *buf)
 	short		nObject;
 	ubyte		nType = buf [5];
 
-	fuelcen_info *robotcen;
+	tFuelCenInfo *robotcen;
 	vmsVector curObject_loc, direction;
 	tObject *objP;
 
@@ -812,7 +812,7 @@ if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &cu
 objP->matCenCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
 //	ExtractOrientFromSegment (&objP->orient, &gameData.segs.segments [robotcen->nSegment]);
 VmVecSub (&direction, &gameData.objs.console->pos, &objP->pos);
-VmVector2Matrix (&objP->orient, &direction, &objP->orient.uvec, NULL);
+VmVector2Matrix (&objP->orient, &direction, &objP->orient.uVec, NULL);
 MorphStart (objP);
 MapObjnumLocalToRemote (OBJ_IDX (objP), nObject, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
@@ -880,7 +880,7 @@ switch (action)  {
 		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->pos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
 		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
-		gameData.ai.localInfo [OBJ_IDX (bossObjP)].next_fire = 0;
+		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
 		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multi.nLocalPlayer) {
 			MultiDeleteControlledRobot (nBossObj);
 //			multiData.robots.controlled [bossObjP->cType.aiInfo.REMOTE_SLOT_NUM] = -1;

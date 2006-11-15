@@ -219,7 +219,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	6,  // MULTI_FLAGS
 	2,  // MULTI_DROP_BLOB
 	MAX_POWERUP_TYPES+1, // MULTI_POWERUP_UPDATE
-	sizeof (active_door)+3, // MULTI_ACTIVE_DOOR
+	sizeof (tActiveDoor)+3, // MULTI_ACTIVE_DOOR
 	4,  // MULTI_SOUND_FUNCTION
 	2,  // MULTI_CAPTURE_BONUS
 	2,  // MULTI_GOT_FLAG
@@ -255,7 +255,7 @@ void extract_netplayer_stats (netplayer_stats *ps, player * pd);
 void use_netplayer_stats (player * ps, netplayer_stats *pd);
 extern fix ThisLevelTime;
 
-player_ship defaultPlayerShip = {
+tPlayerShip defaultPlayerShip = {
 	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175, 
 	{{146013, -59748, 35756}, 
 	{-147477, -59892, 34430}, 
@@ -607,40 +607,6 @@ if (gameStates.app.bHaveExtraGameInfo &&
 			return;
 		}
 	}
-}
-
-//-----------------------------------------------------------------------------
-
-int MultiChooseMission (int *bAnarchyOnly)
-{
-	int i, nMissions;
-	int nDefaultMission;
-	char *m [MAX_MISSIONS];
-	int nNewMission = -1;
-
-*bAnarchyOnly = 0;
-do {
-	nMissions = BuildMissionList (1, nNewMission);
-	if (nMissions < 1)
-		return -1;
-	nDefaultMission = 0;
-	for (i = 0; i <nMissions; i++) {
-		m [i] = gameData.missions.list [i].mission_name;
-		if (!stricmp (m [i], gameConfig.szLastMission))
-			nDefaultMission = i;
-		}
-	gameStates.app.nExtGameStatus = GAMESTAT_START_MULTIPLAYER_MISSION;
-	nNewMission = ExecMenuListBox1 (TXT_MULTI_MISSION, nMissions, m, 1, nDefaultMission, NULL);
-	if (nNewMission == -1)
-		return -1;      //abort!
-	} while (!gameData.missions.list [nNewMission].descent_version);
-strcpy (gameConfig.szLastMission, m [nNewMission]);
-if (!LoadMission (nNewMission)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
-	return -1;
-	}
-*bAnarchyOnly = gameData.missions.list [nNewMission].anarchy_onlyFlag;
-return (nNewMission);
 }
 
 //-----------------------------------------------------------------------------
@@ -3787,12 +3753,12 @@ multiData.msg.buf [0] = MULTI_ACTIVE_DOOR;
 multiData.msg.buf [1] = i;
 multiData.msg.buf [2] = gameData.walls.nOpenDoors;
 count = 3;
-memcpy (multiData.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (struct active_door);
-count += sizeof (active_door);
+memcpy (multiData.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (struct tActiveDoor);
+count += sizeof (tActiveDoor);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
-active_door *ad = (active_door *) (multiData.msg.buf + 3);
-ad->n_parts = INTEL_INT (ad->n_parts);
+tActiveDoor *ad = (tActiveDoor *) (multiData.msg.buf + 3);
+ad->nPartCount = INTEL_INT (ad->nPartCount);
 ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
 ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
 ad->nBackWall [0] = INTEL_SHORT (ad->nBackWall [0]);
@@ -3800,7 +3766,7 @@ ad->nBackWall [1] = INTEL_SHORT (ad->nBackWall [1]);
 ad->time = INTEL_INT (ad->time);
 }
 #endif
-//MultiSendData (multiData.msg.buf, sizeof (struct active_door)+3, 1);
+//MultiSendData (multiData.msg.buf, sizeof (struct tActiveDoor)+3, 1);
 MultiSendData (multiData.msg.buf, count, 1);
 }
 #endif // 0 (never used)
@@ -3812,11 +3778,11 @@ void MultiDoActiveDoor (char *buf)
 	char i = multiData.msg.buf [1];
 	
 gameData.walls.nOpenDoors = buf [2];
-memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct active_door));
+memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct tActiveDoor));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 {
-active_door *ad = gameData.walls.activeDoors + i;
-ad->n_parts = INTEL_INT (ad->n_parts);
+tActiveDoor *ad = gameData.walls.activeDoors + i;
+ad->nPartCount = INTEL_INT (ad->nPartCount);
 ad->nFrontWall [0] = INTEL_SHORT (ad->nFrontWall [0]);
 ad->nFrontWall [1] = INTEL_SHORT (ad->nFrontWall [1]);
 ad->nBackWall [0] = INTEL_SHORT (ad->nBackWall [0]);
@@ -4075,7 +4041,7 @@ MultiSendFlags ((char) gameData.multi.nLocalPlayer);
 //-----------------------------------------------------------------------------
 
 int SoundHacked = 0;
-digiSound ReversedSound;
+tDigiSound ReversedSound;
 
 void MultiSendGotOrb (char nPlayer)
 {

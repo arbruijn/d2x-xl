@@ -315,7 +315,7 @@ void CheckAndFixMatrix (vmsMatrix *m)
 {
 	vmsMatrix tempm;
 
-	VmVector2Matrix (&tempm, &m->fvec, &m->uvec, NULL);
+	VmVector2Matrix (&tempm, &m->fVec, &m->uVec, NULL);
 	*m = tempm;
 }
 
@@ -339,9 +339,9 @@ void DoPhysicsAlignObject (tObject * objP)
 		#ifdef COMPACT_SEGS
 			vmsVector _tv1;
 			GetSideNormal (gameData.segs.segments + objP->nSegment, i, 0, &_tv1);
-			d = VmVecDot (&_tv1, &objP->orient.uvec);
+			d = VmVecDot (&_tv1, &objP->orient.uVec);
 		#else					
-			d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->orient.uvec);
+			d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->orient.uVec);
 		#endif
 
 		if (d > largest_d) {largest_d = d; best_side=i;}
@@ -384,13 +384,13 @@ void DoPhysicsAlignObject (tObject * objP)
 				desired_upvec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
 			#endif
 
-	if (labs (VmVecDot (&desired_upvec, &objP->orient.fvec)) < f1_0/2) {
+	if (labs (VmVecDot (&desired_upvec, &objP->orient.fVec)) < f1_0/2) {
 		fixang save_delta_ang;
 		vmsAngVec tangles;
 		
-		VmVector2Matrix (&temp_matrix, &objP->orient.fvec, &desired_upvec, NULL);
+		VmVector2Matrix (&temp_matrix, &objP->orient.fVec, &desired_upvec, NULL);
 
-		save_delta_ang = delta_ang = VmVecDeltaAng (&objP->orient.uvec, &temp_matrix.uvec, &objP->orient.fvec);
+		save_delta_ang = delta_ang = VmVecDeltaAng (&objP->orient.uVec, &temp_matrix.uVec, &objP->orient.fVec);
 
 		delta_ang += objP->mType.physInfo.turnRoll;
 
@@ -435,7 +435,7 @@ void SetObjectTurnRoll (tObject *objP)
 }
 
 //list of segments went through
-int physSegList [MAX_FVI_SEGS], nPhysSegs;
+short physSegList [MAX_FVI_SEGS], nPhysSegs;
 
 
 #define MAX_IGNORE_OBJS 100
@@ -612,7 +612,7 @@ if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->s
 extern tObject *monsterballP;
 
 //Simulate a physics tObject for this frame
-#if 1
+
 void DoPhysicsSim (tObject *objP)
 {
 	short					ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
@@ -775,9 +775,9 @@ retryMove:
 #endif
 	//	Matt: Mike's hack.
 	if (fate == HIT_OBJECT) {
-		tObject	*objp = gameData.objs.objects + hi.hit.nObject;
+		tObject	*objP = gameData.objs.objects + hi.hit.nObject;
 
-		if ((objp->nType == OBJ_WEAPON) && ((objp->id == PROXIMITY_ID) || (objp->id == SUPERPROX_ID)))
+		if ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXIMITY_ID) || (objP->id == SUPERPROX_ID)))
 			count--;
 	}
 
@@ -791,14 +791,25 @@ retryMove:
 	}
 #endif
 
-	//if (objP->nType == OBJ_PLAYER) 
-	{
-		int i;
+	//if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_MONSTERBALL)) 
+		{
+		int i, j;
 
-		if (nPhysSegs && physSegList [nPhysSegs-1] == hi.segList [0])
+		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
 			nPhysSegs--;
-		for (i=0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS - 1); )
-			physSegList [nPhysSegs++] = hi.segList [i++];
+#ifdef RELEASE
+		j = MAX_FVI_SEGS - nPhysSegs - 1;
+		if (j > hi.nSegments)
+			j = hi.nSegments;
+		memcpy (physSegList + nPhysSegs, hi.segList, j * sizeof (*physSegList));
+		nPhysSegs += j;
+#else
+			for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
+				if (hi.segList [i] > gameData.segs.nLastSegment)
+					LogErr ("Invalid segment in segment list #1\n");
+				physSegList [nPhysSegs++] = hi.segList [i++];
+				}
+#endif
 	}
 
 	ipos = hi.hit.vPoint;
@@ -965,7 +976,7 @@ retryMove:
 							VmVecScale (&objP->mType.physInfo.velocity, FixDiv (MAX_OBJECT_VEL, vel));
 						}
 					if (bBounced && (objP->nType == OBJ_WEAPON))
-						VmVector2Matrix (&objP->orient, &objP->mType.physInfo.velocity, &objP->orient.uvec, NULL);
+						VmVector2Matrix (&objP->orient, &objP->mType.physInfo.velocity, &objP->orient.uVec, NULL);
 					bRetry = 1;
 					}
 				}
@@ -1030,7 +1041,7 @@ retryMove:
 	//	Pass retry count info to AI.
 	if (objP->controlType == CT_AI) {
 		if (count > 0) {
-			gameData.ai.localInfo [nObject].retry_count = count-1;
+			gameData.ai.localInfo [nObject].nRetryCount = count-1;
 #ifdef _DEBUG
 			Total_retries += count-1;
 			Total_sims++;
@@ -1134,580 +1145,8 @@ retryMove:
 	}
 UnstickObject (objP);
 }
-#else
 
-void DoPhysicsSim (tObject *objP)
-{
-	short				ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
-	int				iseg;
-	int				bRetry;
-	int				fate;
-	vmsVector		vFrame;			//movement in this frame
-	vmsVector		vNewPos, ipos;		//position after this frame
-	int				count=0;
-	short				nObject;
-	short				nWallHitSeg, nWallHitSide;
-	fvi_info			hi;
-	fvi_query		fq;
-	vmsVector		vSavePos;
-	int				nSaveSeg;
-	fix				xDrag;
-	fix				xSimTime, xOldSimTime, xTimeScale;
-	vmsVector		vStartPos;
-	int				bObjStopped=0;
-	fix				xMovedTime;			//how long objected moved before hit something
-	vmsVector		vSaveP0, vSaveP1;
-	tPhysicsInfo	*pi;
-	short				nOrigSegment = objP->nSegment;
-	int				bBounced=0;
-	int				bDoSpeedBoost = sbd.bBoosted && (objP == gameData.objs.console);
-
-Assert (objP->nType != OBJ_NONE);
-Assert (objP->movementType == MT_PHYSICS);
-
-#ifdef _DEBUG
-if (bDontMoveAIObjects)
-	if (objP->controlType == CT_AI)
-		return;
-#endif
-	pi = &objP->mType.physInfo;
-	DoPhysicsSimRot (objP);
-	if (!(pi->velocity.x || pi->velocity.y || pi->velocity.z)) {
-		if (objP == gameData.objs.console)
-			sbd.bBoosted = 0;
-		if (!(pi->thrust.x || pi->thrust.y || pi->thrust.z))
-			return;
-		}
-	nObject = OBJ_IDX (objP);
-	nPhysSegs = 0;
-	bSimpleFVI = (objP->nType != OBJ_PLAYER);
-	xSimTime = gameData.time.xFrame;
-//debugObjP = obj;
-	vStartPos = objP->pos;
-	nIgnoreObjs = 0;
-	Assert (objP->mType.physInfo.brakes==0);		//brakes not used anymore?
-	//if uses thrust, cannot have zero xDrag
-	Assert (!(objP->mType.physInfo.flags&PF_USES_THRUST) || objP->mType.physInfo.drag!=0);
-	//do thrust & xDrag
-	//if (!bDoSpeedBoost) 
-	{
-		if (xDrag = objP->mType.physInfo.drag) {
-
-			int count;
-			vmsVector accel, *vel = &objP->mType.physInfo.velocity;
-			fix r, k, d, a;
-
-			d = f1_0 - xDrag;
-			count = xSimTime / FT;
-			r = xSimTime % FT;
-			k = FixDiv (r, FT);
-			if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-				VmVecCopyScale (&accel, &objP->mType.physInfo.thrust, FixDiv (f1_0, objP->mType.physInfo.mass));
-				a = (accel.x || accel.y || accel.z);
-				if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
-					*vel = sbd.vVel;
-				else {
-					while (count--) {
-						if (a)
-							VmVecInc (vel, &accel);
-						VmVecScale (vel, d);
-					}
-					//do linear scale on remaining bit of time
-					VmVecScaleInc (vel, &accel, k);
-					VmVecScale (vel, f1_0 - FixMul (k, xDrag));
-					if (bDoSpeedBoost) {
-						if (vel->x < sbd.vMinVel.x)
-							vel->x = sbd.vMinVel.x;
-						else if (vel->x > sbd.vMaxVel.x)
-							vel->x = sbd.vMaxVel.x;
-						if (vel->y < sbd.vMinVel.y)
-							vel->y = sbd.vMinVel.y;
-						else if (vel->y > sbd.vMaxVel.y)
-							vel->y = sbd.vMaxVel.y;
-						if (vel->z < sbd.vMinVel.z)
-							vel->z = sbd.vMinVel.z;
-						else if (vel->z > sbd.vMaxVel.z)
-							vel->z = sbd.vMaxVel.z;
-					}
-				}
-			}
-			else {
-				fix xTotalDrag = f1_0;
-				while (count--)
-					xTotalDrag = FixMul (xTotalDrag, d);
-				//do linear scale on remaining bit of time
-				xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
-				VmVecScale (&objP->mType.physInfo.velocity, xTotalDrag);
-			}
-		}
-	}
-#if FLUID_PHYSICS
-	if (EGI_FLAG (bFluidPhysics, 0, 0)) {
-		if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
-			xTimeScale = 75;
-		else if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_LAVA)
-			xTimeScale = 66;
-		else
-			xTimeScale = 100;
-		}
-	else
-#endif
-		xTimeScale = 100;
-	do {
-		bRetry = 0;
-		//Move the tObject
-		VmVecCopyScale (
-			&vFrame, 
-			&objP->mType.physInfo.velocity, 
-#if FLUID_PHYSICS
-			FixMulDiv (xSimTime, xTimeScale, 100)
-#else
-			xSimTime
-#endif
-);
-		if ((vFrame.x==0) && (vFrame.y==0) && (vFrame.z==0))	
-			break;
-retryMove:
-		count++;
-		//	If retry count is getting large, then we are trying to do something stupid.
-		if (count > 3) 	{
-			if (objP->nType == OBJ_PLAYER) {
-				if (count > 8) {
-					if (sbd.bBoosted)
-						sbd.bBoosted = 0;
-					break;
-				}
-			} else
-				break;
-		}
-		VmVecAdd (&vNewPos, &objP->pos, &vFrame);
-		ignoreObjList [nIgnoreObjs] = -1;
-#ifdef _DEBUG
-//iSegError:
-#endif
-		fq.p0 = &objP->pos;
-		fq.p1 = &vNewPos;
-		fq.rad = objP->size;
-		fq.startSeg = objP->nSegment;
-		fq.thisObjNum = nObject;
-		fq.ignoreObjList = ignoreObjList;
-		fq.flags = FQ_CHECK_OBJS;
-
-		if (objP->nType == OBJ_WEAPON)
-			fq.flags |= FQ_TRANSPOINT;
-		if (objP->nType == OBJ_PLAYER)
-			fq.flags |= FQ_GET_SEGLIST;
-
-//@@			if (GetSegMasks (&objP->pos, objP->nSegment, 0).centerMask)
-//@@				Int3 ();
-
-vSaveP0 = *fq.p0;
-vSaveP1 = *fq.p1;
-
-		fate = FindVectorIntersection (&fq, &hi);
-#ifdef _DEBUG
-		if (fate == HIT_BAD_P0) {
-			objP->nSegment = FindSegByPoint (&objP->pos, objP->nSegment);
-			if (fq.startSeg != objP->nSegment) {
-				fq.startSeg = objP->nSegment;
-				fate = FindVectorIntersection (&fq, &hi);
-				}
-			}
-		else if (fate)// == HIT_WALL)
-			fate = FindVectorIntersection (&fq, &hi);
-#endif
-		//	Matt: Mike's hack.
-		if (fate == HIT_OBJECT) {
-			tObject	*objP = gameData.objs.objects + hi.hit.nObject;
-
-			if ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXIMITY_ID) || (objP->id == SUPERPROX_ID)))
-				count--;
-		}
-
-#ifdef _DEBUG
-		if (fate == HIT_BAD_P0) {
-#if TRACE				
-			con_printf (CON_DEBUG, "Warning: Bad p0 in physics! Object = %i, nType = %i [%s]\n", 
-				OBJ_IDX (objP), objP->nType, szObjectTypeNames [objP->nType]);
-#endif
-			Int3 ();
-		}
-#endif
-
-		//if (objP->nType == OBJ_PLAYER) 
-		{
-			int i;
-
-			if (nPhysSegs && physSegList [nPhysSegs-1] == hi.segList [0])
-				nPhysSegs--;
-
-			for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1);)
-				physSegList [nPhysSegs++] = hi.segList [i++];
-			}
-
-		ipos = hi.hit.vPoint;
-		iseg = hi.hit.nSegment;
-		nWallHitSide = hi.hit.nSide;
-		nWallHitSeg = hi.hit.nSideSegment;
-		if (iseg==-1) {		//some sort of horrible error
-#ifdef _DEBUG
-#	if TRACE				
-			con_printf (1, "iseg==-1 in physics! Object = %i, nType = %i (%s)\n", 
-				OBJ_IDX (objP), objP->nType, szObjectTypeNames [objP->nType]);
-			fate = FindVectorIntersection (&fq, &hi);
-//			CBRK (1);
-//			goto iSegError;
-#	endif
-#endif
-			//Int3 ();
-			//COMPUTE_SEGMENT_CENTER (&ipos, &gameData.segs.segments [objP->nSegment]);
-			//ipos.x += nObject;
-			//iseg = objP->nSegment;
-			//fate = HIT_NONE;
-			if (objP->nType == OBJ_WEAPON)
-				objP->flags |= OF_SHOULD_BE_DEAD;
-			break;
-		}
-
-		Assert (!((fate==HIT_WALL) && ((nWallHitSeg == -1) || (nWallHitSeg > gameData.segs.nLastSegment))));
-		// update tObject's position and tSegment number
-		vSavePos = objP->pos;
-		nSaveSeg = objP->nSegment;
-		objP->pos = ipos;
-		if (iseg != objP->nSegment)
-			RelinkObject (nObject, iseg);
-
-		//if start point not in tSegment, move tObject to center of tSegment
-		if (GetSegMasks (&objP->pos, objP->nSegment, 0).centerMask) {
-			int n = FindObjectSeg (objP);
-
-			if (n == -1) {
-				//Int3 ();
-				if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->nSegment))!=-1) {
-					objP->pos = objP->last_pos;
-					RelinkObject (nObject, n);
-				}
-				else {
-					COMPUTE_SEGMENT_CENTER_I (&objP->pos, objP->nSegment);
-					objP->pos.x += nObject;
-				}
-				if (objP->nType == OBJ_WEAPON)
-					objP->flags |= OF_SHOULD_BE_DEAD;
-			}
-			return;
-		}
-
-		//calulate new sim time
-		{
-			//vmsVector vMoved;
-			vmsVector vMoveNorm, vFrame;
-			fix attemptedDist, actualDist;
-			xOldSimTime = xSimTime;
-			actualDist = VmVecNormalizedDir (&vMoveNorm, &objP->pos, &vSavePos);
-			if (fate == HIT_WALL)
-				HUDMessage (0, "HIT WALL");
-			VmVecCopyNormalize (&vFrame, &vFrame);
-			if ((fate == HIT_WALL) && (VmVecDot (&vMoveNorm, &vFrame) < 0)) {		//moved backwards
-				//don't change position or xSimTime
-				HUDMessage (0, "stopped");
-				objP->pos = vSavePos;
-				if (nSaveSeg != iseg)
-					RelinkObject (nObject, nSaveSeg);
-				if (bDoSpeedBoost) {
-//					int h = FindSegByPoint (&vNewPos, -1);
-#if 1
-					objP->pos = vStartPos;
-					SetSpeedBoostVelocity (nObject, -1, -1, -1, -1, -1, &vStartPos, &sbd.vDest, 0);
-					VmVecCopyScale (&vFrame, &sbd.vVel, xSimTime);
-#else
-#	if 0
-					vmsVector	v;
-					v.x = (objP->mType.physInfo.velocity.x < 0) ? F1_0 * -60 : F1_0 * 60;
-					v.y = (objP->mType.physInfo.velocity.y < 0) ? F1_0 * -60 : F1_0 * 60;
-					v.z = (objP->mType.physInfo.velocity.z < 0) ? F1_0 * -60 : F1_0 * 60;
-					VmVecCopyScale (&vFrame, &v, xSimTime);
-#	else
-#		if 1
-
-					VmVecCopyScale (&vFrame, &sbd.vVel, 
-#			if FLUID_PHYSICS
-						FixMulDiv (xSimTime, xTimeScale, 100)
-#			else
-						xSimTime
-#			endif
-						);
-#		else
-					vFrame = sbd.vVel;
-#		endif
-#	endif
-					objP->mType.physInfo.velocity = sbd.vVel;
-#endif
-					goto retryMove;
-					}
-				xMovedTime = 0;
-				}
-			else {
-//retryMove2:
-				//if (objP == debugObjP)
-				//	//printf ("   vMoved = %x %x %x\n", XYZ (&vMoved);
-				attemptedDist = VmVecMag (&vFrame);
-				HUDMessage (0, "moved %d", attemptedDist);
-				xSimTime = FixMulDiv (xSimTime, attemptedDist-actualDist, attemptedDist);
-				xMovedTime = xOldSimTime - xSimTime;
-				if (xSimTime < 0 || xSimTime>xOldSimTime) {
-#if TRACE				
-					con_printf (CON_DEBUG, "Bogus xSimTime = %x, old = %x\n", xSimTime, xOldSimTime);
-//					if (objP == debugObjP)
-//						con_printf (CON_DEBUG, "   Bogus xSimTime = %x, old = %x, attemptedDist = %x, actualDist = %x\n", xSimTime, xOldSimTime, attemptedDist, actualDist);
-					//Int3 (); Removed by Rob
-#endif
-					xSimTime = xOldSimTime;
-					//WHY DOES THIS HAPPEN??
-					xMovedTime = 0;
-				}
-			}
-		}
-
-		switch (fate) {
-			case HIT_WALL: {
-				vmsVector vMoved;
-				fix xHitSpeed, xWallPart;
-	
-				// Find hit speed	
-//				if (sbd.bBoosted && (objP == gameData.objs.console))
-//					break;
-
-				VmVecSub (&vMoved, &objP->pos, &vSavePos);
-				xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
-				if (xWallPart != 0 && xMovedTime>0 && (xHitSpeed=-FixDiv (xWallPart, xMovedTime))>0)
-					CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
-				else
-					ScrapeObjectOnWall (objP, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
-				Assert (nWallHitSeg > -1);
-				Assert (nWallHitSide > -1);
-				if (!(objP->flags&OF_SHOULD_BE_DEAD))	{
-					int forcefield_bounce;		//bounce off a forcefield
-
-					Assert (gameStates.app.cheats.bBouncingWeapons || !(objP->mType.physInfo.flags & PF_STICK && objP->mType.physInfo.flags & PF_BOUNCE));	//can't be bounce and stick
-					forcefield_bounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
-					if (!forcefield_bounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
-						AddStuckObject (objP, nWallHitSeg, nWallHitSide);
-						VmVecZero (&objP->mType.physInfo.velocity);
-						bObjStopped = 1;
-						bRetry = 0;
-						}
-					else {					// Slide tObject along wall
-						int bCheckVel=0;
-						//We're constrained by wall, so subtract wall part from
-						//velocity vector
-						xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mType.physInfo.velocity);
-						if (forcefield_bounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off wall
-							xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
-							if (forcefield_bounce) {
-								bCheckVel = 1;				//check for max velocity
-								if (objP->nType == OBJ_PLAYER)
-									xWallPart *= 2;		//player bounce twice as much
-								}
-							if (objP->mType.physInfo.flags & PF_BOUNCES_TWICE) {
-								Assert (objP->mType.physInfo.flags & PF_BOUNCE);
-								if (objP->mType.physInfo.flags & PF_BOUNCED_ONCE)
-									objP->mType.physInfo.flags &= ~ (PF_BOUNCE+PF_BOUNCED_ONCE+PF_BOUNCES_TWICE);
-								else
-									objP->mType.physInfo.flags |= PF_BOUNCED_ONCE;
-								}
-							bBounced = 1;		//this tObject bBounced
-						}
-						VmVecScaleInc (&objP->mType.physInfo.velocity, &hi.hit.vNormal, -xWallPart);
-						if (bCheckVel) {
-							fix vel = VmVecMagQuick (&objP->mType.physInfo.velocity);
-							if (vel > MAX_OBJECT_VEL)
-								VmVecScale (&objP->mType.physInfo.velocity, FixDiv (MAX_OBJECT_VEL, vel));
-							}
-						if (bBounced && objP->nType == OBJ_WEAPON)
-							VmVector2Matrix (&objP->orient, &objP->mType.physInfo.velocity, &objP->orient.uvec, NULL);
-						bRetry = 1;
-					}
-				}
-				break;
-			}
-
-			case HIT_OBJECT: {
-				vmsVector vOldVel;
-				// Mark the hit tObject so that on a retry the fvi code
-				// ignores this tObject.
-				//if (sbd.bBoosted && (objP == gameData.objs.console))
-				//	break;
-				Assert (hi.hit.nObject != -1);
-				//	Calculcate the hit point between the two gameData.objs.objects.
-				{	vmsVector	*ppos0, *ppos1, pos_hit;
-					fix			size0, size1;
-					ppos0 = &gameData.objs.objects [hi.hit.nObject].pos;
-					ppos1 = &objP->pos;
-					size0 = gameData.objs.objects [hi.hit.nObject].size;
-					size1 = objP->size;
-					Assert (size0+size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-					//VmVecScale (VmVecSub (&pos_hit, ppos1, ppos0), FixDiv (size0, size0 + size1);
-					//VmVecInc (&pos_hit, ppos0);
-					VmVecSub (&pos_hit, ppos1, ppos0);
-					VmVecScaleAdd (&pos_hit, ppos0, &pos_hit, FixDiv (size0, size0 + size1));
-					vOldVel = objP->mType.physInfo.velocity;
-					CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &pos_hit);
-					if (sbd.bBoosted && (objP == gameData.objs.console)))
-						objP->mType.physInfo.velocity = vOldVel;
-				}
-
-				// Let tObject continue its movement
-				if (!bCollision)
-					bRetry = 0;
-				else if (!(objP->flags&OF_SHOULD_BE_DEAD)) {
-					//objP->pos = vSavePos;
-
-					if ((objP->mType.physInfo.flags & PF_PERSISTENT) || 
-						 ((vOldVel.x == objP->mType.physInfo.velocity.x) && 
-						  (vOldVel.y == objP->mType.physInfo.velocity.y) && 
-						  (vOldVel.z == objP->mType.physInfo.velocity.z))) {
-						//if (gameData.objs.objects [hi.hit.nObject].nType == OBJ_POWERUP)
-							ignoreObjList [nIgnoreObjs++] = hi.hit.nObject;
-						bRetry = 1;
-						}
-					}
-				break;
-				}	
-			case HIT_NONE:		
-			#ifdef TACTILE
-				if (TactileStick && obj==gameData.objs.console && !(gameData.app.nFrameCount & 15))
-				 Tactile_Xvibrate_clear ();
-			#endif
-				break;
-
-#ifdef _DEBUG
-			case HIT_BAD_P0:
-				Int3 ();		// Unexpected collision nType: start point not in specified tSegment.
-#if TRACE				
-				con_printf (CON_DEBUG, "Warning: Bad p0 in physics!!!\n");
-#endif
-				break;
-			default:
-				// Unknown collision nType returned from FindVectorIntersection!!
-				Int3 ();
-				break;
-#endif
-		}
-
-	} while (bRetry);
-
-	//	Pass retry count info to AI.
-	if (objP->controlType == CT_AI) {
-		if (count > 0) {
-			gameData.ai.localInfo [nObject].retry_count = count-1;
-#ifdef _DEBUG
-			Total_retries += count-1;
-			Total_sims++;
-#endif
-		}
-	}
-
-	//I'm not sure why we do this.  I wish there were a comment that
-	//explained it.  I think maybe it only needs to be done if the tObject
-	//is sliding, but I don't know
-	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
-		vmsVector vMoved;
-		VmVecSub (&vMoved, &objP->pos, &vStartPos);
-		if (vMoved.x || vMoved.y || vMoved.z)
-			VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
-#if FLUID_PHYSICS
-				FixMulDiv (FixDiv (f1_0, gameData.time.xFrame), 100, xTimeScale)
-#else
-				FixDiv (f1_0, gameData.time.xFrame)
-#endif
-				);
-#ifdef BUMP_HACK
-		if (objP == gameData.objs.console && 
-			 objP->mType.physInfo.velocity.x==0 && 
-			 objP->mType.physInfo.velocity.y==0 && 
-			 objP->mType.physInfo.velocity.z==0 &&
-			 (objP->mType.physInfo.thrust.x!=0 || 
-			 objP->mType.physInfo.thrust.y!=0 ||
-			 objP->mType.physInfo.thrust.z!=0)) {
-			vmsVector center, vBump;
-			//bump player a little towards center of tSegment to unstick
-			COMPUTE_SEGMENT_CENTER_I (&center, objP->nSegment);
-			VmVecNormalizedDirQuick (&vBump, &center, &objP->pos);
-			//don't bump player toward center of reactor tSegment
-			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-				VmVecNegate (&vBump);
-			VmVecScaleInc (&objP->pos, &vBump, objP->size/5);
-			//if moving away from seg, might move out of seg, so update
-			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-				UpdateObjectSeg (objP);
-		}
-#endif
-	}
-
-	//Assert (check_point_in_seg (&objP->pos, objP->nSegment, 0).centerMask==0);
-	//if (objP->controlType == CT_FLYING)
-	if (objP->mType.physInfo.flags & PF_LEVELLING)
-		DoPhysicsAlignObject (objP);
-
-	//hack to keep player from going through closed doors
-	if ((objP->nType == OBJ_PLAYER) && (objP->nSegment != nOrigSegment) && 
-		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
-		short nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
-		if (nSide != -1) {
-			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, NULL) & WID_FLY_FLAG)) {
-				tSide *s;
-				int vertnum, num_faces, i;
-				fix dist;
-				int vertex_list [6];
-
-				//bump tObject back
-				s = gameData.segs.segments [nOrigSegment].sides + nSide;
-				if (nOrigSegment==-1)
-					Error ("nOrigSegment == -1 in physics");
-				CreateAbsVertexLists (&num_faces, vertex_list, nOrigSegment, nSide);
-				//let's pretend this wall is not triangulated
-				vertnum = vertex_list [0];
-				for (i=1;i<4;i++)
-					if (vertex_list [i] < vertnum)
-						vertnum = vertex_list [i];
-				#ifdef COMPACT_SEGS
-					{
-					vmsVector _vn;
-					GetSideNormal (gameData.segs.segments + nOrigSegment, nSide, 0, &_vn);
-					dist = VmDistToPlane (&vStartPos, &_vn, &gameData.segs.vertices [vertnum]);
-					VmVecScaleAdd (&objP->pos, &vStartPos, &_vn, objP->size-dist);
-					}
-				#else
-					dist = VmDistToPlane (&vStartPos, s->normals, gameData.segs.vertices + vertnum);
-					VmVecScaleAdd (&objP->pos, &vStartPos, s->normals, objP->size-dist);
-				#endif
-				UpdateObjectSeg (objP);
-
-			}
-		}
-	}
-
-//--WE ALWYS WANT THIS IN, MATT AND MIKE DECISION ON 12/10/94, TWO MONTHS AFTER FINAL 	#ifdef _DEBUG
-	//if end point not in tSegment, move tObject to last pos, or tSegment center
-	if (GetSegMasks (&objP->pos, objP->nSegment, 0).centerMask) {
-		if (FindObjectSeg (objP)==-1) {
-			int n;
-
-			//Int3 ();
-			if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->nSegment))!=-1) {
-				objP->pos = objP->last_pos;
-				RelinkObject (nObject, n);
-			}
-			else {
-				COMPUTE_SEGMENT_CENTER_I (&objP->pos, objP->nSegment);
-				objP->pos.x += nObject;
-			}
-			if (objP->nType == OBJ_WEAPON)
-				objP->flags |= OF_SHOULD_BE_DEAD;
-		}
-	}
-}
-#endif
+//	----------------------------------------------------------------
 //Applies an instantaneous force on an tObject, resulting in an instantaneous
 //change in velocity.
 
@@ -1748,8 +1187,8 @@ void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 }
 
 //	------------------------------------------------------------------------------------------------------
-//	Note: This is the old ai_turn_towards_vector code.
-//	PhysApplyRot used to call ai_turn_towards_vector until I fixed it, which broke PhysApplyRot.
+//	Note: This is the old AITurnTowardsVector code.
+//	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
 void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rate)
 {
 	vmsAngVec	dest_angles, cur_angles;
@@ -1768,7 +1207,7 @@ void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rat
 		rate *= 2;
 
 	VmExtractAnglesVector (&dest_angles, goal_vector);
-	VmExtractAnglesVector (&cur_angles, &objP->orient.fvec);
+	VmExtractAnglesVector (&cur_angles, &objP->orient.fVec);
 
 	delta_p = (dest_angles.p - cur_angles.p);
 	delta_h = (dest_angles.h - cur_angles.h);

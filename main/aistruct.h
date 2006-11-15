@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.21  1994/09/15  16:31:38  mike
  * Define GREEN_GUY
- * Add previous_visibility to tAILocal struct.
+ * Add previousVisibility to tAILocal struct.
  *
  * Revision 1.20  1994/09/12  19:12:45  mike
  * Change some bytes to ints in tAILocal so I could set watchpoints.
@@ -86,19 +86,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add behavior, taking place of what used to be mode.
  *
  * Revision 1.18  1994/08/23  16:38:09  mike
- * rapidfire_count in tAILocal.
+ * nRapidFireCount in tAILocal.
  *
  * Revision 1.17  1994/08/19  17:38:23  mike
  * *** empty log message ***
  *
  * Revision 1.16  1994/08/17  22:18:58  mike
- * add time_since_processed to tAILocal.
+ * add timeSinceProcessed to tAILocal.
  *
  * Revision 1.15  1994/08/10  19:52:25  mike
  * Add nOverallAgitation.
  *
  * Revision 1.14  1994/08/04  16:32:32  mike
- * Add time_player_seen.
+ * Add timePlayerSeen.
  *
  * Revision 1.13  1994/07/28  16:58:11  mike
  * Move constants from ai.c
@@ -193,7 +193,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //typedef struct opath {
 //	sbyte   path_index;     // current index of path
 //	sbyte   path_direction; // current path direction
-//	sbyte   path_length;    // length of current path
+//	sbyte   nPathLength;    // length of current path
 //	sbyte   nothing;
 //	short   path[MAX_SEGMENTS_PER_PATH];
 //	short   always_0xabc;   // If this is ever not 0xabc, then someone overwrote
@@ -230,18 +230,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tAIStatic {
 	ubyte   behavior;               //
 	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
-	short   hide_segment;           // Segment to go to for hiding.
-	short   hide_index;             // Index in Path_seg_points
-	short   path_length;            // Length of hide path.
-	sbyte   cur_path_index;         // Current index in path.
-	sbyte   dyingSound_playing;    // !0 if this robot is playing its dying sound.
+	short   nHideSegment;           // Segment to go to for hiding.
+	short   nHideIndex;             // Index in Path_seg_points
+	short   nPathLength;            // Length of hide path.
+	sbyte   nCurPathIndex;         // Current index in path.
+	sbyte   bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
 
 	// -- not needed! -- short   follow_path_start_seg;  // Start tSegment for robot which follows path.
 	// -- not needed! -- short   follow_path_end_seg;    // End tSegment for robot which follows path.
 
-	short   danger_laser_num;
-	int     danger_laser_signature;
-	fix     dying_startTime;       // Time at which this robot started dying.
+	short   nDangerLaser;
+	int     nDangerLaserSig;
+	fix     xDyingStartTime;       // Time at which this robot started dying.
 
 	//sbyte   extras[28];             // 32 extra bytes for storing stuff so we don't have to change versions on disk
 } __pack__ tAIStatic;
@@ -249,47 +249,45 @@ typedef struct tAIStatic {
 // This is the stuff which doesn't need to be saved to disk.
 typedef struct tAILocal {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
-// player_awarenessType..rapidfire_count used to be bytes
-// goal_segment used to be short.
-	int     player_awarenessType;  // nType of awareness of player
-	int     retry_count;            // number of retries in physics last time this tObject got moved.
-	int     consecutive_retries;    // number of retries in consecutive frames (ie, without a retry_count of 0)
+// playerAwarenessType..nRapidFireCount used to be bytes
+// nGoalSegment used to be short.
+	int     playerAwarenessType;  // nType of awareness of player
+	int     nRetryCount;            // number of retries in physics last time this tObject got moved.
+	int     nConsecutiveRetries;    // number of retries in consecutive frames (ie, without a nRetryCount of 0)
 	int     mode;                   // current mode within behavior
-	int     previous_visibility;    // Visibility of player last time we checked.
-	int     rapidfire_count;        // number of shots fired rapidly
-	int     goal_segment;           // goal tSegment for current path
+	int     previousVisibility;    // Visibility of player last time we checked.
+	int     nRapidFireCount;        // number of shots fired rapidly
+	int     nGoalSegment;           // goal tSegment for current path
 
 	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which player last seen, attacked
 
-	fix     next_actionTime;           // time in seconds until something happens, mode dependent
-	fix     next_fire;                  // time in seconds until can fire again
-	fix     next_fire2;                 // time in seconds until can fire again from second weapon
-	fix     player_awarenessTime;      // time in seconds robot will be aware of player, 0 means not aware of player
-	fix     time_player_seen;           // absolute time in seconds at which player was last seen, might cause to go into follow_path mode
-	fix     time_playerSound_attacked; // absolute time in seconds at which player was last seen with visibility of 2.
-	fix     next_miscSoundTime;       // absolute time in seconds at which this robot last made an angry or lurking sound.
-	fix     time_since_processed;       // time since this robot last processed in DoAIFrame
-	vmsAngVec goal_angles[MAX_SUBMODELS];  // angles for each subobject
-	vmsAngVec delta_angles[MAX_SUBMODELS]; // angles for each subobject
-	sbyte   goal_state[MAX_SUBMODELS];      // Goal state for this sub-tObject
-	sbyte   achieved_state[MAX_SUBMODELS];  // Last achieved state
+	fix     nextActionTime;						// time in seconds until something happens, mode dependent
+	fix     nextPrimaryFire;               // time in seconds until can fire again
+	fix     nextSecondaryFire;             // time in seconds until can fire again from second weapon
+	fix     playerAwarenessTime;				// time in seconds robot will be aware of player, 0 means not aware of player
+	fix     timePlayerSeen;						// absolute time in seconds at which player was last seen, might cause to go into follow_path mode
+	fix     timePlayerSoundAttacked;			// absolute time in seconds at which player was last seen with visibility of 2.
+	fix     nextMiscSoundTime;					// absolute time in seconds at which this robot last made an angry or lurking sound.
+	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
+	vmsAngVec goalAngles [MAX_SUBMODELS];  // angles for each subobject
+	vmsAngVec deltaAngles [MAX_SUBMODELS]; // angles for each subobject
+	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-tObject
+	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
 } tAILocal;
 
 typedef struct {
 	int         nSegment;
-	vmsVector  point;
-} point_seg;
+	vmsVector	point;
+	ubyte			nConnSide;
+} tPointSeg;
 
 typedef struct {
 	short       start, end;
-} seg_seg;
+	ubyte			nConnSide;
+} segQueueEntry;
 
 #define MAX_POINT_SEGS_D2  2500
 #define MAX_POINT_SEGS  	25000
-
-extern point_seg    Point_segs[MAX_POINT_SEGS];
-extern point_seg    *Point_segs_free_ptr;
-extern int          nOverallAgitation;
 
 // These are the information for a robot describing the location of
 // the player last time he wasn't cloaked, and the time at which he

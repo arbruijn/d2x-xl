@@ -33,9 +33,9 @@ extern void gr_pal_setblock( int start, int number, unsigned char * pal );
 main(int argc,char **argv)
 {
 	int ret;
-	grs_bitmap my_bitmap;
+	grsBitmap my_bitmap;
 	ubyte my_palette[256*3];
-	grs_bitmap *bm_list[100];
+	grsBitmap *bm_list[100];
 	int n_bitmaps;
 	char key;
 

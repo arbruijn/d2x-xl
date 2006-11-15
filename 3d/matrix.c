@@ -11,20 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Matrix setup & manipulation routines
- * 
- * Old Log:
- *
- * Revision 1.1  1995/05/05  08:52:11  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  04:14:34  matt
- * Initial revision
- * 
- * 
- */
  
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -95,9 +81,9 @@ else {			//zoom out by scaling x&y
 	viewInfo.scale.y = FixMul (viewInfo.scale.y,s);
 	}
 //now scale matrix elements
-VmVecScale (&viewInfo.view.rvec, viewInfo.scale.x);
-VmVecScale (&viewInfo.view.uvec, viewInfo.scale.y);
-VmVecScale (&viewInfo.view.fvec, viewInfo.scale.z);
+VmVecScale (&viewInfo.view.rVec, viewInfo.scale.x);
+VmVecScale (&viewInfo.view.uVec, viewInfo.scale.y);
+VmVecScale (&viewInfo.view.fVec, viewInfo.scale.z);
 VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
 }
 

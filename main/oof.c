@@ -1351,8 +1351,8 @@ if (!(o.textures.pszNames = (char **) d_malloc (o.textures.nTextures * sizeof (c
 	return OOF_FreeTextures (&o);
 	}
 memset (o.textures.pszNames, 0, o.textures.nTextures * sizeof (char **));
-i = o.textures.nTextures * sizeof (grs_bitmap);
-if (!(o.textures.pBitmaps = (grs_bitmap *) d_malloc (i))) {
+i = o.textures.nTextures * sizeof (grsBitmap);
+if (!(o.textures.pBitmaps = (grsBitmap *) d_malloc (i))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
@@ -1812,15 +1812,15 @@ return pDest;
 float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
 {
 OOF_GlIdent (pDest);
-pDest [0] = ((float) pSrc->rvec.x) / 65536.0f;
-pDest [4] = ((float) pSrc->rvec.y) / 65536.0f;
-pDest [8] = ((float) pSrc->rvec.z) / 65536.0f;
-pDest [1] = ((float) pSrc->uvec.x) / 65536.0f;
-pDest [5] = ((float) pSrc->uvec.y) / 65536.0f;
-pDest [9] = ((float) pSrc->uvec.z) / 65536.0f;
-pDest [2] = ((float) pSrc->fvec.x) / 65536.0f;
-pDest [6] = ((float) pSrc->fvec.y) / 65536.0f;
-pDest [10] = ((float) pSrc->fvec.z) / 65536.0f;
+pDest [0] = ((float) pSrc->rVec.x) / 65536.0f;
+pDest [4] = ((float) pSrc->rVec.y) / 65536.0f;
+pDest [8] = ((float) pSrc->rVec.z) / 65536.0f;
+pDest [1] = ((float) pSrc->uVec.x) / 65536.0f;
+pDest [5] = ((float) pSrc->uVec.y) / 65536.0f;
+pDest [9] = ((float) pSrc->uVec.z) / 65536.0f;
+pDest [2] = ((float) pSrc->fVec.x) / 65536.0f;
+pDest [6] = ((float) pSrc->fVec.y) / 65536.0f;
+pDest [10] = ((float) pSrc->fVec.z) / 65536.0f;
 return pDest;
 }
 
@@ -1838,9 +1838,9 @@ return (float *) pDest;
 
 float *OOF_MatVms2Oof (tOOF_matrix *pDest, vmsMatrix *pSrc)
 {
-OOF_VecVms2Oof (&pDest->f, &pSrc->fvec);
-OOF_VecVms2Oof (&pDest->u, &pSrc->uvec);
-OOF_VecVms2Oof (&pDest->r, &pSrc->rvec);
+OOF_VecVms2Oof (&pDest->f, &pSrc->fVec);
+OOF_VecVms2Oof (&pDest->u, &pSrc->uVec);
+OOF_VecVms2Oof (&pDest->r, &pSrc->rVec);
 return (float *) pDest;
 }
 
@@ -2124,7 +2124,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, int b
 	tOOF_faceVert	*pfv;
 	tOOF_vector		*pv, *pvn, *phv;
 	tFaceColor		*pvc;
-	grs_bitmap		*bmP;
+	grsBitmap		*bmP;
 	int				h, i, j;
 	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
@@ -2177,7 +2177,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
 					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, 1.0);
 				else
-					G3VertexColor ((fVector3 *) (pvn + h), (fVector3 *) phv, -1, pvc + h);
+					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3f (phv->x, phv->y, -phv->z);

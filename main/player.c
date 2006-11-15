@@ -17,9 +17,9 @@ static char rcsid[] = "$Id: player.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 #endif
 
 /*
- * reads a player_ship structure from a CFILE
+ * reads a tPlayerShip structure from a CFILE
  */
-void PlayerShipRead(player_ship *ps, CFILE *fp)
+void PlayerShipRead(tPlayerShip *ps, CFILE *fp)
 {
 	int i;
 
@@ -33,5 +33,5 @@ void PlayerShipRead(player_ship *ps, CFILE *fp)
 	ps->wiggle = CFReadFix(fp);
 	ps->max_rotthrust = CFReadFix(fp);
 	for (i = 0; i < N_PLAYER_GUNS; i++)
-		CFReadVector(&(ps->gun_points[i]), fp);
+		CFReadVector(&(ps->gunPoints[i]), fp);
 }

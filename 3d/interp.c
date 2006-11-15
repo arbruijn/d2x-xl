@@ -12,29 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Polygon tObject interpreter
- *
- * Old Log:
- * Revision 1.4  1995/10/10  22:20:09  allender
- * new morphing code from Matt
- *
- * Revision 1.3  1995/08/31  15:40:24  allender
- * swap color data correctly
- *
- * Revision 1.2  1995/05/11  13:06:38  allender
- * fix int --> short problem
- *
- * Revision 1.1  1995/05/05  08:51:41  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  06:44:33  matt
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -86,7 +63,7 @@ static vmsVector vmsLightPos;
 short nHighestTexture;
 int g3d_interp_outline;
 
-g3s_point	*modelPointList = NULL;
+g3sPoint	*modelPointList = NULL;
 
 #define MAX_INTERP_COLORS 100
 
@@ -102,13 +79,13 @@ static int bTexPolys = 1;
 
 vmsAngVec zeroAngles = {0, 0, 0};
 
-g3s_point *pointList [MAX_POINTS_PER_POLY];
+g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
 static short nGlow = -1;
 
 //------------------------------------------------------------------------------
 //gives the interpreter an array of points to use
-void G3SetModelPoints (g3s_point *pointlist)
+void G3SetModelPoints (g3sPoint *pointlist)
 {
 modelPointList = pointlist;
 }
@@ -120,9 +97,9 @@ modelPointList = pointlist;
 
 //------------------------------------------------------------------------------
 
-void RotatePointList (g3s_point *dest, vmsVector *src, g3s_normal *norms, int n, int o)
+void RotatePointList (g3sPoint *dest, vmsVector *src, g3sNormal *norms, int n, int o)
 {
-	fVector3	*pfv = (fVector3 *) (gameData.models.fPolyModelVerts + o);
+	fVector	*pfv = (fVector *) (gameData.models.fPolyModelVerts + o);
 
 dest += o;
 if (norms)
@@ -795,8 +772,8 @@ if (bShadowData) {
 #endif
 	}
 else {
-	fVector3		nf;
-	g3s_normal	*pvn;
+	fVector		nf;
+	g3sNormal	*pvn;
 
 	pfv = WORDPTR (p+30);
 	VmsVecToFloat (&nf, pn);
@@ -1080,9 +1057,9 @@ if (bShadowData) {
 	}
 //else 
 	{
-	if (!(po->pVertNorms = (g3s_normal *) d_malloc (po->nVerts * sizeof (g3s_normal))))
+	if (!(po->pVertNorms = (g3sNormal *) d_malloc (po->nVerts * sizeof (g3sNormal))))
 		return G3FreePolyModelItems (po);
-	memset (po->pVertNorms, 0, po->nVerts * sizeof (g3s_normal));
+	memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
 	}
 return po->nState = 1;
 }
@@ -1409,12 +1386,12 @@ return 1;
 bool G3DrawPolyModel (
 	tObject		*objP, 
 	void			*modelP, 
-	grs_bitmap	**modelBitmaps, 
+	grsBitmap	**modelBitmaps, 
 	vmsAngVec	*pAnimAngles, 
 	fix			xModelLight, 
 	fix			*xGlowValues, 
 	tRgbColorf	*objColorP,
-	tPOFObject *po)
+	tPOFObject  *po)
 {
 	ubyte *p = modelP;
 	short	h;
@@ -1507,7 +1484,7 @@ for (;;) {
 
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
-				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
+				light = -VmVecDot (&viewInfo.view.fVec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}
@@ -1548,7 +1525,7 @@ for (;;) {
 		p += 32;
 		}
 	else if (h == OP_RODBM) {
-		g3s_point rodBotP, rodTopP;
+		g3sPoint rodBotP, rodTopP;
 		G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 		G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
 		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
@@ -1583,7 +1560,7 @@ int nest_count;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing tObject
-bool G3DrawMorphingModel (void *modelP, grs_bitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
+bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
 								  fix xModelLight, vmsVector *new_points)
 {
 	ubyte *p = modelP;
@@ -1635,7 +1612,7 @@ for (;;) {
 			fix light;
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
-				light = -VmVecDot (&viewInfo.view.fvec, VECPTR (p+16));
+				light = -VmVecDot (&viewInfo.view.fVec, VECPTR (p+16));
 				light = f1_0/4 + (light*3)/4;
 				light = FixMul (light, xModelLight);
 				}
@@ -1681,7 +1658,7 @@ for (;;) {
 			break;
 
 		case OP_RODBM: {
-			g3s_point rodBotP, rodTopP;
+			g3sPoint rodBotP, rodTopP;
 			G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 			G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
 			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
@@ -1799,6 +1776,7 @@ void G3FreeAllPolyModelItems (void)
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_ROBOT_TYPES; j++)
 		G3FreePolyModelItems (gameData.bots.pofData [i] + j);
+memset (gameData.bots.pofData, 0, sizeof (gameData.bots.pofData));
 }
 
 //------------------------------------------------------------------------------

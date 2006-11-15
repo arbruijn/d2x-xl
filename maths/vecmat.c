@@ -57,7 +57,8 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "inferno.h"
 #include "error.h"
 
-#define EXACT_VEC_MAG 1
+#define EXACT_VEC_MAG	1
+#define ENABLE_SSE		0
 
 #ifndef ASM_VECMAT
 vmsVector vmdZeroVector = {0, 0, 0};
@@ -90,7 +91,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecSubf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+fVector *VmVecSubf (fVector *dest, fVector *src0, fVector *src1)
 {
 dest->p.x = src0->p.x - src1->p.x;
 dest->p.y = src0->p.y - src1->p.y;
@@ -157,7 +158,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecScalef (fVector3 *dest, fVector3 *src, float scale)
+fVector *VmVecScalef (fVector *dest, fVector *src, float scale)
 {
 dest->p.x = src->p.x * scale;
 dest->p.y = src->p.y * scale;
@@ -188,7 +189,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecScaleAddf (fVector3 *dest, fVector3 *src1, fVector3 *src2, float scale)
+fVector *VmVecScaleAddf (fVector *dest, fVector *src1, fVector *src2, float scale)
 {
 dest->p.x = src1->p.x + src2->p.x * scale;
 dest->p.y = src1->p.y + src2->p.y * scale;
@@ -198,7 +199,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector4 *VmVecScaleAddf4 (fVector4 *dest, fVector4 *src1, fVector4 *src2, float scale)
+fVector *VmVecScaleAddf4 (fVector *dest, fVector *src1, fVector *src2, float scale)
 {
 dest->c.r = src1->c.r + src2->c.r * scale;
 dest->c.g = src1->c.g + src2->c.g * scale;
@@ -221,7 +222,7 @@ return dest;
 // ------------------------------------------------------------------------
 //scales a vector and adds it to another
 //dest += k * src
-fVector3 *VmVecScaleIncf3 (fVector3 *dest, fVector3 *src, float scale)
+fVector *VmVecScaleIncf3 (fVector *dest, fVector *src, float scale)
 {
 dest->p.x += src->p.x * scale;
 dest->p.y += src->p.y * scale;
@@ -249,8 +250,35 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fVector3 *VmVecMulf (fVector3 *dest, fVector3 *src0, fVector3 *src1)
+fVector *VmVecMulf (fVector *dest, fVector *src0, fVector *src1)
 {
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+#if defined (_WIN32)
+	_asm {
+		mov		esi,src0
+		movups	xmm0,[esi]
+		mov		esi,src1
+		movups	xmm1,[esi]
+		mulps		xmm0,xmm1
+		movups	dest,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"mov		%1,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm0\n\t"
+		"mov		%2,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm1\n\t"
+		"mulps	%%xmm1,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (dest)
+		: "m" (src0), "m" (src1)
+		: "%rsi"
+		);	
+#endif
+	return dest;
+	}
+#endif
 dest->p.x = src0->p.x * src1->p.x;
 dest->p.y = src0->p.y * src1->p.y;
 dest->p.z = src0->p.z * src1->p.z;
@@ -261,7 +289,32 @@ return dest;
 
 fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
 {
-#if 1//def _WIN32
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+		fVector	v0h, v1h;
+	
+	VmsVecToFloat (&v0h, v0);
+	VmsVecToFloat (&v1h, v1);
+#if defined (_WIN32)
+	_asm {
+		movups	xmm0,v0h
+		movups	xmm1,v1h
+		mulps		xmm0,xmm1
+		movups	v0h,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"movups	%0,%%xmm0\n\t"
+		"movups	%1,%%xmm1\n\t"
+		"mulps	%%xmm1,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (v0h)
+		: "m" (v0h), "m" (v1h)
+		);	
+#endif
+	return (fix) ((v0h.p.x + v0h.p.y + v0h.p.z) * 65536);
+	}
+#endif
 if (gameOpts->render.nMathFormat == 2)
 	return (fix) (((double) v0->x * (double) v1->x + 
 						(double) v0->y * (double) v1->y + 
@@ -273,32 +326,41 @@ else {
 	q += mul64 (v0->z, v1->z);
 	return (fix) (q / 65536); //>> 16);
 	}
-#	if 0//def _DEBUG
-{
-quadint i;
-fix h;
-i.low = i.high = 0;
-fixmulaccum(&i, v0->x, v1->x);
-fixmulaccum(&i, v0->y, v1->y);
-fixmulaccum(&i, v0->z, v1->z);
-h = fixquadadjust(&i);
-CBRK (h != (fix) (q >> 16));
-}
-#	endif
-#else
-quadint i;
-i.low = i.high = 0;
-fixmulaccum(&i, v0->x, v1->x);
-fixmulaccum(&i, v0->y, v1->y);
-fixmulaccum(&i, v0->z, v1->z);
-return fixquadadjust(&i);
-#endif
 }
 
 // ------------------------------------------------------------------------
 
-float VmVecDotf (fVector3 *v0, fVector3 *v1)
+float VmVecDotf (fVector *v0, fVector *v1)
 {
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+		fVector	v;
+
+#if defined (_WIN32)
+	_asm {
+		mov		esi,v0
+		movups	xmm0,[esi]
+		mov		esi,v1
+		movups	xmm1,[esi]
+		mulps		xmm0,xmm1
+		movups	v,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"mov		%1,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm0\n\t"
+		"mov		%2,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm1\n\t"
+		"mulps	%%xmm1,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (v)
+		: "m" (v0), "m" (v1)
+		: "%rsi"
+		);	
+#endif
+	return v.p.x + v.p.y + v.p.z;
+	}
+#endif
 return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 }
 
@@ -306,7 +368,6 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 
 fix VmVecDot3(fix x, fix y, fix z, vmsVector *v)
 {
-#if 1//def _WIN32
 if (gameOpts->render.nMathFormat == 2)
 	return (fix) (((double) x * (double) v->x + (double) y * (double) v->y + (double) z * (double) v->z) / 65536.0);
 else {
@@ -315,14 +376,6 @@ else {
 	q += mul64 (z, v->z);
 	return (fix) (q >> 16);
 	}
-#else
-quadint q;
-q.low = q.high = 0;
-fixmulaccum(&q, x, v->x);
-fixmulaccum(&q, y, v->y);
-fixmulaccum(&q, z, v->z);
-return fixquadadjust(&q);
-#endif
 }
 
 // ------------------------------------------------------------------------
@@ -396,8 +449,21 @@ else {
 //returns magnitude of a vector
 fix VmVecMag (vmsVector *v)
 {
-if (gameOpts->render.nMathFormat == 2)
+if (gameOpts->render.nMathFormat == 2) {
+#ifdef _WIN32
+		fVector	h;
+
+	VmsVecToFloat (&h, v);
+	__asm {
+		movups	xmm0,h
+		mulps		xmm0,xmm0
+		movups	h,xmm0
+		}
+	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
+#else
 	return (fix) sqrt (sqrd ((double) v->x) + sqrd ((double) v->y) + sqrd ((double) v->z)); 
+#endif
+	}
 else {
 #if 1//def _WIN32
 	QLONG q = mul64 (v->x, v->x);
@@ -417,8 +483,32 @@ else {
 
 // ------------------------------------------------------------------------
 
-float VmVecMagf (fVector3 *v)
+float VmVecMagf (fVector *v)
 {
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+		fVector	h;
+#if defined (_WIN32)
+	__asm {
+		mov		esi,v
+		movups	xmm0,[esi]
+		mulps		xmm0,xmm0
+		movups	h,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"mov		%1,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm0\n\t"
+		"mulps	%%xmm0,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (h)
+		: "m" (v)
+		: "%rsi"
+		);
+#endif
+	return (float) sqrt (h.p.x + h.p.y + h.p.z);
+	}
+#endif
 return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
 }
 
@@ -426,87 +516,47 @@ return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((do
 //computes the distance between two points. (does sub and mag)
 fix VmVecDist(vmsVector *v0, vmsVector *v1)
 {
-vmsVector t;
+	vmsVector t;
+
 return VmVecMag (VmVecSub (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
 
-float VmVecDistf (fVector3 *v0, fVector3 *v1)
+float VmVecDistf (fVector *v0, fVector *v1)
 {
-fVector3	t;
+	fVector	t;
 
-return VmVecMagf (VmVecSubf (&t, v0, v1));
-}
-
-// ------------------------------------------------------------------------
-//computes an approximation of the magnitude of the vector
-//uses dist = largest + next_largest*3/8 + smallest*3/16
-fix FixVecMagQuick (fix a, fix b, fix c)
-{
-#if 0//def _WIN32
-#	if 1
-	vmsVector v = {a, b, c};
-
-return VmVecMag (&v);
-#	else
-	_asm {
-		mov	eax, a
-		or		eax, eax
-		jns	aPos
-		neg	eax
-	aPos:
-		mov	ebx, b
-		or		ebx, ebx
-		jns	bPos
-		neg	ebx
-	bPos:
-		mov	ecx, c
-		or		ecx, ecx
-		jns	cPos
-		neg	ecx
-	cPos:
-		cmp	eax, ebx
-		jge	agtb
-		xchg	eax, ebx
-	agtb:
-		cmp	ebx, ecx
-		jge	bgtc
-		xchg	ebx, ecx
-		cmp	eax, ebx
-		jge	bgtc
-		xchg	eax, ebx
-	bgtc:
-		shr	ebx, 2
-		shr	ecx, 3
-		add	ebx, ecx
-		add	eax, ebx
-		shr	ebx, 1
-		add	eax, ebx
-	}
-#	endif
-#else
-#	if 1
-	vmsVector v = {a, b, c};
-
-return VmVecMag (&v);
-#	else	// the following code works on Win32, but not on Linux and Mac OS X. Duh.
-	fix bc, t;
-
-a = labs (a);
-b = labs (b);
-c = labs (c);
-if (a < b)
-	t=a; a=b; b=t;
-if (b < c) {
-	t=b; b=c; c=t;
-	if (a < b)
-		t=a; a=b; b=t;
-	}
-bc = (b>>2) + (c>>3);
-return a + bc + (bc >> 1);
-#	endif
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+#if defined (_WIN32)
+	__asm {
+		mov		esi,v0
+		movups	xmm0,[esi]
+		mov		esi,v1
+		movups	xmm1,[esi]
+		subps		xmm0,xmm1
+		mulps		xmm0,xmm0
+		movups	t,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"mov		%1,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm0\n\t"
+		"mov		%2,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm1\n\t"
+		"subps	%%xmm1,%%xmm0\n\t"
+		"mulps	%%xmm0,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (t)
+		: "m" (v0), "m" (v1)
+		: "%rsi"
+		);
 #endif
+	return (float) sqrt (t.p.x + t.p.y + t.p.z);
+	}
+#endif
+return VmVecMagf (VmVecSubf (&t, v0, v1));
 }
 
 // ------------------------------------------------------------------------
@@ -538,7 +588,7 @@ return m;
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns mag of source vec
-float VmVecNormalizef (fVector3 *dest, fVector3 *src)
+float VmVecNormalizef (fVector *dest, fVector *src)
 {
 float m = VmVecMagf (src);
 if (m) {
@@ -548,16 +598,6 @@ if (m) {
 	}
 return m;
 }
-
-// ------------------------------------------------------------------------
-//normalize a vector. returns mag of source vec
-#if 0
-fix VmVecNormalize(vmsVector *v)
-{
-	return VmVecCopyNormalize(v, v);
-}
-#endif
-
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns mag of source vec. uses approx mag
@@ -794,23 +834,23 @@ return VmVecCrossProd(dest, &t0, &t1);
 //the forward vector (third parameter) can be NULL, in which case the absolute
 //value of the angle in returned.  Otherwise the angle around that vector is
 //returned.
-fixang VmVecDeltaAng (vmsVector *v0, vmsVector *v1, vmsVector *fvec)
+fixang VmVecDeltaAng (vmsVector *v0, vmsVector *v1, vmsVector *fVec)
 {
 vmsVector t0, t1;
 
 VmVecCopyNormalize (&t0, v0);
 VmVecCopyNormalize (&t1, v1);
-return VmVecDeltaAngNorm (&t0, &t1, fvec);
+return VmVecDeltaAngNorm (&t0, &t1, fVec);
 }
 
 // ------------------------------------------------------------------------
 //computes the delta angle between two normalized vectors. 
-fixang VmVecDeltaAngNorm (vmsVector *v0, vmsVector *v1, vmsVector *fvec)
+fixang VmVecDeltaAngNorm (vmsVector *v0, vmsVector *v1, vmsVector *fVec)
 {
 fixang a = fix_acos (VmVecDot (v0, v1));
-if (fvec) {
+if (fVec) {
 	vmsVector t;
-	if (VmVecDot (VmVecCrossProd (&t, v0, v1), fvec) < 0)
+	if (VmVecDot (VmVecCrossProd (&t, v0, v1), fVec) < 0)
 		a = -a;
 	}
 return a;
@@ -826,15 +866,15 @@ sbsh = FixMul (sinb, sinh);
 cbch = FixMul (cosb, cosh);
 cbsh = FixMul (cosb, sinh);
 sbch = FixMul (sinb, cosh);
-m->rvec.x = cbch + FixMul (sinp, sbsh);		//m1
-m->uvec.z = sbsh + FixMul (sinp, cbch);		//m8
-m->uvec.x = FixMul (sinp, cbsh) - sbch;		//m2
-m->rvec.z = FixMul (sinp, sbch) - cbsh;		//m7
-m->fvec.x = FixMul (sinh, cosp);				//m3
-m->rvec.y = FixMul (sinb, cosp);				//m4
-m->uvec.y = FixMul (cosb, cosp);				//m5
-m->fvec.z = FixMul (cosh, cosp);				//m9
-m->fvec.y = -sinp;								//m6
+m->rVec.x = cbch + FixMul (sinp, sbsh);		//m1
+m->uVec.z = sbsh + FixMul (sinp, cbch);		//m8
+m->uVec.x = FixMul (sinp, cbsh) - sbch;		//m2
+m->rVec.z = FixMul (sinp, sbch) - cbsh;		//m7
+m->fVec.x = FixMul (sinh, cosp);				//m3
+m->rVec.y = FixMul (sinb, cosp);				//m4
+m->uVec.y = FixMul (cosb, cosp);				//m5
+m->fVec.z = FixMul (cosh, cosp);				//m9
+m->fVec.y = -sinp;								//m6
 return m;
 }
 
@@ -867,25 +907,25 @@ return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z
 //the up vector is used.  If only the forward vector is passed, a bank of
 //zero is assumed
 //returns ptr to matrix
-vmsMatrix *VmVector2Matrix (vmsMatrix *m, vmsVector *fvec, vmsVector *uvec, vmsVector *rvec)
+vmsMatrix *VmVector2Matrix (vmsMatrix *m, vmsVector *fVec, vmsVector *uVec, vmsVector *rVec)
 {
-	vmsVector	*xvec = &m->rvec, 
-					*yvec = &m->uvec, 
-					*zvec = &m->fvec;
-	Assert(fvec != NULL);
-if (VmVecCopyNormalize (zvec, fvec) == 0) {
+	vmsVector	*xvec = &m->rVec, 
+					*yvec = &m->uVec, 
+					*zvec = &m->fVec;
+	Assert(fVec != NULL);
+if (VmVecCopyNormalize (zvec, fVec) == 0) {
 	Int3();		//forward vec should not be zero-length
 	return m;
 	}
-if (uvec == NULL) {
-	if (rvec == NULL) {		//just forward vec
+if (uVec == NULL) {
+	if (rVec == NULL) {		//just forward vec
 
 bad_vector2:
 ;
 		if (zvec->x==0 && zvec->z==0) {		//forward vec is straight up or down
-			m->rvec.x = F1_0;
-			m->uvec.z = (zvec->y < 0) ? F1_0 : -F1_0;
-			m->rvec.y = m->rvec.z = m->uvec.x = m->uvec.y = 0;
+			m->rVec.x = F1_0;
+			m->uVec.z = (zvec->y < 0) ? F1_0 : -F1_0;
+			m->rVec.y = m->rVec.z = m->uVec.x = m->uVec.y = 0;
 			}
 		else { 		//not straight up or down
 			xvec->x = zvec->z;
@@ -896,7 +936,7 @@ bad_vector2:
 			}
 		}
 	else {						//use right vec
-		if (VmVecCopyNormalize (xvec, rvec) == 0)
+		if (VmVecCopyNormalize (xvec, rVec) == 0)
 			goto bad_vector2;
 		VmVecCrossProd (yvec, zvec, xvec);
 		//normalize new perpendicular vector
@@ -907,7 +947,7 @@ bad_vector2:
 		}
 	}
 else {		//use up vec
-	if (VmVecCopyNormalize (yvec, uvec) == 0)
+	if (VmVecCopyNormalize (yvec, uVec) == 0)
 		goto bad_vector2;
 	VmVecCrossProd (xvec, yvec, zvec);
 	//normalize new perpendicular vector
@@ -921,21 +961,21 @@ return m;
 
 // ------------------------------------------------------------------------
 //quicker version of VmVector2Matrix() that takes normalized vectors
-vmsMatrix *VmVector2MatrixNorm (vmsMatrix *m, vmsVector *fvec, vmsVector *uvec, vmsVector *rvec)
+vmsMatrix *VmVector2MatrixNorm (vmsMatrix *m, vmsVector *fVec, vmsVector *uVec, vmsVector *rVec)
 {
-	vmsVector	*xvec = &m->rvec, 
-					*yvec = &m->uvec, 
-					*zvec = &m->fvec;
+	vmsVector	*xvec = &m->rVec, 
+					*yvec = &m->uVec, 
+					*zvec = &m->fVec;
 
-Assert(fvec != NULL);
-if (!uvec) {
-	if (!rvec) {		//just forward vec
+Assert(fVec != NULL);
+if (!uVec) {
+	if (!rVec) {		//just forward vec
 bad_vector2:
 ;
 		if (!(zvec->x || zvec->z)) {		//forward vec is straight up or down
-			m->rvec.x = F1_0;
-			m->uvec.z = (zvec->y < 0) ? F1_0 : -F1_0;
-			m->rvec.y = m->rvec.z = m->uvec.x = m->uvec.y = 0;
+			m->rVec.x = F1_0;
+			m->uVec.z = (zvec->y < 0) ? F1_0 : -F1_0;
+			m->rVec.y = m->rVec.z = m->uVec.x = m->uVec.y = 0;
 			}
 		else { 		//not straight up or down
 			xvec->x = zvec->z;
@@ -969,44 +1009,190 @@ return m;
 // ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
 //dest CANNOT equal source
+
 vmsVector *VmVecRotate (vmsVector *dest, vmsVector *src, vmsMatrix *m)
 {
-	vmsVector	h;
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+		fVector	vf;
+		fMatrix	mf, *mfP;
 
-if (src == dest) {
-	h = *src;
-	src = &h;
+	VmsVecToFloat (&vf, src);
+	if (m == &viewInfo.view)
+		mfP = &viewInfo.viewf;
+	else {
+		VmsVecToFloat (&mf.fVec, &m->fVec);
+		VmsVecToFloat (&mf.rVec, &m->rVec);
+		VmsVecToFloat (&mf.uVec, &m->uVec);
+		mfP = &mf;
+		}
+#if defined (_WIN32)
+	__asm {
+		movups	xmm0,vf
+		// multiply source vector with matrix rows and store results in xmm1 .. xmm3
+		mov		esi,mfP
+		movups	xmm4,[esi]
+		movups	xmm1,xmm0
+		mulps		xmm1,xmm4
+		movups	xmm4,[esi+0x10]
+		movups	xmm2,xmm0
+		mulps		xmm2,xmm4
+		movups	xmm4,[esi+0x20]
+		movups	xmm3,xmm0
+		mulps		xmm3,xmm4
+		// shuffle xmm1 .. xmm3 so that xmm1 = (x1,x2,x3), xmm2 = (y1,y2,y3), xmm3 = (z1,z2,z3)
+		movups	xmm0,xmm1
+		shufps	xmm0,xmm2,01000100b
+		movups	xmm4,xmm0
+		shufps	xmm0,xmm3,11001000b
+		shufps	xmm4,xmm3,11011101b
+		shufps	xmm1,xmm2,11101110b
+		shufps	xmm1,xmm3,11101000b
+		// cumulate xmm1 .. xmm3
+		addps		xmm0,xmm1
+		addps		xmm0,xmm4
+		movups	vf,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"movups	%0,%%xmm0\n\t"
+		"mov		%1,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm1\n\t"
+		"mulps	%%xmm4,%%xmm1\n\t"
+		"movups	0x10(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm2\n\t"
+		"mulps	%%xmm4,%%xmm2\n\t"
+		"movups	0x20(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm3\n\t"
+		"mulps	%%xmm4,%%xmm3\n\t"
+		"shufps	$0x44,%%xmm2,%%xmm0\n\t"
+		"movups	%%xmm0,%%xmm4\n\t"
+		"shufps	$0xC8,%%xmm3,%%xmm0\n\t"
+		"shufps	$0xDD,%%xmm3,%%xmm4\n\t"
+		"shufps	$0xEE,%%xmm2,%%xmm1\n\t"
+		"shufps	$0xE8,%%xmm3,%%xmm1\n\t"
+		"addps	%%xmm1,%%xmm0\n\t"
+		"addps	%%xmm4,%%xmm1\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (vf)
+		: "m" (vf), "m" (mfP)
+		: "%rsi"
+		);
+#endif
+	dest->x = (fix) (vf.p.x * 65536);
+	dest->y = (fix) (vf.p.y * 65536);
+	dest->z = (fix) (vf.p.z * 65536);
 	}
-dest->x = VmVecDot (src, &m->rvec);
-dest->y = VmVecDot (src, &m->uvec);
-dest->z = VmVecDot (src, &m->fvec);
+else 
+#endif
+	{
+		vmsVector	h;
+
+	if (!m)
+		m = &viewInfo.view;
+	if (src == dest) {
+		h = *src;
+		src = &h;
+		}
+	dest->x = VmVecDot (src, &m->rVec);
+	dest->y = VmVecDot (src, &m->uVec);
+	dest->z = VmVecDot (src, &m->fVec);
+	}
 return dest;
 }
 
 // ------------------------------------------------------------------------
 
-fMatrix3 *VmsMatToFloat (fMatrix3 *dest, vmsMatrix *src)
+fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src)
 {
-VmsVecToFloat (&dest->rVec, &src->rvec);
-VmsVecToFloat (&dest->uVec, &src->uvec);
-VmsVecToFloat (&dest->fVec, &src->fvec);
+VmsVecToFloat (&dest->rVec, &src->rVec);
+VmsVecToFloat (&dest->uVec, &src->uVec);
+VmsVecToFloat (&dest->fVec, &src->fVec);
+dest->wVec.p.x = 
+dest->wVec.p.y = 
+dest->wVec.p.z = 0;
+dest->wVec.p.w = 1;
 return dest;
 }
 
 // ------------------------------------------------------------------------
 //rotates a vector through a matrix. returns ptr to dest vector
 
-fVector3 *VmVecRotatef (fVector3 *dest, fVector3 *src, fMatrix3 *m)
+fVector *VmVecRotatef (fVector *dest, fVector *src, fMatrix *m)
 {
-	fVector3 h;
-
-if (src == dest) {
-	h = *src;
-	src = &h;
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+#if defined (_WIN32)
+	__asm {
+		mov		esi,src
+		movups	xmm0,[esi]
+		mov		esi,m
+		// multiply source vector with matrix rows and store results in xmm1 .. xmm3
+		movups	xmm4,[esi]
+		movups	xmm1,xmm0
+		mulps		xmm1,xmm4
+		movups	xmm4,[esi+0x10]
+		movups	xmm2,xmm0
+		mulps		xmm2,xmm4
+		movups	xmm4,[esi+0x20]
+		movups	xmm3,xmm0
+		mulps		xmm3,xmm4
+		// shuffle xmm1 .. xmm3 so that xmm1 = (x1,x2,x3), xmm2 = (y1,y2,y3), xmm3 = (z1,z2,z3)
+		movups	xmm0,xmm1
+		shufps	xmm0,xmm2,01000100b
+		movups	xmm4,xmm0
+		shufps	xmm0,xmm3,11001000b
+		shufps	xmm4,xmm3,11011101b
+		shufps	xmm1,xmm2,11101110b
+		shufps	xmm1,xmm3,11101000b
+		// cumulate xmm1 .. xmm3
+		addps		xmm0,xmm1
+		addps		xmm0,xmm4
+		mov		edi,dest
+		movups	[edi],xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"movups	%1,%%xmm0\n\t"
+		"mov		%2,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm1\n\t"
+		"mulps	%%xmm4,%%xmm1\n\t"
+		"movups	0x10(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm2\n\t"
+		"mulps	%%xmm4,%%xmm2\n\t"
+		"movups	0x20(%%rsi),%%xmm4\n\t"
+		"movups	%%xmm0,%%xmm3\n\t"
+		"mulps	%%xmm4,%%xmm3\n\t"
+		"shufps	$0x44,%%xmm2,%%xmm0\n\t"
+		"movups	%%xmm0,%%xmm4\n\t"
+		"shufps	$0xC8,%%xmm3,%%xmm0\n\t"
+		"shufps	$0xDD,%%xmm3,%%xmm4\n\t"
+		"shufps	$0xEE,%%xmm2,%%xmm1\n\t"
+		"shufps	$0xE8,%%xmm3,%%xmm1\n\t"
+		"addps	%%xmm1,%%xmm0\n\t"
+		"addps	%%xmm4,%%xmm1\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (dest)
+		: "m" (src), "m" (m)
+		: "%rsi"
+		);
+#endif
 	}
-dest->p.x = VmVecDotf (src, &m->rVec);
-dest->p.y = VmVecDotf (src, &m->uVec);
-dest->p.z = VmVecDotf (src, &m->fVec);
+else 
+#endif
+	{
+		fVector h;
+
+	if (src == dest) {
+		h = *src;
+		src = &h;
+		}
+	dest->p.x = VmVecDotf (src, &m->rVec);
+	dest->p.y = VmVecDotf (src, &m->uVec);
+	dest->p.z = VmVecDotf (src, &m->fVec);
+	}
 return dest;
 }
 
@@ -1016,11 +1202,10 @@ vmsMatrix *VmTransposeMatrix (vmsMatrix *m)
 {
 	fix t;
 
-	t = m->uvec.x;  m->uvec.x = m->rvec.y;  m->rvec.y = t;
-	t = m->fvec.x;  m->fvec.x = m->rvec.z;  m->rvec.z = t;
-	t = m->fvec.y;  m->fvec.y = m->uvec.z;  m->uvec.z = t;
-
-	return m;
+t = m->uVec.x;  m->uVec.x = m->rVec.y;  m->rVec.y = t;
+t = m->fVec.x;  m->fVec.x = m->rVec.z;  m->rVec.z = t;
+t = m->fVec.y;  m->fVec.y = m->uVec.z;  m->uVec.z = t;
+return m;
 }
 
 // ------------------------------------------------------------------------
@@ -1028,21 +1213,17 @@ vmsMatrix *VmTransposeMatrix (vmsMatrix *m)
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
 vmsMatrix *VmCopyTransposeMatrix (vmsMatrix *dest, vmsMatrix *src)
 {
-	Assert(dest != src);
-
-	dest->rvec.x = src->rvec.x;
-	dest->rvec.y = src->uvec.x;
-	dest->rvec.z = src->fvec.x;
-
-	dest->uvec.x = src->rvec.y;
-	dest->uvec.y = src->uvec.y;
-	dest->uvec.z = src->fvec.y;
-
-	dest->fvec.x = src->rvec.z;
-	dest->fvec.y = src->uvec.z;
-	dest->fvec.z = src->fvec.z;
-
-	return dest;
+Assert(dest != src);
+dest->rVec.x = src->rVec.x;
+dest->rVec.y = src->uVec.x;
+dest->rVec.z = src->fVec.x;
+dest->uVec.x = src->rVec.y;
+dest->uVec.y = src->uVec.y;
+dest->uVec.z = src->fVec.y;
+dest->fVec.x = src->rVec.z;
+dest->fVec.y = src->uVec.z;
+dest->fVec.z = src->fVec.z;
+return dest;
 }
 
 // ------------------------------------------------------------------------
@@ -1050,21 +1231,28 @@ vmsMatrix *VmCopyTransposeMatrix (vmsMatrix *dest, vmsMatrix *src)
 //dest CANNOT equal either source
 vmsMatrix *VmMatMul (vmsMatrix *dest, vmsMatrix *src0, vmsMatrix *src1)
 {
-	Assert(dest!=src0 && dest!=src1);
+	vmsVector	v;
 
-	dest->rvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->rvec);
-	dest->uvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->uvec);
-	dest->fvec.x = VmVecDot3(src0->rvec.x, src0->uvec.x, src0->fvec.x, &src1->fvec);
-
-	dest->rvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->rvec);
-	dest->uvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->uvec);
-	dest->fvec.y = VmVecDot3(src0->rvec.y, src0->uvec.y, src0->fvec.y, &src1->fvec);
-
-	dest->rvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->rvec);
-	dest->uvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->uvec);
-	dest->fvec.z = VmVecDot3(src0->rvec.z, src0->uvec.z, src0->fvec.z, &src1->fvec);
-
-	return dest;
+Assert(dest!=src0 && dest!=src1);
+v.x = src0->rVec.x;
+v.y = src0->uVec.x;
+v.z = src0->fVec.x;
+dest->rVec.x = VmVecDot (&v, &src1->rVec);
+dest->uVec.x = VmVecDot (&v, &src1->uVec);
+dest->fVec.x = VmVecDot (&v, &src1->fVec);
+v.x = src0->rVec.y;
+v.y = src0->uVec.y;
+v.z = src0->fVec.y;
+dest->rVec.y = VmVecDot (&v, &src1->rVec);
+dest->uVec.y = VmVecDot (&v, &src1->uVec);
+dest->fVec.y = VmVecDot (&v, &src1->fVec);
+v.x = src0->rVec.z;
+v.y = src0->uVec.z;
+v.z = src0->fVec.z;
+dest->rVec.z = VmVecDot (&v, &src1->rVec);
+dest->uVec.z = VmVecDot (&v, &src1->uVec);
+dest->fVec.z = VmVecDot (&v, &src1->fVec);
+return dest;
 }
 #endif
 
@@ -1074,26 +1262,26 @@ vmsAngVec *VmExtractAnglesMatrix (vmsAngVec *a, vmsMatrix *m)
 {
 	fix sinh, cosh, cosp;
 
-if (m->fvec.x==0 && m->fvec.z==0)		//zero head
+if (m->fVec.x==0 && m->fVec.z==0)		//zero head
 	a->h = 0;
 else
-	a->h = fix_atan2(m->fvec.z, m->fvec.x);
+	a->h = fix_atan2(m->fVec.z, m->fVec.x);
 FixSinCos(a->h, &sinh, &cosh);
 if (abs(sinh) > abs(cosh))				//sine is larger, so use it
-	cosp = FixDiv(m->fvec.x, sinh);
+	cosp = FixDiv(m->fVec.x, sinh);
 else											//cosine is larger, so use it
-	cosp = FixDiv(m->fvec.z, cosh);
-if (cosp==0 && m->fvec.y==0)
+	cosp = FixDiv(m->fVec.z, cosh);
+if (cosp==0 && m->fVec.y==0)
 	a->p = 0;
 else
-	a->p = fix_atan2(cosp, -m->fvec.y);
+	a->p = fix_atan2(cosp, -m->fVec.y);
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a->b = 0;
 else {
 	fix sinb, cosb;
 
-	sinb = FixDiv (m->rvec.y, cosp);
-	cosb = FixDiv (m->uvec.y, cosp);
+	sinb = FixDiv (m->rVec.y, cosp);
+	cosb = FixDiv (m->uVec.y, cosp);
 	if (sinb==0 && cosb==0)
 		a->b = 0;
 	else
@@ -1130,8 +1318,43 @@ return a;
 //distance is signed, so negative dist is on the back of the plane
 fix VmDistToPlane (vmsVector *checkp, vmsVector *norm, vmsVector *planep)
 {
-vmsVector t;
-return VmVecDot (VmVecSub (&t, checkp, planep), norm);
+#if ENABLE_SSE
+if (gameOpts->render.bEnableSSE) {
+		fVector	c, p, n, t;
+	
+	VmsVecToFloat (&c, checkp);
+	VmsVecToFloat (&p, planep);
+	VmsVecToFloat (&n, norm);
+#if defined (_WIN32)
+	_asm {
+		movups	xmm0,c
+		movups	xmm1,p
+		subps		xmm0,xmm1
+		movups	xmm1,n
+		mulps		xmm0,xmm1
+		movups	t,xmm0
+		}
+#elif defined (__unix__)
+	asm (
+		"movups	%1,%%xmm0\n\t"
+		"movups	%2,%%xmm1\n\t"
+		"subps	%%xmm1,%%xmm0\n\t"
+		"movups	%3,%%xmm1\n\t"
+		"mulps	%%xmm1,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (t)
+		: "m" (c), "m" (p), "m" (n)
+		);	
+#endif
+	return (fix) ((t.p.x + t.p.y + t.p.z) * 65536);
+	}
+else 
+#endif
+	{
+	vmsVector t;
+
+	return VmVecDot (VmVecSub (&t, checkp, planep), norm);
+	}
 }
 
 // ------------------------------------------------------------------------
@@ -1169,7 +1392,7 @@ return VmVecScale (i, -VmVecDot (n, p) / VmVecDot (n, a));
 
 // ------------------------------------------------------------------------
 
-inline int vm_behind_plane (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *i)
+inline int VmBehindPlane (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *i)
 {
 	vmsVector	t;
 #ifdef _DEBUG
@@ -1189,9 +1412,9 @@ return VmVecDot (i, &t) - VmVecDot (p1, &t) < 0;
 
 int VmTriangleHitTest (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *i)
 {
-return !(vm_behind_plane (n, p1, p2, i) || 
-			vm_behind_plane (n, p2, p3, i) ||
-			vm_behind_plane (n, p3, p1, i));
+return !(VmBehindPlane (n, p1, p2, i) || 
+			VmBehindPlane (n, p2, p3, i) ||
+			VmBehindPlane (n, p3, p1, i));
 }
 
 // ------------------------------------------------------------------------
@@ -1207,9 +1430,9 @@ int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVecto
 i.x = (fix) (l * (double) a->x);
 i.y = (fix) (l * (double) a->y);
 i.z = (fix) (l * (double) a->z);
-return !(vm_behind_plane (n, p1, p2, &i) || 
-			vm_behind_plane (n, p2, p3, &i) ||
-			vm_behind_plane (n, p3, p1, &i));
+return !(VmBehindPlane (n, p1, p2, &i) || 
+			VmBehindPlane (n, p2, p3, &i) ||
+			VmBehindPlane (n, p3, p1, &i));
 }
 
 // ------------------------------------------------------------------------

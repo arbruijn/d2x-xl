@@ -184,22 +184,22 @@ return NULL;
 
 //-------------------------------------------------------------
 //takes pmP, fills in min & max
-void MorphFindModelBounds (polymodel *pmP, int submodel_num, vmsVector *minv, vmsVector *maxv)
+void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector *minv, vmsVector *maxv)
 {
-	ushort nverts;
+	ushort nVerts;
 	vmsVector *vp;
 	ushort *data, nType;
 
-data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [submodel_num]);
+data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
 nType = *data++;
 Assert (nType == 7 || nType == 1);
-nverts = *data++;
+nVerts = *data++;
 if (nType==7)
 	data+=2;		//skip start & pad
 vp = (vmsVector *) data;
 *minv = *maxv = *vp++; 
-nverts--;
-while (nverts--) {
+nVerts--;
+while (nVerts--) {
 	if (vp->x > maxv->x) 
 		maxv->x = vp->x;
 	else if (vp->x < minv->x) 
@@ -218,67 +218,81 @@ while (nverts--) {
 
 //-------------------------------------------------------------
 
-void MorphInitPoints (polymodel *pmP, vmsVector *box_size, int submodel_num, tMorphInfo *mdP)
+int MorphInitPoints (tPolyModel *pmP, vmsVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
 {
-	ushort nverts;
-	vmsVector *vp;
-	ushort *data, nType;
-	int i;
+	ushort		nVerts;
+	vmsVector	*vp, v;
+	ushort		*data, nType;
+	int			i;
 
-//printf ("initing %d ", submodel_num);
-data = (ushort *) &pmP->model_data [pmP->submodel_ptrs [submodel_num]];
+//printf ("initing %d ", nSubModel);
+data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
 nType = *data++;
-Assert (nType == 7 || nType == 1);
-nverts = *data++;
-mdP->nMorphingPoints [submodel_num] = 0;
+#ifdef _DEBUG
+//Assert (nType == 7 || nType == 1);
+if (nType != 7 && nType != 1)
+	return 0;
+#endif
+nVerts = *data++;
+mdP->nMorphingPoints [nSubModel] = 0;
 if (nType==7) {
 	i = *data++;		//get start point number
 	data++;				//skip pad
 	}
 else
 	i = 0;				//start at zero
-Assert (i+nverts < MAX_VECS);
-mdP->submodelStartPoints [submodel_num] = i;
+Assert (i+nVerts < MAX_VECS);
+mdP->submodelStartPoints [nSubModel] = i;
 vp = (vmsVector *) data;
-while (nverts--) {
+v = *vp;
+while (nVerts--) {
 	fix k, dist;
 
-	if (box_size) {
+	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (vp->x && f2i (box_size->x)<abs (vp->x)/2 && (t = FixDiv (box_size->x, abs (vp->x))) < k) k=t;
-		if (vp->y && f2i (box_size->y)<abs (vp->y)/2 && (t = FixDiv (box_size->y, abs (vp->y))) < k) k=t;
-		if (vp->z && f2i (box_size->z)<abs (vp->z)/2 && (t = FixDiv (box_size->z, abs (vp->z))) < k) k=t;
-		if (k==0x7fffffff) k=0;
+		if (v.x && f2i (vBoxSize->x) < abs (v.x)/2 && (t = FixDiv (vBoxSize->x, abs (v.x))) < k) 
+			k = t;
+		if (v.y && f2i (vBoxSize->y) < abs (v.y)/2 && (t = FixDiv (vBoxSize->y, abs (v.y))) < k) 
+			k = t;
+		if (v.z && f2i (vBoxSize->z) < abs (v.z)/2 && (t = FixDiv (vBoxSize->z, abs (v.z))) < k) 
+			k = t;
+		if (k == 0x7fffffff) 
+			k = 0;
 		}
 	else
-		k=0;
-	VmVecCopyScale (&mdP->vecs [i], vp, k);
-	dist = VmVecNormalizedDirQuick (&mdP->deltas [i], vp, &mdP->vecs [i]);
+		k = 0;
+	VmVecCopyScale (mdP->vecs + i, vp, k);
+	dist = VmVecNormalizedDirQuick (mdP->deltas + i, vp, mdP->vecs + i);
 	mdP->times [i] = FixDiv (dist, gameData.render.morph.xRate);
 	if (mdP->times [i] != 0)
-		mdP->nMorphingPoints [submodel_num]++;
+		mdP->nMorphingPoints [nSubModel]++;
 		VmVecScale (&mdP->deltas [i], gameData.render.morph.xRate);
 	vp++; 
 	i++;
 	}
-////printf ("npoints = %d\n", nMorphingPoints [submodel_num]);
+return 1;
+////printf ("npoints = %d\n", nMorphingPoints [nSubModel]);
 }
 
 //-------------------------------------------------------------
 
-void MorphUpdatePoints (polymodel *pmP, int submodel_num, tMorphInfo *mdP)
+int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
 {
-	ushort nverts;
+	ushort nVerts;
 	vmsVector *vp;
 	ushort *data, nType;
 	int i;
 
-	////printf ("updating %d ", submodel_num);
-data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [submodel_num]);
+	////printf ("updating %d ", nSubModel);
+data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
 nType = *data++;
-Assert (nType == 7 || nType == 1);
-nverts = *data++;
+#ifdef _DEBUG
+//Assert (nType == 7 || nType == 1);
+if (nType != 7 && nType != 1)
+	return 0;
+#endif
+nVerts = *data++;
 if (nType == 7) {
 	i = *data++;		//get start point number
 	data++;				//skip pad
@@ -286,12 +300,12 @@ if (nType == 7) {
 else
 	i = 0;				//start at zero
 vp = (vmsVector *) data;
-while (nverts--) {
+while (nVerts--) {
 	if (mdP->times [i]) {		//not done yet
 		if ((mdP->times [i] -= gameData.time.xFrame) <= 0) {
 			 mdP->vecs [i] = *vp;
 			 mdP->times [i] = 0;
-			 mdP->nMorphingPoints [submodel_num]--;
+			 mdP->nMorphingPoints [nSubModel]--;
 			}
 		else
 			VmVecScaleInc (&mdP->vecs [i], &mdP->deltas [i], gameData.time.xFrame);
@@ -299,7 +313,8 @@ while (nverts--) {
 	vp++; 
 	i++;
 	}
-////printf ("npoints = %d\n", nMorphingPoints [submodel_num]);
+return 1;
+////printf ("npoints = %d\n", nMorphingPoints [nSubModel]);
 }
 
 
@@ -307,8 +322,8 @@ while (nverts--) {
 //process the morphing tObject for one frame
 void DoMorphFrame (tObject *objP)
 {
-	int			i;
-	polymodel	*pmP;
+	int			i, t;
+	tPolyModel	*pmP;
 	tMorphInfo	*mdP;
 
 mdP = MorphFindData (objP);
@@ -320,16 +335,16 @@ pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (pmP->model_data);
 for (i = 0; i < pmP->n_models; i++)
 	if (mdP->submodelActive [i] == 1) {
-		MorphUpdatePoints (pmP, i, mdP);
-		if (mdP->nMorphingPoints [i] == 0) {		//maybe start submodel
-			int t;
+		if (!MorphUpdatePoints (pmP, i, mdP))
+			mdP->submodelActive [i] = 0;
+      else if (mdP->nMorphingPoints [i] == 0) {		//maybe start submodel
+			//int t;
 			mdP->submodelActive [i] = 2;		//not animating, just visible
 			mdP->nSubmodelsActive--;		//this one done animating
-			for (t=0;t<pmP->n_models;t++)
+			for (t = 0; t < pmP->n_models; t++)
 				if (pmP->submodel_parents [t] == i) {		//start this one
-					MorphInitPoints (pmP, NULL, t, mdP);
-					mdP->nSubmodelsActive++;
-					mdP->submodelActive [t] = 1;
+					if (mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP))
+						mdP->nSubmodelsActive++;
 					}
 			}
 		}
@@ -360,9 +375,9 @@ for (i=0;i<MAX_MORPH_OBJECTS;i++)
 //make the tObject morph
 void MorphStart (tObject *objP)
 {
-	polymodel *pmP;
+	tPolyModel *pmP;
 	vmsVector pmmin, pmmax;
-	vmsVector box_size;
+	vmsVector vBoxSize;
 	int i;
 	tMorphInfo *mdP = gameData.render.morph.objects;
 
@@ -389,32 +404,32 @@ objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (pmP->model_data);
 MorphFindModelBounds (pmP, 0, &pmmin, &pmmax);
-box_size.x = max (-pmmin.x, pmmax.x) / 2;
-box_size.y = max (-pmmin.y, pmmax.y) / 2;
-box_size.z = max (-pmmin.z, pmmax.z) / 2;
-for (i=0;i<MAX_VECS;i++)		//clear all points
+vBoxSize.x = max (-pmmin.x, pmmax.x) / 2;
+vBoxSize.y = max (-pmmin.y, pmmax.y) / 2;
+vBoxSize.z = max (-pmmin.z, pmmax.z) / 2;
+for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
-for (i=1;i<MAX_SUBMODELS;i++)		//clear all parts
+for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts
 	mdP->submodelActive [i] = 0;
 mdP->submodelActive [0] = 1;		//1 means visible & animating
 mdP->nSubmodelsActive = 1;
 //now, project points onto surface of box
-MorphInitPoints (pmP, &box_size, 0, mdP);
+MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 }
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (polymodel *pmP, int submodel_num, vmsAngVec *animAngles, fix light, tMorphInfo *mdP)
+void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix light, tMorphInfo *mdP)
 {
 	int i, mn;
 	int facing;
 	int sort_list [MAX_SUBMODELS], sort_n;
 	//first, sort the submodels
 
-sort_list [0] = submodel_num;
+sort_list [0] = nSubModel;
 sort_n = 1;
 for (i=0;i<pmP->n_models;i++) {
-	if (mdP->submodelActive [i] && pmP->submodel_parents [i]==submodel_num) {
+	if (mdP->submodelActive [i] && pmP->submodel_parents [i]==nSubModel) {
 		facing = G3CheckNormalFacing (pmP->submodel_pnts+i, pmP->submodel_norms+i);
 		if (!facing)
 			sort_list [sort_n++] = i;
@@ -431,7 +446,7 @@ for (i=0;i<pmP->n_models;i++) {
 	//now draw everything
 for (i=0;i<sort_n;i++) {
 	mn = sort_list [i];
-	if (mn == submodel_num) {
+	if (mn == nSubModel) {
  		int i;
 		for (i=0;i<pmP->n_textures;i++) {
 			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->first_texture+i]];
@@ -454,10 +469,10 @@ for (i=0;i<sort_n;i++) {
 		Assert ( gameData.pig.tex.bPageFlushed == 0);
 #endif
 		G3DrawMorphingModel (
-			pmP->model_data + pmP->submodel_ptrs [submodel_num], 
+			pmP->model_data + pmP->submodel_ptrs [nSubModel], 
 			gameData.models.textures, 
 			animAngles, light, 
-			mdP->vecs + mdP->submodelStartPoints [submodel_num]);
+			mdP->vecs + mdP->submodelStartPoints [nSubModel]);
 		}
 	else {
 		vmsMatrix orient;
@@ -474,7 +489,7 @@ for (i=0;i<sort_n;i++) {
 void MorphDrawObject (tObject *objP)
 {
 //	int save_light;
-	polymodel *pmP;
+	tPolyModel *pmP;
 	fix light;
 	tMorphInfo *mdP;
 

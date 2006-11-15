@@ -39,6 +39,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "3d.h"
 
-extern	g3s_point	Segment_points[];
+extern	g3sPoint	Segment_points[];
 
 #endif /* _SEGPOINTS_H */

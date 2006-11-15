@@ -106,7 +106,7 @@ int con_init(void)
 void con_background(char *filename)
 {
 	int pcx_error;
-	grs_bitmap bmp;
+	grsBitmap bmp;
 
 	GrInitBitmapData(&bmp);
 	pcx_error = pcx_read_bitmap(filename, &bmp, BM_LINEAR, 0);

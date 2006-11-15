@@ -1,4 +1,4 @@
-/* $Id: vclip.c,v 1.5 2003/10/10 09:36:35 btb Exp $ */
+/* $Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * specified in BITMAPS.TBL.  (This is for the materialization center effect).
  *
  * Revision 1.2  1994/05/11  09:25:25  john
- * Abandoned new vclip system for now because each wallclip, vclip,
+ * Abandoned new tVideoClip system for now because each wallclip, tVideoClip,
  * etc, is different and it would be a huge pain to change all of them.
  *
  * Revision 1.1  1994/05/10  15:21:12  john
@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef RCS
-static char rcsid[] = "$Id: vclip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
+static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #endif
 
 #include <stdlib.h>
@@ -87,7 +87,7 @@ static char rcsid[] = "$Id: vclip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 
 inline int CurFrame (int nClip, fix timeToLive)
 {
-vclip	*pvc = gameData.eff.vClips [0] + nClip;
+tVideoClip	*pvc = gameData.eff.vClips [0] + nClip;
 int nFrames = pvc->nFrameCount;
 //	iFrame = (nFrames - f2i (FixDiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
 int iFrame;
@@ -101,7 +101,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
 //----------------- Variables for video clips -------------------
-//draw an tObject which renders as a vclip
+//draw an tObject which renders as a tVideoClip
 
 #define	FIREBALL_ALPHA		0.7
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
@@ -110,7 +110,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 void DrawVClipObject(tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
 	double	ta = 0, alpha = 0;
-	vclip		*pvc = gameData.eff.vClips [0] + vclip_num;
+	tVideoClip		*pvc = gameData.eff.vClips [0] + vclip_num;
 	int		nFrames = pvc->nFrameCount;
 	int		iFrame = CurFrame (vclip_num, timeToLive);
 	int		bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
@@ -181,9 +181,9 @@ void DrawWeaponVClip(tObject *objP)
 
 #ifndef FAST_FILE_IO
 /*
- * reads n vclip structs from a CFILE
+ * reads n tVideoClip structs from a CFILE
  */
-int vclip_read_n(vclip *vc, int n, CFILE *fp)
+int vclip_read_n(tVideoClip *vc, int n, CFILE *fp)
 {
 	int i, j;
 

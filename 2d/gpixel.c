@@ -25,7 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vesa.h"
 #endif
 
-unsigned char gr_ugpixel( grs_bitmap * bitmap, int x, int y )
+unsigned char gr_ugpixel( grsBitmap * bitmap, int x, int y )
 {
 #ifdef __DJGPP__
 	switch(bitmap->bm_props.nType)
@@ -51,7 +51,7 @@ unsigned char gr_ugpixel( grs_bitmap * bitmap, int x, int y )
 #endif
 }
 
-unsigned char gr_gpixel( grs_bitmap * bitmap, int x, int y )
+unsigned char gr_gpixel( grsBitmap * bitmap, int x, int y )
 {
 	if ((x<0) || (y<0) || (x>=bitmap->bm_props.w) || (y>=bitmap->bm_props.h)) return 0;
 #ifdef __DJGPP__

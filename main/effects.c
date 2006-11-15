@@ -132,7 +132,7 @@ return ecP->vc.xFrameTime;
 if ((ecP->changing_wall_texture < 0) && (ecP->changingObject_texture < 0))
 	return ecP->vc.xFrameTime;
 else {
-	grs_bitmap	*bmP = gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index;
+	grsBitmap	*bmP = gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index;
 	return ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? 
 			 (ecP->vc.xFrameTime * ecP->vc.nFrameCount) / BM_FRAMECOUNT (bmP) : 
 			 ecP->vc.xFrameTime;
@@ -157,8 +157,8 @@ void ResetPogEffects (void)
 {
 	int		i, bD1;
 	eclip		*ecP;
-	wclip		*wcP;
-	vclip		*vcP;
+	tWallClip		*wcP;
+	tVideoClip		*vcP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = gameData.eff.nEffects [bD1], ecP = gameData.eff.effects [bD1]; i; i--, ecP++)
@@ -201,13 +201,16 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 								  gameData.pig.tex.pBmIndex [((_fP) [_i])].index : \
 								  ((_fP) [_i]))
 
-grs_bitmap *FindAnimBaseTex (short *frameP, int nFrames, int bIndirect, int bObject, int *piBaseFrame)
+grsBitmap *FindAnimBaseTex (short *frameP, int nFrames, int bIndirect, int bObject, int *piBaseFrame)
 {
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	int			i;
 
 for (i = 0; i < nFrames; i++) {
-	bmP = gameData.pig.tex.pBitmaps + BM_INDEX (frameP, i, bIndirect, bObject);
+	if (bObject)
+		bmP = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
+	else
+		bmP = gameData.pig.tex.pBitmaps + BM_INDEX (frameP, i, bIndirect, bObject);
 	if ((bmP = BM_OVERRIDE (bmP)) && (bmP->bmType != BM_TYPE_FRAME)) {
 		*piBaseFrame = i;
 		return bmP;
@@ -219,25 +222,26 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-grs_bitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames)
+grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames)
 {
-	grs_bitmap	*bmP, *hbmP;
+	grsBitmap	*bmP, *hbmP, *pBitmaps;
 	int			i, j, iBaseFrame, nBmFrames, nFrameStep;
 
 if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (gameOpts->ogl.bGlTexMerge) {
 	OglLoadBmTexture (bmP, 1, 0);
+	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmaps;
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
-		hbmP = gameData.pig.tex.pBitmaps + j;
+		hbmP = pBitmaps + j;
 		if (BM_OVERRIDE (hbmP) != bmP)
-			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data);
+			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
 		BM_OVERRIDE (hbmP) = bmP;
 		}
 	}
 else {
-	grs_bitmap *bmfP, *hbmP;
+	grsBitmap *bmfP, *hbmP;
 
 	OglLoadBmTexture (bmP, 1, 0);
 #ifdef _DEBUG
@@ -281,7 +285,7 @@ void DoSpecialEffects()
 xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.b40fpsTick) 
 	{
-		grs_bitmap		*bmP;
+		grsBitmap		*bmP;
 		eclip				*ecP;
 		tBitmapIndex	bmi;
 		fix				ft;

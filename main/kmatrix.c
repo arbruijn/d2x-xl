@@ -530,7 +530,7 @@ longjmp (gameExitPoint, 0);
 
 #define LAST_OEM_LEVEL	IS_D2_OEM && (gameData.missions.nCurrentLevel == 8)
 
-extern void NetworkEndLevelPoll3 (int nitems, struct newmenu_item * menus, int * key, int citem);
+extern void NetworkEndLevelPoll3 (int nitems, struct tMenuItem * menus, int * key, int citem);
 
 void kmatrix_view (int network)
 {											 
@@ -591,7 +591,7 @@ while (!done) {
 			break;
 			}			
 	//see if redbook song needs to be restarted
-	songs_check_redbook_repeat ();
+	SongsCheckRedbookRepeat ();
 	k = KeyInKey ();
 	switch (k) {
 		case KEY_ENTER:

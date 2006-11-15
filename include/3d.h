@@ -119,7 +119,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added system to only rotate points once per frame
  *
  * Revision 1.2  1993/11/04  08:16:06  mike
- * Add light field (p3_l) to g3s_point.
+ * Add light field (p3_l) to g3sPoint.
  *
  * Revision 1.1  1993/10/29  22:20:56  matt
  * Initial revision
@@ -168,13 +168,13 @@ typedef struct g3s_codes {
 
 //Used to store rotated points for mines.  Has frame count to indictate
 //if rotated, and flag to indicate if projected.
-typedef struct g3s_normal {
-	fVector3		vNormal;
+typedef struct g3sNormal {
+	fVector		vNormal;
 	ubyte			nFaces;	// # of faces that use this vertex
-} g3s_normal;
+} g3sNormal;
 
 
-typedef struct g3s_point {
+typedef struct g3sPoint {
 	vmsVector	p3_vec;  //x,y,z of rotated point
 #ifdef D1XD3D
 	vmsVector	p3_orig;
@@ -184,8 +184,8 @@ typedef struct g3s_point {
 	ubyte			p3_codes;     //clipping codes
 	ubyte			p3Flags;     //projected?
 	short			p3_index;     //keep structure longword aligned
-	g3s_normal	p3_normal;
-} g3s_point;
+	g3sNormal	p3_normal;
+} g3sPoint;
 
 //macros to reference x,y,z elements of a 3d point
 #define p3_x p3_vec.x
@@ -203,7 +203,7 @@ typedef struct g3sObject {
 
 } g3sObject;
 
-typedef void tmap_drawer_func (grs_bitmap *, int, g3s_point **);
+typedef void tmap_drawer_func (grsBitmap *, int, g3sPoint **);
 typedef void flat_drawer_func (int, int *);
 typedef int line_drawer_func (fix, fix, fix, fix);
 typedef tmap_drawer_func *tmap_drawer_fp;
@@ -273,17 +273,17 @@ bool G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
 //specify the arrays refered to by the 'pointlist' parms in the following
 //functions.  I'm not sure if we will keep this function, but I need
 //it now.
-//void g3_set_points(g3s_point *points,vmsVector *vecs);
+//void g3_set_points(g3sPoint *points,vmsVector *vecs);
 
 //returns codes_and & codes_or of a list of points numbers
-g3s_codes g3_check_codes(int nv,g3s_point **pointlist);
+g3s_codes g3_check_codes(int nv,g3sPoint **pointlist);
 
 //projects a point
-void G3ProjectPoint(g3s_point *point);
+void G3ProjectPoint(g3sPoint *point);
 
 //code a point.  fills in the p3_codes field of the point, and returns the codes
 #if 1
-static inline ubyte G3EncodePoint(g3s_point *p)
+static inline ubyte G3EncodePoint(g3sPoint *p)
 {
 ubyte cc=0;
 fix z = p->p3_z;
@@ -301,7 +301,7 @@ if (z < 0)
 return p->p3_codes = cc;
 }
 #else
-ubyte G3EncodePoint(g3s_point *point);
+ubyte G3EncodePoint(g3sPoint *point);
 #endif
 
 static inline vmsVector *G3TranslatePoint (vmsVector *pDest, vmsVector *pSrc)
@@ -320,23 +320,23 @@ vmsVector	vTrans;
 return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.position), &viewInfo.view);
 }
 
-static inline fVector3 *G3TranslatePointf (fVector3 *pDest, fVector3 *pSrc)
+static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
 {
 return VmVecSubf (pDest, pSrc, &viewInfo.posf);
 }
 
-static inline fVector3 *G3RotatePointf (fVector3 *pDest, fVector3 *pSrc)
+static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc)
 {
 return VmVecRotatef (pDest, pSrc, &viewInfo.viewf);
 }
 
-static inline fVector3 *G3TransformPointf (fVector3 *pDest, fVector3 *pSrc)
+static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc)
 {
-fVector3 vTrans;
+fVector vTrans;
 return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), &viewInfo.viewf);
 }
 
-static inline ubyte G3TransformAndEncodePoint (g3s_point *pDest, vmsVector *pSrc)
+static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
 {
 G3TransformPoint (&pDest->p3_vec, pSrc);
 pDest->p3Flags = 0;	
@@ -354,24 +354,24 @@ vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx);
 vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy);
 vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz);
 vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src);
-ubyte G3AddDeltaVec(g3s_point *dest,g3s_point *src,vmsVector *deltav);
+ubyte G3AddDeltaVec(g3sPoint *dest,g3sPoint *src,vmsVector *deltav);
 
 //Drawing functions:
 
 //draw a flat-shaded face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawPoly(int nv,g3s_point **pointlist);
+bool G3DrawPoly(int nv,g3sPoint **pointlist);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTMap(int nv,g3s_point **pointlist,uvl *uvl_list,grs_bitmap *bm, int bBlend);
+bool G3DrawTMap(int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm, int bBlend);
 
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
-int G3DrawSphere(g3s_point *pnt,fix rad, int bBigSphere);
+int G3DrawSphere(g3sPoint *pnt,fix rad, int bBigSphere);
 
 //@@//return ligting value for a point
-//@@fix g3_compute_lightingValue(g3s_point *rotated_point,fix normval);
+//@@fix g3_compute_lightingValue(g3sPoint *rotated_point,fix normval);
 
 
 //like G3DrawPoly(), but checks to see if facing.  If surface normal is
@@ -380,29 +380,29 @@ int G3DrawSphere(g3s_point *pnt,fix rad, int bBigSphere);
 //is passed, this function works like G3CheckNormalFacing() plus
 //G3DrawPoly().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-bool G3CheckAndDrawPoly(int nv,g3s_point **pointlist,vmsVector *norm,vmsVector *pnt);
-bool G3CheckAndDrawTMap(int nv,g3s_point **pointlist,uvl *uvl_list,grs_bitmap *bm,vmsVector *norm,vmsVector *pnt);
+bool G3CheckAndDrawPoly(int nv,g3sPoint **pointlist,vmsVector *norm,vmsVector *pnt);
+bool G3CheckAndDrawTMap(int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm,vmsVector *norm,vmsVector *pnt);
 
 //draws a line. takes two points.
-bool G3DrawLine(g3s_point *p0,g3s_point *p1);
+bool G3DrawLine(g3sPoint *p0,g3sPoint *p1);
 
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodPoly(g3s_point *bot_point,fix bot_width,g3s_point *top_point,fix top_width);
+bool G3DrawRodPoly(g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width);
 
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly(grs_bitmap *bitmap,g3s_point *bot_point,fix bot_width,g3s_point *top_point,fix top_width,fix light);
+bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light);
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitMap (vmsVector *pos,fix width,fix height,grs_bitmap *bm, int orientation, float alpha, int transp, int bDepthInfo);
+bool G3DrawBitMap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, float alpha, int transp, int bDepthInfo);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
 void G3SetSpecialRender(tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer);
 
-extern g3s_point *Vbuf0[];
-extern g3s_point *Vbuf1[];
+extern g3sPoint *Vbuf0[];
+extern g3sPoint *Vbuf1[];
 
 #endif

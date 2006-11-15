@@ -148,7 +148,7 @@ void OptionsMenu();
 void RenderOptionsMenu ();
 void GameplayOptionsMenu();
 int QuitSaveLoadMenu (void);
-
+int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
 #ifdef RELEASE  // read only from hog file
 #define MENU_PCX_MAC_SHARE ("\x01menub.pcx")
@@ -173,7 +173,7 @@ void InitDetailLevels(int detailLevel);
 int SwitchDisplayMode (int dir);
 
 extern char *menu_difficulty_text[];
-extern int Player_default_difficulty;
+extern int playerDefaultDifficulty;
 extern int Max_debrisObjects;
 extern int Missile_view_enabled;
 extern int Escort_view_enabled;

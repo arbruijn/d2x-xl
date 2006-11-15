@@ -49,7 +49,7 @@ void joy_delay()
 int joycal_message( char * title, char * text )
 {
 	int i;
-	newmenu_item	m[2];
+	tMenuItem	m[2];
 	m[0].nType = NM_TYPE_TEXT; m[0].text = text;
 	m[1].nType = NM_TYPE_MENU; m[1].text = TXT_OK;
 	i = ExecMenu( title, NULL, 2, m, NULL );
@@ -64,7 +64,7 @@ void joydefs_calibrate()
   return;
 }
 
-void joydef_menuset_1(int nitems, newmenu_item * items, int *last_key, int citem )
+void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
 	int ocType = gameConfig.nControlType;
@@ -104,7 +104,7 @@ extern ubyte *kc_external_name;
 
 void joydefs_config()
 {
-        newmenu_item m[13];
+        tMenuItem m[13];
         int i, j, i1=0, nitems=7;
 
             m[0].nType = NM_TYPE_RADIO;

@@ -682,20 +682,20 @@ void create_removable_wall(tSegment *sp, int nSide, int nBaseTex)
 //	If so, set global Degenerate_segment_found and return 1, else return 0.
 int check_for_degenerate_segment(tSegment *sp)
 {
-	vmsVector	fvec, rvec, uvec, cross;
+	vmsVector	fVec, rVec, uVec, cross;
 	fix			dot;
 	int			i, degeneracyFlag = 0;				// degeneracy flag for current tSegment
 
-	extract_forward_vector_from_segment(sp, &fvec);
-	extract_right_vector_from_segment(sp, &rvec);
-	extract_up_vector_from_segment(sp, &uvec);
+	extract_forward_vector_from_segment(sp, &fVec);
+	extract_right_vector_from_segment(sp, &rVec);
+	extract_up_vector_from_segment(sp, &uVec);
 
-	VmVecNormalize(&fvec);
-	VmVecNormalize(&rvec);
-	VmVecNormalize(&uvec);
+	VmVecNormalize(&fVec);
+	VmVecNormalize(&rVec);
+	VmVecNormalize(&uVec);
 
-	VmVecCross(&cross, &fvec, &rvec);
-	dot = VmVecDot(&cross, &uvec);
+	VmVecCross(&cross, &fVec, &rVec);
+	dot = VmVecDot(&cross, &uVec);
 
 	if (dot > 0)
 		degeneracyFlag = 0;
@@ -1104,8 +1104,8 @@ int med_attach_segment_rotated(tSegment *destseg, tSegment *newseg, int destside
 
 	nSegment = get_free_segment_number();
 
-	forvec = attmat->fvec;
-	upvec = attmat->uvec;
+	forvec = attmat->fVec;
+	upvec = attmat->uVec;
 
 	//	We are pretty confident we can add the tSegment.
 	nsp = &gameData.segs.segments[nSegment];
@@ -1901,15 +1901,15 @@ void med_create_new_segment(vmsVector *scale)
 void med_create_new_segment_from_cursegp(void)
 {
 	vmsVector	scalevec;
-	vmsVector	uvec, rvec, fvec;
+	vmsVector	uVec, rVec, fVec;
 
-	med_extract_up_vector_from_segment_side(Cursegp, Curside, &uvec);
-	med_extract_right_vector_from_segment_side(Cursegp, Curside, &rvec);
-	extract_forward_vector_from_segment(Cursegp, &fvec);
+	med_extract_up_vector_from_segment_side(Cursegp, Curside, &uVec);
+	med_extract_right_vector_from_segment_side(Cursegp, Curside, &rVec);
+	extract_forward_vector_from_segment(Cursegp, &fVec);
 
-	scalevec.x = VmVecMag(&rvec);
-	scalevec.y = VmVecMag(&uvec);
-	scalevec.z = VmVecMag(&fvec);
+	scalevec.x = VmVecMag(&rVec);
+	scalevec.y = VmVecMag(&uVec);
+	scalevec.z = VmVecMag(&fVec);
 
 	med_create_new_segment(&scalevec);
 }
@@ -2026,15 +2026,15 @@ void create_coordinate_axes_from_segment(tSegment *sp,short *vertnums)
 
 	COMPUTE_SEGMENT_CENTER(&gameData.segs.vertices[vertnums[0]],sp);
 
-	t = rotmat.rvec;
+	t = rotmat.rVec;
 	VmVecScale(&t,i2f(32);
 	VmVecAdd(&gameData.segs.vertices[vertnums[1]],&gameData.segs.vertices[vertnums[0]],&t);
 
-	t = rotmat.uvec;
+	t = rotmat.uVec;
 	VmVecScale(&t,i2f(32);
 	VmVecAdd(&gameData.segs.vertices[vertnums[2]],&gameData.segs.vertices[vertnums[0]],&t);
 
-	t = rotmat.fvec;
+	t = rotmat.fVec;
 	VmVecScale(&t,i2f(32);
 	VmVecAdd(&gameData.segs.vertices[vertnums[3]],&gameData.segs.vertices[vertnums[0]],&t);
 }

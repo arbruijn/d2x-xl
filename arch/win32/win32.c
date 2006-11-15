@@ -163,7 +163,7 @@ void gr_upixel( int x, int y )
 {
 	gr_bm_upixel(&grdCurCanv->cv_bitmap, x, y, (unsigned char)COLOR);
 #if 0
-	grs_bitmap * bm = &grdCurCanv->cv_bitmap;
+	grsBitmap * bm = &grdCurCanv->cv_bitmap;
 	Win32_Rect (
 		//x + bm->bm_props.x, y + bm->bm_props.y,
 		//x + bm->bm_props.x, y + bm->bm_props.y,
@@ -172,7 +172,7 @@ void gr_upixel( int x, int y )
 #endif
 }
 
-void gr_bm_upixel( grs_bitmap * bm, int x, int y, unsigned char color )
+void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
 	switch (bm->bm_props.nType)
 	{
@@ -276,7 +276,7 @@ unsigned char *createdib(void)
 	return buffer;
 }
 
-void Win32_BlitLinearToDirectX_bm(grs_bitmap *bm, int sx, int sy, 
+void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy, 
 	int w, int h, int dx, int dy, int masked) {
 	HDC hdc;
 	unsigned char *src, *dest, *rle_w;

@@ -230,9 +230,9 @@ return v;
 static inline vmsMatrix *SwapMatrix (vmsMatrix *m, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	SwapVector (&m->rvec, bEndian);
-	SwapVector (&m->uvec, bEndian);
-	SwapVector (&m->fvec, bEndian);
+	SwapVector (&m->rVec, bEndian);
+	SwapVector (&m->uVec, bEndian);
+	SwapVector (&m->fVec, bEndian);
 	}
 return m;
 }

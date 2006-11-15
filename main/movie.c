@@ -210,14 +210,13 @@ int PlayMovie(const char *filename, int must_have, int bForce, int bFullScreen)
 	SongsStopAll();
 	DigiClose();
 	// Start sound
-	if (!FindArg("-nosound"))
+	if (gameStates.app.bUseSound)
 		MVE_sndInit(1);
 	else
 		MVE_sndInit(-1);
 	gameOpts->movies.bFullScreen = bFullScreen;
-	ret = RunMovie(name,gameOpts->movies.bHires,must_have,-1,-1);
-	if (!FindArg("-nosound"))
-		DigiInit();
+	ret = RunMovie (name,gameOpts->movies.bHires,must_have,-1,-1);
+	DigiInit();
 	gameStates.video.nScreenMode = -1;		//force screen reset
 	return ret;
 }
@@ -227,7 +226,7 @@ int PlayMovie(const char *filename, int must_have, int bForce, int bFullScreen)
 void MovieShowFrame (ubyte *buf, uint bufw, uint bufh, uint sx, uint sy,
 							uint w, uint h, uint dstx, uint dsty)
 {
-	grs_bitmap bmFrame;
+	grsBitmap bmFrame;
 
 Assert(bufw == w && bufh == h);
 

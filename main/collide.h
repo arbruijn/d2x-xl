@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * make matcen whack on you if it's ready to make a robot.
  *
  * Revision 1.9  1994/07/22  12:08:03  mike
- * Make robot hit vclip and sound weapon-based until robot dies, then robot-based.
+ * Make robot hit tVideoClip and sound weapon-based until robot dies, then robot-based.
  *
  * Revision 1.8  1994/07/09  17:36:31  mike
  * Prototype ApplyDamageToPlayer.

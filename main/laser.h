@@ -312,11 +312,11 @@ void ReleaseGuidedMissile(int player_num);
 extern void CreateSmartChildren(tObject *objp, int count);
 extern int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
 
-typedef struct muzzle_info {
+typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;
 	vmsVector  pos;
-} muzzle_info;
+} tMuzzleInfo;
 
 // Omega cannon stuff.
 #define MAX_OMEGA_CHARGE    (F1_0)  //  Maximum charge level for omega cannonw

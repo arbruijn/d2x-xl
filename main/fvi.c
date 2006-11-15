@@ -482,28 +482,28 @@ fix CalcDetValue (vmsMatrix *det)
 {
 #if 0
 	fix	xDet;
-//LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", det->rvec.x, det->rvec.y, det->rvec.z, det->fvec.x, det->fvec.y, det->fvec.z, det->uvec.x, det->uvec.y, det->uvec.z);
-//LogErr ("               xDet = FixMul (det->rvec.x, FixMul (det->uvec.y, det->fvec.z))\n");
-xDet = FixMul (det->rvec.x, FixMul (det->uvec.y, det->fvec.z));
-//LogErr ("               xDet -= FixMul (det->rvec.x, FixMul (det->uvec.z, det->fvec.y))\n");
-xDet -= FixMul (det->rvec.x, FixMul (det->uvec.z, det->fvec.y));
-//LogErr ("               xDet -= FixMul (det->rvec.y, FixMul (det->uvec.x, det->fvec.z))\n");
-xDet -= FixMul (det->rvec.y, FixMul (det->uvec.x, det->fvec.z));
-//LogErr ("               xDet += FixMul (det->rvec.y, FixMul (det->uvec.z, det->fvec.x))\n");
-xDet += FixMul (det->rvec.y, FixMul (det->uvec.z, det->fvec.x));
-//LogErr ("               xDet += FixMul (det->rvec.z, FixMul (det->uvec.x, det->fvec.y))\n");
-xDet += FixMul (det->rvec.z, FixMul (det->uvec.x, det->fvec.y));
-//LogErr ("               xDet -= FixMul (det->rvec.z, FixMul (det->uvec.y, det->fvec.x))\n");
-xDet -= FixMul (det->rvec.z, FixMul (det->uvec.y, det->fvec.x));
+//LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", det->rVec.x, det->rVec.y, det->rVec.z, det->fVec.x, det->fVec.y, det->fVec.z, det->uVec.x, det->uVec.y, det->uVec.z);
+//LogErr ("               xDet = FixMul (det->rVec.x, FixMul (det->uVec.y, det->fVec.z))\n");
+xDet = FixMul (det->rVec.x, FixMul (det->uVec.y, det->fVec.z));
+//LogErr ("               xDet -= FixMul (det->rVec.x, FixMul (det->uVec.z, det->fVec.y))\n");
+xDet -= FixMul (det->rVec.x, FixMul (det->uVec.z, det->fVec.y));
+//LogErr ("               xDet -= FixMul (det->rVec.y, FixMul (det->uVec.x, det->fVec.z))\n");
+xDet -= FixMul (det->rVec.y, FixMul (det->uVec.x, det->fVec.z));
+//LogErr ("               xDet += FixMul (det->rVec.y, FixMul (det->uVec.z, det->fVec.x))\n");
+xDet += FixMul (det->rVec.y, FixMul (det->uVec.z, det->fVec.x));
+//LogErr ("               xDet += FixMul (det->rVec.z, FixMul (det->uVec.x, det->fVec.y))\n");
+xDet += FixMul (det->rVec.z, FixMul (det->uVec.x, det->fVec.y));
+//LogErr ("               xDet -= FixMul (det->rVec.z, FixMul (det->uVec.y, det->fVec.x))\n");
+xDet -= FixMul (det->rVec.z, FixMul (det->uVec.y, det->fVec.x));
 return xDet;
 //LogErr ("             det = %d\n", xDet);
 #else
-return FixMul (det->rvec.x, FixMul (det->uvec.y, det->fvec.z)) -
-		 FixMul (det->rvec.x, FixMul (det->uvec.z, det->fvec.y)) -
-		 FixMul (det->rvec.y, FixMul (det->uvec.x, det->fvec.z)) +
-		 FixMul (det->rvec.y, FixMul (det->uvec.z, det->fvec.x)) +
-	 	 FixMul (det->rvec.z, FixMul (det->uvec.x, det->fvec.y)) -
-		 FixMul (det->rvec.z, FixMul (det->uvec.y, det->fvec.x));
+return FixMul (det->rVec.x, FixMul (det->uVec.y, det->fVec.z)) -
+		 FixMul (det->rVec.x, FixMul (det->uVec.z, det->fVec.y)) -
+		 FixMul (det->rVec.y, FixMul (det->uVec.x, det->fVec.z)) +
+		 FixMul (det->rVec.y, FixMul (det->uVec.z, det->fVec.x)) +
+	 	 FixMul (det->rVec.z, FixMul (det->uVec.x, det->fVec.y)) -
+		 FixMul (det->rVec.z, FixMul (det->uVec.y, det->fVec.x));
 #endif
 }
 
@@ -516,20 +516,20 @@ int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *
 	fix d, cross_mag2;		//mag squared Cross product
 
 //LogErr ("         VmVecSub\n");
-VmVecSub (&det.rvec, p2, p1);
+VmVecSub (&det.rVec, p2, p1);
 //LogErr ("         VmVecCross\n");
-VmVecCross (&det.fvec, v1, v2);
+VmVecCross (&det.fVec, v1, v2);
 //LogErr ("         VmVecDot\n");
-cross_mag2 = VmVecDot (&det.fvec, &det.fvec);
+cross_mag2 = VmVecDot (&det.fVec, &det.fVec);
 if (!cross_mag2)
 	return 0;			//lines are parallel
-det.uvec = *v2;
+det.uVec = *v2;
 d = CalcDetValue (&det);
 if (oflow_check (d, cross_mag2))
 	return 0;
 //LogErr ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
-det.uvec = *v1;
+det.uVec = *v1;
 //LogErr ("         CalcDetValue\n");
 d = CalcDetValue (&det);
 if (oflow_check (d, cross_mag2))
@@ -1236,7 +1236,7 @@ if (l)
 
 int PixelTranspType (short nTexture, short nOrient, fix u, fix v)
 {
-	grs_bitmap *bmP;
+	grsBitmap *bmP;
 	int bmx, bmy, w, h, offs;
 	unsigned char	c;
 	tBitmapIndex *bmiP;

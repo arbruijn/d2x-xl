@@ -107,7 +107,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_BITMAPS_PER_BRUSH 30
 
-extern player_ship only_player_ship;		// In bm.c
+extern tPlayerShip only_player_ship;		// In bm.c
 
 short		gameData.pig.tex.nObjBitmaps=0;
 short		N_ObjBitmapPtrs=0;
@@ -136,7 +136,7 @@ static short		wall_openSound, wall_closeSound,wall_explodes,wall_blastable, wall
 double		vlighting=0;
 static int			obj_eclip;
 static char 		*dest_bm;		//clip number to play when destroyed
-static int			dest_vclip;		//what vclip to play when exploding
+static int			dest_vclip;		//what tVideoClip to play when exploding
 static int			dest_eclip;		//what eclip to play when exploding
 static fix			dest_size;		//3d size of explosion
 static int			crit_clip;		//clip number to play when destroyed
@@ -185,7 +185,7 @@ void remove_char( char * bObjectRendered, char c )
 
 //---------------------------------------------------------------
 
-int ComputeAvgPixel(grs_bitmap *newBm)
+int ComputeAvgPixel(grsBitmap *newBm)
 {
 	int	row, column, color, size;
 	char	*pptr;
@@ -220,7 +220,7 @@ int ComputeAvgPixel(grs_bitmap *newBm)
 tBitmapIndex bm_load_sub( char * filename )
 {
 	tBitmapIndex bitmap_num;
-	grs_bitmap * new;
+	grsBitmap * new;
 	ubyte newpal[256*3];
 	int iff_error;		//reference parm to avoid warning message
 	char fname[20];
@@ -240,7 +240,7 @@ tBitmapIndex bm_load_sub( char * filename )
 		return bitmap_num;
 	}
 
-	MALLOC( new, grs_bitmap, 1 );
+	MALLOC( new, grsBitmap, 1 );
 	iff_error = iff_read_bitmap(filename,new,BM_LINEAR,newpal);
 	new->bm_handle=0;
 	if (iff_error != IFF_NO_ERROR)		{
@@ -262,13 +262,13 @@ tBitmapIndex bm_load_sub( char * filename )
 	return bitmap_num;
 }
 
-extern grs_bitmap bogus_bitmap;
+extern grsBitmap bogus_bitmap;
 extern ubyte bogus_bitmap_initialized;
-extern digiSound bogusSound;
+extern tDigiSound bogusSound;
 
 void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 {
-	grs_bitmap * bm[MAX_BITMAPS_PER_BRUSH];
+	grsBitmap * bm[MAX_BITMAPS_PER_BRUSH];
 	tBitmapIndex bi;
 	int i;
 	int iff_error;		//reference parm to avoid warning message
@@ -344,7 +344,7 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 int ds_load( char * filename )	{
 	int i;
 	CFILE * cfp;
-	digiSound new;
+	tDigiSound new;
 	char fname[20];
 	char rawname[100];
 
@@ -474,7 +474,7 @@ int bm_init_use_tbl()
 
 	Num_effects = 0;
 	for (i=0; i<MAX_EFFECTS; i++ ) {
-		//Effects [gameStates.app.bD1Data][i].bm_ptr = (grs_bitmap **) -1;
+		//Effects [gameStates.app.bD1Data][i].bm_ptr = (grsBitmap **) -1;
 		Effects [gameStates.app.bD1Data][i].changing_wall_texture = -1;
 		Effects [gameStates.app.bD1Data][i].changingObject_texture = -1;
 		Effects [gameStates.app.bD1Data][i].nSegment = -1;
@@ -730,7 +730,7 @@ int bm_init_use_tbl()
 
 void verify_textures()
 {
-	grs_bitmap * bmp;
+	grsBitmap * bmp;
 	int i,j;
 	j=0;
 	for (i=0; i<Num_tmaps; i++ )	{
@@ -924,9 +924,9 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][nClip].dest_bm_num = dest_bm_num;
 
 		if (dest_vclip==-1)
-			Error("Desctruction vclip missing on line %d",linenum);
+			Error("Desctruction tVideoClip missing on line %d",linenum);
 		if (dest_size==-1)
-			Error("Desctruction vclip missing on line %d",linenum);
+			Error("Desctruction tVideoClip missing on line %d",linenum);
 
 		Effects [gameStates.app.bD1Data][nClip].dest_vclip = dest_vclip;
 		Effects [gameStates.app.bD1Data][nClip].dest_size = dest_size;
@@ -1215,20 +1215,20 @@ void bm_readRobot_ai()
 
 	NumRobot_ais++;
 
-	get4fix(robptr->field_of_view);
-	get4fix(robptr->firing_wait);
-	get4fix(robptr->firing_wait2);
-	get4byte(robptr->rapidfire_count);
+	get4fix(robptr->fieldOfView);
+	get4fix(robptr->primaryFiringWait);
+	get4fix(robptr->secondaryFiringWait);
+	get4byte(robptr->nRapidFireCount);
 	get4fix(robptr->turnTime);
 //	get4fix(robptr->fire_power);
 //	get4fix(robptr->shield);
-	get4fix(robptr->max_speed);
+	get4fix(robptr->xMaxSpeed);
 	get4fix(robptr->circleDistance);
-	get4byte(robptr->evade_speed);
+	get4byte(robptr->evadeSpeed);
 
 	robptr->always_0xabcd	= 0xabcd;
 
-	adjust_field_of_view(robptr->field_of_view);
+	adjust_field_of_view(robptr->fieldOfView);
 
 }
 
@@ -1236,7 +1236,7 @@ void bm_readRobot_ai()
 //this will load a bitmap for a polygon models.  it puts the bitmap into
 //the array gameData.pig.tex.objBmIndex[], and also deals with animating bitmaps
 //returns a pointer to the bitmap
-grs_bitmap *load_polymodel_bitmap(char *name)
+grsBitmap *load_polymodel_bitmap(char *name)
 {
 	Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 
@@ -1291,7 +1291,7 @@ void bm_readRobot()
 	int			g,bObjectRendered;
 	char			name[ROBOT_NAME_LENGTH];
 	int			containsCount=0, containsId=0, containsProb=0, containsType=0, behavior=AIB_NORMAL;
-	int			companion = 0, smart_blobs=0, energy_blobs=0, badass=0, energy_drain=0, kamikaze=0, thief=0, pursuit=0, lightcast=0, death_roll=0;
+	int			companion = 0, smartBlobs=0, energyBlobs=0, badass=0, energyDrain=0, kamikaze=0, thief=0, pursuit=0, lightcast=0, bDeathRoll=0;
 	fix			glow=0, aim=F1_0;
 	int			deathrollSound = SOUND_BOSS_SHARE_DIE;	//default
 	int			scoreValue=1000;
@@ -1371,8 +1371,8 @@ void bm_readRobot()
 				lightcast = atoi(equal_ptr);
 			} else if (!stricmp( arg, "glow" )) {
 				glow = fl2f(atof(equal_ptr);
-			} else if (!stricmp( arg, "death_roll" )) {
-				death_roll = atoi(equal_ptr);
+			} else if (!stricmp( arg, "bDeathRoll" )) {
+				bDeathRoll = atoi(equal_ptr);
 			} else if (!stricmp( arg, "deathrollSound" )) {
 				deathrollSound = atoi(equal_ptr);
 			} else if (!stricmp( arg, "thief" )) {
@@ -1381,12 +1381,12 @@ void bm_readRobot()
 				kamikaze = atoi(equal_ptr);
 			} else if (!stricmp( arg, "pursuit" )) {
 				pursuit = atoi(equal_ptr);
-			} else if (!stricmp( arg, "smart_blobs" )) {
-				smart_blobs = atoi(equal_ptr);
-			} else if (!stricmp( arg, "energy_blobs" )) {
-				energy_blobs = atoi(equal_ptr);
-			} else if (!stricmp( arg, "energy_drain" )) {
-				energy_drain = atoi(equal_ptr);
+			} else if (!stricmp( arg, "smartBlobs" )) {
+				smartBlobs = atoi(equal_ptr);
+			} else if (!stricmp( arg, "energyBlobs" )) {
+				energyBlobs = atoi(equal_ptr);
+			} else if (!stricmp( arg, "energyDrain" )) {
+				energyDrain = atoi(equal_ptr);
 			} else if (!stricmp( arg, "containsProb" )) {
 				containsProb = atoi(equal_ptr);
 			} else if (!stricmp( arg, "cloakType" )) {
@@ -1451,7 +1451,7 @@ void bm_readRobot()
 	//clear out anim info
 	for (g=0;g<MAX_GUNS+1;g++)
 		for (bObjectRendered=0;bObjectRendered<N_ANIM_STATES;bObjectRendered++)
-			Robot_info [gameStates.app.bD1Data][NRobotTypes].anim_states[g][bObjectRendered].n_joints = 0;	//inialize to zero
+			Robot_info [gameStates.app.bD1Data][NRobotTypes].animStates[g][bObjectRendered].n_joints = 0;	//inialize to zero
 
 	first_bitmap_num[n_models] = N_ObjBitmapPtrs;
 
@@ -1502,15 +1502,15 @@ void bm_readRobot()
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].badass = badass;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].lightcast = lightcast;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].glow = (glow>>12);		//convert to 4:4
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].death_roll = death_roll;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].bDeathRoll = bDeathRoll;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].deathrollSound = deathrollSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].thief = thief;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].flags = flags;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].kamikaze = kamikaze;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].pursuit = pursuit;
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].smart_blobs = smart_blobs;
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].energy_blobs = energy_blobs;
-	Robot_info [gameStates.app.bD1Data][NRobotTypes].energy_drain = energy_drain;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].smartBlobs = smartBlobs;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].energyBlobs = energyBlobs;
+	Robot_info [gameStates.app.bD1Data][NRobotTypes].energyDrain = energyDrain;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].scoreValue = scoreValue;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].seeSound = seeSound;
 	Robot_info [gameStates.app.bD1Data][NRobotTypes].attackSound = attackSound;
@@ -1629,7 +1629,7 @@ void bm_read_reactor()
 		Error("No tObject nType specfied for tObject in BITMAPS.TBL on line %d\n",linenum);
 
 	Reactors[Num_reactors].nModel = nModel;
-	Reactors[Num_reactors].nGuns = read_model_guns(model_name,Reactors[Num_reactors].gun_points,Reactors[Num_reactors].gun_dirs,NULL);
+	Reactors[Num_reactors].nGuns = read_model_guns(model_name,Reactors[Num_reactors].gunPoints,Reactors[Num_reactors].gun_dirs,NULL);
 
 	gameData.objs.types.nType[gameData.objs.types.nCount] = nType;
 	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = Num_reactors;
@@ -1869,7 +1869,7 @@ void bm_read_player_ship()
 	//calc player gun positions
 
 	{
-		polymodel *pm;
+		tPolyModel *pm;
 		tRobotInfo *r;
 		vmsVector pnt;
 		int mn;				//submodel number
@@ -1880,8 +1880,8 @@ void bm_read_player_ship()
 
 		for (gun_num=0;gun_num<r->nGuns;gun_num++) {
 
-			pnt = r->gun_points[gun_num];
-			mn = r->gun_submodels[gun_num];
+			pnt = r->gunPoints[gun_num];
+			mn = r->gunSubModels[gun_num];
 		
 			//instance up the tree for this gun
 			while (mn != 0) {
@@ -1889,7 +1889,7 @@ void bm_read_player_ship()
 				mn = pm->submodel_parents[mn];
 			}
 
-			Player_ship->gun_points[gun_num] = pnt;
+			Player_ship->gunPoints[gun_num] = pnt;
 		
 		}
 	}
@@ -2059,7 +2059,7 @@ void bm_read_weapon(int unusedFlag)
 				Weapon_info[n].renderType = WEAPON_RENDER_BLOB;
 
 			} else if (!stricmp( arg, "weapon_vclip" ))	{
-				// Set vclip to play for this weapon.
+				// Set tVideoClip to play for this weapon.
 				Weapon_info[n].bitmap.index = 0;
 				Weapon_info[n].renderType = WEAPON_RENDER_VCLIP;
 				Weapon_info[n].weapon_vclip = atoi(equal_ptr);
@@ -2178,7 +2178,7 @@ void bm_read_weapon(int unusedFlag)
 #endif
 			}		
 		} else {			// Must be a texture specification...
-			grs_bitmap *bm;
+			grsBitmap *bm;
 
 			bm = load_polymodel_bitmap(arg);
 			if (! lighted)
@@ -2364,7 +2364,7 @@ tfile = fopen("hamfile.lst","wt");
 	for (i=0;i<t;i++)
 		fwrite( &TmapInfo [gameStates.app.bD1Data][i], sizeof(*TmapInfo)-sizeof(TmapInfo->filename)-sizeof(TmapInfo->pad2), 1, fp );
 
-fprintf(tfile,"NumTextures = %d, Textures array = %d, TmapInfo array = %d\n",NumTextures,sizeof(tBitmapIndex)*NumTextures,sizeof(tmap_info)*NumTextures);
+fprintf(tfile,"NumTextures = %d, Textures array = %d, TmapInfo array = %d\n",NumTextures,sizeof(tBitmapIndex)*NumTextures,sizeof(tTexMapInfo)*NumTextures);
 
 	t = MAX_SOUNDS;
 	fwrite( &t, sizeof(int), 1, fp );
@@ -2374,9 +2374,9 @@ fprintf(tfile,"NumTextures = %d, Textures array = %d, TmapInfo array = %d\n",Num
 fprintf(tfile,"Num Sounds [gameStates.app.bD1Data] = %d, Sounds [gameStates.app.bD1Data] array = %d, AltSounds array = %d\n",t,t,t);
 
 	fwrite( &Num_vclips, sizeof(int), 1, fp );
-	fwrite( Vclip, sizeof(vclip), Num_vclips, fp );
+	fwrite( Vclip, sizeof(tVideoClip), Num_vclips, fp );
 
-fprintf(tfile,"Num_vclips = %d, Vclip array = %d\n",Num_vclips,sizeof(vclip)*Num_vclips);
+fprintf(tfile,"Num_vclips = %d, Vclip array = %d\n",Num_vclips,sizeof(tVideoClip)*Num_vclips);
 
 	fwrite( &Num_effects, sizeof(int), 1, fp );
 	fwrite( Effects, sizeof(eclip), Num_effects, fp );
@@ -2384,9 +2384,9 @@ fprintf(tfile,"Num_vclips = %d, Vclip array = %d\n",Num_vclips,sizeof(vclip)*Num
 fprintf(tfile,"Num_effects = %d, Effects array = %d\n",Num_effects,sizeof(eclip)*Num_effects);
 
 	fwrite( &Num_wall_anims, sizeof(int), 1, fp );
-	fwrite( WallAnims, sizeof(wclip), Num_wall_anims, fp );
+	fwrite( WallAnims, sizeof(tWallClip), Num_wall_anims, fp );
 
-fprintf(tfile,"Num_wall_anims = %d, WallAnims array = %d\n",Num_wall_anims,sizeof(wclip)*Num_wall_anims);
+fprintf(tfile,"Num_wall_anims = %d, WallAnims array = %d\n",Num_wall_anims,sizeof(tWallClip)*Num_wall_anims);
 
 	t = N_D2_ROBOT_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
@@ -2396,15 +2396,15 @@ fprintf(tfile,"NRobotTypes = %d, Robot_info [gameStates.app.bD1Data] array = %d\
 
 	t = N_D2_ROBOT_JOINTS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Robot_joints, sizeof(jointpos), t, fp );
+	fwrite( Robot_joints, sizeof(tJointPos), t, fp );
 
-fprintf(tfile,"NRobot_joints = %d, Robot_joints array = %d\n",t,sizeof(jointpos)*NRobot_joints);
+fprintf(tfile,"NRobot_joints = %d, Robot_joints array = %d\n",t,sizeof(tJointPos)*NRobot_joints);
 
 	t = N_D2_WEAPON_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Weapon_info, sizeof(weapon_info), t, fp );
+	fwrite( Weapon_info, sizeof(tWeaponInfo), t, fp );
 
-fprintf(tfile,"N_weaponTypes = %d, Weapon_info array = %d\n",N_weaponTypes,sizeof(weapon_info)*N_weaponTypes);
+fprintf(tfile,"N_weaponTypes = %d, Weapon_info array = %d\n",N_weaponTypes,sizeof(tWeaponInfo)*N_weaponTypes);
 
 	fwrite( &N_powerupTypes, sizeof(int), 1, fp );
 	fwrite( Powerup_info, sizeof(powerupType_info), N_powerupTypes, fp );
@@ -2413,9 +2413,9 @@ fprintf(tfile,"N_powerupTypes = %d, Powerup_info array = %d\n",N_powerupTypes,si
 
 	t = N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( gameData.models.polyModels, sizeof(polymodel), t, fp );
+	fwrite( gameData.models.polyModels, sizeof(tPolyModel), t, fp );
 
-fprintf(tfile,"gameData.models.nPolyModels = %d, gameData.models.polyModels array = %d\n",t,sizeof(polymodel)*t);
+fprintf(tfile,"gameData.models.nPolyModels = %d, gameData.models.polyModels array = %d\n",t,sizeof(tPolyModel)*t);
 
 	for (i=0; i<t; i++ )	{
 		g3_uninit_polygon_model(gameData.models.polyModels[i].model_data);	//get RGB colors
@@ -2444,9 +2444,9 @@ fprintf(tfile,"Num gauge bitmaps = %d, Gauges array = %d, Gauges_hires array = %
 
 fprintf(tfile,"Num obj bitmaps = %d, gameData.pig.tex.objBmIndex array = %d, gameData.pig.tex.pObjBmIndex array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(ushort)*t);
 
-	fwrite( &only_player_ship, sizeof(player_ship), 1, fp );
+	fwrite( &only_player_ship, sizeof(tPlayerShip), 1, fp );
 
-fprintf(tfile,"player_ship size = %d\n",sizeof(player_ship);
+fprintf(tfile,"tPlayerShip size = %d\n",sizeof(tPlayerShip);
 
 	fwrite( &gameData.models.nCockpits, sizeof(int), 1, fp );
 	fwrite( gameData.pig.tex.cockpitBmIndex, sizeof(tBitmapIndex), gameData.models.nCockpits, fp );
@@ -2499,7 +2499,7 @@ void bm_write_extraRobots()
 	//write weapon info
 	t = N_weaponTypes - N_D2_WEAPON_TYPES;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &Weapon_info[N_D2_WEAPON_TYPES], sizeof(weapon_info), t, fp );
+	fwrite( &Weapon_info[N_D2_WEAPON_TYPES], sizeof(tWeaponInfo), t, fp );
 
 	//now write robot info
 
@@ -2509,11 +2509,11 @@ void bm_write_extraRobots()
 
 	t = NRobot_joints - N_D2_ROBOT_JOINTS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &Robot_joints[N_D2_ROBOT_JOINTS], sizeof(jointpos), t, fp );
+	fwrite( &Robot_joints[N_D2_ROBOT_JOINTS], sizeof(tJointPos), t, fp );
 
 	t = gameData.models.nPolyModels - N_D2_POLYGON_MODELS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( &gameData.models.polyModels[N_D2_POLYGON_MODELS], sizeof(polymodel), t, fp );
+	fwrite( &gameData.models.polyModels[N_D2_POLYGON_MODELS], sizeof(tPolyModel), t, fp );
 
 	for (i=N_D2_POLYGON_MODELS; i<gameData.models.nPolyModels; i++ )	{
 		g3_uninit_polygon_model(gameData.models.polyModels[i].model_data);	//get RGB colors

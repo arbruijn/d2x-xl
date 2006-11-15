@@ -471,7 +471,7 @@ void expand_row(ubyte * dest, ubyte * src, int num_src_pixels )
 
 //------------------------------------------------------------------------------
 // doubles the size in x or y of a bitmap in place.
-void game_expand_bitmap( grs_bitmap * bmp, uint flags )
+void game_expand_bitmap( grsBitmap * bmp, uint flags )
 {
 	int i;
 	ubyte * dptr, * sptr;
@@ -1457,13 +1457,13 @@ void grow_window()
 }
 
 //------------------------------------------------------------------------------
-// grs_bitmap bmBackground;	already declared in line 434 (samir 4/10/94)
+// grsBitmap bmBackground;	already declared in line 434 (samir 4/10/94)
 
-extern grs_bitmap bmBackground;
+extern grsBitmap bmBackground;
 
 void copy_background_rect(int left,int top,int right,int bot)
 {
-	grs_bitmap *bm = &bmBackground;
+	grsBitmap *bm = &bmBackground;
 	int x,y;
 	int tile_left,tile_right,tile_top,tile_bot;
 	int ofs_x,ofs_y;
@@ -1647,7 +1647,7 @@ void DrawCockpit (int h, int y)
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 {
 	int i = gameData.pig.tex.cockpitBmIndex [h].index;
-	grs_bitmap *bm = gameData.pig.tex.bitmaps [0] + i; 
+	grsBitmap *bm = gameData.pig.tex.bitmaps [0] + i; 
 	grs_color c;
 
 	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h], 0);

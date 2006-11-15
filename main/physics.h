@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // these global vars are set after a call to DoPhysicsSim().  Ugly, I know.
 // list of segments went through
-extern int physSegList [MAX_FVI_SEGS], nPhysSegs;
+extern short physSegList [MAX_FVI_SEGS], nPhysSegs;
 
 // Read contrls and set physics vars
 void ReadFlyingControls(tObject *obj);

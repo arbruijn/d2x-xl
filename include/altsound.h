@@ -4,12 +4,12 @@
  
 extern int use_altSounds;
 extern int use_altsound[MAX_SOUNDS];
-extern digiSound altsound_list[MAX_SOUNDS];
+extern tDigiSound altsound_list[MAX_SOUNDS];
 
 void load_altSounds(char *fname);
 void free_altSounds();
  
-digiSound *Sounddat(int nSound);
+tDigiSound *Sounddat(int nSound);
 int DigiXlatSound(short nSound);
 
 #endif // _ALTSOUND_H

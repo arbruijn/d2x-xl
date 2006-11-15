@@ -23,8 +23,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int free_point_num=0;
 
-g3s_point temp_points[MAX_POINTS_IN_POLY];
-g3s_point *free_points[MAX_POINTS_IN_POLY];
+g3sPoint temp_points[MAX_POINTS_IN_POLY];
+g3sPoint *free_points[MAX_POINTS_IN_POLY];
 
 void init_free_points(void)
 {
@@ -35,9 +35,9 @@ void init_free_points(void)
 }
 
 
-g3s_point *get_temp_point()
+g3sPoint *get_temp_point()
 {
-	g3s_point *p;
+	g3sPoint *p;
 
 	Assert (free_point_num < MAX_POINTS_IN_POLY );
 	p = free_points[free_point_num++];
@@ -47,7 +47,7 @@ g3s_point *get_temp_point()
 	return p;
 }
 
-void free_temp_point(g3s_point *p)
+void free_temp_point(g3sPoint *p)
 {
 	Assert(p->p3Flags & PF_TEMP_POINT);
 
@@ -57,11 +57,11 @@ void free_temp_point(g3s_point *p)
 }
 
 //clips an edge against one plane. 
-g3s_point *clip_edge(int planeFlag,g3s_point *on_pnt,g3s_point *off_pnt)
+g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 {
 	fix psx_ratio;
 	fix a,b,kn,kd;
-	g3s_point *tmp;
+	g3sPoint *tmp;
 
 	//compute clipping value k = (xs-zs) / (xs-xe-zs+ze)
 	//use x or y as appropriate, and negate x/y value as appropriate
@@ -130,10 +130,10 @@ g3s_point *clip_edge(int planeFlag,g3s_point *on_pnt,g3s_point *off_pnt)
 }
 
 //clips a line to the viewing pyramid.
-void clip_line(g3s_point **p0,g3s_point **p1,ubyte codes_or)
+void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 {
 	int planeFlag;
-	g3s_point *old_p1;
+	g3sPoint *old_p1;
 
 	//might have these left over
 	(*p0)->p3Flags &= ~(PF_UVS|PF_LS);
@@ -143,7 +143,7 @@ void clip_line(g3s_point **p0,g3s_point **p1,ubyte codes_or)
 		if (codes_or & planeFlag) {
 
 			if ((*p0)->p3_codes & planeFlag)
-				{g3s_point *t=*p0; *p0=*p1; *p1=t;}	//swap!
+				{g3sPoint *t=*p0; *p0=*p1; *p1=t;}	//swap!
 
 			old_p1 = *p1;
 
@@ -156,10 +156,10 @@ void clip_line(g3s_point **p0,g3s_point **p1,ubyte codes_or)
 }
 
 
-int clip_plane(int planeFlag,g3s_point **src,g3s_point **dest,int *nv,g3s_codes *cc)
+int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *cc)
 {
 	int i;
-	g3s_point **save_dest=dest;
+	g3sPoint **save_dest=dest;
 
 	//copy first two verts to end
 	src[*nv] = src[0];
@@ -205,10 +205,10 @@ int clip_plane(int planeFlag,g3s_point **src,g3s_point **dest,int *nv,g3s_codes 
 }
 
 
-g3s_point **clip_polygon(g3s_point **src,g3s_point **dest,int *nv,g3s_codes *cc)
+g3sPoint **clip_polygon(g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *cc)
 {
 	int planeFlag;
-	g3s_point **t;
+	g3sPoint **t;
 
 	for (planeFlag=1;planeFlag<16;planeFlag<<=1)
 

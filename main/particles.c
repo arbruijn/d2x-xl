@@ -53,10 +53,12 @@
 
 #define PARTICLE_FPS	30
 
+#define PARTICLE_RAD	(F1_0)
+
 static int bHavePartImg [2][3] = {{0, 0, 0},{0, 0, 0}};
 
-static grs_bitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
-static grs_bitmap *bmpBumpMaps [2] = {NULL, NULL};
+static grsBitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
+static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
 
 static char *szParticleImg [2][3] = {
 #if 1
@@ -112,9 +114,9 @@ gameData.smoke.iUsedSmoke = -1;
 
 //	-----------------------------------------------------------------------------
 
-grs_bitmap *ReadParticleImage (char *szFile)
+grsBitmap *ReadParticleImage (char *szFile)
 {
-	grs_bitmap	*bmP = NULL;
+	grsBitmap	*bmP = NULL;
 
 if (!(bmP = GrCreateBitmap (0, 0, 0)))
 	return NULL;
@@ -132,12 +134,13 @@ return NULL;
 int LoadParticleImage (int nType)
 {
 	int			*flagP = bHavePartImg [gameStates.render.bPointSprites] + nType;
-	grs_bitmap	*bmP = NULL;
+	grsBitmap	*bmP = NULL;
 
 if (*flagP < 0)
 	return 0;
 if (*flagP > 0)
 	return 1;
+nType %= 3;
 bmP = ReadParticleImage (szParticleImg [gameStates.render.bPointSprites][nType]);
 *flagP = bmP ? 1 : -1;
 if (*flagP < 0)
@@ -158,7 +161,6 @@ void FreeParticleImages (void)
 for (i = 0; i < 2; i++)
 	for (j = 0; j < 3; j++)
 		if (bmpParticle [i][j]) {
-			d_free (BM_FRAMES (bmpParticle [i][j]));
 			GrFreeBitmap (bmpParticle [i][j]);
 			bmpParticle [i][j] = NULL;
 			bHavePartImg [i][j] = 0;
@@ -183,7 +185,8 @@ return n * n;
 
 //------------------------------------------------------------------------------
 
-int CreateParticle (tParticle *pParticle, vmsVector *pPos, short nSegment, int nLife, 
+int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
+						  short nSegment, int nLife, 
 						  int nSpeed, int nType, float nScale, int nCurTime, int bStart)
 {
 	vmsVector	dir;
@@ -228,29 +231,42 @@ pParticle->glColor.b = pParticle->glColor.a - 0.5;
 #endif
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed = nSpeed * F1_0;
-dir.x = nSpeed - randN (2 * nSpeed);
-dir.y = nSpeed - randN (2 * nSpeed);
-dir.z = nSpeed - randN (2 * nSpeed);
-pParticle->dir = dir;
-#if 0
-pParticle->pos.x = pPosegP->x + 500 - randN (1000);
-pParticle->pos.y = pPosegP->y + 500 - randN (1000);
-pParticle->pos.z = pPosegP->z + 500 - randN (1000);
+if (pDir) {
+	vmsAngVec	a;
+	vmsMatrix	m;
+	double		d;
+#if 1
+	a.p = randN (F1_0 / 4) - F1_0 / 8;
+	a.b = randN (F1_0 / 4) - F1_0 / 8;
+	a.h = randN (F1_0 / 4) - F1_0 / 8;
+	VmAngles2Matrix (&m, &a);
+	VmVecNormalize (VmVecRotate (&dir, pDir, &m));
+	d = (double) VmVecDeltaAng (&dir, pDir, NULL);
+	if (d) {
+		d = exp ((F1_0 / 8) / d);
+		nSpeed = (fix) ((double) nSpeed / d);
+		}
+	pParticle->glColor.g =
+	pParticle->glColor.b = 1.0;//(double) (64 + randN (64)) / 255.0;
 #else
-VmVecScaleAdd (&pParticle->pos, pPos, &dir, 200);
+	dir = *pDir;
 #endif
-#if 0
-if (nLife < 0) {
-	pParticle->nTTL = -1;
-	pParticle->nLife = 1;
+	VmVecScaleAdd (&pParticle->pos, pPos, &dir, 200);
+	VmVecScale (&dir, nSpeed);
 	}
-else
-#else
+else {
+	dir.x = nSpeed - randN (2 * nSpeed);
+	dir.y = nSpeed - randN (2 * nSpeed);
+	dir.z = nSpeed - randN (2 * nSpeed);
+	VmVecScaleAdd (&pParticle->pos, pPos, &dir, 200);
+	}
+pParticle->dir = dir;
 if (nLife < 0)
 	nLife = -nLife;
-#endif
-	pParticle->nLife = 
-	pParticle->nTTL = nLife / 2 + randN (nLife / 2);
+if (gameOpts->render.smoke.bDisperse)
+	nLife = (nLife * 2) / 3;
+pParticle->nLife = 
+pParticle->nTTL = nLife / 2 + randN (nLife / 2);
 pParticle->nOrient = randN (4);
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
@@ -358,15 +374,19 @@ int MoveParticle (tParticle *pParticle, int nCurTime)
 
 if (pParticle->nLife <= 0)
 	return 0;
-if ((1000 / PARTICLE_FPS) <= (t = nCurTime - pParticle->nMoved)) {
+t = nCurTime - pParticle->nMoved;
+//if ((1000 / PARTICLE_FPS) <= ()) 
+	{
 	if (pParticle->nDelay > 0)
 		pParticle->nDelay -= t;
 	else {
 		pos = pParticle->pos;
 		dir = pParticle->dir;
-		dir.x = ChangeDir (dir.x);
-		dir.y = ChangeDir (dir.y);
-		dir.z = ChangeDir (dir.z);
+		if (pParticle->nType != 3) {
+			dir.x = ChangeDir (dir.x);
+			dir.y = ChangeDir (dir.y);
+			dir.z = ChangeDir (dir.z);
+			}
 		for (j = 0; j < 2; j++) {
 			VmVecScaleAdd (&pParticle->pos, &pos, &dir, t);
 			if (gameOpts->render.smoke.bCollisions && CollideParticleAndWall (pParticle)) {	//reflect the particle
@@ -483,16 +503,19 @@ int RenderParticle (tParticle *pParticle)
 	vmsVector			hp;
 	GLdouble				u, v, x, y, z, h, w;
 	char					o;
-	grs_bitmap			*bmP;
+	grsBitmap			*bmP;
 	tPartColor			pc;
 #if OGL_VERTEX_ARRAYS
 	double				*pf;
 #endif
-	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
+	double				decay2,
+							decay = (double) pParticle->nLife / (double) pParticle->nTTL;
 
 if (pParticle->nDelay > 0)
 	return 0;
-bmP = bmpParticle [gameStates.render.bPointSprites][pParticle->nType];
+if (gameOpts->render.smoke.bDisperse)
+	decay2 = pow (decay, 1.0 / 4.0);
+bmP = bmpParticle [gameStates.render.bPointSprites][pParticle->nType % 3];
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 if (gameOpts->render.smoke.bSort)
@@ -501,15 +524,21 @@ else
 	G3TransformPoint (&hp, &pParticle->pos);
 //if (pParticle->glColor.r < 1.0)
 //	pParticle->glColor.r += 0.1;
-if (pParticle->glColor.g < 1.0) {
-	pParticle->glColor.g += 1.0 / 3.0;
-	if (pParticle->glColor.g > 1.0)
-		pParticle->glColor.g = 1.0;
+if (pParticle->nType > 2) {
+	//pParticle->glColor.g *= 0.99;
+	//pParticle->glColor.b *= 0.99;
 	}
-if (pParticle->glColor.b < 1.0) {
-	pParticle->glColor.b += 1.0 / 6.0;
-	if (pParticle->glColor.b > 1.0)
-		pParticle->glColor.b = 1.0;
+else {
+	if (pParticle->glColor.g < 1.0) {
+		pParticle->glColor.g += 1.0 / 3.0;
+		if (pParticle->glColor.g > 1.0)
+			pParticle->glColor.g = 1.0;
+		}
+	if (pParticle->glColor.b < 1.0) {
+		pParticle->glColor.b += 1.0 / 6.0;
+		if (pParticle->glColor.b > 1.0)
+			pParticle->glColor.b = 1.0;
+		}
 	}
 pc = pParticle->glColor;
 if (gameOpts->ogl.bUseLighting) {
@@ -520,7 +549,7 @@ if (gameOpts->ogl.bUseLighting) {
 		pc.b *= (double) psc->color.blue;
 		}
 	}
-glColor4d (pc.r, pc.g, pc.b, pc.a * decay);
+glColor4d (pc.r, pc.g, pc.b, pc.a * (gameOpts->render.smoke.bDisperse ? decay2 : decay));
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 #if OGL_VERTEX_ARRAYS
@@ -550,8 +579,14 @@ if (gameStates.render.bPointSprites) {
 else
 #endif
 	{
-	w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
-	h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
+	if (gameOpts->render.smoke.bDisperse) {
+		w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) / decay2;
+		h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) / decay2;
+		}
+	else {
+		w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
+		h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
+		}
 	x = f2fl (hp.x);
 	y = f2fl (hp.y);
 	z = -f2fl (hp.z);
@@ -590,9 +625,12 @@ return 1;
 
 int BeginRenderSmoke (int nType)
 {
-	grs_bitmap	*bmP = bmpParticle [gameStates.render.bPointSprites][nType];
-	int					nFrames = nParticleFrames [gameStates.render.bPointSprites][nType];
+	grsBitmap	*bmP;
+	int			nFrames;
 
+nType %= 3;
+bmP = bmpParticle [gameStates.render.bPointSprites][nType];
+nFrames = nParticleFrames [gameStates.render.bPointSprites][nType];
 if (nFrames > 1) {
 	static time_t	t0 = 0;
 	time_t			t = gameStates.app.nSDLTicks;
@@ -675,7 +713,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vmsVector *pPos, short nSegment, int nMaxParts, float nPartScale, 
+int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
+					  short nSegment, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
@@ -690,6 +729,8 @@ pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
 pCloud->nType = nType;
+if (pCloud->bHaveDir = (pDir != NULL))
+	pCloud->dir = *pDir;
 pCloud->prevPos =
 pCloud->pos = *pPos;
 pCloud->bHavePrevPos = 1;
@@ -741,11 +782,12 @@ int MoveCloud (tCloud *pCloud, int nCurTime)
 	int			t, h, i, j = c.nParts,
 					nDens, nInterpolatePos = 0;
 	float			fDist;
-	vmsVector	vDelta, vPos;
-	fVector3		vDeltaf, vPosf;
+	vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL);
+	fVector		vDeltaf, vPosf;
 
-if ((t = nCurTime - c.nMoved) < (1000 / PARTICLE_FPS))
-	return 0;
+t = nCurTime - c.nMoved;
+//if (t < (1000 / PARTICLE_FPS))
+//	return 0;
 nPartSeg = -1;
 for (i = 0; i < j; )
 	if (MoveParticle (c.pParticles + i, nCurTime))
@@ -793,7 +835,7 @@ if (CloudLives (pCloud, nCurTime)) {
 		vPos.x = (fix) (vPosf.p.x * 65336.0f);
 		vPos.y = (fix) (vPosf.p.y * 65336.0f);
 		vPos.z = (fix) (vPosf.p.z * 65336.0f);
-		CreateParticle (c.pParticles + i, &vPos, c.nSegment, c.nLife, 
+		CreateParticle (c.pParticles + i, &vPos, pDir, c.nSegment, c.nLife, 
 							 c.nSpeed, c.nType, c.nPartScale, nCurTime, nInterpolatePos);
 		nInterpolatePos = (h > 0);
 		}
@@ -909,17 +951,17 @@ return EndRenderSmoke (pCloud);
 void SetCloudPos (tCloud *pCloud, vmsVector *pos)
 {
 int nNewSeg = FindSegByPoint (pos, pCloud->nSegment);
-#if 0
-if ((pCloud->prevPos.x != pCloud->pos.x) ||
-	 (pCloud->prevPos.y != pCloud->pos.y) ||
-	 (pCloud->prevPos.z != pCloud->pos.z)) {
-	pCloud->prevPos = pCloud->pos;
-	pCloud->bHavePrevPos = 1;
-	}
-#endif
 pCloud->pos = *pos;
 if (nNewSeg >= 0)
 	pCloud->nSegment = nNewSeg;
+}
+
+//------------------------------------------------------------------------------
+
+void SetCloudDir (tCloud *pCloud, vmsVector *pDir)
+{
+if (pCloud->bHaveDir = (pDir != NULL))
+	pCloud->dir = *pDir;
 }
 
 //------------------------------------------------------------------------------
@@ -1054,8 +1096,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateSmoke (vmsVector *pPos, short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nObject)
+int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxClouds, int nMaxParts, 
+					  float nPartScale, int nDensity, int nPartsPerPos, 
+					  int nLife, int nSpeed, int nType, int nObject)
 {
 if (!(EGI_FLAG (bUseSmoke, 0, 0)))
 	return 0;
@@ -1083,7 +1126,7 @@ else {
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
-		if (CreateCloud (pSmoke->pClouds + i, pPos, nSegment, nMaxParts, nPartScale, nDensity, 
+		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nMaxParts, nPartScale, nDensity, 
 							  nPartsPerPos, nLife, nSpeed, nType, t))
 			pSmoke->nClouds++;
 		else {
@@ -1183,7 +1226,7 @@ if (IsUsedSmoke (i)) {
 			SetCloudPos (pSmoke->pClouds, pos);
 #ifdef _DEBUG
 	else if (pSmoke->nObject >= 0) {
-		HUDMessage (0, "no gameData.smoke.smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
+		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
 		//LogErr ("no gameData.smoke.smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
 		pSmoke->nObject = -1;
 		}
@@ -1244,6 +1287,17 @@ if (IsUsedSmoke (i)) {
 
 //------------------------------------------------------------------------------
 
+void SetSmokeDir (int i, vmsVector *pDir)
+{
+if (IsUsedSmoke (i)) {
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
+	for (i = 0; i < pSmoke->nClouds; i++)
+		SetCloudDir (pSmoke->pClouds + i, pDir);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int GetSmokeType (int i)
 {
 return (IsUsedSmoke (i)) ? gameData.smoke.smoke [i].nType : -1;
@@ -1266,6 +1320,16 @@ else
 int MaxParticles (int nParts, int nDens)
 {
 return (nParts < 0) ? -nParts : nParts * (nDens + 1); //(int) (nParts * pow (1.2, nDens));
+}
+
+//------------------------------------------------------------------------------
+
+float ParticleSize (int nSize, float nScale)
+{
+if (gameOpts->render.smoke.bDisperse)
+	return (float) (PARTICLE_RAD * (nSize + 1)) / nScale + 0.5f;
+else
+	return ((float) (PARTICLE_RAD << nSize)) / nScale + 0.5f;
 }
 
 //------------------------------------------------------------------------------

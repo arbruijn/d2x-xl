@@ -155,7 +155,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added Video clip functionality
  *
  * Revision 1.20  1993/12/21  20:00:15  john
- * moved selector stuff to grs_bitmap
+ * moved selector stuff to grsBitmap
  *
  * Revision 1.19  1993/12/21  19:33:58  john
  * Added selector to bmd_bitmap.
@@ -251,7 +251,7 @@ typedef struct {
 	char    filename[13];       //used by editor to remap textures
 	char    pad2[3];
 	#endif
-} __pack__ tmap_info;
+} __pack__ tTexMapInfo;
 
 typedef struct {
 	char			filename[13];
@@ -301,7 +301,7 @@ void BMReadAll(CFILE * fp);
 void BMReadWeaponInfoD1 (CFILE * fp);
 void BMReadGameDataD1 (CFILE * fp);
 void RestoreDefaultRobots (void);
-int ComputeAvgPixel(grs_bitmap *newBm);
+int ComputeAvgPixel(grsBitmap *newBm);
 
 void LoadTextureBrightness (char *pszLevel);
 int LoadExitModels();

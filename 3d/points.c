@@ -11,26 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Routines for point definition, rotation, etc.
- * 
- * Old Log:
- *
- * Revision 1.3  1995/09/21  17:29:40  allender
- * changed project_point to overflow if z <= 0
- *
- * Revision 1.2  1995/09/13  11:31:28  allender
- * removed CheckMulDiv from G3ProjectPoint
- *
- * Revision 1.1  1995/05/05  08:52:35  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  04:32:25  matt
- * Initial revision
- * 
- * 
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -82,7 +62,7 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 // -----------------------------------------------------------------------------------
 //projects a point
-void G3ProjectPoint(g3s_point *p)
+void G3ProjectPoint(g3sPoint *p)
 {
 #ifndef __powerc
 	fix tx,ty;
@@ -140,9 +120,9 @@ void G3Point2Vec(vmsVector *v,short sx,short sy)
 //delta rotation functions
 vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 {
-	dest->x = FixMul(viewInfo.view.rvec.x,dx);
-	dest->y = FixMul(viewInfo.view.uvec.x,dx);
-	dest->z = FixMul(viewInfo.view.fvec.x,dx);
+	dest->x = FixMul(viewInfo.view.rVec.x,dx);
+	dest->y = FixMul(viewInfo.view.uVec.x,dx);
+	dest->z = FixMul(viewInfo.view.fVec.x,dx);
 
 	return dest;
 }
@@ -151,9 +131,9 @@ vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 
 vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 {
-	dest->x = FixMul(viewInfo.view.rvec.y,dy);
-	dest->y = FixMul(viewInfo.view.uvec.y,dy);
-	dest->z = FixMul(viewInfo.view.fvec.y,dy);
+	dest->x = FixMul(viewInfo.view.rVec.y,dy);
+	dest->y = FixMul(viewInfo.view.uVec.y,dy);
+	dest->z = FixMul(viewInfo.view.fVec.y,dy);
 
 	return dest;
 }
@@ -162,9 +142,9 @@ vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 
 vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 {
-	dest->x = FixMul(viewInfo.view.rvec.z,dz);
-	dest->y = FixMul(viewInfo.view.uvec.z,dz);
-	dest->z = FixMul(viewInfo.view.fvec.z,dz);
+	dest->x = FixMul(viewInfo.view.rVec.z,dz);
+	dest->y = FixMul(viewInfo.view.uVec.z,dz);
+	dest->z = FixMul(viewInfo.view.fVec.z,dz);
 
 	return dest;
 }
@@ -178,7 +158,7 @@ vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src)
 
 // -----------------------------------------------------------------------------------
 
-ubyte G3AddDeltaVec (g3s_point *dest, g3s_point *src, vmsVector *vDelta)
+ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, vmsVector *vDelta)
 {
 VmVecAdd (&dest->p3_vec, &src->p3_vec, vDelta);
 dest->p3Flags = 0;		//not projected
@@ -190,17 +170,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(vmsVector *pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view.fvec.x);
-	q += mul64 (pnt->y - viewInfo.position.y, viewInfo.view.fvec.y);
-	q += mul64 (pnt->z - viewInfo.position.z, viewInfo.view.fvec.z);
+	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view.fVec.x);
+	q += mul64 (pnt->y - viewInfo.position.y, viewInfo.view.fVec.y);
+	q += mul64 (pnt->z - viewInfo.position.z, viewInfo.view.fVec.z);
 	return (fix) (q >> 16);
 #else
 	quadint q;
 
 	q.low=q.high=0;
-	fixmulaccum(&q,(pnt->x - viewInfo.position.x),viewInfo.view.fvec.x);
-	fixmulaccum(&q,(pnt->y - viewInfo.position.y),viewInfo.view.fvec.y);
-	fixmulaccum(&q,(pnt->z - viewInfo.position.z),viewInfo.view.fvec.z);
+	fixmulaccum(&q,(pnt->x - viewInfo.position.x),viewInfo.view.fVec.x);
+	fixmulaccum(&q,(pnt->y - viewInfo.position.y),viewInfo.view.fVec.y);
+	fixmulaccum(&q,(pnt->z - viewInfo.position.z),viewInfo.view.fVec.z);
 	return fixquadadjust(&q);
 #endif
 }

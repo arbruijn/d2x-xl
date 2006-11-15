@@ -72,14 +72,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * materialization center.
  *
  * Revision 1.19  1994/06/09  11:46:26  john
- * Took out unused vclip defines.
+ * Took out unused tVideoClip defines.
  *
  * Revision 1.18  1994/06/08  18:16:33  john
  * Bunch of new stuff that basically takes constants out of the code
  * and puts them into bitmaps.tbl.
  *
  * Revision 1.17  1994/06/08  12:49:01  mike
- * Add lightValue to vclip.
+ * Add lightValue to tVideoClip.
  *
  * Revision 1.16  1994/06/08  11:43:28  mike
  * Allow 20 vclips, I think (anyway, more than it used to be, probably 12).
@@ -114,7 +114,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Defined Pclips... maybe shouldn't be in this file.
  *
  * Revision 1.6  1994/03/28  20:58:22  yuan
- * Added blood vclip constant
+ * Added blood tVideoClip constant
  *
  * Revision 1.5  1994/03/15  16:31:56  yuan
  * Cleaned up bm-loading code.
@@ -158,7 +158,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define D1_VCLIP_MAXNUM             70
 #define VCLIP_MAX_FRAMES            30
 
-// vclip flags
+// tVideoClip flags
 #define VF_ROD      1       // draw as a rod, not a blob
 
 typedef struct {
@@ -169,22 +169,22 @@ typedef struct {
 	short           nSound;
 	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
 	fix             lightValue;
-} __pack__ vclip;
+} __pack__ tVideoClip;
 
 extern int Num_vclips [2];
-extern vclip Vclip [2][VCLIP_MAXNUM];
+extern tVideoClip Vclip [2][VCLIP_MAXNUM];
 
-// draw an tObject which renders as a vclip.
+// draw an tObject which renders as a tVideoClip.
 void DrawVClipObject(tObject *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
 extern void DrawWeaponVClip(tObject *obj);
 
 #ifdef FAST_FILE_IO
-#define vclip_read_n(vc, n, fp) CFRead(vc, sizeof(vclip), n, fp)
+#define vclip_read_n(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)
 #else
 /*
- * reads n vclip structs from a CFILE
+ * reads n tVideoClip structs from a CFILE
  */
-extern int vclip_read_n(vclip *vc, int n, CFILE *fp);
+extern int vclip_read_n(tVideoClip *vc, int n, CFILE *fp);
 #endif
 
 #endif /* _VCLIP_H */

@@ -402,7 +402,7 @@ void PlayLevelSong( int levelnum )
 }
 
 //this should be called regularly to check for redbook restart
-void songs_check_redbook_repeat()
+void SongsCheckRedbookRepeat()
 {
 	static fix last_checkTime;
 	fix currentTime;
@@ -418,7 +418,7 @@ void songs_check_redbook_repeat()
 			if (gameStates.sound.bRedbookPlaying == REDBOOK_TITLE_TRACK || gameStates.sound.bRedbookPlaying == REDBOOK_CREDITS_TRACK)
 				play_redbook_track(REDBOOK_CREDITS_TRACK,0);
 			else {
-				//songs_goto_next_song();
+				//SongsGotoNextSong();
 	
 				//new code plays all tracks to end of disk, so if disk has
 				//stopped we must be at end.  So start again with level 1 song.
@@ -432,7 +432,7 @@ void songs_check_redbook_repeat()
 }
 
 //goto the next level song
-void songs_goto_next_song()
+void SongsGotoNextSong()
 {
 	if (gameStates.sound.bRedbookPlaying) 		//get correct track
 		nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
@@ -442,7 +442,7 @@ void songs_goto_next_song()
 }
 
 //goto the previous level song
-void songs_goto_prev_song()
+void SongsGotoPrevSong()
 {
 	if (gameStates.sound.bRedbookPlaying) 		//get correct track
 		nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;

@@ -151,6 +151,7 @@ typedef struct tSmokeOptions {
 	int bMissiles;
 	int bDebris;
 	int bCollisions;
+	int bDisperse;
 	int bSort;
 	int bDecreaseLag;	//only render if player is moving forward
 } tSmokeOptions;
@@ -170,6 +171,7 @@ typedef struct tRenderOptions {
 	int bAutoTransparency;
 	int nMathFormat;
 	int nDefMathFormat;
+	int bEnableSSE;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
@@ -596,6 +598,7 @@ typedef struct tApplicationStates {
 	int bPlayerEggsDropped;
 	int bDeathSequenceAborted;
 	int bPlayerFiredLaserThisFrame;
+	int bUseSound;
 	int bMacData;
 	int bLunacy;
 	int bEnglish;
@@ -738,12 +741,12 @@ typedef struct tOglLight {
 	float			rad;
 #if USE_OGL_LIGHTS
 	unsigned		handle;
-	fVector3		fAttenuation;	// constant, linear quadratic
-	fVector4		fAmbient;
-	fVector4		fDiffuse;
+	fVector		fAttenuation;	// constant, linear quadratic
+	fVector		fAmbient;
+	fVector		fDiffuse;
 #endif
-	fVector4		fSpecular;
-	fVector4		fEmissive;
+	fVector		fSpecular;
+	fVector		fEmissive;
 	float			spotAngle;
 	float			spotExponent;
 	short			nSegment;
@@ -759,11 +762,11 @@ typedef struct tOglLight {
 
 typedef struct tOglMaterial {
 #if 0 //using global default values instead
-	fVector3		diffuse;
-	fVector3		ambient;
+	fVector		diffuse;
+	fVector		ambient;
 #endif
-	fVector3		specular;
-	fVector3		emissive;
+	fVector		specular;
+	fVector		emissive;
 	ubyte			shininess;
 	ubyte			bValid;
 	short			nLight;
@@ -771,9 +774,9 @@ typedef struct tOglMaterial {
 
 typedef struct tShaderLight {
 #if 1
-	fVector4		color;
-	fVector3		pos [2];
-	fVector3		dir;
+	fVector		color;
+	fVector		pos [2];
+	fVector		dir;
 	float			rad;
 #endif
 	float			brightness;
@@ -886,8 +889,8 @@ typedef struct tOglData {
 typedef struct tTerrainRenderData {
 	ubyte			*pHeightMap;
 	fix			*pLightMap;
-	grs_bitmap	*bmP;
-	g3s_point	saveRow [TERRAIN_GRID_MAX_SIZE];
+	grsBitmap	*bmP;
+	g3sPoint	saveRow [TERRAIN_GRID_MAX_SIZE];
 	vmsVector	vStartPoint;
 	uvl			uvlList [2][3];
 	int			bOutline;
@@ -912,7 +915,7 @@ typedef struct tRenderData {
 	int						nComputedColors;
 	fix						xFlashEffect;
 	fix						xTimeFlashLastPlayed;
-	fVector3					*pVerts;
+	fVector					*pVerts;
 	tLightData				lights;
 	tMorphData				morph;
 	tShadowData				shadows;
@@ -935,11 +938,11 @@ typedef struct tSlideSegs {
 
 typedef struct tSegmentData {
 	vmsVector			vertices [MAX_VERTICES];
-	fVector3				fVertices [MAX_VERTICES];
+	fVector				fVertices [MAX_VERTICES];
 	tSegment				segments [MAX_SEGMENTS];
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
-	g3s_point			points [MAX_VERTICES];
+	g3sPoint			points [MAX_VERTICES];
 	vmsVector			segCenters [MAX_SEGMENTS];
 	vmsVector			sideCenters [MAX_SEGMENTS * 6];
 	int					nVertices;
@@ -956,22 +959,22 @@ typedef struct tSegmentData {
 
 typedef struct tWallData {
 	wall					walls [MAX_WALLS];
-	expl_wall			explWalls [MAX_EXPLODING_WALLS];
-	active_door			activeDoors [MAX_DOORS];
-	cloaking_wall		cloaking [MAX_CLOAKING_WALLS];
-	wclip					anims [2][MAX_WALL_ANIMS];
+	tExplWall			explWalls [MAX_EXPLODING_WALLS];
+	tActiveDoor			activeDoors [MAX_DOORS];
+	tCloakingWall		cloaking [MAX_CLOAKING_WALLS];
+	tWallClip					anims [2][MAX_WALL_ANIMS];
 	int					bitmaps [MAX_WALL_ANIMS];
 	int					nWalls;
 	int					nOpenDoors; 
 	int					nCloaking;
 	int					nAnims [2];
-	wclip					*pAnims;
+	tWallClip					*pAnims;
 } tWallData;
 
 typedef struct tTriggerData {
 	tTrigger				triggers [MAX_TRIGGERS];
 	tTrigger				objTriggers [MAX_TRIGGERS];
-	tObjTriggerRef	objTriggerRefs [MAX_OBJ_TRIGGERS];
+	tObjTriggerRef		objTriggerRefs [MAX_OBJ_TRIGGERS];
 	short					firstObjTrigger [MAX_OBJECTS_D2X];
 	long					delay [MAX_TRIGGERS];
 	int					nTriggers;
@@ -1083,7 +1086,7 @@ typedef struct tPOFObject {
 	short					nVerts;
 	vmsVector			*pvVerts;
 	tOOF_vector			*pvVertsf;
-	g3s_normal			*pVertNorms;
+	g3sNormal			*pVertNorms;
 	vmsVector			vCenter;
 	vmsVector			*pvRotVerts;
 	tPOF_faceList		faces;
@@ -1106,8 +1109,8 @@ typedef struct tRobotData {
 	tRobotInfo			info [2][MAX_ROBOT_TYPES];
 	tRobotInfo			defaultInfo [MAX_ROBOT_TYPES];
 	tPOFObject			pofData [2][MAX_ROBOT_TYPES];
-	jointpos				joints [MAX_ROBOT_JOINTS];
-	jointpos				defaultJoints [MAX_ROBOT_JOINTS];
+	tJointPos			joints [MAX_ROBOT_JOINTS];
+	tJointPos			defaultJoints [MAX_ROBOT_JOINTS];
 	int					nJoints;
 	int					nDefaultJoints;
 	int					nCamBotId;
@@ -1120,9 +1123,9 @@ typedef struct tRobotData {
 } tRobotData;
 
 typedef struct tSoundData {
-	digiSound			sounds [2][MAX_SOUND_FILES];
+	tDigiSound			sounds [2][MAX_SOUND_FILES];
 	int					nSoundFiles [2];
-	digiSound			*pSounds;
+	tDigiSound			*pSounds;
 } tSoundData;
 
 #define N_COCKPIT_BITMAPS 6
@@ -1130,8 +1133,8 @@ typedef struct tSoundData {
 
 typedef struct tTextureData {
 	BitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
-	grs_bitmap			bitmaps [2][MAX_BITMAP_FILES];
-	grs_bitmap			altBitmaps [2][MAX_BITMAP_FILES];
+	grsBitmap			bitmaps [2][MAX_BITMAP_FILES];
+	grsBitmap			altBitmaps [2][MAX_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
 	alias					aliases [MAX_ALIASES];
 	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
@@ -1141,32 +1144,32 @@ typedef struct tTextureData {
 	int					nBitmaps [2];
 	int					nObjBitmaps;
 	int					bPageFlushed;
-	tmap_info       	tMapInfo [2][MAX_TEXTURES];
+	tTexMapInfo      	tMapInfo [2][MAX_TEXTURES];
 	int					nExtraBitmaps;
 	int					nAliases;
 	int					nHamFileVersion;
 	int					nTextures [2];
 	int					nFirstMultiBitmap;
 	BitmapFile			*pBitmapFiles;
-	grs_bitmap			*pBitmaps;
-	grs_bitmap			*pAltBitmaps;
+	grsBitmap			*pBitmaps;
+	grsBitmap			*pAltBitmaps;
 	tBitmapIndex		*pBmIndex;
-	tmap_info			*pTMapInfo;
+	tTexMapInfo			*pTMapInfo;
 	int					brightness [MAX_WALL_TEXTURES];
 } tTextureData;
 
 typedef struct tEffectData {
 	eclip					effects [2][MAX_EFFECTS];
-	vclip 				vClips [2][VCLIP_MAXNUM];
+	tVideoClip 				vClips [2][VCLIP_MAXNUM];
 	int					nEffects [2];
 	int 					nClips [2];
 	eclip					*pEffects;
-	vclip					*pVClips;
+	tVideoClip					*pVClips;
 } tEffectData;
 
 #define N_PLAYER_GUNS 8
 
-typedef struct player_ship {
+typedef struct tPlayerShip {
 	int					nModel;
 	int					expl_vclip_num;
 	fix					mass,drag;
@@ -1175,17 +1178,17 @@ typedef struct player_ship {
 							brakes;
 	fix					wiggle;
 	fix					max_rotthrust;
-	vmsVector			gun_points [N_PLAYER_GUNS];
-} player_ship;
+	vmsVector			gunPoints [N_PLAYER_GUNS];
+} tPlayerShip;
 
 typedef struct tShipData {
-	player_ship			only;
-	player_ship			*player;
+	tPlayerShip			only;
+	tPlayerShip			*player;
 } tShipData;
 
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
-	vclip					*vcP;
+	tVideoClip					*vcP;
 	tVClipInfo			vci;
 	tFlightPath			path;
 } tFlagData;
@@ -1201,7 +1204,7 @@ typedef struct tPigData {
 
 typedef struct tMuzzleData {
 	int				queueIndex;
-	muzzle_info		info [MUZZLE_QUEUE_MAX];
+	tMuzzleInfo		info [MUZZLE_QUEUE_MAX];
 } tMuzzleData;
 
 #include "weapon.h"
@@ -1211,8 +1214,8 @@ typedef struct tWeaponData {
 	sbyte					nSecondary;
 	sbyte					nOverridden;
 	int					nTypes [2];
-	weapon_info			info [MAX_WEAPON_TYPES];
-	D1_weapon_info		infoD1 [D1_MAX_WEAPON_TYPES];
+	tWeaponInfo			info [MAX_WEAPON_TYPES];
+	tD1WeaponInfo		infoD1 [D1_MAX_WEAPON_TYPES];
 	tRgbColorf			color [MAX_OBJECTS];
 	ubyte					bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 } tWeaponData;
@@ -1231,13 +1234,13 @@ typedef struct tModelData {
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_HIRES_MODELS];
 	ubyte					bHaveHiresModel [MAX_HIRES_MODELS];
-	polymodel			polyModels [MAX_POLYGON_MODELS];
-	polymodel			defPolyModels [MAX_POLYGON_MODELS];
+	tPolyModel			polyModels [MAX_POLYGON_MODELS];
+	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
-	g3s_point			polyModelPoints [MAX_POLYGON_VERTS];
-	fVector3				fPolyModelVerts [MAX_POLYGON_VERTS];
-	grs_bitmap			*textures [MAX_POLYOBJ_TEXTURES];
+	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];
+	fVector				fPolyModelVerts [MAX_POLYGON_VERTS];
+	grsBitmap			*textures [MAX_POLYOBJ_TEXTURES];
 	tBitmapIndex		textureIndex [MAX_POLYOBJ_TEXTURES];
 	int					nSimpleModelThresholdScale;
 	int					nMarkerModel;
@@ -1434,30 +1437,30 @@ typedef struct tAIData {
 	vmsVector			vBelievedPlayerPos;
 	fix					nDistToLastPlayerPosFiredAt;
 	tAILocal				localInfo [MAX_OBJECTS];
-	ai_cloak_info		cloakInfo [MAX_AI_CLOAK_INFO];
-	point_seg			pointSegs [MAX_POINT_SEGS];
-	point_seg			*freePointSegs;
+	tAICloakInfo		cloakInfo [MAX_AI_CLOAK_INFO];
+	tPointSeg			pointSegs [MAX_POINT_SEGS];
+	tPointSeg			*freePointSegs;
 	int					nAwarenessEvents;
-	awareness_event	awarenessEvents [MAX_AWARENESS_EVENTS];
+	tAwarenessEvent	awarenessEvents [MAX_AWARENESS_EVENTS];
 } tAIData;
 
 typedef struct tSatelliteData {
-	grs_bitmap			bmInstance;
-	grs_bitmap			*bmP;
+	grsBitmap			bmInstance;
+	grsBitmap			*bmP;
 	vmsVector			vPos;
 	vmsVector			vUp;
 } tSatelliteData;
 
 typedef struct tStationData {
-	grs_bitmap			*bmP;
-	grs_bitmap			**bmList [1];
+	grsBitmap			*bmP;
+	grsBitmap			**bmList [1];
 	vmsVector			vPos;
 	int					nModel;
 } tStationData;
 
 typedef struct tTerrainData {
-	grs_bitmap			bmInstance;
-	grs_bitmap			*bmP;
+	grsBitmap			bmInstance;
+	grsBitmap			*bmP;
 } tTerrainData;
 
 typedef struct tExitData {
@@ -1483,7 +1486,7 @@ typedef struct tEndLevelData {
 #include "songs.h"
 
 typedef struct tSongData {
-	song_info			info [MAX_NUM_SONGS];
+	tSongInfo			info [MAX_NUM_SONGS];
 	int					bInitialized;
 	int					nSongs;
 	int					nD1Songs;
@@ -1513,9 +1516,9 @@ typedef struct tMatCenData {
 	fix				xFuelGiveAmount;
 	fix				xFuelMaxAmount;
 	int				nFuelCenters;
-	fuelcen_info	fuelCenters [MAX_FUEL_CENTERS];
+	tFuelCenInfo	fuelCenters [MAX_FUEL_CENTERS];
 	int				nRobotCenters;
-	matcen_info		robotCenters [MAX_ROBOT_CENTERS];
+	tMatCenInfo		robotCenters [MAX_ROBOT_CENTERS];
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];
 	tSegment			*playerSegP;
@@ -1599,7 +1602,7 @@ typedef struct tHoardItem {
 	int			nSize;
 	int			nFrames;
 	int			nClip;
-	grs_bitmap	bm;
+	grsBitmap	bm;
 	ubyte			*palette;
 } tHoardItem;
 
@@ -1716,7 +1719,7 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(ga
 
 static inline void PIGGY_PAGE_IN (tBitmapIndex bmi, int bD1) 
 {
-grs_bitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi.index;
+grsBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi.index;
 if (!bmP->bm_texBuf || (bmP->bm_props.flags & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }
@@ -1734,7 +1737,7 @@ static inline void glVertex3x (fix x, fix y, fix z)
 glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 }
 
-static inline void OglVertex3f (g3s_point *p)
+static inline void OglVertex3f (g3sPoint *p)
 {
 if (p->p3_index < 0)
 	glVertex3x (p->p3_vec.x, p->p3_vec.y, -p->p3_vec.z);

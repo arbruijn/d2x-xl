@@ -12,101 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Routines for bitblt's.
- *
- * Old Log:
- * Revision 1.29  1995/03/14  12:14:28  john
- * Added code to double horz/vert bitblts.
- *
- * Revision 1.28  1995/03/13  09:01:48  john
- * Fixed bug with VFX1 screen not tall enough.
- *
- * Revision 1.27  1995/03/01  15:38:10  john
- * Better ModeX support.
- *
- * Revision 1.26  1994/12/15  12:19:00  john
- * Added GrBmBitBlt (clipped!) function.
- *
- * Revision 1.25  1994/12/09  18:58:42  matt
- * Took out include of 3d.h
- *
- * Revision 1.24  1994/11/28  17:08:32  john
- * Took out some unused functions in linear.asm, moved
- * gr_linear_movsd from linear.asm to bitblt.c, made sure that
- * the code in ibiblt.c sets the direction flags before rep movsing.
- *
- * Revision 1.22  1994/11/23  16:04:00  john
- * Fixed generic rle'ing to use new bit method.
- *
- * Revision 1.21  1994/11/18  22:51:03  john
- * Changed a bunch of shorts to ints in calls.
- *
- * Revision 1.20  1994/11/10  15:59:48  john
- * Fixed bugs with canvas's being created with bogus bm_props.flags.
- *
- * Revision 1.19  1994/11/09  21:03:35  john
- * Added RLE for svga gr_ubitmap.
- *
- * Revision 1.18  1994/11/09  17:41:29  john
- * Made a slow version of rle bitblt to svga, modex.
- *
- * Revision 1.17  1994/11/09  16:35:15  john
- * First version with working RLE bitmaps.
- *
- * Revision 1.16  1994/11/04  10:06:58  john
- * Added fade table for fading fonts. Made font that partially clips
- * not print a warning message.
- *
- * Revision 1.15  1994/09/22  16:08:38  john
- * Fixed some palette stuff.
- *
- * Revision 1.14  1994/09/19  11:44:27  john
- * Changed call to allocate selector to the dpmi module.
- *
- * Revision 1.13  1994/08/08  13:03:00  john
- * Fixed bug in GrBitmap in modex
- *
- * Revision 1.12  1994/07/13  19:47:23  john
- * Fixed bug with modex bitblt to page 2 not working.
- *
- * Revision 1.11  1994/05/31  11:10:52  john
- * *** empty log message ***
- *
- * Revision 1.10  1994/03/18  15:24:34  matt
- * Removed interlace stuff
- *
- * Revision 1.9  1994/02/18  15:32:20  john
- * *** empty log message ***
- *
- * Revision 1.8  1994/02/01  13:22:54  john
- * *** empty log message ***
- *
- * Revision 1.7  1994/01/13  08:28:25  mike
- * Modify rect copy to copy alternate scanlines when in interlaced mode.
- *
- * Revision 1.6  1993/12/28  12:09:46  john
- * added lbitblt.asm
- *
- * Revision 1.5  1993/10/26  13:18:09  john
- * *** empty log message ***
- *
- * Revision 1.4  1993/10/15  16:23:30  john
- * y
- *
- * Revision 1.3  1993/09/13  17:52:58  john
- * Fixed bug in BitBlt linear to SVGA
- *
- * Revision 1.2  1993/09/08  14:47:00  john
- * Made bitmap00 add rowsize instead of bitmap width.
- * Other routines might have this problem too.
- *
- * Revision 1.1  1993/09/08  11:43:01  john
- * Initial revision
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -135,7 +40,7 @@ int gr_bitblt_dest_step_shift = 0;
 int gr_bitblt_double = 0;
 ubyte *grBitBltFadeTable=NULL;
 
-extern void gr_vesa_bitmap(grs_bitmap * source, grs_bitmap * dest, int x, int y);
+extern void gr_vesa_bitmap(grsBitmap * source, grsBitmap * dest, int x, int y);
 
 void gr_linear_movsd(ubyte * source, ubyte * dest, unsigned int nbytes);
 // This code aligns edi so that the destination is aligned to a dword boundry before rep movsd
@@ -672,7 +577,7 @@ static void modex_copy_column_m(ubyte * src, ubyte * dest, int num_pixels, int s
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00(int x, int y, grs_bitmap *bmP)
+void gr_ubitmap00(int x, int y, grsBitmap *bmP)
 {
 	register int y1;
 	int dest_rowsize;
@@ -697,7 +602,7 @@ void gr_ubitmap00(int x, int y, grs_bitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00m(int x, int y, grs_bitmap *bmP)
+void gr_ubitmap00m(int x, int y, grsBitmap *bmP)
 {
 	register int y1;
 	int dest_rowsize;
@@ -918,7 +823,7 @@ static void modex_copy_scanline_2x(ubyte * src, ubyte * dest, int npixels)
 
 //------------------------------------------------------------------------------
 // From Linear to ModeX
-void gr_bm_ubitblt01(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt01(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	ubyte * dbits;
 	ubyte * sbits;
@@ -962,7 +867,7 @@ void gr_bm_ubitblt01(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * 
 
 //------------------------------------------------------------------------------
 // From Linear to ModeX masked
-void gr_bm_ubitblt01m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt01m(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	//ubyte * dbits1;
 	//ubyte * sbits1;
@@ -998,7 +903,7 @@ void gr_bm_ubitblt01m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap *
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012(int x, int y, grs_bitmap *bm)
+void gr_ubitmap012(int x, int y, grsBitmap *bm)
 {
 	register int x1, y1;
 	unsigned char * src;
@@ -1015,7 +920,7 @@ void gr_ubitmap012(int x, int y, grs_bitmap *bm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012m(int x, int y, grs_bitmap *bm)
+void gr_ubitmap012m(int x, int y, grsBitmap *bm)
 {
 	register int x1, y1;
 	unsigned char * src;
@@ -1036,7 +941,7 @@ void gr_ubitmap012m(int x, int y, grs_bitmap *bm)
 //------------------------------------------------------------------------------
 
 #if defined(POLY_ACC)
-void gr_ubitmap05(int x, int y, grs_bitmap *bm)
+void gr_ubitmap05(int x, int y, grsBitmap *bm)
 {
 	register int x1, y1;
 	unsigned char *src;
@@ -1058,7 +963,7 @@ void gr_ubitmap05(int x, int y, grs_bitmap *bm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap05m(int x, int y, grs_bitmap *bm)
+void gr_ubitmap05m(int x, int y, grsBitmap *bm)
 {
 	register int x1, y1;
 	unsigned char *src;
@@ -1084,7 +989,7 @@ void gr_ubitmap05m(int x, int y, grs_bitmap *bm)
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt05_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt05_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned short * dbits;
 	unsigned char * sbits, scanline[1600];
@@ -1118,7 +1023,7 @@ void gr_bm_ubitblt05_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitma
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt05m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt05m_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned short * dbits;
 	unsigned char * sbits, scanline[1600];
@@ -1153,7 +1058,7 @@ void gr_bm_ubitblt05m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitm
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERIC(int x, int y, grs_bitmap * bm)
+void gr_ubitmapGENERIC(int x, int y, grsBitmap * bm)
 {
 	register int x1, y1;
 
@@ -1167,7 +1072,7 @@ void gr_ubitmapGENERIC(int x, int y, grs_bitmap * bm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERICm(int x, int y, grs_bitmap * bm)
+void gr_ubitmapGENERICm(int x, int y, grsBitmap * bm)
 {
 	register int x1, y1;
 	ubyte c;
@@ -1187,7 +1092,7 @@ void gr_ubitmapGENERICm(int x, int y, grs_bitmap * bm)
 
 #ifdef __MSDOS__
 // From linear to SVGA
-void gr_bm_ubitblt02(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt02(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * sbits;
 
@@ -1250,7 +1155,7 @@ void gr_bm_ubitblt02(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * 
 
 #ifdef __MSDOS__
 
-void gr_bm_ubitblt02m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt02m(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * sbits;
 
@@ -1301,7 +1206,7 @@ void gr_bm_ubitblt02m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap *
 
 //------------------------------------------------------------------------------
 // From SVGA to linear
-void gr_bm_ubitblt20(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt20(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * dbits;
 
@@ -1344,7 +1249,7 @@ void gr_bm_ubitblt20(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * 
 //@extern int Interlacing_on;
 
 // From Linear to Linear
-void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * dbits;
 	unsigned char * sbits;
@@ -1371,7 +1276,7 @@ void gr_bm_ubitblt00(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * 
 
 //------------------------------------------------------------------------------
 // From Linear to Linear Masked
-void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * dbits;
 	unsigned char * sbits;
@@ -1402,15 +1307,15 @@ void gr_bm_ubitblt00m(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap *
 
 //------------------------------------------------------------------------------
 
-extern void gr_lbitblt(grs_bitmap * source, grs_bitmap * dest, int height, int width);
+extern void gr_lbitblt(grsBitmap * source, grsBitmap * dest, int height, int width);
 
 // Clipped bitmap ...
 
 //------------------------------------------------------------------------------
 
-void GrBitmap(int x, int y, grs_bitmap *bm)
+void GrBitmap(int x, int y, grsBitmap *bm)
 {
-	grs_bitmap * const scr = &grdCurCanv->cv_bitmap;
+	grsBitmap * const scr = &grdCurCanv->cv_bitmap;
 	int dx1=x, dx2=x+bm->bm_props.w-1;
 	int dy1=y, dy2=y+bm->bm_props.h-1;
 	int sx=0, sy=0;
@@ -1439,7 +1344,7 @@ void GrBitmap(int x, int y, grs_bitmap *bm)
 }
 
 //-NOT-used // From linear to SVGA
-//-NOT-used void gr_bm_ubitblt02_2x(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+//-NOT-used void gr_bm_ubitblt02_2x(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 //-NOT-used {
 //-NOT-used 	unsigned char * sbits;
 //-NOT-used
@@ -1492,7 +1397,7 @@ void GrBitmap(int x, int y, grs_bitmap *bm)
 
 
 //-NOT-used // From Linear to Linear
-//-NOT-used void gr_bm_ubitblt00_2x(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+//-NOT-used void gr_bm_ubitblt00_2x(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 //-NOT-used {
 //-NOT-used 	unsigned char * dbits;
 //-NOT-used 	unsigned char * sbits;
@@ -1514,7 +1419,7 @@ void GrBitmap(int x, int y, grs_bitmap *bm)
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * dbits;
 	unsigned char * sbits;
@@ -1544,7 +1449,7 @@ void gr_bm_ubitblt00_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitma
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char * dbits;
 	unsigned char * sbits;
@@ -1574,11 +1479,11 @@ void gr_bm_ubitblt00m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitm
 //------------------------------------------------------------------------------
 // in rle.c
 
-extern void gr_rle_expand_scanline_generic(grs_bitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
-extern void gr_rle_expand_scanline_generic_masked(grs_bitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
-extern void gr_rle_expand_scanline_svga_masked(grs_bitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
+extern void gr_rle_expand_scanline_generic(grsBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
+extern void gr_rle_expand_scanline_generic_masked(grsBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
+extern void gr_rle_expand_scanline_svga_masked(grsBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
 
-void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	int i, data_offset;
 	register int y1;
@@ -1606,7 +1511,7 @@ void gr_bm_ubitblt0x_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitma
 
 //------------------------------------------------------------------------------
 
-void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	int i, data_offset;
 	register int y1;
@@ -1635,7 +1540,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitm
 //------------------------------------------------------------------------------
 
 #ifdef __MSDOS__
-void gr_bm_ubitblt02m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void gr_bm_ubitblt02m_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	int i, data_offset;
 	register int y1;
@@ -1661,7 +1566,7 @@ void gr_bm_ubitblt02m_rle(int w, int h, int dx, int dy, int sx, int sy, grs_bitm
 }
 #endif
 
-void GrBmUBitBlt(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void GrBmUBitBlt(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	register int x1, y1;
 
@@ -1743,7 +1648,7 @@ for (y1=0; y1 < h; y1++)
 
 //------------------------------------------------------------------------------
 
-void GrBmBitBlt(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void GrBmBitBlt(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	int	dx1 = dx, 
 			dx2 = dx + dest->bm_props.w - 1;
@@ -1805,7 +1710,7 @@ GrBmUBitBlt(w,h, dx1, dy1, sx1, sy1, src, dest);
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap(int x, int y, grs_bitmap *bmP)
+void gr_ubitmap(int x, int y, grsBitmap *bmP)
 {
 	int source, dest;
 
@@ -1863,7 +1768,7 @@ void gr_ubitmap(int x, int y, grs_bitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void GrUBitmapM(int x, int y, grs_bitmap *bmP)
+void GrUBitmapM(int x, int y, grsBitmap *bmP)
 {
 	int source, dest;
 
@@ -1940,7 +1845,7 @@ void GrUBitmapM(int x, int y, grs_bitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void GrBitmapM(int x, int y, grs_bitmap *bmP)
+void GrBitmapM(int x, int y, grsBitmap *bmP)
 {
 	int dx1=x, dx2=x+bmP->bm_props.w-1;
 	int dy1=y, dy2=y+bmP->bm_props.h-1;
@@ -1985,7 +1890,7 @@ void GrBitmapM(int x, int y, grs_bitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grs_bitmap * src, grs_bitmap * dest)
+void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 	register int x1, y1;
 	ubyte c;
@@ -2079,7 +1984,7 @@ inline void scale_line(sbyte *in, sbyte *out, int ilen, int olen)
 
 //------------------------------------------------------------------------------
 
-void GrBitmapScaleTo(grs_bitmap *src, grs_bitmap *dst)
+void GrBitmapScaleTo(grsBitmap *src, grsBitmap *dst)
 {
 	sbyte *s = (sbyte *) (src->bm_texBuf);
 	sbyte *d = (sbyte *) (dst->bm_texBuf);
@@ -2105,9 +2010,9 @@ void GrBitmapScaleTo(grs_bitmap *src, grs_bitmap *dst)
 
 //------------------------------------------------------------------------------
 
-void show_fullscr(grs_bitmap *src)
+void show_fullscr(grsBitmap *src)
 {
-	grs_bitmap * const dest = &grdCurCanv->cv_bitmap;
+	grsBitmap * const dest = &grdCurCanv->cv_bitmap;
 
 #ifdef OGL
 if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
@@ -2120,7 +2025,7 @@ if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
 	}
 #endif
 if(dest->bm_props.nType != BM_LINEAR) {
-	grs_bitmap *tmp = GrCreateBitmap (dest->bm_props.w, dest->bm_props.h, 0);
+	grsBitmap *tmp = GrCreateBitmap (dest->bm_props.w, dest->bm_props.h, 0);
 	GrBitmapScaleTo(src, tmp);
 	GrBitmap(0, 0, tmp);
 	GrFreeBitmap(tmp);

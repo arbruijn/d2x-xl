@@ -520,12 +520,12 @@ switch (objP->controlType) {
 		break;
 
 	case CT_AI:
-		objP->cType.aiInfo.hide_segment = INTEL_SHORT (objP->cType.aiInfo.hide_segment);
-		objP->cType.aiInfo.hide_index = INTEL_SHORT (objP->cType.aiInfo.hide_index);
-		objP->cType.aiInfo.path_length = INTEL_SHORT (objP->cType.aiInfo.path_length);
-		objP->cType.aiInfo.danger_laser_num = INTEL_SHORT (objP->cType.aiInfo.danger_laser_num);
-		objP->cType.aiInfo.danger_laser_signature = INTEL_INT (objP->cType.aiInfo.danger_laser_signature);
-		objP->cType.aiInfo.dying_startTime = INTEL_INT (objP->cType.aiInfo.dying_startTime);
+		objP->cType.aiInfo.nHideSegment = INTEL_SHORT (objP->cType.aiInfo.nHideSegment);
+		objP->cType.aiInfo.nHideIndex = INTEL_SHORT (objP->cType.aiInfo.nHideIndex);
+		objP->cType.aiInfo.nPathLength = INTEL_SHORT (objP->cType.aiInfo.nPathLength);
+		objP->cType.aiInfo.nDangerLaser = INTEL_SHORT (objP->cType.aiInfo.nDangerLaser);
+		objP->cType.aiInfo.nDangerLaserSig = INTEL_INT (objP->cType.aiInfo.nDangerLaserSig);
+		objP->cType.aiInfo.xDyingStartTime = INTEL_INT (objP->cType.aiInfo.xDyingStartTime);
 		break;
 
 	case CT_LIGHT:

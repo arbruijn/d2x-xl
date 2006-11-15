@@ -10,7 +10,7 @@
 int CreateSphere (tSphereData *sdP);
 
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
-					   float red, float green, float blue, float alpha, grs_bitmap *bmP);
+					   float red, float green, float blue, float alpha, grsBitmap *bmP);
 
 void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha);
 

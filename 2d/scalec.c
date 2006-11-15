@@ -37,13 +37,13 @@ ubyte * scale_dest_ptr;
 
 ubyte scale_rle_data[1600];
 
-void scale_up_bitmap(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
-void scale_up_bitmap_rle(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
+void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
+void scale_up_bitmap_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
 void rls_stretch_scanline_setup( int XDelta, int YDelta );
 void rls_stretch_scanline(void);
 
 
-void decode_row( grs_bitmap * bmp, int y )
+void decode_row( grsBitmap * bmp, int y )
 {
 	int i, offset=4+bmp->bm_props.h;
 
@@ -52,7 +52,7 @@ void decode_row( grs_bitmap * bmp, int y )
 	gr_rle_decode( &bmp->bm_texBuf[offset], scale_rle_data );
 }
 
-void scale_up_bitmap(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_up_bitmap(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix dv, v;
 	int y;
@@ -89,7 +89,7 @@ void scale_up_bitmap(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y
 
 
 
-void scale_up_bitmap_rle(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_up_bitmap_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix dv, v;
 	int y, last_row = -1;
@@ -274,7 +274,7 @@ void rls_stretch_scanline()
 #endif
 // old stuff here...
 
-void scale_bitmap_c(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix u, v, du, dv;
 	int x, y;
@@ -383,7 +383,7 @@ NonTransparent:
 	}
 }
 
-void scale_bitmap_c_rle(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
 {
 	fix du, dv, v;
 	int y, last_row=-1;
@@ -430,9 +430,9 @@ void scale_bitmap_c_rle(grs_bitmap *source_bmp, grs_bitmap *dest_bmp, int x0, in
 #define FIND_SCALED_NUM(x,x0,x1,y0,y1) (FixMulDiv((x)-(x0),(y1)-(y0),(x1)-(x0))+(y0))
 
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
-void scale_bitmap(grs_bitmap *bp, grs_point *vertbuf, int orientation )
+void scale_bitmap(grsBitmap *bp, grs_point *vertbuf, int orientation )
 {
-	grs_bitmap * dbp = &grdCurCanv->cv_bitmap;
+	grsBitmap * dbp = &grdCurCanv->cv_bitmap;
 	fix x0, y0, x1, y1;
 	fix u0, v0, u1, v1;
 	fix clipped_x0, clipped_y0, clipped_x1, clipped_y1;

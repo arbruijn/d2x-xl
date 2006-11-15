@@ -13,6 +13,7 @@
 #include "digi.h"
 #include "cfile.h"
 #include "u_mem.h"
+#include "error.h"
 #include "byteswap.h"
 
 #ifdef _WIN32

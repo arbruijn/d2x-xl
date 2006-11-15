@@ -207,7 +207,7 @@ typedef struct v19_wall {
 } __pack__ v19_wall;
 
 typedef struct v19_door {
-	int     n_parts;            // for linked walls
+	int     nPartCount;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
 	short   nSide[2];            // Side number of door.
 	short   nType[2];            // What kind of door animation.
@@ -231,26 +231,26 @@ typedef struct wall {
 	sbyte   cloakValue;				// if this wall is cloaked, the fade value
 } __pack__ wall;
 
-typedef struct active_door {
-	int     n_parts;            // for linked walls
+typedef struct tActiveDoor {
+	int     nPartCount;            // for linked walls
 	short   nFrontWall[2];   // front wall numbers for this door
 	short   nBackWall[2];    // back wall numbers for this door
 	fix     time;               // how long been opening, closing, waiting
-} __pack__ active_door;
+} __pack__ tActiveDoor;
 
 // data for exploding walls (such as hostage door)
-typedef struct expl_wall {
+typedef struct tExplWall {
 	int	nSegment, nSide;
 	fix	time;
-} expl_wall;
+} tExplWall;
 
-typedef struct cloaking_wall {
+typedef struct tCloakingWall {
 	short   nFrontWall;			 // front wall numbers for this door
 	short   nBackWall;			 // back wall numbers for this door
 	fix     front_ls[4];        // front wall saved light values
 	fix     back_ls[4];         // back wall saved light values
 	fix     time;               // how long been cloaking or decloaking
-} __pack__ cloaking_wall;
+} __pack__ tCloakingWall;
 
 //wall clip flags
 #define WCF_EXPLODES    1       //door explodes when opening
@@ -270,18 +270,18 @@ typedef struct {
 	short   flags;
 	char    filename[13];
 	char    pad;
-} __pack__ wclip;
+} __pack__ tWallClip;
 
 typedef struct {
 	fix     playTime;
-	short   num_frames;
+	short   nFrameCount;
 	short   frames[D1_MAX_CLIP_FRAMES];
 	short   openSound;
 	short   closeSound;
 	short   flags;
 	char    filename[13];
 	char    pad;
-} __pack__ D1_wclip;
+} __pack__ tD1WallClip;
 
 extern char pszWallNames[7][10];
 
@@ -323,7 +323,7 @@ extern void WallCloseDoor(tSegment *seg, short tSide);
 #define WHP_BLASTABLE       2       //hit blastable wall
 #define WHP_DOOR            3       //a door (which will now be opening)
 
-int AnimFrameCount (wclip *anim);
+int AnimFrameCount (tWallClip *anim);
 
 // Determines what happens when a wall is shot
 //obj is the tObject that hit...either a weapon or the player himself
@@ -359,19 +359,19 @@ void KillStuckObjects(int wallnum);
 void StartWallCloak(tSegment *seg, short tSide);
 void StartWallDecloak(tSegment *seg, short tSide);
 
-extern int wclip_read_n_d1(wclip *wc, int n, CFILE *fp);
+extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
 #ifdef FAST_FILE_IO
-#define WClipReadN(wc, n, fp) CFRead(wc, sizeof(wclip), n, fp)
+#define WClipReadN(wc, n, fp) CFRead(wc, sizeof(tWallClip), n, fp)
 #define v16_wall_read(w, fp) CFRead(w, sizeof(v16_wall), 1, fp)
 #define v19_wall_read(w, fp) CFRead(w, sizeof(v19_wall), 1, fp)
 #define wall_read(w, fp) CFRead(w, sizeof(wall), 1, fp)
 #define v19_door_read(d, fp) CFRead(d, sizeof(v19_door), 1, fp)
-#define active_door_read(d, fp) CFRead(d, sizeof(active_door), 1, fp)
+#define active_door_read(d, fp) CFRead(d, sizeof(tActiveDoor), 1, fp)
 #else
 /*
- * reads n wclip structs from a CFILE
+ * reads n tWallClip structs from a CFILE
  */
-extern int WClipReadN(wclip *wc, int n, CFILE *fp);
+extern int WClipReadN(tWallClip *wc, int n, CFILE *fp);
 
 /*
  * reads a v16_wall structure from a CFILE
@@ -394,9 +394,9 @@ extern void wall_read(wall *w, CFILE *fp);
 extern void v19_door_read(v19_door *d, CFILE *fp);
 
 /*
- * reads an active_door structure from a CFILE
+ * reads an tActiveDoor structure from a CFILE
  */
-extern void active_door_read(active_door *ad, CFILE *fp);
+extern void active_door_read(tActiveDoor *ad, CFILE *fp);
 #endif
 
 #endif

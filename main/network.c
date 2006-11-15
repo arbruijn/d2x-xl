@@ -1496,6 +1496,7 @@ extraGameInfo [1].bEnableCheats = egi1Save.bEnableCheats;
 extraGameInfo [1].bTargetIndicators = egi1Save.bTargetIndicators;
 extraGameInfo [1].bDamageIndicators = egi1Save.bDamageIndicators;
 extraGameInfo [1].bFriendlyIndicators = egi1Save.bFriendlyIndicators;
+extraGameInfo [1].bHitIndicators = egi1Save.bHitIndicators;
 extraGameInfo [1].bTowFlags = egi1Save.bTowFlags;
 extraGameInfo [1].bDualMissileLaunch = egi1Save.bDualMissileLaunch;
 extraGameInfo [1].bDisableReactor = egi1Save.bDisableReactor;
@@ -2457,7 +2458,7 @@ if (gameData.app.nGameMode & GM_TEAM)
 
 static time_t	nQueryTimeout;
 
-static void QueryPoll (int nItems, newmenu_item *m, int *key, int cItem)
+static void QueryPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 	time_t t;
 
@@ -2804,7 +2805,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RestartNetSearching (newmenu_item * m)
+void RestartNetSearching (tMenuItem * m)
 {
 gameData.multi.nPlayers = 0;
 networkData.nActiveGames = 0;
@@ -2818,7 +2819,7 @@ networkData.bGamesChanged = 1;
 /* Polling loop waiting for sync packet to start game
  * after having sent request
  */
-void NetworkSyncPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	static fix t1 = 0;
 
@@ -2844,7 +2845,7 @@ if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1+F1_0*2)) {
 int NetworkWaitForSync (void)
 {
 	char					text [60];
-	newmenu_item		m [2];
+	tMenuItem		m [2];
 	int					i, choice;
 	sequence_packet	me;
 	
@@ -2887,7 +2888,7 @@ return -1;     // they cancelled
 
 //------------------------------------------------------------------------------
 
-void NetworkRequestPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkRequestPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	// Polling loop for waiting-for-requests menu
 
@@ -2913,7 +2914,7 @@ void NetworkWaitForRequests (void)
 {
 	// Wait for other players to load the level before we send the sync
 	int choice, i;
-	newmenu_item m [1];
+	tMenuItem m [1];
 	
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
@@ -3004,7 +3005,7 @@ networkData.nMaxXDataSize = netGame.bShortPackets ? NET_XDATA_SIZE : NET_XDATA_S
 
 #define ALL_INFO_REQUEST_INTERVAL F1_0*3
 
-void NetworkWaitAllPoll (int nitems, newmenu_item * menus, int * key, int citem)
+void NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	static fix t1=0;
 
@@ -3023,7 +3024,7 @@ int NetworkWaitForAllInfo (int choice)
  {
   int pick;
   
-  newmenu_item m [2];
+  tMenuItem m [2];
 
 memset (m, 0, sizeof (m));
 m [0].nType=NM_TYPE_TEXT; 
@@ -3570,15 +3571,15 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	pd->obj_pos.x = INTEL_INT (pd->obj_pos.x);
 	pd->obj_pos.y = INTEL_INT (pd->obj_pos.y);
 	pd->obj_pos.z = INTEL_INT (pd->obj_pos.z);
-	pd->obj_orient.rvec.x = (fix)INTEL_INT ((int)pd->obj_orient.rvec.x);
-	pd->obj_orient.rvec.y = (fix)INTEL_INT ((int)pd->obj_orient.rvec.y);
-	pd->obj_orient.rvec.z = (fix)INTEL_INT ((int)pd->obj_orient.rvec.z);
-	pd->obj_orient.uvec.x = (fix)INTEL_INT ((int)pd->obj_orient.uvec.x);
-	pd->obj_orient.uvec.y = (fix)INTEL_INT ((int)pd->obj_orient.uvec.y);
-	pd->obj_orient.uvec.z = (fix)INTEL_INT ((int)pd->obj_orient.uvec.z);
-	pd->obj_orient.fvec.x = (fix)INTEL_INT ((int)pd->obj_orient.fvec.x);
-	pd->obj_orient.fvec.y = (fix)INTEL_INT ((int)pd->obj_orient.fvec.y);
-	pd->obj_orient.fvec.z = (fix)INTEL_INT ((int)pd->obj_orient.fvec.z);
+	pd->obj_orient.rVec.x = (fix)INTEL_INT ((int)pd->obj_orient.rVec.x);
+	pd->obj_orient.rVec.y = (fix)INTEL_INT ((int)pd->obj_orient.rVec.y);
+	pd->obj_orient.rVec.z = (fix)INTEL_INT ((int)pd->obj_orient.rVec.z);
+	pd->obj_orient.uVec.x = (fix)INTEL_INT ((int)pd->obj_orient.uVec.x);
+	pd->obj_orient.uVec.y = (fix)INTEL_INT ((int)pd->obj_orient.uVec.y);
+	pd->obj_orient.uVec.z = (fix)INTEL_INT ((int)pd->obj_orient.uVec.z);
+	pd->obj_orient.fVec.x = (fix)INTEL_INT ((int)pd->obj_orient.fVec.x);
+	pd->obj_orient.fVec.y = (fix)INTEL_INT ((int)pd->obj_orient.fVec.y);
+	pd->obj_orient.fVec.z = (fix)INTEL_INT ((int)pd->obj_orient.fVec.z);
 	pd->phys_velocity.x = (fix)INTEL_INT ((int)pd->phys_velocity.x);
 	pd->phys_velocity.y = (fix)INTEL_INT ((int)pd->phys_velocity.y);
 	pd->phys_velocity.z = (fix)INTEL_INT ((int)pd->phys_velocity.z);
@@ -4165,11 +4166,11 @@ networkData.nNamesInfoSecurity=activeNetGames [n].Security;
 //------------------------------------------------------------------------------
 
 extern char bAlreadyShowingInfo;
-extern int ExecMenutiny2 (char * title, char * subtitle, int nitems, newmenu_item * item, void (*subfunction) (int nitems, newmenu_item * items, int * last_key, int citem));
+extern int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, void (*subfunction) (int nitems, tMenuItem * items, int * last_key, int citem));
 
 void NetworkProcessNamesReturn (char *data)
  {
-	newmenu_item m [15];
+	tMenuItem m [15];
    char mtext [15][50], temp [50];
 	int i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
@@ -4424,9 +4425,12 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageIndicators = 0;
 	extraGameInfo [i].bFriendlyIndicators = 0;
 	extraGameInfo [i].bCloakedIndicators = 0;
+	extraGameInfo [i].bHitIndicators = 0;
 	extraGameInfo [i].bTowFlags = 1;
 	extraGameInfo [i].bUseHitAngles = 0;
 	extraGameInfo [i].bLightTrails = 0;
+	extraGameInfo [i].bTracers = 0;
+	extraGameInfo [i].bShockwaves = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
@@ -4551,9 +4555,12 @@ else {
 	LogErr ("   bDamageIndicators: %d\n", extraGameInfo [1].bDamageIndicators);
 	LogErr ("   bFriendlyIndicators: %d\n", extraGameInfo [1].bFriendlyIndicators);
 	LogErr ("   bCloakedIndicators: %d\n", extraGameInfo [1].bCloakedIndicators);
+	LogErr ("   bHitIndicators: %d\n", extraGameInfo [1].bHitIndicators);
 	LogErr ("   bTowFlags: %d\n", extraGameInfo [1].bTowFlags);
 	LogErr ("   bUseHitAngles: %d\n", extraGameInfo [1].bUseHitAngles);
 	LogErr ("   bLightTrails: %d\n", extraGameInfo [1].bLightTrails);
+	LogErr ("   bTracers: %d\n", extraGameInfo [1].bTracers);
+	LogErr ("   bShockwaves: %d\n", extraGameInfo [1].bShockwaves);
 	LogErr ("entropy info data:\n");
 	LogErr ("   nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	LogErr ("   nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);

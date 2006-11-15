@@ -626,7 +626,7 @@ fix fixed_frametime=0;          //if non-zero, set frametime to this
 
 #endif
 
-grs_bitmap bmBackground;
+grsBitmap bmBackground;
 
 #define BACKGROUND_NAME "statback.pcx"
 
@@ -712,7 +712,7 @@ GrPaletteStepUp (0, 0, 0);
 //------------------------------------------------------------------------------
 
 #ifdef WINDOWS
-void win_get_span_list (grs_bitmap *bm, int miny, int maxy)
+void win_get_span_list (grsBitmap *bm, int miny, int maxy)
 {
 	int x,y;
 	int mode = 0;
@@ -798,7 +798,7 @@ void ShowInGameWarning (char *s)
 if (grdCurScreen) {
 	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StopTime ();
-	gameData.menu.warnColor = MEDRED_RGBA;
+	gameData.menu.warnColor = RED_RGBA;
 	gameData.menu.colorOverride = gameData.menu.warnColor;
 	ExecMessageBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
 	gameData.menu.colorOverride = 0;
@@ -878,7 +878,7 @@ switch (gameStates.render.cockpit.nMode) {
 #ifndef OGL
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW: {
-		grs_bitmap *bm = &gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index];
+		grsBitmap *bm = &gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index];
 		PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)]);
 
 #ifdef WINDOWS
@@ -2079,36 +2079,35 @@ void DoCloakStuff (void)
 		}
 }
 
-int FakingInvul=0;
+int bFakingInvul=0;
 
 //	------------------------------------------------------------------------------------
 
 void DoInvulnerableStuff (void)
 {
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
-		if (gameData.time.xGame - gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
-			gameData.multi.players[gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
-			if (FakingInvul==0)
-			{
-				DigiPlaySample (SOUND_INVULNERABILITY_OFF, F1_0);
-				#ifdef NETWORK
-				if (gameData.app.nGameMode & GM_MULTI)
-				{
-					MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, F1_0);
-					MaybeDropNetPowerup (-1, POW_INVULNERABILITY, FORCE_DROP);
+if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) &&
+	 (gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime != 0x7fffffff)) {
+	if (gameData.time.xGame - gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
+		gameData.multi.players[gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
+		if (!bFakingInvul) {
+			DigiPlaySample (SOUND_INVULNERABILITY_OFF, F1_0);
+#ifdef NETWORK
+			if (gameData.app.nGameMode & GM_MULTI) {
+				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, F1_0);
+				MaybeDropNetPowerup (-1, POW_INVULNERABILITY, FORCE_DROP);
 				}
-				#endif
+#endif
 #if TRACE
 				//con_printf (CON_DEBUG, " --- You have been DE-INVULNERABLEIZED! ---\n");
 #endif
 			}
-			FakingInvul=0;
+		bFakingInvul=0;
 		}
 	}
 }
 
-ubyte	Last_afterburner_state = 0;
-fix Last_afterburner_charge = 0;
+ubyte	bLastAfterburnerState = 0;
+fix xLastAfterburnerCharge = 0;
 
 #define AFTERBURNER_LOOP_START	 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
 #define AFTERBURNER_LOOP_END		 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
@@ -2135,48 +2134,38 @@ extern void MultiSendSoundFunction (char,char);
 
 void DoAfterburnerStuff (void)
 {
-   if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
-		xAfterburnerCharge=0;
-
-	if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead)
-		{
-		 if (DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject))
+if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
+	xAfterburnerCharge=0;
+if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
+	if (DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject))
 #ifdef NETWORK
-			MultiSendSoundFunction (0,0)
+		MultiSendSoundFunction (0,0)
 #endif
-		 ;
+	 	;
+	}
+else if ((xLastAfterburnerCharge && (Controls.afterburner_state != bLastAfterburnerState)) || 
+	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !xAfterburnerCharge))) {
+	if (xAfterburnerCharge && Controls.afterburner_state && 
+		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
+		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 
+										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+#ifdef NETWORK
+		if (gameData.app.nGameMode & GM_MULTI)
+			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
+#endif
 		}
-
-	else if ((Last_afterburner_charge && (Controls.afterburner_state != Last_afterburner_state)) || 
-		 (Last_afterburner_state && (Last_afterburner_charge && !xAfterburnerCharge))) {
-		if (xAfterburnerCharge && Controls.afterburner_state && 
-			 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
-			DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 1, F1_0, 
-												 i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+	else {
+		DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
+		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 
+										0, F1_0, i2f (256));
 #ifdef NETWORK
-			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
+		if (gameData.app.nGameMode & GM_MULTI)
+		 	MultiSendSoundFunction (0,0);
 #endif
-			}
-		else {
-			DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
-			DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 0, F1_0, 
-												 i2f (256));
-#ifdef NETWORK
-			if (gameData.app.nGameMode & GM_MULTI)
-			 	MultiSendSoundFunction (0,0);
-#endif
-#if TRACE
-			//con_printf (CON_DEBUG,"Killing afterburner sound\n");
-#endif
-			}
 		}
-
-	//@@if (Controls.afterburner_state && xAfterburnerCharge)
-	//@@	afterburner_shake ();
-
-	Last_afterburner_state = Controls.afterburner_state;
-	Last_afterburner_charge = xAfterburnerCharge;
+	}
+bLastAfterburnerState = Controls.afterburner_state;
+xLastAfterburnerCharge = xAfterburnerCharge;
 }
 
 // -- //	------------------------------------------------------------------------------------
@@ -2410,7 +2399,7 @@ void FullPaletteSave (void)
 void ShowHelp ()
 {
 	int nitems, opt = 0;
-	newmenu_item m[30];
+	tMenuItem m[30];
 	#ifdef MACINTOSH
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
 	#endif
@@ -2706,7 +2695,7 @@ while (1) {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].shields != player_shields)
 		ReleaseGuidedMissile (gameData.multi.nLocalPlayer);
 	//see if redbook song needs to be restarted
-	songs_check_redbook_repeat ();	// Handle RedBook Audio Repeating.
+	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
 	if (gameStates.app.bConfigMenu) {
 		int double_save = Scanline_double;
 	//WIN (mouse_set_mode (0);
@@ -2982,7 +2971,7 @@ int nMovieFrames;
 ubyte Movie_pal[768];
 char movie_path[50] = ".\\";
 
-grs_bitmap bmMovie;
+grsBitmap bmMovie;
 
 void flush_movie_buffer ()
 {
@@ -3024,7 +3013,7 @@ void toggle_movie_saving ()
 	Saving_movie_frames = !Saving_movie_frames;
 
 	if (Saving_movie_frames) {
-		newmenu_item m[1];
+		tMenuItem m[1];
 
 		memset (m, 0, sizeof (m));
 		m[0].nType=NM_TYPE_INPUT; 
@@ -3406,7 +3395,7 @@ if (Debug_slowdown) {
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
-		FakingInvul=1;
+		bFakingInvul=1;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 		}
 #endif
@@ -3659,7 +3648,7 @@ int mark_player_path_to_segment (int nSegment)
 
 	if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 #if TRACE
-		//con_printf (1, "Can't create path.  Not enough point_segs.\n");
+		//con_printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
 		AIResetAllPaths ();
 		return 0;
@@ -3697,7 +3686,7 @@ int mark_player_path_to_segment (int nSegment)
 
 //-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int create_special_path (void)
+int CreateSpecialPath (void)
 {
 	int	i,j;
 

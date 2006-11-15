@@ -182,7 +182,7 @@ extern int Secret_return_segment;
 extern vmsMatrix Secret_return_orient;
 
 /* stuff for loading descent.pig of descent 1 */
-extern short ConvertD1Texture(short d1_tmap_num);
+extern short ConvertD1Texture(short d1_tmap_num, int bForce);
 extern int d1_tmap_num_unique(short d1_tmap_num); //is d1_tmap_num's texture only in d1?
 
 int LoadMineGaugeSize ();

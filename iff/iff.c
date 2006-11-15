@@ -628,7 +628,7 @@ void skip_chunk(FFILE *ifile,long len)
 
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int iff_parse_ilbm_pbm(FFILE *ifile,long formType,iff_bitmap_header *bmheader,int form_len,grs_bitmap *prev_bm)
+int iff_parse_ilbm_pbm(FFILE *ifile,long formType,iff_bitmap_header *bmheader,int form_len,grsBitmap *prev_bm)
 {
 	long sig,len;
 	//char ignore=0;
@@ -800,7 +800,7 @@ int convert_ilbm_to_pbm(iff_bitmap_header *bmheader)
 
 #define INDEX_TO_15BPP(i) ((short)((((palptr[(i)].r/2)&31)<<10)+(((palptr[(i)].g/2)&31)<<5)+((palptr[(i)].b/2 )&31)))
 
-int convert_rgb15(grs_bitmap *bm,iff_bitmap_header *bmheader)
+int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 {
 	ushort *new_data;
 	int x,y;
@@ -854,8 +854,8 @@ void close_fake_file(FFILE *f)
 	f->data = NULL;
 }
 
-//copy an iff header structure to a grs_bitmap structure
-void copy_iff_to_grs(grs_bitmap *bm,iff_bitmap_header *bmheader)
+//copy an iff header structure to a grsBitmap structure
+void copy_iff_to_grs(grsBitmap *bm,iff_bitmap_header *bmheader)
 {
 	bm->bm_props.x = bm->bm_props.y = 0;
 	bm->bm_props.w = bmheader->w;
@@ -870,7 +870,7 @@ void copy_iff_to_grs(grs_bitmap *bm,iff_bitmap_header *bmheader)
 
 //if bm->bm_texBuf is set, use it (making sure w & h are correct), else
 //allocate the memory
-int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmapType, grs_bitmap *prev_bm)
+int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *prev_bm)
 {
 	int ret;			//return code
 	iff_bitmap_header bmheader;
@@ -915,7 +915,7 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmapType, grs_bitmap *p
 			return ret;
 	}
 
-	//Copy data from iff_bitmap_header structure into grs_bitmap structure
+	//Copy data from iff_bitmap_header structure into grsBitmap structure
 
 	copy_iff_to_grs(bm,&bmheader);
 
@@ -934,7 +934,7 @@ int iff_parse_bitmap(FFILE *ifile, grs_bitmap *bm, int bitmapType, grs_bitmap *p
 }
 
 //returns error codes - see IFF.H.  see GR.H for bitmapType
-int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType)
+int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -952,7 +952,7 @@ int iff_read_bitmap(char *ifilename,grs_bitmap *bm,int bitmapType)
 
 //like iff_read_bitmap(), but reads into a bitmap that already exists,
 //without allocating memory for the bitmap.
-int iff_read_into_bitmap(char *ifilename, grs_bitmap *bm)
+int iff_read_into_bitmap(char *ifilename, grsBitmap *bm)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -1227,9 +1227,9 @@ int write_pbm(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)		
 
 }
 
-//writes an IFF file from a grs_bitmap structure. writes palette if not null
+//writes an IFF file from a grsBitmap structure. writes palette if not null
 //returns error codes - see IFF.H.
-int iff_write_bitmap(char *ofilename,grs_bitmap *bm, ubyte *palette)
+int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
 {
 	FILE *ofile;
 	iff_bitmap_header bmheader;
@@ -1281,7 +1281,7 @@ int iff_write_bitmap(char *ofilename,grs_bitmap *bm, ubyte *palette)
 
 //read in many brushes.  fills in array of pointers, and n_bitmaps.
 //returns iff error codes
-int iff_read_animbrush(char *ifilename,grs_bitmap **bm_list,int max_bitmaps,int *n_bitmaps)
+int iff_read_animbrush(char *ifilename,grsBitmap **bm_list,int max_bitmaps,int *n_bitmaps)
 {
 	int ret;			//return code
 	FFILE ifile;
@@ -1313,11 +1313,11 @@ int iff_read_animbrush(char *ifilename,grs_bitmap **bm_list,int max_bitmaps,int 
 
 		while (ifile.position < anim_end && *n_bitmaps < max_bitmaps) {
 
-			grs_bitmap *prev_bm;
+			grsBitmap *prev_bm;
 
 			prev_bm = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
 
-			MALLOC(bm_list[*n_bitmaps] , grs_bitmap, 1 );
+			MALLOC(bm_list[*n_bitmaps] , grsBitmap, 1 );
 			bm_list[*n_bitmaps]->bm_texBuf = NULL;
 
 			ret = iff_parse_bitmap(&ifile,bm_list[*n_bitmaps],formType,prev_bm);

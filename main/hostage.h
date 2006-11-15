@@ -54,11 +54,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added animating bitmap hostages, and cleaned up vclips a bit
  *
  * Revision 1.14  1994/07/14  22:06:51  john
- * Fix radar/hostage vclip conflict.
+ * Fix radar/hostage tVideoClip conflict.
  *
  * Revision 1.13  1994/07/14  22:05:41  john
  * Made radar display not conflict with hostage
- * vclip talking.
+ * tVideoClip talking.
  *
  * Revision 1.12  1994/07/06  13:41:46  matt
  * Added support for bitmap hostages

@@ -139,7 +139,7 @@ int pcx_get_dimensions( char *filename, int *width, int *height)
 
 //------------------------------------------------------------------------------
 
-int pcx_read_bitmap (char * filename, grs_bitmap * bmP, int bitmapType, int bD1Mission)
+int pcx_read_bitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader header;
 	CFILE * PCXfile;
@@ -300,7 +300,7 @@ return PCX_ERROR_NONE;
 
 //------------------------------------------------------------------------------
 
-int pcx_write_bitmap( char * filename, grs_bitmap * bmP)
+int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 {
 	int retval;
 	int i;
@@ -459,7 +459,7 @@ return p;
 int pcx_read_fullscr(char * filename, int bD1Mission)
 {
 	int			pcx_error;
-	grs_bitmap	bm;
+	grsBitmap	bm;
 
 GrInitBitmapData (&bm);
 BM_MASK (&bm) = NULL;

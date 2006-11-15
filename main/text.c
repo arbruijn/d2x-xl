@@ -1603,8 +1603,13 @@ char *defaultGameTexts [][2] = {
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
-	{"~Leuchtspuren zeichen", "render energy ~Trails"},
+	{"~Plasmaspuren zeichen", "render energy ~Trails"},
+	{"~Leuchtspuren zeichen", "render tra~Cers"},
+	{"~Schockwellen zeichnen", "render ~Shock waves"},
 	{"~Sammelregler verwenden    ",  "Use ~Master Sliders            "},
+	{"Rauch ~Verteilen", "~Disperse smoke"},
+	{"Spiel-~Einstellungen...", "game ~Options..."},
+	{"nur getroffene Objekte ~Markieren", "~Tag only hit objects"},
 #if 0
 	{"", ""},
 #endif
@@ -2040,11 +2045,19 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden bei Kollisionen korrekte Winkel fuer\ndie Abprallrichtung berechnet.", 
 	 "If checked, proper reflection angles will be computed for\ncollisions."},
 	{"Wenn angekreuzt, erzeugen Energiewaffen eine Leuchtspur.", "If checked, energy weapons have a light trail."},
+	{"Wenn angekreuzt, werden die Leuchtspuren von Vulkan- und Gauss-\nfeuer gezeichnet.", 
+	 "If checked, tracers created by Vulcan and Gauss fire are rendered."},
+	{"Wenn angekreuzt, werden Energieschuessen vorangehende Druck-\nwellen gezeichnet.", 
+	 "If checked, shock waves preceding energy shots are rendered."},
 	{"Wenn angekreuzt, werden Dichte und Partikelgroesse des Rauchs\nmit zwei Sammelreglern eingestellt. Sonst koennen Rauchdichte\nund Partikelgroesse fuer Schiffe, Roboter und Raketen\nseparat eingestellt werden.", 
 	 "If checked, all smoke size and density settings are controlled\nusing two master sliders. If unchecked, smoke density and\nparticle sizes can be set separately for ships, robots and missiles."},
+	{"Wenn angekreuzt, verteilt sich Rauch nach und nach.", "If checked, smoke slowly disperses."},
+	{"Wenn angekreuzt, werden Ziel- und Schadensanzeigen nur fuer\ngetroffene Objekte angezeigt.", 
+	 "If checked, target and damage indicators are only displayed\nfor hit objects."},
 #if 0
 	{"", ""},
 #endif
+	{"", ""}
 	};
 
 //------------------------------------------------------------------------------
@@ -2262,7 +2275,7 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 #if DUMP_TEXTS 
 		fclose (fTxt);
 #endif
-		Error ("Not enough strings in text file - expecting %d, found %d\n", N_BASE_TEXTS, i);
+		Error ("Wrong number of strings in text file - expecting %d, found %d\n", N_BASE_TEXTS, i);
 		}
 	*psz++ = 0;
 	if (!bBinary && ((*ph == ';') || ((*ph == '/') && ph [1] == '/')))
@@ -2272,8 +2285,6 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 #if DUMP_TEXTS == 3
 		{
 		char s [200], *pi, *pj;
-		if (h == 364)
-			h = h;
 		strcpy (s, d2GameTexts [h]);
 		fprintf (fTxt, "\t{\"%s\", ", ph);
 		if (strlen (ph) > 50)

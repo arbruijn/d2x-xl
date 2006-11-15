@@ -31,16 +31,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * rip out repair center stuff.
  *
  * Revision 1.24  1994/10/03  23:36:36  mike
- * Add nSegment and fuelcen_num (renaming dest_seg and *path) in matcen_info struct.
+ * Add nSegment and fuelcen_num (renaming dest_seg and *path) in tMatCenInfo struct.
  *
  * Revision 1.23  1994/09/30  00:37:44  mike
- * Change fuelcen_info struct.
+ * Change tFuelCenInfo struct.
  *
  * Revision 1.22  1994/09/27  15:42:49  mike
  * Kill some obsolete matcen constants, Prototype Special_names.
  *
  * Revision 1.21  1994/09/27  00:04:30  mike
- * Moved fuelcen_info struct here from fuelcen.c
+ * Moved tFuelCenInfo struct here from fuelcen.c
  *
  * Revision 1.20  1994/09/25  15:55:37  mike
  * Prototype function DisableMatCens.
@@ -181,7 +181,7 @@ extern char Special_names[MAX_CENTER_TYPES][11];
 //--repair-- abort_repair_center();
 
 // An array of pointers to segments with fuel centers.
-typedef struct fuelcen_info {
+typedef struct tFuelCenInfo {
 	int     Type;
 	int     nSegment;
 	sbyte   Flag;
@@ -195,7 +195,7 @@ typedef struct fuelcen_info {
 	//tObject  *last_created_obj;
 	//int     last_created_sig;
 	vmsVector Center;
-} __pack__ fuelcen_info;
+} __pack__ tFuelCenInfo;
 
 // The max number of robot centers per mine.
 
@@ -205,17 +205,17 @@ typedef struct  {
 	fix     interval;       // Interval between materialogrifizations
 	short   nSegment;         // Segment this is attached to.
 	short   fuelcen_num;    // Index in fuelcen array.
-} __pack__ old_matcen_info;
+} __pack__ old_tMatCenInfo;
 
-typedef struct matcen_info {
+typedef struct tMatCenInfo {
 	int     robotFlags[2]; // Up to 64 different robots
 	fix     hit_points;     // How hard it is to destroy this particular matcen
 	fix     interval;       // Interval between materialogrifizations
 	short   nSegment;         // Segment this is attached to.
 	short   fuelcen_num;    // Index in fuelcen array.
-} __pack__ matcen_info;
+} __pack__ tMatCenInfo;
 
-extern matcen_info RobotCenters[MAX_ROBOT_CENTERS];
+extern tMatCenInfo RobotCenters[MAX_ROBOT_CENTERS];
 
 //--repair-- extern tObject *RepairObj;  // which tObject getting repaired, or NULL
 
@@ -230,18 +230,18 @@ void InitAllMatCens (void);
 void FuelCenCheckForHoardGoal(tSegment *segp);
 
 #ifdef FAST_FILE_IO
-#define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_matcen_info), 1, fp)
-#define MatCenInfoRead(mi, fp) CFRead(mi, sizeof(matcen_info), 1, fp)
+#define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_tMatCenInfo), 1, fp)
+#define MatCenInfoRead(mi, fp) CFRead(mi, sizeof(tMatCenInfo), 1, fp)
 #else
 /*
- * reads an old_matcen_info structure from a CFILE
+ * reads an old_tMatCenInfo structure from a CFILE
  */
-void OldMatCenInfoRead(old_matcen_info *mi, CFILE *fp);
+void OldMatCenInfoRead(old_tMatCenInfo *mi, CFILE *fp);
 
 /*
- * reads a matcen_info structure from a CFILE
+ * reads a tMatCenInfo structure from a CFILE
  */
-void MatCenInfoRead (matcen_info *ps, CFILE *fp);
+void MatCenInfoRead (tMatCenInfo *ps, CFILE *fp);
 #endif
 
 #define FUELCEN_IDX(_fuelcenP)	((short) ((_fuelcenP) - gameData.matCens.fuelCenters))

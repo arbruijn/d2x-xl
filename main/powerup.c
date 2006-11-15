@@ -131,7 +131,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * fiddled with powerup disappearance
  *
  * Revision 1.63  1994/10/12  13:07:33  mike
- * Make powerup play vclip when it goes away.
+ * Make powerup play tVideoClip when it goes away.
  *
  * Revision 1.62  1994/10/12  08:04:42  mike
  * Make proximity powerup worth 4 bombs.
@@ -209,19 +209,19 @@ void MultiSendGotFlag (char);
 
 //------------------------------------------------------------------------------
 
-void UpdatePowerupClip (vclip *vcP, tVClipInfo *vciP, int nObject)
+void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
 	static fix	xPowerupTime = 0;
 
 	int			nFrames = vcP->nFrameCount;
 	fix			xFudge = (xPowerupTime * (nObject & 3)) >> 4;
-	grs_bitmap	*bmP;
+	grsBitmap	*bmP;
 	
 xPowerupTime += gameData.time.xFrame;
 
 if (vcP->flags & WCF_ALTFMT) {
 	if (vcP->flags & WCF_INITIALIZED) {
-		bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index);
+		bmP = BM_OVERRIDE (gameData.pig.tex.bitmaps [0] + vcP->frames [0].index);
 		nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
 		}
 	else {
@@ -265,7 +265,7 @@ void DoPowerupFrame (tObject *objP)
 {
 //if (gameStates.app.b40fpsTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
-	vclip			*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
+	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);
 
 UpdatePowerupClip (vcP, vciP, i);
@@ -813,7 +813,7 @@ switch (objP->id) {
 		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
 			if (playerP->nCloaks == 255) {
 				if (LOCALPLAYER (nPlayer))
-					HUDInitMessage ("%s %s!", TXT_INVENTORY_FULL);
+					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}
 			else {
 				playerP->nCloaks++;
@@ -829,7 +829,7 @@ switch (objP->id) {
 		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
 			if (playerP->nInvuls == 255) {
 				if (LOCALPLAYER (nPlayer))
-					HUDInitMessage ("%s %s!", TXT_INVENTORY_FULL);
+					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}
 			else {
 				playerP->nInvuls++;

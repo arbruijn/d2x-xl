@@ -96,7 +96,7 @@ if (!gameStates.render.fonts.bInstalled)
 LogErr ("unloading game fonts\n");
 gameStates.render.fonts.bInstalled = 0;
 for (i = 0; i < MAX_FONTS; i++) {
-	gr_close_font(Gamefonts[i]);
+	GrCloseFont(Gamefonts[i]);
 	Gamefonts[i] = NULL;
 	}
 }

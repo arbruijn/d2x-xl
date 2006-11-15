@@ -12,7 +12,7 @@ typedef struct tCamera {
 	tObject		*objP;
 	short			segNum;
 	short			sideNum;
-	grs_bitmap	texBuf;
+	grsBitmap	texBuf;
 	char			*screenBuf;
 	GLuint		glTexId;
 	time_t		nTimeout;

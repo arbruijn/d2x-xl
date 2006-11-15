@@ -370,7 +370,7 @@ static int DrawingListBright[MAX_EDGES];
 
 #if AUTOMAP_DIRECT_RENDER
 //static grs_canvas	automap_canvas;
-static grs_bitmap bmAutomapBackground;
+static grsBitmap bmAutomapBackground;
 #else
 // Screen anvas variables
 static int current_page=0;
@@ -418,7 +418,7 @@ void AutomapBuildEdgeList (void);
 void DrawMarkerNumber (int num)
  {
   int i;
-  g3s_point basePoint,fromPoint,toPoint;
+  g3sPoint basePoint,fromPoint,toPoint;
 
   float ArrayX[10][20]={ {-.25, 0.0, 0.0, 0.0, -1.0, 1.0},
                          {-1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, 1.0},
@@ -532,7 +532,7 @@ void DrawMarkers ()
  {
 	int i,maxdrop;
 	static int cyc=10,cycdir=1;
-	g3s_point spherePoint;
+	g3sPoint spherePoint;
 
 	if (gameData.app.nGameMode & GM_MULTI)
    	maxdrop=2;
@@ -611,10 +611,10 @@ extern void OglDrawCircle2 (int nsides,int nType,float xsc,float xo,float ysc,fl
 
 //------------------------------------------------------------------------------
 
-bool G3DrawSphere3D (g3s_point *p0, int nSides, int rad)
+bool G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 {
 	grs_color	c = grdCurCanv->cv_color;
-	g3s_point	p = *p0;
+	g3sPoint	p = *p0;
 	int			i;
 	float			hx, hy, x, y, z, r;
 	float			ang;
@@ -640,9 +640,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawCircle3D (g3s_point *p0, int nSides, int rad)
+bool G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 {
-	g3s_point	p = *p0;
+	g3sPoint	p = *p0;
 	int			i, j;
 	float			hx, hy, x, y, z, r;
 	float			ang;
@@ -672,7 +672,7 @@ return 1;
 void DrawPlayer (tObject * objP, int bRadar)
 {
 	vmsVector	arrow_pos, head_pos;
-	g3s_point	spherePoint, arrowPoint, headPoint;
+	g3sPoint	spherePoint, arrowPoint, headPoint;
 	int size = objP->size * (bRadar ? 2 : 1);
 
 headPoint.p3_index =
@@ -686,24 +686,24 @@ G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
 if (bRadar && (OBJ_IDX (objP) != gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
 	return;
 // Draw shaft of arrow
-VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.fvec, size*3);
+VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.fVec, size*3);
 G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
-VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fvec, size*2);
-VmVecScaleInc (&head_pos, &objP->orient.rvec, size*1);
+VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fVec, size*2);
+VmVecScaleInc (&head_pos, &objP->orient.rVec, size*1);
 G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
-VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fvec, size*2);
-VmVecScaleInc (&head_pos, &objP->orient.rvec, size* (-1));
+VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fVec, size*2);
+VmVecScaleInc (&head_pos, &objP->orient.rVec, size* (-1));
 G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
 // Draw player's up vector
-VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.uvec, size*2);
+VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.uVec, size*2);
 G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 }
@@ -727,20 +727,20 @@ void DrawAutomap (int bRadar)
 	int			i, color;
 	tObject		*objP;
 	vmsVector	viewer_position;
-	g3s_point	spherePoint;
+	g3sPoint	spherePoint;
 	vmsMatrix	vmRadar;
 
 if (bRadar && gameStates.render.bTopDownRadar) {
 	vmsMatrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].orient;
-	vmRadar.rvec.x = po->rvec.x;
-	vmRadar.rvec.y = po->rvec.y;
-	vmRadar.rvec.z = po->rvec.z;
-	vmRadar.fvec.x = po->uvec.x;
-	vmRadar.fvec.y = -po->uvec.y;
-	vmRadar.fvec.z = po->uvec.z;
-	vmRadar.uvec.x = po->fvec.x;
-	vmRadar.uvec.y = po->fvec.y;
-	vmRadar.uvec.z = po->fvec.z;
+	vmRadar.rVec.x = po->rVec.x;
+	vmRadar.rVec.y = po->rVec.y;
+	vmRadar.rVec.z = po->rVec.z;
+	vmRadar.fVec.x = po->uVec.x;
+	vmRadar.fVec.y = -po->uVec.y;
+	vmRadar.fVec.z = po->uVec.z;
+	vmRadar.uVec.x = po->fVec.x;
+	vmRadar.uVec.y = po->fVec.y;
+	vmRadar.uVec.z = po->fVec.z;
 	}
 	
 #if AUTOMAP_DIRECT_RENDER == 0
@@ -797,11 +797,11 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 #endif
 	RenderStartFrame ();
 	if (bRadar && gameStates.render.bTopDownRadar) {
-		VmVecScaleAdd (&viewer_position, &amData.viewTarget, &vmRadar.fvec, -amData.nViewDist);
+		VmVecScaleAdd (&viewer_position, &amData.viewTarget, &vmRadar.fVec, -amData.nViewDist);
 		G3SetViewMatrix (&viewer_position, &vmRadar, amData.nZoom * 2);
 		}
 	else {
-		VmVecScaleAdd (&viewer_position, &amData.viewTarget, &amData.viewMatrix.fvec, bRadar ? -amData.nViewDist : -amData.nViewDist);
+		VmVecScaleAdd (&viewer_position, &amData.viewTarget, &amData.viewMatrix.fVec, bRadar ? -amData.nViewDist : -amData.nViewDist);
 		G3SetViewMatrix (&viewer_position, &amData.viewMatrix, bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom);
 		}
 	//if (!bRadar)
@@ -1337,7 +1337,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		}
 
 		//see if redbook song needs to be restarted
-		songs_check_redbook_repeat ();
+		SongsCheckRedbookRepeat ();
 
 		#ifdef WINDOWS
 		{
@@ -1508,7 +1508,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		amData.nViewDist -= Controls.forward_thrustTime*ZOOM_SPEED_FACTOR;
 #else		
 		if (Controls.forward_thrustTime)
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fvec, Controls.forward_thrustTime*ZOOM_SPEED_FACTOR); 
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forward_thrustTime*ZOOM_SPEED_FACTOR); 
 #endif
 		tangles.p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
 		tangles.h  += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
@@ -1521,8 +1521,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			tangles1 = tangles;
 			VmAngles2Matrix (&tempm,&tangles1);
 			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient,&tempm);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uvec, Controls.vertical_thrustTime*SLIDE_SPEED);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rvec, Controls.sideways_thrustTime*SLIDE_SPEED);
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.vertical_thrustTime*SLIDE_SPEED);
+			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sideways_thrustTime*SLIDE_SPEED);
 #if 0
 			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos) > i2f (1000))	{
 				amData.viewTarget = old_vt;
@@ -1611,7 +1611,7 @@ void DrawAllEdges ()
 	vmsVector *tv1;
 	fix distance;
 	fix minDistance = 0x7fffffff;
-	g3s_point *p1, *p2;
+	g3sPoint *p1, *p2;
 
 
 	nbright=0;

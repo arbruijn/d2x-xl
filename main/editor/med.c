@@ -674,7 +674,7 @@ int SetPlayerFromCursegMinusOne()
 	vmsVector view_vec,view_vec2,side_center;
 	vmsVector corner_v[4];
 	vmsVector	upvec;
-	g3s_point corner_p[4];
+	g3sPoint corner_p[4];
 	int i;
 	fix max,viewDist=f1_0*10;
         static int edgenum=0;
@@ -768,7 +768,7 @@ int FindConcaveSegs()
 int DosShell()
 {
 	int ok, w, h;
-	grs_bitmap * save_bitmap;
+	grsBitmap * save_bitmap;
 
 	// Save the current graphics state.
 
@@ -870,7 +870,7 @@ int editor_screen_open = 0;
 //called whenever the editor screen is selected
 void init_editor_screen()
 {	
-//	grs_bitmap * bmp;
+//	grsBitmap * bmp;
 
 	if (editor_screen_open) return;
 
@@ -1039,7 +1039,7 @@ void close_editor() {
 
 	menubar_close();
 	
-	gr_close_font(editor_font);
+	GrCloseFont(editor_font);
 
 	GrFreeCanvas(canv_offscreen); canv_offscreen = NULL;
 
@@ -1134,7 +1134,7 @@ extern void check_wall_validity(void);
 void editor(void)
 {
 	int w,h;
-	grs_bitmap * savedbitmap;
+	grsBitmap * savedbitmap;
 	editor_view *new_cv;
         static int padnum=0;
 	vmsMatrix	MouseRotMat,tempm;

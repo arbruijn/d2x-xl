@@ -456,7 +456,7 @@ int local_key_inkey (void)
 
 //-----------------------------------------------------------------------------
 
-int LoadBriefImg (char *pszImg, grs_bitmap *bmP, int bFullScr)
+int LoadBriefImg (char *pszImg, grsBitmap *bmP, int bFullScr)
 {
 	char	*ps, c;
 	char	szImg [FILENAME_LEN+1];
@@ -491,7 +491,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 {
 	fix timer;
 	int pcx_error;
-	grs_bitmap title_bm;
+	grsBitmap title_bm;
 	char new_filename [FILENAME_LEN+1] = "";
 
 	#ifdef RELEASE
@@ -671,7 +671,7 @@ void ShowBitmapFrame (int bRedraw)
 	grs_canvas *curcanv_save, *bitmap_canv=0;
 #endif
 
-	grs_bitmap *bitmap_ptr;
+	grsBitmap *bitmap_ptr;
 	int x = rescale_x (138);
 	int y = rescale_y (55);
 	int w = rescale_x (166);
@@ -813,7 +813,7 @@ void ShowBitmapFrame (int bRedraw)
 
 //-----------------------------------------------------------------------------
 
-void show_briefing_bitmap (grs_bitmap *bmp)
+void show_briefing_bitmap (grsBitmap *bmp)
 {
 #ifdef WINDOWS
   	dd_grs_canvas *bitmap_canv, *curcanv_save;
@@ -1317,7 +1317,7 @@ while (!done) {
 				}
 			else if (ch == 'N') {
 				if (message > pj) {
-				//--grs_bitmap *bitmap_ptr;
+				//--grsBitmap *bitmap_ptr;
 					if (Robot_canv != NULL) {
 						d_free (Robot_canv);
 						Robot_canv=NULL;
@@ -1376,7 +1376,7 @@ while (!done) {
 				}
 			else if (ch == 'B') {
 				char        bitmap_name[32];
-				grs_bitmap  guy_bitmap;
+				grsBitmap  guy_bitmap;
 				int         iff_error;
 
 				if (message > pj) {
@@ -1815,7 +1815,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 if (gameStates.app.bD1Mission) {
 	int pcx_error;
 #if 1
-	grs_bitmap bmBriefing;
+	grsBitmap bmBriefing;
 
 	GrInitBitmapData (&bmBriefing);
 	if ((pcx_error=LoadBriefImg (Briefing_screens[nScreen].bs_name, &bmBriefing, 0))!=PCX_ERROR_NONE) {

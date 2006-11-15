@@ -45,12 +45,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef ALLEGRO
 #include "allg_snd.h"
-typedef SAMPLE digiSound;
+typedef SAMPLE tDigiSound;
 #else
-typedef struct digiSound       {
+typedef struct tDigiSound       {
 	int length;
 	ubyte * data;
-} digiSound;
+} tDigiSound;
 #endif
 
 #define SOUND_MAX_VOLUME (F1_0 / 2)
