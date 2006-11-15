@@ -229,7 +229,7 @@ WINDOS (
 	nLastMsgYCrd = -1;
 #endif
 	}
-szDisplayedBackgroundMsg [VR_current_page][0] = 0;
+szDisplayedBackgroundMsg [nVRCurrentPage][0] = 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -309,7 +309,7 @@ if (pMsgs->nMessages > 0) {
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
 
-		if (strcmp (szDisplayedBackgroundMsg [VR_current_page], pszMsg)) {
+		if (strcmp (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg)) {
 			int	ycrd;
 			WINDOS (
 				dd_grs_canvas *canv_save = dd_grd_curcanv,
@@ -336,10 +336,10 @@ if (pMsgs->nMessages > 0) {
 									  pMsgs->nColor);
 				if (nModexHUDMsgs > 0) {
 					nModexHUDMsgs--;
-					szDisplayedBackgroundMsg [VR_current_page][0] = '!';
+					szDisplayedBackgroundMsg [nVRCurrentPage][0] = '!';
 					}
 				else
-					strcpy (szDisplayedBackgroundMsg [VR_current_page], pszMsg);
+					strcpy (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg);
 				}
 			else {
 				WIN (DDGRLOCK (dd_grd_curcanv));
@@ -350,7 +350,7 @@ if (pMsgs->nMessages > 0) {
 					PA_DFX (GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg));
 					PA_DFX (pa_set_backbuffer_current ());
 					GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg);
-					strcpy (szDisplayedBackgroundMsg [VR_current_page], pszMsg);
+					strcpy (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg);
 				WIN (DDGRUNLOCK (dd_grd_curcanv));
 				}
 			WINDOS (

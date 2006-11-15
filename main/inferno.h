@@ -145,6 +145,7 @@ typedef struct tTextureOptions {
 typedef struct tSmokeOptions {
 	int nDens [4];
 	int nSize [4];
+	int nLife [4];
 	int bSyncSizes;
 	int bPlayers;
 	int bRobots;
@@ -378,6 +379,7 @@ typedef struct tMultiplayerStates {
 
 typedef struct tGfxStates {
 	int bInstalled;
+	int bOverride;
 	int nStartScrSize;
 	int nStartScrMode;
 } tGfxStates;

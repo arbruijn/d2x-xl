@@ -1149,8 +1149,8 @@ void DoAutomap (int key_code, int bRadar)
 	#endif
 
 	#ifdef WINDOWS
-		dd_VR_screegameStates.render.cockpit.nModeSave = VR_screen_mode;
-		VR_screen_mode = SM95_640x480x8;	// HACK! Forcing reinit of 640x480
+		dd_VR_screegameStates.render.cockpit.nModeSave = nVRScreenMode;
+		nVRScreenMode = SM95_640x480x8;	// HACK! Forcing reinit of 640x480
 		SetScreenMode (SCREEN_GAME);
 	#endif
 
@@ -1574,7 +1574,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 	}
 
 #ifdef WINDOWS
-	VR_screen_mode = dd_VR_screegameStates.render.cockpit.nModeSave;
+	nVRScreenMode = dd_VR_screegameStates.render.cockpit.nModeSave;
 #endif
 
 	gameStates.ogl.nContrast = nContrast;

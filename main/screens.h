@@ -103,7 +103,7 @@ extern int SetScreenMode(u_int32_t sm);		// True = editor screen
 
 //About the screen
 extern ubyte		VR_screenFlags;
-extern ubyte		VR_current_page;
+extern ubyte		nVRCurrentPage;
 extern fix			VR_eye_width;
 extern int 			VR_eye_switch;
 
@@ -118,7 +118,7 @@ extern void 		VRResetParams();
 extern int			VR_use_reg_code;
 
 
-extern u_int32_t	VR_screen_mode;
+extern u_int32_t	nVRScreenMode;
 extern int			VR_render_mode;
 extern int			VR_low_res;
 extern int 			VR_show_hud;
@@ -147,8 +147,8 @@ extern grs_canvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is
 void GameInitRenderBuffers(int screen_mode, int render_max_w, int render_max_h, int render_method, int flags);
 void GameInitRenderSubBuffers(int x, int y, int w, int h);
 
-int GetDisplayMode(int mode);
-void SetDisplayMode(int mode);
+int GetDisplayMode (int mode);
+void SetDisplayMode (int mode, int bOverride);
 extern int nDefaultDisplayMode;		// cannot be -1
 // values are:
 // -1: some special VR mode.

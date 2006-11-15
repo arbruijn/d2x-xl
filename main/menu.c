@@ -161,7 +161,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static int	nFPSopt, nRSDopt, 
 				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
-				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nUseSmokeOpt, nUseCamOpt,
+				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
+				nUseSmokeOpt, nUseCamOpt,
 				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt,
 				nSyncSmokeSizes;
 
@@ -171,6 +172,7 @@ static char *pszTexQual [4];
 static char *pszRendQual [5];
 static char *pszAmount [5];
 static char *pszSize [4];
+static char *pszLife [3];
 
 //------------------------------------------------------------------------------
 
@@ -255,7 +257,7 @@ void PrintVersionInfo (void)
 		if (gameOpts->menus.altBg.bHave > 0)
 			yOffs = 8; //102
 		else {
-			yOffs = (88 * (VR_screen_mode % 65536)) / 480;
+			yOffs = (88 * (nVRScreenMode % 65536)) / 480;
 			if (yOffs < 88)
 				yOffs = 88;
 			}
@@ -341,6 +343,7 @@ try_again:;
 #ifdef OGL
 				gameStates.video.nScreenMode = -1;
 #endif
+				InitSubTitles ("intro.tex");
 				PlayMovie ("intro.mve", 0, 1, gameOpts->movies.bResize);
 				SongsPlaySong (SONG_TITLE, 1);
 				*last_key = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
@@ -534,6 +537,10 @@ for (i = j = 0; i < h; i++)
 i = ExecMenuListBox (TXT_SELECT_MOVIE, j, m, 1, NULL);
 if (i > -1) {
 	SDL_ShowCursor (0);
+	if (strstr (m [i], "intro"))
+		InitSubTitles ("intro.tex");	
+	else if (strstr (m [i], ENDMOVIE))
+		InitSubTitles (ENDMOVIE ".tex");	
 	PlayMovie (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
@@ -634,6 +641,7 @@ switch (select) {
 		SetFunctionMode (FMODE_EXIT);
 		break;
 	case MENU_NEW_PLAYER:
+		gameStates.gfx.bOverride = 0;
 		SelectPlayer ();               //1 == allow escape out of menu
 		break;
 
@@ -958,7 +966,7 @@ displayModeInfo [NUM_DISPLAY_MODES].h = h;
 if (!(displayModeInfo [NUM_DISPLAY_MODES].isAvailable = 
 	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES].VGA_mode)))
 	return 0;
-SetDisplayMode (NUM_DISPLAY_MODES);
+SetDisplayMode (NUM_DISPLAY_MODES, 0);
 return 1;
 }
 
@@ -976,20 +984,20 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void SetDisplayMode (int mode)
+void SetDisplayMode (int mode, int bOverride)
 {
 	dmi *dmi;
 
 if ((gameStates.video.nDisplayMode == -1)|| (VR_render_mode != VR_NONE))	//special VR mode
 	return;								//...don't change
-#if !defined (WINDOWS)
-if (0) // (mode >= 5 && !FindArg ("-superhires"))
-	mode = 4;
-#endif
+if (bOverride && gameStates.gfx.bOverride)
+	mode = gameStates.gfx.nStartScrSize;
+else
+	gameStates.gfx.bOverride = 0;
 if (!gameStates.menus.bHiresAvailable && (mode != 1))
 	mode = 0;
 #ifndef WINDOWS
-if (!GrVideoModeOK (displayModeInfo[mode].VGA_mode))		//can't do mode
+if (!GrVideoModeOK (displayModeInfo [mode].VGA_mode))		//can't do mode
 	mode = 0;
 gameStates.video.nDisplayMode = mode;
 #else
@@ -1060,7 +1068,7 @@ for (i = 0; i < optCustRes; i++)
 	if (m [i].value) {
 		j = ScreenResMenuItemToMode(i);
 		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
-			SetDisplayMode (j);
+			SetDisplayMode (j, 0);
 			nDisplayMode = gameStates.video.nDisplayMode;
 			*last_key = -2;
 			}
@@ -1085,7 +1093,7 @@ do {
 	else if (i >= h)
 		i = h - 1;
 	if (displayModeInfo [i].isAvailable) {
-		SetDisplayMode (i);
+		SetDisplayMode (i, 0);
 		return 1;
 		}
 	} while (i && (i < h - 1) && (i != gameStates.video.nDisplayMode));
@@ -1097,7 +1105,7 @@ return 0;
 #define ADD_RES_OPT(_t) {ADD_RADIO (opt, _t, 0, -1, 0, NULL); opt++;}
 //{m [opt].nType = NM_TYPE_RADIO; m [opt].text = (_t); m [opt].key = -1; m [opt].value = 0; opt++;}
 
-extern int VGA_current_mode;
+extern int nCurrentVGAMode;
 
 void ScreenResMenu ()
 {
@@ -1204,7 +1212,7 @@ do {
 	return;
 #else
 	if (i == gameStates.video.nDisplayMode) {
-		SetDisplayMode (i);
+		SetDisplayMode (i, 0);
 		SetScreenMode (SCREEN_MENU);
 		if (bStdRes)
 			return;
@@ -2294,6 +2302,15 @@ if (extraGameInfo [0].bUseSmoke) {
 					m->rebuild = 1;
 					}
 				}
+			if (nSmokeLifeOpt [i] >= 0) {
+				m = menus + nSmokeLifeOpt [i];
+				v = m->value;
+				if (gameOpts->render.smoke.nLife [i] != v) {
+					gameOpts->render.smoke.nLife [i] = v;
+					sprintf (m->text, TXT_SMOKE_LIFE, pszLife [gameOpts->render.smoke.nLife [i]]);
+					m->rebuild = 1;
+					}
+				}
 			}	
 		}
 	}
@@ -2305,6 +2322,7 @@ else
 
 static char szSmokeDens [4][50];
 static char szSmokeSize [4][50];
+static char szSmokeLife [4][50];
 
 int AddSmokeSliders (tMenuItem *m, int opt, int i)
 {
@@ -2316,6 +2334,14 @@ sprintf (szSmokeSize [i] + 1, TXT_SMOKE_SIZE, pszSize [NMCLAMP (gameOpts->render
 *szSmokeSize [i] = *(TXT_SMOKE_SIZE - 1);
 ADD_SLIDER (opt, szSmokeSize [i] + 1, gameOpts->render.smoke.nSize [i], 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
 nSmokeSizeOpt [i] = opt++;
+if (i < 3)
+	nSmokeLifeOpt [i] = -1;
+else {
+	sprintf (szSmokeLife [i] + 1, TXT_SMOKE_LIFE, pszLife [NMCLAMP (gameOpts->render.smoke.nLife [i], 0, 3)]);
+	*szSmokeLife [i] = *(TXT_SMOKE_LIFE - 1);
+	ADD_SLIDER (opt, szSmokeLife [i] + 1, gameOpts->render.smoke.nLife [i], 0, 2, KEY_L, HTX_SMOKE_LIFE);
+	nSmokeLifeOpt [i] = opt++;
+	}
 return opt;
 }
 
@@ -2338,6 +2364,10 @@ void SmokeOptionsMenu ()
 	pszAmount [2] = TXT_QUALITY_HIGH;
 	pszAmount [3] = TXT_VERY_HIGH;
 	pszAmount [4] = TXT_EXTREME;
+
+	pszLife [0] = TXT_SHORT;
+	pszLife [1] = TXT_MEDIUM;
+	pszLife [2] = TXT_LONG;
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -3157,6 +3187,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
 			gameOpts->render.smoke.nSize [3] = 3;
+			gameOpts->render.smoke.nLife [0] =
+			gameOpts->render.smoke.nLife [1] =
+			gameOpts->render.smoke.nLife [2] = 0;
+			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 1;
 			gameOpts->ogl.bUseLighting = 0;
 			gameOpts->ogl.bLightObjects = 0;
@@ -3183,6 +3217,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
 			gameOpts->render.smoke.nSize [3] = 3;
+			gameOpts->render.smoke.nLife [0] =
+			gameOpts->render.smoke.nLife [1] =
+			gameOpts->render.smoke.nLife [2] = 0;
+			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 0;
 			gameOpts->ogl.bUseLighting = 1;
 			gameOpts->ogl.bLightObjects = 0;
@@ -3210,6 +3248,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
 			gameOpts->render.smoke.nSize [3] = 3;
+			gameOpts->render.smoke.nLife [0] =
+			gameOpts->render.smoke.nLife [1] =
+			gameOpts->render.smoke.nLife [2] = 0;
+			gameOpts->render.smoke.nLife [3] = 2;
 			gameOpts->render.cockpit.bTextGauges = 0;
 			gameOpts->ogl.bUseLighting = 1;
 			gameOpts->ogl.bLightObjects = 0;
@@ -3237,6 +3279,10 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nSize [1] =
 			gameOpts->render.smoke.nSize [2] =
 			gameOpts->render.smoke.nSize [3] = 3;
+			gameOpts->render.smoke.nLife [0] =
+			gameOpts->render.smoke.nLife [1] =
+			gameOpts->render.smoke.nLife [2] = 0;
+			gameOpts->render.smoke.nLife [3] = 2;
 			gameOpts->ogl.bUseLighting = 1;
 			gameOpts->ogl.bLightObjects = 1;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;

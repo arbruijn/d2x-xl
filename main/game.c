@@ -519,7 +519,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "input.h"
 #include "interp.h"
 
-u_int32_t VGA_current_mode;
+u_int32_t nCurrentVGAMode;
 
 void GamePaletteStepUp (int r, int g, int b);
 
@@ -574,10 +574,9 @@ ubyte Game_cockpit_copy_code = 0;
 ubyte Scanline_double = 1;
 #endif
 
-u_int32_t	VR_screen_mode			= 0;
-u_int32_t   bScreenModeOverride = 0;
+u_int32_t	nVRScreenMode			= 0;
 ubyte			VR_screenFlags	= 0;		//see values in screens.h
-ubyte			VR_current_page	= 0;
+ubyte			nVRCurrentPage	= 0;
 fix			VR_eye_width		= F1_0;
 int			VR_render_mode		= VR_NONE;
 int			VR_low_res 			= 3;				// Default to low res
@@ -1081,7 +1080,7 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 		render_w = GRMODEINFO (rw);
 		render_h = GRMODEINFO (rh);
 	}
-	VR_screen_mode		= screen_mode;
+	nVRScreenMode		= screen_mode;
 	VR_screenFlags	=  flags;
 	VRResetParams ();
 	VR_render_mode 	= render_method;
@@ -1143,7 +1142,7 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 //	if (vga_check_mode (screen_mode) != 0)
 //		Error ("Cannot set requested video mode");
 
-	VR_screen_mode		=	screen_mode;
+	nVRScreenMode		=	screen_mode;
 	VR_screenFlags	=  flags;
 //NEWVR
 	VRResetParams ();
@@ -1238,21 +1237,21 @@ WIN (static int saved_window_h);
 #endif
 
 #ifdef WINDOWS
-	if (gameStates.video.nScreenMode == sm && W95DisplayMode == VR_screen_mode) {
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages[VR_current_page]);
+	if (gameStates.video.nScreenMode == sm && W95DisplayMode == nVRScreenMode) {
+		DDGrSetCurrentCanvas (&dd_VR_screen_pages[nVRCurrentPage]);
 		return 1;
 	}
 #else
 #	ifdef OGL
-	if ((gameStates.video.nScreenMode == sm) && (VGA_current_mode == VR_screen_mode) && 
-		 (/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == VR_screen_mode))) {
-		GrSetCurrentCanvas (VR_screen_pages + VR_current_page);
+	if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) && 
+		 (/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == nVRScreenMode))) {
+		GrSetCurrentCanvas (VR_screen_pages + nVRCurrentPage);
 		OglSetScreenMode ();
 		return 1;
 	}
 #	else
-	if (gameStates.video.nScreenMode == sm && VGA_current_mode == VR_screen_mode) {
-		GrSetCurrentCanvas (&VR_screen_pages[VR_current_page]);
+	if (gameStates.video.nScreenMode == sm && nCurrentVGAMode == nVRScreenMode) {
+		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
 		return 1;
 	}
 #	endif
@@ -1265,8 +1264,7 @@ WIN (static int saved_window_h);
 
 	gameStates.video.nScreenMode = sm;
 
-	switch (gameStates.video.nScreenMode)
-	{
+	switch (gameStates.video.nScreenMode) {
 		case SCREEN_MENU:
 		#ifdef WINDOWS
 			//mouse_set_mode (0);
@@ -1299,35 +1297,29 @@ WIN (static int saved_window_h);
 
 		#else
 		{
-			u_int32_t menu_mode;
+			u_int32_t nMenuMode;
 
 			gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 
 #if defined (POLY_ACC)
 				#ifndef MACINTOSH
-	            menu_mode = gameStates.menus.bHires?SM (640,480):SM (320,200);
+	            nMenuMode = gameStates.menus.bHires ? SM (640,480) : SM (320,200);
 				#else
-					menu_mode = PAEnabled?SM_640x480x15xPA:SM_640x480V;
+					nMenuMode = PAEnabled ? SM_640x480x15xPA : SM_640x480V;
 				#endif
 #else
-            menu_mode = 
-					gameStates.menus.bHires?
-						 (VR_screen_mode >= SM (640,480))?
-							VR_screen_mode
-							:SM (640,480)
-						:SM (320,200);
+            nMenuMode = 
+					gameStates.gfx.bOverride ?
+						gameStates.gfx.nStartScrMode
+						: gameStates.menus.bHires ?
+							 (nVRScreenMode >= SM (640,480)) ?
+								nVRScreenMode
+								: SM (640,480)
+							: SM (320,200);
 #endif
 			gameStates.video.nLastScreenMode = -1;
-#if 0
-			if (gameStates.menus.bFullScreen) {
-				gameStates.menus.bFullScreen = 0;
-				SDL_SetVideoMode (gameStates.video.nWidth, gameStates.video.nHeight, gameStates.ogl.nColorBits, 
-										 SDL_OPENGL | (gameStates.ogl.bFullScreen ? SDL_FULLSCREEN : 0));
-				VGA_current_mode = -1;
-				}
-#endif
-			if (VGA_current_mode != menu_mode) {
-				if (GrSetMode (menu_mode))
+			if (nCurrentVGAMode != nMenuMode) {
+				if (GrSetMode (nMenuMode))
 					Error ("Cannot set screen mode for menu");
 				if (!gameStates.render.bPaletteFadedOut)
 					GrPaletteStepLoad (NULL);
@@ -1352,9 +1344,9 @@ WIN (static int saved_window_h);
 #if 0 //def WINDOWS
 		//mouse_set_mode (1);
 		HideCursorW ();
-		if (force_mode_change || (W95DisplayMode != VR_screen_mode)) {
+		if (force_mode_change || (W95DisplayMode != nVRScreenMode)) {
 
-			DDSETDISPLAYMODE (VR_screen_mode);
+			DDSETDISPLAYMODE (nVRScreenMode);
 //@@			PiggyBitmapPageOutAllW ();		// 2D GFX Flush cache.
 			dd_gr_init_screen ();
 #if TRACE
@@ -1367,9 +1359,8 @@ WIN (static int saved_window_h);
 			ResetCockpit ();
 		}
 #else
-//		VR_screen_mode = SM (Game_window_w,Game_window_h);
-		if (VGA_current_mode != VR_screen_mode) {
-			if (GrSetMode (VR_screen_mode))	{
+		if (nCurrentVGAMode != nVRScreenMode) {
+			if (GrSetMode (nVRScreenMode))	{
 				Error ("Cannot set desired screen mode for game!");
 				//we probably should do something else here, like select a standard mode
 			}
@@ -1478,17 +1469,17 @@ WIN (static int saved_window_h);
 		Error ("Invalid screen mode %d",sm);
 	}
 
-	VR_current_page = 0;
+	nVRCurrentPage = 0;
 
 	WINDOS (
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages[VR_current_page]),
-		GrSetCurrentCanvas (&VR_screen_pages[VR_current_page])
+		DDGrSetCurrentCanvas (&dd_VR_screen_pages[nVRCurrentPage]),
+		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage])
 	);
 
 	if (VR_screenFlags&VRF_USE_PAGING)	{
 	WINDOS (
 		dd_gr_flip (),
-		GrShowCanvas (&VR_screen_pages[VR_current_page])
+		GrShowCanvas (&VR_screen_pages[nVRCurrentPage])
 	);
 	}
 #ifdef OGL
@@ -1935,7 +1926,7 @@ void SaveScreenShot (NULL, int automapFlag)
 		GrSetCurrentCanvas (NULL);
 	modexFlag = (grdCurCanv->cv_bitmap.bm_props.nType==BM_MODEX);
 	if (!automapFlag && modexFlag)
-		GrSetCurrentCanvas (&VR_screen_pages[VR_current_page]);
+		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
 
 	save_font = grdCurCanv->cv_font;
 	GrSetCurFont (GAME_FONT);
@@ -1946,8 +1937,8 @@ void SaveScreenShot (NULL, int automapFlag)
 		h *= 2;
 
 	//I changed how these coords were calculated for the high-res automap. -MT
-	//x = (VR_screen_pages[VR_current_page].cv_w-w)/2;
-	//y = (VR_screen_pages[VR_current_page].cv_h-h)/2;
+	//x = (VR_screen_pages[nVRCurrentPage].cv_w-w)/2;
+	//y = (VR_screen_pages[nVRCurrentPage].cv_h-h)/2;
 	x = (grdCurCanv->cv_w-w)/2;
 	y = (grdCurCanv->cv_h-h)/2;
 
@@ -1999,7 +1990,7 @@ void SaveScreenShot (NULL, int automapFlag)
 		goto shot_done;
 	GrSetCurrentCanvas (temp_canv);
 	gr_ubitmap (0, 0, &screen_canv->cv_bitmap);
-	GrSetCurrentCanvas (&VR_screen_pages[VR_current_page]);
+	GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
 
 	show_cursor ();
 	key_close ();
@@ -2911,14 +2902,14 @@ if (fErr) {
 #ifdef WINDOWS
 dd_grs_canvas * GetCurrentGameScreen ()
 {
-	return &dd_VR_screen_pages[VR_current_page];
+	return &dd_VR_screen_pages[nVRCurrentPage];
 }
 
 #else
 
 grs_canvas * GetCurrentGameScreen ()
 {
-	return &VR_screen_pages[VR_current_page];
+	return &VR_screen_pages[nVRCurrentPage];
 }
 #endif
 

@@ -3989,6 +3989,7 @@ gameData.demo.nPlaybackStyle = NORMAL_PLAYBACK;
 SetFunctionMode (FMODE_GAME);
 Cockpit_3d_view [0] = CV_NONE;       //turn off 3d views on cockpit
 Cockpit_3d_view [1] = CV_NONE;       //turn off 3d views on cockpit
+SDL_ShowCursor (0);
 NDPlayBackOneFrame ();       // this one loads new level
 NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb game
 }
@@ -4006,6 +4007,7 @@ strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, gameData
 gameStates.render.cockpit.nMode = gameData.demo.nOldCockpit;
 gameData.app.nGameMode = GM_GAME_OVER;
 SetFunctionMode (FMODE_MENU);
+SDL_ShowCursor (1);
 longjmp (gameExitPoint, 0);               // Exit game loop
 }
 

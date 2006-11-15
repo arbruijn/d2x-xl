@@ -101,7 +101,9 @@ int SCREENMODE (int x, int y, int c)
 	int i = FindArg (ScrSizeArg (x, y));
 
 if (i && (i < Num_args)) {
-	bScreenModeOverride = 1; 
+	gameStates.gfx.bOverride = 1; 
+	Game_window_w = x;
+	Game_window_h = y;
 	return gameStates.gfx.nStartScrMode = GetDisplayMode (SM (x, y)); 
 	}
 return -1;
@@ -337,13 +339,13 @@ int GrVideoModeOK(u_int32_t mode)
 
 //------------------------------------------------------------------------------
 
-extern int VGA_current_mode; // DPH: kludge - remove at all costs
+extern int nCurrentVGAMode; // DPH: kludge - remove at all costs
 
 int GrSetMode(u_int32_t mode)
 {
 	unsigned int w,h;
 	unsigned char *gr_bm_data;
-	int bForce = (VGA_current_mode < 0);
+	int bForce = (nCurrentVGAMode < 0);
 
 #ifdef NOGRAPH
 return 0;
@@ -354,7 +356,7 @@ return 0;
 
 	w=SM_W(mode);
 	h=SM_H(mode);
-	VGA_current_mode = mode;
+	nCurrentVGAMode = mode;
 
 	//if (screen != NULL) GrPaletteStepClear();
 
@@ -586,7 +588,9 @@ grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = NULL;
 // Set the mode.
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
 	if (FindArg (ScrSizeArg (scrSizes [t].x, scrSizes [t].y))) {
+		gameStates.gfx.bOverride = 1;
 		gameStates.gfx.nStartScrSize = t;
+		gameStates.gfx.nStartScrMode =
 		mode = SM (scrSizes [t].x, scrSizes [t].y);
 		break;
 		}

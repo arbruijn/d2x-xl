@@ -1610,6 +1610,9 @@ char *defaultGameTexts [][2] = {
 	{"Rauch ~Verteilen", "~Disperse smoke"},
 	{"Spiel-~Einstellungen...", "game ~Options..."},
 	{"nur getroffene Objekte ~Markieren", "~Tag only hit objects"},
+	{"Schweif~Laenge: %s", "Trail ~Length: %s"},
+	{"Kurz", "Short"},
+	{"Lang", "Long"},
 #if 0
 	{"", ""},
 #endif
@@ -2054,8 +2057,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, verteilt sich Rauch nach und nach.", "If checked, smoke slowly disperses."},
 	{"Wenn angekreuzt, werden Ziel- und Schadensanzeigen nur fuer\ngetroffene Objekte angezeigt.", 
 	 "If checked, target and damage indicators are only displayed\nfor hit objects."},
+	{"Hier kann die Laenge des Rauchschweifs eingestellt werden.", "Adjust the length of the smoke trail here."},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};

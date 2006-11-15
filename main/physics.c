@@ -793,8 +793,10 @@ retryMove:
 
 	//if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_MONSTERBALL)) 
 		{
-		int i, j;
-
+		int i;
+#ifdef RELEASE
+		int j;
+#endif
 		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
 			nPhysSegs--;
 #ifdef RELEASE

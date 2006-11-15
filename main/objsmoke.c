@@ -26,6 +26,15 @@
 #define DEBRIS_MAX_PARTS	50
 #define MSL_MAX_PARTS		500
 
+#define PLR_PART_LIFE	-4000
+#define PLR_PART_SPEED	40
+#define OBJ_PART_LIFE	-4000
+#define OBJ_PART_SPEED	40
+#define MSL_PART_LIFE	-3000
+#define MSL_PART_SPEED	30
+#define DEBRIS_PART_LIFE	-2000
+#define DEBRIS_PART_SPEED	30
+
 //------------------------------------------------------------------------------
 
 void KillPlayerSmoke (int i)
@@ -346,7 +355,7 @@ if (nParts) {
 		}
 	gameData.smoke.objects [i] = CreateSmoke (&objP->pos, NULL, objP->nSegment, 1, nParts, nScale,
 															gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-															1, MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
+															1, (gameOpts->render.smoke.nLife [3] + 1) * MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
 	}
 	VmVecScaleAdd (&pos, &objP->pos, &objP->orient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);

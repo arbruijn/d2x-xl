@@ -152,7 +152,7 @@ int GrVideoModeOK(u_int32_t mode)
 }
 
 
-extern int VGA_current_mode; // DPH: kludge - remove at all costs
+extern int nCurrentVGAMode; // DPH: kludge - remove at all costs
 
 int GrSetMode(u_int32_t mode)
 {
@@ -167,7 +167,7 @@ int GrSetMode(u_int32_t mode)
 
 	w=SM_W(mode);
 	h=SM_H(mode);
-	VGA_current_mode = mode;
+	nCurrentVGAMode = mode;
 	
 	if (screen != NULL) GrPaletteStepClear();
 

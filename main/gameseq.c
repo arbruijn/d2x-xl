@@ -1099,7 +1099,7 @@ if (ReadPlayerFile (0) != EZERO)
 	goto do_menu_again;
 KCSetControls ();
 gameOpts->gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
-SetDisplayMode (gameStates.video.nDefaultDisplayMode);
+SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
 WriteConfigFile ();		// Update lastplr
 D2SetCaption ();
 return 1;
@@ -1762,13 +1762,6 @@ else
 #define MOVIE_REQUIRED 0
 #else
 #define MOVIE_REQUIRED 1
-#endif
-
-#ifdef D2_OEM
-#	define ENDMOVIE		"endo"
-#else
-#	define ENDMOVIE		"end"
-#	define D1_ENDMOVIE	"final"
 #endif
 
 void show_order_form ();

@@ -1376,7 +1376,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 	else
 		redraw_score = -1;
 
-	if (old_score[VR_current_page]==redraw_score) {
+	if (old_score[nVRCurrentPage]==redraw_score) {
 		GrSetCurFont( GAME_FONT );
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 
@@ -1407,9 +1407,9 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 	//erase old score
 	GrSetColorRGBi (RGBA_PAL (0,0,0));
    PA_DFX (pa_set_frontbuffer_current());
-	PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],y,SB_SCORE_RIGHT,y+GAME_FONT->ft_h));
+	PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],y,SB_SCORE_RIGHT,y+GAME_FONT->ft_h));
    PA_DFX(pa_set_backbuffer_current()); 
-	HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],y,SB_SCORE_RIGHT,y+GAME_FONT->ft_h);
+	HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],y,SB_SCORE_RIGHT,y+GAME_FONT->ft_h);
 
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) 
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
@@ -1421,7 +1421,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
    PA_DFX(pa_set_backbuffer_current()); 
  	HUDPrintF(x,y,score_str);
 
-	last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page] = x;
+	last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage] = x;
 WIN(DDGRUNLOCK(dd_grd_curcanv));
 }
 
@@ -1441,7 +1441,7 @@ void SBShowScoreAdded()
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) 
 		return;
 
-	if (score_display[VR_current_page] == 0)
+	if (score_display[nVRCurrentPage] == 0)
 		return;
 
 WIN(DDGRLOCK(dd_grd_curcanv));
@@ -1449,14 +1449,14 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 
 	scoreTime -= gameData.time.xFrame;
 	if (scoreTime > 0) {
-		if (score_display[VR_current_page] != last_score_display[VR_current_page] || frc) {
+		if (score_display[nVRCurrentPage] != last_score_display[nVRCurrentPage] || frc) {
 			GrSetColorRGBi (RGBA_PAL (0,0,0));
 			PA_DFX (pa_set_frontbuffer_current());
-			PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h));
+			PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h));
 		   PA_DFX(pa_set_backbuffer_current()); 
-			GrRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h);
+			GrRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h);
 
-			last_score_display[VR_current_page] = score_display[VR_current_page];
+			last_score_display[nVRCurrentPage] = score_display[nVRCurrentPage];
 		}
 
 		color = f2i(scoreTime * 20) + 10;
@@ -1469,7 +1469,7 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 		if (gameStates.app.cheats.bEnabled)
 			sprintf(score_str, "%s", TXT_CHEATER);
 		else
-			sprintf(score_str, "%5d", score_display[VR_current_page]);
+			sprintf(score_str, "%5d", score_display[nVRCurrentPage]);
 		GrGetStringSize(score_str, &w, &h, &aw );
 		x = SB_SCORE_ADDED_RIGHT-w-LHX(2);
 		GrSetFontColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
@@ -1477,16 +1477,16 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 		PA_DFX (GrPrintF(x, SB_SCORE_ADDED_Y, score_str));
       PA_DFX(pa_set_backbuffer_current()); 
 		GrPrintF(x, SB_SCORE_ADDED_Y, score_str);
-		last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page] = x;
+		last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage] = x;
 	} else {
 		//erase old score
 		GrSetColorRGBi (RGBA_PAL (0,0,0));
 		PA_DFX (pa_set_frontbuffer_current());
-		PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h));
+		PA_DFX (HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h));
 	   PA_DFX(pa_set_backbuffer_current()); 
-		GrRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h);
+		GrRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage],SB_SCORE_ADDED_Y,SB_SCORE_ADDED_RIGHT,SB_SCORE_ADDED_Y+GAME_FONT->ft_h);
 		scoreTime = 0;
-		score_display[VR_current_page] = 0;
+		score_display[nVRCurrentPage] = 0;
 	}
 WIN(DDGRUNLOCK(dd_grd_curcanv));	
 }
@@ -1509,12 +1509,12 @@ void PlayHomingWarning(void)
 		else if (beep_delay < F1_0/8)
 			beep_delay = F1_0/8;
 
-		if (Last_warning_beepTime[VR_current_page] > gameData.time.xGame)
-			Last_warning_beepTime[VR_current_page] = 0;
+		if (Last_warning_beepTime[nVRCurrentPage] > gameData.time.xGame)
+			Last_warning_beepTime[nVRCurrentPage] = 0;
 
-		if (gameData.time.xGame - Last_warning_beepTime[VR_current_page] > beep_delay/2) {
+		if (gameData.time.xGame - Last_warning_beepTime[nVRCurrentPage] > beep_delay/2) {
 			DigiPlaySample( SOUND_HOMING_WARNING, F1_0 );
-			Last_warning_beepTime[VR_current_page] = gameData.time.xGame;
+			Last_warning_beepTime[nVRCurrentPage] = gameData.time.xGame;
 		}
 	}
 }
@@ -1526,14 +1526,14 @@ int	Last_homing_warning_shown[2]={-1,-1};
 void ShowHomingWarning(void)
 {
 	if ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.app.bEndLevelSequence)) {
-		if (Last_homing_warning_shown[VR_current_page] == 1) {
+		if (Last_homing_warning_shown[nVRCurrentPage] == 1) {
 			PAGE_IN_GAUGE( GAUGE_HOMING_WARNING_OFF );
 			WIN(DDGRLOCK(dd_grd_curcanv));
 				/*GrUBitmapM*/HUDBitBlt( 
 					HOMING_WARNING_X, HOMING_WARNING_Y, 
 					gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_HOMING_WARNING_OFF), F1_0, 0);
 			WIN(DDGRUNLOCK(dd_grd_curcanv));
-			Last_homing_warning_shown[VR_current_page] = 0;
+			Last_homing_warning_shown[nVRCurrentPage] = 0;
 		}
 		return;
 	}
@@ -1548,34 +1548,34 @@ WIN(DDGRLOCK(dd_grd_curcanv))
 {
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist >= 0) {
 		if (gameData.time.xGame & 0x4000) {
-			//if (Last_homing_warning_shown[VR_current_page] != 1) 
+			//if (Last_homing_warning_shown[nVRCurrentPage] != 1) 
 			{
 				PAGE_IN_GAUGE( GAUGE_HOMING_WARNING_ON );
 				/*GrUBitmapM*/HUDBitBlt( 
 					HOMING_WARNING_X, HOMING_WARNING_Y, 
 					gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_HOMING_WARNING_ON), F1_0, 0);
-				Last_homing_warning_shown[VR_current_page] = 1;
+				Last_homing_warning_shown[nVRCurrentPage] = 1;
 			}
 		} 
 		else {
-			//if (Last_homing_warning_shown[VR_current_page] != 0) 
+			//if (Last_homing_warning_shown[nVRCurrentPage] != 0) 
 			{
 				PAGE_IN_GAUGE( GAUGE_HOMING_WARNING_OFF );
 				/*GrUBitmapM*/HUDBitBlt( 
 					HOMING_WARNING_X, HOMING_WARNING_Y, 
 					gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_HOMING_WARNING_OFF), F1_0, 0);
-				Last_homing_warning_shown[VR_current_page] = 0;
+				Last_homing_warning_shown[nVRCurrentPage] = 0;
 			}
 		}
 	}
 	else 
-		//if (Last_homing_warning_shown[VR_current_page] != 0) 
+		//if (Last_homing_warning_shown[nVRCurrentPage] != 0) 
 	{
 		PAGE_IN_GAUGE( GAUGE_HOMING_WARNING_OFF );
 		/*GrUBitmapM*/HUDBitBlt( 
 			HOMING_WARNING_X, HOMING_WARNING_Y, 
 			gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_HOMING_WARNING_OFF), F1_0, 0);
-		Last_homing_warning_shown[VR_current_page] = 0;
+		Last_homing_warning_shown[nVRCurrentPage] = 0;
 	}
 }
 WIN(DDGRUNLOCK(dd_grd_curcanv));
@@ -1841,9 +1841,9 @@ skipGauge:
 if (gameData.demo.nState==ND_STATE_RECORDING ) {
 	int energy = f2ir(gameData.multi.players[gameData.multi.nLocalPlayer].energy);
 
-	if (energy != old_energy[VR_current_page]) {
-		NDRecordPlayerEnergy(old_energy[VR_current_page], energy);
-		old_energy[VR_current_page] = energy;
+	if (energy != old_energy[nVRCurrentPage]) {
+		NDRecordPlayerEnergy(old_energy[nVRCurrentPage], energy);
+		old_energy[nVRCurrentPage] = energy;
 	 	}
 	}
 }
@@ -1875,9 +1875,9 @@ void HUDShowAfterburner(void)
 		GrURect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
 		}
 	if (gameData.demo.nState==ND_STATE_RECORDING ) {
-		if (xAfterburnerCharge != old_afterburner[VR_current_page]) {
-			NDRecordPlayerAfterburner(old_afterburner[VR_current_page], xAfterburnerCharge);
-			old_afterburner[VR_current_page] = xAfterburnerCharge;
+		if (xAfterburnerCharge != old_afterburner[nVRCurrentPage]) {
+			NDRecordPlayerAfterburner(old_afterburner[nVRCurrentPage], xAfterburnerCharge);
+			old_afterburner[nVRCurrentPage] = xAfterburnerCharge;
 	 	}
 	}
 }
@@ -1913,7 +1913,7 @@ count = min(count,99);	//only have room for 2 digits - cheating give 200
 countx = (bomb==PROXIMITY_INDEX)?count:-count;
 if (always_show && count == 0)		//no bombs, draw nothing on HUD
 	return;
-if (!always_show && countx == old_bombcount[VR_current_page])
+if (!always_show && countx == old_bombcount[nVRCurrentPage])
 	return;
 WIN(DDGRLOCK(dd_grd_curcanv));
 // I hate doing this off of hard coded coords!!!!
@@ -1954,7 +1954,7 @@ if ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) ||
 else
 	GrString(x,y,txt);
 WIN(DDGRUNLOCK(dd_grd_curcanv));
-old_bombcount[VR_current_page] = countx;
+old_bombcount[nVRCurrentPage] = countx;
 }
 
 //	-----------------------------------------------------------------------------
@@ -2431,18 +2431,18 @@ void HUDShowWeapons(void)
 	GrPrintF(grdCurCanv->cv_bitmap.bm_props.w-5-w, y-2*Line_spacing, weapon_str);
 
 	if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammo_count[0][VR_current_page]) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammo_count[0][nVRCurrentPage]) {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordPrimaryAmmo(old_ammo_count[0][VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
-			old_ammo_count[0][VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
+				NDRecordPrimaryAmmo(old_ammo_count[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
+			old_ammo_count[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
 		}
 	}
 
 	if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-		if (xOmegaCharge != Old_Omega_charge[VR_current_page]) {
+		if (xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordPrimaryAmmo(Old_Omega_charge[VR_current_page], xOmegaCharge);
-			Old_Omega_charge[VR_current_page] = xOmegaCharge;
+				NDRecordPrimaryAmmo(Old_Omega_charge[nVRCurrentPage], xOmegaCharge);
+			Old_Omega_charge[nVRCurrentPage] = xOmegaCharge;
 		}
 	}
 
@@ -2452,10 +2452,10 @@ void HUDShowWeapons(void)
 	GrGetStringSize(weapon_str, &w, &h, &aw );
 	GrPrintF(grdCurCanv->cv_bitmap.bm_props.w-5-w, y-Line_spacing, weapon_str);
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][VR_current_page]) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][nVRCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordSecondaryAmmo(old_ammo_count[1][VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-		old_ammo_count[1][VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+			NDRecordSecondaryAmmo(old_ammo_count[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+		old_ammo_count[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 	}
 
 	ShowBombCount(grdCurCanv->cv_bitmap.bm_props.w-(3*GAME_FONT->ft_w+(gameStates.render.fonts.bHires?0:2)), y-3*Line_spacing,-1,1);
@@ -2559,9 +2559,9 @@ skipGauge:
 if (gameData.demo.nState==ND_STATE_RECORDING ) {
 	int shields = f2ir(gameData.multi.players[gameData.multi.nLocalPlayer].shields);
 
-	if (shields != old_shields[VR_current_page]) {		// Draw the shield gauge
-		NDRecordPlayerShields(old_shields[VR_current_page], shields);
-		old_shields[VR_current_page] = shields;
+	if (shields != old_shields[nVRCurrentPage]) {		// Draw the shield gauge
+		NDRecordPlayerShields(old_shields[nVRCurrentPage], shields);
+		old_shields[nVRCurrentPage] = shields;
 		}
 	}
 }
@@ -2606,7 +2606,7 @@ void SBShowLives()
    PA_DFX (frc=0);
 
 	WIN(DDGRLOCK(dd_grd_curcanv));
-	if (old_lives[VR_current_page]==-1 || frc) {
+	if (old_lives[nVRCurrentPage]==-1 || frc) {
 		GrSetCurFont( GAME_FONT );
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -2639,16 +2639,16 @@ WIN(DDGRUNLOCK(dd_grd_curcanv));
 		sprintf(killed_str, "%5d", gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal);
 		GrGetStringSize(killed_str, &w, &h, &aw );
 		GrSetColorRGBi (RGBA_PAL (0,0,0));
-		HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page], y+1, SB_SCORE_RIGHT, y+GAME_FONT->ft_h);
+		HUDRect(last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage], y+1, SB_SCORE_RIGHT, y+GAME_FONT->ft_h);
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		x = SB_SCORE_RIGHT-w-2;		
 		HUDPrintF(x, y+1, killed_str);
-		last_x[(gameStates.video.nDisplayMode?2:0)+VR_current_page] = x;
+		last_x[(gameStates.video.nDisplayMode?2:0)+nVRCurrentPage] = x;
 	WIN(DDGRUNLOCK(dd_grd_curcanv));
 		return;
 	}
 
-	if (frc || old_lives[VR_current_page]==-1 || gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[VR_current_page]) {
+	if (frc || old_lives[nVRCurrentPage]==-1 || gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[nVRCurrentPage]) {
 	WIN(DDGRLOCK(dd_grd_curcanv));
 
 		//erase old icons
@@ -3556,51 +3556,51 @@ WINDOS(
 WIN(DDGRLOCK(dd_grd_curcanv));
 	GrSetCurFont( GAME_FONT );
 
-	laserLevel_changed = (nWeaponType==0 && weapon_num==LASER_INDEX && (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel != old_laserLevel[VR_current_page]));
+	laserLevel_changed = (nWeaponType==0 && weapon_num==LASER_INDEX && (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel != old_laserLevel[nVRCurrentPage]));
 
-	if ((weapon_num != old_weapon[nWeaponType][VR_current_page] || laserLevel_changed) && weapon_box_states[nWeaponType] == WS_SET) {
+	if ((weapon_num != old_weapon[nWeaponType][nVRCurrentPage] || laserLevel_changed) && weapon_box_states[nWeaponType] == WS_SET) {
 		weapon_box_states[nWeaponType] = WS_FADING_OUT;
 		weapon_box_fadeValues[nWeaponType]=i2f(GR_ACTUAL_FADE_LEVELS-1);
 		}
 		
-	if ((old_weapon[nWeaponType][VR_current_page] == -1) || 1/*(gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
+	if ((old_weapon[nWeaponType][nVRCurrentPage] == -1) || 1/*(gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
 		DrawWeaponInfo(nWeaponType,weapon_num,gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
-		old_weapon[nWeaponType][VR_current_page] = weapon_num;
-		old_ammo_count[nWeaponType][VR_current_page]=-1;
-		Old_Omega_charge[VR_current_page]=-1;
-		old_laserLevel[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
+		old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
+		old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+		Old_Omega_charge[nVRCurrentPage]=-1;
+		old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
 		drewFlag=1;
 		weapon_box_states[nWeaponType] = WS_SET;
 		}
 
 	if (weapon_box_states[nWeaponType] == WS_FADING_OUT) {
-		DrawWeaponInfo(nWeaponType,old_weapon[nWeaponType][VR_current_page],old_laserLevel[VR_current_page]);
-		old_ammo_count[nWeaponType][VR_current_page]=-1;
-		Old_Omega_charge[VR_current_page]=-1;
+		DrawWeaponInfo(nWeaponType,old_weapon[nWeaponType][nVRCurrentPage],old_laserLevel[nVRCurrentPage]);
+		old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+		Old_Omega_charge[nVRCurrentPage]=-1;
 		drewFlag=1;
 		weapon_box_fadeValues[nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 		if (weapon_box_fadeValues[nWeaponType] <= 0) {
 			weapon_box_states[nWeaponType] = WS_FADING_IN;
-			old_weapon[nWeaponType][VR_current_page] = weapon_num;
-			old_weapon[nWeaponType][!VR_current_page] = weapon_num;
-			old_laserLevel[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
-			old_laserLevel[!VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
+			old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
+			old_weapon[nWeaponType][!nVRCurrentPage] = weapon_num;
+			old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
+			old_laserLevel[!nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
 			weapon_box_fadeValues[nWeaponType] = 0;
 			}
 		}
 	else if (weapon_box_states[nWeaponType] == WS_FADING_IN) {
-		if (weapon_num != old_weapon[nWeaponType][VR_current_page]) {
+		if (weapon_num != old_weapon[nWeaponType][nVRCurrentPage]) {
 			weapon_box_states[nWeaponType] = WS_FADING_OUT;
 			}
 		else {
 			DrawWeaponInfo(nWeaponType,weapon_num,gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
-			old_ammo_count[nWeaponType][VR_current_page]=-1;
-			Old_Omega_charge[VR_current_page]=-1;
+			old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+			Old_Omega_charge[nVRCurrentPage]=-1;
 			drewFlag=1;
 			weapon_box_fadeValues[nWeaponType] += gameData.time.xFrame * FADE_SCALE;
 			if (weapon_box_fadeValues[nWeaponType] >= i2f(GR_ACTUAL_FADE_LEVELS-1)) {
 				weapon_box_states[nWeaponType] = WS_SET;
-				old_weapon[nWeaponType][!VR_current_page] = -1;		//force redraw (at full fade-in) of other page
+				old_weapon[nWeaponType][!nVRCurrentPage] = -1;		//force redraw (at full fade-in) of other page
 				}
 			}
 		}
@@ -3695,20 +3695,20 @@ void DrawWeaponBoxes()
 
 		if (weapon_box_states[0] == WS_SET) {
 			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammo_count[0][VR_current_page]) {
+				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammo_count[0][nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo(old_ammo_count[0][VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
+						NDRecordPrimaryAmmo(old_ammo_count[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
 					DrawPrimaryAmmoInfo(f2i((unsigned) VULCAN_AMMO_SCALE * (unsigned) gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]));
-					old_ammo_count[0][VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
+					old_ammo_count[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
 				}
 			}
 
 			if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-				if (xOmegaCharge != Old_Omega_charge[VR_current_page]) {
+				if (xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo(Old_Omega_charge[VR_current_page], xOmegaCharge);
+						NDRecordPrimaryAmmo(Old_Omega_charge[nVRCurrentPage], xOmegaCharge);
 					DrawPrimaryAmmoInfo(xOmegaCharge * 100/MAX_OMEGA_CHARGE);
-					Old_Omega_charge[VR_current_page] = xOmegaCharge;
+					Old_Omega_charge[nVRCurrentPage] = xOmegaCharge;
 				}
 			}
 		}
@@ -3725,12 +3725,12 @@ void DrawWeaponBoxes()
 			);
 
 		if (weapon_box_states[1] == WS_SET)
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][VR_current_page]) {
-				old_bombcount[VR_current_page] = 0x7fff;	//force redraw
+			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][nVRCurrentPage]) {
+				old_bombcount[nVRCurrentPage] = 0x7fff;	//force redraw
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordSecondaryAmmo(old_ammo_count[1][VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+					NDRecordSecondaryAmmo(old_ammo_count[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
 				DrawSecondaryAmmoInfo(gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-				old_ammo_count[1][VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+				old_ammo_count[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 			}
 	}
 	else if (weapon_box_user[1] == WBU_STATIC)
@@ -4447,9 +4447,9 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 				HUDShowKeys();
 			HUDShowCloakInvul();
 
-			if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[VR_current_page])) {
-				NDRecordPlayerFlags(oldFlags[VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
-				oldFlags[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+			if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage])) {
+				NDRecordPlayerFlags(oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
+				oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 			}
 		}
 		#ifdef NETWORK
@@ -4546,107 +4546,107 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 
 DrawWeaponBoxes();
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-	if (energy != old_energy[VR_current_page]) {
+	if (energy != old_energy[nVRCurrentPage]) {
 		if (gameData.demo.nState==ND_STATE_RECORDING ) {
-			NDRecordPlayerEnergy(old_energy[VR_current_page], energy);
+			NDRecordPlayerEnergy(old_energy[nVRCurrentPage], energy);
 		}
 	}
 	DrawEnergyBar(energy);
 	DrawNumericalDisplay(shields, energy);
-	old_energy[VR_current_page] = energy;
+	old_energy[nVRCurrentPage] = energy;
 
-	if (xAfterburnerCharge != old_afterburner[VR_current_page]) {
+	if (xAfterburnerCharge != old_afterburner[nVRCurrentPage]) {
 		if (gameData.demo.nState==ND_STATE_RECORDING ) {
-			NDRecordPlayerAfterburner(old_afterburner[VR_current_page], xAfterburnerCharge);
+			NDRecordPlayerAfterburner(old_afterburner[nVRCurrentPage], xAfterburnerCharge);
 		}
 	}
 	DrawAfterburnerBar(xAfterburnerCharge);
-	old_afterburner[VR_current_page] = xAfterburnerCharge;
+	old_afterburner[nVRCurrentPage] = xAfterburnerCharge;
 
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawNumericalDisplay(shields, energy);
 		DrawInvulnerableShip();
-		old_shields[VR_current_page] = shields ^ 1;
+		old_shields[nVRCurrentPage] = shields ^ 1;
 	} else {
-		if (shields != old_shields[VR_current_page]) {		// Draw the shield gauge
+		if (shields != old_shields[nVRCurrentPage]) {		// Draw the shield gauge
 			if (gameData.demo.nState==ND_STATE_RECORDING ) {
-				NDRecordPlayerShields(old_shields[VR_current_page], shields);
+				NDRecordPlayerShields(old_shields[nVRCurrentPage], shields);
 			}
 		}
 		DrawShieldBar(shields);
 		DrawNumericalDisplay(shields, energy);
-		old_shields[VR_current_page] = shields;
+		old_shields[nVRCurrentPage] = shields;
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[VR_current_page]) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage]) {
 		if (gameData.demo.nState==ND_STATE_RECORDING )
-			NDRecordPlayerFlags(oldFlags[VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
-		oldFlags[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+			NDRecordPlayerFlags(oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
+		oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 	}
 	DrawKeys();
 	ShowHomingWarning();
 	ShowBombCount(BOMB_COUNT_X,BOMB_COUNT_Y,BLACK_RGBA,gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
 } else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 
-	if (energy != old_energy[VR_current_page] || frc)  {
+	if (energy != old_energy[nVRCurrentPage] || frc)  {
 		if (gameData.demo.nState==ND_STATE_RECORDING ) {
-			NDRecordPlayerEnergy(old_energy[VR_current_page], energy);
+			NDRecordPlayerEnergy(old_energy[nVRCurrentPage], energy);
 		}
 		SBDrawEnergyBar(energy);
-		old_energy[VR_current_page] = energy;
+		old_energy[nVRCurrentPage] = energy;
 	}
 
-	if (xAfterburnerCharge != old_afterburner[VR_current_page] || frc) {
+	if (xAfterburnerCharge != old_afterburner[nVRCurrentPage] || frc) {
 		if (gameData.demo.nState==ND_STATE_RECORDING ) {
-			NDRecordPlayerAfterburner(old_afterburner[VR_current_page], xAfterburnerCharge);
+			NDRecordPlayerAfterburner(old_afterburner[nVRCurrentPage], xAfterburnerCharge);
 		}
 		SBDrawAfterburner();
-		old_afterburner[VR_current_page] = xAfterburnerCharge;
+		old_afterburner[nVRCurrentPage] = xAfterburnerCharge;
 	}
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawInvulnerableShip();
-		old_shields[VR_current_page] = shields ^ 1;
+		old_shields[nVRCurrentPage] = shields ^ 1;
 		SBDrawShieldNum(shields);
 	} 
 	else 
-		if (shields != old_shields[VR_current_page] || frc) {		// Draw the shield gauge
+		if (shields != old_shields[nVRCurrentPage] || frc) {		// Draw the shield gauge
 			if (gameData.demo.nState==ND_STATE_RECORDING ) {
-				NDRecordPlayerShields(old_shields[VR_current_page], shields);
+				NDRecordPlayerShields(old_shields[nVRCurrentPage], shields);
 			}
 			SBDrawShieldBar(shields);
-			old_shields[VR_current_page] = shields;
+			old_shields[nVRCurrentPage] = shields;
 			SBDrawShieldNum(shields);
 		}
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[VR_current_page] || frc) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage] || frc) {
 		if (gameData.demo.nState==ND_STATE_RECORDING )
-			NDRecordPlayerFlags(oldFlags[VR_current_page], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
+			NDRecordPlayerFlags(oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
 		SBDrawKeys();
-		oldFlags[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+		oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 	}
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 	{
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal != old_lives[VR_current_page] || frc) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal != old_lives[nVRCurrentPage] || frc) {
 			SBShowLives();
-			old_lives[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal;
+			old_lives[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal;
 		}
 	}
 	else
 	{
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[VR_current_page] || frc) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[nVRCurrentPage] || frc) {
 			SBShowLives();
-			old_lives[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].lives;
+			old_lives[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].lives;
 		}
 	}
 	if ((gameData.app.nGameMode&GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal != old_score[VR_current_page] || frc) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal != old_score[nVRCurrentPage] || frc) {
 			SBShowScore();
-			old_score[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal;
+			old_score[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal;
 		}
 	}
 	else {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].score != old_score[VR_current_page] || frc) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].score != old_score[nVRCurrentPage] || frc) {
 			SBShowScore();
-			old_score[VR_current_page] = gameData.multi.players[gameData.multi.nLocalPlayer].score;
+			old_score[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].score;
 		}
 
 		//if (scoreTime)
@@ -4655,12 +4655,12 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	ShowBombCount(SB_BOMB_COUNT_X,SB_BOMB_COUNT_Y,BLACK_RGBA,0);
 }
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
-	DrawPlayerShip(cloak,old_cloak[VR_current_page],SHIP_GAUGE_X,SHIP_GAUGE_Y);
-else if (frc || (cloak != old_cloak[VR_current_page]) || nCloakFadeState || 
+	DrawPlayerShip(cloak,old_cloak[nVRCurrentPage],SHIP_GAUGE_X,SHIP_GAUGE_Y);
+else if (frc || (cloak != old_cloak[nVRCurrentPage]) || nCloakFadeState || 
 	(cloak && gameData.time.xGame>gameData.multi.players[gameData.multi.nLocalPlayer].cloakTime+CLOAK_TIME_MAX-i2f(3))) {
-	DrawPlayerShip(cloak,old_cloak[VR_current_page],SB_SHIP_GAUGE_X,SB_SHIP_GAUGE_Y);
+	DrawPlayerShip(cloak,old_cloak[nVRCurrentPage],SB_SHIP_GAUGE_X,SB_SHIP_GAUGE_Y);
 
-	old_cloak[VR_current_page]=cloak;
+	old_cloak[nVRCurrentPage]=cloak;
 	}
 }
 
@@ -4669,9 +4669,9 @@ else if (frc || (cloak != old_cloak[VR_current_page]) || nCloakFadeState ||
 //	If laser is active, set old_weapon[0] to -1 to force redraw.
 void UpdateLaserWeaponInfo(void)
 {
-	if (old_weapon[0][VR_current_page] == 0)
-		if (! (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel > MAX_LASER_LEVEL && old_laserLevel[VR_current_page] <= MAX_LASER_LEVEL))
-			old_weapon[0][VR_current_page] = -1;
+	if (old_weapon[0][nVRCurrentPage] == 0)
+		if (! (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel > MAX_LASER_LEVEL && old_laserLevel[nVRCurrentPage] <= MAX_LASER_LEVEL))
+			old_weapon[0][nVRCurrentPage] = -1;
 }
 
 extern int Game_window_y;
@@ -4725,8 +4725,8 @@ void DoCockpitWindowView(int win,tObject *viewer,int rear_viewFlag,int user,char
 		weapon_box_user[win] = user;
 		if (overlap_dirty[win]) {
 		WINDOS(
-			DDGrSetCurrentCanvas(&dd_VR_screen_pages[VR_current_page]),
-			GrSetCurrentCanvas(&VR_screen_pages[VR_current_page])
+			DDGrSetCurrentCanvas(&dd_VR_screen_pages[nVRCurrentPage]),
+			GrSetCurrentCanvas(&VR_screen_pages[nVRCurrentPage])
 		);
 			fill_background();
 			overlap_dirty[win] = 0;
@@ -4905,8 +4905,8 @@ WINDOS(
 
 			if (VR_screenFlags & VRF_USE_PAGING)
 				WINDOS(
-					DDGrSetCurrentCanvas(&dd_VR_screen_pages[!VR_current_page]),
-					GrSetCurrentCanvas(&VR_screen_pages[!VR_current_page])
+					DDGrSetCurrentCanvas(&dd_VR_screen_pages[!nVRCurrentPage]),
+					GrSetCurrentCanvas(&VR_screen_pages[!nVRCurrentPage])
 				);
 			else
 				WINDOS(
@@ -4943,8 +4943,8 @@ WINDOS(
 
 				if (VR_screenFlags & VRF_USE_PAGING)
 					WINDOS(
-						DDGrSetCurrentCanvas(&dd_VR_screen_pages[!VR_current_page]),
-						GrSetCurrentCanvas(&VR_screen_pages[!VR_current_page])
+						DDGrSetCurrentCanvas(&dd_VR_screen_pages[!nVRCurrentPage]),
+						GrSetCurrentCanvas(&VR_screen_pages[!nVRCurrentPage])
 					);
 				else
 					WINDOS(
@@ -4978,7 +4978,7 @@ WINDOS(
   PA_DFX(skip_this_junk:)
   
 	//force redraw when done
-	old_weapon[win][VR_current_page] = old_ammo_count[win][VR_current_page] = -1;
+	old_weapon[win][nVRCurrentPage] = old_ammo_count[win][nVRCurrentPage] = -1;
 
 abort:;
 

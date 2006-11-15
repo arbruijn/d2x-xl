@@ -770,7 +770,7 @@ if (t = FindArg ("-spawndelay")) {
 		extraGameInfo [0].nSpawnDelay = 60;
 	extraGameInfo [0].nSpawnDelay *= 1000;
 	}
-if ((t = FindArg("-pps"))) {
+if ((t = FindArg ("-pps"))) {
 	mpParams.nPPS = atoi(Args [t+1]);
 	if (mpParams.nPPS < 1)
 		mpParams.nPPS = 1;
@@ -962,11 +962,11 @@ if ((t=FindArg ("-tmap")))
 else
 	select_tmap (NULL);
 if ((t = FindArg ("-maxfps"))) {
-	t = NumArg (t, 150);
+	t = NumArg (t, 250);
 	if (t <= 0)
 		t = 1;
-	else if (t > 150)
-		t = 150;
+	else if (t > 250)
+		t = 250;
 	gameOpts->render.nMaxFPS = t;
 	}
 #if RENDER2TEXTURE
@@ -1043,11 +1043,11 @@ if (t=FindArg ("-auto_mission")) {
 		strcat (szAutoMission, ".rl2");
 	}
 if (FindArg ("-debug"))
-	con_threshold.value = (double)2;
+	con_threshold.value = 2.0;
 else if (FindArg ("-verbose"))
-	con_threshold.value = (double)1;
+	con_threshold.value = 1.0;
 else
-	con_threshold.value = (double)-1;
+	con_threshold.value = -1.0;
 if (t = FindArg ("-autodemo")) {
 	gameData.demo.bAuto = 1;
 	strncpy (gameData.demo.fnAuto, *Args [t+1] ? Args [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
@@ -1144,6 +1144,10 @@ if (i) {
 	gameOptions [1].render.smoke.nSize [1] =
 	gameOptions [1].render.smoke.nSize [2] =
 	gameOptions [1].render.smoke.nSize [3] = 0;
+	gameOptions [1].render.smoke.nLife [0] =
+	gameOptions [1].render.smoke.nLife [1] =
+	gameOptions [1].render.smoke.nLife [2] = 0;
+	gameOptions [1].render.smoke.nLife [3] = 1;
 	gameOptions [1].render.smoke.bPlayers = 0;
 	gameOptions [1].render.smoke.bRobots = 0;
 	gameOptions [1].render.smoke.bMissiles = 0;
@@ -1218,6 +1222,10 @@ else {
 	gameOptions [1].render.smoke.nSize [1] =
 	gameOptions [1].render.smoke.nSize [2] =
 	gameOptions [1].render.smoke.nSize [3] = 1;
+	gameOptions [1].render.smoke.nLife [0] =
+	gameOptions [1].render.smoke.nLife [1] =
+	gameOptions [1].render.smoke.nLife [2] = 0;
+	gameOptions [1].render.smoke.nLife [3] = 1;
 	gameOptions [0].render.smoke.bPlayers = 1;
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
@@ -2306,7 +2314,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 int Initialize (int argc, char *argv[])
 {
-	int			h, i, t;
+	int			i, t;
 	u_int32_t	nScreenMode;
 
 /*---*/LogErr ("Initializing data\n");
@@ -2396,9 +2404,6 @@ nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameState
 _3dfx_Init ();
 #endif
 
-for (i = 0; i < NUM_DISPLAY_MODES; i++)
-	if (0 <= (h = SCREENMODE (displayModeInfo [i].w, displayModeInfo [i].h, displayModeInfo [i].w < 640)))
-		gameStates.gfx.nStartScrMode = h;
 /*---*/LogErr ("Initializing render buffers\n");
 #if defined (POLY_ACC)
 if (gameStates.gfx.nStartScrMode < 0)
@@ -2407,7 +2412,7 @@ else
 	GameInitRenderBuffers (nScreenMode, SM_W (nScreenMode), SM_H (nScreenMode), gameStates.gfx.nStartScrMode, screen_compatible);
 #else
 if (!VR_offscreen_buffer)	//if hasn't been initialied (by headset init)
-	SetDisplayMode ((gameStates.gfx.nStartScrMode < 0) ? 0 : gameStates.gfx.nStartScrMode);		//..then set default display mode
+	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 #endif
 S_MODE (&automap_mode, &gameStates.render.bAutomapUseGameRes);
 if ((i = FindArg ("-xcontrol")) > 0)

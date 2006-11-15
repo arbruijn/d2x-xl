@@ -28,6 +28,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MOVIE_PLAYED_FULL   1   // movie was played all the way through
 #define MOVIE_ABORTED       2   // movie started by was aborted
 
+#ifdef D2_OEM
+#	define ENDMOVIE		"endo"
+#else
+#	define ENDMOVIE		"end"
+#	define D1_ENDMOVIE	"final"
+#endif
+
 int PlayMovie(const char *filename, int allow_abort, int bForce, int bFullScreen);
 int PlayMovies(int num_files, const char *filename[], int graphmode, int allow_abort);
 int InitRobotMovie(char *filename);
