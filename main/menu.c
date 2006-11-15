@@ -2349,7 +2349,7 @@ return opt;
 
 void SmokeOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	opt;
 	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optSmokeColl, optSmokeDisp;
