@@ -173,5 +173,6 @@ extern tFlightPath externalView;
 void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
 void SetPathPoint (tFlightPath *pPath, tObject *objP);
 tPathPoint *GetPathPoint (tFlightPath *pPath);
+int IsTransparentTexture (short nTexture);
 
 #endif /* _RENDER_H */

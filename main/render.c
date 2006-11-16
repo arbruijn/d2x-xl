@@ -569,15 +569,20 @@ return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 
 //------------------------------------------------------------------------------
 
-static int IsTransparent (tFaceProps *propsP)
+int IsTransparentTexture (short nTexture)
 {
-	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
-
 return (nTexture == 378) || 
 		 (nTexture == 353) || 
 		 (nTexture == 420) || 
 		 (nTexture == 432) || 
 		 ((nTexture >= 399) && (nTexture <= 409));
+}
+
+//------------------------------------------------------------------------------
+
+static inline int IsTransparentFace (tFaceProps *propsP)
+{
+return IsTransparentTexture (gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex);
 }
 
 //------------------------------------------------------------------------------
@@ -619,7 +624,7 @@ if (IS_WALL (nWallNum)) {
 		if (c && (c < GR_ACTUAL_FADE_LEVELS))
 			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
 		}
-	else if (gameOpts->render.bAutoTransparency && IsTransparent (propsP))
+	else if (gameOpts->render.bAutoTransparency && IsTransparentFace (propsP))
 		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 10.0f * 8.0f;
 	else
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;

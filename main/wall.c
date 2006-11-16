@@ -240,7 +240,7 @@ if (gameStates.app.bD2XLevel) {
 			return 1;
 		}
 	}
-return 0;
+return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseTex);
 }
 
 //define these here so I don't have to change WallIsDoorWay and run
@@ -265,23 +265,23 @@ return 0;
 //		WID_ILLUSORY_WALL			3	//	1/1/0		illusory wall
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
 //		WID_NO_WALL					5	//	1/0/1		no wall, can fly through
-int WallIsDoorWay (tSegment * seg, short tSide)
+int WallIsDoorWay (tSegment * segP, short tSide)
 {
 	int flags, nType;
 	int state;
-	wall * wallP = gameData.walls.walls + WallNumP (seg, tSide);
+	wall * wallP = gameData.walls.walls + WallNumP (segP, tSide);
 #ifdef _DEBUG
-	short nSegment = SEG_IDX (seg);
+	short nSegment = SEG_IDX (segP);
 #endif
 //--Covered by macro	// No child.
-//--Covered by macro	if (seg->children[tSide] == -1)
+//--Covered by macro	if (segP->children[tSide] == -1)
 //--Covered by macro		return WID_WALL;
 
-//--Covered by macro	if (seg->children[tSide] == -2)
+//--Covered by macro	if (segP->children[tSide] == -2)
 //--Covered by macro		return WID_EXTERNAL_FLAG;
 
 //--Covered by macro // No wall present.
-//--Covered by macro	if (!IS_WALL (WallNumP (seg, tSide)))
+//--Covered by macro	if (!IS_WALL (WallNumP (segP, tSide)))
 //--Covered by macro		return WID_NO_WALL;
 
 Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
@@ -298,7 +298,7 @@ if (nType == WALL_ILLUSION) {
 	if (flags & WALL_ILLUSION_OFF)
 		return WID_NO_WALL;
 	else {
-		if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency(seg, tSide))
+		if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency(segP, tSide))
 			return WID_TRANSILLUSORY_WALL;
 		else
 			return WID_ILLUSORY_WALL;
@@ -308,11 +308,9 @@ if (nType == WALL_ILLUSION) {
 if (nType == WALL_BLASTABLE) {
 	if (flags & WALL_BLASTED)
 		return WID_TRANSILLUSORY_WALL;
-
-	if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency(seg, tSide))
+	if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, tSide))
 		return WID_TRANSPARENT_WALL;
-	else
-		return WID_WALL;
+	return WID_WALL;
 	}
 
 if (flags & WALL_DOOR_OPENED)
@@ -333,14 +331,14 @@ state = wallP->state;
 if (nType == WALL_DOOR) 
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	else if (CheckTransparency (seg, tSide))
+	else if (CheckTransparency (segP, tSide))
 		return WID_TRANSPARENT_WALL;
 	else
 		return WID_WALL;
 
 // If none of the above flags are set, there is no doorway.
 if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || 
-	 CheckTransparency (seg, tSide))
+	 CheckTransparency (segP, tSide))
 	return WID_TRANSPARENT_WALL;
 else
 	return WID_WALL; // There are children behind the door.
@@ -348,29 +346,29 @@ else
 
 //-----------------------------------------------------------------
 
-int WALL_IS_DOORWAY (tSegment *seg, short tSide, tObject *objP)
+int WALL_IS_DOORWAY (tSegment *segP, short tSide, tObject *objP)
 {
-	int	wallnum, nSegment, childnum = seg->children [tSide];
+	int	wallnum, nSegment, childnum = segP->children [tSide];
 	
 if (childnum == -1)
 	return WID_RENDER_FLAG;
 if (childnum == -2) 
 	return WID_EXTERNAL_FLAG;
-nSegment = SEG_IDX (seg);
-wallnum = WallNumP (seg, tSide);
+nSegment = SEG_IDX (segP);
+wallnum = WallNumP (segP, tSide);
 if (gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
 	 (objP == gameData.objs.console) && 
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
 	 (gameData.segs.segment2s [childnum].special != SEGMENT_IS_SPEEDBOOST) &&
 	 ((wallnum < 0) || (gameData.trigs.triggers [gameData.walls.walls [wallnum].nTrigger].nType != TT_SPEEDBOOST)))
-	return objP ? WID_RENDER_FLAG : (!IS_WALL (wallnum)) ? WID_RENDPAST_FLAG : WallIsDoorWay (seg, tSide);
+	return objP ? WID_RENDER_FLAG : (!IS_WALL (wallnum)) ? WID_RENDPAST_FLAG : WallIsDoorWay (segP, tSide);
 if ((gameData.segs.segment2s [childnum].special == SEGMENT_IS_BLOCKED) ||
 	 (gameData.segs.segment2s [childnum].special == SEGMENT_IS_SKYBOX))
 	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG : 
-			 (!IS_WALL (wallnum)) ? WID_FLY_FLAG | WID_RENDPAST_FLAG : WallIsDoorWay (seg, tSide);
+			 (!IS_WALL (wallnum)) ? WID_FLY_FLAG | WID_RENDPAST_FLAG : WallIsDoorWay (segP, tSide);
 if (!IS_WALL (wallnum)) 
 	return (WID_FLY_FLAG|WID_RENDPAST_FLAG);
-return WallIsDoorWay (seg, tSide);
+return WallIsDoorWay (segP, tSide);
 }
 #ifdef EDITOR
 
