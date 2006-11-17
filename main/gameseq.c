@@ -1865,7 +1865,7 @@ void AdvanceLevel (int bSecret, int bFromSecret)
 #endif
 
 Assert (!bSecret);
-if ((!bFromSecret && gameStates.app.bD1Mission) &&
+if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 #ifdef NETWORK
