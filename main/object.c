@@ -3256,7 +3256,7 @@ int MoveOneObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
-#if 1//def _DEBUG
+#ifdef _DEBUG
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
 	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
 		HUDInitMessage ("Player should be dead");

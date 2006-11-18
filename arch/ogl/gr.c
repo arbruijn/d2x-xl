@@ -774,9 +774,11 @@ void GrPaletteStepUp (int r, int g, int b)
 {
 if (gameStates.render.bPaletteFadedOut)
 	return;
-r += gameData.render.nPaletteGamma;
-g += gameData.render.nPaletteGamma;
-b += gameData.render.nPaletteGamma;
+if (!gameOpts->ogl.bUseLighting || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) {
+	r += gameData.render.nPaletteGamma;
+	g += gameData.render.nPaletteGamma;
+	b += gameData.render.nPaletteGamma;
+	}
 CLAMP (r, 0, 64);
 CLAMP (g, 0, 64);
 CLAMP (b, 0, 64);
@@ -795,7 +797,7 @@ else {
 	gameStates.ogl.fBright.red = gameStates.ogl.bright.red / 64.0f;
 	gameStates.ogl.fBright.green = gameStates.ogl.bright.green / 64.0f;
 	gameStates.ogl.fBright.blue = gameStates.ogl.bright.blue / 64.0f;
-	gameStates.ogl.bDoPalStep = 1; //if we arrive here, brightness needs adjustment
+	gameStates.ogl.bDoPalStep = (r || g || b); //if we arrive here, brightness needs adjustment
 	}
 }
 

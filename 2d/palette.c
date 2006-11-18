@@ -67,7 +67,7 @@ return gameData.render.nPaletteGamma;
 
 //------------------------------------------------------------------------------
 
-void GrCopyPalette(ubyte *pCurPal, ubyte *pal, int size)
+void GrCopyPalette (ubyte *pCurPal, ubyte *pal, int size)
 {
 gameData.render.nComputedColors = 0;
 }

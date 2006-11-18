@@ -1714,6 +1714,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 				continue;
 			}
 		gameData.render.lights.ogl.shader.lights [j].nType = nType;
+		gameData.render.lights.ogl.shader.lights [j].bState = 1;
 		}
 	}
 }

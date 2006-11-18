@@ -1100,6 +1100,7 @@ newmenu_hide_cursor ();
 if (time_stopped)
 	StartTime ();
 gameStates.menus.nInMenu--;
+GrPaletteStepUp (0, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1402,6 +1403,7 @@ All_items = items;
 Num_items = nitems;
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
+GrPaletteStepUp (0, 0, 0);
 gameStates.menus.nInMenu++;
 memset (start_axis, 0, sizeof (start_axis));
 

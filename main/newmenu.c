@@ -501,6 +501,7 @@ void NMInitBackground (char *filename, bkg *bg, int x, int y, int w, int h, int 
 	static char *pszMenuPcx = NULL;
 	int bVerInfo, bBlueBox;
 
+GrPaletteStepUp (0, 0, 0);
 if (!pszMenuPcx)
 	pszMenuPcx = Menu_pcx_name;
 bVerInfo = filename && !strcmp (filename, pszMenuPcx);
@@ -2563,6 +2564,7 @@ WIN (mouse_set_mode (1));				//re-enable centering mode
 glDepthFunc (depthFunc);
 #endif
 gameStates.menus.nInMenu--;
+GrPaletteStepUp (0, 0, 0);
 SDL_EnableKeyRepeat(0, 0);
 if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI))
 	MultiSendMsgQuit();

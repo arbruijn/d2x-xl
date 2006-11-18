@@ -220,7 +220,7 @@ char *d2GameTexts [] = {
 	"F5\t  Toggle recording",
 	"Pause\t  Pause",
 	"-/+\t  Change screen size",
-	"PrintScrn\t  Save screen shot",
+	"Alt+F9\t  Save screen shot",
 	"1-5\t  Select primary weapon",
 	"6-0\t  Select secondary weapon",
 	" To view control keys, select\nconfiguration in options menu",

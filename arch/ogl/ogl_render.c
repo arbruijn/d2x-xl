@@ -565,7 +565,6 @@ inline float BC (float c, float b)	//biased contrast
 return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 }
 
-
 void OglColor4sf (float r, float g, float b, float s)
 {
 if (IsMultiGame || (gameStates.ogl.nContrast == 8))
@@ -1108,6 +1107,15 @@ if (!(gameStates.render.nState && bDarkness)) {
 	colorSum.c.g += ambient.green;
 	colorSum.c.b += ambient.blue;
 	}
+#if 1
+if (!pVertColor && gameData.render.nPaletteGamma) {
+	float fBright = 1.0f + (float) gameData.render.nPaletteGamma;
+
+	colorSum.c.r *= fBright;
+	colorSum.c.g *= fBright;
+	colorSum.c.b *= fBright;
+	}
+#endif
 if (colorSum.c.r > 1.0)
 	colorSum.c.r = 1.0;
 if (colorSum.c.g > 1.0)

@@ -512,11 +512,11 @@ return ret;
 
 //------------------------------------------------------------------------------
 
-void PrintTriggerMessage (int pnum,int trig,int shot,char *message)
+void PrintTriggerMessage (int nPlayer,int trig,int shot,char *message)
  {
 	char *pl;		//points to 's' or nothing for plural word
 
-   if (pnum != gameData.multi.nLocalPlayer)
+   if (nPlayer != gameData.multi.nLocalPlayer)
 		return;
 
 	pl = (gameData.trigs.triggers [trig].nLinks>1)?"s":"";
@@ -833,7 +833,7 @@ return (i > 0);
 
 //------------------------------------------------------------------------------
 
-int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int nTrigger, int pnum, int shot, int bBotTrigger)
+int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int nTrigger, int nPlayer, int shot, int bBotTrigger)
 {
 	tTrigger	*trigP;
 	tObject	*objP = gameData.objs.objects + nObject;
@@ -848,15 +848,20 @@ if (bIsPlayer) {
 	if (nObject != gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
 		return 1;
 	}
-else if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-	if ((objP->nType != OBJ_ROBOT) || !(bBotTrigger || gameData.bots.pInfo [objP->id].companion))
-		return 1;
+else {
+	nPlayer = -1;
+	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
+		if (objP->nType != OBJ_ROBOT)
+			return 1;
+		if (!(bBotTrigger || gameData.bots.pInfo [objP->id].companion))
+			return 1;
+		}
 	}
 #if 1
 if ((triggers == gameData.trigs.triggers) && 
 	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 	long trigP = gameStates.app.nSDLTicks;
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (trigP - gameData.trigs.delay [nTrigger] < 1000))
+	if ((gameData.trigs.delay [nTrigger] >= 0) && (trigP - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
 	gameData.trigs.delay [nTrigger] = trigP;
 	}
@@ -867,7 +872,7 @@ if (trigP->flags & TF_ONE_SHOT)		//if this is a one-shot...
 switch (trigP->nType) {
 
 	case TT_EXIT:
-		if (pnum != gameData.multi.nLocalPlayer)
+		if (nPlayer != gameData.multi.nLocalPlayer)
 			break;
 		DigiStopAll ();		//kill the sounds
 		if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
@@ -895,7 +900,7 @@ switch (trigP->nType) {
 		int	truth;
 #endif
 
-		if (pnum != gameData.multi.nLocalPlayer)
+		if (nPlayer != gameData.multi.nLocalPlayer)
 			break;
 		if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
 				gameStates.app.bPlayerIsDead)
@@ -936,31 +941,31 @@ switch (trigP->nType) {
 
 	case TT_OPEN_DOOR:
 		DoLink (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Door%s opened!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Door%s opened!");
 		break;
 
 	case TT_CLOSE_DOOR:
 		DoCloseDoor (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Door%s closed!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Door%s closed!");
 		break;
 
 	case TT_UNLOCK_DOOR:
 		DoUnlockDoors (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Door%s unlocked!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Door%s unlocked!");
 		break;
 
 	case TT_LOCK_DOOR:
 		DoLockDoors (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Door%s locked!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Door%s locked!");
 		break;
 
 	case TT_OPEN_WALL:
 		if (DoChangeWalls (trigP))
 		{
 			if (WallIsForceField (trigP))
-				PrintTriggerMessage (pnum,nTrigger,shot,"Force field%s deactivated!");
+				PrintTriggerMessage (nPlayer,nTrigger,shot,"Force field%s deactivated!");
 			else
-				PrintTriggerMessage (pnum,nTrigger,shot,"Wall%s opened!");
+				PrintTriggerMessage (nPlayer,nTrigger,shot,"Wall%s opened!");
 		}
 		break;
 
@@ -968,9 +973,9 @@ switch (trigP->nType) {
 		if (DoChangeWalls (trigP))
 		{
 			if (WallIsForceField (trigP))
-				PrintTriggerMessage (pnum,nTrigger,shot,"Force field%s activated!");
+				PrintTriggerMessage (nPlayer,nTrigger,shot,"Force field%s activated!");
 			else
-				PrintTriggerMessage (pnum,nTrigger,shot,"Wall%s closed!");
+				PrintTriggerMessage (nPlayer,nTrigger,shot,"Wall%s closed!");
 		}
 		break;
 
@@ -986,27 +991,27 @@ switch (trigP->nType) {
 
 	case TT_ILLUSION_ON:
 		DoIllusionOn (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Illusion%s on!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Illusion%s on!");
 		break;
 
 	case TT_ILLUSION_OFF:
 		DoIllusionOff (trigP);
-		PrintTriggerMessage (pnum,nTrigger,shot,"Illusion%s off!");
+		PrintTriggerMessage (nPlayer,nTrigger,shot,"Illusion%s off!");
 		break;
 
 	case TT_LIGHT_OFF:
 		if (DoLightOff (trigP))
-			PrintTriggerMessage (pnum,nTrigger,shot,"Lights off!");
+			PrintTriggerMessage (nPlayer,nTrigger,shot,"Lights off!");
 		break;
 
 	case TT_LIGHT_ON:
 		if (DoLightOn (trigP))
-			PrintTriggerMessage (pnum,nTrigger,shot,"Lights on!");
+			PrintTriggerMessage (nPlayer,nTrigger,shot,"Lights on!");
 		break;
 
 	case TT_TELEPORT:
 		if (bIsPlayer) {
-			if (pnum != gameData.multi.nLocalPlayer)
+			if (nPlayer != gameData.multi.nLocalPlayer)
 				break;
 			if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
 					gameStates.app.bPlayerIsDead)
@@ -1015,12 +1020,12 @@ switch (trigP->nType) {
 		DigiPlaySample (SOUND_SECRET_EXIT, F1_0);
 		DoTeleport (trigP, nObject);
 		if (bIsPlayer)
-			PrintTriggerMessage (pnum,nTrigger,shot,"Teleport!");
+			PrintTriggerMessage (nPlayer,nTrigger,shot,"Teleport!");
 		break;
 
 	case TT_SPEEDBOOST:
 		if (bIsPlayer) {
-			if (pnum != gameData.multi.nLocalPlayer)
+			if (nPlayer != gameData.multi.nLocalPlayer)
 				break;
 			if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
 					gameStates.app.bPlayerIsDead)
@@ -1028,7 +1033,7 @@ switch (trigP->nType) {
 			}
 		DoSpeedBoost (trigP, nObject);
 		if (bIsPlayer)
-			PrintTriggerMessage (pnum,nTrigger, shot, "Speed Boost!");
+			PrintTriggerMessage (nPlayer,nTrigger, shot, "Speed Boost!");
 		break;
 
 	case TT_SHIELD_DAMAGE:
@@ -1055,7 +1060,7 @@ void ExecObjTriggers (short nObject)
 	short i = gameData.trigs.firstObjTrigger [nObject];
 
 while (i >= 0) {
-	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, gameData.multi.nLocalPlayer, 1, 1);
+	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, -1, 1, 1);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendObjTrigger (i);
@@ -1068,15 +1073,16 @@ while (i >= 0) {
 // Checks for a tTrigger whenever an tObject hits a tTrigger nSide.
 void CheckTrigger (tSegment *segP, short nSide, short nObject, int shot)
 {
-	int 	nWall;
-	ubyte	nTrigger;	//, cnTrigger;
+	int 		nWall;
+	ubyte		nTrigger;	//, cnTrigger;
+	tObject	*objP = gameData.objs.objects + nObject;
 
 nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall)) 
 	return;
 nTrigger = gameData.walls.walls [nWall].nTrigger;
 if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, nTrigger, 
-							gameData.multi.nLocalPlayer, shot, 0))
+							(objP->nType == OBJ_PLAYER) ? objP->id : -1, shot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);
