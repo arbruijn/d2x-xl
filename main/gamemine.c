@@ -1384,7 +1384,7 @@ if (gameStates.app.bD2XLevel) {
 	pc = &gameData.render.color.lights [0][0] + i;
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
-#if SHADOWS
+#if 0 //SHADOWS
 		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
 #endif
 		}
@@ -1393,7 +1393,7 @@ else {
 #else
 	{
 #endif
-#if SHADOWS
+#if 0 //SHADOWS
 	tSegment	*segP;
 	tSide		*sideP;
 	int		h;
@@ -1402,7 +1402,7 @@ else {
 	segP = gameData.segs.segments + i;
 	for (i = 0; i < j; i++, segP++)
 		for (h = 0, sideP = segP->sides; h < 6; h++, sideP++)
-			if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTexf))
+			if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex))
 				RegisterLight (NULL, (short) i, (short) h);
 #endif
 	}

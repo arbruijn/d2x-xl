@@ -1107,7 +1107,7 @@ if (!(gameStates.render.nState && bDarkness)) {
 	colorSum.c.g += ambient.green;
 	colorSum.c.b += ambient.blue;
 	}
-#if 1
+#if 0
 if (!pVertColor && gameData.render.nPaletteGamma) {
 	float fBright = 1.0f + (float) gameData.render.nPaletteGamma;
 
@@ -1856,12 +1856,11 @@ if (gameStates.render.nShadowPass) {
 		else {
 			glEnable (GL_BLEND);
 			if (!bShadowTest) {
-				glColorMask (0, 0, 0, 0);
+				glColorMask (0,0,0,0);
 				glDepthMask (0);
 				glBlendFunc (GL_ONE, GL_ONE);
-				glClear (GL_STENCIL_BUFFER_BIT);
 				glEnable (GL_STENCIL_TEST);
-				//glClearStencil (0);
+				glClear (GL_STENCIL_BUFFER_BIT);
 				glStencilMask (~0);
 				glStencilFunc (GL_ALWAYS, 0, ~0);
 				//glEnable (GL_POLYGON_OFFSET_FILL);
@@ -1889,8 +1888,8 @@ if (gameStates.render.nShadowPass) {
 				}
 			glDepthFunc (GL_EQUAL);
 			}
-		glColorMask (1, 1, 1, 1);
-//		glDepthMask (1);
+		glColorMask (1,1,1,1);
+		glDepthMask (1);
 		glCullFace (GL_FRONT);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}

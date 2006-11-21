@@ -142,6 +142,7 @@ static char rcsid[] = "$Id: wall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #include "collide.h"
 #include "effects.h"
 #include "ogl_init.h"
+#include "render.h"
 #include "hudmsg.h"
 
 #ifdef EDITOR

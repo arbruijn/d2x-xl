@@ -1387,23 +1387,16 @@ return nLight;
 
 //------------------------------------------------------------------------------
 
-void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
+void InitShadowLightInfo (tOglLight *pl)
 {
-if (!pc || pc->index) {
-	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
 #ifdef _DEBUG
 	vmsAngVec	a;
 #endif
-	pli->nIndex = (int) nSegment * 6 + nSide;
-	COMPUTE_SIDE_CENTER_I (&pli->pos, nSegment, nSide);
-	OOF_VecVms2Gl (pli->glPos, &pli->pos);
-	pli->nSegNum = nSegment;
-	pli->nSideNum = (ubyte) nSide;
+VmsVecToFloat (&pl->shadow.vPosf, &pl->vPos);
 #ifdef _DEBUG
-	VmExtractAnglesVector (&a, gameData.segs.segments [nSegment].sides [nSide].normals);
-	VmAngles2Matrix (&pli->orient, &a);
+VmExtractAnglesVector (&a, gameData.segs.segments [pl->nSegment].sides [pl->nSide].normals);
+VmAngles2Matrix (&pl->shadow.orient, &a);
 #endif
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -1498,7 +1491,7 @@ else if (nSegment >= 0) {
 
 	ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 	pl->rad = f2fl ((rMin + rMax) / 20);
-	RegisterLight (NULL, nSegment, nSide);
+	InitShadowLightInfo (pl);
 	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 	}
 pl->bTransform = 1;

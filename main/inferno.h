@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #ifdef _DEBUG
-#	define	SHADOWS	0
+#	define	SHADOWS	1
 #else
 #	define	SHADOWS	0
 #endif
@@ -683,18 +683,14 @@ typedef struct tFlightPath {
 
 #include "cameras.h"
 
-typedef struct tLightInfo {
-	short			nIndex;
-	float			glPos [4];
-	vmsVector	pos;
-	short			nShadowMap;
-	short			nSegNum;
-	ubyte			nSideNum;
-	ubyte			nShadowFrame;	//set per frame when scene as seen from a light source has been rendered
+typedef struct tShadowLightInfo {
+	fVector		vPosf;
+	short			nMap;
+	ubyte			nFrame;	//set per frame when scene as seen from a light source has been rendered
 #ifdef _DEBUG
 	vmsMatrix	orient;
 #endif
-} tLightInfo;
+} tShadowLightInfo;
 
 #define MAX_SHADOW_MAPS	20
 
@@ -760,6 +756,7 @@ typedef struct tOglLight {
 	ubyte			nType;
 	ubyte			bVariable;
 	ubyte			bTransform;
+	tShadowLightInfo	shadow;
 } tOglLight;
 
 typedef struct tOglMaterial {
@@ -841,8 +838,7 @@ typedef struct tLightData {
 typedef struct tShadowData {
 	short			nLight;
 	short			nLights;
-	tLightInfo	*pLight;
-	tLightInfo	lightInfo [MAX_SEGMENTS * 6];
+	tOglLight	*pLight;
 	short			nShadowMaps;
 	tCamera		shadowMaps [MAX_SHADOW_MAPS];
 	tObject		lightSource;

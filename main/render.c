@@ -2374,18 +2374,18 @@ OglStartFrame (0, 0);
 
 //------------------------------------------------------------------------------
 
-int RenderShadowMap (tLightInfo *pLight)
+int RenderShadowMap (tOglLight *pLight)
 {
 	tCamera	*pc;
 
-if (pLight->nShadowFrame == gameData.render.shadows.nFrame)
+if (pLight->shadow.nFrame == gameData.render.shadows.nFrame)
 	return 0;
 if (gameData.render.shadows.nShadowMaps == MAX_SHADOW_MAPS)
 	return 0;
-pLight->nShadowFrame = !pLight->nShadowFrame;
+pLight->shadow.nFrame = !pLight->shadow.nFrame;
 gameStates.render.nShadowPass = 2;
 pc = gameData.render.shadows.shadowMaps + gameData.render.shadows.nShadowMaps++;
-CreateCamera (pc, pLight->nSegNum, pLight->nSideNum, pLight->nSegNum, pLight->nSideNum, NULL, 1, 0);
+CreateCamera (pc, pLight->nSegment, pLight->nSide, pLight->nSegment, pLight->nSide, NULL, 1, 0);
 RenderCamera (pc);
 gameStates.render.nShadowPass = 2;
 return 1;

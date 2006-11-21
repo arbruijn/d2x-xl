@@ -1166,7 +1166,7 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOF_subObject *pso, int nCull
 
 G3SetCullAndStencil (nCullFace, 0);
 if (bShadowTest == 1)
-	glColor4f (shadowColor.red, shadowColor.green, shadowColor.blue, shadowColor.alpha);
+	glColor4fv ((GLfloat *) &shadowColor);
 else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 pvf = po->pvVertsf;
@@ -1180,7 +1180,7 @@ for (pe = pso->edges.pEdges; i; pe++)
 		i--;
 		if (bShadowTest < 2) {
 			if (bShadowTest)
-				glColor4f (shadowColor.red, shadowColor.green, shadowColor.blue, shadowColor.alpha);
+				glColor4fv ((GLfloat *) &shadowColor);
 			fv1 = pvf [pe->v1];
 			glVertex3f (fv1.x, fv1.y, -fv1.z);
 			fv0 = pvf [pe->v0];
@@ -1226,7 +1226,7 @@ int G3RenderSubModelShadowCaps (tPOFObject *po, tPOF_subObject *pso, int nCullFa
 
 G3SetCullAndStencil (nCullFace, 0);
 if (bShadowTest)
-	glColor4f (modelColor.red, modelColor.green, modelColor.blue, modelColor.alpha);
+	glColor4fv ((GLfloat *) &modelColor);
 pvf = po->pvVertsf;
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	j = (short) (pf - po->faces.pFaces);
@@ -1239,7 +1239,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		OOF_VecInc (&fv0, &pf->vNormf);
 		glVertex3f (fv0.x, fv0.y, -fv0.z);
 		glEnd ();
-		glColor4f (modelColor.red, modelColor.green, modelColor.blue, modelColor.alpha);
+		glColor4fv ((GLfloat *) &modelColor);
 		}
 	if (pf->bFacingLight) {
 		glBegin (GL_TRIANGLE_FAN);
@@ -1288,10 +1288,14 @@ return bCullFront ?
 G3GetPolyModelSilhouette (po, pso);
 glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
 return
+#if 0
+	G3RenderSubModelShadowCaps (po, pso, 0);
+#else
 	G3RenderSubModelShadowVolume (po, pso, 0) &&
 	G3RenderSubModelShadowCaps (po, pso, 0) &&
 	G3RenderSubModelShadowVolume (po, pso, 1) &&
 	G3RenderSubModelShadowCaps (po, pso, 1);
+#endif
 /*
 	&&
 	G3RenderSubModelShadowCaps (po, pso, 0) 
@@ -1361,7 +1365,7 @@ pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
 	  gameData.render.shadows.nLight++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.shadows.lightInfo + *pnl;
+	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
 	if (gameStates.render.bShadowMaps)
 		RenderShadowMap (gameData.render.shadows.pLight);
 	else {

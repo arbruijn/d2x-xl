@@ -2300,7 +2300,7 @@ int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 for (gameData.render.shadows.nLight = 0; 
 	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
 	  gameData.render.shadows.nLight++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.shadows.lightInfo + *pnl;
+	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
 #if 0
 	OOF_VecVms2Oof (&vrLightPos, &gameData.render.lights.ogl.lights [*pnl].vPos);
 #else
@@ -2310,7 +2310,7 @@ for (gameData.render.shadows.nLight = 0;
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
 	if (gameStates.render.bAltShadows)
-		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->pos, &objP->pos))));
+		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->vPos, &objP->pos))));
 	}
 return 1;
 }
