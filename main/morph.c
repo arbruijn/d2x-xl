@@ -366,7 +366,7 @@ void MorphInit ()
 {
 	int i;
 
-for (i=0;i<MAX_MORPH_OBJECTS;i++)
+for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 	gameData.render.morph.objects [i].objP = NULL;
 }
 

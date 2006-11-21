@@ -82,7 +82,7 @@ typedef struct tMorphInfo {
 	int				nSignature;
 } tMorphInfo;
 
-#define MAX_MORPH_OBJECTS 50
+#define MAX_MORPH_OBJECTS 250
 
 #define MORPH_RATE (f1_0*3)
 

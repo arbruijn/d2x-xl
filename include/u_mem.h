@@ -23,7 +23,7 @@ extern int bShowMemInfo;
 #	define DBG_MALLOC 0
 #endif
 
-#ifdef DBG_MALLOC	
+#if DBG_MALLOC	
 
 #define D2X_MEM_HANDLER
 

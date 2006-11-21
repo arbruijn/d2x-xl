@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int bShowMemInfo = 0;
 
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 #	define CHECKID1 1977
 #	define CHECKID2 1979
 #endif
@@ -56,7 +56,7 @@ int bShowMemInfo = 0;
 #define LONG_MEM_ID 0
 #define MEMSTATS 0
 
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 #	define FULL_MEM_CHECKING 1
 #else
 #	define FULL_MEM_CHECKING 0
@@ -187,7 +187,7 @@ for (i = 0; i <= nLargestIndex; i++) {
 		mem_free ((void *) pMallocBase [i]);
 		}
 	}
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 if (numleft && !bOutOfMemory)
 	Warning ("MEM: %d blocks were left allocated!\n", numleft);
 #endif
@@ -293,7 +293,7 @@ void mem_print_all ()
 
 void mem_free (void *buffer)
 {
-#ifndef DBG_MALLOC
+#if !DBG_MALLOC
 if (buffer)
 	free (buffer);
 #else	
@@ -320,7 +320,7 @@ if (!buffer)
 #endif
 	{
 	//LogErr ("\nMEM_FREE_NULL: An attempt was made to free the null pointer.\n");
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 	//Warning ("MEM: Freeing the NULL pointer!");
 #endif
 	Int3 ();
@@ -333,7 +333,7 @@ buffer = (void *) (((char *) buffer) - 256);
 id = mem_find_id (buffer);
 if ((id == -1) && !bOutOfMemory) {
 	LogErr ("\nMEM_FREE_NOMALLOC: An attempt was made to free a ptr that wasn't\nallocated with mem.h included.\n");
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 	//Warning ("Freeing a non-allocated pointer!");
 #endif
 	Int3 ();
@@ -347,7 +347,7 @@ nBytesMalloced -= *(((int *) buffer) - 1);
 free (((int *) buffer) - 2);
 #if FULL_MEM_CHECKING
 bPresent [id] = 0;
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 if (id == CHECKID1)
 	id = CHECKID1;
 if (id == CHECKID2)
@@ -370,8 +370,8 @@ void *mem_malloc (unsigned int size, char * var, char * filename, int line, int 
 #ifdef RELEASE
 
 if (!(ptr = (int *) malloc (size))) {
-#if TRACE
-	con_printf ("allocating %d bytes in %s:%d failed.\n", size, filename, line);
+#if 1//TRACE
+	LogErr ("allocating %d bytes in %s:%d failed.\n", size, filename, line);
 #endif
 	}
 else if (fill_zero)
@@ -439,7 +439,7 @@ nMallocSize [id] = size;
 szVarname [id] = var;
 szFilename [id] = filename;
 nLineNum [id] = line;
-#ifdef DBG_MALLOC
+#if DBG_MALLOC
 if (id == CHECKID1)
 	id = CHECKID1;
 if (id == CHECKID2)
@@ -478,14 +478,14 @@ void *mem_realloc (void * buffer, unsigned int size, char * var, char * filename
 {
 	void *newbuffer = NULL;
 
-#ifndef DBG_MALLOC
+#if !DBG_MALLOC
 if (!size)
 	mem_free (buffer);
 else if (!buffer)
 	newbuffer = mem_malloc (size, var, filename, line, 0);
 else if (! (newbuffer = realloc (buffer, size))) {
 #if TRACE
-	con_printf (CONDBG_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, filename, line);
+	con_printf (CON_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, filename, line);
 #endif
 	}	
 #else

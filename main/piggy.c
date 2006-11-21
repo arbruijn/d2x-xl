@@ -800,6 +800,7 @@ CFILE *copy_pigfile_from_cd (char *filename)
 //------------------------------------------------------------------------------
 //initialize a pigfile, reading headers
 //returns the size of all the bitmap data
+	static int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 void PiggyInitPigFile (char *filename)
 {
 	char					temp_name [16];
@@ -807,16 +808,15 @@ void PiggyInitPigFile (char *filename)
 	char					szPigName [FILENAME_LEN];
 	grsBitmap			bmTemp;
 	DiskBitmapHeader	bmh;
-	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 
 PiggyCloseFile ();             //close old pig if still open
 strcpy (szPigName, filename);
 //rename pigfile for shareware
-if (stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) == 0 && 
+if (!stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) && 
 	 !CFExist (szPigName, gameFolders.szDataDir,0))
 	strcpy (szPigName, DEFAULT_PIGFILE_SHAREWARE);
-	strlwr (szPigName);
-	piggyFP [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
+strlwr (szPigName);
+piggyFP [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
 if (!piggyFP [gameStates.app.bD1Data]) {
 #ifdef EDITOR
 		return;         //if editor, ok to not have pig, because we'll build one
