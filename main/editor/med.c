@@ -130,7 +130,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed #include problem
  * 
  * Revision 1.162  1994/07/21  18:02:09  matt
- * Don't re-init player stats when going from editor -> game
+ * Don't re-init tPlayer stats when going from editor -> game
  * 
  * Revision 1.161  1994/07/21  12:47:53  mike
  * Add tilde key functionality for tObject movement.
@@ -427,8 +427,8 @@ int	GotoGameCommon(int mode) {
 
 //@@	init_player_stats();
 //@@
-//@@	gameData.multi.playerInit.pos = Player->pos;
-//@@	gameData.multi.playerInit.orient = Player->orient;
+//@@	gameData.multi.playerInit.position.vPos = Player->position.vPos;
+//@@	gameData.multi.playerInit.position.mOrient = Player->position.mOrient;
 //@@	gameData.multi.playerInit.nSegment = Player->nSegment;	
 	
 // -- must always save gamesave.sav because the restore-gameData.objs.objects code relies on it
@@ -436,7 +436,7 @@ int	GotoGameCommon(int mode) {
 //	if (mine_changed) 
 	if (gamestate_not_restored == 0) {
 		gamestate_not_restored = 1;
-		saveLevel("GAMESAVE.LVL");
+		SaveLevel("GAMESAVE.LVL");
 		editor_status("Gamestate saved.\n");
 	}
 
@@ -624,8 +624,8 @@ int fuelcen_delete_from_curseg() {
 //@@
 //@@	med_compute_center_point_on_side(&Player->tObjPosition,Cursegp,sideOpposite[Curside]);
 //@@	med_compute_center_point_on_side(&vp,Cursegp,Curside);
-//@@	VmVecDec(&vp,&Player->position);
-//@@	VmVector2Matrix(&Player->orient,&vp,NULL,NULL);
+//@@	VmVecDec(&vp,&Player->position.vPosition);
+//@@	VmVector2Matrix(&Player->position.mOrient,&vp,NULL,NULL);
 //@@
 //@@	Player->seg = SEG_PTR_2_NUM(Cursegp);
 //@@
@@ -645,15 +645,15 @@ void move_player_2_segment_and_rotate(tSegment *seg,int tSide)
 	vmsVector	upvec;
         static int edgenum=0;
 
-	COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,seg);
+	COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,seg);
 	COMPUTE_SIDE_CENTER(&vp,seg,tSide);
-	VmVecDec(&vp,&gameData.objs.console->pos);
+	VmVecDec(&vp,&gameData.objs.console->position.vPos);
 
 	VmVecSub(&upvec, &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][edgenum%4]]], &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][(edgenum+3)%4]]]);
 	edgenum++;
 
-	VmVector2Matrix(&gameData.objs.console->orient,&vp,&upvec,NULL);
-//	VmVector2Matrix(&gameData.objs.console->orient,&vp,NULL,NULL);
+	VmVector2Matrix(&gameData.objs.console->position.mOrient,&vp,&upvec,NULL);
+//	VmVector2Matrix(&gameData.objs.console->position.mOrient,&vp,NULL,NULL);
 
 	RelinkObject( OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(seg) );
 	
@@ -667,7 +667,7 @@ int SetPlayerFromCursegAndRotate()
 }
 
 
-//sets the player facing curseg/curside, normal to face0 of curside, and
+//sets the tPlayer facing curseg/curside, normal to face0 of curside, and
 //far enough away to see all of curside
 int SetPlayerFromCursegMinusOne()
 {
@@ -685,16 +685,16 @@ int SetPlayerFromCursegMinusOne()
 
 	COMPUTE_SIDE_CENTER(&side_center,Cursegp,Curside);
 	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
-	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
+	VmVecSub(&gameData.objs.console->position.vPos,&side_center,&view_vec2);
 
 	VmVecSub(&upvec, &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][edgenum%4]]], &gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][(edgenum+3)%4]]]);
 	edgenum++;
 
-	VmVector2Matrix(&gameData.objs.console->orient,&view_vec,&upvec,NULL);
+	VmVector2Matrix(&gameData.objs.console->position.mOrient,&view_vec,&upvec,NULL);
 
 	GrSetCurrentCanvas(Canv_editor_game);
 	G3StartFrame();
-	G3SetViewMatrix(&gameData.objs.console->pos,&gameData.objs.console->orient,nRenderZoom);
+	G3SetViewMatrix(&gameData.objs.console->position.vPos,&gameData.objs.console->position.mOrient,nRenderZoom);
 
 	for (i=max=0;i<4;i++) {
 		corner_v[i] = gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][i]]];
@@ -705,12 +705,12 @@ int SetPlayerFromCursegMinusOne()
 
 	viewDist = FixMul(viewDist,FixDiv(FixDiv(max,SIDE_VIEW_FRAC),corner_p[0].p3_z);
 	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
-	VmVecSub(&gameData.objs.console->pos,&side_center,&view_vec2);
+	VmVecSub(&gameData.objs.console->position.vPos,&side_center,&view_vec2);
 
 	//RelinkObject(OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(Cursegp) );
 	//UpdateObjectSeg(gameData.objs.console);		//might have backed right out of curseg
 
-	newseg = FindSegByPoint(&gameData.objs.console->pos,SEG_PTR_2_NUM(Cursegp) );
+	newseg = FindSegByPoint(&gameData.objs.console->position.vPos,SEG_PTR_2_NUM(Cursegp) );
 	if (newseg != -1)
 		RelinkObject(OBJ_IDX (gameData.objs.console),newseg);
 
@@ -1095,16 +1095,16 @@ void gamestate_restore_check() {
 		if (MessageBox( -2, -2, 2, Message, "Yes", "No" )==1) {
 
 			// Save current position
-			Save_position.pos = gameData.objs.console->pos;
-			Save_position.orient = gameData.objs.console->orient;
+			Save_position.position.vPos = gameData.objs.console->position.vPos;
+			Save_position.position.mOrient = gameData.objs.console->position.mOrient;
 			Save_position.nSegment = gameData.objs.console->nSegment;
 
 			LoadLevelSub("GAMESAVE.LVL");
 
 			// Restore current position
 			if (Save_position.nSegment <= gameData.segs.nLastSegment) {
-				gameData.objs.console->pos = Save_position.pos;
-				gameData.objs.console->orient = Save_position.orient;
+				gameData.objs.console->position.vPos = Save_position.position.vPos;
+				gameData.objs.console->position.mOrient = Save_position.position.mOrient;
 				RelinkObject(OBJ_IDX (gameData.objs.console),Save_position.nSegment);
 			}
 
@@ -1392,7 +1392,7 @@ void editor(void)
   			Found_seg_index = 0;	
 		
 			if (N_found_segs > 0) {
-				sort_seg_list(N_found_segs,Found_segs,&gameData.objs.console->pos);
+				sort_seg_list(N_found_segs,Found_segs,&gameData.objs.console->position.vPos);
 				Cursegp = &gameData.segs.segments[Found_segs[0]];
 				med_create_new_segment_from_cursegp();
 				if (Lock_view_to_cursegp)

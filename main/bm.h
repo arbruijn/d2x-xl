@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made exit model come out of bitmaps.tbl
  *
  * Revision 1.59  1994/11/10  14:02:48  matt
- * Hacked in support for player ships with different textures
+ * Hacked in support for tPlayer ships with different textures
  *
  * Revision 1.58  1994/10/27  13:32:17  john
  * Made TmapList only be in if editor
@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Gave textures the ability to cause damage when scraped
  *
  * Revision 1.52  1994/08/30  22:23:43  matt
- * Added cabability for player ship to have alternate model to use to
+ * Added cabability for tPlayer ship to have alternate model to use to
  * create debris.
  *
  * Revision 1.51  1994/08/26  15:35:57  matt
@@ -72,14 +72,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Increase MAX_TEXTURES
  *
  * Revision 1.45  1994/07/13  00:14:57  matt
- * Moved all (or nearly all) of the values that affect player movement to
+ * Moved all (or nearly all) of the values that affect tPlayer movement to
  * bitmaps.tbl
  *
  * Revision 1.44  1994/06/20  21:33:15  matt
  * Made bm.h not include sounds.h, to reduce dependencies
  *
  * Revision 1.43  1994/06/15  11:55:58  matt
- * Added 3d model for player
+ * Added 3d model for tPlayer
  *
  * Revision 1.42  1994/06/13  16:09:11  adam
  * increased max textures to 600
@@ -114,7 +114,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
  * Hostages and powerups are implemented in the tObject system,
- * just need to finish function call to "affect" player.
+ * just need to finish function call to "affect" tPlayer.
  *
  * Revision 1.32  1994/03/25  17:30:37  yuan
  * Checking in hostage stuff.

@@ -86,8 +86,8 @@ hli highestLevels [MAX_MISSIONS];
 
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
-#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 player file version
-#define PLAYER_FILE_VERSION					130	//increment this every time the player file changes
+#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
+#define PLAYER_FILE_VERSION					130	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -243,7 +243,7 @@ WIN(extern char win95_current_joyname[]);
 
 ubyte controlType_dos,controlType_win;
 
-//read in the player's saved games.  returns errno (0 == no error)
+//read in the tPlayer's saved games.  returns errno (0 == no error)
 int ReadPlayerFile(int bOnlyWindowSizes)
 {
 	char	filename[FILENAME_LEN];
@@ -259,14 +259,14 @@ Assert(gameData.multi.nLocalPlayer>=0 && gameData.multi.nLocalPlayer<MAX_PLAYERS
 
 sprintf(filename, "%.8s.plr", gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
 if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
-	LogErr ("   couldn't read player file '%s'\n", filename);
+	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
 	return errno;
 	}
 id = CFReadInt(fp);
 // SWAPINT added here because old versions of d2x
 // used the wrong byte order.
 if (nCFileError || (id!=SAVE_FILE_ID && id!=SWAPINT(SAVE_FILE_ID))) {
-	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
+	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, "Invalid tPlayer file");
 	CFClose(fp);
 	return -1;
 	}
@@ -895,7 +895,7 @@ int FindHLIEntry()
 }
 
 //------------------------------------------------------------------------------
-//set a new highest level for player for this mission
+//set a new highest level for tPlayer for this mission
 void SetHighestLevel(int levelnum)
 {
 	int ret,i;
@@ -910,7 +910,7 @@ WritePlayerFile();
 }
 
 //------------------------------------------------------------------------------
-//gets the player's highest level from the file for this mission
+//gets the tPlayer's highest level from the file for this mission
 int GetHighestLevel(void)
 {
 	int i;
@@ -932,14 +932,14 @@ return i;
 
 //------------------------------------------------------------------------------
 
-//write out player's saved games.  returns errno (0 == no error)
+//write out tPlayer's saved games.  returns errno (0 == no error)
 int WritePlayerFile()
 {
 	char filename[FILENAME_LEN];		// because of ":gameData.multi.players:" path
 	CFILE *fp;
 	int errno_ret, h, i, j;
 
-//	#ifdef APPLE_DEMO		// no saving of player files in Apple OEM version
+//	#ifdef APPLE_DEMO		// no saving of tPlayer files in Apple OEM version
 //	return 0;
 //	#endif
 
@@ -965,7 +965,7 @@ int WritePlayerFile()
 
 	errno_ret			= EZERO;
 
-	//Write out player's info
+	//Write out tPlayer's info
 	CFWriteInt(SAVE_FILE_ID, fp);
 	CFWriteShort(PLAYER_FILE_VERSION, fp);
 
@@ -1309,7 +1309,7 @@ for (j = 0; j < 2; j++) {
 
 }
 
-//update the player's highest level.  returns errno (0 == no error)
+//update the tPlayer's highest level.  returns errno (0 == no error)
 int update_player_file()
 {
 	int ret;

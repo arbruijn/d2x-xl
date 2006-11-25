@@ -44,52 +44,50 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void KillAllRobots(void)
 {
-	int	i, dead_count=0;
+	int	i, nDead=0;
 	tObject *objP;
 	//int	boss_index = -1;
 
 	// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 	for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-		if (objP->nType == OBJ_ROBOT) {
-			if (!gameData.bots.pInfo[objP->id].companion && 
-				 !gameData.bots.pInfo[objP->id].bossFlag) {
-				dead_count++;
-				if (gameStates.app.bNostalgia)
-					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-				else {
-					ApplyDamageToRobot (objP, objP->shields + 1, -1);
-					objP->flags |= OF_ARMAGEDDON;
-					}
+		if ((objP->nType == OBJ_ROBOT) &&
+			 !(gameData.bots.pInfo [objP->id].companion || gameData.bots.pInfo [objP->id].bossFlag)) {
+			nDead++;
+			if (gameStates.app.bNostalgia)
+				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			else {
+				ApplyDamageToRobot (objP, objP->shields + 1, -1);
+				objP->flags |= OF_ARMAGEDDON;
 				}
 			}
 
 // --		// Now, if more than boss and buddy left, un-kill boss.
-// --		if ((dead_count > 2) && (boss_index != -1)) {
+// --		if ((nDead > 2) && (boss_index != -1)) {
 // --			gameData.objs.objects [boss_index].flags &= ~(OF_EXPLODING|OF_SHOULD_BE_DEAD);
-// --			dead_count--;
+// --			nDead--;
 // --		} else if (boss_index != -1)
 // --			HUDInitMessage("Toasted the BOSS!");
 
 	// Toast the buddy if nothing else toasted!
-	if (dead_count == 0)
+	if (nDead == 0)
 		for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
 			if (objP->nType == OBJ_ROBOT)
-				if (gameData.bots.pInfo[objP->id].companion) {
+				if (gameData.bots.pInfo [objP->id].companion) {
 				if (gameStates.app.bNostalgia)
 					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 				else 
 					ApplyDamageToRobot (objP, objP->shields + 1, -1);
 				HUDInitMessage(TXT_BUDDY_TOASTED);
-				dead_count++;
+				nDead++;
 				}
 
-	HUDInitMessage(TXT_BOTS_TOASTED, dead_count);
+	HUDInitMessage(TXT_BOTS_TOASTED, nDead);
 }
 
 //	--------------------------------------------------------------------------
 //	Detonate reactor.
-//	Award player all powerups in mine.
-//	Place player just outside exit.
+//	Award tPlayer all powerups in mine.
+//	Place tPlayer just outside exit.
 //	Kill all bots in mine.
 //	Yippee!!
 void KillEverything(void)
@@ -117,7 +115,7 @@ void KillEverything(void)
 		if (gameData.trigs.triggers [i].nType == TT_EXIT) {
 			for (j=0; j<gameData.walls.nWalls; j++) {
 				if (gameData.walls.walls [j].nTrigger == i) {
-					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->pos, gameData.walls.walls [j].nSegment);
+					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->position.vPos, gameData.walls.walls [j].nSegment);
 					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
 					goto kasf_done;
 				}
@@ -139,7 +137,7 @@ void KillThief(void)
 	//	Kill thief.
 for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo[objP->id].thief) {
+		if (gameData.bots.pInfo [objP->id].thief) {
 			if (gameStates.app.bNostalgia)
 				objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 			else {
@@ -156,16 +154,16 @@ for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP+
 
 void KillAllSnipers(void)
 {
-	int     i, dead_count=0;
+	int     i, nDead=0;
 
 //	Kill all snipers.
 for (i=0; i<=gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
-			dead_count++;
+			nDead++;
 			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		}
-HUDInitMessage(TXT_BOTS_TOASTED, dead_count);
+HUDInitMessage(TXT_BOTS_TOASTED, nDead);
 }
 
 #endif
@@ -179,7 +177,7 @@ void KillBuddy(void)
 	//	Kill buddy.
 for (i=0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo[gameData.objs.objects [i].id].companion) {
+		if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
 			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			HUDInitMessage(TXT_BUDDY_TOASTED);
 		}
@@ -357,7 +355,7 @@ void CubeWarpCheat (void)
 int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
 if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 	DoCheatPenalty ();
-	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].pos, nNewCube); 
+	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, nNewCube); 
 	RelinkObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject, nNewCube);
 	}
 }
@@ -575,7 +573,7 @@ if (gameStates.app.bD1Mission) {
 	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
 		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i];
 	for (i=0; i < MAX_D1_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i];
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = nMaxSecondaryAmmo [i];
 	}
 else {
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
@@ -590,7 +588,7 @@ else {
 	for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i] * h;
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = nMaxSecondaryAmmo [i] * h;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE4_INDEX] = 0;
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE5_INDEX] = 0;
@@ -826,7 +824,7 @@ void DoCheatMenu()
 	mm[7].text="Laser Level"; mm[7].minValue=0; 
 	mm[7].maxValue=MAX_SUPER_LASER_LEVEL+1;
 	mm[8].nType=NM_TYPE_NUMBER; 
-	mm[8].value=gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[CONCUSSION_INDEX]; 
+	mm[8].value=gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [CONCUSSION_INDEX]; 
 	mm[8].text="Missiles"; 
 	mm[8].minValue=0; 
 	mm[8].maxValue=200;
@@ -860,7 +858,7 @@ void DoCheatMenu()
 		//if (mm[9].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=2;
 		//if (mm[10].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=3;
 		gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = mm[7].value-1;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[CONCUSSION_INDEX] = mm[8].value;
+		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [CONCUSSION_INDEX] = mm[8].value;
 		InitGauges();
 	}
 }

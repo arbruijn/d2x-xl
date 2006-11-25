@@ -164,7 +164,7 @@ return ((sum1 << 8) + sum2);
 // structures send through the networking code.  The structures and
 // this code must be kept in total sync
 
-void BEReceiveNetPlayerInfo (ubyte *data, netplayer_info *info)
+void BEReceiveNetPlayerInfo (ubyte *data, tNetPlayerInfo *info)
 {
 	int nmBufI = 0;
 
@@ -222,13 +222,13 @@ BE_GET_BYTE (pinfo->nType);
 BE_GET_INT (pinfo->Security);        
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BEReceiveNetPlayerInfo (data + nmBufI, pinfo->players + i);
-	nmBufI += 26;          // sizeof(netplayer_info) on the PC
+	nmBufI += 26;          // sizeof(tNetPlayerInfo) on the PC
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void BESendSequencePacket (sequence_packet seq, ubyte *server, ubyte *node, ubyte *netAddress)
+void BESendSequencePacket (tSequencePacket seq, ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	int nmBufI = 0;
 
@@ -258,7 +258,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BEReceiveSequencePacket (ubyte *data, sequence_packet *seq)
+void BEReceiveSequencePacket (ubyte *data, tSequencePacket *seq)
 {
 	int nmBufI = 0;
 
@@ -475,8 +475,8 @@ objP->nSignature = INTEL_INT (objP->nSignature);
 objP->next = INTEL_SHORT (objP->next);
 objP->prev = INTEL_SHORT (objP->prev);
 objP->nSegment = INTEL_SHORT (objP->nSegment);
-INTEL_VECTOR (&objP->pos);
-INTEL_MATRIX (&objP->orient);
+INTEL_VECTOR (&objP->position.vPos);
+INTEL_MATRIX (&objP->position.mOrient);
 objP->size = INTEL_INT (objP->size);
 objP->shields = INTEL_INT (objP->shields);
 INTEL_VECTOR (&objP->last_pos);

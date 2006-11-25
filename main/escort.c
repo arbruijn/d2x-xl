@@ -12,17 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Escort robot behavior.
- *
- * Old Log:
- * Revision 1.1  1995/05/06  23:32:19  mike
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -524,7 +513,7 @@ int GetBossId(void)
 
 //	-----------------------------------------------------------------------------
 //	Return tObject index if tObject of objtype, objid exists in mine, else return -1
-//	"special" is used to find gameData.objs.objects spewed by player which is hacked into flags field of powerup.
+//	"special" is used to find gameData.objs.objects spewed by tPlayer which is hacked into flags field of powerup.
 int ExistsInMine2(int nSegment, int objtype, int objid, int special)
 {
 	if (gameData.segs.segments [nSegment].objects != -1) {
@@ -827,7 +816,7 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance(&objP->pos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
+			xDistToPlayer = FindConnectedDistance(&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
@@ -842,7 +831,7 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
-//	Escort robot chooses goal tObject based on player's keys, location.
+//	Escort robot chooses goal tObject based on tPlayer's keys, location.
 //	Returns goal tObject.
 int EscortSetGoalObject(void)
 {
@@ -876,8 +865,8 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 //	-----------------------------------------------------------------------------
 int TimeToVisitPlayer(tObject *objP, tAILocal *ailp, tAIStatic *aip)
 {
-	//	Note: This one has highest priority because, even if already going towards player,
-	//	might be necessary to create a new path, as player can move.
+	//	Note: This one has highest priority because, even if already going towards tPlayer,
+	//	might be necessary to create a new path, as tPlayer can move.
 if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
 	if (gameData.time.xGame - Buddy_last_player_path_created > F1_0)
 		return 1;
@@ -913,11 +902,11 @@ int MaybeBuddyFireMega(short nObject)
 	vmsVector	vVecToRobot;
 	int			nWeaponObj;
 
-VmVecSub(&vVecToRobot, &buddyObjP->pos, &objP->pos);
+VmVecSub(&vVecToRobot, &buddyObjP->position.vPos, &objP->position.vPos);
 dist = VmVecNormalizeQuick(&vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = VmVecDot(&vVecToRobot, &buddyObjP->orient.fVec);
+dot = VmVecDot(&vVecToRobot, &buddyObjP->position.mOrient.fVec);
 if (dot < F1_0/2)
 	return 0;
 if (!ObjectToObjectVisibility(buddyObjP, objP, FQ_TRANSWALL))
@@ -933,7 +922,7 @@ if (gameData.weapons.info [MEGA_ID].renderType == 0) {
 con_printf (CON_DEBUG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage(TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewLaserEasy( &buddyObjP->orient.fVec, &buddyObjP->pos, nObject, MEGA_ID, 1);
+nWeaponObj = CreateNewLaserEasy( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, MEGA_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo(nWeaponObj);
 return 1;
@@ -947,7 +936,7 @@ int MaybeBuddyFireSmart(short nObject)
 	fix		dist;
 	short		nWeaponObj;
 
-dist = VmVecDistQuick(&buddyObjP->pos, &objP->pos);
+dist = VmVecDistQuick(&buddyObjP->position.vPos, &objP->position.vPos);
 if (dist > F1_0*80)
 	return 0;
 if (!ObjectToObjectVisibility(buddyObjP, objP, FQ_TRANSWALL))
@@ -956,7 +945,7 @@ if (!ObjectToObjectVisibility(buddyObjP, objP, FQ_TRANSWALL))
 con_printf (CON_DEBUG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage(TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewLaserEasy( &buddyObjP->orient.fVec, &buddyObjP->pos, nObject, SMART_ID, 1);
+nWeaponObj = CreateNewLaserEasy( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, SMART_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo(nWeaponObj);
 return 1;
@@ -1023,7 +1012,7 @@ if (!gameData.escort.bMayTalk)
 		aip->SKIP_AI_COUNT = (F1_0/4)/gameData.time.xFrame;
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the tObject has been told to get lost and has come to the end of its path.
-//	If the player is now visible, then create a path.
+//	If the tPlayer is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (player_visibility) {
 		CreateNSegmentPath(objP, 16 + d_rand() * 16, -1);

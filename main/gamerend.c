@@ -927,11 +927,11 @@ void show_extra_views()
 			}
 #ifdef NETWORK
 			case CV_COOP: {
-				int player = Coop_view_player[w];
+				int tPlayer = Coop_view_player[w];
 
 	         gameStates.render.nRenderingType=255; // don't handle coop stuff			
 				
-				if (player!=-1 && gameData.multi.players[player].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(player) == GetTeam(gameData.multi.nLocalPlayer)))))
+				if (tPlayer!=-1 && gameData.multi.players[tPlayer].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(tPlayer) == GetTeam(gameData.multi.nLocalPlayer)))))
 					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[Coop_view_player[w]].nObject],0,WBU_COOP,gameData.multi.players[Coop_view_player[w]].callsign);
 				else {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
@@ -943,12 +943,12 @@ void show_extra_views()
 			case CV_MARKER: {
 				char label[10];
 				gameStates.render.nRenderingType=5+(w<<4);
-				if (Marker_viewer_num[w] == -1 || gameData.marker.tObject[Marker_viewer_num[w]] == -1) {
+				if (Marker_viewer_num[w] == -1 || gameData.marker.objects[Marker_viewer_num[w]] == -1) {
 					Cockpit_3d_view[w] = CV_NONE;
 					break;
 				}
 				sprintf(label,"Marker %d",Marker_viewer_num[w]+1);
-				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.tObject[Marker_viewer_num[w]],0,WBU_MARKER,label);
+				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.objects[Marker_viewer_num[w]],0,WBU_MARKER,label);
 				break;
 			}
 			case CV_RADAR_TOPDOWN:

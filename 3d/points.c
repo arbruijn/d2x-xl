@@ -110,7 +110,7 @@ void G3Point2Vec(vmsVector *v,short sx,short sy)
 
 	VmVecNormalize(&tempv);
 
-	VmCopyTransposeMatrix(&tempm,&viewInfo.unscaledView);
+	VmCopyTransposeMatrix(&tempm,&viewInfo.view [1]);
 
 	VmVecRotate(v,&tempv,&tempm);
 
@@ -120,9 +120,9 @@ void G3Point2Vec(vmsVector *v,short sx,short sy)
 //delta rotation functions
 vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 {
-	dest->x = FixMul(viewInfo.view.rVec.x,dx);
-	dest->y = FixMul(viewInfo.view.uVec.x,dx);
-	dest->z = FixMul(viewInfo.view.fVec.x,dx);
+	dest->x = FixMul(viewInfo.view [0].rVec.x,dx);
+	dest->y = FixMul(viewInfo.view [0].uVec.x,dx);
+	dest->z = FixMul(viewInfo.view [0].fVec.x,dx);
 
 	return dest;
 }
@@ -131,9 +131,9 @@ vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 
 vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 {
-	dest->x = FixMul(viewInfo.view.rVec.y,dy);
-	dest->y = FixMul(viewInfo.view.uVec.y,dy);
-	dest->z = FixMul(viewInfo.view.fVec.y,dy);
+	dest->x = FixMul(viewInfo.view [0].rVec.y,dy);
+	dest->y = FixMul(viewInfo.view [0].uVec.y,dy);
+	dest->z = FixMul(viewInfo.view [0].fVec.y,dy);
 
 	return dest;
 }
@@ -142,9 +142,9 @@ vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 
 vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 {
-	dest->x = FixMul(viewInfo.view.rVec.z,dz);
-	dest->y = FixMul(viewInfo.view.uVec.z,dz);
-	dest->z = FixMul(viewInfo.view.fVec.z,dz);
+	dest->x = FixMul(viewInfo.view [0].rVec.z,dz);
+	dest->y = FixMul(viewInfo.view [0].uVec.z,dz);
+	dest->z = FixMul(viewInfo.view [0].fVec.z,dz);
 
 	return dest;
 }
@@ -153,7 +153,7 @@ vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 
 vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src)
 {
-	return VmVecRotate(dest,src,&viewInfo.view);
+	return VmVecRotate(dest,src,&viewInfo.view [0]);
 }
 
 // -----------------------------------------------------------------------------------
@@ -170,17 +170,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(vmsVector *pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view.fVec.x);
-	q += mul64 (pnt->y - viewInfo.position.y, viewInfo.view.fVec.y);
-	q += mul64 (pnt->z - viewInfo.position.z, viewInfo.view.fVec.z);
+	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view [0].fVec.x);
+	q += mul64 (pnt->y - viewInfo.position.y, viewInfo.view [0].fVec.y);
+	q += mul64 (pnt->z - viewInfo.position.z, viewInfo.view [0].fVec.z);
 	return (fix) (q >> 16);
 #else
 	quadint q;
 
 	q.low=q.high=0;
-	fixmulaccum(&q,(pnt->x - viewInfo.position.x),viewInfo.view.fVec.x);
-	fixmulaccum(&q,(pnt->y - viewInfo.position.y),viewInfo.view.fVec.y);
-	fixmulaccum(&q,(pnt->z - viewInfo.position.z),viewInfo.view.fVec.z);
+	fixmulaccum(&q,(pnt->x - viewInfo.position.x),viewInfo.view [0].fVec.x);
+	fixmulaccum(&q,(pnt->y - viewInfo.position.y),viewInfo.view [0].fVec.y);
+	fixmulaccum(&q,(pnt->z - viewInfo.position.z),viewInfo.view [0].fVec.z);
 	return fixquadadjust(&q);
 #endif
 }

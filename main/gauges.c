@@ -12,279 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Inferno gauge drivers
- *
- * Old Log:
- * Revision 1.15  1995/10/31  10:22:37  allender
- * shareware stuff
- *
- * Revision 1.14  1995/10/26  14:11:05  allender
- * do copy of weapon boxes in cockpit correctly
- *
- * Revision 1.13  1995/10/21  22:54:56  allender
- * fixed up player names on hud
- *
- * Revision 1.12  1995/10/12  17:39:27  allender
- * fixed status bar lives display
- *
- * Revision 1.11  1995/09/22  15:21:46  allender
- * fixed hud problems (reticle and kill lists) for
- * non pixel doubled mode
- *
- * Revision 1.10  1995/09/13  11:38:47  allender
- * show KB left in heap instead of piggy cache
- *
- * Revision 1.9  1995/09/04  15:52:28  allender
- * fix vulcan ammo count to update without overwritting itself
- *
- * Revision 1.8  1995/08/31  14:11:20  allender
- * worked on hud kill list for non pixel doubled mode
- *
- * Revision 1.7  1995/08/24  16:05:05  allender
- * more gauge placement -- still not done!
- *
- * Revision 1.6  1995/08/18  15:44:56  allender
- * put in PC gauges for keys, lives, and reticle when pixel doubling
- *
- * Revision 1.5  1995/08/18  10:24:47  allender
- * added proper support for cockpit mode -- still needs
- *
- * Revision 1.4  1995/07/26  16:56:34  allender
- * more gauge stuff for status bar.  still problem
- * with ship
- *
- * Revision 1.3  1995/07/17  08:55:57  allender
- * fix up for large status bar.  Still needs some work though
- *
- * Revision 1.2  1995/06/20  09:54:29  allender
- * stopgap measure to get status bar "working" until real mac
- * status bar gets added
- *
- * Revision 1.1  1995/05/16  15:26:05  allender
- * Initial revision
- *
- * Revision 2.7  1995/12/19  16:18:33  john
- * Made weapon info align with canvas width, not 315.
- *
- * Revision 2.6  1995/03/21  14:39:25  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.5  1995/03/14  12:31:25  john
- * Prevent negative shields from printing.
- *
- * Revision 2.4  1995/03/10  12:57:58  allender
- * move rear view text up four pixels up when playing back demo
- *
- * Revision 2.3  1995/03/09  11:47:51  john
- * Added HUD for VR helmets.
- *
- * Revision 2.2  1995/03/06  15:23:26  john
- * New screen techniques.
- *
- * Revision 2.1  1995/02/27  13:13:45  john
- * Removed floating point.
- *
- * Revision 2.0  1995/02/27  11:29:06  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.203  1995/02/11  01:56:45  mike
- * move up weapons text on fullscreen hud, missiles was offscreen.
- *
- * Revision 1.202  1995/02/09  13:23:34  rob
- * Added reticle names in demo playback.
- *
- * Revision 1.201  1995/02/08  19:20:46  rob
- * Show cloaked teammates on H
- * UD.  Get rid of show ID's in anarchy option.
- *
- * Revision 1.200  1995/02/07  21:09:00  mike
- * add flashing to invulnerability and cloak on fullscreen.
- *
- * Revision 1.199  1995/02/02  21:55:57  matt
- * Added new colored key icons for fullscreen
- *
- * Revision 1.198  1995/01/30  17:17:07  rob
- * Fixed teammate names on hud.
- *
- * Revision 1.197  1995/01/28  17:40:49  mike
- * fix gauge fontcolor.
- *
- * Revision 1.196  1995/01/27  17:03:14  mike
- * fix placement of weapon info in multiplayer fullscreen, as per AP request.
- *
- * Revision 1.195  1995/01/27  11:51:23  rob
- * Put deaths tally into cooperative mode
- *
- * Revision 1.194  1995/01/27  11:43:24  adam
- * fiddled with key display
- *
- * Revision 1.193  1995/01/25  23:38:35  mike
- * fix keys on fullscreen.
- *
- * Revision 1.192  1995/01/24  22:03:28  mike
- * Lotsa hud stuff, put a lot of messages up.
- *
- * Revision 1.191  1995/01/23  16:47:21  rob
- * Fixed problem with playing extra life noise in coop.
- *
- * Revision 1.190  1995/01/22  16:00:46  mike
- * remove unneeded string.
- *
- * Revision 1.189  1995/01/22  15:58:22  mike
- * localization
- *
- * Revision 1.188  1995/01/20  17:19:45  rob
- * Fixing colors of hud kill list players.
- *
- * Revision 1.187  1995/01/20  09:19:18  allender
- * record player flags when in CM_FULL_SCREEN
- *
- * Revision 1.186  1995/01/19  16:29:09  allender
- * made demo recording of weapon change be in this file for shareware only
- *
- * Revision 1.185  1995/01/19  15:00:33  allender
- * code to record shield, energy, and ammo in fullscreen
- *
- * Revision 1.184  1995/01/19  13:43:13  matt
- * Fixed "cheater" message on HUD
- *
- * Revision 1.183  1995/01/18  16:11:58  mike
- * Don't show added scores of 0.
- *
- * Revision 1.182  1995/01/17  17:42:39  allender
- * do ammo counts in demo recording
- *
- * Revision 1.181  1995/01/16  17:26:25  rob
- * Fixed problem with coloration of team kill list.
- *
- * Revision 1.180  1995/01/16  17:22:39  john
- * Made so that KB and framerate don't collide.
- *
- * Revision 1.179  1995/01/16  14:58:31  matt
- * Changed score_added display to print "Cheater!" when cheats enabled
- *
- * Revision 1.178  1995/01/15  19:42:07  matt
- * Ripped out hostage faces for registered version
- *
- * Revision 1.177  1995/01/15  19:25:07  mike
- * show vulcan ammo and secondary ammo in fullscreen view.
- *
- * Revision 1.176  1995/01/15  13:16:12  john
- * Made so that paging always happens, lowmem just loads less.
- * Also, make KB load print to hud.
- *
- * Revision 1.175  1995/01/14  19:17:32  john
- * First version of piggy paging.
- *
- * Revision 1.174  1995/01/05  21:25:23  rob
- * Re-did some changes lost due to RCS weirdness.
- *
- * Revision 1.173  1995/01/05  12:22:34  rob
- * Don't show player names for cloaked players.
- *
- * Revision 1.172  1995/01/04  17:14:50  allender
- * make InitGauges work properly on demo playback
- *
- * Revision 1.171  1995/01/04  15:04:42  allender
- * new demo calls for registered version
- *
- * Revision 1.167  1995/01/03  13:03:57  allender
- * pass score points instead of total points.   Added ifdef for
- * MultiSendScore
- *
- * Revision 1.166  1995/01/03  11:45:02  allender
- * add hook to record player score
- *
- * Revision 1.165  1995/01/03  11:25:19  allender
- * remove newdemo stuff around score display
- *
- * Revision 1.163  1995/01/02  21:03:53  rob
- * Fixing up the hud-score-list for coop games.
- *
- * Revision 1.162  1994/12/31  20:54:40  rob
- * Added coop mode HUD score list.
- * Added more generic system for player names on HUD.
- *
- * Revision 1.161  1994/12/30  20:13:01  rob
- * Ifdef reticle names on shareware.
- * Added robot reticle naming.
- *
- * Revision 1.160  1994/12/29  17:53:51  mike
- * move up energy/shield in fullscreen to get out of way of kill list.
-	 *
- * Revision 1.159  1994/12/29  16:44:05  mike
- * add energy and shield showing.
- *
- * Revision 1.158  1994/12/28  16:34:29  mike
- * make warning beep go away on gameStates.app.bPlayerIsDead.
- *
- * Revision 1.157  1994/12/28  10:00:43  allender
- * change in InitGauges to for multiplayer demo playbacks
- *
- * Revision 1.156  1994/12/27  11:06:46  allender
- * removed some previous code to for demo playback stuff
- *
- * Revision 1.155  1994/12/23  14:23:06  john
- * Added floating reticle for VR helments.
- *
- * Revision 1.154  1994/12/21  12:56:41  allender
- * on multiplayer demo playback, show kills and deaths
- *
- * Revision 1.153  1994/12/19  20:28:42  rob
- * Get rid of kill list in coop games.
- *
- * Revision 1.152  1994/12/14  18:06:44  matt
- * Removed compile warnings
- *
- * Revision 1.151  1994/12/14  15:21:28  rob
- * Made gauges align in status_bar net game.
- *
- * Revision 1.150  1994/12/12  17:20:33  matt
- * Don't get bonus points when cheating
- *
- * Revision 1.149  1994/12/12  16:47:00  matt
- * When cheating, get no score.  Change level cheat to prompt for and
- * jump to new level.
- *
- * Revision 1.148  1994/12/12  12:05:45  rob
- * Grey out players who are disconnected.
- *
- * Revision 1.147  1994/12/09  16:19:48  yuan
- * kill matrix stuff.
- *
- * Revision 1.146  1994/12/09  16:12:34  rob
- * Fixed up the status bar kills gauges for net play.
- *
- * Revision 1.145  1994/12/09  01:55:34  rob
- * Added kills list to HUD/status bar.
- * Added something for Mark.
- *
- * Revision 1.144  1994/12/08  21:03:30  allender
- * pass old player flags to record_playerFlags
- *
- * Revision 1.143  1994/12/07  22:49:33  mike
- * no homing missile warning during endlevel sequence.
- *
- * Revision 1.142  1994/12/06  13:55:31  matt
- * Use new rounding func, f2ir()
- *
- * Revision 1.141  1994/12/03  19:03:37  matt
- * Fixed vulcan ammo HUD message
- *
- * Revision 1.140  1994/12/03  18:43:18  matt
- * Fixed (hopefully) claok gauge
- *
- * Revision 1.139  1994/12/03  14:26:21  yuan
- * Fixed dumb bug
- *
- * Revision 1.138  1994/12/03  14:17:30  yuan
- * Localization 320
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -4272,10 +3999,10 @@ int CanSeeObject(int nObject, int bCheckObjs)
 	int nHitType;
 	fvi_info hit_data;
 
-	//see if we can see this player
+	//see if we can see this tPlayer
 
-	fq.p0 = &gameData.objs.viewer->pos;
-	fq.p1 = &gameData.objs.objects[nObject].pos;
+	fq.p0 = &gameData.objs.viewer->position.vPos;
+	fq.p1 = &gameData.objs.objects[nObject].position.vPos;
 	fq.rad = 0;
 	fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
 	fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
@@ -4319,7 +4046,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 		nObject = gameData.multi.players [p].nObject;
 	else {
-		//if this is a demo, the nObject in the player struct is wrong,
+		//if this is a demo, the nObject in the tPlayer struct is wrong,
 		//so we search the tObject list for the nObject
 		for (nObject = 0;nObject <= gameData.objs.nLastObject; nObject++)
 			if (gameData.objs.objects[nObject].nType==OBJ_PLAYER && 
@@ -4331,7 +4058,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint vPlayerPos;
-		G3TransformAndEncodePoint (&vPlayerPos,&gameData.objs.objects[nObject].pos);
+		G3TransformAndEncodePoint (&vPlayerPos,&gameData.objs.objects[nObject].position.vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3Flags & PF_OVERFLOW)) {
@@ -4501,7 +4228,7 @@ WIN(DDGRUNLOCK(dd_grd_curcanv));
 
 //	-----------------------------------------------------------------------------
 
-//print out some player statistics
+//print out some tPlayer statistics
 void RenderGauges()
 {
 	static int old_display_mode = 0;
@@ -4841,7 +4568,7 @@ WINDOS(
 	WIN(DDGRLOCK(dd_grd_curcanv));
 	
 		nZoomSave = gameStates.render.nZoomFactor;
-		gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the player's zoom factor
+		gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
 		if ((user == WBU_RADAR_TOPDOWN) ||(user == WBU_RADAR_HEADSUP)) {
 			gameStates.render.bTopDownRadar = (user == WBU_RADAR_TOPDOWN);
 			if (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
@@ -4852,7 +4579,7 @@ WINDOS(
 		else
 			RenderFrame(0, win+1);
 
-		gameStates.render.nZoomFactor = nZoomSave;					//the player's zoom factor
+		gameStates.render.nZoomFactor = nZoomSave;					//the tPlayer's zoom factor
 		
 	WIN(DDGRUNLOCK(dd_grd_curcanv));
 

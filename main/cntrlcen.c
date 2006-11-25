@@ -12,98 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Code for the control center
- *
- * Old Log:
- * Revision 1.2  1995/10/17  13:12:13  allender
- * added param to ai call
- *
- * Revision 1.1  1995/05/16  15:23:27  allender
- * Initial revision
- *
- * Revision 2.1  1995/03/21  14:40:25  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02/27  11:31:25  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.22  1995/02/11  01:56:14  mike
- * robots don't fire cheat.
- *
- * Revision 1.21  1995/02/05  13:39:39  mike
- * fix stupid bug in control center firing timing.
- *
- * Revision 1.20  1995/02/03  17:41:21  mike
- * fix control cen next fire time in multiplayer.
- *
- * Revision 1.19  1995/01/29  13:46:41  mike
- * adapt to new CreateSmallFireballOnObject prototype.
- *
- * Revision 1.18  1995/01/18  16:12:13  mike
- * Make control center aware of a cloaked playerr when he fires.
- *
- * Revision 1.17  1995/01/12  12:53:44  rob
- * Trying to fix a bug with having cntrlcen in robotarchy games.
- *
- * Revision 1.16  1994/12/11  12:37:22  mike
- * make control center smarter about firing at cloaked player, don't fire through self, though
- * it still looks that way due to prioritization problems.
- *
- * Revision 1.15  1994/12/01  11:34:33  mike
- * fix control center shield strength in multiplayer team games.
- *
- * Revision 1.14  1994/11/30  15:44:29  mike
- * make cntrlcen harder at higher levels.
- *
- * Revision 1.13  1994/11/29  22:26:23  yuan
- * Fixed boss bug.
- *
- * Revision 1.12  1994/11/27  23:12:31  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.11  1994/11/23  17:29:38  mike
- * deal with peculiarities going between net and regular game on boss level.
- *
- * Revision 1.10  1994/11/18  18:27:15  rob
- * Fixed some bugs with the last version.
- *
- * Revision 1.9  1994/11/18  17:13:59  mike
- * special case handling for level 8.
- *
- * Revision 1.8  1994/11/15  12:45:28  mike
- * don't let cntrlcen know where a cloaked player is.
- *
- * Revision 1.7  1994/11/08  12:18:37  mike
- * small explosions on control center.
- *
- * Revision 1.6  1994/11/02  17:59:18  rob
- * Changed control centers so they can find people in network games.
- * Side effect of this is that control centers can find cloaked players.
- * (see in-code comments for explanation).
- * Also added network hooks so control center shots 'sync up'.
- *
- * Revision 1.5  1994/10/22  14:13:21  mike
- * Make control center stop firing shortly after player dies.
- * Fix bug: If play from editor and die, tries to initialize non-control center tObject.
- *
- * Revision 1.4  1994/10/20  15:17:30  mike
- * Hack for control center inside boss robot.
- *
- * Revision 1.3  1994/10/20  09:47:46  mike
- * lots stuff.
- *
- * Revision 1.2  1994/10/17  21:35:09  matt
- * Added support for new Control Center/Main Reactor
- *
- * Revision 1.1  1994/10/17  20:24:01  matt
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -165,15 +73,15 @@ Assert (objP->renderType==RT_POLYOBJ);
 reactor = &gameData.reactor.reactors[objP->id];
 Assert (gun_num < reactor->nGuns);
 //instance gun position & orientation
-VmCopyTransposeMatrix (&m,&objP->orient);
+VmCopyTransposeMatrix (&m,&objP->position.mOrient);
 VmVecRotate (gun_point,&reactor->gunPoints[gun_num],&m);
-VmVecInc (gun_point,&objP->pos);
+VmVecInc (gun_point,&objP->position.vPos);
 VmVecRotate (vGunDir,&reactor->gun_dirs[gun_num],&m);
 }
 
 //	-----------------------------------------------------------------------------
 //	Look at control center guns, find best one to fire at *objP.
-//	Return best gun number (one whose direction dotted with vector to player is largest).
+//	Return best gun number (one whose direction dotted with vector to tPlayer is largest).
 //	If best gun has negative dot, return -1, meaning no gun is good.
 int CalcBestReactorGun (int nGunCount, vmsVector *vGunPos, vmsVector *vGunDir, vmsVector *vObjPos)
 {
@@ -246,7 +154,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 		}
 	}
 
-//	Control center destroyed, rock the player's ship.
+//	Control center destroyed, rock the tPlayer's ship.
 fc = gameData.reactor.countdown.nSecsLeft;
 if (fc > 16)
 	fc = 16;
@@ -363,14 +271,14 @@ if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know to deal with cloaked dudes.  It
-		// seems to work in single-player mode because it is actually using
+		// seems to work in single-tPlayer mode because it is actually using
 		// the value of Believed_player_position that was set by the last
 		// person to go through ai_do_frame.  But since a no-robots game
 		// never goes through ai_do_frame, I'm making it so the control
 		// center can spot cloaked dudes.
 
 		if (gameData.app.nGameMode & GM_MULTI)
-			gameData.ai.vBelievedPlayerPos = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos;
+			gameData.ai.vBelievedPlayerPos = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -380,27 +288,27 @@ if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 		if (i == MAX_SIDES_PER_SEGMENT)
 			return;
 
-		VmVecSub (&vecToPlayer, &gameData.objs.console->pos, &objP->pos);
+		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
 		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
 		if (xDistToPlayer < F1_0*200) {
-			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vecToPlayer);
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			gameData.reactor.nNextFireTime = 0;
 			}
 		}			
 	return;
 	}
 
-//	Periodically, make the reactor fall asleep if player not visible.
+//	Periodically, make the reactor fall asleep if tPlayer not visible.
 if (gameData.reactor.bHit || gameData.reactor.bSeenPlayer) {
 	if ((LastTime_cc_vis_check + F1_0*5 < gameData.time.xGame) || (LastTime_cc_vis_check > gameData.time.xGame)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 
-		VmVecSub (&vecToPlayer, &gameData.objs.console->pos, &objP->pos);
+		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
 		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
 		LastTime_cc_vis_check = gameData.time.xGame;
 		if (xDistToPlayer < F1_0*120) {
-			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->pos, 0, &vecToPlayer);
+			gameData.reactor.bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			if (!gameData.reactor.bSeenPlayer)
 				gameData.reactor.bHit = 0;
 			}
@@ -411,7 +319,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
 		nBestGun = CalcBestReactorGun (nReactorGuns, Gun_pos, Gun_dir, &gameData.ai.vBelievedPlayerPos);
 	else
-		nBestGun = CalcBestReactorGun (nReactorGuns, Gun_pos, Gun_dir, &gameData.objs.console->pos);
+		nBestGun = CalcBestReactorGun (nReactorGuns, Gun_pos, Gun_dir, &gameData.objs.console->position.vPos);
 
 	if (nBestGun != -1) {
 		int			nRandProb, count;
@@ -424,7 +332,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			} 
 		else {
-			VmVecSub (&vecToGoal, &gameData.objs.console->pos, &Gun_pos[nBestGun]);
+			VmVecSub (&vecToGoal, &gameData.objs.console->position.vPos, &Gun_pos[nBestGun]);
 			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			}
 		if (xDistToPlayer > F1_0*300) {
@@ -437,7 +345,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));	
 #endif
 		CreateNewLaserEasy (&vecToGoal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
-		//	some of time, based on level, fire another thing, not directly at player, so it might hit him if he's constantly moving.
+		//	some of time, based on level, fire another thing, not directly at tPlayer, so it might hit him if he's constantly moving.
 		nRandProb = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
 		count = 0;
 		while ((d_rand () > nRandProb) && (count < 4)) {
@@ -456,7 +364,7 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
 		if (gameStates.app.nDifficultyLevel == 0)
 			xDeltaFireTime += F1_0/2;
-		if (gameData.app.nGameMode & GM_MULTI) // slow down rate of fire in multi player
+		if (gameData.app.nGameMode & GM_MULTI) // slow down rate of fire in multi tPlayer
 			xDeltaFireTime *= 2;
 		gameData.reactor.nNextFireTime = xDeltaFireTime;
 		}

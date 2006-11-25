@@ -238,7 +238,7 @@ VmVecScaleAdd (&gameData.render.terrain.vStartPoint, vOrgPoint, &surface_orient.
 						-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 VmVecScaleInc (&gameData.render.terrain.vStartPoint, &surface_orient.fVec, 
 						-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
-VmVecSub (&tv, &gameData.objs.viewer->pos, &gameData.render.terrain.vStartPoint);
+VmVecSub (&tv, &gameData.objs.viewer->position.vPos, &gameData.render.terrain.vStartPoint);
 iViewer = VmVecDot (&tv, &surface_orient.rVec) / TERRAIN_GRID_SCALE;
 jViewer = VmVecDot (&tv, &surface_orient.fVec) / TERRAIN_GRID_SCALE;
 G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);

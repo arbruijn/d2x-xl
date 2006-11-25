@@ -12,131 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions for loading mines in the game
- *
- * Old Log:
- * Revision 1.2  1995/10/31  10:15:58  allender
- * code for shareware levels
- *
- * Revision 1.1  1995/05/16  15:25:29  allender
- * Initial revision
- *
- * Revision 2.2  1995/03/06  15:23:14  john
- * New screen techniques.
- *
- * Revision 2.1  1995/02/27  13:13:37  john
- * Removed floating point.
- *
- * Revision 2.0  1995/02/27  11:27:45  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.70  1995/02/13  20:35:09  john
- * Lintized
- *
- * Revision 1.69  1995/02/07  17:12:03  rob
- * Added ifdef's for Editor.
- *
- * Revision 1.68  1995/02/07  16:51:48  mike
- * fix gray rock josh problem.
- *
- * Revision 1.67  1995/02/01  15:46:26  yuan
- * Fixed matcen_nums.
- *
- * Revision 1.66  1995/01/19  15:19:28  mike
- * new super-compressed registered file format.
- *
- * Revision 1.65  1994/12/10  16:44:59  matt
- * Added debugging code to track down door that turns into rock
- *
- * Revision 1.64  1994/12/10  14:58:24  yuan
- * *** empty log message ***
- *
- * Revision 1.63  1994/12/08  17:19:10  yuan
- * Cfiling stuff.
- *
- * Revision 1.62  1994/12/07  14:05:33  yuan
- * Fixed wall assert problem... Bashed highest_segment
- * _index before WALL_IS_DOORWAY check.
- *
- * Revision 1.61  1994/11/27  23:14:52  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.60  1994/11/27  18:05:20  matt
- * Compile out LVL reader when editor compiled out
- *
- * Revision 1.59  1994/11/26  22:51:45  matt
- * Removed editor-only fields from tSegment structure when editor is compiled
- * out, and padded tSegment structure to even multiple of 4 bytes.
- *
- * Revision 1.58  1994/11/26  21:48:02  matt
- * Fixed saturation in short light value
- *
- * Revision 1.57  1994/11/20  22:11:49  mike
- * comment out an apparently unnecessary call to FuelCenReset ().
- *
- * Revision 1.56  1994/11/18  21:56:42  john
- * Added a better, leaner pig format.
- *
- * Revision 1.55  1994/11/17  20:09:18  john
- * Added new compiled level format.
- *
- * Revision 1.54  1994/11/17  15:40:17  mike
- * Comment out con_printf which was causing important information to scroll away.
- *
- * Revision 1.53  1994/11/17  14:56:37  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.52  1994/11/17  11:39:35  matt
- * Ripped out code to load old mines
- *
- * Revision 1.51  1994/11/14  20:47:53  john
- * Attempted to strip out all the code in the game
- * directory that uses any ui code.
- *
- * Revision 1.50  1994/11/14  16:05:38  matt
- * Fixed, maybe, again, errors when can't find texture during remap
- *
- * Revision 1.49  1994/11/14  14:34:03  matt
- * Fixed up handling when textures can't be found during remap
- *
- * Revision 1.48  1994/11/14  13:01:55  matt
- * Added Int3 () when can't find texture
- *
- * Revision 1.47  1994/10/30  14:12:21  mike
- * rip out local segments stuff.
- *
- * Revision 1.46  1994/10/27  19:43:07  john
- * Disable the piglet option.
- *
- * Revision 1.45  1994/10/27  18:51:42  john
- * Added -piglet option that only loads needed textures for a
- * mine.  Only saved ~1MB, and code still doesn't d_free textures
- * before you load a new mine.
- *
- * Revision 1.44  1994/10/20  12:47:22  matt
- * Replace old save files (MIN/SAV/HOT) with new LVL files
- *
- * Revision 1.43  1994/10/19  16:46:40  matt
- * Made tmap overrides for robots remap texture numbers
- *
- * Revision 1.42  1994/10/03  23:37:01  mike
- * Adapt to changed FuelCenActivate parameters.
- *
- * Revision 1.41  1994/09/23  22:14:49  matt
- * Took out obsolete structure fields
- *
- * Revision 1.40  1994/08/01  11:04:11  yuan
- * New materialization centers.
- *
- * Revision 1.39  1994/07/21  19:01:47  mike
- * Call Lsegment stuff.
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -244,10 +119,10 @@ struct mfi_v19 {
 	int     texture_offset;
 	int     texture_howmany;
 	int     texture_sizeof;
-	game_item_info	walls;
-	game_item_info	triggers;
-	game_item_info	links;
-	game_item_info	tObject;
+	tGameItemInfo	walls;
+	tGameItemInfo	triggers;
+	tGameItemInfo	links;
+	tGameItemInfo	tObject;
 	int     unused_offset;      // was: doors.offset
 	int     unused_howmamy;     // was: doors.count
 	int     unused_sizeof;      // was: doors.size
@@ -255,8 +130,8 @@ struct mfi_v19 {
 	short   level_shake_duration;   // for level_shake_duration seconds (on average, random).  In 16ths second.
 	int     secret_return_segment;
 	vmsMatrix  secret_return_orient;
-	game_item_info	lightDeltaIndices;
-	game_item_info	lightDeltas;
+	tGameItemInfo	lightDeltaIndices;
+	tGameItemInfo	lightDeltas;
 };
 
 int CreateDefaultNewSegment ();
@@ -581,9 +456,9 @@ int load_mine_data (CFILE *loadFile)
  	mine_fileinfo.triggers.offset	  =	-1;
 	mine_fileinfo.triggers.count  =	0;
 	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);  
-	mine_fileinfo.tObject.offset		=	-1;
-	mine_fileinfo.tObject.count		=	1;
-	mine_fileinfo.tObject.size		=	sizeof (tObject);  
+	mine_fileinfo.object.offset		=	-1;
+	mine_fileinfo.object.count		=	1;
+	mine_fileinfo.object.size		=	sizeof (tObject);  
 
 	mine_fileinfo.level_shake_frequency		=	0;
 	mine_fileinfo.level_shake_duration		=	0;
@@ -952,7 +827,7 @@ int load_mine_data (CFILE *loadFile)
 	gameData.segs.nLastVertex = gameData.segs.nVertices-1;
 	gameData.segs.nLastSegment = gameData.segs.nSegments-1;
 
-	ResetObjects (1);		//one tObject, the player
+	ResetObjects (1);		//one tObject, the tPlayer
 
 	#ifdef EDITOR
 	gameData.segs.nLastVertex = MAX_SEGMENT_VERTICES-1;
@@ -1384,7 +1259,7 @@ if (gameStates.app.bD2XLevel) {
 	pc = &gameData.render.color.lights [0][0] + i;
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
-#if 0 //SHADOWS
+#if 0//SHADOWS
 		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
 #endif
 		}
@@ -1393,7 +1268,7 @@ else {
 #else
 	{
 #endif
-#if 0 //SHADOWS
+#if 0//SHADOWS
 	tSegment	*segP;
 	tSide		*sideP;
 	int		h;
@@ -1402,7 +1277,7 @@ else {
 	segP = gameData.segs.segments + i;
 	for (i = 0; i < j; i++, segP++)
 		for (h = 0, sideP = segP->sides; h < 6; h++, sideP++)
-			if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex))
+			if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTexf))
 				RegisterLight (NULL, (short) i, (short) h);
 #endif
 	}
@@ -1676,7 +1551,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-ResetObjects (1);		//one tObject, the player
+ResetObjects (1);		//one tObject, the tPlayer
 #if !SHADOWS
 if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) 
 #endif

@@ -66,7 +66,7 @@ byte	gameData.objs.types.nType.nId [MAX_OBJTYPE];
 fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 #endif
 
-//right now there's only one player ship, but we can have another by
+//right now there's only one tPlayer ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 
 //---------------- Variables for wall textures ------------------
@@ -273,7 +273,7 @@ BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, fp)
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 
-/*---*/LogErr ("      Loading player ship description\n");
+/*---*/LogErr ("      Loading tPlayer ship description\n");
 PlayerShipRead (&gameData.pig.ship.only, fp);
 
 gameData.models.nCockpits = CFReadInt (fp);

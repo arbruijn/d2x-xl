@@ -1403,10 +1403,10 @@ int med_delete_segment(tSegment *sp)
 		for (nObject=sp->objects;nObject!=-1;nObject=gameData.objs.objects[nObject].next) 	{
 
 			//if an tObject is in the seg, delete it
-			//if the tObject is the player, move to new curseg
+			//if the tObject is the tPlayer, move to new curseg
 
 			if (nObject == (OBJ_IDX (gameData.objs.console)))	{
-				COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,Cursegp);
+				COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,Cursegp);
 				RelinkObject(nObject,CurSEG_IDX (segp));
 			} else
 				ReleaseObject(nObject);
@@ -1951,7 +1951,7 @@ int create_new_mine(void)
 	gameData.missions.szCurrentLevel[0] = 0;
 
 	CurObject_index = -1;
-	ResetObjects(1);		//just one tObject, the player
+	ResetObjects(1);		//just one tObject, the tPlayer
 
 	num_groups = 0;
 	current_group = -1;

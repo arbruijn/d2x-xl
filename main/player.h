@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Structure information for the player
+ * Structure information for the tPlayer
  *
  * Old Log:
  * Revision 1.1  1995/05/16  16:01:11  allender
@@ -40,34 +40,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed netKillsLevel to netKilledTotal.
  *
  * Revision 1.36  1994/11/14  17:20:33  rob
- * Bumped player file version.
+ * Bumped tPlayer file version.
  *
  * Revision 1.35  1994/11/04  19:55:06  rob
  * Changed a previously unused pad character to represent whether or not
- * the player is connected to a net game (used to be nObject=-1 but we
+ * the tPlayer is connected to a net game (used to be nObject=-1 but we
  * want to keep the nObject info in case of re-joins)
  *
  * Revision 1.34  1994/10/22  14:13:54  mike
- * Add homingObjectDist field to player struct.
+ * Add homingObjectDist field to tPlayer struct.
  *
  * Revision 1.33  1994/10/22  00:08:45  matt
  * Fixed up problems with bonus & game sequencing
  * Player doesn't get credit for hostages unless he gets them out alive
  *
  * Revision 1.32  1994/10/21  20:43:03  mike
- * Add hostages_on_board to player struct.
+ * Add hostages_on_board to tPlayer struct.
  *
  * Revision 1.31  1994/10/19  20:00:00  john
  * Added bonus points at the end of level based on skill level.
  *
  * Revision 1.30  1994/10/19  15:14:24  john
- * Took % hits out of player structure, made %kills work properly.
+ * Took % hits out of tPlayer structure, made %kills work properly.
  *
  * Revision 1.29  1994/10/19  12:12:27  john
  * Added hour variable.
  *
  * Revision 1.28  1994/10/17  17:24:48  john
- * Added startingLevel to player struct.
+ * Added startingLevel to tPlayer struct.
  *
  * Revision 1.27  1994/10/13  15:42:02  mike
  * Remove afterburner.
@@ -76,10 +76,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Lower number of players from 10 to 8.
  *
  * Revision 1.25  1994/10/09  14:53:26  matt
- * Made player cockpit state & window size save/restore with saved games & automap
+ * Made tPlayer cockpit state & window size save/restore with saved games & automap
  *
  * Revision 1.24  1994/10/08  20:24:10  matt
- * Added difficulty level to player structure for game load/save
+ * Added difficulty level to tPlayer structure for game load/save
  *
  * Revision 1.23  1994/10/05  17:39:53  rob
  * Changed nKillerObj to a short (was char)
@@ -104,24 +104,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up thrust vars, changing a few names
  *
  * Revision 1.16  1994/09/09  14:22:45  matt
- * Added extra gun for player
+ * Added extra gun for tPlayer
  *
  * Revision 1.15  1994/09/07  13:30:11  john
  * Added code to tell how many packets were lost.
  *
  * Revision 1.14  1994/09/02  11:56:33  mike
- * Alignment on the player struct.
+ * Alignment on the tPlayer struct.
  *
  * Revision 1.13  1994/08/25  18:12:05  matt
- * Made player's weapons and flares fire from the positions on the 3d model.
+ * Made tPlayer's weapons and flares fire from the positions on the 3d model.
  * Also added support for quad lasers.
  *
  * Revision 1.12  1994/08/22  15:49:40  mike
  * change spelling on num_missles -> num_missiles.
  *
  * Revision 1.11  1994/08/18  10:47:32  john
- * Cleaned up game sequencing and player death stuff
- * in preparation for making the player explode into
+ * Cleaned up game sequencing and tPlayer death stuff
+ * in preparation for making the tPlayer explode into
  * pieces when dead.
  *
  * Revision 1.10  1994/08/17  16:50:05  john
@@ -138,7 +138,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  *
  * Revision 1.6  1994/07/13  00:15:05  matt
- * Moved all (or nearly all) of the values that affect player movement to
+ * Moved all (or nearly all) of the values that affect tPlayer movement to
  * bitmaps.tbl
  *
  * Revision 1.5  1994/07/08  21:44:17  matt
@@ -152,7 +152,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up includes
  *
  * Revision 1.2  1994/07/02  13:10:03  matt
- * Moved player stats struct from gameseq.h to player.h
+ * Moved tPlayer stats struct from gameseq.h to player.h
  *
  * Revision 1.1  1994/07/02  11:00:43  matt
  * Initial revision
@@ -170,7 +170,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_PLAYERS 8
 #define MAX_MULTI_PLAYERS MAX_PLAYERS+3
 
-// Initial player stat values
+// Initial tPlayer stat values
 #define INITIAL_ENERGY  i2f(100)    // 100% energy to start
 #define INITIAL_SHIELDS i2f(100)    // 100% shields to start
 
@@ -201,11 +201,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AFTERBURNER_MAX_TIME    (F1_0*5)    // Max time afterburner can be on.
 #define CALLSIGN_LEN                8       // so can use as filename (was: 12)
 
-// Amount of time player is cloaked.
+// Amount of time tPlayer is cloaked.
 #define CLOAK_TIME_MAX          (F1_0*30)
 #define INVULNERABLE_TIME_MAX   (F1_0*30)
 
-#define PLAYER_STRUCT_VERSION   17  // increment this every time player struct changes
+#define PLAYER_STRUCT_VERSION   17  // increment this every time tPlayer struct changes
 
 // defines for teams
 #define TEAM_BLUE   0
@@ -213,12 +213,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
-typedef struct player {
+typedef struct tPlayer {
 	// Who am I data
-	char    callsign[CALLSIGN_LEN+1];   // The callsign of this player, for net purposes.
-	ubyte   netAddress[6];         // The network address of the player.
-	sbyte   connected;              // Is the player connected or not?
-	int     nObject;                 // What tObject number this player is. (made an int by mk because it's very often referenced)
+	char    callsign[CALLSIGN_LEN+1];   // The callsign of this tPlayer, for net purposes.
+	ubyte   netAddress[6];         // The network address of the tPlayer.
+	sbyte   connected;              // Is the tPlayer connected or not?
+	int     nObject;                 // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -229,12 +229,12 @@ typedef struct player {
 	fix     energy;                 // Amount of energy remaining.
 	fix     shields;                // shields remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
+	sbyte   level;                  // Current level tPlayer is playing. (must be signed for secret levels)
 	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the player started on.
+	sbyte   startingLevel;         // What level the tPlayer started on.
 	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ushort  primaryWeaponFlags;   // bit set indicates the player has this weapon.
-	ushort  secondaryWeaponFlags; // bit set indicates the player has this weapon.
+	ushort  primaryWeaponFlags;   // bit set indicates the tPlayer has this weapon.
+	ushort  secondaryWeaponFlags; // bit set indicates the tPlayer has this weapon.
 	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
 	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 #if 1 //for inventory system
@@ -268,7 +268,7 @@ typedef struct player {
 	fix     homingObjectDist;     // Distance of nearest homing tObject.
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
-} __pack__ player;
+} __pack__ tPlayer;
 
 
 //version 16 structure
@@ -278,10 +278,10 @@ typedef struct player {
 
 typedef struct player16 {
 	// Who am I data
-	char    callsign[CALLSIGN_LEN+1]; // The callsign of this player, for net purposes.
-	ubyte   netAddress[6];         // The network address of the player.
-	sbyte   connected;              // Is the player connected or not?
-	int     nObject;                 // What tObject number this player is. (made an int by mk because it's very often referenced)
+	char    callsign[CALLSIGN_LEN+1]; // The callsign of this tPlayer, for net purposes.
+	ubyte   netAddress[6];         // The network address of the tPlayer.
+	sbyte   connected;              // Is the tPlayer connected or not?
+	int     nObject;                 // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
 	int     nPacketsGot;          // How many packets we got from them
 	int     nPacketsSent;         // How many packets we sent to them
 
@@ -292,12 +292,12 @@ typedef struct player16 {
 	fix     energy;                 // Amount of energy remaining.
 	fix     shields;                // shields remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
+	sbyte   level;                  // Current level tPlayer is playing. (must be signed for secret levels)
 	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the player started on.
+	sbyte   startingLevel;         // What level the tPlayer started on.
 	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ubyte   primaryWeaponFlags;   // bit set indicates the player has this weapon.
-	ubyte   secondaryWeaponFlags; // bit set indicates the player has this weapon.
+	ubyte   primaryWeaponFlags;   // bit set indicates the tPlayer has this weapon.
+	ubyte   secondaryWeaponFlags; // bit set indicates the tPlayer has this weapon.
 	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
 	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
 

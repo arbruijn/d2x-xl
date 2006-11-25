@@ -64,7 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Increased maximum number of games
  *
  * Revision 1.13  1994/08/25  18:12:13  matt
- * Made player's weapons and flares fire from the positions on the 3d model.
+ * Made tPlayer's weapons and flares fire from the positions on the 3d model.
  * Also added support for quad lasers.
  *
  * Revision 1.12  1994/08/23  16:37:24  mike
@@ -173,22 +173,22 @@ typedef struct tRobotInfo {
 	fix     strength;       // Initial shields of robot
 	fix     mass;           // how heavy is this thing?
 	fix     drag;           // how much drag does it have?
-	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
+	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see tPlayer
 	fix     primaryFiringWait[NDL];   //  time in seconds between shots
 	fix     secondaryFiringWait[NDL];  //  time in seconds between shots
 	fix     turnTime[NDL];     // time in seconds to rotate 360 degrees in a dimension
 // -- unused, mk, 05/25/95  fix fire_power[NDL];    //  damage done by a hit from this robot
 // -- unused, mk, 05/25/95  fix shield[NDL];        //  shield strength of this robot
 	fix     xMaxSpeed[NDL];         //  maximum speed attainable by this robot
-	fix     circleDistance[NDL];   //  distance at which robot circles player
+	fix     circleDistance[NDL];   //  distance at which robot circles tPlayer
 
 	sbyte   nRapidFireCount[NDL];   //  number of shots fired rapidly
 	sbyte   evadeSpeed[NDL];       //  rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte   cloakType;     //  0=never, 1=always, 2=except-when-firing
 	sbyte   attackType;    //  0=firing, 1=charge (like green guy)
 
-	ubyte   seeSound;      //  sound robot makes when it first sees the player
-	ubyte   attackSound;   //  sound robot makes when it attacks the player
+	ubyte   seeSound;      //  sound robot makes when it first sees the tPlayer
+	ubyte   attackSound;   //  sound robot makes when it attacks the tPlayer
 	ubyte   clawSound;     //  sound robot makes as it claws you (attackType should be 1)
 	ubyte   tauntSound;    //  sound robot makes after you die
 
@@ -198,7 +198,7 @@ typedef struct tRobotInfo {
 	sbyte   energyBlobs;   //  how many smart blobs are emitted when this guy gets hit by energy weapon!
 
 	sbyte   thief;          //  !0 means this guy can steal when he collides with you!
-	sbyte   pursuit;        //  !0 means pursues player after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
+	sbyte   pursuit;        //  !0 means pursues tPlayer after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
 	sbyte   lightcast;      //  Amount of light cast. 1 is default.  10 is very large.
 	sbyte   bDeathRoll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
 
@@ -239,21 +239,21 @@ typedef struct D1Robot_info {
 	fix		mass;										// how heavy is this thing?
 	fix		drag;										// how much drag does it have?
 
-	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see player
+	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see tPlayer
 	fix		primaryFiringWait[NDL];						//	time in seconds between shots
 	fix		turnTime[NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
 	fix		xMaxSpeed[NDL];						//	maximum speed attainable by this robot
-	fix		circleDistance[NDL];				//	distance at which robot circles player
+	fix		circleDistance[NDL];				//	distance at which robot circles tPlayer
 
 	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
 	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte		cloakType;								//	0=never, 1=always, 2=except-when-firing
 	sbyte		attackType;							//	0=firing, 1=charge (like green guy)
 	sbyte		bossFlag;								//	0 = not boss, 1 = boss.  Is that surprising?
-	ubyte		seeSound;								//	sound robot makes when it first sees the player
-	ubyte		attackSound;							//	sound robot makes when it attacks the player
+	ubyte		seeSound;								//	sound robot makes when it first sees the tPlayer
+	ubyte		attackSound;							//	sound robot makes when it attacks the tPlayer
 	ubyte		clawSound;								//	sound robot makes as it claws you (attackType should be 1)
 
 	//animation info

@@ -235,7 +235,7 @@ width = FixMul(width,viewInfo.scale.x);
 height = FixMul(height,viewInfo.scale.y);
 for (i = 0; i < 4; i++) {
 	VmVecSub(&v1,pos,&viewInfo.position);
-	VmVecRotate(&pv,&v1,&viewInfo.view);
+	VmVecRotate(&pv,&v1,&viewInfo.view [0]);
 	switch (i) {
 		case 0:
 			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0, 0.0);

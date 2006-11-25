@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added functional reticle
  *
  * Revision 1.19  1994/10/04  21:41:29  matt
- * Added cloaked player gauge effect, and different ship bitmap for each player
+ * Added cloaked tPlayer gauge effect, and different ship bitmap for each tPlayer
  *
  * Revision 1.18  1994/09/26  13:29:40  matt
  * Added extra life each 100,000 points, and show icons on HUD for num lives

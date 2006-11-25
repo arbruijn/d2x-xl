@@ -1,4 +1,4 @@
-/* $Id: render.c,v 1.18 2003/10/10 09:36:35 btb Exp $ */
+/* $Id: render.c, v 1.18 2003/10/10 09:36:35 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -71,6 +71,7 @@ extern tFaceColor tMapColor, lightColor, vertColors [4];
 extern tRgbColorf globalDynColor;
 extern char bGotGlobalDynColor;
 char bUseGlobalColor = 0;
+extern int bShadowTest;
 
 #define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in tSegment of occurence (of light emission)
 
@@ -96,8 +97,8 @@ vmsVector viewerEye;  //valid during render
 int	nRenderSegs;
 static int renderState = -1;
 
-fix nRenderZoom = 0x9000;					//the player's zoom factor
-fix Render_zoom_scale = 1;					//the player's zoom factor
+fix nRenderZoom = 0x9000;					//the tPlayer's zoom factor
+fix Render_zoom_scale = 1;					//the tPlayer's zoom factor
 
 #ifdef _DEBUG
 ubyte bObjectRendered [MAX_OBJECTS];
@@ -117,14 +118,14 @@ fix	Face_reflectivity = (F1_0/2);
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
-int bSearchMode = 0;			//true if looking for curseg,tSide,face
-short _search_x,_search_y;	//pixel we're looking at
-int found_seg,found_side,found_face,found_poly;
+int bSearchMode = 0;			//true if looking for curseg, tSide, face
+short _search_x, _search_y;	//pixel we're looking at
+int found_seg, found_side, found_face, found_poly;
 #else
 #define bSearchMode 0
 #endif
 
-int	bOutLineMode = 0,
+int	bOutLineMode = 0, 
 		bShowOnlyCurSide = 0;
 
 //------------------------------------------------------------------------------
@@ -169,13 +170,13 @@ for (i = 0; i < nv; i++) {
 	n.x = (fix) (nf->p.x * 65536.0f);
 	n.y = (fix) (nf->p.y * 65536.0f);
 	n.z = (fix) (nf->p.z * 65536.0f);
-	G3RotatePoint (&n, &n);
+	G3RotatePoint (&n, &n, 0);
 	VmVecScaleAdd (&normal.p3_vec, &pointlist [i]->p3_vec, &n, F1_0 * 10);
 	G3DrawLine (pointlist [i], &normal);
 	}
 VmVecNormal (&normal.p3_vec, 
-				 &pointlist [0]->p3_vec,
-				 &pointlist [1]->p3_vec,
+				 &pointlist [0]->p3_vec, 
+				 &pointlist [1]->p3_vec, 
 				 &pointlist [2]->p3_vec);
 VmVecInc (&normal.p3_vec, &center.p3_vec);
 VmVecScale (&normal.p3_vec, F1_0 * 10);
@@ -191,8 +192,8 @@ void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticle_canvas)	{
 	LogErr ("unloading reticle data\n");
-	d_free( reticle_canvas->cv_bitmap.bm_texBuf );
-	d_free( reticle_canvas );
+	d_free( reticle_canvas->cv_bitmap.bm_texBuf);
+	d_free( reticle_canvas);
 	reticle_canvas	= NULL;
 	}
 }
@@ -228,30 +229,30 @@ uvl [2].u =
 uvl [2].v =
 uvl [3].v = F1_0;
 
-VmVecScaleAdd( &v1,&gameData.objs.viewer->pos, &gameData.objs.viewer->orient.fVec, F1_0*4 );
-VmVecScaleInc(&v1,&gameData.objs.viewer->orient.rVec,nEyeOffset);
+VmVecScaleAdd( &v1, &gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient.fVec, F1_0*4);
+VmVecScaleInc(&v1, &gameData.objs.viewer->position.mOrient.rVec, nEyeOffset);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, -F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, F1_0*1 );
-G3TransformAndEncodePoint(reticlePoints,&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->position.mOrient.rVec, -F1_0*1);
+VmVecScaleInc( &v2, &gameData.objs.viewer->position.mOrient.uVec, F1_0*1);
+G3TransformAndEncodePoint(reticlePoints, &v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, +F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, F1_0*1 );
-G3TransformAndEncodePoint(reticlePoints + 1,&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->position.mOrient.rVec, +F1_0*1);
+VmVecScaleInc( &v2, &gameData.objs.viewer->position.mOrient.uVec, F1_0*1);
+G3TransformAndEncodePoint(reticlePoints + 1, &v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, +F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, -F1_0*1 );
-G3TransformAndEncodePoint(reticlePoints + 2,&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->position.mOrient.rVec, +F1_0*1);
+VmVecScaleInc( &v2, &gameData.objs.viewer->position.mOrient.uVec, -F1_0*1);
+G3TransformAndEncodePoint(reticlePoints + 2, &v2);
 
-VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->orient.rVec, -F1_0*1 );
-VmVecScaleInc( &v2, &gameData.objs.viewer->orient.uVec, -F1_0*1 );
-G3TransformAndEncodePoint(reticlePoints + 3,&v2);
+VmVecScaleAdd( &v2, &v1, &gameData.objs.viewer->position.mOrient.rVec, -F1_0*1);
+VmVecScaleInc( &v2, &gameData.objs.viewer->position.mOrient.uVec, -F1_0*1);
+G3TransformAndEncodePoint(reticlePoints + 3, &v2);
 
-if ( reticle_canvas == NULL )	{
-	reticle_canvas = GrCreateCanvas(64,64);
-	if ( !reticle_canvas )
-		Error( "Couldn't d_malloc reticle_canvas" );
-	atexit( FreeReticleCanvas );
+if ( reticle_canvas == NULL)	{
+	reticle_canvas = GrCreateCanvas(64, 64);
+	if ( !reticle_canvas)
+		Error( "Couldn't d_malloc reticle_canvas");
+	atexit( FreeReticleCanvas);
 	//reticle_canvas->cv_bitmap.bm_handle = 0;
 	reticle_canvas->cv_bitmap.bm_props.flags = BM_FLAG_TRANSPARENT;
 	}
@@ -280,9 +281,9 @@ if (!gameData.reactor.bDestroyed && !gameStates.gameplay.seismic.nMagnitude)
 	return;
 if (gameStates.app.bEndLevelSequence)
 	return;
-if (gameStates.ogl.palAdd.blue > 10 )		//whiting out
+if (gameStates.ogl.palAdd.blue > 10)		//whiting out
 	return;
-//	flash_ang += FixMul(FLASH_CYCLE_RATE,gameData.time.xFrame);
+//	flash_ang += FixMul(FLASH_CYCLE_RATE, gameData.time.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix	added_flash;
 
@@ -291,12 +292,12 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 		added_flash *= 16;
 
 	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, added_flash+F1_0));
-	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
+	fix_fastsincos(flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
 else {
-	flash_ang += FixMul(gameStates.render.nFlashRate,gameData.time.xFrame);
-	fix_fastsincos(flash_ang,&gameStates.render.nFlashScale,NULL);
+	flash_ang += FixMul(gameStates.render.nFlashRate, gameData.time.xFrame);
+	fix_fastsincos(flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
 	if (gameStates.app.nDifficultyLevel == 0)
 		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
@@ -323,7 +324,7 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 		if (owner == 1)
 			G3DrawPolyAlpha (nv, pointlist, 0, 0, 0.5, -1);		//draw as flat poly
 		else
-			G3DrawPolyAlpha (nv,pointlist, 0.5, 0, 0, -1);		//draw as flat poly
+			G3DrawPolyAlpha (nv, pointlist, 0.5, 0, 0, -1);		//draw as flat poly
 		}
 	}
 else if (special == SEGMENT_IS_WATER) {
@@ -332,7 +333,7 @@ else if (special == SEGMENT_IS_WATER) {
 	}
 else if (special == SEGMENT_IS_LAVA) {
 	if ((csegnum < 0) || (gameData.segs.segment2s [csegnum].special != SEGMENT_IS_LAVA))
-		G3DrawPolyAlpha (nv,pointlist, 0.5, 0, 0, -1);		//draw as flat poly
+		G3DrawPolyAlpha (nv, pointlist, 0.5, 0, 0, -1);		//draw as flat poly
 	}
 else
 	funcRes = 0;
@@ -449,7 +450,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			}
 #endif
 		if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
-			propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale,propsP->uvls [i].l);
+			propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale, propsP->uvls [i].l);
 		}
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
@@ -531,8 +532,8 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 		if (pvc->index)
 			ScaleColor (pvc, f2fl (propsP->uvls [i].l));
 		}
-	//add in light from player's headlight
-	// -- Using new headlight system...propsP->uvls [i].l += compute_headlight_light(&gameData.segs.points [propsP->vp [i]].p3_vec,face_light);
+	//add in light from tPlayer's headlight
+	// -- Using new headlight system...propsP->uvls [i].l += compute_headlight_light(&gameData.segs.points [propsP->vp [i]].p3_vec, face_light);
 	//saturate at max value
 	if (propsP->uvls [i].l > MAX_LIGHT)
 		propsP->uvls [i].l = MAX_LIGHT;
@@ -738,11 +739,11 @@ Assert(props.nv <= 4);
 		pc->bVisible = 1;
 	if (RenderWall (&props, pointlist, bIsMonitor))
 		return;
-	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->orient.fVec,norm);
+	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->position.mOrient.fVec, norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
 		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 #if TRACE	
-			//con_printf (CON_DEBUG,"Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n",tmap1,gameData.pig.tex.nTextures);
+			//con_printf (CON_DEBUG, "Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n", tmap1, gameData.pig.tex.nTextures);
 #endif
 #ifndef RELEASE
 			Int3();
@@ -792,14 +793,14 @@ Assert(props.nv <= 4);
 	SetFaceLight (&props);
 #ifdef EDITOR
 	if (Render_only_bottom && (nSide == WBOTTOM))
-		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index,1);
+		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
 	else
 #endif
 #ifdef OGL
 	if (bmTop)
 		G3DrawTexPolyMulti (
 			props.nv, 
-			pointlist,
+			pointlist, 
 			props.uvls, 
 #if LIGHTMAPS
 			props.uvl_lMaps, 
@@ -808,36 +809,36 @@ Assert(props.nv <= 4);
 #if LIGHTMAPS
 			lightMaps + props.segNum * 6 + props.sideNum, 
 #endif
-			&props.vNormal,
+			&props.vNormal, 
 			props.nOvlOrient, 
 			!bIsMonitor || bIsTeleCam); 
 	else
 #endif
 #if LIGHTMAPS == 0
 		G3DrawTexPoly (
-			props.nv,
+			props.nv, 
 			pointlist, 
 			props.uvls, 
 			bmBot, 
-			&props.vNormal,
+			&props.vNormal, 
 			!bIsMonitor || bIsTeleCam); 
 #else
 		G3DrawTexPolyMulti (
-			props.nv,
-			pointlist,
+			props.nv, 
+			pointlist, 
 			props.uvls, 
-			props.uvl_lMaps,
-			bmBot,
-			NULL,
+			props.uvl_lMaps, 
+			bmBot, 
+			NULL, 
 			lightMaps + props.segNum * 6 + props.sideNum, 
-			&props.vNormal,
-			0,
+			&props.vNormal, 
+			0, 
 			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
 #endif
 		}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 #ifdef OGL
-		// render the tSegment the player is in with a transparent color if it is a water or lava tSegment
+		// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 		//if (nSegment == gameData.objs.objects->nSegment) 
 # ifdef OGL_ZBUF
 	if (gameOpts->legacy.bZBuf && !gameOpts->legacy.bRender)
@@ -892,8 +893,8 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 		uvl uvlCopy [8];
 		g3sPoint *pointlist [4];
 
-		if (tmap2 > 0 )
-			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient );
+		if (tmap2 > 0)
+			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient);
 		else
 			bm = gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [tmap1].index;
 
@@ -903,15 +904,15 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 		}
 
 		GrSetColor(0);
-		gr_pixel(_search_x,_search_y);	//set our search pixel to color zero
+		gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 		GrSetColor(1);					//and render in color one
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
-		//G3DrawPoly(nv,vp);
-		G3DrawTexPoly(nv,pointlist, (uvl *)uvlCopy, bm, 1);
+		//G3DrawPoly(nv, vp);
+		G3DrawTexPoly(nv, pointlist, (uvl *)uvlCopy, bm, 1);
  gameStates.render.nLighting = save_lighting;
 
-		if (gr_ugpixel(&grdCurCanv->cv_bitmap,_search_x,_search_y) == 1) {
+		if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) == 1) {
 			found_seg = nSegment;
 			found_side = nSide;
 			found_face = facenum;
@@ -955,9 +956,9 @@ void RenderSide (tSegment *segP, short nSide)
 #define	LMAP_SIZE	(1.0 / 16.0)
 
 	static uvl	uvl_lMaps [4] = {
-		{fl2f (LMAP_SIZE), fl2f (LMAP_SIZE), 0},
-		{fl2f (1.0 - LMAP_SIZE), fl2f (LMAP_SIZE), 0},
-		{fl2f (1.0 - LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0},
+		{fl2f (LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
+		{fl2f (1.0 - LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
+		{fl2f (1.0 - LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0}, 
 		{fl2f (LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0}
 	};
 #endif
@@ -1149,7 +1150,7 @@ im_so_ashamed: ;
 				props.uvls [0] = sideP->uvls [0];		
 				props.uvls [1] = sideP->uvls [1];		
 				props.uvls [2] = sideP->uvls [3];
-				props.vp [2] = props.vp [3];		// want to render from vertices 0,1,3
+				props.vp [2] = props.vp [3];		// want to render from vertices 0, 1, 3
 #if LIGHTMAPS
 				if (bDoLightMaps) {
 					props.uvl_lMaps [0] = uvl_lMaps [0];
@@ -1183,19 +1184,19 @@ void renderObject_search(tObject *objP)
 	int changed=0;
 
 	//note that we draw each pixel tObject twice, since we cannot control
-	//what color the tObject draws in, so we try color 0, then color 1,
+	//what color the tObject draws in, so we try color 0, then color 1, 
 	//in case the tObject itself is rendering color 0
 
 	GrSetColor(0);
-	gr_pixel(_search_x,_search_y);	//set our search pixel to color zero
+	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject(objP, 0);
-	if (gr_ugpixel(&grdCurCanv->cv_bitmap,_search_x,_search_y) != 0)
+	if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) != 0)
 		changed=1;
 
 	GrSetColor(1);
-	gr_pixel(_search_x,_search_y);	//set our search pixel to color zero
+	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject(objP, 0);
-	if (gr_ugpixel(&grdCurCanv->cv_bitmap,_search_x,_search_y) != 1)
+	if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) != 1)
 		changed=1;
 
 	if (changed) {
@@ -1208,7 +1209,7 @@ void renderObject_search(tObject *objP)
 
 //------------------------------------------------------------------------------
 
-extern ubyte DemoDoingRight,DemoDoingLeft;
+extern ubyte DemoDoingRight, DemoDoingLeft;
 void DoRenderObject(int nObject, int nWindowNum)
 {
 #ifdef EDITOR
@@ -1241,10 +1242,10 @@ if (!gameOpts->legacy.bZBuf) {
 #endif
    if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 	  if ((DemoDoingLeft==6 || DemoDoingRight==6) && objP->nType==OBJ_PLAYER) {
-			// A nice fat hack: keeps the player ship from showing up in the
+			// A nice fat hack: keeps the tPlayer ship from showing up in the
 			// small extra view when guiding a missile in the big window
 #if TRACE	
-			//con_printf (CON_DEBUG,"Returning from RenderObject prematurely...\n");
+			//con_printf (CON_DEBUG, "Returning from RenderObject prematurely...\n");
 #endif
   			return; 
 			}
@@ -1267,7 +1268,7 @@ if (!gameOpts->legacy.bZBuf) {
 		objP->next = -1;		// won't this clean things up?
 		return;					// get out of this infinite loop!
 	}
-	//g3_drawObject(objP->class_id,&objP->pos,&objP->orient,objP->size);
+	//g3_drawObject(objP->class_id, &objP->position.vPos, &objP->position.mOrient, objP->size);
 	//check for editor tObject
 #ifdef EDITOR
 	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index) {
@@ -1298,8 +1299,8 @@ if (!gameOpts->legacy.bZBuf) {
 
 #ifdef _DEBUG
 int	bDrawBoxes=0;
-int bWindowCheck=1,draw_edges=0,bNewSegSorting=1,bPreDrawSegs=0;
-int no_migrate_segs=1,migrateObjects=1,bCheckBehind=1;
+int bWindowCheck=1, draw_edges=0, bNewSegSorting=1, bPreDrawSegs=0;
+int no_migrate_segs=1, migrateObjects=1, bCheckBehind=1;
 int check_bWindowCheck=0;
 #else
 #define bDrawBoxes			0
@@ -1319,7 +1320,7 @@ int check_bWindowCheck=0;
 void RenderStartFrame()
 {
 if (!++nRLFrameCount) {		//wrap!
-	memset(nRotatedLast,0,sizeof(nRotatedLast));		//clear all to zero
+	memset(nRotatedLast, 0, sizeof(nRotatedLast));		//clear all to zero
 	nRLFrameCount=1;											//and set this frame to 1
 	}
 }
@@ -1330,7 +1331,7 @@ if (!++nRLFrameCount) {		//wrap!
 //by the vertices passed relative to the viewer
 g3s_codes RotateList (int nv, short *pointNumList)
 {
-	int i,pnum;
+	int i, pnum;
 	g3sPoint *pnt;
 	g3s_codes cc;
 
@@ -1357,9 +1358,9 @@ return cc;
 
 // -----------------------------------------------------------------------------------
 //Given a lit of point numbers, project any that haven't been projected
-void ProjectList (int nv,short *pointNumList)
+void ProjectList (int nv, short *pointNumList)
 {
-	int i,pnum;
+	int i, pnum;
 
 for (i=0;i<nv;i++) {
 	pnum = pointNumList [i];
@@ -1441,9 +1442,9 @@ if (!cc.and) {		//all off screen?
 			GetSideVerts (sideVerts, nSegment, sn);
 			dMin = 1e300;
 			for (i = 0; i < 4; i++) {
-				dx = objP->pos.x - gameData.segs.vertices [sideVerts [i]].x;
-				dy = objP->pos.y - gameData.segs.vertices [sideVerts [i]].y;
-				dz = objP->pos.z - gameData.segs.vertices [sideVerts [i]].z;
+				dx = objP->position.vPos.x - gameData.segs.vertices [sideVerts [i]].x;
+				dy = objP->position.vPos.y - gameData.segs.vertices [sideVerts [i]].y;
+				dz = objP->position.vPos.z - gameData.segs.vertices [sideVerts [i]].z;
 				d = dx * dx + dy * dy + dz * dz;
 				if (dMin > d)
 					dMin = d;
@@ -1470,25 +1471,25 @@ OglResetTransform ();
 
 //------------------------------------------------------------------------------
 //draw outline for curside
-void OutlineSegSide(tSegment *seg,int _side,int edge,int vert)
+void OutlineSegSide(tSegment *seg, int _side, int edge, int vert)
 {
 	g3s_codes cc;
 
-cc=RotateList(8,seg->verts);
+cc=RotateList(8, seg->verts);
 if (! cc.and) {		//all off screen?
 	g3sPoint *pnt;
 	tSide *s = seg->sides+_side;
 	//render curedge of curside of curseg in green
 	GrSetColorRGB (0, 255, 0, 255);
-	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]],
+	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]], 
 						gameData.segs.points + seg->verts [sideToVerts [_side][(edge+1)%4]]);
 	//draw a little cross at the current vert
 	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
-	GrLine(pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT);
-	GrLine(pnt->p3_sx,pnt->p3_sy-CROSS_HEIGHT,pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy);
-	GrLine(pnt->p3_sx+CROSS_WIDTH,pnt->p3_sy,pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT);
-	GrLine(pnt->p3_sx,pnt->p3_sy+CROSS_HEIGHT,pnt->p3_sx-CROSS_WIDTH,pnt->p3_sy);
+	GrLine(pnt->p3_sx-CROSS_WIDTH, pnt->p3_sy, pnt->p3_sx, pnt->p3_sy-CROSS_HEIGHT);
+	GrLine(pnt->p3_sx, pnt->p3_sy-CROSS_HEIGHT, pnt->p3_sx+CROSS_WIDTH, pnt->p3_sy);
+	GrLine(pnt->p3_sx+CROSS_WIDTH, pnt->p3_sy, pnt->p3_sx, pnt->p3_sy+CROSS_HEIGHT);
+	GrLine(pnt->p3_sx, pnt->p3_sy+CROSS_HEIGHT, pnt->p3_sx-CROSS_WIDTH, pnt->p3_sy);
 	}
 }
 
@@ -1524,10 +1525,10 @@ return nPerspectiveDepth = DEFAULT_PERSPECTIVE_DEPTH;
 //------------------------------------------------------------------------------
 
 typedef struct window {
-	short left,top,right,bot;
+	short left, top, right, bot;
 } window;
 
-ubyte code_window_point(fix x,fix y,window *w)
+ubyte code_window_point(fix x, fix y, window *w)
 {
 	ubyte code=0;
 
@@ -1543,9 +1544,9 @@ ubyte code_window_point(fix x,fix y,window *w)
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
-void DrawWindowBox (unsigned int color,short left,short top,short right,short bot)
+void DrawWindowBox (unsigned int color, short left, short top, short right, short bot)
 {
-	short l,t,r,b;
+	short l, t, r, b;
 
 GrSetColorRGBi (color);
 l=left; 
@@ -1563,16 +1564,16 @@ if (t<0)
 if (r>=grdCurCanv->cv_bitmap.bm_props.w) r=grdCurCanv->cv_bitmap.bm_props.w-1;
 if (b>=grdCurCanv->cv_bitmap.bm_props.h) b=grdCurCanv->cv_bitmap.bm_props.h-1;
 
-GrLine(i2f(l),i2f(t),i2f(r),i2f(t));
-GrLine(i2f(r),i2f(t),i2f(r),i2f(b));
-GrLine(i2f(r),i2f(b),i2f(l),i2f(b));
-GrLine(i2f(l),i2f(b),i2f(l),i2f(t));
+GrLine(i2f(l), i2f(t), i2f(r), i2f(t));
+GrLine(i2f(r), i2f(t), i2f(r), i2f(b));
+GrLine(i2f(r), i2f(b), i2f(l), i2f(b));
+GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
 }
 #endif
 
 //------------------------------------------------------------------------------
 
-int MattFindConnectedSide(int seg0,int seg1);
+int MattFindConnectedSide(int seg0, int seg1);
 
 #ifdef _DEBUG
 char visited2 [MAX_SEGMENTS];
@@ -1607,30 +1608,30 @@ short nRenderObjList [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
 //Given two sides of tSegment, tell the two verts which form the 
 //edge between them
 short edgeBetweenTwoSides [6][6][2] = {
-	{ {-1,-1}, {3,7}, {-1,-1}, {2,6}, {6,7}, {2,3} },
-	{ {3,7}, {-1,-1}, {0,4}, {-1,-1}, {4,7}, {0,3} },
-	{ {-1,-1}, {0,4}, {-1,-1}, {1,5}, {4,5}, {0,1} },
-	{ {2,6}, {-1,-1}, {1,5}, {-1,-1}, {5,6}, {1,2} },
-	{ {6,7}, {4,7}, {4,5}, {5,6}, {-1,-1}, {-1,-1} },
-	{ {2,3}, {0,3}, {0,1}, {1,2}, {-1,-1}, {-1,-1} }
+	{ {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} }, 
+	{ {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} }, 
+	{ {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} }, 
+	{ {2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2} }, 
+	{ {6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1} }, 
+	{ {2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1} }
 };
 
 //given an edge specified by two verts, give the two sides on that edge
 int edgeToSides [8][8][2] = {
-	{ {-1,-1}, {2,5}, {-1,-1}, {1,5}, {1,2}, {-1,-1}, {-1,-1}, {-1,-1} },
-	{ {2,5}, {-1,-1}, {3,5}, {-1,-1}, {-1,-1}, {2,3}, {-1,-1}, {-1,-1} },
-	{ {-1,-1}, {3,5}, {-1,-1}, {0,5}, {-1,-1}, {-1,-1}, {0,3}, {-1,-1} },
-	{ {1,5}, {-1,-1}, {0,5}, {-1,-1}, {-1,-1}, {-1,-1}, {-1,-1}, {0,1} },
-	{ {1,2}, {-1,-1}, {-1,-1}, {-1,-1}, {-1,-1}, {2,4}, {-1,-1}, {1,4} },
-	{ {-1,-1}, {2,3}, {-1,-1}, {-1,-1}, {2,4}, {-1,-1}, {3,4}, {-1,-1} },
-	{ {-1,-1}, {-1,-1}, {0,3}, {-1,-1}, {-1,-1}, {3,4}, {-1,-1}, {0,4} },
-	{ {-1,-1}, {-1,-1}, {-1,-1}, {0,1}, {1,4}, {-1,-1}, {0,4}, {-1,-1} },
+	{ {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} }, 
+	{ {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} }, 
+	{ {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} }, 
+	{ {1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1} }, 
+	{ {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4} }, 
+	{ {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1} }, 
+	{ {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4} }, 
+	{ {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1} }, 
 };
 
 //@@//perform simple check on tables
 //@@check_check()
 //@@{
-//@@	int i,j;
+//@@	int i, j;
 //@@
 //@@	for (i=0;i<8;i++)
 //@@		for (j=0;j<8;j++)
@@ -1655,7 +1656,7 @@ int FindOtherSideOnEdge (tSegment *seg, short *verts, int notside)
 	int	vv0 = -1, vv1 = -1;
 	int	side0, side1;
 	int	*eptr;
-	int	v0,v1;
+	int	v0, v1;
 	short	*vp;
 
 //@@	check_check();
@@ -1736,10 +1737,10 @@ int FindAdjacentSideNorms (tSegment *seg, short s0, short s1, tSideNormData *s)
 //@@
 //@@		if (seg00 != seg1) {
 //@@
-//@@			notside00 = FindConnectedSide(seg0,seg00);
+//@@			notside00 = FindConnectedSide(seg0, seg00);
 //@@			Assert(notside00 != -1);
 //@@
-//@@			edgeside0 = FindOtherSideOnEdge(seg00,edge_verts,notside00);
+//@@			edgeside0 = FindOtherSideOnEdge(seg00, edge_verts, notside00);
 //@@	 		seg0 = seg00;
 //@@		}
 //@@
@@ -1752,10 +1753,10 @@ int FindAdjacentSideNorms (tSegment *seg, short s0, short s1, tSideNormData *s)
 //@@		seg11 = &gameData.segs.segments [seg1->children [edgeside1]];
 //@@
 //@@		if (seg11 != seg0) {
-//@@			notside11 = FindConnectedSide(seg1,seg11);
+//@@			notside11 = FindConnectedSide(seg1, seg11);
 //@@			Assert(notside11 != -1);
 //@@
-//@@			edgeside1 = FindOtherSideOnEdge(seg11,edge_verts,notside11);
+//@@			edgeside1 = FindOtherSideOnEdge(seg11, edge_verts, notside11);
 //@@ 			seg1 = seg11;
 //@@		}
 //@@	}
@@ -1781,7 +1782,7 @@ return 1;
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-static int CompareChildren (tSegment *seg,short c0,short c1)
+static int CompareChildren (tSegment *seg, short c0, short c1)
 {
 	tSideNormData	s [2];
 	vmsVector		temp;
@@ -1821,11 +1822,11 @@ return 0;
 
 int QuicksortSegChildren (tSegment *seg, short left, short right, short *childList)
 {
-	short	h,
-			l = left,
-			r = right,
-			m = (l + r) / 2,
-			median = childList [m],
+	short	h, 
+			l = left, 
+			r = right, 
+			m = (l + r) / 2, 
+			median = childList [m], 
 			bSwap = 0;
 
 do {
@@ -1853,20 +1854,20 @@ return bSwap;
 
 //------------------------------------------------------------------------------
 
-int sscTotal=0,ssc_swaps=0;
+int sscTotal=0, ssc_swaps=0;
 
 //short the children of tSegment to render in the correct order
 //returns non-zero if swaps were made
-int SortSegChildren(tSegment *seg,int n_children,short *childList)
+int SortSegChildren(tSegment *seg, int n_children, short *childList)
 {
 #if 1
 if (n_children < 2) 
 	return 0;
 return QuicksortSegChildren (seg, (short) 0, (short) (n_children - 1), childList);
 #else
-	int i,j;
+	int i, j;
 	int r;
-	int made_swaps,count;
+	int made_swaps, count;
 
 if (n_children < 2) 
 	return 0;
@@ -1882,7 +1883,7 @@ do {
 	for (i=0;i<n_children-1;i++)
 		for (j=i+1;childList [i]!=-1 && j<n_children;j++)
 			if (childList [j]!=-1) {
-				r = CompareChildren(seg,childList [i],childList [j]);
+				r = CompareChildren(seg, childList [i], childList [j]);
 
 				if (r == 1) {
 					int temp = childList [i];
@@ -1901,9 +1902,9 @@ return count;
 
 //------------------------------------------------------------------------------
 
-void AddObjectToSegList(int nObject,int listnum)
+void AddObjectToSegList(int nObject, int listnum)
 {
-	int i,checkn,marker;
+	int i, checkn, marker;
 
 	checkn = listnum;
 	//first, find a slot
@@ -1969,10 +1970,10 @@ static void swap_bytes(char *a, char *b, size_t nbytes)
    char tmp;
    do {
       tmp = *a; *a++ = *b; *b++ = tmp;
-   } while ( --nbytes );
+   } while ( --nbytes);
 }
 
-void qsort(void *basep, size_t nelems, size_t size,
+void qsort(void *basep, size_t nelems, size_t size, 
                             int (*comp)(const void *, const void *))
 {
    char *stack [40], **sp;       /* stack and stack pointer        */
@@ -1983,31 +1984,31 @@ void qsort(void *basep, size_t nelems, size_t size,
    thresh = T * size;           /* init threshold                 */
    sp = stack;                  /* init stack pointer             */
    limit = base + nelems * size;/* pointer past end of array      */
-   for ( ;; ) {                 /* repeat until break...          */
-      if ( limit - base > thresh ) {  /* if more than T elements  */
+   for ( ;;) {                 /* repeat until break...          */
+      if ( limit - base > thresh) {  /* if more than T elements  */
                                       /*   swap base with middle  */
          SWAP((((limit-base)/size)/2)*size+base, base);
          i = base + size;             /* i scans left to right    */
          j = limit - size;            /* j scans right to left    */
-         if ( COMP(i, j) > 0 )        /* Sedgewick's              */
+         if ( COMP(i, j) > 0)        /* Sedgewick's              */
             SWAP(i, j);               /*    three-element sort    */
-         if ( COMP(base, j) > 0 )     /*        sets things up    */
+         if ( COMP(base, j) > 0)     /*        sets things up    */
             SWAP(base, j);            /*            so that       */
-         if ( COMP(i, base) > 0 )     /*      *i <= *base <= *j   */
+         if ( COMP(i, base) > 0)     /*      *i <= *base <= *j   */
             SWAP(i, base);            /* *base is pivot element   */
-         for ( ;; ) {                 /* loop until break         */
+         for ( ;;) {                 /* loop until break         */
             do                        /* move i right             */
                i += size;             /*        until *i >= pivot */
-            while ( COMP(i, base) < 0 );
+            while ( COMP(i, base) < 0);
             do                        /* move j left              */
                j -= size;             /*        until *j <= pivot */
-            while ( COMP(j, base) > 0 );
-            if ( i > j )              /* if pointers crossed      */
+            while ( COMP(j, base) > 0);
+            if ( i > j)              /* if pointers crossed      */
                break;                 /*     break loop           */
             SWAP(i, j);       /* else swap elements, keep scanning*/
          }
          SWAP(base, j);         /* move pivot into correct place  */
-         if ( j - base > limit - i ) {  /* if left subfile larger */
+         if ( j - base > limit - i) {  /* if left subfile larger */
             sp [0] = base;             /* stack left subfile base  */
             sp [1] = j;                /*    and limit             */
             base = i;                 /* sort the right subfile   */
@@ -2018,13 +2019,13 @@ void qsort(void *basep, size_t nelems, size_t size,
          }
          sp += 2;                     /* increment stack pointer  */
       } else {      /* else subfile is small, use insertion sort  */
-         for ( j = base, i = j+size; i < limit; j = i, i += size )
-            for ( ; COMP(j, j+size) > 0; j -= size ) {
+         for ( j = base, i = j+size; i < limit; j = i, i += size)
+            for ( ; COMP(j, j+size) > 0; j -= size) {
                SWAP(j, j+size);
-               if ( j == base )
+               if ( j == base)
                   break;
             }
-         if ( sp != stack ) {         /* if any entries on stack  */
+         if ( sp != stack) {         /* if any entries on stack  */
             sp -= 2;                  /* pop the base and limit   */
             base = sp [0];
             limit = sp [1];
@@ -2048,10 +2049,10 @@ sort_item sortList [SORT_LIST_SIZE];
 int nSortItems;
 
 //compare function for tObject sort. 
-int _CDECL_ sort_func(const sort_item *a,const sort_item *b)
+int _CDECL_ sort_func(const sort_item *a, const sort_item *b)
 {
 	fix xDeltaDist;
-	tObject *objAP,*objBP;
+	tObject *objAP, *objBP;
 
 xDeltaDist = a->dist - b->dist;
 objAP = gameData.objs.objects + a->nObject;
@@ -2092,10 +2093,10 @@ void BuildObjectLists(int n_segs)
 			int nObject;
 			tObject *objP;
 			for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = objP->next) {
-				int new_segnum,did_migrate,list_pos;
+				int new_segnum, did_migrate, list_pos;
 				objP = gameData.objs.objects+nObject;
 
-				Assert( objP->nSegment == nSegment );
+				Assert( objP->nSegment == nSegment);
 
 				if (objP->flags & OF_ATTACHED)
 					continue;		//ignore this tObject
@@ -2107,10 +2108,10 @@ void BuildObjectLists(int n_segs)
 				do {
 					segmasks m;
 					did_migrate = 0;
-					m = GetSegMasks(&objP->pos,new_segnum,objP->size);
+					m = GetSegMasks(&objP->position.vPos, new_segnum, objP->size);
 					if (m.sideMask) {
-						short sn,sf;
-						for (sn=0,sf=1;sn<6;sn++,sf<<=1)
+						short sn, sf;
+						for (sn=0, sf=1;sn<6;sn++, sf<<=1)
 							if (m.sideMask & sf) {
 								tSegment *seg = gameData.segs.segments+new_segnum;
 		
@@ -2129,7 +2130,7 @@ void BuildObjectLists(int n_segs)
 					}
 	
 				} while (0);	//while (did_migrate);
-				AddObjectToSegList(nObject,list_pos);
+				AddObjectToSegList(nObject, list_pos);
 			}
 		}
 	}
@@ -2141,7 +2142,7 @@ void BuildObjectLists(int n_segs)
 		nSegment = nRenderList [nn];
 
 		if (nSegment != -1) {
-			int t,lookn,i,n;
+			int t, lookn, i, n;
 
 			//first count the number of gameData.objs.objects & copy into sort list
 
@@ -2154,14 +2155,14 @@ void BuildObjectLists(int n_segs)
 					if (nSortItems < SORT_LIST_SIZE-1) {		//add if room
 						sortList [nSortItems].nObject = t;
 						//NOTE: maybe use depth, not dist - quicker computation
-						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
+						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &viewerEye);
 						nSortItems++;
 					}
 					else {			//no room for tObject
 						int ii;
 
 						#ifdef _DEBUG
-						FILE *tfile=fopen("sortlist.out","wt");
+						FILE *tfile=fopen("sortlist.out", "wt");
 
 						//I find this strange, so I'm going to write out
 						//some information to look at later
@@ -2169,8 +2170,8 @@ void BuildObjectLists(int n_segs)
 							for (ii=0;ii<SORT_LIST_SIZE;ii++) {
 								int nObject = sortList [ii].nObject;
 
-								fprintf(tfile,"Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n",
-									nObject,gameData.objs.objects [nObject].nType,gameData.objs.objects [nObject].id,sortList [ii].dist,gameData.objs.objects [nObject].nSegment);
+								fprintf(tfile, "Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n", 
+									nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, sortList [ii].dist, gameData.objs.objects [nObject].nSegment);
 							}
 							fclose(tfile);
 						}
@@ -2188,7 +2189,7 @@ void BuildObjectLists(int n_segs)
 
 							//replace debris & fireballs
 							if (nType == OBJ_DEBRIS || nType == OBJ_FIREBALL) {
-								fix dist = VmVecDistQuick(&gameData.objs.objects [t].pos,&viewerEye);
+								fix dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &viewerEye);
 
 								//don't replace same kind of tObject unless new 
 								//one is closer
@@ -2206,11 +2207,11 @@ void BuildObjectLists(int n_segs)
 
 			//now call qsort
 		#if defined(__WATCOMC__)
-			qsort(sortList,nSortItems,sizeof(*sortList),
+			qsort(sortList, nSortItems, sizeof(*sortList), 
 				   sort_func);
 		#else
-			qsort(sortList,nSortItems,sizeof(*sortList),
-					(int (_CDECL_ *)(const void*,const void*))sort_func);
+			qsort(sortList, nSortItems, sizeof(*sortList), 
+					(int (_CDECL_ *)(const void*, const void*))sort_func);
 		#endif	
 
 			//now copy back into list
@@ -2257,11 +2258,11 @@ if ((pPath->tUpdate < 0) || (t >= pPath->tRefresh)) {
 	pPath->tUpdate = t;
 //	h = pPath->nEnd;
 	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
-	pPath->path [pPath->nEnd].vOrgPos = objP->pos;
-	pPath->path [pPath->nEnd].vPos = objP->pos;
-	pPath->path [pPath->nEnd].mOrient = objP->orient;
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.fVec, 0);
-	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->orient.uVec, 0);
+	pPath->path [pPath->nEnd].vOrgPos = objP->position.vPos;
+	pPath->path [pPath->nEnd].vPos = objP->position.vPos;
+	pPath->path [pPath->nEnd].mOrient = objP->position.mOrient;
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->position.mOrient.fVec, 0);
+	VmVecScaleInc (&pPath->path [pPath->nEnd].vPos, &objP->position.mOrient.uVec, 0);
 //	if (!memcmp (pPath->path + h, pPath->path + pPath->nEnd, sizeof (tMovementPath)))
 //		pPath->nEnd = h;
 //	else 
@@ -2300,7 +2301,7 @@ void GetViewPoint (void)
 	tPathPoint		*p = GetPathPoint (&externalView);
 
 if (!p)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fVec, PP_DELTAZ);
+	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
 else {
 	viewerEye = p->vPos;
 	VmVecScaleInc (&viewerEye, &p->mOrient.fVec, PP_DELTAZ * 2 / 3);
@@ -2394,7 +2395,7 @@ return 1;
 //------------------------------------------------------------------------------
 //The following code is an attempt to find all objects that cast a shadow visible
 //to the player. To accomplish that, for each robot the line of sight to each
-//tSegment visible to the player is computed. If there is a los to any of these 
+//tSegment visible to the tPlayer is computed. If there is a los to any of these 
 //segments, the tObject's shadow is rendered. Far from perfect solution though. :P
 
 void RenderObjectShadows (void)
@@ -2409,7 +2410,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
 		for (j = nRenderSegs; j--;) {
 			fakePlayerPos.nSegment = nRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.pos, fakePlayerPos.nSegment);
+			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0);
@@ -2431,18 +2432,18 @@ for (pc = gameData.render.shadows.shadowMaps; gameData.render.shadows.nShadowMap
 
 //------------------------------------------------------------------------------
 
-void ApplyShadowMaps (short startSegNum, fix nEyeOffset, int nWindowNum)
+void ApplyShadowMaps (short nStartSegNum, fix nEyeOffset, int nWindowNum)
 {	
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 0.5f, 0.0f, 0.0f,
-		0.0f, 0.0f, 0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f, 0.0f, 
+		0.0f, 0.0f, 0.5f, 0.0f, 
 		0.5f, 0.5f, 0.5f, 1.0f};
 
 	static float mPlanef [] = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f, 
+		0.0f, 0.0f, 1.0f, 0.0f, 
 		0.0f, 0.0f, 0.0f, 1.0f};
 
 	static GLenum nTexCoord [] = {GL_S, GL_T, GL_R, GL_Q};
@@ -2475,11 +2476,11 @@ for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shad
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjectionf);
-	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, &pc->objP->orient));
+	glMultMatrixf (OOF_MatVms2Gl (mModelViewf, &pc->objP->position.mOrient));
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif
-RenderMine (startSegNum, nEyeOffset, nWindowNum);
+RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 #if 1
 glMatrixMode (GL_TEXTURE);
 glLoadIdentity ();
@@ -2496,63 +2497,42 @@ DestroyShadowMaps ();
 
 //------------------------------------------------------------------------------
 
-void RenderFrame (fix nEyeOffset, int nWindowNum)
+void SetRenderView (fix nEyeOffset, short *pnStartSegNum)
 {
-	short startSegNum;
 	static int bStopZoom;
 
-if (gameStates.app.bEndLevelSequence) {
-	RenderEndLevelFrame (nEyeOffset, nWindowNum);
-	gameData.app.nFrameCount++;
-	return;
-	}
-#ifdef NEWDEMO
-if ( gameData.demo.nState == ND_STATE_RECORDING && nEyeOffset >= 0 )	{
-   if (gameStates.render.nRenderingType==0)
-   	NDRecordStartFrame(gameData.app.nFrameCount, gameData.time.xFrame );
-   if (gameStates.render.nRenderingType!=255)
-   	NDRecordViewerObject(gameData.objs.viewer);
-	}
-#endif
-  
-StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
-#ifdef OGL_ZBUF
-if (!gameOpts->legacy.bZBuf)
-	gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindowNum;
-#endif
-G3StartFrame (0, !(nWindowNum || gameStates.render.cameras.bActive));
-viewerEye = gameData.objs.viewer->pos;
+viewerEye = gameData.objs.viewer->position.vPos;
 if (nEyeOffset) {
-	VmVecScaleInc(&viewerEye,&gameData.objs.viewer->orient.rVec,nEyeOffset);
+	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, nEyeOffset);
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	viewerEye = gameData.objs.viewer->pos;
+	viewerEye = gameData.objs.viewer->position.vPos;
 #endif
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	startSegNum = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
+	*pnStartSegNum = gameData.objs.viewer->nSegment;
+	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
 	}
 else {
-	startSegNum = FindSegByPoint (&viewerEye,gameData.objs.viewer->nSegment);
-	if (startSegNum == -1)
-		startSegNum = gameData.objs.viewer->nSegment;
+	*pnStartSegNum = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	if (*pnStartSegNum == -1)
+		*pnStartSegNum = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
-		VmAngles2Matrix (&mHead,&viewInfo.playerHeadAngles);
-		VmMatMul (&mView,&gameData.objs.viewer->orient,&mHead);
-		G3SetViewMatrix(&viewerEye,&mView,nRenderZoom );
+		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
+		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
+		G3SetViewMatrix (&viewerEye, &mView, nRenderZoom);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
 		vmsMatrix mHead, mView;
 		viewInfo.playerHeadAngles.p = 
 		viewInfo.playerHeadAngles.b = 0;
 		viewInfo.playerHeadAngles.h = 0x7fff;
-		VmAngles2Matrix(&mHead,&viewInfo.playerHeadAngles);
-		VmMatMul(&mView,&gameData.objs.viewer->orient,&mHead);
-		G3SetViewMatrix(&viewerEye,&mView,FixDiv(nRenderZoom,gameStates.render.nZoomFactor));
+		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
+		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
+		G3SetViewMatrix (&viewerEye, &mView, FixDiv(nRenderZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 #ifdef JOHN_ZOOM
@@ -2601,20 +2581,49 @@ else {
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
 #else
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.fVec, -i2f (30));
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->orient.uVec, i2f (10));
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, -i2f (30));
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.uVec, i2f (10));
 #endif
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, nRenderZoom);
 			}
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
 		}
 	else
-		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
+		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
 #else
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, nRenderZoom);
+	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
 #endif
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderFrame (fix nEyeOffset, int nWindowNum)
+{
+	short nStartSegNum;
+
+if (gameStates.app.bEndLevelSequence) {
+	RenderEndLevelFrame (nEyeOffset, nWindowNum);
+	gameData.app.nFrameCount++;
+	return;
+	}
+#ifdef NEWDEMO
+if ( gameData.demo.nState == ND_STATE_RECORDING && nEyeOffset >= 0)	{
+   if (gameStates.render.nRenderingType==0)
+   	NDRecordStartFrame(gameData.app.nFrameCount, gameData.time.xFrame);
+   if (gameStates.render.nRenderingType!=255)
+   	NDRecordViewerObject(gameData.objs.viewer);
+	}
+#endif
+  
+StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
+#ifdef OGL_ZBUF
+if (!gameOpts->legacy.bZBuf)
+	gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindowNum;
+#endif
+G3StartFrame (0, !(nWindowNum || gameStates.render.cameras.bActive));
+SetRenderView (nEyeOffset, &nStartSegNum);
 if (nClearWindow == 1) {
 	if (!nClearWindowColor)
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
@@ -2630,12 +2639,21 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 		OglStartFrame (0, 0);
-		RenderMine (startSegNum, nEyeOffset, nWindowNum);
+		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 		}
-	gameStates.render.nShadowPass = 2;
-	OglStartFrame (0, 0);
-	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	RenderObjectShadows ();
+#if 0//OOF_TEST_CUBE
+#	if 1
+	for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
+#	else
+	for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
+#	endif
+#endif
+		{
+		gameStates.render.nShadowPass = 2;
+		OglStartFrame (0, 0);
+		gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+		RenderObjectShadows ();
+		}
 	gameStates.render.nShadowPass = 3;
 	OglStartFrame (0, 0);
 	if (gameStates.render.bShadowMaps) {
@@ -2644,27 +2662,27 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 #else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif			 	
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->orient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, nRenderZoom);
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->orient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
-		ApplyShadowMaps (startSegNum, nEyeOffset, nWindowNum);
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
+		ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
 		}
 	else if (gameStates.render.bAltShadows)
 		RenderShadow (0.0f);
 	else
-		RenderMine (startSegNum, nEyeOffset, nWindowNum);
+		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 	}
 else 
 #endif
 	{
 	if (gameStates.render.nRenderPass < 0)
-		RenderMine (startSegNum, nEyeOffset, nWindowNum);
+		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 	else {
 		for (gameStates.render.nRenderPass = 0;
 			gameStates.render.nRenderPass < 2;
 			gameStates.render.nRenderPass++) {
 			OglStartFrame (0, 1);
-			RenderMine (startSegNum, nEyeOffset, nWindowNum);
+			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 			}
 		}
 	if (!nWindowNum)
@@ -2722,9 +2740,9 @@ if (left < r)
 }
 
 //------------------------------------------------------------------------------
-// sort segments by distance from player tSegment, where distance is the minimal
+// sort segments by distance from tPlayer tSegment, where distance is the minimal
 // number of segments that have to be traversed to reach a tSegment, starting at
-// the player tSegment. If the entire mine is to be rendered, segments will then
+// the tPlayer tSegment. If the entire mine is to be rendered, segments will then
 // be rendered in reverse order (furthest first), to achieve proper rendering of
 // transparent walls layered in a view axis.
 
@@ -2766,7 +2784,7 @@ nSegListSize = j;
 
 //------------------------------------------------------------------------------
 
-void BuildSegmentList (short startSegNum, int nWindowNum)
+void BuildSegmentList (short nStartSegNum, int nWindowNum)
 {
 	int		lCnt, sCnt, eCnt, wid, nSide;
 	int		l, i;
@@ -2792,16 +2810,16 @@ memset (nRenderList, 0xff, sizeof (nRenderList));
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
 
-nRenderList [0] = startSegNum; 
+nRenderList [0] = nStartSegNum; 
 nSegDepth [0] = 0;
-VISIT (startSegNum);
-nRenderPos [startSegNum] = 0;
+VISIT (nStartSegNum);
+nRenderPos [nStartSegNum] = 0;
 sCnt = 0;
 lCnt = eCnt = 1;
 
 #ifdef _DEBUG
 if (bPreDrawSegs)
-	RenderSegment(startSegNum, nWindowNum);
+	RenderSegment(nStartSegNum, nWindowNum);
 #endif
 
 renderWindows [0].left =
@@ -2864,17 +2882,17 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			{
 				if (bWindowCheck) {
 					int i;
-					ubyte codes_and_3d,codes_and_2d;
-					short _x,_y,min_x=32767,max_x=-32767,min_y=32767,max_y=-32767;
+					ubyte codes_and_3d, codes_and_2d;
+					short _x, _y, min_x=32767, max_x=-32767, min_y=32767, max_y=-32767;
 					int no_projFlag=0;	//a point wasn't projected
 					if (bRotated<2) {
 //							if (!bRotated)
-//								RotateList(8,segP->verts);
-						ProjectList(8,segP->verts);
+//								RotateList(8, segP->verts);
+						ProjectList(8, segP->verts);
 						bRotated=2;
 					}
 					s2v = sideToVerts [nSide];
-					for (i=0,codes_and_3d=codes_and_2d=0xff;i<4;i++) {
+					for (i=0, codes_and_3d=codes_and_2d=0xff;i<4;i++) {
 						int p = sv [s2v [i]];
 						g3sPoint *pnt = gameData.segs.points+p;
 						if (!(pnt->p3Flags&PF_PROJECTED)) {
@@ -2884,12 +2902,12 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						_x = f2i(pnt->p3_sx);
 						_y = f2i(pnt->p3_sy);
 						codes_and_3d &= pnt->p3_codes;
-						codes_and_2d &= code_window_point(_x,_y,checkWinP);
+						codes_and_2d &= code_window_point(_x, _y, checkWinP);
 #ifdef _DEBUG
 						if (draw_edges) {
 							GrSetColorRGB (128, 0, 128, 255);
-							gr_uline(pnt->p3_sx,pnt->p3_sy,
-								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sx,
+							gr_uline(pnt->p3_sx, pnt->p3_sy, 
+								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sx, 
 								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sy);
 						}
 #endif
@@ -2904,7 +2922,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					}
 #ifdef _DEBUG
 					if (bDrawBoxes)
-						DrawWindowBox(WHITE_RGBA,min_x,min_y,max_x,max_y);
+						DrawWindowBox(WHITE_RGBA, min_x, min_y, max_x, max_y);
 #endif
 					if (no_projFlag || (!codes_and_3d && !codes_and_2d)) {	//maybe add this tSegment
 						int rp = nRenderPos [nChild];
@@ -2913,10 +2931,10 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						if (no_projFlag) 
 							*new_w = *checkWinP;
 						else {
-							new_w->left  = max(checkWinP->left,min_x);
-							new_w->right = min(checkWinP->right,max_x);
-							new_w->top   = max(checkWinP->top,min_y);
-							new_w->bot   = min(checkWinP->bot,max_y);
+							new_w->left  = max(checkWinP->left, min_x);
+							new_w->right = min(checkWinP->right, max_x);
+							new_w->top   = max(checkWinP->top, min_y);
+							new_w->bot   = min(checkWinP->bot, max_y);
 						}
 						//see if this segP already bVisited, and if so, does current window
 						//expand the old window?
@@ -2926,10 +2944,10 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 								 new_w->top < rwP->top ||
 								 new_w->right > rwP->right ||
 								 new_w->bot > rwP->bot) {
-								new_w->left  = min(new_w->left,rwP->left);
-								new_w->right = max(new_w->right,rwP->right);
-								new_w->top   = min(new_w->top,rwP->top);
-								new_w->bot   = max(new_w->bot,rwP->bot);
+								new_w->left  = min(new_w->left, rwP->left);
+								new_w->right = max(new_w->right, rwP->right);
+								new_w->top   = min(new_w->top, rwP->top);
+								new_w->bot   = max(new_w->bot, rwP->bot);
 								if (no_migrate_segs) {
 									//no_renderFlag [lCnt] = 1;
 									nRenderList [lCnt] = -1;
@@ -2945,7 +2963,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 #ifdef _DEBUG
 						if (bDrawBoxes)
-							DrawWindowBox(5,new_w->left,new_w->top,new_w->right,new_w->bot);
+							DrawWindowBox(5, new_w->left, new_w->top, new_w->right, new_w->bot);
 #endif
 						nRenderPos [nChild] = lCnt;
 						nRenderList [lCnt] = nChild;
@@ -2953,7 +2971,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						lCnt++;
 						if (lCnt >= MAX_RENDER_SEGS) {
 #if TRACE								
-							//con_printf (CON_DEBUG,"Too many segs in render list!!\n"); 
+							//con_printf (CON_DEBUG, "Too many segs in render list!!\n"); 
 #endif
 							goto done_list;
 							}
@@ -3009,7 +3027,7 @@ int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWin
 	int		i, di, dj, bRenderLayer, nObject;
 	GLint		fragC;
 
-	static GLuint	segFragC [MAX_SEGMENTS],
+	static GLuint	segFragC [MAX_SEGMENTS], 
 						objFragC [MAX_OBJECTS];
 #endif
 
@@ -3171,11 +3189,11 @@ if (migrateObjects) {
 #ifdef LASER_HACK
 			tObject *objP = gameData.objs.objects + objNum;
 			if ((objP->nType == OBJ_WEAPON) && 								//if its a weapon
-				 (objP->lifeleft == Laser_maxTime ) && 	//  and its in it's first frame
+				 (objP->lifeleft == Laser_maxTime) && 	//  and its in it's first frame
 				 (Hack_nlasers < MAX_HACKED_LASERS) && 									//  and we have space for it
 				 (objP->laserInfo.nParentObj > -1) &&					//  and it has a parent
 				 ((OBJ_IDX (gameData.objs.viewer)) == objP->laserInfo.nParentObj)	//  and it's parent is the viewer
-				 ) {
+				) {
 				Hack_laser_list [Hack_nlasers++] = objNum;								//then make it draw after everything else.
 				}
 			else	
@@ -3284,7 +3302,7 @@ for (i = 0; i < nRenderSegs;i++) {
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-void RenderMine (short startSegNum, fix nEyeOffset, int nWindowNum)
+void RenderMine (short nStartSegNum, fix nEyeOffset, int nWindowNum)
 {
 	int		nn;
 	short		nSegment;
@@ -3326,7 +3344,7 @@ if ((gameStates.render.nRenderPass <= 0) ||
 #endif
 
 if (gameStates.render.nRenderPass <= 0) {
-	BuildSegmentList (startSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
+	BuildSegmentList (nStartSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
 	//GatherVisibleLights ();
 #if OGL_QUERY
 	if (gameOpts->render.bAllSegs && !nWindowNum) {
@@ -3397,7 +3415,7 @@ InitFaceList ();
 for (renderState = rsMin; renderState <= rsMax; renderState++) {
 	//memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nSegments));
 	nVisited++;
-	for (nn = nRenderSegs; nn; ) {
+	for (nn = nRenderSegs; nn;) {
 		nn--;
 		rwP = renderWindows + nn;
 		nSegment = nRenderList [nn];
@@ -3435,7 +3453,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 			}
 		}
 #ifdef LASER_HACK								
-	for (i = 0; i < Hack_nlasers; i++ )
+	for (i = 0; i < Hack_nlasers; i++)
 		DoRenderObject (Hack_laser_list [i], nWindowNum);
 #endif
 	}
@@ -3443,7 +3461,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 #	ifdef _DEBUG
 //draw curedge stuff
 if (bOutLineMode) 
-	OutlineSegSide (Cursegp,Curside,Curedge,Curvert);
+	OutlineSegSide (Cursegp, Curside, Curedge, Curvert);
 #	endif
 #endif
 //RenderVisibleObjects (nWindowNum);
@@ -3459,7 +3477,7 @@ if (gameStates.render.bHaveSkyBox) {
 renderState = 1;
 if (gameOpts->render.bAllSegs) {
 	nVisited++;
-	for (nn = nRenderSegs; nn; ) {
+	for (nn = nRenderSegs; nn;) {
 		nSegment = nRenderList [--nn];
 		if ((nSegment != -1) && !VISITED (nSegment)) {
 			VISIT (nSegment);
@@ -3480,10 +3498,10 @@ RenderFaceList (nWindowNum);
 
 extern int render_3d_in_big_window;
 
-//finds what tSegment is at a given x&y -  seg,tSide,face are filled in
+//finds what tSegment is at a given x&y -  seg, tSide, face are filled in
 //works on last frame rendered. returns true if found
 //if seg<0, then an tObject was found, and the tObject number is -seg-1
-int find_seg_side_face(short x,short y,int *seg,int *tSide,int *face,int *poly)
+int find_seg_side_face(short x, short y, int *seg, int *tSide, int *face, int *poly)
 {
 	bSearchMode = -1;
 	_search_x = x; _search_y = y;
@@ -3491,8 +3509,8 @@ int find_seg_side_face(short x,short y,int *seg,int *tSide,int *face,int *poly)
 	if (render_3d_in_big_window) {
 		grs_canvas temp_canvas;
 
-		GrInitSubCanvas(&temp_canvas,canv_offscreen,0,0,
-			LargeView.ev_canv->cv_bitmap.bm_props.w,LargeView.ev_canv->cv_bitmap.bm_props.h);
+		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0, 
+			LargeView.ev_canv->cv_bitmap.bm_props.w, LargeView.ev_canv->cv_bitmap.bm_props.h);
 		GrSetCurrentCanvas(&temp_canvas);
 		RenderFrame(0, 0);
 	}

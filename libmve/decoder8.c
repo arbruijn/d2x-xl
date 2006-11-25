@@ -307,8 +307,8 @@ static void dispatchDecoder(unsigned char **pFrame, unsigned char codeType, unsi
 	case 0x6:
 		/* I can't figure out how any file containing a block of this nType
 		   could still be playable, since it appears that it would leave the
-		   internal bookkeeping in an inconsistent state in the BG player
-		   code.  Ahh, well.  Perhaps it was a bug in the BG player code that
+		   internal bookkeeping in an inconsistent state in the BG tPlayer
+		   code.  Ahh, well.  Perhaps it was a bug in the BG tPlayer code that
 		   just didn't happen to be exposed by any of the included movies.
 		   Anyway, this skips the next two blocks, doing nothing to them.
 		   Note that if you've reached the end of a row, this means going on

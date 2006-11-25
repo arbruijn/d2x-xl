@@ -12,17 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Escort robot behavior.
- *
- * Old Log:
- * Revision 1.1  1995/05/06  23:32:19  mike
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -183,7 +172,7 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = FindConnectedDistance(&objP->pos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
+			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
 			if (connectedDistance < F1_0*500) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;
@@ -204,11 +193,11 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 						ailp->playerAwarenessType = 0;
 						CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
 
-						//	If path is real short, try again, allowing to go through player's tSegment
+						//	If path is real short, try again, allowing to go through tPlayer's tSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath(objP, 10, -1);
 						} else if (objP->shields* 4 < gameData.bots.pInfo[objP->id].strength) {
-							//	If robot really low on hits, will run through player with even longer path
+							//	If robot really low on hits, will run through tPlayer with even longer path
 							if (aip->nPathLength < 8) {
 								CreateNSegmentPath(objP, 10, -1);
 							}
@@ -241,10 +230,10 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 				ailp->mode = AIM_THIEF_ATTACK;
 			} else {
 				if (player_visibility && (dist_to_player < F1_0*100)) {
-					//	If the player is close to looking at the thief, thief shall run away.
+					//	If the tPlayer is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
 					if (dist_to_player > F1_0*60) {
-						fix	dot = VmVecDot(vec_to_player, &gameData.objs.console->orient.fVec);
+						fix	dot = VmVecDot(vec_to_player, &gameData.objs.console->position.mOrient.fVec);
 						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
 							gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
@@ -394,7 +383,7 @@ int MaybeStealPrimaryWeapon(int player_num, int weapon_num)
 //	----------------------------------------------------------------------------
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
-//	If a wapon successfully stolen, do everything, removing it from player,
+//	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
 int AttemptToStealItem3(tObject *objP, int player_num)
 {
@@ -421,7 +410,7 @@ int AttemptToStealItem3(tObject *objP, int player_num)
 	if (MaybeStealSecondaryWeapon(player_num, gameData.weapons.nSecondary))
 		return 1;
 
-	//	See what the player has and try to snag something.
+	//	See what the tPlayer has and try to snag something.
 	//	Try best things first.
 	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_INVULNERABLE))
 		return 1;
@@ -469,7 +458,7 @@ int AttemptToStealItem2(tObject *objP, int player_num)
 //	----------------------------------------------------------------------------
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
-//	If a wapon successfully stolen, do everything, removing it from player,
+//	If a wapon successfully stolen, do everything, removing it from tPlayer,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
 int AttemptToStealItem(tObject *objP, int player_num)
 {
@@ -493,7 +482,7 @@ int AttemptToStealItem(tObject *objP, int player_num)
 	if (rval) {
 		PALETTE_FLASH_ADD(30, 15, -20);
 		UpdateLaserWeaponInfo();
-//		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->nSegment, 0, &objP->pos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
+//		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->nSegment, 0, &objP->position.vPos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
 //	I removed this to make the "steal sound" more obvious -AP
 #ifdef NETWORK
                 if (gameData.app.nGameMode & GM_NETWORK)
@@ -537,7 +526,7 @@ void DropStolenItems(tObject *objP)
 
 	for (i=0; i<MAX_STOLEN_ITEMS; i++) {
 		if (gameData.thief.stolenItems[i] != 255)
-			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, &objP->mType.physInfo.velocity, &objP->pos, objP->nSegment);
+			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, &objP->mType.physInfo.velocity, &objP->position.vPos, objP->nSegment);
 		gameData.thief.stolenItems[i] = 255;
 	}
 

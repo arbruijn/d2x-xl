@@ -12,12 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Inferno main menu.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -198,7 +192,7 @@ ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo start
 #else
 ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
 #endif
-int playerDefaultDifficulty; // Last difficulty level chosen by the player
+int playerDefaultDifficulty; // Last difficulty level chosen by the tPlayer
 
 // Function Prototypes added after LINTING
 void ExecMenuOption (int select);

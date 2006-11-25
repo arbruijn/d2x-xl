@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Ripped out a bunch of unused stuff
  *
  * Revision 1.3  1994/07/15  09:32:08  john
- * Changes player movement.
+ * Changes tPlayer movement.
  *
  * Revision 1.2  1994/06/30  19:02:22  matt
  * Moved flying controls code from physics.c to controls.c

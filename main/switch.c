@@ -12,152 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * New gameData.trigs.triggers and Switches.
- *
- * Old Log:
- * Revision 1.2  1995/10/31  10:18:10  allender
- * shareware stuff
- *
- * Revision 1.1  1995/05/16  15:31:21  allender
- * Initial revision
- *
- * Revision 2.1  1995/03/21  14:39:08  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02/27  11:28:41  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn'trigP require parsing BITMAPS.TBL.
- *
- * Revision 1.51  1995/01/31  15:26:23  rob
- * Don'trigP tTrigger matcens in anarchy games.
- *
- * Revision 1.50  1995/01/26  12:18:26  rob
- * Changed NetworkDoFrame call.
- *
- * Revision 1.49  1995/01/18  18:50:35  allender
- * don'trigP process triggers if in demo playback mode.  Fix for Rob to only do
- * MultiSendEndLevelStart if in multi player game
- *
- * Revision 1.48  1995/01/13  11:59:40  rob
- * Added palette fade after secret level exit.
- *
- * Revision 1.47  1995/01/12  17:00:41  rob
- * Fixed a problem with switches and secret levels.
- *
- * Revision 1.46  1995/01/12  13:35:11  rob
- * Added data flush after secret level exit.
- *
- * Revision 1.45  1995/01/03  15:25:11  rob
- * Fixed a compile error.
- *
- * Revision 1.44  1995/01/03  15:12:02  rob
- * Adding multiplayer switching.
- *
- * Revision 1.43  1994/11/29  16:52:12  yuan
- * Removed some obsolete commented out code.
- *
- * Revision 1.42  1994/11/27  23:15:07  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.41  1994/11/22  18:36:45  rob
- * Added new hook for endlevel for secret doors.
- *
- * Revision 1.40  1994/11/21  17:29:43  matt
- * Cleaned up sequencing & game saving for secret levels
- *
- * Revision 1.39  1994/11/19  15:20:32  mike
- * rip out unused code and data
- *
- * Revision 1.38  1994/10/25  16:09:52  yuan
- * Fixed byte bug.
- *
- * Revision 1.37  1994/10/24  16:05:28  matt
- * Removed clear of fuelcen_control_center_destroyed
- *
- * Revision 1.36  1994/10/08  14:21:13  matt
- * Added include
- *
- * Revision 1.35  1994/10/07  12:34:09  matt
- * Added code fot going to/from secret levels
- *
- * Revision 1.34  1994/10/05  15:16:10  rob
- * Used to be that only player #0 could tTrigger switches, now only the
- * LOCAL player can do it (and he's expected to tell the other guy with
- * a com message if its important!)
- *
- * Revision 1.33  1994/09/24  17:42:03  mike
- * Kill temporary version of function written by Yuan, replaced by MK.
- *
- * Revision 1.32  1994/09/24  17:10:00  yuan
- * Added Matcen triggers.
- *
- * Revision 1.31  1994/09/23  18:02:21  yuan
- * Completed wall checking.
- *
- * Revision 1.30  1994/08/19  20:09:41  matt
- * Added end-of-level cut scene with external scene
- *
- * Revision 1.29  1994/08/18  10:47:36  john
- * Cleaned up game sequencing and player death stuff
- * in preparation for making the player explode into
- * pieces when dead.
- *
- * Revision 1.28  1994/08/12  22:42:11  john
- * Took away Player_stats; added gameData.multi.players array.
- *
- * Revision 1.27  1994/07/02  13:50:44  matt
- * Cleaned up includes
- *
- * Revision 1.26  1994/06/27  16:32:25  yuan
- * Commented out incomplete code...
- *
- * Revision 1.25  1994/06/27  15:53:27  john
- * #define'd out the newdemo stuff
- *
- *
- * Revision 1.24  1994/06/27  15:10:04  yuan
- * Might mess up triggers.
- *
- * Revision 1.23  1994/06/24  17:01:43  john
- * Add VFX support; Took Game Sequencing, like EndGame and stuff and
- * took it out of game.c and into gameseq.c
- *
- * Revision 1.22  1994/06/16  16:20:15  john
- * Made player start out in physics mode; Neatend up game loop a bit.
- *
- * Revision 1.21  1994/06/15  14:57:22  john
- * Added triggers to demo recording.
- *
- * Revision 1.20  1994/06/10  17:44:25  mike
- * Assert on result of FindConnectedSide == -1
- *
- * Revision 1.19  1994/06/08  10:20:15  yuan
- * Removed unused testing.
- *
- *
- * Revision 1.18  1994/06/07  13:10:48  yuan
- * Fixed bug in check tTrigger... Still working on other bugs.
- *
- * Revision 1.17  1994/05/30  20:22:04  yuan
- * New triggers.
- *
- * Revision 1.16  1994/05/27  10:32:46  yuan
- * New dialog boxes (gameData.walls.walls and gameData.trigs.triggers) added.
- *
- *
- * Revision 1.15  1994/05/25  18:06:46  yuan
- * Making new dialog box controls for walls and triggers.
- *
- * Revision 1.14  1994/05/10  19:05:32  yuan
- * Made end of level flag rather than menu popping up
- *
- * Revision 1.13  1994/04/29  15:05:25  yuan
- * Added menu pop-up at exit tTrigger.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -598,9 +452,9 @@ else
 VmExtractAnglesVector (&an, &n);
 // create new orientation matrix
 if (!nStep)
-	VmAngles2Matrix (&objP->orient, &an);
+	VmAngles2Matrix (&objP->position.mOrient, &an);
 if (bSetPos)
-	COMPUTE_SEGMENT_CENTER_I (&objP->pos, + nSegment); 
+	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, + nSegment); 
 // rotate the ships vel vector accordingly
 VmExtractAnglesVector (&av, &objP->mType.physInfo.velocity);
 av.p -= an.p;
@@ -611,14 +465,14 @@ if (nStep) {
 		av.p /= nStep;
 		av.b /= nStep;
 		av.h /= nStep;
-		VmExtractAnglesMatrix (&ad, &objP->orient);
+		VmExtractAnglesMatrix (&ad, &objP->position.mOrient);
 		ad.p += (an.p - ad.p) / nStep;
 		ad.b += (an.b - ad.b) / nStep;
 		ad.h += (an.h - ad.h) / nStep;
-		VmAngles2Matrix (&objP->orient, &ad);
+		VmAngles2Matrix (&objP->position.mOrient, &ad);
 		}
 	else
-		VmAngles2Matrix (&objP->orient, &an);
+		VmAngles2Matrix (&objP->position.mOrient, &an);
 	}
 VmAngles2Matrix (&rm, &av);
 VmVecRotate (&vel, &objP->mType.physInfo.velocity, &rm);
@@ -645,7 +499,7 @@ if (trigP->nLinks > 0) {
 	i = d_rand () % trigP->nLinks;
 	nSegment = trigP->nSegment [i];
 	nSide = trigP->nSide [i];
-	// set new player direction, facing the destination nSide
+	// set new tPlayer direction, facing the destination nSide
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
 	gameStates.render.bDoAppearanceEffect = 1;

@@ -50,11 +50,11 @@ extern int netmisc_find_diff(void *block1, void *block2, int block_size, void *d
 // final size of block1.
 extern int netmisc_apply_diff(void *block1, void *diff_buffer, int diff_size);
 
-void BEReceiveNetPlayerInfo (ubyte *data, netplayer_info *info);
+void BEReceiveNetPlayerInfo (ubyte *data, tNetPlayerInfo *info);
 void BEReceiveNetPlayersPacket(ubyte *data, allNetPlayers_info *pinfo);
 void BESendNetPlayersPacket(ubyte *server, ubyte *node);
-void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte *netAddress);
-void BEReceiveSequencePacket(ubyte *data, sequence_packet *seq);
+void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte *netAddress);
+void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq);
 void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int liteFlag);
 void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int liteFlag);
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
@@ -118,11 +118,11 @@ void BESwapObject (tObject *obj);
 	IPXSendBroadcastData((ubyte *)&netPlayers, sizeof(allNetPlayers_info))
 
 #define SendSequencePacket(seq, server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&seq, sizeof(sequence_packet), server, node, netAddress)
+	IPXSendPacketData((ubyte *)&seq, sizeof(tSequencePacket), server, node, netAddress)
 #define SendInternetSequencePacket(seq, server, node) \
-	IPXSendInternetPacketData((ubyte *)&seq, sizeof(sequence_packet), server, node)
+	IPXSendInternetPacketData((ubyte *)&seq, sizeof(tSequencePacket), server, node)
 #define SendBroadcastSequencePacket(seq) \
-	IPXSendBroadcastData((ubyte *)&seq, sizeof(sequence_packet))
+	IPXSendBroadcastData((ubyte *)&seq, sizeof(tSequencePacket))
 
 #define SendFullNetGamePacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *)&netGame, sizeof(netgame_info), server, node, netAddress)

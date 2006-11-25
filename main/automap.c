@@ -12,187 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Routines for displaying the auto-map.
- *
- * Old Log:
- * Revision 1.8  1995/10/31  10:24:54  allender
- * shareware stuff
- *
- * Revision 1.7  1995/10/21  16:18:20  allender
- * blit pcx background directly to Page canvas instead of creating
- * seperate bitmap for it -- hope to solve VM bug on some macs
- *
- * Revision 1.6  1995/10/20  00:49:16  allender
- * added redbook check during automap
- *
- * Revision 1.5  1995/09/13  08:44:07  allender
- * Dave Denhart's changes to speed up the automap
- *
- * Revision 1.4  1995/08/18  15:46:00  allender
- * put text all on upper bar -- and fixed background since
- * changing xparency color
- *
- * Revision 1.3  1995/08/03  15:15:18  allender
- * fixed edge hashing problem causing automap to crash
- *
- * Revision 1.2  1995/07/12  12:49:27  allender
- * works in 640x480 mode
- *
- * Revision 1.1  1995/05/16  15:22:59  allender
- * Initial revision
- *
- * Revision 2.2  1995/03/21  14:41:26  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.1  1995/03/20  18:16:06  john
- * Added code to not store the normals in the tSegment structure.
- *
- * Revision 2.0  1995/02/27  11:32:55  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.117  1995/02/22  14:11:31  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.116  1995/02/22  13:24:39  john
- * Removed the vecmat anonymous unions.
- *
- * Revision 1.115  1995/02/09  14:57:02  john
- * Reduced mem usage. Made automap slide farther.
- *
- * Revision 1.114  1995/02/07  20:40:44  rob
- * Allow for anarchy automap of player pos by option.
- *
- * Revision 1.113  1995/02/07  15:45:33  john
- * Made automap memory be static.
- *
- * Revision 1.112  1995/02/02  12:24:00  adam
- * played with automap labels
- *
- * Revision 1.111  1995/02/02  01:52:52  john
- * Made the automap use small font.
- *
- * Revision 1.110  1995/02/02  01:34:34  john
- * Made Reset in automap not change segmentlimit.
- *
- * Revision 1.109  1995/02/02  01:23:11  john
- * Finalized the new automap partial viewer.
- *
- * Revision 1.108  1995/02/02  00:49:45  mike
- * new automap tSegment-depth functionality.
- *
- * Revision 1.107  1995/02/02  00:23:04  john
- * Half of the code for new connected distance stuff in automap.
- *
- * Revision 1.106  1995/02/01  22:54:00  john
- * Made colored doors not fade in automap. Made default
- * viewing area be maxxed.
- *
- * Revision 1.105  1995/02/01  13:16:13  john
- * Added great grates.
- *
- * Revision 1.104  1995/01/31  12:47:06  john
- * Made Alt+F only work with cheats enabled.
- *
- * Revision 1.103  1995/01/31  12:41:23  john
- * Working with new controls.
- *
- * Revision 1.102  1995/01/31  12:04:19  john
- * Version 2 of new key control.
- *
- * Revision 1.101  1995/01/31  11:32:00  john
- * First version of new automap system.
- *
- * Revision 1.100  1995/01/28  16:55:48  john
- * Made keys draw in automap in the segments that you have
- * visited.
- *
- * Revision 1.99  1995/01/28  14:44:51  john
- * Made hostage doors show up on automap.
- *
- * Revision 1.98  1995/01/22  17:03:49  rob
- * Fixed problem drawing playerships in automap coop/team mode
- *
- * Revision 1.97  1995/01/21  17:23:11  john
- * Limited S movement in map. Made map bitmap load from disk
- * and then freed it.
- *
- * Revision 1.96  1995/01/19  18:55:38  john
- * Don't draw players in automap if not obj_player.
- *
- * Revision 1.95  1995/01/19  18:48:13  john
- * Made player colors better in automap.
- *
- * Revision 1.94  1995/01/19  17:34:52  rob
- * Added team colorizations in automap.
- *
- * Revision 1.93  1995/01/19  17:15:36  rob
- * Trying to add player ships into map for coop and team mode.
- *
- * Revision 1.92  1995/01/19  17:11:09  john
- * Added code for Rob to draw Multiplayer ships in automap.
- *
- * Revision 1.91  1995/01/12  13:35:20  john
- * Fixed bug with Segment 0 not getting displayed
- * in automap if you have EDITOR compiled in.
- *
- * Revision 1.90  1995/01/08  16:17:14  john
- * Added code to draw player's up vector while in automap.
- *
- * Revision 1.89  1995/01/08  16:09:41  john
- * Fixed problems with grate.
- *
- * Revision 1.88  1994/12/14  22:54:17  john
- * Fixed bug that didn't show hostages in automap.
- *
- * Revision 1.87  1994/12/09  00:41:03  mike
- * fix hang in automap print screen
- *
- * Revision 1.86  1994/12/05  23:37:15  matt
- * Took out calls to warning () function
- *
- * Revision 1.85  1994/12/03  22:35:28  yuan
- * Localization 412
- *
- * Revision 1.84  1994/12/02  15:05:45  matt
- * Added new "official" cheats
- *
- * Revision 1.83  1994/11/30  12:10:49  adam
- * added support for PCX titles/brief screens
- *
- * Revision 1.82  1994/11/27  23:15:12  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.81  1994/11/27  15:35:52  matt
- * Enable screen shots even when debugging is turned off
- *
- * Revision 1.80  1994/11/26  22:51:43  matt
- * Removed editor-only fields from tSegment structure when editor is compiled
- * out, and padded tSegment structure to even multiple of 4 bytes.
- *
- * Revision 1.79  1994/11/26  16:22:48  matt
- * Reduced leaveTime
- *
- * Revision 1.78  1994/11/23  22:00:10  mike
- * show level number.
- *
- * Revision 1.77  1994/11/21  11:40:33  rob
- * Tweaked the game-loop for automap in multiplayer games.
- *
- * Revision 1.76  1994/11/18  16:42:06  adam
- * removed a font
- *
- * Revision 1.75  1994/11/17  13:06:48  adam
- * changed font
- *
- * Revision 1.74  1994/11/14  20:47:17  john
- * Attempted to strip out all the code in the game
- * directory that uses any ui code.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -455,7 +274,7 @@ void DrawMarkerNumber (int num)
    GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
 
 
-G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.tObject[(gameData.multi.nLocalPlayer*2)+num]].pos);
+G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.objects[(gameData.multi.nLocalPlayer*2)+num]].position.vPos);
 fromPoint.p3_index =
 toPoint.p3_index =
 basePoint.p3_index = -1;
@@ -487,17 +306,17 @@ void DropMarker (char player_marker_num)
 	ubyte marker_num = (gameData.multi.nLocalPlayer*2)+player_marker_num;
 	tObject *playerp = &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject];
 
-	gameData.marker.point[marker_num] = playerp->pos;
+	gameData.marker.point[marker_num] = playerp->position.vPos;
 
-	if (gameData.marker.tObject[marker_num] != -1)
-		ReleaseObject (gameData.marker.tObject[marker_num]);
+	if (gameData.marker.objects[marker_num] != -1)
+		ReleaseObject (gameData.marker.objects[marker_num]);
 
-	gameData.marker.tObject[marker_num] = 
-		DropMarkerObject (&playerp->pos, (short) playerp->nSegment, &playerp->orient, marker_num);
+	gameData.marker.objects[marker_num] = 
+		DropMarkerObject (&playerp->position.vPos, (short) playerp->nSegment, &playerp->position.mOrient, marker_num);
 
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerp->pos, player_marker_num, gameData.marker.szMessage[marker_num]);
+		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerp->position.vPos, player_marker_num, gameData.marker.szMessage[marker_num]);
 #endif
 
 }
@@ -515,12 +334,12 @@ void DropBuddyMarker (tObject *objP)
 
    sprintf (gameData.marker.szMessage[marker_num], "RIP: %s",gameData.escort.szName);
 
-	gameData.marker.point[marker_num] = objP->pos;
+	gameData.marker.point[marker_num] = objP->position.vPos;
 
-	if (gameData.marker.tObject[marker_num] != -1 && gameData.marker.tObject[marker_num] !=0)
-		ReleaseObject (gameData.marker.tObject[marker_num]);
+	if (gameData.marker.objects[marker_num] != -1 && gameData.marker.objects[marker_num] !=0)
+		ReleaseObject (gameData.marker.objects[marker_num]);
 
-	gameData.marker.tObject[marker_num] = DropMarkerObject (&objP->pos, (short) objP->nSegment, &objP->orient, marker_num);
+	gameData.marker.objects[marker_num] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, marker_num);
 
 }
 
@@ -541,9 +360,9 @@ void DrawMarkers ()
 
 	spherePoint.p3_index = -1;
 	for (i=0;i<maxdrop;i++)
-		if (gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
+		if (gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
 
-			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i]].pos);
+			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i]].position.vPos);
 
 			GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
 			G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE, 1);
@@ -581,7 +400,7 @@ void ClearMarkers ()
 
 	for (i=0;i<NUM_MARKERS;i++) {
 		gameData.marker.szMessage[i][0]=0;
-		gameData.marker.tObject[i]=-1;
+		gameData.marker.objects[i]=-1;
 	}
  }
 
@@ -678,32 +497,32 @@ void DrawPlayer (tObject * objP, int bRadar)
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
-// Draw Console player -- shaped like a ellipse with an arrow.
-G3TransformAndEncodePoint (&spherePoint, &objP->pos);
+// Draw Console tPlayer -- shaped like a ellipse with an arrow.
+G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
 G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
 //G3DrawSphere3D (&spherePoint, bRadar ? 8 : 20, objP->size * (bRadar + 1));
 
 if (bRadar && (OBJ_IDX (objP) != gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
 	return;
 // Draw shaft of arrow
-VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.fVec, size*3);
+VmVecScaleAdd (&arrow_pos, &objP->position.vPos, &objP->position.mOrient.fVec, size*3);
 G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
-VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fVec, size*2);
-VmVecScaleInc (&head_pos, &objP->orient.rVec, size*1);
+VmVecScaleAdd (&head_pos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
+VmVecScaleInc (&head_pos, &objP->position.mOrient.rVec, size*1);
 G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
-VmVecScaleAdd (&head_pos, &objP->pos, &objP->orient.fVec, size*2);
-VmVecScaleInc (&head_pos, &objP->orient.rVec, size* (-1));
+VmVecScaleAdd (&head_pos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
+VmVecScaleInc (&head_pos, &objP->position.mOrient.rVec, size* (-1));
 G3TransformAndEncodePoint (&headPoint,&head_pos);
 AutomapDrawLine (&arrowPoint, &headPoint);
 
-// Draw player's up vector
-VmVecScaleAdd (&arrow_pos, &objP->pos, &objP->orient.uVec, size*2);
+// Draw tPlayer's up vector
+VmVecScaleAdd (&arrow_pos, &objP->position.vPos, &objP->position.mOrient.uVec, size*2);
 G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 }
@@ -731,7 +550,7 @@ void DrawAutomap (int bRadar)
 	vmsMatrix	vmRadar;
 
 if (bRadar && gameStates.render.bTopDownRadar) {
-	vmsMatrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].orient;
+	vmsMatrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].position.mOrient;
 	vmRadar.rVec.x = po->rVec.x;
 	vmRadar.rVec.y = po->rVec.y;
 	vmRadar.rVec.z = po->rVec.z;
@@ -828,7 +647,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			ModexPrintF (5,20,msg,SMALL_FONT,automapColors.nDkGray);
 		 }
 	}				
-	// Draw player (s)...
+	// Draw tPlayer (s)...
 #ifdef NETWORK
 	if ( (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))	{
 		for (i = 0; i<gameData.multi.nPlayers; i++)		{
@@ -855,13 +674,13 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			switch (objP->nType)	{
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
-				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
+				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
 				G3DrawSphere (&spherePoint,size, !bRadar);	
 				break;
 
 			case OBJ_MONSTERBALL:
 				GrSetColorRGBi (automapColors.nMonsterball);
-				G3TransformAndEncodePoint (&spherePoint,&objP->pos);
+				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
 				G3DrawSphere (&spherePoint,size, !bRadar);	
 				break;
 
@@ -888,7 +707,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							GrSetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
-					G3TransformAndEncodePoint (&spherePoint,&objP->pos);
+					G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
 					G3DrawSphere (&spherePoint, (size*3)/2, !bRadar);	
 				}
 				break;
@@ -916,7 +735,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							GrSetColorRGBi (ORANGE_RGBA); //orange
 							//Error ("Illegal key nType: %i", objP->id);
 						}
-						G3TransformAndEncodePoint (&spherePoint,&objP->pos);
+						G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
 						G3DrawSphere (&spherePoint,size, !bRadar);	
 					}
 				}
@@ -1258,7 +1077,7 @@ WIN (if (!redraw_screen) {)
 		amData.nViewDist = ZOOM_DEFAULT;
 	else if (!amData.nViewDist)
 		amData.nViewDist = ZOOM_DEFAULT;
-	amData.viewMatrix = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient;
+	amData.viewMatrix = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient;
 
 	tangles.p = PITCH_DEFAULT;
 	tangles.h  = 0;
@@ -1266,7 +1085,7 @@ WIN (if (!redraw_screen) {)
 
 	done = 0;
 
-	amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos;
+	amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
 
 	t1 = entryTime = TimerGetFixedSeconds ();
 	t2 = t1;
@@ -1425,7 +1244,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			marker_num = c-KEY_1;
             if (marker_num<=maxdrop)
 				 {
-					if (gameData.marker.tObject[marker_num] != -1)
+					if (gameData.marker.objects[marker_num] != -1)
 						gameData.marker.nHighlight=marker_num;
 				 }
 			  break;
@@ -1436,7 +1255,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 					DrawAutomap (0);	//..so switch from 1 to 0
 #endif
 
-				if (gameData.marker.nHighlight > -1 && gameData.marker.tObject[gameData.marker.nHighlight] != -1) {
+				if (gameData.marker.nHighlight > -1 && gameData.marker.objects[gameData.marker.nHighlight] != -1) {
 #if AUTOMAP_DIRECT_RENDER == 0
 					WINDOS (
 						DDGrSetCurrentCanvas (&ddPages[current_page]),
@@ -1445,8 +1264,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 #endif
 
 					if (ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?") == 0) {
-						ReleaseObject (gameData.marker.tObject[gameData.marker.nHighlight]);
-						gameData.marker.tObject[gameData.marker.nHighlight]=-1;
+						ReleaseObject (gameData.marker.objects[gameData.marker.nHighlight]);
+						gameData.marker.objects[gameData.marker.nHighlight]=-1;
 						gameData.marker.szMessage[gameData.marker.nHighlight][0]=0;
 						gameData.marker.nHighlight = -1;
 					}					
@@ -1502,7 +1321,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			tangles.p = PITCH_DEFAULT;
 			tangles.h  = 0;
 			tangles.b  = 0;
-			amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos;
+			amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
 		}
 #if 0
 		amData.nViewDist -= Controls.forward_thrustTime*ZOOM_SPEED_FACTOR;
@@ -1520,18 +1339,18 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			old_vt = amData.viewTarget;
 			tangles1 = tangles;
 			VmAngles2Matrix (&tempm,&tangles1);
-			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient,&tempm);
 			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.vertical_thrustTime*SLIDE_SPEED);
 			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sideways_thrustTime*SLIDE_SPEED);
 #if 0
-			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].pos) > i2f (1000))	{
+			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos) > i2f (1000))	{
 				amData.viewTarget = old_vt;
 			}
 #endif
 		}
 
 		VmAngles2Matrix (&tempm,&tangles);
-		VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].orient,&tempm);
+		VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient,&tempm);
 
 		if (amData.nViewDist < ZOOM_MIN_VALUE) 
 			amData.nViewDist = ZOOM_MIN_VALUE;
@@ -2107,7 +1926,7 @@ if (gameData.app.nGameMode & GM_MULTI)
 else
    maxdrop=MAX_DROP_SINGLE;
 for (i=0;i<maxdrop;i++)
-	if (gameData.marker.tObject[ (gameData.multi.nLocalPlayer*2)+i] == -1)		//found d_free slot!
+	if (gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i] == -1)		//found d_free slot!
 		break;
 if (i == maxdrop) {		//no d_free slot
 	if (gameData.app.nGameMode & GM_MULTI)

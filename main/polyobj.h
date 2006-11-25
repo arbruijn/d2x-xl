@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added code to show low detail polygon models
  *
  * Revision 1.26  1994/11/10  14:03:05  matt
- * Hacked in support for player ships with different textures
+ * Hacked in support for tPlayer ships with different textures
  *
  * Revision 1.25  1994/11/02  16:18:24  matt
  * Moved DrawModelPicture() out of editor

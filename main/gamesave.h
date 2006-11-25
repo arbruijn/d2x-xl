@@ -70,11 +70,11 @@ typedef struct {
 	int     fileinfo_sizeof;
 } game_top_fileinfo;    // Should be same as first two fields below...
 
-typedef struct game_item_info {
+typedef struct tGameItemInfo {
 	int		offset;
 	int		count;
 	int		size;
-} game_item_info;
+} tGameItemInfo;
 
 typedef struct {
 	ushort  fileinfo_signature;
@@ -83,18 +83,18 @@ typedef struct {
 	char    mine_filename[15];
 	int     level;
 #if 1
-	game_item_info	player;
-	game_item_info	tObject;
-	game_item_info	walls;
-	game_item_info	doors;
-	game_item_info	triggers;
-	game_item_info	links;
-	game_item_info	control;
-	game_item_info	matcen;
-	game_item_info	lightDeltaIndices;
-	game_item_info	lightDeltas;
+	tGameItemInfo	player;
+	tGameItemInfo	objects;
+	tGameItemInfo	walls;
+	tGameItemInfo	doors;
+	tGameItemInfo	triggers;
+	tGameItemInfo	links;
+	tGameItemInfo	control;
+	tGameItemInfo	matcen;
+	tGameItemInfo	lightDeltaIndices;
+	tGameItemInfo	lightDeltas;
 #else
-	game_item_info	;
+	tGameItemInfo	;
 	int     player_offset;              // Player info
 	int     player_sizeof;
 	int     object_offset;              // Object info
@@ -125,14 +125,14 @@ typedef struct {
 	int     delta_light_howmany;
 	int     delta_light_sizeof;
 #endif
-} game_fileinfo;
+} tGameFileInfo;
 
 void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);
 
 extern int LoadLevelSub(char *filename);
-extern int saveLevel(char *filename);
+extern int SaveLevel(char *filename);
 
 // called in place of load_game() to only load the .min data
 extern void load_mine_only(char * filename);
@@ -143,7 +143,7 @@ extern int Gamesave_num_orgRobots;
 // In dumpmine.c
 extern void write_game_text_file(char *filename);
 
-extern game_fileinfo	gameFileInfo;
+extern tGameFileInfo	gameFileInfo;
 extern game_top_fileinfo gameTopFileInfo;
 
 extern int Errors_in_mine;

@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Linted.
  *
  * Revision 1.38  1995/01/27  11:15:03  rob
- * Added extern for player position vars.
+ * Added extern for tPlayer position vars.
  *
  * Revision 1.37  1995/01/20  22:47:38  matt
  * Mission system implemented, though imcompletely
@@ -95,7 +95,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Player doesn't get credit for hostages unless he gets them out alive
  *
  * Revision 1.22  1994/10/18  18:57:08  matt
- * Added main menu option to enter new player name
+ * Added main menu option to enter new tPlayer name
  *
  * Revision 1.21  1994/10/07  23:37:32  matt
  * Added prototype
@@ -104,7 +104,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Loading saved game no longer clears players weapons & other stats
  *
  * Revision 1.19  1994/10/06  14:12:46  matt
- * Added flash effect when player appears
+ * Added flash effect when tPlayer appears
  *
  * Revision 1.18  1994/10/03  13:34:44  matt
  * Added new (and hopefully better) game sequencing functions
@@ -128,13 +128,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added level 10 capability.. (LEDGES)
  *
  * Revision 1.11  1994/08/18  10:47:38  john
- * Cleaned up game sequencing and player death stuff
- * in preparation for making the player explode into
+ * Cleaned up game sequencing and tPlayer death stuff
+ * in preparation for making the tPlayer explode into
  * pieces when dead.
  *
  * Revision 1.10  1994/08/15  15:24:45  john
  * Made players know who killed them; Disabled cheat menu
- * during net player; fixed bug with not being able to turn
+ * during net tPlayer; fixed bug with not being able to turn
  * of invulnerability; Made going into edit/starting new leve
  * l drop you out of a net game; made death dialog box.
  *
@@ -151,7 +151,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up includes
  *
  * Revision 1.5  1994/07/02  13:09:52  matt
- * Moved player stats struct from gameseq.h to player.h
+ * Moved tPlayer stats struct from gameseq.h to player.h
  *
  * Revision 1.4  1994/07/01  16:35:35  yuan
  * Added key system
@@ -193,17 +193,17 @@ extern tObjPosition Player_init[MAX_PLAYERS];
 extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
 
-// This is the highest level the player has ever reached
+// This is the highest level the tPlayer has ever reached
 extern int Player_highestLevel;
 
 //
 // New game sequencing functions
 //
 
-// called once at program startup to get the player's name
+// called once at program startup to get the tPlayer's name
 int SelectPlayer();
 
-// Inputs the player's name, without putting up the background screen
+// Inputs the tPlayer's name, without putting up the background screen
 int SelectPlayerSub(int allow_abortFlag);
 
 // starts a new game on the given level
@@ -216,17 +216,17 @@ void StartLevel(int randomFlag);
 // Actually does the work to start new level
 int StartNewLevelSub(int level_num, int page_in_textures, int secretFlag);
 
-void InitMultiPlayerObject();            //make sure player's tObject set up
+void InitMultiPlayerObject();            //make sure tPlayer's tObject set up
 void InitPlayerStatsGame();      //clear all stats
 
 // starts a resumed game loaded from disk
 void ResumeSavedGame(int startLevel);
 
-// called when the player has finished a level
+// called when the tPlayer has finished a level
 // if secret flag is true, advance to secret level, else next normal level
 void PlayerFinishedLevel(int secretFlag);
 
-// called when the player has died
+// called when the tPlayer has died
 void DoPlayerDead(void);
 
 // load a level off disk. level numbers start at 1.
@@ -242,7 +242,7 @@ extern void UpdatePlayerStats();
 
 extern void show_high_scores(int place);
 extern void draw_high_scores(int place);
-extern int add_player_to_high_scores(player *pp);
+extern int add_player_to_high_scores(tPlayer *playerP);
 extern void input_name (int place);
 extern int reset_high_scores();
 extern void init_player_statsLevel(int secretFlag);
@@ -250,7 +250,7 @@ extern void init_player_statsLevel(int secretFlag);
 void open_message_window(void);
 void close_message_window(void);
 
-// create flash for player appearance
+// create flash for tPlayer appearance
 extern void CreatePlayerAppearanceEffect(tObject *player_obj);
 
 // goto whatever secrect level is appropriate given the current level

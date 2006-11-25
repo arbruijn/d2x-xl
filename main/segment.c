@@ -1,12 +1,3 @@
-/* $Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $ */
-
-/*
- *
- * Segment Loading Stuff
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif

@@ -196,14 +196,14 @@ typedef struct tPOF_edgeList {
 	tPOF_edge			*pEdges;
 } tPOF_edgeList;
 
-typedef struct tPOF_subObject {
+typedef struct tPOFSubObject {
 	short					nIndex;
 	short					nParent;
 	vmsVector			vClipPlaneNormal;
 	vmsVector			vClipPlanePoint;
 	int					nRadius;
 	int					nOffset;
-} tPOF_subObject;
+} tPOFSubObject;
 
 typedef struct tPOFObject {
 	int					nVersion;
@@ -213,7 +213,7 @@ typedef struct tPOFObject {
 	vmsVector			vMax;
 	int					nDetailLevels;
 	int					nSubObjects;
-	tPOF_subObject		*pSubObjects;
+	tPOFSubObject		*pSubObjects;
 	tPOF_pointList		gunPoints;
 	tPOF_attachList	attachPoints;
 	tPOF_specialList	specialPoints;

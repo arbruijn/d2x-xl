@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Old Log:
  * Revision 2.3  1995/04/03  08:49:50  john
- * Added code to get someone's player struct.
+ * Added code to get someone's tPlayer struct.
  *
  * Revision 2.2  1995/03/27  12:59:17  john
  * Initial version of multiplayer save games.
@@ -215,7 +215,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added message nType for control center firing.
  *
  * Revision 1.14  1994/11/02  11:38:00  rob
- * Added player-in-process-of-dying explosions to network game.
+ * Added tPlayer-in-process-of-dying explosions to network game.
  *
  * Revision 1.13  1994/11/01  19:31:44  rob
  * Bumped max_net_createObjects to 20 to accomodate a fully equipped
@@ -244,7 +244,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added MultiDoDeath to multi.c.
  *
  * Revision 1.6  1994/10/07  16:14:32  rob
- * Added new message nType for player reappear
+ * Added new message nType for tPlayer reappear
  *
  * Revision 1.5  1994/10/07  12:58:17  rob
  * Added MultiLeaveGame.
@@ -334,8 +334,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_SAVE_GAME					33
 #define MULTI_RESTORE_GAME				34
 
-#define MULTI_REQ_PLAYER				35  // Someone requests my player structure
-#define MULTI_SEND_PLAYER				36  // Sending someone my player structure
+#define MULTI_REQ_PLAYER				35  // Someone requests my tPlayer structure
+#define MULTI_SEND_PLAYER				36  // Sending someone my tPlayer structure
 #define MULTI_MARKER						37
 #define MULTI_DROP_WEAPON				38
 #define MULTI_GUIDED						39
@@ -402,7 +402,7 @@ void MultiSendFlags(char);
 void MultiSendWeapons (int bForce);
 void MultiSendMonsterball (int bForce, int bCreate);
 void MultiSendFire(void);
-void MultiSendDestroyReactor(int nObject, int player);
+void MultiSendDestroyReactor(int nObject, int tPlayer);
 void MultiSendEndLevelStart(int);
 void MultiSendPlayerExplode(char nType);
 void MultiSendMessage(void);
@@ -427,7 +427,7 @@ void MultiSendObjTrigger(int tTrigger);
 void MultiSendHostageDoorStatus(int wallnum);
 void MultiSendNetPlayerStatsRequest(ubyte player_num);
 void MultiSendDropWeapon (int nObject,int seed);
-void MultiSendDropMarker (int player,vmsVector position,char messagenum,char text[]);
+void MultiSendDropMarker (int tPlayer,vmsVector position,char messagenum,char text[]);
 void MultiSendGuidedInfo (tObject *miss,char);
 void MultiSendReturnFlagHome(short nObject);
 void MultiSendCaptureBonus (char pnum);
@@ -531,7 +531,7 @@ typedef union {
 } network_info;
 
 
-typedef struct netplayer_info {
+typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
 	network_info network;
 	ubyte   version_major;
@@ -544,14 +544,14 @@ typedef struct netplayer_info {
 	sbyte    connected;
 	ushort  socket;
 	ubyte   rank;
-} __pack__ netplayer_info;
+} __pack__ tNetPlayerInfo;
 
 
 typedef struct allNetPlayers_info
 {
 	char    nType;
 	int     Security;
-	struct netplayer_info players [MAX_PLAYERS+4];
+	struct tNetPlayerInfo players [MAX_PLAYERS+4];
 } __pack__ allNetPlayers_info;
 
 typedef struct netgame_info {

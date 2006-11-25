@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added external tTrigger.
  *
  * Revision 1.14  1994/06/16  16:20:52  john
- * Made player start out in physics mode; Neatend up game loop a bit.
+ * Made tPlayer start out in physics mode; Neatend up game loop a bit.
  *
  * Revision 1.13  1994/05/30  20:22:08  yuan
  * New triggers.

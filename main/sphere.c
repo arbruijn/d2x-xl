@@ -223,7 +223,7 @@ tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vec
 					*s = pRotSphere;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, &viewInfo.view);
+OOF_MatVms2Oof (&m, &viewInfo.view [0]);
 OOF_VecVms2Oof (&p, &viewInfo.position);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
@@ -377,8 +377,8 @@ if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
-	G3StartInstanceMatrix (&objP->pos, &objP->orient);
-	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos),
+	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  f2fl (objP->size) * 1.1f, red, green, blue, alpha, NULL);
 	G3DoneInstance ();
 	}
@@ -394,8 +394,8 @@ if (!gameData.render.monsterball.pSphere) {
 	}
 if (gameData.render.monsterball.nFaces > 0) {
 	tOOF_vector	p;
-	G3StartInstanceMatrix (&objP->pos, &objP->orient);
-	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->pos), 
+	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
 					  f2fl (objP->size), red, green, blue, alpha, &gameData.hoard.monsterball.bm);
 	G3DoneInstance ();
 	}

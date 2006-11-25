@@ -12,122 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Lighting functions.
- *
- * Old Log:
- * Revision 1.4  1995/09/20  14:26:12  allender
- * more optimizations(?) ala MK
- *
- * Revision 1.2  1995/07/05  21:27:31  allender
- * new and improved lighting code by MK!
- *
- * Revision 2.1  1995/07/24  13:21:56  john
- * Added new lighting calculation code to speed things up.
- *
- * Revision 2.0  1995/02/27  11:27:33  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.43  1995/02/22  13:57:10  allender
- * remove anonymous union from tObject structure
- *
- * Revision 1.42  1995/02/13  20:35:07  john
- * Lintized
- *
- * Revision 1.41  1995/02/04  21:43:40  matt
- * Changed an assert() to an int3() and deal with the bad case
- *
- * Revision 1.40  1995/01/15  20:48:27  mike
- * support light field for powerups.
- *
- * Revision 1.39  1994/12/15  13:04:19  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
- *
- * Revision 1.38  1994/11/28  21:50:41  mike
- * optimizations.
- *
- * Revision 1.37  1994/11/28  01:32:33  mike
- * lighting optimization.
- *
- * Revision 1.36  1994/11/15  12:01:00  john
- * Changed a bunch of code that uses timer_get_milliseconds to
- * timer_get_fixed_Seconds.
- *
- * Revision 1.35  1994/10/31  21:56:07  matt
- * Fixed bug & added error checking
- *
- * Revision 1.34  1994/10/21  11:24:57  mike
- * Trap divide overflows in lighting.
- *
- * Revision 1.33  1994/10/08  14:49:11  matt
- * If viewer changed, don't do smooth lighting hack
- *
- * Revision 1.32  1994/09/25  23:41:07  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
- *
- * Revision 1.31  1994/09/25  15:45:15  matt
- * Added OBJ_LIGHT, a nType of tObject that casts light
- * Added generalized lifeleft, and moved it to localObject
- *
- * Revision 1.30  1994/09/11  15:48:27  mike
- * Use VmVecMagQuick in place of VmVecMag in pointDist computation.
- *
- * Revision 1.29  1994/09/08  21:44:49  matt
- * Made lighting ramp 4x as fast; made only static (ambient) light ramp
- * up, but not headlight & dynamic light
- *
- * Revision 1.28  1994/09/02  14:00:07  matt
- * Simplified ExplodeObject() & mutliple-stage explosions
- *
- * Revision 1.27  1994/08/29  19:06:44  mike
- * Make lighting proportional to square of distance, not linear.
- *
- * Revision 1.26  1994/08/25  18:08:38  matt
- * Made muzzle flash cast 3x as much light
- *
- * Revision 1.25  1994/08/23  16:38:31  mike
- * Key weapon light off bitmaps.tbl.
- *
- * Revision 1.24  1994/08/13  12:20:44  john
- * Made the networking uise the gameData.multi.players array.
- *
- * Revision 1.23  1994/08/12  22:42:18  john
- * Took away Player_stats; added gameData.multi.players array.
- *
- * Revision 1.22  1994/07/06  10:19:22  matt
- * Changed include
- *
- * Revision 1.21  1994/06/28  13:20:22  mike
- * Oops, fixed a dumb typo.
- *
- * Revision 1.20  1994/06/28  12:53:25  mike
- * Change lighting function for flares, make brighter and asynchronously flicker.
- *
- * Revision 1.19  1994/06/27  18:31:15  mike
- * Add flares.
- *
- * Revision 1.18  1994/06/20  13:41:17  matt
- * Added time-based gradual lighting hack for gameData.objs.objects
- * Took out strobing robots
- *
- * Revision 1.17  1994/06/19  16:25:54  mike
- * Optimize lighting.
- *
- * Revision 1.16  1994/06/17  18:08:08  mike
- * Make robots cast more and variable light.
- *
- * Revision 1.15  1994/06/13  15:15:55  mike
- * Fix phantom light, every 64K milliseconds, muzzle flash would flash again.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -392,7 +276,7 @@ void ApplyLight(
 	vmsVector	*vertpos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*objP = gameData.objs.objects + nObject;
-	player		*playerP = gameData.multi.players + objP->id;
+	tPlayer		*playerP = gameData.multi.players + objP->id;
 
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	if (objP->nType == OBJ_PLAYER) {
@@ -472,7 +356,7 @@ if (xObjIntensity) {
 					fvi_info		hit_data;
 					int			fate;
 
-					VmVecScaleAdd(&tvec, obj_pos, &objP->orient.fVec, F1_0*200);
+					VmVecScaleAdd(&tvec, obj_pos, &objP->position.mOrient.fVec, F1_0*200);
 
 					fq.startSeg			= objP->nSegment;
 					fq.p0					= obj_pos;
@@ -518,7 +402,7 @@ if (xObjIntensity) {
 
 							VmVecSub(&vecToPoint, vertpos, obj_pos);
 							VmVecNormalizeQuick(&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = VmVecDot(&vecToPoint, &objP->orient.fVec);
+							dot = VmVecDot(&vecToPoint, &objP->position.mOrient.fVec);
 							if (bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
@@ -599,7 +483,7 @@ switch (objtype) {
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX]) {
 		
-		// If hoard game and player, add extra light based on how many orbs you have
+		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 
 		  	hoardlight=i2f(gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f(12);
@@ -793,7 +677,7 @@ for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
 
 	while (nObject != -1) {
 		objP = gameData.objs.objects + nObject;
-		objPos = &objP->pos;
+		objPos = &objP->position.vPos;
 
 		if (objP->nType == OBJ_FIREBALL)
 			objP = objP;
@@ -810,7 +694,7 @@ for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
 
 //	Now, process all lights from last frame which haven't been processed this frame.
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
-	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about player sneaking up.
+	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about tPlayer sneaking up.
 	if ((lightingObjects [nObject]) || 
 		 ((gameData.app.nGameMode & GM_MULTI) && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
 		if (newLightingObjects [nObject])
@@ -820,7 +704,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 		else {
 			//	Lit last frame, but not this frame.  Get intensity...
 			objP = gameData.objs.objects + nObject;
-			objPos = &objP->pos;
+			objPos = &objP->position.vPos;
 
 			xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 			if (bGotColor)
@@ -879,10 +763,10 @@ fix compute_headlight_light_onObject(tObject *objP)
 
 		lightObjP = Headlights [i];
 
-		VmVecSub(&vecToObj, &objP->pos, &lightObjP->pos);
+		VmVecSub(&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
 		dist = VmVecNormalizeQuick(&vecToObj);
 		if (dist > 0) {
-			dot = VmVecDot(&lightObjP->orient.fVec, &vecToObj);
+			dot = VmVecDot(&lightObjP->position.mOrient.fVec, &vecToObj);
 
 			if (dot < F1_0/2)
 				light += FixDiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
@@ -993,7 +877,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	int nObject = OBJ_IDX (objP);
 
 	if (!rotated_pnt) {
-		G3TransformAndEncodePoint (&objpnt,&objP->pos);
+		G3TransformAndEncodePoint (&objpnt, &objP->position.vPos);
 		rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
@@ -1001,17 +885,17 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	//return light;
 	//Now, maybe return different value to smooth transitions
 	if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
-		fix delta_light,frame_delta;
+		fix xDeltaLight,xFrameDelta;
 
-		delta_light = light - object_light [nObject];
-		frame_delta = FixMul(LIGHT_RATE,gameData.time.xFrame);
-		if (abs(delta_light) <= frame_delta)
+		xDeltaLight = light - object_light [nObject];
+		xFrameDelta = FixMul(LIGHT_RATE,gameData.time.xFrame);
+		if (abs(xDeltaLight) <= xFrameDelta)
 			object_light [nObject] = light;		//we've hit the goal
 		else
-			if (delta_light < 0)
-				light = object_light [nObject] -= frame_delta;
+			if (xDeltaLight < 0)
+				light = object_light [nObject] -= xFrameDelta;
 			else
-				light = object_light [nObject] += frame_delta;
+				light = object_light [nObject] += xFrameDelta;
 	}
 	else {		//new tObject, initialize
 		object_sig [nObject] = objP->nSignature;
@@ -1040,7 +924,7 @@ if (objP->movementType == MT_PHYSICS) {
 		engine_glowValue [0] += (FixDiv(speed,MAX_VELOCITY)*3)/5;
 		}
 	}
-//set value for player headlight
+//set value for tPlayer headlight
 if (objP->nType == OBJ_PLAYER) {
 	if ((gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
 		 !gameStates.app.bEndLevelSequence)
@@ -1261,7 +1145,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	int	nLight = gameData.render.lights.ogl.owners [nObject];
 
 	if (nLight >= 0)
-		gameData.render.lights.ogl.lights [nLight].vPos = gameData.objs.objects [nObject].pos;
+		gameData.render.lights.ogl.lights [nLight].vPos = gameData.objs.objects [nObject].position.vPos;
 	}
 }
 
@@ -1386,16 +1270,24 @@ return nLight;
 }
 
 //------------------------------------------------------------------------------
-
-void InitShadowLightInfo (tOglLight *pl)
+void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
 {
+#if 0
+if (!pc || pc->index) {
+	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
 #ifdef _DEBUG
 	vmsAngVec	a;
 #endif
-VmsVecToFloat (&pl->shadow.vPosf, &pl->vPos);
+	pli->nIndex = (int) nSegment * 6 + nSide;
+	COMPUTE_SIDE_CENTER_I (&pli->pos, nSegment, nSide);
+	OOF_VecVms2Gl (pli->glPos, &pli->pos);
+	pli->nSegNum = nSegment;
+	pli->nSideNum = (ubyte) nSide;
 #ifdef _DEBUG
-VmExtractAnglesVector (&a, gameData.segs.segments [pl->nSegment].sides [pl->nSide].normals);
-VmAngles2Matrix (&pl->shadow.orient, &a);
+	VmExtractAnglesVector (&a, gameData.segs.segments [nSegment].sides [nSide].normals);
+	VmAngles2Matrix (&pli->position.mOrient, &a);
+#endif
+	}
 #endif
 }
 
@@ -1446,7 +1338,7 @@ pl->bSpot = 0;
 pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
-	pl->vPos = gameData.objs.objects [nObject].pos;
+	pl->vPos = gameData.objs.objects [nObject].position.vPos;
 else if (nSegment >= 0) {
 #if 1
 	vmsVector	vOffs;
@@ -1491,7 +1383,7 @@ else if (nSegment >= 0) {
 
 	ComputeSideRads (nSegment, nSide, &rMin, &rMax);
 	pl->rad = f2fl ((rMin + rMax) / 20);
-	InitShadowLightInfo (pl);
+	//RegisterLight (NULL, nSegment, nSide);
 	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 	}
 pl->bTransform = 1;
@@ -1647,12 +1539,12 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	if (gameStates.ogl.bUseTransform)
 		psl->pos [1] = psl->pos [0];
 	else
-		G3TransformPointf (psl->pos + 1, psl->pos);
+		G3TransformPointf (psl->pos + 1, psl->pos, 0);
 	psl->brightness = pl->brightness;
 	if (psl->bSpot = pl->bSpot) {
 		VmsVecToFloat (&psl->dir, &pl->vDir);
 		if (pl->bTransform && !gameStates.ogl.bUseTransform)
-			G3RotatePointf (&psl->dir, &psl->dir);
+			G3RotatePointf (&psl->dir, &psl->dir, 0);
 		psl->spotAngle = pl->spotAngle;
 		psl->spotExponent = pl->spotExponent;
 		}
@@ -1873,8 +1765,8 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 		continue;
 	pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nHeadLights [nPlayer];
 	objP = gameData.objs.objects + gameData.multi.players [nPlayer].nObject;
-	pl->vPos = objP->pos;
-	pl->vDir = objP->orient.fVec;
+	pl->vPos = objP->position.vPos;
+	pl->vDir = objP->position.mOrient.fVec;
 	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 3);
 	}
 }
@@ -1912,7 +1804,7 @@ v.p.x = f2fl (pv->x);
 v.p.y = f2fl (pv->y);
 v.p.z = f2fl (pv->z);
 if (!gameStates.ogl.bUseTransform)
-	G3TransformPointf (&v, &v);
+	G3TransformPointf (&v, &v, 0);
 for (i = gameData.render.lights.ogl.nLights; i; i--, pl++, psl++) {
 	d.p.x = v.p.x - psl->pos [1].p.x;
 	d.p.y = v.p.y - psl->pos [1].p.y;

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added code to make the default mission be the one last played.
  *
  * Revision 1.3  1994/12/08  10:01:41  john
- * Changed the way the player callsign stuff works.
+ * Changed the way the tPlayer callsign stuff works.
  *
  * Revision 1.2  1994/11/14  17:53:17  allender
  * extern definitions for ReadConfigFile and WriteConfigFile

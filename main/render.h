@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * as parms, and now only takes pointers to points.
  *
  * Revision 1.14  1994/07/24  14:37:42  matt
- * Added angles for player head
+ * Added angles for tPlayer head
  *
  * Revision 1.13  1994/06/24  17:01:34  john
  * Add VFX support; Took Game Sequencing, like EndGame and stuff and
@@ -126,7 +126,7 @@ int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
 // should access Render_viewerObject members.
-extern fix nRenderZoom;     // the player's zoom factor
+extern fix nRenderZoom;     // the tPlayer's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
@@ -140,7 +140,7 @@ extern int Render_only_bottom;
 #endif
 
 
-// Set the following to turn on player head turning
+// Set the following to turn on tPlayer head turning
 extern int bUsePlayerHeadAngles;
 
 // If the above flag is set, these angles specify the orientation of the head

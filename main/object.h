@@ -89,7 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed some shorts to ints.
  *
  * Revision 1.108  1994/11/10  14:02:45  matt
- * Hacked in support for player ships with different textures
+ * Hacked in support for tPlayer ships with different textures
  *
  * Revision 1.107  1994/11/08  12:19:27  mike
  * Small explosions on objects.
@@ -156,7 +156,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.89  1994/09/15  16:34:47  mike
  * Add nDangerLaser and nDangerLaserSig to object_local to
- * enable robots to efficiently (too efficiently!) avoid player fire.
+ * enable robots to efficiently (too efficiently!) avoid tPlayer fire.
  *
  * Revision 1.88  1994/09/11  22:46:19  mike
  * Death_sequence_aborted prototyped.
@@ -174,7 +174,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Homing missile.
  *
  * Revision 1.83  1994/09/06  17:05:43  matt
- * Added new nType for dead player
+ * Added new nType for dead tPlayer
  *
  * Revision 1.82  1994/09/02  11:56:09  mike
  * Add persistency (PF_PERSISTENT) to physicsInfo.
@@ -187,7 +187,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.79  1994/08/15  15:24:54  john
  * Made players know who killed them; Disabled cheat menu
- * during net player; fixed bug with not being able to turn
+ * during net tPlayer; fixed bug with not being able to turn
  * of invulnerability; Made going into edit/starting new leve
  * l drop you out of a net game; made death dialog box.
  *
@@ -222,7 +222,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * New tAIStatic structure.
  *
  * Revision 1.68  1994/07/13  00:15:06  matt
- * Moved all (or nearly all) of the values that affect player movement to
+ * Moved all (or nearly all) of the values that affect tPlayer movement to
  * bitmaps.tbl
  *
  * Revision 1.67  1994/07/12  12:40:12  matt
@@ -262,7 +262,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_FIREBALL    1   // a fireball, part of an explosion
 #define OBJ_ROBOT       2   // an evil enemy
 #define OBJ_HOSTAGE     3   // a hostage you need to rescue
-#define OBJ_PLAYER      4   // the player on the console
+#define OBJ_PLAYER      4   // the tPlayer on the console
 #define OBJ_WEAPON      5   // a laser, missile, etc
 #define OBJ_CAMERA      6   // a camera to slew around with
 #define OBJ_POWERUP     7   // a powerup you can pick up
@@ -270,9 +270,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_CNTRLCEN    9   // the control center
 #define OBJ_FLARE       10  // a flare
 #define OBJ_CLUTTER     11  // misc objects
-#define OBJ_GHOST       12  // what the player turns into when dead
+#define OBJ_GHOST       12  // what the tPlayer turns into when dead
 #define OBJ_LIGHT       13  // a light source, & not much else
-#define OBJ_COOP        14  // a cooperative player tObject.
+#define OBJ_COOP        14  // a cooperative tPlayer tObject.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
@@ -289,7 +289,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_NONE         0   // doesn't move (or change movement)
 #define CT_AI           1   // driven by AI
 #define CT_EXPLOSION    2   // explosion sequencer
-#define CT_FLYING       4   // the player is flying
+#define CT_FLYING       4   // the tPlayer is flying
 #define CT_SLEW         5   // slewing
 #define CT_FLYTHROUGH   6   // the flythrough system
 #define CT_WEAPON       9   // laser, etc.
@@ -298,7 +298,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CT_DEBRIS       12  // this is a piece of debris
 #define CT_POWERUP      13  // animating powerup blob
 #define CT_LIGHT        14  // doesn't actually do anything
-#define CT_REMOTE       15  // controlled by another net player
+#define CT_REMOTE       15  // controlled by another net tPlayer
 #define CT_CNTRLCEN     16  // the control center/main reactor
 #define CT_CAMERA			17
 
@@ -325,7 +325,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OF_SILENT           8   // this makes no sound when it hits a wall.  Added by MK for weapons, if you extend it to other types, do it completely!
 #define OF_ATTACHED         16  // this tObject is a fireball attached to another tObject
 #define OF_HARMLESS         32  // this tObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
-#define OF_PLAYER_DROPPED   64  // this tObject was dropped by the player...
+#define OF_PLAYER_DROPPED   64  // this tObject was dropped by the tPlayer...
 #define OF_ARMAGEDDON		 128 // destroyed by cheat
 
 // Different Weapon ID types...
@@ -415,12 +415,12 @@ typedef struct tObjLightInfo {
     fix     intensity;          // how bright the light is
 } __pack__ tObjLightInfo;
 
-#define PF_SPAT_BY_PLAYER   1   //this powerup was spat by the player
+#define PF_SPAT_BY_PLAYER   1   //this powerup was spat by the tPlayer
 
 typedef struct tPowerupInfo {
 	int     count;          // how many/much we pick up (vulcan cannon only?)
 	fix     creationTime;  // Absolute time of creation.
-	int     flags;          // spat by player?
+	int     flags;          // spat by tPlayer?
 } __pack__ tPowerupInfo;
 
 typedef struct tVClipInfo {
@@ -439,10 +439,15 @@ typedef struct tPolyObjInfo {
 	int     		nAltTextures;       // if not -1, use these textures instead
 } __pack__ tPolyObjInfo;
 
+typedef struct tPosition {
+	vmsVector	vPos;				// absolute x,y,z coordinate of center of object
+	vmsMatrix	mOrient;			// orientation of object in world
+} tPosition;
+
 typedef struct tObject {
-	int     		nSignature;      // Every tObject ever has a unique nSignature...
-	ubyte   		nType;           // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
-	ubyte   		id;             // which form of tObject...which powerup, robot, etc.
+	int     		nSignature;    // Every tObject ever has a unique nSignature...
+	ubyte   		nType;         // what nType of tObject this is... robot, weapon, hostage, powerup, fireball
+	ubyte   		id;            // which form of tObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
 	short   		pad;
 #endif
@@ -453,8 +458,7 @@ typedef struct tObject {
 	ubyte   		flags;         // misc flags
 	short   		nSegment;      // tSegment number containing tObject
 	short   		attachedObj;   // number of attached fireball tObject
-	vmsVector 	pos;				// absolute x,y,z coordinate of center of tObject
-	vmsMatrix 	orient;			// orientation of tObject in world
+	tPosition	position;
 	fix     		size;          // 3d size of tObject - for collision detection
 	fix     		shields;       // Starts at maximum, when <0, tObject dies..
 	vmsVector 	last_pos;		// where tObject was last frame
@@ -487,8 +491,7 @@ typedef struct tObject {
 	} __pack__ tObject;
 
 typedef struct tObjPosition {
-	vmsVector  pos;        // absolute x,y,z coordinate of center of tObject
-	vmsMatrix  orient;     // orientation of tObject in world
+	tPosition	position;
 	short       nSegment;     // tSegment number containing tObject
 	short			nSegType;		// nType of tSegment
 } tObjPosition;
@@ -603,7 +606,7 @@ void object_render_targets(void);
 // move an tObject for the current frame
 int MoveOneObject(tObject * obj);
 
-// make object0 the player, setting all relevant fields
+// make object0 the tPlayer, setting all relevant fields
 void InitPlayerObject();
 
 // check if tObject is in tObject->nSegment.  if not, check the adjacent

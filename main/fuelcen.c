@@ -12,232 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions for refueling centers.
- *
- * Old Log:
- * Revision 1.2  1995/10/31  10:23:40  allender
- * shareware stuff
- *
- * Revision 1.1  1995/05/16  15:24:50  allender
- * Initial revision
- *
- * Revision 2.3  1995/03/21  14:38:40  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.2  1995/03/06  15:23:09  john
- * New screen techniques.
- *
- * Revision 2.1  1995/02/27  13:13:26  john
- * Removed floating point.
- *
- * Revision 2.0  1995/02/27  11:27:20  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.159  1995/02/22  13:48:10  allender
- * remove anonymous unions in tObject structure
- *
- * Revision 1.158  1995/02/08  11:37:48  mike
- * Check for failures in call to CreateObject.
- *
- * Revision 1.157  1995/02/07  20:39:39  mike
- * fix toasters in multiplayer
- *
- *
- * Revision 1.156  1995/02/02  18:40:10  john
- * Fixed bug with full screen cockpit flashing non-white.
- *
- * Revision 1.155  1995/01/28  15:27:22  yuan
- * Make sure fuelcen nums are valid.
- *
- * Revision 1.154  1995/01/03  14:26:23  rob
- * Better ifdef for robot centers.
- *
- * Revision 1.153  1995/01/03  11:27:49  rob
- * Added include of fuelcen.c
- *
- * Revision 1.152  1995/01/03  09:47:22  john
- * Some ifdef SHAREWARE lines.
- *
- * Revision 1.151  1995/01/02  21:02:07  rob
- * added matcen support for coop/multirobot.
- *
- * Revision 1.150  1994/12/15  18:31:22  mike
- * fix confusing precedence problems.
- *
- * Revision 1.149  1994/12/15  13:04:22  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
- *
- * Revision 1.148  1994/12/15  03:05:18  matt
- * Added error checking for NULL return from ObjectCreateExplosion ()
- *
- * Revision 1.147  1994/12/13  19:49:12  rob
- * Made the fuelcen noise quieter.
- *
- * Revision 1.146  1994/12/13  12:03:18  john
- * Made the warning sirens not start until after "desccruction
- * secquence activated voice".
- *
- * Revision 1.145  1994/12/12  17:18:30  mike
- * make warning siren louder.
- *
- * Revision 1.144  1994/12/11  23:18:04  john
- * Added -nomusic.
- * Added gameData.time.xRealFrame.
- * Put in a pause when sound initialization error.
- * Made controlcen countdown and framerate use gameData.time.xRealFrame.
- *
- * Revision 1.143  1994/12/11  14:10:16  mike
- * louder sounds.
- *
- * Revision 1.142  1994/12/06  11:33:19  yuan
- * Fixed bug with fueling when above 100.
- *
- * Revision 1.141  1994/12/05  23:37:14  matt
- * Took out calls to warning () function
- *
- * Revision 1.140  1994/12/05  23:19:18  yuan
- * Fixed fuel center refuelers..
- *
- * Revision 1.139  1994/12/03  12:48:12  mike
- * diminish rocking due to control center destruction.
- *
- * Revision 1.138  1994/12/02  23:30:32  mike
- * fix bumpiness after toasting control center.
- *
- * Revision 1.137  1994/12/02  22:48:14  mike
- * rock the ship after toasting the control center!
- *
- * Revision 1.136  1994/12/02  17:12:11  rob
- * Fixed countdown sounds.
- *
- * Revision 1.135  1994/11/29  20:59:43  rob
- * Don't run out of fuel in net games (don't want to sync it between machines)
- *
- * Revision 1.134  1994/11/29  19:10:57  john
- * Took out debugging con_printf.
- *
- * Revision 1.133  1994/11/29  13:19:40  john
- * Made voice for "destruction actived in t-"
- * be at 12.75 secs.
- *
- * Revision 1.132  1994/11/29  12:19:46  john
- * MAde the "Mine desctruction will commence"
- * voice play at 12.5 secs.
- *
- * Revision 1.131  1994/11/29  12:12:54  adam
- * *** empty log message ***
- *
- * Revision 1.130  1994/11/28  21:04:26  rob
- * Added code to cast noise when player refuels.
- *
- * Revision 1.129  1994/11/27  23:15:04  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.128  1994/11/21  16:27:51  mike
- * debug code for morphing.
- *
- * Revision 1.127  1994/11/21  12:33:50  matt
- * For control center explosions, use small fireball, not pseudo-random tVideoClip
- *
- * Revision 1.126  1994/11/20  22:12:15  mike
- * Fix bug in initializing materialization centers.
- *
- * Revision 1.125  1994/11/19  15:18:22  mike
- * rip out unused code and data.
- *
- * Revision 1.124  1994/11/08  12:18:59  mike
- * Initialize Fuelcen_seconds_left.
- *
- * Revision 1.123  1994/10/30  14:12:33  mike
- * rip out repair center stuff
- *
- * Revision 1.122  1994/10/28  14:42:45  john
- * Added sound volumes to all sound calls.
- *
- * Revision 1.121  1994/10/16  12:44:02  mike
- * Make time to exit mine after control center destruction diff level dependent.
- *
- * Revision 1.120  1994/10/09  22:03:26  mike
- * Adapt to new CreateNSegmentPath parameters.
- *
- * Revision 1.119  1994/10/06  14:52:42  mike
- * Remove last of ability to damage fuel centers.
- *
- * Revision 1.118  1994/10/06  14:08:45  matt
- * Made morph flash effect get orientation from tSegment
- *
- * Revision 1.117  1994/10/05  16:09:03  mike
- * Put debugging code into matcen/fuelcen synchronization problem.
- *
- * Revision 1.116  1994/10/04  15:32:41  john
- * Took out the old PLAY_SOUND??? code and replaced it
- * with direct calls into digi_link_??? so that all sounds
- * can be made 3d.
- *
- * Revision 1.115  1994/10/03  23:37:57  mike
- * Clean up this mess of confusion to the point where maybe matcens actually work.
- *
- * Revision 1.114  1994/10/03  13:34:40  matt
- * Added new (and hopefully better) game sequencing functions
- *
- * Revision 1.113  1994/09/30  14:41:57  matt
- * Fixed bug as per Mike's instructions
- *
- * Revision 1.112  1994/09/30  00:37:33  mike
- * Balance materialization centers.
- *
- * Revision 1.111  1994/09/28  23:12:52  matt
- * Macroized palette flash system
- *
- * Revision 1.110  1994/09/27  15:42:31  mike
- * Add names of Specials.
- *
- * Revision 1.109  1994/09/27  00:02:23  mike
- * Yet more materialization center stuff.
- *
- * Revision 1.108  1994/09/26  11:26:23  mike
- * Balance materialization centers.
- *
- * Revision 1.107  1994/09/25  23:40:47  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
- *
- * Revision 1.106  1994/09/25  15:55:58  mike
- * Balance materialization centers, make them emit light, make them re-triggerable after awhile.
- *
- * Revision 1.105  1994/09/24  17:42:33  mike
- * Making materialization centers be activated by triggers and balancing them.
- *
- * Revision 1.104  1994/09/24  14:16:06  mike
- * Support new network constants.
- *
- * Revision 1.103  1994/09/20  19:14:40  john
- * Massaged the sound system; used a better formula for determining
- * which l/r balance, also, put in Mike's stuff that searches for a connection
- * between the 2 sounds' segments, stopping for closed doors, etc.
- *
- * Revision 1.102  1994/09/17  01:40:51  matt
- * Added status bar/sizable window mode, and in the process revamped the
- * whole cockpit mode system.
- *
- * Revision 1.101  1994/08/31  20:57:25  matt
- * Cleaned up endlevel/death code
- *
- * Revision 1.100  1994/08/30  17:54:20  mike
- * Slow down rate of creation of gameData.objs.objects by materialization centers.
- *
- * Revision 1.99  1994/08/29  11:47:01  john
- * Added warning if no control centers in mine.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -700,7 +474,7 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 //				topTime *= 2;
 			}
 		else {
-			dist_to_player = VmVecDistQuick (&gameData.objs.console->pos, &robotcen->Center);
+			dist_to_player = VmVecDistQuick (&gameData.objs.console->position.vPos, &robotcen->Center);
 			topTime = dist_to_player/64 + d_rand () * 2 + F1_0*2;
 			if (topTime > ROBOT_GEN_TIME)
 				topTime = ROBOT_GEN_TIME + d_rand ();
@@ -739,7 +513,7 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 					}
 				}
 
-			//	Whack on any robot or player in the matcen tSegment.
+			//	Whack on any robot or tPlayer in the matcen tSegment.
 			count=0;
 			nSegment = robotcen->nSegment;
 #if 1//def _DEBUG
@@ -771,7 +545,7 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 			objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, i2f (10), tVideoClip);
 
 			if (objP)
-				ExtractOrientFromSegment (&objP->orient,gameData.segs.segments + robotcen->nSegment);
+				ExtractOrientFromSegment (&objP->position.mOrient,gameData.segs.segments + robotcen->nSegment);
 
 			if (gameData.eff.vClips [0] [tVideoClip].nSound > -1) {
 				DigiLinkSoundToPos (gameData.eff.vClips [0] [tVideoClip].nSound, (short) robotcen->nSegment,
@@ -853,8 +627,8 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 #endif
 						objP->matCenCreator = (FUELCEN_IDX (robotcen)) | 0x80;
 						// Make tObject faces player...
-						VmVecSub (&direction, &gameData.objs.console->pos,&objP->pos);
-						VmVector2Matrix (&objP->orient, &direction, &objP->orient.uVec, NULL);
+						VmVecSub (&direction, &gameData.objs.console->position.vPos,&objP->position.vPos);
+						VmVector2Matrix (&objP->position.mOrient, &direction, &objP->position.mOrient.uVec, NULL);
 						MorphStart (objP);
 						//robotcen->last_created_obj = obj;
 						//robotcen->last_created_sig = robotcen->last_created_objP->nSignature;
@@ -1139,7 +913,7 @@ return amount;
 //--unused-- int * sidelist;
 
 //--repair-- int Repairing;
-//--repair-- vmsVector repair_save_uvec;		//the player's upvec when enter repaircen
+//--repair-- vmsVector repair_save_uvec;		//the tPlayer's upvec when enter repaircen
 //--repair-- tObject *RepairObj=NULL;		//which tObject getting repaired
 //--repair-- int disable_repair_center=0;
 //--repair-- fix repair_rate;
@@ -1166,15 +940,15 @@ return amount;
 //--repair-- 	deltaTime = F1_0;		// one second...
 //--repair-- 		
 //--repair-- 	// Find start and goal position
-//--repair-- 	start_pos = objP->pos;
+//--repair-- 	start_pos = objP->position.vPos;
 //--repair-- 	
 //--repair-- 	// Find delta position to get to goal position
 //--repair-- 	COMPUTE_SEGMENT_CENTER (&goal_pos,&gameData.segs.segments [repair_seg]);
 //--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
 //--repair-- 	
 //--repair-- 	// Find start angles
-//--repair-- 	//angles_from_vector (&start_angles,&objP->orient.fVec);
-//--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->orient);
+//--repair-- 	//angles_from_vector (&start_angles,&objP->position.mOrient.fVec);
+//--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->position.mOrient);
 //--repair-- 	
 //--repair-- 	// Find delta angles to get to goal orientation
 //--repair-- 	med_compute_center_point_on_side (&nextcenter,&gameData.segs.segments [repair_seg],next_side);
@@ -1255,9 +1029,9 @@ return amount;
 //--repair--
 //--repair-- 	if (currentTime >= deltaTime)	{
 //--repair-- 		vmsAngVec av;
-//--repair-- 		objP->pos = goal_pos;
+//--repair-- 		objP->position.vPos = goal_pos;
 //--repair-- 		av	= goalAngles;
-//--repair-- 		VmAngles2Matrix (&objP->orient,&av);
+//--repair-- 		VmAngles2Matrix (&objP->position.mOrient,&av);
 //--repair--
 //--repair-- 		if (side_index >= 5)	
 //--repair-- 			return 1;		// Done being repaired...
@@ -1296,9 +1070,9 @@ return amount;
 //--repair-- 		factor = FixDiv (currentTime,deltaTime);
 //--repair--
 //--repair-- 		// Find tObject's current position
-//--repair-- 		objP->pos = delta_pos;
-//--repair-- 		VmVecScale (&objP->pos, factor);
-//--repair-- 		VmVecInc (&objP->pos, &start_pos);
+//--repair-- 		objP->position.vPos = delta_pos;
+//--repair-- 		VmVecScale (&objP->position.vPos, factor);
+//--repair-- 		VmVecInc (&objP->position.vPos, &start_pos);
 //--repair-- 			
 //--repair-- 		// Find tObject's current orientation
 //--repair-- 		p	= FixMul (deltaAngles.p,factor);
@@ -1307,7 +1081,7 @@ return amount;
 //--repair-- 		av.p = (fixang)p + start_angles.p;
 //--repair-- 		av.b = (fixang)b + start_angles.b;
 //--repair-- 		av.h = (fixang)h + start_angles.h;
-//--repair-- 		VmAngles2Matrix (&objP->orient,&av);
+//--repair-- 		VmAngles2Matrix (&objP->position.mOrient,&av);
 //--repair--
 //--repair-- 	}
 //--repair--
@@ -1331,10 +1105,10 @@ return amount;
 //--repair-- 		RepairObj = NULL;
 //--repair--
 //--repair--
-//--repair-- 		//the two lines below will spit the player out of the rapair center,
+//--repair-- 		//the two lines below will spit the tPlayer out of the rapair center,
 //--repair-- 		//but what happen is that the ship just bangs into the door
 //--repair-- 		//if (objP->movementType == MT_PHYSICS)
-//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->orient.fVec,i2f (200);
+//--repair-- 		//	VmVecCopyScale (&objP->mType.physInfo.velocity,&objP->position.mOrient.fVec,i2f (200);
 //--repair-- 	}
 //--repair--
 //--repair-- }
@@ -1351,7 +1125,7 @@ return amount;
 //--repair-- 			//have just entered repair center
 //--repair--
 //--repair-- 			RepairObj = obj;
-//--repair-- 			repair_save_uvec = objP->orient.uVec;
+//--repair-- 			repair_save_uvec = objP->position.mOrient.uVec;
 //--repair--
 //--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multi.players [gameData.multi.nLocalPlayer].shields),MAX_SHIELDS);
 //--repair--

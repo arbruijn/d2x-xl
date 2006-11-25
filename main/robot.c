@@ -12,86 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Code for handling robots
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:30:34  allender
- * Initial revision
- *
- * Revision 2.1  1995/03/07  16:52:02  john
- * Fixed robots not moving without edtiro bug.
- *
- * Revision 2.0  1995/02/27  11:31:11  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.19  1995/02/22  13:58:09  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.18  1995/01/27  11:17:06  rob
- * Avoid problems with illegal gun num.
- *
- * Revision 1.17  1994/11/19  15:15:02  mike
- * remove unused code and data
- *
- * Revision 1.16  1994/11/05  16:41:31  adam
- * upped MAX_ROBOT_JOINTS
- *
- * Revision 1.15  1994/09/26  15:29:29  matt
- * Allow morphing gameData.objs.objects to fire
- *
- * Revision 1.14  1994/06/20  14:31:02  matt
- * Don't include joint zero in animation data
- *
- * Revision 1.13  1994/06/10  14:39:58  matt
- * Increased limit of robot joints
- *
- * Revision 1.12  1994/06/10  10:59:18  matt
- * Do error checking on list of angles
- *
- * Revision 1.11  1994/06/09  16:21:32  matt
- * Took out special-case and test code.
- *
- * Revision 1.10  1994/06/07  13:21:14  matt
- * Added support for new chunk-based POF files, with robot animation data.
- *
- * Revision 1.9  1994/06/01  17:58:24  mike
- * Greater flinch effect.
- *
- * Revision 1.8  1994/06/01  14:59:25  matt
- * Fixed calc_gun_position(), which was rotating the wrong way for the
- * tObject orientation.
- *
- * Revision 1.7  1994/06/01  12:44:04  matt
- * Added flinch state for test robot
- *
- * Revision 1.6  1994/05/31  19:17:24  matt
- * Fixed test robot angles
- *
- * Revision 1.5  1994/05/30  19:43:50  mike
- * Call set_testRobot.
- *
- *
- * Revision 1.4  1994/05/30  00:02:44  matt
- * Got rid of robot render nType, and generally cleaned up polygon model
- * render gameData.objs.objects.
- *
- * Revision 1.3  1994/05/29  18:46:15  matt
- * Added stuff for getting robot animation info for different states
- *
- * Revision 1.2  1994/05/26  21:09:15  matt
- * Moved robot stuff out of polygon model and into tRobotInfo struct
- * Made new file, robot.c, to deal with robots
- *
- * Revision 1.1  1994/05/26  18:02:04  matt
- * Initial revision
- *
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -207,9 +127,9 @@ void calc_gun_point(vmsVector *gun_point,tObject *objP,int gun_num)
 
 	//now instance for the entire tObject
 
-	VmCopyTransposeMatrix(&m,&objP->orient);
+	VmCopyTransposeMatrix(&m,&objP->position.mOrient);
 	VmVecRotate(gun_point,&pnt,&m);
-	VmVecInc(gun_point,&objP->pos);
+	VmVecInc(gun_point,&objP->position.vPos);
 
 }
 
@@ -354,12 +274,12 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 		objP->movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
 #if 0
-		VmExtractAnglesMatrix (&a, &objP->orient);
+		VmExtractAnglesMatrix (&a, &objP->position.mOrient);
 		av.x = a.h;
 		av.y = a.b;
 		av.z = a.p;
-		G3StartInstanceMatrix (&objP->pos, &objP->orient);
-		VmVecRotate (&objP->mType.spinRate, &av, &objP->orient);
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		VmVecRotate (&objP->mType.spinRate, &av, &objP->position.mOrient);
 		G3DoneInstance ();
 		h = a.b + a.p;
 		objP->mType.spinRate.x = a.p; //(a.h < 0) ? (a.b < 0) ? -h : h : (a.b < 0) ? h : -h;

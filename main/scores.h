@@ -59,7 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Got rid of externs in source (non-header) files
  *
  * Revision 1.2  1994/05/13  13:13:57  yuan
- * Added player death...
+ * Added tPlayer death...
  *
  * When you die, if just pops up a a message.
  * When game is over, a message is popped up, and if you have a high score,
@@ -96,8 +96,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern void scores_view(int citem);
 
-// If player has a high score, adds you to file and returns.
-// If abortFlag set, only show if player has gotten a high score.
+// If tPlayer has a high score, adds you to file and returns.
+// If abortFlag set, only show if tPlayer has gotten a high score.
 extern void scores_maybe_add_player(int abortFlag);
 
 #endif /* _SCORES_H */

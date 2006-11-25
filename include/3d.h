@@ -12,120 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header file for 3d library
- * except for functions implemented in interp.c
- *
- * Old Log:
- * Revision 1.2  1995/09/14  14:08:58  allender
- * return value for G3DrawSphere
- *
- * Revision 1.1  1995/05/05  08:48:41  allender
- * Initial revision
- *
- * Revision 1.34  1994/11/11  19:22:14  matt
- * Added new function, G3CalcPointDepth()
- *
- * Revision 1.33  1994/09/09  14:23:58  matt
- * Added support for glowing textures, to add engine glow to Descent.
- *
- * Revision 1.32  1994/09/01  10:42:27  matt
- * Blob routine, renamed g3_draw_bitmap(), now takes seperate 3d width & height.
- *
- * Revision 1.31  1994/07/29  18:16:14  matt
- * Added instance by angles, and corrected parms for g3_init()
- *
- * Revision 1.30  1994/07/25  00:00:00  matt
- * Made 3d no longer deal with point numbers, but only with pointers.
- *
- * Revision 1.29  1994/07/22  17:57:27  matt
- * Changed the name of the rod functions, and took out some debugging code
- *
- * Revision 1.28  1994/06/07  16:49:12  matt
- * Made interpreter take lighting value as parm, rather than in global var
- *
- * Revision 1.27  1994/05/31  18:35:28  matt
- * Added light value to g3_draw_facing_bitmap()
- *
- * Revision 1.26  1994/05/30  22:48:04  matt
- * Added support for morph effect
- *
- * Revision 1.25  1994/05/30  11:34:57  matt
- * Added G3SetSpecialRender() to allow a user to specify functions to
- * call for 2d draws.
- *
- * Revision 1.24  1994/05/19  21:46:31  matt
- * Moved texture lighting out of 3d and into the game
- *
- * Revision 1.23  1994/05/14  15:26:48  matt
- * Added extern for polyobj outline flag
- *
- * Revision 1.22  1994/04/19  18:26:33  matt
- * Added G3DrawSphere() function.
- *
- * Revision 1.21  1994/03/25  18:22:28  matt
- * G3DrawPolyModel() now takes ptr to list of angles
- *
- * Revision 1.20  1994/03/15  21:23:23  matt
- * Added interpreter functions
- *
- * Revision 1.19  1994/02/15  17:37:34  matt
- * New function, g3_draw_blob()
- *
- * Revision 1.18  1994/02/09  11:47:47  matt
- * Added rod & delta point functions
- *
- * Revision 1.17  1994/01/26  12:38:11  matt
- * Added function g3_compute_lightingValue()
- *
- * Revision 1.16  1994/01/25  18:00:02  yuan
- * Fixed variable beam_brightness...
- *
- * Revision 1.15  1994/01/24  14:08:34  matt
- * Added instancing functions
- *
- * Revision 1.14  1994/01/22  18:21:48  matt
- * New lighting stuff now done in 3d; G3DrawTMap() takes lighting parm
- *
- * Revision 1.13  1994/01/20  17:21:24  matt
- * New function g3_compute_sky_polygon()
- *
- * Revision 1.12  1994/01/14  17:20:25  matt
- * Added prototype for new function g3_draw_horizon()
- *
- * Revision 1.10  1993/12/20  20:21:52  matt
- * Added G3Point2Vec()
- *
- * Revision 1.9  1993/12/07  23:05:47  matt
- * Fixed mistyped function name.
- *
- * Revision 1.8  1993/12/05  23:47:03  matt
- * Added function g3_draw_line_ptrs()
- *
- * Revision 1.7  1993/12/05  23:13:22  matt
- * Added prototypes for G3TransformAndEncodePoint() and G3ProjectPoint()
- *
- * Revision 1.6  1993/12/05  23:03:28  matt
- * Changed uvl structs to uvl
- *
- * Revision 1.5  1993/11/22  10:51:09  matt
- * Moved uvl structure here from segment.h, made texture map functions use it
- *
- * Revision 1.4  1993/11/21  20:08:31  matt
- * Added function g3_drawObject()
- *
- * Revision 1.3  1993/11/04  18:49:19  matt
- * Added system to only rotate points once per frame
- *
- * Revision 1.2  1993/11/04  08:16:06  mike
- * Add light field (p3_l) to g3sPoint.
- *
- * Revision 1.1  1993/10/29  22:20:56  matt
- * Initial revision
- *
- */
-
 #ifndef _3D_H
 #define _3D_H
 
@@ -309,15 +195,15 @@ static inline vmsVector *G3TranslatePoint (vmsVector *pDest, vmsVector *pSrc)
 return VmVecSub (pDest, pSrc, &viewInfo.position);
 }
 
-static inline vmsVector *G3RotatePoint (vmsVector *pDest, vmsVector *pSrc)
+static inline vmsVector *G3RotatePoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
 {
-return VmVecRotate (pDest, pSrc, &viewInfo.view);
+return VmVecRotate (pDest, pSrc, viewInfo.view + bUnscaled);
 }
 
-static inline vmsVector *G3TransformPoint (vmsVector *pDest, vmsVector *pSrc)
+static inline vmsVector *G3TransformPoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
 {
 vmsVector	vTrans;
-return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.position), &viewInfo.view);
+return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.position), viewInfo.view + bUnscaled);
 }
 
 static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
@@ -325,20 +211,20 @@ static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)
 return VmVecSubf (pDest, pSrc, &viewInfo.posf);
 }
 
-static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc)
+static inline fVector *G3RotatePointf (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
-return VmVecRotatef (pDest, pSrc, &viewInfo.viewf);
+return VmVecRotatef (pDest, pSrc, viewInfo.viewf + bUnscaled);
 }
 
-static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc)
+static inline fVector *G3TransformPointf (fVector *pDest, fVector *pSrc, int bUnscaled)
 {
 fVector vTrans;
-return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), &viewInfo.viewf);
+return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), viewInfo.viewf + bUnscaled);
 }
 
 static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
 {
-G3TransformPoint (&pDest->p3_vec, pSrc);
+G3TransformPoint (&pDest->p3_vec, pSrc, 0);
 pDest->p3Flags = 0;	
 return G3EncodePoint (pDest);
 }

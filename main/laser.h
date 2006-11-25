@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Linted.
  *
  * Revision 1.48  1995/01/31  16:16:16  mike
- * Separate smart blobs for robot and player.
+ * Separate smart blobs for robot and tPlayer.
  *
  * Revision 1.47  1995/01/27  17:02:55  mike
  * Add LASER_ID -- why wasn't this added in June?
@@ -106,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Define some illegal constants.
  *
  * Revision 1.23  1994/08/25  18:12:06  matt
- * Made player's weapons and flares fire from the positions on the 3d model.
+ * Made tPlayer's weapons and flares fire from the positions on the 3d model.
  * Also added support for quad lasers.
  *
  * Revision 1.22  1994/08/19  15:22:28  mike
@@ -144,7 +144,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
  * Hostages and powerups are implemented in the tObject system,
- * just need to finish function call to "affect" player.
+ * just need to finish function call to "affect" tPlayer.
  *
  * Revision 1.11  1994/03/31  09:10:09  matt
  * Added #define to turn crosshair off
@@ -281,13 +281,13 @@ int LaserPlayerFireSpreadDelay (tObject *objP, ubyte laserType, int gun_num, fix
 
 int LaserFireLocalPlayer(void);
 void DoMissileFiring(int do_autoselect);
-void NetMissileFiring(int player, int weapon, int flags);
+void NetMissileFiring(int tPlayer, int weapon, int flags);
 
 int CreateNewLaser(vmsVector * direction, vmsVector * position, short nSegment, short parent, ubyte nType, int makeSound);
 
 // Fires a laser-nType weapon (a Primary weapon)
 // Fires from tObject nObject, weapon nType weapon_id.
-// Assumes that it is firing from a player tObject, so it knows which
+// Assumes that it is firing from a tPlayer tObject, so it knows which
 // gun to fire from.
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,

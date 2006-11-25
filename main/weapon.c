@@ -12,189 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions for weapons...
- *
- * Old Log:
- * Revision 1.2  1995/10/31  10:17:39  allender
- * new shareware stuff
- *
- * Revision 1.1  1995/05/16  15:32:16  allender
- * Initial revision
- *
- * Revision 2.1  1995/03/21  14:38:43  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02/27  11:27:25  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.54  1995/02/15  15:21:48  mike
- * make smart missile select if mega missiles used up.
- *
- *
- * Revision 1.53  1995/02/12  02:12:30  john
- * Fixed bug with state restore making weapon beeps.
- *
- * Revision 1.52  1995/02/09  20:42:15  mike
- * change weapon autoselect, always autoselect smart, mega.
- *
- * Revision 1.51  1995/02/07  20:44:26  mike
- * autoselect mega, smart when you pick them up.
- *
- * Revision 1.50  1995/02/07  13:32:25  rob
- * Added include of multi.h
- *
- * Revision 1.49  1995/02/07  13:21:33  yuan
- * Fixed 2nd typo
- *
- * Revision 1.48  1995/02/07  13:16:39  yuan
- * Fixed typo.
- *
- * Revision 1.47  1995/02/07  12:53:12  rob
- * Added network sound prop. to weapon switch.
- *
- * Revision 1.46  1995/02/06  15:53:17  mike
- * don't autoselect smart or mega missile when you pick it up.
- *
- * Revision 1.45  1995/02/02  21:43:34  mike
- * make autoselection better.
- *
- * Revision 1.44  1995/02/02  16:27:21  mike
- * make concussion missiles trade up.
- *
- * Revision 1.43  1995/02/01  23:34:57  adam
- * messed with weapon change sounds
- *
- * Revision 1.42  1995/02/01  17:12:47  mike
- * Make smart missile, mega missile not auto-select.
- *
- * Revision 1.41  1995/02/01  15:50:54  mike
- * fix bogus weapon selection sound code.
- *
- * Revision 1.40  1995/01/31  16:16:31  mike
- * Separate smart blobs for robot and player.
- *
- * Revision 1.39  1995/01/30  21:12:11  mike
- * Use new weapon selection sounds, different for primary and secondary.
- *
- * Revision 1.38  1995/01/29  13:46:52  mike
- * Don't auto-select fusion cannon when you run out of energy.
- *
- * Revision 1.37  1995/01/20  11:11:13  allender
- * record weapon changes again.  (John somehow lost my 1.35 changes).
- *
- * Revision 1.36  1995/01/19  17:00:46  john
- * Made save game work between levels.
- *
- * Revision 1.34  1995/01/09  17:03:48  mike
- * fix autoselection of weapons.
- *
- * Revision 1.33  1995/01/05  15:46:31  john
- * Made weapons not rearm when starting a saved game.
- *
- * Revision 1.32  1995/01/03  12:34:23  mike
- * autoselect next lower weapon if run out of smart or mega missile.
- *
- * Revision 1.31  1994/12/12  21:39:37  matt
- * Changed vulcan ammo: 10K max, 5K w/weapon, 1250 per powerup
- *
- * Revision 1.30  1994/12/09  19:55:04  matt
- * Added weapon name in "not available in shareware" message
- *
- * Revision 1.29  1994/12/06  13:50:24  adam
- * added shareware msg. when choosing 4 top weapons
- *
- * Revision 1.28  1994/12/02  22:07:13  mike
- * if you gots 19 concussion missiles and you runs over 4, say you picks up 1, not 4, we do the math, see?
- *
- * Revision 1.27  1994/12/02  20:06:24  matt
- * Made vulcan ammo print at approx 25 times actual
- *
- * Revision 1.26  1994/12/02  15:05:03  matt
- * Fixed bogus weapon constants and arrays
- *
- * Revision 1.25  1994/12/02  10:50:34  yuan
- * Localization
- *
- * Revision 1.24  1994/11/29  15:48:28  matt
- * selecting weapon now makes sound
- *
- * Revision 1.23  1994/11/28  11:26:58  matt
- * Cleaned up hud message printing for picking up weapons
- *
- * Revision 1.22  1994/11/27  23:13:39  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.21  1994/11/12  16:38:34  mike
- * clean up default ammo stuff.
- *
- * Revision 1.20  1994/11/07  17:41:18  mike
- * messages for when you try to fire a weapon you don't have or don't have ammo for.
- *
- * Revision 1.19  1994/10/21  20:40:05  mike
- * fix double vulcan ammo.
- *
- * Revision 1.18  1994/10/20  09:49:05  mike
- * kill messages no one liked...*sniff* *sniff*
- *
- * Revision 1.17  1994/10/19  11:17:07  mike
- * Limit amount of player ammo.
- *
- * Revision 1.16  1994/10/12  08:04:18  mike
- * Fix proximity/homing confusion.
- *
- * Revision 1.15  1994/10/11  18:27:58  matt
- * Changed auto selection of secondary weapons
- *
- * Revision 1.14  1994/10/08  23:37:54  matt
- * Don't pick up weapons you already have; also fixed bAutoSelect bug
- * for seconary weapons
- *
- * Revision 1.13  1994/10/08  14:55:47  matt
- * Fixed bug that selected vulcan cannon when picked up ammo, even though
- * you didn't have the weapon.
- *
- * Revision 1.12  1994/10/08  12:50:32  matt
- * Fixed bug that let you select weapons you don't have
- *
- * Revision 1.11  1994/10/07  23:37:56  matt
- * Made weapons select when pick up better one
- *
- * Revision 1.10  1994/10/07  16:02:08  matt
- * Fixed problem with weapon auto-select
- *
- * Revision 1.9  1994/10/05  17:00:20  matt
- * Made PlayerHasWeapon() public and moved constants to header file
- *
- * Revision 1.8  1994/09/26  11:27:13  mike
- * Fix auto selection of weapon when you run out of ammo.
- *
- * Revision 1.7  1994/09/13  16:40:45  mike
- * Add rearm delay and missile firing delay.
- *
- * Revision 1.6  1994/09/13  14:43:12  matt
- * Added cockpit weapon displays
- *
- * Revision 1.5  1994/09/03  15:23:06  mike
- * Auto select next weaker weapon when one runs out, clean up code.
- *
- * Revision 1.4  1994/09/02  16:38:19  mike
- * Eliminate a pile of arrays, associate weapon data with gameData.weapons.info.
- *
- * Revision 1.3  1994/09/02  11:57:10  mike
- * Add a bunch of stuff, I forget what.
- *
- * Revision 1.2  1994/06/03  16:26:32  john
- * Initial version.
- *
- * Revision 1.1  1994/06/03  14:40:43  john
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -297,7 +114,7 @@ ubyte nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255
 
 ubyte bCycling = 0;
 
-//allow player to reorder menus?
+//allow tPlayer to reorder menus?
 
 //char	*Primary_weapon_names[MAX_PRIMARY_WEAPONS] = {
 //	"Laser Cannon",
@@ -390,7 +207,7 @@ int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer)
 {
 	int		returnValue = 0;
 	int		nWeaponIndex;
-	player	*playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
+	tPlayer	*playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
@@ -437,7 +254,7 @@ if (!bSecondary) {
 	else
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
-	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
+	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure tPlayer has energy to omega
 		if (playerP->energy || xOmegaCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
@@ -667,7 +484,7 @@ else
 
 void SetLastSuperWeaponStates (void)
 {
-	player	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
@@ -793,7 +610,7 @@ else {
 #ifndef RELEASE
 
 //	----------------------------------------------------------------------------------------
-//	Show player which weapons he has, how much ammo...
+//	Show tPlayer which weapons he has, how much ammo...
 //	Looks like a debug screen now because it writes to mono screen, but that will change...
 void ShowWeaponStatus(void)
 {
@@ -834,7 +651,7 @@ int PickupSecondary (tObject *objP, int nWeaponIndex, int count, int nPlayer)
 	int		max;
 	int		nPickedUp;
 	int		cutpoint, bEmpty = 0;
-	player	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multi.players + nPlayer;
 
 max = nMaxSecondaryAmmo [nWeaponIndex];
 if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
@@ -1000,7 +817,7 @@ return 0;
 //returns true if actually picked up
 int PickupPrimary (int nWeaponIndex, int nPlayer)
 {
-	player	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multi.players + nPlayer;
 	//ushort oldFlags = gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags;
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
@@ -1058,7 +875,7 @@ int PickupAmmo(int classFlag,int nWeaponIndex,int ammo_count, int nPlayer)
 {
 	int		max,cutpoint,supposed_weapon=gameData.weapons.nPrimary;
 	int		old_ammo=classFlag;		//kill warning
-	player	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multi.players + nPlayer;
 
 Assert(classFlag==CLASS_PRIMARY && nWeaponIndex==VULCAN_INDEX);
 
@@ -1122,7 +939,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
 		if (deltaTime < ESHAKER_SHAKE_TIME) {
-			//	Control center destroyed, rock the player's ship.
+			//	Control center destroyed, rock the tPlayer's ship.
 			int	fc, rx, rz;
 			fix	h;
 			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);
@@ -1276,12 +1093,12 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 
 		gameStates.gameplay.bHaveSmartMines = 1;
 		if (gameData.objs.objects[i].lifeleft + F1_0*2 < gameData.weapons.info[SUPERPROX_ID].lifetime) {
-			vmsVector	*vBombPos = &gameData.objs.objects[i].pos;
+			vmsVector	*vBombPos = &gameData.objs.objects[i].position.vPos;
 
 			for (j = 0; j <= gameData.objs.nLastObject; j++) {
 				if ((gameData.objs.objects[j].nType == OBJ_PLAYER) || 
 					 (gameData.objs.objects[j].nType == OBJ_ROBOT)) {
-					fix	dist = VmVecDistQuick(vBombPos, &gameData.objs.objects[j].pos);
+					fix	dist = VmVecDistQuick(vBombPos, &gameData.objs.objects[j].position.vPos);
 	
 					if (j != nParentObj)
 						if (dist - gameData.objs.objects[j].size < F1_0*20) {
@@ -1296,8 +1113,8 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 									int			fate;
 
 									fq.startSeg = gameData.objs.objects[i].nSegment;
-									fq.p0	= &gameData.objs.objects[i].pos;
-									fq.p1 = &gameData.objs.objects[j].pos;
+									fq.p0	= &gameData.objs.objects[i].position.vPos;
+									fq.p1 = &gameData.objs.objects[j].position.vPos;
 									fq.rad = 0;
 									fq.thisObjNum = i;
 									fq.ignoreObjList = NULL;
@@ -1320,7 +1137,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 
 #define SPIT_SPEED 20
 
-//this function is for when the player intentionally drops a powerup
+//this function is for when the tPlayer intentionally drops a powerup
 //this function is based on DropPowerup()
 int SpitPowerup (tObject *spitter, ubyte id, int seed)
 {
@@ -1337,7 +1154,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 d_srand(seed);
 VmVecScaleAdd (&new_velocity,
 					&spitter->mType.physInfo.velocity,
-					&spitter->orient.fVec,
+					&spitter->position.mOrient.fVec,
 					i2f (SPIT_SPEED));
 new_velocity.x += (d_rand() - 16384) * SPIT_SPEED * 2;
 new_velocity.y += (d_rand() - 16384) * SPIT_SPEED * 2;
@@ -1345,11 +1162,11 @@ new_velocity.z += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if ((gameData.app.nGameMode & GM_MULTI) && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	VmVecZero(&new_velocity);
-//there's a piece of code which lets the player pick up a powerup if
+//there's a piece of code which lets the tPlayer pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-VmVecScaleAdd(&new_pos,&spitter->pos,&spitter->orient.fVec,spitter->size);
+VmVecScaleAdd(&new_pos,&spitter->position.vPos,&spitter->position.mOrient.fVec,spitter->size);
 #ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);

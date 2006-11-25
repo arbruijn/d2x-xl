@@ -110,7 +110,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * JOHN CHECKED IN FOR ROB !!!
  *
  * Revision 1.52  1994/12/30  20:09:07  rob
- * ADded a toggle for showing player names on HUD.
+ * ADded a toggle for showing tPlayer names on HUD.
  *
  * Revision 1.51  1994/12/29  15:59:52  rob
  * Centralized network disconnects.
@@ -229,7 +229,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Put high score system in.
  *
  * Revision 1.14  1994/08/25  18:12:04  matt
- * Made player's weapons and flares fire from the positions on the 3d model.
+ * Made tPlayer's weapons and flares fire from the positions on the 3d model.
  * Also added support for quad lasers.
  *
  * Revision 1.13  1994/08/17  16:50:00  john
@@ -320,7 +320,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_GAME_INFO       57 // 0x39 here's a game i've started
 #define PID_PING_SEND       58
 #define PID_PING_RETURN     59
-#define PID_GAME_UPDATE     60 // inform about new player/team change
+#define PID_GAME_UPDATE     60 // inform about new tPlayer/team change
 #define PID_ENDLEVEL_SHORT  61
 #define PID_NAKED_PDATA     62
 #define PID_GAME_PLAYERS    63
@@ -344,15 +344,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define APPLETALK_GAME  1
 #define IPX_GAME        2
 #define UDP_GAME			3
-extern int Network_gameType;
-extern int Network_game_subtype;
+extern int nNetworkGameType;
+extern int nNetworkGameSubType;
 
-typedef struct sequence_packet {
+typedef struct tSequencePacket {
 	ubyte           nType;
 	int             Security;
 	ubyte           pad1[3];
-	netplayer_info  player;
-} __pack__ sequence_packet;
+	tNetPlayerInfo  player;
+} __pack__ tSequencePacket;
 
 #define NET_XDATA_SIZE 454
 
@@ -543,7 +543,7 @@ typedef struct tNetworkData {
 	int					nSendObjNum;   
 	int					bPlayerAdded;   
 	int					bSendObjectMode; 
-	sequence_packet	playerRejoining;
+	tSequencePacket	playerRejoining;
 	fix					nLastPacketTime [MAX_PLAYERS];
 	int					bPacketUrgent;
 	int					nGameType;
@@ -553,7 +553,7 @@ typedef struct tNetworkData {
 	frame_info			urgentSyncPack;
 	ubyte					mySyncPackInited;       
 	ushort				nMySegsCheckSum;
-	sequence_packet	mySeq;
+	tSequencePacket	mySeq;
 	char					bWantPlayersInfo;
 	char					bWaitingForPlayerInfo;
 	fix					nStartWaitAllTime;
@@ -637,8 +637,8 @@ extern int Network_status;
 extern fix LastPacketTime[MAX_PLAYERS];
 
 // By putting an up-to-20-char-message into Network_message and
-// setting Network_message_reciever to the player num you want to
-// send it to (100 for broadcast) the next frame the player will
+// setting Network_message_reciever to the tPlayer num you want to
+// send it to (100 for broadcast) the next frame the tPlayer will
 // get your message.
 
 // Call once at the beginning of a frame
@@ -740,7 +740,7 @@ typedef struct lite_info {
 #define NETGAME_INFO_SIZE       sizeof(netgame_info)
 #define ALLNETPLAYERSINFO_SIZE  sizeof(allNetPlayers_info)
 #define LITE_INFO_SIZE          sizeof(lite_info)
-#define SEQUENCE_PACKET_SIZE    sizeof(sequence_packet)
+#define SEQUENCE_PACKET_SIZE    sizeof(tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof(frame_info)
 #define IPX_SHORT_INFO_SIZE     sizeof(short_frame_info)
 #define ENTROPY_INFO_SIZE       sizeof(extra_gameinfo)
@@ -750,8 +750,8 @@ typedef struct lite_info {
 int  NetworkSendRequest(void);
 int  NetworkChooseConnect();
 int  NetworkSendGameListRequest();
-void NetworkAddPlayer (sequence_packet *p);
-void NetworkSendGameInfo(sequence_packet *their);
+void NetworkAddPlayer (tSequencePacket *p);
+void NetworkSendGameInfo(tSequencePacket *their);
 void ClipRank(signed char *rank);
 void NetworkCheckForOldVersion(char pnum);
 void NetworkInit(void);
@@ -766,7 +766,7 @@ void InitMonsterballSettings (monsterball_info *monsterballP);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started
-#define DUMP_FULL       1 // player cound maxed out
+#define DUMP_FULL       1 // tPlayer cound maxed out
 #define DUMP_ENDLEVEL   2
 #define DUMP_DORK       3
 #define DUMP_ABORTED    4

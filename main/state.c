@@ -12,224 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions to save/restore game state.
- *
- * Old Log:
- * Revision 1.7  1995/10/31  10:18:25  allender
- * shareware stuff
- *
- * Revision 1.6  1995/10/21  22:25:45  allender
- * put in creator code and file nType for saved games.
- * put save games in players folder
- *
- * Revision 1.5  1995/10/20  00:51:21  allender
- * close boxes and proper mouse support on save game stuff
- *
- * Revision 1.4  1995/10/17  13:19:02  allender
- * close boxes for load and save game
- *
- * Revision 1.3  1995/09/18  08:09:15  allender
- * made larger thumbnail and handled NULL GrBitmap pointers
- * better
- *
- * Revision 1.2  1995/08/14  14:36:12  allender
- * change transparency to 0
- *
- * Revision 1.1  1995/05/16  15:31:12  allender
- * Initial revision
- *
- * Revision 2.14  1995/05/26  16:16:10  john
- * Split SATURN into define's for requiring cd, using cd, etc.
- * Also started adding all the Rockwell stuff.
- *
- * Revision 2.13  1995/04/06  15:12:20  john
- * Fixed bug with lunacy not working.
- *
- * Revision 2.12  1995/04/04  13:33:05  john
- * Removed multiplayer save.
- *
- * Revision 2.11  1995/03/31  13:42:10  john
- * Made saved games from the bogus saturn sgVersion read in
- * correctly.
- *
- * Revision 2.10  1995/03/31  12:45:28  john
- * Fixed bug with previous.
- *
- * Revision 2.9  1995/03/31  12:24:40  john
- * I had changed nAltTextures from a pointer to a byte. This hosed old
- * saved games, so I restored it to an int.
- *
- * Revision 2.8  1995/03/28  11:22:47  john
- * Added cheats to save file. Changed lunacy text.
- *
- * Revision 2.7  1995/03/27  21:41:03  john
- * Added code to verify that the proper bMulti save file
- * is used when restoring a network game.
- *
- * Revision 2.6  1995/03/27  18:04:18  john
- * Made bMulti save/restore require the -multisave command line arg.
- *
- * Revision 2.5  1995/03/27  17:01:52  john
- * Made deafult choice work better.
- *
- * Revision 2.4  1995/03/27  15:49:44  john
- * Added slots to save games.
- *
- * Revision 2.3  1995/03/27  12:59:19  john
- * Initial sgVersion of multiplayer save games.
- *
- * Revision 2.2  1995/03/24  13:11:35  john
- * Added save game during briefing screens.
- *
- * Revision 2.1  1995/03/21  14:38:36  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02/27  11:27:00  john
- * New sgVersion 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.43  1995/02/22  14:32:41  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.42  1995/02/13  20:34:33  john
- * Lintized
- *
- * Revision 1.41  1995/02/13  10:37:30  john
- * Saved Buggin' cheat mode to save file.
- *
- * Revision 1.40  1995/02/09  10:24:25  john
- * *** empty log message ***
- *
- * Revision 1.39  1995/02/09  10:22:20  john
- * Fixed bug with callsign getting trashed if you copy somebody else
- * 's save game file into your directory.
- *
- * Revision 1.38  1995/02/08  21:01:27  john
- * Closed state file around the code that shows briefing screens so that the
- * code works on machines with clean boot with only 5 file handles.
- *
- * Revision 1.37  1995/02/07  14:02:33  john
- * Added code to verify game restore.
- *
- * Revision 1.36  1995/02/07  11:07:43  john
- * Added hooks for confirm on game state restore.
- *
- * Revision 1.35  1995/02/03  11:27:36  john
- * Made inbetween level save's thumbnail's have correct aspect.
- *
- * Revision 1.34  1995/02/03  10:58:43  john
- * Added code to save shareware style saved games into new format...
- * Also, made new player file format not have the saved game array in it.
- *
- * Revision 1.33  1995/02/02  19:40:52  john
- * Added 10 save game slots.
- *
- * Revision 1.32  1995/02/02  12:23:20  john
- * Made between level saves have picture.
- *
- * Revision 1.31  1995/01/31  11:21:43  john
- * Added code for fixed with menus.
- *
- * Revision 1.30  1995/01/29  21:37:29  mike
- * initialize variables on game load so you don't drain your energy when you fire.
- *
- * Revision 1.29  1995/01/29  13:47:58  mike
- * Restore some variables on game load (in game).
- *
- * Revision 1.28  1995/01/26  10:46:57  john
- * Fixed bug with state names getting hosed.
- *
- * Revision 1.27  1995/01/26  09:51:23  john
- * Fixed bug with game descriptions getting hosed.
- *
- * Revision 1.26  1995/01/25  16:35:49  john
- * Made so that when you hit enter during
- * game save, -empty- goes away.
- *
- * Revision 1.25  1995/01/25  15:01:39  john
- * Upped the save file sgVersion.
- *
- * Revision 1.24  1995/01/24  20:35:35  john
- * *** empty log message ***
- *
- * Revision 1.23  1995/01/24  20:34:24  john
- * Fixed bug with player stats not being set right for in
- * between level saves.
- *
- * Revision 1.22  1995/01/23  10:39:03  john
- * Added mission stuff to game saves.
- *
- * Revision 1.21  1995/01/22  16:07:12  mike
- * localization.
- *
- * Revision 1.20  1995/01/22  15:58:32  mike
- * localization
- *
- * Revision 1.19  1995/01/20  11:04:40  john
- * Upped state save sgVersion.
- *
- * Revision 1.18  1995/01/19  17:00:44  john
- * Made save game work between levels.
- *
- * Revision 1.17  1995/01/17  14:27:33  john
- * *** empty log message ***
- *
- * Revision 1.16  1995/01/17  13:36:37  john
- * Moved pig loading into StartNewLevelSub.
- *
- * Revision 1.15  1995/01/16  16:53:38  john
- * Added code to save cheat state during save game.
- *
- * Revision 1.14  1995/01/15  16:55:22  john
- * Improved mine texture parsing.
- *
- * Revision 1.13  1995/01/12  10:45:15  john
- * Added difficulty level to save/restore game.
- *
- * Revision 1.12  1995/01/05  15:46:55  john
- * Made weapons not rearm when starting a saved game.
- *
- * Revision 1.11  1995/01/05  11:51:45  john
- * Added better Abort game menu.
- * Made save state return success or nopt.
- *
- * Revision 1.10  1995/01/05  11:34:51  john
- * Took out endlevel save stuff for registered.
- *
- * Revision 1.9  1995/01/04  18:19:52  john
- * Added automap visited list saving.
- *
- * Revision 1.8  1995/01/04  17:29:56  john
- * Made save/restore ALT+F?. Also made them not work
- * in network mode, and if recording a demo, will
- * quit recording.
- *
- * Revision 1.7  1995/01/04  13:18:31  john
- * Added cool 6 game save.
- *
- * Revision 1.6  1995/01/03  20:38:46  john
- * Saved morph gameData.objs.objects.
- *
- * Revision 1.5  1995/01/03  20:19:29  john
- * Pretty good working sgVersion of game save.
- *
- * Revision 1.4  1995/01/03  14:18:18  matt
- * ifdefs added to compile code add.  Added by Mike, I think.
- *
- * Revision 1.3  1994/12/29  18:40:19  john
- * Initial sgVersion.
- *
- * Revision 1.2  1994/12/29  15:26:40  john
- * Put in hooks for saving/restoring game state.
- *
- * Revision 1.1  1994/12/29  15:16:02  john
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -824,11 +606,11 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWrite (&gameData.multi.nPlayers, sizeof (int), 1, fp);
 	CFWrite (&gameData.multi.nLocalPlayer, sizeof (int), 1, fp);
 	for (i = 0; i < gameData.multi.nPlayers; i++)
-		CFWrite (&gameData.multi.players [i], sizeof (player), 1, fp);
+		CFWrite (&gameData.multi.players [i], sizeof (tPlayer), 1, fp);
 	}
 #endif
-//Save player info
-CFWrite (&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof (player), 1, fp);
+//Save tPlayer info
+CFWrite (&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof (tPlayer), 1, fp);
 // Save the current weapon info
 CFWrite (&gameData.weapons.nPrimary, sizeof (sbyte), 1, fp);
 CFWrite (&gameData.weapons.nSecondary, sizeof (sbyte), 1, fp);
@@ -842,7 +624,7 @@ if (!bBetweenLevels)	{
 		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
 		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].orient = cameras [gameData.objs.cameraRef [i]].orient;
+			gameData.objs.objects [i].position.mOrient = cameras [gameData.objs.cameraRef [i]].orient;
 		else if (gameData.objs.objects [i].renderType==RT_MORPH) {
 			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
@@ -924,7 +706,7 @@ CFWrite (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1, fp);
 CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);
 // Save automap marker info
-CFWrite (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
+CFWrite (gameData.marker.objects, sizeof (gameData.marker.objects), 1, fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 CFWrite (&xAfterburnerCharge, sizeof (fix), 1, fp);
@@ -1051,26 +833,26 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void StateSavePlayer (player *playerP, CFILE *fp)
+void StateSavePlayer (tPlayer *playerP, CFILE *fp)
 {
 	int	i;
 
-CFWrite (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this player, for net purposes.
+CFWrite (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this tPlayer, for net purposes.
 CFWrite (playerP->netAddress, 1, 6, fp);					// The network address of the player.
-CFWriteByte (playerP->connected, fp);            // Is the player connected or not?
-CFWriteInt (playerP->nObject, fp);                // What tObject number this player is. (made an int by mk because it's very often referenced)
+CFWriteByte (playerP->connected, fp);            // Is the tPlayer connected or not?
+CFWriteInt (playerP->nObject, fp);                // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
 CFWriteInt (playerP->nPacketsGot, fp);         // How many packets we got from them
 CFWriteInt (playerP->nPacketsSent, fp);        // How many packets we sent to them
 CFWriteInt ((int) playerP->flags, fp);           // Powerup flags, see below...
 CFWriteFix (playerP->energy, fp);                // Amount of energy remaining.
 CFWriteFix (playerP->shields, fp);               // shields remaining (protection)
 CFWriteByte (playerP->lives, fp);                // Lives remaining, 0 = game over.
-CFWriteByte (playerP->level, fp);                // Current level player is playing. (must be signed for secret levels)
+CFWriteByte (playerP->level, fp);                // Current level tPlayer is playing. (must be signed for secret levels)
 CFWriteByte ((sbyte) playerP->laserLevel, fp);  // Current level of the laser.
-CFWriteByte (playerP->startingLevel, fp);       // What level the player started on.
+CFWriteByte (playerP->startingLevel, fp);       // What level the tPlayer started on.
 CFWriteShort (playerP->nKillerObj, fp);       // Who killed me.... (-1 if no one)
-CFWriteShort ((short) playerP->primaryWeaponFlags, fp);   // bit set indicates the player has this weapon.
-CFWriteShort ((short) playerP->secondaryWeaponFlags, fp); // bit set indicates the player has this weapon.
+CFWriteShort ((short) playerP->primaryWeaponFlags, fp);   // bit set indicates the tPlayer has this weapon.
+CFWriteShort ((short) playerP->secondaryWeaponFlags, fp); // bit set indicates the tPlayer has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	CFWriteShort ((short) playerP->primaryAmmo [i], fp); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -1119,8 +901,8 @@ CFWriteByte ((sbyte) objP->renderType, fp);
 CFWriteByte ((sbyte) objP->flags, fp);
 CFWriteShort (objP->nSegment, fp);
 CFWriteShort (objP->attachedObj, fp);
-CFWriteVector (&objP->pos, fp);     
-CFWriteMatrix (&objP->orient, fp);  
+CFWriteVector (&objP->position.vPos, fp);     
+CFWriteMatrix (&objP->position.mOrient, fp);  
 CFWriteFix (objP->size, fp); 
 CFWriteFix (objP->shields, fp);
 CFWriteVector (&objP->last_pos, fp);  
@@ -1367,7 +1149,7 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	fpos = CFTell (fp);
 	}
 #endif
-//Save player info
+//Save tPlayer info
 StateSavePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
 // Save the current weapon info
 CFWriteByte (gameData.weapons.nPrimary, fp);
@@ -1382,7 +1164,7 @@ if (!bBetweenLevels)	{
 		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
 		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].orient = cameras [gameData.objs.cameraRef [i]].orient;
+			gameData.objs.objects [i].position.mOrient = cameras [gameData.objs.cameraRef [i]].orient;
 		else if (gameData.objs.objects [i].renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
@@ -1486,7 +1268,7 @@ CFWriteInt (gameStates.app.bLunacy, fp);		//	Yes, writing this twice.  Removed t
 CFWriteInt (gameStates.app.bLunacy, fp);
 // Save automap marker info
 for (i = 0; i < NUM_MARKERS; i++)
-	CFWriteShort (gameData.marker.tObject [i], fp);
+	CFWriteShort (gameData.marker.objects [i], fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 CFWriteFix (xAfterburnerCharge, fp);
@@ -1679,16 +1461,16 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------------
-//	Set the player's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
+//	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (void)
 {
 	int	plobjnum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 
-COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [plobjnum].pos, 
+COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [plobjnum].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
 RelinkObject (plobjnum, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
-gameData.objs.objects [plobjnum].orient = gameData.segs.secret.returnOrient;
+gameData.objs.objects [plobjnum].position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //	-----------------------------------------------------------------------------------
@@ -1810,7 +1592,7 @@ else {
 	strcpy (pszOrgCallSign, gameData.multi.players [0].callsign);
 	gameData.multi.nPlayers = 1;
 	if (!bSecretRestore) {
-		InitMultiPlayerObject ();	//make sure player's tObject set up
+		InitMultiPlayerObject ();	//make sure tPlayer's tObject set up
 		InitPlayerStatsGame ();		//clear all stats
 		}
 	}
@@ -1818,7 +1600,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int StateSetServerPlayer (player *restore_players, int nPlayers, char *pszServerCallSign,
+int StateSetServerPlayer (tPlayer *restore_players, int nPlayers, char *pszServerCallSign,
 								  int *pnOtherObjNum, int *pnServerObjNum)
 {
 	int	i,
@@ -1841,12 +1623,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		nOtherObjNum = restore_players [0].nObject;
 		nServerObjNum = restore_players [nServerPlayer].nObject;
 		{
-		netplayer_info h = netPlayers.players [0];
+		tNetPlayerInfo h = netPlayers.players [0];
 		netPlayers.players [0] = netPlayers.players [nServerPlayer];
 		netPlayers.players [nServerPlayer] = h;
 		}
 		{
-		player h = restore_players [0];
+		tPlayer h = restore_players [0];
 		restore_players [0] = restore_players [nServerPlayer];
 		restore_players [nServerPlayer] = h;
 		}
@@ -1867,7 +1649,7 @@ return nServerPlayer;
 
 //------------------------------------------------------------------------------
 
-void StateGetConnectedPlayers (player *restore_players, int nPlayers)
+void StateGetConnectedPlayers (tPlayer *restore_players, int nPlayers)
 {
 	int	i, j;
 
@@ -1880,7 +1662,7 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		}
 	}
-memcpy (gameData.multi.players, restore_players, sizeof (player) * nPlayers);
+memcpy (gameData.multi.players, restore_players, sizeof (tPlayer) * nPlayers);
 gameData.multi.nPlayers = nPlayers;
 if (NetworkIAmMaster ()) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
@@ -1940,16 +1722,16 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		if (save_shields > 0 && (save_shields <= objP->shields))
 			objP->shields = save_shields;
 		else
-			objP->shields /= 2;  //give player a break
+			objP->shields /= 2;  //give tPlayer a break
 		}
 	}	
 }
 
 //------------------------------------------------------------------------------
 
-void StateAwardReturningPlayer (player *retPlayerP, fix xOldGameTime)
+void StateAwardReturningPlayer (tPlayer *retPlayerP, fix xOldGameTime)
 {
-player *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 playerP->level = retPlayerP->level;
 playerP->last_score = retPlayerP->last_score;
 playerP->timeLevel = retPlayerP->timeLevel;
@@ -2077,26 +1859,26 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void StateRestorePlayer (player *playerP, CFILE *fp)
+void StateRestorePlayer (tPlayer *playerP, CFILE *fp)
 {
 	int	i;
 
-CFRead (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this player, for net purposes.
+CFRead (playerP->callsign, 1, CALLSIGN_LEN + 1, fp); // The callsign of this tPlayer, for net purposes.
 CFRead (playerP->netAddress, 1, 6, fp);					// The network address of the player.
-playerP->connected = CFReadByte (fp);            // Is the player connected or not?
-playerP->nObject = CFReadInt (fp);                // What tObject number this player is. (made an int by mk because it's very often referenced)
+playerP->connected = CFReadByte (fp);            // Is the tPlayer connected or not?
+playerP->nObject = CFReadInt (fp);                // What tObject number this tPlayer is. (made an int by mk because it's very often referenced)
 playerP->nPacketsGot = CFReadInt (fp);         // How many packets we got from them
 playerP->nPacketsSent = CFReadInt (fp);        // How many packets we sent to them
 playerP->flags = (uint) CFReadInt (fp);           // Powerup flags, see below...
 playerP->energy = CFReadFix (fp);                // Amount of energy remaining.
 playerP->shields = CFReadFix (fp);               // shields remaining (protection)
 playerP->lives = CFReadByte (fp);                // Lives remaining, 0 = game over.
-playerP->level = CFReadByte (fp);                // Current level player is playing. (must be signed for secret levels)
+playerP->level = CFReadByte (fp);                // Current level tPlayer is playing. (must be signed for secret levels)
 playerP->laserLevel = (ubyte) CFReadByte (fp);  // Current level of the laser.
-playerP->startingLevel = CFReadByte (fp);       // What level the player started on.
+playerP->startingLevel = CFReadByte (fp);       // What level the tPlayer started on.
 playerP->nKillerObj = CFReadShort (fp);       // Who killed me.... (-1 if no one)
-playerP->primaryWeaponFlags = (ushort) CFReadShort (fp);   // bit set indicates the player has this weapon.
-playerP->secondaryWeaponFlags = (ushort) CFReadShort (fp); // bit set indicates the player has this weapon.
+playerP->primaryWeaponFlags = (ushort) CFReadShort (fp);   // bit set indicates the tPlayer has this weapon.
+playerP->secondaryWeaponFlags = (ushort) CFReadShort (fp); // bit set indicates the tPlayer has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	playerP->primaryAmmo [i] = (ushort) CFReadShort (fp); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -2144,8 +1926,8 @@ objP->renderType = (ubyte) CFReadByte (fp);
 objP->flags = (ubyte) CFReadByte (fp);
 objP->nSegment = CFReadShort (fp);
 objP->attachedObj = CFReadShort (fp);
-CFReadVector (&objP->pos, fp);     
-CFReadMatrix (&objP->orient, fp);  
+CFReadVector (&objP->position.vPos, fp);     
+CFReadMatrix (&objP->position.mOrient, fp);  
 objP->size = CFReadFix (fp); 
 objP->shields = CFReadFix (fp);
 CFReadVector (&objP->last_pos, fp);  
@@ -2367,7 +2149,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
 {
-	player	restore_players [MAX_PLAYERS];
+	tPlayer	restore_players [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
@@ -2405,23 +2187,23 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	for (i = 0; i < nPlayers; i++)
 		StateRestorePlayer (restore_players + i, fp);
 	fpos = CFTell (fp);
-	// make sure the current game host is in player slot #0
+	// make sure the current game host is in tPlayer slot #0
 	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	StateGetConnectedPlayers (restore_players, nPlayers);
 	}
 
 #endif
 
-//Read player info
+//Read tPlayer info
 if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
 	CFClose (fp);
 	return 0;
 	}
 nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-if (bSecretRestore != 1)	//either no secret restore, or player died in scret level
+if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
 	StateRestorePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
 else {
-	player	retPlayer;
+	tPlayer	retPlayer;
 	StateRestorePlayer (&retPlayer, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
@@ -2564,7 +2346,7 @@ gameStates.app.bLunacy = CFReadInt (fp);
 if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
-CFRead (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
+CFRead (gameData.marker.objects, sizeof (gameData.marker.objects), 1, fp);
 CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 
@@ -2603,7 +2385,7 @@ return 1;
 
 int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
 {
-	player	restore_players [MAX_PLAYERS];
+	tPlayer	restore_players [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
@@ -2637,23 +2419,23 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	CFRead (&gameData.multi.nLocalPlayer, sizeof (gameData.multi.nLocalPlayer), 1, fp);
 	nSavedLocalPlayer = gameData.multi.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
-		CFRead (restore_players + i, sizeof (player), 1, fp);
+		CFRead (restore_players + i, sizeof (tPlayer), 1, fp);
 	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	StateGetConnectedPlayers (restore_players, nPlayers);
 	}
 #endif
 
-//Read player info
+//Read tPlayer info
 if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
 	CFClose (fp);
 	return 0;
 	}
 nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-if (bSecretRestore != 1)	//either no secret restore, or player died in scret level
-	CFRead (gameData.multi.players + gameData.multi.nLocalPlayer, sizeof (player), 1, fp);
+if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
+	CFRead (gameData.multi.players + gameData.multi.nLocalPlayer, sizeof (tPlayer), 1, fp);
 else {
-	player	retPlayer;
-	CFRead (&retPlayer, sizeof (player), 1, fp);
+	tPlayer	retPlayer;
+	CFRead (&retPlayer, sizeof (tPlayer), 1, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 gameData.multi.players [gameData.multi.nLocalPlayer].nObject = nLocalObjNum;
@@ -2784,7 +2566,7 @@ if (sgVersion >= 7)	{
 }
 
 if (sgVersion >= 17) {
-	CFRead (gameData.marker.tObject, sizeof (gameData.marker.tObject), 1, fp);
+	CFRead (gameData.marker.objects, sizeof (gameData.marker.objects), 1, fp);
 	CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 	CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 }
@@ -2796,7 +2578,7 @@ else {
 	CFRead (&dummy, sizeof (int), 1, fp);     //was CurMarker
 	CFSeek (fp, num * (sizeof (vmsVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
-		gameData.marker.tObject [num] = -1;
+		gameData.marker.objects [num] = -1;
 }
 
 if (sgVersion >= 11) {

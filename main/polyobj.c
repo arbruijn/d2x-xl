@@ -12,102 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Hacked-in polygon gameData.objs.objects
- *
- * Old Log:
- * Revision 1.3  1995/10/25  14:07:07  allender
- * removed load_poly_model function
- *
- * Revision 1.2  1995/09/14  14:10:20  allender
- * two funtions should be void
- *
- * Revision 1.1  1995/05/16  15:30:08  allender
- * Initial revision
- *
- * Revision 2.1  1995/05/26  16:10:37  john
- * Support for new 4-byte align v8 pof files.
- *
- * Revision 2.0  1995/02/27  11:32:44  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.64  1995/01/14  19:16:43  john
- * First version of new bitmap paging code.
- *
- * Revision 1.63  1994/12/14  18:06:54  matt
- * Removed compile warnings
- *
- * Revision 1.62  1994/12/09  17:54:31  john
- * Made the CFILE's close right after reading in data.
- *
- * Revision 1.61  1994/12/09  16:13:28  mike
- * speedup pof file reading, but still horribly slow using hog file...problem somewhere else.
- *
- * Revision 1.60  1994/12/08  17:41:20  yuan
- * Cfiling stuff.
- *
- * Revision 1.59  1994/11/21  11:02:19  matt
- * Added error checking
- *
- * Revision 1.58  1994/11/14  11:32:49  matt
- * Allow switching to simpler models even when altTextures specified
- *
- * Revision 1.57  1994/11/13  21:15:24  matt
- * Added basic support for more than one level of detail simplification
- *
- * Revision 1.56  1994/11/11  19:29:25  matt
- * Added code to show low detail polygon models
- *
- * Revision 1.55  1994/11/10  14:02:57  matt
- * Hacked in support for player ships with different textures
- *
- * Revision 1.54  1994/11/03  11:01:59  matt
- * Made robot pics lighted
- *
- * Revision 1.53  1994/11/02  16:18:34  matt
- * Moved DrawModelPicture () out of editor
- *
- * Revision 1.52  1994/10/18  14:38:11  matt
- * Restored assert now that bug is fixed
- *
- * Revision 1.51  1994/10/17  21:35:03  matt
- * Added support for new Control Center/Main Reactor
- *
- * Revision 1.50  1994/10/14  17:46:23  yuan
- * Made the soft Int3 only work in net mode.
- *
- * Revision 1.49  1994/10/14  17:43:47  yuan
- * Added soft int3's instead of Asserts  for some common network bugs.
- *
- * Revision 1.48  1994/10/14  17:09:04  yuan
- * Made Assert on line 610 be if in an attempt
- * to bypass.
- *
- * Revision 1.47  1994/09/09  14:23:42  matt
- * Added glow code to polygon models for engine glow
- *
- * Revision 1.46  1994/08/26  18:03:30  matt
- * Added code to remap polygon model numbers by matching filenames
- *
- * Revision 1.45  1994/08/26  15:35:58  matt
- * Made eclips usable on more than one tObject at a time
- *
- * Revision 1.44  1994/08/25  18:11:58  matt
- * Made player's weapons and flares fire from the positions on the 3d model.
- * Also added support for quad lasers.
- *
- * Revision 1.43  1994/07/25  00:14:18  matt
- * Made a couple of minor changes for the drivethrough
- *
- * Revision 1.42  1994/07/25  00:02:41  matt
- * Various changes to accomodate new 3d, which no longer takes point numbers
- * as parms, and now only takes pointers to points.
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -721,8 +625,8 @@ G3DoneInstance ();
 {
 	g3sPoint p0, p1;
 
-G3TransformPoint (&p0.p3_vec, &objP->pos);
-VmVecSub (&p1.p3_vec, &objP->pos, &objP->mType.physInfo.velocity);
+G3TransformPoint (&p0.p3_vec, &objP->position.vPos);
+VmVecSub (&p1.p3_vec, &objP->position.vPos, &objP->mType.physInfo.velocity);
 G3TransformPoint (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
 glDisable (GL_TEXTURE_2D);

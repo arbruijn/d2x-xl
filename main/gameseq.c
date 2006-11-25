@@ -12,281 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Routines for EndGame, EndLevel, etc.
- *
- * Old Log:
- * Revision 1.1  1995/12/05  16:02:05  allender
- * Initial revision
- *
- * Revision 1.14  1995/11/03  12:55:30  allender
- * shareware changes
- *
- * Revision 1.13  1995/10/31  10:23:07  allender
- * shareware stuff
- *
- * Revision 1.12  1995/10/18  18:25:02  allender
- * call AutoSelectWeapon after initing ammo since that may
- * change the secondary weapon status
- *
- * Revision 1.11  1995/10/17  13:17:11  allender
- * added closebox when entering pilot name
- *
- * Revision 1.10  1995/09/24  10:56:59  allender
- * new players must be looked for in gameData.multi.players directory
- *
- * Revision 1.9  1995/09/18  08:08:08  allender
- * remove netgame binding if at endgame
- *
- * Revision 1.8  1995/09/14  14:13:01  allender
- * initplayerobject have void return
- *
- * Revision 1.7  1995/08/31  12:54:42  allender
- * try and fix bug
- *
- * Revision 1.6  1995/08/26  16:25:40  allender
- * put return values on needed functions
- *
- * Revision 1.5  1995/08/14  09:26:28  allender
- * added byteswap header files
- *
- * Revision 1.4  1995/08/01  13:57:42  allender
- * macified player file stuff -- players stored in seperate folder
- *
- * Revision 1.3  1995/06/08  12:54:37  allender
- * new function for calculating a tSegment based checksum since the old way
- * is byte order dependent
- *
- * Revision 1.2  1995/06/02  07:42:10  allender
- * removed duplicate extern for NetworkEndLevelPoll2
- *
- * Revision 1.1  1995/05/16  15:25:56  allender
- * Initial revision
- *
- * Revision 2.10  1995/12/19  15:48:25  john
- * Made screen reset when loading new level.
- *
- * Revision 2.9  1995/07/07  16:47:52  john
- * Fixed bug with reactor time..
- *
- * Revision 2.8  1995/06/15  12:14:18  john
- * Made end game, win game and title sequences all go
- * on after 5 minutes automatically.
- *
- * Revision 2.7  1995/05/26  16:16:25  john
- * Split SATURN into define's for requiring cd, using cd, etc.
- * Also started adding all the Rockwell stuff.
- *
- * Revision 2.6  1995/03/24  13:11:20  john
- * Added save game during briefing screens.
- *
- * Revision 2.5  1995/03/23  17:56:20  allender
- * added code to record old laser level and weapons when player gets
- * new ship
- *
- * Revision 2.4  1995/03/21  08:39:14  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.3  1995/03/15  14:33:33  john
- * Added code to force the Descent CD-rom in the drive.
- *
- * Revision 2.2  1995/03/06  16:47:26  mike
- * destination saturn
- *
- * Revision 2.1  1995/03/06  15:23:23  john
- * New screen techniques.
- *
- * Revision 2.0  1995/02/27  11:28:53  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.310  1995/02/14  10:48:09  mike
- * zero bonus if you are a cheater.
- *
- * Revision 1.309  1995/02/11  19:17:08  rob
- * Fixed bug in laser fire rate after demo playback.
- *
- * Revision 1.308  1995/02/11  14:34:08  rob
- * Added include of netmisc.c
- *
- * Revision 1.307  1995/02/11  14:29:04  rob
- * Fixes for invul. controlcen.
- *
- * Revision 1.306  1995/02/11  13:47:00  mike
- * fix cheats.
- *
- * Revision 1.305  1995/02/11  13:10:52  rob
- * Fixed end of anarchy mission problems.
- *
- * Revision 1.304  1995/02/11  12:46:12  mike
- * initialize gameStates.app.cheats.bRobotsFiring, part of AHIMSA cheat.
- *
- * Revision 1.303  1995/02/11  12:42:03  john
- * Added new song method, with FM bank switching..
- *
- * Revision 1.302  1995/02/10  17:39:29  matt
- * Changed secret exit message to be centered
- *
- * Revision 1.301  1995/02/10  16:17:33  mike
- * init LastLevel_path_shown.
- *
- * Revision 1.300  1995/02/09  22:18:22  john
- * Took out between level saves.
- *
- * Revision 1.299  1995/02/09  12:11:42  rob
- * Get rid of high scores thing for multiplayer games.
- *
- * Revision 1.298  1995/02/08  20:34:24  rob
- * Took briefing screens back OUT of coop games (per Interplay request)
- *
- * Revision 1.297  1995/02/08  19:20:09  rob
- * Moved checksum calc.
- *
- * Revision 1.296  1995/02/05  14:39:24  rob
- * Changed tObject mapping to be more efficient.
- *
- * Revision 1.295  1995/02/02  19:05:38  john
- * Made end level menu for 27 not overwrite descent title..
- *
- * Revision 1.294  1995/02/02  16:36:42  adam
- * *** empty log message ***
- *
- * Revision 1.293  1995/02/02  15:58:02  john
- * Added turbo mode cheat.
- *
- * Revision 1.292  1995/02/02  15:29:34  matt
- * Changed & localized secret level text
- *
- * Revision 1.291  1995/02/02  10:50:03  adam
- * messed with secret level message
- *
- * Revision 1.290  1995/02/02  01:20:28  adam
- * changed endgame song temporarily.
- *
- * Revision 1.289  1995/02/01  23:19:43  rob
- * Fixed up endlevel stuff for multiplayer.
- * Put in palette fades around areas that didn't have them before.
- *
- * Revision 1.288  1995/02/01  17:12:34  mike
- * Make score come after endgame screens.
- *
- * Revision 1.287  1995/01/30  18:34:30  rob
- * Put briefing screens back into coop games.
- *
- * Revision 1.286  1995/01/27  13:07:59  rob
- * Removed erroneous warning message.
- *
- * Revision 1.285  1995/01/27  11:47:43  rob
- * Removed new secret level menu from multiplayer games.
- *
- * Revision 1.284  1995/01/26  22:11:11  mike
- * Purple chromo-blaster (ie, fusion cannon) spruce up (chromification)
- *
- * Revision 1.283  1995/01/26  16:55:13  rob
- * Removed ship bonus from cooperative endgame.
- *
- * Revision 1.282  1995/01/26  16:45:24  mike
- * Add autofire fusion cannon stuff.
- *
- * Revision 1.281  1995/01/26  14:44:44  rob
- * Removed unnecessary #ifdefs around mprintfs.
- * Changed gameData.multi.nPlayerPositions to be independant of networkData.nMaxPlayers to
- * accomodate 4-player robo-archy games with 8 start positions.
- *
- * Revision 1.280  1995/01/26  12:19:01  rob
- * Changed NetworkDoFrame call.
- *
- * Revision 1.279  1995/01/26  00:35:03  matt
- * Changed numbering convention for HMP files for levels
- *
- * Revision 1.278  1995/01/25  16:07:59  matt
- * Added message (prototype) when going to secret level
- *
- * Revision 1.277  1995/01/22  18:57:23  matt
- * Made player highest level work with missions
- *
- * Revision 1.276  1995/01/21  23:13:08  matt
- * Made high scores with (not work, really) with loaded missions
- * Don't give player high score when quit game
- *
- * Revision 1.275  1995/01/21  17:17:39  john
- * *** empty log message ***
- *
- * Revision 1.274  1995/01/21  17:15:38  john
- * Added include for state.h
- *
- * Revision 1.273  1995/01/21  16:21:14  matt
- * Fixed bugs in secret level sequencing
- *
- * Revision 1.272  1995/01/20  22:47:29  matt
- * Mission system implemented, though imcompletely
- *
- * Revision 1.271  1995/01/19  17:00:48  john
- * Made save game work between levels.
- *
- * Revision 1.270  1995/01/17  17:49:10  rob
- * Added key syncing for coop.
- *
- * Revision 1.269  1995/01/17  14:27:37  john
- * y
- *
- * Revision 1.268  1995/01/17  13:36:33  john
- * Moved pig loading into StartNewLevelSub.
- *
- * Revision 1.267  1995/01/16  16:53:55  john
- * Added code to save cheat state during save game.
- *
- * Revision 1.266  1995/01/15  19:42:10  matt
- * Ripped out hostage faces for registered version
- *
- * Revision 1.265  1995/01/15  16:55:06  john
- * Improved mine texture parsing.
- *
- * Revision 1.264  1995/01/15  11:56:24  john
- * Working version of paging.
- *
- * Revision 1.263  1995/01/14  19:16:40  john
- * First version of new bitmap paging code.
- *
- * Revision 1.262  1995/01/13  17:38:58  yuan
- * Removed Int3 () for number players check.
- *
- * Revision 1.261  1995/01/12  12:09:52  yuan
- * Added coop tObject capability.
- *
- * Revision 1.260  1995/01/05  17:16:08  yuan
- * Removed Int3s.
- *
- * Revision 1.259  1995/01/05  11:34:29  john
- * Took out endlevel save stuff for registered.
- *
- * Revision 1.258  1995/01/04  19:00:16  rob
- * Added some debugging for two bugs.
- *
- * Revision 1.257  1995/01/04  13:18:18  john
- * Added cool 6 game save.
- *
- * Revision 1.256  1995/01/04  08:46:18  rob
- * JOHN CHECKED IN FOR ROB !!!
- *
- * Revision 1.255  1995/01/02  20:07:35  rob
- * Added score syncing.
- * Get rid of endlevel score for coop games (put it back in elsewhere)
- *
- * Revision 1.254  1995/01/02  16:17:43  mike
- * init super boss.
- *
- * Revision 1.253  1994/12/21  21:08:47  rob
- * fixed a bug in coop player ship positions.
- *
- * Revision 1.252  1994/12/21  12:57:08  rob
- * Handle additional player ships in mines.
- *
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -513,7 +238,7 @@ void GameSeqInitNetworkPlayers ()
 				nPlayers;
 	tObject	*objP;
 
-	// Initialize network player start locations and tObject numbers
+	// Initialize network tPlayer start locations and tObject numbers
 
 memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsTyping));
 nPlayers = 0;
@@ -539,8 +264,8 @@ for (i = 0, objP = gameData.objs.objects;i <= gameData.objs.nLastObject; i++, ob
 // the following code takes care of team players being assigned the proper start locations
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
-// find a player tObject that resides in a tSegment of proper nType for the current
-// player start info 
+// find a tPlayer tObject that resides in a tSegment of proper nType for the current
+// tPlayer start info 
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
@@ -566,8 +291,7 @@ for (i = 0; i < nPlayers; i++) {
 #endif			
 		objP = gameData.objs.objects + playerObjs [j];
 		objP->nType = OBJ_PLAYER;
-		gameData.multi.playerInit [i].pos = objP->pos;
-		gameData.multi.playerInit [i].orient = objP->orient;
+		gameData.multi.playerInit [i].position = objP->position;
 		gameData.multi.playerInit [i].nSegment = objP->nSegment;
 		gameData.multi.playerInit [i].nSegType = segType;
 		gameData.multi.players [i].nObject = playerObjs [j];
@@ -639,7 +363,7 @@ void GameSeqRemoveUnusedPlayers ()
 
 fix xStartingShields=INITIAL_SHIELDS;
 
-// Setup player for new game
+// Setup tPlayer for new game
 void InitPlayerStatsGame ()
 {
 	gameData.multi.players [gameData.multi.nLocalPlayer].score = 0;
@@ -701,7 +425,7 @@ void init_ammo_and_energy (void)
 
 extern	ubyte	bLastAfterburnerState;
 
-// Setup player for new level (After completion of previous level)
+// Setup tPlayer for new level (After completion of previous level)
 void init_player_statsLevel (int bSecret)
 {
 	// int	i;
@@ -754,7 +478,7 @@ gameData.objs.missileViewer = NULL;
 
 extern	void InitAIForShip (void);
 
-// Setup player for a brand-new ship
+// Setup tPlayer for a brand-new ship
 void InitPlayerStatsNewShip ()
 {
 	int	i;
@@ -802,7 +526,7 @@ if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bD
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_HEADLIGHT;
 gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = 0;
 gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = 0;
-gameStates.app.bPlayerIsDead = 0;		//player no longer dead
+gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
 Controls.afterburner_state = 0;
 bLastAfterburnerState = 0;
@@ -857,7 +581,7 @@ void editor_reset_stuff_onLevel ()
 
 //------------------------------------------------------------------------------
 
-//do whatever needs to be done when a player dies in multiplayer
+//do whatever needs to be done when a tPlayer dies in multiplayer
 void DoGameOver ()
 {
 //	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
@@ -875,7 +599,7 @@ void DoGameOver ()
 
 extern void do_save_game_menu ();
 
-//update various information about the player
+//update various information about the tPlayer
 void UpdatePlayerStats ()
 {
 gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel += gameData.time.xFrame;	//the never-ending march of time...
@@ -946,7 +670,7 @@ gameStates.sound.bDontStartObjects = 0;
 
 //fix flashDist=i2f (1);
 fix flashDist=fl2f (.9);
-//create flash for player appearance
+//create flash for tPlayer appearance
 void CreatePlayerAppearanceEffect (tObject *playerObjP)
 {
 	vmsVector pos;
@@ -960,12 +684,12 @@ void CreatePlayerAppearanceEffect (tObject *playerObjP)
 	}
 #endif
 if (playerObjP == gameData.objs.viewer)
-	VmVecScaleAdd (&pos, &playerObjP->pos, &playerObjP->orient.fVec, FixMul (playerObjP->size,flashDist));
+	VmVecScaleAdd (&pos, &playerObjP->position.vPos, &playerObjP->position.mOrient.fVec, FixMul (playerObjP->size,flashDist));
 else
-	pos = playerObjP->pos;
+	pos = playerObjP->position.vPos;
 effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
-	effectObjP->orient = playerObjP->orient;
+	effectObjP->position.mOrient = playerObjP->position.mOrient;
 	if (gameData.eff.vClips [0] [VCLIP_PLAYER_APPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0] [VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0);
 	}
@@ -1015,7 +739,7 @@ if (CFExist (filename,gameFolders.szProfDir,0)) {
 	goto try_again;
 	}
 if (!new_player_config ())
-	goto try_again;			// They hit Esc during New player config
+	goto try_again;			// They hit Esc during New tPlayer config
 strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, text, CALLSIGN_LEN);
 WritePlayerFile ();
 return 1;
@@ -1028,7 +752,7 @@ return 1;
 #define TXT_SELECT_PILOT "Select pilot\n<Ctrl-D> or Right-click\nto delete"
 #endif
 
-//Inputs the player's name, without putting up the background screen
+//Inputs the tPlayer's name, without putting up the background screen
 int SelectPlayer ()
 {
 	static int bStartup = 1;
@@ -1055,7 +779,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].callsign [0] == 0)	{
 	KCSetControls ();
 	//----------------------------------------------------------------
 
-	// Read the last player's name from config file, not lastplr.txt
+	// Read the last tPlayer's name from config file, not lastplr.txt
 	strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
 	if (gameConfig.szLastPlayer [0]==0)
 		allow_abortFlag = 0;
@@ -1118,7 +842,7 @@ extern char szAutoMission [255];
 int LoadLevel (int nLevel, int bPageInTextures)
 {
 	char		*pszLevelName;
-	player	save_player;
+	tPlayer	save_player;
 	int		nRooms, load_ret;
 
 /*---*/LogErr ("Loading level...\n");
@@ -1324,7 +1048,7 @@ int StartNewGame (int nStartLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 gameData.missions.nNextLevel = 0;
-InitMultiPlayerObject ();				//make sure player's tObject set up
+InitMultiPlayerObject ();				//make sure tPlayer's tObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multi.nPlayers = 1;
 #ifdef NETWORK
@@ -1351,7 +1075,7 @@ return result;
 //@@	gameData.multi.nPlayers = 1;
 //@@	networkData.bNewGame = 0;
 //@@
-//@@	InitPlayerObject ();				//make sure player's tObject set up
+//@@	InitPlayerObject ();				//make sure tPlayer's tObject set up
 //@@
 //@@	StartNewLevel (nStartLevel, 0);
 //@@
@@ -1365,7 +1089,7 @@ extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int c
 #endif
 
 //	Does the bonus scoring.
-//	Call with deadFlag = 1 if player died, but deserves some portion of bonus (only skill points), anyway.
+//	Call with deadFlag = 1 if tPlayer died, but deserves some portion of bonus (only skill points), anyway.
 void DoEndLevelScoreGlitz (int network)
 {
 	int level_points, skill_points, energy_points, shield_points, hostage_points;
@@ -1390,7 +1114,7 @@ void DoEndLevelScoreGlitz (int network)
 		  ClearForces ();
 	#endif
 
-	//	Compute level player is on, deal with secret levels (negative numbers)
+	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
 mineLevel = gameData.multi.players [gameData.multi.nLocalPlayer].level;
 if (mineLevel < 0)
 	mineLevel *= - (gameData.missions.nLastLevel/gameData.missions.nSecretLevels);
@@ -1422,7 +1146,7 @@ if (!gameStates.app.cheats.bEnabled && (gameData.multi.players [gameData.multi.n
 	}
 else
 	all_hostage_points = 0;
-if (!gameStates.app.cheats.bEnabled && !(gameData.app.nGameMode & GM_MULTI) && (gameData.multi.players [gameData.multi.nLocalPlayer].lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//player has finished the game!
+if (!gameStates.app.cheats.bEnabled && !(gameData.app.nGameMode & GM_MULTI) && (gameData.multi.players [gameData.multi.nLocalPlayer].lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
 	endgame_points = gameData.multi.players [gameData.multi.nLocalPlayer].lives * 10000;
 	sprintf (endgame_text, "%s%i\n", TXT_SHIP_BONUS, endgame_points);
 	is_lastLevel=1;
@@ -1476,14 +1200,14 @@ ExecMenu2 (NULL, title, c, m, NULL, 0, STARS_BACKGROUND);
 
 //	-----------------------------------------------------------------------------------------------------
 
-//give the player the opportunity to save his game
+//give the tPlayer the opportunity to save his game
 void DoEndlevelMenu ()
 {
 //No between level saves......!!!	StateSaveAll (1);
 }
 
 //	-----------------------------------------------------------------------------------------------------
-//called when the player is starting a level (new game or new ship)
+//called when the tPlayer is starting a level (new game or new ship)
 void StartSecretLevel ()
 {
 Assert (!gameStates.app.bPlayerIsDead);
@@ -1560,7 +1284,7 @@ ResetPaletteAdd ();
 }
 
 //	-----------------------------------------------------------------------------------------------------
-// called when the player is starting a new level for normal game mode and restore state
+// called when the tPlayer is starting a new level for normal game mode and restore state
 //	Need to deal with whether this is the first time coming to this level or not.  If not the
 //	first time, instead of initializing various things, need to do a game restore for all the
 //	robots, powerups, walls, doors, etc.
@@ -1648,7 +1372,7 @@ if (gameStates.app.bFirstSecretVisit)
 	CopyDefaultsToRobotsAll ();
 TurnCheatsOff ();
 InitReactorForLevel ();
-//	Say player can use FLASH cheat to mark path to exit.
+//	Say tPlayer can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 gameStates.app.bFirstSecretVisit = 0;
 return 1;
@@ -1656,7 +1380,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//	Called from switch.c when player is on a secret level and hits exit to return to base level.
+//	Called from switch.c when tPlayer is on a secret level and hits exit to return to base level.
 void ExitSecretLevel (void)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -1688,7 +1412,7 @@ else {
 }
 
 //------------------------------------------------------------------------------
-//	Set invulnerableTime and cloakTime in player struct to preserve amount of time left to
+//	Set invulnerableTime and cloakTime in tPlayer struct to preserve amount of time left to
 //	be invulnerable or cloaked.
 void DoCloakInvulSecretStuff (fix xOldGameTime)
 {
@@ -1708,7 +1432,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CL
 }
 
 //------------------------------------------------------------------------------
-//	Called from switch.c when player passes through secret exit.  That means he was on a non-secret level and he
+//	Called from switch.c when tPlayer passes through secret exit.  That means he was on a non-secret level and he
 //	is passing to the secret level.
 //	Do a savegame.
 void EnterSecretLevel (void)
@@ -1740,12 +1464,12 @@ StartNewLevelSecret (gameData.missions.nNextLevel, 1);
 }
 
 //------------------------------------------------------------------------------
-//called when the player has finished a level
+//called when the tPlayer has finished a level
 void PlayerFinishedLevel (int bSecret)
 {
 	Assert (!bSecret);
 
-	//credit the player for hostages
+	//credit the tPlayer for hostages
 gameData.multi.players [gameData.multi.nLocalPlayer].hostages_rescuedTotal += gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board;
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multi.players [gameData.multi.nLocalPlayer].connected = 2; // Finished but did not die
@@ -1767,7 +1491,7 @@ else
 void show_order_form ();
 extern void com_hangup (void);
 
-//called when the player has finished the last level
+//called when the tPlayer has finished the last level
 void DoEndGame (void)
 {
 SetFunctionMode (FMODE_MENU);
@@ -1885,7 +1609,7 @@ if (gameData.missions.nCurrentLevel == 0)
 if (gameData.app.nGameMode & GM_MULTI)	{
 	result = MultiEndLevel (&bSecret); // Wait for other players to reach this point
 	if (result) { // failed to sync
-		if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)		//player has finished the game!
+		if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)		//tPlayer has finished the game!
 			longjmp (gameExitPoint, 0);		// Exit out of game loop
 		else
 			return;
@@ -1893,7 +1617,7 @@ if (gameData.app.nGameMode & GM_MULTI)	{
 	}
 #endif
 if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
-	!extraGameInfo [IsMultiGame].bRotateLevels) //player has finished the game!
+	!extraGameInfo [IsMultiGame].bRotateLevels) //tPlayer has finished the game!
 	DoEndGame ();
 else {
 	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
@@ -1926,7 +1650,7 @@ starsPalette = gameData.render.pal.pCurPal;
 
 void DiedInMineMessage (void)
 {
-	// Tell the player he died in the mine, explain why
+	// Tell the tPlayer he died in the mine, explain why
 	int old_fmode;
 
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -1955,7 +1679,7 @@ void DiedInMineMessage (void)
 }
 
 //------------------------------------------------------------------------------
-//	Called when player dies on secret level.
+//	Called when tPlayer dies on secret level.
 void ReturningToLevelMessage (void)
 {
 	char	msg [128];
@@ -1988,7 +1712,7 @@ WIN (DEFINE_SCREEN (NULL));
 }
 
 //------------------------------------------------------------------------------
-//	Called when player dies on secret level.
+//	Called when tPlayer dies on secret level.
 void AdvancingToLevelMessage (void)
 {
 	char	msg [128];
@@ -2095,7 +1819,7 @@ DigiSyncSounds ();
 
 //------------------------------------------------------------------------------
 
-//called when the player is starting a new level for normal game mode and restore state
+//called when the tPlayer is starting a new level for normal game mode and restore state
 //	bSecret set if came from a secret level
 int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret)
 {
@@ -2217,7 +1941,7 @@ InitAIObjects ();
 gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls =
 gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks = 0;
 #endif
-//	Say player can use FLASH cheat to mark path to exit.
+//	Say tPlayer can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 return 1;
 }
@@ -2360,7 +2084,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 
 //	---------------------------------------------------------------------------
 //	If starting a level which appears in the gameData.missions.secretLevelTable, then set gameStates.app.bFirstSecretVisit.
-//	Reason: On this level, if player goes to a secret level, he will be going to a different
+//	Reason: On this level, if tPlayer goes to a secret level, he will be going to a different
 //	secret level than he's ever been to before.
 //	Sets the global gameStates.app.bFirstSecretVisit if necessary.  Otherwise leaves it unchanged.
 void MaybeSetFirstSecretVisit (int nLevel)
@@ -2375,7 +2099,7 @@ void MaybeSetFirstSecretVisit (int nLevel)
 }
 
 //------------------------------------------------------------------------------
-//called when the player is starting a new level for normal game model
+//called when the tPlayer is starting a new level for normal game model
 //	bSecret if came from a secret level
 int StartNewLevel (int nLevel, int bSecret)
 {
@@ -2390,7 +2114,7 @@ return StartNewLevelSub (nLevel, 1, bSecret);
 }
 
 //------------------------------------------------------------------------------
-//initialize the player tObject position & orientation (at start of game, or new ship)
+//initialize the tPlayer tObject position & orientation (at start of game, or new ship)
 void InitPlayerPosition (int bRandom)
 {
 	int bNewPlayer=0;
@@ -2431,7 +2155,7 @@ void InitPlayerPosition (int bRandom)
 						spawnMap [i] = i;
 					nSpawnSegs = gameData.multi.nPlayerPositions;
 					}
-				if (nSpawnSegs) {		//try to find a spawn location owned by the player's team
+				if (nSpawnSegs) {		//try to find a spawn location owned by the tPlayer's team
 					closestDist = 0;
 					i = d_rand () % nSpawnSegs;
 					bNewPlayer = spawnMap [i];
@@ -2463,9 +2187,9 @@ void InitPlayerPosition (int bRandom)
 					continue;
 				pObj = gameData.objs.objects + gameData.multi.players [i].nObject; 
 				if ((pObj->nType == OBJ_PLAYER))	{
-					dist = FindConnectedDistance (&pObj->pos, 
+					dist = FindConnectedDistance (&pObj->position.vPos, 
 															 pObj->nSegment, 
-															 &gameData.multi.playerInit [bNewPlayer].pos, 
+															 &gameData.multi.playerInit [bNewPlayer].position.vPos, 
 															 gameData.multi.playerInit [bNewPlayer].nSegment, 
 															 10, WID_FLY_FLAG);	//	Used to be 5, search up to 10 segments
 					if ((dist < closestDist) && (dist >= 0))	{
@@ -2483,8 +2207,8 @@ void InitPlayerPosition (int bRandom)
 	Assert (bNewPlayer < gameData.multi.nPlayerPositions);
 #endif
 
-	gameData.objs.console->pos = gameData.multi.playerInit [bNewPlayer].pos;
-	gameData.objs.console->orient = gameData.multi.playerInit [bNewPlayer].orient;
+	gameData.objs.console->position.vPos = gameData.multi.playerInit [bNewPlayer].position.vPos;
+	gameData.objs.console->position.mOrient = gameData.multi.playerInit [bNewPlayer].position.mOrient;
  	RelinkObject (OBJ_IDX (gameData.objs.console),gameData.multi.playerInit [bNewPlayer].nSegment);
 #ifdef NETWORK
 done:
@@ -2547,7 +2271,7 @@ void CopyDefaultsToRobotsAll ()
 extern void ClearStuckObjects (void);
 
 //------------------------------------------------------------------------------
-//called when the player is starting a level (new game or new ship)
+//called when the tPlayer is starting a level (new game or new ship)
 void StartLevel (int bRandom)
 {
 Assert (!gameStates.app.bPlayerIsDead);
@@ -2575,7 +2299,7 @@ AIInitBossForShip ();
 ClearStuckObjects ();
 #ifdef EDITOR
 //	Note, this is only done if editor builtin.  Calling this from here
-//	will cause it to be called after the player dies, resetting the
+//	will cause it to be called after the tPlayer dies, resetting the
 //	hits for the buddy and thief.  This is ok, since it will work ok
 //	in a shipped version.
 InitAIObjects ();

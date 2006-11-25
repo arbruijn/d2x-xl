@@ -93,6 +93,10 @@ PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 #	endif
 #endif
 
+#ifndef GL_VERSION_20
+PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
+#endif
+
 //------------------------------------------------------------------------------
 
 int bOcclusionQuery = 0;
@@ -1772,6 +1776,12 @@ else {
 #	ifdef _WIN32
 glPointParameterfvARB	= (PFNGLPOINTPARAMETERFVARBPROC) wglGetProcAddress ("glPointParameterfvARB");
 glPointParameterfARB		= (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress ("glPointParameterfARB");
+#	endif
+#endif
+
+#ifdef RELEASE
+#	ifdef _WIN32
+glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glActiveStencilFaceEXT");
 #	endif
 #endif
 

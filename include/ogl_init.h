@@ -202,6 +202,10 @@ extern PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB;
 #	endif
 #endif
 
+#	ifdef _WIN32
+extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
+#	endif
+
 #	ifndef _WIN32
 #	define	wglGetProcAddress	SDL_GL_GetProcAddress
 #	endif

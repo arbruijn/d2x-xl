@@ -12,98 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Destroyable wall stuff
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:32:08  allender
- * Initial revision
- *
- * Revision 2.1  1995/03/21  14:39:04  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02/27  11:28:32  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.112  1995/02/22  13:53:07  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.111  1995/02/01  17:32:17  adam
- * Took out a bogus int3.
- *
- * Revision 1.110  1995/02/01  17:20:24  john
- * Lintized.
- *
- * Revision 1.109  1995/01/21  17:39:50  matt
- * Cleaned up laser/player hit wall confusions
- *
- * Revision 1.108  1995/01/21  17:14:17  rob
- * Fixed bug in multiplayer door-butting.
- *
- * Revision 1.107  1995/01/18  18:57:11  rob
- * Added new hostage door hooks.
- *
- * Revision 1.106  1995/01/18  18:48:18  allender
- * removed #ifdef newdemo's.  Added function call to record a door that
- * starts to open. This fixes the rewind problem
- *
- * Revision 1.105  1995/01/16  11:55:39  mike
- * make control center (and robots whose id == your playernum) not able to open doors.
- *
- * Revision 1.104  1994/12/11  23:07:21  matt
- * Fixed stuck gameData.objs.objects & blastable walls
- *
- * Revision 1.103  1994/12/10  16:44:34  matt
- * Added debugging code to track down door that turns into rock
- *
- * Revision 1.102  1994/12/06  16:27:05  matt
- * Added debugging
- *
- * Revision 1.101  1994/12/02  10:50:27  yuan
- * Localization
- *
- * Revision 1.100  1994/11/30  19:41:22  rob
- * Put in a fix so that door opening sounds travel through the door.
- *
- * Revision 1.99  1994/11/28  11:59:50  yuan
- * *** empty log message ***
- *
- * Revision 1.98  1994/11/28  11:25:45  matt
- * Cleaned up key hud messages
- *
- * Revision 1.97  1994/11/27  23:15:11  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.96  1994/11/19  15:18:29  mike
- * rip out unused code and data.
- *
- * Revision 1.95  1994/11/17  14:57:12  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.94  1994/11/07  08:47:30  john
- * Made wall state record.
- *
- * Revision 1.93  1994/11/04  16:06:37  rob
- * Fixed network damage of blastable walls.
- *
- * Revision 1.92  1994/11/02  21:54:01  matt
- * Don't let gameData.objs.objects with zero size keep door from shutting
- *
- * Revision 1.91  1994/10/31  13:48:42  rob
- * Fixed bug in opening doors over network/modem.  Added a new message
- * nType to multi.c that communicates door openings across the net.
- * Changed includes in multi.c and wall.c to accomplish this.
- *
- * Revision 1.90  1994/10/28  14:42:41  john
- * Added sound volumes to all sound calls.
- *
- * Revision 1.89  1994/10/23  19:16:55  matt
- * Fixed bug with "no key" messages
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -924,7 +832,7 @@ int CheckPoke (int nObject,int nSegment,short tSide)
 
 	//note: don't let gameData.objs.objects with zero size block door
 
-	if (objP->size && GetSegMasks(&objP->pos,nSegment,objP->size).sideMask & (1<<tSide))
+	if (objP->size && GetSegMasks(&objP->position.vPos,nSegment,objP->size).sideMask & (1<<tSide))
 		return 1;		//pokes through tSide!
 	else
 		return 0;		//does not!
@@ -1355,8 +1263,8 @@ for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 //-----------------------------------------------------------------
 // Determines what happens when a wall is shot
 //returns info about wall.  see wall.h for codes
-//obj is the tObject that hit...either a weapon or the player himself
-//playernum is the number the player who hit the wall or fired the weapon,
+//obj is the tObject that hit...either a weapon or the tPlayer himself
+//playernum is the number the tPlayer who hit the wall or fired the weapon,
 //or -1 if a robot fired the weapon
 int WallHitProcess (tSegment *seg, short tSide, fix damage, int playernum, tObject *objP)
 {
@@ -1387,10 +1295,10 @@ if (playernum != gameData.multi.nLocalPlayer)	//return if was robot fire
 
 Assert(playernum > -1);
 
-//	Determine whether player is moving forward.  If not, don't say negative
+//	Determine whether tPlayer is moving forward.  If not, don't say negative
 //	messages because he probably didn't intentionally hit the door.
 if (objP->nType == OBJ_PLAYER)
-	show_message = (VmVecDot(&objP->orient.fVec, &objP->mType.physInfo.velocity) > 0);
+	show_message = (VmVecDot(&objP->position.mOrient.fVec, &objP->mType.physInfo.velocity) > 0);
 else if (objP->nType == OBJ_ROBOT)
 	show_message = 0;
 else if ((objP->nType == OBJ_WEAPON) && (objP->cType.laserInfo.parentType == OBJ_ROBOT))
@@ -1890,9 +1798,9 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||	
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo[tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
-				dist = VmVecDistQuick(&pnt, &objP->pos);
+				dist = VmVecDistQuick(&pnt, &objP->position.vPos);
 				if (dist < damage/2) {
-					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->pos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG);
+					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG);
 					if ((dist > 0) && (dist < damage/2))
 						CheckEffectBlowup(segp, nSide, &pnt, gameData.objs.objects + objP->cType.laserInfo.nParentObj, 1);
 				}

@@ -521,7 +521,7 @@ if (BM_CURFRAME (bmP))
 if (gameOpts->render.smoke.bSort)
 	hp = pParticle->transPos;
 else
-	G3TransformPoint (&hp, &pParticle->pos);
+	G3TransformPoint (&hp, &pParticle->pos, 0);
 //if (pParticle->glColor.r < 1.0)
 //	pParticle->glColor.r += 0.1;
 if (pParticle->nType > 2) {
@@ -878,7 +878,7 @@ if (left < r)
 void TransformParticles (tParticle *pParticles, int nParticles)
 {
 for (; nParticles; nParticles--, pParticles++)
-	G3TransformPoint (&pParticles->transPos, &pParticles->pos);
+	G3TransformPoint (&pParticles->transPos, &pParticles->pos, 0);
 }
 
 //------------------------------------------------------------------------------

@@ -11,23 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Rod routines
- * 
- * Old Log:
- *
- * Revision 1.2  1995/09/13  11:31:46  allender
- * removed CheckMulDiv in PPC implemenation
- *
- * Revision 1.1  1995/05/05  08:52:45  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  06:42:08  matt
- * Initial revision
- * 
- * 
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>

@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * touching a wall.  This manifested itself in spurious lava burns.
  *
  * Revision 1.9  1994/12/04  22:48:04  matt
- * Physics & FVI now only build seglist for player objects, and they
+ * Physics & FVI now only build seglist for tPlayer objects, and they
  * responsilby deal with buffer full conditions
  *
  * Revision 1.8  1994/10/31  12:28:01  matt

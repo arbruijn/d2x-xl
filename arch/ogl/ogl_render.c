@@ -65,8 +65,11 @@
 
 int bShadowTest = 0;
 
-tRgbaColorf shadowColor = {1.0f, 0.5f, 0.0f, 0.25f};
-tRgbaColorf modelColor = {0.0f, 0.5f, 1.0f, 0.5f};
+extern int bZPass;
+int bSingleStencil = 0;
+
+tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.25f}, {0.0f, 0.0f, 1.0f, 0.25f}};
+tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
 
 #define COORTRANS 0
 
@@ -852,7 +855,7 @@ if (pvNormal) {
 		glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
-		G3RotatePoint (&vNormal, pvNormal);
+		G3RotatePoint (&vNormal, pvNormal, 0);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
@@ -882,7 +885,7 @@ else
 		if (bFlip)
 			VmVecNegate (&vNormal);
 		if (!gameStates.ogl.bUseTransform)
-			G3RotatePoint (&vNormal, &vNormal);
+			G3RotatePoint (&vNormal, &vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
 		}
@@ -994,7 +997,7 @@ else {
 		VmVecNormalizef (&vertNorm, pvVertNorm);
 	else 
 #endif
-		G3RotatePointf (&vertNorm, pvVertNorm);
+		G3RotatePointf (&vertNorm, pvVertNorm, 0);
 	}
 if (!(gameStates.render.nState || pVertColor)) {
 #if !STATIC_LIGHT_TRANSFORM
@@ -1495,7 +1498,7 @@ glColor4f (1.0f, 1.0f, 1.0f, alpha);
 u = bmP->glTexture->u;
 v = bmP->glTexture->v;
 VmVecSub (&v1, pos, &viewInfo.position);
-VmVecRotate (&pv, &v1, &viewInfo.view);
+VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 x = (float) f2glf (pv.x);
 y = (float) f2glf (pv.y);
 z = (float) -f2glf (pv.z);
@@ -1843,7 +1846,7 @@ if (gameStates.render.nShadowPass) {
 			glLoadIdentity ();
 			glEnable (GL_DEPTH_TEST);
 			glDepthFunc (GL_LESS);
-			glDisable (GL_CULL_FACE);		
+			glEnable (GL_CULL_FACE);		
 			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
 		}
@@ -1855,31 +1858,64 @@ if (gameStates.render.nShadowPass) {
 			}
 		else {
 			glEnable (GL_BLEND);
-			if (!bShadowTest) {
+			if (bShadowTest) {
+				glColorMask (1,1,1,1);
+				glDepthMask (1);
+				glEnable (GL_BLEND);
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glDisable (GL_STENCIL_TEST);
+				}
+			else {
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
-				glBlendFunc (GL_ONE, GL_ONE);
 				glEnable (GL_STENCIL_TEST);
+				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
-				glStencilMask (~0);
-				glStencilFunc (GL_ALWAYS, 0, ~0);
-				//glEnable (GL_POLYGON_OFFSET_FILL);
-				//glPolygonOffset (1.0f, 2.0f);
+				if (!glActiveStencilFaceEXT)
+					bSingleStencil = 1;
+				if (bSingleStencil || bShadowTest) {
+					glStencilMask (~0);
+					glStencilFunc (GL_ALWAYS, 0, ~0);
+					}
+				else {
+					glEnable (GL_STENCIL_TEST_TWO_SIDE_EXT);
+					glActiveStencilFaceEXT (GL_BACK);
+					if (bZPass)
+						glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
+					else
+						glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+					glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
+					glStencilMask (~0);
+					glStencilFunc (GL_ALWAYS, 0, ~0);
+					glActiveStencilFaceEXT (GL_FRONT);
+					if (bZPass)
+						glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+					else
+						glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+					glStencilMask (~0);
+					glStencilFunc (GL_ALWAYS, 0, ~0);
+					}
+#if 0
+				glEnable (GL_POLYGON_OFFSET_FILL);
+				glPolygonOffset (1.0f, 2.0f);
+#endif
 				}
 			}
 		}
 	else { //render final lit scene
 		if (gameStates.render.bShadowMaps) {
+#if 0
 			glDisable (GL_POLYGON_OFFSET_FILL);
+#endif
 			glDepthFunc (GL_LESS);
 			}
 		else {
 			if (gameStates.render.bAltShadows) {
-				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
+				glStencilFunc (GL_EQUAL, 0, ~0);
+				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}
 			else {
-				glStencilFunc (/*GL_EQUAL*/GL_ALWAYS, 0, ~0);
+				glStencilFunc (GL_EQUAL, 0, ~0);
 #if 0
 				glStencilOp (GL_KEEP, GL_KEEP, GL_INCR);	//problem: layered texturing fails
 #else
@@ -1888,8 +1924,8 @@ if (gameStates.render.nShadowPass) {
 				}
 			glDepthFunc (GL_EQUAL);
 			}
-		glColorMask (1,1,1,1);
-		glDepthMask (1);
+		glColorMask (1, 1, 1, 1);
+//		glDepthMask (1);
 		glCullFace (GL_FRONT);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}

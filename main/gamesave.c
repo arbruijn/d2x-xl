@@ -12,276 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Save game information
- *
- * Old Log:
- * Revision 1.3  1996/02/21  13:59:17  allender
- * check Data folder when can't open a level file from a hog
- *
- * Revision 1.2  1995/10/31  10:23:23  allender
- * shareware stuff
- *
- * Revision 1.1  1995/05/16  15:25:37  allender
- * Initial revision
- *
- * Revision 2.2  1995/04/23  14:53:12  john
- * Made some mine structures read in with no structure packing problems.
- *
- * Revision 2.1  1995/03/20  18:15:43  john
- * Added code to not store the normals in the tSegment structure.
- *
- * Revision 2.0  1995/02/27  11:29:50  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.207  1995/02/23  10:17:36  allender
- * fixed parameter mismatch with COMPUTE_SEGMENT_CENTER
- *
- * Revision 1.206  1995/02/22  14:51:17  allender
- * fixed some things that I missed
- *
- * Revision 1.205  1995/02/22  13:31:38  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.204  1995/02/01  20:58:08  john
- * Made editor check hog.
- *
- * Revision 1.203  1995/01/28  17:40:34  mike
- * correct level names (use rdl, sdl) for dumpmine stuff.
- *
- * Revision 1.202  1995/01/25  20:03:46  matt
- * Moved matrix check to avoid orthogonalizing an uninitialize matrix
- *
- * Revision 1.201  1995/01/20  16:56:53  mike
- * remove some mprintfs.
- *
- * Revision 1.200  1995/01/15  19:42:13  matt
- * Ripped out hostage faces for registered version
- *
- * Revision 1.199  1995/01/05  16:59:09  yuan
- * Make it so if editor is loaded, don't get error from typo
- * in filename.
- *
- * Revision 1.198  1994/12/19  12:49:46  mike
- * Change fgets to CFGetS.  fgets was getting a pointer mismatch warning.
- *
- * Revision 1.197  1994/12/12  01:20:03  matt
- * Took out tObject size hack for green claw guys
- *
- * Revision 1.196  1994/12/11  13:19:37  matt
- * Restored calls to FixObjectSegs() when debugging is turned off, since
- * it's not a big routine, and could fix some possibly bad problems.
- *
- * Revision 1.195  1994/12/10  16:17:24  mike
- * fix editor bug that was converting transparent walls into rock.
- *
- * Revision 1.194  1994/12/09  14:59:27  matt
- * Added system to attach a fireball to another tObject for rendering purposes,
- * so the fireball always renders on top of (after) the tObject.
- *
- * Revision 1.193  1994/12/08  17:19:02  yuan
- * Cfiling stuff.
- *
- * Revision 1.192  1994/12/02  20:01:05  matt
- * Always give vulcan cannon powerup same amount of ammo, regardless of
- * how much it was saved with
- *
- * Revision 1.191  1994/11/30  17:45:57  yuan
- * Saving files now creates RDL/SDLs instead of CDLs.
- *
- * Revision 1.190  1994/11/30  17:22:14  matt
- * Ripped out hostage faces in shareware version
- *
- * Revision 1.189  1994/11/28  00:09:30  allender
- * commented out call to NDRecordStartDemo in LoadLevelSub...what is
- * this doing here anyway?????
- *
- * Revision 1.188  1994/11/27  23:13:48  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.187  1994/11/27  18:06:20  matt
- * Cleaned up LVL/CDL file loading
- *
- * Revision 1.186  1994/11/25  22:46:29  matt
- * Allow ESC out of compiled/normal menu (esc=compiled).
- *
- * Revision 1.185  1994/11/23  12:18:35  mike
- * move level names here...a more logical place than dumpmine.
- *
- * Revision 1.184  1994/11/21  20:29:19  matt
- * If hostage info is bad, fix it.
- *
- * Revision 1.183  1994/11/21  20:26:07  matt
- * Fixed bug, I hope
- *
- * Revision 1.182  1994/11/21  20:20:37  matt
- * Fixed stupid mistake
- *
- * Revision 1.181  1994/11/21  20:18:40  matt
- * Fixed (hopefully) totally bogus writing of hostage data
- *
- * Revision 1.180  1994/11/20  14:11:56  matt
- * Gracefully handle two hostages having same id
- *
- * Revision 1.179  1994/11/19  23:55:05  mike
- * remove Assert, put in comment for Matt.
- *
- * Revision 1.178  1994/11/19  19:53:24  matt
- * Added code to full support different hostage head clip & message for
- * each hostage.
- *
- * Revision 1.177  1994/11/19  15:15:21  mike
- * remove unused code and data
- *
- * Revision 1.176  1994/11/19  10:28:28  matt
- * Took out write routines when editor compiled out
- *
- * Revision 1.175  1994/11/17  20:38:25  john
- * Took out warning.
- *
- * Revision 1.174  1994/11/17  20:36:34  john
- * Made it so that saving a mine will write the .cdl even
- * if .lvl gets error.
- *
- * Revision 1.173  1994/11/17  20:26:19  john
- * Made the game load whichever of .cdl or .lvl exists,
- * and if they both exist, prompt the user for which one.
- *
- * Revision 1.172  1994/11/17  20:11:20  john
- * Fixed warning.
- *
- * Revision 1.171  1994/11/17  20:09:26  john
- * Added new compiled level format.
- *
- * Revision 1.170  1994/11/17  14:57:21  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.169  1994/11/17  11:39:21  matt
- * Ripped out code to load old mines
- *
- * Revision 1.168  1994/11/16  11:24:53  matt
- * Made attack-nType robots have smaller radius, so they get closer to player
- *
- * Revision 1.167  1994/11/15  21:42:47  mike
- * better error messages.
- *
- * Revision 1.166  1994/11/15  15:30:41  matt
- * Save ptr to name of level being loaded
- *
- * Revision 1.165  1994/11/14  20:47:46  john
- * Attempted to strip out all the code in the game
- * directory that uses any ui code.
- *
- * Revision 1.164  1994/11/14  14:34:23  matt
- * Fixed up handling when textures can't be found during remap
- *
- * Revision 1.163  1994/11/10  14:02:49  matt
- * Hacked in support for player ships with different textures
- *
- * Revision 1.162  1994/11/06  14:38:17  mike
- * Remove an apparently unnecessary con_printf.
- *
- * Revision 1.161  1994/10/30  14:11:28  mike
- * ripout local segments stuff.
- *
- * Revision 1.160  1994/10/28  12:10:41  matt
- * Check that was supposed to happen only when editor was in was happening
- * only when editor was out.
- *
- * Revision 1.159  1994/10/27  11:25:32  matt
- * Only do connectivity error check when editor in
- *
- * Revision 1.158  1994/10/27  10:54:00  matt
- * Made connectivity error checking put up warning if errors found
- *
- * Revision 1.157  1994/10/25  10:50:54  matt
- * Vulcan cannon powerups now contain ammo count
- *
- * Revision 1.156  1994/10/23  02:10:43  matt
- * Got rid of obsolete hostage_info stuff
- *
- * Revision 1.155  1994/10/22  18:57:26  matt
- * Added call to CheckSegmentConnections()
- *
- * Revision 1.154  1994/10/21  12:19:23  matt
- * Clear transient gameData.objs.objects when saving (& loading) games
- *
- * Revision 1.153  1994/10/21  11:25:10  mike
- * Use new constant IMMORTAL_TIME.
- *
- * Revision 1.152  1994/10/20  12:46:59  matt
- * Replace old save files (MIN/SAV/HOT) with new LVL files
- *
- * Revision 1.151  1994/10/19  19:26:32  matt
- * Fixed stupid bug
- *
- * Revision 1.150  1994/10/19  16:46:21  matt
- * Made tmap overrides for robots remap texture numbers
- *
- * Revision 1.149  1994/10/18  08:50:27  yuan
- * Fixed correct variable this time.
- *
- * Revision 1.148  1994/10/18  08:45:02  yuan
- * Oops. forgot load function.
- *
- * Revision 1.147  1994/10/18  08:42:10  yuan
- * Avoid the int3.
- *
- * Revision 1.146  1994/10/17  21:34:57  matt
- * Added support for new Control Center/Main Reactor
- *
- * Revision 1.145  1994/10/15  19:06:34  mike
- * Fix bug, maybe, having to do with something or other, ...
- *
- * Revision 1.144  1994/10/12  21:07:33  matt
- * Killed unused field in tObject structure
- *
- * Revision 1.143  1994/10/06  14:52:55  mike
- * Put check in to detect possibly bogus walls in last tSegment which leaked through an earlier check
- * due to misuse of gameData.segs.nLastSegment.
- *
- * Revision 1.142  1994/10/05  22:12:44  mike
- * Put in cleanup for matcen/fuelcen links.
- *
- * Revision 1.141  1994/10/03  11:30:05  matt
- * Make sure player in a valid tSegment before saving
- *
- * Revision 1.140  1994/09/28  11:14:41  mike
- * Better error messaging on bogus mines: Only bring up dialog box if a "real" (level??.*) level.
- *
- * Revision 1.139  1994/09/28  09:22:58  mike
- * Comment out a con_printf.
- *
- * Revision 1.138  1994/09/27  17:08:36  mike
- * Message boxes when you load bogus mines.
- *
- * Revision 1.137  1994/09/27  15:43:45  mike
- * Move the dump stuff to dumpmine.
- *
- * Revision 1.136  1994/09/27  00:02:31  mike
- * Dump text files (".txm") when loading a mine, showing all kinds of useful mine info.
- *
- * Revision 1.135  1994/09/26  11:30:41  matt
- * Took out code which loaded bogus player structure
- *
- * Revision 1.134  1994/09/26  11:18:44  john
- * Fixed some conflicts with newseg.
- *
- * Revision 1.133  1994/09/26  10:56:58  matt
- * Fixed inconsistancies in lifeleft for immortal gameData.objs.objects
- *
- * Revision 1.132  1994/09/25  23:41:10  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -350,7 +80,7 @@ char gamesave_rcsid[] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #define MENU_CURSOR_X_MIN       MENU_X
 #define MENU_CURSOR_X_MAX       MENU_X+6
 
-game_fileinfo	gameFileInfo;
+tGameFileInfo	gameFileInfo;
 game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
@@ -527,7 +257,7 @@ if (objP->nType == OBJ_PLAYER)	{
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
-	CheckAndFixMatrix(&objP->orient);
+	CheckAndFixMatrix(&objP->position.mOrient);
 	gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 	objP->id = Gamesave_num_players++;
 	}
@@ -621,8 +351,8 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 	objP->nSegment         = CFReadShort(f);
 	objP->attachedObj   = -1;
 
-	CFReadVector(&objP->pos,f);
-	CFReadMatrix(&objP->orient,f);
+	CFReadVector(&objP->position.vPos,f);
+	CFReadMatrix(&objP->position.mOrient,f);
 
 	objP->size           = CFReadFix(f);
 	objP->shields        = CFReadFix(f);
@@ -735,7 +465,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 		case CT_DEBRIS:
 			break;
 
-		case CT_SLEW:		//the player is generally saved as slew
+		case CT_SLEW:		//the tPlayer is generally saved as slew
 			break;
 
 		case CT_CNTRLCEN:
@@ -828,8 +558,8 @@ void writeObject(tObject *objP,FILE *f)
 
 	gs_write_short(objP->nSegment,f);
 
-	gr_write_vector(&objP->pos,f);
-	gs_write_matrix(&objP->orient,f);
+	gr_write_vector(&objP->position.vPos,f);
+	gs_write_matrix(&objP->position.mOrient,f);
 
 	gs_write_fix(objP->size,f);
 	gs_write_fix(objP->shields,f);
@@ -925,7 +655,7 @@ void writeObject(tObject *objP,FILE *f)
 		case CT_DEBRIS:
 			break;
 
-		case CT_SLEW:		//the player is generally saved as slew
+		case CT_SLEW:		//the tPlayer is generally saved as slew
 			break;
 
 		case CT_CNTRLCEN:
@@ -1096,10 +826,10 @@ con_printf(CON_DEBUG, "   \nloading game data ...\n");
 // Set default values
 gameFileInfo.level					=	-1;
 gameFileInfo.player.offset		=	-1;
-gameFileInfo.player.size		=	sizeof(player);
-gameFileInfo.tObject.offset		=	-1;
-gameFileInfo.tObject.count		=	0;
-gameFileInfo.tObject.size		=	sizeof(tObject);  
+gameFileInfo.player.size		=	sizeof(tPlayer);
+gameFileInfo.objects.offset		=	-1;
+gameFileInfo.objects.count		=	0;
+gameFileInfo.objects.size		=	sizeof(tObject);  
 gameFileInfo.walls.offset			=	-1;
 gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(wall);  
@@ -1160,9 +890,9 @@ for(i=0; i<15; i++)
 gameFileInfo.level = CFReadInt(LoadFile);
 gameFileInfo.player.offset = CFReadInt(LoadFile);				// Player info
 gameFileInfo.player.size = CFReadInt(LoadFile);
-gameFileInfo.tObject.offset = CFReadInt(LoadFile);				// Object info
-gameFileInfo.tObject.count = CFReadInt(LoadFile);    	
-gameFileInfo.tObject.size = CFReadInt(LoadFile);  
+gameFileInfo.objects.offset = CFReadInt(LoadFile);				// Object info
+gameFileInfo.objects.count = CFReadInt(LoadFile);    	
+gameFileInfo.objects.size = CFReadInt(LoadFile);  
 gameFileInfo.walls.offset = CFReadInt(LoadFile);
 gameFileInfo.walls.count = CFReadInt(LoadFile);
 gameFileInfo.walls.size = CFReadInt(LoadFile);
@@ -1227,14 +957,14 @@ gameData.objs.nNextSignature = 0;
 
 Gamesave_num_orgRobots = 0;
 Gamesave_num_players = 0;
-if (gameFileInfo.tObject.offset > -1) {
+if (gameFileInfo.objects.offset > -1) {
 	tObject	*objP = gameData.objs.objects;
 #if TRACE
 	con_printf(CON_DEBUG, "   loading tObject data ...\n");
 #endif
-	if (CFSeek(LoadFile, gameFileInfo.tObject.offset, SEEK_SET))
+	if (CFSeek(LoadFile, gameFileInfo.objects.offset, SEEK_SET))
 		Error("Error seeking to tObject.offset in gamesave.c");
-	for (i = 0; i < gameFileInfo.tObject.count; i++, objP++) {
+	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, LoadFile, gameTopFileInfo.fileinfo_version);
 //			if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
 //				objP = objP;
@@ -1528,9 +1258,9 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 
 //========================= UPDATE VARIABLES ======================
 
-ResetObjects(gameFileInfo.tObject.count);
+ResetObjects(gameFileInfo.objects.count);
 
-for (i=0; i<gameFileInfo.tObject.count/*MAX_OBJECTS*/; i++) {
+for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
 	if (gameData.objs.objects[i].nType != OBJ_NONE) {
 		int objsegnum = gameData.objs.objects[i].nSegment;
@@ -1910,7 +1640,7 @@ if (!no_oldLevel_file_error && (gameStates.app.nFunctionMode == FMODE_EDITOR) &&
 	StopTime();
 	GrPaletteStepLoad (NULL);
 	if (ExecMessageBox(NULL, 2, "Don't Save", "Save", ErrorMessage)==1)
-		saveLevel(filename);
+		SaveLevel(filename);
 	StartTime();
 }
 #endif
@@ -2014,10 +1744,10 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.level					=  gameData.missions.nCurrentLevel;
 	gameFileInfo.fileinfo_sizeof		=	sizeof(gameFileInfo);
 	gameFileInfo.player.offset		=	-1;
-	gameFileInfo.player.size		=	sizeof(player);
-	gameFileInfo.tObject.offset		=	-1;
-	gameFileInfo.tObject.count		=	gameData.objs.nLastObject+1;
-	gameFileInfo.tObject.size		=	sizeof(tObject);
+	gameFileInfo.player.size		=	sizeof(tPlayer);
+	gameFileInfo.objects.offset		=	-1;
+	gameFileInfo.objects.count		=	gameData.objs.nLastObject+1;
+	gameFileInfo.objects.size		=	sizeof(tObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
 	gameFileInfo.walls.size			=	sizeof(wall);
@@ -2054,15 +1784,15 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE PLAYER INFO ===========================
 
 	player.offset = ftell(SaveFile);
-	fwrite(&gameData.multi.players[gameData.multi.nLocalPlayer], sizeof(player), 1, SaveFile);
+	fwrite(&gameData.multi.players[gameData.multi.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
 
 	//==================== SAVE OBJECT INFO ===========================
 
 	tObject.offset = ftell(SaveFile);
-	//fwrite(&gameData.objs.objects, sizeof(tObject), gameFileInfo.tObject.count, SaveFile);
+	//fwrite(&gameData.objs.objects, sizeof(tObject), gameFileInfo.objects.count, SaveFile);
 	{
 		int i;
-		for (i=0;i<gameFileInfo.tObject.count;i++)
+		for (i=0;i<gameFileInfo.objects.count;i++)
 			writeObject(&gameData.objs.objects[i],SaveFile);
 	}
 
@@ -2103,7 +1833,7 @@ int SaveGameData(FILE * SaveFile)
 
 	// Update the offset fields
 	gameFileInfo.player.offset		=	player.offset;
-	gameFileInfo.tObject.offset		=	tObject.offset;
+	gameFileInfo.objects.offset		=	tObject.offset;
 	gameFileInfo.walls.offset			=	walls.offset;
 	gameFileInfo.doors.offset			=	doors.offset;
 	gameFileInfo.triggers.offset		=	triggers.offset;
@@ -2189,11 +1919,11 @@ int saveLevel_sub(char * filename, int compiled_version)
 
 	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
 
-	//make sure player is in a tSegment
+	//make sure tPlayer is in a tSegment
 	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].nObject]) == 0) {
 		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
 			gameData.objs.console->nSegment = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->pos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
+		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
 	}
  
 	FixObjectSegs();
@@ -2264,7 +1994,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 extern void compress_uv_coordinates_all(void);
 #endif
 
-int saveLevel(char * filename)
+int SaveLevel(char * filename)
 {
 	int r1;
 

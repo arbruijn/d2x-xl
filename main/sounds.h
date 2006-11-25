@@ -89,7 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made exploding wall do one long sound, instead of lots of small ones
  *
  * Revision 1.21  1994/10/22  14:12:35  mike
- * Add sound for missile tracking player.
+ * Add sound for missile tracking tPlayer.
  *
  * Revision 1.20  1994/10/11  12:25:21  matt
  * Added "hot rocks" that create badass explosion when hit by weapons
@@ -133,7 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed up menus.
  *
  * Revision 1.8  1994/06/17  12:21:54  mike
- * Hook for robot hits player.
+ * Hook for robot hits tPlayer.
  *
  * Revision 1.7  1994/06/15  19:01:35  john
  * Added the capability to make 3d sounds play just once for the
@@ -177,7 +177,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOUND_BADASS_EXPLOSION                  11  // need something different for this if possible
 
 #define SOUND_ROBOT_HIT_PLAYER                  17
-#define SOUND_ROBOT_SUCKED_PLAYER               SOUND_ROBOT_HIT_PLAYER // Robot sucked energy from player.
+#define SOUND_ROBOT_SUCKED_PLAYER               SOUND_ROBOT_HIT_PLAYER // Robot sucked energy from tPlayer.
 
 #define SOUND_ROBOT_HIT                         20
 #define SOUND_ROBOT_DESTROYED                   21

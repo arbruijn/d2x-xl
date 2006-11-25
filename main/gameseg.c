@@ -12,221 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions moved from tSegment.c to make editor separable from game.
- *
- * Old Log:
- * Revision 1.9  1995/11/08  16:26:04  allender
- * minor bug fix in FindConnectedDistance
- *
- * Revision 1.8  1995/10/12  17:36:55  allender
- * made TraceSegs only recurse 100 times max
- *
- * Revision 1.7  1995/10/11  18:29:01  allender
- * removed Int3 from TraceSegs
- *
- * Revision 1.6  1995/10/11  14:13:54  allender
- * put in stack check code into trace-segs
- *
- * Revision 1.5  1995/09/23  09:40:25  allender
- * put in casts in ExtractShortPos to try and solve shortpos problem
- * with appletalk
- *
- * Revision 1.4  1995/09/20  14:26:50  allender
- * added flag to swap bytes on extract shortpot
- *
- * Revision 1.3  1995/08/12  12:01:27  allender
- * added flag to CreateShortPos to swap bytes
- *
- * Revision 1.2  1995/06/06  10:42:07  allender
- * made shortpos routines swap bytes when extracting and making shortpos structures
- *
- * Revision 1.1  1995/05/16  15:25:46  allender
- * Initial revision
- *
- * Revision 2.2  1995/03/20  18:15:39  john
- * Added code to not store the normals in the tSegment structure.
- *
- * Revision 2.1  1995/03/08  12:11:39  allender
- * fix shortpos reading/writing
- *
- * Revision 2.0  1995/02/27  11:29:21  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.78  1995/02/22  13:52:22  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.77  1995/02/22  13:24:47  john
- * Removed the vecmat anonymous unions.
- *
- * Revision 1.76  1995/02/13  20:35:01  john
- * Lintized
- *
- * Revision 1.75  1995/02/09  13:10:51  mike
- * remove an annoying con_printf.
- *
- * Revision 1.74  1995/02/05  17:49:28  rob
- * Added assert to gameseg.c.
- *
- * Revision 1.73  1995/02/02  00:49:26  mike
- * new automap tSegment-nDepth functionality.
- *
- * Revision 1.72  1995/01/16  21:06:51  mike
- * Move function pick_random_point_in_segment from fireball.c to gameseg.c.
- *
- * Revision 1.71  1994/12/21  19:54:32  matt
- * Added error checking
- *
- * Revision 1.70  1994/12/11  21:34:09  matt
- * Changed assert () to int3 ()
- *
- * Revision 1.69  1994/12/01  21:04:37  matt
- * Several important changes:
- *  (1) Checking against triangulated sides has been standardized a bit
- *  (2) Code has been added to de-triangulate some sides
- *  (3) BIG ONE: the tolerance for checking a point against a plane has
- *      been drastically relaxed
- *
- *
- * Revision 1.67  1994/11/27  23:12:21  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.66  1994/11/26  22:51:40  matt
- * Removed editor-only fields from tSegment structure when editor is compiled
- * out, and padded tSegment structure to even multiple of 4 bytes.
- *
- * Revision 1.65  1994/11/22  16:55:38  mike
- * use memset in place of loop to clear array.
- *
- * Revision 1.64  1994/11/19  15:20:37  mike
- * rip out unused code and data
- *
- * Revision 1.63  1994/11/18  18:31:48  matt
- * Fixed code again (and maybe for real)
- *
- * Revision 1.62  1994/11/18  16:54:24  matt
- * Fixed ExtractOrientFromSegment ()
- *
- * Revision 1.61  1994/11/17  14:56:50  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.60  1994/11/16  23:38:53  mike
- * new improved boss teleportation behavior.
- *
- * Revision 1.59  1994/10/30  14:12:46  mike
- * rip out local segments stuff.
- *
- * Revision 1.58  1994/10/27  10:53:39  matt
- * Made connectivity error checking put up warning if errors found
- *
- * Revision 1.57  1994/10/25  21:19:26  mike
- * debugging code.
- *
- * Revision 1.56  1994/10/25  11:26:09  mike
- * *** empty log message ***
- *
- * Revision 1.55  1994/10/22  22:36:08  matt
- * Improved error finding routine
- *
- * Revision 1.54  1994/10/22  18:56:51  matt
- * Fixed obscure bug in tSegment trace code
- * Added error find routine, CheckSegmentConnections ()
- *
- * Revision 1.53  1994/10/17  14:05:19  matt
- * Don't give recursion assert if doing lighting
- *
- * Revision 1.52  1994/10/15  19:03:48  mike
- * Don't do exhaustive search in smooth lighting.
- *
- * Revision 1.51  1994/10/12  09:46:44  mike
- * Add debug code for trapping exhaustive searches.
- *
- * Revision 1.50  1994/10/11  20:50:41  matt
- * Made FindSegByPoint () take -1 as nSegment, meaning to search all segments
- *
- * Revision 1.49  1994/10/11  17:40:31  matt
- * Fixed bug that caused tSegment trace to only go through sides you can fly through
- *
- * Revision 1.48  1994/10/10  14:48:16  matt
- * Fixed mistake that caused odd pauses and occasional int3's
- *
- * Revision 1.47  1994/10/09  23:50:41  matt
- * Made FindHitPointUV () work with triangulated sides
- *
- * Revision 1.46  1994/10/08  23:06:52  matt
- * TraceSegs () didn't know about external walls
- *
- * Revision 1.45  1994/10/07  22:18:57  mike
- * Put in asserts to trap bad segnums.
- *
- * Revision 1.44  1994/10/06  14:08:07  matt
- * Added new function, ExtractOrientFromSegment ()
- *
- * Revision 1.43  1994/10/04  16:24:11  mike
- * Set global gameData.fcd.nConnSegDist for debug reasons for aipath.c.
- *
- * Revision 1.42  1994/10/04  09:18:42  mike
- * Comment out a variable definition, preventing a warning message.
- *
- * Revision 1.41  1994/10/03  23:43:42  mike
- * Put in a warning for overrunning tPointSegs buffer.
- *
- * Revision 1.40  1994/10/03  20:55:43  rob
- * Added velocity to shortpos.
- *
- * Revision 1.39  1994/09/27  11:46:06  rob
- * re-fixed that same bug (ugh).
- *
- * Revision 1.38  1994/09/27  10:10:51  rob
- * Fixed bug in ExtractShortPos (RelinkObject added).
- *
- * Revision 1.37  1994/09/25  23:41:02  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all gameData.objs.objects, and the tObject structure has been otherwise cleaned up.
- *
- * Revision 1.36  1994/09/22  19:03:05  mike
- * Add shortpos manipulation functions CreateShortPos and ExtractShortPos.
- *
- * Revision 1.35  1994/09/19  21:21:16  mike
- * Minor optimization to FindConnectedDistance.
- *
- * Revision 1.34  1994/09/19  21:05:25  mike
- * Write function FindConnectedDistance, 
- * returns distance between two points as travellable through the mine.
- *
- * Revision 1.33  1994/08/30  15:07:15  matt
- * Changed FindSegByPoint () to deal with some infinite recursion problems.
- *
- * Revision 1.32  1994/08/11  18:58:32  mike
- * Use ints in place of shorts for optimization.
- *
- * Revision 1.31  1994/08/04  00:20:09  matt
- * Cleaned up fvi & physics error handling; put in code to make sure gameData.objs.objects
- * are in correct tSegment; simplified tSegment finding for gameData.objs.objects and points
- *
- * Revision 1.30  1994/08/03  16:46:12  mike
- * not much...
- *
- * Revision 1.29  1994/08/02  20:41:31  matt
- * Fixed bug in GetSideVerts ()
- *
- * Revision 1.28  1994/08/02  19:04:25  matt
- * Cleaned up vertex list functions
- *
- * Revision 1.27  1994/08/01  10:39:44  matt
- * find_new_seg () now will look through any kind of wall but a totally solid one
- *
- * Revision 1.26  1994/07/28  19:15:59  matt
- * Fixed yet another bug in GetSegMasks ()
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -1663,7 +1448,7 @@ sbyte convert_to_byte (fix f)
 void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 {
 	// int	nSegment;
-	vmsMatrix orient = objP->orient;
+	vmsMatrix orient = objP->position.mOrient;
 	sbyte   *segP = spp->bytemat;
 
 	*segP++ = convert_to_byte (orient.rVec.x);
@@ -1676,9 +1461,9 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 	*segP++ = convert_to_byte (orient.uVec.z);
 	*segP++ = convert_to_byte (orient.fVec.z);
 
-	spp->xo = (objP->pos.x - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].x) >> RELPOS_PRECISION;
-	spp->yo = (objP->pos.y - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].y) >> RELPOS_PRECISION;
-	spp->zo = (objP->pos.z - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].z) >> RELPOS_PRECISION;
+	spp->xo = (objP->position.vPos.x - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].x) >> RELPOS_PRECISION;
+	spp->yo = (objP->position.vPos.y - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].y) >> RELPOS_PRECISION;
+	spp->zo = (objP->position.vPos.z - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].z) >> RELPOS_PRECISION;
 
 	spp->tSegment = objP->nSegment;
 
@@ -1708,15 +1493,15 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 
 	segP = spp->bytemat;
 
-	objP->orient.rVec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.uVec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.fVec.x = *segP++ << MATRIX_PRECISION;
-	objP->orient.rVec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.uVec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.fVec.y = *segP++ << MATRIX_PRECISION;
-	objP->orient.rVec.z = *segP++ << MATRIX_PRECISION;
-	objP->orient.uVec.z = *segP++ << MATRIX_PRECISION;
-	objP->orient.fVec.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.z = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->xo = INTEL_SHORT (spp->xo);
@@ -1732,9 +1517,9 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	objP->pos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
-	objP->pos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
-	objP->pos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
+	objP->position.vPos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
+	objP->position.vPos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
+	objP->position.vPos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
 
 	objP->mType.physInfo.velocity.x = (spp->velx << VEL_PRECISION);
 	objP->mType.physInfo.velocity.y = (spp->vely << VEL_PRECISION);

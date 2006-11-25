@@ -86,7 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added prototypes
  *
  * Revision 1.63  1994/10/09  14:54:39  matt
- * Made player cockpit state & window size save/restore with saved games & automap
+ * Made tPlayer cockpit state & window size save/restore with saved games & automap
  *
  * Revision 1.62  1994/10/08  19:56:32  matt
  * Added prototype
@@ -148,8 +148,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototypes for xNextLaserFireTime, Laser_delayTime.
  *
  * Revision 1.43  1994/08/18  10:47:22  john
- * Cleaned up game sequencing and player death stuff
- * in preparation for making the player explode into
+ * Cleaned up game sequencing and tPlayer death stuff
+ * in preparation for making the tPlayer explode into
  * pieces when dead.
  *
  * Revision 1.42  1994/08/11  18:03:53  matt
@@ -187,7 +187,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Removed unused prototypes
  *
  * Revision 1.32  1994/05/19  18:53:17  yuan
- * Changing player structure...
+ * Changing tPlayer structure...
  *
  * Revision 1.31  1994/05/16  16:38:35  yuan
  * Fixed palette add so it doesn't show up in the menu.
@@ -224,9 +224,9 @@ extern cockpit_span_line win_cockpit_mask[480];
 
 
 // from mglobal.c
-extern fix xNextLaserFireTime;    // Time at which player can next fire his selected laser.
+extern fix xNextLaserFireTime;    // Time at which tPlayer can next fire his selected laser.
 extern fix Last_laser_firedTime;
-extern fix xNextMissileFireTime;  // Time at which player can next fire his selected missile.
+extern fix xNextMissileFireTime;  // Time at which tPlayer can next fire his selected missile.
 extern fix Laser_delayTime;        // Delay between laser fires.
 extern int Cheats_enabled;
 
@@ -311,7 +311,7 @@ extern int Game_double_buffer;      // double buffering?
 #define SUSP_ROBOTS     1           // Robot AI doesn't move
 #define SUSP_WEAPONS    2           // Lasers, etc. don't move
 
-extern int Game_suspended;          // if non-zero, nothing moves but player
+extern int Game_suspended;          // if non-zero, nothing moves but tPlayer
 
 // from game.c
 void InitGame(void);
@@ -371,7 +371,7 @@ extern grs_canvas * GetCurrentGameScreen();
 #define CM_LETTERBOX        4   // half-height window (for cutscenes)
 
 extern int Cockpit_mode;        // what sort of cockpit or window is up?
-extern int Game_window_w,       // width and height of player's game window
+extern int Game_window_w,       // width and height of tPlayer's game window
            Game_window_h;
 
 extern int Rear_view;           // if true, looking back.

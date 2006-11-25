@@ -149,7 +149,7 @@ sbyte out_buffer[IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well 
 
 extern struct ipx_recv_data ipx_udpSrc;
 
-void BEReceiveNetPlayerInfo(ubyte *data, netplayer_info *info)
+void BEReceiveNetPlayerInfo(ubyte *data, tNetPlayerInfo *info)
 {
 	int loc = 0;
 
@@ -216,11 +216,11 @@ void BEReceiveNetPlayersPacket(ubyte *data, allNetPlayers_info *pinfo)
 	pinfo->Security = INTEL_INT(pinfo->Security);
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
 		BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
-		loc += 26;          // sizeof(netplayer_info) on the PC
+		loc += 26;          // sizeof(tNetPlayerInfo) on the PC
 	}
 }
 
-void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte *netAddress)
+void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	short tmps;
 	int loc, tmpi;
@@ -260,7 +260,7 @@ void BESendSequencePacket(sequence_packet seq, ubyte *server, ubyte *node, ubyte
 		IPXSendInternetPacketData(out_buffer, loc, server, node);
 }
 
-void BEReceiveSequencePacket(ubyte *data, sequence_packet *seq)
+void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
 {
 	int loc = 0;
 
@@ -624,19 +624,19 @@ void BESwapObject(tObject *objP)
 	objP->next          = INTEL_SHORT(objP->next);
 	objP->prev          = INTEL_SHORT(objP->prev);
 	objP->nSegment        = INTEL_SHORT(objP->nSegment);
-	objP->pos.x         = INTEL_INT(objP->pos.x);
-	objP->pos.y         = INTEL_INT(objP->pos.y);
-	objP->pos.z         = INTEL_INT(objP->pos.z);
+	objP->position.vPos.x         = INTEL_INT(objP->position.vPos.x);
+	objP->position.vPos.y         = INTEL_INT(objP->position.vPos.y);
+	objP->position.vPos.z         = INTEL_INT(objP->position.vPos.z);
 
-	objP->orient.rVec.x = INTEL_INT(objP->orient.rVec.x);
-	objP->orient.rVec.y = INTEL_INT(objP->orient.rVec.y);
-	objP->orient.rVec.z = INTEL_INT(objP->orient.rVec.z);
-	objP->orient.fVec.x = INTEL_INT(objP->orient.fVec.x);
-	objP->orient.fVec.y = INTEL_INT(objP->orient.fVec.y);
-	objP->orient.fVec.z = INTEL_INT(objP->orient.fVec.z);
-	objP->orient.uVec.x = INTEL_INT(objP->orient.uVec.x);
-	objP->orient.uVec.y = INTEL_INT(objP->orient.uVec.y);
-	objP->orient.uVec.z = INTEL_INT(objP->orient.uVec.z);
+	objP->position.mOrient.rVec.x = INTEL_INT(objP->position.mOrient.rVec.x);
+	objP->position.mOrient.rVec.y = INTEL_INT(objP->position.mOrient.rVec.y);
+	objP->position.mOrient.rVec.z = INTEL_INT(objP->position.mOrient.rVec.z);
+	objP->position.mOrient.fVec.x = INTEL_INT(objP->position.mOrient.fVec.x);
+	objP->position.mOrient.fVec.y = INTEL_INT(objP->position.mOrient.fVec.y);
+	objP->position.mOrient.fVec.z = INTEL_INT(objP->position.mOrient.fVec.z);
+	objP->position.mOrient.uVec.x = INTEL_INT(objP->position.mOrient.uVec.x);
+	objP->position.mOrient.uVec.y = INTEL_INT(objP->position.mOrient.uVec.y);
+	objP->position.mOrient.uVec.z = INTEL_INT(objP->position.mOrient.uVec.z);
 
 	objP->size          = INTEL_INT(objP->size);
 	objP->shields       = INTEL_INT(objP->shields);

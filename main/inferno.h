@@ -124,7 +124,7 @@ typedef struct tColorOptions {
 
 typedef struct tCockpitOptions {
 	int bHUD;
-	int bSplitHUDMsgs;	//split player and other message displays
+	int bSplitHUDMsgs;	//split tPlayer and other message displays
 	int bReticle;
 	int bMouseIndicator;
 	int bTextGauges;
@@ -154,7 +154,7 @@ typedef struct tSmokeOptions {
 	int bCollisions;
 	int bDisperse;
 	int bSort;
-	int bDecreaseLag;	//only render if player is moving forward
+	int bDecreaseLag;	//only render if tPlayer is moving forward
 } tSmokeOptions;
 
 typedef struct tRenderOptions {
@@ -592,6 +592,7 @@ typedef struct tApplicationStates {
 	int bInitialized;
 	int bD2XLevel;
 	int bEnterGame;
+	int bSpectating;
 	int bGameRunning;
 	int bGameSuspended;
 	int bGameAborted;
@@ -630,6 +631,7 @@ typedef struct tApplicationStates {
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
+	tPosition playerPos;
 	tCheatStates cheats;
 } tApplicationStates;
 
@@ -1039,10 +1041,11 @@ typedef struct tObjectData {
 typedef struct tPOF_face {
 	short					nVerts;
 	short					*pVerts;
-	vmsVector			vPlane;
+	vmsVector			vCenter;
 	vmsVector			vNorm;
 	vmsVector			vRotNorm;
 	tOOF_vector			vNormf;
+	tOOF_vector			vCenterf;
 	ubyte					bFacingLight;
 	ubyte					bGlow :1;
 	ubyte					bTest :1;
@@ -1068,15 +1071,17 @@ typedef struct tPOF_edgeList {
 	tPOF_edge			*pEdges;
 } tPOF_edgeList;
 
-typedef struct tPOF_subObject {
+typedef struct tPOFSubObject {
 	short					nParent;
 	tPOF_faceList		faces;
 	tPOF_edgeList		edges;
-} tPOF_subObject;
+	vmsVector			vPos;
+	vmsAngVec			vAngles;
+} tPOFSubObject;
 
 typedef struct tPOF_subObjList {
 	short					nSubObjs;
-	tPOF_subObject		*pSubObjs;
+	tPOFSubObject		*pSubObjs;
 } tPOF_subObjList;
 
 typedef struct tPOFObject {
@@ -1186,7 +1191,7 @@ typedef struct tShipData {
 
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
-	tVideoClip					*vcP;
+	tVideoClip			*vcP;
 	tVClipInfo			vci;
 	tFlightPath			path;
 } tFlagData;
@@ -1250,7 +1255,7 @@ typedef struct tModelData {
 #include "player.h"
 
 typedef struct tAutoNetGame {
-	char					szPlayer [9];		//player profile name
+	char					szPlayer [9];		//tPlayer profile name
 	char					szFile [FILENAME_LEN];
 	char					szMission [13];
 	char					szName [81];		//game name
@@ -1275,7 +1280,7 @@ typedef struct tMultiplayerData {
 	int					nMaxPlayers;
 	int 					nLocalPlayer;					
 	int					nPlayerPositions;
-	player				players [MAX_PLAYERS + 4];                   
+	tPlayer				players [MAX_PLAYERS + 4];                   
 	tObjPosition		playerInit [MAX_PLAYERS];
 	short					nVirusCapacity [MAX_PLAYERS];
 	int					nLastHitTime [MAX_PLAYERS];
@@ -1356,7 +1361,7 @@ typedef struct tMarkerData {
 	vmsVector			point [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
 	char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 	char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
-	short					tObject [NUM_MARKERS];
+	short					objects [NUM_MARKERS];
 	int					nHighlight;
 	float					fScale;
 	ubyte					nDefiningMsg;

@@ -12,103 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Kill matrix displayed at end of level.
- *
- * Old Log:
- * Revision 1.6  1995/09/24  10:57:48  allender
- * made any key move off of kill matrix screen as text indicates it should
- *
- * Revision 1.5  1995/08/18  08:33:05  allender
- * fixed text problem with top level player names
- *
- * Revision 1.4  1995/07/26  17:03:05  allender
- * sort of fixed spacing for mac
- *
- * Revision 1.3  1995/06/06  15:36:14  allender
- * be sure to bitblt to screen inside of kmatrix loop
- *
- * Revision 1.2  1995/06/02  07:47:15  allender
- * removed bogus include files
- *
- * Revision 1.1  1995/05/16  15:27:07  allender
- * Initial revision
- *
- * Revision 2.3  1995/05/02  17:01:22  john
- * Fixed bug with kill list not showing up in VFX mode.
- *
- * Revision 2.2  1995/03/21  14:38:20  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.1  1995/03/06  15:22:54  john
- * New screen techniques.
- *
- * Revision 2.0  1995/02/27  11:25:56  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.19  1995/02/15  14:47:23  john
- * Added code to keep track of kills during endlevel.
- *
- * Revision 1.18  1995/02/08  11:00:06  rob
- * Moved string to localized file
- *
- * Revision 1.17  1995/02/01  23:45:55  rob
- * Fixed string.
- *
- * Revision 1.16  1995/01/30  21:47:11  rob
- * Added a line of instructions.
- *
- * Revision 1.15  1995/01/20  16:58:43  rob
- * careless careless careless...
- *
- *
- * Revision 1.14  1995/01/20  13:43:48  rob
- * Longer time to view.
- *
- * Revision 1.13  1995/01/20  13:42:34  rob
- * Fixed sorting bug.
- *
- * Revision 1.12  1995/01/19  17:35:21  rob
- * Fixed coloration of player names in team mode.
- *
- * Revision 1.11  1995/01/16  21:26:15  rob
- * Fixed it!!
- *
- * Revision 1.10  1995/01/16  18:55:41  rob
- * Added include of network.h
- *
- * Revision 1.9  1995/01/16  18:22:35  rob
- * Fixed problem with signs.
- *
- * Revision 1.8  1995/01/12  16:07:51  rob
- * ADded sorting before display.
- *
- * Revision 1.7  1995/01/04  08:46:53  rob
- * JOHN CHECKED IN FOR ROB !!!
- *
- * Revision 1.6  1994/12/09  20:17:20  yuan
- * Touched up
- *
- * Revision 1.5  1994/12/09  19:46:35  yuan
- * Localized the sucker.
- *
- * Revision 1.4  1994/12/09  19:24:58  rob
- * Yuan's fix to the centering.
- *
- * Revision 1.3  1994/12/09  19:02:37  yuan
- * Cleaned up a bit.
- *
- * Revision 1.2  1994/12/09  16:19:46  yuan
- * kill matrix stuff.
- *
- * Revision 1.1  1994/12/09  15:08:58  yuan
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -188,7 +91,7 @@ void kmatrix_draw_item (int  i, int *sorted)
 
 	y = LHY (50+i*9) + yOffs;
 
-	// Print player name.
+	// Print tPlayer name.
 
 GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)) + xOffs, y, "%s", gameData.multi.players [sorted [i]].callsign);
   if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
@@ -233,7 +136,7 @@ void kmatrix_draw_coop_item (int  i, int *sorted)
 {
 	int  x, y = LHY (50+i*9) + yOffs;
 
-// Print player name.
+// Print tPlayer name.
 GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)) + xOffs, y, "%s", gameData.multi.players [sorted [i]].callsign);
 GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)-15) + xOffs,y,"%c",ConditionLetters [gameData.multi.players [sorted [i]].connected]);
 x = CENTERSCREEN + xOffs;
@@ -655,7 +558,7 @@ while (!done) {
 			// Check timeout for idle players
 			if (TimerGetApproxSeconds () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
 	#if TRACE
-				con_printf (CON_DEBUG, "idle timeout for player %d.\n", i);
+				con_printf (CON_DEBUG, "idle timeout for tPlayer %d.\n", i);
 	#endif
 				gameData.multi.players [i].connected = 0;
 				NetworkSendEndLevelSub (i);

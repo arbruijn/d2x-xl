@@ -12,12 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Game Controls Stuff
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -251,7 +245,7 @@ void TransferEnergyToShield(fix time)
 //------------------------------------------------------------------------------
 
 void update_vcr_state();
-void do_weapon_stuff(void);
+void DoWeaponStuff(void);
 
 //------------------------------------------------------------------------------
 // Control Functions
@@ -280,7 +274,7 @@ int which_bomb()
 
 	//use the last one selected, unless there aren't any, in which case use
 	//the other if there are any
-   // If hoard game, only let the player drop smart mines
+   // If hoard game, only let the tPlayer drop smart mines
 if (gameData.app.nGameMode & GM_ENTROPY)
    return PROXIMITY_INDEX; //allow for dropping orbs
 if (gameData.app.nGameMode & GM_HOARD)
@@ -299,7 +293,7 @@ return bomb;
 
 //------------------------------------------------------------------------------
 
-void do_weapon_stuff(void)
+void DoWeaponStuff(void)
 {
   int i;
 
@@ -429,7 +423,7 @@ void formatTime(char *str, int secs_int)
 
 //------------------------------------------------------------------------------
 
-void do_show_netgame_help();
+void DoShowNetgameHelp();
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
 int DoGamePause()
@@ -453,7 +447,7 @@ int DoGamePause()
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_NETWORK)
 	{
-	 do_show_netgame_help();
+	 DoShowNetgameHelp();
     return (KEY_PAUSE);
 	}
 	else if (gameData.app.nGameMode & GM_MULTI)
@@ -604,7 +598,7 @@ extern char Pauseable_menu;
 extern int PhallicLimit, PhallicMan;
 
 #ifdef NETWORK
-void do_show_netgame_help()
+void DoShowNetgameHelp()
  {
 	tMenuItem m[30];
    char mtext[30][60];
@@ -961,7 +955,7 @@ int select_next_window_function(int w)
 			}
 			//if no ecort, fall through
 		case CV_ESCORT:
-			Coop_view_player[w] = -1;		//force first player
+			Coop_view_player[w] = -1;		//force first tPlayer
 #ifdef NETWORK
 			//fall through
 		case CV_COOP:
@@ -1024,9 +1018,9 @@ dump_door_debugging_info()
 	int wall_numn;
 
 	obj = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-	VmVecScaleAdd(&new_pos, &objP->pos, &objP->orient.fVec, i2f(100);
+	VmVecScaleAdd(&new_pos, &objP->position.vPos, &objP->position.mOrient.fVec, i2f(100);
 
-	fq.p0						= &objP->pos;
+	fq.p0						= &objP->position.vPos;
 	fq.startseg				= objP->nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
@@ -1174,6 +1168,15 @@ int HandleSystemKey(int key)
 		case KEY_CTRLED+KEY_P: 
 		case KEY_PAUSE: 
 			DoGamePause();				
+			break;
+
+		case KEY_CTRLED + KEY_ALTED + KEY_S:
+			{
+			if (gameStates.app.bSpectating = !gameStates.app.bSpectating)
+				gameStates.app.playerPos = gameData.objs.viewer->position;
+			else
+				gameData.objs.viewer->position = gameStates.app.playerPos;
+			}
 			break;
 
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
@@ -1867,7 +1870,7 @@ void HandleTestKey(int key)
 				FlyInit(gameData.objs.console);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
-				slew_init(gameData.objs.console);			//start player slewing
+				slew_init(gameData.objs.console);			//start tPlayer slewing
 				gameStates.app.bGameSuspended |= SUSP_ROBOTS;	//robots don't move
 			}
 			break;
@@ -1990,13 +1993,13 @@ void speedtest_frame(void)
 
 	Speedtest_sidenum=Speedtest_segnum % MAX_SIDES_PER_SEGMENT;
 
-	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->pos, &gameData.segs.segments[Speedtest_segnum]);
-	gameData.objs.viewer->pos.x += 0x10;		gameData.objs.viewer->pos.y -= 0x10;		gameData.objs.viewer->pos.z += 0x17;
+	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[Speedtest_segnum]);
+	gameData.objs.viewer->position.vPos.x += 0x10;		gameData.objs.viewer->position.vPos.y -= 0x10;		gameData.objs.viewer->position.vPos.z += 0x17;
 
 	RelinkObject(OBJ_IDX (gameData.objs.viewer), Speedtest_segnum);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[Speedtest_segnum], Speedtest_sidenum);
-	VmVecNormalizedDirQuick(&view_dir, &center_point, &gameData.objs.viewer->pos);
-	VmVector2Matrix(&gameData.objs.viewer->orient, &view_dir, NULL, NULL);
+	VmVecNormalizedDirQuick(&view_dir, &center_point, &gameData.objs.viewer->position.vPos);
+	VmVector2Matrix(&gameData.objs.viewer->position.mOrient, &view_dir, NULL, NULL);
 
 	if (((gameData.app.nFrameCount - Speedtest_frame_start) % 10) == 0) {
 #if TRACE
@@ -2089,14 +2092,14 @@ int ReadControls()
 			 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 			gameStates.app.bAutoMap = 1;
 
-		do_weapon_stuff();
+		DoWeaponStuff();
 
 	}
 
 	if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
 
 		if (explodingFlag==0)  {
-			explodingFlag = 1;			// When player starts exploding, clear all input devices...
+			explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
 			GameFlushInputs();
 		} else {
 			int i;

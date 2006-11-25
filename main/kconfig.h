@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * background for 'axes' and 'buttons' text.
  *
  * Revision 1.13  1994/10/17  13:06:51  john
- * Moved the descent.cfg info into the player config file.
+ * Moved the descent.cfg info into the tPlayer config file.
  *
  * Revision 1.12  1994/10/14  12:14:47  john
  * Changed code so that by doing DEL+F12 saves the current KConfig

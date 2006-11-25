@@ -12,99 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Basic slew system for moving around the mine
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:30:57  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:29:32  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.34  1995/02/22  14:23:28  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.33  1995/02/22  13:24:26  john
- * Removed the vecmat anonymous unions.
- *
- * Revision 1.32  1994/09/10  15:46:42  john
- * First version of new keyboard configuration.
- *
- * Revision 1.31  1994/08/31  18:29:58  matt
- * Made slew work with new key system
- *
- * Revision 1.30  1994/08/31  14:10:48  john
- * Made slew go faster.
- *
- * Revision 1.29  1994/08/29  19:16:38  matt
- * Made slew tObject not have physics movement nType, so slew gameData.objs.objects don't
- * get bumped.
- *
- * Revision 1.28  1994/08/24  18:59:59  john
- * Changed KeyDownTime to return fixed seconds instead of
- * milliseconds.
- *
- * Revision 1.27  1994/07/01  11:33:05  john
- * Fixed bug with looking for stick even if one not present.
- *
- * Revision 1.26  1994/05/20  11:56:33  matt
- * Cleaned up FindVectorIntersection() interface
- * Killed check_point_in_seg(), check_player_seg(), checkObject_seg()
- *
- * Revision 1.25  1994/05/19  12:08:41  matt
- * Use new vecmat macros and globals
- *
- * Revision 1.24  1994/05/14  17:16:18  matt
- * Got rid of externs in source (non-header) files
- *
- * Revision 1.23  1994/05/03  12:26:38  matt
- * Removed use of tPhysicsInfo var rotVel, which wasn't used for rotational
- * velocity at all.
- *
- * Revision 1.22  1994/02/17  11:32:34  matt
- * Changes in tObject system
- *
- * Revision 1.21  1994/01/18  14:03:53  john
- * made joy_get_pos use the new ints instead of
- * shorts.
- *
- * Revision 1.20  1994/01/10  17:11:35  mike
- * Add prototype for checkObject_seg
- *
- * Revision 1.19  1994/01/05  10:53:38  john
- * New tObject code by John.
- *
- * Revision 1.18  1993/12/22  15:32:50  john
- * took out previos code that attempted to make
- * modifiers cancel keydowntime.
- *
- * Revision 1.17  1993/12/22  11:41:56  john
- * Made so that keydowntime recognizes editor special case!
- *
- * Revision 1.16  1993/12/14  18:13:52  matt
- * Made slew work in editor even when game isn't in slew mode
- *
- * Revision 1.15  1993/12/07  23:53:39  matt
- * Made slew work in editor even when game isn't in slew mode
- *
- * Revision 1.14  1993/12/05  22:47:49  matt
- * Reworked include files in an attempt to cut down on build times
- *
- * Revision 1.13  1993/12/01  11:44:14  matt
- * Chagned Frfract to gameData.time.xFrame
- *
- * Revision 1.12  1993/11/08  16:21:42  john
- * made stop_slew or whatever return an int
- *
- * Revision 1.11  1993/11/01  13:59:49  john
- * more slew experiments.
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -166,10 +73,10 @@ void slew_reset_orient()
 {
 	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return;
 
-	slewObjP->orient.rVec.x = slewObjP->orient.uVec.y = slewObjP->orient.fVec.z = f1_0;
+	slewObjP->position.mOrient.rVec.x = slewObjP->position.mOrient.uVec.y = slewObjP->position.mOrient.fVec.z = f1_0;
 
-	slewObjP->orient.rVec.y = slewObjP->orient.rVec.z = slewObjP->orient.uVec.x =
-   slewObjP->orient.uVec.z = slewObjP->orient.fVec.x = slewObjP->orient.fVec.y = 0;
+	slewObjP->position.mOrient.rVec.y = slewObjP->position.mOrient.rVec.z = slewObjP->position.mOrient.uVec.x =
+   slewObjP->position.mOrient.uVec.z = slewObjP->position.mOrient.fVec.x = slewObjP->position.mOrient.fVec.y = 0;
 
 }
 
@@ -239,8 +146,8 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	moved = rotang.p | rotang.b | rotang.h;
 
 	VmAngles2Matrix(&rotmat,&rotang);
-	VmMatMul(&new_pm,&objP->orient,&rotmat);
-	objP->orient = new_pm;
+	VmMatMul(&new_pm,&objP->position.mOrient,&rotmat);
+	objP->position.mOrient = new_pm;
 	VmTransposeMatrix(&new_pm);		//make those columns rows
 
 	moved |= objP->mType.physInfo.velocity.x | objP->mType.physInfo.velocity.y | objP->mType.physInfo.velocity.z;
@@ -249,8 +156,8 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	VmVecScale(&svel,gameData.time.xFrame);		//movement in this frame
 	VmVecRotate(&movement,&svel,&new_pm);
 
-//	objP->last_pos = objP->pos;
-	VmVecInc(&objP->pos,&movement);
+//	objP->last_pos = objP->position.vPos;
+	VmVecInc(&objP->position.vPos,&movement);
 
 	moved |= (movement.x || movement.y || movement.z);
 

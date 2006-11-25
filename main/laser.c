@@ -12,17 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * This will contain the laser code
- *
- * Old Log:
- * Revision 1.1  1993/11/29  17:19:02  john
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -130,7 +119,7 @@ int	nLastOmegaFireFrame = 0;
 
 //---------------------------------------------------------------------------------
 // Called by render code.... determines if the laser is from a robot or the
-// player and calls the appropriate routine.
+// tPlayer and calls the appropriate routine.
 
 void RenderLaser (tObject *objP)
 {
@@ -177,8 +166,8 @@ switch (gameData.weapons.info [objP->id].renderType)	{
 //
 //	obj = &gameData.objs.objects [nObject];
 //
-//	start_pos = objP->pos;
-//	VmVecScaleAdd (&vEndPos,&start_pos,&objP->orient.fVec,-Laser_length);
+//	start_pos = objP->position.vPos;
+//	VmVecScaleAdd (&vEndPos,&start_pos,&objP->position.mOrient.fVec,-Laser_length);
 //
 //	G3TransformAndEncodePoint (&p1,&start_pos);
 //	G3TransformAndEncodePoint (&p2,&vEndPos);
@@ -225,7 +214,7 @@ ct2 = objP2->cType.laserInfo.creationTime;
 if (objP1->nType == OBJ_WEAPON)
 	if ((objP1->cType.laserInfo.nParentObj == o2) && 
 		 (objP1->cType.laserInfo.nParentSig == objP2->nSignature))
-		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is player, they are related only if o1 < 2.0 seconds old
+		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if ((id1 == PHOENIX_ID && (gameData.time.xGame > ct1 + F1_0/4)) || 
 		   (id1 == GUIDEDMISS_ID && (gameData.time.xGame > ct1 + F1_0*2)) || 
 		   (((id1 == PROXIMITY_ID) || (id1 == SUPERPROX_ID)) && (gameData.time.xGame > ct1 + F1_0*4)))
@@ -237,7 +226,7 @@ if (objP1->nType == OBJ_WEAPON)
 if (objP2->nType == OBJ_WEAPON)
 	if ((objP2->cType.laserInfo.nParentObj == o1) && 
 			 (objP2->cType.laserInfo.nParentSig == objP1->nSignature))
-		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is player, they are related only if o1 < 2.0 seconds old
+		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if ((id2 == PHOENIX_ID && (gameData.time.xGame > ct2 + F1_0/4)) || 
 			  (id2 == GUIDEDMISS_ID && (gameData.time.xGame > ct2 + F1_0*2)) || 
 				 (((id2 == PROXIMITY_ID) || (id2 == SUPERPROX_ID)) && (gameData.time.xGame > ct2 + F1_0*4)))
@@ -409,9 +398,9 @@ else {
 		}
 	}
 
-//	Create random perturbation vector, but favor _not_ going up in player's reference.
+//	Create random perturbation vector, but favor _not_ going up in tPlayer's reference.
 MakeRandomVector (&vPerturb);
-VmVecScaleInc (&vPerturb, &parentObjP->orient.uVec, -F1_0/2);
+VmVecScaleInc (&vPerturb, &parentObjP->position.mOrient.uVec, -F1_0/2);
 //bDoingLightingHack = 1;	//	Ugly, but prevents blobs which are probably outside the mine from killing framerate.
 for (i=0; i<nOmegaBlobs; i++) {
 	vmsVector	temp_pos;
@@ -546,7 +535,7 @@ if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, parentObjP->nSegment)))
 if (parentObjP == gameData.objs.viewer)
 	DigiPlaySample (gameData.weapons.info [weaponObjP->id].flashSound, F1_0);
 else
-	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound, weaponObjP->nSegment, 0, &weaponObjP->pos, 0, F1_0);
+	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound, weaponObjP->nSegment, 0, &weaponObjP->position.vPos, 0, F1_0);
 
 // -- if ((Last_omega_muzzle_flashTime + F1_0/4 < gameData.time.xGame) || (Last_omega_muzzle_flashTime > gameData.time.xGame)) {
 // -- 	DoMuzzleStuff (nFiringSeg, vFiringPos);
@@ -556,7 +545,7 @@ else
 //	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nLockObj != -1)
-	vGoalPos = gameData.objs.objects [nLockObj].pos;
+	vGoalPos = gameData.objs.objects [nLockObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
 	fvi_query	fq;
 	fvi_info		hit_data;
@@ -564,7 +553,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	vmsVector	vPerturb, perturbed_fvec;
 
 	MakeRandomVector (&vPerturb);
-	VmVecScaleAdd (&perturbed_fvec, &parentObjP->orient.fVec, &vPerturb, F1_0/16);
+	VmVecScaleAdd (&perturbed_fvec, &parentObjP->position.mOrient.fVec, &vPerturb, F1_0/16);
 	VmVecScaleAdd (&vGoalPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vFiringPos;
@@ -632,12 +621,12 @@ objP = gameData.objs.objects + nObject;
 //	not apply to the Omega Cannon.
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
-	VmVector2Matrix (&objP->orient, vDirection, &gameData.objs.objects [nParent].orient.uVec ,NULL);
+	VmVector2Matrix (&objP->position.mOrient, vDirection, &gameData.objs.objects [nParent].position.mOrient.uVec ,NULL);
 	if ((gameData.objs.objects + nParent != gameData.objs.viewer) &&
 		 (gameData.objs.objects [nParent].nType != OBJ_WEAPON)) {
 		// Muzzle flash		
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
-			ObjectCreateMuzzleFlash (objP->nSegment, &objP->pos, gameData.weapons.info [objP->id].flash_size, 
+			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 												gameData.weapons.info [objP->id].flash_vclip);
 		}
 	DoOmegaStuff (gameData.objs.objects + nParent, vPosition, objP);
@@ -706,18 +695,18 @@ if (gameData.objs.objects [nParent].nType == OBJ_WEAPON) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
-	VmVector2Matrix (&objP->orient,vDirection, &gameData.objs.objects [nParent].orient.uVec ,NULL);
+	VmVector2Matrix (&objP->position.mOrient,vDirection, &gameData.objs.objects [nParent].position.mOrient.uVec ,NULL);
 if (((gameData.objs.objects + nParent) != gameData.objs.viewer) && 
 		(gameData.objs.objects [nParent].nType != OBJ_WEAPON))	{
 	// Muzzle flash		
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
-		ObjectCreateMuzzleFlash (objP->nSegment, &objP->pos, gameData.weapons.info [objP->id].flash_size, 
+		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 											gameData.weapons.info [objP->id].flash_vclip);
 	}
 volume = F1_0;
 if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 	if (nParent != OBJ_IDX (gameData.objs.viewer))
-		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->pos, 0, volume);
+		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
@@ -732,12 +721,12 @@ if ((gameData.objs.objects [nParent].nType == OBJ_PLAYER) && (gameData.weapons.i
 	vmsVector	vEndPos;
 	int			nEndSeg;
 
-	VmVecScaleAdd (&vEndPos, &objP->pos, vDirection, nLaserOffset+ (xLaserLength/2));
+	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset+ (xLaserLength/2));
 	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment);
 	if (nEndSeg == objP->nSegment) 
-		objP->pos = vEndPos;
+		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
-		objP->pos = vEndPos;
+		objP->position.vPos = vEndPos;
 		RelinkObject (OBJ_IDX (objP), nEndSeg);
 		}
 	}
@@ -749,7 +738,7 @@ if ((nWeaponType != PROXIMITY_ID) && (nWeaponType != SUPERPROX_ID))
 else {
 	xParentSpeed = VmVecMagQuick (&gameData.objs.objects [nParent].mType.physInfo.velocity);
 	if (VmVecDot (&gameData.objs.objects [nParent].mType.physInfo.velocity, 
-						&gameData.objs.objects [nParent].orient.fVec) < 0)
+						&gameData.objs.objects [nParent].position.mOrient.fVec) < 0)
 		xParentSpeed = -xParentSpeed;
 	} 
 
@@ -794,7 +783,7 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same tSegment as the source point.
 
-	fq.p0						= &parentObjP->pos;
+	fq.p0						= &parentObjP->position.vPos;
 	fq.startSeg				= parentObjP->nSegment;
 	fq.p1						= vPosition;
 	fq.rad					= 0;
@@ -820,9 +809,9 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 	fvi_info		hit_data;
 	int			fate;
 
-fq.p0					= &objP1->pos;
+fq.p0					= &objP1->position.vPos;
 fq.startSeg			= objP1->nSegment;
-fq.p1					= &objP2->pos;
+fq.p1					= &objP2->position.vPos;
 fq.rad				= 0x10;
 fq.thisObjNum		= OBJ_IDX (objP1);
 fq.ignoreObjList	= NULL;
@@ -855,7 +844,7 @@ if (nTrackGoal == -1)
 if (gameData.app.nGameMode & GM_MULTI_COOP)
 	return 0;
 objP = gameData.objs.objects + nTrackGoal;
-//	Don't track player if he's cloaked.
+//	Don't track tPlayer if he's cloaked.
 if ((nTrackGoal == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) && 
 	 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
@@ -868,12 +857,12 @@ if (objP->nType == OBJ_ROBOT) {
 		 (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
 		return 0;
 	}
-VmVecSub (&vGoal, &objP->pos, &tracker->pos);
+VmVecSub (&vGoal, &objP->position.vPos, &tracker->position.vPos);
 VmVecNormalizeQuick (&vGoal);
-*xDot = VmVecDot (&vGoal, &tracker->orient.fVec);
+*xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
 if ((*xDot < xMinTrackableDot) && (*xDot > F1_0*9/10)) {
 	VmVecNormalize (&vGoal);
-	*xDot = VmVecDot (&vGoal, &tracker->orient.fVec);
+	*xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
 	}
 
 if (*xDot >= xMinTrackableDot) {
@@ -888,7 +877,7 @@ int call_find_homingObject_complete (tObject *tracker, vmsVector *curpos)
 {
 	if (gameData.app.nGameMode & GM_MULTI) {
 		if (tracker->cType.laserInfo.parentType == OBJ_PLAYER) {
-			//	It's fired by a player, so if robots present, track robot, else track player.
+			//	It's fired by a tPlayer, so if robots present, track robot, else track player.
 			if (gameData.app.nGameMode & GM_MULTI_COOP)
 				return FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1);
 			else
@@ -928,7 +917,7 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 		if ((tracker->nType == OBJ_WEAPON) && (tracker->id == OMEGA_ID))
 			cur_min_trackable_dot = OMEGA_MIN_TRACKABLE_DOT;
 
-		//	Not in network mode.  If not fired by player, then track player.
+		//	Not in network mode.  If not fired by tPlayer, then track player.
 		if (tracker->cType.laserInfo.nParentObj != gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
 			if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
 				best_objnum = OBJ_IDX (gameData.objs.console);
@@ -975,10 +964,10 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 							continue;
 				}
 
-				VmVecSub (&vecToCurObj, &curObjP->pos, curpos);
+				VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 				dist = VmVecNormalizeQuick (&vecToCurObj);
 				if (dist < max_trackableDist) {
-					dot = VmVecDot (&vecToCurObj, &tracker->orient.fVec);
+					dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
 
 					//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 					//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
@@ -992,7 +981,7 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 						}
 					} else if (dot > F1_0 - (F1_0 - cur_min_trackable_dot)*2) {
 						VmVecNormalize (&vecToCurObj);
-						dot = VmVecDot (&vecToCurObj, &tracker->orient.fVec);
+						dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
 						if (dot > cur_min_trackable_dot) {
 							if (dot > max_dot) {
 								if (ObjectToObjectVisibility (tracker, &gameData.objs.objects [nObject], FQ_TRANSWALL)) {
@@ -1077,12 +1066,12 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 					continue;
 		}
 
-		VmVecSub (&vecToCurObj, &curObjP->pos, curpos);
+		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 		dist = VmVecMagQuick (&vecToCurObj);
 
 		if (dist < max_trackableDist) {
 			VmVecNormalizeQuick (&vecToCurObj);
-			dot = VmVecDot (&vecToCurObj, &tracker->orient.fVec);
+			dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
 			if (is_proximity)
 				dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 
@@ -1114,7 +1103,7 @@ int track_track_goal (int nTrackGoal, tObject *tracker, fix *dot)
 	} else if (((OBJ_IDX (tracker) ^ gameData.app.nFrameCount) % 4) == 0) {
 		int	rval = -2;
 
-		//	If player fired missile, then search for an tObject, if not, then give up.
+		//	If tPlayer fired missile, then search for an tObject, if not, then give up.
 		if (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) {
 			int	goalType;
 
@@ -1123,20 +1112,20 @@ int track_track_goal (int nTrackGoal, tObject *tracker, fix *dot)
 				if (gameData.app.nGameMode & GM_MULTI)
 				{
 					if (gameData.app.nGameMode & GM_MULTI_COOP)
-						rval = FindHomingObjectComplete (&tracker->pos, tracker, OBJ_ROBOT, -1);
-					else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or player
-						rval = FindHomingObjectComplete (&tracker->pos, tracker, OBJ_PLAYER, OBJ_ROBOT);
-					else		//	Not cooperative and no robots, track only a player
-						rval = FindHomingObjectComplete (&tracker->pos, tracker, OBJ_PLAYER, -1);
+						rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_ROBOT, -1);
+					else if (gameData.app.nGameMode & GM_MULTI_ROBOTS)		//	Not cooperative, if robots, track either robot or tPlayer
+						rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+					else		//	Not cooperative and no robots, track only a tPlayer
+						rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, -1);
 				}
 				else
-					rval = FindHomingObjectComplete (&tracker->pos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+					rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, OBJ_ROBOT);
 			} 
 			else 
 			{
 				goalType = gameData.objs.objects [tracker->cType.laserInfo.nTrackGoal].nType;
 				if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT))
-					rval = FindHomingObjectComplete (&tracker->pos, tracker, goalType, -1);
+					rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, -1);
 				else
 					rval = -1;
 			}
@@ -1148,10 +1137,10 @@ int track_track_goal (int nTrackGoal, tObject *tracker, fix *dot)
 				goal2Type = OBJ_ROBOT;
 
 			if (nTrackGoal == -1)
-				rval = FindHomingObjectComplete (&tracker->pos, tracker, OBJ_PLAYER, goal2Type);
+				rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, goal2Type);
 			else {
 				goalType = gameData.objs.objects [tracker->cType.laserInfo.nTrackGoal].nType;
-				rval = FindHomingObjectComplete (&tracker->pos, tracker, goalType, goal2Type);
+				rval = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, goal2Type);
 			}
 		}
 
@@ -1191,11 +1180,11 @@ int LaserPlayerFireSpreadDelay (
 	// Find the initial vPosition of the laser
 	pnt = gameData.pig.ship.player->gunPoints [gun_num];
 	if (bLaserOffs)
-		VmVecScaleInc (&pnt, &objP->orient.uVec, LASER_OFFS);
-	VmCopyTransposeMatrix (&m, &objP->orient);
+		VmVecScaleInc (&pnt, &objP->position.mOrient.uVec, LASER_OFFS);
+	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 	VmVecRotate (&gun_point, &pnt, &m);
-	memcpy (&m, &objP->orient, sizeof (vmsMatrix));
-	VmVecAdd (&LaserPos, &objP->pos, &gun_point);
+	memcpy (&m, &objP->position.mOrient, sizeof (vmsMatrix));
+	VmVecAdd (&LaserPos, &objP->position.vPos, &gun_point);
 	//	If supposed to fire at a delayed time (delayTime), then move this point backwards.
 	if (delayTime)
 		VmVecScaleInc (&LaserPos, &m.fVec, -FixMul (delayTime, WI_speed (laserType,gameStates.app.nDifficultyLevel)));
@@ -1203,7 +1192,7 @@ int LaserPlayerFireSpreadDelay (
 //	DoMuzzleStuff (objP, &Pos);
 
 	//--------------- Find LaserPos and LaserSeg ------------------
-	fq.p0						= &objP->pos;
+	fq.p0						= &objP->position.vPos;
 	fq.startSeg				= objP->nSegment;
 	fq.p1						= &LaserPos;
 	fq.rad					= 0x10;
@@ -1216,7 +1205,7 @@ int LaserPlayerFireSpreadDelay (
 		return -1;
 		}
 	//SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-	if (VmVecDistQuick (&LaserPos, &objP->pos) > 0x50000) {
+	if (VmVecDistQuick (&LaserPos, &objP->position.vPos) > 0x50000) {
 		return -1;
 		}
 	if (Fate==HIT_WALL)  {
@@ -1274,7 +1263,7 @@ int LaserPlayerFireSpreadDelay (
 	if (harmless)
 		gameData.objs.objects [nObject].flags |= OF_HARMLESS;
 
-	//	If the tObject firing the laser is the player, then indicate the laser tObject so robots can dodge.
+	//	If the tObject firing the laser is the tPlayer, then indicate the laser tObject so robots can dodge.
 	//	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
 	if ((objP == gameData.objs.console) && 
 		 ((gameData.objs.objects [nObject].id != PROXIMITY_ID) && 
@@ -1290,7 +1279,7 @@ int LaserPlayerFireSpreadDelay (
 			#endif
 		}
 		#ifdef NETWORK
-		else // Some other player shot the homing thing
+		else // Some other tPlayer shot the homing thing
 		{
 			Assert (gameData.app.nGameMode & GM_MULTI);
 			gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = multiData.laser.nTrack;
@@ -1352,11 +1341,11 @@ else {
 	}
 new_fvec = *norm_vel;
 VmVecScale (&new_fvec, /*gameData.time.xFrame*/ frameTime * HOMING_MISSILE_SCALE);
-VmVecInc (&new_fvec, &objP->orient.fVec);
+VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
 VmVecNormalizeQuick (&new_fvec);
 //	if ((norm_vel->x == 0) && (norm_vel->y == 0) && (norm_vel->z == 0))
 //		return;
-VmVector2Matrix (&objP->orient, &new_fvec, NULL, NULL);
+VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, NULL);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1379,7 +1368,7 @@ void LaserDoWeaponSequence (tObject *objP)
 	if (objP->lifeleft < 0) {		// We died of old age
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		if (WI_damage_radius (objP->id))
-			ExplodeBadassWeapon (objP,&objP->pos);
+			ExplodeBadassWeapon (objP,&objP->position.vPos);
 		return;
 	}
 
@@ -1417,9 +1406,9 @@ void LaserDoWeaponSequence (tObject *objP)
 // -- 		p.y = sinval << 3;
 // -- 		p.z = 0;
 // -- 
-// -- 		VmVecRotate (&newp, &p, &objP->orient);
+// -- 		VmVecRotate (&newp, &p, &objP->position.mOrient);
 // -- 
-// -- 		VmVecAdd (&goal_point, &objP->pos, &newp);
+// -- 		VmVecAdd (&goal_point, &objP->position.vPos, &newp);
 // -- 
 // -- 		VmVecSub (&vGoal, &goal_point, obj
 // -- 	}
@@ -1454,14 +1443,14 @@ void LaserDoWeaponSequence (tObject *objP)
 			if (nTrackGoal == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
 				fix	dist_to_player;
 
-				dist_to_player = VmVecDistQuick (&objP->pos, &gameData.objs.objects [nTrackGoal].pos);
+				dist_to_player = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
 				if ((dist_to_player < gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist) || (gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist < 0))
 					gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = dist_to_player;
 					
 			}
 
 			if (nTrackGoal != -1) {
-				VmVecSub (&vector_toObject, &gameData.objs.objects [nTrackGoal].pos, &objP->pos);
+				VmVecSub (&vector_toObject, &gameData.objs.objects [nTrackGoal].position.vPos, &objP->position.vPos);
 
 				VmVecNormalizeQuick (&vector_toObject);
 				temp_vec = objP->mType.physInfo.velocity;
@@ -1522,11 +1511,11 @@ fix	Last_laser_firedTime = 0;
 int	Zbonkers = 0;
 
 //	--------------------------------------------------------------------------------------------------
-// Assumption: This is only called by the actual console player, not for network players
+// Assumption: This is only called by the actual console tPlayer, not for network players
 
 int LaserFireLocalPlayer (void)
 {
-	player	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 	fix		xEnergyUsed;
 	int		nAmmoUsed,nPrimaryAmmo;
 	int		nWeaponIndex;
@@ -1559,7 +1548,7 @@ if ((Last_laser_firedTime + 2 * gameData.time.xFrame < gameData.time.xGame) || (
 Last_laser_firedTime = gameData.time.xGame;
 nPrimaryAmmo = (gameData.weapons.nPrimary == GAUSS_INDEX)? (playerP->primaryAmmo [VULCAN_INDEX]): (playerP->primaryAmmo [gameData.weapons.nPrimary]);
 if	 (!((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)))
-	AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+	AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 if (Zbonkers) {
 	Zbonkers = 0;
 	gameData.time.xGame = 0;
@@ -1594,10 +1583,10 @@ while (xNextLaserFireTime <= gameData.time.xGame) {
 			else
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
 			}
-		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+		AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 		}
 	else {
-		AutoSelectWeapon (0, 1);		//	Make sure the player can fire from this weapon.
+		AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 		xNextLaserFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
 		break;	//	Couldn't fire weapon, so abort.
 		}
@@ -1676,9 +1665,9 @@ return rval;
 // -- 
 // -- 	// Find the initial vPosition of the laser
 // -- 	gun_pos = &gameData.pig.ship.player->gunPoints [Lightning_gun_num];
-// -- 	VmCopyTransposeMatrix (&m,&gameData.objs.objects [parent].orient);
+// -- 	VmCopyTransposeMatrix (&m,&gameData.objs.objects [parent].position.mOrient);
 // -- 	VmVecRotate (&gun_pos2, gun_pos, &m);
-// -- 	VmVecAdd (&point_pos, &gameData.objs.objects [parent].pos, &gun_pos2);
+// -- 	VmVecAdd (&point_pos, &gameData.objs.objects [parent].position.vPos, &gun_pos2);
 // -- 
 // -- 	delta_pos = norm_dir;
 // -- 	VmVecScale (&delta_pos, dist_to_hit_point/num_blobs);
@@ -1715,14 +1704,14 @@ return rval;
 // -- 
 // -- //	--------------------------------------------------------------------------------------------------
 // -- //	Lightning Cannon.
-// -- //	While being fired, creates path of blobs forward from player until it hits something.
+// -- //	While being fired, creates path of blobs forward from tPlayer until it hits something.
 // -- //	Up to MAX_LIGHTNING_BLOBS blobs, spaced LIGHTNING_BLOB_DISTANCE units apart.
-// -- //	When the player releases the firing key, the blobs move forward.
+// -- //	When the tPlayer releases the firing key, the blobs move forward.
 // -- void lightning_frame (void)
 // -- {
 // -- 	if ((gameData.time.xGame - Lightning_startTime < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_startTime > 0)) {
 // -- 		if (gameData.time.xGame - Lightning_lastTime > LIGHTNING_DELAY) {
-// -- 			create_lightning_blobs (&gameData.objs.console->orient.fVec, &gameData.objs.console->pos, gameData.objs.console->nSegment, OBJ_IDX (gameData.objs.console));
+// -- 			create_lightning_blobs (&gameData.objs.console->position.mOrient.fVec, &gameData.objs.console->position.vPos, gameData.objs.console->nSegment, OBJ_IDX (gameData.objs.console));
 // -- 			Lightning_lastTime = gameData.time.xGame;
 // -- 		}
 // -- 	}
@@ -1730,8 +1719,8 @@ return rval;
 
 //	--------------------------------------------------------------------------------------------------
 //	Object "nObject" fires weapon "weapon_num" of level "level". (Right now (9/24/94) level is used only for nType 0 laser.
-//	Flags are the player flags.  For network mode, set to 0.
-//	It is assumed that this is a player tObject (as in multiplayer), and therefore the gun positions are known.
+//	Flags are the tPlayer flags.  For network mode, set to 0.
+//	It is assumed that this is a tPlayer tObject (as in multiplayer), and therefore the gun positions are known.
 //	Returns number of times a weapon was fired.  This is typically 1, but might be more for low frame rates.
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
@@ -1801,9 +1790,9 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 			gameData.app.fusion.xCharge = 0;
 
-			vForce.x = - (objP->orient.fVec.x << 7);
-			vForce.y = - (objP->orient.fVec.y << 7);
-			vForce.z = - (objP->orient.fVec.z << 7);
+			vForce.x = - (objP->position.mOrient.fVec.x << 7);
+			vForce.y = - (objP->position.mOrient.fVec.y << 7);
+			vForce.z = - (objP->position.mOrient.fVec.z << 7);
 			PhysApplyForce (objP, &vForce);
 
 			vForce.x = (vForce.x >> 4) + d_rand () - 16384;
@@ -1911,14 +1900,14 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 	if (nGoalObj == -1) {
 		MakeRandomVector (&vGoal);
 	} else {
-		VmVecNormalizedDirQuick (&vGoal, &gameData.objs.objects [nGoalObj].pos, &objP->pos);
+		VmVecNormalizedDirQuick (&vGoal, &gameData.objs.objects [nGoalObj].position.vPos, &objP->position.vPos);
 		MakeRandomVector (&random_vector);
 		VmVecScaleInc (&vGoal, &random_vector, F1_0/4);
 		VmVecNormalizeQuick (&vGoal);
 	}		
 
 	//	Create a vector towards the goal, then add some noise to it.
-	nObject = CreateNewLaser (&vGoal, &objP->pos, objP->nSegment, 
+	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment, 
 									  OBJ_IDX (objP), objtype, bMakeSound);
 	if (nObject == -1)
 		return -1;
@@ -2002,7 +1991,7 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 							continue;
 				}
 
-				dist = VmVecDistQuick (&objP->pos, &curObjP->pos);
+				dist = VmVecDistQuick (&objP->position.vPos, &curObjP->position.vPos);
 				if (dist < MAX_SMART_DISTANCE) {
 					int	oovis;
 
@@ -2108,7 +2097,7 @@ void DoMissileFiring (int bAutoSelect)
 	ubyte		nWeaponId;
 	int		nWeaponGun;
 	tObject	*gmP = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
-	player	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
 if (gmP && (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
@@ -2168,9 +2157,9 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == SMISSILE5_INDEX)) {
 		vmsVector vForce;
 
-	vForce.x = - (gameData.objs.console->orient.fVec.x << 7);
-	vForce.y = - (gameData.objs.console->orient.fVec.y << 7);
-	vForce.z = - (gameData.objs.console->orient.fVec.z << 7);
+	vForce.x = - (gameData.objs.console->position.mOrient.fVec.x << 7);
+	vForce.y = - (gameData.objs.console->position.mOrient.fVec.y << 7);
+	vForce.z = - (gameData.objs.console->position.mOrient.fVec.z << 7);
 	PhysApplyForce (gameData.objs.console, &vForce);
 	vForce.x = (vForce.x >> 4) + d_rand () - 16384;
 	vForce.y = (vForce.y >> 4) + d_rand () - 16384;

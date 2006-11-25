@@ -608,9 +608,9 @@ void write_player_text(FILE *my_file)
 	}
 
 	if (num_players != MAX_PLAYERS)
-		err_printf(my_file, "Error: %i player gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
+		err_printf(my_file, "Error: %i tPlayer gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
 	if (num_players > MAX_MULTI_PLAYERS)
-		err_printf(my_file, "Error: %i player gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
+		err_printf(my_file, "Error: %i tPlayer gameData.objs.objects.  %i are required.\n", num_players, MAX_PLAYERS);
 }
 
 // ----------------------------------------------------------------------------

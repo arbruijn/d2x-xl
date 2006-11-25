@@ -107,7 +107,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Revision 1.8  1994/06/21  18:54:03  matt
  * Added support for powerups that don't get picked up if not needed, but this
  * feature is commented out at the end of DoPowerup(), since the physics gave
- * me all sorts of problems, with the player getting stuck on a powerup.
+ * me all sorts of problems, with the tPlayer getting stuck on a powerup.
  *
  * Revision 1.7  1994/06/08  18:16:32  john
  * Bunch of new stuff that basically takes constants out of the code
@@ -129,7 +129,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
  * Hostages and powerups are implemented in the tObject system,
- * just need to finish function call to "affect" player.
+ * just need to finish function call to "affect" tPlayer.
  *
  * Revision 1.1  1994/03/31  17:01:43  yuan
  * Initial revision

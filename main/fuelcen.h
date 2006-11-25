@@ -219,7 +219,7 @@ extern tMatCenInfo RobotCenters[MAX_ROBOT_CENTERS];
 
 //--repair-- extern tObject *RepairObj;  // which tObject getting repaired, or NULL
 
-// Called when a materialization center gets triggered by the player
+// Called when a materialization center gets triggered by the tPlayer
 // flying through some tTrigger!
 void MatCenTrigger (short nSegment);
 

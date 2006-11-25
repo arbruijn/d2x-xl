@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added "hot rocks" that create badass explosion when hit by weapons
  *
  * Revision 1.29  1994/10/06  14:10:07  matt
- * Added constant for player appearence effect
+ * Added constant for tPlayer appearence effect
  *
  * Revision 1.28  1994/09/26  08:40:30  adam
  * *** empty log message ***

@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * added new prototype for multi decloaking
  *
  * Revision 1.31  1994/12/01  11:46:34  allender
- * added recording prototype for multi player cloak
+ * added recording prototype for multi tPlayer cloak
  *
  * Revision 1.30  1994/11/27  23:04:22  allender
  * function prototype for recording new levels
@@ -99,7 +99,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * more vcr demo playback defines
  *
  * Revision 1.19  1994/10/26  08:51:26  allender
- * record player weapon change
+ * record tPlayer weapon change
  *
  * Revision 1.18  1994/10/25  16:25:31  allender
  * prototypes for shield, energy and flags
@@ -148,7 +148,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added triggers to demo recording.
  *
  * Revision 1.4  1994/06/14  20:42:19  john
- * Made robot matztn cntr not work until no robots or player are
+ * Made robot matztn cntr not work until no robots or tPlayer are
  * in the tSegment.
  *
  * Revision 1.3  1994/06/14  14:43:52  john

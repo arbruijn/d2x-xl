@@ -405,8 +405,9 @@ if ((nObject<0)|| (nObject>gameData.objs.nLastObject))
 if (!bForever) { 		// && gameData.pig.snd.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (
-		&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, &gameData.objs.objects [nObject].pos, 
-		gameData.objs.objects [nObject].nSegment, maxVolume,&volume, &pan, maxDistance);
+		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
+		gameData.objs.viewer->nSegment, &gameData.objs.objects [nObject].position.vPos, 
+		gameData.objs.objects [nObject].nSegment, maxVolume, &volume, &pan, maxDistance);
 	DigiPlaySample3D (nOrgSound, pan, volume, 0);
 	return -1;
 	}
@@ -442,8 +443,8 @@ if (gameStates.sound.bDontStartObjects) { 		//started at level start
 else {
 	objP = gameData.objs.objects + soP->linkType.obj.nObject;
 	DigiGetSoundLoc (
-		&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, 
-		&objP->pos, objP->nSegment, soP->maxVolume,
+		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
+		gameData.objs.viewer->nSegment, &objP->position.vPos, objP->nSegment, soP->maxVolume,
       &soP->volume, &soP->pan, soP->maxDistance);
 	DigiStartSoundObject (i);
 	// If it's a one-shot sound effect, and it can't start right away, then
@@ -496,7 +497,7 @@ if ((nSegment < 0)|| (nSegment > gameData.segs.nLastSegment))
 	return -1;
 if (!bForever) { 	//&& gameData.pig.snd.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
 	// Hack to keep sounds from building up...
-	DigiGetSoundLoc (&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, 
+	DigiGetSoundLoc (&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 						  pos, nSegment, maxVolume, &volume, &pan, maxDistance);
 	DigiPlaySample3D (nOrgSound, pan, volume, 0);
 	return -1;
@@ -527,9 +528,9 @@ if (gameStates.sound.bDontStartObjects) {		//started at level start
 	}
 else {
 	DigiGetSoundLoc (
-		&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, 
-      &soP->linkType.pos.position, soP->linkType.pos.nSegment, soP->maxVolume,
-      &soP->volume, &soP->pan, soP->maxDistance);
+		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
+		gameData.objs.viewer->nSegment, &soP->linkType.pos.position, 
+		soP->linkType.pos.nSegment, soP->maxVolume, &soP->volume, &soP->pan, soP->maxDistance);
 	DigiStartSoundObject (i);
 	// If it's a one-shot sound effect, and it can't start right away, then
 	// just cancel it and be done with it.
@@ -674,7 +675,7 @@ for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 			}			
 		if (soP->flags & SOF_LINK_TO_POS) {
 			DigiGetSoundLoc (
-				&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, 
+				&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 				&soP->linkType.pos.position, soP->linkType.pos.nSegment, soP->maxVolume,
 				&soP->volume, &soP->pan, soP->maxDistance);
 #if USE_SDL_MIXER
@@ -704,8 +705,8 @@ for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 				}
 			else {
 				DigiGetSoundLoc (
-					&gameData.objs.viewer->orient, &gameData.objs.viewer->pos, gameData.objs.viewer->nSegment, 
-					&objP->pos, objP->nSegment, soP->maxVolume,
+					&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
+					gameData.objs.viewer->nSegment, &objP->position.vPos, objP->nSegment, soP->maxVolume,
 					&soP->volume, &soP->pan, soP->maxDistance);
 #if USE_SDL_MIXER
 			//if (soP->volume)

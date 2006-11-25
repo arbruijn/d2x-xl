@@ -11,23 +11,6 @@ CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
-/*
- * 
- * Global variables for 3d
- * 
- * Old Log:
- *
- * Revision 1.2  1995/09/13  11:30:47  allender
- * added fxCanvW2 and vxCanvH2 for PPC implementation
- *
- * Revision 1.1  1995/05/05  08:50:48  allender
- * Initial revision
- *
- * Revision 1.1  1995/04/17  04:24:57  matt
- * Initial revision
- * 
- * 
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>

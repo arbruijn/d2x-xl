@@ -55,8 +55,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Simplified ExplodeObject() & mutliple-stage explosions
  *
  * Revision 1.13  1994/08/18  10:47:35  john
- * Cleaned up game sequencing and player death stuff
- * in preparation for making the player explode into
+ * Cleaned up game sequencing and tPlayer death stuff
+ * in preparation for making the tPlayer explode into
  * pieces when dead.
  *
  * Revision 1.12  1994/08/17  16:50:08  john
@@ -106,24 +106,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CollideInit();
 int CollideTwoObjects(tObject * A, tObject * B, vmsVector *collision_point);
 int CollideObjectWithWall(tObject * A, fix hitspeed, short hitseg, short hitwall, vmsVector * hitpt);
-void ApplyDamageToPlayer(tObject *player, tObject *killer, fix damage);
+void ApplyDamageToPlayer(tObject *tPlayer, tObject *killer, fix damage);
 
 // Returns 1 if robot died, else 0.
 int ApplyDamageToRobot(tObject *robot, fix damage, int nKillerObj);
 
 extern int Immaterial;
 
-int CollidePlayerAndWeapon(tObject * player, tObject * weapon, vmsVector *collision_point);
+int CollidePlayerAndWeapon(tObject * tPlayer, tObject * weapon, vmsVector *collision_point);
 int CollidePlayerAndMatCen(tObject *objp);
 int CollideRobotAndMatCen(tObject *objp);
 
 void ScrapeObjectOnWall(tObject *obj, short hitseg, short hitwall, vmsVector * hitpt);
 int MaybeDetonateWeapon(tObject *obj0p, tObject *obj, vmsVector *pos);
 
-int CollidePlayerAndNastyRobot(tObject * player, tObject * robot, vmsVector *collision_point);
+int CollidePlayerAndNastyRobot(tObject * tPlayer, tObject * robot, vmsVector *collision_point);
 
 void NetDestroyReactor(tObject *controlcen);
-int CollidePlayerAndPowerup(tObject * player, tObject * powerup, vmsVector *collision_point);
+int CollidePlayerAndPowerup(tObject * tPlayer, tObject * powerup, vmsVector *collision_point);
 int CheckEffectBlowup(tSegment *seg,short tSide,vmsVector *pnt, tObject *blower, int force_blowupFlag);
 void ApplyDamageToReactor(tObject *controlcen, fix damage, short who);
 void BumpOneObject(tObject *obj0, vmsVector *hit_dir, fix damage);

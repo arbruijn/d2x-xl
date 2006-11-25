@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.5  1995/02/03  10:58:12  john
  * Added code to save shareware style saved games into new format...
- * Also, made new player file format not have the saved game array in it.
+ * Also, made new tPlayer file format not have the saved game array in it.
  *
  * Revision 1.4  1995/01/19  17:00:51  john
  * Made save game work between levels.

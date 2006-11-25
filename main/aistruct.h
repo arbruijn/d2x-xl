@@ -67,7 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * of all objects, and the tObject structure has been otherwise cleaned up.
  *
  * Revision 1.24  1994/09/21  12:28:11  mike
- * Change AI behavior for when player cloaked
+ * Change AI behavior for when tPlayer cloaked
  *
  * Revision 1.23  1994/09/19  21:43:00  mike
  * Add follow_path_start_seg and follow_path_end_seg to aistruct.h.
@@ -121,14 +121,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SEGMENTS_PER_PATH       20
 
-#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after player weapon hits nearby wall
-//#define PA_PLAYER_VISIBLE           2   // Level of robot awareness if robot is looking towards player, and player not hidden
+#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after tPlayer weapon hits nearby wall
+//#define PA_PLAYER_VISIBLE           2   // Level of robot awareness if robot is looking towards tPlayer, and tPlayer not hidden
 #define PA_NEARBY_ROBOT_FIRED       1   // Level of robot awareness after nearby robot fires a weapon
-#define PA_PLAYER_COLLISION         3   // Level of robot awareness after player bumps into robot
-#define PA_WEAPON_ROBOT_COLLISION   4   // Level of robot awareness after player weapon hits nearby robot
+#define PA_PLAYER_COLLISION         3   // Level of robot awareness after tPlayer bumps into robot
+#define PA_WEAPON_ROBOT_COLLISION   4   // Level of robot awareness after tPlayer weapon hits nearby robot
 
-//#define PAE_WEAPON_HIT_WALL         1   // weapon hit wall, create player awareness
-//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit wall, create player awareness
+//#define PAE_WEAPON_HIT_WALL         1   // weapon hit wall, create tPlayer awareness
+//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit wall, create tPlayer awareness
 
 // Constants indicating currently moving forward or backward through
 // path.  Note that you can add aip->direction to aip_path_index to
@@ -208,7 +208,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SUB_FLAGS_GUNSEG        0x01
 #define SUB_FLAGS_SPROX         0x02    // If set, then this bot drops a super prox, not a prox, when it's time to drop something
-#define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at player.  Can look real stupid!
+#define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at tPlayer.  Can look real stupid!
 
 //  Constants defining meaning of flags in ai_state
 #define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStatic, allowing for one byte mode
@@ -251,22 +251,22 @@ typedef struct tAILocal {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // playerAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
-	int     playerAwarenessType;  // nType of awareness of player
+	int     playerAwarenessType;  // nType of awareness of tPlayer
 	int     nRetryCount;            // number of retries in physics last time this tObject got moved.
 	int     nConsecutiveRetries;    // number of retries in consecutive frames (ie, without a nRetryCount of 0)
 	int     mode;                   // current mode within behavior
-	int     previousVisibility;    // Visibility of player last time we checked.
+	int     previousVisibility;    // Visibility of tPlayer last time we checked.
 	int     nRapidFireCount;        // number of shots fired rapidly
 	int     nGoalSegment;           // goal tSegment for current path
 
-	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which player last seen, attacked
+	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which tPlayer last seen, attacked
 
 	fix     nextActionTime;						// time in seconds until something happens, mode dependent
 	fix     nextPrimaryFire;               // time in seconds until can fire again
 	fix     nextSecondaryFire;             // time in seconds until can fire again from second weapon
-	fix     playerAwarenessTime;				// time in seconds robot will be aware of player, 0 means not aware of player
-	fix     timePlayerSeen;						// absolute time in seconds at which player was last seen, might cause to go into follow_path mode
-	fix     timePlayerSoundAttacked;			// absolute time in seconds at which player was last seen with visibility of 2.
+	fix     playerAwarenessTime;				// time in seconds robot will be aware of tPlayer, 0 means not aware of tPlayer
+	fix     timePlayerSeen;						// absolute time in seconds at which tPlayer was last seen, might cause to go into follow_path mode
+	fix     timePlayerSoundAttacked;			// absolute time in seconds at which tPlayer was last seen with visibility of 2.
 	fix     nextMiscSoundTime;					// absolute time in seconds at which this robot last made an angry or lurking sound.
 	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
 	vmsAngVec goalAngles [MAX_SUBMODELS];  // angles for each subobject
@@ -290,7 +290,7 @@ typedef struct {
 #define MAX_POINT_SEGS  	25000
 
 // These are the information for a robot describing the location of
-// the player last time he wasn't cloaked, and the time at which he
+// the tPlayer last time he wasn't cloaked, and the time at which he
 // was uncloaked.  We should store this for each robot, but that's
 // memory expensive.
 //extern fix        Last_uncloakedTime;

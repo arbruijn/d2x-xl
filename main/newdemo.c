@@ -12,720 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Code to make a complete demo playback system.
- *
- * Old Log:
- * Revision 1.12  1995/10/31  10:19:43  allender
- * shareware stuff
- *
- * Revision 1.11  1995/10/17  13:19:16  allender
- * close boxes for demo save
- *
- * Revision 1.10  1995/10/05  10:36:07  allender
- * fixed calls to DigiPlaySample to account for differing volume and angle calculations
- *
- * Revision 1.9  1995/09/12  15:49:13  allender
- * define __useAppleExts__ if not already defined
- *
- * Revision 1.8  1995/09/05  14:28:32  allender
- * fixed previous gameData.multi.nPlayers bug in NDGotoEnd
- *
- * Revision 1.7  1995/09/05  14:16:51  allender
- * added space to allowable demo filename characters
- * and fixed bug with netgame demos gameData.multi.nPlayers got getting
- * set correctly
- *
- * Revision 1.6  1995/09/01  16:10:47  allender
- * fixed bug with reading in gameData.multi.nPlayers variable on
- * netgame demo playback
- *
- * Revision 1.5  1995/08/24  16:04:11  allender
- * fix signed byte problem
- *
- * Revision 1.4  1995/08/12  12:21:59  allender
- * made call to CreateShortPos not swap the shortpos
- * elements
- *
- * Revision 1.3  1995/08/01  16:04:19  allender
- * made random picking of demo work
- *
- * Revision 1.2  1995/08/01  13:56:56  allender
- * demo system working on the mac
- *
- * Revision 1.1  1995/05/16  15:28:59  allender
- * Initial revision
- *
- * Revision 2.7  1995/05/26  16:16:06  john
- * Split SATURN into define's for requiring cd, using cd, etc.
- * Also started adding all the Rockwell stuff.
- *
- * Revision 2.6  1995/03/21  14:39:38  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.5  1995/03/14  18:24:31  john
- * Force Destination Saturn to use CD-ROM drive.
- *
- * Revision 2.4  1995/03/14  16:22:29  john
- * Added cdrom alternate directory stuff.
- *
- * Revision 2.3  1995/03/10  12:58:33  allender
- * only display rear view cockpit when cockpit mode was CM_FULL_COCKPIT.
- *
- * Revision 2.2  1995/03/08  16:12:15  allender
- * changes for Destination Saturn
- *
- * Revision 2.1  1995/03/08  12:11:26  allender
- * fix shortpos reading
- *
- * Revision 2.0  1995/02/27  11:29:40  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.189  1995/02/22  14:53:42  allender
- * missed some anonymous stuff
- *
- * Revision 1.188  1995/02/22  13:24:53  john
- * Removed the vecmat anonymous unions.
- *
- * Revision 1.187  1995/02/22  13:13:54  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.186  1995/02/14  15:36:41  allender
- * fix fix for morph effect
- *
- * Revision 1.185  1995/02/14  11:25:48  allender
- * save cockpit mode and restore after playback.  get orientation for morph
- * effect when tObject is morph tVideoClip
- *
- * Revision 1.184  1995/02/13  12:18:14  allender
- * change to decide about interpolating or not
- *
- * Revision 1.183  1995/02/12  00:46:23  adam
- * don't decide to skip frames until after at least 10 frames have
- * passed -- allender
- *
- * Revision 1.182  1995/02/11  22:34:01  john
- * Made textures page in for newdemos before playback time.
- *
- * Revision 1.181  1995/02/11  17:28:32  allender
- * strip frames from end of demo
- *
- * Revision 1.180  1995/02/11  16:40:35  allender
- * start of frame stripping debug code
- *
- * Revision 1.179  1995/02/10  17:40:06  allender
- * put back in WallHitProcess code to fix door problem
- *
- * Revision 1.178  1995/02/10  17:17:24  adam
- * allender } fix
- *
- * Revision 1.177  1995/02/10  17:16:24  allender
- * fix possible tmap problems
- *
- * Revision 1.176  1995/02/10  15:54:37  allender
- * changes for out of space on device.
- *
- * Revision 1.175  1995/02/09  19:55:00  allender
- * fix bug with morph recording -- force rendertype to RT_POLYOBJ when
- * playing back since it won't render until fully morphed otherwise
- *
- * Revision 1.174  1995/02/07  17:15:35  allender
- * DOH!!!!!
- *
- * Revision 1.173  1995/02/07  17:14:21  allender
- * immediately return when loading bogus level stuff when reading a frame
- *
- * Revision 1.172  1995/02/02  11:15:03  allender
- * after loading new level, read next frame (forward or back) always because
- * of co-op ships showing up when level is loaded
- *
- * Revision 1.171  1995/02/02  10:24:16  allender
- * removed cfile stuff.  Use standard FILE functions for demo playback
- *
- * Revision 1.170  1995/01/30  13:54:32  allender
- * support for missions
- *
- * Revision 1.169  1995/01/27  16:27:35  allender
- * put game mode to demo_game_mode when sorting multiplayer kill (and score)
- * list
- *
- * Revision 1.168  1995/01/27  09:52:25  allender
- * minor changes because of tObject/tSegment linking problems
- *
- * Revision 1.167  1995/01/27  09:22:28  allender
- * changed way multi-player score is recorded.  Record difference, not
- * actual
- *
- * Revision 1.166  1995/01/25  14:32:44  allender
- * changed with recorded player flags.  More checks for paused state
- * during interpolation reading of gameData.objs.objects
- *
- * Revision 1.165  1995/01/25  11:23:32  allender
- * found bug with out of disk space problem
- *
- * Revision 1.164  1995/01/25  11:11:33  allender
- * coupla' things.  Fix problem with gameData.objs.objects apparently being linked in
- * the wrong tSegment.  Put an Int3 in to check why demos will write to
- * end of space on drive. close demo file if demo doens't start playing
- * back.  Put objP->nType == OBJ_ROBOT around checking for boss cloaking
- *
- * Revision 1.163  1995/01/24  19:44:30  allender
- * fix obscure problem with rewinding and having the wrong tObject linked
- * to the wrong segments.  will investigate further.
- *
- * Revision 1.162  1995/01/23  09:31:28  allender
- * add team score in team mode playback
- *
- * Revision 1.161  1995/01/20  22:47:39  matt
- * Mission system implemented, though imcompletely
- *
- * Revision 1.160  1995/01/20  09:30:37  allender
- * don't call LoadLevel with bogus data
- *
- * Revision 1.159  1995/01/20  09:13:23  allender
- * *&^%&*%$ typo
- *
- * Revision 1.158  1995/01/20  09:12:04  allender
- * record team names during demo recoring in GM_TEAM
- *
- * Revision 1.157  1995/01/19  16:31:09  allender
- * forgot to bump demo version for new weapon change stuff
- *
- * Revision 1.156  1995/01/19  16:29:33  allender
- * added new byte for weapon change (old weapon) so rewinding works
- * correctly for weapon changes in registered
- *
- * Revision 1.155  1995/01/19  15:00:05  allender
- * remove code to take away blastable walls in multiplayer demo playbacks
- *
- * Revision 1.154  1995/01/19  11:07:05  allender
- * put in psuedo cloaking for boss robots.  Problem is that cloaking is
- * time based, and that don't get bDone in demos, so bosses just disappear.
- * oh well
- *
- * Revision 1.153  1995/01/19  09:42:29  allender
- * record laser levels in demos
- *
- * Revision 1.152  1995/01/18  20:43:12  allender
- * fix laser level stuff on goto-beginning and goto-end
- *
- * Revision 1.151  1995/01/18  20:28:18  allender
- * cloak robots now cloak (except maybe for boss........)  Put in function
- * to deal with control center triggers
- *
- * Revision 1.150  1995/01/18  18:55:07  allender
- * bug fix
- *
- * Revision 1.149  1995/01/18  18:49:03  allender
- * lots 'o stuff....record laser level.  Record beginning of door opening
- * sequence.  Fix some problems with control center stuff.  Control center
- * triggers now work in reverse
- *
- * Revision 1.148  1995/01/18  08:51:40  allender
- * forgot to record ammo counts at beginning of demo
- *
- * Revision 1.147  1995/01/17  17:42:07  allender
- * added primary and secondary ammo counts.  Changed goto_end routine
- * to be more efficient
- *
- * Revision 1.146  1995/01/17  13:46:35  allender
- * fix problem with destroyed control center and rewinding a demo.
- * Save callsign and restore after demo playback
- *
- * Revision 1.145  1995/01/12  10:21:53  allender
- * fixes for 1.0 to 1.1 demo incompatibility
- *
- * Revision 1.144  1995/01/05  13:51:43  allender
- * fixed nType of player num variable
- *
- * Revision 1.143  1995/01/04  16:58:28  allender
- * bumped up demo version number
- *
- * Revision 1.142  1995/01/04  14:59:02  allender
- * added more information to end of demo for registered.  Forced game mode
- * to be GM_NORMAL on demo playback
- *
- * Revision 1.141  1995/01/03  17:30:47  allender
- * fixed logic problem with cloak stuf
- *
- * Revision 1.140  1995/01/03  17:12:23  allender
- * fix for getting cloak stuff at end of demo for shareware
- *
- * Revision 1.139  1995/01/03  15:20:24  allender
- * fix goto_end for shareware -- changes to goto_end for registered
- *
- * Revision 1.138  1995/01/03  13:13:26  allender
- * add } I forgot
- *
- * Revision 1.137  1995/01/03  13:10:29  allender
- * make score work forwards and backwards
- *
- * Revision 1.136  1995/01/03  11:45:20  allender
- * added code to record players scores
- *
- * Revision 1.135  1994/12/30  10:03:57  allender
- * put cloak stuff at end of demo for fast forward to the end
- *
- * Revision 1.134  1994/12/29  17:02:55  allender
- * spelling fix on SHAREWARE
- *
- * Revision 1.133  1994/12/29  16:43:41  allender
- * lots of new multiplayer stuff.  wrapped much code with SHAREWARE defines
- *
- * Revision 1.132  1994/12/28  14:15:01  allender
- * added routines to deal with connecting and reconnecting players when
- * recording multiplayer demos
- *
- * Revision 1.131  1994/12/21  12:57:59  allender
- * bug fix
- *
- * Revision 1.130  1994/12/21  12:46:53  allender
- * record multi player deaths and kills
- *
- * Revision 1.129  1994/12/19  16:37:27  allender
- * pick good filename when trying to save in network play and player
- * gets bumped out of menu by multi-player code
- *
- * Revision 1.128  1994/12/14  10:49:01  allender
- * reset bad_read variable when starting demo playback
- *
- * Revision 1.127  1994/12/14  08:53:06  allender
- * lowered watermark for out of space
- *
- * Revision 1.126  1994/12/14  08:49:52  allender
- * put up warning when starting demo recording if not enough space and
- * not let them record
- *
- * Revision 1.125  1994/12/13  00:01:37  allender
- * CLOAK FIX -- (I'm tempted to take cloak out of game because I can't
- * seem to get it right in demo playback)
- *
- * Revision 1.124  1994/12/12  14:51:21  allender
- * more fixed to multiplayer cloak stuff
- *
- * Revision 1.123  1994/12/12  11:33:11  allender
- * fixed rearview mode to work again
- *
- * Revision 1.122  1994/12/12  11:00:16  matt
- * Added code to handle confusion with attached gameData.objs.objects
- *
- * Revision 1.121  1994/12/12  00:31:29  allender
- * give better warning when out of space when recording.  Don't record
- * until no space left.  We have 500K watermark when we now stop recording
- *
- * Revision 1.120  1994/12/10  16:44:54  matt
- * Added debugging code to track down door that turns into rock
- *
- * Revision 1.119  1994/12/09  18:46:15  matt
- * Added code to handle odd error condition
- *
- * Revision 1.118  1994/12/09  17:27:37  allender
- * force playernum to 0 when demo is bDone playing
- *
- * Revision 1.117  1994/12/09  16:40:39  allender
- * yet more cloak stuff.  Assign cloak/invuln time when starting demo
- * if flags are set.  Check cloak and invuln time when demo
- * even when paused
- *
- * Revision 1.116  1994/12/09  14:59:22  matt
- * Added system to attach a fireball to another tObject for rendering purposes, 
- * so the fireball always renders on top of (after) the tObject.
- *
- * Revision 1.115  1994/12/09  12:21:45  allender
- * only allow valid chars when typing in demo filename
- *
- * Revision 1.114  1994/12/08  23:19:02  allender
- * final (?) fix for getting cloak gauge to work on demo playback
- * with forward and reverse
- *
- * Revision 1.113  1994/12/08  21:34:38  allender
- * record old and new player flags to accuratedly record cloaking and
- * decloaking
- * ./
- *
- * Revision 1.112  1994/12/08  18:04:47  allender
- * bashed playernum right after reading it in demo header so shields
- * and energy are put in right place
- *
- * Revision 1.111  1994/12/08  17:10:07  allender
- * encode playernum in demo header.  Bash viewer tSegment to 0 if in
- * bogus nSegment.  Don't link render objs for same reason
- *
- * Revision 1.110  1994/12/08  15:36:12  allender
- * cloak stuff works forwards and backwards
- *
- * Revision 1.109  1994/12/08  13:46:03  allender
- * don't record rearview anymore, but leave in case statement for playback
- * purposes.  change the way letterbox <--> cockpit transitions happen
- *
- * Revision 1.108  1994/12/08  12:36:06  matt
- * Added new tObject allocation & deallocation functions so other code
- * could stop messing around with internal tObject data structures.
- *
- * Revision 1.107  1994/12/08  11:19:04  allender
- * handle out of space (more) gracefully then before
- *
- * Revision 1.106  1994/12/08  00:29:49  allender
- * fixed bug that didn't load level on goto_beginning
- *
- * Revision 1.105  1994/12/08  00:11:51  mike
- * change matrix interpolation.
- *
- * Revision 1.104  1994/12/07  23:46:37  allender
- * changed invulnerability and cloak to work (almost) correctly both
- * in single and multi player
- *
- * Revision 1.103  1994/12/07  11:48:49  adam
- * BY ALLENDER -- added dampening of interpolation factor to 1 if greater
- * than 1 (although I have not seen this happen).  this is attempt to
- * get wobbling problem solved
- *
- * Revision 1.102  1994/12/07  11:23:56  allender
- * attempt at getting rid of wobbling on demo playback
- *
- * Revision 1.101  1994/12/06  19:31:17  allender
- * moved blastable wall stuff code to where we load level during demo
- * playback
- *
- * Revision 1.100  1994/12/06  19:21:51  allender
- * multi games, destroy blastable walls.  Do wall toggle when control center
- * destroyed
- *
- * Revision 1.99  1994/12/06  16:54:48  allender
- * fixed code so if demo automatically started from menu, don't bring up
- * message if demo is too old
- *
- * Revision 1.98  1994/12/06  13:55:15  matt
- * Use new rounding func, f2ir ()
- *
- * Revision 1.97  1994/12/06  13:44:45  allender
- * suppressed compiler warnings
- *
- * Revision 1.96  1994/12/06  13:38:03  allender
- * removed recording of wall hit process.  I think that all bases are covered
- * elsewhere
- *
- * Revision 1.95  1994/12/06  12:57:35  allender
- * added recording of multi_decloaking.  Fixed some other cloaking code so
- * that cloak should last as long as player was cloaked.  We will lose the
- * guage effect, but the time is probably more important on playback
- *
- * Revision 1.94  1994/12/05  23:37:17  matt
- * Took out calls to warning () function
- *
- * Revision 1.93  1994/12/03  17:52:04  yuan
- * Localization 380ish
- *
- * Revision 1.92  1994/12/02  12:53:39  allender
- * fixed goto_beginning and goto_end on demo playback
- *
- * Revision 1.91  1994/12/01  12:01:49  allender
- * added multi player cloak stuff
- *
- * Revision 1.90  1994/11/30  09:33:58  allender
- * added field in header to tell what version (shareware or registered)
- * demo was recorded with.  Don't allow demo recorded on one to playback
- * on the other
- *
- * Revision 1.89  1994/11/29  00:31:01  allender
- * major changes -- added level recording feature which records level
- * advancement.  Changes to internal code to handle this.
- *
- * Revision 1.88  1994/11/27  23:13:54  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.87  1994/11/27  23:07:35  allender
- * starting on code to get all level transitions recorded. not bDone yet
- *
- * Revision 1.86  1994/11/27  17:39:47  matt
- * Don't xlate tmap numbers when editor compiled out
- *
- * Revision 1.85  1994/11/23  09:27:21  allender
- * put up info box with message if demo version is too old or level
- * cannot be loaded
- *
- * Revision 1.84  1994/11/22  19:37:39  allender
- * fix array mistake
- *
- * Revision 1.83  1994/11/22  19:35:09  allender
- * record player ship colors in multiplayer demo recordings
- *
- * Revision 1.82  1994/11/19  15:36:42  mike
- * fix fix.
- *
- * Revision 1.81  1994/11/19  15:23:21  mike
- * rip out unused code
- *
- * Revision 1.80  1994/11/16  14:51:49  rob
- * Fixed network/demo incompatibility.
- *
- * Revision 1.79  1994/11/15  10:55:48  allender
- * made start of demo playback read initial demo information so
- * level will get loaded.  Made demo record to single file which
- * will get renamed.  Added numerics after old filename so
- * sequential filenames would be defaulted to
- *
- * Revision 1.78  1994/11/15  09:46:06  allender
- * added versioning.  Fixed problems with trying to interpolating a completely
- * 0 orientation matrix
- *
- * Revision 1.77  1994/11/14  14:34:31  matt
- * Fixed up handling when textures can't be found during remap
- *
- * Revision 1.76  1994/11/14  09:15:29  allender
- * make ESC from file save menu exit w/o saving.  Fix letterbox, rear view, 
- * to normal cockpit mode transition to work correctly when skipping and
- * interpolating frames
- *
- * Revision 1.75  1994/11/11  16:22:07  allender
- * made morphing gameData.objs.objects record only the tObject being morphed.
- *
- * Revision 1.74  1994/11/08  14:59:19  john
- * Added code to respond to network while in menus.
- *
- * Revision 1.73  1994/11/08  14:52:20  adam
- * *** empty log message ***
- *
- * Revision 1.72  1994/11/07  15:47:04  allender
- * prompt for filename when bDone recording demo
- *
- * Revision 1.71  1994/11/07  11:47:19  allender
- * when interpolating frames, delete weapon, fireball, and debris gameData.objs.objects
- * from an inpolated frame if they don't appear in the next recorded
- * frame
- *
- * Revision 1.70  1994/11/07  11:02:41  allender
- * more with interpolation. I believe that I have it right now
- *
- * Revision 1.69  1994/11/07  08:47:40  john
- * Made wall state record.
- *
- * Revision 1.68  1994/11/05  17:22:51  john
- * Fixed lots of sequencing problems with newdemo stuff.
- *
- * Revision 1.67  1994/11/04  20:11:52  john
- * Neatening up palette stuff with demos.
- *
- * Revision 1.66  1994/11/04  16:49:44  allender
- * changed newdemo_do_interpolate to default to on
- *
- * Revision 1.65  1994/11/04  16:44:51  allender
- * added filename support for demo recording.  more auto demo stuff
- *
- * Revision 1.64  1994/11/04  13:05:31  allender
- * fixing the lifeleft variable again.  (I think I got it right this time)
- *
- * Revision 1.63  1994/11/04  11:37:37  allender
- * commented out fprintfs and fixed compiler warning
- *
- * Revision 1.62  1994/11/04  11:33:50  allender
- * added OBJ_FLARE and OBJ_LIGHT to objP->lifeleft recording
- *
- * Revision 1.61  1994/11/04  11:29:21  allender
- * more interpolation stuff -- not bDone yet.  Fixed so hostage vclips
- * render correctly.  Changed lifeleft to full precision, but only
- * write it when tObject is fireball or weapon nType of tObject
- *
- * Revision 1.60  1994/11/03  10:00:11  allender
- * fixed divide by zero in calculating render time.  more interpolation
- * stuff which isn't quite bDone
- *
- * Revision 1.59  1994/11/02  17:10:59  allender
- * never play recorded frames when interpolation is occuring
- *
- * Revision 1.58  1994/11/02  14:28:58  allender
- * profile total playback time and average frame render time
- *
- * Revision 1.57  1994/11/02  14:09:03  allender
- * record rear view.  start of playback interpolation code -- this
- * is not yet bDone
- *
- * Revision 1.56  1994/11/01  13:25:30  allender
- * drop frames if playing back demo on slower machine
- *
- * Revision 1.55  1994/10/31  16:10:40  allender
- * record letterbox mode on death seq, and then restore
- *
- * Revision 1.54  1994/10/29  16:01:38  allender
- * added ND_STATE_NODEMOS to indicate that there are no demos currently
- * available for playback
- *
- * Revision 1.53  1994/10/29  15:38:42  allender
- * in NDStartPlayback, make gameData.demo.bEof = 0
- *
- * Revision 1.52  1994/10/28  14:45:28  john
- * fixed typo from last checkin.
- *
- * Revision 1.51  1994/10/28  14:42:55  john
- * Added sound volumes to all sound calls.
- *
- * Revision 1.50  1994/10/28  14:31:57  allender
- * homing missle and autodemo stuff
- *
- * Revision 1.49  1994/10/28  12:42:14  allender
- * record homing distance
- *
- * Revision 1.48  1994/10/27  16:57:54  allender
- * changed demo vcr to be able to play any number of frames by storing
- * frame length (in bytes) in the demo file.  Added blowing up monitors
- *
- * Revision 1.47  1994/10/26  16:50:50  allender
- * put two functions inside of VCR_MODE ifdef
- *
- * Revision 1.46  1994/10/26  15:20:32  allender
- * added CT_REMOTE as valid control nType for recording
- *
- * Revision 1.45  1994/10/26  14:45:35  allender
- * completed hacked in vcr demo playback stuff
- *
- * Revision 1.44  1994/10/26  13:40:52  allender
- * vcr playback of demo stuff
- *
- * Revision 1.43  1994/10/26  08:51:57  allender
- * record player weapon change
- *
- * Revision 1.42  1994/10/25  15:48:01  allender
- * add shields, energy, and player flags to demo recording.
- * , 
- *
- * Revision 1.41  1994/10/24  08:19:35  allender
- * fixed compilation errors
- *
- * Revision 1.40  1994/10/23  19:17:08  matt
- * Fixed bug with "no key" messages
- *
- * Revision 1.39  1994/10/22  14:15:08  mike
- * Suppress compiler warnings.
- *
- * Revision 1.38  1994/10/21  15:24:55  allender
- * compressed writing of tObject structures with specialized code
- * to write out only pertinent tObject structures.
- *
- * Revision 1.37  1994/10/20  13:03:17  matt
- * Replaced old save files (MIN/SAV/HOT) with new LVL files
- *
- * Revision 1.36  1994/09/28  23:13:10  matt
- * Macroized palette flash system
- *
- * Revision 1.35  1994/09/26  17:28:32  matt
- * Made new multiple-tObject morph code work with the demo system
- *
- * Revision 1.34  1994/09/10  13:31:54  matt
- * Made exploding walls a nType of blastable walls.
- * Cleaned up blastable walls, making them tmap2 bitmaps.
- *
- * Revision 1.33  1994/08/15  18:05:28  john
- * *** empty log message ***
- *
- * Revision 1.32  1994/08/15  17:56:38  john
- * , 
- *
- * Revision 1.31  1994/08/10  09:44:54  john
- * *** empty log message ***
- *
- * Revision 1.30  1994/07/22  12:35:48  matt
- * Cleaned up editor/game interactions some more.
- *
- * Revision 1.29  1994/07/21  13:06:45  matt
- * Ripped out remants of old demo system, and added demo only system that
- * disables tObject movement and game options from menu.
- *
- * Revision 1.28  1994/07/18  16:22:44  john
- * Made all file read/writes call the same routine.
- *
- * Revision 1.27  1994/07/14  22:38:27  matt
- * Added exploding doors
- *
- * Revision 1.26  1994/07/05  12:49:04  john
- * Put functionality of New Hostage spec into code.
- *
- * Revision 1.25  1994/06/29  11:05:38  john
- * Made demos read in compressed.
- *
- * Revision 1.24  1994/06/29  09:14:06  john
- * Made files write out uncompressed and read in compressed.
- *
- * Revision 1.23  1994/06/28  11:55:28  john
- * Made newdemo system record/play directly to/from disk, so
- * we don't need the 4 MB buffer anymore.
- *
- * Revision 1.22  1994/06/27  15:52:38  john
- * #define'd out the newdemo stuff
- *
- *
- * Revision 1.21  1994/06/22  00:29:04  john
- * Fixed bug with playing demo then playing game without
- * loading new mine.
- *
- * Revision 1.20  1994/06/22  00:14:23  john
- * Attempted to fix sign.
- *
- * Revision 1.19  1994/06/21  23:57:54  john
- * Hopefully fixed bug with negative countdowns.
- *
- * Revision 1.18  1994/06/21  23:47:44  john
- * MAde Malloc always 4*1024*1024.
- *
- * Revision 1.17  1994/06/21  22:58:47  john
- * Added error if out of memory.
- *
- * Revision 1.16  1994/06/21  22:15:48  john
- * Added  % bDone to demo recording.
- *
- *
- * Revision 1.15  1994/06/21  19:45:55  john
- * Added palette effects to demo recording.
- *
- * Revision 1.14  1994/06/21  15:08:54  john
- * Made demo record HUD message and cleaned up the HUD code.
- *
- * Revision 1.13  1994/06/21  14:20:08  john
- * Put in hooks to record HUD messages.
- *
- * Revision 1.12  1994/06/20  11:50:15  john
- * Made demo record flash effect, and control center triggers.
- *
- * Revision 1.11  1994/06/17  18:01:33  john
- * A bunch of new stuff by John
- *
- * Revision 1.10  1994/06/17  12:13:31  john
- * More newdemo stuff; made editor->game transition start in slew mode.
- *
- * Revision 1.9  1994/06/16  13:14:36  matt
- * Fixed typo
- *
- * Revision 1.8  1994/06/16  13:02:07  john
- * Added morph hooks.
- *
- * Revision 1.7  1994/06/15  19:01:33  john
- * Added the capability to make 3d sounds play just once for the
- * laser hit wall effects.
- *
- * Revision 1.6  1994/06/15  14:56:59  john
- * Added triggers to demo recording.
- *
- * Revision 1.5  1994/06/14  20:42:15  john
- * Made robot matztn cntr not work until no robots or player are
- * in the tSegment.
- *
- * Revision 1.4  1994/06/14  14:43:27  john
- * Made doors work with newdemo system.
- *
- * Revision 1.3  1994/06/14  11:32:29  john
- * Made Newdemo record & restore the current mine.
- *
- * Revision 1.2  1994/06/13  21:02:43  john
- * Initial version of new demo recording system.
- *
- * Revision 1.1  1994/06/13  11:09:00  john
- * Initial revision
- *
- *
- */
-
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -844,7 +130,7 @@ static sbyte	bNDBadRead;
 #define ND_EVENT_PALETTE_EFFECT     16  // Followed by short r, g, b
 #define ND_EVENT_PLAYER_ENERGY      17  // followed by byte energy
 #define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shields
-#define ND_EVENT_PLAYER_FLAGS       19  // followed by player flags
+#define ND_EVENT_PLAYER_FLAGS       19  // followed by tPlayer flags
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
 #define ND_EVENT_EFFECT_BLOWUP      21  // followed by tSegment, nSide, and pnt
 #define ND_EVENT_HOMING_DISTANCE    22  // followed by homing distance
@@ -854,14 +140,14 @@ static sbyte	bNDBadRead;
 #define ND_EVENT_WALL_SET_TMAP_NUM1 26  // Wall changed
 #define ND_EVENT_WALL_SET_TMAP_NUM2 27  // Wall changed
 #define ND_EVENT_NEW_LEVEL          28  // followed by level number
-#define ND_EVENT_MULTI_CLOAK        29  // followed by player num
-#define ND_EVENT_MULTI_DECLOAK      30  // followed by player num
+#define ND_EVENT_MULTI_CLOAK        29  // followed by tPlayer num
+#define ND_EVENT_MULTI_DECLOAK      30  // followed by tPlayer num
 #define ND_EVENT_RESTORE_REARVIEW   31  // restore cockpit after rearview mode
-#define ND_EVENT_MULTI_DEATH        32  // with player number
-#define ND_EVENT_MULTI_KILL         33  // with player number
-#define ND_EVENT_MULTI_CONNECT      34  // with player number
-#define ND_EVENT_MULTI_RECONNECT    35  // with player number
-#define ND_EVENT_MULTI_DISCONNECT   36  // with player number
+#define ND_EVENT_MULTI_DEATH        32  // with tPlayer number
+#define ND_EVENT_MULTI_KILL         33  // with tPlayer number
+#define ND_EVENT_MULTI_CONNECT      34  // with tPlayer number
+#define ND_EVENT_MULTI_RECONNECT    35  // with tPlayer number
+#define ND_EVENT_MULTI_DISCONNECT   36  // with tPlayer number
 #define ND_EVENT_MULTI_SCORE        37  // playernum / score
 #define ND_EVENT_PLAYER_SCORE       38  // followed by score
 #define ND_EVENT_PRIMARY_AMMO       39  // with old/new ammo count
@@ -931,20 +217,20 @@ void my_extract_shortpos (tObject *objP, shortpos *spp)
 	sbyte *sp;
 
 sp = spp->bytemat;
-objP->orient.rVec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.uVec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.fVec.x = *sp++ << MATRIX_PRECISION;
-objP->orient.rVec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.uVec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.fVec.y = *sp++ << MATRIX_PRECISION;
-objP->orient.rVec.z = *sp++ << MATRIX_PRECISION;
-objP->orient.uVec.z = *sp++ << MATRIX_PRECISION;
-objP->orient.fVec.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->tSegment;
 objP->nSegment = nSegment;
-objP->pos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
-objP->pos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
-objP->pos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
+objP->position.vPos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
+objP->position.vPos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
+objP->position.vPos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
 objP->mType.physInfo.velocity.x = (spp->velx << VEL_PRECISION);
 objP->mType.physInfo.velocity.y = (spp->vely << VEL_PRECISION);
 objP->mType.physInfo.velocity.z = (spp->velz << VEL_PRECISION);
@@ -1101,7 +387,7 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 	if (i == 9)
 		Int3 ();         // contact Allender about this.
 #else
-	 NDWriteMatrix (&objP->orient);
+	 NDWriteMatrix (&objP->position.mOrient);
 #endif
 	}
 #if ND_USE_SHORTPOS
@@ -1113,7 +399,7 @@ NDWriteShort (sp.velx);
 NDWriteShort (sp.vely);
 NDWriteShort (sp.velz);
 #else
-NDWriteVector (&objP->pos);	
+NDWriteVector (&objP->position.vPos);	
 NDWriteShort (objP->nSegment);
 NDWriteVector (&objP->mType.physInfo.velocity);
 #endif
@@ -1200,7 +486,7 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 			sp.bytemat [i] = NDReadByte ();
 		}
 	else {
-		CFReadMatrix (&objP->orient, infile);
+		CFReadMatrix (&objP->position.mOrient, infile);
 		}
 	}
 if (gameData.demo.bUseShortPos) {
@@ -1214,14 +500,14 @@ if (gameData.demo.bUseShortPos) {
 	my_extract_shortpos (objP, &sp);
 	}
 else {
-	NDReadVector (&objP->pos);
+	NDReadVector (&objP->position.vPos);
 	objP->nSegment = NDReadShort ();
 	NDReadVector (&objP->mType.physInfo.velocity);
 	}
 if ((objP->id == VCLIP_MORPHING_ROBOT) && 
 		 (renderType == RT_FIREBALL) && 
 		 (objP->controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->orient, gameData.segs.segments + objP->nSegment);
+	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
 }
 
 
@@ -1510,7 +796,7 @@ switch (objP->controlType) {
 	case CT_FLYING:
 	case CT_DEBRIS:
 	case CT_POWERUP:
-	case CT_SLEW:       //the player is generally saved as slew
+	case CT_SLEW:       //the tPlayer is generally saved as slew
 	case CT_CNTRLCEN:
 	case CT_REMOTE:
 	case CT_MORPH:
@@ -2493,15 +1779,15 @@ while (!bDone) {
 				LinkObject (OBJ_IDX (objP), nSegment);
 #ifdef NETWORK
 				if ((objP->nType == OBJ_PLAYER) &&(gameData.demo.nGameMode & GM_MULTI)) {
-					int player = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
-					if (player == 0)
+					int tPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
+					if (tPlayer == 0)
 						break;
-					player--;
+					tPlayer--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						multi_player_textures [player] [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].first_texture+i]];
-					multi_player_textures [player] [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (player)*2]];
-					multi_player_textures [player] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (player)*2+1]];
-					objP->rType.polyObjInfo.nAltTextures = player+1;
+						multi_player_textures [tPlayer] [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].first_texture+i]];
+					multi_player_textures [tPlayer] [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (tPlayer)*2]];
+					multi_player_textures [tPlayer] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (tPlayer)*2+1]];
+					objP->rType.polyObjInfo.nAltTextures = tPlayer+1;
 					}
 #endif
 				}
@@ -2566,16 +1852,16 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_WALL_HIT_PROCESS: {
-				int player, nSegment;
+				int tPlayer, nSegment;
 				fix damage;
 
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			damage = NDReadFix ();
-			player = NDReadInt ();
+			tPlayer = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, player, &(gameData.objs.objects [0]));
+				WallHitProcess (&gameData.segs.segments [nSegment], (short) nSide, damage, tPlayer, &(gameData.objs.objects [0]));
 			break;
 		}
 
@@ -2813,7 +2099,7 @@ while (!bDone) {
 
 			//create a dummy tObject which will be the weapon that hits
 			//the monitor. the blowup code wants to know who the parent of the
-			//laser is, so create a laser whose parent is the player
+			//laser is, so create a laser whose parent is the tPlayer
 			dummy.cType.laserInfo.parentType = OBJ_PLAYER;
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
@@ -3468,35 +2754,35 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 					(renderType != RT_THRUSTER) && 
 					(renderType != RT_POWERUP)) {
 
-				fvec1 = curObjP->orient.fVec;
+				fvec1 = curObjP->position.mOrient.fVec;
 				VmVecScale (&fvec1, F1_0-factor);
-				fvec2 = objP->orient.fVec;
+				fvec2 = objP->position.mOrient.fVec;
 				VmVecScale (&fvec2, factor);
 				VmVecInc (&fvec1, &fvec2);
 				mag1 = VmVecNormalizeQuick (&fvec1);
 				if (mag1 > F1_0/256) {
-					rvec1 = curObjP->orient.rVec;
+					rvec1 = curObjP->position.mOrient.rVec;
 					VmVecScale (&rvec1, F1_0-factor);
-					rvec2 = objP->orient.rVec;
+					rvec2 = objP->position.mOrient.rVec;
 					VmVecScale (&rvec2, factor);
 					VmVecInc (&rvec1, &rvec2);
 					VmVecNormalizeQuick (&rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
-					VmVector2Matrix (&curObjP->orient, &fvec1, NULL, &rvec1);
+					VmVector2Matrix (&curObjP->position.mOrient, &fvec1, NULL, &rvec1);
 					}
 				}
 			// Interpolate the tObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->pos.x - curObjP->pos.x;
-			delta_y = objP->pos.y - curObjP->pos.y;
-			delta_z = objP->pos.z - curObjP->pos.z;
+			delta_x = objP->position.vPos.x - curObjP->position.vPos.x;
+			delta_y = objP->position.vPos.y - curObjP->position.vPos.y;
+			delta_z = objP->position.vPos.z - curObjP->position.vPos.z;
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->pos.x += delta_x;
-			curObjP->pos.y += delta_y;
-			curObjP->pos.z += delta_z;
+			curObjP->position.vPos.x += delta_x;
+			curObjP->position.vPos.y += delta_y;
+			curObjP->position.vPos.z += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the tObject structure
-				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].orient), &cur_angles);
+				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].position.mOrient), &cur_angles);
 			}
 		}
 	}
@@ -3655,8 +2941,8 @@ else {
 					objP = gameData.objs.objects;
 					for (j = 0; j <= gameData.objs.nLastObject; j++, objP++) {
 						if (nSig == objP->nSignature) {
-							objP->orient = curObjs [i].orient;
-							objP->pos = curObjs [i].pos;
+							objP->position.mOrient = curObjs [i].position.mOrient;
+							objP->position.vPos = curObjs [i].position.vPos;
 							break;
 							}
 						}
@@ -3971,7 +3257,7 @@ bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 #endif
 strncpy (gameData.demo.callSignSave, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN);
-gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console player
+gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
 if (NDReadDemoStart (rnd_demo)) {
 	CFClose (infile);
 	return;

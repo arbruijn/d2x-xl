@@ -1866,7 +1866,7 @@ void bm_read_player_ship()
 
 	Assert(ri.nGuns == N_PLAYER_GUNS);
 
-	//calc player gun positions
+	//calc tPlayer gun positions
 
 	{
 		tPolyModel *pm;

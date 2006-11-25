@@ -28,14 +28,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added vars to point to mission names
  *
  * Revision 1.5  1995/01/22  18:57:21  matt
- * Made player highest level work with missions
+ * Made tPlayer highest level work with missions
  *
  * Revision 1.4  1995/01/22  14:13:21  matt
  * Added flag in mission list for anarchy-only missions
  *
  * Revision 1.3  1995/01/21  23:13:12  matt
  * Made high scores with (not work, really) with loaded missions
- * Don't give player high score when quit game
+ * Don't give tPlayer high score when quit game
  *
  * Revision 1.2  1995/01/20  22:47:53  matt
  * Mission system implemented, though imcompletely

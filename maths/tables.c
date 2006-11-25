@@ -12,19 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * C version of fixed point library
- *
- * Old Log:
- * Revision 1.2  1995/08/31  15:44:36  allender
- * ..
- *
- * Revision 1.1  1995/04/17  11:38:04  allender
- * Initial revision
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif

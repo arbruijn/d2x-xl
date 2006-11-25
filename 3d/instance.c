@@ -97,29 +97,26 @@ if (gameStates.ogl.bUseTransform) {
 		glScalef (1.0f, 1.0f, -1.0f);
 	}
 	{
-	vmsVector tempv;
-	vmsMatrix tempm,tempm2;
+	vmsVector vOffs;
+	vmsMatrix mTrans, mRot;
 
-#ifdef D1XD3D
-	Win32_start_instance_matrix (pos, orient);
-#endif
 	//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
 	if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
 		nInstanceDepth = nInstanceDepth;
-	instanceStack [nInstanceDepth].m = viewInfo.view;
+	instanceStack [nInstanceDepth].m = viewInfo.view [0];
 	instanceStack [nInstanceDepth].p = viewInfo.position;
 	nInstanceDepth++;
 	//step 1: subtract tObject position from view position
-	VmVecSub (&tempv, &viewInfo.position, pos);
+	VmVecSub (&vOffs, &viewInfo.position, pos);
 	if (orient) {
 		//step 2: rotate view vector through tObject matrix
-		VmVecRotate (&viewInfo.position, &tempv, orient);
+		VmVecRotate (&viewInfo.position, &vOffs, orient);
 		//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
-		VmCopyTransposeMatrix (&tempm2, orient);
-		VmMatMul (&tempm, &tempm2, &viewInfo.view);
-		viewInfo.view = tempm;
+		VmCopyTransposeMatrix (&mTrans, orient);
+		VmMatMul (&mRot, &mTrans, viewInfo.view);
+		viewInfo.view [0] = mRot;
 		VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-		VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
+		VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 		}
 	}
 }
@@ -127,7 +124,7 @@ if (gameStates.ogl.bUseTransform) {
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
-void G3StartInstanceAngles(vmsVector *pos,vmsAngVec *angles)
+void G3StartInstanceAngles (vmsVector *pos, vmsAngVec *angles)
 {
 	vmsMatrix tm;
 
@@ -148,15 +145,12 @@ if (gameStates.ogl.bUseTransform) {
 	glPopMatrix ();
 	}
 	{
-#ifdef D1XD3D
-	Win32_done_instance ();
-#endif
 	nInstanceDepth--;
 	Assert(nInstanceDepth >= 0);
 	viewInfo.position = instanceStack [nInstanceDepth].p;
-	viewInfo.view = instanceStack [nInstanceDepth].m;
+	viewInfo.view [0] = instanceStack [nInstanceDepth].m;
 	VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-	VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
+	VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
 	}
 }
 

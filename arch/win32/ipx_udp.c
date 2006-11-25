@@ -295,7 +295,7 @@ typedef struct tDestListEntry {
 	short						firstPacket;
 	short						numPackets;
 	int						fd;
-	char						bSafeMode;		//safe mode a peer of the local player uses (unknown: -1)
+	char						bSafeMode;		//safe mode a peer of the local tPlayer uses (unknown: -1)
 	char						bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
 	char						modeCountdown;
 #endif

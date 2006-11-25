@@ -93,7 +93,7 @@ tObject *ObjectCreateBadassExplosion(tObject *objp, short nSegment,
 // return the explosion tObject
 tObject *ExplodeBadassWeapon(tObject *obj,vmsVector *pos);
 
-// blows up the player with a badass explosion
+// blows up the tPlayer with a badass explosion
 // return the explosion tObject
 tObject *ExplodeBadassPlayer(tObject *obj);
 

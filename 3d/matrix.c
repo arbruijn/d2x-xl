@@ -34,9 +34,9 @@ void G3SetViewAngles (vmsVector *view_pos, vmsAngVec *view_orient, fix zoom)
 {
 viewInfo.zoom = zoom;
 viewInfo.position = *view_pos;
-VmAngles2Matrix(&viewInfo.view,view_orient);
+VmAngles2Matrix(&viewInfo.view [0], view_orient);
 VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
+VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
 #ifdef D1XD3D
 Win32_set_view_matrix ();
 #endif
@@ -55,9 +55,9 @@ if (view_pos) {
 	OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.position);
 	}
 if (view_matrix) {
-	viewInfo.view = *view_matrix;
-	VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
-	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), &viewInfo.view);
+	viewInfo.view [0] = *view_matrix;
+	VmsMatToFloat (viewInfo.viewf, viewInfo.view);
+	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view);
 	}
 #ifdef D1XD3D
 Win32_set_view_matrix ();
@@ -69,7 +69,8 @@ ScaleMatrix();
 //performs aspect scaling on global view matrix
 void ScaleMatrix (void)
 {
-	viewInfo.unscaledView = viewInfo.view;		//so we can use unscaled if we want
+	viewInfo.view [1] = viewInfo.view [0];		//so we can use unscaled if we want
+	viewInfo.viewf [1] = viewInfo.viewf [0];		//so we can use unscaled if we want
 
 viewInfo.scale = viewInfo.windowScale;
 if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
@@ -81,10 +82,10 @@ else {			//zoom out by scaling x&y
 	viewInfo.scale.y = FixMul (viewInfo.scale.y,s);
 	}
 //now scale matrix elements
-VmVecScale (&viewInfo.view.rVec, viewInfo.scale.x);
-VmVecScale (&viewInfo.view.uVec, viewInfo.scale.y);
-VmVecScale (&viewInfo.view.fVec, viewInfo.scale.z);
-VmsMatToFloat (&viewInfo.viewf, &viewInfo.view);
+VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.x);
+VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.y);
+VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.z);
+VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }
 
 //------------------------------------------------------------------------------

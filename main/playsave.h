@@ -25,13 +25,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.10  1995/01/22  18:57:04  matt
- * Made player highest level work with missions
+ * Made tPlayer highest level work with missions
  *
  * Revision 1.9  1994/12/12  11:37:15  matt
  * Fixed auto leveling defaults & saving
  *
  * Revision 1.8  1994/12/08  10:01:37  john
- * Changed the way the player callsign stuff works.
+ * Changed the way the tPlayer callsign stuff works.
  *
  * Revision 1.7  1994/11/25  22:46:56  matt
  * Made saved game descriptions longer
@@ -40,10 +40,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added prototype for ReadPlayerFile.
  *
  * Revision 1.5  1994/10/17  13:07:12  john
- * Moved the descent.cfg info into the player config file.
+ * Moved the descent.cfg info into the tPlayer config file.
  *
  * Revision 1.4  1994/10/09  14:54:32  matt
- * Made player cockpit state & window size save/restore with saved games & automap
+ * Made tPlayer cockpit state & window size save/restore with saved games & automap
  *
  * Revision 1.3  1994/10/08  23:08:09  matt
  * Added error check & handling for game load/save disk io
@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int DefaultLeveling_on;
 
-// update the player's highest level.  returns errno (0 == no error)
+// update the tPlayer's highest level.  returns errno (0 == no error)
 int update_player_file();
 
 // Used to save KConfig values to disk.
@@ -80,10 +80,10 @@ int new_player_config();
 
 int ReadPlayerFile(int bOnlyWindowSizes);
 
-// set a new highest level for player for this mission
+// set a new highest level for tPlayer for this mission
 void SetHighestLevel(int levelnum);
 
-// gets the player's highest level from the file for this mission
+// gets the tPlayer's highest level from the file for this mission
 int GetHighestLevel(void);
 
 #endif /* _PLAYSAVE_H */

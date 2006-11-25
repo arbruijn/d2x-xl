@@ -224,7 +224,7 @@ else {
 	glDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT));
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
 		glGetIntegerv (GL_DRAW_BUFFER, &glRes);
-		glClearColor (0.0, 0.0, 0.0, 0.0);
+		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();//clear matrix

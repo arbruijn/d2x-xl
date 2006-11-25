@@ -87,7 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.65  1994/12/15  18:15:48  john
  * Made the joy cal only write the .cfg file, not
- * the player file.
+ * the tPlayer file.
  *
  * Revision 1.64  1994/12/13  14:43:35  john
  * Took out the code in KConfig to build direction array.
@@ -193,10 +193,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Suppress compiler warning message.
  *
  * Revision 1.32  1994/10/19  12:44:24  john
- * Added hours field to player structure.
+ * Added hours field to tPlayer structure.
  *
  * Revision 1.31  1994/10/17  13:07:13  john
- * Moved the descent.cfg info into the player config file.
+ * Moved the descent.cfg info into the tPlayer config file.
  *
  * Revision 1.30  1994/10/13  21:41:12  john
  * MAde Esc exit out of joystick calibration.

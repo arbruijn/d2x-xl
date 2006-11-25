@@ -5,6 +5,12 @@
 #include <conf.h>
 #endif
 
+#if defined (_DEBUG) && SHADOWS
+#	define OOF_TEST_CUBE 0
+#else
+#	define OOF_TEST_CUBE 0
+#endif
+
 //------------------------------------------------------------------------------
 // Subobject flags
 
@@ -119,6 +125,7 @@ typedef struct tOOF_face {
 	tOOF_vector			vMax;
 	ubyte					bFacingLight : 1;
 	ubyte					bFacingViewer : 1;
+	ubyte					bReverse : 1;
 } tOOF_face;
 
 typedef struct tOOF_faceList {
@@ -303,6 +310,7 @@ float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc);
 float *OOF_VecVms2Gl (float *pDest, vmsVector *pSrc);
 float *OOF_VecVms2Oof (tOOF_vector *pDest, vmsVector *pSrc);
 float *OOF_MatVms2Oof (tOOF_matrix *pDest, vmsMatrix *pSrc);
+tOOF_vector *OOF_VecNormalize (tOOF_vector *pv);
 tOOF_vector *OOF_VecAdd (tOOF_vector *pvDest, tOOF_vector *pvSrc, tOOF_vector *pvAdd);
 tOOF_vector *OOF_VecSub (tOOF_vector *pvDest, tOOF_vector *pvMin, tOOF_vector *pvSub);
 tOOF_vector *OOF_VecInc (tOOF_vector *pvDest, tOOF_vector *pvSrc);

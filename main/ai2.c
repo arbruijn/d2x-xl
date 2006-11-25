@@ -12,17 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Split ai.c into two files: ai.c, ai2.c.
- *
- * Old Log:
- * Revision 1.1  1995/05/25  12:00:31  mike
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -169,7 +158,7 @@ int AIBehaviorToMode (int behavior)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-//	Call every time the player starts a new ship.
+//	Call every time the tPlayer starts a new ship.
 void AIInitBossForShip (void)
 {
 	gameData.boss.nHitTime = -F1_0*10;
@@ -299,7 +288,7 @@ if (size_check)
 		boss_size_save = bossObjP->size;
 		// -- Causes problems!!	-- bossObjP->size = FixMul ((F1_0/4)*3, bossObjP->size);
 		original_boss_seg = bossObjP->nSegment;
-		original_boss_pos = bossObjP->pos;
+		original_boss_pos = bossObjP->position.vPos;
 		nGroup = gameData.segs.xSegments [original_boss_seg].group;
 		head = 0;
 		tail = 0;
@@ -367,7 +356,7 @@ if (size_check)
 		}
 
 		bossObjP->size = boss_size_save;
-		bossObjP->pos = original_boss_pos;
+		bossObjP->position.vPos = original_boss_pos;
 		RelinkObject (objList, original_boss_seg);
 
 	}
@@ -516,13 +505,13 @@ void AITurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
 
 	new_fvec = *goal_vector;
 
-	dot = VmVecDot (goal_vector, &objP->orient.fVec);
+	dot = VmVecDot (goal_vector, &objP->position.mOrient.fVec);
 
 	if (dot < (F1_0 - gameData.time.xFrame/2)) {
 		fix	mag;
 		fix	new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
 		VmVecScale (&new_fvec, new_scale);
-		VmVecInc (&new_fvec, &objP->orient.fVec);
+		VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
 		mag = VmVecNormalizeQuick (&new_fvec);
 		if (mag < F1_0/256) {
 #if TRACE	
@@ -540,7 +529,7 @@ void AITurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
 		VmVecScaleInc (&new_fvec, &rand_vec, scale);
 	}
 
-	VmVector2Matrix (&objP->orient, &new_fvec, NULL, &objP->orient.rVec);
+	VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, &objP->position.mOrient.rVec);
 }
 
 // -- unused, 08/07/95 -- // --------------------------------------------------------------------------------------------------------------------
@@ -574,7 +563,7 @@ void AITurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
 //	gameData.ai.nOverallAgitation affects:
 //		Widens field of view.  Field of view is in range 0d:\temp\dm_test1 (specified in bitmaps.tbl as N/360 degrees).
 //			gameData.ai.nOverallAgitation/128 subtracted from field of view, making robots see wider.
-//		Increases distance to which robot will search to create path to player by gameData.ai.nOverallAgitation/8 segments.
+//		Increases distance to which robot will search to create path to tPlayer by gameData.ai.nOverallAgitation/8 segments.
 //		Decreases wait between fire times by gameData.ai.nOverallAgitation/64 seconds.
 
 
@@ -583,7 +572,7 @@ void AITurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
 //		0		Player is not visible from tObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.vBelievedPlayerPos as player's position for cloak effect.
+//	Note: Uses gameData.ai.vBelievedPlayerPos as tPlayer's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player)
 {
@@ -594,11 +583,11 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 
 	fq.p0	= pos;
-	if ((pos->x != objP->pos.x) || (pos->y != objP->pos.y) || (pos->z != objP->pos.z)) {
+	if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (pos->z != objP->position.vPos.z)) {
 		short nSegment = FindSegByPoint (pos, objP->nSegment);
 		if (nSegment == -1) {
 			fq.startSeg = objP->nSegment;
-			*pos = objP->pos;
+			*pos = objP->position.vPos;
 #if TRACE	
 			con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
@@ -625,7 +614,7 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 
 	// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))) {
 	if (gameData.ai.nHitType == HIT_NONE) {
-		dot = VmVecDot (vec_to_player, &objP->orient.fVec);
+		dot = VmVecDot (vec_to_player, &objP->position.mOrient.fVec);
 		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
 			return 2;
 		} else {
@@ -860,8 +849,8 @@ void SetNextFireTime (tObject *objP, tAILocal *ailp, tRobotInfo *robptr, int nGu
 }
 
 // ----------------------------------------------------------------------------------
-//	When some robots collide with the player, they attack.
-//	If player is cloaked, then robot probably didn't actually collide, deal with that here.
+//	When some robots collide with the tPlayer, they attack.
+//	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
 void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collision_point)
 {
 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
@@ -872,14 +861,14 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collisi
 		return;
 //#endif
 
-	//	If player is dead, stop firing.
+	//	If tPlayer is dead, stop firing.
 	if (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nType == OBJ_GHOST)
 		return;
 
 	if (robptr->attackType == 1) {
 		if (ailp->nextPrimaryFire <= 0) {
 			if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
-				if (VmVecDistQuick (&gameData.objs.console->pos, &robot->pos) < robot->size + gameData.objs.console->size + F1_0*2) {
+				if (VmVecDistQuick (&gameData.objs.console->position.vPos, &robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2) {
 					CollidePlayerAndNastyRobot (playerobjP, robot, collision_point);
 					if (robptr->energyDrain && gameData.multi.players [gameData.multi.nLocalPlayer].energy) {
 						gameData.multi.players [gameData.multi.nLocalPlayer].energy -= robptr->energyDrain * F1_0;
@@ -905,14 +894,14 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collisi
 #define	LEAD_RANGE			 (F1_0/2)
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Computes point at which projectile fired by robot can hit player given positions, player vel, elapsed time
+//	Computes point at which projectile fired by robot can hit tPlayer given positions, tPlayer vel, elapsed time
 fix compute_lead_component (fix player_pos, fix robot_pos, fix player_vel, fix elapsedTime)
 {
 	return FixDiv (player_pos - robot_pos, elapsedTime) + player_vel;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Lead the player, returning point to fire at in vFirePoint.
+//	Lead the tPlayer, returning point to fire at in vFirePoint.
 //	Rules:
 //		Player not cloaked
 //		Player must be moving at a speed >= MIN_LEAD_SPEED
@@ -977,13 +966,13 @@ int lead_player (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlaye
 
 	VmVecNormalizeQuick (fire_vec);
 
-	Assert (VmVecDot (fire_vec, &objP->orient.fVec) < 3*F1_0/2);
+	Assert (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < 3*F1_0/2);
 
 	//	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-	if (VmVecDot (fire_vec, &objP->orient.fVec) < F1_0/2) {
+	if (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < F1_0/2) {
 		VmVecInc (fire_vec, &vec_to_player);
 		VmVecScale (fire_vec, F1_0/2);
-		if (VmVecDot (fire_vec, &objP->orient.fVec) < F1_0/2) {
+		if (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < F1_0/2) {
 			return 0;
 		}
 	}
@@ -1013,7 +1002,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 	return;
 if (objP->controlType == CT_MORPH)
 	return;
-//	If player is exploded, stop firing.
+//	If tPlayer is exploded, stop firing.
 if (gameStates.app.bPlayerExploded)
 	return;
 if (objP->cType.aiInfo.xDyingStartTime)
@@ -1022,7 +1011,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
 if (gameData.boss.nDyingStartTime & gameData.bots.pInfo [objP->id].bossFlag)
 	return;
-//	If player is cloaked, maybe don't fire based on how long cloaked and randomness.
+//	If tPlayer is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
 	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX/4) &&
@@ -1056,7 +1045,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		int			fate;
 
 		fq.startSeg				= objP->nSegment;
-		fq.p0						= &objP->pos;
+		fq.p0						= &objP->position.vPos;
 		fq.p1						= vFirePoint;
 		fq.rad					= 0;
 		fq.thisObjNum			= OBJ_IDX (objP);
@@ -1080,8 +1069,8 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 		temp = F1_0/2;
 	aim = FixMul (aim, temp);
 	}
-//	Lead the player half the time.
-//	Note that when leading the player, aim is perfect.  This is probably acceptable since leading is so hacked in.
+//	Lead the tPlayer half the time.
+//	Note that when leading the tPlayer, aim is perfect.  This is probably acceptable since leading is so hacked in.
 //	Problem is all robots will lead equally badly.
 if (d_rand () < 16384) {
 	if (lead_player (objP, vFirePoint, vBelievedPlayerPos, nGun, &fire_vec))		//	Stuff direction to fire at in vFirePoint.
@@ -1095,7 +1084,7 @@ while ((count < 4) && (dot < F1_0/4)) {
 	bpp_diff.y = vBelievedPlayerPos->y + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
 	bpp_diff.z = vBelievedPlayerPos->z + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
 	VmVecNormalizedDirQuick (&fire_vec, &bpp_diff, vFirePoint);
-	dot = VmVecDot (&objP->orient.fVec, &fire_vec);
+	dot = VmVecDot (&objP->position.mOrient.fVec, &fire_vec);
 	count++;
 	}
 
@@ -1128,11 +1117,11 @@ void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based)
 	vmsVector		vel;
 
 	//	Trying to move towards player.  If forward vector much different than velocity vector,
-	//	bash velocity vector twice as much towards player as usual.
+	//	bash velocity vector twice as much towards tPlayer as usual.
 
 	vel = pptr->velocity;
 	VmVecNormalizeQuick (&vel);
-	dot = VmVecDot (&vel, &objP->orient.fVec);
+	dot = VmVecDot (&vel, &objP->position.mOrient.fVec);
 
 	if (robptr->thief)
 		dot = (F1_0+dot)/2;
@@ -1236,7 +1225,7 @@ void move_around_player (tObject *objP, vmsVector *vec_to_player, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = VmVecDot (vec_to_player, &objP->orient.fVec);
+		dot = VmVecDot (vec_to_player, &objP->position.mOrient.fVec);
 		if ((dot > robptr->fieldOfView [gameStates.app.nDifficultyLevel]) && 
 			 !(gameData.objs.console->flags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
@@ -1283,10 +1272,10 @@ void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackT
 		objref = ((OBJ_IDX (objP)) ^ ((gameData.app.nFrameCount + 3* (OBJ_IDX (objP))) >> 5)) & 3;
 
 		switch (objref) {
-			case 0:	VmVecScaleInc (&pptr->velocity, &objP->orient.uVec, gameData.time.xFrame << 5);	break;
-			case 1:	VmVecScaleInc (&pptr->velocity, &objP->orient.uVec, -gameData.time.xFrame << 5);	break;
-			case 2:	VmVecScaleInc (&pptr->velocity, &objP->orient.rVec, gameData.time.xFrame << 5);	break;
-			case 3:	VmVecScaleInc (&pptr->velocity, &objP->orient.rVec, -gameData.time.xFrame << 5);	break;
+			case 0:	VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, gameData.time.xFrame << 5);	break;
+			case 1:	VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, -gameData.time.xFrame << 5);	break;
+			case 2:	VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, gameData.time.xFrame << 5);	break;
+			case 3:	VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, -gameData.time.xFrame << 5);	break;
 			default:	Int3 ();	//	Impossible, bogus value on objref, must be in 0d:\temp\dm_test3
 		}
 	}
@@ -1324,9 +1313,9 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		vmsVector	vec_to_laser, laser_fvec;
 
 		fieldOfView = gameData.bots.pInfo [objP->id].fieldOfView [gameStates.app.nDifficultyLevel];
-		VmVecSub (&vec_to_laser, &dObjP->pos, &objP->pos);
+		VmVecSub (&vec_to_laser, &dObjP->position.vPos, &objP->position.vPos);
 		dist_to_laser = VmVecNormalizeQuick (&vec_to_laser);
-		dot = VmVecDot (&vec_to_laser, &objP->orient.fVec);
+		dot = VmVecDot (&vec_to_laser, &objP->position.mOrient.fVec);
 
 		if ((dot > fieldOfView) || (robptr->companion)) {
 			fix			laserRobot_dot;
@@ -1335,12 +1324,12 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			//	The laser is seen by the robot, see if it might hit the robot.
 			//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
 			if (dObjP->renderType == RT_POLYOBJ)
-				laser_fvec = dObjP->orient.fVec;
+				laser_fvec = dObjP->position.mOrient.fVec;
 			else {		//	Not a polyobjP, get velocity and normalize.
-				laser_fvec = dObjP->mType.physInfo.velocity;	//dObjP->orient.fVec;
+				laser_fvec = dObjP->mType.physInfo.velocity;	//dObjP->position.mOrient.fVec;
 				VmVecNormalizeQuick (&laser_fvec);
 				}
-			VmVecSub (&laser_vec_toRobot, &objP->pos, &dObjP->pos);
+			VmVecSub (&laser_vec_toRobot, &objP->position.vPos, &dObjP->position.vPos);
 			VmVecNormalizeQuick (&laser_vec_toRobot);
 			laserRobot_dot = VmVecDot (&laser_fvec, &laser_vec_toRobot);
 
@@ -1365,7 +1354,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 	//	Green guy selects move around/towards/away based on firing time, not distance.
 if (robptr->attackType == 1)
 	if (( (ailp->nextPrimaryFire > robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < F1_0*30)) || gameStates.app.bPlayerIsDead)
-		//	1/4 of time, move around player, 3/4 of time, move away from player
+		//	1/4 of time, move around tPlayer, 3/4 of time, move away from tPlayer
 		if (d_rand () < 8192)
 			move_around_player (objP, vec_to_player, -1);
 		else
@@ -1457,8 +1446,8 @@ void do_firing_stuff (tObject *objP, int player_visibility, vmsVector *vec_to_pl
 {
 	if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) || 
 		 (player_visibility >= 1)) {
-		//	Now, if in robot's field of view, lock onto player
-		fix	dot = VmVecDot (&objP->orient.fVec, vec_to_player);
+		//	Now, if in robot's field of view, lock onto tPlayer
+		fix	dot = VmVecDot (&objP->position.mOrient.fVec, vec_to_player);
 		if ((dot >= 7*F1_0/8) || (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
 			tAIStatic	*aip = &objP->cType.aiInfo;
 			tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
@@ -1503,7 +1492,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 					Assert (gameData.bots.pInfo [objP->id].attackType == 0);
 
 					r = d_rand ();
-					//	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
+					//	1/8 time, charge tPlayer, 1/4 time create path, rest of time, do nothing
 					if (r < 4096) {
 						CreatePathToPlayer (objP, 10, 1);
 						objP->cType.aiInfo.behavior = AIB_STATION;
@@ -1531,13 +1520,13 @@ int		RobotSoundVolume=DEFAULT_ROBOT_SOUND_VOLUME;
 // --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely ObjectCanSeePlayer would benefit from the
 //	information of a normalized vec_to_player.
-//	Return player visibility:
+//	Return tPlayer visibility:
 //		0		not visible
-//		1		visible, but robot not looking at player (ie, on an unobstructed vector)
+//		1		visible, but robot not looking at tPlayer (ie, on an unobstructed vector)
 //		2		visible and in robot's field of view
-//		-1		player is cloaked
-//	If the player is cloaked, set vec_to_player based on time player cloaked and last uncloaked position.
-//	Updates ailp->previousVisibility if player is not cloaked, in which case the previous visibility is left unchanged
+//		-1		tPlayer is cloaked
+//	If the tPlayer is cloaked, set vec_to_player based on time tPlayer cloaked and last uncloaked position.
+//	Updates ailp->previousVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to player_visibility
 void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag)
 {
@@ -1613,7 +1602,7 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 
 		*flag = 1;
 
-		//	@mk, 09/21/95: If player view is not obstructed and awareness is at least as high as a nearby collision,
+		//	@mk, 09/21/95: If tPlayer view is not obstructed and awareness is at least as high as a nearby collision,
 		//	act is if robot is looking at player.
 		if (ailp->playerAwarenessType >= PA_NEARBY_ROBOT_FIRED)
 			if (*player_visibility == 1)
@@ -1631,7 +1620,7 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 //	It might mean moving it outside its current tSegment.
 void moveObject_to_legal_spot (tObject *objP)
 {
-	vmsVector	original_pos = objP->pos;
+	vmsVector	original_pos = objP->position.vPos;
 	int		i;
 	tSegment	*segp = &gameData.segs.segments [objP->nSegment];
 
@@ -1641,19 +1630,19 @@ void moveObject_to_legal_spot (tObject *objP)
 			fix			dist_to_center;	// Value not used so far.
 
 			COMPUTE_SEGMENT_CENTER_I (&segment_center, segp->children [i]);
-			VmVecSub (&goal_dir, &segment_center, &objP->pos);
+			VmVecSub (&goal_dir, &segment_center, &objP->position.vPos);
 			dist_to_center = VmVecNormalizeQuick (&goal_dir);
 			VmVecScale (&goal_dir, objP->size);
-			VmVecInc (&objP->pos, &goal_dir);
+			VmVecInc (&objP->position.vPos, &goal_dir);
 			if (!ObjectIntersectsWall (objP)) {
-				int	new_segnum = FindSegByPoint (&objP->pos, objP->nSegment);
+				int	new_segnum = FindSegByPoint (&objP->position.vPos, objP->nSegment);
 
 				if (new_segnum != -1) {
 					RelinkObject (OBJ_IDX (objP), new_segnum);
 					return;
 				}
 			} else
-				objP->pos = original_pos;
+				objP->position.vPos = original_pos;
 		}
 	}
 
@@ -1679,14 +1668,14 @@ void move_towards_segment_center (tObject *objP)
 
 	COMPUTE_SEGMENT_CENTER_I (&segment_center, nSegment);
 
-	VmVecSub (&goal_dir, &segment_center, &objP->pos);
+	VmVecSub (&goal_dir, &segment_center, &objP->position.vPos);
 	dist_to_center = VmVecNormalizeQuick (&goal_dir);
 
 	if (dist_to_center < objP->size) {
 		//	Center is nearer than the distance we want to move, so move to center.
-		objP->pos = segment_center;
+		objP->position.vPos = segment_center;
 #if TRACE
-		con_printf (CON_DEBUG, "Object #%i moved to center of tSegment #%i (%7.3f %7.3f %7.3f)\n", OBJ_IDX (objP), objP->nSegment, f2fl (objP->pos.x), f2fl (objP->pos.y), f2fl (objP->pos.z));
+		con_printf (CON_DEBUG, "Object #%i moved to center of tSegment #%i (%7.3f %7.3f %7.3f)\n", OBJ_IDX (objP), objP->nSegment, f2fl (objP->position.vPos.x), f2fl (objP->position.vPos.y), f2fl (objP->position.vPos.z));
 #endif
 		if (ObjectIntersectsWall (objP)) {
 #if TRACE
@@ -1698,10 +1687,10 @@ void move_towards_segment_center (tObject *objP)
 		int	new_segnum;
 		//	Move one radii towards center.
 		VmVecScale (&goal_dir, objP->size);
-		VmVecInc (&objP->pos, &goal_dir);
-		new_segnum = FindSegByPoint (&objP->pos, objP->nSegment);
+		VmVecInc (&objP->position.vPos, &goal_dir);
+		new_segnum = FindSegByPoint (&objP->position.vPos, objP->nSegment);
 		if (new_segnum == -1) {
-			objP->pos = segment_center;
+			objP->position.vPos = segment_center;
 			moveObject_to_legal_spot (objP);
 		}
 	}
@@ -1756,9 +1745,9 @@ if ((objP == NULL) || (gameData.bots.pInfo [objP->id].companion == 1)) {
 	if (wallP->nType != WALL_DOOR) /*&& (wallP->nType != WALL_CLOSED))*/
 		return 1;
 
-	//	If Buddy is returning to player, don't let him think he can get through triggered doors.
-	//	It's only valid to think that if the player is going to get him through.  But if he's
-	//	going to the player, the player is probably on the opposite tSide.
+	//	If Buddy is returning to tPlayer, don't let him think he can get through triggered doors.
+	//	It's only valid to think that if the tPlayer is going to get him through.  But if he's
+	//	going to the tPlayer, the tPlayer is probably on the opposite tSide.
 	if (objP == NULL)
 		ailp_mode = gameData.ai.localInfo [gameData.escort.nObjNum].mode;
 	else
@@ -1816,7 +1805,7 @@ else if ((objP->id == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_RUN_FR
 	if (IS_WALL (nWall)) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
-		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which player has keys.
+		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which tPlayer has keys.
 			if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
 				return 1;
 			}
@@ -1852,7 +1841,7 @@ int openable_doors_in_segment (short nSegment)
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Return true if a special tObject (player or control center) is in this tSegment.
+// -- //	Return true if a special tObject (tPlayer or control center) is in this tSegment.
 // -- int specialObject_in_seg (int nSegment)
 // -- {
 // -- 	int	nObject;
@@ -1887,7 +1876,7 @@ int openable_doors_in_segment (short nSegment)
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an tObject of size size at pos *pos intersects a (player or robot or control center) in tSegment *segp.
+//	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segp.
 int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segp)
 {
 	int		curobjnum;
@@ -1897,7 +1886,7 @@ int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segp)
 	while (curobjnum != -1) {
 		tObject *curObjP = &gameData.objs.objects [curobjnum];
 		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_CNTRLCEN)) {
-			if (VmVecDistQuick (pos, &curObjP->pos) < size + curObjP->size)
+			if (VmVecDistQuick (pos, &curObjP->position.vPos) < size + curObjP->size)
 				return 1;
 		}
 		curobjnum = curObjP->next;
@@ -2003,11 +1992,11 @@ int CreateGatedRobot (short nSegment, ubyte object_id, vmsVector *pos)
 int BossSpewRobot (tObject *objP, vmsVector *pos)
 {
 	short			nObject, nSegment, objType, maxRobotTypes;
-	short			boss_index, boss_id = gameData.bots.pInfo [objP->id].bossFlag;
+	short			nBossIndex, nBossId = gameData.bots.pInfo [objP->id].bossFlag;
 	tRobotInfo	*pri;
 
-	boss_index = (boss_id >= BOSS_D2) ? boss_id - BOSS_D2 : boss_id;
-	Assert ((boss_index >= 0) && (boss_index < NUM_D2_BOSSES));
+	nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
+	Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 	nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
 	if (nSegment == -1) {
 #if TRACE
@@ -2015,7 +2004,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 #endif
 		return -1;
 	}	
-	objType = spewBots [gameStates.app.bD1Mission][boss_index][ (maxSpewBots [boss_index] * d_rand ()) >> 15];
+	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][ (maxSpewBots [nBossIndex] * d_rand ()) >> 15];
 	if (objType == 255) {	// spawn an arbitrary robot
 		maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
 		do {
@@ -2041,7 +2030,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 			newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 			//	Now, give a big initial velocity to get moving away from boss.
-			VmVecSub (&newObjP->mType.physInfo.velocity, pos, &objP->pos);
+			VmVecSub (&newObjP->mType.physInfo.velocity, pos, &objP->position.vPos);
 			VmVecNormalizeQuick (&newObjP->mType.physInfo.velocity);
 			VmVecScale (&newObjP->mType.physInfo.velocity, F1_0*128);
 		}
@@ -2051,7 +2040,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Call this each time the player starts a new ship.
+//	Call this each time the tPlayer starts a new ship.
 void InitAIForShip (void)
 {
 	int	i;
@@ -2059,7 +2048,7 @@ void InitAIForShip (void)
 	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
 		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 		gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->nSegment;
-		gameData.ai.cloakInfo [i].last_position = gameData.objs.console->pos;
+		gameData.ai.cloakInfo [i].last_position = gameData.objs.console->position.vPos;
 	}
 }
 
@@ -2100,9 +2089,9 @@ int boss_fits_in_seg (tObject *bossObjP, int nSegment)
 
 			Assert ((posnum-1 >= 0) && (posnum-1 < 8));
 			vertex_pos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [posnum-1]];
-			VmVecAvg (&bossObjP->pos, &vertex_pos, &segcenter);
+			VmVecAvg (&bossObjP->position.vPos, &vertex_pos, &segcenter);
 		} else
-			bossObjP->pos = segcenter;
+			bossObjP->position.vPos = segcenter;
 
 		RelinkObject (objList, nSegment);
 		if (!ObjectIntersectsWall (bossObjP))
@@ -2135,16 +2124,16 @@ void teleport_boss (tObject *objP)
 		MultiSendBossActions (OBJ_IDX (objP), 1, rand_segnum, 0);
 #endif
 
-	COMPUTE_SEGMENT_CENTER_I (&objP->pos, rand_segnum);
+	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, rand_segnum);
 	RelinkObject (OBJ_IDX (objP), rand_segnum);
 
 	gameData.boss.nLastTeleportTime = gameData.time.xGame;
 
-	//	make boss point right at player
-	VmVecSub (&boss_dir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].pos, &objP->pos);
-	VmVector2Matrix (&objP->orient, &boss_dir, NULL, NULL);
+	//	make boss point right at tPlayer
+	VmVecSub (&boss_dir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &objP->position.vPos);
+	VmVector2Matrix (&objP->position.mOrient, &boss_dir, NULL, NULL);
 
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, rand_segnum, 0, &objP->pos, 0 , F1_0);
+	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, rand_segnum, 0, &objP->position.vPos, 0 , F1_0);
 	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
 	DigiLinkSoundToObject2 (gameData.bots.pInfo [objP->id].seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
 
@@ -2178,7 +2167,7 @@ void start_boss_death_sequence (tObject *objP)
 //	General purpose robot-dies-with-death-roll-and-groan code.
 //	Return true if tObject just died.
 //	scale: F1_0*4 for boss, much smaller for much smaller guys
-int doRobot_dying_frame (tObject *objP, fix StartTime, fix roll_duration, sbyte *bDyingSoundPlaying, short deathSound, fix expl_scale, fix sound_scale)
+int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *bDyingSoundPlaying, short deathSound, fix expl_scale, fix sound_scale)
 {
 	fix	roll_val, temp;
 	fix	sound_duration;
@@ -2222,64 +2211,60 @@ int doRobot_dying_frame (tObject *objP, fix StartTime, fix roll_duration, sbyte 
 //	----------------------------------------------------------------------
 void StartRobotDeathSequence (tObject *objP)
 {
-	objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
-	objP->cType.aiInfo.bDyingSoundPlaying = 0;
-	objP->cType.aiInfo.SKIP_AI_COUNT = 0;
+objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
+objP->cType.aiInfo.bDyingSoundPlaying = 0;
+objP->cType.aiInfo.SKIP_AI_COUNT = 0;
 
 }
 
 //	----------------------------------------------------------------------
-void do_boss_dying_frame (tObject *objP)
+void DoBossDyingFrame (tObject *objP)
 {
 	int	rval;
 
-	rval = doRobot_dying_frame (objP, gameData.boss.nDyingStartTime, BOSS_DEATH_DURATION, 
-										 &gameData.boss.bDyingSoundPlaying, 
-										 gameData.bots.pInfo [objP->id].deathrollSound, F1_0*4, F1_0*4);
-
-	if (rval) {
-		DoReactorDestroyedStuff (NULL);
-		ExplodeObject (objP, F1_0/4);
-		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
-		gameData.boss.nDying = 0;
+rval = DoRobotDyingFrame (objP, gameData.boss.nDyingStartTime, BOSS_DEATH_DURATION, 
+								 &gameData.boss.bDyingSoundPlaying, 
+								 gameData.bots.pInfo [objP->id].deathrollSound, F1_0*4, F1_0*4);
+if (rval) {
+	DoReactorDestroyedStuff (NULL);
+	ExplodeObject (objP, F1_0/4);
+	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
+	gameData.boss.nDying = 0;
 	}
 }
 
 extern void RecreateThief (tObject *objP);
 
 //	----------------------------------------------------------------------
-int do_anyRobot_dying_frame (tObject *objP)
+
+int DoAnyRobotDyingFrame (tObject *objP)
 {
-	if (objP->cType.aiInfo.xDyingStartTime) {
-		int	rval, bDeathRoll;
-
-		bDeathRoll = gameData.bots.pInfo [objP->id].bDeathRoll;
-		rval = doRobot_dying_frame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, gameData.bots.pInfo [objP->id].deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2);
-
-		if (rval) {
-			ExplodeObject (objP, F1_0/4);
-			DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
-			if ((gameData.missions.nCurrentLevel < 0) && (gameData.bots.pInfo [objP->id].thief))
-				RecreateThief (objP);
+if (objP->cType.aiInfo.xDyingStartTime) {
+	int bDeathRoll = gameData.bots.pInfo [objP->id].bDeathRoll;
+	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, gameData.bots.pInfo [objP->id].deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2); 
+	if (rval) {
+		ExplodeObject (objP, F1_0/4);
+		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
+		if ((gameData.missions.nCurrentLevel < 0) && (gameData.bots.pInfo [objP->id].thief))
+			RecreateThief (objP);
 		}
-
-		return 1;
+	return 1;
 	}
-
-	return 0;
+return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Called for an AI tObject if it is fairly aware of the player.
-//	awarenessLevel is in 0d:\temp\dm_test100.  Larger numbers indicate greater awareness (eg, 99 if firing at player).
+//	awarenessLevel is in 0d:\temp\dm_test100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
 //	In a given frame, might not get called for an tObject, or might be called more than once.
 //	The fact that this routine is not called for a given tObject does not mean that tObject is not interested in the player.
 //	gameData.objs.objects are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
-//		0	this player IS NOT allowed to move this robot.
-//		1	this player IS allowed to move this robot.
-int ai_multiplayer_awareness (tObject *objP, int awarenessLevel)
+//		0	this tPlayer IS NOT allowed to move this robot.
+//		1	this tPlayer IS allowed to move this robot.
+
+int AIMultiplayerAwareness (tObject *objP, int awarenessLevel)
 {
 	int	rval=1;
 
@@ -2301,85 +2286,85 @@ fix	Prev_boss_shields = -1;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void do_boss_stuff (tObject *objP, int player_visibility)
+void DoBossStuff (tObject *objP, int player_visibility)
 {
-	int	i, boss_id, boss_index, nObject, boss_alive = 0;
+	int	i, nBossId, nBossIndex, nObject, bBossAlive = 0;
 
-	boss_id = gameData.bots.pInfo [objP->id].bossFlag;
-//	Assert ((boss_id >= BOSS_D2) && (boss_id < BOSS_D2 + NUM_D2_BOSSES));
-	boss_index = (boss_id >= BOSS_D2) ? boss_id - BOSS_D2 : boss_id;
+nBossId = gameData.bots.pInfo [objP->id].bossFlag;
+//	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
+nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #ifndef NDEBUG
-	if (objP->shields != Prev_boss_shields) {
+if (objP->shields != Prev_boss_shields) {
 #if TRACE
-		con_printf (CON_DEBUG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
+	con_printf (CON_DEBUG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
 #endif
-		Prev_boss_shields = objP->shields;
+	Prev_boss_shields = objP->shields;
 	}
 #endif
 	//	New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.
-	if (gameData.boss.nLastTeleportTime > gameData.time.xGame)
-		gameData.boss.nLastTeleportTime = gameData.time.xGame;
+if (gameData.boss.nLastTeleportTime > gameData.time.xGame)
+	gameData.boss.nLastTeleportTime = gameData.time.xGame;
 
-	if (gameData.boss.nLastGateTime > gameData.time.xGame)
-		gameData.boss.nLastGateTime = gameData.time.xGame;
+if (gameData.boss.nLastGateTime > gameData.time.xGame)
+	gameData.boss.nLastGateTime = gameData.time.xGame;
 
-	nObject = OBJ_IDX (objP);
-	for (i = 0; i < extraGameInfo [0].nBossCount; i++)
-		if (gameData.boss.objList [i] == nObject) {
-			boss_alive = 1;
-			break;
-			}
-	//	@mk, 10/13/95:  Reason:
-	//		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
-	//		teleports out of there right away, and blasts player right after first door.
-	if (!player_visibility && (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2))
-		return;
+nObject = OBJ_IDX (objP);
+for (i = 0; i < extraGameInfo [0].nBossCount; i++)
+	if (gameData.boss.objList [i] == nObject) {
+		bBossAlive = 1;
+		break;
+		}
+//	@mk, 10/13/95:  Reason:
+//		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
+//		teleports out of there right away, and blasts tPlayer right after first door.
+if (!player_visibility && (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2))
+	return;
 
-	if (boss_alive && bossProps [gameStates.app.bD1Mission][boss_index].bTeleports) {
-		if (objP->cType.aiInfo.CLOAKED == 1) {
-			gameData.boss.nHitTime = gameData.time.xGame;	//	Keep the cloak:teleport process going.
-			if ((gameData.time.xGame - gameData.boss.nCloakStartTime > BOSS_CLOAK_DURATION/3) && 
-				 (gameData.boss.nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
-				 (gameData.time.xGame - gameData.boss.nLastTeleportTime > gameData.boss.nTeleportInterval)) {
-				if (ai_multiplayer_awareness (objP, 98)) {
+if (bBossAlive && bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
+	if (objP->cType.aiInfo.CLOAKED == 1) {
+		gameData.boss.nHitTime = gameData.time.xGame;	//	Keep the cloak:teleport process going.
+		if ((gameData.time.xGame - gameData.boss.nCloakStartTime > BOSS_CLOAK_DURATION/3) && 
+				(gameData.boss.nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
+				(gameData.time.xGame - gameData.boss.nLastTeleportTime > gameData.boss.nTeleportInterval)) {
+			if (AIMultiplayerAwareness (objP, 98)) {
 
-					teleport_boss (objP);
-					if (bossProps [gameStates.app.bD1Mission][boss_index].bSpewBotsTeleport) {
+				teleport_boss (objP);
+				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
 #if 1
-						vmsVector	spewPoint;
+					vmsVector	spewPoint;
 #	if 1
-						VmVecCopyScale (&spewPoint, &objP->orient.fVec, objP->size * 2);
+					VmVecCopyScale (&spewPoint, &objP->position.mOrient.fVec, objP->size * 2);
 #	else
-						VmVecCopyNormalize (&spewPoint, &objP->orient.fVec);
-						VmVecScale (&spewPoint, objP->size * 2);
+					VmVecCopyNormalize (&spewPoint, &objP->position.mOrient.fVec);
+					VmVecScale (&spewPoint, objP->size * 2);
 #	endif
-						VmVecInc (&spewPoint, &objP->pos);
+					VmVecInc (&spewPoint, &objP->position.vPos);
 #endif
-						if (bossProps [gameStates.app.bD1Mission][boss_index].bSpewMore && (d_rand () > 16384) &&
-							 (BossSpewRobot (objP, &spewPoint) != -1))
-							gameData.boss.nLastGateTime = gameData.time.xGame - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
-						BossSpewRobot (objP, &spewPoint);
-						}
+					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
+							(BossSpewRobot (objP, &spewPoint) != -1))
+						gameData.boss.nLastGateTime = gameData.time.xGame - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
+					BossSpewRobot (objP, &spewPoint);
 					}
-				} 
-			else if (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2) {
-				gameData.boss.nLastTeleportTime -= gameData.boss.nTeleportInterval/4;
 				}
-		if (!gameData.boss.nCloakDuration)
-			gameData.boss.nCloakDuration = BOSS_CLOAK_DURATION;
-		if ((gameData.time.xGame > gameData.boss.nCloakEndTime) || 
-			 (gameData.time.xGame < gameData.boss.nCloakStartTime))
-			objP->cType.aiInfo.CLOAKED = 0;
+			} 
+		else if (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2) {
+			gameData.boss.nLastTeleportTime -= gameData.boss.nTeleportInterval/4;
 			}
-		else if ((gameData.time.xGame - gameData.boss.nCloakEndTime > gameData.boss.nCloakInterval) || 
-					  (gameData.time.xGame - gameData.boss.nCloakEndTime < -gameData.boss.nCloakDuration)) {
-			if (ai_multiplayer_awareness (objP, 95)) {
-				gameData.boss.nCloakStartTime = gameData.time.xGame;
-				gameData.boss.nCloakEndTime = gameData.time.xGame+gameData.boss.nCloakDuration;
-				objP->cType.aiInfo.CLOAKED = 1;
+	if (!gameData.boss.nCloakDuration)
+		gameData.boss.nCloakDuration = BOSS_CLOAK_DURATION;
+	if ((gameData.time.xGame > gameData.boss.nCloakEndTime) || 
+			(gameData.time.xGame < gameData.boss.nCloakStartTime))
+		objP->cType.aiInfo.CLOAKED = 0;
+		}
+	else if ((gameData.time.xGame - gameData.boss.nCloakEndTime > gameData.boss.nCloakInterval) || 
+					(gameData.time.xGame - gameData.boss.nCloakEndTime < -gameData.boss.nCloakDuration)) {
+		if (AIMultiplayerAwareness (objP, 95)) {
+			gameData.boss.nCloakStartTime = gameData.time.xGame;
+			gameData.boss.nCloakEndTime = gameData.time.xGame+gameData.boss.nCloakDuration;
+			objP->cType.aiInfo.CLOAKED = 1;
 #ifdef NETWORK
-				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);
+			if (gameData.app.nGameMode & GM_MULTI)
+				MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);
 #endif
 			}
 		}
@@ -2395,9 +2380,9 @@ void do_boss_stuff (tObject *objP, int player_visibility)
 // -- Obsolete D1 code -- {
 // -- Obsolete D1 code -- 	static int eclip_state = 0;
 // -- Obsolete D1 code -- 
-// -- Obsolete D1 code -- 	do_boss_stuff (objP, player_visibility);
+// -- Obsolete D1 code -- 	DoBossStuff (objP, player_visibility);
 // -- Obsolete D1 code -- 
-// -- Obsolete D1 code -- 	// Only master player can cause gating to occur.
+// -- Obsolete D1 code -- 	// Only master tPlayer can cause gating to occur.
 // -- Obsolete D1 code -- 	if ((gameData.app.nGameMode & GM_MULTI) && !NetworkIAmMaster ())
 // -- Obsolete D1 code -- 		return; 
 // -- Obsolete D1 code -- 
@@ -2418,7 +2403,7 @@ void do_boss_stuff (tObject *objP, int player_visibility)
 // -- Obsolete D1 code -- 		}
 // -- Obsolete D1 code -- 
 // -- Obsolete D1 code -- 		if (gameData.time.xGame - gameData.boss.nLastGateTime > gameData.boss.nGateInterval)
-// -- Obsolete D1 code -- 			if (ai_multiplayer_awareness (objP, 99)) {
+// -- Obsolete D1 code -- 			if (AIMultiplayerAwareness (objP, 99)) {
 // -- Obsolete D1 code -- 				int	rtval;
 // -- Obsolete D1 code -- 				int	randtype = (d_rand () * MAX_GATE_INDEX) >> 15;
 // -- Obsolete D1 code -- 
@@ -2472,7 +2457,7 @@ int maybe_ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip)
 vmsVector	Last_fired_upon_player_pos;
 
 // --------------------------------------------------------------------------------------------------------------------
-//	If fire_anyway, fire even if player is not visible.  We're firing near where we believe him to be.  Perhaps he's
+//	If fire_anyway, fire even if tPlayer is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
 void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int nGun)
 {
@@ -2486,22 +2471,22 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 		fire_pos = gameData.ai.vBelievedPlayerPos;
 
 		//	Hack: If visibility not == 2, we're here because we're firing at a nearby player.
-		//	So, fire at Last_fired_upon_player_pos instead of the player position.
+		//	So, fire at Last_fired_upon_player_pos instead of the tPlayer position.
 		if (!robptr->attackType && (player_visibility != 2))
 			fire_pos = Last_fired_upon_player_pos;
 
 		//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
 		//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 		if (!object_animates || ready_to_fire (robptr, ailp)) {
-			dot = VmVecDot (&objP->orient.fVec, vec_to_player);
+			dot = VmVecDot (&objP->position.mOrient.fVec, vec_to_player);
 			if ((dot >= 7*F1_0/8) || ((dot > F1_0/4) &&  robptr->bossFlag)) {
 
 				if (nGun < robptr->nGuns) {
 					if (robptr->attackType == 1) {
 						if (!gameStates.app.bPlayerExploded && (dist_to_player < objP->size + gameData.objs.console->size + F1_0*2)) {		// robptr->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
-							if (!ai_multiplayer_awareness (objP, ROBOT_FIRE_AGITATION-2))
+							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
-							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->pos);
+							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
 						} else {
 							return;
 						}
@@ -2509,7 +2494,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 						if ((gun_point->x == 0) && (gun_point->y == 0) && (gun_point->z == 0)) {
 							;
 						} else {
-							if (!ai_multiplayer_awareness (objP, ROBOT_FIRE_AGITATION))
+							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 								return;
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 							if (nGun != 0) {
@@ -2563,8 +2548,8 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
 		if (( (!object_animates) || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
 			 && (( (ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
-			 && ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->pos)) > F1_0*40)) {
-			if (!ai_multiplayer_awareness (objP, ROBOT_FIRE_AGITATION))
+			 && ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->position.vPos)) > F1_0*40)) {
+			if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 				return;
 			AIFireLaserAtPlayer (objP, gun_point, nGun, &gameData.ai.vBelievedPlayerPos);
 
@@ -2590,16 +2575,16 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 
 		if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!object_animates || ready_to_fire (robptr, ailp)) && (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
-			VmVecNormalizedDirQuick (&vec_to_last_pos, &gameData.ai.vBelievedPlayerPos, &objP->pos);
-			dot = VmVecDot (&objP->orient.fVec, &vec_to_last_pos);
+			VmVecNormalizedDirQuick (&vec_to_last_pos, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
+			dot = VmVecDot (&objP->position.mOrient.fVec, &vec_to_last_pos);
 			if (dot >= 7*F1_0/8) {
 
 				if (aip->CURRENT_GUN < robptr->nGuns) {
 					if (robptr->attackType == 1) {
 						if (!gameStates.app.bPlayerExploded && (dist_to_player < objP->size + gameData.objs.console->size + F1_0*2)) {		// robptr->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
-							if (!ai_multiplayer_awareness (objP, ROBOT_FIRE_AGITATION-2))
+							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
-							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->pos);
+							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
 						} else {
 							return;
 						}
@@ -2607,7 +2592,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 						if ((gun_point->x == 0) && (gun_point->y == 0) && (gun_point->z == 0)) {
 							; 
 						} else {
-							if (!ai_multiplayer_awareness (objP, ROBOT_FIRE_AGITATION))
+							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 								return;
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 							if (nGun != 0) {

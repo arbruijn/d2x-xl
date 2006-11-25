@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Externed a boss var.
  *
  * Revision 1.54  1995/01/30  13:00:58  mike
- * Make robots fire at player other than one they are controlled by sometimes.
+ * Make robots fire at tPlayer other than one they are controlled by sometimes.
  *
  * Revision 1.53  1995/01/26  15:09:16  rob
  * Changed robot gating to accomodate multiplayer.
@@ -59,7 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * prototype some super boss function for gameseq.
  *
  * Revision 1.48  1994/12/19  17:08:06  mike
- * deal with new ai_multiplayer_awareness which returns a value saying whether this tObject can be moved by this player.
+ * deal with new AIMultiplayerAwareness which returns a value saying whether this tObject can be moved by this tPlayer.
  *
  * Revision 1.47  1994/12/12  17:18:04  mike
  * make boss cloak/teleport when get hit, make quad laser 3/4 as powerful.
@@ -114,7 +114,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Prototype Robot_firing_enabled.
  *
  * Revision 1.31  1994/10/09  22:02:48  mike
- * Adapt CreatePathPoints and CreateNSegmentPath prototypes to use avoid_seg for player evasion.
+ * Adapt CreatePathPoints and CreateNSegmentPath prototypes to use avoid_seg for tPlayer evasion.
  *
  * Revision 1.30  1994/09/18  18:07:44  mike
  * Update prototypes for CreatePathPoints and CreatePathToPlayer.
@@ -200,7 +200,7 @@ extern void ai_move_one(tObject *objp);
 extern void DoAIFrame(tObject *objp);
 extern void InitAIObject(short nObject, short initial_mode, short nHideSegment);
 extern void update_player_awareness(tObject *objp, fix new_awareness);
-extern void CreateAwarenessEvent(tObject *objp, int nType);         // tObject *objp can create awareness of player, amount based on "nType"
+extern void CreateAwarenessEvent(tObject *objp, int nType);         // tObject *objp can create awareness of tPlayer, amount based on "nType"
 extern void DoAIFrameAll(void);
 extern void InitAISystem(void);
 extern void reset_ai_states(tObject *objp);
@@ -228,13 +228,13 @@ extern void move_towards_player(tObject *objp, vmsVector *vec_to_player);
 extern void CreatePathToPlayer(tObject *objp, int max_length, int safetyFlag);
 extern void attempt_to_resume_path(tObject *objp);
 
-// When a robot and a player collide, some robots attack!
-extern void DoAiRobotHitAttack(tObject *robot, tObject *player, vmsVector *collision_point);
+// When a robot and a tPlayer collide, some robots attack!
+extern void DoAiRobotHitAttack(tObject *robot, tObject *tPlayer, vmsVector *collision_point);
 extern void ai_open_doors_in_segment(tObject *robot);
 extern int AIDoorIsOpenable(tObject *objp, tSegment *segp, short nSide);
 extern int ObjectCanSeePlayer(tObject *objp, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player);
 extern void AIResetAllPaths(void);   // Reset all paths.  Call at the start of a level.
-extern int ai_multiplayer_awareness(tObject *objp, int awarenessLevel);
+extern int AIMultiplayerAwareness(tObject *objp, int awarenessLevel);
 
 // In escort.c
 extern void DoEscortFrame(tObject *objp, fix dist_to_player, int player_visibility);
@@ -417,7 +417,7 @@ extern void do_firing_stuff(tObject *obj, int player_visibility, vmsVector *vec_
 extern int maybe_ai_do_actual_firing_stuff(tObject *obj, tAIStatic *aip);
 extern void ai_do_actual_firing_stuff(tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int gun_num);
 extern void do_super_boss_stuff(tObject *objp, fix dist_to_player, int player_visibility);
-extern void do_boss_stuff(tObject *objp, int player_visibility);
+extern void DoBossStuff(tObject *objp, int player_visibility);
 // -- unused, 08/07/95 -- extern void ai_turn_randomly(vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
 extern void ai_move_relative_to_player(tObject *objp, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
 extern void move_away_from_player(tObject *objp, vmsVector *vec_to_player, int attackType);
@@ -433,7 +433,7 @@ extern int AIRestoreBinState (CFILE *fp, int version);
 extern int AIRestoreUniState (CFILE *fp, int version);
 
 extern void StartRobotDeathSequence(tObject *objp);
-extern int do_anyRobot_dying_frame(tObject *objp);
+extern int DoAnyRobotDyingFrame(tObject *objp);
 extern void _CDECL_ BuddyMessage(char * format, ... );
 
 #define SPECIAL_REACTOR_ROBOT   65

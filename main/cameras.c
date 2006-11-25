@@ -206,7 +206,7 @@ if (!OglCreateCamBuf (pc))
 	}
 if (objP) {
 	pc->objP = objP;
-	pc->orient = objP->orient;
+	pc->orient = objP->position.mOrient;
 	pc->curAngle =
 	pc->curDelta = 0;
 	pc->t0 = 0;
@@ -223,23 +223,23 @@ else {
 		}
 	else
 		VmExtractAnglesVector (&a, gameData.segs.segments [srcSeg].sides [srcSide].normals);
-	VmAngles2Matrix (&pc->obj.orient, &a);
+	VmAngles2Matrix (&pc->obj.position.mOrient, &a);
 #if 1
 	if (bTeleport)
-		COMPUTE_SEGMENT_CENTER_I (&pc->obj.pos, srcSeg);
+		COMPUTE_SEGMENT_CENTER_I (&pc->obj.position.vPos, srcSeg);
 	else
-		COMPUTE_SIDE_CENTER_I (&pc->obj.pos, srcSeg, srcSide);
+		COMPUTE_SIDE_CENTER_I (&pc->obj.position.vPos, srcSeg, srcSide);
 #else
 	GetSideVerts (sideVerts, srcSeg, srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + sideVerts [i];
-		pc->obj.pos.x += pv->x;
-		pc->obj.pos.y += pv->y;
-		pc->obj.pos.z += pv->z;
+		pc->obj.position.vPos.x += pv->x;
+		pc->obj.position.vPos.y += pv->y;
+		pc->obj.position.vPos.z += pv->z;
 		}
-	pc->obj.pos.x /= 4;
-	pc->obj.pos.y /= 4;
-	pc->obj.pos.z /= 4;
+	pc->obj.position.vPos.x /= 4;
+	pc->obj.position.vPos.y /= 4;
+	pc->obj.position.vPos.z /= 4;
 #endif
 	pc->obj.nSegment = srcSeg;
 	}

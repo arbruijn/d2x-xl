@@ -335,7 +335,7 @@ for (i = 0; i < nitems; i++) {
 	}
 if (nm > gameData.multi.nMaxPlayers) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
-	// Turn off the last player highlighted
+	// Turn off the last tPlayer highlighted
 	for (i = gameData.multi.nPlayers; i > 0; i--)
 		if (menus [i].value == 1) {
 			menus [i].value = 0;

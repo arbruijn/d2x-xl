@@ -12,320 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * tObject rendering
- *
- * Old Log:
- * Revision 1.5  1995/10 / 26  14:08:03  allender
- * optimization to do physics on gameData.objs.objects that didn't render last
- * frame only every so often
- *
- * Revision 1.4  1995/10 / 20  00:50:57  allender
- * make alt texture for player ship work correctly when cloaked
- *
- * Revision 1.3  1995/09/14  14:11:32  allender
- * FixObjectSegs returns void
- *
- * Revision 1.2  1995/08/12  11:31:01  allender
- * removed #ifdef NEWDEMO -- always in
- *
- * Revision 1.1  1995/05/16  15:29:23  allender
- * Initial revision
- *
- * Revision 2.3  1995/06/15  12:30:51  john
- * Fixed bug with multiplayer ships cloaking out wrongly.
- *
- * Revision 2.2  1995/05/15  11:34:53  john
- * Fixed bug as Matt directed that fixed problems with the exit
- * triggers being missed on slow frame rate computer.
- *
- * Revision 2.1  1995/03 / 21  14:38:51  john
- * Ifdef'd out the NETWORK code.
- *
- * Revision 2.0  1995/02 / 27  11:28:14  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.335  1995/02 / 22  12:57:30  allender
- * remove anonymous unions from tObject structure
- *
- * Revision 1.334  1995/02/09  22:04:40  mike
- * fix lifeleft on badass weapons.
- *
- * Revision 1.333  1995/02/08  12:54:00  matt
- * Fixed tObject freeing code which was deleting some explosions it shouldn't
- *
- * Revision 1.332  1995/02/08  11:37:26  mike
- * Check for failures in call to CreateObject.
- *
- * Revision 1.331  1995/02/05  17:48:52  rob
- * Changed assert in RelinkObject, more robust.
- *
- * Revision 1.330  1995/02/05  13:39:48  mike
- * remove invulnerability effect code (actually, comment out).
- *
- * Revision 1.329  1995/02/04  12:29:52  rob
- * Get rid of potential assert error for explosion detachment.
- *
- * Revision 1.328  1995/02/01  18:15:57  rob
- * Removed debugging output from engine glow change.
- *
- * Revision 1.327  1995/02/01  16:20:12  matt
- * Made engine glow vary over a wider range, and made the glow be based
- * on thrust/speed, without regard to direction.
- *
- * Revision 1.326  1995/01 / 29  14:46:24  rob
- * Fixed invul. tVideoClip to only appear on player who is invul.
- *
- * Revision 1.325  1995/01 / 29  13:48:16  mike
- * Add invulnerability graphical effect viewable by other players.
- *
- * Revision 1.324  1995/01 / 29  11:39:25  mike
- * Add invulnerability effect.
- *
- * Revision 1.323  1995/01 / 27  17:02:41  mike
- * add more information to an Error call.
- *
- * Revision 1.322  1995/01 / 26  22:11:30  mike
- * Purple chromo-blaster (ie, fusion cannon) spruce up (chromification)
- *
- * Revision 1.321  1995/01 / 25  20:04:10  matt
- * Moved matrix check to avoid orthogonalizing an uninitialize matrix
- *
- * Revision 1.320  1995/01 / 25  12:11:35  matt
- * Make sure orient matrix is orthogonal when resetting player tObject
- *
- * Revision 1.319  1995/01 / 21  21:46:22  mike
- * Optimize code in Assert (and prevent warning message).
- *
- * Revision 1.318  1995/01 / 21  21:22:16  rob
- * Removed HUD clear messages.
- * Added more Asserts to try and find illegal control nType bug.
- *
- * Revision 1.317  1995/01/15  15:34:30  matt
- * When freeing tObject slots, don't d_free fireballs that will be deleting
- * other gameData.objs.objects.
- *
- * Revision 1.316  1995/01/14  19:16:48  john
- * First version of new bitmap paging code.
- *
- * Revision 1.315  1995/01/12  18:53:37  john
- * Fixed parameter passing error.
- *
- * Revision 1.314  1995/01/12  12:09:47  yuan
- * Added coop tObject capability.
- *
- * Revision 1.313  1994/12/15  16:45:44  matt
- * Took out slew stuff for release version
- *
- * Revision 1.312  1994/12/15  13:04:25  mike
- * Replace gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal references with gameData.time.xGame.
- *
- * Revision 1.311  1994/12/15  11:01:04  mike
- * add Object_minus_one for debugging.
- *
- * Revision 1.310  1994/12/15  03:03:33  matt
- * Added error checking for NULL return from ObjectCreateExplosion ()
- *
- * Revision 1.309  1994/12/14  17:25:31  matt
- * Made next viewer func based on release not ndebug
- *
- * Revision 1.308  1994/12/13  12:55:42  mike
- * hostages on board messages for when you die.
- *
- * Revision 1.307  1994/12/12  17:18:11  mike
- * make boss cloak/teleport when get hit, make quad laser 3/4 as powerful.
- *
- * Revision 1.306  1994/12/12  00:27:11  matt
- * Added support for no-levelling option
- *
- * Revision 1.305  1994/12/11  22:41:14  matt
- * Added command-line option, -nolevel, which turns off player ship levelling
- *
- * Revision 1.304  1994/12/11  22:03:23  mike
- * d_free up tObject slots as necessary.
- *
- * Revision 1.303  1994/12/11  14:09:31  mike
- * make boss explosion sounds softer.
- *
- * Revision 1.302  1994/12/11  13:25:11  matt
- * Restored calls to FixObjectSegs () when debugging is turned off, since
- * it's not a big routine, and could fix some possibly bad problems.
- *
- * Revision 1.301  1994/12/11  12:38:25  mike
- * make boss explosion sounds louder in create_small_fireball.
- *
- * Revision 1.300  1994/12/10  15:28:37  matt
- * Added asserts for debugging
- *
- * Revision 1.299  1994/12/09  16:18:51  matt
- * Fixed InitPlayerObject, for editor
- *
- * Revision 1.298  1994/12/09  15:03:10  matt
- * Two changes for Mike:
- *   1.  Do better placement of camera during death sequence (prevents hang)
- *   2.  Only record dodging information if the player fired in a frame
- *
- * Revision 1.297  1994/12/09  14:59:12  matt
- * Added system to attach a fireball to another tObject for rendering purposes, 
- * so the fireball always renders on top of (after) the tObject.
- *
- * Revision 1.296  1994/12/08  20:05:07  matt
- * Removed unneeded debug message
- *
- * Revision 1.295  1994/12/08  12:36:02  matt
- * Added new tObject allocation & deallocation functions so other code
- * could stop messing around with internal tObject data structures.
- *
- * Revision 1.294  1994/12/07  20:13:37  matt
- * Added debris tObject limiter
- *
- * Revision 1.293  1994/12/06  16:58:38  matt
- * Killed warnings
- *
- * Revision 1.292  1994/12/05  22:34:35  matt
- * Make nTexOverride gameData.objs.objects use override texture as alt texture.  This
- * should have the effect of making simpler models use the override texture.
- *
- * Revision 1.291  1994/12/05  12:23:53  mike
- * make camera start closer, but move away from player in death sequence.
- *
- * Revision 1.290  1994/12/02  11:11:18  mike
- * hook sound effect to player small explosions (ctrlcen, too).
- *
- * Revision 1.289  1994/11 / 28  21:50:52  mike
- * optimizations.
- *
- * Revision 1.288  1994/11 / 27  23:12:28  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.287  1994/11 / 27  20:35:50  matt
- * Fixed dumb mistake
- *
- * Revision 1.286  1994/11 / 27  20:30:52  matt
- * Got rid of warning
- *
- * Revision 1.285  1994/11 / 21  11:43:21  mike
- * ndebug stuff.
- *
- * Revision 1.284  1994/11/19  15:19:37  mike
- * rip out unused code and data.
- *
- * Revision 1.283  1994/11/18  23:41:59  john
- * Changed some shorts to ints.
- *
- * Revision 1.282  1994/11/18  16:16:17  mike
- * Separate depth on gameData.objs.objects vs. walls.
- *
- * Revision 1.281  1994/11/18  12:05:35  rob
- * Removed unnecessary invulnerability flag set in player death.
- * (I hope its unnecessary.. its commented out if it proves crucial)
- * fixes powerup dropping bug for net play.
- *
- * Revision 1.280  1994/11/16  20:36:34  rob
- * Changed player explosion (small) code.
- *
- * Revision 1.279  1994/11/16  18:26:04  matt
- * Clear tmap override on player, to fix "rock ship" bug
- *
- * Revision 1.278  1994/11/16  14:54:12  rob
- * Moved hook for network explosions.
- *
- * Revision 1.277  1994/11/14  11:40:42  mike
- * plot inner polygon on laser based on detail level.
- *
- * Revision 1.276  1994/11/10  14:02:59  matt
- * Hacked in support for player ships with different textures
- *
- * Revision 1.275  1994/11/08  12:19:08  mike
- * Make a generally useful function for putting small explosions on any tObject.
- *
- * Revision 1.274  1994/11/04  19:55:54  rob
- * Changed calls to player_explode to accomodate new parameter.
- *
- * Revision 1.273  1994/11/02  21:54:27  matt
- * Delete the camera when the death sequence is done
- *
- * Revision 1.272  1994/11/02  11:36:35  rob
- * Added player-in-process-of-dying explosions to network play.
- *
- * Revision 1.271  1994/10/31  17:25:33  matt
- * Fixed cloaked bug
- *
- * Revision 1.270  1994/10/31  16:11:19  allender
- * on demo recording, store letterbox mode in demo.
- *
- * Revision 1.269  1994/10/31  10:36:18  mike
- * Make cloak effect fadein/fadeout different for robots versus player.
- *
- * Revision 1.268  1994/10/30  14:11:44  mike
- * rip out repair center stuff.
- *
- * Revision 1.267  1994/10 / 28  19:43:52  mike
- * Boss cloaking effect.
- *
- * Revision 1.266  1994/10 / 27  11:33:42  mike
- * Add gameData.objs.nObjectLimit -- high water mark in tObject creation.
- *
- * Revision 1.265  1994/10 / 25  10:51:12  matt
- * Vulcan cannon powerups now contain ammo count
- *
- * Revision 1.264  1994/10 / 24  20:49:24  matt
- * Made cloaked gameData.objs.objects pulse
- *
- * Revision 1.263  1994/10 / 21  12:19:45  matt
- * Clear transient gameData.objs.objects when saving (& loading) games
- *
- * Revision 1.262  1994/10 / 21  11:25:23  mike
- * Use new constant IMMORTAL_TIME.
- *
- * Revision 1.261  1994/10/19  16:50:35  matt
- * If out of tSegment, put player in center of tSegment when checking gameData.objs.objects
- *
- *
- * Revision 1.260  1994/10/17  23:21:55  mike
- * Clean up robot cloaking, move more to ai.c
- *
- * Revision 1.259  1994/10/17  21:34:49  matt
- * Added support for new Control Center/Main Reactor
- *
- * Revision 1.258  1994/10/17  21:18:04  mike
- * robot cloaking.
- *
- * Revision 1.257  1994/10/17  14:12:23  matt
- * Cleaned up problems with player dying from mine explosion
- *
- * Revision 1.256  1994/10/15  19:04:31  mike
- * Don't remove proximity bombs after you die.
- *
- * Revision 1.255  1994/10/14  15:57:00  mike
- * Don't show ids in network mode.
- * Fix, I hope, but in death sequence.
- *
- * Revision 1.254  1994/10/12  08:04:29  mike
- * Don't decloak player on death.
- *
- * Revision 1.253  1994/10/11  20:36:16  matt
- * Clear "transient" gameData.objs.objects (weapons, explosions, etc.) when starting a level
- *
- * Revision 1.252  1994/10/11  12:24:09  matt
- * Cleaned up/change badass explosion calls
- *
- * Revision 1.251  1994/10/08  19:30:20  matt
- * Fixed (I hope) a bug in cloaking of multiplayer gameData.objs.objects
- *
- * Revision 1.250  1994/10/08  14:03:15  rob
- * Changed cloaking routine.
- *
- * Revision 1.249  1994/10/07  22:17:27  mike
- * Asserts on valid nSegment.
- *
- * Revision 1.248  1994/10/07  19:11:14  matt
- * Added cool cloak transition effect
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -614,10 +300,10 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 
 xSize = objP->size;
 if (bmP->bm_props.w > bmP->bm_props.h)
-	G3DrawBitMap (&objP->pos,  xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+	G3DrawBitMap (&objP->position.vPos,  xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
 					  orientation, alpha, transp, bDepthInfo);
 else
-	G3DrawBitMap (&objP->pos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
+	G3DrawBitMap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
 					  orientation, alpha, transp, bDepthInfo);
 if (color) {
 #if 1
@@ -661,9 +347,9 @@ void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int lighted)
 PIGGY_PAGE_IN (bmi, 0);
 bmP = BmOverride (bmP);
 //bmP->bm_handle = bmi.index;
-VmVecCopyScale (&delta, &objP->orient.uVec, objP->size);
-VmVecAdd (&top_v, &objP->pos, &delta);
-VmVecSub (&bot_v, &objP->pos, &delta);
+VmVecCopyScale (&delta, &objP->position.mOrient.uVec, objP->size);
+VmVecAdd (&top_v, &objP->position.vPos, &delta);
+VmVecSub (&bot_v, &objP->position.vPos, &delta);
 G3TransformAndEncodePoint (&top_p, &top_v);
 G3TransformAndEncodePoint (&bot_p, &bot_v);
 if (lighted)
@@ -767,8 +453,8 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 		xNewLight = FixMul (light, xLightScale);
 		xSaveGlow = glow [0];
 		glow [0] = FixMul (glow [0], xLightScale);
-		DrawPolygonModel (objP, &objP->pos, 
-				   &objP->orient, 
+		DrawPolygonModel (objP, &objP->position.vPos, 
+				   &objP->position.mOrient, 
 				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 				   xNewLight, 
@@ -781,8 +467,8 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 		gameStates.render.grAlpha = (float) nCloakValue;
 		GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 		G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-		DrawPolygonModel (objP, &objP->pos, 
-				   &objP->orient, 
+		DrawPolygonModel (objP, &objP->position.vPos, 
+				   &objP->position.mOrient, 
 				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 				   light, 
@@ -842,8 +528,8 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	for (i = 0;i<12;i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride];
 
-	DrawPolygonModel (objP, &objP->pos, 
-				&objP->orient, 
+	DrawPolygonModel (objP, &objP->position.vPos, 
+				&objP->position.mOrient, 
 				(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 				objP->rType.polyObjInfo.nModel, 
 				objP->rType.polyObjInfo.nSubObjFlags, 
@@ -877,7 +563,7 @@ else {
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 		if (bBlendPolys) {
 #if OGL_ZBUF
-			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->pos, &objP->pos);
+			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 			if (!gameOpts->legacy.bRender) {
 				gameStates.render.grAlpha = 2.0f;
 				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -885,7 +571,7 @@ else {
 #endif
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
 				DrawPolygonModel (
-					objP, &objP->pos, &objP->orient, 
+					objP, &objP->position.vPos, &objP->position.mOrient, 
 					(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 					gameData.weapons.info [objP->id].model_num_inner, 
 					objP->rType.polyObjInfo.nSubObjFlags, 
@@ -895,7 +581,7 @@ else {
 					NULL /*gameData.weapons.color + objP->id*/);
 			}
 		DrawPolygonModel (
-			objP, &objP->pos, &objP->orient, 
+			objP, &objP->position.vPos, &objP->position.mOrient, 
 			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 			objP->rType.polyObjInfo.nModel, 
 			objP->rType.polyObjInfo.nSubObjFlags, 
@@ -941,7 +627,7 @@ gameStates.render.nInterpolationMethod = imSave;
 //091494:
 //091494: 	// The following code keeps a list of the 10 closest robots to the
 //091494: 	// viewer.  See comments in front of this function for how this works.
-//091494: 	dist = VmVecDist (&objP->pos, &gameData.objs.viewer->pos);
+//091494: 	dist = VmVecDist (&objP->position.vPos, &gameData.objs.viewer->position.vPos);
 //091494: 	if (dist < i2f (20*10))	{				
 //091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
 //091494: 			Object_close_ones [Object_num_close] = obj;
@@ -972,13 +658,13 @@ gameStates.render.nInterpolationMethod = imSave;
 
 // -----------------------------------------------------------------------------
 //this routine checks to see if an robot rendered near the middle of
-//the screen, and if so and the player had fired, "warns" the robot
+//the screen, and if so and the tPlayer had fired, "warns" the robot
 void SetRobotLocationInfo (tObject *objP)
 {
 if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	g3sPoint temp;
 
-	G3TransformAndEncodePoint (&temp, &objP->pos);
+	G3TransformAndEncodePoint (&temp, &objP->position.vPos);
 	if (temp.p3_codes & CC_BEHIND)		//robot behind the screen
 		return;
 	//the code below to check for tObject near the center of the screen
@@ -998,7 +684,7 @@ void CreateSmallFireballOnObject (tObject *objP, fix size_scale, int bSound)
 	vmsVector	pos, rand_vec;
 	short			nSegment;
 
-pos = objP->pos;
+pos = objP->position.vPos;
 MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
@@ -1026,7 +712,7 @@ void CreateVClipOnObject (tObject *objP, fix size_scale, ubyte vclip_num)
 	vmsVector	pos, rand_vec;
 	short			nSegment;
 
-pos = objP->pos;
+pos = objP->position.vPos;
 MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
@@ -1149,8 +835,8 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	pc = ObjectFrameColor (objP, pc);
-	VmsVecToFloat (&fPos, &objP->pos);
-	G3TransformPointf (&fPos, &fPos);
+	VmsVecToFloat (&fPos, &objP->position.vPos);
+	G3TransformPointf (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	r2 = r / 10;
 	r = r2 * 9;
@@ -1224,8 +910,8 @@ if (EGI_FLAG (bHitIndicators, 0, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
-	VmsVecToFloat (&fPos, &objP->pos);
-	G3TransformPointf (&fPos, &fPos);
+	VmsVecToFloat (&fPos, &objP->position.vPos, 0);
+	G3TransformPointf (&fPos, &fPos, 0);
 	fPos.p.z = -fPos.p.z;
 	r = f2fl (objP->size);
 	glDisable (GL_TEXTURE_2D);
@@ -1312,7 +998,7 @@ void RenderTowedFlag (tObject *objP)
 	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
 if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
-		vmsVector		vPos = objP->pos;
+		vmsVector		vPos = objP->position.vPos;
 		fVector			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
 		tPathPoint		*pp = GetPathPoint (&pf->path);
@@ -1330,7 +1016,7 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			return;
 		bmP = BmCurFrame (bmP);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		VmVecScaleInc (&vPos, &objP->orient.fVec, -objP->size);
+		VmVecScaleInc (&vPos, &objP->position.mOrient.fVec, -objP->size);
 		r = f2fl (objP->size);
 		G3StartInstanceMatrix (&vPos, &pp->mOrient);
 		glBegin (GL_QUADS);
@@ -1339,7 +1025,7 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			vPosf.p.x = 0;
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
-			G3TransformPointf (&vPosf, &vPosf);
+			G3TransformPointf (&vPosf, &vPosf, 0);
 			vPosf.p.z = -vPosf.p.z;
 			glTexCoord2fv ((GLfloat *) (uvList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
@@ -1348,7 +1034,7 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			vPosf.p.x = 0;
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
-			G3TransformPointf (&vPosf, &vPosf);
+			G3TransformPointf (&vPosf, &vPosf, 0);
 			vPosf.p.z = -vPosf.p.z;
 			glTexCoord2fv ((GLfloat *) (uvList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
@@ -1471,15 +1157,15 @@ if (objP->nType == OBJ_PLAYER) {
 	fSize = 0.5f + fLength * 0.5f;
 	nThrusters = 2;
 	if (gameOpts->render.bHiresModels) {
-		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size);
-		VmVecScaleInc (vPos, &objP->orient.rVec, -(8 * objP->size / 44));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rVec, 8 * objP->size / 22);
+		VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
+		VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 44));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 22);
 		}
 	else {
-		VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size / 10 * 9);
-		VmVecScaleInc (vPos, &objP->orient.rVec, -(8 * objP->size / 50));
-		VmVecScaleInc (vPos, &objP->orient.uVec, -(objP->size / 20));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->orient.rVec, 8 * objP->size / 25);
+		VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
+		VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 50));
+		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -(objP->size / 20));
+		VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 25);
 		}
 	}
 else {
@@ -1499,7 +1185,7 @@ else {
 	else
 		fSize = 0.5f;
 	nThrusters = 1;
-	VmVecScaleAdd (vPos, &objP->pos, &objP->orient.fVec, -objP->size);
+	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	}
 CreateThrusterFlame ();
 glLineWidth (3);
@@ -1509,7 +1195,7 @@ for (h = 0; h < nThrusters; h++) {
 	c [1].green = 0.45f + 0.045f * fPulse;
 	c [1].blue = 0.0f;
 	c [1].alpha = 0.9f;
-	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->orient);
+	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
 	glCullFace (GL_BACK);
@@ -1527,7 +1213,7 @@ for (h = 0; h < nThrusters; h++) {
 				v.p.x *= fSize;
 				v.p.y *= fSize;
 				v.p.z *= fLength;
-				G3TransformPointf (&v, &v);
+				G3TransformPointf (&v, &v, 0);
 				v.p.z = -v.p.z;
 				glColor4f (c [l].red, c [l].green, c [l].blue, c [l].alpha);
 				glVertex3fv ((GLfloat *) &v);
@@ -1547,7 +1233,7 @@ for (h = 0; h < nThrusters; h++) {
 		}
 	glBegin (GL_TRIANGLE_STRIP);
 	for (j = 0; j < RING_SIZE; j++) {
-		G3TransformPointf (&v, vFlame [0] + nStripIdx [j]);
+		G3TransformPointf (&v, vFlame [0] + nStripIdx [j], 0);
 		v.p.z = -v.p.z;
 		glVertex3fv ((GLfloat *) &v);
 		}
@@ -1571,8 +1257,8 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 		float				r [4], l [4], alpha;
 		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
-	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fVec, objP->size / 2);
-	G3StartInstanceMatrix (&vPos, &objP->orient);
+	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
+	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 	glDepthMask (0);
 	glDisable (GL_TEXTURE_2D);
 	//glCullFace (GL_BACK);
@@ -1603,7 +1289,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 				vPosf.p.x *= r [n];
 				vPosf.p.y *= r [n];
 				vPosf.p.z = -l [n];
-				G3TransformPointf (&vPosf, &vPosf);
+				G3TransformPointf (&vPosf, &vPosf, 0);
 				vPosf.p.z = -vPosf.p.z;
 				glVertex3fv ((GLfloat *) &vPosf);
 				}
@@ -1620,7 +1306,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 			vPosf.p.x *= r [h];
 			vPosf.p.y *= r [h];
 			vPosf.p.z = -l [h];
-			G3TransformPointf (&vPosf, &vPosf);
+			G3TransformPointf (&vPosf, &vPosf, 0);
 			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1649,15 +1335,15 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
 	glLineWidth (3);
 	glBegin (GL_LINES);
 	glColor4d (1, 1, 1, 1.0 / 3.0);
-	VmsVecToFloat (&vPosf, &objP->pos);
-	G3TransformPointf (&vPosf, &vPosf);
+	VmsVecToFloat (&vPosf, &objP->position.vPos);
+	G3TransformPointf (&vPosf, &vPosf, 0);
 	vPosf.p.z = -vPosf.p.z;
 	glVertex3fv ((GLfloat *) &vPosf);
 	vPosf.p.x =
 	vPosf.p.y =
 	vPosf.p.z = -100;
 	VmsVecToFloat (&vPosf, &objP->last_pos);
-	G3TransformPointf (&vPosf, &vPosf);
+	G3TransformPointf (&vPosf, &vPosf, 0);
 	vPosf.p.z = -vPosf.p.z;
 	glVertex3fv ((GLfloat *) &vPosf);
 	glEnd ();
@@ -1694,8 +1380,8 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 		r *= 2;
 	else if (r < 2)
 		r *= 1.5f;
-	VmVecScaleAdd (&vPos, &objP->pos, &objP->orient.fVec, objP->size / 2);
-	G3StartInstanceMatrix (&vPos, &objP->orient);
+	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
+	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 	glDepthMask (0);
 	glDisable (GL_TEXTURE_2D);
 	glDisable (GL_CULL_FACE);		
@@ -1711,7 +1397,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 			vPosf.p.z = vTrail->p.z;
 			if (vPosf.p.z == -50)
 				vPosf.p.z *= h;
-			G3TransformPointf (&vPosf, &vPosf);
+			G3TransformPointf (&vPosf, &vPosf, 0);
 			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1729,7 +1415,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 			vPosf.p.z = vTrail->p.z;
 			if (vPosf.p.z == -50)
 				vPosf.p.z *= h;
-			G3TransformPointf (&vPosf, &vPosf);
+			G3TransformPointf (&vPosf, &vPosf, 0);
 			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1748,20 +1434,29 @@ bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 void RenderObject (tObject *objP, int nWindowNum)
 {
-	int	mld_save, oofIdx;
-	float fLight [3];
-	fix	nGlow [2];
+	int			mld_save, oofIdx, bSpectate = 0;
+	float			fLight [3];
+	fix			nGlow [2];
+	tPosition	savePos;
 
-if ((objP == gameData.objs.viewer) && (objP->nType == OBJ_PLAYER) &&
-	 (gameStates.render.nShadowPass != 2) && 
+if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
+	if (bSpectate = gameStates.app.bSpectating && !nWindowNum) {
+		savePos = objP->position;
+		objP->position = gameStates.app.playerPos;
+		}
 #ifdef _DEBUG
-	 (!gameStates.render.bExternalView || nWindowNum)) {
+	 else if ((gameStates.render.nShadowPass != 2) && 
+				 (nWindowNum || !gameStates.render.bExternalView)) { //don't render ship model if neither external view nor main view
 #else	 
-	 ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || !gameStates.render.bExternalView || nWindowNum)) {
+	 else if ((gameStates.render.nShadowPass != 2) && 
+				 (nWindowNum ||
+				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || 
+				  !gameStates.render.bExternalView))) {
 #endif	 	
-	if (gameOpts->render.smoke.bPlayers)
-		DoPlayerSmoke (objP, -1);
-	return;		
+		if (gameOpts->render.smoke.bPlayers)
+			DoPlayerSmoke (objP, -1);
+		return;		
+		}
 	}
 if ((objP->nType==OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
@@ -1777,7 +1472,7 @@ SetNearestDynamicLights (objP->nSegment);
 switch (objP->renderType) {
 	case RT_NONE:	
 		RenderTracers (objP);
-		break;		//doesn't render, like the player
+		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
 		if (!(extraGameInfo [0].bShadows && extraGameInfo [IsMultiGame].bShadows) || 
@@ -1885,6 +1580,8 @@ if (objP->renderType != RT_NONE)
 	}
 #endif
 gameStates.render.detail.nMaxLinearDepth = mld_save;
+if (bSpectate)
+	objP->position = savePos;
 }
 
 //------------------------------------------------------------------------------
@@ -1918,14 +1615,14 @@ gameData.objs.console->flags = 0;
 }
 
 //------------------------------------------------------------------------------
-//make object0 the player, setting all relevant fields
+//make object0 the tPlayer, setting all relevant fields
 void InitPlayerObject ()
 {
 gameData.objs.console->nType = OBJ_PLAYER;
-gameData.objs.console->id = 0;					//no sub-types for player
-gameData.objs.console->nSignature = 0;			//player has zero, others start at 1
+gameData.objs.console->id = 0;					//no sub-types for tPlayer
+gameData.objs.console->nSignature = 0;			//tPlayer has zero, others start at 1
 gameData.objs.console->size = gameData.models.polyModels [gameData.pig.ship.player->nModel].rad;
-gameData.objs.console->controlType = CT_SLEW;			//default is player slewing
+gameData.objs.console->controlType = CT_SLEW;			//default is tPlayer slewing
 gameData.objs.console->movementType = MT_PHYSICS;		//change this sometime
 gameData.objs.console->lifeleft = IMMORTAL_TIME;
 gameData.objs.console->attachedObj = -1;
@@ -1941,7 +1638,7 @@ idToOOF [MEGA_ID] = OOF_MEGA;
 }
 
 //------------------------------------------------------------------------------
-//sets up the d_free list & init player & whatever else
+//sets up the d_free list & init tPlayer & whatever else
 void InitObjects ()
 {
 	int i;
@@ -1965,7 +1662,7 @@ gameData.objs.viewer =
 gameData.objs.objects;
 InitPlayerObject ();
 LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in tSegment 0
-gameData.objs.nObjects = 1;						//just the player
+gameData.objs.nObjects = 1;						//just the tPlayer
 gameData.objs.nLastObject = 0;
 InitIdToOOF ();
 }
@@ -2381,13 +2078,13 @@ objP->nSignature = gameData.objs.nNextSignature++;
 objP->nType = nType;
 objP->id = id;
 objP->last_pos = *pos;
-objP->pos = *pos;
+objP->position.vPos = *pos;
 objP->size = size;
 objP->flags = 0;
 objP->matCenCreator = (sbyte) owner;
 //@@if (orient != NULL)
-//@@	objP->orient = *orient;
-objP->orient = orient ? *orient : vmdIdentityMatrix;
+//@@	objP->position.mOrient = *orient;
+objP->position.mOrient = orient ? *orient : vmdIdentityMatrix;
 objP->controlType = cType;
 objP->movementType = mType;
 objP->renderType = rType;
@@ -2465,7 +2162,7 @@ if (newObjNum == -1)
 	return -1;
 obj = gameData.objs.objects + newObjNum;
 *objP = gameData.objs.objects [nObject];
-objP->pos = objP->last_pos = *new_pos;
+objP->position.vPos = objP->last_pos = *new_pos;
 objP->next = objP->prev = objP->nSegment = -1;
 LinkObject (newObjNum, newsegnum);
 objP->nSignature = gameData.objs.nNextSignature++;
@@ -2499,7 +2196,7 @@ if (objP->nType == OBJ_WEAPON) {
 		}
 	}
 if (objP == gameData.objs.viewer)		//deleting the viewer?
-	gameData.objs.viewer = gameData.objs.console;						//..make the player the viewer
+	gameData.objs.viewer = gameData.objs.console;						//..make the tPlayer the viewer
 if (objP->flags & OF_ATTACHED)		//detach this from tObject
 	DetachOneObject (objP);
 if (objP->attachedObj != -1)		//detach all gameData.objs.objects from this
@@ -2553,22 +2250,22 @@ gameStates.app.bPlayerEggsDropped = 0;
 
 //------------------------------------------------------------------------------
 
-//	Camera is less than size of player away from
+//	Camera is less than size of tPlayer away from
 void SetCameraPos (vmsVector *camera_pos, tObject *objP)
 {
 	int	count = 0;
 	fix	xCameraPlayerDist;
 	fix	xFarScale;
 
-xCameraPlayerDist = VmVecDistQuick (camera_pos, &objP->pos);
+xCameraPlayerDist = VmVecDistQuick (camera_pos, &objP->position.vPos);
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
-	//	Camera is too close to player tObject, so move it away.
+	//	Camera is too close to tPlayer tObject, so move it away.
 	vmsVector	player_camera_vec;
 	fvi_query	fq;
 	fvi_info		hit_data;
 	vmsVector	local_p1;
 
-	VmVecSub (&player_camera_vec, camera_pos, &objP->pos);
+	VmVecSub (&player_camera_vec, camera_pos, &objP->position.vPos);
 	if ((player_camera_vec.x == 0) && (player_camera_vec.y == 0) && (player_camera_vec.z == 0))
 		player_camera_vec.x += F1_0/16;
 
@@ -2580,10 +2277,10 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 		VmVecNormalizeQuick (&player_camera_vec);
 		VmVecScale (&player_camera_vec, xCameraToPlayerDistGoal);
 
-		fq.p0 = &objP->pos;
-		VmVecAdd (&closer_p1, &objP->pos, &player_camera_vec);		//	This is the actual point we want to put the camera at.
+		fq.p0 = &objP->position.vPos;
+		VmVecAdd (&closer_p1, &objP->position.vPos, &player_camera_vec);		//	This is the actual point we want to put the camera at.
 		VmVecScale (&player_camera_vec, xFarScale);						//	...but find a point 50% further away...
-		VmVecAdd (&local_p1, &objP->pos, &player_camera_vec);		//	...so we won't have to do as many cuts.
+		VmVecAdd (&local_p1, &objP->position.vPos, &player_camera_vec);		//	...so we won't have to do as many cuts.
 
 		fq.p1					= &local_p1;
 		fq.startSeg			= objP->nSegment;
@@ -2621,8 +2318,8 @@ if (gameStates.app.bPlayerIsDead) {
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
 		tObject *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->pos, &player->orient, 0, 
-											CT_NONE, MT_NONE, RT_NONE, 1);
+		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
+											 &player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 		if (nObject != -1)
 			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
 		else
@@ -2632,9 +2329,9 @@ if (gameStates.app.bPlayerIsDead) {
 	gameData.objs.console->mType.physInfo.rotVel.y = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead) / 2;
 	gameData.objs.console->mType.physInfo.rotVel.z = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/3;
 	xCameraToPlayerDistGoal = min (xTimeDead*8, F1_0*20) + gameData.objs.console->size;
-	SetCameraPos (&gameData.objs.deadPlayerCamera->pos, gameData.objs.console);
-	VmVecSub (&fVec, &gameData.objs.console->pos, &gameData.objs.deadPlayerCamera->pos);
-	VmVector2Matrix (&gameData.objs.deadPlayerCamera->orient, &fVec, NULL, NULL);
+	SetCameraPos (&gameData.objs.deadPlayerCamera->position.vPos, gameData.objs.console);
+	VmVecSub (&fVec, &gameData.objs.console->position.vPos, &gameData.objs.deadPlayerCamera->position.vPos);
+	VmVector2Matrix (&gameData.objs.deadPlayerCamera->position.mOrient, &fVec, NULL, NULL);
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board > 1)
@@ -2664,7 +2361,7 @@ if (gameStates.app.bPlayerIsDead) {
 			ExplodeBadassPlayer (gameData.objs.console);
 			//is this next line needed, given the badass call above?
 			ExplodeObject (gameData.objs.console, 0);
-			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill player
+			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
 			gameData.objs.console->renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.console->nType = OBJ_GHOST;						//..and kill intersections
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
@@ -2766,7 +2463,8 @@ gameStates.app.bPlayerIsDead = 1;
 VmVecZero (&player->mType.physInfo.rotThrust);
 VmVecZero (&player->mType.physInfo.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->pos, &player->orient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
+nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
+								&player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 viewerSaveP = gameData.objs.viewer;
 if (nObject != -1)
 	gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
@@ -2831,7 +2529,7 @@ UnlinkObject (nObject);
 LinkObject (nObject, newsegnum);
 #if 0//def _DEBUG
 #if TRACE				
-if (GetSegMasks (&gameData.objs.objects [nObject].pos, 
+if (GetSegMasks (&gameData.objs.objects [nObject].position.vPos, 
 					  gameData.objs.objects [nObject].nSegment, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
@@ -2850,16 +2548,16 @@ rotangs.p = FixMul (objP->mType.spinRate.x, gameData.time.xFrame);
 rotangs.h = FixMul (objP->mType.spinRate.y, gameData.time.xFrame);
 rotangs.b = FixMul (objP->mType.spinRate.z, gameData.time.xFrame);
 VmAngles2Matrix (&rotmat, &rotangs);
-VmMatMul (&new_pm, &objP->orient, &rotmat);
-objP->orient = new_pm;
-CheckAndFixMatrix (&objP->orient);
+VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+objP->position.mOrient = new_pm;
+CheckAndFixMatrix (&objP->position.mOrient);
 }
 
 extern void MultiSendDropBlobs (char);
 extern void FuelCenCheckForGoal (tSegment *);
 
-//see if wall is volatile, and if so, cause damage to player
-//returns true if player is in lava
+//see if wall is volatile, and if so, cause damage to tPlayer
+//returns true if tPlayer is in lava
 int CheckVolatileWall (tObject *objP, int nSegment, int nSide, vmsVector *hitpt);
 int CheckVolatileSegment (tObject *objP, int nSegment);
 
@@ -2938,7 +2636,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	a.h = curAngle;
 	a.b =	a.p = 0;
 	VmAngles2Matrix (&r, &a);
-	VmMatMul (&objP->orient, &pc->orient, &r);
+	VmMatMul (&objP->position.mOrient, &pc->orient, &r);
 	pc->curAngle = curAngle;
 	pc->curDelta = curDelta;
 	}
@@ -2953,7 +2651,7 @@ void CheckObjectInVolatileWall (tObject *objP)
 
 if (objP->nType != OBJ_PLAYER)
 	return;
-sideMask = GetSegMasks (&objP->pos, objP->nSegment, objP->size).sideMask;
+sideMask = GetSegMasks (&objP->position.vPos, objP->nSegment, objP->size).sideMask;
 if (sideMask) {
 	short nSide, nWall;
 	int bit;
@@ -2966,7 +2664,7 @@ if (sideMask) {
 			continue;
 		if (gameData.walls.walls [nWall].nType != WALL_ILLUSION)
 			continue;
-		if (nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->pos)) {
+		if (nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->position.vPos)) {
 			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
@@ -3000,7 +2698,7 @@ void HandleSpecialSegments (tObject *objP)
 	fix fuel, shields;
 	tSegment *segP = gameData.segs.segments + objP->nSegment;
 	xsegment *xsegP = gameData.segs.xSegments + objP->nSegment;
-	player *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 #ifdef NETWORK
@@ -3071,8 +2769,10 @@ switch (objP->controlType) {
 
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
-		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
+		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
+			DoAnyRobotDyingFrame (objP);
 			return 1;
+			}
 		DoAIFrame (objP);
 		break;
 
@@ -3262,7 +2962,7 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 
 		HUDInitMessage ("Player should be dead");
 	}
 #endif
-objP->last_pos = objP->pos;			// Save the current position
+objP->last_pos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
 	//	Ok, this is a big hack by MK.
@@ -3279,7 +2979,7 @@ if (HandleObjectControl (objP))
 if (objP->lifeleft < 0) {		// We died of old age
 	objP->flags |= OF_SHOULD_BE_DEAD;
 	if (objP->nType==OBJ_WEAPON && WI_damage_radius (objP->id))
-		ExplodeBadassWeapon (objP, &objP->pos);
+		ExplodeBadassWeapon (objP, &objP->position.vPos);
 	else if (objP->nType == OBJ_ROBOT)	//make robots explode
 		ExplodeObject (objP, 0);
 	}
@@ -3308,29 +3008,29 @@ int MoveAllObjects ()
 //	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
 
-	if (gameData.objs.nLastObject > nMaxUsedObjects)
-		FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
+if (gameData.objs.nLastObject > nMaxUsedObjects)
+	FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
 
-	DeleteAllObjsThatShouldBeDead ();
-	if (gameOpts->gameplay.bAutoLeveling)
-		gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;
-	else
-		gameData.objs.console->mType.physInfo.flags &= ~PF_LEVELLING;
+DeleteAllObjsThatShouldBeDead ();
+if (gameOpts->gameplay.bAutoLeveling)
+	gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;
+else
+	gameData.objs.console->mType.physInfo.flags &= ~PF_LEVELLING;
 
-	// Move all gameData.objs.objects
-	objP = gameData.objs.objects;
+// Move all gameData.objs.objects
+objP = gameData.objs.objects;
 #ifndef DEMO_ONLY
-	gameStates.entropy.bConquering = 0;
-	UpdatePlayerOrient ();
-	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if ((objP->nType != OBJ_NONE) && !(objP->flags & OF_SHOULD_BE_DEAD)) {
-			if (!MoveOneObject (objP))
-				return 0;
-		}
-		objP++;
+gameStates.entropy.bConquering = 0;
+UpdatePlayerOrient ();
+for (i = 0; i <= gameData.objs.nLastObject; i++) {
+	if ((objP->nType != OBJ_NONE) && !(objP->flags & OF_SHOULD_BE_DEAD)) {
+		if (!MoveOneObject (objP))
+			return 0;
 	}
+	objP++;
+}
 #else
-		i = 0;	//kill warning
+	i = 0;	//kill warning
 #endif
 return 1;
 //	check_duplicateObjects ();
@@ -3419,7 +3119,7 @@ nDebrisObjectCount = 0;
 //Tries to find a tSegment for an tObject, using FindSegByPoint ()
 int FindObjectSeg (tObject * objP)
 {
-return FindSegByPoint (&objP->pos, objP->nSegment);
+return FindSegByPoint (&objP->position.vPos, objP->nSegment);
 }
 
 
@@ -3452,7 +3152,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 			con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
 #endif
 			Int3 ();
-			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].pos, gameData.objs.objects [i].nSegment);
+			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].position.vPos, gameData.objs.objects [i].nSegment);
 			}
 }
 
@@ -3597,7 +3297,7 @@ int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte m
 	if (nObject >= 0) {
 		tObject *objP = &gameData.objs.objects [nObject];
 		objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-		VmVecCopyScale (&objP->mType.spinRate, &objP->orient.uVec, F1_0 / 2);
+		VmVecCopyScale (&objP->mType.spinRate, &objP->position.mOrient.uVec, F1_0 / 2);
 		//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
 		objP->lifeleft = IMMORTAL_TIME - 1;
 	}
@@ -3635,7 +3335,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 			objP = &gameData.objs.objects [nObject];
 	
 			if (objP->nType == OBJ_ROBOT) {
-				if (VmVecDistQuick (&viewer->pos, &objP->pos) < F1_0*100) {
+				if (VmVecDistQuick (&viewer->position.vPos, &objP->position.vPos) < F1_0*100) {
 					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
 					if (ailp->playerAwarenessType == 0) {
 						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;

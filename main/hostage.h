@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added multiple bitmap functionality to all objects...
  * (hostages, powerups, lasers, etc.)
  * Hostages and powerups are implemented in the tObject system,
- * just need to finish function call to "affect" player.
+ * just need to finish function call to "affect" tPlayer.
  *
  * Revision 1.2  1994/03/31  12:04:35  matt
  * Added prototypes for 2 funcs

@@ -800,6 +800,7 @@ CFILE *copy_pigfile_from_cd (char *filename)
 //------------------------------------------------------------------------------
 //initialize a pigfile, reading headers
 //returns the size of all the bitmap data
+	static int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 void PiggyInitPigFile (char *filename)
 {
 	char					temp_name [16];
@@ -807,7 +808,6 @@ void PiggyInitPigFile (char *filename)
 	char					szPigName [FILENAME_LEN];
 	grsBitmap			bmTemp;
 	DiskBitmapHeader	bmh;
-	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 
 PiggyCloseFile ();             //close old pig if still open
 strcpy (szPigName, filename);
