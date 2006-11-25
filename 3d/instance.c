@@ -29,7 +29,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_INSTANCE_DEPTH	10
 
 struct instance_context {
-	vmsMatrix m;
+	vmsMatrix m [2];
 	vmsVector p;
 } instanceStack[MAX_INSTANCE_DEPTH];
 
@@ -69,9 +69,33 @@ else
 }
 
 //------------------------------------------------------------------------------
+
+int G3PushMatrix (void)
+{
+if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
+	return 0;
+memcpy (instanceStack [nInstanceDepth].m, viewInfo.view, 2 * sizeof (vmsMatrix));
+instanceStack [nInstanceDepth].p = viewInfo.pos;
+nInstanceDepth++;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3PopMatrix (void)
+{
+if (nInstanceDepth <= 0)
+	return 0;
+nInstanceDepth--;
+viewInfo.pos = instanceStack [nInstanceDepth].p;
+memcpy (viewInfo.view, instanceStack [nInstanceDepth].m, 2 * sizeof (vmsMatrix));
+return 1;
+}
+
+//------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset   
-void G3StartInstanceMatrix (vmsVector *pos, vmsMatrix *orient)
+void G3StartInstanceMatrix (vmsVector *vPos, vmsMatrix *mOrient)
 {
 if (gameStates.ogl.bUseTransform) {
 	vmsVector	h;
@@ -82,41 +106,41 @@ if (gameStates.ogl.bUseTransform) {
 		glLoadIdentity ();
 		glScalef (1.0f, 1.0f, -viewInfo.glZoom);
 		OglRot (viewInfo.glViewf);
-		VmVecSub (&h, &viewInfo.position, pos);
+		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);
 		}
 	else {
 		glScalef (-1.0f, -1.0f, 1.0f);
-		VmsMove (pos);
+		VmsMove (vPos);
 		}
-	if (orient)
-		VmsRot (orient);
+	if (mOrient)
+		VmsRot (mOrient);
 	if (nInstanceDepth)
 		glScalef (-1.0f, -1.0f, 1.0f);
 	else
 		glScalef (1.0f, 1.0f, -1.0f);
 	}
 	{
-	vmsVector vOffs;
-	vmsMatrix mTrans, mRot;
+	vmsVector	vOffs;
+	vmsMatrix	mTrans, mRot;
 
 	//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-	if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
-		nInstanceDepth = nInstanceDepth;
-	instanceStack [nInstanceDepth].m = viewInfo.view [0];
-	instanceStack [nInstanceDepth].p = viewInfo.position;
-	nInstanceDepth++;
-	//step 1: subtract tObject position from view position
-	VmVecSub (&vOffs, &viewInfo.position, pos);
-	if (orient) {
-		//step 2: rotate view vector through tObject matrix
-		VmVecRotate (&viewInfo.position, &vOffs, orient);
+	if (!G3PushMatrix ())
+		return;
+	//step 1: subtract object position from view position
+	VmVecSub (&vOffs, &viewInfo.pos, vPos);
+	//step 2: rotate view vector through tObject matrix
+	VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
+	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+	if (mOrient) {
+		int i;
 		//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
-		VmCopyTransposeMatrix (&mTrans, orient);
-		VmMatMul (&mRot, &mTrans, viewInfo.view);
-		viewInfo.view [0] = mRot;
-		VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-		VmsMatToFloat (viewInfo.viewf, viewInfo.view);
+		VmCopyTransposeMatrix (&mTrans, mOrient);
+		for (i = 0; i < 2; i++) {
+			VmMatMul (&mRot, &mTrans, viewInfo.view + i);
+			viewInfo.view [i] = mRot;
+			VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
+			}
 		}
 	}
 }
@@ -138,20 +162,16 @@ G3StartInstanceMatrix (pos, &tm);
 
 //------------------------------------------------------------------------------
 //pops the old context
-void G3DoneInstance()
+void G3DoneInstance ()
 {
+if (!G3PopMatrix ())
+	return;
 if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
-	{
-	nInstanceDepth--;
-	Assert(nInstanceDepth >= 0);
-	viewInfo.position = instanceStack [nInstanceDepth].p;
-	viewInfo.view [0] = instanceStack [nInstanceDepth].m;
-	VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-	VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
-	}
+VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }
 
 //------------------------------------------------------------------------------

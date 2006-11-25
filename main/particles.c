@@ -557,7 +557,7 @@ if (gameStates.render.bPointSprites) {
 #if !EXTRA_VERTEX_ARRAYS
 		pParticle->glPos.x = f2fl (hp.x);
 		pParticle->glPos.y = f2fl (hp.y);
-		pParticle->glPos.z = -f2fl (hp.z);
+		pParticle->glPos.z = f2fl (hp.z);
 		nBuffer++;
 #else
 		colorBuffer [iBuffer][3] = (double) pParticle->glColor.a * decay;
@@ -573,7 +573,7 @@ if (gameStates.render.bPointSprites) {
 #endif
 	{
 //	glColor4d (1.0, 1.0, 1.0, pParticle->glColor.a);
-	glVertex3d (f2fl (hp.x), f2fl (hp.y), -f2fl (hp.z));
+	glVertex3d (f2fl (hp.x), f2fl (hp.y), f2fl (hp.z));
 	}
 	}
 else
@@ -589,7 +589,7 @@ else
 		}
 	x = f2fl (hp.x);
 	y = f2fl (hp.y);
-	z = -f2fl (hp.z);
+	z = f2fl (hp.z);
 #if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
 		colorBuffer [iBuffer][3] = (double) pParticle->glColor.a * decay;

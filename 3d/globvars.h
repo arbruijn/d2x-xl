@@ -42,7 +42,7 @@ extern double fxCanvW2, fxCanvH2;
 #endif
 
 typedef struct tViewInfo {
-	vmsVector	position;
+	vmsVector	pos;
 	vmsAngVec	playerHeadAngles;
 	vmsMatrix	view [2];
 	vmsVector	scale;

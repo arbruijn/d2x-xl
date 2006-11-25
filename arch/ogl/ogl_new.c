@@ -129,7 +129,7 @@ if (lightmapping) {//lightmapping enabled
 		set_texcoord (uvl_list + c, orient, 1);
 		glColor3d (1, 1, 1);
 		p = *pp;
-		glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), -f2glf(p->p3_vec.z));
+		glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
 		}
 	glEnd();
 	glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -149,7 +149,7 @@ else {//lightmapping disabled - render old way
 		glBegin(GL_TRIANGLE_FAN);
 		for (c = 0; c < nv; c++, pointlist++) {
 			p = *pointlist;
-			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), -f2glf(p->p3_vec.z));
+			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
 			}
 		glEnd();
 		pointlist=pointlist-4;
@@ -167,7 +167,7 @@ else {//lightmapping disabled - render old way
 			
 			glTexCoord2d (f2glf(uvl_list[c].u), f2glf(uvl_list[c].v));
 			p = *pointlist;
-			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), -f2glf(p->p3_vec.z));
+			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
 			}
 		glEnd();
 		pointlist=pointlist-4;
@@ -196,7 +196,7 @@ else {//lightmapping disabled - render old way
 			set_tmap_color (uvl_list + c, c, bm);
 			set_texcoord (uvl_list + c, orient, 0);
 			p = *pointlist;
-			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), -f2glf(p->p3_vec.z));
+			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
 			}
 		glEnd();
 		glDepthFunc(GL_LESS);
@@ -234,7 +234,7 @@ glColor3d(1.0,1.0,1.0);
 width = FixMul(width,viewInfo.scale.x);
 height = FixMul(height,viewInfo.scale.y);
 for (i = 0; i < 4; i++) {
-	VmVecSub(&v1,pos,&viewInfo.position);
+	VmVecSub(&v1,pos,&viewInfo.pos);
 	VmVecRotate(&pv,&v1,&viewInfo.view [0]);
 	switch (i) {
 		case 0:
@@ -258,7 +258,7 @@ for (i = 0; i < 4; i++) {
 			pv.y+=-height;
 			break;
 		}
-	glVertex3d (f2glf(pv.x), f2glf(pv.y), -f2glf(pv.z));
+	glVertex3d (f2glf(pv.x), f2glf(pv.y), f2glf(pv.z));
 	}
 glEnd();
 

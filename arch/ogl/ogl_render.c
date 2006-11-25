@@ -63,7 +63,7 @@
 #define OGL_CLEANUP		1
 #define USE_VERTNORMS	1
 
-int bShadowTest = 0;
+int bShadowTest = 1;
 
 extern int bZPass;
 int bSingleStencil = 0;
@@ -168,8 +168,8 @@ bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
-glVertex3x (p0->p3_vec.x, p0->p3_vec.y, -p0->p3_vec.z);
-glVertex3x (p1->p3_vec.x, p1->p3_vec.y, -p1->p3_vec.z);
+glVertex3x (p0->p3_vec.x, p0->p3_vec.y, p0->p3_vec.z);
+glVertex3x (p1->p3_vec.x, p1->p3_vec.y, p1->p3_vec.z);
 if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
@@ -1393,8 +1393,6 @@ else
 				G3RotatePointf (&vn, &pl->p3_normal.vNormal);
 			VmsVecToFloat (v, &pl->p3_vec);
 			VmVecScaleAddf (v + 1, v, &vn, 5);
-			v [0].p.z = -v [0].p.z;
-			v [1].p.z = -v [1].p.z;
 			glDisable (GL_TEXTURE_2D);
 			if (c == 1)
 				glColor3f (1.0f, 0.0f, 0.0f);
@@ -1497,11 +1495,11 @@ glBegin (GL_QUADS);
 glColor4f (1.0f, 1.0f, 1.0f, alpha);
 u = bmP->glTexture->u;
 v = bmP->glTexture->v;
-VmVecSub (&v1, pos, &viewInfo.position);
+VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 x = (float) f2glf (pv.x);
 y = (float) f2glf (pv.y);
-z = (float) -f2glf (pv.z);
+z = (float) f2glf (pv.z);
 w = (float) f2glf (FixMul (width, viewInfo.scale.x));
 h = (float) f2glf (FixMul (height, viewInfo.scale.y));
 glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, 0);
@@ -1842,8 +1840,10 @@ if (gameStates.render.nShadowPass) {
 			infProj [2][3] = -1.0f;
 			glLoadMatrixf ((float *) infProj);
 #endif
+#if 0
 			glMatrixMode (GL_MODELVIEW);
 			glLoadIdentity ();
+#endif
 			glEnable (GL_DEPTH_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
@@ -1929,8 +1929,10 @@ if (gameStates.render.nShadowPass) {
 		glCullFace (GL_FRONT);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
+#if GL_INFINITY
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
+#endif
 	}
 else 
 #endif //SHADOWS

@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * doesn't work yet.
  *
  * Revision 1.3  1994/01/05  11:25:47  john
- * Changed Player_zoom to nRenderZoom
+ * Changed Player_zoom to xRenderZoom
  *
  * Revision 1.2  1994/01/05  10:53:43  john
  * New tObject code by John.
@@ -126,7 +126,7 @@ int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
 // should access Render_viewerObject members.
-extern fix nRenderZoom;     // the tPlayer's zoom factor
+extern fix xRenderZoom;     // the tPlayer's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.

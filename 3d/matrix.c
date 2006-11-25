@@ -29,40 +29,34 @@ static char rcsid[] = "$Id: matrix.c,v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 void ScaleMatrix(void);
 
 //------------------------------------------------------------------------------
-//set view from x,y,z & p,b,h, zoom.  Must call one of g3_set_view_*() 
-void G3SetViewAngles (vmsVector *view_pos, vmsAngVec *view_orient, fix zoom)
+//set view from x,y,z & p,b,h, xZoom.  Must call one of g3_set_view_*() 
+void G3SetViewAngles (vmsVector *vPos, vmsAngVec *mOrient, fix xZoom)
 {
-viewInfo.zoom = zoom;
-viewInfo.position = *view_pos;
-VmAngles2Matrix(&viewInfo.view [0], view_orient);
-VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
+viewInfo.zoom = xZoom;
+viewInfo.pos = *vPos;
+VmAngles2Matrix (&viewInfo.view [0], mOrient);
+VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
-#ifdef D1XD3D
-Win32_set_view_matrix ();
-#endif
 ScaleMatrix();
 }
 
 //------------------------------------------------------------------------------
-//set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_set_view_*() 
-void G3SetViewMatrix (vmsVector *view_pos, vmsMatrix *view_matrix, fix zoom)
+//set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_set_view_*() 
+void G3SetViewMatrix (vmsVector *vPos, vmsMatrix *mOrient, fix xZoom)
 {
-viewInfo.zoom = zoom;
-viewInfo.glZoom = (float) zoom / 65536.0f;
-if (view_pos) {
-	viewInfo.position = *view_pos;
-	VmsVecToFloat (&viewInfo.posf, &viewInfo.position);
-	OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.position);
+viewInfo.zoom = xZoom;
+viewInfo.glZoom = (float) xZoom / 65536.0f;
+if (vPos) {
+	viewInfo.pos = *vPos;
+	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+	OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.pos);
 	}
-if (view_matrix) {
-	viewInfo.view [0] = *view_matrix;
+if (mOrient) {
+	viewInfo.view [0] = *mOrient;
 	VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view);
 	}
-#ifdef D1XD3D
-Win32_set_view_matrix ();
-#endif
-ScaleMatrix();
+ScaleMatrix ();
 }
 
 //------------------------------------------------------------------------------
@@ -73,18 +67,23 @@ void ScaleMatrix (void)
 	viewInfo.viewf [1] = viewInfo.viewf [0];		//so we can use unscaled if we want
 
 viewInfo.scale = viewInfo.windowScale;
-if (viewInfo.zoom <= f1_0) 		//zoom in by scaling z
-	viewInfo.scale.z =  FixMul (viewInfo.scale.z, viewInfo.zoom);
-else {			//zoom out by scaling x&y
+if (viewInfo.zoom <= f1_0) 		//xZoom in by scaling z
+	viewInfo.scale.z = FixMul (viewInfo.scale.z, viewInfo.zoom);
+else {			//xZoom out by scaling x&y
 	fix s = FixDiv (f1_0, viewInfo.zoom);
 
-	viewInfo.scale.x = FixMul (viewInfo.scale.x,s);
-	viewInfo.scale.y = FixMul (viewInfo.scale.y,s);
+	viewInfo.scale.x = FixMul (viewInfo.scale.x, s);
+	viewInfo.scale.y = FixMul (viewInfo.scale.y, s);
 	}
 //now scale matrix elements
+#if 1
+//glScalef (1,1,viewInfo.glZoom);
+glScalef (f2fl (viewInfo.scale.x), f2fl (viewInfo.scale.y), -f2fl (viewInfo.scale.z));
+#else
 VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.x);
 VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.y);
 VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.z);
+#endif
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }
 

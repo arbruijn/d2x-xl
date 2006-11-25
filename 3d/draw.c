@@ -118,7 +118,7 @@ bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 bool G3CheckNormalFacing (vmsVector *pv, vmsVector *pnorm)
 {
 vmsVector v;
-return (VmVecDot (VmVecSub (&v, &viewInfo.position, pv), pnorm) > 0);
+return (VmVecDot (VmVecSub (&v, &viewInfo.pos, pv), pnorm) > 0);
 }
 
 //------------------------------------------------------------------------------

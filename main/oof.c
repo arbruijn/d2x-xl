@@ -44,9 +44,9 @@ extern int bShadowTest;
 int bSingleStencil;
 
 int bZPass = 0;
-int bFrontCap = 1;
+int bFrontCap = 0;
 int bRearCap = 1;
-int bShadowVolume = 1;
+int bShadowVolume = 0;
 
 static tOOF_vector vPos;
 static tOOF_vector vLightPos;
@@ -2054,16 +2054,14 @@ for (pe = pso->edges.pEdges; i; pe++)
 				}
 			v0 = pv [pe->v0];
 			v1 = pv [pe->v1];
-			v1.z = -v1.z;
-			v0.z = -v0.z;
 			glVertex3fv ((GLfloat *) &v1);
 			glVertex3fv ((GLfloat *) &v0);
 			v0.x -= vrLightPos.x;
 			v0.y -= vrLightPos.y;
-			v0.z += vrLightPos.z;
+			v0.z -= vrLightPos.z;
 			v1.x -= vrLightPos.x;
 			v1.y -= vrLightPos.y;
-			v1.z += vrLightPos.z;
+			v1.z -= vrLightPos.z;
 #if NORM_INF
 			m0 = OOF_VecMag (&v0);
 			m1 = OOF_VecMag (&v1);
@@ -2080,10 +2078,8 @@ for (pe = pso->edges.pEdges; i; pe++)
 		else {
 			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 			glBegin (GL_LINES);
-			v1 = pv [pe->v1];
-			glVertex3f (v1.x, v1.y, -v1.z);
-			v0 = pv [pe->v0];
-			glVertex3f (v0.x, v0.y, -v0.z);
+			glVertex3fv ((GLfloat *) (pv + pe->v1));
+			glVertex3fv ((GLfloat *) (pv + pe->v0));
 			glEnd ();
 			}
 		}
@@ -2152,8 +2148,7 @@ else {
 #else
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 #endif
-			phv = pv + pfv->nIndex;
-			glVertex3f (phv->x, phv->y, -phv->z);
+			glVertex3fv ((GLfloat *) (pv + pfv->nIndex));
 			}
 		glEnd ();
 		if (pf->bReverse)
@@ -2249,22 +2244,17 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glColor4f (1.0f, 0.0f, 0.5f, 1.0f);
 			glBegin (GL_LINES);
 			fv0 = pf->vRotCenter;
-			fv0.z = -fv0.z;
 			glVertex3fv ((GLfloat *) &fv0);
-			fv0.z = -fv0.z;
 			fv0.x += pf->vRotNormal.x * 1;
 			fv0.y += pf->vRotNormal.y * 1;
 			fv0.z += pf->vRotNormal.z * 1;
-			fv0.z = -fv0.z;
 			glVertex3fv ((GLfloat *) &fv0);
 			glEnd ();
 			glColor4f (0.0f, 1.0f, 0.5f, 1.0f);
 			glBegin (GL_LINES);
 			fv0 = pf->vRotCenter;
-			fv0.z = -fv0.z;
 			glVertex3fv ((GLfloat *) &fv0);
 			fv0 = vrLightPos;
-			fv0.z = -fv0.z;
 			glVertex3fv ((GLfloat *) &fv0);
 			glEnd ();
 			glLineWidth (1);
@@ -2279,8 +2269,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		glColor4f (r, g, b, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-			phv = pv + pfv->nIndex;
-			glVertex3f (phv->x, phv->y, -phv->z);
+			glVertex3fv ((GLfloat *) (pv + pfv->nIndex));
 			}	
 		glEnd ();
 		}
@@ -2376,7 +2365,7 @@ int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 if (!gameStates.ogl.bUseTransform)
 	OOF_MatVms2Oof (&mView, &viewInfo.view [0]);
-OOF_VecVms2Oof (&vPos, &viewInfo.position);
+OOF_VecVms2Oof (&vPos, &viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0_ARB);

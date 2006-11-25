@@ -442,14 +442,14 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 x = f2glf (p.p3_vec.x);
 y = f2glf (p.p3_vec.y);
-z = -f2glf (p.p3_vec.z);
+z = f2glf (p.p3_vec.z);
 r = f2glf (rad);
 glBegin (GL_POLYGON);
 for (i = 0; i <= nSides; i++) {
 	ang = 2.0f * (float) M_PI * (i % nSides) / nSides;
 	hx = x + (float) cos (ang) * r;
 	hy = y + (float) sin (ang) * r;
-	glVertex3f (hx, hy, -z);
+	glVertex3f (hx, hy, z);
 	}
 if (c.rgb)
 	glDisable (GL_BLEND);
@@ -470,7 +470,7 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 x = f2glf (p.p3_vec.x);
 y = f2glf (p.p3_vec.y);
-z = -f2glf (p.p3_vec.z);
+z = f2glf (p.p3_vec.z);
 r = f2glf (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)

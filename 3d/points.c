@@ -170,17 +170,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(vmsVector *pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt->x - viewInfo.position.x, viewInfo.view [0].fVec.x);
-	q += mul64 (pnt->y - viewInfo.position.y, viewInfo.view [0].fVec.y);
-	q += mul64 (pnt->z - viewInfo.position.z, viewInfo.view [0].fVec.z);
+	QLONG q = mul64 (pnt->x - viewInfo.pos.x, viewInfo.view [0].fVec.x);
+	q += mul64 (pnt->y - viewInfo.pos.y, viewInfo.view [0].fVec.y);
+	q += mul64 (pnt->z - viewInfo.pos.z, viewInfo.view [0].fVec.z);
 	return (fix) (q >> 16);
 #else
 	quadint q;
 
 	q.low=q.high=0;
-	fixmulaccum(&q,(pnt->x - viewInfo.position.x),viewInfo.view [0].fVec.x);
-	fixmulaccum(&q,(pnt->y - viewInfo.position.y),viewInfo.view [0].fVec.y);
-	fixmulaccum(&q,(pnt->z - viewInfo.position.z),viewInfo.view [0].fVec.z);
+	fixmulaccum(&q,(pnt->x - viewInfo.pos.x),viewInfo.view [0].fVec.x);
+	fixmulaccum(&q,(pnt->y - viewInfo.pos.y),viewInfo.view [0].fVec.y);
+	fixmulaccum(&q,(pnt->z - viewInfo.pos.z),viewInfo.view [0].fVec.z);
 	return fixquadadjust(&q);
 #endif
 }

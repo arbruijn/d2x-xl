@@ -843,7 +843,6 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	w = 2 * r;
 	fPos.p.x -= r;
 	fPos.p.y += r;
-	fPos.p.z = -fPos.p.z;
 	w *= ObjectDamage (objP);
 	fVerts [0].p.x = fVerts [3].p.x = fPos.p.x;
 	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
@@ -910,9 +909,8 @@ if (EGI_FLAG (bHitIndicators, 0, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 	pc = ObjectFrameColor (objP, pc);
-	VmsVecToFloat (&fPos, &objP->position.vPos, 0);
+	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
-	fPos.p.z = -fPos.p.z;
 	r = f2fl (objP->size);
 	glDisable (GL_TEXTURE_2D);
 	glColor3fv ((GLfloat *) pc);
@@ -1026,7 +1024,6 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
 			G3TransformPointf (&vPosf, &vPosf, 0);
-			vPosf.p.z = -vPosf.p.z;
 			glTexCoord2fv ((GLfloat *) (uvList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1035,7 +1032,6 @@ if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->i
 			vPosf.p.y = fVerts [i].p.y * r;
 			vPosf.p.z = fVerts [i].p.z * r;
 			G3TransformPointf (&vPosf, &vPosf, 0);
-			vPosf.p.z = -vPosf.p.z;
 			glTexCoord2fv ((GLfloat *) (uvList + i));
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
@@ -1214,7 +1210,6 @@ for (h = 0; h < nThrusters; h++) {
 				v.p.y *= fSize;
 				v.p.z *= fLength;
 				G3TransformPointf (&v, &v, 0);
-				v.p.z = -v.p.z;
 				glColor4f (c [l].red, c [l].green, c [l].blue, c [l].alpha);
 				glVertex3fv ((GLfloat *) &v);
 				}
@@ -1225,7 +1220,6 @@ for (h = 0; h < nThrusters; h++) {
 		glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
 		for (j = 0; j < RING_SIZE; j++) {
 			G3TransformPointf (&v, vFlame [i] + j);
-			v.p.z = -v.p.z;
 			glVertex3fv ((GLfloat *) &v);
 			}
 		glEnd ();
@@ -1234,7 +1228,6 @@ for (h = 0; h < nThrusters; h++) {
 	glBegin (GL_TRIANGLE_STRIP);
 	for (j = 0; j < RING_SIZE; j++) {
 		G3TransformPointf (&v, vFlame [0] + nStripIdx [j], 0);
-		v.p.z = -v.p.z;
 		glVertex3fv ((GLfloat *) &v);
 		}
 	glEnd ();
@@ -1290,7 +1283,6 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 				vPosf.p.y *= r [n];
 				vPosf.p.z = -l [n];
 				G3TransformPointf (&vPosf, &vPosf, 0);
-				vPosf.p.z = -vPosf.p.z;
 				glVertex3fv ((GLfloat *) &vPosf);
 				}
 			}
@@ -1307,7 +1299,6 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 			vPosf.p.y *= r [h];
 			vPosf.p.z = -l [h];
 			G3TransformPointf (&vPosf, &vPosf, 0);
-			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
 		glEnd ();
@@ -1337,14 +1328,12 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
 	glColor4d (1, 1, 1, 1.0 / 3.0);
 	VmsVecToFloat (&vPosf, &objP->position.vPos);
 	G3TransformPointf (&vPosf, &vPosf, 0);
-	vPosf.p.z = -vPosf.p.z;
 	glVertex3fv ((GLfloat *) &vPosf);
 	vPosf.p.x =
 	vPosf.p.y =
 	vPosf.p.z = -100;
 	VmsVecToFloat (&vPosf, &objP->last_pos);
 	G3TransformPointf (&vPosf, &vPosf, 0);
-	vPosf.p.z = -vPosf.p.z;
 	glVertex3fv ((GLfloat *) &vPosf);
 	glEnd ();
 	glLineWidth (1);
@@ -1398,7 +1387,6 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 			if (vPosf.p.z == -50)
 				vPosf.p.z *= h;
 			G3TransformPointf (&vPosf, &vPosf, 0);
-			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
 		glEnd ();
@@ -1416,7 +1404,6 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 			if (vPosf.p.z == -50)
 				vPosf.p.z *= h;
 			G3TransformPointf (&vPosf, &vPosf, 0);
-			vPosf.p.z = -vPosf.p.z;
 			glVertex3fv ((GLfloat *) &vPosf);
 			}
 		glEnd ();
@@ -1434,7 +1421,7 @@ bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 void RenderObject (tObject *objP, int nWindowNum)
 {
-	int			mld_save, oofIdx, bSpectate = 0;
+	int			mldSave, oofIdx, bSpectate = 0;
 	float			fLight [3];
 	fix			nGlow [2];
 	tPosition	savePos;
@@ -1464,7 +1451,7 @@ if ((objP->nType==OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #endif
 	return;
 	}
-mld_save = gameStates.render.detail.nMaxLinearDepth;
+mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 SetNearestStaticLights (objP->nSegment, 1);
@@ -1579,7 +1566,7 @@ if (objP->renderType != RT_NONE)
 		}
 	}
 #endif
-gameStates.render.detail.nMaxLinearDepth = mld_save;
+gameStates.render.detail.nMaxLinearDepth = mldSave;
 if (bSpectate)
 	objP->position = savePos;
 }

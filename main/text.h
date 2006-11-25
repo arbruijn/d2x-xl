@@ -1760,12 +1760,10 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_LIFE				GT(815)
 #define TXT_SHORT						GT(816)
 #define TXT_LONG						GT(817)
+#define TXT_EFFECT_RENDER_OPTS	GT(818)
+#define TXT_EFFECT_OPTS				GT(819)
 #if 0
 
-#define TXT_				GT(816)
-#define TXT_				GT(817)
-#define TXT_				GT(818)
-#define TXT_				GT(819)
 #define TXT_				GT(820)
 #define TXT_				GT(821)
 #define TXT_				GT(822)
@@ -2191,10 +2189,9 @@ void LoadGameTexts(void);
 #define HTX_ADVRND_SMOKEDISP		HT(224)
 #define HTX_HIT_INDICATOR			HT(225)				
 #define HTX_SMOKE_LIFE				HT(226)				
-
+#define HTX_RENDER_EFFECTOPTS		HT(227)
 #if 0
 				
-#define HTX_					HT(227)				
 #define HTX_					HT(228)				
 #define HTX_					HT(229)				
 #define HTX_					HT(230)				

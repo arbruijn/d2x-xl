@@ -157,7 +157,7 @@ static int	nFPSopt, nRSDopt,
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nOglLightOpt, nOglMaxLightsOpt,
+				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nOglLightOpt, nOglMaxLightsOpt,
 				nSyncSmokeSizes;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
@@ -167,6 +167,8 @@ static char *pszRendQual [5];
 static char *pszAmount [5];
 static char *pszSize [4];
 static char *pszLife [3];
+
+extern int bZPass, bFrontCap, bRearCap, bShadowVolume, bShadowTest;
 
 //------------------------------------------------------------------------------
 
@@ -1751,6 +1753,63 @@ return j;
 
 //------------------------------------------------------------------------------
 
+void EffectOptionsMenu ()
+{
+	tMenuItem m [30];
+	int	i, choice = 0;
+	int	opt;
+	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
+			optTracers, optShockwaves;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
+	optTranspExpl = opt++;
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
+	optLightTrails = opt++;
+	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
+	optTracers = opt++;
+	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_T, HTX_RENDER_SHKWAVES);
+	optShockwaves = opt++;
+	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_I, HTX_RENDER_AUTOTRANSP);
+	optAutoTransp = opt++;
+	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
+	optDmgExpl = opt++;
+	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
+	optThrustFlame = opt++;
+	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
+	optRenderShields = opt++;
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_EFFECT_OPTS, opt, m, NULL, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
+	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
+	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
+	extraGameInfo [0].bTracers = m [optTracers].value;
+	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
+	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
+	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
+	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
+#if EXPMODE_DEFAULTS
+	if (!gameOpts->app.bExpertMode) {
+		gameOpts->render.bTransparentEffects = 1;
+	gameOpts->render.bAutoTransparency = 1;
+	extraGameInfo [0].bLightTrails = 1;
+	extraGameInfo [0].bTracers = 1;
+	extraGameInfo [0].bShockwaves = 1;
+	extraGameInfo [0].bDamageExplosions = 1;
+	extraGameInfo [0].bThrusterFlames = 1;
+	extraGameInfo [0].bRenderShield = 1;
+		}
+#endif
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
 void AdvancedRenderOptionsMenu ();
 void SmokeOptionsMenu ();
 
@@ -1759,9 +1818,8 @@ void RenderOptionsMenu ()
 	tMenuItem m [50];
 	int	i, choice = 0;
 	int	opt;
-	int	optThrustFlame, optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
-			optSubTitles, optRenderShields, optAdvOpts, optDmgExpl, optObjectLight,
-			optAutoTransp, optLightTrails, optTracers, optShockwaves;
+	int	optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
+			optSubTitles, optAdvOpts, optObjectLight, optEffectOpts;
 #if 0
 	int checks;
 #endif
@@ -1823,20 +1881,6 @@ do {
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
 	nGunColorOpt = opt++;
-	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
-	optLightTrails = opt++;
-	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
-	optTracers = opt++;
-	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_T, HTX_RENDER_SHKWAVES);
-	optShockwaves = opt++;
-	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_I, HTX_RENDER_AUTOTRANSP);
-	optAutoTransp = opt++;
-	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
-	optDmgExpl = opt++;
-	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
-	optThrustFlame = opt++;
-	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
-	optRenderShields = opt++;
 	ADD_CHECK (opt, TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
 	optSubTitles = opt++;
 	if (gameOpts->app.bExpertMode) {
@@ -1854,6 +1898,8 @@ do {
 		opt++;
 		ADD_MENU (opt, TXT_SMOKE_RENDER_OPTS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
+		ADD_MENU (opt, TXT_EFFECT_RENDER_OPTS, KEY_S, HTX_RENDER_EFFECTOPTS);
+		optEffectOpts = opt++;
 		ADD_MENU (opt, TXT_ADV_RENDER_OPTS, KEY_A, HTX_RENDER_ADVOPTS);
 		optAdvOpts = opt++;
 		}
@@ -1867,7 +1913,9 @@ do {
 		if (gameOpts->app.bExpertMode) {
 			if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
 				SmokeOptionsMenu ();
-			if ((optAdvOpts >= 0) && (i == optAdvOpts))
+			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
+				EffectOptionsMenu ();
+			else if ((optAdvOpts >= 0) && (i == optAdvOpts))
 				AdvancedRenderOptionsMenu ();
 			}
 		} 
@@ -1888,13 +1936,6 @@ do {
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
 	if (nGunColorOpt >= 0)
 		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
-	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
-	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
-	extraGameInfo [0].bTracers = m [optTracers].value;
-	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
-	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
-	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
-	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
 	if (gameOpts->app.bExpertMode) {
 		gameOpts->movies.nQuality = m [optMovieQual].value;
 		gameOpts->movies.bResize = m [optMovieSize].value;
@@ -1971,6 +2012,15 @@ if (extraGameInfo [0].bShadows) {
 		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		m->rebuild = 1;
 		}
+	if (nShadowTestOpt >= 0) {
+		m = menus + nShadowTestOpt;
+		v = m->value;
+		if (bShadowTest != v) {
+			bShadowTest = v;
+			sprintf (m->text, "Test mode: %d", bShadowTest);
+			m->rebuild = 1;
+			}
+		}
 	}
 #endif
 m = menus + nRendQualOpt;
@@ -2035,10 +2085,12 @@ void AdvancedRenderOptionsMenu ()
 	int	h, i, choice = 0;
 	int	opt;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
-	int	optTranspExpl, optRenderAll, optMixColors, 
-			optUseGamma, optColoredWalls, optFSCameras, optTeleCams;
+	int	optRenderAll, optMixColors, optUseGamma, optColoredWalls, optFSCameras, optTeleCams;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+#	if SHADOWS
+	int	optZPass, optFrontCap, optRearCap, optShadowVolume;
+#	endif
 #endif
 #if 0
 	int checks;
@@ -2053,6 +2105,7 @@ void AdvancedRenderOptionsMenu ()
 	char szContrast [50];
 #if SHADOWS
 	char szMaxLights [50];
+	char szShadowTest [50];
 #endif
 	int nLMapRange = gameOpts->render.color.nLightMapRange;
 	int nRendQualSave = gameOpts->render.nQuality;
@@ -2115,8 +2168,6 @@ do {
 		optMixColors = -1;
 	ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
 	optColoredWalls = opt++;
-	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
-	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_RENDER_ALL, gameOpts->render.bAllSegs, KEY_R, HTX_ADVRND_ALLSEGS);
 	optRenderAll = opt++;
 #if 0
@@ -2137,6 +2188,25 @@ do {
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
 		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, 7, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
+#	ifdef _DEBUG
+		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
+		optZPass = opt++;
+		ADD_CHECK (opt, "render front cap", bFrontCap, 0, NULL);
+		optFrontCap = opt++;
+		ADD_CHECK (opt, "render rear cap", bRearCap, 0, NULL);
+		optRearCap = opt++;
+		ADD_CHECK (opt, "render shadow volume", bShadowVolume, 0, NULL);
+		optShadowVolume = opt++;
+		sprintf (szShadowTest, "test method: %d", bShadowTest);
+		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
+		nShadowTestOpt = opt++;
+#	else
+		optZPass =
+		optFrontCap =
+		optRearCap =
+		optShadowVolume =
+		nShadowTestOpt = -1;
+#	endif
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
@@ -2209,7 +2279,6 @@ do {
 			gameOpts->render.color.bMix = 1;
 #endif
 	gameOpts->render.color.bWalls = m [optColoredWalls].value;
-	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAllSegs = m [optRenderAll].value;
 	GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
 	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
@@ -2222,6 +2291,14 @@ do {
 	gameOpts->render.bObjects = m [optObjects].value;
 	gameOpts->render.bWalls = m [optWalls].value;
 	gameOpts->render.bDynamicLight = m [optDynLight].value;
+#	if SHADOWS
+	if (extraGameInfo [0].bShadows) {
+		bZPass = m [optZPass].value;
+		bFrontCap = m [optFrontCap].value;
+		bRearCap = m [optRearCap].value;
+		bShadowVolume = m [optShadowVolume].value;
+		}
+#	endif
 #endif
 	if (bFSCameras != gameOpts->render.cameras.bFitToWall) {
 		DestroyCameras ();

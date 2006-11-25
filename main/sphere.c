@@ -223,8 +223,8 @@ tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vec
 					*s = pRotSphere;
 	int			nFaces;
 
-OOF_MatVms2Oof (&m, &viewInfo.view [0]);
-OOF_VecVms2Oof (&p, &viewInfo.position);
+OOF_MatVms2Oof (&m, viewInfo.view);
+OOF_VecVms2Oof (&p, &viewInfo.pos);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
 	OOF_VecScale (&v, fRad);
@@ -326,7 +326,7 @@ if (sdP->nFaceNodes == 3) {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++) 
-			glVertex3f (ps->x, ps->y, -ps->z);
+			glVertex3fv ((GLfloat *) ps);
 	glEnd ();
 	if (bmP)
 		glColor4f (fScale, fScale, fScale, 1.0f);
@@ -335,15 +335,16 @@ if (sdP->nFaceNodes == 3) {
 	glBegin (GL_TRIANGLES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
 		for (i = 0; i < 3; i++, ps++) {
-			glVertex3f (ps->x, ps->y, -ps->z);
+			glVertex3fv ((GLfloat *) ps);
 			}
 	glEnd ();
 	}
 else {
 	glBegin (GL_LINES);
 	for (j = nFaces, ps = pSphere; j; j--, ps++)
-		for (i = 0; i < 4; i++, ps++) 
-			glVertex3f (ps->x, ps->y, -ps->z);
+		for (i = 0; i < 4; i++, ps++) {
+			glVertex3fv ((GLfloat *) ps);
+			}
 	glEnd ();
 	if (bmP)
 		glColor4f (fScale, fScale, fScale, 1.0f);
@@ -354,7 +355,7 @@ else {
 		for (i = 0; i < 4; i++, ps++) {
 			if (bmP)
 				glTexCoord2f (fTexCoord [i][0], fTexCoord [i][1]);
-			glVertex3f (ps->x, ps->y, -ps->z);
+			glVertex3fv ((GLfloat *) ps);
 			}
 	glEnd ();
 	}

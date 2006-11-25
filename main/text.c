@@ -1565,6 +1565,8 @@ char *defaultGameTexts [][2] = {
 	{"Schweif~Laenge: %s", "Trail ~Length: %s"},
 	{"Kurz", "Short"},
 	{"Lang", "Long"},
+	{"~Effekte...", "~Effects..."},
+	{"Effekte", "Effects"},
 #if 0
 	{"", ""},
 #endif
@@ -2010,6 +2012,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden Ziel- und Schadensanzeigen nur fuer\ngetroffene Objekte angezeigt.", 
 	 "If checked, target and damage indicators are only displayed\nfor hit objects."},
 	{"Hier kann die Laenge des Rauchschweifs eingestellt werden.", "Adjust the length of the smoke trail here."},
+	{"Hier koennen Effekte angepasstwerden.", "Adjust effects here."},
 #if 0
 #endif
 	{"", ""}

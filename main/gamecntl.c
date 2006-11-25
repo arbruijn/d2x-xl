@@ -1876,10 +1876,10 @@ void HandleTestKey(int key)
 			break;
 
 		case KEY_DEBUGGED+KEY_COMMA: 
-			nRenderZoom = FixMul(nRenderZoom, 62259); 
+			xRenderZoom = FixMul(xRenderZoom, 62259); 
 			break;
 		case KEY_DEBUGGED+KEY_PERIOD: 
-			nRenderZoom = FixMul(nRenderZoom, 68985); 
+			xRenderZoom = FixMul(xRenderZoom, 68985); 
 			break;
 
 		case KEY_DEBUGGED+KEY_P+KEY_SHIFTED: 

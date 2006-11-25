@@ -97,8 +97,8 @@ vmsVector viewerEye;  //valid during render
 int	nRenderSegs;
 static int renderState = -1;
 
-fix nRenderZoom = 0x9000;					//the tPlayer's zoom factor
-fix Render_zoom_scale = 1;					//the tPlayer's zoom factor
+fix xRenderZoom = 0x9000;					//the player's zoom factor
+fix xRenderZoomScale = 1;					//the player's zoom factor
 
 #ifdef _DEBUG
 ubyte bObjectRendered [MAX_OBJECTS];
@@ -1345,7 +1345,7 @@ for (i = 0; i < nv; i++) {
 		if (!gameStates.ogl.bUseTransform) {
 			gameData.segs.fVertices [pnum].p.x = ((float) pnt->p3_vec.x) / 65536.0f;
 			gameData.segs.fVertices [pnum].p.y = ((float) pnt->p3_vec.y) / 65536.0f;
-			gameData.segs.fVertices [pnum].p.z = -((float) pnt->p3_vec.z) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.z = ((float) pnt->p3_vec.z) / 65536.0f;
 			}
 		nRotatedLast [pnum] = nRLFrameCount;
 		}
@@ -2232,7 +2232,7 @@ void BuildObjectLists(int n_segs)
 //------------------------------------------------------------------------------
 
 #define	PP_DELTAZ	-i2f(30)
-#define	PP_DELTAY	i2f (10)
+#define	PP_DELTAY	i2f(10)
 
 tFlightPath	externalView;
 
@@ -2513,7 +2513,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	*pnStartSegNum = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
+	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 	}
 else {
 	*pnStartSegNum = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
@@ -2523,7 +2523,7 @@ else {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&viewerEye, &mView, nRenderZoom);
+		G3SetViewMatrix (&viewerEye, &mView, xRenderZoom);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
 		vmsMatrix mHead, mView;
@@ -2532,7 +2532,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&viewerEye, &mView, FixDiv(nRenderZoom, gameStates.render.nZoomFactor));
+		G3SetViewMatrix (&viewerEye, &mView, FixDiv(xRenderZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 #ifdef JOHN_ZOOM
@@ -2581,18 +2581,18 @@ else {
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
 #else
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, -i2f (30));
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.uVec, i2f (10));
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
+			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.uVec, PP_DELTAY);
 #endif
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
 			}
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
 		}
 	else
-		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
+		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 #else
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, nRenderZoom);
+	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 #endif
 	}
 }
@@ -2662,9 +2662,9 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 #else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif			 	
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, nRenderZoom);
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (nRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
 		ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
 		}
 	else if (gameStates.render.bAltShadows)

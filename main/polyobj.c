@@ -632,9 +632,9 @@ glLineWidth (20);
 glDisable (GL_TEXTURE_2D);
 glBegin (GL_LINES);
 glColor4d (1.0, 0.5, 0.0, 0.3);
-glVertex3x (p0.p3_vec.x, p0.p3_vec.y, -p0.p3_vec.z);
+glVertex3x (p0.p3_vec.x, p0.p3_vec.y, p0.p3_vec.z);
 glColor4d (1.0, 0.5, 0.0, 0.1);
-glVertex3x (p1.p3_vec.x, p1.p3_vec.y, -p1.p3_vec.z);
+glVertex3x (p1.p3_vec.x, p1.p3_vec.y, p1.p3_vec.z);
 glEnd ();
 glLineWidth (1);
 }

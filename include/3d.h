@@ -137,6 +137,8 @@ void G3StartInstanceAngles(vmsVector *pos,vmsAngVec *angles);
 
 //pops the old context
 void G3DoneInstance();
+int G3PushMatrix (void);
+int G3PopMatrix (void);
 
 //Misc utility functions:
 
@@ -192,7 +194,7 @@ ubyte G3EncodePoint(g3sPoint *point);
 
 static inline vmsVector *G3TranslatePoint (vmsVector *pDest, vmsVector *pSrc)
 {
-return VmVecSub (pDest, pSrc, &viewInfo.position);
+return VmVecSub (pDest, pSrc, &viewInfo.pos);
 }
 
 static inline vmsVector *G3RotatePoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
@@ -203,7 +205,7 @@ return VmVecRotate (pDest, pSrc, viewInfo.view + bUnscaled);
 static inline vmsVector *G3TransformPoint (vmsVector *pDest, vmsVector *pSrc, int bUnscaled)
 {
 vmsVector	vTrans;
-return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.position), viewInfo.view + bUnscaled);
+return VmVecRotate (pDest, VmVecSub (&vTrans, pSrc, &viewInfo.pos), viewInfo.view + bUnscaled);
 }
 
 static inline fVector *G3TranslatePointf (fVector *pDest, fVector *pSrc)

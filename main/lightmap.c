@@ -1013,7 +1013,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 					glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (lMapUVL [i].u), f2fl (lMapUVL [i].v));
 					glVertex3f (f2fl (gameData.segs.vertices [sideVerts [i]].x), 
 									f2fl (gameData.segs.vertices [sideVerts [i]].y), 
-								  -f2fl (gameData.segs.vertices [sideVerts [i]].z));
+								   f2fl (gameData.segs.vertices [sideVerts [i]].z));
 					}
 				glEnd ();
 				glDisable (GL_BLEND);

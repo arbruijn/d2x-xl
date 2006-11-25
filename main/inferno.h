@@ -1743,7 +1743,7 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 static inline void OglVertex3f (g3sPoint *p)
 {
 if (p->p3_index < 0)
-	glVertex3x (p->p3_vec.x, p->p3_vec.y, -p->p3_vec.z);
+	glVertex3x (p->p3_vec.x, p->p3_vec.y, p->p3_vec.z);
 else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }

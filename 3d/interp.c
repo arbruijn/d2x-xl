@@ -112,7 +112,7 @@ while (n--) {
 	if (gameStates.ogl.bUseTransform) {
 		pfv->p.x = (float) src->x / 65536.0f;
 		pfv->p.y = (float) src->y / 65536.0f;
-		pfv->p.z = -(float) src->z / 65536.0f;
+		pfv->p.z = (float) src->z / 65536.0f;
 		dest->p3_index = o++;
 		pfv++;
 		}
@@ -617,10 +617,6 @@ inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector 
 	tOOF_vector	h;
 #ifdef _DEBUG
 	float	mag;
-OOF_VecSub (&h, pDir, viewInfo.glPosf);
-mag = OOF_VecMag (&h);
-OOF_VecSub (&h, pv, viewInfo.glPosf);
-mag = OOF_VecMag (&h);
 OOF_VecSub (&h, pDir, pv);
 mag = OOF_VecMag (&h);
 mag = OOF_VecMul (&h, pNorm);
@@ -659,7 +655,7 @@ tPOF_face *pfqqq;
 
 inline int G3FaceIsLit (tPOFObject *po, tPOF_face *pf)
 {
-if ((int) pf == pfqqq)
+if (pf == pfqqq)
 	pf = pf;
 return pf->bFacingLight = G3CheckLightFacing (&pf->vCenterf, &pf->vNormf);
 }
@@ -733,7 +729,6 @@ vmsVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
 	vmsVector	*pv = po->pvVerts;
 	short			*pfv = pf->pVerts;
-	int			i;
 	tOOF_vector	cf;
 	static vmsVector c;
 
@@ -1311,13 +1306,9 @@ for (pe = pso->edges.pEdges; i; pe++)
 			bFacingLight = OOF_VecDot (&vLightPos, &n) > 0;
 			if (bFacingLight == bCullFront)
 				continue;
-			v0f.z = -v0f.z;
 			glVertex3fv ((GLfloat *) &v0f);
-			v1f.z = -v1f.z;
 			glVertex3fv ((GLfloat *) &v1f);
-			v2f.z = -v2f.z;
 			glVertex3fv ((GLfloat *) &v2f);
-			v3f.z = -v3f.z;
 			glVertex3fv ((GLfloat *) &v3f);
 			}
 		if (bShadowTest > 1) {
@@ -1325,10 +1316,8 @@ for (pe = pso->edges.pEdges; i; pe++)
 				{
 				glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 				glBegin (GL_LINES);
-				v1f = pvf [pe->v1];
-				glVertex3f (v1f.x, v1f.y, -v1f.z);
-				v0f = pvf [pe->v0];
-				glVertex3f (v0f.x, v0f.y, -v0f.z);
+				glVertex3fv ((GLfloat *) (pvf + pe->v1));
+				glVertex3fv ((GLfloat *) (pvf + pe->v0));
 				}
 			}
 		}
@@ -1364,18 +1353,17 @@ if (bCullFront) {
 			continue;
 #if 1
 		if (bShadowTest > 3) {
-			float m = OOF_VecMag (OOF_VecSub (&v1f, &vLightPos, &viewInfo.glPosf));
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
 			v1f = v0f = pf->vCenterf;
 			glBegin (GL_LINES);
-			glVertex3f (v0f.x, v0f.y, -v0f.z);
+			glVertex3fv ((GLfloat *) &v0f);
 			OOF_VecInc (&v0f, &pf->vNormf);
-			glVertex3f (v0f.x, v0f.y, -v0f.z);
+			glVertex3fv ((GLfloat *) &v0f);
 			glEnd ();
 			glColor4d (0,0,1,1);
 			glBegin (GL_LINES);
-			glVertex3f (v1f.x, v1f.y, -v1f.z);
-			glVertex3f (vLightPos.x, vLightPos.y, -vLightPos.z);
+			glVertex3fv ((GLfloat *) &v1f);
+			glVertex3fv ((GLfloat *) &vLightPos);
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
@@ -1406,7 +1394,6 @@ if (bCullFront) {
 				OOF_VecInc (&v0f, &v1f);
 #endif
 				}
-			v0f.z = -v0f.z;
 			glVertex3fv ((GLfloat *) &v0f);
 			}	
 		glEnd ();
@@ -1422,18 +1409,17 @@ else {
 			continue;
 #if 1
 		if (bShadowTest > 3) {
-			float m = OOF_VecMag (OOF_VecSub (&v1f, &vLightPos, &viewInfo.glPosf));
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
 			v1f = v0f = pf->vCenterf;
 			glBegin (GL_LINES);
-			glVertex3f (v0f.x, v0f.y, -v0f.z);
+			glVertex3fv ((GLfloat *) &v0f);
 			OOF_VecInc (&v0f, &pf->vNormf);
-			glVertex3f (v0f.x, v0f.y, -v0f.z);
+			glVertex3fv ((GLfloat *) &v0f);
 			glEnd ();
 			glColor4d (1,0,0,1);
 			glBegin (GL_LINES);
-			glVertex3f (v1f.x, v1f.y, -v1f.z);
-			glVertex3f (vLightPos.x, vLightPos.y, -vLightPos.z);
+			glVertex3fv ((GLfloat *) &v1f);
+			glVertex3fv ((GLfloat *) &vLightPos);
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
@@ -1453,7 +1439,6 @@ else {
 			--pfv;
 #endif
 			v0f = pvf [*pfv];
-			v0f.z = -v0f.z;
 			glVertex3fv ((GLfloat *) &v0f);
 			}
 		glEnd ();
@@ -1546,9 +1531,8 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 {
 #if SHADOWS
 	short				*pnl;
-	int				i, bCullFront, bCalcCenter = 0;
+	int				bCalcCenter = 0;
 	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
-	tPOFSubObject	*pso;
 
 if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
@@ -1596,7 +1580,7 @@ bool G3DrawPolyModel (
 	ubyte *p = modelP;
 	short	h;
 
-#ifdef _DEBUG && SHADOWS
+#if defined (_DEBUG) && SHADOWS
 if (bShadowTest > 1)
 	return 1;
 #endif
@@ -1795,11 +1779,11 @@ for (;;) {
 
 		case OP_FLATPOLY: {
 			int nv = WORDVAL (p+2);
-			int i, ntris;
+			int i, nTris;
 			GrSetColor (WORDVAL (p+28));
-			for (i=0;i<2;i++)
+			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
-			for (ntris=nv-2;ntris;ntris--) {
+			for (nTris=nv-2;nTris;nTris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i++];
 				G3CheckAndDrawPoly (3, pointList, NULL, NULL);
 				pointList [1] = pointList [2];
@@ -1812,7 +1796,7 @@ for (;;) {
 			int nv = WORDVAL (p+2);
 			uvl *uvlList;
 			uvl morph_uvls [3];
-			int i, ntris;
+			int i, nTris;
 			fix light;
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
@@ -1826,14 +1810,14 @@ for (;;) {
 				}
 			//now poke light into l values
 			uvlList = (uvl *) (p+30+ ((nv&~1)+1)*2);
-			for (i=0;i<3;i++)
+			for (i = 0; i < 3; i++)
 				morph_uvls [i].l = light;
-			for (i=0;i<2;i++) {
+			for (i = 0; i < 2; i++) {
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
 				morph_uvls [i].u = uvlList [i].u;
 				morph_uvls [i].v = uvlList [i].v;
 				}
-			for (ntris=nv-2;ntris;ntris--) {
+			for (nTris = nv - 2; nTris; nTris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i];
 				morph_uvls [2].u = uvlList [i].u;
 				morph_uvls [2].v = uvlList [i].v;
