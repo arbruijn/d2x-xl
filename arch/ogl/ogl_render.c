@@ -63,7 +63,7 @@
 #define OGL_CLEANUP		1
 #define USE_VERTNORMS	1
 
-int bShadowTest = 1;
+int bShadowTest = 0;
 
 extern int bZPass;
 int bSingleStencil = 0;
@@ -1911,7 +1911,7 @@ if (gameStates.render.nShadowPass) {
 			}
 		else {
 			if (gameStates.render.bAltShadows) {
-				glStencilFunc (GL_EQUAL, 0, ~0);
+				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}
 			else {
@@ -1924,7 +1924,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			glDepthFunc (GL_EQUAL);
 			}
-		glColorMask (1, 1, 1, 1);
+		glColorMask (1,1,1,1);
 //		glDepthMask (1);
 		glCullFace (GL_FRONT);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

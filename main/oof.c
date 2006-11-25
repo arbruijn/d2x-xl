@@ -44,9 +44,9 @@ extern int bShadowTest;
 int bSingleStencil;
 
 int bZPass = 0;
-int bFrontCap = 0;
+int bFrontCap = 1;
 int bRearCap = 1;
-int bShadowVolume = 0;
+int bShadowVolume = 1;
 
 static tOOF_vector vPos;
 static tOOF_vector vLightPos;
@@ -2001,7 +2001,7 @@ extern tRgbaColorf shadowColor [2], modelColor [2];
 
 //------------------------------------------------------------------------------
 
-void OOF_SetCullAndStencil (int bCullFront, int bFlip)
+void OOF_SetCullAndStencil (int bCullFront)
 {
 if (bSingleStencil || bShadowTest) {
 	glEnable (GL_CULL_FACE);
@@ -2029,7 +2029,6 @@ int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 	tOOF_edge		*pe;
 	tOOF_vector		*pv, v0, v1;
 	int				i;
-	float				m0, m1;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
@@ -2039,7 +2038,7 @@ if (bShadowTest > 3)
 	return 1;
 if (bShadowTest < 2)
 	glColor4fv ((GLfloat *) (shadowColor + bCullFront));
-OOF_SetCullAndStencil (bCullFront, 0);
+OOF_SetCullAndStencil (bCullFront);
 pv = pso->pvRotVerts;
 if (!bShadowTest)
 	glBegin (GL_QUADS);
@@ -2054,24 +2053,19 @@ for (pe = pso->edges.pEdges; i; pe++)
 				}
 			v0 = pv [pe->v0];
 			v1 = pv [pe->v1];
-			glVertex3fv ((GLfloat *) &v1);
 			glVertex3fv ((GLfloat *) &v0);
-			v0.x -= vrLightPos.x;
-			v0.y -= vrLightPos.y;
-			v0.z -= vrLightPos.z;
-			v1.x -= vrLightPos.x;
-			v1.y -= vrLightPos.y;
-			v1.z -= vrLightPos.z;
+			glVertex3fv ((GLfloat *) &v1);
+			OOF_VecDec (&v0, &vrLightPos);
+			OOF_VecDec (&v1, &vrLightPos);
 #if NORM_INF
-			m0 = OOF_VecMag (&v0);
-			m1 = OOF_VecMag (&v1);
+			OOF_VecScale (&v0, INFINITY / OOF_VecMag (&v0));
+			OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
 #else
-			m0 = m1 = 1.0f;
+			OOF_VecScale (&v0, INFINITY);
+			OOF_VecScale (&v1, INFINITY);
 #endif
-			OOF_VecScale (&v0, INFINITY / m0);
-			OOF_VecScale (&v1, INFINITY / m1);
-			glVertex3fv ((GLfloat *) &v0);
 			glVertex3fv ((GLfloat *) &v1);
+			glVertex3fv ((GLfloat *) &v0);
 			if (bShadowTest)
 				glEnd ();
 			}
@@ -2096,15 +2090,14 @@ int OOF_DrawShadowCaps (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 	tOOF_faceVert	*pfv;
 	tOOF_vector		*pv, *phv, v0;
 	int				i, j;
-	float				m;
 
 if (bZPass)
 	return 1;
-if (bShadowTest > 2)
+if (bShadowTest > 4)
 	return 1;
 glColor4fv ((GLfloat *) modelColor);
 pv = pso->pvRotVerts;
-OOF_SetCullAndStencil (bCullFront, 0);
+OOF_SetCullAndStencil (bCullFront);
 if (bCullFront) {
 	if (!bRearCap)
 		return 1;
@@ -2118,16 +2111,12 @@ if (bCullFront) {
 #else
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 #endif
-			phv = pv + pfv->nIndex;
-			v0.x = phv->x - vrLightPos.x;
-			v0.y = phv->y - vrLightPos.y;
-			v0.z = vrLightPos.z - phv->z;
+			OOF_VecSub (&v0, pv + pfv->nIndex, &vrLightPos);
 #	if NORM_INF
-			m = OOF_VecMag (&v0);
+			OOF_VecScale (&v0, INFINITY / OOF_VecMag (&v0));
 #	else
-			m = 1.0f;
+			OOF_VecScale (&v0, INFINITY);
 #	endif
-			OOF_VecScale (&v0, INFINITY / m);
 			glVertex3fv ((GLfloat *) &v0);
 			}	
 		glEnd ();
@@ -2142,7 +2131,7 @@ else {
 		if (pf->bReverse)
 			glFrontFace (GL_CW);
 		glBegin (GL_TRIANGLE_FAN);
-#if 1
+#if 0
 		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
 			--pfv;
 #else
@@ -2160,14 +2149,17 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadow (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
+int OOF_DrawShadow (tOOFObject *po, tOOF_subObject *pso)
 {
-return OOF_DrawShadowVolume (po, pso, bCullFront) && OOF_DrawShadowCaps (po, pso, bCullFront); 
+return OOF_DrawShadowVolume (po, pso, 0) && 
+		 OOF_DrawShadowVolume (po, pso, 1) && 
+		 OOF_DrawShadowCaps (po, pso, 0) && 
+		 OOF_DrawShadowCaps (po, pso, 1); 
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, int bFacing, float *fLight)
+int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float *fLight)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
@@ -2178,7 +2170,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, int b
 	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
-if (bShadowTest)
+if (bShadowTest && (bShadowTest < 4))
 	return 1;
 pv = pso->pvRotVerts;
 pvn = pso->pvNormals;
@@ -2236,8 +2228,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glVertex4f (phv->x, phv->y, -phv->z, 0.5);
 			}	
 		glEnd ();
-#if 0
-		if (pf->bFacingLight) {
+		if (pf->bFacingLight && (bShadowTest > 3)) {
 				tOOF_vector	fv0;
 
 			glLineWidth (3);
@@ -2259,7 +2250,6 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glEnd ();
 			glLineWidth (1);
 			}
-#endif
 		}
 	else {
 		fl = fLight [1];
@@ -2328,29 +2318,30 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 //------------------------------------------------------------------------------
 
 int OOF_RenderSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo, 
-								 int nIndex, int bFacing, float *fLight)
+								 int nIndex, float *fLight)
 {
 	tOOF_subObject	*psc;
 	int				i, j;
 
 OOF_VecInc (&vo, &pso->vOffset);
-if (!bFacing)
-	OOF_RotModelVerts (pso, vo);
-if ((gameStates.render.nShadowPass != 2) && (bFacing != ((pso->nFlags & OOF_SOF_FACING) != 0)))
-	return 1;
+OOF_RotModelVerts (pso, vo);
+//if ((gameStates.render.nShadowPass != 2) && (bFacing != ((pso->nFlags & OOF_SOF_FACING) != 0)))
+//	return 1;
+#if 0
 for (i = 0; i < pso->nChildren; i++) {
 	psc = po->pSubObjects + (j = pso->children [i]);
 	Assert (j >= 0 && j < po->nSubObjects);
 	if (psc->nParent == nIndex)
-		if (!OOF_RenderSubObject (objP, po, psc, vo, j, bFacing, fLight))
+		if (!OOF_RenderSubObject (objP, po, psc, vo, j, fLight))
 			return 0;
 	}
+#endif
 #if SHADOWS
 if (gameStates.render.nShadowPass == 2)
-	OOF_DrawShadow (po, pso, bFacing);
+	OOF_DrawShadow (po, pso);
 else 
 #endif
-	OOF_DrawSubObject (objP, po, pso, bFacing, fLight);
+	OOF_DrawSubObject (objP, po, pso, fLight);
 return 1;
 }
 
@@ -2359,24 +2350,25 @@ return 1;
 int OOF_RenderModel (tObject *objP, tOOFObject *po, float *fLight)
 {
 	tOOF_subObject	*pso;
-	int				r = 1, i, bFacing;
+	int				r = 1, i;
 	tOOF_vector		vo = {0.0f,0.0f,0.0f};
 
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 if (!gameStates.ogl.bUseTransform)
-	OOF_MatVms2Oof (&mView, &viewInfo.view [0]);
+	OOF_MatVms2Oof (&mView, viewInfo.view);
 OOF_VecVms2Oof (&vPos, &viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-for (bFacing = 0; bFacing <= bSingleStencil; bFacing++)
-	for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
-		if (pso->nParent == -1)
-			if (!OOF_RenderSubObject (objP, po, pso, vo, i, bFacing, fLight)) {
-				r = 0;
-				break;
-				}
+for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
+	if (pso->nParent == -1) {
+		if (!OOF_RenderSubObject (objP, po, pso, vo, i, fLight)) {
+			r = 0;
+			break;
+			}
+		break;
+		}
 G3DoneInstance ();
 glDisable (GL_TEXTURE_2D);
 return r;

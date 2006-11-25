@@ -1476,14 +1476,17 @@ switch (objP->renderType) {
 				}
 			else
 				DrawPolygonObject (objP);
-			RenderThrusterFlames (objP);
-			RenderPlayerShield (objP);
-			RenderTargetIndicator (objP, NULL);
-			RenderTowedFlag (objP);
+			if (gameStates.render.nShadowPass != 2) {
+				RenderThrusterFlames (objP);
+				RenderPlayerShield (objP);
+				RenderTargetIndicator (objP, NULL);
+				RenderTowedFlag (objP);
+				}
 			}
 		else if (objP->nType == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
-			RenderTargetIndicator (objP, NULL);
+			if (gameStates.render.nShadowPass != 2)
+				RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2) {

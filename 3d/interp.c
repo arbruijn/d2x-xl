@@ -651,12 +651,8 @@ return (tOOF_vector *) OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (&v, &pf-
 					
 //------------------------------------------------------------------------------
 
-tPOF_face *pfqqq;
-
 inline int G3FaceIsLit (tPOFObject *po, tPOF_face *pf)
 {
-if (pf == pfqqq)
-	pf = pf;
 return pf->bFacingLight = G3CheckLightFacing (&pf->vCenterf, &pf->vNormf);
 }
 
@@ -1270,7 +1266,7 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 if (!bShadowVolume)
 	return 1;
 G3SetCullAndStencil (bCullFront, zPass);
-glDisable (GL_CULL_FACE);
+//glDisable (GL_CULL_FACE);
 if (bShadowTest == 1)
 	glColor4fv ((GLfloat *) shadowColor);
 else if (bShadowTest > 1)
@@ -1340,7 +1336,7 @@ if (bShadowTest) {
 	}
 else
 	G3SetCullAndStencil (bCullFront, zPass);
-glDisable (GL_CULL_FACE);
+//glDisable (GL_CULL_FACE);
 pvf = po->pvVertsf;
 if (bCullFront) {
 	if (!bRearCap) {
@@ -1348,9 +1344,8 @@ if (bCullFront) {
 		return 1;
 		}
 	for (i = (bShadowTest == 4) ? 1 : pso->faces.nFaces, pf = pso->faces.pFaces + ((bShadowTest == 4) ? 13 : 0); i; i--, pf++) {
-		pfqqq = pf;
-		if (pf->bFacingLight)
-			continue;
+		//if (pf->bFacingLight)
+		//	continue;
 #if 1
 		if (bShadowTest > 3) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1405,8 +1400,8 @@ else {
 		return 1;
 		}
 	for (i = (bShadowTest == 4) ? 1 : pso->faces.nFaces, pf = pso->faces.pFaces + ((bShadowTest == 4) ? 13 : 0); i; i--, pf++) {
-		if (!pf->bFacingLight)
-			continue;
+		//if (!pf->bFacingLight)
+		//	continue;
 #if 1
 		if (bShadowTest > 3) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
@@ -1472,9 +1467,9 @@ if ((bShadowTest < 4) || (pso == po->subObjs.pSubObjs + 9)) {
 	G3GetPolyModelSilhouette (po, pso);
 	glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
 	h = G3RenderSubModelShadowVolume (po, pso, 0) &&
-		G3RenderSubModelShadowVolume (po, pso, 1) &&
-		G3RenderSubModelShadowCaps (po, pso, 0) &&
-		G3RenderSubModelShadowCaps (po, pso, 1);
+		 G3RenderSubModelShadowVolume (po, pso, 1) &&
+		 G3RenderSubModelShadowCaps (po, pso, 0) &&
+		 G3RenderSubModelShadowCaps (po, pso, 1);
 	}
 #endif
 if (pso->nParent >= 0)

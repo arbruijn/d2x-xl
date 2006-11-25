@@ -1898,7 +1898,7 @@ do {
 		opt++;
 		ADD_MENU (opt, TXT_SMOKE_RENDER_OPTS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
-		ADD_MENU (opt, TXT_EFFECT_RENDER_OPTS, KEY_S, HTX_RENDER_EFFECTOPTS);
+		ADD_MENU (opt, TXT_EFFECT_RENDER_OPTS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optEffectOpts = opt++;
 		ADD_MENU (opt, TXT_ADV_RENDER_OPTS, KEY_A, HTX_RENDER_ADVOPTS);
 		optAdvOpts = opt++;
@@ -2089,7 +2089,7 @@ void AdvancedRenderOptionsMenu ()
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #	if SHADOWS
-	int	optZPass, optFrontCap, optRearCap, optShadowVolume;
+	int	optZPass, optFrontCap, optRearCap, optShadowVolume, optAltShadows;
 #	endif
 #endif
 #if 0
@@ -2183,6 +2183,12 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
+	optZPass =
+	optFrontCap =
+	optRearCap =
+	optShadowVolume =
+	optAltShadows =
+	nShadowTestOpt = -1;
 	if (extraGameInfo [0].bShadows) {
 		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
@@ -2197,20 +2203,16 @@ do {
 		optRearCap = opt++;
 		ADD_CHECK (opt, "render shadow volume", bShadowVolume, 0, NULL);
 		optShadowVolume = opt++;
+		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bAltShadows, 0, NULL);
+		optAltShadows = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
 		nShadowTestOpt = opt++;
-#	else
-		optZPass =
-		optFrontCap =
-		optRearCap =
-		optShadowVolume =
-		nShadowTestOpt = -1;
 #	endif
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	else 
+	else
 #endif
 	if (extraGameInfo [0].bUseCameras) {
 		ADD_TEXT (opt, "", 0);
@@ -2293,10 +2295,11 @@ do {
 	gameOpts->render.bDynamicLight = m [optDynLight].value;
 #	if SHADOWS
 	if (extraGameInfo [0].bShadows) {
-		bZPass = m [optZPass].value;
-		bFrontCap = m [optFrontCap].value;
-		bRearCap = m [optRearCap].value;
-		bShadowVolume = m [optShadowVolume].value;
+		GET_VAL (bZPass, optZPass);
+		GET_VAL (bFrontCap, optFrontCap);
+		GET_VAL (bRearCap, optRearCap);
+		GET_VAL (gameStates.render.bAltShadows, optAltShadows);
+		GET_VAL (bShadowVolume, optShadowVolume);
 		}
 #	endif
 #endif
