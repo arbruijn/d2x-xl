@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _DEBUG
 #	define	SHADOWS	1
 #else
-#	define	SHADOWS	0
+#	define	SHADOWS	1
 #endif
 
 #include "pstypes.h"

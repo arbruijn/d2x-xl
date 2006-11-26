@@ -63,7 +63,9 @@
 #define OGL_CLEANUP		1
 #define USE_VERTNORMS	1
 
+#if defined (_DEBUG) && SHADOWS
 int bShadowTest = 0;
+#endif
 
 extern int bZPass;
 int bSingleStencil = 0;
@@ -594,7 +596,8 @@ else {
 if (!gameStates.render.nRenderPass)
 	return;
 if (EGI_FLAG (bShadows, 0, 0) && 
-	 (gameStates.render.nShadowPass < 3))
+	 (gameStates.render.nShadowPass < 3) &&
+	 !gameStates.render.bAltShadows)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
@@ -1858,6 +1861,7 @@ if (gameStates.render.nShadowPass) {
 			}
 		else {
 			glEnable (GL_BLEND);
+#ifdef _DEBUG
 			if (bShadowTest) {
 				glColorMask (1,1,1,1);
 				glDepthMask (1);
@@ -1865,15 +1869,23 @@ if (gameStates.render.nShadowPass) {
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glDisable (GL_STENCIL_TEST);
 				}
-			else {
+			else 
+#endif
+				{
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
 				glEnable (GL_STENCIL_TEST);
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
+#if 0
 				if (!glActiveStencilFaceEXT)
+#endif
 					bSingleStencil = 1;
+#ifdef _DEBUG
 				if (bSingleStencil || bShadowTest) {
+#else
+				if (bSingleStencil) {
+#endif
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
@@ -1910,11 +1922,19 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			}
 		else {
+#ifdef _DEBUG
 			if (gameStates.render.bAltShadows) {
+#if 0
+				glStencilFunc (GL_EQUAL, 0, ~0);
+				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
+#else
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
+				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
+#endif
 				}
-			else {
+			else 
+#endif
+				{
 				glStencilFunc (GL_EQUAL, 0, ~0);
 #if 0
 				glStencilOp (GL_KEEP, GL_KEEP, GL_INCR);	//problem: layered texturing fails

@@ -70,10 +70,12 @@ g3sPoint	*modelPointList = NULL;
 //this is a table of mappings from RGB15 to palette colors
 struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
 
+#if defined (_DEBUG) && SHADOWS
 extern int bShadowTest;
 extern int bFrontCap;
 extern int bRearCap;
 extern int bShadowVolume;
+#endif
 static int bContourEdges = 1;
 static int bTriangularize = 0;
 static int bIntrinsicFacing = 0;
@@ -1258,67 +1260,84 @@ else {
 
 int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
-	tOOF_vector	*pvf, v0f, v1f, v2f, v3f, n;
+	tOOF_vector	*pvf, v [4], n;
 	tPOF_edge	*pe;
 	short			i;
 	int			bFacingLight;
 
+#ifdef _DEBUG
 if (!bShadowVolume)
 	return 1;
-G3SetCullAndStencil (bCullFront, zPass);
-//glDisable (GL_CULL_FACE);
 if (bShadowTest == 1)
 	glColor4fv ((GLfloat *) shadowColor);
 else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+#endif
+G3SetCullAndStencil (bCullFront, zPass);
 pvf = po->pvVertsf;
+#ifdef _DEBUG
 if (bShadowTest < 2)
 	glBegin (GL_QUADS);
 else {
 	glLineWidth (3);
 	glBegin (GL_LINES);
 	}
+glEnd ();
+#endif
 i = bContourEdges ? pso->edges.nContourEdges : pso->edges.nEdges;
 for (pe = pso->edges.pEdges; i; pe++)
 	if (!bContourEdges || pe->bContour) {
 		i--;
+#ifdef _DEBUG
 		if (bShadowTest < 2) {
 			if (bShadowTest)
-				glColor4fv ((GLfloat *) shadowColor);
-			v0f = pvf [pe->v0];
-			OOF_VecSub (&v3f, &v0f, &vLightPos);
-			v1f = pvf [pe->v1];
-			OOF_VecSub (&v2f, &v1f, &vLightPos);
-#if NORM_INF
-			OOF_VecScale (&v3f, INFINITY / OOF_VecMag (&v3f));
-			OOF_VecScale (&v2f, INFINITY / OOF_VecMag (&v2f));
-#else
-			OOF_VecScale (&v3f, INFINITY);
-			OOF_VecScale (&v2f, INFINITY);
+				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
-			OOF_VecInc (&v2f, &v1f);
-			OOF_VecInc (&v3f, &v0f);
-			OOF_VecNormal (&n, &v0f, &v1f, &v2f);
+			v [0] = pvf [pe->v0];
+			OOF_VecSub (v+3, v, &vLightPos);
+			v [1] = pvf [pe->v1];
+			OOF_VecSub (v+2, v+1, &vLightPos);
+#if NORM_INF
+			OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
+			OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
+#else
+			OOF_VecScale (v+3, INFINITY);
+			OOF_VecScale (v+2, INFINITY);
+#endif
+			OOF_VecInc (v+2, v+1);
+			OOF_VecInc (v+3, v);
+#if 1
+			OOF_VecNormal (&n, v, v+1, v+2);
 			bFacingLight = OOF_VecDot (&vLightPos, &n) > 0;
 			if (bFacingLight == bCullFront)
 				continue;
-			glVertex3fv ((GLfloat *) &v0f);
-			glVertex3fv ((GLfloat *) &v1f);
-			glVertex3fv ((GLfloat *) &v2f);
-			glVertex3fv ((GLfloat *) &v3f);
+#endif
+#ifdef RELEASE
+			glEnableClientState (GL_VERTEX_ARRAY);
+			glVertexPointer (3, GL_FLOAT, 0, v);
+			glDrawArrays (GL_QUADS, 0, 4);
+			glDisableClientState (GL_VERTEX_ARRAY);
+#else
+			glBegin (GL_QUADS);
+			glVertex3fv ((GLfloat *) v);
+			glVertex3fv ((GLfloat *) (v+1));
+			glVertex3fv ((GLfloat *) (v+2));
+			glVertex3fv ((GLfloat *) (v+3));
+			glEnd ();
+#endif
+#ifdef _DEBUG
 			}
-		if (bShadowTest > 1) {
-//			if (pe->pf0 - po->faces.pFaces == 102 || pe->pf1 - po->faces.pFaces == 102)
-				{
-				glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-				glBegin (GL_LINES);
-				glVertex3fv ((GLfloat *) (pvf + pe->v1));
-				glVertex3fv ((GLfloat *) (pvf + pe->v0));
-				}
+		else {
+			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+			glVertex3fv ((GLfloat *) (pvf + pe->v1));
+			glVertex3fv ((GLfloat *) (pvf + pe->v0));
 			}
+#endif
 		}
-glEnd ();
+#ifdef _DEBUG
+//glEnd ();
 glLineWidth (1);
+#endif
 return 1;
 }
 
@@ -1326,44 +1345,44 @@ return 1;
 
 int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
-	tOOF_vector	*pvf, v0f, v1f;
+	tOOF_vector	*pvf, v0, v1;
 	tPOF_face	*pf;
 	short			*pfv, i, j;
 
+#ifdef _DEBUG
 if (bShadowTest) {
 	glColor4fv ((GLfloat *) (modelColor + bCullFront));
 	glDepthFunc (GL_LEQUAL);
 	}
 else
+#endif
 	G3SetCullAndStencil (bCullFront, zPass);
 //glDisable (GL_CULL_FACE);
 pvf = po->pvVertsf;
 if (bCullFront) {
-	if (!bRearCap) {
-		glEnable (GL_CULL_FACE);
+#ifdef _DEBUG
+	if (!bRearCap)
 		return 1;
-		}
-	for (i = (bShadowTest == 4) ? 1 : pso->faces.nFaces, pf = pso->faces.pFaces + ((bShadowTest == 4) ? 13 : 0); i; i--, pf++) {
+#endif
+	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		//if (pf->bFacingLight)
 		//	continue;
-#if 1
+#ifdef _DEBUG
 		if (bShadowTest > 3) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
-			v1f = v0f = pf->vCenterf;
+			v1 = v0 = pf->vCenterf;
 			glBegin (GL_LINES);
-			glVertex3fv ((GLfloat *) &v0f);
-			OOF_VecInc (&v0f, &pf->vNormf);
-			glVertex3fv ((GLfloat *) &v0f);
+			glVertex3fv ((GLfloat *) &v0);
+			OOF_VecInc (&v0, &pf->vNormf);
+			glVertex3fv ((GLfloat *) &v0);
 			glEnd ();
 			glColor4d (0,0,1,1);
 			glBegin (GL_LINES);
-			glVertex3fv ((GLfloat *) &v1f);
+			glVertex3fv ((GLfloat *) &v1);
 			glVertex3fv ((GLfloat *) &vLightPos);
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
-#endif
-#if 1
 		if (bShadowTest) {
 			glLineWidth (1);
 			glBegin (GL_LINE_LOOP);
@@ -1371,55 +1390,54 @@ if (bCullFront) {
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-#if 0
+#if 1
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 #else
 		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
 			--pfv;
 #endif
-			v0f = pvf [*pfv];
+			v0 = pvf [*pfv];
 #if 1
-			OOF_VecSub (&v1f, &v0f, &vLightPos);
-			if (bShadowTest < 4) {
-#if NORM_INF
-				OOF_VecScale (&v1f, INFINITY / OOF_VecMag (&v1f));
-#else
-				OOF_VecScale (&v1f, INFINITY);
+			OOF_VecSub (&v1, &v0, &vLightPos);
+#ifdef _DEBUG
+			if (bShadowTest < 4) 
 #endif
-				OOF_VecInc (&v0f, &v1f);
+				{
+#if NORM_INF
+				OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+#else
+				OOF_VecScale (&v1, INFINITY);
+#endif
+				OOF_VecInc (&v0, &v1);
 #endif
 				}
-			glVertex3fv ((GLfloat *) &v0f);
+			glVertex3fv ((GLfloat *) &v0);
 			}	
 		glEnd ();
 		}
 	}
 else {
-	if (!bFrontCap) {
-		glEnable (GL_CULL_FACE);
+#ifdef _DEBUG
+	if (!bFrontCap)
 		return 1;
-		}
-	for (i = (bShadowTest == 4) ? 1 : pso->faces.nFaces, pf = pso->faces.pFaces + ((bShadowTest == 4) ? 13 : 0); i; i--, pf++) {
-		//if (!pf->bFacingLight)
-		//	continue;
-#if 1
+#endif
+	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+#ifdef _DEBUG
 		if (bShadowTest > 3) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
-			v1f = v0f = pf->vCenterf;
+			v1 = v0 = pf->vCenterf;
 			glBegin (GL_LINES);
-			glVertex3fv ((GLfloat *) &v0f);
-			OOF_VecInc (&v0f, &pf->vNormf);
-			glVertex3fv ((GLfloat *) &v0f);
+			glVertex3fv ((GLfloat *) &v0);
+			OOF_VecInc (&v0, &pf->vNormf);
+			glVertex3fv ((GLfloat *) &v0);
 			glEnd ();
 			glColor4d (1,0,0,1);
 			glBegin (GL_LINES);
-			glVertex3fv ((GLfloat *) &v1f);
+			glVertex3fv ((GLfloat *) &v1);
 			glVertex3fv ((GLfloat *) &vLightPos);
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
-#endif
-#if 1
 		if (bShadowTest) {
 			glLineWidth (1);
 			glBegin (GL_LINE_LOOP);
@@ -1433,8 +1451,8 @@ else {
 		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
 			--pfv;
 #endif
-			v0f = pvf [*pfv];
-			glVertex3fv ((GLfloat *) &v0f);
+			v0 = pvf [*pfv];
+			glVertex3fv ((GLfloat *) &v0);
 			}
 		glEnd ();
 		}
@@ -1452,26 +1470,15 @@ int G3DrawSubModelShadow (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 if (pso->nParent >= 0)
 	G3StartInstanceAngles (&pso->vPos, &pso->vAngles);
 h = (int) (pso - po->subObjs.pSubObjs);
-#if 1
 for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
 		G3DrawSubModelShadow (po, po->subObjs.pSubObjs + i, bCullFront);
-#endif
-#if 0
-return bCullFront ? 
-		 G3RenderSubModelShadowVolume (po, pso) &&
-		 G3RenderSubModelShadowCaps (po, pso, 1) :
-		 G3RenderSubModelShadowCaps (po, pso, 0);
-#else
-if ((bShadowTest < 4) || (pso == po->subObjs.pSubObjs + 9)) {
-	G3GetPolyModelSilhouette (po, pso);
-	glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
-	h = G3RenderSubModelShadowVolume (po, pso, 0) &&
-		 G3RenderSubModelShadowVolume (po, pso, 1) &&
-		 G3RenderSubModelShadowCaps (po, pso, 0) &&
-		 G3RenderSubModelShadowCaps (po, pso, 1);
-	}
-#endif
+G3GetPolyModelSilhouette (po, pso);
+glColor4f (0.0f, 0.0f, 0.0f, 1.0f);
+h = G3RenderSubModelShadowVolume (po, pso, 0) &&
+	 G3RenderSubModelShadowVolume (po, pso, 1) &&
+	 G3RenderSubModelShadowCaps (po, pso, 0) &&
+	 G3RenderSubModelShadowCaps (po, pso, 1);
 if (pso->nParent >= 0)
 	G3DoneInstance ();
 return h;

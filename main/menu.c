@@ -168,7 +168,9 @@ static char *pszAmount [5];
 static char *pszSize [4];
 static char *pszLife [3];
 
+#if SHADOWS
 extern int bZPass, bFrontCap, bRearCap, bShadowVolume, bShadowTest;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -2012,6 +2014,7 @@ if (extraGameInfo [0].bShadows) {
 		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		m->rebuild = 1;
 		}
+#	ifdef _DEBUG
 	if (nShadowTestOpt >= 0) {
 		m = menus + nShadowTestOpt;
 		v = m->value;
@@ -2021,6 +2024,7 @@ if (extraGameInfo [0].bShadows) {
 			m->rebuild = 1;
 			}
 		}
+#	endif
 	}
 #endif
 m = menus + nRendQualOpt;
@@ -2183,12 +2187,14 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
+#ifdef _DEBUG
 	optZPass =
 	optFrontCap =
 	optRearCap =
 	optShadowVolume =
 	optAltShadows =
 	nShadowTestOpt = -1;
+#endif
 	if (extraGameInfo [0].bShadows) {
 		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);

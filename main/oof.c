@@ -40,13 +40,16 @@
 
 #define oof_free(_p)	if (_p) {d_free (_p); (_p) = NULL;}
 
+#if defined (_DEBUG) && SHADOWS
 extern int bShadowTest;
 int bSingleStencil;
 
-int bZPass = 0;
 int bFrontCap = 1;
 int bRearCap = 1;
 int bShadowVolume = 1;
+#endif
+
+int bZPass = 0;
 
 static tOOF_vector vPos;
 static tOOF_vector vLightPos;
@@ -2003,7 +2006,10 @@ extern tRgbaColorf shadowColor [2], modelColor [2];
 
 void OOF_SetCullAndStencil (int bCullFront)
 {
-if (bSingleStencil || bShadowTest) {
+#ifdef _DEBUG
+if (bSingleStencil || bShadowTest) 
+#endif
+	{
 	glEnable (GL_CULL_FACE);
 	if (bCullFront) {
 		glCullFace (GL_BACK);
@@ -2027,58 +2033,78 @@ if (bSingleStencil || bShadowTest) {
 int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_edge		*pe;
-	tOOF_vector		*pv, v0, v1;
-	int				i;
+	tOOF_vector		*pv, v [4], n;
+	int				i, bFacingLight;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
+#ifdef _DEBUG
 if (!bShadowVolume)
 	return 1;
 if (bShadowTest > 3)
 	return 1;
 if (bShadowTest < 2)
 	glColor4fv ((GLfloat *) (shadowColor + bCullFront));
+#endif
 OOF_SetCullAndStencil (bCullFront);
 pv = pso->pvRotVerts;
-if (!bShadowTest)
+#ifdef _DEBUG
+if (bShadowTest < 2)
 	glBegin (GL_QUADS);
+else
+	glBegin (GL_LINES);
+#endif
 i = bContourEdges ? pso->edges.nContourEdges : pso->edges.nEdges;
 for (pe = pso->edges.pEdges; i; pe++)
 	if (!bContourEdges || pe->bContour) {
 		i--;
+#ifdef _DEBUG
 		if (bShadowTest < 2) {
-			if (bShadowTest) {
-				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
-				glBegin (GL_QUADS);
-				}
-			v0 = pv [pe->v0];
-			v1 = pv [pe->v1];
-			glVertex3fv ((GLfloat *) &v0);
-			glVertex3fv ((GLfloat *) &v1);
-			OOF_VecDec (&v0, &vrLightPos);
-			OOF_VecDec (&v1, &vrLightPos);
-#if NORM_INF
-			OOF_VecScale (&v0, INFINITY / OOF_VecMag (&v0));
-			OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
-#else
-			OOF_VecScale (&v0, INFINITY);
-			OOF_VecScale (&v1, INFINITY);
-#endif
-			glVertex3fv ((GLfloat *) &v1);
-			glVertex3fv ((GLfloat *) &v0);
 			if (bShadowTest)
-				glEnd ();
+				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
+#endif
+			v [0] = pv [pe->v0];
+			OOF_VecSub (v+3, v, &vrLightPos);
+			v [1] = pv [pe->v1];
+			OOF_VecSub (v+2, v+1, &vrLightPos);
+#if NORM_INF
+			OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
+			OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
+#else
+			OOF_VecScale (v+2, INFINITY);
+			OOF_VecScale (v+3, INFINITY);
+#endif
+			OOF_VecInc (v+2, v+1);
+			OOF_VecInc (v+3, v);
+#if 1
+			OOF_VecNormal (&n, v, v+1, v+2);
+			bFacingLight = OOF_VecDot (&vrLightPos, &n) > 0;
+			if (bFacingLight == bCullFront)
+				continue;
+#endif
+#ifdef RELEASE
+			glEnableClientState (GL_VERTEX_ARRAY);
+			glVertexPointer (3, GL_FLOAT, 0, v);
+			glDrawArrays (GL_QUADS, 0, 4);
+			glDisableClientState (GL_VERTEX_ARRAY);
+#else
+			glVertex3fv ((GLfloat *) v);
+			glVertex3fv ((GLfloat *) (v+1));
+			glVertex3fv ((GLfloat *) (v+2));
+			glVertex3fv ((GLfloat *) (v+3));
+#endif
+#ifdef _DEBUG
 			}
 		else {
 			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-			glBegin (GL_LINES);
 			glVertex3fv ((GLfloat *) (pv + pe->v1));
 			glVertex3fv ((GLfloat *) (pv + pe->v0));
-			glEnd ();
 			}
+#endif
 		}
-if (!bShadowTest)
-	glEnd ();
+#ifdef _DEBUG
+glEnd ();
+#endif
 return 1;
 }
 
@@ -2088,19 +2114,23 @@ int OOF_DrawShadowCaps (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
-	tOOF_vector		*pv, *phv, v0;
+	tOOF_vector		*pv, *phv, v0, v1;
 	int				i, j;
 
+#ifdef _DEBUG
 if (bZPass)
 	return 1;
 if (bShadowTest > 4)
 	return 1;
 glColor4fv ((GLfloat *) modelColor);
+#endif
 pv = pso->pvRotVerts;
 OOF_SetCullAndStencil (bCullFront);
 if (bCullFront) {
+#ifdef _DEBUG
 	if (!bRearCap)
 		return 1;
+#endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (pf->bReverse)
 			glFrontFace (GL_CW);
@@ -2111,12 +2141,14 @@ if (bCullFront) {
 #else
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 #endif
-			OOF_VecSub (&v0, pv + pfv->nIndex, &vrLightPos);
+			v0 = pv [pfv->nIndex];
+			OOF_VecSub (&v1, &v0, &vrLightPos);
 #	if NORM_INF
-			OOF_VecScale (&v0, INFINITY / OOF_VecMag (&v0));
+			OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
 #	else
-			OOF_VecScale (&v0, INFINITY);
+			OOF_VecScale (&v1, INFINITY);
 #	endif
+			OOF_VecInc (&v0, &v1);
 			glVertex3fv ((GLfloat *) &v0);
 			}	
 		glEnd ();
@@ -2125,8 +2157,10 @@ if (bCullFront) {
 		}
 	}
 else {
+#ifdef _DEBUG
 	if (!bFrontCap)
 		return 1;
+#endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (pf->bReverse)
 			glFrontFace (GL_CW);
@@ -2170,8 +2204,10 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
+#ifdef _DEBUG
 if (bShadowTest && (bShadowTest < 4))
 	return 1;
+#endif
 pv = pso->pvRotVerts;
 pvn = pso->pvNormals;
 pvc = pso->pVertColors;
@@ -2225,9 +2261,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
-			glVertex4f (phv->x, phv->y, -phv->z, 0.5);
+			glVertex3fv ((GLfloat *) phv);
+			//glVertex4f (phv->x, phv->y, phv->z, 0.5);
 			}	
 		glEnd ();
+#ifdef _DEBUG
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 				tOOF_vector	fv0;
 
@@ -2250,6 +2288,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glEnd ();
 			glLineWidth (1);
 			}
+#endif
 		}
 	else {
 		fl = fLight [1];
@@ -2327,7 +2366,7 @@ OOF_VecInc (&vo, &pso->vOffset);
 OOF_RotModelVerts (pso, vo);
 //if ((gameStates.render.nShadowPass != 2) && (bFacing != ((pso->nFlags & OOF_SOF_FACING) != 0)))
 //	return 1;
-#if 0
+#if 1
 for (i = 0; i < pso->nChildren; i++) {
 	psc = po->pSubObjects + (j = pso->children [i]);
 	Assert (j >= 0 && j < po->nSubObjects);
@@ -2367,7 +2406,6 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 			r = 0;
 			break;
 			}
-		break;
 		}
 G3DoneInstance ();
 glDisable (GL_TEXTURE_2D);

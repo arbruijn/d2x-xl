@@ -71,7 +71,10 @@ extern tFaceColor tMapColor, lightColor, vertColors [4];
 extern tRgbColorf globalDynColor;
 extern char bGotGlobalDynColor;
 char bUseGlobalColor = 0;
+
+#if defined (_DEBUG) && SHADOWS
 extern int bShadowTest;
+#endif
 
 #define INITIAL_LOCAL_LIGHT (F1_0/4)    // local light value in tSegment of occurence (of light emission)
 
@@ -2344,9 +2347,9 @@ void StartLightingFrame (tObject *viewer);
 
 void RenderShadow (float fDist)
 {
+#if 0
 gameStates.render.nShadowPass = 3;
 OglStartFrame (0, 0);
-#if 0
 glPushMatrix ();
 glLoadIdentity ();
 glMatrixMode (GL_PROJECTION);
@@ -2368,9 +2371,9 @@ glEnable (GL_DEPTH_TEST);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
-#endif
 gameStates.render.nShadowPass = 2;
 OglStartFrame (0, 0);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2633,7 +2636,7 @@ if (nClearWindow == 1) {
 if (bShowOnlyCurSide)
 	GrClearCanvas (nClearWindowColor);
 #endif
-#ifdef _DEBUG
+#if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && 
 	 !(nWindowNum || gameStates.render.cameras.bActive)) {
 	if (!gameStates.render.bShadowMaps) {
