@@ -169,7 +169,7 @@ static char *pszSize [4];
 static char *pszLife [3];
 
 #if SHADOWS
-extern int bZPass, bFrontCap, bRearCap, bShadowVolume, bShadowTest;
+extern int bZPass, bFrontCap, bRearCap, bShadowVolume, bShadowTest, bSWCulling;
 #endif
 
 //------------------------------------------------------------------------------
@@ -2093,7 +2093,7 @@ void AdvancedRenderOptionsMenu ()
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #	if SHADOWS
-	int	optZPass, optFrontCap, optRearCap, optShadowVolume, optAltShadows;
+	int	optZPass, optFrontCap, optRearCap, optShadowVolume, optSWCulling, optAltShadows;
 #	endif
 #endif
 #if 0
@@ -2192,6 +2192,7 @@ do {
 	optFrontCap =
 	optRearCap =
 	optShadowVolume =
+	optSWCulling =
 	optAltShadows =
 	nShadowTestOpt = -1;
 #endif
@@ -2209,6 +2210,8 @@ do {
 		optRearCap = opt++;
 		ADD_CHECK (opt, "render shadow volume", bShadowVolume, 0, NULL);
 		optShadowVolume = opt++;
+		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
+		optSWCulling = opt++;
 		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bAltShadows, 0, NULL);
 		optAltShadows = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
@@ -2305,6 +2308,7 @@ do {
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
 		GET_VAL (gameStates.render.bAltShadows, optAltShadows);
+		GET_VAL (bSWCulling, optSWCulling);
 		GET_VAL (bShadowVolume, optShadowVolume);
 		}
 #	endif

@@ -47,6 +47,7 @@ int bSingleStencil;
 int bFrontCap = 1;
 int bRearCap = 1;
 int bShadowVolume = 1;
+int bSWCulling = 1;
 #endif
 
 int bZPass = 0;
@@ -56,7 +57,8 @@ static tOOF_vector vLightPos;
 static tOOF_vector vrLightPos;
 static tOOF_matrix mView;
 static int bContourEdges = 1;
-static int bSWCulling = 0;
+
+int G3GetFaceWinding (tOOF_vector *v0, tOOF_vector *v1, tOOF_vector *v2);
 
 //------------------------------------------------------------------------------
 
@@ -997,7 +999,6 @@ int OOF_FindVertex (tOOF_subObject *pso, int i)
 
 pv = pso->pvVerts;
 v = pv [i];
-
 for (j = 0; i < i; j++, pv++)
 	if ((v.x == pv->x) && (v.y == pv->y) && (v.z == pv->z))
 		return j;
@@ -1006,25 +1007,45 @@ return i;
 
 //------------------------------------------------------------------------------
 
-#define MAXGAP	0.01f;
+#define MAXGAP	0.01f
 
-int OOF_FindEdge (tOOF_subObject *pso, int v0, int v1)
+int OOF_FindEdge (tOOF_subObject *pso, int i0, int i1)
 {
 	int			i;
 	tOOF_edge	h;
+	tOOF_vector	v0, v1, hv0, hv1;
 
 #ifdef _DEBUG
-v0 = OOF_FindVertex (pso, v0);
-v1 = OOF_FindVertex (pso, v1);
+i0 = OOF_FindVertex (pso, i0);
+i1 = OOF_FindVertex (pso, i1);
 #endif
 for (i = 0; i < pso->edges.nEdges; i++) {
 	h = pso->edges.pEdges [i];
-#if 1
-	if (((h.v0 == v0) && (h.v1 == v1)) || ((h.v0 == v1) && (h.v1 == v0)))
-#else
-	if (((fabs (h.v0 - v0) < MAXGAP) && (fabs (h.v1 - v1) < MAXGAP)) || 
-		 ((fabs (h.v0 - v1) < MAXGAP) && (fabs (h.v1 - v0) < MAXGAP)))
-#endif
+	if (((h.v0 [0] == i0) && (h.v1 [0] == i1)) || ((h.v0 [0] == i1) && (h.v1 [0] == i0)))
+		return i;
+	}
+v0 = pso->pvVerts [i0]; 
+v1 = pso->pvVerts [i1]; 
+for (i = 0; i < pso->edges.nEdges; i++) {
+	h = pso->edges.pEdges [i];
+	hv0 = pso->pvVerts [h.v0 [0]]; 
+	hv1 = pso->pvVerts [h.v1 [0]]; 
+	if ((hv0.x == v0.x) && (hv0.y == v0.y) && (hv0.z == v0.z) &&
+		 (hv1.x == v1.x) && (hv1.y == v1.y) && (hv1.z == v1.z))
+		return i;
+	if ((hv1.x == v0.x) && (hv1.y == v0.y) && (hv1.z == v0.z) &&
+		 (hv0.x == v1.x) && (hv0.y == v1.y) && (hv0.z == v1.z))
+		return i;
+	}
+for (i = 0; i < pso->edges.nEdges; i++) {
+	h = pso->edges.pEdges [i];
+	OOF_VecSub (&hv0, pso->pvVerts + h.v0 [0], &v0);
+	OOF_VecSub (&hv1, pso->pvVerts + h.v1 [0], &v1);
+	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
+		return i;
+	OOF_VecSub (&hv0, pso->pvVerts + h.v0 [0], &v1);
+	OOF_VecSub (&hv1, pso->pvVerts + h.v1 [0], &v0);
+	if ((OOF_VecMag (&hv0) < MAXGAP) && (OOF_VecMag (&hv1) < MAXGAP))
 		return i;
 	}
 return -1;
@@ -1044,12 +1065,27 @@ if (i < 0)
 pe = pso->edges.pEdges + i;
 if (i < 0) {
 	}
-if (pe->pf0)
-	pe->pf1 = pf;
+if (pe->pf [0]) {
+	pe->pf [1] = pf;
+	if (pf->bReverse) {
+		pe->v0 [1] = v1;
+		pe->v1 [1] = v0;
+		}
+	else {
+		pe->v0 [1] = v0;
+		pe->v1 [1] = v1;
+		}
+	}
 else {
-	pe->pf0 = pf;
-	pe->v0 = v0;
-	pe->v1 = v1;
+	pe->pf [0] = pf;
+	if (pf->bReverse) {
+		pe->v0 [0] = v1;
+		pe->v1 [0] = v0;
+		}
+	else {
+		pe->v0 [0] = v0;
+		pe->v1 [0] = v1;
+		}
 	}
 return i;
 }
@@ -1125,22 +1161,22 @@ if (pfv) {
 		}	
 #endif
 	OOF_InitMinMax (&f.vMin, &f.vMax);
-	e.v1 = -1;
+	e.v1 [0] = -1;
 	for (i = 0; i < f.nVerts; i++)
 		if (!OOF_ReadFaceVert (fp, f.pVerts + i)) {
 			nIndent -= 2;
 			return OOF_FreeFace (&f);
 			}
 		else {
-			e.v0 = e.v1;
-			e.v1 = f.pVerts [i].nIndex;
-			OOF_GetMinMax (pso->pvVerts + e.v1, &f.vMin, &f.vMax);
+			e.v0 [0] = e.v1 [0];
+			e.v1 [0] = f.pVerts [i].nIndex;
+			OOF_GetMinMax (pso->pvVerts + e.v1 [0], &f.vMin, &f.vMax);
 			if (i)
-				OOF_AddEdge (pso, pf, e.v0, e.v1);
+				OOF_AddEdge (pso, pf, e.v0 [0], e.v1 [0]);
 			else
-				v0 = e.v1;
+				v0 = e.v1 [0];
 			}
-	OOF_AddEdge (pso, pf, e.v1, v0);
+	OOF_AddEdge (pso, pf, e.v1 [0], v0);
 	//OOF_CalcFaceNormal (pso, &f);
 	OOF_CalcFaceCenter (pso, &f);
 #if OOF_MEM_OPT
@@ -1981,8 +2017,8 @@ int OOF_GetSilhouette (tOOF_subObject *pso)
 OOF_GetLitFaces (pso);
 pv = pso->pvRotVerts;
 for (h = j = 0, i = pso->edges.nEdges, pe = pso->edges.pEdges; i; i--, pe++) {
-	if (pe->pf0 && pe->pf1) {
-		if (pe->bContour = (pe->pf0->bFacingLight != pe->pf1->bFacingLight))
+	if (pe->pf [0] && pe->pf [1]) {
+		if (pe->bContour = (pe->pf [0]->bFacingLight != pe->pf [1]->bFacingLight))
 			h++;
 		}
 	else {
@@ -2012,18 +2048,18 @@ if (bSingleStencil || bShadowTest)
 	{
 	glEnable (GL_CULL_FACE);
 	if (bCullFront) {
-		glCullFace (GL_BACK);
-		if (bZPass)
-			glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-		else
-			glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-		}
-	else {
 		glCullFace (GL_FRONT);
 		if (bZPass)
 			glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 		else
 			glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+		}
+	else {
+		glCullFace (GL_BACK);
+		if (bZPass)
+			glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
+		else
+			glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 		}
 	}
 }
@@ -2034,7 +2070,7 @@ int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_edge		*pe;
 	tOOF_vector		*pv, v [4], n;
-	int				i, bFacingLight;
+	int				i, j, bFacingLight;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
@@ -2063,9 +2099,12 @@ for (pe = pso->edges.pEdges; i; pe++)
 			if (bShadowTest)
 				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
-			v [0] = pv [pe->v0];
+			j = (pe->pf [1] && pe->pf [1]->bFacingLight);
+			if (pe->pf [j]->bReverse)
+				j = !j;
+			v [0] = pv [pe->v1 [j]];
 			OOF_VecSub (v+3, v, &vrLightPos);
-			v [1] = pv [pe->v1];
+			v [1] = pv [pe->v0 [j]];
 			OOF_VecSub (v+2, v+1, &vrLightPos);
 #if NORM_INF
 			OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
@@ -2076,12 +2115,6 @@ for (pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#if 1
-			OOF_VecNormal (&n, v, v+1, v+2);
-			bFacingLight = OOF_VecDot (&vrLightPos, &n) > 0;
-			if (bFacingLight == bCullFront)
-				continue;
-#endif
 #ifdef RELEASE
 			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
@@ -2097,8 +2130,8 @@ for (pe = pso->edges.pEdges; i; pe++)
 			}
 		else {
 			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-			glVertex3fv ((GLfloat *) (pv + pe->v1));
-			glVertex3fv ((GLfloat *) (pv + pe->v0));
+			glVertex3fv ((GLfloat *) (pv + pe->v0 [0]));
+			glVertex3fv ((GLfloat *) (pv + pe->v1 [0]));
 			}
 #endif
 		}
@@ -2114,7 +2147,7 @@ int OOF_DrawShadowCaps (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
-	tOOF_vector		*pv, *phv, v0, v1;
+	tOOF_vector		*pv, v0, v1;
 	int				i, j;
 
 #ifdef _DEBUG
@@ -2133,7 +2166,7 @@ if (bCullFront) {
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (pf->bReverse)
-			glFrontFace (GL_CW);
+			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
 #if 0
 		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
@@ -2148,22 +2181,24 @@ if (bCullFront) {
 #	else
 			OOF_VecScale (&v1, INFINITY);
 #	endif
-			OOF_VecInc (&v0, &v1);
-			glVertex3fv ((GLfloat *) &v0);
+			OOF_VecInc (&v1, &v0);
+			glVertex3fv ((GLfloat *) &v1);
 			}	
 		glEnd ();
 		if (pf->bReverse)
-			glFrontFace (GL_CCW);
+			glFrontFace (GL_CW);
 		}
+#if 1
 	}
 else {
+#endif
 #ifdef _DEBUG
 	if (!bFrontCap)
 		return 1;
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (pf->bReverse)
-			glFrontFace (GL_CW);
+			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
 #if 0
 		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
@@ -2175,7 +2210,7 @@ else {
 			}
 		glEnd ();
 		if (pf->bReverse)
-			glFrontFace (GL_CCW);
+			glFrontFace (GL_CW);
 		}
 	}
 return 1;
@@ -2213,10 +2248,10 @@ pvn = pso->pvNormals;
 pvc = pso->pVertColors;
 //memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
 glEnable (GL_CULL_FACE);
-glCullFace (GL_FRONT);
+glCullFace (GL_BACK);
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	if (pf->bReverse)
-		glFrontFace (GL_CW);
+		glFrontFace (GL_CCW);
 	pfv = pf->pVerts;
 #if 0
 	if (!(gameStates.ogl.bUseTransform || OOF_FrontFace (pso, pf)))
@@ -2303,7 +2338,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		glEnd ();
 		}
 	if (pf->bReverse)
-		glFrontFace (GL_CCW);
+		glFrontFace (GL_CW);
 	}
 return 1;
 }

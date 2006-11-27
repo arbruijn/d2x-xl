@@ -597,7 +597,8 @@ if (!gameStates.render.nRenderPass)
 	return;
 if (EGI_FLAG (bShadows, 0, 0) && 
 	 (gameStates.render.nShadowPass < 3) &&
-	 !gameStates.render.bAltShadows)
+	 !gameStates.render.bAltShadows &&
+	 !bShadowTest)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
@@ -1482,6 +1483,8 @@ bool G3DrawBitMap (
 	GLuint		depthFunc;
 
 r_bitmapc++;
+glPushMatrix ();
+glScalef (1 / f2fl (viewInfo.scale.x), 1, 1);
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
@@ -1522,6 +1525,7 @@ glEnd ();
 if (!bDepthInfo)
 	glDepthFunc (depthFunc);
 glDisable (GL_TEXTURE_2D);
+glPopMatrix ();
 return 0;
 } 
 
@@ -1850,7 +1854,7 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_DEPTH_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
-			glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
+			glCullFace (GL_BACK);	//Weird, huh? Well, D2 renders everything reverse ...
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
@@ -1864,7 +1868,7 @@ if (gameStates.render.nShadowPass) {
 #ifdef _DEBUG
 			if (bShadowTest) {
 				glColorMask (1,1,1,1);
-				glDepthMask (1);
+				glDepthMask (0);
 				glEnable (GL_BLEND);
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glDisable (GL_STENCIL_TEST);
@@ -1929,7 +1933,7 @@ if (gameStates.render.nShadowPass) {
 				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
 #else
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
+				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 #endif
 				}
 			else 
@@ -1946,7 +1950,7 @@ if (gameStates.render.nShadowPass) {
 			}
 		glColorMask (1,1,1,1);
 //		glDepthMask (1);
-		glCullFace (GL_FRONT);
+		glCullFace (GL_BACK);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 #if GL_INFINITY
@@ -2016,7 +2020,8 @@ else
 		}
 	else if (!gameOpts->legacy.bZBuf) {
 		glEnable (GL_CULL_FACE);		
-		glCullFace (GL_FRONT);	//Weird, huh? Well, D2 renders everything reverse ...
+		glFrontFace (GL_CW);
+		glCullFace (GL_BACK);	//Weird, huh? Well, D2 renders everything reverse ...
 		glEnable (GL_DEPTH_TEST);
 		if (glIsEnabled (GL_DEPTH_TEST)) {
 			glDepthFunc (GL_LESS);
@@ -2106,7 +2111,7 @@ if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();
-	glScalef (1.0f, 1.0f, -viewInfo.glZoom);
+	//glScalef (f2fl (viewInfo.scale.x), f2fl (viewInfo.scale.y), -f2fl (viewInfo.scale.z));
 	glMultMatrixf (viewInfo.glViewf);
 	glTranslatef (-viewInfo.glPosf [0], -viewInfo.glPosf [1], -viewInfo.glPosf [2]);
 	}

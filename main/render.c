@@ -2657,23 +2657,25 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 		gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 		RenderObjectShadows ();
 		}
-	gameStates.render.nShadowPass = 3;
-	OglStartFrame (0, 0);
-	if (gameStates.render.bShadowMaps) {
+	if (!bShadowTest) {
+		gameStates.render.nShadowPass = 3;
+		OglStartFrame (0, 0);
+		if	(gameStates.render.bShadowMaps) {
 #ifdef _DEBUG
-		if (gameStates.render.bExternalView)
+			if (gameStates.render.bExternalView)
 #else		
-		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
+			if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif			 	
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+				G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+			else
+				G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+			ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
+			}
+		else if (gameStates.render.bAltShadows)
+			RenderShadow (0.0f);
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
-		ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
+			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 		}
-	else if (gameStates.render.bAltShadows)
-		RenderShadow (0.0f);
-	else
-		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 	}
 else 
 #endif

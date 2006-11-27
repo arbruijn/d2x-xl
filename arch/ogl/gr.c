@@ -190,7 +190,7 @@ glLoadIdentity ();
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glScalef (1.0f, -1.0f, 1.0f);
 glTranslatef (0.0f, -1.0f, 0.0f);
-GrPaletteStepUp(0,0,0);//in case its left over from in game
+GrPaletteStepUp (0,0,0);//in case its left over from in game
 }
 
 //------------------------------------------------------------------------------

@@ -1194,7 +1194,7 @@ for (h = 0; h < nThrusters; h++) {
 	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
-	glCullFace (GL_BACK);
+	glCullFace (GL_FRONT);
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 		c [0] = c [1];
@@ -1232,7 +1232,7 @@ for (h = 0; h < nThrusters; h++) {
 		}
 	glEnd ();
 	glLineWidth (1);
-	glCullFace (GL_FRONT);
+	glCullFace (GL_BACK);
 	glDepthMask (1);
 	G3DoneInstance ();
 	}
@@ -1254,7 +1254,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 	glDepthMask (0);
 	glDisable (GL_TEXTURE_2D);
-	//glCullFace (GL_BACK);
+	//glCullFace (GL_FRONT);
 	glDisable (GL_CULL_FACE);		
 	r [3] = f2fl (objP->size);
 	if (r [3] >= 3.0f)
@@ -1304,7 +1304,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 		glEnd ();
 		}
 	glDepthMask (1);
-	glCullFace (GL_FRONT);
+	glCullFace (GL_BACK);
 	G3DoneInstance ();
 	}
 }
@@ -1409,7 +1409,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 		glEnd ();
 		}
 	glDepthMask (1);
-	glCullFace (GL_FRONT);
+	glCullFace (GL_BACK);
 	G3DoneInstance ();
 	RenderShockwave (objP);
 	}

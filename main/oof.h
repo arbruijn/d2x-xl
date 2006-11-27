@@ -6,7 +6,7 @@
 #endif
 
 #if defined (_DEBUG) && SHADOWS
-#	define OOF_TEST_CUBE 0
+#	define OOF_TEST_CUBE 1
 #else
 #	define OOF_TEST_CUBE 0
 #endif
@@ -223,10 +223,9 @@ typedef struct tOOF_rotAnim {
 } tOOF_rotAnim;
 
 typedef struct tOOF_edge {
-	int					v0;
-	int					v1;
-	tOOF_face			*pf0;
-	tOOF_face			*pf1;
+	int					v0 [2];
+	int					v1 [2];
+	tOOF_face			*pf [2];
 	char					bContour;
 } tOOF_edge;
 

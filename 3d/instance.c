@@ -104,7 +104,7 @@ if (gameStates.ogl.bUseTransform) {
 	glPushMatrix ();
 	if (!nInstanceDepth) {
 		glLoadIdentity ();
-		glScalef (1.0f, 1.0f, -viewInfo.glZoom);
+		glScalef (f2fl (viewInfo.scale.x), f2fl (viewInfo.scale.y), -f2fl (viewInfo.scale.z));
 		OglRot (viewInfo.glViewf);
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);

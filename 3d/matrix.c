@@ -36,7 +36,7 @@ viewInfo.zoom = xZoom;
 viewInfo.pos = *vPos;
 VmAngles2Matrix (&viewInfo.view [0], mOrient);
 VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
-VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
+VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 ScaleMatrix();
 }
 
@@ -77,12 +77,12 @@ else {			//xZoom out by scaling x&y
 	}
 //now scale matrix elements
 #if 1
-//glScalef (1,1,viewInfo.glZoom);
 glScalef (f2fl (viewInfo.scale.x), f2fl (viewInfo.scale.y), -f2fl (viewInfo.scale.z));
 #else
 VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.x);
 VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.y);
 VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.z);
+glScalef (1,1,-1);
 #endif
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }

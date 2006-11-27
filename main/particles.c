@@ -628,6 +628,8 @@ int BeginRenderSmoke (int nType)
 	grsBitmap	*bmP;
 	int			nFrames;
 
+glPushMatrix ();
+glScalef (1 / f2fl (viewInfo.scale.x), 1, 1);
 nType %= 3;
 bmP = bmpParticle [gameStates.render.bPointSprites][nType];
 nFrames = nParticleFrames [gameStates.render.bPointSprites][nType];
@@ -708,6 +710,7 @@ if (gameStates.render.bPointSprites) {
 //glEnable (GL_DEPTH_TEST);
 glDepthMask (1);
 glDisable (GL_TEXTURE_2D);
+glPopMatrix ();
 return 1;
 }
 

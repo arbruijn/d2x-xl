@@ -1046,7 +1046,8 @@ typedef struct tPOF_face {
 	vmsVector			vRotNorm;
 	tOOF_vector			vNormf;
 	tOOF_vector			vCenterf;
-	ubyte					bFacingLight;
+	ubyte					bFacingLight :1;
+	ubyte					bFrontFace :1;
 	ubyte					bGlow :1;
 	ubyte					bTest :1;
 	ubyte					bIgnore :1;
@@ -1058,11 +1059,14 @@ typedef struct tPOF_faceList {
 } tPOF_faceList;
 
 typedef struct tPOF_edge {
-	short					v0;
-	short					v1;
-	tPOF_face			*pf0;
-	tPOF_face			*pf1;
-	ubyte					bContour;
+	short					v0 [2];
+	short					v1 [2];
+	tPOF_face			*pf [2];
+	ubyte					bContour :1;
+	ubyte					bFront :1;
+	ubyte					bRear :1;
+	ubyte					bList :1;
+	ubyte					bChild :1;
 } tPOF_edge;
 
 typedef struct tPOF_edgeList {
