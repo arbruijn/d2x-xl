@@ -6,7 +6,7 @@
 #endif
 
 #if defined (_DEBUG) && SHADOWS
-#	define OOF_TEST_CUBE 1
+#	define OOF_TEST_CUBE 0
 #else
 #	define OOF_TEST_CUBE 0
 #endif

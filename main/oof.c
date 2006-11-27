@@ -47,7 +47,7 @@ int bSingleStencil;
 int bFrontCap = 1;
 int bRearCap = 1;
 int bShadowVolume = 1;
-int bSWCulling = 1;
+int bSWCulling = 0;
 #endif
 
 int bZPass = 0;
@@ -1948,23 +1948,11 @@ tOOF_vector *OOF_CalcFacePerp (tOOF_subObject *pso, tOOF_face *pf)
 {
 	tOOF_vector		*pv = pso->pvVerts;
 	tOOF_faceVert	*pfv = pf->pVerts;
-	int				i, i0, i1, i2;
 
 #if 0
 OOF_CalcFaceNormal (pso, pf);
 #endif
-i0 = pfv [0].nIndex;
-i1 = pfv [1].nIndex;
-i2 = pfv [2].nIndex;
-#if 0
-if (i1 < i0)
-	i = i1, i1 = i0, i0 = i;
-if (i2 < i0)
-	i = i2, i2 = i0, i0 = i;
-else if (i2 < i1)
-	i = i2, i2 = i1, i1 = i;
-#endif
-return OOF_VecNormalize (OOF_VecPerp (&pf->vRotNormal, pv + i0, pv + i1, pv + i2));
+return OOF_VecNormalize (OOF_VecPerp (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex, pv + pfv [2].nIndex));
 }
 
 //------------------------------------------------------------------------------
@@ -2090,9 +2078,8 @@ if (bShadowTest < 2)
 else
 	glBegin (GL_LINES);
 #endif
-i = bContourEdges ? pso->edges.nContourEdges : pso->edges.nEdges;
-for (pe = pso->edges.pEdges; i; pe++)
-	if (!bContourEdges || pe->bContour) {
+for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
+	if (pe->bContour) {
 		i--;
 #ifdef _DEBUG
 		if (bShadowTest < 2) {
@@ -2168,12 +2155,7 @@ if (bCullFront) {
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
-#if 0
-		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
-			--pfv;
-#else
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-#endif
 			v0 = pv [pfv->nIndex];
 			OOF_VecSub (&v1, &v0, &vrLightPos);
 #	if NORM_INF
@@ -2200,12 +2182,7 @@ else {
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
-#if 0
-		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
-			--pfv;
-#else
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-#endif
 			glVertex3fv ((GLfloat *) (pv + pfv->nIndex));
 			}
 		glEnd ();

@@ -76,13 +76,13 @@ extern int bFrontCap;
 extern int bRearCap;
 extern int bShadowVolume;
 extern int bSWCulling;
+extern int bZPass;
 #endif
 static int bContourEdges = 1;
 static int bTriangularize = 0;
 static int bIntrinsicFacing = 0;
 static int bFlatPolys = 1;
 static int bTexPolys = 1;
-static int zPass = 0;
 
 vmsAngVec zeroAngles = {0, 0, 0};
 
@@ -1290,25 +1290,20 @@ return pso->edges.nContourEdges = h;
 
 void G3SetCullAndStencil (int bCullFront, int bZPass)
 {
-if (bSWCulling)
-	glDisable (GL_CULL_FACE);
-else
-	glEnable (GL_CULL_FACE);
+glEnable (GL_CULL_FACE);
 if (bCullFront) {
-	if (!bSWCulling)
-		glCullFace (GL_FRONT);
-	if (bZPass)
-		glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-	else
-		glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-	}
-else {
-	if (!bSWCulling)
-		glCullFace (GL_BACK);
+	glCullFace (GL_FRONT);
 	if (bZPass)
 		glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 	else
 		glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+	}
+else {
+	glCullFace (GL_BACK);
+	if (bZPass)
+		glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
+	else
+		glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 	}
 }
 
@@ -1316,12 +1311,9 @@ else {
 
 int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
-	tOOF_vector	*pvf, v [4], n;
+	tOOF_vector	*pvf, v [4];
 	tPOF_edge	*pe;
-	tPOF_face	*pf;
-	float			dx, dy;
 	short			i, j;
-	int			bFrontFace;
 
 #ifdef _DEBUG
 if (!bShadowVolume)
@@ -1331,23 +1323,27 @@ if (bShadowTest == 1)
 else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
-G3SetCullAndStencil (bCullFront, zPass);
+G3SetCullAndStencil (bCullFront, bZPass);
+glDisable (GL_CULL_FACE);
 pvf = po->pvVertsf;
 #ifdef _DEBUG
 if (bShadowTest < 2)
 	glBegin (GL_QUADS);
+else if (bShadowTest < 3) {
+	glLineWidth (3);
+	glBegin (GL_LINE_LOOP);
+	}
 else {
 	glLineWidth (3);
 	glBegin (GL_LINES);
 	}
 glEnd ();
 #endif
-i = bContourEdges ? pso->edges.nContourEdges : pso->edges.nEdges;
-for (pe = pso->edges.pEdges; i; pe++)
-	if (!bContourEdges || pe->bContour) {
+for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
+	if (pe->bContour) {
 		i--;
 #ifdef _DEBUG
-		if (bShadowTest < 2) {
+		if (bShadowTest < 3) {
 			if (bShadowTest)
 				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
@@ -1365,56 +1361,16 @@ for (pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#if 1
-			if (bSWCulling) {
-				OOF_VecNormal (&n, v, v+1, v+2);
-				bFrontFace = OOF_VecDot ((tOOF_vector *) v, &n) > 0;
-#if 1
-				if (bShadowTest && bFrontFace) {
-					tOOF_vector	h, c, t, o;
-					float			m;
-
-					OOF_VecSub (&h, v+1, v);
-					m = OOF_VecMag (&h);
-					OOF_VecScale (&h, 0.5);
-					OOF_VecAdd (&c, v, &h);
-#if 0
-					OOF_VecSub (&h, v, &vLightPos);
-					OOF_VecSub (&t, v+1, &vLightPos);
-					OOF_VecInc (&h, &t);
-					OOF_VecNormalize (&h);
-					OOF_VecScale (&h, 1.0f / m);
-					OOF_VecInc (&c, &h);
-#endif
-					glColor4d (0,0.5,1,0.25);
-					glLineWidth (2);
-#if 0
-					glBegin (GL_LINES);
-					glVertex3fv ((GLfloat *) &c);
-					glVertex3i (0,0,0); //fv ((GLfloat *) &vViewerPos);
-					glEnd ();
-#endif
-					glBegin (GL_LINES);
-					glVertex3fv ((GLfloat *) &c);
-					OOF_VecInc (&c, &n);
-					glVertex3fv ((GLfloat *) &c);
-					glEnd ();
-					glLineWidth (1);
-					glColor4fv ((GLfloat *) (shadowColor + bCullFront));
-					}
-#endif
-				}
-#endif
 #ifdef RELEASE
 			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);
 			glDisableClientState (GL_VERTEX_ARRAY);
 #else
-			glVertex3fv ((GLfloat *) (v+1));
 			glVertex3fv ((GLfloat *) v);
-			glVertex3fv ((GLfloat *) (v+3));
+			glVertex3fv ((GLfloat *) (v+1));
 			glVertex3fv ((GLfloat *) (v+2));
+			glVertex3fv ((GLfloat *) (v+3));
 #endif
 #ifdef _DEBUG
 			}
@@ -1426,11 +1382,9 @@ for (pe = pso->edges.pEdges; i; pe++)
 #endif
 		}
 #ifdef _DEBUG
-//glEnd ();
+glEnd ();
 glLineWidth (1);
 #endif
-if (bSWCulling)
-	glEnable (GL_CULL_FACE);
 return 1;
 }
 
@@ -1447,10 +1401,8 @@ if (bShadowTest) {
 	glColor4fv ((GLfloat *) (modelColor + bCullFront));
 	glDepthFunc (GL_LEQUAL);
 	}
-else
 #endif
-	G3SetCullAndStencil (bCullFront, zPass);
-//glDisable (GL_CULL_FACE);
+G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
 if (bCullFront) {
 #ifdef _DEBUG
@@ -1458,8 +1410,6 @@ if (bCullFront) {
 		return 1;
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
-		if (bSWCulling && pf->bFrontFace)
-			continue;
 #ifdef _DEBUG
 		if (bShadowTest > 3) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1515,8 +1465,6 @@ else {
 		return 1;
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
-		if (bSWCulling && !pf->bFrontFace)
-			continue;
 #ifdef _DEBUG
 		if (bShadowTest > 3) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
@@ -1552,8 +1500,6 @@ else {
 		glEnd ();
 		}
 	}
-if (bSWCulling)
-	glEnable (GL_CULL_FACE);
 return 1;
 }
 
