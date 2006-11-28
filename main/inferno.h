@@ -1059,6 +1059,7 @@ typedef struct tPOF_faceList {
 } tPOF_faceList;
 
 typedef struct tPOF_edge {
+	short					nParent;
 	short					v0 [2];
 	short					v1 [2];
 	tPOF_face			*pf [2];

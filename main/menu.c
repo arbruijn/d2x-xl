@@ -158,7 +158,7 @@ static int	nFPSopt, nRSDopt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt,
 				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nOglLightOpt, nOglMaxLightsOpt,
-				nSyncSmokeSizes;
+				optZPass, optShadowVolume, nSyncSmokeSizes;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -169,7 +169,7 @@ static char *pszSize [4];
 static char *pszLife [3];
 
 #if SHADOWS
-extern int bZPass, bFrontCap, bRearCap, bShadowVolume, bShadowTest, bSWCulling;
+extern int bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, bSWCulling;
 #endif
 
 //------------------------------------------------------------------------------
@@ -2023,6 +2023,22 @@ if (extraGameInfo [0].bShadows) {
 			sprintf (m->text, "Test mode: %d", bShadowTest);
 			m->rebuild = 1;
 			}
+		m = menus + optZPass;
+		v = m->value;
+		if (bZPass != v) {
+			bZPass = v;
+			m->rebuild = 1;
+			*key = -2;
+			return;
+			}
+		m = menus + optShadowVolume;
+		v = m->value;
+		if (bShadowVolume != v) {
+			bShadowVolume = v;
+			m->rebuild = 1;
+			*key = -2;
+			return;
+			}
 		}
 #	endif
 	}
@@ -2093,7 +2109,7 @@ void AdvancedRenderOptionsMenu ()
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #	if SHADOWS
-	int	optZPass, optFrontCap, optRearCap, optShadowVolume, optSWCulling, optAltShadows;
+	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
 #	endif
 #endif
 #if 0
@@ -2192,6 +2208,8 @@ do {
 	optFrontCap =
 	optRearCap =
 	optShadowVolume =
+	optFrontFaces =
+	optBackFaces =
 	optSWCulling =
 	optAltShadows =
 	nShadowTestOpt = -1;
@@ -2204,12 +2222,20 @@ do {
 #	ifdef _DEBUG
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
-		ADD_CHECK (opt, "render front cap", bFrontCap, 0, NULL);
-		optFrontCap = opt++;
-		ADD_CHECK (opt, "render rear cap", bRearCap, 0, NULL);
-		optRearCap = opt++;
+		if (!bZPass) {
+			ADD_CHECK (opt, "render front cap", bFrontCap, 0, NULL);
+			optFrontCap = opt++;
+			ADD_CHECK (opt, "render rear cap", bRearCap, 0, NULL);
+			optRearCap = opt++;
+			}
 		ADD_CHECK (opt, "render shadow volume", bShadowVolume, 0, NULL);
 		optShadowVolume = opt++;
+		if (bShadowVolume) {
+			ADD_CHECK (opt, "render front faces", bFrontFaces, 0, NULL);
+			optFrontFaces = opt++;
+			ADD_CHECK (opt, "render back faces", bBackFaces, 0, NULL);
+			optBackFaces = opt++;
+			}
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;
 		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bAltShadows, 0, NULL);
@@ -2308,6 +2334,8 @@ do {
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
 		GET_VAL (gameStates.render.bAltShadows, optAltShadows);
+		GET_VAL (bFrontFaces, optFrontFaces);
+		GET_VAL (bBackFaces, optBackFaces);
 		GET_VAL (bSWCulling, optSWCulling);
 		GET_VAL (bShadowVolume, optShadowVolume);
 		}

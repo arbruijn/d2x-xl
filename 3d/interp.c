@@ -75,6 +75,8 @@ extern int bShadowTest;
 extern int bFrontCap;
 extern int bRearCap;
 extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
 extern int bSWCulling;
 extern int bZPass;
 #endif
@@ -694,27 +696,6 @@ return nVerts;
 
 //------------------------------------------------------------------------------
 
-short G3FindPolyModelFace (tPOFObject *po, tPOF_face *pf)
-{
-	int			h, i, j, k, l;
-	tPOF_face	*pfh;
-
-for (h = pf->nVerts, i = po->iFace, pfh = po->faces.pFaces; i; i--, pfh++)
-	if (pfh->nVerts == h) {
-		for (k = h, j = 0; j < h; j++)
-			for (l = 0; l < h; l++)
-				if (pf->pVerts [j] == pfh->pVerts [l]) {
-					k--;
-					break;
-					}
-		if (!k)
-			return i;
-		}
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
 void G3CalcFaceNormal (tPOFObject *po, tPOF_face *pf)
 {
 if (bTriangularize) {
@@ -776,6 +757,67 @@ G3CalcFaceNormal (po, pf);
 
 //------------------------------------------------------------------------------
 
+#if 0
+
+short G3FindPolyModelFace (tPOFObject *po, tPOF_face *pf)
+{
+	int			h, i, j, k, l;
+	tPOF_face	*pfh;
+
+for (h = pf->nVerts, i = po->iFace, pfh = po->faces.pFaces; i; i--, pfh++)
+	if (pfh->nVerts == h) {
+		for (k = h, j = 0; j < h; j++)
+			for (l = 0; l < h; l++)
+				if (pf->pVerts [j] == pfh->pVerts [l]) {
+					k--;
+					break;
+					}
+		if (!k)
+			return i;
+		}
+return -1;
+}
+
+#else
+//------------------------------------------------------------------------------
+
+int G3FindPolyModelFace (tPOFObject *po, short *p, int nv)
+{
+	tPOF_face	*pf;
+	int			h, i, j, k;
+	short			*pfv;
+
+for (i = po->iFace, pf = po->faces.pFaces; i; i--, pf++) {
+	if (pf->nVerts != nv)
+		continue;
+	pfv = pf->pVerts;
+	for (j = 0, h = *p; j < nv; j++) {
+		if (h == pfv [j]) {
+			h = j;
+			for (k = 0; k < nv; k++, j = (j + 1) % nv) {
+				if (p [k] != pfv [j]) {
+					j = h;
+					for (k = 0; k < nv; k++) {
+						if (p [k] != pfv [j])
+							break;
+						if (!j)
+							j = nv;
+						j--;
+						}
+					break;
+					}
+				}
+			if (k == nv)
+				return 1;
+			break;
+			}
+		}
+	}
+return 0;
+}
+#endif
+//------------------------------------------------------------------------------
+
 tPOF_face *G3AddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf, 
 										 vmsVector *pn, ubyte *p, int bShadowData)
 {
@@ -784,6 +826,8 @@ tPOF_face *G3AddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf
 	short			*pfv;
 	short			i, v0;
 
+if (G3FindPolyModelFace (po, WORDPTR (p+30), nv))
+	return pf;
 if (bShadowData) {
 	pf->vNorm = *pn;
 	if (bTriangularize) {
@@ -911,7 +955,8 @@ void G3RotatePolyModelNormals (tPOFObject *po)
 	int			i;
 
 for (i = po->faces.nFaces, pf = po->faces.pFaces; i; i--, pf++)
-	if (!pf->bIgnore) {
+	//if (!pf->bIgnore) 
+		{
 		G3RotateFaceNormal (pf);
 		G3TransformFaceCenter (pf);
 		}
@@ -937,14 +982,15 @@ return po->pvVertsf;
 
 #define MAXGAP	0.01f;
 
-int G3FindPolyModelEdge (tPOFSubObject *pso, int v0, int v1)
+int G3FindPolyModelEdge (tPOFSubObject *pso, int v0, int v1, int nParent)
 {
 	int			i;
 	tPOF_edge	h;
 
 for (i = 0; i < pso->edges.nEdges; i++) {
 	h = pso->edges.pEdges [i];
-	if (((h.v0 [0] == v0) && (h.v1 [0] == v1)) || ((h.v0 [0] == v1) && (h.v1 [0] == v0)))
+	if ((h.nParent == nParent) && 
+		(((h.v0 [0] == v0) && (h.v1 [0] == v1)) || ((h.v0 [0] == v1) && (h.v1 [0] == v0))))
 		return i;
 	}
 return -1;
@@ -952,17 +998,19 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3AddPolyModelEdge (tPOFSubObject *pso, tPOF_face *pf, int v0, int v1)
+int G3AddPolyModelEdge (tPOFSubObject *pso, tPOF_face *pf, int v0, int v1, int nParent)
 {
-	int			i = G3FindPolyModelEdge (pso, v0, v1);
+	int			i = G3FindPolyModelEdge (pso, v0, v1, nParent);
 	tPOF_edge	*pe;
 
+if (((v0 == 90 && v1 == 98)) || ((v1 == 90 && v0 == 98)))
+	i = i;
 if (i < 0)
 	i = pso->edges.nEdges++;
 pe = pso->edges.pEdges + i;
 if (pe->pf [0] && pe->pf [1]) {
 #if 1
-	return -1;
+	return 0;
 #else
 	tPOF_edge *ph = pso->edges.pEdges + pso->edges.nEdges++;
 	while (pe->bList)
@@ -989,14 +1037,15 @@ else {
 		pe->bChild = 0;
 		}
 	}
-return i;
+pe->nParent = nParent;
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
 int G3GetPolyModelEdges (tPOFObject *po)
 {
-	short				h, i, j, k, v0, v1, v2 = -1, nEdges;
+	short				h, i, j, k, v0, v1, v2 = -1, nEdges, nSubObj;
 	tPOFSubObject	*pso = po->subObjs.pSubObjs;
 	tPOF_face		*pf;
 	tOOF_vector		*pv;
@@ -1004,7 +1053,7 @@ int G3GetPolyModelEdges (tPOFObject *po)
 
 po->edges.nEdges = 0;
 pv = G3PolyModelVerts2Float (po);
-for (i = po->subObjs.nSubObjs; i; i--, pso++) {
+for (i = po->subObjs.nSubObjs, nSubObj = 0; i; i--, pso++, nSubObj++) {
 	pso->edges.pEdges = po->edges.pEdges + po->edges.nEdges;
 	for (j = pso->faces.nFaces, pf = pso->faces.pFaces; j; j--, pf++) {
 		pfv = pf->pVerts;
@@ -1022,12 +1071,12 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++) {
 			v2 = *pfv;
 			if (!k)
 				v0 = v2;
-			else if (0 > (h = G3AddPolyModelEdge (pso, pf, v1, v2)))
+			else if (!(h = G3AddPolyModelEdge (pso, pf, v1, v2, nSubObj)))
 				break;
 			}
-		if (h >= 0)
-			h = G3AddPolyModelEdge (pso, pf, v2, v0);
-		if (h < 0) {
+		if (h)
+			h = G3AddPolyModelEdge (pso, pf, v2, v0, nSubObj);
+		if (!h) {
 			pf->bIgnore = 1;
 			pso->edges.nEdges = nEdges;
 			}
@@ -1219,7 +1268,8 @@ int G3CalcModelFacing (tPOFObject *po, tPOFSubObject *pso)
 
 G3RotatePolyModelNormals (po);
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++)
-	if (!pf->bIgnore) {
+	//if (!pf->bIgnore) 
+		{
 		G3FaceIsLit (po, pf);
 		G3FaceIsFront (po, pf);
 		}
@@ -1318,26 +1368,28 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 #ifdef _DEBUG
 if (!bShadowVolume)
 	return 1;
+if (bCullFront && !bBackFaces)
+	return 1;
+if (!bCullFront && !bFrontFaces)
+	return 1;
 if (bShadowTest == 1)
 	glColor4fv ((GLfloat *) shadowColor);
 else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
-glDisable (GL_CULL_FACE);
 pvf = po->pvVertsf;
 #ifdef _DEBUG
 if (bShadowTest < 2)
+#endif
 	glBegin (GL_QUADS);
-else if (bShadowTest < 3) {
+#ifdef _DEBUG
+else if (bShadowTest == 2)
 	glLineWidth (3);
-	glBegin (GL_LINE_LOOP);
-	}
 else {
 	glLineWidth (3);
 	glBegin (GL_LINES);
 	}
-glEnd ();
 #endif
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
@@ -1382,13 +1434,17 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 		}
 #ifdef _DEBUG
-glEnd ();
+if (bShadowTest != 2)
+	glEnd ();
 glLineWidth (1);
 #endif
 return 1;
 }
 
 //------------------------------------------------------------------------------
+
+static int _I = 3;
+static int _O = 13;
 
 int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
@@ -1409,9 +1465,13 @@ if (bCullFront) {
 	if (!bRearCap)
 		return 1;
 #endif
+#if 0
+	for (i = _I, pf = pso->faces.pFaces + _O; i; i--, pf++) {
+#else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
-#ifdef _DEBUG
-		if (bShadowTest > 3) {
+#endif
+#if 0//def _DEBUG
+		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
 			v1 = v0 = pf->vCenterf;
 			glBegin (GL_LINES);
@@ -1464,9 +1524,13 @@ else {
 	if (!bFrontCap)
 		return 1;
 #endif
+#if 0
+	for (i = _I, pf = pso->faces.pFaces + _O; i; i--, pf++) {
+#else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+#endif
 #ifdef _DEBUG
-		if (bShadowTest > 3) {
+		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
 			v1 = v0 = pf->vCenterf;
 			glBegin (GL_LINES);
@@ -1508,7 +1572,6 @@ return 1;
 int G3DrawSubModelShadow (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
 	int			h = 1, i;
-	vmsVector	v;
 
 if (pso->nParent >= 0)
 	G3StartInstanceAngles (&pso->vPos, &pso->vAngles);
@@ -1516,13 +1579,16 @@ h = (int) (pso - po->subObjs.pSubObjs);
 for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
 		G3DrawSubModelShadow (po, po->subObjs.pSubObjs + i, bCullFront);
+#if 0
+if (pso - po->subObjs.pSubObjs == 9)
+#endif
+{
 G3GetPolyModelSilhouette (po, pso);
-G3TransformPoint (&v, &viewerEye, 0);
-OOF_VecVms2Oof (&vViewerPos, &v);
 h = G3RenderSubModelShadowVolume (po, pso, 0) &&
 	 G3RenderSubModelShadowVolume (po, pso, 1) &&
 	 G3RenderSubModelShadowCaps (po, pso, 0) &&
 	 G3RenderSubModelShadowCaps (po, pso, 1);
+}
 if (pso->nParent >= 0)
 	G3DoneInstance ();
 return h;

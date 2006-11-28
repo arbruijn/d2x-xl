@@ -46,6 +46,8 @@ int bSingleStencil;
 
 int bFrontCap = 1;
 int bRearCap = 1;
+int bFrontFaces = 1;
+int bBackFaces = 1;
 int bShadowVolume = 1;
 int bSWCulling = 0;
 #endif
@@ -2057,8 +2059,8 @@ if (bSingleStencil || bShadowTest)
 int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 {
 	tOOF_edge		*pe;
-	tOOF_vector		*pv, v [4], n;
-	int				i, j, bFacingLight;
+	tOOF_vector		*pv, v [4];
+	int				i, j;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
@@ -2071,6 +2073,7 @@ if (bShadowTest < 2)
 	glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
 OOF_SetCullAndStencil (bCullFront);
+glDisable (GL_CULL_FACE);
 pv = pso->pvRotVerts;
 #ifdef _DEBUG
 if (bShadowTest < 2)
@@ -2124,6 +2127,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 		}
 #ifdef _DEBUG
 glEnd ();
+glEnable (GL_CULL_FACE);
 #endif
 return 1;
 }
