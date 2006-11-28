@@ -1684,7 +1684,7 @@ gameStates.ogl.bAntiAliasingOk = 0;
 
 void InitRenderStates (void)
 {
-gameStates.render.bFastShadows = 0;
+gameStates.render.bFastShadows = 1;
 gameStates.render.bQueryOcclusion = 0;
 gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 0;

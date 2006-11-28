@@ -599,7 +599,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	 (gameStates.render.nShadowPass < 3) &&
 	 !gameStates.render.bFastShadows &&
 	 !bShadowTest)
-	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
+	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.2f;
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)

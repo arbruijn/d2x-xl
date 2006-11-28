@@ -2348,10 +2348,7 @@ void StartLightingFrame (tObject *viewer);
 void RenderShadow (float fDist)
 {
 	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.8f};
-#if 0
-gameStates.render.nShadowPass = 3;
-OglStartFrame (0, 0);
-#endif
+
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();
@@ -2359,30 +2356,19 @@ glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
-glEnable (GL_BLEND);
-//glBlendFunc (GL_ONE, GL_ONE);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDisable (GL_CULL_FACE);
 glDisable (GL_DEPTH_TEST);
-//glDisable (GL_STENCIL_TEST);
-glDisable (GL_TEXTURE_2D);
 glColor4fv (shadowHue);// / fDist);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
-glVertex2f (0,1);
-glVertex2f (1,1);
 glVertex2f (1,0);
+glVertex2f (1,1);
+glVertex2f (0,1);
 glEnd ();
 glEnable (GL_DEPTH_TEST);
-glEnable (GL_CULL_FACE);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
 gameStates.render.nShadowPass = 2;
-#if 0
-OglStartFrame (0, 0);
-#endif
 }
 
 //------------------------------------------------------------------------------
