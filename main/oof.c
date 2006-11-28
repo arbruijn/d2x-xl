@@ -2447,7 +2447,7 @@ for (gameData.render.shadows.nLight = 0;
 #endif
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
-	if (gameStates.render.bAltShadows)
+	if (gameStates.render.bFastShadows)
 		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->vPos, &objP->position.vPos))));
 	}
 return 1;

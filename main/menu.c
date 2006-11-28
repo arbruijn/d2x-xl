@@ -2108,7 +2108,10 @@ void AdvancedRenderOptionsMenu ()
 	int	optRenderAll, optMixColors, optUseGamma, optColoredWalls, optFSCameras, optTeleCams;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
-#	if SHADOWS
+#endif
+#if SHADOWS
+	int	optRobotShadows;
+#	ifdef _DEBUG
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
 #	endif
 #endif
@@ -2203,6 +2206,7 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
+	optRobotShadows = -1;
 #ifdef _DEBUG
 	optZPass =
 	optFrontCap =
@@ -2219,6 +2223,8 @@ do {
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
 		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, 7, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
+		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
+		optRobotShadows = opt++;
 #	ifdef _DEBUG
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
@@ -2238,7 +2244,7 @@ do {
 			}
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;
-		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bAltShadows, 0, NULL);
+		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bFastShadows, 0, NULL);
 		optAltShadows = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
@@ -2329,11 +2335,12 @@ do {
 	gameOpts->render.bWalls = m [optWalls].value;
 	gameOpts->render.bDynamicLight = m [optDynLight].value;
 #	if SHADOWS
+	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
 	if (extraGameInfo [0].bShadows) {
 		GET_VAL (bZPass, optZPass);
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
-		GET_VAL (gameStates.render.bAltShadows, optAltShadows);
+		GET_VAL (gameStates.render.bFastShadows, optAltShadows);
 		GET_VAL (bFrontFaces, optFrontFaces);
 		GET_VAL (bBackFaces, optBackFaces);
 		GET_VAL (bSWCulling, optSWCulling);

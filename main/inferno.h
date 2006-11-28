@@ -173,6 +173,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int bEnableSSE;
+	int bRobotShadows;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
@@ -489,7 +490,7 @@ typedef struct tRenderStates {
 	int bHaveStencilBuffer;
 	int nRenderPass;
 	int nShadowPass;
-	int bAltShadows;
+	int bFastShadows;
 	int bShadowMaps;
 	int bHeadlightOn;
 	int bHaveSkyBox;

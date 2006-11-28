@@ -826,8 +826,8 @@ tPOF_face *G3AddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf
 	short			*pfv;
 	short			i, v0;
 
-if (G3FindPolyModelFace (po, WORDPTR (p+30), nv))
-	return pf;
+//if (G3FindPolyModelFace (po, WORDPTR (p+30), nv))
+//	return pf;
 if (bShadowData) {
 	pf->vNorm = *pn;
 	if (bTriangularize) {
@@ -1580,7 +1580,7 @@ for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
 		G3DrawSubModelShadow (po, po->subObjs.pSubObjs + i, bCullFront);
 #if 0
-if (pso - po->subObjs.pSubObjs == 9)
+if (pso - po->subObjs.pSubObjs == 2)
 #endif
 {
 G3GetPolyModelSilhouette (po, pso);
@@ -1647,6 +1647,8 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 	int				bCalcCenter = 0;
 	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 
+if ((objP->nType != OBJ_PLAYER) && !gameOpts->render.bRobotShadows)
+	return 0;
 if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
 		return 0;

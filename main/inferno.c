@@ -1088,6 +1088,7 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [1].render.bRobotShadows = 0;
 	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bTransparentEffects = 0;
@@ -1160,6 +1161,7 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [0].render.bRobotShadows = 0;
 	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;
@@ -1682,7 +1684,7 @@ gameStates.ogl.bAntiAliasingOk = 0;
 
 void InitRenderStates (void)
 {
-gameStates.render.bAltShadows = 0;
+gameStates.render.bFastShadows = 0;
 gameStates.render.bQueryOcclusion = 0;
 gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 0;

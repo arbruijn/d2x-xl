@@ -597,7 +597,7 @@ if (!gameStates.render.nRenderPass)
 	return;
 if (EGI_FLAG (bShadows, 0, 0) && 
 	 (gameStates.render.nShadowPass < 3) &&
-	 !gameStates.render.bAltShadows &&
+	 !gameStates.render.bFastShadows &&
 	 !bShadowTest)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.1f;
 //else
@@ -1927,13 +1927,13 @@ if (gameStates.render.nShadowPass) {
 			}
 		else {
 #ifdef _DEBUG
-			if (gameStates.render.bAltShadows) {
+			if (gameStates.render.bFastShadows) {
 #if 0
 				glStencilFunc (GL_EQUAL, 0, ~0);
 				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
 #else
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
+				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
 #endif
 				}
 			else 
@@ -1973,12 +1973,6 @@ else
 	OglSetFOV (gameStates.render.glFOV);
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-#if 0
-	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	glScalef (1.0f, -1.0f, 1.0f);
-	glTranslatef (0.0f, -1.0f, 0.0f);
-#endif
-
 	OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 
 					  nCanvasWidth, nCanvasHeight);
 	if (gameStates.render.nRenderPass < 0) {

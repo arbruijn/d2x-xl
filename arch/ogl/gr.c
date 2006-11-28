@@ -742,7 +742,7 @@ else if (gameStates.ogl.bDoPalStep) {
 	else
 		glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE,GL_ONE);
-	glColor3f (gameStates.ogl.fBright.red, gameStates.ogl.fBright.green, gameStates.ogl.fBright.blue);
+	glColor3fv ((GLfloat *) &gameStates.ogl.fBright);
 	}
 else
 	return;

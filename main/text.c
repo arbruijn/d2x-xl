@@ -1567,6 +1567,7 @@ char *defaultGameTexts [][2] = {
 	{"Lang", "Long"},
 	{"~Effekte...", "~Effects..."},
 	{"Effekte", "Effects"},
+	{"~Roboterschatten", "~Robot shadows"},
 #if 0
 	{"", ""},
 #endif
@@ -2013,7 +2014,10 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, target and damage indicators are only displayed\nfor hit objects."},
 	{"Hier kann die Laenge des Rauchschweifs eingestellt werden.", "Adjust the length of the smoke trail here."},
 	{"Hier koennen Effekte angepasstwerden.", "Adjust effects here."},
+	{"Wenn angekreuzt, werden Schatten fuer alle Objekte erzeugt.\nWenn nicht, haben nur die Schiffe der Spieler Schatten.", 
+	 "If checked, shadows are created for all objects.\nIf not, shadows are only created for player ships."},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
