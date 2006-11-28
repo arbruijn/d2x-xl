@@ -426,7 +426,7 @@ void init_ammo_and_energy (void)
 extern	ubyte	bLastAfterburnerState;
 
 // Setup tPlayer for new level (After completion of previous level)
-void init_player_statsLevel (int bSecret)
+void InitPlayerStatsLevel (int bSecret)
 {
 	// int	i;
 gameData.multi.players [gameData.multi.nLocalPlayer].last_score = gameData.multi.players [gameData.multi.nLocalPlayer].score;
@@ -553,7 +553,7 @@ extern int gameData.segs.bHaveSlideSegs;
 void editor_reset_stuff_onLevel ()
 {
 	GameSeqInitNetworkPlayers ();
-	init_player_statsLevel (0);
+	InitPlayerStatsLevel (0);
 	gameData.objs.viewer = gameData.objs.console;
 	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 	gameData.objs.console->id=gameData.multi.nLocalPlayer;
@@ -843,7 +843,7 @@ int LoadLevel (int nLevel, int bPageInTextures)
 {
 	char		*pszLevelName;
 	tPlayer	save_player;
-	int		nRooms, load_ret;
+	int		nRooms, nLoadRes;
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
@@ -923,9 +923,9 @@ gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMiss
 memset (gameData.segs.xSegments, 0xff, sizeof (gameData.segs.xSegments));
 /*---*/LogErr ("   loading texture brightness info\n");
 LoadTextureBrightness (pszLevelName);
-load_ret = LoadLevelSub (pszLevelName);		//actually load the data from disk!
-if (load_ret) {
-	/*---*/LogErr ("Couldn't load '%s' (%d)\n", pszLevelName, load_ret);
+nLoadRes = LoadLevelSub (pszLevelName);		//actually load the data from disk!
+if (nLoadRes) {
+	/*---*/LogErr ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
@@ -1274,7 +1274,7 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 GameSeqInitNetworkPlayers (); // Initialize the gameData.multi.players array for this level
 HUDClearMessages ();
 AutomapClearVisited ();
-// --	init_player_statsLevel ();
+// --	InitPlayerStatsLevel ();
 gameData.objs.viewer = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 GameSeqRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
@@ -1890,7 +1890,7 @@ if (networkData.bNewGame == 1) {
 	InitPlayerStatsNewShip ();
 }
 #endif
-init_player_statsLevel (bSecret);
+InitPlayerStatsLevel (bSecret);
 #ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
 	int i;

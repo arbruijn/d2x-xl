@@ -444,6 +444,10 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 void DoSmokeFrame (void)
 {
+#if SHADOWS
+if (gameStates.render.nShadowPass > 1)
+	return;
+#endif
 #ifdef _DEBUG
 if (!gameStates.render.bExternalView)
 #else

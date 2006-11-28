@@ -1493,8 +1493,10 @@ if (!bDepthInfo) {
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);
 	}
-if (OglBindBmTex (bmP, transp))
+if (OglBindBmTex (bmP, transp)) {
+	glPopMatrix ();
 	return 1;
+	}
 bmP = BmOverride (bmP);
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 glBegin (GL_QUADS);
@@ -1524,7 +1526,7 @@ glEnd ();
 //glEnable (GL_DEPTH_TEST);
 if (!bDepthInfo)
 	glDepthFunc (depthFunc);
-glDisable (GL_TEXTURE_2D);
+//glDisable (GL_TEXTURE_2D);
 glPopMatrix ();
 return 0;
 } 
@@ -1553,7 +1555,7 @@ switch (orient) {
 
 bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grs_color *c, int scale, int orient)
 {
-	GLint curFunc;
+	GLint depthFunc, bBlend;
 	GLfloat xo, yo, xf, yf;
 	GLfloat u1, u2, v1, v2;
 	GLfloat	h, a;
@@ -1599,10 +1601,11 @@ if (OglBindBmTex (bmP, 0))
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 
 glEnable (GL_TEXTURE_2D);
-glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
+glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 glEnable (GL_ALPHA_TEST);
-glEnable (GL_BLEND);
+if (!(bBlend = glIsEnabled (GL_BLEND)))
+	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 if (bmP->bm_props.x == 0) {
@@ -1639,9 +1642,10 @@ glVertex2f (xf, yf);
 BmSetTexCoord (u1, v2, a, orient);
 glVertex2f (xo, yf);
 glEnd ();
-glDepthFunc (curFunc);
+glDepthFunc (depthFunc);
 glDisable (GL_ALPHA_TEST);
-glDisable (GL_BLEND);
+if (!bBlend)
+	glDisable (GL_BLEND);
 OglActiveTexture (GL_TEXTURE0_ARB);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
@@ -1864,7 +1868,6 @@ if (gameStates.render.nShadowPass) {
 			glPolygonOffset (1.0f, 2.0f);
 			}
 		else {
-			glEnable (GL_BLEND);
 #ifdef _DEBUG
 			if (bShadowTest) {
 				glColorMask (1,1,1,1);

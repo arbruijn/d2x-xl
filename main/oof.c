@@ -2459,6 +2459,10 @@ int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked)
 {
 	float	dt;
 
+#if SHADOWS
+if (gameStates.render.bFastShadows && (gameStates.render.nShadowPass == 3))
+	return;
+#endif
 if (po->bCloaked != bCloaked) {
 	po->bCloaked = bCloaked;
 	po->nCloakPulse = 0;

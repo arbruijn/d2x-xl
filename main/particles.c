@@ -647,11 +647,10 @@ if (nFrames > 1) {
 	}
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//glDisable (GL_DEPTH_TEST);
 glDepthMask (0);
-#if OGL_POINT_SPRITES
+//glEnable (GL_BLEND);
+//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#if 0//OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
    float maxSize = 0.0f;
@@ -667,9 +666,9 @@ if (gameStates.render.bPointSprites) {
 	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, maxSize);
 	if (OglBindBmTex (bmP, 1))
 		return 0;
-#if OGL_VERTEX_ARRAYS
+#	if OGL_VERTEX_ARRAYS
 	if (!gameStates.render.bVertexArrays)
-#endif
+#	endif
 		glBegin (GL_POINTS);
 	}
 else
@@ -693,23 +692,24 @@ int EndRenderSmoke (tCloud *pCloud)
 if (gameStates.render.bVertexArrays)
 #	if EXTRA_VERTEX_ARRAYS
 	FlushVertexArrays ();
-#else
+#	else
 	FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
-#endif
+#	endif
 else
 	glEnd ();
 #else
 glEnd ();
 #endif
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	glDisable (GL_POINT_SPRITE_ARB);
 	}
 #endif
-//glEnable (GL_DEPTH_TEST);
+OGL_BINDTEX (0);
 glDepthMask (1);
-glDisable (GL_TEXTURE_2D);
+//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//glEnable (GL_DEPTH_TEST);
+//glDisable (GL_TEXTURE_2D);
 glPopMatrix ();
 return 1;
 }

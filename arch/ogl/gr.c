@@ -954,8 +954,7 @@ extern int bSaveScreenShot;
 
 void SaveScreenShot (unsigned char *buf, int bAutomap)
 {
-//	fix t1;
-//	char				szMessage [100];
+	char				szMessage [100];
 	char				szSaveName [FILENAME_LEN];
 	int				i, bTmpBuf;
 	static int		nSaveNum = 0;
@@ -975,17 +974,10 @@ if (*gameFolders.szScrShotDir)
 else
 	*szSaveName = '\0';
 i = (int) strlen (szSaveName);
-//added/changed on 10/31/98 by Victor Rachels to fix overwrite each new game
 do {
 	sprintf (szSaveName + i, "scrn%04d.tga", nSaveNum++);
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
-#if 0
-sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
-//end this section addition/change - Victor Rachels
-if (!bAutomap)
-	HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
-#endif
 
 if (bTmpBuf = (buf == NULL)) {
 	buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
@@ -997,8 +989,13 @@ if (bTmpBuf = (buf == NULL)) {
 	}
 else
 	glErrCode = GL_NO_ERROR;
-if (glErrCode == GL_NO_ERROR)
+if (glErrCode == GL_NO_ERROR) {
 	WriteScreenShot (szSaveName, grdCurScreen->sc_w, grdCurScreen->sc_h, buf, 0);
+	if (!bAutomap) {
+		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
+		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
+		}
+	}
 if (bTmpBuf)
 	d_free (buf);
 //KeyFlush ();

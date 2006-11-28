@@ -491,8 +491,11 @@ void DrawPolygonObject (tObject *objP)
 	int bBrightPolys = 0;
 	//tRgbColorf color;
 
-
-	//	If option set for bright players in netgame, brighten them!
+#if SHADOWS
+if (gameStates.render.bFastShadows && (gameStates.render.nShadowPass == 3))
+	return;
+#endif
+//	If option set for bright players in netgame, brighten them!
 #ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
 	xLight = F1_0;
@@ -1445,7 +1448,7 @@ if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObje
 		return;		
 		}
 	}
-if ((objP->nType==OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
+if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
 #endif
@@ -1476,7 +1479,10 @@ switch (objP->renderType) {
 				}
 			else
 				DrawPolygonObject (objP);
-			if (gameStates.render.nShadowPass != 2) {
+#if SHADOWS
+			if (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass == 3) : (gameStates.render.nShadowPass == 1))
+#endif
+				{
 				RenderThrusterFlames (objP);
 				RenderPlayerShield (objP);
 				RenderTargetIndicator (objP, NULL);
@@ -1485,7 +1491,9 @@ switch (objP->renderType) {
 			}
 		else if (objP->nType == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
-			if (gameStates.render.nShadowPass != 2)
+#if SHADOWS
+			if (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass == 3) : (gameStates.render.nShadowPass == 1))
+#endif
 				RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}

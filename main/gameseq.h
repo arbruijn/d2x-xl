@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  *
  * Revision 1.25  1994/11/07  17:50:57  rob
- * Added extern prototype for init_player_statsLevel called for
+ * Added extern prototype for InitPlayerStatsLevel called for
  * network games.
  *
  * Revision 1.24  1994/10/25  15:40:03  yuan
@@ -245,7 +245,7 @@ extern void draw_high_scores(int place);
 extern int add_player_to_high_scores(tPlayer *playerP);
 extern void input_name (int place);
 extern int reset_high_scores();
-extern void init_player_statsLevel(int secretFlag);
+extern void InitPlayerStatsLevel(int secretFlag);
 
 void open_message_window(void);
 void close_message_window(void);
