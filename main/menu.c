@@ -168,7 +168,7 @@ static char *pszAmount [5];
 static char *pszSize [4];
 static char *pszLife [3];
 
-#if SHADOWS
+#if DBG_SHADOWS
 extern int bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, bSWCulling;
 #endif
 
@@ -2014,7 +2014,7 @@ if (extraGameInfo [0].bShadows) {
 		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		m->rebuild = 1;
 		}
-#	ifdef _DEBUG
+#	if DBG_SHADOWS
 	if (nShadowTestOpt >= 0) {
 		m = menus + nShadowTestOpt;
 		v = m->value;
@@ -2111,7 +2111,7 @@ void AdvancedRenderOptionsMenu ()
 #endif
 #if SHADOWS
 	int	optRobotShadows;
-#	ifdef _DEBUG
+#	if DBG_SHADOWS
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
 #	endif
 #endif
@@ -2128,7 +2128,7 @@ void AdvancedRenderOptionsMenu ()
 	char szContrast [50];
 #if SHADOWS
 	char szMaxLights [50];
-#	ifdef _DEBUG
+#	if DBG_SHADOWS
 	char szShadowTest [50];
 #	endif
 #endif
@@ -2209,7 +2209,7 @@ do {
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
 	optRobotShadows = -1;
-#ifdef _DEBUG
+#	if DBG_SHADOWS
 	optZPass =
 	optFrontCap =
 	optRearCap =
@@ -2227,7 +2227,7 @@ do {
 		nMaxLightsOpt = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
-#	ifdef _DEBUG
+#	if DBG_SHADOWS
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
 		if (!bZPass) {
@@ -2336,8 +2336,10 @@ do {
 	gameOpts->render.bObjects = m [optObjects].value;
 	gameOpts->render.bWalls = m [optWalls].value;
 	gameOpts->render.bDynamicLight = m [optDynLight].value;
-#	if SHADOWS
+#endif
+#if SHADOWS
 	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
+#	if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
 		GET_VAL (bZPass, optZPass);
 		GET_VAL (bFrontCap, optFrontCap);

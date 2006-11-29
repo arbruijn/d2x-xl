@@ -267,7 +267,7 @@ return CheckSphereToFace (&checkp, sideP, facenum, nv, rad, vertexList);
 //returns the value of a determinant
 fix CalcDetValue (vmsMatrix *det)
 {
-#if 0
+#if 1
 	fix	xDet;
 //LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", det->rVec.x, det->rVec.y, det->rVec.z, det->fVec.x, det->fVec.y, det->fVec.z, det->uVec.x, det->uVec.y, det->uVec.z);
 //LogErr ("               xDet = FixMul (det->rVec.x, FixMul (det->uVec.y, det->fVec.z))\n");

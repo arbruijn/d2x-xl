@@ -63,7 +63,7 @@
 #define OGL_CLEANUP		1
 #define USE_VERTNORMS	1
 
-#if defined (_DEBUG) && SHADOWS
+#if DBG_SHADOWS
 int bShadowTest = 0;
 #endif
 
@@ -599,7 +599,7 @@ if (!gameStates.render.nRenderPass)
 if (EGI_FLAG (bShadows, 0, 0) 
 	 && (gameStates.render.nShadowPass < 3)
 	 && !gameStates.render.bFastShadows
-#	ifdef _DEBUG
+#	if DBG_SHADOWS
 	 && !bShadowTest
 #	endif
 	 )
@@ -1863,7 +1863,7 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_DEPTH_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
-			glCullFace (GL_FRONT);
+			glCullFace (GL_BACK);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
@@ -1873,7 +1873,7 @@ if (gameStates.render.nShadowPass) {
 			glPolygonOffset (1.0f, 2.0f);
 			}
 		else {
-#ifdef _DEBUG
+#	if DBG_SHADOWS
 			if (bShadowTest) {
 				glColorMask (1,1,1,1);
 				glDepthMask (0);
@@ -1882,7 +1882,7 @@ if (gameStates.render.nShadowPass) {
 				glDisable (GL_STENCIL_TEST);
 				}
 			else 
-#endif
+#	endif
 				{
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
@@ -1893,11 +1893,11 @@ if (gameStates.render.nShadowPass) {
 				if (!glActiveStencilFaceEXT)
 #endif
 					bSingleStencil = 1;
-#ifdef _DEBUG
+#	if DBG_SHADOWS
 				if (bSingleStencil || bShadowTest) {
-#else
+#	else
 				if (bSingleStencil) {
-#endif
+#	endif
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
@@ -2015,8 +2015,8 @@ else
 		}
 	else if (!gameOpts->legacy.bZBuf) {
 		glEnable (GL_CULL_FACE);		
-		glFrontFace (GL_CW);
-		glCullFace (GL_BACK);	//Weird, huh? Well, D2 renders everything reverse ...
+		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
+		glCullFace (GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		if (glIsEnabled (GL_DEPTH_TEST)) {
 			glDepthFunc (GL_LESS);

@@ -72,7 +72,7 @@ extern tRgbColorf globalDynColor;
 extern char bGotGlobalDynColor;
 char bUseGlobalColor = 0;
 
-#if defined (_DEBUG) && SHADOWS
+#if DBG_SHADOWS
 extern int bShadowTest;
 #endif
 

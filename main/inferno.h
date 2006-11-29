@@ -29,6 +29,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	SHADOWS	1
 #endif
 
+#if SHADOWS
+#	ifdef _DEBUG
+#		define DBG_SHADOWS 1
+#	else
+#		define DBG_SHADOWS 1
+#	endif
+#endif
+
 #include "pstypes.h"
 #include "3d.h"
 #include "bm.h"

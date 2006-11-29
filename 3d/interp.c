@@ -70,8 +70,7 @@ g3sPoint	*modelPointList = NULL;
 //this is a table of mappings from RGB15 to palette colors
 struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
 
-#if SHADOWS
-#	ifdef _DEBUG
+#if DBG_SHADOWS
 extern int bShadowTest;
 extern int bFrontCap;
 extern int bRearCap;
@@ -79,7 +78,8 @@ extern int bShadowVolume;
 extern int bFrontFaces;
 extern int bBackFaces;
 extern int bSWCulling;
-#	endif
+#endif
+#if SHADOWS
 extern int bZPass;
 #endif
 static int bContourEdges = 1;
@@ -99,15 +99,8 @@ static short nGlow = -1;
 inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
 {
 	tOOF_vector	h;
-#ifdef _DEBUG
-	float	mag;
-OOF_VecSub (&h, pDir, pv);
-mag = OOF_VecMag (&h);
-mag = OOF_VecMul (&h, pNorm);
-return mag > 0;
-#else
+
 return OOF_VecMul (OOF_VecSub (&h, pDir, pv), pNorm) > 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1367,7 +1360,7 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 	tPOF_edge	*pe;
 	short			i, j;
 
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (!bShadowVolume)
 	return 1;
 if (bCullFront && !bBackFaces)
@@ -1381,11 +1374,11 @@ else if (bShadowTest > 1)
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bShadowTest < 2)
 #endif
 	glBegin (GL_QUADS);
-#ifdef _DEBUG
+#if DBG_SHADOWS
 else if (bShadowTest == 2)
 	glLineWidth (3);
 else {
@@ -1396,7 +1389,7 @@ else {
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
 		i--;
-#ifdef _DEBUG
+#if DBG_SHADOWS
 		if (bShadowTest < 3) {
 			if (bShadowTest)
 				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
@@ -1415,7 +1408,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#ifdef RELEASE
+#if 0//def RELEASE
 			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);
@@ -1426,7 +1419,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			glVertex3fv ((GLfloat *) (v+2));
 			glVertex3fv ((GLfloat *) (v+3));
 #endif
-#ifdef _DEBUG
+#if DBG_SHADOWS
 			}
 		else {
 			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
@@ -1435,7 +1428,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			}
 #endif
 		}
-#ifdef _DEBUG
+#if DBG_SHADOWS
 glLineWidth (1);
 if (bShadowTest != 2)
 #endif
@@ -1454,7 +1447,7 @@ int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFro
 	tPOF_face	*pf;
 	short			*pfv, i, j;
 
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bShadowTest) {
 	glColor4fv ((GLfloat *) (modelColor + bCullFront));
 	glDepthFunc (GL_LEQUAL);
@@ -1463,7 +1456,7 @@ if (bShadowTest) {
 G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
 if (bCullFront) {
-#ifdef _DEBUG
+#if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
 #endif
@@ -1499,7 +1492,7 @@ if (bCullFront) {
 			v0 = pvf [*pfv];
 #if 1
 			OOF_VecSub (&v1, &v0, &vLightPos);
-#ifdef _DEBUG
+#if DBG_SHADOWS
 			if (bShadowTest < 4) 
 #endif
 				{
@@ -1517,7 +1510,7 @@ if (bCullFront) {
 		}
 	}
 else {
-#ifdef _DEBUG
+#if DBG_SHADOWS
 	if (!bFrontCap)
 		return 1;
 #endif
@@ -1526,7 +1519,7 @@ else {
 #else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
-#ifdef _DEBUG
+#if DBG_SHADOWS
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
 			v1 = v0 = pf->vCenterf;
@@ -1685,7 +1678,7 @@ bool G3DrawPolyModel (
 	ubyte *p = modelP;
 	short	h;
 
-#if defined (_DEBUG) && SHADOWS
+#if DBG_SHADOWS
 if (bShadowTest)
 	return 1;
 #endif

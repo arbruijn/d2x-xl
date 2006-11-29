@@ -40,7 +40,7 @@
 
 #define oof_free(_p)	if (_p) {d_free (_p); (_p) = NULL;}
 
-#if defined (_DEBUG) && SHADOWS
+#if DBG_SHADOWS
 extern int bShadowTest;
 int bSingleStencil;
 
@@ -2034,7 +2034,7 @@ extern tRgbaColorf shadowColor [2], modelColor [2];
 
 void OOF_SetCullAndStencil (int bCullFront)
 {
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bSingleStencil || bShadowTest) 
 #endif
 	{
@@ -2066,7 +2066,7 @@ int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bCullFront && !bBackFaces)
 	return 1;
 if (!bCullFront && !bFrontFaces)
@@ -2080,7 +2080,7 @@ if (bShadowTest < 2)
 #endif
 OOF_SetCullAndStencil (bCullFront);
 pv = pso->pvRotVerts;
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bShadowTest < 2)
 	glBegin (GL_QUADS);
 else
@@ -2089,7 +2089,7 @@ else
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
 		i--;
-#ifdef _DEBUG
+#if DBG_SHADOWS
 		if (bShadowTest < 2) {
 			if (bShadowTest)
 				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
@@ -2121,7 +2121,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			glVertex3fv ((GLfloat *) (v+2));
 			glVertex3fv ((GLfloat *) (v+3));
 #endif
-#ifdef _DEBUG
+#if DBG_SHADOWS
 			}
 		else {
 			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
@@ -2130,7 +2130,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			}
 #endif
 		}
-#ifdef _DEBUG
+#if DBG_SHADOWS
 glEnd ();
 glEnable (GL_CULL_FACE);
 #endif
@@ -2146,7 +2146,7 @@ int OOF_DrawShadowCaps (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 	tOOF_vector		*pv, v0, v1;
 	int				i, j;
 
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bZPass)
 	return 1;
 if (bShadowTest > 4)
@@ -2156,7 +2156,7 @@ glColor4fv ((GLfloat *) modelColor);
 pv = pso->pvRotVerts;
 OOF_SetCullAndStencil (bCullFront);
 if (bCullFront) {
-#ifdef _DEBUG
+#if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
 #endif
@@ -2183,7 +2183,7 @@ if (bCullFront) {
 	}
 else {
 #endif
-#ifdef _DEBUG
+#if DBG_SHADOWS
 	if (!bFrontCap)
 		return 1;
 #endif
@@ -2225,7 +2225,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
-#ifdef _DEBUG
+#if DBG_SHADOWS
 if (bShadowTest && (bShadowTest < 4))
 	return 1;
 #endif
@@ -2286,7 +2286,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			//glVertex4f (phv->x, phv->y, phv->z, 0.5);
 			}	
 		glEnd ();
-#ifdef _DEBUG
+#if DBG_SHADOWS
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 				tOOF_vector	fv0;
 

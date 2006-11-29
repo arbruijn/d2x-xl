@@ -1197,7 +1197,7 @@ for (h = 0; h < nThrusters; h++) {
 	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
-	glCullFace (GL_FRONT);
+	glCullFace (GL_BACK);
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 		c [0] = c [1];
@@ -1293,7 +1293,7 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 		}
 	glEnable (GL_CULL_FACE);		
 	for (h = 0; h < 3; h += 2) {
-		glCullFace (h ? GL_BACK : GL_FRONT);
+		glCullFace (h ? GL_FRONT : GL_BACK);
 		glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
 		glBegin (GL_TRIANGLE_STRIP);
 		for (j = 0; j < RING_SIZE; j++) {
@@ -2833,8 +2833,6 @@ switch (objP->movementType) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
-		if (objP->nType == 17)
-			objP = objP;
 		DoPhysicsSim (objP);	
 		SetOglLightPos (OBJ_IDX (objP));
 		break;	//move by physics

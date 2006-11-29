@@ -23,6 +23,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <signal.h>
 
 #if defined(__unix__) || defined(__macosx__)
 #include <unistd.h>
@@ -189,6 +190,26 @@ extern int VR_low_res;
 
 // ----------------------------------------------------------------------------
 
+void __cdecl D2SignalHandler (int nSignal)
+{
+if (nSignal == SIGABRT)
+	LogErr ("Abnormal program termination\n");
+else if (nSignal == SIGFPE)
+	LogErr ("Floating point error\n");
+else if (nSignal == SIGILL)
+	LogErr ("Illegal instruction\n");
+else if (nSignal == SIGINT)
+	LogErr ("Ctrl+C signal\n");
+else if (nSignal == SIGSEGV)
+	LogErr ("Memory access violation\n");
+else if (nSignal == SIGTERM)
+	LogErr ("Termination request\n");
+else
+	LogErr ("Unknown signal\n");
+}
+
+// ----------------------------------------------------------------------------
+
 void D2SetCaption (void)
 {
 	char	szCaption [200];
@@ -209,7 +230,7 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 // ----------------------------------------------------------------------------
 //read help from a file & print to screen
-void print_commandline_help ()
+void PrintCmdLineHelp ()
 {
 	CFILE *ifile;
 	int have_binary=0;
@@ -428,7 +449,7 @@ gameStates.app.bLittleEndian = (h.s == 256);
 
 // ----------------------------------------------------------------------------
 
-void do_joystick_init ()
+void DoJoystickInit ()
 {
 
 if (!FindArg ("-nojoystick"))	{
@@ -444,7 +465,7 @@ if (!FindArg ("-nojoystick"))	{
 
 // ----------------------------------------------------------------------------
 //set this to force game to run in low res
-int disable_high_res=0;
+int bDisableHires=0;
 
 void DoSelectPlayer (void)
 {
@@ -2011,7 +2032,7 @@ con_printf(CON_NORMAL, "Compiler: %s\n", __VERSION__);
 #endif
 con_printf(CON_NORMAL, "\n");
 if (FindArg ("-?") || FindArg ("-help") || FindArg ("?") || FindArg ("-h")) {
-	print_commandline_help ();
+	PrintCmdLineHelp ();
    set_exit_message ("");
 #ifdef __MINGW32__
 	exit (0);  /* mingw hangs on this return.  dunno why */
@@ -2322,6 +2343,12 @@ int Initialize (int argc, char *argv[])
 	u_int32_t	nScreenMode;
 
 /*---*/LogErr ("Initializing data\n");
+signal (SIGABRT, D2SignalHandler);
+signal (SIGFPE, D2SignalHandler);
+signal (SIGILL, D2SignalHandler);
+signal (SIGINT, D2SignalHandler);
+signal (SIGSEGV, D2SignalHandler);
+signal (SIGTERM, D2SignalHandler);
 CFileInit ("", "");
 InitGameData ();
 InitGameStates ();
@@ -2396,7 +2423,7 @@ ReadConfigFile ();
 /*---*/LogErr ("Initializing control types\n");
 SetControlType ();
 /*---*/LogErr ("Initializing joystick\n");
-do_joystick_init ();
+DoJoystickInit ();
 /*---*/LogErr ("Initializing graphics\n");
 if (t = GrInit ()) {		//doesn't do much
 	LogErr ("Cannot initialize graphics\n");
@@ -2423,7 +2450,7 @@ if ((i = FindArg ("-xcontrol")) > 0)
 	KCInitExternalControls (strtol (Args[i+1], NULL, 0), strtol (Args[i+2], NULL, 0));
 
 #if !defined (POLY_ACC)
-if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || disable_high_res)
+if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
 	gameOpts->movies.bHires = 
 	gameStates.menus.bHires = 
 	gameStates.menus.bHiresAvailable = 0;
@@ -2619,3 +2646,6 @@ void quit_request ()
 #endif
 	exit (0);
 }
+
+// ----------------------------------------------------------------------------
+
