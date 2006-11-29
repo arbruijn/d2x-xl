@@ -1990,8 +1990,10 @@ int OOF_GetLitFaces (tOOF_subObject *pso)
 
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	pf->bFacingLight = OOF_LitFace (pso, pf);
+#if 0
 	if (bSWCulling)
 		pf->bFacingViewer = OOF_FrontFace (pso, pf);
+#endif
 	}
 return pso->faces.nFaces;
 }
@@ -2065,6 +2067,10 @@ int OOF_DrawShadowVolume (tOOFObject *po, tOOF_subObject *pso, int bCullFront)
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
 #ifdef _DEBUG
+if (bCullFront && !bBackFaces)
+	return 1;
+if (!bCullFront && !bFrontFaces)
+	return 1;
 if (!bShadowVolume)
 	return 1;
 if (bShadowTest > 3)
@@ -2073,7 +2079,6 @@ if (bShadowTest < 2)
 	glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
 OOF_SetCullAndStencil (bCullFront);
-glDisable (GL_CULL_FACE);
 pv = pso->pvRotVerts;
 #ifdef _DEBUG
 if (bShadowTest < 2)
@@ -2432,13 +2437,15 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			*pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->nSegment];
+	short			i, *pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->nSegment];
 	vmsVector	h, vl;
 
-for (gameData.render.shadows.nLight = 0; 
-	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
-	  gameData.render.shadows.nLight++, pnl++) {
+gameData.render.shadows.nLight = 0; 
+for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
 	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
+	if (!gameData.render.shadows.pLight->bState)
+		continue;
+	gameData.render.shadows.nLight++;
 #if 0
 	OOF_VecVms2Oof (&vrLightPos, &gameData.render.shadows.pLight->vPos);
 #else
@@ -2461,7 +2468,7 @@ int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked)
 
 #if SHADOWS
 if (gameStates.render.bFastShadows && (gameStates.render.nShadowPass == 3))
-	return;
+	return 1;
 #endif
 if (po->bCloaked != bCloaked) {
 	po->bCloaked = bCloaked;

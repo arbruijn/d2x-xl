@@ -959,7 +959,7 @@ int select_next_window_function(int w)
 #ifdef NETWORK
 			//fall through
 		case CV_COOP:
-			Marker_viewer_num[w] = -1;
+			gameData.marker.viewers[w] = -1;
 			if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
 				Cockpit_3d_view[w] = CV_COOP;
 				while (1) {
@@ -981,12 +981,12 @@ int select_next_window_function(int w)
 			//if not multi, fall through
 		case CV_MARKER:
 		case_marker:;
-			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.Allow_marker_view) {	//anarchy only
+			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.bAllowMarkerView) {	//anarchy only
 				Cockpit_3d_view[w] = CV_MARKER;
-				if (Marker_viewer_num[w] == -1)
-					Marker_viewer_num[w] = gameData.multi.nLocalPlayer * 2;
-				else if (Marker_viewer_num[w] == gameData.multi.nLocalPlayer * 2)
-					Marker_viewer_num[w]++;
+				if (gameData.marker.viewers [w] == -1)
+					gameData.marker.viewers [w] = gameData.multi.nLocalPlayer * 2;
+				else if (gameData.marker.viewers [w] == gameData.multi.nLocalPlayer * 2)
+					gameData.marker.viewers [w]++;
 				else
 					Cockpit_3d_view[w] = CV_NONE;
 			}

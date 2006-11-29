@@ -740,8 +740,8 @@ mpParams.bShowAllNames = (ubyte) netGame.ShowAllNames;
 NetworkAdjustMaxDataSize ();
 //  extraGameInfo [0].bEnhancedCTF = (m [optEnhancedCTF].value != 0);
 
-netGame.Allow_marker_view = m [optMarkerView].value;
-mpParams.bMarkerView = (ubyte) netGame.Allow_marker_view;
+netGame.bAllowMarkerView = m [optMarkerView].value;
+mpParams.bMarkerView = (ubyte) netGame.bAllowMarkerView;
 netGame.AlwaysLighting = m [optLight].value; 
 mpParams.bAlwaysBright = (ubyte) netGame.AlwaysLighting;
 mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].value;
@@ -1142,7 +1142,7 @@ int NetworkGetGameParams (int bAutoRun)
 	gameData.multi.nMaxPlayers = MAX_NUM_NET_PLAYERS;
 	//netGame.KillGoal = 0;
 	//netGame.PlayTimeAllowed = 0;
-	//netGame.Allow_marker_view = 1;
+	//netGame.bAllowMarkerView = 1;
 #if 0 // can be called via menu option now so you don't need to chose a level if you have one already
 	nNewMission = MultiChooseMission (&bAnarchyOnly);
 	if (nNewMission < 0)

@@ -1368,6 +1368,7 @@ typedef struct tMarkerData {
 	char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 	char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
 	short					objects [NUM_MARKERS];
+	short					viewers [2];
 	int					nHighlight;
 	float					fScale;
 	ubyte					nDefiningMsg;

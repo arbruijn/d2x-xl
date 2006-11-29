@@ -70,7 +70,8 @@ g3sPoint	*modelPointList = NULL;
 //this is a table of mappings from RGB15 to palette colors
 struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
 
-#if defined (_DEBUG) && SHADOWS
+#if SHADOWS
+#	ifdef _DEBUG
 extern int bShadowTest;
 extern int bFrontCap;
 extern int bRearCap;
@@ -78,6 +79,7 @@ extern int bShadowVolume;
 extern int bFrontFaces;
 extern int bBackFaces;
 extern int bSWCulling;
+#	endif
 extern int bZPass;
 #endif
 static int bContourEdges = 1;
@@ -1434,10 +1436,10 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 		}
 #ifdef _DEBUG
-if (bShadowTest != 2)
-	glEnd ();
 glLineWidth (1);
+if (bShadowTest != 2)
 #endif
+	glEnd ();
 return 1;
 }
 
@@ -1493,12 +1495,7 @@ if (bCullFront) {
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-#if 1
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-#else
-		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
-			--pfv;
-#endif
 			v0 = pvf [*pfv];
 #if 1
 			OOF_VecSub (&v1, &v0, &vLightPos);
@@ -1552,12 +1549,7 @@ else {
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-#if 1
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-#else
-		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
-			--pfv;
-#endif
 			v0 = pvf [*pfv];
 			glVertex3fv ((GLfloat *) &v0);
 			}
@@ -1644,7 +1636,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 #if SHADOWS
 	vmsVector		v;
 	short				*pnl;
-	int				bCalcCenter = 0;
+	int				i, bCalcCenter = 0;
 	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 
 if ((objP->nType != OBJ_PLAYER) && !gameOpts->render.bRobotShadows)
@@ -1656,10 +1648,12 @@ if (!gameStates.render.bShadowMaps) {
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
-for (gameData.render.shadows.nLight = 0; 
-	  (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); 
-	  gameData.render.shadows.nLight++, pnl++) {
+gameData.render.shadows.nLight = 0;
+for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
 	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
+	if (!gameData.render.shadows.pLight->bState)
+		continue;
+	gameData.render.shadows.nLight++;
 	if (gameStates.render.bShadowMaps)
 		RenderShadowMap (gameData.render.shadows.pLight);
 	else {

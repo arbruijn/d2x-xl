@@ -92,6 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_TOO_FAR  64  // An edge that is too far away
 
 void ModexPrintF (int x,int y, char *s, grs_font *font, unsigned int color);
+int LastMarker (void);
 
 typedef struct Edge_info {
 	short verts[2];     // 4 bytes
@@ -144,7 +145,7 @@ typedef struct amColors {
 
 amColors automapColors;
 
-void init_automap_colors (void)
+void InitAutomapColors (void)
 {
 automapColors.walls.nNormal = K_WALL_NORMAL_COLOR;
 automapColors.walls.nDoor = K_WALL_DOOR_COLOR;
@@ -301,45 +302,41 @@ basePoint.p3_index = -1;
 
 //------------------------------------------------------------------------------
 
-void DropMarker (char player_marker_num)
+void DropMarker (char nPlayerMarker)
 {
-	ubyte marker_num = (gameData.multi.nLocalPlayer*2)+player_marker_num;
-	tObject *playerp = &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject];
+	ubyte nMarker = (gameData.multi.nLocalPlayer * 2) + nPlayerMarker;
+	tObject *playerP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 
-	gameData.marker.point[marker_num] = playerp->position.vPos;
-
-	if (gameData.marker.objects[marker_num] != -1)
-		ReleaseObject (gameData.marker.objects[marker_num]);
-
-	gameData.marker.objects[marker_num] = 
-		DropMarkerObject (&playerp->position.vPos, (short) playerp->nSegment, &playerp->position.mOrient, marker_num);
-
+gameData.marker.point [nMarker] = playerP->position.vPos;
+if (gameData.marker.objects [nMarker] != -1)
+	ReleaseObject (gameData.marker.objects[nMarker]);
+gameData.marker.objects[nMarker] = 
+	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
 #ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerp->position.vPos, player_marker_num, gameData.marker.szMessage[marker_num]);
+		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage[nMarker]);
 #endif
-
 }
 
 //------------------------------------------------------------------------------
 
 void DropBuddyMarker (tObject *objP)
 {
-	ubyte	marker_num;
+	ubyte	nMarker;
 
 	//	Find spare marker slot.  "if" code below should be an assert, but what if someone changes NUM_MARKERS or MAX_CROP_SINGLE and it never gets hit?
-	marker_num = MAX_DROP_SINGLE+1;
-	if (marker_num > NUM_MARKERS-1)
-		marker_num = NUM_MARKERS-1;
+	nMarker = MAX_DROP_SINGLE+1;
+	if (nMarker > NUM_MARKERS-1)
+		nMarker = NUM_MARKERS-1;
 
-   sprintf (gameData.marker.szMessage[marker_num], "RIP: %s",gameData.escort.szName);
+   sprintf (gameData.marker.szMessage[nMarker], "RIP: %s",gameData.escort.szName);
 
-	gameData.marker.point[marker_num] = objP->position.vPos;
+	gameData.marker.point[nMarker] = objP->position.vPos;
 
-	if (gameData.marker.objects[marker_num] != -1 && gameData.marker.objects[marker_num] !=0)
-		ReleaseObject (gameData.marker.objects[marker_num]);
+	if (gameData.marker.objects[nMarker] != -1 && gameData.marker.objects[nMarker] !=0)
+		ReleaseObject (gameData.marker.objects[nMarker]);
 
-	gameData.marker.objects[marker_num] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, marker_num);
+	gameData.marker.objects[nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, nMarker);
 
 }
 
@@ -349,17 +346,17 @@ void DropBuddyMarker (tObject *objP)
 
 void DrawMarkers ()
  {
-	int i,maxdrop;
+	int i,nMaxDrop;
 	static int cyc=10,cycdir=1;
 	g3sPoint spherePoint;
 
 	if (gameData.app.nGameMode & GM_MULTI)
-   	maxdrop=2;
+   	nMaxDrop=2;
 	else
-   	maxdrop=9;
+   	nMaxDrop=9;
 
 	spherePoint.p3_index = -1;
-	for (i=0;i<maxdrop;i++)
+	for (i=0;i<nMaxDrop;i++)
 		if (gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i] != -1) {
 
 			G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects[gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i]].position.vPos);
@@ -911,14 +908,14 @@ void DoAutomap (int key_code, int bRadar)
 #if !defined (AUTOMAP_DIRECT_RENDER) || !defined (NDEBUG)
 	int			i;
 #endif
-	int			c, marker_num;
+	int			c, nMarker;
 	fix			entryTime;
 	int			pause_game=1;		// Set to 1 if everything is paused during automap...No pause during net.
 	fix			t1, t2;
 	control_info saved_control_info;
 	int			Max_segments_away = 0;
 	int			SegmentLimit = 1;
-	char			maxdrop;
+	char			nMaxDrop;
 	int			must_free_canvas=0;
 	int			nContrast = gameStates.ogl.nContrast;
 
@@ -929,7 +926,7 @@ void DoAutomap (int key_code, int bRadar)
 
 	gameStates.app.bAutoMap = 1;
 	gameStates.ogl.nContrast = 8;
-	init_automap_colors ();
+	InitAutomapColors ();
 	key_code = key_code;	// disable warning...
 	if (bRadar || ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))
 		pause_game = 0;
@@ -1237,15 +1234,15 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			case KEY_9:
 			case KEY_0:
 				if (gameData.app.nGameMode & GM_MULTI)
-			   	maxdrop=2;
+			   	nMaxDrop=2;
 				else
-			   	maxdrop=9;
+			   	nMaxDrop=9;
 
-			marker_num = c-KEY_1;
-            if (marker_num<=maxdrop)
+			nMarker = c-KEY_1;
+            if (nMarker<=nMaxDrop)
 				 {
-					if (gameData.marker.objects[marker_num] != -1)
-						gameData.marker.nHighlight=marker_num;
+					if (gameData.marker.objects[nMarker] != -1)
+						gameData.marker.nHighlight=nMarker;
 				 }
 			  break;
 
@@ -1263,11 +1260,26 @@ WIN (if (redraw_screen) redraw_screen = 0);
 					);
 #endif
 
-					if (ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?") == 0) {
-						ReleaseObject (gameData.marker.objects[gameData.marker.nHighlight]);
-						gameData.marker.objects[gameData.marker.nHighlight]=-1;
-						gameData.marker.szMessage[gameData.marker.nHighlight][0]=0;
-						gameData.marker.nHighlight = -1;
+					if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
+						int	h, i;
+						ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
+						i = LastMarker ();
+						if (i == gameData.marker.nHighlight) {
+							gameData.marker.objects [gameData.marker.nHighlight] = -1;
+							gameData.marker.szMessage [gameData.marker.nHighlight][0] = '\0';
+							gameData.marker.nHighlight = i ? 0 : -1;
+							}
+						else {
+							h = i - gameData.marker.nHighlight;
+							memcpy (gameData.marker.objects + gameData.marker.nHighlight,
+									  gameData.marker.objects + gameData.marker.nHighlight + 1,
+									  h * sizeof (gameData.marker.objects [0]));
+							memcpy (gameData.marker.szMessage [gameData.marker.nHighlight],
+									  gameData.marker.szMessage [gameData.marker.nHighlight + 1],
+									  h * sizeof (gameData.marker.szMessage [0]));
+							gameData.marker.objects [i] = -1;
+							gameData.marker.szMessage [i][0] = '\0';
+							}
 					}					
 				}
 				break;
@@ -1912,23 +1924,33 @@ void AutomapBuildEdgeList ()
 
 //------------------------------------------------------------------------------
 
+int LastMarker (void)
+{
+	int nMaxDrop, h, i;
+
+//find free marker slot
+nMaxDrop = (gameData.app.nGameMode & GM_MULTI) ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
+h = gameData.multi.nLocalPlayer * 2 + nMaxDrop;
+for (i = nMaxDrop; i; i--)
+	if (gameData.marker.objects [--h] > -1)		//found free slot!
+		return i - 1;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 static int	 nMarkerIndex=0;
-static ubyte bDefiningMarker;
+static ubyte nDefiningMarker;
 static ubyte nLastMarkerDropped;
 
 void InitMarkerInput ()
- {
-	int maxdrop,i;
+{
+	int nMaxDrop, i;
 
-//find d_free marker slot
-if (gameData.app.nGameMode & GM_MULTI)
-   maxdrop=MAX_DROP_MULTI;
-else
-   maxdrop=MAX_DROP_SINGLE;
-for (i=0;i<maxdrop;i++)
-	if (gameData.marker.objects[ (gameData.multi.nLocalPlayer*2)+i] == -1)		//found d_free slot!
-		break;
-if (i == maxdrop) {		//no d_free slot
+//find free marker slot
+i = LastMarker () + 1;
+nMaxDrop = (gameData.app.nGameMode & GM_MULTI) ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
+if (i == nMaxDrop) {		//no free slot
 	if (gameData.app.nGameMode & GM_MULTI)
 		i = !nLastMarkerDropped;		//in multi, replace older of two
 	else {
@@ -1937,10 +1959,10 @@ if (i == maxdrop) {		//no d_free slot
 		}
 	}
 //got a d_free slot.  start inputting marker message
-gameData.marker.szInput[0]=0;
-nMarkerIndex=0;
-gameData.marker.nDefiningMsg=1;
-bDefiningMarker = i;
+gameData.marker.szInput[0] = '\0';
+nMarkerIndex = 0;
+gameData.marker.nDefiningMsg = 1;
+nDefiningMarker = i;
 }
 
 //------------------------------------------------------------------------------
@@ -1961,11 +1983,11 @@ void MarkerInputMessage (int key)
 		gameData.marker.szInput[nMarkerIndex] = 0;
 		break;
 	case KEY_ENTER:
-		strcpy (gameData.marker.szMessage[ (gameData.multi.nLocalPlayer*2)+bDefiningMarker],gameData.marker.szInput);
+		strcpy (gameData.marker.szMessage[ (gameData.multi.nLocalPlayer*2)+nDefiningMarker],gameData.marker.szInput);
 		if (gameData.app.nGameMode & GM_MULTI)
-		 strcpy (gameData.marker.nOwner[ (gameData.multi.nLocalPlayer*2)+bDefiningMarker],gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
-		DropMarker (bDefiningMarker);
-		nLastMarkerDropped = bDefiningMarker;
+		 strcpy (gameData.marker.nOwner[ (gameData.multi.nLocalPlayer*2)+nDefiningMarker],gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
+		DropMarker (nDefiningMarker);
+		nLastMarkerDropped = nDefiningMarker;
 		GameFlushInputs ();
 		gameData.marker.nDefiningMsg = 0;
 		break;

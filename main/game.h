@@ -244,7 +244,6 @@ extern tObject *Missile_viewer;
 
 extern int Cockpit_3d_view[2];      // left & right
 extern int Coop_view_player[2];     // left & right
-extern int Marker_viewer_num[2];    // left & right
 
 // constants for ft_preference
 #define FP_RIGHT        0

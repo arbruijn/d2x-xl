@@ -599,7 +599,7 @@ typedef struct netgame_info {
 	short DoGuided:1;
 	short DoEarthShaker:1;
 	short DoMercury:1;
-	short Allow_marker_view:1;
+	short bAllowMarkerView:1;
 	short AlwaysLighting:1;
 	short DoAmmoRack:1;
 	short DoConverter:1;
@@ -639,7 +639,7 @@ typedef struct netgame_info {
 	short DoConverter:1;
 	short DoAmmoRack:1;
 	short AlwaysLighting:1;
-	short Allow_marker_view:1;
+	short bAllowMarkerView:1;
 	short DoMercury:1;
 	short DoEarthShaker:1;
 	short DoGuided:1;

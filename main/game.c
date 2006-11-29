@@ -2538,7 +2538,6 @@ extern void check_create_player_path (void);
 
 #endif
 
-int Marker_viewer_num[2]={-1,-1};
 int Coop_view_player[2]={-1,-1};
 int Cockpit_3d_view[2]={CV_NONE,CV_NONE};
 

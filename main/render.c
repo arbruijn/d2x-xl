@@ -2658,7 +2658,10 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 		//RenderObjectShadows ();
 		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 		}
-	if (!bShadowTest) {
+#ifdef _DEBUG
+	if (!bShadowTest) 
+#endif
+		{
 		gameStates.render.nShadowPass = 3;
 		OglStartFrame (0, 0);
 		if	(gameStates.render.bShadowMaps) {

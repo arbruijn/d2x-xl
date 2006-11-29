@@ -2128,7 +2128,9 @@ void AdvancedRenderOptionsMenu ()
 	char szContrast [50];
 #if SHADOWS
 	char szMaxLights [50];
+#	ifdef _DEBUG
 	char szShadowTest [50];
+#	endif
 #endif
 	int nLMapRange = gameOpts->render.color.nLightMapRange;
 	int nRendQualSave = gameOpts->render.nQuality;

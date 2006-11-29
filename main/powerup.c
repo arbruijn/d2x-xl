@@ -714,6 +714,7 @@ switch (objP->id) {
 
 	case POW_CONVERTER:
 		sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (GetKeyValue (54)));
+		HUDInitMessage (szTemp);
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) ? 1 : 0;
 		break;
 
@@ -756,6 +757,7 @@ switch (objP->id) {
 
 	case POW_HEADLIGHT:
 		sprintf (szTemp, TXT_GOT_HEADLIGHT, gameOpts->gameplay.bHeadlightOn ? TXT_ON : TXT_OFF);
+		HUDInitMessage (szTemp);
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 		if (bUsed < 0) {
 			if (LOCALPLAYER (nPlayer)) {

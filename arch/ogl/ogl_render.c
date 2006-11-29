@@ -595,11 +595,16 @@ else {
 
 if (!gameStates.render.nRenderPass)
 	return;
-if (EGI_FLAG (bShadows, 0, 0) && 
-	 (gameStates.render.nShadowPass < 3) &&
-	 !gameStates.render.bFastShadows &&
-	 !bShadowTest)
+#if SHADOWS
+if (EGI_FLAG (bShadows, 0, 0) 
+	 && (gameStates.render.nShadowPass < 3)
+	 && !gameStates.render.bFastShadows
+#	ifdef _DEBUG
+	 && !bShadowTest
+#	endif
+	 )
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.2f;
+#endif
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
@@ -1858,7 +1863,7 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_DEPTH_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
-			glCullFace (GL_BACK);	//Weird, huh? Well, D2 renders everything reverse ...
+			glCullFace (GL_FRONT);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
@@ -1929,18 +1934,11 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			}
 		else {
-#ifdef _DEBUG
 			if (gameStates.render.bFastShadows) {
-#if 0
-				glStencilFunc (GL_EQUAL, 0, ~0);
-				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
-#else
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
-#endif
 				}
 			else 
-#endif
 				{
 				glStencilFunc (GL_EQUAL, 0, ~0);
 #if 0

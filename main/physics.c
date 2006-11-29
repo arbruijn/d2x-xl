@@ -553,17 +553,15 @@ retryMove:
 	//if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_MONSTERBALL)) 
 		{
 		int i;
-#ifdef RELEASE
-		int j;
-#endif
+
 		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
 			nPhysSegs--;
 #ifdef RELEASE
-		j = MAX_FVI_SEGS - nPhysSegs - 1;
-		if (j > hi.nSegments)
-			j = hi.nSegments;
-		memcpy (physSegList + nPhysSegs, hi.segList, j * sizeof (*physSegList));
-		nPhysSegs += j;
+		i = MAX_FVI_SEGS - nPhysSegs - 1;
+		if (i > hi.nSegments)
+			i = hi.nSegments;
+		memcpy (physSegList + nPhysSegs, hi.segList, i * sizeof (*physSegList));
+		nPhysSegs += i;
 #else
 			for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
 				if (hi.segList [i] > gameData.segs.nLastSegment)

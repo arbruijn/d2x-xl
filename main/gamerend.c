@@ -942,13 +942,14 @@ void show_extra_views()
 #endif
 			case CV_MARKER: {
 				char label[10];
+				short v = gameData.marker.viewers[w];
 				gameStates.render.nRenderingType=5+(w<<4);
-				if (Marker_viewer_num[w] == -1 || gameData.marker.objects[Marker_viewer_num[w]] == -1) {
+				if ((v == -1) || (gameData.marker.objects [v] == -1)) {
 					Cockpit_3d_view[w] = CV_NONE;
 					break;
 				}
-				sprintf(label,"Marker %d",Marker_viewer_num[w]+1);
-				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.objects[Marker_viewer_num[w]],0,WBU_MARKER,label);
+				sprintf(label,"Marker %d",gameData.marker.viewers[w]+1);
+				DoCockpitWindowView(w,gameData.objs.objects+gameData.marker.objects[gameData.marker.viewers[w]],0,WBU_MARKER,label);
 				break;
 			}
 			case CV_RADAR_TOPDOWN:
