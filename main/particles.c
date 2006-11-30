@@ -580,12 +580,12 @@ else
 #endif
 	{
 	if (gameOpts->render.smoke.bDisperse) {
-		w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) / decay2;
-		h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) / decay2;
+		w = f2fl (pParticle->nWidth) / decay2; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) / decay2;
+		h = f2fl (pParticle->nHeight) / decay2; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) / decay2;
 		}
 	else {
-		w = f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
-		h = f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
+		w = f2fl (pParticle->nWidth) * decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
+		h = f2fl (pParticle->nHeight) * decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
 		}
 	x = f2fl (hp.x);
 	y = f2fl (hp.y);
@@ -628,8 +628,6 @@ int BeginRenderSmoke (int nType)
 	grsBitmap	*bmP;
 	int			nFrames;
 
-glPushMatrix ();
-glScalef (1 / f2fl (viewInfo.scale.x), 1, 1);
 nType %= 3;
 bmP = bmpParticle [gameStates.render.bPointSprites][nType];
 nFrames = nParticleFrames [gameStates.render.bPointSprites][nType];
@@ -710,7 +708,6 @@ glDepthMask (1);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //glEnable (GL_DEPTH_TEST);
 //glDisable (GL_TEXTURE_2D);
-glPopMatrix ();
 return 1;
 }
 

@@ -4088,7 +4088,8 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 				}
 	
 				if (bHasFlag && !(EGI_FLAG (bTargetIndicators, 0, 0) || EGI_FLAG (bTowFlags, 0, 0))) { // Draw box on HUD
-					fix dy = -FixMulDiv(FixMul(gameData.objs.objects[nObject].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,vPlayerPos.p3_z);
+					fix dy = -FixMulDiv(gameData.objs.objects[nObject].size,i2f(grdCurCanv->cv_h)/2,vPlayerPos.p3_z);
+//					fix dy = -FixMulDiv(FixMul(gameData.objs.objects[nObject].size,viewInfo.scale.y),i2f(grdCurCanv->cv_h)/2,vPlayerPos.p3_z);
 					fix dx = FixMul(dy,grdCurScreen->sc_aspect);
 					fix w = dx/4;
 					fix h = dy/4;

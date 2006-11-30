@@ -2057,7 +2057,7 @@ if (GetSegMasks (pos, nSegment, 0).centerMask)
 	if ((nSegment = FindSegByPoint (pos, nSegment)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
-		con_printf (CON_DEBUG, "Bad nSegment in CreateObject (nType=%d)\n", nType);
+		con_printf (CON_DEBUG, "Bad segment in CreateObject (nType=%d)\n", nType);
 #	endif
 #endif
 		return -1;		//don't create this tObject

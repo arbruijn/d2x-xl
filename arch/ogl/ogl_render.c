@@ -1488,8 +1488,6 @@ bool G3DrawBitMap (
 	GLuint		depthFunc;
 
 r_bitmapc++;
-glPushMatrix ();
-glScalef (1 / f2fl (viewInfo.scale.x), 1, 1);
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
@@ -1498,10 +1496,8 @@ if (!bDepthInfo) {
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);
 	}
-if (OglBindBmTex (bmP, transp)) {
-	glPopMatrix ();
+if (OglBindBmTex (bmP, transp)) 
 	return 1;
-	}
 bmP = BmOverride (bmP);
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 glBegin (GL_QUADS);
@@ -1513,8 +1509,8 @@ VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 x = (float) f2glf (pv.x);
 y = (float) f2glf (pv.y);
 z = (float) f2glf (pv.z);
-w = (float) f2glf (FixMul (width, viewInfo.scale.x));
-h = (float) f2glf (FixMul (height, viewInfo.scale.y));
+w = (float) f2glf (width); //FixMul (width, viewInfo.scale.x));
+h = (float) f2glf (height); //FixMul (height, viewInfo.scale.y));
 glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, 0);
 glVertex3f (x - w, y + h, z);
 glMultiTexCoord2f (GL_TEXTURE0_ARB, u, 0);
@@ -1532,7 +1528,6 @@ glEnd ();
 if (!bDepthInfo)
 	glDepthFunc (depthFunc);
 //glDisable (GL_TEXTURE_2D);
-glPopMatrix ();
 return 0;
 } 
 
