@@ -1114,6 +1114,8 @@ if (i) {
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
 	gameOptions [1].render.bRobotShadows = 0;
+	gameOptions [1].render.bMissileShadows = 0;
+	gameOptions [1].render.bReactorShadows = 0;
 	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bTransparentEffects = 0;
@@ -1187,6 +1189,8 @@ else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
 	gameOptions [0].render.bRobotShadows = 0;
+	gameOptions [0].render.bMissileShadows = 0;
+	gameOptions [0].render.bReactorShadows = 0;
 	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;

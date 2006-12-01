@@ -545,7 +545,17 @@ if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
 po = gameData.models.polyModels + nModel;
-if (objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && (gameStates.render.nShadowPass == 2)) {
+if ((gameStates.render.nShadowPass == 2) && objP) {
+	if (objP->nType == OBJ_ROBOT) {
+		if (!gameOpts->render.bRobotShadows)
+			return;
+		}
+	else if (objP->nType == OBJ_WEAPON) {
+		if (!gameOpts->render.bMissileShadows)
+			return;
+		}
+	else if (objP->nType != OBJ_PLAYER)
+		return;
 	G3SetModelPoints (gameData.models.polyModelPoints);
 	G3DrawPolyModelShadow (objP, po->model_data, animAngles);
 	return;

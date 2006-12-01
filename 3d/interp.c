@@ -1655,6 +1655,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 	int				i, j, bCalcCenter = 0;
 	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 
+Assert (objP->id < MAX_ROBOT_TYPES);
 if ((objP->nType != OBJ_PLAYER) && !gameOpts->render.bRobotShadows)
 	return 0;
 if (!gameStates.render.bShadowMaps) {

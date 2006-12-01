@@ -182,6 +182,8 @@ typedef struct tRenderOptions {
 	int nDefMathFormat;
 	int bEnableSSE;
 	int bRobotShadows;
+	int bMissileShadows;
+	int bReactorShadows;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
