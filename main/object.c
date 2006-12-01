@@ -1072,8 +1072,8 @@ void RenderTowedFlag (tObject *objP)
 	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+//	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
@@ -1204,8 +1204,8 @@ void RenderThrusterFlames (tObject *objP)
 	static int		nPulse = 10;
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+//	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 1//ndef _DEBUG
@@ -1337,8 +1337,8 @@ for (h = 0; h < nThrusters; h++) {
 void RenderShockwave (tObject *objP)
 {
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+//	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) && 
@@ -1417,8 +1417,8 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 void RenderTracers (tObject *objP)
 {
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+//	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
@@ -1462,8 +1462,8 @@ static fVector vTrailVerts [2][4] = {{{0,0,0},{0,-1,-5},{0,-1,-50},{0,0,-50}},
 void RenderLightTrail (tObject *objP)
 {
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+//	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
