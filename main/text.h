@@ -1600,10 +1600,10 @@ void LoadGameTexts(void);
 #define TXT_EFFECT_RENDER_OPTS	GT(818)
 #define TXT_EFFECT_OPTS				GT(819)
 #define TXT_ROBOT_SHADOWS			GT(820)
+#define TXT_MISSILE_SHADOWS		GT(821)
+#define TXT_REACTOR_SHADOWS		GT(822)
 #if 0
 
-#define TXT_				GT(821)
-#define TXT_				GT(822)
 #define TXT_				GT(823)
 #define TXT_				GT(824)
 #define TXT_				GT(825)
@@ -2028,10 +2028,10 @@ void LoadGameTexts(void);
 #define HTX_SMOKE_LIFE				HT(226)				
 #define HTX_RENDER_EFFECTOPTS		HT(227)
 #define HTX_ROBOT_SHADOWS			HT(228)				
+#define HTX_MISSILE_SHADOWS		HT(229)				
+#define HTX_REACTOR_SHADOWS		HT(230)				
 #if 0
 				
-#define HTX_					HT(229)				
-#define HTX_					HT(230)				
 #define HTX_					HT(231)				
 #define HTX_					HT(232)				
 #define HTX_					HT(233)				

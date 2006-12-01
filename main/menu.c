@@ -2110,7 +2110,7 @@ void AdvancedRenderOptionsMenu ()
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
 #if SHADOWS
-	int	optRobotShadows;
+	int	optRobotShadows, optMissileShadows, optReactorShadows;
 #	if DBG_SHADOWS
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
 #	endif
@@ -2208,7 +2208,9 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
-	optRobotShadows = -1;
+	optRobotShadows =
+	optMissileShadows =
+	optReactorShadows = -1;
 #	if DBG_SHADOWS
 	optZPass =
 	optFrontCap =
@@ -2227,6 +2229,10 @@ do {
 		nMaxLightsOpt = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
+		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.bMissileShadows, KEY_R, HTX_MISSILE_SHADOWS);
+		optMissileShadows = opt++;
+		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.bReactorShadows, KEY_R, HTX_REACTOR_SHADOWS);
+		optReactorShadows = opt++;
 #	if DBG_SHADOWS
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
