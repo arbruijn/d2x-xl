@@ -1348,7 +1348,8 @@ int PiggyInit (void)
 /*---*/LogErr ("   Loading sound file\n");
 		snd_ok = ReadSoundFile ();
 		}
-
+	if (gameStates.app.bFixModels)
+		LoadRobotReplacements ("d2x-xl", 0, 1);
 	atexit (PiggyClose);
 	return (ham_ok && snd_ok);               //read ok
 }

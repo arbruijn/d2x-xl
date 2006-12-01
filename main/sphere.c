@@ -7,6 +7,7 @@
 #endif
 
 #include "inferno.h"
+#include "network.h"
 #include "sphere.h"
 #include "u_mem.h"
 

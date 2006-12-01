@@ -1413,8 +1413,11 @@ void RenderSegment(short nSegment, int nWindowNum)
 	g3s_codes 	cc;
 	short			sn;
 
-if (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass >= 2) : (gameStates.render.nShadowPass == 2))
+#if SHADOWS
+if (EGI_FLAG (bShadows, 0, 0) &&
+	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass >= 2) : (gameStates.render.nShadowPass == 2)))
 	return;
+#endif
 Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return;

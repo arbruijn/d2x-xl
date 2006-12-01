@@ -254,7 +254,7 @@ memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.mode
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [i].model_data = 
 	gameData.models.defPolyModels [i].model_data = NULL;
-	PolyModelDataRead (gameData.models.polyModels+i, gameData.models.defPolyModels + i, fp);
+	PolyModelDataRead (gameData.models.polyModels + i, gameData.models.defPolyModels + i, fp);
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)
@@ -1199,135 +1199,130 @@ return 1;
 
 extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
-int LoadRobotReplacements (char *level_name, int bAddBots)
+int LoadRobotReplacements (char *szLevelName, int bAddBots, int bOnlyModels)
 {
-	CFILE *fp;
-	int	t,i,j;
-	int	nBotTypeSave = gameData.bots.nTypes [0], 
-			nBotJointSave = gameData.bots.nJoints, 
-			nPolyModelSave = gameData.models.nPolyModels;
-	char	ifile_name [FILENAME_LEN];
+	CFILE		*fp;
+	int		t, i, j;
+	int		nBotTypeSave = gameData.bots.nTypes [0], 
+				nBotJointSave = gameData.bots.nJoints, 
+				nPolyModelSave = gameData.models.nPolyModels;
+	char		szFilename [FILENAME_LEN];
 
-	ChangeFilenameExtension (ifile_name, level_name, ".hxm");
-
-	if (!(fp = CFOpen (ifile_name, gameFolders.szDataDir,"rb", 0)))		//no robot replacement file
+ChangeFilenameExtension (szFilename, szLevelName, ".hxm");
+if (!(fp = CFOpen (szFilename, gameFolders.szDataDir, "rb", 0)))		//no robot replacement file
+	return 0;
+t = CFReadInt (fp);			//read id "HXM!"
+if (t!= MAKE_SIG ('!','X','M','H'))
+	Warning (TXT_HXM_ID);
+t = CFReadInt (fp);			//read version
+if (t<1)
+	Warning (TXT_HXM_VERSION,t);
+t = CFReadInt (fp);			//read number of robots
+for (j = 0; j < t; j++) {
+	i = CFReadInt (fp);		//read robot number
+	if (bAddBots) {
+		if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES)
+			Error (TXT_ROBOT_NO, i, szLevelName, MAX_ROBOT_TYPES);
+		else
+			i = gameData.bots.nTypes [0]++;
+		}
+	else if (i < 0 || i >= gameData.bots.nTypes [0]) {
+		Error (TXT_ROBOT_NO, i, szLevelName, gameData.bots.nTypes [0]-1);
+		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nJoints = nBotJointSave;
+		gameData.models.nPolyModels = nPolyModelSave;
 		return 0;
-
-	t = CFReadInt (fp);			//read id "HXM!"
-	if (t!= MAKE_SIG ('!','X','M','H'))
-		Warning (TXT_HXM_ID);
-
-	t = CFReadInt (fp);			//read version
-	if (t<1)
-		Warning (TXT_HXM_VERSION,t);
-
-	t = CFReadInt (fp);			//read number of robots
-	for (j = 0;j < t;j++) {
-		i = CFReadInt (fp);		//read robot number
-		if (bAddBots) {
-			if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES)
-				Error (TXT_ROBOT_NO, i, level_name, MAX_ROBOT_TYPES);
-			else
-				i = gameData.bots.nTypes [0]++;
-			}
-		else if (i < 0 || i >= gameData.bots.nTypes [0]) {
-			Error (TXT_ROBOT_NO, i, level_name, gameData.bots.nTypes [0]-1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
-			return 0;
-			}
+		}
+	if (bOnlyModels)
+		CFSeek (fp, sizeof (tRobotInfo), SEEK_CUR);
+	else
 		RobotInfoReadN (gameData.bots.info [0] + i, 1, fp);
 	}
-
-	t = CFReadInt (fp);			//read number of joints
-	for (j=0;j<t;j++) {
-		i = CFReadInt (fp);		//read joint number
-		if (bAddBots) {
-			if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
-				Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-						i,level_name,MAX_ROBOT_JOINTS-1);
-				gameData.bots.nTypes [0] = nBotTypeSave;
-				gameData.bots.nJoints = nBotJointSave;
-				gameData.models.nPolyModels = nPolyModelSave;
-				return 0;
-				}
-			else
-				i = gameData.bots.nJoints++;
-			}
-		else if (i<0 || i>=gameData.bots.nJoints) {
+t = CFReadInt (fp);			//read number of joints
+for (j = 0; j < t; j++) {
+	i = CFReadInt (fp);		//read joint number
+	if (bAddBots) {
+		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 			Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-					i,level_name,gameData.bots.nJoints-1);
+					i,szLevelName,MAX_ROBOT_JOINTS-1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return 0;
 			}
-		JointPosReadN (gameData.bots.joints + i, 1, fp);
+		else
+			i = gameData.bots.nJoints++;
+		}
+	else if (i<0 || i>=gameData.bots.nJoints) {
+		Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
+				i,szLevelName,gameData.bots.nJoints-1);
+		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nJoints = nBotJointSave;
+		gameData.models.nPolyModels = nPolyModelSave;
+		return 0;
+		}
+	JointPosReadN (gameData.bots.joints + i, 1, fp);
 	}
-
-	t = CFReadInt (fp);			//read number of polygon models
-	for (j=0;j<t;j++)
-	{
-		i = CFReadInt (fp);		//read model number
-		if (bAddBots) {
-			if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
-				Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-						i,level_name,gameData.models.nPolyModels-1);
-				gameData.bots.nTypes [0] = nBotTypeSave;
-				gameData.bots.nJoints = nBotJointSave;
-				gameData.models.nPolyModels = nPolyModelSave;
-				return 0;
-				}
-			else
-				i = gameData.models.nPolyModels++;
-			}
-		else if (i<0 || i>=gameData.models.nPolyModels) {
+t = CFReadInt (fp);			//read number of polygon models
+for (j = 0; j < t; j++) {
+	i = CFReadInt (fp);		//read model number
+	if (bAddBots) {
+		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-			i,level_name,gameData.models.nPolyModels-1);
+					i,szLevelName,gameData.models.nPolyModels-1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return 0;
 			}
-		FreeModel (gameData.models.polyModels + i);
-		PolyModelRead (gameData.models.polyModels + i, fp);
-		PolyModelDataRead (gameData.models.polyModels + i, NULL, fp);
-
-		gameData.models.nDyingModels [i] = CFReadInt (fp);
-		gameData.models.nDeadModels [i] = CFReadInt (fp);
+		else
+			i = gameData.models.nPolyModels++;
+		}
+	else if (i < 0 || i >= gameData.models.nPolyModels) {
+		Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
+		i,szLevelName,gameData.models.nPolyModels-1);
+		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nJoints = nBotJointSave;
+		gameData.models.nPolyModels = nPolyModelSave;
+		return 0;
+		}
+	FreeModel (gameData.models.polyModels + i);
+	PolyModelRead (gameData.models.polyModels + i, fp);
+	PolyModelDataRead (gameData.models.polyModels + i, bOnlyModels ? gameData.models.defPolyModels + i : NULL, fp);
+	if (bOnlyModels)
+		gameData.models.defPolyModels [i].model_data_size = gameData.models.polyModels [i].model_data_size;
+	gameData.models.nDyingModels [i] = CFReadInt (fp);
+	gameData.models.nDeadModels [i] = CFReadInt (fp);
 	}
 
-	t = CFReadInt (fp);			//read number of objbitmaps
-	for (j=0;j<t;j++) {
-		i = CFReadInt (fp);		//read objbitmap number
-		if (bAddBots) {
-			}
-		else if (i<0 || i>=MAX_OBJ_BITMAPS) {
-			Error ("Object bitmap number (%d) out of range in (%s).  Range = [0..%d].",i,level_name,MAX_OBJ_BITMAPS-1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
-			return 0;
-			}
-		BitmapIndexRead (gameData.pig.tex.objBmIndex + i, fp);
+t = CFReadInt (fp);			//read number of objbitmaps
+for (j=0;j<t;j++) {
+	i = CFReadInt (fp);		//read objbitmap number
+	if (bAddBots) {
+		}
+	else if (i < 0 || i >= MAX_OBJ_BITMAPS) {
+		Error ("Object bitmap number (%d) out of range in (%s).  Range = [0..%d].",i,szLevelName,MAX_OBJ_BITMAPS-1);
+		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nJoints = nBotJointSave;
+		gameData.models.nPolyModels = nPolyModelSave;
+		return 0;
+		}
+	BitmapIndexRead (gameData.pig.tex.objBmIndex + i, fp);
 	}
-
-	t = CFReadInt (fp);			//read number of objbitmapptrs
-	for (j=0;j<t;j++) {
-		i = CFReadInt (fp);		//read objbitmapptr number
-		if (i<0 || i>=MAX_OBJ_BITMAPS) {
-			Error ("Object bitmap pointer (%d) out of range in (%s).  Range = [0..%d].",i,level_name,MAX_OBJ_BITMAPS-1);
-			gameData.bots.nTypes [0] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
-			return 0;
-			}
-		gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
+t = CFReadInt (fp);			//read number of objbitmapptrs
+for (j = 0; j < t; j++) {
+	i = CFReadInt (fp);		//read objbitmapptr number
+	if (i<0 || i>=MAX_OBJ_BITMAPS) {
+		Error ("Object bitmap pointer (%d) out of range in (%s).  Range = [0..%d].",i,szLevelName,MAX_OBJ_BITMAPS-1);
+		gameData.bots.nTypes [0] = nBotTypeSave;
+		gameData.bots.nJoints = nBotJointSave;
+		gameData.models.nPolyModels = nPolyModelSave;
+		return 0;
+		}
+	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 	}
-
-	CFClose (fp);
-	return 1;
+CFClose (fp);
+return 1;
 }
 
 //------------------------------------------------------------------------------

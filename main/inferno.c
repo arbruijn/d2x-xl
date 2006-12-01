@@ -1042,6 +1042,8 @@ if (t = FindArg ("-nosound"))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
 if (t = FindArg ("-progress_bars"))
 	gameStates.app.bProgressBars = NumArg (t, 1);
+if (t = FindArg ("-fix_models"))
+	gameStates.app.bFixModels = NumArg (t, 1);
 if (t=FindArg ("-print_version"))
 	PrintVersion ();
 if (t=FindArg ("-altLanguage"))
@@ -1855,6 +1857,7 @@ gameStates.app.nDetailLevel = NUM_DETAIL_LEVELS - 1;
 gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
 gameStates.app.bDebugSpew = 1;
 gameStates.app.bProgressBars = 1;
+gameStates.app.bFixModels = 0;
 gameStates.app.cheats.bEnabled = 0;
 gameStates.app.cheats.bTurboMode = 0;
 gameStates.app.cheats.bMonsterMode = 0;

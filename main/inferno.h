@@ -637,6 +637,7 @@ typedef struct tApplicationStates {
 	int bProgressBars;
 	int bLittleEndian;
 	int bUsingConverter;
+	int bFixModels;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
@@ -1119,7 +1120,7 @@ typedef struct tPOFObject {
 
 //------------------------------------------------------------------------------
 
-#define MAX_POLYGON_VERTS 1000
+#define MAX_POLYGON_VERTS 10000
 
 typedef struct tRobotData {
 	char					*robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];

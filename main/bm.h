@@ -306,8 +306,9 @@ int ComputeAvgPixel(grsBitmap *newBm);
 void LoadTextureBrightness (char *pszLevel);
 int LoadExitModels();
 int BMReadExtraRobots (char *fname, char *folder, int nType);
-int LoadRobotReplacements (char *level_name, int bAddBots);
 void BMFreeExtraModels (void);
+int LoadRobotReplacements (char *pszLevelName, int bAddBots, int bOnlyModels);
+int ReadHamFile ();
 void _CDECL_ BMFreeExtraObjBitmaps (void);
 
 #endif /* _BM_H */

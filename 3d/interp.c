@@ -1096,7 +1096,7 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++)
 
 //------------------------------------------------------------------------------
 
-bool G3GetPolyModelItems (void *modelP, vmsAngVec	*pAnimAngles, tPOFObject *po, 
+bool G3GetPolyModelItems (void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, 
 								  int bInitModel, int bShadowData, int nThis, int nParent)
 {
 	ubyte				*p = modelP;
@@ -1376,9 +1376,7 @@ G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bShadowTest < 2)
-#endif
 	glBegin (GL_QUADS);
-#if DBG_SHADOWS
 else if (bShadowTest == 2)
 	glLineWidth (3);
 else {
@@ -1386,6 +1384,7 @@ else {
 	glBegin (GL_LINES);
 	}
 #endif
+glEnableClientState (GL_VERTEX_ARRAY);
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
 		i--;
@@ -1408,11 +1407,9 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#if 0//def RELEASE
-			glEnableClientState (GL_VERTEX_ARRAY);
+#if 1//def RELEASE
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);
-			glDisableClientState (GL_VERTEX_ARRAY);
 #else
 			glVertex3fv ((GLfloat *) v);
 			glVertex3fv ((GLfloat *) (v+1));
@@ -1431,8 +1428,9 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #if DBG_SHADOWS
 glLineWidth (1);
 if (bShadowTest != 2)
-#endif
 	glEnd ();
+#endif
+glDisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 

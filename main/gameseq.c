@@ -830,9 +830,7 @@ return 1;
 }
 
 
-int LoadRobotReplacements (char *pszLevelName, int bAddBots);
-int ReadHamFile ();
-int network_verifyObjects (int nRemoteObjNum, int nLocalObjs);
+int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
 
 //------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
@@ -947,10 +945,10 @@ else {
 /*---*/LogErr ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 /*---*/LogErr ("   loading cambot\n");
-gameData.bots.nCamBotId = LoadRobotReplacements ("cambot.hxm", 1) ? gameData.bots.nTypes [0] - 1 : -1;
+gameData.bots.nCamBotId = LoadRobotReplacements ("cambot.hxm", 1, 0) ? gameData.bots.nTypes [0] - 1 : -1;
 gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 /*---*/LogErr ("   loading replacement robots\n");
-LoadRobotReplacements (pszLevelName, 0);
+LoadRobotReplacements (pszLevelName, 0, 0);
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
 #ifdef NETWORK
