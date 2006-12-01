@@ -3993,6 +3993,8 @@ extern int Saving_movie_frames;
 #endif
 
 //returns true if viewer can see tObject
+//	-----------------------------------------------------------------------------
+
 int CanSeeObject(int nObject, int bCheckObjs)
 {
 	fvi_query fq;
@@ -4001,15 +4003,15 @@ int CanSeeObject(int nObject, int bCheckObjs)
 
 	//see if we can see this tPlayer
 
-	fq.p0 = &gameData.objs.viewer->position.vPos;
-	fq.p1 = &gameData.objs.objects[nObject].position.vPos;
-	fq.rad = 0;
-	fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
-	fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-	fq.startSeg = gameData.objs.viewer->nSegment;
-	fq.ignoreObjList = NULL;
-	nHitType = FindVectorIntersection(&fq, &hit_data);
-	return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
+fq.p0 = &gameData.objs.viewer->position.vPos;
+fq.p1 = &gameData.objs.objects[nObject].position.vPos;
+fq.rad = 0;
+fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
+fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
+fq.startSeg = gameData.objs.viewer->nSegment;
+fq.ignoreObjList = NULL;
+nHitType = FindVectorIntersection (&fq, &hit_data);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------

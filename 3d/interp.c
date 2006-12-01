@@ -34,6 +34,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "ogl_init.h"
 #include "network.h"
 #include "render.h"
+#include "gameseg.h"
 
 //------------------------------------------------------------------------------
 
@@ -1376,7 +1377,9 @@ G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bShadowTest < 2)
-	glBegin (GL_QUADS);
+#endif
+#if DBG_SHADOWS
+glEnableClientState (GL_VERTEX_ARRAY);
 else if (bShadowTest == 2)
 	glLineWidth (3);
 else {
@@ -1384,7 +1387,6 @@ else {
 	glBegin (GL_LINES);
 	}
 #endif
-glEnableClientState (GL_VERTEX_ARRAY);
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
 		i--;
@@ -1428,7 +1430,6 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #if DBG_SHADOWS
 glLineWidth (1);
 if (bShadowTest != 2)
-	glEnd ();
 #endif
 glDisableClientState (GL_VERTEX_ARRAY);
 return 1;
@@ -1622,12 +1623,36 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CanSeePoint (tObject *objP, vmsVector *vPoint)
+{
+	fvi_query	fq;
+	int			nHitType;
+	fvi_info		hit_data;
+
+	//see if we can see this tPlayer
+
+fq.p0 = &objP->position.vPos;
+fq.p1 = vPoint;
+fq.rad = 0;
+fq.thisObjNum = OBJ_IDX (objP);
+fq.flags = FQ_TRANSWALL;
+if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+else
+	fq.startSeg = objP->nSegment;
+fq.ignoreObjList = NULL;
+nHitType = FindVectorIntersection (&fq, &hit_data);
+return nHitType != HIT_WALL;
+}
+
+//	-----------------------------------------------------------------------------
+
 int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 {
 #if SHADOWS
-	vmsVector		v;
+	vmsVector		v, vLightDir;
 	short				*pnl;
-	int				i, bCalcCenter = 0;
+	int				i, j, bCalcCenter = 0;
 	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
 
 if ((objP->nType != OBJ_PLAYER) && !gameOpts->render.bRobotShadows)
@@ -1644,7 +1669,18 @@ for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*
 	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
 	if (!gameData.render.shadows.pLight->bState)
 		continue;
-	gameData.render.shadows.nLight++;
+	if (!CanSeePoint (objP, &gameData.render.shadows.pLight->vPos))
+		continue;
+	VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
+	VmVecNormalize (&vLightDir);
+	if (gameData.render.shadows.nLight) {
+		for (j = 0; j < gameData.render.shadows.nLight; j++)
+			if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
+				break;
+		if (j < gameData.render.shadows.nLight)
+			continue;
+		}
+	gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
 	if (gameStates.render.bShadowMaps)
 		RenderShadowMap (gameData.render.shadows.pLight);
 	else {

@@ -370,7 +370,7 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glPushMatrix ();
 //	glTranslated (f2glf (0), f2glf (0), -f2glf (pnt->p3_vec.z));
-glTranslatef (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), -f2glf (pnt->p3_vec.z));
+glTranslatef (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), f2glf (pnt->p3_vec.z));
 r = f2glf (rad);
 glScaled (r, r, r);
 if (bBigSphere)
@@ -391,7 +391,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int gr_ucircle (fix xc1, fix yc1, fix r1)
+int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
 //	glPointSize (f2glf (rad);

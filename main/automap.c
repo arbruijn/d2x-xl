@@ -460,22 +460,23 @@ bool G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 {
 	g3sPoint	p = *p0;
 	int			i, j;
-	float			hx, hy, x, y, z, r;
+	fVector		v;
+	float			x, y, r;
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 x = f2glf (p.p3_vec.x);
 y = f2glf (p.p3_vec.y);
-z = f2glf (p.p3_vec.z);
+v.p.z = f2glf (p.p3_vec.z);
 r = f2glf (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)
 	for (j = i; j <= i + 1; j++) {
 		ang = 2.0f * (float) M_PI * (j % nSides) / nSides;
-		hx = x + (float) cos (ang) * r;
-		hy = y + (float) sin (ang) * r;
-		glVertex3f (hx, hy, z);
+		v.p.x = x + (float) cos (ang) * r;
+		v.p.y = y + (float) sin (ang) * r;
+		glVertex3fv ((GLfloat *) &v);
 		}
 if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);

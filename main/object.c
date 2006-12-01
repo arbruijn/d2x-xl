@@ -1548,7 +1548,7 @@ void RenderObject (tObject *objP, int nWindowNum)
 	tPosition	savePos;
 
 if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
-	if (bSpectate = gameStates.app.bSpectating && !nWindowNum) {
+	if (bSpectate = (gameStates.app.bSpectating && !nWindowNum)) {
 		savePos = objP->position;
 		objP->position = gameStates.app.playerPos;
 		}
@@ -1587,7 +1587,8 @@ switch (objP->renderType) {
 			 (gameStates.render.nShadowPass == 3))
 			DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
-			if (gameData.models.bHaveHiresModel [0]) {
+			if (gameData.models.bHaveHiresModel [0] && 
+				 (!gameStates.render.bLoResShadows || (gameStates.render.nShadowPass != 2))) {
 				ComputeEngineGlow (objP, nGlow);
 				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
 				fLight [1] = (float) nGlow [0] / 65536.0f;				
@@ -1607,7 +1608,7 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
-		else if (gameStates.render.nShadowPass != 2) {
+		else /*if (gameStates.render.nShadowPass != 2)*/ {
 			if (gameData.models.nHiresModels && 
 				 (oofIdx = idToOOF [objP->id]) && 
 				 gameData.models.bHaveHiresModel [oofIdx]) {

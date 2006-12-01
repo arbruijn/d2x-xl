@@ -500,6 +500,7 @@ typedef struct tRenderStates {
 	int nShadowPass;
 	int bFastShadows;
 	int bShadowMaps;
+	int bLoResShadows;
 	int bHeadlightOn;
 	int bHaveSkyBox;
 	int bAllVisited;
@@ -705,6 +706,7 @@ typedef struct tShadowLightInfo {
 } tShadowLightInfo;
 
 #define MAX_SHADOW_MAPS	20
+#define MAX_SHADOW_LIGHTS 8
 
 typedef struct tLightRef {
 	short			nSegment;
@@ -854,6 +856,7 @@ typedef struct tShadowData {
 	short			nShadowMaps;
 	tCamera		shadowMaps [MAX_SHADOW_MAPS];
 	tObject		lightSource;
+	vmsVector	vLightDir [MAX_SHADOW_LIGHTS];
 	ubyte			nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 } tShadowData;
 

@@ -543,7 +543,7 @@ if (i > -1) {
 	SDL_ShowCursor (1);
 	}
 d_free (m);
-songs_play_current_song (1);
+SongsPlayCurrentSong (1);
 }
 
 //------------------------------------------------------------------------------
@@ -2223,7 +2223,7 @@ do {
 	if (extraGameInfo [0].bShadows) {
 		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
-		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, 7, KEY_S, HTX_ADVRND_MAXLIGHTS);
+		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;

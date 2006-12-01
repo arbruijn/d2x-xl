@@ -1119,7 +1119,7 @@ for (;;) {
 		if (gameOpts->menus.nStyle || !bRedraw) {
 			bRedraw = 1;
 			WIN (DDGRLOCK (dd_grd_curcanv));	
-			if (gameStates.app.bGameRunning)
+			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
 			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
 			KCDrawTitle (title);

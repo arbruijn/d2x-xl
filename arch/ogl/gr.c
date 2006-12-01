@@ -248,7 +248,7 @@ gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
 void GrUpdate (int bClear)
 {
 if (gameStates.ogl.bInitialized)// && (gameStates.video.nScreenMode != SCREEN_GAME))
-	if (curDrawBuffer == GL_BACK)
+	if ((curDrawBuffer == GL_BACK) && (gameOpts->menus.nStyle || !gameStates.menus.nInMenu))
 		OglSwapBuffers (1, bClear);
 	else
 		glFlush ();

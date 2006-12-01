@@ -1044,6 +1044,8 @@ if (t = FindArg ("-progress_bars"))
 	gameStates.app.bProgressBars = NumArg (t, 1);
 if (t = FindArg ("-fix_models"))
 	gameStates.app.bFixModels = NumArg (t, 1);
+if (t = FindArg ("-lores_shadows"))
+	gameStates.render.bLoResShadows = NumArg (t, 1);
 if (t=FindArg ("-print_version"))
 	PrintVersion ();
 if (t=FindArg ("-altLanguage"))

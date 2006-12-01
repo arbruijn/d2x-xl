@@ -97,6 +97,6 @@ void SongsStopAll(void);
 // this should be called regularly to check for redbook restart
 void SongsCheckRedbookRepeat(void);
 
-void songs_play_current_song(int repeat);
+void SongsPlayCurrentSong(int repeat);
 
 #endif /* _SONGS_H */
