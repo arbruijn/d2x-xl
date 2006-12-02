@@ -138,24 +138,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_POLYGON_MODELS 500
 #define D1_MAX_POLYGON_MODELS 300
 
+typedef struct tSubModelData {
+	int			ptrs [MAX_SUBMODELS];
+	vmsVector	offsets [MAX_SUBMODELS];
+	vmsVector	norms [MAX_SUBMODELS];   // norm for sep plane
+	vmsVector	pnts [MAX_SUBMODELS];    // point on sep plane
+	fix			rads [MAX_SUBMODELS];       // radius for each submodel
+	ubyte			parents [MAX_SUBMODELS];    // what is parent for each submodel
+	vmsVector	mins [MAX_SUBMODELS];
+	vmsVector	maxs [MAX_SUBMODELS];
+} tSubModelData;
+
 //used to describe a polygon model
 typedef struct tPolyModel {
-	int			n_models;
-	int			model_data_size;
-	ubyte			*model_data;
-	int			submodel_ptrs [MAX_SUBMODELS];
-	vmsVector	submodel_offsets [MAX_SUBMODELS];
-	vmsVector	submodel_norms [MAX_SUBMODELS];   // norm for sep plane
-	vmsVector	submodel_pnts [MAX_SUBMODELS];    // point on sep plane
-	fix			submodel_rads [MAX_SUBMODELS];       // radius for each submodel
-	ubyte			submodel_parents [MAX_SUBMODELS];    // what is parent for each submodel
-	vmsVector	submodel_mins [MAX_SUBMODELS];
-	vmsVector	submodel_maxs [MAX_SUBMODELS];
-	vmsVector	mins,maxs;                       // min,max for whole model
-	fix			rad;
-	ubyte			n_textures;
-	ushort		first_texture;
-	ubyte			simpler_model;                      // alternate model with less detail (0 if none, nModel+1 else)
+	int				nModels;
+	int				nDataSize;
+	ubyte				*modelData;
+	tSubModelData	subModels;
+	vmsVector		mins,maxs;                       // min,max for whole model
+	fix				rad;
+	ubyte				nTextures;
+	ushort			nFirstTexture;
+	ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
 	//vmsVector min,max;
 } __pack__ tPolyModel;
 
@@ -209,7 +213,7 @@ extern int PolyModelReadN(tPolyModel *pm, int n, CFILE *fp);
 #endif
 
 /*
- * routine which allocates, reads, and inits a tPolyModel's model_data
+ * routine which allocates, reads, and inits a tPolyModel's modelData
  */
 void PolyModelDataRead(tPolyModel *pm, tPolyModel *pdm, CFILE *fp);
 

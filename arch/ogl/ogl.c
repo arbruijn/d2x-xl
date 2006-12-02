@@ -537,8 +537,8 @@ void OglCachePolyModelTextures (int nModel)
 	int				h, i, j;
 	tBitmapIndex	bmi;
 
-for (i = po->n_textures, j = po->first_texture; i; i--, j++) {
-//		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [po->first_texture+i]];
+for (i = po->nTextures, j = po->nFirstTexture; i; i--, j++) {
+//		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [po->nFirstTexture+i]];
 	h = gameData.pig.tex.pObjBmIndex [j];
 	bmi = gameData.pig.tex.objBmIndex [h];
 	PIGGY_PAGE_IN (bmi, 0);

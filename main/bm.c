@@ -252,8 +252,8 @@ memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.mode
 
 /*---*/LogErr ("      Loading tPolyModel data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [i].model_data = 
-	gameData.models.defPolyModels [i].model_data = NULL;
+	gameData.models.polyModels [i].modelData = 
+	gameData.models.defPolyModels [i].modelData = NULL;
 	PolyModelDataRead (gameData.models.polyModels + i, gameData.models.defPolyModels + i, fp);
 	}
 
@@ -695,8 +695,8 @@ i = CFReadInt (fp);
 /*---*/LogErr ("         Acquiring model data size of %d polymodels\n", i);
 for (h = 0; i; i--) {
 	CFSeek (fp, MODEL_DATA_SIZE_OFFS, SEEK_CUR);
-	pm.model_data_size = CFReadInt (fp);
-	h += pm.model_data_size;
+	pm.nDataSize = CFReadInt (fp);
+	h += pm.nDataSize;
 	CFSeek (fp, POLYMODEL_SIZE - MODEL_DATA_SIZE_OFFS - sizeof (int), SEEK_CUR);
 	}
 CFSeek (fp, 
@@ -863,9 +863,9 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, fp);
 
 	for (i=0;i<gameData.models.nPolyModels;i++)	{
-		gameData.models.polyModels [i].model_data = d_malloc (gameData.models.polyModels [i].model_data_size);
-		Assert (gameData.models.polyModels [i].model_data != NULL);
-		CFRead (gameData.models.polyModels [i].model_data, sizeof (ubyte), gameData.models.polyModels [i].model_data_size, fp);
+		gameData.models.polyModels [i].modelData = d_malloc (gameData.models.polyModels [i].nDataSize);
+		Assert (gameData.models.polyModels [i].modelData != NULL);
+		CFRead (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, fp);
 	}
 
 	CFRead (Gauges, sizeof (tBitmapIndex), MAX_GAUGE_BMS, fp);
@@ -1172,8 +1172,8 @@ if (bVertigoData) {
 	memcpy (gameData.models.defPolyModels + j, gameData.models.polyModels + j, sizeof (*gameData.models.polyModels) * t);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++) {
-	gameData.models.defPolyModels [i].model_data =
-	gameData.models.polyModels [i].model_data = NULL;
+	gameData.models.defPolyModels [i].modelData =
+	gameData.models.polyModels [i].modelData = NULL;
 	PolyModelDataRead (gameData.models.polyModels + i, bVertigoData ? gameData.models.defPolyModels + i : NULL, fp);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
@@ -1289,8 +1289,11 @@ for (j = 0; j < t; j++) {
 	FreeModel (gameData.models.polyModels + i);
 	PolyModelRead (gameData.models.polyModels + i, fp);
 	PolyModelDataRead (gameData.models.polyModels + i, bOnlyModels ? gameData.models.defPolyModels + i : NULL, fp);
-	if (bOnlyModels)
-		gameData.models.defPolyModels [i].model_data_size = gameData.models.polyModels [i].model_data_size;
+	if (bOnlyModels) {
+		ubyte	*p = gameData.models.defPolyModels [i].modelData;
+		gameData.models.defPolyModels [i] = gameData.models.polyModels [i];
+		gameData.models.defPolyModels [i].modelData = p;
+		}
 	gameData.models.nDyingModels [i] = CFReadInt (fp);
 	gameData.models.nDeadModels [i] = CFReadInt (fp);
 	}
@@ -1428,10 +1431,10 @@ int LoadExitModels ()
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
 		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile);
 		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile);
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].first_texture = start_num;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].first_texture = start_num + 3;
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].model_data = NULL;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].model_data = NULL;
+		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
+		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num + 3;
+		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
+		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
 		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, NULL, exit_hamfile);
 		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
 		CFClose (exit_hamfile);
@@ -1474,11 +1477,11 @@ int LoadExitModels ()
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
 		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile);
 		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile);
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].first_texture = start_num;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].first_texture = start_num+3;
+		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
+		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num+3;
 		CFSeek (exit_hamfile, offset2, SEEK_SET);
-		gameData.models.polyModels [gameData.endLevel.exit.nModel].model_data = NULL;
-		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].model_data = NULL;
+		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
+		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
 		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, NULL, exit_hamfile);
 		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
 		CFClose (exit_hamfile);
@@ -1506,22 +1509,22 @@ void RestoreDefaultRobots (void)
 memcpy (gameData.bots.info [0], gameData.bots.defaultInfo, gameData.bots.nDefaultTypes * sizeof (*gameData.bots.defaultInfo));
 memcpy (gameData.bots.joints, gameData.bots.defaultJoints, gameData.bots.nDefaultJoints * sizeof (*gameData.bots.defaultJoints));
 for (i = 0; i < gameData.models.nDefPolyModels; i++) {
-	p = gameData.models.polyModels [i].model_data;
-	if (gameData.models.defPolyModels [i].model_data_size != gameData.models.polyModels [i].model_data_size) {
+	p = gameData.models.polyModels [i].modelData;
+	if (gameData.models.defPolyModels [i].nDataSize != gameData.models.polyModels [i].nDataSize) {
 		d_free (p);
 		p = NULL;
 		}
 	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (*gameData.models.defPolyModels));
-	if (gameData.models.defPolyModels [i].model_data) {
+	if (gameData.models.defPolyModels [i].modelData) {
 		if (!p)
-			p = d_malloc (gameData.models.defPolyModels [i].model_data_size);
+			p = d_malloc (gameData.models.defPolyModels [i].nDataSize);
 		Assert (p != NULL);
-		memcpy (p, gameData.models.defPolyModels [i].model_data, gameData.models.defPolyModels [i].model_data_size);
-		gameData.models.polyModels [i].model_data = p;
+		memcpy (p, gameData.models.defPolyModels [i].modelData, gameData.models.defPolyModels [i].nDataSize);
+		gameData.models.polyModels [i].modelData = p;
 		}
 	else if (p) {
 		d_free (p);
-		gameData.models.polyModels [i].model_data = NULL;
+		gameData.models.polyModels [i].modelData = NULL;
 		}
 	}
 for (;i < gameData.models.nPolyModels;i++)

@@ -527,7 +527,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	tBitmapIndex bmiP [12];
 	int i;
 
-	Assert (pm->n_textures <= 12);
+	Assert (pm->nTextures <= 12);
 	for (i = 0;i<12;i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride];
 

@@ -667,7 +667,7 @@ int do_silly_animation (tObject *objP)
 			vmsAngVec	*jp = &jp_list [joint].angles;
 			vmsAngVec	*pObjP = &polyObjInfo->animAngles [jointnum];
 
-			if (jointnum >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].n_models) {
+			if (jointnum >= gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels) {
 				Int3 ();		// Contact Mike: incompatible data, illegal jointnum, problem in pof file?
 				continue;
 			}
@@ -765,7 +765,7 @@ void ai_frame_animation (tObject *objP)
 	int	joint;
 	int	num_joints;
 
-	num_joints = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].n_models;
+	num_joints = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels;
 
 	for (joint=1; joint<num_joints; joint++) {
 		fix			delta_to_goal;

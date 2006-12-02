@@ -68,7 +68,7 @@ void MorphFindModelBounds (tPolyModel *pmP, int nSubModel, vmsVector *minv, vmsV
 	vmsVector *vp;
 	ushort *data, nType;
 
-data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
+data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
 Assert (nType == 7 || nType == 1);
 nVerts = *data++;
@@ -104,7 +104,7 @@ int MorphInitPoints (tPolyModel *pmP, vmsVector *vBoxSize, int nSubModel, tMorph
 	int			i;
 
 //printf ("initing %d ", nSubModel);
-data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
+data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
 #ifdef _DEBUG
 //Assert (nType == 7 || nType == 1);
@@ -163,7 +163,7 @@ int MorphUpdatePoints (tPolyModel *pmP, int nSubModel, tMorphInfo *mdP)
 	int i;
 
 	////printf ("updating %d ", nSubModel);
-data = (ushort *) (pmP->model_data + pmP->submodel_ptrs [nSubModel]);
+data = (ushort *) (pmP->modelData + pmP->subModels.ptrs [nSubModel]);
 nType = *data++;
 #ifdef _DEBUG
 //Assert (nType == 7 || nType == 1);
@@ -210,8 +210,8 @@ if (mdP == NULL) {					//maybe loaded half-morphed from disk
 	return;
 	}
 pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
-G3CheckAndSwap (pmP->model_data);
-for (i = 0; i < pmP->n_models; i++)
+G3CheckAndSwap (pmP->modelData);
+for (i = 0; i < pmP->nModels; i++)
 	if (mdP->submodelActive [i] == 1) {
 		if (!MorphUpdatePoints (pmP, i, mdP))
 			mdP->submodelActive [i] = 0;
@@ -219,8 +219,8 @@ for (i = 0; i < pmP->n_models; i++)
 			//int t;
 			mdP->submodelActive [i] = 2;		//not animating, just visible
 			mdP->nSubmodelsActive--;		//this one done animating
-			for (t = 0; t < pmP->n_models; t++)
-				if (pmP->submodel_parents [t] == i) {		//start this one
+			for (t = 0; t < pmP->nModels; t++)
+				if (pmP->subModels.parents [t] == i) {		//start this one
 					if (mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP))
 						mdP->nSubmodelsActive++;
 					}
@@ -280,7 +280,7 @@ objP->renderType = RT_MORPH;
 objP->movementType = MT_PHYSICS;		//RT_NONE;
 objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
-G3CheckAndSwap (pmP->model_data);
+G3CheckAndSwap (pmP->modelData);
 MorphFindModelBounds (pmP, 0, &pmmin, &pmmax);
 vBoxSize.x = max (-pmmin.x, pmmax.x) / 2;
 vBoxSize.y = max (-pmmin.y, pmmax.y) / 2;
@@ -306,9 +306,9 @@ void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix 
 
 sort_list [0] = nSubModel;
 sort_n = 1;
-for (i=0;i<pmP->n_models;i++) {
-	if (mdP->submodelActive [i] && pmP->submodel_parents [i]==nSubModel) {
-		facing = G3CheckNormalFacing (pmP->submodel_pnts+i, pmP->submodel_norms+i);
+for (i=0;i<pmP->nModels;i++) {
+	if (mdP->submodelActive [i] && pmP->subModels.parents [i]==nSubModel) {
+		facing = G3CheckNormalFacing (pmP->subModels.pnts+i, pmP->subModels.norms+i);
 		if (!facing)
 			sort_list [sort_n++] = i;
 		else {		//put at start
@@ -326,28 +326,28 @@ for (i=0;i<sort_n;i++) {
 	mn = sort_list [i];
 	if (mn == nSubModel) {
  		int i;
-		for (i=0;i<pmP->n_textures;i++) {
-			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->first_texture+i]];
-			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->first_texture+i]]*/gameData.models.textureIndex [i].index;
+		for (i=0;i<pmP->nTextures;i++) {
+			gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->nFirstTexture+i]];
+			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->nFirstTexture+i]]*/gameData.models.textureIndex [i].index;
 			}
 
 #ifdef PIGGY_USE_PAGING			
 		// Make sure the textures for this tObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
-		for (i = 0; i < pmP->n_textures;i++)	
+		for (i = 0; i < pmP->nTextures;i++)	
 			PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in, 
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed)	{
 			gameData.pig.tex.bPageFlushed = 0;
-			for (i=0;i<pmP->n_textures;i++)	
+			for (i=0;i<pmP->nTextures;i++)	
 				PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
 			}
 			// Make sure that they can all fit in memory.
 		Assert ( gameData.pig.tex.bPageFlushed == 0);
 #endif
 		G3DrawMorphingModel (
-			pmP->model_data + pmP->submodel_ptrs [nSubModel], 
+			pmP->modelData + pmP->subModels.ptrs [nSubModel], 
 			gameData.models.textures, 
 			animAngles, light, 
 			mdP->vecs + mdP->submodelStartPoints [nSubModel]);
@@ -355,7 +355,7 @@ for (i=0;i<sort_n;i++) {
 	else {
 		vmsMatrix orient;
 		VmAngles2Matrix (&orient, animAngles+mn);
-		G3StartInstanceMatrix (pmP->submodel_offsets+mn, &orient);
+		G3StartInstanceMatrix (pmP->subModels.offsets+mn, &orient);
 		MorphDrawModel (pmP, mn, animAngles, light, mdP);
 		G3DoneInstance ();
 		}

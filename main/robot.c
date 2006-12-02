@@ -120,9 +120,9 @@ void calc_gun_point(vmsVector *gun_point,tObject *objP,int gun_num)
 		VmTransposeMatrix(&m);
 		VmVecRotate(&tpnt,&pnt,&m);
 
-		VmVecAdd(&pnt,&tpnt,&pm->submodel_offsets[mn]);
+		VmVecAdd(&pnt,&tpnt,&pm->subModels.offsets[mn]);
 
-		mn = pm->submodel_parents[mn];
+		mn = pm->subModels.parents[mn];
 	}
 
 	//now instance for the entire tObject
@@ -198,7 +198,7 @@ void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES]
 	int m,g,state;
 	int gun_nums[MAX_SUBMODELS];			//which gun each submodel is part of
 
-	for (m=0;m<pm->n_models;m++)
+	for (m=0;m<pm->nModels;m++)
 		gun_nums[m] = r->nGuns;		//assume part of body...
 
 	gun_nums[0] = -1;		//body never animates, at least for now
@@ -208,7 +208,7 @@ void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES]
 
 		while (m != 0) {
 			gun_nums[m] = g;				//...unless we find it in a gun
-			m = pm->submodel_parents[m];
+			m = pm->subModels.parents[m];
 		}
 	}
 
@@ -219,7 +219,7 @@ void robot_set_angles(tRobotInfo *r,tPolyModel *pm,vmsAngVec angs[N_ANIM_STATES]
 			r->animStates[g][state].n_joints = 0;
 			r->animStates[g][state].offset = gameData.bots.nJoints;
 
-			for (m=0;m<pm->n_models;m++) {
+			for (m=0;m<pm->nModels;m++) {
 				if (gun_nums[m] == g) {
 					gameData.bots.joints[gameData.bots.nJoints].jointnum = m;
 					gameData.bots.joints[gameData.bots.nJoints].angles = angs[state][m];
@@ -268,7 +268,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_CAMBOT) {
 		//objP->nType = OBJ_ROBOT;
 		objP->id	= gameData.bots.nCamBotId;
-		objP->size = G3PolyModelSize (gameData.models.polyModels [gameData.bots.nCamBotModel].model_data);
+		objP->size = G3PolyModelSize (gameData.models.polyModels [gameData.bots.nCamBotModel].modelData);
 		objP->lifeleft = IMMORTAL_TIME;
 		objP->controlType = CT_CAMERA;
 		objP->movementType = MT_NONE;

@@ -788,9 +788,9 @@ void determine_used_texturesLevel(int loadLevelFlag, int sharewareFlag, int leve
 		if (objP->renderType == RT_POLYOBJ) {
 			tPolyModel *po = &gameData.models.polyModels[objP->rType.polyObjInfo.nModel];
 
-			for (i=0; i<po->n_textures; i++) {
+			for (i=0; i<po->nTextures; i++) {
 
-				int	tli = gameData.pig.tex.objBmIndex[gameData.pig.tex.pObjBmIndex[po->first_texture+i]].index;
+				int	tli = gameData.pig.tex.objBmIndex[gameData.pig.tex.pObjBmIndex[po->nFirstTexture+i]].index;
 				if ((tli < MAX_BITMAP_FILES) && (tli >= 0)) {
 					tmap_buf[tli]++;
 					if (level_tmap_buf[tli] == -1)

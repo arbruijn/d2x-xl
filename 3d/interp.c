@@ -1378,8 +1378,8 @@ pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bShadowTest < 2)
 #endif
-#if DBG_SHADOWS
 glEnableClientState (GL_VERTEX_ARRAY);
+#if DBG_SHADOWS
 else if (bShadowTest == 2)
 	glLineWidth (3);
 else {

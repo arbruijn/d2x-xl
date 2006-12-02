@@ -1276,7 +1276,7 @@ grsBitmap *load_polymodel_bitmap(char *name)
 void bm_readRobot()	
 {
 	char			*model_name[MAX_MODEL_VARIANTS];
-	int			n_models,i;
+	int			nModels,i;
 	int			first_bitmap_num[MAX_MODEL_VARIANTS];
 	char			*equal_ptr;
 	int 			nExp1VClip=-1;
@@ -1320,7 +1320,7 @@ void bm_readRobot()
 
 	model_name[0] = strtok( NULL, space );
 	first_bitmap_num[0] = N_ObjBitmapPtrs;
-	n_models = 1;
+	nModels = 1;
 
 	// Process bitmaps
 	bmFlag=BM_ROBOT;
@@ -1432,10 +1432,10 @@ void bm_readRobot()
 				strcpy(name, &equal_ptr[1]);
 				name[strlen(name)-1] = 0;
 			} else if (!stricmp( arg, "simple_model" )) {
-				model_name[n_models] = equal_ptr;
-				first_bitmap_num[n_models] = N_ObjBitmapPtrs;
-				n_models++;
-				Assert(n_models < MAX_MODEL_VARIANTS);
+				model_name[nModels] = equal_ptr;
+				first_bitmap_num[nModels] = N_ObjBitmapPtrs;
+				nModels++;
+				Assert(nModels < MAX_MODEL_VARIANTS);
 			} else {
 				Int3();
 #if TRACE
@@ -1453,20 +1453,20 @@ void bm_readRobot()
 		for (bObjectRendered=0;bObjectRendered<N_ANIM_STATES;bObjectRendered++)
 			Robot_info [gameStates.app.bD1Data][NRobotTypes].animStates[g][bObjectRendered].n_joints = 0;	//inialize to zero
 
-	first_bitmap_num[n_models] = N_ObjBitmapPtrs;
+	first_bitmap_num[nModels] = N_ObjBitmapPtrs;
 
-	for (i=0;i<n_models;i++) {
-		int n_textures;
+	for (i=0;i<nModels;i++) {
+		int nTextures;
 		int nModel,last_model_num=0;
 
-		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
+		nTextures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&Robot_info [gameStates.app.bD1Data][NRobotTypes]:NULL);
+		nModel = LoadPolygonModel(model_name[i],nTextures,first_bitmap_num[i],(i==0)?&Robot_info [gameStates.app.bD1Data][NRobotTypes]:NULL);
 		Assert (nModel < gameData.models.nPolyModels);
 		if (i==0)
 			Robot_info [gameStates.app.bD1Data][NRobotTypes].nModel = nModel;
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
+			gameData.models.polyModels[last_model_num].nSimplerModel = nModel+1;
 
 		last_model_num = nModel;
 	}
@@ -1752,7 +1752,7 @@ void bm_read_player_ship()
 {
 	char	*model_name_dying=NULL;
 	char	*model_name[MAX_MODEL_VARIANTS];
-	int	n_models=0,i;
+	int	nModels=0,i;
 	int	first_bitmap_num[MAX_MODEL_VARIANTS];
 	char *equal_ptr;
 	tRobotInfo ri;
@@ -1778,15 +1778,15 @@ void bm_read_player_ship()
 			// if we have john=cool, arg is 'john' and equal_ptr is 'cool'
 
 			if (!stricmp( arg, "model" )) {
-				Assert(n_models==0);
+				Assert(nModels==0);
 				model_name[0] = equal_ptr;
 				first_bitmap_num[0] = N_ObjBitmapPtrs;
-				n_models = 1;
+				nModels = 1;
 			} else if (!stricmp( arg, "simple_model" )) {
-				model_name[n_models] = equal_ptr;
-				first_bitmap_num[n_models] = N_ObjBitmapPtrs;
-				n_models++;
-				Assert(n_models < MAX_MODEL_VARIANTS);
+				model_name[nModels] = equal_ptr;
+				first_bitmap_num[nModels] = N_ObjBitmapPtrs;
+				nModels++;
+				Assert(nModels < MAX_MODEL_VARIANTS);
 
 				if (gameData.pig.tex.nFirstMultiBitmap!=-1 && last_multi_bitmap_num==-1)
 					last_multi_bitmap_num=N_ObjBitmapPtrs;
@@ -1821,7 +1821,7 @@ void bm_read_player_ship()
 		else if (!stricmp( arg, "multi_textures" )) {
 
 			gameData.pig.tex.nFirstMultiBitmap = N_ObjBitmapPtrs;
-			first_bitmap_num[n_models] = N_ObjBitmapPtrs;
+			first_bitmap_num[nModels] = N_ObjBitmapPtrs;
 
 		}
 		else			// Must be a texture specification...
@@ -1837,30 +1837,30 @@ void bm_read_player_ship()
 		last_multi_bitmap_num=N_ObjBitmapPtrs;
 
 	if (gameData.pig.tex.nFirstMultiBitmap==-1)
-		first_bitmap_num[n_models] = N_ObjBitmapPtrs;
+		first_bitmap_num[nModels] = N_ObjBitmapPtrs;
 
 #ifdef NETWORK
 	Assert(last_multi_bitmap_num-gameData.pig.tex.nFirstMultiBitmap == (MAX_NUM_NET_PLAYERS-1)*2);
 #endif
 
-	for (i=0;i<n_models;i++) {
-		int n_textures;
+	for (i=0;i<nModels;i++) {
+		int nTextures;
 		int nModel,last_model_num=0;
 
-		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
+		nTextures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],(i==0)?&ri:NULL);
+		nModel = LoadPolygonModel(model_name[i],nTextures,first_bitmap_num[i],(i==0)?&ri:NULL);
 
 		if (i==0)
 			Player_ship->nModel = nModel;
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
+			gameData.models.polyModels[last_model_num].nSimplerModel = nModel+1;
 
 		last_model_num = nModel;
 	}
 
 	if ( model_name_dying ) {
-		Assert(n_models);
+		Assert(nModels);
 		gameData.models.nDyingModels[Player_ship->nModel]  = LoadPolygonModel(model_name_dying,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
 	}
 
@@ -1885,8 +1885,8 @@ void bm_read_player_ship()
 		
 			//instance up the tree for this gun
 			while (mn != 0) {
-				vm_vec_add2(&pnt,&pm->submodel_offsets[mn]);
-				mn = pm->submodel_parents[mn];
+				vm_vec_add2(&pnt,&pm->subModels.offsets[mn]);
+				mn = pm->subModels.parents[mn];
 			}
 
 			Player_ship->gunPoints[gun_num] = pnt;
@@ -1960,7 +1960,7 @@ void bm_read_some_file()
 void bm_read_weapon(int unusedFlag)
 {
 	int	i,n;
-	int	n_models=0;
+	int	nModels=0;
 	char 	*equal_ptr;
 	char	*pof_file_inner=NULL;
 	char	*model_name[MAX_MODEL_VARIANTS];
@@ -2070,15 +2070,15 @@ void bm_read_weapon(int unusedFlag)
 
 			} else if (!stricmp( arg, "weapon_pof" ))	{
 				// Load pof file
-				Assert(n_models==0);
+				Assert(nModels==0);
 				model_name[0] = equal_ptr;
 				first_bitmap_num[0] = N_ObjBitmapPtrs;
-				n_models=1;
+				nModels=1;
 			} else if (!stricmp( arg, "simple_model" )) {
-				model_name[n_models] = equal_ptr;
-				first_bitmap_num[n_models] = N_ObjBitmapPtrs;
-				n_models++;
-				Assert(n_models < MAX_MODEL_VARIANTS);
+				model_name[nModels] = equal_ptr;
+				first_bitmap_num[nModels] = N_ObjBitmapPtrs;
+				nModels++;
+				Assert(nModels < MAX_MODEL_VARIANTS);
 			} else if (!stricmp( arg, "weapon_pof_inner" ))	{
 				// Load pof file
 				pof_file_inner = equal_ptr;
@@ -2189,28 +2189,28 @@ void bm_read_weapon(int unusedFlag)
 		arg = strtok( NULL, space );
 	}
 
-	first_bitmap_num[n_models] = N_ObjBitmapPtrs;
+	first_bitmap_num[nModels] = N_ObjBitmapPtrs;
 
-	for (i=0;i<n_models;i++) {
-		int n_textures;
+	for (i=0;i<nModels;i++) {
+		int nTextures;
 		int nModel,last_model_num=0;
 
-		n_textures = first_bitmap_num[i+1] - first_bitmap_num[i];
+		nTextures = first_bitmap_num[i+1] - first_bitmap_num[i];
 
-		nModel = LoadPolygonModel(model_name[i],n_textures,first_bitmap_num[i],NULL);
+		nModel = LoadPolygonModel(model_name[i],nTextures,first_bitmap_num[i],NULL);
 
 		if (i==0) {
 			Weapon_info[n].renderType = WEAPON_RENDER_POLYMODEL;
 			Weapon_info[n].nModel = nModel;
 		}
 		else
-			gameData.models.polyModels[last_model_num].simpler_model = nModel+1;
+			gameData.models.polyModels[last_model_num].nSimplerModel = nModel+1;
 
 		last_model_num = nModel;
 	}
 
 	if ( pof_file_inner )	{
-		Assert(n_models);
+		Assert(nModels);
 		Weapon_info[n].model_num_inner = LoadPolygonModel(pof_file_inner,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
 	}
 
@@ -2418,10 +2418,10 @@ fprintf(tfile,"N_powerupTypes = %d, Powerup_info array = %d\n",N_powerupTypes,si
 fprintf(tfile,"gameData.models.nPolyModels = %d, gameData.models.polyModels array = %d\n",t,sizeof(tPolyModel)*t);
 
 	for (i=0; i<t; i++ )	{
-		g3_uninit_polygon_model(gameData.models.polyModels[i].model_data);	//get RGB colors
-		fwrite( gameData.models.polyModels[i].model_data, sizeof(ubyte), gameData.models.polyModels[i].model_data_size, fp );
-fprintf(tfile,"  Model %d, data size = %d\n",i,gameData.models.polyModels[i].model_data_size); bObjectRendered+=gameData.models.polyModels[i].model_data_size;
-		g3_init_polygon_model(gameData.models.polyModels[i].model_data);	//map colors again
+		g3_uninit_polygon_model(gameData.models.polyModels[i].modelData);	//get RGB colors
+		fwrite( gameData.models.polyModels[i].modelData, sizeof(ubyte), gameData.models.polyModels[i].nDataSize, fp );
+fprintf(tfile,"  Model %d, data size = %d\n",i,gameData.models.polyModels[i].nDataSize); bObjectRendered+=gameData.models.polyModels[i].nDataSize;
+		g3_init_polygon_model(gameData.models.polyModels[i].modelData);	//map colors again
 	}
 fprintf(tfile,"Total model size = %d\n",bObjectRendered);
 
@@ -2516,9 +2516,9 @@ void bm_write_extraRobots()
 	fwrite( &gameData.models.polyModels[N_D2_POLYGON_MODELS], sizeof(tPolyModel), t, fp );
 
 	for (i=N_D2_POLYGON_MODELS; i<gameData.models.nPolyModels; i++ )	{
-		g3_uninit_polygon_model(gameData.models.polyModels[i].model_data);	//get RGB colors
-		fwrite( gameData.models.polyModels[i].model_data, sizeof(ubyte), gameData.models.polyModels[i].model_data_size, fp );
-		g3_init_polygon_model(gameData.models.polyModels[i].model_data);	//map colors again
+		g3_uninit_polygon_model(gameData.models.polyModels[i].modelData);	//get RGB colors
+		fwrite( gameData.models.polyModels[i].modelData, sizeof(ubyte), gameData.models.polyModels[i].nDataSize, fp );
+		g3_init_polygon_model(gameData.models.polyModels[i].modelData);	//map colors again
 	}
 
 	fwrite( &gameData.models.nDyingModels[N_D2_POLYGON_MODELS], sizeof(int), t, fp );

@@ -130,7 +130,7 @@ void PagingTouchModel (int modelnum)
 	ushort	*pi;
 	tPolyModel *pm = gameData.models.polyModels + modelnum;
 
-for (i = pm->n_textures, pi = gameData.pig.tex.pObjBmIndex + pm->first_texture; i; i--, pi++) {
+for (i = pm->nTextures, pi = gameData.pig.tex.pObjBmIndex + pm->nFirstTexture; i; i--, pi++) {
 	j = *pi;
 	PIGGY_PAGE_IN (gameData.pig.tex.objBmIndex [j], 0);
 	PagingTouchObjectEffects (j);

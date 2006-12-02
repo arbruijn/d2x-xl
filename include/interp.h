@@ -63,10 +63,10 @@ void VmsAngVecSwap(vmsAngVec *v);
  * To align it, we need to copy it to an aligned position,
  * and update all pointers  to it.
  * (Those pointers are actually offsets
- * relative to start of model_data) to it.
+ * relative to start of modelData) to it.
  */
 typedef struct chunk {
-	ubyte *old_base; // where the offset sets off from (relative to beginning of model_data)
+	ubyte *old_base; // where the offset sets off from (relative to beginning of modelData)
 	ubyte *new_base; // where the base is in the aligned structure
 	short offset; // how much to add to base to get the address of the offset
 	short correction; // how much the value of the offset must be shifted for alignment

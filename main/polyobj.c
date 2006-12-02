@@ -235,12 +235,12 @@ void AlignPolyModelData (tPolyModel *pm)
 	chunk cur_ch;
 	chunk ch_list [MAX_CHUNKS];
 	int no_chunks = 0;
-	int tmp_size = pm->model_data_size + SHIFT_SPACE;
-	ubyte *tmp = d_malloc (tmp_size); // where we build the aligned version of pm->model_data
+	int tmp_size = pm->nDataSize + SHIFT_SPACE;
+	ubyte *tmp = d_malloc (tmp_size); // where we build the aligned version of pm->modelData
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
-	cur_old = pm->model_data;
+	cur_old = pm->modelData;
 	cur_new = tmp;
 	chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 	memcpy (cur_new, cur_old, chunk_len);
@@ -274,15 +274,15 @@ void AlignPolyModelData (tPolyModel *pm)
 		memcpy (cur_new, cur_old, chunk_len);
 		//correct submodel_ptr's for pm, too
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			if (pm->model_data + pm->submodel_ptrs [i] >= cur_old
-			    && pm->model_data + pm->submodel_ptrs [i] < cur_old + chunk_len)
-				pm->submodel_ptrs [i] += (cur_new - tmp) - (cur_old - pm->model_data);
+			if (pm->modelData + pm->subModels.ptrs [i] >= cur_old
+			    && pm->modelData + pm->subModels.ptrs [i] < cur_old + chunk_len)
+				pm->subModels.ptrs [i] += (cur_new - tmp) - (cur_old - pm->modelData);
  	}
-	d_free (pm->model_data);
-	pm->model_data_size += total_correction;
-	pm->model_data = d_malloc (pm->model_data_size);
-	Assert (pm->model_data != NULL);
-	memcpy (pm->model_data, tmp, pm->model_data_size);
+	d_free (pm->modelData);
+	pm->nDataSize += total_correction;
+	pm->modelData = d_malloc (pm->nDataSize);
+	Assert (pm->modelData != NULL);
+	memcpy (pm->modelData, tmp, pm->nDataSize);
 	d_free (tmp);
 }
 #endif //def WORDS_NEED_ALIGNMENT
@@ -321,9 +321,9 @@ while (new_pof_read_int (id, model_buf) == 1) {
 	switch (id) {
 		case ID_OHDR: {		//Object header
 			vmsVector pmmin, pmmax;
-			pm->n_models = pof_read_int (model_buf);
+			pm->nModels = pof_read_int (model_buf);
 			pm->rad = pof_read_int (model_buf);
-			Assert (pm->n_models <= MAX_SUBMODELS);
+			Assert (pm->nModels <= MAX_SUBMODELS);
 			pof_read_vecs (&pmmin, 1, model_buf);
 			pof_read_vecs (&pmmax, 1, model_buf);
 			if (FindArg ("-bspgen")) {
@@ -344,12 +344,12 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			int n = pof_read_short (model_buf);
 			Assert (n < MAX_SUBMODELS);
 			animFlag++;
-			pm->submodel_parents [n] = (char) pof_read_short (model_buf);
-			pof_read_vecs (&pm->submodel_norms [n], 1, model_buf);
-			pof_read_vecs (&pm->submodel_pnts [n], 1, model_buf);
-			pof_read_vecs (&pm->submodel_offsets [n], 1, model_buf);
-			pm->submodel_rads [n] = pof_read_int (model_buf);		//radius
-			pm->submodel_ptrs [n] = pof_read_int (model_buf);	//offset
+			pm->subModels.parents [n] = (char) pof_read_short (model_buf);
+			pof_read_vecs (&pm->subModels.norms [n], 1, model_buf);
+			pof_read_vecs (&pm->subModels.pnts [n], 1, model_buf);
+			pof_read_vecs (&pm->subModels.offsets [n], 1, model_buf);
+			pm->subModels.rads [n] = pof_read_int (model_buf);		//radius
+			pm->subModels.ptrs [n] = pof_read_int (model_buf);	//offset
 			break;
 			}
 
@@ -387,7 +387,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			if (r) {
 				int f, m, n_frames = pof_read_short (model_buf);
 				Assert (n_frames == N_ANIM_STATES);
-				for (m = 0; m <pm->n_models; m++)
+				for (m = 0; m <pm->nModels; m++)
 					for (f = 0; f < n_frames; f++)
 						pof_read_angs (&anim_angs [f][m], 1, model_buf);
 							robot_set_angles (r, pm, anim_angs);
@@ -406,9 +406,9 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			pm->model_data = d_malloc (len);
-			pm->model_data_size = len;
-			pof_cfread (pm->model_data, 1, len, model_buf);
+			pm->modelData = d_malloc (len);
+			pm->nDataSize = len;
+			pof_cfread (pm->modelData, 1, len, model_buf);
 			break;
 	
 		default:
@@ -418,8 +418,8 @@ while (new_pof_read_int (id, model_buf) == 1) {
 	if (version >= 8)		// Version 8 needs 4-byte alignment!!!
 		pof_CFSeek (model_buf, next_chunk, SEEK_SET);
 	}
-//	for (i=0;i<pm->n_models;i++)
-//		pm->submodel_ptrs [i] += (int) pm->model_data;
+//	for (i=0;i<pm->nModels;i++)
+//		pm->subModels.ptrs [i] += (int) pm->modelData;
 if (FindArg ("-bspgen")) {
 	char *p = strchr (filename, '.');
 	*p = 0;
@@ -433,9 +433,9 @@ d_free (model_buf);
 G3AlignPolyModelData (pm);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__) 
-G3SwapPolyModelData (pm->model_data);
+G3SwapPolyModelData (pm->modelData);
 #endif
-	//verify (pm->model_data);
+	//verify (pm->modelData);
 return pm;
 }
 
@@ -515,9 +515,9 @@ int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, 
 //d_free up a model, getting rid of all its memory
 void FreeModel (tPolyModel *po)
 {
-if (po->model_data) {
-	d_free (po->model_data);
-	po->model_data = NULL;
+if (po->modelData) {
+	d_free (po->modelData);
+	po->modelData = NULL;
 	}
 }
 
@@ -557,18 +557,18 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 	else if (objP->nType != OBJ_PLAYER)
 		return;
 	G3SetModelPoints (gameData.models.polyModelPoints);
-	G3DrawPolyModelShadow (objP, po->model_data, animAngles);
+	G3DrawPolyModelShadow (objP, po->modelData, animAngles);
 	return;
 	}
 //check if should use simple model (depending on detail level chosen)
-if (po->simpler_model)					//must have a simpler model
+if (po->nSimplerModel)					//must have a simpler model
 	if (!flags) {							//can't switch if this is debris
 		int	cnt = 1;
 		fix depth = G3CalcPointDepth (pos);		//gets 3d depth
-		while (po->simpler_model && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
-			po = gameData.models.polyModels + po->simpler_model - 1;
+		while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
+			po = gameData.models.polyModels + po->nSimplerModel - 1;
 		}
-nTextures = po->n_textures;
+nTextures = po->nTextures;
 if (altTextures) {
 	for (i = 0; i < nTextures; i++)	{
 		gameData.models.textureIndex [i] = altTextures [i];
@@ -579,7 +579,7 @@ if (altTextures) {
 		}
 	}
 else {
-	for (i = 0, j = po->first_texture; i < nTextures; i++, j++) {
+	for (i = 0, j = po->nFirstTexture; i < nTextures; i++, j++) {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 #ifdef _3DFX
@@ -612,7 +612,7 @@ PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
 if (flags == 0)		//draw entire tObject
-	G3DrawPolyModel (objP, po->model_data, gameData.models.textures, animAngles, light, glowValues, color, NULL);
+	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL);
 else {
 	int i;
 
@@ -620,12 +620,12 @@ else {
 		if (flags & 1) {
 			vmsVector ofs;
 
-			Assert (i < po->n_models);
+			Assert (i < po->nModels);
 			//if submodel, rotate around its center point, not pivot point
-			VmVecAvg (&ofs, &po->submodel_mins [i], &po->submodel_maxs [i]);
+			VmVecAvg (&ofs, &po->subModels.mins [i], &po->subModels.maxs [i]);
 			VmVecNegate (&ofs);
 			G3StartInstanceMatrix (&ofs, NULL);
-			G3DrawPolyModel (objP, &po->model_data [po->submodel_ptrs [i]], gameData.models.textures, animAngles, 
+			G3DrawPolyModel (objP, &po->modelData [po->subModels.ptrs [i]], gameData.models.textures, animAngles, 
 									light, glowValues, color, NULL);
 			G3DoneInstance ();
 			}	
@@ -668,13 +668,13 @@ void polyobj_find_min_max (tPolyModel *pm)
 	big_mn = &pm->mins;
 	big_mx = &pm->maxs;
 
-	for (m = 0; m < pm->n_models; m++) {
+	for (m = 0; m < pm->nModels; m++) {
 		vmsVector *mn, *mx, *ofs;
 
-		mn = pm->submodel_mins + m;
-		mx = pm->submodel_maxs + m;
-		ofs= pm->submodel_offsets + m;
-		data = (ushort *) (pm->model_data + pm->submodel_ptrs [m]);
+		mn = pm->subModels.mins + m;
+		mx = pm->subModels.maxs + m;
+		ofs= pm->subModels.offsets + m;
+		data = (ushort *) (pm->modelData + pm->subModels.ptrs [m]);
 		nType = *data++;
 		Assert (nType == 7 || nType == 1);
 		nverts = *data++;
@@ -716,9 +716,9 @@ char Pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 //returns the number of this model
 #ifndef DRIVE
-int LoadPolygonModel (char *filename, int n_textures, int first_texture, tRobotInfo *r)
+int LoadPolygonModel (char *filename, int nTextures, int nFirstTexture, tRobotInfo *r)
 #else
-int LoadPolygonModel (char *filename, int n_textures, grsBitmap ***textures)
+int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
 #endif
 {
 	#ifdef DRIVE
@@ -726,7 +726,7 @@ int LoadPolygonModel (char *filename, int n_textures, grsBitmap ***textures)
 	#endif
 
 	Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
-	Assert (n_textures < MAX_POLYOBJ_TEXTURES);
+	Assert (nTextures < MAX_POLYOBJ_TEXTURES);
 
 	//	MK was real tired of those useless, slow mprintfs...
 #if TRACE	
@@ -737,12 +737,12 @@ int LoadPolygonModel (char *filename, int n_textures, grsBitmap ***textures)
 	strcpy (Pof_names [gameData.models.nPolyModels], filename);
 	ReadModelFile (gameData.models.polyModels+gameData.models.nPolyModels, filename, r);
 	polyobj_find_min_max (gameData.models.polyModels+gameData.models.nPolyModels);
-	G3InitPolyModel (gameData.models.polyModels [gameData.models.nPolyModels].model_data);
-	if (nHighestTexture + 1 != n_textures)
-		Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, n_textures);
-	gameData.models.polyModels [gameData.models.nPolyModels].n_textures = n_textures;
-	gameData.models.polyModels [gameData.models.nPolyModels].first_texture = first_texture;
-	gameData.models.polyModels [gameData.models.nPolyModels].simpler_model = 0;
+	G3InitPolyModel (gameData.models.polyModels [gameData.models.nPolyModels].modelData);
+	if (nHighestTexture + 1 != nTextures)
+		Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, nTextures);
+	gameData.models.polyModels [gameData.models.nPolyModels].nTextures = nTextures;
+	gameData.models.polyModels [gameData.models.nPolyModels].nFirstTexture = nFirstTexture;
+	gameData.models.polyModels [gameData.models.nPolyModels].nSimplerModel = 0;
 //	Assert (polygon_models [gameData.models.nPolyModels]!=NULL);
 	gameData.models.nPolyModels++;
 	return gameData.models.nPolyModels-1;
@@ -825,31 +825,31 @@ extern void PolyModelRead (tPolyModel *pm, CFILE *fp)
 {
 	int i;
 
-pm->n_models = CFReadInt (fp);
-pm->model_data_size = CFReadInt (fp);
+pm->nModels = CFReadInt (fp);
+pm->nDataSize = CFReadInt (fp);
 CFReadInt (fp);
-pm->model_data = NULL;
+pm->modelData = NULL;
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->submodel_ptrs [i] = CFReadInt (fp);
+	pm->subModels.ptrs [i] = CFReadInt (fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->submodel_offsets [i]), fp);
+	CFReadVector (& (pm->subModels.offsets [i]), fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->submodel_norms [i]), fp);
+	CFReadVector (& (pm->subModels.norms [i]), fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->submodel_pnts [i]), fp);
+	CFReadVector (& (pm->subModels.pnts [i]), fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	pm->submodel_rads [i] = CFReadFix (fp);
-CFRead (pm->submodel_parents, MAX_SUBMODELS, 1, fp);
+	pm->subModels.rads [i] = CFReadFix (fp);
+CFRead (pm->subModels.parents, MAX_SUBMODELS, 1, fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->submodel_mins [i]), fp);
+	CFReadVector (& (pm->subModels.mins [i]), fp);
 for (i = 0; i < MAX_SUBMODELS; i++)
-	CFReadVector (& (pm->submodel_maxs [i]), fp);
+	CFReadVector (& (pm->subModels.maxs [i]), fp);
 CFReadVector (& (pm->mins), fp);
 CFReadVector (& (pm->maxs), fp);
 pm->rad = CFReadFix (fp);
-pm->n_textures = CFReadByte (fp);
-pm->first_texture = CFReadShort (fp);
-pm->simpler_model = CFReadByte (fp);
+pm->nTextures = CFReadByte (fp);
+pm->nFirstTexture = CFReadShort (fp);
+pm->nSimplerModel = CFReadByte (fp);
 }
 
 //------------------------------------------------------------------------------
@@ -868,30 +868,30 @@ return i;
 
 //------------------------------------------------------------------------------
 /*
- * routine which allocates, reads, and inits a tPolyModel's model_data
+ * routine which allocates, reads, and inits a tPolyModel's modelData
  */
 void PolyModelDataRead (tPolyModel *pm, tPolyModel *pdm, CFILE *fp)
 {
-	if (pm->model_data)
-		d_free (pm->model_data);
-	pm->model_data = d_malloc (pm->model_data_size);
-	Assert (pm->model_data != NULL);
-	CFRead (pm->model_data, sizeof (ubyte), pm->model_data_size, fp);
+	if (pm->modelData)
+		d_free (pm->modelData);
+	pm->modelData = d_malloc (pm->nDataSize);
+	Assert (pm->modelData != NULL);
+	CFRead (pm->modelData, sizeof (ubyte), pm->nDataSize, fp);
 	if (pdm) {
-		if (pdm->model_data)
-			d_free (pdm->model_data);
-		pdm->model_data = d_malloc (pm->model_data_size);
-		Assert (pdm->model_data != NULL);
-		memcpy (pdm->model_data, pm->model_data, pm->model_data_size);
+		if (pdm->modelData)
+			d_free (pdm->modelData);
+		pdm->modelData = d_malloc (pm->nDataSize);
+		Assert (pdm->modelData != NULL);
+		memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
 		}
 #ifdef WORDS_NEED_ALIGNMENT
 	AlignPolyModelData (pm);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__) 
-	G3SwapPolyModelData (pm->model_data);
+	G3SwapPolyModelData (pm->modelData);
 #endif
-	//verify (pm->model_data);
-	G3InitPolyModel (pm->model_data);
+	//verify (pm->modelData);
+	G3InitPolyModel (pm->modelData);
 }
 
 //------------------------------------------------------------------------------
