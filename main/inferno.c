@@ -190,7 +190,11 @@ extern int VR_low_res;
 
 // ----------------------------------------------------------------------------
 
+#ifdef __unix__
+void D2SignalHandler (int nSignal)
+#else
 void __cdecl D2SignalHandler (int nSignal)
+#endif
 {
 if (nSignal == SIGABRT)
 	LogErr ("Abnormal program termination\n");
