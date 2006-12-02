@@ -1454,7 +1454,8 @@ if (bShadowTest) {
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
-if (bCullFront) {
+//if (bCullFront) 
+{
 #if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
@@ -1464,6 +1465,8 @@ if (bCullFront) {
 #else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
+		if (!pf->bFacingLight)
+			continue;
 #if 0//def _DEBUG
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1480,15 +1483,15 @@ if (bCullFront) {
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
-		if (bShadowTest) {
+		if (bShadowTest && (bShadowTest != 2)) {
 			glLineWidth (1);
 			glBegin (GL_LINE_LOOP);
 			}
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-			v0 = pvf [*pfv];
+		for (j = pf->nVerts, pfv = pf->pVerts; j; j--) {
+			v0 = pvf [*pfv++];
 #if 1
 			OOF_VecSub (&v1, &v0, &vLightPos);
 #if DBG_SHADOWS
@@ -1507,8 +1510,10 @@ if (bCullFront) {
 			}	
 		glEnd ();
 		}
+#if 0
 	}
-else {
+else {	//!bCullFront
+#endif
 #if DBG_SHADOWS
 	if (!bFrontCap)
 		return 1;
@@ -1518,6 +1523,8 @@ else {
 #else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
+		if (!pf->bFacingLight)
+			continue;
 #if DBG_SHADOWS
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
@@ -1534,15 +1541,15 @@ else {
 			glEnd ();
 			glColor4fv ((GLfloat *) (modelColor + bCullFront));
 			}
-		if (bShadowTest) {
+		if (bShadowTest && (bShadowTest != 2)) {
 			glLineWidth (1);
 			glBegin (GL_LINE_LOOP);
 			}
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-			v0 = pvf [*pfv];
+		for (j = pf->nVerts, pfv = pf->pVerts; j; j--) {
+			v0 = pvf [*pfv++];
 			glVertex3fv ((GLfloat *) &v0);
 			}
 		glEnd ();

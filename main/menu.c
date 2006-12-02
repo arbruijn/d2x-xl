@@ -2110,7 +2110,7 @@ void AdvancedRenderOptionsMenu ()
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
 #if SHADOWS
-	int	optRobotShadows, optMissileShadows, optReactorShadows;
+	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
 #	if DBG_SHADOWS
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
 #	endif
@@ -2208,6 +2208,7 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
+	optPlayerShadows =
 	optRobotShadows =
 	optMissileShadows =
 	optReactorShadows = -1;
@@ -2227,6 +2228,8 @@ do {
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
 		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
+		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.bPlayerShadows, KEY_R, HTX_PLAYER_SHADOWS);
+		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
 		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.bMissileShadows, KEY_R, HTX_MISSILE_SHADOWS);
@@ -2344,7 +2347,10 @@ do {
 	gameOpts->render.bDynamicLight = m [optDynLight].value;
 #endif
 #if SHADOWS
+	GET_VAL (gameOpts->render.bPlayerShadows, optPlayerShadows);
 	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
+	GET_VAL (gameOpts->render.bMissileShadows, optMissileShadows);
+	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
 #	if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
 		GET_VAL (bZPass, optZPass);

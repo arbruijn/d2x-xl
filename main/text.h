@@ -1602,9 +1602,9 @@ void LoadGameTexts(void);
 #define TXT_ROBOT_SHADOWS			GT(820)
 #define TXT_MISSILE_SHADOWS		GT(821)
 #define TXT_REACTOR_SHADOWS		GT(822)
+#define TXT_PLAYER_SHADOWS			GT(823)
 #if 0
 
-#define TXT_				GT(823)
 #define TXT_				GT(824)
 #define TXT_				GT(825)
 #define TXT_				GT(826)
@@ -2030,9 +2030,9 @@ void LoadGameTexts(void);
 #define HTX_ROBOT_SHADOWS			HT(228)				
 #define HTX_MISSILE_SHADOWS		HT(229)				
 #define HTX_REACTOR_SHADOWS		HT(230)				
+#define HTX_PLAYER_SHADOWS			HT(231)				
 #if 0
 				
-#define HTX_					HT(231)				
 #define HTX_					HT(232)				
 #define HTX_					HT(233)				
 #define HTX_					HT(234)				

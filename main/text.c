@@ -1570,8 +1570,8 @@ char *defaultGameTexts [][2] = {
 	{"o~Boterschatten", "ro~bot shadows"},
 	{"ra~Ketenschatten", "~Missile shadows"},
 	{"~Reaktorschatten", "~Reactor shadows"},
+	{"~Spielerschatten", "~Player shadows"},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2022,6 +2022,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, shadows are created for missiles."},
 	{"Wenn angekreuzt, werden Schatten fuer Reaktoren erzeugt.", 
 	 "If checked, shadows are created for reactors."},
+	{"Wenn angekreuzt, werden Schatten fuer die Schiffe der Spieler\nerzeugt.", 
+	 "If checked, shadows are created for player ships."},
 #if 0
 	{"", ""},
 #endif

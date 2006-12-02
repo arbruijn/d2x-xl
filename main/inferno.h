@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	ifdef _DEBUG
 #		define DBG_SHADOWS 1
 #	else
-#		define DBG_SHADOWS 0
+#		define DBG_SHADOWS 1
 #	endif
 #endif
 
@@ -181,6 +181,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int bEnableSSE;
+	int bPlayerShadows;
 	int bRobotShadows;
 	int bMissileShadows;
 	int bReactorShadows;

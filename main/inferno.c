@@ -1113,6 +1113,7 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [1].render.bPlayerShadows = 0;
 	gameOptions [1].render.bRobotShadows = 0;
 	gameOptions [1].render.bMissileShadows = 0;
 	gameOptions [1].render.bReactorShadows = 0;
@@ -1188,6 +1189,7 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [0].render.bPlayerShadows = 0;
 	gameOptions [0].render.bRobotShadows = 0;
 	gameOptions [0].render.bMissileShadows = 0;
 	gameOptions [0].render.bReactorShadows = 0;

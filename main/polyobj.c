@@ -554,7 +554,15 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 		if (!gameOpts->render.bMissileShadows)
 			return;
 		}
-	else if (objP->nType != OBJ_PLAYER)
+	else if (objP->nType == OBJ_PLAYER) {
+		if (!gameOpts->render.bPlayerShadows)
+			return;
+		}
+	else if (objP->nType == OBJ_CNTRLCEN) {
+		if (!gameOpts->render.bReactorShadows)
+			return;
+		}
+	else 
 		return;
 	G3SetModelPoints (gameData.models.polyModelPoints);
 	G3DrawPolyModelShadow (objP, po->modelData, animAngles);
