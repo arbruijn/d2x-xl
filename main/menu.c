@@ -2255,7 +2255,7 @@ do {
 			}
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;
-		ADD_CHECK (opt, "alternate shadowing method", gameStates.render.bFastShadows, 0, NULL);
+		ADD_CHECK (opt, "fast shadowing", gameStates.render.bFastShadows, 0, NULL);
 		optAltShadows = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
