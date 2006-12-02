@@ -1465,8 +1465,10 @@ pvf = po->pvVertsf;
 #else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
+#if 1
 		if (!pf->bFacingLight)
 			continue;
+#endif
 #if 0//def _DEBUG
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1490,8 +1492,8 @@ pvf = po->pvVertsf;
 		else
 #endif
 			glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--) {
-			v0 = pvf [*pfv++];
+		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
+			v0 = pvf [*--pfv];
 #if 1
 			OOF_VecSub (&v1, &v0, &vLightPos);
 #if DBG_SHADOWS
@@ -1499,7 +1501,12 @@ pvf = po->pvVertsf;
 #endif
 				{
 #if NORM_INF
-				OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+#	if DBG_SHADOWS
+				if (bShadowTest == 2)
+					OOF_VecScale (&v1, 5.0f / OOF_VecMag (&v1));
+				else
+#	endif
+					OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
 #else
 				OOF_VecScale (&v1, INFINITY);
 #endif
@@ -1523,8 +1530,10 @@ else {	//!bCullFront
 #else
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
+#if 1
 		if (!pf->bFacingLight)
 			continue;
+#endif
 #if DBG_SHADOWS
 		if (pf->bFacingLight && (bShadowTest > 3)) {
 			glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
