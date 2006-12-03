@@ -1201,12 +1201,13 @@ extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 {
-	CFILE		*fp;
-	int		t, i, j;
-	int		nBotTypeSave = gameData.bots.nTypes [0], 
-				nBotJointSave = gameData.bots.nJoints, 
-				nPolyModelSave = gameData.models.nPolyModels;
-	char		szFilename [FILENAME_LEN];
+	CFILE			*fp;
+	tPolyModel	*po;
+	int			t, i, j;
+	int			nBotTypeSave = gameData.bots.nTypes [0], 
+					nBotJointSave = gameData.bots.nJoints, 
+					nPolyModelSave = gameData.models.nPolyModels;
+	char			szFilename [FILENAME_LEN];
 
 ChangeFilenameExtension (szFilename, szLevelName, ".hxm");
 if (!(fp = CFOpen (szFilename, gameFolders.szDataDir, "rb", 0)))		//no robot replacement file
@@ -1286,18 +1287,24 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return 0;
 		}
-	FreeModel (gameData.models.polyModels + i);
-	PolyModelRead (gameData.models.polyModels + i, fp);
-	PolyModelDataRead (bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i, NULL, fp);
-#if 0
+	po = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
+	FreeModel (po);
+	PolyModelRead (po, fp);
+	PolyModelDataRead (po, NULL, fp);
 	if (bAltModels) {
+#if 0
 		ubyte	*p = gameData.models.defPolyModels [i].modelData;
 		gameData.models.defPolyModels [i] = gameData.models.polyModels [i];
 		gameData.models.defPolyModels [i].modelData = p;
-		}
+#else
+		CFReadInt (fp);
+		CFReadInt (fp);
 #endif
-	gameData.models.nDyingModels [i] = CFReadInt (fp);
-	gameData.models.nDeadModels [i] = CFReadInt (fp);
+		}
+	else {
+		gameData.models.nDyingModels [i] = CFReadInt (fp);
+		gameData.models.nDeadModels [i] = CFReadInt (fp);
+		}
 	}
 
 t = CFReadInt (fp);			//read number of objbitmaps

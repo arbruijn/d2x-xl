@@ -1914,9 +1914,9 @@ if (gameStates.render.nShadowPass) {
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
-#if 0
+#if 1
 				glEnable (GL_POLYGON_OFFSET_FILL);
-				glPolygonOffset (1.0f, 2.0f);
+				glPolygonOffset (1.0f, 1.0f);
 #endif
 				}
 			}
