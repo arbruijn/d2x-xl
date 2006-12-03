@@ -544,12 +544,9 @@ void DrawPolygonModel (
 if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
-#if 1
-if (gameData.models.altPolyModels [nModel].modelData)
-#else
-if (gameData.models.altPolyModels [nModel].modelData && 
+if (!gameData.models.altPolyModels [nModel].modelData && 
+	 (gameData.models.polyModels [nModel].nDataSize ==  gameData.models.defPolyModels [nModel].nDataSize) &&
 	 ((gameStates.render.nShadowPass == 2) || (objP->nType == OBJ_PLAYER)))
-#endif
 	po = gameData.models.altPolyModels + nModel;
 else
 	po = gameData.models.polyModels + nModel;

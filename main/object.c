@@ -1553,10 +1553,10 @@ if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObje
 		objP->position = gameStates.app.playerPos;
 		}
 #ifdef _DEBUG
-	 else if ((gameStates.render.nShadowPass != 2) && 
+	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum || !gameStates.render.bExternalView)) { //don't render ship model if neither external view nor main view
 #else	 
-	 else if ((gameStates.render.nShadowPass != 2) && 
+	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || 
 				  !gameStates.render.bExternalView))) {

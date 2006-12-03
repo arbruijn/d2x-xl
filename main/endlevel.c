@@ -301,7 +301,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	return;
 	}
-if (gameStates.app.bPlayerIsDead || gameData.objs.console->flags&OF_SHOULD_BE_DEAD)
+if (gameStates.app.bPlayerIsDead || (gameData.objs.console->flags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
 for (i = 0; i <= gameData.objs.nLastObject; i++)
