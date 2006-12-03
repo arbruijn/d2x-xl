@@ -544,14 +544,20 @@ void DrawPolygonModel (
 if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
+#if 1
+if (gameData.models.altPolyModels [nModel].modelData)
+#else
 if (gameData.models.altPolyModels [nModel].modelData && 
 	 ((gameStates.render.nShadowPass == 2) || (objP->nType == OBJ_PLAYER)))
+#endif
 	po = gameData.models.altPolyModels + nModel;
 else
 	po = gameData.models.polyModels + nModel;
 if ((gameStates.render.nShadowPass == 2) && objP) {
 	if (objP->nType == OBJ_ROBOT) {
 		if (!gameOpts->render.bRobotShadows)
+			return;
+		if (objP->cType.aiInfo.CLOAKED)
 			return;
 		}
 	else if (objP->nType == OBJ_WEAPON) {
@@ -560,6 +566,8 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 		}
 	else if (objP->nType == OBJ_PLAYER) {
 		if (!gameOpts->render.bPlayerShadows)
+			return;
+		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
 			return;
 		}
 	else if (objP->nType == OBJ_CNTRLCEN) {
@@ -885,26 +893,26 @@ return i;
  */
 void PolyModelDataRead (tPolyModel *pm, tPolyModel *pdm, CFILE *fp)
 {
-	if (pm->modelData)
-		d_free (pm->modelData);
-	pm->modelData = d_malloc (pm->nDataSize);
-	Assert (pm->modelData != NULL);
-	CFRead (pm->modelData, sizeof (ubyte), pm->nDataSize, fp);
-	if (pdm) {
-		if (pdm->modelData)
-			d_free (pdm->modelData);
-		pdm->modelData = d_malloc (pm->nDataSize);
-		Assert (pdm->modelData != NULL);
-		memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
-		}
+if (pm->modelData)
+	d_free (pm->modelData);
+pm->modelData = d_malloc (pm->nDataSize);
+Assert (pm->modelData != NULL);
+CFRead (pm->modelData, sizeof (ubyte), pm->nDataSize, fp);
+if (pdm) {
+	if (pdm->modelData)
+		d_free (pdm->modelData);
+	pdm->modelData = d_malloc (pm->nDataSize);
+	Assert (pdm->modelData != NULL);
+	memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
+	}
 #ifdef WORDS_NEED_ALIGNMENT
-	AlignPolyModelData (pm);
+AlignPolyModelData (pm);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__) 
-	G3SwapPolyModelData (pm->modelData);
+G3SwapPolyModelData (pm->modelData);
 #endif
-	//verify (pm->modelData);
-	G3InitPolyModel (pm->modelData);
+//verify (pm->modelData);
+G3InitPolyModel (pm->modelData);
 }
 
 //------------------------------------------------------------------------------
