@@ -185,6 +185,7 @@ typedef struct tRenderOptions {
 	int bRobotShadows;
 	int bMissileShadows;
 	int bReactorShadows;
+	int bFastShadows;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
@@ -501,7 +502,6 @@ typedef struct tRenderStates {
 	int bHaveStencilBuffer;
 	int nRenderPass;
 	int nShadowPass;
-	int bFastShadows;
 	int bShadowMaps;
 	int bLoResShadows;
 	int bHeadlightOn;

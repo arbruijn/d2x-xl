@@ -598,7 +598,7 @@ if (!gameStates.render.nRenderPass)
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) 
 	 && (gameStates.render.nShadowPass < 3)
-	 && !gameStates.render.bFastShadows
+	 && !gameOpts->render.bFastShadows
 #	if DBG_SHADOWS
 	 && !bShadowTest
 #	endif
@@ -1930,9 +1930,9 @@ if (gameStates.render.nShadowPass) {
 #if 1
 			glDisable (GL_POLYGON_OFFSET_FILL);
 #endif
-			if (gameStates.render.bFastShadows) {
+			if (gameOpts->render.bFastShadows) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		
+				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}
 			else 
 				{

@@ -860,6 +860,10 @@ for (j = 0; j < 2; j++) {
 		}
 	if (player_file_version >= 132)
 		gameOptions [j].render.bPlayerShadows = (int) CFReadByte (fp);
+#if 0
+	if (player_file_version >= 133)
+		gameOptions [j].render.bFastShadows = (int) CFReadByte (fp);
+#endif
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -1305,6 +1309,9 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (gameOptions [j].render.bMissileShadows, fp);
 	CFWriteByte (gameOptions [j].render.bReactorShadows, fp);
 	CFWriteByte (gameOptions [j].render.bPlayerShadows, fp);
+#if 0
+	CFWriteByte (gameOptions [j].render.bFastShadows, fp);
+#endif
 // end of D2X-XL stuff
 	}
 

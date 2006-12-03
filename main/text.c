@@ -1521,7 +1521,7 @@ char *defaultGameTexts [][2] = {
 	{"Konnte keine Zielgebiete finden.\nSchalte zu Team-Anarchie um.", 
 	 "Couldn't find team goals.\nSwitching to Team Anarchy."},
 	{"Konnte keinen Monsterball erzeugen.\nSchalte zu Team-Anarchie um.", 
-	 "Couldn't create Monsterball tObject.\nSwitching to Team Anarchy."},
+	 "Couldn't create Monsterball object.\nSwitching to Team Anarchy."},
 	{"Monster~Ball-Optionen...", "Monster~Ball Options..."},
 	{"Tor-~Bonus: %d", "Goal ~Bonus: %d"},
 	{"Monsterball-~Groesse: %d.%d", "Monsterball ~Size: %d.%d"},
@@ -1571,7 +1571,9 @@ char *defaultGameTexts [][2] = {
 	{"ra~Ketenschatten", "~Missile shadows"},
 	{"~Reaktorschatten", "~Reactor shadows"},
 	{"~Spielerschatten", "~Player shadows"},
+	{"schnelle Schatten~Berechnung", "~Fast shadow rendering"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -1740,7 +1742,7 @@ char *defaultHelpTexts [][2] = {
 	{"Ankreuzen, wenn Schuesse und Raketen ihre Umgebung farbig\nausleuchten sollen", 
 	 "Check to have weapon fire and missiles cast colored light\non the environment."},
 	{"Ankreuzen, wenn bei stark beschaedigten Schiffen und Robotern\nExplosionseffekte erscheinen sollen. Der Effekt beginnt, wenn\ndie Schilde eines Robots oder Schiffes unter 50% des Ausgangs-\nwertes sinken, und nimmt bei weiterer Beschaedigung zu.\n\nDiese Option kann die Leistung des Programms verringern.", 
-	 "Check if you want to have explosions appear on badly damaged\nships and robots. The effect will start if an robot's or\nship's shields are down to 50% of the initial value, and will\nincrease the more additional damage the tObject takes.\n\nThis option may cause a performance hit."},
+	 "Check if you want to have explosions appear on badly damaged\nships and robots. The effect will start if an robot's or\nship's shields are down to 50% of the initial value, and will\nincrease the more additional damage the object takes.\n\nThis option may cause a performance hit."},
 	{"Ankreuzen, wenn aus den Antriebsduesen der Schiffe Auspuff-\nflammen kommen sollen.", 
 	 "Check to have flames come out of a ship's thrusters."},
 	{"Ankreuzen, wenn die Schiffe von einer transparenten Schildkugel\numgeben sein sollen (blau: normal, weiss: unverwundbar,\norange: getroffen)", 
@@ -1776,7 +1778,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, zeichnet D2X-XL die Schatten von Robotern und Schiffen.", 
 	 "If checked, D2X-XL will render robot and ship shadows."},
 	{"Anzahl der naechstgelegenen Lichtquellen einstellen, die D2X-XL\nbeim Zeichnen der Schatten eines Objects beruecksichtigt.", 
-	 "Adjust the number of light sources close by D2X-XL will take into\naccount if rendering an tObject's shadow."},
+	 "Adjust the number of light sources close by D2X-XL will take into\naccount if rendering an object's shadow."},
 	{"Ankreuzen, wenn Kameras in Leveln aktiviert werden sollen, die\nwelche enthalten (nur D2X-XL-Level)", 
 	 "Check if you want to enable cameras in levels containing some\n(only D2X-XL levels)"},
 	{"Ankreuzen, wenn die Ausgabe einer Kamera ueber die ganze\nFlaeche gedehnt werden soll, auf die sie projeziert wird.", 
@@ -1966,7 +1968,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungsverfahren.\n\nD2X-XL emuliert die OpenGL-Beleuchtung wegen der grossen Anzahl\nbenoetigter Lichter per Software. Dadurch kann es dadurch zu\nstarken Leistungseinbussen kommen.\n\nDie Leistung dieser Beleuchtungsmethode haengt nicht von der\nGrafikkarte, sondern ausschliesslich von der Geschwindigkeit\nvon CPU und Speicher ab.", 
 	 "If checked, D2X-XL uses the OpenGL lighting methods.\n\nDue to the large number of lights in Descent, D2X-XL emulates\nOpenGL lighting by software. This can cause a strong\nperformance hit.\n\nThe speed of this lighting method does not depend on the graphics\nhardware, but exclusively on the CPU and memory speed."},
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungs-\nmethode auch fuer Hires-Objekte. Nur fuer sehr schnelle\nRechner empfohlen.\n\nWird diese Option ausgeschaltet, berechnet D2X-XL anhand der\ndurchschnittlichen Helligkeit am Ort des Objekts seine Beleuchtung.", 
-	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers.\n\nIf unchecked, D2X-XL computes the tObject's lighting depending on the average\nlight at the tObject's location."},
+	 "If checked, D2X-XL uses the OpenGL lighting method for\nhires objects too. Only recommended for really fast computers.\n\nIf unchecked, D2X-XL computes the object's lighting depending on the average\nlight at the object's location."},
 	{"Hier kann die Anzahl nahegelegener Lichter eingestellt werden,\ndie die Beleuchtung eines gegebenen Punktes in der Mine be-\neinflussen. D2X-XL verwendet die hier eingestellte Anzahl der\njedem Segment am naechsten gelegenen Lichter, um das Segment\nzu beleuchten.",
 	 "Adjust the number of nearby lights that influence lighting\nfor a given point in the mine. D2X-XL will use the number of\nnearest lights set here to each tSegment of the mine to\nilluminate that tSegment."},
 	{"Diese Option ankreuzen, um saemtliche Lampen auszuschalten.\nDie Spieler sind dann auf Scheinwerfer, Leuchtraketen,\nLicht von Waffen und ihr Gehoer angewiesen.", 
@@ -2024,6 +2026,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, shadows are created for reactors."},
 	{"Wenn angekreuzt, werden Schatten fuer die Schiffe der Spieler\nerzeugt.", 
 	 "If checked, shadows are created for player ships."},
+	{"Wenn angekreuzt, wird ein schnelleres Verfahren zum Zeichnen\nder Schatten verwendet. Einziger Nachteil: Rauch wird immer von\nSchatten verdeckt", 
+	 "If checked, a faster shadow rendering method is used. Only\nDisadvantage: Smoke is always affected by shadows."},
 #if 0
 	{"", ""},
 #endif

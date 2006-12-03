@@ -2112,7 +2112,7 @@ void AdvancedRenderOptionsMenu ()
 #if SHADOWS
 	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
 #	if DBG_SHADOWS
-	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optAltShadows;
+	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optFastShadows;
 #	endif
 #endif
 #if 0
@@ -2220,7 +2220,7 @@ do {
 	optFrontFaces =
 	optBackFaces =
 	optSWCulling =
-	optAltShadows =
+	optFastShadows =
 	nShadowTestOpt = -1;
 #endif
 	if (extraGameInfo [0].bShadows) {
@@ -2237,6 +2237,10 @@ do {
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.bReactorShadows, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
 #	if DBG_SHADOWS
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.bFastShadows, KEY_F, HTX_FAST_SHADOWS);
+		optFastShadows = opt++;
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
 		if (!bZPass) {
@@ -2255,8 +2259,6 @@ do {
 			}
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;
-		ADD_CHECK (opt, "fast shadowing", gameStates.render.bFastShadows, 0, NULL);
-		optAltShadows = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
 		nShadowTestOpt = opt++;
@@ -2353,10 +2355,10 @@ do {
 	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
 #	if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
+		GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
 		GET_VAL (bZPass, optZPass);
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
-		GET_VAL (gameStates.render.bFastShadows, optAltShadows);
 		GET_VAL (bFrontFaces, optFrontFaces);
 		GET_VAL (bBackFaces, optBackFaces);
 		GET_VAL (bSWCulling, optSWCulling);

@@ -638,13 +638,16 @@ if (nFrames > 1) {
 ;
 
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrames;
-	if (t - t0 > 150) {
+	if (t - t0 > 100) {
 		t0 = t;
 		iParticleFrames [gameStates.render.bPointSprites][nType] = (iFrames + 1) % nFrames;
 		}
 	}
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
+if (EGI_FLAG (bShadows, 0, 0))// && (gameStates.render.nShadowPass == 3))
+	glDisable (GL_STENCIL_TEST);
+glDepthFunc (GL_LESS);
 glDepthMask (0);
 //glEnable (GL_BLEND);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -705,6 +708,8 @@ if (gameStates.render.bPointSprites) {
 #endif
 OGL_BINDTEX (0);
 glDepthMask (1);
+if (EGI_FLAG (bShadows, 0, 0))// && (gameStates.render.nShadowPass == 3))
+	glEnable (GL_STENCIL_TEST);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //glEnable (GL_DEPTH_TEST);
 //glDisable (GL_TEXTURE_2D);

@@ -1415,7 +1415,7 @@ void RenderSegment(short nSegment, int nWindowNum)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass >= 2) : (gameStates.render.nShadowPass == 2)))
+	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass >= 2) : (gameStates.render.nShadowPass == 2)))
 	return;
 #endif
 Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
@@ -2363,6 +2363,7 @@ glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
 glDisable (GL_DEPTH_TEST);
+glDepthMask (0);
 glDisable (GL_TEXTURE_2D);
 glColor4fv (shadowHue);// / fDist);
 glBegin (GL_QUADS);
@@ -2372,6 +2373,7 @@ glVertex2f (1,1);
 glVertex2f (0,1);
 glEnd ();
 glEnable (GL_DEPTH_TEST);
+glDepthMask (1);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
@@ -2645,7 +2647,6 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 		gameStates.render.nShadowPass = 1;
 		OglStartFrame (0, 0);
 		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
-		RenderSmoke ();
 		}
 #if 0//OOF_TEST_CUBE
 #	if 1
@@ -2678,12 +2679,14 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 				G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
 			ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
 			}
-		else if (gameStates.render.bFastShadows) {
+		else if (gameOpts->render.bFastShadows) {
 			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
 			RenderShadow (0.0f);
 			}
-		else
+		else {
 			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
+			}
+		RenderSmoke ();
 		}
 	}
 else 
@@ -3500,7 +3503,7 @@ if (gameOpts->render.bAllSegs) {
 		}
 	}
 #ifdef OGL_ZBUF
-if (gameStates.render.bFastShadows ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
+if (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
 	GlRenderSegments (2, 3, nRenderSegs, nWindowNum);
 #endif
 RenderFaceList (nWindowNum);

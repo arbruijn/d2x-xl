@@ -1121,6 +1121,7 @@ if (i) {
 	gameOptions [1].render.bRobotShadows = 0;
 	gameOptions [1].render.bMissileShadows = 0;
 	gameOptions [1].render.bReactorShadows = 0;
+	gameOptions [1].render.bFastShadows = 1;
 	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bTransparentEffects = 0;
@@ -1197,6 +1198,7 @@ else {
 	gameOptions [0].render.bRobotShadows = 0;
 	gameOptions [0].render.bMissileShadows = 0;
 	gameOptions [0].render.bReactorShadows = 0;
+	gameOptions [0].render.bFastShadows = 1;
 	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;
@@ -1719,7 +1721,6 @@ gameStates.ogl.bAntiAliasingOk = 0;
 
 void InitRenderStates (void)
 {
-gameStates.render.bFastShadows = 1;
 gameStates.render.bQueryOcclusion = 0;
 gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 0;
