@@ -190,7 +190,7 @@ extern int VR_low_res;
 
 // ----------------------------------------------------------------------------
 
-#ifdef __unix__
+#if defined (__unix__) || defined (__macosx__)
 void D2SignalHandler (int nSignal)
 #else
 void __cdecl D2SignalHandler (int nSignal)

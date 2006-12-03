@@ -502,7 +502,7 @@ if (getifaddrs (&ifap) != 0)
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only count the address if it meets our criteria.
-	if (ifa->ifaFlags & IF_NOTFLAGS || !((ifa->ifaFlags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	}
@@ -512,7 +512,7 @@ chk (broads = d_malloc (j * sizeof (*broads)));
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only copy the address if it meets our criteria.
-	if (ifa->ifaFlags & IF_NOTFLAGS || !((ifa->ifaFlags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	sinp = (struct sockaddr_in *) ifa->ifa_broadaddr;
@@ -613,7 +613,7 @@ static void setupHints (struct addrinfo *hints) {
     hints->ai_family = PF_INET;
     hints->ai_protocol = IPPROTO_UDP;
     hints->ai_socktype = 0;
-    hints->aiFlags = 0;
+    hints->ai_flags = 0;
     hints->ai_addrlen = 0;
     hints->ai_addr = NULL;
     hints->ai_canonname = NULL;
