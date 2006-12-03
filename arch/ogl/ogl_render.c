@@ -1914,7 +1914,7 @@ if (gameStates.render.nShadowPass) {
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
-#if 1
+#if 0
 				glEnable (GL_POLYGON_OFFSET_FILL);
 				glPolygonOffset (1.0f, 2.0f);
 #endif
@@ -1922,13 +1922,14 @@ if (gameStates.render.nShadowPass) {
 			}
 		}
 	else { //render final lit scene
-#if 1
-			glDisable (GL_POLYGON_OFFSET_FILL);
-#endif
 		if (gameStates.render.bShadowMaps) {
+			glDisable (GL_POLYGON_OFFSET_FILL);
 			glDepthFunc (GL_LESS);
 			}
 		else {
+#if 1
+			glDisable (GL_POLYGON_OFFSET_FILL);
+#endif
 			if (gameStates.render.bFastShadows) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_REPLACE, GL_REPLACE);		

@@ -1132,7 +1132,6 @@ typedef struct tRobotData {
 	char					*robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];
 	tRobotInfo			info [2][MAX_ROBOT_TYPES];
 	tRobotInfo			defaultInfo [MAX_ROBOT_TYPES];
-	tPOFObject			pofData [2][MAX_ROBOT_TYPES];
 	tJointPos			joints [MAX_ROBOT_JOINTS];
 	tJointPos			defaultJoints [MAX_ROBOT_JOINTS];
 	int					nJoints;
@@ -1257,9 +1256,11 @@ typedef struct tWeaponData {
 typedef struct tModelData {
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_HIRES_MODELS];
+	tPOFObject			pofData [2][MAX_POLYGON_MODELS];
 	ubyte					bHaveHiresModel [MAX_HIRES_MODELS];
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
+	tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];

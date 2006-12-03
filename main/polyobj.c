@@ -544,7 +544,11 @@ void DrawPolygonModel (
 if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
-po = gameData.models.polyModels + nModel;
+if (gameData.models.altPolyModels [nModel].modelData && 
+	 ((gameStates.render.nShadowPass == 2) || (objP->nType == OBJ_PLAYER)))
+	po = gameData.models.altPolyModels + nModel;
+else
+	po = gameData.models.polyModels + nModel;
 if ((gameStates.render.nShadowPass == 2) && objP) {
 	if (objP->nType == OBJ_ROBOT) {
 		if (!gameOpts->render.bRobotShadows)
@@ -619,7 +623,7 @@ _3dfx_rendering_poly_obj = 1;
 PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
-if (flags == 0)		//draw entire tObject
+if (!flags)		//draw entire tObject
 	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL);
 else {
 	int i;
@@ -758,7 +762,7 @@ int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ free_polygon_models (void)
+void _CDECL_ FreePolygonModels (void)
 {
 	int i;
 
@@ -766,6 +770,7 @@ LogErr ("unloading poly models\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	FreeModel (gameData.models.polyModels + i);
 	FreeModel (gameData.models.defPolyModels + i);
+	FreeModel (gameData.models.altPolyModels + i);
 	}
 }
 
@@ -774,7 +779,7 @@ for (i = 0; i < gameData.models.nPolyModels; i++) {
 void InitPolygonModels ()
 {
 	gameData.models.nPolyModels = 0;
-	atexit (free_polygon_models);
+	atexit (FreePolygonModels);
 }
 
 //------------------------------------------------------------------------------

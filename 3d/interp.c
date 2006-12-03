@@ -1669,7 +1669,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles)
 	vmsVector		v, vLightDir;
 	short				*pnl;
 	int				i, j, bCalcCenter = 0;
-	tPOFObject		*po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
+	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission] + objP->id;
 
 Assert (objP->id < MAX_ROBOT_TYPES);
 if ((objP->nType != OBJ_PLAYER) && !gameOpts->render.bRobotShadows)
@@ -1740,7 +1740,7 @@ if (bShadowTest)
 G3CheckAndSwap (modelP);
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && 
 	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
-	po = gameData.bots.pofData [gameStates.app.bD1Mission] + objP->id;
+	po = gameData.models.pofData [gameStates.app.bD1Mission] + objP->id;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
@@ -2111,9 +2111,9 @@ void G3FreeAllPolyModelItems (void)
 	int	i, j;
 
 for (i = 0; i < 2; i++)
-	for (j = 0; j < MAX_ROBOT_TYPES; j++)
-		G3FreePolyModelItems (gameData.bots.pofData [i] + j);
-memset (gameData.bots.pofData, 0, sizeof (gameData.bots.pofData));
+	for (j = 0; j < MAX_POLYGON_MODELS; j++)
+		G3FreePolyModelItems (gameData.models.pofData [i] + j);
+memset (gameData.models.pofData, 0, sizeof (gameData.models.pofData));
 }
 
 //------------------------------------------------------------------------------

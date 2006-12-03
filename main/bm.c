@@ -1199,7 +1199,7 @@ return 1;
 
 extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
-int LoadRobotReplacements (char *szLevelName, int bAddBots, int bOnlyModels)
+int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFILE		*fp;
 	int		t, i, j;
@@ -1233,7 +1233,7 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return 0;
 		}
-	if (bOnlyModels)
+	if (bAltModels)
 		CFSeek (fp, sizeof (tRobotInfo), SEEK_CUR);
 	else
 		RobotInfoReadN (gameData.bots.info [0] + i, 1, fp);
@@ -1288,18 +1288,20 @@ for (j = 0; j < t; j++) {
 		}
 	FreeModel (gameData.models.polyModels + i);
 	PolyModelRead (gameData.models.polyModels + i, fp);
-	PolyModelDataRead (gameData.models.polyModels + i, bOnlyModels ? gameData.models.defPolyModels + i : NULL, fp);
-	if (bOnlyModels) {
+	PolyModelDataRead (bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i, NULL, fp);
+#if 0
+	if (bAltModels) {
 		ubyte	*p = gameData.models.defPolyModels [i].modelData;
 		gameData.models.defPolyModels [i] = gameData.models.polyModels [i];
 		gameData.models.defPolyModels [i].modelData = p;
 		}
+#endif
 	gameData.models.nDyingModels [i] = CFReadInt (fp);
 	gameData.models.nDeadModels [i] = CFReadInt (fp);
 	}
 
 t = CFReadInt (fp);			//read number of objbitmaps
-for (j=0;j<t;j++) {
+for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read objbitmap number
 	if (bAddBots) {
 		}
