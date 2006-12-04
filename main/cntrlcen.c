@@ -432,7 +432,7 @@ if (nReactorObj == -1) {
 	}
 #endif
 
-if (EGI_FLAG (bDisableReactor, 0, 0) ||
+if (/*EGI_FLAG (bDisableReactor, 0, 0) ||*/
 	 ((nBossObj != -1) && (nReactorObj != -1) && 
 	  !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))) {
 	BashToShield (nReactorObj, "reactor");
