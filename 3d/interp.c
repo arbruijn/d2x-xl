@@ -115,6 +115,7 @@ return G3CheckPointFacing (pv, pNorm, &vLightPos);
 
 inline int G3CheckViewerFacing (tOOF_vector *pv, tOOF_vector *pNorm)
 {
+glEnableClientState (GL_VERTEX_ARRAY);
 return OOF_VecMul (pv, pNorm) >= 0;
 }
 

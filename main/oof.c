@@ -2085,6 +2085,10 @@ if (bShadowTest < 2)
 	glBegin (GL_QUADS);
 else
 	glBegin (GL_LINES);
+#elif _DEBUG
+glBegin (GL_QUADS)
+#else
+glEnableClientState (GL_VERTEX_ARRAY);
 #endif
 for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 	if (pe->bContour) {
@@ -2111,10 +2115,8 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
 #ifdef RELEASE
-			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);
-			glDisableClientState (GL_VERTEX_ARRAY);
 #else
 			glVertex3fv ((GLfloat *) v);
 			glVertex3fv ((GLfloat *) (v+1));
@@ -2133,6 +2135,10 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #if DBG_SHADOWS
 glEnd ();
 glEnable (GL_CULL_FACE);
+#elif _DEBUG
+glEnd ();
+#else
+glDisableClientState (GL_VERTEX_ARRAY);
 #endif
 return 1;
 }
@@ -2155,17 +2161,20 @@ glColor4fv ((GLfloat *) modelColor);
 #endif
 pv = pso->pvRotVerts;
 OOF_SetCullAndStencil (bCullFront);
-if (bCullFront) {
+//if (bCullFront) 
+{
 #if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+		if (!pf->bFacingLight)
+			continue;
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
-			v0 = pv [pfv->nIndex];
+		for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
+			v0 = pv [(--pfv)->nIndex];
 			OOF_VecSub (&v1, &v0, &vrLightPos);
 #	if NORM_INF
 			OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
@@ -2179,7 +2188,7 @@ if (bCullFront) {
 		if (pf->bReverse)
 			glFrontFace (GL_CW);
 		}
-#if 1
+#if 0
 	}
 else {
 #endif
@@ -2188,6 +2197,8 @@ else {
 		return 1;
 #endif
 	for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
+		if (!pf->bFacingLight)
+			continue;
 		if (pf->bReverse)
 			glFrontFace (GL_CCW);
 		glBegin (GL_TRIANGLE_FAN);
