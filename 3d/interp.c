@@ -40,7 +40,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 
 #define SHADOW_TEST				0
 #define NORM_INF					1
-#define INFINITY					100.0f
+#define INFINITY					500.0f
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
