@@ -1132,18 +1132,18 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-fix Last_thief_hitTime;
+fix xLastThiefHitTime;
 
 int  CollideRobotAndPlayer (tObject *robot, tObject *playerObjP, vmsVector *vHitPt)
 { 
-	int	steal_attempt = 0;
-	short	collision_seg;
+	int	bTheftAttempt = 0;
+	short	nCollisionSeg;
 
 if (robot->flags & OF_EXPLODING)
 	return 1;
-collision_seg = FindSegByPoint (vHitPt, playerObjP->nSegment);
-if (collision_seg != -1)
-	ObjectCreateExplosion (collision_seg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
+nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment);
+if (nCollisionSeg != -1)
+	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
 
 if (playerObjP->id == gameData.multi.nLocalPlayer) {
 	if (gameData.bots.pInfo [robot->id].companion)	//	Player and companion don't Collide.
@@ -1156,15 +1156,15 @@ if (playerObjP->id == gameData.multi.nLocalPlayer) {
 
 	if (gameData.bots.pInfo [robot->id].thief) {
 		if (gameData.ai.localInfo [OBJ_IDX (robot)].mode == AIM_THIEF_ATTACK) {
-			Last_thief_hitTime = gameData.time.xGame;
+			xLastThiefHitTime = gameData.time.xGame;
 			AttemptToStealItem (robot, playerObjP->id);
-			steal_attempt = 1;
+			bTheftAttempt = 1;
 			} 
-		else if (gameData.time.xGame - Last_thief_hitTime < F1_0*2)
+		else if (gameData.time.xGame - xLastThiefHitTime < F1_0*2)
 			return 1;	//	ZOUNDS! BRILLIANT! Thief not Collide with tPlayer if not stealing!
 							// NO! VERY DUMB! makes thief look very stupid if tPlayer hits him while cloaked!-AP
 		else
-			Last_thief_hitTime = gameData.time.xGame;
+			xLastThiefHitTime = gameData.time.xGame;
 		}
 	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// tObject robot can attract attention to tPlayer
 	DoAiRobotHitAttack (robot, playerObjP, vHitPt);
@@ -1177,7 +1177,7 @@ else
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the robot stole.
-if ((!steal_attempt) && !gameData.bots.pInfo [robot->id].energyDrain)
+if ((!bTheftAttempt) && !gameData.bots.pInfo [robot->id].energyDrain)
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 BumpTwoObjects (robot, playerObjP, 1, vHitPt);
 return 1; 

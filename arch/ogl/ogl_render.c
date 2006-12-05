@@ -1378,11 +1378,9 @@ else
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 			pl = *ppl;
-#if 1
 			if (gameOpts->ogl.bUseLighting)
 				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
 			else
-#endif
 				SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [c].u), f2glf (uvlList [c].v));
 			if (bmTop && !bDrawBM)
@@ -1428,11 +1426,9 @@ else
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
-#if 1
 				if (gameOpts->ogl.bUseLighting)
 					G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL);
 				else
-#endif
 					SetTMapColor (uvlList + c, c, bmTop, 1);
 				SetTexCoord (uvlList + c, orient, 0);
 				OglVertex3f (*ppl);
@@ -1914,7 +1910,7 @@ if (gameStates.render.nShadowPass) {
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
-#if 1
+#if 0
 				glEnable (GL_POLYGON_OFFSET_FILL);
 				glPolygonOffset (1.0f, 1.0f);
 #endif

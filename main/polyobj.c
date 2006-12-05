@@ -551,6 +551,10 @@ if (gameData.models.altPolyModels [nModel].modelData &&
 else
 	po = gameData.models.polyModels + nModel;
 if ((gameStates.render.nShadowPass == 2) && objP) {
+#if 0
+	if (!CanSeePoint (objP, &gameData.objs.viewer->position.vPos))
+		return;
+#endif
 	if (objP->nType == OBJ_ROBOT) {
 		if (!gameOpts->render.bRobotShadows)
 			return;
@@ -574,7 +578,7 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 	else 
 		return;
 	G3SetModelPoints (gameData.models.polyModelPoints);
-	G3DrawPolyModelShadow (objP, po->modelData, animAngles);
+	G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
 	return;
 	}
 //check if should use simple model (depending on detail level chosen)

@@ -1673,71 +1673,6 @@ return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
 }
 
 //------------------------------------------------------------------------------
-//added on 8/18/98 by Victor Rachels to add d1x options menu, gameOpts->render.nMaxFPS setting
-//added/edited on 8/18/98 by Victor Rachels to set gameOpts->render.nMaxFPS always on, max=80
-//added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
-
-void RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
-{
-	tMenuItem * m;
-	int				v;
-
-if (nLightMapsOpt >= 0) {
-	m = menus + nLightMapsOpt;
-	v = m->value;
-	if (v != gameOpts->render.color.bUseLightMaps) {
-		gameOpts->render.color.bUseLightMaps = v;
-		*key = -2;
-		return;
-		}
-	}
-m = menus + nGunColorOpt;
-v = m->value;
-if (v != gameOpts->render.color.bGunLight) {
-	gameOpts->render.color.bGunLight = v;
-	*key = -2;
-	return;
-	}
-if (!gameStates.app.bNostalgia) {
-	m = menus + optBrightness;
-	v = m->value;
-	if (v != GrGetPaletteGamma ())
-		GrSetPaletteGamma (v);
-	}
-if (nOglLightOpt >= 0) {
-	m = menus + nOglLightOpt;
-	v = m->value;
-	if (v != gameOpts->ogl.bUseLighting) {
-		gameOpts->ogl.bUseLighting = v;
-		*key = -2;
-		return;
-		}
-	}
-if (nOglMaxLightsOpt >= 0) {
-	m = menus + nOglMaxLightsOpt;
-	v = m->value + 4;
-	if (v != gameOpts->ogl.nMaxLights) {
-		gameOpts->ogl.nMaxLights = v;
-		sprintf (m->text, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
-		m->rebuild = 1;
-		return;
-		}
-	}
-if (gameOpts->app.bExpertMode) {
-	m = menus + nFPSopt;
-	v = fpsTable [m->value];
-	if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
-		gameOpts->render.nMaxFPS = v ? v : 1;
-		if (v)
-			sprintf (m->text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-		else
-			sprintf (m->text, TXT_NO_FRAMECAP);
-		m->rebuild = 1;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
 
 int FindTableFps (int nFps)
 {
@@ -1783,7 +1718,7 @@ do {
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optRenderShields = opt++;
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_EFFECT_OPTS, opt, m, NULL, &choice);
+		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, NULL, &choice);
 		if (i < 0)
 			break;
 		} 
@@ -1812,175 +1747,13 @@ do {
 
 //------------------------------------------------------------------------------
 
-void AdvancedRenderOptionsMenu ();
-void SmokeOptionsMenu ();
-
-void RenderOptionsMenu ()
-{
-	tMenuItem m [50];
-	int	i, choice = 0;
-	int	opt;
-	int	optColoredLight, optMovieQual, optMovieSize, optSmokeOpts,
-			optSubTitles, optAdvOpts, optObjectLight, optEffectOpts;
-#if 0
-	int checks;
-#endif
-
-	char szMaxFps [50], szMaxLights [50];
-	int bLightMaps = gameOpts->render.color.bUseLightMaps;
-
-do {
-	memset (m, 0, sizeof (m));
-	opt = 0;
-	if (!gameStates.app.bNostalgia) {
-		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
-		optBrightness = opt++;
-		}
-	if (gameOpts->render.nMaxFPS > 1)
-		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-	else
-		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
-	*szMaxFps = *(TXT_FRAMECAP - 1);
-	ADD_SLIDER (opt, szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
-	nFPSopt = opt++;
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	if (gameStates.render.color.bLightMapsOk && !gameOpts->ogl.bUseLighting) {
-		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
-		nLightMapsOpt = opt++;
-		}
-	else
-		nLightMapsOpt = -1;
-	if (gameStates.app.bGameRunning) 
-		nOglLightOpt = 
-		nOglMaxLightsOpt = 
-		optObjectLight = -1;
-	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-		nOglLightOpt = -1;
-	else {
-		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_L, HTX_OGL_LIGHTING);
-		nOglLightOpt = opt++;
-		}
-	if (gameOpts->ogl.bUseLighting && (nOglLightOpt >= 0)) {
-		if (!gameStates.app.bGameRunning) {
-			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
-			optObjectLight = opt++;
-			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
-			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
-			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
-			nOglMaxLightsOpt = opt++;
-			ADD_TEXT (opt, "", 0);
-			opt++;
-			}
-		else
-			nOglMaxLightsOpt = 
-			optObjectLight = -1;
-		}
-	else
-		nOglMaxLightsOpt = 
-		optObjectLight = -1;
-	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_L, HTX_RENDER_AMBICOLOR);
-	optColoredLight = opt++;
-	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_I, HTX_RENDER_WPNCOLOR);
-	nGunColorOpt = opt++;
-	ADD_CHECK (opt, TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
-	optSubTitles = opt++;
-	if (gameOpts->app.bExpertMode) {
-		ADD_CHECK (opt, TXT_MOVIE_QUAL, gameOpts->movies.nQuality, KEY_Q, HTX_RENDER_MOVIEQUAL);
-		optMovieQual = opt++;
-		ADD_CHECK (opt, TXT_MOVIE_FULLSCR, gameOpts->movies.bResize, KEY_S, HTX_RENDER_MOVIEFULL);
-		optMovieSize = opt++;
-		}
-	else
-		optMovieQual = 
-		optMovieSize = -1;
-
-	if (gameOpts->app.bExpertMode) {
-		ADD_TEXT (opt, "", 0);
-		opt++;
-		ADD_MENU (opt, TXT_SMOKE_RENDER_OPTS, KEY_S, HTX_RENDER_SMOKEOPTS);
-		optSmokeOpts = opt++;
-		ADD_MENU (opt, TXT_EFFECT_RENDER_OPTS, KEY_E, HTX_RENDER_EFFECTOPTS);
-		optEffectOpts = opt++;
-		ADD_MENU (opt, TXT_ADV_RENDER_OPTS, KEY_A, HTX_RENDER_ADVOPTS);
-		optAdvOpts = opt++;
-		}
-	else
-		optSmokeOpts =
-		optAdvOpts = -1;
-	for (;;) {
-		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallback, &choice);
-		if (i < 0)
-			break;
-		if (gameOpts->app.bExpertMode) {
-			if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
-				SmokeOptionsMenu ();
-			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
-				EffectOptionsMenu ();
-			else if ((optAdvOpts >= 0) && (i == optAdvOpts))
-				AdvancedRenderOptionsMenu ();
-			}
-		} 
-	if (!gameStates.app.bNostalgia)
-		GrSetPaletteGamma (m [optBrightness].value);
-	if (gameStates.render.color.bLightMapsOk) {
-		// (re-) calc lightmaps if either lightmaps turned on and no lightmaps yet computed
-		// or lightmap range has changed
-		if (gameStates.app.bGameRunning && gameOpts->render.color.bUseLightMaps && 
-			 !bLightMaps && !HaveLightMaps ())
-			CreateLightMaps ();
-		}
-	if ((nOglLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)) {
-		if (optObjectLight >= 0)
-			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
-		}
-	if (optColoredLight >= 0)
-		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-	if (nGunColorOpt >= 0)
-		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
-	if (gameOpts->app.bExpertMode) {
-		gameOpts->movies.nQuality = m [optMovieQual].value;
-		gameOpts->movies.bResize = m [optMovieSize].value;
-		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-			gameStates.ogl.nContrast = 8;
-		}
-	gameOpts->movies.bSubTitles = m [optSubTitles].value;
-#if EXPMODE_DEFAULTS
-	if (!gameOpts->app.bExpertMode) {
-		gameOpts->render.nMaxFPS = 150;
-		gameOpts->render.color.nLightMapRange = 5;
-		gameOpts->render.color.bMix = 1;
-		gameOpts->render.nQuality = 3;
-		gameOpts->render.color.bWalls = 1;
-		gameOpts->render.bTransparentEffects = 1;
-		gameOpts->render.bAllSegs = 1;
-		gameOpts->render.smoke.bPlayers = 0;
-		gameOpts->render.smoke.bRobots =
-		gameOpts->render.smoke.bMissiles = 1;
-		gameOpts->render.smoke.bCollisions = 0;
-		gameOpts->render.smoke.bDisperse = 0;
-		gameOpts->render.smoke.nDens = 2;
-		gameOpts->render.smoke.nSize = 3;
-		gameOpts->render.cameras.bFitToWall = 0;
-		gameOpts->render.cameras.nSpeed = 5000;
-		gameOpts->render.cameras.nFPS = 0;
-		gameOpts->movies.nQuality = 0;
-		gameOpts->movies.bResize = 1;
-		gameStates.ogl.nContrast = 8;
-		gameOpts->ogl.bSetGammaRamp = 0;
-		}
-#endif
-	} while (i == -2);
-}
-
-//------------------------------------------------------------------------------
-
-void AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
-{
-	tMenuItem * m;
-	int				v;
-
 #if SHADOWS
+
+void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
 m = menus + nShadowsOpt;
 v = m->value;
 if (v != extraGameInfo [0].bShadows) {
@@ -1988,24 +1761,6 @@ if (v != extraGameInfo [0].bShadows) {
 	*key = -2;
 	return;
 	}
-#endif
-m = menus + nUseCamOpt;
-v = m->value;
-if (v != extraGameInfo [0].bUseCameras) {
-	extraGameInfo [0].bUseCameras = v;
-	*key = -2;
-	return;
-	}
-if (optContrast >= 0) {
-	m = menus + optContrast;
-	v = m->value;
-	if (v != gameStates.ogl.nContrast) {
-		gameStates.ogl.nContrast = v;
-		sprintf (m->text, TXT_CONTRAST, ContrastText ());
-		m->rebuild = 1;
-		}
-	}
-#if SHADOWS
 if (extraGameInfo [0].bShadows) {
 	m = menus + nMaxLightsOpt;
 	v = m->value + 1;
@@ -2014,7 +1769,7 @@ if (extraGameInfo [0].bShadows) {
 		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
 		m->rebuild = 1;
 		}
-#	if DBG_SHADOWS
+#if DBG_SHADOWS
 	if (nShadowTestOpt >= 0) {
 		m = menus + nShadowTestOpt;
 		v = m->value;
@@ -2040,168 +1795,27 @@ if (extraGameInfo [0].bShadows) {
 			return;
 			}
 		}
-#	endif
-	}
 #endif
-m = menus + nRendQualOpt;
-v = m->value;
-if (gameOpts->render.nQuality != v) {
-	gameOpts->render.nQuality = v;
-	sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
-	m->rebuild = 1;
-	}
-if (nTexQualOpt > 0) {
-	m = menus + nTexQualOpt;
-	v = m->value;
-	if (gameOpts->render.textures.nQuality != v) {
-		gameOpts->render.textures.nQuality = v;
-		sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
-		m->rebuild = 1;
-		}
-	}
-m = menus + nTranspOpt;
-v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
-if (extraGameInfo [0].grWallTransparency != v) {
-	extraGameInfo [0].grWallTransparency = v;
-	sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
-	m->rebuild = 1;
-	}
-if (extraGameInfo [0].bUseCameras) {
-	if (nCamFpsOpt >= 0) {
-		m = menus + nCamFpsOpt;
-		v = m->value * 5;
-		if (gameOpts->render.cameras.nFPS != v) {
-			gameOpts->render.cameras.nFPS = v;
-			sprintf (m->text, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
-			m->rebuild = 1;
-			}
-		}	
-	if (gameOpts->app.bExpertMode && (nCamSpeedOpt >= 0)) {
-		m = menus + nCamSpeedOpt;
-		v = (m->value + 1) * 1000;
-		if (gameOpts->render.cameras.nSpeed != v) {
-			gameOpts->render.cameras.nSpeed = v;
-			sprintf (m->text, TXT_CAM_SPEED, v / 1000);
-			m->rebuild = 1;
-			}
-		}
-	}
-if (nLMapRangeOpt >= 0) {
-	m = menus + nLMapRangeOpt;
-	v = m->value;
-	if (gameOpts->render.color.nLightMapRange != v) {
-		gameOpts->render.color.nLightMapRange = v;
-		sprintf (m->text, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
-		m->rebuild = 1;
-		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void AdvancedRenderOptionsMenu ()
+void ShadowOptionsMenu ()
 {
-	tMenuItem m [50];
-	int	h, i, choice = 0;
+	tMenuItem m [20];
+	int	i, choice = 0;
 	int	opt;
-	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
-	int	optRenderAll, optMixColors, optUseGamma, optColoredWalls, optFSCameras, optTeleCams;
-#ifdef _DEBUG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
-#endif
-#if SHADOWS
 	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
-#	if DBG_SHADOWS
+	char	szMaxLights [50];
+#if DBG_SHADOWS
+	char	szShadowTest [50];
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optFastShadows;
-#	endif
 #endif
-#if 0
-	int checks;
-#endif
-
-	char szWallTransp [50];
-	char szCameraFps [50];
-	char szLMapRange [50];
-	char szRendQual [50];
-	char szTexQual [50];
-	char szCameraSpeed [50];
-	char szContrast [50];
-#if SHADOWS
-	char szMaxLights [50];
-#	if DBG_SHADOWS
-	char szShadowTest [50];
-#	endif
-#endif
-	int nLMapRange = gameOpts->render.color.nLightMapRange;
-	int nRendQualSave = gameOpts->render.nQuality;
-
-	pszRendQual [0] = TXT_QUALITY_LOW;
-	pszRendQual [1] = TXT_QUALITY_MED;
-	pszRendQual [2] = TXT_QUALITY_HIGH;
-	pszRendQual [3] = TXT_VERY_HIGH;
-	pszRendQual [4] = TXT_QUALITY_MAX;
-
-	pszTexQual [0] = TXT_QUALITY_LOW;
-	pszTexQual [1] = TXT_QUALITY_MED;
-	pszTexQual [2] = TXT_QUALITY_HIGH;
-	pszTexQual [3] = TXT_QUALITY_MAX;
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
-		gameStates.ogl.nContrast = 8;
-		optContrast = -1;
-		}
-	else {
-		sprintf (szContrast, TXT_CONTRAST, ContrastText ());
-		ADD_SLIDER (opt, szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
-		optContrast = opt++;
-		}
-	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
-	*szRendQual = *(TXT_RENDQUAL - 1);
-	ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
-	nRendQualOpt = opt++;
-	if (gameStates.app.bGameRunning)
-		nTexQualOpt = -1;
-	else {
-		sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
-		*szTexQual = *(TXT_TEXQUAL + 1);
-		ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
-		nTexQualOpt = opt++;
-		}
-	h = extraGameInfo [0].grWallTransparency * 10 / GR_ACTUAL_FADE_LEVELS;
-	sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
-	*szWallTransp = *(TXT_WALL_TRANSP - 1);
-	ADD_SLIDER (opt, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
-	nTranspOpt = opt++;
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
-		sprintf (szLMapRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
-		*szLMapRange = *(TXT_LMAP_RANGE - 1);
-		ADD_SLIDER (opt, szLMapRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_N, HTX_ADVRND_LMAPRANGE);
-		nLMapRangeOpt = opt++;
-		}
-	else
-		nLMapRangeOpt = -1;
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	if (gameOpts->render.color.bGunLight) {
-		ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
-		optMixColors = opt++;
-		}
-	else
-		optMixColors = -1;
-	ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
-	optColoredWalls = opt++;
-	ADD_CHECK (opt, TXT_RENDER_ALL, gameOpts->render.bAllSegs, KEY_R, HTX_ADVRND_ALLSEGS);
-	optRenderAll = opt++;
-#if 0
-	ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);
-	optUseGamma = opt++;
-#else
-	optUseGamma = -1;
-#endif
-#if SHADOWS
 	if (extraGameInfo [0].bShadows) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -2212,7 +1826,7 @@ do {
 	optRobotShadows =
 	optMissileShadows =
 	optReactorShadows = -1;
-#	if DBG_SHADOWS
+#if DBG_SHADOWS
 	optZPass =
 	optFrontCap =
 	optRearCap =
@@ -2236,7 +1850,7 @@ do {
 		optMissileShadows = opt++;
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.bReactorShadows, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
-#	if DBG_SHADOWS
+#if DBG_SHADOWS
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.bFastShadows, KEY_F, HTX_FAST_SHADOWS);
@@ -2262,16 +1876,89 @@ do {
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
 		nShadowTestOpt = opt++;
-#	endif
-		ADD_TEXT (opt, "", 0);
-		opt++;
-		}
-	else
 #endif
-	if (extraGameInfo [0].bUseCameras) {
-		ADD_TEXT (opt, "", 0);
-		opt++;
 		}
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_SHADOW_MENUTITLE, opt, m, &ShadowOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	GET_VAL (gameOpts->render.bPlayerShadows, optPlayerShadows);
+	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
+	GET_VAL (gameOpts->render.bMissileShadows, optMissileShadows);
+	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
+#if DBG_SHADOWS
+	if (extraGameInfo [0].bShadows) {
+		GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
+		GET_VAL (bZPass, optZPass);
+		GET_VAL (bFrontCap, optFrontCap);
+		GET_VAL (bRearCap, optRearCap);
+		GET_VAL (bFrontFaces, optFrontFaces);
+		GET_VAL (bBackFaces, optBackFaces);
+		GET_VAL (bSWCulling, optSWCulling);
+		GET_VAL (bShadowVolume, optShadowVolume);
+		}
+#endif
+	} while (i == -2);
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
+void CameraOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus + nUseCamOpt;
+v = m->value;
+if (v != extraGameInfo [0].bUseCameras) {
+	extraGameInfo [0].bUseCameras = v;
+	*key = -2;
+	return;
+	}
+if (extraGameInfo [0].bUseCameras) {
+	if (nCamFpsOpt >= 0) {
+		m = menus + nCamFpsOpt;
+		v = m->value * 5;
+		if (gameOpts->render.cameras.nFPS != v) {
+			gameOpts->render.cameras.nFPS = v;
+			sprintf (m->text, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
+			m->rebuild = 1;
+			}
+		}	
+	if (gameOpts->app.bExpertMode && (nCamSpeedOpt >= 0)) {
+		m = menus + nCamSpeedOpt;
+		v = (m->value + 1) * 1000;
+		if (gameOpts->render.cameras.nSpeed != v) {
+			gameOpts->render.cameras.nSpeed = v;
+			sprintf (m->text, TXT_CAM_SPEED, v / 1000);
+			m->rebuild = 1;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CameraOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, choice = 0;
+	int	opt;
+	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
+	int	optFSCameras, optTeleCams;
+#if 0
+	int checks;
+#endif
+
+	char szCameraFps [50];
+	char szCameraSpeed [50];
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
 	ADD_CHECK (opt, TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
 	nUseCamOpt = opt++;
 	if (extraGameInfo [0].bUseCameras && gameOpts->app.bExpertMode) {
@@ -2297,81 +1984,18 @@ do {
 		nCamSpeedOpt = -1;
 		}
 
-#ifdef _DEBUG
-	m [opt].nType = NM_TYPE_TEXT;   
-	m [opt++].text="";
-	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
-	optWireFrame = opt++;
-	ADD_CHECK (opt, "Draw textures", gameOpts->render.bTextures, 0, NULL);
-	optTextures = opt++;
-	ADD_CHECK (opt, "Draw walls", gameOpts->render.bWalls, 0, NULL);
-	optWalls = opt++;
-	ADD_CHECK (opt, "Draw objects", gameOpts->render.bObjects, 0, NULL);
-	optObjects = opt++;
-	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.bDynamicLight, 0, NULL);
-	optDynLight = opt++;
-	Assert (opt <= sizeof (m) / sizeof (m [0]));
-#endif
-
 	do {
-		i = ExecMenu1 (NULL, TXT_ADV_RENDER_TITLE, opt, m, &AdvancedRenderOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_CAMERA_MENUTITLE, opt, m, &CameraOptionsCallback, &choice);
 	} while (i >= 0);
 
 	if (extraGameInfo [0].bUseCameras = m [nUseCamOpt].value) {
 		GET_VAL (extraGameInfo [0].bTeleporterCams, optTeleCams);
 		GET_VAL (gameOpts->render.cameras.bFitToWall, optFSCameras);
 		}
-	if (gameStates.render.color.bLightMapsOk) {
-		// (re-) calc lightmaps if either lightmaps turned on and no lightmaps yet computed
-		// or lightmap range has changed
-		if (gameStates.app.bGameRunning && gameOpts->render.color.bUseLightMaps && 
-			(nLMapRange != gameOpts->render.color.nLightMapRange))
-			CreateLightMaps ();
-		}
-	if (gameOpts->render.color.bGunLight)
-		GET_VAL (gameOpts->render.color.bMix, optMixColors);
-#if EXPMODE_DEFAULTS
-		else
-			gameOpts->render.color.bMix = 1;
-#endif
-	gameOpts->render.color.bWalls = m [optColoredWalls].value;
-	gameOpts->render.bAllSegs = m [optRenderAll].value;
-	GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-		gameStates.ogl.nContrast = 8;
-	else if (optContrast >= 0)
-		gameStates.ogl.nContrast = m [optContrast].value;
-#ifdef _DEBUG
-	gameOpts->render.bWireFrame = m [optWireFrame].value;
-	gameOpts->render.bTextures = m [optTextures].value;
-	gameOpts->render.bObjects = m [optObjects].value;
-	gameOpts->render.bWalls = m [optWalls].value;
-	gameOpts->render.bDynamicLight = m [optDynLight].value;
-#endif
-#if SHADOWS
-	GET_VAL (gameOpts->render.bPlayerShadows, optPlayerShadows);
-	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
-	GET_VAL (gameOpts->render.bMissileShadows, optMissileShadows);
-	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
-#	if DBG_SHADOWS
-	if (extraGameInfo [0].bShadows) {
-		GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
-		GET_VAL (bZPass, optZPass);
-		GET_VAL (bFrontCap, optFrontCap);
-		GET_VAL (bRearCap, optRearCap);
-		GET_VAL (bFrontFaces, optFrontFaces);
-		GET_VAL (bBackFaces, optBackFaces);
-		GET_VAL (bSWCulling, optSWCulling);
-		GET_VAL (bShadowVolume, optShadowVolume);
-		}
-#	endif
-#endif
 	if (bFSCameras != gameOpts->render.cameras.bFitToWall) {
 		DestroyCameras ();
 		CreateCameras ();
 		}
-	if (nRendQualSave != gameOpts->render.nQuality)
-		SetRenderQuality ();
 	} while (i == -2);
 }
 
@@ -2590,7 +2214,7 @@ do {
 
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
 	do {
-		i = ExecMenu1 (NULL, TXT_SMOKE_RENDER_TITLE, opt, m, &SmokeOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_SMOKE_MENUTITLE, opt, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);
 	if (extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value) {
 		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
@@ -2607,6 +2231,604 @@ do {
 				}
 			}
 		}	
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void AdvancedRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+if (optContrast >= 0) {
+	m = menus + optContrast;
+	v = m->value;
+	if (v != gameStates.ogl.nContrast) {
+		gameStates.ogl.nContrast = v;
+		sprintf (m->text, TXT_CONTRAST, ContrastText ());
+		m->rebuild = 1;
+		}
+	}
+m = menus + nRendQualOpt;
+v = m->value;
+if (gameOpts->render.nQuality != v) {
+	gameOpts->render.nQuality = v;
+	sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+	m->rebuild = 1;
+	}
+if (nTexQualOpt > 0) {
+	m = menus + nTexQualOpt;
+	v = m->value;
+	if (gameOpts->render.textures.nQuality != v) {
+		gameOpts->render.textures.nQuality = v;
+		sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+		m->rebuild = 1;
+		}
+	}
+m = menus + nTranspOpt;
+v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+if (extraGameInfo [0].grWallTransparency != v) {
+	extraGameInfo [0].grWallTransparency = v;
+	sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
+	m->rebuild = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void AdvancedRenderOptionsMenu ()
+{
+	tMenuItem m [50];
+	int	h, i, choice = 0;
+	int	opt;
+	int	optUseGamma, optColoredWalls;
+#ifdef _DEBUG
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+#endif
+#if 0
+	int checks;
+#endif
+
+	char szWallTransp [50];
+	char szRendQual [50];
+	char szTexQual [50];
+	char szContrast [50];
+
+	int nLMapRange = gameOpts->render.color.nLightMapRange;
+	int nRendQualSave = gameOpts->render.nQuality;
+
+	pszRendQual [0] = TXT_QUALITY_LOW;
+	pszRendQual [1] = TXT_QUALITY_MED;
+	pszRendQual [2] = TXT_QUALITY_HIGH;
+	pszRendQual [3] = TXT_VERY_HIGH;
+	pszRendQual [4] = TXT_QUALITY_MAX;
+
+	pszTexQual [0] = TXT_QUALITY_LOW;
+	pszTexQual [1] = TXT_QUALITY_MED;
+	pszTexQual [2] = TXT_QUALITY_HIGH;
+	pszTexQual [3] = TXT_QUALITY_MAX;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
+		gameStates.ogl.nContrast = 8;
+		optContrast = -1;
+		}
+	else {
+		sprintf (szContrast, TXT_CONTRAST, ContrastText ());
+		ADD_SLIDER (opt, szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
+		optContrast = opt++;
+		}
+	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+	*szRendQual = *(TXT_RENDQUAL - 1);
+	ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
+	nRendQualOpt = opt++;
+	if (gameStates.app.bGameRunning)
+		nTexQualOpt = -1;
+	else {
+		sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+		*szTexQual = *(TXT_TEXQUAL + 1);
+		ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
+		nTexQualOpt = opt++;
+		}
+	h = extraGameInfo [0].grWallTransparency * 10 / GR_ACTUAL_FADE_LEVELS;
+	sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
+	*szWallTransp = *(TXT_WALL_TRANSP - 1);
+	ADD_SLIDER (opt, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
+	nTranspOpt = opt++;
+	ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
+	optColoredWalls = opt++;
+#if 0
+	ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);
+	optUseGamma = opt++;
+#else
+	optUseGamma = -1;
+#endif
+#ifdef _DEBUG
+	m [opt].nType = NM_TYPE_TEXT;   
+	m [opt++].text="";
+	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
+	optWireFrame = opt++;
+	ADD_CHECK (opt, "Draw textures", gameOpts->render.bTextures, 0, NULL);
+	optTextures = opt++;
+	ADD_CHECK (opt, "Draw walls", gameOpts->render.bWalls, 0, NULL);
+	optWalls = opt++;
+	ADD_CHECK (opt, "Draw objects", gameOpts->render.bObjects, 0, NULL);
+	optObjects = opt++;
+	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.bDynamicLight, 0, NULL);
+	optDynLight = opt++;
+	Assert (opt <= sizeof (m) / sizeof (m [0]));
+#endif
+
+	do {
+		i = ExecMenu1 (NULL, TXT_ADV_RENDER_TITLE, opt, m, &AdvancedRenderOptionsCallback, &choice);
+	} while (i >= 0);
+
+	gameOpts->render.color.bWalls = m [optColoredWalls].value;
+	GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
+	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+		gameStates.ogl.nContrast = 8;
+	else if (optContrast >= 0)
+		gameStates.ogl.nContrast = m [optContrast].value;
+#ifdef _DEBUG
+	gameOpts->render.bWireFrame = m [optWireFrame].value;
+	gameOpts->render.bTextures = m [optTextures].value;
+	gameOpts->render.bObjects = m [optObjects].value;
+	gameOpts->render.bWalls = m [optWalls].value;
+	gameOpts->render.bDynamicLight = m [optDynLight].value;
+#endif
+	if (nRendQualSave != gameOpts->render.nQuality)
+		SetRenderQuality ();
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+if (nLightMapsOpt >= 0) {
+	m = menus + nLightMapsOpt;
+	v = m->value;
+	if (v != gameOpts->render.color.bUseLightMaps) {
+		gameOpts->render.color.bUseLightMaps = v;
+		*key = -2;
+		return;
+		}
+	}
+m = menus + nGunColorOpt;
+v = m->value;
+if (v != gameOpts->render.color.bGunLight) {
+	gameOpts->render.color.bGunLight = v;
+	*key = -2;
+	return;
+	}
+if (nOglLightOpt >= 0) {
+	m = menus + nOglLightOpt;
+	v = m->value;
+	if (v != gameOpts->ogl.bUseLighting) {
+		gameOpts->ogl.bUseLighting = v;
+		*key = -2;
+		return;
+		}
+	}
+if (nOglMaxLightsOpt >= 0) {
+	m = menus + nOglMaxLightsOpt;
+	v = m->value + 4;
+	if (v != gameOpts->ogl.nMaxLights) {
+		gameOpts->ogl.nMaxLights = v;
+		sprintf (m->text, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
+		m->rebuild = 1;
+		return;
+		}
+	}
+if (gameOpts->render.color.bUseLightMaps) {
+	if (nLMapRangeOpt >= 0) {
+		m = menus + nLMapRangeOpt;
+		v = m->value;
+		if (gameOpts->render.color.nLightMapRange != v) {
+			gameOpts->render.color.nLightMapRange = v;
+			sprintf (m->text, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
+			m->rebuild = 1;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LightingOptionsMenu ()
+{
+	tMenuItem m [50];
+	int	i, choice = 0;
+	int	opt;
+	int	optColoredLight, optObjectLight, optMixColors;
+#if 0
+	int checks;
+#endif
+
+	char szMaxLights [50];
+	char szLMapRange [50];
+	int bLightMaps = gameOpts->render.color.bUseLightMaps;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	if (gameStates.render.color.bLightMapsOk && !gameOpts->ogl.bUseLighting) {
+		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
+		nLightMapsOpt = opt++;
+		if (gameOpts->render.color.bUseLightMaps) {
+			sprintf (szLMapRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
+			*szLMapRange = *(TXT_LMAP_RANGE - 1);
+			ADD_SLIDER (opt, szLMapRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_N, HTX_ADVRND_LMAPRANGE);
+			nLMapRangeOpt = opt++;
+			ADD_TEXT (opt, "", 0);
+			opt++;
+			}
+		else
+			nLMapRangeOpt = -1;
+		}
+	else
+		nLightMapsOpt = -1;
+	if (gameStates.app.bGameRunning) 
+		nOglLightOpt = 
+		nOglMaxLightsOpt = 
+		optObjectLight = -1;
+	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+		nOglLightOpt = -1;
+	else {
+		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_O, HTX_OGL_LIGHTING);
+		nOglLightOpt = opt++;
+		}
+	if (gameOpts->ogl.bUseLighting && (nOglLightOpt >= 0)) {
+		if (!gameStates.app.bGameRunning) {
+			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+			optObjectLight = opt++;
+			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
+			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
+			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
+			nOglMaxLightsOpt = opt++;
+			ADD_TEXT (opt, "", 0);
+			opt++;
+			}
+		else
+			nOglMaxLightsOpt = 
+			optObjectLight = -1;
+		}
+	else
+		nOglMaxLightsOpt = 
+		optObjectLight = -1;
+	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
+	optColoredLight = opt++;
+	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
+	nGunColorOpt = opt++;
+	if (gameOpts->app.bExpertMode && gameOpts->render.color.bGunLight) {
+		ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
+		optMixColors = opt++;
+		}
+	else
+		optMixColors = -1;
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	if (gameStates.render.color.bLightMapsOk) {
+		// (re-) calc lightmaps if either lightmaps turned on and no lightmaps yet computed
+		// or lightmap range has changed
+		if (gameStates.app.bGameRunning && gameOpts->render.color.bUseLightMaps && 
+			 !bLightMaps && !HaveLightMaps ())
+			CreateLightMaps ();
+		}
+	if ((nOglLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)) {
+		if (optObjectLight >= 0)
+			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+		}
+	if (optColoredLight >= 0)
+		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
+	if (nGunColorOpt >= 0)
+		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+	if (gameOpts->app.bExpertMode) {
+		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+			gameStates.ogl.nContrast = 8;
+		if (gameOpts->render.color.bGunLight)
+			GET_VAL (gameOpts->render.color.bMix, optMixColors);
+#if EXPMODE_DEFAULTS
+			else
+				gameOpts->render.color.bMix = 1;
+#endif
+		}
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void MovieOptionsMenu ()
+{
+	tMenuItem m [5];
+	int	i, choice = 0;
+	int	opt;
+	int	optMovieQual, optMovieSize, optSubTitles;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
+	optSubTitles = opt++;
+	if (gameOpts->app.bExpertMode) {
+		ADD_CHECK (opt, TXT_MOVIE_QUAL, gameOpts->movies.nQuality, KEY_Q, HTX_RENDER_MOVIEQUAL);
+		optMovieQual = opt++;
+		ADD_CHECK (opt, TXT_MOVIE_FULLSCR, gameOpts->movies.bResize, KEY_U, HTX_RENDER_MOVIEFULL);
+		optMovieSize = opt++;
+		}
+	else
+		optMovieQual = 
+		optMovieSize = -1;
+
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_MOVIE_OPTIONS, opt, m, NULL, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->movies.bSubTitles = m [optSubTitles].value;
+	if (gameOpts->app.bExpertMode) {
+		gameOpts->movies.nQuality = m [optMovieQual].value;
+		gameOpts->movies.bResize = m [optMovieSize].value;
+		}
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+if (!gameStates.app.bNostalgia) {
+	m = menus + optBrightness;
+	v = m->value;
+	if (v != GrGetPaletteGamma ())
+		GrSetPaletteGamma (v);
+	}
+if (gameOpts->app.bExpertMode) {
+	m = menus + nFPSopt;
+	v = fpsTable [m->value];
+	if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
+		gameOpts->render.nMaxFPS = v ? v : 1;
+		if (v)
+			sprintf (m->text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+		else
+			sprintf (m->text, TXT_NO_FRAMECAP);
+		m->rebuild = 1;
+		}
+	}
+if (optContrast >= 0) {
+	m = menus + optContrast;
+	v = m->value;
+	if (v != gameStates.ogl.nContrast) {
+		gameStates.ogl.nContrast = v;
+		sprintf (m->text, TXT_CONTRAST, ContrastText ());
+		m->rebuild = 1;
+		}
+	}
+m = menus + nRendQualOpt;
+v = m->value;
+if (gameOpts->render.nQuality != v) {
+	gameOpts->render.nQuality = v;
+	sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+	m->rebuild = 1;
+	}
+if (nTexQualOpt > 0) {
+	m = menus + nTexQualOpt;
+	v = m->value;
+	if (gameOpts->render.textures.nQuality != v) {
+		gameOpts->render.textures.nQuality = v;
+		sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+		m->rebuild = 1;
+		}
+	}
+m = menus + nTranspOpt;
+v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+if (extraGameInfo [0].grWallTransparency != v) {
+	extraGameInfo [0].grWallTransparency = v;
+	sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
+	m->rebuild = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderOptionsMenu ()
+{
+	tMenuItem m [40];
+	int	h, i, choice = 0;
+	int	opt;
+	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
+			optAdvOpts, optEffectOpts;
+	int	optUseGamma, optColoredWalls;
+#ifdef _DEBUG
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+#endif
+
+	char szMaxFps [50];
+	char szWallTransp [50];
+	char szRendQual [50];
+	char szTexQual [50];
+	char szContrast [50];
+
+	int nLMapRange = gameOpts->render.color.nLightMapRange;
+	int nRendQualSave = gameOpts->render.nQuality;
+
+	pszRendQual [0] = TXT_QUALITY_LOW;
+	pszRendQual [1] = TXT_QUALITY_MED;
+	pszRendQual [2] = TXT_QUALITY_HIGH;
+	pszRendQual [3] = TXT_VERY_HIGH;
+	pszRendQual [4] = TXT_QUALITY_MAX;
+
+	pszTexQual [0] = TXT_QUALITY_LOW;
+	pszTexQual [1] = TXT_QUALITY_MED;
+	pszTexQual [2] = TXT_QUALITY_HIGH;
+	pszTexQual [3] = TXT_QUALITY_MAX;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	if (!gameStates.app.bNostalgia) {
+		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
+		optBrightness = opt++;
+		}
+	if (gameOpts->render.nMaxFPS > 1)
+		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+	else
+		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
+	*szMaxFps = *(TXT_FRAMECAP - 1);
+	ADD_SLIDER (opt, szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
+	nFPSopt = opt++;
+
+	if (gameOpts->app.bExpertMode) {
+		if (!(gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)) {
+			sprintf (szContrast, TXT_CONTRAST, ContrastText ());
+			ADD_SLIDER (opt, szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
+			optContrast = opt++;
+			}
+		sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+		*szRendQual = *(TXT_RENDQUAL - 1);
+		ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
+		nRendQualOpt = opt++;
+		if (gameStates.app.bGameRunning)
+			nTexQualOpt = -1;
+		else {
+			sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+			*szTexQual = *(TXT_TEXQUAL + 1);
+			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
+			nTexQualOpt = opt++;
+			}
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		h = extraGameInfo [0].grWallTransparency * 10 / GR_ACTUAL_FADE_LEVELS;
+		sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
+		*szWallTransp = *(TXT_WALL_TRANSP - 1);
+		ADD_SLIDER (opt, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
+		nTranspOpt = opt++;
+		ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
+		optColoredWalls = opt++;
+#if 0
+		ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);
+		optUseGamma = opt++;
+#else
+		optUseGamma = -1;
+#endif
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_MENU (opt, TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
+		optLightingOpts = opt++;
+		ADD_MENU (opt, TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
+		optSmokeOpts = opt++;
+		ADD_MENU (opt, TXT_SHADOW_OPTIONS, KEY_H, HTX_RENDER_SHADOWOPTS);
+		optShadowOpts = opt++;
+		ADD_MENU (opt, TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+		optEffectOpts = opt++;
+		ADD_MENU (opt, TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
+		optCameraOpts = opt++;
+		ADD_MENU (opt, TXT_MOVIE_OPTIONS, KEY_M, HTX_RENDER_MOVIEOPTS);
+		optMovieOpts = opt++;
+		}
+	else
+		nRendQualOpt =
+		nTexQualOpt =
+		nTranspOpt = 
+		optColoredWalls =
+		optContrast =
+		optLightingOpts =
+		optSmokeOpts =
+		optShadowOpts =
+		optEffectOpts =
+		optCameraOpts = 
+		optMovieOpts = 
+		optAdvOpts = -1;
+
+#ifdef _DEBUG
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
+	optWireFrame = opt++;
+	ADD_CHECK (opt, "Draw textures", gameOpts->render.bTextures, 0, NULL);
+	optTextures = opt++;
+	ADD_CHECK (opt, "Draw walls", gameOpts->render.bWalls, 0, NULL);
+	optWalls = opt++;
+	ADD_CHECK (opt, "Draw objects", gameOpts->render.bObjects, 0, NULL);
+	optObjects = opt++;
+	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.bDynamicLight, 0, NULL);
+	optDynLight = opt++;
+#endif
+
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		if (gameOpts->app.bExpertMode) {
+			if ((optLightingOpts >= 0) && (i == optLightingOpts))
+				LightingOptionsMenu ();
+			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
+				SmokeOptionsMenu ();
+			else if ((optShadowOpts >= 0) && (i == optShadowOpts))
+				ShadowOptionsMenu ();
+			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
+				EffectOptionsMenu ();
+			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
+				CameraOptionsMenu ();
+			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
+				MovieOptionsMenu ();
+			}
+		} 
+	if (!gameStates.app.bNostalgia)
+		GrSetPaletteGamma (m [optBrightness].value);
+	if (gameOpts->app.bExpertMode) {
+		gameOpts->render.color.bWalls = m [optColoredWalls].value;
+		GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
+		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
+			gameStates.ogl.nContrast = 8;
+		else if (optContrast >= 0)
+			gameStates.ogl.nContrast = m [optContrast].value;
+		if (nRendQualSave != gameOpts->render.nQuality)
+			SetRenderQuality ();
+		}
+#if EXPMODE_DEFAULTS
+	else {
+		gameOpts->render.nMaxFPS = 250;
+		gameOpts->render.color.nLightMapRange = 5;
+		gameOpts->render.color.bMix = 1;
+		gameOpts->render.nQuality = 3;
+		gameOpts->render.color.bWalls = 1;
+		gameOpts->render.bTransparentEffects = 1;
+		gameOpts->render.smoke.bPlayers = 0;
+		gameOpts->render.smoke.bRobots =
+		gameOpts->render.smoke.bMissiles = 1;
+		gameOpts->render.smoke.bCollisions = 0;
+		gameOpts->render.smoke.bDisperse = 0;
+		gameOpts->render.smoke.nDens = 2;
+		gameOpts->render.smoke.nSize = 3;
+		gameOpts->render.cameras.bFitToWall = 0;
+		gameOpts->render.cameras.nSpeed = 5000;
+		gameOpts->render.cameras.nFPS = 0;
+		gameOpts->movies.nQuality = 0;
+		gameOpts->movies.bResize = 1;
+		gameStates.ogl.nContrast = 8;
+		gameOpts->ogl.bSetGammaRamp = 0;
+		}
+#endif
+#ifdef _DEBUG
+	gameOpts->render.bWireFrame = m [optWireFrame].value;
+	gameOpts->render.bTextures = m [optTextures].value;
+	gameOpts->render.bObjects = m [optObjects].value;
+	gameOpts->render.bWalls = m [optWalls].value;
+	gameOpts->render.bDynamicLight = m [optDynLight].value;
+#endif
 	} while (i == -2);
 }
 
@@ -3287,7 +3509,6 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 	gameOpts->render.nMaxFPS = 60;
 	gameOpts->render.bTransparentEffects = 1;
 	gameOpts->render.color.nLightMapRange = 5;
-	gameOpts->render.bAllSegs = 1;
 	gameOpts->render.color.bMix = 1;
 	gameOpts->render.color.bWalls = 1;
 	gameOpts->render.cameras.bFitToWall = 0;

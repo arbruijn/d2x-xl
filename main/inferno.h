@@ -1067,6 +1067,7 @@ typedef struct tPOF_face {
 	ubyte					bGlow :1;
 	ubyte					bTest :1;
 	ubyte					bIgnore :1;
+	short					nAdjFaces;
 } tPOF_face;
 
 typedef struct tPOF_faceList {
@@ -1074,28 +1075,16 @@ typedef struct tPOF_faceList {
 	tPOF_face			*pFaces;
 } tPOF_faceList;
 
-typedef struct tPOF_edge {
-	short					nParent;
-	short					v0 [2];
-	short					v1 [2];
-	tPOF_face			*pf [2];
-	ubyte					bContour :1;
-	ubyte					bFront :1;
-	ubyte					bRear :1;
-	ubyte					bList :1;
-	ubyte					bChild :1;
-} tPOF_edge;
-
-typedef struct tPOF_edgeList {
-	short					nEdges;
-	short					nContourEdges;
-	tPOF_edge			*pEdges;
-} tPOF_edgeList;
+typedef struct tPOF_faceRef {
+	short					nFaces;
+	tPOF_face			**pFaces;
+} tPOF_faceRef;
 
 typedef struct tPOFSubObject {
 	short					nParent;
 	tPOF_faceList		faces;
-	tPOF_edgeList		edges;
+	tPOF_faceRef		litFaces;	//submodel faces facing the current light source
+	short					*pAdjFaces;
 	vmsVector			vPos;
 	vmsAngVec			vAngles;
 } tPOFSubObject;
@@ -1114,19 +1103,21 @@ typedef struct tPOFObject {
 	vmsVector			vCenter;
 	vmsVector			*pvRotVerts;
 	tPOF_faceList		faces;
-	tPOF_edgeList		edges;
+	tPOF_faceRef		litFaces;
+	short					nAdjFaces;
+	short					*pAdjFaces;
 	short					*pFaceVerts;
 	short					*pVertMap;
 	short					iSubObj;
 	short					iVert;
 	short					iFace;
 	short					iFaceVert;
-	char					nState;
+	char					nState [2];
 } tPOFObject;
 
 //------------------------------------------------------------------------------
 
-#define MAX_POLYGON_VERTS 10000
+#define MAX_POLYGON_VERTS 1000
 
 typedef struct tRobotData {
 	char					*robotNames [MAX_ROBOT_TYPES][ROBOT_NAME_LENGTH];

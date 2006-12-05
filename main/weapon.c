@@ -667,7 +667,8 @@ if (playerP->secondaryAmmo [nWeaponIndex] >= max) {
 playerP->secondaryWeaponFlags |= (1 << nWeaponIndex);
 playerP->secondaryAmmo [nWeaponIndex] += count;
 nPickedUp = count;
-if (playerP->secondaryAmmo [nWeaponIndex] > max) {
+if ((playerP->secondaryAmmo [nWeaponIndex] > max) &&
+	 (nWeaponIndex != PROXIMITY_INDEX) && (nWeaponIndex != SMART_MINE_INDEX)) {
 	nPickedUp = count - (playerP->secondaryAmmo [nWeaponIndex] - max);
 	playerP->secondaryAmmo [nWeaponIndex] = max;
 	if ((nPickedUp < count) && (nWeaponIndex != PROXIMITY_INDEX) && (nWeaponIndex != SMART_MINE_INDEX)) {

@@ -27,7 +27,7 @@ void G3SetModelPoints(g3sPoint *pointlist);
 bool G3DrawPolyModel (tObject *objP, void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles,
 							 fix light,fix *glowValues, tRgbColorf *obj_colors, tPOFObject *po);
 
-int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles);
+int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel);
 
 int G3FreePolyModelItems (tPOFObject *po);
 

@@ -1611,7 +1611,8 @@ switch (objP->renderType) {
 		else /*if (gameStates.render.nShadowPass != 2)*/ {
 			if (gameData.models.nHiresModels && 
 				 (oofIdx = idToOOF [objP->id]) && 
-				 gameData.models.bHaveHiresModel [oofIdx]) {
+				 gameData.models.bHaveHiresModel [oofIdx] &&
+				 (!gameStates.render.bLoResShadows || (gameStates.render.nShadowPass != 2))) {
 				ComputeEngineGlow (objP, nGlow);
 				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
 				fLight [1] = (float) nGlow [0] / 65536.0f;				
@@ -3063,6 +3064,8 @@ int MoveOneObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
+//if (gameStates.gameplay.bNoBotAI && (objP->nType != OBJ_PLAYER))
+//	return 1;
 #ifdef _DEBUG
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
 	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))

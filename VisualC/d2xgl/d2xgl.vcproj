@@ -97,14 +97,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				GlobalOptimizations="FALSE"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="FALSE"
-				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="0"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="1"
 				OmitFramePointers="FALSE"
-				EnableFiberSafeOptimizations="FALSE"
-				OptimizeForProcessor="0"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
@@ -113,7 +113,7 @@
 				RuntimeLibrary="2"
 				StructMemberAlignment="1"
 				EnableFunctionLevelLinking="TRUE"
-				EnableEnhancedInstructionSet="1"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2xgl.pch"
 				AssemblerListingLocation=".\Release/"
@@ -1625,6 +1625,23 @@
 				</File>
 				<File
 					RelativePath="..\..\main\fvi.c">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="0"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+							BasicRuntimeChecks="3"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="2"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\main\game.c">
@@ -2332,6 +2349,23 @@
 				</File>
 				<File
 					RelativePath="..\..\main\physics.c">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="0"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+							BasicRuntimeChecks="3"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="2"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\main\piggy.c">
@@ -3204,9 +3238,6 @@
 				RelativePath="..\..\include\palette.h">
 			</File>
 			<File
-				RelativePath="..\..\main\particles.h">
-			</File>
-			<File
 				RelativePath="..\..\include\pcx.h">
 			</File>
 			<File
@@ -3243,10 +3274,10 @@
 				RelativePath="..\..\main\reorder.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\..\resource.h">
 			</File>
 			<File
-				RelativePath="..\..\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\include\rle.h">
@@ -3358,10 +3389,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

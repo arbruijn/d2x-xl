@@ -59,6 +59,8 @@
 void GrPaletteStepClear(void); // Function prototype for GrInit;
 void ResetHoardData (void);
 
+extern int screenShotIntervals [];
+
 //------------------------------------------------------------------------------
 
 tScrSize	scrSizes [] = {
@@ -970,7 +972,7 @@ if (!gameOpts->ogl.bReadPixels) {
 	}
 StopTime();
 if (*gameFolders.szScrShotDir)
-	sprintf (szSaveName, "%s/", gameFolders.szScrShotDir);
+	sprintf (szSaveName, "%s", gameFolders.szScrShotDir);
 else
 	*szSaveName = '\0';
 i = (int) strlen (szSaveName);
@@ -991,7 +993,7 @@ else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
 	WriteScreenShot (szSaveName, grdCurScreen->sc_w, grdCurScreen->sc_h, buf, 0);
-	if (!bAutomap) {
+	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
 		}

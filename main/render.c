@@ -1303,7 +1303,7 @@ if (!gameOpts->legacy.bZBuf) {
 #ifdef _DEBUG
 int	bDrawBoxes=0;
 int bWindowCheck=1, draw_edges=0, bNewSegSorting=1, bPreDrawSegs=0;
-int no_migrate_segs=1, migrateObjects=1, bCheckBehind=1;
+int no_migrate_segs=1, migrateObjects=1;
 int check_bWindowCheck=0;
 #else
 #define bDrawBoxes			0
@@ -1313,7 +1313,6 @@ int check_bWindowCheck=0;
 #define bPreDrawSegs		0
 #define no_migrate_segs		1
 #define migrateObjects		1
-#define bCheckBehind			1
 #define check_bWindowCheck	0
 #endif
 
@@ -1407,7 +1406,7 @@ if (r > left)
 
 // -----------------------------------------------------------------------------------
 
-void RenderSegment(short nSegment, int nWindowNum)
+void RenderSegment (short nSegment, int nWindowNum)
 {
 	tSegment		*seg = gameData.segs.segments+nSegment;
 	g3s_codes 	cc;
@@ -2813,10 +2812,11 @@ void BuildSegmentList (short nStartSegNum, int nWindowNum)
 	int		bRotated, nSegment;
 	window	*checkWinP;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
-	int		nChildren;										//how many sides in childList
+	int		nChildren, bCheckBehind;					//how many sides in childList
 	tSegment	*segP;
 
-memset (bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
+if (bCheckBehind = (gameStates.render.nShadowPass != 2))
+	memset (bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
 nVisited = 0;
 memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
@@ -2836,7 +2836,7 @@ lCnt = eCnt = 1;
 
 #ifdef _DEBUG
 if (bPreDrawSegs)
-	RenderSegment(nStartSegNum, nWindowNum);
+	RenderSegment (nStartSegNum, nWindowNum);
 #endif
 
 renderWindows [0].left =
@@ -2996,7 +2996,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 
 #ifdef _DEBUG
 						if (bPreDrawSegs)
-							RenderSegment(nChild, nWindowNum);
+							RenderSegment (nChild, nWindowNum);
 #endif
 no_add:
 ;
@@ -3052,7 +3052,7 @@ if (gameOpts->legacy.bZBuf)
 	return 0;
 #if OGL_QUERY
 for (renderState = nStartState; renderState < nEndState; renderState++) {
-	int bOccQuery = bOcclusionQuery && gameOpts->render.bAllSegs && !nWindowNum && !renderState;
+	int bOccQuery = bOcclusionQuery && 1 && !nWindowNum && !renderState;
 	if (bOccQuery) {
 		glGenQueries (gameData.segs.nLastSegment + 1, glSegOccQuery);
 		glGenQueries (MAX_OBJECTS, glObjOccQuery);
@@ -3131,7 +3131,7 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 #endif
 				RenderSegment (nSegment, nWindowNum);
 #if 1
-				if (gameOpts->render.bAllSegs && !nWindowNum && !renderState && bRenderSegObjs [nSegment])
+				if (1 && !nWindowNum && !renderState && bRenderSegObjs [nSegment])
 					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
 						//if (objFragC [nObject])
 						if (bRenderObjs [nObject])
@@ -3360,11 +3360,11 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	else 
 #endif
 
-if (gameStates.render.nRenderPass <= 0) {
+if ((gameStates.render.nRenderPass <= 0) || (gameStates.render.nShadowPass == 2)) {
 	BuildSegmentList (nStartSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
 	//GatherVisibleLights ();
 #if OGL_QUERY
-	if (gameOpts->render.bAllSegs && !nWindowNum) {
+	if (1 && !nWindowNum) {
 		memset (bRenderSegObjs, 0, sizeof (bRenderSegObjs));
 		memset (bRenderObjs, 0, sizeof (bRenderObjs));
 		nRenderObjs = 0;
@@ -3415,9 +3415,9 @@ if (nClearWindow == 2) {
 		}
 	}
 #if APPEND_LAYERED_TEXTURES
-if (gameOpts->render.bOptimize || (gameOpts->render.bAllSegs && !nWindowNum)) {
+if (gameOpts->render.bOptimize || (1 && !nWindowNum)) {
 #else
-if (gameOpts->render.bAllSegs) {
+if (1) {
 #endif
 	rsMin = 0;
 	rsMax = 0;
@@ -3448,9 +3448,9 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 #endif
 			RenderSegment (nSegment, nWindowNum);
 #if APPEND_LAYERED_TEXTURES
-			if (!(renderState || gameOpts->render.bAllSegs) || gameOpts->render.bOptimize)
+			if (!(renderState || 1) || gameOpts->render.bOptimize)
 #else
-			if (!(renderState || gameOpts->render.bAllSegs))
+			if (!(renderState || 1))
 #endif
 				continue;
 #ifdef OGL_ZBUF
@@ -3464,7 +3464,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
 				nWindowClipBot = grdCurCanv->cv_bitmap.bm_props.h-1;
 				}
-			if (!gameOpts->render.bAllSegs)
+			if (!1)
 				RenderObjList (nn, nWindowNum);
 			}
 		}
@@ -3491,7 +3491,7 @@ if (gameStates.render.bHaveSkyBox) {
 			}
 	}
 renderState = 1;
-if (gameOpts->render.bAllSegs) {
+if (1) {
 	nVisited++;
 	for (nn = nRenderSegs; nn;) {
 		nSegment = nRenderList [--nn];
@@ -3506,7 +3506,9 @@ if (gameOpts->render.bAllSegs) {
 if (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
 	GlRenderSegments (2, 3, nRenderSegs, nWindowNum);
 #endif
+#if APPEND_LAYERED_TEXTURES
 RenderFaceList (nWindowNum);
+#endif
 }
 #ifdef EDITOR
 
