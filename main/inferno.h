@@ -165,6 +165,16 @@ typedef struct tSmokeOptions {
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 } tSmokeOptions;
 
+typedef struct tShadowOptions {
+	int nReach;
+	int nLights;
+	int bFast;
+	int bPlayers;
+	int bRobots;
+	int bMissiles;
+	int bReactors;
+	} tShadowOptions;
+
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int bAutomapAlwaysHires;
@@ -181,21 +191,16 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int bEnableSSE;
-	int bPlayerShadows;
-	int bRobotShadows;
-	int bMissileShadows;
-	int bReactorShadows;
-	int bFastShadows;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
-	int nMaxLights;
 	tCameraOptions cameras;
 	tColorOptions color;
 	tCockpitOptions cockpit;
 	tTextureOptions textures;
 	tWeaponIconOptions weaponIcons;
 	tSmokeOptions smoke;
+	tShadowOptions shadows;
 } tRenderOptions;
 
 typedef struct tOglOptions {

@@ -492,7 +492,7 @@ void DrawPolygonObject (tObject *objP)
 	//tRgbColorf color;
 
 #if SHADOWS
-if (gameOpts->render.bFastShadows && (gameStates.render.nShadowPass == 3))
+if (gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
 	return;
 #endif
 //	If option set for bright players in netgame, brighten them!
@@ -754,7 +754,7 @@ void RenderPlayerShield (tObject *objP)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bRenderShield, 0, 0) &&
@@ -846,7 +846,7 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bDamageIndicators, 0, 0) &&
@@ -924,7 +924,7 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 0
@@ -1073,7 +1073,7 @@ void RenderTowedFlag (tObject *objP)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
@@ -1223,7 +1223,7 @@ void RenderThrusterFlames (tObject *objP)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 1//ndef _DEBUG
@@ -1346,7 +1346,7 @@ void RenderShockwave (tObject *objP)
 {
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) && 
@@ -1426,7 +1426,7 @@ void RenderTracers (tObject *objP)
 {
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
@@ -1471,7 +1471,7 @@ void RenderLightTrail (tObject *objP)
 {
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 

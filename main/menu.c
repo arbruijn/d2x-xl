@@ -157,7 +157,8 @@ static int	nFPSopt, nRSDopt,
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nOglLightOpt, nOglMaxLightsOpt,
+				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nOglLightOpt, 
+				nShadowReachOpt, nOglMaxLightsOpt,
 				optZPass, optShadowVolume, nSyncSmokeSizes;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
@@ -1750,6 +1751,8 @@ do {
 
 #if SHADOWS
 
+static char *pszReach [3];
+
 void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
@@ -1765,9 +1768,16 @@ if (v != extraGameInfo [0].bShadows) {
 if (extraGameInfo [0].bShadows) {
 	m = menus + nMaxLightsOpt;
 	v = m->value + 1;
-	if (gameOpts->render.nMaxLights != v) {
-		gameOpts->render.nMaxLights = v;
-		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
+	if (gameOpts->render.shadows.nLights != v) {
+		gameOpts->render.shadows.nLights = v;
+		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
+		m->rebuild = 1;
+		}
+	m = menus + nShadowReachOpt;
+	v = m->value;
+	if (gameOpts->render.shadows.nReach != v) {
+		gameOpts->render.shadows.nReach = v;
+		sprintf (m->text, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
 		m->rebuild = 1;
 		}
 #if DBG_SHADOWS
@@ -1808,12 +1818,16 @@ void ShadowOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
-	char	szMaxLights [50];
+	char	szMaxLights [50], szReach [50];
 #if DBG_SHADOWS
 	char	szShadowTest [50];
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,
 			optFastShadows;
 #endif
+
+pszReach [0] = TXT_SHORT;
+pszReach [1] = TXT_MEDIUM;
+pszReach [2] = TXT_LONG;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1841,19 +1855,25 @@ do {
 	nShadowTestOpt = -1;
 #endif
 	if (extraGameInfo [0].bShadows) {
-		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.nMaxLights);
+		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
-		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
+		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.shadows.nLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
-		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.bFastShadows, KEY_F, HTX_FAST_SHADOWS);
+		sprintf (szReach + 1, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
+		*szReach = *(TXT_SHADOW_REACH - 1);
+		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 2, KEY_R, HTX_RENDER_SHADOWREACH);
+		nShadowReachOpt = opt++;
+#if DBG_SHADOWS
+		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
 		optFastShadows = opt++;
-		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.bPlayerShadows, KEY_R, HTX_PLAYER_SHADOWS);
+#endif
+		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
-		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
+		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
-		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.bMissileShadows, KEY_R, HTX_MISSILE_SHADOWS);
+		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTX_MISSILE_SHADOWS);
 		optMissileShadows = opt++;
-		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.bReactorShadows, KEY_R, HTX_REACTOR_SHADOWS);
+		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
 #if DBG_SHADOWS
 		ADD_TEXT (opt, "", 0);
@@ -1888,13 +1908,13 @@ do {
 		if (i < 0)
 			break;
 		} 
-	GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
-	GET_VAL (gameOpts->render.bPlayerShadows, optPlayerShadows);
-	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
-	GET_VAL (gameOpts->render.bMissileShadows, optMissileShadows);
-	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
+	GET_VAL (gameOpts->render.shadows.bPlayers, optPlayerShadows);
+	GET_VAL (gameOpts->render.shadows.bRobots, optRobotShadows);
+	GET_VAL (gameOpts->render.shadows.bMissiles, optMissileShadows);
+	GET_VAL (gameOpts->render.shadows.bReactors, optReactorShadows);
 #if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
+		GET_VAL (gameOpts->render.shadows.bFast, optFastShadows);
 		GET_VAL (bZPass, optZPass);
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);

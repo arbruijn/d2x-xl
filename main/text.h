@@ -1612,9 +1612,9 @@ void LoadGameTexts(void);
 #define TXT_LIGHTING_MENUTITLE	GT(830)
 #define TXT_MOVIE_OPTIONS			GT(831)
 #define TXT_MOVIE_MENUTITLE		GT(832)
+#define TXT_SHADOW_REACH			GT(833)
 #if 0
 
-#define TXT_				GT(833)
 #define TXT_				GT(834)
 #define TXT_				GT(835)
 #define TXT_				GT(836)
@@ -2036,9 +2036,9 @@ void LoadGameTexts(void);
 #define HTX_RENDER_CAMERAOPTS		HT(234)				
 #define HTX_RENDER_LIGHTINGOPTS	HT(235)				
 #define HTX_RENDER_MOVIEOPTS		HT(236)				
+#define HTX_RENDER_SHADOWREACH	HT(237)				
 #if 0
 				
-#define HTX_					HT(237)				
 #define HTX_					HT(238)				
 #define HTX_					HT(239)				
 #define HTX_					HT(240)				

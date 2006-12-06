@@ -556,25 +556,25 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 		return;
 #endif
 	if (objP->nType == OBJ_ROBOT) {
-		if (!gameOpts->render.bRobotShadows)
+		if (!gameOpts->render.shadows.bRobots)
 			return;
 		if (objP->cType.aiInfo.CLOAKED)
 			return;
 		}
 	else if (objP->nType == OBJ_WEAPON) {
-		if (!gameOpts->render.bMissileShadows)
+		if (!gameOpts->render.shadows.bMissiles)
 			return;
 		if (!bIsMissile [objP->id] && (objP->id != PMINE_ID))
 			return;
 		}
 	else if (objP->nType == OBJ_PLAYER) {
-		if (!gameOpts->render.bPlayerShadows)
+		if (!gameOpts->render.shadows.bPlayers)
 			return;
 		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
 			return;
 		}
 	else if (objP->nType == OBJ_CNTRLCEN) {
-		if (!gameOpts->render.bReactorShadows)
+		if (!gameOpts->render.shadows.bReactors)
 			return;
 		}
 	else 

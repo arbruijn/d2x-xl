@@ -1580,6 +1580,7 @@ char *defaultGameTexts [][2] = {
 	{"Beleuchtungseinstellungen", "Lighting options"},
 	{"~Filmeinstellungen...", "~Movie options..."},
 	{"Filmeinstellungen", "Movie options"},
+	{"~Reichweite: %s", "~Reach: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2039,8 +2040,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier koennen Schatteneinstellungen angepasst werden.", "Adjust shadow rendering here."},
 	{"Hier koennen Kameraeinstellungen angepasst werden.", "Adjust camera settings here."},
 	{"Hier koennen Beleuchtungseinstellungen angepasst werden.", "Adjust lighting and colorization settings here."},
+	{"Hier kann die Reichweite von Schatten eingestellt werden.", "Adjust how far shadows reach hier."},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};

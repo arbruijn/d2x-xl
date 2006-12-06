@@ -40,7 +40,9 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 
 #define SHADOW_TEST				0
 #define NORM_INF					1
-#define INFINITY					400.0f	//20 standard cubes
+#define INFINITY					fInfinity [gameOpts->render.shadows.nReach]
+
+float fInfinity [3] = {100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cubes
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
@@ -1255,16 +1257,17 @@ else {
 void G3RenderShadowVolumeFace (tOOF_vector *pv)
 {
 	tOOF_vector	v [4];
+	float			inf = INFINITY;
 
 memcpy (v, pv, 2 * sizeof (tOOF_vector));
 OOF_VecSub (v+3, v, &gameData.render.shadows.vLightPos);
 OOF_VecSub (v+2, v+1, &gameData.render.shadows.vLightPos);
 #if NORM_INF
-OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
-OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
+OOF_VecScale (v+3, inf / OOF_VecMag (v+3));
+OOF_VecScale (v+2, inf / OOF_VecMag (v+2));
 #else
-OOF_VecScale (v+3, INFINITY);
-OOF_VecScale (v+2, INFINITY);
+OOF_VecScale (v+3, inf);
+OOF_VecScale (v+2, inf);
 #endif
 OOF_VecInc (v+2, v+1);
 OOF_VecInc (v+3, v);
@@ -1282,6 +1285,7 @@ glDrawArrays (GL_QUADS, 0, 4);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv)
 {
 	tOOF_vector	v0, v1;
+	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -1299,9 +1303,9 @@ for (pv += nv; nv; nv--) {
 	v0 = *(--pv);
 	OOF_VecSub (&v1, &v0, &vLightPos);
 #if NORM_INF
-	OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+	OOF_VecScale (&v1, inf / OOF_VecMag (&v1));
 #else
-	OOF_VecScale (&v1, INFINITY);
+	OOF_VecScale (&v1, inf);
 #endif
 	OOF_VecInc (&v0, &v1);
 	glVertex3fv ((GLfloat *) &v0);
@@ -1317,6 +1321,7 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 	tPOF_face	*pf, **ppf;
 	short			*pfv, *paf;
 	short			i, j, n;
+	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -1358,11 +1363,11 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecSub (v+3, v, &vLightPos);
 				OOF_VecSub (v+2, v+1, &vLightPos);
 #if NORM_INF
-				OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
-				OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
+				OOF_VecScale (v+3, inf / OOF_VecMag (v+3));
+				OOF_VecScale (v+2, inf / OOF_VecMag (v+2));
 #else
-				OOF_VecScale (v+3, INFINITY);
-				OOF_VecScale (v+2, INFINITY);
+				OOF_VecScale (v+3, inf);
+				OOF_VecScale (v+2, inf);
 #endif
 				OOF_VecInc (v+2, v+1);
 				OOF_VecInc (v+3, v);
@@ -1404,6 +1409,7 @@ int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFro
 	tOOF_vector	*pvf, v0, v1;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, i, j;
+	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1457,9 +1463,9 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecScale (&v1, 5.0f / OOF_VecMag (&v1));
 			else
 #	endif
-				OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+				OOF_VecScale (&v1, inf / OOF_VecMag (&v1));
 #else
-			OOF_VecScale (&v1, INFINITY);
+			OOF_VecScale (&v1, inf);
 #endif
 			OOF_VecInc (&v0, &v1);
 #endif
@@ -1618,8 +1624,8 @@ OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
 gameData.render.shadows.nLight = 0;
-if (gameOpts->render.bFastShadows) {
-	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
+if (gameOpts->render.shadows.bFast) {
+	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.pLight = gameData.render.lights.ogl.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->bState)
 			continue;
@@ -1652,7 +1658,7 @@ else {
 	h = OBJ_IDX (objP);
 	j = gameData.render.shadows.pLight - gameData.render.lights.ogl.shader.lights;
 	pnl = gameData.render.shadows.objLights [h];
-	for (i = 0; i < gameOpts->render.nMaxLights; i++, pnl++) {
+	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)
 			break;
 		if (*pnl == j) {

@@ -47,14 +47,16 @@ int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter)
 {
 	FFS	ffs;
 	char	szDir [FILENAME_LEN];
-	int	i;
+	int	i, bAddSlash;
 
 if (!(szName && *szName))
 	return 1;
+i = strlen (szRootDir);
+bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
 LogErr ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
-sprintf (szDir, "%s%s%s%s%s", szRootDir, *szRootDir ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
+sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
 if (!(i = FFF (szDir, &ffs, *szFilter == '\0')))
-	sprintf (szFolder, "%s%s%s", szRootDir, *szRootDir ? "/" : "", szName);
+	sprintf (szFolder, "%s%s%s", szRootDir, bAddSlash ? "/" : "", szName);
 else if (*szRootDir)
 	strcpy (szFolder, szRootDir);
 LogErr ("GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);

@@ -1366,7 +1366,7 @@ int check_bWindowCheck=0;
 #define bWindowCheck			1
 #define draw_edges			0
 #define bNewSegSorting		1
-#define bPreDrawSegs		0
+#define bPreDrawSegs			0
 #define no_migrate_segs		1
 #define migrateObjects		1
 #define check_bWindowCheck	0
@@ -1469,7 +1469,7 @@ void RenderSegment (short nSegment, int nWindow)
 	short			sn;
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && gameOpts->render.bFastShadows && (gameStates.render.nShadowPass >= 2))
+if (EGI_FLAG (bShadows, 0, 0) && gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass >= 2))
 	return;
 #	if 0
 if (gameStates.render.nShadowPass == 2)
@@ -2475,7 +2475,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP == gameData.objs.console)
 		RenderObject (objP, 0);
 	else if ((objP->nType == OBJ_PLAYER) || 
-				(gameOpts->render.bRobotShadows && (objP->nType == OBJ_ROBOT))) {
+				(gameOpts->render.shadows.bRobots && (objP->nType == OBJ_ROBOT))) {
 		for (j = nRenderSegs; j--;) {
 			fakePlayerPos.nSegment = nRenderList [j];
 			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
@@ -2568,7 +2568,7 @@ DestroyShadowMaps ();
 int GatherShadowLightSources (void)
 {
 	tObject			*objP = gameData.objs.objects;
-	int				h, i, j, n, m = gameOpts->render.nMaxLights;
+	int				h, i, j, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	tOglLight		*pl;
 	tShaderLight	*psl;
@@ -2590,15 +2590,15 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 			continue;
 		VmVecSub (&vLightDir, &objP->position.vPos, &psl->vPos);
 		VmVecNormalize (&vLightDir);
-		if (gameData.render.shadows.nLight) {
-			for (j = 0; j < gameData.render.shadows.nLight; j++)
+		if (n) {
+			for (j = 0; j < n; j++)
 				if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
 					break;
-			if (j < gameData.render.shadows.nLight)
+			if (j < n)
 				continue;
 			}
-		gameData.render.shadows.vLightDir [n++] = vLightDir;
-		gameData.render.shadows.objLights [h][n] = i;
+		gameData.render.shadows.vLightDir [n] = vLightDir;
+		gameData.render.shadows.objLights [h][n++] = *pnl;
 		psl->bShadow = 1;
 		}
 	gameData.render.shadows.objLights [h][n] = -1;
@@ -2758,10 +2758,15 @@ if (!bShadowTest)
 
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
-	short				i,	nLights = GatherShadowLightSources ();
+	short				i;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 
+gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, psl++) {
+#if 0
+	if (i != 89)
+		continue;
+#endif
 	if (!psl->bShadow)
 		continue;
 	gameData.render.shadows.pLight = psl;
@@ -2778,7 +2783,6 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, psl++) {
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 	psl->bExclusive = 0;
-	break;
 	}
 #if 0
 gameStates.render.nShadowPass = 4;
@@ -2829,7 +2833,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 		gameStates.render.nShadowPass = 1;
 		OglStartFrame (0, 0);
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
-		if (gameOpts->render.bFastShadows)
+		if (gameOpts->render.shadows.bFast)
 			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 		else
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
@@ -3649,7 +3653,7 @@ if (1) {
 		}
 	}
 #ifdef OGL_ZBUF
-if (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
+if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
 	GlRenderSegments (2, 3, nRenderSegs, nWindow);
 #endif
 #if APPEND_LAYERED_TEXTURES

@@ -677,7 +677,7 @@ if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
 #else
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #endif
-sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir, *gameFolders.szGameDir ? "/" : "", BASE_MISSION_DIR);
+sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir,/* *gameFolders.szGameDir ? "/" :*/ "", BASE_MISSION_DIR);
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (Args [i + 1]);
 }
@@ -1117,11 +1117,12 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [1].render.bPlayerShadows = 0;
-	gameOptions [1].render.bRobotShadows = 0;
-	gameOptions [1].render.bMissileShadows = 0;
-	gameOptions [1].render.bReactorShadows = 0;
-	gameOptions [1].render.bFastShadows = 1;
+	gameOptions [1].render.shadows.bPlayers = 0;
+	gameOptions [1].render.shadows.bRobots = 0;
+	gameOptions [1].render.shadows.bMissiles = 0;
+	gameOptions [1].render.shadows.bReactors = 0;
+	gameOptions [1].render.shadows.bFast = 1;
+	gameOptions [1].render.shadows.nReach = 1;
 	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bTransparentEffects = 0;
@@ -1141,7 +1142,7 @@ if (i) {
 	gameOptions [1].render.nMathFormat = 0;
 	gameOptions [1].render.nDefMathFormat = 0;
 	gameOptions [1].render.bEnableSSE = 0;
-	gameOptions [1].render.nMaxLights = 0;
+	gameOptions [1].render.shadows.nLights = 0;
 	gameOptions [1].render.cameras.bFitToWall = 0;
 	gameOptions [1].render.cameras.nFPS = 0;
 	gameOptions [1].render.cameras.nSpeed = 0;
@@ -1194,11 +1195,12 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [0].render.bPlayerShadows = 0;
-	gameOptions [0].render.bRobotShadows = 0;
-	gameOptions [0].render.bMissileShadows = 0;
-	gameOptions [0].render.bReactorShadows = 0;
-	gameOptions [0].render.bFastShadows = 1;
+	gameOptions [1].render.shadows.bPlayers = 1;
+	gameOptions [1].render.shadows.bRobots = 0;
+	gameOptions [1].render.shadows.bMissiles = 0;
+	gameOptions [1].render.shadows.bReactors = 0;
+	gameOptions [0].render.shadows.bFast = 1;
+	gameOptions [1].render.shadows.nReach = 1;
 	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;
@@ -1216,9 +1218,9 @@ else {
 	gameOptions [0].render.nDefMathFormat = 0;
 	gameOptions [1].render.bEnableSSE = 0;
 #ifdef _DEBUG
-	gameOptions [0].render.nMaxLights = 1;
+	gameOptions [0].render.shadows.nLights = 1;
 #else
-	gameOptions [0].render.nMaxLights = 3;
+	gameOptions [0].render.shadows.nLights = 3;
 #endif
 	gameOptions [0].render.cameras.bFitToWall = 0;
 	gameOptions [0].render.cameras.nFPS = 0;

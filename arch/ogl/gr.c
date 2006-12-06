@@ -977,7 +977,7 @@ else
 	*szSaveName = '\0';
 i = (int) strlen (szSaveName);
 do {
-	sprintf (szSaveName + i, "scrn%04d.tga", nSaveNum++);
+	sprintf (szSaveName + i, "/scrn%04d.tga", nSaveNum++);
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
 

@@ -598,7 +598,7 @@ if (!gameStates.render.nRenderPass)
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) 
 	 && (gameStates.render.nShadowPass < 3)
-	 && !gameOpts->render.bFastShadows
+	 && !gameOpts->render.shadows.bFast
 #	if DBG_SHADOWS
 	 && !bShadowTest
 #	endif
@@ -966,13 +966,15 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 	float				s, NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, nType, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
 	int				bInRad,
-						bExclusive = !gameOpts->render.bFastShadows && (gameStates.render.nShadowPass == 3),
-						bNoShadow = !gameOpts->render.bFastShadows && (gameStates.render.nShadowPass == 4),
+						bExclusive = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3),
+						bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
 						bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
 
-if (gameOpts->render.bFastShadows || (gameStates.render.nShadowPass != 1))
+if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
+	s = 1.0f;// / (float) gameData.render.shadows.nLights;
+else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
 	s = 1.0f;
 else
 	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
@@ -1062,7 +1064,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (psl->brightness < 0)
 		fAttenuation = 0.01f;
 	else {
-		fLightDist = VmVecMagf (&lightDir) / 100.0f;
+		fLightDist = VmVecMagf (&lightDir) / 10.0f;
 #if 1
 		if (nType == 1) {
 #	if 0
@@ -1214,7 +1216,7 @@ if (!bmBot)
 	return 1;
 //if (gameStates.render.nShadowPass != 3)
 	glDepthFunc (GL_LEQUAL);
-if (!gameOpts->render.bFastShadows) {
+if (!gameOpts->render.shadows.bFast) {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
@@ -1892,7 +1894,7 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
 			glCullFace (GL_BACK);
-			if (!gameOpts->render.bFastShadows)
+			if (!gameOpts->render.shadows.bFast)
 				glColorMask (0,0,0,0);
 			}
 		}
@@ -1965,7 +1967,7 @@ if (gameStates.render.nShadowPass) {
 #if 1
 			glDisable (GL_POLYGON_OFFSET_FILL);
 #endif
-			if (gameOpts->render.bFastShadows) {
+			if (gameOpts->render.shadows.bFast) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}
@@ -1980,7 +1982,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			glCullFace (GL_BACK);
 			glDepthFunc (GL_LEQUAL);
-			if (!gameOpts->render.bFastShadows)
+			if (!gameOpts->render.shadows.bFast)
 				glColorMask (1,1,1,1);
 			}
 		}
