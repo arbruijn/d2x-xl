@@ -1817,12 +1817,12 @@ void ShadowOptionsMenu ()
 	tMenuItem m [25];
 	int	i, choice = 0;
 	int	opt;
-	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
+	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
 	char	szMaxLights [50], szReach [50];
 #if DBG_SHADOWS
 	char	szShadowTest [50];
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,
-			optClipShadows, optFastShadows;
+			optFastShadows;
 #endif
 
 pszReach [0] = TXT_SHORT;
