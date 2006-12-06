@@ -580,49 +580,39 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	fvi_query	fq;
 
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
-	objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-
-	fq.p0	= pos;
-	if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (pos->z != objP->position.vPos.z)) {
-		short nSegment = FindSegByPoint (pos, objP->nSegment);
-		if (nSegment == -1) {
-			fq.startSeg = objP->nSegment;
-			*pos = objP->position.vPos;
+objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
+fq.p0	= pos;
+if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (pos->z != objP->position.vPos.z)) {
+	short nSegment = FindSegByPoint (pos, objP->nSegment);
+	if (nSegment == -1) {
+		fq.startSeg = objP->nSegment;
+		*pos = objP->position.vPos;
 #if TRACE	
-			con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
+		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
-			move_towards_segment_center (objP);
-			} 
-		else {
-			if (nSegment != objP->nSegment)
-				objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-			fq.startSeg = nSegment;
-			}
+		move_towards_segment_center (objP);
+		} 
+	else {
+		if (nSegment != objP->nSegment)
+			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
+		fq.startSeg = nSegment;
 		}
-	else
-		fq.startSeg	= objP->nSegment;
-	fq.p1					= &gameData.ai.vBelievedPlayerPos;
-	fq.rad				= F1_0/4;
-	fq.thisObjNum		= OBJ_IDX (objP);
-	fq.ignoreObjList	= NULL;
-	fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
-
-	gameData.ai.nHitType = FindVectorIntersection (&fq,&gameData.ai.hitData);
-
-	gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
-	gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-
-	// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))) {
-	if (gameData.ai.nHitType == HIT_NONE) {
-		dot = VmVecDot (vec_to_player, &objP->position.mOrient.fVec);
-		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
-			return 2;
-		} else {
-			return 1;
-		}
-	} else {
-		return 0;
 	}
+else
+	fq.startSeg	= objP->nSegment;
+fq.p1					= &gameData.ai.vBelievedPlayerPos;
+fq.rad				= F1_0/4;
+fq.thisObjNum		= OBJ_IDX (objP);
+fq.ignoreObjList	= NULL;
+fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
+gameData.ai.nHitType = FindVectorIntersection (&fq,&gameData.ai.hitData);
+gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
+// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))) {
+if (gameData.ai.nHitType != HIT_NONE)
+	return 0;
+dot = VmVecDot (vec_to_player, &objP->position.mOrient.fVec);
+return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 
 // ------------------------------------------------------------------------------------------------------------------

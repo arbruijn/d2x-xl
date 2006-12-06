@@ -1581,6 +1581,7 @@ char *defaultGameTexts [][2] = {
 	{"~Filmeinstellungen...", "~Movie options..."},
 	{"Filmeinstellungen", "Movie options"},
 	{"~Reichweite: %s", "~Reach: %s"},
+	{"Schatten begren~Zen", "~Clip shadows"},
 #if 0
 	{"", ""},
 #endif
@@ -2040,8 +2041,12 @@ char *defaultHelpTexts [][2] = {
 	{"Hier koennen Schatteneinstellungen angepasst werden.", "Adjust shadow rendering here."},
 	{"Hier koennen Kameraeinstellungen angepasst werden.", "Adjust camera settings here."},
 	{"Hier koennen Beleuchtungseinstellungen angepasst werden.", "Adjust lighting and colorization settings here."},
+	{"Hier koennen Filmeinstellungen angepasst werden.", "Adjust movie settings here."},
 	{"Hier kann die Reichweite von Schatten eingestellt werden.", "Adjust how far shadows reach hier."},
+	{"Wenn angekreuzt, werden Schatten kurz hinter der naechsten\nvon ihnen verdeckten Wand abgeschnitten. Wie weit dahinter,\nhaengt von der eingestellten Schattenreichweite ab.", 
+	 "If checked, shadows will be clipped behind the nearest wall\nthey cover. How far behind that wall depends on the setting\nof shadow reach."},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};

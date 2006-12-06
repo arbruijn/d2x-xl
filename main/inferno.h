@@ -169,6 +169,7 @@ typedef struct tShadowOptions {
 	int nReach;
 	int nLights;
 	int bFast;
+	int bClip;
 	int bPlayers;
 	int bRobots;
 	int bMissiles;

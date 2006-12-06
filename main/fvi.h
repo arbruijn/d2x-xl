@@ -114,7 +114,7 @@ typedef struct fvi_info {
 
 //this data contains the parms to fvi()
 typedef struct fvi_query {
-	vmsVector *p0,*p1;
+	vmsVector	*p0,*p1;
 	short			startSeg;
 	fix			rad;
 	short			thisObjNum;

@@ -1814,7 +1814,7 @@ if (extraGameInfo [0].bShadows) {
 
 void ShadowOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [25];
 	int	i, choice = 0;
 	int	opt;
 	int	optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
@@ -1822,7 +1822,7 @@ void ShadowOptionsMenu ()
 #if DBG_SHADOWS
 	char	szShadowTest [50];
 	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,
-			optFastShadows;
+			optClipShadows, optFastShadows;
 #endif
 
 pszReach [0] = TXT_SHORT;
@@ -1838,6 +1838,7 @@ do {
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	nShadowsOpt = opt++;
+	optClipShadows =
 	optPlayerShadows =
 	optRobotShadows =
 	optMissileShadows =
@@ -1863,10 +1864,8 @@ do {
 		*szReach = *(TXT_SHADOW_REACH - 1);
 		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 2, KEY_R, HTX_RENDER_SHADOWREACH);
 		nShadowReachOpt = opt++;
-#if DBG_SHADOWS
-		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
-		optFastShadows = opt++;
-#endif
+		ADD_CHECK (opt, TXT_CLIP_SHADOWS, gameOpts->render.shadows.bClip, KEY_C, HTX_CLIP_SHADOWS);
+		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);
@@ -1876,6 +1875,8 @@ do {
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
 #if DBG_SHADOWS
+		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
+		optFastShadows = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
@@ -1908,6 +1909,7 @@ do {
 		if (i < 0)
 			break;
 		} 
+	GET_VAL (gameOpts->render.shadows.bClip, optClipShadows);
 	GET_VAL (gameOpts->render.shadows.bPlayers, optPlayerShadows);
 	GET_VAL (gameOpts->render.shadows.bRobots, optRobotShadows);
 	GET_VAL (gameOpts->render.shadows.bMissiles, optMissileShadows);

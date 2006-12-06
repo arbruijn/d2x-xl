@@ -43,6 +43,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #define INFINITY					fInfinity [gameOpts->render.shadows.nReach]
 
 float fInfinity [3] = {100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cubes
+float fInf;
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
@@ -990,7 +991,7 @@ for (i = pso->faces.nFaces, pf1 = pso->faces.pFaces; i; i--, pf1++) {
 		for (j = 0, n = pf1->nVerts, pfv = pf1->pVerts; j < n; j++) {
 			h = (j + 1) % n;
 			if (((pfv [j] == v0) && (pfv [h] == v1)) || ((pfv [j] == v1) && (pfv [h] == v0)))
-				return pf1 - pso->faces.pFaces;
+				return (int) (pf1 - pso->faces.pFaces);
 			}
 		}
 	}
@@ -1257,17 +1258,16 @@ else {
 void G3RenderShadowVolumeFace (tOOF_vector *pv)
 {
 	tOOF_vector	v [4];
-	float			inf = INFINITY;
 
 memcpy (v, pv, 2 * sizeof (tOOF_vector));
 OOF_VecSub (v+3, v, &gameData.render.shadows.vLightPos);
 OOF_VecSub (v+2, v+1, &gameData.render.shadows.vLightPos);
 #if NORM_INF
-OOF_VecScale (v+3, inf / OOF_VecMag (v+3));
-OOF_VecScale (v+2, inf / OOF_VecMag (v+2));
+OOF_VecScale (v+3, fInf / OOF_VecMag (v+3));
+OOF_VecScale (v+2, fInf / OOF_VecMag (v+2));
 #else
-OOF_VecScale (v+3, inf);
-OOF_VecScale (v+2, inf);
+OOF_VecScale (v+3, fInf);
+OOF_VecScale (v+2, fInf);
 #endif
 OOF_VecInc (v+2, v+1);
 OOF_VecInc (v+3, v);
@@ -1285,7 +1285,6 @@ glDrawArrays (GL_QUADS, 0, 4);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv)
 {
 	tOOF_vector	v0, v1;
-	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -1303,9 +1302,9 @@ for (pv += nv; nv; nv--) {
 	v0 = *(--pv);
 	OOF_VecSub (&v1, &v0, &vLightPos);
 #if NORM_INF
-	OOF_VecScale (&v1, inf / OOF_VecMag (&v1));
+	OOF_VecScale (&v1, fInf / OOF_VecMag (&v1));
 #else
-	OOF_VecScale (&v1, inf);
+	OOF_VecScale (&v1, fInf);
 #endif
 	OOF_VecInc (&v0, &v1);
 	glVertex3fv ((GLfloat *) &v0);
@@ -1321,7 +1320,6 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 	tPOF_face	*pf, **ppf;
 	short			*pfv, *paf;
 	short			i, j, n;
-	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -1363,11 +1361,11 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecSub (v+3, v, &vLightPos);
 				OOF_VecSub (v+2, v+1, &vLightPos);
 #if NORM_INF
-				OOF_VecScale (v+3, inf / OOF_VecMag (v+3));
-				OOF_VecScale (v+2, inf / OOF_VecMag (v+2));
+				OOF_VecScale (v+3, fInf / OOF_VecMag (v+3));
+				OOF_VecScale (v+2, fInf / OOF_VecMag (v+2));
 #else
-				OOF_VecScale (v+3, inf);
-				OOF_VecScale (v+2, inf);
+				OOF_VecScale (v+3, fInf);
+				OOF_VecScale (v+2, fInf);
 #endif
 				OOF_VecInc (v+2, v+1);
 				OOF_VecInc (v+3, v);
@@ -1409,7 +1407,6 @@ int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFro
 	tOOF_vector	*pvf, v0, v1;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, i, j;
-	float			inf = INFINITY;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1463,9 +1460,9 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecScale (&v1, 5.0f / OOF_VecMag (&v1));
 			else
 #	endif
-				OOF_VecScale (&v1, inf / OOF_VecMag (&v1));
+				OOF_VecScale (&v1, fInf / OOF_VecMag (&v1));
 #else
-			OOF_VecScale (&v1, inf);
+			OOF_VecScale (&v1, fInf);
 #endif
 			OOF_VecInc (&v0, &v1);
 #endif
@@ -1607,6 +1604,33 @@ return nHitType != HIT_WALL;
 
 //	-----------------------------------------------------------------------------
 
+float NearestShadowedWallDist (tObject *objP, vmsVector *vLightPos)
+{
+	fvi_query	fq;
+	fvi_info		fi;
+	vmsVector	v;
+
+	static float fClip [3] = {1.25f, 1.5f, 2.0f};
+
+if (!gameOpts->render.shadows.bClip)
+	return INFINITY;
+fq.p0					= &objP->position.vPos;
+VmVecSub (&v, fq.p0, vLightPos);
+VmVecNormalize (&v);
+VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+fq.startSeg			= objP->nSegment;
+fq.p1					= &v;
+fq.rad				= 0; //objP->size;
+fq.thisObjNum		= OBJ_IDX (objP);
+fq.ignoreObjList	= NULL;
+fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
+if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
+	return INFINITY;
+return f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
+}
+
+//	-----------------------------------------------------------------------------
+
 int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel)
 {
 #if SHADOWS
@@ -1646,6 +1670,7 @@ if (gameOpts->render.shadows.bFast) {
 		else {
 			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
 			OOF_VecVms2Oof (&vLightPos, &v);
+			fInf = NearestShadowedWallDist (objP, &gameData.render.shadows.pLight->vPos);
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
