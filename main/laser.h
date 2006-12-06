@@ -226,6 +226,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_PHASE_ENERGY_ID			48
 #define ROBOT_SMART_MINE_HOMING_ID  49
 #define ROBOT_FLASHMISS_ID				50
+#define PMINE_ID                    51  //the mine that the designers can place
 #define ROBOT_SUPERPROX_ID          53
 #define EARTHSHAKER_MEGA_ID     		54
 #define ROBOT_MERCURY_ID				55
@@ -237,7 +238,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_VERTIGO_FIREBALL_ID	63
 #define ROBOT_VERTIGO_PHOENIX_ID		64
 
-#define PMINE_ID                    51  //the mine that the designers can place
 
 #define OMEGA_MULTI_LIFELEFT    (F1_0/6)
 

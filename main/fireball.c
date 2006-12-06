@@ -1868,11 +1868,7 @@ void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTi
 	short			i, nSegment;
 	tObject		*blobObjP;
 
-VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
-VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 54));
-VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -(objP->size / 20));
-VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 25);
-
+CalcShipThrusterPos (objP, vPos);
 if (count == 1)
 	VmVecAvg (vPos, vPos, vPos + 1);
 for (i = 0; i < count; i++) {

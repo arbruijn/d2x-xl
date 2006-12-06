@@ -1572,7 +1572,7 @@ char *defaultGameTexts [][2] = {
 	{"~Reaktorschatten", "~Reactor shadows"},
 	{"~Spielerschatten", "~Player shadows"},
 	{"schnelle Schatten~Berechnung", "~Fast shadow rendering"},
-	{"~Schatteneinstellungen...", "S~Hadow options..."},
+	{"~Schatteneinstellungen...", "sh~Adow options..."},
 	{"Schatteneinstellungen", "Shadow Render Options"},
 	{"~Kameraeinstellungen...", "~Camera options..."},
 	{"Kameraeinstellungen", "Camera Options"},

@@ -603,7 +603,7 @@ if (EGI_FLAG (bShadows, 0, 0)
 	 && !bShadowTest
 #	endif
 	 )
-	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.2f;
+	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
@@ -624,7 +624,7 @@ else if (vertColors [i].index) {
 
 //	if (pvc->index >= 0)
 //		ScaleColor (pvc, l);
-	OglColor4sf (pvc->color.red * s, pvc->color.green * s, pvc->color.blue * s, s);
+	OglColor4sf (pvc->color.red, pvc->color.green, pvc->color.blue, s);
 	if (bResetColor)
 		pvc->color.red =
 		pvc->color.green =
@@ -963,13 +963,19 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 #if !STATIC_LIGHT_TRANSFORM
 	fVector			vertPos;
 #endif
-	float				NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
+	float				s, NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
 	int				i, j, nType, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
 	int				bInRad,
+						bExclusive = !gameOpts->render.bFastShadows && (gameStates.render.nShadowPass == 3),
+						bNoShadow = !gameOpts->render.bFastShadows && (gameStates.render.nShadowPass == 4),
 						bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	tFaceColor		*pc = NULL;
 
+if (gameOpts->render.bFastShadows || (gameStates.render.nShadowPass != 1))
+	s = 1.0f;
+else
+	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 if (gameData.render.lights.ogl.material.bValid) {
 #if 0
 	if (gameData.render.lights.ogl.material.emissive.c.r ||
@@ -990,10 +996,10 @@ if (gameData.render.lights.ogl.material.bValid) {
 		}
 	}
 #if 1 //cache light values per frame
-if (!(bMatEmissive || pVertColor) && (nVertex >= 0)) {
+if (!(bExclusive || bMatEmissive || pVertColor) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
-		OglColor4sf (pc->color.red, pc->color.green, pc->color.blue, 1.0);
+		OglColor4sf (pc->color.red * s, pc->color.green * s, pc->color.blue * s, 1.0);
 		return;
 		}
 	}
@@ -1017,9 +1023,21 @@ if (!(gameStates.render.nState || pVertColor)) {
 	}
 //VmVecNegatef (&vertNorm);
 for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
-	nType = psl->nType;
-	if (!nType)
-		continue;
+	if (bExclusive) {
+		if (bExclusive < 0)
+			break;
+		if (!psl->bExclusive)
+			continue;
+		bExclusive = -1;
+		nType = psl->nType;
+		}
+	else {
+		if (bNoShadow && psl->bShadow)
+			continue;
+		nType = psl->nType;
+		if (!nType)
+			continue;
+		}
 	if (nType == 1) {
 		if (!gameStates.render.nState)
 			psl->nType = 0;
@@ -1044,7 +1062,7 @@ for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
 	if (psl->brightness < 0)
 		fAttenuation = 0.01f;
 	else {
-		fLightDist = VmVecMagf (&lightDir) / 10.0f;
+		fLightDist = VmVecMagf (&lightDir) / 100.0f;
 #if 1
 		if (nType == 1) {
 #	if 0
@@ -1134,7 +1152,7 @@ if (colorSum.c.g > 1.0)
 	colorSum.c.g = 1.0;
 if (colorSum.c.b > 1.0)
 	colorSum.c.b = 1.0;
-OglColor4sf (colorSum.c.r, colorSum.c.g, colorSum.c.b, 1.0);
+OglColor4sf (colorSum.c.r * s, colorSum.c.g * s, colorSum.c.b * s, 1.0);
 #if 1
 if (!bMatEmissive && pc) {
 	pc->index = gameStates.render.nFrameFlipFlop + 1;
@@ -1182,9 +1200,12 @@ bool G3DrawTexPolyMulti (
 	int orient, 
 	int bBlend)
 {
-	int			c, tmType, nFrame, bDrawBM = 0;
+	int			c, tmType, nFrame;
+	int			bLight = 1, 
+					bDynLight = gameOpts->ogl.bUseLighting, 
+					bDrawBM = 0;
 	grsBitmap	*bmP, *bmMask;
-	g3sPoint	*pl, **ppl;
+	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
 	fVector		vNormal, vVertex;
 #endif
@@ -1193,10 +1214,20 @@ if (!bmBot)
 	return 1;
 //if (gameStates.render.nShadowPass != 3)
 	glDepthFunc (GL_LEQUAL);
-if (bBlend)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-else
-	glDisable (GL_BLEND);
+if (!gameOpts->render.bFastShadows) {
+	if (gameStates.render.nShadowPass == 1)
+		bLight = !bDynLight;
+	else if (gameStates.render.nShadowPass == 3) {
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE);
+		}
+	}
+else {
+	if (bBlend)
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	else
+		glDisable (GL_BLEND);
+	}
 r_tpolyc++;
 bmBot = BmOverride (bmBot);
 if ((bmTop = BmOverride (bmTop)) && BM_FRAMES (bmTop)) {
@@ -1375,13 +1406,16 @@ else
 		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
 			G3Normal (pointList, pvNormal);
 #endif
+		if (!bLight)
+			glColor3i (0,0,0);
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 			pl = *ppl;
-			if (gameOpts->ogl.bUseLighting)
-				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
-			else
-				SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
+			if (bLight)
+				if (bDynLight)
+					G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
+				else
+					SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [c].u), f2glf (uvlList [c].v));
 			if (bmTop && !bDrawBM)
 				SetTexCoord (uvlList + c, orient, 1);
@@ -1424,12 +1458,15 @@ else
 				return 1;
 			bmTop = BmCurFrame (bmTop);
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
+			if (!bLight)
+				glColor3i (0,0,0);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
-				if (gameOpts->ogl.bUseLighting)
-					G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL);
-				else
-					SetTMapColor (uvlList + c, c, bmTop, 1);
+				if (bLight)
+					if (bDynLight)
+						G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL);
+					else
+						SetTMapColor (uvlList + c, c, bmTop, 1);
 				SetTexCoord (uvlList + c, orient, 0);
 				OglVertex3f (*ppl);
 				}
@@ -1835,7 +1872,7 @@ if (gameStates.render.nShadowPass) {
 	float	infProj [4][4];	//projection to infinity
 #endif
 	
-	if (gameStates.render.nShadowPass == 1) {	//render unlit scene
+	if (gameStates.render.nShadowPass == 1) {	//render unlit/final scene
 		if (!gameStates.render.bShadowMaps) {
 #if GL_INFINITY
 			glMatrixMode (GL_PROJECTION);
@@ -1855,6 +1892,8 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
 			glCullFace (GL_BACK);
+			if (!gameOpts->render.bFastShadows)
+				glColorMask (0,0,0,0);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
@@ -1917,7 +1956,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			}
 		}
-	else { //render final lit scene
+	else if (gameStates.render.nShadowPass == 3) { //render final lit scene
 		if (gameStates.render.bShadowMaps) {
 			glDisable (GL_POLYGON_OFFSET_FILL);
 			glDepthFunc (GL_LESS);
@@ -1939,12 +1978,17 @@ if (gameStates.render.nShadowPass) {
 				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
 #endif
 				}
-			glDepthFunc (GL_EQUAL);
+			glCullFace (GL_BACK);
+			glDepthFunc (GL_LEQUAL);
+			if (!gameOpts->render.bFastShadows)
+				glColorMask (1,1,1,1);
 			}
-		glColorMask (1,1,1,1);
-//		glDepthMask (1);
+		}
+	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
+		glEnable (GL_DEPTH_TEST);
+		glDepthFunc (GL_LESS);
+		glEnable (GL_CULL_FACE);		
 		glCullFace (GL_BACK);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 #if GL_INFINITY
 	glMatrixMode (GL_MODELVIEW);
@@ -2070,6 +2114,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	glDisable (GL_COLOR_MATERIAL);
 	}
 glDepthMask (1);
+glColorMask (1,1,1,1);
 if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }

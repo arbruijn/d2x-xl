@@ -343,8 +343,7 @@ if (xObjIntensity) {
 		fix	maxHeadlightDist = F1_0*200;
 
 		if (objP->nType == OBJ_PLAYER)
-			if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
-				gameStates.render.bHeadlightOn = 1;
+			if (gameStates.render.bHeadlightOn = (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
@@ -938,7 +937,7 @@ if (objP->nType == OBJ_PLAYER) {
 
 static int IsFlickeringLight (short nSegment, short nSide)
 {
-	flickering_light	*flP = gameData.render.lights.flicker.lights;
+	tFlickeringLight	*flP = gameData.render.lights.flicker.lights;
 	int					l;
 
 for (l = gameData.render.lights.flicker.nLights; l; l--, flP++)
@@ -969,7 +968,7 @@ else {
 
 void FlickerLights ()
 {
-	flickering_light	*flP = gameData.render.lights.flicker.lights;
+	tFlickeringLight	*flP = gameData.render.lights.flicker.lights;
 	int					l;
 	tSide					*sideP;
 	short					nSegment, nSide;
@@ -1000,10 +999,10 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 
 //-----------------------------------------------------------------------------
 //returns ptr to flickering light structure, or NULL if can't find
-flickering_light *FindFlicker (int nSegment,int nSide)
+tFlickeringLight *FindFlicker (int nSegment,int nSide)
 {
 	int l;
-	flickering_light *flP = gameData.render.lights.flicker.lights;
+	tFlickeringLight *flP = gameData.render.lights.flicker.lights;
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
@@ -1015,7 +1014,7 @@ return NULL;
 //turn flickering off (because light has been turned off)
 void DisableFlicker (int nSegment,int nSide)
 {
-	flickering_light *flP = FindFlicker (nSegment ,nSide);
+	tFlickeringLight *flP = FindFlicker (nSegment ,nSide);
 
 if (flP)
 	flP->timer = 0x80000000;
@@ -1025,7 +1024,7 @@ if (flP)
 //turn flickering off (because light has been turned on)
 void EnableFlicker (int nSegment,int nSide)
 {
-	flickering_light *flP = FindFlicker (nSegment, nSide);
+	tFlickeringLight *flP = FindFlicker (nSegment, nSide);
 
 if (flP)
 	flP->timer = 0;
@@ -1038,7 +1037,7 @@ if (flP)
 int AddFlicker (int nSegment, int nSide, fix delay, unsigned long mask)
 {
 	int l;
-	flickering_light *flP;
+	tFlickeringLight *flP;
 
 #if TRACE
 	//con_printf (CON_DEBUG,"AddFlicker: %d:%d %x %x\n",nSegment,nSide,delay,mask);
@@ -1535,6 +1534,7 @@ gameData.render.lights.ogl.shader.nLights = 0;
 UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 	memcpy (&psl->color, &pl->color, sizeof (pl->color));
+	psl->vPos = pl->vPos;
 	VmsVecToFloat (psl->pos, &pl->vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->pos [1] = psl->pos [0];

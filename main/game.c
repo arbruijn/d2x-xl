@@ -3423,9 +3423,9 @@ void game_win_init_cockpit_mask (int sram)
 
 //-----------------------------------------------------------------------------
 /*
- * reads a flickering_light structure from a CFILE
+ * reads a tFlickeringLight structure from a CFILE
  */
-void ReadFlickeringLight (flickering_light *fl, CFILE *fp)
+void ReadFlickeringLight (tFlickeringLight *fl, CFILE *fp)
 {
 	fl->nSegment = CFReadShort (fp);
 	fl->nSide = CFReadShort (fp);

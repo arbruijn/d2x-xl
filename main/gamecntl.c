@@ -423,118 +423,92 @@ void formatTime(char *str, int secs_int)
 
 //------------------------------------------------------------------------------
 
+void PauseGame (void)
+{
+if (!gameData.app.bGamePaused) {
+	gameData.app.bGamePaused = 1;
+	DigiPauseAll();
+	RBAPause();
+	StopTime();
+	PaletteSave();
+	ApplyModifiedPalette();
+	ResetPaletteAdd();
+	GameFlushInputs();
+#if defined (TACTILE)
+	if (TactileStick)
+		DisableForces();
+#endif
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void ResumeGame (void)
+{
+GameFlushInputs();
+ResetCockpit();
+PaletteRestore();
+StartTime();
+if (gameStates.sound.bRedbookPlaying)
+	RBAResume();
+DigiResumeAll();
+gameData.app.bGamePaused = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void DoShowNetgameHelp();
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
 int DoGamePause()
 {
 	int key;
+	int bScreenChanged;
 	char msg[1000];
 	char totalTime[9], levelTime[9];
 
 	key=0;
 
-	if (gameData.app.bGamePaused) {		//unpause!
-		gameData.app.bGamePaused=0;
-		gameStates.app.bEnterGame = 1;
+if (gameData.app.bGamePaused) {		//unpause!
+	gameData.app.bGamePaused = 0;
+	gameStates.app.bEnterGame = 1;
 #if defined (TACTILE)
-			if (TactileStick)
-			  EnableForces();
+	if (TactileStick)
+		EnableForces();
 #endif
-		return KEY_PAUSE;
+	return KEY_PAUSE;
 	}
 
 #ifdef NETWORK
-	if (gameData.app.nGameMode & GM_NETWORK)
-	{
+if (gameData.app.nGameMode & GM_NETWORK) {
 	 DoShowNetgameHelp();
     return (KEY_PAUSE);
 	}
-	else if (gameData.app.nGameMode & GM_MULTI)
-	 {
-	  HUDInitMessage (TXT_MODEM_PAUSE);
-	  return (KEY_PAUSE);
-	 }
+else if (gameData.app.nGameMode & GM_MULTI) {
+	HUDInitMessage (TXT_MODEM_PAUSE);
+	return (KEY_PAUSE);
+	}
 #endif
-
-	DigiPauseAll();
-	RBAPause();
-	StopTime();
-
-	PaletteSave();
-	ApplyModifiedPalette();
-	ResetPaletteAdd();
-
-// -- Matt: This is a hacked-in test for the stupid menu/flash problem.
-//	We need a new brightening primitive if we want to make this not horribly ugly.
-//		  gameStates.render.grAlpha = 2;
-//		  GrRect(0, 0, 319, 199);
-
-	GameFlushInputs();
-
-	gameData.app.bGamePaused=1;
-
-#if defined (TACTILE)
-	if (TactileStick)
-		  DisableForces();
-	#endif
-
-//	SetScreenMode( SCREEN_MENU );
-	SetPopupScreenMode();
-	GrPaletteStepLoad (NULL);
-
-	formatTime(totalTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursTotal*3600);
-	formatTime(levelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
-
-   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
-		sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, levelTime, totalTime);
+PauseGame ();
+SetPopupScreenMode();
+GrPaletteStepLoad (NULL);
+formatTime(totalTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursTotal*3600);
+formatTime(levelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
+  if (gameData.demo.nState!=ND_STATE_PLAYBACK)
+	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
+			  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, levelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
 				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board);
 
-	if (!gameOpts->menus.nStyle) {
-		gameStates.menus.nInMenu++;
-		GameRenderFrame();
-		gameStates.menus.nInMenu--;
-		ShowBoxedMessage(Pause_msg=msg);		  //TXT_PAUSE);
-		}
-	GrabMouse (0, 0);
-	while (gameData.app.bGamePaused) 
-	{
-		int bScreenChanged;
-
-#if defined (WINDOWS)
-
-		if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS)) {
-			ShowBoxedMessage(msg);
-		}
-
-	SkipPauseStuff:
-
-		while (!(key = KeyInKey()))
-		{
-			MSG wmsg;
-			DoMessageStuff(&wmsg);
-			if (_RedrawScreen) {
-#if TRACE
-				con_printf (CON_DEBUG, "Redrawing paused screen.\n");
-#endif
-				_RedrawScreen = FALSE;
-				if (VR_screenFlags & VRF_COMPATIBLE_MENUS) 
-					GameRenderFrame();
-				gameStates.video.nScreenMode = -1;
-				SetPopupScreenMode();
-				GrPaletteStepLoad (NULL);
-				ShowBoxedMessage(msg);
-#if 0
-				if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR)
-					if (!GRMODEINFO(modex)) RenderGauges();
-#endif
-			}
-		}
-
-#else
+if (!gameOpts->menus.nStyle) {
+	gameStates.menus.nInMenu++;
+	GameRenderFrame();
+	gameStates.menus.nInMenu--;
+	ShowBoxedMessage(Pause_msg=msg);		  //TXT_PAUSE);
+	}
+GrabMouse (0, 0);
+while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
 		key = key_getch();
 	else {
@@ -547,23 +521,17 @@ int DoGamePause()
 			}
 		gameStates.menus.nInMenu--;
 		}
-#endif
-
 #ifndef RELEASE
 		HandleTestKey(key);
 #endif
-		
 		bScreenChanged = HandleSystemKey(key);
-
 	#ifdef WINDOWS
 		if (bScreenChanged == -1) {
 			ExecMessageBox(NULL, 1, TXT_OK, "Unable to do this\noperation while paused under\n320x200 mode"); 
 			goto SkipPauseStuff;
 		}
 	#endif
-
 		HandleVRKey(key);
-
 		if (bScreenChanged) {
 			GameRenderFrame();
 			WIN(SetPopupScreenMode());
@@ -573,21 +541,14 @@ int DoGamePause()
 			if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR)
 				RenderGauges();
 #endif				
+			}
 		}
-	}
 	GrabMouse (1, 0);
 	if (VR_screenFlags & VRF_COMPATIBLE_MENUS) {
 		ClearBoxedMessage();
 	}
-
-	GameFlushInputs();
-	ResetCockpit();
-	PaletteRestore();
-	StartTime();
-	if (gameStates.sound.bRedbookPlaying)
-		RBAResume();
-	DigiResumeAll();
-	return key;
+ResumeGame ();
+return key;
 }
 
 //------------------------------------------------------------------------------

@@ -545,7 +545,7 @@ if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
 if (gameData.models.altPolyModels [nModel].modelData && 
-	 (gameData.models.polyModels [nModel].nDataSize ==  gameData.models.defPolyModels [nModel].nDataSize) &&
+	 (gameData.models.polyModels [nModel].nDataSize == gameData.models.defPolyModels [nModel].nDataSize) &&
 	 ((gameStates.render.nShadowPass == 2) || (objP->nType == OBJ_PLAYER)))
 	po = gameData.models.altPolyModels + nModel;
 else
@@ -563,6 +563,8 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 		}
 	else if (objP->nType == OBJ_WEAPON) {
 		if (!gameOpts->render.bMissileShadows)
+			return;
+		if (!bIsMissile [objP->id] && (objP->id != PMINE_ID))
 			return;
 		}
 	else if (objP->nType == OBJ_PLAYER) {

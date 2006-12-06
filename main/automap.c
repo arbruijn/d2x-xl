@@ -73,6 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "globvars.h"
 #include "gameseg.h"
+#include "gamecntl.h"
 #include "input.h"
 
 #if defined (POLY_ACC)
@@ -911,7 +912,7 @@ void DoAutomap (int key_code, int bRadar)
 #endif
 	int			c, nMarker;
 	fix			entryTime;
-	int			pause_game=1;		// Set to 1 if everything is paused during automap...No pause during net.
+	int			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix			t1, t2;
 	control_info saved_control_info;
 	int			Max_segments_away = 0;
@@ -923,18 +924,16 @@ void DoAutomap (int key_code, int bRadar)
 	static ubyte	automap_pal [256*3];
 
 	WIN (int dd_VR_screegameStates.render.cockpit.nModeSave);
-	WIN (int redraw_screen=0);
+	WIN (int bRedrawScreen=0);
 
 	gameStates.app.bAutoMap = 1;
 	gameStates.ogl.nContrast = 8;
 	InitAutomapColors ();
 	key_code = key_code;	// disable warning...
 	if (bRadar || ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))
-		pause_game = 0;
-	if (pause_game) {
-		StopTime ();
-		DigiPauseDigiSounds ();
-	}
+		bPauseGame = 0;
+	if (bPauseGame)
+		PauseGame ();
 	Max_edges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MAX_EDGES);			//make maybe smaller than max
 #if !defined (WINDOWS)
 	if (bRadar || (gameStates.video.nDisplayMode > 1) || (gameOpts->render.bAutomapAlwaysHires && gameStates.menus.bHiresAvailable)) {
@@ -1068,7 +1067,7 @@ WIN (AutomapRedraw:)
 	}
 
 
-WIN (if (!redraw_screen) {)
+WIN (if (!bRedrawScreen) {)
 	AutomapBuildEdgeList ();
 
 	if (bRadar)
@@ -1109,7 +1108,7 @@ WIN (if (!redraw_screen) {)
 #endif
 WIN (})
 
-WIN (if (redraw_screen) redraw_screen = 0);
+WIN (if (bRedrawScreen) bRedrawScreen = 0);
 
 	if (bRadar) {
 		DrawAutomap (1);
@@ -1125,17 +1124,17 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		if (!Controls.automap_state && (leave_mode==1))
 			done=1;
 
-		if (!pause_game)	{
+		if (!bPauseGame)	{
 			ushort old_wiggle;
 			saved_control_info = Controls;				// Save controls so we can zero them
 			memset (&Controls,0,sizeof (control_info));	// Clear everything...
 			old_wiggle = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
 			gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
-			#ifdef NETWORK
+#ifdef NETWORK
 			if (MultiMenuPoll ())
 				done = 1;
-			#endif
-//			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
+#endif
+			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
 			gameData.objs.console->mType.physInfo.flags |= old_wiggle;	// Restore wiggle
 			Controls = saved_control_info;
 		}
@@ -1162,7 +1161,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			DoMessageStuff (&msg);
 			if (_RedrawScreen) {
 				_RedrawScreen = FALSE;
-				redraw_screen = 1;
+				bRedrawScreen = 1;
 				goto AutomapRedraw;
 			}
 				
@@ -1172,13 +1171,22 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		}
 		#endif
 
-		while ( (c=KeyInKey ()))	{
-			MultiDoFrame();
+		while (c=KeyInKey ()) {
+			if (!gameOpts->menus.nStyle)
+				MultiDoFrame();
 			switch (c) {
-			#ifndef NDEBUG
+#ifdef _DEBUG
 			case KEY_BACKSP: Int3 (); break;
-			#endif
-	
+#endif
+			case KEY_CTRLED + KEY_P:
+				if (gameOpts->menus.nStyle && IsMultiGame) {
+					if (gameData.app.bGamePaused)
+						ResumeGame ();
+					else
+						PauseGame ();
+					}
+				break;
+
 			case KEY_PRINT_SCREEN: {
 				if (AutomapHires) {
 				WINDOS (
@@ -1343,8 +1351,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forward_thrustTime*ZOOM_SPEED_FACTOR); 
 #endif
 		tangles.p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
-		tangles.h  += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
-		tangles.b  += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
+		tangles.h += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
+		tangles.b += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
 
 		if (Controls.vertical_thrustTime || Controls.sideways_thrustTime)	{
 			vmsAngVec	tangles1;
@@ -1370,6 +1378,8 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		if (amData.nViewDist > ZOOM_MAX_VALUE) 
 			amData.nViewDist = ZOOM_MAX_VALUE;
 
+		if (gameOpts->menus.nStyle && !gameData.app.bGamePaused)
+			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
 		DrawAutomap (0);
 
 		if (firstTime)	{
@@ -1378,7 +1388,7 @@ WIN (if (redraw_screen) redraw_screen = 0);
 		}
 
 		t2 = TimerGetFixedSeconds ();
-		if (pause_game)
+		if (bPauseGame)
 			gameData.time.xFrame=t2-t1;
 		t1 = t2;
 	}
@@ -1399,18 +1409,14 @@ WIN (if (redraw_screen) redraw_screen = 0);
 	}
 	GameFlushInputs ();
 
-	if (pause_game)
-	{
-		StartTime ();
-		DigiResumeDigiSounds ();
-	}
+if (gameData.app.bGamePaused)
+	ResumeGame ();
 
 #ifdef WINDOWS
 	nVRScreenMode = dd_VR_screegameStates.render.cockpit.nModeSave;
 #endif
-
-	gameStates.ogl.nContrast = nContrast;
-	gameStates.app.bAutoMap = 0;
+gameStates.ogl.nContrast = nContrast;
+gameStates.app.bAutoMap = 0;
 }
 
 //------------------------------------------------------------------------------

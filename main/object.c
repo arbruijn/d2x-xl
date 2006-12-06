@@ -1190,6 +1190,24 @@ if (!bHaveFlame) {
 
 // -----------------------------------------------------------------------------
 
+void CalcShipThrusterPos (tObject *objP, vmsVector *vPos)
+{
+if (gameOpts->render.bHiresModels) {
+	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
+	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 44));
+	VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 22);
+	}
+else {
+	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
+	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 50));
+	if (!gameStates.app.bFixModels)
+		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -(objP->size / 20));
+	VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 25);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderThrusterFlames (tObject *objP)
 {
 	int				h, i, j, k, l, nThrusters;
@@ -1242,17 +1260,7 @@ if (objP->nType == OBJ_PLAYER) {
 	fPulse = (float) pt->nPulse / 10.0f;
 	fSize = 0.5f + fLength * 0.5f;
 	nThrusters = 2;
-	if (gameOpts->render.bHiresModels) {
-		VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-		VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 44));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 22);
-		}
-	else {
-		VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
-		VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 50));
-		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -(objP->size / 20));
-		VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 25);
-		}
+	CalcShipThrusterPos (objP, vPos);
 	}
 else {
 	if (!bIsMissile [objP->id])
@@ -1286,7 +1294,7 @@ for (h = 0; h < nThrusters; h++) {
 	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
-	glCullFace (GL_BACK);
+	glCullFace (GL_FRONT);
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 		c [0] = c [1];
@@ -1554,7 +1562,7 @@ if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObje
 		}
 #ifdef _DEBUG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
-				 (nWindowNum || !gameStates.render.bExternalView)) { //don't render ship model if neither external view nor main view
+				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
 #else	 
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||

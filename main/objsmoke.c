@@ -131,7 +131,7 @@ void DoPlayerSmoke (tObject *objP, int i)
 	int			h, j, d, nParts, nType;
 	float			nScale;
 	tCloud		*pCloud;
-	vmsVector	pos, fn, mn;
+	vmsVector	vPos [2], fn, mn;
 	static int	bForward = 1;
 
 if (i < 0)
@@ -211,14 +211,10 @@ else {
 			SetSmokePartScale (h, nScale);
 			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
 			}
-		d = 8 * objP->size / 40;
+		CalcShipThrusterPos (objP, vPos);
 		for (j = 0; j < 2; j++)
-			if (pCloud = GetCloud (h, j)) {
-				VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-				VmVecScaleInc (&pos, &objP->position.mOrient.rVec, j ? d : -d);
-				VmVecScaleInc (&pos, &objP->position.mOrient.uVec,  -objP->size / 25);
-				SetCloudPos (pCloud, &pos);
-				}
+			if (pCloud = GetCloud (h, j))
+				SetCloudPos (pCloud, vPos + j);
 		return;
 		}
 	}

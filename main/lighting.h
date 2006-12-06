@@ -79,7 +79,7 @@ void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
 void toggle_headlight_active(void);
 
 // returns ptr to flickering light structure, or NULL if can't find
-flickering_light *FindFlicker(int nSegment, int nSide);
+tFlickeringLight *FindFlicker(int nSegment, int nSide);
 
 // turn flickering off (because light has been turned off)
 void DisableFlicker(int nSegment, int nSide);
@@ -90,7 +90,7 @@ void EnableFlicker(int nSegment, int nSide);
 // returns 1 if ok, 0 if error
 int AddFlicker(int nSegment, int nSide, fix delay, unsigned long mask);
 
-void ReadFlickeringLight(flickering_light *fl, CFILE *fp);
+void ReadFlickeringLight(tFlickeringLight *fl, CFILE *fp);
 
 void InitTextureBrightness (void);
 

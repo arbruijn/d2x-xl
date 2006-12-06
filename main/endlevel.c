@@ -88,14 +88,6 @@ typedef struct flythrough_data {
 
 //endlevel sequence states
 
-#define EL_OFF				0		//not in endlevel
-#define EL_FLYTHROUGH	1		//auto-flythrough in tunnel
-#define EL_LOOKBACK		2		//looking back at tPlayer
-#define EL_OUTSIDE		3		//flying outside for a while
-#define EL_STOPPED		4		//stopped, watching explosion
-#define EL_PANNING		5		//panning around, watching tPlayer
-#define EL_CHASING		6		//chasing tPlayer to station
-
 #define SHORT_SEQUENCE	1		//if defined, end sequnce when panning starts
 //#define STATION_ENABLED	1		//if defined, load & use space station model
 
@@ -851,14 +843,14 @@ fix satellite_size = i2f (400);
 #define SATELLITE_WIDTH		satellite_size
 #define SATELLITE_HEIGHT	 ((satellite_size*9)/4)		// ((satellite_size*5)/2)
 
-void RenderExternalScene (fix eye_offset)
+void RenderExternalScene (fix xEyeOffset)
 {
 	vmsVector delta;
 	g3sPoint p, top_pnt;
 
 viewerEye = gameData.objs.viewer->position.vPos;
-if (eye_offset)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, eye_offset);
+if (xEyeOffset)
+	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 G3SetViewMatrix (&gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 GrClearCanvas (BLACK_RGBA);
 G3StartInstanceMatrix (&vmdZeroVector, &surface_orient);
@@ -930,26 +922,26 @@ for (i = 0; i < MAX_STARS; i++) {
 
 //------------------------------------------------------------------------------
 
-void RenderEndLevelMine (fix eye_offset, int window_num)
+void RenderEndLevelMine (fix xEyeOffset, int nWindowNum)
 {
-	short start_seg_num;
+	short nStartSeg;
 
 viewerEye = gameData.objs.viewer->position.vPos;
 if (gameData.objs.viewer->nType == OBJ_PLAYER)
 	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, (gameData.objs.viewer->size*3)/4);
-if (eye_offset)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, eye_offset);
+if (xEyeOffset)
+	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode==FMODE_EDITOR)
 	viewerEye = gameData.objs.viewer->position.vPos;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
-	start_seg_num = gameData.endLevel.exit.nSegNum;
+	nStartSeg = gameData.endLevel.exit.nSegNum;
 	}
 else {
-	start_seg_num = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
-	if (start_seg_num==-1)
-		start_seg_num = gameData.objs.viewer->nSegment;
+	nStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	if (nStartSeg==-1)
+		nStartSeg = gameData.objs.viewer->nSegment;
 	}
 if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	vmsMatrix headm, viewm;
@@ -960,18 +952,18 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	}
 else
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
-RenderMine (start_seg_num, eye_offset, window_num);
+RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 }
 
 //-----------------------------------------------------------------------------
 
-void RenderEndLevelFrame (fix eye_offset, int window_num)
+void RenderEndLevelFrame (fix xEyeOffset, int nWindowNum)
 {
-G3StartFrame (0, !window_num);
+G3StartFrame (0, !nWindowNum);
 if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-	RenderEndLevelMine (eye_offset, window_num);
-else if (!window_num)
-	RenderExternalScene (eye_offset);
+	RenderEndLevelMine (xEyeOffset, nWindowNum);
+else if (!nWindowNum)
+	RenderExternalScene (xEyeOffset);
 G3EndFrame ();
 }
 

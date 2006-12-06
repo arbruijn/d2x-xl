@@ -40,7 +40,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 
 #define SHADOW_TEST				0
 #define NORM_INF					1
-#define INFINITY					500.0f
+#define INFINITY					400.0f	//20 standard cubes
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
@@ -83,7 +83,6 @@ extern int bSWCulling;
 #if SHADOWS
 extern int bZPass;
 #endif
-static int bContourEdges = 1;
 static int bTriangularize = 0;
 static int bIntrinsicFacing = 0;
 static int bFlatPolys = 1;
@@ -1253,6 +1252,65 @@ else {
 
 //------------------------------------------------------------------------------
 
+void G3RenderShadowVolumeFace (tOOF_vector *pv)
+{
+	tOOF_vector	v [4];
+
+memcpy (v, pv, 2 * sizeof (tOOF_vector));
+OOF_VecSub (v+3, v, &gameData.render.shadows.vLightPos);
+OOF_VecSub (v+2, v+1, &gameData.render.shadows.vLightPos);
+#if NORM_INF
+OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
+OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
+#else
+OOF_VecScale (v+3, INFINITY);
+OOF_VecScale (v+2, INFINITY);
+#endif
+OOF_VecInc (v+2, v+1);
+OOF_VecInc (v+3, v);
+glVertexPointer (3, GL_FLOAT, 0, v);
+#if DBG_SHADOWS
+if (bShadowTest)
+	glDrawArrays (GL_LINES, 0, 4);
+else
+#endif
+glDrawArrays (GL_QUADS, 0, 4);
+}
+
+//------------------------------------------------------------------------------
+
+void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv)
+{
+	tOOF_vector	v0, v1;
+
+#if DBG_SHADOWS
+if (bShadowTest == 1)
+	glColor4fv ((GLfloat *) shadowColor);
+else if (bShadowTest > 1)
+	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+#	if 0
+if (bShadowTest)
+	glBegin (GL_LINE_LOOP);
+else
+#	endif
+#endif
+glBegin (GL_TRIANGLE_FAN);
+for (pv += nv; nv; nv--) {
+	v0 = *(--pv);
+	OOF_VecSub (&v1, &v0, &vLightPos);
+#if NORM_INF
+	OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+#else
+	OOF_VecScale (&v1, INFINITY);
+#endif
+	OOF_VecInc (&v0, &v1);
+	glVertex3fv ((GLfloat *) &v0);
+	}	
+glEnd ();
+}
+
+//------------------------------------------------------------------------------
+
 int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
 	tOOF_vector	*pvf, v [4];
@@ -1548,7 +1606,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 #if SHADOWS
 	vmsVector		v, vLightDir;
 	short				*pnl;
-	int				i, j, bCalcCenter = 0;
+	int				h, i, j, bCalcCenter = 0;
 	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission] + nModel;
 
 Assert (objP->id < MAX_ROBOT_TYPES);
@@ -1560,32 +1618,51 @@ OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
 gameData.render.shadows.nLight = 0;
-for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
-	if (!gameData.render.shadows.pLight->bState)
-		continue;
-	if (!CanSeePoint (objP, &gameData.render.shadows.pLight->vPos))
-		continue;
-	VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
-	VmVecNormalize (&vLightDir);
-	if (gameData.render.shadows.nLight) {
-		for (j = 0; j < gameData.render.shadows.nLight; j++)
-			if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
-				break;
-		if (j < gameData.render.shadows.nLight)
+if (gameOpts->render.bFastShadows) {
+	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
+		gameData.render.shadows.pLight = gameData.render.lights.ogl.shader.lights + *pnl;
+		if (!gameData.render.shadows.pLight->bState)
 			continue;
+		if (!CanSeePoint (objP, &gameData.render.shadows.pLight->vPos))
+			continue;
+		VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
+		VmVecNormalize (&vLightDir);
+		if (gameData.render.shadows.nLight) {
+			for (j = 0; j < gameData.render.shadows.nLight; j++)
+				if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
+					break;
+			if (j < gameData.render.shadows.nLight)
+				continue;
+			}
+		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
+		if (gameStates.render.bShadowMaps)
+			RenderShadowMap (gameData.render.lights.ogl.lights + (gameData.render.shadows.pLight - gameData.render.lights.ogl.shader.lights));
+		else {
+			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
+			OOF_VecVms2Oof (&vLightPos, &v);
+			G3PolyModelVerts2Float (po);
+			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+			po->litFaces.nFaces = 0;
+			G3DrawSubModelShadow (po, po->subObjs.pSubObjs);
+			G3DoneInstance ();
+			}
 		}
-	gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
-	if (gameStates.render.bShadowMaps)
-		RenderShadowMap (gameData.render.shadows.pLight);
-	else {
-		G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
-		OOF_VecVms2Oof (&vLightPos, &v);
-		G3PolyModelVerts2Float (po);
-		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-		po->litFaces.nFaces = 0;
-		G3DrawSubModelShadow (po, po->subObjs.pSubObjs);
-		G3DoneInstance ();
+	}
+else {
+	h = OBJ_IDX (objP);
+	j = gameData.render.shadows.pLight - gameData.render.lights.ogl.shader.lights;
+	pnl = gameData.render.shadows.objLights [h];
+	for (i = 0; i < gameOpts->render.nMaxLights; i++, pnl++) {
+		if (*pnl < 0)
+			break;
+		if (*pnl == j) {
+			vLightPos = gameData.render.shadows.vLightPos;
+			G3PolyModelVerts2Float (po);
+			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+			po->litFaces.nFaces = 0;
+			G3DrawSubModelShadow (po, po->subObjs.pSubObjs);
+			G3DoneInstance ();
+			}
 		}
 	}
 glDisable (GL_TEXTURE_2D);

@@ -169,7 +169,8 @@ static char *pszSize [4];
 static char *pszLife [3];
 
 #if DBG_SHADOWS
-extern int bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, bSWCulling;
+extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, 
+				bWallShadows, bSWCulling;
 #endif
 
 //------------------------------------------------------------------------------
@@ -1810,7 +1811,8 @@ void ShadowOptionsMenu ()
 	char	szMaxLights [50];
 #if DBG_SHADOWS
 	char	szShadowTest [50];
-	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optFastShadows;
+	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,
+			optFastShadows;
 #endif
 
 do {
@@ -1834,6 +1836,7 @@ do {
 	optFrontFaces =
 	optBackFaces =
 	optSWCulling =
+	optWallShadows =
 	optFastShadows =
 	nShadowTestOpt = -1;
 #endif
@@ -1842,6 +1845,8 @@ do {
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
 		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.nMaxLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
 		nMaxLightsOpt = opt++;
+		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.bFastShadows, KEY_F, HTX_FAST_SHADOWS);
+		optFastShadows = opt++;
 		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.bPlayerShadows, KEY_R, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.bRobotShadows, KEY_R, HTX_ROBOT_SHADOWS);
@@ -1853,8 +1858,6 @@ do {
 #if DBG_SHADOWS
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.bFastShadows, KEY_F, HTX_FAST_SHADOWS);
-		optFastShadows = opt++;
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
 		optZPass = opt++;
 		if (!bZPass) {
@@ -1871,6 +1874,8 @@ do {
 			ADD_CHECK (opt, "render back faces", bBackFaces, 0, NULL);
 			optBackFaces = opt++;
 			}
+		ADD_CHECK (opt, "render wall shadows", bWallShadows, 0, NULL);
+		optWallShadows = opt++;
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
@@ -1883,18 +1888,19 @@ do {
 		if (i < 0)
 			break;
 		} 
+	GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
 	GET_VAL (gameOpts->render.bPlayerShadows, optPlayerShadows);
 	GET_VAL (gameOpts->render.bRobotShadows, optRobotShadows);
 	GET_VAL (gameOpts->render.bMissileShadows, optMissileShadows);
 	GET_VAL (gameOpts->render.bReactorShadows, optReactorShadows);
 #if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
-		GET_VAL (gameOpts->render.bFastShadows, optFastShadows);
 		GET_VAL (bZPass, optZPass);
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
 		GET_VAL (bFrontFaces, optFrontFaces);
 		GET_VAL (bBackFaces, optBackFaces);
+		GET_VAL (bWallShadows, optWallShadows);
 		GET_VAL (bSWCulling, optSWCulling);
 		GET_VAL (bShadowVolume, optShadowVolume);
 		}
@@ -2729,7 +2735,7 @@ do {
 		optLightingOpts = opt++;
 		ADD_MENU (opt, TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
-		ADD_MENU (opt, TXT_SHADOW_OPTIONS, KEY_H, HTX_RENDER_SHADOWOPTS);
+		ADD_MENU (opt, TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);
 		optShadowOpts = opt++;
 		ADD_MENU (opt, TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optEffectOpts = opt++;

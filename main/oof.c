@@ -49,6 +49,7 @@ int bRearCap = 1;
 int bFrontFaces = 1;
 int bBackFaces = 1;
 int bShadowVolume = 1;
+int bWallShadows = 1;
 int bSWCulling = 0;
 #endif
 
@@ -2442,20 +2443,15 @@ int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.nMaxLights) && (*pnl >= 0); i++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.lights.ogl.lights + *pnl;
+	gameData.render.shadows.pLight = gameData.render.lights.ogl.shader.lights + *pnl;
 	if (!gameData.render.shadows.pLight->bState)
 		continue;
 	gameData.render.shadows.nLight++;
-#if 0
-	OOF_VecVms2Oof (&vrLightPos, &gameData.render.shadows.pLight->vPos);
-#else
-	G3TransformPoint (&vl, &gameData.render.shadows.pLight->vPos, 0);
-	OOF_VecVms2Oof (&vrLightPos, &vl);
-#endif
+	memcpy (&vrLightPos, gameData.render.shadows.pLight->pos + 1, sizeof (tOOF_vector));
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
 	if (gameOpts->render.bFastShadows)
-		RenderShadow (f2fl (VmVecMag (VmVecSub (&h, &gameData.render.shadows.pLight->vPos, &objP->position.vPos))));
+		RenderShadow (0);
 	}
 return 1;
 }

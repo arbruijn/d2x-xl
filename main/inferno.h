@@ -790,9 +790,10 @@ typedef struct tOglMaterial {
 
 typedef struct tShaderLight {
 #if 1
-	fVector		color;
+	vmsVector	vPos;
 	fVector		pos [2];
 	fVector		dir;
+	fVector		color;
 	float			rad;
 #endif
 	float			brightness;
@@ -802,6 +803,8 @@ typedef struct tShaderLight {
 	ubyte			bState;
 	ubyte			bSpot;
 	ubyte			nType;
+	ubyte			bShadow;
+	ubyte			bExclusive;
 } tShaderLight;
 
 typedef struct tShaderLightData {
@@ -827,18 +830,18 @@ typedef struct tOglLightData {
 extern int nMaxNearestLights [21];
 
 //Flickering light system
-typedef struct flickering_light {
+typedef struct tFlickeringLight {
 	short				nSegment;
 	short				nSide;
 	unsigned long	mask;     // determines flicker pattern
 	fix				timer;    // time until next change
 	fix				delay;    // time between changes
-} flickering_light;
+} tFlickeringLight;
 
 #define MAX_FLICKERING_LIGHTS 1000
 
 typedef struct tFlickerLightData {
-	flickering_light	lights [MAX_FLICKERING_LIGHTS];
+	tFlickeringLight	lights [MAX_FLICKERING_LIGHTS];
 	int					nLights;
 } tFlickerLightData;
 
@@ -853,14 +856,16 @@ typedef struct tLightData {
 } tLightData;
 
 typedef struct tShadowData {
-	short			nLight;
-	short			nLights;
-	tOglLight	*pLight;
-	short			nShadowMaps;
-	tCamera		shadowMaps [MAX_SHADOW_MAPS];
-	tObject		lightSource;
-	vmsVector	vLightDir [MAX_SHADOW_LIGHTS];
-	ubyte			nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
+	short				nLight;
+	short				nLights;
+	tShaderLight	*pLight;
+	short				nShadowMaps;
+	tCamera			shadowMaps [MAX_SHADOW_MAPS];
+	tObject			lightSource;
+	tOOF_vector		vLightPos;
+	vmsVector		vLightDir [MAX_SHADOW_LIGHTS];
+	short				objLights [MAX_OBJECTS][MAX_SHADOW_LIGHTS];
+	ubyte				nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 } tShadowData;
 
 #include "morph.h"

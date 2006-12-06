@@ -414,7 +414,7 @@ void ShowInGameWarning (char *s);
 
 void GetSlowTick (void);
 /*
- * reads a flickering_light structure from a CFILE
+ * reads a tFlickeringLight structure from a CFILE
  */
 extern short maxfps;
 extern int timer_paused;

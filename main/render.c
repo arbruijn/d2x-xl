@@ -58,6 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mouse.h"
 #include "particles.h"
 #include "globvars.h"
+#include "interp.h"
 #include "oof.h"
 
 #ifdef OGL
@@ -66,6 +67,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //------------------------------------------------------------------------------
+
+#if DBG_SHADOWS
+extern int bShadowTest;
+extern int bFrontCap;
+extern int bRearCap;
+extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
+extern int bSWCulling;
+extern int bWallShadows;
+#endif
+#if SHADOWS
+extern int bZPass;
+#endif
 
 extern tFaceColor tMapColor, lightColor, vertColors [4];
 extern tRgbColorf globalDynColor;
@@ -103,9 +118,7 @@ static int renderState = -1;
 fix xRenderZoom = 0x9000;					//the player's zoom factor
 fix xRenderZoomScale = 1;					//the player's zoom factor
 
-#ifdef _DEBUG
 ubyte bObjectRendered [MAX_OBJECTS];
-#endif
 
 GLuint glSegOccQuery [MAX_SEGMENTS];
 GLuint glObjOccQuery [MAX_OBJECTS];
@@ -638,6 +651,44 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void RenderFaceShadow (tFaceProps *propsP)
+{
+	int			i, nv = propsP->nv;
+	g3sPoint		*p;
+	tOOF_vector	v [9];
+
+for (i = 0; i < nv; i++) {
+	p = gameData.segs.points + propsP->vp [i];
+	if (p->p3_index < 0)
+		OOF_VecVms2Oof (v + i, &p->p3_vec);
+	else
+		memcpy (v + i, gameData.render.pVerts + p->p3_index, sizeof (tOOF_vector));
+	}
+v [nv] = v [0];
+glEnableClientState (GL_VERTEX_ARRAY);
+glVertexPointer (3, GL_FLOAT, 0, v);
+#if DBG_SHADOWS
+if (bShadowTest) {
+	if (bFrontCap)
+		glDrawArrays (GL_LINE_LOOP, 0, nv);
+	}
+else
+#endif
+glDrawArrays (GL_TRIANGLE_FAN, 0, nv);
+#if DBG_SHADOWS
+if (!bShadowTest || bShadowVolume)
+#endif
+for (i = 0; i < nv; i++)
+	G3RenderShadowVolumeFace (v + i);
+glDisableClientState (GL_VERTEX_ARRAY);
+#if DBG_SHADOWS
+if (!bShadowTest || bRearCap)
+#endif
+G3RenderFarShadowCapFace (v, nv);
+}
+
+//------------------------------------------------------------------------------
+
 grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 
 #if LIGHTMAPS
@@ -652,6 +703,17 @@ void RenderFace (tFaceProps *propsP, int offs, int bRender)
 
 if (propsP->nBaseTex < 0)
 	return;
+if (gameStates.render.nShadowPass == 2) {
+#if DBG_SHADOWS
+	if (!bWallShadows)
+		return;
+#endif
+	G3SetCullAndStencil (0, 0);
+	RenderFaceShadow (propsP);
+	G3SetCullAndStencil (1, 0);
+	RenderFaceShadow (propsP);
+	return;
+	}
 #if 1
 props = *propsP;
 memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
@@ -693,12 +755,12 @@ if (!bRender)
 #endif
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
-	g3sPoint	*pointlist [8];
+	g3sPoint		*pointlist [8];
 	tSegment		*segP = gameData.segs.segments + props.segNum;
 	tSide			*sideP = segP->sides + props.sideNum;
 	tCamera		*pc = NULL;
 
-Assert(props.nv <= 4);
+	Assert(props.nv <= 4);
 	for (i = 0; i < props.nv; i++)
 		pointlist [i] = gameData.segs.points + props.vp [i];
 #if 1
@@ -1213,13 +1275,13 @@ void renderObject_search(tObject *objP)
 //------------------------------------------------------------------------------
 
 extern ubyte DemoDoingRight, DemoDoingLeft;
-void DoRenderObject(int nObject, int nWindowNum)
+void DoRenderObject(int nObject, int nWindow)
 {
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
 	tObject *objP = gameData.objs.objects+nObject, *hObj;
-	tWindowRenderedData *wrd = windowRenderedData + nWindowNum;
+	tWindowRenderedData *wrd = windowRenderedData + nWindow;
 	int count = 0;
 	int n;
 
@@ -1229,20 +1291,14 @@ void DoRenderObject(int nObject, int nWindowNum)
 	if (obj == gameData.objs.console)
 		return;
 #endif
-#if 0 //def OGL_ZBUF
-if (!gameOpts->legacy.bZBuf) {
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-#endif
 	Assert(nObject < MAX_OBJECTS);
 #ifdef _DEBUG
 	if (bObjectRendered [nObject]) {		//already rendered this...
 		Int3();		//get Matt!!!
 		return;
 	}
-	bObjectRendered [nObject] = 1;
 #endif
+	bObjectRendered [nObject] = 1;
    if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 	  if ((DemoDoingLeft==6 || DemoDoingRight==6) && objP->nType==OBJ_PLAYER) {
 			// A nice fat hack: keeps the tPlayer ship from showing up in the
@@ -1257,7 +1313,7 @@ if (!gameOpts->legacy.bZBuf) {
 	//	that the guided missile system will know what gameData.objs.objects to look at.
 	//	I didn't know we had guided missiles before the release of D1. --MK
 	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
-		//Assert(windowRenderedData [nWindowNum].renderedObjects < MAX_RENDERED_OBJECTS);
+		//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
 		//	This peculiar piece of code makes us keep track of the most recently rendered gameData.objs.objects, which
 		//	are probably the higher priority gameData.objs.objects, without overflowing the buffer
 		if (wrd->numObjects >= MAX_RENDERED_OBJECTS) {
@@ -1283,14 +1339,14 @@ if (!gameOpts->legacy.bZBuf) {
 	else
 #endif
 		//NOTE LINK TO ABOVE
-		RenderObject(objP, nWindowNum);
+		RenderObject(objP, nWindow);
 
 	for (n=objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
 		hObj = gameData.objs.objects + n;
 		Assert(hObj->nType == OBJ_FIREBALL);
 		Assert(hObj->controlType == CT_EXPLOSION);
 		Assert(hObj->flags & OF_ATTACHED);
-		RenderObject(hObj, nWindowNum);
+		RenderObject(hObj, nWindow);
 	}
 #ifdef EDITOR
 	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index)
@@ -1406,16 +1462,19 @@ if (r > left)
 
 // -----------------------------------------------------------------------------------
 
-void RenderSegment (short nSegment, int nWindowNum)
+void RenderSegment (short nSegment, int nWindow)
 {
 	tSegment		*seg = gameData.segs.segments+nSegment;
 	g3s_codes 	cc;
 	short			sn;
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
-	 (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass >= 2) : (gameStates.render.nShadowPass == 2)))
+if (EGI_FLAG (bShadows, 0, 0) && gameOpts->render.bFastShadows && (gameStates.render.nShadowPass >= 2))
 	return;
+#	if 0
+if (gameStates.render.nShadowPass == 2)
+	return;
+#	endif
 #endif
 Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
@@ -2352,7 +2411,7 @@ void StartLightingFrame (tObject *viewer);
 
 void RenderShadow (float fDist)
 {
-	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.8f};
+	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.7f};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -2363,6 +2422,9 @@ glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
 glDisable (GL_DEPTH_TEST);
 glDepthMask (0);
+glColorMask (1,1,1,1);
+glCullFace (GL_BACK);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glColor4fv (shadowHue);// / fDist);
 glBegin (GL_QUADS);
@@ -2438,7 +2500,7 @@ for (pc = gameData.render.shadows.shadowMaps; gameData.render.shadows.nShadowMap
 
 //------------------------------------------------------------------------------
 
-void ApplyShadowMaps (short nStartSegNum, fix nEyeOffset, int nWindowNum)
+void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
 {	
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
@@ -2486,7 +2548,7 @@ for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shad
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif
-RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
+RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1
 glMatrixMode (GL_TEXTURE);
 glLoadIdentity ();
@@ -2503,7 +2565,54 @@ DestroyShadowMaps ();
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix nEyeOffset, short *pnStartSegNum)
+int GatherShadowLightSources (void)
+{
+	tObject			*objP = gameData.objs.objects;
+	int				h, i, j, n, m = gameOpts->render.nMaxLights;
+	short				*pnl;
+//	tOglLight		*pl;
+	tShaderLight	*psl;
+	vmsVector		vLightDir;
+
+psl = gameData.render.lights.ogl.shader.lights;
+for (h = 0, i = gameData.render.lights.ogl.nLights; i; i--, psl++)
+	psl->bShadow =
+	psl->bExclusive = 0;
+for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
+	if (!bObjectRendered [h])
+		continue;
+	pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
+	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
+		psl = gameData.render.lights.ogl.shader.lights + *pnl;
+		if (!psl->bState)
+			continue;
+		if (!CanSeePoint (objP, &psl->vPos))
+			continue;
+		VmVecSub (&vLightDir, &objP->position.vPos, &psl->vPos);
+		VmVecNormalize (&vLightDir);
+		if (gameData.render.shadows.nLight) {
+			for (j = 0; j < gameData.render.shadows.nLight; j++)
+				if (abs (VmVecDot (&vLightDir, gameData.render.shadows.vLightDir + j)) > 2 * F1_0 / 3) // 60 deg
+					break;
+			if (j < gameData.render.shadows.nLight)
+				continue;
+			}
+		gameData.render.shadows.vLightDir [n++] = vLightDir;
+		gameData.render.shadows.objLights [h][n] = i;
+		psl->bShadow = 1;
+		}
+	gameData.render.shadows.objLights [h][n] = -1;
+	}
+psl = gameData.render.lights.ogl.shader.lights;
+for (h = 0, i = gameData.render.lights.ogl.nLights; i; i--, psl++)
+	if (psl->bShadow)
+		h++;
+return h;
+}
+
+//------------------------------------------------------------------------------
+
+void SetRenderView (fix nEyeOffset, short *pnStartSeg)
 {
 	static int bStopZoom;
 
@@ -2518,13 +2627,13 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	*pnStartSegNum = gameData.objs.viewer->nSegment;
+	*pnStartSeg = gameData.objs.viewer->nSegment;
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 	}
 else {
-	*pnStartSegNum = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
-	if (*pnStartSegNum == -1)
-		*pnStartSegNum = gameData.objs.viewer->nSegment;
+	*pnStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	if (*pnStartSeg == -1)
+		*pnStartSeg = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
@@ -2605,12 +2714,86 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RenderFrame (fix nEyeOffset, int nWindowNum)
+void RenderFastShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
-	short nStartSegNum;
+#if 0//OOF_TEST_CUBE
+#	if 1
+for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
+#	else
+for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
+#	endif
+#endif
+	{
+	gameStates.render.nShadowPass = 2;
+	OglStartFrame (0, 0);
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	//RenderObjectShadows ();
+	RenderMine (nStartSeg, nEyeOffset, nWindow);
+	}
+#ifdef _DEBUG
+if (!bShadowTest) 
+#endif
+	{
+	gameStates.render.nShadowPass = 3;
+	OglStartFrame (0, 0);
+	if	(gameStates.render.bShadowMaps) {
+#ifdef _DEBUG
+		if (gameStates.render.bExternalView)
+#else		
+		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
+#endif			 	
+			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+		else
+			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
+		}
+	else {
+		RenderMine (nStartSeg, nEyeOffset, nWindow);
+		RenderShadow (0.0f);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
+{
+	short				i,	nLights = GatherShadowLightSources ();
+	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+
+for (i = 0; i < gameData.render.lights.ogl.nLights; i++, psl++) {
+	if (!psl->bShadow)
+		continue;
+	gameData.render.shadows.pLight = psl;
+	psl->bExclusive = 1;
+#if 1
+	gameStates.render.nShadowPass = 2;
+	OglStartFrame (0, 0);
+	memcpy (&gameData.render.shadows.vLightPos, psl->pos + 1, sizeof (tOOF_vector));
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	RenderMine (nStartSeg, nEyeOffset, nWindow);
+#endif
+	gameStates.render.nShadowPass = 3;
+	OglStartFrame (0, 0);
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
+	RenderMine (nStartSeg, nEyeOffset, nWindow);
+	psl->bExclusive = 0;
+	break;
+	}
+#if 0
+gameStates.render.nShadowPass = 4;
+RenderMine (nStartSeg, nEyeOffset, nWindow);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void RenderFrame (fix nEyeOffset, int nWindow)
+{
+	short nStartSeg;
 
 if (gameStates.app.bEndLevelSequence) {
-	RenderEndLevelFrame (nEyeOffset, nWindowNum);
+	RenderEndLevelFrame (nEyeOffset, nWindow);
 	gameData.app.nFrameCount++;
 	return;
 	}
@@ -2626,10 +2809,10 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0))	{
 StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
 #ifdef OGL_ZBUF
 if (!gameOpts->legacy.bZBuf)
-	gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindowNum;
+	gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 #endif
-G3StartFrame (0, !(nWindowNum || gameStates.render.cameras.bActive));
-SetRenderView (nEyeOffset, &nStartSegNum);
+G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
+SetRenderView (nEyeOffset, &nStartSeg);
 if (nClearWindow == 1) {
 	if (!nClearWindowColor)
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
@@ -2641,50 +2824,15 @@ if (bShowOnlyCurSide)
 #endif
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && 
-	 !(nWindowNum || gameStates.render.cameras.bActive)) {
+	 !(nWindow || gameStates.render.cameras.bActive)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 		OglStartFrame (0, 0);
-		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
-		}
-#if 0//OOF_TEST_CUBE
-#	if 1
-	for (bShadowTest = 1; bShadowTest >= 0; bShadowTest--) 
-#	else
-	for (bShadowTest = 0; bShadowTest < 2; bShadowTest++) 
-#	endif
-#endif
-		{
-		gameStates.render.nShadowPass = 2;
-		OglStartFrame (0, 0);
-		gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-		//RenderObjectShadows ();
-		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
-		}
-#ifdef _DEBUG
-	if (!bShadowTest) 
-#endif
-		{
-		gameStates.render.nShadowPass = 3;
-		OglStartFrame (0, 0);
-		if	(gameStates.render.bShadowMaps) {
-#ifdef _DEBUG
-			if (gameStates.render.bExternalView)
-#else		
-			if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
-#endif			 	
-				G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
-			else
-				G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
-			ApplyShadowMaps (nStartSegNum, nEyeOffset, nWindowNum);
-			}
-		else if (gameOpts->render.bFastShadows) {
-			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
-			RenderShadow (0.0f);
-			}
-		else {
-			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
-			}
+		RenderMine (nStartSeg, nEyeOffset, nWindow);
+		if (gameOpts->render.bFastShadows)
+			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+		else
+			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
 		RenderSmoke ();
 		}
 	}
@@ -2692,16 +2840,16 @@ else
 #endif
 	{
 	if (gameStates.render.nRenderPass < 0)
-		RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
+		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
 		for (gameStates.render.nRenderPass = 0;
 			gameStates.render.nRenderPass < 2;
 			gameStates.render.nRenderPass++) {
 			OglStartFrame (0, 1);
-			RenderMine (nStartSegNum, nEyeOffset, nWindowNum);
+			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
-	if (!nWindowNum)
+	if (!nWindow)
 		RenderSmoke ();
 	}
 gameStates.render.nShadowPass = 0;
@@ -2714,13 +2862,13 @@ G3EndFrame ();
 
 int nFirstTerminalSeg;
 
-void UpdateRenderedData(int nWindowNum, tObject *viewer, int rear_viewFlag, int user)
+void UpdateRenderedData(int nWindow, tObject *viewer, int rear_viewFlag, int user)
 {
-	Assert(nWindowNum < MAX_RENDERED_WINDOWS);
-	windowRenderedData [nWindowNum].frame = gameData.app.nFrameCount;
-	windowRenderedData [nWindowNum].viewer = viewer;
-	windowRenderedData [nWindowNum].rear_view = rear_viewFlag;
-	windowRenderedData [nWindowNum].user = user;
+	Assert(nWindow < MAX_RENDERED_WINDOWS);
+	windowRenderedData [nWindow].frame = gameData.app.nFrameCount;
+	windowRenderedData [nWindow].viewer = viewer;
+	windowRenderedData [nWindow].rear_view = rear_viewFlag;
+	windowRenderedData [nWindow].user = user;
 }
 
 //------------------------------------------------------------------------------
@@ -2800,7 +2948,7 @@ nSegListSize = j;
 
 //------------------------------------------------------------------------------
 
-void BuildSegmentList (short nStartSegNum, int nWindowNum)
+void BuildSegmentList (short nStartSeg, int nWindow)
 {
 	int		lCnt, sCnt, eCnt, wid, nSide;
 	int		l, i;
@@ -2815,8 +2963,8 @@ void BuildSegmentList (short nStartSegNum, int nWindowNum)
 	int		nChildren, bCheckBehind;					//how many sides in childList
 	tSegment	*segP;
 
-if (bCheckBehind = (gameStates.render.nShadowPass != 2))
-	memset (bVisited, 0, sizeof(bVisited [0])*(gameData.segs.nLastSegment+1));
+if (bCheckBehind = (gameStates.render.nShadowPass == 1))
+	memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
 nVisited = 0;
 memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
@@ -2827,16 +2975,16 @@ memset (nRenderList, 0xff, sizeof (nRenderList));
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
 
-nRenderList [0] = nStartSegNum; 
+nRenderList [0] = nStartSeg; 
 nSegDepth [0] = 0;
-VISIT (nStartSegNum);
-nRenderPos [nStartSegNum] = 0;
+VISIT (nStartSeg);
+nRenderPos [nStartSeg] = 0;
 sCnt = 0;
 lCnt = eCnt = 1;
 
 #ifdef _DEBUG
 if (bPreDrawSegs)
-	RenderSegment (nStartSegNum, nWindowNum);
+	RenderSegment (nStartSeg, nWindow);
 #endif
 
 renderWindows [0].left =
@@ -2996,7 +3144,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 
 #ifdef _DEBUG
 						if (bPreDrawSegs)
-							RenderSegment (nChild, nWindowNum);
+							RenderSegment (nChild, nWindow);
 #endif
 no_add:
 ;
@@ -3035,7 +3183,7 @@ void gl_buildObject_list (void)
 
 //------------------------------------------------------------------------------
 
-int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWindowNum)
+int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWindow)
 {
 #if 0
 	short		nSegment;
@@ -3052,7 +3200,7 @@ if (gameOpts->legacy.bZBuf)
 	return 0;
 #if OGL_QUERY
 for (renderState = nStartState; renderState < nEndState; renderState++) {
-	int bOccQuery = bOcclusionQuery && 1 && !nWindowNum && !renderState;
+	int bOccQuery = bOcclusionQuery && 1 && !nWindow && !renderState;
 	if (bOccQuery) {
 		glGenQueries (gameData.segs.nLastSegment + 1, glSegOccQuery);
 		glGenQueries (MAX_OBJECTS, glObjOccQuery);
@@ -3093,7 +3241,7 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 					bRenderLayer--;
 					}
 		      glBeginQuery (GL_SAMPLES_PASSED_ARB, glSegOccQuery [nSegment]);
-				RenderSegment (nSegment, nWindowNum);
+				RenderSegment (nSegment, nWindow);
 		      glEndQuery (GL_SAMPLES_PASSED_ARB);
 				glGetQueryObjectuiv (glSegOccQuery [nSegment], GL_QUERY_RESULT_ARB, segFragC + nSegment);
 #if 1
@@ -3111,7 +3259,7 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 				else {
 					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
 				      glBeginQuery (GL_SAMPLES_PASSED_ARB, glObjOccQuery [nObject]);
-						DoRenderObject (nObject, nWindowNum);
+						DoRenderObject (nObject, nWindow);
 				      glEndQuery (GL_SAMPLES_PASSED_ARB);
 						glGetQueryObjectuiv (glObjOccQuery [nObject], GL_QUERY_RESULT_ARB, objFragC + nObject);
 						}
@@ -3129,13 +3277,13 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 						continue;
 					}
 #endif
-				RenderSegment (nSegment, nWindowNum);
+				RenderSegment (nSegment, nWindow);
 #if 1
-				if (1 && !nWindowNum && !renderState && bRenderSegObjs [nSegment])
+				if (1 && !nWindow && !renderState && bRenderSegObjs [nSegment])
 					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
 						//if (objFragC [nObject])
 						if (bRenderObjs [nObject])
-							DoRenderObject (nObject, nWindowNum);
+							DoRenderObject (nObject, nWindow);
 #endif
 				}
 		}
@@ -3161,10 +3309,10 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 			}
 #if 0
 	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++)
-		RenderSegment (nSegment, nWindowNum);
+		RenderSegment (nSegment, nWindow);
 #else
 	while (nnRenderSegs)
-		RenderSegment (nRenderList [--nnRenderSegs], nWindowNum);
+		RenderSegment (nRenderList [--nnRenderSegs], nWindow);
 #endif
 	}
 #endif //OGL_QUERY
@@ -3188,7 +3336,7 @@ if (gameOpts->render.bOptimize) {
 
 //------------------------------------------------------------------------------
 
-void RenderObjList (int listnum, int nWindowNum)
+void RenderObjList (int listnum, int nWindow)
 {
 if (migrateObjects) {
 	int objnp = 0;
@@ -3215,7 +3363,7 @@ if (migrateObjects) {
 				}
 			else	
 #endif
-				DoRenderObject (objNum, nWindowNum);	// note link to above else
+				DoRenderObject (objNum, nWindow);	// note link to above else
 			objnp++;
 			}
 		}
@@ -3225,7 +3373,7 @@ if (migrateObjects) {
 
 //------------------------------------------------------------------------------
 
-void RenderVisibleObjects (int nWindowNum)
+void RenderVisibleObjects (int nWindow)
 {
 	int	i, j;
 
@@ -3237,14 +3385,14 @@ for (i = nRenderSegs; i--;)  {
 	j = nRenderList [i];
 	if ((j != -1) && !VISITED (j)) {
 		VISIT (j);
-		RenderObjList (i, nWindowNum);
+		RenderObjList (i, nWindow);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (int nWindowNum)
+void RenderFaceList (int nWindow)
 {
 #if APPEND_LAYERED_TEXTURES
 if (gameOpts->render.bOptimize) {
@@ -3280,7 +3428,7 @@ if (gameOpts->render.bOptimize) {
 				}
 			}
 		}
-	RenderVisibleObjects (nWindowNum);
+	RenderVisibleObjects (nWindow);
 	}
 #endif
 }
@@ -3319,7 +3467,7 @@ for (i = 0; i < nRenderSegs;i++) {
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-void RenderMine (short nStartSegNum, fix nEyeOffset, int nWindowNum)
+void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 	int		nn;
 	short		nSegment;
@@ -3331,19 +3479,16 @@ void RenderMine (short nStartSegNum, fix nEyeOffset, int nWindowNum)
 #endif
 
 	//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
-	windowRenderedData [nWindowNum].numObjects = 0;
+	windowRenderedData [nWindow].numObjects = 0;
 
 #ifdef LASER_HACK
 	Hack_nlasers = 0;
 #endif
-#ifdef _DEBUG
 memset (bObjectRendered, 0, (gameData.objs.nLastObject + 1) * sizeof (bObjectRendered [0]));
-#endif
 	//set up for rendering
 
-if ((gameStates.render.nRenderPass <= 0) ||
-	 gameStates.render.bShadowMaps || 
-	 (gameStates.render.nShadowPass < 2)) {
+if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) ||
+	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	TransformOglLights (1, 1);
 #if defined(EDITOR) && !defined(NDEBUG)
@@ -3360,11 +3505,12 @@ if ((gameStates.render.nRenderPass <= 0) ||
 	else 
 #endif
 
-if ((gameStates.render.nRenderPass <= 0) || (gameStates.render.nShadowPass == 2)) {
-	BuildSegmentList (nStartSegNum, nWindowNum);		//fills in nRenderList & nRenderSegs
+if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) || 
+(gameStates.render.nShadowPass == 2)) {
+	BuildSegmentList (nStartSeg, nWindow);		//fills in nRenderList & nRenderSegs
 	//GatherVisibleLights ();
 #if OGL_QUERY
-	if (1 && !nWindowNum) {
+	if (1 && !nWindow) {
 		memset (bRenderSegObjs, 0, sizeof (bRenderSegObjs));
 		memset (bRenderObjs, 0, sizeof (bRenderObjs));
 		nRenderObjs = 0;
@@ -3385,7 +3531,7 @@ if ((gameStates.render.nRenderPass <= 0) || (gameStates.render.nShadowPass == 2)
 				visited2 [nSegment] = 1;
 		}
 #endif
-	if (gameStates.render.nRenderPass <= 0) {
+	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildObjectLists (nRenderSegs);
 		if (nEyeOffset <= 0)	// Do for left eye or zero.
 			SetDynamicLight();
@@ -3415,7 +3561,7 @@ if (nClearWindow == 2) {
 		}
 	}
 #if APPEND_LAYERED_TEXTURES
-if (gameOpts->render.bOptimize || (1 && !nWindowNum)) {
+if (gameOpts->render.bOptimize || (1 && !nWindow)) {
 #else
 if (1) {
 #endif
@@ -3446,7 +3592,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				nWindowClipBot = rwP->bot;
 				}
 #endif
-			RenderSegment (nSegment, nWindowNum);
+			RenderSegment (nSegment, nWindow);
 #if APPEND_LAYERED_TEXTURES
 			if (!(renderState || 1) || gameOpts->render.bOptimize)
 #else
@@ -3465,12 +3611,12 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				nWindowClipBot = grdCurCanv->cv_bitmap.bm_props.h-1;
 				}
 			if (!1)
-				RenderObjList (nn, nWindowNum);
+				RenderObjList (nn, nWindow);
 			}
 		}
 #ifdef LASER_HACK								
 	for (i = 0; i < Hack_nlasers; i++)
-		DoRenderObject (Hack_laser_list [i], nWindowNum);
+		DoRenderObject (Hack_laser_list [i], nWindow);
 #endif
 	}
 #ifdef EDITOR
@@ -3480,14 +3626,14 @@ if (bOutLineMode)
 	OutlineSegSide (Cursegp, Curside, Curedge, Curvert);
 #	endif
 #endif
-//RenderVisibleObjects (nWindowNum);
+//RenderVisibleObjects (nWindow);
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bHaveSkyBox = 0;
 	renderState = 4;
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
 			gameStates.render.bHaveSkyBox = 1;
-			RenderSegment (nSegment, nWindowNum);
+			RenderSegment (nSegment, nWindow);
 			}
 	}
 renderState = 1;
@@ -3497,17 +3643,17 @@ if (1) {
 		nSegment = nRenderList [--nn];
 		if ((nSegment != -1) && !VISITED (nSegment)) {
 			VISIT (nSegment);
-			RenderSegment (nSegment, nWindowNum);
-			RenderObjList (nn, nWindowNum);
+			RenderSegment (nSegment, nWindow);
+			RenderObjList (nn, nWindow);
 			}
 		}
 	}
 #ifdef OGL_ZBUF
 if (gameOpts->render.bFastShadows ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
-	GlRenderSegments (2, 3, nRenderSegs, nWindowNum);
+	GlRenderSegments (2, 3, nRenderSegs, nWindow);
 #endif
 #if APPEND_LAYERED_TEXTURES
-RenderFaceList (nWindowNum);
+RenderFaceList (nWindow);
 #endif
 }
 #ifdef EDITOR
