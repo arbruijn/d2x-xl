@@ -115,7 +115,7 @@ int pcx_get_dimensions( char *filename, int *width, int *height)
 
 //------------------------------------------------------------------------------
 
-int pcx_read_bitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
+int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader header;
 	CFILE * PCXfile;
@@ -439,7 +439,7 @@ int pcx_read_fullscr(char * filename, int bD1Mission)
 
 GrInitBitmapData (&bm);
 BM_MASK (&bm) = NULL;
-pcx_error = pcx_read_bitmap (filename, &bm, BM_LINEAR, bD1Mission);
+pcx_error = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
 if (pcx_error == PCX_ERROR_NONE) {
 #ifdef OGL
 	GrPaletteStepLoad (NULL);

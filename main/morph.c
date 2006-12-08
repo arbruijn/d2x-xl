@@ -297,7 +297,7 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix light, tMorphInfo *mdP)
+void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
 	int i, mn;
 	int facing;
@@ -350,13 +350,13 @@ for (i=0;i<sort_n;i++) {
 			pmP->modelData + pmP->subModels.ptrs [nSubModel], 
 			gameData.models.textures, 
 			animAngles, light, 
-			mdP->vecs + mdP->submodelStartPoints [nSubModel]);
+			mdP->vecs + mdP->submodelStartPoints [nSubModel], nModel);
 		}
 	else {
 		vmsMatrix orient;
 		VmAngles2Matrix (&orient, animAngles+mn);
 		G3StartInstanceMatrix (pmP->subModels.offsets+mn, &orient);
-		MorphDrawModel (pmP, mn, animAngles, light, mdP);
+		MorphDrawModel (pmP, mn, animAngles, light, mdP, nModel);
 		G3DoneInstance ();
 		}
 	}
@@ -378,7 +378,7 @@ void MorphDrawObject (tObject *objP)
 	light = ComputeObjectLight (objP, NULL);
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	G3SetModelPoints (gameData.models.polyModelPoints);
-	MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP);
+	MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
 	G3DoneInstance ();
 
 #ifdef NEWDEMO

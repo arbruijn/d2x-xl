@@ -2439,7 +2439,6 @@ return r;
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
 	short			i, *pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->nSegment];
-	vmsVector	h, vl;
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

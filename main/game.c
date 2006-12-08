@@ -241,7 +241,7 @@ grsBitmap bmBackground;
 
 //	Function prototypes for GAME.C exclusively.
 
-int GameLoop (int RenderFlag, int ReadControlsFlag);
+int GameLoop (int RenderFlag, int bReadControls);
 void FireLaser (void);
 void SlideTextures (void);
 void PowerupGrabCheatAll (void);
@@ -274,7 +274,7 @@ void LoadBackgroundBitmap ()
 if (bmBackground.bm_texBuf)
 	d_free (bmBackground.bm_texBuf);
 bmBackground.bm_texBuf=NULL;
-pcx_error = pcx_read_bitmap (gameStates.app.cheats.bJohnHeadOn ? "johnhead.pcx" : BACKGROUND_NAME,
+pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? "johnhead.pcx" : BACKGROUND_NAME,
 									  &bmBackground, BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)
 	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
@@ -2716,21 +2716,72 @@ if (gameStates.app.b40fpsTick = (gameStates.app.nDeltaTime >= 25))
 }
 
 //-----------------------------------------------------------------------------
+
+extern int flFrameTime;
+
+int FusionBump (void)
+{
+if (gameData.app.fusion.xAutoFireTime) {
+	if (gameData.weapons.nPrimary != FUSION_INDEX)
+		gameData.app.fusion.xAutoFireTime = 0;
+	else if (gameData.time.xGame + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
+		gameData.app.fusion.xAutoFireTime = 0;
+		gameData.app.nGlobalLaserFiringCount = 1;
+		}
+	else {
+		vmsVector	vRand;
+		fix			xBump;
+		static time_t t0 = 0;
+		time_t t = SDL_GetTicks ();
+		if (t - t0 < 30)
+			return 0;
+		t0 = t;
+		gameData.app.nGlobalLaserFiringCount = 0;
+		gameData.objs.console->mType.physInfo.rotVel.x += (d_rand () - 16384)/8;
+		gameData.objs.console->mType.physInfo.rotVel.z += (d_rand () - 16384)/8;
+		MakeRandomVector (&vRand);
+		xBump = F1_0*4;
+		if (gameData.app.fusion.xCharge > F1_0*2)
+			xBump = gameData.app.fusion.xCharge*4;
+		BumpOneObject (gameData.objs.console, &vRand, xBump);
+		}
+	}
+return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, 60};
+
+void AutoScreenshot (void)
+{
+	int	h;
+
+	static	time_t	t0 = 0;
+
+if (gameData.app.bGamePaused || gameStates.menus.nInMenu)
+	return;
+if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
+	return;
+if (gameStates.app.nSDLTicks - t0 < h * 1000)
+	return;
+t0 = gameStates.app.nSDLTicks;
+bSaveScreenShot = 1;
+SaveScreenShot (0, 0);
+}
+
+//-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
 void GameRenderFrame ();
 extern void OmegaChargeFrame (void);
 
 extern time_t t_currentTime, t_savedTime;
-extern int flFrameTime;
-int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, 60};
 
 void FlickerLights ();
 
-int GameLoop (int RenderFlag, int ReadControlsFlag)
+int GameLoop (int RenderFlag, int bReadControls)
 {
-	int	h;
-
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 GetSlowTick ();
@@ -2802,13 +2853,15 @@ if (Debug_slowdown) {
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
 
-	if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
-		static int turned_off=0;
+	if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & 
+		  (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == 
+		 (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
+		static int bTurnedOff=0;
 		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= (gameData.time.xFrame*3/8);
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < i2f (10)) {
-			if (!turned_off) {
+			if (!bTurnedOff) {
 				gameData.multi.players[gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-				turned_off = 1;
+				bTurnedOff = 1;
 #ifdef NETWORK
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendFlags ((char) gameData.multi.nLocalPlayer);
@@ -2816,7 +2869,7 @@ if (Debug_slowdown) {
 			}
 		}
 		else
-			turned_off = 0;
+			bTurnedOff = 0;
 
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
 			gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
@@ -2880,7 +2933,7 @@ if (Debug_slowdown) {
 	if (Speedtest_on)
 		speedtest_frame ();
 #endif
-	if (ReadControlsFlag) {
+	if (bReadControls) {
 //LogErr ("ReadControls\n");
 		ReadControls ();
 		}
@@ -2954,31 +3007,8 @@ if (Debug_slowdown) {
 //LogErr ("FireLaser\n");
 			FireLaser ();				// Fire Laser!
 			}
-		if (gameData.app.fusion.xAutoFireTime) {
-			if (gameData.weapons.nPrimary != FUSION_INDEX)
-				gameData.app.fusion.xAutoFireTime = 0;
-			else if (gameData.time.xGame + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
-				gameData.app.fusion.xAutoFireTime = 0;
-				gameData.app.nGlobalLaserFiringCount = 1;
-				}
-			else {
-				vmsVector	rand_vec;
-				fix			bump_amount;
-				static time_t t0 = 0;
-				time_t t = SDL_GetTicks ();
-				if (t - t0 < 30)
-					return 1;
-				t0 = t;
-				gameData.app.nGlobalLaserFiringCount = 0;
-				gameData.objs.console->mType.physInfo.rotVel.x += (d_rand () - 16384)/8;
-				gameData.objs.console->mType.physInfo.rotVel.z += (d_rand () - 16384)/8;
-				MakeRandomVector (&rand_vec);
-				bump_amount = F1_0*4;
-				if (gameData.app.fusion.xCharge > F1_0*2)
-					bump_amount = gameData.app.fusion.xCharge*4;
-				BumpOneObject (gameData.objs.console, &rand_vec, bump_amount);
-				}
-			}
+		if (!FusionBump ())
+			return 1;
 		if (gameData.app.nGlobalLaserFiringCount) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.app.fusion.xCharge > F1_0*2)
@@ -2995,7 +3025,7 @@ if (Debug_slowdown) {
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
-		bFakingInvul=1;
+		bFakingInvul = 1;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 		}
 #endif
@@ -3007,16 +3037,7 @@ SlideTextures ();
 //LogErr ("FlickerLights \n");
 FlickerLights ();
 //LogErr ("\n");
-if (!(gameData.app.bGamePaused || gameStates.menus.nInMenu))
-	if (h = screenShotIntervals [gameOpts->app.nScreenShotInterval]) {
-		static	time_t	t0 = 0;
-
-		if (gameStates.app.nSDLTicks - t0 >= h * 1000) {
-			t0 = gameStates.app.nSDLTicks;
-			bSaveScreenShot = 1;
-			SaveScreenShot (0, 0);
-			}
-		}
+AutoScreenshot ();
 return 1;
 }
 
@@ -3403,12 +3424,12 @@ void game_win_init_cockpit_mask (int sram)
 //@@	DDGRLOCK (dd_grd_curcanv)
 //@@	{
 //@@		if (W95DisplayMode == SM95_640x480x8) {
-//@@			pcx_error=pcx_read_bitmap ("MASKB.PCX", &grdCurCanv->cv_bitmap,
+//@@			pcx_error=PCXReadBitmap ("MASKB.PCX", &grdCurCanv->cv_bitmap,
 //@@				grdCurCanv->cv_bitmap.bm_props.nType,
 //@@				title_pal);
 //@@		}
 //@@		else {
-//@@			pcx_error=pcx_read_bitmap ("MASK.PCX", &grdCurCanv->cv_bitmap,
+//@@			pcx_error=PCXReadBitmap ("MASK.PCX", &grdCurCanv->cv_bitmap,
 //@@				grdCurCanv->cv_bitmap.bm_props.nType,
 //@@				title_pal);
 //@@		}

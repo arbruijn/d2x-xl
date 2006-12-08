@@ -51,7 +51,7 @@ int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter)
 
 if (!(szName && *szName))
 	return 1;
-i = strlen (szRootDir);
+i = (int) strlen (szRootDir);
 bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
 LogErr ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
 sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);

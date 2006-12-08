@@ -2028,123 +2028,91 @@ int ReadControls()
 	fix keyTime;
 	static ubyte explodingFlag=0;
 
-	gameStates.app.bPlayerFiredLaserThisFrame=-1;
-
-	if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
-
-			if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
-				#ifdef NETWORK
-				|| multiData.msg.bSending || multiData.msg.bDefining
-				#endif
-				)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
-				memset( &Controls, 0, sizeof(control_info) );
-			else
-				#ifdef WINDOWS
-					controls_read_all_win();
-				#else
-					skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
-				#endif
-
-		CheckRearView();
-
-		//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
-		if (Controls.automapDownCount && 
-			 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
-			 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
-			gameStates.app.bAutoMap = 1;
-
-		DoWeaponStuff();
-
-	}
-
-	if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
-
-		if (explodingFlag==0)  {
-			explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
-			GameFlushInputs();
-		} else {
-			int i;
-			//if (keyDownCount(KEY_BACKSP))
-			//	Int3();
-			//if (keyDownCount(KEY_PRINT_SCREEN))
-			//	SaveScreenShot (NULL, 0);
-
-			for (i=0; i<4; i++ )
-				if (joy_get_button_down_cnt(i)>0) 
-					gameStates.app.bDeathSequenceAborted = 1;
-			for (i=0; i<3; i++ )
-				if (MouseButtonDownCount(i)>0) 
-					gameStates.app.bDeathSequenceAborted = 1;
-
-			//for (i=0; i<256; i++ )
-			//	if (!key_isfunc(i) && !key_ismod(i) && keyDownCount(i)>0) gameStates.app.bDeathSequenceAborted = 1;
-
-			if (gameStates.app.bDeathSequenceAborted)
-				GameFlushInputs();
-		}
-	} else {
-		explodingFlag=0;
-	}
-
-	if (gameData.demo.nState == ND_STATE_PLAYBACK )
-		update_vcr_state();
-
-	while ((key=KeyInKeyTime(&keyTime)) != 0)    {
-
-		if (gameData.marker.nDefiningMsg)
-		 {
-			MarkerInputMessage (key);
-			continue;
-		 }
-
-		#ifdef NETWORK
-		if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending || multiData.msg.bDefining ))	{
-			MultiMsgInputSub( key );
-			continue;		//get next key
-		}
-		#endif
-
-		#ifndef RELEASE
-		#ifdef NETWORK
-		if ((key&KEY_DEBUGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
-			multiData.msg.nReceiver = 100;		// Send to everyone...
-			sprintf( multiData.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
-		}
-		#endif
-		#endif
-
-#ifdef CONSOLE
-		if(!con_events(key))
-			continue;
+gameStates.app.bPlayerFiredLaserThisFrame=-1;
+if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
+		if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
+#ifdef NETWORK
+			|| multiData.msg.bSending || multiData.msg.bDefining
 #endif
-
-		if (gameStates.app.bPlayerIsDead)
-			HandleDeathKey(key);
-
-		if (gameStates.app.bEndLevelSequence)
-			HandleEndlevelKey(key);
-		else if (gameData.demo.nState == ND_STATE_PLAYBACK ) {
-			HandleDemoKey(key);
-
-			#ifndef RELEASE
-			HandleTestKey(key);
-			#endif
-		} else {
-			FinalCheats(key);
-
-			HandleSystemKey(key);
-			HandleVRKey(key);
-			HandleGameKey(key);
-
-			#ifndef RELEASE
-			HandleTestKey(key);
-			#endif
+			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
+			memset( &Controls, 0, sizeof(control_info) );
+		else
+#ifdef WINDOWS
+				controls_read_all_win();
+#else
+				skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
+#endif
+	CheckRearView();
+	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
+	if (Controls.automapDownCount && 
+		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
+		 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
+		gameStates.app.bAutoMap = 1;
+	DoWeaponStuff();
+	}
+if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
+	if (explodingFlag==0)  {
+		explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
+		GameFlushInputs();
+		}
+	else {
+		int i;
+		for (i=0; i<4; i++ )
+			if (joy_get_button_down_cnt(i)>0) 
+				gameStates.app.bDeathSequenceAborted = 1;
+		for (i=0; i<3; i++ )
+			if (MouseButtonDownCount(i)>0) 
+				gameStates.app.bDeathSequenceAborted = 1;
+		if (gameStates.app.bDeathSequenceAborted)
+			GameFlushInputs();
+		}
+	} 
+else {
+	explodingFlag=0;
+	}
+if (gameData.demo.nState == ND_STATE_PLAYBACK )
+	update_vcr_state();
+while ((key=KeyInKeyTime(&keyTime)) != 0)    {
+	if (gameData.marker.nDefiningMsg) {
+		MarkerInputMessage (key);
+			continue;
+		}
+#ifdef NETWORK
+if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending || multiData.msg.bDefining ))	{
+	MultiMsgInputSub( key );
+	continue;		//get next key
+	}
+#endif
+#ifdef _DEBUG
+if ((key&KEY_DEBUGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
+	multiData.msg.nReceiver = 100;		// Send to everyone...
+	sprintf( multiData.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
+	}
+#endif
+#ifdef CONSOLE
+if(!con_events(key))
+	continue;
+#endif
+if (gameStates.app.bPlayerIsDead)
+	HandleDeathKey(key);
+	if (gameStates.app.bEndLevelSequence)
+		HandleEndlevelKey(key);
+	else if (gameData.demo.nState == ND_STATE_PLAYBACK ) {
+		HandleDemoKey(key);
+#ifndef RELEASE
+		HandleTestKey(key);
+#endif
+		}
+	else {
+		FinalCheats(key);
+		HandleSystemKey(key);
+		HandleVRKey(key);
+		HandleGameKey(key);
+#ifndef RELEASE
+		HandleTestKey(key);
+#endif
 		}
 	}
-
-
-//	if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CONVERTER) && keyd_pressed[KEY_F8] && (keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT]))
-  //		TransferEnergyToShield(KeyDownTime(KEY_F8);
 return skipControls;
 }
 

@@ -2411,7 +2411,7 @@ void StartLightingFrame (tObject *viewer);
 
 void RenderShadow (float fDist)
 {
-	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.7f};
+	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.6f};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();

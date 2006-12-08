@@ -1137,6 +1137,8 @@ if (gameStates.limitFPS.bControls) {
 	if (gameOpts->legacy.bMouse) 
 		gameStates.input.kcFrameTime = gameData.time.xFrame;
 	else {
+		if (gameData.app.bGamePaused)
+			GetSlowTick ();
 		kcFrameCount++;
 		if (!gameStates.app.b40fpsTick)
 			return 1;

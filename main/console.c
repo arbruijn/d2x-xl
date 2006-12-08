@@ -109,7 +109,7 @@ void con_background(char *filename)
 	grsBitmap bmp;
 
 	GrInitBitmapData(&bmp);
-	pcx_error = pcx_read_bitmap(filename, &bmp, BM_LINEAR, 0);
+	pcx_error = PCXReadBitmap(filename, &bmp, BM_LINEAR, 0);
 	Assert(pcx_error == PCX_ERROR_NONE);
 	GrRemapBitmapGood(&bmp, NULL, -1, -1);
 	CON_Background (Console, &bmp);

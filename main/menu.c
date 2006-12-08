@@ -1865,7 +1865,7 @@ do {
 		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 2, KEY_R, HTX_RENDER_SHADOWREACH);
 		nShadowReachOpt = opt++;
 		ADD_CHECK (opt, TXT_CLIP_SHADOWS, gameOpts->render.shadows.bClip, KEY_C, HTX_CLIP_SHADOWS);
-		optPlayerShadows = opt++;
+		optClipShadows = opt++;
 		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);

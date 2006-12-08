@@ -538,18 +538,28 @@ void DrawPolygonModel (
 	tRgbColorf		*color)
 {
 	tPolyModel	*po;
-	int			i, j, nTextures;
+	int			i, j, nTextures, 
+					bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
+					bIsDefModel = (gameData.models.polyModels [nModel].nDataSize == 
+										gameData.models.defPolyModels [nModel].nDataSize);
 	PA_DFX (int bSaveLight);
 
 if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
-if (gameData.models.altPolyModels [nModel].modelData && 
-	 (gameData.models.polyModels [nModel].nDataSize == gameData.models.defPolyModels [nModel].nDataSize) &&
-	 ((gameStates.render.nShadowPass == 2) || (objP->nType == OBJ_PLAYER)))
+// only render shadows for custom models and for standard models with a shadow proof alternative model
+if (!(bIsDefModel && bHaveAltModel))
+	po = gameData.models.polyModels + nModel;
+else if (gameStates.render.nShadowPass != 2) {
+	if ((gameStates.app.bAltModels || (objP->nType == OBJ_PLAYER)) && bHaveAltModel)
+		po = gameData.models.altPolyModels + nModel;
+	else
+		po = gameData.models.polyModels + nModel;
+	}
+else if (bHaveAltModel)
 	po = gameData.models.altPolyModels + nModel;
 else
-	po = gameData.models.polyModels + nModel;
+	return;
 if ((gameStates.render.nShadowPass == 2) && objP) {
 #if 0
 	if (!CanSeePoint (objP, &gameData.objs.viewer->position.vPos))
@@ -635,7 +645,7 @@ PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
 if (!flags)		//draw entire tObject
-	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL);
+	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL, nModel);
 else {
 	int i;
 
@@ -649,7 +659,7 @@ else {
 			VmVecNegate (&ofs);
 			G3StartInstanceMatrix (&ofs, NULL);
 			G3DrawPolyModel (objP, &po->modelData [po->subModels.ptrs [i]], gameData.models.textures, animAngles, 
-									light, glowValues, color, NULL);
+									light, glowValues, color, NULL, nModel);
 			G3DoneInstance ();
 			}	
 	}

@@ -97,6 +97,15 @@ g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
 static short nGlow = -1;
 
+void CHECK ()
+{
+	int po = 0;
+if (gameData.models.pofData [0][108].subObjs.pSubObjs &&
+	 abs (gameData.models.pofData [0][108].subObjs.pSubObjs [0].nParent) > 1)
+	po = po;
+if (abs (gameData.models.pofData [0][108].subObjs.nSubObjs) > 10)
+	po = po;
+}
 //------------------------------------------------------------------------------
 
 inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
@@ -1388,6 +1397,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 #endif
 			}
 		}
+CHECK();
 	}
 #if DBG_SHADOWS
 glLineWidth (1);
@@ -1470,6 +1480,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}	
 	glEnd ();
+CHECK();
 	}
 #if DBG_SHADOWS
 if (bFrontCap)
@@ -1506,6 +1517,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}
 	glEnd ();
+CHECK();
 	}
 return 1;
 }
@@ -1610,7 +1622,7 @@ float NearestShadowedWallDist (tObject *objP, vmsVector *vLightPos)
 	fvi_info		fi;
 	vmsVector	v;
 
-	static float fClip [3] = {1.25f, 1.5f, 2.0f};
+	static float fClip [3] = {1.25f, 1.5f, 3.0f};
 
 if (!gameOpts->render.shadows.bClip)
 	return INFINITY;
@@ -1639,11 +1651,14 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 	int				h, i, j, bCalcCenter = 0;
 	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission] + nModel;
 
+if (nModel == 75)
+	nModel = nModel;
 Assert (objP->id < MAX_ROBOT_TYPES);
 if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
 		return 0;
 	}
+CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
@@ -1670,7 +1685,9 @@ if (gameOpts->render.shadows.bFast) {
 		else {
 			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
 			OOF_VecVms2Oof (&vLightPos, &v);
+			CHECK ();
 			fInf = NearestShadowedWallDist (objP, &gameData.render.shadows.pLight->vPos);
+			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
@@ -1698,6 +1715,7 @@ else {
 	}
 glDisable (GL_TEXTURE_2D);
 #endif
+CHECK();
 return 1;
 }
 
@@ -1711,7 +1729,8 @@ bool G3DrawPolyModel (
 	fix			xModelLight, 
 	fix			*xGlowValues, 
 	tRgbColorf	*objColorP,
-	tPOFObject  *po)
+	tPOFObject  *po,
+	int			nModel)
 {
 	ubyte *p = modelP;
 	short	h;
@@ -1727,7 +1746,7 @@ if (bShadowTest)
 G3CheckAndSwap (modelP);
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && 
 	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
-	po = gameData.models.pofData [gameStates.app.bD1Mission] + objP->id;
+	po = gameData.models.pofData [gameStates.app.bD1Mission] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
@@ -1839,12 +1858,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		p += 32;
 		}
@@ -1863,7 +1882,7 @@ for (;;) {
 		else
 			a = &zeroAngles;
 		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po);
+		G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
 		p += 20;
 		}
@@ -1885,7 +1904,7 @@ int nest_count;
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing tObject
 bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
-								  fix xModelLight, vmsVector *new_points)
+								  fix xModelLight, vmsVector *new_points, int nModel)
 {
 	ubyte *p = modelP;
 	fix *xGlowValues = NULL;
@@ -1970,13 +1989,13 @@ for (;;) {
 		case OP_SORTNORM:
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 				//draw back then front
-				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points);
-				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
 
 				}
 			else {			//not facing.  draw front then back
-				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points);
-				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points);
+				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
 				}
 			p += 32;
 			break;
@@ -1997,7 +2016,7 @@ for (;;) {
 			else
 				a = &zeroAngles;
 			G3StartInstanceAngles (VECPTR (p+4), a);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL);
+			G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL, nModel);
 			G3DoneInstance ();
 			p += 20;
 			break;

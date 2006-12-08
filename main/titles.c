@@ -286,7 +286,7 @@ if (! (ps = strstr (szImg, "b.pcx")) && (ps = strstr (szImg, ".pcx"))) {
 for (;;) {
 	pcxErr = bFullScr ?
 		pcx_read_fullscr (szImg, gameStates.app.bD1Mission) :
-		pcx_read_bitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
+		PCXReadBitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
 	if (pcxErr == PCX_ERROR_NONE)
 		break;
 	if (!ps)

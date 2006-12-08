@@ -1634,7 +1634,7 @@ void LoadStars (bkg *bg, int bRedraw)
 //@@	int pcx_error;
 //@@	ubyte pal [256*3];
 //@@
-//@@	pcx_error = pcx_read_bitmap ("STARS.PCX",&grdCurCanv->cv_bitmap,grdCurCanv->cv_bitmap.bm_props.nType,pal);
+//@@	pcx_error = PCXReadBitmap ("STARS.PCX",&grdCurCanv->cv_bitmap,grdCurCanv->cv_bitmap.bm_props.nType,pal);
 //@@	Assert (pcx_error == PCX_ERROR_NONE);
 //@@
 //@@	GrRemapBitmapGood (&grdCurCanv->cv_bitmap, pal, -1, -1);

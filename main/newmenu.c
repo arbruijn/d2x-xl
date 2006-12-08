@@ -357,7 +357,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		bmp = GrCreateBitmap (width, height, 0);
 		Assert (bmp != NULL);
 		}
-	pcx_error = pcx_read_bitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.nType, 0);
+	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.nType, 0);
 	Assert (pcx_error == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
@@ -432,7 +432,7 @@ else {
 			if (nm_background.bm_texBuf)
 				d_free (nm_background.bm_texBuf);
 			}
-		pcx_error = pcx_read_bitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
+		pcx_error = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
 		Assert (pcx_error == PCX_ERROR_NONE);
 		nm_background = nm_background_save;
 		nm_background.bm_texBuf = NULL;		

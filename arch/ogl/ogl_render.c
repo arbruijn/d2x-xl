@@ -1981,7 +1981,7 @@ if (gameStates.render.nShadowPass) {
 #endif
 				}
 			glCullFace (GL_BACK);
-			glDepthFunc (GL_LEQUAL);
+			glDepthFunc (GL_LESS);
 			if (!gameOpts->render.shadows.bFast)
 				glColorMask (1,1,1,1);
 			}

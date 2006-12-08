@@ -1388,6 +1388,10 @@ if (!(gameOpts->menus.nStyle && gameOpts->menus.bFastMenus))
 GrGetStringSizeTabbed (s, &w, &h, &aw, nTabs, nMaxWidth);
 if (!(w && h && (bmP = GrCreateBitmap (w, h, 1))))
 	return NULL;
+if (!bmP->bm_texBuf) {
+	GrFreeBitmap (bmP);
+	return NULL;
+	}
 memset (bmP->bm_texBuf, 0, w * h * 4);
 next_row = s;
 y = 0;

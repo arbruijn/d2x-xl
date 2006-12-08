@@ -510,6 +510,7 @@ typedef struct tRenderStates {
 	int nShadowPass;
 	int bShadowMaps;
 	int bLoResShadows;
+	int nSoften;
 	int bHeadlightOn;
 	int bHaveSkyBox;
 	int bAllVisited;
@@ -648,6 +649,7 @@ typedef struct tApplicationStates {
 	int bLittleEndian;
 	int bUsingConverter;
 	int bFixModels;
+	int bAltModels;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;

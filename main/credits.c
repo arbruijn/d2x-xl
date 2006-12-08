@@ -231,7 +231,7 @@ CreditsPaint:
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
 //MWA  be linear, so we can't rely on grdCurCanv->cv_bitmap->bm_props.nType.
 
-	pcx_error = pcx_read_bitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
+	pcx_error = PCXReadBitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 	if (pcx_error != PCX_ERROR_NONE) {
 		CFClose(file);
 		return;

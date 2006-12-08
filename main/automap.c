@@ -168,9 +168,9 @@ ubyte bAutomapVisited[MAX_SEGMENTS];
 ubyte bRadarVisited[MAX_SEGMENTS];
 
 // Edge list variables
-static int Num_edges=0;
-static int Max_edges;		//set each frame
-static int Highest_edge_index = -1;
+static int nNumEdges=0;
+static int nMaxEdges;		//set each frame
+static int nHighestEdgeIndex = -1;
 static Edge_info Edges[MAX_EDGES];
 static int DrawingListBright[MAX_EDGES];
 
@@ -224,7 +224,7 @@ typedef struct tAutomapData {
 static tAutomapData	amData = {0, 0, F1_0 * 20 * 100, 0x9000, {0,0,0}, {{0,0,0},{0,0,0},{0,0,0}}};
 
 //	Function Prototypes
-void adjust_segment_limit (int SegmentLimit, ubyte *pVisited);
+void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited);
 void DrawAllEdges (void);
 void AutomapBuildEdgeList (void);
 
@@ -526,7 +526,7 @@ G3TransformAndEncodePoint (&arrowPoint,&arrow_pos);
 AutomapDrawLine (&spherePoint, &arrowPoint);
 }
 
-int AutomapHires;
+int bAutomapHires;
 
 //------------------------------------------------------------------------------
 
@@ -562,7 +562,7 @@ if (bRadar && gameStates.render.bTopDownRadar) {
 	}
 	
 #if AUTOMAP_DIRECT_RENDER == 0
-if (!AutomapHires) {
+if (!bAutomapHires) {
 #if TRACE
 	WIN (con_printf (1, "Can't do lores automap in Windows!\n"));
 #endif
@@ -753,8 +753,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 #endif
 		}
 	else {
-		GrBitmapM (AutomapHires?10:5, AutomapHires?10:5, &name_canv_left->cv_bitmap);
-		GrBitmapM (grdCurCanv->cv_bitmap.bm_props.w- (AutomapHires?10:5)-name_canv_right->cv_bitmap.bm_props.w,AutomapHires?10:5,&name_canv_right->cv_bitmap);
+		GrBitmapM (bAutomapHires?10:5, bAutomapHires?10:5, &name_canv_left->cv_bitmap);
+		GrBitmapM (grdCurCanv->cv_bitmap.bm_props.w- (bAutomapHires?10:5)-name_canv_right->cv_bitmap.bm_props.w,bAutomapHires?10:5,&name_canv_right->cv_bitmap);
 		}
 }
 WIN (DDGRUNLOCK (dd_grd_curcanv));
@@ -763,7 +763,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 	OglSwapBuffers (0, 0);
 #else
 #if AUTOMAP_DIRECT_RENDER == 0
-	if (!AutomapHires)
+	if (!bAutomapHires)
 		GrShowCanvas (&Pages[current_page]);
 	else {
 	#ifndef WINDOWS
@@ -849,7 +849,7 @@ void ModexPrintF (int x,int y,char *s,grs_font *font, unsigned int color)
 {
 	grs_canvas *temp_canv;
 
-temp_canv = PrintToCanvas (s, font, color, 0, !AutomapHires);
+temp_canv = PrintToCanvas (s, font, color, 0, !bAutomapHires);
 GrBitmapM (x,y,&temp_canv->cv_bitmap);
 GrFreeCanvas (temp_canv);
 }
@@ -864,7 +864,7 @@ char *system_name[] = {
 			"Baloris Prime",
 			"Omega System"};
 
-void create_name_canv ()
+void CreateNameCanv ()
 {
 	char	nameLevel_left[128],nameLevel_right[128];
 
@@ -881,555 +881,378 @@ void create_name_canv ()
 	strcat (nameLevel_right, gameData.missions.szCurrentLevel);
 
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
-	name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !AutomapHires);
+	name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !bAutomapHires);
+	name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !bAutomapHires);
 
 }
 
 //------------------------------------------------------------------------------
 
-extern void GameLoop (int, int);
+void AMDeleteMarker (void)
+{
+if (gameData.marker.nHighlight > -1 && gameData.marker.objects[gameData.marker.nHighlight] != -1) {
+	if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
+		int	h, i;
+		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
+		i = LastMarker ();
+		if (i == gameData.marker.nHighlight) {
+			gameData.marker.objects [gameData.marker.nHighlight] = -1;
+			gameData.marker.szMessage [gameData.marker.nHighlight][0] = '\0';
+			gameData.marker.nHighlight = i ? 0 : -1;
+			}
+		else {
+			h = i - gameData.marker.nHighlight;
+			memcpy (gameData.marker.objects + gameData.marker.nHighlight,
+						gameData.marker.objects + gameData.marker.nHighlight + 1,
+						h * sizeof (gameData.marker.objects [0]));
+			memcpy (gameData.marker.szMessage [gameData.marker.nHighlight],
+						gameData.marker.szMessage [gameData.marker.nHighlight + 1],
+						h * sizeof (gameData.marker.szMessage [0]));
+			gameData.marker.objects [i] = -1;
+			gameData.marker.szMessage [i][0] = '\0';
+			}
+		}					
+	}
+}
+
+//------------------------------------------------------------------------------
+
 extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 
 #ifdef RELEASE
-#define MAP_BACKGROUND_FILENAME (AutomapHires?"\x01MAPB.PCX":"\x01MAP.PCX")	//load only from hog file
+#	define	MAP_BACKGROUND_FILENAME \
+				(bAutomapHires?"\x01MAPB.PCX":"\x01MAP.PCX")	//load only from hog file
 #else
-#define MAP_BACKGROUND_FILENAME ((AutomapHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0))?"MAPB.PCX":"MAP.PCX")
+#	define	MAP_BACKGROUND_FILENAME \
+				((bAutomapHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0))?"MAPB.PCX":"MAP.PCX")
 #endif
+
+int InitAutomap (int bRadar, int bPauseGame, fix *pxEntryTime, 
+					  int *pnMaxSegsAway, int *pnSegmentLimit, vmsAngVec *pvTAngles)
+{
+		int	nPCXError;
+		fix	t1, t2;
+		tObject	*playerP;
+
+gameStates.app.bAutoMap = 1;
+gameStates.ogl.nContrast = 8;
+InitAutomapColors ();
+if (bRadar || 
+	 ((gameData.app.nGameMode & GM_MULTI) && 
+	  (gameStates.app.nFunctionMode == FMODE_GAME) && 
+	  (!gameStates.app.bEndLevelSequence)))
+	bPauseGame = 0;
+if (bPauseGame)
+	PauseGame ();
+nMaxEdges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MAX_EDGES);			//make maybe smaller than max
+if (bRadar || (gameStates.video.nDisplayMode > 1) || 
+	 (gameOpts->render.bAutomapAlwaysHires && gameStates.menus.bHiresAvailable)) {
+	if (grdCurScreen->sc_mode != AUTOMAP_MODE)
+		GrSetMode (gameStates.render.bAutomapUseGameRes ? gameStates.video.nLastScreenMode : AUTOMAP_MODE);
+	else if (!bRadar)
+		GrSetCurrentCanvas (NULL);
+	if (bRadar) {
+		automap_width = grdCurCanv->cv_bitmap.bm_props.w;
+		automap_height = grdCurCanv->cv_bitmap.bm_props.h;
+		}
+	else {
+		automap_width = grdCurScreen->sc_canvas.cv_bitmap.bm_props.w;
+		automap_height = grdCurScreen->sc_canvas.cv_bitmap.bm_props.h;
+		}
+	bAutomapHires = 1;
+	 }
+else {
+	GrSetMode (SM (320, 400));
+	bAutomapHires = 0;
+	}
+gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && bAutomapHires;
+if (!bRadar) {
+	CreateNameCanv ();
+	GrPaletteStepClear ();
+	}
+if (!bRadar) {
+	GrInitBitmapData (&bmAutomapBackground);
+	nPCXError = PCXReadBitmap (MAP_BACKGROUND_FILENAME, &bmAutomapBackground, BM_LINEAR, 0);
+	if (nPCXError != PCX_ERROR_NONE)
+		Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (nPCXError));
+	GrRemapBitmapGood (&bmAutomapBackground, NULL, -1, -1);
+	}
+AutomapBuildEdgeList ();
+if (bRadar)
+	amData.nViewDist = ZOOM_DEFAULT;
+else if (!amData.nViewDist)
+	amData.nViewDist = ZOOM_DEFAULT;
+playerP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+amData.viewMatrix = playerP->position.mOrient;
+
+pvTAngles->p = PITCH_DEFAULT;
+pvTAngles->h = 0;
+pvTAngles->b = 0;
+
+amData.viewTarget = playerP->position.vPos;
+t1 = *pxEntryTime = TimerGetFixedSeconds ();
+t2 = t1;
+//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
+if (bRadar) {
+#ifdef RELEASE
+	if (! (gameData.app.nGameMode & GM_MULTI))
+		memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
+#endif
+	memset (bAutomapVisited, 1, sizeof (bRadarVisited));
+	}
+*pnSegmentLimit =
+*pnMaxSegsAway = 
+	SetSegmentDepths (
+		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
+		bRadar ? bAutomapVisited : bAutomapVisited);
+AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+#ifdef RELEASE
+if (bRadar && ! (gameData.app.nGameMode & GM_MULTI))
+	memcpy (bAutomapVisited, bRadarVisited, sizeof (bRadarVisited));
+#endif
+return bPauseGame;
+}
+
+//------------------------------------------------------------------------------
+
+int UpdateAutomap (vmsAngVec *pvTAngles)
+{
+	tObject		*playerP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	vmsMatrix	m;
+
+if (Controls.fire_primaryDownCount)	{
+	// Reset orientation
+	amData.nViewDist = ZOOM_DEFAULT;
+	pvTAngles->p = PITCH_DEFAULT;
+	pvTAngles->h = 0;
+	pvTAngles->b = 0;
+	amData.viewTarget = playerP->position.vPos;
+	}
+if (Controls.forward_thrustTime)
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forward_thrustTime * ZOOM_SPEED_FACTOR); 
+pvTAngles->p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
+pvTAngles->h += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
+pvTAngles->b += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
+
+VmAngles2Matrix (&m, pvTAngles);
+if (Controls.vertical_thrustTime || Controls.sideways_thrustTime)	{
+	VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.vertical_thrustTime * SLIDE_SPEED);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sideways_thrustTime * SLIDE_SPEED);
+	}
+VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
+if (amData.nViewDist < ZOOM_MIN_VALUE) 
+	amData.nViewDist = ZOOM_MIN_VALUE;
+if (amData.nViewDist > ZOOM_MAX_VALUE) 
+	amData.nViewDist = ZOOM_MAX_VALUE;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int AMReadControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsAway, int *pnSegmentLimit)
+{
+	int	c, nMarker, nMaxDrop;
+
+ControlsReadAll ();		
+if (Controls.automapDownCount && !nLeaveMode)
+	return 1;
+while (c = KeyInKey ()) {
+	if (!gameOpts->menus.nStyle)
+		MultiDoFrame();
+		switch (c) {
+#ifdef _DEBUG
+		case KEY_BACKSP: Int3 (); 
+			break;
+#endif
+		case KEY_CTRLED + KEY_P:
+			if (gameOpts->menus.nStyle && !IsMultiGame) {
+				if (gameData.app.bGamePaused)
+					ResumeGame ();
+				else
+					PauseGame ();
+				}
+			*pbPauseGame = gameData.app.bGamePaused;
+			break;
+
+		case KEY_PRINT_SCREEN: {
+			if (bAutomapHires)
+				WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
+			bSaveScreenShot = 1;
+			SaveScreenShot (NULL, 1);
+			break;
+		}
+
+		case KEY_ESC:
+			if (!nLeaveMode)
+				bDone = 1;
+			break;
+
+		#ifndef NDEBUG
+		case KEY_DEBUGGED+KEY_F: {
+			int i;
+			for (i = 0; i <= gameData.segs.nLastSegment; i++)
+				bAutomapVisited[i] = 1;
+			AutomapBuildEdgeList ();
+			*pnSegmentLimit = 
+			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, bAutomapVisited);
+			AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+			}
+			break;
+		#endif
+
+		case KEY_MINUS:
+			if (*pnSegmentLimit > 1) {
+				*pnSegmentLimit--;
+				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+			}
+			break;
+
+		case KEY_EQUAL:
+			if (*pnSegmentLimit < *pnMaxSegsAway) 	{
+				*pnSegmentLimit++;
+				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+			}
+			break;
+
+		case KEY_1:
+		case KEY_2:
+		case KEY_3:
+		case KEY_4:
+		case KEY_5:
+		case KEY_6:
+		case KEY_7:
+		case KEY_8:
+		case KEY_9:
+		case KEY_0:
+			if (gameData.app.nGameMode & GM_MULTI)
+			   nMaxDrop = 2;
+			else
+			   nMaxDrop = 9;
+		nMarker = c - KEY_1;
+			if (nMarker <= nMaxDrop) {
+				if (gameData.marker.objects[nMarker] != -1)
+					gameData.marker.nHighlight=nMarker;
+				}
+		break;
+
+		case KEY_D+KEY_CTRLED:
+			AMDeleteMarker ();
+			break;
+
+		#ifndef RELEASE
+		case KEY_COMMA:
+			if (gameData.marker.fScale>.5)
+				gameData.marker.fScale-=.5;
+			break;
+		case KEY_PERIOD:
+			if (gameData.marker.fScale<30.0)
+				gameData.marker.fScale+=.5;
+			break;
+		#endif
+
+		case KEY_ALTED+KEY_ENTER:
+		case KEY_ALTED+KEY_PADENTER:
+			GrToggleFullScreenGame ();
+			break;
+		}
+	}
+return bDone;
+}
+
+//------------------------------------------------------------------------------
+
+extern void GameLoop (int, int);
+
+int AMGameFrame (int bPauseGame, int bDone)
+{
+	control_info controlInfoSave;
+
+if (!bPauseGame)	{
+	ushort bWiggleSave;
+	controlInfoSave = Controls;				// Save controls so we can zero them
+	memset (&Controls, 0, sizeof (control_info));	// Clear everything...
+	bWiggleSave = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
+	gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
+	if (MultiMenuPoll ())
+		bDone = 1;
+	GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
+	gameData.objs.console->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
+	Controls = controlInfoSave;
+	}
+return bDone;
+}
+
+//------------------------------------------------------------------------------
 
 u_int32_t automap_mode = SM (640,480);
 
-void DoAutomap (int key_code, int bRadar)	
+void DoAutomap (int nKeyCode, int bRadar)	
 {
-	int			done=0;
-	vmsMatrix	tempm;
-	vmsAngVec	tangles;
-	int			leave_mode=0;
-	int			firstTime=1;
-	int			pcx_error;
-#if !defined (AUTOMAP_DIRECT_RENDER) || !defined (NDEBUG)
-	int			i;
-#endif
-	int			c, nMarker;
-	fix			entryTime;
+	int			bDone = 0;
+	vmsAngVec	vTAngles;
+	int			nLeaveMode = 0;
+	int			bFirstTime = 1;
+	fix			xEntryTime;
 	int			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix			t1, t2;
-	control_info saved_control_info;
-	int			Max_segments_away = 0;
-	int			SegmentLimit = 1;
-	char			nMaxDrop;
-	int			must_free_canvas=0;
+	int			nMaxSegsAway = 0;
+	int			nSegmentLimit = 1;
+	int			bFreeCanvas = 0;
 	int			nContrast = gameStates.ogl.nContrast;
+	int			bRedrawScreen = 0;
 
-	static ubyte	automap_pal [256*3];
+	static ubyte	automapPal [256*3];
 
-	WIN (int dd_VR_screegameStates.render.cockpit.nModeSave);
-	WIN (int bRedrawScreen=0);
-
-	gameStates.app.bAutoMap = 1;
-	gameStates.ogl.nContrast = 8;
-	InitAutomapColors ();
-	key_code = key_code;	// disable warning...
-	if (bRadar || ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))
-		bPauseGame = 0;
+bPauseGame = InitAutomap (bRadar, bPauseGame, &xEntryTime, &nMaxSegsAway, &nSegmentLimit, &vTAngles);
+bRedrawScreen = 0;
+if (bRadar) {
+	DrawAutomap (1);
+	gameStates.ogl.nContrast = nContrast;
+	gameStates.app.bAutoMap = 0;
+	return;
+	}
+GetSlowTick ();
+while (!bDone)	{
+	if (!nLeaveMode && Controls.automap_state && (TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME)
+		nLeaveMode = 1;
+	if (!Controls.automap_state && (nLeaveMode == 1))
+		bDone = 1;
+	bDone = AMGameFrame (bPauseGame, bDone);
+	SongsCheckRedbookRepeat ();
+	bDone = AMReadControls (nLeaveMode, bDone, &bPauseGame, &nMaxSegsAway, &nSegmentLimit);
+	UpdateAutomap (&vTAngles);
+	DrawAutomap (0);
+	if (bFirstTime) {
+		bFirstTime = 0;
+		GrPaletteStepLoad (NULL);
+		}
+	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)
-		PauseGame ();
-	Max_edges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MAX_EDGES);			//make maybe smaller than max
-#if !defined (WINDOWS)
-	if (bRadar || (gameStates.video.nDisplayMode > 1) || (gameOpts->render.bAutomapAlwaysHires && gameStates.menus.bHiresAvailable)) {
-#if !defined (POLY_ACC)
-		//edit 4/23/99 Matt Mueller - don't switch res unless we need to
-		if (grdCurScreen->sc_mode != AUTOMAP_MODE)
-			GrSetMode (gameStates.render.bAutomapUseGameRes ? gameStates.video.nLastScreenMode : AUTOMAP_MODE);
-		else if (!bRadar)
-			GrSetCurrentCanvas (NULL);
-		//end edit -MM
-		if (bRadar) {
-			automap_width=grdCurCanv->cv_bitmap.bm_props.w;
-			automap_height=grdCurCanv->cv_bitmap.bm_props.h;
-			}
-		else {
-			automap_width=grdCurScreen->sc_canvas.cv_bitmap.bm_props.w;
-			automap_height=grdCurScreen->sc_canvas.cv_bitmap.bm_props.h;
-			}
-#endif
-		PA_DFX (pa_set_frontbuffer_current ());
-		AutomapHires = 1;
-	}
-	else {
-		GrSetMode (SM (320, 400));
-		AutomapHires = 0;
-	}
-	#else
-		AutomapHires = 1;		//Mac & Windows (?) always in hires
-	#endif
-
-	#ifdef WINDOWS
-		dd_VR_screegameStates.render.cockpit.nModeSave = nVRScreenMode;
-		nVRScreenMode = SM95_640x480x8;	// HACK! Forcing reinit of 640x480
-		SetScreenMode (SCREEN_GAME);
-	#endif
-
-	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && AutomapHires;
-
-	if (!bRadar) {
-		create_name_canv ();
-		GrPaletteStepClear ();
-		}
-
-WIN (AutomapRedraw:)
-	if (!AutomapHires) {
-#if AUTOMAP_DIRECT_RENDER == 0
-		GrInitSubCanvas (&Pages[0],grdCurCanv,0,0,320,400);
-		GrInitSubCanvas (&Pages[1],grdCurCanv,0,401,320,400);
-		GrInitSubCanvas (&DrawingPages[0],&Pages[0],16,69,WINDOW_WIDTH,272);
-		GrInitSubCanvas (&DrawingPages[1],&Pages[1],16,69,WINDOW_WIDTH,272);
-#endif
-
-		if (!bRadar) {
-			GrInitBitmapData (&bmAutomapBackground);
-			pcx_error = pcx_read_bitmap (MAP_BACKGROUND_FILENAME, &bmAutomapBackground, BM_LINEAR, 0);
-			if (pcx_error != PCX_ERROR_NONE)
-				Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (pcx_error));
-			GrRemapBitmapGood (&bmAutomapBackground, NULL, -1, -1);
-			}
-
-#if AUTOMAP_DIRECT_RENDER == 0
-		for (i=0; i<2; i++) {
-			GrSetCurrentCanvas (Pages + i);
-			GrBitmap (0, 0, &bmAutomapBackground);
-			ModexPrintF (40,  22, TXT_AUTOMAP, HUGE_FONT, automapColors.nDkGray);
-			ModexPrintF (30, 353, TXT_TURN_SHIP, SMALL_FONT, automapColors.nDkGray);
-			ModexPrintF (30, 369, TXT_SLIDE_UPDOWN, SMALL_FONT, automapColors.nDkGray);
-			ModexPrintF (30, 385, TXT_VIEWING_DISTANCE, SMALL_FONT, automapColors.nDkGray);
-			}
-		GrFreeBitmapData (&bmAutomapBackground);	
-		GrSetCurrentCanvas (&DrawingPages[current_page]);
-#endif /* AUTOMAP_DIRECT_RENDER */
-		}
-	else {
-#if AUTOMAP_DIRECT_RENDER == 0
-		if (VR_render_buffer[0].cv_w >= automap_width && VR_render_buffer[0].cv_h >= automap_height) {
-			WIN (DDGrInitSubCanvas (&ddPage, &dd_VR_render_buffer[0], 0, 0, automap_width,automap_height);
-			GrInitSubCanvas (&Page,&VR_render_buffer[0],0, 0, automap_width, automap_height);)
-			}
-		else {
-#ifndef WINDOWS
-			void *raw_data;
-			MALLOC (raw_data,ubyte,automap_width*automap_height);
-			GrInitCanvas (&Page,raw_data,BM_LINEAR,automap_width,automap_height);
-#else
-			dd_gr_init_canvas (&ddPage, BM_LINEAR, automap_width,automap_height);
-			GrInitCanvas (&Page,NULL,BM_LINEAR,automap_width,automap_height);
-#endif
-			must_free_canvas = 1;
-		}
-
-		WIN (
-			DDGrInitSubCanvas (&ddDrawingPage, &ddPage, RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
-			GrInitSubCanvas (&DrawingPage, &Page, RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
-			)
-
-		WINDOS (
-			DDGrSetCurrentCanvas (&ddPage),
-			GrSetCurrentCanvas (&Page)
-		);
-#endif //AUTOMAP_DIRECT_RENDER
-
-		if (!bRadar) {
-#if defined (POLY_ACC)
-    	pcx_error = pcx_read_bitmap (MAP_BACKGROUND_FILENAME,& (grdCurCanv->cv_bitmap),BM_LINEAR15, 0);
-#else
-#	if 1
-			GrInitBitmapData (&bmAutomapBackground);
-			pcx_error = pcx_read_bitmap (MAP_BACKGROUND_FILENAME, &bmAutomapBackground, BM_LINEAR, 0);
-			if (pcx_error != PCX_ERROR_NONE)
-				Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (pcx_error));
-			GrRemapBitmapGood (&bmAutomapBackground, NULL, -1, -1);
-#	else
-			pcx_error = pcx_read_fullscr (MAP_BACKGROUND_FILENAME, automap_pal);
-			if (pcx_error != PCX_ERROR_NONE)	{
-				//printf ("File %s - PCX error: %s",MAP_BACKGROUND_FILENAME,pcx_errormsg (pcx_error);
-				Error ("File %s - PCX error: %s",MAP_BACKGROUND_FILENAME,pcx_errormsg (pcx_error));
-				return;
-				}
-			GrRemapBitmapGood (& (grdCurCanv->cv_bitmap), automap_pal, -1, -1);
-#	endif
-#endif
-		}
-	
-#if AUTOMAP_DIRECT_RENDER == 0
-		WINDOS (
-			DDGrSetCurrentCanvas (&ddDrawingPage),
-			GrSetCurrentCanvas (&DrawingPage)
-		);
-#endif
+		gameData.time.xFrame=t2-t1;
+	t1 = t2;
 	}
 
-
-WIN (if (!bRedrawScreen) {)
-	AutomapBuildEdgeList ();
-
-	if (bRadar)
-		amData.nViewDist = ZOOM_DEFAULT;
-	else if (!amData.nViewDist)
-		amData.nViewDist = ZOOM_DEFAULT;
-	amData.viewMatrix = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient;
-
-	tangles.p = PITCH_DEFAULT;
-	tangles.h  = 0;
-	tangles.b  = 0;
-
-	done = 0;
-
-	amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
-
-	t1 = entryTime = TimerGetFixedSeconds ();
-	t2 = t1;
-
-	//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
-	if (bRadar) {
-#ifdef RELEASE
-		if (! (gameData.app.nGameMode & GM_MULTI))
-			memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
-#endif
-		memset (bAutomapVisited, 1, sizeof (bRadarVisited));
-		}
-	Max_segments_away = 
-		SetSegmentDepths (
-			gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
-			bRadar ? bAutomapVisited : bAutomapVisited);
-	SegmentLimit = bRadar ? Max_segments_away : Max_segments_away;
-
-	adjust_segment_limit (SegmentLimit, bRadar ? bAutomapVisited : bAutomapVisited);
-#ifdef RELEASE
-	if (bRadar && ! (gameData.app.nGameMode & GM_MULTI))
-		memcpy (bAutomapVisited, bRadarVisited, sizeof (bRadarVisited));
-#endif
-WIN (})
-
-WIN (if (bRedrawScreen) bRedrawScreen = 0);
-
-	if (bRadar) {
-		DrawAutomap (1);
-		gameStates.ogl.nContrast = nContrast;
-		gameStates.app.bAutoMap = 0;
-		return;
-		}
-
-	while (!done)	{
-		if (leave_mode==0 && Controls.automap_state && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
-			leave_mode = 1;
-
-		if (!Controls.automap_state && (leave_mode==1))
-			done=1;
-
-		if (!bPauseGame)	{
-			ushort old_wiggle;
-			saved_control_info = Controls;				// Save controls so we can zero them
-			memset (&Controls,0,sizeof (control_info));	// Clear everything...
-			old_wiggle = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
-			gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
-#ifdef NETWORK
-			if (MultiMenuPoll ())
-				done = 1;
-#endif
-			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
-			gameData.objs.console->mType.physInfo.flags |= old_wiggle;	// Restore wiggle
-			Controls = saved_control_info;
-		}
-
-	GetSlowTick ();
-	#ifndef WINDOWS
-		ControlsReadAll ();		
-	#else
-		controls_read_all_win ();
-	#endif
-
-		if (Controls.automapDownCount)	{
-			if (leave_mode==0)
-				done = 1;
-			c = 0;
-		}
-
-		//see if redbook song needs to be restarted
-		SongsCheckRedbookRepeat ();
-
-		#ifdef WINDOWS
-		{
-			MSG msg;
-			DoMessageStuff (&msg);
-			if (_RedrawScreen) {
-				_RedrawScreen = FALSE;
-				bRedrawScreen = 1;
-				goto AutomapRedraw;
-			}
-				
-			if (msg.message == WM_QUIT) exit (1);
-
-			DDGRRESTORE;
-		}
-		#endif
-
-		while (c=KeyInKey ()) {
-			if (!gameOpts->menus.nStyle)
-				MultiDoFrame();
-			switch (c) {
-#ifdef _DEBUG
-			case KEY_BACKSP: Int3 (); break;
-#endif
-			case KEY_CTRLED + KEY_P:
-				if (gameOpts->menus.nStyle && IsMultiGame) {
-					if (gameData.app.bGamePaused)
-						ResumeGame ();
-					else
-						PauseGame ();
-					}
-				break;
-
-			case KEY_PRINT_SCREEN: {
-				if (AutomapHires) {
-				WINDOS (
-					DDGrSetCurrentCanvas (NULL),
-						GrSetCurrentCanvas (NULL)
-				);
-				}
-#if AUTOMAP_DIRECT_RENDER == 0
-				else
-					GrSetCurrentCanvas (&Pages[current_page]);
-#endif
-				bSaveScreenShot = 1;
-				SaveScreenShot (NULL, 1);
-				break;
-			}
-	
-			case KEY_ESC:
-				if (leave_mode==0)
-					done = 1;
-				 break;
-
-			#ifndef NDEBUG
-		  	case KEY_DEBUGGED+KEY_F: 	{
-				for (i=0; i<=gameData.segs.nLastSegment; i++)
-					bAutomapVisited[i] = 1;
-				AutomapBuildEdgeList ();
-				Max_segments_away = SetSegmentDepths (gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, bAutomapVisited);
-				SegmentLimit = Max_segments_away;
-				adjust_segment_limit (SegmentLimit, bAutomapVisited);
-				}
-				break;
-			#endif
-
-			case KEY_MINUS:
-				if (SegmentLimit > 1) 		{
-					SegmentLimit--;
-					adjust_segment_limit (SegmentLimit, bAutomapVisited);
-				}
-				break;
-			case KEY_EQUAL:
-				if (SegmentLimit < Max_segments_away) 	{
-					SegmentLimit++;
-					adjust_segment_limit (SegmentLimit, bAutomapVisited);
-				}
-				break;
-			case KEY_1:
-			case KEY_2:
-			case KEY_3:
-			case KEY_4:
-			case KEY_5:
-			case KEY_6:
-			case KEY_7:
-			case KEY_8:
-			case KEY_9:
-			case KEY_0:
-				if (gameData.app.nGameMode & GM_MULTI)
-			   	nMaxDrop=2;
-				else
-			   	nMaxDrop=9;
-
-			nMarker = c-KEY_1;
-            if (nMarker<=nMaxDrop)
-				 {
-					if (gameData.marker.objects[nMarker] != -1)
-						gameData.marker.nHighlight=nMarker;
-				 }
-			  break;
-
-			case KEY_D+KEY_CTRLED:
-#if AUTOMAP_DIRECT_RENDER == 0
-				if (current_page)		//menu will only work on page 0
-					DrawAutomap (0);	//..so switch from 1 to 0
-#endif
-
-				if (gameData.marker.nHighlight > -1 && gameData.marker.objects[gameData.marker.nHighlight] != -1) {
-#if AUTOMAP_DIRECT_RENDER == 0
-					WINDOS (
-						DDGrSetCurrentCanvas (&ddPages[current_page]),
-						GrSetCurrentCanvas (&Pages[current_page])
-					);
-#endif
-
-					if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
-						int	h, i;
-						ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
-						i = LastMarker ();
-						if (i == gameData.marker.nHighlight) {
-							gameData.marker.objects [gameData.marker.nHighlight] = -1;
-							gameData.marker.szMessage [gameData.marker.nHighlight][0] = '\0';
-							gameData.marker.nHighlight = i ? 0 : -1;
-							}
-						else {
-							h = i - gameData.marker.nHighlight;
-							memcpy (gameData.marker.objects + gameData.marker.nHighlight,
-									  gameData.marker.objects + gameData.marker.nHighlight + 1,
-									  h * sizeof (gameData.marker.objects [0]));
-							memcpy (gameData.marker.szMessage [gameData.marker.nHighlight],
-									  gameData.marker.szMessage [gameData.marker.nHighlight + 1],
-									  h * sizeof (gameData.marker.szMessage [0]));
-							gameData.marker.objects [i] = -1;
-							gameData.marker.szMessage [i][0] = '\0';
-							}
-					}					
-				}
-				break;
-
-			#ifndef RELEASE
-			case KEY_COMMA:
-				if (gameData.marker.fScale>.5)
-					gameData.marker.fScale-=.5;
-				break;
-			case KEY_PERIOD:
-				if (gameData.marker.fScale<30.0)
-					gameData.marker.fScale+=.5;
-				break;
-			#endif
-
-//added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
-#if 0
-			case KEY_CTRLED+KEY_SHIFTED+KEY_PADDIVIDE:
-			case KEY_ALTED+KEY_CTRLED+KEY_PADDIVIDE:
-			case KEY_ALTED+KEY_SHIFTED+KEY_PADDIVIDE:
-				LY:
-			case KEY_ALTED+KEY_SHIFTED+KEY_PADMULTIPLY:
-				change_res ();
-				break;
-			case KEY_CTRLED+KEY_SHIFTED+KEY_PADMINUS:
-			case KEY_ALTED+KEY_CTRLED+KEY_PADMINUS:
-			case KEY_ALTED+KEY_SHIFTED+KEY_PADMINUS:
-				//lower res
-				//should we just cycle through the list that is displayed in the res change menu?
-				// what if their card/X/etc can't handle that mode? hrm.
-				//well, the quick access to the menu is good enough for now.
-				break;
-			case KEY_CTRLED+KEY_SHIFTED+KEY_PADPLUS:
-			case KEY_ALTED+KEY_CTRLED+KEY_PADPLUS:
-			case KEY_ALTED+KEY_SHIFTED+KEY_PADPLUS:
-				//increase res
-				break;
-#endif
-			case KEY_ALTED+KEY_ENTER:
-			case KEY_ALTED+KEY_PADENTER:
-				GrToggleFullScreenGame ();
-				break;
-//end addition -MM
-
-	      }
-		}
-
-		if (Controls.fire_primaryDownCount)	{
-			// Reset orientation
-			amData.nViewDist = ZOOM_DEFAULT;
-			tangles.p = PITCH_DEFAULT;
-			tangles.h  = 0;
-			tangles.b  = 0;
-			amData.viewTarget = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
-		}
-#if 0
-		amData.nViewDist -= Controls.forward_thrustTime*ZOOM_SPEED_FACTOR;
-#else		
-		if (Controls.forward_thrustTime)
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forward_thrustTime*ZOOM_SPEED_FACTOR); 
-#endif
-		tangles.p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
-		tangles.h += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
-		tangles.b += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
-
-		if (Controls.vertical_thrustTime || Controls.sideways_thrustTime)	{
-			vmsAngVec	tangles1;
-			vmsVector	old_vt;
-			old_vt = amData.viewTarget;
-			tangles1 = tangles;
-			VmAngles2Matrix (&tempm,&tangles1);
-			VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient,&tempm);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.vertical_thrustTime*SLIDE_SPEED);
-			VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sideways_thrustTime*SLIDE_SPEED);
-#if 0
-			if (VmVecDistQuick (&amData.viewTarget, &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos) > i2f (1000))	{
-				amData.viewTarget = old_vt;
-			}
-#endif
-		}
-
-		VmAngles2Matrix (&tempm,&tangles);
-		VmMatMul (&amData.viewMatrix,&gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.mOrient,&tempm);
-
-		if (amData.nViewDist < ZOOM_MIN_VALUE) 
-			amData.nViewDist = ZOOM_MIN_VALUE;
-		if (amData.nViewDist > ZOOM_MAX_VALUE) 
-			amData.nViewDist = ZOOM_MAX_VALUE;
-
-		if (gameOpts->menus.nStyle && !gameData.app.bGamePaused)
-			GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
-		DrawAutomap (0);
-
-		if (firstTime)	{
-			firstTime = 0;
-			GrPaletteStepLoad (NULL);
-		}
-
-		t2 = TimerGetFixedSeconds ();
-		if (bPauseGame)
-			gameData.time.xFrame=t2-t1;
-		t1 = t2;
-	}
-
-	//d_free (Edges);
-	//d_free (DrawingListBright);
-
-	GrFreeCanvas (name_canv_left);  name_canv_left=NULL;
-	GrFreeCanvas (name_canv_right);  name_canv_right=NULL;
-
-	if (must_free_canvas)	{
-#if AUTOMAP_DIRECT_RENDER == 0
-	WINDOS (
-		DDFreeSurface (ddPages[0].lpdds),
-		d_free (Page.cv_bitmap.bm_texBuf)
-	);
-#endif
-	}
-	GameFlushInputs ();
-
+GrFreeCanvas (name_canv_left);  name_canv_left=NULL;
+GrFreeCanvas (name_canv_right);  name_canv_right=NULL;
+GameFlushInputs ();
 if (gameData.app.bGamePaused)
 	ResumeGame ();
-
-#ifdef WINDOWS
-	nVRScreenMode = dd_VR_screegameStates.render.cockpit.nModeSave;
-#endif
 gameStates.ogl.nContrast = nContrast;
 gameStates.app.bAutoMap = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void adjust_segment_limit (int SegmentLimit, ubyte *pVisited)
+void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited)
 {
 	int i,e1;
 	Edge_info * e;
-	for (i=0; i<=Highest_edge_index; i++)	{
+	for (i=0; i<=nHighestEdgeIndex; i++)	{
 		e = Edges + i;
 		e->flags |= EF_TOO_FAR;
 		for (e1=0; e1<e->num_faces; e1++)	{
-			if (pVisited[e->nSegment[e1]] <= SegmentLimit)	{
+			if (pVisited[e->nSegment[e1]] <= nSegmentLimit)	{
 				e->flags &= (~EF_TOO_FAR);
 				break;
 			}
@@ -1454,7 +1277,7 @@ void DrawAllEdges ()
 
 	nbright=0;
 
-	for (i=0; i<=Highest_edge_index; i++)	{
+	for (i=0; i<=nHighestEdgeIndex; i++)	{
 		//e = &Edges[Edge_used_list[i]];
 		e = Edges + i;
 		if (! (e->flags & EF_USED)) 
@@ -1585,7 +1408,7 @@ static int AutomapFindEdge (int v0,int v1,Edge_info **edge_ptr)
 
 	vv = (v1<<16) + v0;
 
-	oldhash = hash = ((v0*5+v1) % Max_edges);
+	oldhash = hash = ((v0*5+v1) % nMaxEdges);
 
 	ret = -1;
 
@@ -1596,7 +1419,7 @@ static int AutomapFindEdge (int v0,int v1,Edge_info **edge_ptr)
 		if (Edges[hash].num_faces == 0) ret=0;
 		else if (evv == vv) ret=1;
 		else {
-			if (++hash==Max_edges) hash=0;
+			if (++hash==nMaxEdges) hash=0;
 			if (hash==oldhash) Error ("Edge list full!");
 		}
 	}
@@ -1619,7 +1442,7 @@ void AddOneEdge (int va, int vb, unsigned int color, ubyte tSide, short nSegment
 	Edge_info *e;
 	int tmp;
 
-	if (Num_edges >= Max_edges)	{
+	if (nNumEdges >= nMaxEdges)	{
 		// GET JOHN! (And tell him that his
 		// MAX_EDGES_FROM_VERTS formula is hosed.)
 		// If he's not around, save the mine,
@@ -1645,10 +1468,10 @@ if (found == -1) {
 	e->flags = EF_USED | EF_DEFINING;			// Assume a normal line
 	e->sides[0] = tSide;
 	e->nSegment[0] = nSegment;
-	//Edge_used_list[Num_edges] = EDGE_IDX (e);
-	if ( EDGE_IDX (e) > Highest_edge_index)
-		Highest_edge_index = EDGE_IDX (e);
-	Num_edges++;
+	//Edge_used_list[nNumEdges] = EDGE_IDX (e);
+	if ( EDGE_IDX (e) > nHighestEdgeIndex)
+		nHighestEdgeIndex = EDGE_IDX (e);
+	nNumEdges++;
 	} 
 else {
 	//Assert (e->num_faces < 8);
@@ -1866,12 +1689,12 @@ void AutomapBuildEdgeList ()
 		amData.bCheat = 1;		// Damn cheaters...
 
 	// clear edge list
-	for (i=0; i<Max_edges; i++) {
+	for (i=0; i<nMaxEdges; i++) {
 		Edges[i].num_faces = 0;
 		Edges[i].flags = 0;
 	}
-	Num_edges = 0;
-	Highest_edge_index = -1;
+	nNumEdges = 0;
+	nHighestEdgeIndex = -1;
 
 	if (amData.bCheat || (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL))	{
 		// Cheating, add all edges as visited
@@ -1902,7 +1725,7 @@ void AutomapBuildEdgeList ()
 	}
 
 	// Find unnecessary lines (These are lines that don't have to be drawn because they have small curvature)
-	for (i = 0; i <= Highest_edge_index; i++)	{
+	for (i = 0; i <= nHighestEdgeIndex; i++)	{
 		e = Edges + i;
 		if (!(e->flags & EF_USED))
 			continue;
