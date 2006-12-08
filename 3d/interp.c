@@ -1622,7 +1622,7 @@ float NearestShadowedWallDist (tObject *objP, vmsVector *vLightPos)
 	fvi_info		fi;
 	vmsVector	v;
 
-	static float fClip [3] = {1.25f, 1.5f, 3.0f};
+	static float fClip [3] = {1.2f, 1.5f, 2.0f};
 
 if (!gameOpts->render.shadows.bClip)
 	return INFINITY;
