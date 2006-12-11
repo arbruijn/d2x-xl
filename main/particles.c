@@ -82,6 +82,7 @@ static int iParticleFrames [2][3] = {{0,0,0},{0,0,0}};
 #define VERT_BUF_SIZE	512 //8192
 
 static GLdouble vertexBuffer [VERT_BUF_SIZE][3];
+static GLdouble texCoordBuffer [VERT_BUF_SIZE][2];
 static GLdouble colorBuffer [VERT_BUF_SIZE][4];
 static int iBuffer = 0;
 #else
@@ -448,36 +449,39 @@ static void FlushVertexArrays (tParticle *pParticles, int iBuffer)
 if (iBuffer) {
 	GLenum	i;
 
-	glEnableClientState (GL_VERTEX_ARRAY);
-	glEnableClientState (GL_COLOR_ARRAY);
 #if !EXTRA_VERTEX_ARRAYS
 	glColorPointer (4, GL_DOUBLE, sizeof (tParticle) - sizeof (tPartColor), &pParticles->glColor);
 	glVertexPointer (3, GL_DOUBLE, sizeof (tParticle) - sizeof (tPartPos), &pParticles->glPos);
 	if (i = glGetError ()) {
-#ifdef _DEBUG
+#	ifdef _DEBUG
 		HUDMessage (0, "glVertexPointer %d failed (%d)", iBuffer, i);
-#endif
+#	endif
 		glVertexPointer (3, GL_DOUBLE, sizeof (tParticle) - sizeof (tPartPos), &pParticles->glPos);
 		if (i = glGetError ())
 			glVertexPointer (3, GL_DOUBLE, sizeof (tParticle) - sizeof (tPartPos), &pParticles->glPos);
 		}
 #else
 	glVertexPointer (3, GL_DOUBLE, 0, vertexBuffer);
-	if (i = glGetError ()) {
-#ifdef _DEBUG
+#	ifdef _DEBUG
+	if (i = glGetError ())
 		HUDMessage (0, "glVertexPointer %d failed (%d)", iBuffer, i);
-#endif
-		glVertexPointer (3, GL_DOUBLE, 0, vertexBuffer);
+#	endif
+	if (!gameStates.render.bPointSprites) {
+		glTexCoordPointer (2, GL_DOUBLE, 0, texCoordBuffer);
+#	ifdef _DEBUG
 		if (i = glGetError ())
-			glVertexPointer (3, GL_DOUBLE, 0, vertexBuffer);
+			HUDMessage (0, "glTexCoordPointer %d failed (%d)", iBuffer, i);
+#	endif
 		}
 	glColorPointer (4, GL_DOUBLE, 0, colorBuffer);
+#	ifdef _DEBUG
+	if (i = glGetError ())
+		HUDMessage (0, "glColorPointer %d failed (%d)", iBuffer, i);
+#	endif
 #endif
 	i = glGetError ();
 	glDrawArrays (gameStates.render.bPointSprites ? GL_POINTS : GL_QUADS, 0, iBuffer);
 	i = glGetError ();
-	glDisableClientState (GL_VERTEX_ARRAY);
-	glDisableClientState (GL_COLOR_ARRAY);
 	iBuffer = 0;
 	}
 }
@@ -485,6 +489,28 @@ if (iBuffer) {
 //------------------------------------------------------------------------------
 
 inline void SetParticleTexCoord (GLdouble u, GLdouble v, char orient)
+{
+#if OGL_VERTEX_ARRAYS
+if (gameStates.render.bVertexArrays) {
+	if (orient == 1) {
+		texCoordBuffer [iBuffer][0] = 1.0 - v;
+		texCoordBuffer [iBuffer][1] = u;
+		}
+	else if (orient == 2) {
+		texCoordBuffer [iBuffer][0] = 1.0 - u;
+		texCoordBuffer [iBuffer][1] = 1.0 - v;
+		}
+	else if (orient == 3) {
+		texCoordBuffer [iBuffer][0] = v;
+		texCoordBuffer [iBuffer][1] = 1.0 - u;
+		}
+	else {
+		texCoordBuffer [iBuffer][0] = u;
+		texCoordBuffer [iBuffer][1] = v;
+		}
+	}
+else 
+#endif
 {
 if (orient == 1)
 	glTexCoord2d (1.0 - v, u);
@@ -494,6 +520,7 @@ else if (orient == 3)
 	glTexCoord2d (v, 1.0 - u);
 else 
 	glTexCoord2d (u, v);
+}
 }
 
 //------------------------------------------------------------------------------
@@ -541,6 +568,7 @@ else {
 		}
 	}
 pc = pParticle->glColor;
+pc.a *= gameOpts->render.smoke.bDisperse ? decay2 : decay;
 if (gameOpts->ogl.bUseLighting) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
 	if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
@@ -549,36 +577,39 @@ if (gameOpts->ogl.bUseLighting) {
 		pc.b *= (double) psc->color.blue;
 		}
 	}
-glColor4d (pc.r, pc.g, pc.b, pc.a * (gameOpts->render.smoke.bDisperse ? decay2 : decay));
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
-#if OGL_VERTEX_ARRAYS
+#	if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
-#if !EXTRA_VERTEX_ARRAYS
+#		if !EXTRA_VERTEX_ARRAYS
 		pParticle->glPos.x = f2fl (hp.x);
 		pParticle->glPos.y = f2fl (hp.y);
 		pParticle->glPos.z = f2fl (hp.z);
 		nBuffer++;
-#else
-		colorBuffer [iBuffer][3] = (double) pParticle->glColor.a * decay;
+#		else
+		memcpy (colorBuffer [iBuffer], &pc, sizeof (pc));
 		pf = vertexBuffer [iBuffer];
-		*pf++ = f2fl (hp.x);
-		*pf++ = f2fl (hp.y);
-		*pf++ = -f2fl (hp.z);
-		if (++iBuffer >= VERT_BUF_SIZE)
+		pf [0] = f2fl (hp.x);
+		pf [1] = f2fl (hp.y);
+		pf [2] = f2fl (hp.z);
+		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
+		if (iBuffer >= VERT_BUF_SIZE)
 			FlushVertexArrays ();
-#endif
+#	endif
 		}
 	else
 #endif
 	{
-//	glColor4d (1.0, 1.0, 1.0, pParticle->glColor.a);
+	glColor4dv ((GLdouble *) &pc);
 	glVertex3d (f2fl (hp.x), f2fl (hp.y), f2fl (hp.z));
 	}
 	}
 else
 #endif
 	{
+	u = bmP->glTexture->u;
+	v = bmP->glTexture->v;
+	o = pParticle->nOrient;
 	if (gameOpts->render.smoke.bDisperse) {
 		w = f2fl (pParticle->nWidth) / decay2; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) / decay2;
 		h = f2fl (pParticle->nHeight) / decay2; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) / decay2;
@@ -592,22 +623,35 @@ else
 	z = f2fl (hp.z);
 #if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
-		colorBuffer [iBuffer][3] = (double) pParticle->glColor.a * decay;
 		pf = vertexBuffer [iBuffer];
-		*pf++ = x - w; *pf++ = y + h; *pf++ = z;
-		*pf++ = x + w; *pf++ = y + h; *pf++ = z;
-		*pf++ = x + w; *pf++ = y - h; *pf++ = z;
-		*pf   = x - w; *pf++ = y + h; *pf++ = z;
-		iBuffer += 4;
+		pf [0] =
+		pf [9] = x - w; 
+		pf [3] =
+		pf [6] = x + w; 
+		pf [1] = 
+		pf [4] = y + h; 
+		pf [7] =
+		pf [10] = y - h; 
+		pf [2] =
+		pf [5] =
+		pf [8] =
+		pf [11] = z;
+		SetParticleTexCoord (0, 0, o);
+		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
+		SetParticleTexCoord (u, 0, o);
+		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
+		SetParticleTexCoord (u, v, o);
+		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
+		SetParticleTexCoord (0, v, o);
+		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
 		if (iBuffer >= VERT_BUF_SIZE)
 			FlushVertexArrays ();
 		}
-	else
-#endif
+	else {
+#else
 	{
-	u = bmP->glTexture->u;
-	v = bmP->glTexture->v;
-	o = pParticle->nOrient;
+#endif
+	glColor4dv ((GLdouble *) &pc);
 	SetParticleTexCoord (0, 0, o);
 	glVertex3d (x - w, y + h, z);
 	SetParticleTexCoord (u, 0, o);
@@ -623,7 +667,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int BeginRenderSmoke (int nType)
+int BeginRenderSmoke (int nType, float nScale)
 {
 	grsBitmap	*bmP;
 	int			nFrames;
@@ -651,24 +695,39 @@ glDepthFunc (GL_LESS);
 glDepthMask (0);
 //glEnable (GL_BLEND);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 0//OGL_POINT_SPRITES
+#if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};
-   float maxSize = 0.0f;
+   float partSize = f2fl ((gameOpts->render.smoke.bSyncSizes ? 
+									PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale) : nScale)) * 128; 
+	static float maxSize = -1.0f;
 	glPointParameterfvARB (GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
 	glPointParameterfARB (GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
 	glTexEnvf (GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
 	glEnable (GL_POINT_SPRITE_ARB);
-   glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
-	if (maxSize > (float) (64 >> (3 - gameOpts->render.smoke.nSize [0])))
-		maxSize = (float) (64 >> (3 - gameOpts->render.smoke.nSize [0]));
-   glPointSize (maxSize);
+	if (maxSize < 0)
+	   glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
+	glPointSize ((maxSize > partSize) ? partSize : maxSize);
 	glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
-	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, maxSize);
+	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, 100 * maxSize);
 	if (OglBindBmTex (bmP, 1))
 		return 0;
 #	if OGL_VERTEX_ARRAYS
-	if (!gameStates.render.bVertexArrays)
+	if (gameStates.render.bVertexArrays) {
+		GLenum i;
+
+		glEnableClientState (GL_VERTEX_ARRAY);
+#	ifdef _DEBUG
+		if (i = glGetError ()) 
+			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) %d failed (%d)", iBuffer, i);
+#	endif
+		glEnableClientState (GL_COLOR_ARRAY);
+#	ifdef _DEBUG
+		if (i = glGetError ()) 
+			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) %d failed (%d)", iBuffer, i);
+#	endif
+		}
+	else
 #	endif
 		glBegin (GL_POINTS);
 	}
@@ -678,7 +737,27 @@ else
 	if (OglBindBmTex (bmP, 1))
 		return 0;
 #if OGL_VERTEX_ARRAYS
-	if (!gameStates.render.bVertexArrays)
+	if (gameStates.render.bVertexArrays) {
+		GLenum i;
+
+		glDisableClientState (GL_VERTEX_ARRAY);
+		glEnableClientState (GL_VERTEX_ARRAY);
+#ifdef _DEBUG
+		if (i = glGetError ()) 
+			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) failed (%d)", i);
+#endif
+		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+#ifdef _DEBUG
+		if (i = glGetError ()) 
+			HUDMessage (0, "glEnableClientState (GL_TEX_COORD_ARRAY) failed (%d)", i);
+#endif
+		glEnableClientState (GL_COLOR_ARRAY);
+#ifdef _DEBUG
+		if (i = glGetError ()) 
+			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) failed (%d)", i);
+#endif
+		}
+	else
 #endif
 		glBegin (GL_QUADS);
 	}
@@ -690,12 +769,16 @@ return 1;
 int EndRenderSmoke (tCloud *pCloud)
 {
 #if OGL_VERTEX_ARRAYS
-if (gameStates.render.bVertexArrays)
+if (gameStates.render.bVertexArrays) {
 #	if EXTRA_VERTEX_ARRAYS
 	FlushVertexArrays ();
 #	else
 	FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 #	endif
+	glDisableClientState (GL_COLOR_ARRAY);
+	glDisableClientState (GL_VERTEX_ARRAY);
+	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+	}
 else
 	glEnd ();
 #else
@@ -926,7 +1009,7 @@ int RenderCloud (tCloud *pCloud)
 				bReverse;
 	tPartIdx	*pPartIdx;
 
-if (!BeginRenderSmoke (pCloud->nType))
+if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
 	return 0;
 if (bSorted) {
 	pPartIdx = pCloud->pPartIdx;

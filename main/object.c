@@ -1567,7 +1567,7 @@ if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObje
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || 
-				  !gameStates.render.bExternalView))) {
+				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif	 	
 		if (gameOpts->render.smoke.bPlayers)
 			DoPlayerSmoke (objP, -1);

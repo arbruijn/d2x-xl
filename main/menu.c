@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 
@@ -984,11 +980,18 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+#if VR_NONE
+#   undef VR_NONE			//undef if != 0
+#endif
+#ifndef VR_NONE
+#   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
+#endif
+
 void SetDisplayMode (int mode, int bOverride)
 {
 	dmi *dmi;
 
-if ((gameStates.video.nDisplayMode == -1)|| (VR_render_mode != VR_NONE))	//special VR mode
+if ((gameStates.video.nDisplayMode == -1) || (VR_render_mode != VR_NONE))	//special VR mode
 	return;								//...don't change
 if (bOverride && gameStates.gfx.bOverride)
 	mode = gameStates.gfx.nStartScrSize;
@@ -1101,6 +1104,13 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+#if VR_NONE
+#   undef VR_NONE			//undef if != 0
+#endif
+#ifndef VR_NONE
+#   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
+#endif
 
 #define ADD_RES_OPT(_t) {ADD_RADIO (opt, _t, 0, -1, 0, NULL); opt++;}
 //{m [opt].nType = NM_TYPE_RADIO; m [opt].text = (_t); m [opt].key = -1; m [opt].value = 0; opt++;}
