@@ -164,7 +164,7 @@ void RenderMine (short start_seg_num, fix eye_offset, int window_num);
 
 void RenderShadow (float fDist);
 
-int RenderShadowMap (tOglLight *pLight);
+int RenderShadowMap (tDynLight *pLight);
 
 void UpdateRenderedData (int window_num, tObject *viewer, int rear_viewFlag, int user);
 

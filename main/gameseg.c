@@ -2205,9 +2205,9 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	delta_light	*dlP;
 	short			iSeg, iSide;
 
-if ((dir < 0) && RemoveOglLight (nSegment, nSide, -1))
+if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))
 	return;
-if (ToggleOglLight (nSegment, nSide, -1, dir >= 0) >= 0)
+if (ToggleDynLight (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;
 i = FindDLIndex (nSegment, nSide);
 for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {

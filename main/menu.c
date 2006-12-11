@@ -153,7 +153,7 @@ static int	nFPSopt, nRSDopt,
 				nFusionOpt, nLMapRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nOglLightOpt, 
+				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nDynLightOpt, 
 				nShadowReachOpt, nOglMaxLightsOpt,
 				optZPass, optShadowVolume, nSyncSmokeSizes;
 
@@ -2445,8 +2445,8 @@ if (v != gameOpts->render.color.bGunLight) {
 	*key = -2;
 	return;
 	}
-if (nOglLightOpt >= 0) {
-	m = menus + nOglLightOpt;
+if (nDynLightOpt >= 0) {
+	m = menus + nDynLightOpt;
 	v = m->value;
 	if (v != gameOpts->ogl.bUseLighting) {
 		gameOpts->ogl.bUseLighting = v;
@@ -2513,16 +2513,16 @@ do {
 	else
 		nLightMapsOpt = -1;
 	if (gameStates.app.bGameRunning) 
-		nOglLightOpt = 
+		nDynLightOpt = 
 		nOglMaxLightsOpt = 
 		optObjectLight = -1;
 	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-		nOglLightOpt = -1;
+		nDynLightOpt = -1;
 	else {
 		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_O, HTX_OGL_LIGHTING);
-		nOglLightOpt = opt++;
+		nDynLightOpt = opt++;
 		}
-	if (gameOpts->ogl.bUseLighting && (nOglLightOpt >= 0)) {
+	if (gameOpts->ogl.bUseLighting && (nDynLightOpt >= 0)) {
 		if (!gameStates.app.bGameRunning) {
 			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
 			optObjectLight = opt++;
@@ -2562,7 +2562,7 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if ((nOglLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nOglLightOpt].value)) {
+	if ((nDynLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nDynLightOpt].value)) {
 		if (optObjectLight >= 0)
 			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
 		}

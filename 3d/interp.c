@@ -97,13 +97,15 @@ g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
 static short nGlow = -1;
 
+//------------------------------------------------------------------------------
+
 void CHECK ()
 {
 	int po = 0;
-if (gameData.models.pofData [0][108].subObjs.pSubObjs &&
-	 abs (gameData.models.pofData [0][108].subObjs.pSubObjs [0].nParent) > 1)
+if (gameData.models.pofData [0][1][108].subObjs.pSubObjs &&
+	 abs (gameData.models.pofData [0][1][108].subObjs.pSubObjs [0].nParent) > 1)
 	po = po;
-if (abs (gameData.models.pofData [0][108].subObjs.nSubObjs) > 10)
+if (abs (gameData.models.pofData [0][1][108].subObjs.nSubObjs) > 10)
 	po = po;
 }
 //------------------------------------------------------------------------------
@@ -1214,31 +1216,35 @@ int G3AllocPolyModelItems (void *modelP, tPOFObject *po, int bShadowData)
 	short	nFaceVerts = 0;
 	int	h;
 
-memset (po, 0, sizeof (po));
+//memset (po, 0, sizeof (po));
 po->subObjs.nSubObjs = 1;
 G3CountPolyModelItems (modelP, &po->subObjs.nSubObjs, &po->nVerts, &po->faces.nFaces, &nFaceVerts, &po->nAdjFaces);
 h = po->subObjs.nSubObjs * sizeof (tPOFSubObject);
-if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
-	return G3FreePolyModelItems (po);
-memset (po->subObjs.pSubObjs, 0, h);
-if (!(po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector))))
+if (!po->subObjs.pSubObjs) {
+	if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
+		return G3FreePolyModelItems (po);
+	memset (po->subObjs.pSubObjs, 0, h);
+	}
+if (!(po->pvVerts || (po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector)))))
 	return G3FreePolyModelItems (po);
 if (bShadowData) {
-	if (!(po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face))))
+	if (!(po->faces.pFaces || (po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face)))))
 		return G3FreePolyModelItems (po);
-	if (!(po->litFaces.pFaces = (tPOF_face **) d_malloc (po->faces.nFaces * sizeof (tPOF_face *))))
+	if (!(po->litFaces.pFaces || (po->litFaces.pFaces = (tPOF_face **) d_malloc (po->faces.nFaces * sizeof (tPOF_face *)))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pAdjFaces = (short *) d_malloc (po->nAdjFaces * sizeof (short))))
+	if (!(po->pAdjFaces || (po->pAdjFaces = (short *) d_malloc (po->nAdjFaces * sizeof (short)))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pvVertsf = (tOOF_vector *) d_malloc (po->nVerts * sizeof (tOOF_vector))))
+	if (!(po->pvVertsf || (po->pvVertsf = (tOOF_vector *) d_malloc (po->nVerts * sizeof (tOOF_vector)))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pFaceVerts = (short *) d_malloc (nFaceVerts * sizeof (short))))
+	if (!(po->pFaceVerts || (po->pFaceVerts = (short *) d_malloc (nFaceVerts * sizeof (short)))))
 		return G3FreePolyModelItems (po);
 	}
-if (!(po->pVertNorms = (g3sNormal *) d_malloc (po->nVerts * sizeof (g3sNormal))))
-	return G3FreePolyModelItems (po);
-memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
-return po->nState [bShadowData] = 1;
+if (!po->pVertNorms) {
+	if (!(po->pVertNorms = (g3sNormal *) d_malloc (po->nVerts * sizeof (g3sNormal))))
+		return G3FreePolyModelItems (po);
+	memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
+	}
+return po->nState = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1558,9 +1564,9 @@ int G3GatherPolyModelItems (tObject *objP, void *modelP, vmsAngVec *pAnimAngles,
 	vmsVector	*pv;
 	tOOF_vector	*pvf;
 
-if (!(po->nState [bShadowData] || G3AllocPolyModelItems (modelP, po, bShadowData)))
+if (!(po->nState || G3AllocPolyModelItems (modelP, po, bShadowData)))
 	return 0;
-if (po->nState [bShadowData] == 1) {
+if (po->nState == 1) {
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	G3GetPolyModelItems (modelP, pAnimAngles, po, 1, bShadowData, 0, -1);
 	if (bShadowData) {
@@ -1578,7 +1584,7 @@ if (po->nState [bShadowData] == 1) {
 		G3GetAdjFaces (po);
 		G3GetPolyModelCenters (po);
 		}
-	po->nState [bShadowData] = 2;
+	po->nState = 2;
 	G3DoneInstance ();
 	}
 if (bShadowData) {
@@ -1649,7 +1655,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 	vmsVector		v, vLightDir;
 	short				*pnl;
 	int				h, i, j, bCalcCenter = 0;
-	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission] + nModel;
+	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 if (nModel == 75)
 	nModel = nModel;
@@ -1746,7 +1752,7 @@ if (bShadowTest)
 G3CheckAndSwap (modelP);
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && 
 	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
-	po = gameData.models.pofData [gameStates.app.bD1Mission] + nModel;
+	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
@@ -2114,11 +2120,12 @@ InitSubModel ((ubyte *) modelP);
 
 void G3FreeAllPolyModelItems (void)
 {
-	int	i, j;
+	int	h, i, j;
 
-for (i = 0; i < 2; i++)
-	for (j = 0; j < MAX_POLYGON_MODELS; j++)
-		G3FreePolyModelItems (gameData.models.pofData [i] + j);
+for (h = 0; h < 2; h++)
+	for (i = 0; i < 2; i++)
+		for (j = 0; j < MAX_POLYGON_MODELS; j++)
+			G3FreePolyModelItems (gameData.models.pofData [h][i] + j);
 memset (gameData.models.pofData, 0, sizeof (gameData.models.pofData));
 }
 

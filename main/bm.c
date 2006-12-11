@@ -1536,7 +1536,7 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 		gameData.models.polyModels [i].modelData = NULL;
 		}
 	}
-for (;i < gameData.models.nPolyModels;i++)
+for (;i < gameData.models.nPolyModels; i++)
 	FreeModel (gameData.models.polyModels + i);
 gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
 gameData.bots.nJoints = gameData.bots.nDefaultJoints;

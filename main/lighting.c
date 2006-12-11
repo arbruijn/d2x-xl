@@ -297,7 +297,7 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 		}
 	else if ((objP->nType == OBJ_POWERUP) && bDarkness && !EGI_FLAG (bPowerupLights, 0, 0))
 		return;
-	AddOglLight (color, xObjIntensity, -1, -1, nObject);
+	AddDynLight (color, xObjIntensity, -1, -1, nObject);
 	return;
 	}
 if (xObjIntensity) {
@@ -1081,7 +1081,7 @@ int AddFlicker (int nSegment, int nSide, fix delay, unsigned long mask)
 
 //------------------------------------------------------------------------------
 
-unsigned GetOglLightHandle (void)
+unsigned GetDynLightHandle (void)
 {
 #if USE_OGL_LIGHTS
 	GLint	nMaxLights;
@@ -1099,9 +1099,9 @@ return 0xffffffff;
 
 //------------------------------------------------------------------------------
 
-void SetOglLightColor (short nLight, float red, float green, float blue, float brightness)
+void SetDynLightColor (short nLight, float red, float green, float blue, float brightness)
 {
-	tOglLight	*pl = gameData.render.lights.ogl.lights + nLight;
+	tDynLight	*pl = gameData.render.lights.ogl.lights + nLight;
 	int			i;
 
 if (pl->nType ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {
@@ -1138,7 +1138,7 @@ glLightf (pl->handle, GL_SPOT_EXPONENT, 0.0f);
 
 // ----------------------------------------------------------------------------------------------
 
-void SetOglLightPos (short nObject)
+void SetDynLightPos (short nObject)
 {
 if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 	int	nLight = gameData.render.lights.ogl.owners [nObject];
@@ -1150,10 +1150,10 @@ if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
 
 //------------------------------------------------------------------------------
 
-short FindOglLight (short nSegment, short nSide, short nObject)
+short FindDynLight (short nSegment, short nSide, short nObject)
 {
 if (gameOpts->ogl.bUseLighting) {
-		tOglLight	*pl = gameData.render.lights.ogl.lights;
+		tDynLight	*pl = gameData.render.lights.ogl.lights;
 		short			i;
 
 	if (nObject >= 0)
@@ -1168,24 +1168,24 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-short UpdateOglLight (tRgbColorf *pc, float brightness, short nSegment, short nSide, short nObject)
+short UpdateDynLight (tRgbColorf *pc, float brightness, short nSegment, short nSide, short nObject)
 {
-	short	nLight = FindOglLight (nSegment, nSide, nObject);
+	short	nLight = FindDynLight (nSegment, nSide, nObject);
 	
 if (nLight >= 0) {
-	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	tDynLight *pl = gameData.render.lights.ogl.lights + nLight;
 	if (!pc)
 		pc = &pl->color;
 	if ((pl->brightness != brightness) || 
 		 (pl->color.red != pc->red) || (pl->color.green != pc->green) || (pl->color.blue != pc->blue))
-		SetOglLightColor (nLight, pc->red, pc->green, pc->blue, brightness);
+		SetDynLightColor (nLight, pc->red, pc->green, pc->blue, brightness);
 	}
 return nLight;
 }
 
 //------------------------------------------------------------------------------
 
-int LastEnabledOglLight (void)
+int LastEnabledDynLight (void)
 {
 	int	i = gameData.render.lights.ogl.nLights;
 
@@ -1197,7 +1197,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void RefreshOglLight (tOglLight *pl)
+void RefreshDynLight (tDynLight *pl)
 {
 #if USE_OGL_LIGHTS
 glLightfv (pl->handle, GL_AMBIENT, pl->fAmbient);
@@ -1211,10 +1211,10 @@ glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 
 //------------------------------------------------------------------------------
 
-void SwapOglLights (tOglLight *pl1, tOglLight *pl2)
+void SwapDynLights (tDynLight *pl1, tDynLight *pl2)
 {
 if (pl1 != pl2) {
-		tOglLight	h;
+		tDynLight	h;
 
 	h = *pl1;
 	*pl1 = *pl2;
@@ -1232,29 +1232,29 @@ if (pl1 != pl2) {
 
 //------------------------------------------------------------------------------
 
-int ToggleOglLight (short nSegment, short nSide, short nObject, int bState)
+int ToggleDynLight (short nSegment, short nSide, short nObject, int bState)
 {
-	short nLight = FindOglLight (nSegment, nSide, nObject);
+	short nLight = FindDynLight (nSegment, nSide, nObject);
 	
 if (nLight >= 0) {
-	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	tDynLight *pl = gameData.render.lights.ogl.lights + nLight;
 #if 1
-	pl->bState = bState;
+	pl->bOn = bState;
 #else
 	if (pl->bState != bState) {
-		int i = LastEnabledOglLight ();
+		int i = LastEnabledDynLight ();
 		if (bState) {
-			SwapOglLights (pl, gameData.render.lights.ogl.lights + i + 1);
+			SwapDynLights (pl, gameData.render.lights.ogl.lights + i + 1);
 			pl = gameData.render.lights.ogl.lights + i + 1;
 #if USE_OGL_LIGHTS
 			glEnable (pl->handle);
-			RefreshOglLight (pl);
+			RefreshDynLight (pl);
 #endif
 			}
 		else {
-			SwapOglLights (pl, gameData.render.lights.ogl.lights + i);
+			SwapDynLights (pl, gameData.render.lights.ogl.lights + i);
 #if USE_OGL_LIGHTS
-			RefreshOglLight (pl);
+			RefreshDynLight (pl);
 #endif
 			pl = gameData.render.lights.ogl.lights + i;
 #if USE_OGL_LIGHTS
@@ -1269,6 +1269,7 @@ return nLight;
 }
 
 //------------------------------------------------------------------------------
+
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide)
 {
 #if 0
@@ -1292,16 +1293,16 @@ if (!pc || pc->index) {
 
 //------------------------------------------------------------------------------
 
-int AddOglLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
+int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
 {
-	tOglLight	*pl;
+	tDynLight	*pl;
 	short			h, i;
 	fix			rMin, rMax;
 #if USE_OGL_LIGHTS
 	GLint			nMaxLights;
 #endif
 
-if (0 <= (h = UpdateOglLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
+if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if (!pc)
 	return -1;
@@ -1318,16 +1319,16 @@ if (gameData.render.lights.ogl.nLights >= MAX_OGL_LIGHTS) {
 	return -1;	//too many lights
 	}
 #endif
-i = gameData.render.lights.ogl.nLights; //LastEnabledOglLight () + 1;
+i = gameData.render.lights.ogl.nLights; //LastEnabledDynLight () + 1;
 pl = gameData.render.lights.ogl.lights + i;
 #if USE_OGL_LIGHTS
-pl->handle = GetOglLightHandle (); 
+pl->handle = GetDynLightHandle (); 
 if (pl->handle == 0xffffffff)
 	return -1;
 #endif
 #if 0
 if (i < gameData.render.lights.ogl.nLights)
-	SwapOglLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
+	SwapDynLights (pl, gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights);
 #endif
 pl->nSegment = nSegment;
 pl->nSide = nSide;
@@ -1335,7 +1336,7 @@ pl->nObject = nObject;
 pl->bState = 1;
 pl->bSpot = 0;
 pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
-SetOglLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
+SetDynLightColor (gameData.render.lights.ogl.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
 else if (nSegment >= 0) {
@@ -1391,14 +1392,14 @@ return gameData.render.lights.ogl.nLights++;
 
 //------------------------------------------------------------------------------
 
-void DeleteOglLight (short nLight)
+void DeleteDynLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
-	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	tDynLight *pl = gameData.render.lights.ogl.lights + nLight;
 
 	if (!pl->nType) {
 		// do not remove static lights, or the nearest lights to tSegment info will get messed up!
-		pl->bState = 0;
+		pl->bState = pl->bOn = 0;
 		return;
 		}
 	LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.ogl.lights);
@@ -1409,7 +1410,7 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
 		if (pl->nObject >= 0)
 			gameData.render.lights.ogl.owners [pl->nObject] = nLight;
 #if USE_OGL_LIGHTS
-		RefreshOglLight (pl);
+		RefreshDynLight (pl);
 #endif
 		pl = gameData.render.lights.ogl.lights + gameData.render.lights.ogl.nLights;
 		}
@@ -1421,13 +1422,13 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.ogl.nLights)) {
 
 //------------------------------------------------------------------------------
 
-int RemoveOglLight (short nSegment, short nSide, short nObject)
+int RemoveDynLight (short nSegment, short nSide, short nObject)
 {
-	int	nLight = FindOglLight (nSegment, nSide, nObject);
+	int	nLight = FindDynLight (nSegment, nSide, nObject);
 
 if (nLight < 0)
 	return 0;
-DeleteOglLight (nLight);
+DeleteDynLight (nLight);
 if (nObject >= 0)
 	gameData.render.lights.ogl.owners [nObject] = -1;
 return 1;
@@ -1435,24 +1436,24 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RemoveOglLights (void)
+void RemoveDynLights (void)
 {
 	short	i;
 
 for (i = 0; i < gameData.render.lights.ogl.nLights; i++)
-	DeleteOglLight (i);
+	DeleteDynLight (i);
 }
 
 //------------------------------------------------------------------------------
 
-void SetOglLightMaterial (short nSegment, short nSide, short nObject)
+void SetDynLightMaterial (short nSegment, short nSide, short nObject)
 {
 	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-	int nLight = FindOglLight (nSegment, nSide, nObject);
+	int nLight = FindDynLight (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	tOglLight *pl = gameData.render.lights.ogl.lights + nLight;
+	tDynLight *pl = gameData.render.lights.ogl.lights + nLight;
 	if (pl->bState) {
 		gameData.render.lights.ogl.material.emissive = *((fVector *) &pl->fEmissive);
 		gameData.render.lights.ogl.material.specular = *((fVector *) &pl->fEmissive);
@@ -1467,7 +1468,7 @@ gameData.render.lights.ogl.material.bValid = 0;
 
 //------------------------------------------------------------------------------
 
-void AddOglLights (void)
+void AddDynLights (void)
 {
 	int			i, j, t;
 	tSegment		*segP;
@@ -1490,17 +1491,17 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		if (t >= MAX_WALL_TEXTURES) 
 			continue;
 		pc = gameData.render.color.textures + t;
-		AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+		AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 		t = sideP->nOvlTex;
 		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
 			pc = gameData.render.color.textures + t;
 			if ((pc->color.red > 0.0f) || (pc->color.green > 0.0f) || (pc->color.blue > 0.0f))
-				AddOglLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 			}
 		//if (gameData.render.lights.ogl.nLights)
 		//	return;
 		if (!gameStates.ogl.bHaveLights) {
-			RemoveOglLights ();
+			RemoveDynLights ();
 			return;
 			}
 		}
@@ -1509,10 +1510,10 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 
 //------------------------------------------------------------------------------
 
-void TransformOglLights (int bStatic, int bVariable)
+void TransformDynLights (int bStatic, int bVariable)
 {
 	int			i;
-	tOglLight	*pl = gameData.render.lights.ogl.lights;
+	tDynLight	*pl = gameData.render.lights.ogl.lights;
 
 #if USE_OGL_LIGHTS
 OglSetupTransform ();
@@ -1550,11 +1551,12 @@ for (i = 0; i < gameData.render.lights.ogl.nLights; i++, pl++) {
 		}
 	psl->bVariable = pl->bVariable;
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
+	psl->bOn = pl->bOn;
 	psl->nType = pl->nType;
 	if (psl->bState) {
 		if (!bStatic && (pl->nType == 1) && !pl->bVariable)
 			psl->bState = 0;
-		if (!bVariable && ((pl->nType > 1)  || pl->bVariable))
+		if (!bVariable && ((pl->nType > 1) || pl->bVariable))
 			psl->bState = 0;
 		}
 	psl->rad = pl->rad;
@@ -1591,7 +1593,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		if ((j = *pnl) < 0)
 			break;
 		if (gameData.render.lights.ogl.lights [j].bVariable) {
-			if (!bVariable)
+			if (!(bVariable && gameData.render.lights.ogl.lights [j].bOn))
 				continue;
 			}
 		else {
@@ -1626,7 +1628,7 @@ void SetNearestDynamicLights (int nSegment)
 {
 if (gameOpts->ogl.bUseLighting) {
 	short				i = gameData.render.lights.ogl.shader.nLights;
-	tOglLight		*pl = gameData.render.lights.ogl.lights + i;
+	tDynLight		*pl = gameData.render.lights.ogl.lights + i;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights + i;
 	vmsVector		d, c;
 	fix				m;
@@ -1725,10 +1727,10 @@ int AddOglHeadLight (tObject *objP)
 
 if (gameOpts->ogl.bUseLighting) {
 		tRgbColorf c = {1.0f, 1.0f, 1.0f};
-		tOglLight	*pl;
+		tDynLight	*pl;
 		int			nLight;
 
-	nLight = AddOglLight (&c, F1_0 * 50, -1, -1, -1);
+	nLight = AddDynLight (&c, F1_0 * 50, -1, -1, -1);
 	if (nLight >= 0) {
 		pl = gameData.render.lights.ogl.lights + nLight;
 		pl->nPlayer = objP->id;
@@ -1747,7 +1749,7 @@ return -1;
 void RemoveOglHeadLight (tObject *objP)
 {
 if (gameOpts->ogl.bUseLighting) {
-	DeleteOglLight (gameData.render.lights.ogl.nHeadLights [objP->id]);
+	DeleteDynLight (gameData.render.lights.ogl.nHeadLights [objP->id]);
 	gameData.render.lights.ogl.nHeadLights [objP->id] = -1;
 	}
 }
@@ -1756,7 +1758,7 @@ if (gameOpts->ogl.bUseLighting) {
 
 void UpdateOglHeadLight (void)
 {
-	tOglLight	*pl;
+	tDynLight	*pl;
 	tObject		*objP;
 	short			nPlayer;
 
@@ -1773,14 +1775,14 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 //------------------------------------------------------------------------------
 
-void ComputeStaticOglLighting ()
+void ComputeStaticDynLighting ()
 {
 if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) {
 		int				i, bColorize = !(gameOpts->ogl.bUseLighting || gameStates.app.bD2XLevel);
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
-	TransformOglLights (1, bColorize);
+	TransformDynLights (1, bColorize);
 	for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
 		SetNearestVertexLights (i, 1, 1, bColorize);
@@ -1791,11 +1793,11 @@ if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-void CalcOglLightAttenuation (vmsVector *pv)
+void CalcDynLightAttenuation (vmsVector *pv)
 {
 #if !USE_OGL_LIGHTS
 	int				i;
-	tOglLight		*pl = gameData.render.lights.ogl.lights;
+	tDynLight		*pl = gameData.render.lights.ogl.lights;
 	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
 	fVector			v, d;
 	float				l;

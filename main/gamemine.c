@@ -966,7 +966,7 @@ int nMaxNearestLights [21] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,24,28,
 int ComputeNearestSegmentLights (int i)
 {
 	tSegment				*segP;
-	tOglLight			*pl;
+	tDynLight			*pl;
 	int					h, j, l, n, nMaxLights;
 	vmsVector			center, dist;
 	struct tLightDist	*pDists;
@@ -1010,7 +1010,7 @@ return 1;
 int ComputeNearestVertexLights (int i)
 {
 	vmsVector			*vertP;
-	tOglLight			*pl;
+	tDynLight			*pl;
 	int					h, j, l, n, nMaxLights;
 	vmsVector			dist;
 	struct tLightDist	*pDists;
@@ -1556,7 +1556,7 @@ ResetObjects (1);		//one tObject, the tPlayer
 if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) 
 #endif
 	{
-	AddOglLights ();
+	AddDynLights ();
 	SortLightsGauge ();
 	}
 return 0;

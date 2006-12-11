@@ -850,7 +850,7 @@ gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
 /*---*/LogErr ("   unloading hardware lights\n");
-RemoveOglLights ();
+RemoveDynLights ();
 /*---*/LogErr ("   unloading cambot\n");
 UnloadCamBot ();
 /*---*/LogErr ("   unloading additional models\n");
@@ -979,7 +979,7 @@ memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segD
 /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
 #endif
-ComputeStaticOglLighting ();
+ComputeStaticDynLighting ();
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
 gameData.hoard.nMonsterballSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");

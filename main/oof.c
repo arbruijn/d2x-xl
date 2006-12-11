@@ -2223,7 +2223,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tFaceColor		*pvc;
 	grsBitmap		*bmP;
 	int				h, i, j;
-	int				bOglLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
+	int				bDynLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
 #if DBG_SHADOWS
@@ -2259,13 +2259,13 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		if (OglBindBmTex (bmP, 0))
 			return 0;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
-		if (pso->nFlags & (bOglLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
+		if (pso->nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 
 						  fl * pso->glowInfo.color.b, 
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
-		else if (!bOglLighting) {
+		else if (!bDynLighting) {
 			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
 			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
@@ -2276,7 +2276,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
 			phv = pv + (h = pfv->nIndex);
-			if (bOglLighting) {
+			if (bDynLighting) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
 					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, 0.5);
 				else

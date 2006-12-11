@@ -2030,7 +2030,7 @@ void FreeObject (int nObject)
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 KillObjectSmoke (nObject);
-RemoveOglLight (-1, -1, nObject);
+RemoveDynLight (-1, -1, nObject);
 if (gameData.objs.objects [nObject].nType == OBJ_ROBOT)
 	id = gameData.objs.objects [nObject].id;
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
@@ -2954,7 +2954,7 @@ switch (objP->movementType) {
 
 	case MT_PHYSICS:	
 		DoPhysicsSim (objP);	
-		SetOglLightPos (OBJ_IDX (objP));
+		SetDynLightPos (OBJ_IDX (objP));
 		break;	//move by physics
 
 	case MT_SPINNING:		

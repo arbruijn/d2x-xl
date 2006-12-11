@@ -756,7 +756,7 @@ typedef struct tSphereData {
 #define USE_OGL_LIGHTS	0
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
 
-typedef struct tOglLight {
+typedef struct tDynLight {
 	vmsVector	vPos;
 	vmsVector	vDir;
 	tRgbColorf	color;
@@ -778,11 +778,12 @@ typedef struct tOglLight {
 	ubyte			nPlayer;
 	ubyte			bSpot;
 	ubyte			bState;
+	ubyte			bOn;
 	ubyte			nType;
 	ubyte			bVariable;
 	ubyte			bTransform;
 	tShadowLightInfo	shadow;
-} tOglLight;
+} tDynLight;
 
 typedef struct tOglMaterial {
 #if 0 //using global default values instead
@@ -809,6 +810,7 @@ typedef struct tShaderLight {
 	float			spotExponent;
 	ubyte			bVariable;
 	ubyte			bState;
+	ubyte			bOn;
 	ubyte			bSpot;
 	ubyte			nType;
 	ubyte			bShadow;
@@ -823,8 +825,8 @@ typedef struct tShaderLightData {
 
 #define MAX_NEAREST_LIGHTS 32
 
-typedef struct tOglLightData {
-	tOglLight			lights [MAX_OGL_LIGHTS];
+typedef struct tDynLightData {
+	tDynLight			lights [MAX_OGL_LIGHTS];
 	short					nNearestSegLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
 	short					nNearestVertLights [MAX_VERTICES][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
 	short					owners [MAX_OBJECTS];
@@ -833,7 +835,7 @@ typedef struct tOglLightData {
 	short					nSegment;
 	tShaderLightData	shader;
 	tOglMaterial		material;
-} tOglLightData;
+} tDynLightData;
 
 extern int nMaxNearestLights [21];
 
@@ -859,7 +861,7 @@ typedef struct tLightData {
 	dl_index				deltaIndices [MAX_DL_INDICES];
 	delta_light			deltas [MAX_DELTA_LIGHTS];
 	ubyte					subtracted [MAX_SEGMENTS];
-	tOglLightData		ogl;
+	tDynLightData		ogl;
 	tFlickerLightData	flicker;
 } tLightData;
 
@@ -1125,7 +1127,7 @@ typedef struct tPOFObject {
 	short					iVert;
 	short					iFace;
 	short					iFaceVert;
-	char					nState [2];
+	char					nState;
 } tPOFObject;
 
 //------------------------------------------------------------------------------
@@ -1260,7 +1262,7 @@ typedef struct tWeaponData {
 typedef struct tModelData {
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_HIRES_MODELS];
-	tPOFObject			pofData [2][MAX_POLYGON_MODELS];
+	tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
 	ubyte					bHaveHiresModel [MAX_HIRES_MODELS];
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];

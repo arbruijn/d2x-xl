@@ -413,7 +413,7 @@ int SetVertexColors (tFaceProps *propsP)
 {
 if (gameOpts->ogl.bUseLighting) {
 	// set material properties specific for certain textures here
-	SetOglLightMaterial (propsP->segNum, propsP->sideNum, -1);
+	SetDynLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
 	}
 if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) { 
@@ -2442,7 +2442,7 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-int RenderShadowMap (tOglLight *pLight)
+int RenderShadowMap (tDynLight *pLight)
 {
 	tCamera	*pc;
 
@@ -2570,7 +2570,7 @@ int GatherShadowLightSources (void)
 	tObject			*objP = gameData.objs.objects;
 	int				h, i, j, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
-//	tOglLight		*pl;
+//	tDynLight		*pl;
 	tShaderLight	*psl;
 	vmsVector		vLightDir;
 
@@ -3494,7 +3494,7 @@ memset (bObjectRendered, 0, (gameData.objs.nLastObject + 1) * sizeof (bObjectRen
 if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
-	TransformOglLights (1, 1);
+	TransformDynLights (1, 1);
 #if defined(EDITOR) && !defined(NDEBUG)
 		if (bShowOnlyCurSide) {
 			RotateList (8, Cursegp->verts);
