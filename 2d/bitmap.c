@@ -27,26 +27,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "inferno.h"
 
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
-
-#ifdef OGL
 #include "ogl_init.h"
-#endif
 
 //------------------------------------------------------------------------------
 
 inline void GrSetBitmapData (grsBitmap *bmP, unsigned char *data)
 {
-#ifdef OGL
 OglFreeBmTexture(bmP);
-#endif
 bmP->bm_texBuf = data;
-#ifdef D1XD3D
-Assert (bmP->iMagic == BM_MAGIC_NUMBER);
-Win32_SetTextureBits (bmP, data, bmP->bm_props.flags & BM_FLAG_RLE);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -77,55 +65,12 @@ return GrCreateBitmapSub (w, h, GrAllocBitmapData (w, h, bTGA), bTGA);
 
 //------------------------------------------------------------------------------
 
-#if defined(POLY_ACC)
-//
-//  Creates a bitmap of the requested size and nType.
-//    w, and h are in pixels.
-//    nType is a BM_... and is used to set the rowsize.
-//    if data is NULL, memory is allocated, otherwise data is used for bm_texBuf.
-//
-//  This function is used only by the polygon accelerator code to handle the mixture of 15bit and
-//  8bit bitmaps.
-//
-grsBitmap *GrCreateBitmap2 (int w, int h, int nType, void *data)
-{
-	grsBitmap *newBM;
-
-newBM = (grsBitmap *) d_malloc(sizeof(grsBitmap));
-newBM->bm_props.x = 0;
-newBM->bm_props.y = 0;
-newBM->bm_props.w = w;
-newBM->bm_props.h = h;
-newBM->bm_props.flags = 0;
-newBM->bm_props.nType = nType;
-switch(nType) {
-   case BM_LINEAR:     
-		newBM->bm_props.rowsize = w;            
-		break;
-	case BM_LINEAR15:   
-		newBM->bm_props.rowsize = w*PA_BPP;     
-		break;
-      default: 
-		Int3();    // unsupported nType.
-	   }
-if(data)
-   newBM->bm_texBuf = data;
-else
-   newBM->bm_texBuf = d_malloc(newBM->bm_props.rowsize * newBM->bm_props.h);
-newBM->bm_handle = 0;
-return newBM;
-}
-#endif
-
 //------------------------------------------------------------------------------
 
 void GrInitBitmap  (
 	grsBitmap *bmP, int mode, int x, int y, int w, int h, int nBytesPerLine, 
 	unsigned char *data, int bTGA) // TODO: virtualize
 {
-#ifdef D1XD3D
-Assert (bmP->iMagic != BM_MAGIC_NUMBER || bmP->pvSurface == NULL);
-#endif
 memset (bmP, 0, sizeof  (*bmP));
 bmP->bm_props.x = x;
 bmP->bm_props.y = y;
@@ -133,12 +78,6 @@ bmP->bm_props.w = w;
 bmP->bm_props.h = h;
 bmP->bm_props.nType = mode;
 bmP->bm_props.rowsize = bTGA ? nBytesPerLine * 4 : nBytesPerLine;
-#ifdef D1XD3D
-bmP->iMagic = BM_MAGIC_NUMBER;
-#endif
-#ifdef D1XD3D
-Win32_CreateTexture (bmP);
-#endif
 if (bTGA)
 	bmP->bm_props.flags = (char) BM_FLAG_TGA;
 GrSetBitmapData (bmP, data);
@@ -157,15 +96,8 @@ GrInitBitmap (bmP, mode, x, y, w, h, nBytesPerLine, GrAllocBitmapData (w, h, bTG
 void GrInitBitmapData (grsBitmap *bmP) // TODO: virtulize
 {
 bmP->bm_texBuf = NULL;
-#ifdef D1XD3D
-	Assert (bmP->iMagic != BM_MAGIC_NUMBER);
-	bmP->iMagic = BM_MAGIC_NUMBER;
-	bmP->pvSurface = NULL;
-#endif
-#ifdef OGL
 //	OglFreeBmTexture(bmP);//not what we want here.
 bmP->glTexture = NULL;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -197,9 +129,6 @@ if (bmP) {
 void GrFreeSubBitmap(grsBitmap *bmP)
 {
 if (bmP) {
-#ifdef D1XD3D
-	bmP->iMagic = 0;
-#endif
 	d_free(bmP);
 	}
 }
@@ -209,16 +138,7 @@ if (bmP) {
 void GrFreeBitmapData (grsBitmap *bmP) // TODO: virtulize
 {
 if (bmP) {
-#ifdef D1XD3D
-	Assert (bmP->iMagic == BM_MAGIC_NUMBER);
-	Win32_FreeTexture (bmP);
-	bmP->iMagic = 0;
-	if (bmP->bm_texBuf == BM_D3D_RENDER)
-		bmP->bm_texBuf = NULL;
-#endif
-#ifdef OGL
 	OglFreeBmTexture (bmP);
-#endif
 	if (bmP->bm_texBuf) 
 		d_free (bmP->bm_texBuf);
 	}
@@ -235,19 +155,9 @@ bmP->bm_props.h = h;
 bmP->bm_props.flags = bmParent->bm_props.flags;
 bmP->bm_props.nType = bmParent->bm_props.nType;
 bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
-#ifdef OGL
 bmP->glTexture = bmParent->glTexture;
 bmP->bm_palette = bmParent->bm_palette;
 BM_PARENT (bmP) = bmParent;
-#endif
-#ifdef D1XD3D
-Assert (bmParent->iMagic == BM_MAGIC_NUMBER);
-bmP->iMagic = BM_MAGIC_NUMBER;
-bmP->pvSurface = bmParent->pvSurface;
-if (bmP->bm_props.nType == BM_DIRECTX)
-	bmP->bm_texBuf = bmParent->bm_texBuf;
-else
-#endif
 	bmP->bm_texBuf = bmParent->bm_texBuf+(unsigned int) ((y*bmParent->bm_props.rowsize)+x);
 }
 
@@ -283,18 +193,7 @@ for (; i; i--)
 
 void GrSetBitmapFlags (grsBitmap *pbm, int flags)
 {
-#ifdef D1XD3D
-	Assert (pbm->iMagic == BM_MAGIC_NUMBER);
-
-	if (pbm->pvSurface)
-	{
-		if  ((flags & BM_FLAG_TRANSPARENT) != (pbm->bm_props.flags & BM_FLAG_TRANSPARENT))
-		{
-			Win32_SetTransparent (pbm->pvSurface, flags & BM_FLAG_TRANSPARENT);
-		}
-	}
-#endif
-	pbm->bm_props.flags = flags;
+pbm->bm_props.flags = flags;
 }
 
 //------------------------------------------------------------------------------

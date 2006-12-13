@@ -112,9 +112,6 @@ CFClose (fp);
 for (i = 0; i < GR_FADE_LEVELS; i++)
 	grFadeTable [i * 256 + 255] = 255;
 gameData.render.nComputedColors = 0;	//	Flush palette cache.
-#if defined(POLY_ACC)
-pa_update_clut (palette, 0, 256, 0);
-#endif
 // swap colors 0 and 255 of the palette along with fade table entries
 #ifdef SWAP_0_255
 for (i = 0; i < 3; i++) {

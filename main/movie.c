@@ -102,23 +102,6 @@ typedef struct {
 	ml_entry *movies;
 } movielib;
 
-#ifdef D2_OEM
-
-char movielib_files[][FILENAME_LEN] = {
-	"intro-l.mvl", 
-	"other-l.mvl", 
-	"robots-l.mvl", 
-	"oem-l.mvl",
-	"extra1-l.mvl",
-	"extra2-l.mvl",
-	"extra3-l.mvl",
-	"extra4-l.mvl",
-	"extra5-l.mvl"};
-
-#define	FIRST_EXTRA_MOVIE_LIB	4
-
-#else
-
 char movielib_files[][FILENAME_LEN] = {
 	"intro-l.mvl",
 	"other-l.mvl",
@@ -130,8 +113,6 @@ char movielib_files[][FILENAME_LEN] = {
 	"extra5-l.mvl"};
 
 #define	FIRST_EXTRA_MOVIE_LIB	3
-
-#endif
 
 #define N_EXTRA_MOVIE_LIBS	5
 #define N_BUILTIN_MOVIE_LIBS (sizeof(movielib_files)/sizeof(*movielib_files))
@@ -232,7 +213,6 @@ bmFrame.bm_texBuf = buf;
 bmFrame.bm_palette = moviePalette;
 
 TRANSPARENCY_COLOR = -1;
-#ifdef OGL
 if (gameOpts->menus.nStyle) {
 	//memset (grPalette, 0, 768);
 	//GrPaletteStepLoad (NULL);
@@ -250,7 +230,6 @@ if (gameOpts->movies.bFullScreen) {
 	glEnable (GL_BLEND);
 	}
 else
-#endif
 	{
 		int xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
 		int yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
@@ -381,16 +360,10 @@ int RunMovie(char *filename, int hiresFlag, int must_have,int dx,int dy)
 		GrSetMode(SM(320,200));
 	}
 #endif
-#ifdef OGL
 	SetScreenMode(SCREEN_MENU);
 	GrPaletteStepLoad(NULL);
-#endif
-
-#if !defined(POLY_ACC)
 	MVE_sfCallbacks(MovieShowFrame);
 	MVE_palCallbacks(MovieSetPalette);
-#endif
-
 	if (MVE_rmPrepMovie((void *)filehndl, dx, dy, track)) {
 		Int3();
 		return MOVIE_NOT_PLAYED;
@@ -416,12 +389,9 @@ int RunMovie(char *filename, int hiresFlag, int must_have,int dx,int dy)
 			ClearPauseMessage();
 		}
 
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
 		if ((key == KEY_ALTED+KEY_ENTER) ||
 		    (key == KEY_ALTED+KEY_PADENTER))
 			GrToggleFullScreen();
-#endif
-
 		nFrame++;
 	}
 	Assert(aborted || result == MVE_ERR_EOF);	 ///movie should be over
@@ -430,9 +400,7 @@ int RunMovie(char *filename, int hiresFlag, int must_have,int dx,int dy)
 
 	// Restore old graphic state
 	gameStates.video.nScreenMode=-1;  //force reset of screen mode
-#ifdef OGL
 	GrPaletteStepLoad(NULL);
-#endif
 	return (aborted?MOVIE_ABORTED:MOVIE_PLAYED_FULL);
 }
 
@@ -1050,9 +1018,7 @@ if (nMovieLibs) {
 		}
 	//InitSubTitles("intro.tex");
 	if (pszMovieName = GetMovieName (iMovieLib, iMovie)) {
-#ifdef OGL
 		gameStates.video.nScreenMode = -1;
-#endif
 		if (bPlayMovie)
 			PlayMovie(pszMovieName, 1, 1, gameOpts->movies.bResize);
 		}

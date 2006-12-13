@@ -28,10 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # include <GL/glu.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +38,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #include <limits.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
 #include "inferno.h"
 #include "gr.h"
@@ -58,9 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newmenu.h"
 #include "gamefont.h"
 #include "gamepal.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "iff.h"
 #include "pcx.h"
 #include "u_mem.h"
@@ -83,10 +76,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #if defined (TACTILE)
  #include "tactile.h"
-#endif
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
 #endif
 
 #define MAXDISPLAYABLEITEMS 15
@@ -363,9 +352,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
 // into the 2d's array, so the remapping will work.  Second, we need to remap the fonts.  
 // Third, we need to fill in part of the fade tables so the darkening of the menu edges works.
-#ifdef OGL
 	GrPaletteStepLoad (gameData.render.pal.pCurPal);
-#endif
 	//GrCopyPalette (grPalette, menuPalette, sizeof (grPalette));
 	//RemapFontsAndMenus (1);
 	//GrRemapMonoFonts ();
@@ -380,15 +367,8 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 if (!bmp)
 	return;
 WIN (DDGRLOCK (dd_grd_curcanv));
-#if defined (POLY_ACC)
-pa_save_clut ();
-pa_update_clut (grPalette, 0, 256, 0);
-#endif
 if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
 	show_fullscr (bmp);
-#if defined (POLY_ACC)
-    pa_restore_clut ();
-#endif
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (bg)
 	bg->background = bmp;
@@ -526,11 +506,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 		bg->saved = NULL;
 		if (!gameOpts->menus.nStyle) {
 			if (!bg->background) {
-#if defined (POLY_ACC)
-				bg->background = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
-#else
 				bg->background = GrCreateBitmap (w, h, 1);
-#endif
 				Assert (bg->background != NULL);
 				}
 			WIN (DDGRLOCK (dd_grd_curcanv));
@@ -562,11 +538,7 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 		DisableForces ();
 #endif
 	if (!(gameOpts->menus.nStyle || bg->saved)) {
-#if defined (POLY_ACC)
-		bg->saved = GrCreateBitmap2 (w, h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
-#else
 		bg->saved = GrCreateBitmap (w, h, 0);
-#endif
 		Assert (bg->saved != NULL);
 		}
 	bg->saved->bm_palette = defaultPalette;
@@ -641,10 +613,6 @@ else {
 		grdCurCanv->cv_font = SELECTED_FONT;
 	else
 		grdCurCanv->cv_font = NORMAL_FONT;
-#ifdef WINDOWS
-	if (bIsCurrent && item->nType == NM_TYPE_TEXT) 
-		grdCurCanv->cv_font = NORMAL_FONT;
-#endif
 //	if (!bIsCurrent && (gameOpts->menus.altBg.bHave > 0))
 //		GrSetFontColor (GrFindClosestColorCurrent (29, 29, 47), -1);
 	}
@@ -1243,16 +1211,7 @@ int NMCheckButtonPress ()
 		break;
 	case	CONTROL_MOUSE:
 	case	CONTROL_CYBERMAN:
-#ifndef NEWMENU_MOUSE   // don't allow mouse to continue from menu
-		for (i=0; i<3; i++)	
-			if (MouseButtonDownCount (i)>0) return 1;
-		break;
-#endif
 	case	CONTROL_WINJOYSTICK:
-	#ifdef WINDOWS	
-		for (i=0; i<4; i++)	
-	 		if (joy_get_button_down_cnt (i)>0) return 1;
-	#endif	
 		break;
 	case	CONTROL_NONE:		//keyboard only
 		#ifdef APPLE_DEMO
@@ -1272,9 +1231,7 @@ int NMCheckButtonPress ()
 extern int NetworkRequestPlayerNames (int);
 extern int RestoringMenu;
 
-#ifdef NEWMENU_MOUSE
 ubyte Hack_DblClick_MenuMode=0;
-#endif
 
 # define JOYDEFS_CALIBRATING 0
 
@@ -1638,10 +1595,8 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
 	WINDOS (dd_grs_canvas *save_canvas, grs_canvas *save_canvas);	
 	WINDOS (dd_grs_canvas *game_canvas, grs_canvas *game_canvas);	
-#ifdef NEWMENU_MOUSE
 	int			nMouseState, nOldMouseState, bDblClick=0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
-#endif
 	int			bLaunchOption = 0;
 	int			bCloseBox = 0;
 
@@ -1684,10 +1639,6 @@ if (!(gameOpts->menus.nStyle || ((gameData.app.nGameMode & GM_MULTI) && (gameSta
 if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI))
 	nTypingTimeout = 0;
 
-#ifdef WINDOWS
-RePaintNewmenu4:
-#endif
-
 SetPopupScreenMode ();
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
 old_keyd_repeat = keyd_repeat;
@@ -1700,9 +1651,7 @@ else {
 	else 
 		cItem %= nItems;
 	choice = cItem;
-#ifdef NEWMENU_MOUSE
 	bDblClick = 1;
-#endif
 	while (item [choice].nType == NM_TYPE_TEXT) {
 		choice++;
 		if (choice >= nItems)
@@ -1730,20 +1679,13 @@ while (item [topChoice].nType == NM_TYPE_TEXT) {
 //GrUpdate (0);
 // Clear mouse, joystick to clear button presses.
 GameFlushInputs ();
-#ifdef NEWMENU_MOUSE
 nMouseState = nOldMouseState = 0;
 bCloseBox = !(filename || gameStates.menus.bReordering);
 
 if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	newmenu_show_cursor ();
-# ifdef WINDOWS
-	SetCursor (LoadCursor (NULL, IDC_ARROW);
-# endif
 	}
-#endif
-
 GrabMouse (0, 0);
-
 while (!done) {
 	if (cItemP)
 		*cItemP = choice;
@@ -1751,26 +1693,6 @@ while (!done) {
 		gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer] = 1;
 		MultiSendTyping ();
 		}
-#ifdef WINDOWS
-		MSG msg;
-
-	DoMessageStuff(&msg);
-	if (_RedrawScreen) {
-		_RedrawScreen = FALSE;
-	if (!filename) {
-		GrFreeBitmap(bg.saved);
-		d_free(bg.background);
-		}
-	else 	
-		GrFreeBitmap(bg.background);
-	DDGrFreeSubCanvas(bg.menu_canvas);
-	grdCurCanv->cv_font = saveFont;
-	dd_grd_curcanv = save_canvas;
-	goto RePaintNewmenu4;
-	}
-	DDGRRESTORE;
-#endif
-#ifdef NEWMENU_MOUSE
 	if (!JOYDEFS_CALIBRATING)
 		newmenu_show_cursor ();      // possibly hidden
 	nOldMouseState = nMouseState;
@@ -1780,7 +1702,6 @@ while (!done) {
 		nMouseState = MouseButtonState (0);
 		gameOpts->legacy.bInput = b;
 		}
-#endif
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();
 	//NetworkListen ();
@@ -1845,13 +1766,11 @@ while (!done) {
 			ctrl.ty = t;
 		grdCurCanv->cv_font = bTinyMode ? SMALL_FONT : NORMAL_FONT;
 		}
-#ifdef NETWORK
 	if (!time_stopped){
 		// Save current menu box
 		if (MultiMenuPoll () == -1)
 			k = -2;
 		}
-#endif
 
 	if (k < -1) {
 		bDontRestore = (k == -3);		//-3 means don't restore
@@ -1859,11 +1778,6 @@ while (!done) {
 		k = -1;
 		done = 1;
 		}
-#ifndef WINDOWS
-	if (NMCheckButtonPress ())
-		done = 1;
-#endif
-
 old_choice = choice;
 if (k && con_events(k))
 	switch (k)	{
@@ -1872,7 +1786,7 @@ if (k && con_events(k))
 			con_show();
 			k = -1;
 			break;
-#ifdef NETWORK
+
 		case KEY_I:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 ShowExtraNetGameInfo (choice - 2 - gameStates.multi.bUseTracker);
@@ -1890,7 +1804,7 @@ if (k && con_events(k))
 			 choice=-1;
 			}
 		 break;
-#endif
+
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
@@ -2136,7 +2050,6 @@ launchOption:
 			break;
 		}
 
-#ifdef NEWMENU_MOUSE // for mouse selection of menu's etc.
 		WIN (Sleep (100));
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			mouse_get_pos (&mx, &my);
@@ -2344,7 +2257,6 @@ launchOption:
 //	 HACK! Don't redraw loadgame preview
 		if (RestoringMenu) 
 			item [0].redraw = 0;
-#endif // NEWMENU_MOUSE
 
 		if (choice > -1)	{
 			int ascii;
@@ -2496,10 +2408,8 @@ launchOption:
 					newmenu_hide_cursor ();
            	NMDrawItem (&bg, item + i, (i == choice) && !bAllText, bTinyMode);
 				item [i].redraw = 0;
-#ifdef NEWMENU_MOUSE
 				if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 					newmenu_show_cursor ();
-#endif
 				if (i >= ctrl.nScrollOffset)
 	            item [i].y += ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 	        	}   
@@ -2560,9 +2470,6 @@ if (time_stopped) {
 if (sound_stopped)
 	DigiResumeDigiSounds ();
 WIN (mouse_set_mode (1));				//re-enable centering mode
-#if 0 //def OGL_ZBUF
-glDepthFunc (depthFunc);
-#endif
 gameStates.menus.nInMenu--;
 GrPaletteStepUp (0, 0, 0);
 SDL_EnableKeyRepeat(0, 0);
@@ -2584,14 +2491,6 @@ int _CDECL_ ExecMessageBox1 (
 	char *s;
 	char nm_text [MESSAGEBOX_TEXT_SIZE];
 	tMenuItem nmMsgItems [5];
-#if 0 //def OGL_ZBUF
-	GLint depthFunc; 
-	if (!gameOpts->legacy.bZBuf) {
-		glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
-		glDepthFunc (GL_ALWAYS);
-		}
-#endif
-
 	va_start (args, nChoices);
 	Assert (nChoices <= 5);
 	memset (nmMsgItems, 0, sizeof (nmMsgItems));
@@ -2609,9 +2508,6 @@ int _CDECL_ ExecMessageBox1 (
 	Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
 
 	return ExecMenu (title, nm_text, nChoices, nmMsgItems, subfunction, filename);
-#if 0 //def OGL_ZBUF
-	glDepthFunc (depthFunc);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2659,9 +2555,6 @@ if (!bTiny) {
 i = bTiny ? 
 	 ExecMenutiny (NULL, title, nChoices, nmMsgItems, NULL) :
 	 ExecMenu (title, nm_text, nChoices, nmMsgItems, NULL, filename);
-#if 0 //def OGL_ZBUF
-glDepthFunc (depthFunc);
-#endif
 d_free (nmMsgItems);
 return i;
 }
@@ -2728,18 +2621,12 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int w_x, w_y, w_w, w_h, title_height;
 	int box_x, box_y, box_w, box_h;
 	bkg bg;		// background under listbox
-#ifdef NEWMENU_MOUSE
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
 	int mouse2_state, omouse2_state;
 	int bDblClick=0;
-# ifdef WINDOWS
-	int simukey=0;
-	int show_up_arrow=0, show_down_arrow=0;
-# endif
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
-#endif
 WIN (int win_redraw=0);
 
 	w_x = w_y = w_w = w_h = title_height = 0;
@@ -2837,15 +2724,7 @@ ReadFileNames:
 	if (!initialized) {	
 //		SetScreenMode (SCREEN_MENU);
 		SetPopupScreenMode ();
-
-        #ifdef WINDOWS
-RePaintNewmenuFile:
-
-		DDGrSetCurrentCanvas (NULL);
-	#else
 		GrSetCurrentCanvas (NULL);
-	#endif
-
 		WIN (DDGRLOCK (dd_grd_curcanv))					//mwa put these here -- are these needed Samir???
 		{
 			grdCurCanv->cv_font = SUBTITLE_FONT;
@@ -2899,31 +2778,15 @@ RePaintNewmenuFile:
 
 		bg.saved = NULL;
 		if (!gameOpts->menus.nStyle) {
-#if !defined (WINDOWS)
 			if ((VR_offscreen_buffer->cv_w >= w_w) &&(VR_offscreen_buffer->cv_h >= w_h)) 
 				bg.background = &VR_offscreen_buffer->cv_bitmap;
 			else
-#endif
-#if defined (POLY_ACC)
-				bg.background = GrCreateBitmap2 (w_w, w_h, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
-#else
 				bg.background = GrCreateBitmap (w_w, w_h, 0);
-#endif
 			Assert (bg.background != NULL);
 			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, &grdCurCanv->cv_bitmap, bg.background);
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			}
-#if 0
-		WINDOS (
-	 		dd_gr_blt_notrans (dd_grd_curcanv, 0, 0, 
-				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
-				dd_VR_offscreen_buffer, 0, 0, 
-				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cv_bitmap), &(VR_offscreen_buffer->cv_bitmap))
-		);
-#endif
-
 		NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1, 0);
 		WIN (DDGRLOCK (dd_grd_curcanv))
 		{	
@@ -2941,69 +2804,29 @@ RePaintNewmenuFile:
 		NMFileSort (NumFiles-1, filenames+ (FILENAME_LEN+1));		// Don't sort first one!
 		for (i=0; i<NumFiles; i++)	{
 			if (!stricmp (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, filenames+i* (FILENAME_LEN+1)))	{
-#ifdef NEWMENU_MOUSE
 				bDblClick = 1;
-#endif
 				cItem = i;
 			}
 	 	}
 	}
 
-#ifdef NEWMENU_MOUSE
 	nMouseState = nOldMouseState = 0;
 	mouse2_state = omouse2_state = 0;
 	NMDrawCloseBox (w_x, w_y);
 	newmenu_show_cursor ();
-#endif
 
 	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
-#ifdef WINDOWS
-		MSG msg;
-
-		DoMessageStuff (&msg);
-
-		if (_RedrawScreen) {
-			_RedrawScreen = 0;
-
-			if (bg.background != &VR_offscreen_buffer->cv_bitmap)
-				GrFreeBitmap (bg.background);
-	
-			win_redraw = 1;		
-			goto RePaintNewmenuFile;
-		}
-
-		DDGRRESTORE
-#endif
 		ocitem = cItem;
 		ofirst_item = first_item;
 		GrUpdate (0);
-#ifdef NEWMENU_MOUSE
 		nOldMouseState = nMouseState;
 		omouse2_state = mouse2_state;
 		nMouseState = MouseButtonState (0);
 		mouse2_state = MouseButtonState (1);
-#endif
-
 		//see if redbook song needs to be restarted
 		SongsCheckRedbookRepeat ();
-
-		#ifdef WINDOWS
-		if (!mouse2_state && omouse2_state)
-			key = KEY_CTRLED+KEY_D;		//fake ctrl-d
-		else
-		#endif
-			//NOTE LINK TO ABOVE ELSE
-			key = KeyInKey ();
-
-	#ifdef WINDOWS
-		if (simukey==-1)
-			key=KEY_UP;
-		else if (simukey==1)
-		   key=KEY_DOWN;
-		simukey=0;
-	#endif
-			
+		key = KeyInKey ();
 		switch (key)	{
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
@@ -3031,17 +2854,11 @@ RePaintNewmenuFile:
 
 			if (((player_mode)&&(cItem>0)) || ((demo_mode)&&(cItem>=0)))	{
 				int x = 1;
-				#ifdef WINDOWS
-				mouse_set_mode (1);				//re-enable centering mode
-				#endif
 				newmenu_hide_cursor ();
 				if (player_mode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, &filenames [cItem* (FILENAME_LEN+1)]+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
 				else if (demo_mode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, &filenames [cItem* (FILENAME_LEN+1)]+ ((demo_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
-				#ifdef WINDOWS
-				mouse_set_mode (0);				//disenable centering mode
-				#endif
 				newmenu_show_cursor ();
  				if (x==0)	{
 					char * p;
@@ -3170,18 +2987,6 @@ RePaintNewmenuFile:
 			first_item = cItem-NumFiles_displayed+1;
 		}
 
-#ifdef WINDOWS
-		if (NumFiles>first_item+NumFiles_displayed)
-			show_down_arrow=1;
-		else 
-			show_down_arrow=0;
-		if (first_item>0)
-			show_up_arrow=1;
-		else	
-			show_up_arrow=0;
-#endif
-			
-
 		if (NumFiles <= NumFiles_displayed)
 			 first_item = 0;
 
@@ -3192,7 +2997,6 @@ RePaintNewmenuFile:
 
 		if (first_item < 0) first_item = 0;
 
-#ifdef NEWMENU_MOUSE
 		WIN (Sleep (100));
 		if (nMouseState || mouse2_state) {
 			int w, h, aw;
@@ -3242,34 +3046,10 @@ RePaintNewmenuFile:
 				cItem = -1;
 				done = 1;
 			}
-		   #ifdef WINDOWS
-			x1 = box_x-LHX (10);
-			x2 = x1 + LHX (10);
-			y1 = box_y;
-			y2 = box_y+LHY (7);
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) && show_up_arrow) 
-				simukey = -1;
-			y1 = box_y+box_h-LHY (7);
-			y2 = box_y+box_h;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) && show_down_arrow) 
-				simukey = 1;
-		   #endif
 		}
-
-#endif
   
 	WIN (DDGRLOCK (dd_grd_curcanv));
-#if 0
-		GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
-		GrURect (box_x - 1, box_y-2, box_x + box_w, box_y-2);
-		GrSetColorRGB (0, 0, 0, 255);
-#endif
-	#ifdef WINDOWS
-		if (ofirst_item != first_item || win_redraw)	{
-			win_redraw = 0;
-	#else
 		if ((ofirst_item != first_item) || gameOpts->menus.nStyle) {
-	#endif
 			if (!gameOpts->menus.nStyle) 
 				newmenu_hide_cursor ();
 			NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1,1);
@@ -3346,31 +3126,6 @@ RePaintNewmenuFile:
 			GrUpdate (0);
 			newmenu_show_cursor ();
 		}
-
-	#ifdef WINDOWS   
-			grdCurCanv->cv_font = NORMAL_FONT;
-			if (show_up_arrow)
-	 	  		GrString (box_x-LHX (10), box_y , UP_ARROW_MARKER);
-			else
-			{
-				bNoDarkening=1;
-				NMDrawBackground (bg, box_x-LHX (10), box_y, box_x-2, box_y+LHY (7);
-				bNoDarkening=0;
-			}
-
-			if (show_down_arrow)
-	     		GrString (box_x-LHX (10), box_y+box_h-LHY (7) , DOWN_ARROW_MARKER);
-			else
-			{
-				bNoDarkening=1;
-				NMDrawBackground (bg, box_x-LHX (10), box_y+box_h-LHY (7), box_x-2, box_y+box_h);
-				bNoDarkening=0;
-			}
-
-	#endif
-
-
-
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 
@@ -3464,17 +3219,13 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	int width, height, wx, wy, title_height, border_size;
 	int total_width, total_height;
 	bkg bg;
-#ifdef NEWMENU_MOUSE
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
 	int close_x, close_y;
-# ifdef WINDOWS
-   int simukey=0, show_up_arrow=0, show_down_arrow=0;
-# endif
-#endif
 	int	nItemsOnScreen;
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
+	
 WIN (int win_redraw=0);
 
 	keyd_repeat = 1;
@@ -3487,14 +3238,7 @@ WIN (int win_redraw=0);
 	SetPopupScreenMode ();
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
-
-#ifdef WINDOWS
-RePaintNewmenuListbox:
- 
-	DDGrSetCurrentCanvas (NULL);
-#else
 	GrSetCurrentCanvas (NULL);
-#endif
 	grdCurCanv->cv_font = SUBTITLE_FONT;
 
 	width = 0;
@@ -3533,17 +3277,11 @@ RePaintNewmenuListbox:
 	bg.saved = NULL;
 
 	if (!gameOpts->menus.nStyle) {
-#if !defined (WINDOWS)
 		if ((VR_offscreen_buffer->cv_w >= total_width) &&(VR_offscreen_buffer->cv_h >= total_height))
 			bg.background = &VR_offscreen_buffer->cv_bitmap;
 		else
-#endif
 			//bg.background = GrCreateBitmap (width, (height + title_height));
-#if defined (POLY_ACC)
-			bg.background = GrCreateBitmap2 (total_width, total_height, grdCurCanv->cv_bitmap.bm_props.nType, NULL);
-#else
 			bg.background = GrCreateBitmap (total_width, total_height, 0);
-#endif
 		Assert (bg.background != NULL);
 		WIN (DDGRLOCK (dd_grd_curcanv));
 			//GrBmBitBlt (wx+width+border_size, wy+height+border_size, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cv_bitmap, bg.background);
@@ -3578,39 +3316,18 @@ RePaintNewmenuListbox:
 
 	first_item = -1;
 
-#ifdef NEWMENU_MOUSE
 	nMouseState = nOldMouseState = 0;	//bDblClick = 0;
 	close_x = wx-border_size;
 	close_y = wy-title_height-border_size;
 	NMDrawCloseBox (close_x, close_y);
 	newmenu_show_cursor ();
-#endif
 
 	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
-#ifdef WINDOWS
-		MSG msg;
-
-		DoMessageStuff (&msg);
-
-		if (_RedrawScreen) {
-			_RedrawScreen = 0;
-
-			if (bg.background != &VR_offscreen_buffer->cv_bitmap)
-				GrFreeBitmap (bg.background);
-			win_redraw = 1;			
-			goto RePaintNewmenuListbox;
-		}
-
-	  	DDGRRESTORE;
-#endif
-  
 		ocitem = cItem;
 		ofirst_item = first_item;
-#ifdef NEWMENU_MOUSE
 		nOldMouseState = nMouseState;
 		nMouseState = MouseButtonState (0);
-#endif
 		//see if redbook song needs to be restarted
 		SongsCheckRedbookRepeat ();
 
@@ -3621,13 +3338,6 @@ RePaintNewmenuListbox:
 		else
 			redraw = 0;
 
-	#ifdef WINDOWS
-		if (win_redraw) {
-			redraw = 1;
-			win_redraw = 0;
-		}
-	#endif
-
 		if (key<-1) {
 			cItem = key;
 			key = -1;
@@ -3635,14 +3345,6 @@ RePaintNewmenuListbox:
 		}
 
 
-	#ifdef WINDOWS
-		if (simukey==-1)
-			key=KEY_UP;
-		else if (simukey==1)
-		   key=KEY_DOWN;
-		simukey=0;
-	#endif
-		
 		switch (key)	{
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
@@ -3764,19 +3466,6 @@ RePaintNewmenuListbox:
 		if (first_item < 0) 
 			first_item = 0;
 
-#ifdef WINDOWS
-		if (nItems>first_item+nItemsOnScreen)
-			show_down_arrow=1;
-		else 
-			show_down_arrow=0;
-		if (first_item>0)
-			show_up_arrow=1;
-		else	
-			show_up_arrow=0;
-#endif
-
-
-#ifdef NEWMENU_MOUSE
 		WIN (Sleep (100));
 		if (nMouseState) {
 			int w, h, aw;
@@ -3802,21 +3491,6 @@ RePaintNewmenuListbox:
 			}
 		}
 
-		//no double-click stuff for listbox
-		//@@if (!nMouseState && nOldMouseState) {
-		//@@	int w, h, aw;
-		//@@
-		//@@	GrGetStringSize (items [cItem], &w, &h, &aw);
-		//@@	mouse_get_pos (&mx, &my);
-		//@@	x1 = wx;
-		//@@	x2 = wx + width;
-		//@@	y1 = (cItem-first_item)* (grd_curfont->ft_h+2)+wy;
-		//@@	y2 = y1+h+1;
-		//@@	if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
-		//@@		if (bDblClick) done = 1;
-		//@@	}
-		//@@}
-
 		//check for close box clicked
 		if (!nMouseState && nOldMouseState) {
 			mouse_get_pos (&mx, &my);
@@ -3828,23 +3502,7 @@ RePaintNewmenuListbox:
 				cItem = -1;
 				done = 1;
 			}
-
-		   #ifdef WINDOWS
-			x1 = wx-LHX (10);
-			x2 = x1 + LHX (10);
-			y1 = wy;
-			y2 = wy+LHY (7);
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) && show_up_arrow) 
-				simukey = -1;
-			y1 = total_height-LHY (7);
-			y2 = total_height;
-			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) && show_down_arrow) 
-				simukey = 1;
-		   #endif
-
-		 	
 		}
-#endif
 
 		if ((ofirst_item != first_item) || redraw || gameOpts->menus.nStyle) {
 			if (gameOpts->menus.nStyle) 
@@ -3877,29 +3535,6 @@ RePaintNewmenuListbox:
 
 				
 			// If Win95 port, draw up/down arrows on left tSide of menu
-#ifdef WINDOWS   
-				grdCurCanv->cv_font = NORMAL_FONT;
-			if (show_up_arrow)
-	 	  		GrString (wx-LHX (10), wy , UP_ARROW_MARKER);
-			else
-			{
-				bNoDarkening=1;
-				NMDrawBackground (&bg, wx-LHX (10), wy, wx-2, wy+LHY (7));
-				bNoDarkening=0;
-			}
-
-			if (show_down_arrow)
-	     		GrString (wx-LHX (10), wy+total_height-LHY (7) , DOWN_ARROW_MARKER);
-			else
-			{
-				bNoDarkening=1;
-				NMDrawBackground (&bg, wx-LHX (10), wy+total_height-LHY (7), wx-2, wy+total_height);
-				bNoDarkening=0;
-			}
-
-#endif
-
-
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			newmenu_show_cursor ();
 			GrUpdate (0);
@@ -4048,7 +3683,6 @@ int _CDECL_ NMMsgBoxFixedFont (char *title, int nChoices, ...)
 
 //------------------------------------------------------------------------------
 
-#ifdef NETWORK
 extern netgame_info activeNetGames [];
 
 void ShowExtraNetGameInfo (int choice)
@@ -4079,8 +3713,6 @@ ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
 gameStates.menus.nInMenu = nInMenu;
 bAlreadyShowingInfo = 0;	
  }
-
-#endif // NETWORK
 
 //------------------------------------------------------------------------------
 /* Spiffy word wrap string formatting function */

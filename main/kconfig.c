@@ -20,10 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +28,6 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include <time.h>
 #include <math.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
 #include "inferno.h"
 #include "gr.h"
@@ -73,11 +68,6 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #if defined (TACTILE)
  #include "tactile.h"
 #endif
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
-
 #include "collide.h"
 
 #ifdef USE_LINUX_JOY
@@ -106,18 +96,6 @@ sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26
 int invert_text [2] = { TNUM_N, TNUM_Y };
 
 #ifndef USE_LINUX_JOY
-#ifdef WINDOWS
-	int joybutton_text [28] = 
-	{ TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
-	  -1, -1, -1, -1,
-	  -1, -1, -1, -1,
-	  -1, -1, -1, -1,
-	  TNUM_HAT_L, TNUM_HAT_R, TNUM_HAT_U, TNUM_HAT_D,
-	  -1, -1, -1, -1,
-	  -1, -1, -1, -1
-	};
-	int joyaxis_text [MAX_AXES_PER_JOYSTICK] = { TNUM_X1, TNUM_Y1, TNUM_Z1, TNUM_R1, TNUM_P1, TNUM_R1, TNUM_YA1 };
-#else
 	int joybutton_text [28] = 
 	{ TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
 	  -1, TNUM_TRIG, TNUM_LEFT, TNUM_HAT_L,
@@ -130,7 +108,6 @@ int invert_text [2] = { TNUM_N, TNUM_Y };
 	int joyaxis_text [7] = { TNUM_X1, TNUM_Y1, TNUM_Z1, TNUM_R1, TNUM_P1,TNUM_R1,TNUM_YA1 };
 //	int JOYAXIS_TEXT [4] = { TNUM_X1, TNUM_Y1, TNUM_X2, TNUM_Y2 };
 #endif
-#endif
 
 #define JOYAXIS_TEXT (v)		joyaxis_text [ (v) % MAX_AXES_PER_JOYSTICK]
 #define JOYBUTTON_TEXT (v)	joybutton_text [ (v) % MAX_BUTTONS_PER_JOYSTICK]
@@ -138,30 +115,6 @@ int invert_text [2] = { TNUM_N, TNUM_Y };
 int mouseaxis_text [3] = { TNUM_L_R, TNUM_F_B, TNUM_Z1 };
 int mousebutton_text [3] = { TNUM_LEFT, TNUM_RIGHT, TNUM_MID };
 char * mousebutton_textra [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
-
-#if !defined OGL && !defined SDL_INPUT
-char * key_text [256] = {         \
-"","ESC","1","2","3","4","5","6","7","8","9","0","-", 			\
-"=","BSPC","TAB","Q","W","E","R","T","Y","U","I","O",				\
-"P"," [","]","","LCTRL","A","S","D","F",        \
-"G","H","J","K","L",";","'","`",        \
-"LSHFT","\\","Z","X","C","V","B","N","M",",",      \
-".","/","RSHFT","PAD*","LALT","SPC",      \
-"CPSLK","F1","F2","F3","F4","F5","F6","F7","F8","F9",        \
-"F10","NMLCK","SCLK","PAD7","PAD8","PAD9","PAD-",   \
-"PAD4","PAD5","PAD6","PAD+","PAD1","PAD2","PAD3","PAD0", \
-"PAD.","","","","F11","F12","","","","","","","","","",         \
-"","","","","","","","","","","","","","","","","","","","",     \
-"","","","","","","","","","","","","","","","","","","","",     \
-"","","","","","","","","","","","","","","","","","",           \
-"PAD","RCTRL","","","","","","","","","","","","","", \
-"","","","","","","","","","","PAD/","","","RALT","",      \
-"","","","","","","","","","","","","","HOME","","PGUP",     \
-"","","","","","END","","PGDN","INS",       \
-"DEL","","","","","","","","","","","","","","","","","",     \
-"","","","","","","","","","","","","","","","","","","","",     \
-"","","","","","","" };
-#endif /* OGL */
 
 // macros for drawing lo/hi res KConfig screens (see scores.c as well)
 
@@ -190,9 +143,6 @@ tControlSettings controlSettings = {
 	{0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
 	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
 	{0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	#ifdef WINDOWS
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	#endif
 	},
 	{
 	{0xc8,0x48,0xd0,0x50,0xcb,0x4b,0xcd,0x4d,0x38,0xff,0xff,0x4f,0xff,0x51,0xff,0x4a,0xff,0x4e,0xff,0xff,0x10,0x47,0x12,0x49,0x1d,0x9d,0x39,0xff,0x21,0xff,0x1e,0xff,0x2c,0xff,0x30,0xff,0x13,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf,0xff,0x1f,0xff,0x33,0xff,0x34,0xff,0x23,0xff,0x14,0xff,0xff,0xff,0x0,0x0},
@@ -202,9 +152,6 @@ tControlSettings controlSettings = {
 	{0x3,0x0,0x1,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
 	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0,0x0},
 	{0x0,0x1,0xff,0xff,0x2,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	#ifdef WINDOWS
-	{0x0,0x1,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x1,0x0,0x0,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0x0,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x0,0x0,0x0,0x0},
-	#endif
 	},
 	{
 	0x2 ,0xff,0x3 ,0xff,0x4 ,0xff,0x5 ,0xff,0x6 ,0xff,0x7 ,0xff,0x8 ,0xff,0x9 ,
@@ -583,7 +530,6 @@ return (i < 3)? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 3
 
 //------------------------------------------------------------------------------
 
-#ifdef NEWMENU_MOUSE
 int KCGetItemHeight (kc_item *item)
 {
 	int w, h, aw;
@@ -606,7 +552,7 @@ int KCGetItemHeight (kc_item *item)
 #if defined (USE_LINUX_JOY)
 				sprintf (btext, "J%d B%d", j_button [item->value].joydev, 
 						  j_Get_joydev_button_number (item->value);
-#elif 1//defined (_WIN32)
+#else 
 				{
 					int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 					int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
@@ -619,18 +565,13 @@ int KCGetItemHeight (kc_item *item)
 				else
 					sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
 				}
-#else
-				if (JOYBUTTON_TEXT (item->value) !=-1)
-					strncpy (btext, baseGameTexts [JOYBUTTON_TEXT (item->value)], 10);
-				else
-					sprintf (btext, "BTN%d", item->value);
 #endif
 				break;
 			case BT_JOY_AXIS:
 #if defined (USE_LINUX_JOY)
 				sprintf (btext, "J%d A%d", j_axis [item->value].joydev, 
 						  j_Get_joydev_axis_number (item->value);
-#elif 1//defined (_WIN32)
+#else
 				{
 					int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
 					int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
@@ -641,8 +582,6 @@ int KCGetItemHeight (kc_item *item)
 				else
 					sprintf (btext, "J%d A%d", nStick + 1, nAxis + 1);
 				}
-#else
-				strncpy (btext, baseGameTexts [JOYAXIS_TEXT (item->value)], 10);
 #endif
 				break;
 			case BT_INVERT:
@@ -654,7 +593,6 @@ int KCGetItemHeight (kc_item *item)
 
 	return h;
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -861,7 +799,6 @@ ubyte KCJoyBtnCtrlFunc (void)
 	ubyte code = 255;
 
 WIN (code = joydefsw_do_button ());
-#ifndef WINDOWS
 if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
 	int axis [JOY_MAX_AXES];
 	joystick_read_raw_axis (JOY_ALL_AXIS, axis);
@@ -890,7 +827,6 @@ else {
 			return (ubyte) i;
 		}
 	}
-#endif
 return code;
 }
 
@@ -971,19 +907,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg);
 WIN (DDGRUNLOCK (dd_grd_curcanv));	
 {				
-#ifdef WINDOWS
-	{
-		MSG msg;
-
-		DoMessageStuff (&msg);
-		DDGRRESTORE;
-	}
-#endif
-
-#ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
-#endif
 //		if (gameData.app.nGameMode & GM_MULTI)
 //			GameLoop (0, 0);				// Continue
 	k = KeyInKey ();
@@ -1055,10 +980,8 @@ WINDOS (
 	grs_canvas * save_canvas
 );
 	grs_font * save_font;
-#ifdef NEWMENU_MOUSE
 	int	mouse_state, omouse_state, mx, my, x1, x2, y1, y2;
 	int	close_x, close_y, close_size;
-#endif
 
 	int	i,k,ocitem,citem;
 	int	time_stopped = 0;
@@ -1087,9 +1010,6 @@ WINDOS (save_canvas = dd_grd_curcanv, save_canvas = grdCurCanv);
 WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
 save_font = grdCurCanv->cv_font;
 
-#ifdef WINDOWS
-KConfigPaint:
-#endif
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
 	xOffs + 639 /*grdCurCanv->cv_bitmap.bm_props.w - 1*/, 
@@ -1098,23 +1018,9 @@ GrPaletteStepLoad (NULL);
 
 citem = 0;
 newmenu_show_cursor ();
-#ifdef NEWMENU_MOUSE
-	mouse_state = omouse_state = 0;
-#endif
+mouse_state = omouse_state = 0;
 for (;;) {
 //	Windows addendum to allow for KConfig input.
-#if defined (WINDOWS)
-	{
-		MSG msg;
-		DoMessageStuff (&msg);
-		if (_RedrawScreen) {
-			_RedrawScreen = FALSE;
-			DDGrSetCurrentCanvas (NULL);	
-			goto KConfigPaint;
-		}
-		DDGRRESTORE;
-	}
-#endif
 	do {
 		if (gameOpts->menus.nStyle || !bRedraw) {
 			bRedraw = 1;
@@ -1123,7 +1029,6 @@ for (;;) {
 				GameRenderFrame ();
 			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
 			KCDrawTitle (title);
-			#ifdef NEWMENU_MOUSE
 				close_x = close_y = gameStates.menus.bHires ? 15 : 7;
 				close_x += xOffs;
 				close_y += yOffs;
@@ -1132,7 +1037,6 @@ for (;;) {
 				GrRect (close_x, close_y, close_x + close_size, close_y + close_size);
 				GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
 				GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
-			#endif
 			KCDrawHeader (items);
 			WIN (DDGRUNLOCK (dd_grd_curcanv));	
 			KCDrawTable (items, nitems, citem);
@@ -1171,16 +1075,12 @@ for (;;) {
 
 	k = KeyInKey ();
 	MultiDoFrame();
-#ifdef NEWMENU_MOUSE
 	omouse_state = mouse_state;
 	mouse_state = MouseButtonState (0);
-#endif
 
 	if (!time_stopped) {
-#ifdef NETWORK
 		if (MultiMenuPoll () == -1)
 			k = -2;
-#endif
 		}
 	ocitem = citem;
 	switch (k)	{
@@ -1346,15 +1246,8 @@ for (;;) {
 #endif
 		}
 
-#ifdef NEWMENU_MOUSE
 		if ((mouse_state && !omouse_state) || (mouse_state && omouse_state)) {
 			int item_height;
-#if 0
-			int b = gameOpts->bInput;
-			gameOpts->legacy.bInput = 1;
-		   event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all ()
-			gameOpts->legacy.bInput = b;
-#endif
 			mouse_get_pos (&mx, &my);
 			mx -= xOffs;
 			my -= yOffs;
@@ -1397,8 +1290,6 @@ for (;;) {
 				}
 			}
 		}
-#endif // NEWMENU_MOUSE
-
 		if (ocitem!=citem)	{
 			newmenu_hide_cursor ();
 			KCDrawItem (items + ocitem, 0);
@@ -1448,12 +1339,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef USE_LINUX_JOY
 				sprintf (btext, "J%d B%d", 
 						  j_button [item->value].joydev, j_Get_joydev_button_number (item->value);
-#elif defined (WINDOWS)
-				if (joybutton_text [item->value % MAX_BUTTONS_PER_JOYSTICK] != -1) 
-					strncpy (btext, baseGameTexts [joybutton_text [item->value % MAX_BUTTONS_PER_JOYSTICK]], 10);
-				else 
-					sprintf (btext, "BTN%2d", item->value+1);
-#elif 1//defined (_WIN32)
+#else
 				{
 					int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 					int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
@@ -1466,11 +1352,6 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 				else
 					sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
 				}
-#else
-				if (JOYBUTTON_TEXT (item->value) !=-1)
-					strncpy (btext, baseGameTexts [JOYBUTTON_TEXT (item->value)], 10);
-				else
-					sprintf (btext, "BTN%d", item->value);
 #endif
 				break;
 
@@ -1540,12 +1421,7 @@ void KConfig (int n, char * title)
 	//save screen
 	WIN (mouse_set_mode (0));
 	WIN (DDGrSetCurrentCanvas (NULL));
-#if defined (POLY_ACC)
-	bmSave = GrCreateBitmap2 (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h, 
-										grdCurCanv->cv_bitmap.bm_props.nType, NULL);
-#else
 	bmSave = GrCreateBitmap (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h, 0);
-#endif
 	Assert (bmSave != NULL);
 	bmSave->bm_palette = gameData.render.ogl.palette;
 	WIN (DDGRLOCK (dd_grd_curcanv));
@@ -1624,8 +1500,6 @@ int VR_sense_range [3] = { 25, 50, 75 };
 #if 0
 read_head_tracker ()
 {
-#ifndef WINDOWS
-
 	fix yaw, pitch, roll;
 	int buttons;
 
@@ -1658,7 +1532,6 @@ read_head_tracker ()
 	Last_angles_p = pitch;
 	Last_angles_h = yaw;
 	Last_angles_b = roll;
-#endif
 }
 #endif
 
@@ -1726,14 +1599,10 @@ void KCInitExternalControls (int intno, int address)
 		kc_external_control->automap_state = 1;
 	memset (&r,0,sizeof (r);
 
-#ifndef WINDOWS
-  
    if (!gameStates.input.bCybermouseActive)
    	int386 (kc_external_intno, &r, &r);		// Read external info...
 //	else
   //		ReadOWL (kc_external_control);
-
-#endif
 
 	if (gameData.multi.nLocalPlayer > -1)	{
 		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning

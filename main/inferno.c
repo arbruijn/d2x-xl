@@ -41,7 +41,6 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "u_mem.h"
 #include "strutil.h"
 #include "console.h"
-#include "pa_enabl.h"       //$$POLY_ACC
 #include "gr.h"
 #include "fix.h"
 #include "vecmat.h"
@@ -74,10 +73,8 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "text.h"
 #include "newdemo.h"
 #include "object.h"
-#ifdef NETWORK
-#	include "network.h"
-#	include "modem.h"
-#endif
+#include "network.h"
+#include "modem.h"
 #include "gamefont.h"
 #include "kconfig.h"
 #include "mouse.h"
@@ -112,10 +109,6 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 //end addition -MM
 
 #include "../texmap/scanline.h" //for select_tmap -MM
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 extern void SetFunctionMode (int);
 extern void ShowInGameWarning (char *s);
@@ -258,22 +251,10 @@ void PrintCmdLineHelp ()
 			}
 			if (line[0] == ';')
 				continue;		//don't show comments
-			//printf ("%s",line);
 		}
 		CFClose (ifile);
 	}
 
-//	//printf (" Diagnostic:\n\n");
-//	//printf ("  -emul           %s\n", "Certain video cards need this option in order to run game");
-//	//printf (	"  -ddemul         %s\n", "If -emul doesn't work, use this option");
-//	//printf ("\n");
-#ifdef EDITOR
-	//printf (" Editor Options:\n\n");
-	//printf ("  -autoload <file>%s\n", "Autoload a level in the editor");
-	//printf ("  -hoarddata      %s\n","FIXME: Undocumented");
-//	//printf ("  -nobm           %s\n","FIXME: Undocumented");
-	//printf ("\n");
-#endif
 	con_printf ((int) con_threshold.value, " D2X Options:\n\n");
 	con_printf ((int) con_threshold.value, "  -noredundancy   %s\n", "Do not send messages when picking up redundant items in multi");
 	con_printf ((int) con_threshold.value, "  -shortpackets   %s\n", "Set shortpackets to default as on");
@@ -293,34 +274,21 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -checktime      %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -showmeminfo    %s\n","FIXME: Undocumented");
 #endif
-//	con_printf ((int) con_threshold.value, "  -codereadonly   %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -cyberimpact    %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -debug          %s\n","Enable very verbose output");
-//	con_printf ((int) con_threshold.value, "  -debugmode      %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -disallowgfx    %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -disallowreboot %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -dynamicsockets %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -forcegfx       %s\n","FIXME: Undocumented");
 #ifdef SDL_INPUT
 	con_printf ((int) con_threshold.value, "  -grabmouse      %s\n","Keeps the mouse from wandering out of the window");
 #endif
-//	con_printf ((int) con_threshold.value, "  -hw_3dacc       %s\n","FIXME: Undocumented");
 #ifndef RELEASE
 	con_printf ((int) con_threshold.value, "  -invulnerability %s\n","Make yourself invulnerable");
 #endif
 	con_printf ((int) con_threshold.value, "  -ipxnetwork <num> %s\n","Use IPX network number <num>");
 	con_printf ((int) con_threshold.value, "  -jasen          %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -joyslow        %s\n","FIXME: Undocumented");
-#ifdef NETWORK
 	con_printf ((int) con_threshold.value, "  -kali           %s\n","use Kali for networking");
-#endif
-//	con_printf ((int) con_threshold.value, "  -logfile        %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -lowresmovies   %s\n","Play low resolution movies if available (for slow machines)");
 #if defined (EDITOR) || !defined (MACDATA)
 	con_printf ((int) con_threshold.value, "  -macdata        %s\n","Read (and, for editor, write) mac data files (swap colors)");
 #endif
-//	con_printf ((int) con_threshold.value, "  -memdbg         %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -monodebug      %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -nocdrom        %s\n","FIXME: Undocumented");
 #ifdef __DJGPP__
 	con_printf ((int) con_threshold.value, "  -nocyberman     %s\n","FIXME: Undocumented");
@@ -328,46 +296,25 @@ void PrintCmdLineHelp ()
 #ifndef NDEBUG
 	con_printf ((int) con_threshold.value, "  -nofade         %s\n","Disable fades");
 #endif
-#ifdef NETWORK
 	con_printf ((int) con_threshold.value, "  -nomatrixcheat  %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -norankings     %s\n","Disable multiplayer ranking system");
 	con_printf ((int) con_threshold.value, "  -packets <num>  %s\n","Specifies the number of packets per second\n");
-//	con_printf ((int) con_threshold.value, "  -showaddress    %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -socket         %s\n","FIXME: Undocumented");
-#endif
-#ifndef WINDOWS
 	con_printf ((int) con_threshold.value, "  -nomixer        %s\n","Don't crank music volume");
 	con_printf ((int) con_threshold.value, "  -sound22k       %s\n","Use 22 KHz sound sample rate");
 	con_printf ((int) con_threshold.value, "  -sound11k       %s\n","Use 11 KHz sound sample rate");
-//	con_printf ((int) con_threshold.value, "  -superhires     %s\n","Allow higher-resolution modes");
-#endif
-//	con_printf ((int) con_threshold.value, "  -nomodex        %s\n","FIXME: Undocumented");
 #ifndef RELEASE
 	con_printf ((int) con_threshold.value, "  -nomovies       %s\n","Don't play movies");
 	con_printf ((int) con_threshold.value, "  -noscreens      %s\n","Skip briefing screens");
 #endif
-#if !defined (SHAREWARE) || (defined (SHAREWARE) && defined (APPLE_DEMO))
 	con_printf ((int) con_threshold.value, "  -noredbook      %s\n","Disable redbook audio");
-#endif
 	con_printf ((int) con_threshold.value, "  -norun          %s\n","Bail out after initialization");
-//	con_printf ((int) con_threshold.value, "  -ordinaljoy     %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -rtscts         %s\n","Same as -ctsrts");
-//	con_printf ((int) con_threshold.value, "  -semiwin        %s\n","Use non-fullscreen mode");
-//	con_printf ((int) con_threshold.value, "  -specialdevice  %s\n","FIXME: Undocumented");
 #ifdef TACTILE
 	con_printf ((int) con_threshold.value, "  -stickmag       %s\n","FIXME: Undocumented");
 #endif
-//	con_printf ((int) con_threshold.value, "  -stopwatch      %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -subtitles      %s\n","Turn on movie subtitles (English-only)");
-//	con_printf ((int) con_threshold.value, "  -sysram         %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -text <file>    %s\n","Specify alternate .tex file");
-//	con_printf ((int) con_threshold.value, "  -tsengdebug1    %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -tsengdebug2    %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -tsengdebug3    %s\n","FIXME: Undocumented");
-#ifdef NETWORK
 	con_printf ((int) con_threshold.value, "  -udp            %s\n","Use TCP/UDP for networking");
-#endif
-//	con_printf ((int) con_threshold.value, "  -vidram         %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -xcontrol       %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -xname          %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -xver           %s\n","FIXME: Undocumented");
@@ -375,18 +322,10 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -<X>x<Y>        %s\n","Set screen resolution to <X> by <Y>");
 	con_printf ((int) con_threshold.value, "  -automap<X>x<Y> %s\n","Set automap resolution to <X> by <Y>");
 	con_printf ((int) con_threshold.value, "  -automap_gameres %s\n","Set automap to use the same resolution as in game");
-//	con_printf ((int) con_threshold.value, "  -menu<X>x<Y>    %s\n","Set menu resolution to <X> by <Y>");
-//	con_printf ((int) con_threshold.value, "  -menu_gameres   %s\n","Set menus to use the same resolution as in game");
 	con_printf ((int) con_threshold.value, "\n");
 
 	con_printf ((int) con_threshold.value, "D2X System Options:\n\n");
-#ifdef __MSDOS__
-	con_printf ((int) con_threshold.value, "  -joy209         %s\n", "Use alternate port 209 for joystick");
-#endif
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
 	con_printf ((int) con_threshold.value, "  -fullscreen     %s\n", "Use fullscreen mode if available");
-#endif
-#ifdef OGL
 	con_printf ((int) con_threshold.value, "  -gl_texmagfilt <f> %s\n","set GL_TEXTURE_MAG_FILTER (see readme.d1x)");
 	con_printf ((int) con_threshold.value, "  -gl_texminfilt <f> %s\n","set GL_TEXTURE_MIN_FILTER (see readme.d1x)");
 	con_printf ((int) con_threshold.value, "  -gl_mipmap      %s\n","set gl texture filters to \"standard\" options for mipmapping");
@@ -394,21 +333,16 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -gl_simple      %s\n","set gl texture filters to gl_nearest for \"original\" look. (default)");
 	con_printf ((int) con_threshold.value, "  -gl_alttexmerge %s\n","use new texmerge, usually uses less ram (default)");
 	con_printf ((int) con_threshold.value, "  -gl_stdtexmerge %s\n","use old texmerge, uses more ram, but _might_ be a bit faster");
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
-	con_printf ((int) con_threshold.value, "  -gl_voodoo      %s\n","force fullscreen mode only");
-#endif
 	con_printf ((int) con_threshold.value, "  -gl_16bittextures %s\n","attempt to use 16bit textures");
-	con_printf ((int) con_threshold.value, "  -gameStates.ogl.nReticle <r> %s\n","use OGL reticle 0=never 1=above 320x* 2=always");
+	con_printf ((int) con_threshold.value, "  -ogl_reticle <r> %s\n","use OGL reticle 0=never 1=above 320x* 2=always");
 	con_printf ((int) con_threshold.value, "  -gl_intensity4_ok %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -gl_luminance4_alpha4_ok %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -gl_readpixels_ok %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -gl_rgba2_ok    %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -gl_test1       %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -gl_test2       %s\n","FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -gl_vidmem      %s\n","FIXME: Undocumented");
 #ifdef OGL_RUNTIME_LOAD
 	con_printf ((int) con_threshold.value, "  -gl_library <l> %s\n","use alternate opengl library");
-#endif
 #endif
 #ifdef SDL_VIDEO
 	con_printf ((int) con_threshold.value, "  -nosdlvidmodecheck %s\n", "Some X servers don't like checking vidmode first, so just switch");
@@ -506,11 +440,7 @@ int start_net_immediately = 0;
 
 int OpenMovieFile (char *filename,int must_have);
 
-#if defined (POLY_ACC)
-#define MENU_HIRES_MODE SM_640x480x15xPA
-#else
 #define MENU_HIRES_MODE SM (640,480)
-#endif
 
 //	DESCENT II by Parallax Software
 //		Descent Main
@@ -690,8 +620,6 @@ void EvalLegacyArgs (void)
 
 if (bLegacy || FindArg ("-legacyinput"))
 	gameOptions [0].legacy.bInput = 1;
-if (bLegacy || FindArg ("-legacyzbuf"))
-	gameOptions [0].legacy.bZBuf = 1;
 if (bLegacy || FindArg ("-legacyfuelcens"))
 	gameOptions [0].legacy.bFuelCens = 1;
 if (bLegacy || FindArg ("-legacymouse"))
@@ -1015,7 +943,7 @@ if (t = FindArg ("-enable_sse"))
 if (t = FindArg ("-render_opt"))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
-//if (gameOpts->ogl.bUseLighting)
+//if (gameOpts->render.bDynLighting)
 //	gameStates.ogl.bUseTransform = 1;
 //else
 if (t = FindArg ("-gl_transform"))
@@ -1355,7 +1283,6 @@ void InitLegacyOptions (int i)
 {
 if (i) {
 	gameOptions [1].legacy.bInput = 0;
-	gameOptions [1].legacy.bZBuf = 0;
 	gameOptions [1].legacy.bFuelCens = 0;
 	gameOptions [1].legacy.bMouse = 0;
 	gameOptions [1].legacy.bHomers = 0;
@@ -1365,7 +1292,6 @@ if (i) {
 	}
 else {
 	gameOptions [0].legacy.bInput = 0;
-	gameOptions [0].legacy.bZBuf = 0;
 	gameOptions [0].legacy.bFuelCens = 0;
 	gameOptions [0].legacy.bMouse = 0;
 	gameOptions [0].legacy.bHomers = 0;
@@ -1519,7 +1445,7 @@ else {
 void InitOglOptions (int i)
 {
 if (i) {
-	gameOptions [1].ogl.bUseLighting = 0;
+	gameOptions [1].render.bDynLighting = 0;
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
@@ -1540,9 +1466,9 @@ if (i) {
 	}
 else {
 #ifdef _DEBUG
-	gameOptions [0].ogl.bUseLighting = 0;
+	gameOptions [0].render.bDynLighting = 0;
 #else
-	gameOptions [0].ogl.bUseLighting = 0;
+	gameOptions [0].render.bDynLighting = 0;
 #endif
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
@@ -2003,9 +1929,9 @@ memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissil
 gameData.render.morph.xRate = MORPH_RATE;
 gameData.render.ogl.nSrcBlend = GL_SRC_ALPHA;
 gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
-memset (&gameData.render.lights.ogl, 0xff, sizeof (gameData.render.lights.ogl));
-gameData.render.lights.ogl.nLights = 0;
-gameData.render.lights.ogl.material.bValid = 0;
+memset (&gameData.render.lights.dynamic, 0xff, sizeof (gameData.render.lights.dynamic));
+gameData.render.lights.dynamic.nLights = 0;
+gameData.render.lights.dynamic.material.bValid = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
 gameData.models.nMarkerModel = -1;
 gameData.models.nCockpits = 0;
@@ -2071,33 +1997,11 @@ if (FindArg ("-notitles"))
 else
 #endif
 	{	//NOTE LINK TO ABOVE!
-#ifndef SHAREWARE
 	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
-#endif
 	int bSongPlaying = 0;
 
-#ifdef D2_OEM
-#	define MOVIE_REQUIRED 0
-#else
-#	define MOVIE_REQUIRED 1
-#endif
+#define MOVIE_REQUIRED 1
 
-#ifdef D2_OEM   //$$POLY_ACC, jay.
-		{	//show bundler screens
-		char filename[FILENAME_LEN];
-
-		nPlayed = PlayMovie ("pre_i.mve",0,0,gameOpts->movies.bResize);
-		if (!nPlayed) {
-			strcpy (filename,gameStates.menus.bHires?"pre_i1b.pcx":"pre_i1.pcx");
-			while (CFExist (filename)) {
-				show_title_screen (filename, 1, 0);
-				filename[5]++;
-				}
-			}
-		}
-#endif
-
-#ifndef SHAREWARE
 	if (gameStates.app.bHaveExtraMovies) {
 		nPlayed = PlayMovie ("starta.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
@@ -2110,49 +2014,6 @@ else
 		nPlayed = PlayMovie ("intro.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
 		}
 	CloseSubTitles ();
-#endif
-
-#ifdef D2_OEM
-	if (nPlayed != MOVIE_NOT_PLAYED)
-	gameStates.movies.bIntroPlayed = 1;
-	else {						//didn't get intro movie, try titles
-		nPlayed = PlayMovie ("titles.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
-		if (nPlayed == MOVIE_NOT_PLAYED) {
-#if defined (POLY_ACC)
-			GrSetMode (SM_640x480x15xPA);
-#else
-			GrSetMode (gameStates.menus.bHires?SM_640x480V:SM_320x200C);
-#endif
-			SongsPlaySong (SONG_TITLE, 1);
-			bSongPlaying = 1;
-#if TRACE		
-			con_printf(CON_DEBUG, "\nShowing logo screens..."); fflush (fErr);}
-#endif
-			show_title_screen (gameStates.menus.bHires?"iplogo1b.pcx":"iplogo1.pcx", 1, 1);
-			show_title_screen (gameStates.menus.bHires?"logob.pcx":"logo.pcx", 1, 1);
-			}
-		}
-
-		{	//show bundler movie or screens
-		char filename[FILENAME_LEN];
-		int movie_handle;
-		nPlayed=MOVIE_NOT_PLAYED;	//default is not nPlayed
-		//check if OEM movie exists, so we don't stop the music if it doesn't
-		movie_handle = OpenMovieFile ("oem.mve",0);
-		if (movie_handle != -1) {
-			close (movie_handle);
-			nPlayed = PlayMovie ("oem.mve",0,0,1);
-			bSongPlaying = 0;		//movie will kill sound
-			}
-		if (!nPlayed) {
-			strcpy (filename,gameStates.menus.bHires?"oem1b.pcx":"oem1.pcx");
-			while (CFExist (filename)) {
-				show_title_screen (filename, 1, 0);
-				filename[3]++;
-				}
-			}
-		}
-#endif
 
 	if (!bSongPlaying)
 		SongsPlaySong (SONG_TITLE, 1);
@@ -2177,19 +2038,13 @@ if (! CFExist (filename,gameFolders.szDataDir,0))
 	strcpy (filename, "descentd.pcx"); // SHAREWARE
 if (! CFExist (filename,gameFolders.szDataDir,0))
 	strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
-#if defined (POLY_ACC)
-GrSetMode (SM_640x480x15xPA);
-#else
 GrSetMode (
 	gameStates.menus.bHires ? 
 		(gameStates.gfx.nStartScrSize < 0) ? 
 			SM (640,480) 
 			: SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y) 
 		: SM (320,200));
-#endif
-#ifdef OGL
 SetScreenMode (SCREEN_MENU);
-#endif
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 if ((pcx_error = pcx_read_fullscr (filename, 0))==PCX_ERROR_NONE)	{
 	GrPaletteStepClear ();
@@ -2457,26 +2312,17 @@ _3dfx_Init ();
 #endif
 
 /*---*/LogErr ("Initializing render buffers\n");
-#if defined (POLY_ACC)
-if (gameStates.gfx.nStartScrMode < 0)
-	GameInitRenderBuffers (SM_640x480x15xPA, 640, 480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT);
-else
-	GameInitRenderBuffers (nScreenMode, SM_W (nScreenMode), SM_H (nScreenMode), gameStates.gfx.nStartScrMode, screen_compatible);
-#else
 if (!VR_offscreen_buffer)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
-#endif
 S_MODE (&automap_mode, &gameStates.render.bAutomapUseGameRes);
 if ((i = FindArg ("-xcontrol")) > 0)
 	KCInitExternalControls (strtol (Args[i+1], NULL, 0), strtol (Args[i+2], NULL, 0));
 
-#if !defined (POLY_ACC)
 if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
 	gameOpts->movies.bHires = 
 	gameStates.menus.bHires = 
 	gameStates.menus.bHiresAvailable = 0;
 else
-#endif
 	gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
 
 /*---*/LogErr ("Loading default palette\n");
@@ -2486,10 +2332,6 @@ grdCurCanv->cv_bitmap.bm_palette = defaultPalette;	//just need some valid palett
 GameFontInit ();	// must load after palette data loaded.
 /*---*/LogErr ("Initializing movies\n");
 InitMovies ();		//init movie libraries
-
-#if defined (POLY_ACC)
-GrSetMode (SM_640x480x15xPA);
-#endif
 
 /*---*/LogErr ("Initializing game data\n");
 #ifdef EDITOR
@@ -2660,12 +2502,7 @@ void show_order_form ()
 
 void quit_request ()
 {
-#ifdef NETWORK
-//	void network_abort_game ();
-//	if (Network_status)
-//		network_abort_game ();
-#endif
-	exit (0);
+exit (0);
 }
 
 // ----------------------------------------------------------------------------

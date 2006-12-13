@@ -2200,28 +2200,6 @@ int PiggyIsSubstitutableBitmap (char * name, char * subst_name)
 }
 
 //------------------------------------------------------------------------------
-
-#ifdef WINDOWS
-//	New Windows stuff
-
-//	windows bitmap page in
-//		Page in a bitmap, if ddraw, then page it into a ddsurface in 
-//		'video' memory.  if that fails, page it in normally.
-
-void PiggyBitmapPageInW (tBitmapIndex bitmap, int ddraw)
-{
-}
-
-//------------------------------------------------------------------------------
-//	Essential when switching video modes!
-
-void PiggyBitmapPageOutAllW ()
-{
-}
-
-#endif // WINDOWS
-
-//------------------------------------------------------------------------------
 /*
  * Functions for loading replacement textures
  *  1) From .pog files

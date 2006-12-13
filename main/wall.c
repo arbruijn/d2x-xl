@@ -495,10 +495,8 @@ else {
 
 	if (w->hps < WALL_HPS*1/n) {
 		BlastBlastableWall(seg, tSide);
-		#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendDoorOpen(SEG_IDX (seg), tSide,w->flags);
-		#endif
 	}
 	else
 		for (i=0;i<n;i++)
@@ -1340,10 +1338,8 @@ if (w->nType == WALL_DOOR) {
 	else {
 		if (w->state != WALL_DOOR_OPENING) {
 			WallOpenDoor(seg, tSide);
-		#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendDoorOpen(SEG_IDX (seg), tSide,w->flags);
-		#endif
 			}
 		return WHP_DOOR;
 

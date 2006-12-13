@@ -96,9 +96,7 @@ typedef struct tRgbColors {
 #define BM_SVGA     2
 #define BM_RGB15    3   //5 bits each r, g, b stored at 16 bits
 #define BM_SVGA15   4
-#ifdef OGL
 #define BM_OGL      5
-#endif /* def OGL */
 
 //@@// Define these modes for Gameplay too, since the game was developed under
 //@@// DOS, we will adapt these modes to other systems thru rendering.
@@ -221,11 +219,9 @@ typedef struct _grs_font {
 	ubyte    ** ft_chars;       // Ptrs to data for each char (required for prop font)
 	short     * ft_widths;      // Array of widths (required for prop font)
 	ubyte     * ft_kerndata;    // Array of kerning triplet data
-#ifdef OGL
 	// These fields do not participate in disk i/o!
 	grsBitmap *ft_bitmaps;
 	grsBitmap ft_parent_bitmap;
-#endif /* def OGL */
 } __pack__ grs_font;
 
 #define GRS_FONT_SIZE 28    // how much space it takes up on disk
@@ -302,10 +298,6 @@ void _CDECL_ GrClose(void);
 // including the raw pixel buffer.
 
 grs_canvas *GrCreateCanvas(int w, int h);
-#if defined(POLY_ACC)
-grs_canvas *GrCreateCanvas2(int w, int h, int nType);
-#endif /* def POLY_ACC */
-
 // Creates a canvas that is part of another canvas.  this can be used to make
 // a window on the screen.  the canvas structure is malloc'd; the address of
 // the raw pixel data is inherited from the parent canvas.
@@ -341,11 +333,6 @@ grsBitmap *GrCreateBitmap(int w, int h, int bTGA);
 
 // Allocated a bitmap and makes its data be raw_data that is already somewhere.
 grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char * raw_data, int bTGA );
-
-#if defined(POLY_ACC)
-// Allocates a bitmap of a specific nType. data is either NULL or raw data.
-grsBitmap *GrCreateBitmap2(int w, int h, int nType, void *data );
-#endif /* def POLY_ACC */
 
 // Creates a bitmap which is part of another bitmap
 grsBitmap *GrCreateSubBitmap(grsBitmap *bm, int x, int y, int w, int h);
@@ -611,7 +598,6 @@ extern int bSaveScreenShot;
  * currently SDL and OGL are the only things that supports toggling
  * fullscreen.  otherwise add other checks to the #if -MPM
  */
-#if (defined(SDL_VIDEO) || defined(OGL))
 #define GR_SUPPORTS_FULLSCREEN_TOGGLE
 
 /*
@@ -626,8 +612,6 @@ void ResetTextures (int bReload, int bGame);
  * check_fullscreen immediatly after)
  */
 int GrToggleFullScreen(void);
-
-#endif /* defined(SDL_VIDEO) || defined(OGL)) */
 
 int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
 

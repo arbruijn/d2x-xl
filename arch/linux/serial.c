@@ -1,5 +1,4 @@
 //added 06/09/99 Matt Mueller - fix nonetwork compile
-#ifdef NETWORK
 //end addition -MM
 #include <sys/types.h>
 #include <sys/time.h>
@@ -212,7 +211,3 @@ int com_readline(int timeoutValue, char *input_buffer,int len)
  input_buffer[i]=0;
  return i;
 }
-
-//added 06/09/99 Matt Mueller - fix nonetwork compile
-#endif
-//end addition -MM

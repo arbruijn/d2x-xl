@@ -406,9 +406,6 @@ void rle_expand_texture_sub (grsBitmap * bmP, grsBitmap * rle_temp_bitmap_1)
 	unsigned char * dbits1;
 #endif
 
-#ifdef D1XD3D
-Assert (bmP->iMagic == BM_MAGIC_NUMBER);
-#endif
 sbits = bmP->bm_texBuf + 4 + bmP->bm_props.h;
 dbits = rle_temp_bitmap_1->bm_texBuf;
 rle_temp_bitmap_1->bm_props.flags = bmP->bm_props.flags & (~BM_FLAG_RLE);
@@ -417,24 +414,7 @@ for (i=0; i < bmP->bm_props.h; i++) {
 	sbits += (int) bmP->bm_texBuf [4+i];
 	dbits += bmP->bm_props.w;
 	}
-#ifdef D1XD3D
-	GrSetBitmapData (rle_temp_bitmap_1, rle_temp_bitmap_1->bm_texBuf);
-#endif
 }
-
-//------------------------------------------------------------------------------
-
-#if defined (POLY_ACC)
-grsBitmap *rle_get_id_sub (grsBitmap *bmP)
-{
-	int i;
-
-for (i = 0; i < MAX_CACHE_BITMAPS; i++)
-	if (rle_cache[i].expanded_bitmap == bmP)
-		return rle_cache[i].rle_bitmap;
-return NULL;
-}
-#endif
 
 //------------------------------------------------------------------------------
 

@@ -20,10 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #ifdef _WIN32
 #include <windows.h>
 #include <stddef.h>
@@ -42,7 +38,6 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #include <stdarg.h>
 #include <ctype.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
 #include "inferno.h"
 #include "gr.h"
@@ -55,9 +50,7 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 
 #include "newmenu.h"
 #include "gamefont.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "iff.h"
 #include "pcx.h"
 #include "u_mem.h"
@@ -70,10 +63,6 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #include "compbit.h"
 #include "songs.h"
 #include "menu.h"			// for gameStates.menus.bHires
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
 #define LHY(y)      (gameStates.menus.bHires?(24*(y))/10:y)
@@ -117,16 +106,12 @@ grs_font * header_font;
 grs_font * title_font;
 grs_font * names_font;
 
-#ifdef SHAREWARE
-#define ALLOWED_CHAR 'S'
-#else
 #define ALLOWED_CHAR 'R'
-#endif
 
 #ifdef RELEASE
-#define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires?"\x01starsb.pcx":"\x01stars.pcx")	//only read from hog file
+#	define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires ? "\x01starsb.pcx" : "\x01stars.pcx")	//only read from hog file
 #else
-#define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires?"starsb.pcx":"stars.pcx")
+#	define CREDITS_BACKGROUND_FILENAME (gameStates.menus.bHires ? "starsb.pcx" : "stars.pcx")
 #endif
 
 typedef struct box {
@@ -212,16 +197,8 @@ WIN(int credinit = 0;)
 
 	WIN(DEFINE_SCREEN(NULL));
 
-#ifdef WINDOWS
-CreditsPaint:
-#endif
 	creditsPalette = GrUsePaletteTable("credits.256", NULL);
-#ifdef OGL
 	GrPaletteStepLoad (NULL);
-#endif
-#if defined(POLY_ACC)
-	pa_update_clut(grPalette, 0, 256, 0);
-#endif
 	header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
 	title_font = GrInitFont(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
 	names_font = GrInitFont(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
@@ -262,20 +239,12 @@ if (!gameOpts->menus.nStyle) {
 
 //if (!gameOpts->menus.nStyle) 
 {
-#ifndef PA_3DFX_VOODOO
-#	ifndef WINDOWS
 	if (gameStates.menus.bHires && !gameOpts->menus.nStyle && VR_offscreen_buffer->cv_w == 640)
 		CreditsOffscreenBuf = VR_offscreen_buffer;
 	else if (gameStates.menus.bHires)
 		CreditsOffscreenBuf = GrCreateCanvas(640,480);
 	else
 		CreditsOffscreenBuf = GrCreateCanvas(320,200);
-#	else
-	CreditsOffscreenBuf = GrCreateCanvas(640,480);
-#	endif				
-#else
-	CreditsOffscreenBuf = GrCreateCanvas(640,480);
-#endif
 	if (!CreditsOffscreenBuf)
 		Error("Not enough memory to allocate Credits Buffer.");
 	}
@@ -284,9 +253,6 @@ if (gameOpts->menus.nStyle)
 	CreditsOffscreenBuf->cv_bitmap.bm_props.flags |= BM_FLAG_TRANSPARENT;
 KeyFlush();
 
-#ifdef WINDOWS
-	if (!credinit)	
-#endif
 	{
 		lastTime = TimerGetFixedSeconds();
 		done = 0;
@@ -428,85 +394,26 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			tempbmp = &(CreditsOffscreenBuf->cv_bitmap);
 
 	//	WIN(DDGRSCREENLOCK);
-#if defined(POLY_ACC)
-			if (new_box->width != 0)
-#endif
 				GrBmBitBlt (new_box->width + 1, new_box->height +4,
 								new_box->left + xOffs, new_box->top + yOffs, 
 								new_box->left, new_box->top,
 								tempbmp, &(grdCurScreen->sc_canvas.cv_bitmap));
 	//	WIN(DDGRSCREENUNLOCK);
 		}
-#if defined(POLY_ACC)
-           pa_flush();
-#endif
-
-#if 0//!defined(POLY_ACC) //|| defined (_WIN32)
-		for (j=0; j<NUM_LINES; j++){
-			new_box = dirty_box + j;
-
-			tempbmp = &(CreditsOffscreenBuf->cv_bitmap);
-			GrBmBitBlt(new_box->width
-							,new_box->height+2
-							,new_box->left
-							,new_box->top
-							,new_box->left
-							,new_box->top
-							,&bmBackdrop
-							,tempbmp);
-		}
-#endif
 	}
 	GrUpdate (0);
 
-//		Wacky Fast Credits thing doesn't need this (it's done above)
-//@@		WINDOS(
-//@@			dd_gr_blt_notrans(CreditsOffscreenBuf, 0,0,0,0,	dd_grd_screencanv, 0,0,0,0),
-//@@			GrBmUBitBlt(grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(CreditsOffscreenBuf->cv_bitmap), &(grdCurScreen->sc_canvas.cv_bitmap));
-//@@		);
-
 			while(TimerGetFixedSeconds() < lastTime+time_delay);
 			lastTime = TimerGetFixedSeconds();
-		
-		#ifdef WINDOWS
-			{
-				MSG msg;
-
-				DoMessageStuff(&msg);
-
-				if (_RedrawScreen) {
-					_RedrawScreen = FALSE;
-
-					GrCloseFont(header_font);
-					GrCloseFont(title_font);
-					GrCloseFont(names_font);
-
-					d_free(bmBackdrop.bm_texBuf);
-					GrFreeCanvas(CreditsOffscreenBuf);
-		
-					goto CreditsPaint;
-				}
-
-				DDGRRESTORE;
-			}
-		#endif
-
 			//see if redbook song needs to be restarted
 			SongsCheckRedbookRepeat();
-
 			k = KeyInKey();
-
-			#ifndef NDEBUG
+#ifndef NDEBUG
 			if (k == KEY_BACKSP) {
 				Int3();
 				k=0;
 			}
-			#endif
-
-//			{
-//				fix ot = time_delay;
-//				time_delay += (keyd_pressed[KEY_X] - keyd_pressed[KEY_Z])*100;
-//			}
+#endif
 
 			if ((k == KEY_PRINT_SCREEN) || (k == KEY_ALTED+KEY_F9)){
 				bSaveScreenShot = 1;
@@ -528,16 +435,8 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 				);
 					SongsPlaySong(SONG_TITLE, 1);
 
-				//if (!gameOpts->menus.nStyle) 
-				{
-				#ifdef WINDOWS
+				if (CreditsOffscreenBuf != VR_offscreen_buffer)
 					GrFreeCanvas(CreditsOffscreenBuf);
-				#else					
-					if (CreditsOffscreenBuf != VR_offscreen_buffer)
-						GrFreeCanvas(CreditsOffscreenBuf);
-				#endif
-					}
-
 				WIN(DEFINE_SCREEN(Menu_pcx_name));
 				glDisable (GL_BLEND);
 				gameStates.menus.nInMenu = 0;

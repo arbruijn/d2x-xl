@@ -25,29 +25,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "gr.h"
 #include "grdef.h"
-
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
 
 void GrURect(int left,int top,int right,int bot)
 {
 	int i;
 
-#ifdef OGL
 	if (TYPE == BM_OGL) {
 		OglURect(left,top,right,bot);
 		return;
 	}
-#endif
-#ifdef D1XD3D
-	if (TYPE == BM_DIRECTX) {
-		if (left <= right && top <= bot)
-			Win32_Rect (left, top, right, bot, grdCurCanv->cv_bitmap.bm_texBuf, COLOR);
-		return;
-	}
-#endif
 	for ( i=top; i<=bot; i++ )
 		gr_uscanline( left, right, i );
 }
@@ -56,19 +43,10 @@ void GrRect(int left,int top,int right,int bot)
 {
 	int i;
 
-#ifdef OGL
 	if (TYPE == BM_OGL) {
 		OglURect(left,top,right,bot);
 		return;
 	}
-#endif
-#ifdef D1XD3D
-	if (TYPE == BM_DIRECTX) {
-		if (left <= right && top <= bot)
-			Win32_Rect (left, top, right, bot, grdCurCanv->cv_bitmap.bm_texBuf, COLOR);
-		return;
-	}
-#endif
 	for ( i=top; i<=bot; i++ )
 		gr_scanline( left, right, i );
 }

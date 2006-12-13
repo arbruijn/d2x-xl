@@ -33,7 +33,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <unistd.h>
 #endif
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "u_mem.h"
 
 #include "inferno.h"
@@ -47,10 +46,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "bitmap.h"
 #include "gamefont.h"
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 #include "makesig.h"
 
@@ -405,717 +400,7 @@ VideoOffset1 = y * ROWSIZE + x;
 
 //------------------------------------------------------------------------------
 
-#ifdef __MSDOS__
-int GrInternalString2(int x, int y, char *s)
-{
-	unsigned char * fp;
-	ubyte * text_ptr, * next_row, * text_ptr1;
-	int r, BitMask, i, bits, width, spacing, letter, underline;
-	int page_switched, skip_lines = 0;
-
-	unsigned int VideoOffset, VideoOffset1;
-
-	VideoOffset1 = (size_t)DATA + y * ROWSIZE + x;
-
-	bits = 0;
-
-	gr_vesa_setpage(VideoOffset1 >> 16);
-
-	VideoOffset1 &= 0xFFFF;
-
-	next_row = s;
-
-	while (next_row != NULL)
-	{
-		text_ptr1 = next_row;
-		next_row = NULL;
-
-		if (x==0x8000) {			//centered
-			int xx = GetCenteredX(text_ptr1);
-			VideoOffset1 = y * ROWSIZE + xx;
-			gr_vesa_setpage(VideoOffset1 >> 16);
-			VideoOffset1 &= 0xFFFF;
-		}
-
-		for (r=0; r<FHEIGHT; r++)
-		{
-			text_ptr = text_ptr1;
-
-			VideoOffset = VideoOffset1;
-
-			page_switched = 0;
-
-			while (*text_ptr)
-			{
-				if (*text_ptr == '\n')
-				{
-					next_row = &text_ptr[1];
-					break;
-				}
-
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR = *(text_ptr+1);
-					text_ptr += 2;
-					continue;
-				}
-
-				if (*text_ptr == CC_LSPACING) {
-					skip_lines = *(text_ptr+1) - '0';
-					text_ptr += 2;
-					continue;
-				}
-
-				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)
-				{
-					if ((r==FBASELINE+2) || (r==FBASELINE+3))
-						underline = 1;
-					text_ptr++;
-				}
-
-				get_char_width(text_ptr[0],text_ptr[1],&width,&spacing);
-
-				Assert(width==spacing);		//no kerning support here
-
-				letter = *text_ptr-FMINCHAR;
-
-				if (!INFONT(letter)) {	//not in font, draw as space
-					VideoOffset += spacing;
-					text_ptr++;
-					continue;
-				}
-
-				if (FFLAGS & FT_PROPORTIONAL)
-					fp = FCHARS[letter];
-				else
-					fp = FDATA + letter * BITS_TO_BYTES(width)*FHEIGHT;
-
-				if (underline)
-				{
-					if (VideoOffset+width > 0xFFFF)
-					{
-						for (i=0; i< width; i++)
-						{
-							gr_video_memory[VideoOffset++] = FG_COLOR;
-
-							if (VideoOffset > 0xFFFF)
-							{
-								VideoOffset -= 0xFFFF + 1;
-								page_switched = 1;
-								gr_vesa_incpage();
-							}
-						}
-					}
-					else
-					{
-						for (i=0; i< width; i++)
-							gr_video_memory[VideoOffset++] = FG_COLOR;
-					}
-				}
-				else
-				{
-					// fp -- dword
-					// VideoOffset
-					// width
-
-					fp += BITS_TO_BYTES(width)*r;
-
-					BitMask = 0;
-
-					if (VideoOffset+width > 0xFFFF)
-					{
-						for (i=0; i< width; i++)
-						{
-							if (BitMask==0) {
-								bits = *fp++;
-								BitMask = 0x80;
-							}
-
-							if (bits & BitMask)
-								gr_video_memory[VideoOffset++] = FG_COLOR;
-							else
-								gr_video_memory[VideoOffset++] = BG_COLOR;
-
-							BitMask >>= 1;
-
-							if (VideoOffset > 0xFFFF)
-							{
-								VideoOffset -= 0xFFFF + 1;
-								page_switched = 1;
-								gr_vesa_incpage();
-							}
-
-						}
-					} else {
-
-						if (width == 8)
-						{
-							bits = *fp++;
-
-							if (bits & 0x80) gr_video_memory[VideoOffset+0] = FG_COLOR;
-							else gr_video_memory[VideoOffset+0] = BG_COLOR;
-
-							if (bits & 0x40) gr_video_memory[VideoOffset+1] = FG_COLOR;
-							else gr_video_memory[VideoOffset+1] = BG_COLOR;
-
-							if (bits & 0x20) gr_video_memory[VideoOffset+2] = FG_COLOR;
-							else gr_video_memory[VideoOffset+2] = BG_COLOR;
-
-							if (bits & 0x10) gr_video_memory[VideoOffset+3] = FG_COLOR;
-							else gr_video_memory[VideoOffset+3] = BG_COLOR;
-
-							if (bits & 0x08) gr_video_memory[VideoOffset+4] = FG_COLOR;
-							else gr_video_memory[VideoOffset+4] = BG_COLOR;
-
-							if (bits & 0x04) gr_video_memory[VideoOffset+5] = FG_COLOR;
-							else gr_video_memory[VideoOffset+5] = BG_COLOR;
-
-							if (bits & 0x02) gr_video_memory[VideoOffset+6] = FG_COLOR;
-							else gr_video_memory[VideoOffset+6] = BG_COLOR;
-
-							if (bits & 0x01) gr_video_memory[VideoOffset+7] = FG_COLOR;
-							else gr_video_memory[VideoOffset+7] = BG_COLOR;
-
-							VideoOffset += 8;
-						} else {
-							for (i=0; i< width/2 ; i++)
-							{
-								if (BitMask==0) {
-									bits = *fp++;
-									BitMask = 0x80;
-								}
-
-								if (bits & BitMask)
-									gr_video_memory[VideoOffset++] = FG_COLOR;
-								else
-									gr_video_memory[VideoOffset++] = BG_COLOR;
-								BitMask >>= 1;
-
-
-								// Unroll twice
-
-								if (BitMask==0) {
-									bits = *fp++;
-									BitMask = 0x80;
-								}
-
-								if (bits & BitMask)
-									gr_video_memory[VideoOffset++] = FG_COLOR;
-								else
-									gr_video_memory[VideoOffset++] = BG_COLOR;
-								BitMask >>= 1;
-							}
-						}
-					}
-				}
-				text_ptr++;
-			}
-
-			y ++;
-			VideoOffset1 += ROWSIZE;
-
-			if (VideoOffset1 > 0xFFFF) {
-				VideoOffset1 -= 0xFFFF + 1;
-				if (!page_switched)
-					gr_vesa_incpage();
-			}
-		}
-
-		y += skip_lines;
-		VideoOffset1 += ROWSIZE * skip_lines;
-		skip_lines = 0;
-	}
-	return 0;
-}
-
 //------------------------------------------------------------------------------
-
-int GrInternalString2m(int x, int y, char *s)
-{
-	unsigned char * fp;
-	char * text_ptr, * next_row, * text_ptr1;
-	int r, BitMask, i, bits, width, spacing, letter, underline;
-	int page_switched, skip_lines = 0;
-
-	unsigned int VideoOffset, VideoOffset1;
-
-	VideoOffset1 = (size_t)DATA + y * ROWSIZE + x;
-
-	gr_vesa_setpage(VideoOffset1 >> 16);
-
-	VideoOffset1 &= 0xFFFF;
-
-	next_row = s;
-
-	while (next_row != NULL)
-	{
-		text_ptr1 = next_row;
-		next_row = NULL;
-
-		if (x==0x8000) {			//centered
-			int xx = GetCenteredX(text_ptr1);
-			VideoOffset1 = y * ROWSIZE + xx;
-			gr_vesa_setpage(VideoOffset1 >> 16);
-			VideoOffset1 &= 0xFFFF;
-		}
-
-		for (r=0; r<FHEIGHT; r++)
-		{
-			text_ptr = text_ptr1;
-
-			VideoOffset = VideoOffset1;
-
-			page_switched = 0;
-
-			while (*text_ptr)
-			{
-				if (*text_ptr == '\n')
-				{
-					next_row = &text_ptr[1];
-					break;
-				}
-
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR = *(text_ptr+1);
-					text_ptr += 2;
-					continue;
-				}
-
-				if (*text_ptr == CC_LSPACING) {
-					skip_lines = *(text_ptr+1) - '0';
-					text_ptr += 2;
-					continue;
-				}
-
-				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)
-				{
-					if ((r==FBASELINE+2) || (r==FBASELINE+3))
-						underline = 1;
-					text_ptr++;
-				}
-
-				get_char_width(text_ptr[0],text_ptr[1],&width,&spacing);
-
-				letter = *text_ptr-FMINCHAR;
-
-				if (!INFONT(letter)) {	//not in font, draw as space
-					VideoOffset += width;
-					text_ptr++;
-					continue;
-				}
-
-				if (FFLAGS & FT_PROPORTIONAL)
-					fp = FCHARS[letter];
-				else
-					fp = FDATA + letter * BITS_TO_BYTES(width)*FHEIGHT;
-
-				if (underline)
-				{
-					if (VideoOffset+width > 0xFFFF)
-					{
-						for (i=0; i< width; i++)
-						{
-							gr_video_memory[VideoOffset++] = FG_COLOR;
-
-							if (VideoOffset > 0xFFFF)
-							{
-								VideoOffset -= 0xFFFF + 1;
-								page_switched = 1;
-								gr_vesa_incpage();
-							}
-						}
-					}
-					else
-					{
-						for (i=0; i< width; i++)
-							gr_video_memory[VideoOffset++] = FG_COLOR;
-					}
-				}
-				else
-				{
-					fp += BITS_TO_BYTES(width)*r;
-
-					BitMask = 0;
-
-					if (VideoOffset+width > 0xFFFF)
-					{
-						for (i=0; i< width; i++)
-						{
-							if (BitMask==0) {
-								bits = *fp++;
-								BitMask = 0x80;
-							}
-
-							if (bits & BitMask)
-								gr_video_memory[VideoOffset++] = FG_COLOR;
-							else
-								VideoOffset++;
-
-							BitMask >>= 1;
-
-							if (VideoOffset > 0xFFFF)
-							{
-								VideoOffset -= 0xFFFF + 1;
-								page_switched = 1;
-								gr_vesa_incpage();
-							}
-
-						}
-					} else {
-						for (i=0; i< width; i++)
-						{
-							if (BitMask==0) {
-								bits = *fp++;
-								BitMask = 0x80;
-							}
-
-							if (bits & BitMask)
-								gr_video_memory[VideoOffset++] = FG_COLOR;
-							else
-								VideoOffset++;;
-							BitMask >>= 1;
-						}
-					}
-				}
-				text_ptr++;
-
-				VideoOffset += spacing-width;
-			}
-
-			y ++;
-			VideoOffset1 += ROWSIZE;
-
-			if (VideoOffset1 > 0xFFFF) {
-				VideoOffset1 -= 0xFFFF + 1;
-				if (!page_switched)
-					gr_vesa_incpage();
-			}
-		}
-
-		y += skip_lines;
-		VideoOffset1 += ROWSIZE * skip_lines;
-		skip_lines = 0;
-	}
-	return 0;
-}
-
-#endif // __MSDOS__
-
-//------------------------------------------------------------------------------
-
-#if defined(POLY_ACC)
-int GrInternalString5(int x, int y, char *s)
-{
-	unsigned char * fp;
-	ubyte * text_ptr, * next_row, * text_ptr1;
-	int r, BitMask, i, bits, width, spacing, letter, underline;
-	int	skip_lines = 0;
-
-	unsigned int VideoOffset, VideoOffset1;
-
-  pa_flush();
-  VideoOffset1 = y * ROWSIZE + x * PA_BPP;
-
-	next_row = s;
-
-	while (next_row != NULL)
-	{
-		text_ptr1 = next_row;
-		next_row = NULL;
-
-		if (x==0x8000) {			//centered
-			int xx = GetCenteredX(text_ptr1);
-      VideoOffset1 = y * ROWSIZE + xx * PA_BPP;
-		}
-
-		for (r=0; r<FHEIGHT; r++)
-		{
-
-			text_ptr = text_ptr1;
-
-			VideoOffset = VideoOffset1;
-
-			while (*text_ptr)
-			{
-				if (*text_ptr == '\n')
-				{
-					next_row = &text_ptr[1];
-					break;
-				}
-
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR = *(text_ptr+1);
-					text_ptr += 2;
-					continue;
-				}
-
-				if (*text_ptr == CC_LSPACING) {
-					skip_lines = *(text_ptr+1) - '0';
-					text_ptr += 2;
-					continue;
-				}
-
-				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)
-				{
-					if ((r==FBASELINE+2) || (r==FBASELINE+3))
-						underline = 1;
-					text_ptr++;
-				}
-
-				get_char_width(text_ptr[0],text_ptr[1],&width,&spacing);
-
-				letter = *text_ptr-FMINCHAR;
-
-				if (!INFONT(letter)) {	//not in font, draw as space
-          VideoOffset += spacing * PA_BPP;
-					text_ptr++;
-					continue;
-				}
-
-				if (FFLAGS & FT_PROPORTIONAL)
-					fp = FCHARS[letter];
-				else
-					fp = FDATA + letter * BITS_TO_BYTES(width)*FHEIGHT;
-
-				if (underline)
-					for (i=0; i< width; i++)
-          {    *(short *)(DATA + VideoOffset) = pa_clut[FG_COLOR]; VideoOffset += PA_BPP; }
-				else
-				{
-					fp += BITS_TO_BYTES(width)*r;
-
-					BitMask = 0;
-
-					for (i=0; i< width; i++)
-					{
-						if (BitMask==0) {
-							bits = *fp++;
-							BitMask = 0x80;
-						}
-
-						if (bits & BitMask)
-                {    *(short *)(DATA + VideoOffset) = pa_clut[FG_COLOR]; VideoOffset += PA_BPP; }
-                else
-                {    *(short *)(DATA + VideoOffset) = pa_clut[BG_COLOR]; VideoOffset += PA_BPP; }
-                BitMask >>= 1;
-					}
-				}
-
-            VideoOffset += PA_BPP * (spacing-width);       //for kerning
-
-				text_ptr++;
-			}
-
-			VideoOffset1 += ROWSIZE; y++;
-		}
-
-		y += skip_lines;
-		VideoOffset1 += ROWSIZE * skip_lines;
-		skip_lines = 0;
-	}
-	return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int GrInternalString5m(int x, int y, char *s)
-{
-	unsigned char * fp;
-	ubyte * text_ptr, * next_row, * text_ptr1;
-	int r, BitMask, i, bits, width, spacing, letter, underline;
-	int	skip_lines = 0;
-
-	unsigned int VideoOffset, VideoOffset1;
-
-  pa_flush();
-  VideoOffset1 = y * ROWSIZE + x * PA_BPP;
-
-	next_row = s;
-
-	while (next_row != NULL)
-	{
-		text_ptr1 = next_row;
-		next_row = NULL;
-
-		if (x==0x8000) {			//centered
-			int xx = GetCenteredX(text_ptr1);
-      VideoOffset1 = y * ROWSIZE + xx * PA_BPP;
-		}
-
-		for (r=0; r<FHEIGHT; r++)
-		{
-
-			text_ptr = text_ptr1;
-
-			VideoOffset = VideoOffset1;
-
-			while (*text_ptr)
-			{
-				if (*text_ptr == '\n')
-				{
-					next_row = &text_ptr[1];
-					break;
-				}
-
-				if (*text_ptr == CC_COLOR) {
-					FG_COLOR = *(text_ptr+1);
-					text_ptr += 2;
-					continue;
-				}
-
-				if (*text_ptr == CC_LSPACING) {
-					skip_lines = *(text_ptr+1) - '0';
-					text_ptr += 2;
-					continue;
-				}
-
-				underline = 0;
-				if (*text_ptr == CC_UNDERLINE)
-				{
-					if ((r==FBASELINE+2) || (r==FBASELINE+3))
-						underline = 1;
-					text_ptr++;
-				}
-
-				get_char_width(text_ptr[0],text_ptr[1],&width,&spacing);
-
-				letter = *text_ptr-FMINCHAR;
-
-				if (!INFONT(letter)) {	//not in font, draw as space
-          VideoOffset += spacing * PA_BPP;
-					text_ptr++;
-					continue;
-				}
-
-				if (FFLAGS & FT_PROPORTIONAL)
-					fp = FCHARS[letter];
-				else
-					fp = FDATA + letter * BITS_TO_BYTES(width)*FHEIGHT;
-
-				if (underline)
-					for (i=0; i< width; i++)
-          {    *(short *)(DATA + VideoOffset) = pa_clut[FG_COLOR]; VideoOffset += PA_BPP; }
-            else
-				{
-					fp += BITS_TO_BYTES(width)*r;
-
-					BitMask = 0;
-
-					for (i=0; i< width; i++)
-					{
-						if (BitMask==0) {
-							bits = *fp++;
-							BitMask = 0x80;
-						}
-
-						if (bits & BitMask)
-                {    *(short *)(DATA + VideoOffset) = pa_clut[FG_COLOR]; VideoOffset += PA_BPP; }
-                else
-                  VideoOffset += PA_BPP;
-						BitMask >>= 1;
-					}
-				}
-				text_ptr++;
-
-        VideoOffset += PA_BPP * (spacing-width);
-			}
-
-			VideoOffset1 += ROWSIZE; y++;
-		}
-		y += skip_lines;
-		VideoOffset1 += ROWSIZE * skip_lines;
-		skip_lines = 0;
-	}
-	return 0;
-}
-#endif
-
-//------------------------------------------------------------------------------
-
-#ifndef OGL
-//a bitmap for the character
-grsBitmap char_bm = {
-				0,0,0,0,						//x,y,w,h
-				BM_LINEAR,					//nType
-				BM_FLAG_TRANSPARENT,		//flags
-				0,								//rowsize
-				NULL,							//data
-#ifdef BITMAP_SELECTOR
-				0,				//selector
-#endif
-				0,     //bm_avgColor
-				0      //unused
-};
-
-//------------------------------------------------------------------------------
-
-int GrInternalColorString(int x, int y, char *s)
-{
-	unsigned char * fp;
-	ubyte * text_ptr, * next_row, * text_ptr1;
-	int width, spacing,letter;
-	int xx,yy;
-
-	char_bm.bm_props.h = FHEIGHT;		//set height for chars of this font
-
-	next_row = s;
-
-	yy = y;
-
-
-	while (next_row != NULL)
-	{
-		text_ptr1 = next_row;
-		next_row = NULL;
-
-		text_ptr = text_ptr1;
-
-		xx = x;
-
-		if (xx==0x8000)			//centered
-			xx = GetCenteredX(text_ptr);
-
-		while (*text_ptr)
-		{
-			if (*text_ptr == '\n')
-			{
-				next_row = &text_ptr[1];
-				yy += FHEIGHT + 2;
-				break;
-			}
-
-			letter = *text_ptr-FMINCHAR;
-
-			get_char_width(text_ptr[0],text_ptr[1],&width,&spacing);
-
-			if (!INFONT(letter)) {	//not in font, draw as space
-				xx += spacing;
-				text_ptr++;
-				continue;
-			}
-
-			if (FFLAGS & FT_PROPORTIONAL)
-				fp = FCHARS[letter];
-			else
-				fp = FDATA + letter * BITS_TO_BYTES(width)*FHEIGHT;
-
-			GrInitBitmap (&char_bm, BM_LINEAR, 0, 0, width, FHEIGHT, width, fp, 0);
-			GrBitmapM(xx,yy,&char_bm);
-
-			xx += spacing;
-
-			text_ptr++;
-		}
-
-	}
-	return 0;
-}
-
-//------------------------------------------------------------------------------
-
-#else //OGL
 
 #include "ogl_init.h"
 #include "args.h"
@@ -1453,9 +738,6 @@ while (next_row != NULL) {
 				pc = ((grs_rgba *) bmP->bm_texBuf) + (y + hy) * w + x;
 				pf = bmfP->bm_texBuf + hy * bmfP->bm_props.rowsize;
 				for (hx = bmfP->bm_props.w; hx; hx--, pc++, pf++)
-#if 0
-					*pc = *pf;
-#else
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
 						i = c * 3;
 						pc->red = palP [i] * 4;
@@ -1463,14 +745,12 @@ while (next_row != NULL) {
 						pc->blue = palP [i + 2] * 4;
 						pc->alpha = 255;
 						}
-#endif
 				}
 			}
 		else {
 			if (FG_COLOR.index < 0)
 				memset (&hc, 0xff, sizeof (hc));
 			else {
-#if 1
 				if (FG_COLOR.rgb) {
 					hc = FG_COLOR.color;
 					}
@@ -1481,7 +761,6 @@ while (next_row != NULL) {
 					hc.blue = palP [i + 2] * 4;
 					hc.alpha = 255;
 					}
-#endif
 				}
 			for (hy = 0; hy < bmfP->bm_props.h; hy++) {
 				pc = ((grs_rgba *) bmP->bm_texBuf) + (y + hy) * w + x;
@@ -1506,7 +785,6 @@ int GrInternalColorString(int x, int y, char *s)
 {
 	return OglInternalString(x,y,s);
 }
-#endif //OGL
 
 //------------------------------------------------------------------------------
 
@@ -1563,17 +841,12 @@ int GrString(int x, int y, char *s)
 	}
 
 	// Partially clipped...
-#ifdef OGL
 	if (TYPE==BM_OGL)
 		return OglInternalString(x,y,s);
-#endif
-
 	if (FFLAGS & FT_COLOR)
 		return GrInternalColorString(x, y, s);
-
 	if (BG_COLOR.index == -1)
 		return gr_internal_string_clipped_m(x, y, s);
-
 	return gr_internal_string_clipped(x, y, s);
 }
 
@@ -1581,11 +854,8 @@ int GrString(int x, int y, char *s)
 
 int GrUString(int x, int y, char *s)
 {
-#ifdef OGL
 	if (TYPE==BM_OGL)
 		return OglInternalString(x,y,s);
-#endif
-	
 	if (FFLAGS & FT_COLOR) {
 		return GrInternalColorString(x,y,s);
 	}
@@ -1597,20 +867,6 @@ int GrUString(int x, int y, char *s)
 				return GrInternalString0m(x,y,s);
 			else
 				return GrInternalString0(x,y,s);
-#ifdef __MSDOS__
-		case BM_SVGA:
-			if (BG_COLOR.index == -1)
-				return GrInternalString2m(x,y,s);
-			else
-				return GrInternalString2(x,y,s);
-#endif // __MSDOS__
-#if defined(POLY_ACC)
-      case BM_LINEAR15:
-			if (BG_COLOR.index == -1)
-				return GrInternalString5m(x,y,s);
-			else
-				return GrInternalString5(x,y,s);
-#endif
 		}
 	return 0;
 }
@@ -1745,14 +1001,11 @@ void GrCloseFont(grs_font * font)
 		d_free(font->ft_chars);
 		font->ft_chars = NULL;
 		}
-#ifdef OGL
 	if (font->ft_bitmaps) {
 		d_free(font->ft_bitmaps);
 		font->ft_bitmaps = NULL;
 		}
 	GrFreeBitmapData(&font->ft_parent_bitmap);
-//		OglFreeBmTexture(&font->ft_parent_bitmap);
-#endif
 	d_free(font);
 	font = NULL;
 	}
@@ -1954,10 +1207,7 @@ grs_font * GrInitFont(char * fontname)
 //		newfont->ft_aw=x/(double)strlen(tests);
 	}
 
-#ifdef OGL
 	ogl_init_font(font);
-#endif
-
 	return font;
 
 }
@@ -2043,15 +1293,12 @@ void GrRemapFont(grs_font *font, char * fontname, char *font_data)
 		GrSetPalette (&font->ft_parent_bitmap, palette, TRANSPARENCY_COLOR, -1, freq);
 	}
 	CFClose(fontfile);
-#ifdef OGL
 	if (font->ft_bitmaps) {
 		d_free(font->ft_bitmaps);
 		font->ft_bitmaps = NULL;
 		}
 	GrFreeBitmapData(&font->ft_parent_bitmap);
-//	OglFreeBmTexture(&font->ft_parent_bitmap);
 	ogl_init_font(font);
-#endif
 }
 
 //------------------------------------------------------------------------------

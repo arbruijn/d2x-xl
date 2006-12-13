@@ -53,16 +53,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "gauges.h"
 #include "powerup.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "newmenu.h"
 #include "scores.h"
 #include "effects.h"
 #include "textures.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 #include "cntrlcen.h"
 #include "newdemo.h"
 #include "endlevel.h"
@@ -456,10 +452,8 @@ if (gameData.pig.tex.pTMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
 #endif
 	//make sound
 	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, hitseg, 0, vHitPt, 0, f1_0);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, f1_0);
-#endif
 	ForceFieldHit=1;
 	} 
 else {
@@ -492,10 +486,8 @@ if (damage >= DAMAGE_THRESHOLD) {
 		volume = F1_0;
 	if (volume > 0 && !ForceFieldHit) {  // uhhhgly hack
 		DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, volume);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);	
-#endif
 		}
 	if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].shields > f1_0*10 || ForceFieldHit)
@@ -622,10 +614,8 @@ void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector *
 						Last_volatile_scrapeSoundTime = gameData.time.xGame;
 
 						DigiLinkSoundToPos (sound, hitseg, 0, vHitPt, 0, F1_0);
-#ifdef NETWORK
 						if (gameData.app.nGameMode & GM_MULTI)
 							MultiSendPlaySound (sound, F1_0);
-#endif
 					}
 
 					#ifdef COMPACT_SEGS
@@ -722,11 +712,9 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 				ubyte vc;
 				fix xDestSize;
 
-#ifdef NETWORK
 				if ((gameData.app.nGameMode & GM_MULTI) && netGame.AlwaysLighting)
 			   	if (ec == -1 || db == -1 || bOneShot)
 				   	return (0);
-#endif
 				//note: this must get called before the texture changes, 
 				//because we use the light value of the texture to change
 				//the static light in the tSegment
@@ -874,10 +862,8 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 
 	//make sound
 	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_WEAPON, hitseg, 0, vHitPt, 0, f1_0);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_WEAPON, f1_0);
-#endif
 	return 1;	//bail here. physics code will bounce this tObject
 	}
 
@@ -1020,10 +1006,8 @@ if ((weapon->cType.laserInfo.parentType== OBJ_PLAYER) || robot_escort) {
 			case WHP_NO_KEY:
 				//play special hit door sound (if/when we get it)
 				DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, weapon->nSegment, 0, &weapon->position.vPos, 0, F1_0);
-#ifdef NETWORK
 			   if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, F1_0);
-#endif
 				break;
 
 			case WHP_BLASTABLE:
@@ -1170,10 +1154,8 @@ if (playerObjP->id == gameData.multi.nLocalPlayer) {
 	DoAiRobotHitAttack (robot, playerObjP, vHitPt);
 	DoAiRobotHit (robot, PA_WEAPON_ROBOT_COLLISION);
 	} 
-#ifdef NETWORK
 else
 	MultiRobotRequestChange (robot, playerObjP->id);
-#endif
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the robot stole.
@@ -1220,7 +1202,6 @@ if (whotype != OBJ_PLAYER) {
 #endif
 	return;
 	}
-#ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP) && 
 	 (gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel < netGame.control_invulTime)) {
 	if (gameData.objs.objects [who].id == gameData.multi.nLocalPlayer) {
@@ -1231,7 +1212,6 @@ if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_C
 		}
 	return;
 	}
-#endif
 if (gameData.objs.objects [who].id == gameData.multi.nLocalPlayer) {
 	gameData.reactor.bHit = 1;
 	AIDoCloakStuff ();
@@ -1242,13 +1222,11 @@ if ((controlcen->shields < 0) && !(controlcen->flags& (OF_EXPLODING|OF_DESTROYED
 	if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (controlcen);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI) {
 		if (who == gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
 			AddPointsToScore (CONTROL_CEN_SCORE);
 		MultiSendDestroyReactor (OBJ_IDX (controlcen), gameData.objs.objects [who].id);
 		}
-#endif
 	if (!(gameData.app.nGameMode & GM_MULTI))
 		AddPointsToScore (CONTROL_CEN_SCORE);
 	DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, controlcen->nSegment, 0, &controlcen->position.vPos, 0, F1_0);
@@ -1416,10 +1394,8 @@ void MultiSendFinishGame ();
 //	Return 1 if robot died, else return 0
 int ApplyDamageToRobot (tObject *robot, fix damage, int nKillerObj)
 {
-#ifdef NETWORK
 char bIsThief;
 char tempStolen [MAX_STOLEN_ITEMS];	
-#endif
 
 if (robot->flags & OF_EXPLODING) 
 	return 0;
@@ -1432,10 +1408,8 @@ if (gameData.bots.pInfo [robot->id].bossFlag)
 //	Also invulnerable if his cheat for firing weapons is in effect.
 if (gameData.bots.pInfo [robot->id].companion) {
 //		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) || gameStates.app.cheats.bMadBuddy)
-#ifdef NETWORK
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
-#endif
 	}
 
 //	if (robot->controlType == CT_REMOTE)
@@ -1448,11 +1422,8 @@ robot->shields -= damage;
 
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (gameData.bots.pInfo [robot->id].bossFlag) {
-#ifdef NETWORK
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
-#endif
 		if ((robot->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
 				if (!MultiAllPlayersAlive ()) // everyones gotta be alive
 					robot->shields=1;
@@ -1462,7 +1433,6 @@ if (gameData.bots.pInfo [robot->id].bossFlag) {
 					}		
 				}		
 			else
-#endif
 				{	// NOTE LINK TO ABOVE!!!
 				if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || gameStates.app.bPlayerIsDead)
 					robot->shields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
@@ -1474,7 +1444,6 @@ if (gameData.bots.pInfo [robot->id].bossFlag) {
 	}
 
 if (robot->shields < 0) {
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI) {
 		bIsThief = (gameData.bots.pInfo [robot->id].thief != 0);
 		if (bIsThief)
@@ -1490,7 +1459,6 @@ if (robot->shields < 0) {
 	else
 		return 0;
 	}
-#endif
 
 	if (nKillerObj >= 0) {
 		gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel++;
@@ -1725,10 +1693,8 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 			CreateAwarenessEvent (weapon, PA_WEAPON_ROBOT_COLLISION);			// tObject "weapon" can attract attention to tPlayer
 			DoAiRobotHit (robot, PA_WEAPON_ROBOT_COLLISION);
 			}
-#ifdef NETWORK
 	  	else
 			MultiRobotRequestChange (robot, gameData.objs.objects [weapon->cType.laserInfo.nParentObj].id);
-#endif
 		if (rInfoP->nExp1VClip > -1)
 			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, (robot->size/2*3)/4, (ubyte) rInfoP->nExp1VClip);
 		else if (gameData.weapons.info [weapon->id].robot_hit_vclip > -1)
@@ -1803,10 +1769,8 @@ if (tPlayer == gameData.objs.console) {
 	hostage_rescue (hostage->id);
 	// Remove the hostage tObject.
 	hostage->flags |= OF_SHOULD_BE_DEAD;
-#ifdef NETWORK	
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendRemObj (OBJ_IDX (hostage));
-#endif
 	}
 return 1; 
 }
@@ -1919,12 +1883,10 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 	// Seed the random number generator so in net play the eggs will always
 	// drop the same way
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI) {
 		multiData.create.nLoc = 0;
 		d_srand (5483L);
 	}
-#endif
 
 	//	If the tPlayer had smart mines, maybe arm one of them.
 	rthresh = 30000;
@@ -1988,7 +1950,6 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	playerP->nInvuls =
 	playerP->nCloaks = 0;
 	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
-#ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG)) {
 		if ((GetTeam (pnum)==TEAM_RED))
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_FLAG_BLUE);
@@ -2013,7 +1974,6 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			for (i = 0; i < max_count; i++)
 				CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HOARD_ORB);
 		}
-#endif
 
 		//Drop the vulcan, gauss, and ammo
 		vulcan_ammo = playerP->primaryAmmo [VULCAN_INDEX];
@@ -2254,10 +2214,8 @@ if (weapon->id == EARTHSHAKER_ID)
 damage = FixMul (damage, weapon->cType.laserInfo.multiplier);
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
 	damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI)
 	damage = FixMul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);
-#endif
 if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
 	if (weapon->cType.laserInfo.nLastHitObj == OBJ_IDX (playerObjP))
 		return 1;
@@ -2266,17 +2224,13 @@ if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
 if (playerObjP->id == gameData.multi.nLocalPlayer) {
 	if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)) {
 		DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0);
-#endif
 		}
 	else {
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, F1_0);
-#endif
 		}
 	}
 ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
@@ -2383,13 +2337,10 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	int bPowerupUsed = DoPowerup (powerup, playerObjP->id);
 	if (bPowerupUsed) {
 		powerup->flags |= OF_SHOULD_BE_DEAD;
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendRemObj (OBJ_IDX (powerup));
-#endif
 		}
 	}
-#ifndef SHAREWARE
 else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData.multi.nLocalPlayer)) {
 	switch (powerup->id) {
 		case POW_KEY_BLUE:	
@@ -2405,7 +2356,6 @@ else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData
 			break;
 		}
 	}
-#endif
 return 1; 
 }
 

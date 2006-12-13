@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <string.h>	// for memset
 #include <stdio.h>
 #include <time.h>
@@ -67,9 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "player.h"
 #include "weapon.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "newmenu.h"
 #include "gauges.h"
 #include "multi.h"
@@ -85,14 +79,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "oof.h"
 #include "sphere.h"
 #include "globvars.h"
-
 #ifdef TACTILE
 #include "tactile.h"
 #endif
-
-#ifdef OGL
 #include "ogl_init.h"
-#endif
 #include "kconfig.h"
 
 #ifdef EDITOR
@@ -446,10 +436,8 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 		fix xNewLight, xSaveGlow;
 		tBitmapIndex * nAltTextures = NULL;
 
-#ifdef NETWORK
 		if (objP->rType.polyObjInfo.nAltTextures > 0)
 			nAltTextures = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
-#endif
 		xNewLight = FixMul (light, xLightScale);
 		xSaveGlow = glow [0];
 		glow [0] = FixMul (glow [0], xLightScale);
@@ -496,18 +484,16 @@ if (gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
 	return;
 #endif
 //	If option set for bright players in netgame, brighten them!
-#ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
 	xLight = F1_0;
 else
-#endif
 xLight = ComputeObjectLight (objP, NULL);
 //make robots brighter according to robot glow field
 if (objP->nType == OBJ_ROBOT) {
 #ifdef _DEBUG
 	xLight = ComputeObjectLight (objP, NULL);
 #endif
-	xLight += (gameData.bots.pInfo [objP->id].glow<<12);		//convert 4:4 to 16:16
+	xLight += (gameData.bots.pInfo [objP->id].glow << 12);		//convert 4:4 to 16:16
 	}
 else if (objP->nType == OBJ_WEAPON) {
 	if (objP->id == FLARE_ID)
@@ -528,12 +514,12 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	int i;
 
 	Assert (pm->nTextures <= 12);
-	for (i = 0;i<12;i++)		//fill whole array, in case simple model needs more
+	for (i = 0; i < 12; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride];
 
 	DrawPolygonModel (objP, &objP->position.vPos, 
 				&objP->position.mOrient, 
-				(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+				(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
 				objP->rType.polyObjInfo.nModel, 
 				objP->rType.polyObjInfo.nSubObjFlags, 
 				xLight, 
@@ -552,10 +538,8 @@ else {
 		}
 	else {
 		tBitmapIndex *bmiAltTex = NULL;
-		#ifdef NETWORK
 		if (objP->rType.polyObjInfo.nAltTextures > 0)
 			bmiAltTex = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
-		#endif
 
 		//	Snipers get bright when they fire.
 		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0/8) {
@@ -565,17 +549,15 @@ else {
 		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].model_num_inner > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 		if (bBlendPolys) {
-#if OGL_ZBUF
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = 2.0f;
+				gameStates.render.grAlpha = 29.0f;
 				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 				}
-#endif
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
 				DrawPolygonModel (
 					objP, &objP->position.vPos, &objP->position.mOrient, 
-					(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+					(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
 					gameData.weapons.info [objP->id].model_num_inner, 
 					objP->rType.polyObjInfo.nSubObjFlags, 
 					bBrightPolys ? F1_0 : xLight, 
@@ -592,12 +574,10 @@ else {
 			xEngineGlow, 
 			bmiAltTex, 
 			(objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
-#if OGL_ZBUF
 		if (bBlendPolys && !gameOpts->legacy.bRender) {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
-#endif
 		}
 	}
 gameStates.render.nInterpolationMethod = imSave;
@@ -2464,18 +2444,14 @@ if (gameStates.app.bPlayerIsDead) {
 				ClearForces ();
 #endif
 			gameStates.app.bPlayerExploded = 1;
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_NETWORK) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
-#endif
 			DropPlayerEggs (gameData.objs.console);
 			gameStates.app.bPlayerEggsDropped = 1;
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-#endif
 			ExplodeBadassPlayer (gameData.objs.console);
 			//is this next line needed, given the badass call above?
 			ExplodeObject (gameData.objs.console, 0);
@@ -2491,10 +2467,8 @@ if (gameStates.app.bPlayerIsDead) {
 		}
 	else {
 		if (d_rand () < gameData.time.xFrame*4) {
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCreateExplosion (gameData.multi.nLocalPlayer);
-#endif
 			CreateSmallFireballOnObject (gameData.objs.console, F1_0, 1);
 			}
 		}
@@ -2502,18 +2476,14 @@ if (gameStates.app.bPlayerIsDead) {
 		StopPlayerMovement ();
 		gameStates.app.bEnterGame = 2;
 		if (!gameStates.app.bPlayerEggsDropped) {
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_NETWORK) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
-#endif
 			DropPlayerEggs (gameData.objs.console);
 			gameStates.app.bPlayerEggsDropped = 1;
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-#endif
 			}
 		DoPlayerDead ();		//kill_player ();
 		}
@@ -2559,7 +2529,6 @@ if (!(gameData.app.nGameMode & GM_MULTI))
 nKilledInFrame = gameData.app.nFrameCount;
 nKilledObjNum = OBJ_IDX (player);
 gameStates.app.bDeathSequenceAborted = 0;
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendKill (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 //		If Hoard, increase number of orbs by 1
@@ -2570,7 +2539,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 			if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]<12)
 				gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]++;
 	}
-#endif
 gameStates.ogl.palAdd.red = 40;
 gameStates.app.bPlayerIsDead = 1;
 #ifdef TACTILE
@@ -2819,7 +2787,6 @@ void HandleSpecialSegments (tObject *objP)
 	tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
-#ifdef NETWORK
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 FuelCenCheckForGoal (segP);
    else if (gameData.app.nGameMode & GM_HOARD)
@@ -2836,7 +2803,6 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 		else if (gameStates.entropy.nTimeLastMoved < 0)
 			gameStates.entropy.nTimeLastMoved = 0;
 		}
-#endif
 	shields = HostileRoomDamageShields (segP, playerP->shields + 1);
 	if (shields > 0) {
 		playerP->shields -= shields;
@@ -2972,9 +2938,7 @@ int CheckObjectHitTriggers (tObject *objP, short nPrevSegment)
 
 if (/*(objP->nType != OBJ_PLAYER) ||*/ (objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
-#ifdef NETWORK
 nOldLevel = gameData.missions.nCurrentLevel;
-#endif
 for (i = 0; i < nPhysSegs - 1; i++) {
 #ifdef _DEBUG
 	if (physSegList [i] > gameData.segs.nLastSegment)
@@ -2988,10 +2952,8 @@ for (i = 0; i < nPhysSegs - 1; i++) {
 		LogErr ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
-#ifdef NETWORK
 	if (gameData.missions.nCurrentLevel != nOldLevel)
 		return 1;
-#endif
 	}
 return 0;
 }
@@ -3025,10 +2987,8 @@ void CheckAfterburnerBlobDrop (tObject *objP)
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
 	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendDropBlobs ((char) gameData.multi.nLocalPlayer);
-#endif
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 

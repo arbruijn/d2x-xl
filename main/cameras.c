@@ -7,7 +7,6 @@
 #include <string.h>
 #include <math.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "inferno.h"
 #include "segment.h"
 #include "error.h"

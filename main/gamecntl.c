@@ -65,9 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "powerup.h"
 #include "newmenu.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "gamefont.h"
 #include "gamepal.h"
 #include "endlevel.h"
@@ -102,10 +100,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "cheats.h"
 #include "input.h"
-
-#ifdef POLY_ACC
-# include "poly_acc.h"
-#endif
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
@@ -479,7 +473,6 @@ if (gameData.app.bGamePaused) {		//unpause!
 	return KEY_PAUSE;
 	}
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_NETWORK) {
 	 DoShowNetgameHelp();
     return (KEY_PAUSE);
@@ -488,7 +481,6 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 	HUDInitMessage (TXT_MODEM_PAUSE);
 	return (KEY_PAUSE);
 	}
-#endif
 PauseGame ();
 SetPopupScreenMode();
 GrPaletteStepLoad (NULL);
@@ -525,12 +517,6 @@ while (gameData.app.bGamePaused) {
 		HandleTestKey(key);
 #endif
 		bScreenChanged = HandleSystemKey(key);
-	#ifdef WINDOWS
-		if (bScreenChanged == -1) {
-			ExecMessageBox(NULL, 1, TXT_OK, "Unable to do this\noperation while paused under\n320x200 mode"); 
-			goto SkipPauseStuff;
-		}
-	#endif
 		HandleVRKey(key);
 		if (bScreenChanged) {
 			GameRenderFrame();
@@ -558,7 +544,6 @@ extern char Pauseable_menu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
 extern int PhallicLimit, PhallicMan;
 
-#ifdef NETWORK
 void DoShowNetgameHelp()
  {
 	tMenuItem m[30];
@@ -661,7 +646,6 @@ void DoShowNetgameHelp()
 
 	PaletteRestore();
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -786,17 +770,13 @@ void HandleDemoKey(int key)
 			break;
 
 		case KEY_F7:
-#ifdef NETWORK
 			multiData.kills.bShowList = (multiData.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
-#endif
 			break;
 			
 		case KEY_CTRLED+KEY_F7:
-#ifdef NETWORK
 			if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
 				ResetPingStats ();
 			break;
-#endif
 		case KEY_ESC:
 			SetFunctionMode (FMODE_MENU);
 			break;
@@ -917,7 +897,6 @@ int select_next_window_function(int w)
 			//if no ecort, fall through
 		case CV_ESCORT:
 			Coop_view_player[w] = -1;		//force first tPlayer
-#ifdef NETWORK
 			//fall through
 		case CV_COOP:
 			gameData.marker.viewers[w] = -1;
@@ -952,7 +931,6 @@ int select_next_window_function(int w)
 					Cockpit_3d_view[w] = CV_NONE;
 			}
 			else
-#endif
 				Cockpit_3d_view[w] = CV_NONE;
 			break;
 	}
@@ -1171,14 +1149,6 @@ int HandleSystemKey(int key)
 
 
 		case KEY_F3:
-			#ifdef WINDOWS		// HACK! these shouldn't work in 320x200 pause or in letterbox.
-				if (gameStates.app.bPlayerIsDead) break;
-				if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-					bScreenChanged = -1;
-					break;
-				}
-			#endif
-	
 			PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
 			PA_DFX (break);
 
@@ -1196,30 +1166,12 @@ int HandleSystemKey(int key)
 
 		case KEY_SHIFTED+KEY_MINUS:
 		case KEY_MINUS:	
-		#ifdef WINDOWS
-			if (gameStates.app.bPlayerIsDead) 
-				break;
-			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-				bScreenChanged = -1;
-				break;
-			}
-		#endif
-
 			shrink_window(); 
 			bScreenChanged=1; 
 			break;
 
 		case KEY_SHIFTED+KEY_EQUAL:
 		case KEY_EQUAL:			
-		#ifdef WINDOWS
-			if (gameStates.app.bPlayerIsDead) 
-				break;
-			if (!(VR_screenFlags&VRF_COMPATIBLE_MENUS) && gameData.app.bGamePaused) {
-				bScreenChanged = -1;
-				break;
-			}
-		#endif
-
 			grow_window();  
 			bScreenChanged=1; 
 			break;
@@ -1235,31 +1187,22 @@ int HandleSystemKey(int key)
 			break;
 #endif
 		case KEY_ALTED+KEY_F4:
-			#ifdef NETWORK
 			multiData.bShowReticleName = (multiData.bShowReticleName+1)%2;
-			#endif
-			break;
 
 		case KEY_F7:
-#ifdef NETWORK
 			multiData.kills.bShowList = (multiData.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSortKillList();
 			bStopPlayerMovement = 0;
-#endif
 			break;
 
 		case KEY_CTRLED+KEY_F7:
-#ifdef NETWORK
 			if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
 				ResetPingStats ();
 			break;
-#endif
 
 		case KEY_F8:
-			#ifdef NETWORK
 			MultiSendMsgStart(-1);
-			#endif
 			bStopPlayerMovement = 0;
 			break;
 
@@ -1267,9 +1210,7 @@ int HandleSystemKey(int key)
 		case KEY_F10:
 		case KEY_F11:
 		case KEY_F12:
-			#ifdef NETWORK
 			MultiSendMacro(key);
-			#endif
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 			
@@ -1285,9 +1226,7 @@ int HandleSystemKey(int key)
 		case KEY_SHIFTED + KEY_F10:
 		case KEY_SHIFTED + KEY_F11:
 		case KEY_SHIFTED + KEY_F12:
-			#ifdef NETWORK
 			MultiDefineMacro(key);
-			#endif
 			bStopPlayerMovement = 0;
 			break;		// redefine taunt macros
 
@@ -1545,18 +1484,15 @@ void HandleGameKey(int key)
 	 DropSecondaryWeapon(-1);
 	 break;
 
-#ifdef NETWORK
 		case KEY_0 + KEY_ALTED:
 			DropFlag ();
 			break;
-#endif
 
 		case KEY_F4:
 		if (!gameData.marker.nDefiningMsg)
 		  InitMarkerInput();
 		 break;
 
-#ifdef NETWORK
 		case KEY_ALTED + KEY_CTRLED + KEY_T:
 			SwitchTeam (gameData.multi.nLocalPlayer, 0);
 			break;
@@ -1583,7 +1519,6 @@ void HandleGameKey(int key)
 					RefuseTeam=2;
 				}
 			break;
-#endif
 
 		default:
 			break;
@@ -1615,13 +1550,11 @@ void HandleTestKey(int key)
 			DoReactorDestroyedStuff(NULL);
 			break;
 
-#ifdef NETWORK
 	case KEY_DEBUGGED+KEY_ALTED+KEY_D:
 			networkData.nNetLifeKills=4000; 
 			networkData.nNetLifeKilled=5;
 			MultiAddLifetimeKills();
 			break;
-#endif
 
 		case KEY_BACKSP:
 		case KEY_CTRLED+KEY_BACKSP:
@@ -1668,10 +1601,8 @@ void HandleTestKey(int key)
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
 				if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-					#ifdef NETWORK
 					if (gameData.app.nGameMode & GM_MULTI)
 						MultiSendCloak();
-					#endif
 					AIDoCloakStuff();
 					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
 #if TRACE
@@ -1696,9 +1627,7 @@ void HandleTestKey(int key)
 		#ifdef EDITOR		//editor-specific functions
 
 		case KEY_E + KEY_DEBUGGED:
-#ifdef NETWORK
 			NetworkLeaveGame();
-#endif
 			SetFunctionMode (FMODE_EDITOR);
 			break;
 	case KEY_Q + KEY_SHIFTED + KEY_DEBUGGED:
@@ -2031,17 +1960,11 @@ int ReadControls()
 gameStates.app.bPlayerFiredLaserThisFrame=-1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
-#ifdef NETWORK
 			|| multiData.msg.bSending || multiData.msg.bDefining
-#endif
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			memset( &Controls, 0, sizeof(control_info) );
 		else
-#ifdef WINDOWS
-				controls_read_all_win();
-#else
-				skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
-#endif
+			skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
 	CheckRearView();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (Controls.automapDownCount && 
@@ -2077,12 +2000,10 @@ while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 		MarkerInputMessage (key);
 			continue;
 		}
-#ifdef NETWORK
 if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending || multiData.msg.bDefining ))	{
 	MultiMsgInputSub( key );
 	continue;		//get next key
 	}
-#endif
 #ifdef _DEBUG
 if ((key&KEY_DEBUGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
 	multiData.msg.nReceiver = 100;		// Send to everyone...

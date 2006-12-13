@@ -64,9 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "wall.h"
 #include "textures.h"
 #include "game.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 
 #include "iff.h"
 #include "cfile.h"
@@ -227,12 +225,6 @@ tBitmapIndex bm_load_sub( char * filename )
 
 	bitmap_num.index = 0;
 
-#ifdef SHAREWARE
-	if (Registered_only) {
-		return bitmap_num;
-	}
-#endif
-
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 
 	bitmap_num=piggy_find_bitmap( fname );
@@ -275,19 +267,6 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 	ubyte newpal[768];
 	char fname[20];
 	char tempname[20];
-
-#ifdef SHAREWARE
-	if (Registered_only) {
-		Assert( bogus_bitmap_initialized != 0 );
-#if TRACE
-		con_printf ( 0, "Skipping registered-only animation '%bObjectRendered'\n", filename );
-#endif
-		bmp[0].index = 0;		//index of bogus bitmap==0 (I think)		//&bogus_bitmap;
-		*nframes = 1;
-		return;
-	}
-#endif
-
 
 	_splitpath( filename, NULL, NULL, fname, NULL );
 	
@@ -347,12 +326,6 @@ int ds_load( char * filename )	{
 	tDigiSound new;
 	char fname[20];
 	char rawname[100];
-
-#ifdef SHAREWARE
-	if (Registered_only) {
-		return 0;	//don't know what I should return here		//&bogusSound;
-	}
-#endif
 
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 	_makepath( rawname, NULL, NULL,fname, (gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?".R22":".RAW" );
@@ -646,11 +619,7 @@ int bm_init_use_tbl()
 			else IFTOK("$MARKER")			{bm_read_marker();		continue;}
 			else IFTOK("$PLAYER_SHIP")		{bm_read_player_ship();	continue;}
 			else IFTOK("$EXIT") {
-				#ifdef SHAREWARE
 					bm_read_exitmodel();	
-				#else
-					clear_to_end_of_line();
-				#endif
 				continue;
 			}
 			else	{		//not a special token, must be a bitmap!
@@ -684,10 +653,6 @@ int bm_init_use_tbl()
 	atexit(BMClose);
 
 	Assert(NRobotTypes == NumRobot_ais);		//should be one ai info per robot
-
-	#ifdef SHAREWARE
-	InitEndLevel();		//this is here so endlevel bitmaps go into pig
-	#endif
 
 	verify_textures();
 
@@ -1205,14 +1170,6 @@ void bm_readRobot_ai()
 
 	Assert(robotnum == NumRobot_ais);		//make sure valid number
 
-#ifdef SHAREWARE
-	if (Registered_only) {
-		NumRobot_ais++;
-		clear_to_end_of_line();
-		return;
-	}
-#endif
-
 	NumRobot_ais++;
 
 	get4fix(robptr->fieldOfView);
@@ -1305,18 +1262,6 @@ void bm_readRobot()
 	ubyte flags=0;
 
 	Assert(NRobotTypes < MAX_ROBOT_TYPES);
-
-#ifdef SHAREWARE
-	if (Registered_only) {
-		Robot_info [gameStates.app.bD1Data][NRobotTypes].nModel = -1;
-		NRobotTypes++;
-		Assert(NRobotTypes < MAX_ROBOT_TYPES);
-		gameData.objs.types.nCount++;
-		Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
-		clear_to_end_of_line();
-		return;
-	}
-#endif
 
 	model_name[0] = strtok( NULL, space );
 	first_bitmap_num[0] = N_ObjBitmapPtrs;
@@ -1550,14 +1495,6 @@ void bm_read_reactor()
 
 	Assert(Num_reactors < MAX_REACTORS);
 
-#ifdef SHAREWARE
-	if (Registered_only) {
-		Num_reactors++;
-		clear_to_end_of_line();
-		return;
-	}
-#endif
-
 	model_name = strtok( NULL, space );
 
 	// Process bitmaps
@@ -1681,72 +1618,6 @@ void bm_read_marker()
 	gameData.models.nMarkerModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 }
 
-#ifdef SHAREWARE
-//read the exit model
-void bm_read_exitmodel()
-{
-	char *model_name, *model_name_dead=NULL;
-	int first_bitmap_num, first_bitmap_num_dead, n_normal_bitmaps;
-	char *equal_ptr;
-	short nModel;
-
-	model_name = strtok( NULL, space );
-
-	// Process bitmaps
-	bmFlag = BM_NONE;
-	arg = strtok( NULL, space );
-	first_bitmap_num = N_ObjBitmapPtrs;
-
-	while (arg!=NULL)	{
-
-		equal_ptr = strchr( arg, '=' );
-
-		if ( equal_ptr )	{
-			*equal_ptr='\0';
-			equal_ptr++;
-
-			// if we have john=cool, arg is 'john' and equal_ptr is 'cool'
-
-			if (!stricmp( arg, "dead_pof" ))	{
-				model_name_dead = equal_ptr;
-				first_bitmap_num_dead=N_ObjBitmapPtrs;
-			} else {
-				Int3();
-#if TRACE
-				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
-#endif
-			}		
-		} else {			// Must be a texture specification...
-			load_polymodel_bitmap(arg);
-		}
-		arg = strtok( NULL, space );
-	}
-
-	if ( model_name_dead )
-		n_normal_bitmaps = first_bitmap_num_dead-first_bitmap_num;
-	else
-		n_normal_bitmaps = N_ObjBitmapPtrs-first_bitmap_num;
-
-	nModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
-
-	if ( model_name_dead )
-		gameData.models.nDeadModels[nModel]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
-	else
-		gameData.models.nDeadModels[nModel] = -1;
-
-//@@	gameData.objs.types.nType[gameData.objs.types.nCount] = nType;
-//@@	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = nModel;
-//@@	gameData.objs.types.nType.nStrength[gameData.objs.types.nCount] = strength;
-//@@	
-//@@	////printf( "Object nType %d is a control center\n", gameData.objs.types.nCount );
-//@@	gameData.objs.types.nCount++;
-//@@	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
-
-	gameData.endLevel.exit.nModel = nModel;
-	gameData.endLevel.exit.nDestroyedModel = gameData.models.nDeadModels[nModel];
-
-}
-#endif
 
 void bm_read_player_ship()
 {
@@ -1839,9 +1710,7 @@ void bm_read_player_ship()
 	if (gameData.pig.tex.nFirstMultiBitmap==-1)
 		first_bitmap_num[nModels] = N_ObjBitmapPtrs;
 
-#ifdef NETWORK
 	Assert(last_multi_bitmap_num-gameData.pig.tex.nFirstMultiBitmap == (MAX_NUM_NET_PLAYERS-1)*2);
-#endif
 
 	for (i=0;i<nModels;i++) {
 		int nTextures;
@@ -1977,13 +1846,6 @@ void bm_read_weapon(int unusedFlag)
 		clear_to_end_of_line();
 		return;
 	}
-
-#ifdef SHAREWARE
-	if (Registered_only) {
-		clear_to_end_of_line();
-		return;
-	}
-#endif
 
 	// Initialize weapon array
 	Weapon_info[n].renderType = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=tObject
@@ -2472,11 +2334,6 @@ fprintf(tfile,"Num_reactors = %d, Reactors array = %d\n",Num_reactors,sizeof(*Re
 	//@@fwrite( &N_controlcen_guns, sizeof(int), 1, fp );
 	//@@fwrite( controlcen_gun_points, sizeof(vmsVector), N_controlcen_guns, fp );
 	//@@fwrite( controlcen_gun_dirs, sizeof(vmsVector), N_controlcen_guns, fp );
-
-	#ifdef SHAREWARE
-	fwrite( &gameData.endLevel.exit.nModel, sizeof(int), 1, fp );
-	fwrite( &gameData.endLevel.exit.nDestroyedModel, sizeof(int), 1, fp );
-	#endif
 
 fclose(tfile);
 

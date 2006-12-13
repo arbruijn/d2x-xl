@@ -78,9 +78,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "palette.h"
 #include "multi.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "text.h"
 #include "cntrlcen.h"
 #include "aistruct.h"
@@ -862,14 +860,11 @@ NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte (DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	NDWriteInt (gameData.app.nGameMode | (gameData.multi.nLocalPlayer << 16));
 else
-#endif
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_TEAM) {
 	NDWriteByte (netGame.team_vector);
 	NDWriteString (netGame.team_name [0]);
@@ -889,7 +884,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 		}
 	} 
 else
-#endif
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].score);
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
@@ -1558,7 +1552,6 @@ gameData.boss.nCloakStartTime =
 gameData.boss.nCloakEndTime = gameData.time.xGame;
 gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
-#ifdef NETWORK
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
 if (gameData.demo.nGameMode & GM_TEAM) {
 	netGame.team_vector = NDReadByte ();
@@ -1589,7 +1582,6 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	gameData.app.nGameMode = GM_NORMAL;
 	}
 else
-#endif
 	gameData.multi.players [gameData.multi.nLocalPlayer].score = NDReadInt ();      // Note link to above if!
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = NDReadShort ();
@@ -1777,7 +1769,6 @@ while (!bDone) {
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				LinkObject (OBJ_IDX (objP), nSegment);
-#ifdef NETWORK
 				if ((objP->nType == OBJ_PLAYER) &&(gameData.demo.nGameMode & GM_MULTI)) {
 					int tPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
 					if (tPlayer == 0)
@@ -1789,7 +1780,6 @@ while (!bDone) {
 					multi_player_textures [tPlayer] [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (tPlayer)*2+1]];
 					objP->rType.polyObjInfo.nAltTextures = tPlayer+1;
 					}
-#endif
 				}
 			break;
 
@@ -2274,7 +2264,6 @@ while (!bDone) {
 			}
 			break;
 
-#ifdef NETWORK
 		case ND_EVENT_MULTI_KILL: {
 			sbyte pnum = NDReadByte ();
 			sbyte kill = NDReadByte ();
@@ -2374,7 +2363,6 @@ while (!bDone) {
 			}
 			break;
 
-#endif // NETWORK
 		case ND_EVENT_PLAYER_SCORE: {
 			int score = NDReadInt ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
@@ -2537,10 +2525,8 @@ while (!bDone) {
 					seg->sides [nSide].nOvlTex = nTexture & 0x3fff;
 					seg->sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
 					}
-#ifdef NETWORK
 				if (gameData.demo.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();
-#endif
 				bJustStartedPlayback=0;
 				}
 			ResetPaletteAdd ();                // get palette back to normal
@@ -2977,11 +2963,7 @@ else {
 
 void NDStartRecording ()
 {
-#ifdef WINDOWS
-gameData.demo.nSize=GetFreeDiskSpace ();
-#else
 gameData.demo.nSize = GetDiskFree ();
-#endif
 gameData.demo.nSize -= 100000;
 if ((gameData.demo.nSize+100000) <  2000000000) {
 	if (( (int) (gameData.demo.nSize)) < 500000) {
@@ -3198,9 +3180,7 @@ void NDStartPlayback (char * filename)
 	int rnd_demo = 0;
 	char filename2 [PATH_MAX+FILENAME_LEN], searchName [FILENAME_LEN];
 
-#ifdef NETWORK
 ChangePlayerNumTo (0);
-#endif
 *filename2 = '\0';
 InitDemoData ();
 gameData.demo.bFirstTimePlayback = 1;
@@ -3253,9 +3233,7 @@ if (infile==NULL) {
 	return;
 	}
 bNDBadRead = 0;
-#ifdef NETWORK
 ChangePlayerNumTo (0);                 // force playernum to 0
-#endif
 strncpy (gameData.demo.callSignSave, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN);
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
 if (NDReadDemoStart (rnd_demo)) {
@@ -3286,9 +3264,7 @@ void NDStopPlayback ()
 {
 CFClose (infile);
 gameData.demo.nState = ND_STATE_NORMAL;
-#ifdef NETWORK
 ChangePlayerNumTo (0);             //this is reality
-#endif
 strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
 gameStates.render.cockpit.nMode = gameData.demo.nOldCockpit;
 gameData.app.nGameMode = GM_GAME_OVER;

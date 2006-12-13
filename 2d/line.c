@@ -33,10 +33,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef __DJGPP__
 #include "modex.h"
 #endif
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
 
 /*
 Symmetric Double Step Line Algorithm
@@ -274,11 +271,9 @@ int gr_uline(fix _a1, fix _b1, fix _a2, fix _b2)
 	a1 = f2i(_a1); b1 = f2i(_b1); a2 = f2i(_a2); b2 = f2i(_b2);
 	switch(TYPE)
 	{
-#ifdef OGL
 	case BM_OGL:
 		OglULineC(a1,b1,a2,b2,&COLOR);
 		return 0;
-#endif
 	case BM_LINEAR:
 #ifdef NO_ASM
 		gr_universal_uline( a1,b1,a2,b2);

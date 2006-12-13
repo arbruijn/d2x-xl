@@ -2,10 +2,6 @@
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <string.h>	// for memset
 #include <stdio.h>
 #include <time.h>

@@ -4281,10 +4281,6 @@ int HoardEquipped ()
 {
 	static int checked=-1;
 
-#ifdef WINDOWS
-	return 0;
-#endif
-
 if (checked == -1) {
 	if (CFExist ("hoard.ham", gameFolders.szDataDir, 0))
 		checked=1;

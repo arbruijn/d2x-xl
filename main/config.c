@@ -16,13 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include "winapp.h"
-#else
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,21 +41,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: config.c,v 1.10 2003/10/04 20:03:11 btb Exp $";
 #endif
 
-#ifdef __MSDOS__
-static char *digi_dev8_str = "DigiDeviceID8";
-static char *digi_dev16_str = "DigiDeviceID16";
-static char *digi_port_str = "DigiPort";
-static char *digi_irq_str = "DigiIrq";
-static char *digi_dma8_str = "DigiDma8";
-static char *digi_dma16_str = "DigiDma16";
-static char *midi_dev_str = "MidiDeviceID";
-static char *midi_port_str = "MidiPort";
-
-#define _CRYSTAL_LAKE_8_ST		0xe201
-#define _CRYSTAL_LAKE_16_ST	0xe202
-#define _AWE32_8_ST				0xe208
-#define _AWE32_16_ST				0xe209
-#endif
 static char *pszDigiVolume = "DigiVolume";
 static char *pszMidiVolume = "MidiVolume";
 static char *pszRedbookEnabled = "RedbookEnabled";
@@ -79,15 +57,6 @@ static char *pszVrType = "VRType";
 static char *pszVrResolution = "VR_resolution";
 static char *pszVrTracking = "VR_tracking";
 static char *pszHiresMovies = "Hires Movies";
-
-#ifdef WINDOWS
-int	 DOSJoySaveMin[4];
-int	 DOSJoySaveCen[4];
-int	 DOSJoySaveMax[4];
-
-char win95_current_joyname[256];
-#endif
-
 
 int digi_driver_board_16;
 int digi_driver_dma_16;
@@ -160,29 +129,6 @@ void CrystalLakeSetWSS()
 int bHiresMoviesSave;
 int bRedbookEnabledSave;
 
-#ifdef WINDOWS
-void CheckMovieAttributes()
-{
-		HKEY hKey;
-		DWORD len, nType, val;
-		long lres;
- 
-		lres = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Parallax\\Descent II\\1.1\\INSTALL",
-							0, KEY_READ, &hKey);
-		if (lres == ERROR_SUCCESS) {
-			len = sizeof(val);
-			lres = RegQueryValueEx(hKey, "HIRES", NULL, &nType, &val, &len);
-			if (lres == ERROR_SUCCESS) {
-				gameOpts->movies.bHires = val;
-				logentry("HIRES=%d\n", val);
-			}
-			RegCloseKey(hKey);
-		}
-}
-#endif
-
-// ----------------------------------------------------------------------------
-
 int ReadConfigFile()
 {
 	CFILE *infile;
@@ -198,24 +144,7 @@ int ReadConfigFile()
 	joy_axis_min[0] = joy_axis_min[1] = joy_axis_min[2] = joy_axis_min[3] = 0;
 	joy_axis_max[0] = joy_axis_max[1] = joy_axis_max[2] = joy_axis_max[3] = 0;
 	joy_axis_center[0] = joy_axis_center[1] = joy_axis_center[2] = joy_axis_center[3] = 0;
-
-#ifdef WINDOWS
-	memset(joy_axis_min, 0, sizeof(joy_axis_min);
-	memset(joy_axis_max, 0, sizeof(joy_axis_max);
-	memset(joy_axis_center, 0, sizeof(joy_axis_center);
-//@@	joy_set_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
-#else
 	joy_set_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
-#endif
-
-	/*digi_driver_board = 0;
-	digi_driver_port = 0;
-	digi_driver_irq = 0;
-	digi_driver_dma = 0;
-
-	digi_midiType = 0;
-	digi_midi_port = 0;*/
-
 	gameConfig.nDigiVolume = 8;
 	gameConfig.nMidiVolume = 8;
 	gameConfig.nRedbookVolume = 8;
@@ -331,20 +260,8 @@ int ReadConfigFile()
 			}
 		}
 	}
-
 	CFClose(infile);
-
-#ifdef WINDOWS
-	for (i=0;i<4;i++)
-	{
-	 DOSJoySaveMin[i]=joy_axis_min[i];
-	 DOSJoySaveCen[i]=joy_axis_center[i];
-	 DOSJoySaveMax[i]=joy_axis_max[i];
-   	}
-#else
 	joy_set_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
-#endif
-
 	i = FindArg( "-volume" );
 	
 	if ( i > 0 )	{
@@ -456,14 +373,6 @@ con_printf (CON_VERBOSE, "writing config file ...\n");
 con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 	joy_get_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
 
-#ifdef WINDOWS
-	for (i=0;i<4;i++) {
-	 joy_axis_min[i]=DOSJoySaveMin[i];
-	 joy_axis_center[i]=DOSJoySaveCen[i];
-	 joy_axis_max[i]=DOSJoySaveMax[i];
-   }
-#endif
-
 	infile = CFOpen("descent.cfg", gameFolders.szConfigDir, "wt", 0);
 	if (infile == NULL) {
 		return 1;
@@ -537,32 +446,6 @@ con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 
 	CFClose(infile);
 
-#ifdef WINDOWS
-{
-//	Save Windows Config File
-	char joyname[256];
-
-	joy_get_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
-con_printf (CON_VERBOSE, "   creating "descentw.cfg" ...\n");
-	infile = CFOpen("descentw.cfg", gameFolders.szConfigDir, "wt", 0);
-	if (infile == NULL) return 1;
-	sprintf(str, "%s=%d,%d,%d,%d,%d,%d,%d\n", pszJoystickMin,
-			joy_axis_min[0], joy_axis_min[1], joy_axis_min[2], joy_axis_min[3],
-			joy_axis_min[4], joy_axis_min[5], joy_axis_min[6]);
-	CFPutS(str, infile);
-	sprintf(str, "%s=%d,%d,%d,%d,%d,%d,%d\n", pszJoystickCen,
-			joy_axis_center[0], joy_axis_center[1], joy_axis_center[2], joy_axis_center[3],
-			joy_axis_center[4], joy_axis_center[5], joy_axis_center[6]);
-	CFPutS(str, infile);
-	sprintf(str, "%s=%d,%d,%d,%d,%d,%d,%d\n", pszJoystickMax,
-			joy_axis_max[0], joy_axis_max[1], joy_axis_max[2], joy_axis_max[3],
-			joy_axis_max[4], joy_axis_max[5], joy_axis_max[6]);
-	CFPutS(str, infile);
-	CFClose(infile);
-con_printf (CON_VERBOSE, "   ... done\n");
-}
-	CheckMovieAttributes();
-#endif
 	return 0;
 }		
 

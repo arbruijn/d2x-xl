@@ -27,21 +27,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "vesa.h"
 #include "modex.h"
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
 
 #ifndef D1XD3D
 void gr_upixel( int x, int y )
 {
 	switch (TYPE)
 	{
-#ifdef OGL
 	case BM_OGL:
 		OglUPixelC(x,y, &COLOR);
 		return;
-#endif
 	case BM_LINEAR:
 		DATA [ROWSIZE*y+x] = (ubyte) COLOR.index;
 		return;
@@ -70,13 +65,11 @@ inline void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 	grs_color c;
 	switch (bm->bm_props.nType)
 	{
-#ifdef OGL
 	case BM_OGL:
 		c.index = color;
 		c.rgb = 0;
 		OglUPixelC(bm->bm_props.x + x, bm->bm_props.y + y, &c);
 		return;
-#endif
 	case BM_LINEAR:
 		bm->bm_texBuf[ bm->bm_props.rowsize*y+x ] = color;
 		return;

@@ -488,21 +488,13 @@ if (last_cinvul != menus [opt_cinvul].value)   {
    }
   
 if (menus [optPlayTime].value != LastPTA) {
-#ifdef SHAREWARE
-   LastPTA = 0;
-   ExecMessageBox ("Sorry", 1, TXT_OK, "Registered version only!");
-   menus [optPlayTime].value = 0;
-   menus [optPlayTime].rebuild = 1;
-   return;
-#endif  
-
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
-	LastPTA = 0;
-	ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-	menus [optPlayTime].value = 0;
-	menus [optPlayTime].rebuild = 1;
-	return;
-	}
+	if (gameData.app.nGameMode & GM_MULTI_COOP) {
+		LastPTA = 0;
+		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
+		menus [optPlayTime].value = 0;
+		menus [optPlayTime].rebuild = 1;
+		return;
+		}
 
 	mpParams.nMaxTime = netGame.PlayTimeAllowed = menus [optPlayTime].value;
 	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
@@ -510,22 +502,13 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	menus [optPlayTime].rebuild = 1;
 	}
 if (menus [optKillGoal].value!= LastKillGoal) {
-	#ifdef SHAREWARE
-	ExecMessageBox ("Sorry", 1, TXT_OK, "Registered version only!");
-	menus [optKillGoal].value = 0;
-	menus [optKillGoal].rebuild = 1;
-	LastKillGoal = 0;
-	return;
-	#endif         
-
-
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
-	ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-	menus [optKillGoal].value = 0;
-	menus [optKillGoal].rebuild = 1;
-	LastKillGoal = 0;
-	return;
-	}
+	if (gameData.app.nGameMode & GM_MULTI_COOP) {
+		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
+		menus [optKillGoal].value = 0;
+		menus [optKillGoal].rebuild = 1;
+		LastKillGoal = 0;
+		return;
+		}
 
 mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
 	sprintf (menus [optKillGoal].text, TXT_KILLGOAL, netGame.KillGoal*5);
@@ -1355,20 +1338,6 @@ doMenu:
 
 	if (m [opt_mode].value)
 		mpParams.nGameMode = NETGAME_ANARCHY;
-
-#ifdef SHAREWARE
-	else {
-		ExecMessageBox (TXT_SORRY, 1, TXT_OK, TXT_REGISTERED_ONLY);
-		m [opt_mode+1].value = 0;
-		m [opt_mode+2].value = 0;
-		m [opt_mode+3].value = 0;
-		if (HoardEquipped ())
-			m [opt_mode+4].value = 0;
-
-		m [opt_mode].value = 1;
-		goto doMenu;
-		}
-#else
 	else if (m [opt_mode+1].value) {
 		mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
 		}
@@ -1400,7 +1369,6 @@ doMenu:
 	else if (m [opt_mode+3].value) 
 		mpParams.nGameMode = NETGAME_COOPERATIVE;
 	else Int3 (); // Invalid mode -- see Rob
-#endif
 	if (m [opt_closed].value)
 		netGame.gameFlags |= NETGAME_FLAG_CLOSED;
 	}
@@ -1474,7 +1442,6 @@ return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 
 int NetworkSelectTeams (void)
 {
-#ifndef SHAREWARE
 	tMenuItem m [MAX_PLAYERS+4];
 	int choice, opt, opt_team_b;
 	ubyte team_vector = 0;
@@ -1544,9 +1511,6 @@ doMenu:
 		if ((opt-2-opt_team_b < 2) || (opt_team_b == 1)) 
 		{
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
-#if 0//def RELEASE
-				goto doMenu;
-#endif
 		}
 		
 		netGame.team_vector = team_vector;
@@ -1564,9 +1528,6 @@ doMenu:
 	else if (choice == -1)
 		return 0;
 	goto doMenu;
-#else
-	return 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2039,14 +2000,9 @@ if (activeNetGames [choice].game_status == NETSTAT_ENDLEVEL) {
 	}
 if (activeNetGames [choice].protocol_version != MULTI_PROTO_VERSION) {
 	if (activeNetGames [choice].protocol_version == 3) {
-#ifndef SHAREWARE
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
-#endif
 		}
 	else if (activeNetGames [choice].protocol_version == 4) {
-#ifdef SHAREWARE
-		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT2);
-#endif
 		}
 	else {
 		char	szFmt [200], szError [200];
@@ -2062,18 +2018,14 @@ if (gameStates.multi.bUseTracker) {
 	//LogErr ("   getting server lists from trackers\n");
 	GetServerFromList (choice);
 	}
-#ifndef SHAREWARE
 // Check for valid mission name
-#if 1				
 con_printf (CON_DEBUG, TXT_LOADING_MSN, activeNetGames [choice].mission_name);
-#endif
 if (!(LoadMissionByName (activeNetGames [choice].mission_name, -1) ||
 		 (DownloadMission (activeNetGames [choice].mission_name) &&
 		 LoadMissionByName (activeNetGames [choice].mission_name, -1)))) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
-#endif
 if (IS_D2_OEM && (activeNetGames [choice].levelnum > 8)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;

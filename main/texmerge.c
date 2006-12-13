@@ -18,7 +18,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "inferno.h"
 #include "gr.h"
 #include "error.h"
@@ -30,16 +29,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_init.h"
 #include "texmerge.h"
 
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
-
-#ifdef OGL
 #include "ogl_init.h"
 #define MAX_NUM_CACHE_BITMAPS 200
-#else
-#define MAX_NUM_CACHE_BITMAPS 50
-#endif
 
 //static grsBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 
@@ -60,36 +51,6 @@ static int nCacheMisses = 0;
 
 void MergeTextures (int nType, grsBitmap *bmBot, grsBitmap *bmTop, grsBitmap *dest_bmp, int bSuperTransp);
 void MergeTexturesNormal (int nType, grsBitmap *bmBot, grsBitmap *bmTop, ubyte *dest_data);
-
-#if defined(POLY_ACC)       // useful to all of D2 I think.
-extern grsBitmap * rle_get_id_sub(grsBitmap * bmp);
-
-//----------------------------------------------------------------------
-// Given pointer to a bitmap returns a unique value that describes the bitmap.
-// Returns 0xFFFFFFFF if this bitmap isn't a texmerge'd bitmap.
-uint TexMergeGetUniqueId (grsBitmap * bmp)
-{
-    int i,n;
-    uint tmp;
-    grsBitmap * tmpbmp;
-
-// Check in texmerge cache
-for (i = 0; i < nCacheEntries; i++) {
-   if ((texCache [i].last_frame_used > -1) && (texCache [i].bitmap == bmp)) {
-      tmp = (uint)texCache [i].nOrient<<30;
-      tmp |= ((uint)(texCache [i].bmTop - gameData.pig.tex.bitmaps)) << 16;
-      tmp |= (uint)(texCache [i].bmBot - gameData.pig.tex.bitmaps);
-      return tmp;
-      }
-   }
-// Check in rle cache
-tmpbmp = rle_get_id_sub(bmp);
-if (tmpbmp)
-	return (uint)(tmpbmp-gameData.pig.tex.bitmaps);
-// Must be a normal bitmap
-return (uint)(bmp-gameData.pig.tex.bitmaps);
-}
-#endif
 
 //----------------------------------------------------------------------
 
@@ -193,10 +154,8 @@ if (!bmBot->bm_palette)
 	bmBot->bm_palette = gamePalette;
 cacheP = texCache + nLRU;
 bmP = cacheP->bitmap;
-#ifdef OGL
 if (bmP)
 	OglFreeBmTexture(bmP);
-#endif
 
 // if necessary, allocate cache bitmap
 // in any case make sure the cache bitmap has the proper size

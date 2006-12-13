@@ -1667,11 +1667,11 @@ if (!gameStates.render.bShadowMaps) {
 CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
+pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
 gameData.render.shadows.nLight = 0;
 if (gameOpts->render.shadows.bFast) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-		gameData.render.shadows.pLight = gameData.render.lights.ogl.shader.lights + *pnl;
+		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->bState)
 			continue;
 		if (!CanSeePoint (objP, &gameData.render.shadows.pLight->vPos))
@@ -1687,7 +1687,7 @@ if (gameOpts->render.shadows.bFast) {
 			}
 		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
 		if (gameStates.render.bShadowMaps)
-			RenderShadowMap (gameData.render.lights.ogl.lights + (gameData.render.shadows.pLight - gameData.render.lights.ogl.shader.lights));
+			RenderShadowMap (gameData.render.lights.dynamic.lights + (gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights));
 		else {
 			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
 			OOF_VecVms2Oof (&vLightPos, &v);
@@ -1704,7 +1704,7 @@ if (gameOpts->render.shadows.bFast) {
 	}
 else {
 	h = OBJ_IDX (objP);
-	j = gameData.render.shadows.pLight - gameData.render.lights.ogl.shader.lights;
+	j = gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights;
 	pnl = gameData.render.shadows.objLights [h];
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)
@@ -1750,7 +1750,7 @@ if (bShadowTest)
 	return 1;
 #endif
 G3CheckAndSwap (modelP);
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting && 
+if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting && 
 	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
@@ -1781,9 +1781,9 @@ for (;;) {
 		int nv = WORDVAL (p+2);
 		Assert (nv < MAX_POINTS_PER_POLY);
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
-			int i;
+			int		i;
 #if 0
-			short c;
+			ushort c;
 			unsigned char cc;
 #endif
 			int l;
@@ -1797,7 +1797,14 @@ for (;;) {
 				l = 32;
 #endif
 #if 1
+#	if 0
+			c = WORDVAL (p+28);
+			if ((nModel == 131) || (nModel == 132))
+				c &= (31 << 10) | 31;
+			GrSetColorRGB15bpp (c, (ubyte) (255 * GrAlpha ()));
+#	else
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
+#	endif
 			GrFadeColorRGB (32.0 / (double) l);
 			if (objColorP) {
 				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 

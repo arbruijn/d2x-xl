@@ -40,7 +40,7 @@ char *strlwr( char *s1 );
 char *strrev( char *s1 );
 #endif
 
-#if !defined(__MSDOS__) && !(defined(_WIN32) && !defined(_WIN32_WCE))
+#if !(defined(_WIN32) && !defined(_WIN32_WCE))
 void _splitpath(char *name, char *drive, char *path, char *base, char *ext);
 #endif
 

@@ -1696,7 +1696,7 @@ if (!progP) {
 		return 0;
 	if (gameOpts->ogl.bGlTexMerge)
 		i |= 1;
-	if (gameOpts->ogl.bUseLighting)
+	if (gameOpts->render.bDynLighting)
 		i |= 2;
 	if (!i)
 		return 0;

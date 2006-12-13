@@ -211,18 +211,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#include "segment.h"
 
-#ifdef WINDOWS
-typedef struct cockpit_span_line {
-	short num;
-	struct {
-		short xmin, xmax;
-	} span[5];
-} cockpit_span_line;
-
-extern cockpit_span_line win_cockpit_mask[480];
-#endif
-
-
 // from mglobal.c
 extern fix xNextLaserFireTime;    // Time at which tPlayer can next fire his selected laser.
 extern fix Last_laser_firedTime;
@@ -358,9 +346,7 @@ int TimeStopped (void);
 
 // If automapFlag == 1, then call automap routine to write message.
 
-#ifndef WINDOWS
 extern grs_canvas * GetCurrentGameScreen();
-#endif
 
 //valid modes for cockpit
 #define CM_FULL_COCKPIT     0   // normal screen with cockput

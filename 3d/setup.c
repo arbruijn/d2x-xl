@@ -28,13 +28,7 @@ static char rcsid[] = "$Id: setup.c,v 1.5 2003/03/19 19:21:34 btb Exp $";
 #include "globvars.h"
 #include "inferno.h"
 #include "clipper.h"
-//#include "div0.h"
-
-#ifdef OGL
 #include "ogl_init.h"
-#else
-#include "texmap.h"  // for init_interface_vars_to_assembler()
-#endif
 
 //initialize the 3d system
 void g3_init(void)
@@ -71,31 +65,16 @@ else {
 }
 viewInfo.windowScale.z = f1_0;		//always 1
 init_free_points();
-#ifdef D1XD3D
-Win32_start_frame ();
-#else
-#ifdef OGL
 OglStartFrame (bFlat, bResetColorBuf);
-#else
-init_interface_vars_to_assembler ();		//for the texture-mapper
-#endif
-#endif
 gameStates.render.bHeadlightOn = 1;
 }
 
 //this doesn't do anything, but is here for completeness
 void G3EndFrame(void)
 {
-#ifdef D1XD3D
-	Win32_end_frame ();
-#endif
-#ifdef OGL
-	OglEndFrame();
-#endif
-
+OglEndFrame();
 //	Assert(free_point_num==0);
-	free_point_num = 0;
-
+free_point_num = 0;
 }
 
 

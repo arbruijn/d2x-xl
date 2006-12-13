@@ -22,10 +22,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -61,21 +57,6 @@ static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 #include "newmenu.h"
 #include "gamesave.h"
 #include "gamepal.h"
-
-//------------------------------------------------------------------------------
-
-#ifdef WINDOWS
-void PagingTouchVClipW (tVideoClip * vc)
-{
-	int i;
-
-	for (i=0; i<vc->nFrameCount; i++)	{
-		if (!(vc->flags & EF_ALTFMT) && 
-			 (gameData.pig.tex.bitmaps [ (vc->frames [i]).index].bm_props.flags & BM_FLAG_PAGED_OUT))
-			PiggyBitmapPageInW (vc->frames [i],1);
-	}
-}
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -222,11 +203,6 @@ void PagingTouchObject (tObject *objP)
 		case RT_POWERUP:
 			if ((objP->rType.vClipInfo.nClipIndex > -1) && 
 				 (objP->rType.vClipInfo.nClipIndex < gameData.eff.nClips [0])) {
-		//@@	#ifdef WINDOWS
-		//@@		PagingTouchVClip_w (&gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex]);
-		//@@	#else
-				PagingTouchVClip (&gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex], 0);
-		//@@	#endif
 				}
 			else
 				objP->rType.vClipInfo.nClipIndex = -1;

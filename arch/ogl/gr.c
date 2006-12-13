@@ -534,7 +534,6 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 	LogErr ("SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error("SDL library video initialisation failed: %s.", SDL_GetError());
 }
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
 if (t = FindArg ("-gl_voodoo")) {
 	gameStates.ogl.bVoodooHack = 
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
@@ -545,35 +544,7 @@ if (t = FindArg("-fullscreen")) {
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
-#endif
-#if 1	// use generalized render quality settings instead of allowing detailled settings
 SetRenderQuality ();
-#else
-if ((glt=FindArg ("-gl_mipmap"))){
-	gameStates.ogl.texMagFilter=GL_LINEAR;
-	gameStates.ogl.texMinFilter=GL_LINEAR_MIPMAP_NEAREST;
-	}
-if ((glt=FindArg ("-gl_trilinear"))) {
-	gameStates.ogl.texMagFilter = GL_LINEAR;
-	gameStates.ogl.texMinFilter = GL_LINEAR_MIPMAP_LINEAR;
-	}
-if ((t=FindArg ("-gl_simple"))) {
-	if (t>=glt){//allow overriding of earlier args
-		glt=t;
-		gameStates.ogl.texMagFilter=GL_NEAREST;
-		gameStates.ogl.texMinFilter=GL_NEAREST;
-		}
-	}
-if ((t=FindArg ("-gl_texmagfilt")) || (t=FindArg("-gl_texmagfilter"))){
-	if (t>=glt)//allow overriding of earlier args
-		gameStates.ogl.texMagFilter=ogl_atotexfilti(Args[t+1],0);
-	}
-if ((t=FindArg ("-gl_texminfilt")) || (t=FindArg("-gl_texminfilter"))){
-	if (t>=glt)//allow overriding of earlier args
-		gameStates.ogl.texMinFilter=ogl_atotexfilti(Args[t+1],1);
-	}
-gameStates.ogl.bNeedMipMaps=ogl_testneedmipmaps (gameStates.ogl.texMinFilter);
-#endif
 if ((t=FindArg ("-gl_vidmem"))){
 	ogl_mem_target=atoi(Args[t+1])*1024*1024;
 }
@@ -748,22 +719,16 @@ else if (gameStates.ogl.bDoPalStep) {
 	}
 else
 	return;
-#ifdef OGL_ZBUF
-if(!gameOpts->legacy.bZBuf)
-	if (bDepthTest = glIsEnabled (GL_DEPTH_TEST))
-		glDisable (GL_DEPTH_TEST);
-#endif
+if (bDepthTest = glIsEnabled (GL_DEPTH_TEST))
+	glDisable (GL_DEPTH_TEST);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (0,1);
 glVertex2f (1,1);
 glVertex2f (1,0);
 glEnd ();
-#ifdef OGL_ZBUF
-if(!gameOpts->legacy.bZBuf)
-	if (bDepthTest)
-		glEnable (GL_DEPTH_TEST);
-#endif
+if (bDepthTest)
+	glEnable (GL_DEPTH_TEST);
 if (bBlend)
 	glBlendFunc (blendSrc, blendDest);
 else
@@ -777,7 +742,7 @@ void GrPaletteStepUp (int r, int g, int b)
 if (gameStates.render.bPaletteFadedOut)
 	return;
 #if 0
-if (!gameOpts->ogl.bUseLighting || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
+if (!gameOpts->render.bDynLighting || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
 #endif
 	{
 	r += gameData.render.nPaletteGamma;

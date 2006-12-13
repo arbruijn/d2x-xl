@@ -103,11 +103,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 
 // The default socket to use.
-#ifdef SHAREWARE
-         #define IPX_DEFAULT_SOCKET 0x5110
-#else
-         #define IPX_DEFAULT_SOCKET 0x5130
-#endif
+#define IPX_DEFAULT_SOCKET 0x5130
 
 #define MAX_IPX_DATA		576
 #define MAX_PACKETSIZE	(MAX_IPX_DATA + 22)

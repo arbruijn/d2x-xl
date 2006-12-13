@@ -44,10 +44,8 @@ static char rcsid[] = "$Id: controls.c,v 1.5 2003/08/02 20:36:12 btb Exp $";
 #include "mouse.h"
 #include "kconfig.h"
 #include "laser.h"
-#ifdef NETWORK
 #include "network.h"
 #include "multi.h"
-#endif
 #include "vclip.h"
 #include "fireball.h"
 #include "hudmsg.h"
@@ -136,12 +134,9 @@ void ReadFlyingControls(tObject *objP)
 		gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->position.mOrient = tempm;
 		speed = WI_speed (gmObjP->id,gameStates.app.nDifficultyLevel);
 		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->position.mOrient.fVec,speed);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendGuidedInfo (gmObjP, 0);
-#endif
-
-	}
+		}
 	else {
 		objP->mType.physInfo.rotThrust.x = Controls.pitchTime;
 		objP->mType.physInfo.rotThrust.y = Controls.headingTime;

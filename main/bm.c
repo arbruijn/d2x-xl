@@ -36,9 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "wall.h"
 #include "textures.h"
 #include "game.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 #include "iff.h"
 #include "cfile.h"
 #include "powerup.h"
@@ -438,11 +436,7 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("$MARKER")			{bm_read_marker ();		continue;}
 		else IFTOK ("$PLAYER_SHIP")		{bm_read_player_ship ();	continue;}
 		else IFTOK ("$EXIT") {
-			#ifdef SHAREWARE
 				bm_read_exitmodel ();	
-			#else
-				clear_to_end_of_line ();
-			#endif
 			continue;
 		}
 		else	{		//not a special token, must be a bitmap!
@@ -1404,9 +1398,8 @@ return gameData.pig.tex.bitmaps [0] + i;
 }
 
 //------------------------------------------------------------------------------
-#ifdef OGL
+
 void OglCachePolyModelTextures (int nModel);
-#endif
 
 int LoadExitModels ()
 {
@@ -1452,10 +1445,8 @@ int LoadExitModels ()
 				CFExist ("exit01d.pof", gameFolders.szDataDir, 0)) {
 		gameData.endLevel.exit.nModel = LoadPolygonModel ("exit01.pof", 3, start_num, NULL);
 		gameData.endLevel.exit.nDestroyedModel = LoadPolygonModel ("exit01d.pof", 3, start_num + 3, NULL);
-#ifdef OGL
 		OglCachePolyModelTextures (gameData.endLevel.exit.nModel);
 		OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
-#endif
 	}
 	else if (CFExist (D1_PIGFILE,gameFolders.szDataDir,0)) {
 		int offset, offset2;

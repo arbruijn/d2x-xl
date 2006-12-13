@@ -971,10 +971,10 @@ int ComputeNearestSegmentLights (int i)
 	vmsVector			center, dist;
 	struct tLightDist	*pDists;
 
-if (!gameData.render.lights.ogl.nLights)
+if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
-	gameOpts->ogl.bUseLighting = 0;
+if (!(pDists = d_malloc (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+	gameOpts->render.bDynLighting = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
@@ -984,8 +984,8 @@ if (nMaxLights > MAX_NEAREST_LIGHTS)
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
-	pl = gameData.render.lights.ogl.lights;
-	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
+	pl = gameData.render.lights.dynamic.lights;
+	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		VmVecSub (&dist, &center, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
 		if ((pDists [n].nDist = h) <= F1_0 * 125) {
@@ -997,9 +997,9 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.ogl.nNearestSegLights [i][l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nNearestSegLights [i][l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.ogl.nNearestSegLights [i][l] = -1;
+		gameData.render.lights.dynamic.nNearestSegLights [i][l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1015,10 +1015,10 @@ int ComputeNearestVertexLights (int i)
 	vmsVector			dist;
 	struct tLightDist	*pDists;
 
-if (!gameData.render.lights.ogl.nLights)
+if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = d_malloc (gameData.render.lights.ogl.nLights * sizeof (tLightDist)))) {
-	gameOpts->ogl.bUseLighting = 0;
+if (!(pDists = d_malloc (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+	gameOpts->render.bDynLighting = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
@@ -1027,8 +1027,8 @@ if (nMaxLights > MAX_NEAREST_LIGHTS)
 	nMaxLights = MAX_NEAREST_LIGHTS;
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
-	pl = gameData.render.lights.ogl.lights;
-	for (l = n = 0; l < gameData.render.lights.ogl.nLights; l++, pl++) {
+	pl = gameData.render.lights.dynamic.lights;
+	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		VmVecSub (&dist, vertP, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
 		if ((pDists [n].nDist = h) <= F1_0 * 125) {
@@ -1040,9 +1040,9 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.ogl.nNearestVertLights [i][l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nNearestVertLights [i][l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.ogl.nNearestVertLights [i][l] = -1;
+		gameData.render.lights.dynamic.nNearestVertLights [i][l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1417,7 +1417,7 @@ int SortLightsGaugeSize (void)
 {
 return
 #if !SHADOWS
-	(!gameOpts->ogl.bUseLighting && gameStates.app.bD2XLevel) ? 0 :
+	(!gameOpts->render.bDynLighting && gameStates.app.bD2XLevel) ? 0 :
 #endif
 	PROGRESS_STEPS (gameData.segs.nSegments) +
 	PROGRESS_STEPS (gameData.segs.nVertices);
@@ -1448,7 +1448,7 @@ else {
 	else
 		i++;
 	}
-//if (gameOpts->ogl.bUseLighting)
+//if (gameOpts->render.bDynLighting)
 	i += SortLightsGaugeSize ();
 return i;
 }
@@ -1544,16 +1544,16 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (loadFile);
 else {
 	LoadSegmentsCompiled (-1, loadFile);
-	ValidateSegmentAll ();			// Fill in tSide nType and normals.
+	ValidateSegmentAll ();			// Fill in side type and normals.
 	LoadSegment2sCompiled (loadFile);
 	LoadVertLightsCompiled (-1, loadFile);
 	LoadSideLightsCompiled (-1, loadFile);
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-ResetObjects (1);		//one tObject, the tPlayer
+ResetObjects (1);		//one tObject, the player
 #if !SHADOWS
-if (gameOpts->ogl.bUseLighting || !gameStates.app.bD2XLevel) 
+if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) 
 #endif
 	{
 	AddDynLights ();

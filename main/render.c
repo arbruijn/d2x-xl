@@ -21,7 +21,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "inferno.h"
 #include "segment.h"
 #include "error.h"
@@ -60,11 +59,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "globvars.h"
 #include "interp.h"
 #include "oof.h"
-
-#ifdef OGL
 #include "ogl_init.h"
 #include "lightmap.h"
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -95,10 +91,6 @@ extern int bShadowTest;
 
 #ifdef EDITOR
 #include "editor/editor.h"
-#endif
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
 #endif
 
 //used for checking if points have been bRotated
@@ -411,7 +403,7 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameOpts->ogl.bUseLighting) {
+if (gameOpts->render.bDynLighting) {
 	// set material properties specific for certain textures here
 	SetDynLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
@@ -448,7 +440,7 @@ int SetFaceLight (tFaceProps *propsP)
 	tRgbColorf	*pdc;
 	fix			dynLight;
 
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
+if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
 	return 0;
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it
@@ -750,9 +742,7 @@ if (!bRender)
 {
 	// -- Using new headlight system...fix			face_light;
 	grsBitmap  *bmBot = NULL;
-#ifdef OGL
 	grsBitmap  *bmTop = NULL;
-#endif
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
 	g3sPoint		*pointlist [8];
@@ -772,12 +762,10 @@ if (!bRender)
 		goto drawWireFrame;
 #endif
 	SetVertexColors (propsP);
-#ifdef OGL_ZBUF
-	if (!gameOpts->legacy.bZBuf && !gameOpts->legacy.bRender && (renderState == 2)) {
+	if (renderState == 2) {
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
 		return;
 		}
-#endif
 	nCamNum = nSideCameras [props.segNum][props.sideNum];
 	bIsTeleCam = 0;
 	bIsMonitor = extraGameInfo [0].bUseCameras && 
@@ -861,7 +849,6 @@ if (!bRender)
 		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
 	else
 #endif
-#ifdef OGL
 	if (bmTop)
 		G3DrawTexPolyMulti (
 			props.nv, 
@@ -878,7 +865,6 @@ if (!bRender)
 			props.nOvlOrient, 
 			!bIsMonitor || bIsTeleCam); 
 	else
-#endif
 #if LIGHTMAPS == 0
 		G3DrawTexPoly (
 			props.nv, 
@@ -902,14 +888,8 @@ if (!bRender)
 #endif
 		}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-#ifdef OGL
 		// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 		//if (nSegment == gameData.objs.objects->nSegment) 
-# ifdef OGL_ZBUF
-	if (gameOpts->legacy.bZBuf && !gameOpts->legacy.bRender)
-# endif
-		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
-#endif
 #ifdef _DEBUG
 	if (bOutLineMode) 
 		DrawOutline (props.nv, pointlist);
@@ -1484,17 +1464,7 @@ cc = RotateList (8, seg->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
 if (!cc.and) {		//all off screen?
-#ifdef OGL_ZBUF
-	if (gameOpts->legacy.bZBuf)
-#endif
-	if (!gameStates.render.cameras.bActive && (gameData.objs.viewer->nType!=OBJ_ROBOT))
-  	   bAutomapVisited [nSegment] = 1;
-#if 1
 	gameStates.render.nState = 0;
-#else
-	//SetNearestStaticLights (nSegment, 1);
-	SetNearestDynamicLights (nSegment);
-#endif
 	if (gameStates.render.bQueryOcclusion) {
 			short		sideVerts [4];
 			double	sideDists [6];
@@ -2574,16 +2544,16 @@ int GatherShadowLightSources (void)
 	tShaderLight	*psl;
 	vmsVector		vLightDir;
 
-psl = gameData.render.lights.ogl.shader.lights;
-for (h = 0, i = gameData.render.lights.ogl.nLights; i; i--, psl++)
+psl = gameData.render.lights.dynamic.shader.lights;
+for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	if (!bObjectRendered [h])
 		continue;
-	pnl = gameData.render.lights.ogl.nNearestSegLights [objP->nSegment];
+	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
-		psl = gameData.render.lights.ogl.shader.lights + *pnl;
+		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->bState)
 			continue;
 		if (!CanSeePoint (objP, &psl->vPos))
@@ -2603,8 +2573,8 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 		}
 	gameData.render.shadows.objLights [h][n] = -1;
 	}
-psl = gameData.render.lights.ogl.shader.lights;
-for (h = 0, i = gameData.render.lights.ogl.nLights; i; i--, psl++)
+psl = gameData.render.lights.dynamic.shader.lights;
+for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	if (psl->bShadow)
 		h++;
 return h;
@@ -2759,10 +2729,10 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
-for (i = 0; i < gameData.render.lights.ogl.nLights; i++, psl++) {
+for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
 #if 0
 	if (i != 89)
 		continue;
@@ -2811,10 +2781,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0))	{
 #endif
   
 StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
-#ifdef OGL_ZBUF
-if (!gameOpts->legacy.bZBuf)
-	gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
-#endif
+gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 SetRenderView (nEyeOffset, &nStartSeg);
 if (nClearWindow == 1) {
@@ -3200,8 +3167,6 @@ int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWin
 						objFragC [MAX_OBJECTS];
 #endif
 
-if (gameOpts->legacy.bZBuf)
-	return 0;
 #if OGL_QUERY
 for (renderState = nStartState; renderState < nEndState; renderState++) {
 	int bOccQuery = bOcclusionQuery && 1 && !nWindow && !renderState;
@@ -3603,10 +3568,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 			if (!(renderState || 1))
 #endif
 				continue;
-#ifdef OGL_ZBUF
-			if (!gameOpts->legacy.bZBuf)
-  	   		bAutomapVisited [nSegment] = bSetAutomapVisited;
-#endif
+   		bAutomapVisited [nSegment] = bSetAutomapVisited;
 			VISIT (nSegment);
 
 			if (bWindowCheck) {		//reset for gameData.objs.objects

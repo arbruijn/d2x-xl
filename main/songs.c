@@ -67,10 +67,8 @@ if (gameData.songs.bInitialized)
 	return;
 CFUseD1HogFile("descent.hog");
 for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
-	#if !defined(WINDOWS)
 		if (!FindArg("-nomixer"))
 			CD_blast_mixer();   // Crank it!
-	#endif
 	if (CFExist("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
 		if (!(fp = CFOpen ("descent.sng", gameFolders.szDataDir, "rb", bD1Songs))) {
 			if (bD1Songs)
@@ -109,23 +107,16 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		}
 	gameData.songs.bInitialized = 1;
 	//	RBA Hook
-#if !defined(SHAREWARE) || (defined(SHAREWARE) && defined(APPLE_DEMO))
 		if (!gameOpts->sound.bUseRedbook)
 			gameStates.sound.bRedbookEnabled = 0;
 		else {	// use redbook
-#ifndef __MSDOS__
 				RBAInit();
-#else
-				RBAInit(toupper(CDROM_dir[0]) - 'A');
-#endif
-
 			if (RBAEnabled()) {
 				set_redbookVolume(gameConfig.nRedbookVolume);
 				RBARegisterCD();
 				}
 			}
 		atexit(RBAStop);    // stop song on exit
-#endif	// endof ifndef SHAREWARE, ie ifdef SHAREWARE
 		}
 }
 
@@ -165,17 +156,11 @@ int force_rb_register=0;
 
 void ReInitRedbook()
 {
-	#ifndef __MSDOS__
-		RBAInit();
-	#else
-		RBAInit(toupper(CDROM_dir[0]) - 'A');
-	#endif
-
-	if (RBAEnabled())
-	{
-		set_redbookVolume(gameConfig.nRedbookVolume);
-		RBARegisterCD();
-		force_rb_register=0;
+RBAInit();
+if (RBAEnabled()) {
+	set_redbookVolume(gameConfig.nRedbookVolume);
+	RBARegisterCD();
+	force_rb_register=0;
 	}
 }
 
@@ -285,9 +270,7 @@ return 0;
 
 void SongsPlaySong (int nSong, int repeat)
 {
-#ifndef SHAREWARE
 //Assert(nSong != SONG_ENDLEVEL && nSong != SONG_ENDGAME);	//not in full version
-#endif
 if (!gameData.songs.bInitialized)
 	SongsInit();
 //stop any music already playing

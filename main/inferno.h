@@ -58,14 +58,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 #include "vecmat.h"
 
-// MACRO for single line #ifdef WINDOWS #else DOS
-#ifdef WINDOWS
-#define WINDOS(x,y) x
-#define WIN(x) x
+#ifdef __macosx__
+# include <SDL/SDL.h>
 #else
+# include <SDL.h>
+#endif
+
+// MACRO for single line #ifdef WINDOWS #else DOS
 #define WINDOS(x,y) y
 #define WIN(x)
-#endif
+#define PA_DFX(x)
+#define NO_DFX(x) x
+
 
 /**
  **	Constants
@@ -97,7 +101,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // The version number of the game
 typedef struct tLegacyOptions {
 	int bInput;
-	int bZBuf;
 	int bFuelCens;
 	int bMouse;
 	int bHomers;
@@ -180,6 +183,7 @@ typedef struct tRenderOptions {
 	int bAllSegs;
 	int bAutomapAlwaysHires;
 	int bDynamicLight;
+	int bDynLighting;
 	int bObjects;
 	int bTextures;
 	int bWalls;
@@ -207,7 +211,6 @@ typedef struct tRenderOptions {
 typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
-	int bUseLighting;
 	int bLightObjects;
 	int nMaxLights;
 	int bRgbaFormat;
@@ -421,7 +424,6 @@ typedef struct tOglStates {
 	int bAntiAliasing;
 	int bAntiAliasingOk;
 	int bVoodooHack;
-	int bHaveLights;
 	int texMinFilter;
 	int texMagFilter;
 	int nTexMagFilterState;
@@ -504,6 +506,7 @@ typedef struct tRenderStates {
 	int bTMapFlat;
 	int nLighting;
 	int bTransparency;
+	int bHaveDynLights;
 	int bPaletteFadedOut;
 	int bHaveStencilBuffer;
 	int nRenderPass;
@@ -861,7 +864,7 @@ typedef struct tLightData {
 	dl_index				deltaIndices [MAX_DL_INDICES];
 	delta_light			deltas [MAX_DELTA_LIGHTS];
 	ubyte					subtracted [MAX_SEGMENTS];
-	tDynLightData		ogl;
+	tDynLightData		dynamic;
 	tFlickerLightData	flicker;
 } tLightData;
 

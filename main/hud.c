@@ -61,10 +61,6 @@ int nModexHUDMsgs;
 #define LHX (x)      (gameStates.render.fonts.bHires?2* (x):x)
 #define LHY (y)      (gameStates.render.fonts.bHires? (24* (y))/10:y)
 
-#ifdef WINDOWS
-int bExtraClear=0;
-#endif
-
 extern int max_window_h;
 extern int max_window_w;
 
@@ -74,18 +70,8 @@ extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsig
 
 void ClearBackgroundMessages (void)
 {
-	#ifdef WINDOWS
-if (bExtraClear == gameData.app.nFrameCount) 		//don't do extra clear on same frame
-	return;
-	#endif
-
-#ifdef WINDOWS
-if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (dd_VR_render_sub_buffer [0].yoff >= 6)) {
-	dd_grs_canvas *canv_save = dd_grd_curcanv;
-#else
 if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (VR_render_sub_buffer [0].cv_bitmap.bm_props.y >= 6)) {
 	grs_canvas	*canv_save = grdCurCanv;
-#endif
 
 WINDOS (
 	DDGrSetCurrentCanvas (GetCurrentGameScreen ()),
@@ -99,16 +85,7 @@ WINDOS (
 	DDGrSetCurrentCanvas (canv_save),
 	GrSetCurrentCanvas (canv_save)
 	);
-#ifdef WINDOWS
-	if (bExtraClear || !GRMODEINFO (modex)) {
-		bExtraClear = 0;
-		nLastMsgYCrd = -1;
-		}
-	else
-		bExtraClear = gameData.app.nFrameCount;
-#else
 	nLastMsgYCrd = -1;
-#endif
 	}
 szDisplayedBackgroundMsg [nVRCurrentPage][0] = 0;
 }
@@ -154,10 +131,6 @@ if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
 pMsgs->xTimer -= gameData.time.xFrame;
-#ifdef WINDOWS
-if (bExtraClear)
-	ClearBackgroundMessages ();			//	If in status bar mode and no messages, then erase.
-#endif
 if ( pMsgs->xTimer < 0)	{
 	// Timer expired... get rid of oldest pszMsg...
 	if (pMsgs->nLast != pMsgs->nFirst)	{
@@ -179,13 +152,8 @@ if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == -1)
 		pMsgs->nColor = RGBA_PAL2 (0,28,0);
 
-#ifdef WINDOWS
-	if ((VR_render_mode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
-		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (dd_VR_render_sub_buffer [0].yoff >= (max_window_h/8))) {
-#else
 	if ((VR_render_mode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
 		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (VR_render_sub_buffer [0].cv_bitmap.bm_props.y >= (max_window_h/8))) {
-#endif
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
@@ -283,7 +251,6 @@ if (pMsgs->nMessages > 0) {
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	}
-#ifndef WINDOWS
 else if (GetCurrentGameScreen ()->cv_bitmap.bm_props.nType == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
@@ -292,7 +259,6 @@ else if (GetCurrentGameScreen ()->cv_bitmap.bm_props.nType == BM_MODEX) {
 		nLastMsgYCrd = temp;
 		}
 	}
-#endif
 GrSetCurFont ( GAME_FONT);
 }
 

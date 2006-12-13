@@ -421,14 +421,12 @@ void MultiEndLevelScore (void)
 	int old_connect = 0;
 	int i;
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_NETWORK) {
 	old_connect = gameData.multi.players [gameData.multi.nLocalPlayer].connected;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].connected!=3)
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = CONNECT_END_MENU;
 	networkData.nStatus = NETSTAT_ENDLEVEL;
 	}
-#endif
 // Do the actual screen we wish to show
 SetFunctionMode (FMODE_MENU);
 kmatrix_view (gameData.app.nGameMode & GM_NETWORK);
@@ -436,7 +434,6 @@ SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multi.players [gameData.multi.nLocalPlayer].connected = old_connect;
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	int i;
 	for (i = 0; i < gameData.multi.nMaxPlayers; i++) // Reset keys
@@ -444,8 +441,6 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	}
 for (i = 0; i < gameData.multi.nMaxPlayers; i++)
 	gameData.multi.players [i].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
-
-#endif
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	gameData.multi.players [i].nKillGoalCount = 0;
@@ -619,13 +614,11 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	gameData.multi.players [i].flags = 0;
 	gameData.multi.players [i].nKillGoalCount = 0;
 	}
-#ifndef SHAREWARE
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	multiData.robots.controlled [i] = -1;
 	multiData.robots.agitation [i] = 0;
 	multiData.robots.fired [i] = 0;
 	}
-#endif
 multiData.kills.nTeam [0] = multiData.kills.nTeam [1] = 0;
 gameStates.app.bEndLevelSequence = 0;
 gameStates.app.bPlayerIsDead = 0;
@@ -714,11 +707,9 @@ void MultiSortKillList (void)
 	int changed = 1;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-#ifndef SHAREWARE
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		kills [i] = gameData.multi.players [i].score;
 	else
-#endif
 	if (multiData.kills.bShowList == 2) {
 		if (gameData.multi.players [i].netKilledTotal+gameData.multi.players [i].netKillsTotal)
 			kills [i] = (int) ((double) ((double)gameData.multi.players [i].netKillsTotal/ ((double)gameData.multi.players [i].netKilledTotal+ (double)gameData.multi.players [i].netKillsTotal))*100.0);
@@ -805,7 +796,6 @@ if (killerType == OBJ_CNTRLCEN) {
 	return;
 	}
 
-#ifndef SHAREWARE
 else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
 	if (killer_id == PMINE_ID && killerType!=OBJ_ROBOT) {
 		if (killed_pnum == gameData.multi.nLocalPlayer)
@@ -824,21 +814,6 @@ else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
 	pKilled->netKilledTotal++;
 	return;
 	}
-#else
-else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST) && (killer_id!=PMINE_ID))	{
-	Int3 (); // Illegal killer nType?
-	return;
-	}
-if (killer_id == PMINE_ID) {
-	if (killed_pnum == gameData.multi.nLocalPlayer)
-		HUDInitMessage (TXT_MINEKILL);
-	else
-		HUDInitMessage (TXT_MINEKILL2, killed_name);
-	pKilled->netKilledTotal++;
-	return;
-	}
-#endif
-
 killer_pnum = gameData.objs.objects [killer].id;
 pKiller = gameData.multi.players + killer_pnum;
 if (gameData.app.nGameMode & GM_TEAM)
@@ -973,11 +948,9 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed && lasttime
 MultiSendMessage (); // Send any waiting messages
 if (!multiData.menu.bInvoked)
 	multiData.menu.bLeave = 0;
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 	MultiCheckRobotTimeout ();
 	}
-#endif
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	com_do_frame ();
 else
@@ -1209,11 +1182,9 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multi.nPlayers))
 Assert (nPlayer  >= 0);
 Assert (nPlayer < gameData.multi.nPlayers);
 #endif
-#ifdef NETWORK
 // If we are in the process of sending gameData.objs.objects to a new tPlayer, reset that process
 if (networkData.bSendObjects)
 	networkData.nSendObjNum = -1;
-#endif
 // Stuff the gameData.multi.players structure to prepare for the explosion
 playerP = gameData.multi.players + nPlayer;
 count = 2;
@@ -1288,13 +1259,6 @@ gameData.multi.players [nPlayer].shields = -1;
 killer = GET_INTEL_SHORT (buf + 2);
 if (killer > 0)
 	killer = ObjnumRemoteToLocal (killer, (sbyte)buf [4]);
-#ifdef SHAREWARE
-if ((gameData.objs.objects [killed].nType != OBJ_PLAYER) && 
-	 (gameData.objs.objects [killed].nType != OBJ_GHOST)) {
-	Int3 ();
-	return;
-	}
-#endif
 MultiComputeKill (killer, killed);
 }
 
@@ -1429,10 +1393,8 @@ int nPlayer = (int) (buf [1]);
 Assert (nPlayer < gameData.multi.nPlayers);
 gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 gameData.multi.players [nPlayer].cloakTime = gameData.time.xGame;
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (nPlayer);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1453,10 +1415,8 @@ Assert (nPlayer < gameData.multi.nPlayers);
 gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
 gameData.multi.players [nPlayer].cloakTime = gameData.time.xGame;
 AIDoCloakStuff ();
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (nPlayer);
-#endif
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiCloak (nPlayer);
 }
@@ -2233,10 +2193,8 @@ else {
 	multiData.msg.buf [4] = (char)-1;
 	}
 MultiSendData (multiData.msg.buf, 5, 1);
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (gameData.multi.nLocalPlayer);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2288,10 +2246,8 @@ void MultiSendInvul (void)
 multiData.msg.buf [0] = MULTI_INVUL;
 multiData.msg.buf [1] = (char)gameData.multi.nLocalPlayer;
 MultiSendData (multiData.msg.buf, 2, 1);
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (gameData.multi.nLocalPlayer);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2312,10 +2268,8 @@ void MultiSendCloak (void)
 multiData.msg.buf [0] = MULTI_CLOAK;
 multiData.msg.buf [1] = (char)gameData.multi.nLocalPlayer;
 MultiSendData (multiData.msg.buf, 2, 1);
-#ifndef SHAREWARE
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (gameData.multi.nLocalPlayer);
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2623,13 +2577,11 @@ for (i = 0; i < gameData.multi.nPlayerPositions; i++) {
 	MultiResetPlayerObject (objP);
 	networkData.nLastPacketTime [i] = 0;
 	}
-#ifndef SHAREWARE
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	multiData.robots.controlled [i] = -1;
 	multiData.robots.agitation [i] = 0;
 	multiData.robots.fired [i] = 0;
 	}
-#endif
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 if (!(gameData.app.nGameMode & GM_MULTI_COOP))
 	MultiDeleteExtraObjects (); // Removes monsters from level
@@ -4997,10 +4949,8 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoModemPingReturn (buf); 
 		break;
-#ifndef SHAREWARE
 	case MULTI_FINISH_GAME:
-		
-			MultiDoFinishGame (buf); 
+		MultiDoFinishGame (buf); 
 		break;  // do this one regardless of endsequence
 	case MULTI_ROBOT_CONTROLS:
 		if (!gameStates.app.bEndLevelSequence) 
@@ -5026,7 +4976,6 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoRobotFire (buf); 
 		break;
-#endif
 	case MULTI_SCORE:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoScore (buf); 

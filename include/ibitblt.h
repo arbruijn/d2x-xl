@@ -39,22 +39,11 @@ void gr_ibitblt_find_hole_size ( grsBitmap * mask_bmp, int *minx, int *miny, int
 // another bitmap but only copies into pixel locations that are
 // defined as transparent in bitmap bmp.
 
-#ifdef __MSDOS__
-ubyte * gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-ubyte * gr_ibitblt_create_mask_svga(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-ubyte * gr_ibitblt_create_mask_pa( grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-#else
 void gr_ibitblt_create_mask_pa(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
 void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize);
-#endif
-
 // Copy source bitmap onto destination bitmap, not copying pixels that
 // are defined transparent by the mask
 
-#ifdef __MSDOS__
-void gr_ibitblt(grsBitmap *source_bmp, grsBitmap *dest_bmp, ubyte *mask);
-#else
 void gr_ibitblt(grsBitmap *source_bmp, grsBitmap *dest_bmp, ubyte pixel_double);
-#endif
 
 #endif

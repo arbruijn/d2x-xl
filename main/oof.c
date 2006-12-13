@@ -2223,7 +2223,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tFaceColor		*pvc;
 	grsBitmap		*bmP;
 	int				h, i, j;
-	int				bDynLighting = gameOpts->ogl.bUseLighting && gameOpts->ogl.bLightObjects;
+	int				bDynLighting = gameOpts->render.bDynLighting && gameOpts->ogl.bLightObjects;
 	float				fl, r, g, b;
 
 #if DBG_SHADOWS
@@ -2438,11 +2438,11 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			i, *pnl = gameData.render.lights.ogl.nNearestSegLights [gameData.objs.console->nSegment];
+	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->nSegment];
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.lights.ogl.shader.lights + *pnl;
+	gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 	if (!gameData.render.shadows.pLight->bState)
 		continue;
 	gameData.render.shadows.nLight++;

@@ -20,10 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +28,6 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include <time.h>
 #include <math.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
 #include "inferno.h"
 #include "gr.h"
@@ -75,11 +70,6 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #if defined (TACTILE)
  #include "tactile.h"
 #endif
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
-
 #include "collide.h"
 
 #ifdef USE_LINUX_JOY
@@ -107,19 +97,12 @@ gameOpts->input.nMaxPitch = (BASE_PITCH * 10) / (nMinTurnRate ? nMinTurnRate : 2
 
 #define	PH_SCALE	1
 
-#ifndef __MSDOS__ // WINDOWS
 #define	JOYSTICK_READ_TIME	 (F1_0/40)		//	Read joystick at 40 Hz.
-#else
-#define	JOYSTICK_READ_TIME	 (F1_0/10)		//	Read joystick at 10 Hz.
-#endif
 
 fix	LastReadTime = 0;
-
 fix	joy_axis [JOY_MAX_AXES];
 
 //------------------------------------------------------------------------------
-
-#ifndef WINDOWS
 
 fix Next_toggleTime [3]={0,0,0};
 
@@ -254,14 +237,10 @@ for (i = 0; i < 4; i++)
 	joy_sens_mod [i] = 128 - 7 * gameOpts->input.joySensitivity [i];
 if (gameStates.limitFPS.bJoystick) {
 	if ((LastReadTime + JOYSTICK_READ_TIME > ctime) && (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)) {
-# ifndef __MSDOS__
 		if ((ctime < 0) && (LastReadTime >= 0))
-# else
-		if ((ctime < 0) && (LastReadTime > 0))
-# endif
 			LastReadTime = ctime;
-			use_joystick=1;
-			} 
+		use_joystick=1;
+		} 
 	else if (gameOpts->input.bUseJoystick) {
 		LastReadTime = ctime;
 		if	(channel_masks = joystick_read_raw_axis (JOY_ALL_AXIS, raw_joy_axis)) {
@@ -570,11 +549,6 @@ void ControlsDoKeyboard (int *slide_on, int *bank_on, fix *pkp, fix *pkh, int *n
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
 
-#if 0//def DELTACTRL
-if (gameOpts->input.keyRampScale < 100)
-	speedFactor *= gameOpts->input.keyRampScale;
-#endif
-
 if (bGetSlideBank == 0) {
 	for (i = 0; i < 2; i++) {
 		if ((v = HaveKey (kc_keyboard, 8 + i)) < 255) {
@@ -603,7 +577,6 @@ if (bGetSlideBank == 2) {
 		}
 
 	for (i = 0; i < 2; i++) {
-#ifdef DELTACTRL
 		Controls.sideways_thrustTime -= DELTACTRL (10 + i, 2);
 		Controls.sideways_thrustTime += DELTACTRL (12 + i, 2);
 		Controls.vertical_thrustTime += DELTACTRL (14 + i, 2);
@@ -612,28 +585,6 @@ if (bGetSlideBank == 2) {
 		Controls.bankTime -= DELTACTRL (22 + i, 1);
 		Controls.forward_thrustTime += DELTACTRL (30 + i, 0);
 		Controls.forward_thrustTime -= DELTACTRL (32 + i, 0);
-#else
-		if ((v = HaveKey (kc_keyboard, 14 + i)) < 255) {
-			h = speedFactor * KeyDownTime (v);
-			if (gameOpts->input.bRampKeys [1])
-				h /= key_ramp (v);
-			Controls.vertical_thrustTime += h;
-			}
-		if ((v = HaveKey (kc_keyboard, 16 + i)) < 255) 
-			Controls.vertical_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 10 + i)) < 255) 
-			Controls.sideways_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 12 + i)) < 255) 
-			Controls.sideways_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 20 + i)) < 255) 
-			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 22 + i)) < 255) 
-			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 30 + i)) < 255) 
-			Controls.forward_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 32 + i)) < 255) 
-			Controls.forward_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-#endif
 		if ((v = HaveKey (kc_keyboard, 46 + i)) < 255) 
 			Controls.afterburner_state |= keyd_pressed [v];
 		// count bomb drops
@@ -676,78 +627,38 @@ if (bGetSlideBank == 2) {
 		KCToggleBomb ();
 
 	// cruise speed
-#ifndef DELTACTRL
-//	if (gameOpts->input.keyRampScale)
-//		speedFactor /= gameOpts->input.keyRampScale;
-#endif
 	for (i = 0; i < 4; i++)
 		if ((v = HaveKey (kc_keyboard, 38 + i)) < 255) 
 			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcFrameTime);
 	for (i = 0; i < 2; i++)
 		if (((v = HaveKey (kc_keyboard, 42 + i)) < 255) && keyDownCount (v))
 			*nCruiseSpeed = 0;
-#ifndef DELTACTRL
-//	if (gameOpts->input.keyRampScale)
-//		speedFactor *= gameOpts->input.keyRampScale;
-#endif
 	}
 
 // special slide & bank toggle handling
 if (*slide_on) {
 	if (bGetSlideBank == 2) {
 		for (i = 0; i < 2; i++) {
-#ifdef DELTACTRL
 			Controls.vertical_thrustTime += DELTACTRL (i, 2);
 			Controls.vertical_thrustTime -= DELTACTRL (2 + i, 2);
 			Controls.sideways_thrustTime -= DELTACTRL (4 + i, 2);
 			Controls.sideways_thrustTime += DELTACTRL (6 + i, 2);
-#else
-			if ((v = HaveKey (kc_keyboard, 0 + i)) < 255) 
-				Controls.vertical_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-			if ((v = HaveKey (kc_keyboard, 2 + i)) < 255) 
-				Controls.vertical_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-			if ((v = HaveKey (kc_keyboard, 4 + i)) < 255) 
-				Controls.sideways_thrustTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-			if ((v = HaveKey (kc_keyboard, 6 + i)) < 255) 
-				Controls.sideways_thrustTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-#endif
 			}
 		}
 	}
 else if (bGetSlideBank == 1) {
 	for (i = 0; i < 4; i++)
-#ifdef DELTACTRL
 		kp += key_signs [i] * DELTACTRL (i, 1) / pitchScale;
-#else
-		if ((v = HaveKey (kc_keyboard, i)) < 255)
-			kp += key_signs [i] * speedFactor * KeyDownTime (v) / pitchScale / key_ramp (v);
-#endif
 	if (!*bank_on)
 		for (i = 4; i < 8; i++)
-#ifdef DELTACTRL
 			*pkh += key_signs [i] * DELTACTRL (i, 1) / PH_SCALE;
-#else
-			if ((v = HaveKey (kc_keyboard, i)) < 255)
-				*pkh += key_signs [i] * speedFactor * KeyDownTime (v) / PH_SCALE / key_ramp (v);
-#endif
 	}
 if (*bank_on) {
 	if (bGetSlideBank == 2) {
-#ifdef DELTACTRL
 		for (i = 4; i < 6; i++)
 			Controls.bankTime += DELTACTRL (i, 1);
 		for (i = 6; i < 8; i++)
 			Controls.bankTime -= DELTACTRL (i, 1);
-#else
-		if ((v = HaveKey (kc_keyboard, 4)) < 255) 
-			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 5)) < 255) 
-			Controls.bankTime += speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 6)) < 255) 
-			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-		if ((v = HaveKey (kc_keyboard, 7)) < 255) 
-			Controls.bankTime -= speedFactor * KeyDownTime (v) / key_ramp (v);
-#endif
 		}
 	}
 if (bGetSlideBank == 2)
@@ -1303,7 +1214,6 @@ if (Controls.forward_thrustTime)
 	Controls.forward_thrustTime = Controls.forward_thrustTime;
 return 0;
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -1311,22 +1221,6 @@ void ResetCruise (void)
 {
 gameStates.input.nCruiseSpeed=0;
 }
-
-//------------------------------------------------------------------------------
-
-#if 0
-void kconfig_center_headset ()
-{
-#ifndef WINDOWS
-	if (vfx1_installed)
-		vfx_center_headset ();
-#endif
-//	} else if (iglasses_headset_installed)	{
-//	} else if (Victor_headset_installed)   {
-//	} else {
-//	}
-}
-#endif
 
 //------------------------------------------------------------------------------
 

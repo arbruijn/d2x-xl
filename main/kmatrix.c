@@ -16,17 +16,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 
-#include "pa_enabl.h"       //$$POLY_ACC
 #include "error.h"
 #include "inferno.h"
 #include "gr.h"
@@ -53,10 +48,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "network.h"
 #include "ogl_init.h"
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)
@@ -355,16 +346,9 @@ for (i=0; i<gameData.multi.nPlayers; i++) {
 	kmatrix_draw_item (i, sorted);
 	}
 kmatrix_draw_deaths (sorted);
-#if defined (POLY_ACC)
-pa_save_clut ();
-pa_update_clut (grPalette, 0, 256, 0);
-#endif
 PA_DFX (pa_set_frontbuffer_current ());
 GrUpdate (0);
 PA_DFX (pa_set_backbuffer_current ());
-#if defined (POLY_ACC)
-pa_restore_clut ();
-#endif
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 GrPaletteStepLoad (NULL);
 }
@@ -397,15 +381,8 @@ WINDOS (
 	DDGrSetCurrentCanvas (NULL),
 	GrSetCurrentCanvas (NULL)
 	);
-#if defined (POLY_ACC)
-pa_save_clut ();
-pa_update_clut (grPalette, 0, 256, 0);
-#endif
 PA_DFX (pa_set_frontbuffer_current ());
 PA_DFX (pa_set_backbuffer_current ());
-#if defined (POLY_ACC)
-pa_restore_clut ();
-#endif
 GrPaletteStepLoad (NULL);
 GrUpdate (0);
 }

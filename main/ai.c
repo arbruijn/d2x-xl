@@ -48,10 +48,8 @@ char ai_rcsid[] = "$Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $";
 #include "sounds.h"
 #include "cntrlcen.h"
 #include "multibot.h"
-#ifdef NETWORK
 #include "multi.h"
 #include "network.h"
-#endif
 #include "gameseq.h"
 #include "key.h"
 #include "powerup.h"
@@ -645,10 +643,7 @@ _exit_cheat:
 			if ((aip->behavior != AIB_STILL) && (aip->behavior != AIB_RUN_FROM)) {
 				if (!AIMultiplayerAwareness(objP, 30))
 					return;
-				#ifndef SHAREWARE
 				ai_multi_sendRobot_position(nObject, -1);
-				#endif
-
 				if (!((ailp->mode == AIM_FOLLOW_PATH) && (aip->nCurPathIndex < aip->nPathLength-1)))
 					if ((aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_RUN_FROM)) {
 						if (dist_to_player < F1_0*30)
@@ -1026,19 +1021,14 @@ _exit_cheat:
 
 				ailp->nextPrimaryFire = (F1_0/2)*(NDL+5 - gameStates.app.nDifficultyLevel);      // Drop a proximity bomb every 5 seconds.
 
-#ifdef NETWORK
-#ifndef SHAREWARE
-				if (gameData.app.nGameMode & GM_MULTI)
-				{
+				if (gameData.app.nGameMode & GM_MULTI) {
 					ai_multi_sendRobot_position(OBJ_IDX (objP), -1);
 					if (aip->SUB_FLAGS & SUB_FLAGS_SPROX)
 						MultiSendRobotFire(OBJ_IDX (objP), -2, &fire_vec);
 					else
 						MultiSendRobotFire(OBJ_IDX (objP), -1, &fire_vec);
 				}
-#endif
-#endif
-			}
+ 			}
 			break;
 
 		case AIM_GOTO_PLAYER:

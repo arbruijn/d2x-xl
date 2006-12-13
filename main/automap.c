@@ -21,11 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "error.h"
 #include "3d.h"
 #include "inferno.h"
@@ -54,13 +50,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "wall.h"
 #include "gameseq.h"
 #include "gamefont.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "kconfig.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 #include "endlevel.h"
 #include "text.h"
 #include "gauges.h"
@@ -75,14 +67,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "gamecntl.h"
 #include "input.h"
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
-
-#ifdef OGL
-#	define AUTOMAP_DIRECT_RENDER	1
-#endif
 
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
@@ -189,24 +173,8 @@ static int DrawingListBright[MAX_EDGES];
 #define ZOOM_SPEED_FACTOR		500	// (1500)
 #define ROT_SPEED_DIVISOR		 (115000)
 
-#if AUTOMAP_DIRECT_RENDER
 //static grs_canvas	automap_canvas;
 static grsBitmap bmAutomapBackground;
-#else
-// Screen anvas variables
-static int current_page=0;
-#ifdef WINDOWS
-static dd_grs_canvas ddPages[2];
-static dd_grs_canvas ddDrawingPages[2];
-
-#define ddPage ddPages[0]
-#define ddDrawingPage ddDrawingPages[0]
-
-#endif
-
-	static grs_canvas Pages[2];
-	static grs_canvas DrawingPages[2];
-#endif /* AUTOMAP_DIRECT_RENDER */
 
 #define Page Pages[0]
 #define DrawingPage DrawingPages[0]
@@ -313,10 +281,8 @@ if (gameData.marker.objects [nMarker] != -1)
 	ReleaseObject (gameData.marker.objects[nMarker]);
 gameData.marker.objects[nMarker] = 
 	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage[nMarker]);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -561,26 +527,6 @@ if (bRadar && gameStates.render.bTopDownRadar) {
 	vmRadar.uVec.z = po->fVec.z;
 	}
 	
-#if AUTOMAP_DIRECT_RENDER == 0
-if (!bAutomapHires) {
-#if TRACE
-	WIN (con_printf (1, "Can't do lores automap in Windows!\n"));
-#endif
-	current_page ^= 1;
-	GrSetCurrentCanvas (DrawingPages + current_page);
-	}
-else {
-	WINDOS (
-		DDGrSetCurrentCanvas (&ddDrawingPage),
-		GrSetCurrentCanvas (&DrawingPage)
-		);
-	}
-#endif
-
-#if defined (POLY_ACC)
-   pa_flush ();
-#endif
-
 WINDOS (
 	dd_gr_clear_canvas (RGBA_PAL2 (0,0,0)),
 	GrClearCanvas (RGBA_PAL2 (0,0,0))
@@ -588,11 +534,6 @@ WINDOS (
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 	{
-#ifdef OGL_ZBUF
-	if (bRadar && !gameOpts->legacy.bZBuf)
-		gameStates.ogl.bEnableScissor = 0;
-#endif
-#if AUTOMAP_DIRECT_RENDER
 	if (!bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 		WIN (DDGRLOCK (dd_grd_curcanv));
 		show_fullscr (&bmAutomapBackground);
@@ -607,12 +548,9 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		//GrUpdate (0);
 		}
-#endif
 	G3StartFrame (1,0); //!bRadar);
-#if AUTOMAP_DIRECT_RENDER
 	if (!bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 		OGL_VIEWPORT (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
-#endif
 	RenderStartFrame ();
 	if (bRadar && gameStates.render.bTopDownRadar) {
 		VmVecScaleAdd (&viewer_position, &amData.viewTarget, &vmRadar.fVec, -amData.nViewDist);
@@ -625,11 +563,9 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	//if (!bRadar)
 		DrawAllEdges ();
 	// Draw player...
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (gameData.multi.nLocalPlayer);
 	else
-#endif	
 		color = gameData.multi.nLocalPlayer;	// Note link to above if!
 
 	GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g,player_rgb [color].b));
@@ -647,7 +583,6 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		 }
 	}				
 	// Draw tPlayer (s)...
-#ifdef NETWORK
 	if ( (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))	{
 		for (i = 0; i<gameData.multi.nPlayers; i++)		{
 			if ((i != gameData.multi.nLocalPlayer) && ((gameData.app.nGameMode & GM_MULTI_COOP) || 
@@ -664,7 +599,6 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			}
 		}
 	}
-#endif
 	if (1) {//!bRadar) {
 		int size;
 		objP = gameData.objs.objects;
@@ -746,11 +680,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	G3EndFrame ();
 
 	if (bRadar) {
-#ifdef OGL_ZBUF
-		if (!gameOpts->legacy.bZBuf)
-			gameStates.ogl.bEnableScissor = 0;
+		gameStates.ogl.bEnableScissor = 0;
 		return;
-#endif
 		}
 	else {
 		GrBitmapM (bAutomapHires?10:5, bAutomapHires?10:5, &name_canv_left->cv_bitmap);
@@ -759,30 +690,10 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 }
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 
-#ifdef OGL
-	OglSwapBuffers (0, 0);
-#else
-#if AUTOMAP_DIRECT_RENDER == 0
-	if (!bAutomapHires)
-		GrShowCanvas (&Pages[current_page]);
-	else {
-	#ifndef WINDOWS
-		//GrBmUBitBlt (Page.cv_bitmap.bm_props.w, Page.cv_bitmap.bm_props.h, Page.cv_bitmap.bm_props.x, Page.cv_bitmap.bm_props.y, 0, 0, &Page.cv_bitmap, &VR_screen_pages[0].cv_bitmap);
-		GrBmUBitBlt (Page.cv_bitmap.bm_props.w, Page.cv_bitmap.bm_props.h, Page.cv_bitmap.bm_props.x, Page.cv_bitmap.bm_props.y, 0, 0, &Page.cv_bitmap, &grdCurScreen->sc_canvas.cv_bitmap);
-	#else
-		dd_gr_blt_screen (&ddPage, 0,0,0,0,0,0,0,0);
-	#endif
-	}
-	GrUpdate (0);
-#endif
-#endif
+OglSwapBuffers (0, 0);
 }
 
-#ifdef WINDOWS
-#define LEAVE_TIME 0x00010000
-#else
 #define LEAVE_TIME 0x4000
-#endif
 
 #define WINDOW_WIDTH		288
 

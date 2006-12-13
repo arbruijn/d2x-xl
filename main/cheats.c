@@ -207,12 +207,10 @@ DoCheatPenalty ();
 gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (1);
 MultiSendShields ();
 gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (1);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	multiData.msg.nReceiver = 100;		// Send to everyone...
 	sprintf (multiData.msg.szMsg, TXT_CRIPPLED, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
 	}
-#endif
 HUDInitMessage (TXT_TAKE_THAT);
 }
 
@@ -839,10 +837,8 @@ void DoCheatMenu()
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if ( mm[1].value ) {
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_CLOAKED;
-			#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCloak();
-			#endif
 			AIDoCloakStuff();
 			gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
 		}

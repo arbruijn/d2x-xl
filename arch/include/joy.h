@@ -113,15 +113,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define JOY_MAX_BUTTONS (MAX_BUTTONS_PER_JOYSTICK * MAX_JOYSTICKS)
 
 
-#ifdef WINDOWS
-#define JOY_1_POV           8
-#define JOY_ALL_AXIS        (1+2+4+8)
-#define JOY_EXT_AXIS        (16+32+64)
-#else
 #define JOY_2_X_AXIS        4
 #define JOY_2_Y_AXIS        8
 #define JOY_ALL_AXIS        (1+2+4+8)
-#endif
 
 #define JOY_SLOW_READINGS       1
 #define JOY_POLLED_READINGS     2
@@ -169,14 +163,7 @@ extern struct sdl_joystick/*SDL_Joystick*/ SDL_Joysticks[MAX_JOYSTICKS];
 // joystick was detected, 1 if everything is ok.
 // joy_init() is called.
 
-#ifdef WINDOWS
-# ifdef __NT__
-extern int joy_init(int joy, int spjoy);
-# endif
-extern int joy95_init_stick(int joy, int spjoy);
-#else
 extern int joy_init();
-#endif
 extern void joy_close();
 
 extern char joy_installed;

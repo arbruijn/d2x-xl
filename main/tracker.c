@@ -25,6 +25,12 @@
 #include "menu.h"
 #include "tracker.h"
 
+#ifdef __macosx__
+# include <SDL/SDL.h>
+#else
+# include <SDL.h>
+#endif
+
 static int bTestTracker = 0;
 static tUdpAddress testServer;
 

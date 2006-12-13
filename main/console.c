@@ -38,12 +38,7 @@
 #include "inferno.h"
 #include "cfile.h"
 
-#ifndef __MSDOS__
 int text_console_enabled = 0;
-#else
-int isvga();
-#define text_console_enabled (!isvga())
-#endif
 
 cvar_t *cvar_vars = NULL;
 

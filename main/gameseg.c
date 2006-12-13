@@ -1303,11 +1303,6 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 	tFCDCacheData	*pc;
 
 	//	If > this, will overrun pointSegs buffer
-#ifdef WINDOWS
-if (nMaxDepth == -1) 
-	nMaxDepth = 200;
-#endif	
-
 if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
 #if TRACE		
 	con_printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);

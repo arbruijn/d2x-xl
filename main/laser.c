@@ -50,13 +50,9 @@ char laser_rcsid [] = "$Id: laser.c,v 1.10 2003/10/10 09:36:35 btb Exp $";
 #include "timer.h"
 #include "player.h"
 #include "sounds.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "ai.h"
-#ifdef NETWORK
 #include "modem.h"
-#endif
 #include "powerup.h"
 #include "multi.h"
 #include "physics.h"
@@ -1049,10 +1045,8 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 			if (gameData.multi.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
 				continue;
 			// Don't track teammates in team games
-			#ifdef NETWORK
 			if ((gameData.app.nGameMode & GM_TEAM) && (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].id)))
 				continue;
-			#endif
 		}
 
 		//	Can't track AI tObject if he's cloaked.
@@ -1235,13 +1229,11 @@ int LaserPlayerFireSpreadDelay (
 	if (nObject == -1) {
 		return -1;
 		}
-#ifdef NETWORK
 	if (laserType==GUIDEDMISS_ID && multiData.bIsGuided) {
 		gameData.objs.guidedMissile [objP->id]=gameData.objs.objects + nObject;
 	}
 
 	multiData.bIsGuided=0;
-#endif
 
 	if (laserType == CONCUSSION_ID ||
 		 laserType == HOMING_ID ||
@@ -1274,17 +1266,13 @@ int LaserPlayerFireSpreadDelay (
 		if (objP == gameData.objs.console) {
 			gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = 
 				FindHomingObject (&LaserPos, gameData.objs.objects + nObject);
-			#ifdef NETWORK
 			multiData.laser.nTrack = gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal;
-			#endif
 		}
-		#ifdef NETWORK
 		else // Some other tPlayer shot the homing thing
 		{
 			Assert (gameData.app.nGameMode & GM_MULTI);
 			gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = multiData.laser.nTrack;
 		}
-		#endif
 	}
 return nObject;
 }
@@ -1310,14 +1298,12 @@ void CreateFlare (tObject *objP)
 
 		LaserPlayerFire (objP, FLARE_ID, 6, 1, 0);
 
-		#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI) {
 			multiData.laser.bFired = 1;
 			multiData.laser.nGun = FLARE_ADJUST;
 			multiData.laser.nFlags = 0;
 			multiData.laser.nLevel = 0;
 		}
-		#endif
 // -- 	}
 
 }
@@ -1875,7 +1861,6 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 	// Set values to be recognized during comunication phase, if we are the
 	//  one shooting
-#ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && (nObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
 	{
 		multiData.laser.bFired = nFires;
@@ -1883,8 +1868,6 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 		multiData.laser.nFlags = flags;
 		multiData.laser.nLevel = level;
 	}
-#endif
-
 	return nFires;
 }
 
@@ -1971,11 +1954,8 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 				{
 					if ((parentType == OBJ_PLAYER) && (gameData.app.nGameMode & GM_MULTI_COOP))
 						continue;
-#ifdef NETWORK
 					if ((gameData.app.nGameMode & GM_TEAM) && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [nParentObj].id)))
 						continue;
-#endif
-
 					if (gameData.multi.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
 						continue;
 				}
@@ -2073,12 +2053,10 @@ void ReleaseGuidedMissile (int player_num)
 			return;
 	
 		gameData.objs.missileViewer = gameData.objs.guidedMissile [player_num];
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
-		 MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multi.nLocalPlayer],1);
-#endif
+		 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multi.nLocalPlayer],1);
 		if (gameData.demo.nState==ND_STATE_RECORDING)
-		 NDRecordGuidedEnd ();
+		 	NDRecordGuidedEnd ();
 	 }	
 
 	gameData.objs.guidedMissile [player_num] = NULL;
@@ -2130,9 +2108,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			if (++nProximityDropped == 4) {
 				nProximityDropped = 0;
-#ifdef NETWORK
 				MaybeDropNetPowerup (nObject, POW_PROXIMITY_WEAPON, INIT_DROP);
-#endif
 				}
 			}
 		break; //no dual prox bomb drop
@@ -2141,17 +2117,13 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		if (!(gameData.app.nGameMode & GM_ENTROPY)) {
 			if (++nSmartminesDropped == 4) {
 				nSmartminesDropped = 0;
-#ifdef NETWORK
 				MaybeDropNetPowerup (nObject, POW_SMART_MINE, INIT_DROP);
-#endif
 				}
 			}
 		break; //no dual smartmine drop
 		}
-#ifdef NETWORK
 	else if (gameData.weapons.nSecondary != CONCUSSION_INDEX)
 		MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
-#endif
 	if ((gameData.weapons.nSecondary == GUIDED_INDEX) || (gameData.weapons.nSecondary == SMART_INDEX))
 		break;
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == SMISSILE5_INDEX)) {
@@ -2169,14 +2141,12 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	}
 }
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	multiData.laser.bFired = 1;		//how many
 	multiData.laser.nGun = gameData.weapons.nSecondary + MISSILE_ADJUST;
 	multiData.laser.nFlags = gunFlag;
 	multiData.laser.nLevel = 0;
 	}
-#endif
 if (bAutoSelect)
 	AutoSelectWeapon (1, 1);		//select next missile, if this one out of ammo
 }

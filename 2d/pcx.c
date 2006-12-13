@@ -25,14 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "pcx.h"
 #include "cfile.h"
-
-#ifdef OGL
 #include "palette.h"
-#endif
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid);
 int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp);
@@ -122,10 +115,6 @@ int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Miss
 	int i, row, col, count, xsize, ysize;
 	ubyte data, *pixdata;
     ubyte palette [768];
-#ifdef POLY_ACC
-    pa_flush();
-#endif
-
 PCXfile = CFOpen( filename, gameFolders.szDataDir, "rb", bD1Mission );
 if ( !PCXfile )
 	return PCX_ERROR_OPENING;
@@ -146,25 +135,15 @@ if ((header.Manufacturer != 10)||(header.Encoding != 1)||(header.Nplanes != 1)||
 xsize = header.Xmax - header.Xmin + 1;
 ysize = header.Ymax - header.Ymin + 1;
 
-#if defined(POLY_ACC)
-   // Read the extended palette at the end of PCX file
-   if(bitmapType == BM_LINEAR15)      // need palette for conversion from 8bit pcx to 15bit.
-#else
 	if (palette && !bmP)
-#endif
     {
         CFSeek( PCXfile, -768, SEEK_END );
         CFRead( palette, 3, 256, PCXfile );
         CFSeek( PCXfile, PCXHEADER_SIZE, SEEK_SET );
         for (i=0; i<768; i++ )
             palette [i] >>= 2;
-#ifdef POLY_ACC
-        pa_save_clut();
-        pa_update_clut(palette, 0, 256, 0);
-#else
 		CFClose(PCXfile);
 		return PCX_ERROR_NONE;
-#endif
     }
 
 	if ( bitmapType == BM_LINEAR )	{
@@ -196,39 +175,6 @@ ysize = header.Ymax - header.Ymin + 1;
 				}
 			}
 		}
-#if defined(POLY_ACC)
-    } else if( bmP->bm_props.nType == BM_LINEAR15 )    {
-        ushort *pixdata2, pix15;
-        PA_DFX (pa_set_backbuffer_current();
-		  PA_DFX (pa_set_write_mode(0);
-		for (row=0; row< ysize ; row++)      {
-            pixdata2 = (ushort *)&bmP->bm_texBuf[bmP->bm_props.rowsize*row];
-			for (col=0; col< xsize ; )      {
-				if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-					CFClose( PCXfile );
-					return PCX_ERROR_READING;
-				}
-				if ((data & 0xC0) == 0xC0)     {
-					count =  data & 0x3F;
-					if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-						CFClose( PCXfile );
-						return PCX_ERROR_READING;
-					}
-                    pix15 = pa_clut[data];
-                    for(i = 0; i != count; ++i) pixdata2[i] = pix15;
-                    pixdata2 += count;
-					col += count;
-				} else {
-                    *pixdata2++ = pa_clut[data];
-					col++;
-				}
-			}
-        }
-        pa_restore_clut();
-		  PA_DFX (pa_swap_buffer();
-        PA_DFX (pa_set_frontbuffer_current();
-
-#endif
 	} else {
 		for (row=0; row< ysize ; row++)      {
 			for (col=0; col< xsize ; )      {
@@ -441,9 +387,7 @@ GrInitBitmapData (&bm);
 BM_MASK (&bm) = NULL;
 pcx_error = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
 if (pcx_error == PCX_ERROR_NONE) {
-#ifdef OGL
 	GrPaletteStepLoad (NULL);
-#endif
 	show_fullscr (&bm);
 	GrFreeBitmapData (&bm);
 	}

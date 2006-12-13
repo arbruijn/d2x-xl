@@ -255,27 +255,8 @@ extern double altBgBrightness;
 extern int altBgGrayScale;
 extern char altBgName [FILENAME_LEN];
 
-#if defined(WINDOWS) || defined(SDL_INPUT)
-# define NEWMENU_MOUSE
-#endif
-
-#ifdef NEWMENU_MOUSE
-# if defined(WINDOWS)
-#  define newmenu_show_cursor() ShowCursorW()
-#  define newmenu_hide_cursor() HideCursorW()
-# elif defined(SDL_INPUT)
-#  ifdef __macosx__
-#   include <SDL/SDL.h>
-#  else
-#   include <SDL.h>
-#  endif
-#  define newmenu_show_cursor() SDL_ShowCursor(SDL_ENABLE);
-#  define newmenu_hide_cursor() SDL_ShowCursor(SDL_DISABLE);
-# else
-#  define newmenu_show_cursor()
-#  define newmenu_hide_cursor()
-# endif
-#endif
+#define newmenu_show_cursor()
+#define newmenu_hide_cursor()
 
 #define STARS_BACKGROUND \
 			((gameStates.menus.bHires && CFExist ("starsb.pcx", gameFolders.szDataDir, 0)) ? "starsb.pcx":\

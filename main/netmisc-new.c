@@ -61,9 +61,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 
 #include "ipx.h"
 #include "multi.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "object.h"
 #include "powerup.h"
 #include "netmisc.h"

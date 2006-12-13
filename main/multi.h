@@ -277,11 +277,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // What version of the multiplayer protocol is this?
 
-#ifdef SHAREWARE
-#define MULTI_PROTO_VERSION 3
-#else
 #define MULTI_PROTO_VERSION 4
-#endif
 
 // Protocol versions:
 //   1 Descent Shareware

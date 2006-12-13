@@ -14,22 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if !defined(PA_ENABL_H)
 #define PA_ENABL_H
 
-//#define POLY_ACC                        // define this if poly support wanted.
-
-#if defined(POLY_ACC)
-
-// uncomment only ONE of the following.
-//#define PA_S3_VIRGE
-//#define PA_DIAMOND_S3_VIRGE
-
-#endif
-
-#ifdef PA_3DFX_VOODOO
- #define PA_DFX(x) x
- #define NO_DFX(x)
-#else
- #define PA_DFX(x)
- #define NO_DFX(x) x
-#endif
+#define PA_DFX(x)
+#define NO_DFX(x) x
 
 #endif

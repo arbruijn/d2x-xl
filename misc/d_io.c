@@ -50,26 +50,8 @@ long ffilelength(FILE *file)
 
 unsigned long d_getdiskfree()
 {
-#ifdef __MSDOS__
-  return getdiskfree();
-#else
-#if 0//def __WINDOWS__
-	ULONG cbCluster = 0;
-	ULONG cClusters = 0;
-
-	GetDiskFreeSpace (
-		NULL,
-                (int *) &cbCluster,
-		NULL,
-                (int *) &cClusters,
-		NULL);
-	
-	return cbCluster * cClusters;
-#else
-  // FIXME:
-  return 999999999;
-#endif
-#endif
+ // FIXME:
+return 999999999;
 }
 
 unsigned long GetDiskFree()

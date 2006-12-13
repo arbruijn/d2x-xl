@@ -102,11 +102,7 @@ char * get_scores_filename()
 
 //------------------------------------------------------------------------------
 
-#ifndef D2_OEM
 #define COOL_SAYING TXT_REGISTER_DESCENT
-#else
-#define COOL_SAYING "Get all 30 levels of D2 from 1-800-INTERPLAY"
-#endif
 
 void scores_read()
 {
@@ -436,10 +432,8 @@ ReshowScores:
 
 			GrPaletteFadeIn( NULL,32, 0);
 
-		#ifdef OGL
 			if (citem < 0)
 				GrUpdate (0);
-		#endif
 			bRedraw = 1;
 			}
 		if ( citem > -1 )	{
@@ -469,21 +463,6 @@ ReshowScores:
 		//see if redbook song needs to be restarted
 		SongsCheckRedbookRepeat();
 
-	#ifdef WINDOWS
-		{
-			MSG msg;
-
-			DoMessageStuff(&msg);
-
-			if (_RedrawScreen) {
-				_RedrawScreen = FALSE;
-				goto ReshowScores;
-			}
-
-			DDGRRESTORE;
-	 	}
-	#endif
-
 		k = KeyInKey();
 		switch( k )	{
 		case KEY_CTRLED+KEY_R:		
@@ -509,10 +488,6 @@ ReshowScores:
 
 // Restore background and exit
 	GrPaletteFadeOut (NULL, 32, 0 );
-
-#ifdef WINDOWS
-	DDGRRESTORE;
-#endif
 
 	WINDOS(	DDGrSetCurrentCanvas(NULL),
 				GrSetCurrentCanvas(NULL)

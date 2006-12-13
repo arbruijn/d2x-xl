@@ -19,8 +19,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
-
 #include "menu.h"
 #include "inferno.h"
 #include "game.h"
@@ -49,17 +47,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "newmenu.h"
 #include "piggy.h"
-#ifdef NETWORK
-#  include "network.h"
-#  include "netmenu.h"
-#  include "ipx.h"
-#  include "multi.h"
-#endif
+#include "network.h"
+#include "netmenu.h"
+#include "ipx.h"
+#include "multi.h"
 #include "scores.h"
 #include "joydefs.h"
-#ifdef NETWORK
 #include "modem.h"
-#endif
 #include "playsave.h"
 #include "kconfig.h"
 #include "titles.h"
@@ -92,10 +86,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef EDITOR
 #include "editor/editor.h"
-#endif
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
 #endif
 
 #define TXT_VERTIGO	"Vertigo"
@@ -200,10 +190,8 @@ int playerDefaultDifficulty; // Last difficulty level chosen by the tPlayer
 void ExecMenuOption (int select);
 void CustomDetailsMenu (void);
 void NewGameMenu (void);
-#ifdef NETWORK
 void MultiplayerMenu (void);
 void IpxSetDriver (int ipx_driver);
-#endif //NETWORK
 
 //returns the number of demo files on the disk
 int NDCountDemos ();
@@ -331,24 +319,12 @@ if ( bAllowAutoDemo ) {
 try_again:;
 
 		if ((d_rand () % (n_demos+1)) == 0) {
-			#ifndef SHAREWARE
-				#ifdef WINDOWS
-				mouse_set_mode (1);				//re-enable centering mode
-				HideCursorW ();
-				#endif
-#ifdef OGL
 				gameStates.video.nScreenMode = -1;
-#endif
 				InitSubTitles ("intro.tex");
 				PlayMovie ("intro.mve", 0, 1, gameOpts->movies.bResize);
 				SongsPlaySong (SONG_TITLE, 1);
 				*last_key = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
-				#ifdef WINDOWS
-				mouse_set_mode (0);				//disenable centering mode
-				ShowCursorW ();
-				#endif
-			#endif // end of ifndef shareware
 			}
 		else {
 			WIN (HideCursorW ());
@@ -394,10 +370,8 @@ if (!gameStates.app.bNostalgia) {
 	}
 ADD_MENU (opt, TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
 nMenuChoice [opt++] = MENU_LOAD_GAME;
-#ifdef NETWORK
 ADD_MENU (opt, TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
 nMenuChoice [opt++] = MENU_MULTIPLAYER;
-#endif
 if (gameStates.app.bNostalgia)
 	ADD_MENU (opt, TXT_OPTIONS_, KEY_O, HTX_MAIN_CONF);
 else
@@ -409,7 +383,7 @@ ADD_MENU (opt, TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
 nMenuChoice [opt++] = MENU_DEMO_PLAY;
 ADD_MENU (opt, TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
 nMenuChoice [opt++] = MENU_VIEW_SCORES;
-if (CFExist ("orderd2.pcx", gameFolders.szDataDir, 0)) { /* SHAREWARE */
+if (CFExist ("orderd2.pcx", gameFolders.szDataDir, 0)) { // SHAREWARE
 	ADD_MENU (opt, TXT_ORDERING_INFO, -1, NULL);
 	nMenuChoice [opt++] = MENU_ORDER_INFO;
 	}
@@ -580,11 +554,6 @@ for (;;) {
 
 extern void show_order_form (void);      // John didn't want this in inferno.h so I just externed it.
 
-#ifdef WINDOWS
-#undef TXT_SELECT_DEMO
-#define TXT_SELECT_DEMO "Select Demo\n<Ctrl-D> or Right-click\nto delete"
-#endif
-
 //returns flag, true means quit menu
 void ExecMenuOption (int select) 
 {
@@ -624,7 +593,7 @@ switch (select) {
 		GrPaletteFadeOut (NULL, 32, 0 );
 		scores_view (-1);
 		break;
-#if 1 //def SHAREWARE
+#if 0
 	case MENU_ORDER_INFO:
 		show_order_form ();
 		break;
@@ -671,7 +640,6 @@ switch (select) {
 	}
 #endif //ifndef RELEASE
 
-#ifdef NETWORK
 	//case MENU_START_TCP_NETGAME:
 	//case MENU_JOIN_TCP_NETGAME:
 	case MENU_START_UDP_TRACKER_NETGAME:
@@ -745,7 +713,7 @@ switch (select) {
 		ExecMessageBox (TXT_SORRY, 1, TXT_OK, "Not available in shareware version!");
 		// DoNewIPAddress ();
 		break;
-#endif
+
 	case MENU_START_SERIAL:
 		com_main_menu ();
 		break;
@@ -827,9 +795,6 @@ if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
 	gameStates.render.detail.nWallDetail = nDetailLevel;
 	gameStates.render.detail.nDebrisAmount = nDetailLevel;
 	gameStates.sound.nMaxSoundChannels = nDetailLevel;
-#if defined (POLY_ACC)
-    pa_filter_mode = nDetailLevel;
-#endif
 	gameStates.render.detail.nLevel = nDetailLevel;
 	}
 }
@@ -884,16 +849,12 @@ void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int ci
 	*last_key = *last_key;
 	citem = citem;
 
-	gameStates.render.detail.nObjectComplexity = items[0].value;
-	gameStates.render.detail.nObjectDetail = items[1].value;
-	gameStates.render.detail.nWallDetail = items[2].value;
-	gameStates.render.detail.nWallRenderDepth = items[3].value;
-	gameStates.render.detail.nDebrisAmount = items[4].value;
-	gameStates.sound.nMaxSoundChannels = items[5].value;
-#if defined (POLY_ACC)
-	pa_filter_mode = items[6].value;
-#endif
-
+gameStates.render.detail.nObjectComplexity = items[0].value;
+gameStates.render.detail.nObjectDetail = items[1].value;
+gameStates.render.detail.nWallDetail = items[2].value;
+gameStates.render.detail.nWallRenderDepth = items[3].value;
+gameStates.render.detail.nDebrisAmount = items[4].value;
+gameStates.sound.nMaxSoundChannels = items[5].value;
 }
 
 // -----------------------------------------------------------------------------
@@ -919,9 +880,6 @@ void CustomDetailsMenu (void)
 	int	opt;
 	int	i, choice = 0;
 	tMenuItem m [DL_MAX];
-	#if defined (POLY_ACC)
-	int filtering_id;
-	#endif
 
 do {
 	opt = 0;
@@ -938,10 +896,6 @@ do {
 	opt++;
 	ADD_SLIDER (opt, TXT_SOUND_CHANNELS, gameStates.sound.nMaxSoundChannels, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
 	opt++;
-	#if defined (POLY_ACC)
-	ADD_SLIDER (opt, "FILTERING", pa_filter_mode, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	opt++;
-	#endif
 	ADD_TEXT (opt, TXT_LO_HI, 0);
 	opt++;
 
@@ -999,24 +953,9 @@ else
 	gameStates.gfx.bOverride = 0;
 if (!gameStates.menus.bHiresAvailable && (mode != 1))
 	mode = 0;
-#ifndef WINDOWS
 if (!GrVideoModeOK (displayModeInfo [mode].VGA_mode))		//can't do mode
 	mode = 0;
 gameStates.video.nDisplayMode = mode;
-#else
-if (mode == 2) 
-	mode = 3;					// 320x400 -> 640x400.
-gameStates.video.nDisplayMode = mode;
-if (mode >= 3) 
-	mode--;						// Match to Windows dmi.
-if (DDCheckMode (displayModeInfo[mode].VGA_mode)) {
-	if (Platform_system == WINNT_PLATFORM || DD_Emulation) 
-		mode = 1;
-	else 
-		mode = 0;
-	gameStates.video.nDisplayMode = mode;
-	}
-#endif
 dmi = displayModeInfo + mode;
 if (gameStates.video.nDisplayMode != -1) {
 	GameInitRenderBuffers (dmi->VGA_mode, dmi->w, dmi->h, dmi->render_method, dmi->flags);
@@ -1213,21 +1152,12 @@ do {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);
 		return;
 		}
-#ifdef SHAREWARE
-	if (i != 0)
-		ExecMessageBox (TXT_SORRY, 1, TXT_OK, 
-			"High resolution modes are\n"
-			"only available in the\n"
-			"Commercial version of Descent 2.");
-	return;
-#else
 	if (i == gameStates.video.nDisplayMode) {
 		SetDisplayMode (i, 0);
 		SetScreenMode (SCREEN_MENU);
 		if (bStdRes)
 			return;
 		}
-#endif
 	}
 	while (key == -2);
 }
@@ -2448,8 +2378,8 @@ if (v != gameOpts->render.color.bGunLight) {
 if (nDynLightOpt >= 0) {
 	m = menus + nDynLightOpt;
 	v = m->value;
-	if (v != gameOpts->ogl.bUseLighting) {
-		gameOpts->ogl.bUseLighting = v;
+	if (v != gameOpts->render.bDynLighting) {
+		gameOpts->render.bDynLighting = v;
 		*key = -2;
 		return;
 		}
@@ -2496,7 +2426,7 @@ void LightingOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	if (gameStates.render.color.bLightMapsOk && !gameOpts->ogl.bUseLighting) {
+	if (gameStates.render.color.bLightMapsOk && !gameOpts->render.bDynLighting) {
 		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
 		nLightMapsOpt = opt++;
 		if (gameOpts->render.color.bUseLightMaps) {
@@ -2519,10 +2449,10 @@ do {
 	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
 		nDynLightOpt = -1;
 	else {
-		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->ogl.bUseLighting, KEY_O, HTX_OGL_LIGHTING);
+		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_O, HTX_OGL_LIGHTING);
 		nDynLightOpt = opt++;
 		}
-	if (gameOpts->ogl.bUseLighting && (nDynLightOpt >= 0)) {
+	if (gameOpts->render.bDynLighting && (nDynLightOpt >= 0)) {
 		if (!gameStates.app.bGameRunning) {
 			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
 			optObjectLight = opt++;
@@ -2562,7 +2492,7 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if ((nDynLightOpt >= 0) && (gameOpts->ogl.bUseLighting = m [nDynLightOpt].value)) {
+	if ((nDynLightOpt >= 0) && (gameOpts->render.bDynLighting = m [nDynLightOpt].value)) {
 		if (optObjectLight >= 0)
 			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
 		}
@@ -3055,10 +2985,7 @@ do {
 	opt++;
 	ADD_MENU (opt, strupr (TXT_CONTROLS_), KEY_O, HTX_OPTIONS_CONFIG);
 	optConfig = opt++;
-#if defined (WINDOWS)
-	ADD_MENU (opt, "INVOKE JOYSTICK CONTROL PANEL", KEY_J, NULL);
-	optJoyCal = opt++;
-#elif defined (_WIN32) || defined (__linux__)
+#if defined (_WIN32) || defined (__linux__)
 	optJoyCal = -1;
 #else
 	ADD_MENU (opt, TXT_CAL_JOYSTICK, KEY_J, HTX_OPTIONS_CALSTICK);
@@ -3066,32 +2993,14 @@ do {
 #endif
 	ADD_TEXT (opt, "", 0);
 	opt++;
-#if defined (POLY_ACC)
-	optBrightness = -1;
-#else
 	if (gameStates.app.bNostalgia) {
 		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = opt++;
 		}
-#endif
-
-#ifdef PA_3DFX_VOODOO
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	optDetails = -1;
-#else
 	ADD_MENU (opt, TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
 	optDetails = opt++;
-#endif
-
-#if defined (POLY_ACC)
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	optScrRes = -1;
-#else
 	ADD_MENU (opt, TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	optScrRes = opt++;
-#endif
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_MENU (opt, TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
@@ -3156,34 +3065,10 @@ void SoundMenuCallback (int nitems, tMenuItem * items, int *last_key, int citem 
 
 if ( gameConfig.nDigiVolume != items [optDigiVol].value )     {
 	gameConfig.nDigiVolume = items [optDigiVol].value;
-#ifdef WINDOWS
-		if (windigi_driver_off) {
-			digi_midi_wait ();
-			digi_init_digi ();
-			Sleep (500);
-			windigi_driver_off = FALSE;
-			}
-#endif			
 	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8 );
 	DigiPlaySampleOnce ( SOUND_DROP_BOMB, F1_0 );
 	}
 
-#ifdef WINDOWS
-if (!wmidi_support_volchange ()) {
-	if (!items [optMusicVol].value && gameConfig.nMidiVolume) {
-		gameConfig.nMidiVolume = 0;
-		DigiSetMidiVolume (0);
-		DigiPlayMidiSong ( NULL, NULL, NULL, 0 );
-		}
-	else if (!gameConfig.nMidiVolume && items[optMusicVol].value) {
-		DigiSetMidiVolume (64);
-		gameConfig.nMidiVolume = 4;
-		}
-	}
-else 	 // LINK TO BELOW IF
-#endif
-
-#if !defined (SHAREWARE) || ( defined (SHAREWARE) && defined (APPLE_DEMO) )
 if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 	if (items[optRedbook].value && !gameOpts->sound.bUseRedbook) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
@@ -3200,11 +3085,6 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 
 		if (items[optRedbook].value && !gameStates.sound.bRedbookPlaying) {
 			gameStates.sound.bRedbookEnabled = 0;
-#ifdef WINDOWS
-			if (RBCDROM_State == -1) 
-				ExecMessageBox (TXT_SORRY, 1, TXT_OK, TXT_MUSIC_BLOCKED);
-			else // link to next code line!
-#endif
 			gameStates.menus.nInMenu = 0;
 			ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_MUSIC_NOCD);
 			gameStates.menus.nInMenu = 1;
@@ -3223,20 +3103,11 @@ if (gameStates.sound.bRedbookEnabled) {
 		}
 	}
 else 
-#endif
 	{
 	if (gameConfig.nMidiVolume != items [optMusicVol].value) {
 		int song_playing = (gameConfig.nMidiVolume > 0);
 
  		gameConfig.nMidiVolume = items [optMusicVol].value;
-#ifdef WINDOWS
-			if (!windigi_driver_off) {
-				Sleep (200);
-				digi_close_digi ();
-				Sleep (100);
-				windigi_driver_off = TRUE;
-			}
-#endif
 		DigiSetMidiVolume ((gameConfig.nMidiVolume*128)/8);
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong ( NULL, NULL, NULL, 1, 0 );
@@ -3257,11 +3128,6 @@ void SoundMenu ()
 			optReverse,
 			song_playing = (gameConfig.nMidiVolume > 0);
 
- #ifdef WINDOWS
- 	extern BOOL DIGIDriverInit;
- 	windigi_driver_off = !DIGIDriverInit;
- #endif
-
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -3272,39 +3138,16 @@ do {
 					0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	optMusicVol = opt++;
 
-#ifdef WINDOWS
-	if (!wmidi_support_volchange () && !gameStates.sound.bRedbookPlaying)
-		ADD_CHECK (opt, TXT_MIDI_MUSIC, gameConfig.nMidiVolume != 0, 0, HTX_ONLINE_MANUAL);
-#endif
-
-#ifdef SHAREWARE
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	ADD_TEXT (opt, "", 0);
-	opt++;
-#else	//!defined SHAREWARE
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_REDBOOK_ENABLED, gameStates.sound.bRedbookPlaying, KEY_C, HTX_ONLINE_MANUAL);
 	optRedbook = opt++;
-#endif
-
 	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = opt++;
 	i = ExecMenu1 ( NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [optRedbook].value;
 	gameConfig.bReverseChannels = m [optReverse].value;
 } while (i > -1);
-
-#ifdef WINDOWS
-if (windigi_driver_off) {
-	digi_midi_wait ();
-	Sleep (500);
-	digi_init_digi ();
-	windigi_driver_off=FALSE;
-}
-#endif
-
 
 if ( gameConfig.nMidiVolume < 1 )   {
 		DigiPlayMidiSong ( NULL, NULL, NULL, 0, 0 );
@@ -3503,16 +3346,6 @@ do {
 	gameOpts->gameplay.bHeadlightOn = m [optHeadlight].value;
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].value;
-#if 0
-	gameOpts->render.bAutomapAlwaysHires = m [optAutomap].value;
-
-#	if !defined (POLY_ACC)
-		if (gameStates.menus.bHiresAvailable)
-			gameOpts->render.bAutomapAlwaysHires = m [optAutomap].value;
-		else if (m [optAutomap].value)
-			ExecMessageBox (TXT_SORRY, 1, "OK", "High Resolution modes are\nnot available on this video card");
-#	endif
-#endif
 	if (!gameStates.app.bNostalgia) {
 		gameOpts->app.bExpertMode = m [nExpModeOpt].value;
 		if (gameOpts->app.bExpertMode && gameOpts->app.bExpertMode) {
@@ -3558,7 +3391,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.color.bUseLightMaps = 0;
 			gameOpts->render.nQuality = 1;
 			gameOpts->render.cockpit.bTextGauges = 1;
-			gameOpts->ogl.bUseLighting = 0;
+			gameOpts->render.bDynLighting = 0;
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->movies.nQuality = 0;
 			gameOpts->movies.bResize = 0;
@@ -3588,7 +3421,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [2] = 0;
 			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 1;
-			gameOpts->ogl.bUseLighting = 0;
+			gameOpts->render.bDynLighting = 0;
 			gameOpts->ogl.bLightObjects = 0;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cameras.nFPS = 5;
@@ -3618,7 +3451,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [2] = 0;
 			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 0;
-			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->render.bDynLighting = 1;
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 			extraGameInfo [0].bUseCameras = 1;
@@ -3649,7 +3482,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [2] = 0;
 			gameOpts->render.smoke.nLife [3] = 2;
 			gameOpts->render.cockpit.bTextGauges = 0;
-			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->render.bDynLighting = 1;
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
 			extraGameInfo [0].bUseCameras = 1;
@@ -3679,7 +3512,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [1] =
 			gameOpts->render.smoke.nLife [2] = 0;
 			gameOpts->render.smoke.nLife [3] = 2;
-			gameOpts->ogl.bUseLighting = 1;
+			gameOpts->render.bDynLighting = 1;
 			gameOpts->ogl.bLightObjects = 1;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
 			extraGameInfo [0].bUseCameras = 1;
@@ -3726,7 +3559,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef NETWORK
 void MultiplayerMenu ()
 {
 	int nMenuChoice [11];
@@ -3755,11 +3587,6 @@ else {
 			optJoin = opt++;
 			ADD_TEXT (opt, "", 0);
 			opt++;
-	#if 0
-			ADD_TEXT (opt, TXT_CHOSE_CONNECTION, 0);
-	//		m [opt].centered = 1;
-			opt++;
-	#endif
 			ADD_RADIO (opt, TXT_NGTYPE_IPX, 0, KEY_I, 0, HTX_NETWORK_IPX);
 			optConn = opt++;
 			ADD_RADIO (opt, TXT_NGTYPE_UDP, 0, KEY_U, 0, HTX_NETWORK_UDP);
@@ -3768,42 +3595,32 @@ else {
 			opt++;
 			ADD_RADIO (opt, TXT_NGTYPE_MCAST4, 0, KEY_M, 0, HTX_NETWORK_MCAST);
 			opt++;
-	#ifdef KALINIX
+#ifdef KALINIX
 			ADD_RADIO (opt, TXT_NGTYPE_KALI, 0, KEY_K, 0, HTX_NETWORK_KALI);
 			opt++;
-	#endif
+#endif
 			nConnections = opt;
 			m [optConn + NMCLAMP (gameStates.multi.nConnection, 0, nConnections - optConn)].value = 1;
 			}
 		else {
-	#ifdef NATIVE_IPX
+#ifdef NATIVE_IPX
 			ADD_MENU (opt, TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
 			nMenuChoice [opt++] = MENU_START_IPX_NETGAME;
 			ADD_MENU (opt, TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
 			nMenuChoice [opt++] = MENU_JOIN_IPX_NETGAME;
-	#endif //NATIVE_IPX
+#endif //NATIVE_IPX
 			//ADD_MENU (TXT_START_TCP_NET_GAME, MENU_START_TCP_NETGAME, -1);
 			//ADD_MENU (TXT_JOIN_TCP_NET_GAME, MENU_JOIN_TCP_NETGAME, -1);
-	#if 0
-			ADD_MENU (opt, TXT_UDP_START, KEY_U, HTX_NETWORK_UDP);
-			nMenuChoice [opt++] = MENU_START_UPD_NETGAME;
-			ADD_MENU (opt, TXT_UDP_JOIN, KEY_O, HTX_NETWORK_UDP);
-			nMenuChoice [opt++] = MENU_JOIN_UDP_NETGAME;
-			ADD_MENU (opt, TXT_TRACKER_START, KEY_T, HTX_NETWORK_TRACKER);
-			nMenuChoice [opt++] = MENU_START_UDP_TRACKER_NETGAME;
-			ADD_MENU (opt, TXT_TRACKER_JOIN, KEY_R, HTX_NETWORK_TRACKER);
-			nMenuChoice [opt++] = MENU_JOIN_UDP_TRACKER_NETGAME;
-	#endif
 			ADD_MENU (opt, TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
 			nMenuChoice [opt++] = MENU_START_MCAST4_NETGAME;
 			ADD_MENU (opt, TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
 			nMenuChoice [opt++] = MENU_JOIN_MCAST4_NETGAME;
-	#ifdef KALINIX
+#ifdef KALINIX
 			ADD_MENU (opt, TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
 			nMenuChoice [opt++] = MENU_START_KALI_NETGAME;
 			ADD_MENU (opt, TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
 			nMenuChoice [opt++] = MENU_JOIN_KALI_NETGAME;
-	#endif // KALINIX
+#endif // KALINIX
 			if (gameStates.app.bNostalgia > 2) {
 				ADD_MENU (opt, TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
 				nMenuChoice [opt++] = MENU_START_SERIAL;
@@ -3902,8 +3719,6 @@ void DoNewIPAddress ()
 
   ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
  }
-
-#endif // NETWORK
 
 //------------------------------------------------------------------------------
 //eof

@@ -484,10 +484,8 @@ int AttemptToStealItem(tObject *objP, int player_num)
 		UpdateLaserWeaponInfo();
 //		DigiLinkSoundToPos( SOUND_NASTY_ROBOT_HIT_1, objP->nSegment, 0, &objP->position.vPos, 0 , DEFAULT_ROBOT_SOUND_VOLUME);
 //	I removed this to make the "steal sound" more obvious -AP
-#ifdef NETWORK
                 if (gameData.app.nGameMode & GM_NETWORK)
                  MultiSendStolenItems();
-#endif
 	}
 	return rval;
 }

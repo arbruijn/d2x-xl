@@ -20,10 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: cntrlcen.c,v 1.14 2003/11/26 12:26:29 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -41,9 +37,7 @@ static char rcsid[] = "$Id: cntrlcen.c,v 1.14 2003/11/26 12:26:29 btb Exp $";
 #include "laser.h"
 #include "gameseq.h"
 #include "ai.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 #include "wall.h"
 #include "object.h"
 #include "robot.h"
@@ -340,10 +334,8 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 			gameData.reactor.bSeenPlayer = 0;
 			return;
 			}
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));	
-#endif
 		CreateNewLaserEasy (&vecToGoal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at tPlayer, so it might hit him if he's constantly moving.
 		nRandProb = F1_0/ (abs (gameData.missions.nCurrentLevel)/4+2);
@@ -354,10 +346,8 @@ if ((gameData.reactor.nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (g
 			MakeRandomVector (&vRand);
 			VmVecScaleInc (&vecToGoal, &vRand, F1_0/6);
 			VmVecNormalizeQuick (&vecToGoal);
-			#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
-			#endif
 			CreateNewLaserEasy (&vecToGoal, &Gun_pos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}

@@ -431,14 +431,10 @@ void joydefs_calibrate2()
 
 	masks = joy_get_present_mask();
 
-#ifndef WINDOWS
 	if ( masks == JOY_ALL_AXIS )
 		nsticks = 2;
 	else
 		nsticks = 1;
-#else
-	nsticks = 1;
-#endif
 
 	if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)
 		nsticks = 1;		//ignore for now the Sidewinder Pro X2 axis
@@ -495,7 +491,6 @@ void joydefs_calibrate2()
 
 	// The fcs uses axes 3 for hat, so don't calibrate it.
 	if ( gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS )	{
-	#ifndef WINDOWS
 		//set Y2 axis, which is hat
 		axis_min[3] = 0;
 		axis_cen[3] = tempValues[3]/2;
@@ -526,7 +521,6 @@ void joydefs_calibrate2()
 			axis_max[3] = tempValues[3];
 			joy_delay();
 		}
-	#endif
 	} else {
 		masks = joy_get_present_mask();
 
@@ -566,7 +560,6 @@ void joydefs_calibrate2()
 				joy_delay();
 			}
 		}
-	#ifndef WINDOWS
 		else if ( (!(masks & JOY_2_X_AXIS)) && (masks & JOY_2_Y_AXIS) )	{
 			if ( kconfig_is_axes_used(3) )	{
 				// A throttle axis!!!!!
@@ -598,7 +591,6 @@ void joydefs_calibrate2()
 				joy_delay();
 			}
 		}
-	#endif
 	}
 	joy_set_cal_vals(axis_min, axis_cen, axis_max);
 
@@ -880,8 +872,6 @@ extern ubyte kc_use_external_control;
 extern ubyte kc_enable_external_control;
 extern ubyte *kc_external_name;
 
-#ifndef WINDOWS
-
 #ifdef MACINTOSH
 
 //NOTE: MAC VERSION
@@ -1105,8 +1095,6 @@ void joydefs_config()
 
 #endif	// ifdef MACINTOSH
 
-#else 	//ifndef WINDOWS
-
 void joydef_menuset_win(int nitems, tMenuItem * items, int *last_key, int citem )
 {
 	int i;
@@ -1238,4 +1226,3 @@ void joydefs_config()
 
 }
 
-#endif 	//ifndef WINDOWS

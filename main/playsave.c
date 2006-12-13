@@ -16,11 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#include <mmsystem.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -122,47 +117,18 @@ int new_player_config()
 	tMenuItem m[8];
    int mct=CONTROL_MAX_TYPES;
  
-   #ifndef WINDOWS
  	 mct--;
-	#endif
-
    InitWeaponOrdering ();		//setup default weapon priorities 
 
 RetrySelection:
 		memset (m, 0, sizeof (m));
-		#if !defined(WINDOWS)
 		for (i=0; i<mct; i++ )	{
 			m[i].nType = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i); m[i].key = -1;
 		}
-		#elif defined(WINDOWS)
-			m[0].nType = NM_TYPE_MENU; m[0].text = CONTROL_TEXT(0);
-	 		m[1].nType = NM_TYPE_MENU; m[1].text = CONTROL_TEXT(5);
-			m[2].nType = NM_TYPE_MENU; m[2].text = CONTROL_TEXT(7);
-		 	i = 3;
-		#else
-		for (i = 0; i < 6; i++) {
-			m[i].nType = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i);
-		}
-		m[4].text = "Gravis Firebird/Mousestick II";
-		m[3].text = "Thrustmaster";
-		#endif
-		
 		nitems = i;
 		m[0].text = TXT_CONTROL_KEYBOARD;
 	
-		#ifdef WINDOWS
-			if (gameConfig.nControlType==CONTROL_NONE) 
-				choice = 0;
-			else if (gameConfig.nControlType == CONTROL_MOUSE) 
-				choice = 1;
-			else if (gameConfig.nControlType == CONTROL_WINJOYSTICK) 
-				choice = 2;
-			else 
-				choice = 0;
-		#else
 			choice = gameConfig.nControlType;				// Assume keyboard
-		#endif
-	
 		#ifndef APPLE_DEMO
 			i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
 		#else
@@ -183,15 +149,6 @@ RetrySelection:
 
 	gameConfig.nControlType = choice;
 
-#ifdef WINDOWS
-	if (choice == 1) 
-		gameConfig.nControlType = CONTROL_MOUSE;
-	else if (choice == 2) 
-		gameConfig.nControlType = CONTROL_WINJOYSTICK;
-
-//	if (gameConfig.nControlType == CONTROL_WINJOYSTICK) 
-//		joydefs_calibrate();
-#else
 	if ( gameConfig.nControlType==CONTROL_THRUSTMASTER_FCS)	{
 		i = ExecMessageBox( TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS );
 		if (i==0) 
@@ -201,7 +158,6 @@ RetrySelection:
 	if ( (gameConfig.nControlType>0) && 	(gameConfig.nControlType<5))	{
 		joydefs_calibrate();
 	}
-#endif
 	
 playerDefaultDifficulty = 1;
 gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1;
@@ -219,14 +175,12 @@ Cockpit_3d_view[0]=CV_NONE;
 Cockpit_3d_view[1]=CV_NONE;
 
 // Default taunt macros
-#ifdef NETWORK
 strcpy(multiData.msg.szMacro[0], TXT_GET_ALONG);
 strcpy(multiData.msg.szMacro[1], TXT_GOT_PRESENT);
 strcpy(multiData.msg.szMacro[2], TXT_HANKERING);
 strcpy(multiData.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills=0; 
 networkData.nNetLifeKilled=0;	
-#endif
 #if 0
 InitGameOptions (0);
 InitArgs (0, NULL);
@@ -308,16 +262,6 @@ playerDefaultDifficulty = CFReadByte (fp);
 gameOpts->gameplay.bDefaultLeveling = CFReadByte (fp);
 gameOpts->render.cockpit.bReticle = CFReadByte (fp);
 gameStates.render.cockpit.nMode = CFReadByte (fp);
-#ifdef POLY_ACC
- #ifdef PA_3DFX_VOODOO
-if (gameStates.render.cockpit.nMode<2) {
-   gameStates.render.cockpit.nMode=2;
-	Game_window_w  = 640;
-	Game_window_h	= 480;
-	}
- #endif
-#endif
-
 {
 	unsigned char m = CFReadByte (fp);
 	if (!gameStates.gfx.bOverride)
@@ -346,16 +290,11 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 
 //read taunt macros
 {
-#ifdef NETWORK
 	int len = MAX_MESSAGE_LEN;
 
 	for (i = 0; i < 4; i++)
 		if (CFRead(multiData.msg.szMacro[i], len, 1, fp) != 1)
 			{errno_ret			= errno; break;}
-	#else
-	char dummy[4][MAX_MESSAGE_LEN];
-	CFRead(dummy, MAX_MESSAGE_LEN, 4, fp);
-#endif
 }
 
 //read KConfig data
@@ -370,13 +309,7 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 		errno_ret = errno;
 	else if (CFRead (gameOptions [0].input.joySensitivity, sizeof (ubyte), 1, fp ) != 1)
 		errno_ret = errno;
-
-	#ifdef WINDOWS
-	gameConfig.nControlType = controlType_win;
-	#else
 	gameConfig.nControlType = controlType_dos;
-	#endif
-
 	for (i=0;i<11;i++) {
 		primaryOrder[i]   = CFReadByte (fp);
 		secondaryOrder[i] = CFReadByte (fp);
@@ -394,31 +327,23 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 }
 
 if (player_file_version>=22) {
-#ifdef NETWORK
 	networkData.nNetLifeKills = CFReadInt(fp);
 	networkData.nNetLifeKilled = CFReadInt(fp);
 	if (swap) {
 		networkData.nNetLifeKills = SWAPINT(networkData.nNetLifeKills);
 		networkData.nNetLifeKilled = SWAPINT(networkData.nNetLifeKilled);
 		}
-#else
-	CFReadInt(fp);
-	CFReadInt(fp);
-#endif
 	}
-#ifdef NETWORK
 else
 	{
 	networkData.nNetLifeKills=0; 
 	networkData.nNetLifeKilled=0;
 	}
-#endif
 
 if (player_file_version>=23) {
   i = CFReadInt(fp);
   if (swap)
 	  i = SWAPINT(i);
-#ifdef NETWORK
 #if TRACE				
 	con_printf (CON_DEBUG,"Reading: lifetime checksum is %d\n",i);
 #endif
@@ -427,7 +352,6 @@ if (player_file_version>=23) {
  		ExecMessageBox(NULL, NULL, 1, "Shame on me", "Trying to cheat eh?");
 		rewrite_it=1;
 		}
-#endif
 	}
 
 //read guidebot name
@@ -449,26 +373,8 @@ strcpy(gameData.escort.szRealName, gameData.escort.szName);
 {
 	char buf[128];
 
-#ifdef WINDOWS
-	joy95_get_name(JOYSTICKID1, buf, 127);
-	if (player_file_version >= D2W95_PLAYER_FILE_VERSION) 
-		CFReadString(win95_current_joyname, fp);
-	else
-		strcpy(win95_current_joyname, "Old Player File");
-
-#	if TRACE				
-	con_printf (CON_DEBUG, "Detected joystick: %s\n", buf);
-	con_printf (CON_DEBUG, "Player's joystick: %s\n", win95_current_joyname);
-#	endif
-	if (strcmp(win95_current_joyname, buf)) {
-		for (i = 0; i < nMaxControls; i++)
-			controlSettings.custom[CONTROL_WINJOYSTICK][i] = 
-				controlSettings.defaults[CONTROL_WINJOYSTICK][i];
-		}	 
-#else
 	if (player_file_version >= D2W95_PLAYER_FILE_VERSION) 
 		CFReadString(buf, 127, fp);      // Just read it in fpr DPS.
-#endif
 }
 
 if (player_file_version >= 25)
@@ -799,7 +705,7 @@ for (j = 0; j < 2; j++) {
 		if (!j)
 			extraGameInfo [0].monsterball.nSizeMod = CFReadByte (fp);
 	if (player_file_version >= 117) {
-		gameOptions [j].ogl.bUseLighting = CFReadInt (fp);
+		gameOptions [j].render.bDynLighting = CFReadInt (fp);
 		gameOptions [j].ogl.bLightObjects = CFReadInt (fp);
 		gameOptions [j].ogl.nMaxLights = CFReadInt (fp);
 		}
@@ -1005,26 +911,17 @@ int WritePlayerFile()
 		return errno_ret;
 	}
 
-#ifdef NETWORK
 	if ((CFWrite(multiData.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4))
 	{
 		errno_ret			= errno;
 		CFClose(fp);
 		return errno_ret;
 	}
-#else
-	CFSeek(fp, MAX_MESSAGE_LEN * 4, SEEK_CUR);
-#endif
 
 	//write KConfig info
 	{
 
-		#ifdef WINDOWS
-		controlType_win = gameConfig.nControlType;
-		#else
 		controlType_dos = gameConfig.nControlType;
-		#endif
-
 		if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
 			errno_ret=errno;
 		else if (CFWrite(&controlType_dos, sizeof(ubyte), 1, fp) != 1)
@@ -1043,17 +940,11 @@ int WritePlayerFile()
 		CFWriteInt(Cockpit_3d_view[0], fp);
 		CFWriteInt(Cockpit_3d_view[1], fp);
 
-#ifdef NETWORK
 		CFWriteInt(networkData.nNetLifeKills, fp);
 		CFWriteInt(networkData.nNetLifeKilled, fp);
 		i=get_lifetime_checksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE				
 		con_printf (CON_DEBUG,"Writing: Lifetime checksum is %d\n",i);
-#endif
-#else
-		CFWriteInt(0, fp);
-		CFWriteInt(0, fp);
-		i = get_lifetime_checksum(0, 0);
 #endif
 		CFWriteInt(i,fp);
 	}
@@ -1062,11 +953,7 @@ int WritePlayerFile()
 	CFWriteString(gameData.escort.szRealName, fp);
 	{
 		char buf[128];
-		#ifdef WINDOWS
-		joy95_get_name(JOYSTICKID1, buf, 127);
-		#else
 		strcpy(buf, "DOS joystick");
-		#endif
 		CFWriteString(buf, fp);  // Write out current joystick for player.
 	}
 
@@ -1274,7 +1161,7 @@ for (j = 0; j < 2; j++) {
 		}
 	if (!j)
 		CFWriteByte (extraGameInfo [0].monsterball.nSizeMod, fp);
-	CFWriteInt (gameOptions [j].ogl.bUseLighting, fp);
+	CFWriteInt (gameOptions [j].render.bDynLighting, fp);
 	CFWriteInt (gameOptions [j].ogl.bLightObjects, fp);
 	CFWriteInt (gameOptions [j].ogl.nMaxLights, fp);
 	CFWriteByte (extraGameInfo [j].bDarkness, fp);

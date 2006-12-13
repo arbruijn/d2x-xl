@@ -60,9 +60,7 @@ static char rcsid [] = "$Id: endlevel.c, v 1.20 2003/10/12 09:38:48 btb Exp $";
 #include "multi.h"
 #include "vclip.h"
 #include "fireball.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "text.h"
 #include "digi.h"
 #include "cfile.h"
@@ -100,15 +98,8 @@ void generate_starfield ();
 void StartEndLevelFlyThrough (int n, tObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
-#ifdef D2_OEM
-char movie_table [2][] = {
-	{'a', 'a', 'a', 'a', 'd', 'd', 'd', 'd'}, 
-	{'f', 'f', 'f', 'a', 'a', 'b', 'b', 'c'}
-};
-#else
 char movie_table [2][30] = {	
 	{'a', 'b', 'c', 
-#ifndef SHAREWARE
 	'a', 
 	'd', 'f', 'd', 'f', 
 	'g', 'h', 'i', 'g', 
@@ -116,7 +107,6 @@ char movie_table [2][30] = {
 	'm', 'o', 'm', 'o', 
 	'p', 'q', 'p', 'q', 
 	0, 0, 0, 0, 0, 0
-#endif
 	}, 
 	{'f', 'f', 'f', 'a', 'a', 'b', 'b', 'c', 'c', 
 	 'c', 'g', 'f', 'g', 'g', 'f', 'g', 'f', 'g', 
@@ -124,20 +114,10 @@ char movie_table [2][30] = {
 	 'e', 'e', 'e'
 	}
 };
-#endif
 
 #define N_MOVIES (sizeof (movie_table) / (2 * sizeof (*movie_table)))
 
-#ifndef SHAREWARE
-#ifdef D2_OEM
-char movie_table_secret [2][2] = {{'a', 'd'}, {'e', 'e'}};
-#else
-char movie_table_secret [2][6] = {{'a', 'd', 'g', 'j', 'm', 'p'}, {'e', 'e', 'e', 'e', 'e', 'e'}};
-#endif
-#define N_MOVIES_SECRET (sizeof (movie_table_secret) / (2 * sizeof (*movie_table_secret)))
-#else
 #define N_MOVIES_SECRET 0
-#endif
 
 
 #define FLY_ACCEL i2f (5)
@@ -177,11 +157,7 @@ int ELFindConnectedSide (int seg0, int seg1)
 //------------------------------------------------------------------------------
 extern int Kmatrix_nomovie_message;
 
-#if defined (D2_OEM) || defined (COMPILATION)
-#define MOVIE_REQUIRED 0
-#else
 #define MOVIE_REQUIRED 1
-#endif
 
 //returns movie played status.  see movie.h
 int StartEndLevelMovie ()
@@ -215,12 +191,10 @@ return 0;	// movie not played for shareware
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	SetScreenMode (SCREEN_GAME);
-#ifdef NETWORK
 if (r==MOVIE_NOT_PLAYED && (gameData.app.nGameMode & GM_MULTI))
 	Kmatrix_nomovie_message=1;
 else
  	Kmatrix_nomovie_message=0;
-#endif
 return (r);
 }
 
@@ -304,12 +278,10 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 		}
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-#endif
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && 
 		gameStates.app.bHaveExtraMovies)) {
@@ -319,12 +291,10 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 	}
 if ((nMoviePlayed == MOVIE_NOT_PLAYED) && gameStates.app.bEndLevelDataLoaded) {   //don't have movie.  Do rendered sequence, if available
 	int bExitModelsLoaded = (gameData.pig.tex.nHamFileVersion < 3) ? 1 : LoadExitModels ();
-#ifndef WINDOWS
 	if (bExitModelsLoaded) {
 		StartRenderedEndLevelSequence ();
 		return;
 		}
-#endif
 	}
 //don't have movie or rendered sequence, fade out
 GrPaletteFadeOut (NULL, 32, 0);
@@ -369,12 +339,10 @@ while (i--) {
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
 gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-#endif
 Assert (last_segnum == gameData.endLevel.exit.nSegNum);
 if (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1)
 	SongsPlaySong (SONG_ENDLEVEL, 0);

@@ -43,9 +43,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "endlevel.h"
 #include "gameseq.h"
 #include "multi.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "palette.h"
 #include "robot.h"
 #include "bm.h"
@@ -750,9 +748,7 @@ switch (trigP->nType) {
 		break;
 
 	case TT_SECRET_EXIT: {
-#ifndef SHAREWARE
 		int	truth;
-#endif
 
 		if (nPlayer != gameData.multi.nLocalPlayer)
 			break;
@@ -764,7 +760,6 @@ switch (trigP->nType) {
 			DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
 			break;
 		}
-#ifndef SHAREWARE
 		truth = PSecretLevelDestroyed ();
 
 		if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
@@ -775,13 +770,7 @@ switch (trigP->nType) {
 			DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
 			break;
 		}
-#endif
 
-#ifdef SHAREWARE
-			HUDInitMessage (TXT_TELEPORT_DEMO);
-			DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
-			break;
-#endif
 		if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 			gameData.demo.nState = ND_STATE_PAUSED;
 		DigiStopAll ();		//kill the sounds
@@ -915,10 +904,8 @@ void ExecObjTriggers (short nObject)
 
 while (i >= 0) {
 	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, -1, 1, 1);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendObjTrigger (i);
-#endif
 	i = gameData.trigs.objTriggerRefs [i].next;
 	}
 }
@@ -940,10 +927,8 @@ if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers,
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiSendTrigger (nTrigger, nObject);
-#endif
 }
 
 //------------------------------------------------------------------------------

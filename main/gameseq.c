@@ -20,11 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,11 +29,8 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #endif
 #include <time.h>
 
-#ifdef OGL
 #include "ogl_init.h"
-#endif
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "console.h"
 #include "inferno.h"
 #include "game.h"
@@ -87,12 +79,10 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "newmenu.h"
 #include "endlevel.h"
 #include "interp.h"
-#ifdef NETWORK
-#  include "multi.h"
-#  include "network.h"
-#  include "netmisc.h"
-#  include "modem.h"
-#endif
+#include "multi.h"
+#include "network.h"
+#include "netmisc.h"
+#include "modem.h"
 #include "playsave.h"
 #include "ctype.h"
 #include "fireball.h"
@@ -121,9 +111,6 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "particles.h"
 #include "interp.h"
 
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
 #if defined (TACTILE)
  #include "tactile.h"
 #endif
@@ -313,7 +300,6 @@ if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multi.nPlayerPositio
 	//Int3 (); // Not enough positions!!
 }
 #endif
-#ifdef NETWORK
 if (IS_D2_OEM && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel==8) {
 	for (i=0;i<nPlayers;i++)
 		if (gameData.multi.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
@@ -329,7 +315,6 @@ if (IS_MAC_SHARE && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCu
 			return;
 			}
 	}
-#endif // NETWORK
 }
 
 //------------------------------------------------------------------------------
@@ -340,7 +325,6 @@ void GameSeqRemoveUnusedPlayers ()
 
 	// 'Remove' the unused players
 
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 	{
 		for (i=0; i < gameData.multi.nPlayerPositions; i++)
@@ -352,7 +336,6 @@ void GameSeqRemoveUnusedPlayers ()
 		}
 	}
 	else
-#endif
 	{		// Note link to above if!!!
 		for (i=1; i < gameData.multi.nPlayerPositions; i++)
 		{
@@ -431,14 +414,10 @@ void InitPlayerStatsLevel (int bSecret)
 	// int	i;
 gameData.multi.players [gameData.multi.nLocalPlayer].last_score = gameData.multi.players [gameData.multi.nLocalPlayer].score;
 gameData.multi.players [gameData.multi.nLocalPlayer].level = gameData.missions.nCurrentLevel;
-#ifdef NETWORK
 if (!networkData.bRejoined) {
-#endif
 	gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel = 0;
 	gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel = 0;
-#ifdef NETWORK
 	}
-#endif
 gameData.multi.players [gameData.multi.nLocalPlayer].nKillerObj = -1;
 gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel = 0;
 gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel = count_number_ofRobots ();
@@ -747,11 +726,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef WINDOWS
-#undef TXT_SELECT_PILOT
-#define TXT_SELECT_PILOT "Select pilot\n<Ctrl-D> or Right-click\nto delete"
-#endif
-
 //Inputs the tPlayer's name, without putting up the background screen
 int SelectPlayer ()
 {
@@ -898,23 +872,13 @@ Assert (gameStates.app.bAutoRunMission ||
 pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
 strlwr (pszLevelName);
 /*---*/LogErr ("   loading level '%s'\n", pszLevelName);
-#ifdef WINDOWS
-	DDGrSetCurrentCanvas (NULL);
-	dd_gr_clear_canvas (0);
-#else
-	GrSetCurrentCanvas (NULL);
-	GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
-#endif
+GrSetCurrentCanvas (NULL);
+GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/LogErr ("   loading palette\n");
-#if 1 //defined (POLY_ACC) || defined (OGL)
 GrPaletteStepLoad (NULL);
  //LoadPalette ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 ShowBoxedMessage (TXT_LOADING);
-#else
-ShowBoxedMessage (TXT_LOADING);
-GrPaletteStepLoad (NULL);
-#endif
 /*---*/LogErr ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 				 (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
@@ -951,7 +915,6 @@ gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 LoadRobotReplacements (pszLevelName, 0, 0);
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
-#ifdef NETWORK
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1));
 ResetNetworkObjects ();
 ResetChildObjects ();
@@ -978,7 +941,6 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segDeltas));
 /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
-#endif
 ComputeStaticDynLighting ();
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
 gameData.hoard.nMonsterballSeg = -1;
@@ -987,7 +949,6 @@ SetSoundSources ();
 PlayLevelSong (gameData.missions.nCurrentLevel);
 ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette
-#ifdef OGL
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
 /*---*/LogErr ("      rebuilding effects\n");
 RebuildGfxFx (1, 1);
@@ -999,13 +960,12 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
-if (gameOpts->ogl.bUseLighting)
+if (gameOpts->render.bDynLighting)
 	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
 memset (gameData.objs.speedBoost, 0, sizeof (gameData.objs.speedBoost));
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
-#endif
 //	WIN (HideCursorW ();
 D2SetCaption ();
 return 1;
@@ -1049,9 +1009,7 @@ gameData.missions.nNextLevel = 0;
 InitMultiPlayerObject ();				//make sure tPlayer's tObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multi.nPlayers = 1;
-#ifdef NETWORK
 networkData.bNewGame = 0;
-#endif
 if (nStartLevel < 0)
 	result = StartNewLevelSecret (nStartLevel, 0);
 else
@@ -1162,19 +1120,11 @@ if (!(gameData.app.nGameMode & GM_MULTI) && (gameData.multi.players [gameData.mu
 	sprintf (m_str [c++], "%s", endgame_text);
 sprintf (m_str [c++], "%s%i\n", TXT_TOTAL_BONUS, shield_points+energy_points+hostage_points+skill_points+all_hostage_points+endgame_points);
 sprintf (m_str [c++], "%s%i", TXT_TOTAL_SCORE, gameData.multi.players [gameData.multi.nLocalPlayer].score);
-#ifdef WINDOWS
-sprintf (m_str [c++], "");
-sprintf (m_str [c++], "         Done");
-#endif
 memset (m, 0, sizeof (m));
 for (i=0; i<c; i++) {
 	m [i].nType = NM_TYPE_TEXT;
 	m [i].text = m_str [i];
 	}
-#ifdef WINDOWS
-m [c-1].nType = NM_TYPE_MENU;
-#endif
-// m [c].nType = NM_TYPE_MENU;	m [c++].text = "Ok";
 sprintf (title,
 			"%s%s %d %s\n%s %s",
 			gameOpts->menus.nStyle ? "" : is_lastLevel ? "\n\n\n":"\n",
@@ -1186,11 +1136,9 @@ sprintf (title,
 Assert (c <= N_GLITZITEMS);
 GrPaletteFadeOut (NULL, 32, 0);
 PA_DFX (pa_alpha_always ());
-#ifdef NETWORK
 if (network && (gameData.app.nGameMode & GM_NETWORK))
 	ExecMenu2 (NULL, title, c, m, (void (*))NetworkEndLevelPoll2, 0, STARS_BACKGROUND);
 else
-#endif
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
 ExecMenu2 (NULL, title, c, m, NULL, 0, STARS_BACKGROUND);
@@ -1246,20 +1194,12 @@ void DoSecretMessage (char *msg)
 {
 	int	old_fmode;
 
-#if defined (POLY_ACC)
-	pa_save_clut ();
-	pa_update_clut (grPalette, 0, 256, 0);
-#endif
-
 old_fmode = gameStates.app.nFunctionMode;
 StopTime ();
 SetFunctionMode (FMODE_MENU);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime ();
-#if defined (POLY_ACC)
-pa_restore_clut ();
-#endif
 WIN (DEFINE_SCREEN (NULL));
 }
 
@@ -1480,11 +1420,8 @@ else
 }
 
 //------------------------------------------------------------------------------
-#if defined (D2_OEM) || defined (COMPILATION)
-#define MOVIE_REQUIRED 0
-#else
+
 #define MOVIE_REQUIRED 1
-#endif
 
 void show_order_form ();
 extern void com_hangup (void);
@@ -1541,16 +1478,9 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 		}
 	}
 KeyFlush ();
-
-#ifdef SHAREWARE
-show_order_form ();
-#endif
-
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiEndLevelScore ();
 else
-#endif
 	// NOTE LINK TO ABOVE
 	DoEndLevelScoreGlitz (0);
 
@@ -1582,19 +1512,15 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 //	Return true if game over.
 void AdvanceLevel (int bSecret, int bFromSecret)
 {
-#ifdef NETWORK
 	int result;
-#endif
 
 Assert (!bSecret);
 if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiEndLevelScore ();		
 	else
-#endif
 	// NOTE LINK TO ABOVE!!!
 	DoEndLevelScoreGlitz (0);		//give bonuses
 	}
@@ -1603,7 +1529,6 @@ gameData.reactor.bDestroyed = 0;
 if (gameData.missions.nCurrentLevel == 0)
 	return;		//not a real level
 #endif
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)	{
 	result = MultiEndLevel (&bSecret); // Wait for other players to reach this point
 	if (result) { // failed to sync
@@ -1613,7 +1538,6 @@ if (gameData.app.nGameMode & GM_MULTI)	{
 			return;
 		}
 	}
-#endif
 if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
 	!extraGameInfo [IsMultiGame].bRotateLevels) //tPlayer has finished the game!
 	DoEndGame ();
@@ -1659,20 +1583,10 @@ void DiedInMineMessage (void)
 		DDGrSetCurrentCanvas (NULL),
 		GrSetCurrentCanvas (NULL)
 	);
-#if defined (POLY_ACC)
-	pa_save_clut ();
-	pa_update_clut (grPalette, 0, 256, 0);
-#endif
-
 	old_fmode = gameStates.app.nFunctionMode;
 	SetFunctionMode (FMODE_MENU);
 	ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
 	SetFunctionMode (old_fmode);
-
-#if defined (POLY_ACC)
-	pa_restore_clut ();
-#endif
-
 	WIN (DEFINE_SCREEN (NULL));
 }
 
@@ -1690,10 +1604,6 @@ StopTime ();
 GrPaletteFadeOut (NULL, 32, 0);
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
-#if defined (POLY_ACC)
-pa_save_clut ();
-pa_update_clut (grPalette, 0, 256, 0);
-#endif
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (gameData.missions.nEnteredFromLevel < 0)
@@ -1702,9 +1612,6 @@ else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
-#if defined (POLY_ACC)
-pa_restore_clut ();
-#endif
 StartTime ();
 WIN (DEFINE_SCREEN (NULL));
 }
@@ -1725,21 +1632,11 @@ void AdvancingToLevelMessage (void)
 	GrPaletteFadeOut (NULL, 32, 0);
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	GrSetCurrentCanvas (NULL);
-#if defined (POLY_ACC)
-	pa_save_clut ();
-	pa_update_clut (grPalette, 0, 256, 0);
-#endif
-
 	old_fmode = gameStates.app.nFunctionMode;
 	SetFunctionMode (FMODE_MENU);
 	sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel+1);
 	ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 	SetFunctionMode (old_fmode);
-
-#if defined (POLY_ACC)
-	pa_restore_clut ();
-#endif
-
 	WIN (DEFINE_SCREEN (NULL));
 }
 
@@ -1772,11 +1669,9 @@ if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 }
 #endif
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiDoDeath (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 else
-#endif
 	{				//Note link to above else!
 	if (!--gameData.multi.players [gameData.multi.nLocalPlayer].lives) {	
 		DoGameOver ();
@@ -1859,7 +1754,6 @@ if (gameData.multi.nPlayers > gameData.multi.nPlayerPositions) {
 Assert (gameData.multi.nPlayers <= gameData.multi.nPlayerPositions);
 	//If this assert fails, there's not enough start positions
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_NETWORK) {
 	switch (NetworkLevelSync ()) { // After calling this, gameData.multi.nLocalPlayer is set
 		case -1:
@@ -1877,19 +1771,15 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	if (comLevel_sync ())
 		return 1;
-#endif
 
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
 AutomapClearVisited ();
-#ifdef NETWORK
 if (networkData.bNewGame == 1) {
 	networkData.bNewGame = 0;
 	InitPlayerStatsNewShip ();
 }
-#endif
 InitPlayerStatsLevel (bSecret);
-#ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
 	int i;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
@@ -1899,7 +1789,6 @@ if (gameData.app.nGameMode & GM_MULTI)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
 	FindMonsterball (); //will simply remove all Monsterballs
-#endif
 GameSeqRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
@@ -1923,13 +1812,11 @@ if (!(gameData.app.nGameMode & GM_MULTI) && !gameStates.app.cheats.bEnabled) {
 else
 	ReadPlayerFile (1);		//get window sizes
 ResetSpecialEffects ();
-#ifdef NETWORK
 if (networkData.bRejoined == 1){
 	networkData.bRejoined = 0;
 	StartLevel (1);
 	}
 else {
-#endif
 	StartLevel (0);		// Note link to above if!
 	}
 CopyDefaultsToRobotsAll ();
@@ -1949,12 +1836,10 @@ return 1;
 void BashToShield (int i, char *s)
 {
 	tObject *objP = gameData.objs.objects + i;
-#ifdef NETWORK
 	int id = objP->id;
 
 gameData.multi.powerupsInMine [id] =
 gameData.multi.maxPowerupsAllowed [id] = 0;
-#endif
 objP->nType = OBJ_POWERUP;
 objP->id = POW_SHIELD_BOOST;
 objP->renderType = RT_POWERUP;
@@ -1969,12 +1854,10 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 void BashToEnergy (int i,char *s)
 {
 	tObject *objP = gameData.objs.objects + i;
-#ifdef NETWORK
 	int id = objP->id;
 
 gameData.multi.powerupsInMine [id] =
 gameData.multi.maxPowerupsAllowed [id] = 0;
-#endif
 objP->nType = OBJ_POWERUP;
 objP->id = POW_ENERGY;
 objP->renderType = RT_POWERUP;
@@ -2042,14 +1925,6 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 					break;
 					}
 				}
-
-#ifdef WINDOWS
-			if (!movie) {					//must go before briefing
-				dd_gr_init_screen ();
-				gameStates.video.nScreenMode = -1;
-				}
-#endif
-
 			if (gameStates.movies.nRobots) {
 				int hires_save=gameStates.menus.bHiresAvailable;
 				if (gameStates.movies.nRobots == 1) {		//lowres only
@@ -2117,11 +1992,8 @@ void InitPlayerPosition (int bRandom)
 {
 	int bNewPlayer=0;
 
-#ifdef NETWORK
 	if (!((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode&GM_MULTI_COOP))) // If not deathmatch
-#endif
 		bNewPlayer = gameData.multi.nLocalPlayer;
-#ifdef NETWORK
 	else if (bRandom == 1) {
 		tObject *pObj;
 		int spawnMap [MAX_NUM_NET_PLAYERS];
@@ -2134,16 +2006,6 @@ void InitPlayerPosition (int bRandom)
 			spawnMap [i] = i;
 
 		d_srand (SDL_GetTicks ());
-
-#ifndef NDEBUG
-		if (gameData.multi.nPlayerPositions != MAX_NUM_NET_PLAYERS)
-		{
-#if TRACE		
-			//con_printf (1, "WARNING: There are only %d start positions!\n");
-#endif
-			//Int3 ();
-		}
-#endif
 
 		do {
 			trys++;
@@ -2203,14 +2065,11 @@ void InitPlayerPosition (int bRandom)
 	}
 	Assert (bNewPlayer >= 0);
 	Assert (bNewPlayer < gameData.multi.nPlayerPositions);
-#endif
 
 	gameData.objs.console->position.vPos = gameData.multi.playerInit [bNewPlayer].position.vPos;
 	gameData.objs.console->position.mOrient = gameData.multi.playerInit [bNewPlayer].position.mOrient;
  	RelinkObject (OBJ_IDX (gameData.objs.console),gameData.multi.playerInit [bNewPlayer].nSegment);
-#ifdef NETWORK
 done:
-#endif
 	ResetPlayerObject ();
 	ResetCruise ();
 }
@@ -2282,7 +2141,6 @@ DisableMatCens ();
 clear_transientObjects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		MultiSendScore ();
@@ -2291,7 +2149,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	}		
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
-#endif
 AIResetAllPaths ();
 AIInitBossForShip ();
 ClearStuckObjects ();

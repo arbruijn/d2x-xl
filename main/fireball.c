@@ -43,17 +43,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "collide.h"
 #include "newmenu.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "gameseq.h"
 #include "physics.h"
 #include "scores.h"
 #include "laser.h"
 #include "wall.h"
-#ifdef NETWORK
 #include "multi.h"
-#endif
 #include "endlevel.h"
 #include "timer.h"
 #include "fuelcen.h"
@@ -542,7 +538,7 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 }
 
 //------------------------------------------------------------------------------
-#ifdef NETWORK
+
 #define	BASE_NET_DROP_DEPTH	8
 
 int InitObjectCount (tObject *objP)
@@ -945,8 +941,6 @@ else
 	return nSegment;
 }
 
-#endif // NETWORK
-#ifdef NETWORK
 //	------------------------------------------------------------------------------------------------------
 
 void DropPowerups (void)
@@ -1083,7 +1077,6 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0) ||
 	}
 return 0;
 }
-#endif
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if current tSegment contains some tObject.
@@ -1258,7 +1251,6 @@ switch (nType) {
 				VmVecZero(&new_velocity);
 			vNewPos = *pos;
 
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {	
 				if (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
 #if TRACE
@@ -1277,7 +1269,6 @@ switch (nType) {
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
-#endif
 			nObject = CreateObject (nType, id, owner, nSegment, &vNewPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
 										  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 0);
 			if (nObject < 0) {
@@ -1287,10 +1278,8 @@ switch (nType) {
 				Int3();
 				return nObject;
 				}
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				multiData.create.nObjNums[multiData.create.nLoc++] = nObject;
-#endif
 			objP = gameData.objs.objects + nObject;
 			objP->mType.physInfo.velocity = new_velocity;
 			objP->mType.physInfo.drag = 512;	//1024;
@@ -1345,10 +1334,8 @@ switch (nType) {
 				Int3();
 				return nObject;
 				}
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				multiData.create.nObjNums[multiData.create.nLoc++] = nObject;
-#endif
 			objP = &gameData.objs.objects[nObject];
 			//Set polygon-tObject-specific data
 			objP->rType.polyObjInfo.nModel = gameData.bots.pInfo[objP->id].nModel;

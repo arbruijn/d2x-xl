@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -33,19 +29,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <errno.h>
 #endif
 
-#ifdef OGL
-# ifdef _MSC_VER
+#ifdef _MSC_VER
 #  include <windows.h>
-# endif
-# ifdef __macosx__
+#endif
+#ifdef __macosx__
 #  include <OpenGL/gl.h>
-# else
+#else
 #  include <GL/gl.h>
-# endif
 #endif
 
 #include "pstypes.h"
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "mono.h"
 #include "inferno.h"
 #include "segment.h"
@@ -83,9 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mission.h"
 #include "pcx.h"
 #include "u_mem.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "args.h"
 #include "ai.h"
 #include "fireball.h"
@@ -96,14 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "state.h"
 #include "strutil.h"
 #include "ipx.h"
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
-
-#ifdef OGL
-#	include "gr.h"
-#endif
+#include "gr.h"
 
 #define STATE_VERSION				28
 #define STATE_COMPATIBLE_VERSION 20
@@ -152,10 +136,6 @@ grsBitmap *sc_bmp [NUM_SAVES+1];
 char dgss_id [4] = "DGSS";
 
 int state_default_item = 0;
-
-#ifdef WINDOWS
-extern ubyte Hack_DblClick_MenuMode;
-#endif
 
 void ComputeAllStaticLight (void);
 
@@ -222,11 +202,7 @@ if (gameStates.menus.bHires) {
 //	GrFreeCanvas (temp_canv);
 	}
 else {
-#ifdef WINDOWS
-	Int3 ();
-#else
 	GrBitmap ((grdCurCanv->cv_bitmap.bm_props.w-THUMBNAIL_W)/2,items [0].y-5, sc_bmp [citem-1]);
-#endif
 	}
 }
 
@@ -408,10 +384,6 @@ int StateGetRestoreFile (char * fname, int bMulti)
 
 	sc_last_item = -1;
 
-#if defined (WINDOWS)
-	Hack_DblClick_MenuMode = 1;
-#endif
-
    RestoringMenu=1;
 	choice = state_default_item + NM_IMG_SPACE;
 	i = ExecMenu3 (NULL, TXT_LOAD_GAME_MENU, j + NM_IMG_SPACE, m, state_callback, 
@@ -419,10 +391,6 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	if (i < 0)
 		return 0;
    RestoringMenu=0;
-#if defined (WINDOWS)
-	Hack_DblClick_MenuMode = 0;
-#endif
-
 	choice -= NM_IMG_SPACE;
 
 	for (i=0; i<NUM_SAVES+1; i++)	{
@@ -496,12 +464,10 @@ int StateSaveAll (int bBetweenLevels, int bSecretSave, char *pszFilenameOverride
 	char	filename [128], szDesc [DESC_LENGTH+1];
 
 Assert (bBetweenLevels == 0);	//between levels save ripped out
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)	{
 	MultiInitiateSaveGame ();
 	return 0;
 	}
-#endif
 if (!(bSecretSave || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission) && 
 	  (gameData.missions.nCurrentLevel < 0)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
@@ -598,7 +564,6 @@ CFWrite (&gameData.missions.nNextLevel, sizeof (int), 1, fp);
 //Save gameData.time.xGame
 CFWrite (&gameData.time.xGame, sizeof (fix), 1, fp);
 // If coop save, save all
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWrite (&gameData.app.nStateGameId, sizeof (int), 1, fp);
 	CFWrite (&netGame, sizeof (netgame_info), 1, fp);
@@ -608,7 +573,6 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		CFWrite (&gameData.multi.players [i], sizeof (tPlayer), 1, fp);
 	}
-#endif
 //Save tPlayer info
 CFWrite (&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof (tPlayer), 1, fp);
 // Save the current weapon info
@@ -1135,7 +1099,6 @@ CFWriteInt (gameData.missions.nNextLevel, fp);
 //Save gameData.time.xGame
 CFWriteFix (gameData.time.xGame, fp);
 // If coop save, save all
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWriteInt (gameData.app.nStateGameId, fp);
 	StateSaveNetGame (fp);
@@ -1148,7 +1111,6 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 		StateSavePlayer (gameData.multi.players + i, fp);
 	fpos = CFTell (fp);
 	}
-#endif
 //Save tPlayer info
 StateSavePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
 // Save the current weapon info
@@ -1295,9 +1257,6 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 	int			i;
 	CFILE			*fp;
 	grs_canvas	*cnv;
-	#ifdef POLY_ACC
-	grs_canvas	cnv2,*save_cnv2;
-	#endif
 
 	Assert (bBetweenLevels == 0);	//between levels save ripped out
 	StopTime ();
@@ -1330,63 +1289,26 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 
 	cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH);
 	if (cnv)	{
-#ifdef OGL
 		ubyte			*buf;
 		grsBitmap	tmp;
 		int			k, x, y;
-#endif
-		#ifdef WINDOWS
-			dd_grs_canvas *cnv_save;
-			cnv_save = dd_grd_curcanv;
-		#else
-			grs_canvas * cnv_save;
-			cnv_save = grdCurCanv;
-		#endif
-
+		grs_canvas * cnv_save;
+		cnv_save = grdCurCanv;
 		
-#if defined (POLY_ACC)
-
-		PA_DFX (pa_fool_to_backbuffer ();
-
-		//for poly_acc, we render the frame to the normal render buffer
-		//so that this doesn't show, we create yet another canvas to save
-		//and restore what's on the render buffer
-		PA_DFX (pa_alpha_always ();	
-		PA_DFX (pa_set_front_to_read ();
-		if (sgVersion < 26) {
-			GrInitSubCanvas (&cnv2, &VR_render_buffer [0], 0, 0, THUMBNAIL_W, THUMBNAIL_H);
-			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_W, THUMBNAIL_H, cnv2.cv_bitmap.bm_props.nType);
-			}
-		else {
-			GrInitSubCanvas (&cnv2, &VR_render_buffer [0], 0, 0, THUMBNAIL_LW, THUMBNAIL_LH);
-			save_cnv2 = GrCreateCanvas2 (THUMBNAIL_LW, THUMBNAIL_LH, cnv2.cv_bitmap.bm_props.nType);
-			}
-		GrSetCurrentCanvas (save_cnv2);
-		PA_DFX (pa_set_front_to_read ();
-		GrBitmap (0,0,&cnv2.cv_bitmap);
-		GrSetCurrentCanvas (&cnv2);
-#else
 		GrSetCurrentCanvas (cnv);
-#endif
-
 		PA_DFX (pa_set_backbuffer_current ());
 		RenderFrame (0, 0);
 		PA_DFX (pa_alpha_always ());
 			
-#if defined (POLY_ACC)
-		screen_shot_pa (cnv,&cnv2);
-#elif defined (OGL)
 		//buf = d_malloc (THUMBNAIL_LW * THUMBNAIL_LH * 3);
 		if (curDrawBuffer == GL_BACK)
 			GameRenderFrame ();
 		glReadBuffer (GL_FRONT);
-#if 1
 		buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
 		glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
 		tmp.bm_props.w = grdCurScreen->sc_w;
 		tmp.bm_props.h = grdCurScreen->sc_h;
 		tmp.bm_texBuf = buf;
-#	if 1
 		// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 		ShrinkTGA (&tmp, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0, 3);
 		GrPaletteStepLoad (NULL);
@@ -1399,40 +1321,8 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 					GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
 				}
 		GrPaletteStepLoad (NULL);
-#	else
-		// resize (by skipping pixels) and convert to bmp in one step
-		for (y = 0; y < THUMBNAIL_LH; y++) {
-			i = (y * grdCurScreen->sc_h / THUMBNAIL_LH) * grdCurScreen->sc_w * 3;
-			k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
-			for (x = 0; x < THUMBNAIL_LW; x++, k++, i += grdCurScreen->sc_w / THUMBNAIL_LW * 3)
-				cnv->cv_bitmap.bm_texBuf [k] =
-					GrFindClosestColor (buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
-				}
-#	endif
-#else
-		//copy only a part of the game screen
-		buf = d_malloc (THUMBNAIL_LW * THUMBNAIL_LH * 3);
-		glReadPixels (0, SHEIGHT - THUMBNAIL_LH, THUMBNAIL_LW, THUMBNAIL_LH, GL_RGB, GL_UNSIGNED_BYTE, buf);
-		k = THUMBNAIL_LH;
-		for (i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++) {
-			if (! (j = i % THUMBNAIL_LW))
-				k--;
-			cnv->cv_bitmap.bm_texBuf [THUMBNAIL_LW * k + j] =
-				GrFindClosestColor (gamePalette, buf [3*i]/4, buf [3*i+1]/4, buf [3*i+2]/4);
-		}
-#endif
 		d_free (buf);
-#endif
 		CFWrite (cnv->cv_bitmap.bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
-#if defined (POLY_ACC)
-		PA_DFX (pa_alpha_always ();	
-		PA_DFX (pa_set_frontbuffer_current ();
-		PA_DFX (GrBitmap (0,0,&save_cnv2->cv_bitmap);
-		PA_DFX (pa_set_backbuffer_current ();
-		GrBitmap (0,0,&save_cnv2->cv_bitmap);
-		GrFreeCanvas (save_cnv2);
-	 	PA_DFX (pa_fool_to_offscreen ();
-#endif
 	WINDOS (
 		DDGrSetCurrentCanvas (cnv_save),
 		GrSetCurrentCanvas (cnv_save)
@@ -1480,14 +1370,12 @@ int StateRestoreAll (int bInGame, int bSecretRestore, char *pszFilenameOverride)
 	char filename [128];
 	int	i, filenum = -1;
 
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI)	{
 #	ifdef MULTI_SAVE
 	MultiInitiateRestoreGame ();
 #	endif
 	return 0;
 	}
-#endif
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDStopRecording ();
 if (gameData.demo.nState != ND_STATE_NORMAL)
@@ -1586,9 +1474,7 @@ if (bMulti)
 else {
 	gameData.app.nGameMode = GM_NORMAL;
 	SetFunctionMode (FMODE_GAME);
-#ifdef NETWORK
 	ChangePlayerNumTo (0);
-#endif
 	strcpy (pszOrgCallSign, gameData.multi.players [0].callsign);
 	gameData.multi.nPlayers = 1;
 	if (!bSecretRestore) {
@@ -2171,7 +2057,6 @@ nNextLevel = CFReadInt (fp);
 gameData.time.xGame = CFReadFix (fp);
 // Start new game....
 StateRestoreMultiGame (szOrgCallSign, bMulti, bSecretRestore);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
@@ -2191,9 +2076,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	StateGetConnectedPlayers (restore_players, nPlayers);
 	}
-
-#endif
-
 //Read tPlayer info
 if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
 	CFClose (fp);
@@ -2407,7 +2289,6 @@ CFRead (&nNextLevel, sizeof (int), 1, fp);
 CFRead (&gameData.time.xGame, sizeof (fix), 1, fp);
 // Start new game....
 StateRestoreMultiGame (szOrgCallSign, bMulti, bSecretRestore);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
@@ -2423,7 +2304,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	StateGetConnectedPlayers (restore_players, nPlayers);
 	}
-#endif
 
 //Read tPlayer info
 if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
@@ -2673,7 +2553,6 @@ else
 CFClose (fp);
 FixObjectSegs ();
 SetLastSuperWeaponStates ();
-#ifdef NETWORK
  // Get rid of ships that aren't connected in the restored game
 if (gameData.app.nGameMode & GM_MULTI) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
@@ -2683,7 +2562,6 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	      }
 		}
 	}
-#endif
 gameData.objs.viewer = 
 gameData.objs.console = 
 	gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
@@ -2716,7 +2594,6 @@ void ComputeAllStaticLight (void)
 		gameData.segs.segment2s [i].static_light = h ? total_light / (h * 4) : 0;
 	}
 }
-
 
 //------------------------------------------------------------------------------
 
@@ -2775,65 +2652,5 @@ int StateGetGameId (char *filename)
 	return (gameData.app.nStateGameId);
  }
 
-#if defined (POLY_ACC)
-//void screen_shot_pa (ubyte *dst,ushort *src)
-//{
-//    //ushort *src = pa_get_buffer_address (0),
-//    ushort *s;
-//    fix u, v, du, dv;
-//    int ui, w, h;
-//
-//    pa_flush ();
-//
-//    du = (640.0 / (double)THUMBNAIL_W) * 65536.0;
-//    dv = (480.0 / (double)THUMBNAIL_H) * 65536.0;
-//
-//    for (v = h = 0; h != THUMBNAIL_H; ++h)
-//    {
-//        s = src + f2i (v) * 640;
-//        v += dv;
-//        for (u = w = 0; w != THUMBNAIL_W; ++w)
-//        {
-//            ui = f2i (u);
-//            *dst++ = GrFindClosestColor ((s [ui] >> 9) & 0x3e, (s [ui] >> 4) & 0x3e, (s [ui] << 1) & 0x3e);
-//            u += du;
-//        }
-//    }
-//}
-
-void screen_shot_pa (grs_canvas *dcanv,grs_canvas *scanv)
-{
-	ubyte *dst;
-	ushort *src;
-	int x,y;
-
-	Assert (scanv->cv_w == dcanv->cv_w && scanv->cv_h == dcanv->cv_h);
-
-	pa_flush ();
-
-	src = (ushort *) scanv->cv_bitmap.bm_texBuf;
-	dst = dcanv->cv_bitmap.bm_texBuf;
-
-	#ifdef PA_3DFX_VOODOO
-   src= (ushort *)pa_set_back_to_read ();
-	#endif
-
-	for (y=0; y<scanv->cv_h; y++) {
-		for (x=0; x<scanv->cv_w; x++) {
-			#ifdef PA_3DFX_VOODOO
-			*dst++ = GrFindClosestColor ((*src >> 10) & 0x3e, (*src >> 5) & 0x3f, (*src << 1) & 0x3e);
-			#else
-			*dst++ = GrFindClosestColor ((*src >> 9) & 0x3e, (*src >> 4) & 0x3e, (*src << 1) & 0x3e);
-			#endif
-
-			src++;
-		}
-		src = (ushort *) (( (ubyte *) src) + (scanv->cv_bitmap.bm_props.rowsize - (scanv->cv_bitmap.bm_props.w*PA_BPP));
-		dst += dcanv->cv_bitmap.bm_props.rowsize - dcanv->cv_bitmap.bm_props.w;
-	}
-	#ifdef PA_3DFX_VOODOO
-	pa_set_front_to_read ();
-	#endif
-}
-#endif
-
+//------------------------------------------------------------------------------
+//eof

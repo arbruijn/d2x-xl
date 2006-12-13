@@ -607,7 +607,7 @@ if (EGI_FLAG (bShadows, 0, 0)
 #endif
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
+if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
 	OglColor4sf (1.0f, 1.0f, 1.0f, s);
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
@@ -969,7 +969,7 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 						bExclusive = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3),
 						bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
 						bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
-	tShaderLight	*psl = gameData.render.lights.ogl.shader.lights;
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 	tFaceColor		*pc = NULL;
 
 if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
@@ -978,23 +978,23 @@ else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
 	s = 1.0f;
 else
 	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-if (gameData.render.lights.ogl.material.bValid) {
+if (gameData.render.lights.dynamic.material.bValid) {
 #if 0
-	if (gameData.render.lights.ogl.material.emissive.c.r ||
-		 gameData.render.lights.ogl.material.emissive.c.g ||
-		 gameData.render.lights.ogl.material.emissive.c.b) {
+	if (gameData.render.lights.dynamic.material.emissive.c.r ||
+		 gameData.render.lights.dynamic.material.emissive.c.g ||
+		 gameData.render.lights.dynamic.material.emissive.c.b) {
 		bMatEmissive = 1;
-		nMatLight = gameData.render.lights.ogl.material.nLight;
-		colorSum = gameData.render.lights.ogl.material.emissive;
+		nMatLight = gameData.render.lights.dynamic.material.nLight;
+		colorSum = gameData.render.lights.dynamic.material.emissive;
 		}
 #endif
 	bMatSpecular = 
-		gameData.render.lights.ogl.material.specular.c.r ||
-		gameData.render.lights.ogl.material.specular.c.g ||
-		gameData.render.lights.ogl.material.specular.c.b;
+		gameData.render.lights.dynamic.material.specular.c.r ||
+		gameData.render.lights.dynamic.material.specular.c.g ||
+		gameData.render.lights.dynamic.material.specular.c.b;
 	if (bMatSpecular) {
-		matSpecular = gameData.render.lights.ogl.material.specular;
-		fMatShininess = (float) gameData.render.lights.ogl.material.shininess;
+		matSpecular = gameData.render.lights.dynamic.material.specular;
+		fMatShininess = (float) gameData.render.lights.dynamic.material.shininess;
 		}
 	}
 #if 1 //cache light values per frame
@@ -1024,7 +1024,7 @@ if (!(gameStates.render.nState || pVertColor)) {
 	SetNearestVertexLights (nVertex, 1, 0, 1);
 	}
 //VmVecNegatef (&vertNorm);
-for (i = j = 0; i < gameData.render.lights.ogl.shader.nLights; i++, psl++) {
+for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 	if (bExclusive) {
 		if (bExclusive < 0)
 			break;
@@ -1204,7 +1204,7 @@ bool G3DrawTexPolyMulti (
 {
 	int			c, tmType, nFrame;
 	int			bLight = 1, 
-					bDynLight = gameOpts->ogl.bUseLighting, 
+					bDynLight = gameOpts->render.bDynLighting, 
 					bDrawBM = 0;
 	grsBitmap	*bmP, *bmMask;
 	g3sPoint		*pl, **ppl;
@@ -1335,22 +1335,22 @@ else
 		bDrawBM = bmTop && !bShaderMerge;
 		if (bSuperTransp)
 			r_tpolyc++;
-		if (bShaderMerge || (0 && gameOpts->ogl.bUseLighting)) {	
+		if (bShaderMerge || (0 && gameOpts->render.bDynLighting)) {	
 			GLint loc;
-			if (0 && gameOpts->ogl.bUseLighting) {
+			if (0 && gameOpts->render.bDynLighting) {
 				glUseProgramObject (tmProg = genShaderProg);
 				glUniform1f (loc = glGetUniformLocation (tmProg, "nLights"), 
-								 (GLfloat) gameData.render.lights.ogl.shader.nLights);
+								 (GLfloat) gameData.render.lights.dynamic.shader.nLights);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "lightTex"), 3);
 				InitTMU3 ();
-				glBindTexture (GL_TEXTURE_2D, gameData.render.lights.ogl.shader.nTexHandle);
+				glBindTexture (GL_TEXTURE_2D, gameData.render.lights.dynamic.shader.nTexHandle);
 				tmType = 0;
 				}
 			if (bShaderMerge) {
 				bmMask = BM_MASK (bmTop);
 				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
 #if 0
-				if (gameOpts->ogl.bUseLighting)
+				if (gameOpts->render.bDynLighting)
 					tmType++;
 				else
 #endif
@@ -1378,7 +1378,7 @@ else
 				}
 			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-			if (0 && gameOpts->ogl.bUseLighting) {
+			if (0 && gameOpts->render.bDynLighting) {
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeFS"), tmType);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeVS"), tmType);
 				}
@@ -1405,7 +1405,7 @@ else
 		else
 			G3CalcNormal (pointList, &vNormal);
 #else
-		if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)
+		if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
 			G3Normal (pointList, pvNormal);
 #endif
 		if (!bLight)
@@ -2045,32 +2045,21 @@ else
 		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 		glEnable (GL_MULTISAMPLE_ARB);
-#ifdef OGL_ZBUF //enable depth buffer
 	if (bFlat) {
 		glDisable (GL_DEPTH_TEST);
 		glDisable (GL_ALPHA_TEST);
 		glDisable (GL_CULL_FACE);
 		}
-	else if (!gameOpts->legacy.bZBuf) {
+	else {
 		glEnable (GL_CULL_FACE);		
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
 		glCullFace (GL_BACK);
 		glEnable (GL_DEPTH_TEST);
-		if (glIsEnabled (GL_DEPTH_TEST)) {
-			glDepthFunc (GL_LESS);
-			glEnable (GL_ALPHA_TEST);
-			if (glIsEnabled (GL_ALPHA_TEST))
-				glAlphaFunc (GL_GEQUAL, (float) 0.01);	
-			else {
-				gameOpts->legacy.bZBuf = 1;
-				glDisable (GL_DEPTH_TEST);
-				}
-			}
-		else
-			gameOpts->legacy.bZBuf = 1;
+		glDepthFunc (GL_LESS);
+		glEnable (GL_ALPHA_TEST);
+		glAlphaFunc (GL_GEQUAL, (float) 0.01);	
 		}	
-#endif
-	if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting)	{//for optional hardware lighting
+	if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)	{//for optional hardware lighting
 		//GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		//glEnable (GL_LIGHTING);
 		//glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
@@ -2111,7 +2100,7 @@ glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);
 glDisable (GL_CULL_FACE);
 glDisable (GL_STENCIL_TEST);
-if (gameStates.ogl.bHaveLights && gameOpts->ogl.bUseLighting) {
+if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
 	}

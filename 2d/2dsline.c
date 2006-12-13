@@ -24,15 +24,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "error.h"
 
-#ifdef __MSDOS__
-#include "modex.h"
-#include "vesa.h"
-#endif
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
-
 #include "inferno.h"
 #include "ogl_init.h"
 
@@ -128,120 +119,23 @@ memset(dest, color->index, nbytes);
 #endif
 #endif
 
-#if defined(POLY_ACC)
-//$$ Note that this code WAS a virtual clone of the mac code and any changes to mac should be reflected here.
-void gr_linear15_darken( short * dest, int darkeningLevel, int count, ubyte * fade_table )
-{
-    //$$ this routine is a prime candidate for using the alpha blender.
-    int i;
-    unsigned short rt[32], gt[32], bt[32];
-    unsigned long level, intLevel, dlevel;
-
-    dlevel = (darkeningLevel << 16) / GR_FADE_LEVELS;
-    level = intLevel = 0;
-    for(i = 0; i != 32; ++i)
-    {
-        rt[i] = intLevel << 10;
-        gt[i] = intLevel << 5;
-        bt[i] = intLevel;
-
-        level += dlevel;
-        intLevel = level >> 16;
-    }
-
-    pa_flush();
-    for (i=0; i<count; i++ )    {
-        if(*dest & 0x8000)
-	        *dest =
-   	         rt[((*dest >> 10) & 0x1f)] |
-      	      gt[((*dest >> 5) & 0x1f)] |
-         	   bt[((*dest >> 0) & 0x1f)] |
-            	0x8000;
-	        dest++;
-	}
-}
-
-void gr_linear15_stosd( short * dest, ubyte color, unsigned short count )
-{
-    //$$ this routine is a prime candidate for using the alpha blender.
-    short c = pa_clut[color];
-    pa_flush();
-    while(count--)
-        *dest++ = c;
-}
-#endif
-
 void gr_uscanline( int x1, int x2, int y )
 {
 	if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS ) {
 		switch(TYPE)
 		{
 		case BM_LINEAR:
-#ifdef OGL
 		case BM_OGL:
 			OglULineC(x1, y, x2, y, &COLOR);
-#else
-			gr_linear_stosd( DATA + ROWSIZE*y + x1, &COLOR, x2-x1+1);
-#endif
 			break;
-#ifdef __MSDOS__
-		case BM_MODEX:
-			gr_modex_uscanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, &COLOR );
-			break;
-		case BM_SVGA:
-			gr_vesa_scanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, &COLOR );
-			break;
-#endif
-#if defined(POLY_ACC)
-		case BM_LINEAR15:
-			gr_linear15_stosd( (short *)(DATA + ROWSIZE*y + x1 * PA_BPP), &COLOR, x2-x1+1);
-			break;
-#endif
 		}
 	} else {
 		switch(TYPE)
 		{
 		case BM_LINEAR:
-#ifdef OGL
 		case BM_OGL:
-#endif
 			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, grFadeTable);
 			break;
-#ifdef __MSDOS__
-		case BM_MODEX:
-			gr_modex_uscanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, COLOR );
-			break;
-		case BM_SVGA:
-#if 1
-			{
-				ubyte * vram = (ubyte *)0xA0000;
-				int VideoLocation,page,offset1, offset2;
-
-				VideoLocation = (ROWSIZE * y) + x1;
-				page    = VideoLocation >> 16;
-				offset1  = VideoLocation & 0xFFFF;
-				offset2   = offset1 + (x2-x1+1);
-
-				gr_vesa_setpage( page );
-				if ( offset2 <= 0xFFFF ) {
-					gr_linear_darken( &vram[offset1], gameStates.render.grAlpha, x2-x1+1, grFadeTable);
-				} else {
-					gr_linear_darken( &vram[offset1], gameStates.render.grAlpha, 0xFFFF-offset1+1, grFadeTable);
-					page++;
-					gr_vesa_setpage(page);
-					gr_linear_darken( vram, gameStates.render.grAlpha, offset2 - 0xFFFF, grFadeTable);
-				}
-			}
-#else
-			gr_vesa_scanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, COLOR );
-#endif
-			break;
-#endif
-#if defined(POLY_ACC)
-		case BM_LINEAR15:
-			gr_linear15_darken( (short *)(DATA + ROWSIZE*y + x1 * PA_BPP), gameStates.render.grAlpha, x2-x1+1, grFadeTable);
-			break;
-#endif
 		}
 	}
 }
@@ -262,69 +156,17 @@ void gr_scanline( int x1, int x2, int y )
 		switch(TYPE)
 		{
 		case BM_LINEAR:
-#ifdef OGL
 		case BM_OGL:
-#endif
 			gr_linear_stosd( DATA + ROWSIZE*y + x1, &COLOR, x2-x1+1);
 			break;
-#ifdef __MSDOS__
-		case BM_MODEX:
-			gr_modex_uscanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, &COLOR );
-			break;
-		case BM_SVGA:
-			gr_vesa_scanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, &COLOR );
-			break;
-#endif
-#if defined(POLY_ACC)
-		case BM_LINEAR15:
-			gr_linear15_stosd( (short *)(DATA + ROWSIZE*y + x1 * PA_BPP), &COLOR, x2-x1+1);
-			break;
-#endif
 		}
 	} else {
 		switch(TYPE)
 		{
 		case BM_LINEAR:
-#ifdef OGL
 		case BM_OGL:
-#endif
 			gr_linear_darken( DATA + ROWSIZE*y + x1, (int) gameStates.render.grAlpha, x2-x1+1, grFadeTable);
 			break;
-#ifdef __MSDOS__
-		case BM_MODEX:
-			gr_modex_uscanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, COLOR );
-			break;
-		case BM_SVGA:
-#if 1
-			{
-				ubyte * vram = (ubyte *)0xA0000;
-				int VideoLocation,page,offset1, offset2;
-
-				VideoLocation = (ROWSIZE * y) + x1;
-				page    = VideoLocation >> 16;
-				offset1  = VideoLocation & 0xFFFF;
-				offset2   = offset1 + (x2-x1+1);
-
-				gr_vesa_setpage( page );
-				if ( offset2 <= 0xFFFF )	{
-					gr_linear_darken( &vram[offset1], gameStates.render.grAlpha, x2-x1+1, grFadeTable);
-				} else {
-					gr_linear_darken( &vram[offset1], gameStates.render.grAlpha, 0xFFFF-offset1+1, grFadeTable);
-					page++;
-					gr_vesa_setpage(page);
-					gr_linear_darken( vram, gameStates.render.grAlpha, offset2 - 0xFFFF, grFadeTable);
-				}
-			}
-#else
-			gr_vesa_scanline( x1+XOFFSET, x2+XOFFSET, y+YOFFSET, COLOR );
-#endif
-			break;
-#endif
-#if defined(POLY_ACC)
-		case BM_LINEAR15:
-			gr_linear15_darken( (short *)(DATA + ROWSIZE*y + x1 * PA_BPP), gameStates.render.grAlpha, x2-x1+1, grFadeTable);
-			break;
-#endif
 		}
 	}
 }

@@ -26,7 +26,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <math.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "fix.h"
 #include "vecmat.h"
 #include "gr.h"
@@ -42,10 +41,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "piggy.h"
 #include "strutil.h"
 #include "console.h"
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 extern void g3_remap_interp_colors();
 

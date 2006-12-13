@@ -1,9 +1,7 @@
 #ifndef _cameras_h
 #define _cameras_h
 
-#ifdef OGL
-#	include "ogl_init.h"
-#endif
+#include "ogl_init.h"
 
 #define MAX_CAMERAS	100
 

@@ -53,10 +53,8 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "sounds.h"
 #include "cntrlcen.h"
 #include "multibot.h"
-#ifdef NETWORK
 #include "multi.h"
 #include "network.h"
-#endif
 #include "gameseq.h"
 #include "key.h"
 #include "powerup.h"
@@ -1086,12 +1084,10 @@ if ((robptr->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 if (nWeaponType < 0)
 	return;
 CreateNewLaserEasy (&fire_vec, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	ai_multi_sendRobot_position (nObject, -1);
 	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
-}
-#endif
+	}
 CreateAwarenessEvent (objP, PA_NEARBY_ROBOT_FIRED);
 SetNextFireTime (objP, ailp, robptr, nGun);
 }
@@ -1933,38 +1929,25 @@ int CreateGatedRobot (short nSegment, ubyte object_id, vmsVector *pos)
 		}
 
 	nObject = CreateObject (OBJ_ROBOT, object_id, -1, nSegment, &object_pos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
-
 	if (nObject < 0) {
 		gameData.boss.nLastGateTime = gameData.time.xGame - 3*gameData.boss.nGateInterval/4;
 		return -1;
-	} 
+		} 
 	// added lifetime increase depending on difficulty level 04/26/06 DM
 	gameData.objs.objects [nObject].lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
-
-#ifdef NETWORK
 	multiData.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
-#endif
-
 	objP = gameData.objs.objects + nObject;
-
 	//Set polygon-tObject-specific data
-
 	objP->rType.polyObjInfo.nModel = robptr->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
-
 	//set Physics info
-
 	objP->mType.physInfo.mass = robptr->mass;
 	objP->mType.physInfo.drag = robptr->drag;
-
 	objP->mType.physInfo.flags |= (PF_LEVELLING);
-
 	objP->shields = robptr->strength;
 	objP->matCenCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
-
 	default_behavior = gameData.bots.pInfo [objP->id].behavior;
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-
 	ObjectCreateExplosion (nSegment, &object_pos, i2f (10), VCLIP_MORPHING_ROBOT);
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &object_pos, 0 , F1_0);
 	MorphStart (objP);
@@ -2109,11 +2092,8 @@ void teleport_boss (tObject *objP)
 			}
 		}
 
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendBossActions (OBJ_IDX (objP), 1, rand_segnum, 0);
-#endif
-
 	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, rand_segnum);
 	RelinkObject (OBJ_IDX (objP), rand_segnum);
 
@@ -2258,16 +2238,12 @@ int AIMultiplayerAwareness (tObject *objP, int awarenessLevel)
 {
 	int	rval=1;
 
-#ifdef NETWORK
-	if (gameData.app.nGameMode & GM_MULTI) {
-		if (awarenessLevel == 0)
-			return 0;
-		rval = MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
-	}
-#endif
-
-	return rval;
-
+if (gameData.app.nGameMode & GM_MULTI) {
+	if (awarenessLevel == 0)
+		return 0;
+	rval = MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
+}
+return rval;
 }
 
 #ifndef NDEBUG
@@ -2352,10 +2328,8 @@ if (bBossAlive && bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) 
 			gameData.boss.nCloakStartTime = gameData.time.xGame;
 			gameData.boss.nCloakEndTime = gameData.time.xGame+gameData.boss.nCloakDuration;
 			objP->cType.aiInfo.CLOAKED = 1;
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);
-#endif
 			}
 		}
 	}
@@ -2418,30 +2392,24 @@ if (bBossAlive && bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) 
 
 void ai_multi_sendRobot_position (short nObject, int force)
 {
-#ifdef NETWORK
-	if (gameData.app.nGameMode & GM_MULTI) 
-	{
-		if (force != -1)
-			MultiSendRobotPosition (nObject, 1);
-		else
-			MultiSendRobotPosition (nObject, 0);
+if (gameData.app.nGameMode & GM_MULTI) {
+	if (force != -1)
+		MultiSendRobotPosition (nObject, 1);
+	else
+		MultiSendRobotPosition (nObject, 0);
 	}
-#endif
-	return;
+return;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns true if this tObject should be allowed to fire at the player.
 int maybe_ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip)
 {
-#ifdef NETWORK
-	if (gameData.app.nGameMode & GM_MULTI)
-		if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN))
-			if (aip->CURRENT_STATE == AIS_FIRE)
-				return 1;
-#endif
-
-	return 0;
+if (gameData.app.nGameMode & GM_MULTI)
+	if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN))
+		if (aip->CURRENT_STATE == AIS_FIRE)
+			return 1;
+return 0;
 }
 
 vmsVector	Last_fired_upon_player_pos;

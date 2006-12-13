@@ -3,9 +3,7 @@
 #include <conf.h>
 #endif
 
-#ifndef __MSDOS__
 #define AUDIO
-#endif
 //#define DEBUG
 
 #include <string.h>

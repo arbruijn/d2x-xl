@@ -25,11 +25,7 @@ typedef struct _RBACHANNELCTL {
 	unsigned int out3in, out3vol;
 } RBACHANNELCTL;
 
-#ifndef __MSDOS__ //defined(__NT__) 
-	void RBAInit(void);	//drive a == 0, drive b == 1
-#else
-   void RBAInit(ubyte cd_drive_num);	//drive a == 0, drive b == 1
-#endif
+void RBAInit(void);	//drive a == 0, drive b == 1
 void RBARegisterCD(void);
 long RBAGetDeviceStatus(void);
 int RBAPlayTrack(int track);

@@ -284,9 +284,7 @@ if (LOCALPLAYER (nPlayer)) {
 
 	if (playerP->flags & nKey)
 		return 0;
-#ifdef NETWORK
 	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
-#endif
 	DigiPlaySample ((short) gameData.objs.pwrUp.info[objP->id].hitSound, F1_0);
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
@@ -334,9 +332,7 @@ if (playerP->flags & nEquipment) {
 else {
 	playerP->flags |= nEquipment;
 	if (LOCALPLAYER (nPlayer)) {
-#ifdef NETWORK
 		MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
-#endif
 		DigiPlaySample ((short) gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
@@ -383,10 +379,8 @@ if (bApply = (id < 0))
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && !IsMultiGame) && ((id == POW_CLOAK) || (id == POW_INVULNERABILITY)))
 		id = POW_SHIELD_BOOST;
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI) // Added by Rob, take this out if it turns out to be not good for net games!
 		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
-#endif
 	DigiPlaySample ((short) gameData.objs.pwrUp.info[id].hitSound, F1_0 );
 	}
 MultiSendWeapons (1);
@@ -410,10 +404,8 @@ if (gameOpts->gameplay.bInventory && !IsMultiGame)
 if (LOCALPLAYER (nPlayer)) {
 	playerP->invulnerableTime = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendInvul ();
-#endif
 	PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
 	SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 	UsePowerup (-POW_INVULNERABILITY);
@@ -440,10 +432,8 @@ if (LOCALPLAYER (nPlayer)) {
 	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like tPlayer fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendCloak ();
-#endif
 	PowerupBasic (-10,-10,-10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
 	UsePowerup (-POW_CLOAK);
 	}
@@ -763,10 +753,8 @@ switch (objP->id) {
 			if (LOCALPLAYER (nPlayer)) {
 				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0) || EGI_FLAG (bHeadLights, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
-#ifdef NETWORK
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendFlags ((char) gameData.multi.nLocalPlayer);
-#endif
 				}
 			bUsed = 1;
 			}

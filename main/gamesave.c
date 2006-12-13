@@ -198,7 +198,6 @@ if (objP->nType == OBJ_POWERUP) {
 	objP->controlType = CT_POWERUP;
 	objP->size = gameData.objs.pwrUp.info[objP->id].size;
 	objP->cType.powerupInfo.creationTime = 0;
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_NETWORK) {
 	  if (MultiPowerupIs4Pack(objP->id)) {
 			gameData.multi.powerupsInMine[objP->id-1]+=4;
@@ -212,7 +211,6 @@ if (objP->nType == OBJ_POWERUP) {
 			con_printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
 		}
-#endif
 	}
 if (objP->nType == OBJ_WEAPON)	{
 	if (objP->id >= gameData.weapons.nTypes [0])	{
@@ -1440,17 +1438,13 @@ int LoadLevelSub(char * filename_passed)
 	char filename[128];
 	int sig, minedata_offset, gamedata_offset;
 	int mine_err, game_err;
-#ifdef NETWORK
 	//int i;
-#endif
 	gameData.segs.bHaveSlideSegs = 0;
 
-#ifdef NETWORK
    if (gameData.app.nGameMode & GM_NETWORK) {
 		memset (gameData.multi.maxPowerupsAllowed, 0, sizeof (gameData.multi.maxPowerupsAllowed));
 		memset (gameData.multi.powerupsInMine, 0, sizeof (gameData.multi.powerupsInMine));
 		}
-#endif
 
 #ifdef COMPACT_SEGS
 ncache_flush();
@@ -1889,9 +1883,6 @@ int saveLevel_sub(char * filename, int compiled_version)
 	else
 	{
 		// macs are using the regular hog/rl2 files for shareware
-		#if defined(SHAREWARE)
-			ChangeFilenameExtension(temp_filename,filename,".SL2");
-		#endif
 	}
 
 	SaveFile = fopen(temp_filename, "wb");

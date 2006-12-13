@@ -69,40 +69,20 @@ void gr_box0(int left,int top,int right,int bot)
 
 void gr_ubox12(int left,int top,int right,int bot)
 {
-#ifdef OGL
-#	if 1
-	OglUPolyC(left, top, right, bot, &COLOR);
-#else
-	OglULineC(left, top, right, top, &COLOR);
-	OglULineC(left, bot, right, bot, &COLOR);
-	OglULineC(left, top, left, bot, &COLOR);
-	OglULineC(right, top, right, bot, &COLOR);
-#endif
-#else
-	int i;
-
-	for (i=top; i<=bot; i++ ) {
-		gr_upixel( left, i );
-		gr_upixel( right, i );
-	}
-	gr_uscanline( left, right, top );
-	gr_uscanline( left, right, bot );
-#endif
+OglUPolyC(left, top, right, bot, &COLOR);
 }
 
 void gr_box12(int left,int top,int right,int bot)
 {
-    if (top > MAXY ) return;
-    if (bot < MINY ) return;
-    if (left > MAXX ) return;
-    if (right < MINX ) return;
-    
-	if (top < MINY) top = MINY;
-    if (bot > MAXY ) bot = MAXY;
-	if (left < MINX) left = MINX;
-    if (right > MAXX ) right = MAXX;
-        
-	gr_ubox12(left, top, right, bot );
+if (top > MAXY ) return;
+if (bot < MINY ) return;
+if (left > MAXX ) return;
+if (right < MINX ) return;
+if (top < MINY) top = MINY;
+if (bot > MAXY ) bot = MAXY;
+if (left < MINX) left = MINX;
+if (right > MAXX ) right = MAXX;
+gr_ubox12(left, top, right, bot );
     
 }
 

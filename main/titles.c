@@ -16,15 +16,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "inferno.h"
 #include "timer.h"
 #include "key.h"
@@ -66,10 +61,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # undef GL_ARB_multitexture // hack!
 #else
 # include <GL/glu.h>
-#endif
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
 #endif
 
 #define KEY_DELAY_DEFAULT       ((F1_0*20)/1000)
@@ -240,21 +231,9 @@ int local_key_inkey (void)
 {
 	int	rval;
 
-#ifdef WINDOWS
-	MSG msg;
-
-	DoMessageStuff (&msg);
-#endif
-
 	rval = KeyInKey ();
 
 	if (rval == KEY_PRINT_SCREEN) {
-#ifdef POLY_ACC
-		if (bRobotPlaying) {
-			GrPaletteRead (grPalette);
-			GrCopyPalette (grPalette,grPalette,0);	//reset color lookup cache
-		}
-#endif
 		SaveScreenShot (NULL, 0);
 		return 0;				//say no key pressed
 	}
@@ -322,19 +301,8 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 #endif
 		Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n",filename, pcx_errormsg (pcx_error), pcx_error);
 	}
-
-#if defined (POLY_ACC)
-    pa_save_clut ();
-    pa_update_clut (title_bm.bm_palette, 0, 256, 0);
-#endif
-
 	//vfx_set_palette_sub (brief_palette);
-#ifdef OGL
 	GrPaletteStepLoad (NULL);
-#else
-	GrPaletteStepClear ();
-#endif
-
 	WINDOS (
 		DDGrSetCurrentCanvas (NULL),
 		GrSetCurrentCanvas (NULL)
@@ -342,13 +310,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	show_fullscr (&title_bm);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
-
 	WIN (DDGRRESTORE);
-
-#if defined (POLY_ACC)
-    pa_restore_clut ();
-#endif
-
 	if (GrPaletteFadeIn (NULL, 32, allow_keys))
 		return 1;
 
@@ -372,11 +334,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 #define	SHAREWARE_ENDING_LEVEL_NUM  0x7f
 #define	REGISTERED_ENDING_LEVEL_NUM 0x7e
 
-#ifdef SHAREWARE
-#define ENDING_LEVEL_NUM 	SHAREWARE_ENDING_LEVEL_NUM
-#else
 #define ENDING_LEVEL_NUM 	REGISTERED_ENDING_LEVEL_NUM
-#endif
 
 #define MAX_BRIEFING_SCREENS 60
 
@@ -401,7 +359,6 @@ briefing_screen Briefing_screens[] = {
 	{ "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
 	{ "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
 
-#ifndef SHAREWARE
 	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 },
 	{ "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
 	{ "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
@@ -436,14 +393,11 @@ briefing_screen Briefing_screens[] = {
 	{ "aster01.pcx",  -1, 38,  10, 90, 300,  200 }, // secret level -1
 	{ "aster01.pcx",  -2, 39,  10, 90, 300,  200 }, // secret level -2
 	{ "aster01.pcx",  -3, 40,  10, 90, 300,  200 }, // secret level -3
-#endif
 
 	{ "end01.pcx",   SHAREWARE_ENDING_LEVEL_NUM,  1,  23, 40, 320, 200 },   // shareware end
-#ifndef SHAREWARE
 	{ "end02.pcx",   REGISTERED_ENDING_LEVEL_NUM,  1,  5, 5, 300, 200 },    // registered end
 	{ "end01.pcx",   REGISTERED_ENDING_LEVEL_NUM,  2,  23, 40, 320, 200 },  // registered end
 	{ "end03.pcx",   REGISTERED_ENDING_LEVEL_NUM,  3,  5, 5, 300, 200 },    // registered end
-#endif
 
 };
 
@@ -478,11 +432,7 @@ Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8
 
 void ShowBitmapFrame (int bRedraw)
 {
-#ifdef WINDOWS
-	dd_grs_canvas *curcanv_save, *bitmap_canv=0;
-#else
 	grs_canvas *curcanv_save, *bitmap_canv=0;
-#endif
 
 	grsBitmap *bitmap_ptr;
 	int x = rescale_x (138);
@@ -628,30 +578,15 @@ void ShowBitmapFrame (int bRedraw)
 
 void show_briefing_bitmap (grsBitmap *bmp)
 {
-#ifdef WINDOWS
-  	dd_grs_canvas *bitmap_canv, *curcanv_save;
-
-	bitmap_canv = DDGrCreateSubCanvas (dd_grd_curcanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
-	curcanv_save = dd_grd_curcanv;
-	DDGrSetCurrentCanvas (bitmap_canv);
-	DDGRLOCK (dd_grd_curcanv);
-	GrBitmapM (0,0,bmp);
-	DDGRUNLOCK (dd_grd_curcanv);
-	DDGrSetCurrentCanvas (curcanv_save);
-#else
 	grs_canvas	*curcanv_save, *bitmap_canv;
 
-	bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
-	curcanv_save = grdCurCanv;
-	GrSetCurrentCanvas (bitmap_canv);
-	GrBitmapM (0, 0, bmp);
-	GrSetCurrentCanvas (curcanv_save);
-#endif
-
-	d_free (bitmap_canv);
+bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
+curcanv_save = grdCurCanv;
+GrSetCurrentCanvas (bitmap_canv);
+GrBitmapM (0, 0, bmp);
+GrSetCurrentCanvas (curcanv_save);
+d_free (bitmap_canv);
 }
-
-#ifndef WINDOWS
 
 //-----------------------------------------------------------------------------
 
@@ -707,7 +642,6 @@ void InitSpinningRobot (void) // (int x,int y,int w,int h)
 	bInitRobot = 1;
 	// 138, 55, 166, 138
 }
-#endif
 
 //---------------------------------------------------------------------------
 // Returns char width.
@@ -1008,9 +942,7 @@ bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission &&
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 bOnlyRobots = gameStates.app.bHaveExtraMovies && bExtraSounds && (nLevel == 1) && (nScreen < 4);
 
-#ifndef SHAREWARE
 hum_channel = StartBriefingHum (hum_channel, nLevel, nScreen, bExtraSounds);
-#endif
 
 GrSetCurFont (GAME_FONT);
 
@@ -1159,11 +1091,7 @@ while (!done) {
 				}
 			else if (ch=='Z') {
 				GotZ=1;
-#if 1 //defined (D2_OEM) || defined (COMPILATION)
 				DumbAdjust=1;
-#else
-				DumbAdjust= (LineAdjustment==1) ? 1 : 2;
-#endif
 				i = 0;
 				while ((szBriefScreen [i] = *message) != '\n') {
 					i++;
@@ -1227,24 +1155,8 @@ while (!done) {
 				chattering=0;
 				StopBriefingSound (&printing_channel);
 
-#ifdef WINDOWS
-				if (!wpage_done) {
-					DDGRRESTORE;
-					wpage_done =1;
-				}
-#endif
-
 				StartTime = TimerGetFixedSeconds ();
 				do {		//	Wait for a key
-#ifdef WINDOWS
-					if (_RedrawScreen) {
-						_RedrawScreen = FALSE;
-						if (bot_channel < 0)
-							hum_channel = StartBriefingHum (hum_channel, nLevel, nScreen, bExtraSounds);
-						keypress = KEY_ESC;
-						break;
-						}
-#endif
 					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT/2)
 						;
 					flash_cursor (flashing_cursor);
@@ -1340,8 +1252,6 @@ while (!done) {
 				chattering=1;
 			}
 			Briefing_text_x += show_char_delay ((char) ch, delay_count, robot_num, flashing_cursor, bRedraw);
-//			if (! (bRedraw || bRobotPlaying || *Bitmap_name))
-//				GrUpdate (0);
 		}
 
 		//	Check for Esc -> abort.
@@ -1350,14 +1260,6 @@ while (!done) {
 				key_check=local_key_inkey ();
 			else
 				key_check=0;
-#ifdef WINDOWS
-			if (_RedrawScreen) {
-				_RedrawScreen = FALSE;
-				if (bot_channel < 0)
-					hum_channel = StartBriefingHum (hum_channel, nLevel, nScreen, bExtraSounds);
-				key_check = KEY_ESC;
-				}
-#endif
 			if (key_check == KEY_ESC) {
 				rval = 1;
 				done = 1;
@@ -1368,11 +1270,9 @@ while (!done) {
 				delay_count = 0;
 				bRedraw = 1;
 				}
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
 			if ((key_check == KEY_ALTED+KEY_ENTER) ||
 				 (key_check == KEY_ALTED+KEY_PADENTER))
 				GrToggleFullScreen ();
-#endif
 			}
 		if (Briefing_text_x > bsp->text_ulx + bsp->text_width) {
 			Briefing_text_x = bsp->text_ulx;
@@ -1386,24 +1286,9 @@ while (!done) {
 			new_page = 0;
 			StopBriefingSound (&printing_channel);
 			chattering=0;
-#ifdef WINDOWS
-			if (!wpage_done) {
-				DDGRRESTORE;
-				wpage_done =1;
-			}
-#endif
 			{
 				StartTime = TimerGetFixedSeconds ();
 				do {		//	Wait for a key
-#ifdef WINDOWS
-					if (_RedrawScreen) {
-						_RedrawScreen = FALSE;
-						if (bot_channel < 0)
-							hum_channel = StartBriefingHum (hum_channel, nLevel, nScreen, bExtraSounds);
-						keypress = KEY_ESC;
-						break;
-						}
-#endif
 					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT/2)
 						;
 					flash_cursor (flashing_cursor);
@@ -1639,35 +1524,18 @@ if (gameStates.app.bD1Mission) {
 		Int3 ();
 		return 0;
 		}
-#if 1
-#ifdef OGL
 	GrPaletteStepLoad (bmBriefing.bm_palette);
-#else
-	GrPaletteStepClear ();
-#endif
 	GrSetCurrentCanvas (NULL);
 	show_fullscr (&bmBriefing);
-#endif
 	GrUpdate (0);
-#if 1
 	GrFreeBitmapData (&bmBriefing);
-#endif
 	if (GrPaletteFadeIn (NULL, 32, allow_keys))
 		return 1;
 	}
 if (!ShowBriefingText (nScreen, nLevel))
 	return 0;
-#ifndef WINDOWS
 if (GrPaletteFadeOut (NULL, 32, allow_keys))
 	return 1;
-#else
-DEFINE_SCREEN (NULL);
-WIN (DDGRLOCK (dd_grd_curcanv);
-GrClearCanvas (0);
-WIN (DDGRUNLOCK (dd_grd_curcanv);
-if (GrPaletteFadeOut (NULL, 32, allow_keys))
-	return 1;
-#endif
 return 1;
 }
 
@@ -1705,11 +1573,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 	}
 if (!load_screen_text (filename, &Briefing_text))
 	return;
-#ifndef SHAREWARE
 SongsPlaySong (SONG_BRIEFING, 1);
-#else
-SongsStopAll ();
-#endif
 SetScreenMode (SCREEN_MENU);
 WINDOS (
 	DDGrSetCurrentCanvas (NULL),

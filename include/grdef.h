@@ -81,11 +81,6 @@ void gr_linear_line( int x0, int y0, int x1, int y1);
 
 extern unsigned int Table8to32[256];
 
-#ifdef __MSDOS__
-extern unsigned char * gr_video_memory;
-#endif
-
-
 #define MINX    0
 #define MINY    0
 #define MAXX    (GWIDTH-1)

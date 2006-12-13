@@ -138,9 +138,7 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 
 #include "ipx.h"
 #include "multi.h"
-#ifdef NETWORK
 #include "network.h"
-#endif
 #include "object.h"
 #include "powerup.h"
 #include "error.h"

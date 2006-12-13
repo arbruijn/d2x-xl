@@ -90,6 +90,6 @@ int GetLightColor (int tMapNum, tLightMap *pTempLight);
 			(gameStates.render.color.bLightMapsOk && \
 			 gameOpts->render.color.bUseLightMaps && \
 			 !IsMultiGame && \
-			 !gameOpts->ogl.bUseLighting)
+			 !gameOpts->render.bDynLighting)
 
 #endif //__lightmap_h

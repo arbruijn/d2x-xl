@@ -49,10 +49,8 @@ static char rcsid [] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 #include "player.h"
 #include "collide.h"
 #include "laser.h"
-#ifdef NETWORK
 #include "network.h"
 #include "multi.h"
-#endif
 #include "multibot.h"
 #include "escort.h"
 
@@ -419,16 +417,8 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 	}
 
 	//	No robot making in multiplayer mode.
-#ifdef NETWORK
-#ifndef SHAREWARE
 	if (!bMakeVirus && (gameData.app.nGameMode & GM_MULTI) && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster ()))
 		return;
-#else
-	if (gameData.app.nGameMode & GM_MULTI)
-		return;
-#endif
-#endif
-
 	// Wait until transmorgafier has capacity to make a robot...
 	if (!bMakeVirus && (robotcen->Capacity <= 0)) {
 		return;
@@ -619,12 +609,8 @@ void MatCenHandler (tFuelCenInfo * robotcen)
 #endif
 						}
 					else {
-#ifndef SHAREWARE
-#ifdef NETWORK
 						if (gameData.app.nGameMode & GM_MULTI)
 							MultiSendCreateRobot (FUELCEN_IDX (robotcen), OBJ_IDX (objP), nType);
-#endif
-#endif
 						objP->matCenCreator = (FUELCEN_IDX (robotcen)) | 0x80;
 						// Make tObject faces player...
 						VmVecSub (&direction, &gameData.objs.console->position.vPos,&objP->position.vPos);
@@ -709,10 +695,8 @@ if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0/2);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0/2);
-#endif
 	last_playTime = gameData.time.xGame;
 	}
 return amount;
@@ -761,10 +745,8 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 			last_playTime = 0;
 		if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 			DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-#endif
 			last_playTime = gameData.time.xGame;
 		}
 
@@ -819,10 +801,8 @@ if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-#endif
 	last_playTime = gameData.time.xGame;
 	}
 return amount;
@@ -1232,7 +1212,6 @@ return h;
 
 //--------------------------------------------------------------------
 
-#ifdef NETWORK
 void MultiSendCaptureBonus (char);
 
 int FlagAtHome (int nFlagId)
@@ -1335,8 +1314,6 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
 	}
 
 }
-
-#endif
 
 //--------------------------------------------------------------------
 #ifndef FAST_FILE_IO

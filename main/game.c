@@ -20,10 +20,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,21 +27,9 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include <ctype.h>
 #include <time.h>
 
-#ifdef MACINTOSH
-#include <Files.h>
-#include <StandardFile.h>
-#include <Quickdraw.h>
-#include <Script.h>
-#include <Strings.h>
-#endif
-
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
 #include "pstypes.h"
 #include "console.h"
-#include "pa_enabl.h"       //$$POLY_ACC
 #include "gr.h"
 #include "inferno.h"
 #include "game.h"
@@ -106,10 +90,6 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "lightmap.h"
 #include "oof.h"
 #include "sphere.h"
-
-#if defined (POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 #include "multi.h"
 #include "desc_id.h"
@@ -204,16 +184,6 @@ grs_canvas	VR_render_buffer[2];					//  Two offscreen buffers for left/right eye
 grs_canvas	VR_render_sub_buffer[2];			//  Two sub buffers for left/right eyes.
 grs_canvas	VR_screen_pages[2];					//  Two pages of VRAM if paging is available
 grs_canvas	VR_editor_canvas;						//  The canvas that the editor writes to.
-
-#ifdef WINDOWS
-//@@ LPDIRECTDRAWSURFACE _lpDDSMask = NULL;
-dd_grs_canvas *dd_VR_offscreen_buffer = NULL;
-dd_grs_canvas dd_VR_screen_pages[2];
-dd_grs_canvas dd_VR_render_buffer[2];
-dd_grs_canvas dd_VR_render_sub_buffer[2];
-
-void game_win_init_cockpit_mask (int sram);
-#endif
 
 //do menus work in 640x480 or 320x200?
 //PC version sets this in main ().  Mac versios is always high-res, so set to 1 here
@@ -320,88 +290,6 @@ GrPaletteStepUp (0, 0, 0);
 
 //------------------------------------------------------------------------------
 
-#ifdef WINDOWS
-void win_get_span_list (grsBitmap *bm, int miny, int maxy)
-{
-	int x,y;
-	int mode = 0;
-	ubyte *data;
-	int offset;
-	int lspan=0, rspan=0, span=0;
-//@@FILE *fp;
-
-	data = bm->bm_texBuf;
-//@@	fp = fopen ("cockspan.dat", "w");
-
-	for (y = 0; y < miny; y++)
-		win_cockpit_mask[y].num = 0;
-
-	for (y = miny; y <= maxy; y++)
-	{
-		span = 0;
-		//@@ fprintf (fp, "line %d: ", y);
-		for (x = 0; x < bm->bm_props.w; x++)
-		{
-			offset = y*bm->bm_props.rowsize + x;
-
-			if (data[offset] == 255) {
-				switch (mode)
-				{
-					case 0:				// Start Mode
-						lspan	= x;
-						win_cockpit_mask[y].span[span].xmin = x;
-						mode = 1;
-					//@@	fprintf (fp, "<%d,", lspan);
-						break;
-
-					case 1:				// Transparency mode
-						rspan = x;
-						win_cockpit_mask[y].span[span].xmax = x;
-						break;
-
-					case 2:				// Switch from Draw mode to transparent
-						lspan = x;
-						win_cockpit_mask[y].span[span].xmin = x;
-					//@@	fprintf (fp, "<%d,", lspan);
-						mode = 1;
-						break;
-				}
-			}
-			else {
-				switch (mode)
-				{
-					case 0:				// Start mode
-						mode = 2;
-						break;
-
-					case 1:				// Switching from transparent to Draw
-						rspan = x;
-						mode = 2;
-						win_cockpit_mask[y].span[span].xmax = x;
-						span++;
-					//@@	fprintf (fp, "%d> ", rspan);
-						break;
-
-					case 2:
-						break;
-				}
-			}
-		}
-		if (mode == 1) {
-		//@@	fprintf (fp, "%d> ", rspan);
-			win_cockpit_mask[y].span[span].xmax = rspan;
-			span++;
-		}
-		win_cockpit_mask[y].num = span;
-	//@@	fprintf (fp, "\n");
-		mode = 0;
-	}
-	win_cockpit_mask[y].num = 255;
-}
-#endif //WINDOWS
-
-//------------------------------------------------------------------------------
-
 void ShowInGameWarning (char *s)
 {
 if (grdCurScreen) {
@@ -438,11 +326,6 @@ void InitCockpit ()
 	if (gameStates.video.nScreenMode != SCREEN_GAME)
 		return;
 
-#if defined (POLY_ACC)
- pa_flush ();                 // get rid of undrawn polys.
- pa_clear_buffer (1, 0);
-#endif
-
 //Initialize the on-screen canvases
 
 if (gameData.demo.nState==ND_STATE_RECORDING)
@@ -453,12 +336,6 @@ if (VR_render_mode != VR_NONE)
 //	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-#if 0//def OGL
-if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT || gameStates.render.cockpit.nMode == CM_REAR_VIEW) {
-	HUDMessage (MSGC_GAME_FEEDBACK, "Cockpit not available in GL mode");
-	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-}
-#endif
 
 WINDOS (
 	DDGrSetCurrentCanvas (NULL),
@@ -466,72 +343,10 @@ WINDOS (
 	);
 GrSetCurFont (GAME_FONT);
 
-#if !defined (MACINTOSH) && !defined (WINDOWS)
 if (Game_cockpit_copy_code)
 	d_free (Game_cockpit_copy_code);
 Game_cockpit_copy_code  = NULL;
-#else
-if (Game_cockpit_copy_code)
-	Game_cockpit_copy_code = 0;
-#endif
-
-//@@	#ifdef WINDOWS
-//@@		if (_lpDDSMask) { DDFreeSurface (_lpDDSMask); _lpDDSMask = NULL; }
-//@@	#endif
-
-#ifdef WINDOWS
-	game_win_init_cockpit_mask (0);
-#endif
-
 switch (gameStates.render.cockpit.nMode) {
-#ifndef OGL
-	case CM_FULL_COCKPIT:
-	case CM_REAR_VIEW: {
-		grsBitmap *bm = &gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index];
-		PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex[gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)]);
-
-#ifdef WINDOWS
-		DDGrSetCurrentCanvas (NULL);
-		game_win_init_cockpit_mask (1);
-		DDGrSetCurrentCanvas (dd_VR_offscreen_buffer);
-#else
-		GrSetCurrentCanvas (VR_offscreen_buffer);
-#endif
-
-		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBitmap (0, 0, bm);
-		bm = &VR_offscreen_buffer->cv_bitmap;
-		bm->bm_props.flags = BM_FLAG_TRANSPARENT;
-		gr_ibitblt_find_hole_size (bm, &minx, &miny, &maxx, &maxy);
-		WIN (	win_get_span_list (bm, miny, maxy);
-				DDGRUNLOCK (dd_grd_curcanv)
-			);
-
-#ifndef WINDOWS
-#ifndef __MSDOS__
-		gr_ibitblt_create_mask (bm, minx, miny, maxx-minx+1, maxy-miny+1, VR_offscreen_buffer->cv_bitmap.bm_props.rowsize);
-#else
-		if (gameStates.video.nDisplayMode) {
-#if defined (POLY_ACC)
-			Game_cockpit_copy_code  = gr_ibitblt_create_mask_pa (bm, minx, miny, maxx-minx+1, maxy-miny+1, VR_offscreen_buffer->cv_bitmap.bm_props.rowsize);
-			pa_clear_buffer (1, 0);      // clear offscreen to reduce white flash.
-#else
-			Game_cockpit_copy_code  = gr_ibitblt_create_mask_svga (bm, minx, miny, maxx-minx+1, maxy-miny+1, VR_offscreen_buffer->cv_bitmap.bm_props.rowsize);
-#endif
-		} else
-			Game_cockpit_copy_code  = gr_ibitblt_create_mask (bm, minx, miny, maxx-minx+1, maxy-miny+1, VR_offscreen_buffer->cv_bitmap.bm_props.rowsize);
-#endif
-		bm->bm_props.flags = 0;		// Clear all flags for offscreen canvas
-#else
-		Game_cockpit_copy_code  = (ubyte *) (1);
-		bm->bm_props.flags = 0;		// Clear all flags for offscreen canvas
-#endif
-		GameInitRenderSubBuffers (0, 0, maxx-minx+1, maxy-miny+1);
-		break;
-	}
-#endif
-
-#ifdef OGL
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
      	max_window_h = (grdCurScreen->sc_h * 2) / 3;
@@ -543,7 +358,7 @@ switch (gameStates.render.cockpit.nMode) {
 		Game_window_y = (max_window_h - Game_window_h)/2;
 		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
 		break;
-#endif
+
 	case CM_FULL_SCREEN:
 		max_window_h = grdCurScreen->sc_h;
 //		if (Game_window_h > max_window_h || VR_screenFlags&VRF_ALLOW_COCKPIT)
@@ -627,122 +442,12 @@ void VRResetParams ()
 
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
-#ifdef WINDOWS
-	DDGrInitSubCanvas (&dd_VR_render_sub_buffer[0], &dd_VR_render_buffer[0], x, y, w, h);
-	DDGrInitSubCanvas (&dd_VR_render_sub_buffer[1], &dd_VR_render_buffer[1], x, y, w, h);
-
-	dd_VR_render_sub_buffer[0].canvas.cv_bitmap.bm_props.x = 0;
-	dd_VR_render_sub_buffer[0].canvas.cv_bitmap.bm_props.y = 0;
-	dd_VR_render_sub_buffer[0].xoff = x;
-	dd_VR_render_sub_buffer[0].yoff = y;
-	dd_VR_render_sub_buffer[1].canvas.cv_bitmap.bm_props.x = 0;
-	dd_VR_render_sub_buffer[1].canvas.cv_bitmap.bm_props.y = 0;
-	dd_VR_render_sub_buffer[1].xoff = x;
-	dd_VR_render_sub_buffer[1].yoff = y;
-
-#endif
 	if (Scanline_double) {
-		#ifdef MACINTOSH
-		if (w & 0x3)
-			w &= ~0x3;
-		GrInitSubCanvas (&VR_render_sub_buffer[0], &VR_render_buffer[0], x, y, w/2, (h/2)+1);
-		GrInitSubCanvas (&VR_render_sub_buffer[1], &VR_render_buffer[1], x, y, w/2, (h/2)+1);
-		#endif
 	} else {
 		GrInitSubCanvas (&VR_render_sub_buffer[0], &VR_render_buffer[0], x, y, w, h);
 		GrInitSubCanvas (&VR_render_sub_buffer[1], &VR_render_buffer[1], x, y, w, h);
 	}
-
-	#ifdef MACINTOSH
-		#ifdef POLY_ACC
-			if (PAEnabled)
-			{
-				TQARect	newBounds;
-
-				newBounds.left = x;
-				newBounds.right = x + w;
-				newBounds.top = y;
-				newBounds.bottom = y + h;
-
-				pa_set_context (kGamePlayDrawContextID, &newBounds);		// must resize/create new context
-			}
-		#endif
-	#endif
-
-#ifdef WINDOWS
-	VR_render_sub_buffer[0].cv_bitmap.bm_props.x = 0;
-	VR_render_sub_buffer[0].cv_bitmap.bm_props.y = 0;
-	VR_render_sub_buffer[1].cv_bitmap.bm_props.x = 0;
-	VR_render_sub_buffer[1].cv_bitmap.bm_props.y = 0;
-#endif
 }
-
-//------------------------------------------------------------------------------
-
-#ifdef WINDOWS
-// Sets up the canvases we will be rendering to (WIN95)
-void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int render_method, int flags)
-{
-//	Hack for switching to higher that 640x480 modes (DDraw doesn't allow
-//	 creating surfaces greater than the current resolution
-
-	if (GRMODEINFO (rw) < render_w || GRMODEINFO (rh) < render_h) {
-		render_w = GRMODEINFO (rw);
-		render_h = GRMODEINFO (rh);
-	}
-	nVRScreenMode		= screen_mode;
-	VR_screenFlags	=  flags;
-	VRResetParams ();
-	VR_render_mode 	= render_method;
-	Game_window_w 		= render_w;
-	Game_window_h		= render_h;
-	if (dd_VR_offscreen_buffer && dd_VR_offscreen_buffer != dd_grd_backcanv) {
-		dd_gr_free_canvas (dd_VR_offscreen_buffer);
-	}
-
-	if ((VR_render_mode==VR_AREA_DET) || (VR_render_mode==VR_INTERLACED))	{
-		if (render_h*2 < 200)	{
-		 	Int3 ();		// Not Supported yet!!!
-//			VR_offscreen_buffer = GrCreateCanvas (render_w, 200);
-		}
-		else {
-			Int3 ();		// Not Supported yet!!!
-//			VR_offscreen_buffer = GrCreateCanvas (render_w, render_h*2);
-		}
-
-		Int3 ();			// Not Supported yet!!!
-//		GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
-//		GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, render_h, render_w, render_h);
-	}
-	else if (GRMODEINFO (paged) && !GRMODEINFO (dbuf)) {
-	//	Here we will make the VR_offscreen_buffer the 2nd page and hopefully
-	//	we can just flip it, saving a blt.
-
-		dd_VR_offscreen_buffer = dd_grd_backcanv;
-		VR_offscreen_buffer = & dd_grd_backcanv->canvas;
-	}
-	else if (GRMODEINFO (dbuf)||GRMODEINFO (emul)) {
-	//	The offscreen buffer will be created.  We will just blt this
-	//	to the screen (which may be blted to the primary surface)
-		if (render_h < 200) {
-			dd_VR_offscreen_buffer = dd_gr_create_canvas (render_w, 200);
-			VR_offscreen_buffer = &dd_VR_offscreen_buffer->canvas;
-		}
-		else {
-			dd_VR_offscreen_buffer = dd_gr_create_canvas (render_w, render_h);
-			VR_offscreen_buffer = &dd_VR_offscreen_buffer->canvas;
-		}
-	}
-
-	DDGrInitSubCanvas (&dd_VR_render_buffer[0], dd_VR_offscreen_buffer, 0, 0, render_w, render_h);
-	DDGrInitSubCanvas (&dd_VR_render_buffer[1], dd_VR_offscreen_buffer, 0, 0, render_w, render_h);
-	GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
-	GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, 0, render_w, render_h);
-
-	GameInitRenderSubBuffers (0, 0, render_w, render_h);
-}
-
-#else
 
 //------------------------------------------------------------------------------
 
@@ -779,34 +484,16 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 			VR_offscreen_buffer = GrCreateCanvas (render_w, 200);
 		}
 		else {
-#if defined (POLY_ACC)
-			#ifndef MACINTOSH
             VR_offscreen_buffer = GrCreateCanvas (render_w, render_h);
-            d_free (VR_offscreen_buffer->cv_bitmap.bm_texBuf);
-            GrInitCanvas (VR_offscreen_buffer, pa_get_buffer_address (1), BM_LINEAR15, render_w, render_h);
-			#else
-				if (PAEnabled || gConfigInfo.mAcceleration) {
-					gameStates.render.cockpit.nMode=CM_FULL_SCREEN;		// HACK HACK HACK HACK HACK!!!!
-					VR_offscreen_buffer = GrCreateCanvas2 (render_w, render_h, BM_LINEAR15);
-				} else
-	            VR_offscreen_buffer = GrCreateCanvas (render_w, render_h);
-			#endif
-#else
-            VR_offscreen_buffer = GrCreateCanvas (render_w, render_h);
-#endif
         }
 
-#ifdef OGL
 		VR_offscreen_buffer->cv_bitmap.bm_props.nType = BM_OGL;
-#endif
-
 		GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
 		GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, 0, render_w, render_h);
 	}
 
 	GameInitRenderSubBuffers (0, 0, render_w, render_h);
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -817,11 +504,7 @@ void SetPopupScreenMode (void)
 {
 	//WIN (LoadCursorWin (MOUSE_DEFAULT_CURSOR);
 
-#ifdef OGL // always have to switch to menu mode
 	if (!gameOpts->menus.nStyle || (gameStates.video.nScreenMode < 0))
-#else
-	if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS))
-#endif
 	{
 //		gameStates.video.nLastScreenMode = -1;
 //		gameStates.app.bGameRunning = (gameStates.app.nFunctionMode == FMODE_GAME);
@@ -845,29 +528,12 @@ WIN (static int saved_window_h);
 		return 1;
 	}
 #endif
-
-#ifdef WINDOWS
-	if (gameStates.video.nScreenMode == sm && W95DisplayMode == nVRScreenMode) {
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages[nVRCurrentPage]);
-		return 1;
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) && 
+		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == nVRScreenMode))) {
+	GrSetCurrentCanvas (VR_screen_pages + nVRCurrentPage);
+	OglSetScreenMode ();
+	return 1;
 	}
-#else
-#	ifdef OGL
-	if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) && 
-		 (/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == nVRScreenMode))) {
-		GrSetCurrentCanvas (VR_screen_pages + nVRCurrentPage);
-		OglSetScreenMode ();
-		return 1;
-	}
-#	else
-	if (gameStates.video.nScreenMode == sm && nCurrentVGAMode == nVRScreenMode) {
-		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
-		return 1;
-	}
-#	endif
-#endif
-
-
 #ifdef EDITOR
 	Canv_editor = NULL;
 #endif
@@ -876,48 +542,11 @@ WIN (static int saved_window_h);
 
 	switch (gameStates.video.nScreenMode) {
 		case SCREEN_MENU:
-		#ifdef WINDOWS
-			//mouse_set_mode (0);
-			//ShowCursorW ();
-			if (!(VR_screenFlags & VRF_COMPATIBLE_MENUS)) {
-			// HACK!!!  Meant to save window size when switching from
-			// non-compat menu mode to menu mode.
-				saved_window_w = Game_window_w;
-				saved_window_h = Game_window_h;
-				force_mode_change = 1;
-			}
-			if (W95DisplayMode != SM95_640x480x8) {
-//@@				PiggyBitmapPageOutAllW ();		// 2D GFX Flush cache.
-				DDSETDISPLAYMODE (SM95_640x480x8);
-				dd_gr_init_screen ();
-				if (!gameStates.render.bPaletteFadedOut) 
-					GrPaletteStepLoad (NULL);
-			}
-
-			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv,
-									0,0,
-									dd_grd_screencanv->canvas.cv_bitmap.bm_props.w,
-									dd_grd_screencanv->canvas.cv_bitmap.bm_props.h);
-			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_screencanv,
-									0,0,
-									dd_grd_screencanv->canvas.cv_bitmap.bm_props.w,
-									dd_grd_screencanv->canvas.cv_bitmap.bm_props.h);
-			gameStates.menus.bHires = 1;
-			gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable;
-
-		#else
 		{
 			u_int32_t nMenuMode;
 
 			gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 
-#if defined (POLY_ACC)
-				#ifndef MACINTOSH
-	            nMenuMode = gameStates.menus.bHires ? SM (640,480) : SM (320,200);
-				#else
-					nMenuMode = PAEnabled ? SM_640x480x15xPA : SM_640x480V;
-				#endif
-#else
             nMenuMode = 
 					gameStates.gfx.bOverride ?
 						gameStates.gfx.nStartScrMode
@@ -926,7 +555,6 @@ WIN (static int saved_window_h);
 								nVRScreenMode
 								: SM (640,480)
 							: SM (320,200);
-#endif
 			gameStates.video.nLastScreenMode = -1;
 			if (nCurrentVGAMode != nMenuMode) {
 				if (GrSetMode (nMenuMode))
@@ -947,28 +575,9 @@ WIN (static int saved_window_h);
 			gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 
 		}
-		#endif
 		break;
 
 	case SCREEN_GAME:
-#if 0 //def WINDOWS
-		//mouse_set_mode (1);
-		HideCursorW ();
-		if (force_mode_change || (W95DisplayMode != nVRScreenMode)) {
-
-			DDSETDISPLAYMODE (nVRScreenMode);
-//@@			PiggyBitmapPageOutAllW ();		// 2D GFX Flush cache.
-			dd_gr_init_screen ();
-#if TRACE
-			//con_printf (CON_DEBUG, "Reinitializing render buffers due to display mode change.\n");
-#endif
-			GameInitRenderBuffers (W95DisplayMode,
-					GRMODEINFO (rw), GRMODEINFO (rh),
-					VR_render_mode, VR_screenFlags);
-
-			ResetCockpit ();
-		}
-#else
 		if (nCurrentVGAMode != nVRScreenMode) {
 			if (GrSetMode (nVRScreenMode))	{
 				Error ("Cannot set desired screen mode for game!");
@@ -980,23 +589,9 @@ WIN (static int saved_window_h);
 			#endif
 			ResetCockpit ();
 		}
-#endif
-#if 0
-		if (VR_render_mode != VR_NONE)
-			gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-		else 
-#endif
 			{
 			max_window_w = grdCurScreen->sc_w;
 			max_window_h = grdCurScreen->sc_h;
-#if 0
-			if (VR_screenFlags & VRF_ALLOW_COCKPIT) {
-				if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		      	max_window_h = grdCurScreen->sc_h - gameData.pig.tex.bitmaps[gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index].bm_props.h;
-				}
-			else if (gameStates.render.cockpit.nMode != CM_LETTERBOX)
-				gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-#endif
 	      if (!Game_window_h || (Game_window_h > max_window_h) || 
 				 !Game_window_w || (Game_window_w > max_window_w)) {
 				Game_window_w = max_window_w;
@@ -1004,18 +599,6 @@ WIN (static int saved_window_h);
 				}
 			}
 		InitCockpit ();
-
-		#ifdef WINDOWS
-		//	Super hack.   If we are switching from a 320x200 game to 640x480.
-		//						and we were in a menumode when switching, we don't
-		//						restore Game_window vals
-			if (force_mode_change && (W95DisplayMode == SM95_320x200x8X)) {
-				Game_window_w = saved_window_w;
-				Game_window_h = saved_window_h;
-				force_mode_change = 0;
-			}
-		#endif
-
 
 	//	Define screen pages for game mode
 	// If we designate through screenFlags to use paging, then do so.
@@ -1036,16 +619,8 @@ WIN (static int saved_window_h);
 			GrInitSubCanvas (&VR_screen_pages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
 		);
 		}
-
 		InitCockpit ();
-
-	#ifdef WINDOWS
-		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.video.nDisplayMode != 0);
-		gameStates.menus.bHires = 1;
-	#else
 		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-	#endif
-
 		if (VR_render_mode != VR_NONE)	{
 			// for 640x480 or higher, use hires font.
 			if (gameStates.render.fonts.bHiresAvailable && (grdCurScreen->sc_h > 400))
@@ -1092,10 +667,7 @@ WIN (static int saved_window_h);
 		GrShowCanvas (&VR_screen_pages[nVRCurrentPage])
 	);
 	}
-#ifdef OGL
 	OglSetScreenMode ();
-#endif
-
 	return 1;
 }
 
@@ -1103,24 +675,13 @@ WIN (static int saved_window_h);
 
 int GrToggleFullScreenGame (void)
 {
-#ifdef GR_SUPPORTS_FULLSCREEN_TOGGLE
-	int i=GrToggleFullScreen ();
-	//added 2000/06/19 Matthew Mueller - hack to fix "infinite toggle" problem
-	//it seems to be that the screen mode change takes long enough that the key has already sent repeat codes, or that its unpress event gets dropped, etc.  This is a somewhat ugly fix, but it works.
-//	generic_key_handler (KEY_PADENTER,0);
-	FlushInput ();
-	if (gameStates.app.bGameRunning) {
-		HUDMessage (MSGC_GAME_FEEDBACK, "toggling fullscreen mode %s",i?"on":"off");
-		StopPlayerMovement ();
-		//RebuildGfxFx (gameStates.app.bGameRunning);
-		}
-	//end addition -MM
-	return i;
-#else
-	if (gameStates.app.bGameRunning)
-		HUDMessage (MSGC_GAME_FEEDBACK, "fullscreen toggle not supported by this target");
-	return -1;
-#endif
+int i=GrToggleFullScreen ();
+FlushInput ();
+if (gameStates.app.bGameRunning) {
+	HUDMessage (MSGC_GAME_FEEDBACK, "toggling fullscreen mode %s",i?"on":"off");
+	StopPlayerMovement ();
+	}
+return i;
 }
 
 //------------------------------------------------------------------------------
@@ -1461,173 +1022,6 @@ end:
 
 //------------------------------------------------------------------------------
 
-//automapFlag is now unused, since we just check if the screen we're
-//writing to is modex
-//if called from automap, current canvas is set to visible screen
-#ifndef OGL
-void SaveScreenShot (NULL, int automapFlag)
-{
-#if defined (WINDOWS)
-#if TRACE
-	//con_printf (CON_DEBUG, "Doing screen shot thing.\n");
-#endif
-	win95_save_pcx_shot ();
-
-#elif !defined (MACINTOSH)
-	fix t1;
-	char message[100];
-	grs_canvas *screen_canv=&grdCurScreen->sc_canvas;
-	grs_font *save_font;
-	static int savenum=0;
-	static int stereo_savenum=0;
-	grs_canvas *temp_canv,*temp_canv2,*save_canv;
-        char savename[FILENAME_LEN],savename2[FILENAME_LEN];
-	ubyte pal[768];
-	int w,h,aw,x,y;
-	int modexFlag;
-	int stereo=0;
-
-	temp_canv2=NULL;
-
-//	// Can't do screen shots in VR modes.
-//	if (VR_render_mode != VR_NONE)
-//		return;
-
-	StopTime ();
-
-	save_canv = grdCurCanv;
-
-	if (VR_render_mode != VR_NONE && !automapFlag && gameStates.app.nFunctionMode==FMODE_GAME && gameStates.video.nScreenMode==SCREEN_GAME)
-		stereo = 1;
-
-	if (stereo) {
-		temp_canv = GrCreateCanvas (VR_render_buffer[0].cv_bitmap.bm_props.w,VR_render_buffer[0].cv_bitmap.bm_props.h);
-		GrSetCurrentCanvas (temp_canv);
-		gr_ubitmap (0,0,&VR_render_buffer[0].cv_bitmap);
-
-		temp_canv2 = GrCreateCanvas (VR_render_buffer[1].cv_bitmap.bm_props.w,VR_render_buffer[1].cv_bitmap.bm_props.h);
-		GrSetCurrentCanvas (temp_canv2);
-		gr_ubitmap (0,0,&VR_render_buffer[1].cv_bitmap);
-	}
-	else {
-		temp_canv = GrCreateCanvas (screen_canv->cv_bitmap.bm_props.w,screen_canv->cv_bitmap.bm_props.h);
-		GrSetCurrentCanvas (temp_canv);
-		gr_ubitmap (0,0,&screen_canv->cv_bitmap);
-	}
-
-	GrSetCurrentCanvas (save_canv);
-
-	if (savenum > 99) savenum = 0;
-	if (stereo_savenum > 99) stereo_savenum = 0;
-
-	if (stereo) {
-		sprintf (savename,"left%02d.pcx",stereo_savenum);
-		sprintf (savename2,"right%02d.pcx",stereo_savenum);
-		if (VR_eye_switch) {char t[FILENAME_LEN]; strcpy (t,savename); strcpy (savename,savename2); strcpy (savename2,t);}
-		stereo_savenum++;
-		sprintf (message, "%s '%s' & '%s'", TXT_DUMPING_SCREEN, savename, savename2);
-	}
-	else {
-		sprintf (savename,"screen%02d.pcx",savenum++);
-		sprintf (message, "%s '%s'", TXT_DUMPING_SCREEN, savename);
-	}
-
-	if (!automapFlag)		//if from automap, curcanv is already visible canv
-		GrSetCurrentCanvas (NULL);
-	modexFlag = (grdCurCanv->cv_bitmap.bm_props.nType==BM_MODEX);
-	if (!automapFlag && modexFlag)
-		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
-
-	save_font = grdCurCanv->cv_font;
-	GrSetCurFont (GAME_FONT);
-	GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-	GrGetStringSize (message,&w,&h,&aw);
-
-	if (modexFlag)
-		h *= 2;
-
-	//I changed how these coords were calculated for the high-res automap. -MT
-	//x = (VR_screen_pages[nVRCurrentPage].cv_w-w)/2;
-	//y = (VR_screen_pages[nVRCurrentPage].cv_h-h)/2;
-	x = (grdCurCanv->cv_w-w)/2;
-	y = (grdCurCanv->cv_h-h)/2;
-
-	if (modexFlag) {
-		modex_clear_box (x-2,y-2,w+4,h+4);
-		modex_printf (x, y, message,GAME_FONT,GrFindClosestColorCurrent (0,31,0);
-	} else {
-		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (x-2,y-2,x+w+2,y+h+2);
-		GrPrintF (x,y,message);
-		GrSetCurFont (save_font);
-	}
-	t1 = TimerGetFixedSeconds () + F1_0;
-
-	GrPaletteRead (pal);		//get actual palette from the hardware
-	pcx_write_bitmap (savename,&temp_canv->cv_bitmap,pal);
-	if (stereo)
-		pcx_write_bitmap (savename2,&temp_canv2->cv_bitmap,pal);
-
-	while (TimerGetFixedSeconds () < t1);		// Wait so that messag stays up at least 1 second.
-
-	GrSetCurrentCanvas (screen_canv);
-
-	if (grdCurCanv->cv_bitmap.bm_props.nType!=BM_MODEX && !stereo)
-		gr_ubitmap (0,0,&temp_canv->cv_bitmap);
-
-	GrFreeCanvas (temp_canv);
-	if (stereo)
-		GrFreeCanvas (temp_canv2);
-
-	GrSetCurrentCanvas (save_canv);
-	KeyFlush ();
-	StartTime ();
-
-#else
-
-	grs_canvas *screen_canv = &grdCurScreen->sc_canvas;
-	grs_canvas *temp_canv, *save_canv;
-
-	// Can't do screen shots in VR modes.
-	if (VR_render_mode != VR_NONE)
-		return;
-
-	StopTime ();
-
-	save_canv = grdCurCanv;
-	temp_canv = GrCreateCanvas (screen_canv->cv_bitmap.bm_props.w, screen_canv->cv_bitmap.bm_props.h);
-	if (!temp_canv)
-		goto shot_done;
-	GrSetCurrentCanvas (temp_canv);
-	gr_ubitmap (0, 0, &screen_canv->cv_bitmap);
-	GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage]);
-
-	show_cursor ();
-	key_close ();
-	if (gameData.app.nGameMode & GM_MULTI)
-		SavePictScreen (1);
-	else
-		SavePictScreen (0);
-	key_init ();
-	hide_cursor ();
-
-	GrSetCurrentCanvas (screen_canv);
-
-//	if (!automapFlag)
-		gr_ubitmap (0, 0, &temp_canv->cv_bitmap);
-
-	GrFreeCanvas (temp_canv);
-shot_done:
-	GrSetCurrentCanvas (save_canv);
-	KeyFlush ();
-	StartTime ();
-	#endif
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 //initialize flying
 void FlyInit (tObject *objP)
 {
@@ -1914,9 +1308,7 @@ extern void GrPaletteStepUpVR (int r, int g, int b, int white, int black);
 void GamePaletteStepUp (int r, int g, int b)
 {
 if (VR_use_reg_code)
-#ifndef WINDOWS
 	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
-#endif
 else
 	GrPaletteStepUp (r, g, b);
 }
@@ -2208,9 +1600,6 @@ InitGauges ();
 //DigiInitSounds ();
 //keyd_repeat = 0;                // Don't allow repeat in game
 keyd_repeat = 1;                // Do allow repeat in game
-#if !defined (WINDOWS) && !defined (MACINTOSH)
-//_MARK_ ("start of game");
-#endif
 #ifdef EDITOR
 	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
 		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
@@ -2278,17 +1667,6 @@ while (1) {
 	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]);
 		}
 	player_shields = gameData.multi.players[gameData.multi.nLocalPlayer].shields;
-#ifdef WINDOWS
-	{
-	MSG msg;
-	DoMessageStuff (&msg);		// Do Windows event handling.
-	if (_RedrawScreen) {
-		_RedrawScreen = FALSE;
-		LoadPalette (szCurrentLevelPalette,1,1,0);
-		GrPaletteStepLoad (NULL);
-		}
-	}
-#endif
 	gameStates.app.nExtGameStatus=GAMESTAT_RUNNING;
 	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
 		continue;
@@ -2408,9 +1786,6 @@ if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 //@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR))	{
 //@@		scores_maybe_add_player (gameStates.app.bGameAborted);
 //@@	}
-#if !defined (WINDOWS) && !defined (MACINTOSH)
-//_MARK_ ("end of game");
-#endif
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 GameDisableCheats ();
 UnloadCamBot ();
@@ -2464,33 +1839,18 @@ LogErr ("unloading inventory icons\n");
 FreeInventoryIcons ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
-#ifdef WINDOWS
-if (dd_VR_offscreen_buffer) {
-	if (dd_grd_backcanv != dd_VR_offscreen_buffer) {
-		dd_gr_free_canvas (dd_VR_offscreen_buffer);
-	}
-	dd_VR_offscreen_buffer = NULL;
-	VR_offscreen_buffer = NULL;
-}
-#else
 if (VR_offscreen_buffer)	{
 	GrFreeCanvas (VR_offscreen_buffer);
 	VR_offscreen_buffer = NULL;
 }
-#endif
 LogErr ("unloading gauge data\n");
 CloseGaugeCanvases ();
 LogErr ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
-#if !defined (MACINTOSH) && !defined (WINDOWS)
 if (Game_cockpit_copy_code) {
 	d_free (Game_cockpit_copy_code);
 	Game_cockpit_copy_code = NULL;
 }
-#else
-if (Game_cockpit_copy_code)
-	Game_cockpit_copy_code = 0;
-#endif
 if (bmBackground.bm_texBuf) {
 	LogErr ("unloading background bitmap\n");
 	d_free (bmBackground.bm_texBuf);
@@ -2509,22 +1869,13 @@ if (fErr) {
 }
 
 //-----------------------------------------------------------------------------
-#ifdef WINDOWS
-dd_grs_canvas * GetCurrentGameScreen ()
-{
-	return &dd_VR_screen_pages[nVRCurrentPage];
-}
 
-#else
-
-grs_canvas * GetCurrentGameScreen ()
+grs_canvas *GetCurrentGameScreen ()
 {
-	return &VR_screen_pages[nVRCurrentPage];
+return VR_screen_pages + nVRCurrentPage;
 }
-#endif
 
 //-----------------------------------------------------------------------------
-
 extern void kconfig_center_headset ();
 
 #ifndef	NDEBUG
@@ -2801,24 +2152,6 @@ if (Debug_slowdown) {
 		for (i=0; i<1000; i++)
 			j += i;
 #endif
-}
-#endif
-
-#ifdef WINDOWS
-{
-	static int desc_dead_countdown=100;   /*  used if tPlayer shouldn't be playing */
-
-	if (desc_id_exit_num) {				 // are we supposed to be checking
-		if (!(--desc_dead_countdown)) {// if so, at zero, then pull the plug
-			char time_str[32], time_str2[32];
-
-			_ctime (&t_savedTime, time_str);
-			_ctime (&t_currentTime, time_str2);
-
-			Error ("EXPIRES %s.  YOUR TIME %s.\n", time_str, time_str2);
-			Error ("Loading overlay -- error number: %d\n", (int)desc_id_exit_num);
-		}
-	}
 }
 #endif
 
@@ -3359,86 +2692,6 @@ void show_freeObjects (void)
 	}
 
 }
-
-#endif
-
-//-----------------------------------------------------------------------------
-#ifdef WINDOWS
-void game_win_init_cockpit_mask (int sram)
-{
-	if (dd_VR_offscreen_buffer && dd_VR_offscreen_buffer != dd_grd_backcanv) {
-		dd_gr_free_canvas (dd_VR_offscreen_buffer);
-	}
-
-	if (GRMODEINFO (paged) && !GRMODEINFO (dbuf)) {
-	//	Here we will make the VR_offscreen_buffer the 2nd page and hopefully
-	//	we can just flip it, saving a blt.
-		Int3 ();
-	}
-	else if (GRMODEINFO (dbuf)||GRMODEINFO (emul)) {
-	//	The offscreen buffer will be created.  We will just blt this
-	//	to the screen (which may be blted to the primary surface)
-		if (grdCurScreen->sc_h < 200) {
-			dd_VR_offscreen_buffer = dd_gr_create_canvas (grdCurScreen->sc_w, 200);
-			VR_offscreen_buffer = &dd_VR_offscreen_buffer->canvas;
-			if (sram) {
-				DDFreeSurface (dd_VR_offscreen_buffer->lpdds);
-				dd_VR_offscreen_buffer->lpdds = DDCreateSysMemSurface (grdCurScreen->sc_w, 200);
-				dd_VR_offscreen_buffer->sram = 1;
-			}
-		}
-		else {
-			dd_VR_offscreen_buffer = dd_gr_create_canvas (grdCurScreen->sc_w, grdCurScreen->sc_h);
-			VR_offscreen_buffer = &dd_VR_offscreen_buffer->canvas;
-			if (sram) {
-				DDFreeSurface (dd_VR_offscreen_buffer->lpdds);
-				dd_VR_offscreen_buffer->lpdds = DDCreateSysMemSurface (grdCurScreen->sc_w, grdCurScreen->sc_h);
-				dd_VR_offscreen_buffer->sram = 1;
-			}
-		}
-	}
-
-	DDGrInitSubCanvas (&dd_VR_render_buffer[0], dd_VR_offscreen_buffer, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-	DDGrInitSubCanvas (&dd_VR_render_buffer[1], dd_VR_offscreen_buffer, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-	GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-	GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-
-	GameInitRenderSubBuffers (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-}
-
-//@@void game_win_init_cockpit_mask ()
-//@@{
-//@@	char title_pal[768];
-//@@	dd_grs_canvas ccanv;
-//@@	int pcx_error;
-//@@	LPDIRECTDRAWSURFACE dds;
-//@@
-//@@	dds = DDCreateSurface (GRMODEINFO (w), GRMODEINFO (h), 1);
-//@@	Assert (dds != NULL);
-//@@
-//@@	_lpDDSMask = dds;
-//@@	ccanv.lpdds = dds;
-//@@	dd_gr_reinit_canvas (&ccanv);
-//@@
-//@@	DDGrSetCurrentCanvas (&ccanv);
-//@@	DDGRLOCK (dd_grd_curcanv)
-//@@	{
-//@@		if (W95DisplayMode == SM95_640x480x8) {
-//@@			pcx_error=PCXReadBitmap ("MASKB.PCX", &grdCurCanv->cv_bitmap,
-//@@				grdCurCanv->cv_bitmap.bm_props.nType,
-//@@				title_pal);
-//@@		}
-//@@		else {
-//@@			pcx_error=PCXReadBitmap ("MASK.PCX", &grdCurCanv->cv_bitmap,
-//@@				grdCurCanv->cv_bitmap.bm_props.nType,
-//@@				title_pal);
-//@@		}
-//@@	}
-//@@	DDGRUNLOCK (dd_grd_curcanv);
-//@@
-//@@	Assert (pcx_error == PCX_ERROR_NONE);
-//@@	Game_cockpit_copy_code = (ubyte *) (0xABADC0DE);
-//@@}
 
 #endif
 

@@ -330,12 +330,10 @@ if (!secondaryFlag) {
 	if (gameData.weapons.nPrimary != weapon_num) {
 		if (bWaitForRearm) 
 			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_PRIMARY, F1_0);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)	{
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
-#endif
 		xNextLaserFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.app.nGlobalLaserFiringCount = 0;
 		} 
@@ -373,12 +371,10 @@ else {
 	if (gameData.weapons.nSecondary != weapon_num) {
 		if (bWaitForRearm) 
 			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_SECONDARY, F1_0);
-#ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
-#endif
 		xNextMissileFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.app.nGlobalMissileFiringCount = 0;
 		}
@@ -973,9 +969,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 
 //	-----------------------------------------------------------------------------
 
-#ifdef NETWORK
 extern void multi_send_seismic (fix,fix);
-#endif
 
 #define	SEISMIC_DISTURBANCE_DURATION	(F1_0*5)
 
@@ -1009,10 +1003,8 @@ if (rval) {
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 		}
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI)
 		multi_send_seismic (gameStates.gameplay.seismic.nStartTime,gameStates.gameplay.seismic.nEndTime);
-#endif
 	}
 return rval;
 }
@@ -1168,10 +1160,8 @@ if ((gameData.app.nGameMode & GM_MULTI) && (id >= POW_KEY_BLUE) && (id <= POW_KE
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
 VmVecScaleAdd(&new_pos,&spitter->position.vPos,&spitter->position.mOrient.fVec,spitter->size);
-#ifdef NETWORK
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
-#endif
 nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multi.nLocalPlayer) + 1), 
 							  (short) spitter->nSegment, &new_pos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
 							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
@@ -1285,12 +1275,10 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	if (nObject != -1)
 		gameData.objs.objects[nObject].cType.powerupInfo.count = xOmegaCharge;
 	}
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendDropWeapon (nObject, seed);
 	MultiSendWeapons (1);
 	}
-#endif
 if (gameData.weapons.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
 }
@@ -1336,12 +1324,10 @@ if (nObject == -1) {
 	}
 HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
 DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
-#ifdef NETWORK
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendDropWeapon (nObject, seed);
 	MultiSendWeapons (1);
 	}
-#endif
 if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [nWeapon] == 0) {
 	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags &= (~(1<<gameData.weapons.nSecondary));
 	AutoSelectWeapon (1, 0);

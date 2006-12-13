@@ -16,10 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#ifdef WINDOWS
-#include "desw.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,7 +23,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "hudmsg.h"
 
-#include "pa_enabl.h"                   //$$POLY_ACC
 #include "inferno.h"
 #include "game.h"
 #include "screens.h"
@@ -45,10 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "powerup.h"
 #include "sounds.h"
-#ifdef NETWORK
 #include "multi.h"
 #include "network.h"
-#endif
 #include "endlevel.h"
 #include "cntrlcen.h"
 #include "controls.h"
@@ -65,14 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamepal.h"
 #include "kconfig.h"
 #include "object.h"
-
-#ifdef OGL
 #include "ogl_init.h"
-#endif
-
-#if defined(POLY_ACC)
-#include "poly_acc.h"
-#endif
 
 void DrawAmmoInfo(int x,int y,int ammo_count,int primary);
 extern void DrawGuidedCrosshair(void);
@@ -330,13 +316,8 @@ PIGGY_PAGE_IN(gameStates.render.fonts.bHires ? Gauges_hires[x] : Gauges[x], 0);
 #define SB_BOMB_COUNT_X			(gameStates.video.nDisplayMode?342:171)
 #define SB_BOMB_COUNT_Y			(gameStates.video.nDisplayMode?458:191)
 
-#ifdef WINDOWS
-#define LHX(x)      (gameStates.video.nDisplayMode?2*(x):x)
-#define LHY(y)      (gameStates.video.nDisplayMode?(24*(y))/10:y)
-#else
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
 #define LHY(y)      (gameStates.menus.bHires?(24*(y))/10:y)
-#endif
 
 static int score_display[2];
 static fix scoreTime;
@@ -874,57 +855,6 @@ void _CDECL_ HUDPrintF (int x, int y, char *pszFmt, ...)
 //	-----------------------------------------------------------------------------
 
 //copy a box from the off-screen buffer to the visible page
-#ifdef WINDOWS
-void CopyGaugeBox(gauge_box *box,dd_grs_canvas *cv)
-{
-//	This is kind of funny.  If we are in a full cockpit mode
-//	we have a system offscreen buffer for our canvas.
-//	Since this is true of cockpit mode only, we should do a 
-//	direct copy from system to video memory without blting.
-
-	if (box->spanlist) {
-		int n_spans = box->bot-box->top+1;
-		int cnt,y;
-
-		if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT && cv->sram) {
-			grsBitmap *bm;
-
-			Assert(cv->sram);
-		DDGRLOCK(cv);
-		DDGRLOCK(dd_grd_curcanv);
-			bm = &cv->canvas.cv_bitmap;		
-	
-			for (cnt=0,y=box->top;cnt<n_spans;cnt++,y++)
-			{
-				GrBmUBitBlt(box->spanlist[cnt].r-box->spanlist[cnt].l+1,1,
-							box->left+box->spanlist[cnt].l,y,box->left+box->spanlist[cnt].l,y,bm,&grdCurCanv->cv_bitmap);
-		  	}
-		DDGRUNLOCK(dd_grd_curcanv);
-		DDGRUNLOCK(cv);
-		}
-		else {
-			for (cnt=0,y=box->top;cnt<n_spans;cnt++,y++)
-			{
-				dd_gr_blt_notrans(cv, 
-								box->left+box->spanlist[cnt].l,y,
-								box->spanlist[cnt].r-box->spanlist[cnt].l+1,1,
-								dd_grd_curcanv,
-								box->left+box->spanlist[cnt].l,y,
-								box->spanlist[cnt].r-box->spanlist[cnt].l+1,1);
-			}
-		}
-	}
-	else {
-		dd_gr_blt_notrans(cv, box->left, box->top, 
-						box->right-box->left+1, box->bot-box->top+1,
-						dd_grd_curcanv, box->left, box->top,
-						box->right-box->left+1, box->bot-box->top+1);
-	}
-}
-
-#else
-
-//	-----------------------------------------------------------------------------
 
 void CopyGaugeBox(gauge_box *box,grsBitmap *bm)
 {
@@ -960,9 +890,6 @@ void CopyGaugeBox(gauge_box *box,grsBitmap *bm)
 		PA_DFX (pa_set_front_to_read());
 	 }
 }
-#endif
-
-//	-----------------------------------------------------------------------------
 
 //	-----------------------------------------------------------------------------
 //fills in the coords of the hostage video window
@@ -1014,18 +941,15 @@ GrPrintF(grdCurCanv->cv_w-w-LHX(2), 3, score_str);
 
 void HUDShowTimerCount()
  {
-#ifdef NETWORK
 	char	score_str[20];
 	int	w, h, aw,i;
 	fix timevar=0;
-#endif
 
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 		return;
 	if ((gameData.hud.msgs [0].nMessages > 0) && (strlen(gameData.hud.msgs [0].szMsgs[gameData.hud.msgs [0].nFirst]) > 38))
 		return;
 
-#ifdef NETWORK
    if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed)
     {
      timevar=i2f (netGame.PlayTimeAllowed*5*60);
@@ -1040,7 +964,6 @@ void HUDShowTimerCount()
      if (i>-1 && !gameData.reactor.bDestroyed)
 	     GrPrintF(grdCurCanv->cv_w-w-LHX(10), LHX(11), score_str);
     }
-#endif
  }
 
 //	-----------------------------------------------------------------------------
@@ -1368,8 +1291,6 @@ void HUDShowKeys(void)
 
 //	-----------------------------------------------------------------------------
 
-#ifdef NETWORK
-
 void HUDShowOrbs (void)
 {
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
@@ -1487,7 +1408,6 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players[gameData.mu
 	GrUBitmapM (x, y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(icon));
 	}
 }
-#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -2450,28 +2370,18 @@ void AddPointsToScore(int points)
 	score_display[0] += points;
 	score_display[1] += points;
 	if (scoreTime > f1_0*4) scoreTime = f1_0*4;
-
 	if (points == 0 || gameStates.app.cheats.bEnabled)
 		return;
-
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 		return;
-
 	prev_score=gameData.multi.players[gameData.multi.nLocalPlayer].score;
-
 	gameData.multi.players[gameData.multi.nLocalPlayer].score += points;
-
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordPlayerScore(points);
-
-#ifdef NETWORK
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		MultiSendScore();
-
 	if (gameData.app.nGameMode & GM_MULTI)
 		return;
-#endif
-
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
 		short snd;
 		gameData.multi.players[gameData.multi.nLocalPlayer].lives += gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
@@ -2881,10 +2791,8 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 	grsBitmap *bm = NULL;
 
 	if (gameData.app.nGameMode & GM_TEAM)	{
-		#ifdef NETWORK
 		PAGE_IN_GAUGE( GAUGE_SHIPS+GetTeam(gameData.multi.nLocalPlayer));
 		bm =gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_SHIPS+GetTeam(gameData.multi.nLocalPlayer));
-		#endif
 	} else {
 		PAGE_IN_GAUGE( GAUGE_SHIPS+gameData.multi.nLocalPlayer );
 		bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(GAUGE_SHIPS+gameData.multi.nLocalPlayer);
@@ -2938,23 +2846,6 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 		nCloakFadeState = -1;
 		refade = 1;
 	}
-
-#if defined(POLY_ACC)
-	    gameStates.render.grAlpha = nCloakFadeValue;
-	    GrSetCurrentCanvas( GetCurrentGameScreen());
-	    PA_DFX (pa_set_frontbuffer_current();	
-	    PA_DFX (pa_blit_lit(&grdCurCanv->cv_bitmap, HUD_SCALE_X (x), HUD_SCALE_Y (y), bm, 0, 0, HUD_SCALE_X (bm->bm_props.w), HUD_SCALE_Y (bm->bm_props.h));
-		 PA_DFX (pa_set_backbuffer_current();	
-	    pa_blit_lit(&grdCurCanv->cv_bitmap, HUD_SCALE_X (x), HUD_SCALE_Y (y), bm, 0, 0, HUD_SCALE_X (bm->bm_props.w), HUD_SCALE_Y (bm->bm_props.h));
-
-	    gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-	    return;
-//	    }
-//	    else
-//		    gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-//		 Int3();
-#endif
-
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 		WINDOS( 		
 			DDGrSetCurrentCanvas(&dd_VR_render_buffer[0]),
@@ -2977,15 +2868,6 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 		);
 	}
 
-#ifdef WINDOWS
-	DDGRLOCK(dd_grd_curcanv);
-	if (dd_grd_curcanv->lpdds != dd_VR_render_buffer[0].lpdds) {
-		DDGRLOCK(&dd_VR_render_buffer[0]);
-	}
-	else {
-		dd_gr_dup_hack(&dd_VR_render_buffer[0], dd_grd_curcanv);
-	}
-#endif
 	WINDOS(
 		GrBmUBitBltM( 
 			(int) (bm->bm_props.w * cmScaleX), (int) (bm->bm_props.h * cmScaleY), 
@@ -2996,15 +2878,6 @@ void DrawPlayerShip(int nCloakState,int nOldCloakState,int x, int y)
 			(int) (x * cmScaleX), (int) (y * cmScaleY), x, y, 
 			&VR_render_buffer[0].cv_bitmap, &grdCurCanv->cv_bitmap)
 	);
-#ifdef WINDOWS
-	if (dd_grd_curcanv->lpdds != dd_VR_render_buffer[0].lpdds) {
-		DDGRUNLOCK(&dd_VR_render_buffer[0]);
-	}
-	else {
-		dd_gr_dup_unhack(&dd_VR_render_buffer[0]);
-	}
-	DDGRUNLOCK(dd_grd_curcanv);
-#endif
 }
 
 #define INV_FRAME_TIME	(f1_0/10)		//how long for each frame
@@ -3771,11 +3644,9 @@ void ShowReticle(int force_big_one)
 	if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0)))
 #endif	
 		return;
-#ifdef OGL
       if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bitmap.bm_props.w > 320)){                
       	OglDrawReticle(nCrossBm,nPrimaryBm,nSecondaryBm);
        } else {
-#endif
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
 	WIN(DDGRLOCK(dd_grd_curcanv));
 	bSmallReticle = !(grdCurCanv->cv_bitmap.bm_props.w * 3 > max_window_w*2 || force_big_one);
@@ -3800,16 +3671,13 @@ void ShowReticle(int force_big_one)
 		-(y + HUD_SCALE_Y (secondary_offsets [ofs].y)),
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX(nGaugeIndex), F1_0, 0);
 	WIN(DDGRUNLOCK(dd_grd_curcanv));
-#ifdef OGL
        }
-#endif
 if (gameOpts->input.bJoyMouse && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 }
 
 //	-----------------------------------------------------------------------------
 
-#ifdef NETWORK
 void HUDShowKillList()
 {
 	int n_players, player_list[MAX_NUM_NET_PLAYERS];
@@ -3982,7 +3850,6 @@ for (i = 0; i < n_players; i++) {
 	y += fth+1;
 	}
 }
-#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -4016,7 +3883,6 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject
 
 //	-----------------------------------------------------------------------------
 
-#ifdef NETWORK
 //show names of teammates & players carrying flags
 void ShowHUDNames()
 {
@@ -4117,7 +3983,6 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 		}
 	}
 }
-#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -4129,7 +3994,6 @@ void DrawHUD()
 
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 		return;
-#ifdef OGL
    if (gameStates.render.cockpit.nMode==CM_STATUS_BAR){
    //ogl needs to redraw every frame, at least currently.
    //	InitCockpit();
@@ -4138,7 +4002,6 @@ void DrawHUD()
    InitGauges();
 	//	vr_reset_display();
     }
-#endif
 	cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
 	cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
                                           
@@ -4182,35 +4045,26 @@ WIN(DDGRLOCK(dd_grd_curcanv));
 				oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 			}
 		}
-		#ifdef NETWORK
-		#ifndef RELEASE
+#ifndef RELEASE
 		if (!(gameData.app.nGameMode&GM_MULTI && multiData.kills.bShowList) && !Saving_movie_frames)
 			ShowTime();
-		#endif
-		#endif
+#endif
 		if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!bUsePlayerHeadAngles))
 			ShowReticle(0);
 
-#ifdef NETWORK
 		ShowHUDNames();
-
 		if (/*gameStates.render.cockpit.nMode != CM_LETTERBOX &&*/ gameStates.render.cockpit.nMode != CM_REAR_VIEW)
 			HUDShowFlag();
-
 		if (/*gameStates.render.cockpit.nMode != CM_LETTERBOX &&*/ gameStates.render.cockpit.nMode != CM_REAR_VIEW)
 			HUDShowOrbs();
-
-#endif
 		if (!Saving_movie_frames)
 			HUDRenderMessageFrame();
 
 		if (gameStates.render.cockpit.nMode!=CM_STATUS_BAR && !Saving_movie_frames)
 			HUDShowLives();
 
-		#ifdef NETWORK
 		if (gameData.app.nGameMode&GM_MULTI && multiData.kills.bShowList)
 			HUDShowKillList();
-		#endif
 #if 0
 		DrawWeaponBoxes();
 #endif
@@ -4429,10 +4283,6 @@ void DoCockpitWindowView(int win,tObject *viewer,int rear_viewFlag,int user,char
 		static grs_canvas overlap_canv
 	);
 
-#ifdef WINDOWS
-	int saved_window_x, saved_window_y;
-#endif
-
 	tObject *viewer_save = gameData.objs.viewer;
 	grs_canvas *save_canv = grdCurCanv;
 	static int overlap_dirty[2]={0,0};
@@ -4516,16 +4366,6 @@ void DoCockpitWindowView(int win,tObject *viewer,int rear_viewFlag,int user,char
 			 (extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
 			 window_y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) grdCurCanv->cv_h / 480.0);
 
-
-#ifdef WINDOWS
-		saved_window_x = window_x;
-		saved_window_y = window_y;
-		window_x = dd_VR_render_sub_buffer[0].canvas.cv_bitmap.bm_props.w/2+dx;
-		window_x = win ? 
-			dd_VR_render_sub_buffer[0].cv_bitmap.bm_props.w/3*2-w/2 :
-			dd_VR_render_sub_buffer[0].cv_bitmap.bm_props.w/3+w/2;
-		window_y = VR_render_buffer[0].cv_bitmap.bm_props.h-h-(h/10)-dd_VR_render_sub_buffer[0].yoff;
-#endif
 
 		//copy these vars so stereo code can get at them
 		SW_drawn[win]=1; 
@@ -4616,23 +4456,10 @@ WINDOS(
 
 		//if the window only partially overlaps the big 3d window, copy
 		//the extra part to the visible screen
-
 		big_window_bottom = Game_window_y + Game_window_h - 1;
-
-	#ifdef WINDOWS
-		window_x = saved_window_x;
-		window_y = saved_window_y;
-//		DDGrInitSubCanvas(&window_canv, &dd_VR_render_buffer[0],window_x,window_y,
-//						VR_render_buffer[0].cv_bitmap.bm_props.w/6,
-//						i2f(VR_render_buffer[0].cv_bitmap.bm_props.w/6) / grdCurScreen->sc_aspect);
-
-	#endif
-
 		if (window_y > big_window_bottom) {
-
 			//the small window is completely outside the big 3d window, so
 			//copy it to the visible screen
-
 			if (VR_screenFlags & VRF_USE_PAGING)
 				WINDOS(
 					DDGrSetCurrentCanvas(&dd_VR_screen_pages[!nVRCurrentPage]),

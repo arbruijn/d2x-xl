@@ -40,14 +40,12 @@ void arch_init()
 		joy_init();
 	}
 	//added 06/09/99 Matt Mueller - fix nonetwork compile
-#ifdef NETWORK
 	//end addition -MM
 //added on 10/19/98 by Victor Rachels to add serial support (from DPH)
     if(!(FindArg("-noserial")))
      com_init();
 //end this section addition - Victor 
 	//added 06/09/99 Matt Mueller - fix nonetwork compile
-#endif
 	//end addition -MM
     key_init();
 }
