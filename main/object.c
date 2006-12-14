@@ -551,7 +551,7 @@ else {
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = 29.0f;
+				gameStates.render.grAlpha = 2.0f;
 				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 				}
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
@@ -3016,7 +3016,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 		 bIsMissile [objP->id] &&
 		 ((SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 		  || gameStates.app.bNostalgia
-		 // || EGI_FLAG (bThrusterFlames, 0, 0)
+		  || !EGI_FLAG (bThrusterFlames, 0, 0)
 		 ))
 		return;
 	if ((gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 
