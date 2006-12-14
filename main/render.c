@@ -2718,7 +2718,7 @@ if (!bShadowTest)
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {
-		RenderMine (nStartSeg, nEyeOffset, nWindow);
+		//RenderMine (nStartSeg, nEyeOffset, nWindow);
 		RenderShadow (0.0f);
 		}
 	}

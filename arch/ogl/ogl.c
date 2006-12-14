@@ -93,7 +93,7 @@ PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 #	endif
 #endif
 
-#ifndef GL_VERSION_20
+#ifdef _WIN32
 PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
 #endif
 
