@@ -135,6 +135,7 @@ typedef struct tColorOptions {
 
 typedef struct tCockpitOptions {
 	int bHUD;
+	int bHUDMsgs;
 	int bSplitHUDMsgs;	//split tPlayer and other message displays
 	int bReticle;
 	int bMouseIndicator;
@@ -779,11 +780,11 @@ typedef struct tDynLight {
 	short			nSide;
 	short			nObject;
 	ubyte			nPlayer;
-	ubyte			bSpot;
-	ubyte			bState;
-	ubyte			bOn;
 	ubyte			nType;
+	ubyte			bState;
 	ubyte			bVariable;
+	ubyte			bOn;
+	ubyte			bSpot;
 	ubyte			bTransform;
 	tShadowLightInfo	shadow;
 } tDynLight;
@@ -811,11 +812,11 @@ typedef struct tShaderLight {
 	float			brightness;
 	float			spotAngle;
 	float			spotExponent;
-	ubyte			bVariable;
+	ubyte			nType;
 	ubyte			bState;
+	ubyte			bVariable;
 	ubyte			bOn;
 	ubyte			bSpot;
-	ubyte			nType;
 	ubyte			bShadow;
 	ubyte			bExclusive;
 } tShaderLight;

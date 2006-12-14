@@ -129,11 +129,10 @@ if (gameStates.ogl.bUseTransform) {
 		return;
 	//step 1: subtract object position from view position
 	VmVecSub (&vOffs, &viewInfo.pos, vPos);
-	//step 2: rotate view vector through tObject matrix
-	VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
-	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 	if (mOrient) {
 		int i;
+		//step 2: rotate view vector through tObject matrix
+		VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
 		//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
 		VmCopyTransposeMatrix (&mTrans, mOrient);
 		for (i = 0; i < 2; i++) {
@@ -142,6 +141,7 @@ if (gameStates.ogl.bUseTransform) {
 			VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
 			}
 		}
+	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 	}
 }
 

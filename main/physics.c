@@ -74,8 +74,8 @@ void CheckAndFixMatrix (vmsMatrix *m)
 {
 	vmsMatrix tempm;
 
-	VmVector2Matrix (&tempm, &m->fVec, &m->uVec, NULL);
-	*m = tempm;
+VmVector2Matrix (&tempm, &m->fVec, &m->uVec, NULL);
+*m = tempm;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -234,91 +234,71 @@ void DoPhysicsSimRot (tObject *objP)
 		return;
 #endif
 
-	pi = &objP->mType.physInfo;
+pi = &objP->mType.physInfo;
 
-	if (!(pi->rotVel.x || pi->rotVel.y || pi->rotVel.z || pi->rotThrust.x || pi->rotThrust.y || pi->rotThrust.z))
-		return;
+if (!(pi->rotVel.x || pi->rotVel.y || pi->rotVel.z || 
+		pi->rotThrust.x || pi->rotThrust.y || pi->rotThrust.z))
+	return;
+if (objP->mType.physInfo.drag) {
+	int count;
+	vmsVector accel;
+	fix xDrag, r, k;
 
-	if (objP->mType.physInfo.drag) {
-		int count;
-		vmsVector accel;
-		fix xDrag, r, k;
-
-		count = gameData.time.xFrame / FT;
-		r = gameData.time.xFrame % FT;
-		k = FixDiv (r, FT);
-
-		xDrag = (objP->mType.physInfo.drag*5)/2;
-
-		if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-
-			VmVecCopyScale (&accel, 
-				&objP->mType.physInfo.rotThrust, 
-				FixDiv (f1_0, objP->mType.physInfo.mass));
-
-			while (count--) {
-
-				VmVecInc (&objP->mType.physInfo.rotVel, &accel);
-
-				VmVecScale (&objP->mType.physInfo.rotVel, f1_0-xDrag);
+	count = gameData.time.xFrame / FT;
+	r = gameData.time.xFrame % FT;
+	k = FixDiv (r, FT);
+	xDrag = (objP->mType.physInfo.drag*5)/2;
+	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
+		VmVecCopyScale (&accel, 
+			&objP->mType.physInfo.rotThrust, 
+			FixDiv (f1_0, objP->mType.physInfo.mass));
+		while (count--) {
+			VmVecInc (&objP->mType.physInfo.rotVel, &accel);
+			VmVecScale (&objP->mType.physInfo.rotVel, f1_0-xDrag);
 			}
-
-			//do linear scale on remaining bit of time
-
-			VmVecScaleInc (&objP->mType.physInfo.rotVel, &accel, k);
-			VmVecScale (&objP->mType.physInfo.rotVel, f1_0-FixMul (k, xDrag));
+		//do linear scale on remaining bit of time
+		VmVecScaleInc (&objP->mType.physInfo.rotVel, &accel, k);
+		VmVecScale (&objP->mType.physInfo.rotVel, f1_0-FixMul (k, xDrag));
 		}
-		else if (!(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
-			fix xTotalDrag=f1_0;
-
+	else if (!(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
+		fix xTotalDrag = f1_0;
 			while (count--)
 				xTotalDrag = FixMul (xTotalDrag, f1_0-xDrag);
-
 			//do linear scale on remaining bit of time
-
 			xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
-
 			VmVecScale (&objP->mType.physInfo.rotVel, xTotalDrag);
 		}
-
 	}
+//now rotate tObject
+//unrotate tObject for bank caused by turn
+if (objP->mType.physInfo.turnRoll) {
+	vmsMatrix new_pm;
 
-	//now rotate tObject
-
-	//unrotate tObject for bank caused by turn
-	if (objP->mType.physInfo.turnRoll) {
-		vmsMatrix new_pm;
-
-		tangles.p = tangles.h = 0;
-		tangles.b = -objP->mType.physInfo.turnRoll;
-		VmAngles2Matrix (&rotmat, &tangles);
-		VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
-		objP->position.mOrient = new_pm;
-	}
-
-	tangles.p = FixMul (objP->mType.physInfo.rotVel.x, gameData.time.xFrame);
-	tangles.h = FixMul (objP->mType.physInfo.rotVel.y, gameData.time.xFrame);
-	tangles.b = FixMul (objP->mType.physInfo.rotVel.z, gameData.time.xFrame);
-
+	tangles.p = tangles.h = 0;
+	tangles.b = -objP->mType.physInfo.turnRoll;
 	VmAngles2Matrix (&rotmat, &tangles);
-	VmMatMul (&new_orient, &objP->position.mOrient, &rotmat);
-	objP->position.mOrient = new_orient;
-
-	if (objP->mType.physInfo.flags & PF_TURNROLL)
-		SetObjectTurnRoll (objP);
-
-	//re-rotate tObject for bank caused by turn
-	if (objP->mType.physInfo.turnRoll) {
-		vmsMatrix new_pm;
-
-		tangles.p = tangles.h = 0;
-		tangles.b = objP->mType.physInfo.turnRoll;
-		VmAngles2Matrix (&rotmat, &tangles);
-		VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
-		objP->position.mOrient = new_pm;
+	VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+	objP->position.mOrient = new_pm;
 	}
+tangles.p = FixMul (objP->mType.physInfo.rotVel.x, gameData.time.xFrame);
+tangles.h = FixMul (objP->mType.physInfo.rotVel.y, gameData.time.xFrame);
+tangles.b = FixMul (objP->mType.physInfo.rotVel.z, gameData.time.xFrame);
+VmAngles2Matrix (&rotmat, &tangles);
+VmMatMul (&new_orient, &objP->position.mOrient, &rotmat);
+objP->position.mOrient = new_orient;
+if (objP->mType.physInfo.flags & PF_TURNROLL)
+	SetObjectTurnRoll (objP);
+//re-rotate object for bank caused by turn
+if (objP->mType.physInfo.turnRoll) {
+	vmsMatrix new_pm;
 
-	CheckAndFixMatrix (&objP->position.mOrient);
+	tangles.p = tangles.h = 0;
+	tangles.b = objP->mType.physInfo.turnRoll;
+	VmAngles2Matrix (&rotmat, &tangles);
+	VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+	objP->position.mOrient = new_pm;
+	}
+CheckAndFixMatrix (&objP->position.mOrient);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -390,7 +370,7 @@ void DoPhysicsSim (tObject *objP)
 	fix					xDrag;
 	fix					xSimTime, xOldSimTime, xTimeScale;
 	vmsVector			vStartPos;
-	int					bObjStopped=0;
+	int					bObjStopped = 0;
 	fix					xMovedTime;			//how long objected moved before hit something
 	vmsVector			vSaveP0, vSaveP1;
 	tPhysicsInfo		*pi;
@@ -575,7 +555,7 @@ retryMove:
 	iseg = hi.hit.nSegment;
 	nWallHitSide = hi.hit.nSide;
 	nWallHitSeg = hi.hit.nSideSegment;
-	if (iseg==-1) {		//some sort of horrible error
+	if (iseg == -1) {		//some sort of horrible error
 		if (objP->nType == OBJ_WEAPON)
 			objP->flags |= OF_SHOULD_BE_DEAD;
 		break;

@@ -1582,6 +1582,7 @@ char *defaultGameTexts [][2] = {
 	{"Filmeinstellungen", "Movie options"},
 	{"~Reichweite: %s", "~Reach: %s"},
 	{"Schatten begren~Zen", "~Clip shadows"},
+	{"HUD-~Nachrichten anzeigen", "show HUD ~Messages"},
 #if 0
 	{"", ""},
 #endif
@@ -2045,6 +2046,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Reichweite von Schatten eingestellt werden.", "Adjust how far shadows reach hier."},
 	{"Wenn angekreuzt, werden Schatten kurz hinter der naechsten\nvon ihnen verdeckten Wand abgeschnitten. Wie weit dahinter,\nhaengt von der eingestellten Schattenreichweite ab.", 
 	 "If checked, shadows will be clipped behind the nearest wall\nthey cover. How far behind that wall depends on the setting\nof shadow reach."},
+	{"Wenn angekreuzt, werden am oberen Bildschirmrand Programm-\nund Spieler-Nachrichten eingeblendet.", 
+	 "If checked, program and player messages are displayed at the\nscreen top."},
 #if 0
 	{"", ""},
 #endif

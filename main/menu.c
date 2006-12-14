@@ -713,6 +713,7 @@ switch (select) {
 		ExecMessageBox (TXT_SORRY, 1, TXT_OK, "Not available in shareware version!");
 		// DoNewIPAddress ();
 		break;
+#endif //NETWORK
 
 	case MENU_START_SERIAL:
 		com_main_menu ();
@@ -720,7 +721,6 @@ switch (select) {
 	case MENU_MULTIPLAYER:
 		MultiplayerMenu ();
 		break;
-#endif //NETWORK
 	case MENU_CONFIG:
 		OptionsMenu ();
 		break;
@@ -1419,7 +1419,7 @@ void CockpitOptionsMenu ()
 	int	i, j, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
 			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
-			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optCloakedInd;
+			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optCloakedInd, optHUDMsgs;
 
 	char szCockpitWindowZoom [40];
 
@@ -1443,6 +1443,8 @@ do {
 		opt++;
 		ADD_CHECK (opt, TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 		optHUD = opt++;
+		ADD_CHECK (opt, TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_U, HTX_CPIT_SHOWHUDMSGS);
+		optHUDMsgs = opt++;
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
 		if (gameOpts->input.bJoyMouse) {
@@ -1561,6 +1563,7 @@ do {
 	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
 	GET_VAL (extraGameInfo [0].bHitIndicators, optHitInd);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
+	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
 	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
 		if (gameOpts->app.bExpertMode) {

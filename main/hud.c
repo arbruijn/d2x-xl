@@ -272,7 +272,7 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 }
 
 //------------------------------------------------------------------------------
-// Call to flash a pszMsg on the HUD.  Returns true if pszMsg drawn.
+// Call to flash a message on the HUD.  Returns true if message drawn.
 // (pszMsg might not be drawn if previous pszMsg was same)
 int HUDInitMessageVA (ubyte nType, char * format, va_list args)
 {
@@ -280,8 +280,10 @@ int HUDInitMessageVA (ubyte nType, char * format, va_list args)
 	int			temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
+	char			con_message [HUD_MESSAGE_LENGTH + 3];
 
-char con_message [HUD_MESSAGE_LENGTH + 3];
+if (!gameOpts->render.cockpit.bHUDMsgs)
+	return 0;
 nModexHUDMsgs = 2;
 if ((pMsgs->nLast < 0) || (pMsgs->nLast >= HUD_MAX_MSGS))
 	Int3 (); // Get Rob!!
@@ -329,12 +331,15 @@ return 1;
 
 int _CDECL_ HUDInitMessage (char *format, ...)
 {
-	int ret;
+	int ret = 0;
+	
+if (gameOpts->render.cockpit.bHUDMsgs) {
 	va_list args;
 
-va_start (args, format);
-ret = HUDInitMessageVA (0, format, args);
-va_end (args);
+	va_start (args, format);
+	ret = HUDInitMessageVA (0, format, args);
+	va_end (args);
+	}
 return ret;
 }
 
@@ -342,7 +347,7 @@ return ret;
 
 void PlayerDeadMessage (void)
 {
-if (gameStates.app.bPlayerExploded) {
+if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 	tHUDMessage	*pMsgs = gameData.hud.msgs;
 
    if ( gameData.multi.players [gameData.multi.nLocalPlayer].lives < 2) {
@@ -386,9 +391,9 @@ if (gameStates.app.bPlayerExploded) {
 
 void _CDECL_ HUDMessage (int nClass, char *format, ...)
 {
-if ((!bNoMsgRedundancy || (nClass & MSGC_NOREDUNDANCY)) &&
-	   (!bMSGPlayerMsgs || ! (gameData.app.nGameMode & GM_MULTI) ||
-		 (nClass & MSGC_PLAYERMESSAGES))) {
+if (gameOpts->render.cockpit.bHUDMsgs &&
+	 (!bNoMsgRedundancy || (nClass & MSGC_NOREDUNDANCY)) &&
+	 (!bMSGPlayerMsgs || !(gameData.app.nGameMode & GM_MULTI) || (nClass & MSGC_PLAYERMESSAGES))) {
 		va_list vp;
 
 	va_start (vp, format);
@@ -403,9 +408,11 @@ void _CDECL_ HUDPlayerMessage (char *format, ...)
 {
 	va_list vp;
 
-va_start (vp, format);
-HUDInitMessageVA (1, format, vp);
-va_end (vp);
+if (gameOpts->render.cockpit.bHUDMsgs) {
+	va_start (vp, format);
+	HUDInitMessageVA (1, format, vp);
+	va_end (vp);
+	}
 }
 
 //------------------------------------------------------------------------------

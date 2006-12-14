@@ -2136,6 +2136,8 @@ if (nType == OBJ_WEAPON) {
 	}	
 else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
+else if (nType == OBJ_DEBRIS)
+	nType = nType;
 #endif
 if ((nType == OBJ_POWERUP) && !bIgnoreLimits) {
 	if (TooManyPowerups (id)) {
@@ -3039,6 +3041,8 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 
 	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
 		HUDInitMessage ("Player should be dead");
 	}
+if (objP->nType == OBJ_DEBRIS)
+	objP = objP;
 #endif
 objP->last_pos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
@@ -3056,7 +3060,7 @@ if (HandleObjectControl (objP))
 
 if (objP->lifeleft < 0) {		// We died of old age
 	objP->flags |= OF_SHOULD_BE_DEAD;
-	if (objP->nType==OBJ_WEAPON && WI_damage_radius (objP->id))
+	if ((objP->nType == OBJ_WEAPON) && WI_damage_radius (objP->id))
 		ExplodeBadassWeapon (objP, &objP->position.vPos);
 	else if (objP->nType == OBJ_ROBOT)	//make robots explode
 		ExplodeObject (objP, 0);

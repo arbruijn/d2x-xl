@@ -1614,9 +1614,9 @@ void LoadGameTexts(void);
 #define TXT_MOVIE_MENUTITLE		GT(832)
 #define TXT_SHADOW_REACH			GT(833)
 #define TXT_CLIP_SHADOWS			GT(834)
+#define TXT_SHOW_HUDMSGS			GT(835)
 #if 0
 
-#define TXT_				GT(835)
 #define TXT_				GT(836)
 #define TXT_				GT(837)
 #define TXT_				GT(838)
@@ -2038,9 +2038,9 @@ void LoadGameTexts(void);
 #define HTX_RENDER_MOVIEOPTS		HT(236)				
 #define HTX_RENDER_SHADOWREACH	HT(237)				
 #define HTX_CLIP_SHADOWS			HT(238)				
+#define HTX_CPIT_SHOWHUDMSGS		HT(239)				
 #if 0
 				
-#define HTX_					HT(239)				
 #define HTX_					HT(240)				
 #define HTX_					HT(241)				
 #define HTX_					HT(242)				

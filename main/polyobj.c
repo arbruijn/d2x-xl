@@ -655,11 +655,11 @@ else {
 
 			Assert (i < po->nModels);
 			//if submodel, rotate around its center point, not pivot point
-			VmVecAvg (&ofs, &po->subModels.mins [i], &po->subModels.maxs [i]);
+			VmVecAvg (&ofs, po->subModels.mins + i, po->subModels.maxs + i);
 			VmVecNegate (&ofs);
 			G3StartInstanceMatrix (&ofs, NULL);
-			G3DrawPolyModel (objP, &po->modelData [po->subModels.ptrs [i]], gameData.models.textures, animAngles, 
-									light, glowValues, color, NULL, nModel);
+			G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
+								  animAngles, light, glowValues, color, NULL, nModel);
 			G3DoneInstance ();
 			}	
 	}

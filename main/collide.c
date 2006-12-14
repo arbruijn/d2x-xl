@@ -380,14 +380,14 @@ if (mag < (m0 + m1) / 200) {
 	}
 //HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo.mass) / 200);
 if (EGI_FLAG (bUseHitAngles, 0, 0)) {
-	// exert force in the direction of the hit point to the tObject's center
+	// exert force in the direction of the hit point to the object's center
 	VmVecSub (&vh, vHitPt, &objP1->position.vPos);
 	if (VmVecNormalize (&vh) > F1_0 / 16) {
 		vr = vh;
 		VmVecNegate (&vh);
 		VmVecScale (&vh, mag);
 		BumpThisObject (objP1, objP0, &vh, bDamage);
-		// compute reflection vector. The vector from the other tObject's center to the hit point 
+		// compute reflection vector. The vector from the other object's center to the hit point 
 		// serves as normal.
 		v1 = v0;
 		VmVecNormalize (&v1);

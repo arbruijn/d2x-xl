@@ -1300,6 +1300,8 @@ int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 	GLint			nMaxLights;
 #endif
 
+if (nSegment == 215 && nSide == 2)
+	nSide = nSide;
 if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if (!pc)
@@ -1384,6 +1386,9 @@ else if (nSegment >= 0) {
 	//RegisterLight (NULL, nSegment, nSide);
 	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 	}
+else
+	pl->bVariable = 0;
+pl->bOn = 1;
 pl->bTransform = 1;
 return gameData.render.lights.dynamic.nLights++;
 }
@@ -1484,6 +1489,8 @@ gameData.render.lights.dynamic.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		//if (i != 3 || j != 2) continue;
+		if (i == 218 && j == 2)
+			i = i;
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->nWall))
 			continue;
 		t = sideP->nBaseTex;
@@ -1552,6 +1559,8 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 	psl->bOn = pl->bOn;
 	psl->nType = pl->nType;
+	psl->bShadow =
+	psl->bExclusive = 0;
 	if (psl->bState) {
 		if (!bStatic && (pl->nType == 1) && !pl->bVariable)
 			psl->bState = 0;
@@ -1781,11 +1790,13 @@ if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) {
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
+	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
 	for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
 		SetNearestVertexLights (i, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [i].p3_normal.vNormal, &vVertex, i, pf);
+		SetNearestVertexLights (i, 0, 1, bColorize);
 		}
 	}
 }

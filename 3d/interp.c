@@ -1193,7 +1193,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#define pof_free(_p)	if (_p) {d_free (_p); (_p) = NULL; }
+#define pof_free(_p)	{if (_p) d_free (_p);}
 
 int G3FreePolyModelItems (tPOFObject *po)
 {
@@ -1220,30 +1220,26 @@ int G3AllocPolyModelItems (void *modelP, tPOFObject *po, int bShadowData)
 po->subObjs.nSubObjs = 1;
 G3CountPolyModelItems (modelP, &po->subObjs.nSubObjs, &po->nVerts, &po->faces.nFaces, &nFaceVerts, &po->nAdjFaces);
 h = po->subObjs.nSubObjs * sizeof (tPOFSubObject);
-if (!po->subObjs.pSubObjs) {
-	if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
-		return G3FreePolyModelItems (po);
-	memset (po->subObjs.pSubObjs, 0, h);
-	}
-if (!(po->pvVerts || (po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector)))))
+if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
+	return G3FreePolyModelItems (po);
+memset (po->subObjs.pSubObjs, 0, h);
+if (!(po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector))))
 	return G3FreePolyModelItems (po);
 if (bShadowData) {
-	if (!(po->faces.pFaces || (po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face)))))
+	if (!(po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face))))
 		return G3FreePolyModelItems (po);
-	if (!(po->litFaces.pFaces || (po->litFaces.pFaces = (tPOF_face **) d_malloc (po->faces.nFaces * sizeof (tPOF_face *)))))
+	if (!(po->litFaces.pFaces = (tPOF_face **) d_malloc (po->faces.nFaces * sizeof (tPOF_face *))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pAdjFaces || (po->pAdjFaces = (short *) d_malloc (po->nAdjFaces * sizeof (short)))))
+	if (!(po->pAdjFaces = (short *) d_malloc (po->nAdjFaces * sizeof (short))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pvVertsf || (po->pvVertsf = (tOOF_vector *) d_malloc (po->nVerts * sizeof (tOOF_vector)))))
+	if (!(po->pvVertsf = (tOOF_vector *) d_malloc (po->nVerts * sizeof (tOOF_vector))))
 		return G3FreePolyModelItems (po);
-	if (!(po->pFaceVerts || (po->pFaceVerts = (short *) d_malloc (nFaceVerts * sizeof (short)))))
+	if (!(po->pFaceVerts = (short *) d_malloc (nFaceVerts * sizeof (short))))
 		return G3FreePolyModelItems (po);
 	}
-if (!po->pVertNorms) {
-	if (!(po->pVertNorms = (g3sNormal *) d_malloc (po->nVerts * sizeof (g3sNormal))))
-		return G3FreePolyModelItems (po);
-	memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
-	}
+if (!(po->pVertNorms = (g3sNormal *) d_malloc (po->nVerts * sizeof (g3sNormal))))
+	return G3FreePolyModelItems (po);
+memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
 return po->nState = 1;
 }
 
