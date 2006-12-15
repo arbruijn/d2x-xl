@@ -726,7 +726,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 35 && props.sideNum == 1)
+if (props.segNum == 239 && props.sideNum == 0)
 	props.segNum = props.segNum;
 #	if 0
 else
@@ -761,7 +761,7 @@ if (!bRender)
 	if (!(gameOpts->render.bTextures || IsMultiGame))
 		goto drawWireFrame;
 #endif
-	SetVertexColors (propsP);
+	SetVertexColors (&props);
 	if (renderState == 2) {
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
 		return;
