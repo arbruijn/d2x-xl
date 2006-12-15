@@ -162,7 +162,7 @@ void ProjectList(int nv, short *pointnumlist);
 
 void RenderMine (short start_seg_num, fix eye_offset, int window_num);
 
-void RenderShadow (float fDist);
+void RenderShadowQuad (float fDist);
 
 int RenderShadowMap (tDynLight *pLight);
 

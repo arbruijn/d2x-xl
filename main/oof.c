@@ -2450,7 +2450,7 @@ for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) 
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
 	if (gameOpts->render.shadows.bFast)
-		RenderShadow (0);
+		RenderShadowQuad (0);
 	}
 return 1;
 }

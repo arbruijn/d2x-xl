@@ -2379,7 +2379,7 @@ void StartLightingFrame (tObject *viewer);
 
 //------------------------------------------------------------------------------
 
-void RenderShadow (float fDist)
+void RenderShadowQuad (float fDist)
 {
 	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.6f};
 
@@ -2392,8 +2392,6 @@ glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
 glDisable (GL_DEPTH_TEST);
 glDepthMask (0);
-glColorMask (1,1,1,1);
-glCullFace (GL_BACK);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glColor4fv (shadowHue);// / fDist);
@@ -2404,6 +2402,7 @@ glVertex2f (1,1);
 glVertex2f (0,1);
 glEnd ();
 glEnable (GL_DEPTH_TEST);
+glDisable (GL_STENCIL_TEST);
 glDepthMask (1);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
@@ -2719,7 +2718,7 @@ if (!bShadowTest)
 		}
 	else {
 		//RenderMine (nStartSeg, nEyeOffset, nWindow);
-		RenderShadow (0.0f);
+		RenderShadowQuad (0.0f);
 		}
 	}
 }
@@ -3576,8 +3575,6 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 				nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
 				nWindowClipBot = grdCurCanv->cv_bitmap.bm_props.h-1;
 				}
-			if (!1)
-				RenderObjList (nn, nWindow);
 			}
 		}
 #ifdef LASER_HACK								

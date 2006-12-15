@@ -1984,8 +1984,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			glCullFace (GL_BACK);
 			glDepthFunc (GL_LESS);
-			if (!gameOpts->render.shadows.bFast)
-				glColorMask (1,1,1,1);
+			glColorMask (1,1,1,1);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene

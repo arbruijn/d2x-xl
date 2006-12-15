@@ -689,12 +689,14 @@ if (nFrames > 1) {
 	}
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-if (EGI_FLAG (bShadows, 0, 0))// && (gameStates.render.nShadowPass == 3))
+if (EGI_FLAG (bShadows, 0, 0)) // && (gameStates.render.nShadowPass == 3))
 	glDisable (GL_STENCIL_TEST);
 glDepthFunc (GL_LESS);
 glDepthMask (0);
-//glEnable (GL_BLEND);
-//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#if 0
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 	float quadratic [] =  {1.0f, 0.0f, 0.01f};

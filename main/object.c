@@ -1571,8 +1571,7 @@ switch (objP->renderType) {
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
-		if (!(extraGameInfo [0].bShadows && extraGameInfo [IsMultiGame].bShadows) || 
-			 (gameStates.render.nShadowPass == 3))
+		if (!EGI_FLAG (bShadows, 0, 0) || (gameStates.render.nShadowPass == 1))
 			DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			if (gameData.models.bHaveHiresModel [0] && 

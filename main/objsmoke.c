@@ -388,8 +388,10 @@ else
 void DoObjectSmoke (tObject *objP)
 {
 int t = objP->nType;
+#if 0
 if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
 	return;
+#endif
 if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
