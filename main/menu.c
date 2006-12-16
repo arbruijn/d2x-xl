@@ -1443,7 +1443,7 @@ do {
 		opt++;
 		ADD_CHECK (opt, TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 		optHUD = opt++;
-		ADD_CHECK (opt, TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_U, HTX_CPIT_SHOWHUDMSGS);
+		ADD_CHECK (opt, TXT_SHOW_HUDMSGS, gameOpts->render.cockpit.bHUDMsgs, KEY_M, HTX_CPIT_SHOWHUDMSGS);
 		optHUDMsgs = opt++;
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;

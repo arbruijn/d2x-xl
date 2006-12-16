@@ -548,8 +548,11 @@ if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
 // only render shadows for custom models and for standard models with a shadow proof alternative model
-if (!(bIsDefModel && bHaveAltModel))
+if (!(bIsDefModel && bHaveAltModel)) {
+	if (gameStates.app.bFixModels && (objP->nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
+		return;
 	po = gameData.models.polyModels + nModel;
+	}
 else if (gameStates.render.nShadowPass != 2) {
 	if ((gameStates.app.bAltModels || (objP->nType == OBJ_PLAYER)) && bHaveAltModel)
 		po = gameData.models.altPolyModels + nModel;

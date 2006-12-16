@@ -1585,6 +1585,7 @@ if (!PiggyFreeHiresAnimation (bmP, 0))
 	OglFreeBmTexture (bmP);
 if (bitmapOffsets [bD1][i] > 0)
 	bmP->bm_props.flags |= BM_FLAG_PAGED_OUT;
+bmP->bm_fromPog = 0;
 bmP->bm_palette = NULL;
 PiggyFreeBitmapData (bmP);
 }
