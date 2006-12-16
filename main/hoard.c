@@ -172,6 +172,7 @@ if (!gameData.hoard.bInitialized) {
 	*ecP = gameData.eff.pEffects [94];        //copy from blue goal
 	ecP->changing_wall_texture = gameData.pig.tex.nTextures [0];
 	ecP->vc.nFrameCount = gameData.hoard.goal.nFrames;
+	ecP->flags &= ~EF_INITIALIZED;
 
 	i = gameData.pig.tex.nTextures [0];
 	gameData.pig.tex.pTMapInfo [i] = gameData.pig.tex.pTMapInfo [MultiFindGoalTexture (TMI_GOAL_BLUE)];
