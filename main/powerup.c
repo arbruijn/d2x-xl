@@ -783,13 +783,13 @@ switch (objP->id) {
 		else if (gameData.app.nGameMode & GM_ENTROPY) {
 			if (objP->matCenCreator != GetTeam ((char) gameData.multi.nLocalPlayer) + 1) {
 				if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
-						 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-						 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
-						 (gameData.segs.segment2s [objP->nSegment].special != SEGMENT_IS_ROBOTMAKER))))
+					 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
+					 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
+					 (gameData.segs.segment2s [objP->nSegment].special != SEGMENT_IS_ROBOTMAKER))))
 					objP->lifeleft = -1;	//make orb disappear if touched by opposing team tPlayer
 				}
-			else  if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 
-						 playerP->secondaryAmmo [SMART_MINE_INDEX]) {
+			else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
+						(playerP->secondaryAmmo [PROXIMITY_INDEX] < playerP->secondaryAmmo [SMART_MINE_INDEX])) {
 				if (LOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);

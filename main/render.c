@@ -2291,7 +2291,7 @@ void SetPathPoint (tFlightPath *pPath, tObject *objP)
 {
 	time_t	t = SDL_GetTicks () - pPath->tUpdate;
 
-if ((pPath->tUpdate < 0) || (t >= pPath->tRefresh)) {
+if (pPath->nSize && ((pPath->tUpdate < 0) || (t >= pPath->tRefresh))) {
 	pPath->tUpdate = t;
 //	h = pPath->nEnd;
 	pPath->nEnd = (pPath->nEnd + 1) % pPath->nSize;
