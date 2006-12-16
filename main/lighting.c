@@ -742,7 +742,7 @@ fix	Beam_brightness = (F1_0/2);	//global saying how bright the light beam is
 #define MAX_DIST_LOG	6							//log(MAX_DIST-expressed-as-integer)
 #define MAX_DIST		(f1_0<<MAX_DIST_LOG)	//no light beyond this dist
 
-fix compute_headlight_light_onObject(tObject *objP)
+fix ComputeHeadlightLightOnObject(tObject *objP)
 {
 	int	i;
 	fix	light;
@@ -831,22 +831,18 @@ fix compute_headlight_light_onObject(tObject *objP)
 
 // ----------------------------------------------------------------------------------------------
 //compute the average dynamic light in a tSegment.  Takes the tSegment number
-fix compute_seg_dynamic_light(int nSegment)
+fix ComputeSegDynamicLight(int nSegment)
 {
-	tSegment *seg = gameData.segs.segments + nSegment;
-	short *verts = seg->verts;
-	fix sum = dynamicLight [*verts++];
-
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts++];
-	sum += dynamicLight [*verts];
-
-	return sum >> 3;
-
+short *verts = gameData.segs.segments [nSegment].verts;
+fix sum = dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts++];
+sum += dynamicLight [*verts];
+return sum >> 3;
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -882,11 +878,11 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	//return light;
 	//Now, maybe return different value to smooth transitions
 	if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
-		fix xDeltaLight,xFrameDelta;
+		fix xDeltaLight, xFrameDelta;
 
 		xDeltaLight = light - object_light [nObject];
-		xFrameDelta = FixMul(LIGHT_RATE,gameData.time.xFrame);
-		if (abs(xDeltaLight) <= xFrameDelta)
+		xFrameDelta = FixMul(LIGHT_RATE, gameData.time.xFrame);
+		if (abs (xDeltaLight) <= xFrameDelta)
 			object_light [nObject] = light;		//we've hit the goal
 		else
 			if (xDeltaLight < 0)
@@ -900,9 +896,9 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	}
 	//Next, add in headlight on this tObject
 	// -- Matt code: light += compute_headlight_light(rotated_pnt,f1_0);
-	light += compute_headlight_light_onObject(objP);
+	light += ComputeHeadlightLightOnObject (objP);
 	//Finally, add in dynamic light for this tSegment
-	light += compute_seg_dynamic_light(objP->nSegment);
+	light += ComputeSegDynamicLight (objP->nSegment);
 	return light;
 }
 

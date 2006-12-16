@@ -553,12 +553,12 @@ for (;;)
 
 		case OP_FLATPOLY:
 			nv = WORDVAL (p + 2);
-			p += 30 + ((nv & ~1) + 1) * 2;
+			p += 30 + (nv | 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
 			nv = WORDVAL (p + 2);
-			p += 30 + ((nv & ~1) + 1) * 2 + nv * 12;
+			p += 30 + (nv | 1) * 2 + nv * 12;
 			break;
 
 		case OP_SORTNORM:
@@ -1133,7 +1133,7 @@ for (;;)
 			if (bInitModel && bFlatPolys) {
 				pf = G3AddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
 				}
-			p += 30 + ((nv & ~1) + 1) * 2;
+			p += 30 + (nv | 1) * 2;
 			break;
 			}
 
@@ -1142,7 +1142,7 @@ for (;;)
 			if (bInitModel && bTexPolys) {
 				pf = G3AddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
 				}
-			p += 30 + ((nv & ~1) + 1) * 2 + nv * 12;
+			p += 30 + (nv | 1) * 2 + nv * 12;
 			break;
 			}
 
@@ -1777,46 +1777,14 @@ for (;;) {
 		int nv = WORDVAL (p+2);
 		Assert (nv < MAX_POINTS_PER_POLY);
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
-			int		i;
-#if 0
-			ushort c;
-			unsigned char cc;
-#endif
-			int l;
-#if 1
-			l = 32;
-#else
-			l = f2i (FixMul (i2f (32), xModelLight);
-			if (l < 0) 
-				l = 0;
-			else if (l > 32) 
-				l = 32;
-#endif
-#if 1
-#	if 0
-			c = WORDVAL (p+28);
-			if ((nModel == 131) || (nModel == 132))
-				c &= (31 << 10) | 31;
-			GrSetColorRGB15bpp (c, (ubyte) (255 * GrAlpha ()));
-#	else
+			int i, l = 32;
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
-#	endif
 			GrFadeColorRGB (32.0 / (double) l);
 			if (objColorP) {
 				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 
 				objColorP->green = (float) grdCurCanv->cv_color.color.green / 255.0f;
 				objColorP->blue = (float) grdCurCanv->cv_color.color.blue / 255.0f;
 				}
-#else
-			cc = GrFindClosestColor15bpp (WORDVAL (p+28));
-			c = grFadeTable [(l << 8) | cc];
-			GrSetColor (c);
-			if (objColorP) {
-				objColorP->red = CPAL2Tr (c);
-				objColorP->green = CPAL2Tg (c);
-				objColorP->blue = CPAL2Tb (c);
-				}
-#endif
 			p += 30;
 			for (i = 0; i < nv; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
@@ -1824,7 +1792,7 @@ for (;;) {
 			}
 		else
 			p += 30;
-		p += ((nv & ~1) + 1) * 2;
+		p += (nv | 1) * 2;
 		}
 	else if (h == OP_TMAPPOLY) {
 		int nv = WORDVAL (p+2);
@@ -1837,7 +1805,7 @@ for (;;) {
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
 				light = -VmVecDot (&viewInfo.view [0].fVec, VECPTR (p+16));
-				light = f1_0/4 + (light*3)/4;
+				light = f1_0/4 + (light * 3) / 4;
 				light = FixMul (light, xModelLight);
 				}
 			else {				//yes glow
@@ -1845,7 +1813,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (uvl *) (p+30+ ((nv&~1)+1)*2);
+			uvlList = (uvl *) (p + 30 + (nv | 1) * 2);
 			for (i = 0; i < nv; i++)
 				uvlList [i].l = light;
 
@@ -1862,7 +1830,7 @@ for (;;) {
 			}
 		else
 			p += 30;
-		p += ((nv & ~1) + 1) * 2 + nv * 12;
+		p += (nv | 1) * 2 + nv * 12;
 		}
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing

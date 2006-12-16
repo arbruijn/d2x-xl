@@ -68,7 +68,7 @@ extern void SetDynamicLight(void);
 fix compute_headlight_light(vmsVector *point,fix face_light);
 
 // compute the average dynamic light in a tSegment.  Takes the tSegment number
-fix compute_seg_dynamic_light(int nSegment);
+fix ComputeSegDynamicLight(int nSegment);
 
 // compute the lighting for an tObject.  Takes a pointer to the tObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
