@@ -800,12 +800,12 @@ CFILE *copy_pigfile_from_cd (char *filename)
 //------------------------------------------------------------------------------
 //initialize a pigfile, reading headers
 //returns the size of all the bitmap data
-	static int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, bResize, i;
 void PiggyInitPigFile (char *filename)
 {
 	char					temp_name [16];
 	char					temp_name_read [16];
 	char					szPigName [FILENAME_LEN];
+	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
 	grsBitmap			bmTemp;
 	DiskBitmapHeader	bmh;
 
@@ -883,19 +883,17 @@ if (bLowMemory)
 // the following loop will scale bitmap memory down by 20% for each iteration
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
-bResize = 0;
-while (!(bitmapBits [0] = d_malloc (bitmapCacheSize)) && bResize) {
-	if (bitmapBits [0]) {
+for (;;) {
+	if (bitmapBits [0] = d_malloc (bitmapCacheSize)) {
 		d_free (bitmapBits [0]);
-		bResize = 0;
+		break;
 		}
-	else 
-		bResize = 1;
 	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;
-	if (bitmapCacheSize < PIGGY_SMALL_BUFFER_SIZE)
+	if (bitmapCacheSize < PIGGY_SMALL_BUFFER_SIZE) {
 		Error ("Not enough memory to load D2 bitmaps\n");
+		break;
+		}
 	}
-d_free (bitmapBits [0]);
 bPigFileInitialized = 1;
 }
 
