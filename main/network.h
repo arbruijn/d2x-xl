@@ -444,7 +444,7 @@ typedef struct endlevel_info_short {
 	ubyte                               seconds_left;
 } endlevel_info_short;
 
-// WARNING!!! This is the top part of netgame_info...if that struct changes,
+// WARNING!!! This is the top part of tNetgameInfo...if that struct changes,
 //      this struct much change as well.  ie...they are aligned and the join system will
 // not work without it.
 
@@ -472,8 +472,8 @@ typedef struct lite_info {
 	ubyte                           team_vector;
 } __pack__ lite_info;
 
-#define NETGAME_INFO_SIZE       sizeof(netgame_info)
-#define ALLNETPLAYERSINFO_SIZE  sizeof(allNetPlayers_info)
+#define NETGAME_INFO_SIZE       sizeof(tNetgameInfo)
+#define ALLNETPLAYERSINFO_SIZE  sizeof(tAllNetPlayersInfo)
 #define LITE_INFO_SIZE          sizeof(lite_info)
 #define SEQUENCE_PACKET_SIZE    sizeof(tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof(frame_info)
@@ -494,7 +494,7 @@ void NetworkFlush();
 int  NetworkWaitForAllInfo(int choice);
 void NetworkSetGameMode(int gamemode);
 void NetworkAdjustMaxDataSize();
-int CanJoinNetgame(netgame_info *game,allNetPlayers_info *people);
+int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
 void RestartNetSearching(tMenuItem * m);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (monsterball_info *monsterballP);
@@ -509,8 +509,8 @@ char *iptos (char *pszIP, char *addr);
 #define DUMP_LEVEL      6
 #define DUMP_KICKED     7 // never used
 
-extern netgame_info activeNetGames [MAX_ACTIVE_NETGAMES];
-extern allNetPlayers_info activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern allNetPlayers_info *tmpPlayersInfo, tmpPlayersBase;
+extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
+extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 
 #endif /* _NETWORK_H */

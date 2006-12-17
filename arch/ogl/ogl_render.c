@@ -1919,6 +1919,9 @@ if (gameStates.render.nShadowPass) {
 				glColorMask (0,0,0,0);
 				glDepthMask (0);
 				glEnable (GL_STENCIL_TEST);
+				if (!glIsEnabled (GL_STENCIL_TEST))
+					extraGameInfo [0].bShadows = 
+					extraGameInfo [1].bShadows = 0;
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
 #if 0

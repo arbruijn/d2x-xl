@@ -1125,7 +1125,7 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_F1:					
-			do_show_help();			
+			DoShowHelp();			
 			break;
 
 		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;

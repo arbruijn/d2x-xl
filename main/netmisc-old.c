@@ -203,7 +203,7 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 
 }
 
-void BEReceiveNetPlayersPacket(ubyte *data, allNetPlayers_info *pinfo)
+void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
 {
 	int i, loc = 0;
 
@@ -427,7 +427,7 @@ do_send:
 		IPXSendInternetPacketData(out_buffer, loc, server, node);
 }
 
-void BEReceiveNetGamePacket(ubyte *data, netgame_info *netgame, int liteFlag)
+void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 {
 	int i, j;
 	int loc = 0;

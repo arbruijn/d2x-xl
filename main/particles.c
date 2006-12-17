@@ -716,8 +716,9 @@ if (gameStates.render.bPointSprites) {
 		return 0;
 #	if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
+#	ifdef _DEBUG
 		GLenum i;
-
+#endif
 		glEnableClientState (GL_VERTEX_ARRAY);
 #	ifdef _DEBUG
 		if (i = glGetError ()) 
@@ -740,8 +741,9 @@ else
 		return 0;
 #if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
+#ifdef _DEBUG
 		GLenum i;
-
+#endif
 		glDisableClientState (GL_VERTEX_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
 #ifdef _DEBUG

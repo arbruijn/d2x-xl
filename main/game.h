@@ -376,7 +376,7 @@ void ResetPaletteAdd(void);
 void PaletteRestore(void);
 
 // put up the help message
-void do_show_help();
+void DoShowHelp();
 
 // show a message in a nice little box
 void ShowBoxedMessage(char *msg);

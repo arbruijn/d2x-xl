@@ -566,8 +566,8 @@ CFWrite (&gameData.time.xGame, sizeof (fix), 1, fp);
 // If coop save, save all
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWrite (&gameData.app.nStateGameId, sizeof (int), 1, fp);
-	CFWrite (&netGame, sizeof (netgame_info), 1, fp);
-	CFWrite (&netPlayers, sizeof (allNetPlayers_info), 1, fp);
+	CFWrite (&netGame, sizeof (tNetgameInfo), 1, fp);
+	CFWrite (&netPlayers, sizeof (tAllNetPlayersInfo), 1, fp);
 	CFWrite (&gameData.multi.nPlayers, sizeof (int), 1, fp);
 	CFWrite (&gameData.multi.nLocalPlayer, sizeof (int), 1, fp);
 	for (i = 0; i < gameData.multi.nPlayers; i++)
@@ -2294,8 +2294,8 @@ if (gameData.app.nGameMode & GM_MULTI) {
 
 	strcpy (szServerCallSign, netPlayers.players [0].callsign);
 	CFRead (&gameData.app.nStateGameId, sizeof (int), 1, fp);
-	CFRead (&netGame, sizeof (netgame_info), 1, fp);
-	CFRead (&netPlayers, sizeof (allNetPlayers_info), 1, fp);
+	CFRead (&netGame, sizeof (tNetgameInfo), 1, fp);
+	CFRead (&netPlayers, sizeof (tAllNetPlayersInfo), 1, fp);
 	CFRead (&nPlayers, sizeof (gameData.multi.nPlayers), 1, fp);
 	CFRead (&gameData.multi.nLocalPlayer, sizeof (gameData.multi.nLocalPlayer), 1, fp);
 	nSavedLocalPlayer = gameData.multi.nLocalPlayer;

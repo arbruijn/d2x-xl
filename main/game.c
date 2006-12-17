@@ -1044,9 +1044,9 @@ void test_anim_states ();
 #include "fvi.h"
 
 //put up the help message
-void do_show_help ()
+void DoShowHelp ()
 {
-	ShowHelp ();
+ShowHelp ();
 }
 
 
@@ -1434,7 +1434,7 @@ void ShowHelp ()
 	ADD_HELP_OPT (TXT_HLP_RENAMEGB);
 	ADD_HELP_OPT (TXT_HLP_DROP_PRIM);
 	ADD_HELP_OPT (TXT_HLP_DROP_SEC);
-	ADD_HELP_OPT (TXT_HLP_CALIBRATE);
+	ADD_HELP_OPT (TXT_HLP_CHASECAM);
 	ADD_HELP_OPT (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
 	sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
@@ -2168,6 +2168,7 @@ if (Debug_slowdown) {
 	AutoBalanceTeams ();
 	MultiSendTyping ();
 	MultiSendWeapons (0);
+	MultiSyncKills ();
 	//MultiSendMonsterball (0, 0);
 	UpdatePlayerStats ();
 	DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.

@@ -211,7 +211,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BEReceiveNetPlayersPacket (ubyte *data, allNetPlayers_info *pinfo)
+void BEReceiveNetPlayersPacket (ubyte *data, tAllNetPlayersInfo *pinfo)
 {
 	int i, nmBufI = 0;
 
@@ -352,7 +352,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BEReceiveNetGamePacket (ubyte *data, netgame_info *netgame, int bLiteData)
+void BEReceiveNetGamePacket (ubyte *data, tNetgameInfo *netgame, int bLiteData)
 {
 	int	i;
 	short	*ps;

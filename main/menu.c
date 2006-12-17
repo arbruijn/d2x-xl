@@ -615,7 +615,7 @@ switch (select) {
 		break;
 
 	case MENU_HELP:
-		do_show_help ();
+		DoShowHelp ();
 		break;
 
 	case MENU_PLAY_SONG:    

@@ -1074,7 +1074,7 @@ char *defaultGameTexts [][2] = {
 #endif
 	{"Umsch-F5\t  prim. Waffe abwerfen", "Shift-F5\t  Drop primary"},
 	{"Umsch-F6\t  sek. Waffe abwerfen", "Shift-F6\t  Drop secondary"},
-	{"Umsch-F7\t  Joystick kalibrieren", "Shift-F7\t  Calibrate joystick"},
+	{"Alt-F12\t  Verfolgeransicht umsch.", "Shift-F7\t  toggle chase cam"},
 	{"Umsch-Ziffer\t  GuideBot-Befehle", "Shift-number\t  GuideBot commands"},
 	{"0. Naechstes Ziel: %s", "0.  Next Goal: %s"},
 	{"1. Finde Energie", "1.  Find Energy Powerup"},

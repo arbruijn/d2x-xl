@@ -3683,7 +3683,7 @@ int _CDECL_ NMMsgBoxFixedFont (char *title, int nChoices, ...)
 
 //------------------------------------------------------------------------------
 
-extern netgame_info activeNetGames [];
+extern tNetgameInfo activeNetGames [];
 
 void ShowExtraNetGameInfo (int choice)
  {

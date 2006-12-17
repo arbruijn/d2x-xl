@@ -269,7 +269,9 @@ short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
 
 #define	PowerupsInMine(_nPowerup) \
-			(gameData.multi.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup))
+			((gameStates.multi.nGameType == UDP_GAME) ? \
+			 (gameData.multi.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup) : \
+			 gameData.multi.powerupsInMine [_nPowerup])
 
 #define	TooManyPowerups(_nPowerup) \
 			IsMultiGame && PowerupClass (_nPowerup) && \

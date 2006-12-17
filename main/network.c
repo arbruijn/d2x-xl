@@ -134,9 +134,9 @@ returning the game info.
  */
 
 int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
-netgame_info activeNetGames [MAX_ACTIVE_NETGAMES];
-allNetPlayers_info activeNetPlayers [MAX_ACTIVE_NETGAMES];
-allNetPlayers_info *tmpPlayersInfo, tmpPlayersBase;
+tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
+tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 
 extra_gameinfo extraGameInfo [2];
 
@@ -149,7 +149,7 @@ tMpParams mpParams = {
 tPingStats pingStats [MAX_PLAYERS];
 
 // MWAnetgame_info *TempNetInfo; 
-netgame_info TempNetInfo;
+tNetgameInfo TempNetInfo;
 
 extern struct ipx_recv_data ipx_udpSrc;
 
@@ -167,7 +167,7 @@ void NetworkUpdateNetGame ();
 void NetworkSendObjects ();
 void NetworkSendRejoinSync (int player_num);
 void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
-void NetworkReadSyncPacket (netgame_info * sp, int rsinit);
+void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit);
 int  NetworkWaitForPlayerInfo ();
 int  NetworkProcessPacket (ubyte *data, int length);
 void NetworkProcessPData (char *data);
@@ -304,8 +304,8 @@ OpenReceiveLog ();
 memset (gameData.multi.maxPowerupsAllowed, 0, sizeof (gameData.multi.maxPowerupsAllowed ));
 memset (gameData.multi.powerupsInMine, 0, sizeof (gameData.multi.powerupsInMine));
 networkData.nTotalMissedPackets=0; networkData.nTotalPacketsGot=0;
-memset (&netGame, 0, sizeof (netgame_info));
-memset (&netPlayers, 0, sizeof (allNetPlayers_info));
+memset (&netGame, 0, sizeof (tNetgameInfo));
+memset (&netPlayers, 0, sizeof (tAllNetPlayersInfo));
 memset (&networkData.mySeq, 0, sizeof (tSequencePacket));
 networkData.mySeq.nType = PID_REQUEST;
 memcpy (networkData.mySeq.player.callsign, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN+1);
@@ -434,7 +434,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CanJoinNetgame (netgame_info *game, allNetPlayers_info *people)
+int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people)
 {
 	// Can this tPlayer rejoin a netgame in progress?
 
@@ -1636,8 +1636,8 @@ void DeleteActiveNetGame (int i)
 {
 if (i < --networkData.nActiveGames) {
 	int h = networkData.nActiveGames - i;
-	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (netgame_info) * h);
-	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (allNetPlayers_info) * h);
+	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetgameInfo) * h);
+	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (tAllNetPlayersInfo) * h);
 	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
 	}	   	
 networkData.bGamesChanged = 1;
@@ -1661,7 +1661,7 @@ if (bPlaySound)
 
 //------------------------------------------------------------------------------
 
-int FindActiveNetGame (netgame_info *netGame)
+int FindActiveNetGame (tNetgameInfo *netGame)
 {
 	int	i;
 
@@ -1683,10 +1683,10 @@ int SecurityCheck=0;
 void NetworkProcessGameInfo (ubyte *data)
 {
 	int i;
-	netgame_info *newGame = (netgame_info *)data;
+	tNetgameInfo *newGame = (tNetgameInfo *)data;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	netgame_info tmp_info;
+	tNetgameInfo tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveNetGamePacket (data, &tmp_info, 0); // get correctly aligned structure
@@ -1714,10 +1714,10 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 networkData.bGamesChanged = 1;
-// MWA  memcpy (&activeNetGames [i], data, sizeof (netgame_info);
+// MWA  memcpy (&activeNetGames [i], data, sizeof (tNetgameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
-memcpy (activeNetGames + i, (ubyte *) newGame, sizeof (netgame_info));
-memcpy (activeNetPlayers + i, tmpPlayersInfo, sizeof (allNetPlayers_info));
+memcpy (activeNetGames + i, (ubyte *) newGame, sizeof (tNetgameInfo));
+memcpy (activeNetPlayers + i, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 if (SecurityCheck)
 #if SECURITY_CHECK
 	if (activeNetGames [i].Security == SecurityCheck)
@@ -1735,19 +1735,19 @@ if (activeNetGames [i].numplayers == 0) {	// Delete this game
 void NetworkProcessLiteInfo (ubyte *data)
 {
 	int				i;
-	netgame_info	*actGameP;
+	tNetgameInfo	*actGameP;
 	lite_info		*newInfo = (lite_info *)data;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	lite_info		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (data, (netgame_info *)&tmp_info, 1);
+	ReceiveNetGamePacket (data, (tNetgameInfo *)&tmp_info, 1);
 	newInfo = &tmp_info;
 	}
 #endif
 
 networkData.bGamesChanged = 1;
-i = FindActiveNetGame ((netgame_info *) newInfo);
+i = FindActiveNetGame ((tNetgameInfo *) newInfo);
 if (i == MAX_ACTIVE_NETGAMES)
 	return;
 if (i == networkData.nActiveGames) {
@@ -1906,7 +1906,7 @@ switch (pid) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				ReceiveNetPlayersPacket (data, &tmpPlayersBase);
 			else
-				memcpy (&tmpPlayersBase, data, sizeof (allNetPlayers_info));
+				memcpy (&tmpPlayersBase, data, sizeof (tAllNetPlayersInfo));
 			if (NetworkBadSecurity (tmpPlayersBase.Security, "PID_PLAYERSINFO"))
 				break;
 			con_printf (CON_DEBUG, "Got a waiting PID_PLAYERSINFO!\n");
@@ -2016,7 +2016,7 @@ switch (pid) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				ReceiveFullNetGamePacket (data, &TempNetInfo);
 			else
-				memcpy ((ubyte *)& (TempNetInfo), data, sizeof (netgame_info));
+				memcpy ((ubyte *)& (TempNetInfo), data, sizeof (tNetgameInfo));
 			if (NetworkBadSecurity (TempNetInfo.Security, "PID_SYNC"))
 				break;
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
@@ -2034,7 +2034,7 @@ switch (pid) {
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 				networkData.nSecurityNum = TempNetInfo.Security;
 				if (NetworkWaitForPlayerInfo ())
-					NetworkReadSyncPacket ((netgame_info *)data, 0);
+					NetworkReadSyncPacket ((tNetgameInfo *)data, 0);
 				networkData.nSecurityFlag = 0;
 				networkData.nSecurityNum = 0;
 				}
@@ -2553,13 +2553,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NetworkReadSyncPacket (netgame_info * sp, int rsinit)
+void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit)
 {
 	int				i, j;
 	char				szLocalCallSign [CALLSIGN_LEN+1];
 	tNetPlayerInfo	*playerP;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	netgame_info	tmp_info;
+	tNetgameInfo	tmp_info;
 
 if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macintosh -- get the values unpacked to our structure format
 	ReceiveFullNetGamePacket ((ubyte *)sp, &tmp_info);
@@ -2574,7 +2574,7 @@ if (sp != &netGame) {
 	char *p = (char *) sp;
 	ushort h;
 	int i, s;
-	for (i = 0, h = -1; i < sizeof (netgame_info) - 1; i++, p++) {
+	for (i = 0, h = -1; i < sizeof (tNetgameInfo) - 1; i++, p++) {
 		s = *((ushort *) p);
 		if (s == networkData.nMySegsCheckSum) {
 			h = i;
@@ -2585,8 +2585,8 @@ if (sp != &netGame) {
 			break;
 			}
 		}
-	memcpy (&netGame, sp, sizeof (netgame_info));
-	memcpy (&netPlayers, tmpPlayersInfo, sizeof (allNetPlayers_info));
+	memcpy (&netGame, sp, sizeof (tNetgameInfo));
+	memcpy (&netPlayers, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 	}
 gameData.multi.nPlayers = sp->numplayers;
 gameStates.app.nDifficultyLevel = sp->difficulty;
@@ -2803,7 +2803,7 @@ void RestartNetSearching (tMenuItem * m)
 {
 gameData.multi.nPlayers = 0;
 networkData.nActiveGames = 0;
-memset (activeNetGames, 0, sizeof (netgame_info) * MAX_ACTIVE_NETGAMES);
+memset (activeNetGames, 0, sizeof (tNetgameInfo) * MAX_ACTIVE_NETGAMES);
 InitNetgameMenu (m, 0);
 networkData.nNamesInfoSecurity=-1;
 networkData.bGamesChanged = 1;      
@@ -3047,9 +3047,9 @@ void NetworkDoBigWait (int choice)
 {
 	int size;
 	ubyte packet [IPX_MAX_DATA_SIZE], *data;
-	allNetPlayers_info *temp_info;
+	tAllNetPlayersInfo *temp_info;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	allNetPlayers_info info_struct;
+	tAllNetPlayersInfo info_struct;
 #endif
   
 while (0 < (size = IpxGetPacketData (packet))) {
@@ -3060,7 +3060,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				ReceiveFullNetGamePacket (data, &TempNetInfo); 
 			else
-				memcpy ((ubyte *)&TempNetInfo, data, sizeof (netgame_info));
+				memcpy ((ubyte *)&TempNetInfo, data, sizeof (tNetgameInfo));
 #if SECURITY_CHECK
 			if (TempNetInfo.Security !=SecurityCheck)
 				break;
@@ -3076,8 +3076,8 @@ while (0 < (size = IpxGetPacketData (packet))) {
 #else
 						{
 #endif
-						memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (netgame_info));
-						memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (allNetPlayers_info));
+						memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (tNetgameInfo));
+						memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 						SecurityCheck=-1;
 						}
 					}
@@ -3090,8 +3090,8 @@ while (0 < (size = IpxGetPacketData (packet))) {
 					con_printf (CON_DEBUG, "HUH? Game=%d Player=%d\n", 
 									networkData.nSecurityNum, tmpPlayersInfo->Security);
 #endif
-					memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (netgame_info));
-					memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (allNetPlayers_info));
+					memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (tNetgameInfo));
+					memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 					SecurityCheck=-1;
 					}
 				networkData.nSecurityFlag=0;
@@ -3111,19 +3111,19 @@ while (0 < (size = IpxGetPacketData (packet))) {
 		case PID_PLAYERSINFO:
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-				temp_info= (allNetPlayers_info *)data;
+				temp_info= (tAllNetPlayersInfo *)data;
 #else
 				ReceiveNetPlayersPacket (data, &info_struct);
 				temp_info = &info_struct;
 #endif
 				}
 			else
-				temp_info = (allNetPlayers_info *)data;
+				temp_info = (tAllNetPlayersInfo *)data;
 #if SECURITY_CHECK
 			if (temp_info->Security!=SecurityCheck) 
 				break;     // If this isn't the guy we're looking for, move on
 #endif
-			memcpy (&tmpPlayersBase, (ubyte *)&temp_info, sizeof (allNetPlayers_info));
+			memcpy (&tmpPlayersBase, (ubyte *)&temp_info, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo=&tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo=0;
 			networkData.nSecurityNum = tmpPlayersInfo->Security;
@@ -3221,11 +3221,11 @@ int NetworkWaitForPlayerInfo ()
 {
 	int size=0, retries=0;
 	ubyte packet [IPX_MAX_DATA_SIZE];
-	struct allNetPlayers_info *TempInfo;
+	struct tAllNetPlayersInfo *TempInfo;
 	fix basetime;
 	ubyte id=0;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	allNetPlayers_info info_struct;
+	tAllNetPlayersInfo info_struct;
 #endif
 
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -3251,7 +3251,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 		ReceiveNetPlayersPacket (packet, &info_struct);
 		TempInfo = &info_struct;
 #else
-		TempInfo= (allNetPlayers_info *)packet;
+		TempInfo= (tAllNetPlayersInfo *)packet;
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
@@ -3259,7 +3259,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 			if (networkData.nSecurityNum != TempInfo->Security)
 				continue;
 #endif
-			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (allNetPlayers_info));
+			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo=&tmpPlayersBase;
 			networkData.nSecurityFlag=NETSECURITY_OFF;
 			networkData.nSecurityNum=0;
@@ -3269,7 +3269,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 		else {
 			networkData.nSecurityNum = TempInfo->Security;
 			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_GAMEINFO;
-			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (allNetPlayers_info));
+			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo=&tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo=0;
 			return 1;

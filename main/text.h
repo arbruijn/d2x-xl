@@ -1116,7 +1116,7 @@ void LoadGameTexts(void);
 #define TXT_HLP_RENAMEGB			GT(338)
 #define TXT_HLP_DROP_PRIM			GT(339)
 #define TXT_HLP_DROP_SEC			GT(340)
-#define TXT_HLP_CALIBRATE			GT(341)
+#define TXT_HLP_CHASECAM			GT(341)
 #define TXT_HLP_GBCMDS				GT(342)
 #define TXT_GOAL_NEXT				GT(343)
 #define TXT_GOAL_ESPARK				GT(344)
