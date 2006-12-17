@@ -270,7 +270,7 @@ void SpawnLeftoverPowerups (short nObject);
 
 #define	PowerupsInMine(_nPowerup) \
 			((gameStates.multi.nGameType == UDP_GAME) ? \
-			 (gameData.multi.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup) : \
+			 (gameData.multi.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup)) : \
 			 gameData.multi.powerupsInMine [_nPowerup])
 
 #define	TooManyPowerups(_nPowerup) \
