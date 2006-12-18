@@ -162,73 +162,40 @@ int GrSetMode(u_int32_t mode)
 	return 0;
 #endif
 
-	if (mode<=0)
-		return 0;
-
-	w=SM_W(mode);
-	h=SM_H(mode);
-	nCurrentVGAMode = mode;
-	
-	if (screen != NULL) GrPaletteStepClear();
-
-//added on 11/06/98 by Matt Mueller to set the title bar. (moved from below)
-//sekmu: might wanna copy this litte blurb to one of the text files or something
-//we want to set it here so that X window manager "Style" nType commands work
-//for example, in fvwm2 or fvwm95:
-//Style "D1X*"  NoTitle, NoHandles, BorderWidth 0
-//if you can't use -fullscreen like me (crashes X), this is a big help in
-//getting the window centered correctly (if you use SmartPlacement)
-	SDL_WM_SetCaption(PACKAGE_STRING, "Descent II");
-//end addition -MM
-
-#ifdef SDL_IMAGE
-	{
-#include "descent.xpm"
-		SDL_WM_SetIcon(IMG_ReadXPMFromArray(pixmap), NULL);
-	}
-#endif
-
-//edited 10/05/98 by Matt Mueller - make fullscreen mode optional
-	  // changed by adb on 980913: added SDL_HWPALETTE (should be option?)
-        // changed by someone on 980923 to add SDL_FULLSCREEN
-
-#ifdef LANDSCAPE
-	real_screen = SDL_SetVideoMode(h, w, 0, sdl_videoFlags);
-	screen = CreateRotatedSurface(real_screen);
-#else
-	screen = SDL_SetVideoMode(w, h, 8, sdl_videoFlags);
-#endif
-		// end changes by someone
-        // end changes by adb
-//end edit -MM
-        if (screen == NULL) {
-           Error("Could not set %dx%dx8 video mode\n",w,h);
-           exit(1);
-        }
-	memset( grdCurScreen, 0, sizeof(grs_screen));
-	grdCurScreen->sc_mode = mode;
-	grdCurScreen->sc_w = w;
-	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
-	GrSetCurrentCanvas(NULL);
-	//gr_enable_default_palette_loading();
-
-//added on 9/30/98 by Matt Mueller to hide the mouse if its over the game window
-	SDL_ShowCursor(0);
-//end addition -MM
-//--moved up--added on 9/30/98 by Matt Mueller to set the title bar.  Woohoo!
-//--moved up--	SDL_WM_SetCaption(DESCENT_VERSION " " D1X_DATE, NULL);
-//--moved up--end addition -MM
-
-//	gamefont_choose_game_font(w,h);
+if (mode<=0)
 	return 0;
+w=SM_W(mode);
+h=SM_H(mode);
+nCurrentVGAMode = mode;
+if (screen) 
+	GrPaletteStepClear();
+SDL_WM_SetCaption(PACKAGE_STRING, "Descent II");
+SDL_WM_SetIcon(IMG_ReadXPMFromArray(pixmap), NULL);
+#ifdef LANDSCAPE
+real_screen = SDL_SetVideoMode(h, w, 0, sdl_videoFlags);
+screen = CreateRotatedSurface(real_screen);
+#else
+screen = SDL_SetVideoMode(w, h, 8, sdl_videoFlags);
+#endif
+if (!screen) {
+	Error("Could not set %dx%dx8 video mode\n",w,h);
+   exit(1);
+   }
+memset( grdCurScreen, 0, sizeof(grs_screen));
+grdCurScreen->sc_mode = mode;
+grdCurScreen->sc_w = w;
+grdCurScreen->sc_h = h;
+grdCurScreen->sc_aspect = FixDiv (grdCurScreen->sc_w * 3, grdCurScreen->sc_h * 4);
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
+grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
+GrSetCurrentCanvas (NULL);
+SDL_ShowCursor (0);
+return 0;
 }
 
 int GrCheckFullScreen(void)

@@ -1616,7 +1616,7 @@ PA_DFX (pa_set_front_to_read ());
 WIN (if (!_AppActive) {
 	return -1}
 	);		// Don't draw message if minimized!
-newmenu_hide_cursor ();
+SDL_ShowCursor (0);
 if (nItems < 1)
 	return -1;
 SDL_EnableKeyRepeat(60, 30);
@@ -1683,7 +1683,7 @@ nMouseState = nOldMouseState = 0;
 bCloseBox = !(filename || gameStates.menus.bReordering);
 
 if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
-	newmenu_show_cursor ();
+	SDL_ShowCursor (1);
 	}
 GrabMouse (0, 0);
 while (!done) {
@@ -1694,7 +1694,7 @@ while (!done) {
 		MultiSendTyping ();
 		}
 	if (!JOYDEFS_CALIBRATING)
-		newmenu_show_cursor ();      // possibly hidden
+		SDL_ShowCursor (1);      // possibly hidden
 	nOldMouseState = nMouseState;
 	if (!gameStates.menus.bReordering) {
 		int b = gameOpts->legacy.bInput;
@@ -2405,11 +2405,11 @@ launchOption:
 				if (i >= ctrl.nScrollOffset)
          		item [i].y -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 				if (!gameOpts->menus.nStyle) 
-					newmenu_hide_cursor ();
+					SDL_ShowCursor (0);
            	NMDrawItem (&bg, item + i, (i == choice) && !bAllText, bTinyMode);
 				item [i].redraw = 0;
 				if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
-					newmenu_show_cursor ();
+					SDL_ShowCursor (1);
 				if (i >= ctrl.nScrollOffset)
 	            item [i].y += ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 	        	}   
@@ -2454,7 +2454,7 @@ launchOption:
 			GrPaletteFadeIn (NULL, 32, 0);
 		}
 	}
-newmenu_hide_cursor ();
+SDL_ShowCursor (0);
 // Restore everything...
 NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
 NMFreeAllTextBms (item, nItems);
@@ -2813,7 +2813,7 @@ ReadFileNames:
 	nMouseState = nOldMouseState = 0;
 	mouse2_state = omouse2_state = 0;
 	NMDrawCloseBox (w_x, w_y);
-	newmenu_show_cursor ();
+	SDL_ShowCursor (1);
 
 	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
@@ -2854,12 +2854,12 @@ ReadFileNames:
 
 			if (((player_mode)&&(cItem>0)) || ((demo_mode)&&(cItem>=0)))	{
 				int x = 1;
-				newmenu_hide_cursor ();
+				SDL_ShowCursor (0);
 				if (player_mode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, &filenames [cItem* (FILENAME_LEN+1)]+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
 				else if (demo_mode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, &filenames [cItem* (FILENAME_LEN+1)]+ ((demo_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
-				newmenu_show_cursor ();
+				SDL_ShowCursor (1);
  				if (x==0)	{
 					char * p;
 					int ret;
@@ -3051,7 +3051,7 @@ ReadFileNames:
 	WIN (DDGRLOCK (dd_grd_curcanv));
 		if ((ofirst_item != first_item) || gameOpts->menus.nStyle) {
 			if (!gameOpts->menus.nStyle) 
-				newmenu_hide_cursor ();
+				SDL_ShowCursor (0);
 			NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1,1);
 			WIN (DDGRLOCK (dd_grd_curcanv))
 			{	
@@ -3095,12 +3095,12 @@ ReadFileNames:
 					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
 				}
 			}	 
-			newmenu_show_cursor ();
+			SDL_ShowCursor (1);
 		} else if (cItem != ocitem)	{
 			int w, h, aw, y;
 
 			if (!gameOpts->menus.nStyle) 
-				newmenu_hide_cursor ();
+				SDL_ShowCursor (0);
 			i = ocitem;
 			if ((i>=0) &&(i<NumFiles))	{
 				y = (i-first_item)* (grd_curfont->ft_h+2)+box_y;
@@ -3124,7 +3124,7 @@ ReadFileNames:
 				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
 			}
 			GrUpdate (0);
-			newmenu_show_cursor ();
+			SDL_ShowCursor (1);
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
@@ -3171,7 +3171,7 @@ ExitFileMenu:
 		d_free (filenames);
 
 	WIN (mouse_set_mode (1));				//re-enable centering mode
-	WIN (newmenu_hide_cursor ());
+	WIN (SDL_ShowCursor (0));
 
 	SDL_EnableKeyRepeat(0, 0);
 	return exitValue;
@@ -3320,7 +3320,7 @@ WIN (int win_redraw=0);
 	close_x = wx-border_size;
 	close_y = wy-title_height-border_size;
 	NMDrawCloseBox (close_x, close_y);
-	newmenu_show_cursor ();
+	SDL_ShowCursor (1);
 
 	SDL_EnableKeyRepeat(60, 30);
 	while (!done)	{
@@ -3508,7 +3508,7 @@ WIN (int win_redraw=0);
 			if (gameOpts->menus.nStyle) 
 				NMDrawBackground (&bg, wx-border_size, wy-title_height-border_size, wx+width+border_size-1, wy+height+border_size-1,1);
 			else
-				newmenu_hide_cursor ();
+				SDL_ShowCursor (0);
 			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle) {
 				grdCurCanv->cv_font = NORMAL_FONT;
@@ -3536,13 +3536,13 @@ WIN (int win_redraw=0);
 				
 			// If Win95 port, draw up/down arrows on left tSide of menu
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
-			newmenu_show_cursor ();
+			SDL_ShowCursor (1);
 			GrUpdate (0);
 		} else if (cItem != ocitem)	{
 			int w, h, aw, y;
 
 			if (!gameOpts->menus.nStyle) 
-				newmenu_hide_cursor ();
+				SDL_ShowCursor (0);
 
 			WIN (DDGRLOCK (dd_grd_curcanv));
 
@@ -3571,7 +3571,7 @@ WIN (int win_redraw=0);
 			}
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 
-			newmenu_show_cursor ();
+			SDL_ShowCursor (1);
 			GrUpdate (0);
 		}
 	}
@@ -3590,7 +3590,7 @@ WIN (int win_redraw=0);
 #endif
 		}
 	else {
-		newmenu_hide_cursor ();
+		SDL_ShowCursor (0);
 		WIN (DDGRLOCK (dd_grd_curcanv));
 		GrBmBitBlt (total_width, total_height, wx-border_size, wy-title_height-border_size, 0, 0, bg.background, &grdCurCanv->cv_bitmap);
 		WIN (DDGRUNLOCK (dd_grd_curcanv)); 	

@@ -705,7 +705,7 @@ WIN (DEFINE_SCREEN (old_bg_pcx));
 WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));			
 GameFlushInputs ();
 NMRemoveBackground (bg);
-newmenu_hide_cursor ();
+SDL_ShowCursor (0);
 if (time_stopped)
 	StartTime ();
 gameStates.menus.nInMenu--;
@@ -1017,7 +1017,7 @@ NMDrawBackground (&bg, xOffs, yOffs,
 GrPaletteStepLoad (NULL);
 
 citem = 0;
-newmenu_show_cursor ();
+SDL_ShowCursor (1);
 mouse_state = omouse_state = 0;
 for (;;) {
 //	Windows addendum to allow for KConfig input.
@@ -1041,7 +1041,7 @@ for (;;) {
 			WIN (DDGRUNLOCK (dd_grd_curcanv));	
 			KCDrawTable (items, nitems, citem);
 			}
-		newmenu_hide_cursor ();
+		SDL_ShowCursor (0);
 		switch (nChangeMode) {
 			case BT_KEY:
 				nChangeMode = KCChangeKey (items + citem);
@@ -1067,7 +1067,7 @@ for (;;) {
 				nChangeMode = BT_NONE;
 			}
 		nPrevMode = nChangeMode;
-		newmenu_show_cursor ();
+		SDL_ShowCursor (1);
 		GrUpdate (0);
 		} while (nChangeMode != BT_NONE);
 		//see if redbook song needs to be restarted
@@ -1291,10 +1291,10 @@ for (;;) {
 			}
 		}
 		if (ocitem!=citem)	{
-			newmenu_hide_cursor ();
+			SDL_ShowCursor (0);
 			KCDrawItem (items + ocitem, 0);
 			KCDrawItem (items + citem, 1);
-			newmenu_show_cursor ();
+			SDL_ShowCursor (1);
 		}
 	}
 KCQuitMenu (save_canvas, save_font, &bg, time_stopped);

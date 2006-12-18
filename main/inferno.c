@@ -2155,7 +2155,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			else {
 #ifdef EDITOR
 				if (Auto_exit) {
-					strcpy ((char *)&gameData.missions.szLevelNames[0], Auto_file);
+					strcpy ((char *)&gameData.missions.szLevelNames [0], Auto_file);
 					LoadLevel (1, 1);
 					SetFunctionMode (FMODE_EXIT);
 					break;

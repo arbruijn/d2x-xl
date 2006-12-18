@@ -1013,7 +1013,7 @@ return -1;
 
 int G3GetAdjFaces (tPOFObject *po)
 {
-	short				h, i, j, k, n;
+	short				h, i, j, n;
 	tPOFSubObject	*pso = po->subObjs.pSubObjs;
 	tPOF_face		*pf;
 	short				*pfv;
@@ -1024,11 +1024,8 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++) {
 	pso->pAdjFaces = po->pAdjFaces + po->nAdjFaces;
 	for (j = pso->faces.nFaces, pf = pso->faces.pFaces; j; j--, pf++) {
 		pf->nAdjFaces = po->nAdjFaces;
-		for (h = 0, n = pf->nVerts, pfv = pf->pVerts; h < n; h++) {
-			k = G3FindPolyModelEdge (pso, pf, pfv [h], pfv [(h + 1) % n]);
-			if (k >= 0)
-				po->pAdjFaces [po->nAdjFaces++] = k;
-			}
+		for (h = 0, n = pf->nVerts, pfv = pf->pVerts; h < n; h++)
+			po->pAdjFaces [po->nAdjFaces++] = G3FindPolyModelEdge (pso, pf, pfv [h], pfv [(h + 1) % n]);
 		}
 	}
 return 1;
@@ -1362,7 +1359,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->pAdjFaces + pf->nAdjFaces;
 	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++) {
-		if (!pso->faces.pFaces [*paf++].bFacingLight) {
+		if ((*paf < 0) || !pso->faces.pFaces [*paf++].bFacingLight) {
 			v [1] = pvf [pfv [j]];
 			v [0] = pvf [pfv [(j + 1) % n]];
 #if DBG_SHADOWS

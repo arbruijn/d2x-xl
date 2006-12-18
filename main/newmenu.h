@@ -255,9 +255,6 @@ extern double altBgBrightness;
 extern int altBgGrayScale;
 extern char altBgName [FILENAME_LEN];
 
-#define newmenu_show_cursor()
-#define newmenu_hide_cursor()
-
 #define STARS_BACKGROUND \
 			((gameStates.menus.bHires && CFExist ("starsb.pcx", gameFolders.szDataDir, 0)) ? "starsb.pcx":\
 			CFExist ("stars.pcx", gameFolders.szDataDir, 0) ? "stars.pcx" : "starsb.pcx")

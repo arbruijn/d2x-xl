@@ -1654,7 +1654,7 @@ GameSetup ();								// Replaces what was here earlier.
 ProfilerSetStatus (1);
 #endif
 
-if (setjmp (gameExitPoint)==0)	{
+if (!setjmp (gameExitPoint)) {
 while (1) {
 	int player_shields;
 		// GAME LOOP!

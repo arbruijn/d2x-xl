@@ -159,10 +159,7 @@ void OglDestroyWindow (void)
 if (gameStates.ogl.bInitialized) {
 	ResetTextures (0, 0);
 	SDL_ShowCursor (1);
-		//gameStates.ogl.bInitialized=0;
-		//well..SDL doesn't really let you kill the window.. so we just need to wait for sdl_quit
 	}
-return;
 }
 
 //------------------------------------------------------------------------------
