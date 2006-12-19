@@ -1586,7 +1586,10 @@ char *defaultGameTexts [][2] = {
 	{"~Powerupeinstellungen...", "~Powerup options..."},
 	{"Powerupeinstellungen", "Powerup options"},
 	{"3~D-Powerups", "3~D powerups"},
-	{"Powerups ~Rotieren", "~Spin powerups"},
+	{"~Nicht rotieren", "~Don't spin"},
+	{"~Langsam rotieren", "spin ~Slowly"},
+	{"~Mittelschnell rotieren", "spin ~Medium fast"},
+	{"~Schnell rotieren", "spin ~Fast"},
 #if 0
 	{"", ""},
 #endif

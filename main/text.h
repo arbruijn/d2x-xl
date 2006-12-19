@@ -1618,12 +1618,12 @@ void LoadGameTexts(void);
 #define TXT_POWERUP_OPTIONS		GT(836)
 #define TXT_POWERUP_MENUTITLE		GT(837)
 #define TXT_3D_POWERUPS				GT(838)
-#define TXT_SPIN_POWERUPS			GT(839)
+#define TXT_SPIN_OFF					GT(839)
+#define TXT_SPIN_SLOW				GT(840)
+#define TXT_SPIN_MEDIUM				GT(841)
+#define TXT_SPIN_FAST				GT(842)
 #if 0
 
-#define TXT_				GT(840)
-#define TXT_				GT(841)
-#define TXT_				GT(842)
 #define TXT_				GT(843)
 #define TXT_				GT(844)
 #define TXT_				GT(845)

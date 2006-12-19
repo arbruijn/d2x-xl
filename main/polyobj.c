@@ -574,7 +574,7 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 		if (objP->cType.aiInfo.CLOAKED)
 			return;
 		}
-	else if (objP->nType == OBJ_WEAPON) {
+	else if ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_POWERUP)) {
 		if (!gameOpts->render.shadows.bMissiles)
 			return;
 		if (!bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))

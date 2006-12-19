@@ -182,7 +182,7 @@ typedef struct tShadowOptions {
 
 typedef struct tPowerupOptions {
 	int b3D;
-	int bSpin;
+	int nSpin;
 } tPowerupOptions;
 
 typedef struct tRenderOptions {

@@ -1692,27 +1692,61 @@ do {
 
 //------------------------------------------------------------------------------
 
+static int nOpt3D;
+
+void PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem * m;
+	int			v;
+
+m = menus + nOpt3D;
+v = m->value;
+if (v != gameOpts->render.powerups.b3D) {
+	gameOpts->render.powerups.b3D = v;
+	*key = -2;
+	return;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void PowerupOptionsMenu ()
 {
 	tMenuItem m [10];
-	int	i, choice = 0;
+	int	i, j, choice = 0;
 	int	opt;
-	int	opt3D, optSpin;
+	int	optSpin;
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
-	opt3D = opt++;
-	ADD_CHECK (opt, TXT_SPIN_POWERUPS, gameOpts->render.powerups.bSpin, KEY_T, HTX_SPIN_POWERUPS);
-	optSpin = opt++;
+	nOpt3D = opt++;
+	if (!gameOpts->render.powerups.b3D)
+		optSpin = -1;
+	else {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_SPIN_OFF, 0, KEY_O, 1, NULL);
+		optSpin = opt++;
+		ADD_RADIO (opt, TXT_SPIN_SLOW, 0, KEY_S, 1, NULL);
+		opt++;
+		ADD_RADIO (opt, TXT_SPIN_MEDIUM, 0, KEY_M, 1, NULL);
+		opt++;
+		ADD_RADIO (opt, TXT_SPIN_FAST, 0, KEY_F, 1, NULL);
+		opt++;
+		m [optSpin + gameOpts->render.powerups.nSpin].value = 1;
+		}
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_POWERUP_MENUTITLE, opt, m, NULL, &choice);
+		i = ExecMenu1 (NULL, TXT_POWERUP_MENUTITLE, opt, m, PowerupOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
-	gameOpts->render.powerups.b3D = m [opt3D].value;
-	gameOpts->render.powerups.bSpin = m [optSpin].value;
+	for (j = 0; j < 4; j++)
+		if (m [optSpin + j].value) {
+			gameOpts->render.powerups.nSpin = j;
+			break;
+		}
 	} while (i == -2);
 }
 

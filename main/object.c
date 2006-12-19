@@ -1538,7 +1538,7 @@ if (objP->controlType != CT_WEAPON) {
 	VmAngles2Matrix (&objP->position.mOrient, &a);
 	objP->mType.physInfo.rotVel.x = 0;
 	objP->mType.physInfo.rotVel.y = 
-	objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.bSpin ? F1_0 / 2 : 0;
+	objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 	objP->controlType = CT_WEAPON;
 	objP->renderType = RT_POLYOBJ;
 	objP->movementType = MT_PHYSICS;
@@ -1560,6 +1560,7 @@ void RenderObject (tObject *objP, int nWindowNum)
 	int			mldSave, oofIdx, bSpectate = 0;
 	float			fLight [3];
 	fix			nGlow [2];
+	ubyte			nIdSave;
 	tPosition	savePos;
 
 if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
@@ -1633,8 +1634,13 @@ switch (objP->renderType) {
 				fLight [2] = (float) nGlow [1] / 65536.0f;				
 				OOF_Render (objP, gameData.models.hiresModels + oofIdx, fLight, 0);
 				}
-			else
+			else {
+				if (objP->nType == OBJ_POWERUP) {
+					nIdSave = objP->id;
+					objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
+					}
 				DrawPolygonObject (objP);
+				}
 			if (objP->nType == OBJ_WEAPON) {
 				if (bIsMissile [objP->id])
 					RenderThrusterFlames (objP);
@@ -1644,10 +1650,11 @@ switch (objP->renderType) {
 			else if (objP->nType == OBJ_CNTRLCEN)
 				RenderTargetIndicator (objP, NULL);
 			else if (objP->nType == OBJ_POWERUP) {
-				if (gameOpts->render.powerups.bSpin != 
+				objP->id = nIdSave;
+				if (gameOpts->render.powerups.nSpin != 
 					 ((objP->mType.physInfo.rotVel.y | objP->mType.physInfo.rotVel.z) != 0))
 					objP->mType.physInfo.rotVel.y = 
-					objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.bSpin ? F1_0 / 2 : 0;
+					objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 				}
 			}
 		break;

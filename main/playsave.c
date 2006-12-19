@@ -774,7 +774,7 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.shadows.bClip = (int) CFReadByte (fp);
 	if (player_file_version >= 136) {
 		gameOptions [j].render.powerups.b3D = (int) CFReadByte (fp);
-		gameOptions [j].render.powerups.bSpin = (int) CFReadByte (fp);
+		gameOptions [j].render.powerups.nSpin = (int) CFReadByte (fp);
 		}
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
@@ -1206,7 +1206,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (gameOptions [j].render.shadows.nReach, fp);
 	CFWriteByte (gameOptions [j].render.shadows.bClip, fp);
 	CFWriteByte (gameOptions [j].render.powerups.b3D, fp);
-	CFWriteByte (gameOptions [j].render.powerups.bSpin, fp);
+	CFWriteByte (gameOptions [j].render.powerups.nSpin, fp);
 // end of D2X-XL stuff
 	}
 
