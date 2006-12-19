@@ -108,7 +108,7 @@ void DrawWeaponVClip(tObject *objP)
 	//	Should cause Omega blobs (which live for one frame) to not always be the same.
 	if (modtime == ONE_FRAME_TIME)
 		modtime = d_rand();
-	if (objP->id == PROXIMITY_ID) {		//make prox bombs spin out of sync
+	if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
 		int nObject = OBJ_IDX (objP);
 		modtime += (modtime * (nObject&7)) / 16;	//add variance to spin rate
 		while (modtime > playTime)

@@ -577,7 +577,7 @@ if ((gameStates.render.nShadowPass == 2) && objP) {
 	else if (objP->nType == OBJ_WEAPON) {
 		if (!gameOpts->render.shadows.bMissiles)
 			return;
-		if (!bIsMissile [objP->id] && (objP->id != PMINE_ID))
+		if (!bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
 			return;
 		}
 	else if (objP->nType == OBJ_PLAYER) {

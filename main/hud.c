@@ -224,7 +224,7 @@ if (pMsgs->nMessages > 0) {
 			tObject *gmP = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
 			if (gmP && 
 				 (gmP->nType == OBJ_WEAPON) && 
-				 (gmP->id == GUIDEDMISS_ID) &&
+				 (gmP->id == GUIDEDMSL_ID) &&
 			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]))
 				yStart += SMALL_FONT->ft_h + 3;
 			}

@@ -57,20 +57,32 @@ int SOrderList (int num);
 //ubyte	Default_secondaryAmmoLevel[MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
 
 //	Convert primary weapons to indices in gameData.weapons.info array.
-ubyte primaryWeaponToWeaponInfo[MAX_PRIMARY_WEAPONS] = {LASER_ID, VULCAN_ID, SPREADFIRE_ID, PLASMA_ID, FUSION_ID, SUPER_LASER_ID, GAUSS_ID, HELIX_ID, PHOENIX_ID, OMEGA_ID};
-ubyte secondaryWeaponToWeaponInfo[MAX_SECONDARY_WEAPONS] = {CONCUSSION_ID, HOMING_ID, PROXIMITY_ID, SMART_ID, MEGA_ID, FLASH_ID, GUIDEDMISS_ID, SUPERPROX_ID, MERCURY_ID, EARTHSHAKER_ID};
+ubyte primaryWeaponToWeaponInfo[MAX_PRIMARY_WEAPONS] = {
+	LASER_ID, VULCAN_ID, SPREADFIRE_ID, PLASMA_ID, FUSION_ID, 
+	SUPERLASER_ID, GAUSS_ID, HELIX_ID, PHOENIX_ID, OMEGA_ID};
+
+ubyte secondaryWeaponToWeaponInfo[MAX_SECONDARY_WEAPONS] = {
+	CONCUSSION_ID, HOMINGMSL_ID, PROXMINE_ID, SMARTMSL_ID, MEGAMSL_ID, 
+	FLASHMSL_ID, GUIDEDMSL_ID, SMARTMINE_ID, MERCURYMSL_ID, EARTHSHAKER_ID};
 
 //for each Secondary weapon, which gun it fires out of
 ubyte secondaryWeaponToGunNum[MAX_SECONDARY_WEAPONS] = {4,4,7,7,7,4,4,7,4,7};
 
-int nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {0, VULCAN_AMMO_MAX, 0, 0, 0, 0, VULCAN_AMMO_MAX, 0, 0, 0};
+int nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {
+	0, VULCAN_AMMO_MAX, 0, 0, 0, 
+	0, VULCAN_AMMO_MAX, 0, 0, 0};
+
 ubyte nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS] = {20, 10, 10, 5, 5, 20, 20, 15, 10, 10};
 
 //for each primary weapon, what kind of powerup gives weapon
-ubyte primaryWeaponToPowerup[MAX_PRIMARY_WEAPONS] = {POW_LASER,POW_VULCAN_WEAPON,POW_SPREADFIRE_WEAPON,POW_PLASMA_WEAPON,POW_FUSION_WEAPON,POW_LASER,POW_GAUSS_WEAPON,POW_HELIX_WEAPON,POW_PHOENIX_WEAPON,POW_OMEGA_WEAPON};
+ubyte primaryWeaponToPowerup[MAX_PRIMARY_WEAPONS] = {
+	POW_LASER, POW_VULCAN, POW_SPREADFIRE, POW_PLASMA, POW_FUSION, 
+	POW_LASER, POW_GAUSS, POW_HELIX, POW_PHOENIX, POW_OMEGA};
 
 //for each Secondary weapon, what kind of powerup gives weapon
-ubyte secondaryWeaponToPowerup[MAX_SECONDARY_WEAPONS] = {POW_MISSILE_1,POW_HOMING_AMMO_1,POW_PROXIMITY_WEAPON,POW_SMARTBOMB_WEAPON,POW_MEGA_WEAPON,POW_SMISSILE1_1,POW_GUIDED_MISSILE_1,POW_SMART_MINE,POW_MERCURY_MISSILE_1,POW_EARTHSHAKER_MISSILE};
+ubyte secondaryWeaponToPowerup[MAX_SECONDARY_WEAPONS] = {
+	POW_CONCUSSION_1, POW_HOMINGMSL_1, POW_PROXMINE, POW_SMARTMSL, POW_MEGAMSL,
+	POW_FLASHMSL_1, POW_GUIDEDMSL_1, POW_SMARTMINE, POW_MERCURYMSL_1, POW_EARTHSHAKER};
 
 D2D1_weapon_info weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {
 	{0,1,0,1,0,0,0,32768,16384,{655360,655360,655360,655360,655360},{7864320,7864320,7864320,7864320,7864320},32768,0,0,49152,655360,0},
@@ -653,7 +665,7 @@ max = nMaxSecondaryAmmo [nWeaponIndex];
 if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
 	max *= 2;
 if (playerP->secondaryAmmo [nWeaponIndex] >= max) {
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage("%s %i %ss!", 
 			TXT_ALREADY_HAVE, 
 			playerP->secondaryAmmo [nWeaponIndex],
@@ -675,7 +687,7 @@ if ((playerP->secondaryAmmo [nWeaponIndex] > max) &&
 		gameData.multi.leftoverPowerups [nObject].spitterP = gameData.objs.objects + playerP->nObject;
 		}
 	}
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	cutpoint = SOrderList (255);
 	bEmpty = playerP->secondaryAmmo [gameData.weapons.nSecondary] == 0;
 	if (gameOpts->gameplay.nAutoSelectWeapon) {
@@ -821,12 +833,12 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	int supposed_weapon = gameData.weapons.nPrimary;
 
 if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag)) {		//already have
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	return 0;
 	}
 playerP->primaryWeaponFlags |= flag;
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	cutpoint=POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && 
 		(playerP->laserLevel >= 4))
@@ -1081,11 +1093,11 @@ else {
 gameStates.gameplay.bHaveSmartMines = 0;
 
 for (i = start; i <= gameData.objs.nLastObject; i += add) {
-	if ((gameData.objs.objects[i].nType == OBJ_WEAPON) && (gameData.objs.objects[i].id == SUPERPROX_ID)) {
+	if ((gameData.objs.objects[i].nType == OBJ_WEAPON) && (gameData.objs.objects[i].id == SMARTMINE_ID)) {
 		int	nParentObj = gameData.objs.objects[i].cType.laserInfo.nParentObj;
 
 		gameStates.gameplay.bHaveSmartMines = 1;
-		if (gameData.objs.objects[i].lifeleft + F1_0*2 < gameData.weapons.info[SUPERPROX_ID].lifetime) {
+		if (gameData.objs.objects[i].lifeleft + F1_0*2 < gameData.weapons.info[SMARTMINE_ID].lifetime) {
 			vmsVector	*vBombPos = &gameData.objs.objects[i].position.vPos;
 
 			for (j = 0; j <= gameData.objs.nLastObject; j++) {
@@ -1175,13 +1187,13 @@ objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.flags = PF_BOUNCE;
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips[objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
 if (spitter == gameData.objs.console)
 	objP->cType.powerupInfo.flags |= PF_SPAT_BY_PLAYER;
 switch (objP->id) {
-	case POW_MISSILE_1:
-	case POW_MISSILE_4:
+	case POW_CONCUSSION_1:
+	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
 		objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
@@ -1217,7 +1229,7 @@ seed = d_rand ();
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) {
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objs.console, POW_QUAD_FIRE, seed);
+		nObject = SpitPowerup (gameData.objs.console, POW_QUADLASER, seed);
 		if (nObject == -1) {
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
@@ -1226,7 +1238,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	else if (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel > MAX_LASER_LEVEL) {
 		gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel--;
-		nObject = SpitPowerup (gameData.objs.console, POW_SUPER_LASER, seed);
+		nObject = SpitPowerup (gameData.objs.console, POW_SUPERLASER, seed);
 		if (nObject == -1) {
 			gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel++;
 			return;
@@ -1299,7 +1311,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [nWeapon]
 	}
 nPowerup = secondaryWeaponToPowerup[nWeapon];
 bHoardEntropy = (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) != 0;
-bMine = (nPowerup == POW_PROXIMITY_WEAPON) || (nPowerup == POW_SMART_MINE);
+bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 if (!bHoardEntropy && bMine &&
 	  gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
@@ -1441,15 +1453,15 @@ for (i = 0; i < n; i++, pwi++) {
 		// Set the nType of children correctly when using old datafiles.  
 		// In earlier descent versions this was simply hard-coded in CreateSmartChildren ().
 		switch (i) {
-			case SMART_ID:
-				pwi->children = PLAYER_SMART_HOMING_ID;
+			case SMARTMSL_ID:
+				pwi->children = SMARTMSL_BLOB_ID;
 				break;
-			case SUPERPROX_ID:
-				pwi->children = SMART_MINE_HOMING_ID;
+			case SMARTMINE_ID:
+				pwi->children = SMARTMINE_BLOB_ID;
 				break;
 #if 0 /* not present in shareware */
-			case ROBOT_SUPERPROX_ID:
-				pwi->children = ROBOT_SMART_MINE_HOMING_ID;
+			case ROBOT_SMARTMINE_ID:
+				pwi->children = ROBOT_SMARTMINE_BLOB_ID;
 				break;
 			case EARTHSHAKER_ID:
 				pwi->children = EARTHSHAKER_MEGA_ID;

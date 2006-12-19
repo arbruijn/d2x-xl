@@ -830,6 +830,10 @@ CFWriteInt (playerP->score, fp);                  // Current score.
 CFWriteFix (playerP->timeLevel, fp);             // Level time played
 CFWriteFix (playerP->timeTotal, fp);             // Game time played (high word = seconds)
 CFWriteFix (playerP->cloakTime - gameData.time.xGame, fp);             // Time cloaked
+if (playerP->cloakTime == 0x7fffffff)		// invul cheat active
+	CFWriteFix (playerP->cloakTime, fp);      // Time invulnerable
+else
+	CFWriteFix (playerP->cloakTime - gameData.time.xGame, fp);      // Time invulnerable
 if (playerP->invulnerableTime == 0x7fffffff)		// invul cheat active
 	CFWriteFix (playerP->invulnerableTime, fp);      // Time invulnerable
 else
@@ -1773,11 +1777,13 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 playerP->nInvuls = (ubyte) CFReadByte (fp);
 playerP->nCloaks = (ubyte) CFReadByte (fp);
 #endif
-playerP->last_score = CFReadInt (fp);             // Score at beginning of current level.
-playerP->score = CFReadInt (fp);                  // Current score.
-playerP->timeLevel = CFReadFix (fp);             // Level time played
-playerP->timeTotal = CFReadFix (fp);	// Game time played (high word = seconds)
-playerP->cloakTime = gameData.time.xGame + CFReadFix (fp); // Time cloaked
+playerP->last_score = CFReadInt (fp);           // Score at beginning of current level.
+playerP->score = CFReadInt (fp);                // Current score.
+playerP->timeLevel = CFReadFix (fp);            // Level time played
+playerP->timeTotal = CFReadFix (fp);				// Game time played (high word = seconds)
+playerP->cloakTime = CFReadFix (fp);					// Time cloaked
+if (playerP->cloakTime != 0x7fffffff)
+	playerP->cloakTime += gameData.time.xGame;
 playerP->invulnerableTime = CFReadFix (fp);      // Time invulnerable
 if (playerP->invulnerableTime != 0x7fffffff)
 	playerP->invulnerableTime += gameData.time.xGame;

@@ -116,7 +116,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 			//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
 			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 			if ((obj0P!=objP) && !(obj0P->flags&OF_SHOULD_BE_DEAD) && 
-			    ((t==OBJ_WEAPON && (id==PROXIMITY_ID || id==SUPERPROX_ID || id==PMINE_ID)) || 
+			    ((t==OBJ_WEAPON && (id==PROXMINE_ID || id==SMARTMINE_ID || id==SMALLMINE_ID)) || 
 			     (t == OBJ_CNTRLCEN) || 
 			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && 
 			     ((gameData.objs.objects [parent].nType != OBJ_ROBOT) || (gameData.objs.objects [parent].id != id))))) {
@@ -140,7 +140,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 							case OBJ_WEAPON:
 								PhysApplyForce(obj0P,&vforce);
 
-								if (obj0P->id == PROXIMITY_ID || obj0P->id == SUPERPROX_ID) {		//prox bombs have chance of blowing up
+								if (obj0P->id == PROXMINE_ID || obj0P->id == SMARTMINE_ID) {		//prox bombs have chance of blowing up
 									if (FixMul(dist,force) > i2f(8000)) {
 										obj0P->flags |= OF_SHOULD_BE_DEAD;
 										ExplodeBadassWeapon(obj0P,&obj0P->position.vPos);
@@ -610,7 +610,7 @@ int ReturnFlagHome (tObject *objP)
 	tObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->nSegment].special == ((objP->id == POW_FLAG_RED) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+	if (gameData.segs.segment2s [objP->nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
 		return objP->nSegment;
 	if (initObjP = FindInitObject (objP)) {
 	//objP->nSegment = initObjP->nSegment;
@@ -859,7 +859,7 @@ int ChooseDropSegment(tObject *objP, int *pbFixedPos, int nDropState)
 						objP &&
 						EGI_FLAG (bFixedRespawns, 0, 0) || 
 						(EGI_FLAG (bEnhancedCTF, 0, 0) && 
-						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_FLAG_BLUE) || (objP->id == POW_FLAG_RED)));
+						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG)));
 #if TRACE
 con_printf (CON_DEBUG,"ChooseDropSegment:");
 #endif
@@ -1141,28 +1141,28 @@ void MaybeReplacePowerupWithEnergy(tObject *del_obj)
 		return;
 	}
 	switch (del_obj->containsId) {
-		case POW_VULCAN_WEAPON:			
+		case POW_VULCAN:			
 			weapon_index = VULCAN_INDEX;		
 			break;
-		case POW_GAUSS_WEAPON:			
+		case POW_GAUSS:			
 			weapon_index = GAUSS_INDEX;		
 			break;
-		case POW_SPREADFIRE_WEAPON:	
+		case POW_SPREADFIRE:	
 			weapon_index = SPREADFIRE_INDEX;	
 			break;
-		case POW_PLASMA_WEAPON:			
+		case POW_PLASMA:			
 			weapon_index = PLASMA_INDEX;		
 			break;
-		case POW_FUSION_WEAPON:			
+		case POW_FUSION:			
 			weapon_index = FUSION_INDEX;		
 			break;
-		case POW_HELIX_WEAPON:			
+		case POW_HELIX:			
 			weapon_index = HELIX_INDEX;		
 			break;
-		case POW_PHOENIX_WEAPON:		
+		case POW_PHOENIX:		
 			weapon_index = PHOENIX_INDEX;		
 			break;
-		case POW_OMEGA_WEAPON:			
+		case POW_OMEGA:			
 			weapon_index = OMEGA_INDEX;		
 			break;
 
@@ -1190,7 +1190,7 @@ void MaybeReplacePowerupWithEnergy(tObject *del_obj)
 				del_obj->containsId = POW_SHIELD_BOOST;
 			}
 		}
-	} else if (del_obj->containsId == POW_QUAD_FIRE)
+	} else if (del_obj->containsId == POW_QUADLASER)
 		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby(del_obj, del_obj->containsId)) {
 			if (d_rand() > 16384) {
 				del_obj->containsType = OBJ_POWERUP;
@@ -1291,8 +1291,8 @@ switch (nType) {
 			objP->rType.vClipInfo.nCurFrame = 0;
 
 			switch (objP->id) {
-				case POW_MISSILE_1:
-				case POW_MISSILE_4:
+				case POW_CONCUSSION_1:
+				case POW_CONCUSSION_4:
 				case POW_SHIELD_BOOST:
 				case POW_ENERGY:
 					objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
@@ -1431,9 +1431,9 @@ if (rval != -1) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multi.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
 	if (objP->nType == OBJ_ROBOT && objP->containsType==OBJ_POWERUP) {
-		if (objP->containsId==POW_VULCAN_WEAPON || objP->containsId==POW_GAUSS_WEAPON)
+		if (objP->containsId==POW_VULCAN || objP->containsId==POW_GAUSS)
 			gameData.objs.objects [rval].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->containsId==POW_OMEGA_WEAPON)
+		else if (objP->containsId==POW_OMEGA)
 			gameData.objs.objects [rval].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 		}
 	}

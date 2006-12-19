@@ -330,7 +330,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Different Weapon ID types...
 #define WEAPON_ID_LASER         0
-#define WEAPON_ID_MISSLE        1
+#define WEAPON_IDMSLLE        1
 #define WEAPON_ID_CANNONBALL    2
 
 // Object Initial shields...

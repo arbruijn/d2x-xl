@@ -1875,7 +1875,7 @@ void FilterObjectsFromLevel ()
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].nType==OBJ_POWERUP)
-		if (gameData.objs.objects [i].id==POW_FLAG_RED || gameData.objs.objects [i].id==POW_FLAG_BLUE)
+		if (gameData.objs.objects [i].id==POW_REDFLAG || gameData.objs.objects [i].id==POW_BLUEFLAG)
 			BashToShield (i,"Flag!!!!");
 		}
   }

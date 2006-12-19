@@ -172,22 +172,22 @@ int BMInit ()
 
 void BMSetAfterburnerSizes (void)
 {
-	sbyte	nSize = gameData.weapons.info [MERCURY_ID].afterburner_size;
+	sbyte	nSize = gameData.weapons.info [MERCURYMSL_ID].afterburner_size;
 	
 //gameData.weapons.info [VULCAN_ID].afterburner_size = 
 //gameData.weapons.info [GAUSS_ID].afterburner_size = nSize / 8;
 gameData.weapons.info [CONCUSSION_ID].afterburner_size =
-gameData.weapons.info [HOMING_ID].afterburner_size =
-gameData.weapons.info [REGULAR_MECH_MISS_ID].afterburner_size =
-gameData.weapons.info [FLASH_ID].afterburner_size =
-gameData.weapons.info [GUIDEDMISS_ID].afterburner_size =
-gameData.weapons.info [ROBOT_FLASHMISS_ID].afterburner_size =
-gameData.weapons.info [ROBOT_VERTIGO_FLASHMISS_ID].afterburner_size =
-gameData.weapons.info [ROBOT_MERCURY_ID].afterburner_size = nSize;
-gameData.weapons.info [SUPER_MECH_MISS_ID].afterburner_size =
-gameData.weapons.info [SMART_ID].afterburner_size = 2 * nSize;
-gameData.weapons.info [MEGA_ID].afterburner_size =
-gameData.weapons.info [ROBOT_MEGA_ID].afterburner_size =
+gameData.weapons.info [HOMINGMSL_ID].afterburner_size =
+gameData.weapons.info [REGULAR_MECHMSL_ID].afterburner_size =
+gameData.weapons.info [FLASHMSL_ID].afterburner_size =
+gameData.weapons.info [GUIDEDMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_FLASHMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_VERTIGO_FLASHMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_MERCURYMSL_ID].afterburner_size = nSize;
+gameData.weapons.info [SUPER_MECHMSL_ID].afterburner_size =
+gameData.weapons.info [SMARTMSL_ID].afterburner_size = 2 * nSize;
+gameData.weapons.info [MEGAMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_MEGAMSL_ID].afterburner_size =
 gameData.weapons.info [ROBOT_SHAKER_MEGA_ID].afterburner_size =
 gameData.weapons.info [EARTHSHAKER_MEGA_ID].afterburner_size = 3 * nSize;
 gameData.weapons.info [EARTHSHAKER_ID].afterburner_size =

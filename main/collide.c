@@ -843,7 +843,7 @@ if (weapon->id == OMEGA_ID)
 		return 1;
 
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
-if (weapon->id == GUIDEDMISS_ID) {
+if (weapon->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weapon->position.mOrient.fVec, sideP->normals);
 #if TRACE
 	con_printf (CON_DEBUG, "Guided missile dot = %7.3f \n", f2fl (dot));
@@ -922,7 +922,7 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 	//we've hit a volatile wall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, hitseg, 0, vHitPt, 0, F1_0);
 	//for most weapons, use volatile wall hit.  For mega, use its special tVideoClip
-	tVideoClip = (weapon->id == MEGA_ID)?wInfoP->robot_hit_vclip:VCLIP_VOLATILE_WALL_HIT;
+	tVideoClip = (weapon->id == MEGAMSL_ID)?wInfoP->robot_hit_vclip:VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
 	if (wInfoP->damage_radius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
 		ExplodeBadassWeapon (weapon, vHitPt);
@@ -941,7 +941,7 @@ else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
 	//we've hit water
 	//	MK: 09/13/95: Badass in water is 1/2 normal intensity.
 	if (wInfoP->matter) {
-		DigiLinkSoundToPos (SOUND_MISSILE_HIT_WATER, hitseg, 0, vHitPt, 0, F1_0);
+		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, hitseg, 0, vHitPt, 0, F1_0);
 		if (wInfoP->damage_radius) {
 			DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (weapon), 0, F1_0);
 			//	MK: 09/13/95: Badass in water is 1/2 normal intensity.
@@ -1276,7 +1276,7 @@ return 1;
 //	If both gameData.objs.objects are weapons, weaken the weapon.
 void MaybeKillWeapon (tObject *weapon, tObject *otherObjP)
 {
-if ((weapon->id == PROXIMITY_ID) || (weapon->id == SUPERPROX_ID) || (weapon->id == PMINE_ID)) {
+if ((weapon->id == PROXMINE_ID) || (weapon->id == SMARTMINE_ID) || (weapon->id == SMALLMINE_ID)) {
 	weapon->flags |= OF_SHOULD_BE_DEAD;
 	return;
 	}
@@ -1899,7 +1899,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		VmVecAdd (&tvec, &playerObjP->position.vPos, &randvec);
 		newseg = FindSegByPoint (&tvec, playerObjP->nSegment);
 		if (newseg != -1)
-			CreateNewLaser (&randvec, &tvec, newseg, plrObjNum, SUPERPROX_ID, 0);
+			CreateNewLaser (&randvec, &tvec, newseg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
 
 		//	If the tPlayer had proximity bombs, maybe arm one of them.
@@ -1914,20 +1914,20 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 				VmVecAdd (&tvec, &playerObjP->position.vPos, &randvec);
 				newseg = FindSegByPoint (&tvec, playerObjP->nSegment);
 				if (newseg != -1)
-					CreateNewLaser (&randvec, &tvec, newseg, plrObjNum, PROXIMITY_ID, 0);
+					CreateNewLaser (&randvec, &tvec, newseg, plrObjNum, PROXMINE_ID, 0);
 			}
 		}
 
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
 		if (playerP->laserLevel > MAX_LASER_LEVEL)
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel-MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPER_LASER);
+			CallObjectCreateEgg (playerObjP, playerP->laserLevel-MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
 		else if (playerP->laserLevel >= 1)
 			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 
 		//	Drop quad laser if appropos
 		if (playerP->flags & PLAYER_FLAGS_QUAD_LASERS)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_QUAD_FIRE);
+			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_QUADLASER);
 		if (playerP->flags & PLAYER_FLAGS_CLOAKED)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
 		while (playerP->nInvuls--)
@@ -1939,7 +1939,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		if (playerP->flags & PLAYER_FLAGS_AFTERBURNER)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AFTERBURNER);
 		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AMMO_RACK);
+			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AMMORACK);
 		if (playerP->flags & PLAYER_FLAGS_CONVERTER)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CONVERTER);
 		if ((playerP->flags & PLAYER_FLAGS_HEADLIGHT) && 
@@ -1952,9 +1952,9 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
 	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG)) {
 		if ((GetTeam (pnum)==TEAM_RED))
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_FLAG_BLUE);
+			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_BLUEFLAG);
 		else
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_FLAG_RED);
+			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_REDFLAG);
 		}
 
 #ifdef RELEASE			
@@ -2011,7 +2011,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		DropMissile1or4 (playerObjP, HOMING_INDEX);
 		DropMissile1or4 (playerObjP, GUIDED_INDEX);
 		DropMissile1or4 (playerObjP, CONCUSSION_INDEX);
-		DropMissile1or4 (playerObjP, SMISSILE1_INDEX);
+		DropMissile1or4 (playerObjP, FLASHMSL_INDEX);
 		DropMissile1or4 (playerObjP, SMISSILE4_INDEX);
 		//	If tPlayer has vulcan ammo, but no vulcan cannon, drop the ammo.
 		if (!(playerP->primaryWeaponFlags & HAS_VULCAN_FLAG)) {
@@ -2205,7 +2205,7 @@ if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
 //	Don't Collide own smart mines unless direct hit.
-if (weapon->id == SUPERPROX_ID)
+if (weapon->id == SMARTMINE_ID)
 	if (OBJ_IDX (playerObjP) == weapon->cType.laserInfo.nParentObj)
 		if (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size)
 			return 1;
@@ -2242,7 +2242,7 @@ if (!WI_damage_radius (weapon->id)) {
 	if (weapon->cType.laserInfo.nParentObj > -1)
 		killer = &gameData.objs.objects [weapon->cType.laserInfo.nParentObj];
 
-//		if (weapon->id == SMART_HOMING_ID)
+//		if (weapon->id == SMARTMSL_BLOB_ID)
 //			damage /= 4;
 
 	if (!(weapon->flags & OF_HARMLESS))
@@ -2412,8 +2412,8 @@ else
 
 int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHitPt)
 { 
-	// -- Does this look buggy??:  if (weapon1->id == PMINE_ID && weapon1->id == PMINE_ID)
-if (weapon1->id == PMINE_ID && weapon2->id == PMINE_ID)
+	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
+if (weapon1->id == SMALLMINE_ID && weapon2->id == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  
 if (weapon1->id == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon1))
@@ -2470,7 +2470,7 @@ int CollideWeaponAndDebris (tObject * weapon, tObject * debris, vmsVector *vHitP
 { 
 
 	//	Hack! Prevent debris from causing bombs spewed at tPlayer death to detonate!
-if ((weapon->id == PROXIMITY_ID) || (weapon->id == SUPERPROX_ID)) {
+if ((weapon->id == PROXMINE_ID) || (weapon->id == SMARTMINE_ID)) {
 	if (weapon->cType.laserInfo.creationTime + F1_0/2 > gameData.time.xGame)
 		return 1;
 	}

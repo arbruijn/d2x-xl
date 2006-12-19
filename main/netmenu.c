@@ -968,20 +968,20 @@ static int optionToWeaponId [] = {
 	VULCAN_ID, 
 	PLASMA_ID, 
 	FUSION_ID, 
-	SUPER_LASER_ID, 
-	SUPER_LASER_ID + 1, 
+	SUPERLASER_ID, 
+	SUPERLASER_ID + 1, 
 	HELIX_ID, 
 	GAUSS_ID, 
 	PHOENIX_ID, 
 	OMEGA_ID, 
 	FLARE_ID, 
 	CONCUSSION_ID, 
-	HOMING_ID, 
-	SMART_ID, 
-	MEGA_ID, 
-	FLASH_ID, 
-	GUIDEDMISS_ID, 
-	MERCURY_ID, 
+	HOMINGMSL_ID, 
+	SMARTMSL_ID, 
+	MEGAMSL_ID, 
+	FLASHMSL_ID, 
+	GUIDEDMSL_ID, 
+	MERCURYMSL_ID, 
 	EARTHSHAKER_ID, 
 	EARTHSHAKER_MEGA_ID
 	};
@@ -1160,7 +1160,7 @@ build_menu:
 	opt++;
 	ADD_INPUT (opt, name, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
 	opt_name = opt++;
-	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTIMSLION);
 	opt_mission = opt++;
 	ADD_TEXT (opt, "", 0);
 	m [opt].rebuild = 1; 
@@ -1358,7 +1358,7 @@ doMenu:
 	else if (HoardEquipped () && m [opt_monsterball].value)
 		mpParams.nGameMode = NETGAME_MONSTERBALL;
 	else if (bAnarchyOnly) {
-		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
+		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLYMSLION);
 		m [opt_mode+2].value = 0;
 		m [opt_mode+3].value = 0;
 		m [opt_mode].value = 1;
@@ -2023,7 +2023,7 @@ con_printf (CON_DEBUG, TXT_LOADING_MSN, activeNetGames [choice].mission_name);
 if (!(LoadMissionByName (activeNetGames [choice].mission_name, -1) ||
 		 (DownloadMission (activeNetGames [choice].mission_name) &&
 		 LoadMissionByName (activeNetGames [choice].mission_name, -1)))) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXTMSLION_NOT_FOUND);
 	goto doMenu;
 	}
 if (IS_D2_OEM && (activeNetGames [choice].levelnum > 8)) {

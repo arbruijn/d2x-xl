@@ -183,7 +183,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOUND_ROBOT_DESTROYED                   21
 #define SOUND_VOLATILE_WALL_HIT                 21
 #define SOUND_LASER_HIT_WATER                   232
-#define SOUND_MISSILE_HIT_WATER                 233
+#define SOUNDMSL_HIT_WATER                 233
 
 #define SOUND_LASER_HIT_CLUTTER                 30
 #define SOUND_CONTROL_CENTER_HIT                30

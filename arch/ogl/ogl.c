@@ -656,33 +656,33 @@ else if (gameData.objs.objects [nObj].renderType == RT_POWERUP) {
 //						if (laserlev<4)
 //							laserlev++;
 			break;*/
-		case POW_VULCAN_WEAPON:
+		case POW_VULCAN:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [VULCAN_INDEX]]);
 			break;
-		case POW_SPREADFIRE_WEAPON:
+		case POW_SPREADFIRE:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [SPREADFIRE_INDEX]]);
 			break;
-		case POW_PLASMA_WEAPON:
+		case POW_PLASMA:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [PLASMA_INDEX]]);
 			break;
-		case POW_FUSION_WEAPON:
+		case POW_FUSION:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [FUSION_INDEX]]);
 			break;
-/*					case POW_MISSILE_1:
-		case POW_MISSILE_4:
+/*					case POW_CONCUSSION_1:
+		case POW_CONCUSSION_4:
 			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
 			break;*/
-		case POW_PROXIMITY_WEAPON:
+		case POW_PROXMINE:
 			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXIMITY_INDEX]]);
 			break;
-		case POW_HOMING_AMMO_1:
-		case POW_HOMING_AMMO_4:
+		case POW_HOMINGMSL_1:
+		case POW_HOMINGMSL_4:
 			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [HOMING_INDEX]]);
 			break;
-		case POW_SMARTBOMB_WEAPON:
+		case POW_SMARTMSL:
 			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [SMART_INDEX]]);
 			break;
-		case POW_MEGA_WEAPON:
+		case POW_MEGAMSL:
 			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [MEGA_INDEX]]);
 			break;
 		}
@@ -810,33 +810,33 @@ InitSpecialEffects ();
 					OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
 					break;
 #endif
-				case POW_VULCAN_WEAPON:
+				case POW_VULCAN:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [VULCAN_INDEX]]);
 					break;
-				case POW_SPREADFIRE_WEAPON:
+				case POW_SPREADFIRE:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [SPREADFIRE_INDEX]]);
 					break;
-				case POW_PLASMA_WEAPON:
+				case POW_PLASMA:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [PLASMA_INDEX]]);
 					break;
-				case POW_FUSION_WEAPON:
+				case POW_FUSION:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [FUSION_INDEX]]);
 					break;
-/*					case POW_MISSILE_1:
-				case POW_MISSILE_4:
+/*					case POW_CONCUSSION_1:
+				case POW_CONCUSSION_4:
 					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
 					break;*/
-				case POW_PROXIMITY_WEAPON:
+				case POW_PROXMINE:
 					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXIMITY_INDEX]]);
 					break;
-				case POW_HOMING_AMMO_1:
-				case POW_HOMING_AMMO_4:
+				case POW_HOMINGMSL_1:
+				case POW_HOMINGMSL_4:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [HOMING_INDEX]]);
 					break;
-				case POW_SMARTBOMB_WEAPON:
+				case POW_SMARTMSL:
 					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [SMART_INDEX]]);
 					break;
-				case POW_MEGA_WEAPON:
+				case POW_MEGAMSL:
 					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [MEGA_INDEX]]);
 					break;
 				default:

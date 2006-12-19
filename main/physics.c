@@ -154,7 +154,7 @@ void DoPhysicsAlignObject (tObject * objP)
 		delta_ang += objP->mType.physInfo.turnRoll;
 
 		if (abs (delta_ang) > DAMP_ANG) {
-			vmsMatrix rotmat, new_pm;
+			vmsMatrix mRotate, new_pm;
 
 			roll_ang = FixMul (gameData.time.xFrame, ROLL_RATE);
 
@@ -162,9 +162,9 @@ void DoPhysicsAlignObject (tObject * objP)
 			else if (delta_ang<0) roll_ang = -roll_ang;
 
 			tangles.p = tangles.h = 0;  tangles.b = roll_ang;
-			VmAngles2Matrix (&rotmat, &tangles);
+			VmAngles2Matrix (&mRotate, &tangles);
 
-			VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+			VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 			objP->position.mOrient = new_pm;
 		}
 		else floorLevelling=0;
@@ -223,7 +223,7 @@ extern int bSimpleFVI;
 void DoPhysicsSimRot (tObject *objP)
 {
 	vmsAngVec	tangles;
-	vmsMatrix	rotmat, new_orient;
+	vmsMatrix	mRotate, mNewOrient;
 	//fix			rotdrag_scale;
 	tPhysicsInfo *pi;
 
@@ -276,16 +276,16 @@ if (objP->mType.physInfo.turnRoll) {
 
 	tangles.p = tangles.h = 0;
 	tangles.b = -objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&rotmat, &tangles);
-	VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+	VmAngles2Matrix (&mRotate, &tangles);
+	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 	objP->position.mOrient = new_pm;
 	}
 tangles.p = FixMul (objP->mType.physInfo.rotVel.x, gameData.time.xFrame);
 tangles.h = FixMul (objP->mType.physInfo.rotVel.y, gameData.time.xFrame);
 tangles.b = FixMul (objP->mType.physInfo.rotVel.z, gameData.time.xFrame);
-VmAngles2Matrix (&rotmat, &tangles);
-VmMatMul (&new_orient, &objP->position.mOrient, &rotmat);
-objP->position.mOrient = new_orient;
+VmAngles2Matrix (&mRotate, &tangles);
+VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
+objP->position.mOrient = mNewOrient;
 if (objP->mType.physInfo.flags & PF_TURNROLL)
 	SetObjectTurnRoll (objP);
 //re-rotate object for bank caused by turn
@@ -294,8 +294,8 @@ if (objP->mType.physInfo.turnRoll) {
 
 	tangles.p = tangles.h = 0;
 	tangles.b = objP->mType.physInfo.turnRoll;
-	VmAngles2Matrix (&rotmat, &tangles);
-	VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
+	VmAngles2Matrix (&mRotate, &tangles);
+	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 	objP->position.mOrient = new_pm;
 	}
 CheckAndFixMatrix (&objP->position.mOrient);
@@ -516,7 +516,7 @@ retryMove:
 	if (fate == HIT_OBJECT) {
 		tObject	*objP = gameData.objs.objects + hi.hit.nObject;
 
-		if ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXIMITY_ID) || (objP->id == SUPERPROX_ID)))
+		if ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))
 			count--;
 	}
 
@@ -932,7 +932,7 @@ void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rat
 {
 	vmsAngVec	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
-	vmsVector	*rotvel_ptr = &objP->mType.physInfo.rotVel;
+	vmsVector	*pvRotVel = &objP->mType.physInfo.rotVel;
 
 	// Make this tObject turn towards the goal_vector.  Changes orientation, doesn't change direction of movement.
 	// If no one moves, will be facing goal_vector in 1 second.
@@ -962,9 +962,9 @@ void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rat
 	if (abs (delta_p) < F1_0/16) delta_p *= 4;
 	if (abs (delta_h) < F1_0/16) delta_h *= 4;
 
-	PhysicsSetRotVelAndSaturate (&rotvel_ptr->x, delta_p);
-	PhysicsSetRotVelAndSaturate (&rotvel_ptr->y, delta_h);
-	rotvel_ptr->z = 0;
+	PhysicsSetRotVelAndSaturate (&pvRotVel->x, delta_p);
+	PhysicsSetRotVelAndSaturate (&pvRotVel->y, delta_h);
+	pvRotVel->z = 0;
 }
 
 //	-----------------------------------------------------------------------------

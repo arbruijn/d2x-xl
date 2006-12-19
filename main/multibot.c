@@ -682,9 +682,9 @@ else
 	calc_gun_point (&vGunPoint, &gameData.objs.objects [nRobot], nGun);
 robotP = &gameData.bots.pInfo [gameData.objs.objects [nRobot].id];
 if (nGun == -1) 
-	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXIMITY_ID, 1);
+	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
-	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, SUPERPROX_ID, 1);
+	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, SMARTMINE_ID, 1);
 else	
 	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, robotP->nWeaponType, 1);
 }

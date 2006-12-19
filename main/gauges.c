@@ -1534,7 +1534,7 @@ char *d2_very_short_secondary_weapon_names[] =
 #endif
 #define SECONDARY_WEAPON_NAMES_VERY_SHORT(weapon_num) 				\
 	((weapon_num <= MEGA_INDEX)?GAMETEXT (541 + weapon_num):	\
-	 GT (636+weapon_num-SMISSILE1_INDEX))
+	 GT (636+weapon_num-FLASHMSL_INDEX))
 
 //return which bomb will be dropped next time the bomb key is pressed
 extern int which_bomb();
@@ -3013,7 +3013,7 @@ void DrawWeaponInfoSub(int info_index,gauge_box *box,int pic_x,int pic_y,char *n
 	 }	
 
 	//	For laser, show level and quadness
-	if (info_index == LASER_ID || info_index == SUPER_LASER_ID) {
+	if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
 		char	temp_str[7];
 
 		sprintf(temp_str, "%s: 0", TXT_LVL);
@@ -3046,7 +3046,7 @@ void DrawWeaponInfo(int nWeaponType,int weapon_num,int laserLevel)
 		info_index = primaryWeaponToWeaponInfo[weapon_num];
 
 		if (info_index == LASER_ID && laserLevel > MAX_LASER_LEVEL)
-			info_index = SUPER_LASER_ID;
+			info_index = SUPERLASER_ID;
 
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 			DrawWeaponInfoSub(info_index,
@@ -4428,7 +4428,7 @@ WINDOS(
 
 	//	HACK! If guided missile, wake up robots as necessary.
 	if (viewer->nType == OBJ_WEAPON) {
-		// -- Used to require to be GUIDED -- if (viewer->id == GUIDEDMISS_ID)
+		// -- Used to require to be GUIDED -- if (viewer->id == GUIDEDMSL_ID)
 		WakeupRenderedObjects(viewer, win+1);
 	}
 

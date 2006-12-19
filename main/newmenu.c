@@ -3700,7 +3700,7 @@ for (i = 0; i < 5; i++) {
 	}
 sprintf (mtext [opt], TXT_NGI_GAME, activeNetGames [choice].game_name); 
 opt++;
-sprintf (mtext [opt], TXT_NGI_MISSION, activeNetGames [choice].mission_title); 
+sprintf (mtext [opt], TXT_NGIMSLION, activeNetGames [choice].mission_title); 
 opt++;
 sprintf (mtext [opt], TXT_NGI_LEVEL, activeNetGames [choice].levelnum); 
 opt++;

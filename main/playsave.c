@@ -77,12 +77,12 @@ typedef struct hli {
 
 short nHighestLevels;
 
-hli highestLevels [MAX_MISSIONS];
+hli highestLevels [MAXMSLIONS];
 
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					135	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					136	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -280,7 +280,7 @@ gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 nHighestLevels = CFReadShort(fp);
 if (swap)
 	nHighestLevels = SWAPSHORT(nHighestLevels);
-Assert(nHighestLevels <= MAX_MISSIONS);
+Assert(nHighestLevels <= MAXMSLIONS);
 
 if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestLevels) {
 	errno_ret = errno;
@@ -772,6 +772,10 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.shadows.nReach = (int) CFReadByte (fp);
 	if (player_file_version >= 135)
 		gameOptions [j].render.shadows.bClip = (int) CFReadByte (fp);
+	if (player_file_version >= 136) {
+		gameOptions [j].render.powerups.b3D = (int) CFReadByte (fp);
+		gameOptions [j].render.powerups.bSpin = (int) CFReadByte (fp);
+		}
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -801,7 +805,7 @@ int FindHLIEntry()
 
 	if (i==nHighestLevels) {		//not found.  create entry
 
-		if (i==MAX_MISSIONS)
+		if (i==MAXMSLIONS)
 			i--;		//take last entry
 		else
 			nHighestLevels++;
@@ -902,7 +906,7 @@ int WritePlayerFile()
 	CFWriteByte ((sbyte) gameOptions [0].render.bAutomapAlwaysHires, fp);
 
 	//write higest level info
-	Assert(nHighestLevels <= MAX_MISSIONS);
+	Assert(nHighestLevels <= MAXMSLIONS);
 	CFWriteShort(nHighestLevels, fp);
 	if ((CFWrite(highestLevels, sizeof(hli), nHighestLevels, fp) != nHighestLevels))
 	{
@@ -1201,6 +1205,8 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (gameOptions [j].render.shadows.bFast, fp);
 	CFWriteByte (gameOptions [j].render.shadows.nReach, fp);
 	CFWriteByte (gameOptions [j].render.shadows.bClip, fp);
+	CFWriteByte (gameOptions [j].render.powerups.b3D, fp);
+	CFWriteByte (gameOptions [j].render.powerups.bSpin, fp);
 // end of D2X-XL stuff
 	}
 

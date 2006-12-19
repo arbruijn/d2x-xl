@@ -12,132 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Powerup header file.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  16:01:35  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:27:35  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.34  1995/02/06  15:52:37  mike
- * add mini megawow powerup for giving reasonable weapons.
- *
- * Revision 1.33  1995/01/30  17:14:11  mike
- * halve rate of vulcan ammo consumption.
- *
- * Revision 1.32  1995/01/15  20:47:56  mike
- * add lighting field to powerups.
- *
- * Revision 1.31  1994/12/12  21:39:58  matt
- * Changed vulcan ammo: 10K max, 5K w/weapon, 1250 per powerup
- *
- * Revision 1.30  1994/12/07  12:55:26  mike
- * tweak vulcan amounts.
- *
- * Revision 1.29  1994/12/02  20:06:46  matt
- * Made vulcan ammo print at approx 25 times actual
- *
- * Revision 1.28  1994/10/26  15:56:27  yuan
- * Made vulcan cannon give 100 ammo if it has less than that.
- *
- * Revision 1.27  1994/10/15  19:07:10  mike
- * Define constants for amount of vulcan ammo per powerup.
- *
- * Revision 1.26  1994/09/26  13:29:38  matt
- * Added extra life each 100,000 points, and show icons on HUD for num lives
- *
- * Revision 1.25  1994/09/22  19:00:25  mike
- * Kill constants ENERGY_BOOST and SHIELD_BOOST: it's now difficulty level dependent.
- *
- * Revision 1.24  1994/09/20  19:46:11  mike
- * Fix powerup number assignments.
- *
- * Revision 1.23  1994/09/02  11:53:34  mike
- * Add the megawow powerup.  If you don't know about it, that's because it's a secret.
- *
- * Revision 1.22  1994/09/01  10:41:35  matt
- * Sizes for powerups now specified in bitmaps.tbl; blob bitmaps now plot
- * correctly if width & height of bitmap are different.
- *
- * Revision 1.21  1994/08/31  19:26:14  mike
- * Start adding new pile of powerups.
- *
- * Revision 1.20  1994/08/25  17:56:08  matt
- * Added quad laser powerup
- *
- * Revision 1.19  1994/08/18  15:11:50  mike
- * missile powerups.
- *
- * Revision 1.18  1994/08/09  17:54:33  adam
- * upped no. of powerup types
- *
- * Revision 1.17  1994/08/09  17:53:39  adam
- * *** empty log message ***
- *
- * Revision 1.16  1994/07/27  19:44:16  mike
- * Objects containing objects.
- *
- * Revision 1.15  1994/07/26  18:31:32  mike
- * Move some constants here from eobject.c.
- *
- * Revision 1.14  1994/07/20  17:35:03  yuan
- * Some minor bug fixes and new key gauges...
- *
- * Revision 1.13  1994/07/12  15:53:23  john
- * *** empty log message ***
- *
- * Revision 1.12  1994/07/12  15:30:47  mike
- * Prototype diminish_towards_max.
- *
- * Revision 1.11  1994/07/07  14:59:04  john
- * Made radar powerups.
- *
- *
- * Revision 1.10  1994/07/01  16:35:40  yuan
- * Added key system
- *
- * Revision 1.9  1994/06/29  19:43:33  matt
- * Made powerup animation not happen in render routine
- *
- * Revision 1.8  1994/06/21  18:54:03  matt
- * Added support for powerups that don't get picked up if not needed, but this
- * feature is commented out at the end of DoPowerup(), since the physics gave
- * me all sorts of problems, with the tPlayer getting stuck on a powerup.
- *
- * Revision 1.7  1994/06/08  18:16:32  john
- * Bunch of new stuff that basically takes constants out of the code
- * and puts them into bitmaps.tbl.
- *
- * Revision 1.6  1994/05/18  13:26:30  yuan
- * *** empty log message ***
- *
- * Revision 1.5  1994/05/17  17:01:48  yuan
- * Added constant for boosts.
- *
- * Revision 1.4  1994/04/06  14:42:50  yuan
- * Adding new powerups.
- *
- * Revision 1.3  1994/04/01  14:36:59  yuan
- * John's head is an extra life...
- *
- * Revision 1.2  1994/04/01  11:15:22  yuan
- * Added multiple bitmap functionality to all objects...
- * (hostages, powerups, lasers, etc.)
- * Hostages and powerups are implemented in the tObject system,
- * just need to finish function call to "affect" tPlayer.
- *
- * Revision 1.1  1994/03/31  17:01:43  yuan
- * Initial revision
- *
- *
- */
-
-
 #ifndef _POWERUP_H
 #define _POWERUP_H
 
@@ -158,49 +32,49 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#define POW_RADAR_ROBOTS        8
 //#define POW_RADAR_POWERUPS      9
 
-#define POW_MISSILE_1           10
-#define POW_MISSILE_4           11      // 4-pack MUST follow single missile
+#define POW_CONCUSSION_1        	10
+#define POW_CONCUSSION_4        	11      // 4-pack MUST follow single missile
 
-#define POW_QUAD_FIRE           12
+#define POW_QUADLASER           	12
 
-#define POW_VULCAN_WEAPON       13
-#define POW_SPREADFIRE_WEAPON   14
-#define POW_PLASMA_WEAPON       15
-#define POW_FUSION_WEAPON       16
-#define POW_PROXIMITY_WEAPON    17
-#define POW_SMARTBOMB_WEAPON    20
-#define POW_MEGA_WEAPON         21
-#define POW_VULCAN_AMMO         22
-#define POW_HOMING_AMMO_1       18
-#define POW_HOMING_AMMO_4       19      // 4-pack MUST follow single missile
-#define POW_CLOAK               23
-#define POW_TURBO               24
-#define POW_INVULNERABILITY     25
-#define POW_MEGAWOW             27
+#define POW_VULCAN       			13
+#define POW_SPREADFIRE   			14
+#define POW_PLASMA       			15
+#define POW_FUSION       			16
+#define POW_PROXMINE    			17
+#define POW_SMARTMSL    			20
+#define POW_MEGAMSL         		21
+#define POW_VULCAN_AMMO         	22
+#define POW_HOMINGMSL_1       	18
+#define POW_HOMINGMSL_4       	19      // 4-pack MUST follow single missile
+#define POW_CLOAK               	23
+#define POW_TURBO               	24
+#define POW_INVULNERABILITY     	25
+#define POW_MEGAWOW             	27
 
-#define POW_GAUSS_WEAPON        28
-#define POW_HELIX_WEAPON        29
-#define POW_PHOENIX_WEAPON      30
-#define POW_OMEGA_WEAPON        31
+#define POW_GAUSS        			28
+#define POW_HELIX        			29
+#define POW_PHOENIX      			30
+#define POW_OMEGA        			31
 
-#define POW_SUPER_LASER         32
-#define POW_FULL_MAP            33
-#define POW_CONVERTER           34
-#define POW_AMMO_RACK           35
-#define POW_AFTERBURNER         36
-#define POW_HEADLIGHT           37
+#define POW_SUPERLASER         	32
+#define POW_FULL_MAP            	33
+#define POW_CONVERTER           	34
+#define POW_AMMORACK           	35
+#define POW_AFTERBURNER         	36
+#define POW_HEADLIGHT           	37
 
-#define POW_SMISSILE1_1         38
-#define POW_SMISSILE1_4         39      // 4-pack MUST follow single missile
-#define POW_GUIDED_MISSILE_1    40
-#define POW_GUIDED_MISSILE_4    41      // 4-pack MUST follow single missile
-#define POW_SMART_MINE          42
-#define POW_MERCURY_MISSILE_1   43
-#define POW_MERCURY_MISSILE_4   44      // 4-pack MUST follow single missile
-#define POW_EARTHSHAKER_MISSILE 45
+#define POW_FLASHMSL_1         	38
+#define POW_FLASHMSL_4         	39      // 4-pack MUST follow single missile
+#define POW_GUIDEDMSL_1    		40
+#define POW_GUIDEDMSL_4    		41      // 4-pack MUST follow single missile
+#define POW_SMARTMINE          	42
+#define POW_MERCURYMSL_1   		43
+#define POW_MERCURYMSL_4   		44      // 4-pack MUST follow single missile
+#define POW_EARTHSHAKER 			45
 
-#define POW_FLAG_BLUE           46
-#define POW_FLAG_RED            47
+#define POW_BLUEFLAG           	46
+#define POW_REDFLAG            	47
 
 #if 0//_DEBUG
 #	define	POW_ENTROPY_VIRUS		POW_SHIELD_BOOST
@@ -265,6 +139,7 @@ int ApplyInvul (int bForce, int nPlayer);
 char PowerupToWeapon (short nPowerup, int *nType);
 char PowerupToWeaponCount (short nPowerup);
 char PowerupClass (short nPowerup);
+char PowerupToObject (short nPowerup);
 short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
 

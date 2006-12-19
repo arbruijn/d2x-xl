@@ -111,8 +111,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MENU_SHOW_CREDITS               13
 #define MENU_QUIT                       14
 #define MENU_EDITOR                     15
-#define MENU_D2_MISSIONS					 16
-#define MENU_D1_MISSIONS					 17
+#define MENU_D2MSLIONS					 16
+#define MENU_D1MSLIONS					 17
 #define MENU_LOAD_LEVEL                 18
 #define MENU_START_IPX_NETGAME          20
 #define MENU_JOIN_IPX_NETGAME           21
@@ -416,9 +416,9 @@ if (!gameStates.app.bNostalgia) {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	nMenuChoice [nD2Opt = opt++] = MENU_D2_MISSIONS;
+	nMenuChoice [nD2Opt = opt++] = MENU_D2MSLIONS;
 	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nMenuChoice [nD1Opt = opt++] = MENU_D2_MISSIONS;
+	nMenuChoice [nD1Opt = opt++] = MENU_D2MSLIONS;
 	}
 *nCallerOptions = opt;
 }
@@ -1167,7 +1167,7 @@ do {
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 {
 	int	i, nMissions, nDefaultMission, nNewMission = -1;
-	char	*szMsnNames [MAX_MISSIONS];
+	char	*szMsnNames [MAXMSLIONS];
 
 	static char* menuTitles [4];
 	
@@ -1188,8 +1188,8 @@ do {
 		if (!stricmp (szMsnNames [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
-	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;
-	nNewMission = ExecMenuListBox1 (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], 
+	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYERMSLION : GAMESTAT_SELECTMSLION;
+	nNewMission = ExecMenuListBox1 (bMulti ? TXT_MULTIMSLION : menuTitles [gameOpts->app.nVersionFilter], 
 											  nMissions, szMsnNames, 1, nDefaultMission, NULL);
 	GameFlushInputs ();
 	if (nNewMission == -1)
@@ -1197,7 +1197,7 @@ do {
 	} while (!gameData.missions.list [nNewMission].descent_version);
 strcpy (gameConfig.szLastMission, szMsnNames [nNewMission]);
 if (!LoadMission (nNewMission)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXTMSLION_ERROR);
 	return -1;
 	}
 gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].descent_version == 1);
@@ -1250,7 +1250,7 @@ for (;;) {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 
-	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTIMSLION);
 	optSelMsn = opt++;
 	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].mission_name, 0);	
 	optMsnName = opt++;
@@ -1474,7 +1474,7 @@ do {
 		optScaleGauges =
 		optFlashGauges =
 		optShieldWarn = -1;
-	ADD_CHECK (opt, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPIT_MISSILEVIEW);
+	ADD_CHECK (opt, TXTMSL_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
 	optMissileView = opt++;
 	ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
 	optGuided = opt++;
@@ -1692,6 +1692,32 @@ do {
 
 //------------------------------------------------------------------------------
 
+void PowerupOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, choice = 0;
+	int	opt;
+	int	opt3D, optSpin;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
+	opt3D = opt++;
+	ADD_CHECK (opt, TXT_SPIN_POWERUPS, gameOpts->render.powerups.bSpin, KEY_T, HTX_SPIN_POWERUPS);
+	optSpin = opt++;
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_POWERUP_MENUTITLE, opt, m, NULL, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->render.powerups.b3D = m [opt3D].value;
+	gameOpts->render.powerups.bSpin = m [optSpin].value;
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
 #if SHADOWS
 
 static char *pszReach [3];
@@ -1813,7 +1839,7 @@ do {
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
-		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTX_MISSILE_SHADOWS);
+		ADD_CHECK (opt, TXTMSL_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTXMSL_SHADOWS);
 		optMissileShadows = opt++;
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
@@ -2141,7 +2167,7 @@ do {
 				ADD_TEXT (opt, "", 0);
 				opt++;
 				}
-			ADD_CHECK (opt, TXT_SMOKE_MISSILES, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
+			ADD_CHECK (opt, TXT_SMOKEMSLS, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
 			optMissSmoke = opt++;
 			if (gameOpts->render.smoke.bMissiles) {
 				if (!gameOpts->render.smoke.bSyncSizes) {
@@ -2620,7 +2646,7 @@ void RenderOptionsMenu ()
 	int	h, i, choice = 0;
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
-			optAdvOpts, optEffectOpts;
+			optAdvOpts, optEffectOpts, optPowerupOpts;
 	int	optUseGamma, optColoredWalls;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
@@ -2710,6 +2736,8 @@ do {
 		optEffectOpts = opt++;
 		ADD_MENU (opt, TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
 		optCameraOpts = opt++;
+		ADD_MENU (opt, TXT_POWERUP_OPTIONS, KEY_P, HTX_RENDER_PRUPOPTS);
+		optPowerupOpts = opt++;
 		ADD_MENU (opt, TXT_MOVIE_OPTIONS, KEY_M, HTX_RENDER_MOVIEOPTS);
 		optMovieOpts = opt++;
 		}
@@ -2757,6 +2785,8 @@ do {
 				EffectOptionsMenu ();
 			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
 				CameraOptionsMenu ();
+			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))
+				PowerupOptionsMenu ();
 			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
 				MovieOptionsMenu ();
 			}
@@ -3269,7 +3299,7 @@ do {
 	if (gameStates.app.bNostalgia) {
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
-		ADD_CHECK (opt, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPIT_MISSILEVIEW);
+		ADD_CHECK (opt, TXTMSL_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
 		optMissileView = opt++;
 		ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
 		optGuided = opt++;

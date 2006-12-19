@@ -795,7 +795,7 @@ if (killerType == OBJ_CNTRLCEN) {
 	return;
 	}
 else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
-	if ((nKillerId == PMINE_ID) && (killerType != OBJ_ROBOT)) {
+	if ((nKillerId == SMALLMINE_ID) && (killerType != OBJ_ROBOT)) {
 		if (nKilledPlayer == gameData.multi.nLocalPlayer)
 			HUDInitMessage (TXT_MINEKILL);
 		else
@@ -1196,7 +1196,7 @@ playerP->secondaryAmmo [CONCUSSION_INDEX] = buf [count++];
 playerP->secondaryAmmo [SMART_INDEX] = buf [count++];         
 playerP->secondaryAmmo [MEGA_INDEX] = buf [count++];          
 playerP->secondaryAmmo [PROXIMITY_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [SMISSILE1_INDEX] = buf [count++]; 
+playerP->secondaryAmmo [FLASHMSL_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [GUIDED_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [SMART_MINE_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [SMISSILE4_INDEX] = buf [count++]; 
@@ -1920,7 +1920,7 @@ multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLoca
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_INDEX];
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [MEGA_INDEX];
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX];
-multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE1_INDEX];
+multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [FLASHMSL_INDEX];
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [GUIDED_INDEX];
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX];
 multiData.msg.buf [count++] = (char)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE4_INDEX];
@@ -2008,11 +2008,11 @@ if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [7] *= 4;
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel > MAX_LASER_LEVEL)
-	if (gameData.multi.powerupsInMine [POW_SUPER_LASER] + 1 > gameData.multi.maxPowerupsAllowed [POW_SUPER_LASER])
+	if (gameData.multi.powerupsInMine [POW_SUPERLASER] + 1 > gameData.multi.maxPowerupsAllowed [POW_SUPERLASER])
 		gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = 0;
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-	if (gameData.multi.powerupsInMine [POW_QUAD_FIRE] + 1 > gameData.multi.maxPowerupsAllowed [POW_QUAD_FIRE])
+	if (gameData.multi.powerupsInMine [POW_QUADLASER] + 1 > gameData.multi.maxPowerupsAllowed [POW_QUADLASER])
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~PLAYER_FLAGS_QUAD_LASERS);
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
@@ -2028,7 +2028,7 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AF
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~PLAYER_FLAGS_AFTERBURNER);
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
-	if (gameData.multi.powerupsInMine [POW_AMMO_RACK] + 1 > gameData.multi.maxPowerupsAllowed [POW_AMMO_RACK])
+	if (gameData.multi.powerupsInMine [POW_AMMORACK] + 1 > gameData.multi.maxPowerupsAllowed [POW_AMMORACK])
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~PLAYER_FLAGS_AMMO_RACK);
 
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CONVERTER)
@@ -2042,9 +2042,9 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HE
 if (gameData.app.nGameMode & GM_CAPTURE) {
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)	{
 		if (GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED)
-			flagtype = POW_FLAG_BLUE;
+			flagtype = POW_BLUEFLAG;
 		else
-			flagtype = POW_FLAG_RED;
+			flagtype = POW_REDFLAG;
 		if (gameData.multi.powerupsInMine [(int)flagtype] + 1 > gameData.multi.maxPowerupsAllowed [(int)flagtype])
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~PLAYER_FLAGS_FLAG);
 		}
@@ -2071,9 +2071,9 @@ for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 	gameData.multi.maxPowerupsAllowed [(int)nType] += gameData.multi.players [nPlayer].secondaryAmmo [nIndex];
 	}
 if (gameData.multi.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-	gameData.multi.maxPowerupsAllowed [POW_SUPER_LASER]++;
+	gameData.multi.maxPowerupsAllowed [POW_SUPERLASER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-	gameData.multi.maxPowerupsAllowed [POW_QUAD_FIRE]++;
+	gameData.multi.maxPowerupsAllowed [POW_QUADLASER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 	gameData.multi.maxPowerupsAllowed [POW_CLOAK]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
@@ -2081,7 +2081,7 @@ if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 	gameData.multi.maxPowerupsAllowed [POW_AFTERBURNER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
-	gameData.multi.maxPowerupsAllowed [POW_AMMO_RACK]++;
+	gameData.multi.maxPowerupsAllowed [POW_AMMORACK]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
 	gameData.multi.maxPowerupsAllowed [POW_CONVERTER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT)
@@ -2112,9 +2112,9 @@ for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 		gameData.multi.powerupsInMine [(int)nType] += gameData.multi.players [nPlayer].secondaryAmmo [nIndex];
 	}
 if (gameData.multi.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-	gameData.multi.powerupsInMine [POW_SUPER_LASER]++;
+	gameData.multi.powerupsInMine [POW_SUPERLASER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-	gameData.multi.powerupsInMine [POW_QUAD_FIRE]++;
+	gameData.multi.powerupsInMine [POW_QUADLASER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 	gameData.multi.powerupsInMine [POW_CLOAK]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
@@ -2122,7 +2122,7 @@ if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 	gameData.multi.powerupsInMine [POW_AFTERBURNER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
-	gameData.multi.powerupsInMine [POW_AMMO_RACK]++;
+	gameData.multi.powerupsInMine [POW_AMMORACK]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
 	gameData.multi.powerupsInMine [POW_CONVERTER]++;
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT)
@@ -2681,73 +2681,73 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 			}
 		if (gameData.objs.objects [i].id == POW_AFTERBURNER && ng && !netGame.DoAfterburner)
 			BashToShield (i, "afterburner");
-		if (gameData.objs.objects [i].id == POW_FUSION_WEAPON && ng && !netGame.DoFusions)
+		if (gameData.objs.objects [i].id == POW_FUSION && ng && !netGame.DoFusions)
 			BashToShield (i, "fusion");
-		if (gameData.objs.objects [i].id == POW_PHOENIX_WEAPON && ng && !netGame.DoPhoenix)
+		if (gameData.objs.objects [i].id == POW_PHOENIX && ng && !netGame.DoPhoenix)
 			BashToShield (i, "phoenix");
-		if (gameData.objs.objects [i].id == POW_HELIX_WEAPON && ng && !netGame.DoHelix)
+		if (gameData.objs.objects [i].id == POW_HELIX && ng && !netGame.DoHelix)
 			BashToShield (i, "helix");
-		if (gameData.objs.objects [i].id == POW_MEGA_WEAPON && ng && !netGame.DoMegas)
+		if (gameData.objs.objects [i].id == POW_MEGAMSL && ng && !netGame.DoMegas)
 			BashToShield (i, "mega");
-		if (gameData.objs.objects [i].id == POW_SMARTBOMB_WEAPON && ng && !netGame.DoSmarts)
+		if (gameData.objs.objects [i].id == POW_SMARTMSL && ng && !netGame.DoSmarts)
 			BashToShield (i, "smartmissile");
-		if (gameData.objs.objects [i].id == POW_GAUSS_WEAPON && ng && !netGame.DoGauss)
+		if (gameData.objs.objects [i].id == POW_GAUSS && ng && !netGame.DoGauss)
 			BashToShield (i, "gauss");
-		if (gameData.objs.objects [i].id == POW_VULCAN_WEAPON && ng && !netGame.DoVulcan)
+		if (gameData.objs.objects [i].id == POW_VULCAN && ng && !netGame.DoVulcan)
 			BashToShield (i, "vulcan");
-		if (gameData.objs.objects [i].id == POW_PLASMA_WEAPON && ng && !netGame.DoPlasma)
+		if (gameData.objs.objects [i].id == POW_PLASMA && ng && !netGame.DoPlasma)
 			BashToShield (i, "plasma");
-		if (gameData.objs.objects [i].id == POW_OMEGA_WEAPON && ng && !netGame.DoOmega)
+		if (gameData.objs.objects [i].id == POW_OMEGA && ng && !netGame.DoOmega)
 			BashToShield (i, "omega");
-		if (gameData.objs.objects [i].id == POW_SUPER_LASER && ng && !netGame.DoSuperLaser)
+		if (gameData.objs.objects [i].id == POW_SUPERLASER && ng && !netGame.DoSuperLaser)
 			BashToShield (i, "superlaser");
-		if (gameData.objs.objects [i].id == POW_PROXIMITY_WEAPON && ng && !netGame.DoProximity)
+		if (gameData.objs.objects [i].id == POW_PROXMINE && ng && !netGame.DoProximity)
 			BashToShield (i, "proximity");
 		// Special: Make all proximity bombs into shields if in
 		// hoard mode because we use the proximity slot in the
 		// tPlayer struct to signify how many orbs the tPlayer has.
-		if (gameData.objs.objects [i].id == POW_PROXIMITY_WEAPON && ng && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
+		if (gameData.objs.objects [i].id == POW_PROXMINE && ng && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 			BashToShield (i, "proximity");
-		if (gameData.objs.objects [i].id == POW_SMART_MINE && ng && (gameData.app.nGameMode & GM_ENTROPY))
+		if (gameData.objs.objects [i].id == POW_SMARTMINE && ng && (gameData.app.nGameMode & GM_ENTROPY))
 			BashToShield (i, "smart mine");
 		if (gameData.objs.objects [i].id == POW_VULCAN_AMMO && ng && (!netGame.DoVulcan && !netGame.DoGauss))
 			BashToShield (i, "vulcan ammo");
-		if (gameData.objs.objects [i].id == POW_SPREADFIRE_WEAPON && ng && !netGame.DoSpread)
+		if (gameData.objs.objects [i].id == POW_SPREADFIRE && ng && !netGame.DoSpread)
 			BashToShield (i, "spread");
-		if (gameData.objs.objects [i].id == POW_SMART_MINE && ng && !netGame.DoSmartMine)
+		if (gameData.objs.objects [i].id == POW_SMARTMINE && ng && !netGame.DoSmartMine)
 			BashToShield (i, "smartmine");
-		if (gameData.objs.objects [i].id == POW_SMISSILE1_1 && ng && !netGame.DoFlash)
+		if (gameData.objs.objects [i].id == POW_FLASHMSL_1 && ng && !netGame.DoFlash)
 			BashToShield (i, "flash");
-		if (gameData.objs.objects [i].id == POW_SMISSILE1_4 && ng && !netGame.DoFlash)
+		if (gameData.objs.objects [i].id == POW_FLASHMSL_4 && ng && !netGame.DoFlash)
 			BashToShield (i, "flash");
-		if (gameData.objs.objects [i].id == POW_GUIDED_MISSILE_1 && ng && !netGame.DoGuided)
+		if (gameData.objs.objects [i].id == POW_GUIDEDMSL_1 && ng && !netGame.DoGuided)
 			BashToShield (i, "guided");
-		if (gameData.objs.objects [i].id == POW_GUIDED_MISSILE_4 && ng && !netGame.DoGuided)
+		if (gameData.objs.objects [i].id == POW_GUIDEDMSL_4 && ng && !netGame.DoGuided)
 			BashToShield (i, "guided");
-		if (gameData.objs.objects [i].id == POW_EARTHSHAKER_MISSILE && ng && !netGame.DoEarthShaker)
+		if (gameData.objs.objects [i].id == POW_EARTHSHAKER && ng && !netGame.DoEarthShaker)
 			BashToShield (i, "earth");
-		if (gameData.objs.objects [i].id == POW_MERCURY_MISSILE_1 && ng && !netGame.DoMercury)
+		if (gameData.objs.objects [i].id == POW_MERCURYMSL_1 && ng && !netGame.DoMercury)
 			BashToShield (i, "Mercury");
-		if (gameData.objs.objects [i].id == POW_MERCURY_MISSILE_4 && ng && !netGame.DoMercury)
+		if (gameData.objs.objects [i].id == POW_MERCURYMSL_4 && ng && !netGame.DoMercury)
 			BashToShield (i, "Mercury");
 		if (gameData.objs.objects [i].id == POW_CONVERTER && ng && !netGame.DoConverter)
 			BashToShield (i, "Converter");
-		if (gameData.objs.objects [i].id == POW_AMMO_RACK && ng && !netGame.DoAmmoRack)
+		if (gameData.objs.objects [i].id == POW_AMMORACK && ng && !netGame.DoAmmoRack)
 			BashToShield (i, "Ammo rack");
 		if (gameData.objs.objects [i].id == POW_HEADLIGHT && ng && 
 			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0) && !EGI_FLAG (bHeadLights, 0, 0))))
 			BashToShield (i, "Headlight");
 		if (gameData.objs.objects [i].id == POW_LASER && ng && !netGame.DoLaserUpgrade)
 			BashToShield (i, "Laser powerup");
-		if (gameData.objs.objects [i].id == POW_HOMING_AMMO_1 && ng && !netGame.DoHoming)
+		if (gameData.objs.objects [i].id == POW_HOMINGMSL_1 && ng && !netGame.DoHoming)
 			BashToShield (i, "Homing");
-		if (gameData.objs.objects [i].id == POW_HOMING_AMMO_4 && ng && !netGame.DoHoming)
+		if (gameData.objs.objects [i].id == POW_HOMINGMSL_4 && ng && !netGame.DoHoming)
 			BashToShield (i, "Homing");
-		if (gameData.objs.objects [i].id == POW_QUAD_FIRE && ng && !netGame.DoQuadLasers)
+		if (gameData.objs.objects [i].id == POW_QUADLASER && ng && !netGame.DoQuadLasers)
 			BashToShield (i, "Quad Lasers");
-		if (gameData.objs.objects [i].id == POW_FLAG_BLUE && !(gameData.app.nGameMode & GM_CAPTURE))
+		if (gameData.objs.objects [i].id == POW_BLUEFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
 			BashToShield (i, "Blue flag");
-		if (gameData.objs.objects [i].id == POW_FLAG_RED && !(gameData.app.nGameMode & GM_CAPTURE))
+		if (gameData.objs.objects [i].id == POW_REDFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
 			BashToShield (i, "Red flag");
 		}
 	}
@@ -2913,7 +2913,7 @@ for (i = 0;i <= gameData.objs.nLastObject;i++) {
 		nnp++;
 	else if ((objP->nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 		;
-	else if ((objP->nType!=OBJ_NONE) && (objP->nType!=OBJ_PLAYER) && (objP->nType!=OBJ_POWERUP) && (objP->nType!=OBJ_CNTRLCEN) && (objP->nType!=OBJ_HOSTAGE) && !(objP->nType == OBJ_WEAPON && objP->id == PMINE_ID)) {
+	else if ((objP->nType!=OBJ_NONE) && (objP->nType!=OBJ_PLAYER) && (objP->nType!=OBJ_POWERUP) && (objP->nType!=OBJ_CNTRLCEN) && (objP->nType!=OBJ_HOSTAGE) && !(objP->nType == OBJ_WEAPON && objP->id == SMALLMINE_ID)) {
 		// Before deleting tObject, if it's a robot, drop it's special powerup, if any
 		if (objP->nType == OBJ_ROBOT)
 			if (objP->containsCount && (objP->containsType == OBJ_POWERUP))
@@ -3136,7 +3136,7 @@ if (nObject < 0)
 	return;
 objP = gameData.objs.objects + nObject;
 ammo_count = objP->cType.powerupInfo.count;
-if (objP->id == POW_OMEGA_WEAPON && ammo_count == F1_0)
+if (objP->id == POW_OMEGA && ammo_count == F1_0)
 	ammo_count = F1_0 - 1; //make fit in short
 Assert (ammo_count < F1_0); //make sure fits in short
 multiData.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
@@ -4114,7 +4114,7 @@ if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_
 HUDInitMessage (TXT_DROP_FLAG);
 DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
 seed = d_rand ();
-nObject = SpitPowerup (gameData.objs.console, (ubyte) ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) ? POW_FLAG_BLUE : POW_FLAG_RED), seed);
+nObject = SpitPowerup (gameData.objs.console, (ubyte) ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG), seed);
 if (nObject < 0)
 	return;
 if ((gameData.app.nGameMode & GM_CAPTURE) && nObject>-1)
@@ -4274,47 +4274,47 @@ switch (id) {
 		if (!netGame.DoAfterburner)
 			return (0);
 		break;
-	case POW_FUSION_WEAPON: 
+	case POW_FUSION: 
 		if (!netGame.DoFusions)
 			return (0);
 		break;
-	case POW_PHOENIX_WEAPON: 
+	case POW_PHOENIX: 
 		if (!netGame.DoPhoenix)
 			return (0);
 		break;
-	case POW_HELIX_WEAPON: 
+	case POW_HELIX: 
 		if (!netGame.DoHelix)
 			return (0);
 		break;
-	case POW_MEGA_WEAPON: 
+	case POW_MEGAMSL: 
 		if (!netGame.DoMegas)
 			return (0);
 		break;
-	case POW_SMARTBOMB_WEAPON: 
+	case POW_SMARTMSL: 
 		if (!netGame.DoSmarts)
 			return (0);
 		break;
-	case POW_GAUSS_WEAPON: 
+	case POW_GAUSS: 
 		if (!netGame.DoGauss)
 			return (0);
 		break;
-	case POW_VULCAN_WEAPON: 
+	case POW_VULCAN: 
 		if (!netGame.DoVulcan)
 			return (0);
 		break;
-	case POW_PLASMA_WEAPON: 
+	case POW_PLASMA: 
 		if (!netGame.DoPlasma)
 			return (0);
 		break;
-	case POW_OMEGA_WEAPON: 
+	case POW_OMEGA: 
 		if (!netGame.DoOmega)
 			return (0);
 		break;
-	case POW_SUPER_LASER: 
+	case POW_SUPERLASER: 
 		if (!netGame.DoSuperLaser)
 			return (0);
 		break;
-	case POW_PROXIMITY_WEAPON: 
+	case POW_PROXMINE: 
 		if (!netGame.DoProximity)
 			return (0);
 		break;
@@ -4322,39 +4322,39 @@ switch (id) {
 		if (!(netGame.DoVulcan || netGame.DoGauss))
 			return (0);
 		break;
-	case POW_SPREADFIRE_WEAPON: 
+	case POW_SPREADFIRE: 
 		if (!netGame.DoSpread)
 			return (0);
 		break;
-	case POW_SMART_MINE: 
+	case POW_SMARTMINE: 
 		if (!netGame.DoSmartMine)
 			return (0);
 		break;
-	case POW_SMISSILE1_1: 
+	case POW_FLASHMSL_1: 
 		if (!netGame.DoFlash)
 			return (0);
 		break;
-	case POW_SMISSILE1_4: 
+	case POW_FLASHMSL_4: 
 		if (!netGame.DoFlash)
 			return (0);
 		break;
-	case POW_GUIDED_MISSILE_1: 
+	case POW_GUIDEDMSL_1: 
 		if (!netGame.DoGuided)
 			return (0);
 		break;
-	case POW_GUIDED_MISSILE_4: 
+	case POW_GUIDEDMSL_4: 
 		if (!netGame.DoGuided)
 			return (0);
 		break;
-	case POW_EARTHSHAKER_MISSILE: 
+	case POW_EARTHSHAKER: 
 		if (!netGame.DoEarthShaker)
 			return (0);
 		break;
-	case POW_MERCURY_MISSILE_1: 
+	case POW_MERCURYMSL_1: 
 		if (!netGame.DoMercury)
 			return (0);
 		break;
-	case POW_MERCURY_MISSILE_4: 
+	case POW_MERCURYMSL_4: 
 		if (!netGame.DoMercury)
 			return (0);
 		break;
@@ -4362,7 +4362,7 @@ switch (id) {
 		if (!netGame.DoConverter)
 			return (0);
 		break;
-	case POW_AMMO_RACK: 
+	case POW_AMMORACK: 
 		if (!netGame.DoAmmoRack)
 			return (0);
 		break;
@@ -4374,23 +4374,23 @@ switch (id) {
 		if (!netGame.DoLaserUpgrade)
 			return (0);
 		break;
-	case POW_HOMING_AMMO_1: 
+	case POW_HOMINGMSL_1: 
 		if (!netGame.DoHoming)
 			return (0);
 		break;
-	case POW_HOMING_AMMO_4: 
+	case POW_HOMINGMSL_4: 
 		if (!netGame.DoHoming)
 			return (0);
 		break;
-	case POW_QUAD_FIRE: 
+	case POW_QUADLASER: 
 		if (!netGame.DoQuadLasers)
 			return (0);
 		break;
-	case POW_FLAG_BLUE: 
+	case POW_BLUEFLAG: 
 		if (!(gameData.app.nGameMode & GM_CAPTURE))
 			return (0);
 		break;
-	case POW_FLAG_RED: 
+	case POW_REDFLAG: 
 		if (!(gameData.app.nGameMode & GM_CAPTURE))
 			return (0);
 		break;

@@ -1219,7 +1219,7 @@ int FlagAtHome (int nFlagId)
 	int		i, j;
 	tObject	*objP;
 
-for (i = flag_goal_roots [nFlagId - POW_FLAG_BLUE]; i >= 0; i = flag_goal_list [i])
+for (i = flag_goal_roots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flag_goal_list [i])
 	for (j = gameData.segs.segments [i].objects; j >= 0; j = objP->next) {
 		objP = gameData.objs.objects + j;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == nFlagId))
@@ -1239,7 +1239,7 @@ if (GetTeam (gameData.multi.nLocalPlayer) != nTeamId)
 if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
 	return 0;
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF && 
-	 !FlagAtHome ((nFlagId == POW_FLAG_BLUE) ? POW_FLAG_RED : POW_FLAG_BLUE))
+	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
 MultiSendCaptureBonus ((char) gameData.multi.nLocalPlayer);
 gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
@@ -1257,32 +1257,32 @@ void FuelCenCheckForGoal (tSegment *segP)
 	Assert (gameData.app.nGameMode & GM_CAPTURE);
 
 #if 1
-CheckFlagDrop (seg2p, TEAM_BLUE, POW_FLAG_RED, SEGMENT_IS_GOAL_BLUE);
-CheckFlagDrop (seg2p, TEAM_RED, POW_FLAG_BLUE, SEGMENT_IS_GOAL_RED);
+CheckFlagDrop (seg2p, TEAM_BLUE, POW_REDFLAG, SEGMENT_IS_GOAL_BLUE);
+CheckFlagDrop (seg2p, TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
 if (seg2p->special==SEGMENT_IS_GOAL_BLUE)	{
 	if ((GetTeam (gameData.multi.nLocalPlayer)==TEAM_BLUE) && 
 		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
-		  FlagAtHome (POW_FLAG_BLUE)) {		
+		  FlagAtHome (POW_BLUEFLAG)) {		
 		{
 #if TRACE
 		con_printf (CON_DEBUG,"In goal tSegment BLUE\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
-		MaybeDropNetPowerup (-1, POW_FLAG_RED, FORCE_DROP);
+		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
 else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
 	if ((GetTeam (gameData.multi.nLocalPlayer)==TEAM_RED) && 
 		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) &&
-		 FlagAtHome (POW_FLAG_RED)) {		
+		 FlagAtHome (POW_REDFLAG)) {		
 #if TRACE
 		con_printf (CON_DEBUG,"In goal tSegment RED\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
-		MaybeDropNetPowerup (-1, POW_FLAG_BLUE, FORCE_DROP);
+		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);
 		}
 	}
 #endif

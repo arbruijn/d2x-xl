@@ -1015,9 +1015,9 @@ _exit_cheat:
 				VmVecAdd(&fire_pos, &objP->position.vPos, &fire_vec);
 
 				if (aip->SUB_FLAGS & SUB_FLAGS_SPROX)
-					CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), ROBOT_SUPERPROX_ID, 1);
+					CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), ROBOT_SMARTMINE_ID, 1);
 				else
-					CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), PROXIMITY_ID, 1);
+					CreateNewLaserEasy( &fire_vec, &fire_pos, OBJ_IDX (objP), PROXMINE_ID, 1);
 
 				ailp->nextPrimaryFire = (F1_0/2)*(NDL+5 - gameStates.app.nDifficultyLevel);      // Drop a proximity bomb every 5 seconds.
 

@@ -240,12 +240,12 @@ if (playerP->energy < MAX_ENERGY) {
 	playerP->energy += boost;
 	if (playerP->energy > MAX_ENERGY)
 		playerP->energy = MAX_ENERGY;
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d",
 						 TXT_ENERGY, TXT_BOOSTED_TO, f2ir (playerP->energy));
 	return 1;
 	} 
-else if (LOCALPLAYER (nPlayer))
+else if (ISLOCALPLAYER (nPlayer))
 	HUDInitMessage (TXT_MAXED_OUT, TXT_ENERGY);
 return 0;
 }
@@ -263,14 +263,14 @@ if (playerP->shields < MAX_SHIELDS) {
 	playerP->shields += boost;
 	if (playerP->shields > MAX_SHIELDS)
 		playerP->shields = MAX_SHIELDS;
-	if (LOCALPLAYER (nPlayer)) {
+	if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d",
 							TXT_SHIELD, TXT_BOOSTED_TO, f2ir (playerP->shields));
 		MultiSendShields ();
 		}
 	return 1;
 	}
-else if (LOCALPLAYER (nPlayer))
+else if (ISLOCALPLAYER (nPlayer))
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 return 0;
 }
@@ -279,7 +279,7 @@ return 0;
 
 int PickupKey (tObject *objP, int nKey, char *pszKey, int nPlayer)
 {
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multi.players + nPlayer;
 
 	if (playerP->flags & nKey)
@@ -298,7 +298,7 @@ return 0;
 
 int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, char *pszFlag, int nPlayer)
 {
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	tPlayer	*playerP = gameData.multi.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
 		if (GetTeam ((char) gameData.multi.nLocalPlayer) == nOtherTeam) {
@@ -324,14 +324,14 @@ int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot,
 	int		bUsed = 0;
 
 if (playerP->flags & nEquipment) {
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, pszHave);
 	if (!(gameData.app.nGameMode & GM_MULTI))
 		bUsed = PickupEnergy (nPlayer);
 	} 
 else {
 	playerP->flags |= nEquipment;
-	if (LOCALPLAYER (nPlayer)) {
+	if (ISLOCALPLAYER (nPlayer)) {
 		MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 		DigiPlaySample ((short) gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
@@ -352,7 +352,7 @@ int	pwSave = gameData.weapons.nPrimary;
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, nPlayer)) {
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
 	bUsed = 1;
 	} 
@@ -360,7 +360,7 @@ else {
 	max = nMaxPrimaryAmmo [VULCAN_INDEX];
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
 		max *= 2;
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) max), TXT_VULCAN_ROUNDS);
 	bUsed = 0;
 	}
@@ -395,13 +395,13 @@ int ApplyInvul (int bForce, int nPlayer)
 if (!(bForce || ((gameOpts->gameplay.bInventory && !IsMultiGame) && playerP->nInvuls)))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_INVULNERABLE);
 	return 0;
 	}
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nInvuls--;
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	playerP->invulnerableTime = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
 	if (gameData.app.nGameMode & GM_MULTI)
@@ -422,13 +422,13 @@ int ApplyCloak (int bForce, int nPlayer)
 if (!(bForce || ((gameOpts->gameplay.bInventory && !IsMultiGame) && playerP->nCloaks)))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
-	if (LOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_CLOAKED);
 	return 0;
 	}
 if (gameOpts->gameplay.bInventory && !IsMultiGame)
 	playerP->nCloaks--;
-if (LOCALPLAYER (nPlayer)) {
+if (ISLOCALPLAYER (nPlayer)) {
 	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like tPlayer fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
@@ -503,11 +503,11 @@ switch (objP->id) {
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case POW_MISSILE_1:
+	case POW_CONCUSSION_1:
 		bUsed = PickupSecondary (objP, CONCUSSION_INDEX, 1, nPlayer);
 		break;
 
-	case POW_MISSILE_4:
+	case POW_CONCUSSION_4:
 		bUsed = PickupSecondary (objP, CONCUSSION_INDEX, 4, nPlayer);
 		break;
 
@@ -523,7 +523,7 @@ switch (objP->id) {
 		bUsed = PickupKey (objP, PLAYER_FLAGS_GOLD_KEY, TXT_YELLOW, nPlayer);
 		break;
 
-	case POW_QUAD_FIRE:
+	case POW_QUADLASER:
 		if (!(playerP->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 			playerP->flags |= PLAYER_FLAGS_QUAD_LASERS;
 			PowerupBasic (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
@@ -536,11 +536,11 @@ switch (objP->id) {
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_VULCAN_WEAPON:
-	case	POW_GAUSS_WEAPON: {
+	case POW_VULCAN:
+	case POW_GAUSS: {
 		int ammo = objP->cType.powerupInfo.count;
 
-		bUsed = PickupPrimary ((objP->id == POW_VULCAN_WEAPON) ? VULCAN_INDEX : GAUSS_INDEX, nPlayer);
+		bUsed = PickupPrimary ((objP->id == POW_VULCAN) ? VULCAN_INDEX : GAUSS_INDEX, nPlayer);
 
 		//didn't get the weapon (because we already have it), but
 		//maybe snag some of the ammo.  if single-tPlayer, grab all the ammo
@@ -552,7 +552,7 @@ switch (objP->id) {
 		if (ammo > 0) {
 			int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, ammo, nPlayer);
 			objP->cType.powerupInfo.count -= nAmmoUsed;
-			if (LOCALPLAYER (nPlayer)) {
+			if (ISLOCALPLAYER (nPlayer)) {
 				if (!bUsed && nAmmoUsed) {
 					PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
 					bSpecialUsed = 1;
@@ -565,37 +565,37 @@ switch (objP->id) {
 		break;
 		}
 
-	case	POW_SPREADFIRE_WEAPON:
+	case POW_SPREADFIRE:
 		bUsed = PickupPrimary (SPREADFIRE_INDEX, nPlayer);
 		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_PLASMA_WEAPON:
+	case POW_PLASMA:
 		bUsed = PickupPrimary (PLASMA_INDEX, nPlayer);
 		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_FUSION_WEAPON:
+	case POW_FUSION:
 		bUsed = PickupPrimary (FUSION_INDEX, nPlayer);
 		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_HELIX_WEAPON:
+	case POW_HELIX:
 		bUsed = PickupPrimary (HELIX_INDEX, nPlayer);
 		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_PHOENIX_WEAPON:
+	case POW_PHOENIX:
 		bUsed = PickupPrimary (PHOENIX_INDEX, nPlayer);
 		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_OMEGA_WEAPON:
+	case POW_OMEGA:
 		bUsed = PickupPrimary (OMEGA_INDEX, nPlayer);
 		if (bUsed)
 			xOmegaCharge = objP->cType.powerupInfo.count;
@@ -603,66 +603,66 @@ switch (objP->id) {
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case	POW_PROXIMITY_WEAPON:
+	case POW_PROXMINE:
 		bUsed = PickupSecondary (objP, PROXIMITY_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_SMARTBOMB_WEAPON:
+	case POW_SMARTMSL:
 		bUsed = PickupSecondary (objP, SMART_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_MEGA_WEAPON:
+	case POW_MEGAMSL:
 		bUsed = PickupSecondary (objP, MEGA_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_SMISSILE1_1:
-		bUsed = PickupSecondary (objP, SMISSILE1_INDEX, 1, nPlayer);
+	case POW_FLASHMSL_1:
+		bUsed = PickupSecondary (objP, FLASHMSL_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_SMISSILE1_4:
-		bUsed = PickupSecondary (objP, SMISSILE1_INDEX, 4, nPlayer);
+	case POW_FLASHMSL_4:
+		bUsed = PickupSecondary (objP, FLASHMSL_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_GUIDED_MISSILE_1:
+	case POW_GUIDEDMSL_1:
 		bUsed = PickupSecondary (objP, GUIDED_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_GUIDED_MISSILE_4:
+	case POW_GUIDEDMSL_4:
 		bUsed = PickupSecondary (objP, GUIDED_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_SMART_MINE:
+	case POW_SMARTMINE:
 		bUsed = PickupSecondary (objP, SMART_MINE_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_MERCURY_MISSILE_1:
+	case POW_MERCURYMSL_1:
 		bUsed = PickupSecondary (objP, SMISSILE4_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_MERCURY_MISSILE_4:
+	case POW_MERCURYMSL_4:
 		bUsed = PickupSecondary (objP, SMISSILE4_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_EARTHSHAKER_MISSILE:
+	case POW_EARTHSHAKER:
 		bUsed = PickupSecondary (objP, SMISSILE5_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_VULCAN_AMMO:
+	case POW_VULCAN_AMMO:
 		bUsed = PickUpVulcanAmmo (nPlayer);
 		break;
 
-	case	POW_HOMING_AMMO_1:
+	case POW_HOMINGMSL_1:
 		bUsed = PickupSecondary (objP, HOMING_INDEX, 1, nPlayer);
 		break;
 
-	case	POW_HOMING_AMMO_4:
+	case POW_HOMINGMSL_4:
 		bUsed = PickupSecondary (objP, HOMING_INDEX, 4, nPlayer);
 		break;
 
-	case	POW_CLOAK:
+	case POW_CLOAK:
 		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
 			if (playerP->nCloaks == 255) {
-				if (LOCALPLAYER (nPlayer))
+				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}
 			else {
@@ -675,10 +675,10 @@ switch (objP->id) {
 			}
 		break;
 
-	case	POW_INVULNERABILITY:
+	case POW_INVULNERABILITY:
 		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
 			if (playerP->nInvuls == 255) {
-				if (LOCALPLAYER (nPlayer))
+				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}
 			else {
@@ -708,7 +708,7 @@ switch (objP->id) {
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) ? 1 : 0;
 		break;
 
-	case POW_SUPER_LASER:
+	case POW_SUPERLASER:
 		if (playerP->laserLevel >= MAX_SUPER_LASER_LEVEL) {
 			playerP->laserLevel = MAX_SUPER_LASER_LEVEL;
 			HUDInitMessage (TXT_LASER_MAXEDOUT);
@@ -719,7 +719,7 @@ switch (objP->id) {
 			if (playerP->laserLevel <= MAX_LASER_LEVEL)
 				playerP->laserLevel = MAX_LASER_LEVEL;
 			playerP->laserLevel++;
-			if (LOCALPLAYER (nPlayer)) {
+			if (ISLOCALPLAYER (nPlayer)) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordLaserLevel (nOldLevel, playerP->laserLevel);
 				PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, playerP->laserLevel + 1, nPlayer);
@@ -733,7 +733,7 @@ switch (objP->id) {
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
-	case POW_AMMO_RACK:
+	case POW_AMMORACK:
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) ? 1 : 0;
 		break;
 
@@ -750,7 +750,7 @@ switch (objP->id) {
 		HUDInitMessage (szTemp);
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 		if (bUsed < 0) {
-			if (LOCALPLAYER (nPlayer)) {
+			if (ISLOCALPLAYER (nPlayer)) {
 				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0) || EGI_FLAG (bHeadLights, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 				if (gameData.app.nGameMode & GM_MULTI)
@@ -760,18 +760,18 @@ switch (objP->id) {
 			}
 		break;
 
-	case POW_FLAG_BLUE:
+	case POW_BLUEFLAG:
 		bUsed = PickupFlag (objP, TEAM_BLUE, TEAM_RED, "BLUE FLAG!", nPlayer);
 		break;
 
-	case POW_FLAG_RED:
+	case POW_REDFLAG:
 		bUsed = PickupFlag (objP, TEAM_RED, TEAM_BLUE, "RED FLAG!", nPlayer);
 		break;
 
 	case POW_HOARD_ORB:
 		if (gameData.app.nGameMode & GM_HOARD) {	
 			if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 12) {
-				if (LOCALPLAYER (nPlayer)) {
+				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 					}
@@ -790,7 +790,7 @@ switch (objP->id) {
 				}
 			else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
 						(playerP->secondaryAmmo [PROXIMITY_INDEX] < playerP->secondaryAmmo [SMART_MINE_INDEX])) {
-				if (LOCALPLAYER (nPlayer)) {
+				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 					}
@@ -844,113 +844,155 @@ if (nLeft) {	//leave powerups that cannot be picked up in mine
 char powerupToWeapon [MAX_POWERUP_TYPES];
 char powerupToWeaponCount [MAX_POWERUP_TYPES];
 char powerupClass [MAX_POWERUP_TYPES];
+char powerupToObject [MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void)
 {
 memset (powerupToWeapon, 0xff, sizeof (powerupToWeapon));
 
 powerupToWeapon [POW_LASER] = LASER_INDEX;
-powerupToWeapon [POW_VULCAN_WEAPON] = VULCAN_INDEX;
-powerupToWeapon [POW_SPREADFIRE_WEAPON] = SPREADFIRE_INDEX;
-powerupToWeapon [POW_PLASMA_WEAPON] = PLASMA_INDEX;
-powerupToWeapon [POW_FUSION_WEAPON] = FUSION_INDEX;
-powerupToWeapon [POW_GAUSS_WEAPON] = GAUSS_INDEX;
-powerupToWeapon [POW_HELIX_WEAPON] = HELIX_INDEX;
-powerupToWeapon [POW_PHOENIX_WEAPON] = PHOENIX_INDEX;
-powerupToWeapon [POW_OMEGA_WEAPON] = OMEGA_INDEX;
-powerupToWeapon [POW_SUPER_LASER] = SUPER_LASER_INDEX;
-powerupToWeapon [POW_MISSILE_1] = CONCUSSION_INDEX;
-powerupToWeapon [POW_MISSILE_4] = CONCUSSION_INDEX;
-powerupToWeapon [POW_PROXIMITY_WEAPON] = PROXIMITY_INDEX;
-powerupToWeapon [POW_SMARTBOMB_WEAPON] = SMART_INDEX;
-powerupToWeapon [POW_MEGA_WEAPON] = MEGA_INDEX;
-powerupToWeapon [POW_SMISSILE1_1] = SMISSILE1_INDEX;
-powerupToWeapon [POW_SMISSILE1_4] = SMISSILE1_INDEX;
-powerupToWeapon [POW_GUIDED_MISSILE_1] = GUIDED_INDEX;
-powerupToWeapon [POW_GUIDED_MISSILE_4] = GUIDED_INDEX;
-powerupToWeapon [POW_SMART_MINE] = SMART_MINE_INDEX;
-powerupToWeapon [POW_MERCURY_MISSILE_1] = SMISSILE4_INDEX;
-powerupToWeapon [POW_MERCURY_MISSILE_4] = SMISSILE4_INDEX;
-powerupToWeapon [POW_EARTHSHAKER_MISSILE] = SMISSILE5_INDEX;
-powerupToWeapon [POW_HOMING_AMMO_1] = HOMING_INDEX;
-powerupToWeapon [POW_HOMING_AMMO_4] = HOMING_INDEX;
+powerupToWeapon [POW_VULCAN] = VULCAN_INDEX;
+powerupToWeapon [POW_SPREADFIRE] = SPREADFIRE_INDEX;
+powerupToWeapon [POW_PLASMA] = PLASMA_INDEX;
+powerupToWeapon [POW_FUSION] = FUSION_INDEX;
+powerupToWeapon [POW_GAUSS] = GAUSS_INDEX;
+powerupToWeapon [POW_HELIX] = HELIX_INDEX;
+powerupToWeapon [POW_PHOENIX] = PHOENIX_INDEX;
+powerupToWeapon [POW_OMEGA] = OMEGA_INDEX;
+powerupToWeapon [POW_SUPERLASER] = SUPER_LASER_INDEX;
+powerupToWeapon [POW_CONCUSSION_1] = CONCUSSION_INDEX;
+powerupToWeapon [POW_CONCUSSION_4] = CONCUSSION_INDEX;
+powerupToWeapon [POW_PROXMINE] = PROXIMITY_INDEX;
+powerupToWeapon [POW_SMARTMSL] = SMART_INDEX;
+powerupToWeapon [POW_MEGAMSL] = MEGA_INDEX;
+powerupToWeapon [POW_FLASHMSL_1] = FLASHMSL_INDEX;
+powerupToWeapon [POW_FLASHMSL_4] = FLASHMSL_INDEX;
+powerupToWeapon [POW_GUIDEDMSL_1] = GUIDED_INDEX;
+powerupToWeapon [POW_GUIDEDMSL_4] = GUIDED_INDEX;
+powerupToWeapon [POW_SMARTMINE] = SMART_MINE_INDEX;
+powerupToWeapon [POW_MERCURYMSL_1] = SMISSILE4_INDEX;
+powerupToWeapon [POW_MERCURYMSL_4] = SMISSILE4_INDEX;
+powerupToWeapon [POW_EARTHSHAKER] = SMISSILE5_INDEX;
+powerupToWeapon [POW_HOMINGMSL_1] = HOMING_INDEX;
+powerupToWeapon [POW_HOMINGMSL_4] = HOMING_INDEX;
 
 memset (powerupToWeaponCount, 0, sizeof (powerupToWeaponCount));
 
 powerupToWeaponCount [POW_LASER] = 
-powerupToWeaponCount [POW_VULCAN_WEAPON] = 
-powerupToWeaponCount [POW_SPREADFIRE_WEAPON] = 
-powerupToWeaponCount [POW_PLASMA_WEAPON] = 
-powerupToWeaponCount [POW_FUSION_WEAPON] = 
-powerupToWeaponCount [POW_GAUSS_WEAPON] = 
-powerupToWeaponCount [POW_HELIX_WEAPON] = 
-powerupToWeaponCount [POW_PHOENIX_WEAPON] = 
-powerupToWeaponCount [POW_OMEGA_WEAPON] = 
-powerupToWeaponCount [POW_SUPER_LASER] = 1;
+powerupToWeaponCount [POW_VULCAN] = 
+powerupToWeaponCount [POW_SPREADFIRE] = 
+powerupToWeaponCount [POW_PLASMA] = 
+powerupToWeaponCount [POW_FUSION] = 
+powerupToWeaponCount [POW_GAUSS] = 
+powerupToWeaponCount [POW_HELIX] = 
+powerupToWeaponCount [POW_PHOENIX] = 
+powerupToWeaponCount [POW_OMEGA] = 
+powerupToWeaponCount [POW_SUPERLASER] = 1;
 
 powerupToWeaponCount [POW_CLOAK] = 
 powerupToWeaponCount [POW_TURBO] = 
 powerupToWeaponCount [POW_INVULNERABILITY] = 
 powerupToWeaponCount [POW_FULL_MAP] = 
 powerupToWeaponCount [POW_CONVERTER] = 
-powerupToWeaponCount [POW_AMMO_RACK] = 
+powerupToWeaponCount [POW_AMMORACK] = 
 powerupToWeaponCount [POW_AFTERBURNER] = 
 powerupToWeaponCount [POW_HEADLIGHT] = 1;
 
-powerupToWeaponCount [POW_MISSILE_1] = 
-powerupToWeaponCount [POW_SMARTBOMB_WEAPON] = 
-powerupToWeaponCount [POW_MEGA_WEAPON] = 
-powerupToWeaponCount [POW_SMISSILE1_1] = 
-powerupToWeaponCount [POW_GUIDED_MISSILE_1] = 
-powerupToWeaponCount [POW_MERCURY_MISSILE_1] = 
-powerupToWeaponCount [POW_EARTHSHAKER_MISSILE] = 
-powerupToWeaponCount [POW_HOMING_AMMO_1] = 1;
+powerupToWeaponCount [POW_CONCUSSION_1] = 
+powerupToWeaponCount [POW_SMARTMSL] = 
+powerupToWeaponCount [POW_MEGAMSL] = 
+powerupToWeaponCount [POW_FLASHMSL_1] = 
+powerupToWeaponCount [POW_GUIDEDMSL_1] = 
+powerupToWeaponCount [POW_MERCURYMSL_1] = 
+powerupToWeaponCount [POW_EARTHSHAKER] = 
+powerupToWeaponCount [POW_HOMINGMSL_1] = 1;
 
-powerupToWeaponCount [POW_MISSILE_4] = 
-powerupToWeaponCount [POW_PROXIMITY_WEAPON] = 
-powerupToWeaponCount [POW_SMISSILE1_4] = 
-powerupToWeaponCount [POW_GUIDED_MISSILE_4] = 
-powerupToWeaponCount [POW_SMART_MINE] = 
-powerupToWeaponCount [POW_MERCURY_MISSILE_4] = 
-powerupToWeaponCount [POW_HOMING_AMMO_4] = 4;
+powerupToWeaponCount [POW_CONCUSSION_4] = 
+powerupToWeaponCount [POW_PROXMINE] = 
+powerupToWeaponCount [POW_FLASHMSL_4] = 
+powerupToWeaponCount [POW_GUIDEDMSL_4] = 
+powerupToWeaponCount [POW_SMARTMINE] = 
+powerupToWeaponCount [POW_MERCURYMSL_4] = 
+powerupToWeaponCount [POW_HOMINGMSL_4] = 4;
 
 memset (powerupClass, 0, sizeof (powerupClass));
 powerupClass [POW_LASER] = 
-powerupClass [POW_VULCAN_WEAPON] =
-powerupClass [POW_SPREADFIRE_WEAPON] =
-powerupClass [POW_PLASMA_WEAPON] =
-powerupClass [POW_FUSION_WEAPON] =
-powerupClass [POW_GAUSS_WEAPON] =
-powerupClass [POW_HELIX_WEAPON] =
-powerupClass [POW_PHOENIX_WEAPON] =
-powerupClass [POW_OMEGA_WEAPON] =
-powerupClass [POW_SUPER_LASER] = 1;
+powerupClass [POW_VULCAN] =
+powerupClass [POW_SPREADFIRE] =
+powerupClass [POW_PLASMA] =
+powerupClass [POW_FUSION] =
+powerupClass [POW_GAUSS] =
+powerupClass [POW_HELIX] =
+powerupClass [POW_PHOENIX] =
+powerupClass [POW_OMEGA] =
+powerupClass [POW_SUPERLASER] = 1;
 
-powerupClass [POW_MISSILE_1] = 
-powerupClass [POW_MISSILE_4] = 
-powerupClass [POW_PROXIMITY_WEAPON] =
-powerupClass [POW_SMARTBOMB_WEAPON] =
-powerupClass [POW_MEGA_WEAPON] =
-powerupClass [POW_SMISSILE1_1] = 
-powerupClass [POW_SMISSILE1_4] =
-powerupClass [POW_GUIDED_MISSILE_1] =
-powerupClass [POW_GUIDED_MISSILE_4] = 
-powerupClass [POW_SMART_MINE] = 
-powerupClass [POW_MERCURY_MISSILE_1] = 
-powerupClass [POW_MERCURY_MISSILE_4] =
-powerupClass [POW_EARTHSHAKER_MISSILE] =
-powerupClass [POW_HOMING_AMMO_1] = 
-powerupClass [POW_HOMING_AMMO_4] = 2;
+powerupClass [POW_CONCUSSION_1] = 
+powerupClass [POW_CONCUSSION_4] = 
+powerupClass [POW_PROXMINE] =
+powerupClass [POW_SMARTMSL] =
+powerupClass [POW_MEGAMSL] =
+powerupClass [POW_FLASHMSL_1] = 
+powerupClass [POW_FLASHMSL_4] =
+powerupClass [POW_GUIDEDMSL_1] =
+powerupClass [POW_GUIDEDMSL_4] = 
+powerupClass [POW_SMARTMINE] = 
+powerupClass [POW_MERCURYMSL_1] = 
+powerupClass [POW_MERCURYMSL_4] =
+powerupClass [POW_EARTHSHAKER] =
+powerupClass [POW_HOMINGMSL_1] = 
+powerupClass [POW_HOMINGMSL_4] = 2;
 
-powerupClass [POW_QUAD_FIRE] = 
+powerupClass [POW_QUADLASER] = 
 powerupClass [POW_CLOAK] = 
 powerupClass [POW_TURBO] = 
 powerupClass [POW_INVULNERABILITY] = 
 powerupClass [POW_FULL_MAP] = 
 powerupClass [POW_CONVERTER] = 
-powerupClass [POW_AMMO_RACK] = 
+powerupClass [POW_AMMORACK] = 
 powerupClass [POW_AFTERBURNER] = 
 powerupClass [POW_HEADLIGHT] = 3;
+
+memset (powerupToObject, 0xff, sizeof (powerupToObject));
+#if 0 //no 3D models available
+powerupToObject [POW_LASER] = LASER_ID;
+powerupToObject [POW_VULCAN] = VULCAN_ID;
+powerupToObject [POW_SPREADFIRE] = SPREADFIRE_ID;
+powerupToObject [POW_PLASMA] = PLASMA_ID;
+powerupToObject [POW_FUSION] = FUSION_ID;
+powerupToObject [POW_GAUSS] = GAUSS_ID;
+powerupToObject [POW_HELIX] = HELIX_ID;
+powerupToObject [POW_PHOENIX] = PHOENIX_ID;
+powerupToObject [POW_OMEGA] = OMEGA_ID;
+powerupToObject [POW_SUPERLASER] = SUPERLASER_ID;
+#endif
+powerupToObject [POW_CONCUSSION_1] = CONCUSSION_ID;
+#if 0 //no 3D models available
+powerupToObject [POW_CONCUSSION_4] = CONCUSSION_ID;
+#endif
+#if 0 //no 3D models available
+powerupToObject [POW_PROXMINE] = PROXMINE_ID;
+#endif
+powerupToObject [POW_SMARTMSL] = SMARTMSL_ID;
+powerupToObject [POW_MEGAMSL] = MEGAMSL_ID;
+powerupToObject [POW_FLASHMSL_1] = FLASHMSL_ID;
+#if 0 //no 3D models available
+powerupToObject [POW_FLASHMSL_4] = FLASHMSL_ID;
+#endif
+powerupToObject [POW_GUIDEDMSL_1] = GUIDEDMSL_ID;
+#if 0 //no 3D models available
+powerupToObject [POW_GUIDEDMSL_4] = GUIDEDMSL_ID;
+powerupToObject [POW_SMARTMINE] = SMARTMINE_ID;
+#endif
+powerupToObject [POW_MERCURYMSL_1] = MERCURYMSL_ID;
+#if 0 //no 3D models available
+powerupToObject [POW_MERCURYMSL_4] = MERCURYMSL_ID;
+#endif
+powerupToObject [POW_EARTHSHAKER] = EARTHSHAKER_ID;
+powerupToObject [POW_HOMINGMSL_1] = HOMINGMSL_ID;
+#if 0 //no 3D models available
+powerupToObject [POW_HOMINGMSL_4] = HOMINGMSL_ID;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -973,6 +1015,13 @@ return powerupClass [nPowerup];
 char PowerupToWeaponCount (short nPowerup)
 {
 return powerupToWeaponCount [nPowerup];
+}
+
+//-----------------------------------------------------------------------------
+
+char PowerupToObject (short nPowerup)
+{
+return powerupToObject [nPowerup];
 }
 
 //-----------------------------------------------------------------------------

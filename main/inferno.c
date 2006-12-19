@@ -607,7 +607,7 @@ if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
 #else
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #endif
-sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir,/* *gameFolders.szGameDir ? "/" :*/ "", BASE_MISSION_DIR);
+sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir,/* *gameFolders.szGameDir ? "/" :*/ "", BASEMSLION_DIR);
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (Args [i + 1]);
 }
@@ -1122,6 +1122,8 @@ if (i) {
 	gameOptions [1].render.smoke.bDisperse = 0;
 	gameOptions [1].render.smoke.bSort = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
+	gameOptions [1].render.powerups.b3D = 0;
+	gameOptions [1].render.powerups.bSpin = 0;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -1207,6 +1209,8 @@ else {
 	gameOptions [0].render.smoke.bDisperse = 0;
 	gameOptions [0].render.smoke.bSort = 0;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
+	gameOptions [0].render.powerups.b3D = 0;
+	gameOptions [0].render.powerups.bSpin = 0;
 	}
 }
 

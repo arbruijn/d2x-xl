@@ -334,8 +334,8 @@ else
 	nParts = MSL_MAX_PARTS;
 #else
 	nParts = (objP->id == EARTHSHAKER_ID) ? 1500 : 
-				(objP->id == MEGA_ID) ? 1400 : 
-				(objP->id == SMART_ID) ? 1300 : 
+				(objP->id == MEGAMSL_ID) ? 1400 : 
+				(objP->id == SMARTMSL_ID) ? 1300 : 
 				1200;
 #endif
 if (nParts) {

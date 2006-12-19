@@ -180,6 +180,11 @@ typedef struct tShadowOptions {
 	int bReactors;
 	} tShadowOptions;
 
+typedef struct tPowerupOptions {
+	int b3D;
+	int bSpin;
+} tPowerupOptions;
+
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int bAutomapAlwaysHires;
@@ -207,6 +212,7 @@ typedef struct tRenderOptions {
 	tWeaponIconOptions weaponIcons;
 	tSmokeOptions smoke;
 	tShadowOptions shadows;
+	tPowerupOptions powerups;
 } tRenderOptions;
 
 typedef struct tOglOptions {
@@ -1347,10 +1353,10 @@ typedef struct tMissionData {
 	int					nD1BuiltinHogSize;
 	char					szBuiltinMissionFilename [9];
 	char					szD1BuiltinMissionFilename [9];
-	mle					list [MAX_MISSIONS + 1];
-	char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
-	char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
-	int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
+	mle					list [MAXMSLIONS + 1];
+	char					szLevelNames [MAX_LEVELS_PERMSLION][FILENAME_LEN];
+	char					szSecretLevelNames [MAX_SECRET_LEVELS_PERMSLION][FILENAME_LEN];
+	int					secretLevelTable [MAX_SECRET_LEVELS_PERMSLION];
 } tMissionData;
 
 #define N_MAX_ROOMS	128
@@ -1791,7 +1797,9 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 #define	CLAMP(_val,_minVal,_maxVal)	\
 			{if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
-#define LOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
+#define LOCALPLAYER	gameData.multi.players [gameData.multi.nLocalPlayer]
+
+#define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
 
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 

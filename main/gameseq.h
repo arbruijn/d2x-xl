@@ -176,7 +176,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "mission.h"
 
-#define SUPER_MISSILE       0
+#define SUPERMSL       0
 #define SUPER_SEEKER        1
 #define SUPER_SMARTBOMB     2
 #define SUPER_SHOCKWAVE     3

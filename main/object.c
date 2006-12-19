@@ -1252,9 +1252,9 @@ else {
 	fPulse = (float) nPulse / 10.0f;
 	if (objP->id == EARTHSHAKER_ID)
 		fSize = 1.0f;
-	else if ((objP->id == MEGA_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
+	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
 		fSize = 0.8f;
-	else if (objP->id == SMART_ID)
+	else if (objP->id == SMARTMSL_ID)
 		fSize = 0.6f;
 	else
 		fSize = 0.5f;
@@ -1526,6 +1526,33 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 
 // -----------------------------------------------------------------------------
 
+void ConvertPowerupToWeapon (tObject *objP)
+{
+if (objP->controlType != CT_WEAPON) {
+	vmsAngVec	a;
+
+	memset (&objP->rType, 0, sizeof (objP->rType));
+	a.p = (rand () % F1_0) - F1_0 / 2;
+	a.b = (rand () % F1_0) - F1_0 / 2;
+	a.h = (rand () % F1_0) - F1_0 / 2;
+	VmAngles2Matrix (&objP->position.mOrient, &a);
+	objP->mType.physInfo.rotVel.x = 0;
+	objP->mType.physInfo.rotVel.y = 
+	objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.bSpin ? F1_0 / 2 : 0;
+	objP->controlType = CT_WEAPON;
+	objP->renderType = RT_POLYOBJ;
+	objP->movementType = MT_PHYSICS;
+	objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+								gameData.weapons.info [objP->id].po_len_to_width_ratio);
+	objP->rType.polyObjInfo.nTexOverride = -1;
+	objP->lifeleft = IMMORTAL_TIME;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 void RenderObject (tObject *objP, int nWindowNum)
@@ -1616,6 +1643,12 @@ switch (objP->renderType) {
 				}
 			else if (objP->nType == OBJ_CNTRLCEN)
 				RenderTargetIndicator (objP, NULL);
+			else if (objP->nType == OBJ_POWERUP) {
+				if (gameOpts->render.powerups.bSpin != 
+					 ((objP->mType.physInfo.rotVel.y | objP->mType.physInfo.rotVel.z) != 0))
+					objP->mType.physInfo.rotVel.y = 
+					objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.bSpin ? F1_0 / 2 : 0;
+				}
 			}
 		break;
 
@@ -1649,9 +1682,22 @@ switch (objP->renderType) {
 			DrawHostage (objP); 
 		break;
 
-	case RT_POWERUP: 
-		if (gameStates.render.nShadowPass != 2)
-			DrawPowerup (objP); 
+	case RT_POWERUP: {
+		short	nId = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
+		if (nId < 0) {
+			if (gameStates.render.nShadowPass != 2)
+				DrawPowerup (objP); 
+			}
+		else {
+			ubyte nIdSave = objP->id;
+			objP->nType = OBJ_WEAPON;
+			objP->id = (ubyte) nId;
+			ConvertPowerupToWeapon (objP);
+			DrawPolygonObject (objP);
+			objP->nType = OBJ_POWERUP;
+			objP->id = nIdSave;
+			}
+		}
 		break;
 
 	case RT_LASER: 
@@ -1731,7 +1777,7 @@ ResetPlayerObject ();
 void InitIdToOOF (void)
 {
 memset (idToOOF, 0, sizeof (idToOOF));
-idToOOF [MEGA_ID] = OOF_MEGA;
+idToOOF [MEGAMSL_ID] = OOF_MEGA;
 }
 
 //------------------------------------------------------------------------------
@@ -2190,7 +2236,7 @@ objP->renderType = rType;
 objP->containsType = -1;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (id == POW_HOARD_ORB))
 	objP->lifeleft = (extraGameInfo [1].entropy.nVirusLifespan <= 0) ? 
-									IMMORTAL_TIME : i2f (extraGameInfo [1].entropy.nVirusLifespan);
+							IMMORTAL_TIME : i2f (extraGameInfo [1].entropy.nVirusLifespan);
 else
 	objP->lifeleft = IMMORTAL_TIME;		//assume immortal
 objP->attachedObj = -1;
@@ -2286,7 +2332,7 @@ Assert (objP->nType != OBJ_NONE);
 Assert (objP != gameData.objs.console);
 if (objP->nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);
-	if (objP->id == GUIDEDMISS_ID) {
+	if (objP->id == GUIDEDMSL_ID) {
 		pnum=gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
 		if (pnum!=gameData.multi.nLocalPlayer)
 			gameData.objs.guidedMissile [pnum]=NULL;
@@ -3051,7 +3097,7 @@ if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
 	if (objP->lifeleft != ONE_FRAME_TIME)
 		if (gameData.time.xFrame != F1_0)
 			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
-}
+	}
 
 gameStates.render.bDropAfterburnerBlob = 0;
 if (HandleObjectControl (objP))
@@ -3280,7 +3326,7 @@ void clear_transientObjects (int clear_all)
 	tObject *objP;
 
 	for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++)
-		if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXIMITY_ID) && (objP->id != SUPERPROX_ID)))) ||
+		if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID)))) ||
 			   objP->nType == OBJ_FIREBALL ||
 			   objP->nType == OBJ_DEBRIS ||
 			   objP->nType == OBJ_DEBRIS ||
@@ -3567,21 +3613,21 @@ void InitWeaponFlags (void)
 {
 memset (bIsMissile, 0, sizeof (bIsMissile));
 bIsMissile [CONCUSSION_ID] =
-bIsMissile [HOMING_ID] =
-bIsMissile [SMART_ID] =
-bIsMissile [MEGA_ID] =
-bIsMissile [FLASH_ID] =
-bIsMissile [GUIDEDMISS_ID] =
-bIsMissile [MERCURY_ID] =
+bIsMissile [HOMINGMSL_ID] =
+bIsMissile [SMARTMSL_ID] =
+bIsMissile [MEGAMSL_ID] =
+bIsMissile [FLASHMSL_ID] =
+bIsMissile [GUIDEDMSL_ID] =
+bIsMissile [MERCURYMSL_ID] =
 bIsMissile [EARTHSHAKER_ID] =
 bIsMissile [EARTHSHAKER_MEGA_ID] =
-bIsMissile [REGULAR_MECH_MISS_ID] =
-bIsMissile [SUPER_MECH_MISS_ID] =
-bIsMissile [ROBOT_FLASHMISS_ID] =
-bIsMissile [ROBOT_MERCURY_ID] =
-bIsMissile [ROBOT_VERTIGO_FLASHMISS_ID] =
-bIsMissile [ROBOT_SMART_ID] =
-bIsMissile [ROBOT_MEGA_ID] =
+bIsMissile [REGULAR_MECHMSL_ID] =
+bIsMissile [SUPER_MECHMSL_ID] =
+bIsMissile [ROBOT_FLASHMSL_ID] =
+bIsMissile [ROBOT_MERCURYMSL_ID] =
+bIsMissile [ROBOT_VERTIGO_FLASHMSL_ID] =
+bIsMissile [ROBOT_SMARTMSL_ID] =
+bIsMissile [ROBOT_MEGAMSL_ID] =
 bIsMissile [ROBOT_EARTHSHAKER_ID] =
 bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
@@ -3595,16 +3641,16 @@ bIsWeapon [LASER_ID + 3] =
 bIsWeapon [SPREADFIRE_ID] =
 bIsWeapon [PLASMA_ID] =
 bIsWeapon [FUSION_ID] =
-bIsWeapon [SUPER_LASER_ID] =
-bIsWeapon [SUPER_LASER_ID + 1] =
+bIsWeapon [SUPERLASER_ID] =
+bIsWeapon [SUPERLASER_ID + 1] =
 bIsWeapon [HELIX_ID] =
 bIsWeapon [PHOENIX_ID] =
 bIsWeapon [OMEGA_ID] =
 bIsWeapon [ROBOT_PLASMA_ID] =
 bIsWeapon [ROBOT_PHOENIX_ID] =
 bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
-bIsWeapon [ROBOT_VERTIGO_FLASHMISS_ID] =
-bIsWeapon [ROBOT_VERTIGO_FLASHMISS_ID + 1] =
+bIsWeapon [ROBOT_VERTIGO_FLASHMSL_ID] =
+bIsWeapon [ROBOT_VERTIGO_FLASHMSL_ID + 1] =
 bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =
 bIsWeapon [ROBOT_VERTIGO_PHOENIX_ID] =
 bIsWeapon [ROBOT_HELIX_ID] =

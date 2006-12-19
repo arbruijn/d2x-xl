@@ -217,7 +217,7 @@ if (objP->nType == OBJ_WEAPON)	{
 		objP->id = 0;
 		Assert(objP->renderType != RT_POLYOBJ);
 		}
-	if (objP->id == PMINE_ID) {		//make sure pmines have correct values
+	if (objP->id == SMALLMINE_ID) {		//make sure pmines have correct values
 		objP->mType.physInfo.mass = gameData.weapons.info[objP->id].mass;
 		objP->mType.physInfo.drag = gameData.weapons.info[objP->id].drag;
 		objP->mType.physInfo.flags |= PF_FREE_SPINNING;
@@ -446,13 +446,13 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 			else
 				objP->cType.powerupInfo.count = 1;
 
-			if (objP->id == POW_VULCAN_WEAPON)
+			if (objP->id == POW_VULCAN)
 					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 
-			if (objP->id == POW_GAUSS_WEAPON)
+			if (objP->id == POW_GAUSS)
 					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 
-			if (objP->id == POW_OMEGA_WEAPON)
+			if (objP->id == POW_OMEGA)
 					objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 
 			break;

@@ -967,7 +967,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) &&
 			 (t != OBJ_CNTRLCEN) && (t != OBJ_GHOST) &&
 			 (t != OBJ_ROBOT) && (t != OBJ_HOSTAGE) &&
-			 ((t != OBJ_WEAPON) || (gameData.objs.objects [i].id != PMINE_ID)))
+			 ((t != OBJ_WEAPON) || (gameData.objs.objects [i].id != SMALLMINE_ID)))
 			continue;
 		if ((networkData.bSendObjectMode == 0) && 
 			 ((multiData.nObjOwner [i] != -1) && (multiData.nObjOwner [i] != player_num)))
@@ -4322,9 +4322,9 @@ forceP [6].nForce = 30;
 forceP [7].nWeaponId = FUSION_ID; 
 forceP [7].nForce = 100;
 // primary "super" weapons
-forceP [8].nWeaponId = SUPER_LASER_ID; 
+forceP [8].nWeaponId = SUPERLASER_ID; 
 forceP [8].nForce = 50;
-forceP [9].nWeaponId = SUPER_LASER_ID + 1; 
+forceP [9].nWeaponId = SUPERLASER_ID + 1; 
 forceP [9].nForce = 60;
 forceP [10].nWeaponId = HELIX_ID; 
 forceP [10].nForce = 40;
@@ -4339,18 +4339,18 @@ forceP [14].nForce = 5;
 // missiles
 forceP [15].nWeaponId = CONCUSSION_ID; 
 forceP [15].nForce = 50;
-forceP [16].nWeaponId = HOMING_ID; 
+forceP [16].nWeaponId = HOMINGMSL_ID; 
 forceP [16].nForce = 50;
-forceP [17].nWeaponId = SMART_ID; 
+forceP [17].nWeaponId = SMARTMSL_ID; 
 forceP [17].nForce = 80;
-forceP [18].nWeaponId = MEGA_ID; 
+forceP [18].nWeaponId = MEGAMSL_ID; 
 forceP [18].nForce = 150;
 // "super" missiles
-forceP [19].nWeaponId = FLASH_ID; 
+forceP [19].nWeaponId = FLASHMSL_ID; 
 forceP [19].nForce = 30;
-forceP [20].nWeaponId = GUIDEDMISS_ID; 
+forceP [20].nWeaponId = GUIDEDMSL_ID; 
 forceP [20].nForce = 40;
-forceP [21].nWeaponId = MERCURY_ID; 
+forceP [21].nWeaponId = MERCURYMSL_ID; 
 forceP [21].nForce = 70;
 forceP [22].nWeaponId = EARTHSHAKER_ID; 
 forceP [22].nForce = 200;

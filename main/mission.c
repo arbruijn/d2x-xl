@@ -66,8 +66,8 @@ int load_mission_d1(int mission_num)
 	gameStates.app.szCurrentMission = gameData.missions.list [mission_num].mission_name;
 
 	switch (gameData.missions.nD1BuiltinHogSize) {
-	case D1_SHAREWARE_MISSION_HOGSIZE:
-	case D1_SHAREWARE_10_MISSION_HOGSIZE:
+	case D1_SHAREWAREMSLION_HOGSIZE:
+	case D1_SHAREWARE_10MSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 0;
 
 		gameData.missions.nLastLevel = 7;
@@ -78,7 +78,7 @@ int load_mission_d1(int mission_num)
 			sprintf(gameData.missions.szLevelNames [i], "level%02d.sdl", i+1);
 
 		break;
-	case D1_MAC_SHARE_MISSION_HOGSIZE:
+	case D1_MAC_SHAREMSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 0;
 
 		gameData.missions.nLastLevel = 3;
@@ -89,8 +89,8 @@ int load_mission_d1(int mission_num)
 			sprintf(gameData.missions.szLevelNames [i], "level%02d.sdl", i+1);
 
 		break;
-	case D1_OEM_MISSION_HOGSIZE:
-	case D1_OEM_10_MISSION_HOGSIZE:
+	case D1_OEMMSLION_HOGSIZE:
+	case D1_OEM_10MSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 1;
 
 		gameData.missions.nLastLevel = 15;
@@ -108,11 +108,11 @@ int load_mission_d1(int mission_num)
 		break;
 	default:
 		Int3(); // fall through
-	case D1_MISSION_HOGSIZE:
-	case D1_10_MISSION_HOGSIZE:
-	case D1_15_MISSION_HOGSIZE:
-	case D1_3DFX_MISSION_HOGSIZE:
-	case D1_MAC_MISSION_HOGSIZE:
+	case D1MSLION_HOGSIZE:
+	case D1_10MSLION_HOGSIZE:
+	case D1_15MSLION_HOGSIZE:
+	case D1_3DFXMSLION_HOGSIZE:
+	case D1_MACMSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 3;
 
 		gameData.missions.nLastLevel = BIM_LAST_LEVEL;
@@ -149,7 +149,7 @@ int load_mission_shareware(int mission_num)
 	gameStates.app.szCurrentMission = gameData.missions.list [mission_num].mission_name;
 
 	switch (gameData.missions.nBuiltinHogSize) {
-	case MAC_SHARE_MISSION_HOGSIZE:
+	case MAC_SHAREMSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 1;
 
 		gameData.missions.nLastLevel = 4;
@@ -164,7 +164,7 @@ int load_mission_shareware(int mission_num)
 		break;
 	default:
 		Int3(); // fall through
-	case SHAREWARE_MISSION_HOGSIZE:
+	case SHAREWAREMSLION_HOGSIZE:
 		gameData.missions.nSecretLevels = 0;
 
 		gameData.missions.nLastLevel = 3;
@@ -301,7 +301,7 @@ int ReadMissionFile (char *filename, int count, int location)
 	char	*p, temp [FILENAME_LEN],*t;
 
 switch (location) {
-	case ML_MISSIONDIR:
+	case MLMSLIONDIR:
 	case ML_ALTHOGDIR:
 		strcpy(filename2, gameFolders.szMissionDirs [location]);
 		break;
@@ -384,17 +384,17 @@ void add_d1_builtin_mission_to_list(int *count)
 	gameData.missions.nD1BuiltinHogSize = CFSize("descent.hog",gameFolders.szDataDir, 0);
 
 	switch (gameData.missions.nD1BuiltinHogSize) {
-	case D1_SHAREWARE_MISSION_HOGSIZE:
-	case D1_SHAREWARE_10_MISSION_HOGSIZE:
-	case D1_MAC_SHARE_MISSION_HOGSIZE:
-		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
-		strcpy(gameData.missions.list [*count].mission_name, D1_SHAREWARE_MISSION_NAME);
+	case D1_SHAREWAREMSLION_HOGSIZE:
+	case D1_SHAREWARE_10MSLION_HOGSIZE:
+	case D1_MAC_SHAREMSLION_HOGSIZE:
+		strcpy(gameData.missions.list [*count].filename, D1MSLION_FILENAME);
+		strcpy(gameData.missions.list [*count].mission_name, D1_SHAREWAREMSLION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
-	case D1_OEM_MISSION_HOGSIZE:
-	case D1_OEM_10_MISSION_HOGSIZE:
-		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
-		strcpy(gameData.missions.list [*count].mission_name, D1_OEM_MISSION_NAME);
+	case D1_OEMMSLION_HOGSIZE:
+	case D1_OEM_10MSLION_HOGSIZE:
+		strcpy(gameData.missions.list [*count].filename, D1MSLION_FILENAME);
+		strcpy(gameData.missions.list [*count].mission_name, D1_OEMMSLION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
 	default:
@@ -403,18 +403,18 @@ void add_d1_builtin_mission_to_list(int *count)
 		Int3();
 #endif
 		// fall through
-	case D1_MISSION_HOGSIZE:
-	case D1_10_MISSION_HOGSIZE:
-	case D1_15_MISSION_HOGSIZE:
-	case D1_3DFX_MISSION_HOGSIZE:
-	case D1_MAC_MISSION_HOGSIZE:
-		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
+	case D1MSLION_HOGSIZE:
+	case D1_10MSLION_HOGSIZE:
+	case D1_15MSLION_HOGSIZE:
+	case D1_3DFXMSLION_HOGSIZE:
+	case D1_MACMSLION_HOGSIZE:
+		strcpy(gameData.missions.list [*count].filename, D1MSLION_FILENAME);
 		if (gameOpts->menus.bShowLevelVersion)
-			strcpy(gameData.missions.list [*count].mission_name, "[1] " D1_MISSION_NAME);
+			strcpy(gameData.missions.list [*count].mission_name, "[1] " D1MSLION_NAME);
 		else
-			strcpy(gameData.missions.list [*count].mission_name, D1_MISSION_NAME);
+			strcpy(gameData.missions.list [*count].mission_name, D1MSLION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
-		gameData.missions.list [*count].location = ML_MISSIONDIR;
+		gameData.missions.list [*count].location = MLMSLIONDIR;
 		break;
 	}
 
@@ -453,28 +453,28 @@ if (gameData.missions.nBuiltinHogSize == -1)
 retry:
 
 switch (gameData.missions.nBuiltinHogSize) {
-	case SHAREWARE_MISSION_HOGSIZE:
-	case MAC_SHARE_MISSION_HOGSIZE:
-		strcpy(gameData.missions.list [*count].filename,SHAREWARE_MISSION_FILENAME);
-		strcpy(gameData.missions.list [*count].mission_name,SHAREWARE_MISSION_NAME);
+	case SHAREWAREMSLION_HOGSIZE:
+	case MAC_SHAREMSLION_HOGSIZE:
+		strcpy(gameData.missions.list [*count].filename,SHAREWAREMSLION_FILENAME);
+		strcpy(gameData.missions.list [*count].mission_name,SHAREWAREMSLION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
-	case OEM_MISSION_HOGSIZE:
-		strcpy(gameData.missions.list [*count].filename,OEM_MISSION_FILENAME);
-		strcpy(gameData.missions.list [*count].mission_name,OEM_MISSION_NAME);
+	case OEMMSLION_HOGSIZE:
+		strcpy(gameData.missions.list [*count].filename,OEMMSLION_FILENAME);
+		strcpy(gameData.missions.list [*count].mission_name,OEMMSLION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
-	case FULL_MISSION_HOGSIZE:
-	case FULL_10_MISSION_HOGSIZE:
-	case MAC_FULL_MISSION_HOGSIZE:
-		if (!ReadMissionFile(FULL_MISSION_FILENAME ".mn2", 0, ML_CURDIR))
-			Error("Could not find required mission file <%s>", FULL_MISSION_FILENAME ".mn2");
+	case FULLMSLION_HOGSIZE:
+	case FULL_10MSLION_HOGSIZE:
+	case MAC_FULLMSLION_HOGSIZE:
+		if (!ReadMissionFile(FULLMSLION_FILENAME ".mn2", 0, ML_CURDIR))
+			Error("Could not find required mission file <%s>", FULLMSLION_FILENAME ".mn2");
 		break;
 	default:
 #if 0//def _DEBUG
-		Warning(TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, FULL_MISSION_FILENAME ".mn2");
+		Warning(TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, FULLMSLION_FILENAME ".mn2");
 #endif
-		gameData.missions.nBuiltinHogSize = FULL_MISSION_HOGSIZE;
+		gameData.missions.nBuiltinHogSize = FULLMSLION_HOGSIZE;
 		Int3(); //fall through
 		goto retry;
 	}
@@ -506,7 +506,7 @@ void AddMissionsToList
 	static char *pszExt [2][2] = {{"*.mn2", "*.msn"},{"*", "*"}};
 #endif
 
-	if (c + bSubFolder >= MAX_MISSIONS) 
+	if (c + bSubFolder >= MAXMSLIONS) 
 		return;
 	if (bSubFolder && !bHaveSubFolders && !nLocation) {
 		gameData.missions.list [c].descent_version = 0;	//directory
@@ -537,9 +537,9 @@ void AddMissionsToList
 							c++;
 						}
 					}
-			} while ((c < MAX_MISSIONS) && !FFN (&ffs, bFindDirs));
+			} while ((c < MAXMSLIONS) && !FFN (&ffs, bFindDirs));
 			FFC (&ffs);
-			if (c >= MAX_MISSIONS) {
+			if (c >= MAXMSLIONS) {
 				gameData.missions.list [c].descent_version = 0;	//directory
 				strcpy (gameData.missions.list [c].filename, TXT_MSN_OVERFLOW);
 
@@ -646,11 +646,11 @@ int BuildMissionList(int anarchy_mode, int nSubFolder)
 	sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
-		AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+		AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, MLMSLIONDIR);
 		bHaveSubFolders = 1;
 		}
 	if (gameOpts->app.nVersionFilter & 1) {
-		AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+		AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, MLMSLIONDIR);
 		bHaveSubFolders = 1;
 		}
 	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
@@ -796,7 +796,7 @@ while (MsnGetS (buf, 80, fp)) {
 		LogErr ("      parsing secret level list\n");
 		if (v = MsnGetValue (buf)) {
 			gameData.missions.nSecretLevels = atoi (v);
-			Assert(gameData.missions.nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
+			Assert(gameData.missions.nSecretLevels <= MAX_SECRET_LEVELS_PERMSLION);
 			for (i = 0; (i < gameData.missions.nSecretLevels) && MsnGetS (buf, 80, fp); i++) {
 				LogErr ("         '%s'\n", buf);
 				MsnTrimComment (buf);
@@ -846,16 +846,16 @@ if (mission_num == gameData.missions.nD1BuiltinMission) {
 	switch (gameData.missions.nD1BuiltinHogSize) {
 	default:
 		Int3(); // fall through
-	case D1_MISSION_HOGSIZE:
-	case D1_10_MISSION_HOGSIZE:
-	case D1_15_MISSION_HOGSIZE:
-	case D1_3DFX_MISSION_HOGSIZE:
-	case D1_MAC_MISSION_HOGSIZE:
-	case D1_OEM_MISSION_HOGSIZE:
-	case D1_OEM_10_MISSION_HOGSIZE:
-	case D1_SHAREWARE_MISSION_HOGSIZE:
-	case D1_SHAREWARE_10_MISSION_HOGSIZE:
-	case D1_MAC_SHARE_MISSION_HOGSIZE:
+	case D1MSLION_HOGSIZE:
+	case D1_10MSLION_HOGSIZE:
+	case D1_15MSLION_HOGSIZE:
+	case D1_3DFXMSLION_HOGSIZE:
+	case D1_MACMSLION_HOGSIZE:
+	case D1_OEMMSLION_HOGSIZE:
+	case D1_OEM_10MSLION_HOGSIZE:
+	case D1_SHAREWAREMSLION_HOGSIZE:
+	case D1_SHAREWARE_10MSLION_HOGSIZE:
+	case D1_MAC_SHAREMSLION_HOGSIZE:
 		return load_mission_d1(mission_num);
 		break;
 		}
@@ -863,18 +863,18 @@ if (mission_num == gameData.missions.nD1BuiltinMission) {
 
 if (mission_num == gameData.missions.nBuiltinMission) {
 	switch (gameData.missions.nBuiltinHogSize) {
-	case SHAREWARE_MISSION_HOGSIZE:
-	case MAC_SHARE_MISSION_HOGSIZE:
+	case SHAREWAREMSLION_HOGSIZE:
+	case MAC_SHAREMSLION_HOGSIZE:
 		return load_mission_shareware(mission_num);
 		break;
-	case OEM_MISSION_HOGSIZE:
+	case OEMMSLION_HOGSIZE:
 		return load_mission_oem(mission_num);
 		break;
 	default:
 		Int3(); // fall through
-	case FULL_MISSION_HOGSIZE:
-	case FULL_10_MISSION_HOGSIZE:
-	case MAC_FULL_MISSION_HOGSIZE:
+	case FULLMSLION_HOGSIZE:
+	case FULL_10MSLION_HOGSIZE:
+	case MAC_FULLMSLION_HOGSIZE:
 		// continue on... (use d2.mn2 from hogfile)
 		break;
 		}
@@ -885,7 +885,7 @@ con_printf (CON_VERBOSE, "Loading mission %d\n", mission_num );
 #endif
 	//read mission from file
 switch (gameData.missions.list [mission_num].location) {
-	case ML_MISSIONDIR:
+	case MLMSLIONDIR:
 	case ML_ALTHOGDIR:
 		strcpy (szFolder, gameFolders.szMissionDirs [gameData.missions.list [mission_num].location]);
 		break;

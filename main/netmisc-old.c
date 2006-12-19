@@ -721,7 +721,7 @@ void BESwapObject(tObject *objP)
 		objP->cType.powerupInfo.creationTime = INTEL_INT(objP->cType.powerupInfo.creationTime);
 		// Below commented out 5/2/96 by Matt.  I asked Allender why it was
 		// here, and he didn't know, and it looks like it doesn't belong.
-		// if (objP->id == POW_VULCAN_WEAPON)
+		// if (objP->id == POW_VULCAN)
 		// objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
 		break;
 

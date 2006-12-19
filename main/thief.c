@@ -287,7 +287,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 					ThiefMessage("Full map stolen!");
 					break;
 				case PLAYER_FLAGS_QUAD_LASERS:
-					powerup_index = POW_QUAD_FIRE;
+					powerup_index = POW_QUADLASER;
 					ThiefMessage("Quad lasers stolen!");
 					break;
 				case PLAYER_FLAGS_AFTERBURNER:
@@ -295,7 +295,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 					ThiefMessage("Afterburner stolen!");
 					break;
 // --				case PLAYER_FLAGS_AMMO_RACK:
-// --					powerup_index = POW_AMMO_RACK;
+// --					powerup_index = POW_AMMORACK;
 // --					ThiefMessage("Ammo Rack stolen!");
 // --					break;
 				case PLAYER_FLAGS_CONVERTER:
@@ -354,7 +354,7 @@ int MaybeStealPrimaryWeapon(int player_num, int weapon_num)
 			if (weapon_num == 0) {
 				if (gameData.multi.players[player_num].laserLevel > 0) {
 					if (gameData.multi.players[player_num].laserLevel > 3) {
-						gameData.thief.stolenItems[gameData.thief.nStolenItem] = POW_SUPER_LASER;
+						gameData.thief.stolenItems[gameData.thief.nStolenItem] = POW_SUPERLASER;
 					} else {
 						gameData.thief.stolenItems[gameData.thief.nStolenItem] = primaryWeaponToPowerup[weapon_num];
 					}

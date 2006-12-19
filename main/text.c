@@ -1583,6 +1583,10 @@ char *defaultGameTexts [][2] = {
 	{"~Reichweite: %s", "~Reach: %s"},
 	{"Schatten begren~Zen", "~Clip shadows"},
 	{"HUD-~Nachrichten anzeigen", "show HUD ~Messages"},
+	{"~Powerupeinstellungen...", "~Powerup options..."},
+	{"Powerupeinstellungen", "Powerup options"},
+	{"3~D-Powerups", "3~D powerups"},
+	{"Powerups ~Rotieren", "~Spin powerups"},
 #if 0
 	{"", ""},
 #endif
@@ -2048,6 +2052,10 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, shadows will be clipped behind the nearest wall\nthey cover. How far behind that wall depends on the setting\nof shadow reach."},
 	{"Wenn angekreuzt, werden am oberen Bildschirmrand Programm-\nund Spieler-Nachrichten eingeblendet.", 
 	 "If checked, program and player messages are displayed at the\nscreen top."},
+	{"Wenn angekreuzt, werden Powerups als echte 3D-Modelle angezeigt.", 
+	 "If checked, powerups will rendered as true 3D models."},
+	{"Wenn angekreuzt, kreiseln die 3D-Powerups.", "If checked, the 3D powerups will spin."},
+	{"Hier können Powerupeinstellungen vorgenommen werden.", "Adjust powerup rendering settings here."},
 #if 0
 	{"", ""},
 #endif

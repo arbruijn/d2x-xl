@@ -175,7 +175,7 @@ typedef struct {
 extern rgb player_rgb[];
 
 #define WBU_WEAPON      0       // the weapons display
-#define WBU_MISSILE     1       // the missile view
+#define WBUMSL     1       // the missile view
 #define WBU_ESCORT      2       // the "buddy bot"
 #define WBU_REAR        3       // the rear view
 #define WBU_COOP        4       // coop or team member view

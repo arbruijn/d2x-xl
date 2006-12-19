@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Homing missile.
  *
  * Revision 1.27  1994/09/07  15:59:47  mike
- * Kill FLARE_MAX_TIME (now defined in bitmaps.tbl), add PROXIMITY_ID (shame!), prototype LaserFireObject, DoMissileFiring.
+ * Kill FLARE_MAX_TIME (now defined in bitmaps.tbl), add PROXMINE_ID (shame!), prototype LaserFireObject, DoMissileFiring.
  *
  * Revision 1.26  1994/09/03  15:22:41  mike
  * Kill Projectile_player_fire prototype.
@@ -193,51 +193,55 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SPREADFIRE_ID   				12  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define PLASMA_ID       				13  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define FUSION_ID       				14  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
-#define HOMING_ID       				15
-#define PROXIMITY_ID    				16
-#define SMART_ID        				17
-#define MEGA_ID         				18
-#define PLAYER_SMART_HOMING_ID  		19
+#define HOMINGMSL_ID       			15
+#define PROXMINE_ID    					16
+#define SMARTMSL_ID        			17
+#define MEGAMSL_ID         			18
+#define SMARTMSL_BLOB_ID 				19
 #define ROBOT_BLUE_ENERGY_ID			20
-#define SUPER_MECH_MISS_ID      		21
-#define REGULAR_MECH_MISS_ID    		22
+#define SUPER_MECHMSL_ID      		21
+#define REGULAR_MECHMSL_ID    		22
 #define SILENT_SPREADFIRE_ID    		23
 #define ROBOT_GREEN_LASER_ID			25
 #define ROBOT_PLASMA_ID					26
 #define ROBOT_MEDIUM_FIREBALL_ID		27
-#define ROBOT_MEGA_ID			  		28
-#define ROBOT_SMART_HOMING_ID   		29
-#define SUPER_LASER_ID          		30  // 30,31 are super lasers (level 5,6)
+#define ROBOT_MEGAMSL_ID		  		28
+#define ROBOT_SMARTMSL_BLOB_ID  		29
+#define SUPERLASER_ID          		30  // 30,31 are super lasers (level 5,6)
 #define GAUSS_ID                		32  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define HELIX_ID                		33  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define PHOENIX_ID              		34  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define OMEGA_ID                		35  //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
-#define FLASH_ID                		36
-#define GUIDEDMISS_ID           		37
-#define SUPERPROX_ID            		38
-#define MERCURY_ID              		39
+#define FLASHMSL_ID                	36
+#define GUIDEDMSL_ID           		37
+#define SMARTMINE_ID            		38
+#define MERCURYMSL_ID              	39
 #define EARTHSHAKER_ID          		40
 #define ROBOT_SMALL_FIREBALL_ID		42
 #define ROBOT_WHITE_LASER_ID			43
 #define ROBOT_PHOENIX_ID				44
 #define ROBOT_FAST_PHOENIX_ID			45
 #define ROBOT_HELIX_ID					46
-#define SMART_MINE_HOMING_ID        47
+#define SMARTMINE_BLOB_ID        	47
 #define ROBOT_PHASE_ENERGY_ID			48
-#define ROBOT_SMART_MINE_HOMING_ID  49
-#define ROBOT_FLASHMISS_ID				50
-#define PMINE_ID                    51  //the mine that the designers can place
-#define ROBOT_SUPERPROX_ID          53
-#define EARTHSHAKER_MEGA_ID     		54
-#define ROBOT_MERCURY_ID				55
-#define ROBOT_SMART_ID					57
+#define ROBOT_SMARTMINE_BLOB_ID  	49
+#define ROBOT_FLASHMSL_ID				50
+#define SMALLMINE_ID                51  //the mine that the designers can place
+#define ROBOT_SMARTMINE_ID   			53
+#define EARTHSHAKER_MEGA_ID  			54
+#define ROBOT_MERCURYMSL_ID			55
+#define ROBOT_SMARTMSL_ID				57
 #define ROBOT_EARTHSHAKER_ID        58
 #define ROBOT_SHAKER_MEGA_ID        59
 #define ROBOT_WHITE_ENERGY_ID			60
-#define ROBOT_VERTIGO_FLASHMISS_ID	61
+#define ROBOT_VERTIGO_FLASHMSL_ID	61
 #define ROBOT_VERTIGO_FIREBALL_ID	63
 #define ROBOT_VERTIGO_PHOENIX_ID		64
 
+#define CONCUSSION4_ID   				65
+#define HOMINGMSL4_ID       			66
+#define FLASHMSL4_ID       			67
+#define MERCURYMSL4_ID       			68
 
 #define OMEGA_MULTI_LIFELEFT    (F1_0/6)
 
@@ -267,7 +271,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // xMinTrackableDot
 #define MIN_TRACKABLE_DOT               (7*F1_0/8)
 #define MAX_TRACKABLE_DIST              (F1_0*250)
-#define HOMING_MISSILE_STRAIGHT_TIME    (F1_0/8)    //  Changed as per request of John, Adam, Yuan, but mostly John
+#define HOMINGMSL_STRAIGHT_TIME    (F1_0/8)    //  Changed as per request of John, Adam, Yuan, but mostly John
 
 extern fix xMinTrackableDot;   //  MIN_TRACKABLE_DOT inversely scaled by FrameTime
 

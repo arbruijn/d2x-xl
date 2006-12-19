@@ -524,14 +524,14 @@ void game_render_frame_stereo()
 
 	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		actual_eye_offset = 0;
 
 	GrSetCurrentCanvas(&RenderCanvas[0]);
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
+	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";
 		tObject *viewer_save = gameData.objs.viewer;
 		int w,h,aw;
@@ -606,7 +606,7 @@ void game_render_frame_stereo()
 
 	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && 
+		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && 
 		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		GrBitmap(0,0,&RenderCanvas[0].cv_bitmap);
@@ -761,7 +761,7 @@ ubyte DemoDoingRight=0,DemoDoingLeft=0;
 extern ubyte DemoDoRight,DemoDoLeft;
 extern tObject DemoRightExtra,DemoLeftExtra;
 
-char DemoWBUType[]={0,WBU_MISSILE,WBU_MISSILE,WBU_REAR,WBU_ESCORT,WBU_MARKER,WBU_MISSILE};
+char DemoWBUType[]={0,WBUMSL,WBUMSL,WBU_REAR,WBU_ESCORT,WBU_MARKER,WBUMSL};
 char DemoRearCheck[]={0,0,0,1,0,0,0};
 char *DemoExtraMessage[]={"PLAYER","GUIDED","MISSILE","REAR","GUIDE-BOT","MARKER","SHIP"};
 
@@ -803,11 +803,11 @@ void show_extra_views()
    	return;
     } 
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMISS_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer]) {
+	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer]) {
 		if (gameOpts->render.cockpit.bGuidedInMainView)
 		 {
 			gameStates.render.nRenderingType=6+(1<<4);
-			DoCockpitWindowView(1,gameData.objs.viewer,0,WBU_MISSILE,"SHIP");
+			DoCockpitWindowView(1,gameData.objs.viewer,0,WBUMSL,"SHIP");
 		 }
 		else
 		 {
@@ -834,7 +834,7 @@ void show_extra_views()
 				 (gameData.objs.missileViewer->nType!=OBJ_NONE) && 
 				 (gameData.objs.missileViewer->nSignature == mv_sig)) {
   				gameStates.render.nRenderingType=2+(1<<4);
-				DoCockpitWindowView(1,gameData.objs.missileViewer,0,WBU_MISSILE,"MISSILE");
+				DoCockpitWindowView(1,gameData.objs.missileViewer,0,WBUMSL,"MISSILE");
 				did_missile_view=1;
 			}
 			else {
@@ -967,7 +967,7 @@ void GameRenderFrameMono(void)
 	gm = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
 	if (gm && 
 		 gm->nType==OBJ_WEAPON && 
-		 gm->id==GUIDEDMISS_ID && 
+		 gm->id==GUIDEDMSL_ID && 
 		 gm->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";

@@ -196,7 +196,7 @@ void DoCheatPenalty ()
 {
 DigiPlaySample (SOUND_CHEATER, F1_0);
 gameStates.app.cheats.bEnabled = 1;
-gameData.multi.players [gameData.multi.nLocalPlayer].score = 0;
+LOCALPLAYER.score = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -204,12 +204,12 @@ gameData.multi.players [gameData.multi.nLocalPlayer].score = 0;
 void MultiDoCheatPenalty ()
 {
 DoCheatPenalty ();
-gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (1);
+LOCALPLAYER.shields = i2f (1);
 MultiSendShields ();
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (1);
+LOCALPLAYER.energy = i2f (1);
 if (gameData.app.nGameMode & GM_MULTI) {
 	multiData.msg.nReceiver = 100;		// Send to everyone...
-	sprintf (multiData.msg.szMsg, TXT_CRIPPLED, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+	sprintf (multiData.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
 	}
 HUDInitMessage (TXT_TAKE_THAT);
 }
@@ -253,7 +253,7 @@ return item;
 void AccessoryCheat (void)
 {
 if (!gameStates.app.bD1Mission) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= 
+	LOCALPLAYER.flags |= 
 		PLAYER_FLAGS_HEADLIGHT | 
 		PLAYER_FLAGS_AFTERBURNER | 
 		PLAYER_FLAGS_AMMO_RACK | 
@@ -299,17 +299,17 @@ else {
 void AllKeysCheat (void)
 {
 HUDInitMessage(TXT_ALL_KEYS);
-gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_ALL_KEYS;
+LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 }
 
 //------------------------------------------------------------------------------
 
 void BlueOrbCheat (void)
 {
-if (BoostVal (&gameData.multi.players [gameData.multi.nLocalPlayer].shields, MAX_SHIELDS)) {
+if (BoostVal (&LOCALPLAYER.shields, MAX_SHIELDS)) {
 	MultiSendShields ();
 	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, 
-						f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].shields));
+						f2ir (LOCALPLAYER.shields));
 	}
 else
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -353,8 +353,8 @@ void CubeWarpCheat (void)
 int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
 if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 	DoCheatPenalty ();
-	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, nNewCube); 
-	RelinkObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject, nNewCube);
+	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [LOCALPLAYER.nObject].position.vPos, nNewCube); 
+	RelinkObject (LOCALPLAYER.nObject, nNewCube);
 	}
 }
 
@@ -362,9 +362,9 @@ if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 
 void ElectroCheat (void)
 {
-if (BoostVal (&gameData.multi.players [gameData.multi.nLocalPlayer].energy, MAX_ENERGY))	
+if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))	
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, 
-						 f2ir(gameData.multi.players [gameData.multi.nLocalPlayer].energy));
+						 f2ir(LOCALPLAYER.energy));
 else
 	HUDInitMessage(TXT_MAXED_OUT, TXT_SHIELD);
 }
@@ -373,7 +373,7 @@ else
 
 void ExtraLifeCheat (void)
 {
-gameData.multi.players [gameData.multi.nLocalPlayer].lives++;
+LOCALPLAYER.lives++;
 PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 }
 
@@ -397,10 +397,10 @@ void FullMapCheat (void)
 {
 if (gameStates.render.bAllVisited)
 	gameStates.render.bViewDist++;
-else if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL)
+else if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL)
 	gameStates.render.bAllVisited = 1;
 else
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_MAP_ALL;
+	LOCALPLAYER.flags |= PLAYER_FLAGS_MAP_ALL;
 HUDInitMessage (TXT_FULL_MAP);
 }
 
@@ -408,9 +408,9 @@ HUDInitMessage (TXT_FULL_MAP);
 
 void GasolineCheat (void)
 {
-gameData.multi.players [gameData.multi.nLocalPlayer].shields = MAX_SHIELDS;
+LOCALPLAYER.shields = MAX_SHIELDS;
 MultiSendShields ();
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = MAX_ENERGY;
+LOCALPLAYER.energy = MAX_ENERGY;
 HUDInitMessage (TXT_SLURP);
 }
 
@@ -436,14 +436,29 @@ void InvulCheat (void)
 {
 	int	bInvul;
 
-if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-else if (gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime == 0x7fffffff)
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
-bInvul = (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) != 0;
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
+else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
+bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
-gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
+LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
 SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
+}
+
+//------------------------------------------------------------------------------
+
+void CloakCheat (void)
+{
+	int	bCloaked;
+
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
+	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
+else if (LOCALPLAYER.cloakTime == 0x7fffffff)
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
+bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
+HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
+LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
 }
 
 //------------------------------------------------------------------------------
@@ -566,50 +581,50 @@ void WowieCheat (void)
 
 HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
+	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
+	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
 	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i];
+		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i];
 	for (i=0; i < MAX_D1_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = nMaxSecondaryAmmo [i];
+		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i];
 	}
 else {
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
-		gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = ~((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG(SUPER_LASER_INDEX));
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = ~((1<<SMISSILE4_INDEX) | (1<<MEGA_INDEX) | (1<<SMISSILE5_INDEX));
+		LOCALPLAYER.primaryWeaponFlags = ~((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG(SUPER_LASER_INDEX));
+		LOCALPLAYER.secondaryWeaponFlags = ~((1<<SMISSILE4_INDEX) | (1<<MEGA_INDEX) | (1<<SMISSILE5_INDEX));
 		}
 	else {
-		gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = 0xffff;
+		LOCALPLAYER.primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
+		LOCALPLAYER.secondaryWeaponFlags = 0xffff;
 		}
-	h = (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1;
+	h = (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1;
 	for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = nMaxPrimaryAmmo [i] * h;
+		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i] * h;
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
+		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE4_INDEX] = 0;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMISSILE5_INDEX] = 0;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [MEGA_INDEX] = 0;
+		LOCALPLAYER.secondaryAmmo [SMISSILE4_INDEX] = 0;
+		LOCALPLAYER.secondaryAmmo [SMISSILE5_INDEX] = 0;
+		LOCALPLAYER.secondaryAmmo [MEGA_INDEX] = 0;
 		}
 
 	if (gameData.app.nGameMode & GM_HOARD)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 12;
+		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 12;
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] = 5 * h;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX] = 5 * h;
+		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 5 * h;
+		LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] = 5 * h;
 		}
 	}
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
+	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = MAX_ENERGY;
+LOCALPLAYER.energy = MAX_ENERGY;
 if (gameStates.app.bD1Mission)
-	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_LASER_LEVEL;
+	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 else {
-	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
-	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
+	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
+	LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 	}
 UpdateLaserWeaponInfo();
 SetLastSuperWeaponStates ();
@@ -620,7 +635,7 @@ SetLastSuperWeaponStates ();
 void EnableD1Cheats (void)
 {
 gameStates.app.cheats.bD1CheatsEnabled = !gameStates.app.cheats.bD1CheatsEnabled;
-HUDInitMessage (gameStates.app.cheats.bD1CheatsEnabled ? TXT_WANNA_CHEAT : gameData.multi.players [gameData.multi.nLocalPlayer].score ? TXT_GOODGUY : TXT_TOOLATE);
+HUDInitMessage (gameStates.app.cheats.bD1CheatsEnabled ? TXT_WANNA_CHEAT : LOCALPLAYER.score ? TXT_GOODGUY : TXT_TOOLATE);
 }
 
 //------------------------------------------------------------------------------
@@ -686,6 +701,7 @@ char szBlueOrbCheat [8]				= "blueorb";
 char szBouncyCheat [9]				= "bGbiChQJ";    //only Matt knows / duddaboo
 char szBuddyDudeCheat [9]			= "u#uzIr%e";    //only Matt knows / g-owingnut
 char szBuddyLifeCheat [9]			= "%A-BECuY";    //only Matt knows / he-lpvishnu
+char szCloakCheat [9]				= "itsarock";  //only Matt knows / almighty
 char szCubeWarpCheat [9]			= "&vRv(_U]";   // subspace
 char szElectroCheat [8]				= "electro";
 char szFinishLevelCheat [9]		= "%bG_bZ<D";    //only Matt knows / d-elshiftb
@@ -714,6 +730,7 @@ tCheat cheats [] = {
 	{szBouncyCheat, BouncyCheat, 1, 1, 0}, 
 	{szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
 	{szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
+	{szCloakCheat, CloakCheat, 1, 0, 0}, 
 	{szCubeWarpCheat, CubeWarpCheat, -1, 1, 0}, 
 	{szElectroCheat, ElectroCheat, 1, 0, 0}, 
 	{szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
@@ -787,24 +804,24 @@ void DoCheatMenu()
 	tMenuItem mm[16];
 	char score_text[21];
 
-	sprintf( score_text, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].score );
+	sprintf( score_text, "%d", LOCALPLAYER.score );
 
 	memset (mm, 0, sizeof (mm));
 	mm[0].nType=NM_TYPE_CHECK; 
-	mm[0].value=gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE; 
+	mm[0].value=LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE; 
 	mm[0].text="Invulnerability";
 	mm[1].nType=NM_TYPE_CHECK; 
-	mm[1].value=gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED; 
+	mm[1].value=LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED; 
 	mm[1].text="Cloaked";
 	mm[2].nType=NM_TYPE_CHECK; 
 	mm[2].value=0; 
 	mm[2].text="All keys";
 	mm[3].nType=NM_TYPE_NUMBER; 
-	mm[3].value=f2i(gameData.multi.players [gameData.multi.nLocalPlayer].energy); 
+	mm[3].value=f2i(LOCALPLAYER.energy); 
 	mm[3].text="% Energy"; mm[3].minValue=0; 
 	mm[3].maxValue=200;
 	mm[4].nType=NM_TYPE_NUMBER; 
-	mm[4].value=f2i(gameData.multi.players [gameData.multi.nLocalPlayer].shields); 
+	mm[4].value=f2i(LOCALPLAYER.shields); 
 	mm[4].text="% Shields"; mm[4].minValue=0; 
 	mm[4].maxValue=200;
 	mm[5].nType=NM_TYPE_TEXT; 
@@ -812,17 +829,17 @@ void DoCheatMenu()
 	mm[6].nType=NM_TYPE_INPUT; 
 	mm[6].text_len = 10; 
 	mm[6].text = score_text;
-	//mm[7].nType=NM_TYPE_RADIO; mm[7].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==0); mm[7].group=0; mm[7].text="Laser level 1";
-	//mm[8].nType=NM_TYPE_RADIO; mm[8].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==1); mm[8].group=0; mm[8].text="Laser level 2";
-	//mm[9].nType=NM_TYPE_RADIO; mm[9].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==2); mm[9].group=0; mm[9].text="Laser level 3";
-	//mm[10].nType=NM_TYPE_RADIO; mm[10].value=(gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel==3); mm[10].group=0; mm[10].text="Laser level 4";
+	//mm[7].nType=NM_TYPE_RADIO; mm[7].value=(LOCALPLAYER.laserLevel==0); mm[7].group=0; mm[7].text="Laser level 1";
+	//mm[8].nType=NM_TYPE_RADIO; mm[8].value=(LOCALPLAYER.laserLevel==1); mm[8].group=0; mm[8].text="Laser level 2";
+	//mm[9].nType=NM_TYPE_RADIO; mm[9].value=(LOCALPLAYER.laserLevel==2); mm[9].group=0; mm[9].text="Laser level 3";
+	//mm[10].nType=NM_TYPE_RADIO; mm[10].value=(LOCALPLAYER.laserLevel==3); mm[10].group=0; mm[10].text="Laser level 4";
 
 	mm[7].nType=NM_TYPE_NUMBER; 
-	mm[7].value=gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel+1; 
+	mm[7].value=LOCALPLAYER.laserLevel+1; 
 	mm[7].text="Laser Level"; mm[7].minValue=0; 
 	mm[7].maxValue=MAX_SUPER_LASER_LEVEL+1;
 	mm[8].nType=NM_TYPE_NUMBER; 
-	mm[8].value=gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [CONCUSSION_INDEX]; 
+	mm[8].value=LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX]; 
 	mm[8].text="Missiles"; 
 	mm[8].minValue=0; 
 	mm[8].maxValue=200;
@@ -831,30 +848,30 @@ void DoCheatMenu()
 
 	if (mmn > -1 )  {
 		if ( mm[0].value )  {
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-			gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame+i2f(1000);
+			LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
+			LOCALPLAYER.invulnerableTime = gameData.time.xGame+i2f(1000);
 		} else
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
+			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if ( mm[1].value ) {
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_CLOAKED;
+			LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCloak();
 			AIDoCloakStuff();
-			gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
+			LOCALPLAYER.cloakTime = gameData.time.xGame;
 		}
 		else
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
+			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
-		if (mm[2].value) gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		gameData.multi.players [gameData.multi.nLocalPlayer].energy=i2f(mm[3].value);
-		gameData.multi.players [gameData.multi.nLocalPlayer].shields=i2f(mm[4].value);
-		gameData.multi.players [gameData.multi.nLocalPlayer].score = atoi(mm[6].text);
-		//if (mm[7].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=0;
-		//if (mm[8].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=1;
-		//if (mm[9].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=2;
-		//if (mm[10].value) gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel=3;
-		gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = mm[7].value-1;
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [CONCUSSION_INDEX] = mm[8].value;
+		if (mm[2].value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
+		LOCALPLAYER.energy=i2f(mm[3].value);
+		LOCALPLAYER.shields=i2f(mm[4].value);
+		LOCALPLAYER.score = atoi(mm[6].text);
+		//if (mm[7].value) LOCALPLAYER.laserLevel=0;
+		//if (mm[8].value) LOCALPLAYER.laserLevel=1;
+		//if (mm[9].value) LOCALPLAYER.laserLevel=2;
+		//if (mm[10].value) LOCALPLAYER.laserLevel=3;
+		LOCALPLAYER.laserLevel = mm[7].value-1;
+		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = mm[8].value;
 		InitGauges();
 	}
 }

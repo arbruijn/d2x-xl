@@ -296,7 +296,7 @@ typedef struct D2D1_weapon_info {
 #define WEAPON_TYPE_WEAK_LASER      0
 #define WEAPON_TYPE_STRONG_LASER    1
 #define WEAPON_TYPE_CANNON_BALL     2
-#define WEAPON_TYPE_MISSILE         3
+#define WEAPON_TYPEMSL         3
 
 #define MAX_WEAPON_TYPES            70
 #define D1_MAX_WEAPON_TYPES         30
@@ -348,7 +348,7 @@ typedef struct D2D1_weapon_info {
 #define PROXIMITY_INDEX     2
 #define SMART_INDEX         3
 #define MEGA_INDEX          4
-#define SMISSILE1_INDEX     5
+#define FLASHMSL_INDEX     5
 #define GUIDED_INDEX        6
 #define SMART_MINE_INDEX    7
 #define SMISSILE4_INDEX     8
