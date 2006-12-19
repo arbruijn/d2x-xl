@@ -1274,12 +1274,26 @@ for (j = 0; j < t; j++) {
 			i = gameData.models.nPolyModels++;
 		}
 	else if (i < 0 || i >= gameData.models.nPolyModels) {
-		Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-		i,szLevelName,gameData.models.nPolyModels-1);
-		gameData.bots.nTypes [0] = nBotTypeSave;
-		gameData.bots.nJoints = nBotJointSave;
-		gameData.models.nPolyModels = nPolyModelSave;
-		return 0;
+		if (bAltModels) {
+			if (i < MAX_POLYGON_MODELS) 
+				gameData.models.nPolyModels = i + 1;
+			else {
+				Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
+						i,szLevelName,gameData.models.nPolyModels-1);
+				gameData.bots.nTypes [0] = nBotTypeSave;
+				gameData.bots.nJoints = nBotJointSave;
+				gameData.models.nPolyModels = nPolyModelSave;
+				return 0;
+				}
+			}
+		else {
+			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
+			i,szLevelName,gameData.models.nPolyModels-1);
+			gameData.bots.nTypes [0] = nBotTypeSave;
+			gameData.bots.nJoints = nBotJointSave;
+			gameData.models.nPolyModels = nPolyModelSave;
+			return 0;
+			}
 		}
 	po = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
 	FreeModel (po);

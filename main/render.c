@@ -2391,6 +2391,7 @@ glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
 glDisable (GL_DEPTH_TEST);
+glEnable (GL_STENCIL_TEST);
 glDepthMask (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
@@ -2793,6 +2794,9 @@ if (bShowOnlyCurSide)
 	GrClearCanvas (nClearWindowColor);
 #endif
 #if SHADOWS
+if (!gameStates.render.bHaveStencilBuffer)
+	extraGameInfo [0].bShadows = 
+	extraGameInfo [1].bShadows = 0;
 if (EGI_FLAG (bShadows, 0, 0) && 
 	 !(nWindow || gameStates.render.cameras.bActive)) {
 	if (!gameStates.render.bShadowMaps) {

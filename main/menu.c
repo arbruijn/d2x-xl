@@ -2700,8 +2700,12 @@ do {
 		optLightingOpts = opt++;
 		ADD_MENU (opt, TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
-		ADD_MENU (opt, TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);
-		optShadowOpts = opt++;
+		if (!gameStates.render.bHaveStencilBuffer)
+			optShadowOpts = -1;
+		else {
+			ADD_MENU (opt, TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);
+			optShadowOpts = opt++;
+			}
 		ADD_MENU (opt, TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optEffectOpts = opt++;
 		ADD_MENU (opt, TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);

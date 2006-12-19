@@ -92,32 +92,32 @@ tSoundObject SoundObjects [MAX_SOUND_OBJECTS];
 
 //------------------------------------------------------------------------------
 /* Find the sound which actually equates to a sound number */
-short DigiXlatSound (short soundno)
+short DigiXlatSound (short nSound)
 {
-if (soundno < 0)
+if (nSound < 0)
 	return -1;
 if (gameStates.sound.digi.bLoMem) {
-	soundno = AltSounds [gameOpts->sound.bD1Sound][soundno];
-	if (soundno == 255)
+	nSound = AltSounds [gameOpts->sound.bD1Sound][nSound];
+	if (nSound == 255)
 		return -1;
 	}
-//Assert (Sounds [gameOpts->sound.bD1Sound][soundno] != 255);	//if hit this, probably using undefined sound
-if (Sounds [gameOpts->sound.bD1Sound][soundno] == 255)
+//Assert (Sounds [gameOpts->sound.bD1Sound][nSound] != 255);	//if hit this, probably using undefined sound
+if (Sounds [gameOpts->sound.bD1Sound][nSound] == 255)
 	return -1;
-return Sounds [gameOpts->sound.bD1Sound][soundno];
+return Sounds [gameOpts->sound.bD1Sound][nSound];
 }
 
 //------------------------------------------------------------------------------
 
-int DigiUnXlatSound (int soundno)
+int DigiUnXlatSound (int nSound)
 {
 	int i;
 	ubyte *table = (gameStates.sound.digi.bLoMem ? AltSounds [gameOpts->sound.bD1Sound] :Sounds [gameOpts->sound.bD1Sound]);
 
-	if (soundno < 0) return -1;
+	if (nSound < 0) return -1;
 
 	for (i=0;i<MAX_SOUNDS;i++)
-		if (table [i] == soundno)
+		if (table [i] == nSound)
 			return i;
 
 	Int3 ();
@@ -162,59 +162,59 @@ if (distance < maxDistance) {
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleOnce (short soundno, fix maxVolume)	
+void DigiPlaySampleOnce (short nSound, fix maxVolume)	
 {
 	int channel;
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordSound (soundno);
+	NDRecordSound (nSound);
 #endif
-soundno = DigiXlatSound (soundno);
-if (soundno < 0) 
+nSound = DigiXlatSound (nSound);
+if (nSound < 0) 
 	return;
-channel=DigiFindChannel (soundno);
+channel=DigiFindChannel (nSound);
 if (channel > -1)
 	DigiStopSound (channel);
 // start the sample playing
-DigiStartSound (soundno, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL);
+DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL);
 }
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops)
+int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops)
 {
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSound (soundno);
+		NDRecordSound (nSound);
 #endif
-soundno = (soundno < 0) ? - soundno : DigiXlatSound (soundno);
-if (soundno < 0) 
+nSound = (nSound < 0) ? - nSound : DigiXlatSound (nSound);
+if (nSound < 0) 
 	return -1;
 // start the sample playing
 if (nLoops > 0)
-	return DigiStartSound (soundno, maxVolume, 0xffff/2, 0, 0, nLoops - 1, -1, nSpeed, NULL);
+	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, 0, nLoops - 1, -1, nSpeed, NULL);
 else
-	return DigiStartSound (soundno, maxVolume, 0xffff/2, 0, -1, -1, -1, nSpeed, NULL);
+	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, nSpeed, NULL);
 }
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySample (short soundno, fix maxVolume)
+int DigiPlaySample (short nSound, fix maxVolume)
 {
-return DigiPlaySampleSpeed (soundno, maxVolume, F1_0, 0);
+return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleLooped (short soundno, fix maxVolume, int nLoops)
+int DigiPlaySampleLooped (short nSound, fix maxVolume, int nLoops)
 {
-return DigiPlaySampleSpeed (soundno, maxVolume, F1_0, nLoops);
+return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, nLoops);
 }
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short soundno, int angle, int volume, int no_dups)	
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups)	
 {
 
 	no_dups = 1;
@@ -222,19 +222,19 @@ void DigiPlaySample3D (short soundno, int angle, int volume, int no_dups)
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)		{
 		if (no_dups)
-			NDRecordSound3DOnce (soundno, angle, volume);
+			NDRecordSound3DOnce (nSound, angle, volume);
 		else
-			NDRecordSound3D (soundno, angle, volume);
+			NDRecordSound3D (nSound, angle, volume);
 	}
 #endif
-	soundno = DigiXlatSound (soundno);
+	nSound = DigiXlatSound (nSound);
 
-	if (soundno < 0) return;
+	if (nSound < 0) return;
 
 	if (volume < 10) return;
 
    // start the sample playing
-	DigiStartSound (soundno, volume, angle, 0, -1, -1, -1, F1_0, NULL);
+	DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -285,16 +285,16 @@ if (gameStates.sound.digi.nLoopingSound > -1)
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleLooping (short soundno, fix maxVolume,int loop_start, int loop_end)
+void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end)
 {
-	soundno = DigiXlatSound (soundno);
+	nSound = DigiXlatSound (nSound);
 
-	if (soundno < 0) return;
+	if (nSound < 0) return;
 
 	if (gameStates.sound.digi.nLoopingChannel>-1)
 		DigiStopSound (gameStates.sound.digi.nLoopingChannel);
 
-	gameStates.sound.digi.nLoopingSound = soundno;
+	gameStates.sound.digi.nLoopingSound = nSound;
 	gameStates.sound.digi.nLoopingVolume = maxVolume;
 	gameStates.sound.digi.nLoopingStart = loop_start;
 	gameStates.sound.digi.nLoopingEnd = loop_end;

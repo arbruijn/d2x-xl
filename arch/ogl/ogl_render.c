@@ -1969,7 +1969,7 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			}
 		else {
-#if 1
+#if 0
 			glDisable (GL_POLYGON_OFFSET_FILL);
 #endif
 			if (gameOpts->render.shadows.bFast) {
