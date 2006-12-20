@@ -61,7 +61,7 @@ struct sound_slot {
 
 
 int midiVolume = 255;
-int digi_midi_song_playing = 0;
+int bDigiMidiSongPlaying = 0;
 int digi_last_midi_song = 0;
 int digi_last_midi_song_loop = 0;
 
@@ -428,7 +428,7 @@ void DigiEndSound(int channel)
 }
 
 #else
-int digi_midi_song_playing = 0;
+int bDigiMidiSongPlaying = 0;
 static int gameStates.sound.digi.bInitialized = 0;
 int midiVolume = 255;
 
@@ -452,10 +452,10 @@ int DigiGetMaxChannels() { return 0; }
 
 void DigiStopCurrentSong()
 {
-	if ( digi_midi_song_playing ) {
+	if ( bDigiMidiSongPlaying ) {
 	    hmp_close(hmp);
 	    hmp = NULL;
-	    digi_midi_song_playing = 0;
+	    bDigiMidiSongPlaying = 0;
 	}
 }
 
@@ -491,7 +491,7 @@ void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, i
 
 	if ((hmp = hmp_open(filename))) {
 	    hmp_play(hmp);
-	    digi_midi_song_playing = 1;
+	    bDigiMidiSongPlaying = 1;
 	    DigiSetMidiVolume(midiVolume);
 	}
 	//else

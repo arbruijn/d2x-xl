@@ -327,12 +327,9 @@ static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD
 	hmp->bufs_in_mm--;
 
 	if (!hmp->stop) {
-		while (fill_buffer(hmp) == HMP_EOF)
-		{
+		while (fill_buffer(hmp) == HMP_EOF)	{
 			if (!hmp->bLoop)
-			{
 				hmp->stop=1;
-			}
 			reset_tracks(hmp);
 		}
 		if ((rc = midiStreamOut(hmp->hmidi, hmp->evbuf, 
@@ -381,6 +378,7 @@ int hmp_play(hmp_file *hmp, int bLoop)
          i++;
         } while ((i<(int)numdevs) && (hmp->devid==-1));
 	if (hmp->devid == -1)
+		return -1;
 #endif
 	hmp->bLoop = bLoop;
 	hmp->devid = MIDI_MAPPER;

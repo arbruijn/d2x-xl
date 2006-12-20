@@ -661,7 +661,7 @@ for (i = 0; i < nCameras; i++, pc++) {
 	pc->bTimedOut = 1;
 #endif
 	pc->bVisible = 0;
-		nCamsRendered += RenderCamera (pc);
+	nCamsRendered += RenderCamera (pc);
 	}
 gameData.objs.viewer = viewerSave;
 gameOpts->render.nMaxFPS = frameCap;

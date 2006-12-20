@@ -87,7 +87,7 @@ tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 //	-----------------------------------------------------------------------------------------------------------
 //given an tObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-void calc_gun_point(vmsVector *gun_point,tObject *objP,int gun_num)
+void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
 {
 	tPolyModel *pm;
 	tRobotInfo *r;
@@ -258,8 +258,8 @@ gameData.bots.info [0][gameData.bots.nCamBotId].seeSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].attackSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].clawSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].tauntSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_STILL;
-gameData.bots.info [0][gameData.bots.nCamBotId].aim = AIM_STILL;
+gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_IDLING;
+gameData.bots.info [0][gameData.bots.nCamBotId].aim = AIM_IDLING;
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance));
@@ -291,9 +291,9 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 			objP->mType.physInfo.turnRoll = 0;	// used as current heading angle rel. to start pos
 			objP->mType.physInfo.velocity.x = 0;
 			}
-		//objP->cType.aiInfo.behavior = AIB_NORMAL; //AIB_STILL;
+		//objP->cType.aiInfo.behavior = AIB_NORMAL; //AIB_IDLING;
 #endif
-		gameData.ai.localInfo [i].mode = AIM_STILL;
+		gameData.ai.localInfo [i].mode = AIM_IDLING;
 		}
 }
 

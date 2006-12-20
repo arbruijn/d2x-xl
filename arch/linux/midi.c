@@ -27,7 +27,7 @@ Mix_Music *mixMusic = NULL;
 hmp_file *hmp = NULL;
 
 int midiVolume = 255;
-int digi_midi_song_playing = 0;
+int bDigiMidiSongPlaying = 0;
 
 //------------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ if (hmp) {
 
 void DigiStopCurrentSong()
 {
-if (digi_midi_song_playing) {
+if (bDigiMidiSongPlaying) {
 	int h = midiVolume;	// preserve it for another song being started
 	DigiSetMidiVolume(0);
 	midiVolume = h;
@@ -82,7 +82,7 @@ else
 		{
 		hmp_close(hmp);
 		hmp = NULL;
-		digi_midi_song_playing = 0;
+		bDigiMidiSongPlaying = 0;
 		}
 #endif
 	}
@@ -113,7 +113,7 @@ if (hmp = hmp_open (filename, bD1Song)) {
 				LogErr ("SDL_mixer cannot play %s\n(%s)\n", filename, Mix_GetError ());
 			else {
 				LogErr ("SDL_mixer playing %s\n", filename);
-				digi_midi_song_playing = 1;
+				bDigiMidiSongPlaying = 1;
 				DigiSetMidiVolume (midiVolume);
 				}
 			}
@@ -127,7 +127,7 @@ else
 #	endif
 		{
 		hmp_play(hmp, loop);
-		digi_midi_song_playing = 1;
+		bDigiMidiSongPlaying = 1;
 		DigiSetMidiVolume(midiVolume);
 		}
 #endif

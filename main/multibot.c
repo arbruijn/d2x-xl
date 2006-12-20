@@ -679,7 +679,7 @@ if (nGun == -1 || nGun==-2)
 	// Drop proximity bombs
 	VmVecAdd (&vGunPoint, &gameData.objs.objects [nRobot].position.vPos, &vFire);
 else 
-	calc_gun_point (&vGunPoint, &gameData.objs.objects [nRobot], nGun);
+	CalcGunPoint (&vGunPoint, &gameData.objs.objects [nRobot], nGun);
 robotP = &gameData.bots.pInfo [gameData.objs.objects [nRobot].id];
 if (nGun == -1) 
 	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);

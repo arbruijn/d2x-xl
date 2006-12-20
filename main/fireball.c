@@ -115,7 +115,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 			//	Weapons used to be affected by badass explosions, but this introduces serious problems.
 			//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
 			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
-			if ((obj0P!=objP) && !(obj0P->flags&OF_SHOULD_BE_DEAD) && 
+			if ((obj0P!=objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
 			    ((t==OBJ_WEAPON && (id==PROXMINE_ID || id==SMARTMINE_ID || id==SMALLMINE_ID)) || 
 			     (t == OBJ_CNTRLCEN) || 
 			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && 

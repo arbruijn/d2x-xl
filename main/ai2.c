@@ -142,17 +142,17 @@ void InitAISystem (void)
 int AIBehaviorToMode (int behavior)
 {
 	switch (behavior) {
-		case AIB_STILL:			return AIM_STILL;
+		case AIB_IDLING:			return AIM_IDLING;
 		case AIB_NORMAL:			return AIM_CHASE_OBJECT;
 		case AIB_BEHIND:			return AIM_BEHIND;
 		case AIB_RUN_FROM:		return AIM_RUN_FROM_OBJECT;
-		case AIB_SNIPE:			return AIM_STILL;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
-		case AIB_STATION:			return AIM_STILL;
+		case AIB_SNIPE:			return AIM_IDLING;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
+		case AIB_STATION:			return AIM_IDLING;
 		case AIB_FOLLOW:			return AIM_FOLLOW_PATH;
 		default:	Int3 ();	//	Contact Mike: Error, illegal behavior nType
 	}
 
-	return AIM_STILL;
+	return AIM_IDLING;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -177,8 +177,8 @@ if (behavior == 0) {
 	aip->behavior = (ubyte) behavior;
 	}
 //	mode is now set from the Robot dialog, so this should get overwritten.
-ailp->mode = AIM_STILL;
-ailp->previousVisibility = 0;
+ailp->mode = AIM_IDLING;
+ailp->nPrevVisibility = 0;
 if (behavior != -1) {
 	aip->behavior = (ubyte) behavior;
 	ailp->mode = AIBehaviorToMode (aip->behavior);
@@ -226,7 +226,7 @@ aip->xDyingStartTime = 0;
 }
 
 
-extern tObject * CreateMorphRobot (tSegment *segp, vmsVector *object_pos, ubyte object_id);
+extern tObject * CreateMorphRobot (tSegment *segP, vmsVector *object_pos, ubyte object_id);
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Create a Buddy bot.
@@ -304,14 +304,14 @@ if (size_check)
 
 		while (tail != head) {
 			short		nSide;
-			tSegment	*segp = gameData.segs.segments + seg_queue [tail++];
+			tSegment	*segP = gameData.segs.segments + seg_queue [tail++];
 
 			tail &= QUEUE_SIZE-1;
 
 			for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
-				int	w, childSeg = segp->children [nSide];
+				int	w, childSeg = segP->children [nSide];
 
-				if (( (w = WALL_IS_DOORWAY (segp, nSide, NULL)) & WID_FLY_FLAG) || one_wall_hack) {
+				if (( (w = WALL_IS_DOORWAY (segP, nSide, NULL)) & WID_FLY_FLAG) || one_wall_hack) {
 					//	If we get here and w == WID_WALL, then we want to process through this wall, else not.
 					if (IS_CHILD (childSeg)) {
 						if (one_wall_hack)
@@ -484,59 +484,55 @@ void set_rotvel_and_saturate (fix *dest, fix delta)
 #define	BABY_SPIDER_ID	14
 #define	FIRE_AT_NEARBY_PLAYER_THRESHOLD	 (F1_0*40)
 
-extern void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rate);
+extern void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate);
 
 //-------------------------------------------------------------------------------------------
-void AITurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
+
+fix AITurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 {
 	vmsVector	new_fvec;
 	fix			dot;
 
 	//	Not all robots can turn, eg, SPECIAL_REACTOR_ROBOT
-	if (rate == 0)
-		return;
-
-	if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
-		physics_turn_towards_vector (goal_vector, objP, rate);
-		return;
+if (rate == 0)
+	return 0;
+if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
+	PhysicsTurnTowardsVector (vGoal, objP, rate);
+	return VmVecDot (vGoal, &objP->position.mOrient.fVec);
 	}
-
-	new_fvec = *goal_vector;
-
-	dot = VmVecDot (goal_vector, &objP->position.mOrient.fVec);
-
-	if (dot < (F1_0 - gameData.time.xFrame/2)) {
-		fix	mag;
-		fix	new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
-		VmVecScale (&new_fvec, new_scale);
-		VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
-		mag = VmVecNormalizeQuick (&new_fvec);
-		if (mag < F1_0/256) {
+new_fvec = *vGoal;
+dot = VmVecDot (vGoal, &objP->position.mOrient.fVec);
+if (dot < (F1_0 - gameData.time.xFrame/2)) {
+	fix	mag;
+	fix	new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
+	VmVecScale (&new_fvec, new_scale);
+	VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
+	mag = VmVecNormalizeQuick (&new_fvec);
+	if (mag < F1_0/256) {
 #if TRACE	
-			con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
+		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
 #endif
-			new_fvec = *goal_vector;		//	if degenerate vector, go right to goal
+		new_fvec = *vGoal;		//	if degenerate vector, go right to goal
 		}
 	}
-
-	if (gameStates.gameplay.seismic.nMagnitude) {
-		vmsVector	rand_vec;
-		fix			scale;
-		MakeRandomVector (&rand_vec);
-		scale = FixDiv (2*gameStates.gameplay.seismic.nMagnitude, gameData.bots.pInfo [objP->id].mass);
-		VmVecScaleInc (&new_fvec, &rand_vec, scale);
+if (gameStates.gameplay.seismic.nMagnitude) {
+	vmsVector	rand_vec;
+	fix			scale;
+	MakeRandomVector (&rand_vec);
+	scale = FixDiv (2*gameStates.gameplay.seismic.nMagnitude, gameData.bots.pInfo [objP->id].mass);
+	VmVecScaleInc (&new_fvec, &rand_vec, scale);
 	}
-
-	VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, &objP->position.mOrient.rVec);
+VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, &objP->position.mOrient.rVec);
+return dot;
 }
 
 // -- unused, 08/07/95 -- // --------------------------------------------------------------------------------------------------------------------
-// -- unused, 08/07/95 -- void ai_turn_randomly (vmsVector *vec_to_player, tObject *objP, fix rate, int previousVisibility)
+// -- unused, 08/07/95 -- void ai_turn_randomly (vmsVector *vec_to_player, tObject *objP, fix rate, int nPrevVisibility)
 // -- unused, 08/07/95 -- {
 // -- unused, 08/07/95 -- 	vmsVector	curvec;
 // -- unused, 08/07/95 -- 
 // -- unused, 08/07/95 -- // -- MK, 06/09/95	//	Random turning looks too stupid, so 1/4 of time, cheat.
-// -- unused, 08/07/95 -- // -- MK, 06/09/95	if (previousVisibility)
+// -- unused, 08/07/95 -- // -- MK, 06/09/95	if (nPrevVisibility)
 // -- unused, 08/07/95 -- // -- MK, 06/09/95		if (d_rand () > 0x7400) {
 // -- unused, 08/07/95 -- // -- MK, 06/09/95			AITurnTowardsVector (vec_to_player, objP, rate);
 // -- unused, 08/07/95 -- // -- MK, 06/09/95			return;
@@ -588,7 +584,7 @@ if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (p
 #if TRACE	
 		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
-		move_towards_segment_center (objP);
+		MoveTowardsSegmentCenter (objP);
 		} 
 	else {
 		if (nSegment != objP->nSegment)
@@ -615,7 +611,7 @@ return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
-int do_silly_animation (tObject *objP)
+int DoSillyAnimation (tObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tJointPos 		*jp_list;
@@ -1043,7 +1039,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		fate = FindVectorIntersection (&fq, &hit_data);
 		if (fate != HIT_NONE) {
 			Int3 ();		//	This bot's gun is poking through a wall, so don't fire.
-			move_towards_segment_center (objP);		//	And decrease chances it will happen again.
+			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.
 			return;
 			}
 		}
@@ -1280,7 +1276,7 @@ void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackT
 // --------------------------------------------------------------------------------------------------------------------
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
-//	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_STILL).
+//	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
 void ai_move_relative_to_player (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility)
 {
 	tObject		*dObjP;
@@ -1470,7 +1466,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 	if (objP->controlType == CT_AI) {
 		if ((nType == PA_WEAPON_ROBOT_COLLISION) || (nType == PA_PLAYER_COLLISION))
 			switch (objP->cType.aiInfo.behavior) {
-				case AIB_STILL:
+				case AIB_IDLING:
 				{
 					int	r;
 
@@ -1512,7 +1508,7 @@ int		RobotSoundVolume=DEFAULT_ROBOT_SOUND_VOLUME;
 //		2		visible and in robot's field of view
 //		-1		tPlayer is cloaked
 //	If the tPlayer is cloaked, set vec_to_player based on time tPlayer cloaked and last uncloaked position.
-//	Updates ailp->previousVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
+//	Updates ailp->nPrevVisibility if tPlayer is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to player_visibility
 void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag)
 {
@@ -1550,15 +1546,15 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 			//	see you without killing frame rate.
 			{
 				tAIStatic	*aip = &objP->cType.aiInfo;
-			if ((*player_visibility == 2) && (ailp->previousVisibility != 2))
+			if ((*player_visibility == 2) && (ailp->nPrevVisibility != 2))
 				if ((aip->GOAL_STATE == AIS_REST) || (aip->CURRENT_STATE == AIS_REST)) {
 					aip->GOAL_STATE = AIS_FIRE;
 					aip->CURRENT_STATE = AIS_FIRE;
 				}
 			}
 
-			if ((ailp->previousVisibility != *player_visibility) && (*player_visibility == 2)) {
-				if (ailp->previousVisibility == 0) {
+			if ((ailp->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
+				if (ailp->nPrevVisibility == 0) {
 					if (ailp->timePlayerSeen + F1_0/2 < gameData.time.xGame) {
 						// -- if (gameStates.app.bPlayerExploded)
 						// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
@@ -1583,7 +1579,7 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 				// -- else
 					DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
 			}
-			ailp->previousVisibility = *player_visibility;
+			ailp->nPrevVisibility = *player_visibility;
 		}
 
 		*flag = 1;
@@ -1602,40 +1598,56 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+
+fix MoveObjectToLegalPoint (tObject *objP, vmsVector *vGoal)
+{
+	vmsVector	vGoalDir;
+	fix			xDistToGoal;
+
+VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
+xDistToGoal = VmVecNormalizeQuick (&vGoalDir);
+VmVecScale (&vGoalDir, objP->size / 2);
+VmVecInc (&objP->position.vPos, &vGoalDir);
+return xDistToGoal;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 //	Move the tObject objP to a spot in which it doesn't intersect a wall.
 //	It might mean moving it outside its current tSegment.
-void moveObject_to_legal_spot (tObject *objP)
+void MoveObjectToLegalSpot (tObject *objP, int bMoveToCenter)
 {
-	vmsVector	original_pos = objP->position.vPos;
-	int		i;
-	tSegment	*segp = &gameData.segs.segments [objP->nSegment];
+	vmsVector	vSegCenter, vOrigPos = objP->position.vPos;
+	int			i;
+	tSegment		*segP = gameData.segs.segments + objP->nSegment;
 
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		if (WALL_IS_DOORWAY (segp, (short) i, objP) & WID_FLY_FLAG) {
-			vmsVector	segment_center, goal_dir;
-			fix			dist_to_center;	// Value not used so far.
-
-			COMPUTE_SEGMENT_CENTER_I (&segment_center, segp->children [i]);
-			VmVecSub (&goal_dir, &segment_center, &objP->position.vPos);
-			dist_to_center = VmVecNormalizeQuick (&goal_dir);
-			VmVecScale (&goal_dir, objP->size);
-			VmVecInc (&objP->position.vPos, &goal_dir);
-			if (!ObjectIntersectsWall (objP)) {
-				int	new_segnum = FindSegByPoint (&objP->position.vPos, objP->nSegment);
-
-				if (new_segnum != -1) {
-					RelinkObject (OBJ_IDX (objP), new_segnum);
+if (bMoveToCenter) {
+	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
+	MoveObjectToLegalPoint (objP, &vSegCenter);
+	return;
+	}
+else {
+	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+		if (WALL_IS_DOORWAY (segP, (short) i, objP) & WID_FLY_FLAG) {
+			COMPUTE_SEGMENT_CENTER_I (&vSegCenter, segP->children [i]);
+			MoveObjectToLegalPoint (objP, &vSegCenter);
+			if (ObjectIntersectsWall (objP))
+				objP->position.vPos = vOrigPos;
+			else {
+				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+				if (nNewSeg != -1) {
+					RelinkObject (OBJ_IDX (objP), nNewSeg);
 					return;
+					}
 				}
-			} else
-				objP->position.vPos = original_pos;
+			}
 		}
 	}
 
-	if (gameData.bots.pInfo [objP->id].bossFlag) {
-		Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
-		teleport_boss (objP);
-	} else {
+if (gameData.bots.pInfo [objP->id].bossFlag) {
+	Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
+	teleport_boss (objP);
+	}
+	else {
 #if TRACE
 		con_printf (CON_DEBUG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
 #endif
@@ -1646,41 +1658,51 @@ void moveObject_to_legal_spot (tObject *objP)
 // --------------------------------------------------------------------------------------------------------------------
 //	Move tObject one tObject radii from current position towards tSegment center.
 //	If tSegment center is nearer than 2 radii, move it to center.
-void move_towards_segment_center (tObject *objP)
+fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 {
 	int			nSegment = objP->nSegment;
-	fix			dist_to_center;
-	vmsVector	segment_center, goal_dir;
+	fix			xDistToGoal;
+	vmsVector	vGoalDir;
 
-	COMPUTE_SEGMENT_CENTER_I (&segment_center, nSegment);
-
-	VmVecSub (&goal_dir, &segment_center, &objP->position.vPos);
-	dist_to_center = VmVecNormalizeQuick (&goal_dir);
-
-	if (dist_to_center < objP->size) {
-		//	Center is nearer than the distance we want to move, so move to center.
-		objP->position.vPos = segment_center;
-#if TRACE
-		con_printf (CON_DEBUG, "Object #%i moved to center of tSegment #%i (%7.3f %7.3f %7.3f)\n", OBJ_IDX (objP), objP->nSegment, f2fl (objP->position.vPos.x), f2fl (objP->position.vPos.y), f2fl (objP->position.vPos.z));
-#endif
-		if (ObjectIntersectsWall (objP)) {
-#if TRACE
-			con_printf (CON_DEBUG, "Object #%i still illegal, trying trickier move.\n");
-#endif
-			moveObject_to_legal_spot (objP);
+VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
+xDistToGoal = VmVecNormalizeQuick (&vGoalDir);
+if (xDistToGoal - objP->size <= xMinDist) {
+	//	Center is nearer than the distance we want to move, so move to center.
+	if (!xMinDist) {
+		objP->position.vPos = *vGoal;
+		if (ObjectIntersectsWall (objP))
+			MoveObjectToLegalSpot (objP, xMinDist > 0);
 		}
-	} else {
-		int	new_segnum;
-		//	Move one radii towards center.
-		VmVecScale (&goal_dir, objP->size);
-		VmVecInc (&objP->position.vPos, &goal_dir);
-		new_segnum = FindSegByPoint (&objP->position.vPos, objP->nSegment);
-		if (new_segnum == -1) {
-			objP->position.vPos = segment_center;
-			moveObject_to_legal_spot (objP);
+	xDistToGoal = 0;
+	} 
+else {
+	int	nNewSeg;
+	fix	xRemDist = xDistToGoal - xMinDist, 
+			xScale = (objP->size < xRemDist) ? objP->size : xRemDist;
+
+	if (xMinDist)
+		xScale /= 20;
+	//	Move one radii towards center.
+	VmVecScale (&vGoalDir, xScale);
+	VmVecInc (&objP->position.vPos, &vGoalDir);
+	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+	if (nNewSeg == -1) {
+		objP->position.vPos = *vGoal;
+		MoveObjectToLegalSpot (objP, xMinDist > 0);
 		}
 	}
+return xDistToGoal;
+}
 
+// --------------------------------------------------------------------------------------------------------------------
+//	Move tObject one tObject radii from current position towards tSegment center.
+//	If tSegment center is nearer than 2 radii, move it to center.
+fix MoveTowardsSegmentCenter (tObject *objP)
+{
+	vmsVector	vSegCenter;
+
+COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
+return MoveTowardsPoint (objP, &vSegCenter, 0);
 }
 
 //int	Buddy_got_stuck = 0;
@@ -1689,14 +1711,14 @@ void move_towards_segment_center (tObject *objP)
 //	Return true if door can be flown through by a suitable nType robot.
 //	Brains, avoid robots, companions can open doors.
 //	objP == NULL means treat as buddy.
-int AIDoorIsOpenable (tObject *objP, tSegment *segp, short nSide)
+int AIDoorIsOpenable (tObject *objP, tSegment *segP, short nSide)
 {
 	short nWall;
 	wall	*wallP;
 
-if (!IS_CHILD (segp->children [nSide]))
+if (!IS_CHILD (segP->children [nSide]))
 	return 0;		//trap -2 (exit tSide)
-nWall = WallNumP (segp, nSide);
+nWall = WallNumP (segP, nSide);
 if (!IS_WALL (nWall))		//if there's no door at alld:\temp\dm_test.
 	return 1;				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console tObject can open all doors (for purposes of determining paths).
@@ -1845,30 +1867,30 @@ int openable_doors_in_segment (short nSegment)
 // -- }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
-// -- //	Randomly select a tSegment attached to *segp, reachable by flying.
+// -- //	Randomly select a tSegment attached to *segP, reachable by flying.
 // -- int get_random_child (int nSegment)
 // -- {
 // -- 	int	nSide;
-// -- 	tSegment	*segp = &gameData.segs.segments [nSegment];
+// -- 	tSegment	*segP = &gameData.segs.segments [nSegment];
 // -- 
 // -- 	nSide = (rand () * 6) >> 15;
 // -- 
-// -- 	while (!(WALL_IS_DOORWAY (segp, nSide) & WID_FLY_FLAG))
+// -- 	while (!(WALL_IS_DOORWAY (segP, nSide) & WID_FLY_FLAG))
 // -- 		nSide = (rand () * 6) >> 15;
 // -- 
-// -- 	nSegment = segp->children [nSide];
+// -- 	nSegment = segP->children [nSide];
 // -- 
 // -- 	return nSegment;
 // -- }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segp.
-int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segp)
+//	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
+int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segP)
 {
 	int		curobjnum;
 
 	//	If this would intersect with another tObject (only check those in this tSegment), then try to move.
-	curobjnum = segp->objects;
+	curobjnum = segP->objects;
 	while (curobjnum != -1) {
 		tObject *curObjP = &gameData.objs.objects [curobjnum];
 		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_CNTRLCEN)) {
@@ -1889,7 +1911,7 @@ int CreateGatedRobot (short nSegment, ubyte object_id, vmsVector *pos)
 {
 	int			nObject, nTries = 5;
 	tObject		*objP;
-	tSegment		*segp = gameData.segs.segments + nSegment;
+	tSegment		*segP = gameData.segs.segments + nSegment;
 	vmsVector	object_pos;
 	tRobotInfo	*robptr = &gameData.bots.pInfo [object_id];
 	int			i, count=0;
@@ -1909,15 +1931,15 @@ int CreateGatedRobot (short nSegment, ubyte object_id, vmsVector *pos)
 		return -1;
 	}
 
-	COMPUTE_SEGMENT_CENTER (&object_pos, segp);
+	COMPUTE_SEGMENT_CENTER (&object_pos, segP);
 	for (;;) {
 		if (!pos)
-			PickRandomPointInSeg (&object_pos, SEG_IDX (segp));
+			PickRandomPointInSeg (&object_pos, SEG_IDX (segP));
 		else
 			object_pos = *pos;
 
 		//	See if legal to place tObject here.  If not, move about in tSegment and try again.
-		if (checkObjectObject_intersection (&object_pos, objsize, segp)) {
+		if (checkObjectObject_intersection (&object_pos, objsize, segP)) {
 			if (!--nTries) {
 				gameData.boss.nLastGateTime = gameData.time.xGame - 3*gameData.boss.nGateInterval/4;
 				return -1;
@@ -2462,7 +2484,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 								}
 
 								if ((ailp->nextSecondaryFire <= 0) && (robptr->nSecWeaponType != -1)) {
-									calc_gun_point (gun_point, objP, 0);
+									CalcGunPoint (gun_point, objP, 0);
 									AIFireLaserAtPlayer (objP, gun_point, 0, &fire_pos);
 									Last_fired_upon_player_pos = fire_pos;
 								}
@@ -2476,11 +2498,11 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 
 					//	Wants to fire, so should go into chase mode, probably.
 					if ((aip->behavior != AIB_RUN_FROM)
-						 && (aip->behavior != AIB_STILL)
+						 && (aip->behavior != AIB_IDLING)
 						 && (aip->behavior != AIB_SNIPE)
 						 && (aip->behavior != AIB_FOLLOW)
 						 && (!robptr->attackType)
-						 && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_STILL)))
+						 && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
 						ailp->mode = AIM_CHASE_OBJECT;
 				}
 
@@ -2558,7 +2580,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 									AIFireLaserAtPlayer (objP, gun_point, nGun, &Last_fired_upon_player_pos);
 
 								if ((ailp->nextSecondaryFire <= 0) && (robptr->nSecWeaponType != -1)) {
-									calc_gun_point (gun_point, objP, 0);
+									CalcGunPoint (gun_point, objP, 0);
 									AIFireLaserAtPlayer (objP, gun_point, 0, &Last_fired_upon_player_pos);
 								}
 
@@ -2568,7 +2590,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 					}
 
 					//	Wants to fire, so should go into chase mode, probably.
-					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_STILL)))
+					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_IDLING) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
 						ailp->mode = AIM_CHASE_OBJECT;
 				}
 				aip->GOAL_STATE = AIS_RECO;

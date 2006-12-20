@@ -1590,6 +1590,7 @@ char *defaultGameTexts [][2] = {
 	{"~Langsam rotieren", "spin ~Slowly"},
 	{"~Mittelschnell rotieren", "spin ~Medium fast"},
 	{"~Schnell rotieren", "spin ~Fast"},
+	{"stehende roboter an~Imieren", "animate ~Idling robots"},
 #if 0
 	{"", ""},
 #endif
@@ -2059,6 +2060,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, powerups will rendered as true 3D models."},
 	{"Wenn angekreuzt, kreiseln die 3D-Powerups.", "If checked, the 3D powerups will spin."},
 	{"Hier können Powerupeinstellungen vorgenommen werden.", "Adjust powerup rendering settings here."},
+	{"Wenn angekreuzt, bewegen sich Roboter, die nichts besseres zu\ntun haben, ein wenig herum und beleben die Minen ein bisschen.", 
+	 "If checked, idling robots will move around a little giving a\nlittle more activity to the mines."},
 #if 0
 	{"", ""},
 #endif

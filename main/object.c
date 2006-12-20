@@ -3475,7 +3475,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 						objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
 						ailp->playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
 						ailp->playerAwarenessTime = F1_0*3;
-						ailp->previousVisibility = 2;
+						ailp->nPrevVisibility = 2;
 					}
 				}
 			}

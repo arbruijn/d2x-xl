@@ -1622,9 +1622,9 @@ void LoadGameTexts(void);
 #define TXT_SPIN_SLOW				GT(840)
 #define TXT_SPIN_MEDIUM				GT(841)
 #define TXT_SPIN_FAST				GT(842)
+#define TXT_IDLE_ANIMS				GT(843)
 #if 0
 
-#define TXT_				GT(843)
 #define TXT_				GT(844)
 #define TXT_				GT(845)
 #define TXT_				GT(846)
@@ -2042,10 +2042,10 @@ void LoadGameTexts(void);
 #define HTX_3D_POWERUPS				HT(240)				
 #define HTX_SPIN_POWERUPS			HT(241)				
 #define HTX_RENDER_PRUPOPTS		HT(242)				
+#define HTX_GPLAY_IDLEANIMS		HT(243)				
 
 #if 0
 				
-#define HTX_					HT(243)				
 #define HTX_					HT(244)				
 #define HTX_					HT(245)				
 #define HTX_					HT(246)				

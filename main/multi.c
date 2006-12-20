@@ -423,13 +423,13 @@ void MultiEndLevelScore (void)
 
 if (gameData.app.nGameMode & GM_NETWORK) {
 	old_connect = gameData.multi.players [gameData.multi.nLocalPlayer].connected;
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].connected!=3)
+	if (gameData.multi.players [gameData.multi.nLocalPlayer].connected != 3)
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = CONNECT_END_MENU;
 	networkData.nStatus = NETSTAT_ENDLEVEL;
 	}
 // Do the actual screen we wish to show
 SetFunctionMode (FMODE_MENU);
-kmatrix_view (gameData.app.nGameMode & GM_NETWORK);
+KMatrixView (gameData.app.nGameMode & GM_NETWORK);
 SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
@@ -750,7 +750,7 @@ void MultiComputeKill (int nKiller, int nKilled)
 	tPlayer	*pKiller, *pKilled;
 	tObject	*objP;
 
-kmatrixKills_changed = 1;
+nKMatrixKillsChanged = 1;
 bMultiSuicide = 0;
 
 // Both tObject numbers are localized already!
@@ -3854,7 +3854,7 @@ else if (gameData.app.nGameMode & GM_MONSTERBALL)
 	bonus = extraGameInfo [1].monsterball.nBonus;
 else
 	bonus = 1;
-kmatrixKills_changed = 1;
+nKMatrixKillsChanged = 1;
 if (nPlayer < 0) {
 	penalty = 1;
 	nPlayer = -nPlayer - 1;
@@ -3928,7 +3928,7 @@ void MultiDoOrbBonus (char *buf)
 	int nKillGoal;
 	int bonus = GetOrbBonus (buf [2]);
 
-kmatrixKills_changed = 1;
+nKMatrixKillsChanged = 1;
 if (nPlayer == gameData.multi.nLocalPlayer)
 	HUDInitMessage (TXT_SCORED_ORBS, bonus);
 else

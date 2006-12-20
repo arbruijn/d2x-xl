@@ -548,53 +548,57 @@ if (nModel >= gameData.models.nPolyModels)
 	return;
 Assert (nModel < gameData.models.nPolyModels);
 // only render shadows for custom models and for standard models with a shadow proof alternative model
-if (!(bIsDefModel && bHaveAltModel)) {
-	if (gameStates.app.bFixModels && (objP->nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
-		return;
+if (!objP) 
 	po = gameData.models.polyModels + nModel;
-	}
-else if (gameStates.render.nShadowPass != 2) {
-	if ((gameStates.app.bAltModels || (objP->nType == OBJ_PLAYER)) && bHaveAltModel)
+else {
+	if (!(bIsDefModel && bHaveAltModel)) {
+		if (gameStates.app.bFixModels && (objP->nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
+			return;
+		po = gameData.models.polyModels + nModel;
+		}
+	else if (gameStates.render.nShadowPass != 2) {
+		if ((gameStates.app.bAltModels || (objP->nType == OBJ_PLAYER)) && bHaveAltModel)
+			po = gameData.models.altPolyModels + nModel;
+		else
+			po = gameData.models.polyModels + nModel;
+		}
+	else if (bHaveAltModel)
 		po = gameData.models.altPolyModels + nModel;
 	else
-		po = gameData.models.polyModels + nModel;
-	}
-else if (bHaveAltModel)
-	po = gameData.models.altPolyModels + nModel;
-else
-	return;
-if ((gameStates.render.nShadowPass == 2) && objP) {
+		return;
+	if (gameStates.render.nShadowPass == 2) {
 #if 0
-	if (!CanSeePoint (objP, &gameData.objs.viewer->position.vPos))
-		return;
+		if (!CanSeePoint (objP, &gameData.objs.viewer->position.vPos))
+			return;
 #endif
-	if (objP->nType == OBJ_ROBOT) {
-		if (!gameOpts->render.shadows.bRobots)
+		if (objP->nType == OBJ_ROBOT) {
+			if (!gameOpts->render.shadows.bRobots)
+				return;
+			if (objP->cType.aiInfo.CLOAKED)
+				return;
+			}
+		else if ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_POWERUP)) {
+			if (!gameOpts->render.shadows.bMissiles)
+				return;
+			if (!bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
+				return;
+			}
+		else if (objP->nType == OBJ_PLAYER) {
+			if (!gameOpts->render.shadows.bPlayers)
+				return;
+			if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+				return;
+			}
+		else if (objP->nType == OBJ_CNTRLCEN) {
+			if (!gameOpts->render.shadows.bReactors)
+				return;
+			}
+		else 
 			return;
-		if (objP->cType.aiInfo.CLOAKED)
-			return;
-		}
-	else if ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_POWERUP)) {
-		if (!gameOpts->render.shadows.bMissiles)
-			return;
-		if (!bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
-			return;
-		}
-	else if (objP->nType == OBJ_PLAYER) {
-		if (!gameOpts->render.shadows.bPlayers)
-			return;
-		if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
-			return;
-		}
-	else if (objP->nType == OBJ_CNTRLCEN) {
-		if (!gameOpts->render.shadows.bReactors)
-			return;
-		}
-	else 
+		G3SetModelPoints (gameData.models.polyModelPoints);
+		G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
 		return;
-	G3SetModelPoints (gameData.models.polyModelPoints);
-	G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
-	return;
+		}
 	}
 //check if should use simple model (depending on detail level chosen)
 if (po->nSimplerModel)					//must have a simpler model

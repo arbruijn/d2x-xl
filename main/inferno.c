@@ -1244,6 +1244,7 @@ if (i) {
 	gameOptions [1].gameplay.bHeadlightOn = 1;
 	gameOptions [1].gameplay.bShieldWarning = 0;
 	gameOptions [1].gameplay.bInventory = 0;
+	gameOptions [1].gameplay.bIdleAnims = 0;
 	}
 else {
 	gameOptions [0].gameplay.nAutoSelectWeapon = 2;
@@ -1258,6 +1259,7 @@ else {
 	gameOptions [0].gameplay.bHeadlightOn = 0;
 	gameOptions [0].gameplay.bShieldWarning = 0;
 	gameOptions [1].gameplay.bInventory = 0;
+	gameOptions [1].gameplay.bIdleAnims = 0;
 	}
 }
 

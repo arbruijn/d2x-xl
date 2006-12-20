@@ -40,8 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _KMATRIX_H
 #define _KMATRIX_H
 
-extern int kmatrixKills_changed;
+extern int nKMatrixKillsChanged;
 
-void kmatrix_view();
+void KMatrixView();
 
 #endif /* _KMATRIX_H */

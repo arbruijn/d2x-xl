@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AI_DIR_BACKWARD (-AI_DIR_FORWARD)
 
 // Behaviors
-#define AIB_STILL                       0x80
+#define AIB_IDLING                      0x80
 #define AIB_NORMAL                      0x81
 #define AIB_BEHIND                      0x82
 #define AIB_RUN_FROM                    0x83
@@ -149,7 +149,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_BEHAVIOR    0x86
 
 //  Modes
-#define AIM_STILL                   0
+#define AIM_IDLING                  0
 #define AIM_WANDER                  1
 #define AIM_FOLLOW_PATH             2
 #define AIM_CHASE_OBJECT            3
@@ -251,13 +251,13 @@ typedef struct tAILocal {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // playerAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
-	int     playerAwarenessType;  // nType of awareness of tPlayer
-	int     nRetryCount;            // number of retries in physics last time this tObject got moved.
-	int     nConsecutiveRetries;    // number of retries in consecutive frames (ie, without a nRetryCount of 0)
-	int     mode;                   // current mode within behavior
-	int     previousVisibility;    // Visibility of tPlayer last time we checked.
-	int     nRapidFireCount;        // number of shots fired rapidly
-	int     nGoalSegment;           // goal tSegment for current path
+	int     playerAwarenessType;	// nType of awareness of tPlayer
+	int     nRetryCount;          // number of retries in physics last time this tObject got moved.
+	int     nConsecutiveRetries;  // number of retries in consecutive frames (ie, without a nRetryCount of 0)
+	int     mode;                 // current mode within behavior
+	int     nPrevVisibility;		// Visibility of tPlayer last time we checked.
+	int     nRapidFireCount;      // number of shots fired rapidly
+	int     nGoalSegment;         // goal tSegment for current path
 
 	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which tPlayer last seen, attacked
 

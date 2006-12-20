@@ -1357,7 +1357,7 @@ void bm_readRobot()
 					flags |= RIF_BIG_RADIUS;
 			} else if (!stricmp( arg, "behavior" )) {
 				if (!stricmp(equal_ptr, "STILL"))
-					behavior = AIB_STILL;
+					behavior = AIB_IDLING;
 				else if (!stricmp(equal_ptr, "NORMAL"))
 					behavior = AIB_NORMAL;
 				else if (!stricmp(equal_ptr, "BEHIND"))

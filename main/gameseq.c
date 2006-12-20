@@ -1518,7 +1518,7 @@ Assert (!bSecret);
 if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiEndLevelScore ();		
 	else
 	// NOTE LINK TO ABOVE!!!
@@ -1544,7 +1544,10 @@ if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
 else {
 	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
 	if (gameData.missions.nNextLevel > gameData.missions.nLastLevel)
-		gameData.missions.nNextLevel = gameData.missions.nLastLevel;
+		if (extraGameInfo [IsMultiGame].bRotateLevels)
+			gameData.missions.nNextLevel = 1;
+		else
+			gameData.missions.nNextLevel = gameData.missions.nLastLevel;
 	if (!(gameData.app.nGameMode & GM_MULTI))
 		DoEndlevelMenu (); // Let user save their game
 	StartNewLevel (gameData.missions.nNextLevel, 0);

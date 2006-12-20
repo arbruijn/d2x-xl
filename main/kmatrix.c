@@ -52,9 +52,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
 #define CENTERSCREEN (gameStates.menus.bHires?320:160)
 
-int kmatrixKills_changed = 0;
+int nKMatrixKillsChanged = 0;
 char ConditionLetters []={' ','P','E','D','E','E','V','W'};
-char WaitingForOthers=0;
+char bWaitingForOthers=0;
 
 int Kmatrix_nomovie_message=0;
 
@@ -312,7 +312,7 @@ GrPrintF (CENTERSCREEN- (sw/2), LHY (55+72+3), message);
 
 //-----------------------------------------------------------------------------
 
-void kmatrix_redraw ()
+void KMatrixRedraw ()
 {
 	int i, color;
 	int sorted [MAX_NUM_NET_PLAYERS];
@@ -389,9 +389,9 @@ GrUpdate (0);
 
 //-----------------------------------------------------------------------------
 
-void KMatrixQuit (bkg *bg, int bQuit, int network)
+void KMatrixQuit (bkg *bg, int bQuit, int bNetwork)
 {
-if (network)
+if (bNetwork)
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
 	gameData.multi.players [gameData.multi.nLocalPlayer].connected = 0;
@@ -400,7 +400,8 @@ if (bQuit) {
 Kmatrix_nomovie_message = 0;
 NMRemoveBackground (bg);
 gameStates.menus.nInMenu--;
-longjmp (gameExitPoint, 0);
+if (!extraGameInfo [IsMultiGame].bRotateLevels)
+	longjmp (gameExitPoint, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -412,7 +413,7 @@ longjmp (gameExitPoint, 0);
 
 extern void NetworkEndLevelPoll3 (int nitems, struct tMenuItem * menus, int * key, int citem);
 
-void kmatrix_view (int network)
+void KMatrixView (int bNetwork)
 {											 
    int i, k, done,choice;
 	fix entryTime = TimerGetApproxSeconds ();
@@ -427,46 +428,46 @@ gameStates.menus.nInMenu++;
 gameStates.app.bGameRunning = 0;
 memset (&bg, 0, sizeof (bg));
 
-network=gameData.app.nGameMode & GM_NETWORK;
+bNetwork=gameData.app.nGameMode & GM_NETWORK;
 
-for (i=0;i<MAX_NUM_NET_PLAYERS;i++)
-DigiKillSoundLinkedToObject (gameData.multi.players [i].nObject);
+for (i = 0; i <MAX_NUM_NET_PLAYERS; i++)
+	DigiKillSoundLinkedToObject (gameData.multi.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
-WaitingForOthers=0;
+bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
 GameFlushInputs ();
 done = 0;
 for (i = 0; i < gameData.multi.nPlayers; i++)
 	oldstates  [i] = gameData.multi.players [i].connected;
-if (network)
+if (bNetwork)
 	NetworkEndLevel (&key);
 while (!done) {
 	if (!bRedraw || (curDrawBuffer == GL_BACK)) {
 		LoadStars (&bg, bRedraw);
-		kmatrix_redraw ();
+		KMatrixRedraw ();
 		bRedraw = 1;
 		}
-	kmatrixKills_changed = 0;
+	nKMatrixKillsChanged = 0;
 	for (i = 0; i < 4; i++)
 		if (joy_get_button_down_cnt (i)) {
 			if (LAST_OEM_LEVEL) {
-				KMatrixQuit (&bg, 1, network);
+				KMatrixQuit (&bg, 1, bNetwork);
 				return;
 				}
 			gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
-			if (network)
+			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
 			} 			
 	for (i = 0; i < 3; i++)	
 		if (MouseButtonDownCount (i)) {
 			if (LAST_OEM_LEVEL) {
-				KMatrixQuit (&bg, 1, network);
+				KMatrixQuit (&bg, 1, bNetwork);
 				return;	
 				}
 			gameData.multi.players [gameData.multi.nLocalPlayer].connected=7;
-			if (network)
+			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
 			}			
@@ -481,11 +482,11 @@ while (!done) {
 				break;
 				}
 			if (LAST_OEM_LEVEL) {
-				KMatrixQuit (&bg, 1, network);
+				KMatrixQuit (&bg, 1, bNetwork);
 				return;
 				}
 			gameData.multi.players  [gameData.multi.nLocalPlayer].connected = 7;
-			if (network)	
+			if (bNetwork)	
 				NetworkSendEndLevelPacket ();
 			break;
 
@@ -497,10 +498,10 @@ while (!done) {
 			else
 				choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				if (choice == 0) {
-					KMatrixQuit (&bg, 1, network);
+					KMatrixQuit (&bg, 1, bNetwork);
 					return;
 					}
-				kmatrixKills_changed=1;
+				nKMatrixKillsChanged=1;
 				break;
 
 		case KEY_PRINT_SCREEN:
@@ -517,7 +518,7 @@ while (!done) {
 	if ((TimerGetApproxSeconds () >= entryTime + MAX_VIEW_TIME) && 
 		 (gameData.multi.players [gameData.multi.nLocalPlayer].connected != 7)) {
 		if (LAST_OEM_LEVEL) {
-			KMatrixQuit (&bg, 1, network);
+			KMatrixQuit (&bg, 1, bNetwork);
 			return;
 			}
 		if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
@@ -525,10 +526,10 @@ while (!done) {
 			break;
 			}
 		gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
-		if (network)
+		if (bNetwork)
 			NetworkSendEndLevelPacket ();
 		}	
-	if (network && (gameData.app.nGameMode & GM_NETWORK)) {
+	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
 		NetworkEndLevelPoll2 (0, NULL, &key, 0);
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multi.nPlayers; i++) {
 			if (gameData.multi.players [i].connected && i!=gameData.multi.nLocalPlayer) {
@@ -543,7 +544,7 @@ while (!done) {
 			}
 		if (gameData.multi.players [i].connected!=oldstates [i]) {
 			if (ConditionLetters [gameData.multi.players [i].connected] != ConditionLetters [oldstates [i]])
-				kmatrixKills_changed = 1;
+				nKMatrixKillsChanged = 1;
 				oldstates [i] = gameData.multi.players [i].connected;
 				NetworkSendEndLevelPacket ();
 				}
@@ -558,11 +559,11 @@ while (!done) {
 			gameData.reactor.countdown.nSecsLeft = -1;
 		if (previous_seconds_left != gameData.reactor.countdown.nSecsLeft) {
 			previous_seconds_left = gameData.reactor.countdown.nSecsLeft;
-			kmatrixKills_changed=1;
+			nKMatrixKillsChanged=1;
 			}
-		if (kmatrixKills_changed) {
-			kmatrix_redraw ();
-			kmatrixKills_changed = 0;
+		if (nKMatrixKillsChanged) {
+			KMatrixRedraw ();
+			nKMatrixKillsChanged = 0;
 			}
 		}
 	}
@@ -570,7 +571,7 @@ gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
 // Restore background and exit
 GrPaletteFadeOut (NULL, 32, 0);
 GameFlushInputs ();
-KMatrixQuit (&bg, 0, network);
+KMatrixQuit (&bg, 0, bNetwork);
 }
 
 //-----------------------------------------------------------------------------

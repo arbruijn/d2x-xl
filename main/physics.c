@@ -928,7 +928,7 @@ void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 //	------------------------------------------------------------------------------------------------------
 //	Note: This is the old AITurnTowardsVector code.
 //	PhysApplyRot used to call AITurnTowardsVector until I fixed it, which broke PhysApplyRot.
-void physics_turn_towards_vector (vmsVector *goal_vector, tObject *objP, fix rate)
+void PhysicsTurnTowardsVector (vmsVector *goal_vector, tObject *objP, fix rate)
 {
 	vmsAngVec	dest_angles, cur_angles;
 	fix			delta_p, delta_h;
@@ -1007,7 +1007,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 	}
 
 	//	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.
-	physics_turn_towards_vector (vForce, objP, rate);
+	PhysicsTurnTowardsVector (vForce, objP, rate);
 
 
 }

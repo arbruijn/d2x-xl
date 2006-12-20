@@ -505,14 +505,14 @@ if (!gameStates.render.bOutsideMine) {
 
 		VmVecSub (&tvec, &gameData.objs.console->position.vPos, &gameData.endLevel.exit.vSideExit);
 		if (VmVecDot (&tvec, &gameData.endLevel.exit.mOrient.fVec) > 0) {
-			tObject *tObjP;
+			tObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			tObjP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, i2f (50), VCLIP_BIG_PLAYER_EXPLOSION);
-			if (tObjP) {
-				external_explosion = *tObjP;
-				tObjP->flags |= OF_SHOULD_BE_DEAD;
+			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, i2f (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			if (objP) {
+				external_explosion = *objP;
+				objP->flags |= OF_SHOULD_BE_DEAD;
 				gameStates.render.nFlashScale = 0;	//kill lights in mine
-				ext_expl_halflife = tObjP->lifeleft;
+				ext_expl_halflife = objP->lifeleft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
 			DigiLinkSoundToPos (SOUND_BIG_ENDLEVEL_EXPLOSION, gameData.endLevel.exit.nSegNum, 0, &gameData.endLevel.exit.vSideExit, 0, i2f (3)/4);

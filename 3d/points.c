@@ -151,7 +151,7 @@ vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 
 // -----------------------------------------------------------------------------------
 
-vmsVector *G3RotateDeltaVec(vmsVector *dest,vmsVector *src)
+vmsVector *G3RotateDeltaVec (vmsVector *dest,vmsVector *src)
 {
 	return VmVecRotate(dest,src,&viewInfo.view [0]);
 }

@@ -1591,7 +1591,7 @@ void AddUnknownSegmentEdges (tSegment *seg)
 
 void AutomapBuildEdgeList ()
 {
-	int	i,e1,e2,s;
+	int	h = 0, i, e1, e2, s;
 	Edge_info * e;
 
 	amData.bCheat = 0;
@@ -1623,6 +1623,7 @@ void AutomapBuildEdgeList ()
 			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 				if (bAutomapVisited[s]) {
+					h++;
 					AddSegmentEdges (&gameData.segs.segments[s]);
 				}
 

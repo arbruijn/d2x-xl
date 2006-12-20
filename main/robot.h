@@ -80,7 +80,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Add circleDistance to tRobotInfo.
  *
  * Revision 1.8  1994/06/09  16:22:28  matt
- * Moved header for calc_gun_point() here, where it belongs
+ * Moved header for CalcGunPoint() here, where it belongs
  *
  * Revision 1.7  1994/06/08  18:16:23  john
  * Bunch of new stuff that basically takes constants out of the code
@@ -293,8 +293,8 @@ void InitCamBots (int bReset);
 void UnloadCamBot (void);
 //given an tObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-void calc_gun_point(vmsVector *gun_point,tObject *obj,int gun_num);
-//void calc_gun_point(vmsVector *gun_point,int nObject,int gun_num);
+void CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
+//void CalcGunPoint(vmsVector *gun_point,int nObject,int gun_num);
 
 //  Tells joint positions for a gun to be in a specified state.
 //  A gun can have associated with it any number of joints.  In order to tell whether a gun is a certain

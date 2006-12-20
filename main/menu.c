@@ -2927,7 +2927,8 @@ void GameplayOptionsMenu ()
 	int	i, j, opt = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
-			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1;
+			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
+			optIdleAnims = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50];
 	char	szSpeedBoost [50];
@@ -2975,6 +2976,8 @@ if (gameOpts->app.bExpertMode) {
 	optHitAngles = opt++;
 	ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 	optSmartWeaponSwitch = opt++;
+	ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
+	optIdleAnims = opt++;
 	}
 ADD_TEXT (opt, "", 0);
 opt++;
@@ -3011,6 +3014,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
+	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	}
 else {
 #if EXPMODE_DEFAULTS

@@ -804,7 +804,7 @@ aip->PATH_DIR = 1;		//	Initialize to moving forward.
 ailp->mode = AIM_FOLLOW_PATH;
 //	If this robot is visible (player_visibility is not available) and it's running away, move towards outside with
 //	randomness to prevent a stream of bots from going away down the center of a corridor.
-if (gameData.ai.localInfo [OBJ_IDX (objP)].previousVisibility) {
+if (gameData.ai.localInfo [OBJ_IDX (objP)].nPrevVisibility) {
 	if (aip->nPathLength) {
 		int nPoints = aip->nPathLength;
 		MoveTowardsOutside (&gameData.ai.pointSegs [aip->nHideIndex], &nPoints, objP, 1);
@@ -857,7 +857,7 @@ else if (aip->nCurPathIndex >= aip->nPathLength - 1) {
 		CreatePathToStation (objP, 15);
 		if (!aip->nPathLength) {
 			tAILocal	*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
-			ailp->mode = AIM_STILL;
+			ailp->mode = AIM_IDLING;
 			}
 		return;
 		}
@@ -915,7 +915,7 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (tObject *objP, int player_visibility, int previousVisibility, vmsVector *vec_to_player)
+void AIFollowPath (tObject *objP, int player_visibility, int nPrevVisibility, vmsVector *vec_to_player)
 {
 	tAIStatic		*aip = &objP->cType.aiInfo;
 
@@ -971,7 +971,7 @@ if (aip->nPathLength < 2) {
 			}
 		}
 	else if (robptr->companion == 0) {
-		ailp->mode = AIM_STILL;
+		ailp->mode = AIM_IDLING;
 		aip->nPathLength = 0;
 		return;
 		}
@@ -985,7 +985,7 @@ if (gameStates.app.bPlayerIsDead)
 else
 	xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.console->position.vPos);
 	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
-if (!(player_visibility || previousVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
+if (!(player_visibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
 	if (xDistToGoal < F1_0*2) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
@@ -1074,7 +1074,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	if ((aip->nCurPathIndex >= aip->nPathLength) || (aip->nCurPathIndex < 0)) {
 		//	If mode = hiding, then stay here until get bonked or hit by player.
 		// --	if (ailp->mode == AIM_BEHIND) {
-		// --		ailp->mode = AIM_STILL;
+		// --		ailp->mode = AIM_IDLING;
 		// --		return;		// Stay here until bonked or hit by player.
 		// --	} else
 
@@ -1106,7 +1106,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		else if (aip->behavior == AIB_STATION) {
 			CreatePathToStation (objP, 15);
 			if ((aip->nHideSegment != gameData.ai.pointSegs [aip->nHideIndex+aip->nPathLength-1].nSegment) || (aip->nPathLength == 0)) {
-				ailp->mode = AIM_STILL;
+				ailp->mode = AIM_IDLING;
 				}
 			else {
 				//--Int3_if (( (aip->nCurPathIndex >= 0) && (aip->nCurPathIndex < aip->nPathLength));
@@ -1116,7 +1116,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		else if (ailp->mode == AIM_FOLLOW_PATH) {
 			CreatePathToPlayer (objP, 10, 1);
 			if (aip->nHideSegment != gameData.ai.pointSegs [aip->nHideIndex+aip->nPathLength-1].nSegment) {
-				ailp->mode = AIM_STILL;
+				ailp->mode = AIM_IDLING;
 				return;
 				}
 			else {
@@ -1131,7 +1131,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 				ailp->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 				if (aip->nPathLength < 1) {
 					aip->behavior = AIB_NORMAL;
-					ailp->mode = AIM_STILL;
+					ailp->mode = AIM_IDLING;
 					return;
 					}
 				}
@@ -1393,7 +1393,7 @@ AIPathGarbageCollect ();
 //	---------------------------------------------------------------------------------------------------------
 //	Probably called because a robot bashed a wall, getting a bunch of retries.
 //	Try to resume path.
-void attempt_to_resume_path (tObject *objP)
+void AttemptToResumePath (tObject *objP)
 {
 	//int				nObject = OBJ_IDX (objP);
 	tAIStatic		*aip = &objP->cType.aiInfo;
@@ -1406,7 +1406,7 @@ if ((aip->behavior == AIB_STATION) && (gameData.bots.pInfo [objP->id].companion 
 
 		aip->nHideSegment = objP->nSegment;
 //Int3 ();
-		ailp->mode = AIM_STILL;
+		ailp->mode = AIM_IDLING;
 #if TRACE
 		con_printf (1, "Note: Bashing hide tSegment of robot %i to current tSegment because he's lost.\n", OBJ_IDX (objP));
 #endif
@@ -1423,7 +1423,7 @@ if ((nNewPathIndex >= 0) && (nNewPathIndex < aip->nPathLength)) {
 	} 
 else {
 	//	At end of line and have nowhere to go.
-	move_towards_segment_center (objP);
+	MoveTowardsSegmentCenter (objP);
 	CreatePathToStation (objP, 15);
 	}
 }

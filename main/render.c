@@ -805,7 +805,6 @@ if (!bRender)
 		}
 	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
 		if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-
 			bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
 			if (props.nOvlTex)
 				bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
@@ -1337,8 +1336,8 @@ void DoRenderObject(int nObject, int nWindow)
 // -----------------------------------------------------------------------------------
 
 #ifdef _DEBUG
-int	bDrawBoxes=0;
-int bWindowCheck=1, draw_edges=0, bNewSegSorting=1, bPreDrawSegs=0;
+int bDrawBoxes=0;
+int bWindowCheck = 1, draw_edges = 0, bNewSegSorting = 1, bPreDrawSegs = 0;
 int no_migrate_segs=1, migrateObjects=1;
 int check_bWindowCheck=0;
 #else
@@ -1369,9 +1368,9 @@ if (!++nRLFrameCount) {		//wrap!
 //by the vertices passed relative to the viewer
 g3s_codes RotateList (int nv, short *pointNumList)
 {
-	int i, pnum;
-	g3sPoint *pnt;
-	g3s_codes cc;
+	int			i, pnum;
+	g3sPoint		*pnt;
+	g3s_codes	cc;
 
 cc.and = 0xff;  
 cc.or = 0;
@@ -1400,7 +1399,7 @@ void ProjectList (int nv, short *pointNumList)
 {
 	int i, pnum;
 
-for (i=0;i<nv;i++) {
+for (i = 0; i < nv; i++) {
 	pnum = pointNumList [i];
 	if (!(gameData.segs.points [pnum].p3Flags & PF_PROJECTED))
 		G3ProjectPoint (gameData.segs.points + pnum);
@@ -1546,14 +1545,14 @@ return ++nPerspectiveDepth;
 
 //------------------------------------------------------------------------------
 
-int DecPerspectiveDepth(void)
+int DecPerspectiveDepth (void)
 {
-return nPerspectiveDepth==1?nPerspectiveDepth:--nPerspectiveDepth;
+return (nPerspectiveDepth == 1) ? nPerspectiveDepth : --nPerspectiveDepth;
 }
 
 //------------------------------------------------------------------------------
 
-int ResetPerspectiveDepth(void)
+int ResetPerspectiveDepth (void)
 {
 return nPerspectiveDepth = DEFAULT_PERSPECTIVE_DEPTH;
 }
@@ -1624,8 +1623,8 @@ typedef struct tSegZRef {
 
 static tSegZRef segZRef [MAX_SEGMENTS];
 
-unsigned char bVisited [MAX_SEGMENTS];
-char	nVisited;
+ubyte bVisited [MAX_SEGMENTS];
+ubyte	nVisited = 255;
 short nRenderList [MAX_RENDER_SEGS];
 short nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
 ubyte nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
@@ -2798,7 +2797,7 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 
 	extraGameInfo [1].bShadows = 0;
 if (EGI_FLAG (bShadows, 0, 0) && 
-	 !(nWindow || gameStates.render.cameras.bActive)) {
+	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 		OglStartFrame (0, 0);
@@ -2937,9 +2936,11 @@ void BuildSegmentList (short nStartSeg, int nWindow)
 	int		nChildren, bCheckBehind;					//how many sides in childList
 	tSegment	*segP;
 
-if (bCheckBehind = (gameStates.render.nShadowPass == 1))
-	memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
-nVisited = 0;
+bCheckBehind = (gameStates.render.nShadowPass == 1);
+if (!++nVisited) {
+	memset (bVisited, 0, sizeof (bVisited));
+	nVisited = 1;
+	}
 memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
 memset (nProcessed, 0, sizeof (nProcessed));
@@ -3014,32 +3015,32 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #endif
 		//for (c=0;c<MAX_SIDES_PER_SEGMENT;c++)	{
 		//	nChild=segP->children [c];
-		for ( c= 0; c < nChildren; c++) {
+		for (c = 0; c < nChildren; c++) {
 			nSide = childList [c];
-			nChild=segP->children [nSide];
+			nChild = segP->children [nSide];
 			//if ( (bWindowCheck || !bVisited [nChild])&& (WALL_IS_DOORWAY(segP, c))) {
 			{
 				if (bWindowCheck) {
 					int i;
 					ubyte codes_and_3d, codes_and_2d;
-					short _x, _y, min_x=32767, max_x=-32767, min_y=32767, max_y=-32767;
-					int no_projFlag=0;	//a point wasn't projected
-					if (bRotated<2) {
-//							if (!bRotated)
-//								RotateList(8, segP->verts);
-						ProjectList(8, segP->verts);
-						bRotated=2;
-					}
+					short _x, _y, min_x = 32767, max_x = -32767, min_y = 32767, max_y = -32767;
+					int bDontProj = 0;	//a point wasn't projected
+					if (bRotated < 2) {
+						if (!bRotated)
+							RotateList(8, segP->verts);
+						ProjectList (8, segP->verts);
+						bRotated = 2;
+						}
 					s2v = sideToVerts [nSide];
-					for (i=0, codes_and_3d=codes_and_2d=0xff;i<4;i++) {
+					for (i = 0, codes_and_3d = codes_and_2d = 0xff; i < 4; i++) {
 						int p = sv [s2v [i]];
 						g3sPoint *pnt = gameData.segs.points+p;
-						if (!(pnt->p3Flags&PF_PROJECTED)) {
-							no_projFlag=1; 
+						if (!(pnt->p3Flags & PF_PROJECTED)) {
+							bDontProj = 1; 
 							break;
 							}
-						_x = f2i(pnt->p3_sx);
-						_y = f2i(pnt->p3_sy);
+						_x = f2i (pnt->p3_sx);
+						_y = f2i (pnt->p3_sy);
 						codes_and_3d &= pnt->p3_codes;
 						codes_and_2d &= code_window_point(_x, _y, checkWinP);
 #ifdef _DEBUG
@@ -3061,13 +3062,13 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					}
 #ifdef _DEBUG
 					if (bDrawBoxes)
-						DrawWindowBox(WHITE_RGBA, min_x, min_y, max_x, max_y);
+						DrawWindowBox (WHITE_RGBA, min_x, min_y, max_x, max_y);
 #endif
-					if (no_projFlag || (!codes_and_3d && !codes_and_2d)) {	//maybe add this tSegment
+					if (bDontProj || !(codes_and_3d || codes_and_2d)) {	//maybe add this tSegment
 						int rp = nRenderPos [nChild];
 						window *new_w = renderWindows + lCnt;
 
-						if (no_projFlag) 
+						if (bDontProj) 
 							*new_w = *checkWinP;
 						else {
 							new_w->left  = max(checkWinP->left, min_x);
@@ -3075,7 +3076,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							new_w->top   = max(checkWinP->top, min_y);
 							new_w->bot   = min(checkWinP->bot, max_y);
 						}
-						//see if this segP already bVisited, and if so, does current window
+						//see if this segP already visited, and if so, does current window
 						//expand the old window?
 						if (rp != -1) {
 							window *rwP = renderWindows + rp;
@@ -3327,11 +3328,11 @@ if (migrateObjects) {
 			tObject *objP = gameData.objs.objects + objNum;
 			if ((objP->nType == OBJ_WEAPON) && 								//if its a weapon
 				 (objP->lifeleft == Laser_maxTime) && 	//  and its in it's first frame
-				 (Hack_nlasers < MAX_HACKED_LASERS) && 									//  and we have space for it
+				 (nHackLasers < MAX_HACKED_LASERS) && 									//  and we have space for it
 				 (objP->laserInfo.nParentObj > -1) &&					//  and it has a parent
 				 ((OBJ_IDX (gameData.objs.viewer)) == objP->laserInfo.nParentObj)	//  and it's parent is the viewer
 				) {
-				Hack_laser_list [Hack_nlasers++] = objNum;								//then make it draw after everything else.
+				Hack_laser_list [nHackLasers++] = objNum;								//then make it draw after everything else.
 				}
 			else	
 #endif
@@ -3450,11 +3451,10 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 	int	i;
 #endif
 
-	//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
-	windowRenderedData [nWindow].numObjects = 0;
-
+//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
+windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
-	Hack_nlasers = 0;
+nHackLasers = 0;
 #endif
 memset (bObjectRendered, 0, (gameData.objs.nLastObject + 1) * sizeof (bObjectRendered [0]));
 	//set up for rendering
@@ -3464,10 +3464,10 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 	RenderStartFrame ();
 	TransformDynLights (1, 1);
 #if defined(EDITOR) && !defined(NDEBUG)
-		if (bShowOnlyCurSide) {
-			RotateList (8, Cursegp->verts);
-			RenderSide (Cursegp, Curside);
-			goto done_rendering;
+	if (bShowOnlyCurSide) {
+		RotateList (8, Cursegp->verts);
+		RenderSide (Cursegp, Curside);
+		goto done_rendering;
 		}
 #endif
 	 }
@@ -3478,7 +3478,7 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 #endif
 
 if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) || 
-(gameStates.render.nShadowPass == 2)) {
+	 (gameStates.render.nShadowPass == 2)) {
 	BuildSegmentList (nStartSeg, nWindow);		//fills in nRenderList & nRenderSegs
 	//GatherVisibleLights ();
 #if OGL_QUERY
@@ -3515,7 +3515,7 @@ if (nClearWindow == 2) {
 
 		if (nClearWindowColor == -1)
 			nClearWindowColor = BLACK_RGBA;
-		GrSetColor(nClearWindowColor);
+		GrSetColor (nClearWindowColor);
 		for (i=nFirstTerminalSeg, rwP = renderWindows; i < nRenderSegs; i++, rwP++) {
 			if (nRenderList [i] != -1) {
 #ifdef _DEBUG
@@ -3542,10 +3542,7 @@ if (1) {
 	}
 else
 	rsMin = rsMax = -1;
-bSetAutomapVisited =
-	!((extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3)) || 
-	  gameStates.render.cameras.bActive) && 
-	 (gameData.objs.viewer->nType != OBJ_ROBOT);
+bSetAutomapVisited =	!gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 InitFaceList ();
 for (renderState = rsMin; renderState <= rsMax; renderState++) {
 	//memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nSegments));
@@ -3582,7 +3579,7 @@ for (renderState = rsMin; renderState <= rsMax; renderState++) {
 			}
 		}
 #ifdef LASER_HACK								
-	for (i = 0; i < Hack_nlasers; i++)
+	for (i = 0; i < nHackLasers; i++)
 		DoRenderObject (Hack_laser_list [i], nWindow);
 #endif
 	}

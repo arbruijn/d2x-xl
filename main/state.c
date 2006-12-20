@@ -829,7 +829,6 @@ CFWriteInt (playerP->last_score, fp);             // Score at beginning of curre
 CFWriteInt (playerP->score, fp);                  // Current score.
 CFWriteFix (playerP->timeLevel, fp);             // Level time played
 CFWriteFix (playerP->timeTotal, fp);             // Game time played (high word = seconds)
-CFWriteFix (playerP->cloakTime - gameData.time.xGame, fp);             // Time cloaked
 if (playerP->cloakTime == 0x7fffffff)		// invul cheat active
 	CFWriteFix (playerP->cloakTime, fp);      // Time invulnerable
 else
@@ -2118,6 +2117,7 @@ if (!bBetweenLevels)	{
 	ResetObjects (1);
 
 	//Read objects, and pop 'em into their respective segments.
+	fpos = CFTell (fp);
 	h = CFReadInt (fp);
 	gameData.objs.nLastObject = h - 1;
 	for (i = 0; i < h; i++)

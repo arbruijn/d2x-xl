@@ -119,10 +119,10 @@ bool MustClipFlatFace (int nv, g3s_codes cc)
 		for (i=0;i<nv;i++) {
 			g3sPoint *p = bufptr[i];
 	
-			if (! (p->p3Flags&PF_PROJECTED))
+			if (! (p->p3Flags & PF_PROJECTED))
 				G3ProjectPoint (p);
 	
-			if (p->p3Flags&PF_OVERFLOW) {
+			if (p->p3Flags & PF_OVERFLOW) {
 				ret = 1;
 				goto free_points;
 			}

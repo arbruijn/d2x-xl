@@ -2073,6 +2073,7 @@ else
 		//glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		}
 	glEnable (GL_BLEND);
+	glDisable (GL_STENCIL_TEST);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }

@@ -257,6 +257,7 @@ typedef struct tGameplayOptions {
 	int bHeadlightOn;
 	int bShieldWarning;
 	int bInventory;
+	int bIdleAnims;
 } tGameplayOptions;
 
 #define UNIQUE_JOY_AXES	5
@@ -1053,6 +1054,7 @@ typedef struct tObjectData {
 	tObject				init [MAX_OBJECTS];
 	tObjDropInfo		dropInfo [MAX_OBJECTS];
 	tSpeedBoostData	speedBoost [MAX_OBJECTS];
+	vmsVector			vRobotGoals [MAX_OBJECTS];
 	fix					xLastAfterburnerTime [MAX_OBJECTS];
 	short					nFirstDropped;
 	short					nLastDropped;
