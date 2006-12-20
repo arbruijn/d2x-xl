@@ -829,8 +829,8 @@ CFWriteInt (playerP->last_score, fp);             // Score at beginning of curre
 CFWriteInt (playerP->score, fp);                  // Current score.
 CFWriteFix (playerP->timeLevel, fp);             // Level time played
 CFWriteFix (playerP->timeTotal, fp);             // Game time played (high word = seconds)
-if (playerP->cloakTime == 0x7fffffff)		// invul cheat active
-	CFWriteFix (playerP->cloakTime, fp);      // Time invulnerable
+if (playerP->cloakTime == 0x7fffffff)				// cloak cheat active
+	CFWriteFix (playerP->cloakTime, fp);			// Time invulnerable
 else
 	CFWriteFix (playerP->cloakTime - gameData.time.xGame, fp);      // Time invulnerable
 if (playerP->invulnerableTime == 0x7fffffff)		// invul cheat active
@@ -1089,9 +1089,11 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
+//static int fpos;
+
 void StateSaveUniGameData (CFILE *fp, int bBetweenLevels)
 {
-	int	i, j, fpos;
+	int	i, j;
 // Save the Between levels flag...
 CFWriteInt (bBetweenLevels, fp);
 // Save the mission info...
@@ -1105,14 +1107,14 @@ CFWriteFix (gameData.time.xGame, fp);
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWriteInt (gameData.app.nStateGameId, fp);
 	StateSaveNetGame (fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	StateSaveNetPlayers (fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	CFWriteInt (gameData.multi.nPlayers, fp);
 	CFWriteInt (gameData.multi.nLocalPlayer, fp);
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		StateSavePlayer (gameData.multi.players + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	}
 //Save tPlayer info
 StateSavePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
@@ -1148,37 +1150,37 @@ if (!bBetweenLevels)	{
 				}
 			}
 		}
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save tObject info
 	i = gameData.objs.nLastObject + 1;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveObject (gameData.objs.objects + j, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save wall info
 	i = gameData.walls.nWalls;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveWall (gameData.walls.walls + j, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveExplWall (gameData.walls.explWalls + j, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save door info
 	i = gameData.walls.nOpenDoors;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveActiveDoor (gameData.walls.activeDoors + j, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save cloaking wall info
 	i = gameData.walls.nCloaking;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveCloakingWall (gameData.walls.cloaking + j, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save tTrigger info
 	CFWriteInt (gameData.trigs.nTriggers, fp);
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
@@ -1190,7 +1192,7 @@ if (!bBetweenLevels)	{
 		StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
 	for (i = 0; i < MAX_OBJECTS_D2X; i++)
 		CFWriteShort (gameData.trigs.firstObjTrigger [i], fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 		for (j = 0; j < 6; j++)	{
@@ -1200,7 +1202,7 @@ if (!bBetweenLevels)	{
 			CFWriteShort (gameData.segs.segments [i].sides [j].nOvlTex | (gameData.segs.segments [i].sides [j].nOvlOrient << 14), fp);
 			}
 		}
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 // Save the fuelcen info
 	CFWriteInt (gameData.reactor.bDestroyed, fp);
 	CFWriteFix (gameData.reactor.countdown.nTimer, fp);
@@ -1211,21 +1213,21 @@ if (!bBetweenLevels)	{
 	CFWriteInt (gameData.matCens.nFuelCenters, fp);
 	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		StateSaveFuelCen (gameData.matCens.fuelCenters + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 // Save the control cen info
 	CFWriteInt (gameData.reactor.bHit, fp);
 	CFWriteInt (gameData.reactor.bSeenPlayer, fp);
 	CFWriteInt (gameData.reactor.nNextFireTime, fp);
 	CFWriteInt (gameData.reactor.bPresent, fp);
 	CFWriteInt (gameData.reactor.nDeadObj, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 // Save the AI state
 	AISaveUniState (fp);
 
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 // Save the automap visited info
 	CFWrite (bAutomapVisited, sizeof (ubyte), MAX_SEGMENTS, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	}
 CFWriteInt ((int) gameData.app.nStateGameId, fp);
 CFWriteInt (gameStates.app.cheats.bLaserRapidFire, fp);
@@ -2047,7 +2049,7 @@ int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRe
 	int		nCurrentLevel, nNextLevel;
 	wall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
-	int		h, i, j, fpos;
+	int		h, i, j;
 	short		nTexture;
 
 bBetweenLevels = CFReadInt (fp);
@@ -2068,15 +2070,15 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	strcpy (szServerCallSign, netPlayers.players [0].callsign);
 	gameData.app.nStateGameId = CFReadInt (fp);
 	StateRestoreNetGame (fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	StateRestoreNetPlayers (fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	nPlayers = CFReadInt (fp);
 	for (i = 0; i < nPlayers; i++)
 		nSavedLocalPlayer = gameData.multi.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
 		StateRestorePlayer (restore_players + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	// make sure the current game host is in tPlayer slot #0
 	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	StateGetConnectedPlayers (restore_players, nPlayers);
@@ -2117,12 +2119,12 @@ if (!bBetweenLevels)	{
 	ResetObjects (1);
 
 	//Read objects, and pop 'em into their respective segments.
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	h = CFReadInt (fp);
 	gameData.objs.nLastObject = h - 1;
 	for (i = 0; i < h; i++)
 		StateRestoreObject (gameData.objs.objects + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
 	StateFixObjects ();
@@ -2144,30 +2146,30 @@ if (!bBetweenLevels)	{
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore exploding wall info
 	if (CFReadBoundedInt (MAX_EXPLODING_WALLS, &h, fp))
 		return 0;
 	for (i = 0; i < h; i++)
 		StateRestoreExplWall (gameData.walls.explWalls + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore door info
 	if (CFReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors, fp))
 		return 0;
 	for (i = 0; i < gameData.walls.nOpenDoors; i++)
 		StateRestoreActiveDoor (gameData.walls.activeDoors + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	if (CFReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking, fp))
 		return 0;
 	for (i = 0; i < gameData.walls.nCloaking; i++)
 		StateRestoreCloakingWall (gameData.walls.cloaking + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nTriggers, fp))
 		return 0;
 	for (i = 0; i < gameData.trigs.nTriggers; i++)
 		StateRestoreTrigger (gameData.trigs.triggers + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore tObject tTrigger info
 	if (CFReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.nObjTriggers, fp))
 		return 0;
@@ -2181,7 +2183,7 @@ if (!bBetweenLevels)	{
 		}
 	else
 		CFSeek (fp, MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
 		for (j = 0; j < 6; j++)	{
@@ -2192,7 +2194,7 @@ if (!bBetweenLevels)	{
 			gameData.segs.segments [i].sides [j].nOvlOrient = (nTexture >> 14) & 3;
 			}
 		}
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//Restore the fuelcen info
 	gameData.reactor.bDestroyed = CFReadInt (fp);
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
@@ -2205,20 +2207,20 @@ if (!bBetweenLevels)	{
 		return 0;
 	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		StateRestoreFuelCen (gameData.matCens.fuelCenters + i, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	// Restore the control cen info
 	gameData.reactor.bHit = CFReadInt (fp);
 	gameData.reactor.bSeenPlayer = CFReadInt (fp);
 	gameData.reactor.nNextFireTime = CFReadInt (fp);
 	gameData.reactor.bPresent = CFReadInt (fp);
 	gameData.reactor.nDeadObj = CFReadInt (fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	// Restore the AI state
 	AIRestoreUniState (fp, sgVersion);
 	// Restore the automap visited info
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
-	fpos = CFTell (fp);
+	//fpos = CFTell (fp);
 	//	Restore hacked up weapon system stuff.
 	gameData.app.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.app.fusion.xAutoFireTime = 0;
