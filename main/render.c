@@ -1624,7 +1624,7 @@ typedef struct tSegZRef {
 static tSegZRef segZRef [MAX_SEGMENTS];
 
 ubyte bVisited [MAX_SEGMENTS];
-ubyte	nVisited = 255;
+ubyte nVisited = 255;
 short nRenderList [MAX_RENDER_SEGS];
 short nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
 ubyte nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
