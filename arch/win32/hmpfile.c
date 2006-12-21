@@ -362,23 +362,22 @@ int hmp_play(hmp_file *hmp, int bLoop)
 {
 	int rc;
 	MIDIPROPTIMEDIV mptd;
-#if 1
-        unsigned int    numdevs;
-        int i=0;
+#if 0
+	unsigned int    numdevs;
+   int i=0;
 
-        numdevs=midiOutGetNumDevs();
-        hmp->devid=-1;
-        do
-        {
-         MIDIOUTCAPS devcaps;
-         midiOutGetDevCaps(i,&devcaps,sizeof(MIDIOUTCAPS));
-         if ((devcaps.wTechnology==MOD_FMSYNTH) || (devcaps.wTechnology==MOD_SYNTH))
+numdevs = midiOutGetNumDevs();
+hmp->devid = -1;
+do {
+	MIDIOUTCAPS devcaps;
+	midiOutGetDevCaps (i, &devcaps, sizeof (MIDIOUTCAPS));
+	if ((devcaps.wTechnology == MOD_FMSYNTH) || (devcaps.wTechnology==MOD_SYNTH))
 //			if ((devcaps.dwSupport & (MIDICAPS_VOLUME | MIDICAPS_STREAM)) == (MIDICAPS_VOLUME | MIDICAPS_STREAM))
-             hmp->devid=i;
-         i++;
-        } while ((i<(int)numdevs) && (hmp->devid==-1));
-	if (hmp->devid == -1)
-		return -1;
+		hmp->devid=i;
+	i++;
+	} while ((i < (int)numdevs) && (hmp->devid == -1));
+if (hmp->devid == -1)
+	return -1;
 #endif
 	hmp->bLoop = bLoop;
 	hmp->devid = MIDI_MAPPER;
