@@ -99,17 +99,6 @@ static short nGlow = -1;
 
 //------------------------------------------------------------------------------
 
-void CHECK ()
-{
-	int po = 0;
-if (gameData.models.pofData [0][1][108].subObjs.pSubObjs &&
-	 abs (gameData.models.pofData [0][1][108].subObjs.pSubObjs [0].nParent) > 1)
-	po = po;
-if (abs (gameData.models.pofData [0][1][108].subObjs.nSubObjs) > 10)
-	po = po;
-}
-//------------------------------------------------------------------------------
-
 inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
 {
 	tOOF_vector	h;
@@ -1396,7 +1385,6 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 #endif
 			}
 		}
-CHECK();
 	}
 #if DBG_SHADOWS
 glLineWidth (1);
@@ -1479,7 +1467,6 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}	
 	glEnd ();
-CHECK();
 	}
 #if DBG_SHADOWS
 if (bFrontCap)
@@ -1516,7 +1503,6 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}
 	glEnd ();
-CHECK();
 	}
 return 1;
 }
@@ -1655,7 +1641,6 @@ if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
 		return 0;
 	}
-CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
@@ -1682,9 +1667,7 @@ if (gameOpts->render.shadows.bFast) {
 		else {
 			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
 			OOF_VecVms2Oof (&vLightPos, &v);
-			CHECK ();
 			fInf = NearestShadowedWallDist (objP, &gameData.render.shadows.pLight->vPos);
-			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
@@ -1712,7 +1695,6 @@ else {
 	}
 glDisable (GL_TEXTURE_2D);
 #endif
-CHECK();
 return 1;
 }
 
