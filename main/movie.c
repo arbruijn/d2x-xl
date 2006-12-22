@@ -106,13 +106,14 @@ char movielib_files[][FILENAME_LEN] = {
 	"intro-l.mvl",
 	"other-l.mvl",
 	"robots-l.mvl",
+	"d2x-l.mvl",
 	"extra1-l.mvl",
 	"extra2-l.mvl",
 	"extra3-l.mvl",
 	"extra4-l.mvl",
 	"extra5-l.mvl"};
 
-#define	FIRST_EXTRA_MOVIE_LIB	3
+#define	FIRST_EXTRA_MOVIE_LIB	4
 
 #define N_EXTRA_MOVIE_LIBS	5
 #define N_BUILTIN_MOVIE_LIBS (sizeof(movielib_files)/sizeof(*movielib_files))
@@ -123,8 +124,8 @@ movielib *movie_libs[N_MOVIE_LIBS];
 
 ubyte *moviePalette;
 
-CFILE *RoboFile = NULL;
-int RoboFilePos = 0;
+CFILE *robotFile = NULL;
+int nRoboFilePos = 0;
 
 // Function Prototypes
 int RunMovie(char *filename, int highresFlag, int allow_abort,int dx,int dy);
@@ -433,8 +434,8 @@ int RotateRobot()
 	err = MVE_rmStepMovie();
 	GrPaletteStepLoad (NULL);
 	if (err == MVE_ERR_EOF) {   //end of movie, so reset
-		ResetMovieFile(RoboFile);
-		if (MVE_rmPrepMovie((void *)RoboFile, 
+		ResetMovieFile(robotFile);
+		if (MVE_rmPrepMovie((void *)robotFile, 
 								  gameStates.menus.bHires ? 280 : 140, 
 								  gameStates.menus.bHires ? 200 : 80, 0)) {
 			Int3();
@@ -453,7 +454,7 @@ int RotateRobot()
 void DeInitRobotMovie(void)
 {
 	MVE_rmEndMovie();
-	CFClose(RoboFile);                           // Close Movie File
+	CFClose(robotFile);                           // Close Movie File
 }
 
 //-----------------------------------------------------------------------
@@ -464,11 +465,10 @@ if (gameOpts->movies.nLevel < 1)
 	return 0;
 
 #if TRACE
-	con_printf(DEBUG_LEVEL, "RoboFile=%s\n", filename);
+	con_printf(DEBUG_LEVEL, "robotFile=%s\n", filename);
 #endif
 	MVE_sndInit(-1);        //tell movies to play no sound for robots
-	RoboFile = OpenMovieFile(filename, 1);
-	if (RoboFile == NULL) {
+	if (!(robotFile = OpenMovieFile(filename, 1))) {
 #ifdef _DEBUG
 		Warning(TXT_MOVIE_ROBOT,filename);
 #endif
@@ -480,13 +480,13 @@ if (gameOpts->movies.nLevel < 1)
 	MVE_ioCallbacks(FileRead);
 	MVE_sfCallbacks(MovieShowFrame);
 	MVE_palCallbacks(MovieSetPalette);
-	if (MVE_rmPrepMovie((void *)RoboFile, gameStates.menus.bHires?280:140, gameStates.menus.bHires?200:80, 0)) {
+	if (MVE_rmPrepMovie((void *)robotFile, gameStates.menus.bHires?280:140, gameStates.menus.bHires?200:80, 0)) {
 		Int3();
 		return 0;
 	}
-	RoboFilePos = CFSeek(RoboFile, 0L, SEEK_CUR);
+	nRoboFilePos = CFSeek(robotFile, 0L, SEEK_CUR);
 #if TRACE
-	con_printf(DEBUG_LEVEL, "RoboFilePos=%d!\n", RoboFilePos);
+	con_printf(DEBUG_LEVEL, "nRoboFilePos=%d!\n", nRoboFilePos);
 #endif
 	return 1;
 }

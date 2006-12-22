@@ -405,7 +405,7 @@ briefing_screen Briefing_screens[] = {
 
 int	Briefing_text_x, Briefing_text_y;
 
-grs_canvas	*Robot_canv = NULL;
+grs_canvas	*robotCanv = NULL;
 vmsAngVec	Robot_angles;
 
 char    Bitmap_name[32] = "";
@@ -432,7 +432,7 @@ Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8
 
 void ShowBitmapFrame (int bRedraw)
 {
-	grs_canvas *curcanv_save, *bitmap_canv=0;
+	grs_canvas *curCanvSave, *bitmap_canv=0;
 
 	grsBitmap *bitmap_ptr;
 	int x = rescale_x (138);
@@ -470,8 +470,8 @@ void ShowBitmapFrame (int bRedraw)
 			}
 
 		WINDOS (
-			curcanv_save = dd_grd_curcanv; dd_grd_curcanv = bitmap_canv,
-			curcanv_save = grdCurCanv; grdCurCanv = bitmap_canv
+			curCanvSave = dd_grd_curcanv; dd_grd_curcanv = bitmap_canv,
+			curCanvSave = grdCurCanv; grdCurCanv = bitmap_canv
 		);
 		if (!bRedraw) {	//extract current bitmap number from bitmap name (<name>#<number>)
 			pound_signp = strchr (Bitmap_name, '#');
@@ -547,8 +547,8 @@ void ShowBitmapFrame (int bRedraw)
 		GrPaletteStepLoad (NULL);
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		WINDOS (
-			dd_grd_curcanv = curcanv_save,
-			grdCurCanv = curcanv_save
+			dd_grd_curcanv = curCanvSave,
+			grdCurCanv = curCanvSave
 		);
 		d_free (bitmap_canv);
 		if (! (bRedraw || Door_div_count)) {
@@ -578,38 +578,38 @@ void ShowBitmapFrame (int bRedraw)
 
 void show_briefing_bitmap (grsBitmap *bmp)
 {
-	grs_canvas	*curcanv_save, *bitmap_canv;
+	grs_canvas	*curCanvSave, *bitmap_canv;
 
 bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
-curcanv_save = grdCurCanv;
+curCanvSave = grdCurCanv;
 GrSetCurrentCanvas (bitmap_canv);
 GrBitmapM (0, 0, bmp);
-GrSetCurrentCanvas (curcanv_save);
+GrSetCurrentCanvas (curCanvSave);
 d_free (bitmap_canv);
 }
 
 //-----------------------------------------------------------------------------
 
-void ShowSpinningRobotFrame (int robot_num)
+void ShowSpinningRobotFrame (int nRobot)
 {
-	grs_canvas	*curcanv_save;
+	grs_canvas	*curCanvSave;
 
-	if (robot_num != -1) {
+	if (nRobot != -1) {
 		Robot_angles.h += 150;
 
-		curcanv_save = grdCurCanv;
-		grdCurCanv = Robot_canv;
-		Assert (gameData.bots.pInfo[robot_num].nModel != -1);
+		curCanvSave = grdCurCanv;
+		grdCurCanv = robotCanv;
+		Assert (gameData.bots.pInfo[nRobot].nModel != -1);
 		if (bInitRobot) 
 			{
 //			GrPaletteStepLoad (robot_palette);
 			LoadPalette ("", "", 0, 0, 1);
-			OglCachePolyModelTextures (gameData.bots.pInfo[robot_num].nModel);
+			OglCachePolyModelTextures (gameData.bots.pInfo[nRobot].nModel);
 			GrPaletteStepLoad (NULL);
 			bInitRobot = 0;
 			}
- 		DrawModelPicture (gameData.bots.pInfo[robot_num].nModel, &Robot_angles);
-		grdCurCanv = curcanv_save;
+ 		DrawModelPicture (gameData.bots.pInfo[nRobot].nModel, &Robot_angles);
+		grdCurCanv = curCanvSave;
 	}
 
 }
@@ -618,10 +618,10 @@ void ShowSpinningRobotFrame (int robot_num)
 
 void RotateBriefingRobot (void)
 {
-	grs_canvas	*curcanv_save = grdCurCanv;
-	grdCurCanv = Robot_canv;
-	RotateRobot ();
-	grdCurCanv = curcanv_save;
+grs_canvas	*curCanvSave = grdCurCanv;
+grdCurCanv = robotCanv;
+RotateRobot ();
+grdCurCanv = curCanvSave;
 
 }
 
@@ -638,7 +638,7 @@ void InitSpinningRobot (void) // (int x,int y,int w,int h)
 	int w = rescale_x (163);
 	int h = rescale_y (136);
 
-	Robot_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+	robotCanv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
 	bInitRobot = 1;
 	// 138, 55, 166, 138
 }
@@ -646,7 +646,7 @@ void InitSpinningRobot (void) // (int x,int y,int w,int h)
 //---------------------------------------------------------------------------
 // Returns char width.
 // If showRobotFlag set, then show a frame of the spinning robot.
-int show_char_delay (char the_char, int delay, int robot_num, int cursorFlag, int bRedraw)
+int PrintCharDelayed (char the_char, int delay, int nRobot, int cursorFlag, int bRedraw)
 {
 	int w, h, aw;
 	char message[2];
@@ -687,8 +687,8 @@ if ((delay > 0) && !bRedraw) {
 		if (t >= t0 + KEY_DELAY_DEFAULT/2) {
 			if ((Bitmap_name[0] != 0) && (delay != 0))
 				ShowBitmapFrame (0);
-			if (robot_num != -1)
-				ShowSpinningRobotFrame (robot_num);
+			if (nRobot != -1)
+				ShowSpinningRobotFrame (nRobot);
 				t0 = t;
 			}
 		}
@@ -914,7 +914,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	int			ch, done=0,i;
 	int			delay_count = KEY_DELAY_DEFAULT;
 	int			key_check;
-	int			robot_num=-1;
+	int			nRobot=-1;
 	int			rval=0;
 	int			flashing_cursor=0;
 	int			new_page=0,GotZ=0;
@@ -1026,9 +1026,9 @@ while (!done) {
 				}
 			else if (ch == 'R') {
 				if (message > pj) {
-					if (Robot_canv != NULL) {
-						d_free (Robot_canv);
-						Robot_canv=NULL;
+					if (robotCanv != NULL) {
+						d_free (robotCanv);
+						robotCanv=NULL;
 						}
 					if (bRobotPlaying) {
 						DeInitRobotMovie ();
@@ -1039,7 +1039,7 @@ while (!done) {
 					bot_channel = StartExtraBotSound (bot_channel, (short) nLevel, nBot++);
 					}
 				if (gameStates.app.bD1Mission) {
-					robot_num = get_message_num (&message);
+					nRobot = get_message_num (&message);
 					while (*message++ != 10)
 						;
 					}
@@ -1047,10 +1047,10 @@ while (!done) {
 					kludge=*message++;
 					spinRobotName[2]=kludge; // ugly but proud
 					if (message > pj) {
-						grs_canvas	*curcanv_save = grdCurCanv;
-						grdCurCanv = Robot_canv;
-						bRobotPlaying=InitRobotMovie (spinRobotName);
-						grdCurCanv = curcanv_save;
+						grs_canvas	*curCanvSave = grdCurCanv;
+						grdCurCanv = robotCanv;
+						bRobotPlaying = InitRobotMovie (spinRobotName);
+						grdCurCanv = curCanvSave;
 						// GrRemapBitmapGood (&grdCurCanv->cv_bitmap, pal, -1, -1);
 						if (bRobotPlaying) {
 							RotateBriefingRobot ();
@@ -1063,9 +1063,9 @@ while (!done) {
 			else if (ch == 'N') {
 				if (message > pj) {
 				//--grsBitmap *bitmap_ptr;
-					if (Robot_canv != NULL) {
-						d_free (Robot_canv);
-						Robot_canv=NULL;
+					if (robotCanv != NULL) {
+						d_free (robotCanv);
+						robotCanv=NULL;
 						}
 					StopBriefingSound (&bot_channel);
 					get_message_name (&message, Bitmap_name);
@@ -1076,9 +1076,9 @@ while (!done) {
 				}
 			else if (ch == 'O') {
 				if (message > pj) {
-					if (Robot_canv != NULL) {
-						d_free (Robot_canv);
-						Robot_canv=NULL;
+					if (robotCanv != NULL) {
+						d_free (robotCanv);
+						robotCanv=NULL;
 						}
 					get_message_name (&message, Bitmap_name);
 					strcat (Bitmap_name, "#0");
@@ -1121,9 +1121,9 @@ while (!done) {
 				int         iff_error;
 
 				if (message > pj) {
-					if (Robot_canv != NULL) {
-						d_free (Robot_canv);
-						Robot_canv=NULL;
+					if (robotCanv != NULL) {
+						d_free (robotCanv);
+						robotCanv=NULL;
 						}
 					}
 				get_message_name (&message, bitmap_name);
@@ -1138,9 +1138,9 @@ while (!done) {
 //			} else if (ch==EOF) {
 //				done=1;
 //			} else if (ch == 'B') {
-//				if (Robot_canv != NULL)	{
-//					d_free (Robot_canv);
-//					Robot_canv=NULL;
+//				if (robotCanv != NULL)	{
+//					d_free (robotCanv);
+//					robotCanv=NULL;
 //				}
 //
 //				bitmap_num = get_message_num (&message);
@@ -1162,8 +1162,8 @@ while (!done) {
 					flash_cursor (flashing_cursor);
 					if (bRobotPlaying)
 						RotateBriefingRobot ();
-					if (robot_num != -1)
-						ShowSpinningRobotFrame (robot_num);
+					if (nRobot != -1)
+						ShowSpinningRobotFrame (nRobot);
 					if (Bitmap_name[0] != 0)
 						ShowBitmapFrame (0);
 					StartTime += KEY_DELAY_DEFAULT/2;
@@ -1251,7 +1251,7 @@ while (!done) {
 		 		printing_channel = StartBriefingSound (printing_channel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
 				chattering=1;
 			}
-			Briefing_text_x += show_char_delay ((char) ch, delay_count, robot_num, flashing_cursor, bRedraw);
+			Briefing_text_x += PrintCharDelayed ((char) ch, delay_count, nRobot, flashing_cursor, bRedraw);
 		}
 
 		//	Check for Esc -> abort.
@@ -1294,8 +1294,8 @@ while (!done) {
 					flash_cursor (flashing_cursor);
 					if (bRobotPlaying)
 						RotateBriefingRobot ();
-					if (robot_num != -1)
-						ShowSpinningRobotFrame (robot_num);
+					if (nRobot != -1)
+						ShowSpinningRobotFrame (nRobot);
 					if (Bitmap_name[0] != 0)
 						ShowBitmapFrame (0);
 					StartTime += KEY_DELAY_DEFAULT/2;
@@ -1308,7 +1308,7 @@ while (!done) {
 					if (bRobotPlaying)
 						DeInitRobotMovie ();
 					bRobotPlaying=0;
-					robot_num = -1;
+					nRobot = -1;
 #ifndef NDEBUG
 					if (keypress == KEY_BACKSP)
 						Int3 ();
@@ -1351,8 +1351,8 @@ if (bRobotPlaying) {
 	bRobotPlaying=0;
 	}
 
-if (Robot_canv != NULL)
-	{d_free (Robot_canv); Robot_canv=NULL;}
+if (robotCanv != NULL)
+	{d_free (robotCanv); robotCanv=NULL;}
 
 StopBriefingSound (&hum_channel);
 StopBriefingSound (&printing_channel);
