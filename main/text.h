@@ -1623,9 +1623,9 @@ void LoadGameTexts(void);
 #define TXT_SPIN_MEDIUM				GT(841)
 #define TXT_SPIN_FAST				GT(842)
 #define TXT_IDLE_ANIMS				GT(843)
+#define TXT_BAMBI_WINS				GT(844)
 #if 0
 
-#define TXT_				GT(844)
 #define TXT_				GT(845)
 #define TXT_				GT(846)
 #define TXT_				GT(847)

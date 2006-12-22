@@ -1210,7 +1210,7 @@ t = CFReadInt (fp);			//read id "HXM!"
 if (t!= MAKE_SIG ('!','X','M','H'))
 	Warning (TXT_HXM_ID);
 t = CFReadInt (fp);			//read version
-if (t<1)
+if (t < 1)
 	Warning (TXT_HXM_VERSION,t);
 t = CFReadInt (fp);			//read number of robots
 for (j = 0; j < t; j++) {
@@ -1248,7 +1248,7 @@ for (j = 0; j < t; j++) {
 		else
 			i = gameData.bots.nJoints++;
 		}
-	else if (i<0 || i>=gameData.bots.nJoints) {
+	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
 		Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
 				i,szLevelName,gameData.bots.nJoints-1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
@@ -1273,13 +1273,13 @@ for (j = 0; j < t; j++) {
 		else
 			i = gameData.models.nPolyModels++;
 		}
-	else if (i < 0 || i >= gameData.models.nPolyModels) {
+	else if ((i < 0) || (i >= gameData.models.nPolyModels)) {
 		if (bAltModels) {
 			if (i < MAX_POLYGON_MODELS) 
 				gameData.models.nPolyModels = i + 1;
 			else {
 				Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-						i,szLevelName,gameData.models.nPolyModels-1);
+						 i, szLevelName, gameData.models.nPolyModels - 1);
 				gameData.bots.nTypes [0] = nBotTypeSave;
 				gameData.bots.nJoints = nBotJointSave;
 				gameData.models.nPolyModels = nPolyModelSave;
@@ -1288,7 +1288,7 @@ for (j = 0; j < t; j++) {
 			}
 		else {
 			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-			i,szLevelName,gameData.models.nPolyModels-1);
+					 i, szLevelName, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;

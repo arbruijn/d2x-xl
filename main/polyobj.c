@@ -538,11 +538,10 @@ void DrawPolygonModel (
 	tRgbColorf		*color)
 {
 	tPolyModel	*po;
-	int			i, j, nTextures, 
+	int			i, j, nTextures,
 					bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
 					bIsDefModel = (gameData.models.polyModels [nModel].nDataSize == 
 										gameData.models.defPolyModels [nModel].nDataSize);
-	PA_DFX (int bSaveLight);
 
 if (nModel >= gameData.models.nPolyModels)
 	return;

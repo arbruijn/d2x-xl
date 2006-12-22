@@ -1591,6 +1591,7 @@ char *defaultGameTexts [][2] = {
 	{"~Mittelschnell rotieren", "spin ~Medium fast"},
 	{"~Schnell rotieren", "spin ~Fast"},
 	{"stehende roboter an~Imieren", "animate ~Idling robots"},
+	{"Bambi gewinnt!", "Bambi wins!"},
 #if 0
 	{"", ""},
 #endif

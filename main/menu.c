@@ -1817,7 +1817,7 @@ if (extraGameInfo [0].bShadows) {
 
 void ShadowOptionsMenu ()
 {
-	tMenuItem m [25];
+	tMenuItem m [30];
 	int	i, choice = 0;
 	int	opt;
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
@@ -1869,6 +1869,8 @@ do {
 		nShadowReachOpt = opt++;
 		ADD_CHECK (opt, TXT_CLIP_SHADOWS, gameOpts->render.shadows.bClip, KEY_C, HTX_CLIP_SHADOWS);
 		optClipShadows = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);

@@ -1484,9 +1484,10 @@ gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-		//if (i != 3 || j != 2) continue;
+#ifdef _DEBUG
 		if (i == 218 && j == 2)
 			i = i;
+#endif
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->nWall))
 			continue;
 		t = sideP->nBaseTex;

@@ -44,44 +44,54 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void KillAllRobots(void)
 {
-	int	i, nDead=0;
+	int	i, nKilled=0;
 	tObject *objP;
 	//int	boss_index = -1;
 
-	// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-	for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-		if ((objP->nType == OBJ_ROBOT) &&
-			 !(gameData.bots.pInfo [objP->id].companion || gameData.bots.pInfo [objP->id].bossFlag)) {
-			nDead++;
-			if (gameStates.app.bNostalgia)
-				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-			else {
-				ApplyDamageToRobot (objP, objP->shields + 1, -1);
-				objP->flags |= OF_ARMAGEDDON;
-				}
+// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
+for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) &&
+		 !(gameData.bots.pInfo [objP->id].companion || gameData.bots.pInfo [objP->id].bossFlag)) {
+		nKilled++;
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		else {
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			objP->flags |= OF_ARMAGEDDON;
 			}
+		}
+// Toast the buddy if nothing else toasted!
+if (!nKilled)
+	for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+		if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].companion) {
+			if (gameStates.app.bNostalgia)
+				objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			else 
+				ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			HUDInitMessage(TXT_BUDDY_TOASTED);
+			nKilled++;
+			}
+HUDInitMessage(TXT_BOTS_TOASTED, nKilled);
+}
 
-// --		// Now, if more than boss and buddy left, un-kill boss.
-// --		if ((nDead > 2) && (boss_index != -1)) {
-// --			gameData.objs.objects [boss_index].flags &= ~(OF_EXPLODING|OF_SHOULD_BE_DEAD);
-// --			nDead--;
-// --		} else if (boss_index != -1)
-// --			HUDInitMessage("Toasted the BOSS!");
+//------------------------------------------------------------------------------
 
-	// Toast the buddy if nothing else toasted!
-	if (nDead == 0)
-		for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-			if (objP->nType == OBJ_ROBOT)
-				if (gameData.bots.pInfo [objP->id].companion) {
-				if (gameStates.app.bNostalgia)
-					objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-				else 
-					ApplyDamageToRobot (objP, objP->shields + 1, -1);
-				HUDInitMessage(TXT_BUDDY_TOASTED);
-				nDead++;
-				}
+void KillAllBossRobots (void)
+{
+	int		i, nKilled = 0;
+	tObject	*objP;
 
-	HUDInitMessage(TXT_BOTS_TOASTED, nDead);
+for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].bossFlag) {
+		nKilled++;
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		else {
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			objP->flags |= OF_ARMAGEDDON;
+			}
+		}
+HUDInitMessage(TXT_BOTS_TOASTED, nKilled);
 }
 
 //	--------------------------------------------------------------------------
@@ -94,37 +104,31 @@ void KillEverything(void)
 {
 	int     i, j;
 
-	HUDInitMessage(TXT_KILL_ETC);
-
-	for (i=0; i<=gameData.objs.nLastObject; i++) {
-		switch (gameData.objs.objects [i].nType) {
-			case OBJ_ROBOT:
-				gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-				break;
-			case OBJ_POWERUP:
-				DoPowerup (gameData.objs.objects + i, -1);
-				break;
+HUDInitMessage(TXT_KILL_ETC);
+for (i=0; i<=gameData.objs.nLastObject; i++) {
+	switch (gameData.objs.objects [i].nType) {
+		case OBJ_ROBOT:
+			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			break;
+		case OBJ_POWERUP:
+			DoPowerup (gameData.objs.objects + i, -1);
+			break;
 		}
 	}
-
-	extraGameInfo [0].nBossCount =
-	extraGameInfo [1].nBossCount = 0;
-	DoReactorDestroyedStuff(NULL);
-
-	for (i=0; i<gameData.trigs.nTriggers; i++) {
-		if (gameData.trigs.triggers [i].nType == TT_EXIT) {
-			for (j=0; j<gameData.walls.nWalls; j++) {
-				if (gameData.walls.walls [j].nTrigger == i) {
-					COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->position.vPos, gameData.walls.walls [j].nSegment);
-					RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
-					goto kasf_done;
+extraGameInfo [0].nBossCount =
+extraGameInfo [1].nBossCount = 0;
+DoReactorDestroyedStuff(NULL);
+for (i = 0; i < gameData.trigs.nTriggers; i++) {
+	if (gameData.trigs.triggers [i].nType == TT_EXIT) {
+		for (j = 0; j < gameData.walls.nWalls; j++) {
+			if (gameData.walls.walls [j].nTrigger == i) {
+				COMPUTE_SEGMENT_CENTER_I(&gameData.objs.console->position.vPos, gameData.walls.walls [j].nSegment);
+				RelinkObject(OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
+				return;
 				}
 			}
 		}
 	}
-
-kasf_done: ;
-
 }
 
 //------------------------------------------------------------------------------
@@ -134,17 +138,15 @@ void KillThief(void)
 	int     i;
 	tObject *objP;
 
-	//	Kill thief.
-for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-	if (objP->nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo [objP->id].thief) {
-			if (gameStates.app.bNostalgia)
-				objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-			else {
-				ApplyDamageToRobot (objP, objP->shields + 1, -1);
-				objP->flags |= OF_ARMAGEDDON;
-				}
-			HUDInitMessage(TXT_THIEF_TOASTED);
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].thief) {
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+		else {
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			objP->flags |= OF_ARMAGEDDON;
+			}
+		HUDInitMessage(TXT_THIEF_TOASTED);
 		}
 }
 
@@ -154,16 +156,16 @@ for (i=0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP+
 
 void KillAllSnipers(void)
 {
-	int     i, nDead=0;
+	int     i, nKilled=0;
 
 //	Kill all snipers.
-for (i=0; i<=gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
-			nDead++;
+			nKilled++;
 			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		}
-HUDInitMessage(TXT_BOTS_TOASTED, nDead);
+HUDInitMessage(TXT_BOTS_TOASTED, nKilled);
 }
 
 #endif
@@ -175,11 +177,11 @@ void KillBuddy(void)
 	int     i;
 
 	//	Kill buddy.
-for (i=0; i <= gameData.objs.nLastObject; i++)
+for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
 			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-			HUDInitMessage(TXT_BUDDY_TOASTED);
+			HUDInitMessage (TXT_BUDDY_TOASTED);
 		}
 }
 
@@ -289,7 +291,7 @@ gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
 if (gameStates.app.cheats.bRobotsFiring)
 	HUDInitMessage (TXT_BOTFIRE_ON);
 else {
-	DoCheatPenalty();
+	DoCheatPenalty ();
 	HUDInitMessage (TXT_BOTFIRE_OFF);
 	}
 }
@@ -348,6 +350,21 @@ gameStates.app.cheats.bBouncingWeapons = 1;
 
 //------------------------------------------------------------------------------
 
+void CloakCheat (void)
+{
+	int	bCloaked;
+
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
+	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
+else if (LOCALPLAYER.cloakTime == 0x7fffffff)
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
+bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
+HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
+LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
+}
+
+//------------------------------------------------------------------------------
+
 void CubeWarpCheat (void)
 {
 int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
@@ -381,7 +398,7 @@ PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 
 void FinishLevelCheat (void)
 {
-KillEverything();
+KillEverything ();
 }
 
 //------------------------------------------------------------------------------
@@ -448,30 +465,23 @@ SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f,
 
 //------------------------------------------------------------------------------
 
-void CloakCheat (void)
-{
-	int	bCloaked;
-
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
-else if (LOCALPLAYER.cloakTime == 0x7fffffff)
-	LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
-bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
-HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
-LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f(1000);
-}
-
-//------------------------------------------------------------------------------
-
-void fill_background();
-void LoadBackgroundBitmap();
+void fill_background ();
+void LoadBackgroundBitmap ();
 
 void JohnHeadCheat (void)
 {
 gameStates.app.cheats.bJohnHeadOn = !gameStates.app.cheats.bJohnHeadOn;
-LoadBackgroundBitmap();
-fill_background();
+LoadBackgroundBitmap ();
+fill_background ();
 HUDInitMessage (gameStates.app.cheats.bJohnHeadOn? TXT_HI_JOHN : TXT_BYE_JOHN);
+}
+
+//------------------------------------------------------------------------------
+
+void KillBossCheat (void)
+{
+HUDInitMessage (TXT_BAMBI_WINS);
+KillAllBossRobots ();
 }
 
 //------------------------------------------------------------------------------
@@ -479,7 +489,7 @@ HUDInitMessage (gameStates.app.cheats.bJohnHeadOn? TXT_HI_JOHN : TXT_BYE_JOHN);
 void KillThiefCheat (void)
 {
 HUDInitMessage (TXT_RIGHTEOUS);
-KillThief();
+KillThief ();
 }
 
 //------------------------------------------------------------------------------
@@ -487,7 +497,7 @@ KillThief();
 void KillRobotsCheat (void)
 {
 HUDInitMessage (TXT_ARMAGEDDON);
-KillAllRobots();
+KillAllRobots ();
 ShakerRockStuff ();
 }
 
@@ -626,7 +636,7 @@ else {
 	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 	LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 	}
-UpdateLaserWeaponInfo();
+UpdateLaserWeaponInfo ();
 SetLastSuperWeaponStates ();
 }
 
@@ -711,6 +721,7 @@ char szGasolineCheat [9]			= "?:w8t]M'";		 // pumpmeup / New for D2X-XL
 char szHomingCheat [9]				= "t\\LIhSB[";   //only Matt knows / l-pnlizard
 char szInvulCheat [9]				= "Wv_\\JJ\\Z";  //only Matt knows / almighty
 char szJohnHeadCheat [9]			= "ou]];H:%";    // p-igfarmer
+char szKillBossCheat [9]			= "odgethis";	  //ju-dgedredd
 char szKillThiefCheat [9]			= "dgedredd";	  //ju-dgedredd
 char szKillRobotsCheat [9]			= "&wxbs:5O";    //only Matt knows / spaniard
 char szLevelWarpCheat [9]			= "ZQHtqbb\"";   //only Matt knows / f-reespace
@@ -740,6 +751,7 @@ tCheat cheats [] = {
 	{szHomingCheat, HomingCheat, 1, 1, 0}, 
 	{szInvulCheat, InvulCheat, 1, 1, 0}, 
 	{szJohnHeadCheat, JohnHeadCheat, 0, 1, 0}, 
+	{szKillBossCheat, KillBossCheat, 1, 0, 0}, 
 	{szKillThiefCheat, KillThiefCheat, 1, 0, 0}, 
 	{szKillRobotsCheat, KillRobotsCheat, 1, 1, 0}, 
 	{szLevelWarpCheat, LevelWarpCheat, -1, 1, 0}, 
@@ -798,7 +810,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 //------------------------------------------------------------------------------
 // Internal Cheat Menu
 #ifndef RELEASE
-void DoCheatMenu()
+void DoCheatMenu ()
 {
 	int mmn;
 	tMenuItem mm[16];
@@ -855,8 +867,8 @@ void DoCheatMenu()
 		if ( mm[1].value ) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
 			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendCloak();
-			AIDoCloakStuff();
+				MultiSendCloak ();
+			AIDoCloakStuff ();
 			LOCALPLAYER.cloakTime = gameData.time.xGame;
 		}
 		else
@@ -872,7 +884,7 @@ void DoCheatMenu()
 		//if (mm[10].value) LOCALPLAYER.laserLevel=3;
 		LOCALPLAYER.laserLevel = mm[7].value-1;
 		LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX] = mm[8].value;
-		InitGauges();
+		InitGauges ();
 	}
 }
 #endif
