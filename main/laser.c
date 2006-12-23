@@ -273,18 +273,18 @@ if (gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 //creates a weapon tObject
 int CreateWeaponObject (ubyte nWeaponType, short nSegment,vmsVector *vPosition)
 {
-	int rType=-1;
-	fix laser_radius = -1;
-	int nObject;
-	tObject *objP;
+	int		rType = -1;
+	fix		xLaserRadius = -1;
+	int		nObject;
+	tObject	*objP;
 
 switch (gameData.weapons.info [nWeaponType].renderType)	{
 	case WEAPON_RENDER_BLOB:
 		rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
-		laser_radius = gameData.weapons.info [nWeaponType].blob_size;
+		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
 		break;
 	case WEAPON_RENDER_POLYMODEL:
-		laser_radius = 0;	//	Filled in below.
+		xLaserRadius = 0;	//	Filled in below.
 		rType = RT_POLYOBJ;
 		break;
 	case WEAPON_RENDER_LASER:
@@ -292,20 +292,20 @@ switch (gameData.weapons.info [nWeaponType].renderType)	{
 		break;
 	case WEAPON_RENDER_NONE:
 		rType = RT_NONE;
-		laser_radius = F1_0;
+		xLaserRadius = F1_0;
 		break;
 	case WEAPON_RENDER_VCLIP:
 		rType = RT_WEAPON_VCLIP;
-		laser_radius = gameData.weapons.info [nWeaponType].blob_size;
+		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
 		break;
 	default:
 		Error ("Invalid weapon render nType in CreateNewLaser\n");
 		return -1;
 	}
 
-Assert (laser_radius != -1);
+Assert (xLaserRadius != -1);
 Assert (rType != -1);
-nObject = CreateObject ((ubyte) OBJ_WEAPON, nWeaponType, -1, nSegment, vPosition, NULL, laser_radius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
+nObject = CreateObject ((ubyte) OBJ_WEAPON, nWeaponType, -1, nSegment, vPosition, NULL, xLaserRadius, (ubyte) CT_WEAPON, (ubyte) MT_PHYSICS, (ubyte) rType, 1);
 objP = gameData.objs.objects + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
@@ -1388,17 +1388,17 @@ if (objP->id == HELIX_ID) {
 #endif
 
 //	For homing missiles, turn towards target. (unless it's the guided missile)
-if (WI_homingFlag (objP->id) && 
-	   !(objP->id==GUIDEDMSL_ID && 
-		(objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
-		(objP->nSignature == gmObjP->nSignature))) {
+if ((objP->nType == OBJ_WEAPON) && 
+    WI_homingFlag (objP->id) && 
+	 !((objP->id == GUIDEDMSL_ID) && 
+	   (objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
+	   (objP->nSignature == gmObjP->nSignature))) {
 	vmsVector		vector_toObject, temp_vec;
 	fix				dot=F1_0;
 	fix				speed, xMaxSpeed;
 
 	//	For first 1/2 second of life, missile flies straight.
 	if (objP->cType.laserInfo.creationTime + HOMINGMSL_STRAIGHT_TIME < gameData.time.xGame) {
-
 		int	nTrackGoal = objP->cType.laserInfo.nTrackGoal;
 		int	id = objP->id;
 

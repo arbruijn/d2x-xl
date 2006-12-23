@@ -469,6 +469,54 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 }
 
 //------------------------------------------------------------------------------
+
+fix CalcObjectLight (tObject *objP, fix *xEngineGlow)
+{
+	fix xLight;
+
+if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
+	xLight = F1_0; //	If option set for bright players in netgame, brighten them
+else
+	xLight = ComputeObjectLight (objP, NULL);
+//make robots brighter according to robot glow field
+if (objP->nType == OBJ_ROBOT)
+	xLight += (gameData.bots.pInfo [objP->id].glow << 12);		//convert 4:4 to 16:16
+else if (objP->nType == OBJ_WEAPON) {
+	if (objP->id == FLARE_ID)
+		xLight += F1_0 * 2;
+	}
+else if (objP->nType == OBJ_MARKER)
+ 	xLight += F1_0 * 2;
+ComputeEngineGlow (objP, xEngineGlow);
+return xLight;
+}
+
+//------------------------------------------------------------------------------
+
+int DrawHiresObject (tObject *objP, fix xLight, fix *xEngineGlow)
+{
+	float			fLight [3];
+	int			bCloaked;
+	tOOFObject	*po;
+
+if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
+	return 0;
+if (!(po = gameData.models.modelToOOF [objP->rType.polyObjInfo.nModel]))
+	return 0;
+fLight [0] = xLight / 65536.0f;
+fLight [1] = (float) xEngineGlow [0] / 65536.0f;				
+fLight [2] = (float) xEngineGlow [1] / 65536.0f;				
+if (objP->nType == OBJ_PLAYER)
+	bCloaked = (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
+else if (objP->nType == OBJ_ROBOT)
+	bCloaked = objP->cType.aiInfo.CLOAKED;
+else
+	bCloaked = 0;
+OOF_Render (objP, po, fLight, bCloaked);
+return 1;
+}
+
+//------------------------------------------------------------------------------
 //draw an tObject which renders as a polygon model
 void DrawPolygonObject (tObject *objP)
 {
@@ -483,49 +531,33 @@ void DrawPolygonObject (tObject *objP)
 if (gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
 	return;
 #endif
-//	If option set for bright players in netgame, brighten them!
-if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
-	xLight = F1_0;
-else
-xLight = ComputeObjectLight (objP, NULL);
-//make robots brighter according to robot glow field
-if (objP->nType == OBJ_ROBOT) {
-#ifdef _DEBUG
-	xLight = ComputeObjectLight (objP, NULL);
-#endif
-	xLight += (gameData.bots.pInfo [objP->id].glow << 12);		//convert 4:4 to 16:16
-	}
-else if (objP->nType == OBJ_WEAPON) {
-	if (objP->id == FLARE_ID)
-		xLight += F1_0 * 2;
-	}
-else if (objP->nType == OBJ_MARKER)
- 	xLight += F1_0 * 2;
+xLight = CalcObjectLight (objP, xEngineGlow);
+if (DrawHiresObject (objP, xLight, xEngineGlow))
+	return;
 imSave = gameStates.render.nInterpolationMethod;
 if (bLinearTMapPolyObjs)
 	gameStates.render.nInterpolationMethod = 1;
 //set engine glow value
-ComputeEngineGlow (objP, xEngineGlow);
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #ifdef _DEBUG
 	tPolyModel *pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 #endif
-	tBitmapIndex bmiP [12];
-	int i;
+	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 
+						bmiP [12];
+	int				i;
 
 	Assert (pm->nTextures <= 12);
 	for (i = 0; i < 12; i++)		//fill whole array, in case simple model needs more
-		bmiP [i] = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride];
-
+		bmiP [i] = bm;
 	DrawPolygonModel (objP, &objP->position.vPos, 
-				&objP->position.mOrient, 
-				(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
-				objP->rType.polyObjInfo.nModel, 
-				objP->rType.polyObjInfo.nSubObjFlags, 
-				xLight, 
-				xEngineGlow, 
-				bmiP, 
-				NULL);
+							&objP->position.mOrient, 
+							(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
+							objP->rType.polyObjInfo.nModel, 
+							objP->rType.polyObjInfo.nSubObjFlags, 
+							xLight, 
+							xEngineGlow, 
+							bmiP, 
+							NULL);
 }
 else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
@@ -546,7 +578,7 @@ else {
 			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 				xLight = 2*xLight + F1_0;
 		}
-		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].model_num_inner > -1);
+		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].nInnerModel > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
@@ -558,7 +590,7 @@ else {
 				DrawPolygonModel (
 					objP, &objP->position.vPos, &objP->position.mOrient, 
 					(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
-					gameData.weapons.info [objP->id].model_num_inner, 
+					gameData.weapons.info [objP->id].nInnerModel, 
 					objP->rType.polyObjInfo.nSubObjFlags, 
 					bBrightPolys ? F1_0 : xLight, 
 					xEngineGlow, 
@@ -1557,11 +1589,14 @@ bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 void RenderObject (tObject *objP, int nWindowNum)
 {
-	int			mldSave, oofIdx, bSpectate = 0;
-	float			fLight [3];
-	fix			nGlow [2];
+	int			mldSave, bSpectate = 0;
 	ubyte			nIdSave;
 	tPosition	savePos;
+#if 0
+	float			fLight [3];
+	fix			nGlow [2];
+	int			oofIdx;
+#endif
 
 if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
 	if (bSpectate = (gameStates.app.bSpectating && !nWindowNum)) {
@@ -1602,17 +1637,7 @@ switch (objP->renderType) {
 		if (!EGI_FLAG (bShadows, 0, 0) || (gameStates.render.nShadowPass == 1))
 			DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
-			if (gameData.models.bHaveHiresModel [0] && 
-				 (!gameStates.render.bLoResShadows || (gameStates.render.nShadowPass != 2))) {
-				ComputeEngineGlow (objP, nGlow);
-				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
-				fLight [1] = (float) nGlow [0] / 65536.0f;				
-				fLight [2] = (float) nGlow [1] / 65536.0f;				
-				OOF_Render (objP, gameData.models.hiresModels + OOF_PYRO, fLight, 
-								(gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0);
-				}
-			else
-				DrawPolygonObject (objP);
+			DrawPolygonObject (objP);
 			RenderThrusterFlames (objP);
 			RenderPlayerShield (objP);
 			RenderTargetIndicator (objP, NULL);
@@ -1623,39 +1648,28 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
-		else /*if (gameStates.render.nShadowPass != 2)*/ {
-			if (gameData.models.nHiresModels && 
-				 (oofIdx = idToOOF [objP->id]) && 
-				 gameData.models.bHaveHiresModel [oofIdx] &&
-				 (!gameStates.render.bLoResShadows || (gameStates.render.nShadowPass != 2))) {
-				ComputeEngineGlow (objP, nGlow);
-				fLight [0] = (float) ComputeObjectLight (objP, NULL) / 65536.0f;
-				fLight [1] = (float) nGlow [0] / 65536.0f;				
-				fLight [2] = (float) nGlow [1] / 65536.0f;				
-				OOF_Render (objP, gameData.models.hiresModels + oofIdx, fLight, 0);
-				}
-			else {
-				if (objP->nType == OBJ_POWERUP) {
-					nIdSave = objP->id;
-					objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
-					}
-				DrawPolygonObject (objP);
-				}
-			if (objP->nType == OBJ_WEAPON) {
-				if (bIsMissile [objP->id])
-					RenderThrusterFlames (objP);
-				else
-					RenderLightTrail (objP);
-				}
-			else if (objP->nType == OBJ_CNTRLCEN)
-				RenderTargetIndicator (objP, NULL);
-			else if (objP->nType == OBJ_POWERUP) {
-				objP->id = nIdSave;
-				if (gameOpts->render.powerups.nSpin != 
-					 ((objP->mType.physInfo.rotVel.y | objP->mType.physInfo.rotVel.z) != 0))
-					objP->mType.physInfo.rotVel.y = 
-					objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
-				}
+		else if (objP->nType == OBJ_WEAPON) {
+			DrawPolygonObject (objP);
+			if (bIsMissile [objP->id])
+				RenderThrusterFlames (objP);
+			else
+				RenderLightTrail (objP);
+			}
+		else if (objP->nType == OBJ_CNTRLCEN) {
+			DrawPolygonObject (objP);
+			RenderTargetIndicator (objP, NULL);
+			}
+		else if (objP->nType == OBJ_POWERUP) {
+			nIdSave = objP->id;
+			objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
+			if (objP->id == HOMINGMSL_ID || objP->id == ROBOT_HOMINGMSL_ID)
+				objP = objP;
+			DrawPolygonObject (objP);
+			objP->id = nIdSave;
+			if (gameOpts->render.powerups.nSpin != 
+				 ((objP->mType.physInfo.rotVel.y | objP->mType.physInfo.rotVel.z) != 0))
+				objP->mType.physInfo.rotVel.y = 
+				objP->mType.physInfo.rotVel.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 			}
 		break;
 
@@ -1697,11 +1711,11 @@ switch (objP->renderType) {
 			}
 		else {
 			ubyte nIdSave = objP->id;
-			objP->nType = OBJ_WEAPON;
 			objP->id = (ubyte) nId;
+			if (objP->id == HOMINGMSL_ID || objP->id == ROBOT_HOMINGMSL_ID)
+				objP = objP;
 			ConvertPowerupToWeapon (objP);
 			DrawPolygonObject (objP);
-			objP->nType = OBJ_POWERUP;
 			objP->id = nIdSave;
 			}
 		}
@@ -2232,10 +2246,7 @@ objP->id = id;
 objP->last_pos = *pos;
 objP->position.vPos = *pos;
 objP->size = size;
-objP->flags = 0;
 objP->matCenCreator = (sbyte) owner;
-//@@if (orient != NULL)
-//@@	objP->position.mOrient = *orient;
 objP->position.mOrient = orient ? *orient : vmdIdentityMatrix;
 objP->controlType = cType;
 objP->movementType = mType;
@@ -2253,6 +2264,7 @@ if (objP->controlType == CT_POWERUP)
 
 // Init physics info for this tObject
 if (objP->movementType == MT_PHYSICS) {
+#if 0 //we did memset with 0 further up ...
 	VmVecZero (&objP->mType.physInfo.velocity);
 	VmVecZero (&objP->mType.physInfo.thrust);
 	VmVecZero (&objP->mType.physInfo.rotVel);
@@ -2262,6 +2274,7 @@ if (objP->movementType == MT_PHYSICS) {
 	objP->mType.physInfo.brakes = 0;
 	objP->mType.physInfo.turnRoll = 0;
 	objP->mType.physInfo.flags = 0;
+#endif
 	}
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
@@ -2990,7 +3003,7 @@ int CheckObjectHitTriggers (tObject *objP, short nPrevSegment)
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if (/*(objP->nType != OBJ_PLAYER) ||*/ (objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
+if ((objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < nPhysSegs - 1; i++) {
@@ -3088,28 +3101,15 @@ int MoveOneObject (tObject * objP)
 
 //if (gameStates.gameplay.bNoBotAI && (objP->nType != OBJ_PLAYER))
 //	return 1;
-#ifdef _DEBUG
-if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].shields < 1)) {
-	if ((gameData.multi.players [objP->id].shields < 0) && !(objP->flags & OF_SHOULD_BE_DEAD))
-		HUDInitMessage ("Player should be dead");
-	}
-if (objP->nType == OBJ_DEBRIS)
-	objP = objP;
-#endif
 objP->last_pos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
-if (objP->lifeleft != IMMORTAL_TIME) {	//if not immortal...
-	//	Ok, this is a big hack by MK.
-	//	If you want an tObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME.
-	if (objP->lifeleft != ONE_FRAME_TIME)
-		if (gameData.time.xFrame != F1_0)
-			objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
-	}
-
+if ((objP->lifeleft != IMMORTAL_TIME) && 
+	 (objP->lifeleft != ONE_FRAME_TIME)&& 
+	 (gameData.time.xFrame != F1_0))
+	objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
 if (HandleObjectControl (objP))
 	return 1;
-
 if (objP->lifeleft < 0) {		// We died of old age
 	objP->flags |= OF_SHOULD_BE_DEAD;
 	if ((objP->nType == OBJ_WEAPON) && WI_damage_radius (objP->id))
@@ -3117,7 +3117,6 @@ if (objP->lifeleft < 0) {		// We died of old age
 	else if (objP->nType == OBJ_ROBOT)	//make robots explode
 		ExplodeObject (objP, 0);
 	}
-
 if ((objP->nType == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//tObject has been deleted
 	}
@@ -3628,8 +3627,8 @@ bIsMissile [GUIDEDMSL_ID] =
 bIsMissile [MERCURYMSL_ID] =
 bIsMissile [EARTHSHAKER_ID] =
 bIsMissile [EARTHSHAKER_MEGA_ID] =
-bIsMissile [REGULAR_MECHMSL_ID] =
-bIsMissile [SUPER_MECHMSL_ID] =
+bIsMissile [ROBOT_CONCUSSION_ID] =
+bIsMissile [ROBOT_HOMINGMSL_ID] =
 bIsMissile [ROBOT_FLASHMSL_ID] =
 bIsMissile [ROBOT_MERCURYMSL_ID] =
 bIsMissile [ROBOT_VERTIGO_FLASHMSL_ID] =

@@ -1851,7 +1851,7 @@ void bm_read_weapon(int unusedFlag)
 	Weapon_info[n].renderType = WEAPON_RENDER_NONE;		// 0=laser, 1=blob, 2=tObject
 	Weapon_info[n].bitmap.index = 0;
 	Weapon_info[n].nModel = -1;
-	Weapon_info[n].model_num_inner = -1;
+	Weapon_info[n].nInnerModel = -1;
 	Weapon_info[n].blob_size = 0x1000;									// size of blob
 	Weapon_info[n].flash_vclip = -1;
 	Weapon_info[n].flashSound = SOUND_LASER_FIRED;
@@ -2073,7 +2073,7 @@ void bm_read_weapon(int unusedFlag)
 
 	if ( pof_file_inner )	{
 		Assert(nModels);
-		Weapon_info[n].model_num_inner = LoadPolygonModel(pof_file_inner,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
+		Weapon_info[n].nInnerModel = LoadPolygonModel(pof_file_inner,first_bitmap_num[1]-first_bitmap_num[0],first_bitmap_num[0],NULL);
 	}
 
 	if ((WI_ammo_usage (n) == 0) && (WI_energy_usage (n) == 0))

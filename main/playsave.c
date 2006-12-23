@@ -776,7 +776,7 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.powerups.b3D = (int) CFReadByte (fp);
 		gameOptions [j].render.powerups.nSpin = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 136)
+	if (player_file_version >= 137)
 		gameOptions [j].gameplay.bIdleAnims = (int) CFReadByte (fp);
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;

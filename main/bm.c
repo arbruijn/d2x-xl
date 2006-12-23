@@ -178,13 +178,13 @@ void BMSetAfterburnerSizes (void)
 //gameData.weapons.info [GAUSS_ID].afterburner_size = nSize / 8;
 gameData.weapons.info [CONCUSSION_ID].afterburner_size =
 gameData.weapons.info [HOMINGMSL_ID].afterburner_size =
-gameData.weapons.info [REGULAR_MECHMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_CONCUSSION_ID].afterburner_size =
 gameData.weapons.info [FLASHMSL_ID].afterburner_size =
 gameData.weapons.info [GUIDEDMSL_ID].afterburner_size =
 gameData.weapons.info [ROBOT_FLASHMSL_ID].afterburner_size =
 gameData.weapons.info [ROBOT_VERTIGO_FLASHMSL_ID].afterburner_size =
 gameData.weapons.info [ROBOT_MERCURYMSL_ID].afterburner_size = nSize;
-gameData.weapons.info [SUPER_MECHMSL_ID].afterburner_size =
+gameData.weapons.info [ROBOT_HOMINGMSL_ID].afterburner_size =
 gameData.weapons.info [SMARTMSL_ID].afterburner_size = 2 * nSize;
 gameData.weapons.info [MEGAMSL_ID].afterburner_size =
 gameData.weapons.info [ROBOT_MEGAMSL_ID].afterburner_size =
@@ -476,7 +476,7 @@ void BMReadWeaponInfoD1N (CFILE * fp, int i)
 
 wiP->renderType = CFReadByte (fp);	
 wiP->nModel = CFReadByte (fp);
-wiP->model_num_inner = CFReadByte (fp);	
+wiP->nInnerModel = CFReadByte (fp);	
 wiP->persistent = CFReadByte (fp);	
 wiP->flash_vclip = CFReadByte (fp);
 wiP->flashSound = CFReadShort (fp);

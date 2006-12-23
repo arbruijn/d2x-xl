@@ -1266,19 +1266,18 @@ typedef struct tWeaponData {
 
 #include "polyobj.h"
 
-#define MAX_HIRES_MODELS	2
-
 #define OOF_PYRO			0
 #define OOF_MEGA			1
 
 typedef struct tModelData {
 	int					nHiresModels;
-	tOOFObject			hiresModels [MAX_HIRES_MODELS];
+	tOOFObject			hiresModels [MAX_POLYGON_MODELS];
 	tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
-	ubyte					bHaveHiresModel [MAX_HIRES_MODELS];
+	ubyte					bHaveHiresModel [MAX_POLYGON_MODELS];
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
 	tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
+	tOOFObject			*modelToOOF [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];

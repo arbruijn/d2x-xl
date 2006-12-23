@@ -2221,6 +2221,68 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 // ----------------------------------------------------------------------------
 
+typedef struct tOOFToModel {
+	char	*pszOOF;
+	short	nModel;
+} tOOFToModel;
+
+static tOOFToModel oofToModel [] = {
+	{"pyrogl.oof", 108},
+	{NULL, 110},	//negative means this is an additional model number to be used with an existing oof
+	{"concussion.oof", 127},
+	{NULL, 137},
+	{"homer.oof", 133},
+	{NULL, 136},
+	{"smartmsl.oof", 134},
+	{NULL, 162},
+	{"mega.oof", 135},
+	{NULL, 142},
+	{"flashmsl.oof", 151},
+	{NULL, 158},
+	{NULL, 165},
+	{"guided.oof", 152},
+	{"mercury.oof", 153},
+	{NULL, 161},
+	{"eshaker.oof", 154},
+	{NULL, 163},
+	{"shakrsub.oof", 160}
+	};
+
+void InitModelToOOF (void)
+{
+memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
+}
+
+// ----------------------------------------------------------------------------
+
+void LoadHiresModels (void)
+{
+	short			i = 0, j = sizeofa (oofToModel);
+	tOOFObject	*po = gameData.models.hiresModels;
+
+InitModelToOOF ();
+gameData.models.nHiresModels = 0;
+if (gameOpts->render.bHiresModels) {
+	while (i < sizeofa (oofToModel)) {
+#if OOF_TEST_CUBE
+		if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
+			oofToModel [i].pszOOF = "cube.oof";
+#endif
+		if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
+			i++;
+		else {
+			do {
+				gameData.models.modelToOOF [oofToModel [i].nModel] = po;
+				} while ((i < j) && !oofToModel [++i].pszOOF);
+			gameData.models.nHiresModels++;
+			po++;
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------------------------------
+
 int Initialize (int argc, char *argv[])
 {
 	int			i, t;
@@ -2279,17 +2341,6 @@ if (*szAutoHogFile && *szAutoMission) {
 	}
 /*---*/LogErr ("Loading text resources\n");
 LoadGameTexts ();
-/*---*/LogErr ("Loading hires models\n");
-if (gameOpts->render.bHiresModels) {
-#if OOF_TEST_CUBE
-	if (OOF_ReadFile ("cube.oof", gameData.models.hiresModels))
-#else
-	if (OOF_ReadFile ("pyrogl.oof", gameData.models.hiresModels))
-#endif
-		gameData.models.nHiresModels = 1;
-	if (OOF_ReadFile ("MegaMissile.oof", gameData.models.hiresModels + OOF_MEGA))
-		gameData.models.nHiresModels++;
-	}
 /*---*/LogErr ("Loading ban list\n");
 LoadBanList ();
 PrintBanner ();
@@ -2352,6 +2403,8 @@ BMInit ();
 DigiInit ();
 /*---*/LogErr ("Loading hoard data\n");
 LoadHoardData ();
+/*---*/LogErr ("Loading hires models\n");
+LoadHiresModels ();
 error_init (ShowInGameWarning, NULL);
 if (FindArg ("-norun"))
 	return (0);
