@@ -753,13 +753,19 @@ if (!bRender)
 	Assert(props.nv <= 4);
 	for (i = 0; i < props.nv; i++)
 		pointlist [i] = gameData.segs.points + props.vp [i];
-#if 1
+#if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
 		DrawOutline(props.nv, pointlist);
 		return;
 		}
+#endif
 	if (!(gameOpts->render.bTextures || IsMultiGame))
 		goto drawWireFrame;
+#if 1
+	if (gameStates.render.nShadowBlurPass == 1) {
+		G3DrawWhitePoly (props.nv, pointlist);
+		return;
+		}
 #endif
 	SetVertexColors (&props);
 	if (renderState == 2) {
@@ -1448,7 +1454,10 @@ void RenderSegment (short nSegment, int nWindow)
 	short			sn;
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass >= 2))
+if (EGI_FLAG (bShadows, 0, 0) && 
+	 gameOpts->render.shadows.bFast && 
+	 !gameOpts->render.shadows.bSoft && 
+	 (gameStates.render.nShadowPass >= 2))
 	return;
 #	if 0
 if (gameStates.render.nShadowPass == 2)
@@ -2378,9 +2387,9 @@ void StartLightingFrame (tObject *viewer);
 
 //------------------------------------------------------------------------------
 
-void RenderShadowQuad (float fDist)
+void RenderShadowQuad (int bWhite)
 {
-	static GLfloat shadowHue [] = {0.0f, 0.0f, 0.0f, 0.6f};
+	static GLdouble shadowHue [2][4] = {{0, 0, 0, 0.6},{0, 0, 0, 1}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -2392,9 +2401,12 @@ glOrtho (0, 1, 1, 0, 0, 1);
 glDisable (GL_DEPTH_TEST);
 glEnable (GL_STENCIL_TEST);
 glDepthMask (0);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (gameStates.render.nShadowBlurPass)
+	glDisable (GL_BLEND);
+else
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
-glColor4fv (shadowHue);// / fDist);
+glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);// / fDist);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
@@ -2403,6 +2415,104 @@ glVertex2f (0,1);
 glEnd ();
 glEnable (GL_DEPTH_TEST);
 glDisable (GL_STENCIL_TEST);
+glDepthMask (1);
+glPopMatrix ();
+glMatrixMode (GL_MODELVIEW);
+glPopMatrix ();
+}
+
+//------------------------------------------------------------------------------
+
+#define STB_SIZE_X	128
+#define STB_SIZE_Y	128
+
+grsBitmap	shadowBuf;
+char			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
+static int	bHaveShadowBuf = 0;
+
+void CreateShadowTexture (void)
+{
+	GLint	i;
+
+if (!bHaveShadowBuf) {
+	memset (&shadowBuf, 0, sizeof (shadowBuf));
+	shadowBuf.bm_props.w = STB_SIZE_X;
+	shadowBuf.bm_props.h = STB_SIZE_Y;
+	shadowBuf.bm_props.flags = BM_FLAG_TGA;
+	shadowBuf.bm_texBuf = shadowTexBuf;
+	OglLoadBmTextureM (&shadowBuf, 0, -1, 0, NULL);
+	bHaveShadowBuf = 1;
+	}
+#if 1
+//glStencilFunc (GL_EQUAL, 0, ~0);
+//RenderShadowQuad (1);
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cv_bitmap.bm_props.h - 128, 128, 128, 0);
+//						grdCurCanv->cv_bitmap.bm_props.w, 
+//						grdCurCanv->cv_bitmap.bm_props.h, 0);
+#else
+glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
+#endif
+i = glGetError ();
+}
+
+//------------------------------------------------------------------------------
+
+GLhandleARB shadowProg = 0;
+GLhandleARB shadowFS = 0; 
+GLhandleARB shadowVS = 0; 
+
+#ifdef DBG_SHADERS
+
+char *pszShadowFS = "shadows.frag";
+char *pszShadowVS = "shadows.vert";
+
+#else
+
+#endif
+
+void RenderShadowTexture (void)
+{
+if (!(shadowProg ||
+	   (CreateShaderProg (&shadowProg) &&
+	    CreateShaderFunc (&shadowProg, &shadowFS, &shadowVS, pszShadowFS, pszShadowVS, 1) &&
+	    LinkShaderProg (&shadowProg))))
+	return;
+glMatrixMode (GL_MODELVIEW);
+glPushMatrix ();
+glLoadIdentity ();
+glMatrixMode (GL_PROJECTION);
+glPushMatrix ();
+glLoadIdentity ();
+glOrtho (0, 1, 1, 0, 0, 1);
+glDisable (GL_DEPTH_TEST);
+glDepthMask (0);
+#if 1
+glDisable (GL_BLEND);
+#else
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
+glEnable (GL_TEXTURE_2D);
+OglActiveTexture (GL_TEXTURE0_ARB);
+if (OglBindBmTex (&shadowBuf, 0))
+	return;
+glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#if 0
+glUseProgramObject (shadowProg);
+glUniform1i (glGetUniformLocation (shadowProg, "shadowTex"), 0);
+#endif
+glBegin (GL_QUADS);
+glTexCoord2d (0,0);
+glVertex2d (0,0);
+glTexCoord2d (1,0);
+glVertex2d (0.5,0);
+glTexCoord2d (1,-1);
+glVertex2d (0.5,0.5);
+glTexCoord2d (0,-1);
+glVertex2d (0,0.5);
+glEnd ();
+glUseProgramObject (0);
+glEnable (GL_DEPTH_TEST);
 glDepthMask (1);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
@@ -2717,8 +2827,7 @@ if (!bShadowTest)
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {
-		//RenderMine (nStartSeg, nEyeOffset, nWindow);
-		RenderShadowQuad (0.0f);
+		RenderShadowQuad (0);
 		}
 	}
 }
@@ -2800,12 +2909,32 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
+#if 0
+		if (gameOpts->render.shadows.bSoft = 1)
+			gameStates.render.nShadowBlurPass = 1;
+#endif
 		OglStartFrame (0, 0);
+		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 128, 128);
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
+#if 1
 		if (gameOpts->render.shadows.bFast)
 			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 		else
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
+#endif
+#if 0
+		if (gameOpts->render.shadows.bSoft) {
+			CreateShadowTexture ();
+			gameStates.render.nShadowBlurPass = 2;
+			gameStates.render.nShadowPass = 0;
+#if 1
+			OglStartFrame (0, 1);
+			SetRenderView (nEyeOffset, &nStartSeg);
+			RenderMine (nStartSeg, nEyeOffset, nWindow);
+#endif
+			RenderShadowTexture ();
+			}
+#endif
 		RenderSmoke ();
 		}
 	}
@@ -3459,7 +3588,9 @@ nHackLasers = 0;
 memset (bObjectRendered, 0, (gameData.objs.nLastObject + 1) * sizeof (bObjectRendered [0]));
 	//set up for rendering
 
-if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) ||
+if (((gameStates.render.nRenderPass <= 0) && 
+	  (gameStates.render.nShadowPass < 2) && 
+	  (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	TransformDynLights (1, 1);
@@ -3477,7 +3608,9 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 	else 
 #endif
 
-if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) || 
+if (((gameStates.render.nRenderPass <= 0) && 
+	  (gameStates.render.nShadowPass < 2) && 
+	  (gameStates.render.nShadowBlurPass < 2)) || 
 	 (gameStates.render.nShadowPass == 2)) {
 	BuildSegmentList (nStartSeg, nWindow);		//fills in nRenderList & nRenderSegs
 	//GatherVisibleLights ();

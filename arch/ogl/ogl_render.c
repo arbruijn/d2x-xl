@@ -421,10 +421,33 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+bool G3DrawWhitePoly (int nv, g3sPoint **pointList)
+{
+#if 1
+	int i;
+
+r_polyc++;
+glDisable (GL_TEXTURE_2D);
+glDisable (GL_BLEND);
+glColor4d (1.0, 1.0, 1.0, 1.0);
+glBegin (GL_TRIANGLE_FAN);
+for (i = 0; i < nv; i++, pointList++)
+	OglVertex3f (*pointList);
+glEnd ();
+#endif
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 bool G3DrawPoly (int nv, g3sPoint **pointList)
 {
 	int i;
 
+if (gameStates.render.nShadowBlurPass == 1) {
+	G3DrawWhitePoly (nv, pointList);
+	return 0;
+	}
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
@@ -447,11 +470,17 @@ bool G3DrawPolyAlpha (int nv, g3sPoint **pointList,
 	int			c;
 	GLint			curFunc; 
 
+if (gameStates.render.nShadowBlurPass == 1) {
+	G3DrawWhitePoly (nv, pointList);
+	return 0;
+	}
 r_polyc++;
 glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
+#if OGL_QUERY
 if (gameStates.render.bQueryOcclusion)
 	glDepthFunc (GL_LESS);
 else
+#endif
 	glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
 glDisable (GL_TEXTURE_2D);
@@ -1212,6 +1241,10 @@ bool G3DrawTexPolyMulti (
 	fVector		vNormal, vVertex;
 #endif
 
+if (gameStates.render.nShadowBlurPass == 1) {
+	G3DrawWhitePoly (nv, pointList);
+	return 0;
+	}
 if (!bmBot)
 	return 1;
 //if (gameStates.render.nShadowPass != 3)
@@ -1337,6 +1370,7 @@ else
 			r_tpolyc++;
 		if (bShaderMerge || (0 && gameOpts->render.bDynLighting)) {	
 			GLint loc;
+#if 0
 			if (0 && gameOpts->render.bDynLighting) {
 				glUseProgramObject (tmProg = genShaderProg);
 				glUniform1f (loc = glGetUniformLocation (tmProg, "nLights"), 
@@ -1346,6 +1380,7 @@ else
 				glBindTexture (GL_TEXTURE_2D, gameData.render.lights.dynamic.shader.nTexHandle);
 				tmType = 0;
 				}
+#endif
 			if (bShaderMerge) {
 				bmMask = BM_MASK (bmTop);
 				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
@@ -1378,10 +1413,12 @@ else
 				}
 			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+#if 0
 			if (0 && gameOpts->render.bDynLighting) {
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeFS"), tmType);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeVS"), tmType);
 				}
+#endif
 			}
 		else {
 			InitTMU0 ();
@@ -1524,21 +1561,12 @@ bool G3DrawBitMap (
 
 r_bitmapc++;
 OglActiveTexture (GL_TEXTURE0_ARB);
-glEnable (GL_TEXTURE_2D);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDepthInfo) {
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);
 	}
-if (OglBindBmTex (bmP, transp)) 
-	return 1;
-bmP = BmOverride (bmP);
-OglTexWrap (bmP->glTexture, GL_CLAMP);
-glBegin (GL_QUADS);
-glColor4f (1.0f, 1.0f, 1.0f, alpha);
-u = bmP->glTexture->u;
-v = bmP->glTexture->v;
 VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
 x = (float) f2glf (pv.x);
@@ -1546,16 +1574,36 @@ y = (float) f2glf (pv.y);
 z = (float) f2glf (pv.z);
 w = (float) f2glf (width); //FixMul (width, viewInfo.scale.x));
 h = (float) f2glf (height); //FixMul (height, viewInfo.scale.y));
-glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, 0);
-glVertex3f (x - w, y + h, z);
-glMultiTexCoord2f (GL_TEXTURE0_ARB, u, 0);
-glVertex3f (x + w, y + h, z);
-glMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
-glVertex3f (x + w, y - h, z);
-glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, v);
-glVertex3f (x - w, y - h, z);
-glEnd ();
-
+if (gameStates.render.nShadowBlurPass == 1) {
+	glDisable (GL_TEXTURE_2D);
+	glColor4d (1,1,1,1);
+	glBegin (GL_QUADS);
+	glVertex3f (x - w, y + h, z);
+	glVertex3f (x + w, y + h, z);
+	glVertex3f (x + w, y - h, z);
+	glVertex3f (x - w, y - h, z);
+	glEnd ();
+	}
+else {
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmP, transp)) 
+		return 1;
+	bmP = BmOverride (bmP);
+	OglTexWrap (bmP->glTexture, GL_CLAMP);
+	glColor4f (1.0f, 1.0f, 1.0f, alpha);
+	glBegin (GL_QUADS);
+	u = bmP->glTexture->u;
+	v = bmP->glTexture->v;
+	glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, 0);
+	glVertex3f (x - w, y + h, z);
+	glMultiTexCoord2f (GL_TEXTURE0_ARB, u, 0);
+	glVertex3f (x + w, y + h, z);
+	glMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
+	glVertex3f (x + w, y - h, z);
+	glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, v);
+	glVertex3f (x - w, y - h, z);
+	glEnd ();
+	}
 //These next lines are important for later leave these here - Lehm 4/26/05
 //OglActiveTexture (GL_TEXTURE0_ARB);
 //glBindTexture (GL_TEXTURE_2D, 0);
@@ -1891,6 +1939,7 @@ if (gameStates.render.nShadowPass) {
 			glLoadIdentity ();
 #endif
 			glEnable (GL_DEPTH_TEST);
+			glDisable (GL_STENCIL_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
 			glCullFace (GL_BACK);
@@ -1972,7 +2021,9 @@ if (gameStates.render.nShadowPass) {
 #if 0
 			glDisable (GL_POLYGON_OFFSET_FILL);
 #endif
-			if (gameOpts->render.shadows.bFast) {
+			if (gameStates.render.nShadowBlurPass == 2)
+				glDisable (GL_STENCIL_TEST);
+         else if (gameOpts->render.shadows.bFast) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}
@@ -2011,17 +2062,21 @@ else
 	r_ubitbltc = 
 	r_upixelc = 0;
 
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();//clear matrix
-	OglSetFOV (gameStates.render.glFOV);
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-	OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 
-					  nCanvasWidth, nCanvasHeight);
+	//if (gameStates.render.nShadowBlurPass < 2) 
+		{
+		glMatrixMode (GL_PROJECTION);
+		glLoadIdentity ();//clear matrix
+		OglSetFOV (gameStates.render.glFOV);
+		glMatrixMode (GL_MODELVIEW);
+		glLoadIdentity ();
+		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 
+						  nCanvasWidth, nCanvasHeight);
+		}
 	if (gameStates.render.nRenderPass < 0) {
 		glDepthMask (1);
 		glColorMask (1,1,1,1);
 		glClearColor (0,0,0,0);
+		//glClearDepth (~0);
 		glClear (bResetColorBuf ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_DEPTH_BUFFER_BIT);
 		}
 	else if (gameStates.render.nRenderPass) {
@@ -2036,7 +2091,6 @@ else
 		glColorMask (0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
-	glShadeModel (GL_SMOOTH);
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
 			grdCurCanv->cv_bitmap.bm_props.x, 
@@ -2062,19 +2116,21 @@ else
 		glDepthFunc (GL_LESS);
 		glEnable (GL_ALPHA_TEST);
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);	
-		}	
-	if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)	{//for optional hardware lighting
-		//GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
-		//glEnable (GL_LIGHTING);
-		//glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
-		//glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
-		glShadeModel (GL_SMOOTH);
-		//glEnable (GL_COLOR_MATERIAL);
-		//glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		}
+#if 0
+	if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)	{//for optional hardware lighting
+		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
+		glEnable (GL_LIGHTING);
+		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
+		glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, 0);
+		glShadeModel (GL_SMOOTH);
+		glEnable (GL_COLOR_MATERIAL);
+		glColorMaterial (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+		}
+#endif
 	glEnable (GL_BLEND);
-	glDisable (GL_STENCIL_TEST);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable (GL_STENCIL_TEST);
 	}
 }
 

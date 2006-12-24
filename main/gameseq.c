@@ -1702,7 +1702,8 @@ if (bSecret) {
 else {
 	if (gameData.reactor.bDestroyed) {
 		//AdvancingToLevelMessage ();
-		StartNewLevel (gameData.missions.nCurrentLevel + 1, 0);
+		AdvanceLevel (0, bSecret);
+		//StartNewLevel (gameData.missions.nCurrentLevel + 1, 0);
 		InitPlayerStatsNewShip ();
 		}
 	else if (!gameStates.entropy.bExitSequence) {

@@ -528,7 +528,9 @@ void DrawPolygonObject (tObject *objP)
 	//tRgbColorf color;
 
 #if SHADOWS
-if (gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
+if (gameOpts->render.shadows.bFast && 
+	 !gameOpts->render.shadows.bSoft && 
+	 (gameStates.render.nShadowPass == 3))
 	return;
 #endif
 xLight = CalcObjectLight (objP, xEngineGlow);

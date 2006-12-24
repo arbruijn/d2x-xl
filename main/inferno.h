@@ -174,6 +174,7 @@ typedef struct tShadowOptions {
 	int nLights;
 	int bFast;
 	int bClip;
+	int bSoft;
 	int bPlayers;
 	int bRobots;
 	int bMissiles;
@@ -519,6 +520,7 @@ typedef struct tRenderStates {
 	int bHaveStencilBuffer;
 	int nRenderPass;
 	int nShadowPass;
+	int nShadowBlurPass;
 	int bShadowMaps;
 	int bLoResShadows;
 	int nSoften;
