@@ -88,7 +88,7 @@ void CFSetCriticalErrorCounterPtr(int *ptr)
 
 // ----------------------------------------------------------------------------
 
-FILE * cfile_get_filehandle (char *filename, char *folder, char *mode) 
+FILE * CFGetFileHandle (char *filename, char *folder, char *mode) 
 {
 	FILE	*fp;
 	char	fn [FILENAME_LEN], *pfn;
@@ -119,7 +119,7 @@ FILE * cfile_get_filehandle (char *filename, char *folder, char *mode)
       fp = NULL;
 		}
 	}
-  //if (!fp) LogErr ("cfile_get_filehandle(): error opening %s\n", pfn);
+  //if (!fp) LogErr ("CFGetFileHandle(): error opening %s\n", pfn);
   return fp;
 }
 
@@ -139,7 +139,7 @@ int CFInitHogFile (char *fname, char *folder, hogfile *hog_files, int *nfiles)
 		}
 
 	*nfiles = 0;
-	fp = cfile_get_filehandle (fname, "", "rb");
+	fp = CFGetFileHandle (fname, "", "rb");
 	if (fp == NULL) 
 		return 0;
 
@@ -211,21 +211,21 @@ return CFUseHogFile (&gameHogFiles.AltHogFiles, name, "");
 
 // ----------------------------------------------------------------------------
 
-int cfile_use_D2X_hogfile (char * name) 
+int CFUseD2XHogFile (char * name) 
 {
 return CFUseHogFile (&gameHogFiles.D2XHogFiles, name, gameFolders.szMissionDir);
 }
 
 // ----------------------------------------------------------------------------
 
-int cfile_use_XL_hogfile (char * name) 
+int CFUseXLHogFile (char * name) 
 {
 return CFUseHogFile (&gameHogFiles.XLHogFiles, name, gameFolders.szDataDir);
 }
 
 // ----------------------------------------------------------------------------
 
-int cfile_use_Extra_hogfile (char * name) 
+int CFUseExtraHogFile (char * name) 
 {
 return gameStates.app.bHaveExtraData = 
 	!gameStates.app.bNostalgia &&
@@ -252,9 +252,9 @@ Assert(gameHogFiles.D2HogFiles.bInitialized == 0);
 if (CFInitHogFile (hogname, folder, gameHogFiles.D2HogFiles.files, &gameHogFiles.D2HogFiles.nFiles)) {
 	strcpy (gameHogFiles.D2HogFiles.szName, hogname);
 	gameHogFiles.D2HogFiles.bInitialized = 1;
-	cfile_use_D2X_hogfile ("d2x.hog");
-	cfile_use_XL_hogfile ("d2x-xl.hog");
-	cfile_use_Extra_hogfile ("extra.hog");
+	CFUseD2XHogFile ("d2x.hog");
+	CFUseXLHogFile ("d2x-xl.hog");
+	CFUseExtraHogFile ("extra.hog");
 	CFUseD1HogFile ("descent.hog");
 	return 1;
 	}
@@ -271,24 +271,23 @@ int CFSize(char *hogname, char *folder, int bUseD1Hog)
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-	fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
-	if (fp == NULL)
-		return -1;
-	fstat (fileno(fp->file), &statbuf);
-	CFClose(fp);
-	return statbuf.st_size;
+fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
+if (fp == NULL)
+	return -1;
+fstat (fileno(fp->file), &statbuf);
+CFClose(fp);
+return statbuf.st_size;
 #else
 	DWORD size;
 
-	//sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
-	fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
-	if (fp == NULL)
-		return -1;
-	if (fseek (fp->file, 0, SEEK_END))
-		return -1;
-	size = ftell (fp->file);
-	CFClose(fp);
-	return size;
+//sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
+if (!(fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog)))
+	return -1;
+if (fseek (fp->file, 0, SEEK_END))
+	return -1;
+size = ftell (fp->file);
+CFClose(fp);
+return size;
 #endif
 }
 
@@ -316,7 +315,7 @@ if (*folder) {
 for (i = hog->nFiles, phf = hog->files; i; i--, phf++) {
 	if (stricmp (phf->name, name))
 		continue;
-	if (!(fp = cfile_get_filehandle (hogFilename, "", "rb")))
+	if (!(fp = CFGetFileHandle (hogFilename, "", "rb")))
 		break;
 	fseek (fp, phf->offset, SEEK_SET);
 	if (length)
@@ -382,7 +381,7 @@ int CFExist (char *filename, char *folder, int bUseD1Hog)
 	FILE *fp;
 
 	if (filename[0] != '\x01')
-		fp = cfile_get_filehandle (filename, folder, "rb");		// Check for non-hog file first...
+		fp = CFGetFileHandle (filename, folder, "rb");		// Check for non-hog file first...
 	else {
 		fp = NULL;		//don't look in dir, only in hogfile
 		filename++;
@@ -451,12 +450,12 @@ CFILE * CFOpen (char *filename, char *folder, char *mode, int bUseD1Hog)
 if (! (filename && *filename))
 	return NULL;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
-	fp = cfile_get_filehandle (filename, folder, mode);		// Check for non-hog file first...
+	fp = CFGetFileHandle (filename, folder, mode);		// Check for non-hog file first...
 	if (!fp && 
 		 ((pszFileExt = strstr (filename, ".rdl")) || (pszFileExt = strstr (filename, ".rl2"))) &&
 		 (pszHogExt = strchr (gameHogFiles.szAltHogFile, '.')) &&
 		 !stricmp (pszFileExt, pszHogExt))
-		fp = cfile_get_filehandle (gameHogFiles.szAltHogFile, folder, mode);		// Check for non-hog file first...
+		fp = CFGetFileHandle (gameHogFiles.szAltHogFile, folder, mode);		// Check for non-hog file first...
 	}
 else {
 	fp = NULL;		//don't look in dir, only in hogfile
@@ -960,6 +959,40 @@ if (!CFRead (pData, nSize, 1, fp)) {
 	}
 CFClose (fp);
 return pData;
+}
+
+// ----------------------------------------------------------------------------
+
+void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt)
+{
+	int	i, j, l = strlen (szFullPath) - 1;
+
+i = l;
+#ifdef _WIN32
+while ((i >= 0) && (szFullPath [i] != '/') && (szFullPath [i] != '\\') && (szFullPath [i] != ':'))
+#else
+while ((i >= 0) && (szFullPath [i] != '/'))
+#endif
+	i--;
+i++;
+j = l - 1;
+while ((j > i) && (szFullPath [j] != '.'))
+	j--;
+if (szFolder) {
+	if (i > 0)
+		strncpy (szFolder, szFullPath, i);
+	szFolder [i] = '\0';
+	}
+if (szFile) {
+	if (j > i)
+		strncpy (szFile, szFullPath + i, j - i);
+	szFile [j - i] = '\0';
+	}
+if (szExt) {
+	if (j < l)
+		strncpy (szExt, szFullPath + j, l - j);
+	szExt [l - j] = '\0';
+	}
 }
 
 // ----------------------------------------------------------------------------

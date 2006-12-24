@@ -1,4 +1,4 @@
-/* $Id: inferno.c,v 1.71 2004/04/15 07:34:28 btb Exp $ */
+/* $Id: inferno.c, v 1.71 2004/04/15 07:34:28 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -233,16 +233,16 @@ void PrintCmdLineHelp ()
 	int have_binary=0;
 	char line[LINE_LEN];
 
-	ifile = CFOpen ("help.tex", gameFolders.szDataDir,"rb",0);
+	ifile = CFOpen ("help.tex", gameFolders.szDataDir, "rb", 0);
 	if (!ifile) {
-		ifile = CFOpen ("help.txb", gameFolders.szDataDir,"rb",0);
+		ifile = CFOpen ("help.txb", gameFolders.szDataDir, "rb", 0);
 		if (!ifile)
 			Warning (TXT_NO_HELP);
 		have_binary = 1;
 	}
 	if (ifile)
 	{
-		while (CFGetS (line,LINE_LEN,ifile)) {
+		while (CFGetS (line, LINE_LEN, ifile)) {
 			if (have_binary) {
 				int i;
 				for (i = 0; i < (int) strlen (line) - 1; i++) {
@@ -267,86 +267,86 @@ void PrintCmdLineHelp ()
 #endif
 	con_printf ((int) con_threshold.value, "  -ini <file>     %s\n", "option file (alternate to command line), defaults to d2x.ini");
 	con_printf ((int) con_threshold.value, "  -autodemo       %s\n", "Start in demo mode");
-	con_printf ((int) con_threshold.value, "  -bigpig         %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -bspgen         %s\n","FIXME: Undocumented");
-//	con_printf ((int) con_threshold.value, "  -cdproxy        %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -bigpig         %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -bspgen         %s\n", "FIXME: Undocumented");
+//	con_printf ((int) con_threshold.value, "  -cdproxy        %s\n", "FIXME: Undocumented");
 #ifndef NDEBUG
-	con_printf ((int) con_threshold.value, "  -checktime      %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -showmeminfo    %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -checktime      %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -showmeminfo    %s\n", "FIXME: Undocumented");
 #endif
-	con_printf ((int) con_threshold.value, "  -debug          %s\n","Enable very verbose output");
+	con_printf ((int) con_threshold.value, "  -debug          %s\n", "Enable very verbose output");
 #ifdef SDL_INPUT
-	con_printf ((int) con_threshold.value, "  -grabmouse      %s\n","Keeps the mouse from wandering out of the window");
+	con_printf ((int) con_threshold.value, "  -grabmouse      %s\n", "Keeps the mouse from wandering out of the window");
 #endif
 #ifndef RELEASE
-	con_printf ((int) con_threshold.value, "  -invulnerability %s\n","Make yourself invulnerable");
+	con_printf ((int) con_threshold.value, "  -invulnerability %s\n", "Make yourself invulnerable");
 #endif
-	con_printf ((int) con_threshold.value, "  -ipxnetwork <num> %s\n","Use IPX network number <num>");
-	con_printf ((int) con_threshold.value, "  -jasen          %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -joyslow        %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -kali           %s\n","use Kali for networking");
-	con_printf ((int) con_threshold.value, "  -lowresmovies   %s\n","Play low resolution movies if available (for slow machines)");
+	con_printf ((int) con_threshold.value, "  -ipxnetwork <num> %s\n", "Use IPX network number <num>");
+	con_printf ((int) con_threshold.value, "  -jasen          %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -joyslow        %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -kali           %s\n", "use Kali for networking");
+	con_printf ((int) con_threshold.value, "  -lowresmovies   %s\n", "Play low resolution movies if available (for slow machines)");
 #if defined (EDITOR) || !defined (MACDATA)
-	con_printf ((int) con_threshold.value, "  -macdata        %s\n","Read (and, for editor, write) mac data files (swap colors)");
+	con_printf ((int) con_threshold.value, "  -macdata        %s\n", "Read (and, for editor, write) mac data files (swap colors)");
 #endif
-	con_printf ((int) con_threshold.value, "  -nocdrom        %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -nocdrom        %s\n", "FIXME: Undocumented");
 #ifdef __DJGPP__
-	con_printf ((int) con_threshold.value, "  -nocyberman     %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -nocyberman     %s\n", "FIXME: Undocumented");
 #endif
 #ifndef NDEBUG
-	con_printf ((int) con_threshold.value, "  -nofade         %s\n","Disable fades");
+	con_printf ((int) con_threshold.value, "  -nofade         %s\n", "Disable fades");
 #endif
-	con_printf ((int) con_threshold.value, "  -nomatrixcheat  %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -norankings     %s\n","Disable multiplayer ranking system");
-	con_printf ((int) con_threshold.value, "  -packets <num>  %s\n","Specifies the number of packets per second\n");
-	con_printf ((int) con_threshold.value, "  -socket         %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -nomixer        %s\n","Don't crank music volume");
-	con_printf ((int) con_threshold.value, "  -sound22k       %s\n","Use 22 KHz sound sample rate");
-	con_printf ((int) con_threshold.value, "  -sound11k       %s\n","Use 11 KHz sound sample rate");
+	con_printf ((int) con_threshold.value, "  -nomatrixcheat  %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -norankings     %s\n", "Disable multiplayer ranking system");
+	con_printf ((int) con_threshold.value, "  -packets <num>  %s\n", "Specifies the number of packets per second\n");
+	con_printf ((int) con_threshold.value, "  -socket         %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -nomixer        %s\n", "Don't crank music volume");
+	con_printf ((int) con_threshold.value, "  -sound22k       %s\n", "Use 22 KHz sound sample rate");
+	con_printf ((int) con_threshold.value, "  -sound11k       %s\n", "Use 11 KHz sound sample rate");
 #ifndef RELEASE
-	con_printf ((int) con_threshold.value, "  -nomovies       %s\n","Don't play movies");
-	con_printf ((int) con_threshold.value, "  -noscreens      %s\n","Skip briefing screens");
+	con_printf ((int) con_threshold.value, "  -nomovies       %s\n", "Don't play movies");
+	con_printf ((int) con_threshold.value, "  -noscreens      %s\n", "Skip briefing screens");
 #endif
-	con_printf ((int) con_threshold.value, "  -noredbook      %s\n","Disable redbook audio");
-	con_printf ((int) con_threshold.value, "  -norun          %s\n","Bail out after initialization");
+	con_printf ((int) con_threshold.value, "  -noredbook      %s\n", "Disable redbook audio");
+	con_printf ((int) con_threshold.value, "  -norun          %s\n", "Bail out after initialization");
 #ifdef TACTILE
-	con_printf ((int) con_threshold.value, "  -stickmag       %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -stickmag       %s\n", "FIXME: Undocumented");
 #endif
-	con_printf ((int) con_threshold.value, "  -subtitles      %s\n","Turn on movie subtitles (English-only)");
-	con_printf ((int) con_threshold.value, "  -text <file>    %s\n","Specify alternate .tex file");
-	con_printf ((int) con_threshold.value, "  -udp            %s\n","Use TCP/UDP for networking");
-	con_printf ((int) con_threshold.value, "  -xcontrol       %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -xname          %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -xver           %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -tmap <t>       %s\n","select texmapper to use (c,fp,i386,pent,ppro)");
-	con_printf ((int) con_threshold.value, "  -<X>x<Y>        %s\n","Set screen resolution to <X> by <Y>");
-	con_printf ((int) con_threshold.value, "  -automap<X>x<Y> %s\n","Set automap resolution to <X> by <Y>");
-	con_printf ((int) con_threshold.value, "  -automap_gameres %s\n","Set automap to use the same resolution as in game");
+	con_printf ((int) con_threshold.value, "  -subtitles      %s\n", "Turn on movie subtitles (English-only)");
+	con_printf ((int) con_threshold.value, "  -text <file>    %s\n", "Specify alternate .tex file");
+	con_printf ((int) con_threshold.value, "  -udp            %s\n", "Use TCP/UDP for networking");
+	con_printf ((int) con_threshold.value, "  -xcontrol       %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -xname          %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -xver           %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -tmap <t>       %s\n", "select texmapper to use (c, fp, i386, pent, ppro)");
+	con_printf ((int) con_threshold.value, "  -<X>x<Y>        %s\n", "Set screen resolution to <X> by <Y>");
+	con_printf ((int) con_threshold.value, "  -automap<X>x<Y> %s\n", "Set automap resolution to <X> by <Y>");
+	con_printf ((int) con_threshold.value, "  -automap_gameres %s\n", "Set automap to use the same resolution as in game");
 	con_printf ((int) con_threshold.value, "\n");
 
 	con_printf ((int) con_threshold.value, "D2X System Options:\n\n");
 	con_printf ((int) con_threshold.value, "  -fullscreen     %s\n", "Use fullscreen mode if available");
-	con_printf ((int) con_threshold.value, "  -gl_texmagfilt <f> %s\n","set GL_TEXTURE_MAG_FILTER (see readme.d1x)");
-	con_printf ((int) con_threshold.value, "  -gl_texminfilt <f> %s\n","set GL_TEXTURE_MIN_FILTER (see readme.d1x)");
-	con_printf ((int) con_threshold.value, "  -gl_mipmap      %s\n","set gl texture filters to \"standard\" options for mipmapping");
-	con_printf ((int) con_threshold.value, "  -gl_trilinear   %s\n","set gl texture filters to trilinear mipmapping");
-	con_printf ((int) con_threshold.value, "  -gl_simple      %s\n","set gl texture filters to gl_nearest for \"original\" look. (default)");
-	con_printf ((int) con_threshold.value, "  -gl_alttexmerge %s\n","use new texmerge, usually uses less ram (default)");
-	con_printf ((int) con_threshold.value, "  -gl_stdtexmerge %s\n","use old texmerge, uses more ram, but _might_ be a bit faster");
-	con_printf ((int) con_threshold.value, "  -gl_16bittextures %s\n","attempt to use 16bit textures");
-	con_printf ((int) con_threshold.value, "  -ogl_reticle <r> %s\n","use OGL reticle 0=never 1=above 320x* 2=always");
-	con_printf ((int) con_threshold.value, "  -gl_intensity4_ok %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -gl_luminance4_alpha4_ok %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -gl_readpixels_ok %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -gl_rgba2_ok    %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -gl_test2       %s\n","FIXME: Undocumented");
-	con_printf ((int) con_threshold.value, "  -gl_vidmem      %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_texmagfilt <f> %s\n", "set GL_TEXTURE_MAG_FILTER (see readme.d1x)");
+	con_printf ((int) con_threshold.value, "  -gl_texminfilt <f> %s\n", "set GL_TEXTURE_MIN_FILTER (see readme.d1x)");
+	con_printf ((int) con_threshold.value, "  -gl_mipmap      %s\n", "set gl texture filters to \"standard\" options for mipmapping");
+	con_printf ((int) con_threshold.value, "  -gl_trilinear   %s\n", "set gl texture filters to trilinear mipmapping");
+	con_printf ((int) con_threshold.value, "  -gl_simple      %s\n", "set gl texture filters to gl_nearest for \"original\" look. (default)");
+	con_printf ((int) con_threshold.value, "  -gl_alttexmerge %s\n", "use new texmerge, usually uses less ram (default)");
+	con_printf ((int) con_threshold.value, "  -gl_stdtexmerge %s\n", "use old texmerge, uses more ram, but _might_ be a bit faster");
+	con_printf ((int) con_threshold.value, "  -gl_16bittextures %s\n", "attempt to use 16bit textures");
+	con_printf ((int) con_threshold.value, "  -ogl_reticle <r> %s\n", "use OGL reticle 0=never 1=above 320x* 2=always");
+	con_printf ((int) con_threshold.value, "  -gl_intensity4_ok %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_luminance4_alpha4_ok %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_readpixels_ok %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_rgba2_ok    %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_test2       %s\n", "FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -gl_vidmem      %s\n", "FIXME: Undocumented");
 #ifdef OGL_RUNTIME_LOAD
-	con_printf ((int) con_threshold.value, "  -gl_library <l> %s\n","use alternate opengl library");
+	con_printf ((int) con_threshold.value, "  -gl_library <l> %s\n", "use alternate opengl library");
 #endif
 #ifdef SDL_VIDEO
 	con_printf ((int) con_threshold.value, "  -nosdlvidmodecheck %s\n", "Some X servers don't like checking vidmode first, so just switch");
-	con_printf ((int) con_threshold.value, "  -hwsurface      %s\n","FIXME: Undocumented");
+	con_printf ((int) con_threshold.value, "  -hwsurface      %s\n", "FIXME: Undocumented");
 #endif
 #if defined(__unix__) || defined(__macosx__)
 	con_printf ((int) con_threshold.value, "  -serialdevice <s> %s\n", "Set serial/modem device to <s>");
@@ -438,9 +438,9 @@ int start_net_immediately = 0;
 
 // ----------------------------------------------------------------------------
 
-int OpenMovieFile (char *filename,int must_have);
+int OpenMovieFile (char *filename, int must_have);
 
-#define MENU_HIRES_MODE SM (640,480)
+#define MENU_HIRES_MODE SM (640, 480)
 
 //	DESCENT II by Parallax Software
 //		Descent Main
@@ -607,7 +607,7 @@ if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
 #else
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #endif
-sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir,/* *gameFolders.szGameDir ? "/" :*/ "", BASEMSLION_DIR);
+sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir, /* *gameFolders.szGameDir ? "/" :*/ "", BASEMSLION_DIR);
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (Args [i + 1]);
 }
@@ -788,6 +788,21 @@ if (t = FindArg ("-use_d1sounds"))
 	gameOptions [0].sound.bUseD1Sounds = NumArg (t, 1);
 if (t = FindArg ("-noredbook"))
 	gameOptions [0].sound.bUseRedbook = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void EvalMusicArgs (void)
+{
+	int	t;
+	char	*p;
+
+if ((t = FindArg ("-playlist")) && (p = Args [t+1]))
+	LoadPlayList (p);
+if ((t = FindArg ("-introsong")) && (p = Args [t+1]))
+	strncpy (gameData.songs.user.szIntroSong, p, FILENAME_LEN);
+if ((t = FindArg ("-menusong")) && (p = Args [t+1]))
+	strncpy (gameData.songs.user.szMenuSong, p, FILENAME_LEN);
 }
 
 // ----------------------------------------------------------------------------
@@ -1030,6 +1045,7 @@ EvalMovieArgs ();
 EvalOglArgs ();
 EvalRenderArgs ();
 EvalSoundArgs ();
+EvalMusicArgs ();
 }
 
 //------------------------------------------------------------------------------
@@ -1644,9 +1660,9 @@ gameStates.ogl.bEnableScissor = 0;
 gameStates.ogl.bNeedMipMaps = 0;
 gameStates.ogl.texMinFilter = GL_NEAREST;
 gameStates.ogl.texMinFilter = GL_NEAREST;
-gameStates.ogl.nTexMagFilterState = -1,
+gameStates.ogl.nTexMagFilterState = -1, 
 gameStates.ogl.nTexMinFilterState = -1;
-gameStates.ogl.nTexEnvModeState = -1,
+gameStates.ogl.nTexEnvModeState = -1, 
 gameStates.ogl.nLastX =
 gameStates.ogl.nLastY =
 gameStates.ogl.nLastW =
@@ -1981,7 +1997,7 @@ con_printf(CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
 if (gameHogFiles.D2XHogFiles.bInitialized)
 	con_printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
-con_printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__,__TIME__);
+con_printf(CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
 con_printf(CON_NORMAL, "Compiler: %s\n", __VERSION__);
 #endif
@@ -2011,15 +2027,15 @@ else
 #define MOVIE_REQUIRED 1
 
 	if (gameStates.app.bHaveExtraMovies) {
-		nPlayed = PlayMovie ("starta.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
+		nPlayed = PlayMovie ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
 			nPlayed = MOVIE_PLAYED_FULL;
 		else
-			nPlayed = PlayMovie ("startb.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
+			nPlayed = PlayMovie ("startb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		}
 	else {
 		InitSubTitles ("intro.tex");
-		nPlayed = PlayMovie ("intro.mve",MOVIE_REQUIRED,0,gameOpts->movies.bResize);
+		nPlayed = PlayMovie ("intro.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		}
 	CloseSubTitles ();
 
@@ -2040,18 +2056,18 @@ void ShowLoadingScreen (void)
 con_printf(CON_DEBUG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 strcpy (filename, gameStates.menus.bHires?"descentb.pcx":"descent.pcx");
-if (! CFExist (filename,gameFolders.szDataDir,0))
+if (! CFExist (filename, gameFolders.szDataDir, 0))
 	strcpy (filename, gameStates.menus.bHires?"descntob.pcx":"descento.pcx"); // OEM
-if (! CFExist (filename,gameFolders.szDataDir,0))
+if (! CFExist (filename, gameFolders.szDataDir, 0))
 	strcpy (filename, "descentd.pcx"); // SHAREWARE
-if (! CFExist (filename,gameFolders.szDataDir,0))
+if (! CFExist (filename, gameFolders.szDataDir, 0))
 	strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 GrSetMode (
 	gameStates.menus.bHires ? 
 		(gameStates.gfx.nStartScrSize < 0) ? 
-			SM (640,480) 
+			SM (640, 480) 
 			: SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y) 
-		: SM (320,200));
+		: SM (320, 200));
 SetScreenMode (SCREEN_MENU);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 if ((pcx_error = pcx_read_fullscr (filename, 0))==PCX_ERROR_NONE)	{
@@ -2059,9 +2075,9 @@ if ((pcx_error = pcx_read_fullscr (filename, 0))==PCX_ERROR_NONE)	{
 	GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
 	} 
 else
-	Error ("Couldn't load pcx file '%s',\nPCX load error: %s\n",filename, pcx_errormsg (pcx_error));
+	Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcx_error));
 //the bitmap loading code changes grPalette, so restore it
-//memcpy (grPalette,titlePal,sizeof (grPalette));
+//memcpy (grPalette, titlePal, sizeof (grPalette));
 }
 
 // ----------------------------------------------------------------------------
@@ -2077,54 +2093,54 @@ if (FindArg ("-hoarddata")) {
 	short nframes_short;
 	ubyte palette[256*3];
 	FILE *ofile;
-	int iff_error,i;
+	int iff_error, i;
 
-	char *sounds[] = {"selforb.raw","selforb.r22",		//SOUND_YOU_GOT_ORB			
-							"teamorb.raw","teamorb.r22",		//SOUND_FRIEND_GOT_ORB			
-							"enemyorb.raw","enemyorb.r22",	//SOUND_OPPONENT_GOT_ORB	
-							"OPSCORE1.raw","OPSCORE1.r22"};	//SOUND_OPPONENT_HAS_SCORED
+	char *sounds[] = {"selforb.raw", "selforb.r22", 		//SOUND_YOU_GOT_ORB			
+							"teamorb.raw", "teamorb.r22", 		//SOUND_FRIEND_GOT_ORB			
+							"enemyorb.raw", "enemyorb.r22", 	//SOUND_OPPONENT_GOT_ORB	
+							"OPSCORE1.raw", "OPSCORE1.r22"};	//SOUND_OPPONENT_HAS_SCORED
 
-	ofile = fopen ("hoard.ham","wb");
+	ofile = fopen ("hoard.ham", "wb");
 
-	iff_error = iff_read_animbrush ("orb.abm",bm,MAX_BITMAPS_PER_BRUSH,&nframes,palette);
+	iff_error = iff_read_animbrush ("orb.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
 	nframes_short = nframes;
-	fwrite (&nframes_short,sizeof (nframes_short),1,ofile);
-	fwrite (&bm[0]->bm_props.w,sizeof (short),1,ofile);
-	fwrite (&bm[0]->bm_props.h,sizeof (short),1,ofile);
-	fwrite (palette,3,256,ofile);
+	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
+	fwrite (&bm[0]->bm_props.w, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->bm_props.h, sizeof (short), 1, ofile);
+	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bm_texBuf,1,bm[i]->bm_props.w*bm[i]->bm_props.h,ofile);
+		fwrite (bm[i]->bm_texBuf, 1, bm[i]->bm_props.w*bm[i]->bm_props.h, ofile);
 
-	iff_error = iff_read_animbrush ("orbgoal.abm",bm,MAX_BITMAPS_PER_BRUSH,&nframes,palette);
+	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
 	Assert (bm[0]->bm_props.w == 64 && bm[0]->bm_props.h == 64);
 	nframes_short = nframes;
-	fwrite (&nframes_short,sizeof (nframes_short),1,ofile);
-	fwrite (palette,3,256,ofile);
+	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
+	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bm_texBuf,1,bm[i]->bm_props.w*bm[i]->bm_props.h,ofile);
+		fwrite (bm[i]->bm_texBuf, 1, bm[i]->bm_props.w*bm[i]->bm_props.h, ofile);
 
 	for (i=0;i<2;i++) {
-		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm",&icon,BM_LINEAR,palette);
+		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
 		Assert (iff_error == IFF_NO_ERROR);
-		fwrite (&icon.bm_props.w,sizeof (short),1,ofile);
-		fwrite (&icon.bm_props.h,sizeof (short),1,ofile);
-		fwrite (palette,3,256,ofile);
-		fwrite (icon.bm_texBuf,1,icon.bm_props.w*icon.bm_props.h,ofile);
+		fwrite (&icon.bm_props.w, sizeof (short), 1, ofile);
+		fwrite (&icon.bm_props.h, sizeof (short), 1, ofile);
+		fwrite (palette, 3, 256, ofile);
+		fwrite (icon.bm_texBuf, 1, icon.bm_props.w*icon.bm_props.h, ofile);
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
 		FILE *ifile;
 		int size;
 		ubyte *buf;
-		ifile = fopen (sounds[i],"rb");
+		ifile = fopen (sounds[i], "rb");
 		Assert (ifile != NULL);
 		size = ffilelength (ifile);
 		buf = d_malloc (size);
-		fread (buf,1,size,ifile);
-		fwrite (&size,sizeof (size),1,ofile);
-		fwrite (buf,1,size,ofile);
+		fread (buf, 1, size, ifile);
+		fwrite (&size, sizeof (size), 1, ofile);
+		fwrite (buf, 1, size, ofile);
 		d_free (buf);
 		fclose (ifile);
 		}
@@ -2174,7 +2190,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{
 					create_new_mine ();
 					SetPlayerFromCurseg ();
-					LoadPalette (NULL,1,0);
+					LoadPalette (NULL, 1, 0);
 					}
 #endif
 				}
@@ -2214,7 +2230,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			break;
 #endif
 		default:
-			Error ("Invalid function mode %d",gameStates.app.nFunctionMode);
+			Error ("Invalid function mode %d", gameStates.app.nFunctionMode);
 		}
 	}
 }
@@ -2227,24 +2243,24 @@ typedef struct tOOFToModel {
 } tOOFToModel;
 
 static tOOFToModel oofToModel [] = {
-	{"pyrogl.oof", 108},
-	{NULL, 110},	//negative means this is an additional model number to be used with an existing oof
-	{"concussion.oof", 127},
-	{NULL, 137},
-	{"homer.oof", 133},
-	{NULL, 136},
-	{"smartmsl.oof", 134},
-	{NULL, 162},
-	{"mega.oof", 135},
-	{NULL, 142},
-	{"flashmsl.oof", 151},
-	{NULL, 158},
-	{NULL, 165},
-	{"guided.oof", 152},
-	{"mercury.oof", 153},
-	{NULL, 161},
-	{"eshaker.oof", 154},
-	{NULL, 163},
+	{"pyrogl.oof", 108}, 
+	{NULL, 110}, 	//negative means this is an additional model number to be used with an existing oof
+	{"concussion.oof", 127}, 
+	{NULL, 137}, 
+	{"homer.oof", 133}, 
+	{NULL, 136}, 
+	{"smartmsl.oof", 134}, 
+	{NULL, 162}, 
+	{"mega.oof", 135}, 
+	{NULL, 142}, 
+	{"flashmsl.oof", 151}, 
+	{NULL, 158}, 
+	{NULL, 165}, 
+	{"guided.oof", 152}, 
+	{"mercury.oof", 153}, 
+	{NULL, 161}, 
+	{"eshaker.oof", 154}, 
+	{NULL, 163}, 
 	{"shakrsub.oof", 160}
 	};
 
@@ -2301,7 +2317,7 @@ InitGameStates ();
 InitExtraGameInfo ();
 InitNetworkData ();
 InitGameOptions (0);
-InitArgs (argc,argv);
+InitArgs (argc, argv);
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
@@ -2362,7 +2378,7 @@ DoJoystickInit ();
 /*---*/LogErr ("Initializing graphics\n");
 if (t = GrInit ()) {		//doesn't do much
 	LogErr ("Cannot initialize graphics\n");
-	Error (TXT_CANT_INIT_GFX,t);
+	Error (TXT_CANT_INIT_GFX, t);
 	return 1;
 	}
 nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y);
@@ -2536,13 +2552,13 @@ void show_order_form ()
 	KeyFlush ();
 
 	strcpy (exit_screen, gameStates.menus.bHires?"ordrd2ob.pcx":"ordrd2o.pcx"); // OEM
-	if (! CFExist (exit_screen,gameFolders.szDataDir,0))
+	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"orderd2b.pcx":"orderd2.pcx"); // SHAREWARE, prefer mac if hires
-	if (! CFExist (exit_screen,gameFolders.szDataDir,0))
+	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"orderd2.pcx":"orderd2b.pcx"); // SHAREWARE, have to rescale
-	if (! CFExist (exit_screen,gameFolders.szDataDir,0))
+	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
 		strcpy (exit_screen, gameStates.menus.bHires?"warningb.pcx":"warning.pcx"); // D1
-	if (! CFExist (exit_screen,gameFolders.szDataDir,0))
+	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
 		return; // D2 registered
 
 	if ((pcx_error=pcx_read_fullscr (exit_screen, 0))==PCX_ERROR_NONE) {

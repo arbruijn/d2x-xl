@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "timer.h"
 #include "mission.h"
+#include "u_mem.h"
 
 extern void DigiStopCurrentSong();
 
@@ -53,14 +54,14 @@ void set_redbookVolume(int volume)
 	RBASetVolume(volume*REDBOOK_VOLUME_SCALE/8);
 }
 
-extern char CDROM_dir[];
+extern char CDROM_dir [];
 
 //------------------------------------------------------------------------------
 
 void SongsInit()
 {
 	int i, bD1Songs;
-	char inputline[80+1];
+	char inputline [80+1];
 	CFILE * fp;
 
 if (gameData.songs.bInitialized) 
@@ -83,15 +84,15 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 			if (strlen(inputline)) {
 				Assert(i < MAX_NUM_SONGS);
 				sscanf(inputline, "%s %s %s",
-						gameData.songs.info[i].filename,
-						gameData.songs.info[i].melodic_bank_file,
-						gameData.songs.info[i].drum_bank_file);
+						gameData.songs.info [i].filename,
+						gameData.songs.info [i].melodic_bank_file,
+						gameData.songs.info [i].drum_bank_file);
 				if (!gameData.songs.nFirstLevelSong [bD1Songs] && strstr (gameData.songs.info [i].filename, "game01.hmp"))
 					 gameData.songs.nFirstLevelSong [bD1Songs] = i;
 				if (bD1Songs && strstr (gameData.songs.info [i].filename, "endlevel.hmp"))
 					gameData.songs.nD1EndLevelSong = i;
 
-				////printf("%d. '%s' '%s' '%s'\n",i,gameData.songs.info[i].filename,gameData.songs.info[i].melodic_bank_file,gameData.songs.info[i].drum_bank_file);
+				////printf("%d. '%s' '%s' '%s'\n",i,gameData.songs.info [i].filename,gameData.songs.info [i].melodic_bank_file,gameData.songs.info [i].drum_bank_file);
 				i++;
 				}
 			}
@@ -252,12 +253,12 @@ switch (discid) {
 
 int SongsHaveD2CD()
 {
-	char temp[128],cwd[128];
+	char temp [128],cwd [128];
 	
 getcwd(cwd, 128);
 strcpy(temp,CDROM_dir);
-if (temp[strlen(temp)-1] == '\\')
-	temp[strlen(temp)-1] = 0;
+if (temp [strlen(temp)-1] == '\\')
+	temp [strlen(temp)-1] = 0;
 if (!chdir(temp)) {
 	chdir(cwd);
 	return 1;
@@ -279,18 +280,24 @@ if (!(gameStates.sound.bRedbookEnabled ? gameConfig.nRedbookVolume : gameConfig.
 SongsStopAll();
 //do we want any of these to be redbook songs?
 if (force_rb_register) {
-	RBARegisterCD();			//get new track list for new CD
+	RBARegisterCD ();			//get new track list for new CD
 	force_rb_register = 0;
 	}
 gameStates.sound.nCurrentSong = nSong;
-if (nSong == SONG_TITLE)
-	PlayRedbookTrack (REDBOOK_TITLE_TRACK,0);
-else if (nSong == SONG_CREDITS)
-	PlayRedbookTrack (REDBOOK_CREDITS_TRACK,0);
-if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
-	DigiPlayMidiSong (
-		gameData.songs.info[nSong].filename, gameData.songs.info[nSong].melodic_bank_file, 
-		gameData.songs.info[nSong].drum_bank_file, repeat, gameData.songs.nD1Songs && (nSong >= gameData.songs.nD2Songs));
+if (*gameData.songs.user.szIntroSong)
+	DigiPlayMidiSong (gameData.songs.user.szIntroSong, NULL, NULL, repeat, 0);
+else {
+	if (nSong == SONG_TITLE)
+		PlayRedbookTrack (REDBOOK_TITLE_TRACK, 0);
+	else if (nSong == SONG_CREDITS)
+		PlayRedbookTrack (REDBOOK_CREDITS_TRACK, 0);
+	if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
+		DigiPlayMidiSong (
+			gameData.songs.info [nSong].filename, 
+			gameData.songs.info [nSong].melodic_bank_file, 
+			gameData.songs.info [nSong].drum_bank_file, 
+			repeat, gameData.songs.nD1Songs && (nSong >= gameData.songs.nD2Songs));
+		}
 	}
 }
 
@@ -305,11 +312,11 @@ SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
 
 int nCurrentLevelSong;
 
-void PlayLevelSong(int nLevel)
+void PlayLevelSong (int nLevel)
 {
 	int nSong;
 	int nTracks;
-	int bD1Song = (gameData.missions.list[gameData.missions.nCurrentMission].descent_version == 1);
+	int bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
 
 Assert(nLevel != 0);
 if (!gameData.songs.bInitialized)
@@ -324,17 +331,23 @@ if (force_rb_register) {
 	RBARegisterCD();			//get new track list for new CD
 	force_rb_register = 0;
 	}
-if (gameStates.sound.bRedbookEnabled && RBAEnabled() && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
-	PlayRedbookTrack(REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks-REDBOOK_FIRST_LEVEL_TRACK+1)),1);
-if (! gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
-	nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
-	gameStates.sound.nCurrentSong = nSong;
-		DigiPlayMidiSong (
-			gameData.songs.info [nSong].filename, 
-			gameData.songs.info [nSong].melodic_bank_file, 
-			gameData.songs.info [nSong].drum_bank_file, 
-			1, 
-			bD1Song);
+if (gameData.songs.user.nLevelSongs) {
+	nSong %= gameData.songs.user.nLevelSongs;
+	DigiPlayMidiSong (gameData.songs.user.pszLevelSongs [nSong], NULL, NULL, 1, 0);
+	}
+else {
+	if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
+		PlayRedbookTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks-REDBOOK_FIRST_LEVEL_TRACK+1)),1);
+	if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
+		nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
+		gameStates.sound.nCurrentSong = nSong;
+			DigiPlayMidiSong (
+				gameData.songs.info [nSong].filename, 
+				gameData.songs.info [nSong].melodic_bank_file, 
+				gameData.songs.info [nSong].drum_bank_file, 
+				1, 
+				bD1Song);
+		}
 	}
 }
 
@@ -386,6 +399,48 @@ if (gameStates.sound.bRedbookPlaying) 		//get correct track
 	nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (nCurrentLevelSong > 1)
 	PlayLevelSong(nCurrentLevelSong-1);
+}
+
+//------------------------------------------------------------------------------
+
+int LoadPlayList (char *pszPlayList)
+{
+	CFILE	*fp;
+	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
+	int	l, bRead, nSongs;
+
+CFSplitPath (pszPlayList, szListFolder, NULL, NULL);
+for (bRead = 0; bRead < 2; bRead++) {
+	if (!(fp = CFOpen (pszPlayList, "", "rt", 0)))
+		return 0;
+	nSongs = 0;
+	while (CFGetS (szSong, sizeof (szSong), fp)) {
+		if (strstr (szSong, ".mp3")) {
+			if (bRead) {
+				l = strlen (szSong) + 1;
+				CFSplitPath (szSong, szSongFolder, NULL, NULL);
+				if (!*szSongFolder)
+					l += strlen (szListFolder);
+				if (!(pszSong = (char *) d_malloc (l))) {
+					CFClose (fp);
+					return nSongs = nSongs;
+					}
+				gameData.songs.user.pszLevelSongs [nSongs] = pszSong;
+				if (*szSongFolder)
+					memcpy (pszSong, szSong, l);
+				else
+					sprintf (pszSong, "%s%s", szListFolder, szSong);
+				}
+			nSongs++;
+			}
+		}
+	CFClose (fp);
+	if (!bRead) {
+		if (!(gameData.songs.user.pszLevelSongs = (char **) d_malloc (nSongs * sizeof (char **))))
+			return 0;
+		}
+	}
+return gameData.songs.user.nLevelSongs = nSongs;
 }
 
 //------------------------------------------------------------------------------

@@ -12,36 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header for songs.c
- *
- * Old Log:
- * Revision 2.0  1995/02/27  11:30:52  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.6  1995/02/11  22:21:44  adam
- * *** empty log message ***
- *
- * Revision 1.5  1995/02/11  19:10:49  adam
- * *** empty log message ***
- *
- * Revision 1.4  1995/02/11  18:34:40  adam
- * *** empty log message ***
- *
- * Revision 1.3  1995/02/11  18:04:51  adam
- * upped songs
- *
- * Revision 1.2  1995/02/11  12:42:12  john
- * Added new song method, with FM bank switching..
- *
- * Revision 1.1  1995/02/11  10:20:18  john
- * Initial revision
- *
- *
- */
-
 #ifndef _SONGS_H
 #define _SONGS_H
 
@@ -82,21 +52,15 @@ extern tSongInfo Songs[MAX_NUM_SONGS];
 extern int Num_songs, nD1SongNum, nD2SongNum;   //how many MIDI songs
 
 //whether or not redbook audio should be played
-extern int Redbook_enabled;
-extern int Redbook_playing;     // track that is currently playing
-
-void SongsPlaySong( int songnum, int repeat );
-void PlayLevelSong( int levelnum );
-
+void SongsPlaySong (int songnum, int repeat);
+void PlayLevelSong (int levelnum);
 // stop the redbook, so we can read off the CD
 void songs_stop_redbook(void);
-
 // stop any songs - midi or redbook - that are currently playing
 void SongsStopAll(void);
-
 // this should be called regularly to check for redbook restart
 void SongsCheckRedbookRepeat(void);
-
 void SongsPlayCurrentSong(int repeat);
+int LoadPlayList (char *pszPlayList);
 
 #endif /* _SONGS_H */

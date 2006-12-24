@@ -90,42 +90,55 @@ else
 
 //------------------------------------------------------------------------------
 
-void DigiPlayMidiSong(char *filename, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
+void DigiPlayMidiSong (char *pszSong, char *melodicBank, char *drumBank, int loop, int bD1Song)
 {
+	int	bMP3;
 #if 0
 if (!gameStates.sound.digi.bInitialized)
 	return;
 #endif
-LogErr ("DigiPlayMidiSong (%s)\n", filename);
+LogErr ("DigiPlayMidiSong (%s)\n", pszSong);
 DigiStopCurrentSong();
-if (filename == NULL)
+if (pszSong == NULL)
 	return;
 if (midiVolume < 1)
 	return;
-if (hmp = hmp_open (filename, bD1Song)) {
+bMP3 = (strstr (pszSong, ".mp3") != NULL);
+if (bMP3 || (hmp = hmp_open (pszSong, bD1Song))) {
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer) {
-		char	fnMusic [FILENAME_LEN];
+		char	fnSong [FILENAME_LEN], *pfnSong;
 
-		sprintf (fnMusic, "%s/d2x-temp.mid", gameFolders.szHomeDir);
-		if (hmp_to_midi (hmp, fnMusic) && (mixMusic = Mix_LoadMUS (fnMusic))) {
+		if (bMP3)
+			pfnSong = pszSong;
+		else {
+			sprintf (fnSong, "%s/d2x-temp.mid", gameFolders.szHomeDir);
+			if (!hmp_to_midi (hmp, fnSong)) {
+				LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+				return;
+				}
+			pfnSong = fnSong;
+			}
+		if (!(mixMusic = Mix_LoadMUS (pfnSong)))
+			LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+		else {
 			if (-1 == Mix_PlayMusic (mixMusic, loop))
-				LogErr ("SDL_mixer cannot play %s\n(%s)\n", filename, Mix_GetError ());
+				LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 			else {
-				LogErr ("SDL_mixer playing %s\n", filename);
+				LogErr ("SDL_mixer playing %s\n", pszSong);
 				bDigiMidiSongPlaying = 1;
 				DigiSetMidiVolume (midiVolume);
 				}
 			}
-		else
-			LogErr ("SDL_mixer failed loading %s\n(%s)\n", fnMusic, Mix_GetError ());
 		}
 #endif
 #if defined (_WIN32)
 #	if USE_SDL_MIXER
 else 
 #	endif
-		{
+	if (bMP3)
+		LogErr ("Cannot play %s - enable SDL_mixer\n", pszSong);
+	else {
 		hmp_play(hmp, loop);
 		bDigiMidiSongPlaying = 1;
 		DigiSetMidiVolume(midiVolume);

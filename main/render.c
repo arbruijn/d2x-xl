@@ -64,6 +64,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#define SOFT_SHADOWS		1
+
 #if DBG_SHADOWS
 extern int bShadowTest;
 extern int bFrontCap;
@@ -2423,8 +2425,8 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-#define STB_SIZE_X	128
-#define STB_SIZE_Y	128
+#define STB_SIZE_X	2048
+#define STB_SIZE_Y	2048
 
 grsBitmap	shadowBuf;
 char			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
@@ -2446,9 +2448,13 @@ if (!bHaveShadowBuf) {
 #if 1
 //glStencilFunc (GL_EQUAL, 0, ~0);
 //RenderShadowQuad (1);
+#	if 0
 glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cv_bitmap.bm_props.h - 128, 128, 128, 0);
-//						grdCurCanv->cv_bitmap.bm_props.w, 
-//						grdCurCanv->cv_bitmap.bm_props.h, 0);
+#	else
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0,
+						grdCurCanv->cv_bitmap.bm_props.w, 
+						grdCurCanv->cv_bitmap.bm_props.h, 0);
+#	endif
 #else
 glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
 #endif
@@ -2909,7 +2915,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
-#if 0
+#if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft = 1)
 			gameStates.render.nShadowBlurPass = 1;
 #endif
@@ -2922,7 +2928,7 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 		else
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
 #endif
-#if 0
+#if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft) {
 			CreateShadowTexture ();
 			gameStates.render.nShadowBlurPass = 2;

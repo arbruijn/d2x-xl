@@ -1530,6 +1530,14 @@ typedef struct tEndLevelData {
 
 #include "songs.h"
 
+typedef struct tUserMusicData {
+	int					nLevelSongs;
+	int					nCurrentSong;
+	char					**pszLevelSongs;
+	char					szIntroSong [FILENAME_LEN];
+	char					szMenuSong [FILENAME_LEN];
+} tUserMusicData;
+
 typedef struct tSongData {
 	tSongInfo			info [MAX_NUM_SONGS];
 	int					bInitialized;
@@ -1539,6 +1547,7 @@ typedef struct tSongData {
 	int					nFirstLevelSong [2];
 	int					nLevelSongs [2];
 	int					nD1EndLevelSong;
+	tUserMusicData		user;
 } tSongData;
 
 typedef struct tMenuData {
