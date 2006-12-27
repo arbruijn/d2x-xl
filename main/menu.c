@@ -3128,7 +3128,7 @@ WritePlayerFile ();
 
 //------------------------------------------------------------------------------
 
-void set_redbookVolume (int volume);
+void SetRedbookVolume (int volume);
 
 WIN (extern int RBCDROM_State);
 WIN (static BOOL windigi_driver_off=FALSE);
@@ -3176,20 +3176,23 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 if (gameStates.sound.bRedbookEnabled) {
 	if (gameConfig.nRedbookVolume != items [optMusicVol].value )   {
 		gameConfig.nRedbookVolume = items[optMusicVol].value;
-		set_redbookVolume (gameConfig.nRedbookVolume);
+		SetRedbookVolume (gameConfig.nRedbookVolume);
 		}
 	}
 else 
 	{
 	if (gameConfig.nMidiVolume != items [optMusicVol].value) {
-		int song_playing = (gameConfig.nMidiVolume > 0);
+		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
  		gameConfig.nMidiVolume = items [optMusicVol].value;
 		DigiSetMidiVolume ((gameConfig.nMidiVolume*128)/8);
 		if (gameConfig.nMidiVolume < 1)
-			DigiPlayMidiSong ( NULL, NULL, NULL, 1, 0 );
-		else if (!song_playing)
-			SongsPlaySong ( gameStates.sound.nCurrentSong, 1);
+			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
+		else if (!bSongPlaying)
+			if (gameStates.app.bGameRunning)
+				PlayLevelSong (gameData.missions.nCurrentLevel);
+			else
+				SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 		}
 	}
 // don't enable redbook for a non-apple demo version of the shareware demo
@@ -3203,7 +3206,7 @@ void SoundMenu ()
    tMenuItem m [6];
 	int	i, opt, choice = 0, 
 			optReverse,
-			song_playing = (gameConfig.nMidiVolume > 0);
+			bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3229,7 +3232,7 @@ do {
 if ( gameConfig.nMidiVolume < 1 )   {
 		DigiPlayMidiSong ( NULL, NULL, NULL, 0, 0 );
 	}
-else if (!song_playing)
+else if (!bSongPlaying)
 	SongsPlaySong ( gameStates.sound.nCurrentSong, 1);
 }
 

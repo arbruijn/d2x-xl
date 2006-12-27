@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	ifdef _DEBUG
 #		define USE_SDL_MIXER	1
 #	else
-#		define USE_SDL_MIXER	0
+#		define USE_SDL_MIXER	1
 #	endif
 #else
 #	include "conf.h"

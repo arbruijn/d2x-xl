@@ -90,6 +90,7 @@
 				RuntimeLibrary="2"
 				StructMemberAlignment="1"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/libmve.pch"
 				AssemblerListingLocation=".\Release/"

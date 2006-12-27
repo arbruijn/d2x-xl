@@ -48,7 +48,7 @@ extern int CD_blast_mixer();
 #define REDBOOK_VOLUME_SCALE  (255/3)		//255 is MAX
 
 //takes volume in range 0..8
-void set_redbookVolume(int volume)
+void SetRedbookVolume(int volume)
 {
 	RBASetVolume(0);		// makes the macs sound really funny
 	RBASetVolume(volume*REDBOOK_VOLUME_SCALE/8);
@@ -113,7 +113,7 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		else {	// use redbook
 				RBAInit();
 			if (RBAEnabled()) {
-				set_redbookVolume(gameConfig.nRedbookVolume);
+				SetRedbookVolume(gameConfig.nRedbookVolume);
 				RBARegisterCD();
 				}
 			}
@@ -159,7 +159,7 @@ void ReInitRedbook()
 {
 RBAInit();
 if (RBAEnabled()) {
-	set_redbookVolume(gameConfig.nRedbookVolume);
+	SetRedbookVolume(gameConfig.nRedbookVolume);
 	RBARegisterCD();
 	force_rb_register=0;
 	}
@@ -407,7 +407,7 @@ int LoadPlayList (char *pszPlayList)
 {
 	CFILE	*fp;
 	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
-	int	l, bRead, nSongs;
+	int	l, bRead, nSongs, bMP3;
 
 CFSplitPath (pszPlayList, szListFolder, NULL, NULL);
 for (bRead = 0; bRead < 2; bRead++) {
@@ -415,8 +415,14 @@ for (bRead = 0; bRead < 2; bRead++) {
 		return 0;
 	nSongs = 0;
 	while (CFGetS (szSong, sizeof (szSong), fp)) {
-		if (strstr (szSong, ".mp3")) {
+		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg")) {
 			if (bRead) {
+				if (bMP3)
+					gameData.songs.user.bMP3 = 1;
+				if (pszSong = strchr (szSong, '\r'))
+					*pszSong = '\0';
+				if (pszSong = strchr (szSong, '\n'))
+					*pszSong = '\0';
 				l = strlen (szSong) + 1;
 				CFSplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
@@ -425,11 +431,11 @@ for (bRead = 0; bRead < 2; bRead++) {
 					CFClose (fp);
 					return nSongs = nSongs;
 					}
-				gameData.songs.user.pszLevelSongs [nSongs] = pszSong;
 				if (*szSongFolder)
 					memcpy (pszSong, szSong, l);
 				else
 					sprintf (pszSong, "%s%s", szListFolder, szSong);
+				gameData.songs.user.pszLevelSongs [nSongs] = pszSong;
 				}
 			nSongs++;
 			}

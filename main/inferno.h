@@ -1533,6 +1533,7 @@ typedef struct tEndLevelData {
 typedef struct tUserMusicData {
 	int					nLevelSongs;
 	int					nCurrentSong;
+	int					bMP3;
 	char					**pszLevelSongs;
 	char					szIntroSong [FILENAME_LEN];
 	char					szMenuSong [FILENAME_LEN];

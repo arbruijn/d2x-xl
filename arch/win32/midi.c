@@ -83,7 +83,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void DigiPlayMidiSong(char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
+void DigiPlayMidiSong( char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
 {
 	int	bCustom;
 #if 0
@@ -91,7 +91,7 @@ if (!gameStates.sound.digi.bInitialized)
 	return;
 #endif
 LogErr ("DigiPlayMidiSong (%s)\n", pszSong);
-DigiStopCurrentSong();
+DigiStopCurrentSong ();
 if (pszSong == NULL)
 	return;
 if (midiVolume < 1)
