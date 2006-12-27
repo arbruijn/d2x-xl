@@ -64,7 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define SOFT_SHADOWS		1
+#define SOFT_SHADOWS		0
 
 #if DBG_SHADOWS
 extern int bShadowTest;
@@ -2920,7 +2920,9 @@ if (EGI_FLAG (bShadows, 0, 0) &&
 			gameStates.render.nShadowBlurPass = 1;
 #endif
 		OglStartFrame (0, 0);
+#if SOFT_SHADOWS
 		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 128, 128);
+#endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1
 		if (gameOpts->render.shadows.bFast)
