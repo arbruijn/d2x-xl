@@ -1536,6 +1536,8 @@ typedef struct tUserMusicData {
 	int					bMP3;
 	char					**pszLevelSongs;
 	char					szIntroSong [FILENAME_LEN];
+	char					szBriefingSong [FILENAME_LEN];
+	char					szCreditsSong [FILENAME_LEN];
 	char					szMenuSong [FILENAME_LEN];
 } tUserMusicData;
 

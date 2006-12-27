@@ -801,6 +801,10 @@ if ((t = FindArg ("-playlist")) && (p = Args [t+1]))
 	LoadPlayList (p);
 if ((t = FindArg ("-introsong")) && (p = Args [t+1]))
 	strncpy (gameData.songs.user.szIntroSong, p, FILENAME_LEN);
+if ((t = FindArg ("-briefingsong")) && (p = Args [t+1]))
+	strncpy (gameData.songs.user.szBriefingSong, p, FILENAME_LEN);
+if ((t = FindArg ("-creditssong")) && (p = Args [t+1]))
+	strncpy (gameData.songs.user.szCreditsSong, p, FILENAME_LEN);
 if ((t = FindArg ("-menusong")) && (p = Args [t+1]))
 	strncpy (gameData.songs.user.szMenuSong, p, FILENAME_LEN);
 }

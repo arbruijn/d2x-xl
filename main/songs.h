@@ -19,8 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tSongInfo {
 	char    filename[16];
-	char    melodic_bank_file[16];
-	char    drum_bank_file[16];
+	char    melodicBankFile[16];
+	char    drumBankFile[16];
 } tSongInfo;
 
 extern tSongInfo Songs[MAX_NUM_SONGS];

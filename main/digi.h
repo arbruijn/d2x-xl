@@ -78,29 +78,29 @@ void _CDECL_ DigiClose(void);
 
 // Volume is max at F1_0.
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops);
-int DigiPlaySample( short nSound, fix maxVolume );
+int DigiPlaySample (short nSound, fix maxVolume );
 int DigiPlaySampleLooped (short soundno, fix maxVolume, int nLoops);
-void DigiPlaySampleOnce( short nSound, fix maxVolume );
-int DigiLinkSoundToObject( short nSound, short nObject, int forever, fix maxVolume );
-int DigiLinkSoundToPos( short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume );
+void DigiPlaySampleOnce (short nSound, fix maxVolume );
+int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolume );
+int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume );
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
-int DigiLinkSoundToObject2( short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance );
-int DigiLinkSoundToPos2( short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance );
+int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance );
+int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance );
 
-int DigiLinkSoundToObject3( short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end );
+int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end );
 
-void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song );
+int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song );
 
-void DigiPlaySample3D( short nSound, int angle, int volume, int no_dups ); // Volume from 0-0x7fff
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups ); // Volume from 0-0x7fff
 
 void DigiInitSounds();
 void DigiSyncSounds();
-int  DigiKillSoundLinkedToSegment( short nSegment, short nSide, short nSound );
-int  DigiKillSoundLinkedToObject( int nObject );
+int  DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound );
+int  DigiKillSoundLinkedToObject (int nObject );
 
-void DigiSetMidiVolume( int mvolume );
-void DigiSetFxVolume( int dvolume );
-void DigiMidiVolume( int dvolume, int mvolume );
+void DigiSetMidiVolume (int mvolume );
+void DigiSetFxVolume (int dvolume );
+void DigiMidiVolume (int dvolume, int mvolume );
 
 int DigiIsSoundPlaying(short nSound);
 
@@ -131,20 +131,20 @@ extern int DigiStartSound (short nSound, fix volume, int pan, int looping,
 // Stops all sounds that are playing
 void DigiStopAllChannels();
 
-void DigiEndSound( int channel );
-void DigiSetChannelPan( int channel, int pan );
-void DigiSetChannelVolume( int channel, int volume );
+void DigiEndSound (int channel );
+void DigiSetChannelPan (int channel, int pan );
+void DigiSetChannelVolume (int channel, int volume );
 int DigiIsChannelPlaying(int channel);
 void DigiPauseMidi();
 void DigiDebug();
 void DigiStopCurrentSong();
 
-void DigiPlaySampleLooping( short nSound, fix maxVolume,int loop_start, int loop_end );
-void DigiChangeLoopingVolume( fix volume );
+void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end );
+void DigiChangeLoopingVolume (fix volume );
 void DigiStopLoopingSound();
 void DigiFreeSoundBufs (void);
 
 // Plays a queued voice sound.
-extern void DigiStartSoundQueued( short nSound, fix volume );
+extern void DigiStartSoundQueued (short nSound, fix volume );
 
 #endif

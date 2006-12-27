@@ -85,14 +85,14 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 				Assert(i < MAX_NUM_SONGS);
 				sscanf(inputline, "%s %s %s",
 						gameData.songs.info [i].filename,
-						gameData.songs.info [i].melodic_bank_file,
-						gameData.songs.info [i].drum_bank_file);
+						gameData.songs.info [i].melodicBankFile,
+						gameData.songs.info [i].drumBankFile);
 				if (!gameData.songs.nFirstLevelSong [bD1Songs] && strstr (gameData.songs.info [i].filename, "game01.hmp"))
 					 gameData.songs.nFirstLevelSong [bD1Songs] = i;
 				if (bD1Songs && strstr (gameData.songs.info [i].filename, "endlevel.hmp"))
 					gameData.songs.nD1EndLevelSong = i;
 
-				////printf("%d. '%s' '%s' '%s'\n",i,gameData.songs.info [i].filename,gameData.songs.info [i].melodic_bank_file,gameData.songs.info [i].drum_bank_file);
+				////printf("%d. '%s' '%s' '%s'\n",i,gameData.songs.info [i].filename,gameData.songs.info [i].melodicBankFile,gameData.songs.info [i].drumBankFile);
 				i++;
 				}
 			}
@@ -284,20 +284,29 @@ if (force_rb_register) {
 	force_rb_register = 0;
 	}
 gameStates.sound.nCurrentSong = nSong;
-if (*gameData.songs.user.szIntroSong)
-	DigiPlayMidiSong (gameData.songs.user.szIntroSong, NULL, NULL, repeat, 0);
-else {
-	if (nSong == SONG_TITLE)
-		PlayRedbookTrack (REDBOOK_TITLE_TRACK, 0);
-	else if (nSong == SONG_CREDITS)
-		PlayRedbookTrack (REDBOOK_CREDITS_TRACK, 0);
-	if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
-		DigiPlayMidiSong (
-			gameData.songs.info [nSong].filename, 
-			gameData.songs.info [nSong].melodic_bank_file, 
-			gameData.songs.info [nSong].drum_bank_file, 
-			repeat, gameData.songs.nD1Songs && (nSong >= gameData.songs.nD2Songs));
-		}
+if (nSong == SONG_TITLE) {
+	if (*gameData.songs.user.szIntroSong &&
+		DigiPlayMidiSong (gameData.songs.user.szIntroSong, NULL, NULL, repeat, 0))
+		return;
+	PlayRedbookTrack (REDBOOK_TITLE_TRACK, 0);
+	}
+else if (nSong == SONG_CREDITS) {
+	if (*gameData.songs.user.szCreditsSong &&
+		 DigiPlayMidiSong (gameData.songs.user.szCreditsSong, NULL, NULL, repeat, 0))
+		return;
+	PlayRedbookTrack (REDBOOK_CREDITS_TRACK, 0);
+	}
+else if (nSong == SONG_BRIEFING) {
+	if (*gameData.songs.user.szBriefingSong &&
+		 DigiPlayMidiSong (gameData.songs.user.szBriefingSong, NULL, NULL, repeat, 0))
+		return;
+	}
+if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
+	DigiPlayMidiSong (
+		gameData.songs.info [nSong].filename, 
+		gameData.songs.info [nSong].melodicBankFile, 
+		gameData.songs.info [nSong].drumBankFile, 
+		repeat, gameData.songs.nD1Songs && (nSong >= gameData.songs.nD2Songs));
 	}
 }
 
@@ -343,8 +352,8 @@ else {
 		gameStates.sound.nCurrentSong = nSong;
 			DigiPlayMidiSong (
 				gameData.songs.info [nSong].filename, 
-				gameData.songs.info [nSong].melodic_bank_file, 
-				gameData.songs.info [nSong].drum_bank_file, 
+				gameData.songs.info [nSong].melodicBankFile, 
+				gameData.songs.info [nSong].drumBankFile, 
 				1, 
 				bD1Song);
 		}

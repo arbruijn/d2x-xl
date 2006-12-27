@@ -1456,6 +1456,7 @@ do {
 		}
 	else
 		optHUD =
+		optHUDMsgs =
 		optMouseInd = 
 		optReticle = -1;
 	ADD_CHECK (opt, TXT_EXTRA_PLRMSGS, gameOpts->render.cockpit.bSplitHUDMsgs, KEY_P, HTX_CPIT_SPLITMSGS);
@@ -2283,138 +2284,31 @@ if (optContrast >= 0) {
 		m->rebuild = 1;
 		}
 	}
-m = menus + nRendQualOpt;
-v = m->value;
-if (gameOpts->render.nQuality != v) {
-	gameOpts->render.nQuality = v;
-	sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
-	m->rebuild = 1;
-	}
-if (nTexQualOpt > 0) {
-	m = menus + nTexQualOpt;
+if (gameOpts->app.bExpertMode) {
+	m = menus + nRendQualOpt;
 	v = m->value;
-	if (gameOpts->render.textures.nQuality != v) {
-		gameOpts->render.textures.nQuality = v;
-		sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+	if (gameOpts->render.nQuality != v) {
+		gameOpts->render.nQuality = v;
+		sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+		m->rebuild = 1;
+		}
+	if (nTexQualOpt > 0) {
+		m = menus + nTexQualOpt;
+		v = m->value;
+		if (gameOpts->render.textures.nQuality != v) {
+			gameOpts->render.textures.nQuality = v;
+			sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+			m->rebuild = 1;
+			}
+		}
+	m = menus + nTranspOpt;
+	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+	if (extraGameInfo [0].grWallTransparency != v) {
+		extraGameInfo [0].grWallTransparency = v;
+		sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
 		m->rebuild = 1;
 		}
 	}
-m = menus + nTranspOpt;
-v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
-if (extraGameInfo [0].grWallTransparency != v) {
-	extraGameInfo [0].grWallTransparency = v;
-	sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
-	m->rebuild = 1;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void AdvancedRenderOptionsMenu ()
-{
-	tMenuItem m [50];
-	int	h, i, choice = 0;
-	int	opt;
-	int	optUseGamma, optColoredWalls;
-#ifdef _DEBUG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
-#endif
-#if 0
-	int checks;
-#endif
-
-	char szWallTransp [50];
-	char szRendQual [50];
-	char szTexQual [50];
-	char szContrast [50];
-
-	int nLMapRange = gameOpts->render.color.nLightMapRange;
-	int nRendQualSave = gameOpts->render.nQuality;
-
-	pszRendQual [0] = TXT_QUALITY_LOW;
-	pszRendQual [1] = TXT_QUALITY_MED;
-	pszRendQual [2] = TXT_QUALITY_HIGH;
-	pszRendQual [3] = TXT_VERY_HIGH;
-	pszRendQual [4] = TXT_QUALITY_MAX;
-
-	pszTexQual [0] = TXT_QUALITY_LOW;
-	pszTexQual [1] = TXT_QUALITY_MED;
-	pszTexQual [2] = TXT_QUALITY_HIGH;
-	pszTexQual [3] = TXT_QUALITY_MAX;
-
-do {
-	memset (m, 0, sizeof (m));
-	opt = 0;
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
-		gameStates.ogl.nContrast = 8;
-		optContrast = -1;
-		}
-	else {
-		sprintf (szContrast, TXT_CONTRAST, ContrastText ());
-		ADD_SLIDER (opt, szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
-		optContrast = opt++;
-		}
-	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
-	*szRendQual = *(TXT_RENDQUAL - 1);
-	ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
-	nRendQualOpt = opt++;
-	if (gameStates.app.bGameRunning)
-		nTexQualOpt = -1;
-	else {
-		sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
-		*szTexQual = *(TXT_TEXQUAL + 1);
-		ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
-		nTexQualOpt = opt++;
-		}
-	h = extraGameInfo [0].grWallTransparency * 10 / GR_ACTUAL_FADE_LEVELS;
-	sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
-	*szWallTransp = *(TXT_WALL_TRANSP - 1);
-	ADD_SLIDER (opt, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
-	nTranspOpt = opt++;
-	ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
-	optColoredWalls = opt++;
-#if 0
-	ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);
-	optUseGamma = opt++;
-#else
-	optUseGamma = -1;
-#endif
-#ifdef _DEBUG
-	m [opt].nType = NM_TYPE_TEXT;   
-	m [opt++].text="";
-	ADD_CHECK (opt, "Draw wire frame", gameOpts->render.bWireFrame, 0, NULL);
-	optWireFrame = opt++;
-	ADD_CHECK (opt, "Draw textures", gameOpts->render.bTextures, 0, NULL);
-	optTextures = opt++;
-	ADD_CHECK (opt, "Draw walls", gameOpts->render.bWalls, 0, NULL);
-	optWalls = opt++;
-	ADD_CHECK (opt, "Draw objects", gameOpts->render.bObjects, 0, NULL);
-	optObjects = opt++;
-	ADD_CHECK (opt, "Dynamic Light", gameOpts->render.bDynamicLight, 0, NULL);
-	optDynLight = opt++;
-	Assert (opt <= sizeof (m) / sizeof (m [0]));
-#endif
-
-	do {
-		i = ExecMenu1 (NULL, TXT_ADV_RENDER_TITLE, opt, m, &AdvancedRenderOptionsCallback, &choice);
-	} while (i >= 0);
-
-	gameOpts->render.color.bWalls = m [optColoredWalls].value;
-	GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
-	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-		gameStates.ogl.nContrast = 8;
-	else if (optContrast >= 0)
-		gameStates.ogl.nContrast = m [optContrast].value;
-#ifdef _DEBUG
-	gameOpts->render.bWireFrame = m [optWireFrame].value;
-	gameOpts->render.bTextures = m [optTextures].value;
-	gameOpts->render.bObjects = m [optObjects].value;
-	gameOpts->render.bWalls = m [optWalls].value;
-	gameOpts->render.bDynamicLight = m [optDynLight].value;
-#endif
-	if (nRendQualSave != gameOpts->render.nQuality)
-		SetRenderQuality ();
-	} while (i == -2);
 }
 
 //------------------------------------------------------------------------------
@@ -2628,49 +2522,49 @@ if (!gameStates.app.bNostalgia) {
 	if (v != GrGetPaletteGamma ())
 		GrSetPaletteGamma (v);
 	}
+m = menus + nFPSopt;
+v = fpsTable [m->value];
+if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
+	gameOpts->render.nMaxFPS = v ? v : 1;
+	if (v)
+		sprintf (m->text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+	else
+		sprintf (m->text, TXT_NO_FRAMECAP);
+	m->rebuild = 1;
+	}
 if (gameOpts->app.bExpertMode) {
-	m = menus + nFPSopt;
-	v = fpsTable [m->value];
-	if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
-		gameOpts->render.nMaxFPS = v ? v : 1;
-		if (v)
-			sprintf (m->text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-		else
-			sprintf (m->text, TXT_NO_FRAMECAP);
-		m->rebuild = 1;
+	if (optContrast >= 0) {
+		m = menus + optContrast;
+		v = m->value;
+		if (v != gameStates.ogl.nContrast) {
+			gameStates.ogl.nContrast = v;
+			sprintf (m->text, TXT_CONTRAST, ContrastText ());
+			m->rebuild = 1;
+			}
 		}
-	}
-if (optContrast >= 0) {
-	m = menus + optContrast;
+	m = menus + nRendQualOpt;
 	v = m->value;
-	if (v != gameStates.ogl.nContrast) {
-		gameStates.ogl.nContrast = v;
-		sprintf (m->text, TXT_CONTRAST, ContrastText ());
+	if (gameOpts->render.nQuality != v) {
+		gameOpts->render.nQuality = v;
+		sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 		m->rebuild = 1;
 		}
-	}
-m = menus + nRendQualOpt;
-v = m->value;
-if (gameOpts->render.nQuality != v) {
-	gameOpts->render.nQuality = v;
-	sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
-	m->rebuild = 1;
-	}
-if (nTexQualOpt > 0) {
-	m = menus + nTexQualOpt;
-	v = m->value;
-	if (gameOpts->render.textures.nQuality != v) {
-		gameOpts->render.textures.nQuality = v;
-		sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+	if (nTexQualOpt > 0) {
+		m = menus + nTexQualOpt;
+		v = m->value;
+		if (gameOpts->render.textures.nQuality != v) {
+			gameOpts->render.textures.nQuality = v;
+			sprintf (m->text, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+			m->rebuild = 1;
+			}
+		}
+	m = menus + nTranspOpt;
+	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
+	if (extraGameInfo [0].grWallTransparency != v) {
+		extraGameInfo [0].grWallTransparency = v;
+		sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
 		m->rebuild = 1;
 		}
-	}
-m = menus + nTranspOpt;
-v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
-if (extraGameInfo [0].grWallTransparency != v) {
-	extraGameInfo [0].grWallTransparency = v;
-	sprintf (m->text, TXT_WALL_TRANSP, m->value * 10, '%');
-	m->rebuild = 1;
 	}
 }
 
