@@ -770,7 +770,7 @@ CFILE *copy_pigfile_from_cd (char *filename)
 
 	//Now, copy over new pig
 
-	songs_stop_redbook ();           //so we can read off the cd
+	SongsStopRedbook ();           //so we can read off the cd
 
 	//new code to unarj file
 	strcpy (name,CDROM_dir);

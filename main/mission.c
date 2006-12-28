@@ -307,7 +307,7 @@ switch (location) {
 		break;
 
 	case ML_CDROM:
-		songs_stop_redbook();		//so we can read from the CD
+		SongsStopRedbook();		//so we can read from the CD
 		strcpy(filename2,CDROM_dir);
 		break;
 

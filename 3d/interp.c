@@ -1463,6 +1463,7 @@ VmVecNormalize (&v);
 VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
+#ifdef _DEBUG
 if (bPrintLine) {	
 	fVector	vf;
 	glLineWidth (3);
@@ -1482,6 +1483,7 @@ if (bPrintLine) {
 		glEnable (GL_STENCIL_TEST);
 		}
 	}
+#endif
 nParent = 0x7fffffff;
 vHit = *vPos;
 for (;;) {
@@ -1502,7 +1504,7 @@ for (;;) {
 		}
 	nWID = WALL_IS_DOORWAY (segP, nHitSide, gameData.objs.objects + nObject);
 	if (!(nWID & WID_FLY_FLAG) &&
-		(((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
+		 (((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
 		bHit = 1;
 		break;
 		}

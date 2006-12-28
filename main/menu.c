@@ -3385,6 +3385,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->movies.nQuality = 0;
 			gameOpts->movies.bResize = 0;
+			gameOpts->render.shadows.nClip = 0;
+			gameOpts->render.shadows.nReach = 0;
+			extraGameInfo [0].bShadows = 0;
 			extraGameInfo [0].bUseSmoke = 0;
 			extraGameInfo [0].bUseCameras = 0;
 			extraGameInfo [0].bRenderShield = 0;
@@ -3417,6 +3420,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.cameras.nFPS = 5;
 			gameOpts->movies.nQuality = 0;
 			gameOpts->movies.bResize = 1;
+			gameOpts->render.shadows.nClip = 0;
+			gameOpts->render.shadows.nReach = 0;
+			extraGameInfo [0].bShadows = 1;
 			extraGameInfo [0].bRenderShield = 0;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 0;
@@ -3448,6 +3454,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.cameras.nFPS = 0;
 			gameOpts->movies.nQuality = 0;
 			gameOpts->movies.bResize = 1;
+			gameOpts->render.shadows.nClip = 1;
+			gameOpts->render.shadows.nReach = 1;
+			extraGameInfo [0].bShadows = 1;
 			extraGameInfo [0].bRenderShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;
@@ -3479,6 +3488,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.cameras.nFPS = 0;
 			gameOpts->movies.nQuality = 1;
 			gameOpts->movies.bResize = 1;
+			gameOpts->render.shadows.nClip = 1;
+			gameOpts->render.shadows.nReach = 1;
+			extraGameInfo [0].bShadows = 1;
 			extraGameInfo [0].bRenderShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;
@@ -3510,6 +3522,9 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.cameras.nFPS = 0;
 			gameOpts->movies.nQuality = 1;
 			gameOpts->movies.bResize = 1;
+			gameOpts->render.shadows.nClip = 1;
+			gameOpts->render.shadows.nReach = 1;
+			extraGameInfo [0].bShadows = 1;
 			extraGameInfo [0].bRenderShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;

@@ -1573,6 +1573,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 	}
 if (!load_screen_text (filename, &Briefing_text))
 	return;
+DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 WINDOS (

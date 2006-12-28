@@ -1072,6 +1072,7 @@ if (i) {
 	gameOptions [1].render.shadows.bMissiles = 0;
 	gameOptions [1].render.shadows.bReactors = 0;
 	gameOptions [1].render.shadows.bFast = 1;
+	gameOptions [1].render.shadows.nClip = 1;
 	gameOptions [1].render.shadows.nReach = 1;
 	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
@@ -1148,12 +1149,13 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [1].render.shadows.bPlayers = 1;
-	gameOptions [1].render.shadows.bRobots = 0;
-	gameOptions [1].render.shadows.bMissiles = 0;
-	gameOptions [1].render.shadows.bReactors = 0;
+	gameOptions [0].render.shadows.bPlayers = 1;
+	gameOptions [0].render.shadows.bRobots = 0;
+	gameOptions [0].render.shadows.bMissiles = 0;
+	gameOptions [0].render.shadows.bReactors = 0;
 	gameOptions [0].render.shadows.bFast = 1;
-	gameOptions [1].render.shadows.nReach = 1;
+	gameOptions [0].render.shadows.nClip = 1;
+	gameOptions [0].render.shadows.nReach = 1;
 	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;
@@ -2214,8 +2216,10 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrPaletteFadeOut (NULL, 0, 0);
 			if (gameData.multi.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
-			if (gameStates.app.nFunctionMode == FMODE_MENU)
+			if (gameStates.app.nFunctionMode == FMODE_MENU) {
+				DigiStopAllChannels ();
 				SongsPlaySong (SONG_TITLE, 1);
+				}
 			RestoreDefaultRobots ();
 			break;
 

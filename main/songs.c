@@ -125,7 +125,7 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 
 //------------------------------------------------------------------------------
 //stop the redbook, so we can read off the CD
-void songs_stop_redbook(void)
+void SongsStopRedbook(void)
 {
 	int oldVolume = gameConfig.nRedbookVolume*REDBOOK_VOLUME_SCALE/8;
 	fix oldTime = TimerGetFixedSeconds();
@@ -146,12 +146,15 @@ void songs_stop_redbook(void)
 	gameStates.sound.bRedbookPlaying = 0;		
 }
 
+//------------------------------------------------------------------------------
 //stop any songs - midi or redbook - that are currently playing
 void SongsStopAll(void)
 {
-	DigiStopCurrentSong();	// Stop midi song, if playing
-	songs_stop_redbook();			// Stop CD, if playing
+DigiStopCurrentSong();	// Stop midi song, if playing
+SongsStopRedbook();			// Stop CD, if playing
 }
+
+//------------------------------------------------------------------------------
 
 int force_rb_register=0;
 

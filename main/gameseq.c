@@ -821,6 +821,10 @@ int LoadLevel (int nLevel, int bPageInTextures)
 gameStates.app.bGameRunning = 0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 #if 1
+/*---*/LogErr ("   stopping music\n");
+SongsStopAll ();
+/*---*/LogErr ("   stopping sounds\n");
+DigiStopAllChannels ();
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
 /*---*/LogErr ("   unloading hardware lights\n");
@@ -1061,14 +1065,15 @@ void DoEndLevelScoreGlitz (int network)
 	int				is_lastLevel;
 	int				mineLevel;
 
-	SetScreenMode (SCREEN_MENU);		//go into menu mode
-	if (gameStates.app.bHaveExtraData)
-		SongsPlaySong (SONG_INTER, 0);
-	
-   #ifdef TACTILE
-		if (TactileStick)
-		  ClearForces ();
-	#endif
+DigiStopAllChannels ();
+SetScreenMode (SCREEN_MENU);		//go into menu mode
+if (gameStates.app.bHaveExtraData)
+SongsPlaySong (SONG_INTER, 0);
+
+#ifdef TACTILE
+if (TactileStick)
+	ClearForces ();
+#endif
 
 	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
 mineLevel = gameData.multi.players [gameData.multi.nLocalPlayer].level;

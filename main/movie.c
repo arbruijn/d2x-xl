@@ -920,7 +920,7 @@ CFILE *SearchMovieLib(movielib *lib, char *filename, int must_have)
 			int from_cd;
 			from_cd = (lib->flags & MLF_ON_CD);
 			if (from_cd)
-				songs_stop_redbook();		//ready to read from CD
+				SongsStopRedbook();		//ready to read from CD
 			do {		//keep trying until we get the file handle
 				movie_handle = filehandle = CFOpen(lib->name, gameFolders.szMovieDir, "rb", 0);
 				if (must_have && from_cd && filehandle == NULL)
