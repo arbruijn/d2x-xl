@@ -43,7 +43,6 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 //2: Compute hit point of vector from current light through each lit submodel vertex (slow)
 //3: Compute hit point of vector from current light through each lit model face (fastest, flawed)
 
-int nClipMethod = 2;
 int bPrintLine = 0;
 #define SHADOW_TEST				0
 #define NORM_INF					1
@@ -1205,10 +1204,7 @@ int G3FreePolyModelItems (tPOFObject *po)
 pof_free (po->subObjs.pSubObjs);
 pof_free (po->pvVerts);
 pof_free (po->pvVertsf);
-if (nClipMethod == 2) {
-	pof_free (po->pfClipDist);
-	pof_free (po->pVertFlags);
-	}
+pof_free (po->pfClipDist);
 pof_free (po->pVertNorms);
 pof_free (po->faces.pFaces);
 pof_free (po->litFaces.pFaces);
@@ -1234,12 +1230,8 @@ if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
 memset (po->subObjs.pSubObjs, 0, h);
 if (!(po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector))))
 	return G3FreePolyModelItems (po);
-if (nClipMethod == 2) {
-	if (!(po->pVertFlags = (ubyte *) d_malloc (po->nVerts * sizeof (ubyte))))
-		return G3FreePolyModelItems (po);
-	if (!(po->pfClipDist = (float *) d_malloc (po->nVerts * sizeof (float))))
-		return G3FreePolyModelItems (po);
-	}
+if (!(po->pfClipDist = (float *) d_malloc (po->nVerts * sizeof (float))))
+	gameOpts->render.shadows.nClip = 1;
 if (bShadowData) {
 	if (!(po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face))))
 		return G3FreePolyModelItems (po);
@@ -1347,6 +1339,7 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 	short			*pfv, *paf;
 	short			h, i, j, n;
 	float			fClipDist;
+	int			nClip;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -1374,10 +1367,14 @@ else {
 	glBegin (GL_LINES);
 	}
 #endif
+if (gameOpts->render.shadows.nClip)
+	nClip = po->pfClipDist ? gameOpts->render.shadows.nClip : 1;
+else
+	nClip = 0;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->pAdjFaces + pf->nAdjFaces;
-	if (nClipMethod > 1)
+	if (nClip > 1)
 		fClipDist = pf->fClipDist;
 	else
 		fClipDist = fInf;
@@ -1456,12 +1453,16 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	tSegment		*segP;
 	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
 	float			fDist;
+	static		unsigned int nVisited = 0;
+	static		unsigned int bVisited [MAX_SEGMENTS];
 
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
 	return INFINITY;
 VmVecSub (&v, vPos, &vLightPos);
 VmVecNormalize (&v);
 VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+if (!nVisited++)
+	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
 if (bPrintLine) {	
 	fVector	vf;
 	glLineWidth (3);
@@ -1485,10 +1486,11 @@ nParent = 0x7fffffff;
 vHit = *vPos;
 for (;;) {
 	segP = gameData.segs.segments + nSegment;
+	bVisited [nSegment] = nVisited;
 	for (nSide = 0; nSide < 6; nSide++)
 		if (0 <= (nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide))) {
 			nChild = segP->children [nHitSide];
-			if (nChild != nParent)
+			if (bVisited [nChild] != nVisited)
 				break;
 			}
 	if (nHitSide < 0)
@@ -1498,7 +1500,7 @@ for (;;) {
 		bHit = 1;
 		break;
 		}
-	nWID = WALL_IS_DOORWAY (segP, nSide, gameData.objs.objects + nObject);
+	nWID = WALL_IS_DOORWAY (segP, nHitSide, gameData.objs.objects + nObject);
 	if (!(nWID & WID_FLY_FLAG) &&
 		(((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
 		bHit = 1;
@@ -1517,12 +1519,12 @@ return INFINITY;
 	fvi_info		fi;
 	vmsVector	v;
 
-if (!gameOpts->render.shadows.bClip)
+if (!gameOpts->render.shadows.nClip)
 	return INFINITY;
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
 	return INFINITY;
 fq.p0					= vPos;
-VmVecSub (&v, fq.p0, vLightPosf);
+VmVecSub (&v, fq.p0, &vLightPos);
 VmVecNormalize (&v);
 VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
 fq.startSeg			= nSegment;
@@ -1545,8 +1547,6 @@ float G3FaceClipDist (tObject *objP, tPOF_face *pf)
 {
 	vmsVector	vCenter;
 
-if (!gameOpts->render.shadows.bExactClip)
-	return fInf;
 vCenter.p.x = (fix) (pf->vCenterf.x * 65536.0f);
 vCenter.p.y = (fix) (pf->vCenterf.y * 65536.0f);
 vCenter.p.z = (fix) (pf->vCenterf.z * 65536.0f);
@@ -1554,6 +1554,7 @@ return NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &vCente
 }
 
 //------------------------------------------------------------------------------
+// use face centers to determine clipping distance
 
 float G3SubModelClipDist3 (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
@@ -1561,8 +1562,6 @@ float G3SubModelClipDist3 (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 	short			i;
 	float			fClipDist, fMaxDist = 0;
 
-if (!gameOpts->render.shadows.bExactClip)
-	return fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	fClipDist = G3FaceClipDist (objP, pf);
@@ -1573,111 +1572,55 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
 		fMaxDist = fClipDist;
 	}
-return fMaxDist ? fMaxDist : fInf;
+return fMaxDist ? (fMaxDist < INFINITY) ? fMaxDist : INFINITY : fInf;
 }
 
 //------------------------------------------------------------------------------
-
-int G3CalcLitSubModelVerts (tPOFObject *po, tPOFSubObject *pso)
-{
-	ubyte			*pvf;
-	short			*paf;
-	tPOF_face	*pf, **ppf;
-	short			*pfv, h, i, j, n;
-
-pvf = po->pVertFlags;
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
-	pf = *ppf;
-	paf = po->pAdjFaces + pf->nAdjFaces;
-	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++, pfv++) {
-		h = *paf++;
-		if ((h < 0) || !pso->faces.pFaces [h].bFacingLight)
-			pvf [*pfv] = pvf [*(pfv + 1)] = 1;
-		}
-	}
-return 1;
-}
-
-//------------------------------------------------------------------------------
+// use face centers and vertices to determine clipping distance
 
 float G3SubModelClipDist2 (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	tOOF_vector	*pv;
 	vmsVector	v;
-	ubyte			*pvf;
 	float			*pfc;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, h, i, j, n;
 	short			nObject = OBJ_IDX (objP);
 	short			nPointSeg, nSegment = objP->position.nSegment;
-	float			fClipDist, fMaxDist = G3SubModelClipDist3 (objP, po, pso);
+	float			fClipDist, fMaxDist;
 
-if (!gameOpts->render.shadows.bExactClip)
-	return fInf;
-#if 0
-G3CalcLitSubModelVerts (po, pso);
+#if 1
+pso->nRenderFlipFlop = !pso->nRenderFlipFlop;
+if (pso->nRenderFlipFlop)
+	return pso->fClipDist;	//only recompute every 2nd frame
 #endif
-pv = po->pvVertsf;
-pfc = po->pfClipDist;
-pvf = po->pVertFlags;
-for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
-	pf = *ppf;
-	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++, pfv++) {
-		h = *pfv;
-#if 0
-		if (!pvf [h])
-			continue;
-#endif
-		if (!(fClipDist = pfc [h])) {
-			v.p.x = (fix) (pv [h].x * 65536.0f);
-			v.p.y = (fix) (pv [h].y * 65536.0f);
-			v.p.z = (fix) (pv [h].z * 65536.0f);
-			nPointSeg = FindSegByPoint (&v, nSegment);
-			if (nPointSeg < 0)
-				continue;
-			pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+fMaxDist = G3SubModelClipDist3 (objP, po, pso);
+if (gameOpts->render.shadows.nClip == 3) {
+	pv = po->pvVertsf;
+	pfc = po->pfClipDist;
+	for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
+		pf = *ppf;
+		for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++, pfv++) {
+			h = *pfv;
+			if (!(fClipDist = pfc [h])) {
+				v.p.x = (fix) (pv [h].x * 65536.0f);
+				v.p.y = (fix) (pv [h].y * 65536.0f);
+				v.p.z = (fix) (pv [h].z * 65536.0f);
+				nPointSeg = FindSegByPoint (&v, nSegment);
+				if (nPointSeg < 0)
+					continue;
+				pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #ifdef _DEBUG
-			if (fClipDist == INFINITY)
-				fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+				if (fClipDist == INFINITY)
+					fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #endif
+				}
+			if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
+				fMaxDist = fClipDist;
 			}
-		if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
-			fMaxDist = fClipDist;
 		}
 	}
-return fMaxDist ? fMaxDist : fInf;
-}
-
-//------------------------------------------------------------------------------
-
-float G3PolyModelClipDist (tObject *objP, tPOFObject *po)
-{
-	tOOF_vector	*pv;
-	vmsVector	v;
-	short			i;
-	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->position.nSegment;
-	float			fClipDist, fMaxDist = 0;
-
-if (!gameOpts->render.shadows.bExactClip)
-	return fInf;
-pv = po->pvVertsf;
-for (i = po->nVerts; i; i--, pv++) {
-	v.p.x = (fix) (pv->x * 65536.0f);
-	v.p.y = (fix) (pv->y * 65536.0f);
-	v.p.z = (fix) (pv->z * 65536.0f);
-	nPointSeg = FindSegByPoint (&v, nSegment);
-	if (nPointSeg < 0)
-		continue;
-	fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
-#ifdef _DEBUG
-	if (fClipDist == INFINITY)
-		fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
-#endif
-	if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
-		fMaxDist = fClipDist;
-	}
-return fMaxDist ? fMaxDist : fInf;
+return pso->fClipDist = (fMaxDist ? (fMaxDist < INFINITY) ? fMaxDist : INFINITY : fInf);
 }
 
 //------------------------------------------------------------------------------
@@ -1688,6 +1631,7 @@ int G3RenderSubModelShadowCaps (tObject *objP, tPOFObject *po, tPOFSubObject *ps
 	tPOF_face	*pf, **ppf;
 	short			*pfv, i, j;
 	float			fClipDist;
+	int			nClip;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1700,16 +1644,18 @@ pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bRearCap)
 #endif
-if (nClipMethod == 3)
-	fClipDist = G3SubModelClipDist3 (objP, po, pso);
-else if (nClipMethod == 2)
+if (gameOpts->render.shadows.nClip)
+	nClip = po->pfClipDist ? gameOpts->render.shadows.nClip : 1;
+else
+	nClip = 0;
+if (nClip >= 2)
 	fClipDist = G3SubModelClipDist2 (objP, po, pso);
 else
 	fClipDist = fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
-if (nClipMethod > 1)
-	pf->fClipDist = fClipDist;
+	if (nClip > 1)
+		pf->fClipDist = fClipDist;
 #if 0//def _DEBUG
 	if (pf->bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1936,21 +1882,17 @@ if (gameOpts->render.shadows.bFast) {
 			G3TransformPoint (&vLightPos, &gameData.render.shadows.pLight->vPos, 0);
 			OOF_VecVms2Oof (&vLightPosf, &vLightPos);
 			CHECK ();
-			if (gameOpts->render.shadows.bExactClip = 1)
-				if (nClipMethod == 1)
-					fInf = G3PolyModelClipDist (objP, po);
-				else {
-					G3TransformPoint (&v, &objP->position.vPos, 0);
-					fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &v, 0);
-					}
+			if (gameOpts->render.shadows.nClip) {
+				// get a default clipping distance using the model position as fall back
+				G3TransformPoint (&v, &objP->position.vPos, 0);
+				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &v, 0);
+				}
 			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
-			if (nClipMethod == 2) {
+			if (gameOpts->render.shadows.nClip >= 2)
 				memset (po->pfClipDist, 0, po->nVerts * sizeof (float));
-				memset (po->pVertFlags, 0, po->nVerts);
-				}
 			G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs);
 			G3DoneInstance ();
 			gameStates.render.bRendering = 0;

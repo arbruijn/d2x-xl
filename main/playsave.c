@@ -771,7 +771,7 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 134)
 		gameOptions [j].render.shadows.nReach = (int) CFReadByte (fp);
 	if (player_file_version >= 135)
-		gameOptions [j].render.shadows.bClip = (int) CFReadByte (fp);
+		gameOptions [j].render.shadows.nClip = (int) CFReadByte (fp);
 	if (player_file_version >= 136) {
 		gameOptions [j].render.powerups.b3D = (int) CFReadByte (fp);
 		gameOptions [j].render.powerups.nSpin = (int) CFReadByte (fp);
@@ -1206,7 +1206,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte (gameOptions [j].render.shadows.bPlayers, fp);
 	CFWriteByte (gameOptions [j].render.shadows.bFast, fp);
 	CFWriteByte (gameOptions [j].render.shadows.nReach, fp);
-	CFWriteByte (gameOptions [j].render.shadows.bClip, fp);
+	CFWriteByte (gameOptions [j].render.shadows.nClip, fp);
 	CFWriteByte (gameOptions [j].render.powerups.b3D, fp);
 	CFWriteByte (gameOptions [j].render.powerups.nSpin, fp);
 	CFWriteByte (gameOptions [j].gameplay.bIdleAnims, fp);

@@ -1756,6 +1756,7 @@ do {
 #if SHADOWS
 
 static char *pszReach [3];
+static char *pszClip [4];
 
 void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -1819,7 +1820,7 @@ if (extraGameInfo [0].bShadows) {
 void ShadowOptionsMenu ()
 {
 	tMenuItem m [30];
-	int	i, choice = 0;
+	int	i, j, choice = 0;
 	int	opt;
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
 	char	szMaxLights [50], szReach [50];
@@ -1832,6 +1833,11 @@ void ShadowOptionsMenu ()
 pszReach [0] = TXT_SHORT;
 pszReach [1] = TXT_MEDIUM;
 pszReach [2] = TXT_LONG;
+
+pszClip [0] = TXT_OFF;
+pszClip [1] = TXT_FAST;
+pszClip [2] = TXT_MEDIUM;
+pszClip [3] = TXT_PRECISE;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1868,8 +1874,14 @@ do {
 		*szReach = *(TXT_SHADOW_REACH - 1);
 		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 2, KEY_R, HTX_RENDER_SHADOWREACH);
 		nShadowReachOpt = opt++;
-		ADD_CHECK (opt, TXT_CLIP_SHADOWS, gameOpts->render.shadows.bClip, KEY_C, HTX_CLIP_SHADOWS);
-		optClipShadows = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_TEXT (opt, TXT_CLIP_SHADOWS, 0);
+		optClipShadows = ++opt;
+		for (j = 0; j < 4; j++) {
+			ADD_RADIO (opt, pszClip [j], gameOpts->render.shadows.nClip == j, 0, 1, HTX_CLIP_SHADOWS);
+			opt++;
+			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
@@ -1915,7 +1927,11 @@ do {
 		if (i < 0)
 			break;
 		} 
-	GET_VAL (gameOpts->render.shadows.bClip, optClipShadows);
+	for (j = 0; j < 4; j++)
+		if (m [optClipShadows + j].value) {
+			gameOpts->render.shadows.nClip = j;
+			break;
+			}
 	GET_VAL (gameOpts->render.shadows.bPlayers, optPlayerShadows);
 	GET_VAL (gameOpts->render.shadows.bRobots, optRobotShadows);
 	GET_VAL (gameOpts->render.shadows.bMissiles, optMissileShadows);

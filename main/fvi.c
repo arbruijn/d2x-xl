@@ -173,7 +173,7 @@ int CheckSphereToFace (vmsVector *pnt, tSide *s, int iFace, int nv, fix rad, int
 	vmsVector	vEdge, vCheck;            //this time, real 3d vectors
 	vmsVector	vClosestPoint;
 	fix			edgelen, d, dist;
-	vmsVector	*v0, *v1, v [2];
+	vmsVector	*v0, *v1;
 	int			iType;
 	int			nEdge;
 	uint			edgemask;

@@ -173,8 +173,7 @@ typedef struct tShadowOptions {
 	int nReach;
 	int nLights;
 	int bFast;
-	int bClip;
-	int bExactClip;
+	int nClip;
 	int bSoft;
 	int bPlayers;
 	int bRobots;
@@ -1113,12 +1112,14 @@ typedef struct tPOF_faceRef {
 } tPOF_faceRef;
 
 typedef struct tPOFSubObject {
-	short					nParent;
 	tPOF_faceList		faces;
 	tPOF_faceRef		litFaces;	//submodel faces facing the current light source
-	short					*pAdjFaces;
 	vmsVector			vPos;
 	vmsAngVec			vAngles;
+	float					fClipDist;
+	short					nParent;
+	short					*pAdjFaces;
+	short					nRenderFlipFlop;
 } tPOFSubObject;
 
 typedef struct tPOF_subObjList {
@@ -1132,7 +1133,6 @@ typedef struct tPOFObject {
 	vmsVector			*pvVerts;
 	tOOF_vector			*pvVertsf;
 	float					*pfClipDist;
-	ubyte					*pVertFlags;
 	g3sNormal			*pVertNorms;
 	vmsVector			vCenter;
 	vmsVector			*pvRotVerts;
