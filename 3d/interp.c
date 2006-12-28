@@ -38,6 +38,13 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 
 //------------------------------------------------------------------------------
 
+//shadow clipping
+//1: Compute hit point of vector from current light through each model vertex (fast)
+//2: Compute hit point of vector from current light through each lit submodel vertex (slow)
+//3: Compute hit point of vector from current light through each lit model face (fastest, flawed)
+
+int nClipMethod = 2;
+int bPrintLine = 0;
 #define SHADOW_TEST				0
 #define NORM_INF					1
 #define INFINITY					fInfinity [gameOpts->render.shadows.nReach]
@@ -48,7 +55,8 @@ float fInf;
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
 
-static tOOF_vector vLightPos, vViewerPos, vCenter;
+static tOOF_vector vLightPosf, vViewerPos, vCenter;
+static vmsVector vLightPos;
 
 #define OP_EOF          0   //eof
 #define OP_DEFPOINTS    1   //defpoints
@@ -99,6 +107,17 @@ static short nGlow = -1;
 
 //------------------------------------------------------------------------------
 
+void CHECK ()
+{
+	int po = 0;
+if (gameData.models.pofData [0][1][108].subObjs.pSubObjs &&
+	 abs (gameData.models.pofData [0][1][108].subObjs.pSubObjs [0].nParent) > 1)
+	po = po;
+if (abs (gameData.models.pofData [0][1][108].subObjs.nSubObjs) > 10)
+	po = po;
+}
+//------------------------------------------------------------------------------
+
 inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
 {
 	tOOF_vector	h;
@@ -110,7 +129,7 @@ return OOF_VecMul (OOF_VecSub (&h, pDir, pv), pNorm) > 0;
 
 inline int G3CheckLightFacing (tOOF_vector *pv, tOOF_vector *pNorm)
 {
-return G3CheckPointFacing (pv, pNorm, &vLightPos);
+return G3CheckPointFacing (pv, pNorm, &vLightPosf);
 }
 
 //------------------------------------------------------------------------------
@@ -180,9 +199,9 @@ if (norms)
 	norms += o;
 while (n--) {
 	if (gameStates.ogl.bUseTransform) {
-		pfv->p.x = (float) src->x / 65536.0f;
-		pfv->p.y = (float) src->y / 65536.0f;
-		pfv->p.z = (float) src->z / 65536.0f;
+		pfv->p.x = (float) src->p.x / 65536.0f;
+		pfv->p.y = (float) src->p.y / 65536.0f;
+		pfv->p.z = (float) src->p.z / 65536.0f;
 		dest->p3_index = o++;
 		pfv++;
 		}
@@ -234,9 +253,9 @@ inline void FixSwap (fix *f)
 
 inline void VmsVectorSwap (vmsVector *v)
 {
-FixSwap (FIXPTR (&v->x));
-FixSwap (FIXPTR (&v->y));
-FixSwap (FIXPTR (&v->z));
+FixSwap (FIXPTR (&v->p.x));
+FixSwap (FIXPTR (&v->p.y));
+FixSwap (FIXPTR (&v->p.z));
 }
 
 //------------------------------------------------------------------------------
@@ -275,7 +294,7 @@ for (;;) {
 			n = WORDVAL (p+2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (VECPTR ((p + 4) + (i * sizeof (vmsVector))));
-			p += n*sizeof (struct vmsVector) + 4;
+			p += n*sizeof (vmsVector) + 4;
 			break;
 
 		case OP_DEFP_START:
@@ -284,7 +303,7 @@ for (;;) {
 			n = WORDVAL (p+2);
 			for (i = 0; i < n; i++)
 				VmsVectorSwap (VECPTR ((p + 8) + (i * sizeof (vmsVector))));
-			p += n*sizeof (struct vmsVector) + 8;
+			p += n*sizeof (vmsVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -384,11 +403,11 @@ for (;;) {
 			return p + 2 - data;
 		case OP_DEFPOINTS:
 			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (struct vmsVector) + 4;
+			p += n*sizeof (vmsVector) + 4;
 			break;
 		case OP_DEFP_START:
 			n = INTEL_SHORT (WORDVAL (p+2));
-			p += n*sizeof (struct vmsVector) + 8;
+			p += n*sizeof (vmsVector) + 8;
 			break;
 		case OP_FLATPOLY:
 			n = INTEL_SHORT (WORDVAL (p+2));
@@ -434,11 +453,11 @@ for (;;) {
 			return;
 		case OP_DEFPOINTS:
 			n = (WORDVAL (p+2));
-			p += n*sizeof (struct vmsVector) + 4;
+			p += n*sizeof (vmsVector) + 4;
 			break;
 		case OP_DEFP_START:
 			n = (WORDVAL (p+2));
-			p += n*sizeof (struct vmsVector) + 8;
+			p += n*sizeof (vmsVector) + 8;
 			break;
 		case OP_FLATPOLY:
 			n = (WORDVAL (p+2));
@@ -504,40 +523,40 @@ for (;;)
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
-				if (pMin.x > v->x)
-					pMin.x = v->x;
-				else if (pMax.x < v->x)
-					pMax.x = v->x;
-				if (pMin.y > v->y)
-					pMin.y = v->y;
-				else if (pMax.y < v->y)
-					pMax.y = v->y;
-				if (pMin.z > v->z)
-					pMin.z = v->z;
-				else if (pMax.z < v->z)
-					pMax.z = v->z;
+				if (pMin.p.x > v->p.x)
+					pMin.p.x = v->p.x;
+				else if (pMax.p.x < v->p.x)
+					pMax.p.x = v->p.x;
+				if (pMin.p.y > v->p.y)
+					pMin.p.y = v->p.y;
+				else if (pMax.p.y < v->p.y)
+					pMax.p.y = v->p.y;
+				if (pMin.p.z > v->p.z)
+					pMin.p.z = v->p.z;
+				else if (pMax.p.z < v->p.z)
+					pMax.p.z = v->p.z;
 				}
-			p += n * sizeof (struct vmsVector) + 4;
+			p += n * sizeof (vmsVector) + 4;
 			break;
 
 		case OP_DEFP_START: 
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
-				if (pMin.x > v->x)
-					pMin.x = v->x;
-				else if (pMax.x < v->x)
-					pMax.x = v->x;
-				if (pMin.y > v->y)
-					pMin.y = v->y;
-				else if (pMax.y < v->y)
-					pMax.y = v->y;
-				if (pMin.z > v->z)
-					pMin.z = v->z;
-				else if (pMax.z < v->z)
-					pMax.z = v->z;
+				if (pMin.p.x > v->p.x)
+					pMin.p.x = v->p.x;
+				else if (pMax.p.x < v->p.x)
+					pMax.p.x = v->p.x;
+				if (pMin.p.y > v->p.y)
+					pMin.p.y = v->p.y;
+				else if (pMax.p.y < v->p.y)
+					pMax.p.y = v->p.y;
+				if (pMin.p.z > v->p.z)
+					pMin.p.z = v->p.z;
+				else if (pMax.p.z < v->p.z)
+					pMax.p.z = v->p.z;
 				}
-			p += n * sizeof (struct vmsVector) + 8;
+			p += n * sizeof (vmsVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
@@ -573,9 +592,9 @@ for (;;)
 		}
 done:
 {
-	double	dx = (pMax.x - pMin.x) / 2;
-	double	dy = (pMax.y - pMin.y) / 2;
-	double	dz = (pMax.z - pMin.z) / 2;
+	double	dx = (pMax.p.x - pMin.p.x) / 2;
+	double	dy = (pMax.p.y - pMin.p.y) / 2;
+	double	dz = (pMax.p.z - pMin.p.z) / 2;
 
 return (fix) sqrt (dx * dx + dy * dy + dz + dz);
 }
@@ -597,14 +616,14 @@ for (;;)
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			(*pnVerts) += n;
-			p += n * sizeof (struct vmsVector) + 4;
+			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			p += n * sizeof (struct vmsVector) + 8;
+			p += n * sizeof (vmsVector) + 8;
 			(*pnVerts) += n;
 			break;
 			}
@@ -689,7 +708,7 @@ short G3FindPolyModelVert (vmsVector *pVerts, vmsVector *pv, int nVerts)
 	int	i;
 
 for (i = 0; i < nVerts; i++, pVerts++)
-	if ((pVerts->x == pv->x) && (pVerts->y == pv->y) && (pVerts->z == pv->z))
+	if ((pVerts->p.x == pv->p.x) && (pVerts->p.y == pv->p.y) && (pVerts->p.z == pv->p.z))
 		return i;
 return nVerts;
 }
@@ -734,9 +753,9 @@ vmsVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 	static vmsVector c;
 
 cf = *G3CalcFaceCenterf (po, pf);
-c.x = (fix) (cf.x * F1_0);
-c.y = (fix) (cf.y * F1_0);
-c.z = (fix) (cf.z * F1_0);
+c.p.x = (fix) (cf.x * F1_0);
+c.p.y = (fix) (cf.y * F1_0);
+c.p.z = (fix) (cf.z * F1_0);
 return &c;
 }
 
@@ -969,9 +988,9 @@ tOOF_vector *G3PolyModelVerts2Float (tPOFObject *po)
 	tOOF_vector	*pvf;
 
 for (i = po->nVerts, pv = po->pvVerts, pvf = po->pvVertsf; i; i--, pv++, pvf++) {
-	pvf->x = f2fl (pv->x);
-	pvf->y = f2fl (pv->y);
-	pvf->z = f2fl (pv->z);
+	pvf->x = f2fl (pv->p.x);
+	pvf->y = f2fl (pv->p.y);
+	pvf->z = f2fl (pv->p.z);
 	}
 return po->pvVertsf;
 }
@@ -1096,7 +1115,7 @@ for (;;)
 			else
 				RotatePointListToVec (po->pvVerts, VECPTR (p+4), n);
 			//po->nVerts += n;
-			p += n * sizeof (struct vmsVector) + 4;
+			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
 
@@ -1110,7 +1129,7 @@ for (;;)
 			else
 				RotatePointListToVec (po->pvVerts + s, VECPTR (p+8), n);
 			//po->nVerts += n;
-			p += n * sizeof (struct vmsVector) + 8;
+			p += n * sizeof (vmsVector) + 8;
 			break;
 			}
 
@@ -1186,6 +1205,10 @@ int G3FreePolyModelItems (tPOFObject *po)
 pof_free (po->subObjs.pSubObjs);
 pof_free (po->pvVerts);
 pof_free (po->pvVertsf);
+if (nClipMethod == 2) {
+	pof_free (po->pfClipDist);
+	pof_free (po->pVertFlags);
+	}
 pof_free (po->pVertNorms);
 pof_free (po->faces.pFaces);
 pof_free (po->litFaces.pFaces);
@@ -1211,6 +1234,12 @@ if (!(po->subObjs.pSubObjs = (tPOFSubObject *) d_malloc (h)))
 memset (po->subObjs.pSubObjs, 0, h);
 if (!(po->pvVerts = (vmsVector *) d_malloc (po->nVerts * sizeof (vmsVector))))
 	return G3FreePolyModelItems (po);
+if (nClipMethod == 2) {
+	if (!(po->pVertFlags = (ubyte *) d_malloc (po->nVerts * sizeof (ubyte))))
+		return G3FreePolyModelItems (po);
+	if (!(po->pfClipDist = (float *) d_malloc (po->nVerts * sizeof (float))))
+		return G3FreePolyModelItems (po);
+	}
 if (bShadowData) {
 	if (!(po->faces.pFaces = (tPOF_face *) d_malloc (po->faces.nFaces * sizeof (tPOF_face))))
 		return G3FreePolyModelItems (po);
@@ -1297,7 +1326,7 @@ else
 glBegin (GL_TRIANGLE_FAN);
 for (pv += nv; nv; nv--) {
 	v0 = *(--pv);
-	OOF_VecSub (&v1, &v0, &vLightPos);
+	OOF_VecSub (&v1, &v0, &vLightPosf);
 #if NORM_INF
 	OOF_VecScale (&v1, fInf / OOF_VecMag (&v1));
 #else
@@ -1316,7 +1345,8 @@ int G3RenderSubModelShadowVolume (tPOFObject *po, tPOFSubObject *pso, int bCullF
 	tOOF_vector	*pvf, v [4];
 	tPOF_face	*pf, **ppf;
 	short			*pfv, *paf;
-	short			i, j, n;
+	short			h, i, j, n;
+	float			fClipDist;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -1347,22 +1377,27 @@ else {
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->pAdjFaces + pf->nAdjFaces;
+	if (nClipMethod > 1)
+		fClipDist = pf->fClipDist;
+	else
+		fClipDist = fInf;
 	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++) {
-		if ((*paf < 0) || !pso->faces.pFaces [*paf++].bFacingLight) {
+		h = *paf++;
+		if ((h < 0) || !pso->faces.pFaces [h].bFacingLight) {
 			v [1] = pvf [pfv [j]];
 			v [0] = pvf [pfv [(j + 1) % n]];
 #if DBG_SHADOWS
 			if (bShadowTest < 3) {
 				glColor4fv ((GLfloat *) (shadowColor + bCullFront));
 #endif
-				OOF_VecSub (v+3, v, &vLightPos);
-				OOF_VecSub (v+2, v+1, &vLightPos);
+				OOF_VecSub (v+3, v, &vLightPosf);
+				OOF_VecSub (v+2, v+1, &vLightPosf);
 #if NORM_INF
-				OOF_VecScale (v+3, fInf / OOF_VecMag (v+3));
-				OOF_VecScale (v+2, fInf / OOF_VecMag (v+2));
+				OOF_VecScale (v+3, fClipDist / OOF_VecMag (v+3));
+				OOF_VecScale (v+2, fClipDist / OOF_VecMag (v+2));
 #else
-				OOF_VecScale (v+3, fInf);
-				OOF_VecScale (v+2, fInf);
+				OOF_VecScale (v+3, fClipDist);
+				OOF_VecScale (v+2, fClipDist);
 #endif
 				OOF_VecInc (v+2, v+1);
 				OOF_VecInc (v+3, v);
@@ -1385,6 +1420,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 #endif
 			}
 		}
+CHECK();
 	}
 #if DBG_SHADOWS
 glLineWidth (1);
@@ -1394,16 +1430,264 @@ glDisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 
+//	-----------------------------------------------------------------------------
+
+int LineHitsFace (vmsVector *pHit, vmsVector *p0, vmsVector *p1, short nSegment, short nSide)
+{
+	short			i, nFaces, nVerts;
+	tSegment		*segP = gameData.segs.segments + nSegment;
+
+nFaces = GetNumFaces (segP->sides + nSide);
+nVerts = 5 - nFaces;
+for (i = 0; i < nFaces; i++)
+	if (CheckLineToFace (pHit, p0, p1, segP, nSide, i, nVerts, 0))
+		return nSide;
+return -1;
+}
+
+//	-----------------------------------------------------------------------------
+
+float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, float fScale)
+{
+	static float fClip [3] = {1.5f, 2.0f, 3.0f};
+
+#if 1
+	vmsVector	vHit, v;
+	tSegment		*segP;
+	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
+	float			fDist;
+
+if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
+	return INFINITY;
+VmVecSub (&v, vPos, &vLightPos);
+VmVecNormalize (&v);
+VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+if (bPrintLine) {	
+	fVector	vf;
+	glLineWidth (3);
+	if (!bShadowTest) {
+		glColorMask (1,1,1,1);
+		glDisable (GL_STENCIL_TEST);
+		}
+	glColor4d (1,0.8,0,1);
+	glBegin (GL_LINES);
+	VmsVecToFloat (&vf, vPos);
+	glVertex3fv ((GLfloat*) &vf);
+	VmsVecToFloat (&vf, &v);
+	glVertex3fv ((GLfloat*) &vf);
+	glEnd ();
+	if (!bShadowTest) {
+		glColorMask (0,0,0,0);
+		glEnable (GL_STENCIL_TEST);
+		}
+	}
+nParent = 0x7fffffff;
+vHit = *vPos;
+for (;;) {
+	segP = gameData.segs.segments + nSegment;
+	for (nSide = 0; nSide < 6; nSide++)
+		if (0 <= (nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide))) {
+			nChild = segP->children [nHitSide];
+			if (nChild != nParent)
+				break;
+			}
+	if (nHitSide < 0)
+		break;
+	fDist = f2fl (VmVecDist (vPos, &vHit));
+	if (nChild < 0) {
+		bHit = 1;
+		break;
+		}
+	nWID = WALL_IS_DOORWAY (segP, nSide, gameData.objs.objects + nObject);
+	if (!(nWID & WID_FLY_FLAG) &&
+		(((nWID & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) != (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))) {
+		bHit = 1;
+		break;
+		}
+	if (fDist >= INFINITY)
+		break;
+	nParent = nSegment;
+	nSegment = nChild;
+	}
+if (bHit)
+	return fDist * (fScale ? fScale : fClip [gameOpts->render.shadows.nReach]);
+return INFINITY;
+#else
+	fvi_query	fq;
+	fvi_info		fi;
+	vmsVector	v;
+
+if (!gameOpts->render.shadows.bClip)
+	return INFINITY;
+if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
+	return INFINITY;
+fq.p0					= vPos;
+VmVecSub (&v, fq.p0, vLightPosf);
+VmVecNormalize (&v);
+VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+fq.startSeg			= nSegment;
+fq.p1					= &v;
+fq.rad				= 0;
+fq.thisObjNum		= nObject;
+fq.ignoreObjList	= NULL;
+fq.flags				= FQ_TRANSWALL;
+if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
+	return INFINITY;
+return fScale ? 
+		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
+		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
+#endif
+}
+
 //------------------------------------------------------------------------------
 
-static int _I = 3;
-static int _O = 13;
+float G3FaceClipDist (tObject *objP, tPOF_face *pf)
+{
+	vmsVector	vCenter;
 
-int G3RenderSubModelShadowCaps (tPOFObject *po, tPOFSubObject *pso, int bCullFront)
+if (!gameOpts->render.shadows.bExactClip)
+	return fInf;
+vCenter.p.x = (fix) (pf->vCenterf.x * 65536.0f);
+vCenter.p.y = (fix) (pf->vCenterf.y * 65536.0f);
+vCenter.p.z = (fix) (pf->vCenterf.z * 65536.0f);
+return NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &vCenter, 3.0f);
+}
+
+//------------------------------------------------------------------------------
+
+float G3SubModelClipDist3 (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
+{
+	tPOF_face	*pf, **ppf;
+	short			i;
+	float			fClipDist, fMaxDist = 0;
+
+if (!gameOpts->render.shadows.bExactClip)
+	return fInf;
+for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
+	pf = *ppf;
+	fClipDist = G3FaceClipDist (objP, pf);
+#ifdef _DEBUG
+	if (fClipDist == INFINITY)
+		fClipDist = G3FaceClipDist (objP, pf);
+#endif
+	if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
+		fMaxDist = fClipDist;
+	}
+return fMaxDist ? fMaxDist : fInf;
+}
+
+//------------------------------------------------------------------------------
+
+int G3CalcLitSubModelVerts (tPOFObject *po, tPOFSubObject *pso)
+{
+	ubyte			*pvf;
+	short			*paf;
+	tPOF_face	*pf, **ppf;
+	short			*pfv, h, i, j, n;
+
+pvf = po->pVertFlags;
+for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
+	pf = *ppf;
+	paf = po->pAdjFaces + pf->nAdjFaces;
+	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++, pfv++) {
+		h = *paf++;
+		if ((h < 0) || !pso->faces.pFaces [h].bFacingLight)
+			pvf [*pfv] = pvf [*(pfv + 1)] = 1;
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+float G3SubModelClipDist2 (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
+{
+	tOOF_vector	*pv;
+	vmsVector	v;
+	ubyte			*pvf;
+	float			*pfc;
+	tPOF_face	*pf, **ppf;
+	short			*pfv, h, i, j, n;
+	short			nObject = OBJ_IDX (objP);
+	short			nPointSeg, nSegment = objP->position.nSegment;
+	float			fClipDist, fMaxDist = G3SubModelClipDist3 (objP, po, pso);
+
+if (!gameOpts->render.shadows.bExactClip)
+	return fInf;
+#if 0
+G3CalcLitSubModelVerts (po, pso);
+#endif
+pv = po->pvVertsf;
+pfc = po->pfClipDist;
+pvf = po->pVertFlags;
+for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
+	pf = *ppf;
+	for (j = 0, n = pf->nVerts, pfv = pf->pVerts; j < n; j++, pfv++) {
+		h = *pfv;
+#if 0
+		if (!pvf [h])
+			continue;
+#endif
+		if (!(fClipDist = pfc [h])) {
+			v.p.x = (fix) (pv [h].x * 65536.0f);
+			v.p.y = (fix) (pv [h].y * 65536.0f);
+			v.p.z = (fix) (pv [h].z * 65536.0f);
+			nPointSeg = FindSegByPoint (&v, nSegment);
+			if (nPointSeg < 0)
+				continue;
+			pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+#ifdef _DEBUG
+			if (fClipDist == INFINITY)
+				fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+#endif
+			}
+		if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
+			fMaxDist = fClipDist;
+		}
+	}
+return fMaxDist ? fMaxDist : fInf;
+}
+
+//------------------------------------------------------------------------------
+
+float G3PolyModelClipDist (tObject *objP, tPOFObject *po)
+{
+	tOOF_vector	*pv;
+	vmsVector	v;
+	short			i;
+	short			nObject = OBJ_IDX (objP);
+	short			nPointSeg, nSegment = objP->position.nSegment;
+	float			fClipDist, fMaxDist = 0;
+
+if (!gameOpts->render.shadows.bExactClip)
+	return fInf;
+pv = po->pvVertsf;
+for (i = po->nVerts; i; i--, pv++) {
+	v.p.x = (fix) (pv->x * 65536.0f);
+	v.p.y = (fix) (pv->y * 65536.0f);
+	v.p.z = (fix) (pv->z * 65536.0f);
+	nPointSeg = FindSegByPoint (&v, nSegment);
+	if (nPointSeg < 0)
+		continue;
+	fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+#ifdef _DEBUG
+	if (fClipDist == INFINITY)
+		fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
+#endif
+	if ((fClipDist < INFINITY) && (fMaxDist < fClipDist))
+		fMaxDist = fClipDist;
+	}
+return fMaxDist ? fMaxDist : fInf;
+}
+
+//------------------------------------------------------------------------------
+
+int G3RenderSubModelShadowCaps (tObject *objP, tPOFObject *po, tPOFSubObject *pso, int bCullFront)
 {
 	tOOF_vector	*pvf, v0, v1;
 	tPOF_face	*pf, **ppf;
 	short			*pfv, i, j;
+	float			fClipDist;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1416,10 +1700,16 @@ pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bRearCap)
 #endif
+if (nClipMethod == 3)
+	fClipDist = G3SubModelClipDist3 (objP, po, pso);
+else if (nClipMethod == 2)
+	fClipDist = G3SubModelClipDist2 (objP, po, pso);
+else
+	fClipDist = fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
-	if (!pf->bFacingLight)
-		continue;
+if (nClipMethod > 1)
+	pf->fClipDist = fClipDist;
 #if 0//def _DEBUG
 	if (pf->bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
@@ -1432,7 +1722,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glColor4d (0,0,1,1);
 		glBegin (GL_LINES);
 		glVertex3fv ((GLfloat *) &v1);
-		glVertex3fv ((GLfloat *) &vLightPos);
+		glVertex3fv ((GLfloat *) &vLightPosf);
 		glEnd ();
 		glColor4fv ((GLfloat *) (modelColor + bCullFront));
 		}
@@ -1446,7 +1736,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	for (j = pf->nVerts, pfv = pf->pVerts + j; j; j--) {
 		v0 = pvf [*--pfv];
 #if 1
-		OOF_VecSub (&v1, &v0, &vLightPos);
+		OOF_VecSub (&v1, &v0, &vLightPosf);
 #if DBG_SHADOWS
 		if (bShadowTest < 4) 
 #endif
@@ -1457,9 +1747,9 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecScale (&v1, 5.0f / OOF_VecMag (&v1));
 			else
 #	endif
-				OOF_VecScale (&v1, fInf / OOF_VecMag (&v1));
+				OOF_VecScale (&v1, fClipDist / OOF_VecMag (&v1));
 #else
-			OOF_VecScale (&v1, fInf);
+			OOF_VecScale (&v1, fClipDist);
 #endif
 			OOF_VecInc (&v0, &v1);
 #endif
@@ -1467,6 +1757,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}	
 	glEnd ();
+CHECK();
 	}
 #if DBG_SHADOWS
 if (bFrontCap)
@@ -1487,7 +1778,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glColor4d (1,0,0,1);
 		glBegin (GL_LINES);
 		glVertex3fv ((GLfloat *) &v1);
-		glVertex3fv ((GLfloat *) &vLightPos);
+		glVertex3fv ((GLfloat *) &vLightPosf);
 		glEnd ();
 		glColor4fv ((GLfloat *) (modelColor + bCullFront));
 		}
@@ -1503,13 +1794,14 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 		glVertex3fv ((GLfloat *) &v0);
 		}
 	glEnd ();
+CHECK();
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3DrawSubModelShadow (tPOFObject *po, tPOFSubObject *pso)
+int G3DrawSubModelShadow (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	int			h = 1, i;
 
@@ -1518,16 +1810,17 @@ if (pso->nParent >= 0)
 h = (int) (pso - po->subObjs.pSubObjs);
 for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
-		G3DrawSubModelShadow (po, po->subObjs.pSubObjs + i);
+		G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs + i);
 #if 0
-if (pso - po->subObjs.pSubObjs == 2)
+if (pso - po->subObjs.pSubObjs == 0)
 #endif
 {
 G3GetLitFaces (po, pso);
-h = G3RenderSubModelShadowVolume (po, pso, 0) &&
-	 G3RenderSubModelShadowVolume (po, pso, 1) &&
-	 G3RenderSubModelShadowCaps (po, pso, 0) &&
-	 G3RenderSubModelShadowCaps (po, pso, 1);
+h = G3RenderSubModelShadowCaps (objP, po, pso, 0) &&
+	 G3RenderSubModelShadowCaps (objP, po, pso, 1) &&
+	 G3RenderSubModelShadowVolume (po, pso, 0) &&
+	 G3RenderSubModelShadowVolume (po, pso, 1);
+;
 }
 if (pso->nParent >= 0)
 	G3DoneInstance ();
@@ -1551,14 +1844,14 @@ if (po->nState == 1) {
 	if (bShadowData) {
 		vCenter.x = vCenter.y = vCenter.z = 0.0f;
 		for (j = po->nVerts, pv = po->pvVerts, pvf = po->pvVertsf; j; j--, pv++, pvf++) {
-			vCenter.x += f2fl (pv->x);
-			vCenter.y += f2fl (pv->y);
-			vCenter.z += f2fl (pv->z);
+			vCenter.x += f2fl (pv->p.x);
+			vCenter.y += f2fl (pv->p.y);
+			vCenter.z += f2fl (pv->p.z);
 			}
 		OOF_VecScale (&vCenter, 1.0f / (float) po->nVerts);
-		po->vCenter.x = fl2f (vCenter.x);
-		po->vCenter.y = fl2f (vCenter.y);
-		po->vCenter.z = fl2f (vCenter.z);
+		po->vCenter.p.x = fl2f (vCenter.x);
+		po->vCenter.p.y = fl2f (vCenter.y);
+		po->vCenter.p.z = fl2f (vCenter.z);
 
 		G3GetAdjFaces (po);
 		G3GetPolyModelCenters (po);
@@ -1591,39 +1884,12 @@ fq.rad = 0;
 fq.thisObjNum = OBJ_IDX (objP);
 fq.flags = FQ_TRANSWALL;
 if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
 else
-	fq.startSeg = objP->nSegment;
+	fq.startSeg = objP->position.nSegment;
 fq.ignoreObjList = NULL;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return nHitType != HIT_WALL;
-}
-
-//	-----------------------------------------------------------------------------
-
-float NearestShadowedWallDist (tObject *objP, vmsVector *vLightPos)
-{
-	fvi_query	fq;
-	fvi_info		fi;
-	vmsVector	v;
-
-	static float fClip [3] = {1.5f, 2.0f, 3.0f};
-
-if (!gameOpts->render.shadows.bClip)
-	return INFINITY;
-fq.p0					= &objP->position.vPos;
-VmVecSub (&v, fq.p0, vLightPos);
-VmVecNormalize (&v);
-VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
-fq.startSeg			= objP->nSegment;
-fq.p1					= &v;
-fq.rad				= 0; //objP->size;
-fq.thisObjNum		= OBJ_IDX (objP);
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
-if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
-	return INFINITY;
-return f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
 }
 
 //	-----------------------------------------------------------------------------
@@ -1641,9 +1907,10 @@ if (!gameStates.render.bShadowMaps) {
 	if (!G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 1))
 		return 0;
 	}
+CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
+pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->position.nSegment];
 gameData.render.shadows.nLight = 0;
 if (gameOpts->render.shadows.bFast) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
@@ -1665,36 +1932,51 @@ if (gameOpts->render.shadows.bFast) {
 		if (gameStates.render.bShadowMaps)
 			RenderShadowMap (gameData.render.lights.dynamic.lights + (gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights));
 		else {
-			G3TransformPoint (&v, &gameData.render.shadows.pLight->vPos, 0);
-			OOF_VecVms2Oof (&vLightPos, &v);
-			fInf = NearestShadowedWallDist (objP, &gameData.render.shadows.pLight->vPos);
+			gameStates.render.bRendering = 1;
+			G3TransformPoint (&vLightPos, &gameData.render.shadows.pLight->vPos, 0);
+			OOF_VecVms2Oof (&vLightPosf, &vLightPos);
+			CHECK ();
+			if (gameOpts->render.shadows.bExactClip = 1)
+				if (nClipMethod == 1)
+					fInf = G3PolyModelClipDist (objP, po);
+				else {
+					G3TransformPoint (&v, &objP->position.vPos, 0);
+					fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &v, 0);
+					}
+			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
-			G3DrawSubModelShadow (po, po->subObjs.pSubObjs);
+			if (nClipMethod == 2) {
+				memset (po->pfClipDist, 0, po->nVerts * sizeof (float));
+				memset (po->pVertFlags, 0, po->nVerts);
+				}
+			G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs);
 			G3DoneInstance ();
+			gameStates.render.bRendering = 0;
 			}
 		}
 	}
 else {
 	h = OBJ_IDX (objP);
-	j = gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights;
+	j = (int) (gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights);
 	pnl = gameData.render.shadows.objLights [h];
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)
 			break;
 		if (*pnl == j) {
-			vLightPos = gameData.render.shadows.vLightPos;
+			vLightPosf = gameData.render.shadows.vLightPos;
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 			po->litFaces.nFaces = 0;
-			G3DrawSubModelShadow (po, po->subObjs.pSubObjs);
+			G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs);
 			G3DoneInstance ();
 			}
 		}
 	}
 glDisable (GL_TEXTURE_2D);
 #endif
+CHECK();
 return 1;
 }
 
@@ -1740,7 +2022,7 @@ for (;;) {
 		int n = WORDVAL (p+2);
 
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->pVertNorms : NULL, n, 0);
-		p += n * sizeof (struct vmsVector) + 4;
+		p += n * sizeof (vmsVector) + 4;
 		break;
 		}
 	else if (h == OP_DEFP_START) {
@@ -1748,7 +2030,7 @@ for (;;) {
 		int s = WORDVAL (p+4);
 
 		RotatePointList (modelPointList, VECPTR (p+8), po ? po->pVertNorms : NULL, n, s);
-		p += n * sizeof (struct vmsVector) + 8;
+		p += n * sizeof (vmsVector) + 8;
 		}
 	else if (h == OP_FLATPOLY) {
 		int nv = WORDVAL (p+2);
@@ -1874,7 +2156,7 @@ for (;;) {
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
 			RotatePointList (modelPointList, new_points, NULL, n, 0);
-			p += n*sizeof (struct vmsVector) + 4;
+			p += n*sizeof (vmsVector) + 4;
 			break;
 			}
 
@@ -1882,7 +2164,7 @@ for (;;) {
 			int n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			RotatePointList (modelPointList, new_points, NULL, n, s);
-			p += n*sizeof (struct vmsVector) + 8;
+			p += n*sizeof (vmsVector) + 8;
 			break;
 			}
 
@@ -1998,13 +2280,13 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int n = WORDVAL (p+2);
-			p += n*sizeof (struct vmsVector) + 4;
+			p += n*sizeof (vmsVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			p += n*sizeof (struct vmsVector) + 8;
+			p += n*sizeof (vmsVector) + 8;
 			break;
 			}
 

@@ -1092,7 +1092,7 @@ void gamestate_restore_check() {
 			// Save current position
 			Save_position.position.vPos = gameData.objs.console->position.vPos;
 			Save_position.position.mOrient = gameData.objs.console->position.mOrient;
-			Save_position.nSegment = gameData.objs.console->nSegment;
+			Save_position.nSegment = gameData.objs.console->position.nSegment;
 
 			LoadLevelSub("GAMESAVE.LVL");
 
@@ -1358,7 +1358,7 @@ void editor(void)
 		if (slew_frame(0)) {		//do movement and check keys
 			UpdateFlags |= UF_GAME_VIEW_CHANGED;
 			if (Gameview_lockstep) {
-				Cursegp = &gameData.segs.segments[gameData.objs.console->nSegment];
+				Cursegp = &gameData.segs.segments[gameData.objs.console->position.nSegment];
 				med_create_new_segment_from_cursegp();
 				UpdateFlags |= UF_ED_STATE_CHANGED;
 			}

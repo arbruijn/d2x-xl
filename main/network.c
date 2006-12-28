@@ -2390,15 +2390,15 @@ for (i = 0; i < nobj; i++) {
 			}
 		if (nObject != -1) {
 			objP = gameData.objs.objects + nObject;
-			if (objP->nSegment != -1)
+			if (objP->position.nSegment != -1)
 				UnlinkObject (nObject);
-			Assert (objP->nSegment == -1);
+			Assert (objP->position.nSegment == -1);
 			Assert (nObject < MAX_OBJECTS);
 			GET_BYTES (data, loc, objP, sizeof (tObject));
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				SwapObject (objP);
-			nSegment = objP->nSegment;
-			objP->next = objP->prev = objP->nSegment = -1;
+			nSegment = objP->position.nSegment;
+			objP->next = objP->prev = objP->position.nSegment = -1;
 			objP->attachedObj = -1;
 			if (nSegment > -1)
 				LinkObject (OBJ_IDX (objP), nSegment);
@@ -2684,7 +2684,7 @@ if (!networkData.bRejoined) {
 			j = netGame.locations [i];
 		gameData.objs.objects [gameData.multi.players [i].nObject].position.vPos = gameData.multi.playerInit [j].position.vPos;
 		gameData.objs.objects [gameData.multi.players [i].nObject].position.mOrient = gameData.multi.playerInit [j].position.mOrient;
-		RelinkObject (gameData.multi.players [i].nObject, gameData.multi.playerInit [j].nSegment);
+		RelinkObject (gameData.multi.players [i].nObject, gameData.multi.playerInit [j].position.nSegment);
 		}
 	}
 gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nType = OBJ_PLAYER;
@@ -3450,7 +3450,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 			networkData.mySyncPack.playernum = gameData.multi.nLocalPlayer;
 			networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
 			networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
-			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
+			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].position.nSegment;
 			networkData.mySyncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
 			networkData.mySyncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
 			networkData.mySyncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;

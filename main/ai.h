@@ -397,7 +397,7 @@ extern int Stolen_item_index;   // Used in ai.c for controlling rate of Thief fl
 
 extern void ai_frame_animation (tObject *objP);
 extern int DoSillyAnimation (tObject *objP);
-extern int openable_doors_in_segment (short nSegment);
+extern int OpenableDoorsInSegment (short nSegment);
 extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag);
 extern void do_firing_stuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
 extern int maybe_ai_do_actual_firing_stuff (tObject *obj, tAIStatic *aip);

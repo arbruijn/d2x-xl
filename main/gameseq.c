@@ -237,7 +237,7 @@ for (i = 0, objP = gameData.objs.objects;i <= gameData.objs.nLastObject; i++, ob
 			ReleaseObject ((short) i);
 		else {
 			playerObjs [nPlayers] = i;
-			startSegs [nPlayers] = gameData.objs.objects [i].nSegment;
+			startSegs [nPlayers] = gameData.objs.objects [i].position.nSegment;
 			nPlayers++;
 			}
 		j++;
@@ -279,7 +279,7 @@ for (i = 0; i < nPlayers; i++) {
 		objP = gameData.objs.objects + playerObjs [j];
 		objP->nType = OBJ_PLAYER;
 		gameData.multi.playerInit [i].position = objP->position;
-		gameData.multi.playerInit [i].nSegment = objP->nSegment;
+		gameData.multi.playerInit [i].position.nSegment = objP->position.nSegment;
 		gameData.multi.playerInit [i].nSegType = segType;
 		gameData.multi.players [i].nObject = playerObjs [j];
 		objP->id = i;
@@ -666,7 +666,7 @@ if (playerObjP == gameData.objs.viewer)
 	VmVecScaleAdd (&pos, &playerObjP->position.vPos, &playerObjP->position.mOrient.fVec, FixMul (playerObjP->size,flashDist));
 else
 	pos = playerObjP->position.vPos;
-effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
+effectObjP = ObjectCreateExplosion (playerObjP->position.nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->position.mOrient = playerObjP->position.mOrient;
 	if (gameData.eff.vClips [0] [VCLIP_PLAYER_APPEARANCE].nSound > -1)
@@ -1674,8 +1674,7 @@ if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiDoDeath (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
-else
-	{				//Note link to above else!
+else {				//Note link to above else!
 	if (!--gameData.multi.players [gameData.multi.nLocalPlayer].lives) {	
 		DoGameOver ();
 		return;
@@ -1689,12 +1688,10 @@ if (gameData.reactor.bDestroyed) {
 	gameData.multi.players [gameData.multi.nLocalPlayer].connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
-if (bSecret) {
+if (bSecret && !gameStates.app.bD1Mission) {
 	ExitSecretLevel ();
-	if (!gameStates.app.bD1Mission) {
-		SetPosFromReturnSegment ();
-		gameData.multi.players [gameData.multi.nLocalPlayer].lives--;	//	re-lose the life, gameData.multi.players [gameData.multi.nLocalPlayer].lives got written over in restore.
-		}
+	SetPosFromReturnSegment ();
+	gameData.multi.players [gameData.multi.nLocalPlayer].lives--;	//	re-lose the life, gameData.multi.players [gameData.multi.nLocalPlayer].lives got written over in restore.
 	InitPlayerStatsNewShip ();
 	last_drawn_cockpit [0] =
 	last_drawn_cockpit [1] = -1;
@@ -2052,9 +2049,9 @@ void InitPlayerPosition (int bRandom)
 				pObj = gameData.objs.objects + gameData.multi.players [i].nObject; 
 				if ((pObj->nType == OBJ_PLAYER))	{
 					dist = FindConnectedDistance (&pObj->position.vPos, 
-															 pObj->nSegment, 
+															 pObj->position.nSegment, 
 															 &gameData.multi.playerInit [bNewPlayer].position.vPos, 
-															 gameData.multi.playerInit [bNewPlayer].nSegment, 
+															 gameData.multi.playerInit [bNewPlayer].position.nSegment, 
 															 10, WID_FLY_FLAG);	//	Used to be 5, search up to 10 segments
 					if ((dist < closestDist) && (dist >= 0))	{
 						closestDist = dist;
@@ -2072,7 +2069,7 @@ void InitPlayerPosition (int bRandom)
 
 	gameData.objs.console->position.vPos = gameData.multi.playerInit [bNewPlayer].position.vPos;
 	gameData.objs.console->position.mOrient = gameData.multi.playerInit [bNewPlayer].position.mOrient;
- 	RelinkObject (OBJ_IDX (gameData.objs.console),gameData.multi.playerInit [bNewPlayer].nSegment);
+ 	RelinkObject (OBJ_IDX (gameData.objs.console),gameData.multi.playerInit [bNewPlayer].position.nSegment);
 done:
 	ResetPlayerObject ();
 	ResetCruise ();

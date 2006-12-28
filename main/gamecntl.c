@@ -322,7 +322,7 @@ if (gameData.app.nGlobalMissileFiringCount < 0)
 	gameData.app.nGlobalMissileFiringCount = 0;
 //	Drop proximity bombs.
 if (Controls.drop_bombDownCount) {
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->position.nSegment].special == SEGMENT_IS_NODAMAGE))
 		Controls.drop_bombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
@@ -960,7 +960,7 @@ dump_door_debugging_info()
 	VmVecScaleAdd(&new_pos, &objP->position.vPos, &objP->position.mOrient.fVec, i2f(100);
 
 	fq.p0						= &objP->position.vPos;
-	fq.startseg				= objP->nSegment;
+	fq.startseg				= objP->position.nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
 	fq.thisobjnum			= gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
@@ -1884,7 +1884,9 @@ void speedtest_frame(void)
 	Speedtest_sidenum=Speedtest_segnum % MAX_SIDES_PER_SEGMENT;
 
 	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[Speedtest_segnum]);
-	gameData.objs.viewer->position.vPos.x += 0x10;		gameData.objs.viewer->position.vPos.y -= 0x10;		gameData.objs.viewer->position.vPos.z += 0x17;
+	gameData.objs.viewer->position.vPos.p.x += 0x10;		
+	gameData.objs.viewer->position.vPos.p.y -= 0x10;		
+	gameData.objs.viewer->position.vPos.p.z += 0x17;
 
 	RelinkObject(OBJ_IDX (gameData.objs.viewer), Speedtest_segnum);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[Speedtest_segnum], Speedtest_sidenum);

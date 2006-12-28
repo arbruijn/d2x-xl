@@ -346,7 +346,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 	objP->renderType    = CFReadByte(f);
 	objP->flags          = CFReadByte(f);
 
-	objP->nSegment         = CFReadShort(f);
+	objP->position.nSegment         = CFReadShort(f);
 	objP->attachedObj   = -1;
 
 	CFReadVector(&objP->position.vPos,f);
@@ -554,7 +554,7 @@ void writeObject(tObject *objP,FILE *f)
 	gs_write_byte(objP->renderType,f);
 	gs_write_byte(objP->flags,f);
 
-	gs_write_short(objP->nSegment,f);
+	gs_write_short(objP->position.nSegment,f);
 
 	gr_write_vector(&objP->position.vPos,f);
 	gs_write_matrix(&objP->position.mOrient,f);
@@ -1261,11 +1261,11 @@ ResetObjects(gameFileInfo.objects.count);
 for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
 	if (gameData.objs.objects[i].nType != OBJ_NONE) {
-		int objsegnum = gameData.objs.objects[i].nSegment;
+		int objsegnum = gameData.objs.objects[i].position.nSegment;
 		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus tObject
 			gameData.objs.objects[i].nType = OBJ_NONE;
 		else {
-			gameData.objs.objects[i].nSegment = -1;			//avoid Assert()
+			gameData.objs.objects[i].position.nSegment = -1;			//avoid Assert()
 			LinkObject(i,objsegnum);
 		}
 	}
@@ -1421,10 +1421,6 @@ extern void	SetAmbientSoundFlags(void);
 char *Level_being_loaded=NULL;
 #endif
 
-#ifdef COMPACT_SEGS
-extern void ncache_flush();
-#endif
-
 int no_oldLevel_file_error=0;
 
 //loads a level (.LVL) file from disk
@@ -1445,17 +1441,10 @@ int LoadLevelSub(char * filename_passed)
 		memset (gameData.multi.maxPowerupsAllowed, 0, sizeof (gameData.multi.maxPowerupsAllowed));
 		memset (gameData.multi.powerupsInMine, 0, sizeof (gameData.multi.powerupsInMine));
 		}
-
-#ifdef COMPACT_SEGS
-ncache_flush();
-#endif
-
 #ifndef RELEASE
 Level_being_loaded = filename_passed;
 #endif
-
 strcpy(filename,filename_passed);
-
 #ifdef EDITOR
 	//if we have the editor, try the LVL first, no matter what was passed.
 	//if we don't have an LVL, try RDL  
@@ -1543,26 +1532,26 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient.rVec.x = F1_0;
-	gameData.segs.secret.returnOrient.rVec.y = 0;
-	gameData.segs.secret.returnOrient.rVec.z = 0;
-	gameData.segs.secret.returnOrient.fVec.x = 0;
-	gameData.segs.secret.returnOrient.fVec.y = F1_0;
-	gameData.segs.secret.returnOrient.fVec.z = 0;
-	gameData.segs.secret.returnOrient.uVec.x = 0;
-	gameData.segs.secret.returnOrient.uVec.y = 0;
-	gameData.segs.secret.returnOrient.uVec.z = F1_0;
+	gameData.segs.secret.returnOrient.rVec.p.x = F1_0;
+	gameData.segs.secret.returnOrient.rVec.p.y = 0;
+	gameData.segs.secret.returnOrient.rVec.p.z = 0;
+	gameData.segs.secret.returnOrient.fVec.p.x = 0;
+	gameData.segs.secret.returnOrient.fVec.p.y = F1_0;
+	gameData.segs.secret.returnOrient.fVec.p.z = 0;
+	gameData.segs.secret.returnOrient.uVec.p.x = 0;
+	gameData.segs.secret.returnOrient.uVec.p.y = 0;
+	gameData.segs.secret.returnOrient.uVec.p.z = F1_0;
 } else {
 	gameData.segs.secret.nReturnSegment = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rVec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rVec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.rVec.z = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fVec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fVec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.fVec.z = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uVec.x = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uVec.y = CFReadInt(LoadFile);
-	gameData.segs.secret.returnOrient.uVec.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.p.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.p.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.rVec.p.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.p.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.p.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.fVec.p.z = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.p.x = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.p.y = CFReadInt(LoadFile);
+	gameData.segs.secret.returnOrient.uVec.p.z = CFReadInt(LoadFile);
 }
 
 SetDataVersion (-1);
@@ -1912,9 +1901,9 @@ int saveLevel_sub(char * filename, int compiled_version)
 
 	//make sure tPlayer is in a tSegment
 	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].nObject]) == 0) {
-		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
-			gameData.objs.console->nSegment = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
+		if (gameData.objs.console->position.nSegment > gameData.segs.nLastSegment)
+			gameData.objs.console->position.nSegment = 0;
+		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->position.nSegment]);
 	}
  
 	FixObjectSegs();
@@ -1945,15 +1934,15 @@ int saveLevel_sub(char * filename, int compiled_version)
 	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
 	
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rVec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rVec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.rVec.z, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fVec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fVec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.fVec.z, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uVec.x, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uVec.y, SaveFile);
-	gs_write_int(gameData.segs.secret.returnOrient.uVec.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.fVec.p.z, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.x, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.y, SaveFile);
+	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.z, SaveFile);
 
 	minedata_offset = ftell(SaveFile);
 	if (!compiled_version)	

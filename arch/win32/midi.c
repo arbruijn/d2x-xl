@@ -92,52 +92,50 @@ if (!gameStates.sound.digi.bInitialized)
 #endif
 LogErr ("DigiPlayMidiSong (%s)\n", pszSong);
 DigiStopCurrentSong ();
-if (pszSong == NULL)
-	return;
+if (!(pszSong && *pszSong))
+	return 0;
 if (midiVolume < 1)
-	return;
+	return 0;
 bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
-if (bCustom || (hmp = hmp_open (pszSong, bD1Song))) {
+if (!(bCustom || (hmp = hmp_open (pszSong, bD1Song))))
+	return 0;
 #if USE_SDL_MIXER
-	if (gameOpts->sound.bUseSDLMixer) {
-		char	fnSong [FILENAME_LEN], *pfnSong;
+if (gameOpts->sound.bUseSDLMixer) {
+	char	fnSong [FILENAME_LEN], *pfnSong;
 
-		if (bCustom)
-			pfnSong = pszSong;
-		else {
-			sprintf (fnSong, "%s/d2x-temp.mid", gameFolders.szHomeDir);
-			if (!hmp_to_midi (hmp, fnSong)) {
-				LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
-				return 0;
-				}
-			pfnSong = fnSong;
-			}
-		if (!(mixMusic = Mix_LoadMUS (pfnSong))) {
+	if (bCustom)
+		pfnSong = pszSong;
+	else {
+		sprintf (fnSong, "%s/d2x-temp.mid", gameFolders.szHomeDir);
+		if (!hmp_to_midi (hmp, fnSong)) {
 			LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 			return 0;
 			}
-		if (-1 == Mix_PlayMusic (mixMusic, loop)) {
-			LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
-			return 0;
-			}
-		LogErr ("SDL_mixer playing %s\n", pszSong);
-		bDigiMidiSongPlaying = 1;
-		DigiSetMidiVolume (midiVolume);
+		pfnSong = fnSong;
 		}
+	if (!(mixMusic = Mix_LoadMUS (pfnSong))) {
+		LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+		return 0;
+		}
+	if (-1 == Mix_PlayMusic (mixMusic, loop)) {
+		LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
+		return 0;
+		}
+	LogErr ("SDL_mixer playing %s\n", pszSong);
+	bDigiMidiSongPlaying = 1;
+	DigiSetMidiVolume (midiVolume);
+	return 1;
+	}
 #endif
 #if defined (_WIN32)
-#	if USE_SDL_MIXER
-else 
-#	endif
-	if (bCustom)
-		LogErr ("Cannot play %s - enable SDL_mixer\n", pszSong);
-	else {
-		hmp_play(hmp, loop);
-		bDigiMidiSongPlaying = 1;
-		DigiSetMidiVolume(midiVolume);
-		}
-#endif
+if (bCustom) {
+	LogErr ("Cannot play %s - enable SDL_mixer\n", pszSong);
+	return 0;
 	}
+hmp_play (hmp, loop);
+bDigiMidiSongPlaying = 1;
+DigiSetMidiVolume (midiVolume);
+#endif
 return 1;
 }
 

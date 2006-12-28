@@ -450,7 +450,7 @@ int bm_init_use_tbl()
 		//Effects [gameStates.app.bD1Data][i].bm_ptr = (grsBitmap **) -1;
 		Effects [gameStates.app.bD1Data][i].changing_wall_texture = -1;
 		Effects [gameStates.app.bD1Data][i].changingObject_texture = -1;
-		Effects [gameStates.app.bD1Data][i].nSegment = -1;
+		Effects [gameStates.app.bD1Data][i].position.nSegment = -1;
 		Effects [gameStates.app.bD1Data][i].vc.nFrameCount = -1;		//another mark of being unused
 	}
 

@@ -67,7 +67,7 @@ return (VmVecDot (VmVecSub (&v, &viewInfo.pos, pv), pnorm) > 0);
 bool DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have normal
-	Assert (norm->x || norm->y || norm->z);
+	Assert (norm->p.x || norm->p.y || norm->p.z);
 	return G3CheckNormalFacing (p, norm);
 	}
 else {	//normal not specified, so must compute

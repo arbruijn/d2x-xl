@@ -330,11 +330,11 @@ while (new_pof_read_int (id, model_buf) == 1) {
 				vmsVector v;
 				fix l;
 				VmVecSub (&v, &pmmax, &pmmin);
-				l = v.x;
-				if (v.y > l) 
-					l = v.y;					
-				if (v.z > l) 
-					l = v.z;					
+				l = v.p.x;
+				if (v.p.y > l) 
+					l = v.p.y;					
+				if (v.p.z > l) 
+					l = v.p.z;					
 				//printf (" -l%.3f", f2fl (l));
 				}
 			break;
@@ -681,9 +681,9 @@ glLineWidth (20);
 glDisable (GL_TEXTURE_2D);
 glBegin (GL_LINES);
 glColor4d (1.0, 0.5, 0.0, 0.3);
-glVertex3x (p0.p3_vec.x, p0.p3_vec.y, p0.p3_vec.z);
+glVertex3x (p0.p3_vec.p.x, p0.p3_vec.p.y, p0.p3_vec.p.z);
 glColor4d (1.0, 0.5, 0.0, 0.1);
-glVertex3x (p1.p3_vec.x, p1.p3_vec.y, p1.p3_vec.z);
+glVertex3x (p1.p3_vec.p.x, p1.p3_vec.p.y, p1.p3_vec.p.z);
 glEnd ();
 glLineWidth (1);
 }
@@ -725,18 +725,18 @@ void polyobj_find_min_max (tPolyModel *pm)
 		if (m == 0)
 			*big_mn = *big_mx = *mn;
 		while (nverts--) {
-			if (vp->x > mx->x) mx->x = vp->x;
-			if (vp->y > mx->y) mx->y = vp->y;
-			if (vp->z > mx->z) mx->z = vp->z;
-			if (vp->x < mn->x) mn->x = vp->x;
-			if (vp->y < mn->y) mn->y = vp->y;
-			if (vp->z < mn->z) mn->z = vp->z;
-			if (vp->x + ofs->x > big_mx->x) big_mx->x = vp->x + ofs->x;
-			if (vp->y + ofs->y > big_mx->y) big_mx->y = vp->y + ofs->y;
-			if (vp->z + ofs->z > big_mx->z) big_mx->z = vp->z + ofs->z;
-			if (vp->x + ofs->x < big_mn->x) big_mn->x = vp->x + ofs->x;
-			if (vp->y + ofs->y < big_mn->y) big_mn->y = vp->y + ofs->y;
-			if (vp->z + ofs->z < big_mn->z) big_mn->z = vp->z + ofs->z;
+			if (vp->p.x > mx->p.x) mx->p.x = vp->p.x;
+			if (vp->p.y > mx->p.y) mx->p.y = vp->p.y;
+			if (vp->p.z > mx->p.z) mx->p.z = vp->p.z;
+			if (vp->p.x < mn->p.x) mn->p.x = vp->p.x;
+			if (vp->p.y < mn->p.y) mn->p.y = vp->p.y;
+			if (vp->p.z < mn->p.z) mn->p.z = vp->p.z;
+			if (vp->p.x + ofs->p.x > big_mx->p.x) big_mx->p.x = vp->p.x + ofs->p.x;
+			if (vp->p.y + ofs->p.y > big_mx->p.y) big_mx->p.y = vp->p.y + ofs->p.y;
+			if (vp->p.z + ofs->p.z > big_mx->p.z) big_mx->p.z = vp->p.z + ofs->p.z;
+			if (vp->p.x + ofs->p.x < big_mn->p.x) big_mn->p.x = vp->p.x + ofs->p.x;
+			if (vp->p.y + ofs->p.y < big_mn->p.y) big_mn->p.y = vp->p.y + ofs->p.y;
+			if (vp->p.z + ofs->p.z < big_mn->p.z) big_mn->p.z = vp->p.z + ofs->p.z;
 			vp++;
 		}
 
@@ -826,8 +826,8 @@ void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 	Assert (mn>=0 && mn<gameData.models.nPolyModels);
 #if TEMP_CANV
 	temp_canv = GrCreateCanvas (save_canv->cv_bitmap.bm_props.w, save_canv->cv_bitmap.bm_props.h);
-	temp_canv->cv_bitmap.bm_props.x = grdCurCanv->cv_bitmap.bm_props.x;
-	temp_canv->cv_bitmap.bm_props.y = grdCurCanv->cv_bitmap.bm_props.y;
+	temp_canv->cv_bitmap.bm_props.p.x = grdCurCanv->cv_bitmap.bm_props.p.x;
+	temp_canv->cv_bitmap.bm_props.p.y = grdCurCanv->cv_bitmap.bm_props.p.y;
 	GrSetCurrentCanvas (temp_canv);
 #endif
 	GrClearCanvas (0);
@@ -835,9 +835,9 @@ void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 	glDisable (GL_BLEND);
 	G3SetViewMatrix (&temp_pos, &temp_orient, 0x9000);
 	if (gameData.models.polyModels [mn].rad != 0)
-		temp_pos.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [mn].rad, BASE_MODEL_SIZE);
+		temp_pos.p.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [mn].rad, BASE_MODEL_SIZE);
 	else
-		temp_pos.z = DEFAULT_VIEW_DIST;
+		temp_pos.p.z = DEFAULT_VIEW_DIST;
 	VmAngles2Matrix (&temp_orient, orient_angles);
 	PA_DFX (bSaveLight = gameStates.render.nLighting);
 	PA_DFX (gameStates.render.nLighting = 0);

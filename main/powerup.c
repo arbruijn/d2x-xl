@@ -130,7 +130,7 @@ void DoPowerupFrame (tObject *objP)
 
 UpdatePowerupClip (vcP, vciP, i);
 if (objP->lifeleft <= 0) {
-	ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	ObjectCreateExplosion (objP->position.nSegment, &objP->position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, i, 0, F1_0);
 	}
@@ -784,8 +784,8 @@ switch (objP->id) {
 			if (objP->matCenCreator != GetTeam ((char) gameData.multi.nLocalPlayer) + 1) {
 				if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 					 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-					 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
-					 (gameData.segs.segment2s [objP->nSegment].special != SEGMENT_IS_ROBOTMAKER))))
+					 ((gameData.segs.xSegments [objP->position.nSegment].owner != objP->matCenCreator) ||
+					 (gameData.segs.segment2s [objP->position.nSegment].special != SEGMENT_IS_ROBOTMAKER))))
 					objP->lifeleft = -1;	//make orb disappear if touched by opposing team tPlayer
 				}
 			else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
@@ -826,13 +826,13 @@ void SpawnLeftoverPowerups (short nObject)
 if (nLeft) {	//leave powerups that cannot be picked up in mine
 	ubyte nType = gameData.multi.leftoverPowerups [nObject].nType;
 	tObject spitter = *gameData.multi.leftoverPowerups [nObject].spitterP;
-	spitter.mType.physInfo.velocity.x =
-	spitter.mType.physInfo.velocity.y =
-	spitter.mType.physInfo.velocity.z = 0;
+	spitter.mType.physInfo.velocity.p.x =
+	spitter.mType.physInfo.velocity.p.y =
+	spitter.mType.physInfo.velocity.p.z = 0;
 	for (; nLeft; nLeft--) {
 		i = SpitPowerup (&spitter, nType, d_rand ());
 		objP = gameData.objs.objects + i;
-		MultiSendCreatePowerup (nType, objP->nSegment, i, &objP->position.vPos);
+		MultiSendCreatePowerup (nType, objP->position.nSegment, i, &objP->position.vPos);
 		}
 	gameData.multi.powerupsInMine [nType] += nLeft;
 	memset (gameData.multi.leftoverPowerups + nObject, 0, sizeof (gameData.multi.leftoverPowerups [nObject]));

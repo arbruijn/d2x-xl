@@ -215,9 +215,9 @@ else {
 	pc->objP = &pc->obj;
 	if (bTeleport) {
 		vmsVector n = *gameData.segs.segments [srcSeg].sides [srcSide].normals;
-		n.x = -n.x;
-		n.y = -n.y;
-		n.z = -n.z;
+		n.p.x = -n.p.x;
+		n.p.y = -n.p.y;
+		n.p.z = -n.p.z;
 		VmExtractAnglesVector (&a, &n);
 		}
 	else
@@ -232,15 +232,15 @@ else {
 	GetSideVerts (sideVerts, srcSeg, srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + sideVerts [i];
-		pc->obj.position.vPos.x += pv->x;
-		pc->obj.position.vPos.y += pv->y;
-		pc->obj.position.vPos.z += pv->z;
+		pc->obj.position.p.vPos.x += pv->x;
+		pc->obj.position.p.vPos.y += pv->y;
+		pc->obj.position.p.vPos.z += pv->z;
 		}
-	pc->obj.position.vPos.x /= 4;
-	pc->obj.position.vPos.y /= 4;
-	pc->obj.position.vPos.z /= 4;
+	pc->obj.position.p.vPos.x /= 4;
+	pc->obj.position.p.vPos.y /= 4;
+	pc->obj.position.p.vPos.z /= 4;
 #endif
-	pc->obj.nSegment = srcSeg;
+	pc->obj.position.nSegment = srcSeg;
 	}
 //pc->obj.nSide = srcSide;
 pc->segNum = tgtSeg;

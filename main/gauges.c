@@ -3875,7 +3875,7 @@ fq.p1 = &gameData.objs.objects[nObject].position.vPos;
 fq.rad = 0;
 fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
-fq.startSeg = gameData.objs.viewer->nSegment;
+fq.startSeg = gameData.objs.viewer->position.nSegment;
 fq.ignoreObjList = NULL;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);

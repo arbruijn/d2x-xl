@@ -88,6 +88,7 @@ typedef struct tSide {
 	ushort		nOvlOrient : 2;
 	uvl     		uvls [4];
 	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
+	vmsVector	rotNorms [2];
 } tSide;
 #endif
 

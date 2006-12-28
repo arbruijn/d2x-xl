@@ -249,7 +249,7 @@ void make_nearbyRobot_snipe(void)
 	int bfs_length, i;
 	short bfs_list[MNRS_SEG_MAX];
 
-	CreateBfsList(gameData.objs.console->nSegment, bfs_list, &bfs_length, MNRS_SEG_MAX);
+	CreateBfsList(gameData.objs.console->position.nSegment, bfs_list, &bfs_length, MNRS_SEG_MAX);
 
 	for (i=0; i<bfs_length; i++) {
 		int nObject = gameData.segs.segments[bfs_list[i]].objects;
@@ -299,7 +299,7 @@ void DoSnipeFrame(tObject *objP, fix xDistToPlayer, int player_visibility, vmsVe
 
 			ailp->nextActionTime = SNIPE_WAIT_TIME;
 
-			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, 
+			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->position.nSegment, &gameData.ai.vBelievedPlayerPos, 
 																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
 			if (connectedDistance < F1_0*500) {
 				CreatePathToPlayer(objP, 30, 1);
@@ -339,7 +339,7 @@ void DoSnipeFrame(tObject *objP, fix xDistToPlayer, int player_visibility, vmsVe
 		case AIM_SNIPE_FIRE:
 			if (ailp->nextActionTime < 0) {
 				tAIStatic	*aip = &objP->cType.aiInfo;
-				CreateNSegmentPath(objP, 10 + d_rand()/2048, gameData.objs.console->nSegment);
+				CreateNSegmentPath(objP, 10 + d_rand()/2048, gameData.objs.console->position.nSegment);
 				aip->nPathLength = SmoothPath(objP, &gameData.ai.pointSegs[aip->nHideIndex], aip->nPathLength);
 				if (d_rand() < 8192)
 					ailp->mode = AIM_SNIPE_RETREAT_BACKWARDS;
@@ -364,12 +364,12 @@ void AIIdleAnimation (tObject *objP)
 {
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;
-		tSegment		*segP = gameData.segs.segments + objP->nSegment;
+		tSegment		*segP = gameData.segs.segments + objP->position.nSegment;
 		vmsVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [OBJ_IDX (objP)];
 
 	for (i = 0; i < 8; i++) {
 		vVertex = gameData.segs.vertices + segP->verts [i];
-		if ((vGoal.x == vVertex->x) && (vGoal.y == vVertex->y) && (vGoal.z == vVertex->z))
+		if ((vGoal.p.x == vVertex->p.x) && (vGoal.p.y == vVertex->p.y) && (vGoal.p.z == vVertex->p.z))
 			break;
 		}
 	VmVecNormalize (VmVecSub (&vVecToGoal, &vGoal, &objP->position.vPos));
@@ -388,7 +388,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 	if (h && (rand () % 25 == 0)) {
 		j = rand () % 8;
 		if ((j == i) || (rand () % 3 == 0))
-			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->nSegment);
+			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->position.nSegment);
 		else
 			vGoal = gameData.segs.vertices [segP->verts [j]];
 		gameData.objs.vRobotGoals [OBJ_IDX (objP)] = vGoal;
@@ -422,9 +422,9 @@ void DoAIFrame(tObject *objP)
 	if (aip->SKIP_AI_COUNT) {
 		aip->SKIP_AI_COUNT--;
 		if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-			objP->mType.physInfo.rotThrust.x = (objP->mType.physInfo.rotThrust.x * 15)/16;
-			objP->mType.physInfo.rotThrust.y = (objP->mType.physInfo.rotThrust.y * 15)/16;
-			objP->mType.physInfo.rotThrust.z = (objP->mType.physInfo.rotThrust.z * 15)/16;
+			objP->mType.physInfo.rotThrust.p.x = (objP->mType.physInfo.rotThrust.p.x * 15)/16;
+			objP->mType.physInfo.rotThrust.p.y = (objP->mType.physInfo.rotThrust.p.y * 15)/16;
+			objP->mType.physInfo.rotThrust.p.z = (objP->mType.physInfo.rotThrust.p.z * 15)/16;
 			if (!aip->SKIP_AI_COUNT)
 				objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}
@@ -469,7 +469,7 @@ void DoAIFrame(tObject *objP)
 		aip->behavior = AIB_NORMAL;
 	}
 
-	Assert(objP->nSegment != -1);
+	Assert(objP->position.nSegment != -1);
 	//Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
 	nObjRef = nObject ^ gameData.app.nFrameCount;
@@ -520,7 +520,7 @@ void DoAIFrame(tObject *objP)
 					}
 				if (min_obj != -1) {
 					gameData.ai.vBelievedPlayerPos = gameData.objs.objects[min_obj].position.vPos;
-					gameData.ai.nBelievedPlayerSeg = gameData.objs.objects[min_obj].nSegment;
+					gameData.ai.nBelievedPlayerSeg = gameData.objs.objects[min_obj].position.nSegment;
 					VmVecNormalizedDirQuick(&vec_to_player, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 				} else
 					goto _exit_cheat;
@@ -538,7 +538,7 @@ _exit_cheat:
 	xDistToPlayer = VmVecDistQuick(&gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 	//if (robotP->companion) {
 #if TRACE	
-	//	con_printf (CON_DEBUG, "%3i: %3i %8.3f %8s %8s [%3i %4i]\n", nObject, objP->nSegment, f2fl(xDistToPlayer), mode_text[ailp->mode], behavior_text[aip->behavior-0x80], aip->nHideIndex, aip->nPathLength);
+	//	con_printf (CON_DEBUG, "%3i: %3i %8.3f %8s %8s [%3i %4i]\n", nObject, objP->position.nSegment, f2fl(xDistToPlayer), mode_text[ailp->mode], behavior_text[aip->behavior-0x80], aip->nHideIndex, aip->nPathLength);
 #endif
 	//}
 	// If this robot can fire, compute visibility from gun position.
@@ -598,8 +598,8 @@ _exit_cheat:
 					break;
 				case AIM_GOTO_OBJECT:
 					gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
-					//if (objP->nSegment == gameData.objs.console->nSegment) {
-					//	if (gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex].nSegment == objP->nSegment)
+					//if (objP->position.nSegment == gameData.objs.console->position.nSegment) {
+					//	if (gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex].position.nSegment == objP->position.nSegment)
 					//		if ((aip->nCurPathIndex + aip->PATH_DIR >= 0) && (aip->nCurPathIndex + aip->PATH_DIR < aip->nPathLength-1))
 					//			aip->nCurPathIndex += aip->PATH_DIR;
 					//}
@@ -621,9 +621,9 @@ _exit_cheat:
 					break;
 				case AIM_RUN_FROM_OBJECT:
 					MoveTowardsSegmentCenter(objP);
-					objP->mType.physInfo.velocity.x = 0;
-					objP->mType.physInfo.velocity.y = 0;
-					objP->mType.physInfo.velocity.z = 0;
+					objP->mType.physInfo.velocity.p.x = 0;
+					objP->mType.physInfo.velocity.p.y = 0;
+					objP->mType.physInfo.velocity.p.z = 0;
 					CreateNSegmentPath(objP, 5, -1);
 					ailp->mode = AIM_RUN_FROM_OBJECT;
 					break;
@@ -632,9 +632,9 @@ _exit_cheat:
 					con_printf (CON_DEBUG, "Hiding robot (%i) collided much.\n", OBJ_IDX (objP));
 #endif
 					MoveTowardsSegmentCenter(objP);
-					objP->mType.physInfo.velocity.x = 0;
-					objP->mType.physInfo.velocity.y = 0;
-					objP->mType.physInfo.velocity.z = 0;
+					objP->mType.physInfo.velocity.p.x = 0;
+					objP->mType.physInfo.velocity.p.y = 0;
+					objP->mType.physInfo.velocity.p.z = 0;
 					break;
 				case AIM_OPEN_DOOR:
 					CreateNSegmentPathToDoor(objP, 5, -1);
@@ -652,8 +652,8 @@ _exit_cheat:
 
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	// If in materialization center, exit
-	if (!(gameData.app.nGameMode & GM_MULTI) && (gameData.segs.segment2s[objP->nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
-		if (gameData.matCens.fuelCenters[gameData.segs.segment2s[objP->nSegment].value].Enabled) {
+	if (!(gameData.app.nGameMode & GM_MULTI) && (gameData.segs.segment2s[objP->position.nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
+		if (gameData.matCens.fuelCenters[gameData.segs.segment2s[objP->position.nSegment].value].Enabled) {
 			AIFollowPath(objP, 1, 1, NULL);    // 1 = tPlayer is visible, which might be a lie, but it works.
 			return;
 		}
@@ -782,7 +782,7 @@ _exit_cheat:
 #ifndef NDEBUG
 		if (Break_onObject != nObject) {    // don't time slice if we're interested in this tObject.
 #endif
-			if ((aip->behavior == AIB_STATION) && (ailp->mode == AIM_FOLLOW_PATH) && (aip->nHideSegment != objP->nSegment)) {
+			if ((aip->behavior == AIB_STATION) && (ailp->mode == AIM_FOLLOW_PATH) && (aip->nHideSegment != objP->position.nSegment)) {
 				if (xDistToPlayer > F1_0*250) {  // station guys not at home always processed until 250 units away.
 					AIIdleAnimation (objP);
 					return;
@@ -810,7 +810,7 @@ _exit_cheat:
 			// Robots function nicely if behavior is gameData.matCens.fuelCenters.  This
 			// means they won't move until they can see the tPlayer, at
 			// which time they will start wandering about opening doors.
-			if (gameData.objs.console->nSegment == objP->nSegment) {
+			if (gameData.objs.console->position.nSegment == objP->position.nSegment) {
 				if (!AIMultiplayerAwareness(objP, 97))
 					return;
 				ComputeVisAndVec(objP, &vVisPos, ailp, &vec_to_player, &player_visibility, robotP, &nVisAndVecComputed);
@@ -819,7 +819,7 @@ _exit_cheat:
 			} else if (ailp->mode != AIM_IDLING) {
 				int r;
 
-				r = openable_doors_in_segment(objP->nSegment);
+				r = OpenableDoorsInSegment(objP->position.nSegment);
 				if (r != -1) {
 					ailp->mode = AIM_OPEN_DOOR;
 					aip->GOALSIDE = r;
@@ -890,11 +890,11 @@ _exit_cheat:
 
 		if (ready_to_fire(robotP, ailp)) {
 			int do_stuff = 0;
-			if (openable_doors_in_segment(objP->nSegment) != -1)
+			if (OpenableDoorsInSegment(objP->position.nSegment) != -1)
 				do_stuff = 1;
-			else if (openable_doors_in_segment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + aip->PATH_DIR].nSegment) != -1)
+			else if (OpenableDoorsInSegment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + aip->PATH_DIR].nSegment) != -1)
 				do_stuff = 1;
-			else if (openable_doors_in_segment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + 2*aip->PATH_DIR].nSegment) != -1)
+			else if (OpenableDoorsInSegment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + 2*aip->PATH_DIR].nSegment) != -1)
 				do_stuff = 1;
 			else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < 3*MIN_ESCORT_DISTANCE/2) ) {
 				do_stuff = 1;
@@ -918,11 +918,11 @@ _exit_cheat:
 
 		if (ready_to_fire(robotP, ailp)) {
 			int do_stuff = 0;
-			if (openable_doors_in_segment(objP->nSegment) != -1)
+			if (OpenableDoorsInSegment(objP->position.nSegment) != -1)
 				do_stuff = 1;
-			else if (openable_doors_in_segment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + aip->PATH_DIR].nSegment) != -1)
+			else if (OpenableDoorsInSegment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + aip->PATH_DIR].nSegment) != -1)
 				do_stuff = 1;
-			else if (openable_doors_in_segment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + 2*aip->PATH_DIR].nSegment) != -1)
+			else if (OpenableDoorsInSegment((short) gameData.ai.pointSegs[aip->nHideIndex + aip->nCurPathIndex + 2*aip->PATH_DIR].nSegment) != -1)
 				do_stuff = 1;
 
 			if (do_stuff) {
@@ -1233,7 +1233,7 @@ _exit_cheat:
 						else
 							ai_multi_sendRobot_position(nObject, -1);
 					}
-				} else if ((objP->nSegment != aip->nHideSegment) && (xDistToPlayer > F1_0*80) && (!(gameData.app.nGameMode & GM_MULTI))) {
+				} else if ((objP->position.nSegment != aip->nHideSegment) && (xDistToPlayer > F1_0*80) && (!(gameData.app.nGameMode & GM_MULTI))) {
 					// If pretty far from the tPlayer, tPlayer cannot be
 					// seen (obstructed) and in chase mode, switch to
 					// follow path mode.
@@ -1253,7 +1253,7 @@ _exit_cheat:
 
 			if (!AIMultiplayerAwareness(objP, 62))
 				return;
-			COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[objP->nSegment], aip->GOALSIDE);
+			COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[objP->position.nSegment], aip->GOALSIDE);
 			VmVecSub(&goal_vector, &center_point, &objP->position.vPos);
 			VmVecNormalizeQuick(&goal_vector);
 			AITurnTowardsVector(&goal_vector, objP, robotP->turnTime[gameStates.app.nDifficultyLevel]);
@@ -1455,7 +1455,7 @@ void AIDoCloakStuff(void)
 
 	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
 		gameData.ai.cloakInfo[i].last_position = gameData.objs.console->position.vPos;
-		gameData.ai.cloakInfo[i].last_segment = gameData.objs.console->nSegment;
+		gameData.ai.cloakInfo[i].last_segment = gameData.objs.console->position.nSegment;
 		gameData.ai.cloakInfo[i].lastTime = gameData.time.xGame;
 	}
 
@@ -1479,7 +1479,7 @@ int add_tAwarenessEvent(tObject *objP, int nType)
 				if (d_rand() > 3276)
 					return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
 
-		gameData.ai.awarenessEvents[gameData.ai.nAwarenessEvents].nSegment = objP->nSegment;
+		gameData.ai.awarenessEvents[gameData.ai.nAwarenessEvents].nSegment = objP->position.nSegment;
 		gameData.ai.awarenessEvents[gameData.ai.nAwarenessEvents].pos = objP->position.vPos;
 		gameData.ai.awarenessEvents[gameData.ai.nAwarenessEvents].nType = nType;
 		gameData.ai.nAwarenessEvents++;
@@ -1558,13 +1558,13 @@ void set_player_awareness_all(void)
 
 	for (i=0; i<=gameData.objs.nLastObject; i++)
 		if (gameData.objs.objects[i].controlType == CT_AI) {
-			if (New_awareness[gameData.objs.objects[i].nSegment] > gameData.ai.localInfo[i].playerAwarenessType) {
-				gameData.ai.localInfo[i].playerAwarenessType = New_awareness[gameData.objs.objects[i].nSegment];
+			if (New_awareness[gameData.objs.objects[i].position.nSegment] > gameData.ai.localInfo[i].playerAwarenessType) {
+				gameData.ai.localInfo[i].playerAwarenessType = New_awareness[gameData.objs.objects[i].position.nSegment];
 				gameData.ai.localInfo[i].playerAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
 			}
 
 			// Clear the bit that says this robot is only awake because a camera woke it up.
-			if (New_awareness[gameData.objs.objects[i].nSegment] > gameData.ai.localInfo[i].playerAwarenessType)
+			if (New_awareness[gameData.objs.objects[i].position.nSegment] > gameData.ai.localInfo[i].playerAwarenessType)
 				gameData.objs.objects[i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }

@@ -962,12 +962,12 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 			rx = FixMul(d_rand() - 16384, h);
 			rz = FixMul(d_rand() - 16384, h);
-			gameData.objs.console->mType.physInfo.rotVel.x += rx;
-			gameData.objs.console->mType.physInfo.rotVel.z += rz;
+			gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
+			gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
-				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.x += rx*4;
-				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.z += rz*4;
+				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
+				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
@@ -1042,12 +1042,12 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
 		rx = FixMul(d_rand() - 16384, h);
 		rz = FixMul(d_rand() - 16384, h);
-		gameData.objs.console->mType.physInfo.rotVel.x += rx;
-		gameData.objs.console->mType.physInfo.rotVel.z += rz;
+		gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
+		gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
 		//	Shake the buddy!
 		if (gameData.escort.nObjNum != -1) {
-			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.x += rx*4;
-			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.z += rz*4;
+			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
+			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
 			}
 		//	Shake a guided missile!
 		gameStates.gameplay.seismic.nMagnitude += rx;
@@ -1107,7 +1107,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 	
 					if (j != nParentObj)
 						if (dist - gameData.objs.objects[j].size < F1_0*20) {
-							if (gameData.objs.objects[i].nSegment == gameData.objs.objects[j].nSegment)
+							if (gameData.objs.objects[i].position.nSegment == gameData.objs.objects[j].position.nSegment)
 								gameData.objs.objects[i].lifeleft = 1;
 							else {
 								//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
@@ -1117,7 +1117,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 									fvi_info		hit_data;
 									int			fate;
 
-									fq.startSeg = gameData.objs.objects[i].nSegment;
+									fq.startSeg = gameData.objs.objects[i].position.nSegment;
 									fq.p0	= &gameData.objs.objects[i].position.vPos;
 									fq.p1 = &gameData.objs.objects[j].position.vPos;
 									fq.rad = 0;
@@ -1148,7 +1148,7 @@ int SpitPowerup (tObject *spitter, ubyte id, int seed)
 {
 	short		nObject;
 	tObject	*objP;
-	vmsVector	new_velocity, new_pos;
+	vmsVector	newVelocity, newPos;
 
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -1157,32 +1157,32 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 	return -1;
 #endif
 d_srand(seed);
-VmVecScaleAdd (&new_velocity,
+VmVecScaleAdd (&newVelocity,
 					&spitter->mType.physInfo.velocity,
 					&spitter->position.mOrient.fVec,
 					i2f (SPIT_SPEED));
-new_velocity.x += (d_rand() - 16384) * SPIT_SPEED * 2;
-new_velocity.y += (d_rand() - 16384) * SPIT_SPEED * 2;
-new_velocity.z += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.p.x += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.p.y += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity.p.z += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if ((gameData.app.nGameMode & GM_MULTI) && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
-	VmVecZero(&new_velocity);
+	VmVecZero(&newVelocity);
 //there's a piece of code which lets the tPlayer pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-VmVecScaleAdd(&new_pos,&spitter->position.vPos,&spitter->position.mOrient.fVec,spitter->size);
+VmVecScaleAdd(&newPos,&spitter->position.vPos,&spitter->position.mOrient.fVec,spitter->size);
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
 nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multi.nLocalPlayer) + 1), 
-							  (short) spitter->nSegment, &new_pos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
+							  (short) spitter->position.nSegment, &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
 							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 if (nObject < 0) {
 	Int3();
 	return nObject;
 	}
 objP = gameData.objs.objects + nObject;
-objP->mType.physInfo.velocity = new_velocity;
+objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.flags = PF_BOUNCE;

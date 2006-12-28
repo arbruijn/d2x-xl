@@ -1641,9 +1641,9 @@ void MultiDoDropMarker (char *buf)
 
 if (nPlayer == gameData.multi.nLocalPlayer)  // my marker? don't set it down cuz it might screw up the orientation
 	return;
-position.x = GET_INTEL_INT (buf + 3);
-position.y = GET_INTEL_INT (buf + 7);
-position.z = GET_INTEL_INT (buf + 11);
+position.p.x = GET_INTEL_INT (buf + 3);
+position.p.y = GET_INTEL_INT (buf + 7);
+position.p.z = GET_INTEL_INT (buf + 11);
 memcpy (gameData.marker.szMessage + 2 * nPlayer + msgNum, buf + 15, 40);
 gameData.marker.point [(nPlayer*2)+msgNum] = position;
 if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && gameData.objs.objects [gameData.marker.objects [(nPlayer*2)+msgNum]].nType!=OBJ_NONE && gameData.marker.objects [(nPlayer*2)+msgNum] !=0)
@@ -1651,7 +1651,7 @@ if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && gameData.objs.objects [
 gameData.marker.objects [(nPlayer*2)+msgNum] = 
 	DropMarkerObject (
 		&position, 
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, 
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment, 
 		&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.mOrient, 
 		(ubyte) ((nPlayer*2)+msgNum));
 strcpy (gameData.marker.nOwner [(nPlayer*2)+msgNum], gameData.multi.players [nPlayer].callsign);
@@ -1871,9 +1871,9 @@ if (tPlayer < gameData.multi.nPlayers) {
 	multiData.msg.buf [0] = (char)MULTI_MARKER;
 	multiData.msg.buf [1] = (char)tPlayer;
 	multiData.msg.buf [2] = messagenum;
-	PUT_INTEL_INT (multiData.msg.buf+3, position.x);
-	PUT_INTEL_INT (multiData.msg.buf+7, position.y);
-	PUT_INTEL_INT (multiData.msg.buf+11, position.z);
+	PUT_INTEL_INT (multiData.msg.buf+3, position.p.x);
+	PUT_INTEL_INT (multiData.msg.buf+7, position.p.y);
+	PUT_INTEL_INT (multiData.msg.buf+11, position.p.z);
 	memcpy (multiData.msg.buf + 15, text, 40);
 	MultiSendData (multiData.msg.buf, 55, 1);
 	}
@@ -2626,7 +2626,7 @@ inv_count = 0;
 cloak_count = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((gameData.objs.objects [i].nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].nSegment, 
+		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].position.nSegment, 
 									  &gameData.objs.objects [i].position.vPos, &vmdIdentityMatrix, 
 									  gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
 									  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
@@ -3320,7 +3320,8 @@ gameData.walls.walls [wallnum].flags = flag;
 gameData.walls.walls [wallnum].state = state;
 if (gameData.walls.walls [wallnum].nType == WALL_OPEN) 
 	DigiKillSoundLinkedToSegment (
-		 (short) gameData.walls.walls [wallnum].nSegment, (short) gameData.walls.walls [wallnum].nSide, SOUND_FORCEFIELD_HUM);
+		 (short) gameData.walls.walls [wallnum].nSegment, (short) 
+		 gameData.walls.walls [wallnum].nSide, SOUND_FORCEFIELD_HUM);
 }
 
 //-----------------------------------------------------------------------------
@@ -3609,29 +3610,29 @@ if (bCreate) {
 	return;
 	}
 bufP += 2;
-v.x = GET_INTEL_INT (buf + bufP);
+v.p.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.y = GET_INTEL_INT (buf + bufP);
+v.p.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.z = GET_INTEL_INT (buf + bufP);
+v.p.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 if (!gameData.hoard.monsterballP) {
 	gameData.hoard.nMonsterballSeg = FindSegByPoint (&v, nSegment);
 	CreateMonsterball ();
 	gameData.hoard.monsterballP->position.vPos = v;
 	}
-v.x = GET_INTEL_INT (buf + bufP);
+v.p.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.y = GET_INTEL_INT (buf + bufP);
+v.p.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.z = GET_INTEL_INT (buf + bufP);
+v.p.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 PhysApplyForce (gameData.hoard.monsterballP, &v);
-v.x = GET_INTEL_INT (buf + bufP);
+v.p.x = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.y = GET_INTEL_INT (buf + bufP);
+v.p.y = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-v.z = GET_INTEL_INT (buf + bufP);
+v.p.z = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 PhysApplyRot (gameData.hoard.monsterballP, &v);
 }
@@ -3654,25 +3655,25 @@ if (bForce || (t - nTimeout > 1000)) {
 	nTimeout = t;
 	multiData.msg.buf [bufP++] = (char) MULTI_MONSTERBALL;
 	multiData.msg.buf [bufP++] = (char) bCreate;
-	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->nSegment);
+	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.nSegment);
 	bufP += 2;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.x);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.x);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.y);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.y);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.z);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.z);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.x);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.x);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.y);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.y);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.z);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.velocity.p.z);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.x);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.x);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.y);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.y);
 	bufP += 4;
-	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.z);
+	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->mType.physInfo.rotVel.p.z);
 	bufP += 4;
 	MultiSendData (multiData.msg.buf, bufP, 1);
 	}

@@ -402,9 +402,9 @@ if (j < 0)
 	j = 0;
 else if (j >= gameData.render.terrain.nGridH)
 	j = gameData.render.terrain.nGridH;
-p->x = TERRAIN_GRID_SCALE * i;
-p->z = TERRAIN_GRID_SCALE * j;
-p->y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
+p->p.x = TERRAIN_GRID_SCALE * i;
+p->p.z = TERRAIN_GRID_SCALE * j;
+p->p.y = (fix) HEIGHT (i, j) * TERRAIN_HEIGHT_SCALE;
 }
 
 //-----------------------------------------------------------------------------

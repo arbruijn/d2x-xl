@@ -369,19 +369,13 @@ for (;;) {
 		}
 	if (bD1Sound) {
 		if (b16Bits) {
-			if (k < 700)
-				h <<= k / 100;
-			else if (i < 700)
-				h <<= i / 100;
-			else
-				h <<= 7;
 			*((ushort *) ssp->samples + --j) = (ushort) h;
 			if (!j)
 				break;
 			*((ushort *) ssp->samples + --j) = (ushort) h;
 			if (!j)
 				break;
-			if (++k % 11) {
+			if (k % 11) {
 				*((ushort *) ssp->samples + --j) = (ushort) h;
 				if (!j)
 					break;

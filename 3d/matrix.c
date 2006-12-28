@@ -68,20 +68,20 @@ void ScaleMatrix (void)
 
 viewInfo.scale = viewInfo.windowScale;
 if (viewInfo.zoom <= f1_0) 		//xZoom in by scaling z
-	viewInfo.scale.z = FixMul (viewInfo.scale.z, viewInfo.zoom);
+	viewInfo.scale.p.z = FixMul (viewInfo.scale.p.z, viewInfo.zoom);
 else {			//xZoom out by scaling x&y
 	fix s = FixDiv (f1_0, viewInfo.zoom);
 
-	viewInfo.scale.x = FixMul (viewInfo.scale.x, s);
-	viewInfo.scale.y = FixMul (viewInfo.scale.y, s);
+	viewInfo.scale.p.x = FixMul (viewInfo.scale.p.x, s);
+	viewInfo.scale.p.y = FixMul (viewInfo.scale.p.y, s);
 	}
 //now scale matrix elements
 #if 1
-glScalef (f2fl (viewInfo.scale.x), f2fl (viewInfo.scale.y), -f2fl (viewInfo.scale.z));
+glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
 #else
-VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.x);
-VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.y);
-VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.z);
+VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.p.x);
+VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.p.y);
+VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.p.z);
 glScalef (1,1,-1);
 #endif
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);

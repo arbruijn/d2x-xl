@@ -357,7 +357,7 @@ if (xObjIntensity) {
 
 					VmVecScaleAdd(&tvec, obj_pos, &objP->position.mOrient.fVec, F1_0*200);
 
-					fq.startSeg			= objP->nSegment;
+					fq.startSeg			= objP->position.nSegment;
 					fq.p0					= obj_pos;
 					fq.p1					= &tvec;
 					fq.rad				= 0;
@@ -684,7 +684,7 @@ for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
 		if (bGotColor)
 			bKeepDynColoring = 1;
 		if (xObjIntensity) {
-			ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
+			ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
 			newLightingObjects [nObject] = 1;
 			}
 		nObject = objP->next;
@@ -709,7 +709,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, nObject, 
+				ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, nObject, 
 								bGotColor ? &color : NULL);
 				lightingObjects [nObject] = 1;
 				} 
@@ -874,7 +874,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 		rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
-	light = gameData.segs.segment2s [objP->nSegment].static_light;
+	light = gameData.segs.segment2s [objP->position.nSegment].static_light;
 	//return light;
 	//Now, maybe return different value to smooth transitions
 	if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
@@ -898,7 +898,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 	// -- Matt code: light += compute_headlight_light(rotated_pnt,f1_0);
 	light += ComputeHeadlightLightOnObject (objP);
 	//Finally, add in dynamic light for this tSegment
-	light += ComputeSegDynamicLight (objP->nSegment);
+	light += ComputeSegDynamicLight (objP->position.nSegment);
 	return light;
 }
 
@@ -1296,8 +1296,6 @@ int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 	GLint			nMaxLights;
 #endif
 
-if (nSegment == 215 && nSide == 2)
-	nSide = nSide;
 if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if (!pc)
@@ -1343,7 +1341,7 @@ else if (nSegment >= 0) {
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 #if 1
 	VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
-	VmVecScaleFrac (&vOffs, 1, 2);
+	VmVecScaleFrac (&vOffs, 1, 200);
 	VmVecInc (&pl->vPos, &vOffs);
 #endif
 	}
@@ -1809,9 +1807,9 @@ void CalcDynLightAttenuation (vmsVector *pv)
 	fVector			v, d;
 	float				l;
 
-v.p.x = f2fl (pv->x);
-v.p.y = f2fl (pv->y);
-v.p.z = f2fl (pv->z);
+v.p.x = f2fl (pv->p.x);
+v.p.y = f2fl (pv->p.y);
+v.p.z = f2fl (pv->p.z);
 if (!gameStates.ogl.bUseTransform)
 	G3TransformPointf (&v, &v, 0);
 for (i = gameData.render.lights.dynamic.nLights; i; i--, pl++, psl++) {

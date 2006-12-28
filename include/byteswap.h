@@ -206,9 +206,9 @@ return SWAPSHORT (i);
 static inline vmsVector *SwapVector (vmsVector *v, int bEndian) 
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	v->x = (fix) SWAPINT ((int) v->x);
-	v->y = (fix) SWAPINT ((int) v->y);
-	v->z = (fix) SWAPINT ((int) v->z);
+	v->p.x = (fix) SWAPINT ((int) v->p.x);
+	v->p.y = (fix) SWAPINT ((int) v->p.y);
+	v->p.z = (fix) SWAPINT ((int) v->p.z);
 	}
 return v;
 }

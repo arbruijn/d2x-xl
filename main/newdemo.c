@@ -213,25 +213,27 @@ void my_extract_shortpos (tObject *objP, shortpos *spp)
 {
 	int nSegment;
 	sbyte *sp;
+	vmsVector	*pv;
 
 sp = spp->bytemat;
-objP->position.mOrient.rVec.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.x = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.rVec.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.y = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.rVec.z = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.uVec.z = *sp++ << MATRIX_PRECISION;
-objP->position.mOrient.fVec.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.p.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.p.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.p.x = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.p.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.p.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.p.y = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.rVec.p.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.uVec.p.z = *sp++ << MATRIX_PRECISION;
+objP->position.mOrient.fVec.p.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->tSegment;
-objP->nSegment = nSegment;
-objP->position.vPos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
-objP->position.vPos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
-objP->position.vPos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
-objP->mType.physInfo.velocity.x = (spp->velx << VEL_PRECISION);
-objP->mType.physInfo.velocity.y = (spp->vely << VEL_PRECISION);
-objP->mType.physInfo.velocity.z = (spp->velz << VEL_PRECISION);
+objP->position.nSegment = nSegment;
+pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
+objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
+objP->position.vPos.p.y = (spp->yo << RELPOS_PRECISION) + pv->p.y;
+objP->position.vPos.p.z = (spp->zo << RELPOS_PRECISION) + pv->p.z;
+objP->mType.physInfo.velocity.p.x = (spp->velx << VEL_PRECISION);
+objP->mType.physInfo.velocity.p.y = (spp->vely << VEL_PRECISION);
+objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
 }
 
 //	-----------------------------------------------------------------------------
@@ -398,7 +400,7 @@ NDWriteShort (sp.vely);
 NDWriteShort (sp.velz);
 #else
 NDWriteVector (&objP->position.vPos);	
-NDWriteShort (objP->nSegment);
+NDWriteShort (objP->position.nSegment);
 NDWriteVector (&objP->mType.physInfo.velocity);
 #endif
 }
@@ -499,13 +501,13 @@ if (gameData.demo.bUseShortPos) {
 	}
 else {
 	NDReadVector (&objP->position.vPos);
-	objP->nSegment = NDReadShort ();
+	objP->position.nSegment = NDReadShort ();
 	NDReadVector (&objP->mType.physInfo.velocity);
 	}
 if ((objP->id == VCLIP_MORPHING_ROBOT) && 
 		 (renderType == RT_FIREBALL) && 
 		 (objP->controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
+	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->position.nSegment);
 }
 
 
@@ -1442,13 +1444,13 @@ StartTime ();
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordCloakingWall (int front_wall_num, int back_wall_num, ubyte nType, ubyte state, fix cloakValue, fix l0, fix l1, fix l2, fix l3)
+void NDRecordCloakingWall (int nFrontWall, int nBackWall, ubyte nType, ubyte state, fix cloakValue, fix l0, fix l1, fix l2, fix l3)
 {
-Assert (front_wall_num <= 255 && back_wall_num <= 255);
+Assert (nFrontWall <= 255 && nBackWall <= 255);
 StopTime ();
 NDWriteByte (ND_EVENT_CLOAKING_WALL);
-NDWriteByte ((sbyte) front_wall_num);
-NDWriteByte ((sbyte) back_wall_num);
+NDWriteByte ((sbyte) nFrontWall);
+NDWriteByte ((sbyte) nBackWall);
 NDWriteByte ((sbyte) nType);
 NDWriteByte ((sbyte) state);
 NDWriteByte ((sbyte) cloakValue);
@@ -1735,10 +1737,10 @@ while (!bDone) {
 				NDReadObject (gameData.objs.viewer);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
-					nSegment = gameData.objs.viewer->nSegment;
+					nSegment = gameData.objs.viewer->position.nSegment;
 					gameData.objs.viewer->next = 
 					gameData.objs.viewer->prev = 
-					gameData.objs.viewer->nSegment = -1;
+					gameData.objs.viewer->position.nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
 					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a tSegment
@@ -1762,8 +1764,8 @@ while (!bDone) {
 			if (objP->controlType == CT_POWERUP)
 				DoPowerupFrame (objP);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				nSegment = objP->nSegment;
-				objP->next = objP->prev = objP->nSegment = -1;
+				nSegment = objP->position.nSegment;
+				objP->next = objP->prev = objP->position.nSegment = -1;
 				// HACK HACK HACK -- don't render gameData.objs.objects is segments greater than gameData.segs.nLastSegment
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
@@ -1896,8 +1898,8 @@ while (!bDone) {
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				CATCH_BAD_READ
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-					nSegment = objP->nSegment;
-					objP->next = objP->prev = objP->nSegment = -1;
+					nSegment = objP->position.nSegment;
+					objP->next = objP->prev = objP->position.nSegment = -1;
 					LinkObject (OBJ_IDX (objP), nSegment);
 					}
 				}
@@ -2446,13 +2448,13 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_CLOAKING_WALL: {
-			ubyte back_wall_num, front_wall_num, nType, state, cloakValue;
+			ubyte nBackWall, nFrontWall, nType, state, cloakValue;
 			short l0, l1, l2, l3;
 			tSegment *segp;
 			int nSide;
 
-			front_wall_num = NDReadByte ();
-			back_wall_num = NDReadByte ();
+			nFrontWall = NDReadByte ();
+			nBackWall = NDReadByte ();
 			nType = NDReadByte ();
 			state = NDReadByte ();
 			cloakValue = NDReadByte ();
@@ -2460,20 +2462,20 @@ while (!bDone) {
 			l1 = NDReadShort ();
 			l2 = NDReadShort ();
 			l3 = NDReadShort ();
-			gameData.walls.walls [front_wall_num].nType = nType;
-			gameData.walls.walls [front_wall_num].state = state;
-			gameData.walls.walls [front_wall_num].cloakValue = cloakValue;
-			segp = gameData.segs.segments + gameData.walls.walls [front_wall_num].nSegment;
-			nSide = gameData.walls.walls [front_wall_num].nSide;
+			gameData.walls.walls [nFrontWall].nType = nType;
+			gameData.walls.walls [nFrontWall].state = state;
+			gameData.walls.walls [nFrontWall].cloakValue = cloakValue;
+			segp = gameData.segs.segments + gameData.walls.walls [nFrontWall].nSegment;
+			nSide = gameData.walls.walls [nFrontWall].nSide;
 			segp->sides [nSide].uvls [0].l = ((int) l0) << 8;
 			segp->sides [nSide].uvls [1].l = ((int) l1) << 8;
 			segp->sides [nSide].uvls [2].l = ((int) l2) << 8;
 			segp->sides [nSide].uvls [3].l = ((int) l3) << 8;
-			gameData.walls.walls [back_wall_num].nType = nType;
-			gameData.walls.walls [back_wall_num].state = state;
-			gameData.walls.walls [back_wall_num].cloakValue = cloakValue;
-			segp = &gameData.segs.segments [gameData.walls.walls [back_wall_num].nSegment];
-			nSide = gameData.walls.walls [back_wall_num].nSide;
+			gameData.walls.walls [nBackWall].nType = nType;
+			gameData.walls.walls [nBackWall].state = state;
+			gameData.walls.walls [nBackWall].cloakValue = cloakValue;
+			segp = &gameData.segs.segments [gameData.walls.walls [nBackWall].nSegment];
+			nSide = gameData.walls.walls [nBackWall].nSide;
 			segp->sides [nSide].uvls [0].l = ((int) l0) << 8;
 			segp->sides [nSide].uvls [1].l = ((int) l1) << 8;
 			segp->sides [nSide].uvls [2].l = ((int) l2) << 8;
@@ -2758,15 +2760,15 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				}
 			// Interpolate the tObject position.  This is just straight linear
 			// interpolation.
-			delta_x = objP->position.vPos.x - curObjP->position.vPos.x;
-			delta_y = objP->position.vPos.y - curObjP->position.vPos.y;
-			delta_z = objP->position.vPos.z - curObjP->position.vPos.z;
+			delta_x = objP->position.vPos.p.x - curObjP->position.vPos.p.x;
+			delta_y = objP->position.vPos.p.y - curObjP->position.vPos.p.y;
+			delta_z = objP->position.vPos.p.z - curObjP->position.vPos.p.z;
 			delta_x = FixMul (delta_x, factor);
 			delta_y = FixMul (delta_y, factor);
 			delta_z = FixMul (delta_z, factor);
-			curObjP->position.vPos.x += delta_x;
-			curObjP->position.vPos.y += delta_y;
-			curObjP->position.vPos.z += delta_z;
+			curObjP->position.vPos.p.x += delta_x;
+			curObjP->position.vPos.p.y += delta_y;
+			curObjP->position.vPos.p.z += delta_z;
 				// -- old fashioned way --// stuff the new angles back into the tObject structure
 				// -- old fashioned way --				VmAngles2Matrix (&(curObjs [i].position.mOrient), &cur_angles);
 			}

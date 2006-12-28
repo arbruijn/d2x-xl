@@ -247,8 +247,8 @@ void CreateBuddyBot (void)
 #endif
 		return;
 	}
-	COMPUTE_SEGMENT_CENTER_I (&object_pos, gameData.objs.console->nSegment);
-	CreateMorphRobot (gameData.segs.segments + gameData.objs.console->nSegment, &object_pos, buddy_id);
+	COMPUTE_SEGMENT_CENTER_I (&object_pos, gameData.objs.console->position.nSegment);
+	CreateMorphRobot (gameData.segs.segments + gameData.objs.console->position.nSegment, &object_pos, buddy_id);
 }
 
 #define	QUEUE_SIZE	256
@@ -285,7 +285,7 @@ if (size_check)
 
 		boss_size_save = bossObjP->size;
 		// -- Causes problems!!	-- bossObjP->size = FixMul ((F1_0/4)*3, bossObjP->size);
-		original_boss_seg = bossObjP->nSegment;
+		original_boss_seg = bossObjP->position.nSegment;
 		original_boss_pos = bossObjP->position.vPos;
 		nGroup = gameData.segs.xSegments [original_boss_seg].group;
 		head = 0;
@@ -576,10 +576,12 @@ int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVecto
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 fq.p0	= pos;
-if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (pos->z != objP->position.vPos.z)) {
-	short nSegment = FindSegByPoint (pos, objP->nSegment);
+if ((pos->p.x != objP->position.vPos.p.x) || 
+	 (pos->p.y != objP->position.vPos.p.y) || 
+	 (pos->p.z != objP->position.vPos.p.z)) {
+	short nSegment = FindSegByPoint (pos, objP->position.nSegment);
 	if (nSegment == -1) {
-		fq.startSeg = objP->nSegment;
+		fq.startSeg = objP->position.nSegment;
 		*pos = objP->position.vPos;
 #if TRACE	
 		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
@@ -587,13 +589,13 @@ if ((pos->x != objP->position.vPos.x) || (pos->y != objP->position.vPos.y) || (p
 		MoveTowardsSegmentCenter (objP);
 		} 
 	else {
-		if (nSegment != objP->nSegment)
+		if (nSegment != objP->position.nSegment)
 			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
 		fq.startSeg = nSegment;
 		}
 	}
 else
-	fq.startSeg	= objP->nSegment;
+	fq.startSeg	= objP->position.nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.rad				= F1_0/4;
 fq.thisObjNum		= OBJ_IDX (objP);
@@ -944,9 +946,9 @@ int lead_player (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlaye
 
 	projectedTime = FixDiv (dist_to_player, max_weapon_speed);
 
-	fire_vec->x = compute_lead_component (vBelievedPlayerPos->x, vFirePoint->x, gameData.objs.console->mType.physInfo.velocity.x, projectedTime);
-	fire_vec->y = compute_lead_component (vBelievedPlayerPos->y, vFirePoint->y, gameData.objs.console->mType.physInfo.velocity.y, projectedTime);
-	fire_vec->z = compute_lead_component (vBelievedPlayerPos->z, vFirePoint->z, gameData.objs.console->mType.physInfo.velocity.z, projectedTime);
+	fire_vec->p.x = compute_lead_component (vBelievedPlayerPos->p.x, vFirePoint->p.x, gameData.objs.console->mType.physInfo.velocity.p.x, projectedTime);
+	fire_vec->p.y = compute_lead_component (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, projectedTime);
+	fire_vec->p.z = compute_lead_component (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, projectedTime);
 
 	VmVecNormalizeQuick (fire_vec);
 
@@ -1011,13 +1013,13 @@ if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CL
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different tSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
-	int	nGunSeg = FindSegByPoint (vFirePoint, objP->nSegment);
+	int	nGunSeg = FindSegByPoint (vFirePoint, objP->position.nSegment);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->nSegment]);
+	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->position.nSegment]);
 	if (nConnSide != -1) {
-		//	They are connected via nConnSide in tSegment objP->nSegment.
+		//	They are connected via nConnSide in tSegment objP->position.nSegment.
 		//	See if they are unobstructed.
-		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
+		if (!(WALL_IS_DOORWAY (gameData.segs.segments + objP->position.nSegment, nConnSide, NULL) & WID_FLY_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}
@@ -1028,7 +1030,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		fvi_info		hit_data;
 		int			fate;
 
-		fq.startSeg				= objP->nSegment;
+		fq.startSeg				= objP->position.nSegment;
 		fq.p0						= &objP->position.vPos;
 		fq.p1						= vFirePoint;
 		fq.rad					= 0;
@@ -1064,9 +1066,9 @@ if (d_rand () < 16384) {
 dot = 0;
 count = 0;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 while ((count < 4) && (dot < F1_0/4)) {
-	bpp_diff.x = vBelievedPlayerPos->x + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-	bpp_diff.y = vBelievedPlayerPos->y + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-	bpp_diff.z = vBelievedPlayerPos->z + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+	bpp_diff.p.x = vBelievedPlayerPos->p.x + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+	bpp_diff.p.y = vBelievedPlayerPos->p.y + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+	bpp_diff.p.z = vBelievedPlayerPos->p.z + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
 	VmVecNormalizedDirQuick (&fire_vec, &bpp_diff, vFirePoint);
 	dot = VmVecDot (&objP->position.mOrient.fVec, &fire_vec);
 	count++;
@@ -1111,13 +1113,13 @@ void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based)
 	if (dot_based && (dot < 3*F1_0/4)) {
 		//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 		//	more quickly than the general code
-		pptr->velocity.x = pptr->velocity.x/2 + FixMul (vec_goal->x, gameData.time.xFrame*32);
-		pptr->velocity.y = pptr->velocity.y/2 + FixMul (vec_goal->y, gameData.time.xFrame*32);
-		pptr->velocity.z = pptr->velocity.z/2 + FixMul (vec_goal->z, gameData.time.xFrame*32);
+		pptr->velocity.p.x = pptr->velocity.p.x/2 + FixMul (vec_goal->p.x, gameData.time.xFrame*32);
+		pptr->velocity.p.y = pptr->velocity.p.y/2 + FixMul (vec_goal->p.y, gameData.time.xFrame*32);
+		pptr->velocity.p.z = pptr->velocity.p.z/2 + FixMul (vec_goal->p.z, gameData.time.xFrame*32);
 	} else {
-		pptr->velocity.x += FixMul (vec_goal->x, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		pptr->velocity.y += FixMul (vec_goal->y, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		pptr->velocity.z += FixMul (vec_goal->z, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.p.x += FixMul (vec_goal->p.x, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.p.y += FixMul (vec_goal->p.y, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		pptr->velocity.p.z += FixMul (vec_goal->p.z, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
 	}
 
 	speed = VmVecMagQuick (&pptr->velocity);
@@ -1128,9 +1130,9 @@ void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based)
 		xMaxSpeed *= 2;
 
 	if (speed > xMaxSpeed) {
-		pptr->velocity.x = (pptr->velocity.x*3)/4;
-		pptr->velocity.y = (pptr->velocity.y*3)/4;
-		pptr->velocity.z = (pptr->velocity.z*3)/4;
+		pptr->velocity.p.x = (pptr->velocity.p.x*3)/4;
+		pptr->velocity.p.y = (pptr->velocity.p.y*3)/4;
+		pptr->velocity.p.z = (pptr->velocity.p.z*3)/4;
 	}
 }
 
@@ -1152,7 +1154,7 @@ void move_around_player (tObject *objP, vmsVector *vec_to_player, int fastFlag)
 	int				dir;
 	int				dir_change;
 	fix				ft;
-	vmsVector		evade_vector;
+	vmsVector		vEvade;
 	int				count=0;
 
 	if (fastFlag == 0)
@@ -1177,24 +1179,24 @@ void move_around_player (tObject *objP, vmsVector *vec_to_player, int fastFlag)
 
 	switch (dir) {
 		case 0:
-			evade_vector.x = FixMul (vec_to_player->z, gameData.time.xFrame*32);
-			evade_vector.y = FixMul (vec_to_player->y, gameData.time.xFrame*32);
-			evade_vector.z = FixMul (-vec_to_player->x, gameData.time.xFrame*32);
+			vEvade.p.x = FixMul (vec_to_player->p.z, gameData.time.xFrame*32);
+			vEvade.p.y = FixMul (vec_to_player->p.y, gameData.time.xFrame*32);
+			vEvade.p.z = FixMul (-vec_to_player->p.x, gameData.time.xFrame*32);
 			break;
 		case 1:
-			evade_vector.x = FixMul (-vec_to_player->z, gameData.time.xFrame*32);
-			evade_vector.y = FixMul (vec_to_player->y, gameData.time.xFrame*32);
-			evade_vector.z = FixMul (vec_to_player->x, gameData.time.xFrame*32);
+			vEvade.p.x = FixMul (-vec_to_player->p.z, gameData.time.xFrame*32);
+			vEvade.p.y = FixMul (vec_to_player->p.y, gameData.time.xFrame*32);
+			vEvade.p.z = FixMul (vec_to_player->p.x, gameData.time.xFrame*32);
 			break;
 		case 2:
-			evade_vector.x = FixMul (-vec_to_player->y, gameData.time.xFrame*32);
-			evade_vector.y = FixMul (vec_to_player->x, gameData.time.xFrame*32);
-			evade_vector.z = FixMul (vec_to_player->z, gameData.time.xFrame*32);
+			vEvade.p.x = FixMul (-vec_to_player->p.y, gameData.time.xFrame*32);
+			vEvade.p.y = FixMul (vec_to_player->p.x, gameData.time.xFrame*32);
+			vEvade.p.z = FixMul (vec_to_player->p.z, gameData.time.xFrame*32);
 			break;
 		case 3:
-			evade_vector.x = FixMul (vec_to_player->y, gameData.time.xFrame*32);
-			evade_vector.y = FixMul (-vec_to_player->x, gameData.time.xFrame*32);
-			evade_vector.z = FixMul (vec_to_player->z, gameData.time.xFrame*32);
+			vEvade.p.x = FixMul (vec_to_player->p.y, gameData.time.xFrame*32);
+			vEvade.p.y = FixMul (-vec_to_player->p.x, gameData.time.xFrame*32);
+			vEvade.p.z = FixMul (vec_to_player->p.z, gameData.time.xFrame*32);
 			break;
 		default:
 			Error ("Function move_around_player: Bad case.");
@@ -1221,19 +1223,19 @@ void move_around_player (tObject *objP, vmsVector *vec_to_player, int fastFlag)
 			else if (damage_scale < 0)
 				damage_scale = 0;			//	Just in cased:\temp\dm_test.
 
-			VmVecScale (&evade_vector, i2f (fastFlag) + damage_scale);
+			VmVecScale (&vEvade, i2f (fastFlag) + damage_scale);
 		}
 	}
 
-	pptr->velocity.x += evade_vector.x;
-	pptr->velocity.y += evade_vector.y;
-	pptr->velocity.z += evade_vector.z;
+	pptr->velocity.p.x += vEvade.p.x;
+	pptr->velocity.p.y += vEvade.p.y;
+	pptr->velocity.p.z += vEvade.p.z;
 
 	speed = VmVecMagQuick (&pptr->velocity);
 	if ((OBJ_IDX (objP) != 1) && (speed > robptr->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
-		pptr->velocity.x = (pptr->velocity.x*3)/4;
-		pptr->velocity.y = (pptr->velocity.y*3)/4;
-		pptr->velocity.z = (pptr->velocity.z*3)/4;
+		pptr->velocity.p.x = (pptr->velocity.p.x*3)/4;
+		pptr->velocity.p.y = (pptr->velocity.p.y*3)/4;
+		pptr->velocity.p.z = (pptr->velocity.p.z*3)/4;
 	}
 }
 
@@ -1245,9 +1247,9 @@ void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackT
 	tRobotInfo		*robptr = &gameData.bots.pInfo [objP->id];
 	int				objref;
 
-	pptr->velocity.x -= FixMul (vec_to_player->x, gameData.time.xFrame*16);
-	pptr->velocity.y -= FixMul (vec_to_player->y, gameData.time.xFrame*16);
-	pptr->velocity.z -= FixMul (vec_to_player->z, gameData.time.xFrame*16);
+	pptr->velocity.p.x -= FixMul (vec_to_player->p.x, gameData.time.xFrame*16);
+	pptr->velocity.p.y -= FixMul (vec_to_player->p.y, gameData.time.xFrame*16);
+	pptr->velocity.p.z -= FixMul (vec_to_player->p.z, gameData.time.xFrame*16);
 
 	if (attackType) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
@@ -1266,9 +1268,9 @@ void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackT
 	speed = VmVecMagQuick (&pptr->velocity);
 
 	if (speed > robptr->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
-		pptr->velocity.x = (pptr->velocity.x*3)/4;
-		pptr->velocity.y = (pptr->velocity.y*3)/4;
-		pptr->velocity.z = (pptr->velocity.z*3)/4;
+		pptr->velocity.p.x = (pptr->velocity.p.x*3)/4;
+		pptr->velocity.p.y = (pptr->velocity.p.y*3)/4;
+		pptr->velocity.p.z = (pptr->velocity.p.z*3)/4;
 	}
 
 }
@@ -1371,9 +1373,9 @@ else {
 //	Compute a somewhat random, normalized vector.
 void MakeRandomVector (vmsVector *vec)
 {
-	vec->x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
-	vec->y = d_rand () - 16384;
-	vec->z = d_rand () - 16384;
+	vec->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
+	vec->p.y = d_rand () - 16384;
+	vec->p.z = d_rand () - 16384;
 
 	VmVecNormalizeQuick (vec);
 }
@@ -1478,7 +1480,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 					if (r < 4096) {
 						CreatePathToPlayer (objP, 10, 1);
 						objP->cType.aiInfo.behavior = AIB_STATION;
-						objP->cType.aiInfo.nHideSegment = objP->nSegment;
+						objP->cType.aiInfo.nHideSegment = objP->position.nSegment;
 						gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
 					} else if (r < 4096+8192) {
 						CreateNSegmentPath (objP, d_rand ()/8192 + 2, -1);
@@ -1532,13 +1534,13 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 
 			if ((ailp->nextMiscSoundTime < gameData.time.xGame) && ((ailp->nextPrimaryFire < F1_0) || (ailp->nextSecondaryFire < F1_0)) && (dist < F1_0*20)) {
 				ailp->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 1;
-				DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+				DigiLinkSoundToPos (robptr->seeSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 			}
 		} else {
 			//	Compute expensive stuff -- vec_to_player and player_visibility
 			VmVecNormalizedDirQuick (vec_to_player, &gameData.ai.vBelievedPlayerPos, pos);
-			if ((vec_to_player->x == 0) && (vec_to_player->y == 0) && (vec_to_player->z == 0)) {
-				vec_to_player->x = F1_0;
+			if ((vec_to_player->p.x == 0) && (vec_to_player->p.y == 0) && (vec_to_player->p.z == 0)) {
+				vec_to_player->p.x = F1_0;
 			}
 			*player_visibility = ObjectCanSeePlayer (objP, pos, robptr->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
 
@@ -1557,17 +1559,17 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 				if (ailp->nPrevVisibility == 0) {
 					if (ailp->timePlayerSeen + F1_0/2 < gameData.time.xGame) {
 						// -- if (gameStates.app.bPlayerExploded)
-						// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+						// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 						// -- else
-							DigiLinkSoundToPos (robptr->seeSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+							DigiLinkSoundToPos (robptr->seeSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 						ailp->timePlayerSoundAttacked = gameData.time.xGame;
 						ailp->nextMiscSoundTime = gameData.time.xGame + F1_0 + d_rand ()*4;
 					}
 				} else if (ailp->timePlayerSoundAttacked + F1_0/4 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
-					// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+					// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 					// -- else
-						DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+						DigiLinkSoundToPos (robptr->attackSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 					ailp->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			} 
@@ -1575,9 +1577,9 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 			if ((*player_visibility == 2) && (ailp->nextMiscSoundTime < gameData.time.xGame)) {
 				ailp->nextMiscSoundTime = gameData.time.xGame + (d_rand () + F1_0) * (7 - gameStates.app.nDifficultyLevel) / 2;
 				// -- if (gameStates.app.bPlayerExploded)
-				// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+				// -- 	DigiLinkSoundToPos (robptr->tauntSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 				// -- else
-					DigiLinkSoundToPos (robptr->attackSound, objP->nSegment, 0, pos, 0 , RobotSoundVolume);
+					DigiLinkSoundToPos (robptr->attackSound, objP->position.nSegment, 0, pos, 0 , RobotSoundVolume);
 			}
 			ailp->nPrevVisibility = *player_visibility;
 		}
@@ -1618,10 +1620,10 @@ void MoveObjectToLegalSpot (tObject *objP, int bMoveToCenter)
 {
 	vmsVector	vSegCenter, vOrigPos = objP->position.vPos;
 	int			i;
-	tSegment		*segP = gameData.segs.segments + objP->nSegment;
+	tSegment		*segP = gameData.segs.segments + objP->position.nSegment;
 
 if (bMoveToCenter) {
-	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
+	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->position.nSegment);
 	MoveObjectToLegalPoint (objP, &vSegCenter);
 	return;
 	}
@@ -1633,7 +1635,7 @@ else {
 			if (ObjectIntersectsWall (objP))
 				objP->position.vPos = vOrigPos;
 			else {
-				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
 				if (nNewSeg != -1) {
 					RelinkObject (OBJ_IDX (objP), nNewSeg);
 					return;
@@ -1660,7 +1662,7 @@ if (gameData.bots.pInfo [objP->id].bossFlag) {
 //	If tSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 {
-	int			nSegment = objP->nSegment;
+	int			nSegment = objP->position.nSegment;
 	fix			xDistToGoal;
 	vmsVector	vGoalDir;
 
@@ -1685,7 +1687,7 @@ else {
 	//	Move one radii towards center.
 	VmVecScale (&vGoalDir, xScale);
 	VmVecInc (&objP->position.vPos, &vGoalDir);
-	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
 	if (nNewSeg == -1) {
 		objP->position.vPos = *vGoal;
 		MoveObjectToLegalSpot (objP, xMinDist > 0);
@@ -1701,7 +1703,7 @@ fix MoveTowardsSegmentCenter (tObject *objP)
 {
 	vmsVector	vSegCenter;
 
-COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->nSegment);
+COMPUTE_SEGMENT_CENTER_I (&vSegCenter, objP->position.nSegment);
 return MoveTowardsPoint (objP, &vSegCenter, 0);
 }
 
@@ -1824,7 +1826,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Return tSide of openable door in tSegment, if any.  If none, return -1.
-int openable_doors_in_segment (short nSegment)
+int OpenableDoorsInSegment (short nSegment)
 {
 	ushort	i;
 
@@ -1992,7 +1994,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 
 	nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 	Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-	nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
+	nSegment = pos ? FindSegByPoint (pos, objP->position.nSegment) : objP->position.nSegment;
 	if (nSegment == -1) {
 #if TRACE
 		con_printf (CON_DEBUG, "Tried to spew a bot outside the mine! Aborting!\n");
@@ -2019,9 +2021,9 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 
 		if (force_val) {
 			newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-			newObjP->mType.physInfo.rotThrust.x = ((d_rand () - 16384) * force_val)/16;
-			newObjP->mType.physInfo.rotThrust.y = ((d_rand () - 16384) * force_val)/16;
-			newObjP->mType.physInfo.rotThrust.z = ((d_rand () - 16384) * force_val)/16;
+			newObjP->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
+			newObjP->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
+			newObjP->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
 			newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
 			//	Now, give a big initial velocity to get moving away from boss.
@@ -2042,7 +2044,7 @@ void InitAIForShip (void)
 
 	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
 		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-		gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->nSegment;
+		gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->position.nSegment;
 		gameData.ai.cloakInfo [i].last_position = gameData.objs.console->position.vPos;
 	}
 }
@@ -2169,13 +2171,13 @@ int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *b
 
 	roll_val = FixDiv (gameData.time.xGame - StartTime, roll_duration);
 
-	FixSinCos (FixMul (roll_val, roll_val), &temp, &objP->mType.physInfo.rotVel.x);
-	FixSinCos (roll_val, &temp, &objP->mType.physInfo.rotVel.y);
-	FixSinCos (roll_val-F1_0/8, &temp, &objP->mType.physInfo.rotVel.z);
+	FixSinCos (FixMul (roll_val, roll_val), &temp, &objP->mType.physInfo.rotVel.p.x);
+	FixSinCos (roll_val, &temp, &objP->mType.physInfo.rotVel.p.y);
+	FixSinCos (roll_val-F1_0/8, &temp, &objP->mType.physInfo.rotVel.p.z);
 
-	objP->mType.physInfo.rotVel.x = (gameData.time.xGame - StartTime)/9;
-	objP->mType.physInfo.rotVel.y = (gameData.time.xGame - StartTime)/5;
-	objP->mType.physInfo.rotVel.z = (gameData.time.xGame - StartTime)/7;
+	objP->mType.physInfo.rotVel.p.x = (gameData.time.xGame - StartTime)/9;
+	objP->mType.physInfo.rotVel.p.y = (gameData.time.xGame - StartTime)/5;
+	objP->mType.physInfo.rotVel.p.z = (gameData.time.xGame - StartTime)/7;
 
 	if (gameOpts->sound.digiSampleRate)
 		sound_duration = FixDiv (gameData.pig.snd.pSounds [DigiXlatSound (deathSound)].length, gameOpts->sound.digiSampleRate);
@@ -2471,7 +2473,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 							return;
 						}
 					} else {
-						if ((gun_point->x == 0) && (gun_point->y == 0) && (gun_point->z == 0)) {
+						if ((gun_point->p.x == 0) && (gun_point->p.y == 0) && (gun_point->p.z == 0)) {
 							;
 						} else {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
@@ -2569,7 +2571,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 							return;
 						}
 					} else {
-						if ((gun_point->x == 0) && (gun_point->y == 0) && (gun_point->z == 0)) {
+						if ((gun_point->p.x == 0) && (gun_point->p.y == 0) && (gun_point->p.z == 0)) {
 							; 
 						} else {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))

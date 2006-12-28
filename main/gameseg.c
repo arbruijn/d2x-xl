@@ -83,7 +83,7 @@ void NormCacheFlush ()
 	int i;
 	
 for (i = 0; i < MAX_CACHE_NORMALS; i++)
-	normCache.cache [i].nSegment = -1;
+	normCache.cache [i].position.nSegment = -1;
 }	
 
 
@@ -104,7 +104,7 @@ if (!normCache.bInitialized)
 #endif
 
 	i = ((nSegment<<2) ^ nSide) & CACHE_MASK;
-	if ((normCache.cache [i].nSegment == nSegment) && ((normCache.cache [i].nSide&0xf) == nSide)) {
+	if ((normCache.cache [i].position.nSegment == nSegment) && ((normCache.cache [i].nSide&0xf) == nSide)) {
 		uint f1;
 #ifdef CACHE_DEBUG
 		normCache.nHits++;
@@ -134,7 +134,7 @@ if (!normCache.bInitialized)
 		UncachedGetSideNormals (&gameData.segs.segments [nSegment], nSide, normCache.cache [i].normals, normCache.cache [i].normals + 1);
 		break;
 	}
-	normCache.cache [i].nSegment = nSegment;
+	normCache.cache [i].position.nSegment = nSegment;
 	normCache.cache [i].nSide = nSide | (faceFlags<<4);
 	return i;
 }
@@ -280,9 +280,9 @@ void ComputeSideCenter (vmsVector *vp, tSegment *segP, int tSide)
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v++]);
 VmVecInc (vp, gameData.segs.vertices + sv [*s2v]);
-vp->x /= 4;
-vp->y /= 4;
-vp->z /= 4;
+vp->p.x /= 4;
+vp->p.y /= 4;
+vp->p.z /= 4;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -324,9 +324,9 @@ void ComputeSegmentCenter (vmsVector *vp, tSegment *segP)
 *vp = gameData.segs.vertices [*sv++];
 for (i = 7; i; i--)
 	VmVecInc (vp, gameData.segs.vertices + *sv++);
-vp->x /= 8;
-vp->y /= 8;
-vp->z /= 8;
+vp->p.x /= 8;
+vp->p.y /= 8;
+vp->p.z /= 8;
 }
 
 // -----------------------------------------------------------------------------
@@ -376,7 +376,6 @@ vertlist [1] = vp [sv [1]];
 vertlist [2] = vp [sv [2]];
 vertlist [3] = vp [sv [3]];
 }
-
 
 #ifdef EDITOR
 // -----------------------------------------------------------------------------------
@@ -554,7 +553,7 @@ switch (sideP->nType) {
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this tSegment.  See segmasks structure for info on fields  
-segmasks GetSegMasks (vmsVector *checkp, int nSegment, fix xRad)
+segmasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
 {
 	int			sn, faceBit, sideBit;
 	int			nFaces;
@@ -588,37 +587,25 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 	//but if the tSide pokes in, a point is on the back if behind EITHER face.
 
 	if (nFaces == 2) {
-#ifdef COMPACT_SEGS
-		vmsVector normals [2];
-#endif
-
 		nVertex = min (vertexList [0], vertexList [2]);
-#ifdef COMPACT_SEGS
-		GetSideNormals (segP, sn, normals, normals + 1);
-#endif
-		
 		if (vertexList [4] < vertexList [1])
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
-#else				
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
 		else
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, sideP->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nSideCount = nCenterCount = 0;
 
 		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (checkp, sideP->normals + fn, gameData.segs.vertices + nVertex);
-#endif
-
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (checkP, sideP->rotNorms + fn, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 				// check if the intersection of a line through the point that is orthogonal to the 
 				// plane of the current triangle lies in is inside that triangle
@@ -642,9 +629,6 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 			}
 		}
 	else {				//only one face on this tSide
-#ifdef COMPACT_SEGS			
-		vmsVector normal;
-#endif
 		//use lowest point number
 		nVertex = vertexList [0];
 		//some manual loop unrolling here ...
@@ -654,12 +638,10 @@ for (sn = 0, faceBit = sideBit = 1, sideP = segP->sides; sn < 6; sn++, sideBit <
 			nVertex = vertexList [2];
 		if (nVertex > vertexList [3])
 			nVertex = vertexList [3];
-#ifdef COMPACT_SEGS
-		GetSideNormal (segP, sn, 0, &normal);
-		xDist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
-#else
-		xDist = VmDistToPlane (checkp, sideP->normals, gameData.segs.vertices + nVertex);
-#endif
+		if (gameStates.render.bRendering)
+			xDist = VmDistToPlane (checkP, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+		else
+			xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
 		if (xDist < -PLANE_DIST_TOLERANCE)
 			masks.centerMask |= sideBit;
 		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {
@@ -676,7 +658,7 @@ return masks;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each tSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
-ubyte GetSideDists (vmsVector *checkp, int nSegment, fix *xSideDists)
+ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists)
 {
 	int			sn, faceBit, sideBit;
 	ubyte			mask;
@@ -711,37 +693,36 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		fix	xDist;
 		int	nCenterCount;
 		int	nVertex;
-#ifdef COMPACT_SEGS
-		vmsVector normals [2];
-#endif
 		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
 #endif
-#ifdef COMPACT_SEGS
-		GetSideNormals (segP, sn, normals, normals + 1);
-#endif
 		if (vertexList [4] < vertexList [1])
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, 
+											  sideP->rotNorms, 
+											  &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], 
+											  sideP->normals, 
+											  gameData.segs.vertices + nVertex);
 		else
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, 
+											  sideP->rotNorms + 1, 
+											  &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], 
+											  sideP->normals + 1, 
+											  gameData.segs.vertices + nVertex);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
 		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (checkp, sideP->normals + fn, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (checkP, sideP->rotNorms + fn, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
 			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
 				nCenterCount++;
 				xSideDists [sn] += xDist;
@@ -764,9 +745,6 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 	else {				//only one face on this tSide
 		fix xDist;
 		int nVertex;
-#ifdef COMPACT_SEGS			
-		vmsVector normal;
-#endif
 		//use lowest point number
 		nVertex = vertexList [0];
 		if (nVertex > vertexList [1])
@@ -779,13 +757,10 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
 #endif
-
-#ifdef COMPACT_SEGS
-		GetSideNormal (segP, sn, 0, &normal);
-		xDist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
-#else
-		xDist = VmDistToPlane (checkp, &sideP->normals [0], gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (checkP, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
 		if (xDist < -PLANE_DIST_TOLERANCE) {
 			mask |= sideBit;
 			xSideDists [sn] = xDist;
@@ -800,7 +775,7 @@ return mask;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each tSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
-ubyte GetSideDistsAll (vmsVector *checkp, int nSegment, fix *xSideDists)
+ubyte GetSideDistsAll (vmsVector *checkP, int nSegment, fix *xSideDists)
 {
 	int			sn, faceBit, sideBit;
 	ubyte			mask;
@@ -835,37 +810,25 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		fix	xDist;
 		int	nCenterCount;
 		int	nVertex;
-#ifdef COMPACT_SEGS
-		vmsVector normals [2];
-#endif
 		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
 #endif
-#ifdef COMPACT_SEGS
-		GetSideNormals (segP, sn, normals, normals + 1);
-#endif
 		if (vertexList [4] < vertexList [1])
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], normals, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
 		else
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], normals + 1, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
-#endif
+			if (gameStates.render.bRendering)
+				xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, sideP->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+			else
+				xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
 		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
-#ifdef COMPACT_SEGS
-			xDist = VmDistToPlane (checkp, normals + fn, gameData.segs.vertices + nVertex);
-#else
-			xDist = VmDistToPlane (checkp, sideP->normals + fn, gameData.segs.vertices + nVertex);
-#endif
+			xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
 			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
 				nCenterCount++;
 				}
@@ -884,9 +847,6 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 	else {				//only one face on this tSide
 		fix xDist;
 		int nVertex;
-#ifdef COMPACT_SEGS			
-		vmsVector normal;
-#endif
 		//use lowest point number
 		nVertex = vertexList [0];
 		if (nVertex > vertexList [1])
@@ -899,13 +859,10 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
 			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
 #endif
-
-#ifdef COMPACT_SEGS
-		GetSideNormal (segP, sn, 0, &normal);
-		xDist = VmDistToPlane (checkp, &normal, gameData.segs.vertices + nVertex);
-#else
-		xDist = VmDistToPlane (checkp, &sideP->normals [0], gameData.segs.vertices + nVertex);
-#endif
+		if (gameStates.render.bRendering)
+			xDist = VmDistToPlane (checkP, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+		else
+			xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
 		if (xDist < -PLANE_DIST_TOLERANCE) {
 			mask |= sideBit;
 			}
@@ -927,13 +884,13 @@ int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum,
 	n0 = &gameData.segs.segments [nSegment].sides [nSide].normals [facenum];
 	n1 = &gameData.segs.segments [csegnum].sides [csidenum].normals [cfacenum];
 
-	if (n0->x != -n1->x  ||  n0->y != -n1->y  ||  n0->z != -n1->z) {
+	if (n0->p.x != -n1->p.x  ||  n0->p.y != -n1->p.y  ||  n0->p.z != -n1->p.z) {
 #if TRACE
 		con_printf (CON_DEBUG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
 				"   %8x %8x %8x\n"
 				"   %8x %8x %8x (negated)\n", 
 				nSegment, nSide, facenum, csegnum, csidenum, cfacenum, 
-				n0->x, n0->y, n0->z, -n1->x, -n1->y, -n1->z);
+				n0->p.x, n0->p.y, n0->p.z, -n1->p.x, -n1->p.y, -n1->p.z);
 #endif
 		return 1;
 	}
@@ -1445,26 +1402,28 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 	// int	nSegment;
 	vmsMatrix orient = objP->position.mOrient;
 	sbyte   *segP = spp->bytemat;
+	vmsVector *pv;
 
-	*segP++ = convert_to_byte (orient.rVec.x);
-	*segP++ = convert_to_byte (orient.uVec.x);
-	*segP++ = convert_to_byte (orient.fVec.x);
-	*segP++ = convert_to_byte (orient.rVec.y);
-	*segP++ = convert_to_byte (orient.uVec.y);
-	*segP++ = convert_to_byte (orient.fVec.y);
-	*segP++ = convert_to_byte (orient.rVec.z);
-	*segP++ = convert_to_byte (orient.uVec.z);
-	*segP++ = convert_to_byte (orient.fVec.z);
+	*segP++ = convert_to_byte (orient.rVec.p.x);
+	*segP++ = convert_to_byte (orient.uVec.p.x);
+	*segP++ = convert_to_byte (orient.fVec.p.x);
+	*segP++ = convert_to_byte (orient.rVec.p.y);
+	*segP++ = convert_to_byte (orient.uVec.p.y);
+	*segP++ = convert_to_byte (orient.fVec.p.y);
+	*segP++ = convert_to_byte (orient.rVec.p.z);
+	*segP++ = convert_to_byte (orient.uVec.p.z);
+	*segP++ = convert_to_byte (orient.fVec.p.z);
 
-	spp->xo = (objP->position.vPos.x - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].x) >> RELPOS_PRECISION;
-	spp->yo = (objP->position.vPos.y - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].y) >> RELPOS_PRECISION;
-	spp->zo = (objP->position.vPos.z - gameData.segs.vertices [gameData.segs.segments [objP->nSegment].verts [0]].z) >> RELPOS_PRECISION;
+	pv = gameData.segs.vertices + gameData.segs.segments [objP->position.nSegment].verts [0];
+	spp->xo = (objP->position.vPos.p.x - pv->p.x) >> RELPOS_PRECISION;
+	spp->yo = (objP->position.vPos.p.y - pv->p.y) >> RELPOS_PRECISION;
+	spp->zo = (objP->position.vPos.p.z - pv->p.z) >> RELPOS_PRECISION;
 
-	spp->tSegment = objP->nSegment;
+	spp->tSegment = objP->position.nSegment;
 
- 	spp->velx = (objP->mType.physInfo.velocity.x) >> VEL_PRECISION;
-	spp->vely = (objP->mType.physInfo.velocity.y) >> VEL_PRECISION;
-	spp->velz = (objP->mType.physInfo.velocity.z) >> VEL_PRECISION;
+ 	spp->velx = (objP->mType.physInfo.velocity.p.x) >> VEL_PRECISION;
+	spp->vely = (objP->mType.physInfo.velocity.p.y) >> VEL_PRECISION;
+	spp->velz = (objP->mType.physInfo.velocity.p.z) >> VEL_PRECISION;
 
 // swap the short values for the big-endian machines.
 
@@ -1485,18 +1444,19 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 {
 	int	nSegment;
 	sbyte   *segP;
+	vmsVector *pv;
 
 	segP = spp->bytemat;
 
-	objP->position.mOrient.rVec.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.x = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.rVec.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.y = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.rVec.z = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.uVec.z = *segP++ << MATRIX_PRECISION;
-	objP->position.mOrient.fVec.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.p.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.p.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.p.x = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.p.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.p.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.p.y = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.rVec.p.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.uVec.p.z = *segP++ << MATRIX_PRECISION;
+	objP->position.mOrient.fVec.p.z = *segP++ << MATRIX_PRECISION;
 
 	if (swap_bytes) {
 		spp->xo = INTEL_SHORT (spp->xo);
@@ -1512,13 +1472,14 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	objP->position.vPos.x = (spp->xo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].x;
-	objP->position.vPos.y = (spp->yo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].y;
-	objP->position.vPos.z = (spp->zo << RELPOS_PRECISION) + gameData.segs.vertices [gameData.segs.segments [nSegment].verts [0]].z;
+	pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
+	objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
+	objP->position.vPos.p.y = (spp->yo << RELPOS_PRECISION) + pv->p.y;
+	objP->position.vPos.p.z = (spp->zo << RELPOS_PRECISION) + pv->p.z;
 
-	objP->mType.physInfo.velocity.x = (spp->velx << VEL_PRECISION);
-	objP->mType.physInfo.velocity.y = (spp->vely << VEL_PRECISION);
-	objP->mType.physInfo.velocity.z = (spp->velz << VEL_PRECISION);
+	objP->mType.physInfo.velocity.p.x = (spp->velx << VEL_PRECISION);
+	objP->mType.physInfo.velocity.p.y = (spp->vely << VEL_PRECISION);
+	objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
 
 	RelinkObject (OBJ_IDX (objP), nSegment);
 
@@ -1790,9 +1751,9 @@ void AddToVertexNormal (int nVertex, vmsVector *pvNormal)
 	g3sNormal	*pn = &gameData.segs.points [nVertex].p3_normal;
 
 pn->nFaces++;
-pn->vNormal.p.x += f2fl (pvNormal->x);
-pn->vNormal.p.y += f2fl (pvNormal->y);
-pn->vNormal.p.z += f2fl (pvNormal->z);
+pn->vNormal.p.x += f2fl (pvNormal->p.x);
+pn->vNormal.p.y += f2fl (pvNormal->p.y);
+pn->vNormal.p.z += f2fl (pvNormal->p.z);
 }
 
 // -------------------------------------------------------------------------------
@@ -1946,21 +1907,21 @@ gameOpts->render.nMathFormat = 0;
 memset (gameData.segs.points, 0, sizeof (gameData.segs.points));
 for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
-	if (gameData.segs.segments [s].nSegment != -1)
+	if (gameData.segs.segments [s].position.nSegment != -1)
 #endif
 		ValidateSegment (gameData.segs.segments + s);
 #ifdef EDITOR
 	{
 	int said=0;
 	for (s=gameData.segs.nLastSegment+1; s < MAX_SEGMENTS; s++)
-		if (gameData.segs.segments [s].nSegment != -1) {
+		if (gameData.segs.segments [s].position.nSegment != -1) {
 			if (!said) {
 #if TRACE		
 				con_printf (CON_DEBUG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
 #endif
 				}
 			said++;
-			gameData.segs.segments [s].nSegment = -1;
+			gameData.segs.segments [s].position.nSegment = -1;
 			}
 	if (said) {
 #if TRACE		

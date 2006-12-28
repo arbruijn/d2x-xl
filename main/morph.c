@@ -78,18 +78,18 @@ vp = (vmsVector *) data;
 *minv = *maxv = *vp++; 
 nVerts--;
 while (nVerts--) {
-	if (vp->x > maxv->x) 
-		maxv->x = vp->x;
-	else if (vp->x < minv->x) 
-		minv->x = vp->x;
-	if (vp->y > maxv->y) 
-		maxv->y = vp->y;
-	else if (vp->y < minv->y) 
-		minv->y = vp->y;
-	if (vp->z > maxv->z) 
-		maxv->z = vp->z;
-	else if (vp->z < minv->z) 
-		minv->z = vp->z;
+	if (vp->p.x > maxv->p.x) 
+		maxv->p.x = vp->p.x;
+	else if (vp->p.x < minv->p.x) 
+		minv->p.x = vp->p.x;
+	if (vp->p.y > maxv->p.y) 
+		maxv->p.y = vp->p.y;
+	else if (vp->p.y < minv->p.y) 
+		minv->p.y = vp->p.y;
+	if (vp->p.z > maxv->p.z) 
+		maxv->p.z = vp->p.z;
+	else if (vp->p.z < minv->p.z) 
+		minv->p.z = vp->p.z;
 	vp++;
 	}
 }
@@ -129,11 +129,11 @@ while (nVerts--) {
 	if (vBoxSize) {
 		fix t;
 		k = 0x7fffffff;
-		if (v.x && f2i (vBoxSize->x) < abs (v.x)/2 && (t = FixDiv (vBoxSize->x, abs (v.x))) < k) 
+		if (v.p.x && f2i (vBoxSize->p.x) < abs (v.p.x)/2 && (t = FixDiv (vBoxSize->p.x, abs (v.p.x))) < k) 
 			k = t;
-		if (v.y && f2i (vBoxSize->y) < abs (v.y)/2 && (t = FixDiv (vBoxSize->y, abs (v.y))) < k) 
+		if (v.p.y && f2i (vBoxSize->p.y) < abs (v.p.y)/2 && (t = FixDiv (vBoxSize->p.y, abs (v.p.y))) < k) 
 			k = t;
-		if (v.z && f2i (vBoxSize->z) < abs (v.z)/2 && (t = FixDiv (vBoxSize->z, abs (v.z))) < k) 
+		if (v.p.z && f2i (vBoxSize->p.z) < abs (v.p.z)/2 && (t = FixDiv (vBoxSize->p.z, abs (v.p.z))) < k) 
 			k = t;
 		if (k == 0x7fffffff) 
 			k = 0;
@@ -282,9 +282,9 @@ objP->mType.physInfo.rotVel = morph_rotvel;
 pmP = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 G3CheckAndSwap (pmP->modelData);
 MorphFindModelBounds (pmP, 0, &pmmin, &pmmax);
-vBoxSize.x = max (-pmmin.x, pmmax.x) / 2;
-vBoxSize.y = max (-pmmin.y, pmmax.y) / 2;
-vBoxSize.z = max (-pmmin.z, pmmax.z) / 2;
+vBoxSize.p.x = max (-pmmin.p.x, pmmax.p.x) / 2;
+vBoxSize.p.y = max (-pmmin.p.y, pmmax.p.y) / 2;
+vBoxSize.p.z = max (-pmmin.p.z, pmmax.p.z) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts

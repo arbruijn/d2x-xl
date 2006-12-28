@@ -56,14 +56,14 @@ fxCanvH2 = f2fl((nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h)<<15);
 //compute aspect ratio for this canvas
 s = FixMulDiv(grdCurScreen->sc_aspect,nCanvasHeight,nCanvasWidth);
 if (s <= f1_0) {	   //scale x
-	viewInfo.windowScale.x = s;
-	viewInfo.windowScale.y = f1_0;
+	viewInfo.windowScale.p.x = s;
+	viewInfo.windowScale.p.y = f1_0;
 }
 else {
-	viewInfo.windowScale.y = FixDiv(f1_0,s);
-	viewInfo.windowScale.x = f1_0;
+	viewInfo.windowScale.p.y = FixDiv(f1_0,s);
+	viewInfo.windowScale.p.x = f1_0;
 }
-viewInfo.windowScale.z = f1_0;		//always 1
+viewInfo.windowScale.p.z = f1_0;		//always 1
 init_free_points();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;

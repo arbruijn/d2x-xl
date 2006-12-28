@@ -207,7 +207,7 @@ int BuddyMayTalk(void)
 			gameData.escort.nObjNum = i;
 	}
 
-	segp = gameData.segs.segments + gameData.objs.objects [gameData.escort.nObjNum].nSegment;
+	segp = gameData.segs.segments + gameData.objs.objects [gameData.escort.nObjNum].position.nSegment;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		short	nWall = WallNumP (segp, (short) i);
@@ -699,31 +699,31 @@ if (gameData.escort.nSpecialGoal != -1)
 	gameData.escort.nGoalObject = gameData.escort.nSpecialGoal;
 gameData.escort.nKillObject = -1;
 if (gameData.escort.bSearchingMarker != -1) {
-	gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_MARKER, gameData.escort.nGoalObject-ESCORT_GOAL_MARKER1, -1);
+	gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_MARKER, gameData.escort.nGoalObject-ESCORT_GOAL_MARKER1, -1);
 	if (gameData.escort.nGoalIndex > -1)
-		nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+		nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 	} 
 else {
 	switch (gameData.escort.nGoalObject) {
 		case ESCORT_GOAL_BLUE_KEY:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_GOLD_KEY:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_RED_KEY:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_KEY_RED, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, POW_KEY_RED, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_CONTROLCEN:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_CNTRLCEN, -1, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_CNTRLCEN, -1, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_EXIT:
 		case ESCORT_GOAL_EXIT2:
@@ -731,38 +731,38 @@ else {
 			gameData.escort.nGoalIndex = nGoalSeg;
 			break;
 		case ESCORT_GOAL_ENERGY:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_ENERGY, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, POW_ENERGY, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_ENERGYCEN:
-			nGoalSeg = ExistsInMine (objP->nSegment, FUELCEN_CHECK, -1, -1);
+			nGoalSeg = ExistsInMine (objP->position.nSegment, FUELCEN_CHECK, -1, -1);
 			gameData.escort.nGoalIndex = nGoalSeg;
 			break;
 		case ESCORT_GOAL_SHIELD:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, POW_SHIELD_BOOST, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, POW_SHIELD_BOOST, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_POWERUP:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_POWERUP, -1, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_POWERUP, -1, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_ROBOT:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_ROBOT, -1, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_ROBOT, -1, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_HOSTAGE:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_HOSTAGE, -1, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_HOSTAGE, -1, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_PLAYER_SPEW:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, -1, -1, ESCORT_GOAL_PLAYER_SPEW);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, -1, -1, ESCORT_GOAL_PLAYER_SPEW);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		case ESCORT_GOAL_SCRAM:
 			nGoalSeg = -3;		//	Kinda a hack.
@@ -773,9 +773,9 @@ else {
 
 			boss_id = GetBossId();
 			Assert(boss_id != -1);
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_ROBOT, boss_id, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_ROBOT, boss_id, -1);
 			if (gameData.escort.nGoalIndex > -1) 
-				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
+				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		}
 		default:
@@ -816,7 +816,7 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance(&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
+			xDistToPlayer = FindConnectedDistance(&objP->position.vPos, objP->position.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
@@ -838,13 +838,13 @@ int EscortSetGoalObject(void)
 if (gameData.escort.nSpecialGoal != -1)
 	return ESCORT_GOAL_UNSPECIFIED;
 else if (!(gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
-			(ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
+			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
 	return ESCORT_GOAL_BLUE_KEY;
 else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
-			(ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
+			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
 	return ESCORT_GOAL_GOLD_KEY;
 else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
-			(ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
+			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (gameData.reactor.bDestroyed == 0) {
 	int	i;
@@ -872,7 +872,7 @@ if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
 		return 1;
 if (ailp->mode == AIM_GOTO_PLAYER)
 	return 0;
-if (objP->nSegment == gameData.objs.console->nSegment)
+if (objP->position.nSegment == gameData.objs.console->position.nSegment)
 	return 0;
 if (aip->nCurPathIndex < aip->nPathLength/2)
 	return 0;
@@ -1024,7 +1024,7 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 #if TRACE
 			con_printf (CON_DEBUG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
-			CreateNSegmentPath(objP, 10 + d_rand() * 16, gameData.objs.console->nSegment);
+			CreateNSegmentPath(objP, 10 + d_rand() * 16, gameData.objs.console->position.nSegment);
 			gameData.escort.xLastPathCreated = gameData.time.xGame;
 			}
 	// -- Int3();

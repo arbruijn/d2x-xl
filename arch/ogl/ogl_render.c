@@ -170,8 +170,8 @@ bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
-glVertex3x (p0->p3_vec.x, p0->p3_vec.y, p0->p3_vec.z);
-glVertex3x (p1->p3_vec.x, p1->p3_vec.y, p1->p3_vec.z);
+glVertex3x (p0->p3_vec.p.x, p0->p3_vec.p.y, p0->p3_vec.p.z);
+glVertex3x (p1->p3_vec.p.x, p1->p3_vec.p.y, p1->p3_vec.p.z);
 if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
@@ -369,8 +369,8 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glPushMatrix ();
-//	glTranslated (f2glf (0), f2glf (0), -f2glf (pnt->p3_vec.z));
-glTranslatef (f2glf (pnt->p3_vec.x), f2glf (pnt->p3_vec.y), f2glf (pnt->p3_vec.z));
+//	glTranslated (f2glf (0), f2glf (0), -f2glf (pnt->p3_vec.p.z));
+glTranslatef (f2glf (pnt->p3_vec.p.x), f2glf (pnt->p3_vec.p.y), f2glf (pnt->p3_vec.p.z));
 r = f2glf (rad);
 glScaled (r, r, r);
 if (bBigSphere)
@@ -453,7 +453,7 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nv; i++, pointList++) {
-//	glVertex3f (f2glf (pointList [c]->p3_vec.x), f2glf (pointList [c]->p3_vec.y), f2glf (pointList [c]->p3_vec.z);
+//	glVertex3f (f2glf (pointList [c]->p3_vec.p.x), f2glf (pointList [c]->p3_vec.p.y), f2glf (pointList [c]->p3_vec.p.z);
 	OglVertex3f (*pointList);
 	}
 if (grdCurCanv->cv_color.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
@@ -890,11 +890,15 @@ vmsVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
-		glNormal3f ((GLfloat) f2fl (pvNormal->x), (GLfloat) f2fl (pvNormal->y), (GLfloat) f2fl (pvNormal->z));
+		glNormal3f ((GLfloat) f2fl (pvNormal->p.x), 
+						(GLfloat) f2fl (pvNormal->p.y), 
+						(GLfloat) f2fl (pvNormal->p.z));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		G3RotatePoint (&vNormal, pvNormal, 0);
-		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
+						(GLfloat) f2fl (vNormal.p.y), 
+						(GLfloat) f2fl (vNormal.p.z));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
@@ -912,7 +916,7 @@ else
 						 &pointList [0]->p3_vec,
 						 &pointList [1]->p3_vec,
 						 &pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+		glNormal3f ((GLfloat) f2fl (vNormal.p.x), (GLfloat) f2fl (vNormal.p.y), (GLfloat) f2fl (vNormal.p.z));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, v, v + 1, v + 2, v + 3);
@@ -925,7 +929,9 @@ else
 		if (!gameStates.ogl.bUseTransform)
 			G3RotatePoint (&vNormal, &vNormal, 0);
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
-		glNormal3f ((GLfloat) f2fl (vNormal.x), (GLfloat) f2fl (vNormal.y), (GLfloat) f2fl (vNormal.z));
+		glNormal3f ((GLfloat) f2fl (vNormal.p.x), 
+						(GLfloat) f2fl (vNormal.p.y), 
+						(GLfloat) f2fl (vNormal.p.z));
 		}
 	}
 }
@@ -1569,9 +1575,9 @@ if (!bDepthInfo) {
 	}
 VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
-x = (float) f2glf (pv.x);
-y = (float) f2glf (pv.y);
-z = (float) f2glf (pv.z);
+x = (float) f2glf (pv.p.x);
+y = (float) f2glf (pv.p.y);
+z = (float) f2glf (pv.p.z);
 w = (float) f2glf (width); //FixMul (width, viewInfo.scale.x));
 h = (float) f2glf (height); //FixMul (height, viewInfo.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {

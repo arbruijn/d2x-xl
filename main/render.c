@@ -177,9 +177,9 @@ for (i = 0; i < nv; i++) {
 	G3DrawLine (pointlist [i], pointlist [(i + 1) % nv]);
 	VmVecInc (&center.p3_vec, &pointlist [i]->p3_vec);
 	nf = &pointlist [i]->p3_normal.vNormal;
-	n.x = (fix) (nf->p.x * 65536.0f);
-	n.y = (fix) (nf->p.y * 65536.0f);
-	n.z = (fix) (nf->p.z * 65536.0f);
+	n.p.x = (fix) (nf->p.x * 65536.0f);
+	n.p.y = (fix) (nf->p.y * 65536.0f);
+	n.p.z = (fix) (nf->p.z * 65536.0f);
 	G3RotatePoint (&n, &n, 0);
 	VmVecScaleAdd (&normal.p3_vec, &pointlist [i]->p3_vec, &n, F1_0 * 10);
 	G3DrawLine (pointlist [i], &normal);
@@ -1041,12 +1041,8 @@ void RenderSide (tSegment *segP, short nSide)
 		}
 //CBRK (props.segNum == 123 && props.sideNum == 2);
 	bSidesRendered [props.segNum]++;
-#ifdef COMPACT_SEGS
-	GetSideNormals (segP, props.sideNum, normals, normals+1);
-#else
 	normals [0] = sideP->normals [0];
 	normals [1] = sideP->normals [1];
-#endif
 #if LIGHTMAPS
 if (bDoLightMaps) {
 		float	Xs = 8;
@@ -1113,7 +1109,7 @@ else {
 		max_dot = v_dot_n0;
 		}
 	//	Determine whether to detriangulate tSide: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
-	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
+	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->position.nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
 		//	The other detriangulation code doesn't deal well with badly non-planar sides.
 		fix	n0_dot_n1 = VmVecDot(normals, normals + 1);
 		if (n0_dot_n1 < Min_n0_n1_dot)
@@ -1252,8 +1248,8 @@ void renderObject_search(tObject *objP)
 		changed=1;
 
 	if (changed) {
-		if (objP->nSegment != -1)
-			Cursegp = gameData.segs.segments+objP->nSegment;
+		if (objP->position.nSegment != -1)
+			Cursegp = gameData.segs.segments+objP->position.nSegment;
 		found_seg = -(OBJ_IDX (objP)+1);
 	}
 }
@@ -1388,9 +1384,9 @@ for (i = 0; i < nv; i++) {
 	if (nRotatedLast [pnum] != nRLFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
 		if (!gameStates.ogl.bUseTransform) {
-			gameData.segs.fVertices [pnum].p.x = ((float) pnt->p3_vec.x) / 65536.0f;
-			gameData.segs.fVertices [pnum].p.y = ((float) pnt->p3_vec.y) / 65536.0f;
-			gameData.segs.fVertices [pnum].p.z = ((float) pnt->p3_vec.z) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.x = ((float) pnt->p3_vec.p.x) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.y = ((float) pnt->p3_vec.p.y) / 65536.0f;
+			gameData.segs.fVertices [pnum].p.z = ((float) pnt->p3_vec.p.z) / 65536.0f;
 			}
 		nRotatedLast [pnum] = nRLFrameCount;
 		}
@@ -1488,9 +1484,9 @@ if (!cc.and) {		//all off screen?
 			GetSideVerts (sideVerts, nSegment, sn);
 			dMin = 1e300;
 			for (i = 0; i < 4; i++) {
-				dx = objP->position.vPos.x - gameData.segs.vertices [sideVerts [i]].x;
-				dy = objP->position.vPos.y - gameData.segs.vertices [sideVerts [i]].y;
-				dz = objP->position.vPos.z - gameData.segs.vertices [sideVerts [i]].z;
+				dx = objP->position.vPos.p.x - gameData.segs.vertices [sideVerts [i]].p.x;
+				dy = objP->position.vPos.p.y - gameData.segs.vertices [sideVerts [i]].p.y;
+				dz = objP->position.vPos.p.z - gameData.segs.vertices [sideVerts [i]].p.z;
 				d = dx * dx + dy * dy + dz * dz;
 				if (dMin > d)
 					dMin = d;
@@ -1814,13 +1810,8 @@ int FindAdjacentSideNorms (tSegment *seg, short s0, short s1, tSideNormData *s)
 
 side0 = seg0->sides + edgeside0;
 side1 = seg1->sides + edgeside1;
-#ifdef COMPACT_SEGS
-GetSideNormals (seg0, edgeside0, s [0].n, s [0].n + 1);
-GetSideNormals (seg1, edgeside1, s [1].n, s [1].n + 1);
-#else 
 memcpy (s [0].n, side0->normals, 2 * sizeof (vmsVector));
 memcpy (s [1].n, side1->normals, 2 * sizeof (vmsVector));
-#endif
 s [0].p = gameData.segs.vertices + seg0->verts [sideToVerts [edgeside0][(s [0].t = side0->nType) == 3]];
 s [1].p = gameData.segs.vertices + seg1->verts [sideToVerts [edgeside1][(s [1].t = side1->nType) == 3]];
 return 1;
@@ -2143,7 +2134,7 @@ void BuildObjectLists(int n_segs)
 				int new_segnum, did_migrate, list_pos;
 				objP = gameData.objs.objects+nObject;
 
-				Assert( objP->nSegment == nSegment);
+				Assert( objP->position.nSegment == nSegment);
 
 				if (objP->flags & OF_ATTACHED)
 					continue;		//ignore this tObject
@@ -2218,7 +2209,7 @@ void BuildObjectLists(int n_segs)
 								int nObject = sortList [ii].nObject;
 
 								fprintf(tfile, "Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n", 
-									nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, sortList [ii].dist, gameData.objs.objects [nObject].nSegment);
+									nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, sortList [ii].dist, gameData.objs.objects [nObject].position.nSegment);
 							}
 							fclose(tfile);
 						}
@@ -2562,8 +2553,8 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	else if ((objP->nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->nType == OBJ_ROBOT))) {
 		for (j = nRenderSegs; j--;) {
-			fakePlayerPos.nSegment = nRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
+			fakePlayerPos.position.nSegment = nRenderList [j];
+			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.position.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0);
@@ -2666,7 +2657,7 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	if (!bObjectRendered [h])
 		continue;
-	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
+	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->position.nSegment];
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->bState)
@@ -2712,13 +2703,13 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	*pnStartSeg = gameData.objs.viewer->nSegment;
+	*pnStartSeg = gameData.objs.viewer->position.nSegment;
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 	}
 else {
-	*pnStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	*pnStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->position.nSegment);
 	if (*pnStartSeg == -1)
-		*pnStartSeg = gameData.objs.viewer->nSegment;
+		*pnStartSeg = gameData.objs.viewer->position.nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
@@ -3033,7 +3024,7 @@ void BuildSegList (void)
 	tSegment	*segP;
 
 memset (segDist, 0xFF, sizeof (segDist));
-segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
+segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment;
 i = j = 0;
 segDist [segNum] = 0;
 segList [j++] = segNum;
@@ -3575,6 +3566,21 @@ for (i = 0; i < nRenderSegs;i++) {
 }
 
 //------------------------------------------------------------------------------
+
+void RotateSideNorms (void)
+{
+	int		i, j;
+	tSegment	*segP;
+	tSide		*sideP;
+
+for (i = gameData.segs.nSegments, segP = gameData.segs.segments; i; i--, segP++)
+	for (j = 6, sideP = segP->sides; j; j--, sideP++) {
+		G3RotatePoint (sideP->rotNorms, sideP->normals, 0);
+		G3RotatePoint (sideP->rotNorms + 1, sideP->normals + 1, 0);
+		}
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
@@ -3602,6 +3608,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	TransformDynLights (1, 1);
+	RotateSideNorms ();
 #if defined(EDITOR) && !defined(NDEBUG)
 	if (bShowOnlyCurSide) {
 		RotateList (8, Cursegp->verts);

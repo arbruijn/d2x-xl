@@ -866,7 +866,7 @@ CFWriteByte ((sbyte) objP->controlType, fp);
 CFWriteByte ((sbyte) objP->movementType, fp);
 CFWriteByte ((sbyte) objP->renderType, fp);
 CFWriteByte ((sbyte) objP->flags, fp);
-CFWriteShort (objP->nSegment, fp);
+CFWriteShort (objP->position.nSegment, fp);
 CFWriteShort (objP->attachedObj, fp);
 CFWriteVector (&objP->position.vPos, fp);     
 CFWriteMatrix (&objP->position.mOrient, fp);  
@@ -1595,11 +1595,11 @@ void StateFixObjects (void)
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
-	nSegment = objP->nSegment;
+	nSegment = objP->position.nSegment;
 	// hack for a bug I haven't yet been able to fix
 	if (objP->shields < 0)
 		objP->nType = OBJ_NONE;
-	objP->next = objP->prev = objP->nSegment = -1;
+	objP->next = objP->prev = objP->position.nSegment = -1;
 	if (objP->nType != OBJ_NONE) {
 		LinkObject (i,nSegment);
 		if (objP->nSignature > gameData.objs.nNextSignature)
@@ -1817,7 +1817,7 @@ objP->controlType = (ubyte) CFReadByte (fp);
 objP->movementType = (ubyte) CFReadByte (fp);
 objP->renderType = (ubyte) CFReadByte (fp);
 objP->flags = (ubyte) CFReadByte (fp);
-objP->nSegment = CFReadShort (fp);
+objP->position.nSegment = CFReadShort (fp);
 objP->attachedObj = CFReadShort (fp);
 CFReadVector (&objP->position.vPos, fp);     
 CFReadMatrix (&objP->position.mOrient, fp);  

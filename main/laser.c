@@ -524,20 +524,14 @@ if (gameStates.limitFPS.bOmega && !gameStates.app.b40fpsTick)
 	nLockObj = -1;
 else
 	nLockObj = FindHomingObject (vFiringPos, weaponObjP);
-if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, parentObjP->nSegment)))
+if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, parentObjP->position.nSegment)))
 	return;
-
 //	Play sound.
 if (parentObjP == gameData.objs.viewer)
 	DigiPlaySample (gameData.weapons.info [weaponObjP->id].flashSound, F1_0);
 else
-	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound, weaponObjP->nSegment, 0, &weaponObjP->position.vPos, 0, F1_0);
-
-// -- if ((Last_omega_muzzle_flashTime + F1_0/4 < gameData.time.xGame) || (Last_omega_muzzle_flashTime > gameData.time.xGame)) {
-// -- 	DoMuzzleStuff (nFiringSeg, vFiringPos);
-// -- 	Last_omega_muzzle_flashTime = gameData.time.xGame;
-// -- }
-
+	DigiLinkSoundToPos (gameData.weapons.info [weaponObjP->id].flashSound, 
+							  weaponObjP->position.nSegment, 0, &weaponObjP->position.vPos, 0, F1_0);
 //	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nLockObj != -1)
@@ -589,7 +583,7 @@ if (gameData.objs.objects [nParent].nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel && 
 			(gameData.objs.objects + nParent == gameData.objs.console) && 
-			(gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+			(gameData.segs.segment2s [gameData.objs.console->position.nSegment].special == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
 if ((nParent == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) &&
@@ -622,7 +616,7 @@ if (nWeaponType == OMEGA_ID) {
 		 (gameData.objs.objects [nParent].nType != OBJ_WEAPON)) {
 		// Muzzle flash		
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
-			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
+			ObjectCreateMuzzleFlash (objP->position.nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 												gameData.weapons.info [objP->id].flash_vclip);
 		}
 	DoOmegaStuff (gameData.objs.objects + nParent, vPosition, objP);
@@ -696,13 +690,13 @@ if (((gameData.objs.objects + nParent) != gameData.objs.viewer) &&
 		(gameData.objs.objects [nParent].nType != OBJ_WEAPON))	{
 	// Muzzle flash		
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
-		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
+		ObjectCreateMuzzleFlash (objP->position.nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 											gameData.weapons.info [objP->id].flash_vclip);
 	}
 volume = F1_0;
 if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 	if (nParent != OBJ_IDX (gameData.objs.viewer))
-		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
+		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->position.nSegment, 0, &objP->position.vPos, 0, volume);
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
@@ -718,8 +712,8 @@ if ((gameData.objs.objects [nParent].nType == OBJ_PLAYER) && (gameData.weapons.i
 	int			nEndSeg;
 
 	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset+ (xLaserLength/2));
-	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment);
-	if (nEndSeg == objP->nSegment) 
+	nEndSeg = FindSegByPoint (&vEndPos, objP->position.nSegment);
+	if (nEndSeg == objP->position.nSegment) 
 		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
 		objP->position.vPos = vEndPos;
@@ -780,7 +774,7 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 	//	in the same tSegment as the source point.
 
 	fq.p0						= &parentObjP->position.vPos;
-	fq.startSeg				= parentObjP->nSegment;
+	fq.startSeg				= parentObjP->position.nSegment;
 	fq.p1						= vPosition;
 	fq.rad					= 0;
 	fq.thisObjNum			= OBJ_IDX (parentObjP);
@@ -806,7 +800,7 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 	int			fate;
 
 fq.p0					= &objP1->position.vPos;
-fq.startSeg			= objP1->nSegment;
+fq.startSeg			= objP1->position.nSegment;
 fq.p1					= &objP2->position.vPos;
 fq.rad				= 0x10;
 fq.thisObjNum		= OBJ_IDX (objP1);
@@ -1187,7 +1181,7 @@ int LaserPlayerFireSpreadDelay (
 
 	//--------------- Find LaserPos and LaserSeg ------------------
 	fq.p0						= &objP->position.vPos;
-	fq.startSeg				= objP->nSegment;
+	fq.startSeg				= objP->position.nSegment;
 	fq.p1						= &LaserPos;
 	fq.rad					= 0x10;
 	fq.thisObjNum			= OBJ_IDX (objP);
@@ -1492,7 +1486,7 @@ int LaserFireLocalPlayer (void)
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.objects [playerP->nObject].nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.objects [playerP->nObject].position.nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 xEnergyUsed = WI_energy_usage (nWeaponIndex);
@@ -1676,7 +1670,7 @@ return rval;
 // -- {
 // -- 	if ((gameData.time.xGame - Lightning_startTime < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_startTime > 0)) {
 // -- 		if (gameData.time.xGame - Lightning_lastTime > LIGHTNING_DELAY) {
-// -- 			create_lightning_blobs (&gameData.objs.console->position.mOrient.fVec, &gameData.objs.console->position.vPos, gameData.objs.console->nSegment, OBJ_IDX (gameData.objs.console));
+// -- 			create_lightning_blobs (&gameData.objs.console->position.mOrient.fVec, &gameData.objs.console->position.vPos, gameData.objs.console->position.nSegment, OBJ_IDX (gameData.objs.console));
 // -- 			Lightning_lastTime = gameData.time.xGame;
 // -- 		}
 // -- 	}
@@ -1755,14 +1749,14 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 			gameData.app.fusion.xCharge = 0;
 
-			vForce.x = - (objP->position.mOrient.fVec.x << 7);
-			vForce.y = - (objP->position.mOrient.fVec.y << 7);
-			vForce.z = - (objP->position.mOrient.fVec.z << 7);
+			vForce.p.x = - (objP->position.mOrient.fVec.p.x << 7);
+			vForce.p.y = - (objP->position.mOrient.fVec.p.y << 7);
+			vForce.p.z = - (objP->position.mOrient.fVec.p.z << 7);
 			PhysApplyForce (objP, &vForce);
 
-			vForce.x = (vForce.x >> 4) + d_rand () - 16384;
-			vForce.y = (vForce.y >> 4) + d_rand () - 16384;
-			vForce.z = (vForce.z >> 4) + d_rand () - 16384;
+			vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
+			vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
+			vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
 			PhysApplyRot (objP, &vForce);
 
 		}
@@ -1869,7 +1863,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 	}		
 
 	//	Create a vector towards the goal, then add some noise to it.
-	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment, 
+	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->position.nSegment, 
 									  OBJ_IDX (objP), objtype, bMakeSound);
 	if (nObject == -1)
 		return -1;
@@ -2108,13 +2102,13 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == SMISSILE5_INDEX)) {
 		vmsVector vForce;
 
-	vForce.x = - (gameData.objs.console->position.mOrient.fVec.x << 7);
-	vForce.y = - (gameData.objs.console->position.mOrient.fVec.y << 7);
-	vForce.z = - (gameData.objs.console->position.mOrient.fVec.z << 7);
+	vForce.p.x = - (gameData.objs.console->position.mOrient.fVec.p.x << 7);
+	vForce.p.y = - (gameData.objs.console->position.mOrient.fVec.p.y << 7);
+	vForce.p.z = - (gameData.objs.console->position.mOrient.fVec.p.z << 7);
 	PhysApplyForce (gameData.objs.console, &vForce);
-	vForce.x = (vForce.x >> 4) + d_rand () - 16384;
-	vForce.y = (vForce.y >> 4) + d_rand () - 16384;
-	vForce.z = (vForce.z >> 4) + d_rand () - 16384;
+	vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
+	vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
+	vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
 	PhysApplyRot (gameData.objs.console, &vForce);
 	break; //no dual mega/smart missile launch
 	}

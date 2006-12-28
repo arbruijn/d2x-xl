@@ -280,7 +280,7 @@ gameData.marker.point [nMarker] = playerP->position.vPos;
 if (gameData.marker.objects [nMarker] != -1)
 	ReleaseObject (gameData.marker.objects[nMarker]);
 gameData.marker.objects[nMarker] = 
-	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
+	DropMarkerObject (&playerP->position.vPos, (short) playerP->position.nSegment, &playerP->position.mOrient, nMarker);
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage[nMarker]);
 }
@@ -303,7 +303,7 @@ void DropBuddyMarker (tObject *objP)
 	if (gameData.marker.objects[nMarker] != -1 && gameData.marker.objects[nMarker] !=0)
 		ReleaseObject (gameData.marker.objects[nMarker]);
 
-	gameData.marker.objects[nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, nMarker);
+	gameData.marker.objects[nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->position.nSegment, &objP->position.mOrient, nMarker);
 
 }
 
@@ -404,9 +404,9 @@ bool G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
-x = f2glf (p.p3_vec.x);
-y = f2glf (p.p3_vec.y);
-z = f2glf (p.p3_vec.z);
+x = f2glf (p.p3_vec.p.x);
+y = f2glf (p.p3_vec.p.y);
+z = f2glf (p.p3_vec.p.z);
 r = f2glf (rad);
 glBegin (GL_POLYGON);
 for (i = 0; i <= nSides; i++) {
@@ -433,9 +433,9 @@ bool G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
-x = f2glf (p.p3_vec.x);
-y = f2glf (p.p3_vec.y);
-v.p.z = f2glf (p.p3_vec.z);
+x = f2glf (p.p3_vec.p.x);
+y = f2glf (p.p3_vec.p.y);
+v.p.z = f2glf (p.p3_vec.p.z);
 r = f2glf (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)
@@ -516,15 +516,15 @@ void DrawAutomap (int bRadar)
 
 if (bRadar && gameStates.render.bTopDownRadar) {
 	vmsMatrix *po = &gameData.multi.playerInit [gameData.multi.nLocalPlayer].position.mOrient;
-	vmRadar.rVec.x = po->rVec.x;
-	vmRadar.rVec.y = po->rVec.y;
-	vmRadar.rVec.z = po->rVec.z;
-	vmRadar.fVec.x = po->uVec.x;
-	vmRadar.fVec.y = -po->uVec.y;
-	vmRadar.fVec.z = po->uVec.z;
-	vmRadar.uVec.x = po->fVec.x;
-	vmRadar.uVec.y = po->fVec.y;
-	vmRadar.uVec.z = po->fVec.z;
+	vmRadar.rVec.p.x = po->rVec.p.x;
+	vmRadar.rVec.p.y = po->rVec.p.y;
+	vmRadar.rVec.p.z = po->rVec.p.z;
+	vmRadar.fVec.p.x = po->uVec.p.x;
+	vmRadar.fVec.p.y = -po->uVec.p.y;
+	vmRadar.fVec.p.z = po->uVec.p.z;
+	vmRadar.uVec.p.x = po->fVec.p.x;
+	vmRadar.uVec.p.y = po->fVec.p.y;
+	vmRadar.uVec.p.z = po->fVec.p.z;
 	}
 	
 WINDOS (
@@ -620,7 +620,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_ROBOT:
 				if (
 #if 1//ndef _DEBUG
-					 bAutomapVisited[objP->nSegment] && 
+					 bAutomapVisited[objP->position.nSegment] && 
 #endif
 					 EGI_FLAG (bRobotsOnRadar, 0, 0)) {
 					static int c = 0;
@@ -648,7 +648,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_POWERUP:
 				if (EGI_FLAG (bPowerUpsOnRadar, 0, 0) && 
 					 !(gameData.app.nGameMode & GM_MULTI) && 
-					 (gameStates.render.bAllVisited || bAutomapVisited[objP->nSegment]))	{
+					 (gameStates.render.bAllVisited || bAutomapVisited[objP->position.nSegment]))	{
 					//if ( (objP->id==POW_KEY_RED) || (objP->id==POW_KEY_BLUE) || (objP->id==POW_KEY_GOLD))	
 					{
 						switch (objP->id) {
@@ -903,7 +903,7 @@ pvTAngles->b = 0;
 amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
-//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
+//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.nSegment
 if (bRadar) {
 #ifdef RELEASE
 	if (! (gameData.app.nGameMode & GM_MULTI))
@@ -914,7 +914,7 @@ if (bRadar) {
 *pnSegmentLimit =
 *pnMaxSegsAway = 
 	SetSegmentDepths (
-		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
+		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.nSegment, 
 		bRadar ? bAutomapVisited : bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 #ifdef RELEASE
@@ -1006,7 +1006,7 @@ while (c = KeyInKey ()) {
 				bAutomapVisited[i] = 1;
 			AutomapBuildEdgeList ();
 			*pnSegmentLimit = 
-			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, bAutomapVisited);
+			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment, bAutomapVisited);
 			AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 			}
 			break;
@@ -1213,13 +1213,7 @@ void DrawAllEdges ()
 			tv1 = gameData.segs.vertices + e->verts[0];
 			j = 0;
 			while (j<e->num_faces && (nfacing==0 || nnfacing==0))	{
-#ifdef COMPACT_SEGS
-				vmsVector temp_v;
-				GetSideNormal (&gameData.segs.segments[e->nSegment[j]], e->sides[j], 0, &temp_v);
-				if (!G3CheckNormalFacing (tv1, &temp_v))
-#else
 				if (!G3CheckNormalFacing (tv1, &gameData.segs.segments[e->nSegment[j]].sides[e->sides[j]].normals[0]))
-#endif
 					nfacing++;
 				else
 					nnfacing++;
@@ -1536,7 +1530,7 @@ if (IS_WALL (wn = WallNumP (seg, sn)))	{
 		}
 	}
 
-if (nSegment == gameData.multi.playerInit[gameData.multi.nLocalPlayer].nSegment)
+if (nSegment == gameData.multi.playerInit[gameData.multi.nLocalPlayer].position.nSegment)
 	color = RGBA_PAL2 (31,0,31);
 
 	if (color != WHITE_RGBA) {
@@ -1611,7 +1605,7 @@ void AutomapBuildEdgeList ()
 		// Cheating, add all edges as visited
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].nSegment != -1)
+			if (gameData.segs.segments[s].position.nSegment != -1)
 			#endif
 			{
 				AddSegmentEdges (&gameData.segs.segments[s]);
@@ -1620,7 +1614,7 @@ void AutomapBuildEdgeList ()
 		// Not cheating, add visited edges, and then unvisited edges
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].nSegment != -1)
+			if (gameData.segs.segments[s].position.nSegment != -1)
 			#endif
 				if (bAutomapVisited[s]) {
 					h++;
@@ -1629,7 +1623,7 @@ void AutomapBuildEdgeList ()
 
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].nSegment != -1)
+			if (gameData.segs.segments[s].position.nSegment != -1)
 			#endif
 				if (!bAutomapVisited[s]) {
 					AddUnknownSegmentEdges (&gameData.segs.segments[s]);
@@ -1645,14 +1639,7 @@ void AutomapBuildEdgeList ()
 		for (e1 = 0; e1 < e->num_faces; e1++)	{
 			for (e2 = 1; e2 < e->num_faces; e2++)	{
 				if ( (e1 != e2) && (e->nSegment[e1] != e->nSegment[e2]))	{
-					#ifdef COMPACT_SEGS
-					vmsVector v1, v2;
-					GetSideNormal (&gameData.segs.segments[e->nSegment[e1]], e->sides[e1], 0, &v1);
-					GetSideNormal (&gameData.segs.segments[e->nSegment[e2]], e->sides[e2], 0, &v2);
-					if (VmVecDot (&v1,&v2) > (F1_0- (F1_0/10)) )	{
-					#else
 					if (VmVecDot (&gameData.segs.segments[e->nSegment[e1]].sides[e->sides[e1]].normals[0], &gameData.segs.segments[e->nSegment[e2]].sides[e->sides[e2]].normals[0]) > (F1_0- (F1_0/10)) )	{
-					#endif
 						e->flags &= (~EF_DEFINING);
 						break;
 					}

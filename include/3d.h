@@ -62,9 +62,6 @@ typedef struct g3sNormal {
 
 typedef struct g3sPoint {
 	vmsVector	p3_vec;  //x,y,z of rotated point
-#ifdef D1XD3D
-	vmsVector	p3_orig;
-#endif
 	fix			p3_u,p3_v,p3_l; //u,v,l coords
 	fix			p3_sx,p3_sy;    //screen x&y
 	ubyte			p3_codes;     //clipping codes
@@ -74,9 +71,9 @@ typedef struct g3sPoint {
 } g3sPoint;
 
 //macros to reference x,y,z elements of a 3d point
-#define p3_x p3_vec.x
-#define p3_y p3_vec.y
-#define p3_z p3_vec.z
+#define p3_x p3_vec.p.x
+#define p3_y p3_vec.p.y
+#define p3_z p3_vec.p.z
 
 //An tObject, such as a robot
 typedef struct g3sObject {

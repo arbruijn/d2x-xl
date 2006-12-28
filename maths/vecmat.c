@@ -43,9 +43,9 @@ vmsMatrix vmdIdentityMatrix = {{f1_0, 0, 0},
 #if !INLINE_VEC_ADD
 vmsVector *VmVecAdd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
-dest->x = src0->x + src1->x;
-dest->y = src0->y + src1->y;
-dest->z = src0->z + src1->z;
+dest->p.x = src0->p.x + src1->p.x;
+dest->p.y = src0->p.y + src1->p.y;
+dest->p.z = src0->p.z + src1->p.z;
 return dest;
 }
 
@@ -54,9 +54,9 @@ return dest;
 //ok for dest to equal either source, but should use VmVecDec() if so
 vmsVector *VmVecSub(vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
-dest->x = src0->x - src1->x;
-dest->y = src0->y - src1->y;
-dest->z = src0->z - src1->z;
+dest->p.x = src0->p.x - src1->p.x;
+dest->p.y = src0->p.y - src1->p.y;
+dest->p.z = src0->p.z - src1->p.z;
 return dest;
 }
 
@@ -75,9 +75,9 @@ return dest;
 //dest can equal source
 vmsVector *VmVecInc (vmsVector *dest, vmsVector *src)
 {
-dest->x += src->x;
-dest->y += src->y;
-dest->z += src->z;
+dest->p.x += src->p.x;
+dest->p.y += src->p.y;
+dest->p.z += src->p.z;
 return dest;
 }
 
@@ -86,9 +86,9 @@ return dest;
 //dest can equal source
 vmsVector *VmVecDec(vmsVector *dest, vmsVector *src)
 {
-dest->x -= src->x;
-dest->y -= src->y;
-dest->z -= src->z;
+dest->p.x -= src->p.x;
+dest->p.y -= src->p.y;
+dest->p.z -= src->p.z;
 return dest;
 }
 #endif
@@ -98,9 +98,9 @@ return dest;
 //dest can equal either source
 vmsVector *VmVecAvg(vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
-dest->x = (src0->x + src1->x)/2;
-dest->y = (src0->y + src1->y)/2;
-dest->z = (src0->z + src1->z)/2;
+dest->p.x = (src0->p.x + src1->p.x)/2;
+dest->p.y = (src0->p.y + src1->p.y)/2;
+dest->p.z = (src0->p.z + src1->p.z)/2;
 return dest;
 }
 
@@ -111,9 +111,9 @@ vmsVector *VmVecAvg4(vmsVector *dest,
 								vmsVector *src0, vmsVector *src1, 
 								vmsVector *src2, vmsVector *src3)
 {
-dest->x = (src0->x + src1->x + src2->x + src3->x)/4;
-dest->y = (src0->y + src1->y + src2->y + src3->y)/4;
-dest->z = (src0->z + src1->z + src2->z + src3->z)/4;
+dest->p.x = (src0->p.x + src1->p.x + src2->p.x + src3->p.x)/4;
+dest->p.y = (src0->p.y + src1->p.y + src2->p.y + src3->p.y)/4;
+dest->p.z = (src0->p.z + src1->p.z + src2->p.z + src3->p.z)/4;
 return dest;
 }
 
@@ -121,9 +121,9 @@ return dest;
 //scales a vector in place.  returns ptr to vector
 vmsVector *VmVecScale (vmsVector *dest, fix s)
 {
-dest->x = FixMul (dest->x, s);
-dest->y = FixMul (dest->y, s);
-dest->z = FixMul (dest->z, s);
+dest->p.x = FixMul (dest->p.x, s);
+dest->p.y = FixMul (dest->p.y, s);
+dest->p.z = FixMul (dest->p.z, s);
 return dest;
 }
 
@@ -141,9 +141,9 @@ return dest;
 //scales and copies a vector.  returns ptr to dest
 vmsVector *VmVecCopyScale (vmsVector *dest, vmsVector *src, fix s)
 {
-dest->x = FixMul (src->x, s);
-dest->y = FixMul (src->y, s);
-dest->z = FixMul (src->z, s);
+dest->p.x = FixMul (src->p.x, s);
+dest->p.y = FixMul (src->p.y, s);
+dest->p.z = FixMul (src->p.z, s);
 return dest;
 }
 
@@ -152,9 +152,9 @@ return dest;
 //dest = src1 + k * src2
 vmsVector *VmVecScaleAdd (vmsVector *dest, vmsVector *src1, vmsVector *src2, fix k)
 {
-dest->x = src1->x + FixMul (src2->x, k);
-dest->y = src1->y + FixMul (src2->y, k);
-dest->z = src1->z + FixMul (src2->z, k);
+dest->p.x = src1->p.x + FixMul (src2->p.x, k);
+dest->p.y = src1->p.y + FixMul (src2->p.y, k);
+dest->p.z = src1->p.z + FixMul (src2->p.z, k);
 return dest;
 }
 
@@ -184,9 +184,9 @@ return dest;
 //dest += k * src
 vmsVector *VmVecScaleInc (vmsVector *dest, vmsVector *src, fix k)
 {
-dest->x += FixMul (src->x, k);
-dest->y += FixMul (src->y, k);
-dest->z += FixMul (src->z, k);
+dest->p.x += FixMul (src->p.x, k);
+dest->p.y += FixMul (src->p.y, k);
+dest->p.z += FixMul (src->p.z, k);
 return dest;
 }
 
@@ -208,13 +208,13 @@ vmsVector *VmVecScaleFrac (vmsVector *dest, fix n, fix d)
 {
 #if 1 // DPH: Kludge: this was overflowing a lot, so I made it use the FPU.
 double nd = f2fl(n) / f2fl(d);
-dest->x = fl2f (f2fl (dest->x) * nd);
-dest->y = fl2f (f2fl (dest->y) * nd);
-dest->z = fl2f (f2fl (dest->z) * nd);
+dest->p.x = fl2f (f2fl (dest->p.x) * nd);
+dest->p.y = fl2f (f2fl (dest->p.y) * nd);
+dest->p.z = fl2f (f2fl (dest->p.z) * nd);
 #else
-dest->x = FixMulDiv (src->x, n, d);
-dest->y = FixMulDiv (src->y, n, d);
-dest->z = FixMulDiv (src->z, n, d);
+dest->p.x = FixMulDiv (src->p.x, n, d);
+dest->p.y = FixMulDiv (src->p.y, n, d);
+dest->p.z = FixMulDiv (src->p.z, n, d);
 #endif
 return dest;
 }
@@ -287,14 +287,14 @@ if (gameOpts->render.bEnableSSE) {
 	}
 #endif
 if (gameOpts->render.nMathFormat == 2)
-	return (fix) (((double) v0->x * (double) v1->x + 
-						(double) v0->y * (double) v1->y + 
-						(double) v0->z * (double) v1->z) 
+	return (fix) (((double) v0->p.x * (double) v1->p.x + 
+						(double) v0->p.y * (double) v1->p.y + 
+						(double) v0->p.z * (double) v1->p.z) 
 					  / 65536.0);
 else {
-	QLONG q = mul64 (v0->x, v1->x);
-	q += mul64 (v0->y, v1->y);
-	q += mul64 (v0->z, v1->z);
+	QLONG q = mul64 (v0->p.x, v1->p.x);
+	q += mul64 (v0->p.y, v1->p.y);
+	q += mul64 (v0->p.z, v1->p.z);
 	return (fix) (q / 65536); //>> 16);
 	}
 }
@@ -340,11 +340,11 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 fix VmVecDot3(fix x, fix y, fix z, vmsVector *v)
 {
 if (gameOpts->render.nMathFormat == 2)
-	return (fix) (((double) x * (double) v->x + (double) y * (double) v->y + (double) z * (double) v->z) / 65536.0);
+	return (fix) (((double) x * (double) v->p.x + (double) y * (double) v->p.y + (double) z * (double) v->p.z) / 65536.0);
 else {
-	QLONG q = mul64 (x, v->x);
-	q += mul64 (y, v->y);
-	q += mul64 (z, v->z);
+	QLONG q = mul64 (x, v->p.x);
+	q += mul64 (y, v->p.y);
+	q += mul64 (z, v->p.z);
 	return (fix) (q >> 16);
 	}
 }
@@ -432,21 +432,21 @@ if (gameOpts->render.nMathFormat == 2) {
 		}
 	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
 #else
-	return (fix) sqrt (sqrd ((double) v->x) + sqrd ((double) v->y) + sqrd ((double) v->z)); 
+	return (fix) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
 #endif
 	}
 else {
 #if 1//def _WIN32
-	QLONG q = mul64 (v->x, v->x);
-	q += mul64 (v->y, v->y);
-	q += mul64 (v->z, v->z);
+	QLONG q = mul64 (v->p.x, v->p.x);
+	q += mul64 (v->p.y, v->p.y);
+	q += mul64 (v->p.z, v->p.z);
 	return sqrt64 ((unsigned QLONG) q);
 #else
 	quadint q;
 	q.low = q.high = 0;
-	fixmulaccum(&q, v->x, v->x);
-	fixmulaccum(&q, v->y, v->y);
-	fixmulaccum(&q, v->z, v->z);
+	fixmulaccum(&q, v->p.x, v->p.x);
+	fixmulaccum(&q, v->p.y, v->p.y);
+	fixmulaccum(&q, v->p.z, v->p.z);
 	return quad_sqrt(q.low, q.high);
 #endif
 	}
@@ -536,7 +536,7 @@ return VmVecMagf (VmVecSubf (&t, v0, v1));
 #if 0//QUICK_VEC_MATH
 fix VmVecDistQuick (vmsVector *v0, vmsVector *v1)
 {
-return FixVecMagQuick (v0->x - v1->x, v0->y - v1->y, v0->z - v1->z);
+return FixVecMagQuick (v0->p.x - v1->p.x, v0->p.y - v1->p.y, v0->p.z - v1->p.z);
 }
 #endif
 
@@ -546,14 +546,14 @@ fix VmVecCopyNormalize (vmsVector *dest, vmsVector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
-	dest->x = FixDiv (src->x, m);
-	dest->y = FixDiv (src->y, m);
-	dest->z = FixDiv (src->z, m);
+	dest->p.x = FixDiv (src->p.x, m);
+	dest->p.y = FixDiv (src->p.y, m);
+	dest->p.z = FixDiv (src->p.z, m);
 	}
 else
-	dest->x =
-	dest->y =
-	dest->z = 0;
+	dest->p.x =
+	dest->p.y =
+	dest->p.z = 0;
 return m;
 }
 
@@ -578,9 +578,9 @@ fix VmVecCopyNormalizeQuick(vmsVector *dest, vmsVector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
-	dest->x = FixDiv(src->x, m);
-	dest->y = FixDiv(src->y, m);
-	dest->z = FixDiv(src->z, m);
+	dest->p.x = FixDiv(src->p.x, m);
+	dest->p.y = FixDiv(src->p.y, m);
+	dest->p.z = FixDiv(src->p.z, m);
 	}
 return m;
 }
@@ -597,9 +597,9 @@ return 1.0f / VmVecMag (v);
 #else
 #	if 1//def _WIN32
 u_int32_t l, h;
-QLONG q = mul64 (v->x, v->x);
-q += mul64 (v->y, v->y);
-q += mul64 (v->z, v->z);
+QLONG q = mul64 (v->p.x, v->p.x);
+q += mul64 (v->p.y, v->p.y);
+q += mul64 (v->p.z, v->p.z);
 h = q >> 32;
 if (h >= 0x800000)
 	return (fix_isqrt (h) >> 8);
@@ -610,9 +610,9 @@ return (fix_isqrt ((h << 8) + (l >> 24)) >> 4);
 #	else
 quadint q;
 q.low = q.high = 0;
-fixmulaccum(&q, v->x, v->x);
-fixmulaccum(&q, v->y, v->y);
-fixmulaccum(&q, v->z, v->z);
+fixmulaccum(&q, v->p.x, v->p.x);
+fixmulaccum(&q, v->p.y, v->p.y);
+fixmulaccum(&q, v->p.z, v->p.z);
 if (!q.high)
 	return fix_isqrt(fixquadadjust(&q));
 if (q.high >= 0x800000)
@@ -627,9 +627,9 @@ return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
 fix VmVecCopyNormalizeQuick(vmsVector *dest, vmsVector *src)
 {
 fix im = VmVecInvMag(src);
-dest->x = FixMul (src->x, im);
-dest->y = FixMul (src->y, im);
-dest->z = FixMul (src->z, im);
+dest->p.x = FixMul (src->p.x, im);
+dest->p.y = FixMul (src->p.y, im);
+dest->p.z = FixMul (src->p.z, im);
 return im;
 }
 
@@ -678,7 +678,7 @@ void CheckVec(vmsVector *vp)
 	int cnt = 0;
 	vmsVector v = *vp;
 
-if (!(check = labs (v.x) | labs (v.y) | labs (v.z)))
+if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
 	return;
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
@@ -702,9 +702,9 @@ else if (!(check & 0xffff8000)) {		//yep, too small
 	}
 else
 	return;
-v.x >>= cnt;
-v.y >>= cnt;
-v.z >>= cnt;
+v.p.x >>= cnt;
+v.p.y >>= cnt;
+v.p.z >>= cnt;
 *vp = v;
 }
 
@@ -721,26 +721,26 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 	double d;
 	Assert(dest!=src0 && dest!=src1);
 
-	d = (double)(src0->y) * (double)(src1->z);
-	d += (double)-(src0->z) * (double)(src1->y);
+	d = (double)(src0->p.y) * (double)(src1->p.z);
+	d += (double)-(src0->p.z) * (double)(src1->p.y);
 	d /= 65536.0;
 	if (d < 0.0)
 		d = d - 1.0;
-	dest->x = (fix)d;
+	dest->p.x = (fix)d;
 
-	d = (double)(src0->z) * (double)(src1->x);
-	d += (double)-(src0->x) * (double)(src1->z);
+	d = (double)(src0->p.z) * (double)(src1->p.x);
+	d += (double)-(src0->p.x) * (double)(src1->p.z);
 	d /= 65536.0;
 	if (d < 0.0)
 		d = d - 1.0;
-	dest->y = (fix)d;
+	dest->p.y = (fix)d;
 
-	d = (double)(src0->x) * (double)(src1->y);
-	d += (double)-(src0->y) * (double)(src1->x);
+	d = (double)(src0->p.x) * (double)(src1->p.y);
+	d += (double)-(src0->p.y) * (double)(src1->p.x);
 	d /= 65536.0;
 	if (d < 0.0)
 		d = d - 1.0;
-	dest->z = (fix)d;
+	dest->p.z = (fix)d;
 
 	return dest;
 }
@@ -751,33 +751,33 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
 #if 1//def _WIN32
-QLONG q = mul64 (src0->y, src1->z);
+QLONG q = mul64 (src0->p.y, src1->p.z);
 Assert(dest!=src0 && dest!=src1);
-q += mul64 (-src0->z, src1->y);
-dest->x = (fix) (q >> 16);
-q = mul64 (src0->z, src1->x);
-q += mul64 (-src0->x, src1->z);
-dest->y = (fix) (q >> 16);
-q = mul64 (src0->x, src1->y);
-q += mul64 (-src0->y, src1->x);
-dest->z = (fix) (q >> 16);
+q += mul64 (-src0->p.z, src1->p.y);
+dest->p.x = (fix) (q >> 16);
+q = mul64 (src0->p.z, src1->p.x);
+q += mul64 (-src0->p.x, src1->p.z);
+dest->p.y = (fix) (q >> 16);
+q = mul64 (src0->p.x, src1->p.y);
+q += mul64 (-src0->p.y, src1->p.x);
+dest->p.z = (fix) (q >> 16);
 #else
 quadint q;
 Assert(dest!=src0 && dest!=src1);
 q.low = q.high = 0;
-fixmulaccum(&q, src0->y, src1->z);
-fixmulaccum(&q, -src0->z, src1->y);
-dest->x = fixquadadjust(&q);
+fixmulaccum(&q, src0->p.y, src1->p.z);
+fixmulaccum(&q, -src0->p.z, src1->p.y);
+dest->p.x = fixquadadjust(&q);
 
 q.low = q.high = 0;
-fixmulaccum(&q, src0->z, src1->x);
-fixmulaccum(&q, -src0->x, src1->z);
-dest->y = fixquadadjust(&q);
+fixmulaccum(&q, src0->p.z, src1->p.x);
+fixmulaccum(&q, -src0->p.x, src1->p.z);
+dest->p.y = fixquadadjust(&q);
 
 q.low = q.high = 0;
-fixmulaccum(&q, src0->x, src1->y);
-fixmulaccum(&q, -src0->y, src1->x);
-dest->z = fixquadadjust(&q);
+fixmulaccum(&q, src0->p.x, src1->p.y);
+fixmulaccum(&q, -src0->p.y, src1->p.x);
+dest->p.z = fixquadadjust(&q);
 #endif
 return dest;
 }
@@ -837,15 +837,15 @@ sbsh = FixMul (sinb, sinh);
 cbch = FixMul (cosb, cosh);
 cbsh = FixMul (cosb, sinh);
 sbch = FixMul (sinb, cosh);
-m->rVec.x = cbch + FixMul (sinp, sbsh);		//m1
-m->uVec.z = sbsh + FixMul (sinp, cbch);		//m8
-m->uVec.x = FixMul (sinp, cbsh) - sbch;		//m2
-m->rVec.z = FixMul (sinp, sbch) - cbsh;		//m7
-m->fVec.x = FixMul (sinh, cosp);				//m3
-m->rVec.y = FixMul (sinb, cosp);				//m4
-m->uVec.y = FixMul (cosb, cosp);				//m5
-m->fVec.z = FixMul (cosh, cosp);				//m9
-m->fVec.y = -sinp;								//m6
+m->rVec.p.x = cbch + FixMul (sinp, sbsh);		//m1
+m->uVec.p.z = sbsh + FixMul (sinp, cbch);		//m8
+m->uVec.p.x = FixMul (sinp, cbsh) - sbch;		//m2
+m->rVec.p.z = FixMul (sinp, sbch) - cbsh;		//m7
+m->fVec.p.x = FixMul (sinh, cosp);				//m3
+m->rVec.p.y = FixMul (sinb, cosp);				//m4
+m->uVec.p.y = FixMul (cosb, cosp);				//m5
+m->fVec.p.z = FixMul (cosh, cosp);				//m9
+m->fVec.p.y = -sinp;								//m6
 return m;
 }
 
@@ -867,9 +867,9 @@ vmsMatrix *VmVecAng2Matrix (vmsMatrix *m, vmsVector *v, fixang a)
 	fix sinb, cosb, sinp, cosp;
 
 FixSinCos (a, &sinb, &cosb);
-sinp = -v->y;
+sinp = -v->p.y;
 cosp = fix_sqrt (f1_0 - FixMul (sinp, sinp));
-return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->x, cosp), FixDiv(v->z, cosp));
+return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->p.x, cosp), FixDiv(v->p.z, cosp));
 }
 
 // ------------------------------------------------------------------------
@@ -893,15 +893,15 @@ if (uVec == NULL) {
 
 bad_vector2:
 ;
-		if (zvec->x==0 && zvec->z==0) {		//forward vec is straight up or down
-			m->rVec.x = F1_0;
-			m->uVec.z = (zvec->y < 0) ? F1_0 : -F1_0;
-			m->rVec.y = m->rVec.z = m->uVec.x = m->uVec.y = 0;
+		if (zvec->p.x==0 && zvec->p.z==0) {		//forward vec is straight up or down
+			m->rVec.p.x = F1_0;
+			m->uVec.p.z = (zvec->p.y < 0) ? F1_0 : -F1_0;
+			m->rVec.p.y = m->rVec.p.z = m->uVec.p.x = m->uVec.p.y = 0;
 			}
 		else { 		//not straight up or down
-			xvec->x = zvec->z;
-			xvec->y = 0;
-			xvec->z = -zvec->x;
+			xvec->p.x = zvec->p.z;
+			xvec->p.y = 0;
+			xvec->p.z = -zvec->p.x;
 			VmVecNormalize (xvec);
 			VmVecCrossProd (yvec, zvec, xvec);
 			}
@@ -943,15 +943,15 @@ if (!uVec) {
 	if (!rVec) {		//just forward vec
 bad_vector2:
 ;
-		if (!(zvec->x || zvec->z)) {		//forward vec is straight up or down
-			m->rVec.x = F1_0;
-			m->uVec.z = (zvec->y < 0) ? F1_0 : -F1_0;
-			m->rVec.y = m->rVec.z = m->uVec.x = m->uVec.y = 0;
+		if (!(zvec->p.x || zvec->p.z)) {		//forward vec is straight up or down
+			m->rVec.p.x = F1_0;
+			m->uVec.p.z = (zvec->p.y < 0) ? F1_0 : -F1_0;
+			m->rVec.p.y = m->rVec.p.z = m->uVec.p.x = m->uVec.p.y = 0;
 			}
 		else { 		//not straight up or down
-			xvec->x = zvec->z;
-			xvec->y = 0;
-			xvec->z = -zvec->x;
+			xvec->p.x = zvec->p.z;
+			xvec->p.y = 0;
+			xvec->p.z = -zvec->p.x;
 			VmVecNormalize (xvec);
 			VmVecCrossProd (yvec, zvec, xvec);
 			}
@@ -1051,9 +1051,9 @@ if (gameOpts->render.bEnableSSE) {
 		: "%rsi"
 		);
 #endif
-	dest->x = (fix) (vf.p.x * 65536);
-	dest->y = (fix) (vf.p.y * 65536);
-	dest->z = (fix) (vf.p.z * 65536);
+	dest->p.x = (fix) (vf.p.x * 65536);
+	dest->p.y = (fix) (vf.p.y * 65536);
+	dest->p.z = (fix) (vf.p.z * 65536);
 	}
 else 
 #endif
@@ -1066,9 +1066,9 @@ else
 		h = *src;
 		src = &h;
 		}
-	dest->x = VmVecDot (src, &m->rVec);
-	dest->y = VmVecDot (src, &m->uVec);
-	dest->z = VmVecDot (src, &m->fVec);
+	dest->p.x = VmVecDot (src, &m->rVec);
+	dest->p.y = VmVecDot (src, &m->uVec);
+	dest->p.z = VmVecDot (src, &m->fVec);
 	}
 return dest;
 }
@@ -1173,9 +1173,9 @@ vmsMatrix *VmTransposeMatrix (vmsMatrix *m)
 {
 	fix t;
 
-t = m->uVec.x;  m->uVec.x = m->rVec.y;  m->rVec.y = t;
-t = m->fVec.x;  m->fVec.x = m->rVec.z;  m->rVec.z = t;
-t = m->fVec.y;  m->fVec.y = m->uVec.z;  m->uVec.z = t;
+t = m->uVec.p.x;  m->uVec.p.x = m->rVec.p.y;  m->rVec.p.y = t;
+t = m->fVec.p.x;  m->fVec.p.x = m->rVec.p.z;  m->rVec.p.z = t;
+t = m->fVec.p.y;  m->fVec.p.y = m->uVec.p.z;  m->uVec.p.z = t;
 return m;
 }
 
@@ -1185,15 +1185,15 @@ return m;
 vmsMatrix *VmCopyTransposeMatrix (vmsMatrix *dest, vmsMatrix *src)
 {
 Assert(dest != src);
-dest->rVec.x = src->rVec.x;
-dest->rVec.y = src->uVec.x;
-dest->rVec.z = src->fVec.x;
-dest->uVec.x = src->rVec.y;
-dest->uVec.y = src->uVec.y;
-dest->uVec.z = src->fVec.y;
-dest->fVec.x = src->rVec.z;
-dest->fVec.y = src->uVec.z;
-dest->fVec.z = src->fVec.z;
+dest->rVec.p.x = src->rVec.p.x;
+dest->rVec.p.y = src->uVec.p.x;
+dest->rVec.p.z = src->fVec.p.x;
+dest->uVec.p.x = src->rVec.p.y;
+dest->uVec.p.y = src->uVec.p.y;
+dest->uVec.p.z = src->fVec.p.y;
+dest->fVec.p.x = src->rVec.p.z;
+dest->fVec.p.y = src->uVec.p.z;
+dest->fVec.p.z = src->fVec.p.z;
 return dest;
 }
 
@@ -1205,24 +1205,24 @@ vmsMatrix *VmMatMul (vmsMatrix *dest, vmsMatrix *src0, vmsMatrix *src1)
 	vmsVector	v;
 
 Assert(dest!=src0 && dest!=src1);
-v.x = src0->rVec.x;
-v.y = src0->uVec.x;
-v.z = src0->fVec.x;
-dest->rVec.x = VmVecDot (&v, &src1->rVec);
-dest->uVec.x = VmVecDot (&v, &src1->uVec);
-dest->fVec.x = VmVecDot (&v, &src1->fVec);
-v.x = src0->rVec.y;
-v.y = src0->uVec.y;
-v.z = src0->fVec.y;
-dest->rVec.y = VmVecDot (&v, &src1->rVec);
-dest->uVec.y = VmVecDot (&v, &src1->uVec);
-dest->fVec.y = VmVecDot (&v, &src1->fVec);
-v.x = src0->rVec.z;
-v.y = src0->uVec.z;
-v.z = src0->fVec.z;
-dest->rVec.z = VmVecDot (&v, &src1->rVec);
-dest->uVec.z = VmVecDot (&v, &src1->uVec);
-dest->fVec.z = VmVecDot (&v, &src1->fVec);
+v.p.x = src0->rVec.p.x;
+v.p.y = src0->uVec.p.x;
+v.p.z = src0->fVec.p.x;
+dest->rVec.p.x = VmVecDot (&v, &src1->rVec);
+dest->uVec.p.x = VmVecDot (&v, &src1->uVec);
+dest->fVec.p.x = VmVecDot (&v, &src1->fVec);
+v.p.x = src0->rVec.p.y;
+v.p.y = src0->uVec.p.y;
+v.p.z = src0->fVec.p.y;
+dest->rVec.p.y = VmVecDot (&v, &src1->rVec);
+dest->uVec.p.y = VmVecDot (&v, &src1->uVec);
+dest->fVec.p.y = VmVecDot (&v, &src1->fVec);
+v.p.x = src0->rVec.p.z;
+v.p.y = src0->uVec.p.z;
+v.p.z = src0->fVec.p.z;
+dest->rVec.p.z = VmVecDot (&v, &src1->rVec);
+dest->uVec.p.z = VmVecDot (&v, &src1->uVec);
+dest->fVec.p.z = VmVecDot (&v, &src1->fVec);
 return dest;
 }
 #endif
@@ -1233,26 +1233,26 @@ vmsAngVec *VmExtractAnglesMatrix (vmsAngVec *a, vmsMatrix *m)
 {
 	fix sinh, cosh, cosp;
 
-if (m->fVec.x==0 && m->fVec.z==0)		//zero head
+if (m->fVec.p.x==0 && m->fVec.p.z==0)		//zero head
 	a->h = 0;
 else
-	a->h = fix_atan2(m->fVec.z, m->fVec.x);
+	a->h = fix_atan2(m->fVec.p.z, m->fVec.p.x);
 FixSinCos(a->h, &sinh, &cosh);
 if (abs(sinh) > abs(cosh))				//sine is larger, so use it
-	cosp = FixDiv(m->fVec.x, sinh);
+	cosp = FixDiv(m->fVec.p.x, sinh);
 else											//cosine is larger, so use it
-	cosp = FixDiv(m->fVec.z, cosh);
-if (cosp==0 && m->fVec.y==0)
+	cosp = FixDiv(m->fVec.p.z, cosh);
+if (cosp==0 && m->fVec.p.y==0)
 	a->p = 0;
 else
-	a->p = fix_atan2(cosp, -m->fVec.y);
+	a->p = fix_atan2(cosp, -m->fVec.p.y);
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a->b = 0;
 else {
 	fix sinb, cosb;
 
-	sinb = FixDiv (m->rVec.y, cosp);
-	cosb = FixDiv (m->uVec.y, cosp);
+	sinb = FixDiv (m->rVec.p.y, cosp);
+	cosb = FixDiv (m->uVec.p.y, cosp);
 	if (sinb==0 && cosb==0)
 		a->b = 0;
 	else
@@ -1266,8 +1266,8 @@ return a;
 vmsAngVec *VmExtractAnglesVecNorm (vmsAngVec *a, vmsVector *v)
 {
 a->b = 0;		//always zero bank
-a->p = fix_asin (-v->y);
-a->h = (v->x || v->z) ? fix_atan2(v->z, v->x) : 0;
+a->p = fix_asin (-v->p.y);
+a->h = (v->p.x || v->p.z) ? fix_atan2(v->p.z, v->p.x) : 0;
 return a;
 }
 
@@ -1332,9 +1332,9 @@ else
 
 vmsVector *VmVecMake (vmsVector *v, fix x, fix y, fix z)
 {
-v->x = x; 
-v->y = y; 
-v->z = z;
+v->p.x = x; 
+v->p.y = y; 
+v->p.z = z;
 return v;
 }
 
@@ -1351,9 +1351,9 @@ double l = d / (double) VmVecDot (n, a);
 #	else
 double l = (double) -VmVecDot (n, p) / (double) VmVecDot (n, a);
 #	endif
-i->x = (fix) (l * (double) a->x);
-i->y = (fix) (l * (double) a->y);
-i->z = (fix) (l * (double) a->z);
+i->p.x = (fix) (l * (double) a->p.x);
+i->p.y = (fix) (l * (double) a->p.y);
+i->p.z = (fix) (l * (double) a->p.z);
 return i;
 #else
 *i = *a;
@@ -1398,9 +1398,9 @@ int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVecto
 	vmsVector	i;
 	double l = (double) -VmVecDot (n, p1) / (double) VmVecDot (n, a);
 
-i.x = (fix) (l * (double) a->x);
-i.y = (fix) (l * (double) a->y);
-i.z = (fix) (l * (double) a->z);
+i.p.x = (fix) (l * (double) a->p.x);
+i.p.y = (fix) (l * (double) a->p.y);
+i.p.z = (fix) (l * (double) a->p.z);
 return !(VmBehindPlane (n, p1, p2, &i) || 
 			VmBehindPlane (n, p2, p3, &i) ||
 			VmBehindPlane (n, p3, p1, &i));

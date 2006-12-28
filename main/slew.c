@@ -71,13 +71,17 @@ int slew_stop()
 
 void slew_reset_orient()
 {
-	if (!slewObjP || slewObjP->controlType!=CT_SLEW) return;
-
-	slewObjP->position.mOrient.rVec.x = slewObjP->position.mOrient.uVec.y = slewObjP->position.mOrient.fVec.z = f1_0;
-
-	slewObjP->position.mOrient.rVec.y = slewObjP->position.mOrient.rVec.z = slewObjP->position.mOrient.uVec.x =
-   slewObjP->position.mOrient.uVec.z = slewObjP->position.mOrient.fVec.x = slewObjP->position.mOrient.fVec.y = 0;
-
+if (!slewObjP || slewObjP->controlType!=CT_SLEW) 
+	return;
+slewObjP->position.mOrient.rVec.p.x = 
+slewObjP->position.mOrient.uVec.p.y = 
+slewObjP->position.mOrient.fVec.p.z = f1_0;
+slewObjP->position.mOrient.rVec.p.y = 
+slewObjP->position.mOrient.rVec.p.z = 
+slewObjP->position.mOrient.uVec.p.x =
+slewObjP->position.mOrient.uVec.p.z = 
+slewObjP->position.mOrient.fVec.p.x = 
+slewObjP->position.mOrient.fVec.p.y = 0;
 }
 
 int do_slew_movement(tObject *objP, int check_keys, int check_joy )
@@ -94,11 +98,11 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
 			if (FindArg("-jasen"))
-				objP->mType.physInfo.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
+				objP->mType.physInfo.velocity.p.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
 			else
-				objP->mType.physInfo.velocity.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
-			objP->mType.physInfo.velocity.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
-			objP->mType.physInfo.velocity.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
+				objP->mType.physInfo.velocity.p.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
+			objP->mType.physInfo.velocity.p.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
+			objP->mType.physInfo.velocity.p.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
 
 			rotang.p = (KeyDownTime(KEY_LBRACKET) - KeyDownTime(KEY_RBRACKET))/ROT_SPEED ;
 			if (FindArg("-jasen"))
@@ -108,9 +112,9 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 			rotang.h  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mType.physInfo.velocity.x += VEL_SPEED * Controls.sideways_thrustTime;
-			objP->mType.physInfo.velocity.y += VEL_SPEED * Controls.vertical_thrustTime;
-			objP->mType.physInfo.velocity.z += VEL_SPEED * Controls.forward_thrustTime;
+			objP->mType.physInfo.velocity.p.x += VEL_SPEED * Controls.sideways_thrustTime;
+			objP->mType.physInfo.velocity.p.y += VEL_SPEED * Controls.vertical_thrustTime;
+			objP->mType.physInfo.velocity.p.z += VEL_SPEED * Controls.forward_thrustTime;
 
 			rotang.p = Controls.pitchTime/ROT_SPEED ;
 			rotang.b  = Controls.bankTime/ROT_SPEED;
@@ -135,7 +139,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 		if (btns)
 			if (!rotang.p) rotang.p = FixMul(-joy_y * 512,gameData.time.xFrame); else;
 		else
-			if (joyy_moved) objP->mType.physInfo.velocity.z = -joy_y * 8192;
+			if (joyy_moved) objP->mType.physInfo.velocity.p.z = -joy_y * 8192;
 	
 		if (!rotang.h) rotang.h = FixMul(joy_x * 512,gameData.time.xFrame);
 	
@@ -150,7 +154,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	objP->position.mOrient = new_pm;
 	VmTransposeMatrix(&new_pm);		//make those columns rows
 
-	moved |= objP->mType.physInfo.velocity.x | objP->mType.physInfo.velocity.y | objP->mType.physInfo.velocity.z;
+	moved |= objP->mType.physInfo.velocity.p.x | objP->mType.physInfo.velocity.p.y | objP->mType.physInfo.velocity.p.z;
 
 	svel = objP->mType.physInfo.velocity;
 	VmVecScale(&svel,gameData.time.xFrame);		//movement in this frame
@@ -159,7 +163,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 //	objP->last_pos = objP->position.vPos;
 	VmVecInc(&objP->position.vPos,&movement);
 
-	moved |= (movement.x || movement.y || movement.z);
+	moved |= (movement.p.x || movement.p.y || movement.p.z);
 
 	if (moved)
 		UpdateObjectSeg(objP);	//update tSegment id

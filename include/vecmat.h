@@ -164,14 +164,10 @@ typedef union fVector {
 } fVector;
 
 //The basic fixed-point vector.  Access elements by name or position
-typedef struct vmsVector {
-    fix x, y, z;
+typedef union vmsVector {
+	fix v [3];
+	struct {fix x, y, z;} p;
   } __pack__ vmsVector;
-
-
-typedef struct vms_vector_array {
-    fix xyz[3];
-  } __pack__ vms_vector_array;
 
 
 //Short vector, used for pre-rotation points. 
@@ -205,7 +201,7 @@ typedef struct fMatrix {
 //macro to set a vector to zero.  we could do this with an in-line assembly 
 //macro, but it's probably better to let the compiler optimize it.
 //Note: NO RETURN VALUE
-#define VmVecZero(v) (v)->x=(v)->y=(v)->z=0
+#define VmVecZero(v) (v)->p.x = (v)->p.y = (v)->p.z = 0
 
 //macro set set a matrix to the identity. Note: NO RETURN VALUE
 
@@ -290,7 +286,7 @@ extern vmsMatrix vmdIdentityMatrix;
 
 //negate a vector
 static inline vmsVector *VmVecNegate (vmsVector *v)
-	{v->x = -v->x; v->y = -v->y; v->z = -v->z; return v;}
+	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
 
 static inline fVector *VmVecNegatef (fVector *v)
 	{v->p.x = -v->p.x; v->p.y = -v->p.y; v->p.z = -v->p.z; return v;}
@@ -304,10 +300,10 @@ static inline fVector *VmVecNegatef (fVector *v)
 #if INLINE_VEC_ADD
 
 static inline vmsVector *VmVecAdd (vmsVector *d, vmsVector *s0, vmsVector *s1)
-	{d->x = s0->x + s1->x; d->y = s0->y + s1->y; d->z = s0->z + s1->z;return d;}
+	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z;return d;}
 
 static inline vmsVector *VmVecSub (vmsVector *d, vmsVector *s0, vmsVector *s1)
-	{d->x = s0->x - s1->x; d->y = s0->y - s1->y; d->z = s0->z - s1->z;return d;}
+	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z;return d;}
 
 static inline fVector *VmVecAddf (fVector *d, fVector *s0, fVector *s1)
 	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
@@ -316,10 +312,10 @@ static inline fVector *VmVecSubf (fVector *d, fVector *s0, fVector *s1)
 	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z; return d;}
 
 static inline vmsVector *VmVecDec (vmsVector *d, vmsVector *s)
-	{d->x -= s->x; d->y -= s->y; d->z -= s->z; return d;}
+	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
 
 static inline vmsVector *VmVecInc (vmsVector *d, vmsVector *s)
-	{d->x += s->x; d->y += s->y; d->z += s->z; return d;}
+	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
 
 static inline fVector *VmVecIncf (fVector *d, fVector *s)
 	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
@@ -328,7 +324,7 @@ static inline fVector *VmVecDecf (fVector *d, fVector *s)
 	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
 
 static inline fVector *VmsVecToFloat (fVector *d, vmsVector *s)
-	{d->p.x = f2fl (s->x); d->p.y = f2fl (s->y); d->p.z = f2fl (s->z); d->p.w = 1; return d;}
+	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); d->p.w = 1; return d;}
 
 fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src);
 

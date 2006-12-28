@@ -62,11 +62,11 @@ VmVecNormalize (&rod_norm);
 //now we have the usable edge.  generate four points
 //top points
 VmVecCopyScale (&tempv, &rod_norm, top_width);
-tempv.z = 0;
+tempv.p.z = 0;
 VmVecAdd (&rodPoints [0].p3_vec, &top_point->p3_vec, &tempv);
 VmVecSub (&rodPoints [1].p3_vec, &top_point->p3_vec, &tempv);
 VmVecCopyScale (&tempv, &rod_norm, bot_width);
-tempv.z = 0;
+tempv.p.z = 0;
 VmVecSub (&rodPoints [2].p3_vec, &bot_point->p3_vec, &tempv);
 VmVecAdd (&rodPoints [3].p3_vec, &bot_point->p3_vec, &tempv);
 

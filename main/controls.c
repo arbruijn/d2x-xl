@@ -138,9 +138,9 @@ void ReadFlyingControls(tObject *objP)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
 	else {
-		objP->mType.physInfo.rotThrust.x = Controls.pitchTime;
-		objP->mType.physInfo.rotThrust.y = Controls.headingTime;
-		objP->mType.physInfo.rotThrust.z = Controls.bankTime;
+		objP->mType.physInfo.rotThrust.p.x = Controls.pitchTime;
+		objP->mType.physInfo.rotThrust.p.y = Controls.headingTime;
+		objP->mType.physInfo.rotThrust.p.z = Controls.bankTime;
 	}
 	forward_thrustTime = Controls.forward_thrustTime;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{

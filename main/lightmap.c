@@ -192,9 +192,9 @@ if (gameStates.render.color.bLightMapsOk) {
 
 inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, double f_offset)
 {
-outvec->x = (fix) (f_offset * (vec2.x - vec1.x)); 
-outvec->y = (fix) (f_offset * (vec2.y - vec1.y)); 
-outvec->z = (fix) (f_offset * (vec2.z - vec1.z)); 
+outvec->p.x = (fix) (f_offset * (vec2.p.x - vec1.p.x)); 
+outvec->p.y = (fix) (f_offset * (vec2.p.y - vec1.p.y)); 
+outvec->p.z = (fix) (f_offset * (vec2.p.z - vec1.p.z)); 
 }
 
 //------------------------------------------------------------------------------
@@ -346,17 +346,17 @@ xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
 	v = gameData.segs.vertices + sideVerts [i];
-	h = v->x;
+	h = v->p.x;
 	if (xMin > h)
 		xMin = h;
 	if (xMax < h)
 		xMax = h;
-	h = v->y;
+	h = v->p.y;
 	if (yMin > h)
 		yMin = h;
 	if (yMax < h)
 		yMax = h;
-	h = v->z;
+	h = v->p.z;
 	if (zMin > h)
 		zMin = h;
 	if (zMax < h)

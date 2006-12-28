@@ -104,25 +104,21 @@ void G3Point2Vec(vmsVector *v,short sx,short sy)
 	vmsVector tempv;
 	vmsMatrix tempm;
 
-	tempv.x =  FixMulDiv(FixDiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.z,viewInfo.scale.x);
-	tempv.y = -FixMulDiv(FixDiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.z,viewInfo.scale.y);
-	tempv.z = f1_0;
-
-	VmVecNormalize(&tempv);
-
-	VmCopyTransposeMatrix(&tempm,&viewInfo.view [1]);
-
-	VmVecRotate(v,&tempv,&tempm);
-
+tempv.p.x =  FixMulDiv(FixDiv((sx<<16) - xCanvW2,xCanvW2),viewInfo.scale.p.z,viewInfo.scale.p.x);
+tempv.p.y = -FixMulDiv(FixDiv((sy<<16) - xCanvH2,xCanvH2),viewInfo.scale.p.z,viewInfo.scale.p.y);
+tempv.p.z = f1_0;
+VmVecNormalize(&tempv);
+VmCopyTransposeMatrix(&tempm,&viewInfo.view [1]);
+VmVecRotate(v,&tempv,&tempm);
 }
 
 // -----------------------------------------------------------------------------------
 //delta rotation functions
 vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 {
-	dest->x = FixMul(viewInfo.view [0].rVec.x,dx);
-	dest->y = FixMul(viewInfo.view [0].uVec.x,dx);
-	dest->z = FixMul(viewInfo.view [0].fVec.x,dx);
+	dest->p.x = FixMul(viewInfo.view [0].rVec.p.x,dx);
+	dest->p.y = FixMul(viewInfo.view [0].uVec.p.x,dx);
+	dest->p.z = FixMul(viewInfo.view [0].fVec.p.x,dx);
 
 	return dest;
 }
@@ -131,9 +127,9 @@ vmsVector *G3RotateDeltaX(vmsVector *dest,fix dx)
 
 vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 {
-	dest->x = FixMul(viewInfo.view [0].rVec.y,dy);
-	dest->y = FixMul(viewInfo.view [0].uVec.y,dy);
-	dest->z = FixMul(viewInfo.view [0].fVec.y,dy);
+	dest->p.x = FixMul(viewInfo.view [0].rVec.p.y,dy);
+	dest->p.y = FixMul(viewInfo.view [0].uVec.p.y,dy);
+	dest->p.z = FixMul(viewInfo.view [0].fVec.p.y,dy);
 
 	return dest;
 }
@@ -142,9 +138,9 @@ vmsVector *G3RotateDeltaY(vmsVector *dest,fix dy)
 
 vmsVector *G3RotateDeltaZ(vmsVector *dest,fix dz)
 {
-	dest->x = FixMul(viewInfo.view [0].rVec.z,dz);
-	dest->y = FixMul(viewInfo.view [0].uVec.z,dz);
-	dest->z = FixMul(viewInfo.view [0].fVec.z,dz);
+	dest->p.x = FixMul(viewInfo.view [0].rVec.p.z,dz);
+	dest->p.y = FixMul(viewInfo.view [0].uVec.p.z,dz);
+	dest->p.z = FixMul(viewInfo.view [0].fVec.p.z,dz);
 
 	return dest;
 }
@@ -170,17 +166,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth(vmsVector *pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt->x - viewInfo.pos.x, viewInfo.view [0].fVec.x);
-	q += mul64 (pnt->y - viewInfo.pos.y, viewInfo.view [0].fVec.y);
-	q += mul64 (pnt->z - viewInfo.pos.z, viewInfo.view [0].fVec.z);
+	QLONG q = mul64 (pnt->p.x - viewInfo.pos.p.x, viewInfo.view [0].fVec.p.x);
+	q += mul64 (pnt->p.y - viewInfo.pos.p.y, viewInfo.view [0].fVec.p.y);
+	q += mul64 (pnt->p.z - viewInfo.pos.p.z, viewInfo.view [0].fVec.p.z);
 	return (fix) (q >> 16);
 #else
 	quadint q;
 
 	q.low=q.high=0;
-	fixmulaccum(&q,(pnt->x - viewInfo.pos.x),viewInfo.view [0].fVec.x);
-	fixmulaccum(&q,(pnt->y - viewInfo.pos.y),viewInfo.view [0].fVec.y);
-	fixmulaccum(&q,(pnt->z - viewInfo.pos.z),viewInfo.view [0].fVec.z);
+	fixmulaccum(&q,(pnt->p.x - viewInfo.pos.p.x),viewInfo.view [0].fVec.p.x);
+	fixmulaccum(&q,(pnt->p.y - viewInfo.pos.p.y),viewInfo.view [0].fVec.p.y);
+	fixmulaccum(&q,(pnt->p.z - viewInfo.pos.p.z),viewInfo.view [0].fVec.p.z);
 	return fixquadadjust(&q);
 #endif
 }

@@ -1859,9 +1859,9 @@ return pm;
 
 float *OOF_VecVms2Gl (float *pDest, vmsVector *pSrc)
 {
-pDest [0] = (float) pSrc->x / 65536.0f;
-pDest [1] = (float) pSrc->y / 65536.0f;
-pDest [2] = (float) pSrc->z / 65536.0f;
+pDest [0] = (float) pSrc->p.x / 65536.0f;
+pDest [1] = (float) pSrc->p.y / 65536.0f;
+pDest [2] = (float) pSrc->p.z / 65536.0f;
 pDest [3] = 1.0f;
 return pDest;
 }
@@ -1871,15 +1871,15 @@ return pDest;
 float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
 {
 OOF_GlIdent (pDest);
-pDest [0] = ((float) pSrc->rVec.x) / 65536.0f;
-pDest [4] = ((float) pSrc->rVec.y) / 65536.0f;
-pDest [8] = ((float) pSrc->rVec.z) / 65536.0f;
-pDest [1] = ((float) pSrc->uVec.x) / 65536.0f;
-pDest [5] = ((float) pSrc->uVec.y) / 65536.0f;
-pDest [9] = ((float) pSrc->uVec.z) / 65536.0f;
-pDest [2] = ((float) pSrc->fVec.x) / 65536.0f;
-pDest [6] = ((float) pSrc->fVec.y) / 65536.0f;
-pDest [10] = ((float) pSrc->fVec.z) / 65536.0f;
+pDest [0] = ((float) pSrc->rVec.p.x) / 65536.0f;
+pDest [4] = ((float) pSrc->rVec.p.y) / 65536.0f;
+pDest [8] = ((float) pSrc->rVec.p.z) / 65536.0f;
+pDest [1] = ((float) pSrc->uVec.p.x) / 65536.0f;
+pDest [5] = ((float) pSrc->uVec.p.y) / 65536.0f;
+pDest [9] = ((float) pSrc->uVec.p.z) / 65536.0f;
+pDest [2] = ((float) pSrc->fVec.p.x) / 65536.0f;
+pDest [6] = ((float) pSrc->fVec.p.y) / 65536.0f;
+pDest [10] = ((float) pSrc->fVec.p.z) / 65536.0f;
 return pDest;
 }
 
@@ -1887,9 +1887,9 @@ return pDest;
 
 float *OOF_VecVms2Oof (tOOF_vector *pDest, vmsVector *pSrc)
 {
-pDest->x = (float) pSrc->x / 65536.0f;
-pDest->y = (float) pSrc->y / 65536.0f;
-pDest->z = (float) pSrc->z / 65536.0f;
+pDest->x = (float) pSrc->p.x / 65536.0f;
+pDest->y = (float) pSrc->p.y / 65536.0f;
+pDest->z = (float) pSrc->p.z / 65536.0f;
 return (float *) pDest;
 }
 
@@ -2266,7 +2266,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
 		else if (!bDynLighting) {
-			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
+			tFaceColor *psc = AvgSgmColor (objP->position.nSegment, &objP->position.vPos);
 			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			else
@@ -2438,7 +2438,7 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->nSegment];
+	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->position.nSegment];
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

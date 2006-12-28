@@ -102,7 +102,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 	if (maxdamage > 0) {
 		fix dist, force;
-		vmsVector pos_hit, vforce;
+		vmsVector pos_hit, vForce;
 		fix damage;
 		int i, t, id;
 		tObject * obj0P = gameData.objs.objects;
@@ -129,8 +129,8 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 						force = maxforce - FixMulDiv(dist, maxforce, maxdistance);
 
 						// Find the force vector on the tObject
-						VmVecNormalizedDirQuick(&vforce, &obj0P->position.vPos, &explObjP->position.vPos);
-						VmVecScale(&vforce, force);
+						VmVecNormalizedDirQuick(&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
+						VmVecScale(&vForce, force);
 	
 						// Find where the point of impact is... (pos_hit)
 						VmVecSub(&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
@@ -138,7 +138,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 	
 						switch (obj0P->nType)	{
 							case OBJ_WEAPON:
-								PhysApplyForce(obj0P,&vforce);
+								PhysApplyForce(obj0P,&vForce);
 
 								if (obj0P->id == PROXMINE_ID || obj0P->id == SMARTMINE_ID) {		//prox bombs have chance of blowing up
 									if (FixMul(dist,force) > i2f(8000)) {
@@ -150,18 +150,18 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 							case OBJ_ROBOT:
 								{
-								PhysApplyForce(obj0P,&vforce);
+								PhysApplyForce(obj0P,&vForce);
 
 								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 								if ((objP != NULL) && (!gameData.bots.pInfo [obj0P->id].bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 									tAIStatic	*aip = &obj0P->cType.aiInfo;
-									int			force_val = f2i(FixDiv(VmVecMagQuick(&vforce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+									int			force_val = f2i(FixDiv(VmVecMagQuick(&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
 									if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
 										aip->SKIP_AI_COUNT += force_val;
-										obj0P->mType.physInfo.rotThrust.x = ((d_rand() - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.y = ((d_rand() - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.z = ((d_rand() - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.x = ((d_rand() - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.y = ((d_rand() - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.z = ((d_rand() - 16384) * force_val)/16;
 										obj0P->mType.physInfo.flags |= PF_USES_THRUST;
 
 										//@@if (gameData.bots.pInfo [obj0P->id].companion)
@@ -173,11 +173,11 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 								//	When a robot gets whacked by a badass force, he looks towards it because robots tend to get blasted from behind.
 								{
-									vmsVector neg_vforce;
-									neg_vforce.x = vforce.x * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									neg_vforce.y = vforce.y * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									neg_vforce.z = vforce.z * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									PhysApplyRot(obj0P,&neg_vforce);
+									vmsVector vNegForce;
+									vNegForce.p.x = vForce.p.x * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
+									vNegForce.p.y = vForce.p.y * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
+									vNegForce.p.z = vForce.p.z * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
+									PhysApplyRot(obj0P,&vNegForce);
 								}
 								if (obj0P->shields >= 0) {
 									if (gameData.bots.pInfo [obj0P->id].bossFlag)
@@ -214,7 +214,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								break;
 							case OBJ_PLAYER:	{
 								tObject * killer=NULL;
-								vmsVector	vforce2;
+								vmsVector	vForce2;
 
 								//	Hack! Warning! Test code!
 								if ((objP != NULL) && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multi.nLocalPlayer) {
@@ -238,20 +238,20 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								if ((objP != NULL) && (gameData.app.nGameMode & GM_MULTI) && (objP->nType == OBJ_PLAYER)) {
 									killer = objP;
 								}
-								vforce2 = vforce;
+								vForce2 = vForce;
 								if (parent > -1) {
 									killer = gameData.objs.objects + parent;
 									if (killer != gameData.objs.console)		// if someone else whacks you, cut force by 2x
-										vforce2.x /= 2;	
-										vforce2.y /= 2;	
-										vforce2.z /= 2;
+										vForce2.p.x /= 2;	
+										vForce2.p.y /= 2;	
+										vForce2.p.z /= 2;
 								}
-								vforce2.x /= 2;	
-								vforce2.y /= 2;	
-								vforce2.z /= 2;
+								vForce2.p.x /= 2;	
+								vForce2.p.y /= 2;	
+								vForce2.p.z /= 2;
 
-								PhysApplyForce(obj0P,&vforce);
-								PhysApplyRot(obj0P,&vforce2);
+								PhysApplyForce(obj0P,&vForce);
+								PhysApplyRot(obj0P,&vForce2);
 								if (gameStates.app.nDifficultyLevel == 0)
 									damage /= 4;
 								if (obj0P->shields >= 0)
@@ -330,7 +330,7 @@ tObject *ExplodeBadassWeapon(tObject *objP,vmsVector *pos)
 
 	DigiLinkSoundToObject(SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
 
-	return ObjectCreateBadassExplosion(objP, objP->nSegment, pos,
+	return ObjectCreateBadassExplosion(objP, objP->position.nSegment, pos,
 	                                      wi->impact_size,
 	                                      wi->robot_hit_vclip,
 	                                      wi->strength [gameStates.app.nDifficultyLevel],
@@ -346,7 +346,7 @@ tObject *ExplodeBadassObject(tObject *objP, fix damage, fix distance, fix force)
 
 	tObject 	*rval;
 
-	rval = ObjectCreateBadassExplosion(objP, objP->nSegment, &objP->position.vPos, objP->size,
+	rval = ObjectCreateBadassExplosion(objP, objP->position.nSegment, &objP->position.vPos, objP->size,
 					(ubyte) GetExplosionVClip(objP, 0),
 					damage, distance, force,
 					OBJ_IDX (objP));
@@ -376,7 +376,7 @@ tObject *ObjectCreateDebris(tObject *parentObjP, int nSubObj)
 
 Assert((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
 nObject = CreateObject(
-	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient,
+	OBJ_DEBRIS, 0, -1, parentObjP->position.nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient,
 	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj],
 	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
 if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS-1)) {
@@ -396,9 +396,9 @@ debrisObjP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 debrisObjP->rType.polyObjInfo.nTexOverride = parentObjP->rType.polyObjInfo.nTexOverride;
 //Set physics data for this tObject
 po = gameData.models.polyModels + debrisObjP->rType.polyObjInfo.nModel;
-debrisObjP->mType.physInfo.velocity.x = RAND_MAX/2 - d_rand();
-debrisObjP->mType.physInfo.velocity.y = RAND_MAX/2 - d_rand();
-debrisObjP->mType.physInfo.velocity.z = RAND_MAX/2 - d_rand();
+debrisObjP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand();
+debrisObjP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand();
+debrisObjP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand();
 VmVecNormalizeQuick (&debrisObjP->mType.physInfo.velocity);
 VmVecScale (&debrisObjP->mType.physInfo.velocity,i2f(10 + (30 * d_rand() / RAND_MAX)));
 VmVecInc (&debrisObjP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
@@ -458,7 +458,7 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 	sbyte		depth [MAX_SEGMENTS];
 	sbyte		side_rand [MAX_SIDES_PER_SEGMENT];
 
-	start_seg = objP->nSegment;
+	start_seg = objP->position.nSegment;
 	head = 0;
 	tail = 0;
 	seg_queue [head++] = start_seg;
@@ -553,7 +553,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
+	for (bFree = 1, j = gameData.segs.segments [objP->position.nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
 		if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
 			bFree = 0;
 			break;
@@ -589,7 +589,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	// if the current tSegment does not contain a powerup of the nType being looked for,
 	// return that tSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
+		for (bUsed = 0, j = gameData.segs.segments [objP->position.nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
 			if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
 				bUsed = 1;
 				break;
@@ -610,19 +610,19 @@ int ReturnFlagHome (tObject *objP)
 	tObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
-		return objP->nSegment;
+	if (gameData.segs.segment2s [objP->position.nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+		return objP->position.nSegment;
 	if (initObjP = FindInitObject (objP)) {
-	//objP->nSegment = initObjP->nSegment;
+	//objP->position.nSegment = initObjP->nSegment;
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
-		RelinkObject (OBJ_IDX (objP), initObjP->nSegment);
+		RelinkObject (OBJ_IDX (objP), initObjP->position.nSegment);
 		HUDInitMessage(TXT_FLAG_RETURN);
 		DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
 		MultiSendReturnFlagHome (OBJ_IDX (objP));
 		}
 	}
-return objP->nSegment;
+return objP->position.nSegment;
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -869,7 +869,7 @@ if (bUseInitSgm) {
 		*pbFixedPos = 1;
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
-		return initObjP->nSegment;
+		return initObjP->position.nSegment;
 		}
 	}
 if (pbFixedPos)
@@ -877,7 +877,7 @@ if (pbFixedPos)
 d_srand(TimerGetFixedSeconds());
 nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand() * BASE_NET_DROP_DEPTH*2) >> 15);
 player_pos = &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
-player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
+player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 	pnum = (d_rand() * gameData.multi.nPlayers) >> 15;
 	count = 0;
@@ -1119,28 +1119,28 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 //	Return true if some powerup is nearby (within 3 segments).
 int WeaponNearby(tObject *objP, int weapon_id)
 {
-	return ObjectNearbyAux(objP->nSegment, OBJ_POWERUP, weapon_id, 3);
+	return ObjectNearbyAux(objP->position.nSegment, OBJ_POWERUP, weapon_id, 3);
 }
 
 //	------------------------------------------------------------------------------------------------------
 
-void MaybeReplacePowerupWithEnergy(tObject *del_obj)
+void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 {
 	int	weapon_index=-1;
 
-	if (del_obj->containsType != OBJ_POWERUP)
+	if (delObjP->containsType != OBJ_POWERUP)
 		return;
 
-	if (del_obj->containsId == POW_CLOAK) {
-		if (WeaponNearby(del_obj, del_obj->containsId)) {
+	if (delObjP->containsId == POW_CLOAK) {
+		if (WeaponNearby(delObjP, delObjP->containsId)) {
 #if TRACE
 			con_printf (CON_DEBUG, "Bashing cloak into nothing because there's one nearby.\n");
 #endif
-			del_obj->containsCount = 0;
+			delObjP->containsCount = 0;
 		}
 		return;
 	}
-	switch (del_obj->containsId) {
+	switch (delObjP->containsId) {
 		case POW_VULCAN:			
 			weapon_index = VULCAN_INDEX;		
 			break;
@@ -1169,51 +1169,51 @@ void MaybeReplacePowerupWithEnergy(tObject *del_obj)
 	}
 
 	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (((weapon_index == VULCAN_INDEX) || (del_obj->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
-		del_obj->containsCount = 0;
-	else if (((weapon_index == GAUSS_INDEX) || (del_obj->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
-		del_obj->containsCount = 0;
+	if (((weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+		delObjP->containsCount = 0;
+	else if (((weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+		delObjP->containsCount = 0;
 	else if (weapon_index != -1) {
 		if ((PlayerHasWeapon(weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
-			 WeaponNearby(del_obj, del_obj->containsId)) {
+			 WeaponNearby(delObjP, delObjP->containsId)) {
 			if (d_rand() > 16384) {
-				del_obj->containsType = OBJ_POWERUP;
+				delObjP->containsType = OBJ_POWERUP;
 				if (weapon_index == VULCAN_INDEX) {
-					del_obj->containsId = POW_VULCAN_AMMO;
+					delObjP->containsId = POW_VULCAN_AMMO;
 				} else if (weapon_index == GAUSS_INDEX) {
-					del_obj->containsId = POW_VULCAN_AMMO;
+					delObjP->containsId = POW_VULCAN_AMMO;
 				} else {
-					del_obj->containsId = POW_ENERGY;
+					delObjP->containsId = POW_ENERGY;
 				}
 			} else {
-				del_obj->containsType = OBJ_POWERUP;
-				del_obj->containsId = POW_SHIELD_BOOST;
+				delObjP->containsType = OBJ_POWERUP;
+				delObjP->containsId = POW_SHIELD_BOOST;
 			}
 		}
-	} else if (del_obj->containsId == POW_QUADLASER)
-		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby(del_obj, del_obj->containsId)) {
+	} else if (delObjP->containsId == POW_QUADLASER)
+		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby(delObjP, delObjP->containsId)) {
 			if (d_rand() > 16384) {
-				del_obj->containsType = OBJ_POWERUP;
-				del_obj->containsId = POW_ENERGY;
+				delObjP->containsType = OBJ_POWERUP;
+				delObjP->containsId = POW_ENERGY;
 			} else {
-				del_obj->containsType = OBJ_POWERUP;
-				del_obj->containsId = POW_SHIELD_BOOST;
+				delObjP->containsType = OBJ_POWERUP;
+				delObjP->containsId = POW_SHIELD_BOOST;
 			}
 		}
 
 	//	If this robot was gated in by the boss and it now contains energy, make it contain nothing,
 	//	else the room gets full of energy.
-	if ((del_obj->matCenCreator == BOSS_GATE_MATCEN_NUM) && (del_obj->containsId == POW_ENERGY) && (del_obj->containsType == OBJ_POWERUP)) {
+	if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
 #if TRACE
-		con_printf (CON_DEBUG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (del_obj));
+		con_printf (CON_DEBUG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
 #endif
-		del_obj->containsCount = 0;
+		delObjP->containsCount = 0;
 	}
 
 	// Change multiplayer extra-lives into invulnerability
-	if ((gameData.app.nGameMode & GM_MULTI) && (del_obj->containsId == POW_EXTRA_LIFE))
+	if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->containsId == POW_EXTRA_LIFE))
 	{
-		del_obj->containsId = POW_INVULNERABILITY;
+		delObjP->containsId = POW_INVULNERABILITY;
 	}
 }
 
@@ -1243,9 +1243,9 @@ switch (nType) {
 				}
 			else
 				rand_scale = 2;
-			new_velocity.x += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.y += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.z += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.p.x += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.p.y += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.p.z += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) && 
 				 (((id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
@@ -1315,9 +1315,9 @@ switch (nType) {
 			VmVecNormalizeQuick(&new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
-			new_velocity.x += (d_rand()-16384)*2;
-			new_velocity.y += (d_rand()-16384)*2;
-			new_velocity.z += (d_rand()-16384)*2;
+			new_velocity.p.x += (d_rand()-16384)*2;
+			new_velocity.p.y += (d_rand()-16384)*2;
+			new_velocity.p.z += (d_rand()-16384)*2;
 			VmVecNormalizeQuick(&new_velocity);
 			VmVecScale(&new_velocity, (F1_0*32 + old_mag) * rand_scale);
 			vNewPos = *pos;
@@ -1426,7 +1426,7 @@ rval = DropPowerup (
 		),
 	objP->containsCount, 
 	&objP->mType.physInfo.velocity, 
-	&objP->position.vPos, objP->nSegment);
+	&objP->position.vPos, objP->position.nSegment);
 if (rval != -1) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multi.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
@@ -1498,25 +1498,25 @@ if (gameData.models.polyModels [obj->rType.polyObjInfo.nModel].nModels > 1) {
 
 //------------------------------------------------------------------------------
 //if the tObject has a destroyed model, switch to it.  Otherwise, delete it.
-void MaybeDeleteObject(tObject *del_obj)
+void MaybeDeleteObject(tObject *delObjP)
 {
-if (gameData.models.nDeadModels [del_obj->rType.polyObjInfo.nModel] != -1) {
-	del_obj->rType.polyObjInfo.nModel = gameData.models.nDeadModels [del_obj->rType.polyObjInfo.nModel];
-	del_obj->flags |= OF_DESTROYED;
+if (gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel] != -1) {
+	delObjP->rType.polyObjInfo.nModel = gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel];
+	delObjP->flags |= OF_DESTROYED;
 	}
 else {		//normal, multi-stage explosion
-	if (del_obj->nType == OBJ_PLAYER)
-		del_obj->renderType = RT_NONE;
+	if (delObjP->nType == OBJ_PLAYER)
+		delObjP->renderType = RT_NONE;
 	else
-		del_obj->flags |= OF_SHOULD_BE_DEAD;
+		delObjP->flags |= OF_SHOULD_BE_DEAD;
 	}
 }
 
 //	-------------------------------------------------------------------------------------------------------
 //blow up an tObject.  Takes the tObject to destroy, and the point of impact
-void ExplodeObject (tObject *hitobj, fix delayTime)
+void ExplodeObject (tObject *hitObjP, fix delayTime)
 {
-	if (hitobj->flags & OF_EXPLODING) 
+	if (hitObjP->flags & OF_EXPLODING) 
 		return;
 
 	if (delayTime) {		//wait a little while before creating explosion
@@ -1524,10 +1524,10 @@ void ExplodeObject (tObject *hitobj, fix delayTime)
 		tObject *obj;
 
 		//create a placeholder tObject to do the delay, with id==-1
-		nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitobj->nSegment, &hitobj->position.vPos, &vmdIdentityMatrix, 0,
+		nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->position.nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0,
 									  CT_EXPLOSION, MT_NONE, RT_NONE, 1);
 		if (nObject < 0) {
-			MaybeDeleteObject(hitobj);		//no explosion, die instantly
+			MaybeDeleteObject(hitObjP);		//no explosion, die instantly
 #if TRACE
 			con_printf (1,"Couldn't start explosion, deleting tObject now\n");
 #endif
@@ -1537,7 +1537,7 @@ void ExplodeObject (tObject *hitobj, fix delayTime)
 		obj = gameData.objs.objects + nObject;
 		//now set explosion-specific data
 		obj->lifeleft = delayTime;
-		obj->cType.explInfo.nDeleteObj = OBJ_IDX (hitobj);
+		obj->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
 #ifndef NDEBUG
 		if (obj->cType.explInfo.nDeleteObj < 0)
 		 Int3(); // See Rob!
@@ -1549,10 +1549,10 @@ void ExplodeObject (tObject *hitobj, fix delayTime)
 		tObject *expl_obj;
 		ubyte vclip_num;
 
-		vclip_num = (ubyte) GetExplosionVClip(hitobj,0);
-		expl_obj = ObjectCreateExplosion(hitobj->nSegment, &hitobj->position.vPos, FixMul(hitobj->size,EXPLOSION_SCALE), vclip_num);
+		vclip_num = (ubyte) GetExplosionVClip(hitObjP,0);
+		expl_obj = ObjectCreateExplosion(hitObjP->position.nSegment, &hitObjP->position.vPos, FixMul(hitObjP->size,EXPLOSION_SCALE), vclip_num);
 		if (! expl_obj) {
-			MaybeDeleteObject(hitobj);		//no explosion, die instantly
+			MaybeDeleteObject(hitObjP);		//no explosion, die instantly
 #if TRACE
 			con_printf (CON_DEBUG,"Couldn't start explosion, deleting tObject now\n");
 #endif
@@ -1562,16 +1562,16 @@ void ExplodeObject (tObject *hitobj, fix delayTime)
 		//don't make debris explosions have physics, because they often
 		//happen when the debris has hit the wall, so the fireball is trying
 		//to move into the wall, which shows off FVI problems.   	
-		if (hitobj->nType!=OBJ_DEBRIS && hitobj->movementType==MT_PHYSICS) {
+		if (hitObjP->nType!=OBJ_DEBRIS && hitObjP->movementType==MT_PHYSICS) {
 			expl_obj->movementType = MT_PHYSICS;
-			expl_obj->mType.physInfo = hitobj->mType.physInfo;
+			expl_obj->mType.physInfo = hitObjP->mType.physInfo;
 		}
-		if (hitobj->renderType==RT_POLYOBJ && hitobj->nType!=OBJ_DEBRIS)
-			ExplodePolyModel(hitobj);
-		MaybeDeleteObject(hitobj);
+		if (hitObjP->renderType==RT_POLYOBJ && hitObjP->nType!=OBJ_DEBRIS)
+			ExplodePolyModel(hitObjP);
+		MaybeDeleteObject(hitObjP);
 	}
-	hitobj->flags |= OF_EXPLODING;		//say that this is blowing up
-	hitobj->controlType = CT_NONE;		//become inert while exploding
+	hitObjP->flags |= OF_EXPLODING;		//say that this is blowing up
+	hitObjP->controlType = CT_NONE;		//become inert while exploding
 }
 
 //------------------------------------------------------------------------------
@@ -1604,10 +1604,10 @@ void DoExplosionSequence(tObject *obj)
 
 	//See if we should create a secondary explosion
 	if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
-		tObject *expl_obj, *del_obj = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
+		tObject *expl_obj, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
 		ubyte vclip_num;
-		vmsVector *spawn_pos;
-		fix badass = (fix) gameData.bots.pInfo [del_obj->id].badass;
+		vmsVector *vSpawnPos;
+		fix badass = (fix) gameData.bots.pInfo [delObjP->id].badass;
 
 		if ((obj->cType.explInfo.nDeleteObj < 0) || (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
@@ -1616,74 +1616,75 @@ void DoExplosionSequence(tObject *obj)
 			Int3(); // get Rob, please... thanks
 			return;
 		}
-		spawn_pos = &del_obj->position.vPos;
-		t = del_obj->nType;
-		if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || (del_obj->nSegment == -1)) {
+		vSpawnPos = &delObjP->position.vPos;
+		t = delObjP->nType;
+		if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
+			 (delObjP->position.nSegment == -1)) {
 			Int3();	//pretty bad
 			return;
 		}
-		vclip_num = (ubyte) GetExplosionVClip (del_obj, 1);
-		if (del_obj->nType == OBJ_ROBOT && badass)
+		vclip_num = (ubyte) GetExplosionVClip (delObjP, 1);
+		if (delObjP->nType == OBJ_ROBOT && badass)
 			expl_obj = ObjectCreateBadassExplosion (
 				NULL, 
-				del_obj->nSegment, 
-				spawn_pos, 
-				FixMul (del_obj->size, EXPLOSION_SCALE), 
+				delObjP->position.nSegment, 
+				vSpawnPos, 
+				FixMul (delObjP->size, EXPLOSION_SCALE), 
 				vclip_num, 
 				F1_0 * badass, 
 				i2f(4) * badass, 
 				i2f(35) * badass, 
 				-1);
 		else
-			expl_obj = ObjectCreateExplosion(del_obj->nSegment, spawn_pos, FixMul(del_obj->size, EXPLOSION_SCALE), vclip_num);
+			expl_obj = ObjectCreateExplosion(delObjP->position.nSegment, vSpawnPos, FixMul(delObjP->size, EXPLOSION_SCALE), vclip_num);
 
-		if ((del_obj->containsCount > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
+		if ((delObjP->containsCount > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
 			//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
-			if (del_obj->containsType == OBJ_POWERUP)
-				MaybeReplacePowerupWithEnergy(del_obj);
-			if ((del_obj->containsType != OBJ_ROBOT) || !(del_obj->flags & OF_ARMAGEDDON))
-				ObjectCreateEgg(del_obj);
+			if (delObjP->containsType == OBJ_POWERUP)
+				MaybeReplacePowerupWithEnergy(delObjP);
+			if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
+				ObjectCreateEgg(delObjP);
 			}
-		else if ((del_obj->nType == OBJ_ROBOT) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside this code!!
-			tRobotInfo	*robptr = &gameData.bots.pInfo [del_obj->id];
-			if (robptr->containsCount && ((robptr->containsType != OBJ_ROBOT) || !(del_obj->flags & OF_ARMAGEDDON))) {
+		else if ((delObjP->nType == OBJ_ROBOT) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside this code!!
+			tRobotInfo	*robptr = &gameData.bots.pInfo [delObjP->id];
+			if (robptr->containsCount && ((robptr->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
 				if (((d_rand() * 16) >> 15) < robptr->containsProb) {
-					del_obj->containsCount = ((d_rand() * robptr->containsCount) >> 15) + 1;
-					del_obj->containsType = robptr->containsType;
-					del_obj->containsId = robptr->containsId;
-					MaybeReplacePowerupWithEnergy(del_obj);
-					ObjectCreateEgg(del_obj);
+					delObjP->containsCount = ((d_rand() * robptr->containsCount) >> 15) + 1;
+					delObjP->containsType = robptr->containsType;
+					delObjP->containsId = robptr->containsId;
+					MaybeReplacePowerupWithEnergy(delObjP);
+					ObjectCreateEgg(delObjP);
 				}
 			}
 
 			if (robptr->thief)
-				DropStolenItems(del_obj);
+				DropStolenItems(delObjP);
 
 			if (robptr->companion) {
-				DropBuddyMarker(del_obj);
+				DropBuddyMarker(delObjP);
 			}
 		}
 
-		if (gameData.bots.pInfo [del_obj->id].nExp2Sound > -1)
-			DigiLinkSoundToPos(gameData.bots.pInfo [del_obj->id].nExp2Sound, del_obj->nSegment, 0, spawn_pos, 0, F1_0);
-			//PLAY_SOUND_3D(gameData.bots.pInfo [del_obj->id].nExp2Sound, spawn_pos, del_obj->nSegment);
+		if (gameData.bots.pInfo [delObjP->id].nExp2Sound > -1)
+			DigiLinkSoundToPos(gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->position.nSegment, 0, vSpawnPos, 0, F1_0);
+			//PLAY_SOUND_3D(gameData.bots.pInfo [delObjP->id].nExp2Sound, vSpawnPos, delObjP->nSegment);
 
 		obj->cType.explInfo.nSpawnTime = -1;
 
 		//make debris
-		if (del_obj->renderType==RT_POLYOBJ)
-			ExplodePolyModel(del_obj);		//explode a polygon model
+		if (delObjP->renderType==RT_POLYOBJ)
+			ExplodePolyModel(delObjP);		//explode a polygon model
 
 		//set some parm in explosion
 		if (expl_obj) {
 
-			if (del_obj->movementType == MT_PHYSICS) {
+			if (delObjP->movementType == MT_PHYSICS) {
 				expl_obj->movementType = MT_PHYSICS;
-				expl_obj->mType.physInfo = del_obj->mType.physInfo;
+				expl_obj->mType.physInfo = delObjP->mType.physInfo;
 			}
 
 			expl_obj->cType.explInfo.nDeleteTime = expl_obj->lifeleft/2;
-			expl_obj->cType.explInfo.nDeleteObj = OBJ_IDX (del_obj);
+			expl_obj->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifndef NDEBUG
 			if (obj->cType.explInfo.nDeleteObj < 0)
 		  		Int3(); // See Rob!
@@ -1691,7 +1692,7 @@ void DoExplosionSequence(tObject *obj)
 
 		}
 		else {
-			MaybeDeleteObject(del_obj);
+			MaybeDeleteObject(delObjP);
 #if TRACE
 			con_printf (CON_DEBUG,"Couldn't create secondary explosion, deleting tObject now\n");
 #endif
@@ -1701,11 +1702,11 @@ void DoExplosionSequence(tObject *obj)
 
 	//See if we should delete an tObject
 	if (obj->lifeleft <= obj->cType.explInfo.nDeleteTime) {
-		tObject *del_obj = gameData.objs.objects+obj->cType.explInfo.nDeleteObj;
+		tObject *delObjP = gameData.objs.objects+obj->cType.explInfo.nDeleteObj;
 
 		obj->cType.explInfo.nDeleteTime = -1;
 
-		MaybeDeleteObject(del_obj);
+		MaybeDeleteObject(delObjP);
 	}
 }
 
@@ -1718,8 +1719,8 @@ void InitExplodingWalls()
 {
 	int i;
 
-	for (i=0;i<MAX_EXPLODING_WALLS;i++)
-		gameData.walls.explWalls [i].nSegment = -1;
+for (i = 0; i < MAX_EXPLODING_WALLS; i++)
+	gameData.walls.explWalls [i].nSegment = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -1796,30 +1797,16 @@ void DoExplodingWallFrame()
 				//calc expl position
 
 				GetSideVerts(vertnum_list,nSegment,nSide);
-
 				v0 = gameData.segs.vertices + vertnum_list [0];
 				v1 = gameData.segs.vertices + vertnum_list [1];
 				v2 = gameData.segs.vertices + vertnum_list [2];
-
 				VmVecSub(&vv0,v0,v1);
 				VmVecSub(&vv1,v2,v1);
-
 				VmVecScaleAdd(&pos,v1,&vv0,d_rand()*2);
 				VmVecScaleInc(&pos,&vv1,d_rand()*2);
-
 				size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
-
 				//fireballs start away from door, with subsequent ones getting closer
-				#ifdef COMPACT_SEGS	
-					{
-					vmsVector _vn;
-					GetSideNormal(gameData.segs.segments + nSegment, nSide, 0, &_vn);
-					VmVecScaleInc(&pos,&_vn,size*(EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
-					}
-				#else
-					VmVecScaleInc(&pos,gameData.segs.segments [nSegment].sides [nSide].normals,size*(EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
-				#endif
-
+				VmVecScaleInc(&pos,gameData.segs.segments [nSegment].sides [nSide].normals,size*(EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
 				if (e & 3)		//3 of 4 are normal
 					ObjectCreateExplosion((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 				else
@@ -1831,16 +1818,11 @@ void DoExplodingWallFrame()
 					i2f(50),		//	damage force
 					-1		//	parent id
 					);
-
-
 			}
-
 			if (gameData.walls.explWalls [i].time >= EXPL_WALL_TIME)
 				gameData.walls.explWalls [i].nSegment = -1;	//flag this slot as d_free
-
 		}
 	}
-
 }
 
 //------------------------------------------------------------------------------
@@ -1856,7 +1838,7 @@ CalcShipThrusterPos (objP, vPos);
 if (count == 1)
 	VmVecAvg (vPos, vPos, vPos + 1);
 for (i = 0; i < count; i++) {
-	nSegment = FindSegByPoint (vPos + i, objP->nSegment);
+	nSegment = FindSegByPoint (vPos + i, objP->position.nSegment);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = ObjectCreateExplosion (nSegment, vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
@@ -1929,7 +1911,7 @@ for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP+
 	if ((objP->nType == OBJ_MONSTERBALL) || 
 		 ((objP->nType == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0)
-			gameData.hoard.nMonsterballSeg = objP->nSegment;
+			gameData.hoard.nMonsterballSeg = objP->position.nSegment;
 		ReleaseObject (i);
 		}
 #ifdef RELEASE
@@ -1954,7 +1936,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
 	return 0;
-special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].special;
+special = gameData.segs.segment2s [gameData.hoard.monsterballP->position.nSegment].special;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
 if ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))

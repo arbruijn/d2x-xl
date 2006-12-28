@@ -157,8 +157,8 @@ div_scale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	div_scale = 4;
 h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-gameData.objs.console->mType.physInfo.rotVel.x += (FixMul (d_rand () - 16384, h)) / div_scale;
-gameData.objs.console->mType.physInfo.rotVel.z += (FixMul (d_rand () - 16384, h)) / div_scale;
+gameData.objs.console->mType.physInfo.rotVel.p.x += (FixMul (d_rand () - 16384, h)) / div_scale;
+gameData.objs.console->mType.physInfo.rotVel.p.z += (FixMul (d_rand () - 16384, h)) / div_scale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -261,7 +261,7 @@ if (!(gameData.reactor.bHit || gameData.reactor.bSeenPlayer)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
-		tSegment		*segP = gameData.segs.segments + objP->nSegment;
+		tSegment		*segP = gameData.segs.segments + objP->position.nSegment;
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know to deal with cloaked dudes.  It

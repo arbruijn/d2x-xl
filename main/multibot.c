@@ -502,7 +502,7 @@ multiData.msg.buf [bufP++] = (sbyte)secondary;  // More info for what he is doin
 PUT_INTEL_SHORT (multiData.msg.buf + bufP, nObject);                  
 bufP += 2; // Objnum of tObject created by gate-in action
 if (action == 3) {
-	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.objs.objects [nObject].nSegment); 
+	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.objs.objects [nObject].position.nSegment); 
 	bufP += 2; // Segment number tObject created in (for gate only)
 	}
 else 
@@ -538,14 +538,14 @@ multiData.msg.buf [bufP++] = gameData.multi.nLocalPlayer;
 hBufP = bufP++;
 multiData.msg.buf [bufP++] = delObjP->containsType; 					
 multiData.msg.buf [bufP++] = delObjP->containsId;						
-PUT_INTEL_SHORT (multiData.msg.buf + bufP, delObjP->nSegment);		        
+PUT_INTEL_SHORT (multiData.msg.buf + bufP, delObjP->position.nSegment);		        
 bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (multiData.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));	
 #else
-swapped_vec.x = (fix)INTEL_INT ((int) delObjP->position.vPos.x);
-swapped_vec.y = (fix)INTEL_INT ((int) delObjP->position.vPos.y);
-swapped_vec.z = (fix)INTEL_INT ((int) delObjP->position.vPos.z);
+swapped_vec.x = (fix)INTEL_INT ((int) delObjP->position.vPos.p.x);
+swapped_vec.y = (fix)INTEL_INT ((int) delObjP->position.vPos.p.y);
+swapped_vec.z = (fix)INTEL_INT ((int) delObjP->position.vPos.p.z);
 memcpy (multiData.msg.buf + bufP, &swapped_vec, sizeof (vmsVector));     
 #endif
 bufP += 12;
@@ -667,9 +667,9 @@ nRobot = ObjnumRemoteToLocal (nRemoteBot, (sbyte)buf [bufP+2]);
 bufP += 3;
 nGun = (sbyte)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (vmsVector));
-vFire.x = (fix)INTEL_INT ((int)vFire.x);
-vFire.y = (fix)INTEL_INT ((int)vFire.y);
-vFire.z = (fix)INTEL_INT ((int)vFire.z);
+vFire.p.x = (fix)INTEL_INT ((int)vFire.p.x);
+vFire.p.y = (fix)INTEL_INT ((int)vFire.p.y);
+vFire.p.z = (fix)INTEL_INT ((int)vFire.p.z);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject) || 
 		 (gameData.objs.objects [nRobot].nType != OBJ_ROBOT) || 
 		 (gameData.objs.objects [nRobot].flags & OF_EXPLODING))
@@ -929,14 +929,14 @@ nPlayer = buf [bufP++];
 delObjP.containsCount = buf [bufP++];						
 delObjP.containsType = buf [bufP++];						
 delObjP.containsId = buf [bufP++]; 						
-delObjP.nSegment = GET_INTEL_SHORT (buf + bufP);            
+delObjP.position.nSegment = GET_INTEL_SHORT (buf + bufP);            
 bufP += 2;
 memcpy (&delObjP.position.vPos, buf+bufP, sizeof (vmsVector));      
 bufP += 12;
 VmVecZero (&delObjP.mType.physInfo.velocity);
-delObjP.position.vPos.x = (fix)INTEL_INT ((int)delObjP.position.vPos.x);
-delObjP.position.vPos.y = (fix)INTEL_INT ((int)delObjP.position.vPos.y);
-delObjP.position.vPos.z = (fix)INTEL_INT ((int)delObjP.position.vPos.z);
+delObjP.position.vPos.p.x = (fix)INTEL_INT ((int)delObjP.position.vPos.p.x);
+delObjP.position.vPos.p.y = (fix)INTEL_INT ((int)delObjP.position.vPos.p.y);
+delObjP.position.vPos.p.z = (fix)INTEL_INT ((int)delObjP.position.vPos.p.z);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multi.nPlayers));
 Assert (nPlayer != gameData.multi.nLocalPlayer); // What? How'd we send ourselves this?
 multiData.create.nLoc = 0;

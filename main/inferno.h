@@ -174,6 +174,7 @@ typedef struct tShadowOptions {
 	int nLights;
 	int bFast;
 	int bClip;
+	int bExactClip;
 	int bSoft;
 	int bPlayers;
 	int bRobots;
@@ -529,6 +530,7 @@ typedef struct tRenderStates {
 	int bAllVisited;
 	int bViewDist;
 	int bD2XLights;
+	int bRendering;
 	int nFrameFlipFlop;
 	int nState;	//0: render geometry, 1: render objects
 	ubyte nRenderingType;
@@ -1091,6 +1093,7 @@ typedef struct tPOF_face {
 	vmsVector			vRotNorm;
 	tOOF_vector			vNormf;
 	tOOF_vector			vCenterf;
+	float					fClipDist;
 	ubyte					bFacingLight :1;
 	ubyte					bFrontFace :1;
 	ubyte					bGlow :1;
@@ -1128,6 +1131,8 @@ typedef struct tPOFObject {
 	short					nVerts;
 	vmsVector			*pvVerts;
 	tOOF_vector			*pvVertsf;
+	float					*pfClipDist;
+	ubyte					*pVertFlags;
 	g3sNormal			*pVertNorms;
 	vmsVector			vCenter;
 	vmsVector			*pvRotVerts;
@@ -1797,7 +1802,7 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 static inline void OglVertex3f (g3sPoint *p)
 {
 if (p->p3_index < 0)
-	glVertex3x (p->p3_vec.x, p->p3_vec.y, p->p3_vec.z);
+	glVertex3x (p->p3_vec.p.x, p->p3_vec.p.y, p->p3_vec.p.z);
 else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }

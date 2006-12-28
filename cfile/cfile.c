@@ -766,9 +766,9 @@ return (fixang) INTEL_SHORT ((int) f);
 
 void CFReadVector (vmsVector *v, CFILE *file)
 {
-v->x = CFReadFix (file);
-v->y = CFReadFix (file);
-v->z = CFReadFix (file);
+v->p.x = CFReadFix (file);
+v->p.y = CFReadFix (file);
+v->p.z = CFReadFix (file);
 }
 
 // ----------------------------------------------------------------------------
@@ -866,9 +866,9 @@ return CFWrite (&a, sizeof (a), 1, file);
 
 void CFWriteVector (vmsVector *v, CFILE *file)
 {
-CFWriteFix (v->x, file);
-CFWriteFix (v->y, file);
-CFWriteFix (v->z, file);
+CFWriteFix (v->p.x, file);
+CFWriteFix (v->p.y, file);
+CFWriteFix (v->p.z, file);
 }
 
 // ----------------------------------------------------------------------------

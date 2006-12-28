@@ -256,9 +256,9 @@ if (pDir) {
 	VmVecScale (&dir, nSpeed);
 	}
 else {
-	dir.x = nSpeed - randN (2 * nSpeed);
-	dir.y = nSpeed - randN (2 * nSpeed);
-	dir.z = nSpeed - randN (2 * nSpeed);
+	dir.p.x = nSpeed - randN (2 * nSpeed);
+	dir.p.y = nSpeed - randN (2 * nSpeed);
+	dir.p.z = nSpeed - randN (2 * nSpeed);
 	VmVecScaleAdd (&pParticle->pos, pPos, &dir, 200);
 	}
 pParticle->dir = dir;
@@ -384,9 +384,9 @@ t = nCurTime - pParticle->nMoved;
 		pos = pParticle->pos;
 		dir = pParticle->dir;
 		if (pParticle->nType != 3) {
-			dir.x = ChangeDir (dir.x);
-			dir.y = ChangeDir (dir.y);
-			dir.z = ChangeDir (dir.z);
+			dir.p.x = ChangeDir (dir.p.x);
+			dir.p.y = ChangeDir (dir.p.y);
+			dir.p.z = ChangeDir (dir.p.z);
 			}
 		for (j = 0; j < 2; j++) {
 			VmVecScaleAdd (&pParticle->pos, &pos, &dir, t);
@@ -582,16 +582,16 @@ if (gameStates.render.bPointSprites) {
 #	if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
 #		if !EXTRA_VERTEX_ARRAYS
-		pParticle->glPos.x = f2fl (hp.x);
-		pParticle->glPos.y = f2fl (hp.y);
-		pParticle->glPos.z = f2fl (hp.z);
+		pParticle->glPos.p.x = f2fl (hp.x);
+		pParticle->glPos.p.y = f2fl (hp.y);
+		pParticle->glPos.p.z = f2fl (hp.z);
 		nBuffer++;
 #		else
 		memcpy (colorBuffer [iBuffer], &pc, sizeof (pc));
 		pf = vertexBuffer [iBuffer];
-		pf [0] = f2fl (hp.x);
-		pf [1] = f2fl (hp.y);
-		pf [2] = f2fl (hp.z);
+		pf [0] = f2fl (hp.p.x);
+		pf [1] = f2fl (hp.p.y);
+		pf [2] = f2fl (hp.p.z);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
 		if (iBuffer >= VERT_BUF_SIZE)
 			FlushVertexArrays ();
@@ -601,7 +601,7 @@ if (gameStates.render.bPointSprites) {
 #endif
 	{
 	glColor4dv ((GLdouble *) &pc);
-	glVertex3d (f2fl (hp.x), f2fl (hp.y), f2fl (hp.z));
+	glVertex3d (f2fl (hp.p.x), f2fl (hp.p.y), f2fl (hp.p.z));
 	}
 	}
 else
@@ -611,16 +611,16 @@ else
 	v = bmP->glTexture->v;
 	o = pParticle->nOrient;
 	if (gameOpts->render.smoke.bDisperse) {
-		w = f2fl (pParticle->nWidth) / decay2; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) / decay2;
-		h = f2fl (pParticle->nHeight) / decay2; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) / decay2;
+		w = f2fl (pParticle->nWidth) / decay2; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) / decay2;
+		h = f2fl (pParticle->nHeight) / decay2; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) / decay2;
 		}
 	else {
-		w = f2fl (pParticle->nWidth) * decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.x)) * decay;
-		h = f2fl (pParticle->nHeight) * decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.y)) * decay;
+		w = f2fl (pParticle->nWidth) * decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) * decay;
+		h = f2fl (pParticle->nHeight) * decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) * decay;
 		}
-	x = f2fl (hp.x);
-	y = f2fl (hp.y);
-	z = f2fl (hp.z);
+	x = f2fl (hp.p.x);
+	y = f2fl (hp.p.y);
+	z = f2fl (hp.p.z);
 #if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
 		pf = vertexBuffer [iBuffer];
@@ -904,7 +904,7 @@ if (CloudLives (pCloud, nCurTime)) {
 	else if (h == 1)
 		h = 1;
 #ifdef _DEBUG
-	if (c.prevPos.x == c.pos.x && c.prevPos.y == c.pos.y && c.prevPos.z == c.pos.z)
+	if (c.prevPos.p.x == c.pos.p.x && c.prevPos.p.y == c.pos.p.y && c.prevPos.p.z == c.pos.p.z)
 		c.bHavePrevPos = 0;
 #endif
 	if (c.bHavePrevPos && (fDist > 0)) {
@@ -924,9 +924,9 @@ if (CloudLives (pCloud, nCurTime)) {
 		}
 	for (; h; h--, i++) {
 		VmVecIncf (&vPosf, &vDeltaf);
-		vPos.x = (fix) (vPosf.p.x * 65336.0f);
-		vPos.y = (fix) (vPosf.p.y * 65336.0f);
-		vPos.z = (fix) (vPosf.p.z * 65336.0f);
+		vPos.p.x = (fix) (vPosf.p.x * 65336.0f);
+		vPos.p.y = (fix) (vPosf.p.y * 65336.0f);
+		vPos.p.z = (fix) (vPosf.p.z * 65336.0f);
 		CreateParticle (c.pParticles + i, &vPos, pDir, c.nSegment, c.nLife, 
 							 c.nSpeed, c.nType, c.nPartScale, nCurTime, nInterpolatePos);
 		nInterpolatePos = (h > 0);
@@ -983,7 +983,7 @@ if (nParticles > 1) {
 	TransformParticles (pParticles, nParticles);
 	for (i = 0; i < nParticles; i++) {
 		pPartIdx [i].i = i;
-		pPartIdx [i].z = pParticles [i].transPos.z;
+		pPartIdx [i].z = pParticles [i].transPos.p.z;
 		if (i)
 			if (z > pPartIdx [i].z)
 				nSortedUp++;
