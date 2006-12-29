@@ -3098,11 +3098,13 @@ else
 		DigiSetMidiVolume ((gameConfig.nMidiVolume*128)/8);
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
-		else if (!bSongPlaying)
+		else if (!bSongPlaying) {
+			DigiStopAllChannels ();
 			if (gameStates.app.bGameRunning)
 				PlayLevelSong (gameData.missions.nCurrentLevel);
 			else
 				SongsPlaySong (gameStates.sound.nCurrentSong, 1);
+			}
 		}
 	}
 // don't enable redbook for a non-apple demo version of the shareware demo
