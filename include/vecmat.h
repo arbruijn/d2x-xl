@@ -58,7 +58,7 @@
  * 
  * Revision 1.26  1994/05/18  22:28:57  matt
  * Added function VmVecNormalizedDir()
- * Added C macros IS_ZERO_VEC(), VmVecZero(), and vm_set_identity()
+ * Added C macros IS_ZERO_VEC(), VmVecZero(), and VmSetIdentity()
  * Added C global static vars vmd_zero_vector & vmdIdentityMatrix
  * 
  * Revision 1.25  1994/05/18  21:45:06  matt
@@ -196,7 +196,7 @@ typedef struct fMatrix {
 //Macros/functions to fill in fields of structures
 
 //macro to check if vector is zero
-#define IS_VEC_NULL(v) (v->x == 0 && v->y == 0 && v->z == 0)
+#define IS_VEC_NULL(v) (v->p.x == 0 && v->p.y == 0 && v->p.z == 0)
 
 //macro to set a vector to zero.  we could do this with an in-line assembly 
 //macro, but it's probably better to let the compiler optimize it.
@@ -208,42 +208,17 @@ typedef struct fMatrix {
 // DPH (18/9/98): Begin mod to fix linefeed problem under linux. Uses an
 // inline function instead of a multi-line macro to fix CR/LF problems.
 
-#if defined(__unix__) || defined(__macosx__)
-static inline void vm_set_identity(vmsMatrix *m)
+static inline void VmSetIdentity(vmsMatrix *m)
 {
-  m->rVec.x = m->uVec.y = m->fVec.z = f1_0;
-  m->rVec.y = m->rVec.z = m->uVec.x = m->uVec.z = m->fVec.x = m->fVec.y = 0;
+m->rVec.p.x = m->uVec.p.y = m->fVec.p.z = f1_0;
+m->rVec.p.y = m->rVec.p.z = m->uVec.p.x = m->uVec.p.z = m->fVec.p.x = m->fVec.p.y = 0;
 }
-#else
-#define vm_set_identity(m) do {m->rVec.x = m->uVec.y = m->fVec.z = f1_0; \
-	m->rVec.y = m->rVec.z = \
-	m->uVec.x = m->uVec.z = \
-	m->fVec.x = m->fVec.y = 0;} while (0)
-#endif
 
 // DPH (19/8/98): End changes.
 
 vmsVector *VmVecMake (vmsVector *v, fix x, fix y, fix z);
 
-
-#ifdef __WATCOMC__
-#pragma aux VmVecMake "*_" parm [eax] [edx] [ebx] [ecx] value [eax] modify exact [] = \
-"mov 0[eax],edx" \
-"mov 4[eax],ebx" \
-"mov 8[eax],ecx";
-
-#endif
-
 vmsAngVec *VmAngVecMake (vmsAngVec * v, fixang p, fixang b, fixang h);
-
-
-#ifdef __WATCOMC__
-#pragma aux VmAngVecMake "*_" parm [eax] [dx] [bx] [cx] value [eax] modify exact [] = \
-"mov 0[eax],dx" \
-"mov 2[eax],bx" \
-"mov 4[eax],cx";
-
-#endif
 
 //Global constants
 
@@ -256,33 +231,6 @@ extern vmsMatrix vmdIdentityMatrix;
 
 #define ZERO_VECTOR {0,0,0}
 #define IDENTITY_MATRIX { {f1_0,0,0}, {0,f1_0,0}, {0,0,f1_0} }
-
-//#define VmVecMake(v,_x,_y,_z) (((v)->x=(_x), (v)->y=(_y), (v)->z=(_z)), (v))
-
-//#pragma off (unreferenced)
-////make this local, so compiler can in-line it
-//static vmsVector *VmVecMake(vmsVector *v,fix x,fix y,fix z)
-//{
-//      v->x = x;
-//      v->y = y;
-//      v->z = z;
-//
-//      return v;
-//}
-//#pragma on (unreferenced)
-
-
-////macro to fill in elements of a matrix, also for Mike
-/*
-   #define vm_mat_make(m,_m1,_m2,_m3,_m4,_m5,_m6,_m7,_m8,_m9) \
-   do { (m)->m1=(_m1); (m)->m2=(_m2); (m)->m3=(_m3); \
-   (m)->m4=(_m4); (m)->m5=(_m5); (m)->m6=(_m6); \
-   (m)->m7=(_m7); (m)->m8=(_m8); (m)->m9=(_m9);} while (0)
- */ 
-
-
-////fills in fields of an angle vector
-//#define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
 
 //negate a vector
 static inline vmsVector *VmVecNegate (vmsVector *v)
@@ -347,22 +295,21 @@ vmsVector *VmVecDec (vmsVector *dest, vmsVector *src);
 
 #endif
 
-#else	/* 
- */
+#else	
 
 #define	VmVecAdd(dest,src0,src1) \
-			(dest)->x = (src0)->x + (src1)->x, (dest)->y = (src0)->y + (src1)->y, (dest)->z = (src0)->z + (src1)->z;
+			(dest)->p.x = (src0)->p.x + (src1)->p.x, (dest)->p.y = (src0)->p.y + (src1)->p.y, (dest)->p.z = (src0)->p.z + (src1)->p.z;
 
 #define	VmVecSub(dest,src0,src1) \
-			(dest)->x = (src0)->x - (src1)->x, (dest)->y = (src0)->y - (src1)->y, (dest)->z = (src0)->z - (src1)->z;
+			(dest)->p.x = (src0)->p.x - (src1)->p.x, (dest)->p.y = (src0)->p.y - (src1)->p.y, (dest)->p.z = (src0)->p.z - (src1)->p.z;
 
 
 #define	VmVecInc(dest,src)	\
-			(dest)->x += (src)->x, (dest)->y += (src)->y, (dest)->z += (src)->z;
+			(dest)->p.x += (src)->p.x, (dest)->p.y += (src)->p.y, (dest)->p.z += (src)->p.z;
 
 
 #define	VmVecDec(dest,src) \
-			(dest)->x -= (src)->x, (dest)->y -= (src)->y, (dest)->z -= (src)->z;
+			(dest)->p.x -= (src)->p.x, (dest)->p.y -= (src)->p.y, (dest)->p.z -= (src)->p.z;
 
 #endif	/* 
  */
