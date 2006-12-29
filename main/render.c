@@ -80,6 +80,9 @@ extern int bWallShadows;
 extern int bZPass;
 #endif
 
+int _CDECL_ D2X_RenderThread (void *p);
+int _CDECL_ D2X_OpenGLThread (void *p);
+
 extern tFaceColor tMapColor, lightColor, vertColors [4];
 extern tRgbColorf globalDynColor;
 extern char bGotGlobalDynColor;
@@ -3288,113 +3291,6 @@ void gl_buildObject_list (void)
 
 int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWindow)
 {
-#if 0
-	short		nSegment;
-#endif
-#if OGL_QUERY
-	int		i, di, dj, bRenderLayer, nObject;
-	GLint		fragC;
-
-	static GLuint	segFragC [MAX_SEGMENTS], 
-						objFragC [MAX_OBJECTS];
-#endif
-
-#if OGL_QUERY
-for (renderState = nStartState; renderState < nEndState; renderState++) {
-	int bOccQuery = bOcclusionQuery && 1 && !nWindow && !renderState;
-	if (bOccQuery) {
-		glGenQueries (gameData.segs.nLastSegment + 1, glSegOccQuery);
-		glGenQueries (MAX_OBJECTS, glObjOccQuery);
-		memset (segFragC, 0, sizeof (segFragC));
-		memset (objFragC, 0, sizeof (objFragC));
-		memset (bSidesRendered, 0, sizeof (bSidesRendered));
-		}
-	// the following code tries to determine segments up to which distance (in segments) from the 
-	// start tSegment need to be rendered. To do that, the occlusion query OpenGL extension is used.
-	// If segments in three subsequents distances do not get rendered, it is assumed that all
-	// visible segments have been rendered.
-	for (gameStates.render.bQueryOcclusion = bOccQuery; gameStates.render.bQueryOcclusion >= 0; gameStates.render.bQueryOcclusion--) {
-		//if (gameStates.render.nShadowPass != 3)
-			switch (renderState) {
-				case 0: //solid sides
-					glDepthFunc (GL_LESS);
-					break;
-				case 1: //walls
-					glDepthFunc (GL_LEQUAL);
-					break;
-				case 2: //transparency (alpha blending)
-					glDepthFunc (GL_LEQUAL);
-					break;
-				}
-		if (gameStates.render.bQueryOcclusion) {
-			di = -1;
-			fragC = grdCurCanv->cv_bitmap.bm_props.w * grdCurCanv->cv_bitmap.bm_props.h;
-			bRenderLayer = 4;
-			for (i = 0; i < nSegListSize; i++) {
-				nSegment = segList [i];
-				dj = segDist [nSegment];
-				if (di != dj) {
-#if 1
-					if (di && !bRenderLayer)
-						break;
-#endif
-					di = dj;
-					bRenderLayer--;
-					}
-		      glBeginQuery (GL_SAMPLES_PASSED_ARB, glSegOccQuery [nSegment]);
-				RenderSegment (nSegment, nWindow);
-		      glEndQuery (GL_SAMPLES_PASSED_ARB);
-				glGetQueryObjectuiv (glSegOccQuery [nSegment], GL_QUERY_RESULT_ARB, segFragC + nSegment);
-#if 1
-				if (segFragC [nSegment] > 500) { // || !bSidesRendered [nSegment]) {
-#	if 0
-					fragC -= segFragC [nSegment];
-					if (fragC <= 0)
-						break;
-#	endif
-					bRenderLayer = 3;
-					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
-						objFragC [nObject] = 1;
-					}
-#	if 0
-				else {
-					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
-				      glBeginQuery (GL_SAMPLES_PASSED_ARB, glObjOccQuery [nObject]);
-						DoRenderObject (nObject, nWindow);
-				      glEndQuery (GL_SAMPLES_PASSED_ARB);
-						glGetQueryObjectuiv (glObjOccQuery [nObject], GL_QUERY_RESULT_ARB, objFragC + nObject);
-						}
-					}
-#	endif
-#endif
-				}
-			}
-		else 
-			for (i = nSegListSize; i;) {
-				nSegment = segList [--i];
-#if 1
-				if (bOcclusionQuery) {
-					if (segDist [nSegment] > di)
-						continue;
-					}
-#endif
-				RenderSegment (nSegment, nWindow);
-#if 1
-				if (1 && !nWindow && !renderState && bRenderSegObjs [nSegment])
-					for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
-						//if (objFragC [nObject])
-						if (bRenderObjs [nObject])
-							DoRenderObject (nObject, nWindow);
-#endif
-				}
-		}
-	gameStates.render.bQueryOcclusion = 0;
-	if (bOccQuery) {
-		glDeleteQueries (gameData.segs.nLastSegment + 1, glSegOccQuery);
-		glDeleteQueries (MAX_OBJECTS, glObjOccQuery);
-		}
-	}
-#else //OGL_QUERY
 for (renderState = nStartState; renderState < nEndState; renderState++) {
 	//if (gameStates.render.nShadowPass != 3)
 		switch (renderState) {
@@ -3408,15 +3304,9 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 				glDepthFunc (GL_LEQUAL);
 				break;
 			}
-#if 0
-	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++)
-		RenderSegment (nSegment, nWindow);
-#else
 	while (nnRenderSegs)
 		RenderSegment (nRenderList [--nnRenderSegs], nWindow);
-#endif
 	}
-#endif //OGL_QUERY
 glDepthFunc (GL_LESS);
 renderState = -1;
 return 1;
@@ -3583,18 +3473,13 @@ for (i = gameData.segs.nSegments, segP = gameData.segs.segments; i; i--, segP++)
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
+int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
-	int		nn;
-	short		nSegment;
-	int		rsMin, rsMax;
-	ubyte		bSetAutomapVisited;
 	window	*rwP;
 #ifdef _DEBUG
-	int	i;
+	int		i;
 #endif
 
-//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
 windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
@@ -3680,65 +3565,16 @@ if (nClearWindow == 2) {
 			}
 		}
 	}
-#if APPEND_LAYERED_TEXTURES
-if (gameOpts->render.bOptimize || (1 && !nWindow)) {
-#else
-if (1) {
-#endif
-	rsMin = 0;
-	rsMax = 0;
-	}
-else
-	rsMin = rsMax = -1;
-bSetAutomapVisited =	!gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 InitFaceList ();
-for (renderState = rsMin; renderState <= rsMax; renderState++) {
-	//memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nSegments));
-	nVisited++;
-	for (nn = nRenderSegs; nn;) {
-		nn--;
-		rwP = renderWindows + nn;
-		nSegment = nRenderList [nn];
-		nCurrentSegDepth = nSegDepth [nn];
-		if ((nSegment != -1) && !VISITED (nSegment)) {
-#if 0
-			if (bWindowCheck) {
-				nWindowClipLeft = rwP->left;
-				nWindowClipTop  = rwP->top;
-				nWindowClipRight = rwP->right;
-				nWindowClipBot = rwP->bot;
-				}
-#endif
-			RenderSegment (nSegment, nWindow);
-#if APPEND_LAYERED_TEXTURES
-			if (!(renderState || 1) || gameOpts->render.bOptimize)
-#else
-			if (!(renderState || 1))
-#endif
-				continue;
-   		bAutomapVisited [nSegment] = bSetAutomapVisited;
-			VISIT (nSegment);
+return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
+}
 
-			if (bWindowCheck) {		//reset for gameData.objs.objects
-				nWindowClipLeft = nWindowClipTop = 0;
-				nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
-				nWindowClipBot = grdCurCanv->cv_bitmap.bm_props.h-1;
-				}
-			}
-		}
-#ifdef LASER_HACK								
-	for (i = 0; i < nHackLasers; i++)
-		DoRenderObject (Hack_laser_list [i], nWindow);
-#endif
-	}
-#ifdef EDITOR
-#	ifdef _DEBUG
-//draw curedge stuff
-if (bOutLineMode) 
-	OutlineSegSide (Cursegp, Curside, Curedge, Curvert);
-#	endif
-#endif
-//RenderVisibleObjects (nWindow);
+//------------------------------------------------------------------------------
+
+void RenderSkyBox (int nWindow)
+{
+	int	nSegment;
+
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bHaveSkyBox = 0;
 	renderState = 4;
@@ -3748,26 +3584,53 @@ if (gameStates.render.bHaveSkyBox) {
 			RenderSegment (nSegment, nWindow);
 			}
 	}
-renderState = 1;
-if (1) {
-	nVisited++;
-	for (nn = nRenderSegs; nn;) {
-		nSegment = nRenderList [--nn];
-		if ((nSegment != -1) && !VISITED (nSegment)) {
-			VISIT (nSegment);
-			RenderSegment (nSegment, nWindow);
-			RenderObjList (nn, nWindow);
-			}
-		}
-	}
-#ifdef OGL_ZBUF
-if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2))
-	GlRenderSegments (2, 3, nRenderSegs, nWindow);
-#endif
-#if APPEND_LAYERED_TEXTURES
-RenderFaceList (nWindow);
-#endif
 }
+
+//------------------------------------------------------------------------------
+
+static ubyte bSetAutomapVisited;
+
+inline void RenderMineSegment (int nn, int nWindow)
+{
+	int nSegment = nRenderList [nn];
+
+if ((nSegment != -1) && !VISITED (nSegment)) {
+	RenderSegment (nSegment, nWindow);
+	VISIT (nSegment);
+	if (renderState == 0)
+		bAutomapVisited [nSegment] = bSetAutomapVisited;
+	else if (renderState == 1)
+		RenderObjList (nn, nWindow);
+	}
+}
+
+//------------------------------------------------------------------------------
+//renders onto current canvas
+
+void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
+{
+	int		nn;
+
+bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
+//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
+renderState = 0;	//render solid geometry front to back
+nVisited++;
+for (nn = 0; nn < nRenderSegs; )
+	RenderMineSegment (nn++, nWindow);
+RenderSkyBox (nWindow);
+renderState = 1;	//render transparency back to front
+nVisited++;
+for (nn = nRenderSegs; nn; )
+	RenderMineSegment (--nn, nWindow);
+if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
+	renderState = 2;
+	glDepthFunc (GL_LEQUAL);
+	for (nn = nRenderSegs; nn;)
+		RenderMineSegment (--nn, nWindow);
+	glDepthFunc (GL_LESS);
+	}
+}
+
 #ifdef EDITOR
 
 //------------------------------------------------------------------------------
@@ -3803,4 +3666,21 @@ int find_seg_side_face(short x, short y, int *seg, int *tSide, int *face, int *p
 }
 
 #endif
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ D2X_RenderThread (void *p)
+{
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ D2X_OpenGLThread (void *p)
+{
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 

@@ -1710,6 +1710,13 @@ typedef struct tFCDData {
 	int				nConnSegDist;
 } tFCDData;
 
+typedef struct tThreadData {
+	SDL_Thread	*oglSems [2];
+	SDL_Thread	*renderThreads [2];
+	SDL_sem		*renderSems [2];
+	SDL_cond		*renderStates [4];
+	} tThreadData;
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
