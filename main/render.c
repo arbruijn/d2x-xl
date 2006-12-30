@@ -3590,17 +3590,17 @@ if (gameStates.render.bHaveSkyBox) {
 
 static ubyte bSetAutomapVisited;
 
-inline void RenderMineSegment (int nn, int nWindow)
+inline void RenderMineSegment (int nn)
 {
 	int nSegment = nRenderList [nn];
 
 if ((nSegment != -1) && !VISITED (nSegment)) {
-	RenderSegment (nSegment, nWindow);
+	RenderSegment (nSegment, gameStates.render.nWindow);
 	VISIT (nSegment);
 	if (renderState == 0)
 		bAutomapVisited [nSegment] = bSetAutomapVisited;
 	else if (renderState == 1)
-		RenderObjList (nn, nWindow);
+		RenderObjList (nn, gameStates.render.nWindow);
 	}
 }
 
@@ -3611,29 +3611,30 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 	int		nn;
 
+gameStates.render.nWindow = nWindow;
 bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
-//	Initialize number of gameData.objs.objects (actually, robots!) rendered this frame.
 renderState = 0;	//render solid geometry front to back
 nVisited++;
 for (nn = 0; nn < nRenderSegs; )
-	RenderMineSegment (nn++, nWindow);
+	RenderMineSegment (nn++);
 RenderSkyBox (nWindow);
 renderState = 1;	//render transparency back to front
 nVisited++;
 for (nn = nRenderSegs; nn; )
-	RenderMineSegment (--nn, nWindow);
+	RenderMineSegment (--nn);
 if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	renderState = 2;
+	nVisited++;
 	glDepthFunc (GL_LEQUAL);
 	for (nn = nRenderSegs; nn;)
-		RenderMineSegment (--nn, nWindow);
+		RenderMineSegment (--nn);
 	glDepthFunc (GL_LESS);
 	}
 }
 
-#ifdef EDITOR
-
 //------------------------------------------------------------------------------
+
+#ifdef EDITOR
 
 extern int render_3d_in_big_window;
 
@@ -3668,19 +3669,4 @@ int find_seg_side_face(short x, short y, int *seg, int *tSide, int *face, int *p
 #endif
 
 //------------------------------------------------------------------------------
-
-int _CDECL_ D2X_RenderThread (void *p)
-{
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ D2X_OpenGLThread (void *p)
-{
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-
+//eof

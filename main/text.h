@@ -1625,12 +1625,12 @@ void LoadGameTexts(void);
 #define TXT_IDLE_ANIMS				GT(843)
 #define TXT_BAMBI_WINS				GT(844)
 #define TXT_PRECISE					GT(845)
+#define TXT_TGTIND_MENUTITLE		GT(846)
+#define TXT_TGTIND_MENUCALL		GT(847)
+#define TXT_WPNICON_MENUTITLE		GT(848)
+#define TXT_WPNICON_MENUCALL		GT(849)
 #if 0
 
-#define TXT_				GT(846)
-#define TXT_				GT(847)
-#define TXT_				GT(848)
-#define TXT_				GT(849)
 #define TXT_				GT(850)
 #define TXT_				GT(851)
 #define TXT_				GT(852)

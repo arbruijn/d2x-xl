@@ -989,6 +989,8 @@ if (t = FindArg ("-nostalgia"))
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
 gameOpts = gameOptions + gameStates.app.iNostalgia;
 
+if (t = FindArg ("-multithreaded"))
+	gameStates.app.bMultiThreaded = NumArg (t, 1);
 if (t = FindArg ("-nosound"))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
 if (t = FindArg ("-progress_bars"))
@@ -2307,6 +2309,41 @@ if (gameOpts->render.bHiresModels) {
 
 // ----------------------------------------------------------------------------
 
+int _CDECL_ VertColorThread (void *pThreadId);
+int _CDECL_ ClipDistThread (void *pThreadId);
+
+void InitThreads (void)
+{
+	int	i;
+
+if (gameStates.app.bMultiThreaded) {
+	for (i = 0; i < 2; i++) {
+		gameData.threads.vertColor.done [i] = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.exec [i] = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.nId [i] = i;
+		gameData.threads.vertColor.pThread [i] = SDL_CreateThread (VertColorThread, gameData.threads.vertColor.nId + i);
+		gameData.threads.clipDist.done [i] = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.exec [i] = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.nId [i] = i;
+		gameData.threads.clipDist.pThread [i] = SDL_CreateThread (ClipDistThread, gameData.threads.clipDist.nId + i);
+		}
+	}
+gameData.threads.vertColor.data.matAmbient.c.r = 
+gameData.threads.vertColor.data.matAmbient.c.g = 
+gameData.threads.vertColor.data.matAmbient.c.b = 0.01f;
+gameData.threads.vertColor.data.matAmbient.c.a = 1.0f;
+gameData.threads.vertColor.data.matDiffuse.c.r = 
+gameData.threads.vertColor.data.matDiffuse.c.g = 
+gameData.threads.vertColor.data.matDiffuse.c.b = 
+gameData.threads.vertColor.data.matDiffuse.c.a = 1.0f;
+gameData.threads.vertColor.data.matSpecular.c.r = 
+gameData.threads.vertColor.data.matSpecular.c.g = 
+gameData.threads.vertColor.data.matSpecular.c.b = 0.0f;
+gameData.threads.vertColor.data.matSpecular.c.a = 1.0f;
+}
+
+// ----------------------------------------------------------------------------
+
 int Initialize (int argc, char *argv[])
 {
 	int			i, t;
@@ -2446,6 +2483,7 @@ SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
 InitWeaponFlags ();
 InitGame ();
+InitThreads ();
 return 0;
 }
 

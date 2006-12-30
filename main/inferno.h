@@ -513,6 +513,7 @@ typedef struct tRenderStates {
 	int bRearView;
 	int nInterpolationMethod;
 	int bTMapFlat;
+	int nWindow;
 	int nLighting;
 	int bTransparency;
 	int bHaveDynLights;
@@ -613,6 +614,8 @@ typedef struct tEntropyStates {
 } tEntropyStates;
 
 typedef struct tApplicationStates {
+	int bExit;
+	int bMultiThreaded;
 	int nSDLTicks;
 	int nLastTick;
 	int b40fpsTick;
@@ -1133,6 +1136,7 @@ typedef struct tPOFObject {
 	vmsVector			*pvVerts;
 	tOOF_vector			*pvVertsf;
 	float					*pfClipDist;
+	ubyte					*pVertFlags;
 	g3sNormal			*pVertNorms;
 	vmsVector			vCenter;
 	vmsVector			*pvRotVerts;
@@ -1147,6 +1151,7 @@ typedef struct tPOFObject {
 	short					iFace;
 	short					iFaceVert;
 	char					nState;
+	ubyte					nVertFlag;
 } tPOFObject;
 
 //------------------------------------------------------------------------------
@@ -1710,11 +1715,48 @@ typedef struct tFCDData {
 	int				nConnSegDist;
 } tFCDData;
 
+typedef struct tVertColorData {
+	int		bExclusive;
+	int		bNoShadow;
+	int		bDarkness;
+	int		bMatEmissive;
+	int		bMatSpecular;
+	int		nMatLight;
+	fVector	matAmbient;
+	fVector	matDiffuse;
+	fVector	matSpecular;
+	fVector	vertNorm;
+	fVector	colorSum [2];
+	fVector	*pVertPos;
+	float		fMatShininess;
+	} tVertColorData;
+
+typedef struct tVertColorThreadData {
+	SDL_Thread		*pThread [2];
+	int				nId [2];
+	SDL_sem			*done [2];	
+	SDL_sem			*exec [2];
+	tVertColorData	data;
+	} tVertColorThreadData;
+
+typedef struct tClipDistData {
+	tObject			*objP;
+	tPOFObject		*po;
+	tPOFSubObject	*pso;
+	float				fClipDist [2];
+	} tClipDistData;
+
+typedef struct tClipDistThreadData {
+	SDL_Thread		*pThread [2];
+	int				nId [2];
+	SDL_sem			*done [2];	
+	SDL_sem			*exec [2];
+	tClipDistData	data;
+	} tClipDistThreadData;
+
 typedef struct tThreadData {
-	SDL_Thread	*oglSems [2];
-	SDL_Thread	*renderThreads [2];
-	SDL_sem		*renderSems [2];
-	SDL_cond		*renderStates [4];
+	tVertColorThreadData	vertColor;
+	tClipDistThreadData	clipDist;
 	} tThreadData;
 
 typedef struct tGameData {
@@ -1749,6 +1791,8 @@ typedef struct tGameData {
 	tTerrainData		terrain;
 	tTimeData			time;
 	tFCDData				fcd;
+	tVertColorData		vertColor;
+	tThreadData			threads;
 	tApplicationData	app;
 } tGameData;
 
@@ -1827,6 +1871,10 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 #define LOCALPLAYER	gameData.multi.players [gameData.multi.nLocalPlayer]
 
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
+
+#define INFINITY					fInfinity [gameOpts->render.shadows.nReach]
+
+extern float fInfinity [];
 
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 

@@ -22,9 +22,11 @@
 #ifdef __macosx__
 # include <stdlib.h>
 # include <SDL/SDL.h>
+# include <SDL_mutex.h>
 #else
 # include <malloc.h>
 # include <SDL.h>
+# include <SDL_mutex.h>
 #endif
 
 #include "3d.h"
@@ -985,91 +987,26 @@ return vReflect;
 
 //------------------------------------------------------------------------------
 
-#define STATIC_LIGHT_TRANSFORM	0
-
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor)
+int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 {
-	fVector			lightDir, spotDir, vReflect;
-	fVector			matDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
-	fVector			matAmbient = {0.01f, 0.01f, 0.01f, 1.0f};
-	fVector			matSpecular = {0.0f, 0.0f, 0.0f, 1.0f};
-	fVector			lightColor, lightPos;
-	fVector			vertNorm, vertColor = {0.0f, 0.0f, 0.0f, 1.0f}, colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
-#if !STATIC_LIGHT_TRANSFORM
-	fVector			vertPos;
-#endif
-	float				s, NdotL, RdotE, spotEffect, fLightDist, fAttenuation, fMatShininess = 0.0f;
-	int				i, j, nType, bMatSpecular = 0, bMatEmissive = 0, nMatLight = -1;
-	int				bInRad,
-						bExclusive = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3),
-						bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
-						bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
-	tFaceColor		*pc = NULL;
+	int				j, nType, bInRad;
+	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
+	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
+						vertColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 
-if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
-	s = 1.0f;// / (float) gameData.render.shadows.nLights;
-else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
-	s = 1.0f;
-else
-	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-if (gameData.render.lights.dynamic.material.bValid) {
-#if 0
-	if (gameData.render.lights.dynamic.material.emissive.c.r ||
-		 gameData.render.lights.dynamic.material.emissive.c.g ||
-		 gameData.render.lights.dynamic.material.emissive.c.b) {
-		bMatEmissive = 1;
-		nMatLight = gameData.render.lights.dynamic.material.nLight;
-		colorSum = gameData.render.lights.dynamic.material.emissive;
-		}
-#endif
-	bMatSpecular = 
-		gameData.render.lights.dynamic.material.specular.c.r ||
-		gameData.render.lights.dynamic.material.specular.c.g ||
-		gameData.render.lights.dynamic.material.specular.c.b;
-	if (bMatSpecular) {
-		matSpecular = gameData.render.lights.dynamic.material.specular;
-		fMatShininess = (float) gameData.render.lights.dynamic.material.shininess;
-		}
-	}
-#if 1 //cache light values per frame
-if (!(bExclusive || bMatEmissive || pVertColor) && (nVertex >= 0)) {
-	pc = gameData.render.color.vertices + nVertex;
-	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
-		OglColor4sf (pc->color.red * s, pc->color.green * s, pc->color.blue * s, 1.0);
-		return;
-		}
-	}
-#endif
-if (gameStates.ogl.bUseTransform) 
-	VmVecNormalizef (&vertNorm, pvVertNorm);
-else {
-#if !STATIC_LIGHT_TRANSFORM
-	if (!gameStates.render.nState)
-		VmVecNormalizef (&vertNorm, pvVertNorm);
-	else 
-#endif
-		G3RotatePointf (&vertNorm, pvVertNorm, 0);
-	}
-if (!(gameStates.render.nState || pVertColor)) {
-#if !STATIC_LIGHT_TRANSFORM
-	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
-	pVertPos = &vertPos;
-#endif
-	SetNearestVertexLights (nVertex, 1, 0, 1);
-	}
-//VmVecNegatef (&vertNorm);
-for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
-	if (bExclusive) {
-		if (bExclusive < 0)
+colorSum = *pColorSum;
+for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl += incr) {
+	if (gameData.threads.vertColor.data.bExclusive) {
+		if (gameData.threads.vertColor.data.bExclusive < 0)
 			break;
 		if (!psl->bExclusive)
 			continue;
-		bExclusive = -1;
+		gameData.threads.vertColor.data.bExclusive = -1;
 		nType = psl->nType;
 		}
 	else {
-		if (bNoShadow && psl->bShadow)
+		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
 		nType = psl->nType;
 		if (!nType)
@@ -1078,12 +1015,12 @@ for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 	if (nType == 1) {
 		if (!gameStates.render.nState)
 			psl->nType = 0;
-		if (bDarkness)
+		if (gameData.threads.vertColor.data.bDarkness)
 			continue;
 		//if (!(gameStates.render.nState || psl->bVariable))
 		//	continue;
 		}
-	if (i == nMatLight)
+	if (i == gameData.threads.vertColor.data.nMatLight)
 		continue;
 	if (!psl->bState)
 		continue;
@@ -1093,7 +1030,7 @@ for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 #else
 	lightPos = psl->pos [gameStates.render.nState];
 #endif
-	VmVecSubf (&lightDir, &lightPos, pVertPos);
+	VmVecSubf (&lightDir, &lightPos, gameData.threads.vertColor.data.pVertPos);
 	//scaled quadratic attenuation depending on brightness
 	bInRad = 0;
 	if (psl->brightness < 0)
@@ -1125,7 +1062,7 @@ for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 		fAttenuation = fLightDist / psl->brightness;
 		}
 	VmVecNormalizef (&lightDir, &lightDir);
-	NdotL = bInRad ? 1 : VmVecDotf (&vertNorm, &lightDir);
+	NdotL = bInRad ? 1 : VmVecDotf (&gameData.threads.vertColor.data.vertNorm, &lightDir);
 	if (psl->bSpot) {
 		if (NdotL <= 0)
 			continue;
@@ -1136,39 +1073,148 @@ for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 			continue;
 		spotEffect = (float) pow (spotEffect, psl->spotExponent);
 		fAttenuation /= spotEffect * 10;
-		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
+		VmVecScaleAddf (&vertColor, &gameData.threads.vertColor.data.matAmbient, &gameData.threads.vertColor.data.matDiffuse, NdotL);
 		}
 	else if (NdotL < 0) {
 		NdotL = 0;
-		VmVecIncf (&vertColor, &matAmbient);
+		VmVecIncf (&vertColor, &gameData.threads.vertColor.data.matAmbient);
 		}
 	else
 		//vertColor = lightColor * (gl_FrontMaterial.diffuse * NdotL + matAmbient);
-		VmVecScaleAddf (&vertColor, &matAmbient, &matDiffuse, NdotL);
+		VmVecScaleAddf (&vertColor, &gameData.threads.vertColor.data.matAmbient, &gameData.threads.vertColor.data.matDiffuse, NdotL);
 	//if (fAttenuation > 50.0)
 	//	continue;	//too far away
 	VmVecMulf (&vertColor, &vertColor, (fVector *) &lightColor);
-	if ((NdotL > 0.0) && bMatSpecular) {
+	if ((NdotL > 0.0) && gameData.threads.vertColor.data.bMatSpecular) {
 		//spec = pow (reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 		//RdotV = max (dot (reflect (-normalize (lightDir), normal), normalize (-vertPos)), 0.0);
 		VmVecNegatef (&lightPos);	//create vector from light to eye
 		VmVecNormalizef (&lightPos, &lightPos);
 		if (!psl->bSpot)
 			VmVecNegatef (&lightDir); //need direction from light to vertex now
-		G3Reflect (&vReflect, &lightDir, &vertNorm);
+		G3Reflect (&vReflect, &lightDir, &gameData.threads.vertColor.data.vertNorm);
 		VmVecNormalizef (&vReflect, &vReflect);
 		RdotE = VmVecDotf (&vReflect, &lightPos);
 		if (RdotE < 0.0)
 			RdotE = 0.0;
 		//vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
-		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, fMatShininess));
-		VmVecMulf (&lightColor, &lightColor, &matSpecular);
+		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, gameData.threads.vertColor.data.fMatShininess));
+		VmVecMulf (&lightColor, &lightColor, &gameData.threads.vertColor.data.matSpecular);
 		VmVecIncf (&vertColor, &lightColor);
 		}
 	VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 	j++;
 	}
-if (!(gameStates.render.nState && bDarkness)) {
+if (j)
+	*pColorSum = colorSum;
+return j;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ VertColorThread (void *pThreadId)
+{
+	int		nId = *((int *) pThreadId);
+	fVector	colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
+
+while (!gameStates.app.bExit) {
+	SDL_SemWait (gameData.threads.vertColor.exec [nId]);
+	gameData.threads.vertColor.data.colorSum [nId] = colorSum;
+	G3AccumVertColor (nId, 2, gameData.threads.vertColor.data.colorSum + nId);
+	SDL_SemPost (gameData.threads.vertColor.done [nId]);
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+#define STATIC_LIGHT_TRANSFORM	0
+
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor)
+{
+	fVector			matSpecular = {0.0f, 0.0f, 0.0f, 1.0f},
+						colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
+#if !STATIC_LIGHT_TRANSFORM
+	fVector			vertPos;
+#endif
+	float				s;
+	tFaceColor		*pc = NULL;
+
+gameData.threads.vertColor.data.fMatShininess = 0.0f;
+gameData.threads.vertColor.data.bMatSpecular = 0;
+gameData.threads.vertColor.data.bMatEmissive = 0; 
+gameData.threads.vertColor.data.nMatLight = -1;
+gameData.threads.vertColor.data.bExclusive = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3),
+gameData.threads.vertColor.data.bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
+gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
+if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
+	s = 1.0f;// / (float) gameData.render.shadows.nLights;
+else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
+	s = 1.0f;
+else
+	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
+if (gameData.render.lights.dynamic.material.bValid) {
+#if 0
+	if (gameData.render.lights.dynamic.material.emissive.c.r ||
+		 gameData.render.lights.dynamic.material.emissive.c.g ||
+		 gameData.render.lights.dynamic.material.emissive.c.b) {
+		bMatEmissive = 1;
+		nMatLight = gameData.render.lights.dynamic.material.nLight;
+		colorSum = gameData.render.lights.dynamic.material.emissive;
+		}
+#endif
+	gameData.threads.vertColor.data.bMatSpecular = 
+		gameData.render.lights.dynamic.material.specular.c.r ||
+		gameData.render.lights.dynamic.material.specular.c.g ||
+		gameData.render.lights.dynamic.material.specular.c.b;
+	if (gameData.threads.vertColor.data.bMatSpecular) {
+		gameData.threads.vertColor.data.matSpecular = gameData.render.lights.dynamic.material.specular;
+		gameData.threads.vertColor.data.fMatShininess = (float) gameData.render.lights.dynamic.material.shininess;
+		}
+	else
+		gameData.threads.vertColor.data.matSpecular = matSpecular;
+	}
+#if 1 //cache light values per frame
+if (!(gameData.threads.vertColor.data.bExclusive || 
+	   gameData.threads.vertColor.data.bMatEmissive || pVertColor) && (nVertex >= 0)) {
+	pc = gameData.render.color.vertices + nVertex;
+	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
+		OglColor4sf (pc->color.red * s, pc->color.green * s, pc->color.blue * s, 1.0);
+		return;
+		}
+	}
+#endif
+if (gameStates.ogl.bUseTransform) 
+	VmVecNormalizef (&gameData.threads.vertColor.data.vertNorm, pvVertNorm);
+else {
+#if !STATIC_LIGHT_TRANSFORM
+	if (!gameStates.render.nState)
+		VmVecNormalizef (&gameData.threads.vertColor.data.vertNorm, pvVertNorm);
+	else 
+#endif
+		G3RotatePointf (&gameData.threads.vertColor.data.vertNorm, pvVertNorm, 0);
+	}
+if (!(gameStates.render.nState || pVertColor)) {
+#if !STATIC_LIGHT_TRANSFORM
+	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
+	pVertPos = &vertPos;
+#endif
+	SetNearestVertexLights (nVertex, 1, 0, 1);
+	}
+gameData.threads.vertColor.data.pVertPos = pVertPos;
+//VmVecNegatef (&vertNorm);
+#if 1
+if (gameStates.app.bMultiThreaded) {
+	SDL_SemPost (gameData.threads.vertColor.exec [0]);
+	SDL_SemPost (gameData.threads.vertColor.exec [1]);
+	SDL_SemWait (gameData.threads.vertColor.done [0]);
+	SDL_SemWait (gameData.threads.vertColor.done [1]);
+	VmVecAddf (&colorSum, gameData.threads.vertColor.data.colorSum, gameData.threads.vertColor.data.colorSum + 1);
+	}
+else
+#endif
+	G3AccumVertColor (0, 1, &colorSum);
+if (!(gameStates.render.nState && gameData.threads.vertColor.data.bDarkness)) {
 	tRgbColorf	ambient = gameData.render.color.ambient [nVertex].color;
 	colorSum.c.r += ambient.red;
 	colorSum.c.g += ambient.green;
@@ -1191,7 +1237,7 @@ if (colorSum.c.b > 1.0)
 	colorSum.c.b = 1.0;
 OglColor4sf (colorSum.c.r * s, colorSum.c.g * s, colorSum.c.b * s, 1.0);
 #if 1
-if (!bMatEmissive && pc) {
+if (!gameData.threads.vertColor.data.bMatEmissive && pc) {
 	pc->index = gameStates.render.nFrameFlipFlop + 1;
 	pc->color.red = colorSum.c.r;
 	pc->color.green = colorSum.c.g;

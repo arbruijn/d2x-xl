@@ -1340,14 +1340,189 @@ last_key++;		//kill warning
 }
 
 //------------------------------------------------------------------------------
-//added on 8/18/98 by Victor Rachels to add d1x options menu, gameOpts->render.nMaxFPS setting
-//added/edited on 8/18/98 by Victor Rachels to set gameOpts->render.nMaxFPS always on, max=80
-//added/edited on 9/7/98 by Victor Rachels to attempt dir browsing.  failed.
 
-static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, optIconAlpha, 
-				optTgtInd, optDmgInd, optHitInd;
+static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, 
+				optIconAlpha, optTgtInd, optDmgInd, optHitInd;
 
 static char *szCWS [4];
+
+//------------------------------------------------------------------------------
+
+void TgtIndOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v, j;
+
+m = menus + optTgtInd;
+v = m->value;
+if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
+	for (j = 0; j < 3; j++)
+		if (m [optTgtInd + j].value) {
+			extraGameInfo [0].bTargetIndicators = j;
+			break;
+			}
+	*key = -2;
+	return;
+	}
+m = menus + optDmgInd;
+v = m->value;
+if (v != extraGameInfo [0].bDamageIndicators) {
+	extraGameInfo [0].bDamageIndicators = v;
+	*key = -2;
+	return;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void TgtIndOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, j, opt, choice = 0;
+	int	optCloakedInd;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+
+	ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
+	optTgtInd = opt++;
+	ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
+	opt++;
+	ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
+	opt++;
+	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
+	if (extraGameInfo [0].bTargetIndicators) {
+		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
+		optCloakedInd = opt++;
+		}
+	else
+		optCloakedInd = -1;
+	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
+	optDmgInd = opt++;
+	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators) {
+		ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [0].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
+		optHitInd = opt++;
+		}
+	else
+		optHitInd = -1;
+	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		}
+	Assert (sizeofa (m) >= opt);
+	do {
+		i = ExecMenu1 (NULL, TXT_TGTIND_MENUTITLE, opt, m, &TgtIndOptionsCallback, &choice);
+	} while (i >= 0);
+	if (optTgtInd >= 0) {
+		for (j = 0; j < 3; j++)
+			if (m [optTgtInd + j].value) {
+				extraGameInfo [0].bTargetIndicators = j;
+				break;
+				}
+		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
+		}
+	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
+	GET_VAL (extraGameInfo [0].bHitIndicators, optHitInd);
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void WpnIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus + optWeaponIcons;
+v = m->value;
+if (v != bShowWeaponIcons) {
+	bShowWeaponIcons = v;
+	*key = -2;
+	return;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void WpnIconOptionsMenu (void)
+{
+	tMenuItem m [35];
+	int	i, j, opt, choice = 0;
+	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons;
+
+bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+
+	ADD_CHECK (opt, TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
+	optWeaponIcons = opt++;
+	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
+		ADD_CHECK (opt, TXT_SHOW_EQUIPICONS, gameOpts->render.weaponIcons.bEquipment, KEY_Q, HTX_CPIT_EQUIPICONS);
+		optEquipIcons = opt++;
+		ADD_CHECK (opt, TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
+		optSmallIcons = opt++;
+		ADD_CHECK (opt, TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
+		optIconSort = opt++;
+		ADD_CHECK (opt, TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
+		optIconAmmo = opt++;
+		optIconPos = opt;
+		ADD_RADIO (opt, TXT_WPNICONS_TOP, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		opt++;
+		ADD_RADIO (opt, TXT_WPNICONS_BTM, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		opt++;
+		ADD_RADIO (opt, TXT_WPNICONS_LRB, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		opt++;
+		ADD_RADIO (opt, TXT_WPNICONS_LRT, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
+		opt++;
+		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].value = 1;
+		ADD_SLIDER (opt, TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
+		optIconAlpha = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		}
+	else
+		optEquipIcons =
+		optSmallIcons =
+		optIconSort =
+		optIconPos =
+		optIconAmmo = 
+		optIconAlpha = -1;
+	Assert (sizeofa (m) >= opt);
+	do {
+		i = ExecMenu1 (NULL, TXT_WPNICON_MENUTITLE, opt, m, &WpnIconOptionsCallback, &choice);
+	} while (i >= 0);
+	if (bShowWeaponIcons) {
+		if (gameOpts->app.bExpertMode) {
+			GET_VAL (gameOpts->render.weaponIcons.bEquipment, optEquipIcons);
+			GET_VAL (gameOpts->render.weaponIcons.bSmall, optSmallIcons);
+			GET_VAL (gameOpts->render.weaponIcons.nSort, optIconSort);
+			GET_VAL (gameOpts->render.weaponIcons.bShowAmmo, optIconAmmo);
+			if (optIconPos >= 0)
+				for (j = 0; j < 4; j++)
+					if (m [optIconPos + j].value) {
+						extraGameInfo [0].nWeaponIcons = j + 1;
+						break;
+						}
+			GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
+			}
+		else {
+#if EXPMODE_DEFAULTS
+			gameOpts->render.weaponIcons.bEquipment = 1;
+			gameOpts->render.weaponIcons.bSmall = 1;
+			gameOpts->render.weaponIcons.nSort = 1;
+			gameOpts->render.weaponIcons.bShowAmmo = 1;
+			gameOpts->render.weaponIcons.alpha = 3;
+#endif
+			}
+		}
+	else
+		extraGameInfo [0].nWeaponIcons = 0;
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
 
 void CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -1413,13 +1588,13 @@ if (gameOpts->app.bExpertMode) {
 
 //------------------------------------------------------------------------------
 
-void CockpitOptionsMenu ()
+void CockpitOptionsMenu (void)
 {
-	tMenuItem m [35];
-	int	i, j, opt, choice = 0;
+	tMenuItem m [25];
+	int	i, opt, choice = 0;
 	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
-			optFlashGauges, optMissileView, optSmallIcons, optIconSort, optIconAmmo, optIconPos, 
-			optEquipIcons, optShieldWarn, optMouseInd, optSplitMsgs, optCloakedInd, optHUDMsgs;
+			optFlashGauges, optMissileView, optShieldWarn, optMouseInd, optSplitMsgs, optHUDMsgs,
+			optTgtInd, optWpnIcons;
 
 	char szCockpitWindowZoom [40];
 
@@ -1485,67 +1660,19 @@ do {
 	optBotsOnRadar = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
+	ADD_MENU (opt, TXT_TGTIND_MENUCALL, KEY_I, "");
 	optTgtInd = opt++;
-	ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
-	opt++;
-	ADD_RADIO (opt, TXT_TGTIND_TRIANGLE, 0, KEY_T, 1, HTX_CPIT_TGTIND);
-	opt++;
-	m [optTgtInd + extraGameInfo [0].bTargetIndicators].value = 1;
-	if (extraGameInfo [0].bTargetIndicators) {
-		ADD_CHECK (opt, TXT_CLOAKED_INDICATOR, extraGameInfo [0].bCloakedIndicators, KEY_C, HTX_CLOAKED_INDICATOR);
-		optCloakedInd = opt++;
-		}
-	else
-		optCloakedInd = -1;
-	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-	optDmgInd = opt++;
-	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators) {
-		ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [0].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
-		optHitInd = opt++;
-		}
-	else
-		optHitInd = -1;
-	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
-		ADD_TEXT (opt, "", 0);
-		opt++;
-		}
-	ADD_CHECK (opt, TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
-	optWeaponIcons = opt++;
-	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
-		ADD_CHECK (opt, TXT_SHOW_EQUIPICONS, gameOpts->render.weaponIcons.bEquipment, KEY_Q, HTX_CPIT_EQUIPICONS);
-		optEquipIcons = opt++;
-		ADD_CHECK (opt, TXT_SMALL_WPNICONS, gameOpts->render.weaponIcons.bSmall, KEY_I, HTX_CPIT_SMALLICONS);
-		optSmallIcons = opt++;
-		ADD_CHECK (opt, TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort, KEY_T, HTX_CPIT_SORTICONS);
-		optIconSort = opt++;
-		ADD_CHECK (opt, TXT_AMMO_WPNICONS, gameOpts->render.weaponIcons.bShowAmmo, KEY_A, HTX_CPIT_ICONAMMO);
-		optIconAmmo = opt++;
-		optIconPos = opt;
-		ADD_RADIO (opt, TXT_WPNICONS_TOP, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		opt++;
-		ADD_RADIO (opt, TXT_WPNICONS_BTM, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		opt++;
-		ADD_RADIO (opt, TXT_WPNICONS_LRB, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		opt++;
-		ADD_RADIO (opt, TXT_WPNICONS_LRT, 0, KEY_I, 3, HTX_CPIT_ICONPOS);
-		opt++;
-		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].value = 1;
-		ADD_SLIDER (opt, TXT_ICON_DIM, gameOpts->render.weaponIcons.alpha, 0, 8, KEY_D, HTX_CPIT_ICONDIM);
-		optIconAlpha = opt++;
-		ADD_TEXT (opt, "", 0);
-		opt++;
-		}
-	else
-		optEquipIcons =
-		optSmallIcons =
-		optIconSort =
-		optIconPos =
-		optIconAmmo = 
-		optIconAlpha = -1;
+	ADD_MENU (opt, TXT_WPNICON_MENUCALL, KEY_W, "");
+	optWpnIcons = opt++;
 	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, opt, m, &CockpitOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		if ((optTgtInd >= 0) && (i == optTgtInd))
+			TgtIndOptionsMenu ();
+		else if ((optWpnIcons >= 0) && (i == optWpnIcons))
+			WpnIconOptionsMenu ();
 	} while (i >= 0);
 	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissileView);
@@ -1553,16 +1680,6 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
 	extraGameInfo [0].bPowerUpsOnRadar = m [optPwrUpsOnRadar].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optBotsOnRadar].value;
-	if (optTgtInd >= 0) {
-		for (j = 0; j < 3; j++)
-			if (m [optTgtInd + j].value) {
-				extraGameInfo [0].bTargetIndicators = j;
-				break;
-				}
-		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
-		}
-	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
-	GET_VAL (extraGameInfo [0].bHitIndicators, optHitInd);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
@@ -1580,32 +1697,6 @@ do {
 #endif
 			}
 		}
-	if (bShowWeaponIcons) {
-		if (gameOpts->app.bExpertMode) {
-			GET_VAL (gameOpts->render.weaponIcons.bEquipment, optEquipIcons);
-			GET_VAL (gameOpts->render.weaponIcons.bSmall, optSmallIcons);
-			GET_VAL (gameOpts->render.weaponIcons.nSort, optIconSort);
-			GET_VAL (gameOpts->render.weaponIcons.bShowAmmo, optIconAmmo);
-			if (optIconPos >= 0)
-				for (j = 0; j < 4; j++)
-					if (m [optIconPos + j].value) {
-						extraGameInfo [0].nWeaponIcons = j + 1;
-						break;
-						}
-			GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
-			}
-		else {
-#if EXPMODE_DEFAULTS
-			gameOpts->render.weaponIcons.bEquipment = 1;
-			gameOpts->render.weaponIcons.bSmall = 1;
-			gameOpts->render.weaponIcons.nSort = 1;
-			gameOpts->render.weaponIcons.bShowAmmo = 1;
-			gameOpts->render.weaponIcons.alpha = 3;
-#endif
-			}
-		}
-	else
-		extraGameInfo [0].nWeaponIcons = 0;
 	} while (i == -2);
 }
 
@@ -1755,7 +1846,7 @@ do {
 
 #if SHADOWS
 
-static char *pszReach [3];
+static char *pszReach [4];
 static char *pszClip [4];
 
 void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
@@ -1830,9 +1921,10 @@ void ShadowOptionsMenu ()
 			optFastShadows;
 #endif
 
-pszReach [0] = TXT_SHORT;
-pszReach [1] = TXT_MEDIUM;
-pszReach [2] = TXT_LONG;
+pszReach [0] = TXT_PRECISE;
+pszReach [1] = TXT_SHORT;
+pszReach [2] = TXT_MEDIUM;
+pszReach [3] = TXT_LONG;
 
 pszClip [0] = TXT_OFF;
 pszClip [1] = TXT_FAST;
@@ -1872,7 +1964,7 @@ do {
 		nMaxLightsOpt = opt++;
 		sprintf (szReach + 1, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
 		*szReach = *(TXT_SHADOW_REACH - 1);
-		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 2, KEY_R, HTX_RENDER_SHADOWREACH);
+		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 3, KEY_R, HTX_RENDER_SHADOWREACH);
 		nShadowReachOpt = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;

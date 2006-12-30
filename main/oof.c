@@ -31,7 +31,6 @@
 #define GL_INFINITY	0
 #define SHADOW_TEST	0
 #define NORM_INF		1
-#define INFINITY		1000.0f
 
 #ifdef __unix
 #	define	stricmp	strcasecmp
