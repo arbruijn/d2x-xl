@@ -1662,6 +1662,8 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
+#if MULTI_THREADED
+
 int _CDECL_ ClipDistThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
@@ -1682,6 +1684,8 @@ while (!gameStates.app.bExit) {
 	}
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1714,6 +1718,7 @@ pso->nRenderFlipFlop = (pso->nRenderFlipFlop + 1) % 4;
 if (pso->nRenderFlipFlop && pso->fClipDist)
 	return pso->fClipDist;	//only recompute every 2nd frame
 #endif
+#if MULTI_THREADED
 	if (gameStates.app.bMultiThreaded) {
 	gameData.threads.clipDist.data.objP = objP;
 	gameData.threads.clipDist.data.po = po;
@@ -1726,7 +1731,9 @@ if (pso->nRenderFlipFlop && pso->fClipDist)
 	fMaxDist = (gameData.threads.clipDist.data.fClipDist [0] > gameData.threads.clipDist.data.fClipDist [1]) ?
 					gameData.threads.clipDist.data.fClipDist [0] : gameData.threads.clipDist.data.fClipDist [1];
 	}
-else {
+else 
+#endif
+	{
 	fMaxDist = G3ClipDistByFaceCenters (objP, po, pso, 0, 1);
 	if (gameOpts->render.shadows.nClip == 3)
 		fMaxDist = G3ClipDistByFaceVerts (objP, po, pso, fMaxDist, 0, 1);
@@ -1866,8 +1873,10 @@ h = (int) (pso - po->subObjs.pSubObjs);
 for (i = 0; i < po->subObjs.nSubObjs; i++)
 	if (po->subObjs.pSubObjs [i].nParent == h)
 		G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs + i);
-#if 1
+#ifdef _DEBUG
+#	if 0
 if (pso - po->subObjs.pSubObjs == 0)
+#	endif
 #endif
 {
 G3GetLitFaces (po, pso);

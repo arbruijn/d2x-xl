@@ -1809,12 +1809,13 @@ for (i = 0; i < gameData.models.nHiresModels; i++)
 void _CDECL_ CloseGame (void)
 {
 	static	int bGameClosed = 0;
-
+#if MULTI_THREADED
 	int		i;
-	
+#endif
 if (bGameClosed)
 	return;
 bGameClosed = 1;
+#if MULTI_THREADED
 gameStates.app.bExit = 1;
 if (gameStates.app.bMultiThreaded) {
 	for (i = 0; i < 2; i++) {
@@ -1822,6 +1823,7 @@ if (gameStates.app.bMultiThreaded) {
 		SDL_DestroySemaphore (gameData.threads.vertColor.exec [i]);
 		}
 	}
+#endif
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
 LogErr ("unloading hires animations\n");

@@ -989,8 +989,10 @@ if (t = FindArg ("-nostalgia"))
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
 gameOpts = gameOptions + gameStates.app.iNostalgia;
 
+#if MULTI_THREADED
 if (t = FindArg ("-multithreaded"))
 	gameStates.app.bMultiThreaded = NumArg (t, 1);
+#endif
 if (t = FindArg ("-nosound"))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
 if (t = FindArg ("-progress_bars"))
@@ -2314,6 +2316,7 @@ int _CDECL_ ClipDistThread (void *pThreadId);
 
 void InitThreads (void)
 {
+#if MULTI_THREADED
 	int	i;
 
 if (gameStates.app.bMultiThreaded) {
@@ -2340,6 +2343,7 @@ gameData.threads.vertColor.data.matSpecular.c.r =
 gameData.threads.vertColor.data.matSpecular.c.g = 
 gameData.threads.vertColor.data.matSpecular.c.b = 0.0f;
 gameData.threads.vertColor.data.matSpecular.c.a = 1.0f;
+#endif
 }
 
 // ----------------------------------------------------------------------------

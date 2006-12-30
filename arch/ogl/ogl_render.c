@@ -1112,6 +1112,8 @@ return j;
 
 //------------------------------------------------------------------------------
 
+#if MULTI_THREADED
+
 int _CDECL_ VertColorThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
@@ -1125,6 +1127,8 @@ while (!gameStates.app.bExit) {
 	}
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1203,7 +1207,7 @@ if (!(gameStates.render.nState || pVertColor)) {
 	}
 gameData.threads.vertColor.data.pVertPos = pVertPos;
 //VmVecNegatef (&vertNorm);
-#if 1
+#if MULTI_THREADED
 if (gameStates.app.bMultiThreaded) {
 	SDL_SemPost (gameData.threads.vertColor.exec [0]);
 	SDL_SemPost (gameData.threads.vertColor.exec [1]);

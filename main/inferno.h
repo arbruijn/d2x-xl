@@ -23,6 +23,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
+#define MULTI_THREADED	0
+
 #ifdef _DEBUG
 #	define	SHADOWS	1
 #else
@@ -616,8 +618,10 @@ typedef struct tEntropyStates {
 } tEntropyStates;
 
 typedef struct tApplicationStates {
+#if MULTI_THREADED
 	int bExit;
 	int bMultiThreaded;
+#endif
 	int nSDLTicks;
 	int nLastTick;
 	int b40fpsTick;
@@ -1734,10 +1738,12 @@ typedef struct tVertColorData {
 	} tVertColorData;
 
 typedef struct tVertColorThreadData {
+#if MULTI_THREADED
 	SDL_Thread		*pThread [2];
 	int				nId [2];
 	SDL_sem			*done [2];	
 	SDL_sem			*exec [2];
+#endif
 	tVertColorData	data;
 	} tVertColorThreadData;
 
@@ -1749,10 +1755,12 @@ typedef struct tClipDistData {
 	} tClipDistData;
 
 typedef struct tClipDistThreadData {
+#if MULTI_THREADED
 	SDL_Thread		*pThread [2];
 	int				nId [2];
 	SDL_sem			*done [2];	
 	SDL_sem			*exec [2];
+#endif
 	tClipDistData	data;
 	} tClipDistThreadData;
 
