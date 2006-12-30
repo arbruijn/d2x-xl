@@ -424,9 +424,9 @@ bufP += sizeof (vmsVector); // 12
 // --------------------------
 //      Total = 18
 #else
-swapped_vec.x = (fix)INTEL_INT ((int)vFire->x);
-swapped_vec.y = (fix)INTEL_INT ((int)vFire->y);
-swapped_vec.z = (fix)INTEL_INT ((int)vFire->z);
+swapped_vec.p.x = (fix)INTEL_INT ((int)vFire->p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int)vFire->p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int)vFire->p.z);
 memcpy (multiData.msg.buf + bufP, &swapped_vec, sizeof (vmsVector)); 
 bufP += sizeof (vmsVector);
 #endif
@@ -543,9 +543,9 @@ bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (multiData.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));	
 #else
-swapped_vec.x = (fix)INTEL_INT ((int) delObjP->position.vPos.p.x);
-swapped_vec.y = (fix)INTEL_INT ((int) delObjP->position.vPos.p.y);
-swapped_vec.z = (fix)INTEL_INT ((int) delObjP->position.vPos.p.z);
+swapped_vec.p.x = (fix)INTEL_INT ((int) delObjP->position.vPos.p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int) delObjP->position.vPos.p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int) delObjP->position.vPos.p.z);
 memcpy (multiData.msg.buf + bufP, &swapped_vec, sizeof (vmsVector));     
 #endif
 bufP += 12;
