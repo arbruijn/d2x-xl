@@ -478,7 +478,7 @@ void DigiSetMidiVolume( int n )
 		midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | mmVolume << 16);
 }
 
-void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop )
+int DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop )
 {       
 	if (!gameStates.sound.digi.bInitialized) return;
 
@@ -493,7 +493,9 @@ void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, i
 	    hmp_play(hmp);
 	    bDigiMidiSongPlaying = 1;
 	    DigiSetMidiVolume(midiVolume);
+	    return 1;
 	}
+	return 0;
 	//else
 		//printf("hmp_open failed\n");
 }
@@ -501,7 +503,7 @@ void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 
 #else
-void DigiStopCurrentSong() {}
+int DigiStopCurrentSong() {return 0;}
 void DigiSetMidiVolume( int n ) {}
 void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {}
 void DigiPauseMidi() {}

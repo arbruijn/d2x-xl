@@ -742,7 +742,7 @@ DigiStopSound (channel);
 #if ! (defined (_WIN32) || USE_SDL_MIXER)
 // MIDI stuff follows.
 void DigiSetMidiVolume (int mvolume) { }
-void DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) {}
+int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) {return 0;}
 void DigiStopCurrentSong ()
 {
 #ifdef HMIPLAY

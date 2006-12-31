@@ -1480,9 +1480,9 @@ void MultiDoCtrlcenFire (char *buf)
 memcpy (&to_target, buf + count, 12);          
 count += 12;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)  // swap the vector to_target
-to_target.x = (fix)INTEL_INT ((int)to_target.x);
-to_target.y = (fix)INTEL_INT ((int)to_target.y);
-to_target.z = (fix)INTEL_INT ((int)to_target.z);
+to_target.p.x = (fix)INTEL_INT ((int)to_target.p.x);
+to_target.p.y = (fix)INTEL_INT ((int)to_target.p.y);
+to_target.p.z = (fix)INTEL_INT ((int)to_target.p.z);
 #endif
 gun_num = buf [count++];                       
 nObject = GET_INTEL_SHORT (buf + count);      
@@ -2357,7 +2357,7 @@ MultiSendData (multiData.msg.buf, 2, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendCtrlcenFire (vmsVector *to_goal, int best_gun_num, int nObject)
+void MultiSendCtrlcenFire (vmsVector *to_goal, int nBestGun, int nObject)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	vmsVector swapped_vec;
@@ -2369,13 +2369,13 @@ multiData.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;
 memcpy (multiData.msg.buf+count, to_goal, 12);                    
 count += 12;
 #else
-swapped_vec.x = (fix)INTEL_INT ((int)to_goal->x);
-swapped_vec.y = (fix)INTEL_INT ((int)to_goal->y);
-swapped_vec.z = (fix)INTEL_INT ((int)to_goal->z);
+swapped_vec.p.x = (fix)INTEL_INT ((int)to_goal->p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int)to_goal->p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int)to_goal->p.z);
 memcpy (multiData.msg.buf+count, &swapped_vec, 12);				
 count += 12;
 #endif
-multiData.msg.buf [count++] = (char)best_gun_num;                   
+multiData.msg.buf [count++] = (char)nBestGun;                   
 PUT_INTEL_SHORT (multiData.msg.buf+count, nObject);     
 count += 2;
 MultiSendData (multiData.msg.buf, count, 0);
@@ -2409,9 +2409,9 @@ count += 2;
 memcpy (multiData.msg.buf+count, pos, sizeof (vmsVector));  
 count += sizeof (vmsVector);
 #else
-swapped_vec.x = (fix)INTEL_INT ((int)pos->x);
-swapped_vec.y = (fix)INTEL_INT ((int)pos->y);
-swapped_vec.z = (fix)INTEL_INT ((int)pos->z);
+swapped_vec.p.x = (fix)INTEL_INT ((int)pos->p.x);
+swapped_vec.p.y = (fix)INTEL_INT ((int)pos->p.y);
+swapped_vec.p.z = (fix)INTEL_INT ((int)pos->p.z);
 memcpy (multiData.msg.buf+count, &swapped_vec, 12);				
 count += 12;
 #endif

@@ -769,11 +769,12 @@ void play_hmi (void * arg)
 	
 }
 
-void DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {
+int DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {
         char buf[128];
     
         sprintf(buf,"p%s",filename);
         send_ipc(buf);
+        return 0;
 }
 void DigiSetMidiVolume( int mvolume ) { 
         char buf[128];
