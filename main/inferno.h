@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #define MULTI_THREADED	0
+#define USE_SEGRADS		0
 
 #ifdef _DEBUG
 #	define	SHADOWS	1
@@ -997,8 +998,10 @@ typedef struct tSegmentData {
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
 	g3sPoint				points [MAX_VERTICES];
+#if USE_SEGRADS
 	fix					segRads [MAX_SEGMENTS];
-	vmsVector			segCenters [MAX_SEGMENTS];
+#endif
+	vmsVector			segCenters [MAX_SEGMENTS][2];
 	vmsVector			sideCenters [MAX_SEGMENTS * 6];
 	int					nVertices;
 	int					nLastVertex;
@@ -1130,6 +1133,7 @@ typedef struct tPOFSubObject {
 	short					nParent;
 	short					*pAdjFaces;
 	short					nRenderFlipFlop;
+	short					bCalcClipDist;
 } tPOFSubObject;
 
 typedef struct tPOF_subObjList {

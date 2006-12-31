@@ -1455,7 +1455,9 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	tSegment		*segP;
 	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
 	float			fDist;
+#if USE_SEGRADS
 	fix			xDist;
+#endif
 	static		unsigned int nVisited = 0;
 	static		unsigned int bVisited [MAX_SEGMENTS];
 
@@ -1493,19 +1495,20 @@ for (;;) {
 	segP = gameData.segs.segments + nSegment;
 	bVisited [nSegment] = nVisited;
 	nHitSide = -1;
-#if 0
+#if USE_SEGRADS
 	for (nSide = 0; nSide < 6; nSide++) {
 		nChild = segP->children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
-		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters + nChild);
+		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters [nChild] + 1);
 		if (xDist <= gameData.segs.segRads [nChild]) {
 			nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide);
 			break;
 			}
 		} 
+	if (nHitSide < 0) 
 #endif
-	if (nHitSide < 0) {
+		{
 		for (nSide = 0; nSide < 6; nSide++) {
 			nChild = segP->children [nSide];
 			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
@@ -1551,20 +1554,19 @@ if (!gameOpts->render.shadows.nClip)
 	return INFINITY;
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
 	return INFINITY;
-fq.p0					= vPos;
+fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
 VmVecNormalize (&v);
 VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
-fq.startSeg			= nSegment;
-fq.p1					= &v;
-fq.rad				= 0;
-fq.thisObjNum		= nObject;
-fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL;
+fq.startSeg		  = nSegment;
+fq.p1				  = &v;
+fq.rad			  = 0;
+fq.thisObjNum	  = nObject;
+fq.ignoreObjList = NULL;
+fq.flags			  = FQ_TRANSWALL;
 if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
 	return INFINITY;
-return fScale ? 
-		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
+return //fScale ? f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
 		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
 #endif
 }
@@ -1736,10 +1738,10 @@ float G3SubModelClipDist (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	float	fMaxDist = 0;
 #if 1
-pso->nRenderFlipFlop = (pso->nRenderFlipFlop + 1) % 4;
-if (pso->nRenderFlipFlop && pso->fClipDist)
+if (!pso->bCalcClipDist)
 	return pso->fClipDist;	//only recompute every 2nd frame
 #endif
+pso->bCalcClipDist = 0;
 #if MULTI_THREADED
 	if (gameStates.app.bMultiThreaded) {
 	gameData.threads.clipDist.data.objP = objP;
@@ -1902,6 +1904,8 @@ if (pso - po->subObjs.pSubObjs == 8)
 #endif
 {
 G3GetLitFaces (po, pso);
+pso->nRenderFlipFlop = !pso->nRenderFlipFlop;
+pso->bCalcClipDist = pso->nRenderFlipFlop;
 h = G3RenderSubModelShadowCaps (objP, po, pso, 0) &&
 	 G3RenderSubModelShadowCaps (objP, po, pso, 1) &&
 	 G3RenderSubModelShadowVolume (po, pso, 0) &&

@@ -1296,6 +1296,8 @@ int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 	GLint			nMaxLights;
 #endif
 
+if (gameData.render.lights.dynamic.nLights == 86)
+gameData.render.lights.dynamic.nLights = gameData.render.lights.dynamic.nLights;
 if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if (!pc)
@@ -1334,7 +1336,7 @@ SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
 else if (nSegment >= 0) {
-#if 1
+#if 0
 	vmsVector	vOffs;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
@@ -1492,7 +1494,8 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		if (t >= MAX_WALL_TEXTURES) 
 			continue;
 		pc = gameData.render.color.textures + t;
-		AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+		if (gameData.pig.tex.brightness [t])
+			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
 		t = sideP->nOvlTex;
 		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
 			pc = gameData.render.color.textures + t;

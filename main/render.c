@@ -1474,6 +1474,7 @@ gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
 if (!cc.and) {		//all off screen?
 	gameStates.render.nState = 0;
+#if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
 			short		sideVerts [4];
 			double	sideDists [6];
@@ -1500,7 +1501,9 @@ if (!cc.and) {		//all off screen?
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sideNums [sn]);
 		}
-	else {
+	else 
+#endif
+		{
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sn);
 		}
@@ -3471,6 +3474,20 @@ for (i = gameData.segs.nSegments, segP = gameData.segs.segments; i; i--, segP++)
 }
 
 //------------------------------------------------------------------------------
+
+#if USE_SEGRADS
+
+void TransformSideCenters (void)
+{
+	int	i;
+
+for (i = 0; i < gameData.segs.nSegments; i++)
+	G3TransformPoint (gameData.segs.segCenters [i] + 1, gameData.segs.segCenters [i], 0);
+}
+
+#endif
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
@@ -3493,6 +3510,9 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	TransformDynLights (1, 1);
+#if USE_SEGRADS
+	TransformSideCenters ();
+#endif
 	RotateSideNorms ();
 #if defined(EDITOR) && !defined(NDEBUG)
 	if (bShowOnlyCurSide) {

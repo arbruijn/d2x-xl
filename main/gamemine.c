@@ -1290,20 +1290,28 @@ void ComputeSegSideCenters (int nSegment)
 	int			i, j, nSide;
 	tSegment		*segP;
 	tSide			*sideP;
+#if USE_SEGRADS
 	fix			xSideDists [6], xMinDist;
+#endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
 for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; nSegment++, segP++) {
-	ComputeSegmentCenter (gameData.segs.segCenters + nSegment, segP);
-	GetSideDists (gameData.segs.segCenters + nSegment, nSegment, xSideDists, 0);
+	ComputeSegmentCenter (gameData.segs.segCenters [nSegment], segP);
+#if USE_SEGRADS
+	GetSideDists (gameData.segs.segCenters [nSegment], nSegment, xSideDists, 0);
 	xMinDist = 0x7fffffff;
+#endif
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, i++) {
 		ComputeSideCenter (gameData.segs.sideCenters + i, segP, nSide);
+#if USE_SEGRADS
 		if (xMinDist > xSideDists [nSide])
 			xMinDist = xSideDists [nSide];
-		gameData.segs.segRads [nSegment] = xMinDist;
+#endif
 		}
+#if USE_SEGRADS
+	gameData.segs.segRads [nSegment] = xMinDist;
+#endif
 	}
 }
 

@@ -1419,7 +1419,7 @@ magab = VmVecMag (&ab);
 if (magab == 0)
 	return VmVecMag (&ap);
 VmVecCrossProd (&abxap, &ab, &ap);
-return VmVecMag (&abxap) / magab;
+return VmVecMag (&abxap) / magab * F1_0;
 }
 
 // ------------------------------------------------------------------------
