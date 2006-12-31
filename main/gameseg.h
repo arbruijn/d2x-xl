@@ -128,30 +128,27 @@ void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax);
 void ComputeSegmentCenter(vmsVector *vp,tSegment *sp);
 int FindConnectedSide(tSegment *base_seg, tSegment *con_seg);
 
-#if 1
 #define	COMPUTE_SEGMENT_CENTER_I(_pc,_nSeg) \
 			*(_pc) = gameData.segs.segCenters [_nSeg]
 
 #define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
 			*(_pc) = gameData.segs.sideCenters [(_nSeg) * 6 + (_nSide)]
 
-#else
-#define	COMPUTE_SEGMENT_CENTER_I(_pc,_nSeg) \
-			G3TransformPoint (_pc, gameData.segs.segCenters + (_nSeg));
+#define	COMPUTE_SEGMENT_RAD_I(_pc,_nSeg,_nSide) \
+			*(_pc) = gameData.segs.segRads [_nSeg]
 
-#define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
-			G3TransformPoint (_pc, gameData.segs.sideCenters + ((_nSeg) * 6 + (_nSide)))
-			
-#endif
 #define	COMPUTE_SEGMENT_CENTER(_pc,_segP) \
 			COMPUTE_SEGMENT_CENTER_I (_pc, SEG_IDX (_segP))
 
 #define	COMPUTE_SIDE_CENTER(_pc,_segP,_nSide) \
 			COMPUTE_SIDE_CENTER_I (_pc, SEG_IDX (_segP), _nSide)
 
+#define	COMPUTE_SEGMENT_RAD(_pc,_segP) \
+			COMPUTE_SEGMENT_RAD_I (_pc, SEG_IDX (_segP))
+
 // Fill in array with four absolute point numbers for a given tSide
 void GetSideVerts(short *vertlist,int nSegment,int nSide);
-ubyte GetSideDists (vmsVector *checkp, int nSegment, fix *xSideDists);
+ubyte GetSideDists (vmsVector *checkp, int nSegment, fix *xSideDists, int bBehind);
 ubyte GetSideDistsAll (vmsVector *checkp, int nSegment, fix *xSideDists);
 
 //      Create all vertex lists (1 or 2) for faces on a tSide.

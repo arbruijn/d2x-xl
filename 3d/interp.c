@@ -47,7 +47,7 @@ int bPrintLine = 0;
 #define SHADOW_TEST				0
 #define NORM_INF					1
 
-float fInfinity [3] = {100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cubes
+float fInfinity [4] = {100.0f, 100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cubes
 float fInf;
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
@@ -1451,10 +1451,11 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	static float fClip [4] = {1.1f, 1.5f, 2.0f, 3.0f};
 
 #if 1
-	vmsVector	vHit, v;
+	vmsVector	vHit, v, vh;
 	tSegment		*segP;
 	int			nSide, nHitSide, nParent, nChild, nWID, bHit = 0;
 	float			fDist;
+	fix			xDist;
 	static		unsigned int nVisited = 0;
 	static		unsigned int bVisited [MAX_SEGMENTS];
 
@@ -1491,12 +1492,33 @@ vHit = *vPos;
 for (;;) {
 	segP = gameData.segs.segments + nSegment;
 	bVisited [nSegment] = nVisited;
-	for (nSide = 0; nSide < 6; nSide++)
-		if (0 <= (nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide))) {
-			nChild = segP->children [nHitSide];
-			if (bVisited [nChild] != nVisited)
-				break;
+	nHitSide = -1;
+#if 0
+	for (nSide = 0; nSide < 6; nSide++) {
+		nChild = segP->children [nSide];
+		if ((nChild < 0) || (bVisited [nChild] == nVisited))
+			continue;
+		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters + nChild);
+		if (xDist <= gameData.segs.segRads [nChild]) {
+			nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide);
+			break;
 			}
+		} 
+#endif
+	if (nHitSide < 0) {
+		for (nSide = 0; nSide < 6; nSide++) {
+			nChild = segP->children [nSide];
+			if ((nChild >= 0) && (bVisited [nChild] == nVisited))
+				continue;
+			if (0 <= LineHitsFace (&vHit, vPos, &v, nSegment, nSide)) {
+				VmVecSub (&vh, &vHit, vPos);
+				if (VmVecDot (&vh, &v) > 0) {
+					nHitSide = nSide;
+					break;
+					}
+				}
+			}
+		}
 	if (nHitSide < 0)
 		break;
 	fDist = f2fl (VmVecDist (vPos, &vHit));
@@ -1712,7 +1734,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 
 float G3SubModelClipDist (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
-	float	fMaxDist;
+	float	fMaxDist = 0;
 #if 1
 pso->nRenderFlipFlop = (pso->nRenderFlipFlop + 1) % 4;
 if (pso->nRenderFlipFlop && pso->fClipDist)
@@ -1875,7 +1897,7 @@ for (i = 0; i < po->subObjs.nSubObjs; i++)
 		G3DrawSubModelShadow (objP, po, po->subObjs.pSubObjs + i);
 #ifdef _DEBUG
 #	if 0
-if (pso - po->subObjs.pSubObjs == 0)
+if (pso - po->subObjs.pSubObjs == 8)
 #	endif
 #endif
 {

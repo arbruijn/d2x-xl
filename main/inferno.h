@@ -997,6 +997,7 @@ typedef struct tSegmentData {
 	segment2				segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
 	g3sPoint				points [MAX_VERTICES];
+	fix					segRads [MAX_SEGMENTS];
 	vmsVector			segCenters [MAX_SEGMENTS];
 	vmsVector			sideCenters [MAX_SEGMENTS * 6];
 	int					nVertices;

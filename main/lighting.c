@@ -1339,7 +1339,7 @@ else if (nSegment >= 0) {
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
 	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
-#if 1
+#if 0
 	VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
 	VmVecScaleFrac (&vOffs, 1, 200);
 	VmVecInc (&pl->vPos, &vOffs);

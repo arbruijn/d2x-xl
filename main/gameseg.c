@@ -658,7 +658,7 @@ return masks;
 //this was converted from GetSegMasks ()...it fills in an array of 6
 //elements for the distace behind each tSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
-ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists)
+ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists, int bBehind)
 {
 	int			sn, faceBit, sideBit;
 	ubyte			mask;
@@ -723,7 +723,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 				xDist = VmDistToPlane (checkP, sideP->rotNorms + fn, &gameData.segs.points [nVertex].p3_vec);
 			else
 				xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
-			if (xDist < -PLANE_DIST_TOLERANCE) {	//in front of face
+			if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 				nCenterCount++;
 				xSideDists [sn] += xDist;
 				}
@@ -761,7 +761,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 				xDist = VmDistToPlane (checkP, sideP->rotNorms, &gameData.segs.points [nVertex].p3_vec);
 			else
 				xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
-		if (xDist < -PLANE_DIST_TOLERANCE) {
+		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 			mask |= sideBit;
 			xSideDists [sn] = xDist;
 			}
@@ -1064,7 +1064,7 @@ if (bVisited [nOldSeg] || (gameData.segs.segment2s [nOldSeg].special == SEGMENT_
 	return -1;
 nTraceDepth++;
 bVisited [nOldSeg] = 1;
-centerMask = GetSideDists (p0, nOldSeg, xSideDists);		//check old tSegment
+centerMask = GetSideDists (p0, nOldSeg, xSideDists, 1);		//check old tSegment
 if (!centerMask) {		//we're in the old tSegment
 	nTraceDepth--;
 	return nOldSeg;		//..say so

@@ -433,8 +433,8 @@ return IT_NONE;			//no hit
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intp
 //else returns 0
-int CheckVectorToSphere1(vmsVector *intp, vmsVector *p0, vmsVector *p1, vmsVector *sphere_pos, 
-									  fix sphere_rad)
+int CheckVectorToSphere1 (vmsVector *intp, vmsVector *p0, vmsVector *p1, vmsVector *vSpherePos, 
+								  fix xSphereRad)
 {
 	vmsVector d, dn, w, vClosestPoint;
 	fix mag_d, dist, wDist, intDist;
@@ -442,25 +442,25 @@ int CheckVectorToSphere1(vmsVector *intp, vmsVector *p0, vmsVector *p1, vmsVecto
 //this routine could be optimized if it's taking too much time!
 
 VmVecSub(&d, p1, p0);
-VmVecSub(&w, sphere_pos, p0);
+VmVecSub(&w, vSpherePos, p0);
 mag_d = VmVecCopyNormalize(&dn, &d);
 if (mag_d == 0) {
 	intDist = VmVecMag(&w);
 	*intp = *p0;
-	return ((sphere_rad < 0) || (intDist<sphere_rad))?intDist:0;
+	return ((xSphereRad < 0) || (intDist<xSphereRad))?intDist:0;
 	}
 wDist = VmVecDot(&dn, &w);
 if (wDist < 0)		//moving away from tObject
 	return 0;
-if (wDist > mag_d+sphere_rad)
+if (wDist > mag_d+xSphereRad)
 	return 0;		//cannot hit
 VmVecScaleAdd(&vClosestPoint, p0, &dn, wDist);
-dist = VmVecDist(&vClosestPoint, sphere_pos);
-if (dist < sphere_rad) {
+dist = VmVecDist(&vClosestPoint, vSpherePos);
+if (dist < xSphereRad) {
 	fix	dist2, radius2, nShorten;
 
 	dist2 = FixMul(dist, dist);
-	radius2 = FixMul(sphere_rad, sphere_rad);
+	radius2 = FixMul(xSphereRad, xSphereRad);
 	nShorten = fix_sqrt(radius2 - dist2);
 	intDist = wDist-nShorten;
 	if (intDist > mag_d || intDist < 0) {
@@ -949,7 +949,7 @@ return nHitType;
 #define Cross(v0, v1) (FixMul((v0)->i, (v1)->j) - FixMul((v0)->j, (v1)->i))
 
 //	-----------------------------------------------------------------------------
-//finds the uv coords of the given point on the given seg & tSide
+//finds the uv coords of the given point on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
 void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int nSide, int iFace)
 {

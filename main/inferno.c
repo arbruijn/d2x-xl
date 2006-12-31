@@ -2331,6 +2331,7 @@ if (gameStates.app.bMultiThreaded) {
 		gameData.threads.clipDist.pThread [i] = SDL_CreateThread (ClipDistThread, gameData.threads.clipDist.nId + i);
 		}
 	}
+#endif
 gameData.threads.vertColor.data.matAmbient.c.r = 
 gameData.threads.vertColor.data.matAmbient.c.g = 
 gameData.threads.vertColor.data.matAmbient.c.b = 0.01f;
@@ -2343,7 +2344,6 @@ gameData.threads.vertColor.data.matSpecular.c.r =
 gameData.threads.vertColor.data.matSpecular.c.g = 
 gameData.threads.vertColor.data.matSpecular.c.b = 0.0f;
 gameData.threads.vertColor.data.matSpecular.c.a = 1.0f;
-#endif
 }
 
 // ----------------------------------------------------------------------------

@@ -1407,4 +1407,20 @@ return !(VmBehindPlane (n, p1, p2, &i) ||
 }
 
 // ------------------------------------------------------------------------
+
+fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p)
+{
+	vmsVector	ab, ap, abxap;
+	fix			magab;
+
+VmVecSub (&ab, b, a);
+VmVecSub (&ap, p, a);
+magab = VmVecMag (&ab);
+if (magab == 0)
+	return VmVecMag (&ap);
+VmVecCrossProd (&abxap, &ab, &ap);
+return VmVecMag (&abxap) / magab;
+}
+
+// ------------------------------------------------------------------------
 // eof

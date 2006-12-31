@@ -11,142 +11,6 @@
    AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
    COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  */  
-/*
- *
- * Header file for vector/matrix library
- *
- * Old Log:
- *
- * Revision 1.1  1995/04/17  16:18:05  allender
- * Initial revision
- *
- *
- * --- PC RCS Information ---
- * Revision 1.37  1995/02/22  13:23:22  john
- * Added the vms_vector_array structure, to access a vmsVector
- * with an array.
- * 
- * Revision 1.36  1995/02/22  12:34:33  john
- * Took out anonymous unions.
- * 
- * Revision 1.35  1994/12/13  14:44:20  matt
- * Added VmVector2MatrixNorm()
- * 
- * Revision 1.34  1994/09/11  19:22:55  matt
- * Added VmVecNormalizedDirQuick()
- * 
- * Revision 1.33  1994/08/04  19:45:38  matt
- * Added option to make a bunch of functions (add, sub, dotprod) inline
- * 
- * Revision 1.32  1994/07/19  18:52:36  matt
- * Added VmVecNormalizeQuick() and VmVecCopyNormalizeQuick()
- * 
- * Revision 1.31  1994/06/16  18:24:30  matt
- * Added VmVecMagQuick()
- * 
- * Revision 1.30  1994/06/10  23:19:00  matt
- * New register usage for VmVecAng2Matrix()
- * 
- * Revision 1.29  1994/06/01  17:32:06  matt
- * Fixed modify list for VmVecNormalizedDir()
- * 
- * Revision 1.28  1994/05/19  12:07:20  matt
- * Fixed globals and macros and added a constant
- * 
- * Revision 1.27  1994/05/19  09:19:15  matt
- * Made VmVecNormalizedDir() return mag of vector
- * 
- * Revision 1.26  1994/05/18  22:28:57  matt
- * Added function VmVecNormalizedDir()
- * Added C macros IS_ZERO_VEC(), VmVecZero(), and VmSetIdentity()
- * Added C global static vars vmd_zero_vector & vmdIdentityMatrix
- * 
- * Revision 1.25  1994/05/18  21:45:06  matt
- * Added functions:
- *   VmExtractAnglesVector()
- *   vm_extract_angles_vector_normalized()
- *   VmVecCopyNormalize()
- * 
- * Revision 1.24  1994/05/13  12:42:16  matt
- * Added new function, VmVecDistQuick(), which does an approximation.
- * 
- * Revision 1.23  1994/03/30  13:37:34  matt
- * Added prototype for VmVecScaleAdd(), and fixed typos
- * 
- * Revision 1.22  1994/03/30  13:29:42  matt
- * Header for vm_vec_scale_add2()
- * 
- * Revision 1.21  1994/01/31  19:45:13  matt
- * Added function VmExtractAnglesMatrix()
- * 
- * Revision 1.20  1993/12/21  19:46:14  matt
- * Added function VmDistToPlane()
- * 
- * Revision 1.19  1993/12/13  17:26:41  matt
- * Added VmVecDist()
- * 
- * Revision 1.18  1993/12/02  12:45:11  matt
- * New functions: VmVecCopyScale(), vm_vec_scale2()
- * Aliases: VmTranspose(), VmVecDot(), VmVecCross(), VmCopyTranspose()
- * 
- * Revision 1.17  1993/10/29  22:38:36  matt
- * Changed matrix order, making direction vectors the rows
- * 
- * Revision 1.16  1993/10/25  11:49:57  matt
- * Made VmVecDeltaAng() take optional forward vector to return signed delta
- * 
- * Revision 1.15  1993/10/20  01:10:05  matt
- * Added VmVecDeltaAng(), VmVecDeltaAngNorm(), and VmVecAng2Matrix()
- * 
- * Revision 1.14  1993/10/17  17:02:52  matt
- *VmVector2Matrix() now takes optional right vector
- * 
- * Revision 1.13  1993/10/12  19:31:39  matt
- * Added IDENTITY_MATRIX constant
- * 
- * Revision 1.12  1993/10/08  18:10:16  matt
- * Changed VmVecMake() and VmAngVecMake() to be inline assembly 
- * functions, to get rid of compiler warnings.  Did not change vm_mat_make(),
- * which could still get warnings if the return value is unused.
- * 
- * Revision 1.11  1993/09/29  12:10:07  matt
- * Changed modified regs in pragmas to include return register
- * 
- * Revision 1.10  1993/09/28  12:15:41  matt
- * Added func VmVector2Matrix()
- * 
- * Revision 1.9  1993/09/24  21:18:38  matt
- * Added VmVecAvg(), VmVecAvg4(), and VmAngVecMake().
- * Documented which functions could have dest==source
- * 
- * Revision 1.8  1993/09/20  14:56:11  matt
- * Added new function, VmVecPerp()
- * 
- * Revision 1.7  1993/09/20  14:27:42  mike
- * unfix last fix which introduced a bug
- * 
- * Revision 1.6  1993/09/20  10:11:53  mike
- * no changes
- * 
- * Revision 1.5  1993/09/20  09:58:58  mike
- * Re-fix VmVecMake
- * 
- * Revision 1.4  1993/09/20  09:41:21  mike
- * Correct VmVecMake and vm_mat_make macros to return the destination
- * as the value of the macro.
- * 
- * Revision 1.3  1993/09/17  11:23:47  matt
- * Added row access (via xrow,yrow,zrow) to vmsMatrix
- * Added macro vm_mat_make(), like VmVecMake()
- * 
- * Revision 1.2  1993/09/17  11:10:32  matt
- * Added VmVecInc() and VmVecDec(), which take 2 args (dest==src0)
- * 
- * Revision 1.1  1993/09/16  20:10:01  matt
- * Initial revision
- * 
- *
- */ 
 
 #ifndef _VECMAT_H
 #define _VECMAT_H
@@ -489,6 +353,8 @@ vmsVector *VmPlaneProjection (vmsVector *i, vmsVector *n, vmsVector *p, vmsVecto
 int VmTriangleHitTest (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *i);
 
 int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *a);
+
+fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
