@@ -297,7 +297,7 @@ if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 		}
 	else if ((objP->nType == OBJ_POWERUP) && bDarkness && !EGI_FLAG (bPowerupLights, 0, 0))
 		return;
-	AddDynLight (color, xObjIntensity, -1, -1, nObject);
+	AddDynLight (color, xObjIntensity / 4, -1, -1, nObject);
 	return;
 	}
 if (xObjIntensity) {
