@@ -1257,7 +1257,7 @@ for (;;) {
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
+		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 32);
 		ADD_TEXT (opt, szLevelText, 0); 
 		m [opt].rebuild = 1;
