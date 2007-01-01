@@ -1359,13 +1359,13 @@ return 1;
 //	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (void)
 {
-	int	plobjnum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	int	nPlayerObj = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 
-COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [plobjnum].position.vPos, 
+COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [nPlayerObj].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
-RelinkObject (plobjnum, gameData.segs.secret.nReturnSegment);
+RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
-gameData.objs.objects [plobjnum].position.mOrient = gameData.segs.secret.returnOrient;
+gameData.objs.objects [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
 }
 
 //	-----------------------------------------------------------------------------------
@@ -1596,8 +1596,8 @@ gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->position.nSegment;
-	// hack for a bug I haven't yet been able to fix
-	if (objP->shields < 0)
+	// hack for a bug I haven't yet been able to fix 
+	if ((objP->shields < 0) && (gameData.boss.nDying != i))
 		objP->nType = OBJ_NONE;
 	objP->next = objP->prev = objP->position.nSegment = -1;
 	if (objP->nType != OBJ_NONE) {
@@ -2074,7 +2074,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	StateRestoreNetPlayers (fp);
 	//fpos = CFTell (fp);
 	nPlayers = CFReadInt (fp);
-	for (i = 0; i < nPlayers; i++)
+	//for (i = 0; i < nPlayers; i++)
 		nSavedLocalPlayer = gameData.multi.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
 		StateRestorePlayer (restore_players + i, fp);
@@ -2113,7 +2113,7 @@ gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 gameStates.app.cheats.bEnabled = CFReadInt (fp);
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
-	//Clear out all the gameData.objs.objects from the lvl file
+	//Clear out all the objects from the lvl file
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
 		gameData.segs.segments [i].objects = -1;
 	ResetObjects (1);
@@ -2127,8 +2127,6 @@ if (!bBetweenLevels)	{
 	//fpos = CFTell (fp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
-	StateFixObjects ();
-	SpecialResetObjects ();
 	InitCamBots (1);
 	gameData.objs.nNextSignature++;
 	//	1 = Didn't die on secret level.
@@ -2219,6 +2217,8 @@ if (!bBetweenLevels)	{
 	AIRestoreUniState (fp, sgVersion);
 	// Restore the automap visited info
 	//fpos = CFTell (fp);
+	StateFixObjects ();
+	SpecialResetObjects ();
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	//fpos = CFTell (fp);
 	//	Restore hacked up weapon system stuff.

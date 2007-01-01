@@ -341,16 +341,15 @@ ssp->bResampled = 1;
 j = b16Bits ? l / 2 : l;
 k = 0;
 for (;;) {
-	if (i) {
+	if (i) 
 		h = gsp->data [--i];
-		if (b16Bits) {
-			if (k < 700)
-				h <<= k / 100;
-			else if (i < 700)
-				h <<= i / 100;
-			else
-				h <<= 7;
-			}
+	if (b16Bits) {
+		if (k < 700)
+			h <<= k / 100;
+		else if (i < 700)
+			h <<= i / 100;
+		else
+			h <<= 7;
 		*((ushort *) ssp->samples + --j) = (ushort) h;
 		if (!j)
 			break;
@@ -366,6 +365,8 @@ for (;;) {
 	else {
 		ssp->samples [--j] = h;
 		ssp->samples [--j] = h;
+		if (!j)
+			break;
 		}
 	if (bD1Sound) {
 		if (b16Bits) {
@@ -384,6 +385,8 @@ for (;;) {
 		else {
 			ssp->samples [--j] = h;
 			ssp->samples [--j] = h;
+			if (!j)
+				break;
 			}
 		}
 	}

@@ -2212,6 +2212,7 @@ objP->cType.aiInfo.SKIP_AI_COUNT = 0;
 }
 
 //	----------------------------------------------------------------------
+
 void DoBossDyingFrame (tObject *objP)
 {
 	int	rval;
