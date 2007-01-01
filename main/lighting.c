@@ -152,13 +152,13 @@ for (i = h; --i; ) {
 }
 
 // ----------------------------------------------------------------------------------------------
-//	Return true if we think vertex vertnum is visible from tSegment nSegment.
+//	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
-int LightingCacheVisible(int vertnum, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vertpos)
+int LightingCacheVisible(int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vertpos)
 {
 	int	cache_val, cache_frame, cache_vis;
 
-	cache_val = Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ vertnum) & (LIGHTING_CACHE_SIZE-1)];
+	cache_val = Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
 
 	cache_frame = cache_val >> 1;
 	cache_vis = cache_val & 1;
@@ -206,7 +206,7 @@ Cache_lookups++;
 				// -- Int3();	//	Curious, did fvi detect intersection with wall containing vertex?
 			}
 		}
-		Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ vertnum) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
+		Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
 		return bApplyLight;
 	} else {
 Cache_hits++;
@@ -231,7 +231,7 @@ bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (tRgbColorf *color, tRgbColorf *pDynColor, int vertnum, char *pbGotDynColor, int bForce)
+void SetDynColor (tRgbColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
 if (gameOpts->render.bDynLighting)
 	return;
@@ -244,8 +244,8 @@ if (bStartDynColoring) {
 	}
 if (!pDynColor) {
 	SetDynColor (color, &globalDynColor, 0, &bGotGlobalDynColor, bForce);
-	pDynColor = dynamicColor + vertnum;
-	pbGotDynColor = bGotDynColor + vertnum;
+	pDynColor = dynamicColor + nVertex;
+	pbGotDynColor = bGotDynColor + nVertex;
 	}
 if (*pbGotDynColor) {
 	pDynColor->red = (pDynColor->red + color->red) / 2;
@@ -270,7 +270,7 @@ void ApplyLight(
 	tRgbColorf	*color)
 {
 	int			vv, bUseColor, bForceColor;
-	int			vertnum;
+	int			nVertex;
 	int			bApplyLight;
 	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0);
 	vmsVector	*vertpos;
@@ -297,7 +297,9 @@ if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 		}
 	else if ((objP->nType == OBJ_POWERUP) && bDarkness && !EGI_FLAG (bPowerupLights, 0, 0))
 		return;
-	AddDynLight (color, xObjIntensity / 4, -1, -1, nObject);
+	if ((objP->nType == OBJ_POWERUP) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))
+		xObjIntensity /= 4;
+	AddDynLight (color, xObjIntensity, -1, -1, nObject);
 	return;
 	}
 if (xObjIntensity) {
@@ -318,22 +320,22 @@ if (xObjIntensity) {
 
 		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
 
-			vertnum = vp [vv];
+			nVertex = vp [vv];
 #if !FLICKERFIX
 			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ 
-				 ((vertnum ^ gameData.app.nFrameCount) & 1))
+				 ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
-				vertpos = gameData.segs.vertices+vertnum;
+				vertpos = gameData.segs.vertices+nVertex;
 				dist = VmVecDistQuick (obj_pos, vertpos) / 4;
 				dist = FixMul(dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 
-					dynamicLight [vertnum] += FixDiv (xObjIntensity, dist);
+					dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 					if (bUseColor)
-						SetDynColor (color, NULL, vertnum, NULL, 0);
+						SetDynColor (color, NULL, nVertex, NULL, 0);
 					}
 				}
 			}
@@ -375,12 +377,12 @@ if (xObjIntensity) {
 		// -- for (vv=gameData.app.nFrameCount&1; vv<nRenderVertices; vv+=2) {
 		for (vv = 0; vv < nRenderVertices; vv++) {
 
-			vertnum = renderVertices [vv];
+			nVertex = renderVertices [vv];
 #if FLICKERFIX == 0
-			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ ((vertnum ^ gameData.app.nFrameCount) & 1))
+			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
-				vertpos = gameData.segs.vertices + vertnum;
+				vertpos = gameData.segs.vertices + nVertex;
 				dist = VmVecDistQuick (obj_pos, vertpos);
 				bApplyLight = 0;
 
@@ -391,9 +393,9 @@ if (xObjIntensity) {
 					bApplyLight = 1;
 					if (bApplyLight) {
 						if (bUseColor)
-							SetDynColor (color, NULL, vertnum, NULL, bForceColor);
+							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
 						if (!headlightShift) 
-							dynamicLight [vertnum] += FixDiv(xObjIntensity, dist);
+							dynamicLight [nVertex] += FixDiv(xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
@@ -407,9 +409,9 @@ if (xObjIntensity) {
 							else
 								maxDot = F1_0 / 2;
 							if (dot < maxDot)
-								dynamicLight [vertnum] += FixDiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+								dynamicLight [nVertex] += FixDiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 							else if (!(gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
-								dynamicLight [vertnum] += FixMul(FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
+								dynamicLight [nVertex] += FixMul(FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
 							}
 						}
 					}
@@ -604,12 +606,12 @@ switch (objtype) {
 
 void SetDynamicLight (void)
 {
-	int			vv;
-	int			nObject, vertnum, nSegment;
+	int			vv, nv;
+	int			nObject, nVertex, nSegment;
 	int			nRenderVertices;
 	short			renderVertices [MAX_VERTICES];
 	sbyte			render_vertexFlags [MAX_VERTICES];
-	int			render_seg, v;
+	int			iRenderSeg, v;
 	sbyte			newLightingObjects [MAX_OBJECTS];
 	char			bGotColor, bKeepDynColoring = 0;
 	tObject		*objP;
@@ -622,7 +624,7 @@ void SetDynamicLight (void)
 if (!gameOpts->render.bDynamicLight)
 	return;
 
-memset(render_vertexFlags, 0, gameData.segs.nLastVertex+1);
+memset(render_vertexFlags, 0, gameData.segs.nLastVertex + 1);
 bStartDynColoring = 1;
 if (bInitDynColoring) {
 	InitDynColoring ();
@@ -631,55 +633,53 @@ if (bInitDynColoring) {
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
 if (!gameOpts->render.bDynLighting) {
-	for (render_seg=0; render_seg<nRenderSegs; render_seg++) {
-		nSegment = nRenderList [render_seg];
+	for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
+		nSegment = nRenderList [iRenderSeg];
 		if (nSegment != -1) {
 			short	*vp = gameData.segs.segments [nSegment].verts;
-			for (v=0; v<MAX_VERTICES_PER_SEGMENT; v++) {
-				int	vnum = vp [v];
-				if (vnum<0 || vnum>gameData.segs.nLastVertex) {
+			for (v=0; v < MAX_VERTICES_PER_SEGMENT; v++) {
+				nv = vp [v];
+				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
 					Int3();		//invalid vertex number
 					continue;	//ignore it, and go on to next one
 					}
-				if (!render_vertexFlags [vnum]) {
-					render_vertexFlags [vnum] = 1;
-					renderVertices [nRenderVertices++] = vnum;
+				if (!render_vertexFlags [nv]) {
+					render_vertexFlags [nv] = 1;
+					renderVertices [nRenderVertices++] = nv;
 					}
 				}
 			}
 		}
 
-	for (vv=0; vv<nRenderVertices; vv++) {
-		vertnum = renderVertices [vv];
-		Assert(vertnum >= 0 && vertnum <= gameData.segs.nLastVertex);
+	for (vv = 0; vv < nRenderVertices; vv++) {
+		nVertex = renderVertices [vv];
+		Assert(nVertex >= 0 && nVertex <= gameData.segs.nLastVertex);
 #if FLICKERFIX == 0
-		if ((vertnum ^ gameData.app.nFrameCount) & 1)
+		if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 			{
-			dynamicLight [vertnum] = 0;
-			bGotDynColor [vertnum] = 0;
-			memset (dynamicColor + vertnum, 0, sizeof (*dynamicColor));
+			dynamicLight [nVertex] = 0;
+			bGotDynColor [nVertex] = 0;
+			memset (dynamicColor + nVertex, 0, sizeof (*dynamicColor));
 			}
 		}
 	}
 CastMuzzleFlashLight (nRenderVertices, renderVertices);
-
 memset (newLightingObjects, 0, sizeof (newLightingObjects));
 
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
 //	one or two segments if we notice light changing as gameData.objs.objects go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
-	nSegment = nRenderList [render_seg];
+#if 0
+for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
+	nSegment = nRenderList [iRenderSeg];
 	nObject = gameData.segs.segments [nSegment].objects;
 
 	while (nObject != -1) {
 		objP = gameData.objs.objects + nObject;
 		objPos = &objP->position.vPos;
 
-		if (objP->nType == OBJ_FIREBALL)
-			objP = objP;
 		xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
 		if (bGotColor)
 			bKeepDynColoring = 1;
@@ -690,7 +690,20 @@ for (render_seg=0; render_seg < nRenderSegs; render_seg++) {
 		nObject = objP->next;
 		}
 	}
-
+#else
+for (nObject = gameData.objs.nLastObject + 1, objP = gameData.objs.objects; nObject; nObject--, objP++) {
+	if (objP->nType == OBJ_NONE)
+		continue;
+	objPos = &objP->position.vPos;
+	xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
+	if (bGotColor)
+		bKeepDynColoring = 1;
+	if (xObjIntensity) {
+		ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
+		newLightingObjects [nObject] = 1;
+		}
+	}
+#endif
 //	Now, process all lights from last frame which haven't been processed this frame.
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about tPlayer sneaking up.

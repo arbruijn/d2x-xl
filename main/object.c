@@ -1673,6 +1673,8 @@ switch (objP->renderType) {
 				objP->mType.physInfo.rotVel.p.y = 
 				objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 			}
+		else
+			DrawPolygonObject (objP);
 		break;
 
 	case RT_MORPH:	
@@ -3430,18 +3432,17 @@ int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte m
 {
 	short nObject;
 
-	Assert (gameData.models.nMarkerModel != -1);
-	nObject = CreateObject (OBJ_MARKER, marker_num, -1, nSegment, pos, orient, 
-								  gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
-	if (nObject >= 0) {
-		tObject *objP = &gameData.objs.objects [nObject];
-		objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
-		VmVecCopyScale (&objP->mType.spinRate, &objP->position.mOrient.uVec, F1_0 / 2);
-		//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
-		objP->lifeleft = IMMORTAL_TIME - 1;
+Assert (gameData.models.nMarkerModel != -1);
+nObject = CreateObject (OBJ_MARKER, marker_num, -1, nSegment, pos, orient, 
+								gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
+if (nObject >= 0) {
+	tObject *objP = &gameData.objs.objects [nObject];
+	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
+	VmVecCopyScale (&objP->mType.spinRate, &objP->position.mOrient.uVec, F1_0 / 2);
+	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
+	objP->lifeleft = IMMORTAL_TIME - 1;
 	}
-
-	return nObject;	
+return nObject;	
 }
 
 //------------------------------------------------------------------------------

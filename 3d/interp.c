@@ -1369,14 +1369,8 @@ else {
 	glBegin (GL_LINES);
 	}
 #endif
-if (gameOpts->render.shadows.nClip)
-	nClip = po->pfClipDist ? gameOpts->render.shadows.nClip : 1;
-else
-	nClip = 0;
-if (nClip > 1)
-	fClipDist = pso->fClipDist;
-else
-	fClipDist = fInf;
+nClip = gameOpts->render.shadows.nClip ? po->pfClipDist ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->pAdjFaces + pf->nAdjFaces;
@@ -1786,14 +1780,8 @@ pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bRearCap)
 #endif
-if (gameOpts->render.shadows.nClip)
-	nClip = po->pfClipDist ? gameOpts->render.shadows.nClip : 1;
-else
-	nClip = 0;
-if (nClip >= 2)
-	fClipDist = G3SubModelClipDist (objP, po, pso);
-else
-	fClipDist = fInf;
+nClip = gameOpts->render.shadows.nClip ? po->pfClipDist ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 #if 0//def _DEBUG
@@ -1904,8 +1892,8 @@ if (pso - po->subObjs.pSubObjs == 8)
 #endif
 {
 G3GetLitFaces (po, pso);
-pso->nRenderFlipFlop = !pso->nRenderFlipFlop;
-pso->bCalcClipDist = pso->nRenderFlipFlop;
+if (pso->nRenderFlipFlop = !pso->nRenderFlipFlop)
+	pso->fClipDist = G3SubModelClipDist (objP, po, pso);
 h = G3RenderSubModelShadowCaps (objP, po, pso, 0) &&
 	 G3RenderSubModelShadowCaps (objP, po, pso, 1) &&
 	 G3RenderSubModelShadowVolume (po, pso, 0) &&

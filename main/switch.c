@@ -673,19 +673,19 @@ return (i > 0);
 
 //------------------------------------------------------------------------------
 
-int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int nTrigger, int nPlayer, int shot, int bBotTrigger)
+int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, int nTrigger, int nPlayer, int shot, int bBotTrigger)
 {
 	tTrigger	*trigP;
 	tObject	*objP = gameData.objs.objects + nObject;
 	ubyte		bIsPlayer = (objP->nType == OBJ_PLAYER);
 
-if (nTrigger >= num_triggers)
+if (nTrigger >= nTriggerCount)
 	return 1;
 trigP = triggers + nTrigger;
 if (trigP->flags & TF_DISABLED)
-	return 1;		//1 means don'trigP send tTrigger hit to other players
+	return 1;		//1 means don't send trigger hit to other players
 if (bIsPlayer) {
-	if (nObject != gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
+	if (!IsMultiGame && (nObject != gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
 		return 1;
 	}
 else {
@@ -696,7 +696,10 @@ else {
 		if (!(bBotTrigger || gameData.bots.pInfo [objP->id].companion))
 			return 1;
 		}
-	}
+	else
+		if (objP->nType != OBJ_ROBOT)
+			return 1;
+		}
 #if 1
 if ((triggers == gameData.trigs.triggers) && 
 	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
@@ -859,7 +862,7 @@ switch (trigP->nType) {
 			if (nPlayer != gameData.multi.nLocalPlayer)
 				break;
 			if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
-					gameStates.app.bPlayerIsDead)
+				 gameStates.app.bPlayerIsDead)
 				break;
 			}
 		DoSpeedBoost (trigP, nObject);

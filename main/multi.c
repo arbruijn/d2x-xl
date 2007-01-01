@@ -2514,7 +2514,7 @@ MultiSendData (multiData.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendTrigger (int triggernum, int nObject)
+void MultiSendTrigger (int nTrigger, int nObject)
 {
 	// Send an even to tTrigger something in the mine
 
@@ -2522,7 +2522,7 @@ void MultiSendTrigger (int triggernum, int nObject)
 
 multiData.msg.buf [count] = gameData.multi.nLocalPlayer;                                   
 count += 1;
-multiData.msg.buf [count] = (ubyte)triggernum;            
+multiData.msg.buf [count] = (ubyte)nTrigger;            
 count += 1;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	multiData.msg.buf [0] = MULTI_TRIGGER_EXT;                                
@@ -2537,7 +2537,7 @@ MultiSendData (multiData.msg.buf, count, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendObjTrigger (int triggernum)
+void MultiSendObjTrigger (int nTrigger)
 {
 	// Send an even to tTrigger something in the mine
 
@@ -2547,7 +2547,7 @@ multiData.msg.buf [count] = MULTI_OBJ_TRIGGER;
 count += 1;
 multiData.msg.buf [count] = gameData.multi.nLocalPlayer;                                   
 count += 1;
-multiData.msg.buf [count] = (ubyte)triggernum;            
+multiData.msg.buf [count] = (ubyte)nTrigger;            
 count += 1;
 MultiSendData (multiData.msg.buf, count, 1);
 //MultiSendData (multiData.msg.buf, count, 1); // twice?
@@ -4787,6 +4787,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoWeapons, 1},
 	{MultiDoMonsterball, 1},
 	{MultiDoCheating, 1},
+	{MultiDoTrigger, 1},
 	{MultiDoSyncKills, 1},
 	};
 
@@ -5019,6 +5020,7 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 			MultiDoCreateRobot (buf); 
 		break;
 	case MULTI_TRIGGER:
+	case MULTI_TRIGGER_EXT:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoTrigger (buf); 
 		break;

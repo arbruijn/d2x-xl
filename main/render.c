@@ -496,7 +496,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			}
 		else if (bGotDynColor [h]) {
 			pdc = dynamicColor + h;
-			pvc->index = -1;
+			//pvc->index = -1;
 			if (gameOpts->render.color.bMix) {
 				float dl = f2fl (dynLight);
 #if 0
@@ -504,10 +504,10 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 #else
-				if (gameStates.app.bD2XLevel && 
-						gameOpts->render.color.bAmbientLight && 
-						!gameOpts->render.color.bUseLightMaps && 
-						(pvc->index != -1)) {
+				if (/*gameStates.app.bD2XLevel && */
+					 gameOpts->render.color.bAmbientLight && 
+					 !gameOpts->render.color.bUseLightMaps && 
+					 (pvc->index != -1)) {
 					pvc->color.red += pdc->red * dl;
 					pvc->color.green += pdc->green * dl;
 					pvc->color.blue += pdc->blue * dl;
@@ -731,7 +731,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 239 && props.sideNum == 0)
+if (props.segNum == 228 && props.sideNum == 3)
 	props.segNum = props.segNum;
 #	if 0
 else

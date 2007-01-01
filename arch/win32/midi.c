@@ -83,7 +83,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int DigiPlayMidiSong (char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
+int DigiPlayMidiSong (char *pszSong, char *melodic_bank, char *drum_bank, int bLoop, int bD1Song)
 {
 	int	bCustom;
 #if 0
@@ -117,7 +117,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
-	if (-1 == Mix_PlayMusic (mixMusic, loop)) {
+	if (-1 == Mix_PlayMusic (mixMusic, bLoop ? -1 : 1)) {
 		LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		return 0;
 		}
@@ -132,7 +132,7 @@ if (bCustom) {
 	LogErr ("Cannot play %s - enable SDL_mixer\n", pszSong);
 	return 0;
 	}
-hmp_play (hmp, loop);
+hmp_play (hmp, bLoop);
 bDigiMidiSongPlaying = 1;
 DigiSetMidiVolume (midiVolume);
 #endif
