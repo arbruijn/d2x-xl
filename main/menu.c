@@ -1230,7 +1230,7 @@ if (gameStates.app.nDifficultyLevel != v) {
 void NewGameMenu ()
 {
 	tMenuItem	m [10];
-	int				opt, optSelMsn, optMsnName, optLevelText, optLevel;
+	int				opt, optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0, nDefaultMission = 0;
 	char				szDifficulty [50];
@@ -1250,13 +1250,15 @@ for (;;) {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 
-	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTIMSLION);
+	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTI_MISSION);
 	optSelMsn = opt++;
 	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].mission_name, 0);	
 	optMsnName = opt++;
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
+#if 0
 		ADD_TEXT (opt, "", 0);
 		opt++;
+#endif
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 32);
 		ADD_TEXT (opt, szLevelText, 0); 
@@ -1274,6 +1276,15 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	nDiffOpt = opt++;
+	if (nMission >= 0) {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_MENU (opt, TXT_LAUNCH_GAME, KEY_L, "");
+		m [opt].centered = 1;
+		optLaunch = opt++;
+		}
+	else
+		optLaunch = -1;
 
 	i = ExecMenu1 (NULL, TXT_SELECT_START_LEV, opt, m, &NewGameMenuCallback, &choice);
 	if (i < 0) {
@@ -1980,7 +1991,7 @@ do {
 		optPlayerShadows = opt++;
 		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
-		ADD_CHECK (opt, TXTMSL_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTXMSL_SHADOWS);
+		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTX_MISSILE_SHADOWS);
 		optMissileShadows = opt++;
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
@@ -2312,7 +2323,7 @@ do {
 				ADD_TEXT (opt, "", 0);
 				opt++;
 				}
-			ADD_CHECK (opt, TXT_SMOKEMSLS, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
+			ADD_CHECK (opt, TXT_SMOKE_MISSILES, gameOpts->render.smoke.bMissiles, KEY_M, HTX_ADVRND_MSLSMOKE);
 			optMissSmoke = opt++;
 			if (gameOpts->render.smoke.bMissiles) {
 				if (!gameOpts->render.smoke.bSyncSizes) {

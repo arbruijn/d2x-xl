@@ -1160,7 +1160,7 @@ build_menu:
 	opt++;
 	ADD_INPUT (opt, name, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
 	opt_name = opt++;
-	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTIMSLION);
+	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTI_MISSION);
 	opt_mission = opt++;
 	ADD_TEXT (opt, "", 0);
 	m [opt].rebuild = 1; 

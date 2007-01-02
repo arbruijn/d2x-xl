@@ -410,7 +410,7 @@ inline int DownloadError (int nReason)
 if (nReason == 1)
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
 else if (nReason == 2)
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODLMSLPKTS);
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
 else if (nReason == 3)
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else

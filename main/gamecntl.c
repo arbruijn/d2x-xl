@@ -562,7 +562,7 @@ void DoShowNetgameHelp()
 	}
 
    sprintf (mtext[num], TXT_INFO_GAME, netGame.game_name); num++;
-   sprintf (mtext[num], TXT_INFOMSLION, netGame.mission_title); num++;
+   sprintf (mtext[num], TXT_INFO_MISSION, netGame.mission_title); num++;
 	sprintf (mtext[num], TXT_INFO_LEVEL, netGame.levelnum); num++;
 	sprintf (mtext[num], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT(netGame.difficulty)); num++;
 	sprintf (mtext[num], TXT_INFO_MODE, GT(537+netGame.gamemode)); num++;

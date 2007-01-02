@@ -1547,8 +1547,8 @@ char *defaultGameTexts [][2] = {
 	{"~Bildschirmabzuege: keine", "~Screenshots: none"},
 	{"Scheinwerfer nicht verfuegbar", "Headlights not available"},
 	{"~Ruckeln durch Rauch reduzieren", "~Reduce smoke induced lag"},
-	{"~Raucheinstellungen...", "~Smoke options..."},
-	{"Raucheinstellungen", "Smoke Render Options"},
+	{"~Rauch...", "~Smoke options..."},
+	{"Rauch", "Smoke Render Options"},
 	{"laufendes Spiel ~Verlassen", "~Quit Playing Game"},
 	{"gespeichertes Spiel ~Laden...", "~Load Saved Game..."},
 	{"aktuelles Spiel ~Speichern...", "~Save Current Game..."},
@@ -1565,26 +1565,26 @@ char *defaultGameTexts [][2] = {
 	{"Schweif~Laenge: %s", "Trail ~Length: %s"},
 	{"Kurz", "Short"},
 	{"Lang", "Long"},
-	{"~Effekteinstellungen...", "~Effect options..."},
-	{"Effekteinstellungen", "Effect options"},
+	{"~Effekten...", "~Effect options..."},
+	{"Effekt", "Effect options"},
 	{"o~Boterschatten", "ro~bot shadows"},
 	{"ra~Ketenschatten", "~Missile shadows"},
 	{"~Reaktorschatten", "~Reactor shadows"},
 	{"~Spielerschatten", "~Player shadows"},
 	{"schnelle Schatten~Berechnung", "~Fast shadow rendering"},
-	{"~Schatteneinstellungen...", "sh~Adow options..."},
-	{"Schatteneinstellungen", "Shadow Render Options"},
-	{"~Kameraeinstellungen...", "~Camera options..."},
-	{"Kameraeinstellungen", "Camera Options"},
-	{"~Beleuchtungseinstellungen...", "~Lighting options..."},
-	{"Beleuchtungseinstellungen", "Lighting options"},
-	{"~Filmeinstellungen...", "~Movie options..."},
-	{"Filmeinstellungen", "Movie options"},
+	{"~Schatten...", "sh~Adow options..."},
+	{"Schatten", "Shadow Render Options"},
+	{"~Kameras...", "~Camera options..."},
+	{"Kameras", "Camera Options"},
+	{"~Beleuchtung...", "~Lighting options..."},
+	{"Beleuchtung", "Lighting options"},
+	{"~Filme...", "~Movie options..."},
+	{"Filme", "Movie options"},
 	{"~Reichweite: %s", "~Reach: %s"},
 	{"Schatten begren~Zen:", "Shadow ~Clipping:"},
 	{"HUD-~Nachrichten anzeigen", "show HUD ~Messages"},
-	{"~Powerupeinstellungen...", "~Powerup options..."},
-	{"Powerupeinstellungen", "Powerup options"},
+	{"~Ausruestung...", "~Powerup options..."},
+	{"Ausruestung", "Powerup options"},
 	{"3~D-Powerups", "3~D powerups"},
 	{"~Nicht rotieren", "~Don't spin"},
 	{"~Langsam rotieren", "spin ~Slowly"},
@@ -1597,7 +1597,7 @@ char *defaultGameTexts [][2] = {
 	{"~Zielmarkierungen...", "Target ~Indicators..."},
 	{"Waffensymbole", "Weapon Icons"},
 	{"~Waffensymbole...", "~Weapon Icons..."},
-	{"", ""},
+	{"~Spiel starten", "~Launch Game"},
 #if 0
 	{"", ""},
 #endif
@@ -2221,6 +2221,32 @@ for (; *p; p++)
 
 //------------------------------------------------------------------------------
 
+void DumpGameText (FILE *fTxt, char *ps)
+{
+char s [200], *pi, *pj;
+
+strcpy (s, ps);
+for (pi = pj = s; *pj; pj++) {
+	switch (*pj) {
+		case '\t':
+			*pj = '\0';
+			fprintf (fTxt, "%s\\t", pi);
+			*pj = '\t';
+			pi = pj + 1;
+			break;
+		case '\n':
+			*pj = '\0';
+			fprintf (fTxt, "%s\\n", pi);
+			*pj = '\n';
+			pi = pj + 1;
+			break;
+		}
+	}
+fprintf (fTxt, "%s\n", pi);
+}
+
+//------------------------------------------------------------------------------
+
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -2230,7 +2256,7 @@ for (; *p; p++)
 void LoadGameTexts (void)
 {
 #if DUMP_TEXTS == 2
-	FILE *fTxt = fopen (gameStates.app.bEnglish ? "descent.tex.e" : "descent.tex.g", "wt");
+	FILE *fTxt = fopen (gameStates.app.bEnglish ? "d:\\temp\\descent.tex.e" : "d:\\temp\\descent.tex.g", "wt");
 #elif DUMP_TEXTS == 3
 	FILE *fTxt = fopen ("d:\\temp\\basetex.h", "wt");
 #endif
@@ -2240,6 +2266,11 @@ void LoadGameTexts (void)
 	char *psz;
 	char *filename = "descent.tex";
 
+#if DUMP_TEXTS == 2
+for (i = 0; *GT (i); i++)
+	DumpGameText (fTxt, GT (i));
+fclose (fTxt);
+#endif
 if ((i = FindArg ("-text")))
 	filename = Args [i+1];
 if (!(tfile = CFOpen (filename, gameFolders.szDataDir, "rt", 0))) {
@@ -2298,31 +2329,7 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 	if (i < N_BASE_TEXTS) {
 		baseGameTexts [h] = ph;
 #if DUMP_TEXTS == 3
-		{
-		char s [200], *pi, *pj;
-		strcpy (s, d2GameTexts [h]);
-		fprintf (fTxt, "\t{\"%s\", ", ph);
-		if (strlen (ph) > 50)
-			fprintf (fTxt, "\n\t ");
-		fprintf (fTxt, "\"");
-		for (pi = pj = s; *pj; pj++) {
-			switch (*pj) {
-				case '\t':
-					*pj = '\0';
-					fprintf (fTxt, "%s\\t", pi);
-					*pj = '\t';
-					pi = pj + 1;
-					break;
-				case '\n':
-					*pj = '\0';
-					fprintf (fTxt, "%s\\n", pi);
-					*pj = '\n';
-					pi = pj + 1;
-					break;
-				}
-			}
-		fprintf (fTxt, "%s\"},\n", pi);
-		}
+		DumpGameText (fTxt, d2GameTexts [h]);
 #endif
 		}
 	else if (gameStates.app.bEnglish)

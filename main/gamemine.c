@@ -1057,10 +1057,11 @@ void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 	tSide			*sideP;
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
+	short			sideVerts [4];
 	ubyte			bit_mask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
-for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, segP++) {
+for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, segP++) {
 
 #ifdef EDITOR
 	segP->nSegment = nSegment;
@@ -1157,7 +1158,8 @@ for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, 
 				}
 
 			// Read uvl sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
-			for (i = 0; i < 4; i++ )	{
+			GetSideVerts (sideVerts, nSegment, nSide);
+			for (i = 0; i < 4; i++ ) {
 				temp_short = CFReadShort (loadFile);
 				sideP->uvls [i].u = ((fix)temp_short) << 5;
 				temp_short = CFReadShort (loadFile);
@@ -1169,6 +1171,7 @@ for (segP = gameData.segs.segments + nSegment;  nSegment < lastSeg; nSegment++, 
 				else
 #endif
 				sideP->uvls [i].l = ((fix)temp_ushort) << 1;
+				gameData.render.color.vertBright [sideVerts [i]] = f2fl (sideP->uvls [i].l);
 				//CFRead ( &sideP->uvls [i].l, sizeof (fix), 1, loadFile );
 				}
 			} 

@@ -22,7 +22,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 #include <math.h>
 #include <stdio.h>
-#include <string.h>	// for memset()
+#include <string.h>	// for memset ()
 
 #include "fix.h"
 #include "vecmat.h"
@@ -147,18 +147,18 @@ for (i = 0; i < MAX_WALL_TEXTURES; i++) {
 	}
 for (i = h; --i; ) {
 	gameData.pig.tex.brightness [ptb [i].nTexture] = 
-		((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
+		 ((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
 	}
 }
 
 // ----------------------------------------------------------------------------------------------
 //	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
-int LightingCacheVisible(int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vertpos)
+int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vertpos)
 {
 	int	cache_val, cache_frame, cache_vis;
 
-	cache_val = Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
+	cache_val = Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
 
 	cache_frame = cache_val >> 1;
 	cache_vis = cache_val & 1;
@@ -173,9 +173,9 @@ Cache_lookups++;
 		nSegment = -1;
 
 		#ifndef NDEBUG
-		nSegment = FindSegByPoint(obj_pos, obj_seg);
+		nSegment = FindSegByPoint (obj_pos, obj_seg);
 		if (nSegment == -1) {
-			Int3();		//	Obj_pos is not in obj_seg!
+			Int3 ();		//	Obj_pos is not in obj_seg!
 			return 0;		//	Done processing this tObject.
 		}
 		#endif
@@ -188,25 +188,25 @@ Cache_lookups++;
 		fq.ignoreObjList	= NULL;
 		fq.flags				= FQ_TRANSWALL;
 
-		hitType = FindVectorIntersection(&fq, &hit_data);
+		hitType = FindVectorIntersection (&fq, &hit_data);
 
 		// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 		// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
 
 		if (hitType == HIT_OBJECT)
-			Int3();	//	Hey, we're not supposed to be checking gameData.objs.objects!
+			Int3 ();	//	Hey, we're not supposed to be checking gameData.objs.objects!
 
 		if (hitType == HIT_NONE)
 			bApplyLight = 1;
 		else if (hitType == HIT_WALL) {
 			fix	distDist;
-			distDist = VmVecDistQuick(&hit_data.hit.vPoint, obj_pos);
+			distDist = VmVecDistQuick (&hit_data.hit.vPoint, obj_pos);
 			if (distDist < F1_0/4) {
 				bApplyLight = 1;
-				// -- Int3();	//	Curious, did fvi detect intersection with wall containing vertex?
+				// -- Int3 ();	//	Curious, did fvi detect intersection with wall containing vertex?
 			}
 		}
-		Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
+		Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
 		return bApplyLight;
 	} else {
 Cache_hits++;
@@ -214,8 +214,8 @@ Cache_hits++;
 	}	
 }
 
-#define	HEADLIGHT_CONE_DOT	(F1_0*9/10)
-#define	HEADLIGHT_SCALE		(F1_0*10)
+#define	HEADLIGHT_CONE_DOT	 (F1_0*9/10)
+#define	HEADLIGHT_SCALE		 (F1_0*10)
 
 // ----------------------------------------------------------------------------------------------
 
@@ -260,7 +260,7 @@ else {
 
 // ----------------------------------------------------------------------------------------------
 
-void ApplyLight(
+void ApplyLight (
 	fix			xObjIntensity, 
 	int			obj_seg, 
 	vmsVector	*obj_pos, 
@@ -281,7 +281,7 @@ void ApplyLight(
 if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
-			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+			if (! (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
 				gameData.render.lights.dynamic.nHeadLights [objP->id] = AddOglHeadLight (objP);
@@ -315,20 +315,20 @@ if (xObjIntensity) {
 	bForceColor = 0;
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
-	if ((abs(obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER)) {
+	if ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER)) {
 		short *vp = gameData.segs.segments [obj_seg].verts;
 
 		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
 
 			nVertex = vp [vv];
 #if !FLICKERFIX
-			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ 
+			if (/* (gameOpts->render.color.bAmbientLight && color) ||*/ 
 				 ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
 				vertpos = gameData.segs.vertices+nVertex;
 				dist = VmVecDistQuick (obj_pos, vertpos) / 4;
-				dist = FixMul(dist, dist);
+				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
@@ -357,7 +357,7 @@ if (xObjIntensity) {
 					fvi_info		hit_data;
 					int			fate;
 
-					VmVecScaleAdd(&tvec, obj_pos, &objP->position.mOrient.fVec, F1_0*200);
+					VmVecScaleAdd (&tvec, obj_pos, &objP->position.mOrient.fVec, F1_0*200);
 
 					fq.startSeg			= objP->position.nSegment;
 					fq.p0					= obj_pos;
@@ -367,10 +367,10 @@ if (xObjIntensity) {
 					fq.ignoreObjList	= NULL;
 					fq.flags				= FQ_TRANSWALL;
 
-					fate = FindVectorIntersection(&fq, &hit_data);
+					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
-						VmVecSub(&tvec, &hit_data.hit.vPoint, obj_pos);
-						maxHeadlightDist = VmVecMagQuick(&tvec) + F1_0*4;
+						VmVecSub (&tvec, &hit_data.hit.vPoint, obj_pos);
+						maxHeadlightDist = VmVecMagQuick (&tvec) + F1_0*4;
 					}
 				}
 			}
@@ -379,14 +379,14 @@ if (xObjIntensity) {
 
 			nVertex = renderVertices [vv];
 #if FLICKERFIX == 0
-			if (/*(gameOpts->render.color.bAmbientLight && color) ||*/ ((nVertex ^ gameData.app.nFrameCount) & 1))
+			if (/* (gameOpts->render.color.bAmbientLight && color) ||*/ ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
 				vertpos = gameData.segs.vertices + nVertex;
 				dist = VmVecDistQuick (obj_pos, vertpos);
 				bApplyLight = 0;
 
-				if ((dist >> headlightShift) < abs(obji_64)) {
+				if ((dist >> headlightShift) < abs (obji_64)) {
 
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
@@ -395,23 +395,23 @@ if (xObjIntensity) {
 						if (bUseColor)
 							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
 						if (!headlightShift) 
-							dynamicLight [nVertex] += FixDiv(xObjIntensity, dist);
+							dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 
-							VmVecSub(&vecToPoint, vertpos, obj_pos);
-							VmVecNormalizeQuick(&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
-							dot = VmVecDot(&vecToPoint, &objP->position.mOrient.fVec);
+							VmVecSub (&vecToPoint, vertpos, obj_pos);
+							VmVecNormalizeQuick (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
 							if (bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
 								maxDot = F1_0 / 2;
 							if (dot < maxDot)
-								dynamicLight [nVertex] += FixDiv(xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
-							else if (!(gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
-								dynamicLight [nVertex] += FixMul(FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
+								dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+							else if (! (gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
+								dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
 							}
 						}
 					}
@@ -421,8 +421,8 @@ if (xObjIntensity) {
 	}
 }
 
-#define	FLASH_LEN_FIXED_SECONDS	(F1_0/3)
-#define	FLASH_SCALE					(3*F1_0/FLASH_LEN_FIXED_SECONDS)
+#define	FLASH_LEN_FIXED_SECONDS	 (F1_0/3)
+#define	FLASH_SCALE					 (3*F1_0/FLASH_LEN_FIXED_SECONDS)
 
 // ----------------------------------------------------------------------------------------------
 
@@ -430,7 +430,7 @@ void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
 {
 	int	i;
 	short	time_since_flash;
-	fix currentTime = TimerGetFixedSeconds();
+	fix currentTime = TimerGetFixedSeconds ();
 
 	for (i=0; i<MUZZLE_QUEUE_MAX; i++) {
 		if (gameData.muzzle.info [i].createTime) {
@@ -457,14 +457,14 @@ sbyte   lightingObjects [MAX_OBJECTS];
 
 #define	MAX_HEADLIGHTS	8
 tObject	*Headlights [MAX_HEADLIGHTS];
-int		Num_headlights;
+int		nHeadLights;
 
 // ---------------------------------------------------------
 
 fix ComputeLightIntensity (int nObject, tRgbColorf *color, char *pbGotColor)
 {
-	tObject		*objP = gameData.objs.objects+nObject;
-	int			objtype = objP->nType;
+	tObject		*objP = gameData.objs.objects + nObject;
+	int			nObjType = objP->nType;
    fix			hoardlight, s;
 
 	static tRgbColorf powerupColors [9] = {
@@ -475,11 +475,11 @@ color->red =
 color->green =
 color->blue = 1.0;
 *pbGotColor = 0;
-switch (objtype) {
+switch (nObjType) {
 	case OBJ_PLAYER:
 		 if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
-			if (Num_headlights < MAX_HEADLIGHTS)
-				Headlights [Num_headlights++] = objP;
+			if (nHeadLights < MAX_HEADLIGHTS)
+				Headlights [nHeadLights++] = objP;
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX]) {
@@ -487,7 +487,7 @@ switch (objtype) {
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 
-		  	hoardlight=i2f(gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f(12);
+		  	hoardlight=i2f (gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
@@ -496,10 +496,10 @@ switch (objtype) {
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multi.nLocalPlayer) {
-			return max(VmVecMagQuick(&player_thrust)/4, F1_0*2) + F1_0/2;
+			return max (VmVecMagQuick (&player_thrust)/4, F1_0*2) + F1_0/2;
 			}
 		else {
-			return max(VmVecMagQuick(&objP->mType.physInfo.thrust)/4, F1_0*2) + F1_0/2;
+			return max (VmVecMagQuick (&objP->mType.physInfo.thrust)/4, F1_0*2) + F1_0/2;
 			}
 		break;
 
@@ -541,7 +541,7 @@ switch (objtype) {
 				xLight /= 8;
 #endif
 			if (objP->lifeleft < F1_0*4)
-				return FixMul (FixDiv(objP->lifeleft, 
+				return FixMul (FixDiv (objP->lifeleft, 
 								   gameData.eff.vClips [0][objP->id].xTotalTime), xLight);
 			else
 				return xLight;
@@ -560,10 +560,10 @@ switch (objtype) {
 		*pbGotColor = 1;
 		if (gameData.app.nGameMode & GM_MULTI)
 			if (objP->id == OMEGA_ID)
-				if (d_rand() > 8192)
+				if (d_rand () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
 		if (objP->id == FLARE_ID)
-			return 2* (min(tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
+			return 2* (min (tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
 		else
 			return tval;
 	}
@@ -571,7 +571,7 @@ switch (objtype) {
 	case OBJ_MARKER: {
 		fix	lightval = objP->lifeleft;
 		lightval &= 0xffff;
-		lightval = 8 * abs(F1_0/2 - lightval);
+		lightval = 8 * abs (F1_0/2 - lightval);
 		if (objP->lifeleft < F1_0*1000)
 			objP->lifeleft += F1_0;	//	Make sure this tObject doesn't go out.
 		color->red = 0.1f;
@@ -619,12 +619,12 @@ void SetDynamicLight (void)
 	fix			xObjIntensity;
 	tRgbColorf	color;
 
-	Num_headlights = 0;
+	nHeadLights = 0;
 
 if (!gameOpts->render.bDynamicLight)
 	return;
 
-memset(render_vertexFlags, 0, gameData.segs.nLastVertex + 1);
+memset (render_vertexFlags, 0, gameData.segs.nLastVertex + 1);
 bStartDynColoring = 1;
 if (bInitDynColoring) {
 	InitDynColoring ();
@@ -640,7 +640,7 @@ if (!gameOpts->render.bDynLighting) {
 			for (v=0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
-					Int3();		//invalid vertex number
+					Int3 ();		//invalid vertex number
 					continue;	//ignore it, and go on to next one
 					}
 				if (!render_vertexFlags [nv]) {
@@ -653,7 +653,7 @@ if (!gameOpts->render.bDynLighting) {
 
 	for (vv = 0; vv < nRenderVertices; vv++) {
 		nVertex = renderVertices [vv];
-		Assert(nVertex >= 0 && nVertex <= gameData.segs.nLastVertex);
+		Assert (nVertex >= 0 && nVertex <= gameData.segs.nLastVertex);
 #if FLICKERFIX == 0
 		if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
@@ -691,7 +691,7 @@ for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
 		}
 	}
 #else
-for (nObject = gameData.objs.nLastObject + 1, objP = gameData.objs.objects; nObject; nObject--, objP++) {
+for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		continue;
 	objPos = &objP->position.vPos;
@@ -737,12 +737,12 @@ if (!bKeepDynColoring)
 
 // ---------------------------------------------------------
 
-void toggle_headlight_active()
+void toggle_headlight_active ()
 {
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) {
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendFlags((char) gameData.multi.nLocalPlayer);		
+			MultiSendFlags ((char) gameData.multi.nLocalPlayer);		
 	}
 }
 
@@ -752,10 +752,10 @@ void toggle_headlight_active()
 
 fix	Beam_brightness = (F1_0/2);	//global saying how bright the light beam is
 
-#define MAX_DIST_LOG	6							//log(MAX_DIST-expressed-as-integer)
-#define MAX_DIST		(f1_0<<MAX_DIST_LOG)	//no light beyond this dist
+#define MAX_DIST_LOG	6							//log (MAX_DIST-expressed-as-integer)
+#define MAX_DIST		 (f1_0<<MAX_DIST_LOG)	//no light beyond this dist
 
-fix ComputeHeadlightLightOnObject(tObject *objP)
+fix ComputeHeadlightLightOnObject (tObject *objP)
 {
 	int	i;
 	fix	light;
@@ -766,22 +766,22 @@ fix ComputeHeadlightLightOnObject(tObject *objP)
 
 	light = 0;
 
-	for (i=0; i<Num_headlights; i++) {
+	for (i=0; i<nHeadLights; i++) {
 		fix			dot, dist;
 		vmsVector	vecToObj;
 		tObject		*lightObjP;
 
 		lightObjP = Headlights [i];
 
-		VmVecSub(&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
-		dist = VmVecNormalizeQuick(&vecToObj);
+		VmVecSub (&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
+		dist = VmVecNormalizeQuick (&vecToObj);
 		if (dist > 0) {
-			dot = VmVecDot(&lightObjP->position.mOrient.fVec, &vecToObj);
+			dot = VmVecDot (&lightObjP->position.mOrient.fVec, &vecToObj);
 
 			if (dot < F1_0/2)
-				light += FixDiv(HEADLIGHT_SCALE, FixMul(HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+				light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 			else
-				light += FixMul(FixMul(dot, dot), HEADLIGHT_SCALE)/8;
+				light += FixMul (FixMul (dot, dot), HEADLIGHT_SCALE)/8;
 		}
 	}
 
@@ -794,7 +794,7 @@ fix ComputeHeadlightLightOnObject(tObject *objP)
 // -- Unused -- //  point - the 3d coords of the point
 // -- Unused -- //  face_light - a scale factor derived from the surface normal of the face
 // -- Unused -- //If no surface normal effect is wanted, pass F1_0 for face_light
-// -- Unused -- fix compute_headlight_light(vmsVector *point,fix face_light)
+// -- Unused -- fix compute_headlight_light (vmsVector *point,fix face_light)
 // -- Unused -- {
 // -- Unused -- 	fix light;
 // -- Unused -- 	int use_beam = 0;		//flag for beam effect
@@ -809,7 +809,7 @@ fix ComputeHeadlightLightOnObject(tObject *objP)
 // -- Unused -- 	if (light) {				//if no beam, don't bother with the rest of this
 // -- Unused -- 		fix pointDist;
 // -- Unused --
-// -- Unused -- 		pointDist = VmVecMagQuick(point);
+// -- Unused -- 		pointDist = VmVecMagQuick (point);
 // -- Unused --
 // -- Unused -- 		if (pointDist >= MAX_DIST)
 // -- Unused --
@@ -819,21 +819,21 @@ fix ComputeHeadlightLightOnObject(tObject *objP)
 // -- Unused -- 			fix dist_scale,face_scale;
 // -- Unused --
 // -- Unused -- 			dist_scale = (MAX_DIST - pointDist) >> MAX_DIST_LOG;
-// -- Unused -- 			light = FixMul(light,dist_scale);
+// -- Unused -- 			light = FixMul (light,dist_scale);
 // -- Unused --
 // -- Unused -- 			if (face_light < 0)
 // -- Unused -- 				face_light = 0;
 // -- Unused --
 // -- Unused -- 			face_scale = f1_0/4 + face_light/2;
-// -- Unused -- 			light = FixMul(light,face_scale);
+// -- Unused -- 			light = FixMul (light,face_scale);
 // -- Unused --
 // -- Unused -- 			if (use_beam) {
 // -- Unused -- 				fix beam_scale;
 // -- Unused --
-// -- Unused -- 				if (face_light > f1_0*3/4 && point->z > i2f(12)) {
-// -- Unused -- 					beam_scale = FixDiv(point->z,pointDist);
-// -- Unused -- 					beam_scale = FixMul(beam_scale,beam_scale);	//square it
-// -- Unused -- 					light = FixMul(light,beam_scale);
+// -- Unused -- 				if (face_light > f1_0*3/4 && point->z > i2f (12)) {
+// -- Unused -- 					beam_scale = FixDiv (point->z,pointDist);
+// -- Unused -- 					beam_scale = FixMul (beam_scale,beam_scale);	//square it
+// -- Unused -- 					light = FixMul (light,beam_scale);
 // -- Unused -- 				}
 // -- Unused -- 			}
 // -- Unused -- 		}
@@ -844,7 +844,7 @@ fix ComputeHeadlightLightOnObject(tObject *objP)
 
 // ----------------------------------------------------------------------------------------------
 //compute the average dynamic light in a tSegment.  Takes the tSegment number
-fix ComputeSegDynamicLight(int nSegment)
+fix ComputeSegDynamicLight (int nSegment)
 {
 short *verts = gameData.segs.segments [nSegment].verts;
 fix sum = dynamicLight [*verts++];
@@ -864,9 +864,9 @@ int object_sig [MAX_OBJECTS];
 tObject *old_viewer;
 int reset_lighting_hack;
 
-#define LIGHT_RATE i2f(4)		//how fast the light ramps up
+#define LIGHT_RATE i2f (4)		//how fast the light ramps up
 
-void StartLightingFrame(tObject *viewer)
+void StartLightingFrame (tObject *viewer)
 {
 reset_lighting_hack = (viewer != old_viewer);
 old_viewer = viewer;
@@ -876,7 +876,7 @@ old_viewer = viewer;
 //compute the lighting for an tObject.  Takes a pointer to the tObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
 //tObject's center point is rotated.
-fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
+fix ComputeObjectLight (tObject *objP,vmsVector *rotated_pnt)
 {
 	fix light;
 	g3sPoint objpnt;
@@ -894,7 +894,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 		fix xDeltaLight, xFrameDelta;
 
 		xDeltaLight = light - object_light [nObject];
-		xFrameDelta = FixMul(LIGHT_RATE, gameData.time.xFrame);
+		xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
 		if (abs (xDeltaLight) <= xFrameDelta)
 			object_light [nObject] = light;		//we've hit the goal
 		else
@@ -908,7 +908,7 @@ fix ComputeObjectLight(tObject *objP,vmsVector *rotated_pnt)
 		object_light [nObject] = light;
 	}
 	//Next, add in headlight on this tObject
-	// -- Matt code: light += compute_headlight_light(rotated_pnt,f1_0);
+	// -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
 	light += ComputeHeadlightLightOnObject (objP);
 	//Finally, add in dynamic light for this tSegment
 	light += ComputeSegDynamicLight (objP->position.nSegment);
@@ -922,12 +922,12 @@ void ComputeEngineGlow (tObject *objP, fix *engine_glowValue)
 engine_glowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
 	if ((objP->nType==OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id==gameData.multi.nLocalPlayer)) {
-		fix thrust_mag = VmVecMagQuick(&objP->mType.physInfo.thrust);
-		engine_glowValue [0] += (FixDiv(thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
+		fix thrust_mag = VmVecMagQuick (&objP->mType.physInfo.thrust);
+		engine_glowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
 	}
 	else {
-		fix speed = VmVecMagQuick(&objP->mType.physInfo.velocity);
-		engine_glowValue [0] += (FixDiv(speed,MAX_VELOCITY)*3)/5;
+		fix speed = VmVecMagQuick (&objP->mType.physInfo.velocity);
+		engine_glowValue [0] += (FixDiv (speed,MAX_VELOCITY)*3)/5;
 		}
 	}
 //set value for tPlayer headlight
@@ -982,12 +982,12 @@ void FlickerLights ()
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	//make sure this is actually a light
-	if (!(WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
+	if (! (WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
 		continue;
 	nSegment = flP->nSegment;
 	nSide = flP->nSide;
 	sideP = gameData.segs.segments [nSegment].sides + nSide;
-	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] || 
+	if (! (gameData.pig.tex.brightness [sideP->nBaseTex] || 
 		   gameData.pig.tex.brightness [sideP->nOvlTex]))
 		continue;
 	if (flP->timer == 0x80000000)		//disabled
@@ -1467,8 +1467,8 @@ void SetDynLightMaterial (short nSegment, short nSide, short nObject)
 if (nLight >= 0) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
 	if (pl->bState) {
-		gameData.render.lights.dynamic.material.emissive = *((fVector *) &pl->fEmissive);
-		gameData.render.lights.dynamic.material.specular = *((fVector *) &pl->fEmissive);
+		gameData.render.lights.dynamic.material.emissive = * ((fVector *) &pl->fEmissive);
+		gameData.render.lights.dynamic.material.specular = * ((fVector *) &pl->fEmissive);
 		gameData.render.lights.dynamic.material.shininess = 96;
 		gameData.render.lights.dynamic.material.bValid = 1;
 		gameData.render.lights.dynamic.material.nLight = nLight;
@@ -1612,7 +1612,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		if ((j = *pnl) < 0)
 			break;
 		if (gameData.render.lights.dynamic.lights [j].bVariable) {
-			if (!(bVariable && gameData.render.lights.dynamic.lights [j].bOn))
+			if (! (bVariable && gameData.render.lights.dynamic.lights [j].bOn))
 				continue;
 			}
 		else {
@@ -1797,7 +1797,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 void ComputeStaticDynLighting ()
 {
 if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) {
-		int				i, bColorize = !(gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
+		int				i, bColorize = ! (gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
@@ -1851,7 +1851,7 @@ char *lightingFS =
 	"";
 
 char *lightingVS =
-	"void LightingVS(void){gl_FragColor=gl_Color;}"
+	"void LightingVS (void){gl_FragColor=gl_Color;}"
 	;
 
 #endif

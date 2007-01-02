@@ -381,15 +381,10 @@ static short				faceListTails [MAX_TEXTURES];
 static short				nFaceListSize;
 
 //------------------------------------------------------------------------------
+// If any color component > 1, scale all components down so that the greatest == 1.
 
 static inline void ScaleColor (tFaceColor *color, float l)
 {
-#if 1
-#	if 0
-color->color.red *= l;
-color->color.green *= l;
-color->color.blue *= l;
-#	else
 	float m = color->color.red;
 
 if (m < color->color.green)
@@ -400,8 +395,6 @@ m = l / m;
 color->color.red *= m;
 color->color.green *= m;
 color->color.blue *= m;
-#	endif
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -444,6 +437,7 @@ int SetFaceLight (tFaceProps *propsP)
 	tFaceColor	*pvc = vertColors;
 	tRgbColorf	*pdc;
 	fix			dynLight;
+	float			l, dl;
 
 if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
 	return 0;
@@ -467,10 +461,11 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 		}
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
+	l = gameData.render.color.vertBright [h] ? f2fl (propsP->uvls [i].l) / gameData.render.color.vertBright [h] : 0;
 #ifdef _DEBUG
 	if (dynLight)
 #endif
-	propsP->uvls [i].l += dynLight;
+	dl = f2fl (dynLight);
 #if 0
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		if (segP->owner == 1) {
@@ -498,7 +493,6 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			pdc = dynamicColor + h;
 			//pvc->index = -1;
 			if (gameOpts->render.color.bMix) {
-				float dl = f2fl (dynLight);
 #if 0
 				pvc->color.red = (pvc->color.red + dynamicColor [h].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
@@ -508,12 +502,11 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 					 gameOpts->render.color.bAmbientLight && 
 					 !gameOpts->render.color.bUseLightMaps && 
 					 (pvc->index != -1)) {
-					pvc->color.red += pdc->red * dl;
-					pvc->color.green += pdc->green * dl;
-					pvc->color.blue += pdc->blue * dl;
+					pvc->color.red = pvc->color.red * l + pdc->red * dl;
+					pvc->color.green = pvc->color.green * l + pdc->green * dl;
+					pvc->color.blue = pvc->color.blue * l + pdc->blue * dl;
 					}
 				else {
-					float l = f2fl (propsP->uvls [i].l);
 					pvc->color.red = l + pdc->red * dl;
 					pvc->color.green = l + pdc->green * dl;
 					pvc->color.blue = l + pdc->blue * dl;
@@ -538,12 +531,12 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			}
 		else {
 			if (pvc->index)
-				ScaleColor (pvc, f2fl (propsP->uvls [i].l));
+				ScaleColor (pvc, l);
 			}
 		}
 	else {
 		if (pvc->index)
-			ScaleColor (pvc, f2fl (propsP->uvls [i].l));
+			ScaleColor (pvc, l);
 		}
 	//add in light from tPlayer's headlight
 	// -- Using new headlight system...propsP->uvls [i].l += compute_headlight_light(&gameData.segs.points [propsP->vp [i]].p3_vec, face_light);
@@ -731,7 +724,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 228 && props.sideNum == 3)
+if (props.segNum == 3 && props.sideNum == 2)
 	props.segNum = props.segNum;
 #	if 0
 else

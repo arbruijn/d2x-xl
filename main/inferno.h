@@ -754,6 +754,7 @@ typedef struct tColorData {
 	tFaceColor	sides [MAX_SEGMENTS][6];
 	tFaceColor	segments [MAX_SEGMENTS];
 	tFaceColor	vertices [MAX_VERTICES];
+	float			vertBright [MAX_VERTICES];
 	tFaceColor	ambient [MAX_VERTICES];	//static light values
 	tFaceColor	textures [MAX_WALL_TEXTURES];
 	tLightRef	visibleLights [MAX_SEGMENTS * 6];
