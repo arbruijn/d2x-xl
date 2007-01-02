@@ -1221,17 +1221,39 @@ void InitTexColors (void)
 {
 	int			i;
 	tLightMap	lm;
+	tFaceColor	*pf = gameData.render.color.textures;
 
 // get the default colors
 memset (gameData.render.color.textures, 0, sizeof (gameData.render.color.textures));
-for (i = 0; i < MAX_WALL_TEXTURES; i++) {
+for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 	if (GetLightColor (i, &lm)) {
-		gameData.render.color.textures [i].index = 1;
-		gameData.render.color.textures [i].color.red = lm.color [0];
-		gameData.render.color.textures [i].color.green = lm.color [1];
-		gameData.render.color.textures [i].color.blue = lm.color [2];
+		pf->index = 1;
+		pf->color.red = lm.color [0];
+		pf->color.green = lm.color [1];
+		pf->color.blue = lm.color [2];
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+int HasTexColors (void)
+{
+	int			i;
+	tFaceColor	*pf = gameData.render.color.textures;
+
+if (!gameStates.app.bD2XLevel)
+	return 0;
+// get the default colors
+for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
+	if (pf->index <= 0)
+		continue;
+	if ((pf->color.red == 0) && (pf->color.green == 0) && (pf->color.blue == 0))
+		continue;
+	if ((pf->color.red < 1) || (pf->color.green < 1) || (pf->color.blue < 1))
+		return 1;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1569,6 +1591,8 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
+if (!HasTexColors ())
+	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS
 if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) 

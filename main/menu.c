@@ -1440,7 +1440,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-void WpnIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+void WeaponIconOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -1456,7 +1456,7 @@ if (v != bShowWeaponIcons) {
 
 //------------------------------------------------------------------------------
 
-void WpnIconOptionsMenu (void)
+void WeaponIconOptionsMenu (void)
 {
 	tMenuItem m [35];
 	int	i, j, opt, choice = 0;
@@ -1502,7 +1502,7 @@ do {
 		optIconAlpha = -1;
 	Assert (sizeofa (m) >= opt);
 	do {
-		i = ExecMenu1 (NULL, TXT_WPNICON_MENUTITLE, opt, m, &WpnIconOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_WPNICON_MENUTITLE, opt, m, &WeaponIconOptionsCallback, &choice);
 	} while (i >= 0);
 	if (bShowWeaponIcons) {
 		if (gameOpts->app.bExpertMode) {
@@ -1535,36 +1535,11 @@ do {
 
 //------------------------------------------------------------------------------
 
-void CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+void GaugeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	tMenuItem * m;
-	int				v, j;
+	tMenuItem	*m;
+	int			v;
 
-m = menus + optTgtInd;
-v = m->value;
-if (v != (extraGameInfo [0].bTargetIndicators == 0)) {
-	for (j = 0; j < 3; j++)
-		if (m [optTgtInd + j].value) {
-			extraGameInfo [0].bTargetIndicators = j;
-			break;
-			}
-	*key = -2;
-	return;
-	}
-m = menus + optDmgInd;
-v = m->value;
-if (v != extraGameInfo [0].bDamageIndicators) {
-	extraGameInfo [0].bDamageIndicators = v;
-	*key = -2;
-	return;
-	}
-m = menus + optWeaponIcons;
-v = m->value;
-if (v != bShowWeaponIcons) {
-	bShowWeaponIcons = v;
-	*key = -2;
-	return;
-	}
 m = menus + optTextGauges;
 v = !m->value;
 if (v != gameOpts->render.cockpit.bTextGauges) {
@@ -1572,6 +1547,60 @@ if (v != gameOpts->render.cockpit.bTextGauges) {
 	*key = -2;
 	return;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void GaugeOptionsMenu (void)
+{
+	tMenuItem m [5];
+	int	i, opt, choice = 0;
+	int	optScaleGauges, optFlashGauges, optShieldWarn;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
+	optTextGauges = opt++;
+	if (!gameOpts->render.cockpit.bTextGauges && gameOpts->app.bExpertMode) {
+		ADD_CHECK (opt, TXT_SCALE_GAUGES, gameOpts->render.cockpit.bScaleGauges, KEY_C, HTX_CPIT_SCALEGAUGES);
+		optScaleGauges = opt++;
+		ADD_CHECK (opt, TXT_FLASH_GAUGES, gameOpts->render.cockpit.bFlashGauges, KEY_F, HTX_CPIT_FLASHGAUGES);
+		optFlashGauges = opt++;
+		ADD_CHECK (opt, TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
+		optShieldWarn = opt++;
+		}
+	else
+		optScaleGauges =
+		optFlashGauges =
+		optShieldWarn = -1;
+	do {
+		i = ExecMenu1 (NULL, TXT_GAUGES_MENUTITLE, opt, m, &GaugeOptionsCallback, &choice);
+	} while (i >= 0);
+	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
+		if (gameOpts->app.bExpertMode) {
+			GET_VAL (gameOpts->render.cockpit.bScaleGauges, optScaleGauges);
+			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
+			GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
+			}
+		else {
+#if EXPMODE_DEFAULTS
+			gameOpts->render.cockpit.bScaleGauges = 1;
+			gameOpts->render.cockpit.bFlashGauges = 1;
+			gameOpts->gameplay.bShieldWarning = 0;
+#endif
+			}
+		}
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+void CockpitOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
 if (gameOpts->app.bExpertMode) {
 	m = menus + nCWSopt;
 	v = m->value;
@@ -1603,9 +1632,8 @@ void CockpitOptionsMenu (void)
 {
 	tMenuItem m [25];
 	int	i, opt, choice = 0;
-	int	optPwrUpsOnRadar, optBotsOnRadar, optScaleGauges, optHUD, optReticle, optGuided, 
-			optFlashGauges, optMissileView, optShieldWarn, optMouseInd, optSplitMsgs, optHUDMsgs,
-			optTgtInd, optWpnIcons;
+	int	optPwrUpsOnRadar, optBotsOnRadar, optGauges, optHUD, optReticle, optGuided, 
+			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
 
@@ -1647,23 +1675,9 @@ do {
 		optReticle = -1;
 	ADD_CHECK (opt, TXT_EXTRA_PLRMSGS, gameOpts->render.cockpit.bSplitHUDMsgs, KEY_P, HTX_CPIT_SPLITMSGS);
 	optSplitMsgs = opt++;
-	ADD_CHECK (opt, TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
-	optTextGauges = opt++;
-	if (!gameOpts->render.cockpit.bTextGauges && gameOpts->app.bExpertMode) {
-		ADD_CHECK (opt, TXT_SCALE_GAUGES, gameOpts->render.cockpit.bScaleGauges, KEY_C, HTX_CPIT_SCALEGAUGES);
-		optScaleGauges = opt++;
-		ADD_CHECK (opt, TXT_FLASH_GAUGES, gameOpts->render.cockpit.bFlashGauges, KEY_F, HTX_CPIT_FLASHGAUGES);
-		optFlashGauges = opt++;
-		ADD_CHECK (opt, TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
-		optShieldWarn = opt++;
-		}
-	else
-		optScaleGauges =
-		optFlashGauges =
-		optShieldWarn = -1;
 	ADD_CHECK (opt, TXTMSL_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
 	optMissileView = opt++;
-	ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
+	ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_F, HTX_CPIT_GUIDEDVIEW);
 	optGuided = opt++;
 	ADD_CHECK (opt, TXT_RADAR_PWRUPS, extraGameInfo [0].bPowerUpsOnRadar, KEY_R, HTX_CPIT_RADARPWRUPS);
 	optPwrUpsOnRadar = opt++;
@@ -1671,10 +1685,12 @@ do {
 	optBotsOnRadar = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_MENU (opt, TXT_TGTIND_MENUCALL, KEY_I, "");
+	ADD_MENU (opt, TXT_TGTIND_MENUCALL, KEY_T, "");
 	optTgtInd = opt++;
 	ADD_MENU (opt, TXT_WPNICON_MENUCALL, KEY_W, "");
-	optWpnIcons = opt++;
+	optWeaponIcons = opt++;
+	ADD_MENU (opt, TXT_GAUGES_MENUCALL, KEY_G, "");
+	optGauges = opt++;
 	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_COCKPIT_OPTS, opt, m, &CockpitOptionsCallback, &choice);
@@ -1682,8 +1698,10 @@ do {
 			break;
 		if ((optTgtInd >= 0) && (i == optTgtInd))
 			TgtIndOptionsMenu ();
-		else if ((optWpnIcons >= 0) && (i == optWpnIcons))
-			WpnIconOptionsMenu ();
+		else if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
+			WeaponIconOptionsMenu ();
+		else if ((optGauges >= 0) && (i == optGauges))
+			GaugeOptionsMenu ();
 	} while (i >= 0);
 	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissileView);
@@ -1694,20 +1712,6 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
-	if (!(gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].value)) {
-		if (gameOpts->app.bExpertMode) {
-			GET_VAL (gameOpts->render.cockpit.bScaleGauges, optScaleGauges);
-			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
-			GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
-			}
-		else {
-#if EXPMODE_DEFAULTS
-			gameOpts->render.cockpit.bScaleGauges = 1;
-			gameOpts->render.cockpit.bFlashGauges = 1;
-			gameOpts->gameplay.bShieldWarning = 0;
-#endif
-			}
-		}
 	} while (i == -2);
 }
 

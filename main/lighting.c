@@ -1797,7 +1797,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 void ComputeStaticDynLighting ()
 {
 if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) {
-		int				i, bColorize = ! (gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
+		int				i, bColorize = !(gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 

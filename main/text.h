@@ -1629,11 +1629,11 @@ void LoadGameTexts(void);
 #define TXT_TGTIND_MENUCALL		GT(847)
 #define TXT_WPNICON_MENUTITLE		GT(848)
 #define TXT_WPNICON_MENUCALL		GT(849)
-#define TXT_LAUNCH_GAME				GT(850)
+#define TXT_GAUGES_MENUTITLE		GT(850)
+#define TXT_GAUGES_MENUCALL		GT(851)
+#define TXT_LAUNCH_GAME				GT(852)
 
 #if 0
-#define TXT_				GT(851)
-#define TXT_				GT(852)
 #define TXT_				GT(853)
 #define TXT_				GT(854)
 #define TXT_				GT(855)
