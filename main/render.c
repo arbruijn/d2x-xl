@@ -461,7 +461,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 		}
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
-	l = gameData.render.color.vertBright [h] ? f2fl (propsP->uvls [i].l) / gameData.render.color.vertBright [h] : 0;
+	l = f2fl (propsP->uvls [i].l);
 #ifdef _DEBUG
 	if (dynLight)
 #endif
