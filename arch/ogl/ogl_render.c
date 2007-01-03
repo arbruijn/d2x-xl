@@ -22,11 +22,9 @@
 #ifdef __macosx__
 # include <stdlib.h>
 # include <SDL/SDL.h>
-# include <SDL_mutex.h>
 #else
 # include <malloc.h>
 # include <SDL.h>
-# include <SDL_mutex.h>
 #endif
 
 #include "3d.h"

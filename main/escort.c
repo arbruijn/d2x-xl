@@ -16,9 +16,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#include <stdio.h>		// for printf()
-#include <stdlib.h>		// for rand() and qsort()
-#include <string.h>		// for memset()
+#include <stdio.h>		// for printf ()
+#include <stdlib.h>		// for rand () and qsort ()
+#include <string.h>		// for memset ()
 
 #include "inferno.h"
 #include "mono.h"
@@ -62,8 +62,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/editor.h"
 #endif
 
-void SayEscortGoal(int goal_num);
-void ShowEscortMenu(char *msg);
+void SayEscortGoal (int goal_num);
+void ShowEscortMenu (char *msg);
 
 int nEscortGoalText [MAX_ESCORT_GOALS] = {
 	702,
@@ -94,7 +94,7 @@ int nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 //	-------------------------------------------------------------------------------------------------
 
-void InitBuddyForLevel(void)
+void InitBuddyForLevel (void)
 {
 	int	i;
 
@@ -135,7 +135,7 @@ return AIDoorIsOpenable (NULL, gameData.segs.segments + curseg, nSide);
 //	Output:
 //		bfs_list:	array of shorts, each reachable tSegment.  Includes start tSegment.
 //		length:		number of elements in bfs_list
-void CreateBfsList(int start_seg, short bfs_list [], int *length, int max_segs)
+void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 {
 	int		head, tail;
 	sbyte		bVisited [MAX_SEGMENTS];
@@ -166,13 +166,13 @@ while ((head != tail) && (head < max_segs)) {
 			continue;
 		if (bVisited [connected_seg])
 			continue;
-		if (!SegmentIsReachable(curseg, (short) i))
+		if (!SegmentIsReachable (curseg, (short) i))
 			continue;
 		bfs_list [head++] = connected_seg;
 		if (head >= max_segs)
 			break;
 		bVisited [connected_seg] = 1;
-		Assert(head < MAX_SEGMENTS);
+		Assert (head < MAX_SEGMENTS);
 		}
 	}
 *length = head;
@@ -182,7 +182,7 @@ while ((head != tail) && (head < max_segs)) {
 //	Return true if ok for buddy to talk, else return false.
 //	Buddy is allowed to talk if the tSegment he is in does not contain a blastable wall that has not been blasted
 //	AND he has never yet, since being initialized for level, been allowed to talk.
-int BuddyMayTalk(void)
+int BuddyMayTalk (void)
 {
 	int		i;
 	tSegment	*segp;
@@ -196,7 +196,7 @@ int BuddyMayTalk(void)
 		return 1;
 
 	if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
-		(gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
+		 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
 		!gameData.bots.pInfo [gameData.objs.objects [gameData.escort.nObjNum].id].companion) {
 		for (i=0; i<=gameData.objs.nLastObject; i++)
 			if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
@@ -214,12 +214,12 @@ int BuddyMayTalk(void)
 
 		if (IS_WALL (nWall)) {
 			if ((gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
-				!(gameData.walls.walls [nWall].flags & WALL_BLASTED))
+				! (gameData.walls.walls [nWall].flags & WALL_BLASTED))
 				return 0;
 		}
 
 		//	Check one level deeper.
-		if (IS_CHILD(segp->children [i])) {
+		if (IS_CHILD (segp->children [i])) {
 			int		j;
 			tSegment	*csegp = &gameData.segs.segments [segp->children [i]];
 
@@ -227,7 +227,7 @@ int BuddyMayTalk(void)
 				short	wall2 = WallNumP (csegp, (short) j);
 
 				if (IS_WALL (wall2)) {
-					if ((gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && !(gameData.walls.walls [wall2].flags & WALL_BLASTED))
+					if ((gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && ! (gameData.walls.walls [wall2].flags & WALL_BLASTED))
 						return 0;
 				}
 			}
@@ -239,7 +239,7 @@ int BuddyMayTalk(void)
 }
 
 //	--------------------------------------------------------------------------------------------
-void DetectEscortGoalAccomplished(int index)
+void DetectEscortGoalAccomplished (int index)
 {
 	int		i,j;
 	int		bDetected = 0;
@@ -306,7 +306,7 @@ if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
 					  (gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
 			bDetected = 1;	//	Any nType of powerup picked up will do.
 		else if ((gameData.objs.objects [index].nType == gameData.objs.objects [gameData.escort.nGoalIndex].nType) && 
-					(gameData.objs.objects [index].id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
+					 (gameData.objs.objects [index].id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
 			//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
 			// because of the insistence of both nType and id matching.
 			bDetected = 1;
@@ -314,8 +314,8 @@ if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
 	}
 
 dega_ok: ;
-	if (bDetected && BuddyMayTalk()) {
-		DigiPlaySampleOnce(SOUND_BUDDY_MET_GOAL, F1_0);
+	if (bDetected && BuddyMayTalk ()) {
+		DigiPlaySampleOnce (SOUND_BUDDY_MET_GOAL, F1_0);
 		gameData.escort.nGoalIndex = -1;
 		gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 		gameData.escort.nSpecialGoal = -1;
@@ -325,29 +325,29 @@ dega_ok: ;
 
 //	-------------------------------------------------------------------------------------------------
 
-void ChangeGuidebotName()
+void ChangeGuidebotName ()
 {
 	tMenuItem m;
 	char text [GUIDEBOT_NAME_LEN+1]="";
 	int item;
 
-	strcpy(text,gameData.escort.szName);
+	strcpy (text,gameData.escort.szName);
 
 	memset (&m, 0, sizeof (m));
 	m.nType=NM_TYPE_INPUT; 
 	m.text_len = GUIDEBOT_NAME_LEN; 
 	m.text = text;
-	item = ExecMenu( NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL );
+	item = ExecMenu ( NULL, "Enter Guide-bot name:", 1, &m, NULL, NULL );
 
 	if (item != -1) {
-		strcpy(gameData.escort.szName,text);
-		strcpy(gameData.escort.szRealName,text);
-		WritePlayerFile();
+		strcpy (gameData.escort.szName,text);
+		strcpy (gameData.escort.szRealName,text);
+		WritePlayerFile ();
 	}
 }
 
 //	-----------------------------------------------------------------------------
-void _CDECL_ BuddyMessage(char * format, ... )
+void _CDECL_ BuddyMessage (char * format, ... )
 {
 	if (gameData.escort.bMsgsSuppressed)
 		return;
@@ -357,25 +357,25 @@ void _CDECL_ BuddyMessage(char * format, ... )
 
 if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) || 
 	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
-	if (BuddyMayTalk()) {
+	if (BuddyMayTalk ()) {
 		char	gb_str [16], new_format [128];
 		va_list	args;
 		int t;
 
-		va_start(args, format );
-		vsprintf(new_format, format, args);
-		va_end(args);
+		va_start (args, format );
+		vsprintf (new_format, format, args);
+		va_end (args);
 
 		gb_str [0] = 1;
 		gb_str [1] = GrFindClosestColor (gamePalette, 28, 28, 0);
-		strcpy(&gb_str [2], gameData.escort.szName);
-		t = (int) strlen(gb_str);
+		strcpy (&gb_str [2], gameData.escort.szName);
+		t = (int) strlen (gb_str);
 		gb_str [t] = ':';
 		gb_str [t+1] = 1;
 		gb_str [t+2] = GrFindClosestColor (gamePalette, 0, 31, 0);
 		gb_str [t+3] = 0;
 
-		HUDInitMessage("%s %s", gb_str, new_format);
+		HUDInitMessage ("%s %s", gb_str, new_format);
 		gameData.escort.xLastMsgTime = gameData.time.xGame;
 		}
 	}
@@ -383,7 +383,7 @@ if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
 
 //	-----------------------------------------------------------------------------
 //	Return true if marker #id has been placed.
-int MarkerExistsInMine(int id)
+int MarkerExistsInMine (int id)
 {
 	int	i;
 
@@ -395,24 +395,24 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-void EscortSetSpecialGoal(int special_key)
+void EscortSetSpecialGoal (int special_key)
 {
 	int marker_key;
 
 	gameData.escort.bMsgsSuppressed = 0;
 
 	if (!gameData.escort.bMayTalk) {
-		BuddyMayTalk();
+		BuddyMayTalk ();
 		if (!gameData.escort.bMayTalk) {
 			int	i;
 
 			for (i=0; i<=gameData.objs.nLastObject; i++)
 				if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
-					HUDInitMessage(TXT_GB_RELEASE, gameData.escort.szName);
+					HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 					break;
 				}
 			if (i == gameData.objs.nLastObject+1)
-				HUDInitMessage(TXT_GB_NONE);
+				HUDInitMessage (TXT_GB_NONE);
 
 			return;
 		}
@@ -426,11 +426,11 @@ void EscortSetSpecialGoal(int special_key)
 	if (gameData.escort.nLastKey == special_key)
 	{
 		if ((gameData.escort.bSearchingMarker == -1) && (special_key != KEY_0)) {
-			if (MarkerExistsInMine(marker_key - KEY_1))
+			if (MarkerExistsInMine (marker_key - KEY_1))
 				gameData.escort.bSearchingMarker = marker_key - KEY_1;
 			else {
 				gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-				BuddyMessage("Marker %i not placed.", marker_key - KEY_1 + 1);
+				BuddyMessage ("Marker %i not placed.", marker_key - KEY_1 + 1);
 				gameData.escort.bSearchingMarker = -1;
 			}
 		} else {
@@ -478,21 +478,21 @@ void EscortSetSpecialGoal(int special_key)
 				gameData.escort.nSpecialGoal = -1;								
 				break;
 			default:
-				Int3();		//	Oops, called with illegal key value.
+				Int3 ();		//	Oops, called with illegal key value.
 		}
 	}
 
 	gameData.escort.xLastMsgTime = gameData.time.xGame - 2*F1_0;	//	Allow next message to come through.
 
-	SayEscortGoal(gameData.escort.nSpecialGoal);
-	// -- gameData.escort.nGoalObject = EscortSetGoalObject();
+	SayEscortGoal (gameData.escort.nSpecialGoal);
+	// -- gameData.escort.nGoalObject = EscortSetGoalObject ();
 
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 }
 
 //	-----------------------------------------------------------------------------
 //	Return id of boss.
-int GetBossId(void)
+int GetBossId (void)
 {
 	int	i;
 #if 1
@@ -514,7 +514,7 @@ int GetBossId(void)
 //	-----------------------------------------------------------------------------
 //	Return tObject index if tObject of objtype, objid exists in mine, else return -1
 //	"special" is used to find gameData.objs.objects spewed by tPlayer which is hacked into flags field of powerup.
-int ExistsInMine2(int nSegment, int objtype, int objid, int special)
+int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
 	if (gameData.segs.segments [nSegment].objects != -1) {
 		int		nObject = gameData.segs.segments [nSegment].objects;
@@ -603,7 +603,7 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int FindExitSegment(void)
+int FindExitSegment (void)
 {
 	int	i,j;
 
@@ -621,52 +621,52 @@ int FindExitSegment(void)
 
 //	-----------------------------------------------------------------------------
 
-void SayEscortGoal(int goal_num)
+void SayEscortGoal (int goal_num)
 {
 if (gameStates.app.bPlayerIsDead)
 	return;
 switch (goal_num) {
 	case ESCORT_GOAL_BLUE_KEY:		
-		BuddyMessage(TXT_FIND_BLUEKEY);			
+		BuddyMessage (TXT_FIND_BLUEKEY);			
 		break;
 	case ESCORT_GOAL_GOLD_KEY:		
-		BuddyMessage(TXT_FIND_GOLDKEY);		
+		BuddyMessage (TXT_FIND_GOLDKEY);		
 		break;
 	case ESCORT_GOAL_RED_KEY:		
-		BuddyMessage(TXT_FIND_REDKEY);			
+		BuddyMessage (TXT_FIND_REDKEY);			
 		break;
 	case ESCORT_GOAL_CONTROLCEN:	
-		BuddyMessage(TXT_FIND_REACTOR);			
+		BuddyMessage (TXT_FIND_REACTOR);			
 		break;
 	case ESCORT_GOAL_EXIT:			
-		BuddyMessage(TXT_FIND_EXIT);				
+		BuddyMessage (TXT_FIND_EXIT);				
 		break;
 	case ESCORT_GOAL_ENERGY:		
-		BuddyMessage(TXT_FIND_ENERGY);				
+		BuddyMessage (TXT_FIND_ENERGY);				
 		break;
 	case ESCORT_GOAL_ENERGYCEN:	
-		BuddyMessage(TXT_FIND_ECENTER);	
+		BuddyMessage (TXT_FIND_ECENTER);	
 		break;
 	case ESCORT_GOAL_SHIELD:		
-		BuddyMessage(TXT_FIND_SHIELD);			
+		BuddyMessage (TXT_FIND_SHIELD);			
 		break;
 	case ESCORT_GOAL_POWERUP:		
-		BuddyMessage(TXT_FIND_POWERUP);			
+		BuddyMessage (TXT_FIND_POWERUP);			
 		break;
 	case ESCORT_GOAL_ROBOT:			
-		BuddyMessage(TXT_FIND_ROBOT);			
+		BuddyMessage (TXT_FIND_ROBOT);			
 		break;
 	case ESCORT_GOAL_HOSTAGE:		
-		BuddyMessage(TXT_FIND_HOSTAGE);			
+		BuddyMessage (TXT_FIND_HOSTAGE);			
 		break;
 	case ESCORT_GOAL_SCRAM:			
-		BuddyMessage(TXT_STAYING_AWAY);			
+		BuddyMessage (TXT_STAYING_AWAY);			
 		break;
 	case ESCORT_GOAL_BOSS:			
-		BuddyMessage(TXT_FIND_BOSS);		
+		BuddyMessage (TXT_FIND_BOSS);		
 		break;
 	case ESCORT_GOAL_PLAYER_SPEW:	
-		BuddyMessage(TXT_FIND_YOURSTUFF);	
+		BuddyMessage (TXT_FIND_YOURSTUFF);	
 		break;
 	case ESCORT_GOAL_MARKER1:
 	case ESCORT_GOAL_MARKER2:
@@ -679,16 +679,16 @@ switch (goal_num) {
 	case ESCORT_GOAL_MARKER9: { 
 			char marker_text [BUDDY_MARKER_TEXT_LEN];
 			
-		strncpy(marker_text, gameData.marker.szMessage [goal_num-ESCORT_GOAL_MARKER1], BUDDY_MARKER_TEXT_LEN-1);
+		strncpy (marker_text, gameData.marker.szMessage [goal_num-ESCORT_GOAL_MARKER1], BUDDY_MARKER_TEXT_LEN-1);
 		marker_text [BUDDY_MARKER_TEXT_LEN-1] = 0;
-		BuddyMessage(TXT_FIND_MARKER, goal_num-ESCORT_GOAL_MARKER1+1, marker_text);
+		BuddyMessage (TXT_FIND_MARKER, goal_num-ESCORT_GOAL_MARKER1+1, marker_text);
 		break;
 		}
 	}
 }
 
 //	-----------------------------------------------------------------------------
-void EscortCreatePathToGoal(tObject *objP)
+void EscortCreatePathToGoal (tObject *objP)
 {
 	short			nGoalSeg = -1;
 	short			nObject = OBJ_IDX (objP);
@@ -727,7 +727,7 @@ else {
 			break;
 		case ESCORT_GOAL_EXIT:
 		case ESCORT_GOAL_EXIT2:
-			nGoalSeg = FindExitSegment();
+			nGoalSeg = FindExitSegment ();
 			gameData.escort.nGoalIndex = nGoalSeg;
 			break;
 		case ESCORT_GOAL_ENERGY:
@@ -771,15 +771,15 @@ else {
 		case ESCORT_GOAL_BOSS: {
 			int	boss_id;
 
-			boss_id = GetBossId();
-			Assert(boss_id != -1);
+			boss_id = GetBossId ();
+			Assert (boss_id != -1);
 			gameData.escort.nGoalIndex = ExistsInMine (objP->position.nSegment, OBJ_ROBOT, boss_id, -1);
 			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].position.nSegment;
 			break;
 		}
 		default:
-			Int3();	//	Oops, Illegal value in gameData.escort.nGoalObject.
+			Int3 ();	//	Oops, Illegal value in gameData.escort.nGoalObject.
 			nGoalSeg = 0;
 			break;
 		}
@@ -787,23 +787,23 @@ else {
 if ((gameData.escort.nGoalIndex < 0) && (gameData.escort.nGoalIndex != -3)) {	//	I apologize for this statement -- MK, 09/22/95
 	if (gameData.escort.nGoalIndex == -1) {
 		gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-		BuddyMessage(TXT_NOT_IN_MINE, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
+		BuddyMessage (TXT_NOT_IN_MINE, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 		gameData.escort.bSearchingMarker = -1;
 		}
 	else if (gameData.escort.nGoalIndex == -2) {
 		gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
-		BuddyMessage(TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
+		BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 		gameData.escort.bSearchingMarker = -1;
 		}
 	else
-		Int3();
+		Int3 ();
 
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.nSpecialGoal = -1;
 	}
 else {
 	if (nGoalSeg == -3) {
-		CreateNSegmentPath (objP, 16 + d_rand() * 16, -1);
+		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 		}
 	else {
@@ -816,12 +816,12 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance(&objP->position.vPos, objP->position.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
+			xDistToPlayer = FindConnectedDistance (&objP->position.vPos, objP->position.nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
-				CreateNSegmentPath(objP, 8 + d_rand() * 8, -1);
-				aip->nPathLength = SmoothPath(objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+				CreateNSegmentPath (objP, 8 + d_rand () * 8, -1);
+				aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 				}
 			}
 		}
@@ -833,18 +833,18 @@ else {
 //	-----------------------------------------------------------------------------
 //	Escort robot chooses goal tObject based on tPlayer's keys, location.
 //	Returns goal tObject.
-int EscortSetGoalObject(void)
+int EscortSetGoalObject (void)
 {
 if (gameData.escort.nSpecialGoal != -1)
 	return ESCORT_GOAL_UNSPECIFIED;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
-			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
+else if (! (gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
+			 (ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
 	return ESCORT_GOAL_BLUE_KEY;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
-			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
+else if (! (gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
+			 (ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
 	return ESCORT_GOAL_GOLD_KEY;
-else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
-			(ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
+else if (! (gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
+			 (ExistsInMine (gameData.objs.console->position.nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (gameData.reactor.bDestroyed == 0) {
 	int	i;
@@ -858,12 +858,12 @@ else
 	return ESCORT_GOAL_EXIT;
 }
 
-#define	MAX_ESCORT_TIME_AWAY		(F1_0*4)
+#define	MAX_ESCORT_TIME_AWAY		 (F1_0*4)
 
 fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 //	-----------------------------------------------------------------------------
-int TimeToVisitPlayer(tObject *objP, tAILocal *ailp, tAIStatic *aip)
+int TimeToVisitPlayer (tObject *objP, tAILocal *ailp, tAIStatic *aip)
 {
 	//	Note: This one has highest priority because, even if already going towards tPlayer,
 	//	might be necessary to create a new path, as tPlayer can move.
@@ -884,7 +884,7 @@ fix Last_come_back_messageTime = 0;
 fix Buddy_last_missileTime;
 
 //	-----------------------------------------------------------------------------
-void BashBuddyWeaponInfo(int nWeaponObj)
+void BashBuddyWeaponInfo (int nWeaponObj)
 {
 	tObject	*objP = &gameData.objs.objects [nWeaponObj];
 
@@ -894,7 +894,7 @@ void BashBuddyWeaponInfo(int nWeaponObj)
 }
 
 //	-----------------------------------------------------------------------------
-int MaybeBuddyFireMega(short nObject)
+int MaybeBuddyFireMega (short nObject)
 {
 	tObject		*objP = gameData.objs.objects + nObject;
 	tObject		*buddyObjP = gameData.objs.objects + gameData.escort.nObjNum;
@@ -902,61 +902,61 @@ int MaybeBuddyFireMega(short nObject)
 	vmsVector	vVecToRobot;
 	int			nWeaponObj;
 
-VmVecSub(&vVecToRobot, &buddyObjP->position.vPos, &objP->position.vPos);
-dist = VmVecNormalizeQuick(&vVecToRobot);
+VmVecSub (&vVecToRobot, &buddyObjP->position.vPos, &objP->position.vPos);
+dist = VmVecNormalizeQuick (&vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
-dot = VmVecDot(&vVecToRobot, &buddyObjP->position.mOrient.fVec);
+dot = VmVecDot (&vVecToRobot, &buddyObjP->position.mOrient.fVec);
 if (dot < F1_0/2)
 	return 0;
-if (!ObjectToObjectVisibility(buddyObjP, objP, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
 if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 #if TRACE
-	con_printf(CON_VERBOSE, "Buddy can't fire mega (shareware)\n");
+	con_printf (CON_VERBOSE, "Buddy can't fire mega (shareware)\n");
 #endif
-	BuddyMessage(TXT_BUDDY_CLICK);
+	BuddyMessage (TXT_BUDDY_CLICK);
 	return 0;
 	}
 #if TRACE
 con_printf (CON_DEBUG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
-BuddyMessage(TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewLaserEasy( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, MEGAMSL_ID, 1);
+BuddyMessage (TXT_BUDDY_GAHOOGA);
+nWeaponObj = CreateNewLaserEasy ( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, MEGAMSL_ID, 1);
 if (nWeaponObj != -1)
-	BashBuddyWeaponInfo(nWeaponObj);
+	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
 }
 
 //-----------------------------------------------------------------------------
-int MaybeBuddyFireSmart(short nObject)
+int MaybeBuddyFireSmart (short nObject)
 {
 	tObject	*objP = &gameData.objs.objects [nObject];
 	tObject	*buddyObjP = &gameData.objs.objects [gameData.escort.nObjNum];
 	fix		dist;
 	short		nWeaponObj;
 
-dist = VmVecDistQuick(&buddyObjP->position.vPos, &objP->position.vPos);
+dist = VmVecDistQuick (&buddyObjP->position.vPos, &objP->position.vPos);
 if (dist > F1_0*80)
 	return 0;
-if (!ObjectToObjectVisibility(buddyObjP, objP, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
 #if TRACE
 con_printf (CON_DEBUG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
-BuddyMessage(TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewLaserEasy( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, SMARTMSL_ID, 1);
+BuddyMessage (TXT_BUDDY_WHAMMO);
+nWeaponObj = CreateNewLaserEasy ( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, SMARTMSL_ID, 1);
 if (nWeaponObj != -1)
-	BashBuddyWeaponInfo(nWeaponObj);
+	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
-void DoBuddyDudeStuff(void)
+void DoBuddyDudeStuff (void)
 {
 	short	i;
 
-if (!BuddyMayTalk())
+if (!BuddyMayTalk ())
 	return;
 
 if (Buddy_last_missileTime > gameData.time.xGame)
@@ -966,14 +966,14 @@ if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	for (i=0; i<=gameData.objs.nLastObject; i++)
 		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
-			if (MaybeBuddyFireMega(i)) {
+			if (MaybeBuddyFireMega (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
 	for (i=0; i<=gameData.objs.nLastObject; i++)
 		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
-			if (MaybeBuddyFireSmart(i)) {
+			if (MaybeBuddyFireSmart (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
@@ -982,7 +982,7 @@ if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 
 //	-----------------------------------------------------------------------------
 //	Called every frame (or something).
-void DoEscortFrame(tObject *objP, fix xDistToPlayer, int player_visibility)
+void DoEscortFrame (tObject *objP, fix xDistToPlayer, int player_visibility)
 {
 	int			nObject = OBJ_IDX (objP);
 	tAIStatic	*aip = &objP->cType.aiInfo;
@@ -993,17 +993,17 @@ void DoEscortFrame(tObject *objP, fix xDistToPlayer, int player_visibility)
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
-		if (f2i(gameData.multi.players [gameData.multi.nLocalPlayer].energy) < 40)
-			if ((f2i(gameData.multi.players [gameData.multi.nLocalPlayer].energy)/2) & 2)
+		if (f2i (gameData.multi.players [gameData.multi.nLocalPlayer].energy) < 40)
+			if ((f2i (gameData.multi.players [gameData.multi.nLocalPlayer].energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)
-					BuddyMessage(TXT_HEADLIGHT_WARN);
+					BuddyMessage (TXT_HEADLIGHT_WARN);
 	}
 if (gameStates.app.cheats.bMadBuddy)
-	DoBuddyDudeStuff();
+	DoBuddyDudeStuff ();
 if (gameData.escort.xSorryTime + F1_0 > gameData.time.xGame) {
 	gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
 	if (gameData.escort.xSorryTime < gameData.time.xGame + F1_0*2)
-		BuddyMessage(TXT_BUDDY_SORRY);
+		BuddyMessage (TXT_BUDDY_SORRY);
 	gameData.escort.xSorryTime = -F1_0*2;
 	}
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
@@ -1015,8 +1015,8 @@ if (!gameData.escort.bMayTalk)
 //	If the tPlayer is now visible, then create a path.
 if (ailp->mode == AIM_WANDER)
 	if (player_visibility) {
-		CreateNSegmentPath(objP, 16 + d_rand() * 16, -1);
-		aip->nPathLength = SmoothPath(objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+		CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
+		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 		}
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	if (player_visibility)
@@ -1024,10 +1024,10 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 #if TRACE
 			con_printf (CON_DEBUG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
-			CreateNSegmentPath(objP, 10 + d_rand() * 16, gameData.objs.console->position.nSegment);
+			CreateNSegmentPath (objP, 10 + d_rand () * 16, gameData.objs.console->position.nSegment);
 			gameData.escort.xLastPathCreated = gameData.time.xGame;
 			}
-	// -- Int3();
+	// -- Int3 ();
 	return;
 	}
 //	Force checking for new goal every 5 seconds, and create new path, if necessary.
@@ -1036,14 +1036,14 @@ if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xL
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escort.xLastPathCreated = gameData.time.xGame;
 	}
-if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer(objP, ailp, aip)) {
+if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (objP, ailp, aip)) {
 	int	nMaxLen;
 
 	Buddy_last_player_path_created = gameData.time.xGame;
 	ailp->mode = AIM_GOTO_PLAYER;
 	if (!player_visibility) {
 		if ((Last_come_back_messageTime + F1_0 < gameData.time.xGame) || (Last_come_back_messageTime > gameData.time.xGame)) {
-			BuddyMessage(TXT_COMING_BACK);
+			BuddyMessage (TXT_COMING_BACK);
 			Last_come_back_messageTime = gameData.time.xGame;
 			}
 		}
@@ -1051,8 +1051,8 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer(obj
 	nMaxLen = gameData.escort.nMaxLength;
 	if (!gameData.escort.bMayTalk)
 		nMaxLen = 3;
-	CreatePathToPlayer(objP, nMaxLen, 1);	//	MK!: Last parm used to be 1!
-	aip->nPathLength = SmoothPath(objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+	CreatePathToPlayer (objP, nMaxLen, 1);	//	MK!: Last parm used to be 1!
+	aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 	ailp->mode = AIM_GOTO_PLAYER;
 	}	
 else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
@@ -1060,22 +1060,22 @@ else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
 	return;
 	}
 else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < MIN_ESCORT_DISTANCE)) {
-	gameData.escort.nGoalObject = EscortSetGoalObject();
+	gameData.escort.nGoalObject = EscortSetGoalObject ();
 	ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
-	EscortCreatePathToGoal(objP);
-	aip->nPathLength = SmoothPath(objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+	EscortCreatePathToGoal (objP);
+	aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 	if (aip->nPathLength < 3)
 		CreateNSegmentPath (objP, 5, gameData.ai.nBelievedPlayerSeg);
 	ailp->mode = AIM_GOTO_OBJECT;
 	}
 else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 	if ((ailp->mode != AIM_GOTO_PLAYER) || (xDistToPlayer < MIN_ESCORT_DISTANCE)) {
-		gameData.escort.nGoalObject = EscortSetGoalObject();
+		gameData.escort.nGoalObject = EscortSetGoalObject ();
 		ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
-		EscortCreatePathToGoal(objP);
-		aip->nPathLength = SmoothPath(objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
+		EscortCreatePathToGoal (objP);
+		aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 		if (aip->nPathLength < 3)
-			CreateNSegmentPath(objP, 5, gameData.ai.nBelievedPlayerSeg);
+			CreateNSegmentPath (objP, 5, gameData.ai.nBelievedPlayerSeg);
 		ailp->mode = AIM_GOTO_OBJECT;
 		}
 	} 
@@ -1083,7 +1083,7 @@ else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void InvalidateEscortGoal(void)
+void InvalidateEscortGoal (void)
 {
 	gameData.escort.nGoalObject = -1;
 }
@@ -1128,7 +1128,7 @@ return ExecMenutiny2 (NULL, "Guide-Bot Commands", 11, m, NULL);
 
 // --------------------------------------------------------------------------------------------------------------
 
-void DoEscortMenu(void)
+void DoEscortMenu (void)
 {
 	int	i;
 	int	paused;
@@ -1136,7 +1136,7 @@ void DoEscortMenu(void)
 	char	goal_str [32], tstr [32];
 
 	if (gameData.app.nGameMode & GM_MULTI) {
-		HUDInitMessage(TXT_GB_MULTIPLAYER);
+		HUDInitMessage (TXT_GB_MULTIPLAYER);
 		return;
 	}
 
@@ -1151,72 +1151,72 @@ void DoEscortMenu(void)
 #if 1//def _DEBUG - always allow buddy bot creation
 		//	If no buddy bot, create one!
 		HUDInitMessage (TXT_GB_CREATE);
-		CreateBuddyBot();
+		CreateBuddyBot ();
 #else
-		HUDInitMessage(TXT_GB_NONE);
+		HUDInitMessage (TXT_GB_NONE);
 		return;
 #endif
 	}
 
-	BuddyMayTalk();	//	Needed here or we might not know buddy can talk when he can.
+	BuddyMayTalk ();	//	Needed here or we might not know buddy can talk when he can.
 
 	if (!gameData.escort.bMayTalk) {
-		HUDInitMessage(TXT_GB_RELEASE, gameData.escort.szName);
+		HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 		return;
 	}
 
-	DigiPauseDigiSounds();
+	DigiPauseDigiSounds ();
 	if (!gameOpts->menus.nStyle)
-		StopTime();
+		StopTime ();
 
-	PaletteSave();
-	ApplyModifiedPalette();
-	ResetPaletteAdd();
+	PaletteSave ();
+	ApplyModifiedPalette ();
+	ResetPaletteAdd ();
 
-	GameFlushInputs();
+	GameFlushInputs ();
 
 	paused = 1;
 
-//	SetScreenMode( SCREEN_MENU );
-	SetPopupScreenMode();
-	GrPaletteStepLoad( NULL );
+//	SetScreenMode ( SCREEN_MENU );
+	SetPopupScreenMode ();
+	GrPaletteStepLoad ( NULL );
 
 	//	This prevents the buddy from coming back if you've told him to scram.
 	//	If we don't set next_goal, we get garbage there.
 	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 		gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
-		next_goal = EscortSetGoalObject();
+		next_goal = EscortSetGoalObject ();
 		gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;
 	} else {
 		gameData.escort.nSpecialGoal = -1;	//	Else setting next goal might fail.
-		next_goal = EscortSetGoalObject();
+		next_goal = EscortSetGoalObject ();
 	}
 
 	switch (next_goal) {
 	#ifndef NDEBUG
 		case ESCORT_GOAL_UNSPECIFIED:
-			Int3();
-			sprintf(goal_str, "ERROR");
+			Int3 ();
+			sprintf (goal_str, "ERROR");
 			break;
 	#endif
 			
 		case ESCORT_GOAL_BLUE_KEY:
-			sprintf(goal_str, TXT_GB_BLUEKEY);
+			sprintf (goal_str, TXT_GB_BLUEKEY);
 			break;
 		case ESCORT_GOAL_GOLD_KEY:
-			sprintf(goal_str, TXT_GB_YELLOWKEY);
+			sprintf (goal_str, TXT_GB_YELLOWKEY);
 			break;
 		case ESCORT_GOAL_RED_KEY:
-			sprintf(goal_str, TXT_GB_REDKEY);
+			sprintf (goal_str, TXT_GB_REDKEY);
 			break;
 		case ESCORT_GOAL_CONTROLCEN:
-			sprintf(goal_str, TXT_GB_REACTOR);
+			sprintf (goal_str, TXT_GB_REACTOR);
 			break;
 		case ESCORT_GOAL_BOSS:
-			sprintf(goal_str, TXT_GB_BOSS);
+			sprintf (goal_str, TXT_GB_BOSS);
 			break;
 		case ESCORT_GOAL_EXIT:
-			sprintf(goal_str, TXT_GB_EXIT);
+			sprintf (goal_str, TXT_GB_EXIT);
 			break;
 		case ESCORT_GOAL_MARKER1:
 		case ESCORT_GOAL_MARKER2:
@@ -1227,15 +1227,15 @@ void DoEscortMenu(void)
 		case ESCORT_GOAL_MARKER7:
 		case ESCORT_GOAL_MARKER8:
 		case ESCORT_GOAL_MARKER9:
-			sprintf(goal_str, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
+			sprintf (goal_str, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
 			break;
 
 	}
 			
 	if (!gameData.escort.bMsgsSuppressed)
-		sprintf(tstr, TXT_GB_SUPPRESS);
+		sprintf (tstr, TXT_GB_SUPPRESS);
 	else
-		sprintf(tstr, TXT_GB_ENABLE);
+		sprintf (tstr, TXT_GB_ENABLE);
 
 	i = ShowEscortHelp (goal_str, tstr);
 	if (i < 11) {
@@ -1250,17 +1250,17 @@ void DoEscortMenu(void)
 		gameData.escort.bMsgsSuppressed = !gameData.escort.bMsgsSuppressed;
 		paused = 0;
 		}
-	GameFlushInputs();
-	PaletteRestore();
+	GameFlushInputs ();
+	PaletteRestore ();
 	if (!gameOpts->menus.nStyle)
-		StartTime();
-	DigiResumeDigiSounds();
+		StartTime ();
+	DigiResumeDigiSounds ();
 }
 
 //	-------------------------------------------------------------------------------
 //	Show the Buddy menu!
 #if 0 //obsolete in d2x-xl
-void ShowEscortMenu(char *msg)
+void ShowEscortMenu (char *msg)
 {	
 	int	w,h,aw;
 	int	x,y;
@@ -1269,26 +1269,26 @@ void ShowEscortMenu(char *msg)
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 
-	WINDOS(
-		DDGrSetCurrentCanvas(&dd_VR_screen_pages [0]),
-		GrSetCurrentCanvas(&VR_screen_pages [0])
+	WINDOS (
+		DDGrSetCurrentCanvas (&dd_VR_screen_pages [0]),
+		GrSetCurrentCanvas (&VR_screen_pages [0])
 	);
 
-	GrSetCurFont( GAME_FONT );
-	GrGetStringSize(msg,&w,&h,&aw);
+	GrSetCurFont ( GAME_FONT );
+	GrGetStringSize (msg,&w,&h,&aw);
 	x = (grdCurScreen->sc_w-w)/2;
 	y = (grdCurScreen->sc_h-h)/4;
 	GrSetFontColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
-   PA_DFX (pa_set_frontbuffer_current());
-	PA_DFX (NMDrawBackground(x-15,y-15,x+w+15-1,y+h+15-1));
-   PA_DFX (pa_set_backbuffer_current());
-   NMDrawBackground(NULL,x-15,y-15,x+w+15-1,y+h+15-1);
-WIN(DDGRLOCK(dd_grd_curcanv));
-	PA_DFX (pa_set_frontbuffer_current());
-  	PA_DFX (GrUString( x, y, msg ));
-	PA_DFX (pa_set_backbuffer_current());
-  	GrUString( x, y, msg );
-WIN(DDGRUNLOCK(dd_grd_curcanv));
-	ResetCockpit();
+   PA_DFX (pa_set_frontbuffer_current ());
+	PA_DFX (NMDrawBackground (x-15,y-15,x+w+15-1,y+h+15-1));
+   PA_DFX (pa_set_backbuffer_current ());
+   NMDrawBackground (NULL,x-15,y-15,x+w+15-1,y+h+15-1);
+WIN (DDGRLOCK (dd_grd_curcanv));
+	PA_DFX (pa_set_frontbuffer_current ());
+  	PA_DFX (GrUString ( x, y, msg ));
+	PA_DFX (pa_set_backbuffer_current ());
+  	GrUString ( x, y, msg );
+WIN (DDGRUNLOCK (dd_grd_curcanv));
+	ResetCockpit ();
 }
 #endif

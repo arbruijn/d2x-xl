@@ -1279,7 +1279,7 @@ void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackT
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void ai_move_relative_to_player (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility)
+void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility)
 {
 	tObject		*dObjP;
 	tRobotInfo	*robptr = gameData.bots.pInfo + objP->id;
@@ -1424,7 +1424,8 @@ void mprintf_animation_info (tObject *objP)
 #endif
 
 //	-------------------------------------------------------------------------------------------------------------------
-int	Break_onObject = -1;
+
+int	nBreakOnObject = -1;
 
 void do_firing_stuff (tObject *objP, int player_visibility, vmsVector *vec_to_player)
 {
@@ -1493,7 +1494,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 
 }
 #ifndef NDEBUG
-int	Do_aiFlag=1;
+int	bDoAIFlag=1;
 int	Cvv_test=0;
 int	Cvv_lastTime [MAX_OBJECTS];
 int	Gun_point_hack=0;
@@ -2460,7 +2461,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 
 		//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
 		//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
-		if (!object_animates || ready_to_fire (robptr, ailp)) {
+		if (!object_animates || ReadyToFire (robptr, ailp)) {
 			dot = VmVecDot (&objP->position.mOrient.fVec, vec_to_player);
 			if ((dot >= 7*F1_0/8) || ((dot > F1_0/4) &&  robptr->bossFlag)) {
 
@@ -2557,7 +2558,7 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 		vmsVector	vec_to_last_pos;
 
 		if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
-		if ((!object_animates || ready_to_fire (robptr, ailp)) && (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
+		if ((!object_animates || ReadyToFire (robptr, ailp)) && (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			VmVecNormalizedDirQuick (&vec_to_last_pos, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 			dot = VmVecDot (&objP->position.mOrient.fVec, &vec_to_last_pos);
 			if (dot >= 7*F1_0/8) {

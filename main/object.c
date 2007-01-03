@@ -2206,14 +2206,20 @@ if (nType == OBJ_WEAPON) {
 	nType = nType;
 	if ((owner >= 0) && (gameData.objs.objects [owner].nType == OBJ_ROBOT))
 		nType = nType;
+	if (id == FLARE_ID)
+		nType = nType;
 	}	
 else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)
 	nType = nType;
+else
 #endif
-if ((nType == OBJ_POWERUP) && !bIgnoreLimits) {
-	if (TooManyPowerups (id)) {
+if (nType == OBJ_POWERUP) {
+#ifdef _DEBUG
+	nType = nType;
+#endif
+	if (!bIgnoreLimits && TooManyPowerups (id)) {
 #ifdef _DEBUG
 		HUDInitMessage ("%c%cDiscarding excess powerup!", 1, 
 							 (char) GrFindClosestColor (gamePalette, 63, 31, 0));

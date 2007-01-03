@@ -205,7 +205,7 @@ void InitRobotsForLevel (void);
 int AIBehaviorToMode (int behavior);
 int Robot_firing_enabled;
 void CreatePathToSegment (tObject *objP, short goalseg, int max_length, int safetyFlag);
-int ready_to_fire (tRobotInfo *robptr, tAILocal *ailp);
+int ReadyToFire (tRobotInfo *robptr, tAILocal *ailp);
 int SmoothPath (tObject *objP, tPointSeg *psegs, int num_points);
 void move_towards_player (tObject *objP, vmsVector *vec_to_player);
 
@@ -387,7 +387,7 @@ extern char behavior_text [6] [9];
 // Index into this array with aip->GOAL_STATE or aip->CURRENT_STATE
 extern char state_text [8] [5];
 
-extern int Do_aiFlag, Break_onObject;
+extern int bDoAIFlag, nBreakOnObject;
 
 extern void mprintf_animation_info (tObject *objP);
 
@@ -405,7 +405,7 @@ extern void ai_do_actual_firing_stuff (tObject *obj, tAIStatic *aip, tAILocal *a
 extern void do_super_boss_stuff (tObject *objP, fix dist_to_player, int player_visibility);
 extern void DoBossStuff (tObject *objP, int player_visibility);
 // -- unused, 08/07/95 -- extern void ai_turn_randomly (vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
-extern void ai_move_relative_to_player (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
+extern void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
 extern void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackType);
 extern void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based);
 extern void InitAIFrame (void);

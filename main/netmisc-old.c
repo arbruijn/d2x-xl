@@ -12,30 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Misc routines for network.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:28:41  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:27:24  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.3  1994/11/19  15:19:34  mike
- * rip out unused code and data.
- *
- * Revision 1.2  1994/08/09  19:31:53  john
- * Networking changes.
- *
- * Revision 1.1  1994/08/08  11:06:07  john
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -99,11 +75,11 @@ ushort BECalcSegmentCheckSum()
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 			}
 			for (k = 0; k < 2; k++) {
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].x));
+				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.x));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].y));
+				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.y));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].z));
+				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.z));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 			}
 		}
@@ -621,27 +597,27 @@ void BESwapObject(tObject *objP)
 	objP->nSignature     = INTEL_INT(objP->nSignature);
 	objP->next          = INTEL_SHORT(objP->next);
 	objP->prev          = INTEL_SHORT(objP->prev);
-	objP->position.nSegment        = INTEL_SHORT(objP->position.nSegment);
-	objP->position.vPos.x         = INTEL_INT(objP->position.vPos.x);
-	objP->position.vPos.y         = INTEL_INT(objP->position.vPos.y);
-	objP->position.vPos.z         = INTEL_INT(objP->position.vPos.z);
+	objP->position.nSegment       = INTEL_SHORT(objP->position.nSegment);
+	objP->position.vPos.p.x         = INTEL_INT(objP->position.vPos.p.x);
+	objP->position.vPos.p.y         = INTEL_INT(objP->position.vPos.p.y);
+	objP->position.vPos.p.z         = INTEL_INT(objP->position.vPos.p.z);
 
-	objP->position.mOrient.rVec.x = INTEL_INT(objP->position.mOrient.rVec.x);
-	objP->position.mOrient.rVec.y = INTEL_INT(objP->position.mOrient.rVec.y);
-	objP->position.mOrient.rVec.z = INTEL_INT(objP->position.mOrient.rVec.z);
-	objP->position.mOrient.fVec.x = INTEL_INT(objP->position.mOrient.fVec.x);
-	objP->position.mOrient.fVec.y = INTEL_INT(objP->position.mOrient.fVec.y);
-	objP->position.mOrient.fVec.z = INTEL_INT(objP->position.mOrient.fVec.z);
-	objP->position.mOrient.uVec.x = INTEL_INT(objP->position.mOrient.uVec.x);
-	objP->position.mOrient.uVec.y = INTEL_INT(objP->position.mOrient.uVec.y);
-	objP->position.mOrient.uVec.z = INTEL_INT(objP->position.mOrient.uVec.z);
+	objP->position.mOrient.rVec.p.x = INTEL_INT(objP->position.mOrient.rVec.p.x);
+	objP->position.mOrient.rVec.p.y = INTEL_INT(objP->position.mOrient.rVec.p.y);
+	objP->position.mOrient.rVec.p.z = INTEL_INT(objP->position.mOrient.rVec.p.z);
+	objP->position.mOrient.fVec.p.x = INTEL_INT(objP->position.mOrient.fVec.p.x);
+	objP->position.mOrient.fVec.p.y = INTEL_INT(objP->position.mOrient.fVec.p.y);
+	objP->position.mOrient.fVec.p.z = INTEL_INT(objP->position.mOrient.fVec.p.z);
+	objP->position.mOrient.uVec.p.x = INTEL_INT(objP->position.mOrient.uVec.p.x);
+	objP->position.mOrient.uVec.p.y = INTEL_INT(objP->position.mOrient.uVec.p.y);
+	objP->position.mOrient.uVec.p.z = INTEL_INT(objP->position.mOrient.uVec.p.z);
 
 	objP->size          = INTEL_INT(objP->size);
 	objP->shields       = INTEL_INT(objP->shields);
 
-	objP->last_pos.x    = INTEL_INT(objP->last_pos.x);
-	objP->last_pos.y    = INTEL_INT(objP->last_pos.y);
-	objP->last_pos.z    = INTEL_INT(objP->last_pos.z);
+	objP->last_pos.p.x    = INTEL_INT(objP->last_pos.p.x);
+	objP->last_pos.p.y    = INTEL_INT(objP->last_pos.p.y);
+	objP->last_pos.p.z    = INTEL_INT(objP->last_pos.p.z);
 
 	objP->lifeleft      = INTEL_INT(objP->lifeleft);
 
@@ -649,25 +625,25 @@ void BESwapObject(tObject *objP)
 
 	case MT_PHYSICS:
 
-		objP->mType.physInfo.velocity.x = INTEL_INT(objP->mType.physInfo.velocity.x);
-		objP->mType.physInfo.velocity.y = INTEL_INT(objP->mType.physInfo.velocity.y);
-		objP->mType.physInfo.velocity.z = INTEL_INT(objP->mType.physInfo.velocity.z);
+		objP->mType.physInfo.velocity.p.x = INTEL_INT(objP->mType.physInfo.velocity.p.x);
+		objP->mType.physInfo.velocity.p.y = INTEL_INT(objP->mType.physInfo.velocity.p.y);
+		objP->mType.physInfo.velocity.p.z = INTEL_INT(objP->mType.physInfo.velocity.p.z);
 
-		objP->mType.physInfo.thrust.x   = INTEL_INT(objP->mType.physInfo.thrust.x);
-		objP->mType.physInfo.thrust.y   = INTEL_INT(objP->mType.physInfo.thrust.y);
-		objP->mType.physInfo.thrust.z   = INTEL_INT(objP->mType.physInfo.thrust.z);
+		objP->mType.physInfo.thrust.p.x   = INTEL_INT(objP->mType.physInfo.thrust.p.x);
+		objP->mType.physInfo.thrust.p.y   = INTEL_INT(objP->mType.physInfo.thrust.p.y);
+		objP->mType.physInfo.thrust.p.z   = INTEL_INT(objP->mType.physInfo.thrust.p.z);
 
 		objP->mType.physInfo.mass       = INTEL_INT(objP->mType.physInfo.mass);
 		objP->mType.physInfo.drag       = INTEL_INT(objP->mType.physInfo.drag);
 		objP->mType.physInfo.brakes     = INTEL_INT(objP->mType.physInfo.brakes);
 
-		objP->mType.physInfo.rotVel.x   = INTEL_INT(objP->mType.physInfo.rotVel.x);
-		objP->mType.physInfo.rotVel.y   = INTEL_INT(objP->mType.physInfo.rotVel.y);
-		objP->mType.physInfo.rotVel.z   = INTEL_INT(objP->mType.physInfo.rotVel.z);
+		objP->mType.physInfo.rotVel.p.x   = INTEL_INT(objP->mType.physInfo.rotVel.p.x);
+		objP->mType.physInfo.rotVel.p.y   = INTEL_INT(objP->mType.physInfo.rotVel.p.y);
+		objP->mType.physInfo.rotVel.p.z   = INTEL_INT(objP->mType.physInfo.rotVel.p.z);
 
-		objP->mType.physInfo.rotThrust.x = INTEL_INT(objP->mType.physInfo.rotThrust.x);
-		objP->mType.physInfo.rotThrust.y = INTEL_INT(objP->mType.physInfo.rotThrust.y);
-		objP->mType.physInfo.rotThrust.z = INTEL_INT(objP->mType.physInfo.rotThrust.z);
+		objP->mType.physInfo.rotThrust.p.x = INTEL_INT(objP->mType.physInfo.rotThrust.p.x);
+		objP->mType.physInfo.rotThrust.p.y = INTEL_INT(objP->mType.physInfo.rotThrust.p.y);
+		objP->mType.physInfo.rotThrust.p.z = INTEL_INT(objP->mType.physInfo.rotThrust.p.z);
 
 		objP->mType.physInfo.turnRoll   = INTEL_INT(objP->mType.physInfo.turnRoll);
 		objP->mType.physInfo.flags      = INTEL_SHORT(objP->mType.physInfo.flags);
@@ -676,22 +652,22 @@ void BESwapObject(tObject *objP)
 
 	case MT_SPINNING:
 
-		objP->mType.spinRate.x = INTEL_INT(objP->mType.spinRate.x);
-		objP->mType.spinRate.y = INTEL_INT(objP->mType.spinRate.y);
-		objP->mType.spinRate.z = INTEL_INT(objP->mType.spinRate.z);
+		objP->mType.spinRate.p.x = INTEL_INT(objP->mType.spinRate.p.x);
+		objP->mType.spinRate.p.y = INTEL_INT(objP->mType.spinRate.p.y);
+		objP->mType.spinRate.p.z = INTEL_INT(objP->mType.spinRate.p.z);
 		break;
 	}
 
 	switch (objP->controlType) {
 
 	case CT_WEAPON:
-		objP->cType.laserInfo.parentType       = INTEL_SHORT(objP->cType.laserInfo.parentType);
-		objP->cType.laserInfo.nParentObj        = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
+		objP->cType.laserInfo.parentType = INTEL_SHORT(objP->cType.laserInfo.parentType);
+		objP->cType.laserInfo.nParentObj = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
 		objP->cType.laserInfo.nParentSig  = INTEL_INT(objP->cType.laserInfo.nParentSig);
-		objP->cType.laserInfo.creationTime     = INTEL_INT(objP->cType.laserInfo.creationTime);
-		objP->cType.laserInfo.nLastHitObj       = INTEL_SHORT(objP->cType.laserInfo.nLastHitObj);
-		objP->cType.laserInfo.nTrackGoal        = INTEL_SHORT(objP->cType.laserInfo.nTrackGoal);
-		objP->cType.laserInfo.multiplier        = INTEL_INT(objP->cType.laserInfo.multiplier);
+		objP->cType.laserInfo.creationTime = INTEL_INT(objP->cType.laserInfo.creationTime);
+		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT(objP->cType.laserInfo.nLastHitObj);
+		objP->cType.laserInfo.nTrackGoal = INTEL_SHORT(objP->cType.laserInfo.nTrackGoal);
+		objP->cType.laserInfo.multiplier = INTEL_INT(objP->cType.laserInfo.multiplier);
 		break;
 
 	case CT_EXPLOSION:
