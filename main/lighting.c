@@ -154,7 +154,7 @@ for (i = h; --i; ) {
 // ----------------------------------------------------------------------------------------------
 //	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
-int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vertpos)
+int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vVertPos)
 {
 	int	cache_val, cache_frame, cache_vis;
 
@@ -182,7 +182,7 @@ Cache_lookups++;
 
 		fq.p0					= obj_pos;
 		fq.startSeg			= obj_seg;
-		fq.p1					= vertpos;
+		fq.p1					= vVertPos;
 		fq.rad				= 0;
 		fq.thisObjNum		= nObject;
 		fq.ignoreObjList	= NULL;
@@ -273,7 +273,7 @@ void ApplyLight (
 	int			nVertex;
 	int			bApplyLight;
 	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0);
-	vmsVector	*vertpos;
+	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*objP = gameData.objs.objects + nObject;
 	tPlayer		*playerP = gameData.multi.players + objP->id;
@@ -312,7 +312,7 @@ if (xObjIntensity) {
 			xObjIntensity = 0;
 		}
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
-	bForceColor = 0;
+	bForceColor = (objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL);
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
 	if ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER)) {
@@ -326,8 +326,8 @@ if (xObjIntensity) {
 				 ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
-				vertpos = gameData.segs.vertices+nVertex;
-				dist = VmVecDistQuick (obj_pos, vertpos) / 4;
+				vVertPos = gameData.segs.vertices+nVertex;
+				dist = VmVecDistQuick (obj_pos, vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -382,8 +382,8 @@ if (xObjIntensity) {
 			if (/* (gameOpts->render.color.bAmbientLight && color) ||*/ ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
-				vertpos = gameData.segs.vertices + nVertex;
-				dist = VmVecDistQuick (obj_pos, vertpos);
+				vVertPos = gameData.segs.vertices + nVertex;
+				dist = VmVecDistQuick (obj_pos, vVertPos);
 				bApplyLight = 0;
 
 				if ((dist >> headlightShift) < abs (obji_64)) {
@@ -401,7 +401,7 @@ if (xObjIntensity) {
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 
-							VmVecSub (&vecToPoint, vertpos, obj_pos);
+							VmVecSub (&vecToPoint, vVertPos, obj_pos);
 							VmVecNormalizeQuick (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
 							if (bDarkness)
@@ -556,7 +556,8 @@ switch (nObjType) {
 
 	case OBJ_WEAPON: {
 		fix tval = gameData.weapons.info [objP->id].light;
-		*color = gameData.weapons.color [objP->id];
+		if (gameOpts->render.color.bGunLight)
+			*color = gameData.weapons.color [objP->id];
 		*pbGotColor = 1;
 		if (gameData.app.nGameMode & GM_MULTI)
 			if (objP->id == OMEGA_ID)

@@ -462,10 +462,8 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [h = propsP->vp [i]];
 	l = f2fl (propsP->uvls [i].l);
-#ifdef _DEBUG
-	if (dynLight)
-#endif
 	dl = f2fl (dynLight);
+	propsP->uvls [i].l += dynLight;
 #if 0
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		if (segP->owner == 1) {
@@ -482,7 +480,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			}
 		}
 #endif
-	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameOpts->render.color.bGunLight) {
+	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] /*&& gameOpts->render.color.bGunLight*/) {
 		if (bUseGlobalColor) {
 			if (bGotGlobalDynColor) {
 				tMapColor.index = 1;
@@ -498,19 +496,28 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 #else
-				if (/*gameStates.app.bD2XLevel && */
-					 gameOpts->render.color.bAmbientLight && 
-					 !gameOpts->render.color.bUseLightMaps && 
-					 (pvc->index != -1)) {
-					pvc->color.red = pvc->color.red * l + pdc->red * dl;
-					pvc->color.green = pvc->color.green * l + pdc->green * dl;
-					pvc->color.blue = pvc->color.blue * l + pdc->blue * dl;
+				if (gameOpts->render.color.bGunLight) {
+					if (/*gameStates.app.bD2XLevel && */
+						gameOpts->render.color.bAmbientLight && 
+						!gameOpts->render.color.bUseLightMaps && 
+						(pvc->index != -1)) {
+						pvc->color.red = pvc->color.red * l + pdc->red * dl;
+						pvc->color.green = pvc->color.green * l + pdc->green * dl;
+						pvc->color.blue = pvc->color.blue * l + pdc->blue * dl;
+						pvc->index = -1;
+						}
+					else {
+						pvc->color.red = l + pdc->red * dl;
+						pvc->color.green = l + pdc->green * dl;
+						pvc->color.blue = l + pdc->blue * dl;
+						pvc->index = -1;
+						}
 					}
 				else {
-					pvc->color.red = l + pdc->red * dl;
-					pvc->color.green = l + pdc->green * dl;
-					pvc->color.blue = l + pdc->blue * dl;
-					}
+					pvc->color.red =
+					pvc->color.green =
+					pvc->color.blue = l + dl;
+					}	
 				if (gameOpts->render.color.bCap) {
 					if (pvc->color.red > 1.0)
 						pvc->color.red = 1.0;
