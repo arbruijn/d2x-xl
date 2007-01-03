@@ -111,8 +111,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MENU_SHOW_CREDITS               13
 #define MENU_QUIT                       14
 #define MENU_EDITOR                     15
-#define MENU_D2MSLIONS					 16
-#define MENU_D1MSLIONS					 17
+#define MENU_D2_MISSIONS					 16
+#define MENU_D1_MISSIONS					 17
 #define MENU_LOAD_LEVEL                 18
 #define MENU_START_IPX_NETGAME          20
 #define MENU_JOIN_IPX_NETGAME           21
@@ -416,9 +416,9 @@ if (!gameStates.app.bNostalgia) {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	nMenuChoice [nD2Opt = opt++] = MENU_D2MSLIONS;
+	nMenuChoice [nD2Opt = opt++] = MENU_D2_MISSIONS;
 	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nMenuChoice [nD1Opt = opt++] = MENU_D2MSLIONS;
+	nMenuChoice [nD1Opt = opt++] = MENU_D2_MISSIONS;
 	}
 *nCallerOptions = opt;
 }
@@ -1616,12 +1616,6 @@ if (gameOpts->app.bExpertMode) {
 		gameOpts->render.cockpit.nWindowZoom = v;
 		sprintf (m->text, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
 		m->rebuild = 1;
-		}
-
-	m = menus + optIconAlpha;
-	v = m->value;
-	if (gameOpts->render.weaponIcons.alpha != v) {
-		gameOpts->render.weaponIcons.alpha = v;
 		}
 	}
 }
