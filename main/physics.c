@@ -352,8 +352,6 @@ void DoPhysicsSim (tObject *objP)
 
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
-if (objP->nType == OBJ_PLAYER && Controls.headingTime)
-	objP = objP;
 #ifdef _DEBUG
 if (bDontMoveAIObjects)
 	if (objP->controlType == CT_AI)

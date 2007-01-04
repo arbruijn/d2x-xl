@@ -2218,7 +2218,8 @@ void LoadBitmapReplacements (char *level_name)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			*fp;
-	int			i, j, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int			i, j,
+					bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	grsBitmap	bm;
 
 	//first, d_free up data allocated for old bitmaps

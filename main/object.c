@@ -1664,8 +1664,6 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_POWERUP) {
 			nIdSave = objP->id;
 			objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
-			if (objP->id == HOMINGMSL_ID || objP->id == ROBOT_HOMINGMSL_ID)
-				objP = objP;
 			DrawPolygonObject (objP);
 			objP->id = nIdSave;
 			if (gameOpts->render.powerups.nSpin != 
@@ -1716,8 +1714,6 @@ switch (objP->renderType) {
 		else {
 			ubyte nIdSave = objP->id;
 			objP->id = (ubyte) nId;
-			if (objP->id == HOMINGMSL_ID || objP->id == ROBOT_HOMINGMSL_ID)
-				objP = objP;
 			ConvertPowerupToWeapon (objP);
 			DrawPolygonObject (objP);
 			objP->id = nIdSave;
