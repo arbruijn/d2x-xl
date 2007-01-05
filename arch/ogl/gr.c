@@ -518,7 +518,7 @@ int GrInit (void)
 	int retcode, t, glt = 0;
 
 // Only do this function once!
-if (gameStates.gfx.bInstalled==1)
+if (gameStates.gfx.bInstalled)
 	return -1;
 
 #ifdef OGL_RUNTIME_LOAD

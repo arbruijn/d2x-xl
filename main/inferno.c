@@ -1658,7 +1658,7 @@ void InitGfxStates (void)
 {
 gameStates.gfx.bInstalled = 0;
 gameStates.gfx.nStartScrSize = 2;
-gameStates.gfx.nStartScrMode = -1;
+gameStates.gfx.nStartScrMode = 2;
 }
 
 // ----------------------------------------------------------------------------
