@@ -407,10 +407,10 @@ for (i=0; i<nOmegaBlobs; i++) {
 		VmVecScaleInc (&vBlobPos, &vOmegaDelta, 15*F1_0/32);	//	Move last blob another (almost) half section
 	//	Every so often, re-perturb blobs
 	if ((i % 4) == 3) {
-		vmsVector	temp_vec;
+		vmsVector	vTemp;
 
-		MakeRandomVector (&temp_vec);
-		VmVecScaleInc (&vPerturb, &temp_vec, F1_0/4);
+		MakeRandomVector (&vTemp);
+		VmVecScaleInc (&vPerturb, &vTemp, F1_0/4);
 		}
 	VmVecScaleAdd (&temp_pos, &vBlobPos, &vPerturb, xPerturbArray [i]);
 	nSegment = FindSegByPoint (&temp_pos, nLastSeg);
@@ -1332,7 +1332,8 @@ VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, NULL);
 //sequence this laser tObject for this _frame_ (underscores added here to aid MK in his searching!)
 void LaserDoWeaponSequence (tObject *objP)
 {
-	tObject *gmObjP;
+	tObject	*gmObjP;
+	fix		xWeaponSpeed, xScaleFactor, xDistToPlayer;
 	Assert (objP->controlType == CT_WEAPON);
 
 //	Ok, this is a big hack by MK.
@@ -1351,44 +1352,26 @@ if (objP->lifeleft < 0) {		// We died of old age
 	return;
 	}
 //delete weapons that are not moving
+xWeaponSpeed = VmVecMagQuick (&objP->mType.physInfo.velocity);
 if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 		(objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID) &&
 		(gameData.weapons.info [objP->id].speed [gameStates.app.nDifficultyLevel] > 0) &&
-		(VmVecMagQuick (&objP->mType.physInfo.velocity) < F2_0)) {
+		(xWeaponSpeed < F2_0)) {
 	ReleaseObject (OBJ_IDX (objP));
 	return;
 	}
-if (objP->id == FUSION_ID) {		//always set fusion weapon to max vel
+if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusion weapon to max vel
 	VmVecNormalizeQuick (&objP->mType.physInfo.velocity);
 	VmVecScale (&objP->mType.physInfo.velocity, WI_speed (objP->id,gameStates.app.nDifficultyLevel));
 	}
-#if 0
-//	The Super Spreadfire (Helix) blobs travel in a sinusoidal path.  That is accomplished
-//	by modifying velocity (vDirection) in the frame interval.
-if (objP->id == HELIX_ID) {
- 	fix			sinval, cosval;
- 	vmsVector	p, newp;
- 	fix			speed = VmVecMagQuick (&objP->physInfo.velocity);
- 	fix			age = gameData.weapons.info [objP->id].lifetime - objP->lifeleft;
- 	fix_fast_sincos (age, &sinval, &cosval);
- 	//	Note: Below code assumes x=1, y=0.  Need to scale this for values around a circle for 5 helix positions.
- 	p.x = cosval << 3;
- 	p.y = sinval << 3;
- 	p.z = 0;
- 	VmVecRotate (&newp, &p, &objP->position.mOrient);
-	VmVecAdd (&goal_point, &objP->position.vPos, &newp);
- 	VmVecSub (&vGoal, &goal_point, obj
- 	}
-#endif
-
 //	For homing missiles, turn towards target. (unless it's the guided missile)
 if ((objP->nType == OBJ_WEAPON) && 
     WI_homingFlag (objP->id) && 
 	 !((objP->id == GUIDEDMSL_ID) && 
 	   (objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
 	   (objP->nSignature == gmObjP->nSignature))) {
-	vmsVector		vector_toObject, temp_vec;
-	fix				dot=F1_0;
+	vmsVector		vVecToObject, vTemp;
+	fix				dot = F1_0;
 	fix				speed, xMaxSpeed;
 
 	//	For first 1/2 second of life, missile flies straight.
@@ -1408,18 +1391,16 @@ if ((objP->nType == OBJ_WEAPON) &&
 		//	Make sure the tObject we are tracking is still trackable.
 		nTrackGoal = track_track_goal (nTrackGoal, objP, &dot);
 		if (nTrackGoal == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
-			fix	dist_to_player;
-
-			dist_to_player = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
-			if ((dist_to_player < gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist) || (gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist < 0))
-				gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = dist_to_player;
+			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
+			if ((xDistToPlayer < gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist) || (gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist < 0))
+				gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = xDistToPlayer;
 				
 			}
 		if (nTrackGoal != -1) {
-			VmVecSub (&vector_toObject, &gameData.objs.objects [nTrackGoal].position.vPos, &objP->position.vPos);
-			VmVecNormalizeQuick (&vector_toObject);
-			temp_vec = objP->mType.physInfo.velocity;
-			speed = VmVecNormalizeQuick (&temp_vec);
+			VmVecSub (&vVecToObject, &gameData.objs.objects [nTrackGoal].position.vPos, &objP->position.vPos);
+			VmVecNormalizeQuick (&vVecToObject);
+			vTemp = objP->mType.physInfo.velocity;
+			speed = VmVecNormalizeQuick (&vTemp);
 			xMaxSpeed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 			if (speed+F1_0 < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame/2);
@@ -1427,13 +1408,13 @@ if ((objP->nType == OBJ_WEAPON) &&
 					speed = xMaxSpeed;
 			}
 
-			// -- dot = VmVecDot (&temp_vec, &vector_toObject);
-			VmVecInc (&temp_vec, &vector_toObject);
+			// -- dot = VmVecDot (&vTemp, &vVecToObject);
+			VmVecInc (&vTemp, &vVecToObject);
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
-				VmVecInc (&temp_vec, &vector_toObject);
-			VmVecNormalizeQuick (&temp_vec);
-			objP->mType.physInfo.velocity = temp_vec;
+				VmVecInc (&vTemp, &vVecToObject);
+			VmVecNormalizeQuick (&vTemp);
+			objP->mType.physInfo.velocity = vTemp;
 			VmVecScale (&objP->mType.physInfo.velocity, speed);
 
 			//	Subtract off life proportional to amount turned.
@@ -1446,21 +1427,17 @@ if ((objP->nType == OBJ_WEAPON) &&
 
 			//	Only polygon gameData.objs.objects have visible orientation, so only they should turn.
 			if (gameData.weapons.info [objP->id].renderType == WEAPON_RENDER_POLYMODEL)
-				HomingMissileTurnTowardsVelocity (objP, &temp_vec);		//	temp_vec is normalized velocity.
+				HomingMissileTurnTowardsVelocity (objP, &vTemp);		//	vTemp is normalized velocity.
 			}
 		}
 	}
 	//	Make sure weapon is not moving faster than allowed speed.
-	{
-	fix	xWeaponSpeed = VmVecMagQuick (&objP->mType.physInfo.velocity);
-	if (xWeaponSpeed > WI_speed (objP->id,gameStates.app.nDifficultyLevel)) {
-		//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
-		if (WI_speed (objP->id,gameStates.app.nDifficultyLevel)) {
-			fix	scale_factor;
-
-			scale_factor = FixDiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), xWeaponSpeed);
-			VmVecScale (&objP->mType.physInfo.velocity, scale_factor);
-			}
+if ((objP->nType == OBJ_WEAPON) &&
+	 (xWeaponSpeed > WI_speed (objP->id, gameStates.app.nDifficultyLevel))) {
+	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
+	if (WI_speed (objP->id,gameStates.app.nDifficultyLevel)) {
+		xScaleFactor = FixDiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), xWeaponSpeed);
+		VmVecScale (&objP->mType.physInfo.velocity, xScaleFactor);
 		}
 	}
 }

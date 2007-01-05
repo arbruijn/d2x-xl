@@ -433,7 +433,7 @@ return 1;
 
 int SetFaceLight (tFaceProps *propsP)
 {
-	int			h, i;
+	int			nVertex, i;
 	tFaceColor	*pvc = vertColors;
 	tRgbColorf	*pdc;
 	fix			dynLight;
@@ -460,7 +460,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale, propsP->uvls [i].l);
 		}
 	//add in dynamic light (from explosions, etc.)
-	dynLight = dynamicLight [h = propsP->vp [i]];
+	dynLight = dynamicLight [nVertex = propsP->vp [i]];
 	l = f2fl (propsP->uvls [i].l);
 	dl = f2fl (dynLight);
 	propsP->uvls [i].l += dynLight;
@@ -487,12 +487,12 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 				memcpy (&tMapColor.color, &globalDynColor, sizeof (tRgbColorf));
 				}
 			}
-		else if (bGotDynColor [h]) {
-			pdc = dynamicColor + h;
+		else if (bGotDynColor [nVertex]) {
+			pdc = dynamicColor + nVertex;
 			//pvc->index = -1;
 			if (gameOpts->render.color.bMix) {
 #if 0
-				pvc->color.red = (pvc->color.red + dynamicColor [h].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
+				pvc->color.red = (pvc->color.red + dynamicColor [nVertex].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 #else
@@ -501,6 +501,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 						gameOpts->render.color.bAmbientLight && 
 						!gameOpts->render.color.bUseLightMaps && 
 						(pvc->index != -1)) {
+						l /= gameData.render.color.vertBright [nVertex];
 						pvc->color.red = pvc->color.red * l + pdc->red * dl;
 						pvc->color.green = pvc->color.green * l + pdc->green * dl;
 						pvc->color.blue = pvc->color.blue * l + pdc->blue * dl;

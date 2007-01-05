@@ -95,8 +95,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "editor/editor.h"
 #endif
 
-#define ND_USE_SHORTPOS 0
-
 extern void SetFunctionMode (int);
 
 void DoJasonInterpolate (fix xRecordedTime);
@@ -371,13 +369,13 @@ CFWriteMatrix (m, outfile);
 void NDWriteShortPos (tObject *objP)
 {
 	ubyte		renderType = objP->renderType;
-#if ND_USE_SHORTPOS
 	shortpos sp;
+
+if (gameOpts->demo.bOldFormat)
 	CreateShortPos (&sp, objP, 0);
-#endif
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
 	 (objP->nType == OBJ_CAMERA)) {
-#if ND_USE_SHORTPOS
+if (gameOpts->demo.bOldFormat) {
 	int		i;
 	for (i = 0; i < 9; i++)
 		NDWriteByte (sp.bytemat [i]);
@@ -386,23 +384,24 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 			break;
 	if (i == 9)
 		Int3 ();         // contact Allender about this.
-#else
-	 NDWriteMatrix (&objP->position.mOrient);
-#endif
 	}
-#if ND_USE_SHORTPOS
-NDWriteShort (sp.xo);
-NDWriteShort (sp.yo);
-NDWriteShort (sp.zo);
-NDWriteShort (sp.tSegment);
-NDWriteShort (sp.velx);
-NDWriteShort (sp.vely);
-NDWriteShort (sp.velz);
-#else
-NDWriteVector (&objP->position.vPos);	
-NDWriteShort (objP->position.nSegment);
-NDWriteVector (&objP->mType.physInfo.velocity);
-#endif
+else
+	NDWriteMatrix (&objP->position.mOrient);
+	}
+if (gameOpts->demo.bOldFormat) {
+	NDWriteShort (sp.xo);
+	NDWriteShort (sp.yo);
+	NDWriteShort (sp.zo);
+	NDWriteShort (sp.tSegment);
+	NDWriteShort (sp.velx);
+	NDWriteShort (sp.vely);
+	NDWriteShort (sp.velz);
+	}
+else {
+	NDWriteVector (&objP->position.vPos);	
+	NDWriteShort (objP->position.nSegment);
+	NDWriteVector (&objP->mType.physInfo.velocity);
+	}
 }
 
 //	-----------------------------------------------------------------------------

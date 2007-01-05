@@ -1448,6 +1448,16 @@ else {
 
 // ----------------------------------------------------------------------------
 
+void InitDemoOptions (int i)
+{
+if (i)
+	gameOptions [i].demo.bOldFormat = 0;
+else
+	gameOptions [i].demo.bOldFormat = 1;
+}
+
+// ----------------------------------------------------------------------------
+
 void InitMenuOptions (int i)
 {
 if (i) {
@@ -1560,6 +1570,7 @@ InitGameplayOptions (i);
 InitRenderOptions (i);
 InitMultiplayerOptions (i);
 InitMenuOptions (i);
+InitDemoOptions (i);
 InitSoundOptions (i);
 InitMovieOptions (i);
 InitOglOptions (i);

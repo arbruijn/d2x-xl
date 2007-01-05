@@ -1560,16 +1560,32 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) &&
 
 // -----------------------------------------------------------------------------
 
+void ConvertWeaponToPowerup (tObject *objP)
+{
+objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.nCurFrame = 0;
+objP->size = gameData.objs.pwrUp.info [objP->id].size;
+objP->controlType = CT_POWERUP;
+objP->renderType = RT_POWERUP;
+objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.drag = 512;
+}
+
+// -----------------------------------------------------------------------------
+
 void ConvertPowerupToWeapon (tObject *objP)
 {
 if (objP->controlType != CT_WEAPON) {
 	vmsAngVec	a;
 
-	memset (&objP->rType, 0, sizeof (objP->rType));
+	//memset (&objP->rType, 0, sizeof (objP->rType));
 	a.p = (rand () % F1_0) - F1_0 / 2;
 	a.b = (rand () % F1_0) - F1_0 / 2;
 	a.h = (rand () % F1_0) - F1_0 / 2;
 	VmAngles2Matrix (&objP->position.mOrient, &a);
+	objP->mType.physInfo.mass = F1_0;
+	objP->mType.physInfo.drag = 512;
 	objP->mType.physInfo.rotVel.p.x = 0;
 	objP->mType.physInfo.rotVel.p.y = 
 	objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
@@ -1662,14 +1678,20 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
-			nIdSave = objP->id;
-			objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
-			DrawPolygonObject (objP);
-			objP->id = nIdSave;
-			if (gameOpts->render.powerups.nSpin != 
-				 ((objP->mType.physInfo.rotVel.p.y | objP->mType.physInfo.rotVel.p.z) != 0))
-				objP->mType.physInfo.rotVel.p.y = 
-				objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+			if (gameOpts->render.powerups.b3D) {
+				nIdSave = objP->id;
+				objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
+				DrawPolygonObject (objP);
+				objP->id = nIdSave;
+				objP->mType.physInfo.mass = F1_0;
+				objP->mType.physInfo.drag = 512;
+				if (gameOpts->render.powerups.nSpin != 
+					((objP->mType.physInfo.rotVel.p.y | objP->mType.physInfo.rotVel.p.z) != 0))
+					objP->mType.physInfo.rotVel.p.y = 
+					objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+				}
+			else
+				ConvertWeaponToPowerup (objP);
 			}
 		else
 			DrawPolygonObject (objP);

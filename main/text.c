@@ -1600,6 +1600,7 @@ char *defaultGameTexts [][2] = {
 	{"Skalen", "Gauges"},
 	{"~Skalen...", "~Gauges..."},
 	{"~Spiel starten", "~Launch Game"},
+	{"~Kompatibles Demo-Format", "use ~Compatible demo format"},
 #if 0
 	{"", ""},
 #endif
@@ -2071,6 +2072,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier können Powerupeinstellungen vorgenommen werden.", "Adjust powerup rendering settings here."},
 	{"Wenn angekreuzt, bewegen sich Roboter, die nichts besseres zu\ntun haben, ein wenig herum und beleben die Minen ein bisschen.", 
 	 "If checked, idling robots will move around a little giving a\nlittle more activity to the mines."},
+	{"Wenn angekreuzt, werden Demos in mit anderen Descent 2-Versionen\nkompatiblem Format abgespeichert. Die Qualitaet dieses Formats ist\nallerdings etwas schlechter.", 
+	 "If checked, demos are saved in a format compatible to other\nDescent 2 versions. The quality is worse though."},
 #if 0
 	{"", ""},
 #endif

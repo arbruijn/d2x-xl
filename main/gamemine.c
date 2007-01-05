@@ -1591,7 +1591,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-if (!HasTexColors ())
+if (!(gameStates.render.bColored = HasTexColors ()))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS

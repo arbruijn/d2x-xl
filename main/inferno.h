@@ -314,6 +314,10 @@ typedef struct tMenuOptions {
 	tAltBgOptions altBg;
 } tMenuOptions;
 
+typedef struct tDemoOptions {
+	int bOldFormat;
+} tDemoOptions;
+
 typedef struct tMultiplayerOptions {
 	int bNoRankings;
 	int bTimeoutPlayers;
@@ -341,6 +345,7 @@ typedef struct tGameOptions {
 	tOglOptions				ogl;
 	tApplicationOptions	app;
 	tMultiplayerOptions	multi;
+	tDemoOptions			demo;
 } tGameOptions;
 
 typedef struct tSeismicStates {
@@ -515,6 +520,7 @@ typedef struct tRenderStates {
 	int bExtExplPlaying;
 	int bDoAppearanceEffect;
 	int bGlLighting;
+	int bColored;
 	int bRearView;
 	int nInterpolationMethod;
 	int bTMapFlat;

@@ -1843,11 +1843,12 @@ do {
 		if (i < 0)
 			break;
 		} 
-	for (j = 0; j < 4; j++)
-		if (m [optSpin + j].value) {
-			gameOpts->render.powerups.nSpin = j;
-			break;
-		}
+	if (gameOpts->render.powerups.b3D && (optSpin >= 0))
+		for (j = 0; j < 4; j++)
+			if (m [optSpin + j].value) {
+				gameOpts->render.powerups.nSpin = j;
+				break;
+			}
 	} while (i == -2);
 }
 
@@ -3326,9 +3327,8 @@ void MiscellaneousMenu ()
 #if 0
 			optFastResp, 
 #endif
-			optReticle, optMissileView, optGuided,
-			optHeadlight, optEscort, optUseMacros, 
-			optWiggle, optSmartSearch, optLevelVer;
+			optReticle, optMissileView, optGuided, optHeadlight, optEscort, optUseMacros, 
+			optWiggle, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
 #endif
@@ -3388,6 +3388,8 @@ do {
 			optLevelVer = -1;
 		ADD_CHECK (opt, TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
 		nExpModeOpt = opt++;
+		ADD_CHECK (opt, TXT_OLD_DEMO_FORMAT, gameOpts->demo.bOldFormat, KEY_C, HTX_OLD_DEMO_FORMAT);
+		optDemoFmt = opt++;
 		}
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
@@ -3441,6 +3443,7 @@ do {
 	gameOpts->multi.bUseMacros = m [optUseMacros].value;
 	if (!gameStates.app.bNostalgia) {
 		gameOpts->app.bExpertMode = m [nExpModeOpt].value;
+		gameOpts->demo.bOldFormat = m [optDemoFmt].value;
 		if (gameOpts->app.bExpertMode && gameOpts->app.bExpertMode) {
 			extraGameInfo [0].bWiggle = m [optWiggle].value;
 #if UDP_SAFEMODE
