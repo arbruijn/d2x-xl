@@ -1035,27 +1035,18 @@ for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl +=
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMagf (&lightDir) / 10.0f;
-#if 1
 		if (nType == 1) {
-#	if 0
-			if (fLightDist <= psl->rad) {
-				bInRad = 1;
-				fLightDist *= fLightDist;
-				}
-#	else
 			fLightDist -= psl->rad;	//make light brighter close to light source
 			if (fLightDist < 1.0f) {
 				bInRad = 1;
-				fLightDist = 2.0f;
+				fLightDist = 1.4142f;
 				}
-#	endif
 			else {	//make it decay faster
 				fLightDist *= fLightDist;
 				fLightDist *= 2.0f;
 				}
 			}
 		else
-#endif
 			fLightDist *= fLightDist;
 		fAttenuation = fLightDist / psl->brightness;
 		}
@@ -1096,7 +1087,8 @@ for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl +=
 		if (RdotE < 0.0)
 			RdotE = 0.0;
 		//vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
-		VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, gameData.threads.vertColor.data.fMatShininess));
+		if (RdotE && gameData.threads.vertColor.data.fMatShininess)
+			VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, gameData.threads.vertColor.data.fMatShininess));
 		VmVecMulf (&lightColor, &lightColor, &gameData.threads.vertColor.data.matSpecular);
 		VmVecIncf (&vertColor, &lightColor);
 		}

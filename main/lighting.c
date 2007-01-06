@@ -1310,8 +1310,6 @@ int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, s
 	GLint			nMaxLights;
 #endif
 
-if (gameData.render.lights.dynamic.nLights == 86)
-gameData.render.lights.dynamic.nLights = gameData.render.lights.dynamic.nLights;
 if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject)))
 	return h;
 if (!pc)
@@ -1613,7 +1611,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		if ((j = *pnl) < 0)
 			break;
 		if (gameData.render.lights.dynamic.lights [j].bVariable) {
-			if (! (bVariable && gameData.render.lights.dynamic.lights [j].bOn))
+			if (!(bVariable && gameData.render.lights.dynamic.lights [j].bOn))
 				continue;
 			}
 		else {
@@ -1800,7 +1798,8 @@ void ComputeStaticDynLighting ()
 if (gameOpts->render.bDynLighting || 
 	 !gameStates.app.bD2XLevel || 
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
-		int				i, bColorize = !gameStates.render.bColored || !(gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
+		int				i, bColorize = (gameStates.app.bD2XLevel && !gameStates.render.bColored) || 
+												!(gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
