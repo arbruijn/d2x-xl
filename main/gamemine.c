@@ -1237,23 +1237,29 @@ for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 
 //------------------------------------------------------------------------------
 
-int HasTexColors (void)
+int HasColoredLight (void)
 {
-	int			i;
-	tFaceColor	*pf = gameData.render.color.textures;
+	int			i, bColored = 0;
+	tFaceColor	*pvc = gameData.render.color.vertices;
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
 // get the default colors
-for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
-	if (pf->index <= 0)
+for (i = 0; i < gameData.segs.nVertices; i++, pvc++) {
+#if 0
+	if (pvc->index <= 0)
 		continue;
-	if ((pf->color.red == 0) && (pf->color.green == 0) && (pf->color.blue == 0))
+#endif
+	if ((pvc->color.red == 0) && (pvc->color.green == 0) && (pvc->color.blue == 0)) {
+		pvc->index = -1;
 		continue;
-	if ((pf->color.red < 1) || (pf->color.green < 1) || (pf->color.blue < 1))
-		return 1;
+		}
+	if (pvc->index < 0)
+		pvc->index = 0;
+	if ((pvc->color.red < 1) || (pvc->color.green < 1) || (pvc->color.blue < 1))
+		bColored = 1;
 	}
-return 0;
+return bColored;
 }
 
 //------------------------------------------------------------------------------
@@ -1591,7 +1597,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-if (!(gameStates.render.bColored = HasTexColors ()))
+if (!(gameStates.render.bColored = HasColoredLight ()))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS

@@ -2488,10 +2488,10 @@ if (gameOpts->render.color.bUseLightMaps) {
 
 void LightingOptionsMenu ()
 {
-	tMenuItem m [50];
+	tMenuItem m [15];
 	int	i, choice = 0;
 	int	opt;
-	int	optColoredLight, optObjectLight, optMixColors;
+	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights;
 #if 0
 	int checks;
 #endif
@@ -2551,12 +2551,16 @@ do {
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
 	nGunColorOpt = opt++;
-	if (gameOpts->app.bExpertMode && gameOpts->render.color.bGunLight) {
-		ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
-		optMixColors = opt++;
+	optMixColors = 
+	optPowerupLights = -1;
+	if (gameOpts->app.bExpertMode) {
+		if (gameOpts->render.color.bGunLight) {
+			ADD_CHECK (opt, TXT_MIX_COLOR, gameOpts->render.color.bMix, KEY_X, HTX_ADVRND_MIXCOLOR);
+			optMixColors = opt++;
+			}
+		ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
+		optPowerupLights = opt++;
 		}
-	else
-		optMixColors = -1;
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
 		if (i < 0)
@@ -2586,6 +2590,8 @@ do {
 			else
 				gameOpts->render.color.bMix = 1;
 #endif
+		if (optPowerupLights >= 0)
+			extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
 		}
 	} while (i == -2);
 }

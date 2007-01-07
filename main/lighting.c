@@ -876,8 +876,8 @@ old_viewer = viewer;
 // ----------------------------------------------------------------------------------------------
 //compute the lighting for an tObject.  Takes a pointer to the tObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
-//tObject's center point is rotated.
-fix ComputeObjectLight (tObject *objP,vmsVector *rotated_pnt)
+//object's center point is rotated.
+fix ComputeObjectLight (tObject *objP, vmsVector *rotated_pnt)
 {
 	fix light;
 	g3sPoint objpnt;
