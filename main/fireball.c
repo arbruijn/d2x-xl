@@ -1,4 +1,4 @@
-/* $Id: fireball.c,v 1.4 2003/10/04 03:14:47 btb Exp $ */
+/* $Id: fireball.c, v 1.4 2003/10/04 03:14:47 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -83,7 +83,7 @@ tObject *ObjectCreateExplosionSub (
 	short nObject;
 	tObject *explObjP;
 
-nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIdentityMatrix, size,
+nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIdentityMatrix, size, 
 							  CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
 	if (nObject < 0) {
@@ -107,7 +107,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 		int i, t, id;
 		tObject * obj0P = gameData.objs.objects;
 					 
-		// -- now legal for badass explosions on a wall. Assert(objP != NULL);
+		// -- now legal for badass explosions on a wall. Assert (objP != NULL);
 
 		for (i=0; i<=gameData.objs.nLastObject; i++)	{
 			t = obj0P->nType;
@@ -120,52 +120,52 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 			     (t == OBJ_CNTRLCEN) || 
 			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && 
 			     ((gameData.objs.objects [parent].nType != OBJ_ROBOT) || (gameData.objs.objects [parent].id != id))))) {
-				dist = VmVecDistQuick(&obj0P->position.vPos, &explObjP->position.vPos);
+				dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
 				// Make damage be from 'maxdamage' to 0.0, where 0.0 is 'maxdistance' away;
 				if (dist < maxdistance) {
-					if (ObjectToObjectVisibility(explObjP, obj0P, FQ_TRANSWALL)) {
+					if (ObjectToObjectVisibility (explObjP, obj0P, FQ_TRANSWALL)) {
 
-						damage = maxdamage - FixMulDiv(dist, maxdamage, maxdistance);
-						force = maxforce - FixMulDiv(dist, maxforce, maxdistance);
+						damage = maxdamage - FixMulDiv (dist, maxdamage, maxdistance);
+						force = maxforce - FixMulDiv (dist, maxforce, maxdistance);
 
 						// Find the force vector on the tObject
-						VmVecNormalizedDirQuick(&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
-						VmVecScale(&vForce, force);
+						VmVecNormalizedDirQuick (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
+						VmVecScale (&vForce, force);
 	
 						// Find where the point of impact is... (pos_hit)
-						VmVecSub(&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
-						VmVecScale(&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
+						VmVecSub (&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
+						VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
 	
 						switch (obj0P->nType)	{
 							case OBJ_WEAPON:
-								PhysApplyForce(obj0P,&vForce);
+								PhysApplyForce (obj0P, &vForce);
 
 								if (obj0P->id == PROXMINE_ID || obj0P->id == SMARTMINE_ID) {		//prox bombs have chance of blowing up
-									if (FixMul(dist,force) > i2f(8000)) {
+									if (FixMul (dist, force) > i2f (8000)) {
 										obj0P->flags |= OF_SHOULD_BE_DEAD;
-										ExplodeBadassWeapon(obj0P,&obj0P->position.vPos);
+										ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
 									}
 								}
 								break;
 
 							case OBJ_ROBOT:
 								{
-								PhysApplyForce(obj0P,&vForce);
+								PhysApplyForce (obj0P, &vForce);
 
 								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 								if ((objP != NULL) && (!gameData.bots.pInfo [obj0P->id].bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 									tAIStatic	*aip = &obj0P->cType.aiInfo;
-									int			force_val = f2i(FixDiv(VmVecMagQuick(&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+									int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
 									if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
 										aip->SKIP_AI_COUNT += force_val;
-										obj0P->mType.physInfo.rotThrust.p.x = ((d_rand() - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.p.y = ((d_rand() - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.p.z = ((d_rand() - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
+										obj0P->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
 										obj0P->mType.physInfo.flags |= PF_USES_THRUST;
 
 										//@@if (gameData.bots.pInfo [obj0P->id].companion)
-										//@@	BuddyMessage("Daisy, Daisy, Give me...");
+										//@@	BuddyMessage ("Daisy, Daisy, Give me...");
 									} else
 										aip->SKIP_AI_COUNT--;
 
@@ -177,50 +177,50 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 									vNegForce.p.x = vForce.p.x * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
 									vNegForce.p.y = vForce.p.y * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
 									vNegForce.p.z = vForce.p.z * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									PhysApplyRot(obj0P,&vNegForce);
+									PhysApplyRot (obj0P, &vNegForce);
 								}
 								if (obj0P->shields >= 0) {
 									if (gameData.bots.pInfo [obj0P->id].bossFlag)
 										if (bossProps [gameStates.app.bD1Mission] [gameData.bots.pInfo [obj0P->id].bossFlag-BOSS_D2].bInvulKinetic)
 											damage /= 4;
 
-									if (ApplyDamageToRobot(obj0P, damage, parent))
+									if (ApplyDamageToRobot (obj0P, damage, parent))
 										if ((objP != NULL) && (parent == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
-											AddPointsToScore(gameData.bots.pInfo [obj0P->id].scoreValue);
+											AddPointsToScore (gameData.bots.pInfo [obj0P->id].scoreValue);
 								}
 
 								if ((objP != NULL) && (gameData.bots.pInfo [obj0P->id].companion) && (!gameData.weapons.info [objP->id].flash)) {
 									int	i, count;
 									char	ouch_str [6*4 + 2];
 
-									count = f2i(damage/8);
+									count = f2i (damage/8);
 									if (count > 4)
 										count = 4;
 									else if (count <= 0)
 										count = 1;
 									ouch_str [0] = 0;
 									for (i=0; i<count; i++) {
-										strcat(ouch_str, TXT_BUDDY_OUCH);
-										strcat(ouch_str, " ");
+										strcat (ouch_str, TXT_BUDDY_OUCH);
+										strcat (ouch_str, " ");
 										}
-									BuddyMessage(ouch_str);
+									BuddyMessage (ouch_str);
 								}
 								break;
 								}
 							case OBJ_CNTRLCEN:
 								if (obj0P->shields >= 0) {
-									ApplyDamageToReactor(obj0P, damage, parent);
+									ApplyDamageToReactor (obj0P, damage, parent);
 								}
 								break;
 							case OBJ_PLAYER:	{
 								tObject * killer=NULL;
 								vmsVector	vForce2;
 
-								//	Hack! Warning! Test code!
+								//	Hack!Warning!Test code!
 								if ((objP != NULL) && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multi.nLocalPlayer) {
 									int	fe;
 
-									fe = min(F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
+									fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
 
 									if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
 										fe /= 2;
@@ -228,9 +228,9 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 									}
 									if (force > F1_0) {
 										gameData.render.xFlashEffect = fe;
-										PALETTE_FLASH_ADD(PK1 + f2i(PK2*force), PK1 + f2i(PK2*force), PK1 + f2i(PK2*force));
+										PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
 #if TRACE
-										con_printf (CON_DEBUG, "force = %7.3f, adding %i\n", f2fl(force), PK1 + f2i(PK2*force));
+										con_printf (CON_DEBUG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
 #endif
 									}
 								}
@@ -250,17 +250,17 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								vForce2.p.y /= 2;	
 								vForce2.p.z /= 2;
 
-								PhysApplyForce(obj0P,&vForce);
-								PhysApplyRot(obj0P,&vForce2);
+								PhysApplyForce (obj0P, &vForce);
+								PhysApplyRot (obj0P, &vForce2);
 								if (gameStates.app.nDifficultyLevel == 0)
 									damage /= 4;
 								if (obj0P->shields >= 0)
-									ApplyDamageToPlayer(obj0P, killer, damage);
+									ApplyDamageToPlayer (obj0P, killer, damage);
 							}
 								break;
 
 							default:
-								Int3();	//	Illegal tObject nType
+								Int3 ();	//	Illegal tObject nType
 						}	// end switch
 					} else {
 						;
@@ -277,21 +277,21 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateMuzzleFlash(short nSegment, vmsVector * position, fix size, ubyte vclipType)
+tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte vclipType)
 {
-return ObjectCreateExplosionSub(NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateExplosion(short nSegment, vmsVector * position, fix size, ubyte vclipType)
+tObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte vclipType)
 {
-return ObjectCreateExplosionSub(NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateBadassExplosion(
+tObject *ObjectCreateBadassExplosion (
 	tObject *objP, 
 	short nSegment, 
 	vmsVector *position, 
@@ -304,14 +304,14 @@ tObject *ObjectCreateBadassExplosion(
 {
 	tObject	*rval;
 
-	rval = ObjectCreateExplosionSub(objP, nSegment, position, size, vclipType, maxdamage, maxdistance, maxforce, parent);
+	rval = ObjectCreateExplosionSub (objP, nSegment, position, size, vclipType, maxdamage, maxdistance, maxforce, parent);
 
 	if ((objP != NULL) && (objP->nType == OBJ_WEAPON))
-		CreateSmartChildren(objP, NUM_SMART_CHILDREN);
+		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 
 // -- 	if (objP->nType == OBJ_ROBOT)
 // -- 		if (gameData.bots.pInfo [objP->id].smartBlobs)
-// -- 			CreateSmartChildren(objP, gameData.bots.pInfo [objP->id].smartBlobs);
+// -- 			CreateSmartChildren (objP, gameData.bots.pInfo [objP->id].smartBlobs);
 
 	return rval;
 }
@@ -319,39 +319,39 @@ tObject *ObjectCreateBadassExplosion(
 //------------------------------------------------------------------------------
 //blows up a badass weapon, creating the badass explosion
 //return the explosion tObject
-tObject *ExplodeBadassWeapon(tObject *objP,vmsVector *pos)
+tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
 {
 	tWeaponInfo *wi = &gameData.weapons.info [objP->id];
 
-	Assert(wi->damage_radius);
+	Assert (wi->damage_radius);
 
 	if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
-		ShakerRockStuff();
+		ShakerRockStuff ();
 
-	DigiLinkSoundToObject(SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
+	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
 
-	return ObjectCreateBadassExplosion(objP, objP->position.nSegment, pos,
-	                                      wi->impact_size,
-	                                      wi->robot_hit_vclip,
-	                                      wi->strength [gameStates.app.nDifficultyLevel],
-	                                      wi->damage_radius,wi->strength [gameStates.app.nDifficultyLevel],
+	return ObjectCreateBadassExplosion (objP, objP->position.nSegment, pos, 
+	                                      wi->impact_size, 
+	                                      wi->robot_hit_vclip, 
+	                                      wi->strength [gameStates.app.nDifficultyLevel], 
+	                                      wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel], 
 	                                      objP->cType.laserInfo.nParentObj);
 
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ExplodeBadassObject(tObject *objP, fix damage, fix distance, fix force)
+tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force)
 {
 
 	tObject 	*rval;
 
-	rval = ObjectCreateBadassExplosion(objP, objP->position.nSegment, &objP->position.vPos, objP->size,
-					(ubyte) GetExplosionVClip(objP, 0),
-					damage, distance, force,
+	rval = ObjectCreateBadassExplosion (objP, objP->position.nSegment, &objP->position.vPos, objP->size, 
+					 (ubyte) GetExplosionVClip (objP, 0), 
+					damage, distance, force, 
 					OBJ_IDX (objP));
 	if (rval)
-		DigiLinkSoundToObject(SOUND_BADASS_EXPLOSION, OBJ_IDX (rval), 0, F1_0);
+		DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (rval), 0, F1_0);
 
 	return (rval);
 
@@ -360,61 +360,61 @@ tObject *ExplodeBadassObject(tObject *objP, fix damage, fix distance, fix force)
 //------------------------------------------------------------------------------
 //blows up the tPlayer with a badass explosion
 //return the explosion tObject
-tObject *ExplodeBadassPlayer(tObject *objP)
+tObject *ExplodeBadassPlayer (tObject *objP)
 {
-	return ExplodeBadassObject(objP, F1_0*50, F1_0*40, F1_0*150);
+	return ExplodeBadassObject (objP, F1_0*50, F1_0*40, F1_0*150);
 }
 
 //------------------------------------------------------------------------------
 #define DEBRIS_LIFE (f1_0 * 2)		//lifespan in seconds
 
-tObject *ObjectCreateDebris(tObject *parentObjP, int nSubObj)
+tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 {
 	int nObject;
 	tObject *debrisObjP;
 	tPolyModel *po;
 
-Assert((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
-nObject = CreateObject(
-	OBJ_DEBRIS, 0, -1, parentObjP->position.nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient,
-	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj],
+Assert ((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
+nObject = CreateObject (
+	OBJ_DEBRIS, 0, -1, parentObjP->position.nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient, 
+	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj], 
 	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
-if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS-1)) {
+if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS - 1)) {
 #if TRACE
 	con_printf (1, "Can't create tObject in ObjectCreateDebris.\n");
 #endif
-	Int3();
+	Int3 ();
 	return NULL;
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
 debrisObjP = gameData.objs.objects + nObject;
-Assert(nSubObj < 32);
+Assert (nSubObj < 32);
 //Set polygon-tObject-specific data
 debrisObjP->rType.polyObjInfo.nModel = parentObjP->rType.polyObjInfo.nModel;
 debrisObjP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 debrisObjP->rType.polyObjInfo.nTexOverride = parentObjP->rType.polyObjInfo.nTexOverride;
 //Set physics data for this tObject
 po = gameData.models.polyModels + debrisObjP->rType.polyObjInfo.nModel;
-debrisObjP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand();
-debrisObjP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand();
-debrisObjP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand();
+debrisObjP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand ();
+debrisObjP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
+debrisObjP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
 VmVecNormalizeQuick (&debrisObjP->mType.physInfo.velocity);
-VmVecScale (&debrisObjP->mType.physInfo.velocity,i2f(10 + (30 * d_rand() / RAND_MAX)));
+VmVecScale (&debrisObjP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
 VmVecInc (&debrisObjP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
-// -- used to be: Notice, not random! VmVecMake(&debrisObjP->mType.physInfo.rotVel,10*0x2000/3,10*0x4000/3,10*0x7000/3);
-VmVecMake (&debrisObjP->mType.physInfo.rotVel, d_rand() + 0x1000, d_rand()*2 + 0x4000, d_rand()*3 + 0x2000);
+// -- used to be: Notice, not random!VmVecMake (&debrisObjP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
+VmVecMake (&debrisObjP->mType.physInfo.rotVel, d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
 VmVecZero (&debrisObjP->mType.physInfo.rotThrust);
-debrisObjP->lifeleft = 3*DEBRIS_LIFE/4 + FixMul(d_rand(), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+debrisObjP->lifeleft = 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
 debrisObjP->mType.physInfo.mass = 
-	FixMulDiv (parentObjP->mType.physInfo.mass,debrisObjP->size, parentObjP->size);
-debrisObjP->mType.physInfo.drag = 0; //fl2f(0.2);		//parentObjP->mType.physInfo.drag;
+	FixMulDiv (parentObjP->mType.physInfo.mass, debrisObjP->size, parentObjP->size);
+debrisObjP->mType.physInfo.drag = 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
 return debrisObjP;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void DrawFireball(tObject *objP)
+void DrawFireball (tObject *objP)
 {
 if (objP->lifeleft > 0)
 	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
@@ -424,7 +424,7 @@ if (objP->lifeleft > 0)
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if there is a door here and it is openable
 //	It is assumed that the tPlayer has all keys.
-int PlayerCanOpenDoor(tSegment *segP, short nSide)
+int PlayerCanOpenDoor (tSegment *segP, short nSide)
 {
 	short	nWall, wallType;
 
@@ -435,7 +435,7 @@ int PlayerCanOpenDoor(tSegment *segP, short nSide)
 
 	wallType = gameData.walls.walls [nWall].nType;
 	//	Can't open locked doors.
-	if (((wallType == WALL_DOOR) && (gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
+	if (( (wallType == WALL_DOOR) && (gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) || (wallType == WALL_CLOSED))
 		return 0;
 
 	return 1;
@@ -447,7 +447,7 @@ int PlayerCanOpenDoor(tSegment *segP, short nSide)
 // --------------------------------------------------------------------------------------------------------------------
 //	Return a tSegment %i segments away from initial tSegment.
 //	Returns -1 if can't find a tSegment that distance away.
-int PickConnectedSegment(tObject *objP, int max_depth)
+int PickConnectedSegment (tObject *objP, int max_depth)
 {
 	int		i;
 	int		cur_depth;
@@ -463,8 +463,8 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 	tail = 0;
 	seg_queue [head++] = start_seg;
 
-	memset(bVisited, 0, gameData.segs.nLastSegment+1);
-	memset(depth, 0, gameData.segs.nLastSegment+1);
+	memset (bVisited, 0, gameData.segs.nLastSegment+1);
+	memset (depth, 0, gameData.segs.nLastSegment+1);
 	cur_depth = 0;
 
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
@@ -474,7 +474,7 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 	for (i=0; i<4; i++) {
 		int	ind1, temp;
 
-		ind1 = (d_rand() * MAX_SIDES_PER_SEGMENT) >> 15;
+		ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
 		temp = side_rand [ind1];
 		side_rand [ind1] = side_rand [i];
 		side_rand [i] = temp;
@@ -494,8 +494,8 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 		tail &= QUEUE_SIZE-1;
 
 		//	to make random, switch a pair of entries in side_rand.
-		ind1 = (d_rand() * MAX_SIDES_PER_SEGMENT) >> 15;
-		ind2 = (d_rand() * MAX_SIDES_PER_SEGMENT) >> 15;
+		ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
+		ind2 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
 		temp = side_rand [ind1];
 		side_rand [ind1] = side_rand [ind2];
 		side_rand [ind2] = temp;
@@ -511,7 +511,7 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 			nWall = WallNumP (segP, snrand);
 			nSide++;
 
-			if (((!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor(segP, snrand)) {
+			if (( (!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor (segP, snrand)) {
 				if (!bVisited [segP->children [snrand]]) {
 					seg_queue [head++] = segP->children [snrand];
 					bVisited [segP->children [snrand]] = 1;
@@ -519,15 +519,15 @@ int PickConnectedSegment(tObject *objP, int max_depth)
 					head &= QUEUE_SIZE-1;
 					if (head > tail) {
 						if (head == tail + QUEUE_SIZE-1)
-							Int3();	//	queue overflow.  Make it bigger!
+							Int3 ();	//	queue overflow.  Make it bigger!
 					} else
 						if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
-							Int3();	//	queue overflow.  Make it bigger!
+							Int3 ();	//	queue overflow.  Make it bigger!
 				}
 			}
 		}
 		if ((seg_queue [tail] < 0) || (seg_queue [tail] > gameData.segs.nLastSegment)) {
-			// -- Int3();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
+			// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
 			return -1;
 		}
 		cur_depth = depth [seg_queue [tail]];
@@ -569,24 +569,24 @@ return nFree ? -nFree : nTotal;
 tObject *FindInitObject (tObject *objP)
 {
 	int	h, i, j, bUsed, 
-			bUseFree,
+			bUseFree, 
 			objCount = InitObjectCount (objP);
 	short	nType = objP->nType;
 	short	id = objP->id; 
 
-// due to gameData.objs.objects being deleted from the tObject list when picked up and recreated when dropped,
+// due to gameData.objs.objects being deleted from the tObject list when picked up and recreated when dropped, 
 // cannot determine exact respawn tSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
 if (!objCount)		//no gameData.objs.objects of this nType had initially been placed in the mine. 
 	return NULL;	//can happen with missile packs
-d_srand(TimerGetFixedSeconds());
+d_srand (TimerGetFixedSeconds ());
 if (bUseFree = (objCount < 0))
 	objCount = -objCount;
 h = d_rand () % objCount + 1;	
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
-	// if the current tSegment does not contain a powerup of the nType being looked for,
+	// if the current tSegment does not contain a powerup of the nType being looked for, 
 	// return that tSegment
 	if (bUseFree) {
 		for (bUsed = 0, j = gameData.segs.segments [objP->position.nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
@@ -617,8 +617,8 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
 		RelinkObject (OBJ_IDX (objP), initObjP->position.nSegment);
-		HUDInitMessage(TXT_FLAG_RETURN);
-		DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
+		HUDInitMessage (TXT_FLAG_RETURN);
+		DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
 		MultiSendReturnFlagHome (OBJ_IDX (objP));
 		}
 	}
@@ -648,7 +648,7 @@ memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
 	if ((segP->owner >= 0) && (segP->group >= 0) && 
-		 /*(segP->group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [segP->group] < 0))
+		 /* (segP->group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [segP->group] < 0))
 		gameData.entropy.nRoomOwners [segP->group] = segP->owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
 	if (gameData.entropy.nRoomOwners [i] >= 0) {
@@ -671,10 +671,10 @@ void ConquerRoom (int newOwner, int oldOwner, int roomId)
 
 // this loop with
 // a) convert all segments with group 'roomId' to newOwner 'newOwner'
-// b) count all virus centers newOwner 'newOwner' was owning already,
+// b) count all virus centers newOwner 'newOwner' was owning already, 
 //    j holding the total number of virus centers, jj holding the number of 
 //    virus centers converted from fuel/repair centers
-// c) count all virus centers newOwner 'newOwner' has just conquered,
+// c) count all virus centers newOwner 'newOwner' has just conquered, 
 //    k holding the total number of conquered virus centers, kk holding the number of 
 //    conquered virus centers converted from fuel/repair centers
 // So if j > jj or k < kk, all virus centers placed in virusGens can be converted
@@ -846,7 +846,7 @@ return 1;
 //	For all active net players, try to create a N tSegment path from the player.  If possible, return that
 //	tSegment.  If not possible, try another player.  After a few tries, use a random tSegment.
 //	Don't drop if control center in tSegment.
-int ChooseDropSegment(tObject *objP, int *pbFixedPos, int nDropState)
+int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 {
 	int			pnum = 0;
 	short			nSegment = -1;
@@ -858,10 +858,10 @@ int ChooseDropSegment(tObject *objP, int *pbFixedPos, int nDropState)
 	int			bUseInitSgm = 
 						objP &&
 						EGI_FLAG (bFixedRespawns, 0, 0) || 
-						(EGI_FLAG (bEnhancedCTF, 0, 0) && 
+						 (EGI_FLAG (bEnhancedCTF, 0, 0) && 
 						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG)));
 #if TRACE
-con_printf (CON_DEBUG,"ChooseDropSegment:");
+con_printf (CON_DEBUG, "ChooseDropSegment:");
 #endif
 if (bUseInitSgm) {
 	tObject *initObjP = FindInitObject (objP);
@@ -874,27 +874,27 @@ if (bUseInitSgm) {
 	}
 if (pbFixedPos)
 	*pbFixedPos = 0;
-d_srand(TimerGetFixedSeconds());
-nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand() * BASE_NET_DROP_DEPTH*2) >> 15);
+d_srand (TimerGetFixedSeconds ());
+nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
 player_pos = &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
 player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
-	pnum = (d_rand() * gameData.multi.nPlayers) >> 15;
+	pnum = (d_rand () * gameData.multi.nPlayers) >> 15;
 	count = 0;
 	while ((count < gameData.multi.nPlayers) && 
-				((gameData.multi.players [pnum].connected == 0) || (pnum==gameData.multi.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
-				(GetTeam(pnum)==GetTeam(gameData.multi.nLocalPlayer))))) {
+				 ((gameData.multi.players [pnum].connected == 0) || (pnum==gameData.multi.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
+				 (GetTeam (pnum)==GetTeam (gameData.multi.nLocalPlayer))))) {
 		pnum = (pnum+1)%gameData.multi.nPlayers;
 		count++;
 		}
 	if (count == gameData.multi.nPlayers) {
 		//if can't valid non-tPlayer person, use the tPlayer
 		pnum = gameData.multi.nLocalPlayer;
-		//return (d_rand() * gameData.segs.nLastSegment) >> 15;
+		//return (d_rand () * gameData.segs.nLastSegment) >> 15;
 		}
-	nSegment = PickConnectedSegment(gameData.objs.objects + gameData.multi.players [pnum].nObject, nCurDropDepth);
+	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multi.players [pnum].nObject, nCurDropDepth);
 #if TRACE
-	con_printf (CON_DEBUG," %d",nSegment);
+	con_printf (CON_DEBUG, " %d", nSegment);
 #endif
 	if (nSegment == -1) {
 		nCurDropDepth--;
@@ -912,7 +912,7 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		int i;
 		for (i=0;i<6;i++) {
 			int ch = gameData.segs.segments [nSegment].children [i];
-			if (IS_CHILD(ch) && gameData.segs.segment2s [ch].special == SEGMENT_IS_CONTROLCEN) {
+			if (IS_CHILD (ch) && gameData.segs.segment2s [ch].special == SEGMENT_IS_CONTROLCEN) {
 				nSegment = -1;
 				break;
 				}
@@ -920,9 +920,9 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		}
 	//bail if not far enough from original position
 	if (nSegment != -1) {
-		COMPUTE_SEGMENT_CENTER_I(&tempv, nSegment);
+		COMPUTE_SEGMENT_CENTER_I (&tempv, nSegment);
 		nDist = FindConnectedDistance (player_pos, player_seg, &tempv, nSegment, -1, WID_FLY_FLAG);
-		if ((nDist >= 0) && (nDist < i2f(20) * nCurDropDepth)) {
+		if ((nDist >= 0) && (nDist < i2f (20) * nCurDropDepth)) {
 			nSegment = -1;
 			}
 		}
@@ -930,13 +930,13 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 }
 #if TRACE
 if (nSegment != -1)
-	con_printf (CON_DEBUG," dist=%x\n", nDist);
+	con_printf (CON_DEBUG, " dist=%x\n", nDist);
 #endif
 if (nSegment == -1) {
 #if TRACE
 	con_printf (1, "Warning: Unable to find a connected tSegment.  Picking a random one.\n");
 #endif
-	return (d_rand() * gameData.segs.nLastSegment) >> 15;
+	return (d_rand () * gameData.segs.nLastSegment) >> 15;
 	}
 else
 	return nSegment;
@@ -1023,7 +1023,7 @@ gameData.objs.nDropped--;
 int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 {
 if (EGI_FLAG (bImmortalPowerups, 0, 0) || 
-		((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
+		 ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
 	short	nSegment;
 	int h, bFixedPos = 0;
 	vmsVector vNewPos;
@@ -1052,7 +1052,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0) ||
 			gameData.objs.dropInfo [h].nObject = nObject;
 			gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
 			gameData.objs.dropInfo [h].nDropTime = 
-				(extraGameInfo [IsMultiGame].nSpawnDelay < 0) ? -1 : gameStates.app.nSDLTicks;
+				 (extraGameInfo [IsMultiGame].nSpawnDelay < 0) ? -1 : gameStates.app.nSDLTicks;
 			return 0;
 			}
 		if (nDropState == EXEC_DROP) {
@@ -1073,7 +1073,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0) ||
 		gameData.objs.objects [nObject].position.vPos = vNewPos;
 	VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
 	RelinkObject (nObject, nSegment);
-	ObjectCreateExplosion (nSegment, &vNewPos, i2f(5), VCLIP_POWERUP_DISAPPEARANCE);
+	ObjectCreateExplosion (nSegment, &vNewPos, i2f (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -1081,7 +1081,7 @@ return 0;
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if current tSegment contains some tObject.
-int SegmentContainsObject(int objType, int obj_id, int nSegment)
+int SegmentContainsObject (int objType, int obj_id, int nSegment)
 {
 	int	nObject;
 
@@ -1097,18 +1097,18 @@ return 0;
 }
 
 //	------------------------------------------------------------------------------------------------------
-int ObjectNearbyAux(int nSegment, int objectType, int object_id, int depth)
+int ObjectNearbyAux (int nSegment, int objectType, int object_id, int depth)
 {
 	int	i, seg2;
 
 if (depth == 0)
 	return 0;
-if (SegmentContainsObject(objectType, object_id, nSegment))
+if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	seg2 = gameData.segs.segments [nSegment].children [i];
 	if (seg2 != -1)
-		if (ObjectNearbyAux(seg2, objectType, object_id, depth-1))
+		if (ObjectNearbyAux (seg2, objectType, object_id, depth-1))
 			return 1;
 		}
 	return 0;
@@ -1117,14 +1117,14 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if some powerup is nearby (within 3 segments).
-int WeaponNearby(tObject *objP, int weapon_id)
+int WeaponNearby (tObject *objP, int weapon_id)
 {
-	return ObjectNearbyAux(objP->position.nSegment, OBJ_POWERUP, weapon_id, 3);
+	return ObjectNearbyAux (objP->position.nSegment, OBJ_POWERUP, weapon_id, 3);
 }
 
 //	------------------------------------------------------------------------------------------------------
 
-void MaybeReplacePowerupWithEnergy(tObject *delObjP)
+void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 {
 	int	weapon_index=-1;
 
@@ -1132,7 +1132,7 @@ void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 		return;
 
 	if (delObjP->containsId == POW_CLOAK) {
-		if (WeaponNearby(delObjP, delObjP->containsId)) {
+		if (WeaponNearby (delObjP, delObjP->containsId)) {
 #if TRACE
 			con_printf (CON_DEBUG, "Bashing cloak into nothing because there's one nearby.\n");
 #endif
@@ -1169,14 +1169,14 @@ void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 	}
 
 	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (((weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (((weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
 	else if (weapon_index != -1) {
-		if ((PlayerHasWeapon(weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
-			 WeaponNearby(delObjP, delObjP->containsId)) {
-			if (d_rand() > 16384) {
+		if ((PlayerHasWeapon (weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
+			 WeaponNearby (delObjP, delObjP->containsId)) {
+			if (d_rand () > 16384) {
 				delObjP->containsType = OBJ_POWERUP;
 				if (weapon_index == VULCAN_INDEX) {
 					delObjP->containsId = POW_VULCAN_AMMO;
@@ -1191,8 +1191,8 @@ void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 			}
 		}
 	} else if (delObjP->containsId == POW_QUADLASER)
-		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby(delObjP, delObjP->containsId)) {
-			if (d_rand() > 16384) {
+		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
+			if (d_rand () > 16384) {
 				delObjP->containsType = OBJ_POWERUP;
 				delObjP->containsId = POW_ENERGY;
 			} else {
@@ -1201,7 +1201,7 @@ void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 			}
 		}
 
-	//	If this robot was gated in by the boss and it now contains energy, make it contain nothing,
+	//	If this robot was gated in by the boss and it now contains energy, make it contain nothing, 
 	//	else the room gets full of energy.
 	if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
 #if TRACE
@@ -1219,7 +1219,7 @@ void MaybeReplacePowerupWithEnergy(tObject *delObjP)
 
 //------------------------------------------------------------------------------
 
-int DropPowerup(ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment)
 {
 	short			nObject=-1;
 	tObject		*objP;
@@ -1232,7 +1232,7 @@ switch (nType) {
 		for (count = 0; count < num; count++) {
 			int	rand_scale;
 			new_velocity = *init_vel;
-			old_mag = VmVecMagQuick(init_vel);
+			old_mag = VmVecMagQuick (init_vel);
 
 			//	We want powerups to move more in network mode.
 			if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
@@ -1243,13 +1243,13 @@ switch (nType) {
 				}
 			else
 				rand_scale = 2;
-			new_velocity.p.x += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.p.y += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
-			new_velocity.p.z += FixMul(old_mag+F1_0*32, d_rand()*rand_scale - 16384*rand_scale);
+			new_velocity.p.x += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity.p.y += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
+			new_velocity.p.z += FixMul (old_mag+F1_0*32, d_rand ()*rand_scale - 16384*rand_scale);
 			// Give keys zero velocity so they can be tracked better in multi
 			if ((gameData.app.nGameMode & GM_MULTI) && 
-				 (((id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
-				VmVecZero(&new_velocity);
+				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
+				VmVecZero (&new_velocity);
 			vNewPos = *pos;
 
 			if (gameData.app.nGameMode & GM_MULTI) {	
@@ -1276,7 +1276,7 @@ switch (nType) {
 #if TRACE
 				con_printf (1, "Can't create tObject in ObjectCreateEgg.  Aborting.\n");
 #endif
-				Int3();
+				Int3 ();
 				return nObject;
 				}
 			if (gameData.app.nGameMode & GM_MULTI)
@@ -1295,13 +1295,13 @@ switch (nType) {
 				case POW_CONCUSSION_4:
 				case POW_SHIELD_BOOST:
 				case POW_ENERGY:
-					objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+					objP->lifeleft = (d_rand () + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 					if (gameData.app.nGameMode & GM_MULTI)
 						objP->lifeleft /= 2;
 					break;
 				default:
 //						if (gameData.app.nGameMode & GM_MULTI)
-//							objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+//							objP->lifeleft = (d_rand () + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 					break;
 				}
 			}
@@ -1311,28 +1311,28 @@ switch (nType) {
 		for (count=0; count<num; count++) {
 			int	rand_scale;
 			new_velocity = *init_vel;
-			old_mag = VmVecMagQuick(init_vel);
-			VmVecNormalizeQuick(&new_velocity);
+			old_mag = VmVecMagQuick (init_vel);
+			VmVecNormalizeQuick (&new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
-			new_velocity.p.x += (d_rand()-16384)*2;
-			new_velocity.p.y += (d_rand()-16384)*2;
-			new_velocity.p.z += (d_rand()-16384)*2;
-			VmVecNormalizeQuick(&new_velocity);
-			VmVecScale(&new_velocity, (F1_0*32 + old_mag) * rand_scale);
+			new_velocity.p.x += (d_rand ()-16384)*2;
+			new_velocity.p.y += (d_rand ()-16384)*2;
+			new_velocity.p.z += (d_rand ()-16384)*2;
+			VmVecNormalizeQuick (&new_velocity);
+			VmVecScale (&new_velocity, (F1_0*32 + old_mag) * rand_scale);
 			vNewPos = *pos;
 			//	This is dangerous, could be outside mine.
-//				vNewPos.x += (d_rand()-16384)*8;
-//				vNewPos.y += (d_rand()-16384)*7;
-//				vNewPos.z += (d_rand()-16384)*6;
-			nObject = CreateObject(OBJ_ROBOT, id, -1, nSegment, &vNewPos, &vmdIdentityMatrix, 
+//				vNewPos.x += (d_rand ()-16384)*8;
+//				vNewPos.y += (d_rand ()-16384)*7;
+//				vNewPos.z += (d_rand ()-16384)*6;
+			nObject = CreateObject (OBJ_ROBOT, id, -1, nSegment, &vNewPos, &vmdIdentityMatrix, 
 										 gameData.models.polyModels [gameData.bots.pInfo [id].nModel].rad, 
 										 CT_AI, MT_PHYSICS, RT_POLYOBJ, 1);
 			if (nObject < 0) {
 #if TRACE
 				con_printf (1, "Can't create tObject in ObjectCreateEgg, robots.  Aborting.\n");
 #endif
-				Int3();
+				Int3 ();
 				return nObject;
 				}
 			if (gameData.app.nGameMode & GM_MULTI)
@@ -1356,12 +1356,12 @@ switch (nType) {
 			}
 		// At JasenW's request, robots which contain robots
 		// sometimes drop shields.
-		if (d_rand() > 16384)
-			DropPowerup(OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, init_vel, pos, nSegment);
+		if (d_rand () > 16384)
+			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, init_vel, pos, nSegment);
 		break;
 
 	default:
-		Error("Error: Illegal nType (%i) in tObject spawning.\n", nType);
+		Error ("Error: Illegal nType (%i) in tObject spawning.\n", nType);
 	}
 return nObject;
 }
@@ -1376,16 +1376,16 @@ int ObjectCreateEgg (tObject *objP)
 if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
 		if (objP->containsId == POW_SHIELD_BOOST) {
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f(100)) {
-				if (d_rand() > 16384) {
+			if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (100)) {
+				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CON_DEBUG, "Not dropping shield!\n");
 #endif
 					return -1;
 					}
 				} 
-			else  if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f(150)) {
-				if (d_rand() > 8192) {
+			else  if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (150)) {
+				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CON_DEBUG, "Not dropping shield!\n");
 #endif
@@ -1394,16 +1394,16 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 				}
 			} 
 		else if (objP->containsId == POW_ENERGY) {
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f(100)) {
-				if (d_rand() > 16384) {
+			if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (100)) {
+				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CON_DEBUG, "Not dropping energy!\n");
 #endif
 					return -1;
 					}
 				} 
-			else if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f(150)) {
-				if (d_rand() > 8192) {
+			else if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (150)) {
+				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CON_DEBUG, "Not dropping energy!\n");
 #endif
@@ -1416,14 +1416,14 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 
 rval = DropPowerup (
 	objP->containsType, 
-	(ubyte) objP->containsId, 
-	(short) (
-		((gameData.app.nGameMode & GM_ENTROPY) && 
+	 (ubyte) objP->containsId, 
+	 (short) (
+		 ((gameData.app.nGameMode & GM_ENTROPY) && 
 		 (objP->containsType == OBJ_POWERUP) && 
 		 (objP->containsId == POW_ENTROPY_VIRUS) && 
 		 (objP->nType == OBJ_PLAYER)) ? 
 		GetTeam (objP->id) + 1 : -1
-		),
+		), 
 	objP->containsCount, 
 	&objP->mType.physInfo.velocity, 
 	&objP->position.vPos, objP->position.nSegment);
@@ -1443,12 +1443,12 @@ return rval;
 // -- extern int Items_destroyed;
 
 //	-------------------------------------------------------------------------------------------------------
-//	Put count gameData.objs.objects of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them!  Yippee!
+//	Put count gameData.objs.objects of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
 //	Returns created tObject number.
-int CallObjectCreateEgg(tObject *objP, int count, int nType, int id)
+int CallObjectCreateEgg (tObject *objP, int count, int nType, int id)
 {
 // -- 	if (!(gameData.app.nGameMode & GM_MULTI) && (objP == gameData.objs.console))
-// -- 		if (d_rand() < 32767/6) {
+// -- 		if (d_rand () < 32767/6) {
 // -- 			Items_destroyed++;
 // -- 			return -1;
 // -- 		}
@@ -1463,7 +1463,7 @@ return ObjectCreateEgg (objP);
 
 //------------------------------------------------------------------------------
 //what tVideoClip does this explode with?
-short GetExplosionVClip(tObject *obj,int stage)
+short GetExplosionVClip (tObject *obj, int stage)
 {
 	if (obj->nType==OBJ_ROBOT) {
 
@@ -1473,7 +1473,7 @@ short GetExplosionVClip(tObject *obj,int stage)
 				return gameData.bots.pInfo [obj->id].nExp2VClip;
 
 	}
-	else if (obj->nType==OBJ_PLAYER && gameData.pig.ship.player->expl_vclip_num>-1)
+	else if ((obj->nType == OBJ_PLAYER) && (gameData.pig.ship.player->expl_vclip_num >- 1))
 			return gameData.pig.ship.player->expl_vclip_num;
 
 	return VCLIP_SMALL_EXPLOSION;		//default
@@ -1481,9 +1481,9 @@ short GetExplosionVClip(tObject *obj,int stage)
 
 //------------------------------------------------------------------------------
 //blow up a polygon model
-void ExplodePolyModel(tObject *obj)
+void ExplodePolyModel (tObject *obj)
 {
-Assert(obj->renderType == RT_POLYOBJ);
+Assert (obj->renderType == RT_POLYOBJ);
 if (gameData.models.nDyingModels [obj->rType.polyObjInfo.nModel] != -1)
 	obj->rType.polyObjInfo.nModel = gameData.models.nDyingModels [obj->rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [obj->rType.polyObjInfo.nModel].nModels > 1) {
@@ -1498,7 +1498,7 @@ if (gameData.models.polyModels [obj->rType.polyObjInfo.nModel].nModels > 1) {
 
 //------------------------------------------------------------------------------
 //if the tObject has a destroyed model, switch to it.  Otherwise, delete it.
-void MaybeDeleteObject(tObject *delObjP)
+void MaybeDeleteObject (tObject *delObjP)
 {
 if (gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel] != -1) {
 	delObjP->rType.polyObjInfo.nModel = gameData.models.nDeadModels [delObjP->rType.polyObjInfo.nModel];
@@ -1516,85 +1516,80 @@ else {		//normal, multi-stage explosion
 //blow up an tObject.  Takes the tObject to destroy, and the point of impact
 void ExplodeObject (tObject *hitObjP, fix delayTime)
 {
-	if (hitObjP->flags & OF_EXPLODING) 
+if (hitObjP->flags & OF_EXPLODING) 
+	return;
+if (delayTime) {		//wait a little while before creating explosion
+	int nObject;
+	tObject *objP;
+	//create a placeholder tObject to do the delay, with id==-1
+	nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->position.nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0, 
+									CT_EXPLOSION, MT_NONE, RT_NONE, 1);
+	if (nObject < 0) {
+		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
+#if TRACE
+		con_printf (1, "Couldn't start explosion, deleting tObject now\n");
+#endif
+		Int3 ();
 		return;
-
-	if (delayTime) {		//wait a little while before creating explosion
-		int nObject;
-		tObject *obj;
-
-		//create a placeholder tObject to do the delay, with id==-1
-		nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->position.nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0,
-									  CT_EXPLOSION, MT_NONE, RT_NONE, 1);
-		if (nObject < 0) {
-			MaybeDeleteObject(hitObjP);		//no explosion, die instantly
-#if TRACE
-			con_printf (1,"Couldn't start explosion, deleting tObject now\n");
-#endif
-			Int3();
-			return;
 		}
-		obj = gameData.objs.objects + nObject;
-		//now set explosion-specific data
-		obj->lifeleft = delayTime;
-		obj->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
+	objP = gameData.objs.objects + nObject;
+	//now set explosion-specific data
+	objP->lifeleft = delayTime;
+	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
 #ifndef NDEBUG
-		if (obj->cType.explInfo.nDeleteObj < 0)
-		 Int3(); // See Rob!
+	if (objP->cType.explInfo.nDeleteObj < 0)
+		Int3 (); // See Rob!
 #endif
-		obj->cType.explInfo.nDeleteTime = -1;
-		obj->cType.explInfo.nSpawnTime = 0;
+	objP->cType.explInfo.nDeleteTime = -1;
+	objP->cType.explInfo.nSpawnTime = 0;
 	}
-	else {
-		tObject *expl_obj;
-		ubyte vclip_num;
+else {
+	tObject	*explObjP;
+	ubyte		nVClip;
 
-		vclip_num = (ubyte) GetExplosionVClip(hitObjP,0);
-		expl_obj = ObjectCreateExplosion(hitObjP->position.nSegment, &hitObjP->position.vPos, FixMul(hitObjP->size,EXPLOSION_SCALE), vclip_num);
-		if (! expl_obj) {
-			MaybeDeleteObject(hitObjP);		//no explosion, die instantly
+	nVClip = (ubyte) GetExplosionVClip (hitObjP, 0);
+	explObjP = ObjectCreateExplosion (hitObjP->position.nSegment, &hitObjP->position.vPos, FixMul (hitObjP->size, EXPLOSION_SCALE), nVClip);
+	if (!explObjP) {
+		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
-			con_printf (CON_DEBUG,"Couldn't start explosion, deleting tObject now\n");
+		con_printf (CON_DEBUG, "Couldn't start explosion, deleting tObject now\n");
 #endif
-			return;
+		return;
 		}
-
-		//don't make debris explosions have physics, because they often
-		//happen when the debris has hit the wall, so the fireball is trying
-		//to move into the wall, which shows off FVI problems.   	
-		if (hitObjP->nType!=OBJ_DEBRIS && hitObjP->movementType==MT_PHYSICS) {
-			expl_obj->movementType = MT_PHYSICS;
-			expl_obj->mType.physInfo = hitObjP->mType.physInfo;
+	//don't make debris explosions have physics, because they often
+	//happen when the debris has hit the wall, so the fireball is trying
+	//to move into the wall, which shows off FVI problems.   	
+	if ((hitObjP->nType != OBJ_DEBRIS) && (hitObjP->movementType == MT_PHYSICS)) {
+		explObjP->movementType = MT_PHYSICS;
+		explObjP->mType.physInfo = hitObjP->mType.physInfo;
 		}
-		if (hitObjP->renderType==RT_POLYOBJ && hitObjP->nType!=OBJ_DEBRIS)
-			ExplodePolyModel(hitObjP);
-		MaybeDeleteObject(hitObjP);
+	if ((hitObjP->renderType == RT_POLYOBJ) && (hitObjP->nType != OBJ_DEBRIS))
+		ExplodePolyModel (hitObjP);
+	MaybeDeleteObject (hitObjP);
 	}
-	hitObjP->flags |= OF_EXPLODING;		//say that this is blowing up
-	hitObjP->controlType = CT_NONE;		//become inert while exploding
+hitObjP->flags |= OF_EXPLODING;		//say that this is blowing up
+hitObjP->controlType = CT_NONE;		//become inert while exploding
 }
 
 //------------------------------------------------------------------------------
 //do whatever needs to be done for this piece of debris for this frame
-void DoDebrisFrame(tObject *obj)
+void DoDebrisFrame (tObject *objP)
 {
-	Assert(obj->controlType == CT_DEBRIS);
-
-	if (obj->lifeleft < 0)
-		ExplodeObject(obj,0);
-
+Assert (objP->controlType == CT_DEBRIS);
+if (objP->lifeleft < 0)
+	ExplodeObject (objP, 0);
 }
 
 //------------------------------------------------------------------------------
 
-extern void DropStolenItems(tObject *objP);
+extern void DropStolenItems (tObject *objP);
 
 //do whatever needs to be done for this explosion for this frame
-void DoExplosionSequence(tObject *obj)
+void DoExplosionSequence (tObject *obj)
 {
 	int t;
 
-	Assert(obj->controlType == CT_EXPLOSION);
+	Assert (obj->controlType == CT_EXPLOSION);
 
 	//See if we should die of old age
 	if (obj->lifeleft <= 0) 	{	// We died of old age
@@ -1604,8 +1599,8 @@ void DoExplosionSequence(tObject *obj)
 
 	//See if we should create a secondary explosion
 	if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
-		tObject *expl_obj, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
-		ubyte vclip_num;
+		tObject *explObjP, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
+		ubyte nVClip;
 		vmsVector *vSpawnPos;
 		fix badass = (fix) gameData.bots.pInfo [delObjP->id].badass;
 
@@ -1613,88 +1608,88 @@ void DoExplosionSequence(tObject *obj)
 #if TRACE
 			con_printf (CON_DEBUG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif
-			Int3(); // get Rob, please... thanks
+			Int3 (); // get Rob, please... thanks
 			return;
 		}
 		vSpawnPos = &delObjP->position.vPos;
 		t = delObjP->nType;
-		if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
+		if (( (t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
 			 (delObjP->position.nSegment == -1)) {
-			Int3();	//pretty bad
+			Int3 ();	//pretty bad
 			return;
 		}
-		vclip_num = (ubyte) GetExplosionVClip (delObjP, 1);
+		nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
 		if (delObjP->nType == OBJ_ROBOT && badass)
-			expl_obj = ObjectCreateBadassExplosion (
+			explObjP = ObjectCreateBadassExplosion (
 				NULL, 
 				delObjP->position.nSegment, 
 				vSpawnPos, 
 				FixMul (delObjP->size, EXPLOSION_SCALE), 
-				vclip_num, 
+				nVClip, 
 				F1_0 * badass, 
-				i2f(4) * badass, 
-				i2f(35) * badass, 
+				i2f (4) * badass, 
+				i2f (35) * badass, 
 				-1);
 		else
-			expl_obj = ObjectCreateExplosion(delObjP->position.nSegment, vSpawnPos, FixMul(delObjP->size, EXPLOSION_SCALE), vclip_num);
+			explObjP = ObjectCreateExplosion (delObjP->position.nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
 
 		if ((delObjP->containsCount > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
 			//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 			if (delObjP->containsType == OBJ_POWERUP)
-				MaybeReplacePowerupWithEnergy(delObjP);
+				MaybeReplacePowerupWithEnergy (delObjP);
 			if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
-				ObjectCreateEgg(delObjP);
+				ObjectCreateEgg (delObjP);
 			}
 		else if ((delObjP->nType == OBJ_ROBOT) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside this code!!
 			tRobotInfo	*robptr = &gameData.bots.pInfo [delObjP->id];
 			if (robptr->containsCount && ((robptr->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
-				if (((d_rand() * 16) >> 15) < robptr->containsProb) {
-					delObjP->containsCount = ((d_rand() * robptr->containsCount) >> 15) + 1;
+				if (( (d_rand () * 16) >> 15) < robptr->containsProb) {
+					delObjP->containsCount = ((d_rand () * robptr->containsCount) >> 15) + 1;
 					delObjP->containsType = robptr->containsType;
 					delObjP->containsId = robptr->containsId;
-					MaybeReplacePowerupWithEnergy(delObjP);
-					ObjectCreateEgg(delObjP);
+					MaybeReplacePowerupWithEnergy (delObjP);
+					ObjectCreateEgg (delObjP);
 				}
 			}
 
 			if (robptr->thief)
-				DropStolenItems(delObjP);
+				DropStolenItems (delObjP);
 
 			if (robptr->companion) {
-				DropBuddyMarker(delObjP);
+				DropBuddyMarker (delObjP);
 			}
 		}
 
 		if (gameData.bots.pInfo [delObjP->id].nExp2Sound > -1)
-			DigiLinkSoundToPos(gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->position.nSegment, 0, vSpawnPos, 0, F1_0);
-			//PLAY_SOUND_3D(gameData.bots.pInfo [delObjP->id].nExp2Sound, vSpawnPos, delObjP->nSegment);
+			DigiLinkSoundToPos (gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->position.nSegment, 0, vSpawnPos, 0, F1_0);
+			//PLAY_SOUND_3D (gameData.bots.pInfo [delObjP->id].nExp2Sound, vSpawnPos, delObjP->nSegment);
 
 		obj->cType.explInfo.nSpawnTime = -1;
 
 		//make debris
 		if (delObjP->renderType==RT_POLYOBJ)
-			ExplodePolyModel(delObjP);		//explode a polygon model
+			ExplodePolyModel (delObjP);		//explode a polygon model
 
 		//set some parm in explosion
-		if (expl_obj) {
+		if (explObjP) {
 
 			if (delObjP->movementType == MT_PHYSICS) {
-				expl_obj->movementType = MT_PHYSICS;
-				expl_obj->mType.physInfo = delObjP->mType.physInfo;
+				explObjP->movementType = MT_PHYSICS;
+				explObjP->mType.physInfo = delObjP->mType.physInfo;
 			}
 
-			expl_obj->cType.explInfo.nDeleteTime = expl_obj->lifeleft/2;
-			expl_obj->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
+			explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
+			explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifndef NDEBUG
 			if (obj->cType.explInfo.nDeleteObj < 0)
-		  		Int3(); // See Rob!
+		  		Int3 (); // See Rob!
 #endif
 
 		}
 		else {
-			MaybeDeleteObject(delObjP);
+			MaybeDeleteObject (delObjP);
 #if TRACE
-			con_printf (CON_DEBUG,"Couldn't create secondary explosion, deleting tObject now\n");
+			con_printf (CON_DEBUG, "Couldn't create secondary explosion, deleting tObject now\n");
 #endif
 		}
 
@@ -1706,16 +1701,16 @@ void DoExplosionSequence(tObject *obj)
 
 		obj->cType.explInfo.nDeleteTime = -1;
 
-		MaybeDeleteObject(delObjP);
+		MaybeDeleteObject (delObjP);
 	}
 }
 
 //------------------------------------------------------------------------------
-#define EXPL_WALL_TIME					(f1_0)
+#define EXPL_WALL_TIME					 (f1_0)
 #define EXPL_WALL_TOTAL_FIREBALLS	32
-#define EXPL_WALL_FIREBALL_SIZE 		(0x48000*6/10)	//smallest size
+#define EXPL_WALL_FIREBALL_SIZE 		 (0x48000*6/10)	//smallest size
 
-void InitExplodingWalls()
+void InitExplodingWalls ()
 {
 	int i;
 
@@ -1725,7 +1720,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++)
 
 //------------------------------------------------------------------------------
 //explode the given wall
-void ExplodeWall(short nSegment, short nSide)
+void ExplodeWall (short nSegment, short nSide)
 {
 	int i;
 	vmsVector pos;
@@ -1736,9 +1731,9 @@ void ExplodeWall(short nSegment, short nSide)
 
 	if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-		con_printf (CON_DEBUG,"Couldn't find d_free slot for exploding wall!\n");
+		con_printf (CON_DEBUG, "Couldn't find d_free slot for exploding wall!\n");
 #endif
-		Int3();
+		Int3 ();
 		return;
 	}
 
@@ -1747,15 +1742,15 @@ void ExplodeWall(short nSegment, short nSide)
 	gameData.walls.explWalls [i].time = 0;
 
 	//play one long sound for whole door wall explosion
-	COMPUTE_SIDE_CENTER(&pos,&gameData.segs.segments [nSegment], nSide);
-	DigiLinkSoundToPos(SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
+	COMPUTE_SIDE_CENTER (&pos, &gameData.segs.segments [nSegment], nSide);
+	DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
 
 }
 
 //------------------------------------------------------------------------------
 //handle walls for this frame
 //note: this wall code assumes the wall is not triangulated
-void DoExplodingWallFrame()
+void DoExplodingWallFrame ()
 {
 	int i;
 
@@ -1763,59 +1758,59 @@ void DoExplodingWallFrame()
 		short nSegment = gameData.walls.explWalls [i].nSegment;
 		if (nSegment != -1) {
 			short nSide = gameData.walls.explWalls [i].nSide;
-			fix oldfrac,newfrac;
-			int old_count,new_count,e;		//n,
-			oldfrac = FixDiv(gameData.walls.explWalls [i].time,EXPL_WALL_TIME);
+			fix oldfrac, newfrac;
+			int old_count, new_count, e;		//n, 
+			oldfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
 			gameData.walls.explWalls [i].time += gameData.time.xFrame;
 			if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
 				gameData.walls.explWalls [i].time = EXPL_WALL_TIME;
-			if (gameData.walls.explWalls [i].time>(EXPL_WALL_TIME*3)/4) {
-				tSegment *seg,*csegp;
+			if (gameData.walls.explWalls [i].time> (EXPL_WALL_TIME*3)/4) {
+				tSegment *seg, *csegp;
 				short cside, n;
 				ubyte	a;
 				seg = gameData.segs.segments + nSegment;
 				a = (ubyte) gameData.walls.walls [WallNumP (seg, nSide)].nClip;
 				n = AnimFrameCount (gameData.walls.pAnims + a);
 				csegp = gameData.segs.segments + seg->children [nSide];
-				cside = FindConnectedSide(seg, csegp);
-				WallSetTMapNum(seg,nSide, csegp, cside, a, n - 1);
+				cside = FindConnectedSide (seg, csegp);
+				WallSetTMapNum (seg, nSide, csegp, cside, a, n - 1);
 				gameData.walls.walls [WallNumP (seg, nSide)].flags |= WALL_BLASTED;
 				if (cside >= 0)
 					gameData.walls.walls [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
-			newfrac = FixDiv(gameData.walls.explWalls [i].time,EXPL_WALL_TIME);
-			old_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(oldfrac,oldfrac));
-			new_count = f2i(EXPL_WALL_TOTAL_FIREBALLS * FixMul(newfrac,newfrac));
+			newfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
+			old_count = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
+			new_count = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
 			//n = new_count - old_count;
 			//now create all the next explosions
 			for (e=old_count;e<new_count;e++) {
 				short			vertnum_list [4];
-				vmsVector	*v0,*v1,*v2;
-				vmsVector	vv0,vv1,pos;
+				vmsVector	*v0, *v1, *v2;
+				vmsVector	vv0, vv1, pos;
 				fix			size;
 
 				//calc expl position
 
-				GetSideVerts(vertnum_list,nSegment,nSide);
+				GetSideVerts (vertnum_list, nSegment, nSide);
 				v0 = gameData.segs.vertices + vertnum_list [0];
 				v1 = gameData.segs.vertices + vertnum_list [1];
 				v2 = gameData.segs.vertices + vertnum_list [2];
-				VmVecSub(&vv0,v0,v1);
-				VmVecSub(&vv1,v2,v1);
-				VmVecScaleAdd(&pos,v1,&vv0,d_rand()*2);
-				VmVecScaleInc(&pos,&vv1,d_rand()*2);
+				VmVecSub (&vv0, v0, v1);
+				VmVecSub (&vv1, v2, v1);
+				VmVecScaleAdd (&pos, v1, &vv0, d_rand ()*2);
+				VmVecScaleInc (&pos, &vv1, d_rand ()*2);
 				size = EXPL_WALL_FIREBALL_SIZE + (2*EXPL_WALL_FIREBALL_SIZE * e / EXPL_WALL_TOTAL_FIREBALLS);
 				//fireballs start away from door, with subsequent ones getting closer
-				VmVecScaleInc(&pos,gameData.segs.segments [nSegment].sides [nSide].normals,size*(EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
+				VmVecScaleInc (&pos, gameData.segs.segments [nSegment].sides [nSide].normals, size* (EXPL_WALL_TOTAL_FIREBALLS-e)/EXPL_WALL_TOTAL_FIREBALLS);
 				if (e & 3)		//3 of 4 are normal
-					ObjectCreateExplosion((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
+					ObjectCreateExplosion ((short) gameData.walls.explWalls [i].nSegment, &pos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
 				else
-					ObjectCreateBadassExplosion(NULL, (short) gameData.walls.explWalls [i].nSegment, &pos,
-					size,
-					(ubyte) VCLIP_SMALL_EXPLOSION,
-					i2f(4),		// damage strength
-					i2f(20),		//	damage radius
-					i2f(50),		//	damage force
+					ObjectCreateBadassExplosion (NULL, (short) gameData.walls.explWalls [i].nSegment, &pos, 
+					size, 
+					 (ubyte) VCLIP_SMALL_EXPLOSION, 
+					i2f (4), 		// damage strength
+					i2f (20), 		//	damage radius
+					i2f (50), 		//	damage force
 					-1		//	parent id
 					);
 			}
@@ -1869,7 +1864,7 @@ int CreateMonsterball (void)
 {
 	short			nDropSeg, nObject;
 	vmsVector	vSegCenter;
-	vmsVector	vInitVel = {0,0,0};
+	vmsVector	vInitVel = {0, 0, 0};
 
 RemoveMonsterball ();
 #ifdef _DEBUG
@@ -1915,7 +1910,7 @@ for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP+
 		ReleaseObject (i);
 		}
 #ifdef RELEASE
-if (!(NetworkIAmMaster() && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
+if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #endif
 if (!CreateMonsterball ())

@@ -82,7 +82,7 @@ if (bThruster)
 if (pvc->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, pvc->frames [iFrame], lighted);
 else {
-	Assert(lighted==0);		//blob cannot now be lighted
+	Assert(lighted == 0);		//blob cannot now be lighted
 	DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, (float) alpha);
 	}
 #if 1
@@ -91,37 +91,88 @@ if (bThruster)
 #endif
 }
 
+// -----------------------------------------------------------------------------
+
+void ConvertWeaponToVClip (tObject *objP)
+{
+objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.nCurFrame = 0;
+objP->size = gameData.objs.pwrUp.info [objP->id].size;
+objP->controlType = CT_POWERUP;
+objP->renderType = RT_POWERUP;
+objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.drag = 512;
+}
+
+// -----------------------------------------------------------------------------
+
+int ConvertVClipToPolymodel (tObject *objP)
+{
+	vmsAngVec	a;
+	short			nModel;
+
+if (!gameOpts->render.powerups.b3D)
+	return 0;
+if (objP->renderType == RT_POLYOBJ)
+	return 1;
+nModel = WeaponToModel (objP->id);
+if (!(nModel && gameData.models.modelToOOF [nModel]))
+	return 0;
+a.p = (rand () % F1_0) - F1_0 / 2;
+a.b = (rand () % F1_0) - F1_0 / 2;
+a.h = (rand () % F1_0) - F1_0 / 2;
+VmAngles2Matrix (&objP->position.mOrient, &a);
+objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.drag = 512;
+objP->mType.physInfo.rotVel.p.z = 
+objP->mType.physInfo.rotVel.p.y = 0;
+objP->mType.physInfo.rotVel.p.x = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+//objP->controlType = CT_WEAPON;
+objP->renderType = RT_POLYOBJ;
+objP->movementType = MT_PHYSICS;
+objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
+objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+							gameData.weapons.info [objP->id].po_len_to_width_ratio);
+objP->rType.polyObjInfo.nTexOverride = -1;
+objP->lifeleft = IMMORTAL_TIME;
+return 1;
+}
+
 //------------------------------------------------------------------------------
 
 void DrawWeaponVClip(tObject *objP)
 {
-	int	vclip_num;
-	fix	modtime,playTime;
+	int	nVClip;
+	fix	modtime, playTime;
 
-	Assert(objP->nType == OBJ_WEAPON);
-	vclip_num = gameData.weapons.info[objP->id].weapon_vclip;
-	modtime = objP->lifeleft;
-	playTime = gameData.eff.pVClips[vclip_num].xTotalTime;
-	//	Special values for modtime were causing enormous slowdown for omega blobs.
-	if (modtime == IMMORTAL_TIME)
-		modtime = playTime;
-	//	Should cause Omega blobs (which live for one frame) to not always be the same.
-	if (modtime == ONE_FRAME_TIME)
-		modtime = d_rand();
-	if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
-		int nObject = OBJ_IDX (objP);
-		modtime += (modtime * (nObject&7)) / 16;	//add variance to spin rate
-		while (modtime > playTime)
-			modtime -= playTime;
-		if ((nObject&1) ^ ((nObject>>1)&1))			//make some spin other way
-			modtime = playTime - modtime;
+Assert(objP->nType == OBJ_WEAPON);
+nVClip = gameData.weapons.info [objP->id].weapon_vclip;
+modtime = objP->lifeleft;
+playTime = gameData.eff.pVClips [nVClip].xTotalTime;
+//	Special values for modtime were causing enormous slowdown for omega blobs.
+if (modtime == IMMORTAL_TIME)
+	modtime = playTime;
+//	Should cause Omega blobs (which live for one frame) to not always be the same.
+if (modtime == ONE_FRAME_TIME)
+	modtime = d_rand();
+if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
+	int nObject = OBJ_IDX (objP);
+	modtime += (modtime * (nObject&7)) / 16;	//add variance to spin rate
+	while (modtime > playTime)
+		modtime -= playTime;
+	if ((nObject&1) ^ ((nObject>>1)&1))			//make some spin other way
+		modtime = playTime - modtime;
 	}
-	else {
-		while (modtime > playTime)
-			modtime -= playTime;
+else {
+	while (modtime > playTime)
+		modtime -= playTime;
 	}
-
-	DrawVClipObject(objP, modtime, 0, vclip_num, gameData.weapons.color + objP->id);
+if (ConvertVClipToPolymodel (objP))
+	DrawPolygonObject (objP);
+else
+	DrawVClipObject (objP, modtime, 0, nVClip, gameData.weapons.color + objP->id);
 }
 
 //------------------------------------------------------------------------------

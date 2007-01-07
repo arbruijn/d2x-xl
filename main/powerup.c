@@ -845,6 +845,8 @@ char powerupToWeapon [MAX_POWERUP_TYPES];
 char powerupToWeaponCount [MAX_POWERUP_TYPES];
 char powerupClass [MAX_POWERUP_TYPES];
 char powerupToObject [MAX_POWERUP_TYPES];
+short powerupToModel [MAX_POWERUP_TYPES];
+short weaponToModel [MAX_WEAPON_TYPES];
 
 void InitPowerupTables (void)
 {
@@ -982,8 +984,8 @@ powerupToObject [POW_FLASHMSL_4] = FLASHMSL_ID;
 powerupToObject [POW_GUIDEDMSL_1] = GUIDEDMSL_ID;
 #if 0 //no 3D models available
 powerupToObject [POW_GUIDEDMSL_4] = GUIDEDMSL_ID;
-powerupToObject [POW_SMARTMINE] = SMARTMINE_ID;
 #endif
+powerupToObject [POW_SMARTMINE] = SMINEPACK_ID;
 powerupToObject [POW_MERCURYMSL_1] = MERCURYMSL_ID;
 #if 0 //no 3D models available
 powerupToObject [POW_MERCURYMSL_4] = MERCURYMSL_ID;
@@ -993,6 +995,12 @@ powerupToObject [POW_HOMINGMSL_1] = HOMINGMSL_ID;
 #if 0 //no 3D models available
 powerupToObject [POW_HOMINGMSL_4] = HOMINGMSL_ID;
 #endif
+
+memset (powerupToModel, 0, sizeof (powerupToModel));
+powerupToModel [SMINEPACK_ID] = MAX_POLYGON_MODELS - 1;
+
+memset (weaponToModel, 0, sizeof (weaponToModel));
+weaponToModel [SMARTMINE_ID] = MAX_POLYGON_MODELS - 2;
 }
 
 //-----------------------------------------------------------------------------
@@ -1022,6 +1030,20 @@ return powerupToWeaponCount [nPowerup];
 char PowerupToObject (short nPowerup)
 {
 return powerupToObject [nPowerup];
+}
+
+//-----------------------------------------------------------------------------
+
+short PowerupToModel (short nPowerup)
+{
+return powerupToModel [nPowerup];
+}
+
+//-----------------------------------------------------------------------------
+
+short WeaponToModel (short nWeapon)
+{
+return weaponToModel [nWeapon];
 }
 
 //-----------------------------------------------------------------------------

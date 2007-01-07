@@ -497,11 +497,20 @@ int DrawHiresObject (tObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
 	int			bCloaked;
+	short			nModel = 0;
 	tOOFObject	*po;
 
 if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
 	return 0;
-if (!(po = gameData.models.modelToOOF [objP->rType.polyObjInfo.nModel]))
+if (objP->nType == OBJ_DEBRIS)
+	return 0;
+else if (objP->nType == OBJ_POWERUP)
+	nModel = PowerupToModel (objP->id);
+else if (objP->nType == OBJ_WEAPON)
+	nModel = WeaponToModel (objP->id);
+if (!nModel)
+	nModel = objP->rType.polyObjInfo.nModel;
+if (!(po = gameData.models.modelToOOF [nModel]))
 	return 0;
 fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;				

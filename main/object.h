@@ -703,6 +703,7 @@ int DelObjChildP (tObject *pChild);
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
 tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
 
+void DrawPolygonObject (tObject *objP);
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc);
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 

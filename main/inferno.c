@@ -2284,7 +2284,10 @@ static tOOFToModel oofToModel [] = {
 	{NULL, 161}, 
 	{"eshaker.oof", 154}, 
 	{NULL, 163}, 
-	{"shakrsub.oof", 160}
+	{"shakrsub.oof", 160},
+	{"sminepack.oof", MAX_POLYGON_MODELS - 1},
+	{"smartmine.oof", MAX_POLYGON_MODELS - 2},
+	{"smineblob.oof", MAX_POLYGON_MODELS - 3}
 	};
 
 void InitModelToOOF (void)

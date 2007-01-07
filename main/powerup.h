@@ -88,7 +88,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define GAUSS_WEAPON_AMMO_AMOUNT    392
 
-#define MAX_POWERUP_TYPES   50
+#define MAX_POWERUP_TYPES		50
+#define D2X_POWERUP_TYPES		100
 #define D1_MAX_POWERUP_TYPES  29
 
 #define POWERUP_NAME_LENGTH 16      // Length of a robot or powerup name.
@@ -140,6 +141,8 @@ char PowerupToWeapon (short nPowerup, int *nType);
 char PowerupToWeaponCount (short nPowerup);
 char PowerupClass (short nPowerup);
 char PowerupToObject (short nPowerup);
+short PowerupToModel (short nPowerup);
+short WeaponToModel (short nWeapon);
 short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
 
