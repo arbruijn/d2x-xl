@@ -1731,11 +1731,14 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 float G3SubModelClipDist (tObject *objP, tPOFObject *po, tPOFSubObject *pso)
 {
 	float	fMaxDist = 0;
-#if 1
+
+if (gameOpts->render.shadows.nClip < 2)
+	return fInf;
+#if 0
 if (!pso->bCalcClipDist)
 	return pso->fClipDist;	//only recompute every 2nd frame
-#endif
 pso->bCalcClipDist = 0;
+#endif
 #if MULTI_THREADED
 	if (gameStates.app.bMultiThreaded) {
 	gameData.threads.clipDist.data.objP = objP;
@@ -2019,6 +2022,8 @@ if (gameOpts->render.shadows.bFast) {
 				G3TransformPoint (&v, &objP->position.vPos, 0);
 				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &v, 0);
 				}
+			else
+				fInf = INFINITY;
 			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
