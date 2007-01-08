@@ -1925,7 +1925,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		if (playerP->flags & PLAYER_FLAGS_CLOAKED)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
 		while (playerP->nInvuls--)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVULNERABILITY);
+			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
 		while (playerP->nCloaks--)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
 		if (playerP->flags & PLAYER_FLAGS_MAP_ALL)

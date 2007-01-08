@@ -2649,7 +2649,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 			else {
-				gameData.objs.objects [i].id = POW_INVULNERABILITY;
+				gameData.objs.objects [i].id = POW_INVUL;
 				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				}
@@ -2661,7 +2661,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				}
-		if (gameData.objs.objects [i].id == POW_INVULNERABILITY) {
+		if (gameData.objs.objects [i].id == POW_INVUL) {
 			if (inv_count  >= 3 || (ng && !netGame.DoInvulnerability)) {
 				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
 				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
@@ -4263,7 +4263,7 @@ return 0;
 int MultiPowerupIsAllowed (int id)
 {
 switch (id) {
-	case POW_INVULNERABILITY: 
+	case POW_INVUL: 
 		if (!netGame.DoInvulnerability)
 			return (0);
 		break;

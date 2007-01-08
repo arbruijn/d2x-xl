@@ -500,7 +500,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 					if (/*gameStates.app.bD2XLevel && */
 						gameOpts->render.color.bAmbientLight && 
 						!gameOpts->render.color.bUseLightMaps && 
-						(pvc->index != -1)) {
+						pvc->index) {
 						l /= gameData.render.color.vertBright [nVertex];
 						pvc->color.red = pvc->color.red * l + pdc->red * dl;
 						pvc->color.green = pvc->color.green * l + pdc->green * dl;

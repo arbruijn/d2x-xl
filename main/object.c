@@ -261,7 +261,7 @@ if (gameOpts->render.bTransparentEffects) {
 				 (id == POW_SHIELD_BOOST) ||
 				 (id == POW_HOARD_ORB) ||
 				 (id == POW_CLOAK) ||
-				 (id == POW_INVULNERABILITY))
+				 (id == POW_INVUL))
 				alpha = 2.0f / 3.0f;
 			else
 				alpha = 1.0f;
@@ -493,6 +493,30 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
+short PowerupModel (int nId)
+{
+	short nModel;
+
+if (nModel = PowerupToModel (nId))
+	return nModel;
+if (0 > (nId = PowerupToObject (nId)))
+	return 0;
+return gameData.weapons.info [nId].nModel;
+}
+
+//------------------------------------------------------------------------------
+
+short WeaponModel (tObject *objP)
+{
+	short	nModel;
+	
+if (nModel = WeaponToModel (objP->id))
+	return nModel;
+return objP->rType.polyObjInfo.nModel;
+}
+
+//------------------------------------------------------------------------------
+
 int DrawHiresObject (tObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
@@ -505,11 +529,11 @@ if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
 if (objP->nType == OBJ_DEBRIS)
 	return 0;
 else if (objP->nType == OBJ_POWERUP)
-	nModel = PowerupToModel (objP->id);
+	nModel = PowerupModel (objP->id);
 else if (objP->nType == OBJ_WEAPON)
-	nModel = WeaponToModel (objP->id);
+	nModel = WeaponModel (objP);
 if (!nModel)
-	nModel = objP->rType.polyObjInfo.nModel;
+	return 0;
 if (!(po = gameData.models.modelToOOF [nModel]))
 	return 0;
 fLight [0] = xLight / 65536.0f;
@@ -1583,7 +1607,7 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
-void ConvertPowerupToWeapon (tObject *objP)
+void ConvertPowerupToWeapon (tObject *objP, short nModel, int bHasModel)
 {
 if (objP->controlType != CT_WEAPON) {
 	vmsAngVec	a;
@@ -1602,9 +1626,10 @@ if (objP->controlType != CT_WEAPON) {
 	objP->renderType = RT_POLYOBJ;
 	objP->movementType = MT_PHYSICS;
 	objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
-	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
-	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
-								gameData.weapons.info [objP->id].po_len_to_width_ratio);
+	objP->rType.polyObjInfo.nModel = nModel;
+	if (bHasModel)
+		objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+									gameData.weapons.info [objP->id].po_len_to_width_ratio);
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->lifeleft = IMMORTAL_TIME;
 	}
@@ -1617,7 +1642,6 @@ bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 void RenderObject (tObject *objP, int nWindowNum)
 {
 	int			mldSave, bSpectate = 0;
-	ubyte			nIdSave;
 	tPosition	savePos;
 #if 0
 	float			fLight [3];
@@ -1688,10 +1712,7 @@ switch (objP->renderType) {
 			}
 		else if (objP->nType == OBJ_POWERUP) {
 			if (gameOpts->render.powerups.b3D) {
-				nIdSave = objP->id;
-				objP->id = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
 				DrawPolygonObject (objP);
-				objP->id = nIdSave;
 				objP->mType.physInfo.mass = F1_0;
 				objP->mType.physInfo.drag = 512;
 				if (gameOpts->render.powerups.nSpin != 
@@ -1737,17 +1758,28 @@ switch (objP->renderType) {
 		break;
 
 	case RT_POWERUP: {
-		short	nId = gameOpts->render.powerups.b3D ? PowerupToObject (objP->id) : -1;
+		short nModel, nId = -1;
+		int	bHasModel = 0;
+
+		if (gameOpts->render.powerups.b3D) {
+			nModel = PowerupToModel (objP->id);
+			if (!nModel) {
+				nId = PowerupToObject (objP->id);
+				if (nId >= 0) {
+					nModel = gameData.weapons.info [nId].nModel;
+					bHasModel = 1;
+					}
+				}
+			if (!(nModel && gameData.models.modelToOOF [nModel]))
+				nId = -1;
+			}
 		if (nId < 0) {
 			if (gameStates.render.nShadowPass != 2)
 				DrawPowerup (objP); 
 			}
 		else {
-			ubyte nIdSave = objP->id;
-			objP->id = (ubyte) nId;
-			ConvertPowerupToWeapon (objP);
+			ConvertPowerupToWeapon (objP, nModel, bHasModel);
 			DrawPolygonObject (objP);
-			objP->id = nIdSave;
 			}
 		}
 		break;

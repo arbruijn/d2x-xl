@@ -123,8 +123,10 @@ a.p = (rand () % F1_0) - F1_0 / 2;
 a.b = (rand () % F1_0) - F1_0 / 2;
 a.h = (rand () % F1_0) - F1_0 / 2;
 VmAngles2Matrix (&objP->position.mOrient, &a);
+#if 0
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
+#endif
 objP->mType.physInfo.rotVel.p.z = 
 objP->mType.physInfo.rotVel.p.y = 0;
 objP->mType.physInfo.rotVel.p.x = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
@@ -133,8 +135,10 @@ objP->renderType = RT_POLYOBJ;
 objP->movementType = MT_PHYSICS;
 objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
+#if 0
 objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
 							gameData.weapons.info [objP->id].po_len_to_width_ratio);
+#endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 objP->lifeleft = IMMORTAL_TIME;
 return 1;
@@ -166,8 +170,8 @@ if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
 		modtime = playTime - modtime;
 	}
 else {
-	while (modtime > playTime)
-		modtime -= playTime;
+	if (modtime > playTime)
+		modtime %= playTime;
 	}
 if (ConvertVClipToPolymodel (objP))
 	DrawPolygonObject (objP);

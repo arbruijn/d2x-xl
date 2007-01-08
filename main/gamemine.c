@@ -1251,11 +1251,9 @@ for (i = 0; i < gameData.segs.nVertices; i++, pvc++) {
 		continue;
 #endif
 	if ((pvc->color.red == 0) && (pvc->color.green == 0) && (pvc->color.blue == 0)) {
-		pvc->index = -1;
+		pvc->index = 0;
 		continue;
 		}
-	if (pvc->index < 0)
-		pvc->index = 0;
 	if ((pvc->color.red < 1) || (pvc->color.green < 1) || (pvc->color.blue < 1))
 		bColored = 1;
 	}

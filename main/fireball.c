@@ -1213,7 +1213,7 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	// Change multiplayer extra-lives into invulnerability
 	if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->containsId == POW_EXTRA_LIFE))
 	{
-		delObjP->containsId = POW_INVULNERABILITY;
+		delObjP->containsId = POW_INVUL;
 	}
 }
 
@@ -1239,7 +1239,7 @@ switch (nType) {
 				rand_scale = 4;
 				//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
 				if (id == POW_EXTRA_LIFE)
-					id = POW_INVULNERABILITY;
+					id = POW_INVUL;
 				}
 			else
 				rand_scale = 2;

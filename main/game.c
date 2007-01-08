@@ -1089,7 +1089,7 @@ if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_IN
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
 				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, F1_0);
-				MaybeDropNetPowerup (-1, POW_INVULNERABILITY, FORCE_DROP);
+				MaybeDropNetPowerup (-1, POW_INVUL, FORCE_DROP);
 				}
 #endif
 #if TRACE

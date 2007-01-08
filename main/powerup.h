@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POW_HOMINGMSL_4       	19      // 4-pack MUST follow single missile
 #define POW_CLOAK               	23
 #define POW_TURBO               	24
-#define POW_INVULNERABILITY     	25
+#define POW_INVUL				     	25
 #define POW_MEGAWOW             	27
 
 #define POW_GAUSS        			28

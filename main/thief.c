@@ -275,7 +275,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 			gameData.multi.players[player_num].flags &= (~flagval);
 			switch (flagval) {
 				case PLAYER_FLAGS_INVULNERABLE:
-					powerup_index = POW_INVULNERABILITY;
+					powerup_index = POW_INVUL;
 					ThiefMessage("Invulnerability stolen!");
 					break;
 				case PLAYER_FLAGS_CLOAKED:

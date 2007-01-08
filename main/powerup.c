@@ -377,7 +377,7 @@ void UsePowerup (int id)
 if (bApply = (id < 0))
 	id = -id;
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
-	if (!bApply && (gameOpts->gameplay.bInventory && !IsMultiGame) && ((id == POW_CLOAK) || (id == POW_INVULNERABILITY)))
+	if (!bApply && (gameOpts->gameplay.bInventory && !IsMultiGame) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
 	if (gameData.app.nGameMode & GM_MULTI) // Added by Rob, take this out if it turns out to be not good for net games!
 		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
@@ -408,7 +408,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		MultiSendInvul ();
 	PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
 	SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
-	UsePowerup (-POW_INVULNERABILITY);
+	UsePowerup (-POW_INVUL);
 	}
 return 1;
 }
@@ -675,7 +675,7 @@ switch (objP->id) {
 			}
 		break;
 
-	case POW_INVULNERABILITY:
+	case POW_INVUL:
 		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
 			if (playerP->nInvuls == 255) {
 				if (ISLOCALPLAYER (nPlayer))
@@ -893,7 +893,7 @@ powerupToWeaponCount [POW_SUPERLASER] = 1;
 
 powerupToWeaponCount [POW_CLOAK] = 
 powerupToWeaponCount [POW_TURBO] = 
-powerupToWeaponCount [POW_INVULNERABILITY] = 
+powerupToWeaponCount [POW_INVUL] = 
 powerupToWeaponCount [POW_FULL_MAP] = 
 powerupToWeaponCount [POW_CONVERTER] = 
 powerupToWeaponCount [POW_AMMORACK] = 
@@ -948,7 +948,7 @@ powerupClass [POW_HOMINGMSL_4] = 2;
 powerupClass [POW_QUADLASER] = 
 powerupClass [POW_CLOAK] = 
 powerupClass [POW_TURBO] = 
-powerupClass [POW_INVULNERABILITY] = 
+powerupClass [POW_INVUL] = 
 powerupClass [POW_FULL_MAP] = 
 powerupClass [POW_CONVERTER] = 
 powerupClass [POW_AMMORACK] = 
@@ -956,7 +956,6 @@ powerupClass [POW_AFTERBURNER] =
 powerupClass [POW_HEADLIGHT] = 3;
 
 memset (powerupToObject, 0xff, sizeof (powerupToObject));
-#if 0 //no 3D models available
 powerupToObject [POW_LASER] = LASER_ID;
 powerupToObject [POW_VULCAN] = VULCAN_ID;
 powerupToObject [POW_SPREADFIRE] = SPREADFIRE_ID;
@@ -967,40 +966,56 @@ powerupToObject [POW_HELIX] = HELIX_ID;
 powerupToObject [POW_PHOENIX] = PHOENIX_ID;
 powerupToObject [POW_OMEGA] = OMEGA_ID;
 powerupToObject [POW_SUPERLASER] = SUPERLASER_ID;
-#endif
 powerupToObject [POW_CONCUSSION_1] = CONCUSSION_ID;
-#if 0 //no 3D models available
-powerupToObject [POW_CONCUSSION_4] = CONCUSSION_ID;
-#endif
-#if 0 //no 3D models available
 powerupToObject [POW_PROXMINE] = PROXMINE_ID;
-#endif
 powerupToObject [POW_SMARTMSL] = SMARTMSL_ID;
 powerupToObject [POW_MEGAMSL] = MEGAMSL_ID;
 powerupToObject [POW_FLASHMSL_1] = FLASHMSL_ID;
-#if 0 //no 3D models available
-powerupToObject [POW_FLASHMSL_4] = FLASHMSL_ID;
-#endif
 powerupToObject [POW_GUIDEDMSL_1] = GUIDEDMSL_ID;
-#if 0 //no 3D models available
-powerupToObject [POW_GUIDEDMSL_4] = GUIDEDMSL_ID;
-#endif
 powerupToObject [POW_SMARTMINE] = SMINEPACK_ID;
 powerupToObject [POW_MERCURYMSL_1] = MERCURYMSL_ID;
-#if 0 //no 3D models available
-powerupToObject [POW_MERCURYMSL_4] = MERCURYMSL_ID;
-#endif
 powerupToObject [POW_EARTHSHAKER] = EARTHSHAKER_ID;
 powerupToObject [POW_HOMINGMSL_1] = HOMINGMSL_ID;
-#if 0 //no 3D models available
+
+powerupToObject [POW_CONCUSSION_4] = CONCUSSION_ID;
+powerupToObject [POW_FLASHMSL_4] = FLASHMSL_ID;
 powerupToObject [POW_HOMINGMSL_4] = HOMINGMSL_ID;
-#endif
+powerupToObject [POW_GUIDEDMSL_4] = GUIDEDMSL_ID;
+powerupToObject [POW_MERCURYMSL_4] = MERCURYMSL_ID;
 
 memset (powerupToModel, 0, sizeof (powerupToModel));
-powerupToModel [SMINEPACK_ID] = MAX_POLYGON_MODELS - 1;
+powerupToModel [POW_PROXMINE] = MAX_POLYGON_MODELS - 1;
+powerupToModel [POW_SMARTMINE] = MAX_POLYGON_MODELS - 3;
+powerupToModel [POW_CONCUSSION_4] = MAX_POLYGON_MODELS - 5;
+powerupToModel [POW_HOMINGMSL_4] = MAX_POLYGON_MODELS - 6;
+powerupToModel [POW_FLASHMSL_4] = MAX_POLYGON_MODELS - 7;
+powerupToModel [POW_GUIDEDMSL_4] = MAX_POLYGON_MODELS - 8;
+powerupToModel [POW_MERCURYMSL_4] = MAX_POLYGON_MODELS - 9;
+powerupToModel [POW_LASER] = MAX_POLYGON_MODELS - 10;
+powerupToModel [POW_VULCAN] = MAX_POLYGON_MODELS - 11;
+powerupToModel [POW_SPREADFIRE] = MAX_POLYGON_MODELS - 12;
+powerupToModel [POW_FUSION] = MAX_POLYGON_MODELS - 13;
+powerupToModel [POW_SUPERLASER] = MAX_POLYGON_MODELS - 14;
+powerupToModel [POW_GAUSS] = MAX_POLYGON_MODELS - 15;
+powerupToModel [POW_HELIX] = MAX_POLYGON_MODELS - 16;
+powerupToModel [POW_PHOENIX] = MAX_POLYGON_MODELS - 17;
+powerupToModel [POW_OMEGA] = MAX_POLYGON_MODELS - 18;
+powerupToModel [POW_QUADLASER] = MAX_POLYGON_MODELS - 19;
+powerupToModel [POW_AFTERBURNER] = MAX_POLYGON_MODELS - 20;
+powerupToModel [POW_HEADLIGHT] = MAX_POLYGON_MODELS - 21;
+powerupToModel [POW_AMMORACK] = MAX_POLYGON_MODELS - 22;
+powerupToModel [POW_CONVERTER] = MAX_POLYGON_MODELS - 23;
+powerupToModel [POW_FULL_MAP] = MAX_POLYGON_MODELS - 24;
+powerupToModel [POW_CLOAK] = MAX_POLYGON_MODELS - 25;
+powerupToModel [POW_INVUL] = MAX_POLYGON_MODELS - 26;
+powerupToModel [POW_EXTRA_LIFE] = MAX_POLYGON_MODELS - 27;
+powerupToModel [POW_KEY_BLUE] = MAX_POLYGON_MODELS - 28;
+powerupToModel [POW_KEY_RED] = MAX_POLYGON_MODELS - 29;
+powerupToModel [POW_KEY_GOLD] = MAX_POLYGON_MODELS - 30;
 
 memset (weaponToModel, 0, sizeof (weaponToModel));
-weaponToModel [SMARTMINE_ID] = MAX_POLYGON_MODELS - 2;
+weaponToModel [PROXMINE_ID] = MAX_POLYGON_MODELS - 2;
+weaponToModel [SMARTMINE_ID] = MAX_POLYGON_MODELS - 4;
 }
 
 //-----------------------------------------------------------------------------
