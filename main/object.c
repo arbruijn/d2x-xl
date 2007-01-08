@@ -1649,7 +1649,8 @@ void RenderObject (tObject *objP, int nWindowNum)
 	int			oofIdx;
 #endif
 
-if (OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
+if ((OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) &&
+	 (gameData.objs.viewer == gameData.objs.console)) {
 	if (bSpectate = (gameStates.app.bSpectating && !nWindowNum)) {
 		savePos = objP->position;
 		objP->position = gameStates.app.playerPos;
