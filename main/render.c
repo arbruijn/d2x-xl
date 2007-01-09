@@ -128,6 +128,12 @@ int	Bottom_bitmap_num = 9;
 
 fix	Face_reflectivity = (F1_0/2);
 
+#ifdef _DEBUG
+short nDbgSeg = -1;
+short nDbgSide = -1;
+int nDbgVertex = -1;
+#endif
+
 //------------------------------------------------------------------------------
 
 #ifdef EDITOR
@@ -461,6 +467,10 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 		}
 	//add in dynamic light (from explosions, etc.)
 	dynLight = dynamicLight [nVertex = propsP->vp [i]];
+#ifdef _DEBUG
+	if (nVertex == nDbgVertex)
+		nVertex = nVertex;
+#endif
 	l = f2fl (propsP->uvls [i].l);
 	dl = f2fl (dynLight);
 	propsP->uvls [i].l += dynLight;
@@ -732,7 +742,7 @@ memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
 props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == 3 && props.sideNum == 2)
+if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 #	if 0
 else

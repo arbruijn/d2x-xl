@@ -1601,6 +1601,9 @@ char *defaultGameTexts [][2] = {
 	{"~Skalen...", "~Gauges..."},
 	{"~Spiel starten", "~Launch Game"},
 	{"~Kompatibles Demo-Format", "use ~Compatible demo format"},
+	{"Roboter", "Robots"},
+	{"Powerups", "Powerups"},
+	{"Objekt-Zaehler anzeigen", "show object ~Tally"},
 #if 0
 	{"", ""},
 #endif
@@ -2074,6 +2077,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, idling robots will move around a little giving a\nlittle more activity to the mines."},
 	{"Wenn angekreuzt, werden Demos in mit anderen Descent 2-Versionen\nkompatiblem Format abgespeichert. Die Qualitaet dieses Formats ist\nallerdings etwas schlechter.", 
 	 "If checked, demos are saved in a format compatible to other\nDescent 2 versions. The quality is worse though."},
+	{"Wenn angekreuzt, wird die Anzahl verbliebener Roboter und\nPowerups rechts oben am Bildschirm angezeigt.\n\nJe nach Einstellung grafischer Skalen werden Bildchen oder nur Text\nangezeigt.", 
+	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
 #if 0
 	{"", ""},
 #endif

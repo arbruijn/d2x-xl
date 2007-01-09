@@ -201,8 +201,8 @@ if (!bmP->bm_texBuf) {
 	if (!(bmP->bm_texBuf = d_malloc (nSize)))
 		return 0;
 	}
-memset (bmP->bm_data.alt.bm_transparentFrames, 0, sizeof (bmP->bm_data.alt.bm_transparentFrames));
-memset (bmP->bm_data.alt.bm_supertranspFrames, 0, sizeof (bmP->bm_data.alt.bm_supertranspFrames));
+memset (bmP->bm_transparentFrames, 0, sizeof (bmP->bm_transparentFrames));
+memset (bmP->bm_supertranspFrames, 0, sizeof (bmP->bm_supertranspFrames));
 if (ph->bits == 24) {
 	tBGRA	c;
 	for (i = bmP->bm_props.h; i; i--) {
@@ -256,7 +256,7 @@ else if (bReverse) {
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
 				if (bmP)
-					bmP->bm_data.alt.bm_supertranspFrames [n / 32] |= (1 << (n % 32));
+					bmP->bm_supertranspFrames [n / 32] |= (1 << (n % 32));
 				}
 			else {
 				p->alpha = (alpha < 0) ? c.a : alpha;
@@ -269,7 +269,7 @@ else if (bReverse) {
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 				if (bmP)
-					bmP->bm_data.alt.bm_transparentFrames [n / 32] |= (1 << (n % 32));
+					bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
 			}
 		}
@@ -305,7 +305,7 @@ else {
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
 				if (bmP)
-					bmP->bm_data.alt.bm_supertranspFrames [n / 32] |= (1 << (n % 32));
+					bmP->bm_supertranspFrames [n / 32] |= (1 << (n % 32));
 				}
 			else {
 				p->alpha = (alpha < 0) ? c.a : alpha;
@@ -317,8 +317,7 @@ else {
 			if (p->alpha < 128) {
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
-				if (bmP)
-					bmP->bm_data.alt.bm_transparentFrames [n / 32] |= (1 << (n % 32));
+				bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
 			}
 		p -= 2 * w;
@@ -520,7 +519,7 @@ if ((bmP->bmType != BM_TYPE_ALT) || !bmP->bm_data.alt.bm_frames) {
 	}
 nFrames = BM_FRAMECOUNT (bmP);
 for (nMasks = i = 0; i < nFrames; i++)
-if (bmP->bm_data.alt.bm_supertranspFrames [i / 32] & (1 << (i % 32)))
+if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
 	if (CreateSuperTranspMask (bmP->bm_data.alt.bm_frames + i))
 		nMasks++;
 return nMasks;
@@ -1822,7 +1821,7 @@ reloadTextures:
 			bmP->bmType = BM_TYPE_ALT;
 			if (IsOpaqueDoor (i)) {
 				bmP->bm_props.flags &= ~BM_FLAG_TRANSPARENT;
-				bmP->bm_data.alt.bm_transparentFrames [0] &= ~1;
+				bmP->bm_transparentFrames [0] &= ~1;
 				}
 			if ((bmP->bm_props.w == 512) &&
 					ShrinkTGA (bmP, 1 << (3 - gameOpts->render.textures.nQuality), 1 << (3 - gameOpts->render.textures.nQuality), 1, 4))

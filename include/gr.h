@@ -150,10 +150,8 @@ typedef struct _grs_stdBmData {
 
 typedef struct _grs_altBmData {
 	ubyte						bm_frameCount;
-	struct _grsBitmap	*bm_frames;
-	struct _grsBitmap	*bm_curFrame;
-	int						bm_transparentFrames [4];
-	int						bm_supertranspFrames [4];
+	struct _grsBitmap		*bm_frames;
+	struct _grsBitmap		*bm_curFrame;
 } grs_altBmData;
 
 #define BM_TYPE_STD		0
@@ -174,6 +172,9 @@ typedef struct _grsBitmap {
 	ubyte				bm_wallAnim :1;
 	ubyte				bm_fromPog :1;
 	ubyte				bmType :3;
+
+	int				bm_transparentFrames [4];
+	int				bm_supertranspFrames [4];
 
 	struct _ogl_texture	*glTexture;
 	union {

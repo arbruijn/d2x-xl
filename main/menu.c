@@ -1553,9 +1553,9 @@ if (v != gameOpts->render.cockpit.bTextGauges) {
 
 void GaugeOptionsMenu (void)
 {
-	tMenuItem m [5];
+	tMenuItem m [10];
 	int	i, opt, choice = 0;
-	int	optScaleGauges, optFlashGauges, optShieldWarn;
+	int	optScaleGauges, optFlashGauges, optShieldWarn, optObjectTally;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1574,6 +1574,8 @@ do {
 		optScaleGauges =
 		optFlashGauges =
 		optShieldWarn = -1;
+	ADD_CHECK (opt, TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
+	optObjectTally = opt++;
 	do {
 		i = ExecMenu1 (NULL, TXT_GAUGES_MENUTITLE, opt, m, &GaugeOptionsCallback, &choice);
 	} while (i >= 0);
@@ -1582,6 +1584,7 @@ do {
 			GET_VAL (gameOpts->render.cockpit.bScaleGauges, optScaleGauges);
 			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
 			GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
+			GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjectTally);
 			}
 		else {
 #if EXPMODE_DEFAULTS

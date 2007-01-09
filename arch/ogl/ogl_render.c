@@ -1400,7 +1400,7 @@ else
 			if (nFrame < 0)
             bSuperTransp = (bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 			else
-				bSuperTransp = (BM_PARENT (bmP)->bm_data.alt.bm_supertranspFrames [nFrame / 32] & (1 << (nFrame % 32))) != 0;
+				bSuperTransp = (BM_PARENT (bmP)->bm_supertranspFrames [nFrame / 32] & (1 << (nFrame % 32))) != 0;
 			//bTransparent = gameStates.render.grAlpha < (float) GR_ACTUAL_FADE_LEVELS;
 			}
 		// only use shaders for highres textures containing color keyed transparency

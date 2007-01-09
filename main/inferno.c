@@ -1106,6 +1106,7 @@ if (i) {
 	gameOptions [1].render.cockpit.bSplitHUDMsgs = 0;
 	gameOptions [1].render.cockpit.bMouseIndicator = 1;
 	gameOptions [1].render.cockpit.bTextGauges = 1;
+	gameOptions [1].render.cockpit.bObjectTally = 0;
 	gameOptions [1].render.cockpit.bScaleGauges = 1;
 	gameOptions [1].render.cockpit.bFlashGauges = 1;
 	gameOptions [1].render.cockpit.bReticle = 1;
@@ -1189,6 +1190,7 @@ else {
 	gameOptions [0].render.cockpit.bSplitHUDMsgs = 0;
 	gameOptions [0].render.cockpit.bMouseIndicator = 0;
 	gameOptions [0].render.cockpit.bTextGauges = 1;
+	gameOptions [0].render.cockpit.bObjectTally = 1;
 	gameOptions [0].render.cockpit.bScaleGauges = 1;
 	gameOptions [0].render.cockpit.bFlashGauges = 1;
 	gameOptions [0].render.cockpit.bReticle = 1;

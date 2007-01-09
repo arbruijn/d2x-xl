@@ -1383,9 +1383,9 @@ else if (!BM_FRAMES (bmP)) {
 		bmfP->bmType = BM_TYPE_FRAME;
 		bmfP->bm_props.y = 0;
 		BM_PARENT (bmfP) = bmP;
-		if (bmP->bm_data.alt.bm_transparentFrames [i / 32] & (1 << (i % 32)))
+		if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
 			bmfP->bm_props.flags |= BM_FLAG_TRANSPARENT;
-		if (bmP->bm_data.alt.bm_supertranspFrames [i / 32] & (1 << (i % 32)))
+		if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
 			bmfP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
 		OglLoadBmTextureM (bmfP, bDoMipMap, nTransp, 0, NULL);
 		}

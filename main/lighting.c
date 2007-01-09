@@ -154,7 +154,7 @@ for (i = h; --i; ) {
 // ----------------------------------------------------------------------------------------------
 //	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
-int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *obj_pos, int obj_seg, vmsVector *vVertPos)
+int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
 {
 	int	cache_val, cache_frame, cache_vis;
 
@@ -173,15 +173,15 @@ Cache_lookups++;
 		nSegment = -1;
 
 		#ifndef NDEBUG
-		nSegment = FindSegByPoint (obj_pos, obj_seg);
+		nSegment = FindSegByPoint (vObjPos, nObjSeg);
 		if (nSegment == -1) {
-			Int3 ();		//	Obj_pos is not in obj_seg!
+			Int3 ();		//	Obj_pos is not in nObjSeg!
 			return 0;		//	Done processing this tObject.
 		}
 		#endif
 
-		fq.p0					= obj_pos;
-		fq.startSeg			= obj_seg;
+		fq.p0					= vObjPos;
+		fq.startSeg			= nObjSeg;
 		fq.p1					= vVertPos;
 		fq.rad				= 0;
 		fq.thisObjNum		= nObject;
@@ -200,7 +200,7 @@ Cache_lookups++;
 			bApplyLight = 1;
 		else if (hitType == HIT_WALL) {
 			fix	distDist;
-			distDist = VmVecDistQuick (&hit_data.hit.vPoint, obj_pos);
+			distDist = VmVecDistQuick (&hit_data.hit.vPoint, vObjPos);
 			if (distDist < F1_0/4) {
 				bApplyLight = 1;
 				// -- Int3 ();	//	Curious, did fvi detect intersection with wall containing vertex?
@@ -237,8 +237,10 @@ if (gameOpts->render.bDynLighting)
 	return;
 if (!color)
 	return;
+#if 1
 if (!bForce && (color->red == 1.0) && (color->green == 1.0) && (color->blue == 1.0))
 	return;
+#endif
 if (bStartDynColoring) {
 	InitDynColoring ();
 	}
@@ -262,8 +264,8 @@ else {
 
 void ApplyLight (
 	fix			xObjIntensity, 
-	int			obj_seg, 
-	vmsVector	*obj_pos, 
+	int			nObjSeg, 
+	vmsVector	*vObjPos, 
 	int			nRenderVertices, 
 	short			*renderVertices, 
 	int			nObject,
@@ -294,10 +296,16 @@ if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 			}
 		if (bDarkness)
 			return;
+		xObjIntensity /= 4;
 		}
-	else if ((objP->nType == OBJ_POWERUP) && bDarkness && !EGI_FLAG (bPowerupLights, 0, 0))
-		return;
-	if ((objP->nType == OBJ_POWERUP) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))
+	else if (objP->nType == OBJ_POWERUP) {
+		if (!EGI_FLAG (bPowerupLights, 0, 0)) {
+			RemoveDynLight (-1, -1, nObject);
+			return;
+			}
+		xObjIntensity /= 2;
+		}
+	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	AddDynLight (color, xObjIntensity, -1, -1, nObject);
 	return;
@@ -308,15 +316,15 @@ if (xObjIntensity) {
 	if (bDarkness) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
-		else if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0)) 
-			xObjIntensity = 0;
 		}
+	if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0)) 
+		xObjIntensity = 0;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = (objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL);
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
 	if ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER)) {
-		short *vp = gameData.segs.segments [obj_seg].verts;
+		short *vp = gameData.segs.segments [nObjSeg].verts;
 
 		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
 
@@ -326,8 +334,8 @@ if (xObjIntensity) {
 				 ((nVertex ^ gameData.app.nFrameCount) & 1))
 #endif
 			{
-				vVertPos = gameData.segs.vertices+nVertex;
-				dist = VmVecDistQuick (obj_pos, vVertPos) / 4;
+				vVertPos = gameData.segs.vertices + nVertex;
+				dist = VmVecDistQuick (vObjPos, vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -357,10 +365,10 @@ if (xObjIntensity) {
 					fvi_info		hit_data;
 					int			fate;
 
-					VmVecScaleAdd (&tvec, obj_pos, &objP->position.mOrient.fVec, F1_0*200);
+					VmVecScaleAdd (&tvec, vObjPos, &objP->position.mOrient.fVec, F1_0*200);
 
 					fq.startSeg			= objP->position.nSegment;
-					fq.p0					= obj_pos;
+					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
 					fq.rad				= 0;
 					fq.thisObjNum		= nObject;
@@ -369,7 +377,7 @@ if (xObjIntensity) {
 
 					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
-						VmVecSub (&tvec, &hit_data.hit.vPoint, obj_pos);
+						VmVecSub (&tvec, &hit_data.hit.vPoint, vObjPos);
 						maxHeadlightDist = VmVecMagQuick (&tvec) + F1_0*4;
 					}
 				}
@@ -379,19 +387,20 @@ if (xObjIntensity) {
 
 			nVertex = renderVertices [vv];
 #if FLICKERFIX == 0
-			if (/* (gameOpts->render.color.bAmbientLight && color) ||*/ ((nVertex ^ gameData.app.nFrameCount) & 1))
+			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
-				dist = VmVecDistQuick (obj_pos, vVertPos);
+				dist = VmVecDistQuick (vObjPos, vVertPos);
 				bApplyLight = 0;
-
 				if ((dist >> headlightShift) < abs (obji_64)) {
-
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
+#if 0
 					bApplyLight = 1;
-					if (bApplyLight) {
+					if (bApplyLight) 
+#endif
+					{
 						if (bUseColor)
 							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
 						if (!headlightShift) 
@@ -401,7 +410,7 @@ if (xObjIntensity) {
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 
-							VmVecSub (&vecToPoint, vVertPos, obj_pos);
+							VmVecSub (&vecToPoint, vVertPos, vObjPos);
 							VmVecNormalizeQuick (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
 							if (bDarkness)

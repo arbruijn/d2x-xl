@@ -1619,9 +1619,16 @@ if (objP->controlType != CT_WEAPON) {
 	VmAngles2Matrix (&objP->position.mOrient, &a);
 	objP->mType.physInfo.mass = F1_0;
 	objP->mType.physInfo.drag = 512;
-	objP->mType.physInfo.rotVel.p.x = 0;
-	objP->mType.physInfo.rotVel.p.y = 
-	objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	if (bIsMissile [objP->id]) {
+		objP->mType.physInfo.rotVel.p.x = 0;
+		objP->mType.physInfo.rotVel.p.y = 
+		objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+		}
+	else {
+		objP->mType.physInfo.rotVel.p.x = 
+		objP->mType.physInfo.rotVel.p.z = 0;
+		objP->mType.physInfo.rotVel.p.y = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+		}
 	objP->controlType = CT_WEAPON;
 	objP->renderType = RT_POLYOBJ;
 	objP->movementType = MT_PHYSICS;
@@ -1764,7 +1771,9 @@ switch (objP->renderType) {
 
 		if (gameOpts->render.powerups.b3D) {
 			nModel = PowerupToModel (objP->id);
-			if (!nModel) {
+			if (nModel) 
+				nId = objP->id;
+			else {
 				nId = PowerupToObject (objP->id);
 				if (nId >= 0) {
 					nModel = gameData.weapons.info [nId].nModel;
@@ -3295,6 +3304,19 @@ void compressObjects (void)
 
 	ResetObjects (gameData.objs.nObjects);
 
+}
+
+//------------------------------------------------------------------------------
+
+int ObjectCount (int nType)
+{
+	int		h, i;
+	tObject	*objP = gameData.objs.objects;
+
+for (h = 0, i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if (objP->nType == nType)
+		h++;
+return h;
 }
 
 //------------------------------------------------------------------------------

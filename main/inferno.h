@@ -149,6 +149,7 @@ typedef struct tCockpitOptions {
 	int bFlashGauges;
 	int bMissileView;
 	int bGuidedInMainView;
+	int bObjectTally;
 	int nWindowPos;
 	int nWindowSize;
 	int nWindowZoom;

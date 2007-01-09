@@ -421,7 +421,7 @@ else {
 fix VmVecMag (vmsVector *v)
 {
 if (gameOpts->render.nMathFormat == 2) {
-#ifdef _WIN32
+#if ENABLE_SSE
 		fVector	h;
 
 	VmsVecToFloat (&h, v);
