@@ -1620,6 +1620,8 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		if ((j = *pnl) < 0)
 			break;
 		if (gameData.render.lights.dynamic.lights [j].bVariable) {
+			if (bVariable < 0)
+				continue;
 			if (!(bVariable && gameData.render.lights.dynamic.lights [j].bOn))
 				continue;
 			}
@@ -1807,18 +1809,20 @@ void ComputeStaticDynLighting ()
 if (gameOpts->render.bDynLighting || 
 	 !gameStates.app.bD2XLevel || 
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
-		int				i, bColorize = (gameStates.app.bD2XLevel && !gameStates.render.bColored) || 
-												!(gameOpts->render.bDynLighting || gameStates.app.bD2XLevel);
+		int				nVertex,
+							bVariable,
+							bColorize = !gameOpts->render.bDynLighting;
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
-	for (i = 0; i < gameData.segs.nVertices; i++, pf++) {
-		VmsVecToFloat (&vVertex, gameData.segs.vertices + i);
-		SetNearestVertexLights (i, 1, 1, bColorize);
-		G3VertexColor (&gameData.segs.points [i].p3_normal.vNormal, &vVertex, i, pf);
-		SetNearestVertexLights (i, 0, 1, bColorize);
+	bVariable = bColorize - 1;
+	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {
+		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
+		SetNearestVertexLights (nVertex, 1, 1, bVariable);
+		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf);
+		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}
 	}
 }
