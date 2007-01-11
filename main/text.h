@@ -1636,9 +1636,9 @@ void LoadGameTexts(void);
 #define TXT_ROBOTS					GT(854)
 #define TXT_POWERUPS					GT(855)
 #define TXT_OBJECT_TALLY			GT(856)
+#define TXT_TRUE_DREAMS				GT(857)
 
 #if 0
-#define TXT_				GT(857)
 #define TXT_				GT(858)
 #define TXT_				GT(859)
 #define TXT_				GT(860)

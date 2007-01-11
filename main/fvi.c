@@ -1166,5 +1166,29 @@ int ObjectIntersectsWall(tObject *objP)
 return SphereIntersectsWall(&objP->position.vPos, objP->position.nSegment, objP->size);
 }
 
+//------------------------------------------------------------------------------
+
+int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment)
+{
+	fvi_query	fq;
+	int			nHitType;
+	fvi_info		hit_data;
+
+	//see if we can see this tPlayer
+
+fq.p0 = vSource;
+fq.p1 = vDest;
+fq.rad = 0;
+fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
+fq.flags = FQ_TRANSWALL;
+if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
+else
+	fq.startSeg = objP ? objP->position.nSegment : nSegment;
+fq.ignoreObjList = NULL;
+nHitType = FindVectorIntersection (&fq, &hit_data);
+return nHitType != HIT_WALL;
+}
+
 //	-----------------------------------------------------------------------------
 //eof

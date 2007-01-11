@@ -1846,8 +1846,9 @@ DestroyAllSmoke ();
 LogErr ("unloading shield sphere data\n");
 DestroySphere (&gameData.render.shield);
 DestroySphere (&gameData.render.monsterball);
-LogErr ("unloading inventory icons\n");
+LogErr ("unloading HUD icons\n");
 FreeInventoryIcons ();
+FreeObjTallyIcons ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
 if (VR_offscreen_buffer)	{

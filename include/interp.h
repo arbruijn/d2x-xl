@@ -80,7 +80,6 @@ typedef struct chunk {
 int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 #endif //def WORDS_NEED_ALIGNMENT
 
-int CanSeePoint (tObject *objP, vmsVector *vPoint);
 void G3SetCullAndStencil (int bCullFront, int bZPass);
 void G3RenderShadowVolumeFace (tOOF_vector *pv);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv);

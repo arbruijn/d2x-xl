@@ -192,6 +192,7 @@ extern rgb player_rgb[];
 // the top of the window.
 void DoCockpitWindowView(int win, tObject *viewer, int rear_viewFlag, int user, char *label);
 void FreeInventoryIcons (void);
+void FreeObjTallyIcons (void);
 void HUDShowIcons (void);
 int CanSeeObject(int nObject, int bCheckObjs);
 

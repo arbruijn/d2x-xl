@@ -999,6 +999,9 @@ typedef struct tSlideSegs {
 	ubyte	nSides;
 } tSlideSegs;
 
+#define SEGVIS_FLAGS		((MAX_SEGMENTS + 7) / 8)
+#define VERTVIS_FLAGS	((MAX_VERTICES + 7) / 8)
+
 typedef struct tSegmentData {
 	vmsVector			vertices [MAX_VERTICES];
 	fVector				fVertices [MAX_VERTICES];
@@ -1011,6 +1014,8 @@ typedef struct tSegmentData {
 #endif
 	vmsVector			segCenters [MAX_SEGMENTS][2];
 	vmsVector			sideCenters [MAX_SEGMENTS * 6];
+	//ubyte					bVertVis [MAX_SEGMENTS * VERTVIS_FLAGS];
+	ubyte					bSegVis [MAX_SEGMENTS * SEGVIS_FLAGS];
 	int					nVertices;
 	int					nLastVertex;
 	short					nSegments;
@@ -1896,6 +1901,9 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
 
 #define INFINITY					fInfinity [gameOpts->render.shadows.nReach]
+
+#define SEGVIS(_i,_j)			((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
+
 
 extern float fInfinity [];
 

@@ -2079,7 +2079,7 @@ void HUDShowIcons (void)
 HUDToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || 
 	 ((gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
-	  (gameStates.render.cockpit.nMode != CM_LETTERBOX)))
+	  (gameStates.render.cockpit.nMode != CM_LETTERBOX))) {
 	HUDShowObjTally ();
 	if (EGI_FLAG (nWeaponIcons, 1, 0)) {
 		HUDShowWeaponIcons ();
@@ -2090,6 +2090,7 @@ if (gameOpts->render.cockpit.bHUD ||
 				HUDShowInventoryIcons ();
 			}
 		}
+	}
 }
 
 //	-----------------------------------------------------------------------------

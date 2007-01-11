@@ -2679,7 +2679,7 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->bState)
 			continue;
-		if (!CanSeePoint (objP, &psl->vPos))
+		if (!CanSeePoint (objP, &objP->position.vPos, &psl->vPos, objP->position.nSegment))
 			continue;
 		VmVecSub (&vLightDir, &objP->position.vPos, &psl->vPos);
 		VmVecNormalize (&vLightDir);
@@ -3626,12 +3626,16 @@ inline void RenderMineSegment (int nn)
 	int nSegment = nRenderList [nn];
 
 if ((nSegment != -1) && !VISITED (nSegment)) {
+	SetNearestStaticLights (nSegment, 1);
+	SetNearestDynamicLights (nSegment);
 	RenderSegment (nSegment, gameStates.render.nWindow);
 	VISIT (nSegment);
 	if (renderState == 0)
 		bAutomapVisited [nSegment] = bSetAutomapVisited;
-	else if (renderState == 1)
+	else if (renderState == 1) {
 		RenderObjList (nn, gameStates.render.nWindow);
+		}	
+	SetNearestStaticLights (nSegment, 0);
 	}
 }
 

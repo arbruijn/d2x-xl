@@ -1949,30 +1949,6 @@ if (bShadowData) {
 return 1;
 }
 
-//------------------------------------------------------------------------------
-
-int CanSeePoint (tObject *objP, vmsVector *vPoint)
-{
-	fvi_query	fq;
-	int			nHitType;
-	fvi_info		hit_data;
-
-	//see if we can see this tPlayer
-
-fq.p0 = &objP->position.vPos;
-fq.p1 = vPoint;
-fq.rad = 0;
-fq.thisObjNum = OBJ_IDX (objP);
-fq.flags = FQ_TRANSWALL;
-if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
-else
-	fq.startSeg = objP->position.nSegment;
-fq.ignoreObjList = NULL;
-nHitType = FindVectorIntersection (&fq, &hit_data);
-return nHitType != HIT_WALL;
-}
-
 //	-----------------------------------------------------------------------------
 
 int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel)
@@ -1998,7 +1974,7 @@ if (gameOpts->render.shadows.bFast) {
 		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->bState)
 			continue;
-		if (!CanSeePoint (objP, &gameData.render.shadows.pLight->vPos))
+		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->vPos, objP->position.nSegment))
 			continue;
 		VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
 		VmVecNormalize (&vLightDir);

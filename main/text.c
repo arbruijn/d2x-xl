@@ -1604,6 +1604,7 @@ char *defaultGameTexts [][2] = {
 	{"Roboter", "Robots"},
 	{"Powerups", "Powerups"},
 	{"Objekt-Zaehler anzeigen", "show object ~Tally"},
+	{"Traeume werden wahr...", "Dreams are coming true..."},
 #if 0
 	{"", ""},
 #endif

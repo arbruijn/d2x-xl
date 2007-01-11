@@ -88,5 +88,7 @@ int PixelTranspType (short nTexture, short nOrient, fix u, fix v);	//-1: supertr
 int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, tSegment *segP, 
 							int nSide, int iFace, int nv, fix rad);
 
+int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
+
 #endif
 

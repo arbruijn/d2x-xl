@@ -1634,9 +1634,11 @@ if (objP->controlType != CT_WEAPON) {
 	objP->movementType = MT_PHYSICS;
 	objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 	objP->rType.polyObjInfo.nModel = nModel;
+#if 0
 	if (bHasModel)
 		objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
 									gameData.weapons.info [objP->id].po_len_to_width_ratio);
+#endif
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->lifeleft = IMMORTAL_TIME;
 	}
@@ -1685,8 +1687,6 @@ if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-SetNearestStaticLights (objP->position.nSegment, 1);
-SetNearestDynamicLights (objP->position.nSegment);
 switch (objP->renderType) {
 	case RT_NONE:	
 		RenderTracers (objP);

@@ -668,8 +668,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 							GrSetColorRGBi (ORANGE_RGBA); //orange
 							//Error ("Illegal key nType: %i", objP->id);
 						}
-						G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-						G3DrawSphere (&spherePoint,size, !bRadar);	
+						G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+						G3DrawSphere (&spherePoint, size, !bRadar);	
 					}
 				}
 				break;

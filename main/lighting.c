@@ -1639,6 +1639,13 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 
 void SetNearestStaticLights (int nSegment, ubyte nType)
 {
+	static	int nLastSeg = 1;
+	static	ubyte nLastType = 255;
+
+if ((nLastSeg == nSegment) && (nLastType == nType))
+	return;
+nLastSeg = nSegment;
+nLastType = nType;
 if (gameOpts->render.bDynLighting) {
 	short	*pnl = gameData.render.lights.dynamic.nNearestSegLights [nSegment];
 	short	i, j;
@@ -1655,8 +1662,14 @@ if (gameOpts->render.bDynLighting) {
 
 void SetNearestDynamicLights (int nSegment)
 {
+	static	int nLastSeg = 1;
+
+if (nLastSeg == nSegment)
+	return;
+nLastSeg = nSegment;
 if (gameOpts->render.bDynLighting) {
-	short				i = gameData.render.lights.dynamic.shader.nLights;
+	short				i = gameData.render.lights.dynamic.shader.nLights,
+						nLightSeg;
 	tDynLight		*pl = gameData.render.lights.dynamic.lights + i;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector		d, c;
@@ -1668,6 +1681,11 @@ if (gameOpts->render.bDynLighting) {
 		pl--;
 		if (psl->nType < 2)
 			break;
+		nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+		if (!SEGVIS (nLightSeg, nSegment)) {
+			psl->bState = 0;
+			continue;
+			}
 		if (psl->nType == 3)
 			psl->bState = 1;
 		else {
