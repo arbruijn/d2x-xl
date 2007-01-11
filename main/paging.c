@@ -610,7 +610,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nTouchPowerup1 = 0;
 	nTouchPowerup2 = 0;
 	nTouchGauge = 0;
-	NMProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize (), PagingTouchPoll); 
+	NMProgressBar (TXT_PREP_DESCENT, i, i + PagingGaugeSize () + SortLightsGaugeSize (), PagingTouchPoll); 
 	}
 else
 	PagingTouchAllSub ();

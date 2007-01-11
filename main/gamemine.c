@@ -1014,7 +1014,7 @@ int ComputeNearestVertexLights (int i)
 {
 	vmsVector			*vertP;
 	tDynLight			*pl;
-	int					h, j, l, m, n, nMaxLights;
+	int					h, j, l, n, nMaxLights;
 	vmsVector			dist;
 	struct tLightDist	*pDists;
 
@@ -1032,8 +1032,8 @@ INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
-		if (!CanSeePoint (NULL, SEGMENT_CENTER_I (m), vertP, m))
+		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+		if (!VERTVIS (h, i))
 			continue;
 		VmVecSub (&dist, vertP, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
@@ -1352,36 +1352,80 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 
 //------------------------------------------------------------------------------
 
+inline void SetVertVis (short nSegment, short nVertex, ubyte b)
+{
+gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) * 2));
+}
+
+//------------------------------------------------------------------------------
+
+inline void SetSegVis (short nSrcSeg, short nDestSeg)
+{
+gameData.segs.bSegVis [nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeVertexVisibility (int startI)
+{
+	int			i, j, v, endI;
+	vmsVector	c, d, *vertP;
+
+if (startI <= 0) {
+	memset (gameData.segs.bVertVis, 0, sizeof (gameData.segs.bVertVis));
+	// every segment can see itself and its neighbours
+	}
+INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+for (i = startI; i < endI; i++) {
+	for (v = 0, vertP = gameData.segs.vertices; v < gameData.segs.nVertices; v++, vertP++) {
+		for (j = 0; j < 6; j++) {
+			COMPUTE_SIDE_CENTER_I (&c, i, j);
+			VmVecSub (&d, &c, vertP);
+			if (VmVecMag (&d) > F1_0 * 125)
+				SetVertVis (i, v, 1);
+			else if (!CanSeePoint (NULL, &c, vertP, i))
+				SetVertVis (i, v, 1);
+			else {
+				SetVertVis (i, v, 3);
+				break;
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeSegmentVisibility (int startI)
 {
-	int			h = (MAX_SEGMENTS + 7) / 8,
-					i, j, m, n, endI;
+	int			c, i, j, k, v, endI;
+	short			*psv;
 	tSegment		*segP;
 
 if (startI <= 0) {
 	memset (gameData.segs.bSegVis, 0, sizeof (gameData.segs.bSegVis));
 	// every segment can see itself and its neighbours
 	for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
-		m = h * i;
-		gameData.segs.bSegVis [m + (i >> 3)] |= (1 << (i & 7));
+		SetSegVis (i, i);
 		for (j = 0; j < 6; j++) {
-			n = segP->children [j];
-			if (n >= 0)
-				gameData.segs.bSegVis [m + (n >> 3)] |= (1 << (n & 7));
+			c = segP->children [j];
+			if (c >= 0)
+				SetSegVis (i, c);
 			}
 		}
 	}
 INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 for (i = startI; i < endI; i++) {
-	m = h * i;
 	for (j = 0, segP = gameData.segs.segments; j < gameData.segs.nSegments; j++, segP++) {
-		if (gameData.segs.bSegVis [m + (j >> 3)] & (1 << (j & 7)))
+		if ((i == j) || SEGVIS (i, j))
 			continue;
-		for (n = 0; n < 8; n++) {
-			if (!CanSeePoint (NULL, SEGMENT_CENTER_I (i), gameData.segs.vertices + segP->verts [n], i))
-				continue;
-			gameData.segs.bSegVis [m + (j >> 3)] |= (1 << (j & 7));
-			break;
+		psv = segP->verts;
+		for (k = 0; k < 8; k++) {
+			v = psv [k];	
+			if (VERTVIS (i, v) > 0) {
+				SetSegVis (i, j);
+				break;
+				}
 			}
 		}
 	}
@@ -1472,7 +1516,7 @@ static void SortLightsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
-	ComputeSegmentVisibility (loadIdx);
+	ComputeVertexVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -1480,22 +1524,30 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
-	ComputeNearestSegmentLights (loadIdx);
+	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 2;
 		}
 	}
-else if (loadOp == 2) {
-	ComputeNearestVertexLights (loadIdx);
+if (loadOp == 2) {
+	ComputeNearestSegmentLights (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nVertices) {
+	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 3;
 		}
 	}
-if (loadOp == 3) {
+else if (loadOp == 3) {
+	ComputeNearestVertexLights (loadIdx);
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nVertices) {
+		loadIdx = 0;
+		loadOp = 4;
+		}
+	}
+if (loadOp == 4) {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
 	return;
@@ -1514,7 +1566,7 @@ return
 #if !SHADOWS
 	(!gameOpts->render.bDynLighting && gameStates.app.bD2XLevel) ? 0 :
 #endif
-	PROGRESS_STEPS (gameData.segs.nSegments) * 2 +
+	PROGRESS_STEPS (gameData.segs.nSegments) * 3 +
 	PROGRESS_STEPS (gameData.segs.nVertices);
 }
 
@@ -1543,8 +1595,6 @@ else {
 	else
 		i++;
 	}
-//if (gameOpts->render.bDynLighting)
-	i += SortLightsGaugeSize ();
 return i;
 }
 
@@ -1555,19 +1605,19 @@ void LoadSegmentsGauge (CFILE *loadFile)
 loadOp = 0;
 loadIdx = 0;
 mineDataFile = loadFile;
-NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize (), LoadSegmentsPoll); 
+NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), LoadSegmentsPoll); 
 }
 
 //------------------------------------------------------------------------------
 
-void SortLightsGauge (void)
+void ComputeNearestLights (void)
 {
 loadOp = 0;
 loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	NMProgressBar (TXT_PREP_DESCENT, 
-						LoadMineGaugeSize () - SortLightsGaugeSize (), 
-						LoadMineGaugeSize () + PagingGaugeSize (), SortLightsPoll); 
+						LoadMineGaugeSize () + PagingGaugeSize (), 
+						LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 else {
 	ComputeSegmentVisibility (-1);
 	ComputeNearestSegmentLights (-1);
@@ -1655,7 +1705,6 @@ if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel)
 #endif
 	{
 	AddDynLights ();
-	SortLightsGauge ();
 	}
 return 0;
 }

@@ -1518,7 +1518,6 @@ if (!cc.and) {		//all off screen?
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 			RenderSide (seg, sn);
 		}
-	SetNearestStaticLights (nSegment, 0);
 	}
 OglResetTransform ();
 OGL_BINDTEX (0);
@@ -3626,16 +3625,20 @@ inline void RenderMineSegment (int nn)
 	int nSegment = nRenderList [nn];
 
 if ((nSegment != -1) && !VISITED (nSegment)) {
-	SetNearestStaticLights (nSegment, 1);
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
 	SetNearestDynamicLights (nSegment);
 	RenderSegment (nSegment, gameStates.render.nWindow);
 	VISIT (nSegment);
 	if (renderState == 0)
 		bAutomapVisited [nSegment] = bSetAutomapVisited;
 	else if (renderState == 1) {
+		SetNearestStaticLights (nSegment, 1);
 		RenderObjList (nn, gameStates.render.nWindow);
+		SetNearestStaticLights (nSegment, 0);
 		}	
-	SetNearestStaticLights (nSegment, 0);
 	}
 }
 

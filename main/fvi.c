@@ -758,41 +758,39 @@ masks = GetSegMasks (p1, nStartSeg, rad);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
 if (endMask = masks.faceMask) { //on the back of at least one face
-	short tSide, face, bit;
+	short nSide, face, bit;
 
 	//for each face we are on the back of, check if intersected
-	for (tSide = 0, bit = 1; (tSide < 6) && (endMask >= bit); tSide++) {
-		int nFaces = GetNumFaces (segP->sides + tSide);
+	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
+		int nFaces = GetNumFaces (segP->sides + nSide);
 		if (!nFaces)
 			nFaces = 1;
-		// commented out by mk on 02/13/94:: if ((nFaces=segP->sides [tSide].nFaces)==0) nFaces=1;
+		// commented out by mk on 02/13/94:: if ((nFaces=segP->sides [nSide].nFaces)==0) nFaces=1;
 		for (face = 0; face < 2; face++, bit <<= 1) {
 			if (endMask & bit) {            //on the back of this face
 				int nFaceHitType;      //in what way did we hit the face?
-				if (segP->children [tSide] == entrySegP)
-					continue;		//don't go back through entry tSide
+				if (segP->children [nSide] == entrySegP)
+					continue;		//don't go back through entry nSide
 				//did we go through this wall/door?
 				if (startMask & bit)	{	//start was also though.  Do extra check
 					//LogErr ("   SpecialCheckLineToFace...");
-					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, segP, tSide, face, 5 - nFaces, rad);
+					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, segP, nSide, face, 5 - nFaces, rad);
 					//LogErr ("done\n");
 					}
 				else {
 					//NOTE LINK TO ABOVE!!
 					//LogErr ("   CheckLineToFace...");
-					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, segP, tSide, face, 5 - nFaces, rad);
+					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, segP, nSide, face, 5 - nFaces, rad);
 					//LogErr ("done\n");
 					}
 				//LogErr ("   nFaceHitType = %d\n", nFaceHitType);
 				if (nFaceHitType) { //through this wall/door
-					int widFlag;
-					//LogErr ("   WALL_IS_DOORWAY...");
-					widFlag = WALL_IS_DOORWAY (segP, tSide, gameData.objs.objects + nThisObject);
+					int widFlag = WALL_IS_DOORWAY (segP, nSide, gameData.objs.objects + nThisObject);
 					//LogErr ("done\n");
 					//if what we have hit is a door, check the adjoining segP
 					if ((nThisObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) && 
 						 (gameStates.app.cheats.bPhysics == 0xBADA55)) {
-						int childSide = segP->children [tSide];
+						int childSide = segP->children [nSide];
 						if (childSide >= 0) {
 							int special = gameData.segs.segment2s [childSide].special;
 							if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
@@ -805,14 +803,14 @@ if (endMask = masks.faceMask) { //on the back of at least one face
 
 					if ((widFlag & WID_FLY_FLAG) ||
 						 (((widFlag & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, tSide, face))))) {
+						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, face))))) {
 
 						int			i, nNewSeg, subHitType;
 						short			subHitSeg, nSaveHitObj = fviHitData.nObject;
 						vmsVector	subHitPoint, vSaveWallNorm = fviHitData.vNormal;
 
 						//do the check recursively on the next tSegment.p.
-						nNewSeg = segP->children [tSide];
+						nNewSeg = segP->children [nSide];
 						//LogErr ("   check next seg (%d)\n", nNewSeg);
 						for (i = 0; i < nSegsVisited && (nNewSeg != segsVisited [i]); i++)
 							;
@@ -885,13 +883,13 @@ if (endMask = masks.faceMask) { //on the back of at least one face
 							dMin = d;
 							vClosestHitPoint = vHitPoint;
 							nHitType = HIT_WALL;
-							fviHitData.vNormal = segP->sides [tSide].normals [face];	
+							fviHitData.vNormal = segP->sides [nSide].normals [face];	
 							if (!GetSegMasks (&vHitPoint, nStartSeg, rad).centerMask)
 								nHitSegment = nStartSeg;             //hit in this tSegment
 							else
 								fviHitData.nSegment2 = nStartSeg;
 							fviHitData.nSegment = nHitSegment;
-							fviHitData.nSide = tSide;
+							fviHitData.nSide = nSide;
 							fviHitData.nSideSegment = nStartSeg;
 							}
 						}

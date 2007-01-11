@@ -86,6 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_init.h"
 #include "state.h"
 #include "strutil.h"
+#include "lighting.h"
 #include "ipx.h"
 #include "gr.h"
 
@@ -2084,7 +2085,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	StateGetConnectedPlayers (restore_players, nPlayers);
 	}
 //Read tPlayer info
-if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
+if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
@@ -2314,7 +2315,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	}
 
 //Read tPlayer info
-if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore)) {
+if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
@@ -2560,6 +2561,8 @@ else
 	StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 CFClose (fp);
 FixObjectSegs ();
+ComputeNearestLights ();
+ComputeStaticDynLighting ();
 SetLastSuperWeaponStates ();
  // Get rid of ships that aren't connected in the restored game
 if (gameData.app.nGameMode & GM_MULTI) {

@@ -1333,6 +1333,9 @@ if (bHaveObjTallyBms > 0) {
 
 void HUDShowObjTally (void)
 {
+	static int		objCounts [2] = {0, 0};
+	static time_t	t0 = -1;
+
 if (!gameOpts->render.cockpit.bObjectTally)
 	return;
 if (!gameOpts->render.cockpit.bHUD && 
@@ -1361,12 +1364,18 @@ if (!IsMultiGame || IsCoopGame) {
 	x0 = grdCurCanv->cv_w;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	if (!gameOpts->render.cockpit.bTextGauges && LoadObjTallyIcons () > 0) {
+		time_t t = gameStates.app.nSDLTicks;
+		if (t - t0 > 333) {	//update 3 times per second
+			t0 = t;
+			for (i = 0; i < 2; i++) 
+				objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
+			}
 		for (i = 0; i < 2; i++) {
 			bmH = bmObjTally [i].bm_props.h / 2;
 			bmW = bmObjTally [i].bm_props.w / 2;
 			x = x0 - bmW - LHX (2);
 			OglUBitMapMC (x, y, bmW, bmH, bmObjTally + i, NULL, F1_0, 0);
-			sprintf (szInfo, "%d", ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT));
+			sprintf (szInfo, "%d", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);
 			x -= w + LHY (2);
 			GrPrintF (x, y + (bmH - h) / 2, szInfo);
@@ -1376,7 +1385,7 @@ if (!IsMultiGame || IsCoopGame) {
 	else {
 		y = 3 + Line_spacing;
 		for (i = 0; i < 2; i++) {
-			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT));
+			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);
 			GrPrintF (grdCurCanv->cv_w - w - LHX (2), y, szInfo);
 			y += Line_spacing;

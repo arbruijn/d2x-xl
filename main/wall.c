@@ -257,25 +257,26 @@ else
 
 int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP)
 {
-	int	wallnum, nSegment, childnum = segP->children [nSide];
+	int	nWall, bIsWall, nSegment, nChild = segP->children [nSide];
 	
-if (childnum == -1)
+if (nChild == -1)
 	return WID_RENDER_FLAG;
-if (childnum == -2) 
+if (nChild == -2) 
 	return WID_EXTERNAL_FLAG;
 nSegment = SEG_IDX (segP);
-wallnum = WallNumP (segP, nSide);
+nWall = WallNumP (segP, nSide);
+bIsWall = IS_WALL (nWall);
 if (gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
 	 (objP == gameData.objs.console) && 
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
-	 (gameData.segs.segment2s [childnum].special != SEGMENT_IS_SPEEDBOOST) &&
-	 ((wallnum < 0) || (gameData.trigs.triggers [gameData.walls.walls [wallnum].nTrigger].nType != TT_SPEEDBOOST)))
-	return objP ? WID_RENDER_FLAG : (!IS_WALL (wallnum)) ? WID_RENDPAST_FLAG : WallIsDoorWay (segP, nSide);
-if ((gameData.segs.segment2s [childnum].special == SEGMENT_IS_BLOCKED) ||
-	 (gameData.segs.segment2s [childnum].special == SEGMENT_IS_SKYBOX))
+	 (gameData.segs.segment2s [nChild].special != SEGMENT_IS_SPEEDBOOST) &&
+	 (!bIsWall || (gameData.trigs.triggers [gameData.walls.walls [nWall].nTrigger].nType != TT_SPEEDBOOST)))
+	return objP ? WID_RENDER_FLAG : bIsWall ? WallIsDoorWay (segP, nSide) : WID_RENDPAST_FLAG;
+if ((gameData.segs.segment2s [nChild].special == SEGMENT_IS_BLOCKED) ||
+	 (gameData.segs.segment2s [nChild].special == SEGMENT_IS_SKYBOX))
 	return (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) ? WID_RENDER_FLAG : 
-			 (!IS_WALL (wallnum)) ? WID_FLY_FLAG | WID_RENDPAST_FLAG : WallIsDoorWay (segP, nSide);
-if (!IS_WALL (wallnum)) 
+			 bIsWall ? WallIsDoorWay (segP, nSide) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+if (!bIsWall) 
 	return (WID_FLY_FLAG|WID_RENDPAST_FLAG);
 return WallIsDoorWay (segP, nSide);
 }

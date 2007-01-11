@@ -294,7 +294,9 @@ if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
 			}
+#ifndef _DEBUG
 		if (bDarkness)
+#endif
 			return;
 		xObjIntensity /= 4;
 		}
@@ -1681,17 +1683,17 @@ if (gameOpts->render.bDynLighting) {
 		pl--;
 		if (psl->nType < 2)
 			break;
-		nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
-		if (!SEGVIS (nLightSeg, nSegment)) {
-			psl->bState = 0;
-			continue;
-			}
 		if (psl->nType == 3)
 			psl->bState = 1;
 		else {
-			VmVecSub (&d, &c, &pl->vPos);
-			m = VmVecMag (&d);
-			psl->bState = (m <= F1_0 * 125);
+			nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+			if (!SEGVIS (nLightSeg, nSegment)) 
+				psl->bState = 0;
+			else {
+				VmVecSub (&d, &c, &pl->vPos);
+				m = VmVecMag (&d);
+				psl->bState = (m <= F1_0 * 125);
+				}
 			}
 		}
 	}
@@ -1773,7 +1775,7 @@ int AddOglHeadLight (tObject *objP)
 	static float spotAngles [] = {0.95f, 0.825f, 0.25f};
 
 if (gameOpts->render.bDynLighting) {
-		tRgbColorf c = {1.0f, 1.0f, 1.0f};
+		tRgbColorf	c = {1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
 		int			nLight;
 
@@ -1822,6 +1824,10 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+extern int nDbgVertex;
+#endif
+
 void ComputeStaticDynLighting ()
 {
 if (gameOpts->render.bDynLighting || 
@@ -1837,6 +1843,10 @@ if (gameOpts->render.bDynLighting ||
 	TransformDynLights (1, bColorize);
 	bVariable = bColorize - 1;
 	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {
+#ifdef _DEBUG
+		if (nVertex == nDbgVertex)
+			nVertex = nVertex;
+#endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
 		SetNearestVertexLights (nVertex, 1, 1, bVariable);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf);

@@ -214,7 +214,7 @@ int StartNewLevel(int level_num, int secretFlag);
 void StartLevel(int randomFlag);
 
 // Actually does the work to start new level
-int StartNewLevelSub(int level_num, int page_in_textures, int secretFlag);
+int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore);
 
 void InitMultiPlayerObject();            //make sure tPlayer's tObject set up
 void InitPlayerStatsGame();      //clear all stats

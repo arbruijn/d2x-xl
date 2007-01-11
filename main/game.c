@@ -2095,7 +2095,7 @@ if (gameData.app.fusion.xAutoFireTime) {
 		vmsVector	vRand;
 		fix			xBump;
 		static time_t t0 = 0;
-		time_t t = SDL_GetTicks ();
+		time_t t = gameStates.app.nSDLTicks;
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;

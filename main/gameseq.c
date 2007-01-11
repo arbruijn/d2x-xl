@@ -945,7 +945,6 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 memset (gameData.render.lights.segDeltas, 0, sizeof (gameData.render.lights.segDeltas));
 /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
-ComputeStaticDynLighting ();
 gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
 gameData.hoard.nMonsterballSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");
@@ -1720,7 +1719,7 @@ DigiSyncSounds ();
 
 //called when the tPlayer is starting a new level for normal game mode and restore state
 //	bSecret set if came from a secret level
-int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret)
+int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore)
 {
 	int funcRes;
 
@@ -1743,6 +1742,10 @@ if (gameData.app.nGameMode & GM_MULTI)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
 funcRes = LoadLevel (nLevel, bPageInTextures);
+if (!bRestore) {
+	ComputeNearestLights ();
+	ComputeStaticDynLighting ();
+	}
 ClearWarnFunc (ShowInGameWarning);
 if (!funcRes)
 	return 0;
@@ -1989,7 +1992,7 @@ if ((nLevel > 0) && !bSecret)
 if (!gameStates.app.bAutoRunMission)
 	ShowLevelIntro (nLevel);
 WIN (DEFINE_SCREEN (NULL));		// ALT-TAB: no restore of background.
-return StartNewLevelSub (nLevel, 1, bSecret);
+return StartNewLevelSub (nLevel, 1, bSecret, 0);
 }
 
 //------------------------------------------------------------------------------

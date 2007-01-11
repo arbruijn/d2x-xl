@@ -1168,7 +1168,7 @@ if (gameData.render.lights.dynamic.material.bValid) {
 	else
 		gameData.threads.vertColor.data.matSpecular = matSpecular;
 	}
-#if 1 //cache light values per frame
+#if 1//ndef _DEBUG //cache light values per frame
 if (!(gameData.threads.vertColor.data.bExclusive || 
 	   gameData.threads.vertColor.data.bMatEmissive || pVertColor) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;

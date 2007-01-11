@@ -497,6 +497,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		GrRemapMonoFonts ();
 	if (bGame) {
 		FreeInventoryIcons ();
+		FreeObjTallyIcons ();
 		ResetHoardData ();
 		FreeParticleImages ();
 		OOF_ReleaseTextures ();

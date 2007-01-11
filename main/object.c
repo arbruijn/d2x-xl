@@ -1619,16 +1619,21 @@ if (objP->controlType != CT_WEAPON) {
 	VmAngles2Matrix (&objP->position.mOrient, &a);
 	objP->mType.physInfo.mass = F1_0;
 	objP->mType.physInfo.drag = 512;
-	if (bIsMissile [objP->id]) {
+#if 0
+	if (bIsMissile [objP->id]) 
+#endif
+		{
 		objP->mType.physInfo.rotVel.p.x = 0;
 		objP->mType.physInfo.rotVel.p.y = 
 		objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 		}
+#if 0
 	else {
 		objP->mType.physInfo.rotVel.p.x = 
 		objP->mType.physInfo.rotVel.p.z = 0;
 		objP->mType.physInfo.rotVel.p.y = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 		}
+#endif
 	objP->controlType = CT_WEAPON;
 	objP->renderType = RT_POLYOBJ;
 	objP->movementType = MT_PHYSICS;
