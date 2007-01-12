@@ -142,14 +142,14 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][9];
 
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
-typedef struct shortpos {
+typedef struct tShortPos {
 	sbyte   bytemat[9];
 	short   xo,yo,zo;
-	short   tSegment;
+	short   nSegment;
 	short   velx, vely, velz;
-} __pack__ shortpos;
+} __pack__ tShortPos;
 
-// This is specific to the shortpos extraction routines in gameseg.c.
+// This is specific to the tShortPos extraction routines in gameseg.c.
 #define RELPOS_PRECISION    10
 #define MATRIX_PRECISION    9
 #define MATRIX_MAX          0x7f    // This is based on MATRIX_PRECISION, 9 => 0x7f
@@ -413,13 +413,13 @@ int CallObjectCreateEgg(tObject *objp, int count, int nType, int id);
 extern void DeadPlayerEnd(void);
 
 // Extract information from an tObject (objp->orient, objp->pos,
-// objp->nSegment), stuff in a shortpos structure.  See typedef
-// shortpos.
-extern void CreateShortPos(shortpos *spp, tObject *objp, int swap_bytes);
+// objp->nSegment), stuff in a tShortPos structure.  See typedef
+// tShortPos.
+extern void CreateShortPos(tShortPos *spp, tObject *objp, int swap_bytes);
 
-// Extract information from a shortpos, stuff in objp->orient
+// Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
-extern void ExtractShortPos(tObject *objp, shortpos *spp, int swap_bytes);
+extern void ExtractShortPos(tObject *objp, tShortPos *spp, int swap_bytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs
@@ -484,9 +484,8 @@ tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
 void DrawPolygonObject (tObject *objP);
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc);
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
-
 tObject *ObjFindFirstOfType (int nType);
-
+void ConvertWeaponToPowerup (tObject *objP);
 void InitWeaponFlags (void);
 
 extern ubyte bIsMissile [];

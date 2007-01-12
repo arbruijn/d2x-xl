@@ -202,7 +202,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	sizeof (tNetPlayerStats), // MULTI_SEND_PLAYER
 	55, // MULTI_MARKER
 	12, // MULTI_DROP_WEAPON
-	3+sizeof (shortpos), // MULTI_GUIDED
+	3+sizeof (tShortPos), // MULTI_GUIDED
 	11, // MULTI_STOLEN_ITEMS
 	6,  // MULTI_WALL_STATUS
 	5,  // MULTI_HEARTBEAT
@@ -1127,7 +1127,7 @@ else {
 void MultiDoPosition (char *buf)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 int nPlayer = (gameData.multi.nLocalPlayer+1)%2;
 Assert (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject] != gameData.objs.console);
@@ -1136,7 +1136,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	return;
 	}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject], (shortpos *) (buf+1), 0);
+ExtractShortPos (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject], (tShortPos *) (buf+1), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + 1), 9);
 memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
@@ -2144,7 +2144,7 @@ multiData.kills.pFlags [gameData.multi.nLocalPlayer] = 0;
 void MultiSendPosition (int nObject)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 	int count = 0;
 
@@ -2152,8 +2152,8 @@ if (gameData.app.nGameMode & GM_NETWORK)
 	return;
 multiData.msg.buf [count++] = (char)MULTI_POSITION;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((shortpos *) (multiData.msg.buf+count), gameData.objs.objects+nObject, 0);
-count += sizeof (shortpos);
+CreateShortPos ((tShortPos *) (multiData.msg.buf+count), gameData.objs.objects+nObject, 0);
+count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, gameData.objs.objects+nObject, 1);
 memcpy (& (multiData.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
@@ -3185,7 +3185,7 @@ if (gameData.app.nGameMode & GM_NETWORK)
 void MultiSendGuidedInfo (tObject *miss, char done)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 	int count = 0;
 
@@ -3193,8 +3193,8 @@ multiData.msg.buf [count++] = (char)MULTI_GUIDED;
 multiData.msg.buf [count++] = (char)gameData.multi.nLocalPlayer;
 multiData.msg.buf [count++] = done;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((shortpos *) (multiData.msg.buf+count), miss, 0);
-count += sizeof (shortpos);
+CreateShortPos ((tShortPos *) (multiData.msg.buf+count), miss, 0);
+count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, miss, 1);
 memcpy (& (multiData.msg.buf [count]), (ubyte *) (sp.bytemat), 9);
@@ -3213,7 +3213,7 @@ void MultiDoGuided (char *buf)
 	int count = 3;
 	static int fun = 200;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 	tObject *gmObj = gameData.objs.guidedMissile [nPlayer];
 
@@ -3234,13 +3234,13 @@ else if (++fun >= 50)
 		return;
 		}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (gmObj, (shortpos *) (buf+count), 0);
+ExtractShortPos (gmObj, (tShortPos *) (buf+count), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
 memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
 ExtractShortPos (gmObj, &sp, 1);
 #endif
-count += sizeof (shortpos);
+count += sizeof (tShortPos);
 UpdateObjectSeg (gmObj);
 }
 

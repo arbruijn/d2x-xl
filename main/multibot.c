@@ -351,7 +351,7 @@ void MultiSendRobotPositionSub (int nObject)
 	int bufP = 0;
 	short s;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 
 multiData.msg.buf [bufP++] = MULTI_ROBOT_POSITION;  								
@@ -360,8 +360,8 @@ s = ObjnumLocalToRemote (nObject, (sbyte *) (multiData.msg.buf + bufP + 2));
 PUT_INTEL_SHORT (multiData.msg.buf + bufP, s);
 bufP += 3;
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((shortpos *) (multiData.msg.buf + bufP), gameData.objs.objects + nObject, 0);		
-bufP += sizeof (shortpos);
+CreateShortPos ((tShortPos *) (multiData.msg.buf + bufP), gameData.objs.objects + nObject, 0);		
+bufP += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, gameData.objs.objects+nObject, 1);
 memcpy (multiData.msg.buf + bufP, (ubyte *) (sp.bytemat), 9);
@@ -612,7 +612,7 @@ gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 void MultiDoRobotPosition (char *buf)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	shortpos sp;
+	tShortPos sp;
 #endif
 	short nRobot, nRemoteBot;
 	int bufP = 1;
@@ -640,7 +640,7 @@ if (gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 set_thrust_from_velocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
 //	gameData.objs.objects [nRobot].physInfo.drag = gameData.bots.pInfo [gameData.objs.objects [nRobot].id].drag >> 4; // Set drag to low
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (&gameData.objs.objects [nRobot], (shortpos *) (buf+bufP), 0);
+ExtractShortPos (&gameData.objs.objects [nRobot], (tShortPos *) (buf+bufP), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + bufP), 9);		
 bufP += 9;

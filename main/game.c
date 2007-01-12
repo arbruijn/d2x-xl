@@ -138,9 +138,7 @@ void FreeHoardData (void);
 int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
-int	Speedtest_on = 0;
-
-#ifndef NDEBUG
+#ifdef _DEBUG
 int	Mark_count = 0;                 // number of debugging marks set
 int	Speedtest_startTime;
 int	Speedtest_segnum;
@@ -198,7 +196,7 @@ int	*Toggle_var = &Dummy_var;
 char faded_in;
 #endif
 
-#ifndef NDEBUG                          //these only exist if debugging
+#ifdef _DEBUG                          //these only exist if debugging
 
 int Game_double_buffer = 1;     //double buffer by default
 fix fixed_frametime=0;          //if non-zero, set frametime to this
@@ -846,11 +844,11 @@ if (gameData.time.xFrame > F1_0/5)
 gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
-#ifndef NDEBUG
+#ifdef _DEBUG
 if (fixed_frametime) 
 	gameData.time.xFrame = fixed_frametime;
 #endif
-#ifndef NDEBUG
+#ifdef _DEBUG
 // Pause here!!!
 if (Debug_pause) {
 	int c = 0;
@@ -1655,7 +1653,7 @@ ProfilerSetStatus (1);
 #endif
 
 if (!setjmp (gameExitPoint)) {
-while (1) {
+for (;;) {
 	int player_shields;
 		// GAME LOOP!
 	gameStates.app.bAutoMap = 0;
@@ -1890,9 +1888,9 @@ return VR_screen_pages + nVRCurrentPage;
 //-----------------------------------------------------------------------------
 extern void kconfig_center_headset ();
 
-#ifndef	NDEBUG
-void speedtest_frame (void);
-Uint32 Debug_slowdown=0;
+#ifdef _DEBUG
+void SpeedtestFrame (void);
+Uint32 nDebugSlowdown = 0;
 #endif
 
 #ifdef EDITOR
@@ -2148,19 +2146,19 @@ int GameLoop (int RenderFlag, int bReadControls)
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 GetSlowTick ();
-#ifndef	NDEBUG
+#ifdef _DEBUG
 //	Used to slow down frame rate for testing things.
 //	RenderFlag = 1; // DEBUG
 //	GrPaletteStepLoad (gamePalette);
-if (Debug_slowdown) {
+if (nDebugSlowdown) {
 #if 1
 	time_t	t = SDL_GetTicks ();
-	while (SDL_GetTicks () - t < Debug_slowdown)
+	while (SDL_GetTicks () - t < nDebugSlowdown)
 		;
 #else
 	int	h, i, j=0;
 
-	for (h=0; h<Debug_slowdown; h++)
+	for (h=0; h<nDebugSlowdown; h++)
 		for (i=0; i<1000; i++)
 			j += i;
 #endif
@@ -2275,9 +2273,9 @@ if (Debug_slowdown) {
 	DoSmokeFrame ();
 //LogErr ("DoAmbientSounds\n");
 	DoAmbientSounds ();
-#ifndef NDEBUG
-	if (Speedtest_on)
-		speedtest_frame ();
+#ifdef _DEBUG
+	if (gameData.speedtest.bOn)
+		SpeedtestFrame ();
 #endif
 	if (bReadControls) {
 //LogErr ("ReadControls\n");
@@ -2293,7 +2291,7 @@ if (Debug_slowdown) {
 	if (gameData.time.xGame < 0 || gameData.time.xGame > i2f (0x7fff - 600)) {
 		gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 		}
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (FindArg ("-checktime") != 0)
 		if (gameData.time.xGame >= i2f (600))		//wrap after 10 minutes
 			gameData.time.xGame = gameData.time.xFrame;

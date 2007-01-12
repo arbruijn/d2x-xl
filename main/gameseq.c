@@ -811,7 +811,7 @@ int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
 
 extern char szAutoMission [255];
 
-int LoadLevel (int nLevel, int bPageInTextures)
+int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 {
 	char		*pszLevelName;
 	tPlayer	save_player;
@@ -971,6 +971,10 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 //	WIN (HideCursorW ();
 D2SetCaption ();
+if (!bRestore) {
+	ComputeNearestLights ();
+	ComputeStaticDynLighting ();
+	}
 return 1;
 }
 
@@ -1266,7 +1270,7 @@ else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	}
 
 if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBACK)) {
-	if (!LoadLevel (nLevel, bPageInTextures))
+	if (!LoadLevel (nLevel, bPageInTextures, 0))
 		return 0;
 	InitSecretLevel (nLevel);
 	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
@@ -1298,7 +1302,7 @@ else {
 
 		sprintf (text_str, TXT_ADVANCE_LVL, gameData.missions.nCurrentLevel+1);
 		DoSecretMessage (text_str);
-		if (!LoadLevel (nLevel, bPageInTextures))
+		if (!LoadLevel (nLevel, bPageInTextures, 0))
 			return 0;
 		InitSecretLevel (nLevel);
 		return 1;
@@ -1741,11 +1745,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 if (gameData.app.nGameMode & GM_MULTI)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
-funcRes = LoadLevel (nLevel, bPageInTextures);
-if (!bRestore) {
-	ComputeNearestLights ();
-	ComputeStaticDynLighting ();
-	}
+funcRes = LoadLevel (nLevel, bPageInTextures, bRestore);
 ClearWarnFunc (ShowInGameWarning);
 if (!funcRes)
 	return 0;

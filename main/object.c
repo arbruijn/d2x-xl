@@ -1607,46 +1607,66 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
-void ConvertPowerupToWeapon (tObject *objP, short nModel, int bHasModel)
+int ConvertPowerupToWeapon (tObject *objP)
 {
-if (objP->controlType != CT_WEAPON) {
 	vmsAngVec	a;
+	short			nModel, nId;
+	int			bHasModel = 0;
 
-	//memset (&objP->rType, 0, sizeof (objP->rType));
+if (!gameOpts->render.powerups.b3D)
+	return 0;
+if (objP->controlType == CT_WEAPON)
+	return 1;
+
+nModel = PowerupToModel (objP->id);
+if (nModel) 
+	nId = objP->id;
+else {
+	nId = PowerupToObject (objP->id);
+	if (nId >= 0) {
+		nModel = gameData.weapons.info [nId].nModel;
+		bHasModel = 1;
+		}
+	}
+if (!(nModel && gameData.models.modelToOOF [nModel]))
+	return 0;
+
+if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	a.p = (rand () % F1_0) - F1_0 / 2;
 	a.b = (rand () % F1_0) - F1_0 / 2;
 	a.h = (rand () % F1_0) - F1_0 / 2;
 	VmAngles2Matrix (&objP->position.mOrient, &a);
-	objP->mType.physInfo.mass = F1_0;
-	objP->mType.physInfo.drag = 512;
-#if 0
-	if (bIsMissile [objP->id]) 
-#endif
-		{
-		objP->mType.physInfo.rotVel.p.x = 0;
-		objP->mType.physInfo.rotVel.p.y = 
-		objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
-		}
-#if 0
-	else {
-		objP->mType.physInfo.rotVel.p.x = 
-		objP->mType.physInfo.rotVel.p.z = 0;
-		objP->mType.physInfo.rotVel.p.y = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
-		}
-#endif
-	objP->controlType = CT_WEAPON;
-	objP->renderType = RT_POLYOBJ;
-	objP->movementType = MT_PHYSICS;
-	objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
-	objP->rType.polyObjInfo.nModel = nModel;
-#if 0
-	if (bHasModel)
-		objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
-									gameData.weapons.info [objP->id].po_len_to_width_ratio);
-#endif
-	objP->rType.polyObjInfo.nTexOverride = -1;
-	objP->lifeleft = IMMORTAL_TIME;
 	}
+objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.drag = 512;
+#if 0
+if (bIsMissile [objP->id]) 
+#endif
+	{
+	objP->mType.physInfo.rotVel.p.x = 0;
+	objP->mType.physInfo.rotVel.p.y = 
+	objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	}
+#if 0
+else {
+	objP->mType.physInfo.rotVel.p.x = 
+	objP->mType.physInfo.rotVel.p.z = 0;
+	objP->mType.physInfo.rotVel.p.y = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+	}
+#endif
+objP->controlType = CT_WEAPON;
+objP->renderType = RT_POLYOBJ;
+objP->movementType = MT_PHYSICS;
+objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+objP->rType.polyObjInfo.nModel = nModel;
+#if 0
+if (bHasModel)
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+								gameData.weapons.info [objP->id].po_len_to_width_ratio);
+#endif
+objP->rType.polyObjInfo.nTexOverride = -1;
+objP->lifeleft = IMMORTAL_TIME;
+return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -1770,33 +1790,11 @@ switch (objP->renderType) {
 			DrawHostage (objP); 
 		break;
 
-	case RT_POWERUP: {
-		short nModel, nId = -1;
-		int	bHasModel = 0;
-
-		if (gameOpts->render.powerups.b3D) {
-			nModel = PowerupToModel (objP->id);
-			if (nModel) 
-				nId = objP->id;
-			else {
-				nId = PowerupToObject (objP->id);
-				if (nId >= 0) {
-					nModel = gameData.weapons.info [nId].nModel;
-					bHasModel = 1;
-					}
-				}
-			if (!(nModel && gameData.models.modelToOOF [nModel]))
-				nId = -1;
-			}
-		if (nId < 0) {
-			if (gameStates.render.nShadowPass != 2)
-				DrawPowerup (objP); 
-			}
-		else {
-			ConvertPowerupToWeapon (objP, nModel, bHasModel);
+	case RT_POWERUP:
+		if (ConvertPowerupToWeapon (objP))
 			DrawPolygonObject (objP);
-			}
-		}
+		else if (gameStates.render.nShadowPass != 2)
+			DrawPowerup (objP); 
 		break;
 
 	case RT_LASER: 

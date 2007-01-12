@@ -138,17 +138,7 @@ int	redbookVolume = 255;
 
 //	External Variables ---------------------------------------------------------
 
-extern int	Speedtest_on;			 // Speedtest global adapted from game.c
 extern char WaitForRefuseAnswer, RefuseThisPlayer, RefuseTeam;
-
-#ifndef NDEBUG
-extern int	Mark_count;
-extern int	Speedtest_startTime;
-extern int	Speedtest_segnum;
-extern int	Speedtest_sidenum;
-extern int	Speedtest_frame_start;
-extern int	Speedtest_count;
-#endif
 
 extern int	*Toggle_var;
 extern int	last_drawn_cockpit[2];
@@ -190,10 +180,10 @@ int HandleSystemKey(int key);
 void HandleTestKey(int key);
 void HandleVRKey(int key);
 
-void speedtest_init(void);
-void speedtest_frame(void);
-void advanceSound(void);
-void play_testSound(void);
+void SpeedtestInit(void);
+void SpeedtestFrame(void);
+void AdvanceSound(void);
+void PlayTestSound(void);
 
 #define key_isfunc(k) (((k&0xff)>=KEY_F1 && (k&0xff)<=KEY_F10) || (k&0xff)==KEY_F11 || (k&0xff)==KEY_F12)
 #define key_ismod(k)  ((k&0xff)==KEY_LALT || (k&0xff)==KEY_RALT || (k&0xff)==KEY_LSHIFT || (k&0xff)==KEY_RSHIFT || (k&0xff)==KEY_LCTRL || (k&0xff)==KEY_RCTRL)
@@ -815,12 +805,13 @@ void HandleDemoKey(int key)
 			old_state = gameData.demo.nVcrState;
 			gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
 			//GameRenderFrameMono();
+			bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
 			gameData.demo.nVcrState = old_state;
 			break;
 		}
 
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 		case KEY_BACKSP:
 			Int3();
 			break;
@@ -1663,7 +1654,7 @@ void HandleTestKey(int key)
 		// case KEY_UP:		ft_preference=FP_UP; break;
 		// case KEY_DOWN:		ft_preference=FP_DOWN; break;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 		case KEY_DEBUGGED+KEY_LAPOSTRO: 
 			Show_view_textTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
@@ -1677,7 +1668,7 @@ void HandleTestKey(int key)
 			gameData.objs.viewer=gameData.objs.console; 
 			break;
 
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 		case KEY_DEBUGGED+KEY_O: 
 			ToggleOutlineMode(); 
 			break;
@@ -1699,13 +1690,13 @@ void HandleTestKey(int key)
 			slew_stop(); 
 			break;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 		case KEY_DEBUGGED + KEY_F11: 
-			play_testSound(); 
+			PlayTestSound(); 
 			break;
 		case KEY_DEBUGGED + KEY_SHIFTED+KEY_F11: 
-			advanceSound(); 
-			play_testSound(); 
+			AdvanceSound(); 
+			PlayTestSound(); 
 			break;
 #endif
 
@@ -1776,36 +1767,21 @@ void HandleTestKey(int key)
 			Debug_pause = 1; 
 			break;
 
-		//case KEY_F7: {
-		//	char mystr[30];
-		//	sprintf(mystr, "mark %i start", Mark_count);
-		//	_MARK_(mystr);
-		//	break;
-		//}
-		//case KEY_SHIFTED+KEY_F7: {
-		//	char mystr[30];
-		//	sprintf(mystr, "mark %i end", Mark_count);
-		//	Mark_count++;
-		//	_MARK_(mystr);
-		//	break;
-		//}
-
-
-		#ifndef NDEBUG
+#ifdef _DEBUG
 		case KEY_DEBUGGED+KEY_F8: 
-			speedtest_init(); 
-			Speedtest_count = 1;	 
+			SpeedtestInit(); 
+			gameData.speedtest.nCount = 1;	 
 			break;
 		case KEY_DEBUGGED+KEY_F9: 
-			speedtest_init(); 
-			Speedtest_count = 10;	 
+			SpeedtestInit(); 
+			gameData.speedtest.nCount = 10;	 
 			break;
 
 		case KEY_DEBUGGED+KEY_D:
 			if ((Game_double_buffer = !Game_double_buffer)!=0)
 				InitCockpit();
 			break;
-		#endif
+#endif
 
 		#ifdef EDITOR
 		case KEY_DEBUGGED+KEY_Q:
@@ -1862,14 +1838,14 @@ char OldHomingState[20];
 
 //	Testing functions ----------------------------------------------------------
 
-#ifndef NDEBUG
-void speedtest_init(void)
+#ifdef _DEBUG
+void SpeedtestInit(void)
 {
-	Speedtest_startTime = TimerGetFixedSeconds();
-	Speedtest_on = 1;
-	Speedtest_segnum = 0;
-	Speedtest_sidenum = 0;
-	Speedtest_frame_start = gameData.app.nFrameCount;
+	gameData.speedtest.nStartTime = TimerGetFixedSeconds();
+	gameData.speedtest.bOn = 1;
+	gameData.speedtest.nSegment = 0;
+	gameData.speedtest.nSide = 0;
+	gameData.speedtest.nFrameStart = gameData.app.nFrameCount;
 #if TRACE
 	con_printf (CON_DEBUG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
 #endif
@@ -1877,46 +1853,46 @@ void speedtest_init(void)
 
 //------------------------------------------------------------------------------
 
-void speedtest_frame(void)
+void SpeedtestFrame(void)
 {
 	vmsVector	view_dir, center_point;
 
-	Speedtest_sidenum=Speedtest_segnum % MAX_SIDES_PER_SEGMENT;
+	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
-	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[Speedtest_segnum]);
+	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[gameData.speedtest.nSegment]);
 	gameData.objs.viewer->position.vPos.p.x += 0x10;		
 	gameData.objs.viewer->position.vPos.p.y -= 0x10;		
 	gameData.objs.viewer->position.vPos.p.z += 0x17;
 
-	RelinkObject(OBJ_IDX (gameData.objs.viewer), Speedtest_segnum);
-	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[Speedtest_segnum], Speedtest_sidenum);
+	RelinkObject(OBJ_IDX (gameData.objs.viewer), gameData.speedtest.nSegment);
+	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
 	VmVecNormalizedDirQuick(&view_dir, &center_point, &gameData.objs.viewer->position.vPos);
 	VmVector2Matrix(&gameData.objs.viewer->position.mOrient, &view_dir, NULL, NULL);
 
-	if (((gameData.app.nFrameCount - Speedtest_frame_start) % 10) == 0) {
+	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		con_printf (CON_DEBUG, ".");
 #endif
 		}
-	Speedtest_segnum++;
+	gameData.speedtest.nSegment++;
 
-	if (Speedtest_segnum > gameData.segs.nLastSegment) {
+	if (gameData.speedtest.nSegment > gameData.segs.nLastSegment) {
 		char    msg[128];
 
 		sprintf(msg, TXT_SPEEDTEST, 
-			gameData.app.nFrameCount-Speedtest_frame_start, 
-			f2fl(TimerGetFixedSeconds() - Speedtest_startTime), 
-			(double) (gameData.app.nFrameCount-Speedtest_frame_start) / f2fl(TimerGetFixedSeconds() - Speedtest_startTime));
+			gameData.app.nFrameCount-gameData.speedtest.nFrameStart, 
+			f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
+			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
 #if TRACE
 		con_printf (CON_DEBUG, "%s", msg);
 #endif
 		HUDInitMessage(msg);
 
-		Speedtest_count--;
-		if (Speedtest_count == 0)
-			Speedtest_on = 0;
+		gameData.speedtest.nCount--;
+		if (gameData.speedtest.nCount == 0)
+			gameData.speedtest.bOn = 0;
 		else
-			speedtest_init();
+			SpeedtestInit();
 	}
 
 }
@@ -1931,7 +1907,7 @@ int sound_nums[] = {10, 11, 20, 21, 30, 31, 32, 33, 40, 41, 50, 51, 60, 61, 62, 
 
 //------------------------------------------------------------------------------
 
-void advanceSound()
+void AdvanceSound()
 {
 	if (++testSound_num == N_TEST_SOUNDS)
 		testSound_num=0;
@@ -1942,7 +1918,7 @@ void advanceSound()
 
 short TestSound = 251;
 
-void play_testSound()
+void PlayTestSound()
 {
 
 	// -- DigiPlaySample(sound_nums[testSound_num], F1_0);

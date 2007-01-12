@@ -166,12 +166,6 @@ extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, 
 //ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1 );
 
 //unused - extern int last_joyTime;               //last time the joystick was used
-#ifndef NDEBUG
-extern int Speedtest_on;
-#else
-#define Speedtest_on 0
-#endif
-
 extern void SetFunctionMode (int);
 extern int UDPGetMyAddress ();
 extern unsigned char ipx_ServerAddress [10];
@@ -310,8 +304,11 @@ if (*last_key==KEY_ESC)
 
 if ( bAllowAutoDemo ) {
 	curtime = TimerGetApproxSeconds ();
-	//if (( (keydTime_when_last_pressed+i2f (20)) < curtime) && ((last_joyTime+i2f (20)) < curtime) && (!Speedtest_on)  ) {
-	if (( (keydTime_when_last_pressed+i2f (25)) < curtime) && (!Speedtest_on)  ) {
+	if (( (keydTime_when_last_pressed+i2f (25)) < curtime)
+#ifdef _DEBUG	
+		&& !gameData.speedtest.bOn
+#endif		
+		) {
 		int n_demos;
 
 		n_demos = NDCountDemos ();
@@ -3063,6 +3060,8 @@ for (j = 0; j < 3; j++)
 		extraGameInfo [0].nZoomMode = j;
 		break;
 		}
+if (IsMultiGame)
+	NetworkSendExtraGameInfo (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -3112,8 +3111,12 @@ do {
 		optCockpit = opt++;
 		ADD_MENU (opt, TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		optRender = opt++;
-		ADD_MENU (opt, TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
-		optGameplay = opt++;
+		if (IsMultiGame && !IsCoopGame) 
+			optGameplay = -1;
+		else {
+			ADD_MENU (opt, TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
+			optGameplay = opt++;
+			}
 		}
 
 	i = ExecMenu1 (NULL, TXT_OPTIONS, opt, m, options_menuset, &choice);
@@ -3139,7 +3142,7 @@ do {
 				CockpitOptionsMenu ();			
 			else if (i == optRender)
 				RenderOptionsMenu ();			
-			else if (i == optGameplay)
+			else if ((optGameplay >= 0) && (i == optGameplay))
 				GameplayOptionsMenu ();        
 			}
 		}

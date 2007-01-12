@@ -1335,6 +1335,7 @@ void HUDShowObjTally (void)
 {
 	static int		objCounts [2] = {0, 0};
 	static time_t	t0 = -1;
+	time_t			t;
 
 if (!gameOpts->render.cockpit.bObjectTally)
 	return;
@@ -1363,13 +1364,13 @@ if (!IsMultiGame || IsCoopGame) {
 
 	x0 = grdCurCanv->cv_w;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	t = gameStates.app.nSDLTicks;
+	if (t - t0 > 333) {	//update 3 times per second
+		t0 = t;
+		for (i = 0; i < 2; i++) 
+			objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
+		}
 	if (!gameOpts->render.cockpit.bTextGauges && LoadObjTallyIcons () > 0) {
-		time_t t = gameStates.app.nSDLTicks;
-		if (t - t0 > 333) {	//update 3 times per second
-			t0 = t;
-			for (i = 0; i < 2; i++) 
-				objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
-			}
 		for (i = 0; i < 2; i++) {
 			bmH = bmObjTally [i].bm_props.h / 2;
 			bmW = bmObjTally [i].bm_props.w / 2;

@@ -2609,7 +2609,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int i;
 	FFS ffs;
 	int NumFiles=0, key, done, cItem, ocitem;
-	char * filenames = NULL;
+	char *filenames = NULL;
 	int NumFiles_displayed = 8;
 	int first_item = -1, ofirst_item;
 	int old_keyd_repeat = keyd_repeat;
@@ -2852,41 +2852,44 @@ ReadFileNames:
 
 		case KEY_CTRLED+KEY_D:
 
-			if (((player_mode)&&(cItem>0)) || ((demo_mode)&&(cItem>=0)))	{
+			if (((player_mode) && (cItem > 0)) || ((demo_mode) && (cItem >= 0))) {
 				int x = 1;
+				char *pszFile = filenames + cItem * (FILENAME_LEN+1);
+				if (*pszFile == '$')
+					pszFile++;
 				SDL_ShowCursor (0);
 				if (player_mode)
-					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, &filenames [cItem* (FILENAME_LEN+1)]+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
+					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
 				else if (demo_mode)
-					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, &filenames [cItem* (FILENAME_LEN+1)]+ ((demo_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
+					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
 				SDL_ShowCursor (1);
- 				if (x==0)	{
-					char * p;
+ 				if (!x)	{
+					char *p;
 					int ret;
-					char name [256], dir [256];
 
-					p = &filenames [ (cItem* (FILENAME_LEN+1))+strlen (&filenames [cItem* (FILENAME_LEN+1)])];
+					p = pszFile + strlen (pszFile);
 					if (player_mode)
 						*p = '.';
-
-					_splitpath (filespec, name, dir, NULL, NULL);
+#if 0
+					_splitpath (filespec, NULL, name, dir, NULL);
 					strcat (name, dir);
-					strcat (name, &filenames [cItem* (FILENAME_LEN+1)]);
-					
-					ret = CFDelete (name, player_mode ? "" : gameFolders.szDemoDir);
+					//strcat (name, &filenames [cItem* (FILENAME_LEN+1)]);
+#endif					
+					ret = CFDelete (pszFile, player_mode ? gameFolders.szProfDir : gameFolders.szDemoDir);
 					if (player_mode)
 						*p = 0;
 
 					if ((!ret) && player_mode)	{
-						DeletePlayerSavedGames (&filenames [cItem* (FILENAME_LEN+1)]);
+						DeletePlayerSavedGames (pszFile);
 					}
 
 					if (ret) {
 						if (player_mode)
-							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, &filenames [cItem* (FILENAME_LEN+1)]+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
+							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 						else if (demo_mode)
-							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, &filenames [cItem* (FILENAME_LEN+1)]+ ((demo_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0));
-					} else if (demo_mode)
+							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+						}
+					else if (demo_mode)
 						demos_deleted = 1;
 					first_item = -1;
 					goto ReadFileNames;

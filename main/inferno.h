@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	endif
 #endif
 
+#include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
 #include "bm.h"
@@ -1624,6 +1625,7 @@ typedef struct tDemoData {
 	sbyte				bRenderingWasRecorded [32];
 
 	char				callSignSave [CALLSIGN_LEN+1];
+	int				nVersion;
 	int				nState;
 	int				nVcrState;
 	int				nStartFrame;
@@ -1639,6 +1641,7 @@ typedef struct tDemoData {
 	sbyte				bCtrlcenDestroyed;
 	int				nFrameCount;
 	short				nFrameBytesWritten;
+	fix				xStartTime;
 	fix				xPlaybackTotal;
 	fix				xRecordedTotal;
 	fix				xRecordedTime;
@@ -1787,6 +1790,18 @@ typedef struct tThreadData {
 	tClipDistThreadData	clipDist;
 	} tThreadData;
 
+#ifdef _DEBUG
+typedef struct tSpeedtestData {
+	int		bOn;
+	int		nMarks;
+	int		nStartTime;
+	int		nSegment;
+	int		nSide;
+	int		nFrameStart;
+	int		nCount;
+	} tSpeedtestData;
+#endif
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -1821,6 +1836,9 @@ typedef struct tGameData {
 	tFCDData				fcd;
 	tVertColorData		vertColor;
 	tThreadData			threads;
+#ifdef _DEBUG
+	tSpeedtestData		speedtest;
+#endif
 	tApplicationData	app;
 } tGameData;
 

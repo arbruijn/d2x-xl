@@ -116,14 +116,14 @@ typedef struct frame_info {
 } __pack__ frame_info;
 
 // short_frame_info is not aligned -- 01/18/96 -- MWA
-// won't align because of shortpos.  Shortpos needs
+// won't align because of tShortPos.  Shortpos needs
 // to stay in current form.
 
 typedef struct short_frame_info {
 	ubyte       nType;                   // What nType of packet
 	ubyte       pad[3];                 // Pad out length of frame_info packet
 	int         numpackets;
-	shortpos    thepos;
+	tShortPos    thepos;
 	ushort      data_size;          // Size of data appended to the net packet
 	ubyte       playernum;
 	ubyte       obj_renderType;
@@ -498,6 +498,7 @@ int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
 void RestartNetSearching(tMenuItem * m);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (monsterball_info *monsterballP);
+void NetworkSendExtraGameInfo (tSequencePacket *their);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started

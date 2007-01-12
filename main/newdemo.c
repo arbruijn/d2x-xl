@@ -166,15 +166,15 @@ static sbyte	bNDBadRead;
 #define INTERPOL_FACTOR         (F1_0 + (F1_0/5))
 
 #define DEMO_VERSION            15      // last D1 version was 13
-#define DEMO_VERSION_D2X        16      // last D1 version was 13
+#define DEMO_VERSION_D2X        17      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
 
 #define DEMO_MAX_LEVELS         29
 
-CFILE *infile = NULL;
-CFILE *outfile = NULL;
+CFILE *ndInFile = NULL;
+CFILE *ndOutFile = NULL;
 
 //	-----------------------------------------------------------------------------
 
@@ -197,9 +197,9 @@ gameData.demo.xJasonPlaybackTotal = 0;
 int NDGetPercentDone () 
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return (CFTell (infile) * 100) / gameData.demo.nSize;
+	return (CFTell (ndInFile) * 100) / gameData.demo.nSize;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	return CFTell (outfile);
+	return CFTell (ndOutFile);
 return 0;
 }
 
@@ -207,7 +207,7 @@ return 0;
 
 #define VEL_PRECISION 12
 
-void my_extract_shortpos (tObject *objP, shortpos *spp)
+void my_extract_shortpos (tObject *objP, tShortPos *spp)
 {
 	int nSegment;
 	sbyte *sp;
@@ -223,7 +223,7 @@ objP->position.mOrient.fVec.p.y = *sp++ << MATRIX_PRECISION;
 objP->position.mOrient.rVec.p.z = *sp++ << MATRIX_PRECISION;
 objP->position.mOrient.uVec.p.z = *sp++ << MATRIX_PRECISION;
 objP->position.mOrient.fVec.p.z = *sp++ << MATRIX_PRECISION;
-nSegment = spp->tSegment;
+nSegment = spp->nSegment;
 objP->position.nSegment = nSegment;
 pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
 objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
@@ -238,8 +238,8 @@ objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
 
 int NDRead (void *buffer, int elsize, int nelem)
 {
-int nRead = (int) CFRead (buffer, elsize, nelem, infile);
-if (CFError (infile) || CFEoF (infile))
+int nRead = (int) CFRead (buffer, elsize, nelem, ndInFile);
+if (CFError (ndInFile) || CFEoF (ndInFile))
 	bNDBadRead = -1;
 return nRead;
 }
@@ -266,8 +266,8 @@ int NDWrite (void *buffer, int elsize, int nelem)
 
 gameData.demo.nFrameBytesWritten += nTotalSize;
 gameData.demo.nWritten += nTotalSize;
-Assert (outfile != NULL);
-nWritten = CFWrite (buffer, elsize, nelem, outfile);
+Assert (ndOutFile != NULL);
+nWritten = CFWrite (buffer, elsize, nelem, ndOutFile);
 if ((gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
 	gameData.demo.bNoSpace = 1;
 if ((nWritten == nelem) && !gameData.demo.bNoSpace)
@@ -289,7 +289,7 @@ static inline void NDWriteByte (sbyte b)
 {
 gameData.demo.nFrameBytesWritten += sizeof (b);
 gameData.demo.nWritten += sizeof (b);
-CFWriteByte (b, outfile);
+CFWriteByte (b, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -298,7 +298,7 @@ static inline void NDWriteShort (short s)
 {
 gameData.demo.nFrameBytesWritten += sizeof (s);
 gameData.demo.nWritten += sizeof (s);
-CFWriteShort (s, outfile);
+CFWriteShort (s, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -307,7 +307,7 @@ static void NDWriteInt (int i)
 {
 gameData.demo.nFrameBytesWritten += sizeof (i);
 gameData.demo.nWritten += sizeof (i);
-CFWriteInt (i, outfile);
+CFWriteInt (i, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -325,7 +325,7 @@ static inline void NDWriteFix (fix f)
 {
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
-CFWriteFix (f, outfile);
+CFWriteFix (f, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -334,7 +334,7 @@ static inline void NDWriteFixAng (fixang f)
 {
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
-CFWriteFix (f, outfile);
+CFWriteFix (f, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -343,7 +343,7 @@ static inline void NDWriteVector (vmsVector *v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*v);
 gameData.demo.nWritten += sizeof (*v);
-CFWriteVector (v, outfile);
+CFWriteVector (v, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -352,7 +352,7 @@ static inline void NDWriteAngVec (vmsAngVec *v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*v);
 gameData.demo.nWritten += sizeof (*v);
-CFWriteAngVec (v, outfile);
+CFWriteAngVec (v, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -361,38 +361,37 @@ static inline void NDWriteMatrix (vmsMatrix *m)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*m);
 gameData.demo.nWritten += sizeof (*m);
-CFWriteMatrix (m, outfile);
+CFWriteMatrix (m, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDWriteShortPos (tObject *objP)
+void NDWritePosition (tObject *objP)
 {
 	ubyte		renderType = objP->renderType;
-	shortpos sp;
+	tShortPos sp;
 
 if (gameOpts->demo.bOldFormat)
 	CreateShortPos (&sp, objP, 0);
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
-	 (objP->nType == OBJ_CAMERA)) {
-if (gameOpts->demo.bOldFormat) {
-	int		i;
-	for (i = 0; i < 9; i++)
-		NDWriteByte (sp.bytemat [i]);
-	for (i = 0; i < 9; i++)
-		if (sp.bytemat [i] != 0)
-			break;
-	if (i == 9)
-		Int3 ();         // contact Allender about this.
-	}
-else
-	NDWriteMatrix (&objP->position.mOrient);
+	 (objP->nType == OBJ_CAMERA) ||
+	 (!gameOpts->demo.bOldFormat && (renderType == RT_POWERUP))) {
+	if (gameOpts->demo.bOldFormat) {
+		int	i;
+		for (i = 0; i < 9; i++)
+			NDWriteByte (sp.bytemat [i]);
+		for (i = 0; i < 9; i++)
+			if (sp.bytemat [i] != 0)
+				break;
+		}
+	else
+		NDWriteMatrix (&objP->position.mOrient);
 	}
 if (gameOpts->demo.bOldFormat) {
 	NDWriteShort (sp.xo);
 	NDWriteShort (sp.yo);
 	NDWriteShort (sp.zo);
-	NDWriteShort (sp.tSegment);
+	NDWriteShort (sp.nSegment);
 	NDWriteShort (sp.velx);
 	NDWriteShort (sp.vely);
 	NDWriteShort (sp.velz);
@@ -408,21 +407,21 @@ else {
 
 static inline ubyte NDReadByte (void)
 {
-return CFReadByte (infile);
+return CFReadByte (ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline short NDReadShort (void)
 {
-return CFReadShort (infile);
+return CFReadShort (ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline int NDReadInt ()
 {
-return CFReadInt (infile);
+return CFReadInt (ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -438,61 +437,62 @@ return str;
 
 static inline fix NDReadFix (void)
 {
-return CFReadFix (infile);
+return CFReadFix (ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline fixang NDReadFixAng (void)
 {
-return CFReadFixAng (infile);
+return CFReadFixAng (ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline void NDReadVector (vmsVector *v)
 {
-CFReadVector (v, infile);
+CFReadVector (v, ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline void NDReadAngVec (vmsAngVec *v)
 {
-CFReadAngVec (v, infile);
+CFReadAngVec (v, ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline void NDReadMatrix (vmsMatrix *m)
 {
-CFReadMatrix (m, infile);
+CFReadMatrix (m, ndInFile);
 }
 
 //	-----------------------------------------------------------------------------
 
-static void NDReadShortPos (tObject *objP)
+static void NDReadPosition (tObject *objP)
 {
-	shortpos sp;
+	tShortPos sp;
 	ubyte renderType;
 
 renderType = objP->renderType;
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
-		(objP->nType == OBJ_CAMERA)) {
+	 (objP->nType == OBJ_CAMERA) ||
+	 ((renderType == RT_POWERUP) && (gameData.demo.nVersion > DEMO_VERSION + 1))) {
 	if (gameData.demo.bUseShortPos) {
 		int i;
 		for (i = 0; i < 9; i++)
 			sp.bytemat [i] = NDReadByte ();
 		}
 	else {
-		CFReadMatrix (&objP->position.mOrient, infile);
+		CFReadMatrix (&objP->position.mOrient, ndInFile);
 		}
 	}
 if (gameData.demo.bUseShortPos) {
 	sp.xo = NDReadShort ();
 	sp.yo = NDReadShort ();
 	sp.zo = NDReadShort ();
-	sp.tSegment = NDReadShort ();
+	sp.nSegment = NDReadShort ();
 	sp.velx = NDReadShort ();
 	sp.vely = NDReadShort ();
 	sp.velz = NDReadShort ();
@@ -523,12 +523,18 @@ memset (objP, 0, sizeof (tObject));
  */
 objP->renderType = NDReadByte ();
 objP->nType = NDReadByte ();
-if ((objP->renderType == RT_NONE) &&(objP->nType != OBJ_CAMERA))
+if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA))
 	return;
 objP->id = NDReadByte ();
+if (gameData.demo.nVersion > DEMO_VERSION + 1)
+	objP->shields = NDReadFix ();
 objP->flags = NDReadByte ();
 objP->nSignature = NDReadShort ();
-NDReadShortPos (objP);
+NDReadPosition (objP);
+if (objP->nType == OBJ_POWERUP && objP->id == POW_VULCAN) {
+	int h = CFTell (ndInFile);
+		objP = objP;
+	}
 if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 objP->attachedObj = -1;
@@ -710,46 +716,69 @@ switch (objP->renderType) {
 	default:
 		Int3 ();
 	}
+if (objP->nType == OBJ_POWERUP && objP->id == POW_VULCAN) {
+	int h = CFTell (ndInFile);
+	objP = objP;
+	}
 prevObjP = objP;
+}
+
+//------------------------------------------------------------------------------
+//process this powerup for this frame
+void NDSetPowerupClip (tObject *objP)
+{
+//if (gameStates.app.b40fpsTick) 
+	tVClipInfo	*vciP = &objP->rType.vClipInfo;
+	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
+	int			i = OBJ_IDX (objP);
+
+vciP->nCurFrame = ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount;
 }
 
 //	-----------------------------------------------------------------------------
 
 void NDWriteObject (tObject *objP)
 {
-	int life;
+	int		life;
+	tObject	o = *objP;
 
-if ((objP->nType == OBJ_ROBOT) &&(objP->id == SPECIAL_REACTOR_ROBOT))
+if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 // Do renderType first so on read, we can make determination of
 // what else to read in
-NDWriteByte (objP->renderType);
-NDWriteByte (objP->nType);
-if ((objP->renderType == RT_NONE) &&(objP->nType != OBJ_CAMERA))
-	return;
-NDWriteByte (objP->id);
-NDWriteByte (objP->flags);
-NDWriteShort ((short)objP->nSignature);
-NDWriteShortPos (objP);
-if ((objP->nType != OBJ_HOSTAGE) &&(objP->nType != OBJ_ROBOT) &&(objP->nType != OBJ_PLAYER) &&(objP->nType != OBJ_POWERUP) &&(objP->nType != OBJ_CLUTTER)) {
-	NDWriteByte (objP->controlType);
-	NDWriteByte (objP->movementType);
-	NDWriteFix (objP->size);
+if ((o.nType == OBJ_POWERUP) && (o.renderType == RT_POLYOBJ)) {
+	int h = CFTell (ndOutFile);
+	ConvertWeaponToPowerup (&o);
+	NDSetPowerupClip (&o);
 	}
-if (objP->nType == OBJ_POWERUP)
-	NDWriteByte (objP->movementType);
-NDWriteVector (&objP->last_pos);
-if ((objP->nType == OBJ_WEAPON) &&(objP->renderType == RT_WEAPON_VCLIP))
-	NDWriteFix (objP->lifeleft);
+NDWriteByte (o.renderType);
+NDWriteByte (o.nType);
+if ((o.renderType == RT_NONE) && (o.nType != OBJ_CAMERA))
+	return;
+NDWriteByte (o.id);
+if (!gameOpts->demo.bOldFormat)
+	NDWriteFix (o.shields);
+NDWriteByte (o.flags);
+NDWriteShort ((short) o.nSignature);
+NDWritePosition (&o);
+if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_POWERUP) &&(o.nType != OBJ_CLUTTER)) {
+	NDWriteByte (o.controlType);
+	NDWriteByte (o.movementType);
+	NDWriteFix (o.size);
+	}
+else if (o.nType == OBJ_POWERUP)
+	NDWriteByte (o.movementType);
+NDWriteVector (&o.last_pos);
+if ((o.nType == OBJ_WEAPON) && (o.renderType == RT_WEAPON_VCLIP))
+	NDWriteFix (o.lifeleft);
 else {
-	life = (int)objP->lifeleft;
-	life = life >> 12;
+	life = ((int) o.lifeleft) >> 12;
 	if (life > 255)
 		life = 255;
 	NDWriteByte ((ubyte)life);
 	}
-if (objP->nType == OBJ_ROBOT) {
-	if (gameData.bots.pInfo [objP->id].bossFlag) {
+if (o.nType == OBJ_ROBOT) {
+	if (gameData.bots.pInfo [o.id].bossFlag) {
 		if ((gameData.time.xGame > gameData.boss.nCloakStartTime) && 
 			 (gameData.time.xGame < gameData.boss.nCloakEndTime))
 			NDWriteByte (1);
@@ -757,14 +786,14 @@ if (objP->nType == OBJ_ROBOT) {
 			NDWriteByte (0);
 		}
 	}
-switch (objP->movementType) {
+switch (o.movementType) {
 	case MT_PHYSICS:
-		NDWriteVector (&objP->mType.physInfo.velocity);
-		NDWriteVector (&objP->mType.physInfo.thrust);
+		NDWriteVector (&o.mType.physInfo.velocity);
+		NDWriteVector (&o.mType.physInfo.thrust);
 		break;
 
 	case MT_SPINNING:
-		NDWriteVector (&objP->mType.spinRate);
+		NDWriteVector (&o.mType.spinRate);
 		break;
 
 	case MT_NONE:
@@ -774,21 +803,21 @@ switch (objP->movementType) {
 		Int3 ();
 	}
 
-switch (objP->controlType) {
+switch (o.controlType) {
 	case CT_AI:
 		break;
 
 	case CT_EXPLOSION:
-		NDWriteFix (objP->cType.explInfo.nSpawnTime);
-		NDWriteFix (objP->cType.explInfo.nDeleteTime);
-		NDWriteShort (objP->cType.explInfo.nDeleteObj);
+		NDWriteFix (o.cType.explInfo.nSpawnTime);
+		NDWriteFix (o.cType.explInfo.nDeleteTime);
+		NDWriteShort (o.cType.explInfo.nDeleteObj);
 		break;
 
 	case CT_WEAPON:
 		break;
 
 	case CT_LIGHT:
-		NDWriteFix (objP->cType.lightInfo.intensity);
+		NDWriteFix (o.cType.lightInfo.intensity);
 		break;
 
 	case CT_NONE:
@@ -807,25 +836,25 @@ switch (objP->controlType) {
 		Int3 ();
 	}
 
-switch (objP->renderType) {
+switch (o.renderType) {
 	case RT_NONE:
 		break;
 
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		if ((objP->nType != OBJ_ROBOT) &&(objP->nType != OBJ_PLAYER) &&(objP->nType != OBJ_CLUTTER)) {
-			NDWriteInt (objP->rType.polyObjInfo.nModel);
-			NDWriteInt (objP->rType.polyObjInfo.nSubObjFlags);
+		if ((o.nType != OBJ_ROBOT) &&(o.nType != OBJ_PLAYER) &&(o.nType != OBJ_CLUTTER)) {
+			NDWriteInt (o.rType.polyObjInfo.nModel);
+			NDWriteInt (o.rType.polyObjInfo.nSubObjFlags);
 			}
-		if ((objP->nType != OBJ_PLAYER) &&(objP->nType != OBJ_DEBRIS))
+		if ((o.nType != OBJ_PLAYER) &&(o.nType != OBJ_DEBRIS))
 #if 0
 			for (i=0;i<MAX_SUBMODELS;i++)
-				NDWriteAngVec (&objP->polyObjInfo.animAngles [i]);
+				NDWriteAngVec (&o.polyObjInfo.animAngles [i]);
 #endif
-		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
-			NDWriteAngVec (&objP->rType.polyObjInfo.animAngles [i]);
-		NDWriteInt (objP->rType.polyObjInfo.nTexOverride);
+		for (i = 0; i < gameData.models.polyModels [o.rType.polyObjInfo.nModel].nModels; i++)
+			NDWriteAngVec (&o.rType.polyObjInfo.animAngles [i]);
+		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
 		}
 
@@ -834,9 +863,9 @@ switch (objP->renderType) {
 	case RT_FIREBALL:
 	case RT_THRUSTER:
 	case RT_HOSTAGE:
-		NDWriteInt (objP->rType.vClipInfo.nClipIndex);
-		NDWriteFix (objP->rType.vClipInfo.xFrameTime);
-		NDWriteByte (objP->rType.vClipInfo.nCurFrame);
+		NDWriteInt (o.rType.vClipInfo.nClipIndex);
+		NDWriteFix (o.rType.vClipInfo.xFrameTime);
+		NDWriteByte (o.rType.vClipInfo.nCurFrame);
 		break;
 
 	case RT_LASER:
@@ -858,7 +887,7 @@ void NDRecordStartDemo ()
 
 StopTime ();
 NDWriteByte (ND_EVENT_START_DEMO);
-NDWriteByte (DEMO_VERSION_D2X);
+NDWriteByte (gameOpts->demo.bOldFormat ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
 if (gameData.app.nGameMode & GM_MULTI)
@@ -1493,7 +1522,7 @@ StartTime ();
 
 int NDReadDemoStart (int rnd_demo)
 {
-	sbyte i, version, gameType, laserLevel;
+	sbyte i, gameType, laserLevel;
 	char c, energy, shield;
 	char text [128], szCurrentMission [FILENAME_LEN];
 
@@ -1508,7 +1537,7 @@ if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	return 1;
 	}
-version = NDReadByte ();
+gameData.demo.nVersion = NDReadByte ();
 gameType = NDReadByte ();
 if (gameType < DEMO_GAME_TYPE) {
 	tMenuItem m [2];
@@ -1536,7 +1565,7 @@ if (gameType != DEMO_GAME_TYPE) {
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	return 1;
 	}
-if (version < DEMO_VERSION) {
+if (gameData.demo.nVersion < DEMO_VERSION) {
 	if (!rnd_demo) {
 		tMenuItem m [1];
 		sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
@@ -1547,7 +1576,7 @@ if (version < DEMO_VERSION) {
 		}
 		return 1;
 	}
-gameData.demo.bUseShortPos = (version == DEMO_VERSION);
+gameData.demo.bUseShortPos = (gameData.demo.nVersion == DEMO_VERSION);
 gameData.time.xGame = NDReadFix ();
 gameData.boss.nCloakStartTime =
 gameData.boss.nCloakEndTime = gameData.time.xGame;
@@ -1705,13 +1734,15 @@ ResetObjects (1);
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
+	if (gameData.demo.nFrameCount == 890)
+		gameData.demo.nFrameCount = gameData.demo.nFrameCount;
 	c = NDReadByte ();
 	CATCH_BAD_READ
 	switch (c) {
 		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
 			short last_frame_length;
 
-			bDone=1;
+			bDone = 1;
 			last_frame_length = NDReadShort ();
 			gameData.demo.nFrameCount = NDReadInt ();
 			gameData.demo.xRecordedTime = NDReadInt ();
@@ -2511,7 +2542,7 @@ while (!bDone) {
 				ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 				return -1;
 				}
-			LoadLevel ((int)loadedLevel, 1);
+			LoadLevel ((int)loadedLevel, 1, 0);
 			gameData.demo.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();
@@ -2535,16 +2566,19 @@ while (!bDone) {
 			}
 			break;
 
-		case ND_EVENT_EOF: {
-			bDone=-1;
-			CFSeek (infile, -1, SEEK_CUR);        // get back to the EOF marker
+		case ND_EVENT_EOF:
+			bDone = -1;
+			CFSeek (ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
 			gameData.demo.bEof = 1;
 			gameData.demo.nFrameCount++;
-			}
 			break;
 
 		default:
-			Int3 ();
+			bDone = -1;
+			CFSeek (ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
+			gameData.demo.bEof = 1;
+			gameData.demo.nFrameCount++;
+			break;
 		}
 	}
 LastReadValue = c;
@@ -2565,7 +2599,7 @@ return bDone;
 
 void NDGotoBeginning ()
 {
-CFSeek (infile, 0, SEEK_SET);
+CFSeek (ndInFile, 0, SEEK_SET);
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 if (NDReadDemoStart (0))
 	NDStopPlayback ();
@@ -2586,7 +2620,7 @@ void NDGotoEnd ()
 	ubyte energy, shield, c;
 	int i, loc, bint;
 
-CFSeek (infile, -2, SEEK_END);
+CFSeek (ndInFile, -2, SEEK_END);
 level = NDReadByte ();
 if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.nLastLevel)) {
 	tMenuItem m [3];
@@ -2600,13 +2634,13 @@ if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.n
 	return;
 	}
 if (level != gameData.missions.nCurrentLevel)
-	LoadLevel (level, 1);
-CFSeek (infile, -4, SEEK_END);
+	LoadLevel (level, 1, 0);
+CFSeek (ndInFile, -4, SEEK_END);
 byte_count = NDReadShort ();
-CFSeek (infile, -2 - byte_count, SEEK_CUR);
+CFSeek (ndInFile, -2 - byte_count, SEEK_CUR);
 
 frame_length = NDReadShort ();
-loc = CFTell (infile);
+loc = CFTell (ndInFile);
 if (gameData.demo.nGameMode & GM_MULTI)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
@@ -2655,11 +2689,11 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	}
 else
 	gameData.multi.players [gameData.multi.nLocalPlayer].score = NDReadInt ();
-CFSeek (infile, loc, SEEK_SET);
-CFSeek (infile, -frame_length, SEEK_CUR);
+CFSeek (ndInFile, loc, SEEK_SET);
+CFSeek (ndInFile, -frame_length, SEEK_CUR);
 gameData.demo.nFrameCount = NDReadInt ();            // get the frame count
 gameData.demo.nFrameCount--;
-CFSeek (infile, 4, SEEK_CUR);
+CFSeek (ndInFile, 4, SEEK_CUR);
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 NDReadFrameInfo ();           // then the frame information
 gameData.demo.nVcrState = ND_STATE_PAUSED;
@@ -2674,18 +2708,18 @@ void NDBackFrames (int frames)
 	int i;
 
 for (i = 0; i < frames; i++) {
-	CFSeek (infile, -10, SEEK_CUR);
+	CFSeek (ndInFile, -10, SEEK_CUR);
 	last_frame_length = NDReadShort ();
-	CFSeek (infile, 8 - last_frame_length, SEEK_CUR);
+	CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
 	if (!gameData.demo.bEof && NDReadFrameInfo () == -1) {
 		NDStopPlayback ();
 		return;
 		}
 	if (gameData.demo.bEof)
 		gameData.demo.bEof = 0;
-	CFSeek (infile, -10, SEEK_CUR);
+	CFSeek (ndInFile, -10, SEEK_CUR);
 	last_frame_length = NDReadShort ();
-	CFSeek (infile, 8 - last_frame_length, SEEK_CUR);
+	CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
 	}
 }
 
@@ -2826,7 +2860,7 @@ if ((gameData.demo.nVcrState == ND_STATE_REWINDING) ||
 	else
 		frames_back = 1;
 	if (gameData.demo.bEof) {
-		CFSeek (infile, 11, SEEK_CUR);
+		CFSeek (ndInFile, 11, SEEK_CUR);
 		}
 	NDBackFrames (frames_back);
 	if (level != gameData.missions.nCurrentLevel)
@@ -2974,18 +3008,19 @@ if ((gameData.demo.nSize+100000) <  2000000000) {
 	}
 InitDemoData ();
 gameData.demo.nWritten = 0;
-gameData.demo.bNoSpace=0;
+gameData.demo.bNoSpace = 0;
+gameData.demo.xStartTime = gameData.time.xGame;
 gameData.demo.nState = ND_STATE_RECORDING;
-outfile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
+ndOutFile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 #ifndef _WIN32_WCE
-if (!outfile && errno == ENOENT) {   //dir doesn't exist?
+if (!ndOutFile && errno == ENOENT) {   //dir doesn't exist?
 #else
-if (!outfile) {                      //dir doesn't exist and no errno on mac!
+if (!ndOutFile) {                      //dir doesn't exist and no errno on mac!
 #endif
 	CFMkDir (gameFolders.szDemoDir); //try making directory
-	outfile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
+	ndOutFile = CFOpen (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 	}
-if (!outfile) {
+if (!ndOutFile) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
 	gameData.demo.nState = ND_STATE_NORMAL;
 	}
@@ -3062,9 +3097,9 @@ else {
 NDWriteShort (byte_count);
 NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
-l = CFTell (outfile);
-CFClose (outfile);
-outfile = NULL;
+l = CFTell (ndOutFile);
+CFClose (ndOutFile);
+ndOutFile = NULL;
 gameData.demo.nState = ND_STATE_NORMAL;
 GrPaletteStepLoad (NULL);
 if (filename [0] != '\0') {
@@ -3226,8 +3261,8 @@ if (!filename) {
 if (!filename)
 	return;
 strcpy (filename2, filename);
-infile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0);
-if (infile==NULL) {
+ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0);
+if (ndInFile==NULL) {
 #if TRACE				
 	con_printf (CON_DEBUG, "Error reading '%s'\n", filename);
 #endif
@@ -3238,14 +3273,14 @@ ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN);
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
 if (NDReadDemoStart (rnd_demo)) {
-	CFClose (infile);
+	CFClose (ndInFile);
 	return;
 	}
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 gameData.demo.nOldCockpit = gameStates.render.cockpit.nMode;
-gameData.demo.nSize = CFLength (infile, 0);
+gameData.demo.nSize = CFLength (ndInFile, 0);
 bNDBadRead = 0;
 gameData.demo.bEof = 0;
 gameData.demo.nFrameCount = 0;
@@ -3263,7 +3298,7 @@ NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb 
 
 void NDStopPlayback ()
 {
-CFClose (infile);
+CFClose (ndInFile);
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
@@ -3282,16 +3317,16 @@ longjmp (gameExitPoint, 0);               // Exit game loop
 
 void NewDemoStripFrames (char *outname, int bytes_to_strip)
 {
-	CFILE *outfile;
+	CFILE *ndOutFile;
 	char *buf;
 	int nTotalSize, bytes_done, read_elems, bytes_back;
 	int trailer_start, loc1, loc2, stop_loc, bytes_to_read;
 	short last_frame_length;
 
 bytes_done = 0;
-nTotalSize = CFLength (infile, 0);
-outfile = CFOpen (outname, "", "wb", 0);
-if (!outfile) {
+nTotalSize = CFLength (ndInFile, 0);
+ndOutFile = CFOpen (outname, "", "wb", 0);
+if (!ndOutFile) {
 	tMenuItem m [1];
 
 	memset (m, 0, sizeof (m));
@@ -3306,45 +3341,45 @@ if (buf == NULL) {
 
 	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't d_malloc output buffer";
 	ExecMenu (NULL, NULL, 1, m, NULL, NULL);
-	CFClose (outfile);
+	CFClose (ndOutFile);
 	NDStopPlayback ();
 	return;
 	}
 NDGotoEnd ();
-trailer_start = CFTell (infile);
-CFSeek (infile, 11, SEEK_CUR);
+trailer_start = CFTell (ndInFile);
+CFSeek (ndInFile, 11, SEEK_CUR);
 bytes_back = 0;
 while (bytes_back < bytes_to_strip) {
-	loc1 = CFTell (infile);
-	//CFSeek (infile, -10, SEEK_CUR);
+	loc1 = CFTell (ndInFile);
+	//CFSeek (ndInFile, -10, SEEK_CUR);
 	//NDReadShort (&last_frame_length);
-	//CFSeek (infile, 8 - last_frame_length, SEEK_CUR);
+	//CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
 	NDBackFrames (1);
-	loc2 = CFTell (infile);
+	loc2 = CFTell (ndInFile);
 	bytes_back += (loc1 - loc2);
 	}
-CFSeek (infile, -10, SEEK_CUR);
+CFSeek (ndInFile, -10, SEEK_CUR);
 last_frame_length = NDReadShort ();
-CFSeek (infile, -3, SEEK_CUR);
-stop_loc = CFTell (infile);
-CFSeek (infile, 0, SEEK_SET);
+CFSeek (ndInFile, -3, SEEK_CUR);
+stop_loc = CFTell (ndInFile);
+CFSeek (ndInFile, 0, SEEK_SET);
 while (stop_loc > 0) {
 	if (stop_loc < BUF_SIZE)
 		bytes_to_read = stop_loc;
 	else
 		bytes_to_read = BUF_SIZE;
-	read_elems = CFRead (buf, 1, bytes_to_read, infile);
-	CFWrite (buf, 1, read_elems, outfile);
+	read_elems = CFRead (buf, 1, bytes_to_read, ndInFile);
+	CFWrite (buf, 1, read_elems, ndOutFile);
 	stop_loc -= read_elems;
 	}
-stop_loc = CFTell (outfile);
-CFSeek (infile, trailer_start, SEEK_SET);
-while ((read_elems = CFRead (buf, 1, BUF_SIZE, infile)) != 0)
-	CFWrite (buf, 1, read_elems, outfile);
-CFSeek (outfile, stop_loc, SEEK_SET);
-CFSeek (outfile, 1, SEEK_CUR);
-CFWrite (&last_frame_length, 2, 1, outfile);
-CFClose (outfile);
+stop_loc = CFTell (ndOutFile);
+CFSeek (ndInFile, trailer_start, SEEK_SET);
+while ((read_elems = CFRead (buf, 1, BUF_SIZE, ndInFile)) != 0)
+	CFWrite (buf, 1, read_elems, ndOutFile);
+CFSeek (ndOutFile, stop_loc, SEEK_SET);
+CFSeek (ndOutFile, 1, SEEK_CUR);
+CFWrite (&last_frame_length, 2, 1, ndOutFile);
+CFClose (ndOutFile);
 NDStopPlayback ();
 DestroyAllSmoke ();
 }

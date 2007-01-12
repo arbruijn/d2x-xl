@@ -1393,11 +1393,11 @@ sbyte convert_to_byte (fix f)
 #define VEL_PRECISION 12
 
 // -------------------------------------------------------------------------------
-//	Create a shortpos struct from an tObject.
+//	Create a tShortPos struct from an tObject.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 normal "fix" precision.
 //	Stuff tSegment in a short.
-void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
+void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 {
 	// int	nSegment;
 	vmsMatrix orient = objP->position.mOrient;
@@ -1419,7 +1419,7 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 	spp->yo = (objP->position.vPos.p.y - pv->p.y) >> RELPOS_PRECISION;
 	spp->zo = (objP->position.vPos.p.z - pv->p.z) >> RELPOS_PRECISION;
 
-	spp->tSegment = objP->position.nSegment;
+	spp->nSegment = objP->position.nSegment;
 
  	spp->velx = (objP->mType.physInfo.velocity.p.x) >> VEL_PRECISION;
 	spp->vely = (objP->mType.physInfo.velocity.p.y) >> VEL_PRECISION;
@@ -1431,7 +1431,7 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 		spp->xo = INTEL_SHORT (spp->xo);
 		spp->yo = INTEL_SHORT (spp->yo);
 		spp->zo = INTEL_SHORT (spp->zo);
-		spp->tSegment = INTEL_SHORT (spp->tSegment);
+		spp->nSegment = INTEL_SHORT (spp->nSegment);
 		spp->velx = INTEL_SHORT (spp->velx);
 		spp->vely = INTEL_SHORT (spp->vely);
 		spp->velz = INTEL_SHORT (spp->velz);
@@ -1440,7 +1440,7 @@ void CreateShortPos (shortpos *spp, tObject *objP, int swap_bytes)
 
 // -------------------------------------------------------------------------------
 
-void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
+void ExtractShortPos (tObject *objP, tShortPos *spp, int swap_bytes)
 {
 	int	nSegment;
 	sbyte   *segP;
@@ -1462,13 +1462,13 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 		spp->xo = INTEL_SHORT (spp->xo);
 		spp->yo = INTEL_SHORT (spp->yo);
 		spp->zo = INTEL_SHORT (spp->zo);
-		spp->tSegment = INTEL_SHORT (spp->tSegment);
+		spp->nSegment = INTEL_SHORT (spp->nSegment);
 		spp->velx = INTEL_SHORT (spp->velx);
 		spp->vely = INTEL_SHORT (spp->vely);
 		spp->velz = INTEL_SHORT (spp->velz);
 	}
 
-	nSegment = spp->tSegment;
+	nSegment = spp->nSegment;
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
@@ -1487,7 +1487,7 @@ void ExtractShortPos (tObject *objP, shortpos *spp, int swap_bytes)
 
 //--unused-- void test_shortpos (void)
 //--unused-- {
-//--unused-- 	shortpos	spp;
+//--unused-- 	tShortPos	spp;
 //--unused--
 //--unused-- 	CreateShortPos (&spp, &gameData.objs.objects [0]);
 //--unused-- 	ExtractShortPos (&gameData.objs.objects [0], &spp);

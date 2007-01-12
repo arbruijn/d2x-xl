@@ -189,7 +189,6 @@ void DoRefuseStuff (tSequencePacket *their);
 int  GetNewPlayerNumber (tSequencePacket *their);
 void SetAllAllowablesTo (int on);
 void LogExtraGameInfo ();
-void NetworkSendExtraGameInfo (tSequencePacket *their);
 
 #if 1
 #	define	SET_INT(_b, _loc, _i)			*((int *) ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
@@ -3713,7 +3712,7 @@ void NetworkReadPDataShortPacket (short_frame_info *pd)
 	tObject * theirObjP = NULL;
 	short_frame_info new_pd;
 
-// short frame info is not aligned because of shortpos.  The mac
+// short frame info is not aligned because of tShortPos.  The mac
 // will call totally hacked and gross function to fix this up.
 
 if (gameStates.multi.nGameType >= IPX_GAME)
