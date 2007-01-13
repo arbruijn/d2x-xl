@@ -1309,8 +1309,8 @@ void DoRenderObject(int nObject, int nWindow)
 	}
 #endif
 	bObjectRendered [nObject] = 1;
-   if (gameData.demo.nState==ND_STATE_PLAYBACK) {
-	  if ((DemoDoingLeft==6 || DemoDoingRight==6) && objP->nType==OBJ_PLAYER) {
+   if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+	  if ((DemoDoingLeft == 6 || DemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
 			// A nice fat hack: keeps the tPlayer ship from showing up in the
 			// small extra view when guiding a missile in the big window
 #if TRACE	

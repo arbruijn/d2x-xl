@@ -987,7 +987,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
-		if (!SEGVIS (m, j))
+		if (!SEGVIS (m, i))
 			continue;
 		VmVecSub (&dist, &center, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
