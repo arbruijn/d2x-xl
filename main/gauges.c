@@ -4016,9 +4016,6 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 		g3sPoint vPlayerPos;
 		G3TransformAndEncodePoint (&vPlayerPos, &gameData.objs.objects [nObject].position.vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
-			vPlayerPos.p3_vec.p.x = FixMul (vPlayerPos.p3_vec.p.x, viewInfo.scale.p.x);
-			vPlayerPos.p3_vec.p.y = FixMul (vPlayerPos.p3_vec.p.y, viewInfo.scale.p.y);
-			vPlayerPos.p3_vec.p.z = FixMul (vPlayerPos.p3_vec.p.z, viewInfo.scale.p.z);
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3Flags & PF_OVERFLOW)) {
 				fix x = vPlayerPos.p3_sx;
