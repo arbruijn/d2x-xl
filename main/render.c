@@ -443,7 +443,7 @@ int SetFaceLight (tFaceProps *propsP)
 	tFaceColor	*pvc = vertColors;
 	tRgbColorf	*pdc;
 	fix			dynLight;
-	float			l, dl;
+	float			l, dl, hl;
 
 if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
 	return 0;
@@ -498,6 +498,10 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 				}
 			}
 		else if (bGotDynColor [nVertex]) {
+#ifdef _DEBUG //convenient place for a debug breakpoint
+			if (propsP->segNum == nDbgSeg && propsP->sideNum == nDbgSide)
+				propsP->segNum = propsP->segNum;
+#endif
 			pdc = dynamicColor + nVertex;
 			//pvc->index = -1;
 			if (gameOpts->render.color.bMix) {
@@ -511,10 +515,19 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 						gameOpts->render.color.bAmbientLight && 
 						!gameOpts->render.color.bUseLightMaps && 
 						pvc->index) {
-						l /= gameData.render.color.vertBright [nVertex];
-						pvc->color.red = pvc->color.red * l + pdc->red * dl;
-						pvc->color.green = pvc->color.green * l + pdc->green * dl;
-						pvc->color.blue = pvc->color.blue * l + pdc->blue * dl;
+						if (l && gameData.render.color.vertBright [nVertex]) {
+							hl = l / gameData.render.color.vertBright [nVertex];
+							pvc->color.red = pvc->color.red * hl + pdc->red * dl;
+							pvc->color.green = pvc->color.green * hl + pdc->green * dl;
+							pvc->color.blue = pvc->color.blue * hl + pdc->blue * dl;
+							ScaleColor (pvc, l + dl);
+							}
+						else {
+							pvc->color.red = pdc->red * dl;
+							pvc->color.green = pdc->green * dl;
+							pvc->color.blue = pdc->blue * dl;
+							ScaleColor (pvc, dl);
+							}
 						pvc->index = -1;
 						}
 					else {
