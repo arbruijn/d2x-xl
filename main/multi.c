@@ -4705,6 +4705,34 @@ CreatePlayerAppearanceEffect (gameData.objs.objects + nObject);
 
 //-----------------------------------------------------------------------------
 
+void MultiRefillPowerups (void)
+{
+	int		h, i, j;
+	time_t	t = gameStates.app.nSDLTicks;
+	static	time_t	t0 = 0;
+
+if (gameStates.multi.nGameType != UDP_GAME)
+	return;
+if (t0 - t < 1000)
+	return;
+t0 = t;
+for (i = 0; i < MAX_POWERUP_TYPES; i++) {
+	h = gameData.multi.maxPowerupsAllowed [i] - PowerupsInMine (i);
+	if (!h)
+		continue;
+	if (MultiPowerupIs4Pack (i + 1)) {
+		for (j = h % 4; j; j--)
+			MaybeDropNetPowerup (-1, i, FORCE_DROP);
+		h /= 4;
+		i++;
+		}
+	for (j = h; j; j--)
+		MaybeDropNetPowerup (-1, i, FORCE_DROP);
+	}
+}
+
+//-----------------------------------------------------------------------------
+
 tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoPosition, 1}, 
 	{MultiDoReappear, 1}, 

@@ -505,5 +505,6 @@ void MultiSetFlagPos (void);
 void ResetPlayerPaths (void);
 void SetPlayerPaths (void);
 void MultiSyncKills (void);
+void MultiRefillPowerups (void);
 
 #endif /* _MULTI_H */

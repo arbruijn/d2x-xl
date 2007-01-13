@@ -2179,6 +2179,7 @@ if (nDebugSlowdown) {
 	MultiSendTyping ();
 	MultiSendWeapons (0);
 	MultiSyncKills ();
+	MultiRefillPowerups ();
 	//MultiSendMonsterball (0, 0);
 	UpdatePlayerStats ();
 	DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.
