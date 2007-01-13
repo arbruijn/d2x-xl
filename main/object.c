@@ -528,7 +528,7 @@ if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
 	return 0;
 if (objP->nType == OBJ_DEBRIS)
 	return 0;
-else {
+else if ((objP->nType == OBJ_POWERUP) || (objP->nType == OBJ_WEAPON)) {
 	if (objP->nType == OBJ_POWERUP)
 		nModel = PowerupModel (objP->id);
 	else if (objP->nType == OBJ_WEAPON)
@@ -536,6 +536,8 @@ else {
 	if (!nModel)
 		return 0;
 	}
+else
+	nModel = objP->rType.polyObjInfo.nModel;
 if (!(po = gameData.models.modelToOOF [nModel]))
 	return 0;
 fLight [0] = xLight / 65536.0f;
