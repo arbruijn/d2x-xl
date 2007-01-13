@@ -593,73 +593,58 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 
 void BESwapObject(tObject *objP)
 {
-	// swap the short and int entries for this tObject
-	objP->nSignature     = INTEL_INT(objP->nSignature);
-	objP->next          = INTEL_SHORT(objP->next);
-	objP->prev          = INTEL_SHORT(objP->prev);
-	objP->position.nSegment       = INTEL_SHORT(objP->position.nSegment);
-	objP->position.vPos.p.x         = INTEL_INT(objP->position.vPos.p.x);
-	objP->position.vPos.p.y         = INTEL_INT(objP->position.vPos.p.y);
-	objP->position.vPos.p.z         = INTEL_INT(objP->position.vPos.p.z);
-
-	objP->position.mOrient.rVec.p.x = INTEL_INT(objP->position.mOrient.rVec.p.x);
-	objP->position.mOrient.rVec.p.y = INTEL_INT(objP->position.mOrient.rVec.p.y);
-	objP->position.mOrient.rVec.p.z = INTEL_INT(objP->position.mOrient.rVec.p.z);
-	objP->position.mOrient.fVec.p.x = INTEL_INT(objP->position.mOrient.fVec.p.x);
-	objP->position.mOrient.fVec.p.y = INTEL_INT(objP->position.mOrient.fVec.p.y);
-	objP->position.mOrient.fVec.p.z = INTEL_INT(objP->position.mOrient.fVec.p.z);
-	objP->position.mOrient.uVec.p.x = INTEL_INT(objP->position.mOrient.uVec.p.x);
-	objP->position.mOrient.uVec.p.y = INTEL_INT(objP->position.mOrient.uVec.p.y);
-	objP->position.mOrient.uVec.p.z = INTEL_INT(objP->position.mOrient.uVec.p.z);
-
-	objP->size          = INTEL_INT(objP->size);
-	objP->shields       = INTEL_INT(objP->shields);
-
-	objP->last_pos.p.x    = INTEL_INT(objP->last_pos.p.x);
-	objP->last_pos.p.y    = INTEL_INT(objP->last_pos.p.y);
-	objP->last_pos.p.z    = INTEL_INT(objP->last_pos.p.z);
-
-	objP->lifeleft      = INTEL_INT(objP->lifeleft);
-
-	switch (objP->movementType) {
-
+// swap the short and int entries for this tObject
+objP->nSignature     = INTEL_INT(objP->nSignature);
+objP->next          = INTEL_SHORT(objP->next);
+objP->prev          = INTEL_SHORT(objP->prev);
+objP->position.nSegment       = INTEL_SHORT(objP->position.nSegment);
+objP->position.vPos.p.x         = INTEL_INT(objP->position.vPos.p.x);
+objP->position.vPos.p.y         = INTEL_INT(objP->position.vPos.p.y);
+objP->position.vPos.p.z         = INTEL_INT(objP->position.vPos.p.z);
+objP->position.mOrient.rVec.p.x = INTEL_INT(objP->position.mOrient.rVec.p.x);
+objP->position.mOrient.rVec.p.y = INTEL_INT(objP->position.mOrient.rVec.p.y);
+objP->position.mOrient.rVec.p.z = INTEL_INT(objP->position.mOrient.rVec.p.z);
+objP->position.mOrient.fVec.p.x = INTEL_INT(objP->position.mOrient.fVec.p.x);
+objP->position.mOrient.fVec.p.y = INTEL_INT(objP->position.mOrient.fVec.p.y);
+objP->position.mOrient.fVec.p.z = INTEL_INT(objP->position.mOrient.fVec.p.z);
+objP->position.mOrient.uVec.p.x = INTEL_INT(objP->position.mOrient.uVec.p.x);
+objP->position.mOrient.uVec.p.y = INTEL_INT(objP->position.mOrient.uVec.p.y);
+objP->position.mOrient.uVec.p.z = INTEL_INT(objP->position.mOrient.uVec.p.z);
+objP->size          = INTEL_INT(objP->size);
+objP->shields       = INTEL_INT(objP->shields);
+objP->last_pos.p.x    = INTEL_INT(objP->last_pos.p.x);
+objP->last_pos.p.y    = INTEL_INT(objP->last_pos.p.y);
+objP->last_pos.p.z    = INTEL_INT(objP->last_pos.p.z);
+objP->lifeleft      = INTEL_INT(objP->lifeleft);
+switch (objP->movementType) {
 	case MT_PHYSICS:
-
 		objP->mType.physInfo.velocity.p.x = INTEL_INT(objP->mType.physInfo.velocity.p.x);
 		objP->mType.physInfo.velocity.p.y = INTEL_INT(objP->mType.physInfo.velocity.p.y);
 		objP->mType.physInfo.velocity.p.z = INTEL_INT(objP->mType.physInfo.velocity.p.z);
-
 		objP->mType.physInfo.thrust.p.x   = INTEL_INT(objP->mType.physInfo.thrust.p.x);
 		objP->mType.physInfo.thrust.p.y   = INTEL_INT(objP->mType.physInfo.thrust.p.y);
 		objP->mType.physInfo.thrust.p.z   = INTEL_INT(objP->mType.physInfo.thrust.p.z);
-
 		objP->mType.physInfo.mass       = INTEL_INT(objP->mType.physInfo.mass);
 		objP->mType.physInfo.drag       = INTEL_INT(objP->mType.physInfo.drag);
 		objP->mType.physInfo.brakes     = INTEL_INT(objP->mType.physInfo.brakes);
-
 		objP->mType.physInfo.rotVel.p.x   = INTEL_INT(objP->mType.physInfo.rotVel.p.x);
 		objP->mType.physInfo.rotVel.p.y   = INTEL_INT(objP->mType.physInfo.rotVel.p.y);
 		objP->mType.physInfo.rotVel.p.z   = INTEL_INT(objP->mType.physInfo.rotVel.p.z);
-
 		objP->mType.physInfo.rotThrust.p.x = INTEL_INT(objP->mType.physInfo.rotThrust.p.x);
 		objP->mType.physInfo.rotThrust.p.y = INTEL_INT(objP->mType.physInfo.rotThrust.p.y);
 		objP->mType.physInfo.rotThrust.p.z = INTEL_INT(objP->mType.physInfo.rotThrust.p.z);
-
 		objP->mType.physInfo.turnRoll   = INTEL_INT(objP->mType.physInfo.turnRoll);
 		objP->mType.physInfo.flags      = INTEL_SHORT(objP->mType.physInfo.flags);
-
 		break;
 
 	case MT_SPINNING:
-
 		objP->mType.spinRate.p.x = INTEL_INT(objP->mType.spinRate.p.x);
 		objP->mType.spinRate.p.y = INTEL_INT(objP->mType.spinRate.p.y);
 		objP->mType.spinRate.p.z = INTEL_INT(objP->mType.spinRate.p.z);
 		break;
 	}
 
-	switch (objP->controlType) {
-
+switch (objP->controlType) {
 	case CT_WEAPON:
 		objP->cType.laserInfo.parentType = INTEL_SHORT(objP->cType.laserInfo.parentType);
 		objP->cType.laserInfo.nParentObj = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
@@ -703,20 +688,16 @@ void BESwapObject(tObject *objP)
 
 	}
 
-	switch (objP->renderType) {
-
+switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-
 		objP->rType.polyObjInfo.nModel      = INTEL_INT(objP->rType.polyObjInfo.nModel);
-
 		for (i=0;i<MAX_SUBMODELS;i++) {
 			objP->rType.polyObjInfo.animAngles[i].p = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].p);
 			objP->rType.polyObjInfo.animAngles[i].b = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].b);
 			objP->rType.polyObjInfo.animAngles[i].h = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].h);
 		}
-
 		objP->rType.polyObjInfo.nSubObjFlags   = INTEL_INT(objP->rType.polyObjInfo.nSubObjFlags);
 		objP->rType.polyObjInfo.nTexOverride  = INTEL_INT(objP->rType.polyObjInfo.nTexOverride);
 		objP->rType.polyObjInfo.nAltTextures   = INTEL_INT(objP->rType.polyObjInfo.nAltTextures);
@@ -734,10 +715,8 @@ void BESwapObject(tObject *objP)
 
 	case RT_LASER:
 		break;
-
 	}
 //  END OF SWAPPING OBJECT STRUCTURE
-
 }
 
 #else /* !WORDS_BIGENDIAN */
