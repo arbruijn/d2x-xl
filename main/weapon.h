@@ -230,8 +230,8 @@ typedef struct D2D1_weapon_info {
 #define FLASHMSL_INDEX      5
 #define GUIDED_INDEX        6
 #define SMART_MINE_INDEX    7
-#define SMISSILE4_INDEX     8
-#define SMISSILE5_INDEX     9
+#define MERCURY_INDEX		 8
+#define EARTHSHAKER_INDEX   9
 
 #define SUPER_WEAPON        5
 

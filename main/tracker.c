@@ -352,7 +352,7 @@ void CreateTrackerList (void)
 
 ResetTrackerList ();
 if (!(a = FindArg ("-internal_tracker")) || atoi (Args [a + 1])) {
-	AddTracker (&vexTracker);
+	//AddTracker (&vexTracker);
 	AddTracker (&dbbTracker);
 	AddTracker (&kbTracker);
 	}

@@ -641,15 +641,15 @@ switch (objP->id) {
 		break;
 
 	case POW_MERCURYMSL_1:
-		bUsed = PickupSecondary (objP, SMISSILE4_INDEX, 1, nPlayer);
+		bUsed = PickupSecondary (objP, MERCURY_INDEX, 1, nPlayer);
 		break;
 
 	case POW_MERCURYMSL_4:
-		bUsed = PickupSecondary (objP, SMISSILE4_INDEX, 4, nPlayer);
+		bUsed = PickupSecondary (objP, MERCURY_INDEX, 4, nPlayer);
 		break;
 
 	case POW_EARTHSHAKER:
-		bUsed = PickupSecondary (objP, SMISSILE5_INDEX, 1, nPlayer);
+		bUsed = PickupSecondary (objP, EARTHSHAKER_INDEX, 1, nPlayer);
 		break;
 
 	case POW_VULCAN_AMMO:
@@ -814,8 +814,11 @@ switch (objP->id) {
 //is solved.  Note also the break statements above that are commented out
 //!!	bUsed = 1;
 
-if (bUsed || bSpecialUsed)
+if (bUsed || bSpecialUsed) {
 	UsePowerup (id * (bUsed ? bUsed : bSpecialUsed));
+	if (IsMultiGame)
+		MultiSendWeapons (1);
+	}
 gameData.hud.bPlayerMessage = 1;
 return bUsed;
 }
@@ -877,9 +880,9 @@ powerupToWeapon [POW_FLASHMSL_4] = FLASHMSL_INDEX;
 powerupToWeapon [POW_GUIDEDMSL_1] = GUIDED_INDEX;
 powerupToWeapon [POW_GUIDEDMSL_4] = GUIDED_INDEX;
 powerupToWeapon [POW_SMARTMINE] = SMART_MINE_INDEX;
-powerupToWeapon [POW_MERCURYMSL_1] = SMISSILE4_INDEX;
-powerupToWeapon [POW_MERCURYMSL_4] = SMISSILE4_INDEX;
-powerupToWeapon [POW_EARTHSHAKER] = SMISSILE5_INDEX;
+powerupToWeapon [POW_MERCURYMSL_1] = MERCURY_INDEX;
+powerupToWeapon [POW_MERCURYMSL_4] = MERCURY_INDEX;
+powerupToWeapon [POW_EARTHSHAKER] = EARTHSHAKER_INDEX;
 powerupToWeapon [POW_HOMINGMSL_1] = HOMING_INDEX;
 powerupToWeapon [POW_HOMINGMSL_4] = HOMING_INDEX;
 

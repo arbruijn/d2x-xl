@@ -622,7 +622,7 @@ if (gameStates.app.bD1Mission) {
 else {
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
 		LOCALPLAYER.primaryWeaponFlags = ~ ((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG (SUPER_LASER_INDEX));
-		LOCALPLAYER.secondaryWeaponFlags = ~ ((1<<SMISSILE4_INDEX) | (1<<MEGA_INDEX) | (1<<SMISSILE5_INDEX));
+		LOCALPLAYER.secondaryWeaponFlags = ~ ((1<<MERCURY_INDEX) | (1<<MEGA_INDEX) | (1<<EARTHSHAKER_INDEX));
 		}
 	else {
 		LOCALPLAYER.primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
@@ -634,8 +634,8 @@ else {
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
-		LOCALPLAYER.secondaryAmmo [SMISSILE4_INDEX] = 0;
-		LOCALPLAYER.secondaryAmmo [SMISSILE5_INDEX] = 0;
+		LOCALPLAYER.secondaryAmmo [MERCURY_INDEX] = 0;
+		LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX] = 0;
 		LOCALPLAYER.secondaryAmmo [MEGA_INDEX] = 0;
 		}
 

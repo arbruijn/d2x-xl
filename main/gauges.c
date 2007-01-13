@@ -3977,7 +3977,7 @@ void ShowHUDNames ()
 	int bHasFlag, bShowName, bShowTeamNames, bShowAllNames, bShowFlags, nObject, nTeam;
 	int p;
 	rgb *colorP;
-	static int nColor = 1, tColorChange = 0;
+	static int nCurColor = 1, tColorChange = 0;
 	static rgb typingColors [2] = {
 		{63, 0, 0}, 
 		{63, 63, 0}
@@ -3985,7 +3985,7 @@ void ShowHUDNames ()
 	char s[CALLSIGN_LEN+10];
 	int w, h, aw;
 	int x1, y1;
-	int color_num;
+	int nColor;
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
 						 (netGame.ShowAllNames && multiData.bShowReticleName));
@@ -4014,8 +4014,11 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint vPlayerPos;
-		G3TransformAndEncodePoint (&vPlayerPos, &gameData.objs.objects[nObject].position.vPos);
+		G3TransformAndEncodePoint (&vPlayerPos, &gameData.objs.objects [nObject].position.vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
+			vPlayerPos.p3_vec.p.x = FixMul (vPlayerPos.p3_vec.p.x, viewInfo.scale.p.x);
+			vPlayerPos.p3_vec.p.y = FixMul (vPlayerPos.p3_vec.p.y, viewInfo.scale.p.y);
+			vPlayerPos.p3_vec.p.z = FixMul (vPlayerPos.p3_vec.p.z, viewInfo.scale.p.z);
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3Flags & PF_OVERFLOW)) {
 				fix x = vPlayerPos.p3_sx;
@@ -4026,13 +4029,13 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 
 						if (t - tColorChange > 333) {
 							tColorChange = t;
-							nColor = !nColor;
+							nCurColor = !nCurColor;
 							}
-						colorP = typingColors + nColor;
+						colorP = typingColors + nCurColor;
 						}
 					else {
-						color_num = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
-						colorP = player_rgb + color_num;
+						nColor = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
+						colorP = player_rgb + nColor;
 						}
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multi.players[p].callsign);
