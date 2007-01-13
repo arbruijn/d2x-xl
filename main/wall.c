@@ -135,10 +135,11 @@ else {
 	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index);
 	if ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) {
 		int i = (int) (BM_CURFRAME (bmP) - BM_FRAMES (bmP));
-		if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
+		if ((bmP->bm_transparentFrames [i / 32] & (1 << (i % 32))) ||
+			 (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32))))
 			return 1;
 		}
-	else if (bmP->bm_props.flags & BM_FLAG_TRANSPARENT)
+	else if (bmP->bm_props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 		return 1;
 	}
 if (gameStates.app.bD2XLevel) {

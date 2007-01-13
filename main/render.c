@@ -3138,6 +3138,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 #ifdef _DEBUG
 		if (bDrawBoxes)
 			DrawWindowBox (RED_RGBA, checkWinP->left, checkWinP->top, checkWinP->right, checkWinP->bot);
+		if (nSegment == nDbgSeg)
+			nSegment = nSegment;
 #endif
 		if (nSegment == -1) 
 			continue;
