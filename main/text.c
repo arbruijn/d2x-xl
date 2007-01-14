@@ -1605,8 +1605,9 @@ char *defaultGameTexts [][2] = {
 	{"Powerups", "Powerups"},
 	{"Objekt-Zaehler anzeigen", "show object ~Tally"},
 	{"Traeume werden wahr...", "Dreams are coming true..."},
+	{"D2~X-Einstellungen...", "D2~X options..."},
+	{"D2X-Einstellungen", "D2X options"},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2080,6 +2081,7 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, demos are saved in a format compatible to other\nDescent 2 versions. The quality is worse though."},
 	{"Wenn angekreuzt, wird die Anzahl verbliebener Roboter und\nPowerups rechts oben am Bildschirm angezeigt.\n\nJe nach Einstellung grafischer Skalen werden Bildchen oder nur Text\nangezeigt.", 
 	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
+	{"Hier koennen D2X-XL-spezifische Einstellungen vorgenommen werden.", "Adjust D2X-XL specific options here."},
 #if 0
 	{"", ""},
 #endif

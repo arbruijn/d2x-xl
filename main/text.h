@@ -1637,10 +1637,10 @@ void LoadGameTexts(void);
 #define TXT_POWERUPS					GT(855)
 #define TXT_OBJECT_TALLY			GT(856)
 #define TXT_TRUE_DREAMS				GT(857)
+#define TXT_MULTI_D2X_OPTS			GT(858)
+#define TXT_D2XOPTIONS_TITLE		GT(859)
 
 #if 0
-#define TXT_				GT(858)
-#define TXT_				GT(859)
 #define TXT_				GT(860)
 #define TXT_				GT(861)
 #define TXT_				GT(862)
@@ -2044,11 +2044,11 @@ void LoadGameTexts(void);
 #define HTX_RENDER_PRUPOPTS		HT(242)				
 #define HTX_GPLAY_IDLEANIMS		HT(243)				
 #define HTX_OLD_DEMO_FORMAT		HT(244)				
-#define HTX_CPIT_OBJTALLY			HT(245)				
+#define HTX_CPIT_OBJTALLY			HT(245)			
+#define HTX_MULTI_D2XOPTS			HT(246)
 
 #if 0
 				
-#define HTX_					HT(246)				
 #define HTX_					HT(247)				
 #define HTX_					HT(248)				
 #define HTX_					HT(249)				
