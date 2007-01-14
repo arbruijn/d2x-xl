@@ -1207,7 +1207,9 @@ playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + count);
 count += 2;
 playerP->flags = GET_INTEL_INT (buf + count);               
 count += 4;
+#if 0
 MultiAdjustRemoteCap (nPlayer);
+#endif
 objP = gameData.objs.objects + playerP->nObject;
 nRemoteCreated = buf [count++]; // How many did the other guy create?
 multiData.create.nLoc = 0;
@@ -1322,13 +1324,17 @@ if (nObject < 1)
 nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
-if ((gameData.objs.objects [nLocalObj].nType != OBJ_POWERUP) && (gameData.objs.objects [nLocalObj].nType != OBJ_HOSTAGE))
+if ((gameData.objs.objects [nLocalObj].nType != OBJ_POWERUP) && 
+	 (gameData.objs.objects [nLocalObj].nType != OBJ_HOSTAGE))
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (nLocalObj))
 	networkData.nSendObjNum = -1;
 if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = gameData.objs.objects [nLocalObj].id;
+#ifdef _DEBUG
+		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multi.powerupsInMine [id]);
+#endif
 		if (gameData.multi.powerupsInMine [id] > 0)
 			gameData.multi.powerupsInMine [id]--;
 		if (MultiPowerupIs4Pack (id)) {
@@ -2090,6 +2096,8 @@ if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT)
 
 //-----------------------------------------------------------------------------
 
+#if 0
+
 void MultiAdjustRemoteCap (int nPlayer)
 {
 	char nType;
@@ -2128,6 +2136,8 @@ if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
 if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT)
 	gameData.multi.powerupsInMine [POW_HEADLIGHT]++;
 }
+
+#endif
 
 //-----------------------------------------------------------------------------
 
@@ -2238,6 +2248,9 @@ void MultiSendRemObj (int nObject)
 
 if ((gameData.objs.objects [nObject].nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
 	id = gameData.objs.objects [nObject].id;
+#ifdef _DEBUG
+	HUDMessage (0, "requesting to remove %s (%d present)", pszPowerup [id], gameData.multi.powerupsInMine [id]);
+#endif
 	if (gameData.multi.powerupsInMine [id] > 0) {
 		gameData.multi.powerupsInMine [id]--;
 		if (MultiPowerupIs4Pack (id)) {

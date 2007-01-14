@@ -2270,6 +2270,7 @@ return nOrgNumToFree - nToFree;
 //note that nSegment is really just a suggestion, since this routine actually
 //searches for the correct tSegment
 //returns the tObject number
+
 int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos, 
 					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
@@ -2297,8 +2298,8 @@ if (nType == OBJ_POWERUP) {
 #endif
 	if (!bIgnoreLimits && TooManyPowerups (id)) {
 #ifdef _DEBUG
-		HUDInitMessage ("%c%cDiscarding excess powerup!", 1, 
-							 (char) GrFindClosestColor (gamePalette, 63, 31, 0));
+		HUDInitMessage ("%c%cDiscarding excess %s!", 1, 
+							 (char) GrFindClosestColor (gamePalette, 63, 31, 0), pszPowerup [id]);
 		TooManyPowerups (id);
 #endif
 		return -2;

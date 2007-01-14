@@ -42,11 +42,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POW_PLASMA       			15
 #define POW_FUSION       			16
 #define POW_PROXMINE    			17
+#define POW_HOMINGMSL_1       	18
+#define POW_HOMINGMSL_4       	19      // 4-pack MUST follow single missile
 #define POW_SMARTMSL    			20
 #define POW_MEGAMSL         		21
 #define POW_VULCAN_AMMO         	22
-#define POW_HOMINGMSL_1       	18
-#define POW_HOMINGMSL_4       	19      // 4-pack MUST follow single missile
 #define POW_CLOAK               	23
 #define POW_TURBO               	24
 #define POW_INVUL				     	25
@@ -154,5 +154,7 @@ void SpawnLeftoverPowerups (short nObject);
 #define	TooManyPowerups(_nPowerup) \
 			IsMultiGame && PowerupClass (_nPowerup) && \
 			(PowerupsInMine (_nPowerup) >= gameData.multi.maxPowerupsAllowed [_nPowerup])
+
+extern char *pszPowerup [MAX_POWERUP_TYPES];
 
 #endif /* _POWERUP_H */
