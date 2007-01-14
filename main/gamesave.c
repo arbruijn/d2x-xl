@@ -150,8 +150,8 @@ char Save_pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 void CheckAndFixMatrix(vmsMatrix *m);
 
-void VerifyObject(tObject * objP)	{
-
+void VerifyObject(tObject * objP)	
+{
 objP->lifeleft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
 if (objP->nType == OBJ_ROBOT) {
 	Gamesave_num_orgRobots++;
@@ -238,16 +238,17 @@ if (objP->nType == OBJ_CNTRLCEN) {
 	{
 	int i;
 	// Check, and set, strength of reactor
-	for (i=0; i<gameData.objs.types.nCount; i++)	
-		if (gameData.objs.types.nType[i]==OL_CONTROL_CENTER && gameData.objs.types.nType.nId[i] == objP->id) {
-			objP->shields = gameData.objs.types.nType.nStrength[i];
+	for (i = 0; i < gameData.objs.types.nCount; i++)	
+		if ((gameData.objs.types.nType [i] == OL_CONTROL_CENTER) && 
+			 (gameData.objs.types.nType.nId [i] == objP->id)) {
+			objP->shields = gameData.objs.types.nType.nStrength [i];
 			break;		
 			}
 		Assert(i < gameData.objs.types.nCount);		//make sure we found it
 		}
 #endif
 	}
-if (objP->nType == OBJ_PLAYER)	{
+if (objP->nType == OBJ_PLAYER) {
 	if (objP == gameData.objs.console)		
 		InitPlayerObject();
 	else
@@ -822,34 +823,34 @@ start_offset = CFTell(LoadFile);
 con_printf(CON_DEBUG, "   \nloading game data ...\n");
 #endif
 // Set default values
-gameFileInfo.level					=	-1;
+gameFileInfo.level				=	-1;
 gameFileInfo.player.offset		=	-1;
 gameFileInfo.player.size		=	sizeof(tPlayer);
-gameFileInfo.objects.offset		=	-1;
+gameFileInfo.objects.offset	=	-1;
 gameFileInfo.objects.count		=	0;
 gameFileInfo.objects.size		=	sizeof(tObject);  
-gameFileInfo.walls.offset			=	-1;
+gameFileInfo.walls.offset		=	-1;
 gameFileInfo.walls.count		=	0;
 gameFileInfo.walls.size			=	sizeof(wall);  
-gameFileInfo.doors.offset			=	-1;
+gameFileInfo.doors.offset		=	-1;
 gameFileInfo.doors.count		=	0;
 gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
-gameFileInfo.triggers.offset		=	-1;
+gameFileInfo.triggers.offset	=	-1;
 gameFileInfo.triggers.count	=	0;
 gameFileInfo.triggers.size		=	sizeof(tTrigger);  
-gameFileInfo.control.offset		=	-1;
+gameFileInfo.control.offset	=	-1;
 gameFileInfo.control.count		=	0;
 gameFileInfo.control.size		=	sizeof(tReactorTriggers);
 gameFileInfo.matcen.offset		=	-1;
 gameFileInfo.matcen.count		=	0;
 gameFileInfo.matcen.size		=	sizeof(tMatCenInfo);
 
-gameFileInfo.lightDeltaIndices.offset		=	-1;
-gameFileInfo.lightDeltaIndices.count		=	0;
+gameFileInfo.lightDeltaIndices.offset	=	-1;
+gameFileInfo.lightDeltaIndices.count	=	0;
 gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
 
-gameFileInfo.lightDeltas.offset		=	-1;
-gameFileInfo.lightDeltas.count		=	0;
+gameFileInfo.lightDeltas.offset	=	-1;
+gameFileInfo.lightDeltas.count	=	0;
 gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
 
 // Read in gameTopFileInfo to get size of saved fileinfo.
@@ -967,7 +968,7 @@ if (gameFileInfo.objects.offset > -1) {
 //			if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
 //				objP = objP;
 		objP->nSignature = gameData.objs.nNextSignature++;
-		VerifyObject(objP);
+		VerifyObject (objP);
 		gameData.objs.init [i] = *objP;
 	}
 }
@@ -1271,7 +1272,7 @@ for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 	}
 }
 
-clear_transientObjects(1);		//1 means clear proximity bombs
+ClearTransientObjects(1);		//1 means clear proximity bombs
 
 // Make sure non-transparent doors are set correctly.
 for (i = 0; i < gameData.segs.nSegments; i++) {
@@ -1532,14 +1533,14 @@ else
 
 if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.nReturnSegment = 0;
-	gameData.segs.secret.returnOrient.rVec.p.x = F1_0;
-	gameData.segs.secret.returnOrient.rVec.p.y = 0;
-	gameData.segs.secret.returnOrient.rVec.p.z = 0;
-	gameData.segs.secret.returnOrient.fVec.p.x = 0;
-	gameData.segs.secret.returnOrient.fVec.p.y = F1_0;
-	gameData.segs.secret.returnOrient.fVec.p.z = 0;
-	gameData.segs.secret.returnOrient.uVec.p.x = 0;
+	gameData.segs.secret.returnOrient.rVec.p.y =
+	gameData.segs.secret.returnOrient.rVec.p.z = 
+	gameData.segs.secret.returnOrient.fVec.p.x =
+	gameData.segs.secret.returnOrient.fVec.p.z =
+	gameData.segs.secret.returnOrient.uVec.p.x =
 	gameData.segs.secret.returnOrient.uVec.p.y = 0;
+	gameData.segs.secret.returnOrient.rVec.p.x =
+	gameData.segs.secret.returnOrient.fVec.p.y =
 	gameData.segs.secret.returnOrient.uVec.p.z = F1_0;
 } else {
 	gameData.segs.secret.nReturnSegment = CFReadInt(LoadFile);
@@ -1895,7 +1896,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 	if (gameData.missions.szCurrentLevel[0] == 0)
 		strcpy(gameData.missions.szCurrentLevel,"Untitled");
 
-	clear_transientObjects(1);		//1 means clear proximity bombs
+	ClearTransientObjects(1);		//1 means clear proximity bombs
 
 	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
 

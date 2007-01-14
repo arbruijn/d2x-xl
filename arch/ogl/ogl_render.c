@@ -987,7 +987,10 @@ return vReflect;
 
 int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 {
+	static float	fLightRanges [3] = {10, 14.414f, 20};
+
 	int				j, nType, bInRad;
+	float				fLightRange = fLightRanges [gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].nLightRange : 1];
 	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
 						vertColor = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -1034,7 +1037,7 @@ for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl +=
 	if (psl->brightness < 0)
 		fAttenuation = 0.01f;
 	else {
-		fLightDist = VmVecMagf (&lightDir) / 10.0f;
+		fLightDist = VmVecMagf (&lightDir) / fLightRange;
 		if (nType == 1) {
 			fLightDist -= psl->rad;	//make light brighter close to light source
 			if (fLightDist < 1.0f) {

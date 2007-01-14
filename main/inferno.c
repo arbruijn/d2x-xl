@@ -976,6 +976,8 @@ void EvalAppArgs (void)
 {
 	int	t;
 
+if (t = FindArg ("-enable_shadows"))
+	gameStates.app.bEnableShadows = NumArg (t, 1);
 if (t = FindArg ("-nostalgia"))
 	if (Args [t+1]) {
 		gameStates.app.bNostalgia = NumArg (t, 0);

@@ -165,7 +165,7 @@ extern void MultiSendRobotControls (char);
 int  NetworkListen ();
 void NetworkUpdateNetGame ();
 void NetworkSendObjects ();
-void NetworkSendRejoinSync (int player_num);
+void NetworkSendRejoinSync (int nPlayer);
 void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
 void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit);
 int  NetworkWaitForPlayerInfo ();
@@ -181,8 +181,8 @@ void NetworkSendPlayerNames (tSequencePacket *their);
 void NetworkCountPowerupsInMine ();
 void NetworkDoBigWait (int choice);
 void NetworkSendExtras ();
-void NetworkReadPDataPacket (frame_info *pd);
-void NetworkReadPDataShortPacket (short_frame_info *pd);
+void NetworkReadPDataPacket (tFrameInfo *pd);
+void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
 int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
 
 void DoRefuseStuff (tSequencePacket *their);
@@ -191,18 +191,18 @@ void SetAllAllowablesTo (int on);
 void LogExtraGameInfo ();
 
 #if 1
-#	define	SET_INT(_b, _loc, _i)			*((int *) ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
+#	define	SET_INT(_b, _loc, _i)		*((int *) ((_b) + (_loc))) = INTEL_INT ((int) (_i)); (_loc) += 4
 #	define	SET_SHORT(_b, _loc, _i)		*((short *) ((_b) + (_loc))) = INTEL_SHORT ((short) (_i)); (_loc) += 2
-#	define	GET_INT(_b, _loc, _i)			(_i) = INTEL_INT (*((int *) ((_b) + (_loc)))); (_loc) += 4
+#	define	GET_INT(_b, _loc, _i)		(_i) = INTEL_INT (*((int *) ((_b) + (_loc)))); (_loc) += 4
 #	define	GET_SHORT(_b, _loc, _i)		(_i) = INTEL_SHORT (*((short *) ((_b) + (_loc)))); (_loc) += 2
 #else
-#	define	SET_INT(_b, _loc, _i)			{int tmpi = INTEL_INT (_i); memcpy ((_b) + (_loc), &tmpi, 4); (_loc) += 4; }
+#	define	SET_INT(_b, _loc, _i)		{int tmpi = INTEL_INT (_i); memcpy ((_b) + (_loc), &tmpi, 4); (_loc) += 4; }
 #	define	SET_SHORT(_b, _loc, _i)		{int tmps = INTEL_SHORT (_i); memcpy ((_b) + (_loc), &tmpi, 2); (_loc) += 2; }
 #endif
-#define	SET_BYTE(_b, _loc, _i)				(_b) [(_loc)++] = (ubyte) (_i)
-#define	SET_BYTES(_b, _loc, _p, _n)		memcpy ((_b) + (_loc), _p, _n); (_loc) += (_n)
-#define	GET_BYTE(_b, _loc, _i)				(_i) = (_b) [(_loc)++]
-#define	GET_BYTES(_b, _loc, _p, _n)		memcpy (_p, (_b) + (_loc), _n); (_loc) += (_n)
+#define	SET_BYTE(_b, _loc, _i)			(_b) [(_loc)++] = (ubyte) (_i)
+#define	SET_BYTES(_b, _loc, _p, _n)	memcpy ((_b) + (_loc), _p, _n); (_loc) += (_n)
+#define	GET_BYTE(_b, _loc, _i)			(_i) = (_b) [(_loc)++]
+#define	GET_BYTES(_b, _loc, _p, _n)	memcpy (_p, (_b) + (_loc), _n); (_loc) += (_n)
 
 //------------------------------------------------------------------------------
 
@@ -290,7 +290,7 @@ return pszIP;
 
 void NetworkInit (void)
 {
-	int save_pnum = gameData.multi.nLocalPlayer;
+	int nPlayerSave = gameData.multi.nLocalPlayer;
 
 GameDisableCheats ();
 gameStates.multi.bIWasKicked=0;
@@ -325,7 +325,7 @@ for (gameData.multi.nLocalPlayer = 0;
 	  gameData.multi.nLocalPlayer < MAX_NUM_NET_PLAYERS; 
 	  gameData.multi.nLocalPlayer++)
 	InitPlayerStatsGame ();
-gameData.multi.nLocalPlayer = save_pnum;         
+gameData.multi.nLocalPlayer = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;
 gameData.reactor.bDestroyed = 0;
@@ -385,7 +385,7 @@ inline int CmpNetPlayers (char *callsign1, char *callsign2,
 								  network_info *network1, network_info *network2)
 {
 if ((gameStates.multi.nGameType == IPX_GAME) ||
-	 ((gameStates.multi.nGameType == UDP_GAME) || gameStates.multi.bCheckPorts)) {
+	 ((gameStates.multi.nGameType == UDP_GAME) && gameStates.multi.bCheckPorts)) {
 	if (memcmp (network1, network2, sizeof (network_info)))
 		return 1;
 	}
@@ -397,15 +397,24 @@ else if (gameStates.multi.nGameType == UDP_GAME) {
 #endif
 		return 1;
 	}
+#ifdef MACINTOSH
 else {
 	if (network1->appletalk.node != network2->appletalk.node)
 		return 1;
 	if (network1->appletalk.net == network2->appletalk.net)
 		return 1;
 	}
+#endif
 if (callsign1 && callsign2 && stricmp (callsign1, callsign2))
 	return 1;
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+static inline void ResetPlayerTimeout (int nPlayer, fix t)
+{
+networkData.nLastPacketTime [nPlayer] = (t < 0) ? TimerGetApproxSeconds () : t;
 }
 
 //------------------------------------------------------------------------------
@@ -423,7 +432,7 @@ networkData.nStatus = NETSTAT_ENDLEVEL; // We are between levels
 NetworkListen ();
 NetworkSendEndLevelPacket ();
 for (i = 0; i < gameData.multi.nPlayers; i++) 
-	networkData.nLastPacketTime [i] = t;
+	ResetPlayerTimeout (i, t);
 NetworkSendEndLevelPacket ();
 NetworkSendEndLevelPacket ();
 networkData.mySyncPackInited = 0;
@@ -494,25 +503,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NetworkDisconnectPlayer (int playernum)
+void NetworkDisconnectPlayer (int nPlayer)
 {
 	// A tPlayer has disconnected from the net game, take whatever steps are
 	// necessary 
 
-if (playernum == gameData.multi.nLocalPlayer) {
+if (nPlayer == gameData.multi.nLocalPlayer) {
 	Int3 (); // Weird, see Rob
 	return;
 	}
-gameData.multi.players [playernum].connected = 0;
-KillPlayerSmoke (playernum);
-netPlayers.players [playernum].connected = 0;
-if (networkData.bVerifyPlayerJoined == playernum)
+gameData.multi.players [nPlayer].connected = 0;
+KillPlayerSmoke (nPlayer);
+netPlayers.players [nPlayer].connected = 0;
+if (networkData.bVerifyPlayerJoined == nPlayer)
 	networkData.bVerifyPlayerJoined=-1;
-//      CreatePlayerAppearanceEffect (&gameData.objs.objects [gameData.multi.players [playernum].nObject]);
-MultiMakePlayerGhost (playernum);
+//      CreatePlayerAppearanceEffect (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject]);
+MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordMultiDisconnect (playernum);
-MultiStripRobots (playernum);
+	NDRecordMultiDisconnect (nPlayer);
+MultiStripRobots (nPlayer);
 }
 		
 //------------------------------------------------------------------------------
@@ -580,7 +589,7 @@ void NetworkWelcomePlayer (tSequencePacket *their)
 {
 	// Add a tPlayer to a game already in progress
 	ubyte local_address [6];
-	int player_num;
+	int nPlayer;
 	int i;
 
 WaitForRefuseAnswer=0;
@@ -642,7 +651,7 @@ if (their->player.connected != gameData.missions.nCurrentLevel) {
 			DUMP_LEVEL);
 	return;
 	}
-player_num = -1;
+nPlayer = -1;
 memset (&networkData.playerRejoining, 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -658,27 +667,27 @@ for (i = 0; i < gameData.multi.nPlayers; i++) {
 	if (gameStates.multi.nGameType == IPX_GAME) {
 		if (!memcmp (gameData.multi.players [i].netAddress, local_address, 6) &&
 			 !stricmp (gameData.multi.players [i].callsign, their->player.callsign)) {
-			player_num = i;
+			nPlayer = i;
 			break;
 			}
 		}
 	else if (gameStates.multi.nGameType == UDP_GAME) {
 		if (!memcmp (gameData.multi.players [i].netAddress, local_address, 4) &&	//ignore the port
 			 !stricmp (gameData.multi.players [i].callsign, their->player.callsign)) {
-			player_num = i;
+			nPlayer = i;
 			memcpy (gameData.multi.players [i].netAddress, local_address, 6);
 			break;
 			}
 		}
 	}
-if (player_num == -1) {
+if (nPlayer == -1) {
 	// Player is new to this game
 	if (!(netGame.gameFlags & NETGAME_FLAG_CLOSED) && 
 		  (gameData.multi.nPlayers < gameData.multi.nMaxPlayers)) {
 		// Add tPlayer in an open slot, game not full yet
-		player_num = gameData.multi.nPlayers;
+		nPlayer = gameData.multi.nPlayers;
 		if (gameData.app.nGameMode & GM_TEAM)
-			ChoseTeam (player_num);
+			ChoseTeam (nPlayer);
 		networkData.bPlayerAdded = 1;
 		}
 	else if (netGame.gameFlags & NETGAME_FLAG_CLOSED)	{
@@ -714,7 +723,7 @@ if (player_num == -1) {
 			}
 		else {       
 			// Found a slot!
-			player_num = oldest_player;
+			nPlayer = oldest_player;
 			networkData.bPlayerAdded = 1;
 			}
 		}
@@ -722,7 +731,7 @@ if (player_num == -1) {
 else {
 	// Player is reconnecting
 #if 0		
-	if (gameData.multi.players [player_num].connected)	{
+	if (gameData.multi.players [nPlayer].connected)	{
 #if 1      
 		con_printf (CON_DEBUG, "Extra REQUEST from tPlayer ignored.\n");
 #endif
@@ -730,19 +739,19 @@ else {
 		}
 #endif
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordMultiReconnect (player_num);
+		NDRecordMultiReconnect (nPlayer);
 	networkData.bPlayerAdded = 0;
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	if (gameOpts->multi.bNoRankings)
-		HUDInitMessage ("'%s' %s", gameData.multi.players [player_num].callsign, TXT_REJOIN);
+		HUDInitMessage ("'%s' %s", gameData.multi.players [nPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [player_num].rank], gameData.multi.players [player_num].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nPlayer].rank], gameData.multi.players [nPlayer].callsign, TXT_REJOIN);
 	}
-gameData.multi.players [player_num].nKillGoalCount=0;
-gameData.multi.players [player_num].connected=0;
+gameData.multi.players [nPlayer].nKillGoalCount=0;
+gameData.multi.players [nPlayer].connected=0;
 // Send updated gameData.objs.objects data to the new/returning tPlayer
 networkData.playerRejoining = *their;
-networkData.playerRejoining.player.connected = player_num;
+networkData.playerRejoining.player.connected = nPlayer;
 networkData.bSendObjects = 1;
 networkData.nSendObjNum = -1;
 NetworkSendObjects ();
@@ -754,8 +763,8 @@ int NetworkObjnumIsPast (int nObject)
 {
 	// determine whether or not a given tObject number has already been sent
 	// to a re-joining player.
-	int player_num = networkData.playerRejoining.player.connected;
-	int obj_mode = !((multiData.nObjOwner [nObject] == -1) || (multiData.nObjOwner [nObject] == player_num));
+	int nPlayer = networkData.playerRejoining.player.connected;
+	int obj_mode = !((multiData.nObjOwner [nObject] == -1) || (multiData.nObjOwner [nObject] == nPlayer));
 
 if (!networkData.bSendObjects)
 	return 0; // We're not sending gameData.objs.objects to a new tPlayer
@@ -922,13 +931,13 @@ void NetworkSendObjects (void)
 	static int nFrame = 0;
 
 	int obj_count_frame = 0;
-	int player_num = networkData.playerRejoining.player.connected;
+	int nPlayer = networkData.playerRejoining.player.connected;
 
 	// Send clear gameData.objs.objects array tTrigger and send tPlayer num
 
 Assert (networkData.bSendObjects != 0);
-Assert (player_num >= 0);
-Assert (player_num < gameData.multi.nMaxPlayers);
+Assert (nPlayer >= 0);
+Assert (nPlayer < gameData.multi.nMaxPlayers);
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// Endlevel started before we finished sending the goods, we'll
@@ -953,7 +962,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		obj_count = 0;
 		networkData.bSendObjectMode = 0;
 		SET_SHORT (object_buffer, loc, -1);            
-		SET_BYTE (object_buffer, loc, player_num);                            
+		SET_BYTE (object_buffer, loc, nPlayer);                            
 		/* Placeholder for remote_objnum, not used here */          
 		loc += 2;
 		networkData.nSendObjNum = 0;
@@ -969,10 +978,10 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			 ((t != OBJ_WEAPON) || (gameData.objs.objects [i].id != SMALLMINE_ID)))
 			continue;
 		if ((networkData.bSendObjectMode == 0) && 
-			 ((multiData.nObjOwner [i] != -1) && (multiData.nObjOwner [i] != player_num)))
+			 ((multiData.nObjOwner [i] != -1) && (multiData.nObjOwner [i] != nPlayer)))
 			continue;
 		if ((networkData.bSendObjectMode == 1) && 
-			 ((multiData.nObjOwner [i] == -1) || (multiData.nObjOwner [i] == player_num)))
+			 ((multiData.nObjOwner [i] == -1) || (multiData.nObjOwner [i] == nPlayer)))
 			continue;
 
 		if (((IPX_MAX_DATA_SIZE-1) - loc) < (sizeof (tObject)+5))
@@ -1032,8 +1041,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			
 		
 			// Send sync packet which tells the tPlayer who he is and to start!
-			NetworkSendRejoinSync (player_num);
-			networkData.bVerifyPlayerJoined=player_num;
+			NetworkSendRejoinSync (nPlayer);
+			networkData.bVerifyPlayerJoined=nPlayer;
 
 			// Turn off send tObject mode
 			networkData.nSendObjNum = -1;
@@ -1044,7 +1053,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			// Int3 ();  // Bad!! Get Jason.  Someone goofy is trying to get ahold of the game!
 
 			networkData.bSendingExtras = 40; // start to send extras
-			networkData.nPlayerJoiningExtras=player_num;
+			networkData.nPlayerJoiningExtras=nPlayer;
 
 			return;
 			} // mode == 1;
@@ -1056,12 +1065,12 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 
 extern void MultiSendPowerupUpdate ();
 
-void NetworkSendRejoinSync (int player_num)
+void NetworkSendRejoinSync (int nPlayer)
 {
 	int i, j;
 
-gameData.multi.players [player_num].connected = 1; // connect the new guy
-networkData.nLastPacketTime [player_num] = TimerGetApproxSeconds ();
+gameData.multi.players [nPlayer].connected = 1; // connect the new guy
+ResetPlayerTimeout (nPlayer, -1);
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// Endlevel started before we finished sending the goods, we'll
 	// have to stop and try again after the level.
@@ -1077,11 +1086,11 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	}
 if (networkData.bPlayerAdded) {
 	networkData.playerRejoining.nType = PID_ADDPLAYER;
-	networkData.playerRejoining.player.connected = player_num;
+	networkData.playerRejoining.player.connected = nPlayer;
 	NetworkNewPlayer (&networkData.playerRejoining);
 
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
-		if ((i != player_num) && 
+		if ((i != nPlayer) && 
 			 (i != gameData.multi.nLocalPlayer) && 
 			 (gameData.multi.players [i].connected))
 			if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -1189,9 +1198,9 @@ playerP->version_minor = pkt->player.version_minor;
 playerP->rank = pkt->player.rank;
 playerP->connected = 1;
 NetworkCheckForOldVersion ((char) gameData.multi.nPlayers);
-gameData.multi.players [gameData.multi.nPlayers].nKillGoalCount=0;
+gameData.multi.players [gameData.multi.nPlayers].nKillGoalCount = 0;
 gameData.multi.players [gameData.multi.nPlayers].connected = 1;
-networkData.nLastPacketTime [gameData.multi.nPlayers] = TimerGetApproxSeconds ();
+ResetPlayerTimeout (gameData.multi.nPlayers, -1);
 gameData.multi.nPlayers++;
 netGame.numplayers = gameData.multi.nPlayers;
 // Broadcast updated info
@@ -1316,7 +1325,7 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 		netGame.numconnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
-//	the lite_info struct when you're sitting on the join netgame screen.  We can
+//	the tLiteInfo struct when you're sitting on the join netgame screen.  We can
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
@@ -1351,18 +1360,18 @@ netGame.levelnum = gameData.missions.nCurrentLevel;
 
 //------------------------------------------------------------------------------
 
-void NetworkSendEndLevelSub (int player_num)
+void NetworkSendEndLevelSub (int nPlayer)
 {
-	endlevel_info end;
+	tEndLevelInfo end;
 	int i, j = 0;
 
 	// Send an endlevel packet for a tPlayer
 end.nType       = PID_ENDLEVEL;
-end.player_num = player_num;
-end.connected  = gameData.multi.players [player_num].connected;
-end.kills      = INTEL_SHORT (gameData.multi.players [player_num].netKillsTotal);
-end.killed     = INTEL_SHORT (gameData.multi.players [player_num].netKilledTotal);
-memcpy (end.killMatrix, multiData.kills.matrix [player_num], MAX_PLAYERS*sizeof (short));
+end.nPlayer = nPlayer;
+end.connected  = gameData.multi.players [nPlayer].connected;
+end.kills      = INTEL_SHORT (gameData.multi.players [nPlayer].netKillsTotal);
+end.killed     = INTEL_SHORT (gameData.multi.players [nPlayer].netKilledTotal);
+memcpy (end.killMatrix, multiData.kills.matrix [nPlayer], MAX_PLAYERS*sizeof (short));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
@@ -1370,19 +1379,19 @@ for (i = 0; i < MAX_PLAYERS; i++)
 #else
 j = j;          // to satisfy compiler
 #endif
-if (gameData.multi.players [player_num].connected == 1) {// Still playing
+if (gameData.multi.players [nPlayer].connected == 1) {// Still playing
 	Assert (gameData.reactor.bDestroyed);
 	end.seconds_left = gameData.reactor.countdown.nSecsLeft;
 	}
 for (i = 0; i < gameData.multi.nPlayers; i++) {       
 	if ((i != gameData.multi.nLocalPlayer) && 
-		 (i != player_num) && 
+		 (i != nPlayer) && 
 		 (gameData.multi.players [i].connected)) {
 		if (gameData.multi.players [i].connected == 1)
-			NetworkSendEndLevelShortSub (player_num, i);
+			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
 			IPXSendPacketData (
-				(ubyte *)&end, sizeof (endlevel_info), 
+				(ubyte *)&end, sizeof (tEndLevelInfo), 
 			netPlayers.players [i].network.ipx.server, 
 			netPlayers.players [i].network.ipx.node, gameData.multi.players [i].netAddress);
 		}
@@ -1402,10 +1411,10 @@ void NetworkSendEndLevelPacket (void)
 /* Send an endlevel packet for a tPlayer */
 void NetworkSendEndLevelShortSub (int from_player_num, int to_player)
 {
-	endlevel_info_short end;
+	tEndLevelInfoShort end;
 
 end.nType = PID_ENDLEVEL_SHORT;
-end.player_num = from_player_num;
+end.nPlayer = from_player_num;
 end.connected = gameData.multi.players [from_player_num].connected;
 end.seconds_left = gameData.reactor.countdown.nSecsLeft;
 
@@ -1417,7 +1426,7 @@ if ((to_player != gameData.multi.nLocalPlayer) &&
 	 (gameData.multi.players [to_player].connected)) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		IPXSendPacketData (
-		 (ubyte *)&end, sizeof (endlevel_info_short), 
+		 (ubyte *)&end, sizeof (tEndLevelInfoShort), 
 		netPlayers.players [to_player].network.ipx.server, 
 		netPlayers.players [to_player].network.ipx.node, gameData.multi.players [to_player].netAddress);
 	}
@@ -1735,9 +1744,9 @@ void NetworkProcessLiteInfo (ubyte *data)
 {
 	int				i;
 	tNetgameInfo	*actGameP;
-	lite_info		*newInfo = (lite_info *)data;
+	tLiteInfo		*newInfo = (tLiteInfo *)data;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	lite_info		tmp_info;
+	tLiteInfo		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveNetGamePacket (data, (tNetgameInfo *)&tmp_info, 1);
@@ -1755,7 +1764,7 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 actGameP = activeNetGames + i;
-memcpy (actGameP, (ubyte *) newInfo, sizeof (lite_info));
+memcpy (actGameP, (ubyte *) newInfo, sizeof (tLiteInfo));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the data accordingly
@@ -1835,6 +1844,9 @@ if (nLength == nExpectedLength)
 	return 0;
 con_printf (CON_DEBUG, "WARNING! Received invalid size for %s\n", pszId);
 LogErr ("Networking: Bad size for %s\n", pszId);
+#ifdef _DEBUG
+HUDMessage (0, "invalid %s", pszId);
+#endif
 if (nLength == nExpectedLength - 4)
 	LogErr ("   (Probably due to mismatched UDP/IP connection quality improvement settings)\n");
 return 1;
@@ -2136,9 +2148,9 @@ switch (pid) {
 				ReceiveLiteNetGamePacket (data, &TempNetInfo);
 				}
 			else
-				memcpy ((ubyte *)&TempNetInfo, data, sizeof (lite_info));
+				memcpy ((ubyte *)&TempNetInfo, data, sizeof (tLiteInfo));
 			if (!NetworkBadSecurity (TempNetInfo.Security, "PID_GAME_UPDATE"))
-				memcpy (&netGame, (ubyte *)&TempNetInfo, sizeof (lite_info));
+				memcpy (&netGame, (ubyte *)&TempNetInfo, sizeof (tLiteInfo));
 			}
 		if (gameData.app.nGameMode & GM_TEAM) {
 			int i;
@@ -2213,8 +2225,8 @@ con_printf (CON_DEBUG, "SS=%d\n", sizeof (tSegment));
 void NetworkReadEndLevelPacket (ubyte *data)
 {
 	// Special packet for end of level syncing
-	int playernum;
-	endlevel_info *end = (endlevel_info *)data;
+	int nPlayer;
+	tEndLevelInfo *end = (tEndLevelInfo *)data;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	int i, j;
 
@@ -2224,21 +2236,21 @@ for (i = 0; i < MAX_PLAYERS; i++)
 end->kills = INTEL_SHORT (end->kills);
 end->killed = INTEL_SHORT (end->killed);
 #endif
-playernum = end->player_num;
-Assert (playernum != gameData.multi.nLocalPlayer);
-if (playernum>=gameData.multi.nPlayers) {              
+nPlayer = end->nPlayer;
+Assert (nPlayer != gameData.multi.nLocalPlayer);
+if (nPlayer>=gameData.multi.nPlayers) {              
 	Int3 (); // weird, but it an happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
 if ((networkData.nStatus == NETSTAT_PLAYING) && (end->connected != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-gameData.multi.players [playernum].connected = end->connected;
-memcpy (&multiData.kills.matrix [playernum][0], end->killMatrix, MAX_PLAYERS*sizeof (short));
-gameData.multi.players [playernum].netKillsTotal = end->kills;
-gameData.multi.players [playernum].netKilledTotal = end->killed;
-if ((gameData.multi.players [playernum].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
+gameData.multi.players [nPlayer].connected = end->connected;
+memcpy (&multiData.kills.matrix [nPlayer][0], end->killMatrix, MAX_PLAYERS*sizeof (short));
+gameData.multi.players [nPlayer].netKillsTotal = end->kills;
+gameData.multi.players [nPlayer].netKilledTotal = end->killed;
+if ((gameData.multi.players [nPlayer].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
 	gameData.reactor.countdown.nSecsLeft = end->seconds_left;
-networkData.nLastPacketTime [playernum] = TimerGetApproxSeconds ();
+ResetPlayerTimeout (nPlayer, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -2247,23 +2259,23 @@ void NetworkReadEndLevelShortPacket (ubyte *data)
 {
 	// Special packet for end of level syncing
 
-	int playernum;
-	endlevel_info_short *end;       
+	int nPlayer;
+	tEndLevelInfoShort *end;       
 
-end = (endlevel_info_short *)data;
-playernum = end->player_num;
-Assert (playernum != gameData.multi.nLocalPlayer);
-if (playernum>=gameData.multi.nPlayers) {              
+end = (tEndLevelInfoShort *)data;
+nPlayer = end->nPlayer;
+Assert (nPlayer != gameData.multi.nLocalPlayer);
+if (nPlayer >= gameData.multi.nPlayers) {              
 	Int3 (); // weird, but it can happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
 
 if ((networkData.nStatus == NETSTAT_PLAYING) && (end->connected != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-gameData.multi.players [playernum].connected = end->connected;
-if ((gameData.multi.players [playernum].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
+gameData.multi.players [nPlayer].connected = end->connected;
+if ((gameData.multi.players [nPlayer].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
 	gameData.reactor.countdown.nSecsLeft = end->seconds_left;
-networkData.nLastPacketTime [playernum] = TimerGetApproxSeconds ();
+ResetPlayerTimeout (nPlayer, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -2545,8 +2557,10 @@ if (gameStates.multi.nGameType == UDP_GAME)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	return memcmp (pNetwork->ipx.node, LOCAL_NODE, 4) ? 1 : 0;
 	}
+#ifdef MACINTOSH
 if (pNetwork->appletalk.node != networkData.mySeq.player.network.appletalk.node)
 	return 1;
+#endif
 return 0;
 }
 
@@ -3295,7 +3309,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (!networkData.mySyncPackInited) {
 	networkData.mySyncPackInited = 1;
-	memset (&networkData.mySyncPack, 0, sizeof (frame_info));
+	memset (&networkData.mySyncPack, 0, sizeof (tFrameInfo));
 	}
 if (urgent)
 	networkData.bPacketUrgent = 1;
@@ -3322,18 +3336,18 @@ networkData.mySyncPack.data_size += len;
 
 //------------------------------------------------------------------------------
 
-void NetworkTimeoutPlayer (int playernum)
+void NetworkTimeoutPlayer (int nPlayer)
 {
 	// Remove a tPlayer from the game if we haven't heard from them in 
 	// a long time.
 	int i, n = 0;
 
-Assert (playernum < gameData.multi.nPlayers);
-Assert (playernum > -1);
-NetworkDisconnectPlayer (playernum);
-CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [playernum].nObject);
+Assert (nPlayer < gameData.multi.nPlayers);
+Assert (nPlayer > -1);
+NetworkDisconnectPlayer (nPlayer);
+CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [nPlayer].nObject);
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-HUDInitMessage ("%s %s", gameData.multi.players [playernum].callsign, TXT_DISCONNECTING);
+HUDInitMessage ("%s %s", gameData.multi.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multi.nPlayers; i++)
 	if (gameData.multi.players [i].connected) 
 		n++;
@@ -3349,7 +3363,7 @@ fix xLastSendTime = 0;
 fix xLastTimeoutCheck = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-void SquishShortFrameInfo (short_frame_info old_info, ubyte *data)
+void SquishShortFrameInfo (tFrameInfoShort old_info, ubyte *data)
 {
 	int 	loc = 0;
 	int 	tmpi;
@@ -3367,7 +3381,7 @@ SET_SHORT (data, loc, old_info.thepos.velx);
 SET_SHORT (data, loc, old_info.thepos.vely);
 SET_SHORT (data, loc, old_info.thepos.velz);
 SET_SHORT (data, loc, old_info.data_size);
-SET_BYTE (data, loc, old_info.playernum);                                     
+SET_BYTE (data, loc, old_info.nPlayer);                                     
 SET_BYTE (data, loc, old_info.obj_renderType);                               
 SET_BYTE (data, loc, old_info.level_num);                                     
 SET_BYTES (data, loc, old_info.data, old_info.data_size);
@@ -3382,7 +3396,7 @@ int NakedPacketDestPlayer=-1;
 
 void NetworkDoFrame (int force, int listen)
 {
-	short_frame_info ShortSyncPack;
+	tFrameInfoShort ShortSyncPack;
 	static fix LastEndlevel=0;
 	int i;
 
@@ -3424,7 +3438,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 			memset (&ShortSyncPack, 0, sizeof (ShortSyncPack));
 			CreateShortPos (&ShortSyncPack.thepos, gameData.objs.objects+nObject, 0);
 			ShortSyncPack.nType = PID_PDATA;
-			ShortSyncPack.playernum = gameData.multi.nLocalPlayer;
+			ShortSyncPack.nPlayer = gameData.multi.nLocalPlayer;
 			ShortSyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
 			ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
 			ShortSyncPack.data_size = networkData.mySyncPack.data_size;
@@ -3434,7 +3448,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 			IpxSendGamePacket (
 				(ubyte*)&ShortSyncPack, 
-				sizeof (short_frame_info) - networkData.nMaxXDataSize + networkData.mySyncPack.data_size);
+				sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.mySyncPack.data_size);
 #else
 			SquishShortFrameInfo (ShortSyncPack, send_data);
 			IpxSendGamePacket (
@@ -3446,7 +3460,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 				int send_data_size;
 
 			networkData.mySyncPack.nType = PID_PDATA;
-			networkData.mySyncPack.playernum = gameData.multi.nLocalPlayer;
+			networkData.mySyncPack.nPlayer = gameData.multi.nLocalPlayer;
 			networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
 			networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
 			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].position.nSegment;
@@ -3468,7 +3482,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 			networkData.mySyncPack.numpackets = INTEL_INT (gameData.multi.players [0].nPacketsSent++);
 			IpxSendGamePacket (
 				(ubyte*)&networkData.mySyncPack, 
-				sizeof (frame_info) - networkData.nMaxXDataSize + send_data_size);
+				sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
 			}
 		networkData.mySyncPack.data_size = 0;               // Start data over at 0 length.
 		if (gameData.reactor.bDestroyed) {
@@ -3491,12 +3505,14 @@ if ((xLastTimeoutCheck > F1_0) && !(gameData.reactor.bDestroyed)) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
 		if ((i != gameData.multi.nLocalPlayer) && 
 			 ((gameData.multi.players [i].connected == 1) || bDownloading [i])) {
-			if ((networkData.nLastPacketTime [i] == 0) || (networkData.nLastPacketTime [i] > approxTime)) {
-				networkData.nLastPacketTime [i] = approxTime;
+			if ((networkData.nLastPacketTime [i] == 0) || 
+				 (networkData.nLastPacketTime [i] > approxTime)) {
+				ResetPlayerTimeout (i, approxTime);
 				continue;
 				}
 #if 1//ndef _DEBUG
-			if (gameOpts->multi.bTimeoutPlayers && (approxTime - networkData.nLastPacketTime [i]) > (15*F1_0))
+			if (gameOpts->multi.bTimeoutPlayers && 
+				 (approxTime - networkData.nLastPacketTime [i]) > (15*F1_0))
 				NetworkTimeoutPlayer (i);
 #endif
 			}
@@ -3544,20 +3560,20 @@ void NetworkProcessPData (char *data)
 {
 Assert (gameData.app.nGameMode & GM_NETWORK);
 if (netGame.bShortPackets)
-	NetworkReadPDataShortPacket ((short_frame_info *)data);
+	NetworkReadPDataShortPacket ((tFrameInfoShort *)data);
 else
-	NetworkReadPDataPacket ((frame_info *)data);
+	NetworkReadPDataPacket ((tFrameInfo *)data);
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkReadPDataPacket (frame_info *pd)
+void NetworkReadPDataPacket (tFrameInfo *pd)
 {
-	int theirPlayerNum;
+	int nTheirPlayer;
 	int theirObjNum;
 	tObject * theirObjP = NULL;
 	
-// frame_info should be aligned...for mac, make the necessary adjustments
+// tFrameInfo should be aligned...for mac, make the necessary adjustments
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	pd->numpackets = INTEL_INT (pd->numpackets);
@@ -3583,15 +3599,15 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	pd->data_size = INTEL_SHORT (pd->data_size);
 	}
 #endif
-theirPlayerNum = pd->playernum;
-theirObjNum = gameData.multi.players [pd->playernum].nObject;
-if (theirPlayerNum < 0) {
+nTheirPlayer = pd->nPlayer;
+theirObjNum = gameData.multi.players [pd->nPlayer].nObject;
+if (nTheirPlayer < 0) {
 	Int3 (); // This packet is bogus!!
 	return;
 	}
-if ((networkData.bVerifyPlayerJoined != -1) && (theirPlayerNum == networkData.bVerifyPlayerJoined))
+if ((networkData.bVerifyPlayerJoined != -1) && (nTheirPlayer == networkData.bVerifyPlayerJoined))
 	networkData.bVerifyPlayerJoined = -1;
-if (!multiData.bQuitGame && (theirPlayerNum >= gameData.multi.nPlayers)) {
+if (!multiData.bQuitGame && (nTheirPlayer >= gameData.multi.nPlayers)) {
 	if (networkData.nStatus!=NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
 		NetworkConsistencyError ();
@@ -3609,36 +3625,36 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
 #if 1				
-	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->playernum, pd->level_num);
+	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->level_num);
 #endif
 	return;
 	}
 
 theirObjP = &gameData.objs.objects [theirObjNum];
 //------------- Keep track of missed packets -----------------
-gameData.multi.players [theirPlayerNum].nPacketsGot++;
+gameData.multi.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
-networkData.nLastPacketTime [theirPlayerNum] = TimerGetApproxSeconds ();
-if  (pd->numpackets != gameData.multi.players [theirPlayerNum].nPacketsGot) {
+ResetPlayerTimeout (nTheirPlayer, -1);
+if  (pd->numpackets != gameData.multi.players [nTheirPlayer].nPacketsGot) {
 	int nMissedPackets;
-	nMissedPackets = pd->numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot;
-	if ((pd->numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot)>0)
-		networkData.nTotalMissedPackets += pd->numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot;
+	nMissedPackets = pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
+	if ((pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot)>0)
+		networkData.nTotalMissedPackets += pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
 #if 1				
 	if (nMissedPackets > 0)       
 		con_printf (0, 
 			"Missed %d packets from tPlayer #%d (%d total)\n", 
-			pd->numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot, 
-			theirPlayerNum, 
+			pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot, 
+			nTheirPlayer, 
 			nMissedPackets);
 	else
 		con_printf (CON_DEBUG, 
 			"Got %d late packets from tPlayer #%d (%d total)\n", 
-			gameData.multi.players [theirPlayerNum].nPacketsGot-pd->numpackets, 
-			theirPlayerNum, 
+			gameData.multi.players [nTheirPlayer].nPacketsGot-pd->numpackets, 
+			nTheirPlayer, 
 			nMissedPackets);
 #endif
-	gameData.multi.players [theirPlayerNum].nPacketsGot = pd->numpackets;
+	gameData.multi.players [nTheirPlayer].nPacketsGot = pd->numpackets;
 	}
 //------------ Read the tPlayer's ship's tObject info ----------------------
 theirObjP->position.vPos = pd->obj_pos;
@@ -3646,23 +3662,23 @@ theirObjP->position.mOrient = pd->obj_orient;
 theirObjP->mType.physInfo.velocity = pd->phys_velocity;
 theirObjP->mType.physInfo.rotVel = pd->phys_rotvel;
 if ((theirObjP->renderType != pd->obj_renderType) && (pd->obj_renderType == RT_POLYOBJ))
-	MultiMakeGhostPlayer (theirPlayerNum);
+	MultiMakeGhostPlayer (nTheirPlayer);
 RelinkObject (theirObjNum, pd->obj_segnum);
 if (theirObjP->movementType == MT_PHYSICS)
 	set_thrust_from_velocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
-if (!gameData.multi.players [theirPlayerNum].connected) {
-	gameData.multi.players [theirPlayerNum].connected = 1;
+if (!gameData.multi.players [nTheirPlayer].connected) {
+	gameData.multi.players [nTheirPlayer].connected = 1;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordMultiReconnect (theirPlayerNum);
-	MultiMakeGhostPlayer (theirPlayerNum);
+		NDRecordMultiReconnect (nTheirPlayer);
+	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank (&netPlayers.players [theirPlayerNum].rank);
+	ClipRank (&netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)      
-		HUDInitMessage ("'%s' %s", gameData.multi.players [theirPlayerNum].callsign, TXT_REJOIN);
+		HUDInitMessage ("'%s' %s", gameData.multi.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [theirPlayerNum].rank], gameData.multi.players [theirPlayerNum].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nTheirPlayer].rank], gameData.multi.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
 //------------ Parse the extra data at the end ---------------
@@ -3674,7 +3690,7 @@ if (pd->data_size > 0)
 //------------------------------------------------------------------------------
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-void GetShortFrameInfo (ubyte *old_info, short_frame_info *new_info)
+void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
 {
 	int loc = 0;
 	
@@ -3691,7 +3707,7 @@ GET_SHORT (old_info, loc, new_info->thepos.velx);
 GET_SHORT (old_info, loc, new_info->thepos.vely);
 GET_SHORT (old_info, loc, new_info->thepos.velz);
 GET_SHORT (old_info, loc, new_info->data_size);
-GET_BYTE (old_info, loc, new_info->playernum);
+GET_BYTE (old_info, loc, new_info->nPlayer);
 GET_BYTE (old_info, loc, new_info->obj_renderType);
 GET_BYTE (old_info, loc, new_info->level_num);
 GET_BYTES (old_info, loc, new_info->data, new_info->data_size);
@@ -3699,18 +3715,18 @@ GET_BYTES (old_info, loc, new_info->data, new_info->data_size);
 #else
 
 #define GetShortFrameInfo(old_info, new_info) \
-	memcpy (new_info, old_info, sizeof (short_frame_info))
+	memcpy (new_info, old_info, sizeof (tFrameInfoShort))
 
 #endif
 
 //------------------------------------------------------------------------------
 
-void NetworkReadPDataShortPacket (short_frame_info *pd)
+void NetworkReadPDataShortPacket (tFrameInfoShort *pd)
 {
-	int theirPlayerNum;
+	int nTheirPlayer;
 	int theirObjNum;
 	tObject * theirObjP = NULL;
-	short_frame_info new_pd;
+	tFrameInfoShort new_pd;
 
 // short frame info is not aligned because of tShortPos.  The mac
 // will call totally hacked and gross function to fix this up.
@@ -3718,21 +3734,21 @@ void NetworkReadPDataShortPacket (short_frame_info *pd)
 if (gameStates.multi.nGameType >= IPX_GAME)
 	GetShortFrameInfo ((ubyte *)pd, &new_pd);
 else
-	memcpy (&new_pd, (ubyte *)pd, sizeof (short_frame_info));
-theirPlayerNum = new_pd.playernum;
-theirObjNum = gameData.multi.players [new_pd.playernum].nObject;
-if (theirPlayerNum < 0) {
+	memcpy (&new_pd, (ubyte *)pd, sizeof (tFrameInfoShort));
+nTheirPlayer = new_pd.nPlayer;
+theirObjNum = gameData.multi.players [new_pd.nPlayer].nObject;
+if (nTheirPlayer < 0) {
 	Int3 (); // This packet is bogus!!
 	return;
 	}
-if (!multiData.bQuitGame && (theirPlayerNum >= gameData.multi.nPlayers)) {
+if (!multiData.bQuitGame && (nTheirPlayer >= gameData.multi.nPlayers)) {
 	if (networkData.nStatus!=NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
 		NetworkConsistencyError ();
 		}
 	return;
 	}
-if (networkData.bVerifyPlayerJoined!=-1 && theirPlayerNum == networkData.bVerifyPlayerJoined) {
+if (networkData.bVerifyPlayerJoined!=-1 && nTheirPlayer == networkData.bVerifyPlayerJoined) {
 	// Hurray! Someone really really got in the game (I think).
    networkData.bVerifyPlayerJoined=-1;
 	}
@@ -3749,54 +3765,54 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
 #if 1				
-	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.playernum, new_pd.level_num);
+	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.level_num);
 #endif
 	return;
 	}
 theirObjP = &gameData.objs.objects [theirObjNum];
 //------------- Keep track of missed packets -----------------
-gameData.multi.players [theirPlayerNum].nPacketsGot++;
+gameData.multi.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
-networkData.nLastPacketTime [theirPlayerNum] = TimerGetApproxSeconds ();
-if  (new_pd.numpackets != gameData.multi.players [theirPlayerNum].nPacketsGot)      {
-	int nMissedPackets = new_pd.numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot;
-	if ((new_pd.numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot)>0)
-		networkData.nTotalMissedPackets += new_pd.numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot;
+networkData.nLastPacketTime [nTheirPlayer] = TimerGetApproxSeconds ();
+if  (new_pd.numpackets != gameData.multi.players [nTheirPlayer].nPacketsGot)      {
+	int nMissedPackets = new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
+	if ((new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot)>0)
+		networkData.nTotalMissedPackets += new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
 #if 1				
 	if (nMissedPackets > 0)       
 		con_printf (CON_DEBUG, 
 			"Missed %d packets from tPlayer #%d (%d total)\n", 
-			new_pd.numpackets-gameData.multi.players [theirPlayerNum].nPacketsGot, 
-			theirPlayerNum, 
+			new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot, 
+			nTheirPlayer, 
 			nMissedPackets);
 	else
 		con_printf (CON_DEBUG, 
 			"Got %d late packets from tPlayer #%d (%d total)\n", 
-			gameData.multi.players [theirPlayerNum].nPacketsGot-new_pd.numpackets, 
-			theirPlayerNum, 
+			gameData.multi.players [nTheirPlayer].nPacketsGot-new_pd.numpackets, 
+			nTheirPlayer, 
 			nMissedPackets);
 #endif
-		gameData.multi.players [theirPlayerNum].nPacketsGot = new_pd.numpackets;
+		gameData.multi.players [nTheirPlayer].nPacketsGot = new_pd.numpackets;
 	}
 //------------ Read the tPlayer's ship's tObject info ----------------------
 ExtractShortPos (theirObjP, &new_pd.thepos, 0);
 if ((theirObjP->renderType != new_pd.obj_renderType) && (new_pd.obj_renderType == RT_POLYOBJ))
-	MultiMakeGhostPlayer (theirPlayerNum);
+	MultiMakeGhostPlayer (nTheirPlayer);
 if (theirObjP->movementType == MT_PHYSICS)
 	set_thrust_from_velocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
-if (!gameData.multi.players [theirPlayerNum].connected) {
-	gameData.multi.players [theirPlayerNum].connected = 1;
+if (!gameData.multi.players [nTheirPlayer].connected) {
+	gameData.multi.players [nTheirPlayer].connected = 1;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordMultiReconnect (theirPlayerNum);
-	MultiMakeGhostPlayer (theirPlayerNum);
+		NDRecordMultiReconnect (nTheirPlayer);
+	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank (&netPlayers.players [theirPlayerNum].rank);
+	ClipRank (&netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)
-		HUDInitMessage ("'%s' %s", gameData.multi.players [theirPlayerNum].callsign, TXT_REJOIN);
+		HUDInitMessage ("'%s' %s", gameData.multi.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [theirPlayerNum].rank], gameData.multi.players [theirPlayerNum].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nTheirPlayer].rank], gameData.multi.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
 //------------ Parse the extra data at the end ---------------
@@ -4423,6 +4439,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bPowerupLights = i;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
+	extraGameInfo [i].nLightRange = 0;
 	extraGameInfo [i].entropy.nEnergyFillRate = 25;
 	extraGameInfo [i].entropy.nShieldFillRate = 11;
 	extraGameInfo [i].entropy.nShieldDamageRate = 11;
@@ -4551,6 +4568,9 @@ else {
 	LogErr ("   bLightTrails: %d\n", extraGameInfo [1].bLightTrails);
 	LogErr ("   bTracers: %d\n", extraGameInfo [1].bTracers);
 	LogErr ("   bShockwaves: %d\n", extraGameInfo [1].bShockwaves);
+	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
+	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
+	LogErr ("   nLightRange: %d\n", extraGameInfo [1].nLightRange);
 	LogErr ("entropy info data:\n");
 	LogErr ("   nEnergyFillRate: %d\n", extraGameInfo [1].entropy.nEnergyFillRate);
 	LogErr ("   nShieldFillRate: %d\n", extraGameInfo [1].entropy.nShieldFillRate);

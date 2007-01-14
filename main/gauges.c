@@ -1325,7 +1325,7 @@ if (bHaveObjTallyBms > 0) {
 	for (i = 0; i < 2; i++)
 		GrFreeBitmapData (bmObjTally + i);
 	memset (bmObjTally, 0, sizeof (bmObjTally));
-	bHaveInvBms = -1;
+	bHaveObjTallyBms = -1;
 	}
 }
 
@@ -1370,7 +1370,7 @@ if (!IsMultiGame || IsCoopGame) {
 		for (i = 0; i < 2; i++) 
 			objCounts [i] = ObjectCount (i ? OBJ_POWERUP : OBJ_ROBOT);
 		}
-	if (!gameOpts->render.cockpit.bTextGauges && LoadObjTallyIcons () > 0) {
+	if (!gameOpts->render.cockpit.bTextGauges && (LoadObjTallyIcons () > 0)) {
 		for (i = 0; i < 2; i++) {
 			bmH = bmObjTally [i].bm_props.h / 2;
 			bmW = bmObjTally [i].bm_props.w / 2;

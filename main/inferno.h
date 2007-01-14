@@ -682,6 +682,7 @@ typedef struct tApplicationStates {
 	int bUsingConverter;
 	int bFixModels;
 	int bAltModels;
+	int bEnableShadows;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;

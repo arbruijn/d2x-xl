@@ -3431,7 +3431,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 //delete gameData.objs.objects, such as weapons & explosions, that shouldn't stay between levels
 //	Changed by MK on 10/15/94, don't remove proximity bombs.
 //if clear_all is set, clear even proximity bombs
-void clear_transientObjects (int clear_all)
+void ClearTransientObjects (int clear_all)
 {
 	short nObject;
 	tObject *objP;

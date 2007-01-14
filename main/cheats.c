@@ -733,7 +733,7 @@ char szBouncyCheat [9]				= "bGbiChQJ";    //only Matt knows / duddaboo
 char szBuddyDudeCheat [9]			= "u#uzIr%e";    //only Matt knows / g-owingnut
 char szBuddyLifeCheat [9]			= "%A-BECuY";    //only Matt knows / he-lpvishnu
 char szCloakCheat [9]				= "itsarock";
-char szCubeWarpCheat [9]			= "&vRv (_U]";   // subspace
+char szCubeWarpCheat [9]			= "subspace";   // subspace
 char szElectroCheat [8]				= "electro";
 char szFinishLevelCheat [9]		= "%bG_bZ<D";    //only Matt knows / d-elshiftb
 char szFramerateCheat [9]			= "rQ60#ZBN";    // f-rametime
@@ -764,7 +764,7 @@ tCheat cheats [] = {
 	{szBuddyDudeCheat, BuddyDudeCheat, 1, 1, 0}, 
 	{szBuddyLifeCheat, BuddyLifeCheat, 1, 1, 0}, 
 	{szCloakCheat, CloakCheat, 1, 0, 0}, 
-	{szCubeWarpCheat, CubeWarpCheat, -1, 1, 0}, 
+	{szCubeWarpCheat, CubeWarpCheat, -1, 0, 0}, 
 	{szElectroCheat, ElectroCheat, 1, 0, 0}, 
 	{szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
 	{szFramerateCheat, FramerateCheat, 0, 1, -1}, 

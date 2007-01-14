@@ -127,19 +127,19 @@ void BESwapObject (tObject *obj);
 #define SendFullNetGamePacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *)&netGame, sizeof(tNetgameInfo), server, node, netAddress)
 #define SendLiteNetGamePacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&netGame, sizeof(lite_info), server, node, netAddress)
+	IPXSendPacketData((ubyte *)&netGame, sizeof(tLiteInfo), server, node, netAddress)
 #define SendInternetFullNetGamePacket(server, node) \
 	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(tNetgameInfo), server, node)
 #define SendInternetLiteNetGamePacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(lite_info), server, node)
+	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(tLiteInfo), server, node)
 #define SendBroadcastFullNetGamePacket() \
 	IPXSendBroadcastData((ubyte *)&netGame, sizeof(tNetgameInfo))
 #define SendBroadcastLiteNetGamePacket() \
-	IPXSendBroadcastData((ubyte *)&netGame, sizeof(lite_info))
+	IPXSendBroadcastData((ubyte *)&netGame, sizeof(tLiteInfo))
 #define ReceiveFullNetGamePacket(data, netgame) \
 	memcpy((ubyte *)(netgame), data, sizeof(tNetgameInfo))
 #define ReceiveLiteNetGamePacket(data, netgame) \
-	memcpy((ubyte *)(netgame), data, sizeof(lite_info))
+	memcpy((ubyte *)(netgame), data, sizeof(tLiteInfo))
 
 #define SendExtraGameInfoPacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(extra_gameinfo), server, node, netAddress)

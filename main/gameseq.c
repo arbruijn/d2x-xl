@@ -1170,7 +1170,7 @@ VerifyConsoleObject ();
 gameData.objs.console->controlType	= CT_FLYING;
 gameData.objs.console->movementType	= MT_PHYSICS;
 // -- WHY? -- DisableMatCens ();
-clear_transientObjects (0);		//0 means leave proximity bombs
+ClearTransientObjects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
 AIResetAllPaths ();
@@ -1180,6 +1180,9 @@ gameData.app.fusion.xAutoFireTime = 0;
 gameData.app.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
+if (gameStates.app.bD1Mission)
+	gameData.multi.players[gameData.multi.nLocalPlayer].shields =
+	gameData.multi.players[gameData.multi.nLocalPlayer].energy = F1_0 * 100;
 }
 
 //------------------------------------------------------------------------------
@@ -2147,7 +2150,7 @@ gameData.objs.console->controlType = CT_FLYING;
 gameData.objs.console->movementType = MT_PHYSICS;
 MultiSendShields ();
 DisableMatCens ();
-clear_transientObjects (0);		//0 means leave proximity bombs
+ClearTransientObjects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
 if (gameData.app.nGameMode & GM_MULTI) {

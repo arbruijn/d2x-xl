@@ -785,7 +785,7 @@ char *defaultGameTexts [][2] = {
 	{"Wandtransparenz: %d %c", "Wall Transparency: %d %c"},
 	{"Kamera-Bildaufbau: %d BPS", "CAmera Refresh: %d FPS"},
 	{"Kamera-Geschw.: %d s/90 Grd", "CAmera SPeed: %d s/90 deg"},
-	{"Reichweite Lightmaps: %d %c", "Lightmap RaNge: %d %c"},
+	{"~Reichweite Lightmaps: %d %c", "Lightmap ~Range: %d %c"},
 	{"Lightmaps anwenden", "Use Light MaPs"},
 	{"Transparenz korrekt ~Zeichnen", "~Render Transparency correctly"},
 	{"Farbiges Licht einschalten", "Enable ~Colored Light"},
@@ -1607,7 +1607,10 @@ char *defaultGameTexts [][2] = {
 	{"Traeume werden wahr...", "Dreams are coming true..."},
 	{"D2~X-Einstellungen...", "D2~X options..."},
 	{"D2X-Einstellungen", "D2X options"},
+	{"Licht-~Reichweite: %s", "Light ~Range: %s"},
+	{"Weit", "Far"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2082,6 +2085,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird die Anzahl verbliebener Roboter und\nPowerups rechts oben am Bildschirm angezeigt.\n\nJe nach Einstellung grafischer Skalen werden Bildchen oder nur Text\nangezeigt.", 
 	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
 	{"Hier koennen D2X-XL-spezifische Einstellungen vorgenommen werden.", "Adjust D2X-XL specific options here."},
+	{"Hier kann die Reichweite der Lichter eingestellt werden.", "Adjust the reach of lights here."},
 #if 0
 	{"", ""},
 #endif

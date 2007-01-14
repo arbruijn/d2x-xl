@@ -1562,6 +1562,12 @@ GrPaletteStepLoad (NULL);
 
 int SortLightsGaugeSize (void)
 {
+if (gameStates.app.bNostalgia)
+	return 0;
+if (!(gameOpts->render.bDynLighting || 
+	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
+	   gameStates.app.bEnableShadows))
+	return 0;
 return
 #if !SHADOWS
 	(!gameOpts->render.bDynLighting && gameStates.app.bD2XLevel) ? 0 :
@@ -1612,6 +1618,12 @@ NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + 
 
 void ComputeNearestLights (void)
 {
+if (gameStates.app.bNostalgia)
+	return;
+if (!(gameOpts->render.bDynLighting || 
+	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
+	   gameStates.app.bEnableShadows))
+	return;
 loadOp = 0;
 loadIdx = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)

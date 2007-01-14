@@ -100,37 +100,37 @@ typedef struct tSequencePacket {
 //      shorts on even byte boundries
 //      ints on even byte boundries
 
-typedef struct frame_info {
+typedef struct tFrameInfo {
 	ubyte       nType;                   // What nType of packet
-	ubyte       pad[3];                 // Pad out length of frame_info packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
 	int         numpackets;
-	vmsVector  obj_pos;
-	vmsMatrix  obj_orient;
-	vmsVector  phys_velocity;
-	vmsVector  phys_rotvel;
+	vmsVector	obj_pos;
+	vmsMatrix	obj_orient;
+	vmsVector	phys_velocity;
+	vmsVector	phys_rotvel;
 	short       obj_segnum;
 	ushort      data_size;          // Size of data appended to the net packet
-	ubyte       playernum;
+	ubyte       nPlayer;
 	ubyte       obj_renderType;
 	ubyte       level_num;
 	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
-} __pack__ frame_info;
+} __pack__ tFrameInfo;
 
-// short_frame_info is not aligned -- 01/18/96 -- MWA
+// tFrameInfoShort is not aligned -- 01/18/96 -- MWA
 // won't align because of tShortPos.  Shortpos needs
 // to stay in current form.
 
-typedef struct short_frame_info {
+typedef struct tFrameInfoShort {
 	ubyte       nType;                   // What nType of packet
-	ubyte       pad[3];                 // Pad out length of frame_info packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
 	int         numpackets;
-	tShortPos    thepos;
+	tShortPos   thepos;
 	ushort      data_size;          // Size of data appended to the net packet
-	ubyte       playernum;
+	ubyte       nPlayer;
 	ubyte       obj_renderType;
 	ubyte       level_num;
 	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
-} __pack__ short_frame_info;
+} __pack__ tFrameInfoShort;
 
 typedef struct entropy_gameinfo {
 	ushort	nEnergyFillRate;
@@ -222,6 +222,7 @@ typedef struct extra_gameinfo {
 	char		bShockwaves;
 	char		nSpotSize;
 	char		nSpotStrength;
+	int		nLightRange;
 	monsterball_info	monsterball;
 } __pack__ extra_gameinfo;
 
@@ -285,8 +286,8 @@ typedef struct tNetworkData {
 	int					nGameType;
 	int					nTotalMissedPackets;
 	int					nTotalPacketsGot;
-	frame_info			mySyncPack;
-	frame_info			urgentSyncPack;
+	tFrameInfo			mySyncPack;
+	tFrameInfo			urgentSyncPack;
 	ubyte					mySyncPackInited;       
 	ushort				nMySegsCheckSum;
 	tSequencePacket	mySeq;
@@ -428,22 +429,22 @@ int InitAutoNetGame (void);
 // headaches by keeping alignment if these are changed!!!!  Contact
 // me for info.
 
-typedef struct endlevel_info {
+typedef struct tEndLevelInfo {
 	ubyte                               nType;
-	ubyte                               player_num;
+	ubyte                               nPlayer;
 	sbyte                               connected;
 	ubyte                               seconds_left;
 	short											killMatrix [MAX_PLAYERS] [MAX_PLAYERS];
 	short                               kills;
 	short                               killed;
-} endlevel_info;
+} tEndLevelInfo;
 
-typedef struct endlevel_info_short {
+typedef struct tEndLevelInfoShort {
 	ubyte                               nType;
-	ubyte                               player_num;
+	ubyte                               nPlayer;
 	sbyte                               connected;
 	ubyte                               seconds_left;
-} endlevel_info_short;
+} tEndLevelInfoShort;
 
 // WARNING!!! This is the top part of tNetgameInfo...if that struct changes,
 //      this struct much change as well.  ie...they are aligned and the join system will
@@ -452,7 +453,7 @@ typedef struct endlevel_info_short {
 // MWA  if this structure changes -- please make appropriate changes to receive_netgame_info
 // code for macintosh in netmisc.c
 
-typedef struct lite_info {
+typedef struct tLiteInfo {
 	ubyte                           nType;
 	int                             Security;
 	char                            game_name [NETGAME_NAME_LEN+1];
@@ -471,14 +472,14 @@ typedef struct lite_info {
 	ubyte                           version_major;
 	ubyte                           version_minor;
 	ubyte                           team_vector;
-} __pack__ lite_info;
+} __pack__ tLiteInfo;
 
 #define NETGAME_INFO_SIZE       sizeof(tNetgameInfo)
 #define ALLNETPLAYERSINFO_SIZE  sizeof(tAllNetPlayersInfo)
-#define LITE_INFO_SIZE          sizeof(lite_info)
+#define LITE_INFO_SIZE          sizeof(tLiteInfo)
 #define SEQUENCE_PACKET_SIZE    sizeof(tSequencePacket)
-#define FRAME_INFO_SIZE         sizeof(frame_info)
-#define IPX_SHORT_INFO_SIZE     sizeof(short_frame_info)
+#define FRAME_INFO_SIZE         sizeof(tFrameInfo)
+#define IPX_SHORT_INFO_SIZE     sizeof(tFrameInfoShort)
 #define ENTROPY_INFO_SIZE       sizeof(extra_gameinfo)
 
 #define MAX_ACTIVE_NETGAMES     80

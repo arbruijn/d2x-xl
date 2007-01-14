@@ -2931,7 +2931,8 @@ if (bShowOnlyCurSide)
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 
 	extraGameInfo [1].bShadows = 0;
-if (EGI_FLAG (bShadows, 0, 0) && 
+if (gameStates.app.bEnableShadows &&
+	 EGI_FLAG (bShadows, 0, 0) && 
 	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;

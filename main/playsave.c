@@ -82,7 +82,7 @@ hli highestLevels [MAXMSLIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					140	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					141	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -783,8 +783,11 @@ for (j = 0; j < 2; j++) {
 			gameStates.app.nDifficultyLevel = (int) CFReadByte (fp);
 	if (player_file_version >= 139)
 		gameOptions [j].demo.bOldFormat = (int) CFReadByte (fp);
-	if (player_file_version >= 150)
+	if (player_file_version >= 140)
 		gameOptions [j].render.cockpit.bObjectTally = (int) CFReadByte (fp);
+	if (player_file_version >= 141)
+		if (!j)
+			extraGameInfo [0].nLightRange = CFReadByte (fp);
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -1221,6 +1224,8 @@ for (j = 0; j < 2; j++) {
 		CFWriteByte (gameStates.app.nDifficultyLevel, fp);
 	CFWriteByte (gameOptions [j].demo.bOldFormat, fp);
 	CFWriteByte (gameOptions [j].render.cockpit.bObjectTally, fp);
+	if (!j)
+		CFWriteByte (extraGameInfo [0].nLightRange, fp);
 // end of D2X-XL stuff
 	}
 

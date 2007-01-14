@@ -1830,6 +1830,8 @@ extern int nDbgVertex;
 
 void ComputeStaticDynLighting ()
 {
+if (gameStates.app.bNostalgia)
+	return;
 if (gameOpts->render.bDynLighting || 
 	 !gameStates.app.bD2XLevel || 
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {

@@ -423,7 +423,7 @@ extern void ExtractShortPos(tObject *objp, tShortPos *spp, int swap_bytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs
-void clear_transientObjects(int clear_all);
+void ClearTransientObjects(int clear_all);
 
 // returns the number of a free tObject, updating HighestObject_index.
 // Generally, CreateObject() should be called to get an tObject, since it
