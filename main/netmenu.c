@@ -1558,7 +1558,7 @@ if (nNewMission < 0) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Please chose a mission");
 	goto doMenu;
 	}
-if (bNostalgia) {
+if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bDarkness = 0;
 	extraGameInfo [1].bTowFlags = 0;
 	extraGameInfo [1].bTeamDoors = 0;
