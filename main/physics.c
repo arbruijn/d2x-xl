@@ -95,24 +95,24 @@ void DoPhysicsAlignObject (tObject * objP)
 	//find tSide of tSegment that tPlayer is most alligned with
 
 	for (i=0;i<6;i++) {
-		d = VmVecDot (gameData.segs.segments [objP->position.nSegment].sides [i].normals, &objP->position.mOrient.uVec);
+		d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->position.mOrient.uVec);
 		if (d > largest_d) {largest_d = d; best_side=i;}
 		}
 
 	if (bFloorLeveling) {
 		// old way: used floor's normal as upvec
-		desiredUpVec = gameData.segs.segments [objP->position.nSegment].sides [3].normals [0];
+		desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
 	}
 	else  // new tPlayer leveling code: use normal of tSide closest to our up vec
-		if (GetNumFaces (&gameData.segs.segments [objP->position.nSegment].sides [best_side])==2) {
-			tSide *s = &gameData.segs.segments [objP->position.nSegment].sides [best_side];
+		if (GetNumFaces (&gameData.segs.segments [objP->nSegment].sides [best_side])==2) {
+			tSide *s = &gameData.segs.segments [objP->nSegment].sides [best_side];
 			desiredUpVec.p.x = (s->normals [0].p.x + s->normals [1].p.x) / 2;
 			desiredUpVec.p.y = (s->normals [0].p.y + s->normals [1].p.y) / 2;
 			desiredUpVec.p.z = (s->normals [0].p.z + s->normals [1].p.z) / 2;
 			VmVecNormalize (&desiredUpVec);
 		}
 		else
-			desiredUpVec = gameData.segs.segments [objP->position.nSegment].sides [best_side].normals [0];
+			desiredUpVec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
 
 	if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 		fixang save_delta_ang;
@@ -287,7 +287,7 @@ if ((objP->nType == OBJ_PLAYER) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
 fq.p0 = fq.p1 = &objP->position.vPos;
-fq.startSeg = objP->position.nSegment;
+fq.startSeg = objP->nSegment;
 fq.rad = objP->size;
 fq.thisObjNum = OBJ_IDX (objP);
 fq.ignoreObjList = NULL;
@@ -307,8 +307,8 @@ if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->s
 	objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * r);
 	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * r);
 	objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * r);
-	nSegment = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
-	if (nSegment != objP->position.nSegment)
+	nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+	if (nSegment != objP->nSegment)
 		RelinkObject (OBJ_IDX (objP), nSegment);
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
@@ -345,7 +345,7 @@ void DoPhysicsSim (tObject *objP)
 	fix					xMovedTime;			//how long objected moved before hit something
 	vmsVector			vSaveP0, vSaveP1;
 	tPhysicsInfo		*pi;
-	short					nOrigSegment = objP->position.nSegment;
+	short					nOrigSegment = objP->nSegment;
 	int					bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.console);
@@ -426,9 +426,9 @@ if (xDrag = objP->mType.physInfo.drag) {
 		}
 	}
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (gameData.segs.segment2s [objP->position.nSegment].special == SEGMENT_IS_WATER)
+	if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
-	else if (gameData.segs.segment2s [objP->position.nSegment].special == SEGMENT_IS_LAVA)
+	else if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_LAVA)
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -462,7 +462,7 @@ retryMove:
 	VmVecAdd (&vNewPos, &objP->position.vPos, &vFrame);
 	ignoreObjList [nIgnoreObjs] = -1;
 	fq.p0 = &objP->position.vPos;
-	fq.startSeg = objP->position.nSegment;
+	fq.startSeg = objP->nSegment;
 	fq.p1 = &vNewPos;
 	fq.rad = objP->size;
 	fq.thisObjNum = nObject;
@@ -531,18 +531,18 @@ retryMove:
 		}
 	Assert (!((fate==HIT_WALL) && ((nWallHitSeg == -1) || (nWallHitSeg > gameData.segs.nLastSegment))));
 	vSavePos = objP->position.vPos;			//save the tObject's position
-	nSaveSeg = objP->position.nSegment;
+	nSaveSeg = objP->nSegment;
 	// update tObject's position and tSegment number
 	objP->position.vPos = ipos;
-	if (iseg != objP->position.nSegment)
+	if (iseg != objP->nSegment)
 		RelinkObject (nObject, iseg);
 	//if start point not in tSegment, move tObject to center of tSegment
-	if (GetSegMasks (&objP->position.vPos, objP->position.nSegment, 0).centerMask) {	//tObject stuck
+	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {	//tObject stuck
 		vmsVector	vCenter;
 		int n = FindObjectSeg (objP);
 
 		if (n == -1) {
-			n = FindSegByPoint (&objP->last_pos, objP->position.nSegment);
+			n = FindSegByPoint (&objP->last_pos, objP->nSegment);
 			if (n == -1) {
 				objP->flags |= OF_SHOULD_BE_DEAD;
 				return;
@@ -550,7 +550,7 @@ retryMove:
 			}
 		objP->position.vPos = objP->last_pos;
 		RelinkObject (nObject, n);
-		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->position.nSegment);
+		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 		VmVecDec (&vCenter, &objP->position.vPos);
 		if (VmVecMag (&vCenter) > F1_0) {
 			VmVecNormalize (&vCenter);
@@ -570,7 +570,7 @@ retryMove:
 		if ((fate == HIT_WALL) && (VmVecDot (&vMoveNormal, &vFrame) < 0)) {		//moved backwards
 			//don't change position or xSimTime
 			objP->position.vPos = vSavePos;
-			//iseg = objP->position.nSegment;		//don't change tSegment
+			//iseg = objP->nSegment;		//don't change tSegment
 			if (nSaveSeg != iseg)
 				RelinkObject (nObject, nSaveSeg);
 			if (bDoSpeedBoost) {
@@ -636,8 +636,8 @@ retryMove:
 				objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * r);
 				objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * r);
 				objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * r);
-				nSegment = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
-				if (nSegment != objP->position.nSegment)
+				nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+				if (nSegment != objP->nSegment)
 					RelinkObject (OBJ_IDX (objP), nSegment);
 #if 0//def _DEBUG
 				if (objP->nType == OBJ_PLAYER)
@@ -775,29 +775,29 @@ retryMove:
 			  objP->mType.physInfo.thrust.p.z!=0)) {
 			vmsVector vCenter, vBump;
 			//bump tPlayer a little towards vCenter of tSegment to unstick
-			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->position.nSegment);
+			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 			//HUDMessage (0, "BUMP! %d %d", d1, d2);
 			//don't bump tPlayer toward vCenter of reactor tSegment
-			if (gameData.segs.segment2s [objP->position.nSegment].special == SEGMENT_IS_CONTROLCEN)
+			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 				VmVecNegate (&vBump);
 			VmVecScaleInc (&objP->position.vPos, &vBump, objP->size/5);
 			//if moving away from seg, might move out of seg, so update
-			if (gameData.segs.segment2s [objP->position.nSegment].special == SEGMENT_IS_CONTROLCEN)
+			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 				UpdateObjectSeg (objP);
 			}
 #endif
 		}
 
-	//Assert (check_point_in_seg (&objP->position.vPos, objP->position.nSegment, 0).centerMask==0);
+	//Assert (check_point_in_seg (&objP->position.vPos, objP->nSegment, 0).centerMask==0);
 	//if (objP->controlType == CT_FLYING)
 	if (objP->mType.physInfo.flags & PF_LEVELLING)
 		DoPhysicsAlignObject (objP);
 
 	//hack to keep tPlayer from going through closed doors
-	if ((objP->nType == OBJ_PLAYER) && (objP->position.nSegment != nOrigSegment) && 
+	if ((objP->nType == OBJ_PLAYER) && (objP->nSegment != nOrigSegment) && 
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide;
-		nSide = FindConnectedSide (gameData.segs.segments + objP->position.nSegment, gameData.segs.segments + nOrigSegment);
+		nSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nOrigSegment);
 		if (nSide != -1) {
 			if (!(WALL_IS_DOORWAY (gameData.segs.segments + nOrigSegment, nSide, NULL) & WID_FLY_FLAG)) {
 				tSide *sideP;
@@ -826,16 +826,16 @@ retryMove:
 		}
 
 	//if end point not in tSegment, move tObject to last pos, or tSegment center
-	if (GetSegMasks (&objP->position.vPos, objP->position.nSegment, 0).centerMask) {
+	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
 		if (FindObjectSeg (objP) == -1) {
 			int n;
 
-			if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->position.nSegment))!=-1) {
+			if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->nSegment))!=-1) {
 				objP->position.vPos = objP->last_pos;
 				RelinkObject (nObject, n);
 				}
 			else {
-				COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->position.nSegment);
+				COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
 				objP->position.vPos.p.x += nObject;
 				}
 			if (objP->nType == OBJ_WEAPON)

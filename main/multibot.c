@@ -502,7 +502,7 @@ multiData.msg.buf [bufP++] = (sbyte)secondary;  // More info for what he is doin
 PUT_INTEL_SHORT (multiData.msg.buf + bufP, nObject);                  
 bufP += 2; // Objnum of tObject created by gate-in action
 if (action == 3) {
-	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.objs.objects [nObject].position.nSegment); 
+	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.objs.objects [nObject].nSegment); 
 	bufP += 2; // Segment number tObject created in (for gate only)
 	}
 else 
@@ -538,7 +538,7 @@ multiData.msg.buf [bufP++] = gameData.multi.nLocalPlayer;
 hBufP = bufP++;
 multiData.msg.buf [bufP++] = delObjP->containsType; 					
 multiData.msg.buf [bufP++] = delObjP->containsId;						
-PUT_INTEL_SHORT (multiData.msg.buf + bufP, delObjP->position.nSegment);		        
+PUT_INTEL_SHORT (multiData.msg.buf + bufP, delObjP->nSegment);		        
 bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (multiData.msg.buf + bufP, &delObjP->position.vPos, sizeof (vmsVector));	
@@ -929,7 +929,7 @@ nPlayer = buf [bufP++];
 delObjP.containsCount = buf [bufP++];						
 delObjP.containsType = buf [bufP++];						
 delObjP.containsId = buf [bufP++]; 						
-delObjP.position.nSegment = GET_INTEL_SHORT (buf + bufP);            
+delObjP.nSegment = GET_INTEL_SHORT (buf + bufP);            
 bufP += 2;
 memcpy (&delObjP.position.vPos, buf+bufP, sizeof (vmsVector));      
 bufP += 12;

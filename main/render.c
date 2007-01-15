@@ -1136,7 +1136,7 @@ else {
 		max_dot = v_dot_n0;
 		}
 	//	Determine whether to detriangulate tSide: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
-	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->position.nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
+	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
 		//	The other detriangulation code doesn't deal well with badly non-planar sides.
 		fix	n0_dot_n1 = VmVecDot(normals, normals + 1);
 		if (n0_dot_n1 < Min_n0_n1_dot)
@@ -1275,8 +1275,8 @@ void renderObject_search(tObject *objP)
 		changed=1;
 
 	if (changed) {
-		if (objP->position.nSegment != -1)
-			Cursegp = gameData.segs.segments+objP->position.nSegment;
+		if (objP->nSegment != -1)
+			Cursegp = gameData.segs.segments+objP->nSegment;
 		found_seg = -(OBJ_IDX (objP)+1);
 	}
 }
@@ -2163,7 +2163,7 @@ void BuildObjectLists(int n_segs)
 				int new_segnum, did_migrate, list_pos;
 				objP = gameData.objs.objects+nObject;
 
-				Assert( objP->position.nSegment == nSegment);
+				Assert( objP->nSegment == nSegment);
 
 				if (objP->flags & OF_ATTACHED)
 					continue;		//ignore this tObject
@@ -2238,7 +2238,7 @@ void BuildObjectLists(int n_segs)
 								int nObject = sortList [ii].nObject;
 
 								fprintf(tfile, "Obj %3d  Type = %2d  Id = %2d  Dist = %08x  Segnum = %3d\n", 
-									nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, sortList [ii].dist, gameData.objs.objects [nObject].position.nSegment);
+									nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, sortList [ii].dist, gameData.objs.objects [nObject].nSegment);
 							}
 							fclose(tfile);
 						}
@@ -2582,8 +2582,8 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	else if ((objP->nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->nType == OBJ_ROBOT))) {
 		for (j = nRenderSegs; j--;) {
-			fakePlayerPos.position.nSegment = nRenderList [j];
-			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.position.nSegment);
+			fakePlayerPos.nSegment = nRenderList [j];
+			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
 				RenderObject (objP, 0);
@@ -2686,12 +2686,12 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	if (!bObjectRendered [h])
 		continue;
-	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->position.nSegment];
+	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &psl->vPos, objP->position.nSegment))
+		if (!CanSeePoint (objP, &objP->position.vPos, &psl->vPos, objP->nSegment))
 			continue;
 		VmVecSub (&vLightDir, &objP->position.vPos, &psl->vPos);
 		VmVecNormalize (&vLightDir);
@@ -2732,13 +2732,13 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
-	*pnStartSeg = gameData.objs.viewer->position.nSegment;
+	*pnStartSeg = gameData.objs.viewer->nSegment;
 	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 	}
 else {
-	*pnStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->position.nSegment);
+	*pnStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
 	if (*pnStartSeg == -1)
-		*pnStartSeg = gameData.objs.viewer->position.nSegment;
+		*pnStartSeg = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
@@ -3054,7 +3054,7 @@ void BuildSegList (void)
 	tSegment	*segP;
 
 memset (segDist, 0xFF, sizeof (segDist));
-segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment;
+segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
 i = j = 0;
 segDist [segNum] = 0;
 segList [j++] = segNum;
@@ -3488,14 +3488,16 @@ for (i = 0; i < nRenderSegs;i++) {
 
 void RotateSideNorms (void)
 {
-	int		i, j;
-	tSegment	*segP;
-	tSide		*sideP;
+	int			i, j;
+	tSegment		*segP = gameData.segs.segments;
+	tSegment2	*seg2P = gameData.segs.segment2s;
+	tSide			*sideP;
+	tSide2		*side2P;
 
-for (i = gameData.segs.nSegments, segP = gameData.segs.segments; i; i--, segP++)
-	for (j = 6, sideP = segP->sides; j; j--, sideP++) {
-		G3RotatePoint (sideP->rotNorms, sideP->normals, 0);
-		G3RotatePoint (sideP->rotNorms + 1, sideP->normals + 1, 0);
+for (i = gameData.segs.nSegments; i; i--, segP++, seg2P++)
+	for (j = 6, sideP = segP->sides, side2P = seg2P->sides; j; j--, sideP++, side2P++) {
+		G3RotatePoint (side2P->rotNorms, sideP->normals, 0);
+		G3RotatePoint (side2P->rotNorms + 1, sideP->normals + 1, 0);
 		}
 }
 

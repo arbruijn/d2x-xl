@@ -280,6 +280,7 @@ typedef struct tNetworkData {
 	int					nSendObjNum;   
 	int					bPlayerAdded;   
 	int					bSendObjectMode; 
+	int					bD2XData;
 	tSequencePacket	playerRejoining;
 	fix					nLastPacketTime [MAX_PLAYERS];
 	int					bPacketUrgent;

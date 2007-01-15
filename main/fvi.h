@@ -81,12 +81,12 @@ int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data);
 void FindHitPointUV(fix *u,fix *v,fix *l, vmsVector *pnt,tSegment *seg,int nSide,int facenum);
 
 //Returns true if the tObject is through any walls
-int ObjectIntersectsWall(tObject *objp);
+int ObjectIntersectsWall (tObject *objP);
 
 int PixelTranspType (short nTexture, short nOrient, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
-int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, tSegment *segP, 
-							int nSide, int iFace, int nv, fix rad);
+int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
+							short nSegment, short nSide, short iFace, int nv, fix rad);
 
 int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
 

@@ -101,7 +101,7 @@ void CreateThrusterFlames (tObject *objP)
 VmVecNegate (&dir);
 if (nThrusters < 0) {
 	nThrusters = 
-		CreateSmoke (&objP->position.vPos, &dir, objP->position.nSegment, 2, -2000, 20000,
+		CreateSmoke (&objP->position.vPos, &dir, objP->nSegment, 2, -2000, 20000,
 						 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
 						 2, -2000, PLR_PART_SPEED * 50, 5, OBJ_IDX (objP));
 	gameData.smoke.objects [OBJ_IDX (objP)] = nThrusters;
@@ -198,7 +198,7 @@ else {
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating tPlayer smoke\n");
 			h = gameData.smoke.objects [j] = 
-				CreateSmoke (&objP->position.vPos, NULL, objP->position.nSegment, 2, nParts, nScale,
+				CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 2, nParts, nScale,
 								 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
 								 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j);
 			}
@@ -260,7 +260,7 @@ if (nParts > 0) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [2]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [2], nScale);
 			}
-		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->position.nSegment, 1, nParts, nScale,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 																gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
 																1, OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
 		}
@@ -298,7 +298,7 @@ if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->position.nSegment, 1, nParts, 1.0,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 1.0,
 																-1, 1, OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
 		}
 	else {
@@ -345,7 +345,7 @@ if (nParts) {
 		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [3]);
 		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
 		}
-	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->position.nSegment, 1, nParts, nScale,
+	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 															gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
 															1, (gameOpts->render.smoke.nLife [3] + 1) * MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
 	}
@@ -373,7 +373,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating missile %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->position.nSegment, 1, nParts / 2, 1.5,
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts / 2, 1.5,
 																-1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);

@@ -102,28 +102,28 @@ int ij_table [3][2] =        {
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToFace (vmsVector *checkP, tSide *s, int iFace, int nv, int *vertList)
+uint CheckPointToFace (vmsVector *checkP, short nSegment, short nSide, short iFace, int nv, int *vertList)
 {
-	vmsVector norm;
+	vmsVector vNormal;
 	vmsVector t;
 	int biggest;
 ///
-	int i, j, nEdge;
-	uint edgemask;
-	fix check_i, check_j;
-	vmsVector *v0, *v1;
-	vec2d vEdge, vCheck;
-	fix d;
+	int 			i, j, nEdge;
+	uint 			edgemask;
+	fix 			check_i, check_j;
+	vmsVector	*v0, *v1;
+	vec2d 		vEdge, vCheck;
+	fix 			d;
 
 if (gameStates.render.bRendering)
-	norm = s->rotNorms [iFace];
+	vNormal = gameData.segs.segment2s [nSegment].sides [nSide].rotNorms [iFace];
 else
-	norm = s->normals [iFace];
+	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
 //now do 2d check to see if point is in tSide
 //project polygon onto plane by finding largest component of normal
-t.p.x = labs (norm.v [0]); 
-t.p.y = labs (norm.v [1]); 
-t.p.z = labs (norm.v [2]);
+t.p.x = labs (vNormal.v [0]); 
+t.p.y = labs (vNormal.v [1]); 
+t.p.z = labs (vNormal.v [2]);
 
 if (t.p.x > t.p.y) 
 	if (t.p.x > t.p.z) 
@@ -134,7 +134,7 @@ if (t.p.x > t.p.y)
 		biggest = 1; 
 	else 
 		biggest=2;
-if (norm.v [biggest] > 0) {
+if (vNormal.v [biggest] > 0) {
 	i = ij_table [biggest][0];
 	j = ij_table [biggest][1];
 	}
@@ -167,7 +167,8 @@ return edgemask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace (vmsVector *pnt, tSide *s, int iFace, int nv, fix rad, int *vertList)
+int CheckSphereToFace (vmsVector *pnt, short nSegment, short nSide, short iFace, int nv, 
+							  fix rad, int *vertList)
 {
 	vmsVector	checkP = *pnt;
 	vmsVector	vEdge, vCheck;            //this time, real 3d vectors
@@ -179,7 +180,7 @@ int CheckSphereToFace (vmsVector *pnt, tSide *s, int iFace, int nv, fix rad, int
 	uint			edgemask;
 
 //now do 2d check to see if point is in side
-edgemask = CheckPointToFace (pnt, s, iFace, nv, vertList);
+edgemask = CheckPointToFace (pnt, nSegment, nSide, iFace, nv, vertList);
 //we've gone through all the sides, are we inside?
 if (edgemask == 0)
 	return IT_FACE;
@@ -225,19 +226,21 @@ return IT_NONE;
 //point on plane, whether or not line intersects tSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a point field
-int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, tSegment *segP, int nSide, int iFace, int nv, fix rad)
+int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
+							short nSegment, short nSide, short iFace, int nv, fix rad)
 {
 	vmsVector	checkP, vNormal, v1;
+	tSegment		*segP = gameData.segs.segments + nSegment;
 	tSide			*sideP = segP->sides + nSide;
 	int			vertexList [6];
 	int			pli, nFaces, nVertex;
 
-if (gameStates.render.bRendering)
-	vNormal = sideP->rotNorms [iFace];
-else
-	vNormal = sideP->normals [iFace];
-if ((SEG_IDX (segP))==-1)
+if (nSegment == -1)
 	Error ("nSegment == -1 in CheckLineToFace()");
+if (gameStates.render.bRendering)
+	vNormal = gameData.segs.segment2s [nSegment].sides [nSide].rotNorms [iFace];
+else
+	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
 CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), nSide);
 //use lowest point number
 nVertex = vertexList [0];
@@ -272,7 +275,7 @@ checkP = *newP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
 	VmVecScaleInc (&checkP, &vNormal, -rad);
-return CheckSphereToFace (&checkP, sideP, iFace, nv, rad, vertexList);
+return CheckSphereToFace (&checkP, nSegment, nSide, iFace, nv, rad, vertexList);
 }
 
 //	-----------------------------------------------------------------------------
@@ -348,8 +351,8 @@ int bSimpleFVI = 0;
 //this version is for when the start and end positions both poke through
 //the plane of a tSide.  In this case, we must do checks against the edge
 //of faces
-int SpecialCheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, tSegment *segP, 
-									 int nSide, int iFace, int nv, fix rad)
+int SpecialCheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, short nSegment, 
+									 short nSide, int iFace, int nv, fix rad)
 {
 	vmsVector	move_vec;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
@@ -358,12 +361,13 @@ int SpecialCheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, tSegm
 	int			h, num_faces, nEdge;
 	uint			edgemask;
 	vmsVector	*edge_v0, *edge_v1, edge_vec;
+	tSegment		*segP = gameData.segs.segments + nSegment;
 	tSide			*sideP = segP->sides + nSide;
 	vmsVector	closest_point_edge, closest_point_move;
 
 if (bSimpleFVI) {
 	//LogErr ("      CheckLineToFace ...");
-	h = CheckLineToFace (newP, p0, p1, segP, nSide, iFace, nv, rad);
+	h = CheckLineToFace (newP, p0, p1, nSegment, nSide, iFace, nv, rad);
 	//LogErr ("done\n");
 	return h;
 	}
@@ -371,14 +375,14 @@ if (bSimpleFVI) {
 if ((SEG_IDX (segP)) == -1)
 	Error ("nSegment == -1 in SpecialCheckLineToFace()");
 //LogErr ("      CreateAbsVertexLists ...");
-CreateAbsVertexLists (&num_faces, vertList, SEG_IDX (segP), nSide);
+CreateAbsVertexLists (&num_faces, vertList, nSegment, nSide);
 //LogErr ("done\n");
 VmVecSub (&move_vec, p1, p0);
 //figure out which edge(sideP) to check against
 //LogErr ("      CheckPointToFace ...\n");
-if (!(edgemask = CheckPointToFace (p0, sideP, iFace, nv, vertList))) {
+if (!(edgemask = CheckPointToFace (p0, nSegment, nSide, iFace, nv, vertList))) {
 	//LogErr ("      CheckLineToFace ...");
-	return CheckLineToFace (newP, p0, p1, segP, nSide, iFace, nv, rad);
+	return CheckLineToFace (newP, p0, p1, nSegment, nSide, iFace, nv, rad);
 	//LogErr ("done\n");
 	}
 for (nEdge = 0; !(edgemask & 1); edgemask >>= 1, nEdge++)
@@ -621,7 +625,7 @@ int ObjectInList(short nObject, short *obj_list)
 
 #define FVI_NEWCODE 2
 
-int CheckTransWall (vmsVector *pnt, tSegment *seg, short nSide, short iFace);
+int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
 
 int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
 					 fix rad, short nThisObject, short *ignoreObjList, int flags, short *segList, 
@@ -757,30 +761,30 @@ startMask = GetSegMasks (p0, nStartSeg, (p1 == NULL) ? 0 : rad).faceMask;
 masks = GetSegMasks (p1, nStartSeg, rad);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
-if (endMask = masks.faceMask) { //on the back of at least one face
-	short nSide, face, bit;
+if (endMask = masks.faceMask) { //on the back of at least one iFace
+	short nSide, iFace, bit;
 
-	//for each face we are on the back of, check if intersected
+	//for each iFace we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
 		int nFaces = GetNumFaces (segP->sides + nSide);
 		if (!nFaces)
 			nFaces = 1;
 		// commented out by mk on 02/13/94:: if ((nFaces=segP->sides [nSide].nFaces)==0) nFaces=1;
-		for (face = 0; face < 2; face++, bit <<= 1) {
-			if (endMask & bit) {            //on the back of this face
-				int nFaceHitType;      //in what way did we hit the face?
+		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
+			if (endMask & bit) {            //on the back of this iFace
+				int nFaceHitType;      //in what way did we hit the iFace?
 				if (segP->children [nSide] == entrySegP)
 					continue;		//don't go back through entry nSide
 				//did we go through this wall/door?
 				if (startMask & bit)	{	//start was also though.  Do extra check
 					//LogErr ("   SpecialCheckLineToFace...");
-					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, segP, nSide, face, 5 - nFaces, rad);
+					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad);
 					//LogErr ("done\n");
 					}
 				else {
 					//NOTE LINK TO ABOVE!!
 					//LogErr ("   CheckLineToFace...");
-					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, segP, nSide, face, 5 - nFaces, rad);
+					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad);
 					//LogErr ("done\n");
 					}
 				//LogErr ("   nFaceHitType = %d\n", nFaceHitType);
@@ -803,7 +807,7 @@ if (endMask = masks.faceMask) { //on the back of at least one face
 
 					if ((widFlag & WID_FLY_FLAG) ||
 						 (((widFlag & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, face))))) {
+						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, iFace))))) {
 
 						int			i, nNewSeg, subHitType;
 						short			subHitSeg, nSaveHitObj = fviHitData.nObject;
@@ -883,7 +887,7 @@ if (endMask = masks.faceMask) { //on the back of at least one face
 							dMin = d;
 							vClosestHitPoint = vHitPoint;
 							nHitType = HIT_WALL;
-							fviHitData.vNormal = segP->sides [nSide].normals [face];	
+							fviHitData.vNormal = segP->sides [nSide].normals [iFace];	
 							if (!GetSegMasks (&vHitPoint, nStartSeg, rad).centerMask)
 								nHitSegment = nStartSeg;             //hit in this tSegment
 							else
@@ -1108,46 +1112,41 @@ return nTranspType;
 //	-----------------------------------------------------------------------------
 //new function for Mike
 //note: nSegsVisited must be set to zero before this is called
-int SphereIntersectsWall(vmsVector *pnt, int nSegment, fix rad)
+int SphereIntersectsWall (vmsVector *vPoint, short nSegment, fix rad)
 {
-	int faceMask;
-	tSegment *seg;
+	int		faceMask;
+	tSegment *segP;
 
+if (nSegment == -1) {
+	Error("nSegment == -1 in SphereIntersectsWall()");
+	return 0;
+	}
 segsVisited [nSegsVisited++] = nSegment;
-
-faceMask = GetSegMasks(pnt, nSegment, rad).faceMask;
-
-seg = gameData.segs.segments + nSegment;
-
+faceMask = GetSegMasks(vPoint, nSegment, rad).faceMask;
+segP = gameData.segs.segments + nSegment;
 if (faceMask != 0) {				//on the back of at least one face
-	int tSide, bit, face, child, i;
+	int nSide, bit, iFace, nChild, i;
 	int nFaceHitType;      //in what way did we hit the face?
-	int num_faces, vertList [6];
+	int nFaces, vertList [6];
 
 //for each face we are on the back of, check if intersected
-	for (tSide = 0, bit = 1; (tSide < 6) && (faceMask >= bit); tSide++) {
-		for (face = 0; face < 2; face++, bit <<= 1) {
-			if (faceMask & bit) {            //on the back of this face
+	for (nSide = 0, bit = 1; (nSide < 6) && (faceMask >= bit); nSide++) {
+		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
+			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this wall/door?
-				if ((SEG_IDX (seg))==-1) {
-					Error("nSegment == -1 in SphereIntersectsWall()");
-					return 0;
-					}
-				CreateAbsVertexLists(&num_faces, vertList, SEG_IDX (seg), tSide);
-				nFaceHitType = CheckSphereToFace(pnt, &seg->sides [tSide], 
-									face, ((num_faces==1)?4:3), rad, vertList);
+				CreateAbsVertexLists (&nFaces, vertList, SEG_IDX (segP), nSide);
+				nFaceHitType = CheckSphereToFace (vPoint, nSegment, nSide, iFace, 
+															 (nFaces == 1) ? 4 : 3, rad, vertList);
 				if (nFaceHitType) {            //through this wall/door
-					//if what we have hit is a door, check the adjoining seg
-					child = seg->children [tSide];
-					for (i = 0; (i < nSegsVisited) && (child != segsVisited [i]); i++)
+					//if what we have hit is a door, check the adjoining segP
+					nChild = segP->children [nSide];
+					for (i = 0; (i < nSegsVisited) && (nChild != segsVisited [i]); i++)
 						;
 					if (i == nSegsVisited) {                //haven't visited here yet
-						if (!IS_CHILD(child))
+						if (!IS_CHILD (nChild))
 							return 1;
-						else {
-							if (SphereIntersectsWall(pnt, child, rad))
-								return 1;
-							}
+						if (SphereIntersectsWall (vPoint, nChild, rad))
+							return 1;
 						}
 					}
 				}
@@ -1161,7 +1160,7 @@ return 0;
 //Returns true if the tObject is through any walls
 int ObjectIntersectsWall(tObject *objP)
 {
-return SphereIntersectsWall(&objP->position.vPos, objP->position.nSegment, objP->size);
+return SphereIntersectsWall(&objP->position.vPos, objP->nSegment, objP->size);
 }
 
 //------------------------------------------------------------------------------
@@ -1180,9 +1179,9 @@ fq.rad = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
 if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
 else
-	fq.startSeg = objP ? objP->position.nSegment : nSegment;
+	fq.startSeg = objP ? objP->nSegment : nSegment;
 fq.ignoreObjList = NULL;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return nHitType != HIT_WALL;

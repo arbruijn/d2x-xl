@@ -578,7 +578,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 
 	if (!forever)	{
 		// Hack to keep sounds from building up...
-		DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, &gameData.objs.objects[nObject].position.vPos, gameData.objs.objects[nObject].position.nSegment, maxVolume,&volume, &pan, maxDistance);
+		DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, &gameData.objs.objects[nObject].position.vPos, gameData.objs.objects[nObject].nSegment, maxVolume,&volume, &pan, maxDistance);
 		DigiPlaySample3D(orgSoundnum, pan, volume, 0);
 		return -1;
 		}
@@ -605,8 +605,8 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 	SoundObjects[i].nSound = nSound;
 
 	objP = &gameData.objs.objects[SoundObjects[i].lo_objnum];
-	DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, 
-                       &objP->position.vPos, objP->position.nSegment, SoundObjects[i].maxVolume,
+	DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
+                       &objP->position.vPos, objP->nSegment, SoundObjects[i].maxVolume,
                        &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance);
 
 	if (!forever || SoundObjects[i].volume >= MIN_VOLUME)
@@ -640,7 +640,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 
 	if (!forever)	{
 		// Hack to keep sounds from building up...
-		DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, pos, nSegment, maxVolume, &volume, &pan, maxDistance);
+		DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, pos, nSegment, maxVolume, &volume, &pan, maxDistance);
 		DigiPlaySample3D(orgSoundnum, pan, volume, 0);
 		return -1;
 	}
@@ -667,7 +667,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 	SoundObjects[i].maxDistance = maxDistance;
 	SoundObjects[i].volume = 0;
 	SoundObjects[i].pan = 0;
-	DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, 
+	DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 					   &SoundObjects[i].lp_position, SoundObjects[i].lp_segnum,
 					   SoundObjects[i].maxVolume,
                        &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance);
@@ -767,7 +767,7 @@ void DigiSyncSounds()
 			}			
 		
 			if (SoundObjects[i].flags & SOF_LINK_TO_POS)	{
-				DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, 
+				DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 								&SoundObjects[i].lp_position, SoundObjects[i].lp_segnum,
 								SoundObjects[i].maxVolume,
                                 &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance);
@@ -787,8 +787,8 @@ void DigiSyncSounds()
 					SoundObjects[i].flags = 0;	// Mark as dead, so some other sound can use this sound
 					continue;		// Go on to next sound...
 				} else {
-					DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->position.nSegment, 
-	                                &objP->position.vPos, objP->position.nSegment, SoundObjects[i].maxVolume,
+					DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
+	                                &objP->position.vPos, objP->nSegment, SoundObjects[i].maxVolume,
                                    &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance);
 				}
 			}

@@ -118,7 +118,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  * 
  * Revision 1.164  1994/06/15  15:42:40  mike
- * Initialize static_light field in new segments.
+ * Initialize xAvgSegLight field in new segments.
  * 
  * Revision 1.163  1994/06/13  17:49:19  mike
  * Fix bug in med_validate_side which was toasting lighting for removable walls.
@@ -166,7 +166,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "segment.h"
-// #include "segment2.h"
+// #include "tSegment2.h"
 #include "editor.h"
 #include "error.h"
 #include "object.h"
@@ -544,7 +544,7 @@ int get_free_segment_number(void)
 	int	nSegment;
 
 	for (nSegment=0; nSegment<MAX_SEGMENTS; nSegment++)
-		if (gameData.segs.segments[nSegment].position.nSegment == -1) {
+		if (gameData.segs.segments[nSegment].nSegment == -1) {
 			gameData.segs.nSegments++;
 			if (nSegment > gameData.segs.nLastSegment)
 				gameData.segs.nLastSegment = nSegment;
@@ -896,7 +896,7 @@ void change_vertex_occurrences(int dest, int src)
 
 	// now scan all segments, changing occurrences of src to dest
 	for (s=0; s<=gameData.segs.nLastSegment; s++)
-		if (gameData.segs.segments[s].position.nSegment != -1)
+		if (gameData.segs.segments[s].nSegment != -1)
 			for (v=0; v<MAX_VERTICES_PER_SEGMENT; v++)
 				if (gameData.segs.segments[s].verts[v] == src)
 					gameData.segs.segments[s].verts[v] = dest;
@@ -944,9 +944,9 @@ void compress_segments(void)
 	seg = gameData.segs.nLastSegment;
 
 	for (hole=0; hole < seg; hole++)
-		if (gameData.segs.segments[hole].position.nSegment == -1) {
+		if (gameData.segs.segments[hole].nSegment == -1) {
 			// found an unused tSegment which is a hole if a used tSegment follows (not necessarily immediately) it.
-			for ( ; (seg>hole) && (gameData.segs.segments[seg].position.nSegment == -1); seg--)
+			for ( ; (seg>hole) && (gameData.segs.segments[seg].nSegment == -1); seg--)
 				;
 
 			if (seg > hole) {
@@ -957,7 +957,7 @@ void compress_segments(void)
 				// Ok, hole is the index of a hole, seg is the index of a tSegment which follows it.
 				// Copy seg into hole, update pointers to it, update Cursegp, Markedsegp if necessary.
 				gameData.segs.segments[hole] = gameData.segs.segments[seg];
-				gameData.segs.segments[seg].position.nSegment = -1;
+				gameData.segs.segments[seg].nSegment = -1;
 
 				if (Cursegp == &gameData.segs.segments[seg])
 					Cursegp = &gameData.segs.segments[hole];
@@ -973,17 +973,17 @@ void compress_segments(void)
 
 				// Fix walls
 				for (w=0;w<gameData.walls.nWalls;w++)
-					if (gameData.walls.walls[w].position.nSegment == seg)
-						gameData.walls.walls[w].position.nSegment = hole;
+					if (gameData.walls.walls[w].nSegment == seg)
+						gameData.walls.walls[w].nSegment = hole;
 
 				// Fix fuelcenters, robotcens, and triggers... added 2/1/95 -Yuan
 				for (f=0;f<gameData.matCens.nFuelCenters;f++)
-					if (gameData.matCens.fuelCenters[f].position.nSegment == seg)
-						gameData.matCens.fuelCenters[f].position.nSegment = hole;
+					if (gameData.matCens.fuelCenters[f].nSegment == seg)
+						gameData.matCens.fuelCenters[f].nSegment = hole;
 
 				for (f=0;f<gameData.matCens.nRobotCenters;f++)
-					if (gameData.matCens.robotCenters[f].position.nSegment == seg)
-						gameData.matCens.robotCenters[f].position.nSegment = hole;
+					if (gameData.matCens.robotCenters[f].nSegment == seg)
+						gameData.matCens.robotCenters[f].nSegment = hole;
 
 				for (t=0;t<gameData.trigs.nTriggers;t++)
 					for (l=0;l<gameData.trigs.triggers[t].nLinks;l++)
@@ -1007,8 +1007,8 @@ void compress_segments(void)
 
 				//Update tObject tSegment pointers
 				for (nObject = sp->objects; nObject != -1; nObject = gameData.objs.objects[nObject].next) {
-					Assert(gameData.objs.objects[nObject].position.nSegment == seg);
-					gameData.objs.objects[nObject].position.nSegment = hole;
+					Assert(gameData.objs.objects[nObject].nSegment == seg);
+					gameData.objs.objects[nObject].nSegment = hole;
 				}
 
 				seg--;
@@ -1091,7 +1091,7 @@ int med_attach_segment_rotated(tSegment *destseg, tSegment *newseg, int destside
 {
 	char			*dvp;
 	tSegment		*nsp;
-	segment2	*nsp2;
+	tSegment2	*nsp2;
 	int			tSide,v;
 	vmsMatrix	rotmat,rotmat1,rotmat2,rotmat3,rotmat4;
 	vmsVector	vr,vc,tvs[4],xlate_vec;
@@ -1288,7 +1288,7 @@ void set_vertex_counts(void)
 
 	// Count number of occurrences of each vertex.
 	for (s=0; s<=gameData.segs.nLastSegment; s++)
-		if (gameData.segs.segments[s].position.nSegment != -1)
+		if (gameData.segs.segments[s].nSegment != -1)
 			for (v=0; v<MAX_VERTICES_PER_SEGMENT; v++) {
 				if (!Vertex_active[gameData.segs.segments[s].verts[v]])
 					gameData.segs.nVertices++;
@@ -1389,7 +1389,7 @@ int med_delete_segment(tSegment *sp)
 	// If we deleted something which was not connected to anything, must now select a new current tSegment.
 	if (Cursegp == sp)
 		for (s=0; s<MAX_SEGMENTS; s++)
-			if ((gameData.segs.segments[s].position.nSegment != -1) && (s!=nSegment) ) {
+			if ((gameData.segs.segments[s].nSegment != -1) && (s!=nSegment) ) {
 				Cursegp = &gameData.segs.segments[s];
 				med_create_new_segment_from_cursegp();
 		   	break;
@@ -1652,7 +1652,7 @@ int med_form_joint(tSegment *seg1, int side1, tSegment *seg2, int side2)
 
 	for (v=0; v<4; v++)
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
-			if (gameData.segs.segments[s].position.nSegment != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 				for (sv=0; sv<MAX_VERTICES_PER_SEGMENT; sv++)
 					if (gameData.segs.segments[s].verts[sv] == lost_vertices[v]) {
 						gameData.segs.segments[s].verts[sv] = remap_vertices[v];
@@ -1687,7 +1687,7 @@ int med_form_joint(tSegment *seg1, int side1, tSegment *seg2, int side2)
 //--{
 //--int seg,tSide;
 //--for (seg=0; seg<MAX_SEGMENTS; seg++)
-//--	if (gameData.segs.segments[seg].position.nSegment != -1)
+//--	if (gameData.segs.segments[seg].nSegment != -1)
 //--		for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 //--			if (gameData.segs.segments[seg].children[tSide] == -1) {
 //--				if (gameData.segs.segments[seg].sides[tSide].num_faces == 0) {
@@ -1786,7 +1786,7 @@ void med_create_segment(tSegment *sp,fix cx, fix cy, fix cz, fix length, fix wid
 {
 	int			i,f;
 	vmsVector	v0,v1,cv;
-	segment2 *sp2;
+	tSegment2 *sp2;
 
 	gameData.segs.nSegments++;
 
@@ -1834,7 +1834,7 @@ void med_create_segment(tSegment *sp,fix cx, fix cy, fix cz, fix length, fix wid
 	// Assume nothing special about this tSegment
 	sp2->special = 0;
 	sp2->value = 0;
-	sp2->static_light = 0;
+	sp2->xAvgSegLight = 0;
 	sp2->nMatCen = -1;
 
 	copy_tmaps_to_segment(sp, &New_segment);
@@ -1849,7 +1849,7 @@ void med_create_new_segment(vmsVector *scale)
 	int			s,t;
 	vmsVector	v0;
 	tSegment		*sp = &New_segment;
-	segment2 *sp2;
+	tSegment2 *sp2;
 
 	fix			length,width,height;
 
@@ -1893,7 +1893,7 @@ void med_create_new_segment(vmsVector *scale)
 	// Assume nothing special about this tSegment
 	sp2->special = 0;
 	sp2->value = 0;
-	sp2->static_light = 0;
+	sp2->xAvgSegLight = 0;
 	sp2->nMatCen = -1;
 }
 
@@ -1925,7 +1925,7 @@ void init_all_vertices(void)
 		Vertex_active[v] = 0;
 
 	for (s=0; s<MAX_SEGMENTS; s++)
-		gameData.segs.segments[s].position.nSegment = -1;
+		gameData.segs.segments[s].nSegment = -1;
 
 }
 

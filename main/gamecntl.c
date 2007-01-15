@@ -312,7 +312,7 @@ if (gameData.app.nGlobalMissileFiringCount < 0)
 	gameData.app.nGlobalMissileFiringCount = 0;
 //	Drop proximity bombs.
 if (Controls.drop_bombDownCount) {
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->position.nSegment].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 		Controls.drop_bombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
@@ -951,7 +951,7 @@ dump_door_debugging_info()
 	VmVecScaleAdd(&new_pos, &objP->position.vPos, &objP->position.mOrient.fVec, i2f(100);
 
 	fq.p0						= &objP->position.vPos;
-	fq.startseg				= objP->position.nSegment;
+	fq.startseg				= objP->nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
 	fq.thisobjnum			= gameData.multi.players [gameData.multi.nLocalPlayer].nObject;

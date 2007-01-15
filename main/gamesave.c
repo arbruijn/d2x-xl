@@ -347,7 +347,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 	objP->renderType    = CFReadByte(f);
 	objP->flags          = CFReadByte(f);
 
-	objP->position.nSegment         = CFReadShort(f);
+	objP->nSegment         = CFReadShort(f);
 	objP->attachedObj   = -1;
 
 	CFReadVector(&objP->position.vPos,f);
@@ -555,7 +555,7 @@ void writeObject(tObject *objP,FILE *f)
 	gs_write_byte(objP->renderType,f);
 	gs_write_byte(objP->flags,f);
 
-	gs_write_short(objP->position.nSegment,f);
+	gs_write_short(objP->nSegment,f);
 
 	gr_write_vector(&objP->position.vPos,f);
 	gs_write_matrix(&objP->position.mOrient,f);
@@ -1262,11 +1262,11 @@ ResetObjects(gameFileInfo.objects.count);
 for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
 	if (gameData.objs.objects[i].nType != OBJ_NONE) {
-		int objsegnum = gameData.objs.objects[i].position.nSegment;
+		int objsegnum = gameData.objs.objects[i].nSegment;
 		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus tObject
 			gameData.objs.objects[i].nType = OBJ_NONE;
 		else {
-			gameData.objs.objects[i].position.nSegment = -1;			//avoid Assert()
+			gameData.objs.objects[i].nSegment = -1;			//avoid Assert()
 			LinkObject(i,objsegnum);
 		}
 	}
@@ -1902,9 +1902,9 @@ int saveLevel_sub(char * filename, int compiled_version)
 
 	//make sure tPlayer is in a tSegment
 	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].nObject]) == 0) {
-		if (gameData.objs.console->position.nSegment > gameData.segs.nLastSegment)
-			gameData.objs.console->position.nSegment = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->position.nSegment]);
+		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
+			gameData.objs.console->nSegment = 0;
+		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
 	}
  
 	FixObjectSegs();
@@ -2011,8 +2011,8 @@ void dump_mine_info(void)
 			int	vertnum;
 			tSide	*sidep = &gameData.segs.segments[nSegment].sides[nSide];
 
-			if (gameData.segs.segment2s[nSegment].static_light > max_sl)
-				max_sl = gameData.segs.segment2s[nSegment].static_light;
+			if (gameData.segs.segment2s[nSegment].xAvgSegLight > max_sl)
+				max_sl = gameData.segs.segment2s[nSegment].xAvgSegLight;
 
 			for (vertnum=0; vertnum<4; vertnum++) {
 				if (sidep->uvls[vertnum].u < min_u)

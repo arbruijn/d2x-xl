@@ -11,15 +11,15 @@ static char rcsid[] = "$Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 
 #ifndef FAST_FILE_IO
 /*
- * reads a segment2 structure from a CFILE
+ * reads a tSegment2 structure from a CFILE
  */
-void segment2_read(segment2 *s2, CFILE *fp)
+void segment2_read(tSegment2 *s2, CFILE *fp)
 {
 	s2->special = CFReadByte (fp);
 	s2->nMatCen = CFReadByte (fp);
 	s2->value = CFReadByte (fp);
 	s2->s2Flags = CFReadByte (fp);
-	s2->static_light = CFReadFix (fp);
+	s2->xAvgSegLight = CFReadFix (fp);
 }
 
 /*

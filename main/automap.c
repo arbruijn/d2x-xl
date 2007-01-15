@@ -280,7 +280,7 @@ gameData.marker.point [nMarker] = playerP->position.vPos;
 if (gameData.marker.objects [nMarker] != -1)
 	ReleaseObject (gameData.marker.objects[nMarker]);
 gameData.marker.objects[nMarker] = 
-	DropMarkerObject (&playerP->position.vPos, (short) playerP->position.nSegment, &playerP->position.mOrient, nMarker);
+	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendDropMarker (gameData.multi.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage[nMarker]);
 }
@@ -303,7 +303,7 @@ void DropBuddyMarker (tObject *objP)
 	if (gameData.marker.objects[nMarker] != -1 && gameData.marker.objects[nMarker] !=0)
 		ReleaseObject (gameData.marker.objects[nMarker]);
 
-	gameData.marker.objects[nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->position.nSegment, &objP->position.mOrient, nMarker);
+	gameData.marker.objects[nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, nMarker);
 
 }
 
@@ -620,7 +620,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_ROBOT:
 				if (
 #if 1//ndef _DEBUG
-					 bAutomapVisited[objP->position.nSegment] && 
+					 bAutomapVisited[objP->nSegment] && 
 #endif
 					 EGI_FLAG (bRobotsOnRadar, 0, 0)) {
 					static int c = 0;
@@ -648,7 +648,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			case OBJ_POWERUP:
 				if (EGI_FLAG (bPowerUpsOnRadar, 0, 0) && 
 					 !(gameData.app.nGameMode & GM_MULTI) && 
-					 (gameStates.render.bAllVisited || bAutomapVisited[objP->position.nSegment]))	{
+					 (gameStates.render.bAllVisited || bAutomapVisited[objP->nSegment]))	{
 					//if ( (objP->id==POW_KEY_RED) || (objP->id==POW_KEY_BLUE) || (objP->id==POW_KEY_GOLD))	
 					{
 						switch (objP->id) {
@@ -903,7 +903,7 @@ pvTAngles->b = 0;
 amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
-//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.nSegment
+//Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
 if (bRadar) {
 #ifdef RELEASE
 	if (! (gameData.app.nGameMode & GM_MULTI))
@@ -914,7 +914,7 @@ if (bRadar) {
 *pnSegmentLimit =
 *pnMaxSegsAway = 
 	SetSegmentDepths (
-		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.nSegment, 
+		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
 		bRadar ? bAutomapVisited : bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 #ifdef RELEASE
@@ -1006,7 +1006,7 @@ while (c = KeyInKey ()) {
 				bAutomapVisited[i] = 1;
 			AutomapBuildEdgeList ();
 			*pnSegmentLimit = 
-			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment, bAutomapVisited);
+			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, bAutomapVisited);
 			AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 			}
 			break;
@@ -1530,7 +1530,7 @@ if (IS_WALL (wn = WallNumP (seg, sn)))	{
 		}
 	}
 
-if (nSegment == gameData.multi.playerInit[gameData.multi.nLocalPlayer].position.nSegment)
+if (nSegment == gameData.multi.playerInit[gameData.multi.nLocalPlayer].nSegment)
 	color = RGBA_PAL2 (31,0,31);
 
 	if (color != WHITE_RGBA) {
@@ -1605,7 +1605,7 @@ void AutomapBuildEdgeList ()
 		// Cheating, add all edges as visited
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].position.nSegment != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 			{
 				AddSegmentEdges (&gameData.segs.segments[s]);
@@ -1614,7 +1614,7 @@ void AutomapBuildEdgeList ()
 		// Not cheating, add visited edges, and then unvisited edges
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].position.nSegment != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 				if (bAutomapVisited[s]) {
 					h++;
@@ -1623,7 +1623,7 @@ void AutomapBuildEdgeList ()
 
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
-			if (gameData.segs.segments[s].position.nSegment != -1)
+			if (gameData.segs.segments[s].nSegment != -1)
 			#endif
 				if (!bAutomapVisited[s]) {
 					AddUnknownSegmentEdges (&gameData.segs.segments[s]);

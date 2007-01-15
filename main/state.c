@@ -867,7 +867,7 @@ CFWriteByte ((sbyte) objP->controlType, fp);
 CFWriteByte ((sbyte) objP->movementType, fp);
 CFWriteByte ((sbyte) objP->renderType, fp);
 CFWriteByte ((sbyte) objP->flags, fp);
-CFWriteShort (objP->position.nSegment, fp);
+CFWriteShort (objP->nSegment, fp);
 CFWriteShort (objP->attachedObj, fp);
 CFWriteVector (&objP->position.vPos, fp);     
 CFWriteMatrix (&objP->position.mOrient, fp);  
@@ -1596,11 +1596,11 @@ void StateFixObjects (void)
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
-	nSegment = objP->position.nSegment;
+	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix 
 	if ((objP->shields < 0) && (gameData.boss.nDying != i))
 		objP->nType = OBJ_NONE;
-	objP->next = objP->prev = objP->position.nSegment = -1;
+	objP->next = objP->prev = objP->nSegment = -1;
 	if (objP->nType != OBJ_NONE) {
 		LinkObject (i,nSegment);
 		if (objP->nSignature > gameData.objs.nNextSignature)
@@ -1818,7 +1818,7 @@ objP->controlType = (ubyte) CFReadByte (fp);
 objP->movementType = (ubyte) CFReadByte (fp);
 objP->renderType = (ubyte) CFReadByte (fp);
 objP->flags = (ubyte) CFReadByte (fp);
-objP->position.nSegment = CFReadShort (fp);
+objP->nSegment = CFReadShort (fp);
 objP->attachedObj = CFReadShort (fp);
 CFReadVector (&objP->position.vPos, fp);     
 CFReadMatrix (&objP->position.mOrient, fp);  
@@ -2499,7 +2499,7 @@ if (sgVersion >= 12) {
 if (sgVersion >= 16) {
 	CFRead (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	ApplyAllChangedLight ();
-	//ComputeAllStaticLight ();	//	set static_light field in tSegment struct.  See note at that function.
+	//ComputeAllStaticLight ();	//	set xAvgSegLight field in tSegment struct.  See note at that function.
 	}
 else
 	memset (gameData.render.lights.subtracted, 0, sizeof (gameData.render.lights.subtracted));
@@ -2581,11 +2581,11 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-//	When loading a saved game, segp->static_light is bogus.
+//	When loading a saved game, segp->xAvgSegLight is bogus.
 //	This is because ApplyAllChangedLight, which is supposed to properly update this value,
 //	cannot do so because it needs the original light cast from a light which is no longer there.
 //	That is, a light has been blown out, so the texture remaining casts 0 light, but the static light
-//	which is present in the static_light field contains the light cast from that light.
+//	which is present in the xAvgSegLight field contains the light cast from that light.
 void ComputeAllStaticLight (void)
 {
 	int		h, i, j, k;
@@ -2602,7 +2602,7 @@ void ComputeAllStaticLight (void)
 					total_light += sideP->uvls [k].l;
 			}
 		}
-		gameData.segs.segment2s [i].static_light = h ? total_light / (h * 4) : 0;
+		gameData.segs.segment2s [i].xAvgSegLight = h ? total_light / (h * 4) : 0;
 	}
 }
 

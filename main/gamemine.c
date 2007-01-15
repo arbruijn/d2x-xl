@@ -90,7 +90,7 @@ typedef struct v16_segment {
 	ubyte   special;            // what nType of center this is
 	sbyte   nMatCen;         // which center tSegment is associated with.
 	short   value;
-	fix     static_light;       // average static light in tSegment
+	fix     xAvgSegLight;       // average static light in tSegment
 	#ifndef EDITOR
 	short   pad;                // make structure longword aligned
 	#endif
@@ -477,7 +477,7 @@ int load_mine_data (CFILE *loadFile)
 
 	mine_fileinfo.segment2_offset		= -1;
 	mine_fileinfo.segment2_howmany	= 0;
-	mine_fileinfo.segment2_sizeof    = sizeof (segment2);
+	mine_fileinfo.segment2_sizeof    = sizeof (tSegment2);
 
 	// Read in mine_top_fileinfo to get size of saved fileinfo.
 	
@@ -678,7 +678,7 @@ int load_mine_data (CFILE *loadFile)
 					Error ( "Error reading segments in gamemine.c" );
 
 				#ifdef EDITOR
-				gameData.segs.segments [i].position.nSegment = v16_seg.nSegment;
+				gameData.segs.segments [i].nSegment = v16_seg.nSegment;
 				// -- gameData.segs.segments [i].pad = v16_seg.pad;
 				#endif
 
@@ -695,7 +695,7 @@ int load_mine_data (CFILE *loadFile)
 				gameData.segs.segment2s [i].value = v16_seg.value;
 				gameData.segs.segment2s [i].s2Flags = 0;
 				gameData.segs.segment2s [i].nMatCen = v16_seg.nMatCen;
-				gameData.segs.segment2s [i].static_light = v16_seg.static_light;
+				gameData.segs.segment2s [i].xAvgSegLight = v16_seg.xAvgSegLight;
 				FuelCenActivate ( &gameData.segs.segments [i], gameData.segs.segment2s [i].special );
 
 			} else  {
@@ -751,8 +751,8 @@ int load_mine_data (CFILE *loadFile)
 
 
 		if (mine_top_fileinfo.fileinfo_version >= 20)
-			for (i=0; i<=gameData.segs.nLastSegment; i++) {
-				CFRead (gameData.segs.segment2s + i, sizeof (segment2), 1, loadFile);
+			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
+				CFRead (gameData.segs.segment2s + i, sizeof (tSegment2), 1, loadFile);
 				FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special );
 			}
 	}
@@ -986,7 +986,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!SEGVIS (m, i))
 			continue;
 		VmVecSub (&dist, &center, &pl->vPos);
@@ -1032,7 +1032,7 @@ INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
-		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!VERTVIS (h, i))
 			continue;
 		VmVecSub (&dist, vertP, &pl->vPos);
@@ -1103,10 +1103,10 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 	segP->objects = -1;
 
 	if (gameData.segs.nLevelVersion <= 5) { // descent 1 thru d2 SHAREWARE level
-		// Read fix	segP->static_light (shift down 5 bits, write as short)
+		// Read fix	segP->xAvgSegLight (shift down 5 bits, write as short)
 		temp_ushort = CFReadShort (loadFile);
-		gameData.segs.segment2s [nSegment].static_light	= ((fix)temp_ushort) << 4;
-		//CFRead ( &segP->static_light, sizeof (fix), 1, loadFile );
+		gameData.segs.segment2s [nSegment].xAvgSegLight	= ((fix)temp_ushort) << 4;
+		//CFRead ( &segP->xAvgSegLight, sizeof (fix), 1, loadFile );
 		}
 
 	// Read the walls as a 6 byte array

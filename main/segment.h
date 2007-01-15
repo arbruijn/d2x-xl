@@ -88,7 +88,6 @@ typedef struct tSide {
 	ushort		nOvlOrient : 2;
 	uvl     		uvls [4];
 	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
-	vmsVector	rotNorms [2];
 } tSide;
 #endif
 
@@ -116,13 +115,19 @@ typedef struct xsegment {
 #define S2F_AMBIENT_WATER   0x01
 #define S2F_AMBIENT_LAVA    0x02
 
-typedef struct segment2 {
-	ubyte   special;
-	sbyte   nMatCen;
-	sbyte   value;
-	ubyte   s2Flags;
-	fix     static_light;
-} segment2;
+typedef struct tSide2 {
+	vmsVector	rotNorms [2];
+} tSide2;
+
+
+typedef struct tSegment2 {
+	ubyte			special;
+	sbyte			nMatCen;
+	sbyte			value;
+	ubyte			s2Flags;
+	fix			xAvgSegLight;
+	tSide2		sides [MAX_SIDES_PER_SEGMENT];
+} tSegment2;
 
 //values for special field
 #define SEGMENT_IS_NOTHING      0
@@ -246,14 +251,14 @@ extern void add_segment_to_group(int segment_num, int group_num);
 extern void med_check_all_vertices();
 
 #ifdef FAST_FILE_IO
-#define segment2_read(s2, fp) CFRead(s2, sizeof(segment2), 1, fp)
+#define segment2_read(s2, fp) CFRead(s2, sizeof(tSegment2), 1, fp)
 #define delta_light_read(dl, fp) CFRead(dl, sizeof(delta_light), 1, fp)
 #define dl_index_read(di, fp) CFRead(di, sizeof(dl_index), 1, fp)
 #else
 /*
- * reads a segment2 structure from a CFILE
+ * reads a tSegment2 structure from a CFILE
  */
-void segment2_read(segment2 *s2, CFILE *fp);
+void segment2_read(tSegment2 *s2, CFILE *fp);
 
 /*
  * reads a delta_light structure from a CFILE

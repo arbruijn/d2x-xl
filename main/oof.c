@@ -2265,7 +2265,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
 		else if (!bDynLighting) {
-			tFaceColor *psc = AvgSgmColor (objP->position.nSegment, &objP->position.vPos);
+			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
 			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			else
@@ -2437,7 +2437,7 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->position.nSegment];
+	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->nSegment];
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

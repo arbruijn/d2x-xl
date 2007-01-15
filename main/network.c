@@ -391,7 +391,7 @@ if ((gameStates.multi.nGameType == IPX_GAME) ||
 	}
 else if (gameStates.multi.nGameType == UDP_GAME) {
 #ifdef _DEBUG
-	if (memcmp (network1, network2, sizeof (network_info)))	//check the port too
+	if (memcmp (network1, network2, sizeof (network_info)))	//bCheck the port too
 #else
 	if (memcmp (network1, network2, sizeof (network_info) - 2))
 #endif
@@ -407,6 +407,9 @@ else {
 #endif
 if (callsign1 && callsign2 && stricmp (callsign1, callsign2))
 	return 1;
+#ifdef _DEBUG
+HUDMessage (0, "'%s' not recognized", callsign1);
+#endif
 return 0;
 }
 
@@ -2401,15 +2404,15 @@ for (i = 0; i < nobj; i++) {
 			}
 		if (nObject != -1) {
 			objP = gameData.objs.objects + nObject;
-			if (objP->position.nSegment != -1)
+			if (objP->nSegment != -1)
 				UnlinkObject (nObject);
-			Assert (objP->position.nSegment == -1);
+			Assert (objP->nSegment == -1);
 			Assert (nObject < MAX_OBJECTS);
 			GET_BYTES (data, loc, objP, sizeof (tObject));
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				SwapObject (objP);
-			nSegment = objP->position.nSegment;
-			objP->next = objP->prev = objP->position.nSegment = -1;
+			nSegment = objP->nSegment;
+			objP->next = objP->prev = objP->nSegment = -1;
 			objP->attachedObj = -1;
 			if (nSegment > -1)
 				LinkObject (OBJ_IDX (objP), nSegment);
@@ -2614,8 +2617,11 @@ if (netGame.segments_checksum != networkData.nMySegsCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;
 	else {
+		short nInMenu = gameStates.menus.nInMenu;
+		gameStates.menus.nInMenu = 0;
 		networkData.nStatus = NETSTAT_MENU;
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_NMATCH);
+		gameStates.menus.nInMenu = nInMenu;
 		}
 #if 1//def RELEASE
 		return;
@@ -2697,7 +2703,7 @@ if (!networkData.bRejoined) {
 			j = netGame.locations [i];
 		gameData.objs.objects [gameData.multi.players [i].nObject].position.vPos = gameData.multi.playerInit [j].position.vPos;
 		gameData.objs.objects [gameData.multi.players [i].nObject].position.mOrient = gameData.multi.playerInit [j].position.mOrient;
-		RelinkObject (gameData.multi.players [i].nObject, gameData.multi.playerInit [j].position.nSegment);
+		RelinkObject (gameData.multi.players [i].nObject, gameData.multi.playerInit [j].nSegment);
 		}
 	}
 gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nType = OBJ_PLAYER;
@@ -3297,7 +3303,8 @@ return 0;
 
 void NetworkSendData (ubyte * ptr, int len, int urgent)
 {
-	char check;
+	char	bCheck;
+	int	bD2XData;
 
 #ifdef NETPROFILING
 TTSent [ptr [0]]++;  
@@ -3314,7 +3321,7 @@ if (!networkData.mySyncPackInited) {
 if (urgent)
 	networkData.bPacketUrgent = 1;
 if ((networkData.mySyncPack.data_size+len) > networkData.nMaxXDataSize) {
-	check = ptr [0];
+	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
 	if (networkData.mySyncPack.data_size != 0) {
 #if 1				
@@ -3327,7 +3334,18 @@ if ((networkData.mySyncPack.data_size+len) > networkData.nMaxXDataSize) {
 #if 1				
 	con_printf (CON_DEBUG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
 #endif
-	Assert (check == ptr [0]);
+	Assert (bCheck == ptr [0]);
+	}
+// for IPX game, separate legacy and D2X message to avoid non D2X-XL participants losing data
+// because they do not know the D2X data and hence cannot determine its length, thus getting out
+// of sync when decompositing a multi-data packet.
+if (gameStates.multi.nGameType == IPX_GAME) {
+	bD2XData = (*ptr > MULTI_MAX_TYPE_D2);
+	if (bD2XData && gameStates.app.bNostalgia)
+		return;
+	if (networkData.mySyncPack.data_size && !bD2XData && networkData.bD2XData)
+		NetworkDoFrame (1, 0);
+	networkData.bD2XData = bD2XData;
 	}
 Assert (networkData.mySyncPack.data_size + len <= networkData.nMaxXDataSize);
 memcpy (networkData.mySyncPack.data + networkData.mySyncPack.data_size, ptr, len);
@@ -3421,7 +3439,7 @@ xLastSendTime += gameData.time.xFrame;
 xLastTimeoutCheck += gameData.time.xFrame;
 
 // Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
-if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) || 
+if ((xLastSendTime > F1_0 / netGame.nPacketsPerSec) || 
 	  (multiData.laser.bFired) || force || networkData.bPacketUrgent) {        
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].connected) {
 		int nObject = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
@@ -3463,7 +3481,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 			networkData.mySyncPack.nPlayer = gameData.multi.nLocalPlayer;
 			networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
 			networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
-			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].position.nSegment;
+			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
 			networkData.mySyncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
 			networkData.mySyncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
 			networkData.mySyncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
@@ -3485,6 +3503,7 @@ if ((xLastSendTime>F1_0/netGame.nPacketsPerSec) ||
 				sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
 			}
 		networkData.mySyncPack.data_size = 0;               // Start data over at 0 length.
+		networkData.bD2XData = 0;
 		if (gameData.reactor.bDestroyed) {
 			if (gameStates.app.bPlayerIsDead)
 				gameData.multi.players [gameData.multi.nLocalPlayer].connected=3;

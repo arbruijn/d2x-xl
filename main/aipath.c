@@ -175,7 +175,7 @@ j = *nPoints;
 if (j > MAX_SEGMENTS)
 	j = MAX_SEGMENTS;
 for (i = 1, --j; i < j; i++) {
-	// -- ptSegs [i].position.nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].position.nSegment);
+	// -- ptSegs [i].nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	Assert (nTempSeg != -1);
 	ptSegs [i].nSegment = nTempSeg;
@@ -312,11 +312,11 @@ ValidateAllPaths ();
 if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM)) {
 	if (nAvoidSeg != -32767) {
 		bRandom = 1;
-		nAvoidSeg = gameData.objs.console->position.nSegment;
+		nAvoidSeg = gameData.objs.console->nSegment;
 		}	
 	// Int3 ();
 	}
-bAvoidPlayer = gameData.objs.console->position.nSegment == nAvoidSeg;
+bAvoidPlayer = gameData.objs.console->nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
@@ -354,7 +354,7 @@ while (nCurSeg != nEndSeg) {
 		if (bAvoidPlayer && ((nCurSeg == nAvoidSeg) || (nThisSeg == nAvoidSeg))) {
 			COMPUTE_SIDE_CENTER (&vCenter, segP, hSide);
 			fq.p0					= &objP->position.vPos;
-			fq.startSeg			= objP->position.nSegment;
+			fq.startSeg			= objP->nSegment;
 			fq.p1					= &vCenter;
 			fq.rad				= objP->size;
 			fq.thisObjNum		= OBJ_IDX (objP);
@@ -527,7 +527,7 @@ if (gameData.bots.pInfo [objP->id].companion) {
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
 	}
 fq.p0					= &objP->position.vPos;
-fq.startSeg			= objP->position.nSegment;
+fq.startSeg			= objP->nSegment;
 fq.rad				= objP->size;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
@@ -628,7 +628,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 #endif
 
 // -- //	-------------------------------------------------------------------------------------------------------
-// -- //	Creates a path from the gameData.objs.objects current tSegment (objP->position.nSegment) to the specified tSegment for the tObject to
+// -- //	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 // -- //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 // -- //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 // -- //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -639,7 +639,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 // -- 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
 // -- 	int			nStartSeg, nEndSeg;
 // --
-// -- 	nStartSeg = objP->position.nSegment;
+// -- 	nStartSeg = objP->nSegment;
 // -- 	nEndSeg = ailp->nGoalSegment;
 // --
 // -- 	if (nEndSeg == -1)
@@ -669,7 +669,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 // -- }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the gameData.objs.objects current tSegment (objP->position.nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment.
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -688,7 +688,7 @@ if (max_length == -1)
 ailp->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailp->nGoalSegment = gameData.ai.nBelievedPlayerSeg;
 
-nStartSeg = objP->position.nSegment;
+nStartSeg = objP->nSegment;
 nEndSeg = ailp->nGoalSegment;
 
 if (nEndSeg != -1) {
@@ -710,7 +710,7 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the tObject's current tSegment (objP->position.nSegment) to tSegment goalseg.
+//	Creates a path from the tObject's current tSegment (objP->nSegment) to tSegment goalseg.
 void CreatePathToSegment (tObject *objP, short goalseg, int max_length, int bSafeMode)
 {
 	tAIStatic	*aip = &objP->cType.aiInfo;
@@ -721,7 +721,7 @@ if (max_length == -1)
 	max_length = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
 ailp->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailp->nGoalSegment = goalseg;
-nStartSeg = objP->position.nSegment;
+nStartSeg = objP->nSegment;
 nEndSeg = ailp->nGoalSegment;
 if (nEndSeg != -1) {
 	CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aip->nPathLength, max_length, 1, bSafeMode, -1);
@@ -740,7 +740,7 @@ MaybeAIPathGarbageCollect ();
 }
 
 //	-------------------------------------------------------------------------------------------------------
-//	Creates a path from the gameData.objs.objects current tSegment (objP->position.nSegment) to the specified tSegment for the tObject to
+//	Creates a path from the gameData.objs.objects current tSegment (objP->nSegment) to the specified tSegment for the tObject to
 //	hide in gameData.ai.localInfo [nObject].nGoalSegment
 //	Sets	objP->cType.aiInfo.nHideIndex, 		a pointer into gameData.ai.pointSegs, the first tPointSeg of the path.
 //			objP->cType.aiInfo.nPathLength, 		length of path
@@ -756,7 +756,7 @@ if (max_length == -1)
 
 ailp->timePlayerSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 
-nStartSeg = objP->position.nSegment;
+nStartSeg = objP->nSegment;
 nEndSeg = aip->nHideSegment;
 
 
@@ -785,9 +785,9 @@ void CreateNSegmentPath (tObject *objP, int nPathLength, short nAvoidSeg)
 	tAIStatic	*aip=&objP->cType.aiInfo;
 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
 
-if (CreatePathPoints (objP, objP->position.nSegment, -2, gameData.ai.freePointSegs, &aip->nPathLength, nPathLength, 1, 0, nAvoidSeg) == -1) {
+if (CreatePathPoints (objP, objP->nSegment, -2, gameData.ai.freePointSegs, &aip->nPathLength, nPathLength, 1, 0, nAvoidSeg) == -1) {
 	gameData.ai.freePointSegs += aip->nPathLength;
-	while ((CreatePathPoints (objP, objP->position.nSegment, -2, gameData.ai.freePointSegs, &aip->nPathLength, --nPathLength, 1, 0, -1) == -1)) {
+	while ((CreatePathPoints (objP, objP->nSegment, -2, gameData.ai.freePointSegs, &aip->nPathLength, --nPathLength, 1, 0, -1) == -1)) {
 		Assert (nPathLength);
 		}
 	}
@@ -832,11 +832,11 @@ void MoveObjectToGoal (tObject *objP, vmsVector *vGoalPoint, short nGoalSeg)
 
 if (aip->nPathLength < 2)
 	return;
-Assert (objP->position.nSegment != -1);
+Assert (objP->nSegment != -1);
 #ifdef _DEBUG
-if (objP->position.nSegment != nGoalSeg)
-	if (FindConnectedSide (gameData.segs.segments + objP->position.nSegment, gameData.segs.segments + nGoalSeg) == -1) {
-		fix dist = FindConnectedDistance (&objP->position.vPos, objP->position.nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG);
+if (objP->nSegment != nGoalSeg)
+	if (FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nGoalSeg) == -1) {
+		fix dist = FindConnectedDistance (&objP->position.vPos, objP->nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
 			con_printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, f2fl (dist));
@@ -877,7 +877,7 @@ if (nSegment == -1) {
 	Int3 ();	//	Oops, tObject is not in any tSegment.
 				// Contact Mike: This is impossible.p.
 	//	Hack, move tObject to center of tSegment it used to be in.
-	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->position.nSegment);
+	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
 	}
 else
 	RelinkObject (OBJ_IDX (objP), nSegment);
@@ -898,7 +898,7 @@ else
 // -- too much work -- 	kill_objp = &gameData.objs.objects [gameData.escort.nKillObject];
 // -- too much work --
 // -- too much work -- 	fq.p0						= &objP->position.vPos;
-// -- too much work -- 	fq.startSeg				= objP->position.nSegment;
+// -- too much work -- 	fq.startSeg				= objP->nSegment;
 // -- too much work -- 	fq.p1						= &kill_objP->position.vPos;
 // -- too much work -- 	fq.rad					= objP->size;
 // -- too much work -- 	fq.thisObjNum			= OBJ_IDX (objP);
@@ -952,12 +952,12 @@ if ((aip->nHideIndex + aip->nPathLength > gameData.ai.freePointSegs - gameData.a
 
 if (aip->nPathLength < 2) {
 	if ((aip->behavior == AIB_SNIPE) || (ailp->mode == AIM_RUN_FROM_OBJECT)) {
-		if (gameData.objs.console->position.nSegment == objP->position.nSegment) {
+		if (gameData.objs.console->nSegment == objP->nSegment) {
 			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid tSegment tPlayer is in, robot is already in it!(That's what the -1 is for)
 			//--Int3_if ((aip->nPathLength != 0);
 			} 
 		else {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->position.nSegment);
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->nSegment);
 				//--Int3_if ((aip->nPathLength != 0);
 			}
 		if (aip->behavior == AIB_SNIPE) {
@@ -994,10 +994,10 @@ if (!(player_visibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(g
 		tRobotInfo	*robptr = &gameData.bots.pInfo [objP->id];
 		fix	cur_speed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
 		fix	distance_travellable = FixMul (gameData.time.xFrame, cur_speed);
-		// int	nConnSide = FindConnectedSide (objP->position.nSegment, nGoalSeg);
+		// int	nConnSide = FindConnectedSide (objP->nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the tSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
-		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&gameData.segs.segments]objP->position.nSegment], nConnSide) & WID_FLY_FLAG) {
+		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&gameData.segs.segments]objP->nSegment], nConnSide) & WID_FLY_FLAG) {
 		if (!gameData.bots.pInfo [objP->id].companion && !gameData.bots.pInfo [objP->id].thief) {
 			if (distance_travellable >= xDistToGoal) {
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
@@ -1025,12 +1025,12 @@ if (ailp->mode == AIM_RUN_FROM_OBJECT) {
 	else if (!(gameData.app.nFrameCount ^ ((OBJ_IDX (objP)) & 0x07))) {		//	Done 1/8 frames.
 		//	If tPlayer on path (beyond point robot is now at), then create a new path.
 		tPointSeg	*curpsp = &gameData.ai.pointSegs [aip->nHideIndex];
-		short			player_segnum = gameData.objs.console->position.nSegment;
+		short			player_segnum = gameData.objs.console->nSegment;
 		int			i;
 		//	This is probably being done every frame, which is wasteful.
 		for (i=aip->nCurPathIndex; i<aip->nPathLength; i++) {
 			if (curpsp [i].nSegment == player_segnum) {
-				if (player_segnum != objP->position.nSegment) {
+				if (player_segnum != objP->nSegment) {
 					CreateNSegmentPath (objP, AVOID_SEG_LENGTH, player_segnum);
 					}
 				else {
@@ -1052,7 +1052,7 @@ if (aip->nCurPathIndex < 0) {
 	}
 else if (aip->nCurPathIndex >= aip->nPathLength) {
 	if (ailp->mode == AIM_RUN_FROM_OBJECT) {
-		CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->position.nSegment);
+		CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->nSegment);
 		ailp->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 		Assert (aip->nPathLength != 0);
 		}
@@ -1100,7 +1100,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 				}
 			}
 		if (aip->behavior == AIB_FOLLOW) {
-			CreateNSegmentPath (objP, 10, gameData.objs.console->position.nSegment);
+			CreateNSegmentPath (objP, 10, gameData.objs.console->nSegment);
 			//--Int3_if (( (aip->nCurPathIndex >= 0) && (aip->nCurPathIndex < aip->nPathLength));
 			}
 		else if (aip->behavior == AIB_STATION) {
@@ -1125,10 +1125,10 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 				}
 			}
 		else if (ailp->mode == AIM_RUN_FROM_OBJECT) {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->position.nSegment);
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->nSegment);
 			ailp->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 			if (aip->nPathLength < 1) {
-				CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->position.nSegment);
+				CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.objs.console->nSegment);
 				ailp->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 				if (aip->nPathLength < 1) {
 					aip->behavior = AIB_NORMAL;
@@ -1159,7 +1159,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//--Int3_if (( (nOppositeEndIndex >= 0) && (nOppositeEndIndex < aip->nPathLength));
 			vOppositeEndPoint = &gameData.ai.pointSegs [aip->nHideIndex + nOppositeEndIndex].point;
 			fq.p0					= &objP->position.vPos;
-			fq.startSeg			= objP->position.nSegment;
+			fq.startSeg			= objP->nSegment;
 			fq.p1					= vOppositeEndPoint;
 			fq.rad				= objP->size;
 			fq.thisObjNum		= OBJ_IDX (objP);
@@ -1405,7 +1405,7 @@ if ((aip->behavior == AIB_STATION) && (gameData.bots.pInfo [objP->id].companion 
 	if (d_rand () > 8192) {
 		tAILocal			*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
 
-		aip->nHideSegment = objP->position.nSegment;
+		aip->nHideSegment = objP->nSegment;
 //Int3 ();
 		ailp->mode = AIM_IDLING;
 #if TRACE
@@ -1413,9 +1413,9 @@ if ((aip->behavior == AIB_STATION) && (gameData.bots.pInfo [objP->id].companion 
 #endif
 		}
 
-//	object_segnum = objP->position.nSegment;
+//	object_segnum = objP->nSegment;
 nAbsIndex = aip->nHideIndex+aip->nCurPathIndex;
-//	nGoalSegnum = gameData.ai.pointSegs [nAbsIndex].position.nSegment;
+//	nGoalSegnum = gameData.ai.pointSegs [nAbsIndex].nSegment;
 
 nNewPathIndex = aip->nCurPathIndex - aip->PATH_DIR;
 
@@ -1464,7 +1464,7 @@ void show_path (int nStartSeg, int nEndSeg, tPointSeg *psp, short length)
 	//printf (" [%3i:%3i (%3i):] ", nStartSeg, nEndSeg, length);
 
 	while (length--)
-		//printf ("%3i ", psp [length].position.nSegment);
+		//printf ("%3i ", psp [length].nSegment);
 
 	//printf ("\n");
 }
@@ -1478,9 +1478,9 @@ void test_create_all_paths (void)
 	gameData.ai.freePointSegs = gameData.ai.pointSegs;
 
 	for (nStartSeg=0; nStartSeg<=gameData.segs.nLastSegment-1; nStartSeg++) {
-		if (gameData.segs.segments [nStartSeg].position.nSegment != -1) {
+		if (gameData.segs.segments [nStartSeg].nSegment != -1) {
 			for (nEndSeg=nStartSeg+1; nEndSeg<=gameData.segs.nLastSegment; nEndSeg++) {
-				if (gameData.segs.segments [nEndSeg].position.nSegment != -1) {
+				if (gameData.segs.segments [nEndSeg].nSegment != -1) {
 					CreatePathPoints (&gameData.objs.objects [0], nStartSeg, nEndSeg, gameData.ai.freePointSegs, &resultant_length, -1, 0, 0, -1);
 					show_path (nStartSeg, nEndSeg, gameData.ai.freePointSegs, resultant_length);
 				}
@@ -1528,7 +1528,7 @@ void test_create_all_paths (void)
 //--anchor--	Num_anchors = 0;
 //--anchor--
 //--anchor--	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
-//--anchor--		if (gameData.segs.segments [nSegment].position.nSegment != -1) {
+//--anchor--		if (gameData.segs.segments [nSegment].nSegment != -1) {
 //--anchor--			nearest_anchorDistance = get_nearest_anchorDistance (nSegment);
 //--anchor--			if (nearest_anchorDistance > AnchorDistance)
 //--anchor--				create_new_anchor (nSegment);
@@ -1632,7 +1632,7 @@ void player_follow_path (tObject *objP)
 		return;
 
 	vGoalPoint = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].point;
-	nGoalSeg = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].position.nSegment;
+	nGoalSeg = gameData.ai.pointSegs [Player_hide_index + Player_cur_path_index].nSegment;
 	Assert ((nGoalSeg >= 0) && (nGoalSeg <= gameData.segs.nLastSegment);
 	xDistToGoal = VmVecDistQuick (&vGoalPoint, &objP->position.vPos);
 
@@ -1701,7 +1701,7 @@ void create_player_path_to_segment (int nSegment)
 	Player_cur_path_index=0;
 	Player_following_pathFlag=0;
 
-	if (CreatePathPoints (objP, objP->position.nSegment, nSegment, gameData.ai.freePointSegs, &Player_path_length, 100, 0, 0, -1) == -1) {
+	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &Player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
 		con_printf (CON_DEBUG, "Unable to form path of length %i for myself\n", 100);
 #endif

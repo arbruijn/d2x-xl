@@ -240,7 +240,7 @@ else {
 	pc->obj.position.p.vPos.y /= 4;
 	pc->obj.position.p.vPos.z /= 4;
 #endif
-	pc->obj.position.nSegment = srcSeg;
+	pc->obj.nSegment = srcSeg;
 	}
 //pc->obj.nSide = srcSide;
 pc->segNum = tgtSeg;

@@ -1330,7 +1330,7 @@ int AllowedToFireLaser (void)
 		gameData.app.nGlobalMissileFiringCount = 0;
 		return 0;
 	}
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->position.nSegment].special == SEGMENT_IS_NODAMAGE))
+	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 		return 0;
 	//	Make sure enough time has elapsed to fire laser, but if it looks like it will
 	//	be a long while before laser can be fired, then there must be some mistake!
@@ -1365,7 +1365,7 @@ int AllowedToFireMissile (void)
 {
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->position.nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 if (xNextMissileFireTime > gameData.time.xGame) 
 	if (xNextMissileFireTime < gameData.time.xGame + 5 * F1_0)
@@ -1599,7 +1599,7 @@ InitGauges ();
 //keyd_repeat = 0;                // Don't allow repeat in game
 keyd_repeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
-	if (gameData.segs.segments[gameData.objs.console->position.nSegment].position.nSegment == -1)      //tSegment no longer exists
+	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
 		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.console))
@@ -2047,8 +2047,8 @@ void DoAmbientSounds ()
 	int has_water,has_lava;
 	short sound;
 
-	has_lava = (gameData.segs.segment2s[gameData.objs.console->position.nSegment].s2Flags & S2F_AMBIENT_LAVA);
-	has_water = (gameData.segs.segment2s[gameData.objs.console->position.nSegment].s2Flags & S2F_AMBIENT_WATER);
+	has_lava = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_LAVA);
+	has_water = (gameData.segs.segment2s[gameData.objs.console->nSegment].s2Flags & S2F_AMBIENT_WATER);
 
 	if (has_lava) {							//has lava
 		sound = SOUND_AMBIENT_LAVA;
@@ -2406,7 +2406,7 @@ return 1;
 //!!
 //!!		light = abs (frame - 5) * f1_0 / 5;
 //!!
-//!!		gameData.segs.segment2s[Goal_red_segnum].static_light = gameData.segs.segment2s[Goal_blue_segnum].static_light = light;
+//!!		gameData.segs.segment2s[Goal_red_segnum].xAvgSegLight = gameData.segs.segment2s[Goal_blue_segnum].xAvgSegLight = light;
 //!!	}
 //!!}
 
@@ -2571,7 +2571,7 @@ void PowerupGrabCheatAll (void)
 	tSegment	*segp;
 	int		nObject;
 
-	segp = gameData.segs.segments + gameData.objs.console->position.nSegment;
+	segp = gameData.segs.segments + gameData.objs.console->nSegment;
 	nObject = segp->objects;
 
 	while (nObject != -1) {
@@ -2602,7 +2602,7 @@ int mark_player_path_to_segment (int nSegment)
 
 	nLastLevelPathCreated = gameData.missions.nCurrentLevel;
 
-	if (CreatePathPoints (objP, objP->position.nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
+	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
 		//con_printf (CON_DEBUG, "Unable to form path of length %i for myself\n", 100);
 #endif

@@ -369,7 +369,7 @@ if (xObjIntensity) {
 
 					VmVecScaleAdd (&tvec, vObjPos, &objP->position.mOrient.fVec, F1_0*200);
 
-					fq.startSeg			= objP->position.nSegment;
+					fq.startSeg			= objP->nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
 					fq.rad				= 0;
@@ -696,7 +696,7 @@ for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
 		if (bGotColor)
 			bKeepDynColoring = 1;
 		if (xObjIntensity) {
-			ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
+			ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
 			newLightingObjects [nObject] = 1;
 			}
 		nObject = objP->next;
@@ -711,7 +711,7 @@ for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastOb
 	if (bGotColor)
 		bKeepDynColoring = 1;
 	if (xObjIntensity) {
-		ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
+		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
 		newLightingObjects [nObject] = 1;
 		}
 	}
@@ -734,7 +734,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->position.nSegment, objPos, nRenderVertices, renderVertices, nObject, 
+				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, nObject, 
 								bGotColor ? &color : NULL);
 				lightingObjects [nObject] = 1;
 				} 
@@ -899,7 +899,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *rotated_pnt)
 		rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
-	light = gameData.segs.segment2s [objP->position.nSegment].static_light;
+	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
 	//return light;
 	//Now, maybe return different value to smooth transitions
 	if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
@@ -923,7 +923,7 @@ fix ComputeObjectLight (tObject *objP, vmsVector *rotated_pnt)
 	// -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
 	light += ComputeHeadlightLightOnObject (objP);
 	//Finally, add in dynamic light for this tSegment
-	light += ComputeSegDynamicLight (objP->position.nSegment);
+	light += ComputeSegDynamicLight (objP->nSegment);
 	return light;
 }
 
@@ -1686,7 +1686,7 @@ if (gameOpts->render.bDynLighting) {
 		if (psl->nType == 3)
 			psl->bState = 1;
 		else {
-			nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].position.nSegment : pl->nSegment;
+			nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 			if (!SEGVIS (nLightSeg, nSegment)) 
 				psl->bState = 0;
 			else {

@@ -1107,7 +1107,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 	
 					if (j != nParentObj)
 						if (dist - gameData.objs.objects[j].size < F1_0*20) {
-							if (gameData.objs.objects[i].position.nSegment == gameData.objs.objects[j].position.nSegment)
+							if (gameData.objs.objects[i].nSegment == gameData.objs.objects[j].nSegment)
 								gameData.objs.objects[i].lifeleft = 1;
 							else {
 								//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
@@ -1117,7 +1117,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 									fvi_info		hit_data;
 									int			fate;
 
-									fq.startSeg = gameData.objs.objects[i].position.nSegment;
+									fq.startSeg = gameData.objs.objects[i].nSegment;
 									fq.p0	= &gameData.objs.objects[i].position.vPos;
 									fq.p1 = &gameData.objs.objects[j].position.vPos;
 									fq.rad = 0;
@@ -1175,7 +1175,7 @@ VmVecScaleAdd(&newPos,&spitter->position.vPos,&spitter->position.mOrient.fVec,sp
 if ((gameData.app.nGameMode & GM_MULTI) && (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
 nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multi.nLocalPlayer) + 1), 
-							  (short) spitter->position.nSegment, &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
+							  (short) spitter->nSegment, &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
 							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 if (nObject < 0) {
 	Int3();

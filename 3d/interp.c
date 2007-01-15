@@ -1433,7 +1433,7 @@ int LineHitsFace (vmsVector *pHit, vmsVector *p0, vmsVector *p1, short nSegment,
 nFaces = GetNumFaces (segP->sides + nSide);
 nVerts = 5 - nFaces;
 for (i = 0; i < nFaces; i++)
-	if (CheckLineToFace (pHit, p0, p1, segP, nSide, i, nVerts, 0))
+	if (CheckLineToFace (pHit, p0, p1, nSegment, nSide, i, nVerts, 0))
 		return nSide;
 return -1;
 }
@@ -1574,7 +1574,7 @@ inline float G3FaceClipDist (tObject *objP, tPOF_face *pf)
 vCenter.p.x = (fix) (pf->vCenterf.x * 65536.0f);
 vCenter.p.y = (fix) (pf->vCenterf.y * 65536.0f);
 vCenter.p.z = (fix) (pf->vCenterf.z * 65536.0f);
-return NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &vCenter, 0.0f);
+return NearestShadowedWallDist (OBJ_IDX (objP), objP->nSegment, &vCenter, 0.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -1610,7 +1610,7 @@ float G3ClipDistByFaceVerts (tObject *objP, tPOFObject *po, tPOFSubObject *pso,
 	tPOF_face	*pf, **ppf;
 	short			*pfv, h, j, m, n;
 	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->position.nSegment;
+	short			nPointSeg, nSegment = objP->nSegment;
 	float			fClipDist;
 
 pv = po->pvVertsf;
@@ -1649,7 +1649,7 @@ float G3ClipDistByLitVerts (tObject *objP, tPOFObject *po, float fMaxDist, int i
 	short			j;
 	ubyte			*pvf;
 	short			nObject = OBJ_IDX (objP);
-	short			nPointSeg, nSegment = objP->position.nSegment;
+	short			nPointSeg, nSegment = objP->nSegment;
 	float			fClipDist;
 	ubyte			nVertFlag = po->nVertFlag;
 
@@ -1967,14 +1967,14 @@ if (!gameStates.render.bShadowMaps) {
 CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->position.nSegment];
+pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
 gameData.render.shadows.nLight = 0;
 if (gameOpts->render.shadows.bFast) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->vPos, objP->position.nSegment))
+		if (!CanSeePoint (objP, &objP->position.vPos, &gameData.render.shadows.pLight->vPos, objP->nSegment))
 			continue;
 		VmVecSub (&vLightDir, &objP->position.vPos, &gameData.render.shadows.pLight->vPos);
 		VmVecNormalize (&vLightDir);
@@ -1996,7 +1996,7 @@ if (gameOpts->render.shadows.bFast) {
 			if (gameOpts->render.shadows.nClip) {
 				// get a default clipping distance using the model position as fall back
 				G3TransformPoint (&v, &objP->position.vPos, 0);
-				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->position.nSegment, &v, 0);
+				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->nSegment, &v, 0);
 				}
 			else
 				fInf = INFINITY;

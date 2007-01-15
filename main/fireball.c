@@ -330,7 +330,7 @@ tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
 
 	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
 
-	return ObjectCreateBadassExplosion (objP, objP->position.nSegment, pos, 
+	return ObjectCreateBadassExplosion (objP, objP->nSegment, pos, 
 	                                      wi->impact_size, 
 	                                      wi->robot_hit_vclip, 
 	                                      wi->strength [gameStates.app.nDifficultyLevel], 
@@ -346,7 +346,7 @@ tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force
 
 	tObject 	*rval;
 
-	rval = ObjectCreateBadassExplosion (objP, objP->position.nSegment, &objP->position.vPos, objP->size, 
+	rval = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size, 
 					 (ubyte) GetExplosionVClip (objP, 0), 
 					damage, distance, force, 
 					OBJ_IDX (objP));
@@ -376,7 +376,7 @@ tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 
 Assert ((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
 nObject = CreateObject (
-	OBJ_DEBRIS, 0, -1, parentObjP->position.nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient, 
+	OBJ_DEBRIS, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &parentObjP->position.mOrient, 
 	gameData.models.polyModels [parentObjP->rType.polyObjInfo.nModel].subModels.rads [nSubObj], 
 	CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ, 1);
 if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS - 1)) {
@@ -458,7 +458,7 @@ int PickConnectedSegment (tObject *objP, int max_depth)
 	sbyte		depth [MAX_SEGMENTS];
 	sbyte		side_rand [MAX_SIDES_PER_SEGMENT];
 
-	start_seg = objP->position.nSegment;
+	start_seg = objP->nSegment;
 	head = 0;
 	tail = 0;
 	seg_queue [head++] = start_seg;
@@ -553,7 +553,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = gameData.segs.segments [objP->position.nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
+	for (bFree = 1, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
 		if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
 			bFree = 0;
 			break;
@@ -589,7 +589,7 @@ for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP
 	// if the current tSegment does not contain a powerup of the nType being looked for, 
 	// return that tSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = gameData.segs.segments [objP->position.nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
+		for (bUsed = 0, j = gameData.segs.segments [objP->nSegment].objects; j != -1; j = gameData.objs.objects [j].next)
 			if ((gameData.objs.objects [j].nType == nType) && (gameData.objs.objects [j].id == id)) {
 				bUsed = 1;
 				break;
@@ -610,19 +610,19 @@ int ReturnFlagHome (tObject *objP)
 	tObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.segs.segment2s [objP->position.nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
-		return objP->position.nSegment;
+	if (gameData.segs.segment2s [objP->nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+		return objP->nSegment;
 	if (initObjP = FindInitObject (objP)) {
-	//objP->position.nSegment = initObjP->nSegment;
+	//objP->nSegment = initObjP->nSegment;
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
-		RelinkObject (OBJ_IDX (objP), initObjP->position.nSegment);
+		RelinkObject (OBJ_IDX (objP), initObjP->nSegment);
 		HUDInitMessage (TXT_FLAG_RETURN);
 		DigiPlaySample (SOUND_DROP_WEAPON, F1_0);
 		MultiSendReturnFlagHome (OBJ_IDX (objP));
 		}
 	}
-return objP->position.nSegment;
+return objP->nSegment;
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -869,7 +869,7 @@ if (bUseInitSgm) {
 		*pbFixedPos = 1;
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
-		return initObjP->position.nSegment;
+		return initObjP->nSegment;
 		}
 	}
 if (pbFixedPos)
@@ -877,7 +877,7 @@ if (pbFixedPos)
 d_srand (TimerGetFixedSeconds ());
 nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
 player_pos = &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
-player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment;
+player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 	pnum = (d_rand () * gameData.multi.nPlayers) >> 15;
 	count = 0;
@@ -1119,7 +1119,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 //	Return true if some powerup is nearby (within 3 segments).
 int WeaponNearby (tObject *objP, int weapon_id)
 {
-	return ObjectNearbyAux (objP->position.nSegment, OBJ_POWERUP, weapon_id, 3);
+	return ObjectNearbyAux (objP->nSegment, OBJ_POWERUP, weapon_id, 3);
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -1426,7 +1426,7 @@ rval = DropPowerup (
 		), 
 	objP->containsCount, 
 	&objP->mType.physInfo.velocity, 
-	&objP->position.vPos, objP->position.nSegment);
+	&objP->position.vPos, objP->nSegment);
 if (rval != -1) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multi.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
@@ -1522,7 +1522,7 @@ if (delayTime) {		//wait a little while before creating explosion
 	int nObject;
 	tObject *objP;
 	//create a placeholder tObject to do the delay, with id==-1
-	nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->position.nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0, 
+	nObject = CreateObject (OBJ_FIREBALL, -1, -1, hitObjP->nSegment, &hitObjP->position.vPos, &vmdIdentityMatrix, 0, 
 									CT_EXPLOSION, MT_NONE, RT_NONE, 1);
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
@@ -1548,7 +1548,7 @@ else {
 	ubyte		nVClip;
 
 	nVClip = (ubyte) GetExplosionVClip (hitObjP, 0);
-	explObjP = ObjectCreateExplosion (hitObjP->position.nSegment, &hitObjP->position.vPos, FixMul (hitObjP->size, EXPLOSION_SCALE), nVClip);
+	explObjP = ObjectCreateExplosion (hitObjP->nSegment, &hitObjP->position.vPos, FixMul (hitObjP->size, EXPLOSION_SCALE), nVClip);
 	if (!explObjP) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
@@ -1614,7 +1614,7 @@ void DoExplosionSequence (tObject *obj)
 		vSpawnPos = &delObjP->position.vPos;
 		t = delObjP->nType;
 		if (( (t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
-			 (delObjP->position.nSegment == -1)) {
+			 (delObjP->nSegment == -1)) {
 			Int3 ();	//pretty bad
 			return;
 		}
@@ -1622,7 +1622,7 @@ void DoExplosionSequence (tObject *obj)
 		if (delObjP->nType == OBJ_ROBOT && badass)
 			explObjP = ObjectCreateBadassExplosion (
 				NULL, 
-				delObjP->position.nSegment, 
+				delObjP->nSegment, 
 				vSpawnPos, 
 				FixMul (delObjP->size, EXPLOSION_SCALE), 
 				nVClip, 
@@ -1631,7 +1631,7 @@ void DoExplosionSequence (tObject *obj)
 				i2f (35) * badass, 
 				-1);
 		else
-			explObjP = ObjectCreateExplosion (delObjP->position.nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
+			explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
 
 		if ((delObjP->containsCount > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
 			//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -1661,7 +1661,7 @@ void DoExplosionSequence (tObject *obj)
 		}
 
 		if (gameData.bots.pInfo [delObjP->id].nExp2Sound > -1)
-			DigiLinkSoundToPos (gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->position.nSegment, 0, vSpawnPos, 0, F1_0);
+			DigiLinkSoundToPos (gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
 			//PLAY_SOUND_3D (gameData.bots.pInfo [delObjP->id].nExp2Sound, vSpawnPos, delObjP->nSegment);
 
 		obj->cType.explInfo.nSpawnTime = -1;
@@ -1833,7 +1833,7 @@ CalcShipThrusterPos (objP, vPos);
 if (count == 1)
 	VmVecAvg (vPos, vPos, vPos + 1);
 for (i = 0; i < count; i++) {
-	nSegment = FindSegByPoint (vPos + i, objP->position.nSegment);
+	nSegment = FindSegByPoint (vPos + i, objP->nSegment);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = ObjectCreateExplosion (nSegment, vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
@@ -1906,7 +1906,7 @@ for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP+
 	if ((objP->nType == OBJ_MONSTERBALL) || 
 		 ((objP->nType == OBJ_POWERUP) && (objP->id == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0)
-			gameData.hoard.nMonsterballSeg = objP->position.nSegment;
+			gameData.hoard.nMonsterballSeg = objP->nSegment;
 		ReleaseObject (i);
 		}
 #ifdef RELEASE
@@ -1931,7 +1931,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
 	return 0;
-special = gameData.segs.segment2s [gameData.hoard.monsterballP->position.nSegment].special;
+special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].special;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
 if ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))

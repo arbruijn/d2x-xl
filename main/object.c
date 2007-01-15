@@ -743,7 +743,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 / 2 + d_rand ()*4 / 2);
-nSegment = FindSegByPoint (&pos, objP->position.nSegment);
+nSegment = FindSegByPoint (&pos, objP->nSegment);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
@@ -771,7 +771,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
-nSegment = FindSegByPoint (&pos, objP->position.nSegment);
+nSegment = FindSegByPoint (&pos, objP->nSegment);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, vclip_num);
 	if (!explObjP)
@@ -1709,7 +1709,7 @@ if ((OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObj
 	}
 if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
-	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->position.nSegment);
+	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
 #endif
 	return;
 	}
@@ -1812,7 +1812,7 @@ switch (objP->renderType) {
 	default: 
 		Error ("Unknown renderType <%d>", objP->renderType);
 	}
-SetNearestStaticLights (objP->position.nSegment, 0);
+SetNearestStaticLights (objP->nSegment, 0);
 
 #ifdef NEWDEMO
 if (objP->renderType != RT_NONE)
@@ -1892,7 +1892,7 @@ CollideInit ();
 for (i = 0; i < MAX_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.objects [i].nType = OBJ_NONE;
-	gameData.objs.objects [i].position.nSegment =
+	gameData.objs.objects [i].nSegment =
 	gameData.objs.objects [i].cType.explInfo.nNextAttach =
 	gameData.objs.objects [i].cType.explInfo.nPrevAttach =
 	gameData.objs.objects [i].cType.explInfo.nAttachParent =
@@ -1998,7 +1998,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 			Int3 ();
 		}
 		#endif
-		if (gameData.objs.objects [nObject].position.nSegment != nSegment)	{
+		if (gameData.objs.objects [nObject].nSegment != nSegment)	{
 			#ifdef _DEBUG
 #if TRACE				
 			con_printf (CON_DEBUG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
@@ -2039,7 +2039,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 #	endif
 			Int3 ();
 #endif
-			RemoveAllObjectsBut (gameData.objs.objects [i].position.nSegment,  i);
+			RemoveAllObjectsBut (gameData.objs.objects [i].nSegment,  i);
 			return count;
 			}
 		}
@@ -2075,9 +2075,9 @@ void LinkObject (int nObject, int nSegment)
 	
 Assert (nObject != -1);
 objP = gameData.objs.objects + nObject;
-Assert (objP->position.nSegment == -1);
+Assert (objP->nSegment == -1);
 Assert (nSegment >= 0 && nSegment <= gameData.segs.nLastSegment);
-objP->position.nSegment = nSegment;
+objP->nSegment = nSegment;
 objP->next = gameData.segs.segments [nSegment].objects;
 objP->prev = -1;
 gameData.segs.segments [nSegment].objects = nObject;
@@ -2101,7 +2101,7 @@ if (gameData.objs.objects [0].prev == 0)
 void UnlinkObject (int nObject)
 {
 	tObject  *objP = gameData.objs.objects+nObject;
-	tSegment *segP= gameData.segs.segments+objP->position.nSegment;
+	tSegment *segP= gameData.segs.segments+objP->nSegment;
 
 Assert (nObject != -1);
 if (objP->prev == -1)
@@ -2110,7 +2110,7 @@ else
 	gameData.objs.objects [objP->prev].next = objP->next;
 if (objP->next != -1) 
 	gameData.objs.objects [objP->next].prev = objP->prev;
-objP->position.nSegment = -1;
+objP->nSegment = -1;
 Assert (gameData.objs.objects [0].next != 0);
 Assert (gameData.objs.objects [0].prev != 0);
 }
@@ -2327,7 +2327,7 @@ if (nObject == -1)		//no d_free gameData.objs.objects
 	return -1;
 Assert (gameData.objs.objects [nObject].nType == OBJ_NONE);		//make sure unused
 objP = gameData.objs.objects + nObject;
-Assert (objP->position.nSegment == -1);
+Assert (objP->nSegment == -1);
 // Zero out tObject structure to keep weird bugs from happening
 // in uninitialized fields.
 memset (objP, 0, sizeof (tObject));
@@ -2372,7 +2372,7 @@ if (objP->renderType == RT_POLYOBJ)
 objP->shields = 20 * F1_0;
 nSegment = FindSegByPoint (pos, nSegment);		//find correct tSegment
 Assert (nSegment != -1);
-objP->position.nSegment = -1;					//set to zero by memset, above
+objP->nSegment = -1;					//set to zero by memset, above
 LinkObject (nObject, nSegment);
 //	Set (or not) persistent bit in physInfo.
 if (objP->nType == OBJ_WEAPON) {
@@ -2419,7 +2419,7 @@ if (newObjNum == -1)
 obj = gameData.objs.objects + newObjNum;
 *objP = gameData.objs.objects [nObject];
 objP->position.vPos = objP->last_pos = *new_pos;
-objP->next = objP->prev = objP->position.nSegment = -1;
+objP->next = objP->prev = objP->nSegment = -1;
 LinkObject (newObjNum, newsegnum);
 objP->nSignature = gameData.objs.nNextSignature++;
 //we probably should initialize sub-structures here
@@ -2465,7 +2465,7 @@ if (objP->nType == OBJ_ROBOT)
 	ExecObjTriggers (nObject);
 objP->nType = OBJ_NONE;		//unused!
 objP->nSignature = -1;
-objP->position.nSegment=-1;				// zero it!
+objP->nSegment=-1;				// zero it!
 FreeObject (nObject);
 SpawnLeftoverPowerups (nObject);
 }
@@ -2539,7 +2539,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 		VmVecAdd (&local_p1, &objP->position.vPos, &player_camera_vec);		//	...so we won't have to do as many cuts.
 
 		fq.p1					= &local_p1;
-		fq.startSeg			= objP->position.nSegment;
+		fq.startSeg			= objP->nSegment;
 		fq.rad				= 0;
 		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
@@ -2574,7 +2574,7 @@ if (gameStates.app.bPlayerIsDead) {
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
 		tObject *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
-		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->position.nSegment, &player->position.vPos, 
+		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
 											 &player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 		if (nObject != -1)
 			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
@@ -2707,7 +2707,7 @@ gameStates.app.bPlayerIsDead = 1;
 VmVecZero (&player->mType.physInfo.rotThrust);
 VmVecZero (&player->mType.physInfo.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-nObject = CreateObject (OBJ_CAMERA, 0, -1, player->position.nSegment, &player->position.vPos, 
+nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
 								&player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 viewerSaveP = gameData.objs.viewer;
 if (nObject != -1)
@@ -2774,7 +2774,7 @@ LinkObject (nObject, newsegnum);
 #if 0//def _DEBUG
 #if TRACE				
 if (GetSegMasks (&gameData.objs.objects [nObject].position.vPos, 
-					  gameData.objs.objects [nObject].position.nSegment, 0).centerMask)
+					  gameData.objs.objects [nObject].nSegment, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
 #endif
 #endif
@@ -2895,11 +2895,11 @@ void CheckObjectInVolatileWall (tObject *objP)
 
 if (objP->nType != OBJ_PLAYER)
 	return;
-sideMask = GetSegMasks (&objP->position.vPos, objP->position.nSegment, objP->size).sideMask;
+sideMask = GetSegMasks (&objP->position.vPos, objP->nSegment, objP->size).sideMask;
 if (sideMask) {
 	short nSide, nWall;
 	int bit;
-	tSide *pSide = gameData.segs.segments [objP->position.nSegment].sides;
+	tSide *pSide = gameData.segs.segments [objP->nSegment].sides;
 	for (nSide = 0, bit = 1; nSide < 6; bit <<= 1, nSide++, pSide++) {
 		if (!(sideMask & bit))
 			continue;
@@ -2908,7 +2908,7 @@ if (sideMask) {
 			continue;
 		if (gameData.walls.walls [nWall].nType != WALL_ILLUSION)
 			continue;
-		if (nType = CheckVolatileWall (objP, objP->position.nSegment, nSide, &objP->position.vPos)) {
+		if (nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->position.vPos)) {
 			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
@@ -2920,7 +2920,7 @@ if (sideMask) {
 		}
 	}
 if (bChkVolaSeg) {
-	if (nType=CheckVolatileSegment (objP, objP->position.nSegment)) {
+	if (nType=CheckVolatileSegment (objP, objP->nSegment)) {
 		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {
@@ -2940,8 +2940,8 @@ if (!bUnderLavaFall && nLavaFallHissPlaying [objP->id]) {
 void HandleSpecialSegments (tObject *objP)
 {
 	fix fuel, shields;
-	tSegment *segP = gameData.segs.segments + objP->position.nSegment;
-	xsegment *xsegP = gameData.segs.xSegments + objP->position.nSegment;
+	tSegment *segP = gameData.segs.segments + objP->nSegment;
+	xsegment *xsegP = gameData.segs.xSegments + objP->nSegment;
 	tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
 
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
@@ -3094,7 +3094,7 @@ int CheckObjectHitTriggers (tObject *objP, short nPrevSegment)
 		short	nConnSide, i;
 		int	nOldLevel;
 
-if ((objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->position.nSegment))
+if ((objP->movementType != MT_PHYSICS) || (nPrevSegment == objP->nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < nPhysSegs - 1; i++) {
@@ -3122,8 +3122,8 @@ void CheckGuidedMissileThroughExit (tObject *objP, short nPrevSegment)
 {
 if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) && 
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
-	if (nPrevSegment != objP->position.nSegment) {
-		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->position.nSegment, gameData.segs.segments+nPrevSegment);
+	if (nPrevSegment != objP->nSegment) {
+		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments+nPrevSegment);
 		if (nConnSide != -1) {
 			short nWall, nTrigger;
 			nWall = WallNumI (nPrevSegment, nConnSide);
@@ -3188,7 +3188,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 
 int MoveOneObject (tObject * objP)
 {
-	short	nPrevSegment = (short) objP->position.nSegment;
+	short	nPrevSegment = (short) objP->nSegment;
 
 //if (gameStates.gameplay.bNoBotAI && (objP->nType != OBJ_PLAYER))
 //	return 1;
@@ -3290,7 +3290,7 @@ void compressObjects (void)
 
 			int	segnum_copy;
 
-			segnum_copy = gameData.objs.objects [gameData.objs.nLastObject].position.nSegment;
+			segnum_copy = gameData.objs.objects [gameData.objs.nLastObject].nSegment;
 
 			UnlinkObject (gameData.objs.nLastObject);
 
@@ -3340,7 +3340,7 @@ Assert (gameData.objs.nObjects > 0);
 for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.objects [i].nType = OBJ_NONE;
-	gameData.objs.objects [i].position.nSegment =
+	gameData.objs.objects [i].nSegment =
 	gameData.objs.objects [i].cType.explInfo.nNextAttach =
 	gameData.objs.objects [i].cType.explInfo.nPrevAttach =
 	gameData.objs.objects [i].cType.explInfo.nAttachParent =
@@ -3356,7 +3356,7 @@ nDebrisObjectCount = 0;
 //Tries to find a tSegment for an tObject, using FindSegByPoint ()
 int FindObjectSeg (tObject * objP)
 {
-return FindSegByPoint (&objP->position.vPos, objP->position.nSegment);
+return FindSegByPoint (&objP->position.vPos, objP->nSegment);
 }
 
 
@@ -3371,7 +3371,7 @@ int UpdateObjectSeg (tObject * objP)
 newseg = FindObjectSeg (objP);
 if (newseg == -1)
 	return 0;
-if (newseg != objP->position.nSegment)
+if (newseg != objP->nSegment)
 	RelinkObject (OBJ_IDX (objP), newseg);
 return 1;
 }
@@ -3390,7 +3390,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 #endif
 			Int3 ();
 			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].position.vPos, 
-											  gameData.objs.objects [i].position.nSegment);
+											  gameData.objs.objects [i].nSegment);
 			}
 }
 
@@ -3418,11 +3418,11 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 //--unused-- 		if (objP->nType != OBJ_NONE)	{
 //--unused-- 			gameData.objs.nObjects++;
 //--unused-- 			gameData.objs.nLastObject = i;
-//--unused-- 			nSegment = objP->position.nSegment;
-//--unused-- 			objP->next = objP->prev = objP->position.nSegment = -1;
+//--unused-- 			nSegment = objP->nSegment;
+//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
 //--unused-- 			LinkObject (i, nSegment);
 //--unused-- 		} else {
-//--unused-- 			objP->next = objP->prev = objP->position.nSegment = -1;
+//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
 //--unused-- 		}
 //--unused-- 	}
 //--unused-- 	

@@ -454,6 +454,8 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 	struct tSoundSlot *ssp;
 	tDigiSound *gsp;
 
+if (!gameStates.app.bUseSound)
+	return -1;
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
 if (! (pszWAV && gameOpts->sound.bUseSDLMixer)) {
@@ -586,6 +588,8 @@ return i;
 // -1 if none.
 int DigiFindChannel (short soundno)
 {
+if (!gameStates.app.bUseSound)
+	return -1;
 if (!gameStates.sound.digi.bInitialized)
 	return -1;
 if (soundno < 0)
@@ -602,6 +606,8 @@ return -1;
 //added on 980905 by adb from original source to make sfx volume work
 void DigiSetFxVolume (int dvolume)
 {
+if (!gameStates.app.bUseSound)
+	return;
 dvolume = FixMulDiv (dvolume, SOUND_MAX_VOLUME, 0x7fff);
 if (dvolume > SOUND_MAX_VOLUME)
 	gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
@@ -618,6 +624,8 @@ DigiSyncSounds ();
 
 void DigiMidiVolume (int dvolume, int mvolume)
 {
+if (!gameStates.app.bUseSound)
+	return;
 DigiSetFxVolume (dvolume);
 DigiSetMidiVolume (mvolume);
 //      //mprintf ((1, "Volume: 0x%x and 0x%x\n", gameStates.sound.digi.nVolume, midiVolume));
@@ -630,7 +638,6 @@ int DigiIsSoundPlaying (short soundno)
 	int i;
 
 soundno = DigiXlatSound (soundno);
-
 for (i = 0; i < MAX_SOUND_SLOTS; i++)
   //changed on 980905 by adb: added SoundSlots[i].playing &&
   if (SoundSlots[i].playing && SoundSlots[i].soundno == soundno)
@@ -643,8 +650,9 @@ return 0;
 //added on 980905 by adb to make sound channel setting work
 void DigiSetMaxChannels (int n) 
 { 
-	gameStates.sound.digi.nMaxChannels	= n;
-
+if (!gameStates.app.bUseSound)
+	return;
+gameStates.sound.digi.nMaxChannels	= n;
 if (gameStates.sound.digi.nMaxChannels < 1) 
 	gameStates.sound.digi.nMaxChannels = 1;
 if (gameStates.sound.digi.nMaxChannels > MAX_SOUND_SLOTS) 
@@ -675,6 +683,8 @@ return SoundSlots[channel].playing;
 
 void DigiSetChannelVolume (int channel, int volume)
 {
+if (!gameStates.app.bUseSound)
+	return;
 if (!gameStates.sound.digi.bInitialized)
 	return;
 if (!SoundSlots[channel].playing)
@@ -690,6 +700,8 @@ if (gameOpts->sound.bUseSDLMixer)
 
 void DigiSetChannelPan (int channel, int pan)
 {
+if (!gameStates.app.bUseSound)
+	return;
 if (!gameStates.sound.digi.bInitialized)
 	return;
 if (!SoundSlots[channel].playing)
@@ -709,6 +721,8 @@ void DigiStopSound (int channel)
 {
 	struct tSoundSlot *ssp = SoundSlots + channel;
 		
+if (!gameStates.app.bUseSound)
+	return;
 ssp->playing = 0;
 ssp->soundobj = -1;
 ssp->persistent = 0;
@@ -733,6 +747,8 @@ if (ssp->bResampled) {
 
 void DigiEndSound (int channel)
 {
+if (!gameStates.app.bUseSound)
+	return;
 if (!gameStates.sound.digi.bInitialized)
 	return;
 if (!SoundSlots[channel].playing)

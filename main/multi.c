@@ -933,8 +933,8 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed && lasttime!=f2i (ThisLevelTime))	{
-	for (i = 0;i<gameData.multi.nPlayers;i++)
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed && lasttime!=f2i (ThisLevelTime)) {
+	for (i = 0; i < gameData.multi.nPlayers; i++)
 		if (gameData.multi.players [i].connected) {
 			if (i == gameData.multi.nLocalPlayer) {
 				MultiSendHeartBeat ();
@@ -1657,7 +1657,7 @@ if (gameData.marker.objects [(nPlayer*2)+msgNum] !=-1 && gameData.objs.objects [
 gameData.marker.objects [(nPlayer*2)+msgNum] = 
 	DropMarkerObject (
 		&position, 
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.nSegment, 
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, 
 		&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.mOrient, 
 		(ubyte) ((nPlayer*2)+msgNum));
 strcpy (gameData.marker.nOwner [(nPlayer*2)+msgNum], gameData.multi.players [nPlayer].callsign);
@@ -2254,7 +2254,7 @@ if ((gameData.objs.objects [nObject].nType == OBJ_POWERUP) && (gameData.app.nGam
 	if (gameData.multi.powerupsInMine [id] > 0) {
 		gameData.multi.powerupsInMine [id]--;
 		if (MultiPowerupIs4Pack (id)) {
-			if (gameData.multi.powerupsInMine [--id] - 4 < 0)
+			if (gameData.multi.powerupsInMine [--id] < 4)
 				gameData.multi.powerupsInMine [id] = 0;
 			else
 				gameData.multi.powerupsInMine [id] -= 4;
@@ -2639,7 +2639,7 @@ inv_count = 0;
 cloak_count = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((gameData.objs.objects [i].nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].position.nSegment, 
+		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].nSegment, 
 									  &gameData.objs.objects [i].position.vPos, &vmdIdentityMatrix, 
 									  gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
 									  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
@@ -2818,7 +2818,7 @@ if (nTexture >- 1)
 			}
 		}
 if (bFullBright)
-	gameData.segs.segment2s [SEG_IDX (segP)].static_light = i2f (100);	//make static light bright
+	gameData.segs.segment2s [SEG_IDX (segP)].xAvgSegLight = i2f (100);	//make static light bright
 }
 
 //-----------------------------------------------------------------------------
@@ -2831,7 +2831,7 @@ int Goal_blue_segnum, Goal_red_segnum;
 void ChangeSegmentTexture (int nSegment, int oldOwner)
 {
 	tSegment	*segP = gameData.segs.segments + nSegment;
-	segment2 *seg2P = gameData.segs.segment2s + nSegment;
+	tSegment2 *seg2P = gameData.segs.segment2s + nSegment;
 	xsegment *xSegP = gameData.segs.xSegments + nSegment;
 	int		bFullBright = ((gameData.app.nGameMode & GM_HOARD) != 0) || ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bBrightenRooms);
 	static	short texOverrides [3] = {-313, TMI_BLUE_TEAM, TMI_RED_TEAM};
@@ -3668,7 +3668,7 @@ if (bForce || (t - nTimeout > 1000)) {
 	nTimeout = t;
 	multiData.msg.buf [bufP++] = (char) MULTI_MONSTERBALL;
 	multiData.msg.buf [bufP++] = (char) bCreate;
-	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.nSegment);
+	PUT_INTEL_SHORT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->nSegment);
 	bufP += 2;
 	PUT_INTEL_INT (multiData.msg.buf + bufP, gameData.hoard.monsterballP->position.vPos.p.x);
 	bufP += 4;

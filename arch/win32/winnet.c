@@ -211,7 +211,7 @@ return IPX_INIT_OK;
 
 void _CDECL_ IpxClose (void)
 {
-LogErr ("closing down IPX socket\n");
+LogErr ("closing IPX socket\n");
 if (bIpxInstalled) {
    WSACleanup ();
 	driver->CloseSocket (&ipxSocketData);
@@ -232,6 +232,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 	size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
 #ifdef _DEBUG
 	HUDMessage (0, "received %d bytes from %d.%d.%d.%d:%u", 
+					size,
 					ipx_udpSrc.src_node [0],
 					ipx_udpSrc.src_node [1],
 					ipx_udpSrc.src_node [2],

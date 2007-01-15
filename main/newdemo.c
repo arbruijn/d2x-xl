@@ -224,7 +224,7 @@ objP->position.mOrient.rVec.p.z = *sp++ << MATRIX_PRECISION;
 objP->position.mOrient.uVec.p.z = *sp++ << MATRIX_PRECISION;
 objP->position.mOrient.fVec.p.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
-objP->position.nSegment = nSegment;
+objP->nSegment = nSegment;
 pv = gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0];
 objP->position.vPos.p.x = (spp->xo << RELPOS_PRECISION) + pv->p.x;
 objP->position.vPos.p.y = (spp->yo << RELPOS_PRECISION) + pv->p.y;
@@ -398,7 +398,7 @@ if (gameOpts->demo.bOldFormat) {
 	}
 else {
 	NDWriteVector (&objP->position.vPos);	
-	NDWriteShort (objP->position.nSegment);
+	NDWriteShort (objP->nSegment);
 	NDWriteVector (&objP->mType.physInfo.velocity);
 	}
 }
@@ -500,13 +500,13 @@ if (gameData.demo.bUseShortPos) {
 	}
 else {
 	NDReadVector (&objP->position.vPos);
-	objP->position.nSegment = NDReadShort ();
+	objP->nSegment = NDReadShort ();
 	NDReadVector (&objP->mType.physInfo.velocity);
 	}
 if ((objP->id == VCLIP_MORPHING_ROBOT) && 
 		 (renderType == RT_FIREBALL) && 
 		 (objP->controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->position.nSegment);
+	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
 }
 
 
@@ -1767,10 +1767,10 @@ while (!bDone) {
 				NDReadObject (gameData.objs.viewer);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
-					nSegment = gameData.objs.viewer->position.nSegment;
+					nSegment = gameData.objs.viewer->nSegment;
 					gameData.objs.viewer->next = 
 					gameData.objs.viewer->prev = 
-					gameData.objs.viewer->position.nSegment = -1;
+					gameData.objs.viewer->nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
 					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a tSegment
@@ -1794,8 +1794,8 @@ while (!bDone) {
 			if (objP->controlType == CT_POWERUP)
 				DoPowerupFrame (objP);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				nSegment = objP->position.nSegment;
-				objP->next = objP->prev = objP->position.nSegment = -1;
+				nSegment = objP->nSegment;
+				objP->next = objP->prev = objP->nSegment = -1;
 				// HACK HACK HACK -- don't render gameData.objs.objects is segments greater than gameData.segs.nLastSegment
 				// HACK HACK HACK -- (see above)
 				if (nSegment > gameData.segs.nLastSegment)
@@ -1928,8 +1928,8 @@ while (!bDone) {
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				CATCH_BAD_READ
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-					nSegment = objP->position.nSegment;
-					objP->next = objP->prev = objP->position.nSegment = -1;
+					nSegment = objP->nSegment;
+					objP->next = objP->prev = objP->nSegment = -1;
 					LinkObject (OBJ_IDX (objP), nSegment);
 					}
 				}

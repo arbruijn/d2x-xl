@@ -597,7 +597,7 @@ void BESwapObject(tObject *objP)
 objP->nSignature     = INTEL_INT(objP->nSignature);
 objP->next          = INTEL_SHORT(objP->next);
 objP->prev          = INTEL_SHORT(objP->prev);
-objP->position.nSegment       = INTEL_SHORT(objP->position.nSegment);
+objP->nSegment       = INTEL_SHORT(objP->nSegment);
 objP->position.vPos.p.x         = INTEL_INT(objP->position.vPos.p.x);
 objP->position.vPos.p.y         = INTEL_INT(objP->position.vPos.p.y);
 objP->position.vPos.p.z         = INTEL_INT(objP->position.vPos.p.z);

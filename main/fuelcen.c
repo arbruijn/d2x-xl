@@ -105,7 +105,7 @@ void reset_allRobot_centers ()
 // Turns a tSegment into a fully charged up fuel center...
 void FuelCenCreate (tSegment *segP, int oldType)
 {
-	segment2	*seg2p = gameData.segs.segment2s + (SEG_IDX (segP));
+	tSegment2	*seg2p = gameData.segs.segment2s + (SEG_IDX (segP));
 
 	int	stationType = seg2p->special;
 	int	i;
@@ -176,7 +176,7 @@ void FuelCenCreate (tSegment *segP, int oldType)
 // This function is separate from other fuelcens because we don't want values reset.
 void MatCenCreate (tSegment *segP, int oldType)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int	stationType = seg2p->special;
 	int	i;
 
@@ -221,7 +221,7 @@ void MatCenCreate (tSegment *segP, int oldType)
 // Adds a tSegment that already is a special nType into the gameData.matCens.fuelCenters array.
 void FuelCenActivate (tSegment * segP, int stationType)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
 	seg2p->special = stationType;
 	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
@@ -240,7 +240,7 @@ void FuelCenActivate (tSegment * segP, int stationType)
 void MatCenTrigger (short nSegment)
 {
 	// -- tSegment		*segP = &gameData.segs.segments [nSegment];
-	segment2		*seg2p = &gameData.segs.segment2s [nSegment];
+	tSegment2		*seg2p = &gameData.segs.segment2s [nSegment];
 	vmsVector	pos, delta;
 	tFuelCenInfo	*robotcen;
 	int			nObject;
@@ -291,7 +291,7 @@ void MatCenTrigger (short nSegment)
 //	Deletes the tSegment point entry in the tFuelCenInfo list.
 void FuelCenDelete (tSegment * segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 	int i, j;
 
 Restart: ;
@@ -299,7 +299,7 @@ Restart: ;
 	seg2p->special = 0;
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
-		if (gameData.matCens.fuelCenters [i].position.nSegment == SEG_IDX (segP))	{
+		if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP))	{
 
 			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.robotCenters.
 			if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER) {
@@ -311,8 +311,8 @@ Restart: ;
 
 				for (j=0; j<gameData.matCens.nFuelCenters; j++) {
 					if (gameData.matCens.fuelCenters [j].Type == SEGMENT_IS_ROBOTMAKER)
-						if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].position.nSegment].nMatCen > seg2p->nMatCen)
-							gameData.segs.segment2s [gameData.matCens.fuelCenters [j].position.nSegment].nMatCen--;
+						if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2p->nMatCen)
+							gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
 				}
 			}
 
@@ -325,7 +325,7 @@ Restart: ;
 			Assert (gameData.matCens.nFuelCenters >= 0);
 			for (j=i; j<gameData.matCens.nFuelCenters; j++)	{
 				gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
-				gameData.segs.segment2s [gameData.matCens.fuelCenters [j].position.nSegment].value = j;
+				gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].value = j;
 			}
 			goto Restart;
 		}
@@ -708,7 +708,7 @@ return amount;
 fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 {
 	short		nSegment = SEG_IDX (segP);
-	segment2	*seg2p = gameData.segs.segment2s + nSegment;
+	tSegment2	*seg2p = gameData.segs.segment2s + nSegment;
 	xsegment	*xsegp = gameData.segs.xSegments + nSegment;
 
 	static fix last_playTime=0;
@@ -767,7 +767,7 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 fix RepairCenGiveShields (tSegment *segP, fix MaxAmountCanTake)
 {
 	short		nSegment = SEG_IDX (segP);
-	segment2	*seg2p = gameData.segs.segment2s + nSegment;
+	tSegment2	*seg2p = gameData.segs.segment2s + nSegment;
 	xsegment	*xsegp = gameData.segs.xSegments + nSegment;
 	static fix last_playTime=0;
 	fix amount;
@@ -980,7 +980,7 @@ return amount;
 //--repair--
 //--repair-- 		DigiPlaySample (SOUND_REPAIR_STATION_PLAYER_ENTERING, F1_0);
 //--repair--
-//--repair-- 		entry_side = john_find_connect_side (repair_seg,objP->position.nSegment);
+//--repair-- 		entry_side = john_find_connect_side (repair_seg,objP->nSegment);
 //--repair-- 		Assert (entry_side > -1);
 //--repair--
 //--repair-- 		switch (entry_side)	{
@@ -1100,7 +1100,7 @@ return amount;
 //--repair-- {
 //--repair-- 	if (RepairObj != NULL) return;		//already in repair center
 //--repair--
-//--repair-- 	if (Lsegments [objP->position.nSegment].specialType & SS_REPAIR_CENTER) {
+//--repair-- 	if (Lsegments [objP->nSegment].specialType & SS_REPAIR_CENTER) {
 //--repair--
 //--repair-- 		if (!disable_repair_center) {
 //--repair-- 			//have just entered repair center
@@ -1116,7 +1116,7 @@ return amount;
 //--repair-- 			objP->controlType = CT_REPAIRCEN;
 //--repair-- 			objP->movementType = MT_NONE;
 //--repair--
-//--repair-- 			FuelStationSeg	= Lsegments [objP->position.nSegment].special_segment;
+//--repair-- 			FuelStationSeg	= Lsegments [objP->nSegment].special_segment;
 //--repair-- 			Assert (FuelStationSeg != -1);
 //--repair--
 //--repair-- 			if (refuel_do_repair_effect (objP, 1, FuelStationSeg)) {
@@ -1191,7 +1191,7 @@ short blueFlag_goals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	segment2		*seg2P = gameData.segs.segment2s;
+	tSegment2		*seg2P = gameData.segs.segment2s;
 
 memset (flag_goal_list, 0xff, sizeof (flag_goal_list));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
@@ -1231,7 +1231,7 @@ return 0;
 
 //--------------------------------------------------------------------
 
-int CheckFlagDrop (segment2 *pSeg, int nTeamId, int nFlagId, int nGoalId)
+int CheckFlagDrop (tSegment2 *pSeg, int nTeamId, int nFlagId, int nGoalId)
 {
 if (pSeg->special != nGoalId)
 	return 0;
@@ -1252,7 +1252,7 @@ return 1;
 
 void FuelCenCheckForGoal (tSegment *segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
 	Assert (segP != NULL);
 	Assert (gameData.app.nGameMode & GM_CAPTURE);
@@ -1293,7 +1293,7 @@ else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
 
 void FuelCenCheckForHoardGoal (tSegment *segP)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
 	Assert (segP != NULL);
 	Assert (gameData.app.nGameMode & GM_HOARD);

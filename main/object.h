@@ -219,7 +219,6 @@ typedef struct tPolyObjInfo {
 typedef struct tPosition {
 	vmsVector	vPos;				// absolute x,y,z coordinate of center of object
 	vmsMatrix	mOrient;			// orientation of object in world
-	short   		nSegment;      // tSegment number containing tObject
 } tPosition;
 
 typedef struct tObject {
@@ -234,6 +233,7 @@ typedef struct tObject {
 	ubyte   		movementType;  // how this tObject moves
 	ubyte   		renderType;    // how this tObject renders
 	ubyte   		flags;         // misc flags
+	short			nSegment;
 	short   		attachedObj;   // number of attached fireball tObject
 	tPosition	position;
 	fix     		size;          // 3d size of tObject - for collision detection

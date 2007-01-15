@@ -283,7 +283,7 @@ void PagingTouchSide (tSegment * segp, short nSide)
 
 void PagingTouchRobotMaker (tSegment * segp)
 {
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
 
 	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	{
 		PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
@@ -314,7 +314,7 @@ void PagingTouchRobotMaker (tSegment * segp)
 void PagingTouchSegment (tSegment * segp)
 {
 	short sn, nObject;
-	segment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
 
 	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	
 		PagingTouchRobotMaker (segp);

@@ -452,7 +452,7 @@ if (gameData.multi.autoNG.bValid) {
 	ExecMenuOption (MENU_MULTIPLAYER);
 	return 0;
 	}
-
+LogErr ("launching main menu\n");
 do {
 	CreateMainMenu (m, nMenuChoice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
 	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!

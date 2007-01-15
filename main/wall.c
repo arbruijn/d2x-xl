@@ -1720,7 +1720,7 @@ void KillStuckObjects(int wallnum)
 // -- unused -- 		tObject	*objP = &gameData.objs.objects[StuckObjects[i].nObject];
 // -- unused --
 // -- unused -- 		if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
-// -- unused -- 			if (gameData.walls.walls[StuckObjects[i].wallnum].position.nSegment == SEG_IDX (segp))
+// -- unused -- 			if (gameData.walls.walls[StuckObjects[i].wallnum].nSegment == SEG_IDX (segp))
 // -- unused -- 				if (gameData.walls.walls[StuckObjects[i].wallnum].nSide == nSide)
 // -- unused -- 					return OBJ_IDX (objP);
 // -- unused -- 		}
@@ -1798,7 +1798,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
 				dist = VmVecDistQuick(&pnt, &objP->position.vPos);
 				if (dist < damage/2) {
-					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->position.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG);
+					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG);
 					if ((dist > 0) && (dist < damage/2))
 						CheckEffectBlowup(segp, nSide, &pnt, gameData.objs.objects + objP->cType.laserInfo.nParentObj, 1);
 				}
@@ -1829,11 +1829,11 @@ void BlastNearbyGlass(tObject *objP, fix damage)
 	sbyte   visited[MAX_SEGMENTS];
 	tSegment	*cursegp;
 
-	cursegp = &gameData.segs.segments[objP->position.nSegment];
+	cursegp = &gameData.segs.segments[objP->nSegment];
 	for (i=0; i<=gameData.segs.nLastSegment; i++)
 		visited[i] = 0;
 
-	visited[objP->position.nSegment] = 1;
+	visited[objP->nSegment] = 1;
 	BngProcessSegment(objP, damage, cursegp, 0, visited);
 
 
