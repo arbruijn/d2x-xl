@@ -3341,7 +3341,7 @@ if ((networkData.mySyncPack.data_size+len) > networkData.nMaxXDataSize) {
 // of sync when decompositing a multi-data packet.
 if (gameStates.multi.nGameType == IPX_GAME) {
 	bD2XData = (*ptr > MULTI_MAX_TYPE_D2);
-	if (bD2XData && gameStates.app.bNostalgia)
+	if (bD2XData && (gameStates.app.bNostalgia > 1))
 		return;
 	if (networkData.mySyncPack.data_size && !bD2XData && networkData.bD2XData)
 		NetworkDoFrame (1, 0);

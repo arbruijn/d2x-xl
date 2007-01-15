@@ -3588,7 +3588,9 @@ void MultiSendWeapons (int bForce)
 
 	static int nTimeout = 0;
 
-if (bForce || (t - nTimeout > 3000)) {
+if (gameStates.multi.nGameType == IPX_GAME) 
+	return;
+if (bForce || (t - nTimeout > 1000)) {
 		int i, bufP = 0;
 
 	nTimeout = t;
