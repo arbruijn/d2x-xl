@@ -740,21 +740,16 @@ int DifficultyMenu ()
 	tMenuItem m [5];
 
 memset (m, 0, sizeof (m));
-m [0].nType=NM_TYPE_MENU; m [0].text=MENU_DIFFICULTY_TEXT (0);
-m [1].nType=NM_TYPE_MENU; m [1].text=MENU_DIFFICULTY_TEXT (1);
-m [2].nType=NM_TYPE_MENU; m [2].text=MENU_DIFFICULTY_TEXT (2);
-m [3].nType=NM_TYPE_MENU; m [3].text=MENU_DIFFICULTY_TEXT (3);
-m [4].nType=NM_TYPE_MENU; m [4].text=MENU_DIFFICULTY_TEXT (4);
+for (i = 0; i < 5; i++)
+	ADD_MENU (i, MENU_DIFFICULTY_TEXT (i), 0, "");
 i = ExecMenu1 ( NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
-
 if (i <= -1)
 	return 0;
 if (choice != gameStates.app.nDifficultyLevel) {       
-	playerDefaultDifficulty = choice;
+	gameOpts->gameplay.nPlayerDifficultyLevel = choice;
 	WritePlayerFile ();
 	}
-gameOpts->gameplay.nPlayerDifficultyLevel =
-gameStates.app.nDifficultyLevel = choice;
+gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 return 1;
 }
 
@@ -1164,7 +1159,7 @@ do {
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 {
 	int	i, nMissions, nDefaultMission, nNewMission = -1;
-	char	*szMsnNames [MAXMSLIONS];
+	char	*szMsnNames [MAX_MISSIONS];
 
 	static char* menuTitles [4];
 	
@@ -1185,8 +1180,8 @@ do {
 		if (!stricmp (szMsnNames [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
-	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYERMSLION : GAMESTAT_SELECTMSLION;
-	nNewMission = ExecMenuListBox1 (bMulti ? TXT_MULTIMSLION : menuTitles [gameOpts->app.nVersionFilter], 
+	gameStates.app.nExtGameStatus = bMulti ? GAMESTAT_START_MULTIPLAYER_MISSION : GAMESTAT_SELECT_MISSION;
+	nNewMission = ExecMenuListBox1 (bMulti ? TXT_MULTI_MISSION : menuTitles [gameOpts->app.nVersionFilter], 
 											  nMissions, szMsnNames, 1, nDefaultMission, NULL);
 	GameFlushInputs ();
 	if (nNewMission == -1)
@@ -1194,7 +1189,7 @@ do {
 	} while (!gameData.missions.list [nNewMission].descent_version);
 strcpy (gameConfig.szLastMission, szMsnNames [nNewMission]);
 if (!LoadMission (nNewMission)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXTMSLION_ERROR);
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
 gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].descent_version == 1);
@@ -1206,10 +1201,99 @@ return nNewMission;
 
 //------------------------------------------------------------------------------
 
+void LegacyNewGameMenu (void)
+{
+	int			nNewLevel, nHighestPlayerLevel;
+	int			nMissions;
+	char			*m [MAX_MISSIONS];
+	int			i, choice = 0, nFolder, nDefaultMission = 0;
+	static int	nMission = -1;
+	static char	*menuTitles [4];
+	
+menuTitles [0] = TXT_NEW_GAME;
+menuTitles [1] = TXT_NEW_D1GAME;
+menuTitles [2] = TXT_NEW_D2GAME;
+menuTitles [3] = TXT_NEW_GAME;
+
+gameStates.app.bD1Mission = 0;
+gameStates.app.bD1Data = 0;
+SetDataVersion (-1);
+if ((nMission < 0) || gameOpts->app.bSinglePlayer)
+	gameFolders.szMsnSubFolder [0] = '\0';
+nFolder = -1;
+CFUseAltHogFile ("");
+do {
+	nMissions = BuildMissionList (0, nFolder);
+	if (nMissions < 1)
+		return;
+	for (i = 0; i < nMissions; i++) {
+		m [i] = gameData.missions.list[i].mission_name;
+		if (!stricmp (m [i], gameConfig.szLastMission))
+			nDefaultMission= i;
+		}
+	nMission = ExecMenuListBox1 (menuTitles [gameOpts->app.nVersionFilter], nMissions, m, 1, nDefaultMission, NULL);
+	GameFlushInputs ();
+	if (nMission == -1)
+		return;         //abort!
+	nFolder = nMission;
+	}
+while (!gameData.missions.list [nMission].descent_version);
+strcpy (gameConfig.szLastMission, m [nMission]);
+if (!LoadMission (nMission)) {
+	ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
+	return;
+}
+gameStates.app.bD1Mission = (gameData.missions.list [nMission].descent_version == 1);
+gameData.missions.nLastMission = nMission;
+nNewLevel = 1;
+
+LogErr ("   getting highest level allowed to play\n");
+nHighestPlayerLevel = GetHighestLevel ();
+
+if (nHighestPlayerLevel > gameData.missions.nLastLevel)
+	nHighestPlayerLevel = gameData.missions.nLastLevel;
+
+if (nHighestPlayerLevel > 1) {
+	tMenuItem m [4];
+	char szInfo [80];
+	char szNumber [10];
+	int choice;
+	int nItems;
+
+try_again:
+	sprintf (szInfo, "%s %d", TXT_START_ANY_LEVEL, nHighestPlayerLevel);
+
+	memset (m, 0, sizeof (m));
+	ADD_TEXT (0, szInfo, 0);
+	ADD_INPUT (1, szNumber, 10, "");
+	nItems = 2;
+
+	strcpy (szNumber, "1");
+	choice = ExecMenu ( NULL, TXT_SELECT_START_LEV, nItems, m, NULL, NULL);
+	if ((choice == -1) || !m [1].text [0])
+		return;
+	nNewLevel = atoi (m [1].text);
+	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
+		m [0].text = TXT_ENTER_TO_CONT;
+		ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+		goto try_again;
+	}
+}
+
+gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
+if (!DifficultyMenu ())
+	return;
+GrPaletteFadeOut (NULL, 32, 0 );
+if (!StartNewGame (nNewLevel))
+	SetFunctionMode (FMODE_MENU);
+}
+
+//------------------------------------------------------------------------------
+
 void NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
-	int				v;
+	int			v;
 
 m = menus + nDiffOpt;
 v = m->value;
@@ -1237,6 +1321,10 @@ void NewGameMenu ()
 	static int		nPlayerMaxLevel = 1;
 	static int		nLevel = 1;
 	
+if (gameStates.app.bNostalgia) {
+	LegacyNewGameMenu ();
+	return;
+	}
 gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
@@ -1247,7 +1335,7 @@ for (;;) {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 
-	ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTI_MISSION);
+	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 	optSelMsn = opt++;
 	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].mission_name, 0);	
 	optMsnName = opt++;

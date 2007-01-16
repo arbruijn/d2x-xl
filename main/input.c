@@ -492,6 +492,7 @@ if (! (gameOpts->input.bLimitTurnRate || (gameData.app.nGameMode & GM_MULTI)) /*
 	return 0;
 if (gameStates.app.bAutoMap || 
 	 gameOpts->input.bJoyMouse ||
+	 gameStates.app.bNostalgia ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 0))) {
 	KCCLAMP (Controls.pitchTime, MAX_PITCH);
 	KCCLAMP (Controls.headingTime, MAX_PITCH);
@@ -544,7 +545,7 @@ return h;
 
 void ControlsDoKeyboard (int *slide_on, int *bank_on, fix *pkp, fix *pkh, int *nCruiseSpeed, int bGetSlideBank)
 {
-	int	i, v, pitchScale = extraGameInfo [IsMultiGame].bFastPitch ? 2 * PH_SCALE : 1;
+	int	i, v, pitchScale = (!gameStates.app.bNostalgia && extraGameInfo [IsMultiGame].bFastPitch) ? 2 * PH_SCALE : 1;
 	fix	kp = 0;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
@@ -911,7 +912,7 @@ if (bGetSlideBank == 2) {
 		}
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
-		if (gameOpts->input.bJoyMouse) {
+		if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
 			int	dx = mouseData.x - SWIDTH / 2;
 			if (dx < 0)
 				if (dx > -16)
@@ -940,7 +941,7 @@ if (bGetSlideBank == 2) {
 					Controls.bankTime += (mouse_axis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
 			}
 		else {
-			if (gameOpts->input.bJoyMouse) {
+			if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
 				int	dy = mouseData.y - SHEIGHT / 2;
 				if (dy < 0)
 					if (dy > -16)

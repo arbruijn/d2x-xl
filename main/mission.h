@@ -12,79 +12,45 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header for mission.h
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:59:22  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:31:35  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.6  1995/01/30  12:55:41  matt
- * Added vars to point to mission names
- *
- * Revision 1.5  1995/01/22  18:57:21  matt
- * Made tPlayer highest level work with missions
- *
- * Revision 1.4  1995/01/22  14:13:21  matt
- * Added flag in mission list for anarchy-only missions
- *
- * Revision 1.3  1995/01/21  23:13:12  matt
- * Made high scores with (not work, really) with loaded missions
- * Don't give tPlayer high score when quit game
- *
- * Revision 1.2  1995/01/20  22:47:53  matt
- * Mission system implemented, though imcompletely
- *
- * Revision 1.1  1995/01/20  13:42:26  matt
- * Initial revision
- *
- *
- */
-
-#ifndef MSLION_H
-#define MSLION_H
+#ifndef _MISSION_H
+#define _MISSION_H
 
 #include "pstypes.h"
 #include "cfile.h"
 
-#define MAXMSLIONS                    300
-#define MAX_LEVELS_PERMSLION          30
-#define MAX_SECRET_LEVELS_PERMSLION   6
+#define MAX_MISSIONS                    300
+#define MAX_LEVELS_PER_MISSION          30
+#define MAX_SECRET_LEVELS_PER_MISSION   6
 #define MISSION_NAME_LEN                25
 
-#define D1MSLION_FILENAME             "descent"
-#define D1MSLION_NAME                 "Descent: First Strike"
-#define D1MSLION_HOGSIZE              6856701 // v1.4 - 1.5
-#define D1_10MSLION_HOGSIZE           7261423 // v1.0
-#define D1_15MSLION_HOGSIZE           6856183 // v1.0 -> 1.5
-#define D1_3DFXMSLION_HOGSIZE         9934912
-#define D1_MACMSLION_HOGSIZE          7456179
-#define D1_OEMMSLION_NAME             "Destination Saturn"
-#define D1_OEMMSLION_HOGSIZE          4492107 // v1.4a
-#define D1_OEM_10MSLION_HOGSIZE       4494862 // v1.0
-#define D1_SHAREWAREMSLION_NAME       "Descent Demo"
-#define D1_SHAREWAREMSLION_HOGSIZE    2339773 // v1.4
-#define D1_SHAREWARE_10MSLION_HOGSIZE 2365676 // v1.0 - 1.2
-#define D1_MAC_SHAREMSLION_HOGSIZE    3370339
+#define D1_MISSION_FILENAME             "descent"
+#define D1_MISSION_NAME                 "Descent: First Strike"
+#define D1_MISSION_HOGSIZE              6856701 // v1.4 - 1.5
+#define D1_10_MISSION_HOGSIZE           7261423 // v1.0
+#define D1_15_MISSION_HOGSIZE           6856183 // v1.0 -> 1.5
+#define D1_3DFX_MISSION_HOGSIZE         9934912
+#define D1_MAC_MISSION_HOGSIZE          7456179
+#define D1_OEM_MISSION_NAME             "Destination Saturn"
+#define D1_OEM_MISSION_HOGSIZE          4492107 // v1.4a
+#define D1_OEM_10_MISSION_HOGSIZE       4494862 // v1.0
+#define D1_SHAREWARE_MISSION_NAME       "Descent Demo"
+#define D1_SHAREWARE_MISSION_HOGSIZE    2339773 // v1.4
+#define D1_SHAREWARE_10_MISSION_HOGSIZE 2365676 // v1.0 - 1.2
+#define D1_MAC_SHARE_MISSION_HOGSIZE    3370339
 
-#define SHAREWAREMSLION_FILENAME  "d2demo"
-#define SHAREWAREMSLION_NAME      "Descent 2 Demo"
-#define SHAREWAREMSLION_HOGSIZE   2292566 // v1.0 (d2demo.hog)
-#define MAC_SHAREMSLION_HOGSIZE   4292746
+#define SHAREWARE_MISSION_FILENAME  "d2demo"
+#define SHAREWARE_MISSION_NAME      "Descent 2 Demo"
+#define SHAREWARE_MISSION_HOGSIZE   2292566 // v1.0 (d2demo.hog)
+#define MAC_SHARE_MISSION_HOGSIZE   4292746
 
-#define OEMMSLION_FILENAME        "d2"
-#define OEMMSLION_NAME            "D2 Destination:Quartzon"
-#define OEMMSLION_HOGSIZE         6132957 // v1.1
+#define OEM_MISSION_FILENAME        "d2"
+#define OEM_MISSION_NAME            "D2 Destination:Quartzon"
+#define OEM_MISSION_HOGSIZE         6132957 // v1.1
 
-#define FULLMSLION_FILENAME       "d2"
-#define FULLMSLION_HOGSIZE        7595079 // v1.1 - 1.2
-#define FULL_10MSLION_HOGSIZE     7107354 // v1.0
-#define MAC_FULLMSLION_HOGSIZE    7110007 // v1.1 - 1.2
+#define FULL_MISSION_FILENAME       "d2"
+#define FULL_MISSION_HOGSIZE        7595079 // v1.1 - 1.2
+#define FULL_10_MISSION_HOGSIZE     7107354 // v1.0
+#define MAC_FULL_MISSION_HOGSIZE    7110007 // v1.1 - 1.2
 
 //mission list entry
 typedef struct mle {
@@ -96,7 +62,7 @@ typedef struct mle {
 } mle;
 
 //values that describe where a mission is located
-#define MLMSLIONDIR   0
+#define ML_MISSIONDIR   0
 #define ML_ALTHOGDIR    1
 #define ML_CURDIR       2
 #define ML_CDROM        3
@@ -105,15 +71,15 @@ typedef struct mle {
 
 //where the missions go
 #ifndef EDITOR
-#define BASEMSLION_DIR "missions"
-#define MISSION_DIR (gameOpts->app.bSinglePlayer ? BASEMSLION_DIR "/single/" : BASEMSLION_DIR)
+#define BASE_MISSION_DIR "missions"
+#define MISSION_DIR (gameOpts->app.bSinglePlayer ? BASE_MISSION_DIR "/single/" : BASE_MISSION_DIR)
 #else
 #define MISSION_DIR "./"
 #endif
 
-#define IS_SHAREWARE (gameData.missions.nBuiltinHogSize == SHAREWAREMSLION_HOGSIZE)
-#define IS_MAC_SHARE (gameData.missions.nBuiltinHogSize == MAC_SHAREMSLION_HOGSIZE)
-#define IS_D2_OEM (gameData.missions.nBuiltinHogSize == OEMMSLION_HOGSIZE)
+#define IS_SHAREWARE (gameData.missions.nBuiltinHogSize == SHAREWARE_MISSION_HOGSIZE)
+#define IS_MAC_SHARE (gameData.missions.nBuiltinHogSize == MAC_SHARE_MISSION_HOGSIZE)
+#define IS_D2_OEM (gameData.missions.nBuiltinHogSize == OEM_MISSION_HOGSIZE)
 
 //fills in the global list of missions.  Returns the number of missions
 //in the list.  If anarchy_mode set, don't include non-anarchy levels.

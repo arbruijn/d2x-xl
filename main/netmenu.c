@@ -1332,7 +1332,7 @@ ADD_TEXT (opt, TXT_DESCRIPTION, 0);
 opt++;
 ADD_INPUT (opt, name, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
 opt_name = opt++;
-ADD_MENU (opt, TXT_SELMSLION, KEY_I, HTX_MULTI_MISSION);
+ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 opt_mission = opt++;
 ADD_TEXT (opt, "", 0);
 m [opt].rebuild = 1; 
@@ -1537,7 +1537,7 @@ else if (HoardEquipped () && m [optEntropy].value)
 else if (HoardEquipped () && m [opt_monsterball].value)
 	mpParams.nGameMode = NETGAME_MONSTERBALL;
 else if (bAnarchyOnly) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLYMSLION);
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
 	m [opt_mode+2].value = 0;
 	m [opt_mode+3].value = 0;
 	m [opt_mode].value = 1;
@@ -2224,7 +2224,7 @@ con_printf (CON_DEBUG, TXT_LOADING_MSN, activeNetGames [choice].mission_name);
 if (!(LoadMissionByName (activeNetGames [choice].mission_name, -1) ||
 		 (DownloadMission (activeNetGames [choice].mission_name) &&
 		 LoadMissionByName (activeNetGames [choice].mission_name, -1)))) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXTMSLION_NOT_FOUND);
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
 if (IS_D2_OEM && (activeNetGames [choice].levelnum > 8)) {

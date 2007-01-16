@@ -372,7 +372,7 @@ rebuild_menu:
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	if (gameOpts->app.bExpertMode) {
+	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 3)) {
 		ADD_CHECK (opt, TXT_FASTPITCH, (extraGameInfo [0].bFastPitch == 1) ? 1 : 0, KEY_T, HTX_CONF_FASTPITCH);
 		nFastPitchOpt = opt++;
 		extraGameInfo [0].bFastPitch = m [nFastPitchOpt].value ? 1 : 2;

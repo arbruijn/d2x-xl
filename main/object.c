@@ -760,6 +760,7 @@ if (nSegment != -1) {
 }
 
 //	------------------------------------------------------------------------------------------------------------------
+
 void CreateVClipOnObject (tObject *objP, fix size_scale, ubyte vclip_num)
 {
 	fix			size;
@@ -803,6 +804,8 @@ void RenderPlayerShield (tObject *objP)
 {
 	int i = objP->id;
 
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) &&
 	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -895,6 +898,8 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 	fVector		fPos, fVerts [4];
 	float			r, r2, w;
 
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -973,6 +978,8 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 	float			r, r2, r3;
 	int			nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1122,6 +1129,8 @@ void RenderTowedFlag (tObject *objP)
 
 	static uv uvList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
 
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1272,6 +1281,8 @@ void RenderThrusterFlames (tObject *objP)
 	static time_t	tPulse = 0;
 	static int		nPulse = 10;
 
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1395,6 +1406,8 @@ for (h = 0; h < nThrusters; h++) {
 
 void RenderShockwave (tObject *objP)
 {
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1475,6 +1488,8 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 
 void RenderTracers (tObject *objP)
 {
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1520,6 +1535,8 @@ static fVector vTrailVerts [2][4] = {{{0,0,0},{0,-1,-5},{0,-1,-50},{0,0,-50}},
 
 void RenderLightTrail (tObject *objP)
 {
+if (gameStates.app.bNostalgia)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1617,7 +1634,7 @@ int ConvertPowerupToWeapon (tObject *objP)
 	short			nModel, nId;
 	int			bHasModel = 0;
 
-if (!gameOpts->render.powerups.b3D)
+if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 	return 0;
 if (objP->controlType == CT_WEAPON)
 	return 1;
@@ -1748,7 +1765,7 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
-			if (gameOpts->render.powerups.b3D) {
+			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 				DrawPolygonObject (objP);
 				objP->mType.physInfo.mass = F1_0;
 				objP->mType.physInfo.drag = 512;
@@ -3168,13 +3185,12 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 		lifetime *= 2;
 		}
 
-	if ((objP->nType == OBJ_WEAPON) &&
-		 bIsMissile [objP->id] &&
-		 ((SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
-		  || gameStates.app.bNostalgia
-		  || !EGI_FLAG (bThrusterFlames, 0, 0)
-		 ))
-		return;
+	if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) {
+		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
+			return;
+		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0)) && (objP->id != MERCURYMSL_ID))
+			return;
+		}
 	if ((gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 
 		 (gameData.objs.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
 		DropAfterburnerBlobs (objP, 1, i2f (gameData.weapons.info [objP->id].afterburner_size)/16, lifetime, NULL, 0);
@@ -3192,6 +3208,8 @@ int MoveOneObject (tObject * objP)
 
 //if (gameStates.gameplay.bNoBotAI && (objP->nType != OBJ_PLAYER))
 //	return 1;
+if (objP->nType == OBJ_WEAPON && objP->id == MERCURYMSL_ID)
+	objP = objP;
 objP->last_pos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 

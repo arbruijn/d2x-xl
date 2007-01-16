@@ -1713,6 +1713,8 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 	bTGA = 0;
+	if (gameStates.app.bNostalgia)
+		gameOpts->render.textures.bUseHires = 0;
 	if ((!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk) && 
 			gameOpts->render.textures.bUseHires && 
 			//!gameStates.app.bD1Mission &&

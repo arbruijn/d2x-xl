@@ -77,7 +77,7 @@ typedef struct hli {
 
 short nHighestLevels;
 
-hli highestLevels [MAXMSLIONS];
+hli highestLevels [MAX_MISSIONS];
 
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
@@ -280,7 +280,7 @@ gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 nHighestLevels = CFReadShort(fp);
 if (swap)
 	nHighestLevels = SWAPSHORT(nHighestLevels);
-Assert(nHighestLevels <= MAXMSLIONS);
+Assert(nHighestLevels <= MAX_MISSIONS);
 
 if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestLevels) {
 	errno_ret = errno;
@@ -451,8 +451,10 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].gameplay.bFastRespawn = (int) CFReadByte (fp);
 	if (!j && (player_file_version >= 46))
 		extraGameInfo [0].bDualMissileLaunch = (int) CFReadByte (fp);
-	if (player_file_version >= 47)
+	if (player_file_version >= 47) {
 		gameOptions [j].gameplay.nPlayerDifficultyLevel = (int) CFReadByte (fp);
+		gameOptions [j].gameplay.nPlayerDifficultyLevel = NMCLAMP (gameOptions [j].gameplay.nPlayerDifficultyLevel, 0, 4);
+		}
 	if (player_file_version >= 48)
 		gameOptions [j].render.bTransparentEffects = (int) CFReadByte (fp);
 	if (!j && (player_file_version >= 49))
@@ -817,7 +819,7 @@ int FindHLIEntry()
 
 	if (i==nHighestLevels) {		//not found.  create entry
 
-		if (i==MAXMSLIONS)
+		if (i==MAX_MISSIONS)
 			i--;		//take last entry
 		else
 			nHighestLevels++;
@@ -918,7 +920,7 @@ int WritePlayerFile()
 	CFWriteByte ((sbyte) gameOptions [0].render.bAutomapAlwaysHires, fp);
 
 	//write higest level info
-	Assert(nHighestLevels <= MAXMSLIONS);
+	Assert(nHighestLevels <= MAX_MISSIONS);
 	CFWriteShort(nHighestLevels, fp);
 	if ((CFWrite(highestLevels, sizeof(hli), nHighestLevels, fp) != nHighestLevels))
 	{

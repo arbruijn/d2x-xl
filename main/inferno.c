@@ -607,7 +607,7 @@ if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
 #else
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #endif
-sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir, /* *gameFolders.szGameDir ? "/" :*/ "", BASEMSLION_DIR);
+sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir, /* *gameFolders.szGameDir ? "/" :*/ "", BASE_MISSION_DIR);
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (Args [i + 1]);
 }
@@ -2341,7 +2341,9 @@ void LoadHiresModels (void)
 
 InitModelToOOF ();
 gameData.models.nHiresModels = 0;
-if (gameOpts->render.bHiresModels) {
+if (gameStates.app.bNostalgia)
+	gameOpts->render.bHiresModels = 0;
+else if (gameOpts->render.bHiresModels) {
 	while (i < sizeofa (oofToModel)) {
 #if OOF_TEST_CUBE
 		if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))

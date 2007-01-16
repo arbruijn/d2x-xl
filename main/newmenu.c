@@ -2301,7 +2301,9 @@ launchOption:
 						if (++choice1 >= nItems) 
 							choice1=0;
 						t = item [choice1].nType;
-						if (item [choice1].key > 0)
+						if (gameStates.app.bNostalgia)
+							ch = item [choice1].text [0];
+						else if (item [choice1].key > 0)
 							ch = MENU_KEY (item [choice1].key, 0);
 						else if (item [choice1].key < 0) //skip any leading blanks
 							for (i=0; (ch=item [choice1].text [i]) && ch==' ';i++)
@@ -3703,7 +3705,7 @@ for (i = 0; i < 5; i++) {
 	}
 sprintf (mtext [opt], TXT_NGI_GAME, activeNetGames [choice].game_name); 
 opt++;
-sprintf (mtext [opt], TXT_NGIMSLION, activeNetGames [choice].mission_title); 
+sprintf (mtext [opt], TXT_NGI_MISSION, activeNetGames [choice].mission_title); 
 opt++;
 sprintf (mtext [opt], TXT_NGI_LEVEL, activeNetGames [choice].levelnum); 
 opt++;

@@ -112,7 +112,7 @@ int ConvertVClipToPolymodel (tObject *objP)
 	vmsAngVec	a;
 	short			nModel;
 
-if (!gameOpts->render.powerups.b3D)
+if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 	return 0;
 if (objP->renderType == RT_POLYOBJ)
 	return 1;

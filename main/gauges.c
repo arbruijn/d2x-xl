@@ -2086,6 +2086,8 @@ for (j = firstItem; j < n; j++) {
 
 void HUDShowIcons (void)
 {
+if (gameStates.app.bNostalgia)
+	return;
 HUDToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || 
 	 ((gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
@@ -3760,7 +3762,7 @@ void ShowReticle (int force_big_one)
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
        }
-if (gameOpts->input.bJoyMouse && gameOpts->render.cockpit.bMouseIndicator)
+if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 }
 
