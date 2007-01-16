@@ -2317,15 +2317,11 @@ static tOOFToModel oofToModel [] = {
 	{"converter.oof", MAX_POLYGON_MODELS - 24},
 	{"fullmap.oof", MAX_POLYGON_MODELS - 25},
 	{"cloak.oof", MAX_POLYGON_MODELS - 26},
-	{"invul.oof", MAX_POLYGON_MODELS - 267,
+	{"invul.oof", MAX_POLYGON_MODELS - 27},
 	{"extralife.oof", MAX_POLYGON_MODELS - 28},
 	{"bluekey.oof", MAX_POLYGON_MODELS - 29},
 	{"redkey.oof", MAX_POLYGON_MODELS - 30},
-	{"goldkey.oof", MAX_POLYGON_MODELS - 31},
-	{".oof", MAX_POLYGON_MODELS - 32},
-	{".oof", MAX_POLYGON_MODELS - 33},
-	{".oof", MAX_POLYGON_MODELS - 34},
-	{".oof", MAX_POLYGON_MODELS - 35}
+	{"goldkey.oof", MAX_POLYGON_MODELS - 31}
 	};
 
 void InitModelToOOF (void)
