@@ -1062,7 +1062,7 @@ EvalMusicArgs ();
 void InitRenderOptions (int i)
 {
 if (i) {
-	extraGameInfo [0].bPowerUpsOnRadar = 0;
+	extraGameInfo [0].bPowerupsOnRadar = 0;
 	extraGameInfo [0].bRobotsOnRadar = 0;
 	extraGameInfo [0].bUseCameras = 0;
 	if (gameStates.app.bNostalgia > 2)

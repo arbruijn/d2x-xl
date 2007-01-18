@@ -85,7 +85,7 @@ extern int nNetworkGameSubType;
 
 typedef struct tSequencePacket {
 	ubyte           nType;
-	int             Security;
+	int             nSecurity;
 	ubyte           pad1[3];
 	tNetPlayerInfo  player;
 } __pack__ tSequencePacket;
@@ -158,14 +158,14 @@ typedef struct tMonsterballForce {
 	ubyte		nForce;
 } tMonsterballForce;
 
-typedef struct monsterball_info {
+typedef struct tMonsterballInfo {
 	char					nBonus;
 	char					nSizeMod;
 	tMonsterballForce forces [MAX_MONSTERBALL_FORCES];
 
-} monsterball_info;
+} tMonsterballInfo;
 
-typedef struct extra_gameinfo {
+typedef struct tExtraGameInfo {
 	ubyte   	nType;
 	char		bFriendlyFire;
 	char		bInhibitSuicide;
@@ -173,7 +173,7 @@ typedef struct extra_gameinfo {
 	long		nSpawnDelay;
 	char		bEnhancedCTF;
 	char		bRadarEnabled;
-	char		bPowerUpsOnRadar;
+	char		bPowerupsOnRadar;
 	char		nZoomMode;
 	char		bRobotsHitRobots;
 	char		bAutoDownload;
@@ -224,8 +224,10 @@ typedef struct extra_gameinfo {
 	char		nSpotSize;
 	char		nSpotStrength;
 	int		nLightRange;
-	monsterball_info	monsterball;
-} __pack__ extra_gameinfo;
+	tMonsterballInfo	monsterball;
+	char		szGameName [NETGAME_NAME_LEN + 1];
+	int		nSecurity;
+} __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {
 	char	szGameName [NETGAME_NAME_LEN + 1];	
@@ -349,7 +351,7 @@ void NetworkLeaveGame();
 int NetworkEndLevel(int *secret);
 void NetworkEndLevelPoll2(int nitems, struct tMenuItem * menus, int * key, int citem);
 
-extern extra_gameinfo extraGameInfo [2];
+extern tExtraGameInfo extraGameInfo [2];
 
 int NetworkListen();
 int NetworkLevelSync();
@@ -425,7 +427,7 @@ int InitAutoNetGame (void);
 #define NETSECURITY_WAIT_FOR_PLAYERS    1
 #define NETSECURITY_WAIT_FOR_GAMEINFO   2
 #define NETSECURITY_WAIT_FOR_SYNC       3
-/* The networkData.nSecurityNum and the "Security" field of the network structs
+/* The networkData.nSecurityNum and the "nSecurity" field of the network structs
  * identifies a netgame. It is a random number chosen by the network master
  * (the one that did "start netgame").
  */
@@ -460,23 +462,23 @@ typedef struct tEndLevelInfoShort {
 
 typedef struct tLiteInfo {
 	ubyte                           nType;
-	int                             Security;
-	char                            game_name [NETGAME_NAME_LEN+1];
-	char                            mission_title [MISSION_NAME_LEN+1];
-	char                            mission_name [9];
-	int                             levelnum;
-	ubyte                           gamemode;
-	ubyte                           RefusePlayers;
+	int                             nSecurity;
+	char                            szGameName [NETGAME_NAME_LEN+1];
+	char                            szMissionTitle [MISSION_NAME_LEN+1];
+	char                            szMissionName [9];
+	int                             nLevel;
+	ubyte                           gameMode;
+	ubyte                           bRefusePlayers;
 	ubyte                           difficulty;
-	ubyte                           game_status;
-	ubyte                           numplayers;
-	ubyte                           max_numplayers;
-	ubyte                           numconnected;
+	ubyte                           gameStatus;
+	ubyte                           nNumPlayers;
+	ubyte                           nMaxPlayers;
+	ubyte                           nConnected;
 	ubyte                           gameFlags;
 	ubyte                           protocol_version;
 	ubyte                           version_major;
 	ubyte                           version_minor;
-	ubyte                           team_vector;
+	ubyte                           teamVector;
 } __pack__ tLiteInfo;
 
 #define NETGAME_INFO_SIZE       sizeof(tNetgameInfo)
@@ -485,7 +487,7 @@ typedef struct tLiteInfo {
 #define SEQUENCE_PACKET_SIZE    sizeof(tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof(tFrameInfo)
 #define IPX_SHORT_INFO_SIZE     sizeof(tFrameInfoShort)
-#define ENTROPY_INFO_SIZE       sizeof(extra_gameinfo)
+#define ENTROPY_INFO_SIZE       sizeof(tExtraGameInfo)
 
 #define MAX_ACTIVE_NETGAMES     80
 
@@ -499,12 +501,12 @@ void NetworkCheckForOldVersion(char pnum);
 void NetworkInit(void);
 void NetworkFlush();
 int  NetworkWaitForAllInfo(int choice);
-void NetworkSetGameMode(int gamemode);
+void NetworkSetGameMode(int gameMode);
 void NetworkAdjustMaxDataSize();
 int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
 void RestartNetSearching(tMenuItem * m);
 void DeleteTimedOutNetGames (void);
-void InitMonsterballSettings (monsterball_info *monsterballP);
+void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 char *iptos (char *pszIP, char *addr);
 
@@ -521,6 +523,6 @@ extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 
-#define COMPETITION	extraGameInfo [IsMultiGame].bCompetition
+#define COMPETITION	(IsMultiGame && extraGameInfo [1].bCompetition)
 
 #endif /* _NETWORK_H */

@@ -533,7 +533,7 @@ if (speed < 0)
 if ((speed <= 0) || (speed > 10))
 	speed = 10;
 speedBoostSpeed = speed;
-v = 60 + extraGameInfo [IsMultiGame].nSpeedBoost * 4 * speed;
+v = 60 + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
 if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
 		VmVecSub (&n, pDestPt, pSrcPt);
@@ -644,7 +644,7 @@ if (gameStates.app.b40fpsTick && gameStates.gameplay.nDirSteps)
 
 void DoSpeedBoost (tTrigger *trigP, short nObject)
 {
-if (extraGameInfo [IsMultiGame].nSpeedBoost) {
+if (COMPETITION || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	wall *w = TriggerParentWall (TRIG_IDX (trigP));
 	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, trigP->value, 

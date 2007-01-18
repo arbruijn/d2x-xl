@@ -414,7 +414,7 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 32)
 		gameOptions [j].render.cockpit.nWindowZoom = (int) CFReadByte (fp);
 	if (!j && (player_file_version >= 33))
-		extraGameInfo [0].bPowerUpsOnRadar = (int) CFReadByte (fp);
+		extraGameInfo [0].bPowerupsOnRadar = (int) CFReadByte (fp);
 	if (player_file_version >= 34) {
 		gameOptions [j].input.keyRampScale = (int) CFReadByte (fp);
 		if (gameOptions [j].input.keyRampScale < 10)
@@ -994,7 +994,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.nWindowPos, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.nWindowZoom, fp);
 	if (!j)
-		CFWriteByte ((sbyte) extraGameInfo [0].bPowerUpsOnRadar, fp);
+		CFWriteByte ((sbyte) extraGameInfo [0].bPowerupsOnRadar, fp);
 	CFWriteByte ((sbyte) gameOptions [j].input.keyRampScale, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.color.bAmbientLight, fp);
 	CFWriteByte ((sbyte) gameOptions [j].ogl.bSetGammaRamp, fp);

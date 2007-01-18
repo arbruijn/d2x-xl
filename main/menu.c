@@ -1176,7 +1176,7 @@ do {
 		return -1;
 	nDefaultMission = 0;
 	for (i = 0; i < nMissions; i++) {
-		szMsnNames [i] = gameData.missions.list [i].mission_name;
+		szMsnNames [i] = gameData.missions.list [i].szMissionName;
 		if (!stricmp (szMsnNames [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
@@ -1227,7 +1227,7 @@ do {
 	if (nMissions < 1)
 		return;
 	for (i = 0; i < nMissions; i++) {
-		m [i] = gameData.missions.list[i].mission_name;
+		m [i] = gameData.missions.list[i].szMissionName;
 		if (!stricmp (m [i], gameConfig.szLastMission))
 			nDefaultMission= i;
 		}
@@ -1337,7 +1337,7 @@ for (;;) {
 
 	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 	optSelMsn = opt++;
-	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].mission_name, 0);	
+	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);	
 	optMsnName = opt++;
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 #if 0
@@ -1761,7 +1761,7 @@ do {
 	optMissileView = opt++;
 	ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_F, HTX_CPIT_GUIDEDVIEW);
 	optGuided = opt++;
-	ADD_CHECK (opt, TXT_RADAR_PWRUPS, extraGameInfo [0].bPowerUpsOnRadar, KEY_R, HTX_CPIT_RADARPWRUPS);
+	ADD_CHECK (opt, TXT_RADAR_PWRUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_R, HTX_CPIT_RADARPWRUPS);
 	optPwrUpsOnRadar = opt++;
 	ADD_CHECK (opt, TXT_RADAR_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_B, HTX_CPIT_RADARBOTS);
 	optBotsOnRadar = opt++;
@@ -1789,7 +1789,7 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissileView);
 	GET_VAL (gameOpts->render.cockpit.bGuidedInMainView, optGuided);
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
-	extraGameInfo [0].bPowerUpsOnRadar = m [optPwrUpsOnRadar].value;
+	extraGameInfo [0].bPowerupsOnRadar = m [optPwrUpsOnRadar].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optBotsOnRadar].value;
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);

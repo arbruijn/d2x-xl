@@ -454,7 +454,7 @@ short GetTeam (int nPlayer)
 {
 if ((gameData.app.nGameMode & GM_CAPTURE) && ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)))
 	return nPlayer;
-if (netGame.team_vector & (1 << nPlayer))
+if (netGame.teamVector & (1 << nPlayer))
 	return 1;
 else
 	return 0;
@@ -485,16 +485,16 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 
 if (team  >= 0) {
 	if (team)
-		netGame.team_vector |= (1 << nPlayer);
+		netGame.teamVector |= (1 << nPlayer);
 	else
-		netGame.team_vector &= ~ (1 << nPlayer);
+		netGame.teamVector &= ~ (1 << nPlayer);
 	}
 else {
 	team = !GetTeam (nPlayer);
 	if (team)
-		netGame.team_vector |= (1 << nPlayer);
+		netGame.teamVector |= (1 << nPlayer);
 	else
-		netGame.team_vector &= ~ (1 << nPlayer);
+		netGame.teamVector &= ~ (1 << nPlayer);
 	NetworkSendNetgameUpdate ();
 	}
 sprintf (multiData.msg.szMsg, TXT_TEAMCHANGE3, gameData.multi.players [nPlayer].callsign);
@@ -933,7 +933,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed && lasttime!=f2i (ThisLevelTime)) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=f2i (ThisLevelTime)) {
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		if (gameData.multi.players [i].connected) {
 			if (i == gameData.multi.nLocalPlayer) {
@@ -3370,7 +3370,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 void MultiSendHeartBeat ()
 {
-if (!netGame.PlayTimeAllowed)
+if (!netGame.xPlayTimeAllowed)
 	return;
 multiData.msg.buf [0] = MULTI_HEARTBEAT;
 PUT_INTEL_INT (multiData.msg.buf+1, ThisLevelTime);

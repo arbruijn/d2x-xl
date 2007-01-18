@@ -74,6 +74,9 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
+#define AGI	activeNetGames [choice]
+#define AXI activeExtraGameInfo [choice]
+
 /* the following are the possible packet identificators.
  * they are stored in the "nType" field of the packet structs.
  * they are offset 4 bytes from the beginning of the raw IPX data
@@ -346,10 +349,10 @@ if (nm > gameData.multi.nMaxPlayers) {
 
 //       if (nitems > MAX_PLAYERS) return; 
 
-n = netGame.numplayers;
+n = netGame.nNumPlayers;
 NetworkListen ();
 
-if (n < netGame.numplayers) {
+if (n < netGame.nNumPlayers) {
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	if (gameOpts->multi.bNoRankings)
 	   sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %-20s", gameData.multi.nPlayers, netPlayers.players [gameData.multi.nPlayers-1].callsign);
@@ -359,7 +362,7 @@ if (n < netGame.numplayers) {
 	if (gameData.multi.nPlayers <= gameData.multi.nMaxPlayers)
 		menus [gameData.multi.nPlayers - 1].value = 1;
 	} 
-else if (n > netGame.numplayers) {
+else if (n > netGame.nNumPlayers) {
 	// One got removed...
    DigiPlaySample (SOUND_HUD_KILL, F1_0);
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
@@ -411,8 +414,8 @@ if (menus [opt_coop].value) {
 		}
 	if (!(netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGame.PlayTimeAllowed || netGame.KillGoal) {
-		netGame.PlayTimeAllowed = 0;
+	if (netGame.xPlayTimeAllowed || netGame.KillGoal) {
+		netGame.xPlayTimeAllowed = 0;
 		netGame.KillGoal = 0;
 		}
 	}
@@ -462,9 +465,9 @@ if (menus [optPlayTime].value != LastPTA) {
 		return;
 		}
 
-	mpParams.nMaxTime = netGame.PlayTimeAllowed = menus [optPlayTime].value;
-	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
-	LastPTA = netGame.PlayTimeAllowed;
+	mpParams.nMaxTime = netGame.xPlayTimeAllowed = menus [optPlayTime].value;
+	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
+	LastPTA = netGame.xPlayTimeAllowed;
 	menus [optPlayTime].rebuild = 1;
 	}
 if (menus [optKillGoal].value!= LastKillGoal) {
@@ -502,7 +505,7 @@ do {
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
 	ADD_SLIDER (opt, szInvul + 1, mpParams.nReactorLife, 0, 10, KEY_R, HTX_MULTI2_REACTOR); 
 	opt_cinvul = opt++;
-	sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.PlayTimeAllowed*5, TXT_MINUTES_ABBREV);
+	sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 	*szPlayTime = * (TXT_MAXTIME - 1);
 	ADD_SLIDER (opt, szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
 	optPlayTime = opt++;
@@ -1193,7 +1196,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 gameData.multi.nMaxPlayers = MAX_NUM_NET_PLAYERS;
 //netGame.KillGoal = 0;
-//netGame.PlayTimeAllowed = 0;
+//netGame.xPlayTimeAllowed = 0;
 //netGame.bAllowMarkerView = 1;
 #if 0 // can be called via menu option now so you don't need to chose a level if you have one already
 nNewMission = MultiChooseMission (&bAnarchyOnly);
@@ -1328,13 +1331,13 @@ if (!gameStates.app.bNostalgia) {
 doMenu:
 
 if (m [optMissionName].rebuild) {
-	strncpy (netGame.mission_name, 
+	strncpy (netGame.szMissionName, 
 				(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
-				sizeof (netGame.mission_name) - 1);
+				sizeof (netGame.szMissionName) - 1);
 	m [optMissionName].text = 
 			(nNewMission < 0) ? 
 		TXT_NONE_SELECTED : 
-		gameData.missions.list [nNewMission].mission_name;
+		gameData.missions.list [nNewMission].szMissionName;
 	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
@@ -1385,16 +1388,16 @@ else if (choice == opt_mission) {
 	m [optMissionName].rebuild = 1;
 	goto build_menu;
 	}
-netGame.RefusePlayers = m [opt_refuse].value;
+netGame.bRefusePlayers = m [opt_refuse].value;
 
 if (key != -1) {
 	int j;
 		   
 gameData.multi.nMaxPlayers = m [optMaxNet].value+2;
-netGame.max_numplayers = gameData.multi.nMaxPlayers;
+netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
 			
 for (j = 0; j < networkData.nActiveGames; j++)
-	if (!stricmp (activeNetGames [j].game_name, name)) {
+	if (!stricmp (activeNetGames [j].szGameName, name)) {
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
 		goto doMenu;
 	}
@@ -1485,8 +1488,8 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bDamageIndicators = 0;
 	extraGameInfo [1].bHitIndicators = 0;
 	}
-netGame.mission_name [sizeof (netGame.mission_name) - 1] = '\0';
-strcpy (netGame.mission_title, gameData.missions.list [nNewMission].mission_name + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
+netGame.szMissionName [sizeof (netGame.szMissionName) - 1] = '\0';
+strcpy (netGame.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
 netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 return key;
@@ -1549,7 +1552,7 @@ int NetworkSelectTeams (void)
 {
 	tMenuItem m [MAX_PLAYERS+4];
 	int choice, opt, opt_team_b;
-	ubyte team_vector = 0;
+	ubyte teamVector = 0;
 	char team_names [2] [CALLSIGN_LEN+1];
 	int i;
 	int pnums [MAX_PLAYERS+2];
@@ -1558,7 +1561,7 @@ int NetworkSelectTeams (void)
 
 	for (i = gameData.multi.nPlayers/2; i < gameData.multi.nPlayers; i++) // Put first half of players on team A
 	{
-		team_vector |= (1 << i);
+		teamVector |= (1 << i);
 	}
 
 	sprintf (team_names [0], "%s", TXT_BLUE);
@@ -1576,7 +1579,7 @@ doMenu:
 	opt = 1;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 	{
-		if (!(team_vector & (1 << i)))
+		if (!(teamVector & (1 << i)))
 		{
 			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
@@ -1591,7 +1594,7 @@ doMenu:
 	opt++;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 	{
-		if (team_vector & (1 << i))
+		if (teamVector & (1 << i))
 		{
 			m [opt].nType = NM_TYPE_MENU; 
 			m [opt].text = netPlayers.players [i].callsign; 
@@ -1618,17 +1621,17 @@ doMenu:
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		}
 		
-		netGame.team_vector = team_vector;
+		netGame.teamVector = teamVector;
 		strcpy (netGame.team_name [0], team_names [0]);
 		strcpy (netGame.team_name [1], team_names [1]);
 		return 1;
 	}
 
 	else if ((choice > 0) && (choice < opt_team_b)) {
-		team_vector |= (1 << pnums [choice]);
+		teamVector |= (1 << pnums [choice]);
 	}
 	else if ((choice > opt_team_b) && (choice < opt-2)) {
-		team_vector &= ~ (1 << pnums [choice]);
+		teamVector &= ~ (1 << pnums [choice]);
 	}
 	else if (choice == -1)
 		return 0;
@@ -1682,7 +1685,7 @@ abort:
 				DUMP_ABORTED);
 		}
 
-	netGame.numplayers = 0;
+	netGame.nNumPlayers = 0;
 	NetworkSendGameInfo (0); // Tell everyone we're bailing
 	ipx_handle_leave_game (); // Tell the network driver we're bailing too
 	networkData.nStatus = NETSTAT_MENU;
@@ -1694,7 +1697,7 @@ for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].value) 
 		gameData.multi.nPlayers++;
 	}
-if (gameData.multi.nPlayers > netGame.max_numplayers) {
+if (gameData.multi.nPlayers > netGame.nMaxPlayers) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
 	gameData.multi.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
@@ -1710,9 +1713,9 @@ if (gameData.multi.nPlayers < 2) {
 #endif
 
 #ifdef RELEASE
-if ((netGame.gamemode == NETGAME_TEAM_ANARCHY ||
-	  netGame.gamemode == NETGAME_CAPTURE_FLAG || 
-	  netGame.gamemode == NETGAME_TEAM_HOARD) && 
+if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
+	  netGame.gameMode == NETGAME_CAPTURE_FLAG || 
+	  netGame.gameMode == NETGAME_TEAM_HOARD) && 
 	 (gameData.multi.nPlayers < 2)) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multi.nPlayers = nSavePlayers;
@@ -1772,13 +1775,13 @@ for (i = gameData.multi.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.players [i].rank = 0;
 	}
 #if 1				
-con_printf (CON_DEBUG, "Select teams: Game mode is %d\n", netGame.gamemode);
+con_printf (CON_DEBUG, "Select teams: Game mode is %d\n", netGame.gameMode);
 #endif
-if (netGame.gamemode == NETGAME_TEAM_ANARCHY ||
-	 netGame.gamemode == NETGAME_CAPTURE_FLAG ||
-	 netGame.gamemode == NETGAME_TEAM_HOARD ||
-	 netGame.gamemode == NETGAME_ENTROPY ||
-	 netGame.gamemode == NETGAME_MONSTERBALL)
+if (netGame.gameMode == NETGAME_TEAM_ANARCHY ||
+	 netGame.gameMode == NETGAME_CAPTURE_FLAG ||
+	 netGame.gameMode == NETGAME_TEAM_HOARD ||
+	 netGame.gameMode == NETGAME_ENTROPY ||
+	 netGame.gameMode == NETGAME_MONSTERBALL)
 	if (!NetworkSelectTeams ())
 		goto abort;
 return 1; 
@@ -1936,24 +1939,24 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 #endif
 	// Copy the active games data into the menu options
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
-			int game_status = activeNetGames [i].game_status;
+			int gameStatus = activeNetGames [i].gameStatus;
 			int nplayers = 0;
 			char szLevelName [20], szMissionName [50], szGameName [50];
-			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? FindMissionByName (activeNetGames [i].mission_name, -1) : -1;
+			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? FindMissionByName (activeNetGames [i].szMissionName, -1) : -1;
 
 		// These next two loops protect against menu skewing
 		// if missiontitle or gamename contain a tab
 
-		PruneText (szMissionName, activeNetGames [i].mission_title, sizeof (szMissionName), 4, nLevelVersion);
-		PruneText (szGameName, activeNetGames [i].game_name, sizeof (szGameName), 1, -1);
-		nplayers = activeNetGames [i].numconnected;
-		if (activeNetGames [i].levelnum < 0)
-			sprintf (szLevelName, "S%d", -activeNetGames [i].levelnum);
+		PruneText (szMissionName, activeNetGames [i].szMissionTitle, sizeof (szMissionName), 4, nLevelVersion);
+		PruneText (szGameName, activeNetGames [i].szGameName, sizeof (szGameName), 1, -1);
+		nplayers = activeNetGames [i].nConnected;
+		if (activeNetGames [i].nLevel < 0)
+			sprintf (szLevelName, "S%d", -activeNetGames [i].nLevel);
 		else
-			sprintf (szLevelName, "%d", activeNetGames [i].levelnum);
-		if (game_status == NETSTAT_STARTING)
+			sprintf (szLevelName, "%d", activeNetGames [i].nLevel);
+		if (gameStatus == NETSTAT_STARTING)
 			psz = "Forming";
-		else if (game_status == NETSTAT_PLAYING) {
+		else if (gameStatus == NETSTAT_PLAYING) {
 			nJoinStatus = CanJoinNetgame (activeNetGames + i, NULL);
 
 			if (nJoinStatus == 1)
@@ -1968,8 +1971,8 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 		else 
 			psz = "Between";
 		sprintf (szOption, "%2d.\t%s\t%s\t%d/%d\t%s\t%s\t%s", 
-					i + 1, szGameName, szModeLetters [activeNetGames [i].gamemode], nplayers, 
-					activeNetGames [i].max_numplayers, szMissionName, szLevelName, psz);
+					i + 1, szGameName, szModeLetters [activeNetGames [i].gameMode], nplayers, 
+					activeNetGames [i].nMaxPlayers, szMissionName, szLevelName, psz);
 		Assert (strlen (szOption) < 100);
 		if (strcmp (szOption, menus [h].text)) {
 			memcpy (menus [h].text, szOption, 100);
@@ -2099,21 +2102,21 @@ if (choice >= networkData.nActiveGames) {
 	}
 
 // Choice has been made and looks legit
-if (activeNetGames [choice].game_status == NETSTAT_ENDLEVEL) {
+if (AGI.gameStatus == NETSTAT_ENDLEVEL) {
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
-if (activeNetGames [choice].protocol_version != MULTI_PROTO_VERSION) {
-	if (activeNetGames [choice].protocol_version == 3) {
+if (AGI.protocol_version != MULTI_PROTO_VERSION) {
+	if (AGI.protocol_version == 3) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
 		}
-	else if (activeNetGames [choice].protocol_version == 4) {
+	else if (AGI.protocol_version == 4) {
 		}
 	else {
 		char	szFmt [200], szError [200];
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
-		sprintf (szError, szFmt, MULTI_PROTO_VERSION, activeNetGames [choice].protocol_version);
+		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.protocol_version);
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
 		}
 	goto doMenu;
@@ -2124,18 +2127,18 @@ if (gameStates.multi.bUseTracker) {
 	GetServerFromList (choice);
 	}
 // Check for valid mission name
-con_printf (CON_DEBUG, TXT_LOADING_MSN, activeNetGames [choice].mission_name);
-if (!(LoadMissionByName (activeNetGames [choice].mission_name, -1) ||
-		(DownloadMission (activeNetGames [choice].mission_name) &&
-		 LoadMissionByName (activeNetGames [choice].mission_name, -1)))) {
+con_printf (CON_DEBUG, TXT_LOADING_MSN, AGI.szMissionName);
+if (!(LoadMissionByName (AGI.szMissionName, -1) ||
+		(DownloadMission (AGI.szMissionName) &&
+		 LoadMissionByName (AGI.szMissionName, -1)))) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
-if (IS_D2_OEM && (activeNetGames [choice].levelnum > 8)) {
+if (IS_D2_OEM && (AGI.nLevel > 8)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;
 	}
-if (IS_MAC_SHARE && (activeNetGames [choice].levelnum > 4)) {
+if (IS_MAC_SHARE && (AGI.nLevel > 4)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
 	goto doMenu;
 	}
@@ -2147,7 +2150,7 @@ if (!NetworkWaitForAllInfo (choice)) {
 
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
   if (!CanJoinNetgame (activeNetGames + choice, activeNetPlayers + choice)) {
-	if (activeNetGames [choice].numplayers == activeNetGames [choice].max_numplayers)
+	if (AGI.nNumPlayers == AGI.nMaxPlayers)
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
 	else
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
@@ -2157,7 +2160,7 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 memcpy (&netGame, activeNetGames + choice, sizeof (tNetgameInfo));
 memcpy (&netPlayers, activeNetPlayers + choice, sizeof (tAllNetPlayersInfo));
 gameStates.app.nDifficultyLevel = netGame.difficulty;
-gameData.multi.nMaxPlayers = netGame.max_numplayers;
+gameData.multi.nMaxPlayers = netGame.nMaxPlayers;
 ChangePlayerNumTo (1);
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to
@@ -2166,10 +2169,10 @@ if (IpxHandleNetGameAuxData (netGame.AuxData) < 0) {
 	networkData.nStatus = NETSTAT_BROWSING;
 	goto doMenu;
 	}
-NetworkSetGameMode (netGame.gamemode);
+NetworkSetGameMode (netGame.gameMode);
 NetworkAdjustMaxDataSize ();
 //LogErr ("loading level\n");
-StartNewLevel (netGame.levelnum, 0);
+StartNewLevel (netGame.nLevel, 0);
 //LogErr ("exiting netgame browser\n");
 NMRemoveBackground (&bg);
 return 1;         // look ma, we're in a game!!!
@@ -2388,6 +2391,166 @@ for (;;) {
 	}
 return 0;
 } 
+
+//------------------------------------------------------------------------------
+
+extern tNetgameInfo activeNetGames [];
+extern tExtraGameInfo activeExtraGameInfo [];
+
+#define FLAGTEXT(_b)	((_b) ? TXT_ON : TXT_OFF)
+
+#define	INITFLAGS(_t) \
+			{sprintf (mTexts [opt], _t); j = 0;}
+
+#define	ADDFLAG(_f,_t) \
+		if (_f) {if (j) strcat (mTexts [opt], ", "); strcat (mTexts [opt], _t); j++; }
+
+void ShowNetGameInfo (int choice)
+ {
+	tMenuItem	m [20];
+   char			mTexts [20][80];
+	int			i, j, nInMenu, opt = 0;
+
+#ifndef _DEBUG
+if (choice >= networkData.nActiveGames)
+	return;
+#endif
+memset (m, 0, sizeof (m));
+memset (mTexts, 0, sizeof (mTexts));
+for (i = 0; i < 20; i++) {
+	m [i].text = (char *) (mTexts + i);
+	m [i].nType = NM_TYPE_TEXT;		
+	}
+sprintf (mTexts [opt], TXT_NGI_GAME, AGI.szGameName); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_MISSION, AGI.szMissionTitle); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_LEVEL, AGI.nLevel); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_SKILL, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
+opt++;
+opt++;
+#ifndef _DEBUG
+if (!*AXI.szGameName) {
+	sprintf (mTexts [opt], "Gamehost is not using D2X-XL or running in pure mode");
+	opt++;
+	}
+else 
+#endif
+	{
+	if (AXI.bShadows || AXI.bUseSmoke) {
+		INITFLAGS ("Graphics Fx: "); 
+		ADDFLAG (AXI.bShadows, "Shadows");
+		ADDFLAG (AXI.bUseSmoke, "Smoke");
+		}
+	else
+		strcpy (mTexts [opt], "Graphics Fx: None");
+	opt++;
+	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bShockwaves || AXI.bTracers)) {
+		INITFLAGS ("Weapon Fx: ");
+		ADDFLAG (AXI.bLightTrails, "Light trails");
+		ADDFLAG (AXI.bShockwaves, "Shockwaves");
+		ADDFLAG (AXI.bTracers, "Tracers");
+		}
+	else
+		sprintf (mTexts [opt], "Weapon Fx: None");
+	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bShockwaves || AXI.bTracers)) {
+		INITFLAGS ("Weapon Fx: ");
+		ADDFLAG (AXI.bLightTrails, "Light trails");
+		ADDFLAG (AXI.bShockwaves, "Shockwaves");
+		ADDFLAG (AXI.bTracers, "Tracers");
+		}
+	else
+		sprintf (mTexts [opt], "Weapon Fx: None");
+	opt++;
+	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.bRenderShield)) {
+		INITFLAGS ("Ship Fx: ");
+		ADDFLAG (AXI.bRenderShield, "Shield");
+		ADDFLAG (AXI.bDamageExplosions, "Damage");
+		}
+	else
+		sprintf (mTexts [opt], "Ship Fx: None");
+	opt++;
+	if (AXI.nWeaponIcons || (!AXI.bCompetition && (AXI.bTargetIndicators || AXI.bDamageIndicators))) {
+		INITFLAGS ("HUD extensions: ");
+		ADDFLAG (AXI.nWeaponIcons != 0, "Icons");
+		ADDFLAG (!AXI.bCompetition && AXI.bTargetIndicators, "Tgt indicators");
+		ADDFLAG (!AXI.bCompetition && AXI.bDamageIndicators, "Dmg indicators");
+		}
+	else
+		strcat (mTexts [opt], "HUD extensions: None");
+	opt++;
+	if (!AXI.bCompetition && AXI.bRadarEnabled) {
+		INITFLAGS ("Radar: ");
+		ADDFLAG ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players");
+		ADDFLAG (AXI.bPowerupsOnRadar, "Powerups");
+		ADDFLAG (AXI.bRobotsOnRadar, "Robots");
+		}
+	else
+		strcat (mTexts [opt], "Radar: off");
+	opt++;
+	if (!AXI.bCompetition && (AXI.bMouseLook || AXI.bFastPitch)) {
+		INITFLAGS ("Controls ext.: ");
+		ADDFLAG (AXI.bMouseLook, "mouselook");
+		ADDFLAG (AXI.bFastPitch, "fast pitch");
+		}
+	else
+		strcat (mTexts [opt], "Controls ext.: None");
+	opt++;
+	if (!AXI.bCompetition && 
+		 (AXI.bDualMissileLaunch || !AXI.bFriendlyFire || AXI.bInhibitSuicide || 
+		  AXI.bEnableCheats || AXI.bDarkness || (AXI.nFusionPowerMod != 2))) {
+		INITFLAGS ("Gameplay ext.: ");
+		ADDFLAG (AXI.bEnableCheats, "Cheats");
+		ADDFLAG (AXI.bDarkness, "Darkness");
+		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls");
+		ADDFLAG (AXI.nFusionPowerMod != 2, "Fusion bump");
+		ADDFLAG (!AXI.bFriendlyFire, "no FF");
+		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
+		}
+	else
+		strcat (mTexts [opt], "Gameplay ext.: None");
+	opt++;
+	}
+bAlreadyShowingInfo = 1;	
+nInMenu = gameStates.menus.nInMenu;
+gameStates.menus.nInMenu = 0;
+ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
+gameStates.menus.nInMenu = nInMenu;
+bAlreadyShowingInfo = 0;	
+ }
+
+//------------------------------------------------------------------------------
+
+
+void ShowExtraNetGameInfo (int choice)
+ {
+	tMenuItem m [25];
+   char mTexts [25][50];
+	int i, nInMenu, opt = 0;
+
+if (choice >= networkData.nActiveGames)
+	return;
+memset (m, 0, sizeof (m));
+for (i = 0; i < 25; i++) {
+	m [i].text = (char *) (mTexts + i);
+	m [i].nType = NM_TYPE_TEXT;		
+	}
+sprintf (mTexts [opt], TXT_NGI_GAME, AGI.szGameName); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_MISSION, AGI.szMissionTitle); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_LEVEL, AGI.nLevel); 
+opt++;
+sprintf (mTexts [opt], TXT_NGI_SKILL, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
+opt++;
+bAlreadyShowingInfo = 1;	
+nInMenu = gameStates.menus.nInMenu;
+gameStates.menus.nInMenu = 0;
+ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
+gameStates.menus.nInMenu = nInMenu;
+bAlreadyShowingInfo = 0;	
+ }
 
 //------------------------------------------------------------------------------
 

@@ -282,14 +282,14 @@ static int UploadOpenFile (int i, char *pszExt)
 
 sprintf (szFile, "%s%s%s%s", 
 			gameFolders.szMissionDirs [0], (l && (gameFolders.szMissionDirs [0][l-1] != '/')) ? "/" : "", 
-			netGame.mission_name, pszExt);
+			netGame.szMissionName, pszExt);
 if (uploadDests [i].fp)
 	CFClose (uploadDests [i].fp);
 if (!(uploadDests [i].fp = CFOpen (szFile, "", "rb", 0)))
 	return UploadError ();
 uploadDests [i].fLen = CFLength (uploadDests [i].fp, 0);
 PUT_INTEL_INT (uploadBuf + 2, uploadDests [i].fLen);
-sprintf (szFile, "%s%s", netGame.mission_name, pszExt);
+sprintf (szFile, "%s%s", netGame.szMissionName, pszExt);
 l = (int) strlen (szFile) + 1;
 memcpy (uploadBuf + 6, szFile, l);
 uploadDests [i].nPacketId = -1;

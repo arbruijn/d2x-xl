@@ -409,12 +409,12 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 			SetTeam (i, -1);
 #else
 #if 0
-			if (netGame.team_vector & (1<<i))
-				netGame.team_vector&= (~ (1<<i));
+			if (netGame.teamVector & (1<<i))
+				netGame.teamVector&= (~ (1<<i));
 			else
-				netGame.team_vector|= (1<<i);
+				netGame.teamVector|= (1<<i);
 #else
-				netGame.team_vector ^= (1<<i);
+				netGame.teamVector ^= (1<<i);
 #endif
 			for (t = 0;t<gameData.multi.nPlayers;t++)
 				if (gameData.multi.players [t].connected)

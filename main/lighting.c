@@ -221,7 +221,7 @@ Cache_hits++;
 
 void InitDynColoring (void)
 {
-if (!gameOpts->render.bDynamicLight && bInitDynColoring) {
+if (!gameOpts->render.bDynLighting && bInitDynColoring) {
 	bInitDynColoring = 0;
 	memset (bGotDynColor, 0, sizeof (bGotDynColor));
 	}
@@ -233,7 +233,7 @@ bStartDynColoring = 0;
 
 void SetDynColor (tRgbColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
-if (gameOpts->render.bDynamicLight)
+if (gameOpts->render.bDynLighting)
 	return;
 if (!color)
 	return;

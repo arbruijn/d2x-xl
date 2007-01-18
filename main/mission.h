@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //mission list entry
 typedef struct mle {
 	char    filename[FILENAME_LEN];                // path and filename without extension
-	char    mission_name[MISSION_NAME_LEN+5];
+	char    szMissionName[MISSION_NAME_LEN+5];
 	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
 	ubyte   location;                   // see defines below
 	ubyte   descent_version;            // descent 1 or descent 2?
@@ -93,7 +93,7 @@ int LoadMission(int mission_num);
 
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int LoadMissionByName(char *mission_name, int nSubFolder);
-int FindMissionByName(char *mission_name, int nSubFolder);
+int LoadMissionByName(char *szMissionName, int nSubFolder);
+int FindMissionByName(char *szMissionName, int nSubFolder);
 
 #endif

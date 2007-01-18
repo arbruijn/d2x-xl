@@ -138,7 +138,7 @@ int	redbookVolume = 255;
 
 //	External Variables ---------------------------------------------------------
 
-extern char WaitForRefuseAnswer, RefuseThisPlayer, RefuseTeam;
+extern char bWaitForRefuseAnswer, bRefuseThisPlayer, bRefuseTeam;
 
 extern int	*Toggle_var;
 extern int	last_drawn_cockpit[2];
@@ -449,7 +449,7 @@ int DoGamePause()
 	int key;
 	int bScreenChanged;
 	char msg[1000];
-	char totalTime[9], levelTime[9];
+	char totalTime[9], xLevelTime[9];
 
 	key=0;
 
@@ -475,10 +475,10 @@ PauseGame ();
 SetPopupScreenMode();
 GrPaletteStepLoad (NULL);
 formatTime(totalTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursTotal*3600);
-formatTime(levelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
+formatTime(xLevelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, levelTime, totalTime);
+			  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, xLevelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
 				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board);
@@ -551,31 +551,26 @@ void DoShowNetgameHelp()
     m[i].nType=NM_TYPE_TEXT;
 	}
 
-   sprintf (mtext[num], TXT_INFO_GAME, netGame.game_name); num++;
-   sprintf (mtext[num], TXT_INFO_MISSION, netGame.mission_title); num++;
-	sprintf (mtext[num], TXT_INFO_LEVEL, netGame.levelnum); num++;
-	sprintf (mtext[num], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT(netGame.difficulty)); num++;
-	sprintf (mtext[num], TXT_INFO_MODE, GT(537+netGame.gamemode)); num++;
+   sprintf (mtext[num], TXT_INFO_GAME, netGame.szGameName); num++;
+   sprintf (mtext[num], TXT_INFO_MISSION, netGame.szMissionTitle); num++;
+	sprintf (mtext[num], TXT_INFO_LEVEL, netGame.nLevel); num++;
+	sprintf (mtext[num], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.difficulty)); num++;
+	sprintf (mtext[num], TXT_INFO_MODE, GT (537 + netGame.gameMode)); num++;
 	sprintf (mtext[num], TXT_INFO_SERVER, gameData.multi.players [NetworkWhoIsMaster()].callsign); num++;
-   sprintf (mtext[num], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.max_numplayers); num++;
+   sprintf (mtext[num], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers); num++;
    sprintf (mtext[num], TXT_INFO_PPS, netGame.nPacketsPerSec); num++;
-   sprintf (mtext[num], TXT_INFO_SHORTPKT, netGame.bShortPackets?"Yes":"No"); num++;
-
+   sprintf (mtext[num], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No"); num++;
 #ifndef RELEASE
 		pl=(int)(((double)networkData.nTotalMissedPackets/(double)networkData.nTotalPacketsGot)*100.0);
 		if (pl<0)
 		  pl=0;
 		sprintf (mtext[num], TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl); num++;
 #endif
-
    if (netGame.KillGoal)
      { sprintf (mtext[num], TXT_INFO_KILLGOAL, netGame.KillGoal*5); num++; }
-
    sprintf (mtext[num], " "); num++;
    sprintf (mtext[num], TXT_INFO_PLRSCONN); num++;
-
    netPlayers.players [gameData.multi.nLocalPlayer].rank=GetMyNetRanking();
-
    for (i=0;i<gameData.multi.nPlayers;i++)
      if (gameData.multi.players [i].connected)
 	  {		  
@@ -869,13 +864,13 @@ int select_next_window_function(int w)
 			Cockpit_3d_view[w] = CV_REAR;
 			break;
 		case CV_REAR:
-			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
-			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_HEADSUP;
 				break;
@@ -1488,26 +1483,26 @@ void HandleGameKey(int key)
 			SwitchTeam (gameData.multi.nLocalPlayer, 0);
 			break;
 		case KEY_F6:
-			if (netGame.RefusePlayers && WaitForRefuseAnswer && !(gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && !(gameData.app.nGameMode & GM_TEAM))
 				{
-					RefuseThisPlayer=1;
+					bRefuseThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 				}
 			break;
 		case KEY_ALTED + KEY_1:
-			if (netGame.RefusePlayers && WaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
 				{
-					RefuseThisPlayer=1;
+					bRefuseThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
-					RefuseTeam=1;
+					bRefuseTeam=1;
 				}
 			break;
 		case KEY_ALTED + KEY_2:
-			if (netGame.RefusePlayers && WaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
 				{
-					RefuseThisPlayer=1;
+					bRefuseThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
-					RefuseTeam=2;
+					bRefuseTeam=2;
 				}
 			break;
 

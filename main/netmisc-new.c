@@ -191,7 +191,7 @@ nmBufP = nmDataBuf;
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netPlayers.nType);                            
-BE_SET_INT (netPlayers.Security);
+BE_SET_INT (netPlayers.nSecurity);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BE_SET_BYTES (netPlayers.players [i].callsign, CALLSIGN_LEN + 1); 
 	BE_SET_BYTES (netPlayers.players [i].network.ipx.server, 4);    
@@ -217,7 +217,7 @@ void BEReceiveNetPlayersPacket (ubyte *data, tAllNetPlayersInfo *pinfo)
 
 nmBufP = data;
 BE_GET_BYTE (pinfo->nType);                            
-BE_GET_INT (pinfo->Security);        
+BE_GET_INT (pinfo->nSecurity);        
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BEReceiveNetPlayerInfo (data + nmBufI, pinfo->players + i);
 	nmBufI += 26;          // sizeof(tNetPlayerInfo) on the PC
@@ -235,7 +235,7 @@ nmBufP = nmDataBuf;
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (seq.nType);                                       
-BE_SET_INT (seq.Security);                           
+BE_SET_INT (seq.nSecurity);                           
 nmBufI += 3;
 BE_SET_BYTES (seq.player.callsign, CALLSIGN_LEN + 1);
 BE_SET_BYTES (seq.player.network.ipx.server, 4);   
@@ -262,7 +262,7 @@ void BEReceiveSequencePacket (ubyte *data, tSequencePacket *seq)
 
 nmBufP = data;
 BE_GET_BYTE (seq->nType);                        
-BE_GET_INT (seq->Security);  
+BE_GET_INT (seq->nSecurity);  
 nmBufI += 3;   // +3 for pad bytes
 BEReceiveNetPlayerInfo (data + nmBufI, &(seq->player));
 }
@@ -280,15 +280,15 @@ nmBufP = nmDataBuf;
 memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netGame.nType);                 
-BE_SET_INT (netGame.Security);                           
+BE_SET_INT (netGame.nSecurity);                           
 BE_SET_BYTES (netGame.game_name, NETGAME_NAME_LEN + 1);  
 BE_SET_BYTES (netGame.mission_title, MISSION_NAME_LEN + 1);  
-BE_SET_BYTES (netGame.mission_name, 9);            
+BE_SET_BYTES (netGame.szMissionName, 9);            
 BE_SET_INT (netGame.levelnum);
-BE_SET_BYTE (netGame.gamemode);             
+BE_SET_BYTE (netGame.gameMode);             
 BE_SET_BYTE (netGame.RefusePlayers);        
 BE_SET_BYTE (netGame.difficulty);           
-BE_SET_BYTE (netGame.game_status);          
+BE_SET_BYTE (netGame.gameStatus);          
 BE_SET_BYTE (netGame.numplayers);           
 BE_SET_BYTE (netGame.max_numplayers);       
 BE_SET_BYTE (netGame.numconnected);         
@@ -296,11 +296,11 @@ BE_SET_BYTE (netGame.gameFlags);
 BE_SET_BYTE (netGame.protocol_version);     
 BE_SET_BYTE (netGame.version_major);        
 BE_SET_BYTE (netGame.version_minor);        
-BE_SET_BYTE (netGame.team_vector);          
+BE_SET_BYTE (netGame.teamVector);          
 if (bLiteData)
 	goto do_send;
-BE_SET_SHORT (((ubyte *) &netGame.team_vector) + 1);    // get the values for the first short bitfield
-BE_SET_SHORT (((ubyte *) &netGame.team_vector) + 3);    // get the values for the first short bitfield
+BE_SET_SHORT (((ubyte *) &netGame.teamVector) + 1);    // get the values for the first short bitfield
+BE_SET_SHORT (((ubyte *) &netGame.teamVector) + 3);    // get the values for the first short bitfield
 BE_SET_BYTES (netGame.team_name, 2 * (CALLSIGN_LEN + 1)); 
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_INT (netGame.locations [i]);
@@ -329,8 +329,8 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_SHORT (netGame.playerKills [i]);
 	}
 BE_SET_INT (netGame.KillGoal);
-BE_SET_INT (netGame.PlayTimeAllowed);
-BE_SET_INT (netGame.levelTime);
+BE_SET_INT (netGame.xPlayTimeAllowed);
+BE_SET_INT (netGame.xLevelTime);
 BE_SET_INT (netGame.control_invulTime);
 BE_SET_INT (netGame.monitor_vector);
 for (i = 0; i < MAX_PLAYERS; i++) {
@@ -360,15 +360,15 @@ void BEReceiveNetGamePacket (ubyte *data, tNetgameInfo *netgame, int bLiteData)
 
 nmBufP = data;
 BE_GET_BYTE (netgame->nType);                      
-BE_GET_INT (netgame->Security);                  
+BE_GET_INT (netgame->nSecurity);                  
 BE_GET_BYTES (netgame->game_name, NETGAME_NAME_LEN + 1);   
 BE_GET_BYTES (netgame->mission_title, MISSION_NAME_LEN + 1); 
-BE_GET_BYTES (netgame->mission_name, 9);                 
+BE_GET_BYTES (netgame->szMissionName, 9);                 
 BE_GET_INT (netgame->levelnum);                  
-BE_GET_BYTE (netgame->gamemode);                  
+BE_GET_BYTE (netgame->gameMode);                  
 BE_GET_BYTE (netgame->RefusePlayers);             
 BE_GET_BYTE (netgame->difficulty);                
-BE_GET_BYTE (netgame->game_status);               
+BE_GET_BYTE (netgame->gameStatus);               
 BE_GET_BYTE (netgame->numplayers);                
 BE_GET_BYTE (netgame->max_numplayers);            
 BE_GET_BYTE (netgame->numconnected);              
@@ -376,11 +376,11 @@ BE_GET_BYTE (netgame->gameFlags);
 BE_GET_BYTE (netgame->protocol_version);          
 BE_GET_BYTE (netgame->version_major);             
 BE_GET_BYTE (netgame->version_minor);             
-BE_GET_BYTE (netgame->team_vector);               
+BE_GET_BYTE (netgame->teamVector);               
 if (bLiteData)
 	return;
-BE_GET_SHORT (*((short *) (((ubyte *) &netgame->team_vector) + 1)));                             
-BE_GET_SHORT (*((short *) (((ubyte *) &netgame->team_vector) + 3)));                             
+BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 1)));                             
+BE_GET_SHORT (*((short *) (((ubyte *) &netgame->teamVector) + 3)));                             
 BE_GET_BYTES (netgame->team_name, CALLSIGN_LEN + 1);   
 for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_INT (netgame->locations [i]);          
@@ -408,8 +408,8 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_GET_SHORT (netgame->playerKills [i]);       
 	}
 BE_GET_INT (netgame->KillGoal);                  
-BE_GET_INT (netgame->PlayTimeAllowed);           
-BE_GET_INT (netgame->levelTime);                
+BE_GET_INT (netgame->xPlayTimeAllowed);           
+BE_GET_INT (netgame->xLevelTime);                
 BE_GET_INT (netgame->control_invulTime);        
 BE_GET_INT (netgame->monitor_vector);            
 for (i = 0; i < MAX_PLAYERS; i++) {
@@ -453,7 +453,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BEReceiveExtraGameInfo (ubyte *data, extra_gameinfo *extraGameInfo)
+void BEReceiveExtraGameInfo (ubyte *data, tExtraGameInfo *extraGameInfo)
 {
 nmBufP = data;
 memcpy (&extraGameInfo [1], nmBufP, sizeof (extraGameInfo [0]));

@@ -204,7 +204,7 @@ typedef struct ext_control_info {
 	//int x_vibrate_clear
 	//int y_vibrate_clear
 
-	//ubyte game_status;
+	//ubyte gameStatus;
 
 	//ubyte keyboard[128];          // scan code array, not ascii
 	//ubyte current_guidebot_command;
@@ -268,7 +268,7 @@ typedef struct advanced_ext_control_info {
 	int x_vibrate_clear;
 	int y_vibrate_clear;
 
-	ubyte game_status;
+	ubyte gameStatus;
 
 	ubyte headlight_state;
 	ubyte current_guidebot_command;

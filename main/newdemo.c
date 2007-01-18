@@ -897,7 +897,7 @@ else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
 if (gameData.app.nGameMode & GM_TEAM) {
-	NDWriteByte (netGame.team_vector);
+	NDWriteByte (netGame.teamVector);
 	NDWriteString (netGame.team_name [0]);
 	NDWriteString (netGame.team_name [1]);
 	}
@@ -1585,7 +1585,7 @@ gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
 if (gameData.demo.nGameMode & GM_TEAM) {
-	netGame.team_vector = NDReadByte ();
+	netGame.teamVector = NDReadByte ();
 	NDReadString (netGame.team_name [0]);
 	NDReadString (netGame.team_name [1]);
 	}

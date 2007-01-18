@@ -157,7 +157,7 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 
 	memset(out_buffer, 0, sizeof(out_buffer));
 	out_buffer[0] = netPlayers.nType;                            loc++;
-	tmpi = INTEL_INT(netPlayers.Security);
+	tmpi = INTEL_INT(netPlayers.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                       loc += 4;
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
 		memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); loc += CALLSIGN_LEN+1;
@@ -185,9 +185,9 @@ void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
 
 	pinfo->nType = data[loc];                            
 	loc++;
-	memcpy(&(pinfo->Security), data + loc, 4);        
+	memcpy(&(pinfo->nSecurity), data + loc, 4);        
 	loc += 4;
-	pinfo->Security = INTEL_INT(pinfo->Security);
+	pinfo->nSecurity = INTEL_INT(pinfo->nSecurity);
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
 		BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
 		loc += 26;          // sizeof(tNetPlayerInfo) on the PC
@@ -203,7 +203,7 @@ void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte
 	memset(out_buffer, 0, sizeof(out_buffer));
 	out_buffer[0] = seq.nType;                                       
 	loc++;
-	tmpi = INTEL_INT(seq.Security);
+	tmpi = INTEL_INT(seq.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;       
 	loc += 3;
@@ -239,8 +239,8 @@ void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
 	int loc = 0;
 
 	seq->nType = data[0];                        loc++;
-	memcpy(&(seq->Security), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
-	seq->Security = INTEL_INT(seq->Security);
+	memcpy(&(seq->nSecurity), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
+	seq->nSecurity = INTEL_INT(seq->nSecurity);
 	BEReceiveNetPlayerInfo(data + loc, &(seq->player));
 }
 
@@ -254,25 +254,25 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	memset(out_buffer, 0, IPX_MAX_DATA_SIZE);
 	memcpy(out_buffer + loc, &(netGame.nType), 1);                 
 	loc++;
-	tmpi = INTEL_INT(netGame.Security);
+	tmpi = INTEL_INT(netGame.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;
 	memcpy(out_buffer + loc, netGame.game_name, NETGAME_NAME_LEN+1);  
 	loc += (NETGAME_NAME_LEN+1);
 	memcpy(out_buffer + loc, netGame.mission_title, MISSION_NAME_LEN+1);  
 	loc += (MISSION_NAME_LEN+1);
-	memcpy(out_buffer + loc, netGame.mission_name, 9);            
+	memcpy(out_buffer + loc, netGame.szMissionName, 9);            
 	loc += 9;
 	tmpi = INTEL_INT(netGame.levelnum);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;
-	memcpy(out_buffer + loc, &(netGame.gamemode), 1);             
+	memcpy(out_buffer + loc, &(netGame.gameMode), 1);             
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.RefusePlayers), 1);        
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.difficulty), 1);           
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.game_status), 1);          
+	memcpy(out_buffer + loc, &(netGame.gameStatus), 1);          
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.numplayers), 1);           
 	loc++;
@@ -288,7 +288,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.version_minor), 1);        
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.team_vector), 1);          
+	memcpy(out_buffer + loc, &(netGame.teamVector), 1);          
 	loc++;
 
 	if (liteFlag)
@@ -299,18 +299,18 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 // Watcom makes bitfields from left to right.  CW7 on the mac goes
 // from right to left.  then they are endian swapped
 
-	tmps = *(ushort *)((ubyte *)(&netGame.team_vector) + 1);    // get the values for the first short bitfield
+	tmps = *(ushort *)((ubyte *)(&netGame.teamVector) + 1);    // get the values for the first short bitfield
 	tmps = INTEL_SHORT(tmps);
 	memcpy(out_buffer + loc, &tmps, 2);                           
 	loc += 2;
 
-	tmps = *(ushort *)((ubyte *)(&netGame.team_vector) + 3);    // get the values for the second short bitfield
+	tmps = *(ushort *)((ubyte *)(&netGame.teamVector) + 3);    // get the values for the second short bitfield
 	tmps = INTEL_SHORT(tmps);
 	memcpy(out_buffer + loc, &tmps, 2);                           
 	loc += 2;
 
 #if 0       // removed since I reordered bitfields on mac
-	p = *(ushort *)((ubyte *)(&netGame.team_vector) + 1);       // get the values for the first short bitfield
+	p = *(ushort *)((ubyte *)(&netGame.teamVector) + 1);       // get the values for the first short bitfield
 	tmps = 0;
 	for (i = 15; i >= 0; i--) {
 		if (p & (1 << i))
@@ -319,7 +319,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	tmps = INTEL_SHORT(tmps);
 	memcpy(out_buffer + loc, &tmps, 2);                           
 	loc += 2;
-	p = *(ushort *)((ubyte *)(&netGame.team_vector) + 3);       // get the values for the second short bitfield
+	p = *(ushort *)((ubyte *)(&netGame.teamVector) + 3);       // get the values for the second short bitfield
 	tmps = 0;
 	for (i = 15; i >= 0; i--) {
 		if (p & (1 << i))
@@ -368,10 +368,10 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	tmpi = INTEL_INT(netGame.KillGoal);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.PlayTimeAllowed);
+	tmpi = INTEL_INT(netGame.xPlayTimeAllowed);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.levelTime);
+	tmpi = INTEL_INT(netGame.xLevelTime);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
 	tmpi = INTEL_INT(netGame.control_invulTime);
@@ -411,25 +411,25 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 
 	memcpy(&(netgame->nType), data + loc, 1);                      
 	loc++;
-	memcpy(&(netgame->Security), data + loc, 4);                  
+	memcpy(&(netgame->nSecurity), data + loc, 4);                  
 	loc += 4;
-	netgame->Security = INTEL_INT(netgame->Security);
+	netgame->nSecurity = INTEL_INT(netgame->nSecurity);
 	memcpy(netgame->game_name, data + loc, NETGAME_NAME_LEN+1);   
 	loc += (NETGAME_NAME_LEN+1);
 	memcpy(netgame->mission_title, data + loc, MISSION_NAME_LEN+1); 
 	loc += (MISSION_NAME_LEN+1);
-	memcpy(netgame->mission_name, data + loc, 9);                 
+	memcpy(netgame->szMissionName, data + loc, 9);                 
 	loc += 9;
 	memcpy(&(netgame->levelnum), data + loc, 4);                  
 	loc += 4;
 	netgame->levelnum = INTEL_INT(netgame->levelnum);
-	memcpy(&(netgame->gamemode), data + loc, 1);                  
+	memcpy(&(netgame->gameMode), data + loc, 1);                  
 	loc++;
 	memcpy(&(netgame->RefusePlayers), data + loc, 1);             
 	loc++;
 	memcpy(&(netgame->difficulty), data + loc, 1);                
 	loc++;
-	memcpy(&(netgame->game_status), data + loc, 1);               
+	memcpy(&(netgame->gameStatus), data + loc, 1);               
 	loc++;
 	memcpy(&(netgame->numplayers), data + loc, 1);                
 	loc++;
@@ -445,7 +445,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	loc++;
 	memcpy(&(netgame->version_minor), data + loc, 1);             
 	loc++;
-	memcpy(&(netgame->team_vector), data + loc, 1);               
+	memcpy(&(netgame->teamVector), data + loc, 1);               
 	loc++;
 
 	if (liteFlag)
@@ -454,12 +454,12 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	memcpy(&bitfield, data + loc, 2);                             
 	loc += 2;
 	bitfield = INTEL_SHORT(bitfield);
-	memcpy(((ubyte *)(&netgame->team_vector) + 1), &bitfield, 2);
+	memcpy(((ubyte *)(&netgame->teamVector) + 1), &bitfield, 2);
 
 	memcpy(&bitfield, data + loc, 2);                             
 	loc += 2;
 	bitfield = INTEL_SHORT(bitfield);
-	memcpy(((ubyte *)(&netgame->team_vector) + 3), &bitfield, 2);
+	memcpy(((ubyte *)(&netgame->teamVector) + 3), &bitfield, 2);
 
 #if 0       // not used since reordering mac bitfields
 	memcpy(&bitfield, data + loc, 2);                             
@@ -470,7 +470,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 			new_field |= (1 << (15 - i);
 	}
 	new_field = INTEL_SHORT(new_field);
-	memcpy(((ubyte *)(&netgame->team_vector) + 1), &new_field, 2);
+	memcpy(((ubyte *)(&netgame->teamVector) + 1), &new_field, 2);
 
 	memcpy(&bitfield, data + loc, 2);                             
 	loc += 2;
@@ -480,7 +480,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 			new_field |= (1 << (15 - i);
 	}
 	new_field = INTEL_SHORT(new_field);
-	memcpy(((ubyte *)(&netgame->team_vector) + 3), &new_field, 2);
+	memcpy(((ubyte *)(&netgame->teamVector) + 3), &new_field, 2);
 #endif
 
 	memcpy(netgame->team_name, data + loc, 2*(CALLSIGN_LEN+1));   
@@ -521,13 +521,13 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	memcpy(&(netgame->KillGoal), data + loc, 4);                  
 	loc += 4;
 	netgame->KillGoal = INTEL_INT(netgame->KillGoal);
-	memcpy(&(netgame->PlayTimeAllowed), data + loc, 4);           
+	memcpy(&(netgame->xPlayTimeAllowed), data + loc, 4);           
 	loc += 4;
-	netgame->PlayTimeAllowed = INTEL_INT(netgame->PlayTimeAllowed);
+	netgame->xPlayTimeAllowed = INTEL_INT(netgame->xPlayTimeAllowed);
 
-	memcpy(&(netgame->levelTime), data + loc, 4);                
+	memcpy(&(netgame->xLevelTime), data + loc, 4);                
 	loc += 4;
-	netgame->levelTime = INTEL_INT(netgame->levelTime);
+	netgame->xLevelTime = INTEL_INT(netgame->xLevelTime);
 	memcpy(&(netgame->control_invulTime), data + loc, 4);        
 	loc += 4;
 	netgame->control_invulTime = INTEL_INT(netgame->control_invulTime);
@@ -565,24 +565,24 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress)
 {
-memcpy (out_buffer, &extraGameInfo [1], sizeof (extra_gameinfo));
+memcpy (out_buffer, &extraGameInfo [1], sizeof (tExtraGameInfo));
 EGI_INTEL_SHORT_2BUF (entropy.nMaxVirusCapacity);
 EGI_INTEL_SHORT_2BUF (entropy.nEnergyFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldFillRate);
 EGI_INTEL_SHORT_2BUF (entropy.nShieldDamageRate);
 EGI_INTEL_INT_2BUF (nSpawnDelay);
 if (netAddress != NULL)
-	IPXSendPacketData(out_buffer, sizeof (extra_gameinfo), server, node, netAddress);
+	IPXSendPacketData(out_buffer, sizeof (tExtraGameInfo), server, node, netAddress);
 else if ((server == NULL) && (node == NULL))
-	IPXSendBroadcastData(out_buffer, sizeof (extra_gameinfo));
+	IPXSendBroadcastData(out_buffer, sizeof (tExtraGameInfo));
 else
-	IPXSendInternetPacketData(out_buffer, sizeof (extra_gameinfo), server, node);
+	IPXSendInternetPacketData(out_buffer, sizeof (tExtraGameInfo), server, node);
 }
 
 
-void BEReceiveExtraGameInfo(ubyte *data, extra_gameinfo *extraGameInfo)
+void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo)
 {
-memcpy (&extraGameInfo [1], data, sizeof (extra_gameinfo));
+memcpy (&extraGameInfo [1], data, sizeof (tExtraGameInfo));
 BUF2_EGI_INTEL_SHORT (entropy.nMaxVirusCapacity);
 BUF2_EGI_INTEL_SHORT (entropy.nEnergyFillRate);
 BUF2_EGI_INTEL_SHORT (entropy.nShieldFillRate);

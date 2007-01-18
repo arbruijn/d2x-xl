@@ -646,7 +646,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				break;
 
 			case OBJ_POWERUP:
-				if (EGI_FLAG (bPowerUpsOnRadar, 0, 1, 0) && 
+				if (EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) && 
 					 !(gameData.app.nGameMode & GM_MULTI) && 
 					 (gameStates.render.bAllVisited || bAutomapVisited[objP->nSegment]))	{
 					//if ( (objP->id==POW_KEY_RED) || (objP->id==POW_KEY_BLUE) || (objP->id==POW_KEY_GOLD))	

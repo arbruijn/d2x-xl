@@ -956,9 +956,9 @@ void HUDShowTimerCount ()
 	if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs[gameData.hud.msgs [0].nFirst]) > 38))
 		return;
 
-   if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed)
+   if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed)
     {
-     timevar=i2f (netGame.PlayTimeAllowed*5*60);
+     timevar=i2f (netGame.xPlayTimeAllowed*5*60);
      i=f2i (timevar-ThisLevelTime);
      i++;
     
@@ -3825,10 +3825,10 @@ for (i = 0; i < n_players; i++) {
 			}
 		if (i==n_left)
 			y = save_y;
-		if (netGame.KillGoal || netGame.PlayTimeAllowed) 
+		if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
 			x1-=LHX (18);
 		}
-	else if (netGame.KillGoal || netGame.PlayTimeAllowed) 
+	else if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
 		 x1 = LHX (43) - LHX (18);
 	player_num = (multiData.kills.bShowList == 3) ? i : player_list[i];
 	if (multiData.kills.bShowList == 1 || multiData.kills.bShowList==2) {
@@ -3918,7 +3918,7 @@ for (i = 0; i < n_players; i++) {
 			GrPrintF (x1, y, "%3d", multiData.kills.nTeam [i]);
 	else if (gameData.app.nGameMode & GM_MULTI_COOP)
 		GrPrintF (x1, y, "%-6d", gameData.multi.players[player_num].score);
-   else if (netGame.PlayTimeAllowed || netGame.KillGoal)
+   else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
       GrPrintF (x1, y, "%3d (%d)", gameData.multi.players[player_num].netKillsTotal, gameData.multi.players[player_num].nKillGoalCount);
    else
 		GrPrintF (x1, y, "%3d", gameData.multi.players[player_num].netKillsTotal);

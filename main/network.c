@@ -135,10 +135,11 @@ returning the game info.
 
 int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 
-extra_gameinfo extraGameInfo [2];
+tExtraGameInfo extraGameInfo [2];
 
 tMpParams mpParams = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -449,13 +450,13 @@ int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people)
 {
 	// Can this tPlayer rejoin a netgame in progress?
 
-	int i, num_players;
+	int i, nNumPlayers;
 
-if (game->game_status == NETSTAT_STARTING)
+if (game->gameStatus == NETSTAT_STARTING)
    return 1;
-if (game->game_status != NETSTAT_PLAYING) {
+if (game->gameStatus != NETSTAT_PLAYING) {
 #if 1      
-	con_printf (CON_DEBUG, "Error: Can't join because game_status !=NETSTAT_PLAYING\n");
+	con_printf (CON_DEBUG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
 #endif
 	return 0;
     }
@@ -474,17 +475,17 @@ if (game->version_major>0 && D2X_MAJOR == 0) {
 	return 0;
 	}
 // Game is in progress, figure out if this guy can re-join it
-num_players = game->numplayers;
+nNumPlayers = game->nNumPlayers;
 
 if (!(game->gameFlags & NETGAME_FLAG_CLOSED)) {
 	// Look for tPlayer that is not connected
-	if (game->numconnected == game->max_numplayers)
+	if (game->nConnected == game->nMaxPlayers)
 		 return (2);
-	if (game->RefusePlayers)
+	if (game->bRefusePlayers)
 		 return (3);
-	if (game->numplayers < game->max_numplayers)
+	if (game->nNumPlayers < game->nMaxPlayers)
 		return 1;
-	if (game->numconnected<num_players)
+	if (game->nConnected<nNumPlayers)
 		return 1;
 	}
 if (!people) {
@@ -492,7 +493,7 @@ if (!people) {
 	return 0;
    }
 // Search to see if we were already in this closed netgame in progress
-for (i = 0; i < num_players; i++)
+for (i = 0; i < nNumPlayers; i++)
 	if (!CmpNetPlayers (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, 
 							  people->players [i].callsign, 
 							  &networkData.mySeq.player.network, 
@@ -568,7 +569,7 @@ gameData.multi.players [pnum].flags = 0;
 gameData.multi.players [pnum].nKillGoalCount=0;
 if (pnum == gameData.multi.nPlayers) {
 	gameData.multi.nPlayers++;
-	netGame.numplayers = gameData.multi.nPlayers;
+	netGame.nNumPlayers = gameData.multi.nPlayers;
 	}
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 ClipRank (&their->player.rank);
@@ -582,7 +583,7 @@ MultiSortKillList ();
 //      CreatePlayerAppearanceEffect (&gameData.objs.objects [nObject]);
 }
 
-char RefuseThisPlayer=0, WaitForRefuseAnswer=0, RefuseTeam;
+char bRefuseThisPlayer=0, bWaitForRefuseAnswer=0, bRefuseTeam;
 char RefusePlayerName [12];
 fix RefuseTimeLimit=0;
 
@@ -595,7 +596,7 @@ void NetworkWelcomePlayer (tSequencePacket *their)
 	int nPlayer;
 	int i;
 
-WaitForRefuseAnswer=0;
+bWaitForRefuseAnswer=0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((their->player.version_minor & 0x0F) < 3) {
 		NetworkDumpPlayer (
@@ -1116,7 +1117,7 @@ for (j=0; j<MAX_PLAYERS; j++) {
 	netGame.playerKills [j] = gameData.multi.players [j].netKillsTotal;
 	netGame.player_score [j] = gameData.multi.players [j].score;
 	}       
-netGame.levelTime = gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel;
+netGame.xLevelTime = gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
@@ -1145,7 +1146,7 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 	netGame.playerKills [j] = gameData.multi.players [j].netKillsTotal;
 	netGame.player_score [j] = gameData.multi.players [j].score;
 	}       
-netGame.levelTime = gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel;
+netGame.xLevelTime = gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
@@ -1205,7 +1206,7 @@ gameData.multi.players [gameData.multi.nPlayers].nKillGoalCount = 0;
 gameData.multi.players [gameData.multi.nPlayers].connected = 1;
 ResetPlayerTimeout (gameData.multi.nPlayers, -1);
 gameData.multi.nPlayers++;
-netGame.numplayers = gameData.multi.nPlayers;
+netGame.nNumPlayers = gameData.multi.nPlayers;
 // Broadcast updated info
 NetworkSendGameInfo (NULL);
 }
@@ -1233,7 +1234,7 @@ for (i = pn; i < gameData.multi.nPlayers - 1; ) {
    NetworkCheckForOldVersion ((char) i);	
 	}
 gameData.multi.nPlayers--;
-netGame.numplayers = gameData.multi.nPlayers;
+netGame.nNumPlayers = gameData.multi.nPlayers;
 // Broadcast new info
 NetworkSendGameInfo (NULL);
 }
@@ -1302,7 +1303,7 @@ void NetworkSendAllInfoRequest (char nType, int which_security)
 	// Send a broadcast request for game info
 	tSequencePacket me;
 
-me.Security = which_security;
+me.nSecurity = which_security;
 me.nType = nType;
 memcpy (me.player.callsign, 
 			gameData.multi.players [gameData.multi.nLocalPlayer].callsign, 
@@ -1322,10 +1323,10 @@ void NetworkUpdateNetGame (void)
 
 	int i, j;
 
-netGame.numconnected = 0;
+netGame.nConnected = 0;
 for (i = 0; i < gameData.multi.nPlayers; i++)
 	if (gameData.multi.players [i].connected)
-		netGame.numconnected++;
+		netGame.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
 //	the tLiteInfo struct when you're sitting on the join netgame screen.  We can
@@ -1344,9 +1345,9 @@ if (HoardEquipped ()) {
 	}
 if (networkData.nStatus == NETSTAT_STARTING)
 	return;
-netGame.numplayers = gameData.multi.nPlayers;
-netGame.game_status = networkData.nStatus;
-netGame.max_numplayers = gameData.multi.nMaxPlayers;
+netGame.nNumPlayers = gameData.multi.nPlayers;
+netGame.gameStatus = networkData.nStatus;
+netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.players [i].connected = gameData.multi.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
@@ -1358,7 +1359,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	}
 netGame.teamKills [0] = multiData.kills.nTeam [0];
 netGame.teamKills [1] = multiData.kills.nTeam [1];
-netGame.levelnum = gameData.missions.nCurrentLevel;
+netGame.nLevel = gameData.missions.nCurrentLevel;
 }
 
 //------------------------------------------------------------------------------
@@ -1449,19 +1450,19 @@ void NetworkSendGameInfo (tSequencePacket *their)
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.game_status;
+old_status = netGame.gameStatus;
 netGame.nType = PID_GAME_INFO;
 netPlayers.nType = PID_PLAYERSINFO;
-netPlayers.Security = netGame.Security;
+netPlayers.nSecurity = netGame.nSecurity;
 netGame.version_major = D2X_MAJOR;
 netGame.version_minor = D2X_MINOR;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
-	netGame.game_status = NETSTAT_ENDLEVEL;
-if (netGame.PlayTimeAllowed) {
-	timevar=i2f (netGame.PlayTimeAllowed*5*60);
+	netGame.gameStatus = NETSTAT_ENDLEVEL;
+if (netGame.xPlayTimeAllowed) {
+	timevar=i2f (netGame.xPlayTimeAllowed*5*60);
 	i=f2i (timevar-ThisLevelTime);
 	if (i<30)
-		netGame.game_status=NETSTAT_ENDLEVEL;
+		netGame.gameStatus=NETSTAT_ENDLEVEL;
 	}       
 if (!their) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -1478,7 +1479,7 @@ else if (gameStates.multi.nGameType >= IPX_GAME) {
 		their->player.network.ipx.node);
 	}
 netGame.nType = oldType;
-netGame.game_status = old_status;
+netGame.gameStatus = old_status;
 //	if ((gameData.app.nGameMode & GM_ENTROPY) || extraGameInfo [0].bEnhancedCTF)
 //make half-way sure the client gets this data ...
 NetworkSendExtraGameInfo (their);
@@ -1491,7 +1492,7 @@ MultiSendMonsterball (1, 1);
 
 void NetworkSendExtraGameInfo (tSequencePacket *their)
 {
-	extra_gameinfo	egi1Save = extraGameInfo [1];
+	tExtraGameInfo	egi1Save = extraGameInfo [1];
 
 extraGameInfo [1] = extraGameInfo [0];
 extraGameInfo [1].bCompetition = egi1Save.bCompetition;
@@ -1513,6 +1514,8 @@ extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
 extraGameInfo [1].bRadarEnabled = ((netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);
 extraGameInfo [1].nType = PID_EXTRA_GAMEINFO;
+memcpy (extraGameInfo [1].szGameName, mpParams.szGameName, sizeof (mpParams.szGameName));
+extraGameInfo [1].nSecurity = netGame.nSecurity;
 gameStates.app.bHaveExtraGameInfo [1] = 1;
 #if 1
 if (!their) {
@@ -1540,16 +1543,16 @@ void NetworkSendLiteInfo (tSequencePacket *their)
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.game_status;
+old_status = netGame.gameStatus;
 netGame.nType = PID_LITE_INFO;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
-	netGame.game_status = NETSTAT_ENDLEVEL;
+	netGame.gameStatus = NETSTAT_ENDLEVEL;
 // If hoard mode, make this game look closed even if it isn't
 if (HoardEquipped ()) {
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
-		oldstatus=netGame.game_status;
-		netGame.game_status=NETSTAT_ENDLEVEL;
-		netGame.gamemode=NETGAME_CAPTURE_FLAG;
+		oldstatus = netGame.gameStatus;
+		netGame.gameStatus = NETSTAT_ENDLEVEL;
+		netGame.gameMode = NETGAME_CAPTURE_FLAG;
 		if (oldstatus == NETSTAT_ENDLEVEL)
 			netGame.gameFlags|= NETGAME_FLAG_REALLY_ENDLEVEL;
 		if (oldstatus == NETSTAT_STARTING)
@@ -1572,18 +1575,19 @@ else {
 if (HoardEquipped ()) {
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
- 			netGame.gamemode = NETGAME_ENTROPY;
+ 			netGame.gameMode = NETGAME_ENTROPY;
 		else if (gameData.app.nGameMode & GM_MONSTERBALL)
- 			netGame.gamemode = NETGAME_MONSTERBALL;
+ 			netGame.gameMode = NETGAME_MONSTERBALL;
 		else if (gameData.app.nGameMode & GM_TEAM)
- 			netGame.gamemode = NETGAME_TEAM_HOARD;
+ 			netGame.gameMode = NETGAME_TEAM_HOARD;
 		else
- 			netGame.gamemode = NETGAME_HOARD;
+ 			netGame.gameMode = NETGAME_HOARD;
 		netGame.gameFlags &= ~(NETGAME_FLAG_REALLY_ENDLEVEL | NETGAME_FLAG_REALLY_FORMING | NETGAME_FLAG_TEAM_HOARD);
 		}
 	}
 netGame.nType = oldType;
-netGame.game_status = old_status;
+netGame.gameStatus = old_status;
+NetworkSendExtraGameInfo (their);
 }       
 
 //------------------------------------------------------------------------------
@@ -1596,10 +1600,10 @@ void NetworkSendNetgameUpdate ()
 
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.nType;
-old_status = netGame.game_status;
+old_status = netGame.gameStatus;
 netGame.nType = PID_GAME_UPDATE;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
-	netGame.game_status = NETSTAT_ENDLEVEL;
+	netGame.gameStatus = NETSTAT_ENDLEVEL;
 LogErr ("sending netgame update:\n");
 for (i = 0; i < gameData.multi.nPlayers; i++) {
 	if ((gameData.multi.players [i].connected) && (i != gameData.multi.nLocalPlayer)) {
@@ -1614,7 +1618,7 @@ for (i = 0; i < gameData.multi.nPlayers; i++) {
 		}
 	}
 netGame.nType = oldType;
-netGame.game_status = old_status;
+netGame.gameStatus = old_status;
 }       
 			  
 //------------------------------------------------------------------------------
@@ -1625,7 +1629,7 @@ int NetworkSendRequest (void)
 	// game, non-zero if there is some problem.
 	int i;
 
-if (netGame.numplayers < 1)
+if (netGame.nNumPlayers < 1)
 	return 1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	if (netPlayers.players [i].connected)
@@ -1673,14 +1677,14 @@ if (bPlaySound)
 
 //------------------------------------------------------------------------------
 
-int FindActiveNetGame (tNetgameInfo *netGame)
+int FindActiveNetGame (char *pszGameName, int nSecurity)
 {
 	int	i;
 
 for (i = 0; i < networkData.nActiveGames; i++) {
-	if (!stricmp (activeNetGames [i].game_name, netGame->game_name)
+	if (!stricmp (activeNetGames [i].szGameName, pszGameName)
 #if SECURITY_CHECK
-		 && (activeNetGames [i].Security == netGame->Security)
+		 && (activeNetGames [i].nSecurity == nSecurity)
 #endif
 		 )
 		break;
@@ -1690,12 +1694,12 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int SecurityCheck=0;
+int nSecurityCheck = 0;
 	
 void NetworkProcessGameInfo (ubyte *data)
 {
 	int i;
-	tNetgameInfo *newGame = (tNetgameInfo *)data;
+	tNetgameInfo *newGame = (tNetgameInfo *) data;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tNetgameInfo tmp_info;
@@ -1707,13 +1711,13 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 networkData.bWaitingForPlayerInfo = 0;
 #if SECURITY_CHECK
-if (newGame->Security != tmpPlayersInfo->Security) {
+if (newGame->nSecurity != tmpPlayersInfo->nSecurity) {
 	Int3 ();     // Get Jason
    return;     // If this first half doesn't go with the second half
    }
 #endif
 Assert (tmpPlayersInfo != NULL);
-i = FindActiveNetGame (newGame);
+i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
 	con_printf (CON_DEBUG, "Too many netgames.\n");
@@ -1721,7 +1725,7 @@ if (i == MAX_ACTIVE_NETGAMES) {
 	return;
 	}
 if (i == networkData.nActiveGames) {
-	if (newGame->numplayers == 0)
+	if (newGame->nNumPlayers == 0)
 		return;
 	networkData.nActiveGames++;
 	}
@@ -1730,15 +1734,15 @@ networkData.bGamesChanged = 1;
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 memcpy (activeNetGames + i, (ubyte *) newGame, sizeof (tNetgameInfo));
 memcpy (activeNetPlayers + i, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
-if (SecurityCheck)
+if (nSecurityCheck)
 #if SECURITY_CHECK
-	if (activeNetGames [i].Security == SecurityCheck)
+	if (activeNetGames [i].nSecurity == nSecurityCheck)
 #endif
-		SecurityCheck = -1;
+		nSecurityCheck = -1;
 if (i == networkData.nActiveGames)
-if (activeNetGames [i].numplayers == 0) {	// Delete this game
+if (activeNetGames [i].nNumPlayers == 0) {	// Delete this game
 	DeleteActiveNetGame (i);
-	SecurityCheck = 0;
+	nSecurityCheck = 0;
 	}
 }
 
@@ -1759,11 +1763,11 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 
 networkData.bGamesChanged = 1;
-i = FindActiveNetGame ((tNetgameInfo *) newInfo);
+i = FindActiveNetGame (((tNetgameInfo *) newInfo)->szGameName, ((tNetgameInfo *) newInfo)->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES)
 	return;
 if (i == networkData.nActiveGames) {
-	if (newInfo->numplayers == 0)
+	if (newInfo->nNumPlayers == 0)
 		return;
 	networkData.nActiveGames++;
 	}
@@ -1775,22 +1779,39 @@ nLastNetGameUpdate [i] = SDL_GetTicks ();
 if (HoardEquipped ()) {
 	if (actGameP->gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
 		if ((actGameP->gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
-			actGameP->gamemode = NETGAME_MONSTERBALL; 
+			actGameP->gameMode = NETGAME_MONSTERBALL; 
 		else if (actGameP->gameFlags & NETGAME_FLAG_HOARD)
-			actGameP->gamemode = NETGAME_HOARD;					  
+			actGameP->gameMode = NETGAME_HOARD;					  
 		else if (actGameP->gameFlags & NETGAME_FLAG_ENTROPY)
-			actGameP->gamemode = NETGAME_ENTROPY;					  
-		actGameP->game_status = NETSTAT_PLAYING;
+			actGameP->gameMode = NETGAME_ENTROPY;					  
+		actGameP->gameStatus = NETSTAT_PLAYING;
 		if (actGameP->gameFlags & NETGAME_FLAG_TEAM_HOARD)
-			actGameP->gamemode = NETGAME_TEAM_HOARD;					  
+			actGameP->gameMode = NETGAME_TEAM_HOARD;					  
 		if (actGameP->gameFlags & NETGAME_FLAG_REALLY_ENDLEVEL)
-			actGameP->game_status = NETSTAT_ENDLEVEL;
+			actGameP->gameStatus = NETSTAT_ENDLEVEL;
 		if (actGameP->gameFlags & NETGAME_FLAG_REALLY_FORMING)
-			actGameP->game_status = NETSTAT_STARTING;
+			actGameP->gameStatus = NETSTAT_STARTING;
 		}
 	}
-if (actGameP->numplayers == 0)
+if (actGameP->nNumPlayers == 0)
 	DeleteActiveNetGame (i);
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkProcessExtraGameInfo (ubyte *data)
+{
+	int	i;
+
+ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
+SetMonsterballForces ();
+LogExtraGameInfo ();
+gameStates.app.bHaveExtraGameInfo [1] = 1;
+i = FindActiveNetGame (extraGameInfo [1].szGameName, extraGameInfo [1].nSecurity);
+if (i < networkData.nActiveGames)
+	activeExtraGameInfo [i] = extraGameInfo [1];
+else
+	memset (activeExtraGameInfo + i, 0, sizeof (activeExtraGameInfo [i]));
 }
 
 //------------------------------------------------------------------------------
@@ -1861,7 +1882,7 @@ return 1;
 int NetworkBadSecurity (int nSecurity, char *pszId)
 {
 #if SECURITY_CHECK
-if (nSecurity == netGame.Security)
+if (nSecurity == netGame.nSecurity)
 #endif
 	return 0;
 con_printf (CON_DEBUG, "Bad security for %s\n", pszId);
@@ -1922,14 +1943,14 @@ switch (pid) {
 				ReceiveNetPlayersPacket (data, &tmpPlayersBase);
 			else
 				memcpy (&tmpPlayersBase, data, sizeof (tAllNetPlayersInfo));
-			if (NetworkBadSecurity (tmpPlayersBase.Security, "PID_PLAYERSINFO"))
+			if (NetworkBadSecurity (tmpPlayersBase.nSecurity, "PID_PLAYERSINFO"))
 				break;
 			con_printf (CON_DEBUG, "Got a waiting PID_PLAYERSINFO!\n");
 			if (NetworkBadPacketSize (length, ALLNETPLAYERSINFO_SIZE, "PID_PLAYERSINFO"))
 				return 0;
 			tmpPlayersInfo=&tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo=0;
-			networkData.nSecurityNum=tmpPlayersInfo->Security;
+			networkData.nSecurityNum=tmpPlayersInfo->nSecurity;
 			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_SYNC;
 		   }
      break;
@@ -1968,7 +1989,7 @@ switch (pid) {
 			 (networkData.nStatus == NETSTAT_STARTING) || 
 			 (networkData.nStatus == NETSTAT_ENDLEVEL))
 			if (NetworkIAmMaster () && 
-				 !NetworkBadSecurity (their->Security, "PID_SEND_ALL_GAMEINFO"))
+				 !NetworkBadSecurity (their->nSecurity, "PID_SEND_ALL_GAMEINFO"))
 				NetworkSendGameInfo (their);
 		break;
 	
@@ -1997,7 +2018,7 @@ switch (pid) {
 		}
 		else if (networkData.nStatus == NETSTAT_PLAYING) {
 			// Someone wants to join a game in progress!
-			if (netGame.RefusePlayers)
+			if (netGame.bRefusePlayers)
 				DoRefuseStuff (their);
 		   else 
 				NetworkWelcomePlayer (their);
@@ -2032,11 +2053,11 @@ switch (pid) {
 				ReceiveFullNetGamePacket (data, &TempNetInfo);
 			else
 				memcpy ((ubyte *)& (TempNetInfo), data, sizeof (tNetgameInfo));
-			if (NetworkBadSecurity (TempNetInfo.Security, "PID_SYNC"))
+			if (NetworkBadSecurity (TempNetInfo.nSecurity, "PID_SYNC"))
 				break;
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
-				if (TempNetInfo.Security == tmpPlayersInfo->Security) {
+				if (TempNetInfo.nSecurity == tmpPlayersInfo->nSecurity) {
 #else
 					{
 #endif
@@ -2047,7 +2068,7 @@ switch (pid) {
 				}
 			else {	
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
-				networkData.nSecurityNum = TempNetInfo.Security;
+				networkData.nSecurityNum = TempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ())
 					NetworkReadSyncPacket ((tNetgameInfo *)data, 0);
 				networkData.nSecurityFlag = 0;
@@ -2059,12 +2080,8 @@ switch (pid) {
     //-------------------------------------------
 	case PID_EXTRA_GAMEINFO: 
 		con_printf (0, "received PID_EXTRA_GAMEINFO\n");
-		if (gameStates.multi.nGameType >= IPX_GAME) {
-			ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
-			SetMonsterballForces ();
-			LogExtraGameInfo ();
-			gameStates.app.bHaveExtraGameInfo [1] = 1;
-			}
+		if (gameStates.multi.nGameType >= IPX_GAME)
+			NetworkProcessExtraGameInfo (data);
 		break;
 
     //-------------------------------------------
@@ -2153,7 +2170,7 @@ switch (pid) {
 				}
 			else
 				memcpy ((ubyte *)&TempNetInfo, data, sizeof (tLiteInfo));
-			if (!NetworkBadSecurity (TempNetInfo.Security, "PID_GAME_UPDATE"))
+			if (!NetworkBadSecurity (TempNetInfo.nSecurity, "PID_GAME_UPDATE"))
 				memcpy (&netGame, (ubyte *)&TempNetInfo, sizeof (tLiteInfo));
 			}
 		if (gameData.app.nGameMode & GM_TEAM) {
@@ -2195,7 +2212,7 @@ switch (pid) {
 			 (networkData.nStatus == NETSTAT_STARTING) || 
 			 (networkData.nStatus == NETSTAT_ENDLEVEL))
 			if (NetworkIAmMaster () && 
-				 !NetworkBadSecurity (their->Security, "PID_GAME_PLAYERS"))
+				 !NetworkBadSecurity (their->nSecurity, "PID_GAME_PLAYERS"))
 				NetworkSendPlayerNames (their);
 		break;
 
@@ -2432,28 +2449,28 @@ gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 	
 //------------------------------------------------------------------------------
 
-void NetworkSetGameMode (int gamemode)
+void NetworkSetGameMode (int gameMode)
 {
 	multiData.kills.bShowList = 1;
 
-if (gamemode == NETGAME_ANARCHY)
+if (gameMode == NETGAME_ANARCHY)
 	;
-else if (gamemode == NETGAME_TEAM_ANARCHY)
+else if (gameMode == NETGAME_TEAM_ANARCHY)
 	gameData.app.nGameMode = GM_TEAM;
-else if (gamemode == NETGAME_ROBOT_ANARCHY)
+else if (gameMode == NETGAME_ROBOT_ANARCHY)
 	gameData.app.nGameMode = GM_MULTI_ROBOTS;
-else if (gamemode == NETGAME_COOPERATIVE) 
+else if (gameMode == NETGAME_COOPERATIVE) 
 	gameData.app.nGameMode = GM_MULTI_COOP | GM_MULTI_ROBOTS;
-else if (gamemode == NETGAME_CAPTURE_FLAG)
+else if (gameMode == NETGAME_CAPTURE_FLAG)
 		gameData.app.nGameMode = GM_TEAM | GM_CAPTURE;
 else if (HoardEquipped ()) {
-	if (gamemode == NETGAME_HOARD)
+	if (gameMode == NETGAME_HOARD)
 		gameData.app.nGameMode = GM_HOARD;
-	else if (gamemode == NETGAME_TEAM_HOARD)
+	else if (gameMode == NETGAME_TEAM_HOARD)
 		gameData.app.nGameMode = GM_HOARD | GM_TEAM;
-	else if (gamemode == NETGAME_ENTROPY)
+	else if (gameMode == NETGAME_ENTROPY)
 		gameData.app.nGameMode = GM_ENTROPY | GM_TEAM;
-	else if (gamemode == NETGAME_MONSTERBALL)
+	else if (gameMode == NETGAME_MONSTERBALL)
 		gameData.app.nGameMode = GM_MONSTERBALL | GM_TEAM;
 	}
 else
@@ -2605,9 +2622,9 @@ if (sp != &netGame) {
 	memcpy (&netGame, sp, sizeof (tNetgameInfo));
 	memcpy (&netPlayers, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 	}
-gameData.multi.nPlayers = sp->numplayers;
+gameData.multi.nPlayers = sp->nNumPlayers;
 gameStates.app.nDifficultyLevel = sp->difficulty;
-networkData.nStatus = sp->game_status;
+networkData.nStatus = sp->gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
 #if 1				
@@ -2685,7 +2702,7 @@ if (networkData.bRejoined) {
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		gameData.multi.players [i].netKilledTotal = sp->killed [i];
 	NetworkProcessMonitorVector (sp->monitor_vector);
-	gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel = sp->levelTime;
+	gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel = sp->xLevelTime;
 	}
 multiData.kills.nTeam [0] = sp->teamKills [0];
 multiData.kills.nTeam [1] = sp->teamKills [1];
@@ -2742,7 +2759,7 @@ for (i = 0; i < gameData.multi.nPlayerPositions; i++) {
 	}
 // Push current data into the sync packet
 NetworkUpdateNetGame ();
-netGame.game_status = NETSTAT_PLAYING;
+netGame.gameStatus = NETSTAT_PLAYING;
 netGame.nType = PID_SYNC;
 netGame.segments_checksum = networkData.nMySegsCheckSum;
 for (i = 0; i < gameData.multi.nPlayers; i++) {
@@ -2788,14 +2805,14 @@ gameData.multi.nPlayers = 0;
 // LoadLevel (level); Old, no longer used.
 
 netGame.difficulty = gameStates.app.nDifficultyLevel;
-netGame.gamemode = mpParams.nGameMode;
-netGame.game_status = NETSTAT_STARTING;
-netGame.numplayers = 0;
-netGame.max_numplayers = gameData.multi.nMaxPlayers;
-netGame.levelnum = mpParams.nLevel;
+netGame.gameMode = mpParams.nGameMode;
+netGame.gameStatus = NETSTAT_STARTING;
+netGame.nNumPlayers = 0;
+netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
+netGame.nLevel = mpParams.nLevel;
 netGame.protocol_version = MULTI_PROTO_VERSION;
 
-strcpy (netGame.game_name, mpParams.szGameName);
+strcpy (netGame.szGameName, mpParams.szGameName);
 
 networkData.nStatus = NETSTAT_STARTING;
 // Have the network driver initialize whatever data it wants to
@@ -2804,11 +2821,11 @@ networkData.nStatus = NETSTAT_STARTING;
 // Clients subscribe to this address when they call
 // IpxHandleNetGameAuxData.
 IpxInitNetGameAuxData (netGame.AuxData);
-NetworkSetGameMode (netGame.gamemode);
+NetworkSetGameMode (netGame.gameMode);
 d_srand (TimerGetFixedSeconds ());
-netGame.Security=d_rand ();  // For syncing Netgames with tPlayer packets
+netGame.nSecurity=d_rand ();  // For syncing Netgames with tPlayer packets
 if (NetworkSelectPlayers (bAutoRun)) {
-	StartNewLevel (netGame.levelnum, 0);
+	StartNewLevel (netGame.nLevel, 0);
 	return 1;
 	}
 else {
@@ -2882,7 +2899,7 @@ if (choice > -1)
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL)
-	if (DownloadMission (netGame.mission_name))
+	if (DownloadMission (netGame.szMissionName))
 		return 1;
 #if 1				
 con_printf (CON_DEBUG, "Aborting join.\n");
@@ -3024,11 +3041,11 @@ void NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	static fix t1=0;
 
 if (TimerGetApproxSeconds () > t1+ALL_INFO_REQUEST_INTERVAL) {
-	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, SecurityCheck);
+	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, nSecurityCheck);
 	t1 = TimerGetApproxSeconds ();
 	}
 NetworkDoBigWait (networkData.bWaitAllChoice);  
-if (SecurityCheck == -1)
+if (nSecurityCheck == -1)
 	*key=-2;
 }
  
@@ -3045,19 +3062,19 @@ m [0].nType=NM_TYPE_TEXT;
 m [0].text = "Press Escape to cancel";
 networkData.bWaitAllChoice=choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
-SecurityCheck=activeNetGames [choice].Security;
+nSecurityCheck=activeNetGames [choice].nSecurity;
 networkData.nSecurityFlag=0;
 
 get_menu:
 
 pick=ExecMenu (NULL, TXT_CONNECTING, 1, m, NetworkWaitAllPoll, NULL);
-if (pick>-1 && SecurityCheck!=-1)
+if (pick>-1 && nSecurityCheck!=-1)
 	goto get_menu;
-if (SecurityCheck == -1) {   
-	SecurityCheck=0;     
+if (nSecurityCheck == -1) {   
+	nSecurityCheck=0;     
 	return 1;
 	}
-SecurityCheck=0;      
+nSecurityCheck=0;      
 return 0;
  }
 
@@ -3082,56 +3099,53 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			else
 				memcpy ((ubyte *)&TempNetInfo, data, sizeof (tNetgameInfo));
 #if SECURITY_CHECK
-			if (TempNetInfo.Security !=SecurityCheck)
+			if (TempNetInfo.nSecurity !=nSecurityCheck)
 				break;
 #endif
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_GAMEINFO) {
 #if SECURITY_CHECK
-				if (tmpPlayersInfo->Security == TempNetInfo.Security) {
+				if (tmpPlayersInfo->nSecurity == TempNetInfo.nSecurity) {
 #else
 					{
 #endif
 #if SECURITY_CHECK
-					if (tmpPlayersInfo->Security == SecurityCheck) {
+					if (tmpPlayersInfo->nSecurity == nSecurityCheck) {
 #else
 						{
 #endif
 						memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (tNetgameInfo));
 						memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
-						SecurityCheck=-1;
+						nSecurityCheck=-1;
 						}
 					}
 				}
 			else {
 				networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_PLAYERS;
-				networkData.nSecurityNum=TempNetInfo.Security;
+				networkData.nSecurityNum=TempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
 #if 1				
 					con_printf (CON_DEBUG, "HUH? Game=%d Player=%d\n", 
-									networkData.nSecurityNum, tmpPlayersInfo->Security);
+									networkData.nSecurityNum, tmpPlayersInfo->nSecurity);
 #endif
 					memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (tNetgameInfo));
 					memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
-					SecurityCheck=-1;
+					nSecurityCheck = -1;
 					}
-				networkData.nSecurityFlag=0;
-				networkData.nSecurityNum=0;
+				networkData.nSecurityFlag = 0;
+				networkData.nSecurityNum = 0;
 				}
 			break;
 
 		case PID_EXTRA_GAMEINFO: 
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
-				SetMonsterballForces ();
-				LogExtraGameInfo ();
-				gameStates.app.bHaveExtraGameInfo [1] = 1;
+				NetworkProcessExtraGameInfo (data);
 				}
 			break;
 
 		case PID_PLAYERSINFO:
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-				temp_info= (tAllNetPlayersInfo *)data;
+				temp_info = (tAllNetPlayersInfo *)data;
 #else
 				ReceiveNetPlayersPacket (data, &info_struct);
 				temp_info = &info_struct;
@@ -3140,13 +3154,13 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			else
 				temp_info = (tAllNetPlayersInfo *)data;
 #if SECURITY_CHECK
-			if (temp_info->Security!=SecurityCheck) 
+			if (temp_info->nSecurity!=nSecurityCheck) 
 				break;     // If this isn't the guy we're looking for, move on
 #endif
 			memcpy (&tmpPlayersBase, (ubyte *)&temp_info, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo=&tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo=0;
-			networkData.nSecurityNum = tmpPlayersInfo->Security;
+			networkData.nSecurityNum = tmpPlayersInfo->nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
 			break;
 
@@ -3171,7 +3185,7 @@ if ((NetworkIAmMaster ())) {
 	while (networkData.bSendingExtras>1 && networkData.nPlayerJoiningExtras!=-1)
 		NetworkSendExtras ();
 
-	netGame.numplayers = 0;
+	netGame.nNumPlayers = 0;
 	nsave=gameData.multi.nPlayers;
 	gameData.multi.nPlayers=0;
 	NetworkSendGameInfo (NULL);
@@ -3276,7 +3290,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
 #if SECURITY_CHECK
-			if (networkData.nSecurityNum != TempInfo->Security)
+			if (networkData.nSecurityNum != TempInfo->nSecurity)
 				continue;
 #endif
 			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
@@ -3287,7 +3301,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 			return 1;
 			}
 		else {
-			networkData.nSecurityNum = TempInfo->Security;
+			networkData.nSecurityNum = TempInfo->nSecurity;
 			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_GAMEINFO;
 			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
 			tmpPlayersInfo=&tmpPlayersBase;
@@ -3434,8 +3448,8 @@ if (NakedPacketLen) {
 	NakedPacketLen = 0;
 	NakedPacketDestPlayer = -1;
 	}
-if (WaitForRefuseAnswer && TimerGetApproxSeconds ()> (RefuseTimeLimit+ (F1_0*12)))
-	WaitForRefuseAnswer=0;
+if (bWaitForRefuseAnswer && TimerGetApproxSeconds ()> (RefuseTimeLimit+ (F1_0*12)))
+	bWaitForRefuseAnswer=0;
 xLastSendTime += gameData.time.xFrame;
 xLastTimeoutCheck += gameData.time.xFrame;
 
@@ -3937,7 +3951,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		}
 if (FindPlayerInBanList (their->player.callsign))
 	return;
-if (!WaitForRefuseAnswer) {
+if (!bWaitForRefuseAnswer) {
 	DigiPlaySample (SOUND_HUD_JOIN_REQUEST, F1_0*2);           
 	if (gameData.app.nGameMode & GM_TEAM) {
 		if (!gameOpts->multi.bNoRankings)
@@ -3954,23 +3968,23 @@ if (!WaitForRefuseAnswer) {
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
 	strcpy (RefusePlayerName, their->player.callsign);
 	RefuseTimeLimit=TimerGetApproxSeconds ();   
-	RefuseThisPlayer=0;
-	WaitForRefuseAnswer=1;
+	bRefuseThisPlayer=0;
+	bWaitForRefuseAnswer=1;
 	}
 else {      
 	if (strcmp (their->player.callsign, RefusePlayerName))
 		return;
-	if (RefuseThisPlayer) {
+	if (bRefuseThisPlayer) {
 		RefuseTimeLimit=0;
-		RefuseThisPlayer=0;
-		WaitForRefuseAnswer=0;
+		bRefuseThisPlayer=0;
+		bWaitForRefuseAnswer=0;
 		if (gameData.app.nGameMode & GM_TEAM) {
 			new_player_num=GetNewPlayerNumber (their);
-			Assert (RefuseTeam == 1 || RefuseTeam == 2);        
-			if (RefuseTeam == 1)      
-				netGame.team_vector &= (~ (1<<new_player_num));
+			Assert (bRefuseTeam == 1 || bRefuseTeam == 2);        
+			if (bRefuseTeam == 1)      
+				netGame.teamVector &= (~ (1<<new_player_num));
 			else
-				netGame.team_vector |= (1<<new_player_num);
+				netGame.teamVector |= (1<<new_player_num);
 			NetworkWelcomePlayer (their);
 			NetworkSendNetgameUpdate (); 
 			}
@@ -3980,8 +3994,8 @@ else {
 		}
 	if ((TimerGetApproxSeconds ()) > RefuseTimeLimit+REFUSE_INTERVAL) {
 		RefuseTimeLimit=0;
-		RefuseThisPlayer=0;
-		WaitForRefuseAnswer=0;
+		bRefuseThisPlayer=0;
+		bWaitForRefuseAnswer=0;
 		if (!strcmp (their->player.callsign, RefusePlayerName)) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				NetworkDumpPlayer (
@@ -4037,7 +4051,7 @@ if (networkData.bSendingExtras == 35)
 	NetworkSendMarkers ();
 if (networkData.bSendingExtras == 30 && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 	MultiSendStolenItems ();
-if (networkData.bSendingExtras == 25 && (netGame.PlayTimeAllowed || netGame.KillGoal))
+if (networkData.bSendingExtras == 25 && (netGame.xPlayTimeAllowed || netGame.KillGoal))
 	MultiSendKillGoalCounts ();
 if (networkData.bSendingExtras == 20)
 	NetworkSendSmashLights (networkData.nPlayerJoiningExtras);
@@ -4188,13 +4202,12 @@ if ((netPlayers.players [(int) pnum].version_major == 1) &&
 
 void NetworkRequestPlayerNames (int n)
 {
-NetworkSendAllInfoRequest (PID_GAME_PLAYERS, activeNetGames [n].Security);
-networkData.nNamesInfoSecurity=activeNetGames [n].Security;
+NetworkSendAllInfoRequest (PID_GAME_PLAYERS, activeNetGames [n].nSecurity);
+networkData.nNamesInfoSecurity=activeNetGames [n].nSecurity;
 }
 
 //------------------------------------------------------------------------------
 
-extern char bAlreadyShowingInfo;
 extern int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, void (*subfunction) (int nitems, tMenuItem * items, int * last_key, int citem));
 
 void NetworkProcessNamesReturn (char *data)
@@ -4226,7 +4239,7 @@ for (i = 0; i < 12; i++) {
 	}
 #if SECURITY_CHECK
 for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
-	if (networkData.nNamesInfoSecurity == activeNetGames [i].Security) {
+	if (networkData.nNamesInfoSecurity == activeNetGames [i].nSecurity) {
 		gnum = i;
 		break;
 		}
@@ -4241,7 +4254,7 @@ if (gnum == -1) {
 #else
 gnum = 0;
 #endif
-sprintf (mtext [num], TXT_GAME_PLRS, activeNetGames [gnum].game_name); 
+sprintf (mtext [num], TXT_GAME_PLRS, activeNetGames [gnum].szGameName); 
 num++;
 for (i = 0; i < nPlayers; i++) {
 	l = data [count++];
@@ -4283,7 +4296,7 @@ if (!their) {
 	}
 buf [0] = PID_NAMES_RETURN; 
 count++;
-(*(int *) (buf+1)) = netGame.Security; 
+(*(int *) (buf+1)) = netGame.nSecurity; 
 count+=4;
 if (!bNameReturning) {
 	buf [count++] = (char) 255; 
@@ -4335,7 +4348,7 @@ networkData.tLastPingStat = 0;
 
 //------------------------------------------------------------------------------
 
-void InitMonsterballSettings (monsterball_info *monsterballP)
+void InitMonsterballSettings (tMonsterballInfo *monsterballP)
 {
 	tMonsterballForce *forceP = monsterballP->forces;
 
@@ -4412,7 +4425,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nSpawnDelay = 0;
 	extraGameInfo [i].bEnhancedCTF = 0;
 	extraGameInfo [i].bRadarEnabled = i ? 0 : 1;
-	extraGameInfo [i].bPowerUpsOnRadar = 0;
+	extraGameInfo [i].bPowerupsOnRadar = 0;
 	extraGameInfo [i].nZoomMode = 0;
 	extraGameInfo [i].bRobotsHitRobots = 0;
 	extraGameInfo [i].bAutoDownload = 1;
@@ -4544,7 +4557,7 @@ else {
 	LogErr ("   nSpawnDelay: %d\n", extraGameInfo [1].nSpawnDelay);
 	LogErr ("   bEnhancedCTF: %d\n", extraGameInfo [1].bEnhancedCTF);
 	LogErr ("   bRadarEnabled: %d\n", extraGameInfo [1].bRadarEnabled);
-	LogErr ("   bPowerUpsOnRadar: %d\n", extraGameInfo [1].bPowerUpsOnRadar);
+	LogErr ("   bPowerupsOnRadar: %d\n", extraGameInfo [1].bPowerupsOnRadar);
 	LogErr ("   nZoomMode: %d\n", extraGameInfo [1].nZoomMode);
 	LogErr ("   bRobotsHitRobots: %d\n", extraGameInfo [1].bRobotsHitRobots);
 	LogErr ("   bAutoDownload: %d\n", extraGameInfo [1].bAutoDownload);

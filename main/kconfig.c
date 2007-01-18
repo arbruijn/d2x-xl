@@ -1699,7 +1699,7 @@ void KCReadExternalControls ()
       for (i=0;i<2;i++)
 		   temp_ptr->x_vibrate_info [i]=ExtXVibrateInfo [i];
 		temp_ptr->x_vibrate_clear=ExtXVibrateClear;
- 	   temp_ptr->game_status=gameStates.app.nExtGameStatus;
+ 	   temp_ptr->gameStatus=gameStates.app.nExtGameStatus;
    
       memset ((void *)&ExtForceVec,0,sizeof (vmsVector));
       memset ((void *)&ExtApplyForceMatrix,0,sizeof (vmsMatrix));

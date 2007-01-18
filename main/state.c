@@ -696,23 +696,23 @@ void StateSaveNetGame (CFILE *fp)
 	int	i, j;
 
 CFWriteByte (netGame.nType, fp);
-CFWriteInt (netGame.Security, fp);
-CFWrite (netGame.game_name, 1, NETGAME_NAME_LEN + 1, fp);
-CFWrite (netGame.mission_title, 1, MISSION_NAME_LEN + 1, fp);
-CFWrite (netGame.mission_name, 1, 9, fp);
-CFWriteInt (netGame.levelnum, fp);
-CFWriteByte ((sbyte) netGame.gamemode, fp);
-CFWriteByte ((sbyte) netGame.RefusePlayers, fp);
+CFWriteInt (netGame.nSecurity, fp);
+CFWrite (netGame.szGameName, 1, NETGAME_NAME_LEN + 1, fp);
+CFWrite (netGame.szMissionTitle, 1, MISSION_NAME_LEN + 1, fp);
+CFWrite (netGame.szMissionName, 1, 9, fp);
+CFWriteInt (netGame.nLevel, fp);
+CFWriteByte ((sbyte) netGame.gameMode, fp);
+CFWriteByte ((sbyte) netGame.bRefusePlayers, fp);
 CFWriteByte ((sbyte) netGame.difficulty, fp);
-CFWriteByte ((sbyte) netGame.game_status, fp);
-CFWriteByte ((sbyte) netGame.numplayers, fp);
-CFWriteByte ((sbyte) netGame.max_numplayers, fp);
-CFWriteByte ((sbyte) netGame.numconnected, fp);
+CFWriteByte ((sbyte) netGame.gameStatus, fp);
+CFWriteByte ((sbyte) netGame.nNumPlayers, fp);
+CFWriteByte ((sbyte) netGame.nMaxPlayers, fp);
+CFWriteByte ((sbyte) netGame.nConnected, fp);
 CFWriteByte ((sbyte) netGame.gameFlags, fp);
 CFWriteByte ((sbyte) netGame.protocol_version, fp);
 CFWriteByte ((sbyte) netGame.version_major, fp);
 CFWriteByte ((sbyte) netGame.version_minor, fp);
-CFWriteByte ((sbyte) netGame.team_vector, fp);
+CFWriteByte ((sbyte) netGame.teamVector, fp);
 CFWriteByte ((sbyte) netGame.DoMegas, fp);
 CFWriteByte ((sbyte) netGame.DoSmarts, fp);
 CFWriteByte ((sbyte) netGame.DoFusions, fp);
@@ -760,8 +760,8 @@ for (i = 0; i < MAX_PLAYERS; i++)
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteShort (netGame.playerKills [i], fp);			// 16 bytes
 CFWriteInt (netGame.KillGoal, fp);							// 4 bytes
-CFWriteFix (netGame.PlayTimeAllowed, fp);					// 4 bytes
-CFWriteFix (netGame.levelTime, fp);							// 4 bytes
+CFWriteFix (netGame.xPlayTimeAllowed, fp);					// 4 bytes
+CFWriteFix (netGame.xLevelTime, fp);							// 4 bytes
 CFWriteInt (netGame.control_invulTime, fp);				// 4 bytes
 CFWriteInt (netGame.monitor_vector, fp);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -782,7 +782,7 @@ void StateSaveNetPlayers (CFILE *fp)
 	int	i;
 
 CFWriteByte ((sbyte) netPlayers.nType, fp);
-CFWriteInt (netPlayers.Security, fp);
+CFWriteInt (netPlayers.nSecurity, fp);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFWrite (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, fp);
 	CFWrite (netPlayers.players [i].network.ipx.server, 1, 4, fp);
@@ -1649,23 +1649,23 @@ void StateRestoreNetGame (CFILE *fp)
 	int	i, j;
 
 netGame.nType = CFReadByte (fp);
-netGame.Security = CFReadInt (fp);
-CFRead (netGame.game_name, 1, NETGAME_NAME_LEN + 1, fp);
-CFRead (netGame.mission_title, 1, MISSION_NAME_LEN + 1, fp);
-CFRead (netGame.mission_name, 1, 9, fp);
-netGame.levelnum = CFReadInt (fp);
-netGame.gamemode = (ubyte) CFReadByte (fp);
-netGame.RefusePlayers = (ubyte) CFReadByte (fp);
+netGame.nSecurity = CFReadInt (fp);
+CFRead (netGame.szGameName, 1, NETGAME_NAME_LEN + 1, fp);
+CFRead (netGame.szMissionTitle, 1, MISSION_NAME_LEN + 1, fp);
+CFRead (netGame.szMissionName, 1, 9, fp);
+netGame.nLevel = CFReadInt (fp);
+netGame.gameMode = (ubyte) CFReadByte (fp);
+netGame.bRefusePlayers = (ubyte) CFReadByte (fp);
 netGame.difficulty = (ubyte) CFReadByte (fp);
-netGame.game_status = (ubyte) CFReadByte (fp);
-netGame.numplayers = (ubyte) CFReadByte (fp);
-netGame.max_numplayers = (ubyte) CFReadByte (fp);
-netGame.numconnected = (ubyte) CFReadByte (fp);
+netGame.gameStatus = (ubyte) CFReadByte (fp);
+netGame.nNumPlayers = (ubyte) CFReadByte (fp);
+netGame.nMaxPlayers = (ubyte) CFReadByte (fp);
+netGame.nConnected = (ubyte) CFReadByte (fp);
 netGame.gameFlags = (ubyte) CFReadByte (fp);
 netGame.protocol_version = (ubyte) CFReadByte (fp);
 netGame.version_major = (ubyte) CFReadByte (fp);
 netGame.version_minor = (ubyte) CFReadByte (fp);
-netGame.team_vector = (ubyte) CFReadByte (fp);
+netGame.teamVector = (ubyte) CFReadByte (fp);
 netGame.DoMegas = (ubyte) CFReadByte (fp);
 netGame.DoSmarts = (ubyte) CFReadByte (fp);
 netGame.DoFusions = (ubyte) CFReadByte (fp);
@@ -1713,8 +1713,8 @@ for (i = 0; i < MAX_PLAYERS; i++)
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.playerKills [i] = CFReadShort (fp);			// 16 bytes
 netGame.KillGoal = CFReadInt (fp);							// 4 bytes
-netGame.PlayTimeAllowed = CFReadFix (fp);					// 4 bytes
-netGame.levelTime = CFReadFix (fp);							// 4 bytes
+netGame.xPlayTimeAllowed = CFReadFix (fp);					// 4 bytes
+netGame.xLevelTime = CFReadFix (fp);							// 4 bytes
 netGame.control_invulTime = CFReadInt (fp);				// 4 bytes
 netGame.monitor_vector = CFReadInt (fp);					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -1735,7 +1735,7 @@ void StateRestoreNetPlayers (CFILE *fp)
 	int	i;
 
 netPlayers.nType = (ubyte) CFReadByte (fp);
-netPlayers.Security = CFReadInt (fp);
+netPlayers.nSecurity = CFReadInt (fp);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFRead (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, fp);
 	CFRead (netPlayers.players [i].network.ipx.server, 1, 4, fp);

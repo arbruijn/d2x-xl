@@ -906,7 +906,7 @@ void GameDrawTimeLeft ()
         GrSetCurFont (GAME_FONT);    //GAME_FONT
         GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 
-        timevar=i2f (netGame.PlayTimeAllowed*5*60);
+        timevar=i2f (netGame.xPlayTimeAllowed*5*60);
         i=f2i (timevar-ThisLevelTime);
         i++;
 
@@ -2238,7 +2238,7 @@ if (nDebugSlowdown) {
 		AddServerToTracker ();
       MultiDoFrame ();
 		CheckMonsterballScore ();
-		if (netGame.PlayTimeAllowed && ThisLevelTime>=i2f ((netGame.PlayTimeAllowed*5*60)))
+		if (netGame.xPlayTimeAllowed && ThisLevelTime>=i2f ((netGame.xPlayTimeAllowed*5*60)))
           MultiCheckForKillGoalWinner ();
 		else 
 			MultiCheckForEntropyWinner ();
@@ -2298,7 +2298,7 @@ if (nDebugSlowdown) {
 			gameData.time.xGame = gameData.time.xFrame;
 #endif
 #ifdef NETWORK
-   if ((gameData.app.nGameMode & GM_MULTI) && netGame.PlayTimeAllowed)
+   if ((gameData.app.nGameMode & GM_MULTI) && netGame.xPlayTimeAllowed)
        ThisLevelTime +=gameData.time.xFrame;
 #endif
 //LogErr ("DigiSyncSounds\n");

@@ -7,5 +7,7 @@ int NetworkSelectPlayers (int bAutoRun);
 void InitNetgameMenu (tMenuItem *m, int i);
 int NetworkFindGame (void);
 int NetworkGetIpAddr (void);
+void ShowNetGameInfo (int choice);
+void ShowExtraNetGameInfo (int choice);
 
 #endif //__NETMENU_H

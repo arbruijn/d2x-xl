@@ -73,6 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "input.h"
 #include "gameseq.h"
+#include "netmenu.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -141,7 +142,7 @@ void PrintVersionInfo (void);
 int ExecMenu4 (char * title, char * subtitle, int nItems, tMenuItem * item, 
 					  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					  int *cItemP, char * filename, int width, int height, int bTinyMode);
-void ShowExtraNetGameInfo (int choice);
+void ShowNetGameInfo (int choice);
 
 
 int bNewMenuFirstTime = 1;
@@ -1789,13 +1790,14 @@ if (k && con_events(k))
 
 		case KEY_I:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
-			 ShowExtraNetGameInfo (choice - 2 - gameStates.multi.bUseTracker);
+			 ShowNetGameInfo (choice - 2 - gameStates.multi.bUseTracker);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo)
 			{
-			 done=1;
-			 choice=-1;
+			 done = 1;
+			 choice = -1;
 			}
 		 break;
+		 
 		case KEY_U:
 		 if (gameStates.multi.bSurfingNet && !bAlreadyShowingInfo)
 			 NetworkRequestPlayerNames (choice - 2 - gameStates.multi.bUseTracker);
@@ -3685,39 +3687,6 @@ int _CDECL_ NMMsgBoxFixedFont (char *title, int nChoices, ...)
    return ExecMenuFixedFont (title, nm_text, nChoices, nmMsgItems, NULL, 0, NULL, -1, -1);
 }
 //end this section addition - Victor Rachels
-
-//------------------------------------------------------------------------------
-
-extern tNetgameInfo activeNetGames [];
-
-void ShowExtraNetGameInfo (int choice)
- {
-	tMenuItem m [5];
-   char mtext [5] [50];
-	int i, nInMenu, opt = 0;
-
-if (choice >= networkData.nActiveGames)
-	return;
-memset (m, 0, sizeof (m));
-for (i = 0; i < 5; i++) {
-	m [i].text = (char *) (mtext + i);
-	m [i].nType = NM_TYPE_TEXT;		
-	}
-sprintf (mtext [opt], TXT_NGI_GAME, activeNetGames [choice].game_name); 
-opt++;
-sprintf (mtext [opt], TXT_NGI_MISSION, activeNetGames [choice].mission_title); 
-opt++;
-sprintf (mtext [opt], TXT_NGI_LEVEL, activeNetGames [choice].levelnum); 
-opt++;
-sprintf (mtext [opt], TXT_NGI_SKILL, MENU_DIFFICULTY_TEXT (activeNetGames [choice].difficulty)); 
-opt++;
-bAlreadyShowingInfo = 1;	
-nInMenu = gameStates.menus.nInMenu;
-gameStates.menus.nInMenu = 0;
-ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
-gameStates.menus.nInMenu = nInMenu;
-bAlreadyShowingInfo = 0;	
- }
 
 //------------------------------------------------------------------------------
 /* Spiffy word wrap string formatting function */

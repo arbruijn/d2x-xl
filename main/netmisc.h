@@ -58,7 +58,7 @@ void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq);
 void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int liteFlag);
 void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag);
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
-void BEReceiveExtraGameInfo(ubyte *data, extra_gameinfo *extraGameInfo);
+void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo);
 void BESwapObject (tObject *obj);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -142,13 +142,13 @@ void BESwapObject (tObject *obj);
 	memcpy((ubyte *)(netgame), data, sizeof(tLiteInfo))
 
 #define SendExtraGameInfoPacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(extra_gameinfo), server, node, netAddress)
+	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node, netAddress)
 #define SendInternetExtraGameInfoPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)(extraGameInfo + 1), sizeof(extra_gameinfo), server, node)
+	IPXSendInternetPacketData((ubyte *)(extraGameInfo + 1), sizeof(tExtraGameInfo), server, node)
 #define SendBroadcastExtraGameInfoPacket() \
-	IPXSendBroadcastData((ubyte *) (extraGameInfo + 1), sizeof(extra_gameinfo))
+	IPXSendBroadcastData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo))
 #define ReceiveExtraGameInfoPacket(data, _extraGameInfo) \
-	memcpy((ubyte *)(_extraGameInfo), data, sizeof(extra_gameinfo))
+	memcpy((ubyte *)(_extraGameInfo), data, sizeof(tExtraGameInfo))
 #define SwapObject(obj)
 
 #endif

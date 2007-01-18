@@ -295,29 +295,29 @@ typedef struct tNetPlayerInfo {
 typedef struct tAllNetPlayersInfo
 {
 	char    nType;
-	int     Security;
+	int     nSecurity;
 	struct tNetPlayerInfo players [MAX_PLAYERS+4];
 } __pack__ tAllNetPlayersInfo;
 
 typedef struct tNetgameInfo {
 	ubyte   nType;
-	int     Security;
-	char    game_name[NETGAME_NAME_LEN+1];
-	char    mission_title[MISSION_NAME_LEN+1];
-	char    mission_name[9];
-	int     levelnum;
-	ubyte   gamemode;
-	ubyte   RefusePlayers;
+	int     nSecurity;
+	char    szGameName [NETGAME_NAME_LEN + 1];
+	char    szMissionTitle [MISSION_NAME_LEN + 1];
+	char    szMissionName [9];
+	int     nLevel;
+	ubyte   gameMode;
+	ubyte   bRefusePlayers;
 	ubyte   difficulty;
-	ubyte   game_status;
-	ubyte   numplayers;
-	ubyte   max_numplayers;
-	ubyte   numconnected;
+	ubyte   gameStatus;
+	ubyte   nNumPlayers;
+	ubyte   nMaxPlayers;
+	ubyte   nConnected;
 	ubyte   gameFlags;
 	ubyte   protocol_version;
 	ubyte   version_major;
 	ubyte   version_minor;
-	ubyte   team_vector;
+	ubyte   teamVector;
 // 72 bytes
 // change the order of the bit fields for the mac compiler.
 // doing so will mean I don't have to do screwy things to
@@ -399,8 +399,8 @@ typedef struct tNetgameInfo {
 	short   killed[MAX_PLAYERS];					// 16 bytes
 	short   playerKills[MAX_PLAYERS];			// 16 bytes
 	int     KillGoal;									// 4 bytes
-	fix     PlayTimeAllowed;						// 4 bytes
-	fix     levelTime;								// 4 bytes
+	fix     xPlayTimeAllowed;						// 4 bytes
+	fix     xLevelTime;								// 4 bytes
 	int     control_invulTime;					// 4 bytes
 	int     monitor_vector;							// 4 bytes
 	int     player_score[MAX_PLAYERS];			// 32 bytes

@@ -646,7 +646,7 @@ if (IS_WALL (nWallNum)) {
 					if (gameData.walls.walls [nWallNum].hps)
 						gameStates.render.grAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWallNum].hps / ((float) F1_0 * 100.0f)) * GR_ACTUAL_FADE_LEVELS);
 					else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
+						gameStates.render.grAlpha = COMPETITION ? GR_ACTUAL_FADE_LEVELS * 3.0f / 2.0f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency);
 					else
 						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
