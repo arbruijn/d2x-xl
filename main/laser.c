@@ -2044,7 +2044,7 @@ if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 else
 	xNextMissileFireTime = gameData.time.xGame + F1_0/25;
 nWeaponGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
-h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 1, 0)) ? 1 : 0;
+h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {
 	playerP->secondaryAmmo [gameData.weapons.nSecondary]--;
 	if (IsMultiGame)

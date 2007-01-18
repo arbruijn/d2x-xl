@@ -274,7 +274,7 @@ void ApplyLight (
 	int			vv, bUseColor, bForceColor;
 	int			nVertex;
 	int			bApplyLight;
-	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0);
+	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0, 0);
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*objP = gameData.objs.objects + nObject;
@@ -282,7 +282,7 @@ void ApplyLight (
 
 if (SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
-		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
+		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
 			if (! (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
@@ -301,7 +301,7 @@ if (SHOW_DYN_LIGHT) {
 		xObjIntensity /= 4;
 		}
 	else if (objP->nType == OBJ_POWERUP) {
-		if (!EGI_FLAG (bPowerupLights, 0, 0)) {
+		if (!EGI_FLAG (bPowerupLights, 0, 0, 0)) {
 			RemoveDynLight (-1, -1, nObject);
 			return;
 			}
@@ -319,7 +319,7 @@ if (xObjIntensity) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
-	if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0)) 
+	if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
 		xObjIntensity = 0;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
 	bForceColor = (objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL);

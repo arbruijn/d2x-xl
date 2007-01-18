@@ -908,8 +908,8 @@ void show_extra_views()
 			}
 			case CV_RADAR_TOPDOWN:
 			case CV_RADAR_HEADSUP:
-				if (EGI_FLAG (bRadarEnabled, 1, 0))
-					DoCockpitWindowView(w,gameData.objs.console,0, 
+				if (EGI_FLAG (bRadarEnabled, 0, 1, 0))
+					DoCockpitWindowView(w,gameData.objs.console, 0, 
 					(Cockpit_3d_view[w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "RADAR");
 				else
 					Cockpit_3d_view[w] = CV_NONE;

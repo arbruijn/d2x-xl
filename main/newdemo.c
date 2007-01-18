@@ -1687,7 +1687,7 @@ for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
 
 int NDUpdateSmoke (void)
 {
-if (!EGI_FLAG (bUseSmoke, 0, 0))
+if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
 	return 0;
 else {
 		int		i, nObject;

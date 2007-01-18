@@ -869,13 +869,13 @@ int select_next_window_function(int w)
 			Cockpit_3d_view[w] = CV_REAR;
 			break;
 		case CV_REAR:
-			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 1, 0) &&
+			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
-			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 1, 0) &&
+			if (!gameStates.app.bNostalgia && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				Cockpit_3d_view[w] = CV_RADAR_HEADSUP;
 				break;
@@ -1207,7 +1207,7 @@ int HandleSystemKey(int key)
 			
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
-			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0))
+			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
 #endif			
 				gameStates.render.bExternalView = !gameStates.render.bExternalView;
 			ResetFlightPath (&externalView, -1, -1);

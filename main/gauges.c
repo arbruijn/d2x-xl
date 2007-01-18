@@ -2093,7 +2093,7 @@ if (gameOpts->render.cockpit.bHUD ||
 	 ((gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && 
 	  (gameStates.render.cockpit.nMode != CM_LETTERBOX))) {
 	HUDShowObjTally ();
-	if (EGI_FLAG (nWeaponIcons, 1, 0)) {
+	if (EGI_FLAG (nWeaponIcons, 0, 1, 0)) {
 		HUDShowWeaponIcons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
@@ -3731,7 +3731,7 @@ void ShowReticle (int force_big_one)
 #ifdef _DEBUG
 	if (gameStates.render.bExternalView)
 #else	
-	if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0)))
+	if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif	
 		return;
       if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bitmap.bm_props.w > 320)){                
@@ -4045,7 +4045,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 					GrString (x1, y1, s);
 				}
 	
-				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 0) || EGI_FLAG (bTowFlags, 0, 0)))) { // Draw box on HUD
+				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) { // Draw box on HUD
 					fix dy = -FixMulDiv (gameData.objs.objects[nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 //					fix dy = -FixMulDiv (FixMul (gameData.objs.objects[nObject].size, viewInfo.scale.y), i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->sc_aspect);

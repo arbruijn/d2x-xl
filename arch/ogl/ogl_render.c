@@ -625,7 +625,7 @@ else {
 if (!gameStates.render.nRenderPass)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) 
+if (EGI_FLAG (bShadows, 0, 1, 0) 
 	 && (gameStates.render.nShadowPass < 3)
 	 && !gameOpts->render.shadows.bFast
 #	if DBG_SHADOWS

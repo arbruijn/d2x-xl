@@ -450,7 +450,7 @@ if (SHOW_DYN_LIGHT)
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it
 	//scale static light for destruction effect
-	if (EGI_FLAG (bDarkness, 0, 0))
+	if (EGI_FLAG (bDarkness, 0, 0, 0))
 		propsP->uvls [i].l = 0;
 	else {
 #if LMAP_LIGHTADJUST
@@ -816,7 +816,7 @@ if (!bRender)
 #endif
 		bHaveCamImg = pc->bValid && /*!pc->bShadowMap &&*/ 
 						  (pc->texBuf.glTexture || bCamBufAvail) &&
-						  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 0));
+						  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 		}
 	else {
 		bHaveCamImg = 0;
@@ -1479,7 +1479,7 @@ void RenderSegment (short nSegment, int nWindow)
 	short			sn;
 
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && 
+if (EGI_FLAG (bShadows, 0, 1, 0) && 
 	 gameOpts->render.shadows.bFast && 
 	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass >= 2))
@@ -2795,7 +2795,7 @@ else {
 #ifdef _DEBUG
 			 gameStates.render.bExternalView) {
 #else		
-			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0))) {
+			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
 #endif			 	
 #if 1
 			SetPathPoint (&externalView, gameData.objs.viewer);
@@ -2845,7 +2845,7 @@ if (!bShadowTest)
 #ifdef _DEBUG
 		if (gameStates.render.bExternalView)
 #else		
-		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
+		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 	
 			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
 		else

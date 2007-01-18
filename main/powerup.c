@@ -809,7 +809,7 @@ switch (objP->id) {
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 		if (bUsed < 0) {
 			if (ISLOCALPLAYER (nPlayer)) {
-				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0) || EGI_FLAG (bHeadLights, 0, 0)))
+				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (bHeadLights, 0, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendFlags ((char) gameData.multi.nLocalPlayer);

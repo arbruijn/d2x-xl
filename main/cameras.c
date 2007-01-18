@@ -629,7 +629,7 @@ for (i = 0; i < nCameras; i++, pc++) {
 	pc->nWaitFrames++;
 	if (!pc->bVisible)
 		continue;
-	if (pc->bTeleport && !EGI_FLAG (bTeleporterCams, 0, 0))
+	if (pc->bTeleport && !EGI_FLAG (bTeleporterCams, 0, 1, 0))
 		continue;
 	if (pc->objP && (pc->objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 		continue;

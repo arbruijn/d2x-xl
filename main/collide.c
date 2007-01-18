@@ -379,7 +379,7 @@ if (mag < (m0 + m1) / 200) {
 	return 0;	// don't bump if force too low
 	}
 //HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo.mass) / 200);
-if (EGI_FLAG (bUseHitAngles, 0, 0)) {
+if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	VmVecSub (&vh, vHitPt, &objP1->position.vPos);
 	if (VmVecNormalize (&vh) > F1_0 / 16) {
@@ -553,7 +553,7 @@ int CheckVolatileSegment (tObject *objP, int nSegment)
 
 //	Assert (objP->nType==OBJ_PLAYER);
 
-	if (!EGI_FLAG (bFluidPhysics, 0, 0))
+	if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
 		return 0;
 	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_WATER)
 		d = 0;
@@ -1680,7 +1680,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 		}
 	if (((weapon->cType.laserInfo.parentType==OBJ_PLAYER) || 
 		 gameStates.app.cheats.bRobotsKillRobots || 
-		 (EGI_FLAG (bRobotsHitRobots, 0, 0))) && 
+		 (EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) && 
 		 !(robot->flags & OF_EXPLODING))	{	
 		tObject *expl_obj = NULL;
 		if (weapon->cType.laserInfo.nParentObj == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
@@ -1838,7 +1838,7 @@ void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int cou
 	int nPowerup = secondaryWeaponToPowerup [weapon_index];
 
 if (gameData.multi.players [playerObjP->id].secondaryWeaponFlags & weaponFlag) {
-	int	i, max_count = (EGI_FLAG (bDropAllMissiles, 0, 0)) ? count : min (count, 3);
+	int	i, max_count = (EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3);
 	for (i=0; i<max_count; i++)
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 	}
@@ -1852,7 +1852,7 @@ void DropMissile1or4 (tObject *playerObjP, int nMissileIndex)
 
 if (nMissiles = gameData.multi.players [playerObjP->id].secondaryAmmo [nMissileIndex]) {
 	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
-	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0)) && (nMissiles > 10))
+	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 		nMissiles = 10;
 	CallObjectCreateEgg (playerObjP, nMissiles/4, OBJ_POWERUP, nPowerupId+1);
 	CallObjectCreateEgg (playerObjP, nMissiles%4, OBJ_POWERUP, nPowerupId);

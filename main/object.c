@@ -811,9 +811,9 @@ if (SHOW_SHADOWS &&
 	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bRenderShield, 0, 0) &&
+if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	 !(gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	UseSpherePulse (&gameData.render.shield, gameData.multi.spherePulse + i);
 	if (gameData.multi.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
@@ -836,7 +836,7 @@ if (EGI_FLAG (bRenderShield, 0, 0) &&
 			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
 		}
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -899,13 +899,13 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bDamageIndicators, 0, 0) &&
+if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
@@ -963,7 +963,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 0) &&
 	glVertex3fv ((GLfloat *) (fVerts + 3));
 	glEnd ();
 #endif
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -987,7 +987,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 if (!CanSeeObject (OBJ_IDX (objP), 1))
 	return;
 #endif
-if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
+if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	if (nPlayer >= 0) {
 		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
@@ -997,17 +997,17 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
 			return;
 		}
 	}
-if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 0)) {
+if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 	if (GetTeam (nPlayer) != GetTeam (gameData.multi.nLocalPlayer)) {
 		if (!(gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
 			return;
 		pc = ObjectFrameColor (NULL, NULL);
 		}
 	}
-if (EGI_FLAG (bHitIndicators, 0, 0) && (ObjectDamage (objP) >= 1.0f))
+if (EGI_FLAG (bHitIndicators, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
-if (EGI_FLAG (bTargetIndicators, 0, 0)) {
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
@@ -1078,7 +1078,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 		glVertex3fv ((GLfloat *) (fVerts + 2));
 		glEnd ();
 #endif
-		if (EGI_FLAG (bDamageIndicators, 0, 0)) {
+		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
 			r3 = ObjectDamage (objP);
 			if (r3 < 1.0f) {
 				if (r3 < 0.0f)
@@ -1104,7 +1104,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 0)) {
 		glEnd ();
 #endif
 		}
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 RenderDamageIndicator (objP, pc);
@@ -1130,7 +1130,7 @@ void RenderTowedFlag (tObject *objP)
 if (gameStates.app.bNostalgia)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
@@ -1144,7 +1144,7 @@ if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG))
 		grsBitmap		*bmP;
 
 	if (pp) {
-		if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+		if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 			glDisable (GL_STENCIL_TEST);
 		OglActiveTexture (GL_TEXTURE0_ARB);
 		glEnable (GL_TEXTURE_2D);
@@ -1179,7 +1179,7 @@ if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG))
 		glEnd ();
 		G3DoneInstance ();
 		OGL_BINDTEX (0);
-		if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+		if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 			glEnable (GL_STENCIL_TEST);
 		}
 	}
@@ -1282,12 +1282,12 @@ void RenderThrusterFlames (tObject *objP)
 if (gameStates.app.bNostalgia)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 1//ndef _DEBUG
-if (!EGI_FLAG (bThrusterFlames, 0, 0))
+if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 	return;
 #endif
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
@@ -1344,7 +1344,7 @@ else {
 CreateThrusterFlame ();
 glLineWidth (3);
 
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 	glDisable (GL_STENCIL_TEST);
 for (h = 0; h < nThrusters; h++) {
 	c [1].red = 0.5f + 0.05f * fPulse;
@@ -1395,7 +1395,7 @@ for (h = 0; h < nThrusters; h++) {
 	glCullFace (GL_BACK);
 	glDepthMask (1);
 	G3DoneInstance ();
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1407,11 +1407,11 @@ void RenderShockwave (tObject *objP)
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bShockwaves, 0, 0) && 
+if (EGI_FLAG (bShockwaves, 1, 1, 0) && 
 	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
 		fVector			vPosf;
@@ -1419,7 +1419,7 @@ if (EGI_FLAG (bShockwaves, 0, 0) &&
 		float				r [4], l [4], alpha;
 		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
@@ -1477,7 +1477,7 @@ if (EGI_FLAG (bShockwaves, 0, 0) &&
 	glDepthMask (1);
 	glCullFace (GL_BACK);
 	G3DoneInstance ();
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1489,17 +1489,17 @@ void RenderTracers (tObject *objP)
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bTracers, 0, 0) &&
+if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
 		fVector			vPosf;
 		short				h;
 		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
@@ -1521,7 +1521,7 @@ if (EGI_FLAG (bTracers, 0, 0) &&
 	glLineWidth (1);
 	glDisable (GL_LINE_STIPPLE);
 	glDepthMask (1);
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1536,11 +1536,11 @@ void RenderLightTrail (tObject *objP)
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bLightTrails, 0, 0) && 
+if (EGI_FLAG (bLightTrails, 1, 1, 0) && 
 	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
@@ -1560,7 +1560,7 @@ if (EGI_FLAG (bLightTrails, 0, 0) &&
 		r *= 2;
 	else if (r < 2)
 		r *= 1.5f;
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
@@ -1604,7 +1604,7 @@ if (EGI_FLAG (bLightTrails, 0, 0) &&
 	glDepthMask (1);
 	glCullFace (GL_BACK);
 	G3DoneInstance ();
-	if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass == 3))
+	if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	RenderShockwave (objP);
 	}
@@ -1633,7 +1633,7 @@ int ConvertPowerupToWeapon (tObject *objP)
 	int			bHasModel = 0;
 
 if (!SHOW_OBJ_FX)
-	return;
+	return 0;
 if (!gameOpts->render.powerups.b3D)
 	return 0;
 if (objP->controlType == CT_WEAPON)
@@ -1716,7 +1716,7 @@ if ((OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObj
 #else	 
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum ||
-				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0)) || 
+				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) || 
 				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
 #endif	 	
 		if (gameOpts->render.smoke.bPlayers)
@@ -3188,7 +3188,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 	if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) {
 		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 			return;
-		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0)) && 
+		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 1, 1, 0)) && 
 			 (objP->id != MERCURYMSL_ID))
 			return;
 		}

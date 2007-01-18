@@ -622,7 +622,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 #if 1//ndef _DEBUG
 					 bAutomapVisited[objP->nSegment] && 
 #endif
-					 EGI_FLAG (bRobotsOnRadar, 0, 0)) {
+					 EGI_FLAG (bRobotsOnRadar, 0, 1, 0)) {
 					static int c = 0;
 					static int t = 0;
 					int h = SDL_GetTicks ();
@@ -646,7 +646,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				break;
 
 			case OBJ_POWERUP:
-				if (EGI_FLAG (bPowerUpsOnRadar, 0, 0) && 
+				if (EGI_FLAG (bPowerUpsOnRadar, 0, 1, 0) && 
 					 !(gameData.app.nGameMode & GM_MULTI) && 
 					 (gameStates.render.bAllVisited || bAutomapVisited[objP->nSegment]))	{
 					//if ( (objP->id==POW_KEY_RED) || (objP->id==POW_KEY_BLUE) || (objP->id==POW_KEY_GOLD))	

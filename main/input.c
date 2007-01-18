@@ -494,7 +494,7 @@ if (gameStates.app.bAutoMap ||
 	 gameOpts->input.bJoyMouse ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
-	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 0))) {
+	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
 	KCCLAMP (Controls.pitchTime, MAX_PITCH);
 	KCCLAMP (Controls.headingTime, MAX_PITCH);
 	}

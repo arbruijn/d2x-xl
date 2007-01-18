@@ -689,7 +689,7 @@ if (nFrames > 1) {
 	}
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-if (EGI_FLAG (bShadows, 0, 0)) // && (gameStates.render.nShadowPass == 3))
+if (EGI_FLAG (bShadows, 0, 1, 0)) // && (gameStates.render.nShadowPass == 3))
 	glDisable (GL_STENCIL_TEST);
 glDepthFunc (GL_LESS);
 glDepthMask (0);
@@ -795,7 +795,7 @@ if (gameStates.render.bPointSprites) {
 #endif
 OGL_BINDTEX (0);
 glDepthMask (1);
-if (EGI_FLAG (bShadows, 0, 0))// && (gameStates.render.nShadowPass == 3))
+if (EGI_FLAG (bShadows, 0, 1, 0))// && (gameStates.render.nShadowPass == 3))
 	glEnable (GL_STENCIL_TEST);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //glEnable (GL_DEPTH_TEST);
@@ -1192,7 +1192,7 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxCloud
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, int nType, int nObject)
 {
-if (!(EGI_FLAG (bUseSmoke, 0, 0)))
+if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
 	return 0;
 else if (gameData.smoke.iFreeSmoke < 0)
 	return 0;
@@ -1241,7 +1241,7 @@ else {
 int MoveSmoke (void)
 {
 if (!(gameStates.app.b40fpsTick &&
-	   EGI_FLAG (bUseSmoke, 0, 0)))
+	   EGI_FLAG (bUseSmoke, 0, 1, 0)))
 	return 0;
 else {
 		int		h, i, j = 0, t = gameStates.app.nSDLTicks;
@@ -1283,7 +1283,7 @@ else {
 
 int RenderSmoke (void)
 {
-if (!EGI_FLAG (bUseSmoke, 0, 0))
+if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
 	return 0;
 else {
 		int		i, j;

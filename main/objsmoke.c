@@ -80,7 +80,7 @@ return (int) ((double) rand () * (double) n / (double) RAND_MAX);
 
 void CreateDamageExplosion (int h, int i)
 {
-if (EGI_FLAG (bDamageExplosions, 0, 0) && 
+if (EGI_FLAG (bDamageExplosions, 1, 0, 0) && 
 	 (gameStates.app.nSDLTicks - gameData.smoke.objExplTime [i] > 100)) {
 	gameData.smoke.objExplTime [i] = gameStates.app.nSDLTicks;
 	if (!RandN (11 - h))
@@ -158,7 +158,7 @@ if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multi.nLocalPlayer)) {
 		}
 	}
 #if 0
-if (EGI_FLAG (bThrusterFlames, 0, 0)) {
+if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 	if ((a <= F1_0 / 4) && (a || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
 		DropAfterburnerBlobs (objP, 2, i2f (1), -1, gameData.objs.console, 1); //F1_0 / 4);
 	}
@@ -445,7 +445,7 @@ if (gameStates.render.nShadowPass > 1)
 #ifdef _DEBUG
 if (!gameStates.render.bExternalView)
 #else
-if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0)))
+if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
 RobotSmokeFrame ();

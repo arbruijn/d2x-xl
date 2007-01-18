@@ -857,8 +857,8 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 	fix			nDist;
 	int			bUseInitSgm = 
 						objP &&
-						EGI_FLAG (bFixedRespawns, 0, 0) || 
-						 (EGI_FLAG (bEnhancedCTF, 0, 0) && 
+						EGI_FLAG (bFixedRespawns, 0, 0, 0) || 
+						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) && 
 						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG)));
 #if TRACE
 con_printf (CON_DEBUG, "ChooseDropSegment:");
@@ -1022,7 +1022,7 @@ gameData.objs.nDropped--;
 
 int MaybeDropNetPowerup (short nObject, int nPowerupType, int nDropState)
 {
-if (EGI_FLAG (bImmortalPowerups, 0, 0) || 
+if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || 
 		 ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
 	short	nSegment;
 	int h, bFixedPos = 0;

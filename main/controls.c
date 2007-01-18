@@ -57,7 +57,7 @@ static fix wiggleTime;
 
 void WiggleObject (tObject *objP)
 {
-if (!IsMultiGame && (gameStates.render.nShadowPass != 2) && (EGI_FLAG (bWiggle, 0, 1))) {
+if (!IsMultiGame && (gameStates.render.nShadowPass != 2) && (EGI_FLAG (bWiggle, 1, 0, 1))) {
 	fix swiggle;
 	int nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
 	tObject *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;

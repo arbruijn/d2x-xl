@@ -304,30 +304,33 @@ typedef struct tNetworkData {
 
 extern tNetworkData networkData;
 
-#if 0
+#if 1
 
-static inline EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlag)
+static inline EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
 {
-if (IsMultiGame)
-	if (gameStates.app.bHaveExtraGameInfo [1])
-		if (bMultiFlag)
-			if (bAllowLocalFlag)
-				return bLocalFlag;
-			else
-				return 1;
-		else
-			return 0;
-	else
-		return bDefault;
-else
+if (!IsMultiGame)
 	return bLocalFlag;
+if (!gameStates.app.bHaveExtraGameInfo [1])	//host doesn't use d2x-xl or runs in pure D2 mode
+	return bDefault;
+if (bLocalFlag == bMultiFlag)
+	return bMultiFlag;
+if (bLocalFlag) {
+	if (bAllowLocalFlagOn)
+		return bLocalFlag;
+	}
+else {
+	if (bAllowLocalFlagOff)
+		return bLocalFlag;
+	}
+return bMultiFlag;
 }
 
-#define	EGI_FLAG(_bFlag,_bLocal,_bDefault)	EGIFlag (extraGameInfo [0]._bFlag, extraGameInfo [1]._bFlag, _bDefault, _bLocal)
+#define	EGI_FLAG(_bFlag, _bAllowLocalOn, _bAllowLocalOff, _bDefault)	\
+			EGIFlag (extraGameInfo [0]._bFlag, extraGameInfo [1]._bFlag, _bDefault, _bAllowLocalOn, _bAllowLocalOff)
 
 #else
 
-#define	EGI_FLAG(_bFlag,_bLocal,_bDefault) \
+#define	EGI_FLAG(_bFlag, _bAllocLocalOn, _bAllowLocalOff, _bDefault) \
 			(IsMultiGame ? \
 				gameStates.app.bHaveExtraGameInfo [1] ? \
 					extraGameInfo [1]._bFlag ? \
