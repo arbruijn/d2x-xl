@@ -6,11 +6,7 @@
 //------------------------------------------------------------------------------
 
 #define	SHOW_SMOKE	\
-	(!(gameStates.app.bNostalgia || COMPETITION) && \
-	 extraGameInfo [0].bUseSmoke && \
-	 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && \
-	 extraGameInfo [IsMultiGame].bUseSmoke /*&& \
-	 (gameData.demo.nState != ND_STATE_PLAYBACK)*/)
+			(!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseSmoke, 1, 1, 0))
 
 //------------------------------------------------------------------------------
 

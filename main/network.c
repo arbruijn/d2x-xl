@@ -423,6 +423,16 @@ networkData.nLastPacketTime [nPlayer] = (t < 0) ? TimerGetApproxSeconds () : t;
 
 //------------------------------------------------------------------------------
 
+void ResetAllPlayerTimeouts (void)
+{
+	int	i;
+
+for (i = 0; i < gameData.multi.nPlayers; i++)
+	ResetPlayerTimeout (i, -1);
+}
+
+//------------------------------------------------------------------------------
+
 int NetworkEndLevel (int *secret)
 {
 	// Do whatever needs to be done between levels
@@ -2826,6 +2836,7 @@ d_srand (TimerGetFixedSeconds ());
 netGame.nSecurity=d_rand ();  // For syncing Netgames with tPlayer packets
 if (NetworkSelectPlayers (bAutoRun)) {
 	StartNewLevel (netGame.nLevel, 0);
+	ResetAllPlayerTimeouts ();
 	return 1;
 	}
 else {

@@ -28,6 +28,7 @@
 #include "gameseg.h"
 #include "network.h"
 #include "lighting.h"
+#include "objsmoke.h"
 #include "particles.h"
 
 #ifdef __macosx__
@@ -1283,7 +1284,7 @@ else {
 
 int RenderSmoke (void)
 {
-if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
+if (!SHOW_SMOKE)
 	return 0;
 else {
 		int		i, j;
