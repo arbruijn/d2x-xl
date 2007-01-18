@@ -220,6 +220,7 @@ typedef struct extra_gameinfo {
 	char		bLightTrails;
 	char		bTracers;
 	char		bShockwaves;
+	char		bCompetition;
 	char		nSpotSize;
 	char		nSpotStrength;
 	int		nLightRange;
@@ -516,5 +517,7 @@ char *iptos (char *pszIP, char *addr);
 extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
+
+#define COMPETITION	extraGameInfo [IsMultiGame].bCompetition
 
 #endif /* _NETWORK_H */

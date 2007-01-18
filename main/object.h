@@ -490,6 +490,14 @@ void InitWeaponFlags (void);
 
 extern ubyte bIsMissile [];
 
-#define OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
+#define	OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
+
+#define	SHOW_SHADOWS \
+			(gameStates.app.bEnableShadows && \
+			EGI_FLAG (bShadows, 0, 0) && \
+			!COMPETITION)
+
+#define	SHOW_OBJ_FX \
+			(!(gameStates.app.bNostalgia || COMPETITION))
 
 #endif

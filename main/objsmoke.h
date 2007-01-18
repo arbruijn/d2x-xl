@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #define	SHOW_SMOKE	\
-	(!gameStates.app.bNostalgia && \
+	(!(gameStates.app.bNostalgia || COMPETITION) && \
 	 extraGameInfo [0].bUseSmoke && \
 	 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && \
 	 extraGameInfo [IsMultiGame].bUseSmoke /*&& \

@@ -1609,6 +1609,8 @@ char *defaultGameTexts [][2] = {
 	{"D2X-Einstellungen", "D2X options"},
 	{"Licht-~Reichweite: %s", "Light ~Range: %s"},
 	{"Weit", "Far"},
+	{"Lade Hires-Modelle...", "Loading Hires Models..."},
+	{"~Wettkampf-Modus", "~Competition mode"},
 #if 0
 	{"", ""},
 #endif
@@ -2086,6 +2088,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
 	{"Hier koennen D2X-XL-spezifische Einstellungen vorgenommen werden.", "Adjust D2X-XL specific options here."},
 	{"Hier kann die Reichweite der Lichter eingestellt werden.", "Adjust the reach of lights here."},
+	{"Wenn angekreuzt, werden einige Erweiterungen von D2X-XL waehrend\nMultiplayer-Spielen abgeschaltet.", 
+	 "If checked, certain D2X-XL extensions are disabled during\nmultiplayer games."},
 #if 0
 	{"", ""},
 #endif

@@ -804,10 +804,10 @@ void RenderPlayerShield (tObject *objP)
 {
 	int i = objP->id;
 
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) &&
+if (SHOW_SHADOWS &&
 	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
@@ -877,9 +877,7 @@ static inline float ObjectDamage (tObject *objP)
 if (objP->nType == OBJ_PLAYER)
 	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
 else if (objP->nType == OBJ_ROBOT) {
-	xMaxShields = gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength;
-	if (gameData.bots.info [gameStates.app.bD1Mission][objP->id].bossFlag)
-		xMaxShields /= (NDL - gameStates.app.nDifficultyLevel);
+	xMaxShields = RobotDefaultShields (objP);
 	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
 	if (gameData.bots.pInfo [objP->id].companion)
 		fDmg /= 2;
@@ -898,7 +896,7 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 	fVector		fPos, fVerts [4];
 	float			r, r2, w;
 
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
@@ -978,10 +976,10 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 	float			r, r2, r3;
 	int			nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
+if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
@@ -989,7 +987,7 @@ if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 if (!CanSeeObject (OBJ_IDX (objP), 1))
 	return;
 #endif
-if (gameStates.app.bNostalgia || !EGI_FLAG (bCloakedIndicators, 0, 0)) {
+if (!EGI_FLAG (bCloakedIndicators, 0, 0)) {
 	if (nPlayer >= 0) {
 		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
@@ -1136,7 +1134,7 @@ if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (!gameStates.app.bNostalgia && IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
+if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
 		vmsVector		vPos = objP->position.vPos;
 		fVector			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
@@ -1289,7 +1287,7 @@ if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 #if 1//ndef _DEBUG
-if (gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0))
+if (!EGI_FLAG (bThrusterFlames, 0, 0))
 	return;
 #endif
 if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
@@ -1406,14 +1404,14 @@ for (h = 0; h < nThrusters; h++) {
 
 void RenderShockwave (tObject *objP)
 {
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) && 
+if (EGI_FLAG (bShockwaves, 0, 0) && 
 	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
 		fVector			vPosf;
@@ -1488,14 +1486,14 @@ if (!gameStates.app.bNostalgia && EGI_FLAG (bShockwaves, 0, 0) &&
 
 void RenderTracers (tObject *objP)
 {
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (!gameStates.app.bNostalgia && EGI_FLAG (bTracers, 0, 0) &&
+if (EGI_FLAG (bTracers, 0, 0) &&
 	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
 		fVector			vPosf;
 		short				h;
@@ -1535,14 +1533,14 @@ static fVector vTrailVerts [2][4] = {{{0,0,0},{0,-1,-5},{0,-1,-50},{0,0,-50}},
 
 void RenderLightTrail (tObject *objP)
 {
-if (gameStates.app.bNostalgia)
+if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (!gameStates.app.bNostalgia && EGI_FLAG (bLightTrails, 0, 0) && 
+if (EGI_FLAG (bLightTrails, 0, 0) && 
 	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
@@ -1634,7 +1632,9 @@ int ConvertPowerupToWeapon (tObject *objP)
 	short			nModel, nId;
 	int			bHasModel = 0;
 
-if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
+if (!SHOW_OBJ_FX)
+	return;
+if (!gameOpts->render.powerups.b3D)
 	return 0;
 if (objP->controlType == CT_WEAPON)
 	return 1;
@@ -1739,7 +1739,7 @@ switch (objP->renderType) {
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
-		if (!EGI_FLAG (bShadows, 0, 0) || (gameStates.render.nShadowPass == 1))
+		if (!SHOW_SHADOWS || (gameStates.render.nShadowPass == 1))
 			DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			DrawPolygonObject (objP);
@@ -3188,7 +3188,8 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 	if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) {
 		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 			return;
-		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0)) && (objP->id != MERCURYMSL_ID))
+		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 0, 0)) && 
+			 (objP->id != MERCURYMSL_ID))
 			return;
 		}
 	if ((gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 

@@ -1709,7 +1709,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 				if (rInfoP->bossFlag)
 					damage = damage * (2*NDL-gameStates.app.nDifficultyLevel)/ (2*NDL);
 				}
-			else if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
+			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
 				damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
 			if (!ApplyDamageToRobot (robot, damage, weapon->cType.laserInfo.nParentObj))
 				BumpTwoObjects (robot, weapon, 0, vHitPt);		//only bump if not dead. no damage from bump
@@ -2106,10 +2106,11 @@ void ApplyDamageToPlayer (tObject *playerObjP, tObject *killer, fix damage)
 		return;
 
 	if (killer == playerObjP) {
-		if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
+		if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
 			return;
 		}
-	else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && !extraGameInfo [1].bFriendlyFire) {
+	else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && 
+				!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 		if (gameData.app.nGameMode & GM_TEAM) {
 			if (GetTeam (playerObjP->id) == GetTeam (killer->id))
 				return;
@@ -2206,7 +2207,7 @@ if (weapon->id == SMARTMINE_ID)
 if (weapon->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 damage = FixMul (damage, weapon->cType.laserInfo.multiplier);
-if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
+if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
 	damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
 if (gameData.app.nGameMode & GM_MULTI)
 	damage = FixMul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);

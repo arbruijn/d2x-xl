@@ -124,7 +124,7 @@ void SetFunctionMode (int);
 void InitPlayerStatsNewShip (void);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
-void copy_defaults_toRobot (tObject *objP);
+void CopyDefaultsToRobot (tObject *objP);
 void MultiInitiateSaveGame ();
 void MultiInitiateRestoreGame ();
 void ApplyAllChangedLight (void);
@@ -1609,7 +1609,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	//look for, and fix, boss with bogus shields
 	if (objP->nType == OBJ_ROBOT && gameData.bots.pInfo [objP->id].bossFlag) {
 		fix save_shields = objP->shields;
-		copy_defaults_toRobot (objP);		//calculate starting shields
+		CopyDefaultsToRobot (objP);		//calculate starting shields
 		//if in valid range, use loaded shield value
 		if (save_shields > 0 && (save_shields <= objP->shields))
 			objP->shields = save_shields;

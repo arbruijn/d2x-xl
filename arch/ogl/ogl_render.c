@@ -636,7 +636,7 @@ if (EGI_FLAG (bShadows, 0, 0)
 #endif
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
+if (SHOW_DYN_LIGHT)
 	OglColor4sf (1.0f, 1.0f, 1.0f, s);
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
@@ -987,7 +987,7 @@ return vReflect;
 
 int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 {
-	static float	fLightRanges [3] = {10, 14.414f, 20};
+	static float	fLightRanges [3] = {10, 14.142f, 20};
 
 	int				j, nType, bInRad;
 	float				fLightRange = fLightRanges [gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].nLightRange : 1];
@@ -1282,7 +1282,7 @@ bool G3DrawTexPolyMulti (
 {
 	int			c, tmType, nFrame;
 	int			bLight = 1, 
-					bDynLight = gameOpts->render.bDynLighting, 
+					bDynLight = SHOW_DYN_LIGHT, 
 					bDrawBM = 0;
 	grsBitmap	*bmP, *bmMask;
 	g3sPoint		*pl, **ppl;
@@ -1417,28 +1417,12 @@ else
 		bDrawBM = bmTop && !bShaderMerge;
 		if (bSuperTransp)
 			r_tpolyc++;
-		if (bShaderMerge || (0 && gameOpts->render.bDynLighting)) {	
+		if (bShaderMerge) {	
 			GLint loc;
-#if 0
-			if (0 && gameOpts->render.bDynLighting) {
-				glUseProgramObject (tmProg = genShaderProg);
-				glUniform1f (loc = glGetUniformLocation (tmProg, "nLights"), 
-								 (GLfloat) gameData.render.lights.dynamic.shader.nLights);
-				glUniform1i (loc = glGetUniformLocation (tmProg, "lightTex"), 3);
-				InitTMU3 ();
-				glBindTexture (GL_TEXTURE_2D, gameData.render.lights.dynamic.shader.nTexHandle);
-				tmType = 0;
-				}
-#endif
 			if (bShaderMerge) {
 				bmMask = BM_MASK (bmTop);
 				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
-#if 0
-				if (gameOpts->render.bDynLighting)
-					tmType++;
-				else
-#endif
-					glUseProgramObject (tmProg = tmShaderProgs [tmType]);
+				glUseProgramObject (tmProg = tmShaderProgs [tmType]);
 				INIT_TMU (InitTMU0, bmBot);
 				glUniform1i (loc = glGetUniformLocation (tmProg, "btmTex"), 0);
 				INIT_TMU (InitTMU1, bmTop);
@@ -1462,12 +1446,6 @@ else
 				}
 			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
-#if 0
-			if (0 && gameOpts->render.bDynLighting) {
-				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeFS"), tmType);
-				glUniform1i (loc = glGetUniformLocation (tmProg, "tmTypeVS"), tmType);
-				}
-#endif
 			}
 		else {
 			InitTMU0 ();
@@ -1476,22 +1454,13 @@ else
 			bmBot = BmCurFrame (bmBot);
 			OglTexWrap (bmBot->glTexture, GL_REPEAT);
 			}
-#if 0
-		if (!bShaderMerge && bmTop && !bDrawBM) {
-			InitTMU1 ();
-			if (OglBindBmTex (bmTop, 0))
-				return 1;
-			bmTop = BmCurFrame (bmTop);
-			OglTexWrap (bmTop->glTexture, GL_REPEAT);
-			}
-#endif
 #if USE_VERTNORMS
 		if (pvNormal)
 			VmsVecToFloat (&vNormal, pvNormal);
 		else
 			G3CalcNormal (pointList, &vNormal);
 #else
-		if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
+		if (SHOW_DYN_LIGHT)
 			G3Normal (pointList, pvNormal);
 #endif
 		if (!bLight)
@@ -2167,7 +2136,7 @@ else
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);	
 		}
 #if 0
-	if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)	{//for optional hardware lighting
+	if (SHOW_DYN_LIGHT)	{//for optional hardware lighting
 		GLfloat fAmbient [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 		glEnable (GL_LIGHTING);
 		glLightModelfv (GL_LIGHT_MODEL_AMBIENT, fAmbient);
@@ -2210,7 +2179,7 @@ glDisable (GL_ALPHA_TEST);
 glDisable (GL_DEPTH_TEST);
 glDisable (GL_CULL_FACE);
 glDisable (GL_STENCIL_TEST);
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
+if (SHOW_DYN_LIGHT) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
 	}

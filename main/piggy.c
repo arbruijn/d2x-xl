@@ -1577,7 +1577,7 @@ void PiggyFreeBitmap (grsBitmap *bmP, int i, int bD1)
 if (!bmP)
 	bmP = gameData.pig.tex.bitmaps [bD1] + i;
 else if (i < 0)
-	i = bmP - gameData.pig.tex.bitmaps [bD1];
+	i = (int) (bmP - gameData.pig.tex.bitmaps [bD1]);
 if (!PiggyFreeHiresAnimation (bmP, 0))
 	OglFreeBmTexture (bmP);
 if (bitmapOffsets [bD1][i] > 0)

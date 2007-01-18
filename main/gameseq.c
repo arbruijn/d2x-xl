@@ -963,7 +963,7 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
-if (gameOpts->render.bDynLighting)
+if (SHOW_DYN_LIGHT)
 	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
 memset (gameData.objs.speedBoost, 0, sizeof (gameData.objs.speedBoost));
@@ -2087,40 +2087,53 @@ done:
 }
 
 //------------------------------------------------------------------------------
-//	Initialize default parameters for one robot, copying from gameData.bots.pInfo to *objP.
-//	What about setting size!?  Where does that come from?
-void copy_defaults_toRobot (tObject *objP)
+
+fix RobotDefaultShields (tObject *objP)
 {
-	tRobotInfo	*robptr;
-	int			objid;
+	tRobotInfo	*botInfoP;
+	int			objId;
+	fix			shields;
 
-	Assert (objP->nType == OBJ_ROBOT);
-	objid = objP->id;
-	Assert (objid < gameData.bots.nTypes [0]);
-
-	robptr = &gameData.bots.pInfo [objid];
-
-	//	Boost shield for Thief and Buddy based on level.
-	objP->shields = robptr->strength;
-
-	if ((robptr->thief) || (robptr->companion)) {
-		objP->shields = (objP->shields * (abs (gameData.missions.nCurrentLevel)+7))/8;
-
-		if (robptr->companion) {
-			//	Now, scale guide-bot hits by skill level
-			switch (gameStates.app.nDifficultyLevel) {
-				case 0:	objP->shields = i2f (20000);	break;		//	Trainee, basically unkillable
-				case 1:	objP->shields *= 3;				break;		//	Rookie, pretty dang hard
-				case 2:	objP->shields *= 2;				break;		//	Hotshot, a bit tough
-				default:	break;
+Assert (objP->nType == OBJ_ROBOT);
+objId = objP->id;
+Assert (objId < gameData.bots.nTypes [0]);
+botInfoP = gameData.bots.pInfo + objId;
+//	Boost shield for Thief and Buddy based on level.
+shields = botInfoP->strength;
+if (botInfoP->thief || botInfoP->companion) {
+	shields = (shields * (abs (gameData.missions.nCurrentLevel) + 7)) / 8;
+	if (botInfoP->companion) {
+		//	Now, scale guide-bot hits by skill level
+		switch (gameStates.app.nDifficultyLevel) {
+			case 0:	
+				shields = i2f (20000);	
+				break;		//	Trainee, basically unkillable
+			case 1:	
+				shields *= 3;				
+				break;		//	Rookie, pretty dang hard
+			case 2:	
+				shields *= 2;				
+				break;		//	Hotshot, a bit tough
+			default:	
+				break;
 			}
 		}
-	} else if (robptr->bossFlag)	//	MK, 01/16/95, make boss shields lower on lower diff levels.
-		objP->shields = objP->shields/ (NDL+3) * (gameStates.app.nDifficultyLevel+4);
+	} 
+else if (botInfoP->bossFlag) {	//	MK, 01/16/95, make boss shields lower on lower diff levels.
+	shields = shields / (NDL + 3) * (gameStates.app.nDifficultyLevel + 4);
+//	Additional wimpification of bosses at Trainee
+	if (gameStates.app.nDifficultyLevel == 0)
+		shields /= 2;
+	}
+return shields;
+}
 
-	//	Additional wimpification of bosses at Trainee
-	if ((robptr->bossFlag) && (gameStates.app.nDifficultyLevel == 0))
-		objP->shields /= 2;
+//------------------------------------------------------------------------------
+//	Initialize default parameters for one robot, copying from gameData.bots.pInfo to *objP.
+//	What about setting size!?  Where does that come from?
+inline void CopyDefaultsToRobot (tObject *objP)
+{
+objP->shields = RobotDefaultShields (objP);
 }
 
 //------------------------------------------------------------------------------
@@ -2133,7 +2146,7 @@ void CopyDefaultsToRobotsAll ()
 
 	for (i=0; i<=gameData.objs.nLastObject; i++)
 		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			copy_defaults_toRobot (&gameData.objs.objects [i]);
+			CopyDefaultsToRobot (&gameData.objs.objects [i]);
 
 }
 

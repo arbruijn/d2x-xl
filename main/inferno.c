@@ -962,9 +962,6 @@ if (t = FindArg ("-enable_sse"))
 if (t = FindArg ("-render_opt"))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
-//if (gameOpts->render.bDynLighting)
-//	gameStates.ogl.bUseTransform = 1;
-//else
 if (t = FindArg ("-gl_transform"))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
@@ -1816,6 +1813,7 @@ gameStates.app.bGameSuspended = 0;
 gameStates.app.bEnterGame = 0;
 gameStates.app.bUseSound = 1;
 gameStates.app.bLunacy = 0;
+gameStates.app.bEnableShadows = 1;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks = -1;
@@ -2331,31 +2329,84 @@ memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
 
 // ----------------------------------------------------------------------------
 
+short LoadHiresModel (tOOFObject *po, short i)
+{
+	short	j = sizeofa (oofToModel);
+
+#if OOF_TEST_CUBE
+if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
+	oofToModel [i].pszOOF = "cube.oof";
+#endif
+if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
+	i++;
+else {
+	do {
+		gameData.models.modelToOOF [oofToModel [i].nModel] = po;
+		} while ((i < j) && !oofToModel [++i].pszOOF);
+	gameData.models.nHiresModels++;
+	po++;
+	}
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+static int loadIdx;
+
+static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
+{
+GrPaletteStepLoad (NULL);
+loadIdx = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, loadIdx);
+if (loadIdx >= sizeofa (oofToModel)) {
+	*key = -2;
+	GrPaletteStepLoad (NULL);
+	return;
+	}
+m [0].value++;
+m [0].rebuild = 1;
+*key = 0;
+GrPaletteStepLoad (NULL);
+}
+
+//------------------------------------------------------------------------------
+
+int ModelsGaugeSize (void)
+{
+	int h = sizeofa (oofToModel), i, j;
+
+for (i = h, j = 0; j < i; j++)
+	if (!oofToModel [j].pszOOF)
+		h--;
+return h;
+}
+
+//------------------------------------------------------------------------------
+
+void LoadModelsGauge (void)
+{
+loadIdx = 0;
+NMProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
+}
+
+// ----------------------------------------------------------------------------
+
 void LoadHiresModels (void)
 {
-	short			i = 0, j = sizeofa (oofToModel);
-	tOOFObject	*po = gameData.models.hiresModels;
-
 InitModelToOOF ();
 gameData.models.nHiresModels = 0;
 if (gameStates.app.bNostalgia)
 	gameOpts->render.bHiresModels = 0;
 else if (gameOpts->render.bHiresModels) {
-	while (i < sizeofa (oofToModel)) {
-#if OOF_TEST_CUBE
-		if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
-			oofToModel [i].pszOOF = "cube.oof";
-#endif
-		if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
-			i++;
-		else {
-			do {
-				gameData.models.modelToOOF [oofToModel [i].nModel] = po;
-				} while ((i < j) && !oofToModel [++i].pszOOF);
-			gameData.models.nHiresModels++;
-			po++;
-			}
+	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+		LoadModelsGauge ();
+	else {
+		short	i = 0, j = sizeofa (oofToModel);
+
+		ShowBoxedMessage (TXT_LOADING_MODELS);
+		while (i < j)
+			i = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, i);
 		}
+	ClearBoxedMessage ();
 	}
 }
 
@@ -2518,8 +2569,6 @@ BMInit ();
 DigiInit ();
 /*---*/LogErr ("Loading hoard data\n");
 LoadHoardData ();
-/*---*/LogErr ("Loading hires models\n");
-LoadHiresModels ();
 error_init (ShowInGameWarning, NULL);
 if (FindArg ("-norun"))
 	return (0);
@@ -2538,6 +2587,8 @@ InitPowerupTables ();
 InitWeaponFlags ();
 InitGame ();
 InitThreads ();
+/*---*/LogErr ("Loading hires models\n");
+LoadHiresModels ();
 return 0;
 }
 

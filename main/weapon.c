@@ -496,8 +496,8 @@ void SetLastSuperWeaponStates (void)
 	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
-	bLastPrimaryWasSuper [i] = i ? playerP->primaryWeaponFlags & j : playerP->laserLevel > MAX_LASER_LEVEL;
-	bLastSecondaryWasSuper [i] = playerP->secondaryWeaponFlags & j;
+	bLastPrimaryWasSuper [i] = i ? ((playerP->primaryWeaponFlags & j) != 0) : (playerP->laserLevel > MAX_LASER_LEVEL);
+	bLastSecondaryWasSuper [i] = (playerP->secondaryWeaponFlags & j) != 0;
 	}
 }
 

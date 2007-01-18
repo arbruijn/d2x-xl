@@ -1641,10 +1641,10 @@ void LoadGameTexts(void);
 #define TXT_D2XOPTIONS_TITLE		GT(859)
 #define TXT_LIGHT_RANGE				GT(860)
 #define TXT_FAR						GT(861)
+#define TXT_LOADING_MODELS			GT(862)
+#define TXT_COMPETITION_MODE		GT(863)
 
 #if 0
-#define TXT_				GT(862)
-#define TXT_				GT(863)
 #define TXT_				GT(864)
 #define TXT_				GT(865)
 #define TXT_				GT(866)
@@ -2047,10 +2047,10 @@ void LoadGameTexts(void);
 #define HTX_CPIT_OBJTALLY			HT(245)			
 #define HTX_MULTI_D2XOPTS			HT(246)
 #define HTX_ADVRND_LIGHTRANGE		HT(247)				
+#define HTX_MULTI2_COMPETITION	HT(248)				
 
 #if 0
 				
-#define HTX_					HT(248)				
 #define HTX_					HT(249)				
 #define HTX_					HT(250)				
 #define HTX_					HT(251)				

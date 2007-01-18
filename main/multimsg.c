@@ -104,7 +104,7 @@ int MultiMessageFeedback (void)
 char *colon = strrchr (multiData.msg.szMsg, ':');
 if (!colon)
 	return 0;
-l = colon - multiData.msg.szMsg;
+l = (int) (colon - multiData.msg.szMsg);
 if (!l || (l > CALLSIGN_LEN))
 	return 0;
 sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
@@ -639,7 +639,7 @@ if ((tilde = strchr (buf + bufP, '$'))) {
 	strcpy (buf + bufP, msgBuf);
 	}
 if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain team or tPlayer
-	l = colon - (buf + bufP);
+	l = (int) (colon - (buf + bufP));
 	if (l && (l <= CALLSIGN_LEN) &&
 		 ((IsTeamId (buf + bufP, l) && !IsMyTeamId (buf + bufP, l)) ||
 		  (IsPlayerId (buf + bufP, l) && !IsMyPlayerId (buf + bufP, l))))

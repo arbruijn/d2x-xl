@@ -569,7 +569,7 @@ else {
 	}
 pc = pParticle->glColor;
 pc.a *= gameOpts->render.smoke.bDisperse ? decay2 : decay;
-if (gameOpts->render.bDynLighting) {
+if (SHOW_DYN_LIGHT) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
 	if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
 		pc.r *= (double) psc->color.red;

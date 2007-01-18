@@ -35,6 +35,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "network.h"
 #include "render.h"
 #include "gameseg.h"
+#include "lighting.h"
 
 //------------------------------------------------------------------------------
 
@@ -2060,7 +2061,7 @@ if (bShadowTest)
 	return 1;
 #endif
 G3CheckAndSwap (modelP);
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting && 
+if (SHOW_DYN_LIGHT && 
 	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);

@@ -65,6 +65,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "gamepal.h"
 #include "paging.h"
 #include "maths.h"
+#include "network.h"
 #include "lighting.h"
 
 //------------------------------------------------------------------------------
@@ -1570,7 +1571,7 @@ if (!(gameOpts->render.bDynLighting ||
 	return 0;
 return
 #if !SHADOWS
-	(!gameOpts->render.bDynLighting && gameStates.app.bD2XLevel) ? 0 :
+	(!SHOW_DYN_LIGHT && gameStates.app.bD2XLevel) ? 0 :
 #endif
 	PROGRESS_STEPS (gameData.segs.nSegments) * 3 +
 	PROGRESS_STEPS (gameData.segs.nVertices);
@@ -1620,9 +1621,9 @@ void ComputeNearestLights (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
-if (!(gameOpts->render.bDynLighting || 
+if (!(SHOW_DYN_LIGHT || 
 	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
-	   gameStates.app.bEnableShadows))
+	   (gameStates.app.bEnableShadows && !COMPETITION)))
 	return;
 loadOp = 0;
 loadIdx = 0;
@@ -1631,6 +1632,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 						LoadMineGaugeSize () + PagingGaugeSize (), 
 						LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 else {
+	ComputeVertexVisibility (-1);
 	ComputeSegmentVisibility (-1);
 	ComputeNearestSegmentLights (-1);
 	ComputeNearestVertexLights (-1);
@@ -1713,7 +1715,7 @@ if (!(gameStates.render.bColored = HasColoredLight ()))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS
-if (gameOpts->render.bDynLighting || !gameStates.app.bD2XLevel) 
+if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel) 
 #endif
 	{
 	AddDynLights ();

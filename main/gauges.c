@@ -1888,7 +1888,7 @@ for (i = 0; i < 2; i++) {
 			if (j < 8)
 				bArmed = (l == gameData.weapons.nSecondary);
 			else
-				bArmed = (j == 8) == bLastSecondaryWasSuper [PROXIMITY_INDEX];
+				bArmed = (j == 8) == (bLastSecondaryWasSuper [PROXIMITY_INDEX] != 0);
 			}
 		else {
 			if (l == 5)
@@ -4045,7 +4045,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 					GrString (x1, y1, s);
 				}
 	
-				if (bHasFlag && !(EGI_FLAG (bTargetIndicators, 0, 0) || EGI_FLAG (bTowFlags, 0, 0))) { // Draw box on HUD
+				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 0) || EGI_FLAG (bTowFlags, 0, 0)))) { // Draw box on HUD
 					fix dy = -FixMulDiv (gameData.objs.objects[nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 //					fix dy = -FixMulDiv (FixMul (gameData.objs.objects[nObject].size, viewInfo.scale.y), i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);
 					fix dx = FixMul (dy, grdCurScreen->sc_aspect);

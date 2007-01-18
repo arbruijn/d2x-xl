@@ -368,15 +368,16 @@ CFWriteMatrix (m, ndOutFile);
 
 void NDWritePosition (tObject *objP)
 {
-	ubyte		renderType = objP->renderType;
-	tShortPos sp;
+	ubyte			renderType = objP->renderType;
+	tShortPos	sp;
+	int			bOldFormat = gameStates.app.bNostalgia || gameOpts->demo.bOldFormat;
 
-if (gameOpts->demo.bOldFormat)
+if (bOldFormat)
 	CreateShortPos (&sp, objP, 0);
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
 	 (objP->nType == OBJ_CAMERA) ||
-	 (!gameOpts->demo.bOldFormat && (renderType == RT_POWERUP))) {
-	if (gameOpts->demo.bOldFormat) {
+	 (!bOldFormat && (renderType == RT_POWERUP))) {
+	if (bOldFormat) {
 		int	i;
 		for (i = 0; i < 9; i++)
 			NDWriteByte (sp.bytemat [i]);
@@ -387,7 +388,7 @@ if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == R
 	else
 		NDWriteMatrix (&objP->position.mOrient);
 	}
-if (gameOpts->demo.bOldFormat) {
+if (bOldFormat) {
 	NDWriteShort (sp.xo);
 	NDWriteShort (sp.yo);
 	NDWriteShort (sp.zo);
@@ -756,7 +757,7 @@ NDWriteByte (o.nType);
 if ((o.renderType == RT_NONE) && (o.nType != OBJ_CAMERA))
 	return;
 NDWriteByte (o.id);
-if (!gameOpts->demo.bOldFormat)
+if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
 	NDWriteFix (o.shields);
 NDWriteByte (o.flags);
 NDWriteShort ((short) o.nSignature);
@@ -887,7 +888,7 @@ void NDRecordStartDemo ()
 
 StopTime ();
 NDWriteByte (ND_EVENT_START_DEMO);
-NDWriteByte (gameOpts->demo.bOldFormat ? DEMO_VERSION : DEMO_VERSION_D2X);
+NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
 if (gameData.app.nGameMode & GM_MULTI)

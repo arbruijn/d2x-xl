@@ -12,40 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Lighting system prototypes, structures, etc.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:58:51  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:27:52  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.6  1994/11/28  21:50:56  mike
- * optimizations.
- *
- * Revision 1.5  1994/06/07  16:51:58  matt
- * Made tObject lighting work correctly; changed name of Ambient_light to
- * Dynamic_light; cleaned up polygobj tObject rendering a little.
- *
- * Revision 1.4  1994/05/31  18:41:35  matt
- * Added comments
- *
- * Revision 1.3  1994/05/23  15:00:08  mike
- * Change MIN_LIGHT_DIST.
- *
- * Revision 1.2  1994/05/22  15:30:09  mike
- * First version.
- *
- * Revision 1.1  1994/05/22  15:16:44  mike
- * Initial revision
- *
- *
- */
-
 #ifndef _LIGHTING_H
 #define _LIGHTING_H
 
@@ -111,5 +77,10 @@ void SetNearestDynamicLights (int nSegment);
 void ComputeStaticDynLighting (void);
 void InitLightingShaders (void);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
+
+#define	SHOW_DYN_LIGHT \
+			(!(gameStates.app.bNostalgia /*|| COMPETITION*/) && \
+			 gameStates.render.bHaveDynLights && \
+			 gameOpts->render.bDynLighting)
 
 #endif /* _LIGHTING_H */

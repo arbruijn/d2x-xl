@@ -407,7 +407,7 @@ color->color.blue *= m;
 
 int SetVertexColors (tFaceProps *propsP)
 {
-if (gameOpts->render.bDynLighting) {
+if (SHOW_DYN_LIGHT) {
 	// set material properties specific for certain textures here
 	SetDynLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
@@ -445,7 +445,7 @@ int SetFaceLight (tFaceProps *propsP)
 	fix			dynLight;
 	float			l, dl, hl;
 
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting)
+if (SHOW_DYN_LIGHT)
 	return 0;
 for (i = 0; i < propsP->nv; i++, pvc++) {
 	//the uvl struct has static light already in it
@@ -2931,8 +2931,7 @@ if (bShowOnlyCurSide)
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 
 	extraGameInfo [1].bShadows = 0;
-if (gameStates.app.bEnableShadows &&
-	 EGI_FLAG (bShadows, 0, 0) && 
+if (SHOW_SHADOWS && 
 	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;

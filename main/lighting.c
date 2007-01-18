@@ -221,7 +221,7 @@ Cache_hits++;
 
 void InitDynColoring (void)
 {
-if (!gameOpts->render.bDynLighting && bInitDynColoring) {
+if (!gameOpts->render.bDynamicLight && bInitDynColoring) {
 	bInitDynColoring = 0;
 	memset (bGotDynColor, 0, sizeof (bGotDynColor));
 	}
@@ -233,7 +233,7 @@ bStartDynColoring = 0;
 
 void SetDynColor (tRgbColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
-if (gameOpts->render.bDynLighting)
+if (gameOpts->render.bDynamicLight)
 	return;
 if (!color)
 	return;
@@ -280,7 +280,7 @@ void ApplyLight (
 	tObject		*objP = gameData.objs.objects + nObject;
 	tPlayer		*playerP = gameData.multi.players + objP->id;
 
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
+if (SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0)) {
 			if (! (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
@@ -498,7 +498,7 @@ switch (nObjType) {
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 
-		  	hoardlight=i2f (gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
+		  	hoardlight = i2f (gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
@@ -1159,7 +1159,7 @@ glLightf (pl->handle, GL_SPOT_EXPONENT, 0.0f);
 
 void SetDynLightPos (short nObject)
 {
-if (gameStates.render.bHaveDynLights && gameOpts->render.bDynLighting) {
+if (SHOW_DYN_LIGHT) {
 	int	nLight = gameData.render.lights.dynamic.owners [nObject];
 
 	if (nLight >= 0)
@@ -1243,9 +1243,11 @@ if (pl1 != pl2) {
 	pl2->handle = (unsigned) (GL_LIGHT0 + (pl2 - gameData.render.lights.dynamic.lights));
 #endif
 	if (pl1->nObject >= 0)
-		gameData.render.lights.dynamic.owners [pl1->nObject] = pl1 - gameData.render.lights.dynamic.lights;
+		gameData.render.lights.dynamic.owners [pl1->nObject] = 
+			(short) (pl1 - gameData.render.lights.dynamic.lights);
 	if (pl2->nObject >= 0)
-		gameData.render.lights.dynamic.owners [pl2->nObject] = pl2 - gameData.render.lights.dynamic.lights;
+		gameData.render.lights.dynamic.owners [pl2->nObject] = 
+			(short) (pl2 - gameData.render.lights.dynamic.lights);
 	}
 }
 

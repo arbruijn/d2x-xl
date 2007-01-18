@@ -1494,6 +1494,7 @@ void NetworkSendExtraGameInfo (tSequencePacket *their)
 	extra_gameinfo	egi1Save = extraGameInfo [1];
 
 extraGameInfo [1] = extraGameInfo [0];
+extraGameInfo [1].bCompetition = egi1Save.bCompetition;
 extraGameInfo [1].bMouseLook = egi1Save.bMouseLook;
 extraGameInfo [1].bFastPitch = egi1Save.bFastPitch;
 extraGameInfo [1].bTeamDoors = egi1Save.bTeamDoors;
@@ -4455,6 +4456,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bLightTrails = 0;
 	extraGameInfo [i].bTracers = 0;
 	extraGameInfo [i].bShockwaves = 0;
+	extraGameInfo [i].bCompetition = 0;
 	extraGameInfo [i].bPowerupLights = i;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
@@ -4587,6 +4589,7 @@ else {
 	LogErr ("   bLightTrails: %d\n", extraGameInfo [1].bLightTrails);
 	LogErr ("   bTracers: %d\n", extraGameInfo [1].bTracers);
 	LogErr ("   bShockwaves: %d\n", extraGameInfo [1].bShockwaves);
+	LogErr ("   bCompetition: %d\n", extraGameInfo [1].bCompetition);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
 	LogErr ("   nLightRange: %d\n", extraGameInfo [1].nLightRange);

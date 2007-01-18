@@ -493,6 +493,7 @@ if (! (gameOpts->input.bLimitTurnRate || (gameData.app.nGameMode & GM_MULTI)) /*
 if (gameStates.app.bAutoMap || 
 	 gameOpts->input.bJoyMouse ||
 	 gameStates.app.bNostalgia ||
+	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 0))) {
 	KCCLAMP (Controls.pitchTime, MAX_PITCH);
 	KCCLAMP (Controls.headingTime, MAX_PITCH);
@@ -545,7 +546,8 @@ return h;
 
 void ControlsDoKeyboard (int *slide_on, int *bank_on, fix *pkp, fix *pkh, int *nCruiseSpeed, int bGetSlideBank)
 {
-	int	i, v, pitchScale = (!gameStates.app.bNostalgia && extraGameInfo [IsMultiGame].bFastPitch) ? 2 * PH_SCALE : 1;
+	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) && 
+									 extraGameInfo [IsMultiGame].bFastPitch) ? 2 * PH_SCALE : 1;
 	fix	kp = 0;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};

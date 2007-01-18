@@ -435,10 +435,10 @@ for (bRead = 0; bRead < 2; bRead++) {
 					*pszSong = '\0';
 				if (pszSong = strchr (szSong, '\n'))
 					*pszSong = '\0';
-				l = strlen (szSong) + 1;
+				l = (int) strlen (szSong) + 1;
 				CFSplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
-					l += strlen (szListFolder);
+					l += (int) strlen (szListFolder);
 				if (!(pszSong = (char *) d_malloc (l))) {
 					CFClose (fp);
 					return nSongs = nSongs;

@@ -965,7 +965,7 @@ return pData;
 
 void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
-	int	i, j, l = strlen (szFullPath) - 1;
+	int	i, j, l = (int) strlen (szFullPath) - 1;
 
 i = l;
 #ifdef _WIN32
