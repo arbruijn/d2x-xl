@@ -2454,14 +2454,6 @@ else
 		}
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");
-	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bShockwaves || AXI.bTracers)) {
-		INITFLAGS ("Weapon Fx: ");
-		ADDFLAG (AXI.bLightTrails, "Light trails");
-		ADDFLAG (AXI.bShockwaves, "Shockwaves");
-		ADDFLAG (AXI.bTracers, "Tracers");
-		}
-	else
-		sprintf (mTexts [opt], "Weapon Fx: None");
 	opt++;
 	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.bRenderShield)) {
 		INITFLAGS ("Ship Fx: ");
@@ -2504,7 +2496,7 @@ else
 		ADDFLAG (AXI.bEnableCheats, "Cheats");
 		ADDFLAG (AXI.bDarkness, "Darkness");
 		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls");
-		ADDFLAG (AXI.nFusionPowerMod != 2, "Fusion bump");
+		ADDFLAG (AXI.nFusionPowerMod != 2, "Fusion ramp");
 		ADDFLAG (!AXI.bFriendlyFire, "no FF");
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		}
@@ -2512,38 +2504,6 @@ else
 		strcat (mTexts [opt], "Gameplay ext.: None");
 	opt++;
 	}
-bAlreadyShowingInfo = 1;	
-nInMenu = gameStates.menus.nInMenu;
-gameStates.menus.nInMenu = 0;
-ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
-gameStates.menus.nInMenu = nInMenu;
-bAlreadyShowingInfo = 0;	
- }
-
-//------------------------------------------------------------------------------
-
-
-void ShowExtraNetGameInfo (int choice)
- {
-	tMenuItem m [25];
-   char mTexts [25][50];
-	int i, nInMenu, opt = 0;
-
-if (choice >= networkData.nActiveGames)
-	return;
-memset (m, 0, sizeof (m));
-for (i = 0; i < 25; i++) {
-	m [i].text = (char *) (mTexts + i);
-	m [i].nType = NM_TYPE_TEXT;		
-	}
-sprintf (mTexts [opt], TXT_NGI_GAME, AGI.szGameName); 
-opt++;
-sprintf (mTexts [opt], TXT_NGI_MISSION, AGI.szMissionTitle); 
-opt++;
-sprintf (mTexts [opt], TXT_NGI_LEVEL, AGI.nLevel); 
-opt++;
-sprintf (mTexts [opt], TXT_NGI_SKILL, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
-opt++;
 bAlreadyShowingInfo = 1;	
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;

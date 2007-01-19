@@ -1011,6 +1011,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+extern int nDbgVertex;
+#endif
+
 int ComputeNearestVertexLights (int i)
 {
 	vmsVector			*vertP;
@@ -1031,6 +1035,10 @@ if (nMaxLights > MAX_NEAREST_LIGHTS)
 	nMaxLights = MAX_NEAREST_LIGHTS;
 INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
+#ifdef _DEBUG
+	if (i == nDbgVertex)
+		i = i;
+#endif
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
@@ -1326,27 +1334,36 @@ void ComputeSegSideCenters (int nSegment)
 	int			i, j, nSide;
 	tSegment		*segP;
 	tSide			*sideP;
-#if USE_SEGRADS
-	fix			xSideDists [6], xMinDist;
+#if CALC_SEGRADS
+	fix			xSideDists [6], xMinDist, xMaxDist, xDist;
+	short			k;
+	vmsVector	v;
 #endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
 for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; nSegment++, segP++) {
 	ComputeSegmentCenter (gameData.segs.segCenters [nSegment], segP);
-#if USE_SEGRADS
+#if CALC_SEGRADS
 	GetSideDists (gameData.segs.segCenters [nSegment], nSegment, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, i++) {
 		ComputeSideCenter (gameData.segs.sideCenters + i, segP, nSide);
-#if USE_SEGRADS
+#if CALC_SEGRADS
 		if (xMinDist > xSideDists [nSide])
 			xMinDist = xSideDists [nSide];
 #endif
 		}
-#if USE_SEGRADS
-	gameData.segs.segRads [nSegment] = xMinDist;
+#if CALC_SEGRADS
+	gameData.segs.segRads [nSegment][0] = xMinDist;
+	for (k = 0, xMaxDist = 0; k < 8; k++) {
+		VmVecSub (&v, gameData.segs.segCenters [nSegment], gameData.segs.vertices + segP->verts [k]);
+		xDist = VmVecMag (&v);
+		if (xMaxDist < xDist)
+			xMaxDist = xDist;
+		}	
+	gameData.segs.segRads [nSegment][1] = xMaxDist;
 #endif
 	}
 }
@@ -1367,6 +1384,21 @@ gameData.segs.bSegVis [nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDest
 
 //------------------------------------------------------------------------------
 
+inline int IsSegVert (short nSegment, int nVertex)
+{
+	int	i;
+	short	*psv;
+
+if (nSegment < 0)
+	return 0;
+for (i = 8, psv = gameData.segs.segments [nSegment].verts; i; i--, psv++)
+	if (nVertex == *psv)
+		return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeVertexVisibility (int startI)
 {
 	int			i, j, v, endI;
@@ -1379,14 +1411,34 @@ if (startI <= 0) {
 INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 for (i = startI; i < endI; i++) {
 	for (v = 0, vertP = gameData.segs.vertices; v < gameData.segs.nVertices; v++, vertP++) {
+		if (VERTVIS (i, v) > 0)
+			continue;
+		// if v is a vertex of segment i, i is visible from v
+		if (IsSegVert (i, v)) {
+			SetVertVis (i, v, 3);
+			continue;
+			}
+#if 0
+		// mark segment i as visible from v if v is a segment vertex of one if 's children, too
+		// not 100% precise, but speeds up things
+		for (j = 6, pc = gameData.segs.segments [i].children; j; j--, pc++)
+			if (IsSegVert (*pc, v))
+				break;
+		if (j) {
+			SetVertVis (i, v, 3);
+			continue;
+			}
+#endif
+		SetVertVis (i, v, 1);
+#if CALC_SEGRADS
+		VmVecSub (&d, gameData.segs.segCenters [i], vertP);
+		if (VmVecMag (&d) > F1_0 * 125 + gameData.segs.segRads [i][1])
+			continue;
+#endif
 		for (j = 0; j < 6; j++) {
 			COMPUTE_SIDE_CENTER_I (&c, i, j);
 			VmVecSub (&d, &c, vertP);
-			if (VmVecMag (&d) > F1_0 * 125)
-				SetVertVis (i, v, 1);
-			else if (!CanSeePoint (NULL, &c, vertP, i))
-				SetVertVis (i, v, 1);
-			else {
+			if ((VmVecMag (&d) <= F1_0 * 125) && CanSeePoint (NULL, &c, vertP, i)) {
 				SetVertVis (i, v, 3);
 				break;
 				}

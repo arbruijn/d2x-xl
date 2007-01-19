@@ -400,7 +400,8 @@ if (bQuit) {
 Kmatrix_nomovie_message = 0;
 NMRemoveBackground (bg);
 gameStates.menus.nInMenu--;
-if (!extraGameInfo [IsMultiGame].bRotateLevels)
+if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
+	 !extraGameInfo [IsMultiGame].bRotateLevels)
 	longjmp (gameExitPoint, 0);
 }
 

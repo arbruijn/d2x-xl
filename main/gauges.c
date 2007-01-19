@@ -1888,7 +1888,7 @@ for (i = 0; i < 2; i++) {
 			if (j < 8)
 				bArmed = (l == gameData.weapons.nSecondary);
 			else
-				bArmed = (j == 8) == (bLastSecondaryWasSuper [PROXIMITY_INDEX] != 0);
+				bArmed = (j == 8) == (bLastSecondaryWasSuper [PROXIMITY_INDEX] == 0);
 			}
 		else {
 			if (l == 5)

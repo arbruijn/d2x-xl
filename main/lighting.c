@@ -1838,21 +1838,19 @@ if (gameOpts->render.bDynLighting ||
 	 !gameStates.app.bD2XLevel || 
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
 		int				nVertex,
-							bVariable,
 							bColorize = !gameOpts->render.bDynLighting;
 		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
-	bVariable = bColorize - 1;
 	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {
 #ifdef _DEBUG
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
-		SetNearestVertexLights (nVertex, 1, 1, bVariable);
+		SetNearestVertexLights (nVertex, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}

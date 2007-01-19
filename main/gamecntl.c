@@ -264,7 +264,7 @@ if (gameData.app.nGameMode & GM_ENTROPY)
 if (gameData.app.nGameMode & GM_HOARD)
 	return SMART_MINE_INDEX;
 
-bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? SMART_MINE_INDEX : PROXIMITY_INDEX;
+bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
 otherBomb = SMART_MINE_INDEX + PROXIMITY_INDEX - bomb;
 
 if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb] &&

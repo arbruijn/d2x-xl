@@ -2563,7 +2563,7 @@ CFClose (fp);
 FixObjectSegs ();
 ComputeNearestLights ();
 ComputeStaticDynLighting ();
-SetLastSuperWeaponStates ();
+//SetLastSuperWeaponStates ();
  // Get rid of ships that aren't connected in the restored game
 if (gameData.app.nGameMode & GM_MULTI) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {

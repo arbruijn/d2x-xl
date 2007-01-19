@@ -703,7 +703,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 			//we want to do a mini-auto-selection that applies to the drop bomb key
 			if ((nWeaponIndex == PROXIMITY_INDEX || nWeaponIndex == SMART_MINE_INDEX) &&
 				!(gameData.weapons.nSecondary == PROXIMITY_INDEX || gameData.weapons.nSecondary == SMART_MINE_INDEX)) {
-				int cur = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? SMART_MINE_INDEX : PROXIMITY_INDEX;
+				int cur = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
 				if (SOrderList (nWeaponIndex) < SOrderList (cur))
 					bLastSecondaryWasSuper[PROXIMITY_INDEX] = (nWeaponIndex == SMART_MINE_INDEX);
 				}

@@ -174,7 +174,7 @@ void SoundMenu ();
 void MiscellaneousMenu ();
 
 #ifdef _DEBUG
-ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
+ubyte bAllowAutoDemo = 0;                 // Flag used to enable auto demo starting in main menu.
 #else
 ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
 #endif

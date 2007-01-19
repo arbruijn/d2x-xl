@@ -491,7 +491,7 @@ exit (0);
 #	define	SAVEDIR			"Savegames"
 #	define	DEMODIR			"Demos"
 #	define	TEXTUREDIR_D2	"Textures"
-#	define	TEXTUREDIR_D1	"Textures/d1"
+#	define	TEXTUREDIR_D1	"Textures/D1"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"

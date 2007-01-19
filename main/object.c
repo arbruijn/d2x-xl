@@ -898,6 +898,8 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 
 if (!SHOW_OBJ_FX)
 	return;
+if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
+	return;
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))

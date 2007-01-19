@@ -91,7 +91,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		64
+#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
 
 //	-----------------------------------------------------------------------------
 
@@ -541,8 +541,10 @@ int RenderParticle (tParticle *pParticle)
 
 if (pParticle->nDelay > 0)
 	return 0;
+#if 0
 if (gameOpts->render.smoke.bDisperse)
-	decay2 = pow (decay, 1.0 / 4.0);
+	decay2 = sqrt (decay);
+#endif
 bmP = bmpParticle [gameStates.render.bPointSprites][pParticle->nType % 3];
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
@@ -569,7 +571,7 @@ else {
 		}
 	}
 pc = pParticle->glColor;
-pc.a *= gameOpts->render.smoke.bDisperse ? decay2 : decay;
+pc.a *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
 if (SHOW_DYN_LIGHT) {
 	tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
 	if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
@@ -612,8 +614,9 @@ else
 	v = bmP->glTexture->v;
 	o = pParticle->nOrient;
 	if (gameOpts->render.smoke.bDisperse) {
-		w = f2fl (pParticle->nWidth) / decay2; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) / decay2;
-		h = f2fl (pParticle->nHeight) / decay2; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) / decay2;
+		decay = sqrt (decay);
+		w = f2fl (pParticle->nWidth) / decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) / decay2;
+		h = f2fl (pParticle->nHeight) / decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) / decay2;
 		}
 	else {
 		w = f2fl (pParticle->nWidth) * decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) * decay;

@@ -1596,7 +1596,7 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
 	WINDOS (dd_grs_canvas *save_canvas, grs_canvas *save_canvas);	
 	WINDOS (dd_grs_canvas *game_canvas, grs_canvas *game_canvas);	
-	int			nMouseState, nOldMouseState, bDblClick=0;
+	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick=0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
 	int			bCloseBox = 0;
@@ -1701,12 +1701,19 @@ while (!done) {
 		int b = gameOpts->legacy.bInput;
 		gameOpts->legacy.bInput = 1;
 		nMouseState = MouseButtonState (0);
+		bWheelUp = MouseButtonState (3);
+		bWheelDown = MouseButtonState (4);
 		gameOpts->legacy.bInput = b;
 		}
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();
 	//NetworkListen ();
-	k = KeyInKey ();
+	if (bWheelUp)
+		k = KEY_UP;
+	else if (bWheelDown)
+		k = KEY_DOWN;
+	else
+		k = KeyInKey ();
 	if ((ctrl.sc_w != grdCurScreen->sc_w) || (ctrl.sc_h != grdCurScreen->sc_h)) {
 		memset (&ctrl, 0, sizeof (ctrl));
 		ctrl.width = width;
@@ -1780,7 +1787,7 @@ while (!done) {
 		done = 1;
 		}
 old_choice = choice;
-if (k && con_events(k))
+if (k && (con_events (k) || bWheelUp || bWheelDown))
 	switch (k)	{
 
 		case KEY_SHIFTED + KEY_ESC:
@@ -2626,7 +2633,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int box_x, box_y, box_w, box_h;
 	bkg bg;		// background under listbox
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
-	int mouse2_state, omouse2_state;
+	int mouse2_state, omouse2_state, bWheelUp, bWheelDown;
 	int bDblClick=0;
 	char szPattern [40];
 	int nPatternLen = 0;
@@ -2828,10 +2835,17 @@ ReadFileNames:
 		omouse2_state = mouse2_state;
 		nMouseState = MouseButtonState (0);
 		mouse2_state = MouseButtonState (1);
+		bWheelUp = MouseButtonState (3);
+		bWheelDown = MouseButtonState (4);
 		//see if redbook song needs to be restarted
 		SongsCheckRedbookRepeat ();
-		key = KeyInKey ();
-		switch (key)	{
+		if (bWheelUp)
+			key = KEY_UP;
+		else if (bWheelDown)
+			key = KEY_DOWN;
+		else
+			key = KeyInKey ();
+		switch (key) {
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
@@ -3227,8 +3241,8 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	int total_width, total_height;
 	bkg bg;
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
-	int close_x, close_y;
-	int	nItemsOnScreen;
+	int close_x, close_y, bWheelUp, bWheelDown;
+	int nItemsOnScreen;
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
@@ -3335,10 +3349,17 @@ WIN (int win_redraw=0);
 		ofirst_item = first_item;
 		nOldMouseState = nMouseState;
 		nMouseState = MouseButtonState (0);
+		bWheelUp = MouseButtonState (3);
+		bWheelDown = MouseButtonState (4);
 		//see if redbook song needs to be restarted
 		SongsCheckRedbookRepeat ();
 
-		key = KeyInKey ();
+		if (bWheelUp)
+			key = KEY_UP;
+		else if (bWheelDown)
+			key = KEY_DOWN;
+		else
+			key = KeyInKey ();
 
 		if (listbox_callback)
 			redraw = (*listbox_callback) (&cItem, &nItems, items, &key);

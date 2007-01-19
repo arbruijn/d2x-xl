@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MULTI_THREADED	0
 #define USE_SEGRADS		0
+#define CALC_SEGRADS		1
 
 #ifdef _DEBUG
 #	define	SHADOWS	1
@@ -1008,11 +1009,11 @@ typedef struct tSegmentData {
 	vmsVector			vertices [MAX_VERTICES];
 	fVector				fVertices [MAX_VERTICES];
 	tSegment				segments [MAX_SEGMENTS];
-	tSegment2				segment2s [MAX_SEGMENTS];
+	tSegment2			segment2s [MAX_SEGMENTS];
 	xsegment				xSegments [MAX_SEGMENTS];
 	g3sPoint				points [MAX_VERTICES];
-#if USE_SEGRADS
-	fix					segRads [MAX_SEGMENTS];
+#if CALC_SEGRADS
+	fix					segRads [MAX_SEGMENTS][2];
 #endif
 	vmsVector			segCenters [MAX_SEGMENTS][2];
 	vmsVector			sideCenters [MAX_SEGMENTS * 6];
