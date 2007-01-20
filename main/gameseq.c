@@ -819,6 +819,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
+gameStates.gameplay.bKillBossCheat = 0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 #if 1
 /*---*/LogErr ("   stopping music\n");

@@ -94,17 +94,20 @@ else if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
 	rval = 0;
 	}
 #endif
-else if ((gameData.bots.pInfo [gameData.objs.objects [nObject].id].bossFlag) && (gameData.boss.nDying == 1))
-	return 0;
-else if (nRemOwner == gameData.multi.nLocalPlayer) { // Already my robot!
-	int slot_num = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
-   if ((slot_num < 0) || (slot_num >= MAX_ROBOTS_CONTROLLED))
+else if (gameData.bots.pInfo [gameData.objs.objects [nObject].id].bossFlag) {
+	int i = FindBoss (nObject);
+	if ((i >= 0) && gameData.boss [i].nDying == 1)
 		return 0;
-	if (multiData.robots.fired [slot_num])
+	}
+else if (nRemOwner == gameData.multi.nLocalPlayer) { // Already my robot!
+	int nSlot = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
+   if ((nSlot < 0) || (nSlot >= MAX_ROBOTS_CONTROLLED))
+		return 0;
+	if (multiData.robots.fired [nSlot])
 		rval = 0;
 	else {
-		multiData.robots.agitation [slot_num] = agitation;
-		multiData.robots.lastMsgTime [slot_num] = gameData.time.xGame;
+		multiData.robots.agitation [nSlot] = agitation;
+		multiData.robots.lastMsgTime [nSlot] = gameData.time.xGame;
 		rval = 1;
 		}
 	}
@@ -727,7 +730,8 @@ else if (robotP->cType.aiInfo.REMOTE_OWNER == -1 && NetworkIAmMaster ()) {
 if (bIsThief || gameData.bots.pInfo [robotP->id].thief)
 	DropStolenItems (robotP);
 if (gameData.bots.pInfo [robotP->id].bossFlag) {
-	if (gameData.boss.nDying)
+	int i = FindBoss (nRobot);
+	if ((i >= 0) && gameData.boss [i].nDying)
 		return 0;
 	StartBossDeathSequence (robotP);	
 	}
@@ -819,7 +823,7 @@ void MultiDoBossActions (char *buf)
 	// Code to handle remote-controlled boss actions
 
 	tObject	*bossObjP;
-	short		nBossObj, boss_index;
+	short		nBossObj, nBossIdx;
 	int		nPlayer;
 	int		action;
 	short		secondary;
@@ -839,15 +843,11 @@ if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject)) {
 	Int3 ();  // See Rob
 	return;
 	}
-bossObjP = gameData.objs.objects + nBossObj;
-if ((bossObjP->nType != OBJ_ROBOT) || ! (gameData.bots.pInfo [bossObjP->id].bossFlag)) {
-	Int3 (); // Got boss actions for a robot who's not a boss?
+nBossIdx = FindBoss (nBossObj);
+if (nBossIdx < 0)
 	return;
-	}
-for (boss_index = 0; boss_index < extraGameInfo [0].nBossCount; boss_index++)
-	if (gameData.boss.objList [boss_index] == nBossObj)
-		break;
-if (gameData.boss.objList [boss_index] == nBossObj) {
+bossObjP = gameData.objs.objects + nBossObj;
+if ((bossObjP->nType != OBJ_ROBOT) || !(gameData.bots.pInfo [bossObjP->id].bossFlag)) {
 	Int3 (); // Got boss actions for a robot who's not a boss?
 	return;
 	}
@@ -856,21 +856,21 @@ switch (action)  {
 		{	
 		short nTeleportSeg;
 
-		vmsVector boss_dir;
-		if ((secondary < 0) || (secondary > gameData.boss.nTeleportSegs [boss_index])) {
+		vmsVector vBossDir;
+		if ((secondary < 0) || (secondary > gameData.boss [nBossIdx].nTeleportSegs)) {
 			Int3 (); // Bad nSegment for boss teleport, ROB!!
 			return;
 			}
-		nTeleportSeg = gameData.boss.teleportSegs [boss_index][secondary];
+		nTeleportSeg = gameData.boss [nBossIdx].teleportSegs[secondary];
 		if ((nTeleportSeg < 0) || (nTeleportSeg > gameData.segs.nLastSegment)) {
 			Int3 ();  // See Rob
 			return;
 			}
 		COMPUTE_SEGMENT_CENTER_I (&bossObjP->position.vPos, nTeleportSeg);
-		RelinkObject (OBJ_IDX (bossObjP), nTeleportSeg);
-		gameData.boss.nLastTeleportTime = gameData.time.xGame;
-		VmVecSub (&boss_dir, &gameData.objs.objects [gameData.multi.players [nPlayer].nObject].position.vPos, &bossObjP->position.vPos);
-		VmVector2Matrix (&bossObjP->position.mOrient, &boss_dir, NULL, NULL);
+		RelinkObject (nBossObj, nTeleportSeg);
+		gameData.boss [nBossIdx].nLastTeleportTime = gameData.time.xGame;
+		VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multi.players [nPlayer].nObject].position.vPos, &bossObjP->position.vPos);
+		VmVector2Matrix (&bossObjP->position.mOrient, &vBossDir, NULL, NULL);
 		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->position.vPos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
 		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
@@ -885,9 +885,9 @@ switch (action)  {
 		break;
 
 	case 2: // Cloak
-		gameData.boss.nHitTime = -F1_0*10;
-		gameData.boss.nCloakStartTime = gameData.time.xGame;
-		gameData.boss.nCloakEndTime = gameData.time.xGame + gameData.boss.nCloakDuration;
+		gameData.boss [nBossIdx].nHitTime = -F1_0*10;
+		gameData.boss [nBossIdx].nCloakStartTime = gameData.time.xGame;
+		gameData.boss [nBossIdx].nCloakEndTime = gameData.time.xGame + gameData.boss [nBossIdx].nCloakDuration;
 		bossObjP->cType.aiInfo.CLOAKED = 1;
 		break;
 

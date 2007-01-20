@@ -494,20 +494,13 @@ void EscortSetSpecialGoal (int special_key)
 //	Return id of boss.
 int GetBossId (void)
 {
-	int	i;
-#if 1
+	int	h, i;
 	int	nObject;
 	
-	for (i = 0; i < extraGameInfo [0].nBossCount; i++) {
-		if (0 <= (nObject = gameData.boss.objList [i]))
+	for (h = BOSS_COUNT, i = 0; i < BOSS_COUNT; i++) {
+		if (0 <= (nObject = gameData.boss [i].nObject))
 			return gameData.objs.objects [nObject].id;
 		}
-#else
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			if (gameData.bots.pInfo [gameData.objs.objects [i].id].bossFlag)
-				return gameData.objs.objects [i].id;
-#endif
 	return -1;
 }
 
@@ -850,7 +843,7 @@ else if (gameData.reactor.bDestroyed == 0) {
 	int	i;
 	
 	for (i = 0; i < extraGameInfo [0].nBossCount; i++)
-		if ((gameData.boss.objList [i] >= 0) && gameData.boss.nTeleportSegs [i])
+		if ((gameData.boss [i].nObject >= 0) && gameData.boss [i].nTeleportSegs)
 			return ESCORT_GOAL_BOSS;
 		return ESCORT_GOAL_CONTROLCEN;
 	}

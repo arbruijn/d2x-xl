@@ -1300,7 +1300,7 @@ v = m->value;
 if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = 
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
-	gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	InitGateIntervals ();
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
 	m->rebuild = 1;
 	}
@@ -1405,7 +1405,7 @@ i = m [nDiffOpt].value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = i;
 	gameStates.app.nDifficultyLevel = i;
-	gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+	InitGateIntervals ();
 	}
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
@@ -3014,7 +3014,7 @@ if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
 	if (!(gameData.app.nGameMode & GM_MULTI)) {
 		gameStates.app.nDifficultyLevel = v;
-		gameData.boss.nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+		InitGateIntervals ();
 		}
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
 	m->rebuild = 1;

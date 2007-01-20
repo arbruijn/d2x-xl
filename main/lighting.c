@@ -894,61 +894,61 @@ fix ComputeObjectLight (tObject *objP, vmsVector *rotated_pnt)
 	g3sPoint objpnt;
 	int nObject = OBJ_IDX (objP);
 
-	if (!rotated_pnt) {
-		G3TransformAndEncodePoint (&objpnt, &objP->position.vPos);
-		rotated_pnt = &objpnt.p3_vec;
+if (!rotated_pnt) {
+	G3TransformAndEncodePoint (&objpnt, &objP->position.vPos);
+	rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
-	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
-	//return light;
-	//Now, maybe return different value to smooth transitions
-	if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
-		fix xDeltaLight, xFrameDelta;
+light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
+//return light;
+//Now, maybe return different value to smooth transitions
+if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
+	fix xDeltaLight, xFrameDelta;
 
-		xDeltaLight = light - object_light [nObject];
-		xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
-		if (abs (xDeltaLight) <= xFrameDelta)
-			object_light [nObject] = light;		//we've hit the goal
+	xDeltaLight = light - object_light [nObject];
+	xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
+	if (abs (xDeltaLight) <= xFrameDelta)
+		object_light [nObject] = light;		//we've hit the goal
+	else
+		if (xDeltaLight < 0)
+			light = object_light [nObject] -= xFrameDelta;
 		else
-			if (xDeltaLight < 0)
-				light = object_light [nObject] -= xFrameDelta;
-			else
-				light = object_light [nObject] += xFrameDelta;
+			light = object_light [nObject] += xFrameDelta;
 	}
-	else {		//new tObject, initialize
-		object_sig [nObject] = objP->nSignature;
-		object_light [nObject] = light;
-	}
-	//Next, add in headlight on this tObject
-	// -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
-	light += ComputeHeadlightLightOnObject (objP);
-	//Finally, add in dynamic light for this tSegment
-	light += ComputeSegDynamicLight (objP->nSegment);
-	return light;
+else {		//new tObject, initialize
+	object_sig [nObject] = objP->nSignature;
+	object_light [nObject] = light;
+}
+//Next, add in headlight on this tObject
+// -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
+light += ComputeHeadlightLightOnObject (objP);
+//Finally, add in dynamic light for this tSegment
+light += ComputeSegDynamicLight (objP->nSegment);
+return light;
 }
 
 // ----------------------------------------------------------------------------------------------
 
-void ComputeEngineGlow (tObject *objP, fix *engine_glowValue)
+void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 {
-engine_glowValue [0] = f1_0/5;
+xEngineGlowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
-	if ((objP->nType==OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id==gameData.multi.nLocalPlayer)) {
+	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multi.nLocalPlayer)) {
 		fix thrust_mag = VmVecMagQuick (&objP->mType.physInfo.thrust);
-		engine_glowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
+		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
 	}
 	else {
 		fix speed = VmVecMagQuick (&objP->mType.physInfo.velocity);
-		engine_glowValue [0] += (FixDiv (speed,MAX_VELOCITY)*3)/5;
+		xEngineGlowValue [0] += (FixDiv (speed, MAX_VELOCITY) * 3) / 5;
 		}
 	}
 //set value for tPlayer headlight
 if (objP->nType == OBJ_PLAYER) {
 	if ((gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
 		 !gameStates.app.bEndLevelSequence)
-		engine_glowValue [1] =  (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
+		xEngineGlowValue [1] =  (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
 	else
-		engine_glowValue [1] = -3;			//don't draw
+		xEngineGlowValue [1] = -3;			//don't draw
 	}
 }
 

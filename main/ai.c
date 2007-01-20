@@ -726,7 +726,7 @@ _exit_cheat:
 	if (gameData.ai.bEnableAnimation && (xDistToPlayer < F1_0*100)) { // && ! (gameData.app.nGameMode & GM_MULTI)) {
 		bObjAnimates = DoSillyAnimation (objP);
 		if (bObjAnimates)
-			ai_frame_animation (objP);
+			AIFrameAnimation (objP);
 	} else {
 		// If Object is supposed to animate, but we don't let it animate due to distance, then
 		// we must change its state, else it will never update.
@@ -1541,7 +1541,7 @@ void process_tAwarenessEvents (void)
 }
 
 // ----------------------------------------------------------------------------------
-void set_player_awareness_all (void)
+void SetPlayerAwarenessAll (void)
 {
 	int i;
 
@@ -1602,33 +1602,25 @@ extern void DoBossDyingFrame (tObject *objP);
 //  Setting player_awareness (a fix, time in seconds which tObject is aware of tPlayer)
 void DoAIFrameAll (void)
 {
-#ifndef NDEBUG
-	//dump_aiObjects_all ();
-#endif
+	int	h, i, j;
 
-	set_player_awareness_all ();
-
-	if (nAiLastMissileCamera != -1) {
-		// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
-		if (((gameData.app.nFrameCount & 0x0f) == 0) || (gameData.objs.objects [nAiLastMissileCamera].nType != OBJ_WEAPON)) {
-			int i;
-
-			nAiLastMissileCamera = -1;
-			for (i=0; i<=gameData.objs.nLastObject; i++)
-				if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-					gameData.objs.objects [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+SetPlayerAwarenessAll ();
+if (nAiLastMissileCamera != -1) {
+	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
+	if (((gameData.app.nFrameCount & 0x0f) == 0) || (gameData.objs.objects [nAiLastMissileCamera].nType != OBJ_WEAPON)) {
+		nAiLastMissileCamera = -1;
+		for (i = 0; i <= gameData.objs.nLastObject; i++)
+			if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+				gameData.objs.objects [i].cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 	}
-
-	// (Moved here from DoBossStuff () because that only gets called if robot aware of player.)
-	if (gameData.boss.nDying) {
+for (h = BOSS_COUNT, j = 0; j < h; j++)
+	if (gameData.boss [j].nDying) {
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
-			DoBossDyingFrame (gameData.objs.objects + gameData.boss.nDying);
+			DoBossDyingFrame (gameData.objs.objects + gameData.boss [j].nDying);
 		else {
-			int i;
 			tObject *objP = gameData.objs.objects;
-
-			for (i=0; i<=gameData.objs.nLastObject; i++, objP++)
+			for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 				if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag))
 					DoBossDyingFrame (objP);
 		}
@@ -1642,14 +1634,15 @@ extern fix Boss_invulnerable_dot;
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
 {
-	gameData.ai.nOverallAgitation = 0;
-	gameStates.gameplay.bFinalBossIsDead=0;
+	int	i;
 
-	gameData.escort.nObjNum = 0;
-	gameData.escort.bMayTalk = 0;
-
-	Boss_invulnerable_dot = F1_0/4 - i2f (gameStates.app.nDifficultyLevel)/8;
-	gameData.boss.nDyingStartTime = 0;
+gameData.ai.nOverallAgitation = 0;
+gameStates.gameplay.bFinalBossIsDead=0;
+gameData.escort.nObjNum = 0;
+gameData.escort.bMayTalk = 0;
+Boss_invulnerable_dot = F1_0/4 - i2f (gameStates.app.nDifficultyLevel)/8;
+for (i = 0; i < MAX_BOSS_COUNT; i++)
+	gameData.boss [i].nDyingStartTime = 0;
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -1658,48 +1651,49 @@ int AISaveBinState (CFILE *fp)
 {
 	int	i;
 
-	CFWrite (&gameData.ai.bInitialized, sizeof (int), 1, fp);
-	CFWrite (&gameData.ai.nOverallAgitation, sizeof (int), 1, fp);
-	CFWrite (gameData.ai.localInfo, sizeof (tAILocal), MAX_OBJECTS, fp);
-	CFWrite (gameData.ai.pointSegs, sizeof (tPointSeg), MAX_POINT_SEGS, fp);
-	CFWrite (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO, fp);
-	CFWrite (&gameData.boss.nCloakStartTime, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nCloakEndTime , sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nLastTeleportTime , sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nTeleportInterval, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nCloakInterval, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nCloakDuration, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nLastGateTime, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nGateInterval, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nDyingStartTime, sizeof (fix), 1, fp);
-	CFWrite (&gameData.boss.nDying, sizeof (int), 1, fp);
-	CFWrite (&gameData.boss.bDyingSoundPlaying, sizeof (int), 1, fp);
-	CFWrite (&gameData.boss.nHitTime, sizeof (fix), 1, fp);
-	// -- MK, 10/21/95, unused! -- CFWrite ( &Boss_been_hit, sizeof (int), 1, fp);
-
-	CFWrite (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1, fp);
-	CFWrite (&gameData.escort.xLastPathCreated, sizeof (gameData.escort.xLastPathCreated), 1, fp);
-	CFWrite (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1, fp);
-	CFWrite (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1, fp);
-	CFWrite (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1, fp);
-	CFWrite (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
-
-	{ 
-	int temp;
-	temp = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
-	CFWrite (&temp, sizeof (int), 1, fp);
+CFWrite (&gameData.ai.bInitialized, sizeof (int), 1, fp);
+CFWrite (&gameData.ai.nOverallAgitation, sizeof (int), 1, fp);
+CFWrite (gameData.ai.localInfo, sizeof (tAILocal), MAX_OBJECTS, fp);
+CFWrite (gameData.ai.pointSegs, sizeof (tPointSeg), MAX_POINT_SEGS, fp);
+CFWrite (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO, fp);
+for (i = 0; i < MAX_BOSS_COUNT; i++) {
+	CFWrite (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nCloakInterval, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nCloakDuration, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nLastGateTime, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nGateInterval, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1, fp);
+	CFWrite (&gameData.boss [i].nDying, sizeof (int), 1, fp);
+	CFWrite (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1, fp);
+	CFWrite (&gameData.boss [i].nHitTime, sizeof (fix), 1, fp);
 	}
+CFWrite (&gameData.escort.nKillObject, sizeof (gameData.escort.nKillObject), 1, fp);
+CFWrite (&gameData.escort.xLastPathCreated, sizeof (gameData.escort.xLastPathCreated), 1, fp);
+CFWrite (&gameData.escort.nGoalObject, sizeof (gameData.escort.nGoalObject), 1, fp);
+CFWrite (&gameData.escort.nSpecialGoal, sizeof (gameData.escort.nSpecialGoal), 1, fp);
+CFWrite (&gameData.escort.nGoalIndex, sizeof (gameData.escort.nGoalIndex), 1, fp);
+CFWrite (&gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
 
-	CFWrite (gameData.boss.nTeleportSegs, sizeof (gameData.boss.nTeleportSegs), 1, fp);
-	CFWrite (gameData.boss.nGateSegs, sizeof (gameData.boss.nGateSegs), 1, fp);
-	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if (gameData.boss.nGateSegs [i])
-			CFWrite (gameData.boss.gateSegs [i], sizeof (gameData.boss.gateSegs [i][0]), gameData.boss.nGateSegs [i], fp);
-		if (gameData.boss.nTeleportSegs [i])
-			CFWrite (gameData.boss.teleportSegs [i], sizeof (gameData.boss.teleportSegs [i][0]), gameData.boss.nTeleportSegs [i], fp);
-		}
+{ 
+int temp;
+temp = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
+CFWrite (&temp, sizeof (int), 1, fp);
+}
 
-	return 1;
+for (i = 0; i < MAX_BOSS_COUNT; i++)
+	CFWrite (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1, fp);
+for (i = 0; i < MAX_BOSS_COUNT; i++)
+	CFWrite (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1, fp);
+for (i = 0; i < MAX_BOSS_COUNT; i++) {
+	if (gameData.boss [i].nGateSegs)
+		CFWrite (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs, fp);
+	if (gameData.boss [i].nTeleportSegs)
+		CFWrite (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs, fp);
+	}
+return 1;
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -1715,18 +1709,50 @@ int AIRestoreBinState (CFILE *fp, int version)
 	CFRead (gameData.ai.localInfo, sizeof (tAILocal), (version > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2, fp);
 	CFRead (gameData.ai.pointSegs, sizeof (tPointSeg), (version > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2, fp);
 	CFRead (gameData.ai.cloakInfo, sizeof (tAICloakInfo), MAX_AI_CLOAK_INFO, fp);
-	CFRead (&gameData.boss.nCloakStartTime, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nCloakEndTime , sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nLastTeleportTime , sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nTeleportInterval, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nCloakInterval, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nCloakDuration, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nLastGateTime, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nGateInterval, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nDyingStartTime, sizeof (fix), 1, fp);
-	CFRead (&gameData.boss.nDying, sizeof (int), 1, fp);
-	CFRead (&gameData.boss.bDyingSoundPlaying, sizeof (int), 1, fp);
-	CFRead (&gameData.boss.nHitTime, sizeof (fix), 1, fp);
+	if (version < 29) {
+		CFRead (&gameData.boss [0].nCloakStartTime, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nCloakEndTime , sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nLastTeleportTime , sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nTeleportInterval, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nCloakInterval, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nCloakDuration, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nLastGateTime, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nGateInterval, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nDyingStartTime, sizeof (fix), 1, fp);
+		CFRead (&gameData.boss [0].nDying, sizeof (int), 1, fp);
+		CFRead (&gameData.boss [0].bDyingSoundPlaying, sizeof (int), 1, fp);
+		CFRead (&gameData.boss [0].nHitTime, sizeof (fix), 1, fp);
+		for (i = 1; i < MAX_BOSS_COUNT; i++) {
+			gameData.boss [i].nCloakStartTime = 0;
+			gameData.boss [i].nCloakEndTime = 0;
+			gameData.boss [i].nLastTeleportTime = 0;
+			gameData.boss [i].nTeleportInterval = 0;
+			gameData.boss [i].nCloakInterval = 0;
+			gameData.boss [i].nCloakDuration = 0;
+			gameData.boss [i].nLastGateTime = 0;
+			gameData.boss [i].nGateInterval = 0;
+			gameData.boss [i].nDyingStartTime = 0;
+			gameData.boss [i].nDying = 0;
+			gameData.boss [i].bDyingSoundPlaying = 0;
+			gameData.boss [i].nHitTime = 0;
+			}
+		}
+	else {
+		for (i = 0; i < MAX_BOSS_COUNT; i++) {
+			CFRead (&gameData.boss [i].nCloakStartTime, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nCloakEndTime , sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nLastTeleportTime , sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nTeleportInterval, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nCloakInterval, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nCloakDuration, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nLastGateTime, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nGateInterval, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nDyingStartTime, sizeof (fix), 1, fp);
+			CFRead (&gameData.boss [i].nDying, sizeof (int), 1, fp);
+			CFRead (&gameData.boss [i].bDyingSoundPlaying, sizeof (int), 1, fp);
+			CFRead (&gameData.boss [i].nHitTime, sizeof (fix), 1, fp);
+			}
+		}
 	// -- MK, 10/21/95, unused! -- CFRead (&Boss_been_hit, sizeof (int), 1, fp);
 
 	if (version >= 8) {
@@ -1759,24 +1785,26 @@ int AIRestoreBinState (CFILE *fp, int version)
 		AIResetAllPaths ();
 
 	if (version >= 24) {
-		CFRead (gameData.boss.nTeleportSegs, sizeof (gameData.boss.nTeleportSegs), 1, fp);
-		CFRead (gameData.boss.nGateSegs, sizeof (gameData.boss.nGateSegs), 1, fp);
+		for (i = 0; i < MAX_BOSS_COUNT; i++)
+			CFRead (&gameData.boss [i].nTeleportSegs, sizeof (gameData.boss [i].nTeleportSegs), 1, fp);
+		for (i = 0; i < MAX_BOSS_COUNT; i++)
+			CFRead (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1, fp);
 		for (i = 0; i < MAX_BOSS_COUNT; i++) {
-			if (gameData.boss.nGateSegs [i])
-				CFRead (&gameData.boss.gateSegs [i][0], sizeof (gameData.boss.gateSegs [i][0]), gameData.boss.nGateSegs [i], fp);
-			if (gameData.boss.nTeleportSegs [i])
-				CFRead (&gameData.boss.teleportSegs [i][0], sizeof (gameData.boss.teleportSegs [i][0]), gameData.boss.nTeleportSegs [i], fp);
+			if (gameData.boss [i].nGateSegs)
+				CFRead (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs), gameData.boss [i].nGateSegs, fp);
+			if (gameData.boss [i].nTeleportSegs)
+				CFRead (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs), gameData.boss [i].nTeleportSegs, fp);
 			}
 		}
 	else if (version >= 21) {
-		CFRead (&gameData.boss.nTeleportSegs [0], sizeof (gameData.boss.nTeleportSegs [0]), 1, fp);
-		CFRead (&gameData.boss.nGateSegs [0], sizeof (gameData.boss.nGateSegs [0]), 1, fp);
+		CFRead (&gameData.boss [0].nTeleportSegs, sizeof (gameData.boss [0].nTeleportSegs), 1, fp);
+		CFRead (&gameData.boss [0].nGateSegs, sizeof (gameData.boss [0].nGateSegs), 1, fp);
 
-		if (gameData.boss.nGateSegs [0])
-			CFRead (gameData.boss.gateSegs [0], sizeof (gameData.boss.gateSegs [0][0]), gameData.boss.nGateSegs [0], fp);
+		if (gameData.boss [0].nGateSegs)
+			CFRead (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs), gameData.boss [0].nGateSegs, fp);
 
-		if (gameData.boss.nTeleportSegs [0])
-			CFRead (gameData.boss.teleportSegs [0], sizeof (gameData.boss.teleportSegs [0][0]), gameData.boss.nTeleportSegs [0], fp);
+		if (gameData.boss [0].nTeleportSegs)
+			CFRead (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs), gameData.boss [0].nTeleportSegs, fp);
 	} else {
 		// -- gameData.boss.nTeleportSegs = 1;
 		// -- gameData.boss.nGateSegs = 1;
@@ -1850,18 +1878,20 @@ for (i = 0; i < MAX_POINT_SEGS; i++)
 	AISavePointSeg (gameData.ai.pointSegs+  i, fp);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	AISaveCloakInfo (gameData.ai.cloakInfo + i, fp);
-CFWriteFix (gameData.boss.nCloakStartTime, fp);
-CFWriteFix (gameData.boss.nCloakEndTime , fp);
-CFWriteFix (gameData.boss.nLastTeleportTime , fp);
-CFWriteFix (gameData.boss.nTeleportInterval, fp);
-CFWriteFix (gameData.boss.nCloakInterval, fp);
-CFWriteFix (gameData.boss.nCloakDuration, fp);
-CFWriteFix (gameData.boss.nLastGateTime, fp);
-CFWriteFix (gameData.boss.nGateInterval, fp);
-CFWriteFix (gameData.boss.nDyingStartTime, fp);
-CFWriteInt (gameData.boss.nDying, fp);
-CFWriteInt (gameData.boss.bDyingSoundPlaying, fp);
-CFWriteFix (gameData.boss.nHitTime, fp);
+for (i = 0; i < MAX_BOSS_COUNT; i++) {
+	CFWriteFix (gameData.boss [i].nCloakStartTime, fp);
+	CFWriteFix (gameData.boss [i].nCloakEndTime , fp);
+	CFWriteFix (gameData.boss [i].nLastTeleportTime , fp);
+	CFWriteFix (gameData.boss [i].nTeleportInterval, fp);
+	CFWriteFix (gameData.boss [i].nCloakInterval, fp);
+	CFWriteFix (gameData.boss [i].nCloakDuration, fp);
+	CFWriteFix (gameData.boss [i].nLastGateTime, fp);
+	CFWriteFix (gameData.boss [i].nGateInterval, fp);
+	CFWriteFix (gameData.boss [i].nDyingStartTime, fp);
+	CFWriteInt (gameData.boss [i].nDying, fp);
+	CFWriteInt (gameData.boss [i].bDyingSoundPlaying, fp);
+	CFWriteFix (gameData.boss [i].nHitTime, fp);
+	}
 CFWriteInt (gameData.escort.nKillObject, fp);
 CFWriteFix (gameData.escort.xLastPathCreated, fp);
 CFWriteInt (gameData.escort.nGoalObject, fp);
@@ -1870,16 +1900,16 @@ CFWriteInt (gameData.escort.nGoalIndex, fp);
 CFWrite (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
 CFWriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs), fp);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	CFWriteShort (gameData.boss.nTeleportSegs [i], fp);
-	CFWriteShort (gameData.boss.nGateSegs [i], fp);
+	CFWriteShort (gameData.boss [i].nTeleportSegs, fp);
+	CFWriteShort (gameData.boss [i].nGateSegs, fp);
 	}
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	if (h = gameData.boss.nGateSegs [i])
+	if (h = gameData.boss [i].nGateSegs)
 		for (j = 0; j < h; j++)
-			CFWriteShort (gameData.boss.gateSegs [i][j], fp);
-	if (h = gameData.boss.nTeleportSegs [i])
+			CFWriteShort (gameData.boss [i].gateSegs [j], fp);
+	if (h = gameData.boss [i].nTeleportSegs)
 		for (j = 0; j < h; j++)
-			CFWriteShort (gameData.boss.teleportSegs [i][j], fp);
+			CFWriteShort (gameData.boss [i].teleportSegs [j], fp);
 	}
 return 1;
 }
@@ -1948,18 +1978,50 @@ for (i = 0; i < h; i++)
 	AIRestorePointSeg (gameData.ai.pointSegs + i, fp);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	AIRestoreCloakInfo (gameData.ai.cloakInfo + i, fp);
-gameData.boss.nCloakStartTime = CFReadFix (fp);
-gameData.boss.nCloakEndTime = CFReadFix (fp);
-gameData.boss.nLastTeleportTime = CFReadFix (fp);
-gameData.boss.nTeleportInterval = CFReadFix (fp);
-gameData.boss.nCloakInterval = CFReadFix (fp);
-gameData.boss.nCloakDuration = CFReadFix (fp);
-gameData.boss.nLastGateTime = CFReadFix (fp);
-gameData.boss.nGateInterval = CFReadFix (fp);
-gameData.boss.nDyingStartTime = CFReadFix (fp);
-gameData.boss.nDying = CFReadInt (fp);
-gameData.boss.bDyingSoundPlaying = CFReadInt (fp);
-gameData.boss.nHitTime = CFReadFix (fp);
+if (version < 29) {
+	gameData.boss [0].nCloakStartTime = CFReadFix (fp);
+	gameData.boss [0].nCloakEndTime = CFReadFix (fp);
+	gameData.boss [0].nLastTeleportTime = CFReadFix (fp);
+	gameData.boss [0].nTeleportInterval = CFReadFix (fp);
+	gameData.boss [0].nCloakInterval = CFReadFix (fp);
+	gameData.boss [0].nCloakDuration = CFReadFix (fp);
+	gameData.boss [0].nLastGateTime = CFReadFix (fp);
+	gameData.boss [0].nGateInterval = CFReadFix (fp);
+	gameData.boss [0].nDyingStartTime = CFReadFix (fp);
+	gameData.boss [0].nDying = CFReadInt (fp);
+	gameData.boss [0].bDyingSoundPlaying = CFReadInt (fp);
+	gameData.boss [0].nHitTime = CFReadFix (fp);
+	for (i = 1; i < MAX_BOSS_COUNT; i++) {
+		gameData.boss [i].nCloakStartTime = 0;
+		gameData.boss [i].nCloakEndTime = 0;
+		gameData.boss [i].nLastTeleportTime = 0;
+		gameData.boss [i].nTeleportInterval = 0;
+		gameData.boss [i].nCloakInterval = 0;
+		gameData.boss [i].nCloakDuration = 0;
+		gameData.boss [i].nLastGateTime = 0;
+		gameData.boss [i].nGateInterval = 0;
+		gameData.boss [i].nDyingStartTime = 0;
+		gameData.boss [i].nDying = 0;
+		gameData.boss [i].bDyingSoundPlaying = 0;
+		gameData.boss [i].nHitTime = 0;
+		}
+	}
+else {
+	for (i = 1; i < MAX_BOSS_COUNT; i++) {
+		gameData.boss [i].nCloakStartTime = CFReadFix (fp);
+		gameData.boss [i].nCloakEndTime = CFReadFix (fp);
+		gameData.boss [i].nLastTeleportTime = CFReadFix (fp);
+		gameData.boss [i].nTeleportInterval = CFReadFix (fp);
+		gameData.boss [i].nCloakInterval = CFReadFix (fp);
+		gameData.boss [i].nCloakDuration = CFReadFix (fp);
+		gameData.boss [i].nLastGateTime = CFReadFix (fp);
+		gameData.boss [i].nGateInterval = CFReadFix (fp);
+		gameData.boss [i].nDyingStartTime = CFReadFix (fp);
+		gameData.boss [i].nDying = CFReadInt (fp);
+		gameData.boss [i].bDyingSoundPlaying = CFReadInt (fp);
+		gameData.boss [i].nHitTime = CFReadFix (fp);
+		}
+	}
 if (version >= 8) {
 	gameData.escort.nKillObject = CFReadInt (fp);
 	gameData.escort.xLastPathCreated = CFReadFix (fp);
@@ -1990,16 +2052,16 @@ if (version < 21) {
 else {
 	nMaxBossCount = (version >= 24) ? MAX_BOSS_COUNT : 1;
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		gameData.boss.nTeleportSegs [i] = CFReadShort (fp);
-		gameData.boss.nGateSegs [i] = CFReadShort (fp);
+		gameData.boss [i].nTeleportSegs = CFReadShort (fp);
+		gameData.boss [i].nGateSegs = CFReadShort (fp);
 		}
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if (h = gameData.boss.nGateSegs [i])
+		if (h = gameData.boss [i].nGateSegs)
 			for (j = 0; j < h; j++)
-				gameData.boss.gateSegs [i][j] = CFReadShort (fp);
-		if (h = gameData.boss.nTeleportSegs [i])
+				gameData.boss [i].gateSegs [j] = CFReadShort (fp);
+		if (h = gameData.boss [i].nTeleportSegs)
 			for (j = 0; j < h; j++)
-				gameData.boss.teleportSegs [i][j] = CFReadShort (fp);
+				gameData.boss [i].teleportSegs[j] = CFReadShort (fp);
 		}
 	}
 return 1;

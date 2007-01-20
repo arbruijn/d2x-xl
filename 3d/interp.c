@@ -2092,9 +2092,10 @@ for (;;) {
 		int nv = WORDVAL (p+2);
 		Assert (nv < MAX_POINTS_PER_POLY);
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
-			int i, l = 32;
+			int i;
+			//fix l = f2i (32 * xModelLight);
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
-			GrFadeColorRGB (32.0 / (double) l);
+			//GrFadeColorRGB (32.0 / (double) l);
 			if (objColorP) {
 				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 
 				objColorP->green = (float) grdCurCanv->cv_color.color.green / 255.0f;
@@ -2111,26 +2112,26 @@ for (;;) {
 		}
 	else if (h == OP_TMAPPOLY) {
 		int nv = WORDVAL (p+2);
-		uvl *uvlList;
 		Assert ( nv < MAX_POINTS_PER_POLY );
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
+			uvl *uvlList;
 			int i;
-			fix light;
+			fix l;
 
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
-				light = -VmVecDot (&viewInfo.view [0].fVec, VECPTR (p+16));
-				light = f1_0/4 + (light * 3) / 4;
-				light = FixMul (light, xModelLight);
+				l = -VmVecDot (&viewInfo.view [0].fVec, VECPTR (p+16));
+				l = f1_0/4 + (l * 3) / 4;
+				l = FixMul (l, xModelLight);
 				}
 			else {				//yes glow
-				light = xGlowValues [nGlow];
+				l = xGlowValues [nGlow];
 				nGlow = -1;
 				}
 			//now poke light into l values
 			uvlList = (uvl *) (p + 30 + (nv | 1) * 2);
 			for (i = 0; i < nv; i++)
-				uvlList [i].l = light;
+				uvlList [i].l = l;
 
 			if (objColorP) {
 				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bm_avgColor;

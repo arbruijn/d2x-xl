@@ -67,13 +67,13 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "editor/kdefs.h"
 #endif
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 #include "string.h"
 #include <time.h>
 #endif
 
-void teleport_boss (tObject *objP);
-int boss_fits_in_seg (tObject *bossObjP, int nSegment);
+void TeleportBoss (tObject *objP);
+int BossFitsInSeg (tObject *bossObjP, int nSegment);
 
 int     Flinch_scale = 4;
 int     Attack_scale = 24;
@@ -159,8 +159,10 @@ int AIBehaviorToMode (int behavior)
 //	Call every time the tPlayer starts a new ship.
 void AIInitBossForShip (void)
 {
-	gameData.boss.nHitTime = -F1_0*10;
+	int	i;
 
+for (i = 0; i < MAX_BOSS_COUNT; i++)
+	gameData.boss [i].nHitTime = -F1_0*10;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -226,7 +228,7 @@ aip->xDyingStartTime = 0;
 }
 
 
-extern tObject * CreateMorphRobot (tSegment *segP, vmsVector *object_pos, ubyte object_id);
+extern tObject * CreateMorphRobot (tSegment *segP, vmsVector *vObjPos, ubyte nObjId);
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Create a Buddy bot.
@@ -235,7 +237,7 @@ extern tObject * CreateMorphRobot (tSegment *segP, vmsVector *object_pos, ubyte 
 void CreateBuddyBot (void)
 {
 	ubyte	buddy_id;
-	vmsVector	object_pos;
+	vmsVector	vObjPos;
 
 	for (buddy_id=0; buddy_id<gameData.bots.nTypes [0]; buddy_id++)
 		if (gameData.bots.info [0][buddy_id].companion)
@@ -247,8 +249,8 @@ void CreateBuddyBot (void)
 #endif
 		return;
 	}
-	COMPUTE_SEGMENT_CENTER_I (&object_pos, gameData.objs.console->nSegment);
-	CreateMorphRobot (gameData.segs.segments + gameData.objs.console->nSegment, &object_pos, buddy_id);
+	COMPUTE_SEGMENT_CENTER_I (&vObjPos, gameData.objs.console->nSegment);
+	CreateMorphRobot (gameData.segs.segments + gameData.objs.console->nSegment, &vObjPos, buddy_id);
 }
 
 #define	QUEUE_SIZE	256
@@ -330,7 +332,7 @@ if (size_check)
 							if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
 								Int3 ();	//	queue overflow.  Make it bigger!
 	
-						if ((!size_check) || boss_fits_in_seg (bossObjP, childSeg)) {
+						if ((!size_check) || BossFitsInSeg (bossObjP, childSeg)) {
 							segptr [ (*num_segs)++] = childSeg;
 							if (size_check) {
 #if TRACE	
@@ -364,58 +366,59 @@ if (size_check)
 extern void InitBuddyForLevel (void);
 
 // ---------------------------------------------------------------------------------------------------------------------
+
 void InitAIObjects (void)
 {
-	short		i, j;
+	short		h, i, j;
 	tObject	*objP;
 
 	gameData.ai.freePointSegs = gameData.ai.pointSegs;
 
-	memset (gameData.boss.objList, 0xff, sizeof (gameData.boss.objList));
-	for (i=j=0, objP = gameData.objs.objects; i<MAX_OBJECTS; i++, objP++) {
-		if (objP->controlType == CT_AI)
-			InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-		if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag)) {
-			if (j)		//	There are two bosses in this mine! i and gameData.boss.objList!
-				Int3 ();			//do int3 here instead of assert so museum will work
-			gameData.boss.objList [j++] = i;
+for (i = 0; i < MAX_BOSS_COUNT; i++) {
+	gameData.boss [i].nObject = -1;
+#ifdef _DEBUG
+	gameData.boss [i].xPrevShields = -1;
+#endif
+	}
+for (i = j = 0, objP = gameData.objs.objects; i < MAX_OBJECTS; i++, objP++) {
+	if (objP->controlType == CT_AI)
+		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
+	if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag)) {
+		if (j)		//	There are two bosses in this mine! i and gameData.boss.objList!
+			Int3 ();			//do int3 here instead of assert so museum will work
+		gameData.boss [j++].nObject = i;
 		}
 	}
-
-	for (i = 0; i < extraGameInfo [0].nBossCount; i++) {
-		if (gameData.boss.objList [i] < 0)
-			continue;
-		InitBossSegments (gameData.boss.objList [i], gameData.boss.gateSegs [i], &gameData.boss.nGateSegs [i], 0, 0);
-		InitBossSegments (gameData.boss.objList [i], gameData.boss.teleportSegs [i], &gameData.boss.nTeleportSegs [i], 1, 0);
-		if (gameData.boss.nTeleportSegs [i] == 1)
-			InitBossSegments (gameData.boss.objList [i], gameData.boss.teleportSegs [i], &gameData.boss.nTeleportSegs [i], 1, 1);
-		}
-
-	gameData.boss.bDyingSoundPlaying = 0;
-	gameData.boss.nDying = 0;
-	// -- unused!MK, 10/21/95 -- Boss_been_hit = 0;
-	gameData.boss.nGateInterval = F1_0*4 - gameStates.app.nDifficultyLevel*i2f (2)/3;
-
-	gameData.ai.bInitialized = 1;
-
-	AIDoCloakStuff ();
-
-	InitBuddyForLevel ();
-
+for (h = BOSS_COUNT, i = 0; i < h; i++) {
+	if (gameData.boss [i].nObject < 0)
+		continue;
+	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs, &gameData.boss [i].nGateSegs, 0, 0);
+	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 0);
+	if (gameData.boss [i].nTeleportSegs == 1)
+		InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 1);
+	gameData.boss [i].bDyingSoundPlaying = 0;
+	gameData.boss [i].nDying = 0;
+	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
 	if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
-		gameData.boss.nTeleportInterval = F1_0*10;
-		gameData.boss.nCloakInterval = F1_0*15;					//	Time between cloaks
-	} else {
-		gameData.boss.nTeleportInterval = F1_0*7;
-		gameData.boss.nCloakInterval = F1_0*10;					//	Time between cloaks
+		gameData.boss [i].nTeleportInterval = F1_0*10;
+		gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks
+		} 
+	else {
+		gameData.boss [i].nTeleportInterval = F1_0*7;
+		gameData.boss [i].nCloakInterval = F1_0*10;					//	Time between cloaks
+		}
 	}
+gameData.ai.bInitialized = 1;
+AIDoCloakStuff ();
+InitBuddyForLevel ();
 }
 
-int	nDiffSave = 1;
+// ---------------------------------------------------------------------------------------------------------------------
 
-fix     Firing_wait_copy [MAX_ROBOT_TYPES];
-fix     Firing_wait2_copy [MAX_ROBOT_TYPES];
-sbyte   Rapidfire_count_copy [MAX_ROBOT_TYPES];
+int		nDiffSave = 1;
+fix		Firing_wait_copy [MAX_ROBOT_TYPES];
+fix		Firing_wait2_copy [MAX_ROBOT_TYPES];
+sbyte		Rapidfire_count_copy [MAX_ROBOT_TYPES];
 
 void DoLunacyOn (void)
 {
@@ -440,6 +443,8 @@ void DoLunacyOn (void)
 	}
 
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 void DoLunacyOff (void)
 {
@@ -477,7 +482,8 @@ else {
 	}
 }
 
-//--debug-- #ifndef NDEBUG
+// ---------------------------------------------------------------------------------------------------------------------
+//--debug-- #ifdef _DEBUG
 //--debug-- int	Total_turns=0;
 //--debug-- int	Prevented_turns=0;
 //--debug-- #endif
@@ -747,7 +753,7 @@ int DoSillyAnimation (tObject *objP)
 //	Current orientation of tObject is at:	polyObjInfo.animAngles
 //	Goal orientation of tObject is at:		aiInfo.goalAngles
 //	Delta orientation of tObject is at:		aiInfo.deltaAngles
-void ai_frame_animation (tObject *objP)
+void AIFrameAnimation (tObject *objP)
 {
 	int	nObject = OBJ_IDX (objP);
 	int	joint;
@@ -834,7 +840,7 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collisi
 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
 	tRobotInfo *robptr = &gameData.bots.pInfo [robot->id];
 
-//#ifndef NDEBUG
+//#ifdef _DEBUG
 	if (!gameStates.app.cheats.bRobotsFiring)
 		return;
 //#endif
@@ -971,7 +977,7 @@ void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVec
 	vmsVector	bpp_diff;
 	short			nWeaponType;
 	fix			aim, dot;
-	int			count;
+	int			count, i;
 
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
@@ -987,8 +993,11 @@ if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
-if ((extraGameInfo [0].nBossCount < 2) && gameData.boss.nDyingStartTime & gameData.bots.pInfo [objP->id].bossFlag)
-	return;
+if (gameData.bots.pInfo [objP->id].bossFlag) {
+	i = FindBoss (nObject);
+	if (gameData.boss [i].nDyingStartTime)
+		return;
+	}
 //	If tPlayer is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
@@ -1372,7 +1381,7 @@ void MakeRandomVector (vmsVector *vec)
 	VmVecNormalizeQuick (vec);
 }
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 void mprintf_animation_info (tObject *objP)
 {
 	tAIStatic	*aip = &objP->cType.aiInfo;
@@ -1485,7 +1494,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 	}
 
 }
-#ifndef NDEBUG
+#ifdef _DEBUG
 int	bDoAIFlag=1;
 int	Cvv_test=0;
 int	Cvv_lastTime [MAX_OBJECTS];
@@ -1640,7 +1649,7 @@ else {
 
 if (gameData.bots.pInfo [objP->id].bossFlag) {
 	Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
-	teleport_boss (objP);
+	TeleportBoss (objP);
 	}
 	else {
 #if TRACE
@@ -1902,79 +1911,75 @@ int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segP)
 // --------------------------------------------------------------------------------------------------------------------
 //	Return nObject if tObject created, else return -1.
 //	If pos == NULL, pick random spot in tSegment.
-int CreateGatedRobot (short nSegment, ubyte object_id, vmsVector *pos)
+int CreateGatedRobot (tObject *bossObjP, short nSegment, ubyte nObjId, vmsVector *pos)
 {
 	int			nObject, nTries = 5;
 	tObject		*objP;
 	tSegment		*segP = gameData.segs.segments + nSegment;
-	vmsVector	object_pos;
-	tRobotInfo	*robptr = &gameData.bots.pInfo [object_id];
-	int			i, count=0;
+	vmsVector	vObjPos;
+	tRobotInfo	*robptr = &gameData.bots.pInfo [nObjId];
+	int			i, count = 0;
 	fix			objsize = gameData.models.polyModels [robptr->nModel].rad;
 	ubyte			default_behavior;
 
-	if (gameData.time.xGame - gameData.boss.nLastGateTime < gameData.boss.nGateInterval)
-		return -1;
-
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			if (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM)
-				count++;
-
-	if (count > 2*gameStates.app.nDifficultyLevel + 6) {
-		gameData.boss.nLastGateTime = gameData.time.xGame - 3*gameData.boss.nGateInterval/4;
-		return -1;
+i = FindBoss (OBJ_IDX (bossObjP));
+if (i < 0)
+	return -1;
+if (gameData.time.xGame - gameData.boss [i].nLastGateTime < gameData.boss [i].nGateInterval)
+	return -1;
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		if (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM)
+			count++;
+if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
+	gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+	return -1;
 	}
+COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
+for (;;) {
+	if (!pos)
+		PickRandomPointInSeg (&vObjPos, SEG_IDX (segP));
+	else
+		vObjPos = *pos;
 
-	COMPUTE_SEGMENT_CENTER (&object_pos, segP);
-	for (;;) {
-		if (!pos)
-			PickRandomPointInSeg (&object_pos, SEG_IDX (segP));
-		else
-			object_pos = *pos;
-
-		//	See if legal to place tObject here.  If not, move about in tSegment and try again.
-		if (checkObjectObject_intersection (&object_pos, objsize, segP)) {
-			if (!--nTries) {
-				gameData.boss.nLastGateTime = gameData.time.xGame - 3*gameData.boss.nGateInterval/4;
-				return -1;
-				}
-			pos = NULL;
+	//	See if legal to place tObject here.  If not, move about in tSegment and try again.
+	if (checkObjectObject_intersection (&vObjPos, objsize, segP)) {
+		if (!--nTries) {
+			gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+			return -1;
 			}
-		else 
-			break;
+		pos = NULL;
 		}
-
-	nObject = CreateObject (OBJ_ROBOT, object_id, -1, nSegment, &object_pos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
-	if (nObject < 0) {
-		gameData.boss.nLastGateTime = gameData.time.xGame - 3*gameData.boss.nGateInterval/4;
-		return -1;
-		} 
-	// added lifetime increase depending on difficulty level 04/26/06 DM
-	gameData.objs.objects [nObject].lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
-	multiData.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
-	objP = gameData.objs.objects + nObject;
-	//Set polygon-tObject-specific data
-	objP->rType.polyObjInfo.nModel = robptr->nModel;
-	objP->rType.polyObjInfo.nSubObjFlags = 0;
-	//set Physics info
-	objP->mType.physInfo.mass = robptr->mass;
-	objP->mType.physInfo.drag = robptr->drag;
-	objP->mType.physInfo.flags |= (PF_LEVELLING);
-	objP->shields = robptr->strength;
-	objP->matCenCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
-	default_behavior = gameData.bots.pInfo [objP->id].behavior;
-	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-	ObjectCreateExplosion (nSegment, &object_pos, i2f (10), VCLIP_MORPHING_ROBOT);
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &object_pos, 0 , F1_0);
-	MorphStart (objP);
-
-	gameData.boss.nLastGateTime = gameData.time.xGame;
-
-	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
-	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
-
-	return OBJ_IDX (objP);
+	else 
+		break;
+	}
+nObject = CreateObject (OBJ_ROBOT, nObjId, -1, nSegment, &vObjPos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
+if (nObject < 0) {
+	gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+	return -1;
+	} 
+// added lifetime increase depending on difficulty level 04/26/06 DM
+gameData.objs.objects [nObject].lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
+multiData.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
+objP = gameData.objs.objects + nObject;
+//Set polygon-tObject-specific data
+objP->rType.polyObjInfo.nModel = robptr->nModel;
+objP->rType.polyObjInfo.nSubObjFlags = 0;
+//set Physics info
+objP->mType.physInfo.mass = robptr->mass;
+objP->mType.physInfo.drag = robptr->drag;
+objP->mType.physInfo.flags |= (PF_LEVELLING);
+objP->shields = robptr->strength;
+objP->matCenCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
+default_behavior = gameData.bots.pInfo [objP->id].behavior;
+InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
+ObjectCreateExplosion (nSegment, &vObjPos, i2f (10), VCLIP_MORPHING_ROBOT);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
+MorphStart (objP);
+gameData.boss [i].nLastGateTime = gameData.time.xGame;
+gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
+gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
+return OBJ_IDX (objP);
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -1984,49 +1989,44 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 	short			nObject, nSegment, objType, maxRobotTypes;
 	short			nBossIndex, nBossId = gameData.bots.pInfo [objP->id].bossFlag;
 	tRobotInfo	*pri;
-
-	nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
-	Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-	nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
-	if (nSegment == -1) {
+nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
+Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
+nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
+if (nSegment == -1) {
 #if TRACE
-		con_printf (CON_DEBUG, "Tried to spew a bot outside the mine! Aborting!\n");
+	con_printf (CON_DEBUG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
-		return -1;
+	return -1;
 	}	
-	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][ (maxSpewBots [nBossIndex] * d_rand ()) >> 15];
-	if (objType == 255) {	// spawn an arbitrary robot
-		maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
-		do {
-				objType = d_rand () % maxRobotTypes;
-			pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
-			} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
-						pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
-						 (pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
-		}
-	nObject = CreateGatedRobot (nSegment, (ubyte) objType, pos);
-	//	Make spewed robot come tumbling out as if blasted by a flash missile.
-	if (nObject != -1) {
-		tObject	*newObjP = &gameData.objs.objects [nObject];
-		int		force_val;
+objType = spewBots [gameStates.app.bD1Mission][nBossIndex][ (maxSpewBots [nBossIndex] * d_rand ()) >> 15];
+if (objType == 255) {	// spawn an arbitrary robot
+	maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
+	do {
+			objType = d_rand () % maxRobotTypes;
+		pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
+		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
+					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
+						(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
+	}
+nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
+//	Make spewed robot come tumbling out as if blasted by a flash missile.
+if (nObject != -1) {
+	tObject	*newObjP = &gameData.objs.objects [nObject];
+	int		force_val = F1_0 / gameData.time.xFrame;
+	if (force_val) {
+		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
+		newObjP->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
+		newObjP->mType.physInfo.flags |= PF_USES_THRUST;
 
-		force_val = F1_0 / gameData.time.xFrame;
-
-		if (force_val) {
-			newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
-			newObjP->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
-			newObjP->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
-			newObjP->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
-			newObjP->mType.physInfo.flags |= PF_USES_THRUST;
-
-			//	Now, give a big initial velocity to get moving away from boss.
-			VmVecSub (&newObjP->mType.physInfo.velocity, pos, &objP->position.vPos);
-			VmVecNormalizeQuick (&newObjP->mType.physInfo.velocity);
-			VmVecScale (&newObjP->mType.physInfo.velocity, F1_0*128);
+		//	Now, give a big initial velocity to get moving away from boss.
+		VmVecSub (&newObjP->mType.physInfo.velocity, pos, &objP->position.vPos);
+		VmVecNormalizeQuick (&newObjP->mType.physInfo.velocity);
+		VmVecScale (&newObjP->mType.physInfo.velocity, F1_0*128);
 		}
 	}
-
-	return nObject;
+return nObject;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -2035,10 +2035,10 @@ void InitAIForShip (void)
 {
 	int	i;
 
-	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
-		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-		gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->nSegment;
-		gameData.ai.cloakInfo [i].last_position = gameData.objs.console->position.vPos;
+for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
+	gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->nSegment;
+	gameData.ai.cloakInfo [i].last_position = gameData.objs.console->position.vPos;
 	}
 }
 
@@ -2049,23 +2049,18 @@ void InitAIForShip (void)
 //	Return nObject if robot successfully created, else return -1
 int GateInRobot (short nObject, ubyte nType, short nSegment)
 {
-	if (nSegment < 0) {
-		int	i;
-		
-		for (i = 0; i < extraGameInfo [0].nBossCount; i++)
-			if (nObject == gameData.boss.objList [i]) {
-				nSegment = gameData.boss.gateSegs [i][ (d_rand () * gameData.boss.nGateSegs [i]) >> 15];
-				break;
-				}
-			}
-
-	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
-
-	return CreateGatedRobot (nSegment, nType, NULL);
+if (nSegment < 0) {
+	int i = FindBoss (nObject);
+	if (i >= 0)
+		nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
+		}
+Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
+return CreateGatedRobot (gameData.objs.objects + nObject, nSegment, nType, NULL);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-int boss_fits_in_seg (tObject *bossObjP, int nSegment)
+
+int BossFitsInSeg (tObject *bossObjP, int nSegment)
 {
 	vmsVector	segcenter;
 	int			objList = OBJ_IDX (bossObjP);
@@ -2092,62 +2087,49 @@ int boss_fits_in_seg (tObject *bossObjP, int nSegment)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void teleport_boss (tObject *objP)
+
+void TeleportBoss (tObject *objP)
 {
-	short			i, rand_segnum = 0, rand_index, nObject;
-	vmsVector	boss_dir;
-	Assert (gameData.boss.nTeleportSegs [0] > 0);
+	short			i, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
+	vmsVector	vBossDir;
 
-	//	Pick a random tSegment from the list of boss-teleportable-to segments.
-	nObject = OBJ_IDX (objP);
-	for (i = 0; i < extraGameInfo [0].nBossCount; i++) {
-		if (nObject == gameData.boss.objList [i]) {
-			rand_index = (d_rand () * gameData.boss.nTeleportSegs [i]) >> 15;	
-			rand_segnum = gameData.boss.teleportSegs [i][rand_index];
-			Assert ((rand_segnum >= 0) && (rand_segnum <= gameData.segs.nLastSegment));
-			break;
-			}
-		}
-
-	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendBossActions (OBJ_IDX (objP), 1, rand_segnum, 0);
-	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, rand_segnum);
-	RelinkObject (OBJ_IDX (objP), rand_segnum);
-
-	gameData.boss.nLastTeleportTime = gameData.time.xGame;
-
-	//	make boss point right at tPlayer
-	VmVecSub (&boss_dir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &objP->position.vPos);
-	VmVector2Matrix (&objP->position.mOrient, &boss_dir, NULL, NULL);
-
-	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, rand_segnum, 0, &objP->position.vPos, 0 , F1_0);
-	DigiKillSoundLinkedToObject (OBJ_IDX (objP));
-	DigiLinkSoundToObject2 (gameData.bots.pInfo [objP->id].seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
-
-	//	After a teleport, boss can fire right away.
-	gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire = 0;
-	gameData.ai.localInfo [OBJ_IDX (objP)].nextSecondaryFire = 0;
-
+//	Pick a random tSegment from the list of boss-teleportable-to segments.
+i = FindBoss (OBJ_IDX (objP));
+if (i < 0)
+	return;
+Assert (gameData.boss [i].nTeleportSegs > 0);
+nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
+nRandSeg = gameData.boss [i].teleportSegs[nRandIndex];
+Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
+if (gameData.app.nGameMode & GM_MULTI)
+	MultiSendBossActions (nObject, 1, nRandSeg, 0);
+COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, nRandSeg);
+RelinkObject (nObject, nRandSeg);
+gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
+//	make boss point right at tPlayer
+VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &objP->position.vPos);
+VmVector2Matrix (&objP->position.mOrient, &vBossDir, NULL, NULL);
+DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
+DigiKillSoundLinkedToObject (nObject);
+DigiLinkSoundToObject2 (gameData.bots.pInfo [objP->id].seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
+//	After a teleport, boss can fire right away.
+gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
+gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 }
 
 //	----------------------------------------------------------------------
+
 void StartBossDeathSequence (tObject *objP)
 {
-	if (gameData.bots.pInfo [objP->id].bossFlag) {
-		int	i;
+if (gameData.bots.pInfo [objP->id].bossFlag) {
+	int	nObject = OBJ_IDX (objP),
+			i = FindBoss (nObject);
 
-		gameData.boss.nDying = OBJ_IDX (objP);
-		gameData.boss.nDyingStartTime = gameData.time.xGame;
-		--extraGameInfo [0].nBossCount;
-		for (i = 0; i <= extraGameInfo [0].nBossCount; i++) {
-			if (gameData.boss.objList [i] == gameData.boss.nDying) {
-				if (i < extraGameInfo [0].nBossCount)
-					gameData.boss.objList [i] = gameData.boss.objList [extraGameInfo [0].nBossCount];
-				break;
-				}
-			}
+	if (i < 0)
+		return;
+	gameData.boss [i].nDying = nObject;
+	gameData.boss [i].nDyingStartTime = gameData.time.xGame;
 	}
-
 }
 
 //	----------------------------------------------------------------------
@@ -2208,16 +2190,18 @@ objP->cType.aiInfo.SKIP_AI_COUNT = 0;
 
 void DoBossDyingFrame (tObject *objP)
 {
-	int	rval;
+	int	rval, i = FindBoss (OBJ_IDX (objP));
 
-rval = DoRobotDyingFrame (objP, gameData.boss.nDyingStartTime, BOSS_DEATH_DURATION, 
-								 &gameData.boss.bDyingSoundPlaying, 
+if (i < 0)
+	return;
+rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DURATION, 
+								 &gameData.boss [i].bDyingSoundPlaying, 
 								 gameData.bots.pInfo [objP->id].deathrollSound, F1_0*4, F1_0*4);
 if (rval) {
 	DoReactorDestroyedStuff (NULL);
 	ExplodeObject (objP, F1_0/4);
 	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
-	gameData.boss.nDying = 0;
+	gameData.boss [i].nDying = 0;
 	}
 }
 
@@ -2264,87 +2248,73 @@ if (gameData.app.nGameMode & GM_MULTI) {
 return rval;
 }
 
-#ifndef NDEBUG
-fix	Prev_boss_shields = -1;
-#endif
-
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
 void DoBossStuff (tObject *objP, int player_visibility)
 {
 	int	i, nBossId, nBossIndex, nObject, bBossAlive = 0;
 
+nObject = OBJ_IDX (objP);
+i = FindBoss (nObject);
+if (i < 0)
+	return;
 nBossId = gameData.bots.pInfo [objP->id].bossFlag;
 //	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
-#ifndef NDEBUG
-if (objP->shields != Prev_boss_shields) {
+#ifdef _DEBUG
+if (objP->shields != gameData.boss [i].xPrevShields) {
 #if TRACE
 	con_printf (CON_DEBUG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
 #endif
-	Prev_boss_shields = objP->shields;
+	gameData.boss [i].xPrevShields = objP->shields;
 	}
 #endif
 	//	New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.
-if (gameData.boss.nLastTeleportTime > gameData.time.xGame)
-	gameData.boss.nLastTeleportTime = gameData.time.xGame;
+if (gameData.boss [i].nLastTeleportTime > gameData.time.xGame)
+	gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 
-if (gameData.boss.nLastGateTime > gameData.time.xGame)
-	gameData.boss.nLastGateTime = gameData.time.xGame;
+if (gameData.boss [i].nLastGateTime > gameData.time.xGame)
+	gameData.boss [i].nLastGateTime = gameData.time.xGame;
 
-nObject = OBJ_IDX (objP);
-for (i = 0; i < extraGameInfo [0].nBossCount; i++)
-	if (gameData.boss.objList [i] == nObject) {
-		bBossAlive = 1;
-		break;
-		}
 //	@mk, 10/13/95:  Reason:
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
 //		teleports out of there right away, and blasts tPlayer right after first door.
-if (!player_visibility && (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2))
+if (!player_visibility && (gameData.time.xGame - gameData.boss [i].nHitTime > F1_0*2))
 	return;
 
-if (bBossAlive && bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
+if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 	if (objP->cType.aiInfo.CLOAKED == 1) {
-		gameData.boss.nHitTime = gameData.time.xGame;	//	Keep the cloak:teleport process going.
-		if ((gameData.time.xGame - gameData.boss.nCloakStartTime > BOSS_CLOAK_DURATION/3) && 
-				(gameData.boss.nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
-				(gameData.time.xGame - gameData.boss.nLastTeleportTime > gameData.boss.nTeleportInterval)) {
+		gameData.boss [i].nHitTime = gameData.time.xGame;	//	Keep the cloak:teleport process going.
+		if ((gameData.time.xGame - gameData.boss [i].nCloakStartTime > BOSS_CLOAK_DURATION/3) && 
+				(gameData.boss [i].nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
+				(gameData.time.xGame - gameData.boss [i].nLastTeleportTime > gameData.boss [i].nTeleportInterval)) {
 			if (AIMultiplayerAwareness (objP, 98)) {
-
-				teleport_boss (objP);
+				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
-#if 1
 					vmsVector	spewPoint;
-#	if 1
 					VmVecCopyScale (&spewPoint, &objP->position.mOrient.fVec, objP->size * 2);
-#	else
-					VmVecCopyNormalize (&spewPoint, &objP->position.mOrient.fVec);
-					VmVecScale (&spewPoint, objP->size * 2);
-#	endif
 					VmVecInc (&spewPoint, &objP->position.vPos);
-#endif
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
-							(BossSpewRobot (objP, &spewPoint) != -1))
-						gameData.boss.nLastGateTime = gameData.time.xGame - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
+						 (BossSpewRobot (objP, &spewPoint) != -1))
+						gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
 					BossSpewRobot (objP, &spewPoint);
 					}
 				}
 			} 
-		else if (gameData.time.xGame - gameData.boss.nHitTime > F1_0*2) {
-			gameData.boss.nLastTeleportTime -= gameData.boss.nTeleportInterval/4;
+		else if (gameData.time.xGame - gameData.boss [i].nHitTime > F1_0*2) {
+			gameData.boss [i].nLastTeleportTime -= gameData.boss [i].nTeleportInterval/4;
 			}
-	if (!gameData.boss.nCloakDuration)
-		gameData.boss.nCloakDuration = BOSS_CLOAK_DURATION;
-	if ((gameData.time.xGame > gameData.boss.nCloakEndTime) || 
-			(gameData.time.xGame < gameData.boss.nCloakStartTime))
+	if (!gameData.boss [i].nCloakDuration)
+		gameData.boss [i].nCloakDuration = BOSS_CLOAK_DURATION;
+	if ((gameData.time.xGame > gameData.boss [i].nCloakEndTime) || 
+			(gameData.time.xGame < gameData.boss [i].nCloakStartTime))
 		objP->cType.aiInfo.CLOAKED = 0;
 		}
-	else if ((gameData.time.xGame - gameData.boss.nCloakEndTime > gameData.boss.nCloakInterval) || 
-					(gameData.time.xGame - gameData.boss.nCloakEndTime < -gameData.boss.nCloakDuration)) {
+	else if ((gameData.time.xGame - gameData.boss [i].nCloakEndTime > gameData.boss [i].nCloakInterval) || 
+					(gameData.time.xGame - gameData.boss [i].nCloakEndTime < -gameData.boss [i].nCloakDuration)) {
 		if (AIMultiplayerAwareness (objP, 95)) {
-			gameData.boss.nCloakStartTime = gameData.time.xGame;
-			gameData.boss.nCloakEndTime = gameData.time.xGame+gameData.boss.nCloakDuration;
+			gameData.boss [i].nCloakStartTime = gameData.time.xGame;
+			gameData.boss [i].nCloakEndTime = gameData.time.xGame+gameData.boss [i].nCloakDuration;
 			objP->cType.aiInfo.CLOAKED = 1;
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);

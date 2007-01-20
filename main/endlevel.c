@@ -261,8 +261,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playback mode
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
-			((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && 
-			gameStates.app.bHaveExtraMovies))
+		 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && 
+		 gameStates.app.bHaveExtraMovies))
 		StartEndLevelMovie ();
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	return;

@@ -103,6 +103,7 @@ for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, obj
 			ApplyDamageToRobot (objP, objP->shields + 1, -1);
 			objP->flags |= OF_ARMAGEDDON;
 			}
+		gameStates.gameplay.bKillBossCheat = 1;
 		}
 HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
 }
@@ -142,6 +143,8 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 			}
 		}
 	}
+// make sure exit gets opened
+gameStates.gameplay.bKillBossCheat = 0;
 }
 
 //------------------------------------------------------------------------------

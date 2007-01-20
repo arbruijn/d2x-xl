@@ -1401,8 +1401,11 @@ if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 
 	if ((killerObjP->nType == OBJ_ROBOT) && !gameData.bots.pInfo [killerObjP->id].companion)
 		return 0;
 	}
-if (gameData.bots.pInfo [robot->id].bossFlag)
-	gameData.boss.nHitTime = gameData.time.xGame;
+if (gameData.bots.pInfo [robot->id].bossFlag) {
+	int i = FindBoss (OBJ_IDX (robot));
+	if (i >= 0)
+		gameData.boss [i].nHitTime = gameData.time.xGame;
+	}
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
@@ -1426,7 +1429,7 @@ if (gameData.bots.pInfo [robot->id].bossFlag) {
 		if ((robot->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
 			if (gameData.app.nGameMode & GM_MULTI) {
 				if (!MultiAllPlayersAlive ()) // everyones gotta be alive
-					robot->shields=1;
+					robot->shields = 1;
 				else {
 					MultiSendFinishGame ();
 					DoFinalBossHacks ();
@@ -1506,116 +1509,116 @@ fix	LastTime_buddy_gave_hint = 0;
 //	Return true if damage done to boss, else return false.
 int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 {
-	int	d2_boss_index;
-	int	bDamage;
+	int	d2BossIndex;
+	int	bDamage = 1;
 	int	bKinetic;
 
-	bDamage = 1;
+d2BossIndex = gameData.bots.pInfo [robot->id].bossFlag - BOSS_D2;
+Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 
-	d2_boss_index = gameData.bots.pInfo [robot->id].bossFlag - BOSS_D2;
-
-	Assert ((d2_boss_index >= 0) && (d2_boss_index < NUM_D2_BOSSES));
-
-	//	See if should spew a bot.
-	if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
-		bKinetic = WI_matter (weapon->id);
-		if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2_boss_index].bSpewBotsKinetic) || 
-		    (!bKinetic && bossProps [gameStates.app.bD1Mission][d2_boss_index].bSpewBotsEnergy)) {
-			if (bossProps [gameStates.app.bD1Mission][d2_boss_index].bSpewMore && (d_rand () > 16384) &&
-				 (BossSpewRobot (robot, vHitPt) != -1))
-				gameData.boss.nLastGateTime = gameData.time.xGame - gameData.boss.nGateInterval - 1;	//	Force allowing spew of another bot.
-			BossSpewRobot (robot, vHitPt);
+//	See if should spew a bot.
+if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
+	bKinetic = WI_matter (weapon->id);
+	if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsKinetic) || 
+		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
+		if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
+			 (BossSpewRobot (robot, vHitPt) != -1)) {
+			int i = FindBoss (OBJ_IDX (robot));
+			if (i >= 0)
+				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
+			}
+		BossSpewRobot (robot, vHitPt);
 		}
 	}
 
-	if (bossProps [gameStates.app.bD1Mission][d2_boss_index].bInvulSpot) {
-		fix			dot;
-		vmsVector	tvec1;
+if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
+	fix			dot;
+	vmsVector	tvec1;
 
-		//	Boss only vulnerable in back.  See if hit there.
-		VmVecSub (&tvec1, vHitPt, &robot->position.vPos);
-		VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-		dot = VmVecDot (&tvec1, &robot->position.mOrient.fVec);
+	//	Boss only vulnerable in back.  See if hit there.
+	VmVecSub (&tvec1, vHitPt, &robot->position.vPos);
+	VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
+	dot = VmVecDot (&tvec1, &robot->position.mOrient.fVec);
 #if TRACE
-		con_printf (CON_DEBUG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
+	con_printf (CON_DEBUG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
-		if (dot > Boss_invulnerable_dot) {
-			short	new_obj;
-			short	nSegment;
-
-			nSegment = FindSegByPoint (vHitPt, robot->nSegment);
-			DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
-			bDamage = 0;
-
-			if (LastTime_buddy_gave_hint == 0)
-				LastTime_buddy_gave_hint = d_rand ()*32 + F1_0*16;
-
-			if (Buddy_gave_hint_count) {
-				if (LastTime_buddy_gave_hint + F1_0*20 < gameData.time.xGame) {
-					int	sval;
-
-					Buddy_gave_hint_count--;
-					LastTime_buddy_gave_hint = gameData.time.xGame;
-					sval = (d_rand ()*4) >> 15;
-					switch (sval) {
-						case 0:	
-							BuddyMessage (TXT_BOSS_HIT_BACK);	
-							break;
-						case 1:	
-							BuddyMessage (TXT_BOSS_VULNERABLE);	
-							break;
-						case 2:	
-							BuddyMessage (TXT_BOSS_GET_BEHIND);	
-							break;
-						case 3:
-						default:
-							BuddyMessage (TXT_BOSS_GLOW_SPOT);	
-							break;
-					}
-				}
-			}
-
-			//	Cause weapon to bounce.
-			//	Make a copy of this weapon, because the physics wants to destroy it.
-			if (!WI_matter (weapon->id)) {
-				new_obj = CreateObject (weapon->nType, weapon->id, -1, weapon->nSegment, &weapon->position.vPos, 
-												&weapon->position.mOrient, weapon->size, weapon->controlType, weapon->movementType, weapon->renderType, 1);
-
-				if (new_obj != -1) {
-					vmsVector	vec_to_point;
-					vmsVector	weap_vec;
-					fix			speed;
-					tObject		*newObjP = gameData.objs.objects + new_obj;
-
-					if (weapon->renderType == RT_POLYOBJ) {
-						newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->id].nModel;
-						newObjP->size = FixDiv (gameData.models.polyModels [newObjP->rType.polyObjInfo.nModel].rad, gameData.weapons.info [newObjP->id].po_len_to_width_ratio);
-					}
-
-					newObjP->mType.physInfo.mass = WI_mass (weapon->nType);
-					newObjP->mType.physInfo.drag = WI_drag (weapon->nType);
-					VmVecZero (&newObjP->mType.physInfo.thrust);
-
-					VmVecSub (&vec_to_point, vHitPt, &robot->position.vPos);
-					VmVecNormalizeQuick (&vec_to_point);
-					weap_vec = weapon->mType.physInfo.velocity;
-					speed = VmVecNormalizeQuick (&weap_vec);
-					VmVecScaleInc (&vec_to_point, &weap_vec, -F1_0*2);
-					VmVecScale (&vec_to_point, speed/4);
-					newObjP->mType.physInfo.velocity = vec_to_point;
-				}
-			}
-		}
-	} else if ((WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2_boss_index].bInvulKinetic) || 
-				  (!WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2_boss_index].bInvulEnergy)) {
+	if (dot > Boss_invulnerable_dot) {
+		short	new_obj;
 		short	nSegment;
 
 		nSegment = FindSegByPoint (vHitPt, robot->nSegment);
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 		bDamage = 0;
-	}
 
-	return bDamage;
+		if (LastTime_buddy_gave_hint == 0)
+			LastTime_buddy_gave_hint = d_rand ()*32 + F1_0*16;
+
+		if (Buddy_gave_hint_count) {
+			if (LastTime_buddy_gave_hint + F1_0*20 < gameData.time.xGame) {
+				int	sval;
+
+				Buddy_gave_hint_count--;
+				LastTime_buddy_gave_hint = gameData.time.xGame;
+				sval = (d_rand ()*4) >> 15;
+				switch (sval) {
+					case 0:	
+						BuddyMessage (TXT_BOSS_HIT_BACK);	
+						break;
+					case 1:	
+						BuddyMessage (TXT_BOSS_VULNERABLE);	
+						break;
+					case 2:	
+						BuddyMessage (TXT_BOSS_GET_BEHIND);	
+						break;
+					case 3:
+					default:
+						BuddyMessage (TXT_BOSS_GLOW_SPOT);	
+						break;
+					}
+				}
+			}
+
+		//	Cause weapon to bounce.
+		//	Make a copy of this weapon, because the physics wants to destroy it.
+		if (!WI_matter (weapon->id)) {
+			new_obj = CreateObject (weapon->nType, weapon->id, -1, weapon->nSegment, &weapon->position.vPos, 
+											&weapon->position.mOrient, weapon->size, weapon->controlType, weapon->movementType, weapon->renderType, 1);
+
+			if (new_obj != -1) {
+				vmsVector	vec_to_point;
+				vmsVector	weap_vec;
+				fix			speed;
+				tObject		*newObjP = gameData.objs.objects + new_obj;
+
+				if (weapon->renderType == RT_POLYOBJ) {
+					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->id].nModel;
+					newObjP->size = FixDiv (gameData.models.polyModels [newObjP->rType.polyObjInfo.nModel].rad, gameData.weapons.info [newObjP->id].po_len_to_width_ratio);
+				}
+
+				newObjP->mType.physInfo.mass = WI_mass (weapon->nType);
+				newObjP->mType.physInfo.drag = WI_drag (weapon->nType);
+				VmVecZero (&newObjP->mType.physInfo.thrust);
+
+				VmVecSub (&vec_to_point, vHitPt, &robot->position.vPos);
+				VmVecNormalizeQuick (&vec_to_point);
+				weap_vec = weapon->mType.physInfo.velocity;
+				speed = VmVecNormalizeQuick (&weap_vec);
+				VmVecScaleInc (&vec_to_point, &weap_vec, -F1_0*2);
+				VmVecScale (&vec_to_point, speed/4);
+				newObjP->mType.physInfo.velocity = vec_to_point;
+				}
+			}
+		}
+	} 
+else if ((WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulKinetic) || 
+		   (!WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
+	short	nSegment;
+
+	nSegment = FindSegByPoint (vHitPt, robot->nSegment);
+	DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
+	bDamage = 0;
+	}
+return bDamage;
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -1631,7 +1634,9 @@ if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
 if (rInfoP->bossFlag) {
-	gameData.boss.nHitTime = gameData.time.xGame;
+	int i = FindBoss (OBJ_IDX (robot));
+	if (i >= 0)
+		gameData.boss [i].nHitTime = gameData.time.xGame;
 	if (rInfoP->bossFlag >= BOSS_D2) {
 		bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
 		bInvulBoss = !bDamage;

@@ -388,6 +388,7 @@ void InitReactorForLevel (void)
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
 extraGameInfo [0].nBossCount = 0;
+gameStates.gameplay.nReactorCount = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	if (objP->nType == OBJ_CNTRLCEN) {
 		if (nReactorObj != -1) {
@@ -398,6 +399,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		else {
 			nReactorObj = i;
 			extraGameInfo [0].nBossCount++;
+			gameStates.gameplay.nReactorCount++;
 			}
 		}
 

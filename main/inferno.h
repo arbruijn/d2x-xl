@@ -369,14 +369,18 @@ typedef struct tGameplayStates {
 	int bFinalBossIsDead;
 	int bHaveSmartMines;
 	int bMineDestroyed;
+	int bKillBossCheat;
 	int bNoBotAI;
 	int bTagFlag;
 	int nShieldFlash;
+	int nReactorCount;
 	fix nPlayerSpeed;
 	vmsVector vTgtDir;
 	int nDirSteps;
 	tSeismicStates seismic;
 } tGameplayStates;
+
+#define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
 
 typedef struct tInputStates {
 	int		nMouseType;
@@ -1484,10 +1488,10 @@ typedef struct tApplicationData {
 #define BOSS_DEATH_DURATION		(F1_0*6)
 
 typedef struct tBossData {
-	short					nTeleportSegs [MAX_BOSS_COUNT];
-	short					teleportSegs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
-	short					nGateSegs [MAX_BOSS_COUNT];
-	short					gateSegs [MAX_BOSS_COUNT][MAX_BOSS_TELEPORT_SEGS];
+	short					nTeleportSegs;
+	short					teleportSegs [MAX_BOSS_TELEPORT_SEGS];
+	short					nGateSegs;
+	short					gateSegs [MAX_BOSS_TELEPORT_SEGS];
 	fix					nDyingStartTime;
 	fix					nHitTime;
 	fix					nCloakStartTime;
@@ -1498,7 +1502,10 @@ typedef struct tBossData {
 	fix					nTeleportInterval;
 	fix					nLastGateTime;
 	fix					nGateInterval;
-	int					objList [MAX_BOSS_COUNT];
+#ifdef _DEBUG
+	fix					xPrevShields;
+#endif
+	int					nObject;
 	short					nDying;
 	sbyte					bDyingSoundPlaying;
 } tBossData;
@@ -1821,7 +1828,7 @@ typedef struct tGameData {
 	tEntropyData		entropy;
 	tReactorData		reactor;
 	tMarkerData			marker;
-	tBossData			boss;
+	tBossData			boss [MAX_BOSS_COUNT];
 	tAIData				ai;
 	tSongData			songs;
 	tEndLevelData		endLevel;

@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				28
+#define STATE_VERSION				29
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1591,15 +1591,18 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 void StateFixObjects (void)
 {
 	tObject	*objP = gameData.objs.objects;
-	int		i, nSegment;
+	int		i, j, nSegment;
 	
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix 
-	if ((objP->shields < 0) && (gameData.boss.nDying != i))
-		objP->nType = OBJ_NONE;
+	if (objP->shields < 0) {
+		j = FindBoss (i);
+		if ((j < 0) || (gameData.boss [j].nDying != i))
+			objP->nType = OBJ_NONE;
+		}
 	objP->next = objP->prev = objP->nSegment = -1;
 	if (objP->nType != OBJ_NONE) {
 		LinkObject (i,nSegment);

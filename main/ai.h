@@ -395,7 +395,7 @@ extern void mprintf_animation_info (tObject *objP);
 
 extern int Stolen_item_index;   // Used in ai.c for controlling rate of Thief flare firing.
 
-extern void ai_frame_animation (tObject *objP);
+extern void AIFrameAnimation (tObject *objP);
 extern int DoSillyAnimation (tObject *objP);
 extern int OpenableDoorsInSegment (short nSegment);
 extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag);

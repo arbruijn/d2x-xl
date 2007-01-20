@@ -160,7 +160,44 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][9] = {
 };
 #endif
 
-#ifndef RELEASE
+// -----------------------------------------------------------------------------
+
+int FindBoss (int nBossObj)
+{
+	int	i, j = BOSS_COUNT;
+	
+for (i = 0; i < j; i++)
+	if (gameData.boss [i].nObject == nBossObj)
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void DeleteBoss (int nObject)
+{
+	int	i = FindBoss (nObject);
+
+if (i < 0)
+	return;
+extraGameInfo [0].nBossCount--;
+if (i < BOSS_COUNT)
+	gameData.boss [i] = gameData.boss [BOSS_COUNT];
+}
+
+//------------------------------------------------------------------------------
+
+void InitGateIntervals (void)
+{
+	int	i;
+
+for (i = 0; i < MAX_BOSS_COUNT; i++)
+	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+}
+
+//------------------------------------------------------------------------------
+
+#ifdef _DEBUG
 //set viewer tObject to next tObject in array
 void ObjectGotoNextViewer ()
 {
@@ -602,10 +639,13 @@ else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime+CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
-		if (gameData.bots.pInfo [objP->id].bossFlag)
-			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss.nCloakStartTime, gameData.boss.nCloakEndTime);
+		if (gameData.bots.pInfo [objP->id].bossFlag) {
+			int i = FindBoss (OBJ_IDX (objP));
+			if (i >= 0)
+				DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
+			}
 		else
-			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame-F1_0*10, gameData.time.xGame+F1_0*10);
+			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
 		}
 	else {
 		tBitmapIndex *bmiAltTex = NULL;
@@ -615,7 +655,7 @@ else {
 		//	Snipers get bright when they fire.
 		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0/8) {
 			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
-				xLight = 2*xLight + F1_0;
+				xLight = 2 * xLight + F1_0;
 		}
 		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].nInnerModel > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);

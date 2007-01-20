@@ -654,10 +654,12 @@ else if (vertColors [i].index) {
 //	if (pvc->index >= 0)
 //		ScaleColor (pvc, l);
 	OglColor4sf (pvc->color.red, pvc->color.green, pvc->color.blue, s);
-	if (bResetColor)
+	if (bResetColor) {
 		pvc->color.red =
 		pvc->color.green =
 		pvc->color.blue = 1.0;
+		pvc->index = 0;
+		}
 	}	
 #else
 else if (lightColor.index) {

@@ -488,6 +488,8 @@ tObject *ObjFindFirstOfType (int nType);
 void ConvertWeaponToPowerup (tObject *objP);
 void InitWeaponFlags (void);
 float ObjectDamage (tObject *objP);
+int FindBoss (int nObject);
+void InitGateIntervals (void);
 
 extern ubyte bIsMissile [];
 
