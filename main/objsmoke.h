@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #define	SHOW_SMOKE	\
-			(!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseSmoke, 1, 1, 0))
+			(!gameStates.app.bNostalgia && EGI_FLAG (bUseSmoke, 1, 1, 0))
 
 //------------------------------------------------------------------------------
 

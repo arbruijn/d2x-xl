@@ -66,13 +66,13 @@ if ((gameStates.render.nShadowPass != 2) && (IsMultiGame || (EGI_FLAG (bWiggle, 
 		swiggle = FixMul (swiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 	if ((objP->nType == OBJ_PLAYER) || !pParent)
 		VmVecScaleInc (&objP->mType.physInfo.velocity,
-								 &objP->position.mOrient.uVec,
-								 FixMul (swiggle, gameData.pig.ship.player->wiggle));
+							&objP->position.mOrient.uVec,
+							FixMul (swiggle, gameData.pig.ship.player->wiggle));
 #if 1
 	else {
 		VmVecScaleInc (&objP->mType.physInfo.velocity,
-								&pParent->position.mOrient.uVec,
-								FixMul (swiggle, gameData.pig.ship.player->wiggle));
+							&pParent->position.mOrient.uVec,
+							FixMul (swiggle, gameData.pig.ship.player->wiggle));
 		VmVecScaleInc (&objP->position.vPos, &objP->mType.physInfo.velocity, wiggleTime);
 		}
 #endif
