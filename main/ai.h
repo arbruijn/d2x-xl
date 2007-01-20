@@ -233,7 +233,7 @@ void force_dump_aiObjects_all (char *msg);
 #define force_dump_aiObjects_all (msg)
 #endif
 
-void start_boss_death_sequence (tObject *objP);
+void StartBossDeathSequence (tObject *objP);
 void AIInitBossForShip (void);
 extern int Boss_been_hit;
 extern fix AI_procTime;

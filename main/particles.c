@@ -198,6 +198,8 @@ if (gameOpts->render.smoke.bSyncSizes)
 	nRad = (int) PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale);
 else
 	nRad = (int) nScale;
+if (!nRad)
+	nRad = 1;
 pParticle->nType = nType;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
@@ -536,15 +538,10 @@ int RenderParticle (tParticle *pParticle)
 #if OGL_VERTEX_ARRAYS
 	double				*pf;
 #endif
-	double				decay2,
-							decay = (double) pParticle->nLife / (double) pParticle->nTTL;
+	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
 
 if (pParticle->nDelay > 0)
 	return 0;
-#if 0
-if (gameOpts->render.smoke.bDisperse)
-	decay2 = sqrt (decay);
-#endif
 bmP = bmpParticle [gameStates.render.bPointSprites][pParticle->nType % 3];
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
@@ -615,12 +612,12 @@ else
 	o = pParticle->nOrient;
 	if (gameOpts->render.smoke.bDisperse) {
 		decay = sqrt (decay);
-		w = f2fl (pParticle->nWidth) / decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) / decay2;
-		h = f2fl (pParticle->nHeight) / decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) / decay2;
+		w = f2fl (pParticle->nWidth) / decay;
+		h = f2fl (pParticle->nHeight) / decay;
 		}
 	else {
-		w = f2fl (pParticle->nWidth) * decay; //f2fl (FixMul (pParticle->nWidth, viewInfo.scale.p.x)) * decay;
-		h = f2fl (pParticle->nHeight) * decay; //f2fl (FixMul (pParticle->nHeight, viewInfo.scale.p.y)) * decay;
+		w = f2fl (pParticle->nWidth) * decay;
+		h = f2fl (pParticle->nHeight) * decay;
 		}
 	x = f2fl (hp.p.x);
 	y = f2fl (hp.p.y);

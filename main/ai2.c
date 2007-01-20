@@ -463,15 +463,17 @@ void DoLunacyOff (void)
 //	Do *dest = *delta unless:
 //				*delta is pretty small
 //		and	they are of different signs.
-void set_rotvel_and_saturate (fix *dest, fix delta)
+void SetRotVelAndSaturate (fix *dest, fix delta)
 {
-	if ((delta ^ *dest) < 0) {
-		if (abs (delta) < F1_0/8) {
-			*dest = delta/4;
-		} else
-			*dest = delta;
-	} else {
+if ((delta ^ *dest) < 0) {
+	if (abs (delta) < F1_0/8) {
+		*dest = delta/4;
+		} 
+	else
 		*dest = delta;
+	}
+else {
+	*dest = delta;
 	}
 }
 
@@ -807,30 +809,20 @@ void ai_frame_animation (tObject *objP)
 void SetNextFireTime (tObject *objP, tAILocal *ailp, tRobotInfo *robptr, int nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot in d_free.
-	if ((nGun != 0) || (robptr->nSecWeaponType == -1))
-		if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (d_rand () > 16384))
-			ailp->nRapidFireCount++;
-
-	//	Old way, 10/15/95: Continuous rapidfire if nRapidFireCount set.
-// -- 	if (( (robptr->nSecWeaponType == -1) || (nGun != 0)) && (ailp->nRapidFireCount < robptr->nRapidFireCount [gameStates.app.nDifficultyLevel])) {
-// -- 		ailp->nextPrimaryFire = min (F1_0/8, robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
-// -- 	} else {
-// -- 		if ((robptr->nSecWeaponType == -1) || (nGun != 0)) {
-// -- 			ailp->nRapidFireCount = 0;
-// -- 			ailp->nextPrimaryFire = robptr->primaryFiringWait [gameStates.app.nDifficultyLevel];
-// -- 		} else
-// -- 			ailp->nextSecondaryFire = robptr->secondaryFiringWait [gameStates.app.nDifficultyLevel];
-// -- 	}
-
-	if (( (nGun != 0) || (robptr->nSecWeaponType == -1)) && (ailp->nRapidFireCount < robptr->nRapidFireCount [gameStates.app.nDifficultyLevel])) {
-		ailp->nextPrimaryFire = min (F1_0/8, robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
-	} else {
-		if ((robptr->nSecWeaponType == -1) || (nGun != 0)) {
-			ailp->nextPrimaryFire = robptr->primaryFiringWait [gameStates.app.nDifficultyLevel];
-			if (ailp->nRapidFireCount >= robptr->nRapidFireCount [gameStates.app.nDifficultyLevel])
-				ailp->nRapidFireCount = 0;
-		} else
-			ailp->nextSecondaryFire = robptr->secondaryFiringWait [gameStates.app.nDifficultyLevel];
+if ((nGun != 0) || (robptr->nSecWeaponType == -1))
+	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (d_rand () > 16384))
+		ailp->nRapidFireCount++;
+if (((nGun != 0) || (robptr->nSecWeaponType == -1)) && (ailp->nRapidFireCount < robptr->nRapidFireCount [gameStates.app.nDifficultyLevel])) {
+	ailp->nextPrimaryFire = min (F1_0/8, robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
+	}
+else {
+	if ((robptr->nSecWeaponType == -1) || (nGun != 0)) {
+		ailp->nextPrimaryFire = robptr->primaryFiringWait [gameStates.app.nDifficultyLevel];
+		if (ailp->nRapidFireCount >= robptr->nRapidFireCount [gameStates.app.nDifficultyLevel])
+			ailp->nRapidFireCount = 0;
+		}
+	else
+		ailp->nextSecondaryFire = robptr->secondaryFiringWait [gameStates.app.nDifficultyLevel];
 	}
 }
 
@@ -881,9 +873,9 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collisi
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Computes point at which projectile fired by robot can hit tPlayer given positions, tPlayer vel, elapsed time
-fix compute_lead_component (fix player_pos, fix robot_pos, fix player_vel, fix elapsedTime)
+inline fix ComputeLeadComponent (fix player_pos, fix robot_pos, fix player_vel, fix elapsedTime)
 {
-	return FixDiv (player_pos - robot_pos, elapsedTime) + player_vel;
+return FixDiv (player_pos - robot_pos, elapsedTime) + player_vel;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -894,7 +886,7 @@ fix compute_lead_component (fix player_pos, fix robot_pos, fix player_vel, fix e
 //		Player not farther away than MAX_LEAD_DISTANCE
 //		dot (vector_to_player, player_direction) must be in -LEAD_RANGE,LEAD_RANGE
 //		if firing a matter weapon, less leading, based on skill level.
-int lead_player (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGun, vmsVector *fire_vec)
+int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayerPos, int nGun, vmsVector *fire_vec)
 {
 	fix			dot, player_speed, dist_to_player, max_weapon_speed, projectedTime;
 	vmsVector	player_movement_dir, vec_to_player;
@@ -946,9 +938,9 @@ int lead_player (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlaye
 
 	projectedTime = FixDiv (dist_to_player, max_weapon_speed);
 
-	fire_vec->p.x = compute_lead_component (vBelievedPlayerPos->p.x, vFirePoint->p.x, gameData.objs.console->mType.physInfo.velocity.p.x, projectedTime);
-	fire_vec->p.y = compute_lead_component (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, projectedTime);
-	fire_vec->p.z = compute_lead_component (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, projectedTime);
+	fire_vec->p.x = ComputeLeadComponent (vBelievedPlayerPos->p.x, vFirePoint->p.x, gameData.objs.console->mType.physInfo.velocity.p.x, projectedTime);
+	fire_vec->p.y = ComputeLeadComponent (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, projectedTime);
+	fire_vec->p.z = ComputeLeadComponent (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, projectedTime);
 
 	VmVecNormalizeQuick (fire_vec);
 
@@ -988,14 +980,14 @@ if (!gameStates.app.cheats.bRobotsFiring)
 	return;
 if (objP->controlType == CT_MORPH)
 	return;
-//	If tPlayer is exploded, stop firing.
+//	If player is exploded, stop firing.
 if (gameStates.app.bPlayerExploded)
 	return;
 if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
-if (gameData.boss.nDyingStartTime & gameData.bots.pInfo [objP->id].bossFlag)
+if ((extraGameInfo [0].nBossCount < 2) && gameData.boss.nDyingStartTime & gameData.bots.pInfo [objP->id].bossFlag)
 	return;
 //	If tPlayer is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
@@ -1059,7 +1051,7 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 //	Note that when leading the tPlayer, aim is perfect.  This is probably acceptable since leading is so hacked in.
 //	Problem is all robots will lead equally badly.
 if (d_rand () < 16384) {
-	if (lead_player (objP, vFirePoint, vBelievedPlayerPos, nGun, &fire_vec))		//	Stuff direction to fire at in vFirePoint.
+	if (LeadPlayer (objP, vFirePoint, vBelievedPlayerPos, nGun, &fire_vec))		//	Stuff direction to fire at in vFirePoint.
 		goto player_led;
 }
 
@@ -2139,7 +2131,7 @@ void teleport_boss (tObject *objP)
 }
 
 //	----------------------------------------------------------------------
-void start_boss_death_sequence (tObject *objP)
+void StartBossDeathSequence (tObject *objP)
 {
 	if (gameData.bots.pInfo [objP->id].bossFlag) {
 		int	i;

@@ -487,6 +487,7 @@ void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 tObject *ObjFindFirstOfType (int nType);
 void ConvertWeaponToPowerup (tObject *objP);
 void InitWeaponFlags (void);
+float ObjectDamage (tObject *objP);
 
 extern ubyte bIsMissile [];
 

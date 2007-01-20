@@ -1388,13 +1388,19 @@ void MultiSendFinishGame ();
 //	Return 1 if robot died, else return 0
 int ApplyDamageToRobot (tObject *robot, fix damage, int nKillerObj)
 {
-char bIsThief;
-char tempStolen [MAX_STOLEN_ITEMS];	
+	char bIsThief;
+	char tempStolen [MAX_STOLEN_ITEMS];	
 
 if (robot->flags & OF_EXPLODING) 
 	return 0;
 if (robot->shields < 0) 
 	return 0;	//robot already dead...
+if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
+	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
+	// guidebot may kill other bots
+	if ((killerObjP->nType == OBJ_ROBOT) && !gameData.bots.pInfo [killerObjP->id].companion)
+		return 0;
+	}
 if (gameData.bots.pInfo [robot->id].bossFlag)
 	gameData.boss.nHitTime = gameData.time.xGame;
 
@@ -1460,7 +1466,7 @@ if (robot->shields < 0) {
 		}
 
 	if (gameData.bots.pInfo [robot->id].bossFlag) {
-		start_boss_death_sequence (robot);	//DoReactorDestroyedStuff (NULL);
+		StartBossDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
 		}
 	else if (gameData.bots.pInfo [robot->id].bDeathRoll) {
 		StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
@@ -1616,8 +1622,8 @@ int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 
 int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
 { 
-	int	bDamage=1;
-	int	boss_invulFlag=0;
+	int	bDamage = 1;
+	int	bInvulBoss = 0;
 	tRobotInfo *rInfoP = gameData.bots.pInfo + robot->id;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 
@@ -1628,7 +1634,7 @@ if (rInfoP->bossFlag) {
 	gameData.boss.nHitTime = gameData.time.xGame;
 	if (rInfoP->bossFlag >= BOSS_D2) {
 		bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
-		boss_invulFlag = !bDamage;
+		bInvulBoss = !bDamage;
 		}
 	}
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
@@ -1665,7 +1671,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 	//	Note: If weapon hits an invulnerable boss, it will still do badass damage, including to the boss, 
 	//	unless this is trapped elsewhere.
 	if (WI_damage_radius (weapon->id)) {
-		if (boss_invulFlag) {			//don't make badass sound
+		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeBadassWeapon ()
 			ObjectCreateBadassExplosion (weapon, weapon->nSegment, vHitPt, 
 							wInfoP->impact_size, 
@@ -1678,9 +1684,9 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 		else		//normal badass explosion
 			ExplodeBadassWeapon (weapon, vHitPt);
 		}
-	if (((weapon->cType.laserInfo.parentType==OBJ_PLAYER) || 
-		 gameStates.app.cheats.bRobotsKillRobots || 
-		 (EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) && 
+	if (((weapon->cType.laserInfo.parentType == OBJ_PLAYER) || 
+		 ((weapon->cType.laserInfo.parentType == OBJ_ROBOT) &&
+		  (gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0)))) && 
 		 !(robot->flags & OF_EXPLODING))	{	
 		tObject *expl_obj = NULL;
 		if (weapon->cType.laserInfo.nParentObj == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
@@ -1710,7 +1716,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 					damage = damage * (2*NDL-gameStates.app.nDifficultyLevel)/ (2*NDL);
 				}
 			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
-				damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
+				damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
 			if (!ApplyDamageToRobot (robot, damage, weapon->cType.laserInfo.nParentObj))
 				BumpTwoObjects (robot, weapon, 0, vHitPt);		//only bump if not dead. no damage from bump
 			else if (weapon->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {

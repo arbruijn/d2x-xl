@@ -869,7 +869,7 @@ return &defaultColor;
 
 // -----------------------------------------------------------------------------
 
-static inline float ObjectDamage (tObject *objP)
+float ObjectDamage (tObject *objP)
 {
 	float	fDmg;
 	fix	xMaxShields;
@@ -879,8 +879,10 @@ if (objP->nType == OBJ_PLAYER)
 else if (objP->nType == OBJ_ROBOT) {
 	xMaxShields = RobotDefaultShields (objP);
 	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
+#if 0
 	if (gameData.bots.pInfo [objP->id].companion)
 		fDmg /= 2;
+#endif
 	}
 else if (objP->nType == OBJ_CNTRLCEN)
 	fDmg = f2fl (objP->shields) / f2fl (ReactorStrength ());

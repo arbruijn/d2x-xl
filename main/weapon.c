@@ -1060,16 +1060,18 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 //	Call this when a smega detonates to start the process of rocking the mine.
 void ShakerRockStuff(void)
 {
+#ifndef _DEBUG
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes[i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
-		eshakerDetonateTimes[i] = 0;
+	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
+		eshakerDetonateTimes [i] = 0;
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes[i] == 0) {
-		eshakerDetonateTimes[i] = gameData.time.xGame;
+	if (eshakerDetonateTimes [i] == 0) {
+		eshakerDetonateTimes [i] = gameData.time.xGame;
 		break;
 		}
+#endif
 }
 
 //	-----------------------------------------------------------------------------

@@ -729,7 +729,7 @@ if (bIsThief || gameData.bots.pInfo [robotP->id].thief)
 if (gameData.bots.pInfo [robotP->id].bossFlag) {
 	if (gameData.boss.nDying)
 		return 0;
-	start_boss_death_sequence (robotP);	
+	StartBossDeathSequence (robotP);	
 	}
 else if (gameData.bots.pInfo [robotP->id].bDeathRoll)
 	StartRobotDeathSequence (robotP);
