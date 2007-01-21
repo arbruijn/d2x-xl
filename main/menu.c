@@ -2588,7 +2588,7 @@ void LightingOptionsMenu ()
 	tMenuItem m [15];
 	int	i, choice = 0;
 	int	opt;
-	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights;
+	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights;
 #if 0
 	int checks;
 #endif
@@ -2671,6 +2671,8 @@ do {
 		ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [0].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
 		optPowerupLights = opt++;
 		}
+	ADD_CHECK (opt, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
+	optFlickerLights = opt++;
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
 		if (i < 0)
@@ -2703,6 +2705,7 @@ do {
 		if (optPowerupLights >= 0)
 			extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
 		}
+	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
 	} while (i == -2);
 }
 

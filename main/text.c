@@ -1611,6 +1611,7 @@ char *defaultGameTexts [][2] = {
 	{"Weit", "Far"},
 	{"Lade Hires-Modelle...", "Loading Hires Models..."},
 	{"~Wettkampf-Modus", "~Competition mode"},
+	{"~Flackernde Lichter verwenden", "use ~Flickering lights"},
 #if 0
 	{"", ""},
 #endif
@@ -2090,6 +2091,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Reichweite der Lichter eingestellt werden.", "Adjust the reach of lights here."},
 	{"Wenn angekreuzt, werden einige Erweiterungen von D2X-XL waehrend\nMultiplayer-Spielen abgeschaltet.", 
 	 "If checked, certain D2X-XL extensions are disabled during\nmultiplayer games."},
+	{"Wenn angekreuzt, werden flackernde Lichter wie ueblich angezeigt.\nSonst bleiben sie einfach immer hell. Diese Einstellung\nist besonders fuer Epileptiker geeignet.", 
+	 "If checked, flickering lights will go and off as usual.\nIf unchecked, flickering lights will be constantly bright. This\nsetting is particular useful for people suffering\nfrom epilepsy."},
 #if 0
 	{"", ""},
 #endif

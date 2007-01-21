@@ -994,13 +994,13 @@ void FlickerLights ()
 
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 	//make sure this is actually a light
-	if (! (WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
+	if (!(WALL_IS_DOORWAY (gameData.segs.segments + flP->nSegment, flP->nSide, NULL) & WID_RENDER_FLAG))
 		continue;
 	nSegment = flP->nSegment;
 	nSide = flP->nSide;
 	sideP = gameData.segs.segments [nSegment].sides + nSide;
-	if (! (gameData.pig.tex.brightness [sideP->nBaseTex] || 
-		   gameData.pig.tex.brightness [sideP->nOvlTex]))
+	if (!(gameData.pig.tex.brightness [sideP->nBaseTex] || 
+			gameData.pig.tex.brightness [sideP->nOvlTex]))
 		continue;
 	if (flP->timer == 0x80000000)		//disabled
 		continue;
@@ -1010,7 +1010,7 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 		flP->mask = ((flP->mask & 0x80000000) ? 1 : 0) + (flP->mask << 1);
 		if (flP->mask & 1)
 			AddLight (nSegment, nSide);
-		else
+		else if (EGI_FLAG (bFlickerLights, 1, 0, 1)) 
 			SubtractLight (nSegment, nSide);
 		}
 	}
