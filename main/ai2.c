@@ -72,6 +72,8 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include <time.h>
 #endif
 
+extern int nSegsVisited;
+
 void TeleportBoss (tObject *objP);
 int BossFitsInSeg (tObject *bossObjP, int nSegment);
 
@@ -256,111 +258,90 @@ void CreateBuddyBot (void)
 #define	QUEUE_SIZE	256
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Create list of segments boss is allowed to teleport to at segptr.
-//	Set *num_segs.
+//	Create list of segments boss is allowed to teleport to at segListP.
+//	Set *segCountP.
 //	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
 //	he can reach from his initial position (calls FindConnectedDistance).
-//	If size_check is set, then only add tSegment if boss can fit in it, else any tSegment is legal.
-//	one_wall_hack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the 
-void InitBossSegments (int objList, short segptr [], short *num_segs, int size_check, int one_wall_hack)
+//	If bSizeCheck is set, then only add tSegment if boss can fit in it, else any segment is legal.
+//	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the 
+void InitBossSegments (int objList, short segListP [], short *segCountP, int bSizeCheck, int bOneWallHack)
 {
+	tSegment		*segP;
+	tObject		*bossObjP = gameData.objs.objects + objList;
+	vmsVector	vBossHomePos;
+	int			nBossHomeSeg;
+	int			head, tail, w, childSeg;
+	int			nGroup, nSide, nSegments;
+	int			seqQueue [QUEUE_SIZE];
+	fix			xBossSizeSave;
+
 #ifdef EDITOR
-	N_selected_segs = 0;
+nSelectedSegs = 0;
+#endif
+//	See if there is a boss.  If not, quick out.
+nSegments = 0;
+xBossSizeSave = bossObjP->size;
+// -- Causes problems!!	-- bossObjP->size = FixMul ((F1_0/4)*3, bossObjP->size);
+nBossHomeSeg = bossObjP->nSegment;
+vBossHomePos = bossObjP->position.vPos;
+nGroup = gameData.segs.xSegments [nBossHomeSeg].group;
+head = 
+tail = 0;
+seqQueue [head++] = nBossHomeSeg;
+segListP [nSegments++] = nBossHomeSeg;
+#ifdef EDITOR
+Selected_segs [nSelectedSegs++] = nBossHomeSeg;
 #endif
 
+memset (bVisited, 0, gameData.segs.nSegments);
 
-if (size_check)
-#if TRACE	
-	con_printf (CON_DEBUG, "Boss fits in segments:\n");
-#endif
-	//	See if there is a boss.  If not, quick out.
-	*num_segs = 0;
-	{
-		int			original_boss_seg;
-		vmsVector	original_boss_pos;
-		tObject		*bossObjP = gameData.objs.objects + objList;
-		int			head, tail;
-		int			seg_queue [QUEUE_SIZE];
-		//ALREADY IN RENDER.H sbyte   bVisited [MAX_SEGMENTS];
-		fix			boss_size_save;
-		int			nGroup;
-
-		boss_size_save = bossObjP->size;
-		// -- Causes problems!!	-- bossObjP->size = FixMul ((F1_0/4)*3, bossObjP->size);
-		original_boss_seg = bossObjP->nSegment;
-		original_boss_pos = bossObjP->position.vPos;
-		nGroup = gameData.segs.xSegments [original_boss_seg].group;
-		head = 0;
-		tail = 0;
-		seg_queue [head++] = original_boss_seg;
-
-		segptr [ (*num_segs)++] = original_boss_seg;
-#if TRACE	
-		con_printf (CON_DEBUG, "%4i ", original_boss_seg);
-#endif
-		#ifdef EDITOR
-		Selected_segs [N_selected_segs++] = original_boss_seg;
-		#endif
-
-		memset (bVisited, 0, gameData.segs.nSegments);
-
-		while (tail != head) {
-			short		nSide;
-			tSegment	*segP = gameData.segs.segments + seg_queue [tail++];
-
-			tail &= QUEUE_SIZE-1;
-
-			for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
-				int	w, childSeg = segP->children [nSide];
-
-				if (( (w = WALL_IS_DOORWAY (segP, nSide, NULL)) & WID_FLY_FLAG) || one_wall_hack) {
-					//	If we get here and w == WID_WALL, then we want to process through this wall, else not.
-					if (IS_CHILD (childSeg)) {
-						if (one_wall_hack)
-							one_wall_hack--;
-					} else
-						continue;
-
-					if ((nGroup == gameData.segs.xSegments [childSeg].group) && (bVisited [childSeg] == 0)) {
-						seg_queue [head++] = childSeg;
-						bVisited [childSeg] = 1;
-						head &= QUEUE_SIZE-1;
-						if (head > tail) {
-							if (head == tail + QUEUE_SIZE-1)
-								Int3 ();	//	queue overflow.  Make it bigger!
-						} else
-							if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
-								Int3 ();	//	queue overflow.  Make it bigger!
-	
-						if ((!size_check) || BossFitsInSeg (bossObjP, childSeg)) {
-							segptr [ (*num_segs)++] = childSeg;
-							if (size_check) {
-#if TRACE	
-								con_printf (CON_DEBUG, "%4i ", childSeg);
-#endif
-							}								
-							#ifdef EDITOR
-							Selected_segs [N_selected_segs++] = childSeg;
-							#endif
-							if (*num_segs >= MAX_BOSS_TELEPORT_SEGS) {
-#if TRACE	
-								con_printf (1, "Warning: Too many boss teleport segments.  Found %i after searching %i/%i segments.\n", MAX_BOSS_TELEPORT_SEGS, childSeg, gameData.segs.nLastSegment+1);
-#endif
-								tail = head;
-							}
-						}
-					}
-				}
+while (tail != head) {
+	segP = gameData.segs.segments + seqQueue [tail++];
+	tail &= QUEUE_SIZE-1;
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+		childSeg = segP->children [nSide];
+		if (!bOneWallHack) {
+			w = WALL_IS_DOORWAY (segP, nSide, NULL);
+			if (!(w & WID_FLY_FLAG))
+				continue;
 			}
-
+		//	If we get here and w == WID_WALL, then we want to process through this wall, else not.
+		if (!IS_CHILD (childSeg))
+			continue;
+		if (bOneWallHack)
+			bOneWallHack--;
+		if (bVisited [childSeg])
+			continue;
+		if (nGroup != gameData.segs.xSegments [childSeg].group)
+			continue;
+		seqQueue [head++] = childSeg;
+		bVisited [childSeg] = 1;
+		head &= QUEUE_SIZE - 1;
+		if (head > tail) {
+			if (head == tail + QUEUE_SIZE-1)
+				goto errorExit;	//	queue overflow.  Make it bigger!
+			}
+		else if (head + QUEUE_SIZE == tail + QUEUE_SIZE - 1)
+			goto errorExit;	//	queue overflow.  Make it bigger!
+		if (nSegments > 406)
+			nSegments = nSegments;
+		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
+			continue;
+		if (nSegments >= MAX_BOSS_TELEPORT_SEGS - 1)
+			goto errorExit;
+		segListP [nSegments++] = childSeg;
+#ifdef EDITOR
+		Selected_segs [nSelectedSegs++] = childSeg;
+#endif
 		}
-
-		bossObjP->size = boss_size_save;
-		bossObjP->position.vPos = original_boss_pos;
-		RelinkObject (objList, original_boss_seg);
-
 	}
 
+errorExit:
+
+bossObjP->size = xBossSizeSave;
+bossObjP->position.vPos = vBossHomePos;
+RelinkObject (objList, nBossHomeSeg);
+*segCountP = nSegments;
 }
 
 extern void InitBuddyForLevel (void);
@@ -1338,7 +1319,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 
 	//	Green guy selects move around/towards/away based on firing time, not distance.
 if (robptr->attackType == 1)
-	if (( (ailp->nextPrimaryFire > robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < F1_0*30)) || gameStates.app.bPlayerIsDead)
+	if (((ailp->nextPrimaryFire > robptr->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < F1_0*30)) || gameStates.app.bPlayerIsDead)
 		//	1/4 of time, move around tPlayer, 3/4 of time, move away from tPlayer
 		if (d_rand () < 8192)
 			move_around_player (objP, vec_to_player, -1);
@@ -1361,7 +1342,7 @@ else {
 	else
 		if ((-ailp->nextPrimaryFire > F1_0 + (objval << 12)) && player_visibility)
 			//	Usually move away, but sometimes move around player.
-			if (( ((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4) 
+			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4) 
 				move_away_from_player (objP, vec_to_player, 0);
 			else
 				move_around_player (objP, vec_to_player, -1);
@@ -1918,21 +1899,21 @@ int CreateGatedRobot (tObject *bossObjP, short nSegment, ubyte nObjId, vmsVector
 	tSegment		*segP = gameData.segs.segments + nSegment;
 	vmsVector	vObjPos;
 	tRobotInfo	*robptr = &gameData.bots.pInfo [nObjId];
-	int			i, count = 0;
+	int			i, nBoss, count = 0;
 	fix			objsize = gameData.models.polyModels [robptr->nModel].rad;
 	ubyte			default_behavior;
 
-i = FindBoss (OBJ_IDX (bossObjP));
-if (i < 0)
+nBoss = FindBoss (OBJ_IDX (bossObjP));
+if (nBoss < 0)
 	return -1;
-if (gameData.time.xGame - gameData.boss [i].nLastGateTime < gameData.boss [i].nGateInterval)
+if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
 for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM)
 			count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
-	gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 	return -1;
 	}
 COMPUTE_SEGMENT_CENTER (&vObjPos, segP);
@@ -1945,7 +1926,7 @@ for (;;) {
 	//	See if legal to place tObject here.  If not, move about in tSegment and try again.
 	if (checkObjectObject_intersection (&vObjPos, objsize, segP)) {
 		if (!--nTries) {
-			gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+			gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 			return -1;
 			}
 		pos = NULL;
@@ -1955,7 +1936,7 @@ for (;;) {
 	}
 nObject = CreateObject (OBJ_ROBOT, nObjId, -1, nSegment, &vObjPos, &vmdIdentityMatrix, objsize, CT_AI, MT_PHYSICS, RT_POLYOBJ, 0);
 if (nObject < 0) {
-	gameData.boss [i].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [i].nGateInterval / 4;
+	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 	return -1;
 	} 
 // added lifetime increase depending on difficulty level 04/26/06 DM
@@ -1976,7 +1957,7 @@ InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment thi
 ObjectCreateExplosion (nSegment, &vObjPos, i2f (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
-gameData.boss [i].nLastGateTime = gameData.time.xGame;
+gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
 gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
 gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
 return OBJ_IDX (objP);
@@ -1989,6 +1970,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos)
 	short			nObject, nSegment, objType, maxRobotTypes;
 	short			nBossIndex, nBossId = gameData.bots.pInfo [objP->id].bossFlag;
 	tRobotInfo	*pri;
+
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
@@ -1998,20 +1980,20 @@ if (nSegment == -1) {
 #endif
 	return -1;
 	}	
-objType = spewBots [gameStates.app.bD1Mission][nBossIndex][ (maxSpewBots [nBossIndex] * d_rand ()) >> 15];
+objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
 	maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
 	do {
-			objType = d_rand () % maxRobotTypes;
+		objType = d_rand () % maxRobotTypes;
 		pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
 		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
-						(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
+					(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
 	}
 nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
-	tObject	*newObjP = &gameData.objs.objects [nObject];
+	tObject	*newObjP = gameData.objs.objects + nObject;
 	int		force_val = F1_0 / gameData.time.xFrame;
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
@@ -2051,9 +2033,10 @@ int GateInRobot (short nObject, ubyte nType, short nSegment)
 {
 if (nSegment < 0) {
 	int i = FindBoss (nObject);
-	if (i >= 0)
-		nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
-		}
+	if (i < 0)
+		return -1;
+	nSegment = gameData.boss [i].gateSegs [(d_rand () * gameData.boss [i].nGateSegs) >> 15];
+	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 return CreateGatedRobot (gameData.objs.objects + nObject, nSegment, nType, NULL);
 }
@@ -2062,28 +2045,24 @@ return CreateGatedRobot (gameData.objs.objects + nObject, nSegment, nType, NULL)
 
 int BossFitsInSeg (tObject *bossObjP, int nSegment)
 {
-	vmsVector	segcenter;
-	int			objList = OBJ_IDX (bossObjP);
-	int			posnum;
+	int			nObject = OBJ_IDX (bossObjP);
+	int			nPos;
+	vmsVector	vSegCenter, vVertPos;
 
-	COMPUTE_SEGMENT_CENTER_I (&segcenter, nSegment);
-
-	for (posnum=0; posnum<9; posnum++) {
-		if (posnum > 0) {
-			vmsVector	vertex_pos;
-
-			Assert ((posnum-1 >= 0) && (posnum-1 < 8));
-			vertex_pos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [posnum-1]];
-			VmVecAvg (&bossObjP->position.vPos, &vertex_pos, &segcenter);
-		} else
-			bossObjP->position.vPos = segcenter;
-
-		RelinkObject (objList, nSegment);
-		if (!ObjectIntersectsWall (bossObjP))
-			return 1;
+nSegsVisited = 0;
+COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nSegment);
+for (nPos = 0; nPos < 9; nPos++) {
+	if (!nPos)
+		bossObjP->position.vPos = vSegCenter;
+	else {
+		vVertPos = gameData.segs.vertices [gameData.segs.segments [nSegment].verts [nPos-1]];
+		VmVecAvg (&bossObjP->position.vPos, &vVertPos, &vSegCenter);
+		} 
+	RelinkObject (nObject, nSegment);
+	if (!ObjectIntersectsWall (bossObjP))
+		return 1;
 	}
-
-	return 0;
+return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -2099,7 +2078,7 @@ if (i < 0)
 	return;
 Assert (gameData.boss [i].nTeleportSegs > 0);
 nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
-nRandSeg = gameData.boss [i].teleportSegs[nRandIndex];
+nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];
 Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiSendBossActions (nObject, 1, nRandSeg, 0);
@@ -2486,14 +2465,14 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 				}
 			}
 		}
-	} else if (( (!robptr->attackType) &&
+	} else if (((!robptr->attackType) &&
 				   (gameData.weapons.info [robptr->nWeaponType].homingFlag == 1)) || 
-				  (( (robptr->nSecWeaponType != -1) && 
+				  (((robptr->nSecWeaponType != -1) && 
 				   (gameData.weapons.info [robptr->nSecWeaponType].homingFlag == 1)))) {
 		fix dist;
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
-		if (( (!object_animates) || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
-			 && (( (ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
+		if (((!object_animates) || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
+			 && (((ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
 			 && ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->position.vPos)) > F1_0*40)) {
 			if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 				return;

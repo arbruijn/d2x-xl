@@ -1481,8 +1481,9 @@ typedef struct tApplicationData {
 	tFusionData			fusion;
 } tApplicationData;
 
+#define MAX_SEGS_VISITED			1000
 #define MAX_BOSS_COUNT				10
-#define MAX_BOSS_TELEPORT_SEGS   100
+#define MAX_BOSS_TELEPORT_SEGS	MAX_SEGS_VISITED
 #define NUM_D2_BOSSES				8
 #define BOSS_CLOAK_DURATION		(F1_0*7)
 #define BOSS_DEATH_DURATION		(F1_0*6)

@@ -502,7 +502,6 @@ return CheckVectorToSphere1 (intp, p0, p1, &objP->position.vPos, size+rad);
 }
 
 
-#define MAX_SEGS_VISITED 100
 int nSegsVisited;
 short segsVisited [MAX_SEGS_VISITED];
 
@@ -1121,6 +1120,8 @@ if (nSegment == -1) {
 	Error("nSegment == -1 in SphereIntersectsWall()");
 	return 0;
 	}
+if ((nSegsVisited < 0) || (nSegsVisited > MAX_SEGS_VISITED))
+	nSegsVisited = 0;
 segsVisited [nSegsVisited++] = nSegment;
 faceMask = GetSegMasks(vPoint, nSegment, rad).faceMask;
 segP = gameData.segs.segments + nSegment;

@@ -2095,7 +2095,7 @@ for (;;) {
 			int i;
 			//fix l = f2i (32 * xModelLight);
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
-			//GrFadeColorRGB (32.0 / (double) l);
+			GrFadeColorRGB (1.0);
 			if (objColorP) {
 				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 
 				objColorP->green = (float) grdCurCanv->cv_color.color.green / 255.0f;

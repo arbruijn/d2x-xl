@@ -1899,6 +1899,7 @@ CFWriteInt (gameData.escort.nSpecialGoal, fp);
 CFWriteInt (gameData.escort.nGoalIndex, fp);
 CFWrite (gameData.thief.stolenItems, sizeof (gameData.thief.stolenItems [0]), MAX_STOLEN_ITEMS, fp);
 CFWriteInt ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs), fp);
+i =CFTell (fp);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	CFWriteShort (gameData.boss [i].nTeleportSegs, fp);
 	CFWriteShort (gameData.boss [i].nGateSegs, fp);
@@ -2007,7 +2008,7 @@ if (version < 29) {
 		}
 	}
 else {
-	for (i = 1; i < MAX_BOSS_COUNT; i++) {
+	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		gameData.boss [i].nCloakStartTime = CFReadFix (fp);
 		gameData.boss [i].nCloakEndTime = CFReadFix (fp);
 		gameData.boss [i].nLastTeleportTime = CFReadFix (fp);
@@ -2051,6 +2052,7 @@ if (version < 21) {
 	}
 else {
 	nMaxBossCount = (version >= 24) ? MAX_BOSS_COUNT : 1;
+	i =CFTell (fp);
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		gameData.boss [i].nTeleportSegs = CFReadShort (fp);
 		gameData.boss [i].nGateSegs = CFReadShort (fp);
@@ -2061,7 +2063,7 @@ else {
 				gameData.boss [i].gateSegs [j] = CFReadShort (fp);
 		if (h = gameData.boss [i].nTeleportSegs)
 			for (j = 0; j < h; j++)
-				gameData.boss [i].teleportSegs[j] = CFReadShort (fp);
+				gameData.boss [i].teleportSegs [j] = CFReadShort (fp);
 		}
 	}
 return 1;

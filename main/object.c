@@ -2347,6 +2347,8 @@ if (nType == OBJ_WEAPON) {
 	if (id == FLARE_ID)
 		nType = nType;
 	}	
+else if (nType == OBJ_ROBOT)
+	nType = nType;
 else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)

@@ -1521,13 +1521,13 @@ if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
 	bKinetic = WI_matter (weapon->id);
 	if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsKinetic) || 
 		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
-		if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
-			 (BossSpewRobot (robot, vHitPt) != -1)) {
-			int i = FindBoss (OBJ_IDX (robot));
-			if (i >= 0)
+		int i = FindBoss (OBJ_IDX (robot));
+		if (i >= 0) {
+			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
+				 (BossSpewRobot (robot, vHitPt) != -1))
 				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
+			BossSpewRobot (robot, vHitPt);
 			}
-		BossSpewRobot (robot, vHitPt);
 		}
 	}
 
