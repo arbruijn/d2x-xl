@@ -431,7 +431,6 @@ rebuild_menu:
 							}
 						}
 					}
-				extraGameInfo [0].bFastPitch = m [nFastPitchOpt].value ? 1 : 2;
 				}
 			else {
 #if EXPMODE_DEFAULTS
@@ -439,6 +438,8 @@ rebuild_menu:
 				extraGameInfo [0].bFastPitch = 1;
 #endif
 				}
+			if (nFastPitchOpt >= 0)
+				extraGameInfo [0].bFastPitch = m [nFastPitchOpt].value ? 1 : 2;
 			}
 /*
 		for (j = 0; j < 3; j++)
