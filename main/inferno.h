@@ -1608,8 +1608,9 @@ typedef struct tMenuData {
 	unsigned int		colorOverride;
 } tMenuData;
 
-#define MAX_FUEL_CENTERS    350
+#define MAX_FUEL_CENTERS    500
 #define MAX_ROBOT_CENTERS   100
+#define MAX_EQUIP_CENTERS   100
 
 #include "fuelcen.h"
 
@@ -1617,10 +1618,12 @@ typedef struct tMatCenData {
 	fix				xFuelRefillSpeed;
 	fix				xFuelGiveAmount;
 	fix				xFuelMaxAmount;
-	int				nFuelCenters;
 	tFuelCenInfo	fuelCenters [MAX_FUEL_CENTERS];
-	int				nRobotCenters;
 	tMatCenInfo		robotCenters [MAX_ROBOT_CENTERS];
+	tMatCenInfo		equipCenters [MAX_EQUIP_CENTERS];
+	int				nFuelCenters;
+	int				nRobotCenters;
+	int				nEquipCenters;
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];
 	tSegment			*playerSegP;

@@ -287,14 +287,14 @@ void PagingTouchRobotMaker (tSegment * segp)
 
 	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	{
 		PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
-		if (gameData.matCens.robotCenters [seg2p->nMatCen].robotFlags != 0) {
+		if (gameData.matCens.robotCenters [seg2p->nMatCen].objFlags != 0) {
 			int	i;
 			uint	flags;
 			int	robot_index;
 
 			for (i=0;i<2;i++) {
 				robot_index = i*32;
-				flags = gameData.matCens.robotCenters [seg2p->nMatCen].robotFlags [i];
+				flags = gameData.matCens.robotCenters [seg2p->nMatCen].objFlags [i];
 				while (flags) {
 					if (flags & 1)	{
 						// Page in robot_index

@@ -12,55 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Triggers and Switches.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  16:03:48  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:26:52  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.19  1995/01/12  17:00:36  rob
- * Fixed a problem with switches and secret levels.
- *
- * Revision 1.18  1994/10/06  21:24:40  matt
- * Added switch for exit to secret level
- *
- * Revision 1.17  1994/09/29  17:05:52  matt
- * Removed unused constant
- *
- * Revision 1.16  1994/09/24  17:10:07  yuan
- * Added Matcen triggers.
- *
- * Revision 1.15  1994/08/15  18:06:39  yuan
- * Added external tTrigger.
- *
- * Revision 1.14  1994/06/16  16:20:52  john
- * Made tPlayer start out in physics mode; Neatend up game loop a bit.
- *
- * Revision 1.13  1994/05/30  20:22:08  yuan
- * New triggers.
- *
- * Revision 1.12  1994/05/27  10:32:44  yuan
- * New dialog boxes (Walls and Triggers) added.
- *
- *
- * Revision 1.11  1994/05/25  18:06:32  yuan
- * Making new dialog box controls for walls and triggers.
- *
- * Revision 1.10  1994/04/28  18:04:40  yuan
- * Gamesave added.
- * Trigger problem fixed (seg pointer is replaced by index now.)
- *
- * Revision 1.9  1994/04/26  11:19:01  yuan
- * Make it so a tTrigger can only be triggered every 5 seconds.
- *
- */
-
 #ifndef _SWITCH_H
 #define _SWITCH_H
 
@@ -207,6 +158,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
+int FindTriggerTarget (short nSegment, short nSide);
 
 extern vmsVector	speedBoostSrc, speedBoostDest;
 

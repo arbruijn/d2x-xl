@@ -655,7 +655,7 @@ _exit_cheat:
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	// If in materialization center, exit
 	if (! (gameData.app.nGameMode & GM_MULTI) && (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
-		if (gameData.matCens.fuelCenters [gameData.segs.segment2s [objP->nSegment].value].Enabled) {
+		if (gameData.matCens.fuelCenters [gameData.segs.segment2s [objP->nSegment].value].bEnabled) {
 			AIFollowPath (objP, 1, 1, NULL);    // 1 = tPlayer is visible, which might be a lie, but it works.
 			return;
 		}

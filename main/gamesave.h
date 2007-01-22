@@ -82,7 +82,6 @@ typedef struct {
 	int     fileinfo_sizeof;
 	char    mine_filename[15];
 	int     level;
-#if 1
 	tGameItemInfo	player;
 	tGameItemInfo	objects;
 	tGameItemInfo	walls;
@@ -90,41 +89,10 @@ typedef struct {
 	tGameItemInfo	triggers;
 	tGameItemInfo	links;
 	tGameItemInfo	control;
-	tGameItemInfo	matcen;
+	tGameItemInfo	botGen;
 	tGameItemInfo	lightDeltaIndices;
 	tGameItemInfo	lightDeltas;
-#else
-	tGameItemInfo	;
-	int     player_offset;              // Player info
-	int     player_sizeof;
-	int     object_offset;              // Object info
-	int     object_howmany;
-	int     object_sizeof;
-	int     walls_offset;
-	int     walls_howmany;
-	int     walls_sizeof;
-	int     doors_offset;
-	int     doors_howmany;
-	int     doors_sizeof;
-	int     triggers_offset;
-	int     triggers_howmany;
-	int     triggers_sizeof;
-	int     links_offset;
-	int     links_howmany;
-	int     links_sizeof;
-	int     control_offset;
-	int     control_howmany;
-	int     control_sizeof;
-	int     matcen_offset;
-	int     matcen_howmany;
-	int     matcen_sizeof;
-	int     dl_indices_offset;
-	int     dl_indices_howmany;
-	int     dl_indices_sizeof;
-	int     delta_light_offset;
-	int     delta_light_howmany;
-	int     delta_light_sizeof;
-#endif
+	tGameItemInfo	equipGen;
 } tGameFileInfo;
 
 void LoadGame(void);

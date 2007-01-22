@@ -96,32 +96,35 @@ void CollideRobotAndWall (tObject * robot, fix hitspeed, short hitseg, short hit
 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
 	tRobotInfo	*rInfoP = gameData.bots.pInfo + robot->id;
 
-	if ((robot->id == ROBOT_BRAIN) || 
-		 (robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
-		 (rInfoP->companion == 1) || 
-		 (robot->cType.aiInfo.behavior == AIB_SNIPE)) {
-		int	nWall = WallNumI (hitseg, hitwall);
-		if (nWall != -1) {
-			wall *wallP = gameData.walls.walls + nWall;
-			if ((wallP->nType == WALL_DOOR) &&
-				 (wallP->keys == KEY_NONE) && 
-				 (wallP->state == WALL_DOOR_CLOSED) && 
-				 !(wallP->flags & WALL_DOOR_LOCKED)) {
-				WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-			// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
-			//-- } else if ((rInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
-			} else if ((rInfoP->companion == 1) && (wallP->nType == WALL_DOOR)) {
-				if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
-					if (wallP->keys != KEY_NONE) {
-						if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
-							WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-					} else if (!(wallP->flags & WALL_DOOR_LOCKED))
-						WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
-				}
-			} else if (rInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
-				if (wallP->keys != KEY_NONE)
+if ((robot->id == ROBOT_BRAIN) || 
+		(robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
+		(rInfoP->companion == 1) || 
+		(robot->cType.aiInfo.behavior == AIB_SNIPE)) {
+	int	nWall = WallNumI (hitseg, hitwall);
+	if (nWall != -1) {
+		wall *wallP = gameData.walls.walls + nWall;
+		if ((wallP->nType == WALL_DOOR) &&
+				(wallP->keys == KEY_NONE) && 
+				(wallP->state == WALL_DOOR_CLOSED) && 
+				!(wallP->flags & WALL_DOOR_LOCKED)) {
+			WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+		// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
+		//-- } else if ((rInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
+			} 
+		else if ((rInfoP->companion == 1) && (wallP->nType == WALL_DOOR)) {
+			if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
+				if (wallP->keys != KEY_NONE) {
 					if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
 						WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+					} 
+				else if (!(wallP->flags & WALL_DOOR_LOCKED))
+					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
+				}
+			} 
+		else if (rInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
+			if (wallP->keys != KEY_NONE)
+				if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
+					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 			}
 		}
 	}
@@ -1511,14 +1514,13 @@ int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 {
 	int	d2BossIndex;
 	int	bDamage = 1;
-	int	bKinetic;
+	int	bKinetic = WI_matter (weapon->id);
 
 d2BossIndex = gameData.bots.pInfo [robot->id].bossFlag - BOSS_D2;
 Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 
 //	See if should spew a bot.
 if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
-	bKinetic = WI_matter (weapon->id);
 	if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsKinetic) || 
 		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
 		int i = FindBoss (OBJ_IDX (robot));
@@ -1610,8 +1612,8 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 			}
 		}
 	} 
-else if ((WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulKinetic) || 
-		   (!WI_matter (weapon->id) && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
+else if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulKinetic) || 
+		   (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
 	short	nSegment;
 
 	nSegment = FindSegByPoint (vHitPt, robot->nSegment);

@@ -935,6 +935,34 @@ for (i = 0; i < gameData.trigs.nTriggers; i++)
 
 //------------------------------------------------------------------------------
 
+static inline int TriggerHasTarget (tTrigger *triggerP, short nSegment, short nSide)
+{
+	int	i;
+			
+for (i = 0; i < triggerP->nLinks; i++)
+	if ((triggerP->nSegment [i] == nSegment) && 
+		 ((nSide < 0) || (triggerP->nSide [i] == nSide)))
+	return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int FindTriggerTarget (short nSegment, short nSide)
+{
+	int	i;
+
+for (i = 0; i < gameData.trigs.nTriggers; i++)
+	if (TriggerHasTarget (gameData.trigs.triggers + i, nSegment, nSide))
+		return i + 1;
+for (i = 0; i < gameData.trigs.nObjTriggers; i++)
+	if (TriggerHasTarget (gameData.trigs.objTriggers + i, nSegment, nSide))
+		return -i - 1;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
 #ifndef FAST_FILE_IO
 #if 0
 	static char d2TriggerMap [10] = {

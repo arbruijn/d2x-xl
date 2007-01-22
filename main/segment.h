@@ -130,22 +130,23 @@ typedef struct tSegment2 {
 } tSegment2;
 
 //values for special field
-#define SEGMENT_IS_NOTHING      0
-#define SEGMENT_IS_FUELCEN      1
-#define SEGMENT_IS_REPAIRCEN    2
-#define SEGMENT_IS_CONTROLCEN   3
-#define SEGMENT_IS_ROBOTMAKER   4
-#define SEGMENT_IS_GOAL_BLUE    5
-#define SEGMENT_IS_GOAL_RED     6
-#define SEGMENT_IS_WATER        7
-#define SEGMENT_IS_LAVA         8
-#define SEGMENT_IS_TEAM_BLUE    9
-#define SEGMENT_IS_TEAM_RED     10
-#define SEGMENT_IS_SPEEDBOOST	  11
-#define SEGMENT_IS_BLOCKED		  12
-#define SEGMENT_IS_NODAMAGE	  13
-#define SEGMENT_IS_SKYBOX		  14
-#define MAX_CENTER_TYPES        15
+#define SEGMENT_IS_NOTHING			0
+#define SEGMENT_IS_FUELCEN			1
+#define SEGMENT_IS_REPAIRCEN		2
+#define SEGMENT_IS_CONTROLCEN		3
+#define SEGMENT_IS_ROBOTMAKER		4
+#define SEGMENT_IS_GOAL_BLUE		5
+#define SEGMENT_IS_GOAL_RED		6
+#define SEGMENT_IS_WATER			7
+#define SEGMENT_IS_LAVA				8
+#define SEGMENT_IS_TEAM_BLUE		9
+#define SEGMENT_IS_TEAM_RED		10
+#define SEGMENT_IS_SPEEDBOOST		11
+#define SEGMENT_IS_BLOCKED			12
+#define SEGMENT_IS_NODAMAGE		13
+#define SEGMENT_IS_SKYBOX			14
+#define SEGMENT_IS_EQUIPMAKER		15
+#define MAX_CENTER_TYPES			16
 
 #ifdef COMPACT_SEGS
 extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, vmsVector * vm );

@@ -1052,27 +1052,27 @@ void StateSaveMatCen (tMatCenInfo *matcenP, CFILE *fp)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	CFWriteInt (matcenP->robotFlags [i], fp);
-CFWriteFix (matcenP->hit_points, fp);
-CFWriteFix (matcenP->interval, fp);
+	CFWriteInt (matcenP->objFlags [i], fp);
+CFWriteFix (matcenP->xHitPoints, fp);
+CFWriteFix (matcenP->xInterval, fp);
 CFWriteShort (matcenP->nSegment, fp);
-CFWriteShort (matcenP->fuelcen_num, fp);
+CFWriteShort (matcenP->nFuelCen, fp);
 }
 
 //------------------------------------------------------------------------------
 
 void StateSaveFuelCen (tFuelCenInfo *fuelcenP, CFILE *fp)
 {
-CFWriteInt (fuelcenP->Type, fp);
+CFWriteInt (fuelcenP->nType, fp);
 CFWriteInt (fuelcenP->nSegment, fp);
-CFWriteByte (fuelcenP->Flag, fp);
-CFWriteByte (fuelcenP->Enabled, fp);
-CFWriteByte (fuelcenP->Lives, fp);
-CFWriteFix (fuelcenP->Capacity, fp);
-CFWriteFix (fuelcenP->MaxCapacity, fp);
-CFWriteFix (fuelcenP->Timer, fp);
-CFWriteFix (fuelcenP->DisableTime, fp);
-CFWriteVector (&fuelcenP->Center, fp);
+CFWriteByte (fuelcenP->bFlag, fp);
+CFWriteByte (fuelcenP->bEnabled, fp);
+CFWriteByte (fuelcenP->nLives, fp);
+CFWriteFix (fuelcenP->xCapacity, fp);
+CFWriteFix (fuelcenP->xMaxCapacity, fp);
+CFWriteFix (fuelcenP->xTimer, fp);
+CFWriteFix (fuelcenP->xDisableTime, fp);
+CFWriteVector (&fuelcenP->vCenter, fp);
 }
 
 //------------------------------------------------------------------------------
@@ -2006,27 +2006,27 @@ void StateRestoreMatCen (tMatCenInfo *matcenP, CFILE *fp)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	matcenP->robotFlags [i] = CFReadInt (fp);
-matcenP->hit_points = CFReadFix (fp);
-matcenP->interval = CFReadFix (fp);
+	matcenP->objFlags [i] = CFReadInt (fp);
+matcenP->xHitPoints = CFReadFix (fp);
+matcenP->xInterval = CFReadFix (fp);
 matcenP->nSegment = CFReadShort (fp);
-matcenP->fuelcen_num = CFReadShort (fp);
+matcenP->nFuelCen = CFReadShort (fp);
 }
 
 //------------------------------------------------------------------------------
 
 void StateRestoreFuelCen (tFuelCenInfo *fuelcenP, CFILE *fp)
 {
-fuelcenP->Type = CFReadInt (fp);
+fuelcenP->nType = CFReadInt (fp);
 fuelcenP->nSegment = CFReadInt (fp);
-fuelcenP->Flag = CFReadByte (fp);
-fuelcenP->Enabled = CFReadByte (fp);
-fuelcenP->Lives = CFReadByte (fp);
-fuelcenP->Capacity = CFReadFix (fp);
-fuelcenP->MaxCapacity = CFReadFix (fp);
-fuelcenP->Timer = CFReadFix (fp);
-fuelcenP->DisableTime = CFReadFix (fp);
-CFReadVector (&fuelcenP->Center, fp);
+fuelcenP->bFlag = CFReadByte (fp);
+fuelcenP->bEnabled = CFReadByte (fp);
+fuelcenP->nLives = CFReadByte (fp);
+fuelcenP->xCapacity = CFReadFix (fp);
+fuelcenP->xMaxCapacity = CFReadFix (fp);
+fuelcenP->xTimer = CFReadFix (fp);
+fuelcenP->xDisableTime = CFReadFix (fp);
+CFReadVector (&fuelcenP->vCenter, fp);
 }
 
 //------------------------------------------------------------------------------

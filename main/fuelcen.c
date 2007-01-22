@@ -58,11 +58,15 @@ static char rcsid [] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 
 // Every time a robot is created in the morphing code, it decreases capacity of the morpher
 // by this amount... when capacity gets to 0, no more morphers...
+
+#define	ROBOT_GEN_TIME (i2f (5))
+#define	EQUIP_GEN_TIME (i2f (3) * (gameStates.app.nDifficultyLevel + 1))
+
 #define MATCEN_HP_DEFAULT			F1_0*500; // Hitpoints
 #define MATCEN_INTERVAL_DEFAULT	F1_0*5;	//  5 seconds
 
 #ifdef EDITOR
-char	Special_names [MAX_CENTER_TYPES] [11] = {
+char	Special_names [MAX_CENTER_TYPES][11] = {
 	"NOTHING   ",
 	"FUELCEN   ",
 	"REPAIRCEN ",
@@ -110,7 +114,7 @@ void FuelCenCreate (tSegment *segP, int oldType)
 	int	stationType = seg2p->special;
 	int	i;
 	
-	switch (stationType)	{
+switch (stationType)	{
 	case SEGMENT_IS_NOTHING:
 	case SEGMENT_IS_GOAL_BLUE:
 	case SEGMENT_IS_GOAL_RED:
@@ -132,43 +136,46 @@ void FuelCenCreate (tSegment *segP, int oldType)
 		Error ("Segment %d has invalid\nstation nType %d in fuelcen.c\n", SEG_IDX (segP), stationType);
 	}
 
-	Assert ((seg2p != NULL));
-	if (seg2p == NULL) 
-		return;
+Assert ((seg2p != NULL));
+if (seg2p == NULL) 
+	return;
 
-	switch (oldType) {
-		case SEGMENT_IS_FUELCEN:
-		case SEGMENT_IS_REPAIRCEN:
-		case SEGMENT_IS_ROBOTMAKER:
-			i = seg2p->value;
-			break;
-		default:
-			Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
-			i = gameData.matCens.nFuelCenters;
-		}
+switch (oldType) {
+	case SEGMENT_IS_FUELCEN:
+	case SEGMENT_IS_REPAIRCEN:
+	case SEGMENT_IS_ROBOTMAKER:
+	case SEGMENT_IS_EQUIPMAKER:
+		i = seg2p->value;
+		break;
+	default:
+		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
+		i = gameData.matCens.nFuelCenters;
+	}
 
-	seg2p->value = i;
-	gameData.matCens.fuelCenters [i].Type = stationType;
-	gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-	gameData.matCens.fuelCenters [i].MaxCapacity = gameData.matCens.xFuelMaxAmount;
-	gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
-	gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
-	gameData.matCens.fuelCenters [i].Timer = -1;
-	gameData.matCens.fuelCenters [i].Flag = 0;
+seg2p->value = i;
+gameData.matCens.fuelCenters [i].nType = stationType;
+gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
+gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.xFuelMaxAmount;
+gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
+gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.fuelCenters [i].xTimer = -1;
+gameData.matCens.fuelCenters [i].bFlag = 0;
 //	gameData.matCens.fuelCenters [i].NextRobotType = -1;
 //	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
 //	gameData.matCens.fuelCenters [i].last_created_sig = -1;
-	COMPUTE_SEGMENT_CENTER (&gameData.matCens.fuelCenters [i].Center, segP);
-	if (oldType == SEGMENT_IS_NOTHING)
-		gameData.matCens.nFuelCenters++;
-	else if (oldType == SEGMENT_IS_ROBOTMAKER) {
-		gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
-		i = seg2p->nMatCen;
-		if (i < --gameData.matCens.nRobotCenters)
-			memcpy (gameData.matCens.robotCenters + i, gameData.matCens.robotCenters + i + 1, (gameData.matCens.nRobotCenters - i) * sizeof (tFuelCenInfo));
-		}
-//	if (stationType == SEGMENT_IS_ROBOTMAKER)
-//		gameData.matCens.fuelCenters [gameData.matCens.nFuelCenters].Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
+COMPUTE_SEGMENT_CENTER (&gameData.matCens.fuelCenters [i].vCenter, segP);
+if (oldType == SEGMENT_IS_NOTHING)
+	gameData.matCens.nFuelCenters++;
+if (oldType == SEGMENT_IS_EQUIPMAKER)
+	gameData.matCens.nEquipCenters++;
+else if (oldType == SEGMENT_IS_ROBOTMAKER) {
+	gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
+	i = seg2p->nMatCen;
+	if (i < --gameData.matCens.nRobotCenters)
+		memcpy (gameData.matCens.robotCenters + i, 
+				  gameData.matCens.robotCenters + i + 1, 
+				  (gameData.matCens.nRobotCenters - i) * sizeof (tFuelCenInfo));
+	}
 }
 
 //------------------------------------------------------------
@@ -196,38 +203,79 @@ void MatCenCreate (tSegment *segP, int oldType)
 			i = gameData.matCens.nFuelCenters;
 		}
 	seg2p->value = i;
-	gameData.matCens.fuelCenters [i].Type = stationType;
+	gameData.matCens.fuelCenters [i].nType = stationType;
 	gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-	gameData.matCens.fuelCenters [i].Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
-	gameData.matCens.fuelCenters [i].MaxCapacity = gameData.matCens.fuelCenters [i].Capacity;
+	gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+	gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
 	gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
-	gameData.matCens.fuelCenters [i].Timer = -1;
-	gameData.matCens.fuelCenters [i].Flag = 0;
-//	gameData.matCens.fuelCenters [i].NextRobotType = -1;
-//	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
-//	gameData.matCens.fuelCenters [i].last_created_sig = -1;
-	COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].Center, seg2p-gameData.segs.segment2s);
+	gameData.matCens.fuelCenters [i].xTimer = -1;
+	gameData.matCens.fuelCenters [i].bFlag = 0;
+	COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
 	seg2p->nMatCen = gameData.matCens.nRobotCenters;
-	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].hit_points = MATCEN_HP_DEFAULT;
-	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].interval = MATCEN_INTERVAL_DEFAULT;
+	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].xHitPoints = MATCEN_HP_DEFAULT;
+	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
 	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].nSegment = SEG2_IDX (seg2p);
 	if (oldType == SEGMENT_IS_NOTHING)
-		gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].fuelcen_num = gameData.matCens.nFuelCenters;
+		gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].nFuelCen = gameData.matCens.nFuelCenters;
 	gameData.matCens.nRobotCenters++;
 	gameData.matCens.nFuelCenters++;
+}
+
+//------------------------------------------------------------
+// Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
+// This function is separate from other fuelcens because we don't want values reset.
+void EquipGenCreate (tSegment *segP, int oldType)
+{
+	tSegment2	*seg2p = gameData.segs.segment2s  + SEG_IDX (segP);
+	int			stationType = seg2p->special;
+	int			i;
+
+Assert (stationType == SEGMENT_IS_EQUIPMAKER);
+Assert (gameData.matCens.nFuelCenters > -1);
+switch (oldType) {
+	case SEGMENT_IS_FUELCEN:
+	case SEGMENT_IS_REPAIRCEN:
+	case SEGMENT_IS_ROBOTMAKER:
+	case SEGMENT_IS_EQUIPMAKER:
+		i = seg2p->value;
+		break;
+	default:
+		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
+		i = gameData.matCens.nFuelCenters;
+	}
+seg2p->value = i;
+gameData.matCens.fuelCenters [i].nType = stationType;
+gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
+gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
+gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.fuelCenters [i].xTimer = -1;
+gameData.matCens.fuelCenters [i].bFlag = 0;
+gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (SEG_IDX (segP), -1) == 0;
+COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
+seg2p->nMatCen = gameData.matCens.nEquipCenters;
+gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].nSegment = SEG2_IDX (seg2p);
+if (oldType == SEGMENT_IS_NOTHING)
+	gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].nFuelCen = gameData.matCens.nFuelCenters;
+gameData.matCens.nEquipCenters++;
+gameData.matCens.nFuelCenters++;
 }
 
 //------------------------------------------------------------
 // Adds a tSegment that already is a special nType into the gameData.matCens.fuelCenters array.
 void FuelCenActivate (tSegment * segP, int stationType)
 {
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = gameData.segs.segment2s + SEG_IDX (segP);
 
-	seg2p->special = stationType;
-	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
-		MatCenCreate (segP, SEGMENT_IS_NOTHING);
-	else
-		FuelCenCreate (segP, SEGMENT_IS_NOTHING);
+seg2p->special = stationType;
+if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
+	MatCenCreate (segP, SEGMENT_IS_NOTHING);
+else if (seg2p->special == SEGMENT_IS_EQUIPMAKER)
+	EquipGenCreate (segP, SEGMENT_IS_NOTHING);
+else
+	FuelCenCreate (segP, SEGMENT_IS_NOTHING);
 }
 
 //	The lower this number is, the more quickly the center can be re-triggered.
@@ -241,47 +289,50 @@ void MatCenTrigger (short nSegment)
 {
 	// -- tSegment		*segP = &gameData.segs.segments [nSegment];
 	tSegment2		*seg2p = &gameData.segs.segment2s [nSegment];
-	vmsVector	pos, delta;
-	tFuelCenInfo	*robotcen;
-	int			nObject;
+	vmsVector		pos, delta;
+	tFuelCenInfo	*matCenP;
+	int				nObject;
 
 #if TRACE
-	con_printf (CON_DEBUG, "Trigger matcen, tSegment %i\n", nSegment);
+con_printf (CON_DEBUG, "Trigger matcen, tSegment %i\n", nSegment);
 #endif
-	Assert (seg2p->special == SEGMENT_IS_ROBOTMAKER);
-	Assert (seg2p->nMatCen < gameData.matCens.nFuelCenters);
-	Assert ((seg2p->nMatCen >= 0) && (seg2p->nMatCen <= gameData.segs.nLastSegment));
+if (seg2p->special == SEGMENT_IS_EQUIPMAKER) {
+	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipCenters [seg2p->nMatCen].nFuelCen;
+	matCenP->bEnabled = !matCenP->bEnabled;
+	return;
+	}
+Assert (seg2p->special == SEGMENT_IS_ROBOTMAKER);
+Assert (seg2p->nMatCen < gameData.matCens.nFuelCenters);
+Assert ((seg2p->nMatCen >= 0) && (seg2p->nMatCen <= gameData.segs.nLastSegment));
 
-	robotcen = gameData.matCens.fuelCenters + gameData.matCens.robotCenters [seg2p->nMatCen].fuelcen_num;
+matCenP = gameData.matCens.fuelCenters + gameData.matCens.robotCenters [seg2p->nMatCen].nFuelCen;
+if (matCenP->bEnabled == 1)
+	return;
+if (!matCenP->nLives)
+	return;
+//	MK: 11/18/95, At insane, matcens work forever!
+if (gameStates.app.nDifficultyLevel+1 < NDL)
+	matCenP->nLives--;
 
-	if (robotcen->Enabled == 1)
-		return;
+matCenP->xTimer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
+matCenP->bEnabled = 1;			//	Say this center is enabled, it can create robots.
+matCenP->xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
+matCenP->xDisableTime = MATCEN_LIFE;
 
-	if (!robotcen->Lives)
-		return;
-
-	//	MK: 11/18/95, At insane, matcens work forever!
-	if (gameStates.app.nDifficultyLevel+1 < NDL)
-		robotcen->Lives--;
-
-	robotcen->Timer = F1_0*1000;	//	Make sure the first robot gets emitted right away.
-	robotcen->Enabled = 1;			//	Say this center is enabled, it can create robots.
-	robotcen->Capacity = i2f (gameStates.app.nDifficultyLevel + 3);
-	robotcen->DisableTime = MATCEN_LIFE;
-
-	//	Create a bright tObject in the tSegment.
-	pos = robotcen->Center;
-	VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0], &robotcen->Center);
-	VmVecScaleInc (&pos, &delta, F1_0/2);
-	nObject = CreateObject (OBJ_LIGHT, 0, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
-	if (nObject != -1) {
-		gameData.objs.objects [nObject].lifeleft = MATCEN_LIFE;
-		gameData.objs.objects [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.
-	} else {
+//	Create a bright tObject in the tSegment.
+pos = matCenP->vCenter;
+VmVecSub (&delta, gameData.segs.vertices + gameData.segs.segments [nSegment].verts [0], &matCenP->vCenter);
+VmVecScaleInc (&pos, &delta, F1_0/2);
+nObject = CreateObject (OBJ_LIGHT, 0, -1, nSegment, &pos, NULL, 0, CT_LIGHT, MT_NONE, RT_NONE, 1);
+if (nObject != -1) {
+	gameData.objs.objects [nObject].lifeleft = MATCEN_LIFE;
+	gameData.objs.objects [nObject].cType.lightInfo.intensity = i2f (8);	//	Light cast by a fuelcen.
+	} 
+else {
 #if TRACE
-		con_printf (1, "Can't create invisible flare for matcen.\n");
+	con_printf (1, "Can't create invisible flare for matcen.\n");
 #endif
-		Int3 ();
+	Int3 ();
 	}
 }
 
@@ -302,28 +353,28 @@ Restart: ;
 		if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP))	{
 
 			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.robotCenters.
-			if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER) {
+			if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
 				gameData.matCens.nRobotCenters--;
 				Assert (gameData.matCens.nRobotCenters >= 0);
 
-				for (j=seg2p->nMatCen; j<gameData.matCens.nRobotCenters; j++)
+				for (j = seg2p->nMatCen; j < gameData.matCens.nRobotCenters; j++)
 					gameData.matCens.robotCenters [j] = gameData.matCens.robotCenters [j+1];
 
 				for (j=0; j<gameData.matCens.nFuelCenters; j++) {
-					if (gameData.matCens.fuelCenters [j].Type == SEGMENT_IS_ROBOTMAKER)
+					if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
 						if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2p->nMatCen)
 							gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
 				}
 			}
 
 			//fix gameData.matCens.robotCenters so they point to correct fuelcenter
-			for (j=0; j<gameData.matCens.nRobotCenters; j++)
-				if (gameData.matCens.robotCenters [j].fuelcen_num > i)		//this robotcenter's fuelcen is changing
-					gameData.matCens.robotCenters [j].fuelcen_num--;
+			for (j = 0; j < gameData.matCens.nRobotCenters; j++)
+				if (gameData.matCens.robotCenters [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
+					gameData.matCens.robotCenters [j].nFuelCen--;
 
 			gameData.matCens.nFuelCenters--;
 			Assert (gameData.matCens.nFuelCenters >= 0);
-			for (j=i; j<gameData.matCens.nFuelCenters; j++)	{
+			for (j = i; j < gameData.matCens.nFuelCenters; j++)	{
 				gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
 				gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].value = j;
 			}
@@ -333,9 +384,9 @@ Restart: ;
 }
 #endif
 
-#define	ROBOT_GEN_TIME (i2f (5))
+//	----------------------------------------------------------------------------------------------------------
 
-tObject * CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
+tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 {
 	short		nObject;
 	tObject	*objP;
@@ -380,253 +431,319 @@ int	FrameCount_last_msg = 0;
 
 //	----------------------------------------------------------------------------------------------------------
 
-void MatCenHandler (tFuelCenInfo * robotcen)
+void CreateMatCenEffect (tFuelCenInfo *matCenP, ubyte nVideoClip)
 {
-	fix			dist_to_player;
-	vmsVector	curObject_loc; //, direction;
+	vmsVector	vPos;
+	tObject		*objP;
+
+COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+// HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
+objP = ObjectCreateExplosion ((short) matCenP->nSegment, &vPos, i2f (10), nVideoClip);
+if (objP) {
+	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + matCenP->nSegment);
+	if (gameData.eff.vClips [0][nVideoClip].nSound > -1)
+		DigiLinkSoundToPos (gameData.eff.vClips [0][nVideoClip].nSound, (short) matCenP->nSegment,
+								  0, &vPos, 0, F1_0);
+	matCenP->bFlag	= 1;
+	matCenP->xTimer = 0;
+	}
+}
+
+//	----------------------------------------------------------------------------------------------------------
+
+int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags)
+{
+	int	i, flags, nObjIndex, nTypes = 0;
+	sbyte	objTypes [64];
+
+memset (objTypes, 0, sizeof (objTypes));
+for (i = 0; i < 2; i++) {
+	nObjIndex = i * 32;
+	flags = objFlags [i];
+	while (flags) {
+		if (flags & 1)
+			objTypes [nTypes++] = nObjIndex;
+		flags >>= 1;
+		nObjIndex++;
+		}
+	}
+if (!nTypes)
+	return -1;
+if (nTypes == 1)
+	return objTypes [0];
+return objTypes [(d_rand () * nTypes) / 32768];
+}
+
+//	----------------------------------------------------------------------------------------------------------
+
+void EquipGenHandler (tFuelCenInfo * matCenP)
+{
+	int			nObject, nMatCen, nType;
+	tObject		*objP;
+	vmsVector	vPos; 
+	fix			topTime;
+
+if (!matCenP->bEnabled)
+	return;
+nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+if (nMatCen == -1) {
+#if TRACE
+	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+#endif
+	return;
+	}
+matCenP->xTimer += gameData.time.xFrame;
+if (!matCenP->bFlag) {
+	topTime = EQUIP_GEN_TIME;	
+	if (matCenP->xTimer < topTime)
+		return;
+	nObject = gameData.segs.segments [matCenP->nSegment].objects;
+	while (nObject >= 0) {
+		objP = gameData.objs.objects + nObject;
+		if ((objP->nType == OBJ_POWERUP) || (objP->id == OBJ_PLAYER)) {
+			matCenP->xTimer = 0;
+			return;
+			}
+		nObject = objP->next;
+		}
+	CreateMatCenEffect (matCenP, VCLIP_POWERUP_DISAPPEARANCE);
+	}
+else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
+	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
+		return;
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
+	nType = GetMatCenObjType (matCenP, gameData.matCens.equipCenters [nMatCen].objFlags);
+	if (nType < 0)
+		return;
+	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+	// If this is the first materialization, set to valid robot.
+	nObject = CreateObject (OBJ_POWERUP, nType, -1, (short) matCenP->nSegment, &vPos, &vmdIdentityMatrix, 
+									gameData.objs.pwrUp.info [nType].size, 
+									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
+	if (nObject < 0)
+		return;
+	objP = gameData.objs.objects + nObject;
+	if (IsMultiGame) {
+		gameData.multi.maxPowerupsAllowed [nType]++;
+		multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
+		}
+	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->matCenCreator = gameData.segs.xSegments [matCenP->nSegment].owner;
+	objP->lifeleft = IMMORTAL_TIME;
+	}
+else {
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
+	}
+}
+
+//	----------------------------------------------------------------------------------------------------------
+
+void VirusGenHandler (tFuelCenInfo * matCenP)
+{
+	int			nObject, nMatCen;
+	tObject		*objP;
+	vmsVector	vPos; 
+	fix			topTime;
+
+if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegment].owner <= 0))
+	return;
+nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+if (nMatCen == -1) {
+#if TRACE
+	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+#endif
+	return;
+	}
+matCenP->xTimer += gameData.time.xFrame;
+if (!matCenP->bFlag) {
+	topTime = i2f (extraGameInfo [1].entropy.nVirusGenTime);	
+	if (matCenP->xTimer < topTime)
+		return;
+	nObject = gameData.segs.segments [matCenP->nSegment].objects;
+	while (nObject >= 0) {
+		objP = gameData.objs.objects + nObject;
+		if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_ENTROPY_VIRUS)) {
+			matCenP->xTimer = 0;
+			return;
+			}
+		nObject = objP->next;
+		}
+	CreateMatCenEffect (matCenP, VCLIP_POWERUP_DISAPPEARANCE);
+	}
+else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
+	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
+		return;
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
+	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+	// If this is the first materialization, set to valid robot.
+	nObject = CreateObject (OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) matCenP->nSegment, &vPos, &vmdIdentityMatrix, 
+									gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, 
+									CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
+	if (nObject >= 0) {
+		objP = gameData.objs.objects + nObject;
+		if (IsMultiGame)
+			multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
+		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+		objP->rType.vClipInfo.nCurFrame = 0;
+		objP->matCenCreator = gameData.segs.xSegments [matCenP->nSegment].owner;
+		objP->lifeleft = IMMORTAL_TIME;
+		}
+	}
+else {
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
+	}
+}
+
+
+//	----------------------------------------------------------------------------------------------------------
+
+void BotGenHandler (tFuelCenInfo * matCenP)
+{
+	fix			xDistToPlayer;
+	vmsVector	vPos, vDir; 
 	int			nMatCen, nSegment, nObject;
 	tObject		*objP;
 	fix			topTime;
-	vmsVector	direction;
-#if 0//def _DEBUG
-	int			bMakeVirus = 1;
-#else
-	int			bMakeVirus = (gameData.app.nGameMode & GM_ENTROPY) != 0;
-#endif
-	ubyte			tVideoClip = bMakeVirus ? VCLIP_POWERUP_DISAPPEARANCE : VCLIP_MORPHING_ROBOT;
+	ubyte			nVideoClip = VCLIP_MORPHING_ROBOT;
+	ubyte			nType;
+	int			nMyStation, nCount, i;
 
-	if (bMakeVirus) {
-#if 1//def RELEASE
-		if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [robotcen->nSegment].owner <= 0))
-			return;
+if (!matCenP->bEnabled)
+	return;
+if (matCenP->xDisableTime > 0) {
+	matCenP->xDisableTime -= gameData.time.xFrame;
+	if (matCenP->xDisableTime <= 0) {
+#if TRACE
+		con_printf (CON_DEBUG, "Robot center #%i gets disabled due to time running out.\n", 
+						FUELCEN_IDX (matCenP));
 #endif
+		matCenP->bEnabled = 0;
 		}
+	}
+//	No robot making in multiplayer mode.
+if (IsMultiGame && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster ()))
+	return;
+// Wait until transmorgafier has capacity to make a robot...
+if (matCenP->xCapacity <= 0)
+	return;
+nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
+if (nMatCen == -1) {
+#if TRACE
+	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+#endif
+	return;
+	}
+if (!(gameData.matCens.robotCenters [nMatCen].objFlags [0] ||
+		gameData.matCens.robotCenters [nMatCen].objFlags [1]))
+	return;
+
+// Wait until we have a d_free slot for this puppy...
+if ((gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel - 
+	  gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel) >= 
+	 (Gamesave_num_orgRobots + Num_extryRobots)) {
+#ifndef NDEBUG
+	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
+#if TRACE
+		con_printf (CON_DEBUG, "Cannot morph until you kill one!\n");
+#endif
+		FrameCount_last_msg = gameData.app.nFrameCount;
+		}
+#endif
+	return;
+	}
+matCenP->xTimer += gameData.time.xFrame;
+if (!matCenP->bFlag) {
+	if (IsMultiGame)
+		topTime = ROBOT_GEN_TIME;	
 	else {
-		if (!robotcen->Enabled)
+		xDistToPlayer = VmVecDistQuick (&gameData.objs.console->position.vPos, &matCenP->vCenter);
+		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
+		if (topTime > ROBOT_GEN_TIME)
+			topTime = ROBOT_GEN_TIME + d_rand ();
+		if (topTime < F1_0*2)
+			topTime = F1_0*3/2 + d_rand ()*2;
+		}
+	if (matCenP->xTimer < topTime)
+		return;
+	nMyStation = FUELCEN_IDX (matCenP);
+
+	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
+	for (i = 0, nCount = 0; i <= gameData.objs.nLastObject; i++)
+		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) &&
+			 ((gameData.objs.objects [i].matCenCreator ^ 0x80) == nMyStation))
+			nCount++;
+	if (nCount > gameStates.app.nDifficultyLevel + 3) {
+#if TRACE
+		con_printf (CON_DEBUG, "Cannot morph: center %i has already put out %i robots.\n", nMyStation, nCount);
+#endif
+		matCenP->xTimer /= 2;
+		return;
+		}
+		//	Whack on any robot or tPlayer in the matcen tSegment.
+	nCount = 0;
+	nSegment = matCenP->nSegment;
+	for (nObject = gameData.segs.segments [nSegment].objects;
+		  nObject != -1;
+		  nObject = gameData.objs.objects [nObject].next) {
+		nCount++;
+		if (nCount > MAX_OBJECTS) {
+#if TRACE
+			con_printf (CON_DEBUG, "Object list in tSegment %d is circular.", nSegment);
+#endif
+			Int3 ();
 			return;
-		if (robotcen->DisableTime > 0) {
-			robotcen->DisableTime -= gameData.time.xFrame;
-			if (robotcen->DisableTime <= 0) {
-#if TRACE
-				con_printf (CON_DEBUG, "Robot center #%i gets disabled due to time running out.\n", 
-								FUELCEN_IDX (robotcen));
-#endif
-				robotcen->Enabled = 0;
+			}
+		if (gameData.objs.objects [nObject].nType == OBJ_ROBOT) {
+			CollideRobotAndMatCen (gameData.objs.objects + nObject);
+			matCenP->xTimer = topTime / 2;
+			return;
+			}
+		else if (gameData.objs.objects [nObject].nType == OBJ_PLAYER) {
+			CollidePlayerAndMatCen (gameData.objs.objects + nObject);
+			matCenP->xTimer = topTime / 2;
+			return;
 			}
 		}
+	CreateMatCenEffect (matCenP, VCLIP_MORPHING_ROBOT);
 	}
-
-	//	No robot making in multiplayer mode.
-	if (!bMakeVirus && (gameData.app.nGameMode & GM_MULTI) && (!(gameData.app.nGameMode & GM_MULTI_ROBOTS) || !NetworkIAmMaster ()))
+else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
+	if (matCenP->xTimer <= (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
 		return;
-	// Wait until transmorgafier has capacity to make a robot...
-	if (!bMakeVirus && (robotcen->Capacity <= 0)) {
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
+	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
+		// If this is the first materialization, set to valid robot.
+	if (!(gameData.matCens.robotCenters [nMatCen].objFlags [0] || 
+			gameData.matCens.robotCenters [nMatCen].objFlags [1]))
 		return;
-	}
-
-	nMatCen = gameData.segs.segment2s [robotcen->nSegment].nMatCen;
-
-	if (nMatCen == -1) {
+	nType = GetMatCenObjType (matCenP, gameData.matCens.robotCenters [nMatCen].objFlags);
 #if TRACE
-		con_printf (CON_DEBUG, "Non-functional robotcen at %d\n", robotcen->nSegment);
+	con_printf (CON_DEBUG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
+#endif
+	if (!(objP = CreateMorphRobot (gameData.segs.segments + matCenP->nSegment, &vPos, nType))) {
+#if TRACE
+		con_printf (CON_DEBUG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
 #endif
 		return;
-	}
-
-	if (!bMakeVirus && 
-		 gameData.matCens.robotCenters [nMatCen].robotFlags [0]==0 && 
-		 gameData.matCens.robotCenters [nMatCen].robotFlags [1]==0) {
-		return;
-	}
-
-	// Wait until we have a d_free slot for this puppy...
-   //	  <<<<<<<<<<<<<<<< Num robots in mine >>>>>>>>>>>>>>>>>>>>>>>>>>    <<<<<<<<<<<< Max robots in mine >>>>>>>>>>>>>>>
-	if ((gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel - gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel) >= 
-		 (Gamesave_num_orgRobots + Num_extryRobots)) {
-		#ifndef NDEBUG
-		if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
-#if TRACE
-			con_printf (CON_DEBUG, "Cannot morph until you kill one!\n");
-#endif
-			FrameCount_last_msg = gameData.app.nFrameCount;
 		}
-		#endif
-		return;
+	if (IsMultiGame)
+		MultiSendCreateRobot (FUELCEN_IDX (matCenP), OBJ_IDX (objP), nType);
+	objP->matCenCreator = (FUELCEN_IDX (matCenP)) | 0x80;
+	// Make object face player...
+	VmVecSub (&vDir, &gameData.objs.console->position.vPos, &objP->position.vPos);
+	VmVector2Matrix (&objP->position.mOrient, &vDir, &objP->position.mOrient.uVec, NULL);
+	MorphStart (objP);
 	}
-
-	robotcen->Timer += gameData.time.xFrame;
-
-	switch (robotcen->Flag)	{
-	case 0:		// Wait until next robot can generate
-		if (gameData.app.nGameMode & GM_MULTI) {
-			topTime = bMakeVirus ? i2f (extraGameInfo [1].entropy.nVirusGenTime) : ROBOT_GEN_TIME;	
-//			if (bMakeVirus)
-//				topTime *= 2;
-			}
-		else {
-			dist_to_player = VmVecDistQuick (&gameData.objs.console->position.vPos, &robotcen->Center);
-			topTime = dist_to_player/64 + d_rand () * 2 + F1_0*2;
-			if (topTime > ROBOT_GEN_TIME)
-				topTime = ROBOT_GEN_TIME + d_rand ();
-			if (topTime < F1_0*2)
-				topTime = F1_0*3/2 + d_rand ()*2;
-			}
-		if (robotcen->Timer > topTime)	{
-			int	count=0;
-			int	i, my_station_num = FUELCEN_IDX (robotcen);
-
-			//	Make sure this robotmaker hasn't put out its max without having any of them killed.
-			if (bMakeVirus) {
-				tObject *objP;
-				int nObject = gameData.segs.segments [robotcen->nSegment].objects;
-
-				while (nObject >= 0) {
-					objP = gameData.objs.objects + nObject;
-					if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_ENTROPY_VIRUS)) {
-						robotcen->Timer = 0;
-						return;
-						}
-					nObject = objP->next;
-					}
-				}
-			else {
-				for (i=0; i<=gameData.objs.nLastObject; i++)
-					if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-						if ((gameData.objs.objects [i].matCenCreator^0x80) == my_station_num)
-							count++;
-				if (count > gameStates.app.nDifficultyLevel + 3) {
-#if TRACE
-					con_printf (CON_DEBUG, "Cannot morph: center %i has already put out %i robots.\n", my_station_num, count);
-#endif
-					robotcen->Timer /= 2;
-					return;
-					}
-				}
-
-			//	Whack on any robot or tPlayer in the matcen tSegment.
-			count=0;
-			nSegment = robotcen->nSegment;
-#if 1//def _DEBUG
-		if (!bMakeVirus)
-#endif
-			for (nObject=gameData.segs.segments [nSegment].objects;nObject!=-1;nObject=gameData.objs.objects [nObject].next)	{
-				count++;
-				if (count > MAX_OBJECTS)	{
-#if TRACE
-					con_printf (CON_DEBUG, "Object list in tSegment %d is circular.", nSegment);
-#endif
-					Int3 ();
-					return;
-				}
-				if (gameData.objs.objects [nObject].nType == OBJ_ROBOT) {
-					CollideRobotAndMatCen (gameData.objs.objects + nObject);
-					robotcen->Timer = topTime / 2;
-					return;
-					}
-				else if (gameData.objs.objects [nObject].nType == OBJ_PLAYER) {
-					CollidePlayerAndMatCen (gameData.objs.objects + nObject);
-					robotcen->Timer = topTime / 2;
-					return;
-				}
-			}
-
-			COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
-			// HACK!!!The 10 under here should be something equal to the 1/2 the size of the tSegment.
-			objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, i2f (10), tVideoClip);
-
-			if (objP)
-				ExtractOrientFromSegment (&objP->position.mOrient,gameData.segs.segments + robotcen->nSegment);
-
-			if (gameData.eff.vClips [0] [tVideoClip].nSound > -1) {
-				DigiLinkSoundToPos (gameData.eff.vClips [0] [tVideoClip].nSound, (short) robotcen->nSegment,
-												0, &curObject_loc, 0, F1_0);
-			}
-			robotcen->Flag	= 1;
-			robotcen->Timer = 0;
-		}
-		break;
-
-	case 1:			// Wait until 1/2 second after VCLIP started.
-		if (robotcen->Timer > (gameData.eff.vClips [0] [tVideoClip].xTotalTime / 2))	{
-			if (!bMakeVirus)
-				robotcen->Capacity -= gameData.matCens.xEnergyToCreateOneRobot;
-			robotcen->Flag = 0;
-			robotcen->Timer = 0;
-			COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
-
-			// If this is the first materialization, set to valid robot.
-			if (bMakeVirus ||
-				 gameData.matCens.robotCenters [nMatCen].robotFlags [0] != 0 || 
-				 gameData.matCens.robotCenters [nMatCen].robotFlags [1] != 0) {
-				ubyte	nType;
-				uint	flags;
-				sbyte legalTypes [64];   // 64 bits, the width of robotFlags [].
-				int	numTypes, robot_index, i;
-
-				if (!bMakeVirus) {
-					numTypes = 0;
-					for (i=0;i<2;i++) {
-						robot_index = i*32;
-						flags = gameData.matCens.robotCenters [nMatCen].robotFlags [i];
-						while (flags) {
-							if (flags & 1)
-								legalTypes [numTypes++] = robot_index;
-							flags >>= 1;
-							robot_index++;
-							}
-						}
-
-					if (numTypes == 1)
-						nType = legalTypes [0];
-					else
-						nType = legalTypes [ (d_rand () * numTypes) / 32768];
-#if TRACE
-					con_printf (CON_DEBUG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, robotcen->nSegment, robotcen->Capacity);
-#endif
-					}
-				if (bMakeVirus) {
-					int nObject = CreateObject (OBJ_POWERUP, POW_ENTROPY_VIRUS, -1, (short) robotcen->nSegment, &curObject_loc, &vmdIdentityMatrix, 
-														gameData.objs.pwrUp.info [POW_ENTROPY_VIRUS].size, 
-														CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
-					if (nObject >= 0) {
-						objP = gameData.objs.objects + nObject;
-						if (gameData.app.nGameMode & GM_MULTI)
-							multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
-						objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
-						objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0] [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-						objP->rType.vClipInfo.nCurFrame = 0;
-						objP->matCenCreator = gameData.segs.xSegments [robotcen->nSegment].owner;
-#if 1//def _DEBUG
-						objP->lifeleft = IMMORTAL_TIME;
-#endif
-						}
-					}
-				else {
-					objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &curObject_loc, nType);
-					if (objP == NULL) {
-#if TRACE
-						con_printf (CON_DEBUG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
-#endif
-						}
-					else {
-						if (gameData.app.nGameMode & GM_MULTI)
-							MultiSendCreateRobot (FUELCEN_IDX (robotcen), OBJ_IDX (objP), nType);
-						objP->matCenCreator = (FUELCEN_IDX (robotcen)) | 0x80;
-						// Make tObject faces player...
-						VmVecSub (&direction, &gameData.objs.console->position.vPos,&objP->position.vPos);
-						VmVector2Matrix (&objP->position.mOrient, &direction, &objP->position.mOrient.uVec, NULL);
-						MorphStart (objP);
-						//robotcen->last_created_obj = obj;
-						//robotcen->last_created_sig = robotcen->last_created_objP->nSignature;
-						}
-					}
-				}
-			}
-		break;
-
-	default:
-		robotcen->Flag = 0;
-		robotcen->Timer = 0;
+else {
+	matCenP->bFlag = 0;
+	matCenP->xTimer = 0;
 	}
 }
 
@@ -638,20 +755,27 @@ void FuelcenUpdateAll ()
 	int i;
 	fix xAmountToReplenish = FixMul (gameData.time.xFrame,gameData.matCens.xFuelRefillSpeed);
 
-	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
-		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER)	{
-			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
-				MatCenHandler (&gameData.matCens.fuelCenters [i]);
-		} else if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_CONTROLCEN)	{
-			//controlcen_proc (&gameData.matCens.fuelCenters [i]);
-	
-		} else if ((gameData.matCens.fuelCenters [i].MaxCapacity > 0) && 
-					  (gameData.matCens.playerSegP != gameData.segs.segments + gameData.matCens.fuelCenters [i].nSegment)) {
-			if (gameData.matCens.fuelCenters [i].Capacity < gameData.matCens.fuelCenters [i].MaxCapacity) {
- 				gameData.matCens.fuelCenters [i].Capacity += xAmountToReplenish;
-				if (gameData.matCens.fuelCenters [i].Capacity >= gameData.matCens.fuelCenters [i].MaxCapacity) {
-					gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
-					//gauge_message ("Fuel center is fully recharged!   ");
+for (i = 0; i < gameData.matCens.nFuelCenters; i++)	{
+	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER)	{
+		if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY))
+			VirusGenHandler (gameData.matCens.fuelCenters + i);
+		else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
+			BotGenHandler (gameData.matCens.fuelCenters + i);
+		}
+	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_EQUIPMAKER) {
+		if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
+			EquipGenHandler (gameData.matCens.fuelCenters + i);
+		}
+	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_CONTROLCEN)	{
+		//controlcen_proc (gameData.matCens.fuelCenters + i);
+		}
+	else if ((gameData.matCens.fuelCenters [i].xMaxCapacity > 0) && 
+				(gameData.matCens.playerSegP != gameData.segs.segments + gameData.matCens.fuelCenters [i].nSegment)) {
+		if (gameData.matCens.fuelCenters [i].xCapacity < gameData.matCens.fuelCenters [i].xMaxCapacity) {
+ 			gameData.matCens.fuelCenters [i].xCapacity += xAmountToReplenish;
+			if (gameData.matCens.fuelCenters [i].xCapacity >= gameData.matCens.fuelCenters [i].xMaxCapacity) {
+				gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
+				//gauge_message ("Fuel center is fully recharged!   ");
 				}
 			}
 		}
@@ -665,7 +789,7 @@ void FuelcenUpdateAll ()
 //--unused-- 	int i;
 //--unused--
 //--unused-- 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
-//--unused-- 		gameData.matCens.fuelCenters [i].Capacity = gameData.matCens.fuelCenters [i].MaxCapacity;
+//--unused-- 		gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
 //--unused-- 	}
 //--unused--
 //--unused-- }
@@ -696,7 +820,7 @@ if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_PLAYER_GOT_HIT, F1_0/2);
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0/2);
 	last_playTime = gameData.time.xGame;
 	}
@@ -721,12 +845,12 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 		fix amount;
 		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 
-//		if (gameData.matCens.fuelCenters [segP->value].MaxCapacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
 //			HUDInitMessage ("Fuelcenter %d is destroyed.", segP->value);
 //			return 0;
 //		}
 
-//		if (gameData.matCens.fuelCenters [segP->value].Capacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
 //			HUDInitMessage ("Fuelcenter %d is empty.", segP->value);
 //			return 0;
 //		}
@@ -746,13 +870,13 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 			last_playTime = 0;
 		if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 			DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 			last_playTime = gameData.time.xGame;
 		}
 
 
-		//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].Capacity),f2i (gameData.matCens.fuelCenters [segP->value].MaxCapacity));
+		//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].xCapacity),f2i (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
 		return amount;
 
 	} else {
@@ -784,11 +908,11 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) ||
 if (seg2p->special != SEGMENT_IS_REPAIRCEN)
 	return 0;
 //		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
-//		if (gameData.matCens.fuelCenters [segP->value].MaxCapacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
 //			HUDInitMessage ("Repaircenter %d is destroyed.", segP->value);
 //			return 0;
 //		}
-//		if (gameData.matCens.fuelCenters [segP->value].Capacity<=0)	{
+//		if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
 //			HUDInitMessage ("Repaircenter %d is empty.", segP->value);
 //			return 0;
 //		}
@@ -802,7 +926,7 @@ if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 	last_playTime = gameData.time.xGame;
 	}
@@ -824,15 +948,15 @@ return amount;
 //--unused-- 		return;
 //--unused-- 	case SEGMENT_IS_ROBOTMAKER:
 //--unused-- //--		// Robotmaker hit by laser
-//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].MaxCapacity<=0)	{
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity<=0)	{
 //--unused-- //--			// Shooting a already destroyed materializer
 //--unused-- //--		} else {
-//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].Capacity > gameData.matCens.fuelCenters [station_num].MaxCapacity)	{
-//--unused-- //--				gameData.matCens.fuelCenters [station_num].Capacity = gameData.matCens.fuelCenters [station_num].MaxCapacity;
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].xCapacity = gameData.matCens.fuelCenters [station_num].xMaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].MaxCapacity <= 0)	{
-//--unused-- //--				gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
 //--unused-- //--				// Robotmaker dead
 //--unused-- //--				for (i=0; i<6; i++)
 //--unused-- //--					segP->sides [i].nOvlTex = 0;
@@ -841,17 +965,17 @@ return amount;
 //--unused-- 		break;
 //--unused-- 	case SEGMENT_IS_FUELCEN:	
 //--unused-- //--		DigiPlaySample (SOUND_REFUEL_STATION_HIT);
-//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].MaxCapacity>0)	{
-//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity -= damage;
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].Capacity > gameData.matCens.fuelCenters [station_num].MaxCapacity)	{
-//--unused-- //--				gameData.matCens.fuelCenters [station_num].Capacity = gameData.matCens.fuelCenters [station_num].MaxCapacity;
+//--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity>0)	{
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xCapacity > gameData.matCens.fuelCenters [station_num].xMaxCapacity)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].xCapacity = gameData.matCens.fuelCenters [station_num].xMaxCapacity;
 //--unused-- //--			}
-//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].MaxCapacity <= 0)	{
-//--unused-- //--				gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
+//--unused-- //--			if (gameData.matCens.fuelCenters [station_num].xMaxCapacity <= 0)	{
+//--unused-- //--				gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
 //--unused-- //--				DigiPlaySample (SOUND_REFUEL_STATION_DESTROYED);
 //--unused-- //--			}
 //--unused-- //--		} else {
-//--unused-- //--			gameData.matCens.fuelCenters [station_num].MaxCapacity = 0;
+//--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity = 0;
 //--unused-- //--		}
 //--unused-- //--		HUDInitMessage ("Fuelcenter %d damaged", station_num);
 //--unused-- 		break;
@@ -1137,8 +1261,8 @@ void DisableMatCens (void)
 	int	i;
 
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		gameData.matCens.fuelCenters [i].Enabled = 0;
-		gameData.matCens.fuelCenters [i].DisableTime = 0;
+		gameData.matCens.fuelCenters [i].bEnabled = 0;
+		gameData.matCens.fuelCenters [i].xDisableTime = 0;
 	}
 }
 
@@ -1150,16 +1274,16 @@ void InitAllMatCens (void)
 	int	i;
 
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)
-		if (gameData.matCens.fuelCenters [i].Type == SEGMENT_IS_ROBOTMAKER) {
-			gameData.matCens.fuelCenters [i].Lives = 3;
-			gameData.matCens.fuelCenters [i].Enabled = 0;
-			gameData.matCens.fuelCenters [i].DisableTime = 0;
+		if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
+			gameData.matCens.fuelCenters [i].nLives = 3;
+			gameData.matCens.fuelCenters [i].bEnabled = 0;
+			gameData.matCens.fuelCenters [i].xDisableTime = 0;
 #ifndef NDEBUG
 {
 			//	Make sure this fuelcen is pointed at by a matcen.
 			int	j;
 			for (j=0; j<gameData.matCens.nRobotCenters; j++) {
-				if (gameData.matCens.robotCenters [j].fuelcen_num == i)
+				if (gameData.matCens.robotCenters [j].nFuelCen == i)
 					break;
 			}
 			Assert (j != gameData.matCens.nRobotCenters);
@@ -1170,11 +1294,11 @@ void InitAllMatCens (void)
 
 #ifndef NDEBUG
 	//	Make sure all matcens point at a fuelcen
-	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		int	fuelcen_num = gameData.matCens.robotCenters [i].fuelcen_num;
+	for (i=0; i < gameData.matCens.nRobotCenters; i++) {
+		int	nFuelCen = gameData.matCens.robotCenters [i].nFuelCen;
 
-		Assert (fuelcen_num < gameData.matCens.nFuelCenters);
-		Assert (gameData.matCens.fuelCenters [fuelcen_num].Type == SEGMENT_IS_ROBOTMAKER);
+		Assert (nFuelCen < gameData.matCens.nFuelCenters);
+		Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_IS_ROBOTMAKER);
 	}
 #endif
 
@@ -1323,11 +1447,11 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
  */
 void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
 {
-	mi->robotFlags = CFReadInt (fp);
-	mi->hit_points = CFReadFix (fp);
-	mi->interval = CFReadFix (fp);
+	mi->objFlags = CFReadInt (fp);
+	mi->xHitPoints = CFReadFix (fp);
+	mi->xInterval = CFReadFix (fp);
 	mi->nSegment = CFReadShort (fp);
-	mi->fuelcen_num = CFReadShort (fp);
+	mi->nFuelCen = CFReadShort (fp);
 }
 
 /*
@@ -1335,11 +1459,11 @@ void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
  */
 void MatCenInfoRead (tMatCenInfo *mi, CFILE *fp)
 {
-	mi->robotFlags [0] = CFReadInt (fp);
-	mi->robotFlags [1] = CFReadInt (fp);
-	mi->hit_points = CFReadFix (fp);
-	mi->interval = CFReadFix (fp);
+	mi->objFlags [0] = CFReadInt (fp);
+	mi->objFlags [1] = CFReadInt (fp);
+	mi->xHitPoints = CFReadFix (fp);
+	mi->xInterval = CFReadFix (fp);
 	mi->nSegment = CFReadShort (fp);
-	mi->fuelcen_num = CFReadShort (fp);
+	mi->nFuelCen = CFReadShort (fp);
 }
 #endif

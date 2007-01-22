@@ -500,16 +500,16 @@ void write_matcen_text(FILE *my_file)
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Materialization centers:\n");
 	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		int	trigger_count=0, nSegment, fuelcen_num;
+		int	trigger_count=0, nSegment, nFuelCen;
 
 		fprintf(my_file, "tFuelCenInfo[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
 		fprintf(my_file, "Segment2[%04i].nMatCen = %02i  ", gameData.matCens.fuelCenters[i].nSegment, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].nMatCen);
 
-		fuelcen_num = gameData.matCens.robotCenters[i].fuelcen_num;
-		if (gameData.matCens.fuelCenters[fuelcen_num].Type != SEGMENT_IS_ROBOTMAKER)
-			err_printf(my_file, "Error: Matcen %i corresponds to gameData.matCens.fuelCenters %i, which has nType %i (%s).\n", i, fuelcen_num, gameData.matCens.fuelCenters[fuelcen_num].Type, Special_names[gameData.matCens.fuelCenters[fuelcen_num].Type]);
+		nFuelCen = gameData.matCens.robotCenters[i].nFuelCen;
+		if (gameData.matCens.fuelCenters[nFuelCen].Type != SEGMENT_IS_ROBOTMAKER)
+			err_printf(my_file, "Error: Matcen %i corresponds to gameData.matCens.fuelCenters %i, which has nType %i (%s).\n", i, nFuelCen, gameData.matCens.fuelCenters[nFuelCen].Type, Special_names[gameData.matCens.fuelCenters[nFuelCen].Type]);
 
-		nSegment = gameData.matCens.fuelCenters[fuelcen_num].nSegment;
+		nSegment = gameData.matCens.fuelCenters[nFuelCen].nSegment;
 
 		//	Find tTrigger for this materialization center.
 		for (j=0; j<gameData.trigs.nTriggers; j++) {

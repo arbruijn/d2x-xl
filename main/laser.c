@@ -645,7 +645,7 @@ if (gameData.objs.objects [nParent].nType == OBJ_PLAYER) {
 	}
 
 //	Make children of smart bomb bounce so if they hit a wall right away, they
-//	won't detonate.  The frame interval code will clear this bit after 1/2 second.
+//	won't detonate.  The frame xInterval code will clear this bit after 1/2 second.
 if ((nWeaponType == SMARTMSL_BLOB_ID) || 
 	 (nWeaponType == SMARTMINE_BLOB_ID) || 
 	 (nWeaponType == ROBOT_SMARTMSL_BLOB_ID) || 

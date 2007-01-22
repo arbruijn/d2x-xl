@@ -274,10 +274,10 @@ int NoDivTriTriIsect(float V0[3],float V1[3],float V2[3],
   up1=U1[index];
   up2=U2[index];
 
-  /* compute interval for triangle 1 */
+  /* compute xInterval for triangle 1 */
   NEWCOMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,a,b,c,x0,x1);
 
-  /* compute interval for triangle 2 */
+  /* compute xInterval for triangle 2 */
   NEWCOMPUTE_INTERVALS(up0,up1,up2,du0,du1,du2,du0du1,du0du2,d,e,f,y0,y1);
 
   xx=x0*x1;

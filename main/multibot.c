@@ -778,7 +778,7 @@ if (rval && (nKiller == gameData.multi.players [gameData.multi.nLocalPlayer].nOb
 void MultiDoCreateRobot (char *buf)
 {
 	
-	int		fuelcen_num = buf [2];
+	int		nFuelCen = buf [2];
 	int		nPlayer = buf [1];
 	short		nObject;
 	ubyte		nType = buf [5];
@@ -788,12 +788,12 @@ void MultiDoCreateRobot (char *buf)
 	tObject *objP;
 
 nObject = GET_INTEL_SHORT (buf + 3);
-if ((nPlayer < 0) || (nObject < 0) || (fuelcen_num < 0) || 
-	 (fuelcen_num >= gameData.matCens.nFuelCenters) || (nPlayer >= gameData.multi.nPlayers)) {
+if ((nPlayer < 0) || (nObject < 0) || (nFuelCen < 0) || 
+	 (nFuelCen >= gameData.matCens.nFuelCenters) || (nPlayer >= gameData.multi.nPlayers)) {
 	Int3 (); // Bogus data
 	return;
 	}
-robotcen = gameData.matCens.fuelCenters + fuelcen_num;
+robotcen = gameData.matCens.fuelCenters + nFuelCen;
 // Play effect and sound
 COMPUTE_SEGMENT_CENTER_I (&curObject_loc, robotcen->nSegment);
 objP = ObjectCreateExplosion ((short) robotcen->nSegment, &curObject_loc, i2f (10), VCLIP_MORPHING_ROBOT);
@@ -802,9 +802,9 @@ if (objP)
 if (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound > -1)
 	DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, (short) robotcen->nSegment, 0, &curObject_loc, 0, F1_0);
 // Set robot center flags, in case we become the master for the next one
-robotcen->Flag = 0;
-robotcen->Capacity -= gameData.matCens.xEnergyToCreateOneRobot;
-robotcen->Timer = 0;
+robotcen->bFlag = 0;
+robotcen->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
+robotcen->xTimer = 0;
 if (! (objP = CreateMorphRobot (gameData.segs.segments + robotcen->nSegment, &curObject_loc, nType)))
 	return; // Cannot create tObject!
 objP->matCenCreator = ((short) (robotcen - gameData.matCens.fuelCenters)) | 0x80;
