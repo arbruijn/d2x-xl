@@ -271,7 +271,7 @@ extern int Game_window_h;
 extern int max_window_w;
 extern int max_window_h;
 
-void render_countdown_gauge()
+void renderCountdown_gauge()
 {
 	if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127))	{
 		int	y;
@@ -354,7 +354,7 @@ void game_draw_hud_stuff()
 	}
 
 	if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
-		render_countdown_gauge();
+		renderCountdown_gauge();
 		if ( gameData.multi.nLocalPlayer > -1 && gameData.objs.viewer->nType==OBJ_PLAYER && gameData.objs.viewer->id==gameData.multi.nLocalPlayer )	{
 			int	x = 3;
 			int	y = grdCurCanv->cv_bitmap.bm_props.h;

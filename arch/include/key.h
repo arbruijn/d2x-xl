@@ -87,12 +87,12 @@ extern unsigned int keyDownCount(int scancode);
 
 extern ubyte keyFlags(int scancode);
 // Returns number of times key has went from down to up since last call.
-extern unsigned int key_up_count(int scancode);
+extern unsigned int key_upCount(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();
 //void key_clearTimes();
-//void key_clear_counts();
+//void key_clearCounts();
 
 extern char * key_text[256];
 

@@ -880,7 +880,7 @@ return 1;
 
 //called when ammo (for the vulcan cannon) is picked up
 //	Returns the amount picked up
-int PickupAmmo(int classFlag,int nWeaponIndex,int ammo_count, int nPlayer)
+int PickupAmmo(int classFlag,int nWeaponIndex,int ammoCount, int nPlayer)
 {
 	int		max,cutpoint,supposed_weapon=gameData.weapons.nPrimary;
 	int		old_ammo=classFlag;		//kill warning
@@ -894,9 +894,9 @@ if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
 if (playerP->primaryAmmo [nWeaponIndex] == max)
 	return 0;
 old_ammo = playerP->primaryAmmo [nWeaponIndex];
-playerP->primaryAmmo [nWeaponIndex] += ammo_count;
+playerP->primaryAmmo [nWeaponIndex] += ammoCount;
 if (playerP->primaryAmmo [nWeaponIndex] > max) {
-	ammo_count += (max - playerP->primaryAmmo [nWeaponIndex]);
+	ammoCount += (max - playerP->primaryAmmo [nWeaponIndex]);
 	playerP->primaryAmmo [nWeaponIndex] = max;
 	}
 if (nPlayer = gameData.multi.nLocalPlayer) {
@@ -910,7 +910,7 @@ if (nPlayer = gameData.multi.nLocalPlayer) {
 		(POrderList (nWeaponIndex) < POrderList (supposed_weapon)))
 		SelectWeapon(nWeaponIndex,0,0,1);
 	}
-return ammo_count;	//return amount used
+return ammoCount;	//return amount used
 }
 
 //	-----------------------------------------------------------------------------
@@ -1435,7 +1435,7 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->robot_hit_vclip = CFReadByte (fp);
 	pwi->flashSound = CFReadShort (fp);
 	pwi->wall_hit_vclip = CFReadByte (fp);
-	pwi->fire_count = CFReadByte (fp);
+	pwi->fireCount = CFReadByte (fp);
 	pwi->robot_hitSound = CFReadShort (fp);
 	pwi->ammo_usage = CFReadByte (fp);
 	pwi->weapon_vclip = CFReadByte (fp);

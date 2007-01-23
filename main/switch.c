@@ -107,7 +107,7 @@ int oppTrigTypes [] = {
 //int Num_links;
 
 #ifdef EDITOR
-fix triggerTime_count=F1_0;
+fix triggerTimeCount=F1_0;
 
 //-----------------------------------------------------------------
 // Initializes all the switches.
@@ -547,9 +547,9 @@ if (sbd.bBoosted) {
 			VmVecNormalize (&n);
 			}
 		else {
-			Controls.vertical_thrustTime =
-			Controls.forward_thrustTime =
-			Controls.sideways_thrustTime = 0;
+			Controls.verticalThrustTime =
+			Controls.forwardThrustTime =
+			Controls.sidewaysThrustTime = 0;
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination tSegment
 		// invert the normal as it points into the tSegment

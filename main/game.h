@@ -133,7 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * write when using stereo mode.
  *
  * Revision 1.48  1994/09/13  16:40:10  mike
- * Prototype Global_missile_firing_count.
+ * Prototype Global_missile_firingCount.
  *
  * Revision 1.47  1994/09/13  11:19:05  mike
  * Add xNextMissileFireTime.
@@ -142,7 +142,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Made global flush function that flushes keyboard,mouse, and joystick.
  *
  * Revision 1.45  1994/09/03  15:24:14  mike
- * Make global Global_laser_firing_count.
+ * Make global Global_laser_firingCount.
  *
  * Revision 1.44  1994/08/31  19:26:57  mike
  * Prototypes for xNextLaserFireTime, Laser_delayTime.
@@ -313,8 +313,8 @@ extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
 extern int DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
 extern int nPlayerDifficultyLevel;
 extern int DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
-extern int Global_laser_firing_count;
-extern int Global_missile_firing_count;
+extern int Global_laser_firingCount;
+extern int Global_missile_firingCount;
 extern int Render_depth;
 extern fix Auto_fire_fusion_cannonTime, Fusion_charge;
 
@@ -336,7 +336,7 @@ extern void GameFlushInputs();    // clear all inputs
 
 extern int Playing_game;    // True if playing game
 extern int Auto_flythrough; // if set, start flythough automatically
-extern int Mark_count;      // number of debugging marks set
+extern int MarkCount;      // number of debugging marks set
 extern char faded_in;
 
 void StopTime(void);

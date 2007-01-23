@@ -123,7 +123,7 @@ fix fix_sqrt (fix a);
 //either of the pointers can be NULL
 void FixSinCos (fix a, fix * s, fix * c);	//with interpolation
 
-void fix_fastsincos (fix a, fix * s, fix * c);	//no interpolation
+void FixFastSinCos (fix a, fix * s, fix * c);	//no interpolation
 
 //compute inverse sine & cosine
 fixang fix_asin (fix v);

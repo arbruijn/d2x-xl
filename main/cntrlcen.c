@@ -215,6 +215,8 @@ void DoReactorDestroyedStuff (tObject *objP)
 
 if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level
+if (gameStates.gameplay.bKillBossCheat)
+	return;
 // Must toggle walls whether it is a boss or control center.
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 	WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);

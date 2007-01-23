@@ -378,28 +378,28 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		if (*arg == '$') bmFlag = BM_NONE; // reset to no flags as default.
 
 		IFTOK ("$COCKPIT") 			bmFlag = BM_COCKPIT;
-		else IFTOK ("$GAUGES")		{bmFlag = BM_GAUGES;   clip_count = 0;}
-		else IFTOK ("$GAUGES_HIRES"){bmFlag = BM_GAUGES_HIRES; clip_count = 0;}
+		else IFTOK ("$GAUGES")		{bmFlag = BM_GAUGES;   clipCount = 0;}
+		else IFTOK ("$GAUGES_HIRES"){bmFlag = BM_GAUGES_HIRES; clipCount = 0;}
 		else IFTOK ("$SOUND") 		bm_readSound ();
 		else IFTOK ("$DOOR_ANIMS")	bmFlag = BM_WALL_ANIMS;
 		else IFTOK ("$WALL_ANIMS")	bmFlag = BM_WALL_ANIMS;
 		else IFTOK ("$TEXTURES") 	bmFlag = BM_TEXTURES;
-		else IFTOK ("$VCLIP")			{bmFlag = BM_VCLIP;		vlighting = 0;	clip_count = 0;}
-		else IFTOK ("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clip_count = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
-		else IFTOK ("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clip_count = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
+		else IFTOK ("$VCLIP")			{bmFlag = BM_VCLIP;		vlighting = 0;	clipCount = 0;}
+		else IFTOK ("$ECLIP")			{bmFlag = BM_ECLIP;		vlighting = 0;	clipCount = 0; obj_eclip=0; dest_bm=NULL; dest_vclip=-1; dest_eclip=-1; dest_size=-1; crit_clip=-1; critFlag=0; nSound=-1;}
+		else IFTOK ("$WCLIP")			{bmFlag = BM_WCLIP;		vlighting = 0;	clipCount = 0; wall_explodes = wall_blastable = 0; wall_openSound=wall_closeSound=-1; tmap1Flag=0; wall_hidden=0;}
 
 		else IFTOK ("$EFFECTS")		{bmFlag = BM_EFFECTS;	nClip = 0;}
 		else IFTOK ("$ALIAS")			bm_read_alias ();
 
-		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [texture_count-1].lighting = fl2f (get_float ();
-		else IFTOK ("damage") 			gameData.pig.tex.pTMapInfo [texture_count-1].damage = fl2f (get_float ();
-		else IFTOK ("volatile") 			gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_VOLATILE;
-		else IFTOK ("goal_blue")			gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_GOAL_BLUE;
-		else IFTOK ("goal_red")			gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_GOAL_RED;
-		else IFTOK ("water")	 			gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_WATER;
-		else IFTOK ("force_field")		gameData.pig.tex.pTMapInfo [texture_count-1].flags |= TMI_FORCE_FIELD;
-		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [texture_count-1].slide_u = fl2f (get_float ())>>8; gameData.pig.tex.pTMapInfo [texture_count-1].slide_v = fl2f (get_float ())>>8;}
-		else IFTOK ("destroyed")	 		{int t=texture_count-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
+		else IFTOK ("lighting") 			gameData.pig.tex.pTMapInfo [textureCount-1].lighting = fl2f (get_float ();
+		else IFTOK ("damage") 			gameData.pig.tex.pTMapInfo [textureCount-1].damage = fl2f (get_float ();
+		else IFTOK ("volatile") 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_VOLATILE;
+		else IFTOK ("goal_blue")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_BLUE;
+		else IFTOK ("goal_red")			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_GOAL_RED;
+		else IFTOK ("water")	 			gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_WATER;
+		else IFTOK ("force_field")		gameData.pig.tex.pTMapInfo [textureCount-1].flags |= TMI_FORCE_FIELD;
+		else IFTOK ("slide")	 			{gameData.pig.tex.pTMapInfo [textureCount-1].slide_u = fl2f (get_float ())>>8; gameData.pig.tex.pTMapInfo [textureCount-1].slide_v = fl2f (get_float ())>>8;}
+		else IFTOK ("destroyed")	 		{int t=textureCount-1; gameData.pig.tex.pTMapInfo [t].destroyed = get_texture (strtok (NULL, space);}
 		//else IFTOK ("gameData.eff.nEffects")		gameData.eff.nEffects = get_int ();
 		else IFTOK ("gameData.walls.nAnims")	gameData.walls.nAnims = get_int ();
 		else IFTOK ("nClip")			nClip = get_int ();
@@ -460,8 +460,8 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
    }
 }
 
-gameData.pig.tex.nTextures = texture_count;
-nTMaps [gameStates.app.bD1Data] = tmap_count;
+gameData.pig.tex.nTextures = textureCount;
+nTMaps [gameStates.app.bD1Data] = tmapCount;
 
 gameData.pig.tex.pBmIndex [gameData.pig.tex.nTextures++].index = 0;		//entry for bogus tmap
 
@@ -484,7 +484,7 @@ wiP->robot_hit_vclip = CFReadByte (fp);
 wiP->robot_hitSound = CFReadShort (fp);
 wiP->wall_hit_vclip = CFReadByte (fp);
 wiP->wall_hitSound = CFReadShort (fp);
-wiP->fire_count = CFReadByte (fp);
+wiP->fireCount = CFReadByte (fp);
 wiP->ammo_usage = CFReadByte (fp);	
 wiP->weapon_vclip = CFReadByte (fp);
 wiP->destroyable = CFReadByte (fp);
@@ -797,7 +797,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	for (i = 0;i < D1_MAX_WEAPON_TYPES;i++) {
 		fprintf (f, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
 			gameData.weapons.infoD1 [i].persistent,	
-			gameData.weapons.infoD1 [i].fire_count,	
+			gameData.weapons.infoD1 [i].fireCount,	
 			gameData.weapons.infoD1 [i].ammo_usage,	
 			gameData.weapons.infoD1 [i].destroyable,
 			gameData.weapons.infoD1 [i].matter,		

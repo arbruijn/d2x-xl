@@ -744,13 +744,13 @@ if ((objP->id == SMARTMSL_BLOB_ID) ||
 		(objP->id == ROBOT_SMARTMINE_BLOB_ID) || 
 		(objP->id == EARTHSHAKER_MEGA_ID))
 	xWeaponSpeed /= 4;
-if (WI_thrust (objP->id) != 0)
+if (WIThrust (objP->id) != 0)
 	xWeaponSpeed /= 2;
 /*test*/VmVecCopyScale (&objP->mType.physInfo.velocity, vDirection, (xWeaponSpeed + xParentSpeed));
 //	Set thrust 
-if (WI_thrust (nWeaponType) != 0) {
+if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;
-	VmVecScale (&objP->mType.physInfo.thrust, FixDiv (WI_thrust (objP->id), xWeaponSpeed + xParentSpeed));
+	VmVecScale (&objP->mType.physInfo.thrust, FixDiv (WIThrust (objP->id), xWeaponSpeed + xParentSpeed));
 	}
 if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID))
 	objP->lifeleft += (d_rand () - 16384) << 2;		//	add in -2..2 seconds
@@ -1510,7 +1510,7 @@ while (xNextLaserFireTime <= gameData.time.xGame) {
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
 		rval += LaserFireObject ((short) gameData.multi.players [gameData.multi.nLocalPlayer].nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nfires);
-		playerP->energy -= (xEnergyUsed * rval) / gameData.weapons.info [nWeaponIndex].fire_count;
+		playerP->energy -= (xEnergyUsed * rval) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
 		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {

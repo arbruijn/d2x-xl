@@ -27,11 +27,11 @@ void PlayerShipRead(tPlayerShip *ps, CFILE *fp)
 	ps->expl_vclip_num = CFReadInt(fp);
 	ps->mass = CFReadFix(fp);
 	ps->drag = CFReadFix(fp);
-	ps->max_thrust = CFReadFix(fp);
-	ps->reverse_thrust = CFReadFix(fp);
+	ps->maxThrust = CFReadFix(fp);
+	ps->reverseThrust = CFReadFix(fp);
 	ps->brakes = CFReadFix(fp);
 	ps->wiggle = CFReadFix(fp);
-	ps->max_rotthrust = CFReadFix(fp);
+	ps->maxRotThrust = CFReadFix(fp);
 	for (i = 0; i < N_PLAYER_GUNS; i++)
 		CFReadVector(&(ps->gunPoints[i]), fp);
 }

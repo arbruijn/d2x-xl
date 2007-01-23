@@ -187,16 +187,16 @@ void VerifyConsoleObject ()
 
 int count_number_ofRobots ()
 {
-	int robot_count;
+	int robotCount;
 	int i;
 
-	robot_count = 0;
+	robotCount = 0;
 	for (i=0;i<=gameData.objs.nLastObject;i++) {
 		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			robot_count++;
+			robotCount++;
 	}
 
-	return robot_count;
+	return robotCount;
 }
 
 //------------------------------------------------------------------------------

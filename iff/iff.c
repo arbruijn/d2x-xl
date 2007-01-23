@@ -276,7 +276,7 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 	unsigned char *data_end;
 	int end_pos;
         #ifndef NDEBUG
-	int row_count=0;
+	int rowCount=0;
         #endif
 
         width=0;
@@ -363,9 +363,9 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 
 			#ifndef NDEBUG
 			if ((p-bmheader->raw_data) % width == 0)
-					row_count++;
+					rowCount++;
 
-			Assert((p-bmheader->raw_data) - (width*row_count) < width);
+			Assert((p-bmheader->raw_data) - (width*rowCount) < width);
 			#endif
 
 		}

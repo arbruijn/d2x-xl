@@ -139,12 +139,12 @@ int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
 #ifdef _DEBUG
-int	Mark_count = 0;                 // number of debugging marks set
+int	MarkCount = 0;                 // number of debugging marks set
 int	Speedtest_startTime;
 int	Speedtest_segnum;
 int	Speedtest_sidenum;
 int	Speedtest_frame_start;
-int	Speedtest_count=0;				//	number of times to do the debug test.
+int	SpeedtestCount=0;				//	number of times to do the debug test.
 #endif
 
 fix ThisLevelTime=0;
@@ -952,7 +952,7 @@ void SavePictScreen (int multiplayer)
 	short fd;
 	FSSpec spec;
 	PicHandle pict_handle;
-	static int multi_count = 0;
+	static int multiCount = 0;
 	StandardFileReply sf_reply;
 
 // dump the contents of the GameWindow into a picture using copybits
@@ -969,7 +969,7 @@ void SavePictScreen (int multiplayer)
 		Int3 ();
 // create the fsspec
 
-	sprintf (filename, "screen%d", multi_count++);
+	sprintf (filename, "screen%d", multiCount++);
 	pfilename = c2pstr (filename);
 	if (!multiplayer) {
 		show_cursor ();
@@ -1682,7 +1682,7 @@ for (;;) {
 			ApplyModifiedPalette (); 
 			GrPaletteStepLoad (NULL); 
 			}
-		OptionsMenu ();
+		ConfigMenu ();
 		if (Scanline_double != double_save)	
 			InitCockpit ();
 		if (!(gameData.app.nGameMode&GM_MULTI)) 
@@ -2492,7 +2492,7 @@ int flFrameTime = 0;
 void FireLaser ()
 {
 	int i = primaryWeaponToWeaponInfo[gameData.weapons.nPrimary];
-	gameData.app.nGlobalLaserFiringCount += WI_fire_count (i) * (Controls.fire_primary_state || Controls.fire_primaryDownCount);
+	gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls.fire_primary_state || Controls.fire_primaryDownCount);
 	if ((gameData.weapons.nPrimary == FUSION_INDEX) && (gameData.app.nGlobalLaserFiringCount)) {
 		if ((gameData.multi.players[gameData.multi.nLocalPlayer].energy < F1_0*2) && (gameData.app.fusion.xAutoFireTime == 0)) {
 			gameData.app.nGlobalLaserFiringCount = 0;
@@ -2674,7 +2674,7 @@ int CreateSpecialPath (void)
 
 //-----------------------------------------------------------------------------
 #ifndef RELEASE
-int	Max_obj_count_mike = 0;
+int	Max_objCount_mike = 0;
 
 //	Shows current number of used gameData.objs.objects.
 void show_freeObjects (void)
@@ -2692,8 +2692,8 @@ void show_freeObjects (void)
 #if TRACE
 		//con_printf (CON_DEBUG, "%3i", count);
 #endif
-		if (count > Max_obj_count_mike) {
-			Max_obj_count_mike = count;
+		if (count > Max_objCount_mike) {
+			Max_objCount_mike = count;
 #if TRACE
 			//con_printf (CON_DEBUG, " ***");
 #endif

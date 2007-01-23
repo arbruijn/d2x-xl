@@ -268,12 +268,13 @@ tPlayerShip defaultPlayerShip = {
 
 int MultiProtectGame (void)
 {
-if (IsMultiGame) {
+if (IsMultiGame && !IsCoopGame) {
 	gameData.pig.ship.player->brakes = defaultPlayerShip.brakes;
 	gameData.pig.ship.player->drag = defaultPlayerShip.drag;
 	gameData.pig.ship.player->mass = defaultPlayerShip.mass;
-	gameData.pig.ship.player->max_thrust = defaultPlayerShip.max_thrust;
-	gameData.pig.ship.player->reverse_thrust = defaultPlayerShip.reverse_thrust;
+	gameData.pig.ship.player->maxThrust = defaultPlayerShip.maxThrust;
+	gameData.pig.ship.player->maxRotThrust = defaultPlayerShip.maxRotThrust;
+	gameData.pig.ship.player->reverseThrust = defaultPlayerShip.reverseThrust;
 	gameData.pig.ship.player->brakes = defaultPlayerShip.brakes;
 	gameData.pig.ship.player->wiggle = defaultPlayerShip.wiggle;
 	}
@@ -1143,7 +1144,7 @@ memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
 ExtractShortPos (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject], &sp, 1);
 #endif
 if (gameData.objs.objects [gameData.multi.players [nPlayer].nObject].movementType == MT_PHYSICS)
-	set_thrust_from_velocity (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject]);
+	setThrust_from_velocity (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject]);
 }
 
 //-----------------------------------------------------------------------------
@@ -2602,7 +2603,7 @@ void MultiPrepLevel (void)
 	// at the time this is called.
 
 	int		i, ng = 0, nObject;
-	int		cloak_count, inv_count;
+	int		cloakCount, invCount;
 	tObject	*objP;
 
 Assert (gameData.app.nGameMode & GM_MULTI);
@@ -2635,8 +2636,8 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiSendPowerupUpdate ();
 	}
 ng = 1;
-inv_count = 0;
-cloak_count = 0;
+invCount = 0;
+cloakCount = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((gameData.objs.objects [i].nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
 		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].nSegment, 
@@ -2675,22 +2676,22 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 		if (gameData.objs.objects [i].id == POW_INVUL) {
-			if (inv_count  >= 3 || (ng && !netGame.DoInvulnerability)) {
+			if (invCount  >= 3 || (ng && !netGame.DoInvulnerability)) {
 				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
 				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				} 
 			else
-				inv_count++;
+				invCount++;
 			}
 		if (gameData.objs.objects [i].id == POW_CLOAK) {
-			if (cloak_count  >= 3 || (ng && !netGame.DoCloak)) {
+			if (cloakCount  >= 3 || (ng && !netGame.DoCloak)) {
 				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
 				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
 				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
 				} 
 			else
-				cloak_count++;
+				cloakCount++;
 			}
 		if (gameData.objs.objects [i].id == POW_AFTERBURNER && ng && !netGame.DoAfterburner)
 			BashToShield (i, "afterburner");
@@ -3143,22 +3144,22 @@ void MultiSendDropWeapon (int nObject, int seed)
 {
 	tObject *objP;
 	int count = 0;
-	int ammo_count;
+	int ammoCount;
 
 if (nObject < 0)
 	return;
 objP = gameData.objs.objects + nObject;
-ammo_count = objP->cType.powerupInfo.count;
-if (objP->id == POW_OMEGA && ammo_count == F1_0)
-	ammo_count = F1_0 - 1; //make fit in short
-Assert (ammo_count < F1_0); //make sure fits in short
+ammoCount = objP->cType.powerupInfo.count;
+if (objP->id == POW_OMEGA && ammoCount == F1_0)
+	ammoCount = F1_0 - 1; //make fit in short
+Assert (ammoCount < F1_0); //make sure fits in short
 multiData.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
 multiData.msg.buf [count++] = (char)objP->id;
 PUT_INTEL_SHORT (multiData.msg.buf+count, gameData.multi.nLocalPlayer); 
 count += 2;
 PUT_INTEL_SHORT (multiData.msg.buf+count, nObject); 
 count += 2;
-PUT_INTEL_SHORT (multiData.msg.buf+count, ammo_count); 
+PUT_INTEL_SHORT (multiData.msg.buf+count, ammoCount); 
 count += 2;
 PUT_INTEL_INT (multiData.msg.buf+count, seed);
 MapObjnumLocalToLocal (nObject);

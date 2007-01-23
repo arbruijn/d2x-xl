@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
  *
  * Revision 1.29  1995/02/06  19:47:18  matt
- * New function (untested), set_thrust_from_velocity()
+ * New function (untested), setThrust_from_velocity()
  *
  * Revision 1.28  1994/12/04  22:14:20  mike
  * apply instantaneous rotation to an tObject due to a force blow.
@@ -100,6 +100,6 @@ void PhysApplyRot(tObject *obj, vmsVector *force_vec);
 
 // this routine will set the thrust for an tObject to a value that will
 // (hopefully) maintain the tObject's current velocity
-void set_thrust_from_velocity(tObject *obj);
+void setThrust_from_velocity(tObject *obj);
 
 #endif /* _PHYSICS_H */

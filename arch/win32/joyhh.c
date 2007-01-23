@@ -67,7 +67,7 @@ typedef struct Joy_info {
 	ubyte			present_mask;
 	ubyte			slow_read;
 	int			maxTimer;
-	int			read_count;
+	int			readCount;
 	ubyte			lastValue;
 	Button_info	buttons[MAX_BUTTONS];
         int                     axis_min[JOY_NUM_AXES];    //changed 
@@ -306,7 +306,7 @@ int joy_init(int joyid) //HH: added joyid parameter
                 joy_present = 0;
                 joy_installed = 1;
                 joystick.maxTimer = 65536;
-                joystick.read_count = 0;
+                joystick.readCount = 0;
                 joystick.lastValue = 0;
 	}
 

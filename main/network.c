@@ -941,10 +941,10 @@ void NetworkSendObjects (void)
 	sbyte owner;
 	int loc, i, h, t;
 
-	static int obj_count = 0;
+	static int objCount = 0;
 	static int nFrame = 0;
 
-	int obj_count_frame = 0;
+	int objCount_frame = 0;
 	int nPlayer = networkData.playerRejoining.player.connected;
 
 	// Send clear gameData.objs.objects array tTrigger and send tPlayer num
@@ -967,20 +967,20 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	}
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try to speed it up without
 														  // over-stressing the receiver.
-	obj_count_frame = 0;
+	objCount_frame = 0;
 	memset (object_buffer, 0, IPX_MAX_DATA_SIZE);
 	object_buffer [0] = PID_OBJECT_DATA;
 	loc = 3;
 
 	if (networkData.nSendObjNum == -1) {
-		obj_count = 0;
+		objCount = 0;
 		networkData.bSendObjectMode = 0;
 		SET_SHORT (object_buffer, loc, -1);            
 		SET_BYTE (object_buffer, loc, nPlayer);                            
 		/* Placeholder for remote_objnum, not used here */          
 		loc += 2;
 		networkData.nSendObjNum = 0;
-		obj_count_frame = 1;
+		objCount_frame = 1;
 		nFrame = 0;
 		}
 	
@@ -1001,8 +1001,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		if (((IPX_MAX_DATA_SIZE-1) - loc) < (sizeof (tObject)+5))
 			break; // Not enough room for another tObject
 
-		obj_count_frame++;
-		obj_count++;
+		objCount_frame++;
+		objCount++;
 
 		remote_objnum = ObjnumLocalToRemote ((short)i, &owner);
 		Assert (owner == multiData.nObjOwner [i]);
@@ -1015,11 +1015,11 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			SwapObject ((tObject *) (object_buffer + loc - sizeof (tObject)));
 		}
 
-	if (obj_count_frame) {// Send any gameData.objs.objects we've buffered
+	if (objCount_frame) {// Send any gameData.objs.objects we've buffered
 		nFrame++;
 
 		networkData.nSendObjNum = i;
-		object_buffer [1] = obj_count_frame;  
+		object_buffer [1] = objCount_frame;  
 		object_buffer [2] = nFrame;
 
 		Assert (loc <= IPX_MAX_DATA_SIZE);
@@ -1048,7 +1048,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			object_buffer [1] = 1;
 			object_buffer [2] = nFrame;
 			* (short *) (object_buffer+3) = INTEL_SHORT (-2);
-			* (short *) (object_buffer+6) = INTEL_SHORT (obj_count);
+			* (short *) (object_buffer+6) = INTEL_SHORT (objCount);
 			//OLD IPXSendPacketData (object_buffer, 8, &networkData.playerRejoining.player.node);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (object_buffer, 8, networkData.playerRejoining.player.network.ipx.server, networkData.playerRejoining.player.network.ipx.node);
@@ -1061,7 +1061,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			// Turn off send tObject mode
 			networkData.nSendObjNum = -1;
 			networkData.bSendObjects = 0;
-			obj_count = 0;
+			objCount = 0;
 
 			//if (!NetworkIAmMaster ())
 			// Int3 ();  // Bad!! Get Jason.  Someone goofy is trying to get ahold of the game!
@@ -2364,7 +2364,7 @@ void NetworkReadObjectPacket (ubyte *data)
 
 	static int my_pnum = 0;
 	static int mode = 0;
-	static int object_count = 0;
+	static int objectCount = 0;
 	static int nFrame = 0;
 	int nobj = data [1];
 	int loc = 3;
@@ -2382,7 +2382,7 @@ for (i = 0; i < nobj; i++) {
 		my_pnum = obj_owner;
 		ChangePlayerNumTo (my_pnum);
 		mode = 1;
-		object_count = 0;
+		objectCount = 0;
 		nFrame = 1;
 		}
 	else if (nObject == -2) {
@@ -2393,12 +2393,12 @@ for (i = 0; i < nobj; i++) {
 			}
 #if 1				
 		con_printf (CON_DEBUG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, remote_frame_num);
-		con_printf (CON_DEBUG, "Got %d gameData.objs.objects, zF %d.\n", object_count, remote_objnum);
+		con_printf (CON_DEBUG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, remote_objnum);
 #endif
-		if (remote_objnum != object_count) {
+		if (remote_objnum != objectCount) {
 			Int3 ();
 			}
-		if (NetworkVerifyObjects (remote_objnum, object_count)) {
+		if (NetworkVerifyObjects (remote_objnum, objectCount)) {
 			// Failed to sync up 
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 			networkData.nStatus = NETSTAT_MENU;                          
@@ -2412,7 +2412,7 @@ for (i = 0; i < nobj; i++) {
 #if 1				
 		con_printf (CON_DEBUG, "Got a nType 3 tObject packet!\n");
 #endif
-		object_count++;
+		objectCount++;
 		if ((obj_owner == my_pnum) || (obj_owner == -1)) {
 			if (mode != 1)
 				Int3 (); // SEE ROB
@@ -2453,7 +2453,7 @@ for (i = 0; i < nobj; i++) {
 			}
 		} // For a standard onbject
 	} // For each tObject in packet
-gameData.objs.nObjects = object_count;
+gameData.objs.nObjects = objectCount;
 gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 }
 	
@@ -3710,7 +3710,7 @@ if ((theirObjP->renderType != pd->obj_renderType) && (pd->obj_renderType == RT_P
 	MultiMakeGhostPlayer (nTheirPlayer);
 RelinkObject (theirObjNum, pd->obj_segnum);
 if (theirObjP->movementType == MT_PHYSICS)
-	set_thrust_from_velocity (theirObjP);
+	setThrust_from_velocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multi.players [nTheirPlayer].connected) {
 	gameData.multi.players [nTheirPlayer].connected = 1;
@@ -3844,7 +3844,7 @@ ExtractShortPos (theirObjP, &new_pd.thepos, 0);
 if ((theirObjP->renderType != new_pd.obj_renderType) && (new_pd.obj_renderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
 if (theirObjP->movementType == MT_PHYSICS)
-	set_thrust_from_velocity (theirObjP);
+	setThrust_from_velocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multi.players [nTheirPlayer].connected) {
 	gameData.multi.players [nTheirPlayer].connected = 1;

@@ -206,7 +206,7 @@ extern	short		Warning_segs[];		// List of warning-worthy segments
 
 extern	int		Show_axesFlag;		// 0 = don't show, !0 = do show coordinate axes in *Cursegp orientation
 
-extern   int		Autosave_count;		// Current counter for which autosave mine we are "on"
+extern   int		AutosaveCount;		// Current counter for which autosave mine we are "on"
 extern	int		AutosaveFlag;			// Whether or not Autosave is on.
 extern	struct tm EditorTime_of_day;
 
@@ -443,7 +443,7 @@ extern	int med_scale_and_rotate_segment(tSegment *seg, vmsAngVec *rot);
 
 //	Set Vertex_active to number of occurrences of each vertex.
 //	Set Num_vertices.
-extern	void set_vertex_counts(void);
+extern	void set_vertexCounts(void);
 
 //	Modify seg2 to share side2 with seg1:side1.  This forms a connection between
 //	two segments without creating a new tSegment.  It modifies seg2 by sharing
@@ -575,16 +575,16 @@ extern	int	Degenerate_segment_found;
 extern	byte	Been_visited[];					//	List of segments visited in a recursive search, if element n set, tSegment n done been visited
 
 // Initializes autosave system.
-// Sets global Autosave_count to 0.
+// Sets global AutosaveCount to 0.
 extern void init_autosave(void);
 
 // Closes autosave system.
 // Deletes all autosaved files.
 extern void close_autosave(void);
 
-// Saves current mine to name.miX where name = suffix of mine name and X = Autosave_count.
-// For example, if name = "cookie.min", and Autosave_count = 3, then writes "cookie.mi3".
-// Increments Autosave_count, wrapping from 9 to 0.
+// Saves current mine to name.miX where name = suffix of mine name and X = AutosaveCount.
+// For example, if name = "cookie.min", and AutosaveCount = 3, then writes "cookie.mi3".
+// Increments AutosaveCount, wrapping from 9 to 0.
 // (If there is no current mine name, assume "temp.min")
 // Call med_save_mine to save the mine.
 extern void autosave_mine(char *name);

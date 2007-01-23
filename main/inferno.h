@@ -390,7 +390,8 @@ typedef struct tInputStates {
 	int		bSkipControls;
 	int		bControlsSkipFrame;
 	int		bKeepSlackTime;
-	time_t	kcFrameTime;
+	time_t	kcPollTime;
+	float		kcFrameTime;
 	fix		nCruiseSpeed;
 } tInputStates;
 
@@ -1257,11 +1258,11 @@ typedef struct tPlayerShip {
 	int					nModel;
 	int					expl_vclip_num;
 	fix					mass,drag;
-	fix					max_thrust,
-							reverse_thrust,
+	fix					maxThrust,
+							reverseThrust,
 							brakes;
 	fix					wiggle;
-	fix					max_rotthrust;
+	fix					maxRotThrust;
 	vmsVector			gunPoints [N_PLAYER_GUNS];
 } tPlayerShip;
 
@@ -1619,10 +1620,10 @@ typedef struct tMatCenData {
 	fix				xFuelGiveAmount;
 	fix				xFuelMaxAmount;
 	tFuelCenInfo	fuelCenters [MAX_FUEL_CENTERS];
-	tMatCenInfo		robotCenters [MAX_ROBOT_CENTERS];
-	tMatCenInfo		equipCenters [MAX_EQUIP_CENTERS];
+	tMatCenInfo		botGens [MAX_ROBOT_CENTERS];
+	tMatCenInfo		equipGens [MAX_EQUIP_CENTERS];
 	int				nFuelCenters;
-	int				nRobotCenters;
+	int				nMatCens;
 	int				nEquipCenters;
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];

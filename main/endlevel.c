@@ -524,7 +524,7 @@ if (!gameStates.render.bOutsideMine) {
 		vmsVector	tpnt;
 		short			nSegment;
 		tObject		*expl;
-		static int	sound_count;
+		static int	soundCount;
 
 		VmVecScaleAdd (&tpnt, &gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient.fVec, -gameData.objs.console->size*5);
 		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*15);
@@ -532,9 +532,9 @@ if (!gameStates.render.bOutsideMine) {
 		nSegment = FindSegByPoint (&tpnt, gameData.objs.console->nSegment);
 		if (nSegment != -1) {
 			expl = ObjectCreateExplosion (nSegment, &tpnt, i2f (20), VCLIP_BIG_PLAYER_EXPLOSION);
-			if (d_rand ()<10000 || ++sound_count==7) {		//pseudo-random
+			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
 				DigiLinkSoundToPos (SOUND_TUNNEL_EXPLOSION, nSegment, 0, &tpnt, 0, F1_0);
-				sound_count=0;
+				soundCount=0;
 				}
 			}
 		explosion_wait1 = 0x2000 + d_rand ()/4;

@@ -74,16 +74,16 @@ gameFolders.bAltHogDirInited =
 
 // ----------------------------------------------------------------------------
 //in case no one installs one
-int default_error_counter=0;
+int default_errorCounter=0;
 
 //ptr to counter of how many critical errors
-int *critical_error_counter_ptr=&default_error_counter;
+int *critical_errorCounter_ptr=&default_errorCounter;
 
 // ----------------------------------------------------------------------------
 //tell cfile about your critical error counter
 void CFSetCriticalErrorCounterPtr(int *ptr)
 {
-	critical_error_counter_ptr = ptr;
+	critical_errorCounter_ptr = ptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -102,9 +102,9 @@ FILE * CFGetFileHandle (char *filename, char *folder, char *mode)
   else
     pfn = filename;
   
-  *critical_error_counter_ptr = 0;
+  *critical_errorCounter_ptr = 0;
   fp = fopen (pfn, mode);
-  if (fp && *critical_error_counter_ptr) {
+  if (fp && *critical_errorCounter_ptr) {
     fclose(fp);
     fp = NULL;
 	}
@@ -112,9 +112,9 @@ FILE * CFGetFileHandle (char *filename, char *folder, char *mode)
   if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
     sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
     pfn = fn;
-    *critical_error_counter_ptr = 0;
+    *critical_errorCounter_ptr = 0;
     fp = fopen (pfn, mode);
-    if (fp && *critical_error_counter_ptr) {
+    if (fp && *critical_errorCounter_ptr) {
       fclose(fp);
       fp = NULL;
 		}

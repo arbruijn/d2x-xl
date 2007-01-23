@@ -58,7 +58,7 @@ static char rcsid[] = "$Id: ibitblt.c,v 1.9 2003/12/08 22:32:56 btb Exp $";
 
 
 ubyte *Code_pointer = NULL;
-int Code_counter = 0;
+int CodeCounter = 0;
 int ibitblt_svga_page = 0;
 int is_svga = 0;
 uint linear_address;
@@ -69,35 +69,35 @@ void count_block( int ecx )
 
 	while ( ecx > 0 ) {
 		switch(ecx) {
-		case 1: Code_counter++; ecx = 0; break;     // MOVSB
-		case 2: Code_counter+=2; ecx = 0; break;    // MOVSW
-		case 3: Code_counter+=3; ecx = 0; break;    // MOVSW, MOVSB
-		case 4: Code_counter++; ecx = 0; break;     // MOVSD
+		case 1: CodeCounter++; ecx = 0; break;     // MOVSB
+		case 2: CodeCounter+=2; ecx = 0; break;    // MOVSW
+		case 3: CodeCounter+=3; ecx = 0; break;    // MOVSW, MOVSB
+		case 4: CodeCounter++; ecx = 0; break;     // MOVSD
 		default:
 			blocks = ecx / 4;
 			if ( blocks == 1 )
-				Code_counter++; // MOVSD
+				CodeCounter++; // MOVSD
 			else
-				Code_counter+=7;
+				CodeCounter+=7;
 			ecx -= blocks*4;
 		}
 	}
 }
 
 
-void move_and_count( int dsource, int ddest, int ecx )
+void move_andCount( int dsource, int ddest, int ecx )
 {
 	if ( ecx <= 0 )
 		return;
 
 	if ( dsource > 0 ) {
 		// ADD ESI, dsource
-		Code_counter += 6;
+		CodeCounter += 6;
 	}
 	if ( !is_svga ) {
 		if ( ddest > 0 ) {
 			// ADD EDI, ddest
-			Code_counter += 6;
+			CodeCounter += 6;
 		}
 		count_block( ecx );
 	} else {
@@ -110,11 +110,11 @@ void move_and_count( int dsource, int ddest, int ecx )
 		if ( p1 != ibitblt_svga_page ) {
 			// Set page
 			// MOV EAX, ?, CALL EBX
-			Code_counter += 7;
+			CodeCounter += 7;
 			ibitblt_svga_page = p1;
 		}
 
-		Code_counter += 5;  // mov edi, ????
+		CodeCounter += 5;  // mov edi, ????
 
 		if ( p1 == p2 ) {
 			count_block( ecx );
@@ -124,11 +124,11 @@ void move_and_count( int dsource, int ddest, int ecx )
 			count_block( nbytes );
 			// set page
 			// MOV EAX, 0
-			Code_counter += 7;  // mov eax,???? call ebx
+			CodeCounter += 7;  // mov eax,???? call ebx
 
 			ibitblt_svga_page = p2;
 
-			Code_counter += 5;  // mov edi, ????
+			CodeCounter += 5;  // mov edi, ????
 
 			nbytes = ecx - nbytes;
 			if (nbytes > 0 )
@@ -292,12 +292,12 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 
 	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
 
-	Code_counter = 0;
+	CodeCounter = 0;
 
 	if ( destType == BM_SVGA ) {
-		Code_counter += 1+4;    // move ebx, gr_vesa_set_page
-		Code_counter += 1+4;    // move eax, 0
-		Code_counter += 2;      // call ebx
+		CodeCounter += 1+4;    // move ebx, gr_vesa_set_page
+		CodeCounter += 1+4;    // move eax, 0
+		CodeCounter += 2;      // call ebx
 		ibitblt_svga_page = 0;
 		linear_address = 0;
 		is_svga = 1;
@@ -316,7 +316,7 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 			if ( pixel!=255 ) {
 				switch ( draw_mode) {
 				case MODE_DRAW:
-					move_and_count( draw_start_source-esi, draw_start_dest-edi, num_to_draw );
+					move_andCount( draw_start_source-esi, draw_start_dest-edi, num_to_draw );
 					esi = draw_start_source + num_to_draw;
 					edi = draw_start_dest + num_to_draw;
 					// fall through!!!
@@ -342,20 +342,20 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 			source_offset++;
 		}
 		if ( draw_mode == MODE_DRAW ) {
-			move_and_count( draw_start_source-esi, draw_start_dest-edi, num_to_draw );
+			move_andCount( draw_start_source-esi, draw_start_dest-edi, num_to_draw );
 			esi = draw_start_source + num_to_draw;
 			edi = draw_start_dest + num_to_draw;
 		}
 		draw_mode = MODE_NONE;
 		source_offset += (srowsize - sw);
 	}
-	Code_counter++;     // for return
+	CodeCounter++;     // for return
 
-	////printf( "Code will be %d bytes\n", Code_counter );
+	////printf( "Code will be %d bytes\n", CodeCounter );
 
-	Code_counter += 16; // for safety was 16
+	CodeCounter += 16; // for safety was 16
 
-	return Code_counter;
+	return CodeCounter;
 }
 
 int gr_ibitblt_find_code_size( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )

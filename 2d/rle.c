@@ -351,7 +351,7 @@ typedef struct rle_cache_element {
 } rle_cache_element;
 
 int rle_cache_initialized = 0;
-int rle_counter = 0;
+int rleCounter = 0;
 int rle_next = 0;
 rle_cache_element rle_cache[MAX_CACHE_BITMAPS];
 
@@ -421,7 +421,7 @@ for (i=0; i < bmP->bm_props.h; i++) {
 grsBitmap *rle_expand_texture (grsBitmap * bmP)
 {
 	int i;
-	int lowest_count, lc;
+	int lowestCount, lc;
 	int least_recently_used;
 
 if (!rle_cache_initialized) 
@@ -429,16 +429,16 @@ if (!rle_cache_initialized)
 
 Assert (!(bmP->bm_props.flags & BM_FLAG_PAGED_OUT));
 
-lc = rle_counter;
-rle_counter++;
-if (rle_counter < lc) {
+lc = rleCounter;
+rleCounter++;
+if (rleCounter < lc) {
 	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
 		rle_cache[i].rle_bitmap = NULL;
 		rle_cache[i].last_used = 0;
 		}
 	}
 
-lowest_count = rle_cache[rle_next].last_used;
+lowestCount = rle_cache[rle_next].last_used;
 least_recently_used = rle_next;
 rle_next++;
 if (rle_next >= MAX_CACHE_BITMAPS)
@@ -446,11 +446,11 @@ if (rle_next >= MAX_CACHE_BITMAPS)
 for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
 	if (rle_cache [i].rle_bitmap == bmP) {
 		rle_hits++;
-		rle_cache[i].last_used = rle_counter;
+		rle_cache[i].last_used = rleCounter;
 		return rle_cache [i].expanded_bitmap;
 		}
-	if (rle_cache [i].last_used < lowest_count) {
-		lowest_count = rle_cache[i].last_used;
+	if (rle_cache [i].last_used < lowestCount) {
+		lowestCount = rle_cache[i].last_used;
 		least_recently_used = i;
 		}
 	}
@@ -458,7 +458,7 @@ Assert (bmP->bm_props.w<=64 && bmP->bm_props.h<=64); //dest buffer is 64x64
 rle_misses++;
 rle_expand_texture_sub (bmP, rle_cache[least_recently_used].expanded_bitmap);
 rle_cache[least_recently_used].rle_bitmap = bmP;
-rle_cache[least_recently_used].last_used = rle_counter;
+rle_cache[least_recently_used].last_used = rleCounter;
 return rle_cache[least_recently_used].expanded_bitmap;
 }
 

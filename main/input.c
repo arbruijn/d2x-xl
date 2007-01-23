@@ -79,18 +79,24 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 control_info Controls;
 
 // *must* be defined - set to 0 if no limit
-#define BASE_PITCH	2200
-#define MAX_PITCH		 (gameStates.input.kcFrameTime / kcFrameCount)
+#define MIN_TIME_360	3.0f	//time for a 360 degree turn in secs
+//#define nMaxTurnRate		(gameStates.input.kcPollTime / kcFrameCount)
 
-#define KCCLAMP(_val,_max)	if ((_val) < - (_max)) (_val) = (fix) -(_max); else if ((_val) > (_max)) (_val) = (fix) (_max)
+#define	KCCLAMP(_val,_max) \
+			if ((_val) < -(_max)) \
+				(_val) = (fix) -(_max); \
+			else if ((_val) > (_max)) \
+				(_val) = (fix) (_max)
 
 static long kcFrameCount = 0;
+static int	nMaxTurnRate;
+
 
 //------------------------------------------------------------------------------
 
 void SetMaxPitch (int nMinTurnRate)
 {
-gameOpts->input.nMaxPitch = (BASE_PITCH * 10) / (nMinTurnRate ? nMinTurnRate : 20);
+gameOpts->input.nMaxPitch = (int) ((MIN_TIME_360 * 10) / (nMinTurnRate ? nMinTurnRate : 20));
 }
 
 //------------------------------------------------------------------------------
@@ -157,10 +163,10 @@ MouseGetDeltaZ (&dx, &dy, &dz);
 #else
 MouseGetDelta (&dx, &dy);
 #endif
-mouse_axis [0] = (int) ((dx * gameStates.input.kcFrameTime) / 35);
-mouse_axis [1] = (int) ((dy * gameStates.input.kcFrameTime) / 25);
+mouse_axis [0] = (int) ((dx * gameStates.input.kcPollTime) / 35);
+mouse_axis [1] = (int) ((dy * gameStates.input.kcPollTime) / 25);
 #ifdef SDL_INPUT
-mouse_axis [2] = (int) (dz * gameStates.input.kcFrameTime);
+mouse_axis [2] = (int) (dz * gameStates.input.kcPollTime);
 #endif
 *mouse_buttons = MouseGetButtons ();
 return 1;
@@ -218,7 +224,7 @@ else if (h < -joy_deadzone_scaled)
 	h = ((h + joy_deadzone_scaled) * 128) / (128 - joy_deadzone_scaled);
 else
 	h = 0;
-return (int) ((AttenuateAxis (h, i) * gameStates.input.kcFrameTime) / 128);	
+return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);	
 }
 
 //------------------------------------------------------------------------------
@@ -287,11 +293,11 @@ return use_joystick;
 
 void ControlsSetFCSButton (int btn, int button)
 {
-	int state,time_down,upcount,downcount;
+	int state, time_down, upcount, downcount;
 	state = time_down = upcount = downcount = 0;
 
 if (joy_get_button_state (btn)) {
-	if (btn==button) {
+	if (btn == button) {
 		state = 1;
 		time_down = gameData.time.xFrame;
 		} 
@@ -317,30 +323,27 @@ void ControlsReadFCS (int raw_axis)
 {
 	int raw_button, button, axis_min [4], axis_center [4], axis_max [4];
 
-	if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS) return;
-
-	joy_get_cal_vals (axis_min, axis_center, axis_max);
-
-	if (axis_max [3] > 1)
-		raw_button = (raw_axis*100)/axis_max [3];
-	else
-		raw_button = 0;
-
-	if (raw_button > 88)
-		button = 0;
-	else if (raw_button > 63)
-		button = 7;
-	else if (raw_button > 39)
-		button = 11;
-	else if (raw_button > 15)
-		button = 15;
-	else	
-		button = 19;
-
-	ControlsSetFCSButton (19, button);
-	ControlsSetFCSButton (15, button);
-	ControlsSetFCSButton (11, button);
-	ControlsSetFCSButton (7, button);
+if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS) 
+	return;
+joy_get_cal_vals (axis_min, axis_center, axis_max);
+if (axis_max [3] > 1)
+	raw_button = (raw_axis*100)/axis_max [3];
+else
+	raw_button = 0;
+if (raw_button > 88)
+	button = 0;
+else if (raw_button > 63)
+	button = 7;
+else if (raw_button > 39)
+	button = 11;
+else if (raw_button > 15)
+	button = 15;
+else	
+	button = 19;
+ControlsSetFCSButton (19, button);
+ControlsSetFCSButton (15, button);
+ControlsSetFCSButton (11, button);
+ControlsSetFCSButton (7, button);
 }
 		
 //------------------------------------------------------------------------------
@@ -349,9 +352,9 @@ int ControlsReadCyberman (int *mouse_axis, int *mouse_buttons)
 {
 	int idx, idy;
 
-mouse_get_cyberman_pos (&idx,&idy);
-mouse_axis [0] = (int) ((idx*gameStates.input.kcFrameTime)/128);
-mouse_axis [1] = (int) ((idy*gameStates.input.kcFrameTime)/128);
+mouse_get_cyberman_pos (&idx, &idy);
+mouse_axis [0] = (int) ((idx * gameStates.input.kcPollTime) / 128);
+mouse_axis [1] = (int) ((idy * gameStates.input.kcPollTime) / 128);
 *mouse_buttons = MouseGetButtons ();
 return 1;
 }
@@ -488,17 +491,18 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.app.bAutoMap)) {
 
 int ControlsLimitTurnRate (int bUseMouse)
 {
-if (! (gameOpts->input.bLimitTurnRate || (gameData.app.nGameMode & GM_MULTI)) /*|| (kcFrameCount == 1)*/)
+if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
 if (gameStates.app.bAutoMap || 
 	 gameOpts->input.bJoyMouse ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
-	KCCLAMP (Controls.pitchTime, MAX_PITCH);
-	KCCLAMP (Controls.headingTime, MAX_PITCH);
+	KCCLAMP (Controls.pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	if (Controls.headingTime)
+		KCCLAMP (Controls.headingTime, nMaxTurnRate);
 	}
-KCCLAMP (Controls.bankTime, MAX_PITCH);
+KCCLAMP (Controls.bankTime, gameStates.input.kcFrameTime);
 return 1;
 }
 
@@ -547,7 +551,7 @@ return h;
 void ControlsDoKeyboard (int *slide_on, int *bank_on, fix *pkp, fix *pkh, int *nCruiseSpeed, int bGetSlideBank)
 {
 	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) && 
-									 extraGameInfo [IsMultiGame].bFastPitch) ? 2 * PH_SCALE : 1;
+									 (extraGameInfo [IsMultiGame].bFastPitch == 1)) ? 2 * PH_SCALE : 1;
 	fix	kp = 0;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
@@ -580,14 +584,14 @@ if (bGetSlideBank == 2) {
 		}
 
 	for (i = 0; i < 2; i++) {
-		Controls.sideways_thrustTime -= DELTACTRL (10 + i, 2);
-		Controls.sideways_thrustTime += DELTACTRL (12 + i, 2);
-		Controls.vertical_thrustTime += DELTACTRL (14 + i, 2);
-		Controls.vertical_thrustTime -= DELTACTRL (16 + i, 2);
+		Controls.sidewaysThrustTime -= DELTACTRL (10 + i, 2);
+		Controls.sidewaysThrustTime += DELTACTRL (12 + i, 2);
+		Controls.verticalThrustTime += DELTACTRL (14 + i, 2);
+		Controls.verticalThrustTime -= DELTACTRL (16 + i, 2);
 		Controls.bankTime += DELTACTRL (20 + i, 1);
 		Controls.bankTime -= DELTACTRL (22 + i, 1);
-		Controls.forward_thrustTime += DELTACTRL (30 + i, 0);
-		Controls.forward_thrustTime -= DELTACTRL (32 + i, 0);
+		Controls.forwardThrustTime += DELTACTRL (30 + i, 0);
+		Controls.forwardThrustTime -= DELTACTRL (32 + i, 0);
 		if ((v = HaveKey (kc_keyboard, 46 + i)) < 255) 
 			Controls.afterburner_state |= keyd_pressed [v];
 		// count bomb drops
@@ -611,15 +615,15 @@ if (bGetSlideBank == 2) {
 	}
 	// headlight and weapon cycling
 	if ((v = HaveKey (kc_keyboard, 54)) < 255)
-		Controls.headlight_count = keyDownCount (v);
-	Controls.headlight_count += HaveKeyCount (kc_keyboard, 55);
-	Controls.cycle_primary_count = HaveKeyCount (kc_keyboard, 48);
-	Controls.cycle_primary_count += HaveKeyCount (kc_keyboard, 49);
-	Controls.cycle_secondary_count += HaveKeyCount (kc_keyboard, 50);
-	Controls.cycle_secondary_count += HaveKeyCount (kc_keyboard, 51);
+		Controls.headlightCount = keyDownCount (v);
+	Controls.headlightCount += HaveKeyCount (kc_keyboard, 55);
+	Controls.cycle_primaryCount = HaveKeyCount (kc_keyboard, 48);
+	Controls.cycle_primaryCount += HaveKeyCount (kc_keyboard, 49);
+	Controls.cycle_secondaryCount += HaveKeyCount (kc_keyboard, 50);
+	Controls.cycle_secondaryCount += HaveKeyCount (kc_keyboard, 51);
 	Controls.zoomDownCount += HaveKeyCount (kc_keyboard, 52);
 	Controls.zoomDownCount += HaveKeyCount (kc_keyboard, 53);
-	Controls.toggle_icons_count += HaveKeyCount (kc_keyboard, 59);
+	Controls.toggle_iconsCount += HaveKeyCount (kc_keyboard, 59);
 	Controls.useCloakDownCount += HaveKeyCount (kc_keyboard, 60);
 	Controls.useCloakDownCount += HaveKeyCount (kc_keyboard, 61);
 	Controls.useInvulDownCount += HaveKeyCount (kc_keyboard, 62);
@@ -632,7 +636,7 @@ if (bGetSlideBank == 2) {
 	// cruise speed
 	for (i = 0; i < 4; i++)
 		if ((v = HaveKey (kc_keyboard, 38 + i)) < 255) 
-			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcFrameTime);
+			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcPollTime);
 	for (i = 0; i < 2; i++)
 		if (((v = HaveKey (kc_keyboard, 42 + i)) < 255) && keyDownCount (v))
 			*nCruiseSpeed = 0;
@@ -642,10 +646,10 @@ if (bGetSlideBank == 2) {
 if (*slide_on) {
 	if (bGetSlideBank == 2) {
 		for (i = 0; i < 2; i++) {
-			Controls.vertical_thrustTime += DELTACTRL (i, 2);
-			Controls.vertical_thrustTime -= DELTACTRL (2 + i, 2);
-			Controls.sideways_thrustTime -= DELTACTRL (4 + i, 2);
-			Controls.sideways_thrustTime += DELTACTRL (6 + i, 2);
+			Controls.verticalThrustTime += DELTACTRL (i, 2);
+			Controls.verticalThrustTime -= DELTACTRL (2 + i, 2);
+			Controls.sidewaysThrustTime -= DELTACTRL (4 + i, 2);
+			Controls.sidewaysThrustTime += DELTACTRL (6 + i, 2);
 			}
 		}
 	}
@@ -666,7 +670,7 @@ if (*bank_on) {
 	}
 if (bGetSlideBank == 2)
 	ControlsLimitTurnRate (0);
-//KCCLAMP (kp, MAX_PITCH / extraGameInfo [IsMultiGame].bFastPitch);
+//KCCLAMP (kp, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
 *pkp = kp;
 }
 
@@ -724,19 +728,19 @@ if (bGetSlideBank == 2) {
 		Controls.fire_secondaryDownCount += joy_get_button_down_cnt (v);
 		}
 	if ((v = kc_joystick [2].value) < 255) 
-		Controls.forward_thrustTime += joy_get_button_downTime (v);
+		Controls.forwardThrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [3].value) < 255) 
-		Controls.forward_thrustTime -= joy_get_button_downTime (v);
+		Controls.forwardThrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [4].value) < 255) 
 		Controls.fire_flareDownCount += joy_get_button_down_cnt (v);
 	if ((v = kc_joystick [6].value) < 255) 
-		Controls.sideways_thrustTime -= joy_get_button_downTime (v);
+		Controls.sidewaysThrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [7].value) < 255) 
-		Controls.sideways_thrustTime += joy_get_button_downTime (v);
+		Controls.sidewaysThrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [8].value) < 255) 
-		Controls.vertical_thrustTime += joy_get_button_downTime (v);
+		Controls.verticalThrustTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [9].value) < 255) 
-		Controls.vertical_thrustTime -= joy_get_button_downTime (v);
+		Controls.verticalThrustTime -= joy_get_button_downTime (v);
 	if ((v = kc_joystick [11].value) < 255) 
 		Controls.bankTime += joy_get_button_downTime (v);
 	if ((v = kc_joystick [12].value) < 255) 
@@ -750,29 +754,29 @@ if (bGetSlideBank == 2) {
 	if ((v = kc_joystick [27].value) < 255) 
 		Controls.afterburner_state |= joy_get_button_state (v);
 	if ((v = kc_joystick [28].value) < 255) 
-		Controls.cycle_primary_count += joy_get_button_down_cnt (v);
+		Controls.cycle_primaryCount += joy_get_button_down_cnt (v);
 	if ((v = kc_joystick [29].value) < 255) 
-		Controls.cycle_secondary_count += joy_get_button_down_cnt (v);
+		Controls.cycle_secondaryCount += joy_get_button_down_cnt (v);
 	if ((v = kc_joystick [30].value) < 255) 
-		Controls.headlight_count += joy_get_button_down_cnt (v);
+		Controls.headlightCount += joy_get_button_down_cnt (v);
 	if (((v = kc_joystick [31].value) < 255) && joy_get_button_down_cnt (v))
 		KCToggleBomb ();
 	if ((v = kc_joystick [32].value) < 255) 
-		Controls.toggle_icons_count += joy_get_button_down_cnt (v);
+		Controls.toggle_iconsCount += joy_get_button_down_cnt (v);
 	if ((v = kc_joystick [33].value) < 255) 
 		Controls.automapDownCount += joy_get_button_down_cnt (v);
 
 	// Axis movements
 	if ((v = kc_joystick [17].value) < 255)
 		if (kc_joystick [18].value)		// If inverted...
-			Controls.sideways_thrustTime += joy_axis [v];
+			Controls.sidewaysThrustTime += joy_axis [v];
 		else
-			Controls.sideways_thrustTime -= joy_axis [v];
+			Controls.sidewaysThrustTime -= joy_axis [v];
 	if ((v = kc_joystick [19].value) < 255)
 		if (kc_joystick [20].value)		// If inverted...
-			Controls.vertical_thrustTime -= joy_axis [v];
+			Controls.verticalThrustTime -= joy_axis [v];
 		else
-			Controls.vertical_thrustTime += joy_axis [v];
+			Controls.verticalThrustTime += joy_axis [v];
 	if ((v = kc_joystick [21].value) < 255)
 		if (kc_joystick [22].value)		// If inverted...
 			Controls.bankTime += joy_axis [v];
@@ -780,22 +784,22 @@ if (bGetSlideBank == 2) {
 			Controls.bankTime -= joy_axis [v];
 	if ((v = kc_joystick [23].value) < 255)
 		if (kc_joystick [24].value)		// If inverted...
-			Controls.forward_thrustTime += joy_axis [v];
+			Controls.forwardThrustTime += joy_axis [v];
 		else
-			Controls.forward_thrustTime -= joy_axis [v];
+			Controls.forwardThrustTime -= joy_axis [v];
 
 	// special continuous slide & bank handling
 	if (*slide_on) {
 		if ((v = kc_joystick [13].value) < 255)
 			if (kc_joystick [14].value)		// If inverted...
-				Controls.vertical_thrustTime -= joy_axis [v];
+				Controls.verticalThrustTime -= joy_axis [v];
 			else
-				Controls.vertical_thrustTime += joy_axis [v];
+				Controls.verticalThrustTime += joy_axis [v];
 		if ((v = kc_joystick [15].value) < 255)
 			if (kc_joystick [16].value)		// If inverted...
-				Controls.sideways_thrustTime -= joy_axis [v];
+				Controls.sidewaysThrustTime -= joy_axis [v];
 			else
-				Controls.sideways_thrustTime += joy_axis [v];
+				Controls.sidewaysThrustTime += joy_axis [v];
 		}
 	else {
 		if ((v = kc_joystick [13].value) < 255)
@@ -847,19 +851,19 @@ if (bGetSlideBank == 2) {
 		Controls.fire_secondaryDownCount += MouseButtonDownCount (v);
 		}
 	if ((v = kc_mouse [2].value) < 255) 
-		Controls.forward_thrustTime += MouseButtonDownTime (v);
+		Controls.forwardThrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [3].value) < 255) 
-		Controls.forward_thrustTime -= MouseButtonDownTime (v);
+		Controls.forwardThrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [4].value) < 255) 
 		Controls.fire_flareDownCount += MouseButtonDownCount (v);
 	if ((v = kc_mouse [6].value) < 255) 
-		Controls.sideways_thrustTime -= MouseButtonDownTime (v);
+		Controls.sidewaysThrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [7].value) < 255) 
-		Controls.sideways_thrustTime += MouseButtonDownTime (v);
+		Controls.sidewaysThrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [8].value) < 255) 
-		Controls.vertical_thrustTime += MouseButtonDownTime (v);
+		Controls.verticalThrustTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [9].value) < 255) 
-		Controls.vertical_thrustTime -= MouseButtonDownTime (v);
+		Controls.verticalThrustTime -= MouseButtonDownTime (v);
 	if ((v = kc_mouse [11].value) < 255) 
 		Controls.bankTime += MouseButtonDownTime (v);
 	if ((v = kc_mouse [12].value) < 255) 
@@ -873,22 +877,22 @@ if (bGetSlideBank == 2) {
 	if ((v = kc_mouse [27].value) < 255) 
 		Controls.afterburner_state |= MouseButtonState (v);
 	if (((v = kc_mouse [28].value) < 255) && MouseButtonState (v))
-		Controls.cycle_primary_count += MouseButtonDownCount (v);
+		Controls.cycle_primaryCount += MouseButtonDownCount (v);
 	if (((v = kc_mouse [29].value) < 255) && MouseButtonState (v))
-		Controls.cycle_secondary_count += MouseButtonDownCount (v);
+		Controls.cycle_secondaryCount += MouseButtonDownCount (v);
 	if (((v = kc_mouse [30].value) < 255) && MouseButtonState (v))
 		Controls.zoomDownCount += MouseButtonDownCount (v);
 	// Axis movements
 	if ((v = kc_mouse [17].value) < 255)
 		if (kc_mouse [18].value)		// If inverted...
-			Controls.sideways_thrustTime -= mouse_axis [v];
+			Controls.sidewaysThrustTime -= mouse_axis [v];
 		else
-			Controls.sideways_thrustTime += mouse_axis [v];
+			Controls.sidewaysThrustTime += mouse_axis [v];
 	if ((v = kc_mouse [19].value) < 255)
 		if (kc_mouse [20].value)		// If inverted...
-			Controls.vertical_thrustTime -= mouse_axis [v];
+			Controls.verticalThrustTime -= mouse_axis [v];
 		else
-			Controls.vertical_thrustTime += mouse_axis [v];
+			Controls.verticalThrustTime += mouse_axis [v];
 	if ((v = kc_mouse [21].value) < 255)
 		if (kc_mouse [22].value)		// If inverted...
 			Controls.bankTime -= mouse_axis [v];
@@ -896,21 +900,21 @@ if (bGetSlideBank == 2) {
 			Controls.bankTime += mouse_axis [v];
 	if ((v = kc_mouse [23].value) < 255)
 		if (kc_mouse [24].value)		// If inverted...
-			Controls.forward_thrustTime += mouse_axis [v];
+			Controls.forwardThrustTime += mouse_axis [v];
 		else
-			Controls.forward_thrustTime -= mouse_axis [v];
+			Controls.forwardThrustTime -= mouse_axis [v];
 	// special continuous slide & bank handling
 	if (*slide_on) {
 		if ((v = kc_mouse [13].value) < 255)
 			if (kc_mouse [14].value)		// If inverted...
-				Controls.vertical_thrustTime += mouse_axis [v];
+				Controls.verticalThrustTime += mouse_axis [v];
 			else
-				Controls.vertical_thrustTime -= mouse_axis [v];
+				Controls.verticalThrustTime -= mouse_axis [v];
 		if ((v = kc_mouse [15].value) < 255)	
 			if (kc_mouse [16].value)		// If inverted...
-				Controls.sideways_thrustTime -= mouse_axis [v];
+				Controls.sidewaysThrustTime -= mouse_axis [v];
 			else
-				Controls.sideways_thrustTime += mouse_axis [v];
+				Controls.sidewaysThrustTime += mouse_axis [v];
 		}
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
@@ -970,17 +974,17 @@ if (bGetSlideBank == 2) {
 
 if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 	if (bGetSlideBank == 2) {
-		Controls.vertical_thrustTime += MouseButtonDownTime (D2_MB_Z_UP)/2;
-		Controls.vertical_thrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN)/2;
+		Controls.verticalThrustTime += MouseButtonDownTime (D2_MB_Z_UP)/2;
+		Controls.verticalThrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN)/2;
 		Controls.bankTime += MouseButtonDownTime (D2_MB_BANK_LEFT);
 		Controls.bankTime -= MouseButtonDownTime (D2_MB_BANK_RIGHT);
 		}
 	if (*slide_on) {
 		if (bGetSlideBank == 2) {
-			Controls.vertical_thrustTime -= MouseButtonDownTime (D2_MB_PITCH_FORWARD);
-			Controls.vertical_thrustTime += MouseButtonDownTime (D2_MB_PITCH_BACKWARD);
-			Controls.sideways_thrustTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
-			Controls.sideways_thrustTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
+			Controls.verticalThrustTime -= MouseButtonDownTime (D2_MB_PITCH_FORWARD);
+			Controls.verticalThrustTime += MouseButtonDownTime (D2_MB_PITCH_BACKWARD);
+			Controls.sidewaysThrustTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
+			Controls.sidewaysThrustTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
 			}
 		}
 	else if (bGetSlideBank == 1) {
@@ -1044,24 +1048,29 @@ else {
 int ControlsCapSampleRate (void)
 {
 //	DEFTIME
+
 if (gameStates.limitFPS.bControls) {
-		int		fps;
 	// check elapsed time since last call to ControlsReadAll
 	// if less than 25 ms (i.e. 40 fps) return
 	if (gameOpts->legacy.bMouse) 
-		gameStates.input.kcFrameTime = gameData.time.xFrame;
+		gameStates.input.kcPollTime = gameData.time.xFrame;
 	else {
 		if (gameData.app.bGamePaused)
 			GetSlowTick ();
 		kcFrameCount++;
+		gameStates.input.kcPollTime += gameData.time.xFrame;
 		if (!gameStates.app.b40fpsTick)
 			return 1;
-		fps = (int) ((1000 + gameStates.app.nDeltaTime / 2) / gameStates.app.nDeltaTime);
-		gameStates.input.kcFrameTime = fps ? (f1_0 + fps / 2) / fps : f1_0;
 		}
 	}
 else
-	gameStates.input.kcFrameTime = gameData.time.xFrame;
+	gameStates.input.kcPollTime = gameData.time.xFrame;
+gameStates.input.kcFrameTime = (float) gameStates.input.kcPollTime / kcFrameCount;
+#if 1
+nMaxTurnRate = (int) gameStates.input.kcFrameTime;
+#else
+nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - f2fl (gameData.pig.ship.player->maxRotThrust)));
+#endif
 return 0;
 }
 
@@ -1105,14 +1114,11 @@ int ControlsReadAll (void)
 	int	mouse_buttons;
 	int	bUseMouse, use_joystick;
 
-Controls.vertical_thrustTime = 0;
-Controls.sideways_thrustTime = 0;
-Controls.forward_thrustTime = 0;
-Controls.cycle_primary_count = 0;
-Controls.cycle_secondary_count = 0;
-Controls.toggle_icons_count = 0;
+Controls.cycle_primaryCount = 0;
+Controls.cycle_secondaryCount = 0;
+Controls.toggle_iconsCount = 0;
 Controls.zoomDownCount = 0;
-Controls.headlight_count = 0; 
+Controls.headlightCount = 0; 
 Controls.fire_flareDownCount = 0;
 Controls.drop_bombDownCount = 0;	
 Controls.automapDownCount = 0;
@@ -1169,8 +1175,8 @@ if (gameStates.input.nCruiseSpeed > i2f (100))
 	gameStates.input.nCruiseSpeed = i2f (100);
 else if (gameStates.input.nCruiseSpeed < 0) 
 	gameStates.input.nCruiseSpeed = 0;
-if (!Controls.forward_thrustTime)
-	Controls.forward_thrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcFrameTime)/100;
+if (!Controls.forwardThrustTime)
+	Controls.forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime)/100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (bank_sens_mod > 2) {
@@ -1179,21 +1185,28 @@ if (bank_sens_mod > 2) {
 	}
 #endif
 
-//----------- Clamp values between -gameStates.input.kcFrameTime and gameStates.input.kcFrameTime
-if (gameStates.input.kcFrameTime > F1_0) {
+//----------- Clamp values between -gameStates.input.kcPollTime and gameStates.input.kcPollTime
+if (gameStates.input.kcPollTime > F1_0) {
 #if TRACE
-	con_printf (1, "Bogus frame time of %.2f seconds\n", f2fl (gameStates.input.kcFrameTime));
+	con_printf (1, "Bogus frame time of %.2f seconds\n", f2fl (gameStates.input.kcPollTime));
 #endif	
-	gameStates.input.kcFrameTime = F1_0;
+	gameStates.input.kcPollTime = F1_0;
 	}
-
-KCCLAMP (Controls.vertical_thrustTime, gameStates.input.kcFrameTime);
-KCCLAMP (Controls.sideways_thrustTime, gameStates.input.kcFrameTime);
-KCCLAMP (Controls.forward_thrustTime, gameStates.input.kcFrameTime);
+#if 0
+Controls.verticalThrustTime /= kcFrameCount;
+Controls.sidewaysThrustTime /= kcFrameCount;
+Controls.forwardThrustTime /= kcFrameCount;
+Controls.headingTime /= kcFrameCount;
+Controls.pitchTime /= kcFrameCount;
+Controls.bankTime /= kcFrameCount;
+#endif
+KCCLAMP (Controls.verticalThrustTime, nMaxTurnRate);
+KCCLAMP (Controls.sidewaysThrustTime, nMaxTurnRate);
+KCCLAMP (Controls.forwardThrustTime, nMaxTurnRate);
 if (!ControlsLimitTurnRate (bUseMouse)) {
-	KCCLAMP (Controls.headingTime, gameStates.input.kcFrameTime);
-	KCCLAMP (Controls.pitchTime, gameStates.input.kcFrameTime);
-	KCCLAMP (Controls.bankTime, gameStates.input.kcFrameTime);
+	KCCLAMP (Controls.headingTime, nMaxTurnRate);
+	KCCLAMP (Controls.pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	KCCLAMP (Controls.bankTime, nMaxTurnRate);
 	}
 if (gameStates.render.nZoomFactor > F1_0) {
 		int r = (gameStates.render.nZoomFactor * 100) / F1_0;
@@ -1206,15 +1219,14 @@ if (gameStates.render.nZoomFactor > F1_0) {
 	HUDMessage (0, "x %d.%02d", r / 100, r % 100);
 #endif
 	}
-//	KCCLAMP (Controls.afterburnerTime, gameStates.input.kcFrameTime);
+//	KCCLAMP (Controls.afterburnerTime, gameStates.input.kcPollTime);
 #ifdef _DEBUG
 if (keyd_pressed [KEY_DELETE])
 	memset (&Controls, 0, sizeof (control_info));
 #endif
 gameStates.input.bKeepSlackTime = 0;
 kcFrameCount = 0;
-if (Controls.forward_thrustTime)
-	Controls.forward_thrustTime = Controls.forward_thrustTime;
+gameStates.input.kcPollTime = 0;
 return 0;
 }
 
@@ -1253,11 +1265,11 @@ void CybermouseAdjust ()
 	}*/
 
 	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
-	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
+	Controls.forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
 //	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 //	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;

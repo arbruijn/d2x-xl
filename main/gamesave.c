@@ -1192,22 +1192,22 @@ if (gameFileInfo.botGen.offset > -1) {
 
 				OldMatCenInfoRead(&m, LoadFile);
 
-				gameData.matCens.robotCenters[i].objFlags[0] = m.objFlags;
-				gameData.matCens.robotCenters[i].objFlags[1] = 0;
-				gameData.matCens.robotCenters[i].xHitPoints = m.xHitPoints;
-				gameData.matCens.robotCenters[i].xInterval = m.xInterval;
-				gameData.matCens.robotCenters[i].nSegment = m.nSegment;
-				gameData.matCens.robotCenters[i].nFuelCen = m.nFuelCen;
+				gameData.matCens.botGens[i].objFlags[0] = m.objFlags;
+				gameData.matCens.botGens[i].objFlags[1] = 0;
+				gameData.matCens.botGens[i].xHitPoints = m.xHitPoints;
+				gameData.matCens.botGens[i].xInterval = m.xInterval;
+				gameData.matCens.botGens[i].nSegment = m.nSegment;
+				gameData.matCens.botGens[i].nFuelCen = m.nFuelCen;
 			}
 			else
-				MatCenInfoRead(&gameData.matCens.robotCenters[i], LoadFile);
+				MatCenInfoRead(&gameData.matCens.botGens[i], LoadFile);
 
-			//	Set links in gameData.matCens.robotCenters to gameData.matCens.fuelCenters array
+			//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 
 			for (j=0; j<=gameData.segs.nLastSegment; j++)
 				if (gameData.segs.segment2s[j].special == SEGMENT_IS_ROBOTMAKER)
 					if (gameData.segs.segment2s[j].nMatCen == i)
-						gameData.matCens.robotCenters[i].nFuelCen = gameData.segs.segment2s[j].value;
+						gameData.matCens.botGens[i].nFuelCen = gameData.segs.segment2s[j].value;
 		}
 	}
 }
@@ -1222,13 +1222,13 @@ if (gameFileInfo.equipGen.offset > -1) {
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.equipGen.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.equipGen.count;i++) {
-			MatCenInfoRead(&gameData.matCens.equipCenters[i], LoadFile);
+			MatCenInfoRead(&gameData.matCens.equipGens[i], LoadFile);
 
-			//	Set links in gameData.matCens.robotCenters to gameData.matCens.fuelCenters array
+			//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 			for (j=0; j<=gameData.segs.nLastSegment; j++)
 				if (gameData.segs.segment2s[j].special == SEGMENT_IS_EQUIPMAKER)
 					if (gameData.segs.segment2s[j].nMatCen == i)
-						gameData.matCens.equipCenters[i].nFuelCen = gameData.segs.segment2s[j].value;
+						gameData.matCens.equipGens[i].nFuelCen = gameData.segs.segment2s[j].value;
 		}
 	}
 }
@@ -1390,7 +1390,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 }
 }
 
-gameData.matCens.nRobotCenters = gameFileInfo.botGen.count;
+gameData.matCens.nMatCens = gameFileInfo.botGen.count;
 //fix old wall structs
 if (gameTopFileInfo.fileinfo_version < 17) {
 	short nSegment,nSide,wallnum;
@@ -1773,7 +1773,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.control.count		=  1;
 	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
  	gameFileInfo.botGen.offset		=	-1;
-	gameFileInfo.botGen.count		=	gameData.matCens.nRobotCenters;
+	gameFileInfo.botGen.count		=	gameData.matCens.nMatCens;
 	gameFileInfo.botGen.size		=	sizeof(tMatCenInfo);
 
  	gameFileInfo.lightDeltaIndices.offset		=	-1;
@@ -1832,7 +1832,7 @@ int SaveGameData(FILE * SaveFile)
 	//================ SAVE MATERIALIZATION CENTER TRIGGER INFO ===============
 
 	botGen.offset = ftell(SaveFile);
-	fwrite(gameData.matCens.robotCenters, sizeof(tMatCenInfo), gameFileInfo.botGen.count, SaveFile);
+	fwrite(gameData.matCens.botGens, sizeof(tMatCenInfo), gameFileInfo.botGen.count, SaveFile);
 
 	//================ SAVE DELTA LIGHT INFO ===============
 	gameData.render.lights.deltaIndices.offset = ftell(SaveFile);

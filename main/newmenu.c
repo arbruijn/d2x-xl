@@ -1701,10 +1701,10 @@ while (!done) {
 		int b = gameOpts->legacy.bInput;
 		gameOpts->legacy.bInput = 1;
 		nMouseState = MouseButtonState (0);
-		bWheelUp = MouseButtonState (3);
-		bWheelDown = MouseButtonState (4);
 		gameOpts->legacy.bInput = b;
 		}
+	bWheelUp = MouseButtonState (3);
+	bWheelDown = MouseButtonState (4);
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();
 	//NetworkListen ();

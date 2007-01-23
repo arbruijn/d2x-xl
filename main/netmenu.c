@@ -1174,7 +1174,7 @@ int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
 	int opt, opt_name, optLevel, optLevelText, opt_mode, optMoreOpts, 
-		 opt_access, opt_mission, optMissionName, optD2XOpts;
+		 opt_access, opt_mission, optMissionName, optD2XOpts, optConfigMenu;
 	tMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char szLevelText [32];
@@ -1312,6 +1312,7 @@ ADD_TEXT (opt, "", 0);
 opt++; 
 ADD_MENU (opt, TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 optMoreOpts = opt++;
+optConfigMenu =
 optD2XOpts =
 optEntOpts =
 optMBallOpts = -1;
@@ -1326,6 +1327,8 @@ if (!gameStates.app.bNostalgia) {
 		ADD_MENU (opt, TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
 		optMBallOpts = opt++;
 		}
+	ADD_MENU (opt, TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+	optConfigMenu = opt++;
 	}
 
 doMenu:
@@ -1378,6 +1381,10 @@ else if (!gameStates.app.bNostalgia && (optEntOpts >= 0) && (choice == optEntOpt
 	}
 else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBallOpts)) {
 	NetworkMonsterballOptions ();
+	goto doMenu;
+	}
+else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optConfigMenu)) {
+	ConfigMenu ();
 	goto doMenu;
 	}
 else if (choice == opt_mission) {

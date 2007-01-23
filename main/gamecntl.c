@@ -290,22 +290,22 @@ if (Controls.fire_flareDownCount)
 		CreateFlare(gameData.objs.console);
 if (AllowedToFireMissile()) {
 	i = secondaryWeaponToWeaponInfo[gameData.weapons.nSecondary];
-	gameData.app.nGlobalMissileFiringCount += WI_fire_count (i) * (Controls.fire_secondary_state || Controls.fire_secondaryDownCount);
+	gameData.app.nGlobalMissileFiringCount += WI_fireCount (i) * (Controls.fire_secondary_state || Controls.fire_secondaryDownCount);
 	}
 if (gameData.app.nGlobalMissileFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for normal missile firing
 	gameData.app.nGlobalMissileFiringCount--;
 	}
-if (Controls.cycle_primary_count) {
-	for (i = 0; i < Controls.cycle_primary_count; i++)
+if (Controls.cycle_primaryCount) {
+	for (i = 0; i < Controls.cycle_primaryCount; i++)
 	CyclePrimary ();
 	}
-if (Controls.cycle_secondary_count) {
-	for (i = 0; i < Controls.cycle_secondary_count; i++)
+if (Controls.cycle_secondaryCount) {
+	for (i = 0; i < Controls.cycle_secondaryCount; i++)
 	CycleSecondary ();
 	}
-if (Controls.headlight_count) {
-	for (i=0;i<Controls.headlight_count;i++)
+if (Controls.headlightCount) {
+	for (i=0;i<Controls.headlightCount;i++)
 	toggle_headlight_active ();
 	}
 if (gameData.app.nGlobalMissileFiringCount < 0)
@@ -1124,7 +1124,7 @@ int HandleSystemKey(int key)
 					ResetPaletteAdd(); 
 					GrPaletteStepLoad (NULL); 
 					}
-				OptionsMenu();
+				ConfigMenu();
 				if (!(gameData.app.nGameMode&GM_MULTI)) 
 					PaletteRestore();
 				if (scanline_save != Scanline_double)   

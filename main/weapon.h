@@ -34,7 +34,7 @@ typedef struct tWeaponInfo {
 	short   flashSound;        // What sound to play when fired
 
 	sbyte   wall_hit_vclip;     // What tVideoClip for impact with wall
-	sbyte   fire_count;         // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fire_count shots will be fired.
+	sbyte   fireCount;         // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	short   robot_hitSound;    // What sound for impact with robot
 
 	sbyte   ammo_usage;         // How many units of ammunition it uses.
@@ -96,7 +96,7 @@ typedef struct tD1WeaponInfo {
 
 	sbyte	wall_hit_vclip;			// What tVideoClip for impact with wall
 	short	wall_hitSound;			// What sound for impact with wall
-	sbyte	fire_count;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fire_count shots will be fired.
+	sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	sbyte	ammo_usage;					//	How many units of ammunition it uses.
 
 	sbyte	weapon_vclip;				//	Vclip to render for the weapon, itself.
@@ -131,7 +131,7 @@ typedef struct tD1WeaponInfo {
 
 typedef struct D2D1_weapon_info {
 	sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
-	sbyte	fire_count;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fire_count shots will be fired.
+	sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	sbyte	ammo_usage;					//	How many units of ammunition it uses.
 	sbyte	destroyable;				//	If !0, this weapon can be destroyed by another weapon.
 	sbyte	matter;						//	Flag: set if this tObject is matter (as opposed to energy)
@@ -150,7 +150,7 @@ typedef struct D2D1_weapon_info {
 } D2D1_weapon_info;
 
 #define WI_persistent(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].persistent : gameData.weapons.info [_i].persistent)
-#define WI_fire_count(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].fire_count : gameData.weapons.info [_i].fire_count)
+#define WI_fireCount(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].fireCount : gameData.weapons.info [_i].fireCount)
 #define WI_ammo_usage(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].ammo_usage : gameData.weapons.info [_i].ammo_usage)
 #define WI_destructable(_i)	(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].destroyable : gameData.weapons.info [_i].destroyable)
 #define WI_matter(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].matter : gameData.weapons.info [_i].matter)
@@ -163,7 +163,7 @@ typedef struct D2D1_weapon_info {
 #define WI_speed(_i,_j)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].speed [_j] : gameData.weapons.info [_i].speed [_j])
 #define WI_mass(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].mass : gameData.weapons.info [_i].mass)
 #define WI_drag(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].drag : gameData.weapons.info [_i].drag)
-#define WI_thrust(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].thrust : gameData.weapons.info [_i].thrust)
+#define WIThrust(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].thrust : gameData.weapons.info [_i].thrust)
 #define WI_light(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].light : gameData.weapons.info [_i].light)
 #define WI_lifetime(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].lifetime : gameData.weapons.info [_i].lifetime)
 #define WI_damage_radius(_i)	(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].damage_radius : gameData.weapons.info [_i].damage_radius)
@@ -292,7 +292,7 @@ int PickupSecondary (tObject *objP, int weapon_index, int count, int nPlayer);
 int PickupPrimary (int weapon_index, int nPlayer);
 
 //called when ammo (for the vulcan cannon) is picked up
-int PickupAmmo(int classFlag,int weapon_index,int ammo_count, int nPlayer);
+int PickupAmmo(int classFlag,int weapon_index,int ammoCount, int nPlayer);
 
 extern int AttemptToStealItem(tObject *objp, int player_num);
 

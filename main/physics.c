@@ -213,31 +213,30 @@ if (!(pi->rotVel.p.x || pi->rotVel.p.y || pi->rotVel.p.z ||
 if (objP->mType.physInfo.drag) {
 	int count;
 	vmsVector accel;
-	fix xDrag, r, k;
+	fix xDrag, xScale, r, k;
 
 	count = gameData.time.xFrame / FT;
 	r = gameData.time.xFrame % FT;
 	k = FixDiv (r, FT);
-	xDrag = (objP->mType.physInfo.drag*5)/2;
+	xDrag = (objP->mType.physInfo.drag * 5) / 2;
+	xScale = f1_0 - xDrag;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		VmVecCopyScale (&accel, 
-			&objP->mType.physInfo.rotThrust, 
-			FixDiv (f1_0, objP->mType.physInfo.mass));
+		VmVecCopyScale (&accel, &objP->mType.physInfo.rotThrust, FixDiv (f1_0, objP->mType.physInfo.mass));
 		while (count--) {
 			VmVecInc (&objP->mType.physInfo.rotVel, &accel);
-			VmVecScale (&objP->mType.physInfo.rotVel, f1_0-xDrag);
+			VmVecScale (&objP->mType.physInfo.rotVel, xScale);
 			}
 		//do linear scale on remaining bit of time
 		VmVecScaleInc (&objP->mType.physInfo.rotVel, &accel, k);
-		VmVecScale (&objP->mType.physInfo.rotVel, f1_0-FixMul (k, xDrag));
+		VmVecScale (&objP->mType.physInfo.rotVel, f1_0 - FixMul (k, xDrag));
 		}
 	else if (!(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
 		fix xTotalDrag = f1_0;
-			while (count--)
-				xTotalDrag = FixMul (xTotalDrag, f1_0-xDrag);
-			//do linear scale on remaining bit of time
-			xTotalDrag = FixMul (xTotalDrag, f1_0-FixMul (k, xDrag));
-			VmVecScale (&objP->mType.physInfo.rotVel, xTotalDrag);
+		while (count--)
+			xTotalDrag = FixMul (xTotalDrag, xScale);
+		//do linear scale on remaining bit of time
+		xTotalDrag = FixMul (xTotalDrag, f1_0 - FixMul (k, xDrag));
+		VmVecScale (&objP->mType.physInfo.rotVel, xTotalDrag);
 		}
 	}
 //now rotate tObject
@@ -975,7 +974,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 
 //this routine will set the thrust for an tObject to a value that will
 // (hopefully) maintain the tObject's current velocity
-void set_thrust_from_velocity (tObject *objP)
+void setThrust_from_velocity (tObject *objP)
 {
 	fix k;
 

@@ -515,7 +515,7 @@ return p;
 int InitSubTitles(char *filename)
 {
 	CFILE *ifile;
-	int size,read_count;
+	int size,readCount;
 	ubyte *p;
 	int have_binary = 0;
 
@@ -537,10 +537,10 @@ int InitSubTitles(char *filename)
 
 	size = CFLength(ifile, 0);
 	MALLOC (subTitles.rawDataP, ubyte, size+1);
-	read_count = (int) CFRead(subTitles.rawDataP, 1, size, ifile);
+	readCount = (int) CFRead(subTitles.rawDataP, 1, size, ifile);
 	CFClose(ifile);
 	subTitles.rawDataP[size] = 0;
-	if (read_count != size) {
+	if (readCount != size) {
 		d_free(subTitles.rawDataP);
 		return 0;
 	}

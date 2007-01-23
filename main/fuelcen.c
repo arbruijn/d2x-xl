@@ -87,7 +87,7 @@ void FuelCenReset ()
 	for (i=0; i<MAX_SEGMENTS; i++)
 		gameData.segs.segment2s [i].special = SEGMENT_IS_NOTHING;
 
-	gameData.matCens.nRobotCenters = 0;
+	gameData.matCens.nMatCens = 0;
 
 }
 
@@ -171,10 +171,10 @@ if (oldType == SEGMENT_IS_EQUIPMAKER)
 else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 	gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
 	i = seg2p->nMatCen;
-	if (i < --gameData.matCens.nRobotCenters)
-		memcpy (gameData.matCens.robotCenters + i, 
-				  gameData.matCens.robotCenters + i + 1, 
-				  (gameData.matCens.nRobotCenters - i) * sizeof (tFuelCenInfo));
+	if (i < --gameData.matCens.nMatCens)
+		memcpy (gameData.matCens.botGens + i, 
+				  gameData.matCens.botGens + i + 1, 
+				  (gameData.matCens.nMatCens - i) * sizeof (tFuelCenInfo));
 	}
 }
 
@@ -211,13 +211,13 @@ void MatCenCreate (tSegment *segP, int oldType)
 	gameData.matCens.fuelCenters [i].xTimer = -1;
 	gameData.matCens.fuelCenters [i].bFlag = 0;
 	COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
-	seg2p->nMatCen = gameData.matCens.nRobotCenters;
-	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].xHitPoints = MATCEN_HP_DEFAULT;
-	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
-	gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].nSegment = SEG2_IDX (seg2p);
+	seg2p->nMatCen = gameData.matCens.nMatCens;
+	gameData.matCens.botGens [gameData.matCens.nMatCens].xHitPoints = MATCEN_HP_DEFAULT;
+	gameData.matCens.botGens [gameData.matCens.nMatCens].xInterval = MATCEN_INTERVAL_DEFAULT;
+	gameData.matCens.botGens [gameData.matCens.nMatCens].nSegment = SEG2_IDX (seg2p);
 	if (oldType == SEGMENT_IS_NOTHING)
-		gameData.matCens.robotCenters [gameData.matCens.nRobotCenters].nFuelCen = gameData.matCens.nFuelCenters;
-	gameData.matCens.nRobotCenters++;
+		gameData.matCens.botGens [gameData.matCens.nMatCens].nFuelCen = gameData.matCens.nFuelCenters;
+	gameData.matCens.nMatCens++;
 	gameData.matCens.nFuelCenters++;
 }
 
@@ -254,11 +254,11 @@ gameData.matCens.fuelCenters [i].bFlag = 0;
 gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (SEG_IDX (segP), -1) == 0;
 COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
 seg2p->nMatCen = gameData.matCens.nEquipCenters;
-gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.equipGens [gameData.matCens.nEquipCenters].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.equipGens [gameData.matCens.nEquipCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nSegment = SEG2_IDX (seg2p);
 if (oldType == SEGMENT_IS_NOTHING)
-	gameData.matCens.equipCenters [gameData.matCens.nEquipCenters].nFuelCen = gameData.matCens.nFuelCenters;
+	gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nFuelCen = gameData.matCens.nFuelCenters;
 gameData.matCens.nEquipCenters++;
 gameData.matCens.nFuelCenters++;
 }
@@ -297,7 +297,7 @@ void MatCenTrigger (short nSegment)
 con_printf (CON_DEBUG, "Trigger matcen, tSegment %i\n", nSegment);
 #endif
 if (seg2p->special == SEGMENT_IS_EQUIPMAKER) {
-	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipCenters [seg2p->nMatCen].nFuelCen;
+	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2p->nMatCen].nFuelCen;
 	matCenP->bEnabled = !matCenP->bEnabled;
 	return;
 	}
@@ -305,8 +305,8 @@ Assert (seg2p->special == SEGMENT_IS_ROBOTMAKER);
 Assert (seg2p->nMatCen < gameData.matCens.nFuelCenters);
 Assert ((seg2p->nMatCen >= 0) && (seg2p->nMatCen <= gameData.segs.nLastSegment));
 
-matCenP = gameData.matCens.fuelCenters + gameData.matCens.robotCenters [seg2p->nMatCen].nFuelCen;
-if (matCenP->bEnabled == 1)
+matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [seg2p->nMatCen].nFuelCen;
+if (matCenP->bEnabled)
 	return;
 if (!matCenP->nLives)
 	return;
@@ -352,13 +352,13 @@ Restart: ;
 	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
 		if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP))	{
 
-			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.robotCenters.
+			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.botGens.
 			if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
-				gameData.matCens.nRobotCenters--;
-				Assert (gameData.matCens.nRobotCenters >= 0);
+				gameData.matCens.nMatCens--;
+				Assert (gameData.matCens.nMatCens >= 0);
 
-				for (j = seg2p->nMatCen; j < gameData.matCens.nRobotCenters; j++)
-					gameData.matCens.robotCenters [j] = gameData.matCens.robotCenters [j+1];
+				for (j = seg2p->nMatCen; j < gameData.matCens.nMatCens; j++)
+					gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
 
 				for (j=0; j<gameData.matCens.nFuelCenters; j++) {
 					if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
@@ -367,10 +367,10 @@ Restart: ;
 				}
 			}
 
-			//fix gameData.matCens.robotCenters so they point to correct fuelcenter
-			for (j = 0; j < gameData.matCens.nRobotCenters; j++)
-				if (gameData.matCens.robotCenters [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
-					gameData.matCens.robotCenters [j].nFuelCen--;
+			//fix gameData.matCens.botGens so they point to correct fuelcenter
+			for (j = 0; j < gameData.matCens.nMatCens; j++)
+				if (gameData.matCens.botGens [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
+					gameData.matCens.botGens [j].nFuelCen--;
 
 			gameData.matCens.nFuelCenters--;
 			Assert (gameData.matCens.nFuelCenters >= 0);
@@ -506,14 +506,14 @@ if (!matCenP->bFlag) {
 			}
 		nObject = objP->next;
 		}
-	CreateMatCenEffect (matCenP, VCLIP_POWERUP_DISAPPEARANCE);
+	CreateMatCenEffect (matCenP, VCLIP_MORPHING_ROBOT);
 	}
 else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
+	if (matCenP->xTimer < (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
 		return;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
-	nType = GetMatCenObjType (matCenP, gameData.matCens.equipCenters [nMatCen].objFlags);
+	nType = GetMatCenObjType (matCenP, gameData.matCens.equipGens [nMatCen].objFlags);
 	if (nType < 0)
 		return;
 	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
@@ -640,8 +640,8 @@ if (nMatCen == -1) {
 #endif
 	return;
 	}
-if (!(gameData.matCens.robotCenters [nMatCen].objFlags [0] ||
-		gameData.matCens.robotCenters [nMatCen].objFlags [1]))
+if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
+		gameData.matCens.botGens [nMatCen].objFlags [1]))
 	return;
 
 // Wait until we have a d_free slot for this puppy...
@@ -716,14 +716,14 @@ if (!matCenP->bFlag) {
 else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	if (matCenP->xTimer <= (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
 		return;
+	matCenP->xCapacity -= gameData.matCens.xEnergyToCreateOneRobot;
 	matCenP->bFlag = 0;
 	matCenP->xTimer = 0;
 	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
-		// If this is the first materialization, set to valid robot.
-	if (!(gameData.matCens.robotCenters [nMatCen].objFlags [0] || 
-			gameData.matCens.robotCenters [nMatCen].objFlags [1]))
+	// If this is the first materialization, set to valid robot.
+	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags);
+	if (nType < 0)
 		return;
-	nType = GetMatCenObjType (matCenP, gameData.matCens.robotCenters [nMatCen].objFlags);
 #if TRACE
 	con_printf (CON_DEBUG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
 #endif
@@ -1260,9 +1260,11 @@ void DisableMatCens (void)
 {
 	int	i;
 
-	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
+for (i = 0; i < gameData.matCens.nMatCens; i++) {
+	if (gameData.matCens.fuelCenters [i].nType != SEGMENT_IS_EQUIPMAKER) {
 		gameData.matCens.fuelCenters [i].bEnabled = 0;
 		gameData.matCens.fuelCenters [i].xDisableTime = 0;
+		}
 	}
 }
 
@@ -1273,20 +1275,20 @@ void InitAllMatCens (void)
 {
 	int	i;
 
-	for (i=0; i<gameData.matCens.nFuelCenters; i++)
-		if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
-			gameData.matCens.fuelCenters [i].nLives = 3;
-			gameData.matCens.fuelCenters [i].bEnabled = 0;
+for (i = 0; i < gameData.matCens.nFuelCenters; i++)
+	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
+		gameData.matCens.fuelCenters [i].nLives = 3;
+		gameData.matCens.fuelCenters [i].bEnabled = 0;
 			gameData.matCens.fuelCenters [i].xDisableTime = 0;
 #ifndef NDEBUG
 {
 			//	Make sure this fuelcen is pointed at by a matcen.
 			int	j;
-			for (j=0; j<gameData.matCens.nRobotCenters; j++) {
-				if (gameData.matCens.robotCenters [j].nFuelCen == i)
+			for (j=0; j<gameData.matCens.nMatCens; j++) {
+				if (gameData.matCens.botGens [j].nFuelCen == i)
 					break;
 			}
-			Assert (j != gameData.matCens.nRobotCenters);
+			Assert (j != gameData.matCens.nMatCens);
 }
 #endif
 
@@ -1294,8 +1296,8 @@ void InitAllMatCens (void)
 
 #ifndef NDEBUG
 	//	Make sure all matcens point at a fuelcen
-	for (i=0; i < gameData.matCens.nRobotCenters; i++) {
-		int	nFuelCen = gameData.matCens.robotCenters [i].nFuelCen;
+	for (i=0; i < gameData.matCens.nMatCens; i++) {
+		int	nFuelCen = gameData.matCens.botGens [i].nFuelCen;
 
 		Assert (nFuelCen < gameData.matCens.nFuelCenters);
 		Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_IS_ROBOTMAKER);

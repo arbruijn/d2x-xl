@@ -73,7 +73,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Correctly set currentLevel_num when loading/creating mine in editor
  * 
  * Revision 1.178  1994/09/25  14:17:51  mike
- * Initialize (to 0) gameData.matCens.nRobotCenters and gameData.walls.nOpenDoors at mine creation.
+ * Initialize (to 0) gameData.matCens.nMatCens and gameData.walls.nOpenDoors at mine creation.
  * 
  * Revision 1.177  1994/09/20  14:36:06  mike
  * Write function to find overlapping segments.
@@ -404,7 +404,7 @@ void med_get_vertex_list(tSegment *s,int *nv,short **vp)
 //	This function can be used to determine whether a vertex is used exactly once in
 //	all segments, in which case it can be freely moved because it is not connected
 //	to any other tSegment.
-int med_vertex_count(int vi)
+int med_vertexCount(int vi)
 {
 	int		s,v;
 	tSegment	*sp;
@@ -426,7 +426,7 @@ int med_vertex_count(int vi)
 // -------------------------------------------------------------------------------
 int is_free_vertex(int vi)
 {
-	return med_vertex_count(vi) == 1;
+	return med_vertexCount(vi) == 1;
 }
 
 
@@ -447,7 +447,7 @@ void med_move_vertex(tSegment *sp, int pi, vmsVector *vofs)
 	abspi = sp->verts[pi];
 
 	// Make sure vertex abspi is d_free.  If it is d_free, it appears exactly once in gameData.segs.vertices
-	Assert(med_vertex_count(abspi) == 1);
+	Assert(med_vertexCount(abspi) == 1);
 
 	Assert(abspi <= MAX_SEGMENT_VERTICES);			// Make sure vertex id is not bogus.
 
@@ -502,7 +502,7 @@ int med_add_vertex(vmsVector *vp)
 	int	v,free_index;
 	int	count;					// number of used vertices found, for loops exits when count == gameData.segs.nVertices
 
-//	set_vertex_counts();
+//	set_vertexCounts();
 
 	Assert(gameData.segs.nVertices < MAX_SEGMENT_VERTICES);
 
@@ -981,9 +981,9 @@ void compress_segments(void)
 					if (gameData.matCens.fuelCenters[f].nSegment == seg)
 						gameData.matCens.fuelCenters[f].nSegment = hole;
 
-				for (f=0;f<gameData.matCens.nRobotCenters;f++)
-					if (gameData.matCens.robotCenters[f].nSegment == seg)
-						gameData.matCens.robotCenters[f].nSegment = hole;
+				for (f=0;f<gameData.matCens.nMatCens;f++)
+					if (gameData.matCens.botGens[f].nSegment == seg)
+						gameData.matCens.botGens[f].nSegment = hole;
 
 				for (t=0;t<gameData.trigs.nTriggers;t++)
 					for (l=0;l<gameData.trigs.triggers[t].nLinks;l++)
@@ -1057,7 +1057,7 @@ void med_compress_mine(void)
 
 	compress_segments();
 	compress_vertices();
-	set_vertex_counts();
+	set_vertexCounts();
 
 	//--repair-- create_local_segment_data();
 
@@ -1177,7 +1177,7 @@ int med_attach_segment_rotated(tSegment *destseg, tSegment *newseg, int destside
 		nsp->verts[v+4] = med_add_vertex(&tvs[v]);
 	}
 
-	set_vertex_counts();
+	set_vertexCounts();
 
 	// Now all the vertices are in place.  Create the faces.
 	ValidateSegment(nsp);
@@ -1277,7 +1277,7 @@ void update_num_vertices(void)
 // -------------------------------------------------------------------------------
 //	Set Vertex_active to number of occurrences of each vertex.
 //	Set gameData.segs.nVertices.
-void set_vertex_counts(void)
+void set_vertexCounts(void)
 {
 	int	s,v;
 
@@ -1306,7 +1306,7 @@ void delete_vertices_in_segment(tSegment *sp)
 
 //	init_vertices();
 
-	set_vertex_counts();
+	set_vertexCounts();
 
 	// Subtract one count for each appearance of vertex in deleted tSegment
 	for (v=0; v<MAX_VERTICES_PER_SEGMENT; v++)
@@ -1677,7 +1677,7 @@ int med_form_joint(tSegment *seg1, int side1, tSegment *seg2, int side2)
 		warn_if_concave_segment(&gameData.segs.segments[validation_list[s]]);
 	}
 
-	set_vertex_counts();
+	set_vertexCounts();
 
 	//	Make sure connection is open, ie renderable.
 //	seg1->sides[side1].renderFlag = 0;
@@ -1969,7 +1969,7 @@ int create_new_mine(void)
 		Groupside[s] = 0;
 	}
 
-	gameData.matCens.nRobotCenters = 0;
+	gameData.matCens.nMatCens = 0;
 	gameData.walls.nOpenDoors = 0;
 	WallInit();
 	trigger_init();

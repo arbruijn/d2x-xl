@@ -399,7 +399,7 @@ InitBuddyForLevel ();
 int		nDiffSave = 1;
 fix		Firing_wait_copy [MAX_ROBOT_TYPES];
 fix		Firing_wait2_copy [MAX_ROBOT_TYPES];
-sbyte		Rapidfire_count_copy [MAX_ROBOT_TYPES];
+sbyte		RapidfireCount_copy [MAX_ROBOT_TYPES];
 
 void DoLunacyOn (void)
 {
@@ -416,7 +416,7 @@ void DoLunacyOn (void)
 	for (i=0; i<MAX_ROBOT_TYPES; i++) {
 		Firing_wait_copy [i] = gameData.bots.pInfo [i].primaryFiringWait [NDL-1];
 		Firing_wait2_copy [i] = gameData.bots.pInfo [i].secondaryFiringWait [NDL-1];
-		Rapidfire_count_copy [i] = gameData.bots.pInfo [i].nRapidFireCount [NDL-1];
+		RapidfireCount_copy [i] = gameData.bots.pInfo [i].nRapidFireCount [NDL-1];
 
 		gameData.bots.pInfo [i].primaryFiringWait [NDL-1] = gameData.bots.pInfo [i].primaryFiringWait [1];
 		gameData.bots.pInfo [i].secondaryFiringWait [NDL-1] = gameData.bots.pInfo [i].secondaryFiringWait [1];
@@ -439,7 +439,7 @@ void DoLunacyOff (void)
 	for (i=0; i<MAX_ROBOT_TYPES; i++) {
 		gameData.bots.pInfo [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
 		gameData.bots.pInfo [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
-		gameData.bots.pInfo [i].nRapidFireCount [NDL-1] = Rapidfire_count_copy [i];
+		gameData.bots.pInfo [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
 	}
 
 	gameStates.app.nDifficultyLevel = nDiffSave;
@@ -2177,10 +2177,12 @@ rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DU
 								 &gameData.boss [i].bDyingSoundPlaying, 
 								 gameData.bots.pInfo [objP->id].deathrollSound, F1_0*4, F1_0*4);
 if (rval) {
+	extraGameInfo [0].nBossCount--;
+	if (i < BOSS_COUNT)
+		gameData.boss [i] = gameData.boss [BOSS_COUNT];
 	DoReactorDestroyedStuff (NULL);
 	ExplodeObject (objP, F1_0/4);
 	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
-	gameData.boss [i].nDying = 0;
 	}
 }
 

@@ -388,8 +388,8 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
       /* The initial and last runs are partial, because Y advances only 0.5
          for these runs, rather than 1. Divide one full run, plus the
          initial pixel, between the initial and last runs */
-      scale_initial_pixel_count = (scale_whole_step / 2) + 1;
-      scale_final_pixel_count = scale_initial_pixel_count;
+      scale_initial_pixelCount = (scale_whole_step / 2) + 1;
+      scale_final_pixelCount = scale_initial_pixelCount;
 
       /* If the basic run length is even and there's no fractional
          advance, we have one pixel that could go to either the initial
@@ -397,7 +397,7 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
          last run */
       if ((scale_adj_up == 0) && ((scale_whole_step & 0x01) == 0))
       {
-         scale_initial_pixel_count--;
+         scale_initial_pixelCount--;
       }
      /* If there're an odd number of pixels per run, we have 1 pixel that can't
      be allocated to either the initial or last partial run, so we'll add 0.5

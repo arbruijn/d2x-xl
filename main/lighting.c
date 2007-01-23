@@ -76,7 +76,7 @@ int	Lighting_cache [LIGHTING_CACHE_SIZE];
 
 int Cache_hits=0, Cache_lookups=1;
 
-extern vmsVector player_thrust;
+extern vmsVector playerThrust;
 
 typedef struct {
   int    nTexture;
@@ -507,7 +507,7 @@ switch (nObjType) {
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multi.nLocalPlayer) {
-			return max (VmVecMagQuick (&player_thrust)/4, F1_0*2) + F1_0/2;
+			return max (VmVecMagQuick (&playerThrust)/4, F1_0*2) + F1_0/2;
 			}
 		else {
 			return max (VmVecMagQuick (&objP->mType.physInfo.thrust)/4, F1_0*2) + F1_0/2;
@@ -935,7 +935,7 @@ xEngineGlowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multi.nLocalPlayer)) {
 		fix thrust_mag = VmVecMagQuick (&objP->mType.physInfo.thrust);
-		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->max_thrust)*4)/5;
+		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}
 	else {
 		fix speed = VmVecMagQuick (&objP->mType.physInfo.velocity);

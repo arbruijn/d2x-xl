@@ -640,7 +640,7 @@ if (gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 	else
 		gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_SLOT_NUM++;
 	}
-set_thrust_from_velocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
+setThrust_from_velocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
 //	gameData.objs.objects [nRobot].physInfo.drag = gameData.bots.pInfo [gameData.objs.objects [nRobot].id].drag >> 4; // Set drag to low
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&gameData.objs.objects [nRobot], (tShortPos *) (buf+bufP), 0);

@@ -1759,7 +1759,7 @@ void DoExplodingWallFrame ()
 		if (nSegment != -1) {
 			short nSide = gameData.walls.explWalls [i].nSide;
 			fix oldfrac, newfrac;
-			int old_count, new_count, e;		//n, 
+			int oldCount, newCount, e;		//n, 
 			oldfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
 			gameData.walls.explWalls [i].time += gameData.time.xFrame;
 			if (gameData.walls.explWalls [i].time > EXPL_WALL_TIME)
@@ -1779,11 +1779,11 @@ void DoExplodingWallFrame ()
 					gameData.walls.walls [WallNumP (csegp, cside)].flags |= WALL_BLASTED;
 			}
 			newfrac = FixDiv (gameData.walls.explWalls [i].time, EXPL_WALL_TIME);
-			old_count = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
-			new_count = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
-			//n = new_count - old_count;
+			oldCount = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
+			newCount = f2i (EXPL_WALL_TOTAL_FIREBALLS * FixMul (newfrac, newfrac));
+			//n = newCount - oldCount;
 			//now create all the next explosions
-			for (e=old_count;e<new_count;e++) {
+			for (e=oldCount;e<newCount;e++) {
 				short			vertnum_list [4];
 				vmsVector	*v0, *v1, *v2;
 				vmsVector	vv0, vv1, pos;

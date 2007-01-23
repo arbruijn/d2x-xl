@@ -120,11 +120,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct _control_info {
 	fix pitchTime;
-	fix vertical_thrustTime;
+	fix verticalThrustTime;
 	fix headingTime;
-	fix sideways_thrustTime;
+	fix sidewaysThrustTime;
 	fix bankTime;
-	fix forward_thrustTime;
+	fix forwardThrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -144,10 +144,10 @@ typedef struct _control_info {
 	//char oem_message[64];
 
 	ubyte afterburner_state;
-	ubyte cycle_primary_count;
-	ubyte cycle_secondary_count;
-	ubyte headlight_count;
-	ubyte toggle_icons_count;
+	ubyte cycle_primaryCount;
+	ubyte cycle_secondaryCount;
+	ubyte headlightCount;
+	ubyte toggle_iconsCount;
 	ubyte zoomDownCount;
 	ubyte useCloakDownCount;
 	ubyte useInvulDownCount;
@@ -155,11 +155,11 @@ typedef struct _control_info {
 
 typedef struct ext_control_info {
 	fix pitchTime;
-	fix vertical_thrustTime;
+	fix verticalThrustTime;
 	fix headingTime;
-	fix sideways_thrustTime;
+	fix sidewaysThrustTime;
 	fix bankTime;
-	fix forward_thrustTime;
+	fix forwardThrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -181,10 +181,10 @@ typedef struct ext_control_info {
 	//vmsVector ship_pos           // for version >=2.0
 	//vmsMatrix ship_orient        // for version >=2.0
 
-	//ubyte cycle_primary_count     // for version >=3.0
-	//ubyte cycle_secondary_count   // for version >=3.0
+	//ubyte cycle_primaryCount     // for version >=3.0
+	//ubyte cycle_secondaryCount   // for version >=3.0
 	//ubyte afterburner_state       // for version >=3.0
-	//ubyte headlight_count         // for version >=3.0
+	//ubyte headlightCount         // for version >=3.0
 
 	// everything below this line is for version >=4.0
 
@@ -215,11 +215,11 @@ typedef struct ext_control_info {
 
 typedef struct advanced_ext_control_info {
 	fix pitchTime;
-	fix vertical_thrustTime;
+	fix verticalThrustTime;
 	fix headingTime;
-	fix sideways_thrustTime;
+	fix sidewaysThrustTime;
 	fix bankTime;
-	fix forward_thrustTime;
+	fix forwardThrustTime;
 
 	ubyte rear_viewDownCount;
 	ubyte rear_view_down_state;
@@ -247,10 +247,10 @@ typedef struct advanced_ext_control_info {
 
 	// everything below this line is for version >=3.0
 
-	ubyte cycle_primary_count;
-	ubyte cycle_secondary_count;
+	ubyte cycle_primaryCount;
+	ubyte cycle_secondaryCount;
 	ubyte afterburner_state;
-	ubyte headlight_count;
+	ubyte headlightCount;
 
 	// everything below this line is for version >=4.0
 

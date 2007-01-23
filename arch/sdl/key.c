@@ -665,7 +665,7 @@ if (!bFastPoll)
 	return key_data.keys[scancode].flags;
 }
 
-unsigned int key_up_count(int scancode)
+unsigned int key_upCount(int scancode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL

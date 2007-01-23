@@ -1170,16 +1170,13 @@ return 1;
 //	was actually in another tObject.
 void NetDestroyReactor (tObject *controlcen)
 {
-	if (gameData.reactor.bDestroyed != 1) {
-
-		DoReactorDestroyedStuff (controlcen);
-
-		if ((controlcen != NULL) && !(controlcen->flags& (OF_EXPLODING|OF_DESTROYED))) {
-			DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, controlcen->nSegment, 0, &controlcen->position.vPos, 0, F1_0);
-			ExplodeObject (controlcen, 0);
+if (gameData.reactor.bDestroyed != 1) {
+	DoReactorDestroyedStuff (controlcen);
+	if ((controlcen != NULL) && !(controlcen->flags& (OF_EXPLODING|OF_DESTROYED))) {
+		DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, controlcen->nSegment, 0, &controlcen->position.vPos, 0, F1_0);
+		ExplodeObject (controlcen, 0);
 		}
 	}
-
 }
 
 //	-----------------------------------------------------------------------------
@@ -1505,7 +1502,7 @@ extern int BossSpewRobot (tObject *objP, vmsVector *pos);
 //#define	BOSS_INVULNERABLE_DOT	0		//	If a boss is invulnerable over most of his body, fVec (dot)vec_to_collision must be less than this for damage to occur.
 int	Boss_invulnerable_dot = 0;
 
-int	Buddy_gave_hint_count = 5;
+int	Buddy_gave_hintCount = 5;
 fix	LastTime_buddy_gave_hint = 0;
 
 //	------------------------------------------------------------------------------------------------------
@@ -1555,11 +1552,11 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		if (LastTime_buddy_gave_hint == 0)
 			LastTime_buddy_gave_hint = d_rand ()*32 + F1_0*16;
 
-		if (Buddy_gave_hint_count) {
+		if (Buddy_gave_hintCount) {
 			if (LastTime_buddy_gave_hint + F1_0*20 < gameData.time.xGame) {
 				int	sval;
 
-				Buddy_gave_hint_count--;
+				Buddy_gave_hintCount--;
 				LastTime_buddy_gave_hint = gameData.time.xGame;
 				sval = (d_rand ()*4) >> 15;
 				switch (sval) {
@@ -1851,8 +1848,8 @@ void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int cou
 	int nPowerup = secondaryWeaponToPowerup [weapon_index];
 
 if (gameData.multi.players [playerObjP->id].secondaryWeaponFlags & weaponFlag) {
-	int	i, max_count = (EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3);
-	for (i=0; i<max_count; i++)
+	int	i, maxCount = (EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3);
+	for (i=0; i<maxCount; i++)
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 	}
 }
@@ -1971,14 +1968,14 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		    ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.nVirusStability)) {
 			// Drop hoard orbs
 			
-			int max_count, i;
+			int maxCount, i;
 #if TRACE
 			con_printf (CON_DEBUG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXIMITY_INDEX]);
 #endif	
-			max_count = playerP->secondaryAmmo [PROXIMITY_INDEX];
-			if ((gameData.app.nGameMode & GM_HOARD) && (max_count > 12))
-				max_count = 12;
-			for (i = 0; i < max_count; i++)
+			maxCount = playerP->secondaryAmmo [PROXIMITY_INDEX];
+			if ((gameData.app.nGameMode & GM_HOARD) && (maxCount > 12))
+				maxCount = 12;
+			for (i = 0; i < maxCount; i++)
 				CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HOARD_ORB);
 		}
 

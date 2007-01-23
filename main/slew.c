@@ -112,9 +112,9 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 			rotang.h  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mType.physInfo.velocity.p.x += VEL_SPEED * Controls.sideways_thrustTime;
-			objP->mType.physInfo.velocity.p.y += VEL_SPEED * Controls.vertical_thrustTime;
-			objP->mType.physInfo.velocity.p.z += VEL_SPEED * Controls.forward_thrustTime;
+			objP->mType.physInfo.velocity.p.x += VEL_SPEED * Controls.sidewaysThrustTime;
+			objP->mType.physInfo.velocity.p.y += VEL_SPEED * Controls.verticalThrustTime;
+			objP->mType.physInfo.velocity.p.z += VEL_SPEED * Controls.forwardThrustTime;
 
 			rotang.p = Controls.pitchTime/ROT_SPEED ;
 			rotang.b  = Controls.bankTime/ROT_SPEED;

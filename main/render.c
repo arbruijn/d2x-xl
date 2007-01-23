@@ -311,12 +311,12 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 		added_flash *= 16;
 
 	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, added_flash+F1_0));
-	fix_fastsincos(flash_ang, &gameStates.render.nFlashScale, NULL);
+	FixFastSinCos(flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
 else {
 	flash_ang += FixMul(gameStates.render.nFlashRate, gameData.time.xFrame);
-	fix_fastsincos(flash_ang, &gameStates.render.nFlashScale, NULL);
+	FixFastSinCos(flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
 	if (gameStates.app.nDifficultyLevel == 0)
 		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
@@ -2395,7 +2395,7 @@ return (Controls.zoomDownCount > 0);
 //------------------------------------------------------------------------------
 
 int bUsePlayerHeadAngles = 0;
-extern int critical_error_counter_ptr, nDescentCriticalError;
+extern int critical_errorCounter_ptr, nDescentCriticalError;
 
 extern int Num_tmaps_drawn;
 extern int nTotalPixels;

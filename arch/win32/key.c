@@ -406,7 +406,7 @@ unsigned int keyDownCount(KEYCODE kcKey)
 	return n;
 }
 
-unsigned int key_up_count(KEYCODE kcKey)
+unsigned int key_upCount(KEYCODE kcKey)
 {
 	int n;
 

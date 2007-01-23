@@ -719,7 +719,7 @@ switch (select) {
 		MultiplayerMenu ();
 		break;
 	case MENU_CONFIG:
-		OptionsMenu ();
+		ConfigMenu ();
 		break;
 	case MENU_SHOW_CREDITS:
 		GrPaletteFadeOut (NULL, 32, 0);
@@ -3179,7 +3179,7 @@ if (IsMultiGame)
 
 //------------------------------------------------------------------------------
 
-void OptionsMenu ()
+void ConfigMenu ()
 {
 	tMenuItem m [20];
 	int i, opt, choice = 0;
@@ -3785,7 +3785,7 @@ i = ExecMenu1 (NULL, TXT_ABORT_GAME, opt, m, NULL, &choice);
 if (!i)
 	return 0;
 if (i == optOptions)
-	OptionsMenu ();
+	ConfigMenu ();
 else if (i == optLoad)
 	StateRestoreAll (1, 0, NULL);
 else if (i == optSave)

@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "ogl_init.h"
 
-void DrawAmmoInfo (int x, int y, int ammo_count, int primary);
+void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
 extern void DrawGuidedCrosshair (void);
 extern void DoAutomap (int key_code, int bRadar);
 
@@ -330,7 +330,7 @@ static int old_energy[2]			= { -1, -1 };
 static int old_shields[2]			= { -1, -1 };
 static uint oldFlags[2]			= { (uint) -1, (uint) -1 };
 static int old_weapon[2][2]		= {{ -1, -1 }, {-1, -1}};
-static int old_ammo_count[2][2]	= {{ -1, -1 }, {-1, -1}};
+static int old_ammoCount[2][2]	= {{ -1, -1 }, {-1, -1}};
 static int Old_Omega_charge[2]	= { -1, -1 };
 static int old_laserLevel[2]		= { -1, -1 };
 static int old_cloak[2]				= { 0, 0 };
@@ -1692,12 +1692,12 @@ old_bombcount[nVRCurrentPage] = countx;
 
 //	-----------------------------------------------------------------------------
 
-void DrawPrimaryAmmoInfo (int ammo_count)
+void DrawPrimaryAmmoInfo (int ammoCount)
 {
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammo_count, 1);
+		DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammoCount, 1);
 	else
-		DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammo_count, 1);
+		DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1706,7 +1706,7 @@ void HUDToggleWeaponIcons (void)
 {
 	int	i;
 
-for (i = 0; i < Controls.toggle_icons_count; i++)
+for (i = 0; i < Controls.toggle_iconsCount; i++)
 	if (gameStates.app.bNostalgia)
 		extraGameInfo [0].nWeaponIcons = 0;
 	else {
@@ -2168,10 +2168,10 @@ void HUDShowWeapons (void)
 	GrPrintF (grdCurCanv->cv_bitmap.bm_props.w-5-w, y-2*Line_spacing, weapon_str);
 
 	if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammo_count[0][nVRCurrentPage]) {
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammoCount[0][nVRCurrentPage]) {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordPrimaryAmmo (old_ammo_count[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
-			old_ammo_count[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
+				NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
+			old_ammoCount[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
 		}
 	}
 
@@ -2189,10 +2189,10 @@ void HUDShowWeapons (void)
 	GrGetStringSize (weapon_str, &w, &h, &aw);
 	GrPrintF (grdCurCanv->cv_bitmap.bm_props.w-5-w, y-Line_spacing, weapon_str);
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][nVRCurrentPage]) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordSecondaryAmmo (old_ammo_count[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-		old_ammo_count[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+			NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+		old_ammoCount[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 	}
 
 	ShowBombCount (grdCurCanv->cv_bitmap.bm_props.w- (3*GAME_FONT->ft_w+ (gameStates.render.fonts.bHires?0:2)), y-3*Line_spacing, -1, 1);
@@ -2416,7 +2416,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 
-//	for (i=0;i<draw_count;i++, x+=bm->bm_props.w+2)
+//	for (i=0;i<drawCount;i++, x+=bm->bm_props.w+2)
 //		GrUBitmapM (x, y, bm);
 
 }
@@ -2568,7 +2568,7 @@ void InitGauges ()
 		old_laserLevel[i]	= 0;
 	
 		old_weapon[0][i] = old_weapon[1][i] = -1;
-		old_ammo_count[0][i] = old_ammo_count[1][i] = -1;
+		old_ammoCount[0][i] = old_ammoCount[1][i] = -1;
 		Old_Omega_charge[i] = -1;
 	}
 
@@ -3188,7 +3188,7 @@ void DrawWeaponInfo (int nWeaponType, int weapon_num, int laserLevel)
 
 //	-----------------------------------------------------------------------------
 
-void DrawAmmoInfo (int x, int y, int ammo_count, int primary)
+void DrawAmmoInfo (int x, int y, int ammoCount, int primary)
 {
 	int w;
 	char str[16];
@@ -3206,7 +3206,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetColorRGBi (RGBA_PAL (0, 0, 0));
 	GrRect (HUD_SCALE_X (x), HUD_SCALE_Y (y), HUD_SCALE_X (x+w), HUD_SCALE_Y (y + grdCurCanv->cv_font->ft_h));
 	GrSetFontColorRGBi (MEDRED_RGBA, 1, 0, 0);
-	sprintf (str, "%03d", ammo_count);
+	sprintf (str, "%03d", ammoCount);
 	convert_1s (str);
 	HUDPrintF (x, y, str);
 
@@ -3220,12 +3220,12 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 //	-----------------------------------------------------------------------------
 
-void DrawSecondaryAmmoInfo (int ammo_count)
+void DrawSecondaryAmmoInfo (int ammoCount)
 {
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammo_count, 0);
+		DrawAmmoInfo (SB_SECONDARY_AMMO_X, SB_SECONDARY_AMMO_Y, ammoCount, 0);
 	else
-		DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammo_count, 0);
+		DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -3256,7 +3256,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	if ((old_weapon[nWeaponType][nVRCurrentPage] == -1) || 1/* (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
 		DrawWeaponInfo (nWeaponType, weapon_num, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
 		old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
-		old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+		old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 		Old_Omega_charge[nVRCurrentPage]=-1;
 		old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
 		drewFlag=1;
@@ -3265,7 +3265,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 
 	if (weapon_box_states[nWeaponType] == WS_FADING_OUT) {
 		DrawWeaponInfo (nWeaponType, old_weapon[nWeaponType][nVRCurrentPage], old_laserLevel[nVRCurrentPage]);
-		old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+		old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 		Old_Omega_charge[nVRCurrentPage]=-1;
 		drewFlag=1;
 		weapon_box_fadeValues[nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
@@ -3284,7 +3284,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			}
 		else {
 			DrawWeaponInfo (nWeaponType, weapon_num, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
-			old_ammo_count[nWeaponType][nVRCurrentPage]=-1;
+			old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 			Old_Omega_charge[nVRCurrentPage]=-1;
 			drewFlag=1;
 			weapon_box_fadeValues[nWeaponType] += gameData.time.xFrame * FADE_SCALE;
@@ -3385,11 +3385,11 @@ void DrawWeaponBoxes ()
 
 		if (weapon_box_states[0] == WS_SET) {
 			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammo_count[0][nVRCurrentPage]) {
+				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammoCount[0][nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo (old_ammo_count[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
+						NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
 					DrawPrimaryAmmoInfo (f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]));
-					old_ammo_count[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
+					old_ammoCount[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
 				}
 			}
 
@@ -3415,12 +3415,12 @@ void DrawWeaponBoxes ()
 			);
 
 		if (weapon_box_states[1] == WS_SET)
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammo_count[1][nVRCurrentPage]) {
+			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
 				old_bombcount[nVRCurrentPage] = 0x7fff;	//force redraw
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordSecondaryAmmo (old_ammo_count[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+					NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
 				DrawSecondaryAmmoInfo (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-				old_ammo_count[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+				old_ammoCount[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 			}
 	}
 	else if (weapon_box_user[1] == WBU_STATIC)
@@ -4625,7 +4625,7 @@ WINDOS (
   PA_DFX (skip_this_junk:)
   
 	//force redraw when done
-	old_weapon[win][nVRCurrentPage] = old_ammo_count[win][nVRCurrentPage] = -1;
+	old_weapon[win][nVRCurrentPage] = old_ammoCount[win][nVRCurrentPage] = -1;
 
 abort:;
 

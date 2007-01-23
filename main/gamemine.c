@@ -833,7 +833,7 @@ int load_mine_data (CFILE *loadFile)
 	#ifdef EDITOR
 	gameData.segs.nLastVertex = MAX_SEGMENT_VERTICES-1;
 	gameData.segs.nLastSegment = MAX_SEGMENTS-1;
-	set_vertex_counts ();
+	set_vertexCounts ();
 	gameData.segs.nLastVertex = gameData.segs.nVertices-1;
 	gameData.segs.nLastSegment = gameData.segs.nSegments-1;
 

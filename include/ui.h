@@ -356,7 +356,7 @@ int ui_recorder_status();
 void ui_set_playback_speed( int speed );
 
 extern unsigned int ui_number_of_events;
-extern unsigned int ui_event_counter;
+extern unsigned int ui_eventCounter;
 
 
 int ui_get_file( char * filename, char * Filespec  );

@@ -368,7 +368,7 @@ unsigned int keyDownCount(int scancode)
 	return n;
 }
 
-unsigned int key_up_count(int scancode)
+unsigned int key_upCount(int scancode)
 {
 	int n;
         event_poll();

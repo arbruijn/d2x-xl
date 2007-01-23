@@ -2619,7 +2619,7 @@ gameData.demo.bEof = 0;
 
 void NDGotoEnd ()
 {
-	short frame_length, byte_count, bshort;
+	short frame_length, byteCount, bshort;
 	sbyte level, bbyte, laserLevel;
 	ubyte energy, shield, c;
 	int i, loc, bint;
@@ -2640,8 +2640,8 @@ if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.n
 if (level != gameData.missions.nCurrentLevel)
 	LoadLevel (level, 1, 0);
 CFSeek (ndInFile, -4, SEEK_END);
-byte_count = NDReadShort ();
-CFSeek (ndInFile, -2 - byte_count, SEEK_CUR);
+byteCount = NDReadShort ();
+CFSeek (ndInFile, -2 - byteCount, SEEK_CUR);
 
 frame_length = NDReadShort ();
 loc = CFTell (ndInFile);
@@ -3043,7 +3043,7 @@ void NDStopRecording ()
 	static ubyte tmpcnt = 0;
 	ubyte cloaked = 0;
 	char fullname [15+FILENAME_LEN] = "";
-	unsigned short byte_count = 0;
+	unsigned short byteCount = 0;
 
 	exit = 0;
 
@@ -3062,43 +3062,43 @@ else {
 	}
 NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
-byte_count += 10;       // from gameData.demo.nFrameBytesWritten
+byteCount += 10;       // from gameData.demo.nFrameBytesWritten
 NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].energy)));
 NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].shields)));
 NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
-byte_count += 8;
+byteCount += 8;
 for (l = 0; l < MAX_PRIMARY_WEAPONS; l++)
 	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [l]);
 for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
 	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l]);
-byte_count += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
+byteCount += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
 NDWriteByte (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel);
-byte_count++;
+byteCount++;
 if (gameData.app.nGameMode & GM_MULTI) {
 	NDWriteByte ((sbyte)gameData.multi.nPlayers);
-	byte_count++;
+	byteCount++;
 	for (l = 0; l < gameData.multi.nPlayers; l++) {
 		NDWriteString (gameData.multi.players [l].callsign);
-		byte_count += ((int) strlen (gameData.multi.players [l].callsign) + 2);
+		byteCount += ((int) strlen (gameData.multi.players [l].callsign) + 2);
 		NDWriteByte ((sbyte) gameData.multi.players [l].connected);
 		if (gameData.app.nGameMode & GM_MULTI_COOP) {
 			NDWriteInt (gameData.multi.players [l].score);
-			byte_count += 5;
+			byteCount += 5;
 			}
 		else {
 			NDWriteShort ((short)gameData.multi.players [l].netKilledTotal);
 			NDWriteShort ((short)gameData.multi.players [l].netKillsTotal);
-			byte_count += 5;
+			byteCount += 5;
 			}
 		}
 	} 
 else {
 	NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].score);
-	byte_count += 4;
+	byteCount += 4;
 	}
-NDWriteShort (byte_count);
+NDWriteShort (byteCount);
 NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
 l = CFTell (ndOutFile);

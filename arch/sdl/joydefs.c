@@ -138,7 +138,7 @@ if (gameOpts->input.bUseMouse) {
 		gameOpts->input.mouseSensitivity [i] = gameOpts->input.mouseSensitivity [0];
 	}
 
-if (gameOpts->input.bUseJoystick) {
+if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
 	if (gameOpts->app.bExpertMode) {
 		m = items + nSyncJoyAxesOpt;
 		v = m->value;
@@ -263,7 +263,7 @@ rebuild_menu:
 			m [nMouseTypeOpt + NMCLAMP (gameStates.input.nMouseType - CONTROL_MOUSE, 0, 1)].value = 1;
 			}
 		}
-#ifdef RELEASE
+#if 1//def RELEASE
 	if (gameOpts->input.bUseMouse || (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick)) {
 #else
 	if (gameOpts->input.bUseMouse || gameOpts->input.bUseJoystick) {
@@ -272,7 +272,7 @@ rebuild_menu:
 		opt++;
 		}
 
-#ifdef RELEASE
+#if 1//def RELEASE
 	if (!gameOpts->input.nJoysticks) 
 		nUseJoyOpt = -1;
 	else 
@@ -394,7 +394,7 @@ rebuild_menu:
 			gameOpts->input.joySensitivity [j] = gameOpts->input.joySensitivity [0];
 */
 		gameOpts->input.bUseMouse = m [nUseMouseOpt].value;
-#ifdef RELEASE
+#if 1//def RELEASE
 		if (gameOpts->input.nJoysticks)
 #endif
 			gameOpts->input.bUseJoystick = m [nUseJoyOpt].value;
@@ -414,7 +414,7 @@ rebuild_menu:
 							}
 						}
 				}
-#ifdef RELEASE
+#if 1//def RELEASE
 			if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
 #else
 			if (gameOpts->input.bUseJoystick) {

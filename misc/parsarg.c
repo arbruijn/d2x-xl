@@ -54,7 +54,7 @@ void parse_args(int argc,char **argv,void (*handler_func)(char *arg),int flags)
 	for (;argc--;argv++) {
 		if (**argv=='@') {			/* read args from file */
 			char *arg_ptrs[MAX_ARGS];
-			int arg_count;
+			int argCount;
 			FILE *argfile;
 			int len;
 			char *p=ab_ptr,c;
@@ -84,17 +84,17 @@ void parse_args(int argc,char **argv,void (*handler_func)(char *arg),int flags)
 			p=ab_ptr;
 
 
-			for (arg_count=0;p<ab_ptr+len;) {
+			for (argCount=0;p<ab_ptr+len;) {
 				while (p<ab_ptr+len && ((c=*p)==' ' || c=='\t' || c=='\n')) p++;
 				if (p<ab_ptr+len) {	/* found parm? */
-					arg_ptrs[arg_count++]=p;
-					if (arg_count>=MAX_ARGS) error_exit(10,"Too many args");
+					arg_ptrs[argCount++]=p;
+					if (argCount>=MAX_ARGS) error_exit(10,"Too many args");
 					while (p<ab_ptr+len && !((c=*p)==' ' || c=='\t' || c=='\n')) p++;
 					*p++=0;
 				}
 			}
 			ab_ptr+=len;
-			parse_args(arg_count,arg_ptrs,handler_func,flags);
+			parse_args(argCount,arg_ptrs,handler_func,flags);
 		}
 		else
 			if (flags&PA_EXPAND && (**argv != '-')) {

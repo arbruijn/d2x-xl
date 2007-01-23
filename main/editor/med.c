@@ -1580,7 +1580,7 @@ void dump_stuff(void)
 int MarkStart(void)
 {
 	char mystr[30];
-	sprintf(mystr,"mark %i start",Mark_count);
+	sprintf(mystr,"mark %i start",MarkCount);
 //	_MARK_(mystr);//Nuked to compile -KRB
 
 	return 1;
@@ -1589,8 +1589,8 @@ int MarkStart(void)
 int MarkEnd(void)
 {
 	char mystr[30];
-	sprintf(mystr,"mark %i end",Mark_count);
-	Mark_count++;
+	sprintf(mystr,"mark %i end",MarkCount);
+	MarkCount++;
 //	_MARK_(mystr);//Nuked to compile -KRB
 
 	return 1;

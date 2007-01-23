@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
-extern vmsVector player_thrust;
+extern vmsVector playerThrust;
 extern int bSpeedBost;
 
 void DetachAllObjects (tObject *parent);
@@ -170,19 +170,6 @@ for (i = 0; i < j; i++)
 	if (gameData.boss [i].nObject == nBossObj)
 		return i;
 return -1;
-}
-
-//------------------------------------------------------------------------------
-
-void DeleteBoss (int nObject)
-{
-	int	i = FindBoss (nObject);
-
-if (i < 0)
-	return;
-extraGameInfo [0].nBossCount--;
-if (i < BOSS_COUNT)
-	gameData.boss [i] = gameData.boss [BOSS_COUNT];
 }
 
 //------------------------------------------------------------------------------
@@ -399,7 +386,7 @@ _3dfx_rendering_poly_obj = 0;
 
 int	bLinearTMapPolyObjs = 1;
 
-extern fix Max_thrust;
+extern fix MaxThrust;
 
 //used for robot engine glow
 //function that takes the same parms as draw_tmap, but renders as flat poly
@@ -2879,9 +2866,9 @@ void StopObjectMovement (tObject *objP)
 Controls.headingTime = 0;
 Controls.pitchTime = 0;
 Controls.bankTime = 0;
-Controls.vertical_thrustTime = 0;
-Controls.sideways_thrustTime = 0;
-Controls.forward_thrustTime = 0;
+Controls.verticalThrustTime = 0;
+Controls.sidewaysThrustTime = 0;
+Controls.forwardThrustTime = 0;
 VmVecZero (&objP->mType.physInfo.rotThrust);
 VmVecZero (&objP->mType.physInfo.thrust);
 VmVecZero (&objP->mType.physInfo.velocity);
@@ -2894,7 +2881,7 @@ void StopPlayerMovement (void)
 {
 if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
 	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
-	memset (&player_thrust, 0, sizeof (player_thrust));
+	memset (&playerThrust, 0, sizeof (playerThrust));
 //	gameData.time.xFrame = F1_0;
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
 	}
@@ -3013,9 +3000,9 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
    else if (gameData.app.nGameMode & GM_HOARD)
 		 FuelCenCheckForHoardGoal (segP);
    else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if (Controls.forward_thrustTime || 
-			 Controls.vertical_thrustTime || 
-			 Controls.sideways_thrustTime ||
+		if (Controls.forwardThrustTime || 
+			 Controls.verticalThrustTime || 
+			 Controls.sidewaysThrustTime ||
 			 (xsegP->owner < 0) ||
 			 (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1)) {
 			StopConquerWarning ();

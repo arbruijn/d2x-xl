@@ -939,17 +939,17 @@ if (Controls.fire_primaryDownCount)	{
 	pvTAngles->b = 0;
 	amData.viewTarget = playerP->position.vPos;
 	}
-if (Controls.forward_thrustTime)
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forward_thrustTime * ZOOM_SPEED_FACTOR); 
+if (Controls.forwardThrustTime)
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forwardThrustTime * ZOOM_SPEED_FACTOR); 
 pvTAngles->p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
 pvTAngles->h += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
 pvTAngles->b += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
 
 VmAngles2Matrix (&m, pvTAngles);
-if (Controls.vertical_thrustTime || Controls.sideways_thrustTime)	{
+if (Controls.verticalThrustTime || Controls.sidewaysThrustTime)	{
 	VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.vertical_thrustTime * SLIDE_SPEED);
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sideways_thrustTime * SLIDE_SPEED);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.verticalThrustTime * SLIDE_SPEED);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sidewaysThrustTime * SLIDE_SPEED);
 	}
 VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
 if (amData.nViewDist < ZOOM_MIN_VALUE) 

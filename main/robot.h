@@ -229,7 +229,7 @@ typedef struct D1Robot_info {
 	short			exp2Sound_num;
 	short			weaponType;
 	sbyte			contains_id;						//	ID of powerup this robot can contain.
-	sbyte			contains_count;					//	Max number of things this instance can contain.
+	sbyte			containsCount;					//	Max number of things this instance can contain.
 	sbyte			containsProb;						//	Probability that this instance will contain something in N/16
 	sbyte			containsType;						//	Type of thing contained, robot or powerup, in bitmaps.tbl, !0=robot, 0=powerup
 	int			scoreValue;						//	Score from this robot.

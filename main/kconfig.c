@@ -1628,11 +1628,11 @@ void KCInitExternalControls (int intno, int address)
 	}
 
 	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
-	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
+	Controls.forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;
@@ -1746,11 +1746,11 @@ void KCReadExternalControls ()
 	}
 
 	Controls.pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
-	Controls.vertical_thrustTime += FixMul (kc_external_control->vertical_thrustTime,gameData.time.xFrame);
+	Controls.verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls.headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
-	Controls.sideways_thrustTime += FixMul (kc_external_control->sideways_thrustTime ,gameData.time.xFrame);
+	Controls.sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls.bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
-	Controls.forward_thrustTime += FixMul (kc_external_control->forward_thrustTime ,gameData.time.xFrame);
+	Controls.forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
 	Controls.rear_viewDownCount += kc_external_control->rear_viewDownCount;	
 	Controls.rear_view_down_state |= kc_external_control->rear_view_down_state;	
 	Controls.fire_primaryDownCount += kc_external_control->fire_primaryDownCount;
@@ -1768,14 +1768,14 @@ void KCReadExternalControls ()
 		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix));
   
 	   if (* (temp_ptr))
-		 Controls.cycle_primary_count= (* (temp_ptr));
+		 Controls.cycle_primaryCount= (* (temp_ptr));
 	   if (* (temp_ptr+1))
-		 Controls.cycle_secondary_count= (* (temp_ptr+1));
+		 Controls.cycle_secondaryCount= (* (temp_ptr+1));
 
 		if (* (temp_ptr+2))
 		 Controls.afterburner_state= (* (temp_ptr+2));
 		if (* (temp_ptr+3))
-		 Controls.headlight_count= (* (temp_ptr+3));
+		 Controls.headlightCount= (* (temp_ptr+3));
   	 }
    if (kc_external_version>=4)
 	 {

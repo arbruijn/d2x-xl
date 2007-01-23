@@ -2191,7 +2191,7 @@ return 1;
 }
 
 #ifndef NDEBUG
-int nest_count;
+int nestCount;
 #endif
 
 //------------------------------------------------------------------------------
@@ -2329,7 +2329,7 @@ return 1;
 
 void InitSubModel (ubyte *p)
 {
-Assert (++nest_count < 1000);
+Assert (++nestCount < 1000);
 for (;;) {
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -2395,7 +2395,7 @@ for (;;) {
 void G3InitPolyModel (void *modelP)
 {
 	#ifndef NDEBUG
-	nest_count = 0;
+	nestCount = 0;
 	#endif
 
 nHighestTexture = -1;

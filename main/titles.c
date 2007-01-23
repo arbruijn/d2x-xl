@@ -412,7 +412,7 @@ char    Bitmap_name[32] = "";
 #define EXIT_DOOR_MAX   14
 #define OTHER_THING_MAX 10      //  Adam: This is the number of frames in your new animating thing.
 #define DOOR_DIV_INIT   6
-sbyte   Door_dir=1, Door_div_count=0, Animating_bitmapType=0;
+sbyte   Door_dir=1, Door_divCount=0, Animating_bitmapType=0;
 
 //-----------------------------------------------------------------------------
 
@@ -441,8 +441,8 @@ void ShowBitmapFrame (int bRedraw)
 	int h = rescale_y (138);
 
 	//	Only plot every nth frame.
-	if (!bRedraw && Door_div_count) {
-		Door_div_count--;
+	if (!bRedraw && Door_divCount) {
+		Door_divCount--;
 		if (!gameOpts->menus.nStyle)
 			return;
 	}
@@ -486,7 +486,7 @@ void ShowBitmapFrame (int bRedraw)
 
 			switch (Animating_bitmapType) {
 				case 0:
-					if (!Door_div_count) {
+					if (!Door_divCount) {
 						num += Door_dir;
 						if (num > EXIT_DOOR_MAX) {
 							num = EXIT_DOOR_MAX;
@@ -498,7 +498,7 @@ void ShowBitmapFrame (int bRedraw)
 					}
 					break;
 				case 1:
-					if (!Door_div_count)
+					if (!Door_divCount)
 						num++;
 					if (num > OTHER_THING_MAX)
 						num = 0;
@@ -551,19 +551,19 @@ void ShowBitmapFrame (int bRedraw)
 			grdCurCanv = curCanvSave
 		);
 		d_free (bitmap_canv);
-		if (! (bRedraw || Door_div_count)) {
+		if (! (bRedraw || Door_divCount)) {
 #if 1
-		Door_div_count = DOOR_DIV_INIT;
+		Door_divCount = DOOR_DIV_INIT;
 #else
 		switch (Animating_bitmapType) {
 			case 0:
 				if (num == EXIT_DOOR_MAX) {
 					Door_dir = -1;
-					Door_div_count = DOOR_DIV_INIT;
+					Door_divCount = DOOR_DIV_INIT;
 					} 
 				else if (num == 0) {
 					Door_dir = 1;
-					Door_div_count = DOOR_DIV_INIT;
+					Door_divCount = DOOR_DIV_INIT;
 				}
 				break;
 			case 1:
@@ -912,7 +912,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	briefing_screen	*bsp, briefBuf;
 	int			prev_ch=-1;
 	int			ch, done=0,i;
-	int			delay_count = KEY_DELAY_DEFAULT;
+	int			delayCount = KEY_DELAY_DEFAULT;
 	int			key_check;
 	int			nRobot=-1;
 	int			rval=0;
@@ -1245,18 +1245,18 @@ while (!done) {
 					LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
 				}
 			prev_ch = ch;
-			WIN (if (GRMODEINFO (emul)) delay_count = 0);
-			bRedraw = !delay_count || (message <= pj);
+			WIN (if (GRMODEINFO (emul)) delayCount = 0);
+			bRedraw = !delayCount || (message <= pj);
 			if (!bRedraw) {
 		 		printing_channel = StartBriefingSound (printing_channel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
 				chattering=1;
 			}
-			Briefing_text_x += PrintCharDelayed ((char) ch, delay_count, nRobot, flashing_cursor, bRedraw);
+			Briefing_text_x += PrintCharDelayed ((char) ch, delayCount, nRobot, flashing_cursor, bRedraw);
 		}
 
 		//	Check for Esc -> abort.
 		if (!bRedraw) {
-			if (delay_count)
+			if (delayCount)
 				key_check=local_key_inkey ();
 			else
 				key_check=0;
@@ -1267,7 +1267,7 @@ while (!done) {
 				}
 			if ((key_check == KEY_SPACEBAR) || (key_check == KEY_ENTER)) {
 				StopBriefingSound (&bot_channel);
-				delay_count = 0;
+				delayCount = 0;
 				bRedraw = 1;
 				}
 			if ((key_check == KEY_ALTED+KEY_ENTER) ||
@@ -1332,7 +1332,7 @@ while (!done) {
 							}
 						Briefing_text_x = bsp->text_ulx;
 						Briefing_text_y = bsp->text_uly;
-						delay_count = KEY_DELAY_DEFAULT;
+						delayCount = KEY_DELAY_DEFAULT;
 						WIN (wpage_done = 0);
 						goto redrawPage;
 						}

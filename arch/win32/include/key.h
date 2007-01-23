@@ -61,7 +61,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * *** empty log message ***
  * 
  * Revision 1.8  1993/10/16  19:24:43  matt
- * Added new function key_clearTimes() & key_clear_counts()
+ * Added new function key_clearTimes() & key_clearCounts()
  * 
  * Revision 1.7  1993/10/15  10:17:09  john
  * added keyd_last_key_pressed and released for use with recorder.
@@ -142,12 +142,12 @@ extern fix KeyDownTime(int scancode);
 extern unsigned int keyDownCount(int scancode);
 
 // Returns number of times key has went from down to up since last call.
-extern unsigned int key_up_count(int scancode);
+extern unsigned int key_upCount(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();
 //void key_clearTimes();
-//void key_clear_counts();
+//void key_clearCounts();
 
 extern char * key_text[256];
 

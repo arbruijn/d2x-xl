@@ -461,7 +461,7 @@ else
 //compute sine and cosine of an angle, filling in the variables
 //either of the pointers can be NULL
 //no interpolation
-void fix_fastsincos(fix a,fix *s,fix *c)
+void FixFastSinCos(fix a,fix *s,fix *c)
 {
 	int i;
 

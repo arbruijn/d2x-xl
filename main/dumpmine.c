@@ -271,17 +271,17 @@ void write_exit_text(FILE *my_file)
 void write_key_text(FILE *my_file)
 {
 	int	i;
-	int	red_count, blue_count, gold_count;
-	int	red_count2, blue_count2, gold_count2;
+	int	redCount, blueCount, goldCount;
+	int	redCount2, blueCount2, goldCount2;
 	int	blue_segnum=-1, blue_sidenum=-1, red_segnum=-1, red_sidenum=-1, gold_segnum=-1, gold_sidenum=-1;
 	int	connect_side;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Key stuff:\n");
 
-	red_count = 0;
-	blue_count = 0;
-	gold_count = 0;
+	redCount = 0;
+	blueCount = 0;
+	goldCount = 0;
 
 	for (i=0; i<gameData.walls.nWalls; i++) {
 		if (gameData.walls.walls[i].keys & KEY_BLUE) {
@@ -289,12 +289,12 @@ void write_key_text(FILE *my_file)
 			if (blue_segnum == -1) {
 				blue_segnum = gameData.walls.walls[i].nSegment;
 				blue_sidenum = gameData.walls.walls[i].nSide;
-				blue_count++;
+				blueCount++;
 			} else {
 				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[blue_segnum]);
 				if (connect_side != blue_sidenum) {
 					warning_printf(my_file, "Warning: This blue door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, blue_segnum, blue_sidenum);
-					blue_count++;
+					blueCount++;
 				}
 			}
 		}
@@ -303,12 +303,12 @@ void write_key_text(FILE *my_file)
 			if (red_segnum == -1) {
 				red_segnum = gameData.walls.walls[i].nSegment;
 				red_sidenum = gameData.walls.walls[i].nSide;
-				red_count++;
+				redCount++;
 			} else {
 				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[red_segnum]);
 				if (connect_side != red_sidenum) {
 					warning_printf(my_file, "Warning: This red door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, red_segnum, red_sidenum);
-					red_count++;
+					redCount++;
 				}
 			}
 		}
@@ -317,45 +317,45 @@ void write_key_text(FILE *my_file)
 			if (gold_segnum == -1) {
 				gold_segnum = gameData.walls.walls[i].nSegment;
 				gold_sidenum = gameData.walls.walls[i].nSide;
-				gold_count++;
+				goldCount++;
 			} else {
 				connect_side = FindConnectedSide(&gameData.segs.segments[gameData.walls.walls[i].nSegment], &gameData.segs.segments[gold_segnum]);
 				if (connect_side != gold_sidenum) {
 					warning_printf(my_file, "Warning: This gold door at seg %i, is different than the one at seg %i, tSide %i\n", gameData.walls.walls[i].nSegment, gold_segnum, gold_sidenum);
-					gold_count++;
+					goldCount++;
 				}
 			}
 		}
 	}
 
-	if (blue_count > 1)
-		warning_printf(my_file, "Warning: %i doors are keyed to the blue key.\n", blue_count);
+	if (blueCount > 1)
+		warning_printf(my_file, "Warning: %i doors are keyed to the blue key.\n", blueCount);
 
-	if (red_count > 1)
-		warning_printf(my_file, "Warning: %i doors are keyed to the red key.\n", red_count);
+	if (redCount > 1)
+		warning_printf(my_file, "Warning: %i doors are keyed to the red key.\n", redCount);
 
-	if (gold_count > 1)
-		warning_printf(my_file, "Warning: %i doors are keyed to the gold key.\n", gold_count);
+	if (goldCount > 1)
+		warning_printf(my_file, "Warning: %i doors are keyed to the gold key.\n", goldCount);
 
-	red_count2 = 0;
-	blue_count2 = 0;
-	gold_count2 = 0;
+	redCount2 = 0;
+	blueCount2 = 0;
+	goldCount2 = 0;
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
 		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_BLUE) {
 				fprintf(my_file, "The BLUE key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
-				blue_count2++;
+				blueCount2++;
 			}
 		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_RED) {
 				fprintf(my_file, "The RED key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
-				red_count2++;
+				redCount2++;
 			}
 		if (gameData.objs.objects[i].nType == OBJ_POWERUP)
 			if (gameData.objs.objects[i].id == POW_KEY_GOLD) {
 				fprintf(my_file, "The GOLD key is tObject %i in tSegment %i\n", i, gameData.objs.objects[i].nSegment);
-				gold_count2++;
+				goldCount2++;
 			}
 
 		if (gameData.objs.objects[i].containsCount) {
@@ -363,15 +363,15 @@ void write_key_text(FILE *my_file)
 				switch (gameData.objs.objects[i].containsId) {
 					case POW_KEY_BLUE:
 						fprintf(my_file, "The BLUE key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						blue_count2 += gameData.objs.objects[i].containsCount;
+						blueCount2 += gameData.objs.objects[i].containsCount;
 						break;
 					case POW_KEY_GOLD:
 						fprintf(my_file, "The GOLD key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						gold_count2 += gameData.objs.objects[i].containsCount;
+						goldCount2 += gameData.objs.objects[i].containsCount;
 						break;
 					case POW_KEY_RED:
 						fprintf(my_file, "The RED key is contained in tObject %i (a %s %s) in tSegment %i\n", i, szObjectTypeNames[gameData.objs.objects[i].nType], gameData.bots.names[gameData.objs.objects[i].id], gameData.objs.objects[i].nSegment);
-						red_count2 += gameData.objs.objects[i].containsCount;
+						redCount2 += gameData.objs.objects[i].containsCount;
 						break;
 					default:
 						break;
@@ -380,26 +380,26 @@ void write_key_text(FILE *my_file)
 		}
 	}
 
-	if (blue_count)
-		if (blue_count2 == 0)
+	if (blueCount)
+		if (blueCount2 == 0)
 			err_printf(my_file, "Error: There is a door keyed to the blue key, but no blue key!\n");
 
-	if (red_count)
-		if (red_count2 == 0)
+	if (redCount)
+		if (redCount2 == 0)
 			err_printf(my_file, "Error: There is a door keyed to the red key, but no red key!\n");
 
-	if (gold_count)
-		if (gold_count2 == 0)
+	if (goldCount)
+		if (goldCount2 == 0)
 			err_printf(my_file, "Error: There is a door keyed to the gold key, but no gold key!\n");
 
-	if (blue_count2 > 1)
-		err_printf(my_file, "Error: There are %i blue keys!\n", blue_count2);
+	if (blueCount2 > 1)
+		err_printf(my_file, "Error: There are %i blue keys!\n", blueCount2);
 
-	if (red_count2 > 1)
-		err_printf(my_file, "Error: There are %i red keys!\n", red_count2);
+	if (redCount2 > 1)
+		err_printf(my_file, "Error: There are %i red keys!\n", redCount2);
 
-	if (gold_count2 > 1)
-		err_printf(my_file, "Error: There are %i gold keys!\n", gold_count2);
+	if (goldCount2 > 1)
+		err_printf(my_file, "Error: There are %i gold keys!\n", goldCount2);
 }
 
 // ----------------------------------------------------------------------------
@@ -499,13 +499,13 @@ void write_matcen_text(FILE *my_file)
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Materialization centers:\n");
-	for (i=0; i<gameData.matCens.nRobotCenters; i++) {
-		int	trigger_count=0, nSegment, nFuelCen;
+	for (i=0; i<gameData.matCens.nMatCens; i++) {
+		int	triggerCount=0, nSegment, nFuelCen;
 
 		fprintf(my_file, "tFuelCenInfo[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
 		fprintf(my_file, "Segment2[%04i].nMatCen = %02i  ", gameData.matCens.fuelCenters[i].nSegment, gameData.segs.segment2s[gameData.matCens.fuelCenters[i].nSegment].nMatCen);
 
-		nFuelCen = gameData.matCens.robotCenters[i].nFuelCen;
+		nFuelCen = gameData.matCens.botGens[i].nFuelCen;
 		if (gameData.matCens.fuelCenters[nFuelCen].Type != SEGMENT_IS_ROBOTMAKER)
 			err_printf(my_file, "Error: Matcen %i corresponds to gameData.matCens.fuelCenters %i, which has nType %i (%s).\n", i, nFuelCen, gameData.matCens.fuelCenters[nFuelCen].Type, Special_names[gameData.matCens.fuelCenters[nFuelCen].Type]);
 
@@ -517,13 +517,13 @@ void write_matcen_text(FILE *my_file)
 				for (k=0; k<gameData.trigs.triggers[j].nLinks; k++)
 					if (gameData.trigs.triggers[j].seg[k] == nSegment) {
 						fprintf(my_file, "Trigger = %2i  ", j );
-						trigger_count++;
+						triggerCount++;
 					}
 			}
 		}
 		fprintf(my_file, "\n");
 
-		if (trigger_count == 0)
+		if (triggerCount == 0)
 			err_printf(my_file, "Error: Matcen %i in tSegment %i has no tTrigger!\n", i, nSegment);
 
 	}
@@ -682,7 +682,7 @@ void write_game_text_file(char *filename)
 	fprintf(my_file, "Number of walls:      %4i\n", gameData.walls.nWalls);
 	fprintf(my_file, "Number of open doors: %4i\n", gameData.walls.nOpenDoors);
 	fprintf(my_file, "Number of triggers:   %4i\n", gameData.trigs.nTriggers);
-	fprintf(my_file, "Number of matcens:    %4i\n", gameData.matCens.nRobotCenters);
+	fprintf(my_file, "Number of matcens:    %4i\n", gameData.matCens.nMatCens);
 	fprintf(my_file, "\n");
 
 	write_segment_text(my_file);
