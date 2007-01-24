@@ -64,8 +64,8 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 
 	if (mbe->state == SDL_PRESSED) {
 		mb->pressed = 1;
-		mb->time_went_down = TimerGetFixedSeconds();
-		mb->num_downs++;
+		mb->time_wentDown = TimerGetFixedSeconds();
+		mb->numDowns++;
 
 		if (button == D2_MB_Z_UP) {
 			mouseData.delta_z += Z_SENSITIVITY;
@@ -79,7 +79,7 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 		}
 	} else {
 		mb->pressed = 0;
-		mb->time_held_down += TimerGetFixedSeconds() - mb->time_went_down;
+		mb->time_heldDown += TimerGetFixedSeconds() - mb->time_wentDown;
 		mb->num_ups++;
 	}
 }
@@ -115,10 +115,10 @@ void mouse_flush()	// clears all mice events...
 	currentTime = TimerGetFixedSeconds();
 	for (i=0; i<MOUSE_MAX_BUTTONS; i++) {
 		mouseData.buttons[i].pressed=0;
-		mouseData.buttons[i].time_went_down=currentTime;
-		mouseData.buttons[i].time_held_down=0;
+		mouseData.buttons[i].time_wentDown=currentTime;
+		mouseData.buttons[i].time_heldDown=0;
 		mouseData.buttons[i].num_ups=0;
-		mouseData.buttons[i].num_downs=0;
+		mouseData.buttons[i].numDowns=0;
 		mouseData.buttons[i].rotated=0;
 	}
 	mouseData.delta_x = 0;
@@ -231,8 +231,8 @@ int MouseButtonDownCount(int button)
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	count = mouseData.buttons[button].num_downs;
-	mouseData.buttons[button].num_downs = 0;
+	count = mouseData.buttons[button].numDowns;
+	mouseData.buttons[button].numDowns = 0;
 
 	return count;
 }
@@ -241,23 +241,23 @@ if (!bFastPoll)
 // Returns how long this button has been down since last call.
 fix MouseButtonDownTime(int button)
 {
-	fix time_down, time;
+	fix timeDown, time;
 
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
 	if (!mouseData.buttons[button].pressed) {
-		time_down = mouseData.buttons[button].time_held_down;
-		if (!time_down && mouseData.buttons [button].rotated)
-			time_down = (fix) (MouseButtonDownCount (button) * gameStates.input.kcFrameTime);
-		mouseData.buttons[button].time_held_down = 0;
+		timeDown = mouseData.buttons[button].time_heldDown;
+		if (!timeDown && mouseData.buttons [button].rotated)
+			timeDown = (fix) (MouseButtonDownCount (button) * gameStates.input.kcPollTime);
+		mouseData.buttons[button].time_heldDown = 0;
 	} else {
 		time = TimerGetFixedSeconds();
-		time_down = time - mouseData.buttons[button].time_held_down;
-		mouseData.buttons[button].time_held_down = time;
+		timeDown = time - mouseData.buttons[button].time_heldDown;
+		mouseData.buttons[button].time_heldDown = time;
 	}
-	return time_down;
+	return timeDown;
 }
 
 //------------------------------------------------------------------------------

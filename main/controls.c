@@ -132,9 +132,9 @@ void ReadFlyingControls(tObject *objP)
 		//this is a horrible hack.  guided missile stuff should not be
 		//handled in the middle of a routine that is dealing with the tPlayer
 		VmVecZero(&objP->mType.physInfo.rotThrust);
-		rotangs.p = Controls.pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		rotangs.b = Controls.bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
-		rotangs.h = Controls.headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+		rotangs.p = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+		rotangs.b = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
+		rotangs.h = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		VmAngles2Matrix(&rotmat,&rotangs);
 		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->position.mOrient,&rotmat);
 		gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->position.mOrient = tempm;
@@ -144,15 +144,15 @@ void ReadFlyingControls(tObject *objP)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
 	else {
-		if (Controls.headingTime)
-			Controls.headingTime = Controls.headingTime;
-		objP->mType.physInfo.rotThrust.p.x = Controls.pitchTime;
-		objP->mType.physInfo.rotThrust.p.y = Controls.headingTime;//Controls.headingTime ? f1_0 / 4 : 0; //Controls.headingTime;
-		objP->mType.physInfo.rotThrust.p.z = Controls.bankTime;
+		if (Controls [0].headingTime)
+			Controls [0].headingTime = Controls [0].headingTime;
+		objP->mType.physInfo.rotThrust.p.x = Controls [0].pitchTime;
+		objP->mType.physInfo.rotThrust.p.y = Controls [0].headingTime;//Controls [0].headingTime ? f1_0 / 4 : 0; //Controls [0].headingTime;
+		objP->mType.physInfo.rotThrust.p.z = Controls [0].bankTime;
 		}
-	forwardThrustTime = Controls.forwardThrustTime;
+	forwardThrustTime = Controls [0].forwardThrustTime;
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{
-		if (Controls.afterburner_state) {			//tPlayer has key down
+		if (Controls [0].afterburnerState) {			//tPlayer has key down
 			//if (forwardThrustTime >= 0) { 		//..and isn't moving backward
 			{
 				fix afterburner_scale;
@@ -186,9 +186,9 @@ void ReadFlyingControls(tObject *objP)
 	// Set tObject's thrust vector for forward/backward
 	VmVecCopyScale (&objP->mType.physInfo.thrust, &objP->position.mOrient.fVec, forwardThrustTime);
 	// slide left/right
-	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->position.mOrient.rVec, Controls.sidewaysThrustTime);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->position.mOrient.rVec, Controls [0].sidewaysThrustTime);
 	// slide up/down
-	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->position.mOrient.uVec, Controls.verticalThrustTime);
+	VmVecScaleInc (&objP->mType.physInfo.thrust, &objP->position.mOrient.uVec, Controls [0].verticalThrustTime);
 	if (!gameStates.input.bSkipControls)
 		memcpy (&playerThrust, &objP->mType.physInfo.thrust, sizeof (playerThrust));
 	//HUDMessage (0, "%d %d %d", playerThrust.x, playerThrust.y, playerThrust.z);

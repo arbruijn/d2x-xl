@@ -3291,8 +3291,8 @@ gameData.demo.nFrameCount = 0;
 gameData.demo.bPlayersCloaked = 0;
 gameData.demo.nPlaybackStyle = NORMAL_PLAYBACK;
 SetFunctionMode (FMODE_GAME);
-Cockpit_3d_view [0] = CV_NONE;       //turn off 3d views on cockpit
-Cockpit_3d_view [1] = CV_NONE;       //turn off 3d views on cockpit
+Cockpit_3dView [0] = CV_NONE;       //turn off 3d views on cockpit
+Cockpit_3dView [1] = CV_NONE;       //turn off 3d views on cockpit
 SDL_ShowCursor (0);
 NDPlayBackOneFrame ();       // this one loads new level
 NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb game

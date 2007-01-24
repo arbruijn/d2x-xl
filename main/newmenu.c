@@ -1208,7 +1208,7 @@ int NMCheckButtonPress ()
 	case	CONTROL_THRUSTMASTER_FCS:
 	case	CONTROL_GRAVIS_GAMEPAD:
 		for (i=0; i<4; i++)	
-	 		if (joy_get_button_down_cnt (i)>0) return 1;
+	 		if (JoyGetButtonDownCnt (i)>0) return 1;
 		break;
 	case	CONTROL_MOUSE:
 	case	CONTROL_CYBERMAN:
@@ -2633,7 +2633,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int box_x, box_y, box_w, box_h;
 	bkg bg;		// background under listbox
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
-	int mouse2_state, omouse2_state, bWheelUp, bWheelDown;
+	int mouse2State, omouse2State, bWheelUp, bWheelDown;
 	int bDblClick=0;
 	char szPattern [40];
 	int nPatternLen = 0;
@@ -2822,7 +2822,7 @@ ReadFileNames:
 	}
 
 	nMouseState = nOldMouseState = 0;
-	mouse2_state = omouse2_state = 0;
+	mouse2State = omouse2State = 0;
 	NMDrawCloseBox (w_x, w_y);
 	SDL_ShowCursor (1);
 
@@ -2832,9 +2832,9 @@ ReadFileNames:
 		ofirst_item = first_item;
 		GrUpdate (0);
 		nOldMouseState = nMouseState;
-		omouse2_state = mouse2_state;
+		omouse2State = mouse2State;
 		nMouseState = MouseButtonState (0);
-		mouse2_state = MouseButtonState (1);
+		mouse2State = MouseButtonState (1);
 		bWheelUp = MouseButtonState (3);
 		bWheelDown = MouseButtonState (4);
 		//see if redbook song needs to be restarted
@@ -3019,7 +3019,7 @@ ReadFileNames:
 		if (first_item < 0) first_item = 0;
 
 		WIN (Sleep (100));
-		if (nMouseState || mouse2_state) {
+		if (nMouseState || mouse2State) {
 			int w, h, aw;
 
 			mouse_get_pos (&mx, &my);
@@ -3030,7 +3030,7 @@ ReadFileNames:
 				y1 = (i-first_item)* (grd_curfont->ft_h + 2) + box_y;
 				y2 = y1+h+1;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
-					if (i == cItem && !mouse2_state) {
+					if (i == cItem && !mouse2State) {
 						break;
 					}
 					cItem = i;

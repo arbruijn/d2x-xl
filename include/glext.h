@@ -1729,7 +1729,7 @@ extern "C" {
 #define GL_SEPARATE_SPECULAR_COLOR_EXT    0x81FA
 #endif
 
-#ifndef GL_EXT_secondary_color
+#ifndef GL_EXTSecondary_color
 #define GL_COLOR_SUM_EXT                  0x8458
 #define GL_CURRENT_SECONDARY_COLOR_EXT    0x8459
 #define GL_SECONDARY_COLOR_ARRAY_SIZE_EXT 0x845A
@@ -2897,7 +2897,7 @@ extern "C" {
 #define GL_READ_PIXEL_DATA_RANGE_POINTER_NV 0x887D
 #endif
 
-#ifndef GL_NV_primitive_restart
+#ifndef GL_NVPrimitive_restart
 #define GL_PRIMITIVE_RESTART_NV           0x8558
 #define GL_PRIMITIVE_RESTART_INDEX_NV     0x8559
 #endif
@@ -4925,8 +4925,8 @@ typedef void (APIENTRYP PFNGLPIXELTRANSFORMPARAMETERFVEXTPROC) (GLenum target, G
 #define GL_EXT_separate_specular_color 1
 #endif
 
-#ifndef GL_EXT_secondary_color
-#define GL_EXT_secondary_color 1
+#ifndef GL_EXTSecondary_color
+#define GL_EXTSecondary_color 1
 #ifdef GL_GLEXT_PROTOTYPES
 GLAPI void APIENTRY glSecondaryColor3bEXT (GLbyte, GLbyte, GLbyte);
 GLAPI void APIENTRY glSecondaryColor3bvEXT (const GLbyte *);
@@ -6337,8 +6337,8 @@ typedef void (APIENTRYP PFNGLPIXELDATARANGENVPROC) (GLenum target, GLsizei lengt
 typedef void (APIENTRYP PFNGLFLUSHPIXELDATARANGENVPROC) (GLenum target);
 #endif
 
-#ifndef GL_NV_primitive_restart
-#define GL_NV_primitive_restart 1
+#ifndef GL_NVPrimitive_restart
+#define GL_NVPrimitive_restart 1
 #ifdef GL_GLEXT_PROTOTYPES
 GLAPI void APIENTRY glPrimitiveRestartNV (void);
 GLAPI void APIENTRY glPrimitiveRestartIndexNV (GLuint);

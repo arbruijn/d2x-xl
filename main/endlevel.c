@@ -1112,8 +1112,8 @@ if (check_keys) {
 		rotang.pitch = rotang.bank  = rotang.head  = 0;
 //check for joystick movement
 if (check_joy && joy_present)	{
-	joy_get_pos (&joy_x, &joy_y);
-	btns=joy_get_btns ();
+	JoyGetpos (&joy_x, &joy_y);
+	btns=JoyGetBtns ();
 	joyx_moved = (abs (joy_x - old_joy_x)>JOY_NULL);
 	joyy_moved = (abs (joy_y - old_joy_y)>JOY_NULL);
 	if (abs (joy_x) < JOY_NULL) joy_x = 0;

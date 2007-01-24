@@ -102,9 +102,9 @@ extern int MouseButtonState(int button);
 typedef struct mousebutton {
 	ubyte pressed;
 	ubyte rotated;
-	fix time_went_down;
-	fix time_held_down;
-	uint num_downs;
+	fix time_wentDown;
+	fix time_heldDown;
+	uint numDowns;
 	uint num_ups;
 } mousebutton;
 

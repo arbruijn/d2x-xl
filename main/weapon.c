@@ -53,8 +53,8 @@ int POrderList (int num);
 int SOrderList (int num);
 //	Note, only Vulcan cannon requires ammo.
 // NOTE: Now Vulcan and Gauss require ammo. -5/3/95 Yuan
-//ubyte	Default_primaryAmmoLevel[MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
-//ubyte	Default_secondaryAmmoLevel[MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
+//ubyte	DefaultPrimaryAmmoLevel[MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
+//ubyte	DefaultSecondaryAmmoLevel[MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
 
 //	Convert primary weapons to indices in gameData.weapons.info array.
 ubyte primaryWeaponToWeaponInfo[MAX_PRIMARY_WEAPONS] = {

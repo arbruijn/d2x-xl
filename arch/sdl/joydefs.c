@@ -165,7 +165,7 @@ if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
 		v = nJoyDeadzones [m->value];
 		if (gameOpts->input.joyDeadZones [i] != v) {
 			gameOpts->input.joyDeadZones [i] = v;
-			set_joy_deadzone (gameOpts->input.joyDeadZones [i], i);
+			JoySetDeadzone (gameOpts->input.joyDeadZones [i], i);
 			if (gameOpts->input.bSyncJoyAxes)
 				sprintf (m->text, TXT_JOY_DEADZONE, gameOpts->input.joyDeadZones [i]);
 			else

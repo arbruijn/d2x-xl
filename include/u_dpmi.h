@@ -41,7 +41,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.2  1994/08/24  18:53:51  john
  * Made Cyberman read like normal mouse; added dpmi module; moved
- * mouse from assembly to c. Made mouse buttons return time_down.
+ * mouse from assembly to c. Made mouse buttons return timeDown.
  *
  * Revision 1.1  1994/08/24  10:22:48  john
  * Initial revision

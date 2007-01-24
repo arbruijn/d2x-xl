@@ -31,7 +31,7 @@ static char rcsid[] = "$Id: slew.c,v 1.4 2003/10/10 09:36:35 btb Exp $";
 #include "error.h"
 #include "physics.h"
 #include "joydefs.h"
-#include "kconfig.h"
+#include "input.h"
 #include "args.h"
 
 //variables for slew system
@@ -112,13 +112,13 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 			rotang.h  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mType.physInfo.velocity.p.x += VEL_SPEED * Controls.sidewaysThrustTime;
-			objP->mType.physInfo.velocity.p.y += VEL_SPEED * Controls.verticalThrustTime;
-			objP->mType.physInfo.velocity.p.z += VEL_SPEED * Controls.forwardThrustTime;
+			objP->mType.physInfo.velocity.p.x += VEL_SPEED * Controls [0].sidewaysThrustTime;
+			objP->mType.physInfo.velocity.p.y += VEL_SPEED * Controls [0].verticalThrustTime;
+			objP->mType.physInfo.velocity.p.z += VEL_SPEED * Controls [0].forwardThrustTime;
 
-			rotang.p = Controls.pitchTime/ROT_SPEED ;
-			rotang.b  = Controls.bankTime/ROT_SPEED;
-			rotang.h  = Controls.headingTime/ROT_SPEED;
+			rotang.p = Controls [0].pitchTime/ROT_SPEED ;
+			rotang.b  = Controls [0].bankTime/ROT_SPEED;
+			rotang.h  = Controls [0].headingTime/ROT_SPEED;
 		}
 	}
 	else
@@ -127,8 +127,8 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	//check for joystick movement
 
 	if (check_joy && joy_present && (gameStates.app.nFunctionMode == FMODE_EDITOR) )	{
-		joy_get_pos(&joy_x,&joy_y);
-		btns=joy_get_btns();
+		JoyGetPos(&joy_x,&joy_y);
+		btns=JoyGetBtns();
 	
 		joyx_moved = (abs(joy_x - old_joy_x)>JOY_NULL);
 		joyy_moved = (abs(joy_y - old_joy_y)>JOY_NULL);

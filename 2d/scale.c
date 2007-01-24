@@ -379,7 +379,7 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
 
       /* Error term adjust when the error term turns over, used to factor
          out the X step made at that time */
-      scale_adj_down = YDelta * 2;
+      scale_adjDown = YDelta * 2;
 
       /* Initial error term; reflects an initial step of 0.5 along the Y
          axis */

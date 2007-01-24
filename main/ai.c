@@ -57,7 +57,7 @@ char ai_rcsid [] = "$Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $";
 #include "text.h"
 #include "fuelcen.h"
 #include "controls.h"
-#include "kconfig.h"
+#include "input.h"
 #include "gameseg.h"
 
 #ifdef EDITOR
@@ -221,14 +221,14 @@ sbyte Ai_transition_table [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
 // ----------------------------------------------------------------------------
 void InitAIFrame (void)
 {
-	int ab_state;
+	int abState;
 
 gameData.ai.nDistToLastPlayerPosFiredAt = 
 	VmVecDistQuick (&Last_fired_upon_player_pos, &gameData.ai.vBelievedPlayerPos);
-ab_state = xAfterburnerCharge && Controls.afterburner_state && 
+abState = xAfterburnerCharge && Controls [0].afterburnerState && 
 			  (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER);
 if (! (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) || 
-	 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) || ab_state)
+	 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) || abState)
 	AIDoCloakStuff ();
 }
 

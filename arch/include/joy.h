@@ -31,11 +31,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added function to set joystick for slow reading
  *
  * Revision 1.13  1994/10/13  11:36:06  john
- * Made joy_downTime be kept track of in fixed seconds,
+ * Made joyDownTime be kept track of in fixed seconds,
  * not ticks.
  *
  * Revision 1.12  1994/10/12  17:03:16  john
- * Added prototype for joy_get_scaled_reading.
+ * Added prototype for JoyGetScaledReading.
  *
  * Revision 1.11  1994/10/12  16:57:55  john
  * Added function to set a joystick button's state.
@@ -131,9 +131,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 struct joybutton {
 	int state;
-	int last_state;
-	fix time_went_down;
-	int num_downs;
+	int lastState;
+	fix time_wentDown;
+	int numDowns;
 	int num_ups;
 };
 
@@ -191,44 +191,44 @@ extern void joy_set_cen();
 // is in the lower right hand corner. Always returns 0,0 if no stick
 // is present.
 
-extern void joy_get_pos(int *x, int *y);
+extern void JoyGetPos(int *x, int *y);
 
 //==========================================================================
 // This just reads the buttons and returns their status.  When bit 0
 // is 1, button 1 is pressed, when bit 1 is 1, button 2 is pressed.
-extern int joy_get_btns();
+extern int JoyGetBtns();
 
 //==========================================================================
 // This returns the number of times a button went either down or up since
 // the last call to this function.
-extern int joy_get_button_up_cnt(int btn);
-extern int joy_get_button_down_cnt(int btn);
+extern int JoyGetButtonUpCnt(int btn);
+extern int JoyGetButtonDownCnt(int btn);
 
 //==========================================================================
 // This returns how long (in approximate milliseconds) that each of the
 // buttons has been held down since the last call to this function.
 // It is the total time... say you pressed it down for 3 ticks, released
 // it, and held it down for 6 more ticks. The time returned would be 9.
-extern fix joy_get_button_downTime(int btn);
+extern fix JoyGetButtonDownTime(int btn);
 
 extern unsigned long joy_read_raw_buttons();
-extern unsigned long joystick_read_raw_axis(unsigned long mask, int *axis);
-extern void joy_flush();
-extern ubyte joy_get_present_mask();
-extern void joy_setTimer_rate(int maxValue);
-extern int joy_getTimer_rate();
+extern unsigned long JoyReadRawAxis(unsigned long mask, int *axis);
+extern void JoyFlush();
+extern ubyte JoyGetPresentMask();
+extern void JoySetTimerRate(int maxValue);
+extern int JoyGetTimerRate();
 
-extern int joy_get_button_state(int btn);
-extern void joy_set_cen_fake(int channel);
-extern ubyte joy_read_stick(ubyte masks, int *axis);
-extern void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_btnValues(int btn, int state, fix timedown, int downcount, int upcount);
-extern int joy_get_scaled_reading(int raw, int axn);
-extern void joy_set_slow_reading(int flag);
-extern int set_joy_deadzone (int nRelZone, int nAxis);
+extern int JoyGetButtonState(int btn);
+extern void JoySetCenFake(int channel);
+extern ubyte JoyReadStick(ubyte masks, int *axis);
+extern void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max);
+extern void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max);
+extern void JoySetBtnValues(int btn, int state, fix timedown, int downcount, int upcount);
+extern int JoyGetScaledReading(int raw, int axn);
+extern void JoySetSlowReading(int flag);
+extern int JoySetDeadzone (int nRelZone, int nAxis);
 
-extern int joy_deadzone [4];
-extern int joy_deadzone_rel [4];
+extern int joyDeadzone [4];
+extern int joyDeadzone_rel [4];
 
 #endif // _JOY_H

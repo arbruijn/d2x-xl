@@ -1712,7 +1712,7 @@ void KillStuckObjects(int wallnum)
 // -- unused -- // -----------------------------------------------------------------------------------
 // -- unused -- //	Return tObject id of first flare found embedded in segp:nSide.
 // -- unused -- //	If no flare, return -1.
-// -- unused -- int contains_flare(tSegment *segp, short nSide)
+// -- unused -- int containsFlare(tSegment *segp, short nSide)
 // -- unused -- {
 // -- unused -- 	int	i;
 // -- unused --

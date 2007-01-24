@@ -250,13 +250,13 @@ grs_canvas *Pad_text_canvas;		// Keypad text
 grs_font *editor_font=NULL;
 
 //where the editor is looking
-vmsVector Ed_view_target={0,0,0};
+vmsVector EdView_target={0,0,0};
 
 int gamestate_not_restored = 0;
 
 UI_WINDOW * EditorWindow;
 
-int	Large_view_index = -1;
+int	LargeView_index = -1;
 
 UI_GADGET_USERBOX * GameViewBox;
 UI_GADGET_USERBOX * LargeViewBox;
@@ -919,7 +919,7 @@ void init_editor_screen()
 	OutlineIcon = ui_add_gadget_icon( EditorWindow, "Out\nline", 	680,25+530,  	40, 22,	KEY_O,			ToggleOutlineMode );
 	LockIcon	= ui_add_gadget_icon( EditorWindow, "Lock\nstep", 725,25+530, 	40, 22,	KEY_L,			ToggleLockstep );
 
-	meddraw_init_views(LargeViewBox->canvas);
+	meddraw_initViews(LargeViewBox->canvas);
 
 	//ui_add_gadget_button( EditorWindow, 460, 510, 50, 25, "Quit", ExitEditor );
 	//ui_add_gadget_button( EditorWindow, 520, 510, 50, 25, "Lisp", CallLisp );
@@ -1130,7 +1130,7 @@ void editor(void)
 {
 	int w,h;
 	grsBitmap * savedbitmap;
-	editor_view *new_cv;
+	editorView *new_cv;
         static int padnum=0;
 	vmsMatrix	MouseRotMat,tempm;
 	//@@short camera_objnum;			//a camera for viewing
@@ -1159,14 +1159,14 @@ void editor(void)
 //	_MARK_("start of editor");//Nuked to compile -KRB
 
 	ui_mouse_hide();
-	ui_reset_idle_seconds();
+	ui_reset_idleSeconds();
 	gameData.objs.viewer = gameData.objs.console;
 	slew_init(gameData.objs.console);
 	UpdateFlags = UF_ALL;
 	medlisp_update_screen();
 
 	//set the wire-frame window to be the current view
-	current_view = &LargeView;
+	currentView = &LargeView;
 
 	if (faded_in==0)
 	{
@@ -1233,10 +1233,10 @@ void editor(void)
 			}
 		}
 
-		if ( ui_get_idle_seconds() > COMPRESS_INTERVAL ) 
+		if ( ui_get_idleSeconds() > COMPRESS_INTERVAL ) 
 			{
 			med_compress_mine();
-			ui_reset_idle_seconds();
+			ui_reset_idleSeconds();
 			}
   
 //	Commented out because it occupies about 25% of time in twirling the mine.
@@ -1337,10 +1337,10 @@ void editor(void)
 			break;
 		}
 
-//		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)GameViewBox) current_view=NULL;
-//		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)GroupViewBox) current_view=NULL;
+//		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)GameViewBox) currentView=NULL;
+//		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)GroupViewBox) currentView=NULL;
 
-		new_cv = current_view ;
+		new_cv = currentView ;
 
 #if ORTHO_VIEWS
 		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)LargeViewBox) new_cv=&LargeView;
@@ -1348,10 +1348,10 @@ void editor(void)
 		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)FrontViewBox) new_cv=&FrontView;
 		if (CurWindow->keyboard_focus_gadget == (UI_GADGET *)RightViewBox) new_cv=&RightView;
 #endif
-		if (new_cv != current_view ) {
-			current_view->ev_changed = 1;
+		if (new_cv != currentView ) {
+			currentView->ev_changed = 1;
 			new_cv->ev_changed = 1;
-			current_view = new_cv;
+			currentView = new_cv;
 		}
 
 		CalcFrameTime();
@@ -1390,8 +1390,8 @@ void editor(void)
 				sort_seg_list(N_found_segs,Found_segs,&gameData.objs.console->position.vPos);
 				Cursegp = &gameData.segs.segments[Found_segs[0]];
 				med_create_new_segment_from_cursegp();
-				if (Lock_view_to_cursegp)
-					set_view_target_from_segment(Cursegp);
+				if (LockView_to_cursegp)
+					setView_target_from_segment(Cursegp);
 			}
 
 			UpdateFlags |= UF_ED_STATE_CHANGED | UF_VIEWPOINT_MOVED;
@@ -1479,7 +1479,7 @@ void editor(void)
 				VmMatMul(&tempm,&LargeView.ev_matrix,&MouseRotMat);
 				LargeView.ev_matrix = tempm;
 				LargeView.ev_changed = 1;
-				Large_view_index = -1;			// say not one of the orthogonal views
+				LargeView_index = -1;			// say not one of the orthogonal views
 			}
 		} else  {
 			ui_mouse_show();
@@ -1488,8 +1488,8 @@ void editor(void)
 		if ( keyd_pressed[ KEY_Z ] ) {
 			ui_mouse_hide();
 			if ( Mouse.dy!=0 ) {
-				current_view->evDist += Mouse.dy*10000;
-				current_view->ev_changed = 1;
+				currentView->evDist += Mouse.dy*10000;
+				currentView->ev_changed = 1;
 			}
 		} else {
 			ui_mouse_show();

@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * NEw score system.
  *
  * Revision 1.9  1994/10/03  23:01:58  matt
- * New parms for scores_view()
+ * New parms for scoresView()
  *
  *
  * Revision 1.8  1994/09/27  16:10:37  adam
@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INVULNERABILITY_SCORE   0
 #define HEADLIGHT_SCORE         0
 
-extern void scores_view(int citem);
+extern void scoresView(int citem);
 
 // If tPlayer has a high score, adds you to file and returns.
 // If abortFlag set, only show if tPlayer has gotten a high score.

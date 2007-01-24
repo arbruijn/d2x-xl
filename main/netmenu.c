@@ -95,10 +95,10 @@ extern unsigned char ipx_MyAddress [10];
 
 void NetworkSetWeaponsAllowed (void)
  {
-  int opt = 0, choice, opt_primary, opt_second, opt_power;
+  int opt = 0, choice, optPrimary, optSecond, opt_power;
   tMenuItem m [40];
   
-  opt_primary = opt;
+  optPrimary = opt;
   memset (m, 0, sizeof (m));
   ADD_CHECK (opt, TXT_WA_LASER, netGame.DoLaserUpgrade, 0, NULL); opt++;
   ADD_CHECK (opt, TXT_WA_SLASER, netGame.DoSuperLaser, 0, NULL); opt++;
@@ -112,7 +112,7 @@ void NetworkSetWeaponsAllowed (void)
   ADD_CHECK (opt, TXT_WA_PHOENIX, netGame.DoPhoenix, 0, NULL); opt++;
   ADD_CHECK (opt, TXT_WA_OMEGA, netGame.DoOmega, 0, NULL); opt++;
   
-  opt_second = opt;   
+  optSecond = opt;   
   ADD_CHECK (opt, TXT_WA_HOMING_MSL, netGame.DoHoming, 0, NULL); opt++;
   ADD_CHECK (opt, TXT_WA_PROXBOMB, netGame.DoProximity, 0, NULL); opt++;
   ADD_CHECK (opt, TXT_WA_SMART_MSL, netGame.DoSmarts, 0, NULL); opt++;
@@ -133,27 +133,27 @@ void NetworkSetWeaponsAllowed (void)
   
   choice = ExecMenu (NULL, TXT_WA_OBJECTS, opt, m, NULL, NULL);
 
-  netGame.DoLaserUpgrade = m [opt_primary].value; 
-  netGame.DoSuperLaser = m [opt_primary+1].value;
-  netGame.DoQuadLasers = m [opt_primary+2].value;  
-  netGame.DoVulcan = m [opt_primary+3].value;
-  netGame.DoSpread = m [opt_primary+4].value;
-  netGame.DoPlasma = m [opt_primary+5].value;
-  netGame.DoFusions = m [opt_primary+6].value;
-  netGame.DoGauss = m [opt_primary+7].value;
-  netGame.DoHelix = m [opt_primary+8].value;
-  netGame.DoPhoenix = m [opt_primary+9].value;
-  netGame.DoOmega = m [opt_primary+10].value;
+  netGame.DoLaserUpgrade = m [optPrimary].value; 
+  netGame.DoSuperLaser = m [optPrimary+1].value;
+  netGame.DoQuadLasers = m [optPrimary+2].value;  
+  netGame.DoVulcan = m [optPrimary+3].value;
+  netGame.DoSpread = m [optPrimary+4].value;
+  netGame.DoPlasma = m [optPrimary+5].value;
+  netGame.DoFusions = m [optPrimary+6].value;
+  netGame.DoGauss = m [optPrimary+7].value;
+  netGame.DoHelix = m [optPrimary+8].value;
+  netGame.DoPhoenix = m [optPrimary+9].value;
+  netGame.DoOmega = m [optPrimary+10].value;
   
-  netGame.DoHoming = m [opt_second].value;
-  netGame.DoProximity = m [opt_second+1].value;
-  netGame.DoSmarts = m [opt_second+2].value;
-  netGame.DoMegas = m [opt_second+3].value;
-  netGame.DoFlash = m [opt_second+4].value;
-  netGame.DoGuided = m [opt_second+5].value;
-  netGame.DoSmartMine = m [opt_second+6].value;
-  netGame.DoMercury = m [opt_second+7].value;
-  netGame.DoEarthShaker = m [opt_second+8].value;
+  netGame.DoHoming = m [optSecond].value;
+  netGame.DoProximity = m [optSecond+1].value;
+  netGame.DoSmarts = m [optSecond+2].value;
+  netGame.DoMegas = m [optSecond+3].value;
+  netGame.DoFlash = m [optSecond+4].value;
+  netGame.DoGuided = m [optSecond+5].value;
+  netGame.DoSmartMine = m [optSecond+6].value;
+  netGame.DoMercury = m [optSecond+7].value;
+  netGame.DoEarthShaker = m [optSecond+8].value;
 
   netGame.DoInvulnerability = m [opt_power].value;
   netGame.DoCloak = m [opt_power+1].value;

@@ -919,7 +919,7 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 			for (i=0; i<MAX_RENDERED_WINDOWS; i++)
 				if (windowRenderedData [i].frame >= gameData.app.nFrameCount-1)
 					if (windowRenderedData [i].viewer == gameData.objs.console)
-						if (!windowRenderedData [i].rear_view) {
+						if (!windowRenderedData [i].rearView) {
 							window_num = i;
 							break;
 						}

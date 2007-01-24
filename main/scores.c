@@ -282,7 +282,7 @@ void scores_maybe_add_player(int abortFlag)
 		scores_write();
 
 	}
-	scores_view(position);
+	scoresView(position);
 }
 
 //------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ void scores_draw_item( int  i, stats_info * stats )
 
 //------------------------------------------------------------------------------
 
-void scores_view(int citem)
+void scoresView(int citem)
 {
 	fix t0 = 0, t1;
 	int c,i,done,looper;
@@ -456,7 +456,7 @@ ReshowScores:
 		}
 
 		for (i=0; i<4; i++ )	
-			if (joy_get_button_down_cnt(i)>0) done=1;
+			if (JoyGetButtonDownCnt(i)>0) done=1;
 		for (i=0; i<3; i++ )	
 			if (MouseButtonDownCount(i)>0) done=1;
 

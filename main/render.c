@@ -1004,7 +1004,7 @@ fix	Tulate_min_dot = (F1_0/4);
 //--unused-- fix	Tulate_min_ratio = (2*F1_0);
 fix	Min_n0_n1_dot	= (F1_0*15/16);
 
-extern int contains_flare(tSegment *segP, int nSide);
+extern int containsFlare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
 
 // -----------------------------------------------------------------------------------
@@ -2378,17 +2378,17 @@ else {
 
 //------------------------------------------------------------------------------
 
-extern kc_item kc_mouse [];
+extern kcItem kcMouse [];
 
 inline int ZoomKeyPressed (void)
 {
 #if 1
 	int	v;
 
-return keyd_pressed [kc_keyboard [52].value] || keyd_pressed [kc_keyboard [53].value] ||
-		 (((v = kc_mouse [30].value) < 255) && MouseButtonState (v));
+return keyd_pressed [kcKeyboard [52].value] || keyd_pressed [kcKeyboard [53].value] ||
+		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
 #else
-return (Controls.zoomDownCount > 0);
+return (Controls [0].zoomDownCount > 0);
 #endif
 }
 
@@ -2992,12 +2992,12 @@ G3EndFrame ();
 
 int nFirstTerminalSeg;
 
-void UpdateRenderedData(int nWindow, tObject *viewer, int rear_viewFlag, int user)
+void UpdateRenderedData(int nWindow, tObject *viewer, int rearViewFlag, int user)
 {
 	Assert(nWindow < MAX_RENDERED_WINDOWS);
 	windowRenderedData [nWindow].frame = gameData.app.nFrameCount;
 	windowRenderedData [nWindow].viewer = viewer;
-	windowRenderedData [nWindow].rear_view = rear_viewFlag;
+	windowRenderedData [nWindow].rearView = rearViewFlag;
 	windowRenderedData [nWindow].user = user;
 }
 

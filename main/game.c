@@ -763,14 +763,14 @@ void GameFlushInputs ()
 	FlushInput ();
 #else	
 	KeyFlush ();
-	joy_flush ();
+	JoyFlush ();
 	mouse_flush ();
 #endif	
 	#ifdef MACINTOSH
 	if ((gameStates.app.nFunctionMode != FMODE_MENU) && !joydefs_calibrating)		// only reset mouse when not in menu or not calibrating
 	#endif
 		MouseGetDelta (&dx, &dy);	// Read mouse
-	memset (&Controls,0,sizeof (control_info));
+	memset (&Controls,0,sizeof (tControlInfo));
 }
 
 //------------------------------------------------------------------------------
@@ -1037,7 +1037,7 @@ void FlyInit (tObject *objP)
 
 //	------------------------------------------------------------------------------------
 
-void test_anim_states ();
+void test_animStates ();
 
 #include "fvi.h"
 
@@ -1136,9 +1136,9 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 #endif
 	 	;
 	}
-else if ((xLastAfterburnerCharge && (Controls.afterburner_state != bLastAfterburnerState)) || 
+else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfterburnerState)) || 
 	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !xAfterburnerCharge))) {
-	if (xAfterburnerCharge && Controls.afterburner_state && 
+	if (xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 
 										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
@@ -1157,7 +1157,7 @@ else if ((xLastAfterburnerCharge && (Controls.afterburner_state != bLastAfterbur
 #endif
 		}
 	}
-bLastAfterburnerState = Controls.afterburner_state;
+bLastAfterburnerState = Controls [0].afterburnerState;
 xLastAfterburnerCharge = xAfterburnerCharge;
 }
 
@@ -1343,18 +1343,18 @@ int AllowedToFireLaser (void)
 
 //------------------------------------------------------------------------------
 
-fix	Next_flare_fireTime = 0;
+fix	NextFlare_fireTime = 0;
 #define	FLARE_BIG_DELAY	 (F1_0*2)
 
 int AllowedToFireFlare (void)
 {
-	if (Next_flare_fireTime > gameData.time.xGame)
-		if (Next_flare_fireTime < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
+	if (NextFlare_fireTime > gameData.time.xGame)
+		if (NextFlare_fireTime < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
 			return 0;
 	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
-		Next_flare_fireTime = gameData.time.xGame + F1_0/4;
+		NextFlare_fireTime = gameData.time.xGame + F1_0/4;
 	else
-		Next_flare_fireTime = gameData.time.xGame + FLARE_BIG_DELAY;
+		NextFlare_fireTime = gameData.time.xGame + FLARE_BIG_DELAY;
 
 	return 1;
 }
@@ -1461,9 +1461,9 @@ void CheckRearView ()
 	static int leave_mode;
 	static fix entryTime;
 #ifdef _DEBUG
-	if (Controls.rear_viewDownCount) {		//key/button has gone down
+	if (Controls [0].rearViewDownCount) {		//key/button has gone down
 #else
-	if (Controls.rear_viewDownCount && !gameStates.render.bExternalView) {		//key/button has gone down
+	if (Controls [0].rearViewDownCount && !gameStates.render.bExternalView) {		//key/button has gone down
 #endif
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
@@ -1487,7 +1487,7 @@ void CheckRearView ()
 		}
 	}
 	else
-		if (Controls.rear_view_down_state) {
+		if (Controls [0].rearViewDownState) {
 
 			if (leave_mode==0 && (TimerGetFixedSeconds ()-entryTime)>LEAVE_TIME)
 				leave_mode = 1;
@@ -1899,8 +1899,8 @@ extern void check_create_player_path (void);
 
 #endif
 
-int Coop_view_player[2]={-1,-1};
-int Cockpit_3d_view[2]={CV_NONE,CV_NONE};
+int CoopView_player[2]={-1,-1};
+int Cockpit_3dView[2]={CV_NONE,CV_NONE};
 
 //returns ptr to escort robot, or NULL
 tObject *find_escort ()
@@ -2253,7 +2253,7 @@ if (nDebugSlowdown) {
 //LogErr ("GameRenderFrame\n");
 		GameRenderFrame ();
 		gameStates.app.bUsingConverter = 0;
-		//show_extra_views ();		//missile view, buddy bot, etc.
+		//show_extraViews ();		//missile view, buddy bot, etc.
 
 #ifndef RELEASE
 		if (Saving_movie_frames)
@@ -2492,7 +2492,7 @@ int flFrameTime = 0;
 void FireLaser ()
 {
 	int i = primaryWeaponToWeaponInfo[gameData.weapons.nPrimary];
-	gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls.fire_primary_state || Controls.fire_primaryDownCount);
+	gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
 	if ((gameData.weapons.nPrimary == FUSION_INDEX) && (gameData.app.nGlobalLaserFiringCount)) {
 		if ((gameData.multi.players[gameData.multi.nLocalPlayer].energy < F1_0*2) && (gameData.app.fusion.xAutoFireTime == 0)) {
 			gameData.app.nGlobalLaserFiringCount = 0;

@@ -2076,7 +2076,7 @@ if (nCallDepth < 2)
 		}
 }
 
-extern tObject *old_viewer;
+extern tObject *oldViewer;
 
 //	------------------------------------------------------------------------------------------
 //update the xAvgSegLight field in a tSegment, which is used for tObject lighting
@@ -2099,7 +2099,7 @@ if (WALL_IS_DOORWAY (segp, nSide, NULL) & WID_RENDER_FLAG) {
 	}
 //this is a horrible hack to get around the horrible hack used to
 //smooth lighting values when an tObject moves between segments
-old_viewer = NULL;
+oldViewer = NULL;
 }
 
 //	------------------------------------------------------------------------------------------

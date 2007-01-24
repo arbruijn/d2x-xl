@@ -90,7 +90,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 * 
 * Revision 1.2  1994/08/24  18:53:46  john
 * Made Cyberman read like normal mouse; added dpmi module; moved
-* mouse from assembly to c. Made mouse buttons return time_down.
+* mouse from assembly to c. Made mouse buttons return timeDown.
 * 
 * Revision 1.1  1994/08/24  13:56:37  john
 * Initial revision
@@ -167,11 +167,11 @@ typedef struct mouse_info {
 	ubyte	cyberman;
 	int		num_buttons;
 	ubyte	pressed[MOUSE_MAX_BUTTONS];
-	fix		time_went_down[MOUSE_MAX_BUTTONS];
-	fix		time_held_down[MOUSE_MAX_BUTTONS];
-	uint	num_downs[MOUSE_MAX_BUTTONS];
+	fix		time_wentDown[MOUSE_MAX_BUTTONS];
+	fix		time_heldDown[MOUSE_MAX_BUTTONS];
+	uint	numDowns[MOUSE_MAX_BUTTONS];
 	uint	num_ups[MOUSE_MAX_BUTTONS];
-	//	ubyte	went_down; /* Not in PC version, not needed with 'num_downs' etc */
+	//	ubyte	wentDown; /* Not in PC version, not needed with 'numDowns' etc */
 	event_info *x_info;
 	ushort	button_status;
 } mouse_info;
@@ -276,20 +276,20 @@ void UpdateMouseState (DIDEVICEOBJECTDATA *pdidod)
 				if (!Mouse.pressed [iButton])
 				{
 					Mouse.pressed [iButton] = 1;
-					Mouse.time_went_down [iButton] = Mouse.ctime;
-					Mouse.num_downs [iButton]++;
-					//			Mouse.went_down = 1;
+					Mouse.time_wentDown [iButton] = Mouse.ctime;
+					Mouse.numDowns [iButton]++;
+					//			Mouse.wentDown = 1;
 				}
-				Mouse.num_downs [iButton] ++;
+				Mouse.numDowns [iButton] ++;
 			}
 			else
 			{
 				if (Mouse.pressed [iButton])
 				{
 					Mouse.pressed [iButton] = 0;
-					Mouse.time_held_down [iButton] += Mouse.ctime - Mouse.time_went_down [iButton];
+					Mouse.time_heldDown [iButton] += Mouse.ctime - Mouse.time_wentDown [iButton];
 					Mouse.num_ups [iButton]++;
-					//			Mouse.went_down = 0;
+					//			Mouse.wentDown = 0;
 				}
 			}
 			break;
@@ -337,12 +337,12 @@ void mouse_flush()
 	CurTime = TimerGetFixedSeconds();
 	for (i = 0; i < MOUSE_MAX_BUTTONS; i++) {
 		Mouse.pressed[i] = 0;
-		Mouse.time_went_down[i] = CurTime;
-		Mouse.time_held_down[i] = 0;
-		Mouse.num_downs[i] = 0;
+		Mouse.time_wentDown[i] = CurTime;
+		Mouse.time_heldDown[i] = 0;
+		Mouse.numDowns[i] = 0;
 		Mouse.num_ups[i] = 0;
 	}
-	//	Mouse.went_down = 0; /* mac only */
+	//	Mouse.wentDown = 0; /* mac only */
 	//	_enable();
 
 	{
@@ -486,7 +486,7 @@ int MouseGetButtons()
 }
 
 /* This should be replaced with MouseButtonDownCount(int button)	*/
-int mouse_went_down(int button)
+int mouse_wentDown(int button)
 {
 	int count;
 	
@@ -499,8 +499,8 @@ int mouse_went_down(int button)
 		return 0;
 	
 	//	_disable();		
-	count = Mouse.num_downs[button];
-	Mouse.num_downs[button] = 0;
+	count = Mouse.numDowns[button];
+	Mouse.numDowns[button] = 0;
 	
 	// 	_enable();
 	return count;
@@ -520,8 +520,8 @@ int MouseButtonDownCount(int button)
 		return 0;
 	
 	//	_disable();
-	count = Mouse.num_downs[button];
-	Mouse.num_downs[button] = 0;
+	count = Mouse.numDowns[button];
+	Mouse.numDowns[button] = 0;
 	//	_enable();
 	return count;
 }
@@ -548,7 +548,7 @@ int MouseButtonState(int button)
 // Returns how long this button has been down since last call.
 fix MouseButtonDownTime(int button)	
 {
-	fix time_down, time;
+	fix timeDown, time;
 	
 	if (!Mouse_installed)
 		return 0;
@@ -560,16 +560,16 @@ fix MouseButtonDownTime(int button)
 	
 	//	_disable();
 	if (!Mouse.pressed[button]) {
-		time_down = Mouse.time_held_down[button];
-		Mouse.time_held_down[button] = 0;
+		timeDown = Mouse.time_heldDown[button];
+		Mouse.time_heldDown[button] = 0;
 	} else {
 		time = TimerGetFixedSeconds();
-		time_down = time - Mouse.time_held_down[button];
-		Mouse.time_held_down[button] = 0;
+		timeDown = time - Mouse.time_heldDown[button];
+		Mouse.time_heldDown[button] = 0;
 	}
 	//	_enable();
 	
-	return time_down;
+	return timeDown;
 }
 
 void mouse_get_cyberman_pos( int *x, int *y )

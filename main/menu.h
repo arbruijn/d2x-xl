@@ -48,9 +48,9 @@ int SwitchDisplayMode (int dir);
 extern char *menu_difficulty_text[];
 extern int playerDefaultDifficulty;
 extern int Max_debrisObjects;
-extern int Missile_view_enabled;
-extern int Escort_view_enabled;
-extern int Cockpit_rear_view;
+extern int MissileView_enabled;
+extern int EscortView_enabled;
+extern int Cockpit_rearView;
 
 #define EXPMODE_DEFAULTS 0
 

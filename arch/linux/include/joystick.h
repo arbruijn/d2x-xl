@@ -20,7 +20,7 @@ typedef struct joystick_axis {
 
 typedef struct joystick_button {
 	ubyte		state;
-	ubyte		last_state;
+	ubyte		lastState;
 //changed 6/24/1999 to finally squish the timedown bug - Owen Evans 
 	fix		timedown;
 //end changed - OE
@@ -36,7 +36,7 @@ extern joystick_device j_joystick[4];
 extern joystick_axis j_axis[MAX_AXES];
 extern joystick_button j_button[MAX_BUTTONS];
 
-extern int j_Update_state ();
+extern int j_UpdateState ();
 extern int j_Get_joydev_axis_number (int all_axis_number);
 extern int j_Get_joydev_button_number (int all_button_number);
 

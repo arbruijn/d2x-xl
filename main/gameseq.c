@@ -396,12 +396,12 @@ void init_ammo_and_energy (void)
 		gameData.multi.players [gameData.multi.nLocalPlayer].shields = xStartingShields;
 
 //	for (i=0; i<MAX_PRIMARY_WEAPONS; i++)
-//		if (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] < Default_primaryAmmoLevel [i])
-//			gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = Default_primaryAmmoLevel [i];
+//		if (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] < DefaultPrimaryAmmoLevel [i])
+//			gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = DefaultPrimaryAmmoLevel [i];
 
 //	for (i=0; i<MAX_SECONDARY_WEAPONS; i++)
-//		if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] < Default_secondaryAmmoLevel [i])
-//			gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = Default_secondaryAmmoLevel [i];
+//		if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] < DefaultSecondaryAmmoLevel [i])
+//			gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = DefaultSecondaryAmmoLevel [i];
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 }
@@ -442,7 +442,7 @@ else if (gameStates.app.bD1Mission)
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
 Last_laser_firedTime = xNextLaserFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
-Controls.afterburner_state = 0;
+Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 InitGauges ();
@@ -507,7 +507,7 @@ gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = 0;
 gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
-Controls.afterburner_state = 0;
+Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
 gameData.objs.missileViewer=NULL;		///reset missile camera if out there
@@ -738,7 +738,7 @@ int SelectPlayer ()
 if (gameData.multi.players [gameData.multi.nLocalPlayer].callsign [0] == 0)	{
 	//---------------------------------------------------------------------
 	// Set default config options in case there is no config file
-	// kc_keyboard, kc_joystick, kc_mouse are statically defined.
+	// kcKeyboard, kc_joystick, kcMouse are statically defined.
 	gameOpts->input.joySensitivity [0] =
 	gameOpts->input.joySensitivity [1] =
 	gameOpts->input.joySensitivity [2] =

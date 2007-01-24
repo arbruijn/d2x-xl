@@ -36,7 +36,7 @@ typedef struct
 	struct _gadget  * when_tab;  \
 	struct _gadget  * when_btab; \
 	struct _gadget  * when_up;    \
-	struct _gadget  * when_down;   \
+	struct _gadget  * whenDown;   \
 	struct _gadget  * when_left;   \
 	struct _gadget  * when_right;  \
 	struct _gadget  * parent;    \
@@ -62,7 +62,7 @@ typedef struct  {
 typedef struct  {
 	BASE_GADGET
 	short           width, height;
-	short           b1_held_down;
+	short           b1_heldDown;
 	short           b1_clicked;
 	short           b1_double_clicked;
 	short           b1_dragging;
@@ -391,8 +391,8 @@ void ui_barbox_open( char * text, int length );
 int ui_barbox_update( int position );
 void ui_barbox_close();
 
-void ui_reset_idle_seconds(void);
-int ui_get_idle_seconds(void);
+void ui_reset_idleSeconds(void);
+int ui_get_idleSeconds(void);
 
 extern char filename_list[300][13];
 extern char directory_list[100][13];

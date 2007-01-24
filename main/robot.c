@@ -136,7 +136,7 @@ void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
 //	-----------------------------------------------------------------------------------------------------------
 //fills in ptr to list of joints, and returns the number of joints in list
 //takes the robot nType (tObject id), gun number, and desired state
-int robot_get_anim_state(tJointPos **jp_list_ptr,int robotType,int gun_num,int state)
+int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state)
 {
 
 	Assert(gun_num <= gameData.bots.pInfo[robotType].nGuns);
@@ -150,7 +150,7 @@ int robot_get_anim_state(tJointPos **jp_list_ptr,int robotType,int gun_num,int s
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void setRobot_state(tObject *objP,int state)
+void setRobotState(tObject *objP,int state)
 {
 	int g,j,jo;
 	tRobotInfo *ri;
@@ -180,14 +180,14 @@ void setRobot_state(tObject *objP,int state)
 //	-----------------------------------------------------------------------------------------------------------
 #include "mono.h"
 
-//--unused-- int cur_state=0;
+//--unused-- int curState=0;
 
-//--unused-- test_anim_states()
+//--unused-- test_animStates()
 //--unused-- {
-//--unused-- 	setRobot_state(&gameData.objs.objects[1],cur_state);
+//--unused-- 	setRobotState(&gameData.objs.objects[1],curState);
 //--unused--
 //--unused--
-//--unused-- 	cur_state = (cur_state+1)%N_ANIM_STATES;
+//--unused-- 	curState = (curState+1)%N_ANIM_STATES;
 //--unused--
 //--unused-- }
 

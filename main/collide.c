@@ -2069,7 +2069,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 }
 
-// -- removed, 09/06/95, MK -- void destroy_primaryWeapon (int weapon_index)
+// -- removed, 09/06/95, MK -- void destroyPrimaryWeapon (int weapon_index)
 // -- removed, 09/06/95, MK -- {
 // -- removed, 09/06/95, MK -- 	if (weapon_index == MAX_PRIMARY_WEAPONS) {
 // -- removed, 09/06/95, MK -- 		HUDInitMessage ("Quad lasers destroyed!");
@@ -2088,7 +2088,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 // -- removed, 09/06/95, MK -- 
 // -- removed, 09/06/95, MK -- }
 // -- removed, 09/06/95, MK -- 
-// -- removed, 09/06/95, MK -- void destroy_secondaryWeapon (int weapon_index)
+// -- removed, 09/06/95, MK -- void destroySecondaryWeapon (int weapon_index)
 // -- removed, 09/06/95, MK -- {
 // -- removed, 09/06/95, MK -- 	if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo <= 0)
 // -- removed, 09/06/95, MK -- 		return;
@@ -2178,14 +2178,14 @@ void ApplyDamageToPlayer (tObject *playerObjP, tObject *killer, fix damage)
 // -- removed, 09/06/95, MK -- 
 // -- removed, 09/06/95, MK -- 			if (FixMul (gameData.multi.players [gameData.multi.nLocalPlayer].shields, randnum) < damage/4) {
 // -- removed, 09/06/95, MK -- 				if (d_rand () > 20000) {
-// -- removed, 09/06/95, MK -- 					destroy_secondaryWeapon (gameData.weapons.nSecondary);
+// -- removed, 09/06/95, MK -- 					destroySecondaryWeapon (gameData.weapons.nSecondary);
 // -- removed, 09/06/95, MK -- 				} else if (gameData.weapons.nPrimary == 0) {
 // -- removed, 09/06/95, MK -- 					if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-// -- removed, 09/06/95, MK -- 						destroy_primaryWeapon (MAX_PRIMARY_WEAPONS);	//	This means to destroy quad laser.
+// -- removed, 09/06/95, MK -- 						destroyPrimaryWeapon (MAX_PRIMARY_WEAPONS);	//	This means to destroy quad laser.
 // -- removed, 09/06/95, MK -- 					else if (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel > 0)
-// -- removed, 09/06/95, MK -- 						destroy_primaryWeapon (gameData.weapons.nPrimary);
+// -- removed, 09/06/95, MK -- 						destroyPrimaryWeapon (gameData.weapons.nPrimary);
 // -- removed, 09/06/95, MK -- 				} else
-// -- removed, 09/06/95, MK -- 					destroy_primaryWeapon (gameData.weapons.nPrimary);
+// -- removed, 09/06/95, MK -- 					destroyPrimaryWeapon (gameData.weapons.nPrimary);
 // -- removed, 09/06/95, MK -- 			} else
 // -- removed, 09/06/95, MK -- 				; 
 // -- removed, 09/06/95, MK -- 		}

@@ -1,7 +1,9 @@
 #ifndef __INPUT_H
 #define __INPUT_H
 
-extern control_info Controls;
+#include "kconfig.h"
+
+extern tControlInfo Controls [4];
 
 int ControlsReadJoystick (int *joy_axis);
 void ControlsReadFCS (int raw_axis);

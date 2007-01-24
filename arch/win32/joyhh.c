@@ -10,7 +10,7 @@
 //    Also JOY_ALL_AXIS must be (1+2+4+8+16+32+64) in JOY.H file
 // 2) Windows DirectX supports up to 32 buttons. So far we however only support 4. Adding support for more should be however easily possible.
 // 3) _enable and _disable are not needed
-// 4) joy_bogus_reading is not needed, so all calls are just removed
+// 4) joy_bogusReading is not needed, so all calls are just removed
 // 5) The joystick query goes over the DirectInputs function
 //    MMRESULT joyGetPosEx(UINT uJoyID, LPJOYINFOEX pji);
 //    All functions reading over BIOS, including the ASM code are removed
@@ -56,7 +56,7 @@ char joy_present = 0;
 typedef struct Button_info {
 	ubyte		ignore;
 	ubyte		state;
-	ubyte		last_state;
+	ubyte		lastState;
 	int		timedown;
 	ubyte		downcount;
 	ubyte		upcount;
@@ -78,9 +78,9 @@ typedef struct Joy_info {
 Joy_info joystick;
 
 
-int joy_deadzone = 0;
+int joyDeadzone = 0;
 
-void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max)
+void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max)
 {
 	int i;
 
@@ -91,7 +91,7 @@ void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max)
 	}
 }
 
-void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
+void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max)
 {
 	int i;
 
@@ -102,19 +102,19 @@ void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
 	}
 }
 
-ubyte joy_get_present_mask()	{
+ubyte JoyGetPresentMask()	{
 	return joystick.present_mask;
 }
 
-void joy_setTimer_rate(int maxValue )	{
+void JoySetTimerRate(int maxValue )	{
 	joystick.maxTimer = maxValue;
 }
 
-int joy_getTimer_rate()	{
+int JoyGetTimerRate()	{
 	return joystick.maxTimer;
 }
 
-void joy_flush()	{
+void JoyFlush()	{
 	int i;
 
 	if (!joy_installed) return;
@@ -178,7 +178,7 @@ LRESULT joy_handler32(HWND hWnd, UINT joymsg, UINT wParam, LPARAM lParam)
 			else
 				state = 0;
 
-			if ( button->last_state == state )	{
+			if ( button->lastState == state )	{
 				if (state) {
 					button->timedown += time_diff;	//ticks_thisTime;
 				}
@@ -190,7 +190,7 @@ LRESULT joy_handler32(HWND hWnd, UINT joymsg, UINT wParam, LPARAM lParam)
 					button->upcount += button->state;
 					button->state = 0;
 				}
-				button->last_state = state;
+				button->lastState = state;
 			}
 		}
 	}
@@ -218,9 +218,9 @@ ubyte joy_read_raw_buttons()
 		return 0;
 
         for (i = 0; i < MAX_BUTTONS; i++) {
-                joystick.buttons[i].last_state = joystick.buttons[i].state;
+                joystick.buttons[i].lastState = joystick.buttons[i].state;
                 joystick.buttons[i].state = (joy.dwButtons >> i) & 0x1;
-                if (!joystick.buttons[i].last_state && joystick.buttons[i].state) {
+                if (!joystick.buttons[i].lastState && joystick.buttons[i].state) {
                         joystick.buttons[i].timedown = TimerGetFixedSeconds();
                         joystick.buttons[i].downcount++;
                 }
@@ -242,7 +242,7 @@ ubyte joy_read_raw_buttons()
 //end changed section - OE
 
 
-ubyte joystick_read_raw_axis( ubyte mask, int * axis )
+ubyte JoyReadRawAxis( ubyte mask, int * axis )
 {
 	JOYINFOEX	joy;
 	ubyte read_masks = 0;
@@ -296,11 +296,11 @@ int joy_init(int joyid) //HH: added joyid parameter
 
 	atexit(joy_close);	//HH: we are a bit lazy :). Errors are ignored, so we are even double-lazy :)
 
-	joy_flush();
+	JoyFlush();
 	memset(&joystick, 0, sizeof(joystick);
 
 	for (i=0; i<MAX_BUTTONS; i++)
-		joystick.buttons[i].last_state = 0;
+		joystick.buttons[i].lastState = 0;
 
 	if ( !joy_installed )   {
                 joy_present = 0;
@@ -312,7 +312,7 @@ int joy_init(int joyid) //HH: added joyid parameter
 
 
 	joystick.present_mask = JOY_ALL_AXIS;		// Assume they're all present
-        joystick.present_mask = joystick_read_raw_axis( JOY_ALL_AXIS, temp_axis );
+        joystick.present_mask = JoyReadRawAxis( JOY_ALL_AXIS, temp_axis );
 
 	if ( joystick.present_mask & 3 )
 		joy_present = 1;
@@ -396,7 +396,7 @@ void joy_close()
 void joy_set_ul()	
 {
 	joystick.present_mask = JOY_ALL_AXIS;		// Assume they're all present
-        joystick.present_mask = joystick_read_raw_axis( JOY_ALL_AXIS, joystick.axis_min );
+        joystick.present_mask = JoyReadRawAxis( JOY_ALL_AXIS, joystick.axis_min );
 
 	if ( joystick.present_mask & 3 )
 		joy_present = 1;
@@ -407,7 +407,7 @@ void joy_set_ul()
 void joy_set_lr()	
 {
 	joystick.present_mask = JOY_ALL_AXIS;		// Assume they're all present
-        joystick.present_mask = joystick_read_raw_axis( JOY_ALL_AXIS, joystick.axis_max );
+        joystick.present_mask = JoyReadRawAxis( JOY_ALL_AXIS, joystick.axis_max );
 
 	if ( joystick.present_mask & 3 )
 		joy_present = 1;
@@ -418,7 +418,7 @@ void joy_set_lr()
 void joy_set_cen() 
 {
 	joystick.present_mask = JOY_ALL_AXIS;		// Assume they're all present
-        joystick.present_mask = joystick_read_raw_axis( JOY_ALL_AXIS, joystick.axis_center );
+        joystick.present_mask = JoyReadRawAxis( JOY_ALL_AXIS, joystick.axis_center );
 
 	if ( joystick.present_mask & 3 )
 		joy_present = 1;
@@ -426,11 +426,11 @@ void joy_set_cen()
 		joy_present = 0;
 }
 
-void joy_set_cen_fake(int channel)	
+void JoySetCenFake(int channel)	
 { }
 
 
-int joy_get_scaled_reading( int raw, int axn )	
+int JoyGetscaledReading( int raw, int axn )	
 {
  int x, d;
 
@@ -458,7 +458,7 @@ int joy_get_scaled_reading( int raw, int axn )
    if ( x > 127 ) x = 127;
 
 //added on 4/13/99 by Victor Rachels to add deadzone control
-  d =  (joy_deadzone) * 6;
+  d =  (joyDeadzone) * 6;
    if ((x > (-1*d)) && (x < d))
     x = 0;
 //end this section addition -VR
@@ -466,27 +466,27 @@ int joy_get_scaled_reading( int raw, int axn )
 	return x;
 }
 
-void joy_get_pos( int *x, int *y )	
+void JoyGetpos( int *x, int *y )	
 {
 	ubyte flags;
         int axis[JOY_NUM_AXES];
 
 	if ((!joy_installed)||(!joy_present)) { *x=*y=0; return; }
 
-	flags=joystick_read_raw_axis( JOY_1_X_AXIS+JOY_1_Y_AXIS, axis );
+	flags=JoyReadRawAxis( JOY_1_X_AXIS+JOY_1_Y_AXIS, axis );
 
 	if ( flags & JOY_1_X_AXIS )
-		*x = joy_get_scaled_reading( axis[0], 0 );
+		*x = JoyGetscaledReading( axis[0], 0 );
 	else
 		*x = 0;
 
 	if ( flags & JOY_1_Y_AXIS )
-		*y = joy_get_scaled_reading( axis[1], 1 );
+		*y = JoyGetscaledReading( axis[1], 1 );
 	else
 		*y = 0;
 }
 
-ubyte joy_read_stick( ubyte masks, int *axis )	
+ubyte JoyReadStick( ubyte masks, int *axis )	
 {
 	ubyte flags;
         int raw_axis[JOY_NUM_AXES];
@@ -498,35 +498,35 @@ ubyte joy_read_stick( ubyte masks, int *axis )
 		return 0;  
 	}
 
-	flags=joystick_read_raw_axis( masks, raw_axis );
+	flags=JoyReadRawAxis( masks, raw_axis );
 
 	if ( flags & JOY_1_X_AXIS )
-		axis[0] = joy_get_scaled_reading( raw_axis[0], 0 );
+		axis[0] = JoyGetscaledReading( raw_axis[0], 0 );
 	else
 		axis[0] = 0;
 
 	if ( flags & JOY_1_Y_AXIS )
-		axis[1] = joy_get_scaled_reading( raw_axis[1], 1 );
+		axis[1] = JoyGetscaledReading( raw_axis[1], 1 );
 	else
 		axis[1] = 0;
 
         if ( flags & JOY_1_R_AXIS )
-                axis[2] = joy_get_scaled_reading( raw_axis[2], 2 );
+                axis[2] = JoyGetscaledReading( raw_axis[2], 2 );
 	else
                 axis[2] = 0;
 
         if ( flags & JOY_1_Z_AXIS )
-                axis[3] = joy_get_scaled_reading( raw_axis[3], 3 );
+                axis[3] = JoyGetscaledReading( raw_axis[3], 3 );
 	else
 		axis[3] = 0;
 
 	if ( flags & JOY_1_U_AXIS )
-                axis[4] = joy_get_scaled_reading( raw_axis[4], 4);
+                axis[4] = JoyGetscaledReading( raw_axis[4], 4);
 	else
                 axis[4] = 0;
 
 	if ( flags & JOY_1_V_AXIS )
-                axis[5] = joy_get_scaled_reading( raw_axis[5], 5 );
+                axis[5] = JoyGetscaledReading( raw_axis[5], 5 );
 	else
                 axis[5] = 0;
 
@@ -534,7 +534,7 @@ ubyte joy_read_stick( ubyte masks, int *axis )
 	return flags;
 }
 
-int joy_get_btns()	
+int JoyGetBtns()	
 {
 	if ((!joy_installed)||(!joy_present)) return 0;
 
@@ -544,11 +544,11 @@ int joy_get_btns()
 
 //Begin section modified 3/7/99 - Owen Evans
 
-void joy_get_btn_down_cnt( int *btn0, int *btn1 )
+void JoyGetbtnDown_cnt( int *btn0, int *btn1 )
 {
 	if ((!joy_installed)||(!joy_present)) { *btn0=*btn1=0; return; }
 
-        joy_get_btns();
+        JoyGetBtns();
 
 	*btn0 = joystick.buttons[0].downcount;
 	joystick.buttons[0].downcount = 0;
@@ -556,17 +556,17 @@ void joy_get_btn_down_cnt( int *btn0, int *btn1 )
 	joystick.buttons[1].downcount = 0;
 }
 
-int joy_get_button_state( int btn )	
+int JoyGetbuttonState( int btn )	
 {    
 	if ((!joy_installed)||(!joy_present)) return 0;
 	if ( btn >= MAX_BUTTONS ) return 0;
 
-        joy_get_btns();
+        JoyGetBtns();
 
         return joystick.buttons[btn].state;
 }
 
-int joy_get_button_up_cnt( int btn ) 
+int JoyGetButtonUpCnt( int btn ) 
 {
 	int count;
 
@@ -580,14 +580,14 @@ int joy_get_button_up_cnt( int btn )
 	return count;
 }
 
-int joy_get_button_down_cnt( int btn ) 
+int JoyGetButtonDownCnt( int btn ) 
 {
 	int count;
 
 	if ((!joy_installed)||(!joy_present)) return 0;
 	if ( btn >= MAX_BUTTONS ) return 0;
 
-        joy_get_btns();
+        JoyGetBtns();
 
 	count = joystick.buttons[btn].downcount;
 	joystick.buttons[btn].downcount = 0;
@@ -595,14 +595,14 @@ int joy_get_button_down_cnt( int btn )
 	return count;
 }
 
-fix joy_get_button_downTime( int btn ) 
+fix JoyGetButtonDownTime( int btn ) 
 {
         fix count;
 
         if ((!joy_installed)||(!joy_present)) return 0;
 	if ( btn >= MAX_BUTTONS ) return 0;
 
-        joy_get_btns();
+        JoyGetBtns();
 
         if (joystick.buttons[btn].state) {
                 count = TimerGetFixedSeconds() - joystick.buttons[btn].timedown;
@@ -615,7 +615,7 @@ fix joy_get_button_downTime( int btn )
 //end changed section - OE
 
 
-void joy_get_btn_up_cnt( int *btn0, int *btn1 ) 
+void JoyGetbtn_up_cnt( int *btn0, int *btn1 ) 
 {
 	if ((!joy_installed)||(!joy_present)) { *btn0=*btn1=0; return; }
 
@@ -625,7 +625,7 @@ void joy_get_btn_up_cnt( int *btn0, int *btn1 )
 	joystick.buttons[1].upcount = 0;
 }
 
-void joy_set_btnValues( int btn, int state, fix timedown, int downcount, int upcount )
+void JoySetBtnValues( int btn, int state, fix timedown, int downcount, int upcount )
 {
 	joystick.buttons[btn].ignore = 1;
 	joystick.buttons[btn].state = state;

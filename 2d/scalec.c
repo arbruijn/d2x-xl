@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int scale_error_term;
 int scale_initial_pixelCount;
 int scale_adj_up;
-int scale_adj_down;
+int scale_adjDown;
 int scale_final_pixelCount;
 int scale_ydelta_minus_1;
 int scale_whole_step;
@@ -140,7 +140,7 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
 
       /* Error term adjust when the error term turns over, used to factor
          out the X step made at that time */
-      scale_adj_down = YDelta * 2;
+      scale_adjDown = YDelta * 2;
 
       /* Initial error term; reflects an initial step of 0.5 along the Y
          axis */
@@ -199,7 +199,7 @@ void rls_stretch_scanline( )
  		// Advance the error term and add an extra pixel if the error term so indicates
 		if ((ErrorTerm += scale_adj_up) > 0)    {
 			len++;
-			ErrorTerm -= scale_adj_down;   // reset the error term
+			ErrorTerm -= scale_adjDown;   // reset the error term
 		}
 
 		// Draw this run o' pixels
@@ -249,7 +249,7 @@ void rls_stretch_scanline()
  		// Advance the error term and add an extra pixel if the error term so indicates
 		if ((ErrorTerm += scale_adj_up) > 0)	{
 			len++;
-			ErrorTerm -= scale_adj_down;   // reset the error term
+			ErrorTerm -= scale_adjDown;   // reset the error term
 		}
 
 		// Draw this run o' pixels

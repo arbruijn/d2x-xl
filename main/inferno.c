@@ -393,11 +393,11 @@ void DoJoystickInit ()
 if (!FindArg ("-nojoystick"))	{
 	joy_init ();
 	if (FindArg ("-joyslow"))
-		joy_set_slow_reading (JOY_SLOW_READINGS);
+		JoySetSlowReading (JOY_SLOW_READINGS);
 	if (FindArg ("-joypolled"))
-		joy_set_slow_reading (JOY_POLLED_READINGS);
+		JoySetSlowReading (JOY_POLLED_READINGS);
 	if (FindArg ("-joybios"))
-		joy_set_slow_reading (JOY_BIOS_READINGS);
+		JoySetSlowReading (JOY_BIOS_READINGS);
 	}
 }
 
@@ -873,7 +873,7 @@ if (t = FindArg ("-minturnrate"))
 SetMaxPitch (gameOptions [0].input.nMinTurnRate);
 if (t = FindArg ("-joydeadzone"))
 	for (i = 0; i < 4; i++)
-		set_joy_deadzone (NumArg (t, 0), i);
+		JoySetDeadzone (NumArg (t, 0), i);
 if (t = FindArg ("-grabmouse"))
 	gameStates.input.bGrabMouse = NumArg (t, 1);
 }
@@ -2674,11 +2674,11 @@ void check_joystick_calibration ()
 		  (gameConfig.nControlType!=CONTROL_THRUSTMASTER_FCS) &&
 		  (gameConfig.nControlType!=CONTROL_GRAVIS_GAMEPAD)
 		) return;
-	joy_get_pos (&x1, &y1);
+	JoyGetpos (&x1, &y1);
 	t1 = TimerGetFixedSeconds ();
 	while (TimerGetFixedSeconds () < t1 + F1_0/100)
 		;
-	joy_get_pos (&x2, &y2);
+	JoyGetpos (&x2, &y2);
 	// If joystick hasn't moved...
 	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30))	{
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30))	{

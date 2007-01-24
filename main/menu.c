@@ -588,7 +588,7 @@ switch (select) {
 	#endif
 	case MENU_VIEW_SCORES:
 		GrPaletteFadeOut (NULL, 32, 0 );
-		scores_view (-1);
+		scoresView (-1);
 		break;
 #if 0
 	case MENU_ORDER_INFO:

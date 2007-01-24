@@ -144,7 +144,7 @@ extern int	*Toggle_var;
 extern int	last_drawn_cockpit[2];
 extern int	Debug_pause;
 
-extern fix	Show_view_textTimer;
+extern fix	ShowView_textTimer;
 
 //	Function prototypes --------------------------------------------------------
 
@@ -228,7 +228,7 @@ void TransferEnergyToShield(fix time)
 
 //------------------------------------------------------------------------------
 
-void update_vcr_state();
+void update_vcrState();
 void DoWeaponStuff(void);
 
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ void DoWeaponStuff(void);
 
 fix newdemo_single_frameTime;
 
-void update_vcr_state(void)
+void update_vcrState(void)
 {
 	if ((keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) && keyd_pressed[KEY_RIGHT])
 		gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
@@ -252,7 +252,7 @@ void update_vcr_state(void)
 
 //------------------------------------------------------------------------------
 //returns which bomb will be dropped next time the bomb key is pressed
-int which_bomb()
+int whichBomb()
 {
 	int bomb, otherBomb;
 
@@ -281,43 +281,43 @@ void DoWeaponStuff(void)
 {
   int i;
 
-if (Controls.useCloakDownCount)
+if (Controls [0].useCloakDownCount)
 	ApplyCloak (0, -1);
-if (Controls.useInvulDownCount)
+if (Controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
-if (Controls.fire_flareDownCount)
+if (Controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare())
 		CreateFlare(gameData.objs.console);
 if (AllowedToFireMissile()) {
 	i = secondaryWeaponToWeaponInfo[gameData.weapons.nSecondary];
-	gameData.app.nGlobalMissileFiringCount += WI_fireCount (i) * (Controls.fire_secondary_state || Controls.fire_secondaryDownCount);
+	gameData.app.nGlobalMissileFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
 	}
 if (gameData.app.nGlobalMissileFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for normal missile firing
 	gameData.app.nGlobalMissileFiringCount--;
 	}
-if (Controls.cycle_primaryCount) {
-	for (i = 0; i < Controls.cycle_primaryCount; i++)
+if (Controls [0].cyclePrimaryCount) {
+	for (i = 0; i < Controls [0].cyclePrimaryCount; i++)
 	CyclePrimary ();
 	}
-if (Controls.cycle_secondaryCount) {
-	for (i = 0; i < Controls.cycle_secondaryCount; i++)
+if (Controls [0].cycleSecondaryCount) {
+	for (i = 0; i < Controls [0].cycleSecondaryCount; i++)
 	CycleSecondary ();
 	}
-if (Controls.headlightCount) {
-	for (i=0;i<Controls.headlightCount;i++)
+if (Controls [0].headlightCount) {
+	for (i=0;i<Controls [0].headlightCount;i++)
 	toggle_headlight_active ();
 	}
 if (gameData.app.nGlobalMissileFiringCount < 0)
 	gameData.app.nGlobalMissileFiringCount = 0;
 //	Drop proximity bombs.
-if (Controls.drop_bombDownCount) {
+if (Controls [0].dropBombDownCount) {
 	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
-		Controls.drop_bombDownCount = 0;
+		Controls [0].dropBombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
-		while (Controls.drop_bombDownCount--) {
-			int ssw_save2 = gameData.weapons.nSecondary = which_bomb();
+		while (Controls [0].dropBombDownCount--) {
+			int ssw_save2 = gameData.weapons.nSecondary = whichBomb();
 			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);
 			else
@@ -335,7 +335,7 @@ if (Controls.drop_bombDownCount) {
 char *Pause_msg;
 
 extern void GameRenderFrame();
-extern void show_extra_views();
+extern void show_extraViews();
 
 void ApplyModifiedPalette(void)
 {
@@ -513,7 +513,7 @@ while (gameData.app.bGamePaused) {
 			WIN(SetPopupScreenMode());
 			ShowBoxedMessage(msg);
 #if 0			
-			show_extra_views();
+			show_extraViews();
 			if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR)
 				RenderGauges();
 #endif				
@@ -795,14 +795,14 @@ void HandleDemoKey(int key)
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 		case KEY_PRINT_SCREEN: 
 		{
-			int old_state;
+			int oldState;
 
-			old_state = gameData.demo.nVcrState;
+			oldState = gameData.demo.nVcrState;
 			gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
 			//GameRenderFrameMono();
 			bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
-			gameData.demo.nVcrState = old_state;
+			gameData.demo.nVcrState = oldState;
 			break;
 		}
 
@@ -859,47 +859,47 @@ int select_next_window_function(int w)
 {
 	Assert(w==0 || w==1);
 
-	switch (Cockpit_3d_view[w]) {
+	switch (Cockpit_3dView[w]) {
 		case CV_NONE:
-			Cockpit_3d_view[w] = CV_REAR;
+			Cockpit_3dView[w] = CV_REAR;
 			break;
 		case CV_REAR:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				Cockpit_3d_view[w] = CV_RADAR_TOPDOWN;
+				Cockpit_3dView[w] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				Cockpit_3d_view[w] = CV_RADAR_HEADSUP;
+				Cockpit_3dView[w] = CV_RADAR_HEADSUP;
 				break;
 				}
 		case CV_RADAR_HEADSUP:
 			if (find_escort()) {
-				Cockpit_3d_view[w] = CV_ESCORT;
+				Cockpit_3dView[w] = CV_ESCORT;
 				break;
 			}
 			//if no ecort, fall through
 		case CV_ESCORT:
-			Coop_view_player[w] = -1;		//force first tPlayer
+			CoopView_player[w] = -1;		//force first tPlayer
 			//fall through
 		case CV_COOP:
 			gameData.marker.viewers[w] = -1;
 			if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
-				Cockpit_3d_view[w] = CV_COOP;
+				Cockpit_3dView[w] = CV_COOP;
 				while (1) {
-					Coop_view_player[w]++;
-					if (Coop_view_player[w] == gameData.multi.nPlayers) {
-						Cockpit_3d_view[w] = CV_MARKER;
+					CoopView_player[w]++;
+					if (CoopView_player[w] == gameData.multi.nPlayers) {
+						Cockpit_3dView[w] = CV_MARKER;
 						goto case_marker;
 					}
-					if (Coop_view_player[w]==gameData.multi.nLocalPlayer)
+					if (CoopView_player[w]==gameData.multi.nLocalPlayer)
 						continue;
 
 					if (gameData.app.nGameMode & GM_MULTI_COOP)
 						break;
-					else if (GetTeam(Coop_view_player[w]) == GetTeam(gameData.multi.nLocalPlayer))
+					else if (GetTeam(CoopView_player[w]) == GetTeam(gameData.multi.nLocalPlayer))
 						break;
 				}
 				break;
@@ -908,16 +908,16 @@ int select_next_window_function(int w)
 		case CV_MARKER:
 		case_marker:;
 			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.bAllowMarkerView) {	//anarchy only
-				Cockpit_3d_view[w] = CV_MARKER;
+				Cockpit_3dView[w] = CV_MARKER;
 				if (gameData.marker.viewers [w] == -1)
 					gameData.marker.viewers [w] = gameData.multi.nLocalPlayer * 2;
 				else if (gameData.marker.viewers [w] == gameData.multi.nLocalPlayer * 2)
 					gameData.marker.viewers [w]++;
 				else
-					Cockpit_3d_view[w] = CV_NONE;
+					Cockpit_3dView[w] = CV_NONE;
 			}
 			else
-				Cockpit_3d_view[w] = CV_NONE;
+				Cockpit_3dView[w] = CV_NONE;
 			break;
 	}
 	WritePlayerFile();
@@ -1651,11 +1651,11 @@ void HandleTestKey(int key)
 
 #ifdef _DEBUG
 		case KEY_DEBUGGED+KEY_LAPOSTRO: 
-			Show_view_textTimer = 0x30000; 
+			ShowView_textTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
 			break;
 		case KEY_DEBUGGED+KEY_CTRLED+KEY_LAPOSTRO: 
-			Show_view_textTimer = 0x30000; 
+			ShowView_textTimer = 0x30000; 
 			ObjectGotoPrevViewer(); 
 			break;
 #endif
@@ -1935,12 +1935,12 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
 			|| multiData.msg.bSending || multiData.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
-			memset( &Controls, 0, sizeof(control_info) );
+			memset( &Controls, 0, sizeof(tControlInfo) );
 		else
 			skipControls = ControlsReadAll();		//NOTE LINK TO ABOVE!!!
 	CheckRearView();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
-	if (Controls.automapDownCount && 
+	if (Controls [0].automapDownCount && 
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
 		 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		gameStates.app.bAutoMap = 1;
@@ -1954,7 +1954,7 @@ if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameDat
 	else {
 		int i;
 		for (i=0; i<4; i++ )
-			if (joy_get_button_down_cnt(i)>0) 
+			if (JoyGetButtonDownCnt(i)>0) 
 				gameStates.app.bDeathSequenceAborted = 1;
 		for (i=0; i<3; i++ )
 			if (MouseButtonDownCount(i)>0) 
@@ -1967,7 +1967,7 @@ else {
 	explodingFlag=0;
 	}
 if (gameData.demo.nState == ND_STATE_PLAYBACK )
-	update_vcr_state();
+	update_vcrState();
 while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 	if (gameData.marker.nDefiningMsg) {
 		MarkerInputMessage (key);

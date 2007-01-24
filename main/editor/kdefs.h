@@ -313,7 +313,7 @@ extern int do_centers_dialog(void);
 //extern int trigger_add_repair(void);
 //extern int trigger_control(void);
 //extern int trigger_remove(void);
-//extern int trigger_add_if_control_center_dead(void);
+//extern int trigger_add_if_control_centerDead(void);
 extern int bind_wall_to_control_trigger(void);
 
 // In med.c

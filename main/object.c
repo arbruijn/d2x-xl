@@ -83,7 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tactile.h"
 #endif
 #include "ogl_init.h"
-#include "kconfig.h"
+#include "input.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -129,7 +129,7 @@ tObject	Object_minus_one;
 //--unused-- int NumRobotTypes = 0;
 
 int bPrintObjectInfo = 0;
-//@@int Object_viewer = 0;
+//@@int ObjectViewer = 0;
 
 //tObject * SlewObject = NULL;	// Object containing slew tObject info.
 
@@ -2863,12 +2863,12 @@ int CheckVolatileSegment (tObject *objP, int nSegment);
 
 void StopObjectMovement (tObject *objP)
 {
-Controls.headingTime = 0;
-Controls.pitchTime = 0;
-Controls.bankTime = 0;
-Controls.verticalThrustTime = 0;
-Controls.sidewaysThrustTime = 0;
-Controls.forwardThrustTime = 0;
+Controls [0].headingTime = 0;
+Controls [0].pitchTime = 0;
+Controls [0].bankTime = 0;
+Controls [0].verticalThrustTime = 0;
+Controls [0].sidewaysThrustTime = 0;
+Controls [0].forwardThrustTime = 0;
 VmVecZero (&objP->mType.physInfo.rotThrust);
 VmVecZero (&objP->mType.physInfo.thrust);
 VmVecZero (&objP->mType.physInfo.velocity);
@@ -3000,9 +3000,9 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
    else if (gameData.app.nGameMode & GM_HOARD)
 		 FuelCenCheckForHoardGoal (segP);
    else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if (Controls.forwardThrustTime || 
-			 Controls.verticalThrustTime || 
-			 Controls.sidewaysThrustTime ||
+		if (Controls [0].forwardThrustTime || 
+			 Controls [0].verticalThrustTime || 
+			 Controls [0].sidewaysThrustTime ||
 			 (xsegP->owner < 0) ||
 			 (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1)) {
 			StopConquerWarning ();

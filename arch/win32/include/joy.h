@@ -78,44 +78,44 @@ extern void joy_set_cen();
 // is in the lower right hand corner. Always returns 0,0 if no stick
 // is present.
 
-extern void joy_get_pos( int *x, int *y );
+extern void JoyGetPos( int *x, int *y );
 
 //==========================================================================
 // This just reads the buttons and returns their status.  When bit 0
 // is 1, button 1 is pressed, when bit 1 is 1, button 2 is pressed.
-extern int joy_get_btns();
+extern int JoyGetbtns();
 
 //==========================================================================
 // This returns the number of times a button went either down or up since
 // the last call to this function.
-extern int joy_get_button_up_cnt( int btn );
-extern int joy_get_button_down_cnt( int btn );
+extern int JoyGetbutton_up_cnt( int btn );
+extern int JoyGetbuttonDown_cnt( int btn );
 
 //==========================================================================
 // This returns how long (in approximate milliseconds) that each of the
 // buttons has been held down since the last call to this function.
 // It is the total time... say you pressed it down for 3 ticks, released
 // it, and held it down for 6 more ticks. The time returned would be 9.
-extern fix joy_get_button_downTime( int btn );
+extern fix JoyGetbuttonDownTime( int btn );
 
 extern ubyte joy_read_raw_buttons();
-extern ubyte joystick_read_raw_axis( ubyte mask, int * axis );
-extern void joy_flush();
-extern ubyte joy_get_present_mask();
-extern void joy_setTimer_rate(int maxValue );
-extern int joy_getTimer_rate();
+extern ubyte JoyReadRawAxis( ubyte mask, int * axis );
+extern void JoyFlush();
+extern ubyte JoyGetPresentMask();
+extern void JoySetTimerRate(int maxValue );
+extern int JoyGetTimerRate();
 
-extern int joy_get_button_state( int btn );
-extern void joy_set_cen_fake(int channel);
-extern ubyte joy_read_stick( ubyte masks, int *axis );
-extern void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max);
-extern void joy_set_btnValues( int btn, int state, fix timedown, int downcount, int upcount );
-extern int joy_get_scaled_reading( int raw, int axn );
-extern void joy_set_slow_reading( int flag );
-extern int set_joy_deadzone (int nRelZone);
+extern int JoyGetButtonState( int btn );
+extern void JoySetCenFake(int channel);
+extern ubyte JoyReadStick( ubyte masks, int *axis );
+extern void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max);
+extern void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max);
+extern void JoySetBtnValues( int btn, int state, fix timedown, int downcount, int upcount );
+extern int JoyGetScaledReading( int raw, int axn );
+extern void JoySetSlowReading( int flag );
+extern int JoySetDeadzone (int nRelZone);
 
 extern int JOY_PORT;
-extern int joy_deadzone;
+extern int joyDeadzone;
 #endif
 

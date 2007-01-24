@@ -125,7 +125,7 @@ int ToggleOutlineMode(void);
 int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
-// should access Render_viewerObject members.
+// should access RenderViewerObject members.
 extern fix xRenderZoom;     // the tPlayer's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
@@ -166,7 +166,7 @@ void RenderShadowQuad (int bWhite);
 
 int RenderShadowMap (tDynLight *pLight);
 
-void UpdateRenderedData (int window_num, tObject *viewer, int rear_viewFlag, int user);
+void UpdateRenderedData (int window_num, tObject *viewer, int rearViewFlag, int user);
 
 extern tFlightPath externalView;
 

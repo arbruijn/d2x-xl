@@ -1096,7 +1096,7 @@ void get4byte(sbyte *bytep)
 
 // ------------------------------------------------------------------------------
 //	Convert field of view from an angle in 0..360 to cosine.
-void adjust_field_of_view(fix *fovp)
+void adjust_field_ofView(fix *fovp)
 {
 	int		i;
 	fixang	tt;
@@ -1185,7 +1185,7 @@ void bm_readRobot_ai()
 
 	robptr->always_0xabcd	= 0xabcd;
 
-	adjust_field_of_view(robptr->fieldOfView);
+	adjust_field_ofView(robptr->fieldOfView);
 
 }
 
@@ -1483,8 +1483,8 @@ void bm_readRobot()
 //read a reactor model
 void bm_read_reactor()
 {
-	char *model_name, *model_name_dead=NULL;
-	int first_bitmap_num, first_bitmap_num_dead=0, n_normal_bitmaps;
+	char *model_name, *model_nameDead=NULL;
+	int first_bitmap_num, first_bitmap_numDead=0, n_normal_bitmaps;
 	char *equal_ptr;
 	short nModel;
 	short explosion_vclip_num = -1;
@@ -1524,8 +1524,8 @@ void bm_read_reactor()
 			if (!stricmp( arg, "exp_vclip" ))	{
 				explosion_vclip_num = atoi(equal_ptr);
 			} else if (!stricmp( arg, "dead_pof" ))	{
-				model_name_dead = equal_ptr;
-				first_bitmap_num_dead=N_ObjBitmapPtrs;
+				model_nameDead = equal_ptr;
+				first_bitmap_numDead=N_ObjBitmapPtrs;
 			} else if (!stricmp( arg, "expSound" ))	{
 				explosionSound_num = atoi(equal_ptr);
 			} else if (!stricmp( arg, "lighting" ))	{
@@ -1550,15 +1550,15 @@ void bm_read_reactor()
 		arg = strtok( NULL, space );
 	}
 
-	if ( model_name_dead )
-		n_normal_bitmaps = first_bitmap_num_dead-first_bitmap_num;
+	if ( model_nameDead )
+		n_normal_bitmaps = first_bitmap_numDead-first_bitmap_num;
 	else
 		n_normal_bitmaps = N_ObjBitmapPtrs-first_bitmap_num;
 
 	nModel = LoadPolygonModel(model_name,n_normal_bitmaps,first_bitmap_num,NULL);
 
-	if ( model_name_dead )
-		gameData.models.nDeadModels[nModel]  = LoadPolygonModel(model_name_dead,N_ObjBitmapPtrs-first_bitmap_num_dead,first_bitmap_num_dead,NULL);
+	if ( model_nameDead )
+		gameData.models.nDeadModels[nModel]  = LoadPolygonModel(model_nameDead,N_ObjBitmapPtrs-first_bitmap_numDead,first_bitmap_numDead,NULL);
 	else
 		gameData.models.nDeadModels[nModel] = -1;
 

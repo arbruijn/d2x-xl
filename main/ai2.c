@@ -606,7 +606,7 @@ int DoSillyAnimation (tObject *objP)
 {
 	int				nObject = OBJ_IDX (objP);
 	tJointPos 		*jp_list;
-	int				robotType, nGun, robot_state, num_joint_positions;
+	int				robotType, nGun, robotState, num_joint_positions;
 	tPolyObjInfo	*polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStatic		*aip = &objP->cType.aiInfo;
 	int				num_guns, at_goal;
@@ -622,19 +622,19 @@ int DoSillyAnimation (tObject *objP)
 	}
 
 	//	This is a hack.  All positions should be based on goalState, not GOAL_STATE.
-	robot_state = Mike_to_matt_xlate [aip->GOAL_STATE];
-	// previousRobot_state = Mike_to_matt_xlate [aip->CURRENT_STATE];
+	robotState = Mike_to_matt_xlate [aip->GOAL_STATE];
+	// previousRobotState = Mike_to_matt_xlate [aip->CURRENT_STATE];
 
-	if (attackType) // && ((robot_state == AS_FIRE) || (robot_state == AS_RECOIL)))
+	if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
 		flinch_attack_scale = Attack_scale;
-	else if ((robot_state == AS_FLINCH) || (robot_state == AS_RECOIL))
+	else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
 		flinch_attack_scale = Flinch_scale;
 
 	at_goal = 1;
 	for (nGun=0; nGun <= num_guns; nGun++) {
 		int	joint;
 
-		num_joint_positions = robot_get_anim_state (&jp_list, robotType, nGun, robot_state);
+		num_joint_positions = robot_get_animState (&jp_list, robotType, nGun, robotState);
 
 		for (joint=0; joint<num_joint_positions; joint++) {
 			fix			delta_angle, delta_2;
@@ -2311,7 +2311,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 // -- Obsolete D1 code -- //	Do special stuff for a boss.
 // -- Obsolete D1 code -- void do_super_boss_stuff (tObject *objP, fix dist_to_player, int player_visibility)
 // -- Obsolete D1 code -- {
-// -- Obsolete D1 code -- 	static int eclip_state = 0;
+// -- Obsolete D1 code -- 	static int eclipState = 0;
 // -- Obsolete D1 code -- 
 // -- Obsolete D1 code -- 	DoBossStuff (objP, player_visibility);
 // -- Obsolete D1 code -- 
@@ -2322,16 +2322,16 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 // -- Obsolete D1 code -- 	if ((dist_to_player < BOSS_TO_PLAYER_GATE_DISTANCE) || player_visibility || (gameData.app.nGameMode & GM_MULTI)) {
 // -- Obsolete D1 code -- 		if (gameData.time.xGame - gameData.boss.nLastGateTime > gameData.boss.nGateInterval/2) {
 // -- Obsolete D1 code -- 			RestartEffect (BOSS_ECLIP_NUM);
-// -- Obsolete D1 code -- 			if (eclip_state == 0) {
+// -- Obsolete D1 code -- 			if (eclipState == 0) {
 // -- Obsolete D1 code -- 				MultiSendBossActions (OBJ_IDX (objP), 4, 0, 0);
-// -- Obsolete D1 code -- 				eclip_state = 1;
+// -- Obsolete D1 code -- 				eclipState = 1;
 // -- Obsolete D1 code -- 			}
 // -- Obsolete D1 code -- 		}
 // -- Obsolete D1 code -- 		else {
 // -- Obsolete D1 code -- 			StopEffect (BOSS_ECLIP_NUM);
-// -- Obsolete D1 code -- 			if (eclip_state == 1) {
+// -- Obsolete D1 code -- 			if (eclipState == 1) {
 // -- Obsolete D1 code -- 				MultiSendBossActions (OBJ_IDX (objP), 5, 0, 0);
-// -- Obsolete D1 code -- 				eclip_state = 0;
+// -- Obsolete D1 code -- 				eclipState = 0;
 // -- Obsolete D1 code -- 			}
 // -- Obsolete D1 code -- 		}
 // -- Obsolete D1 code -- 

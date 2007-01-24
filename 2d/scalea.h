@@ -3,7 +3,7 @@ extern char scale_trans_color;
 extern int scale_error_term;
 extern int scale_initial_pixelCount;
 extern int scale_adj_up;
-extern int scale_adj_down;
+extern int scale_adjDown;
 extern int scale_final_pixelCount;
 extern int scale_ydelta_minus_1;
 extern int scale_whole_step;

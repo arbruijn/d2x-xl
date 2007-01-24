@@ -49,7 +49,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "bm.h"
 #include "timer.h"
 #include "segment.h"
-#include "kconfig.h"
+#include "input.h"
 #include "text.h"
 #include "lighting.h"
 #include "hudmsg.h"
@@ -547,9 +547,9 @@ if (sbd.bBoosted) {
 			VmVecNormalize (&n);
 			}
 		else {
-			Controls.verticalThrustTime =
-			Controls.forwardThrustTime =
-			Controls.sidewaysThrustTime = 0;
+			Controls [0].verticalThrustTime =
+			Controls [0].forwardThrustTime =
+			Controls [0].sidewaysThrustTime = 0;
 			memcpy (&n, gameData.segs.segments [destSegnum].sides [destSidenum].normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination tSegment
 		// invert the normal as it points into the tSegment

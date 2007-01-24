@@ -199,18 +199,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	short   always_0xabc;   // If this is ever not 0xabc, then someone overwrote
 //} opath;
 //
-//typedef struct oai_state {
+//typedef struct oaiState {
 //	short   mode;               //
 //	short   counter;            // kind of a hack, frame countdown until switch modes
 //	opath   paths[2];
 //	vmsVector movement_vector; // movement vector for one second
-//} oai_state;
+//} oaiState;
 
 #define SUB_FLAGS_GUNSEG        0x01
 #define SUB_FLAGS_SPROX         0x02    // If set, then this bot drops a super prox, not a prox, when it's time to drop something
 #define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at tPlayer.  Can look real stupid!
 
-//  Constants defining meaning of flags in ai_state
+//  Constants defining meaning of flags in aiState
 #define MAX_AI_FLAGS    11          // This MUST cause word (4 bytes) alignment in tAIStatic, allowing for one byte mode
 
 #define CURRENT_GUN     flags[0]    // This is the last gun the tObject fired from

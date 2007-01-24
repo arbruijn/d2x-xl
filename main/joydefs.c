@@ -97,7 +97,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Changed some delays to use TICKER instead of TimerGetFixedSeconds.
  *
  * Revision 1.62  1994/12/09  11:01:07  mike
- * force calibration of joystick on joystick selection from Controls... menu.
+ * force calibration of joystick on joystick selection from Controls [0]... menu.
  *
  * Revision 1.61  1994/12/07  21:50:27  john
  * Put stop/start time around joystick delay.
@@ -350,7 +350,7 @@ void joy_delay()
 	timer_delay(.25);
 	//delay(250);				// changed by allender because	1) more portable
 							//								2) was totally broken on PC
-	joy_flush();
+	JoyFlush();
 	StartTime();
 }
 
@@ -419,17 +419,17 @@ void joydefs_calibrate2()
 
 	joydefs_calibrateFlag = 0;
 
-	joy_get_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+	JoyGetCalVals(org_axis_min, org_axis_center, org_axis_max);
 
 	joy_set_cen();
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 
 	if (!joy_present)	{
 		ExecMessageBox( NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
 		return;
 	}
 
-	masks = joy_get_present_mask();
+	masks = JoyGetPresentMask();
 
 	if ( masks == JOY_ALL_AXIS )
 		nsticks = 2;
@@ -448,10 +448,10 @@ void joydefs_calibrate2()
 	}
 
 	if (joycal_message( title, text )) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_min[0] = tempValues[0];
 	axis_min[1] = tempValues[1];
 	joy_delay();
@@ -464,10 +464,10 @@ void joydefs_calibrate2()
 		sprintf( text, "%s %s", TXT_MOVE_JOYSTICK, TXT_TO_LR);
 	}
 	if (joycal_message( title, text)) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_max[0] = tempValues[0];
 	axis_max[1] = tempValues[1];
 	joy_delay();
@@ -480,10 +480,10 @@ void joydefs_calibrate2()
 		sprintf( text, "%s %s", TXT_MOVE_JOYSTICK, TXT_TO_C);
 	}
 	if (joycal_message( title, text)) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_cen[0] = tempValues[0];
 	axis_cen[1] = tempValues[1];
 	axis_cen[2] = tempValues[2];
@@ -502,10 +502,10 @@ void joydefs_calibrate2()
 			sprintf( title, "Joystick X2 axis\nLEFT");
 			sprintf( text, "Move joystick X2 axis\nall the way left");
 			if (joycal_message( title, text )) {
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_min[2] = tempValues[2];
 			axis_min[3] = tempValues[3];
 			joy_delay();
@@ -513,26 +513,26 @@ void joydefs_calibrate2()
 			sprintf( title, "Joystick X2 axis\nRIGHT");
 			sprintf( text, "Move joystick X2 axis\nall the way right");
 			if (joycal_message( title, text ))	{
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_max[2] = tempValues[2];
 			axis_max[3] = tempValues[3];
 			joy_delay();
 		}
 	} else {
-		masks = joy_get_present_mask();
+		masks = JoyGetPresentMask();
 
 		if ( nsticks == 2 )	{
 			if ( kconfig_is_axes_used(2) || kconfig_is_axes_used(3) )	{
 				sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_UPPER_LEFT);
 				sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_UL);
 				if (joycal_message( title, text )) {
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_min[2] = tempValues[2];
 				axis_min[3] = tempValues[3];
 				joy_delay();
@@ -540,10 +540,10 @@ void joydefs_calibrate2()
 				sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_LOWER_RIGHT);
 				sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_LR);
 				if (joycal_message( title, text ))	{
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_max[2] = tempValues[2];
 				axis_max[3] = tempValues[3];
 				joy_delay();
@@ -551,10 +551,10 @@ void joydefs_calibrate2()
 				sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_CENTER);
 				sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_C);
 				if (joycal_message( title, text ))	{
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_cen[2] = tempValues[2];
 				axis_cen[3] = tempValues[3];
 				joy_delay();
@@ -565,34 +565,34 @@ void joydefs_calibrate2()
 				// A throttle axis!!!!!
 				sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_FORWARD);
 				if (joycal_message( title, TXT_MOVE_THROTTLE_F))	{
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_min[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_REVERSE);
 				if (joycal_message( title, TXT_MOVE_THROTTLE_R)) {
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_max[3] = tempValues[3];
 				joy_delay();
 
 				sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_CENTER);
 				if (joycal_message( title, TXT_MOVE_THROTTLE_C)) {
-					joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+					JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 					return;
 				}
-				joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+				JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 				axis_cen[3] = tempValues[3];
 				joy_delay();
 			}
 		}
 	}
-	joy_set_cal_vals(axis_min, axis_cen, axis_max);
+	JoySetCalVals(axis_min, axis_cen, axis_max);
 
 	WriteConfigFile();
 }
@@ -622,24 +622,24 @@ void joydefs_calibrate2()
 		axis_min[3] = 0;
 		axis_max[3] = 255;
 		axis_cen[3] = 128;
-		joy_set_cal_vals(axis_min, axis_cen, axis_max);
+		JoySetCalVals(axis_min, axis_cen, axis_max);
 		return;
 	}
 
 	if ( gameConfig.nControlType == CONTROL_FLIGHTSTICK_PRO ) 		// no calibration needed
 		return;
 
-	joy_get_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+	JoyGetCalVals(org_axis_min, org_axis_center, org_axis_max);
 
 	joy_set_cen();
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 
 	if (!joy_present)	{
 		ExecMessageBox( NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
 		return;
 	}
 
-	masks = joy_get_present_mask();
+	masks = JoyGetPresentMask();
 
 	if ( masks == JOY_ALL_AXIS )
 		nsticks = 2;
@@ -658,10 +658,10 @@ void joydefs_calibrate2()
 	}
 
 	if (joycal_message( title, text )) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_min[0] = tempValues[0];
 	axis_min[1] = tempValues[1];
 	joy_delay();
@@ -674,10 +674,10 @@ void joydefs_calibrate2()
 		sprintf( text, "%s %s", TXT_MOVE_JOYSTICK, TXT_TO_LR);
 	}
 	if (joycal_message( title, text)) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_max[0] = tempValues[0];
 	axis_max[1] = tempValues[1];
 	joy_delay();
@@ -690,26 +690,26 @@ void joydefs_calibrate2()
 		sprintf( text, "%s %s", TXT_MOVE_JOYSTICK, TXT_TO_C);
 	}
 	if (joycal_message( title, text)) {
-		joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+		JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 		return;
 	}
-	joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+	JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 	axis_cen[0] = tempValues[0];
 	axis_cen[1] = tempValues[1];
 	axis_cen[2] = tempValues[2];
 	joy_delay();
 
-	masks = joy_get_present_mask();
+	masks = JoyGetPresentMask();
 
 	if ( nsticks == 2 )	{
 		if ( kconfig_is_axes_used(2) || kconfig_is_axes_used(3) )	{
 			sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_UPPER_LEFT);
 			sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_UL);
 			if (joycal_message( title, text )) {
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_min[2] = tempValues[2];
 			axis_min[3] = tempValues[3];
 			joy_delay();
@@ -717,10 +717,10 @@ void joydefs_calibrate2()
 			sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_LOWER_RIGHT);
 			sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_LR);
 			if (joycal_message( title, text ))	{
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_max[2] = tempValues[2];
 			axis_max[3] = tempValues[3];
 			joy_delay();
@@ -728,10 +728,10 @@ void joydefs_calibrate2()
 			sprintf( title, "%s #2\n%s", TXT_JOYSTICK, TXT_CENTER);
 			sprintf( text, "%s #2 %s", TXT_MOVE_JOYSTICK, TXT_TO_C);
 			if (joycal_message( title, text ))	{
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_cen[2] = tempValues[2];
 			axis_cen[3] = tempValues[3];
 			joy_delay();
@@ -741,33 +741,33 @@ void joydefs_calibrate2()
 			// A throttle axis!!!!!
 			sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_FORWARD);
 			if (joycal_message( title, TXT_MOVE_THROTTLE_F))	{
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_min[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_REVERSE);
 			if (joycal_message( title, TXT_MOVE_THROTTLE_R)) {
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_max[3] = tempValues[3];
 			joy_delay();
 
 			sprintf( title, "%s\n%s", TXT_THROTTLE, TXT_CENTER);
 			if (joycal_message( title, TXT_MOVE_THROTTLE_C)) {
-				joy_set_cal_vals(org_axis_min, org_axis_center, org_axis_max);
+				JoySetCalVals(org_axis_min, org_axis_center, org_axis_max);
 				return;
 			}
-			joystick_read_raw_axis( JOY_ALL_AXIS, tempValues );
+			JoyReadRawAxis( JOY_ALL_AXIS, tempValues );
 			axis_cen[3] = tempValues[3];
 			joy_delay();
 		}
 	}
-	joy_set_cal_vals(axis_min, axis_cen, axis_max);
+	JoySetCalVals(axis_min, axis_cen, axis_max);
 
 	WriteConfigFile();
 }

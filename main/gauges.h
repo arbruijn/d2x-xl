@@ -187,10 +187,10 @@ extern rgb player_rgb[];
 
 // draws a 3d view into one of the cockpit windows.  win is 0 for
 // left, 1 for right.  viewer is tObject.  NULL tObject means give up
-// window user is one of the WBU_ constants.  If rear_viewFlag is
+// window user is one of the WBU_ constants.  If rearViewFlag is
 // set, show a rear view.  If label is non-NULL, print the label at
 // the top of the window.
-void DoCockpitWindowView(int win, tObject *viewer, int rear_viewFlag, int user, char *label);
+void DoCockpitWindowView(int win, tObject *viewer, int rearViewFlag, int user, char *label);
 void FreeInventoryIcons (void);
 void FreeObjTallyIcons (void);
 void HUDShowIcons (void);

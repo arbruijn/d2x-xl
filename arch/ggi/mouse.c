@@ -29,9 +29,9 @@
 
 struct mousebutton {
  ubyte pressed;
- fix time_went_down;
- fix time_held_down;
- uint num_downs;
+ fix time_wentDown;
+ fix time_heldDown;
+ uint numDowns;
  uint num_ups;
 };
 
@@ -80,8 +80,8 @@ void mouse_handler_button(int button, ubyte state)
 {
 	if (!Mouse.buttons[button].pressed && state)
 	{
-		Mouse.buttons[button].time_went_down = TimerGetFixedSeconds();
-		Mouse.buttons[button].num_downs++;
+		Mouse.buttons[button].time_wentDown = TimerGetFixedSeconds();
+		Mouse.buttons[button].numDowns++;
 	}
 	else if (Mouse.buttons[button].pressed && !state)
 	{
@@ -158,7 +158,7 @@ void mouse_get_cyberman_pos( int *x, int *y )
 fix MouseButtonDownTime(int button)
 {
 	if (Mouse.buttons[button].pressed)
-		return (TimerGetFixedSeconds() - Mouse.buttons[button].time_went_down);
+		return (TimerGetFixedSeconds() - Mouse.buttons[button].time_wentDown);
 	else
 		return 0;
 }
@@ -166,8 +166,8 @@ fix MouseButtonDownTime(int button)
 // Returns how many times this button has went down since last call
 int MouseButtonDownCount(int button)
 {
-	int count = Mouse.buttons[button].num_downs;
-	Mouse.buttons[button].num_downs = 0;
+	int count = Mouse.buttons[button].numDowns;
+	Mouse.buttons[button].numDowns = 0;
 	return count;	
 }
 

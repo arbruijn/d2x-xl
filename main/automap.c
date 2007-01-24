@@ -931,7 +931,7 @@ int UpdateAutomap (vmsAngVec *pvTAngles)
 	tObject		*playerP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 	vmsMatrix	m;
 
-if (Controls.fire_primaryDownCount)	{
+if (Controls [0].firePrimaryDownCount)	{
 	// Reset orientation
 	amData.nViewDist = ZOOM_DEFAULT;
 	pvTAngles->p = PITCH_DEFAULT;
@@ -939,17 +939,17 @@ if (Controls.fire_primaryDownCount)	{
 	pvTAngles->b = 0;
 	amData.viewTarget = playerP->position.vPos;
 	}
-if (Controls.forwardThrustTime)
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls.forwardThrustTime * ZOOM_SPEED_FACTOR); 
-pvTAngles->p += FixDiv (Controls.pitchTime, ROT_SPEED_DIVISOR);
-pvTAngles->h += FixDiv (Controls.headingTime, ROT_SPEED_DIVISOR);
-pvTAngles->b += FixDiv (Controls.bankTime, ROT_SPEED_DIVISOR*2);
+if (Controls [0].forwardThrustTime)
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
+pvTAngles->p += FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
+pvTAngles->h += FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
+pvTAngles->b += FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 VmAngles2Matrix (&m, pvTAngles);
-if (Controls.verticalThrustTime || Controls.sidewaysThrustTime)	{
+if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{
 	VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls.verticalThrustTime * SLIDE_SPEED);
-	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls.sidewaysThrustTime * SLIDE_SPEED);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.uVec, Controls [0].verticalThrustTime * SLIDE_SPEED);
+	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.rVec, Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 VmMatMul (&amData.viewMatrix, &playerP->position.mOrient, &m);
 if (amData.nViewDist < ZOOM_MIN_VALUE) 
@@ -966,7 +966,7 @@ int AMReadControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsA
 	int	c, nMarker, nMaxDrop;
 
 ControlsReadAll ();		
-if (Controls.automapDownCount && !nLeaveMode)
+if (Controls [0].automapDownCount && !nLeaveMode)
 	return 1;
 while (c = KeyInKey ()) {
 	if (!gameOpts->menus.nStyle)
@@ -1077,19 +1077,19 @@ extern void GameLoop (int, int);
 
 int AMGameFrame (int bPauseGame, int bDone)
 {
-	control_info controlInfoSave;
+	tControlInfo controlInfoSave;
 
 if (!bPauseGame)	{
 	ushort bWiggleSave;
-	controlInfoSave = Controls;				// Save controls so we can zero them
-	memset (&Controls, 0, sizeof (control_info));	// Clear everything...
+	controlInfoSave = Controls [0];				// Save controls so we can zero them
+	memset (&Controls, 0, sizeof (tControlInfo));	// Clear everything...
 	bWiggleSave = gameData.objs.console->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
 	gameData.objs.console->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
 	GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
 	gameData.objs.console->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
-	Controls = controlInfoSave;
+	Controls [0] = controlInfoSave;
 	}
 return bDone;
 }
@@ -1125,9 +1125,9 @@ if (bRadar) {
 	}
 GetSlowTick ();
 while (!bDone)	{
-	if (!nLeaveMode && Controls.automap_state && (TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME)
+	if (!nLeaveMode && Controls [0].automapState && (TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME)
 		nLeaveMode = 1;
-	if (!Controls.automap_state && (nLeaveMode == 1))
+	if (!Controls [0].automapState && (nLeaveMode == 1))
 		bDone = 1;
 	bDone = AMGameFrame (bPauseGame, bDone);
 	SongsCheckRedbookRepeat ();

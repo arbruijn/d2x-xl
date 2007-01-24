@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "gr.h"
 #include "gamepal.h"
-#include "kconfig.h"
+#include "input.h"
 #include "object.h"
 #include "ogl_init.h"
 
@@ -336,7 +336,7 @@ static int old_laserLevel[2]		= { -1, -1 };
 static int old_cloak[2]				= { 0, 0 };
 static int old_lives[2]				= { -1, -1 };
 static fix old_afterburner[2]		= { -1, -1 };
-static int old_bombcount[2]		= { 0, 0 };
+static int oldBombcount[2]		= { 0, 0 };
 
 static int invulnerable_frame = 0;
 
@@ -347,7 +347,7 @@ static int nCloakFadeState;		//0=steady, -1 fading out, 1 fading in
 #define WS_FADING_IN		2
 
 int weapon_box_user[2]={WBU_WEAPON, WBU_WEAPON};		//see WBU_ constants in gauges.h
-int weapon_box_states[2];
+int weapon_boxStates[2];
 fix weapon_box_fadeValues[2];
 
 #define FADE_SCALE	 (2*i2f (GR_ACTUAL_FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
@@ -1615,7 +1615,7 @@ void HUDShowAfterburner (void)
 	}
 }
 #if 0
-char *d2_very_short_secondary_weapon_names[] =
+char *d2_very_shortSecondary_weapon_names[] =
 		{"Flash", "Guided", "SmrtMine", "Mercury", "Shaker"};
 #endif
 #define SECONDARY_WEAPON_NAMES_VERY_SHORT(weapon_num) 				\
@@ -1623,7 +1623,7 @@ char *d2_very_short_secondary_weapon_names[] =
 	 GT (636+weapon_num-FLASHMSL_INDEX))
 
 //return which bomb will be dropped next time the bomb key is pressed
-extern int which_bomb ();
+extern int whichBomb ();
 
 //	-----------------------------------------------------------------------------
 
@@ -1634,7 +1634,7 @@ void ShowBombCount (int x, int y, int bg_color, int always_show)
 
 if (gameData.app.nGameMode & GM_ENTROPY)
 	return;
-bomb = which_bomb ();
+bomb = whichBomb ();
 if (!bomb)
 	return;
 if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXIMITY_INDEX))
@@ -1646,7 +1646,7 @@ count = min (count, 99);	//only have room for 2 digits - cheating give 200
 countx = (bomb==PROXIMITY_INDEX)?count:-count;
 if (always_show && count == 0)		//no bombs, draw nothing on HUD
 	return;
-if (!always_show && countx == old_bombcount[nVRCurrentPage])
+if (!always_show && countx == oldBombcount[nVRCurrentPage])
 	return;
 WIN (DDGRLOCK (dd_grd_curcanv));
 // I hate doing this off of hard coded coords!!!!
@@ -1687,7 +1687,7 @@ if ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) ||
 else
 	GrString (x, y, txt);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
-old_bombcount[nVRCurrentPage] = countx;
+oldBombcount[nVRCurrentPage] = countx;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1706,7 +1706,7 @@ void HUDToggleWeaponIcons (void)
 {
 	int	i;
 
-for (i = 0; i < Controls.toggle_iconsCount; i++)
+for (i = 0; i < Controls [0].toggleIconsCount; i++)
 	if (gameStates.app.bNostalgia)
 		extraGameInfo [0].nWeaponIcons = 0;
 	else {
@@ -1967,7 +1967,7 @@ int HUDEquipmentActive (int bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
-		return (xAfterburnerCharge && Controls.afterburner_state);
+		return (xAfterburnerCharge && Controls [0].afterburnerState);
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
@@ -2564,7 +2564,7 @@ void InitGauges ()
 		old_cloak[i]			= -1;
 		old_lives[i]			= -1;
 		old_afterburner[i]	= -1;
-		old_bombcount[i]		= 0;
+		oldBombcount[i]		= 0;
 		old_laserLevel[i]	= 0;
 	
 		old_weapon[0][i] = old_weapon[1][i] = -1;
@@ -3248,8 +3248,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 
 	laserLevel_changed = (nWeaponType==0 && weapon_num==LASER_INDEX && (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel != old_laserLevel[nVRCurrentPage]));
 
-	if ((weapon_num != old_weapon[nWeaponType][nVRCurrentPage] || laserLevel_changed) && weapon_box_states[nWeaponType] == WS_SET) {
-		weapon_box_states[nWeaponType] = WS_FADING_OUT;
+	if ((weapon_num != old_weapon[nWeaponType][nVRCurrentPage] || laserLevel_changed) && weapon_boxStates[nWeaponType] == WS_SET) {
+		weapon_boxStates[nWeaponType] = WS_FADING_OUT;
 		weapon_box_fadeValues[nWeaponType]=i2f (GR_ACTUAL_FADE_LEVELS-1);
 		}
 		
@@ -3260,17 +3260,17 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		Old_Omega_charge[nVRCurrentPage]=-1;
 		old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
 		drewFlag=1;
-		weapon_box_states[nWeaponType] = WS_SET;
+		weapon_boxStates[nWeaponType] = WS_SET;
 		}
 
-	if (weapon_box_states[nWeaponType] == WS_FADING_OUT) {
+	if (weapon_boxStates[nWeaponType] == WS_FADING_OUT) {
 		DrawWeaponInfo (nWeaponType, old_weapon[nWeaponType][nVRCurrentPage], old_laserLevel[nVRCurrentPage]);
 		old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 		Old_Omega_charge[nVRCurrentPage]=-1;
 		drewFlag=1;
 		weapon_box_fadeValues[nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 		if (weapon_box_fadeValues[nWeaponType] <= 0) {
-			weapon_box_states[nWeaponType] = WS_FADING_IN;
+			weapon_boxStates[nWeaponType] = WS_FADING_IN;
 			old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
 			old_weapon[nWeaponType][!nVRCurrentPage] = weapon_num;
 			old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
@@ -3278,9 +3278,9 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			weapon_box_fadeValues[nWeaponType] = 0;
 			}
 		}
-	else if (weapon_box_states[nWeaponType] == WS_FADING_IN) {
+	else if (weapon_boxStates[nWeaponType] == WS_FADING_IN) {
 		if (weapon_num != old_weapon[nWeaponType][nVRCurrentPage]) {
-			weapon_box_states[nWeaponType] = WS_FADING_OUT;
+			weapon_boxStates[nWeaponType] = WS_FADING_OUT;
 			}
 		else {
 			DrawWeaponInfo (nWeaponType, weapon_num, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
@@ -3289,13 +3289,13 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			drewFlag=1;
 			weapon_box_fadeValues[nWeaponType] += gameData.time.xFrame * FADE_SCALE;
 			if (weapon_box_fadeValues[nWeaponType] >= i2f (GR_ACTUAL_FADE_LEVELS-1)) {
-				weapon_box_states[nWeaponType] = WS_SET;
+				weapon_boxStates[nWeaponType] = WS_SET;
 				old_weapon[nWeaponType][!nVRCurrentPage] = -1;		//force redraw (at full fade-in) of other page
 				}
 			}
 		}
 
-	if (weapon_box_states[nWeaponType] != WS_SET) {		//fade gauge
+	if (weapon_boxStates[nWeaponType] != WS_SET) {		//fade gauge
 		int fadeValue = f2i (weapon_box_fadeValues[nWeaponType]);
 		int boxofs = (gameStates.render.cockpit.nMode==CM_STATUS_BAR)?SB_PRIMARY_BOX:COCKPIT_PRIMARY_BOX;
 		
@@ -3383,7 +3383,7 @@ void DrawWeaponBoxes ()
 				CopyGaugeBox (gauge_boxes+boxofs, &VR_render_buffer[0].cv_bitmap)
 			);
 
-		if (weapon_box_states[0] == WS_SET) {
+		if (weapon_boxStates[0] == WS_SET) {
 			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammoCount[0][nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -3414,9 +3414,9 @@ void DrawWeaponBoxes ()
 				CopyGaugeBox (&gauge_boxes[boxofs+1], &VR_render_buffer[0].cv_bitmap)
 			);
 
-		if (weapon_box_states[1] == WS_SET)
+		if (weapon_boxStates[1] == WS_SET)
 			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
-				old_bombcount[nVRCurrentPage] = 0x7fff;	//force redraw
+				oldBombcount[nVRCurrentPage] = 0x7fff;	//force redraw
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
 				DrawSecondaryAmmoInfo (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
@@ -4356,13 +4356,13 @@ int SW_drawn[2], SW_x[2], SW_y[2], SW_w[2], SW_h[2];
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left, 
 //1 for right.  viewer is tObject.  NULL tObject means give up window
-//user is one of the WBU_ constants.  If rear_viewFlag is set, show a
+//user is one of the WBU_ constants.  If rearViewFlag is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int win, tObject *viewer, int rear_viewFlag, int user, char *label)
+void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, char *label)
 {
 	WINDOS (
 		dd_grs_canvas window_canv, 
@@ -4379,7 +4379,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int rear_viewFlag, int user,
 	int boxnum;
 	static int window_x, window_y;
 	gauge_box *box;
-	int rear_view_save = gameStates.render.bRearView;
+	int rearView_save = gameStates.render.bRearView;
 	int w, h, dx;
 	fix nZoomSave;
 
@@ -4404,10 +4404,10 @@ void DoCockpitWindowView (int win, tObject *viewer, int rear_viewFlag, int user,
 
 		return;
 	}
-	UpdateRenderedData (win+1, viewer, rear_viewFlag, user);
+	UpdateRenderedData (win+1, viewer, rearViewFlag, user);
 	weapon_box_user[win] = user;						//say who's using window
 	gameData.objs.viewer = viewer;
-	gameStates.render.bRearView = rear_viewFlag;
+	gameStates.render.bRearView = rearViewFlag;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
 
@@ -4634,7 +4634,7 @@ WINDOS (
 	DDGrSetCurrentCanvas (save_canv), 
 	GrSetCurrentCanvas (save_canv)
 );
-	gameStates.render.bRearView = rear_view_save;
+	gameStates.render.bRearView = rearView_save;
 }
 
 //	-----------------------------------------------------------------------------

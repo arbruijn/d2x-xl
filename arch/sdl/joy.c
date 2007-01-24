@@ -29,7 +29,7 @@ extern int joybutton_text []; //from KConfig.c
 
 char joy_present = 0;
 
-int joy_deadzone [4] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10% of max. range
+int joyDeadzone [4] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10% of max. range
 
 static struct joyinfo {
 	int		n_axes;
@@ -52,9 +52,9 @@ void joy_button_handler (SDL_JoyButtonEvent *jbe)
 	Joystick.buttons [button].state = jbe->state;
 	switch (jbe->type) {
 	case SDL_JOYBUTTONDOWN:
-		Joystick.buttons [button].time_went_down
+		Joystick.buttons [button].time_wentDown
 			= TimerGetFixedSeconds();
-		Joystick.buttons [button].num_downs++;
+		Joystick.buttons [button].numDowns++;
 		break;
 	case SDL_JOYBUTTONUP:
 		Joystick.buttons [button].num_ups++;
@@ -73,10 +73,10 @@ void joy_hat_handler (SDL_JoyHatEvent *jhe)
 		return;
 	hat = SDL_Joysticks [jhe->which].hat_map [jhe->hat] + jhe->which * MAX_BUTTONS_PER_JOYSTICK;
 	//Save last state of the hat-button
-	Joystick.buttons [hat  ].last_state = Joystick.buttons [hat  ].state;
-	Joystick.buttons [hat+1].last_state = Joystick.buttons [hat+1].state;
-	Joystick.buttons [hat+2].last_state = Joystick.buttons [hat+2].state;
-	Joystick.buttons [hat+3].last_state = Joystick.buttons [hat+3].state;
+	Joystick.buttons [hat  ].lastState = Joystick.buttons [hat  ].state;
+	Joystick.buttons [hat+1].lastState = Joystick.buttons [hat+1].state;
+	Joystick.buttons [hat+2].lastState = Joystick.buttons [hat+2].state;
+	Joystick.buttons [hat+3].lastState = Joystick.buttons [hat+3].state;
 
 	//get current state of the hat-button
 	Joystick.buttons [hat  ].state = ((jhe->value & SDL_HAT_UP)>0);
@@ -84,16 +84,16 @@ void joy_hat_handler (SDL_JoyHatEvent *jhe)
 	Joystick.buttons [hat+2].state = ((jhe->value & SDL_HAT_DOWN)>0);
 	Joystick.buttons [hat+3].state = ((jhe->value & SDL_HAT_LEFT)>0);
 
-	//determine if a hat-button up or down event based on state and last_state
+	//determine if a hat-button up or down event based on state and lastState
 	for(hbi=0;hbi<4;hbi++)
 	{
-		if(	!Joystick.buttons [hat+hbi].last_state && Joystick.buttons [hat+hbi].state) //last_state up, current state down
+		if(	!Joystick.buttons [hat+hbi].lastState && Joystick.buttons [hat+hbi].state) //lastState up, current state down
 		{
-			Joystick.buttons [hat+hbi].time_went_down
+			Joystick.buttons [hat+hbi].time_wentDown
 				= TimerGetFixedSeconds();
-			Joystick.buttons [hat+hbi].num_downs++;
+			Joystick.buttons [hat+hbi].numDowns++;
 		}
-		else if(Joystick.buttons [hat+hbi].last_state && !Joystick.buttons [hat+hbi].state)  //last_state down, current state up
+		else if(Joystick.buttons [hat+hbi].lastState && !Joystick.buttons [hat+hbi].state)  //lastState down, current state up
 		{
 			Joystick.buttons [hat+hbi].num_ups++;
 		}
@@ -197,7 +197,7 @@ void joy_close()
 
 //------------------------------------------------------------------------------
 
-void joy_get_pos(int *x, int *y)
+void JoyGetPos(int *x, int *y)
 {
 	int axis [JOY_MAX_AXES];
 
@@ -206,15 +206,15 @@ void joy_get_pos(int *x, int *y)
 		return;
 	}
 
-	joystick_read_raw_axis (JOY_ALL_AXIS, axis);
+	JoyReadRawAxis (JOY_ALL_AXIS, axis);
 
-	*x = joy_get_scaled_reading (axis [0], 0 );
-	*y = joy_get_scaled_reading (axis [1], 1 );
+	*x = JoyGetScaledReading (axis [0], 0 );
+	*y = JoyGetScaledReading (axis [1], 1 );
 }
 
 //------------------------------------------------------------------------------
 
-int joy_get_btns()
+int JoyGetBtns()
 {
 #if 0 // This is never used?
 	int i, buttons = 0;
@@ -235,9 +235,9 @@ int joy_get_btns()
 
 //------------------------------------------------------------------------------
 
-int joy_get_button_down_cnt (int btn )
+int JoyGetButtonDownCnt (int btn )
 {
-	int num_downs;
+	int numDowns;
 
 	if (!gameOpts->input.nJoysticks)
 		return 0;
@@ -245,15 +245,15 @@ int joy_get_button_down_cnt (int btn )
 if (gameOpts->legacy.bInput)
    event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	num_downs = Joystick.buttons [btn].num_downs;
-	Joystick.buttons [btn].num_downs = 0;
+	numDowns = Joystick.buttons [btn].numDowns;
+	Joystick.buttons [btn].numDowns = 0;
 
-	return num_downs;
+	return numDowns;
 }
 
 //------------------------------------------------------------------------------
 
-fix joy_get_button_downTime(int btn)
+fix JoyGetButtonDownTime(int btn)
 {
 	fix time = F0_0;
 
@@ -265,8 +265,8 @@ if (gameOpts->legacy.bInput)
 #endif
 	switch (Joystick.buttons [btn].state) {
 	case SDL_PRESSED:
-		time = TimerGetFixedSeconds() - Joystick.buttons [btn].time_went_down;
-		Joystick.buttons [btn].time_went_down = TimerGetFixedSeconds();
+		time = TimerGetFixedSeconds() - Joystick.buttons [btn].time_wentDown;
+		Joystick.buttons [btn].time_wentDown = TimerGetFixedSeconds();
 		break;
 	case SDL_RELEASED:
 		time = 0;
@@ -278,7 +278,7 @@ if (gameOpts->legacy.bInput)
 
 //------------------------------------------------------------------------------
 
-unsigned long joystick_read_raw_axis (unsigned long mask, int * axis )
+unsigned long JoyReadRawAxis (unsigned long mask, int * axis )
 {
 	int i;
 	unsigned long channel_masks = 0;
@@ -297,7 +297,7 @@ for (i = 0; i < JOY_MAX_AXES; i++)
 return channel_masks;
 }
 
-void joy_flush()
+void JoyFlush()
 {
 	int i;
 
@@ -305,15 +305,15 @@ void joy_flush()
 		return;
 
 	for (i = 0; i < MAX_JOYSTICKS * JOY_MAX_BUTTONS; i++) {
-		Joystick.buttons [i].time_went_down = 0;
-		Joystick.buttons [i].num_downs = 0;
+		Joystick.buttons [i].time_wentDown = 0;
+		Joystick.buttons [i].numDowns = 0;
 	}
 
 }
 
 //------------------------------------------------------------------------------
 
-int joy_get_button_state (int btn )
+int JoyGetButtonState (int btn )
 {
 	if (!gameOpts->input.nJoysticks)
 		return 0;
@@ -329,7 +329,7 @@ if (gameOpts->legacy.bInput)
 
 //------------------------------------------------------------------------------
 
-void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max)
+void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max)
 {
 	int i;
 
@@ -342,7 +342,7 @@ void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max)
 
 //------------------------------------------------------------------------------
 
-void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
+void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max)
 {
 	int i;
 
@@ -355,7 +355,7 @@ void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
 
 //------------------------------------------------------------------------------
 
-int joy_get_scaled_reading (int raw, int axis_num )
+int JoyGetScaledReading (int raw, int axis_num )
 {
 #if 1
 	return (raw + 128) / 256;
@@ -380,7 +380,7 @@ int joy_get_scaled_reading (int raw, int axis_num )
 	if (x > 127)
 		x = 127;
 
-	d = (joy_deadzone [axis_num % 4]) * 6;
+	d = (joyDeadzone [axis_num % 4]) * 6;
 	if ((x > (-d)) && (x < d))
 		x = 0;
 
@@ -390,17 +390,17 @@ int joy_get_scaled_reading (int raw, int axis_num )
 
 //------------------------------------------------------------------------------
 
-void joy_set_slow_reading (int flag )
+void JoySetSlowReading (int flag )
 {
 }
 
 //------------------------------------------------------------------------------
 
-int set_joy_deadzone (int nRelZone, int nAxis)
+int JoySetDeadzone (int nRelZone, int nAxis)
 {
 nAxis %= 4;
 gameOpts->input.joyDeadZones [nAxis] = (nRelZone > 100) ? 100 : (nRelZone < 0) ? 0 : nRelZone;
-return joy_deadzone [nAxis] = (32767 * gameOpts->input.joyDeadZones [nAxis] / 2) / 100;
+return joyDeadzone [nAxis] = (32767 * gameOpts->input.joyDeadZones [nAxis] / 2) / 100;
 }
 
 //------------------------------------------------------------------------------

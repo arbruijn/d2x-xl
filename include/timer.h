@@ -85,11 +85,11 @@ extern QLONG TimerGetFixedSeconds(void);
 extern fix TimerGetFixedSeconds();   // Rolls about every 9 hours...
 #endif
 #ifdef __DJGPP__
-extern fix timer_get_fixed_secondsX(); // Assume interrupts already disabled
+extern fix timer_get_fixedSecondsX(); // Assume interrupts already disabled
 extern fix TimerGetApproxSeconds();		// Returns time since program started... accurate to 1/120th of a second
 extern void timer_set_joyhandler( void (*joy_handler)() );
 #else
-#define timer_get_fixed_secondsX TimerGetFixedSeconds
+#define timer_get_fixedSecondsX TimerGetFixedSeconds
 //#define TimerGetApproxSeconds TimerGetFixedSeconds
 extern fix TimerGetApproxSeconds();
 #endif

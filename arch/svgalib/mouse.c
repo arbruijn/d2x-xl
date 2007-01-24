@@ -36,9 +36,9 @@ ubyte installed = 0;
 
 struct mousebutton {
  ubyte pressed;
- fix time_went_down;
- fix time_held_down;
- uint num_downs;
+ fix time_wentDown;
+ fix time_heldDown;
+ uint numDowns;
  uint num_ups;
 };
 
@@ -67,8 +67,8 @@ void mouse_handler (int vga_button, int dx, int dy, int dz, int drx, int dry, in
   state = button & (1 << i);
   if (!Mouse.buttons[i].pressed && state)
     {
-      Mouse.buttons[i].time_went_down = TimerGetFixedSeconds();
-      Mouse.buttons[i].num_downs++;
+      Mouse.buttons[i].time_wentDown = TimerGetFixedSeconds();
+      Mouse.buttons[i].numDowns++;
     }
   else if (Mouse.buttons[i].pressed && !state)
     {
@@ -127,10 +127,10 @@ void mouse_flush()	// clears all mice events...
  for (i=0; i<MOUSE_MAX_BUTTONS; i++)
  {
    Mouse.buttons[i].pressed=0;
-   Mouse.buttons[i].time_went_down=currentTime;
-   Mouse.buttons[i].time_held_down=0;
+   Mouse.buttons[i].time_wentDown=currentTime;
+   Mouse.buttons[i].time_heldDown=0;
    Mouse.buttons[i].num_ups=0;
-   Mouse.buttons[i].num_downs=0;
+   Mouse.buttons[i].numDowns=0;
  }
 //added on 10/17/98 by Hans de Goede for mouse functionality 
  Mouse.delta_x = 0;
@@ -195,19 +195,19 @@ void mouse_get_cyberman_pos( int *x, int *y )
 // Returns how long this button has been down since last call.
 fix MouseButtonDownTime(int button)
 {
- fix time_down, time;
+ fix timeDown, time;
 
  event_poll();
 
  if (!Mouse.buttons[button].pressed) {
-   time_down = Mouse.buttons[button].time_held_down;
-   Mouse.buttons[button].time_held_down = 0;
+   timeDown = Mouse.buttons[button].time_heldDown;
+   Mouse.buttons[button].time_heldDown = 0;
  } else {
    time = TimerGetFixedSeconds();
-   time_down = time - Mouse.buttons[button].time_held_down;
-   Mouse.buttons[button].time_held_down = time;
+   timeDown = time - Mouse.buttons[button].time_heldDown;
+   Mouse.buttons[button].time_heldDown = time;
  }
- return time_down;
+ return timeDown;
 }
 
 // Returns how many times this button has went down since last call
@@ -217,8 +217,8 @@ int MouseButtonDownCount(int button)
 
   event_poll();
 
-  count = Mouse.buttons[button].num_downs;
-  Mouse.buttons[button].num_downs = 0;
+  count = Mouse.buttons[button].numDowns;
+  Mouse.buttons[button].numDowns = 0;
 
   return count;
 }

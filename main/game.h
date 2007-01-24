@@ -218,9 +218,9 @@ extern fix xNextMissileFireTime;  // Time at which tPlayer can next fire his sel
 extern fix Laser_delayTime;        // Delay between laser fires.
 extern int Cheats_enabled;
 
-extern int Missile_view_enabled;
+extern int MissileView_enabled;
 
-extern tObject *Missile_viewer;
+extern tObject *MissileViewer;
 
 #define CV_NONE             0
 #define CV_ESCORT           1
@@ -230,8 +230,8 @@ extern tObject *Missile_viewer;
 #define CV_RADAR_TOPDOWN    5
 #define CV_RADAR_HEADSUP    6
 
-extern int Cockpit_3d_view[2];      // left & right
-extern int Coop_view_player[2];     // left & right
+extern int Cockpit_3dView[2];      // left & right
+extern int CoopView_player[2];     // left & right
 
 // constants for ft_preference
 #define FP_RIGHT        0
@@ -359,7 +359,7 @@ extern int Cockpit_mode;        // what sort of cockpit or window is up?
 extern int Game_window_w,       // width and height of tPlayer's game window
            Game_window_h;
 
-extern int Rear_view;           // if true, looking back.
+extern int RearView;           // if true, looking back.
 
 // initalize flying
 void FlyInit(tObject *obj);

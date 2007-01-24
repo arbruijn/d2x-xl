@@ -420,7 +420,7 @@ void KMatrixView (int bNetwork)
 	fix entryTime = TimerGetApproxSeconds ();
 	int key;
    int oldstates [MAX_PLAYERS];
-   int previous_seconds_left=-1;
+   int previousSeconds_left=-1;
    int nReady,nEscaped;
 	int bRedraw = 0;
 	bkg bg;
@@ -451,7 +451,7 @@ while (!done) {
 		}
 	nKMatrixKillsChanged = 0;
 	for (i = 0; i < 4; i++)
-		if (joy_get_button_down_cnt (i)) {
+		if (JoyGetButtonDownCnt (i)) {
 			if (LAST_OEM_LEVEL) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;
@@ -558,8 +558,8 @@ while (!done) {
 			done = 1;
 		if (nEscaped >= gameData.multi.nPlayers)
 			gameData.reactor.countdown.nSecsLeft = -1;
-		if (previous_seconds_left != gameData.reactor.countdown.nSecsLeft) {
-			previous_seconds_left = gameData.reactor.countdown.nSecsLeft;
+		if (previousSeconds_left != gameData.reactor.countdown.nSecsLeft) {
+			previousSeconds_left = gameData.reactor.countdown.nSecsLeft;
 			nKMatrixKillsChanged=1;
 			}
 		if (nKMatrixKillsChanged) {

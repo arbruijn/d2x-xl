@@ -49,7 +49,7 @@ volatile int		keydTime_when_last_pressed;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
-	ubyte		last_state;		// previous state of key
+	ubyte		lastState;		// previous state of key
 	int		counter;		// incremented each time key is down in handler
 	fix		timewentdown;	// simple counter incremented each time in interrupt and key is down
 	fix		timehelddown;	// counter to tell how long key is down -- gets reset to 0 by key routines
@@ -243,13 +243,13 @@ unsigned char KeyToASCII(int keycode)
 
 void keyboard_handler(int button, ubyte state)
 {
-	ubyte key_state;
+	ubyte keyState;
 	int i, keycode;
 	unsigned short event_key;
 	Key_info *key;
 	unsigned char temp;
 
-	key_state = state;
+	keyState = state;
 	event_key = giiKeyTranslate(button);
 	//con_printf (CON_DEBUG,"keyboard_handler(%i,%i):%i\n",button,state,event_key);
 
@@ -262,11 +262,11 @@ void keyboard_handler(int button, ubyte state)
 		keycode = i;
 		key = &(key_data.keys[keycode]);
                 if (i == event_key)
-			state = key_state;
+			state = keyState;
 		else
-			state = key->last_state;
+			state = key->lastState;
 			
-		if ( key->last_state == state )	{
+		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
 				keyd_last_pressed = keycode;
@@ -289,7 +289,7 @@ void keyboard_handler(int button, ubyte state)
 				key->timehelddown += TimerGetFixedSeconds() - key->timewentdown;
 			}
 		}
-		if ( (state && !key->last_state) || (state && key->last_state && (key->counter > 30) && (key->counter & 0x01)) ) {
+		if ( (state && !key->lastState) || (state && key->lastState && (key->counter > 30) && (key->counter & 0x01)) ) {
 			if ( keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT])
 				keycode |= KEY_SHIFTED;
 			if ( keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT])
@@ -306,7 +306,7 @@ void keyboard_handler(int button, ubyte state)
 				key_data.keytail = temp;
 			}
 		}
-		key->last_state = state;
+		key->lastState = state;
 	}
 }
 
@@ -349,7 +349,7 @@ void KeyFlush()
 	for (i=0; i<256; i++ )	{
 		keyd_pressed[i] = 0;
 		key_data.keys[i].state = 1;
-		key_data.keys[i].last_state = 0;
+		key_data.keys[i].lastState = 0;
 		key_data.keys[i].timewentdown = curtime;
 		key_data.keys[i].downcount=0;
 		key_data.keys[i].upcount=0;
@@ -452,21 +452,21 @@ unsigned int key_get_shift_status()
 // Returns the number of seconds this key has been down since last call.
 fix KeyDownTime(int scancode)
 {
-	fix time_down, time;
+	fix timeDown, time;
 
 	event_poll();
         if ((scancode<0)|| (scancode>255)) return 0;
 
 	if (!keyd_pressed[scancode]) {
-		time_down = key_data.keys[scancode].timehelddown;
+		timeDown = key_data.keys[scancode].timehelddown;
 		key_data.keys[scancode].timehelddown = 0;
 	} else {
 		time = TimerGetFixedSeconds();
-		time_down = time - key_data.keys[scancode].timewentdown;
+		timeDown = time - key_data.keys[scancode].timewentdown;
 		key_data.keys[scancode].timewentdown = time;
 	}
 
-	return time_down;
+	return timeDown;
 }
 
 unsigned int keyDownCount(int scancode)

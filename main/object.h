@@ -276,7 +276,7 @@ typedef struct tObjPosition {
 typedef struct {
 	int     frame;
 	tObject *viewer;
-	int     rear_view;
+	int     rearView;
 	int     user;
 	int     numObjects;
 	short   renderedObjects[MAX_RENDERED_OBJECTS];
@@ -375,7 +375,7 @@ void object_toggle_lock_targets();
 int MoveAllObjects();     // moves all objects
 
 // set viewer tObject to next tObject in array
-void object_goto_next_viewer();
+void object_goto_nextViewer();
 
 // draw target boxes for nearby robots
 void object_render_targets(void);

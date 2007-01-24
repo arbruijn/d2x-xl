@@ -144,7 +144,7 @@ int ReadConfigFile()
 	joy_axis_min[0] = joy_axis_min[1] = joy_axis_min[2] = joy_axis_min[3] = 0;
 	joy_axis_max[0] = joy_axis_max[1] = joy_axis_max[2] = joy_axis_max[3] = 0;
 	joy_axis_center[0] = joy_axis_center[1] = joy_axis_center[2] = joy_axis_center[3] = 0;
-	joy_set_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
+	JoySetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 	gameConfig.nDigiVolume = 8;
 	gameConfig.nMidiVolume = 8;
 	gameConfig.nRedbookVolume = 8;
@@ -261,7 +261,7 @@ int ReadConfigFile()
 		}
 	}
 	CFClose(infile);
-	joy_set_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
+	JoySetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 	i = FindArg( "-volume" );
 	
 	if ( i > 0 )	{
@@ -371,7 +371,7 @@ int WriteConfigFile()
 	ubyte gamma = GrGetPaletteGamma();
 con_printf (CON_VERBOSE, "writing config file ...\n");
 con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
-	joy_get_cal_vals(joy_axis_min, joy_axis_center, joy_axis_max);
+	JoyGetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 
 	infile = CFOpen("descent.cfg", gameFolders.szConfigDir, "wt", 0);
 	if (infile == NULL) {

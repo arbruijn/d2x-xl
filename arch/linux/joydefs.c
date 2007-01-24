@@ -63,7 +63,7 @@ void joy_delay()
 	//int t1 = TICKER + 19/4;			// Wait 1/4 second...
 	//StopTime();
 	//while( TICKER < t1 );
-	//joy_flush();
+	//JoyFlush();
 	//StartTime();
 }
 
@@ -117,19 +117,19 @@ void joydefs_calibrate()
 
 		sprintf (text, "center joystick %d", j_axis[i].joydev);
 		joycal_message (title, text);
-		joystick_read_raw_axis (JOY_ALL_AXIS, tempValues);
+		JoyReadRawAxis (JOY_ALL_AXIS, tempValues);
 		j_axis[i].center_val = tempValues[i];
 		j_axis[i + 1].center_val = tempValues[i + 1];
 
 		sprintf (text, "move joystick %d to the upper left", j_axis[i].joydev);
 		joycal_message (title, text);
-		joystick_read_raw_axis (JOY_ALL_AXIS, tempValues);
+		JoyReadRawAxis (JOY_ALL_AXIS, tempValues);
 		j_axis[i].min_val = tempValues[i];
 		j_axis[i + 1].min_val = tempValues[i + 1];
 
 		sprintf (text, "move joystick %d to the lower right", j_axis[i].joydev);
 		joycal_message (title, text);
-		joystick_read_raw_axis (JOY_ALL_AXIS, tempValues);
+		JoyReadRawAxis (JOY_ALL_AXIS, tempValues);
 		j_axis[i].max_val = tempValues[i];
 		j_axis[i + 1].max_val = tempValues[i + 1];
 

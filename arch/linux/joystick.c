@@ -36,7 +36,7 @@ int timer_rate;
 int j_axes_in_sticks[4]; 	/* number of axes in the first [x] sticks */
 int j_buttons_in_sticks[4];     /* number of buttons in the first [x] sticks */
 
-int joy_deadzone = 0;
+int joyDeadzone = 0;
 
 int j_Get_joydev_axis_number (int all_axis_number) {
 	int i, joy_axis_number = all_axis_number;
@@ -60,21 +60,21 @@ int j_Get_joydev_button_number (int all_button_number) {
 }
 
 
-int j_Update_state () {
+int j_UpdateState () {
 	int num_processed = 0, i;
 	struct js_event current_event;
 	struct JS_DATA_TYPE joy_data;
 
 	for (i = 0; i < j_num_buttons; i++) {
 		//changed 6/24/1999 to finally squish the timedown bug - Owen Evans 
-		if (j_button[i].state != j_button[i].last_state) {
+		if (j_button[i].state != j_button[i].lastState) {
 			if (j_button[i].state) {
 				j_button[i].downcount++;
 				j_button[i].timedown = TimerGetFixedSeconds();
 			}
 		}
 		//end changed - OE
-		j_button[i].last_state = j_button[i].state;
+		j_button[i].lastState = j_button[i].state;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -105,7 +105,7 @@ int j_Update_state () {
 }
 
 
-void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
+void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max)
 {
 /* stpohle - this is already done in the "joy_init" function, so we don't need it in here.
 	int i;
@@ -120,10 +120,10 @@ void joy_set_cal_vals(int *axis_min, int *axis_center, int *axis_max)
 }
 
 
-void joy_get_cal_vals(int *axis_min, int *axis_center, int *axis_max) {
+void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max) {
 	int i;
 
-	//edited 05/18/99 Matt Mueller - we should return all axes instead of j_num_axes, since they are all given to us in joy_set_cal_vals ( and because checker complains :)
+	//edited 05/18/99 Matt Mueller - we should return all axes instead of j_num_axes, since they are all given to us in JoySetCalVals ( and because checker complains :)
 	for (i = 0; i < 4; i++) {
 	//end edit -MM
 		axis_center[i] = j_axis[i].center_val;
@@ -148,22 +148,22 @@ void joy_set_max (int axis_number, int value) {
 }
 
 
-ubyte joy_get_present_mask () {
+ubyte JoyGetPresentMask () {
 	return 1;
 }
 
 
-void joy_setTimer_rate (int maxValue) {
+void JoySetTimerRate (int maxValue) {
 	timer_rate = maxValue;
 }
 
 
-int joy_getTimer_rate () {
+int JoyGetTimerRate () {
 	return timer_rate;
 }
 
 
-void joy_flush () {
+void JoyFlush () {
 	int i;
 
 	if (!joy_installed) return;
@@ -176,10 +176,10 @@ void joy_flush () {
 }
 
 
-ubyte joystick_read_raw_axis (ubyte mask, int *axes) {
+ubyte JoyReadRawAxis (ubyte mask, int *axes) {
 	int i;
 	
-	j_Update_state();
+	j_UpdateState();
 
 	for (i = 0; i < j_num_axes; i++) {
 		axes[i] = j_axis[i].value;
@@ -196,7 +196,7 @@ int joy_init () {
 	int i, j;
 
 	if (joy_installed) return 0;
-	joy_flush ();
+	JoyFlush ();
 
 	if (!joy_installed)	{
 
@@ -294,7 +294,7 @@ void joy_set_cen() {
 }
 
 
-int joy_get_scaled_reading(int raw, int axis_num)
+int JoyGetscaledReading(int raw, int axis_num)
 {
  int d, x;
 
@@ -318,7 +318,7 @@ int joy_get_scaled_reading(int raw, int axis_num)
     x = 127;
 
 //added on 4/13/99 by Victor Rachels to add deadzone control
-  d =  (joy_deadzone) * 6;
+  d =  (joyDeadzone) * 6;
    if ((x > (-1*d)) && (x < d))
     x = 0;
 //end this section addition -VR
@@ -327,36 +327,36 @@ int joy_get_scaled_reading(int raw, int axis_num)
 }
 
 
-void joy_get_pos(int *x, int *y) {
+void JoyGetpos(int *x, int *y) {
 	int axis[MAX_AXES];
 
 	if ((!joy_installed)||(!joy_present)) { *x=*y=0; return; }
 
-	joystick_read_raw_axis (JOY_ALL_AXIS, axis);
+	JoyReadRawAxis (JOY_ALL_AXIS, axis);
 
-	*x = joy_get_scaled_reading( axis[0], 0 );
-	*y = joy_get_scaled_reading( axis[1], 1 );
+	*x = JoyGetscaledReading( axis[0], 0 );
+	*y = JoyGetscaledReading( axis[1], 1 );
 }
 
 
-int joy_get_btns () {
+int JoyGetBtns () {
 	return 0;
 }
 
 
-int joy_get_button_state (int btn) {
+int JoyGetbuttonState (int btn) {
   if(btn >= j_num_buttons)
    return 0;
-        j_Update_state ();
+        j_UpdateState ();
 
         return j_button[btn].state;
 }
 
 
-int joy_get_button_down_cnt (int btn) {
+int JoyGetButtonDownCnt (int btn) {
 	int downcount;
 
-	j_Update_state ();
+	j_UpdateState ();
 
 	downcount = j_button[btn].downcount;
 	j_button[btn].downcount = 0;
@@ -366,9 +366,9 @@ int joy_get_button_down_cnt (int btn) {
 
 
 //changed 6/24/99 to finally squish the timedown bug - Owen Evans
-fix joy_get_button_downTime(int btn)  {
+fix JoyGetButtonDownTime(int btn)  {
 	fix downtime;
-	j_Update_state ();
+	j_UpdateState ();
 
 	if (j_button[btn].state) {
 		downtime = TimerGetFixedSeconds() - j_button[btn].timedown;
@@ -386,6 +386,6 @@ void joy_poll() {
 }
 
 
-void joy_set_slow_reading(int flag) {
+void JoySetSlowReading(int flag) {
 
 }

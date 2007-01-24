@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * is read in from bitmaps.tbl
  *
  * Revision 1.5  1994/05/30  19:43:31  mike
- * Add voluminous comment for robot_get_anim_state.
+ * Add voluminous comment for robot_get_animState.
  *
  * Revision 1.4  1994/05/30  00:03:18  matt
  * Got rid of robot render nType, and generally cleaned up polygon model
@@ -315,7 +315,7 @@ void CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
 //  On exit:
 //      Returns number of joints in list.
 //      jp_list_ptr is stuffed with a pointer to a static array of joint positions.  This pointer is valid forever.
-extern int robot_get_anim_state(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
+extern int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
 
 #ifdef FAST_FILE_IO
 #define RobotInfoReadN(ri, n, fp) CFRead(ri, sizeof(tRobotInfo), n, fp)

@@ -102,7 +102,7 @@ GL_EXT_draw_range_elements
 GL_EXT_fog_coord
 GL_EXT_multi_draw_arrays
 GL_EXT_point_parameters
-GL_EXT_secondary_color  
+GL_EXTSecondary_color  
 GL_EXT_separate_specular_color
 GL_EXT_shadow_funcs
 GL_EXT_stencil_two_side
@@ -145,7 +145,7 @@ GL_NV_occlusion_query
 GL_NV_packed_depth_stencil
 GL_NV_pixel_data_range
 GL_NV_point_sprite
-GL_NV_primitive_restart
+GL_NVPrimitive_restart
 GL_NV_register_combiners
 GL_NV_register_combiners2
 GL_NV_texgen_reflection
@@ -2336,8 +2336,8 @@ extern glUnlockArraysEXTPROC glUnlockArraysEXT;
 /*------------EXT_SECONDARY_COLOR------------------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_EXT_secondary_color
-#define GL_EXT_secondary_color 1
+#ifndef GL_EXTSecondary_color
+#define GL_EXTSecondary_color 1
 
 #define GL_COLOR_SUM_EXT                                        0x8458
 #define GL_CURRENT_SECONDARY_COLOR_EXT                          0x8459
@@ -2383,7 +2383,7 @@ extern glSecondaryColor3usEXTPROC glSecondaryColor3usEXT;
 extern glSecondaryColor3usvEXTPROC glSecondaryColor3usvEXT;
 extern glSecondaryColorPointerEXTPROC glSecondaryColorPointerEXT;
 
-#endif /* GL_EXT_secondary_color */
+#endif /* GL_EXTSecondary_color */
 
 /*-------------------------------------------------------------------*/
 /*------------EXT_FOG_COORD------------------------------------------*/
@@ -4660,8 +4660,8 @@ extern glGetProgramLocalParameterfvARBPROC glGetProgramLocalParameterfvARB;
 /*------------GL_NV_PRIMITIVE_RESTART--------------------------------*/
 /*-------------------------------------------------------------------*/
 
-#ifndef GL_NV_primitive_restart
-#define GL_NV_primitive_restart 1
+#ifndef GL_NVPrimitive_restart
+#define GL_NVPrimitive_restart 1
 
 #define GL_PRIMITIVE_RESTART_NV                                 0x8558
 #define GL_PRIMITIVE_RESTART_INDEX_NV                           0x8559
@@ -4672,7 +4672,7 @@ typedef void (APIENTRY * glPrimitiveRestartIndexNVPROC) (GLuint index);
 extern glPrimitiveRestartNVPROC glPrimitiveRestartNV;
 extern glPrimitiveRestartIndexNVPROC glPrimitiveRestartIndexNV;
 
-#endif /* GL_NV_primitive_restart */
+#endif /* GL_NVPrimitive_restart */
 
 /*-------------------------------------------------------------------*/
 /*------------GL_NV_VERTEX_PROGRAM2----------------------------------*/
@@ -5553,7 +5553,7 @@ struct ExtensionTypes
     int EXT_fog_coord;
     int EXT_multi_draw_arrays;
     int EXT_point_parameters;
-    int EXT_secondary_color;
+    int EXTSecondary_color;
     int EXT_separate_specular_color;
     int EXT_shadow_funcs;
     int EXT_stencil_two_side;
@@ -5598,7 +5598,7 @@ struct ExtensionTypes
     int NV_packed_depth_stencil;
     int NV_pixel_data_range;
     int NV_point_sprite;
-    int NV_primitive_restart;
+    int NVPrimitive_restart;
     int NV_register_combiners;
     int NV_register_combiners2;
     int NV_texgen_reflection;

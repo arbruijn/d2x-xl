@@ -109,10 +109,10 @@ void _CDECL_ g3_close(void);
 //start the frame
 void G3StartFrame(int bFlat, int bResetColorBuf);
 
-//set view from x,y,z & p,b,h, zoom.  Must call one of g3_set_view_*()
+//set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_*()
 void G3SetViewAngles(vmsVector *view_pos,vmsAngVec *view_orient,fix zoom);
 
-//set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_set_view_*()
+//set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_*()
 void G3SetViewMatrix(vmsVector *view_pos,vmsMatrix *view_matrix,fix zoom);
 
 //end the frame
@@ -147,7 +147,7 @@ void g3_get_FOV(fixang *fov_x,fixang *fov_y);
 fix g3_get_zoom(char axis,fixang fov,short window_width,short window_height);
 
 //returns the normalized, unscaled view vectors
-void g3_get_view_vectors(vmsVector *forward,vmsVector *up,vmsVector *right);
+void g3_getView_vectors(vmsVector *forward,vmsVector *up,vmsVector *right);
 
 //returns true if a plane is facing the viewer. takes the unrotated surface
 //normal of the plane, and a point on it.  The normal need not be normalized

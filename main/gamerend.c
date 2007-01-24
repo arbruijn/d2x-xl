@@ -211,15 +211,15 @@ void show_framerate()
 //------------------------------------------------------------------------------
 #ifndef NDEBUG
 
-fix Show_view_textTimer = -1;
+fix ShowView_textTimer = -1;
 
 void draw_window_label()
 {
-	if ( Show_view_textTimer > 0 )
+	if ( ShowView_textTimer > 0 )
 	{
 		char *viewer_name,*control_name;
 		char	*viewer_id;
-		Show_view_textTimer -= gameData.time.xFrame;
+		ShowView_textTimer -= gameData.time.xFrame;
 		GrSetCurFont( GAME_FONT );
 
 		viewer_id = "";
@@ -574,7 +574,7 @@ void game_render_frame_stereo()
 		fix save_aspect2 = grdCurScreen->sc_aspect;
 		grdCurScreen->sc_aspect = save_aspect*2;
 		SW_drawn[0] = SW_drawn[1] = 0;
-		show_extra_views();
+		show_extraViews();
 		GrSetCurrentCanvas(save);
 		grdCurScreen->sc_aspect = save_aspect2;
 	}
@@ -765,10 +765,10 @@ char DemoWBUType[]={0,WBUMSL,WBUMSL,WBU_REAR,WBU_ESCORT,WBU_MARKER,WBUMSL};
 char DemoRearCheck[]={0,0,0,1,0,0,0};
 char *DemoExtraMessage[]={"PLAYER","GUIDED","MISSILE","REAR","GUIDE-BOT","MARKER","SHIP"};
 
-void show_extra_views()
+void show_extraViews()
 {
-	int did_missile_view=0;
-	int save_newdemo_state = gameData.demo.nState;
+	int did_missileView=0;
+	int save_newdemoState = gameData.demo.nState;
 	int w;
 
    if (gameData.demo.nState==ND_STATE_PLAYBACK)
@@ -815,7 +815,7 @@ void show_extra_views()
 			DoCockpitWindowView(1,gameData.objs.guidedMissile[gameData.multi.nLocalPlayer],0,WBU_GUIDED,"GUIDED");
 	    }
 			
-		did_missile_view=1;
+		did_missileView=1;
 	}
 	else {
 
@@ -835,7 +835,7 @@ void show_extra_views()
 				 (gameData.objs.missileViewer->nSignature == mv_sig)) {
   				gameStates.render.nRenderingType=2+(1<<4);
 				DoCockpitWindowView(1,gameData.objs.missileViewer,0,WBUMSL,"MISSILE");
-				did_missile_view=1;
+				did_missileView=1;
 			}
 			else {
 				gameData.objs.missileViewer = NULL;
@@ -848,11 +848,11 @@ void show_extra_views()
 
 	for (w=0;w<2;w++) {
 
-		if (w==1 && did_missile_view)
+		if (w==1 && did_missileView)
 			continue;		//if showing missile view in right window, can't show anything else
 
 		//show special views if selected
-		switch (Cockpit_3d_view[w]) {
+		switch (Cockpit_3dView[w]) {
 			case CV_NONE:
 				gameStates.render.nRenderingType=255;
 				DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
@@ -872,7 +872,7 @@ void show_extra_views()
 				buddy = find_escort();
 				if (buddy == NULL) {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
-					Cockpit_3d_view[w] = CV_NONE;
+					Cockpit_3dView[w] = CV_NONE;
 				}
 				else {
 					gameStates.render.nRenderingType=4+(w<<4);
@@ -881,15 +881,15 @@ void show_extra_views()
 				break;
 			}
 			case CV_COOP: {
-				int tPlayer = Coop_view_player[w];
+				int tPlayer = CoopView_player[w];
 
 	         gameStates.render.nRenderingType=255; // don't handle coop stuff			
 				
 				if (tPlayer!=-1 && gameData.multi.players[tPlayer].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(tPlayer) == GetTeam(gameData.multi.nLocalPlayer)))))
-					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[Coop_view_player[w]].nObject],0,WBU_COOP,gameData.multi.players[Coop_view_player[w]].callsign);
+					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[CoopView_player[w]].nObject],0,WBU_COOP,gameData.multi.players[CoopView_player[w]].callsign);
 				else {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
-					Cockpit_3d_view[w] = CV_NONE;
+					Cockpit_3dView[w] = CV_NONE;
 				}
 				break;
 			}
@@ -899,7 +899,7 @@ void show_extra_views()
 				short v = gameData.marker.viewers[w];
 				gameStates.render.nRenderingType=5+(w<<4);
 				if ((v == -1) || (gameData.marker.objects [v] == -1)) {
-					Cockpit_3d_view[w] = CV_NONE;
+					Cockpit_3dView[w] = CV_NONE;
 					break;
 				}
 				sprintf(label,"Marker %d",gameData.marker.viewers[w]+1);
@@ -910,16 +910,16 @@ void show_extra_views()
 			case CV_RADAR_HEADSUP:
 				if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
 					DoCockpitWindowView(w,gameData.objs.console, 0, 
-					(Cockpit_3d_view[w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "RADAR");
+					(Cockpit_3dView[w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "RADAR");
 				else
-					Cockpit_3d_view[w] = CV_NONE;
+					Cockpit_3dView[w] = CV_NONE;
 				break;
 			default:
 				Int3();		//invalid window nType
 		}
 	}
 	gameStates.render.nRenderingType=0;
-	gameData.demo.nState = save_newdemo_state;
+	gameData.demo.nState = save_newdemoState;
 }
 
 //------------------------------------------------------------------------------
@@ -1067,7 +1067,7 @@ void GameRenderFrameMono(void)
 	}
 
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
-		show_extra_views();		//missile view, buddy bot, etc.
+		show_extraViews();		//missile view, buddy bot, etc.
 	if ( Game_double_buffer ) {		//copy to visible screen
 		if ( !Game_cockpit_copy_code )	{
 			if ( VR_screenFlags&VRF_USE_PAGING )	{	
@@ -1092,11 +1092,11 @@ void GameRenderFrameMono(void)
 		glDepthFunc(GL_ALWAYS);
 		if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 			update_cockpits (1);
-			show_extra_views();		//missile view, buddy bot, etc.
+			show_extraViews();		//missile view, buddy bot, etc.
 			}
 		else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 			update_cockpits (1);
-			show_extra_views();		//missile view, buddy bot, etc.
+			show_extraViews();		//missile view, buddy bot, etc.
 			}
 		RenderGauges();
 		HUDShowIcons ();

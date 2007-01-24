@@ -873,15 +873,15 @@ return sum >> 3;
 // ----------------------------------------------------------------------------------------------
 fix object_light [MAX_OBJECTS];
 int object_sig [MAX_OBJECTS];
-tObject *old_viewer;
+tObject *oldViewer;
 int reset_lighting_hack;
 
 #define LIGHT_RATE i2f (4)		//how fast the light ramps up
 
 void StartLightingFrame (tObject *viewer)
 {
-reset_lighting_hack = (viewer != old_viewer);
-old_viewer = viewer;
+reset_lighting_hack = (viewer != oldViewer);
+oldViewer = viewer;
 }
 
 // ----------------------------------------------------------------------------------------------

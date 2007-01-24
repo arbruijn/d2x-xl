@@ -171,8 +171,8 @@ gameOpts->input.joySensitivity [3] = 8;
 gameOpts->input.mouseSensitivity [0] =
 gameOpts->input.mouseSensitivity [1] =
 gameOpts->input.mouseSensitivity [2] = 8;
-Cockpit_3d_view[0]=CV_NONE;
-Cockpit_3d_view[1]=CV_NONE;
+Cockpit_3dView[0]=CV_NONE;
+Cockpit_3dView[1]=CV_NONE;
 
 // Default taunt macros
 strcpy(multiData.msg.szMacro[0], TXT_GET_ALONG);
@@ -317,11 +317,11 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 	ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 	ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 	if (player_file_version>=16) {
-		Cockpit_3d_view[0] = CFReadInt(fp);
-		Cockpit_3d_view[1] = CFReadInt(fp);
+		Cockpit_3dView[0] = CFReadInt(fp);
+		Cockpit_3dView[1] = CFReadInt(fp);
 		if (swap) {
-			Cockpit_3d_view[0] = SWAPINT(Cockpit_3d_view[0]);
-			Cockpit_3d_view[1] = SWAPINT(Cockpit_3d_view[1]);
+			Cockpit_3dView[0] = SWAPINT(Cockpit_3dView[0]);
+			Cockpit_3dView[1] = SWAPINT(Cockpit_3dView[1]);
 			}
 		}
 }
@@ -628,8 +628,9 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 97)
 		gameOptions [j].render.cockpit.bFlashGauges = (int) CFReadByte (fp);
 	if (!j && (player_file_version >= 98))
-		for (i = 0; i < 2; i++)
-			extraGameInfo [i].bFastPitch = (int) CFReadByte (fp);
+		for (i = 0; i < 2; i++) 
+			if (!(extraGameInfo [i].bFastPitch = (int) CFReadByte (fp)))
+				extraGameInfo [i].bFastPitch = 2;
 	if (!j && (player_file_version >= 99))
 		gameStates.multi.nConnection = CFReadInt (fp);
 	if (player_file_version >= 100) {
@@ -960,8 +961,8 @@ int WritePlayerFile()
 			CFWrite(&secondaryOrder[i], sizeof(ubyte), 1, fp);
 		}
 
-		CFWriteInt(Cockpit_3d_view[0], fp);
-		CFWriteInt(Cockpit_3d_view[1], fp);
+		CFWriteInt(Cockpit_3dView[0], fp);
+		CFWriteInt(Cockpit_3dView[1], fp);
 
 		CFWriteInt(networkData.nNetLifeKills, fp);
 		CFWriteInt(networkData.nNetLifeKilled, fp);

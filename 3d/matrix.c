@@ -29,7 +29,7 @@ static char rcsid[] = "$Id: matrix.c,v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 void ScaleMatrix(void);
 
 //------------------------------------------------------------------------------
-//set view from x,y,z & p,b,h, xZoom.  Must call one of g3_set_view_*() 
+//set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*() 
 void G3SetViewAngles (vmsVector *vPos, vmsAngVec *mOrient, fix xZoom)
 {
 viewInfo.zoom = xZoom;
@@ -41,7 +41,7 @@ ScaleMatrix();
 }
 
 //------------------------------------------------------------------------------
-//set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_set_view_*() 
+//set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_setView_*() 
 void G3SetViewMatrix (vmsVector *vPos, vmsMatrix *mOrient, fix xZoom)
 {
 viewInfo.zoom = xZoom;

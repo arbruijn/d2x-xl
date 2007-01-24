@@ -147,31 +147,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SEGSIZEMODE_MAX			SEGSIZEMODE_VERTEX
 
 //defines a view for an editor window
-typedef struct editor_view {
+typedef struct editorView {
 	short ev_num;				//each view has it's own number
 	short ev_changed;			//set to true if view changed
 	grs_canvas *ev_canv;		//points to this window's canvas
 	fix evDist;				//the distance from the view point
 	vmsMatrix ev_matrix;	//the view matrix
 	fix ev_zoom;				//zoom for this window
-} editor_view;
+} editorView;
 
 /*
  * Global variables
  * 
  */
 
-extern editor_view *Views[];
-extern int N_views;
+extern editorView *Views[];
+extern int NViews;
 extern grs_canvas *canv_offscreen;		//for off-screen rendering
-extern int Large_view_index;
+extern int LargeView_index;
 extern UI_GADGET_USERBOX * LargeViewBox;
 extern int Found_seg_index;				// Index in Found_segs corresponding to Cursegp
 extern int gamestate_not_restored;
 
 
 extern	tSegment  *Cursegp;				// Pointer to current tSegment in the mine, the one to which things happen.
-extern	vmsVector Ed_view_target;		// what editor is looking at
+extern	vmsVector EdView_target;		// what editor is looking at
 
 // -- extern	tSegment  New_segment;			// The tSegment which can be added to the mine.
 #define	New_segment	(Segments[MAX_SEGMENTS-1])
@@ -548,15 +548,15 @@ extern vmsAngVec  Seg_orientation;
 extern vmsVector  Seg_scale;
 extern int         mine_changed;
 extern int         ModeFlag;
-extern editor_view *current_view;
+extern editorView *currentView;
 
 //the view for the different windows
-extern editor_view LargeView;
-extern editor_view TopView;
-extern editor_view FrontView;
-extern editor_view RightView;
+extern editorView LargeView;
+extern editorView TopView;
+extern editorView FrontView;
+extern editorView RightView;
 
-extern void set_view_target_from_segment(tSegment *sp);
+extern void setView_target_from_segment(tSegment *sp);
 extern int SafetyCheck();
 
 extern void editor_status( const char *format, ...);
@@ -566,7 +566,7 @@ extern int MacroStatus;
 
 //extern	int	Highest_vertex_index;			// Highest index in Vertices and Vertex_active, an efficiency hack
 //extern	int	Highest_segment_index;			// Highest index in Segments, an efficiency hack
-extern	int	Lock_view_to_cursegp;			// !0 means whenever cursegp changes, view it
+extern	int	LockView_to_cursegp;			// !0 means whenever cursegp changes, view it
 
 //	eglobal.c
 extern	int	Num_tilings;						// number of tilings/wall
@@ -628,13 +628,13 @@ extern grs_canvas *canv_offscreen;		//for off-screen rendering
 extern grs_canvas *Pad_text_canvas;		// Keypad text
 
 //where the editor is looking
-extern vmsVector Ed_view_target;
+extern vmsVector EdView_target;
 
 extern int gamestate_not_restored;
 
 extern UI_WINDOW * EditorWindow;
 
-extern int     Large_view_index;
+extern int     LargeView_index;
 
 extern UI_GADGET_USERBOX * GameViewBox;
 extern UI_GADGET_USERBOX * LargeViewBox;
