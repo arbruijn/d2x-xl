@@ -490,6 +490,7 @@ void InitWeaponFlags (void);
 float ObjectDamage (tObject *objP);
 int FindBoss (int nObject);
 void InitGateIntervals (void);
+int CountPlayerObjects (int nPlayer, int nType, int nId);
 
 extern ubyte bIsMissile [];
 

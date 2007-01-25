@@ -193,8 +193,10 @@ int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 {
 	vmsVector	vDir;
 	int			nRad;
-	
-if (gameOpts->render.smoke.bSyncSizes)
+
+if (nScale < 0)
+	nRad = (int) -nScale;
+else if (gameOpts->render.smoke.bSyncSizes)
 	nRad = (int) PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale);
 else
 	nRad = (int) nScale;
@@ -232,6 +234,12 @@ pParticle->glColor.r =
 pParticle->glColor.g =
 pParticle->glColor.b = pParticle->glColor.a - 0.5;
 #	endif
+#endif
+#if 0
+h = 1 << (2 - nType);
+pParticle->glColor.r /= h;
+pParticle->glColor.g /= h;
+pParticle->glColor.b /= h;
 #endif
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed = nSpeed * F1_0;
@@ -279,7 +287,7 @@ pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
 pParticle->nRad = nRad + randN (nRad);
 pParticle->nWidth =
 pParticle->nHeight = pParticle->nRad / 2;
-pParticle->glColor.a /= 4;
+pParticle->glColor.a /= nType + 2; //4 - nType * 0.5; //nType + 2;
 return 1;
 }
 
@@ -1195,9 +1203,12 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxCloud
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, int nType, int nObject)
 {
+#if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
 	return 0;
-else if (gameData.smoke.iFreeSmoke < 0)
+else 
+#endif
+if (gameData.smoke.iFreeSmoke < 0)
 	return 0;
 else if (!LoadParticleImage (nType)) {
 	//LogErr ("cannot create gameData.smoke.smoke\n");
@@ -1243,10 +1254,14 @@ else {
 
 int MoveSmoke (void)
 {
-if (!(gameStates.app.b40fpsTick &&
-	   EGI_FLAG (bUseSmoke, 0, 1, 0)))
+if (!gameStates.app.b40fpsTick)
 	return 0;
-else {
+#if 0
+if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
+	return 0;
+else 
+#endif
+{
 		int		h, i, j = 0, t = gameStates.app.nSDLTicks;
 		tSmoke	*pSmoke;
 		tCloud	*pCloud;
@@ -1286,9 +1301,12 @@ else {
 
 int RenderSmoke (void)
 {
+#if 0
 if (!SHOW_SMOKE)
 	return 0;
-else {
+else 
+#endif
+	{
 		int		i, j;
 		tSmoke	*pSmoke = gameData.smoke.smoke;
 

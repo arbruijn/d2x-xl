@@ -518,7 +518,8 @@ if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
 	}
 else if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb]) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
-	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMART_MINE_INDEX)? TXT_SMART_MINES : TXT_PROX_BOMBS);
+	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMART_MINE_INDEX)? TXT_SMART_MINES : 
+						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
 	}
 else {
 	bLastSecondaryWasSuper [PROXIMITY_INDEX] = !bLastSecondaryWasSuper [PROXIMITY_INDEX];

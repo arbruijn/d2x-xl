@@ -1770,8 +1770,7 @@ switch (objP->renderType) {
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
-		if (!SHOW_SHADOWS || (gameStates.render.nShadowPass == 1))
-			DoObjectSmoke (objP);
+		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			DrawPolygonObject (objP);
 			RenderThrusterFlames (objP);
@@ -1831,9 +1830,13 @@ switch (objP->renderType) {
 
 	case RT_WEAPON_VCLIP: 
 		if (gameStates.render.nShadowPass != 2) {
-			DrawWeaponVClip (objP); 
-			if (objP->nType == OBJ_WEAPON)
+			if (objP->nType == OBJ_WEAPON) {
 				RenderLightTrail (objP);
+				if (!DoObjectSmoke (objP))
+					DrawWeaponVClip (objP); 
+				}
+			else
+				DrawWeaponVClip (objP); 
 			}
 		break;
 
@@ -3767,6 +3770,21 @@ return (i < 0) ? NULL : gameData.objs.childObjs + i;
 tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef)
 {
 return GetChildObjN (OBJ_IDX (pParent), pChildRef);
+}
+
+//------------------------------------------------------------------------------
+
+int CountPlayerObjects (int nPlayer, int nType, int nId)
+{
+	int		i, h = 0;
+	tObject	*objP;
+
+for (i = gameData.objs.nLastObject + 1, objP = gameData.objs.objects; i; i--, objP++)
+	if ((objP->nType == nType) && (objP->id == nId) &&
+		 (objP->cType.laserInfo.parentType == OBJ_PLAYER) &&
+		 (gameData.objs.objects [objP->cType.laserInfo.nParentObj].id == nPlayer))
+	h++;
+return h;
 }
 
 //------------------------------------------------------------------------------

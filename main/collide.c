@@ -1629,6 +1629,8 @@ int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
 	tRobotInfo *rInfoP = gameData.bots.pInfo + robot->id;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 
+if ((weapon->id == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	return 1;		
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
@@ -2206,6 +2208,8 @@ int CollidePlayerAndWeapon (tObject * playerObjP, tObject * weapon, vmsVector *v
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 1;
+if ((weapon->id == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	return 1;
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
@@ -2419,25 +2423,29 @@ else
 
 int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHitPt)
 { 
+	int	id1 = weapon1->id;
+	int	id2 = weapon1->id;
 	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
-if (weapon1->id == SMALLMINE_ID && weapon2->id == SMALLMINE_ID)
+if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  
-if (weapon1->id == OMEGA_ID) {
+if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	return 1;
+if (id1 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon1))
 		return 1;
 	}
-else if (weapon2->id == OMEGA_ID) {
+else if (id2 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon2))
 		return 1;
 	}
-if (WI_destructable (weapon1->id) || WI_destructable (weapon2->id)) {
+if (WI_destructable (id1) || WI_destructable (id2)) {
 	//	Bug reported by Adam Q. Pletcher on September 9, 1994, smart bomb homing missiles were toasting each other.
-	if ((weapon1->id == weapon2->id) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))
+	if ((id1 == id2) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))
 		return 1;
-	if (WI_destructable (weapon1->id))
+	if (WI_destructable (id1))
 		if (MaybeDetonateWeapon (weapon1, weapon2, vHitPt))
 			MaybeDetonateWeapon (weapon2, weapon1, vHitPt);
-	if (WI_destructable (weapon2->id))
+	if (WI_destructable (id2))
 		if (MaybeDetonateWeapon (weapon2, weapon1, vHitPt))
 			MaybeDetonateWeapon (weapon1, weapon2, vHitPt);
 	}
@@ -2475,8 +2483,7 @@ return 1;
 
 int CollideWeaponAndDebris (tObject * weapon, tObject * debris, vmsVector *vHitPt) 
 { 
-
-	//	Hack! Prevent debris from causing bombs spewed at tPlayer death to detonate!
+//	Hack! Prevent debris from causing bombs spewed at tPlayer death to detonate!
 if ((weapon->id == PROXMINE_ID) || (weapon->id == SMARTMINE_ID)) {
 	if (weapon->cType.laserInfo.creationTime + F1_0/2 > gameData.time.xGame)
 		return 1;

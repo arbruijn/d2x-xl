@@ -4482,6 +4482,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bShockwaves = 0;
 	extraGameInfo [i].bCompetition = 0;
 	extraGameInfo [i].bPowerupLights = i;
+	extraGameInfo [i].bSmokeGrenades = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;

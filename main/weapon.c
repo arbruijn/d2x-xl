@@ -658,18 +658,25 @@ int PickupSecondary (tObject *objP, int nWeaponIndex, int count, int nPlayer)
 {
 	int		max;
 	int		nPickedUp;
-	int		cutpoint, bEmpty = 0;
+	int		cutpoint, bEmpty = 0, bSmokeGrens;
 	tPlayer	*playerP = gameData.multi.players + nPlayer;
 
-max = nMaxSecondaryAmmo [nWeaponIndex];
-if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-	max *= 2;
+if ((nWeaponIndex == PROXIMITY_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
+	bSmokeGrens = 1;
+	max = 4;
+	}
+else {
+	bSmokeGrens = 0;
+	max = nMaxSecondaryAmmo [nWeaponIndex];
+	if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
+		max *= 2;
+	}
 if (playerP->secondaryAmmo [nWeaponIndex] >= max) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage("%s %i %ss!", 
 			TXT_ALREADY_HAVE, 
 			playerP->secondaryAmmo [nWeaponIndex],
-			SECONDARY_WEAPON_NAMES(nWeaponIndex));
+			bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
 	return 0;
 	}
 playerP->secondaryWeaponFlags |= (1 << nWeaponIndex);
@@ -712,11 +719,11 @@ if (ISLOCALPLAYER (nPlayer)) {
 	//note: flash for all but concussion was 7,14,21
 	if (count>1) {
 		PALETTE_FLASH_ADD (15,15,15);
-		HUDInitMessage("%d %s%s", nPickedUp, SECONDARY_WEAPON_NAMES(nWeaponIndex), TXT_SX);
+		HUDInitMessage("%d %s%s", nPickedUp, bSmokeGrens ? TXT_SMOKE_GRENADES : SECONDARY_WEAPON_NAMES (nWeaponIndex), TXT_SX);
 		}
 	else {
 		PALETTE_FLASH_ADD (10,10,10);
-		HUDInitMessage("%s!", SECONDARY_WEAPON_NAMES (nWeaponIndex));
+		HUDInitMessage("%s!", bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
 		}
 	}
 return 1;

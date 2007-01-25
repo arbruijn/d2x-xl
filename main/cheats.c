@@ -636,6 +636,8 @@ else {
 		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i] * h;
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
+	if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 4;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
 		LOCALPLAYER.secondaryAmmo [MERCURY_INDEX] = 0;
 		LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX] = 0;

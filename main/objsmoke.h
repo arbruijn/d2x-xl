@@ -19,7 +19,7 @@ void CreateDamageExplosion (int h, int i);
 void DoPlayerSmoke (tObject *objP, int i);
 void DoRobotSmoke (tObject *objP);
 void DoMissileSmoke (tObject *objP);
-void DoObjectSmoke (tObject *objP);
+int DoObjectSmoke (tObject *objP);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
 void DoSmokeFrame (void);

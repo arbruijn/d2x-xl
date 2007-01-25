@@ -321,7 +321,7 @@ if (Controls [0].dropBombDownCount) {
 			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);
 			else
-				DoMissileFiring(gameData.weapons.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected
+				DoMissileFiring (gameData.weapons.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected
 			if (gameData.weapons.nSecondary != ssw_save2 && ssw_save == ssw_save2)
 				ssw_save = gameData.weapons.nSecondary;    //if bomb was selected, and we ran out & autoselect, then stick with new selection
 			}

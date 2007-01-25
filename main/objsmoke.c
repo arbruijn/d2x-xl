@@ -18,19 +18,26 @@
 #include "objsmoke.h"
 
 #define SHIP_MAX_PARTS		50
-#define BOT_MAX_PARTS		50
-#define REACTOR_MAX_PARTS	50
-#define DEBRIS_MAX_PARTS	50
-#define MSL_MAX_PARTS		500
-
 #define PLR_PART_LIFE		-4000
 #define PLR_PART_SPEED		40
-#define OBJ_PART_LIFE		-4000
-#define OBJ_PART_SPEED		40
+
+#define BOT_MAX_PARTS		50
+#define BOT_PART_LIFE		-6000
+#define BOT_PART_SPEED		300
+
+#define MSL_MAX_PARTS		500
 #define MSL_PART_LIFE		-3000
 #define MSL_PART_SPEED		30
+
+#define BOMB_MAX_PARTS		60
+#define BOMB_PART_LIFE		-16000
+#define BOMB_PART_SPEED		200
+
+#define DEBRIS_MAX_PARTS	50
 #define DEBRIS_PART_LIFE	-2000
 #define DEBRIS_PART_SPEED	30
+
+#define REACTOR_MAX_PARTS	50
 
 //------------------------------------------------------------------------------
 
@@ -256,7 +263,7 @@ if (nParts > 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 																gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
-																1, OBJ_PART_LIFE, OBJ_PART_SPEED, 0, i);
+																1, BOT_PART_LIFE, BOT_PART_SPEED, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
@@ -293,7 +300,7 @@ if (nParts > 0) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 1.0,
-																-1, 1, OBJ_PART_LIFE * 2, OBJ_PART_SPEED * 8, 0, i);
+																-1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED * 8, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
@@ -334,15 +341,14 @@ else
 #endif
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
-		//LogErr ("creating missile %d smoke\n", i);
-	if (!gameOpts->render.smoke.bSyncSizes) {
-		nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [3]);
-		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
+		if (!gameOpts->render.smoke.bSyncSizes) {
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [3]);
+			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [3], nScale);
+			}
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
+																gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
+																1, (gameOpts->render.smoke.nLife [3] + 1) * MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
 		}
-	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
-															gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-															1, (gameOpts->render.smoke.nLife [3] + 1) * MSL_PART_LIFE, MSL_PART_SPEED, 1, i);
-	}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
 	}
@@ -366,9 +372,8 @@ else
 	nParts = -DEBRIS_MAX_PARTS;
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
-		//LogErr ("creating missile %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts / 2, 1.5,
-																-1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts / 2,
+																-PARTICLE_SIZE (3, 1), -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -379,7 +384,36 @@ else
 
 //------------------------------------------------------------------------------
 
-void DoObjectSmoke (tObject *objP)
+void DoBombSmoke (tObject *objP)
+{
+	int			nParts, i;
+	vmsVector	pos, offs;
+
+if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
+	return;
+i = (int) (objP - gameData.objs.objects);
+if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+	nParts = 0;
+else 
+	nParts = -BOMB_MAX_PARTS;
+if (nParts) {
+	if (gameData.smoke.objects [i] < 0) {
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts,
+																-PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 0, i);
+		}
+	offs.p.x = (F1_0 / 4 - d_rand ()) << 5;
+	offs.p.y = (F1_0 / 4 - d_rand ()) << 5;
+	offs.p.z = (F1_0 / 4 - d_rand ()) << 5;
+	VmVecAdd (&pos, &objP->position.vPos, &offs);
+	SetSmokePos (gameData.smoke.objects [i], &pos);
+	}
+else 
+	KillObjectSmoke (i);
+}
+
+//------------------------------------------------------------------------------
+
+int DoObjectSmoke (tObject *objP)
 {
 int t = objP->nType;
 #if 0
@@ -395,9 +429,16 @@ else if (t == OBJ_CNTRLCEN)
 else if (t == OBJ_WEAPON) {
 	if (bIsMissile [objP->id])
 		DoMissileSmoke (objP);
+	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->id == PROXMINE_ID))
+		DoBombSmoke (objP);
+	else
+		return 0;
 	}
 else if (t == OBJ_DEBRIS)
 	DoDebrisSmoke (objP);
+else
+	return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -414,7 +455,7 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 
 //------------------------------------------------------------------------------
 
-void RobotSmokeFrame (void)
+void ObjectSmokeFrame (void)
 {
 	int		i;
 	tObject	*objP;
@@ -442,8 +483,8 @@ if (!gameStates.render.bExternalView)
 if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
-RobotSmokeFrame ();
-if (SHOW_SMOKE)
+ObjectSmokeFrame ();
+//if (SHOW_SMOKE)
 	MoveSmoke ();
 }
 

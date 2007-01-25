@@ -1644,11 +1644,11 @@ void LoadGameTexts(void);
 #define TXT_LOADING_MODELS			GT(862)
 #define TXT_COMPETITION_MODE		GT(863)
 #define TXT_FLICKERLIGHTS			GT(864)
+#define TXT_GPLAY_SMOKEGRENADES	GT(865)
+#define TXT_SMOKE_GRENADE			GT(866)
+#define TXT_SMOKE_GRENADES			GT(867)
 
 #if 0
-#define TXT_				GT(865)
-#define TXT_				GT(866)
-#define TXT_				GT(867)
 #define TXT_				GT(868)
 #define TXT_				GT(869)
 #define TXT_				GT(870)
@@ -2049,10 +2049,10 @@ void LoadGameTexts(void);
 #define HTX_ADVRND_LIGHTRANGE		HT(247)				
 #define HTX_MULTI2_COMPETITION	HT(248)				
 #define HTX_FLICKERLIGHTS			HT(249)				
+#define HTX_GPLAY_SMOKEGRENADES	HT(250)				
 
 #if 0
 				
-#define HTX_					HT(250)				
 #define HTX_					HT(251)				
 #define HTX_					HT(252)				
 #define HTX_					HT(253)				

@@ -2039,6 +2039,9 @@ if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nS
 	return;
 
 nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+if ((nWeaponId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
+	 (CountPlayerObjects (gameData.multi.nLocalPlayer, OBJ_WEAPON, PROXMINE_ID) >= 2))
+	return;
 if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 	xNextMissileFireTime = gameData.time.xGame + WI_fire_wait (nWeaponId);
 else

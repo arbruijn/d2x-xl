@@ -3061,7 +3061,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1;
+			optIdleAnims = -1, optSmokeGrenades = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50];
 	char	szSpeedBoost [50];
@@ -3089,6 +3089,8 @@ if (gameOpts->app.bExpertMode) {
 	opt++;
 	ADD_CHECK (opt, TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
 	optFixedSpawn = opt++;
+	ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
+	optDualMiss = opt++;
 	ADD_CHECK (opt, TXT_DUAL_LAUNCH, extraGameInfo [0].bDualMissileLaunch, KEY_U, HTX_GPLAY_DUALLAUNCH);
 	optDualMiss = opt++;
 	ADD_CHECK (opt, TXT_DROP_ALL, extraGameInfo [0].bDropAllMissiles, KEY_A, HTX_GPLAY_DROPALL);
@@ -3138,6 +3140,7 @@ do {
 if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bFixedRespawns = m [optFixedSpawn].value;
 	extraGameInfo [0].bRobotsHitRobots = m [optRobHits].value;
+	extraGameInfo [0].bSmokeGrenades = m [optSmokeGrenades].value;
 	extraGameInfo [0].bDualMissileLaunch = m [optDualMiss].value;
 	extraGameInfo [0].bDropAllMissiles = m [optDropAll].value;
 	extraGameInfo [0].bImmortalPowerups = m [optImmortal].value;
@@ -3173,6 +3176,8 @@ for (j = 0; j < 3; j++)
 		extraGameInfo [0].nZoomMode = j;
 		break;
 		}
+if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 }
