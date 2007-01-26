@@ -4,7 +4,7 @@
 #include <conf.h>
 #endif
 
-#if (defined (_WIN32) || USE_SDL_MIXER)
+#if defined (_WIN32) || defined (USE_SDL_MIXER)
 
 #include <stdio.h>
 
