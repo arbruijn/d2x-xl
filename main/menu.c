@@ -145,7 +145,8 @@ static int	nFPSopt, nRSDopt,
 				nUseSmokeOpt, nUseCamOpt,
 				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nDynLightOpt, 
 				nShadowReachOpt, nOglMaxLightsOpt,
-				optZPass, optShadowVolume, nSyncSmokeSizes;
+				optZPass, optShadowVolume, nSyncSmokeSizes,
+				nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -3047,6 +3048,22 @@ if (gameOpts->app.bExpertMode) {
 		sprintf (m->text, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
 		m->rebuild = 1;
 		}
+	m = menus + nSmokeGrenadeOpt;
+	v = m->value;
+	if (extraGameInfo [0].bSmokeGrenades != v) {
+		extraGameInfo [0].bSmokeGrenades = v;
+		*key = -2;
+		return;
+		}
+	if (nMaxSmokeGrenOpt >= 0) {
+		m = menus + nMaxSmokeGrenOpt;
+		v = m->value + 1;
+		if (extraGameInfo [0].nMaxSmokeGrenades != v) {
+			extraGameInfo [0].nMaxSmokeGrenades = v;
+			sprintf (m->text, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+			m->rebuild = 1;
+			}
+		}
 	}
 }
 
@@ -3061,86 +3078,100 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1, optSmokeGrenades = -1;
+			optIdleAnims = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50];
 	char	szSpeedBoost [50];
 	char	szFusionPower [50];
+	char	szMaxSmokeGrens [50];
 
-memset (&m, 0, sizeof (m));
-sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-nDiffOpt = opt++;
-if (gameOpts->app.bExpertMode) {
-	sprintf (szRespawnDelay + 1, TXT_RESPAWN_DELAY, (extraGameInfo [0].nSpawnDelay < 0) ? -1 : extraGameInfo [0].nSpawnDelay / 1000);
-	*szRespawnDelay = *(TXT_RESPAWN_DELAY - 1);
-	ADD_SLIDER (opt, szRespawnDelay + 1, extraGameInfo [0].nSpawnDelay / 5000 + 1, 0, 13, KEY_R, HTX_GPLAY_SPAWNDELAY);
-	nRSDopt = opt++;
-	sprintf (szSpeedBoost + 1, TXT_SPEEDBOOST, extraGameInfo [0].nSpeedBoost * 10, '%');
-	*szSpeedBoost = *(TXT_SPEEDBOOST - 1);
-	ADD_SLIDER (opt, szSpeedBoost + 1, extraGameInfo [0].nSpeedBoost, 0, 10, KEY_B, HTX_GPLAY_SPEEDBOOST);
-	nSBoostOpt = opt++;
-	sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
-	*szFusionPower = *(TXT_FUSION_PWR - 1);
-	ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
-	nFusionOpt = opt++;
+do {
+	memset (&m, 0, sizeof (m));
+	opt = 0;
+	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
+	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	nDiffOpt = opt++;
+	if (gameOpts->app.bExpertMode) {
+		sprintf (szRespawnDelay + 1, TXT_RESPAWN_DELAY, (extraGameInfo [0].nSpawnDelay < 0) ? -1 : extraGameInfo [0].nSpawnDelay / 1000);
+		*szRespawnDelay = *(TXT_RESPAWN_DELAY - 1);
+		ADD_SLIDER (opt, szRespawnDelay + 1, extraGameInfo [0].nSpawnDelay / 5000 + 1, 0, 13, KEY_R, HTX_GPLAY_SPAWNDELAY);
+		nRSDopt = opt++;
+		sprintf (szSpeedBoost + 1, TXT_SPEEDBOOST, extraGameInfo [0].nSpeedBoost * 10, '%');
+		*szSpeedBoost = *(TXT_SPEEDBOOST - 1);
+		ADD_SLIDER (opt, szSpeedBoost + 1, extraGameInfo [0].nSpeedBoost, 0, 10, KEY_B, HTX_GPLAY_SPEEDBOOST);
+		nSBoostOpt = opt++;
+		sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
+		*szFusionPower = *(TXT_FUSION_PWR - 1);
+		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
+		nFusionOpt = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
+		nSmokeGrenadeOpt = opt++;
+		if (extraGameInfo [0].bSmokeGrenades) {
+			sprintf (szMaxSmokeGrens + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+			*szMaxSmokeGrens = *(TXT_MAX_SMOKEGRENS - 1);
+			ADD_SLIDER (opt, szMaxSmokeGrens + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
+			nMaxSmokeGrenOpt = opt++;
+			ADD_TEXT (opt, "", 0);
+			opt++;
+			}
+		else
+			nMaxSmokeGrenOpt = 1;
+		ADD_CHECK (opt, TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
+		optFixedSpawn = opt++;
+		ADD_CHECK (opt, TXT_DUAL_LAUNCH, extraGameInfo [0].bDualMissileLaunch, KEY_U, HTX_GPLAY_DUALLAUNCH);
+		optDualMiss = opt++;
+		ADD_CHECK (opt, TXT_DROP_ALL, extraGameInfo [0].bDropAllMissiles, KEY_A, HTX_GPLAY_DROPALL);
+		optDropAll = opt++;
+		ADD_CHECK (opt, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
+		optImmortal = opt++;
+		ADD_CHECK (opt, TXT_DROP_QUADSUPER, extraGameInfo [0].nWeaponDropMode, KEY_Q, HTX_GPLAY_DROPQUAD);
+		optWeaponDrop = opt++;
+		ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);
+		optInventory = opt++;
+		ADD_CHECK (opt, TXT_BOTS_HIT_BOTS, extraGameInfo [0].bRobotsHitRobots, KEY_O, HTX_GPLAY_BOTSHITBOTS);
+		optRobHits = opt++;
+		ADD_CHECK (opt, TXT_MULTI_BOSSES, extraGameInfo [0].bMultiBosses, KEY_M, HTX_GPLAY_MULTIBOSS);
+		optMultiBosses = opt++;
+		ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
+		optFluidPhysics = opt++;
+		ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_A, HTX_GPLAY_HITANGLES);
+		optHitAngles = opt++;
+		ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
+		optSmartWeaponSwitch = opt++;
+		ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
+		optIdleAnims = opt++;
+		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_CHECK (opt, TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
-	optFixedSpawn = opt++;
-	ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
-	optDualMiss = opt++;
-	ADD_CHECK (opt, TXT_DUAL_LAUNCH, extraGameInfo [0].bDualMissileLaunch, KEY_U, HTX_GPLAY_DUALLAUNCH);
-	optDualMiss = opt++;
-	ADD_CHECK (opt, TXT_DROP_ALL, extraGameInfo [0].bDropAllMissiles, KEY_A, HTX_GPLAY_DROPALL);
-	optDropAll = opt++;
-	ADD_CHECK (opt, TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
-	optImmortal = opt++;
-	ADD_CHECK (opt, TXT_DROP_QUADSUPER, extraGameInfo [0].nWeaponDropMode, KEY_Q, HTX_GPLAY_DROPQUAD);
-	optWeaponDrop = opt++;
-	ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);
-	optInventory = opt++;
-	ADD_CHECK (opt, TXT_BOTS_HIT_BOTS, extraGameInfo [0].bRobotsHitRobots, KEY_O, HTX_GPLAY_BOTSHITBOTS);
-	optRobHits = opt++;
-	ADD_CHECK (opt, TXT_MULTI_BOSSES, extraGameInfo [0].bMultiBosses, KEY_M, HTX_GPLAY_MULTIBOSS);
-	optMultiBosses = opt++;
-	ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
-	optFluidPhysics = opt++;
-	ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_A, HTX_GPLAY_HITANGLES);
-	optHitAngles = opt++;
-	ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
-	optSmartWeaponSwitch = opt++;
-	ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
-	optIdleAnims = opt++;
-	}
-ADD_TEXT (opt, "", 0);
-opt++;
-optAutoSel = opt;
-ADD_RADIO (opt, TXT_WPNSEL_NEVER, 0, KEY_N, 1, HTX_GPLAY_WSELNEVER);
-opt++;
-ADD_RADIO (opt, TXT_WPNSEL_EMPTY, 0, KEY_Y, 1, HTX_GPLAY_WSELEMPTY);
-opt++;
-ADD_RADIO (opt, TXT_WPNSEL_ALWAYS, 0, KEY_T, 1, HTX_GPLAY_WSELALWAYS);
-opt++;
-ADD_TEXT (opt, "", 0);
-opt++;
-optSnipeMode = opt;
-ADD_RADIO (opt, TXT_ZOOM_OFF, 0, KEY_D, 2, HTX_GPLAY_ZOOMOFF);
-opt++;
-ADD_RADIO (opt, TXT_ZOOM_FIXED, 0, KEY_X, 2, HTX_GPLAY_ZOOMFIXED);
-opt++;
-ADD_RADIO (opt, TXT_ZOOM_SMOOTH, 0, KEY_Z, 2, HTX_GPLAY_ZOOMSMOOTH);
-opt++;
-m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].value = 1;
-m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].value = 1;
-do {
-	i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
-} while (i >= 0);
+	optAutoSel = opt;
+	ADD_RADIO (opt, TXT_WPNSEL_NEVER, 0, KEY_N, 1, HTX_GPLAY_WSELNEVER);
+	opt++;
+	ADD_RADIO (opt, TXT_WPNSEL_EMPTY, 0, KEY_Y, 1, HTX_GPLAY_WSELEMPTY);
+	opt++;
+	ADD_RADIO (opt, TXT_WPNSEL_ALWAYS, 0, KEY_T, 1, HTX_GPLAY_WSELALWAYS);
+	opt++;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	optSnipeMode = opt;
+	ADD_RADIO (opt, TXT_ZOOM_OFF, 0, KEY_D, 2, HTX_GPLAY_ZOOMOFF);
+	opt++;
+	ADD_RADIO (opt, TXT_ZOOM_FIXED, 0, KEY_X, 2, HTX_GPLAY_ZOOMFIXED);
+	opt++;
+	ADD_RADIO (opt, TXT_ZOOM_SMOOTH, 0, KEY_Z, 2, HTX_GPLAY_ZOOMSMOOTH);
+	opt++;
+	m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].value = 1;
+	m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].value = 1;
+	do {
+		i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
+		} while (i >= 0);
+	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bFixedRespawns = m [optFixedSpawn].value;
 	extraGameInfo [0].bRobotsHitRobots = m [optRobHits].value;
-	extraGameInfo [0].bSmokeGrenades = m [optSmokeGrenades].value;
+	extraGameInfo [0].bSmokeGrenades = m [nSmokeGrenadeOpt].value;
 	extraGameInfo [0].bDualMissileLaunch = m [optDualMiss].value;
 	extraGameInfo [0].bDropAllMissiles = m [optDropAll].value;
 	extraGameInfo [0].bImmortalPowerups = m [optImmortal].value;

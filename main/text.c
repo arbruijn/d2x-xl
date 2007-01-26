@@ -1612,11 +1612,11 @@ char *defaultGameTexts [][2] = {
 	{"Lade Hires-Modelle...", "Loading Hires Models..."},
 	{"~Wettkampf-Modus", "~Competition mode"},
 	{"~Flackernde Lichter verwenden", "use ~Flickering lights"},
-	{"rauch~Granaten verwenden", "use ~Smoke grenades"},
+	{"~rauchgranaten verwenden", "use ~Smoke grenades"},
 	{"Rauchgranate", "Smoke Grenade"},
 	{"Rauchgranaten", "Smoke Grenades"},
+	{"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2096,10 +2096,11 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, certain D2X-XL extensions are disabled during\nmultiplayer games."},
 	{"Wenn angekreuzt, werden flackernde Lichter wie ueblich angezeigt.\nSonst bleiben sie einfach immer hell. Diese Einstellung\nist besonders fuer Epileptiker geeignet.", 
 	 "If checked, flickering lights will go and off as usual.\nIf unchecked, flickering lights will be constantly bright. This\nsetting is particular useful for people suffering\nfrom epilepsy."},
-	{"Wenn angekreuzt, fungieren Kontaktminen als Rauchgranaten.\nSie koennen dann nicht zerstoert werden, explodieren\nbei Kontakt aber auch nicht. Man kann hoechstens vier Rauchgranaten\naufladen und maximal zwei gleichzeitig abwerfen, damit kein\nSpieler die anderen mit Rauchgranaten 'zumuellen' kann.", 
-	"If checked, proximity mines work as smoke grenades. You cannot\ndestroy smoke grenades, but they will also not explode at\ncontact and not do any damage. A ship can carry up to four\nsmoke grenades, and you cannot drop more than two simultaneously\nto avoid smoke grenade spamming."},
+	{"Wenn angekreuzt, fungieren Kontaktminen als Rauchgranaten.\nSie koennen dann nicht zerstoert werden, explodieren\nbei Kontakt aber auch nicht. Man kann hoechstens vier Rauchgranaten\naufladen und je nach Einstellung maximal vier gleichzeitig\nabwerfen, damit kein Spieler die anderen mit Rauchgranaten\n'zumuellen' kann.", 
+	 "If checked, proximity mines work as smoke grenades. You cannot\ndestroy smoke grenades, but they will also not explode at\ncontact and not do any damage. A ship can carry up to four\nsmoke grenades, and depending on the setting below you cannot\ndrop more than four simultaneously nto avoid smoke grenade spamming."},
+	{"Hier kann die Anzahl maximal gleichzeitig von einem Spieler\nabgeworfener Rauchgranaten begrenzt werden.", 
+	 "Limit the number of smoke grenades a player can deploy at any\ngiven time."},
 #if 0
-	{"", ""},
 #endif
 	{"", ""}
 	};

@@ -4483,6 +4483,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bCompetition = 0;
 	extraGameInfo [i].bPowerupLights = i;
 	extraGameInfo [i].bSmokeGrenades = 0;
+	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;
@@ -4614,6 +4615,8 @@ else {
 	LogErr ("   bLightTrails: %d\n", extraGameInfo [1].bLightTrails);
 	LogErr ("   bTracers: %d\n", extraGameInfo [1].bTracers);
 	LogErr ("   bShockwaves: %d\n", extraGameInfo [1].bShockwaves);
+	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
+	LogErr ("   nMaxSmokeGrenades: %d\n", extraGameInfo [1].nMaxSmokeGrenades);
 	LogErr ("   bCompetition: %d\n", extraGameInfo [1].bCompetition);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);

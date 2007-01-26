@@ -1300,20 +1300,107 @@ else
 
 //------------------------------------------------------------------------------
 
+typedef struct tCloudList {
+	tCloud		*pCloud;
+	fix			xDist;
+} tCloudList;
+
+tCloudList *pCloudList = NULL;
+
+//------------------------------------------------------------------------------
+
+void QSortClouds (int left, int right)
+{
+	int	l = left, 
+			r = right; 
+	fix	m = pCloudList [(l + r) / 2].xDist;
+
+while (pCloudList [l].xDist > m)
+	l++;
+while (pCloudList [r].xDist < m)
+	r--;
+if (l <= r) {
+	if (l < r) {
+		tCloudList h = pCloudList [l];
+		pCloudList [l] = pCloudList [r];
+		pCloudList [r] = h;
+		}
+	l++;
+	r--;
+	}
+if (l < right)
+	QSortClouds (l, right);
+if (left < r)
+	QSortClouds (left, r);
+}
+
+//------------------------------------------------------------------------------
+
+int CloudCount (void)
+{
+	int		i, j;
+	tSmoke	*pSmoke = gameData.smoke.smoke;
+
+for (i = gameData.smoke.iUsedSmoke, j = 0; i >= 0; i = pSmoke->nNext) {
+	pSmoke = gameData.smoke.smoke + i;
+	if (pSmoke->pClouds) {
+		j += pSmoke->nClouds;
+		if (gameData.smoke.objects [pSmoke->nObject] < 0)
+			SetSmokeLife (i, 0);
+		}
+	}
+return j;
+}
+
+//------------------------------------------------------------------------------
+
+int CreateCloudList (void)
+{
+	int			h, i, j, k;
+	vmsVector	vPos;
+	tSmoke		*pSmoke = gameData.smoke.smoke;
+
+h = CloudCount ();
+if (!h)
+	return 0;
+if (!(pCloudList = d_malloc (h * sizeof (tCloudList *))))
+	return -1;
+for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
+	pSmoke = gameData.smoke.smoke + i;
+	if (pSmoke->pClouds) {
+		for (j = 0; j < pSmoke->nClouds; j++, k++) {
+			pCloudList [k].pCloud = pSmoke->pClouds + j;
+			G3TransformPoint (&vPos, &pSmoke->pClouds [j].pos, 0);
+			pCloudList [k].xDist = VmVecMag (&vPos);
+			}
+		}
+	}
+QSortClouds (0, h - 1);
+return h;
+}
+
+//------------------------------------------------------------------------------
+
 int RenderSmoke (void)
 {
-#if 0
-if (!SHOW_SMOKE)
-	return 0;
-else 
-#endif
-	{
-		int		i, j;
-		tSmoke	*pSmoke = gameData.smoke.smoke;
+	int		h, i, j;
 
 #if !EXTRA_VERTEX_ARRAYS
-	nBuffer = 0;
+nBuffer = 0;
 #endif
+h = CreateCloudList ();
+if (!h)
+	return 1;
+else if (h) {
+	do {
+		RenderCloud (pCloudList [--h].pCloud);
+		} while (h);
+	d_free (pCloudList);
+	pCloudList = NULL;
+	}
+else {
+	tSmoke *pSmoke = gameData.smoke.smoke;
+
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.smoke + i;
 		if (pSmoke->pClouds) {
@@ -1325,8 +1412,8 @@ else
 				RenderCloud (pSmoke->pClouds + j);
 			}
 		}
-	return 1;
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
