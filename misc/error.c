@@ -174,7 +174,7 @@ Int3();
 if (!err_initialized) 
 	print_exit_message();
 #ifdef RELEASE
-//exit (2);
+exit (2);
 #endif
 }
 

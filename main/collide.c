@@ -1629,7 +1629,7 @@ int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
 	tRobotInfo *rInfoP = gameData.bots.pInfo + robot->id;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 
-if ((weapon->id == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((weapon->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;		
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
@@ -2208,7 +2208,7 @@ int CollidePlayerAndWeapon (tObject * playerObjP, tObject * weapon, vmsVector *v
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 1;
-if ((weapon->id == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((weapon->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
@@ -2428,7 +2428,7 @@ int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHi
 	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
 if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  
-if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
 if (id1 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon1))

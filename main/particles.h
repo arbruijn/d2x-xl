@@ -56,6 +56,7 @@ typedef struct tCloud {
 	float			nPartScale;
 	int			nMoved;			//time last moved
 	short			nSegment;
+	short			nObject;
 	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position

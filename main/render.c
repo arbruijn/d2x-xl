@@ -2867,10 +2867,6 @@ void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
-#if 0
-	if (i != 89)
-		continue;
-#endif
 	if (!psl->bShadow)
 		continue;
 	gameData.render.shadows.pLight = psl;
@@ -2979,8 +2975,9 @@ else
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
-	if (!nWindow)
+	if (!nWindow) {
 		RenderSmoke ();
+		}
 	}
 gameStates.render.nShadowPass = 0;
 if (bUsePlayerHeadAngles) 

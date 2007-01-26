@@ -1288,10 +1288,13 @@ if (gameOpts->render.bHiresModels) {
 	}
 else {
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
-	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 50));
-	if (!gameStates.app.bFixModels)
-		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -(objP->size / 20));
-	VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 25);
+	if (gameStates.app.bFixModels)
+		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, objP->size / 40);
+	else
+		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -objP->size / 20);
+	vPos [1] = vPos [0];
+	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -8 * objP->size / 49);
+	VmVecScaleInc (vPos + 1, &objP->position.mOrient.rVec, 8 * objP->size / 49);
 	}
 }
 

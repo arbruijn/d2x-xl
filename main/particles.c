@@ -817,7 +817,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
-					  short nSegment, int nMaxParts, float nPartScale, 
+					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
@@ -845,6 +845,7 @@ pCloud->nPartScale = nPartScale;
 pCloud->nDensity = nDensity;
 pCloud->nPartsPerPos = nPartsPerPos;
 pCloud->nSegment = nSegment;
+pCloud->nObject = nObject;
 return 1;
 }
 
@@ -935,9 +936,9 @@ if (CloudLives (pCloud, nCurTime)) {
 		}
 	for (; h; h--, i++) {
 		VmVecIncf (&vPosf, &vDeltaf);
-		vPos.p.x = (fix) (vPosf.p.x * 65336.0f);
-		vPos.p.y = (fix) (vPosf.p.y * 65336.0f);
-		vPos.p.z = (fix) (vPosf.p.z * 65336.0f);
+		vPos.p.x = (fix) (vPosf.p.x * 65536.0f);
+		vPos.p.y = (fix) (vPosf.p.y * 65536.0f);
+		vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 		CreateParticle (c.pParticles + i, &vPos, pDir, c.nSegment, c.nLife, 
 							 c.nSpeed, c.nType, c.nPartScale, nCurTime, nInterpolatePos);
 		nInterpolatePos = (h > 0);
@@ -1232,7 +1233,7 @@ else {
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
-		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nMaxParts, nPartScale, nDensity, 
+		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nObject, nMaxParts, nPartScale, nDensity, 
 							  nPartsPerPos, nLife, nSpeed, nType, t))
 			pSmoke->nClouds++;
 		else {
