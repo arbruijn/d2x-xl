@@ -1363,7 +1363,7 @@ int CreateCloudList (void)
 h = CloudCount ();
 if (!h)
 	return 0;
-if (!(pCloudList = d_malloc (h * sizeof (tCloudList *))))
+if (!(pCloudList = d_malloc (h * sizeof (tCloudList))))
 	return -1;
 for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.smoke + i;
@@ -1375,7 +1375,8 @@ for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 			}
 		}
 	}
-QSortClouds (0, h - 1);
+if (h > 1)
+	QSortClouds (0, h - 1);
 return h;
 }
 
@@ -1391,7 +1392,7 @@ nBuffer = 0;
 h = CreateCloudList ();
 if (!h)
 	return 1;
-else if (h) {
+else if (h > 0) {
 	do {
 		RenderCloud (pCloudList [--h].pCloud);
 		} while (h);
