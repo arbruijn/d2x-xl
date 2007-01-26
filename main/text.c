@@ -1612,7 +1612,7 @@ char *defaultGameTexts [][2] = {
 	{"Lade Hires-Modelle...", "Loading Hires Models..."},
 	{"~Wettkampf-Modus", "~Competition mode"},
 	{"~Flackernde Lichter verwenden", "use ~Flickering lights"},
-	{"~rauchgranaten verwenden", "use ~Smoke grenades"},
+	{"~Rauchgranaten verwenden", "use ~Smoke grenades"},
 	{"Rauchgranate", "Smoke Grenade"},
 	{"Rauchgranaten", "Smoke Grenades"},
 	{"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
