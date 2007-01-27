@@ -2415,7 +2415,7 @@ extern tExtraGameInfo activeExtraGameInfo [];
 void ShowNetGameInfo (int choice)
  {
 	tMenuItem	m [20];
-   char			mTexts [20][80];
+   char			mTexts [20][200];
 	int			i, j, nInMenu, opt = 0;
 
 #ifndef _DEBUG
@@ -2502,6 +2502,7 @@ else
 		INITFLAGS ("Gameplay ext.: ");
 		ADDFLAG (AXI.bEnableCheats, "Cheats");
 		ADDFLAG (AXI.bDarkness, "Darkness");
+		ADDFLAG (AXI.bSmokeGrenades, "Smoke Grens");
 		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls");
 		ADDFLAG (AXI.nFusionPowerMod != 2, "Fusion ramp");
 		ADDFLAG (!AXI.bFriendlyFire, "no FF");
