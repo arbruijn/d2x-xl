@@ -612,9 +612,9 @@ objP->position.mOrient.uVec.p.y = INTEL_INT(objP->position.mOrient.uVec.p.y);
 objP->position.mOrient.uVec.p.z = INTEL_INT(objP->position.mOrient.uVec.p.z);
 objP->size          = INTEL_INT(objP->size);
 objP->shields       = INTEL_INT(objP->shields);
-objP->last_pos.p.x    = INTEL_INT(objP->last_pos.p.x);
-objP->last_pos.p.y    = INTEL_INT(objP->last_pos.p.y);
-objP->last_pos.p.z    = INTEL_INT(objP->last_pos.p.z);
+objP->vLastPos.p.x    = INTEL_INT(objP->vLastPos.p.x);
+objP->vLastPos.p.y    = INTEL_INT(objP->vLastPos.p.y);
+objP->vLastPos.p.z    = INTEL_INT(objP->vLastPos.p.z);
 objP->lifeleft      = INTEL_INT(objP->lifeleft);
 switch (objP->movementType) {
 	case MT_PHYSICS:

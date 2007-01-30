@@ -160,7 +160,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	VmVecScale(&svel,gameData.time.xFrame);		//movement in this frame
 	VmVecRotate(&movement,&svel,&new_pm);
 
-//	objP->last_pos = objP->position.vPos;
+//	objP->vLastPos = objP->position.vPos;
 	VmVecInc(&objP->position.vPos,&movement);
 
 	moved |= (movement.p.x || movement.p.y || movement.p.z);

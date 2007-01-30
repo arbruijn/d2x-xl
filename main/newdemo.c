@@ -589,7 +589,7 @@ switch (objP->nType) {
 		break;
 	}
 
-NDReadVector (&objP->last_pos);
+NDReadVector (&objP->vLastPos);
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_WEAPON_VCLIP))
 	objP->lifeleft = NDReadFix ();
 else {
@@ -769,7 +769,7 @@ if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER
 	}
 else if (o.nType == OBJ_POWERUP)
 	NDWriteByte (o.movementType);
-NDWriteVector (&o.last_pos);
+NDWriteVector (&o.vLastPos);
 if ((o.nType == OBJ_WEAPON) && (o.renderType == RT_WEAPON_VCLIP))
 	NDWriteFix (o.lifeleft);
 else {

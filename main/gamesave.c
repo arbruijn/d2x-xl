@@ -356,7 +356,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 	objP->size           = CFReadFix(f);
 	objP->shields        = CFReadFix(f);
 
-	CFReadVector(&objP->last_pos,f);
+	CFReadVector(&objP->vLastPos,f);
 
 	objP->containsType  = CFReadByte(f);
 	objP->containsId    = CFReadByte(f);
@@ -563,7 +563,7 @@ void writeObject(tObject *objP,FILE *f)
 	gs_write_fix(objP->size,f);
 	gs_write_fix(objP->shields,f);
 
-	gr_write_vector(&objP->last_pos,f);
+	gr_write_vector(&objP->vLastPos,f);
 
 	gs_write_byte(objP->containsType,f);
 	gs_write_byte(objP->containsId,f);

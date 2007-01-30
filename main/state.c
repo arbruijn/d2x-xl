@@ -875,7 +875,7 @@ CFWriteVector (&objP->position.vPos, fp);
 CFWriteMatrix (&objP->position.mOrient, fp);  
 CFWriteFix (objP->size, fp); 
 CFWriteFix (objP->shields, fp);
-CFWriteVector (&objP->last_pos, fp);  
+CFWriteVector (&objP->vLastPos, fp);  
 CFWriteByte (objP->containsType, fp); 
 CFWriteByte (objP->containsId, fp);   
 CFWriteByte (objP->containsCount, fp);
@@ -1832,7 +1832,7 @@ CFReadVector (&objP->position.vPos, fp);
 CFReadMatrix (&objP->position.mOrient, fp);  
 objP->size = CFReadFix (fp); 
 objP->shields = CFReadFix (fp);
-CFReadVector (&objP->last_pos, fp);  
+CFReadVector (&objP->vLastPos, fp);  
 objP->containsType = CFReadByte (fp); 
 objP->containsId = CFReadByte (fp);   
 objP->containsCount = CFReadByte (fp);
@@ -2505,12 +2505,9 @@ if (sgVersion >= 12) {
 	CFRead (&gameStates.ogl.palAdd.red, sizeof (int), 1, fp);
 	CFRead (&gameStates.ogl.palAdd.green, sizeof (int), 1, fp);
 	CFRead (&gameStates.ogl.palAdd.blue, sizeof (int), 1, fp);
-} else {
-	gameData.render.xFlashEffect = 0;
-	gameData.render.xTimeFlashLastPlayed = 0;
-	gameStates.ogl.palAdd.red = 0;
-	gameStates.ogl.palAdd.green = 0;
-	gameStates.ogl.palAdd.blue = 0;
+	}
+else {
+	ResetPaletteAdd ();
 	}
 
 //	Load gameData.render.lights.subtracted

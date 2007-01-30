@@ -56,6 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 
 #define FLUID_PHYSICS	0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -273,13 +274,51 @@ CheckAndFixMatrix (&objP->position.mOrient);
 
 //	-----------------------------------------------------------------------------------------------------------
 
+int BounceObject (tObject *objP, fvi_info	hi, float fOffs)
+{
+	fix	xSideDist, xSideDists [6];
+	short	nSegment;
+
+GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
+if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->size / 100)) {
+#if 0
+	objP->position.vPos = objP->vLastPos;
+#else
+#	if 0
+	float fOffs;
+	xSideDist = objP->size - xSideDist;
+	r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
+#	endif
+	objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * fOffs);
+	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * fOffs);
+	objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * fOffs);
+#endif
+	nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
+		objP->position.vPos = objP->vLastPos;
+		nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+		}
+	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->nSegment))
+		return 0;
+	RelinkObject (OBJ_IDX (objP), nSegment);
+#if 0//def _DEBUG
+	if (objP->nType == OBJ_PLAYER)
+		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+#endif
+	return 1;
+	}
+return 0;
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+#if UNSTICK_OBJS
+
 void UnstickObject (tObject *objP)
 {
 	fvi_info			hi;
 	fvi_query		fq;
 	int				fate;
-	short				nSegment;
-	fix				xSideDist, xSideDists [6];
 
 if ((objP->nType == OBJ_PLAYER) && 
 	 (objP->id == gameData.multi.nLocalPlayer) && 
@@ -292,29 +331,11 @@ fq.thisObjNum = OBJ_IDX (objP);
 fq.ignoreObjList = NULL;
 fq.flags = 0;
 fate = FindVectorIntersection (&fq, &hi);
-if (fate != HIT_WALL)
-	return;
-GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
-if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->size / 100)) {
-#if 1
-	float r = 0.25f;
-#else
-	float r;
-	xSideDist = objP->size - xSideDist;
-	r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
-#endif
-	objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * r);
-	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * r);
-	objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * r);
-	nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
-	if (nSegment != objP->nSegment)
-		RelinkObject (OBJ_IDX (objP), nSegment);
-#if 0//def _DEBUG
-	if (objP->nType == OBJ_PLAYER)
-		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
-#endif
-	}
+if (fate == HIT_WALL)
+	BounceObject (objP, hi, 0.25f);
 }
+
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 
@@ -360,7 +381,9 @@ pi = &objP->mType.physInfo;
 DoPhysicsSimRot (objP);
 #if 1
 if (!(pi->velocity.p.x || pi->velocity.p.y || pi->velocity.p.z)) {
+#if UNSTICK_OBJS
 	UnstickObject (objP);
+#endif
 	if (objP == gameData.objs.console)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
 	if (!(pi->thrust.p.x || pi->thrust.p.y || pi->thrust.p.z))
@@ -541,13 +564,13 @@ retryMove:
 		int n = FindObjectSeg (objP);
 
 		if (n == -1) {
-			n = FindSegByPoint (&objP->last_pos, objP->nSegment);
+			n = FindSegByPoint (&objP->vLastPos, objP->nSegment);
 			if (n == -1) {
 				objP->flags |= OF_SHOULD_BE_DEAD;
 				return;
 				}
 			}
-		objP->position.vPos = objP->last_pos;
+		objP->position.vPos = objP->vLastPos;
 		RelinkObject (nObject, n);
 		COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 		VmVecDec (&vCenter, &objP->position.vPos);
@@ -596,8 +619,7 @@ retryMove:
 	switch (fate) {
 		case HIT_WALL: {
 			vmsVector vMoved;
-			fix xHitSpeed, xWallPart, xSideDist, xSideDists [6];
-			short nSegment;
+			fix xHitSpeed, xWallPart, xSideDists [6];
 			// Find hit speed	
 
 #if 0//def _DEBUG
@@ -624,26 +646,7 @@ retryMove:
 			Assert (nWallHitSeg > -1);
 			Assert (nWallHitSide > -1);
 			GetSideDistsAll (&objP->position.vPos, nWallHitSeg, xSideDists);
-			if ((xSideDist = xSideDists [nWallHitSide]) && (xSideDist < objP->size - objP->size / 100)) {
-#if 1
-				float r = 0.1f;
-#else
-				float r;
-				xSideDist = objP->size - xSideDist;
-				r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
-#endif
-				objP->position.vPos.p.x += (fix) ((float) hi.hit.vNormal.p.x * r);
-				objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * r);
-				objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * r);
-				nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment);
-				if (nSegment != objP->nSegment)
-					RelinkObject (OBJ_IDX (objP), nSegment);
-#if 0//def _DEBUG
-				if (objP->nType == OBJ_PLAYER)
-					HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
-#endif
-				bRetry = 1;
-				}
+			bRetry = BounceObject (objP, hi, 0.1f);
 			if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 				int forcefield_bounce;		//bounce off a forcefield
 
@@ -829,8 +832,8 @@ retryMove:
 		if (FindObjectSeg (objP) == -1) {
 			int n;
 
-			if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->last_pos, objP->nSegment))!=-1) {
-				objP->position.vPos = objP->last_pos;
+			if (objP->nType==OBJ_PLAYER && (n=FindSegByPoint (&objP->vLastPos, objP->nSegment))!=-1) {
+				objP->position.vPos = objP->vLastPos;
 				RelinkObject (nObject, n);
 				}
 			else {
@@ -841,7 +844,9 @@ retryMove:
 				objP->flags |= OF_SHOULD_BE_DEAD;
 		}
 	}
+#if UNSTICK_OBJS
 UnstickObject (objP);
+#endif
 }
 
 //	----------------------------------------------------------------

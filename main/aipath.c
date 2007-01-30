@@ -178,6 +178,9 @@ for (i = 1, --j; i < j; i++) {
 	// -- ptSegs [i].nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
 	Assert (nTempSeg != -1);
+	if (nTempSeg < 0) {
+		break;
+		}
 	ptSegs [i].nSegment = nTempSeg;
 	nSegment = ptSegs [i].nSegment;
 
@@ -366,6 +369,10 @@ while (nCurSeg != nEndSeg) {
 			}
 		Assert (nThisSeg > -1 && nThisSeg <= gameData.segs.nLastSegment);
 		Assert (nCurSeg > -1 && nCurSeg <= gameData.segs.nLastSegment);
+		if (nThisSeg < 0)
+			continue;
+		if (nCurSeg < 0)
+			continue;
 		segmentQ [qTail].start = nCurSeg;
 		segmentQ [qTail].end = nThisSeg;
 		segmentQ [qTail].nConnSide = (ubyte) hSide;
@@ -438,46 +445,10 @@ if (bSafeMode) {
 	}
 pointSegP += lNumPoints;
 
-#if 0
-#	if PATH_VALIDATION
-ValidatePath (1, origPointSegs, lNumPoints);
-#	endif
-//	Now, reverse tPointSegs in place.p.
-{
-tPointSeg tempPointSeg;
-for (i = 0, j = lNumPoints - 1; i < lNumPoints / 2; i++, j--) {
-	tempPointSeg = origPointSegs [i];
-	origPointSegs [i] = origPointSegs [j];
-	origPointSegs [j] = tempPointSeg;
-	}
-}
-#endif
 #if PATH_VALIDATION
 ValidatePath (2, origPointSegs, lNumPoints);
 #endif
 
-#if 0
-//	Now, if bSafeMode set, then insert the point at the center of the tSide connecting two segments
-//	between the two points.  This is messy because we must insert into the list.  The simplest (and not too slow)
-//	way to do this is to start at the end of the list and go backwards.
-if (bSafeMode) {
-	if ((pointSegP - gameData.ai.pointSegs) + lNumPoints + 2 >= MAX_POINT_SEGS) {
-		//	Ouch! Cannot insert center points in path.  So return unsafe path.
-//			Int3 ();	// Contact Mike:  This is impossible.p.
-//			force_dump_aiObjects_all ("Error in CreatePathPoints");
-#if TRACE
-		con_printf (CON_DEBUG, "Resetting all paths because of bSafeMode.p.\n");
-#endif
-		AIResetAllPaths ();
-		*numPoints = lNumPoints;
-		return -1;
-		}
-	else {
-		// int	old_num_points = lNumPoints;
-		lNumPoints = InsertCenterPoints (origPointSegs, lNumPoints);
-	}
-}
-#endif
 #if PATH_VALIDATION
 ValidatePath (3, origPointSegs, lNumPoints);
 #endif
@@ -780,10 +751,14 @@ MaybeAIPathGarbageCollect ();
 
 //	-------------------------------------------------------------------------------------------------------
 //	Create a path of length nPathLength for an tObject, stuffing info in aiInfo field.
+
+static int nObject = 0;
+
 void CreateNSegmentPath (tObject *objP, int nPathLength, short nAvoidSeg)
 {
-	tAIStatic	*aip=&objP->cType.aiInfo;
-	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
+	tAIStatic	*aip = &objP->cType.aiInfo;
+	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (objP);
+	nObject = OBJ_IDX (objP);
 
 if (CreatePathPoints (objP, objP->nSegment, -2, gameData.ai.freePointSegs, &aip->nPathLength, nPathLength, 1, 0, nAvoidSeg) == -1) {
 	gameData.ai.freePointSegs += aip->nPathLength;
@@ -807,7 +782,7 @@ ailp->mode = AIM_FOLLOW_PATH;
 if (gameData.ai.localInfo [OBJ_IDX (objP)].nPrevVisibility) {
 	if (aip->nPathLength) {
 		int nPoints = aip->nPathLength;
-		MoveTowardsOutside (&gameData.ai.pointSegs [aip->nHideIndex], &nPoints, objP, 1);
+		MoveTowardsOutside (gameData.ai.pointSegs + aip->nHideIndex, &nPoints, objP, 1);
 		aip->nPathLength = nPoints;
 		}
 	}

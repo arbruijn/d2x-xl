@@ -477,7 +477,7 @@ INTEL_VECTOR (&objP->position.vPos);
 INTEL_MATRIX (&objP->position.mOrient);
 objP->size = INTEL_INT (objP->size);
 objP->shields = INTEL_INT (objP->shields);
-INTEL_VECTOR (&objP->last_pos);
+INTEL_VECTOR (&objP->vLastPos);
 objP->lifeleft = INTEL_INT (objP->lifeleft);
 switch (objP->movementType) {
 	case MT_PHYSICS:

@@ -1548,7 +1548,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	vPosf.p.x =
 	vPosf.p.y =
 	vPosf.p.z = -100;
-	VmsVecToFloat (&vPosf, &objP->last_pos);
+	VmsVecToFloat (&vPosf, &objP->vLastPos);
 	G3TransformPointf (&vPosf, &vPosf, 0);
 	glVertex3fv ((GLfloat *) &vPosf);
 	glEnd ();
@@ -2390,7 +2390,7 @@ memset (objP, 0, sizeof (tObject));
 objP->nSignature = gameData.objs.nNextSignature++;
 objP->nType = nType;
 objP->id = id;
-objP->last_pos = *pos;
+objP->vLastPos = *pos;
 objP->position.vPos = *pos;
 objP->size = size;
 objP->matCenCreator = (sbyte) owner;
@@ -2474,7 +2474,7 @@ if (newObjNum == -1)
 	return -1;
 obj = gameData.objs.objects + newObjNum;
 *objP = gameData.objs.objects [nObject];
-objP->position.vPos = objP->last_pos = *new_pos;
+objP->position.vPos = objP->vLastPos = *new_pos;
 objP->next = objP->prev = objP->nSegment = -1;
 LinkObject (newObjNum, newsegnum);
 objP->nSignature = gameData.objs.nNextSignature++;
@@ -3250,7 +3250,7 @@ int MoveOneObject (tObject * objP)
 //	return 1;
 if (objP->nType == OBJ_WEAPON && objP->id == MERCURYMSL_ID)
 	objP = objP;
-objP->last_pos = objP->position.vPos;			// Save the current position
+objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 
 	 (objP->lifeleft != ONE_FRAME_TIME)&& 

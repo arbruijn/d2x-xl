@@ -472,9 +472,9 @@ void DoEndLevelFrame ()
 	static fix explosion_wait2=0;
 	static fix ext_expl_halflife;
 
-save_last_pos = gameData.objs.console->last_pos;	//don't let move code change this
+save_last_pos = gameData.objs.console->vLastPos;	//don't let move code change this
 MoveAllObjects ();
-gameData.objs.console->last_pos = save_last_pos;
+gameData.objs.console->vLastPos = save_last_pos;
 
 if (gameStates.render.bExtExplPlaying) {
 	external_explosion.lifeleft -= gameData.time.xFrame;
@@ -755,7 +755,7 @@ int find_exit_side (tObject *objP)
 
 	//find exit tSide
 
-	VmVecNormalizedDirQuick (&prefvec, &objP->position.vPos, &objP->last_pos);
+	VmVecNormalizedDirQuick (&prefvec, &objP->position.vPos, &objP->vLastPos);
 
 	COMPUTE_SEGMENT_CENTER (&segcenter, pseg);
 

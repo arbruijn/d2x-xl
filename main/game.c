@@ -282,6 +282,8 @@ void ResetPaletteAdd ()
 gameStates.ogl.palAdd.red = 
 gameStates.ogl.palAdd.green =
 gameStates.ogl.palAdd.blue	= 0;
+gameData.render.xFlashEffect = 0;
+gameData.render.xTimeFlashLastPlayed = 0;
 GrPaletteStepUp (0, 0, 0);
 //gameStates.ogl.bDoPalStep = !(gameOpts->ogl.bSetGammaRamp && gameStates.ogl.bBrightness);
 }
@@ -1213,81 +1215,78 @@ void DiminishPaletteTowardsNormal (void)
 
 	//	Diminish at DIMINISH_RATE units/second.
 	//	For frame rates > DIMINISH_RATE Hz, use randomness to achieve this.
-	if (gameData.time.xFrame < F1_0/DIMINISH_RATE) {
-		if (d_rand () < gameData.time.xFrame*DIMINISH_RATE/2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
-			dec_amount = 1;
-		}
-	else {
-		dec_amount = f2i (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
-		if (dec_amount == 0)
-			dec_amount++;						// make sure we decrement by something
+if (gameData.time.xFrame < F1_0/DIMINISH_RATE) {
+	if (d_rand () < gameData.time.xFrame*DIMINISH_RATE/2)	//	Note: d_rand () is in 0d:\temp\dm_test32767, and 8 Hz means decrement every frame
+		dec_amount = 1;
+	}
+else {
+	dec_amount = f2i (gameData.time.xFrame*DIMINISH_RATE);		// one second = DIMINISH_RATE counts
+	if (dec_amount == 0)
+		dec_amount++;						// make sure we decrement by something
 	}
 
-	if (gameData.render.xFlashEffect) {
-		int	force_do = 0;
+if (gameData.render.xFlashEffect) {
+	int	force_do = 0;
 
-		//	Part of hack system to force update of palette after exiting a menu.
-		if (gameData.render.xTimeFlashLastPlayed) {
-			force_do = 1;
-			gameStates.ogl.palAdd.red ^= 1;	//	Very Tricky!  In GrPaletteStepUp, if all stepups same as last time, won't do anything!
+	//	Part of hack system to force update of palette after exiting a menu.
+	if (gameData.render.xTimeFlashLastPlayed) {
+		force_do = 1;
+		gameStates.ogl.palAdd.red ^= 1;	//	Very Tricky!  In GrPaletteStepUp, if all stepups same as last time, won't do anything!
 		}
 
-		if ((gameData.render.xTimeFlashLastPlayed + F1_0/8 < gameData.time.xGame) || (gameData.render.xTimeFlashLastPlayed > gameData.time.xGame)) {
-			DigiPlaySample (SOUND_CLOAK_OFF, gameData.render.xFlashEffect/4);
-			gameData.render.xTimeFlashLastPlayed = gameData.time.xGame;
+	if ((gameData.render.xTimeFlashLastPlayed + F1_0/8 < gameData.time.xGame) || (gameData.render.xTimeFlashLastPlayed > gameData.time.xGame)) {
+		DigiPlaySample (SOUND_CLOAK_OFF, gameData.render.xFlashEffect/4);
+		gameData.render.xTimeFlashLastPlayed = gameData.time.xGame;
 		}
 
-		gameData.render.xFlashEffect -= gameData.time.xFrame;
-		if (gameData.render.xFlashEffect < 0)
-			gameData.render.xFlashEffect = 0;
+	gameData.render.xFlashEffect -= gameData.time.xFrame;
+	if (gameData.render.xFlashEffect < 0)
+		gameData.render.xFlashEffect = 0;
 
-		if (force_do || (d_rand () > 4096)) {
-      	if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
-	      	NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-
-			GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-
-			return;
+	if (force_do || (d_rand () > 4096)) {
+      if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
+	      NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
+		GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
+		return;
 		}
 
 	}
 
-	if (gameStates.ogl.palAdd.red > 0) { 
-		gameStates.ogl.palAdd.red -= dec_amount; 
-		if (gameStates.ogl.palAdd.red < 0) 
-			gameStates.ogl.palAdd.red = 0; 
-		}
-	else if (gameStates.ogl.palAdd.red < 0) { 
-		gameStates.ogl.palAdd.red += dec_amount; 
-		if (gameStates.ogl.palAdd.red > 0) 
-			gameStates.ogl.palAdd.red = 0; 
-		}
-	if (gameStates.ogl.palAdd.green > 0) { 
-		gameStates.ogl.palAdd.green -= dec_amount; 
-		if (gameStates.ogl.palAdd.green < 0) 
-			gameStates.ogl.palAdd.green = 0; 
-		}
-	else if (gameStates.ogl.palAdd.green < 0) { 
-		gameStates.ogl.palAdd.green += dec_amount; 
-		if (gameStates.ogl.palAdd.green > 0) 
-			gameStates.ogl.palAdd.green = 0; 
-		}
-	if (gameStates.ogl.palAdd.blue > 0) { 
-		gameStates.ogl.palAdd.blue -= dec_amount; 
-		if (gameStates.ogl.palAdd.blue < 0) 
-			gameStates.ogl.palAdd.blue = 0; 
-		}
-	else if (gameStates.ogl.palAdd.blue < 0) { 
-		gameStates.ogl.palAdd.blue += dec_amount; 
-		if (gameStates.ogl.palAdd.blue > 0) 
-			gameStates.ogl.palAdd.blue = 0; 
-		}
+if (gameStates.ogl.palAdd.red > 0) { 
+	gameStates.ogl.palAdd.red -= dec_amount; 
+	if (gameStates.ogl.palAdd.red < 0) 
+		gameStates.ogl.palAdd.red = 0; 
+	}
+else if (gameStates.ogl.palAdd.red < 0) { 
+	gameStates.ogl.palAdd.red += dec_amount; 
+	if (gameStates.ogl.palAdd.red > 0) 
+		gameStates.ogl.palAdd.red = 0; 
+	}
+if (gameStates.ogl.palAdd.green > 0) { 
+	gameStates.ogl.palAdd.green -= dec_amount; 
+	if (gameStates.ogl.palAdd.green < 0) 
+		gameStates.ogl.palAdd.green = 0; 
+	}
+else if (gameStates.ogl.palAdd.green < 0) { 
+	gameStates.ogl.palAdd.green += dec_amount; 
+	if (gameStates.ogl.palAdd.green > 0) 
+		gameStates.ogl.palAdd.green = 0; 
+	}
+if (gameStates.ogl.palAdd.blue > 0) { 
+	gameStates.ogl.palAdd.blue -= dec_amount; 
+	if (gameStates.ogl.palAdd.blue < 0) 
+		gameStates.ogl.palAdd.blue = 0; 
+	}
+else if (gameStates.ogl.palAdd.blue < 0) { 
+	gameStates.ogl.palAdd.blue += dec_amount; 
+	if (gameStates.ogl.palAdd.blue > 0) 
+		gameStates.ogl.palAdd.blue = 0; 
+	}
 
-	if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
-		NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-
-	GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
-
+if ((gameData.demo.nState==ND_STATE_RECORDING) && 
+		(gameStates.ogl.palAdd.red || gameStates.ogl.palAdd.green || gameStates.ogl.palAdd.blue))
+	NDRecordPaletteEffect (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
+GamePaletteStepUp (gameStates.ogl.palAdd.red, gameStates.ogl.palAdd.green, gameStates.ogl.palAdd.blue);
 }
 
 //------------------------------------------------------------------------------
@@ -1311,6 +1310,8 @@ else
 	GrPaletteStepUp (r, g, b);
 }
 
+//------------------------------------------------------------------------------
+
 void PaletteRestore (void)
 {
 gameStates.ogl.palAdd = palAddSave; 
@@ -1320,25 +1321,22 @@ gameData.render.xTimeFlashLastPlayed = 0;
 }
 
 void DeadPlayerFrame (void);
-void player_smoke_frame (void);
 
 //	-----------------------------------------------------------------------------
 
 int AllowedToFireLaser (void)
 {
-	if (gameStates.app.bPlayerIsDead) {
-		gameData.app.nGlobalMissileFiringCount = 0;
-		return 0;
+if (gameStates.app.bPlayerIsDead) {
+	gameData.app.nGlobalMissileFiringCount = 0;
+	return 0;
 	}
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
-		return 0;
-	//	Make sure enough time has elapsed to fire laser, but if it looks like it will
-	//	be a long while before laser can be fired, then there must be some mistake!
-	if (xNextLaserFireTime > gameData.time.xGame)
-		if (xNextLaserFireTime < gameData.time.xGame + 2*F1_0)
-			return 0;
-
-	return 1;
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+	return 0;
+//	Make sure enough time has elapsed to fire laser, but if it looks like it will
+//	be a long while before laser can be fired, then there must be some mistake!
+if ((xNextLaserFireTime > gameData.time.xGame) &&  (xNextLaserFireTime < gameData.time.xGame + 2*F1_0))
+	return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------

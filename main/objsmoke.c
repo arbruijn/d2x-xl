@@ -147,7 +147,7 @@ if (gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED) {
 j = OBJ_IDX (objP);
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multi.nLocalPlayer)) {
 	fn = objP->position.mOrient.fVec;
-	VmVecSub (&mn, &objP->position.vPos, &objP->last_pos);
+	VmVecSub (&mn, &objP->position.vPos, &objP->vLastPos);
 	VmVecNormalize (&fn);
 	VmVecNormalize (&mn);
 	d = VmVecDot (&fn, &mn);

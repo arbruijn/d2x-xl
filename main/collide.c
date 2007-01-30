@@ -593,6 +593,13 @@ int CheckVolatileSegment (tObject *objP, int nSegment)
 		}
 	return (d > 0) ? 1 : 2;
 	}
+if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && 
+	 (objP->mType.physInfo.thrust.p.x || 
+	  objP->mType.physInfo.thrust.p.y ||
+	  objP->mType.physInfo.thrust.p.z)) {
+	objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 4;
+	objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 4;
+	}
 return 0;
 }
 
@@ -2424,7 +2431,7 @@ else
 int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHitPt)
 { 
 	int	id1 = weapon1->id;
-	int	id2 = weapon1->id;
+	int	id2 = weapon2->id;
 	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
 if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  

@@ -238,7 +238,7 @@ typedef struct tObject {
 	tPosition	position;
 	fix     		size;          // 3d size of tObject - for collision detection
 	fix     		shields;       // Starts at maximum, when <0, tObject dies..
-	vmsVector 	last_pos;		// where tObject was last frame
+	vmsVector 	vLastPos;		// where tObject was last frame
 	sbyte   		containsType;  // Type of tObject this tObject contains (eg, spider contains powerup)
 	sbyte   		containsId;    // ID of tObject this tObject contains (eg, id = blue nType = key)
 	sbyte   		containsCount; // number of objects of nType:id this tObject contains

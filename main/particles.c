@@ -1367,6 +1367,10 @@ if (!(pCloudList = d_malloc (h * sizeof (tCloudList))))
 	return -1;
 for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.smoke + i;
+	if (!LoadParticleImage (pSmoke->nType)) {
+		d_free (pCloudList);
+		return 0;
+		}
 	if (pSmoke->pClouds) {
 		for (j = 0; j < pSmoke->nClouds; j++, k++) {
 			pCloudList [k].pCloud = pSmoke->pClouds + j;
