@@ -648,8 +648,8 @@ if (!bBetweenLevels)	{
 // Save the fuelcen info
 	CFWrite (&gameData.reactor.bDestroyed, sizeof (int), 1, fp);
 	CFWrite (&gameData.reactor.countdown.nTimer, sizeof (int), 1, fp);
-	CFWrite (&gameData.matCens.nMatCens, sizeof (int), 1, fp);
-	CFWrite (gameData.matCens.botGens, sizeof (tMatCenInfo), gameData.matCens.nMatCens, fp);
+	CFWrite (&gameData.matCens.nBotCenters, sizeof (int), 1, fp);
+	CFWrite (gameData.matCens.botGens, sizeof (tMatCenInfo), gameData.matCens.nBotCenters, fp);
 	CFWrite (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	CFWrite (&gameData.matCens.nFuelCenters, sizeof (int), 1, fp);
 	CFWrite (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters, fp);
@@ -1209,11 +1209,11 @@ if (!bBetweenLevels)	{
 // Save the fuelcen info
 	CFWriteInt (gameData.reactor.bDestroyed, fp);
 	CFWriteFix (gameData.reactor.countdown.nTimer, fp);
-	CFWriteInt (gameData.matCens.nMatCens, fp);
-	for (i = 0; i < gameData.matCens.nMatCens; i++)
+	CFWriteInt (gameData.matCens.nBotCenters, fp);
+	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		StateSaveMatCen (gameData.matCens.botGens + i, fp);
-	CFWriteInt (gameData.matCens.nMatCens, fp);
-	for (i = 0; i < gameData.matCens.nMatCens; i++)
+	CFWriteInt (gameData.matCens.nBotCenters, fp);
+	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		StateSaveMatCen (gameData.matCens.botGens + i, fp);
 	StateSaveReactorTrigger (&gameData.reactor.triggers, fp);
 	CFWriteInt (gameData.matCens.nFuelCenters, fp);
@@ -2205,18 +2205,18 @@ if (!bBetweenLevels)	{
 	//Restore the fuelcen info
 	gameData.reactor.bDestroyed = CFReadInt (fp);
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
-	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nMatCens, fp))
+	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters, fp))
 		return 0;
-	for (i = 0; i < gameData.matCens.nMatCens; i++)
+	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		StateRestoreMatCen (gameData.matCens.botGens + i, fp);
 	if (sgVersion >= 30) {
-		if (CFReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nMatCens, fp))
+		if (CFReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nBotCenters, fp))
 			return 0;
-		for (i = 0; i < gameData.matCens.nMatCens; i++)
+		for (i = 0; i < gameData.matCens.nBotCenters; i++)
 			StateRestoreMatCen (gameData.matCens.botGens + i, fp);
 		}
 	else {
-		gameData.matCens.nMatCens = 0;
+		gameData.matCens.nBotCenters = 0;
 		memset (gameData.matCens.botGens, 0, sizeof (gameData.matCens.botGens));
 		}
 	StateRestoreReactorTrigger (&gameData.reactor.triggers, fp);
@@ -2434,9 +2434,9 @@ if (!bBetweenLevels)	{
 //Restore the fuelcen info
 	gameData.reactor.bDestroyed = CFReadInt (fp);
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
-	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nMatCens, fp))
+	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters, fp))
 		return 0;
-	CFRead (gameData.matCens.botGens, sizeof (tMatCenInfo), gameData.matCens.nMatCens, fp);
+	CFRead (gameData.matCens.botGens, sizeof (tMatCenInfo), gameData.matCens.nBotCenters, fp);
 	CFRead (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	if (CFReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters, fp))
 		return 0;

@@ -1390,7 +1390,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 }
 }
 
-gameData.matCens.nMatCens = gameFileInfo.botGen.count;
+gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
 //fix old wall structs
 if (gameTopFileInfo.fileinfo_version < 17) {
 	short nSegment,nSide,wallnum;
@@ -1773,7 +1773,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.control.count		=  1;
 	gameFileInfo.control.size		=  sizeof(tReactorTriggers);
  	gameFileInfo.botGen.offset		=	-1;
-	gameFileInfo.botGen.count		=	gameData.matCens.nMatCens;
+	gameFileInfo.botGen.count		=	gameData.matCens.nBotCenters;
 	gameFileInfo.botGen.size		=	sizeof(tMatCenInfo);
 
  	gameFileInfo.lightDeltaIndices.offset		=	-1;

@@ -73,7 +73,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Correctly set currentLevel_num when loading/creating mine in editor
  * 
  * Revision 1.178  1994/09/25  14:17:51  mike
- * Initialize (to 0) gameData.matCens.nMatCens and gameData.walls.nOpenDoors at mine creation.
+ * Initialize (to 0) gameData.matCens.nBotCenters and gameData.walls.nOpenDoors at mine creation.
  * 
  * Revision 1.177  1994/09/20  14:36:06  mike
  * Write function to find overlapping segments.
@@ -981,7 +981,7 @@ void compress_segments(void)
 					if (gameData.matCens.fuelCenters[f].nSegment == seg)
 						gameData.matCens.fuelCenters[f].nSegment = hole;
 
-				for (f=0;f<gameData.matCens.nMatCens;f++)
+				for (f=0;f<gameData.matCens.nBotCenters;f++)
 					if (gameData.matCens.botGens[f].nSegment == seg)
 						gameData.matCens.botGens[f].nSegment = hole;
 
@@ -1969,7 +1969,7 @@ int create_new_mine(void)
 		Groupside[s] = 0;
 	}
 
-	gameData.matCens.nMatCens = 0;
+	gameData.matCens.nBotCenters = 0;
 	gameData.walls.nOpenDoors = 0;
 	WallInit();
 	trigger_init();

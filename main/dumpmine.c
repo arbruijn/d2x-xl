@@ -499,7 +499,7 @@ void write_matcen_text(FILE *my_file)
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "Materialization centers:\n");
-	for (i=0; i<gameData.matCens.nMatCens; i++) {
+	for (i=0; i<gameData.matCens.nBotCenters; i++) {
 		int	triggerCount=0, nSegment, nFuelCen;
 
 		fprintf(my_file, "tFuelCenInfo[%02i].Segment = %04i  ", i, gameData.matCens.fuelCenters[i].nSegment);
@@ -682,7 +682,7 @@ void write_game_text_file(char *filename)
 	fprintf(my_file, "Number of walls:      %4i\n", gameData.walls.nWalls);
 	fprintf(my_file, "Number of open doors: %4i\n", gameData.walls.nOpenDoors);
 	fprintf(my_file, "Number of triggers:   %4i\n", gameData.trigs.nTriggers);
-	fprintf(my_file, "Number of matcens:    %4i\n", gameData.matCens.nMatCens);
+	fprintf(my_file, "Number of matcens:    %4i\n", gameData.matCens.nBotCenters);
 	fprintf(my_file, "\n");
 
 	write_segment_text(my_file);

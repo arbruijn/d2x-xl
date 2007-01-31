@@ -745,7 +745,7 @@ if (h < 0)
 	return;
 i = gameData.segs.segment2s [h].special;
 gameData.segs.segment2s [h].special = SEGMENT_IS_ROBOTMAKER;
-MatCenCreate (gameData.segs.segments + h, i);
+BotGenCreate (gameData.segs.segments + h, i);
 ChangeSegmentTexture (h, newOwner);
 }
 

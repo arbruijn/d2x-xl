@@ -1623,7 +1623,7 @@ typedef struct tMatCenData {
 	tMatCenInfo		botGens [MAX_ROBOT_CENTERS];
 	tMatCenInfo		equipGens [MAX_EQUIP_CENTERS];
 	int				nFuelCenters;
-	int				nMatCens;
+	int				nBotCenters;
 	int				nEquipCenters;
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];
