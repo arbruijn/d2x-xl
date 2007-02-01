@@ -12,139 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header file for AI system.
- *
- * Old Log:
- * Revision 1.3  1995/10/15  16:28:07  allender
- * added flag to player_is_visible function
- *
- * Revision 1.2  1995/10/10  11:48:32  allender
- * PC ai header
- *
- * Revision 1.1  1995/05/16  15:54:00  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:33:07  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.57  1995/02/04  17:28:31  mike
- * make station guys return better.
- *
- * Revision 1.56  1995/02/04  10:03:23  mike
- * Fly to exit cheat.
- *
- * Revision 1.55  1995/02/01  19:23:52  rob
- * Externed a boss var.
- *
- * Revision 1.54  1995/01/30  13:00:58  mike
- * Make robots fire at tPlayer other than one they are controlled by sometimes.
- *
- * Revision 1.53  1995/01/26  15:09:16  rob
- * Changed robot gating to accomodate multiplayer.
- *
- * Revision 1.52  1995/01/26  12:23:12  rob
- * Added new externs needed for multiplayer.
- *
- * Revision 1.51  1995/01/21  21:22:14  mike
- * Kill prototype of InitBossSegments, which didn't need to be public
- * and had changed.
- *
- * Revision 1.50  1995/01/16  19:24:29  mike
- * Publicize BOSS_GATE_MATCEN_NUM and Boss_been_hit.
- *
- * Revision 1.49  1995/01/02  16:17:35  mike
- * prototype some super boss function for gameseq.
- *
- * Revision 1.48  1994/12/19  17:08:06  mike
- * deal with new AIMultiplayerAwareness which returns a value saying whether this tObject can be moved by this tPlayer.
- *
- * Revision 1.47  1994/12/12  17:18:04  mike
- * make boss cloak/teleport when get hit, make quad laser 3/4 as powerful.
- *
- * Revision 1.46  1994/12/08  15:46:16  mike
- * better robot behavior.
- *
- * Revision 1.45  1994/11/27  23:16:08  matt
- * Made debug code go away when debugging turned off
- *
- * Revision 1.44  1994/11/16  23:38:41  mike
- * new improved boss teleportation behavior.
- *
- * Revision 1.43  1994/11/10  17:45:11  mike
- * debugging.
- *
- * Revision 1.42  1994/11/07  10:37:42  mike
- * hooks for rob's network code.
- *
- * Revision 1.41  1994/11/06  15:10:50  mike
- * prototype a debug function for dumping ai info.
- *
- * Revision 1.40  1994/11/02  17:57:30  rob
- * Added extern of Believe_player_pos needed to get control centers
- * locating people.
- *
- * Revision 1.39  1994/10/28  19:43:39  mike
- * Prototype Boss_cloak_startTime, Boss_cloak_endTime.
- *
- * Revision 1.38  1994/10/22  14:14:42  mike
- * Prototype AIResetAllPaths.
- *
- * Revision 1.37  1994/10/21  20:42:01  mike
- * Define MAX_PATH_LENGTH: maximum allowed length of a path.
- *
- * Revision 1.36  1994/10/20  09:49:18  mike
- * Prototype something.
- *
- *
- * Revision 1.35  1994/10/18  15:37:52  mike
- * Define ROBOT_BOSS1.
- *
- * Revision 1.34  1994/10/13  11:12:25  mike
- * Prototype some door functions.
- *
- * Revision 1.33  1994/10/12  21:28:51  mike
- * Prototype CreateNSegmentPathToDoor
- * Prototype ai_open_doors_in_segment
- * Prototype AIDoorIsOpenable.
- *
- * Revision 1.32  1994/10/11  15:59:41  mike
- * Prototype Robot_firing_enabled.
- *
- * Revision 1.31  1994/10/09  22:02:48  mike
- * Adapt CreatePathPoints and CreateNSegmentPath prototypes to use avoid_seg for tPlayer evasion.
- *
- * Revision 1.30  1994/09/18  18:07:44  mike
- * Update prototypes for CreatePathPoints and CreatePathToPlayer.
- *
- * Revision 1.29  1994/09/15  16:34:08  mike
- * Prototype DoAiRobotHitAttack.
- *
- * Revision 1.28  1994/09/12  19:12:35  mike
- * Prototype AttemptToResumePath.
- *
- * Revision 1.27  1994/08/25  21:55:32  mike
- * Add some prototypes.
- *
- * Revision 1.26  1994/08/10  19:53:24  mike
- * Prototype CreatePathToPlayer and InitRobotsForLevel.
- *
- * Revision 1.25  1994/08/04  16:32:58  mike
- * prototype CreatePathToPlayer.
- *
- * Revision 1.24  1994/08/03  15:17:20  mike
- * Prototype MakeRandomVector.
- *
- * Revision 1.23  1994/07/31  18:10:34  mike
- * Update prototype for CreatePathPoints.
- *
- * Revision 1.22  1994/07/28  12:36:14  matt
- * Cleaned up tObject bumping code
- *
- */
-
 #ifndef _AI_H
 #define _AI_H
 
@@ -207,7 +74,11 @@ int Robot_firing_enabled;
 void CreatePathToSegment (tObject *objP, short goalseg, int max_length, int safetyFlag);
 int ReadyToFire (tRobotInfo *robptr, tAILocal *ailp);
 int SmoothPath (tObject *objP, tPointSeg *psegs, int num_points);
-void move_towards_player (tObject *objP, vmsVector *vec_to_player);
+void MoveTowardsPlayer (tObject *objP, vmsVector *vec_to_player);
+
+void InitBossData (int i, int nObject);
+int AddBoss (int nObject);
+void RemoveBoss (int i);
 
 // max_length is maximum depth of path to create.
 // If -1, use default: MAX_DEPTH_TO_SEARCH_FOR_PLAYER
@@ -216,7 +87,7 @@ void AttemptToResumePath (tObject *objP);
 
 // When a robot and a tPlayer collide, some robots attack!
 void DoAiRobotHitAttack (tObject *robot, tObject *tPlayer, vmsVector *collision_point);
-void ai_open_doors_in_segment (tObject *robot);
+void AIOpenDoorsInSegment (tObject *robot);
 int AIDoorIsOpenable (tObject *objP, tSegment *segp, short nSide);
 int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
@@ -247,22 +118,21 @@ extern fix AI_procTime;
 
 typedef struct {
 	fix         lastTime;
-	int         last_segment;
-	vmsVector  last_position;
+	int         nLastSeg;
+	vmsVector   vLastPos;
 } tAICloakInfo;
 
 #define CHASE_TIME_LENGTH   (F1_0*8)
 #define DEFAULT_ROBOT_SOUND_VOLUME F1_0
 
-extern fix Dist_to_last_fired_upon_player_pos;
-extern vmsVector Last_fired_upon_player_pos;
-extern int Laser_rapid_fire;
+extern fix xDistToLastPlayerPosFiredAt;
+extern vmsVector vLastPlayerPosFiredAt;
 
 #define MAX_AWARENESS_EVENTS 64
 typedef struct tAwarenessEvent {
 	short       nSegment; // tSegment the event occurred in
 	short       nType;   // nType of event, defines behavior
-	vmsVector  pos;    // absolute 3 space location of event
+	vmsVector	pos;    // absolute 3 space location of event
 } tAwarenessEvent;
 
 #define AIS_MAX 8
@@ -319,19 +189,36 @@ extern int Escort_goalObject, Escort_special_goal, Escort_goal_index;
 #define THIEF_PROBABILITY   16384   // 50% chance of stealing an item at each attempt
 #define MAX_STOLEN_ITEMS    10      // Maximum number kept track of, will keep stealing, causes stolen weapons to be lost!
 
+#if 0
+
+extern ubyte Stolen_items [MAX_STOLEN_ITEMS];
+extern int Stolen_item_index;   // Used in ai.c for controlling rate of Thief flare firing.
+
 extern int   Max_escort_length;
 extern int   EscortKillObject;
-extern ubyte Stolen_items [MAX_STOLEN_ITEMS];
 extern fix   Escort_last_path_created;
 extern int   Escort_goalObject, Escort_special_goal, Escort_goal_index;
+extern int 	 nEscortGoalText [MAX_ESCORT_GOALS];
+
+extern int   Num_boss_teleport_segs [MAX_BOSS_COUNT];
+extern short Boss_teleport_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
+extern int   Num_boss_gate_segs [MAX_BOSS_COUNT];
+extern short Boss_gate_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
+extern int	 boss_obj_num [MAX_BOSS_COUNT];
+
+// --------- John: These variables must be saved as part of gamesave. ---------
+extern int              Ai_initialized;
+extern int              nOverallAgitation;
+extern tAILocal         aiLocalInfo [MAX_OBJECTS];
+extern tPointSeg        Point_segs [MAX_POINT_SEGS];
+extern tPointSeg        *Point_segs_free_ptr;
+extern tAICloakInfo    aiCloakInfo [MAX_AI_CLOAK_INFO];
+
+#endif
 
 extern void  CreateBuddyBot (void);
 
-extern int   Max_escort_length;
-
-extern int 	 nEscortGoalText [MAX_ESCORT_GOALS];
-
-extern void  ai_multi_sendRobot_position (short nObject, int force);
+extern void  AIMultiSendRobotPos (short nObject, int force);
 
 extern int   Flinch_scale;
 extern int   Attack_scale;
@@ -340,20 +227,7 @@ extern sbyte Mike_to_matt_xlate [];
 // Amount of time since the current robot was last processed for things such as movement.
 // It is not valid to use FrameTime because robots do not get moved every frame.
 
-extern int   Num_boss_teleport_segs [MAX_BOSS_COUNT];
-extern short Boss_teleport_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
-extern int   Num_boss_gate_segs [MAX_BOSS_COUNT];
-extern short Boss_gate_segs [MAX_BOSS_COUNT] [MAX_BOSS_TELEPORT_SEGS];
-extern int	 boss_obj_num [MAX_BOSS_COUNT];
 
-
-// --------- John: These variables must be saved as part of gamesave. ---------
-extern int              Ai_initialized;
-extern int              nOverallAgitation;
-extern tAILocal         aiLocalInfo [MAX_OBJECTS];
-extern tPointSeg        Point_segs [MAX_POINT_SEGS];
-extern tPointSeg        *Point_segs_free_ptr;
-extern tAICloakInfo    Ai_cloak_info [MAX_AI_CLOAK_INFO];
 // -- extern int              Boss_been_hit;
 // ------ John: End of variables which must be saved as part of gamesave. -----
 
@@ -393,21 +267,19 @@ extern void mprintf_animation_info (tObject *objP);
 
 #endif //ifndef NDEBUG
 
-extern int Stolen_item_index;   // Used in ai.c for controlling rate of Thief flare firing.
-
 extern void AIFrameAnimation (tObject *objP);
 extern int DoSillyAnimation (tObject *objP);
 extern int OpenableDoorsInSegment (short nSegment);
 extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag);
-extern void do_firing_stuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
-extern int maybe_ai_do_actual_firing_stuff (tObject *obj, tAIStatic *aip);
-extern void ai_do_actual_firing_stuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int gun_num);
-extern void do_super_boss_stuff (tObject *objP, fix dist_to_player, int player_visibility);
+extern void DoFiringStuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
+extern int AIMaybeDoActualFiringStuff (tObject *obj, tAIStatic *aip);
+extern void AIDoActualFiringStuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int gun_num);
+extern void DoSuperBossStuff (tObject *objP, fix dist_to_player, int player_visibility);
 extern void DoBossStuff (tObject *objP, int player_visibility);
 // -- unused, 08/07/95 -- extern void ai_turn_randomly (vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
 extern void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
-extern void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackType);
-extern void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based);
+extern void MoveAwayFromPlayer (tObject *objP, vmsVector *vec_to_player, int attackType);
+extern void MoveTowardsVector (tObject *objP, vmsVector *vec_goal, int dot_based);
 extern void InitAIFrame (void);
 
 extern void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs);

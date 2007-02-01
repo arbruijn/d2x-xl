@@ -784,7 +784,8 @@ void CreateNameCanv ()
 	else
 		sprintf (nameLevel_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
 
-	if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel>0)		//built-in mission
+	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+		 (gameData.missions.nCurrentLevel > 0))		//built-in mission
 		sprintf (nameLevel_right,"%s %d: ",system_name[ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
 	else
 		strcpy (nameLevel_right, " ");

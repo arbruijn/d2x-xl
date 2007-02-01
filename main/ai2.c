@@ -348,6 +348,55 @@ extern void InitBuddyForLevel (void);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void InitBossData (int i, int nObject)
+{
+if (nObject >= 0)
+	gameData.boss [i].nObject = nObject;
+else if (gameData.boss [i].nObject < 0)
+	return;
+InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs, &gameData.boss [i].nGateSegs, 0, 0);
+InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 0);
+if (gameData.boss [i].nTeleportSegs == 1)
+	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 1);
+gameData.boss [i].bDyingSoundPlaying = 0;
+gameData.boss [i].nDying = 0;
+gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
+if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
+	gameData.boss [i].nTeleportInterval = F1_0*10;
+	gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks
+	} 
+else {
+	gameData.boss [i].nTeleportInterval = F1_0*7;
+	gameData.boss [i].nCloakInterval = F1_0*10;					//	Time between cloaks
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+int AddBoss (int nObject)
+{
+	int	i = FindBoss (nObject);
+
+if (i >= 0)
+	return i;
+i = extraGameInfo [0].nBossCount++;
+if (i >= MAX_BOSS_COUNT)
+	return -1;
+InitBossData (i, nObject);
+return i;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void RemoveBoss (int i)
+{
+extraGameInfo [0].nBossCount--;
+if (i < BOSS_COUNT)
+	gameData.boss [i] = gameData.boss [BOSS_COUNT];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 void InitAIObjects (void)
 {
 	short		h, i, j;
@@ -364,31 +413,11 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 for (i = j = 0, objP = gameData.objs.objects; i < MAX_OBJECTS; i++, objP++) {
 	if (objP->controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-	if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag)) {
-		if (j)		//	There are two bosses in this mine! i and gameData.boss.objList!
-			Int3 ();			//do int3 here instead of assert so museum will work
+	if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag))
 		gameData.boss [j++].nObject = i;
-		}
 	}
-for (h = BOSS_COUNT, i = 0; i < h; i++) {
-	if (gameData.boss [i].nObject < 0)
-		continue;
-	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].gateSegs, &gameData.boss [i].nGateSegs, 0, 0);
-	InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 0);
-	if (gameData.boss [i].nTeleportSegs == 1)
-		InitBossSegments (gameData.boss [i].nObject, gameData.boss [i].teleportSegs, &gameData.boss [i].nTeleportSegs, 1, 1);
-	gameData.boss [i].bDyingSoundPlaying = 0;
-	gameData.boss [i].nDying = 0;
-	gameData.boss [i].nGateInterval = F1_0 * 4 - gameStates.app.nDifficultyLevel * i2f (2) / 3;
-	if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
-		gameData.boss [i].nTeleportInterval = F1_0*10;
-		gameData.boss [i].nCloakInterval = F1_0*15;					//	Time between cloaks
-		} 
-	else {
-		gameData.boss [i].nTeleportInterval = F1_0*7;
-		gameData.boss [i].nCloakInterval = F1_0*10;					//	Time between cloaks
-		}
-	}
+for (h = BOSS_COUNT, i = 0; i < h; i++)
+	InitBossData (i, -1);
 gameData.ai.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();
@@ -1065,7 +1094,7 @@ if (nWeaponType < 0)
 	return;
 CreateNewLaserEasy (&fire_vec, vFirePoint, OBJ_IDX (objP), (ubyte) nWeaponType, 1);
 if (gameData.app.nGameMode & GM_MULTI) {
-	ai_multi_sendRobot_position (nObject, -1);
+	AIMultiSendRobotPos (nObject, -1);
 	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
 	}
 CreateAwarenessEvent (objP, PA_NEARBY_ROBOT_FIRED);
@@ -1075,7 +1104,7 @@ SetNextFireTime (objP, ailp, robptr, nGun);
 // --------------------------------------------------------------------------------------------------------------------
 //	vec_goal must be normalized, or close to it.
 //	if dot_based set, then speed is based on direction of movement relative to heading
-void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based)
+void MoveTowardsVector (tObject *objP, vmsVector *vec_goal, int dot_based)
 {
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
 	fix				speed, dot, xMaxSpeed;
@@ -1119,10 +1148,10 @@ void move_towards_vector (tObject *objP, vmsVector *vec_goal, int dot_based)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void move_towards_player (tObject *objP, vmsVector *vec_to_player)
+void MoveTowardsPlayer (tObject *objP, vmsVector *vec_to_player)
 //	vec_to_player must be normalized, or close to it.
 {
-move_towards_vector (objP, vec_to_player, 1);
+MoveTowardsVector (objP, vec_to_player, 1);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1222,7 +1251,7 @@ void move_around_player (tObject *objP, vmsVector *vec_to_player, int fastFlag)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void move_away_from_player (tObject *objP, vmsVector *vec_to_player, int attackType)
+void MoveAwayFromPlayer (tObject *objP, vmsVector *vec_to_player, int attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
@@ -1324,30 +1353,30 @@ if (robptr->attackType == 1)
 		if (d_rand () < 8192)
 			move_around_player (objP, vec_to_player, -1);
 		else
-			move_away_from_player (objP, vec_to_player, 1);
+			MoveAwayFromPlayer (objP, vec_to_player, 1);
 	else
-		move_towards_player (objP, vec_to_player);
+		MoveTowardsPlayer (objP, vec_to_player);
 else if (robptr->thief)
-	move_towards_player (objP, vec_to_player);
+	MoveTowardsPlayer (objP, vec_to_player);
 else {
 	int	objval = ((OBJ_IDX (objP)) & 0x0f) ^ 0x0a;
 
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (robptr->kamikaze)
-		move_towards_player (objP, vec_to_player);
+		MoveTowardsPlayer (objP, vec_to_player);
 	else if (dist_to_player < circleDistance)
-		move_away_from_player (objP, vec_to_player, 0);
+		MoveAwayFromPlayer (objP, vec_to_player, 0);
 	else if ((dist_to_player < (3+objval)*circleDistance/2) && (ailp->nextPrimaryFire > -F1_0))
 		move_around_player (objP, vec_to_player, -1);
 	else
 		if ((-ailp->nextPrimaryFire > F1_0 + (objval << 12)) && player_visibility)
 			//	Usually move away, but sometimes move around player.
 			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4) 
-				move_away_from_player (objP, vec_to_player, 0);
+				MoveAwayFromPlayer (objP, vec_to_player, 0);
 			else
 				move_around_player (objP, vec_to_player, -1);
 		else
-			move_towards_player (objP, vec_to_player);
+			MoveTowardsPlayer (objP, vec_to_player);
 	}
 }
 
@@ -1409,7 +1438,7 @@ void mprintf_animation_info (tObject *objP)
 
 int	nBreakOnObject = -1;
 
-void do_firing_stuff (tObject *objP, int player_visibility, vmsVector *vec_to_player)
+void DoFiringStuff (tObject *objP, int player_visibility, vmsVector *vec_to_player)
 {
 	if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) || 
 		 (player_visibility >= 1)) {
@@ -1508,10 +1537,10 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector 
 
 				gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
 				MakeRandomVector (&randvec);
-				VmVecScaleInc (&gameData.ai.cloakInfo [cloak_index].last_position, &randvec, 8*deltaTime);
+				VmVecScaleInc (&gameData.ai.cloakInfo [cloak_index].vLastPos, &randvec, 8*deltaTime);
 			}
 
-			dist = VmVecNormalizedDirQuick (vec_to_player, &gameData.ai.cloakInfo [cloak_index].last_position, pos);
+			dist = VmVecNormalizedDirQuick (vec_to_player, &gameData.ai.cloakInfo [cloak_index].vLastPos, pos);
 			*player_visibility = ObjectCanSeePlayer (objP, pos, robptr->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
 			// *player_visibility = 2;
 
@@ -2019,8 +2048,8 @@ void InitAIForShip (void)
 
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	gameData.ai.cloakInfo [i].last_segment = gameData.objs.console->nSegment;
-	gameData.ai.cloakInfo [i].last_position = gameData.objs.console->position.vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = gameData.objs.console->nSegment;
+	gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
 	}
 }
 
@@ -2177,9 +2206,7 @@ rval = DoRobotDyingFrame (objP, gameData.boss [i].nDyingStartTime, BOSS_DEATH_DU
 								 &gameData.boss [i].bDyingSoundPlaying, 
 								 gameData.bots.pInfo [objP->id].deathrollSound, F1_0*4, F1_0*4);
 if (rval) {
-	extraGameInfo [0].nBossCount--;
-	if (i < BOSS_COUNT)
-		gameData.boss [i] = gameData.boss [BOSS_COUNT];
+	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
 	ExplodeObject (objP, F1_0/4);
 	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
@@ -2309,7 +2336,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 
 // -- Obsolete D1 code -- // --------------------------------------------------------------------------------------------------------------------
 // -- Obsolete D1 code -- //	Do special stuff for a boss.
-// -- Obsolete D1 code -- void do_super_boss_stuff (tObject *objP, fix dist_to_player, int player_visibility)
+// -- Obsolete D1 code -- void DoSuperBossStuff (tObject *objP, fix dist_to_player, int player_visibility)
 // -- Obsolete D1 code -- {
 // -- Obsolete D1 code -- 	static int eclipState = 0;
 // -- Obsolete D1 code -- 
@@ -2359,7 +2386,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 //	return 0;
 //}
 
-void ai_multi_sendRobot_position (short nObject, int force)
+void AIMultiSendRobotPos (short nObject, int force)
 {
 if (gameData.app.nGameMode & GM_MULTI) {
 	if (force != -1)
@@ -2372,7 +2399,7 @@ return;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns true if this tObject should be allowed to fire at the player.
-int maybe_ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip)
+int AIMaybeDoActualFiringStuff (tObject *objP, tAIStatic *aip)
 {
 if (gameData.app.nGameMode & GM_MULTI)
 	if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN))
@@ -2381,12 +2408,12 @@ if (gameData.app.nGameMode & GM_MULTI)
 return 0;
 }
 
-vmsVector	Last_fired_upon_player_pos;
+vmsVector	vLastPlayerPosFiredAt;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If fire_anyway, fire even if tPlayer is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
-void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int nGun)
+void AIDoActualFiringStuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int nGun)
 {
 	fix	dot;
 	//tRobotInfo *robptr = gameData.bots.pInfo + objP->id;
@@ -2398,9 +2425,9 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 		fire_pos = gameData.ai.vBelievedPlayerPos;
 
 		//	Hack: If visibility not == 2, we're here because we're firing at a nearby player.
-		//	So, fire at Last_fired_upon_player_pos instead of the tPlayer position.
+		//	So, fire at vLastPlayerPosFiredAt instead of the tPlayer position.
 		if (!robptr->attackType && (player_visibility != 2))
-			fire_pos = Last_fired_upon_player_pos;
+			fire_pos = vLastPlayerPosFiredAt;
 
 		//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
 		//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
@@ -2427,18 +2454,18 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 							if (nGun != 0) {
 								if (ailp->nextPrimaryFire <= 0) {
 									AIFireLaserAtPlayer (objP, gun_point, nGun, &fire_pos);
-									Last_fired_upon_player_pos = fire_pos;
+									vLastPlayerPosFiredAt = fire_pos;
 								}
 
 								if ((ailp->nextSecondaryFire <= 0) && (robptr->nSecWeaponType != -1)) {
 									CalcGunPoint (gun_point, objP, 0);
 									AIFireLaserAtPlayer (objP, gun_point, 0, &fire_pos);
-									Last_fired_upon_player_pos = fire_pos;
+									vLastPlayerPosFiredAt = fire_pos;
 								}
 
 							} else if (ailp->nextPrimaryFire <= 0) {
 								AIFireLaserAtPlayer (objP, gun_point, nGun, &fire_pos);
-								Last_fired_upon_player_pos = fire_pos;
+								vLastPlayerPosFiredAt = fire_pos;
 							}
 						}
 					}
@@ -2524,15 +2551,15 @@ void ai_do_actual_firing_stuff (tObject *objP, tAIStatic *aip, tAILocal *ailp, t
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 							if (nGun != 0) {
 								if (ailp->nextPrimaryFire <= 0)
-									AIFireLaserAtPlayer (objP, gun_point, nGun, &Last_fired_upon_player_pos);
+									AIFireLaserAtPlayer (objP, gun_point, nGun, &vLastPlayerPosFiredAt);
 
 								if ((ailp->nextSecondaryFire <= 0) && (robptr->nSecWeaponType != -1)) {
 									CalcGunPoint (gun_point, objP, 0);
-									AIFireLaserAtPlayer (objP, gun_point, 0, &Last_fired_upon_player_pos);
+									AIFireLaserAtPlayer (objP, gun_point, 0, &vLastPlayerPosFiredAt);
 								}
 
 							} else if (ailp->nextPrimaryFire <= 0)
-								AIFireLaserAtPlayer (objP, gun_point, nGun, &Last_fired_upon_player_pos);
+								AIFireLaserAtPlayer (objP, gun_point, nGun, &vLastPlayerPosFiredAt);
 						}
 					}
 

@@ -2238,7 +2238,7 @@ nAlreadyFree = MAX_OBJECTS - gameData.objs.nLastObject - 1;
 if (MAX_OBJECTS - nAlreadyFree < num_used)
 	return 0;
 
-for (i = 0; i<=gameData.objs.nLastObject; i++) {
+for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].flags & OF_SHOULD_BE_DEAD) {
 		nAlreadyFree++;
 		if (MAX_OBJECTS - nAlreadyFree < num_used)
@@ -2340,8 +2340,10 @@ if (nType == OBJ_WEAPON) {
 	if (id == FLARE_ID)
 		nType = nType;
 	}	
-else if (nType == OBJ_ROBOT)
-	nType = nType;
+else if (nType == OBJ_ROBOT) {
+	if (gameData.bots.pInfo [id].bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+		return -1;
+	}
 else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)

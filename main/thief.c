@@ -241,7 +241,7 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 						}
 					} 
 					AITurnTowardsVector(vec_to_player, objP, F1_0/4);
-					move_towards_player(objP, vec_to_player);
+					MoveTowardsPlayer(objP, vec_to_player);
 				} else {
 					tAIStatic	*aip = &objP->cType.aiInfo;
 					//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
