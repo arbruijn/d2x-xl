@@ -510,6 +510,7 @@ int CanJoinNetgame(tNetgameInfo *game,tAllNetPlayersInfo *people);
 void RestartNetSearching(tMenuItem * m);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
+void InitEntropySettings (int i);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 char *iptos (char *pszIP, char *addr);
 

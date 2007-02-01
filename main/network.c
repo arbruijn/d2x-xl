@@ -4424,6 +4424,28 @@ monsterballP->nSizeMod = 7;	// that is actually shield orb size * 3, because it'
 
 //------------------------------------------------------------------------------
 
+void InitEntropySettings (int i)
+{
+extraGameInfo [i].entropy.nEnergyFillRate = 25;
+extraGameInfo [i].entropy.nShieldFillRate = 11;
+extraGameInfo [i].entropy.nShieldDamageRate = 11;
+extraGameInfo [i].entropy.nMaxVirusCapacity = 0; 
+extraGameInfo [i].entropy.nBumpVirusCapacity = 2;
+extraGameInfo [i].entropy.nBashVirusCapacity = 1; 
+extraGameInfo [i].entropy.nVirusGenTime = 2; 
+extraGameInfo [i].entropy.nVirusLifespan = 0; 
+extraGameInfo [i].entropy.nVirusStability = 0;
+extraGameInfo [i].entropy.nCaptureVirusLimit = 1; 
+extraGameInfo [i].entropy.nCaptureTimeLimit = 1; 
+extraGameInfo [i].entropy.bRevertRooms = 0;
+extraGameInfo [i].entropy.bDoConquerWarning = 0;
+extraGameInfo [i].entropy.nOverrideTextures = 2;
+extraGameInfo [i].entropy.bBrightenRooms = 0;
+extraGameInfo [i].entropy.bPlayerHandicap = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void InitExtraGameInfo (void)
 {
 	int	i;
@@ -4487,22 +4509,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;
-	extraGameInfo [i].entropy.nEnergyFillRate = 25;
-	extraGameInfo [i].entropy.nShieldFillRate = 11;
-	extraGameInfo [i].entropy.nShieldDamageRate = 11;
-	extraGameInfo [i].entropy.nMaxVirusCapacity = 0; 
-	extraGameInfo [i].entropy.nBumpVirusCapacity = 2;
-	extraGameInfo [i].entropy.nBashVirusCapacity = 1; 
-	extraGameInfo [i].entropy.nVirusGenTime = 2; 
-	extraGameInfo [i].entropy.nVirusLifespan = 0; 
-	extraGameInfo [i].entropy.nVirusStability = 0;
-	extraGameInfo [i].entropy.nCaptureVirusLimit = 1; 
-	extraGameInfo [i].entropy.nCaptureTimeLimit = 1; 
-	extraGameInfo [i].entropy.bRevertRooms = 0;
-	extraGameInfo [i].entropy.bDoConquerWarning = 0;
-	extraGameInfo [i].entropy.nOverrideTextures = 2;
-	extraGameInfo [i].entropy.bBrightenRooms = 0;
-	extraGameInfo [i].entropy.bPlayerHandicap = 0;
+	InitEntropySettings (i);
 	InitMonsterballSettings (&extraGameInfo [i].monsterball);
 	}
 }

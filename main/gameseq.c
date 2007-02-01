@@ -950,6 +950,8 @@ gameData.multi.players [gameData.multi.nLocalPlayer] = save_player;
 gameData.hoard.nMonsterballSeg = -1;
 /*---*/LogErr ("   initializing sound sources\n");
 SetSoundSources ();
+if (!IsMultiGame)
+	InitEntropySettings (0);	//required for repair centers
 PlayLevelSong (gameData.missions.nCurrentLevel);
 ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette

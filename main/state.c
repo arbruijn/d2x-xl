@@ -2578,6 +2578,8 @@ CFClose (fp);
 FixObjectSegs ();
 ComputeNearestLights ();
 ComputeStaticDynLighting ();
+if (!IsMultiGame)
+	InitEntropySettings (0);	//required for repair centers
 //SetLastSuperWeaponStates ();
  // Get rid of ships that aren't connected in the restored game
 if (gameData.app.nGameMode & GM_MULTI) {
