@@ -41,9 +41,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WBACK                       4
 #define WFRONT                      5
 
-#define MAX_SEGMENTS_D2        900
-#define MAX_SEGMENTS           5000
-#define MAX_SEGMENT_VERTICES   (MAX_SEGMENTS * 4 + 8)
+#define MAX_SEGMENTS_D2					900
+#define MAX_SEGMENTS						6000
+#define MAX_SEGMENT_VERTICES			(MAX_SEGMENTS * 4 + 8)
 
 //normal everyday vertices
 
@@ -209,7 +209,7 @@ typedef union {
 #define MAX_DL_INDICES_D2    500
 #define MAX_DELTA_LIGHTS_D2  10000
 
-#define MAX_DL_INDICES       2500
+#define MAX_DL_INDICES       3000
 #define MAX_DELTA_LIGHTS     50000
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
