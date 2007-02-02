@@ -152,7 +152,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ControlsReadMouse (int *mouseAxis, int *mouse_buttons)
+int ControlsReadMouse (int *mouseAxis, int *nMouseButtons)
 {
 	int	dx, dy;
 #ifdef SDL_INPUT
@@ -168,7 +168,7 @@ mouseAxis [1] = (int) ((dy * gameStates.input.kcPollTime) / 25);
 #ifdef SDL_INPUT
 mouseAxis [2] = (int) (dz * gameStates.input.kcPollTime);
 #endif
-*mouse_buttons = MouseGetButtons ();
+*nMouseButtons = MouseGetButtons ();
 return 1;
 }
 
@@ -216,7 +216,7 @@ inline int ControlsReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.bSyncJoyAxes && (kcJoystick[23].value == i))		// If this is the throttle
+if (gameOpts->input.bSyncJoyAxes && (kcJoystick [23].value == i))		// If this is the throttle
 	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
 if (h > joyDeadzoneScaled) 
 	h = ((h - joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
@@ -233,7 +233,7 @@ int ControlsReadJoystick (int *joyAxis)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
 	unsigned long channelMasks;
-	int	i, useJoystick = 0;
+	int	i, bUseJoystick = 0;
 	fix	ctime;
 
 if (gameStates.limitFPS.bJoystick)
@@ -245,7 +245,7 @@ if (gameStates.limitFPS.bJoystick) {
 	if ((LastReadTime + JOYSTICK_READ_TIME > ctime) && (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)) {
 		if ((ctime < 0) && (LastReadTime >= 0))
 			LastReadTime = ctime;
-		useJoystick=1;
+		bUseJoystick=1;
 		} 
 	else if (gameOpts->input.bUseJoystick) {
 		LastReadTime = ctime;
@@ -265,7 +265,7 @@ if (gameStates.limitFPS.bJoystick) {
 #endif
 				}	
 			}
-		useJoystick=1;
+		bUseJoystick=1;
 		}
 	else {
 		for (i = 0; i < JOY_MAX_AXES; i++)
@@ -283,10 +283,10 @@ else {   // LIMIT_JOY_FPS
 					joyAxis [i] = 0;
 				}	
 			}
-		useJoystick = 1;
+		bUseJoystick = 1;
 		}
 	}
-return useJoystick;
+return bUseJoystick;
 }
 
 //------------------------------------------------------------------------------
@@ -348,14 +348,14 @@ ControlsSetFCSButton (7, button);
 		
 //------------------------------------------------------------------------------
 
-int ControlsReadCyberman (int *mouseAxis, int *mouse_buttons)
+int ControlsReadCyberman (int *mouseAxis, int *nMouseButtons)
 {
 	int idx, idy;
 
 mouse_get_cyberman_pos (&idx, &idy);
 mouseAxis [0] = (int) ((idx * gameStates.input.kcPollTime) / 128);
 mouseAxis [1] = (int) ((idy * gameStates.input.kcPollTime) / 128);
-*mouse_buttons = MouseGetButtons ();
+*nMouseButtons = MouseGetButtons ();
 return 1;
 }
 
@@ -712,113 +712,113 @@ void ControlsDoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *head
 	int	v;
 
 if (bGetSlideBank == 0) {
-	if ((v = kcJoystick[5].value) < 255) 
+	if ((v = kcJoystick [5].value) < 255) 
 		*bSlideOn |= JoyGetButtonState (v);
-	if ((v = kcJoystick[10].value) < 255)
+	if ((v = kcJoystick [10].value) < 255)
 		*bBankOn |= JoyGetButtonState (v);
 	return;
 	}
 // Buttons
 if (bGetSlideBank == 2) {
-	if ((v = kcJoystick[0].value) < 255) {
+	if ((v = kcJoystick [0].value) < 255) {
 		Controls [0].firePrimaryState |= JoyGetButtonState (v);
 		Controls [0].firePrimaryDownCount += JoyGetButtonDownCnt (v);
 		}
-	if ((v = kcJoystick[1].value) < 255) {
+	if ((v = kcJoystick [1].value) < 255) {
 		Controls [0].fireSecondaryState |= JoyGetButtonState (v);
 		Controls [0].fireSecondaryDownCount += JoyGetButtonDownCnt (v);
 		}
-	if ((v = kcJoystick[2].value) < 255) 
+	if ((v = kcJoystick [2].value) < 255) 
 		Controls [0].forwardThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[3].value) < 255) 
+	if ((v = kcJoystick [3].value) < 255) 
 		Controls [0].forwardThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[4].value) < 255) 
+	if ((v = kcJoystick [4].value) < 255) 
 		Controls [0].fireFlareDownCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick[6].value) < 255) 
+	if ((v = kcJoystick [6].value) < 255) 
 		Controls [0].sidewaysThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[7].value) < 255) 
+	if ((v = kcJoystick [7].value) < 255) 
 		Controls [0].sidewaysThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[8].value) < 255) 
+	if ((v = kcJoystick [8].value) < 255) 
 		Controls [0].verticalThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[9].value) < 255) 
+	if ((v = kcJoystick [9].value) < 255) 
 		Controls [0].verticalThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[11].value) < 255) 
-		Controls [0].bankTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[12].value) < 255) 
-		Controls [0].bankTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick[25].value) < 255) {
+	if ((v = kcJoystick [11].value) < 255) 
+		Controls [2].bankTime += JoyGetButtonDownTime (v);
+	if ((v = kcJoystick [12].value) < 255) 
+		Controls [2].bankTime -= JoyGetButtonDownTime (v);
+	if ((v = kcJoystick [25].value) < 255) {
 		Controls [0].rearViewDownCount += JoyGetButtonDownCnt (v);
 		Controls [0].rearViewDownState |= JoyGetButtonState (v);
 		}
-	if ((v = kcJoystick[26].value) < 255) 
+	if ((v = kcJoystick [26].value) < 255) 
 		Controls [0].dropBombDownCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick[27].value) < 255) 
+	if ((v = kcJoystick [27].value) < 255) 
 		Controls [0].afterburnerState |= JoyGetButtonState (v);
-	if ((v = kcJoystick[28].value) < 255) 
+	if ((v = kcJoystick [28].value) < 255) 
 		Controls [0].cyclePrimaryCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick[29].value) < 255) 
+	if ((v = kcJoystick [29].value) < 255) 
 		Controls [0].cycleSecondaryCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick[30].value) < 255) 
+	if ((v = kcJoystick [30].value) < 255) 
 		Controls [0].headlightCount += JoyGetButtonDownCnt (v);
-	if (((v = kcJoystick[31].value) < 255) && JoyGetButtonDownCnt (v))
+	if (((v = kcJoystick [31].value) < 255) && JoyGetButtonDownCnt (v))
 		KCToggleBomb ();
-	if ((v = kcJoystick[32].value) < 255) 
+	if ((v = kcJoystick [32].value) < 255) 
 		Controls [0].toggleIconsCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick[33].value) < 255) 
+	if ((v = kcJoystick [33].value) < 255) 
 		Controls [0].automapDownCount += JoyGetButtonDownCnt (v);
 
 	// Axis movements
-	if ((v = kcJoystick[17].value) < 255)
-		if (kcJoystick[18].value)		// If inverted...
+	if ((v = kcJoystick [17].value) < 255)
+		if (kcJoystick [18].value)		// If inverted...
 			Controls [0].sidewaysThrustTime += joyAxis [v];
 		else
 			Controls [0].sidewaysThrustTime -= joyAxis [v];
-	if ((v = kcJoystick[19].value) < 255)
-		if (kcJoystick[20].value)		// If inverted...
+	if ((v = kcJoystick [19].value) < 255)
+		if (kcJoystick [20].value)		// If inverted...
 			Controls [0].verticalThrustTime -= joyAxis [v];
 		else
 			Controls [0].verticalThrustTime += joyAxis [v];
-	if ((v = kcJoystick[21].value) < 255)
-		if (kcJoystick[22].value)		// If inverted...
+	if ((v = kcJoystick [21].value) < 255)
+		if (kcJoystick [22].value)		// If inverted...
 			Controls [2].bankTime += joyAxis [v];
 		else
 			Controls [2].bankTime -= joyAxis [v];
-	if ((v = kcJoystick[23].value) < 255)
-		if (kcJoystick[24].value)		// If inverted...
+	if ((v = kcJoystick [23].value) < 255)
+		if (kcJoystick [24].value)		// If inverted...
 			Controls [0].forwardThrustTime += joyAxis [v];
 		else
 			Controls [0].forwardThrustTime -= joyAxis [v];
 
 	// special continuous slide & bank handling
 	if (*bSlideOn) {
-		if ((v = kcJoystick[13].value) < 255)
-			if (kcJoystick[14].value)		// If inverted...
+		if ((v = kcJoystick [13].value) < 255)
+			if (kcJoystick [14].value)		// If inverted...
 				Controls [0].verticalThrustTime -= joyAxis [v];
 			else
 				Controls [0].verticalThrustTime += joyAxis [v];
-		if ((v = kcJoystick[15].value) < 255)
-			if (kcJoystick[16].value)		// If inverted...
+		if ((v = kcJoystick [15].value) < 255)
+			if (kcJoystick [16].value)		// If inverted...
 				Controls [0].sidewaysThrustTime -= joyAxis [v];
 			else
 				Controls [0].sidewaysThrustTime += joyAxis [v];
 		}
 	else {
-		if ((v = kcJoystick[13].value) < 255)
-			if (kcJoystick[14].value)		// If inverted...
+		if ((v = kcJoystick [13].value) < 255)
+			if (kcJoystick [14].value)		// If inverted...
 				Controls [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 			else 
 				Controls [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 		if (!*bBankOn) {
-			if ((v = kcJoystick[15].value) < 255)
-				if (kcJoystick[16].value)		// If inverted...
+			if ((v = kcJoystick [15].value) < 255)
+				if (kcJoystick [16].value)		// If inverted...
 					Controls [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //kcFrameCount;
 				else
 					Controls [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // kcFrameCount;
 			}
 		}
 	if (*bBankOn) {
-		if ((v = kcJoystick[15].value) < 255)
-			if (kcJoystick[16].value)		// If inverted...
+		if ((v = kcJoystick [15].value) < 255)
+			if (kcJoystick [16].value)		// If inverted...
 				Controls [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 			else
 				Controls [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
@@ -828,7 +828,7 @@ if (bGetSlideBank == 2) {
 
 //------------------------------------------------------------------------------
 
-void ControlsDoMouse (int *mouseAxis, int mouse_buttons, 
+void ControlsDoMouse (int *mouseAxis, int nMouseButtons, 
 							 int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, 
 							 int bGetSlideBank)
 {
@@ -836,9 +836,9 @@ void ControlsDoMouse (int *mouseAxis, int mouse_buttons,
 
 if (bGetSlideBank == 0) {
 	if ((v = kcMouse [5].value) < 255) 
-		*bSlideOn |= mouse_buttons & (1 << v);
+		*bSlideOn |= nMouseButtons & (1 << v);
 	if ((v = kcMouse [10].value) < 255) 
-		*bBankOn |= mouse_buttons & (1 << v);
+		*bBankOn |= nMouseButtons & (1 << v);
 	return;
 	}
 // Buttons
@@ -1109,11 +1109,11 @@ int ControlsReadAll (void)
 {
 	int	i;
 	int	bSlideOn, bBankOn;
-	int	bank_sens_mod;
+	int	nBankSensMod;
 	fix	pitchTime, headingTime;
 	fix	mouseAxis [3];
-	int	mouse_buttons;
-	int	bUseMouse, useJoystick;
+	int	nMouseButtons;
+	int	bUseMouse, bUseJoystick;
 
 Controls [0].cyclePrimaryCount = 0;
 Controls [0].cycleSecondaryCount = 0;
@@ -1130,8 +1130,8 @@ if (ControlsCapSampleRate ())
 gameStates.input.bControlsSkipFrame = 0;
 ControlsResetControls ();
 gameStates.input.bKeepSlackTime = 1;
-bank_sens_mod = kcFrameCount;
-mouse_buttons = 0;
+nBankSensMod = kcFrameCount;
+nMouseButtons = 0;
 bUseMouse = 0;
 bSlideOn = 0;
 bBankOn = 0;
@@ -1141,21 +1141,21 @@ if (!gameOpts->legacy.bInput)
 #endif
 
 SetControlType ();
-useJoystick = gameOpts->input.bUseJoystick && ControlsReadJoystick (joyAxis);
+bUseJoystick = gameOpts->input.bUseJoystick && ControlsReadJoystick (joyAxis);
 if (gameOpts->input.bUseMouse)
 	if (gameStates.input.bCybermouseActive) {
 //		ReadOWL (kc_external_control);
 //		CybermouseAdjust ();
 		} 
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
-		bUseMouse = ControlsReadCyberman (mouseAxis, &mouse_buttons);
+		bUseMouse = ControlsReadCyberman (mouseAxis, &nMouseButtons);
 	else
-		bUseMouse = ControlsReadMouse (mouseAxis, &mouse_buttons);
+		bUseMouse = ControlsReadMouse (mouseAxis, &nMouseButtons);
 else {
 	mouseAxis [0] =
 	mouseAxis [1] =
 	mouseAxis [2] = 0;
-	mouse_buttons = 0;
+	nMouseButtons = 0;
 	bUseMouse = 0;
 	}
 
@@ -1163,10 +1163,10 @@ pitchTime = headingTime = 0;
 memset (Controls + 1, 0, 3 * sizeof (tControlInfo));
 for (i = 0; i < 3; i++) {
 	ControlsDoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
-	if (useJoystick)
+	if (bUseJoystick)
 		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
 	if (bUseMouse)
-		ControlsDoMouse (mouseAxis, mouse_buttons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
+		ControlsDoMouse (mouseAxis, nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
 	Controls [0].pitchTime = Controls [1].pitchTime + Controls [2].pitchTime + Controls [3].pitchTime;
 	Controls [0].headingTime = Controls [1].headingTime + Controls [2].headingTime + Controls [3].headingTime;
 	Controls [0].bankTime = Controls [1].bankTime + Controls [2].bankTime + Controls [3].bankTime;
@@ -1185,9 +1185,9 @@ if (!Controls [0].forwardThrustTime)
 	Controls [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime)/100;
 
 #if 0 //LIMIT_CONTROLS_FPS
-if (bank_sens_mod > 2) {
+if (nBankSensMod > 2) {
 	Controls [0].bankTime *= 2;
-	Controls [0].bankTime /= bank_sens_mod;
+	Controls [0].bankTime /= nBankSensMod;
 	}
 #endif
 

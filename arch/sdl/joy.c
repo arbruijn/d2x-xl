@@ -257,13 +257,13 @@ fix JoyGetButtonDownTime(int btn)
 {
 	fix time = F0_0;
 
-	if (!gameOpts->input.nJoysticks)
-		return 0;
+if (!gameOpts->input.nJoysticks)
+	return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
    event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	switch (Joystick.buttons [btn].state) {
+switch (Joystick.buttons [btn].state) {
 	case SDL_PRESSED:
 		time = TimerGetFixedSeconds() - Joystick.buttons [btn].time_wentDown;
 		Joystick.buttons [btn].time_wentDown = TimerGetFixedSeconds();
@@ -272,8 +272,7 @@ if (gameOpts->legacy.bInput)
 		time = 0;
 		break;
 	}
-
-	return time;
+return time;
 }
 
 //------------------------------------------------------------------------------
