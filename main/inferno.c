@@ -607,7 +607,11 @@ if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
 #else
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
 #endif
-sprintf (gameFolders.szMissionDir, "%s%s%s", gameFolders.szGameDir, /* *gameFolders.szGameDir ? "/" :*/ "", BASE_MISSION_DIR);
+#ifdef WIN32
+sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);
+#else
+sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_DIR);
+#endif
 //if (i = FindArg ("-hogdir"))
 //	CFUseAltHogDir (Args [i + 1]);
 }

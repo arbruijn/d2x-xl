@@ -895,7 +895,7 @@ void ExecObjTriggers (short nObject)
 
 while (i >= 0) {
 	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, -1, 1, 1);
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendObjTrigger (i);
 	i = gameData.trigs.objTriggerRefs [i].next;
 	}
