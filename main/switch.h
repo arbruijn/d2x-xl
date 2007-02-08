@@ -44,7 +44,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_CAMERA				 16
 #define TT_SHIELD_DAMAGE	 17
 #define TT_ENERGY_DRAIN		 18
-#define NUM_TRIGGER_TYPES   19
+#define TT_CHANGE_TEXTURE	 19
+#define NUM_TRIGGER_TYPES   20
 
 // Trigger flags
 
@@ -122,7 +123,7 @@ extern tObjTriggerRef ObjTriggerRefs[MAX_OBJ_TRIGGERS];
 extern short FirstObjTrigger [MAX_OBJECTS_D2X];
 extern int Num_obj_triggers;
 
-extern void trigger_init();
+extern void TriggerInit();
 extern void CheckTrigger(tSegment *seg, short tSide, short nObject,int shot);
 extern int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int trigger_num, 
 									 int player_num, int shot, int bBotTrigger);

@@ -60,28 +60,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 
 #define MAX_ORIENT_STEPS	10
 
-#define TT_OPEN_DOOR        0   // Open a door
-#define TT_CLOSE_DOOR       1   // Close a door
-#define TT_MATCEN           2   // Activate a matcen
-#define TT_EXIT             3   // End the level
-#define TT_SECRET_EXIT      4   // Go to secret level
-#define TT_ILLUSION_OFF     5   // Turn an illusion off
-#define TT_ILLUSION_ON      6   // Turn an illusion on
-#define TT_UNLOCK_DOOR      7   // Unlock a door
-#define TT_LOCK_DOOR        8   // Lock a door
-#define TT_OPEN_WALL        9   // Makes a wall open
-#define TT_CLOSE_WALL       10  // Makes a wall closed
-#define TT_ILLUSORY_WALL    11  // Makes a wall illusory
-#define TT_LIGHT_OFF        12  // Turn a light off
-#define TT_LIGHT_ON         13  // Turn s light on
-#define TT_TELEPORT			 14
-#define TT_SPEEDBOOST		 15
-#define TT_CAMERA				 16
-#define TT_SHIELD_DAMAGE	 17
-#define TT_ENERGY_DRAIN		 18
-#define NUM_TRIGGER_TYPES   19
-
-int oppTrigTypes [] = {
+int oppTrigTypes  [] = {
 	TT_CLOSE_DOOR,
 	TT_OPEN_DOOR,
 	TT_MATCEN,
@@ -100,7 +79,8 @@ int oppTrigTypes [] = {
 	TT_SPEEDBOOST,
 	TT_CAMERA,
 	TT_SHIELD_DAMAGE,
-	TT_ENERGY_DRAIN
+	TT_ENERGY_DRAIN,
+	TT_CHANGE_TEXTURE
 	};
 
 //link Links [MAX_WALL_LINKS];
@@ -111,7 +91,7 @@ fix triggerTimeCount=F1_0;
 
 //-----------------------------------------------------------------
 // Initializes all the switches.
-void trigger_init ()
+void TriggerInit ()
 {
 	int i;
 
@@ -140,6 +120,25 @@ short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
 for (i = trigP->nLinks; i; i--, segs++, sides++)
 	WallToggle (gameData.segs.segments + *segs, *sides);
+}
+
+//-----------------------------------------------------------------
+// Executes a link, attached to a tTrigger.
+// Toggles all walls linked to the switch.
+// Opens doors, Blasts blast walls, turns off illusions.
+void DoChangeTexture (tTrigger *trigP)
+{
+	int	i, 
+			baseTex = trigP->value & 0xffff,
+			ovlTex = (trigP->value >> 16);
+
+short *segs = trigP->nSegment;
+short *sides = trigP->nSide;
+for (i = trigP->nLinks; i; i--, segs++, sides++) {
+	gameData.segs.segments [*segs].sides [*sides].nBaseTex = baseTex;
+	if (ovlTex > 0)
+		gameData.segs.segments [*segs].sides [*sides].nOvlTex = ovlTex;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -876,6 +875,10 @@ switch (trigP->nType) {
 
 	case TT_ENERGY_DRAIN:
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy += gameData.trigs.triggers [nTrigger].value;
+		break;
+
+	case TT_CHANGE_TEXTURE:
+		DoChangeTexture (trigP);
 		break;
 
 	default:

@@ -2576,6 +2576,7 @@ else
 	StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 CFClose (fp);
 FixObjectSegs ();
+FixObjectSizes ();
 ComputeNearestLights ();
 ComputeStaticDynLighting ();
 if (!IsMultiGame)

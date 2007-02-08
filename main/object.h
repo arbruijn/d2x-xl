@@ -491,6 +491,7 @@ float ObjectDamage (tObject *objP);
 int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
+void FixObjectSizes (void);
 
 extern ubyte bIsMissile [];
 

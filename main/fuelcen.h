@@ -128,11 +128,9 @@ extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 // Called when a materialization center gets triggered by the tPlayer
 // flying through some tTrigger!
 void MatCenTrigger (short nSegment);
-
 void DisableMatCens (void);
-
 void InitAllMatCens (void);
-
+void BotGenCreate (tSegment *segP, int oldType);
 void FuelCenCheckForHoardGoal(tSegment *segp);
 
 #ifdef FAST_FILE_IO

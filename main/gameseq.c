@@ -925,6 +925,7 @@ ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);
 ResetPlayerPaths ();
+FixObjectSizes ();
 /*---*/LogErr ("   counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {

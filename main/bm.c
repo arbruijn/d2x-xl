@@ -1299,6 +1299,8 @@ for (j = 0; j < t; j++) {
 	FreeModel (po);
 	PolyModelRead (po, fp);
 	PolyModelDataRead (po, NULL, fp);
+	if (!bAltModels)
+		po->rad = G3PolyModelSize (po->modelData);
 	if (bAltModels) {
 #if 0
 		ubyte	*p = gameData.models.defPolyModels [i].modelData;

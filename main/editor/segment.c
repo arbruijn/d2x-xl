@@ -1972,7 +1972,7 @@ int create_new_mine(void)
 	gameData.matCens.nBotCenters = 0;
 	gameData.walls.nOpenDoors = 0;
 	WallInit();
-	trigger_init();
+	TriggerInit();
 
 	// Create New_segment, which is the tSegment we will be adding at each instance.
 	med_create_new_segment(VmVecMake(&sizevec,DEFAULT_X_SIZE,DEFAULT_Y_SIZE,DEFAULT_Z_SIZE);		// New_segment = gameData.segs.segments[0];

@@ -3454,39 +3454,19 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 			}
 }
 
+//------------------------------------------------------------------------------
+//go through all gameData.objs.objects and make sure they have the correct size
+void FixObjectSizes (void)
+{
+	int i;
+	tObject	*objP = gameData.objs.objects;
 
-//--unused-- void object_use_newObject_list (tObject * new_list)
-//--unused-- {
-//--unused-- 	int i, nSegment;
-//--unused-- 	tObject *objP;
-//--unused--
-//--unused-- 	// First, unlink all the old gameData.objs.objects for the segments array
-//--unused-- 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
-//--unused-- 		gameData.segs.segments [nSegment].objects = -1;
-//--unused-- 	}
-//--unused-- 	// Then, erase all the gameData.objs.objects
-//--unused-- 	ResetObjects (1);
-//--unused--
-//--unused-- 	// Fill in the tObject array
-//--unused-- 	memcpy (gameData.objs.objects, new_list, sizeof (tObject)*MAX_OBJECTS);
-//--unused--
-//--unused-- 	gameData.objs.nLastObject=-1;
-//--unused--
-//--unused-- 	// Relink 'em
-//--unused-- 	for (i = 0; i<MAX_OBJECTS; i++)	{
-//--unused-- 		obj = &gameData.objs.objects [i];
-//--unused-- 		if (objP->nType != OBJ_NONE)	{
-//--unused-- 			gameData.objs.nObjects++;
-//--unused-- 			gameData.objs.nLastObject = i;
-//--unused-- 			nSegment = objP->nSegment;
-//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
-//--unused-- 			LinkObject (i, nSegment);
-//--unused-- 		} else {
-//--unused-- 			objP->next = objP->prev = objP->nSegment = -1;
-//--unused-- 		}
-//--unused-- 	}
-//--unused-- 	
-//--unused-- }
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if (objP->nType != OBJ_NONE)
+		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+}
+
+//------------------------------------------------------------------------------
 
 //delete gameData.objs.objects, such as weapons & explosions, that shouldn't stay between levels
 //	Changed by MK on 10/15/94, don't remove proximity bombs.

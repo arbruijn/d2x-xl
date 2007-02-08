@@ -503,16 +503,15 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-//calls the tObject interpreter to render an tObject.  The tObject renderer
-//is really a seperate pipeline. returns true if drew
-fix G3PolyModelSize (void *modelP)
+//walks through all submodels of a polymodel and determines the coordinate extremes
+void G3GetPolyModelMinMax (void *modelP, vmsVector *pvMin, vmsVector *pvMax)
 {
 	ubyte			*p = modelP;
 	int			i, n, nv;
-	vmsVector	*v, 
-					pMin = {0x7fffffff, 0x7fffffff, 0x7fffffff}, 
-					pMax = {-0x7fffffff, -0x7fffffff, -0x7fffffff};
+	vmsVector	*v, vMin, vMax;
 
+vMin = *pvMin;
+vMax = *pvMax;
 G3CheckAndSwap (modelP);
 for (;;)
 	switch (WORDVAL (p)) {
@@ -522,18 +521,18 @@ for (;;)
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
-				if (pMin.p.x > v->p.x)
-					pMin.p.x = v->p.x;
-				else if (pMax.p.x < v->p.x)
-					pMax.p.x = v->p.x;
-				if (pMin.p.y > v->p.y)
-					pMin.p.y = v->p.y;
-				else if (pMax.p.y < v->p.y)
-					pMax.p.y = v->p.y;
-				if (pMin.p.z > v->p.z)
-					pMin.p.z = v->p.z;
-				else if (pMax.p.z < v->p.z)
-					pMax.p.z = v->p.z;
+				if (vMin.p.x > v->p.x)
+					vMin.p.x = v->p.x;
+				else if (vMax.p.x < v->p.x)
+					vMax.p.x = v->p.x;
+				if (vMin.p.y > v->p.y)
+					vMin.p.y = v->p.y;
+				else if (vMax.p.y < v->p.y)
+					vMax.p.y = v->p.y;
+				if (vMin.p.z > v->p.z)
+					vMin.p.z = v->p.z;
+				else if (vMax.p.z < v->p.z)
+					vMax.p.z = v->p.z;
 				}
 			p += n * sizeof (vmsVector) + 4;
 			break;
@@ -542,18 +541,18 @@ for (;;)
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
-				if (pMin.p.x > v->p.x)
-					pMin.p.x = v->p.x;
-				else if (pMax.p.x < v->p.x)
-					pMax.p.x = v->p.x;
-				if (pMin.p.y > v->p.y)
-					pMin.p.y = v->p.y;
-				else if (pMax.p.y < v->p.y)
-					pMax.p.y = v->p.y;
-				if (pMin.p.z > v->p.z)
-					pMin.p.z = v->p.z;
-				else if (pMax.p.z < v->p.z)
-					pMax.p.z = v->p.z;
+				if (vMin.p.x > v->p.x)
+					vMin.p.x = v->p.x;
+				else if (vMax.p.x < v->p.x)
+					vMax.p.x = v->p.x;
+				if (vMin.p.y > v->p.y)
+					vMin.p.y = v->p.y;
+				else if (vMax.p.y < v->p.y)
+					vMax.p.y = v->p.y;
+				if (vMin.p.z > v->p.z)
+					vMin.p.z = v->p.z;
+				else if (vMax.p.z < v->p.z)
+					vMax.p.z = v->p.z;
 				}
 			p += n * sizeof (vmsVector) + 8;
 			break;
@@ -569,6 +568,9 @@ for (;;)
 			break;
 
 		case OP_SORTNORM:
+			G3GetPolyModelMinMax (p+WORDVAL (p+28), &vMin, &vMax);
+//			(*pnSubObjs)++;
+			G3GetPolyModelMinMax (p+WORDVAL (p+30), &vMin, &vMax);
 			p += 32;
 			break;
 
@@ -578,6 +580,7 @@ for (;;)
 			break;
 
 		case OP_SUBCALL:
+			G3GetPolyModelMinMax (p+WORDVAL (p+16), &vMin, &vMax);
 			p += 20;
 			break;
 
@@ -589,13 +592,28 @@ for (;;)
 		default:
 			Error ("invalid polygon model\n");
 		}
-done:
-{
-	double	dx = (pMax.p.x - pMin.p.x) / 2;
-	double	dy = (pMax.p.y - pMin.p.y) / 2;
-	double	dz = (pMax.p.z - pMin.p.z) / 2;
 
-return (fix) sqrt (dx * dx + dy * dy + dz + dz);
+done:
+
+*pvMin = vMin;
+*pvMax = vMax;
+}
+
+//------------------------------------------------------------------------------
+//walks through all submodels of a polymodel and determines the coordinate extremes
+fix G3PolyModelSize (void *modelP)
+{
+	ubyte			*p = modelP;
+	vmsVector	vMin = {0x7fffffff, 0x7fffffff, 0x7fffffff}, 
+					vMax = {-0x7fffffff, -0x7fffffff, -0x7fffffff};
+
+G3GetPolyModelMinMax (modelP, &vMin, &vMax);
+{
+	double	dx = (vMax.p.x - vMin.p.x) / 2;
+	double	dy = (vMax.p.y - vMin.p.y) / 2;
+	double	dz = (vMax.p.z - vMin.p.z) / 2;
+
+return (fix) (sqrt (dx * dx + dy * dy + dz + dz) * 1.33);
 }
 //return VmVecDist (&pMin, &pMax) / 2;
 }
