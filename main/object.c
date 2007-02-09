@@ -3462,7 +3462,7 @@ void FixObjectSizes (void)
 	tObject	*objP = gameData.objs.objects;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-	if (objP->nType != OBJ_NONE)
+	if (objP->nType == OBJ_ROBOT)
 		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 }
 

@@ -897,9 +897,12 @@ void ExecObjTriggers (short nObject)
 	short i = gameData.trigs.firstObjTrigger [nObject];
 
 while (i >= 0) {
+	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
+		break;
 	CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, -1, 1, 1);
 	if (IsMultiGame)
 		MultiSendObjTrigger (i);
+	gameData.trigs.objTriggerRefs [i].nObject = -1;
 	i = gameData.trigs.objTriggerRefs [i].next;
 	}
 }
