@@ -60,47 +60,47 @@ ushort BECalcSegmentCheckSum()
 	uvl				*uvlP;
 	vmsVector		*normP;
 
-	sum1 = sum2 = 0;
-	for (i = 0; i < gameData.segs.nSegments, segP = gameData.segs.segments; i++, segP++) {
-		for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
-			BEDoCheckSumCalc(&(sideP->nType), 1, &sum1, &sum2);
-			BEDoCheckSumCalc(&(sideP->nFrame), 1, &sum1, &sum2);
-			s = INTEL_SHORT(WallNumI (i, j));
-			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(sideP->nBaseTex);
-			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(sideP->nOvlTex + (((short) sideP->nOvlOrient) << 6));
-			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
-				t = INTEL_INT (((int)uvlP->u));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT (((int)uvlP->v));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT (((int)uvlP->l));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-			}
-			for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
-				t = INTEL_INT (((int)normP->p.x));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT (((int)normP->p.y));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT (((int)normP->p.z));
-				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-			}
+sum1 = sum2 = 0;
+for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
+	for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		BEDoCheckSumCalc (&(sideP->nType), 1, &sum1, &sum2);
+		BEDoCheckSumCalc (&(sideP->nFrame), 1, &sum1, &sum2);
+		s = INTEL_SHORT (WallNumI (i, j));
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		s = INTEL_SHORT (sideP->nBaseTex);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		s = INTEL_SHORT (sideP->nOvlTex + (((short) sideP->nOvlOrient) << 6));
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
+			t = INTEL_INT (((int) uvlP->u));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->v));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) uvlP->l));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 		}
-		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-			s = INTEL_SHORT(segP->children[j]);
-			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
+		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
+			t = INTEL_INT (((int) normP->p.x));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) normP->p.y));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			t = INTEL_INT (((int) normP->p.z));
+			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 		}
-		for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
-			s = INTEL_SHORT(segP->verts[j]);
-			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-		}
-		t = INTEL_INT (segP->objects);
-		BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 	}
-	sum2 %= 255;
-	return ((sum1<<8)+ sum2);
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
+		s = INTEL_SHORT (segP->children [j]);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+	}
+	for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
+		s = INTEL_SHORT (segP->verts [j]);
+		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
+	}
+	t = INTEL_INT (segP->objects);
+	BEDoCheckSumCalc((ubyte *) &t, 4, &sum1, &sum2);
+}
+sum2 %= 255;
+return ((sum1<<8)+ sum2);
 }
 
 // this routine totally and completely relies on the fact that the network
