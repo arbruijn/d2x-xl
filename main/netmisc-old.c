@@ -27,6 +27,8 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "pstypes.h"
 #include "mono.h"
 
+//#define WORDS_BIGENDIAN
+
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 #include "byteswap.h"
@@ -50,48 +52,51 @@ void BEDoCheckSumCalc(ubyte *b, int len, unsigned int *s1, unsigned int *s2)
 
 ushort BECalcSegmentCheckSum()
 {
-	int i, j, k;
-	unsigned int sum1,sum2;
-	short s;
-	int t;
+	int				i, j, k, t;
+	unsigned int	sum1,sum2;
+	short				s;
+	tSegment			*segP;
+	tSide				*sideP;
+	uvl				*uvlP;
+	vmsVector		*normP;
 
 	sum1 = sum2 = 0;
-	for (i = 0; i < gameData.segs.nLastSegment + 1; i++) {
-		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].nType), 1, &sum1, &sum2);
-			BEDoCheckSumCalc(&(gameData.segs.segments[i].sides[j].nFrame), 1, &sum1, &sum2);
+	for (i = 0; i < gameData.segs.nSegments, segP = gameData.segs.segments; i++, segP++) {
+		for (j = 0, sideP = segP->sides; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+			BEDoCheckSumCalc(&(sideP->nType), 1, &sum1, &sum2);
+			BEDoCheckSumCalc(&(sideP->nFrame), 1, &sum1, &sum2);
 			s = INTEL_SHORT(WallNumI (i, j));
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].nBaseTex);
+			s = INTEL_SHORT(sideP->nBaseTex);
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			s = INTEL_SHORT(gameData.segs.segments[i].sides[j].nOvlTex);
+			s = INTEL_SHORT(sideP->nOvlTex + (((short) sideP->nOvlOrient) << 6));
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
-			for (k = 0; k < 4; k++) {
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].uvls[k].u));
+			for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
+				t = INTEL_INT (((int)uvlP->u));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].uvls[k].v));
+				t = INTEL_INT (((int)uvlP->v));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].uvls[k].l));
+				t = INTEL_INT (((int)uvlP->l));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 			}
-			for (k = 0; k < 2; k++) {
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.x));
+			for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
+				t = INTEL_INT (((int)normP->p.x));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.y));
+				t = INTEL_INT (((int)normP->p.y));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
-				t = INTEL_INT(((int)gameData.segs.segments[i].sides[j].normals[k].p.z));
+				t = INTEL_INT (((int)normP->p.z));
 				BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 			}
 		}
 		for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
-			s = INTEL_SHORT(gameData.segs.segments[i].children[j]);
+			s = INTEL_SHORT(segP->children[j]);
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
 		}
 		for (j = 0; j < MAX_VERTICES_PER_SEGMENT; j++) {
-			s = INTEL_SHORT(gameData.segs.segments[i].verts[j]);
+			s = INTEL_SHORT(segP->verts[j]);
 			BEDoCheckSumCalc((ubyte *)&s, 2, &sum1, &sum2);
 		}
-		t = INTEL_INT(gameData.segs.segments[i].objects);
+		t = INTEL_INT (segP->objects);
 		BEDoCheckSumCalc((ubyte *)&t, 4, &sum1, &sum2);
 	}
 	sum2 %= 255;
@@ -157,7 +162,7 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 
 	memset(out_buffer, 0, sizeof(out_buffer));
 	out_buffer[0] = netPlayers.nType;                            loc++;
-	tmpi = INTEL_INT(netPlayers.nSecurity);
+	tmpi = INTEL_INT (netPlayers.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                       loc += 4;
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
 		memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); loc += CALLSIGN_LEN+1;
@@ -187,7 +192,7 @@ void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
 	loc++;
 	memcpy(&(pinfo->nSecurity), data + loc, 4);        
 	loc += 4;
-	pinfo->nSecurity = INTEL_INT(pinfo->nSecurity);
+	pinfo->nSecurity = INTEL_INT (pinfo->nSecurity);
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
 		BEReceiveNetPlayerInfo(data + loc, &(pinfo->players[i]));
 		loc += 26;          // sizeof(tNetPlayerInfo) on the PC
@@ -203,7 +208,7 @@ void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte
 	memset(out_buffer, 0, sizeof(out_buffer));
 	out_buffer[0] = seq.nType;                                       
 	loc++;
-	tmpi = INTEL_INT(seq.nSecurity);
+	tmpi = INTEL_INT (seq.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;       
 	loc += 3;
@@ -240,7 +245,7 @@ void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
 
 	seq->nType = data[0];                        loc++;
 	memcpy(&(seq->nSecurity), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
-	seq->nSecurity = INTEL_INT(seq->nSecurity);
+	seq->nSecurity = INTEL_INT (seq->nSecurity);
 	BEReceiveNetPlayerInfo(data + loc, &(seq->player));
 }
 
@@ -254,7 +259,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	memset(out_buffer, 0, IPX_MAX_DATA_SIZE);
 	memcpy(out_buffer + loc, &(netGame.nType), 1);                 
 	loc++;
-	tmpi = INTEL_INT(netGame.nSecurity);
+	tmpi = INTEL_INT (netGame.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;
 	memcpy(out_buffer + loc, netGame.szGameName, NETGAME_NAME_LEN+1);  
@@ -263,7 +268,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	loc += (MISSION_NAME_LEN+1);
 	memcpy(out_buffer + loc, netGame.szMissionName, 9);            
 	loc += 9;
-	tmpi = INTEL_INT(netGame.nLevel);
+	tmpi = INTEL_INT (netGame.nLevel);
 	memcpy(out_buffer + loc, &tmpi, 4);                           
 	loc += 4;
 	memcpy(out_buffer + loc, &(netGame.gameMode), 1);             
@@ -332,7 +337,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 
 	memcpy(out_buffer + loc, netGame.team_name, 2*(CALLSIGN_LEN+1)); loc += 2*(CALLSIGN_LEN+1);
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		tmpi = INTEL_INT(netGame.locations[i]);
+		tmpi = INTEL_INT (netGame.locations[i]);
 		memcpy(out_buffer + loc, &tmpi, 4);       
 		loc += 4;   // SWAP HERE!!!
 	}
@@ -365,23 +370,23 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 		loc += 2;   // SWAP HERE!!!
 	}
 
-	tmpi = INTEL_INT(netGame.KillGoal);
+	tmpi = INTEL_INT (netGame.KillGoal);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.xPlayTimeAllowed);
+	tmpi = INTEL_INT (netGame.xPlayTimeAllowed);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.xLevelTime);
+	tmpi = INTEL_INT (netGame.xLevelTime);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.control_invulTime);
+	tmpi = INTEL_INT (netGame.control_invulTime);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
-	tmpi = INTEL_INT(netGame.monitor_vector);
+	tmpi = INTEL_INT (netGame.monitor_vector);
 	memcpy(out_buffer + loc, &tmpi, 4);           
 	loc += 4;   // SWAP_HERE
 	for (i = 0; i < MAX_PLAYERS; i++) {
-		tmpi = INTEL_INT(netGame.player_score[i]);
+		tmpi = INTEL_INT (netGame.player_score[i]);
 		memcpy(out_buffer + loc, &tmpi, 4);       
 		loc += 4;   // SWAP_HERE
 	}
@@ -413,7 +418,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	loc++;
 	memcpy(&(netgame->nSecurity), data + loc, 4);                  
 	loc += 4;
-	netgame->nSecurity = INTEL_INT(netgame->nSecurity);
+	netgame->nSecurity = INTEL_INT (netgame->nSecurity);
 	memcpy(netgame->szGameName, data + loc, NETGAME_NAME_LEN+1);   
 	loc += (NETGAME_NAME_LEN+1);
 	memcpy(netgame->szMissionTitle, data + loc, MISSION_NAME_LEN+1); 
@@ -422,7 +427,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	loc += 9;
 	memcpy(&(netgame->nLevel), data + loc, 4);                  
 	loc += 4;
-	netgame->nLevel = INTEL_INT(netgame->nLevel);
+	netgame->nLevel = INTEL_INT (netgame->nLevel);
 	memcpy(&(netgame->gameMode), data + loc, 1);                  
 	loc++;
 	memcpy(&(netgame->bRefusePlayers), data + loc, 1);             
@@ -488,7 +493,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	for (i = 0; i < MAX_PLAYERS; i++) {
 		memcpy(&(netgame->locations[i]), data + loc, 4);          
 		loc += 4;
-		netgame->locations[i] = INTEL_INT(netgame->locations[i]);
+		netgame->locations[i] = INTEL_INT (netgame->locations[i]);
 	}
 
 	for (i = 0; i < MAX_PLAYERS; i++) {
@@ -520,24 +525,24 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	}
 	memcpy(&(netgame->KillGoal), data + loc, 4);                  
 	loc += 4;
-	netgame->KillGoal = INTEL_INT(netgame->KillGoal);
+	netgame->KillGoal = INTEL_INT (netgame->KillGoal);
 	memcpy(&(netgame->xPlayTimeAllowed), data + loc, 4);           
 	loc += 4;
-	netgame->xPlayTimeAllowed = INTEL_INT(netgame->xPlayTimeAllowed);
+	netgame->xPlayTimeAllowed = INTEL_INT (netgame->xPlayTimeAllowed);
 
 	memcpy(&(netgame->xLevelTime), data + loc, 4);                
 	loc += 4;
-	netgame->xLevelTime = INTEL_INT(netgame->xLevelTime);
+	netgame->xLevelTime = INTEL_INT (netgame->xLevelTime);
 	memcpy(&(netgame->control_invulTime), data + loc, 4);        
 	loc += 4;
-	netgame->control_invulTime = INTEL_INT(netgame->control_invulTime);
+	netgame->control_invulTime = INTEL_INT (netgame->control_invulTime);
 	memcpy(&(netgame->monitor_vector), data + loc, 4);            
 	loc += 4;
-	netgame->monitor_vector = INTEL_INT(netgame->monitor_vector);
+	netgame->monitor_vector = INTEL_INT (netgame->monitor_vector);
 	for (i = 0; i < MAX_PLAYERS; i++) {
 		memcpy(&(netgame->player_score[i]), data + loc, 4);       
 		loc += 4;
-		netgame->player_score[i] = INTEL_INT(netgame->player_score[i]);
+		netgame->player_score[i] = INTEL_INT (netgame->player_score[i]);
 	}
 	for (i = 0; i < MAX_PLAYERS; i++) {
 		memcpy(&(netgame->playerFlags[i]), data + loc, 1);       
@@ -594,53 +599,53 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 void BESwapObject(tObject *objP)
 {
 // swap the short and int entries for this tObject
-objP->nSignature     = INTEL_INT(objP->nSignature);
+objP->nSignature     = INTEL_INT (objP->nSignature);
 objP->next          = INTEL_SHORT(objP->next);
 objP->prev          = INTEL_SHORT(objP->prev);
 objP->nSegment       = INTEL_SHORT(objP->nSegment);
-objP->position.vPos.p.x         = INTEL_INT(objP->position.vPos.p.x);
-objP->position.vPos.p.y         = INTEL_INT(objP->position.vPos.p.y);
-objP->position.vPos.p.z         = INTEL_INT(objP->position.vPos.p.z);
-objP->position.mOrient.rVec.p.x = INTEL_INT(objP->position.mOrient.rVec.p.x);
-objP->position.mOrient.rVec.p.y = INTEL_INT(objP->position.mOrient.rVec.p.y);
-objP->position.mOrient.rVec.p.z = INTEL_INT(objP->position.mOrient.rVec.p.z);
-objP->position.mOrient.fVec.p.x = INTEL_INT(objP->position.mOrient.fVec.p.x);
-objP->position.mOrient.fVec.p.y = INTEL_INT(objP->position.mOrient.fVec.p.y);
-objP->position.mOrient.fVec.p.z = INTEL_INT(objP->position.mOrient.fVec.p.z);
-objP->position.mOrient.uVec.p.x = INTEL_INT(objP->position.mOrient.uVec.p.x);
-objP->position.mOrient.uVec.p.y = INTEL_INT(objP->position.mOrient.uVec.p.y);
-objP->position.mOrient.uVec.p.z = INTEL_INT(objP->position.mOrient.uVec.p.z);
-objP->size          = INTEL_INT(objP->size);
-objP->shields       = INTEL_INT(objP->shields);
-objP->vLastPos.p.x    = INTEL_INT(objP->vLastPos.p.x);
-objP->vLastPos.p.y    = INTEL_INT(objP->vLastPos.p.y);
-objP->vLastPos.p.z    = INTEL_INT(objP->vLastPos.p.z);
-objP->lifeleft      = INTEL_INT(objP->lifeleft);
+objP->position.vPos.p.x         = INTEL_INT (objP->position.vPos.p.x);
+objP->position.vPos.p.y         = INTEL_INT (objP->position.vPos.p.y);
+objP->position.vPos.p.z         = INTEL_INT (objP->position.vPos.p.z);
+objP->position.mOrient.rVec.p.x = INTEL_INT (objP->position.mOrient.rVec.p.x);
+objP->position.mOrient.rVec.p.y = INTEL_INT (objP->position.mOrient.rVec.p.y);
+objP->position.mOrient.rVec.p.z = INTEL_INT (objP->position.mOrient.rVec.p.z);
+objP->position.mOrient.fVec.p.x = INTEL_INT (objP->position.mOrient.fVec.p.x);
+objP->position.mOrient.fVec.p.y = INTEL_INT (objP->position.mOrient.fVec.p.y);
+objP->position.mOrient.fVec.p.z = INTEL_INT (objP->position.mOrient.fVec.p.z);
+objP->position.mOrient.uVec.p.x = INTEL_INT (objP->position.mOrient.uVec.p.x);
+objP->position.mOrient.uVec.p.y = INTEL_INT (objP->position.mOrient.uVec.p.y);
+objP->position.mOrient.uVec.p.z = INTEL_INT (objP->position.mOrient.uVec.p.z);
+objP->size          = INTEL_INT (objP->size);
+objP->shields       = INTEL_INT (objP->shields);
+objP->vLastPos.p.x    = INTEL_INT (objP->vLastPos.p.x);
+objP->vLastPos.p.y    = INTEL_INT (objP->vLastPos.p.y);
+objP->vLastPos.p.z    = INTEL_INT (objP->vLastPos.p.z);
+objP->lifeleft      = INTEL_INT (objP->lifeleft);
 switch (objP->movementType) {
 	case MT_PHYSICS:
-		objP->mType.physInfo.velocity.p.x = INTEL_INT(objP->mType.physInfo.velocity.p.x);
-		objP->mType.physInfo.velocity.p.y = INTEL_INT(objP->mType.physInfo.velocity.p.y);
-		objP->mType.physInfo.velocity.p.z = INTEL_INT(objP->mType.physInfo.velocity.p.z);
-		objP->mType.physInfo.thrust.p.x   = INTEL_INT(objP->mType.physInfo.thrust.p.x);
-		objP->mType.physInfo.thrust.p.y   = INTEL_INT(objP->mType.physInfo.thrust.p.y);
-		objP->mType.physInfo.thrust.p.z   = INTEL_INT(objP->mType.physInfo.thrust.p.z);
-		objP->mType.physInfo.mass       = INTEL_INT(objP->mType.physInfo.mass);
-		objP->mType.physInfo.drag       = INTEL_INT(objP->mType.physInfo.drag);
-		objP->mType.physInfo.brakes     = INTEL_INT(objP->mType.physInfo.brakes);
-		objP->mType.physInfo.rotVel.p.x   = INTEL_INT(objP->mType.physInfo.rotVel.p.x);
-		objP->mType.physInfo.rotVel.p.y   = INTEL_INT(objP->mType.physInfo.rotVel.p.y);
-		objP->mType.physInfo.rotVel.p.z   = INTEL_INT(objP->mType.physInfo.rotVel.p.z);
-		objP->mType.physInfo.rotThrust.p.x = INTEL_INT(objP->mType.physInfo.rotThrust.p.x);
-		objP->mType.physInfo.rotThrust.p.y = INTEL_INT(objP->mType.physInfo.rotThrust.p.y);
-		objP->mType.physInfo.rotThrust.p.z = INTEL_INT(objP->mType.physInfo.rotThrust.p.z);
-		objP->mType.physInfo.turnRoll   = INTEL_INT(objP->mType.physInfo.turnRoll);
+		objP->mType.physInfo.velocity.p.x = INTEL_INT (objP->mType.physInfo.velocity.p.x);
+		objP->mType.physInfo.velocity.p.y = INTEL_INT (objP->mType.physInfo.velocity.p.y);
+		objP->mType.physInfo.velocity.p.z = INTEL_INT (objP->mType.physInfo.velocity.p.z);
+		objP->mType.physInfo.thrust.p.x   = INTEL_INT (objP->mType.physInfo.thrust.p.x);
+		objP->mType.physInfo.thrust.p.y   = INTEL_INT (objP->mType.physInfo.thrust.p.y);
+		objP->mType.physInfo.thrust.p.z   = INTEL_INT (objP->mType.physInfo.thrust.p.z);
+		objP->mType.physInfo.mass       = INTEL_INT (objP->mType.physInfo.mass);
+		objP->mType.physInfo.drag       = INTEL_INT (objP->mType.physInfo.drag);
+		objP->mType.physInfo.brakes     = INTEL_INT (objP->mType.physInfo.brakes);
+		objP->mType.physInfo.rotVel.p.x   = INTEL_INT (objP->mType.physInfo.rotVel.p.x);
+		objP->mType.physInfo.rotVel.p.y   = INTEL_INT (objP->mType.physInfo.rotVel.p.y);
+		objP->mType.physInfo.rotVel.p.z   = INTEL_INT (objP->mType.physInfo.rotVel.p.z);
+		objP->mType.physInfo.rotThrust.p.x = INTEL_INT (objP->mType.physInfo.rotThrust.p.x);
+		objP->mType.physInfo.rotThrust.p.y = INTEL_INT (objP->mType.physInfo.rotThrust.p.y);
+		objP->mType.physInfo.rotThrust.p.z = INTEL_INT (objP->mType.physInfo.rotThrust.p.z);
+		objP->mType.physInfo.turnRoll   = INTEL_INT (objP->mType.physInfo.turnRoll);
 		objP->mType.physInfo.flags      = INTEL_SHORT(objP->mType.physInfo.flags);
 		break;
 
 	case MT_SPINNING:
-		objP->mType.spinRate.p.x = INTEL_INT(objP->mType.spinRate.p.x);
-		objP->mType.spinRate.p.y = INTEL_INT(objP->mType.spinRate.p.y);
-		objP->mType.spinRate.p.z = INTEL_INT(objP->mType.spinRate.p.z);
+		objP->mType.spinRate.p.x = INTEL_INT (objP->mType.spinRate.p.x);
+		objP->mType.spinRate.p.y = INTEL_INT (objP->mType.spinRate.p.y);
+		objP->mType.spinRate.p.z = INTEL_INT (objP->mType.spinRate.p.z);
 		break;
 	}
 
@@ -648,16 +653,16 @@ switch (objP->controlType) {
 	case CT_WEAPON:
 		objP->cType.laserInfo.parentType = INTEL_SHORT(objP->cType.laserInfo.parentType);
 		objP->cType.laserInfo.nParentObj = INTEL_SHORT(objP->cType.laserInfo.nParentObj);
-		objP->cType.laserInfo.nParentSig  = INTEL_INT(objP->cType.laserInfo.nParentSig);
-		objP->cType.laserInfo.creationTime = INTEL_INT(objP->cType.laserInfo.creationTime);
+		objP->cType.laserInfo.nParentSig  = INTEL_INT (objP->cType.laserInfo.nParentSig);
+		objP->cType.laserInfo.creationTime = INTEL_INT (objP->cType.laserInfo.creationTime);
 		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT(objP->cType.laserInfo.nLastHitObj);
 		objP->cType.laserInfo.nTrackGoal = INTEL_SHORT(objP->cType.laserInfo.nTrackGoal);
-		objP->cType.laserInfo.multiplier = INTEL_INT(objP->cType.laserInfo.multiplier);
+		objP->cType.laserInfo.multiplier = INTEL_INT (objP->cType.laserInfo.multiplier);
 		break;
 
 	case CT_EXPLOSION:
-		objP->cType.explInfo.nSpawnTime     = INTEL_INT(objP->cType.explInfo.nSpawnTime);
-		objP->cType.explInfo.nDeleteTime    = INTEL_INT(objP->cType.explInfo.nDeleteTime);
+		objP->cType.explInfo.nSpawnTime     = INTEL_INT (objP->cType.explInfo.nSpawnTime);
+		objP->cType.explInfo.nDeleteTime    = INTEL_INT (objP->cType.explInfo.nDeleteTime);
 		objP->cType.explInfo.nDeleteObj  = INTEL_SHORT(objP->cType.explInfo.nDeleteObj);
 		objP->cType.explInfo.nAttachParent  = INTEL_SHORT(objP->cType.explInfo.nAttachParent);
 		objP->cType.explInfo.nPrevAttach    = INTEL_SHORT(objP->cType.explInfo.nPrevAttach);
@@ -669,17 +674,17 @@ switch (objP->controlType) {
 		objP->cType.aiInfo.nHideIndex           = INTEL_SHORT(objP->cType.aiInfo.nHideIndex);
 		objP->cType.aiInfo.nPathLength          = INTEL_SHORT(objP->cType.aiInfo.nPathLength);
 		objP->cType.aiInfo.nDangerLaser     = INTEL_SHORT(objP->cType.aiInfo.nDangerLaser);
-		objP->cType.aiInfo.nDangerLaserSig = INTEL_INT(objP->cType.aiInfo.nDangerLaserSig);
-		objP->cType.aiInfo.xDyingStartTime     = INTEL_INT(objP->cType.aiInfo.xDyingStartTime);
+		objP->cType.aiInfo.nDangerLaserSig = INTEL_INT (objP->cType.aiInfo.nDangerLaserSig);
+		objP->cType.aiInfo.xDyingStartTime     = INTEL_INT (objP->cType.aiInfo.xDyingStartTime);
 		break;
 
 	case CT_LIGHT:
-		objP->cType.lightInfo.intensity = INTEL_INT(objP->cType.lightInfo.intensity);
+		objP->cType.lightInfo.intensity = INTEL_INT (objP->cType.lightInfo.intensity);
 		break;
 
 	case CT_POWERUP:
-		objP->cType.powerupInfo.count = INTEL_INT(objP->cType.powerupInfo.count);
-		objP->cType.powerupInfo.creationTime = INTEL_INT(objP->cType.powerupInfo.creationTime);
+		objP->cType.powerupInfo.count = INTEL_INT (objP->cType.powerupInfo.count);
+		objP->cType.powerupInfo.creationTime = INTEL_INT (objP->cType.powerupInfo.creationTime);
 		// Below commented out 5/2/96 by Matt.  I asked Allender why it was
 		// here, and he didn't know, and it looks like it doesn't belong.
 		// if (objP->id == POW_VULCAN)
@@ -692,15 +697,15 @@ switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		objP->rType.polyObjInfo.nModel      = INTEL_INT(objP->rType.polyObjInfo.nModel);
+		objP->rType.polyObjInfo.nModel      = INTEL_INT (objP->rType.polyObjInfo.nModel);
 		for (i=0;i<MAX_SUBMODELS;i++) {
-			objP->rType.polyObjInfo.animAngles[i].p = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].p);
-			objP->rType.polyObjInfo.animAngles[i].b = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].b);
-			objP->rType.polyObjInfo.animAngles[i].h = INTEL_INT(objP->rType.polyObjInfo.animAngles[i].h);
+			objP->rType.polyObjInfo.animAngles[i].p = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].p);
+			objP->rType.polyObjInfo.animAngles[i].b = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].b);
+			objP->rType.polyObjInfo.animAngles[i].h = INTEL_INT (objP->rType.polyObjInfo.animAngles[i].h);
 		}
-		objP->rType.polyObjInfo.nSubObjFlags   = INTEL_INT(objP->rType.polyObjInfo.nSubObjFlags);
-		objP->rType.polyObjInfo.nTexOverride  = INTEL_INT(objP->rType.polyObjInfo.nTexOverride);
-		objP->rType.polyObjInfo.nAltTextures   = INTEL_INT(objP->rType.polyObjInfo.nAltTextures);
+		objP->rType.polyObjInfo.nSubObjFlags   = INTEL_INT (objP->rType.polyObjInfo.nSubObjFlags);
+		objP->rType.polyObjInfo.nTexOverride  = INTEL_INT (objP->rType.polyObjInfo.nTexOverride);
+		objP->rType.polyObjInfo.nAltTextures   = INTEL_INT (objP->rType.polyObjInfo.nAltTextures);
 		break;
 	}
 
@@ -709,8 +714,8 @@ switch (objP->renderType) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		objP->rType.vClipInfo.nClipIndex = INTEL_INT(objP->rType.vClipInfo.nClipIndex);
-		objP->rType.vClipInfo.xFrameTime = INTEL_INT(objP->rType.vClipInfo.xFrameTime);
+		objP->rType.vClipInfo.nClipIndex = INTEL_INT (objP->rType.vClipInfo.nClipIndex);
+		objP->rType.vClipInfo.xFrameTime = INTEL_INT (objP->rType.vClipInfo.xFrameTime);
 		break;
 
 	case RT_LASER:

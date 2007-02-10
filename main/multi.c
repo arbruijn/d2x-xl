@@ -331,6 +331,24 @@ return nRemoteObj;
 }
 
 //-----------------------------------------------------------------------------
+
+void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj)
+{
+	int	i;
+
+if (nLocalObj != nRemoteObj)
+	for (i = 0; i < gameData.multi.nPlayerPositions; i++)
+		if (gameData.multi.players [i].nObject == nRemoteObj) {
+			gameData.multi.players [i].nObject = nLocalObj;
+			if (OBJ_IDX (gameData.objs.console) == nRemoteObj) {
+				gameData.objs.objects [nLocalObj] = *gameData.objs.console;
+				gameData.objs.console = gameData.objs.objects + nLocalObj;
+				}
+			break;
+			}
+}
+
+//-----------------------------------------------------------------------------
 // Add a mapping from a network remote object number to a local one
 
 void MapObjnumLocalToRemote (int nLocalObj, int nRemoteObj, int nOwner)
@@ -357,15 +375,14 @@ Assert (nLocalObj < MAX_OBJECTS);
 multiData.nObjOwner [nLocalObj] = gameData.multi.nLocalPlayer;
 multiData.remoteToLocal [gameData.multi.nLocalPlayer][nLocalObj] = nLocalObj;
 multiData.localToRemote [nLocalObj] = nLocalObj;
-return;
 }
 
 //-----------------------------------------------------------------------------
 
 void ResetNetworkObjects ()
 {
-memset (multiData.localToRemote, -1, MAX_OBJECTS*sizeof (short));
-memset (multiData.remoteToLocal, -1, MAX_NUM_NET_PLAYERS*MAX_OBJECTS*sizeof (short));
+memset (multiData.localToRemote, -1, MAX_OBJECTS * sizeof (short));
+memset (multiData.remoteToLocal, -1, MAX_NUM_NET_PLAYERS * MAX_OBJECTS * sizeof (short));
 memset (multiData.nObjOwner, -1, MAX_OBJECTS);
 }
 
@@ -1754,9 +1771,10 @@ void MultiResetPlayerObject (tObject *objP)
 	int i;
 
 //Init physics for a non-console tPlayer
-Assert (objP >= gameData.objs.objects);
-Assert (objP <= gameData.objs.objects+gameData.objs.nLastObject);
-Assert ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST));
+if (objP > gameData.objs.objects + gameData.objs.nLastObject)
+	return;
+if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_GHOST))
+	return;
 VmVecZero (&objP->mType.physInfo.velocity);
 VmVecZero (&objP->mType.physInfo.thrust);
 VmVecZero (&objP->mType.physInfo.rotVel);

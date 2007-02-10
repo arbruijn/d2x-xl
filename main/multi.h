@@ -508,5 +508,6 @@ void ResetPlayerPaths (void);
 void SetPlayerPaths (void);
 void MultiSyncKills (void);
 void MultiRefillPowerups (void);
+void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
 
 #endif /* _MULTI_H */

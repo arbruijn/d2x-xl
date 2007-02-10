@@ -230,10 +230,10 @@ void GameSeqInitNetworkPlayers ()
 memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsTyping));
 nPlayers = 0;
 j = 0;
-for (i = 0, objP = gameData.objs.objects;i <= gameData.objs.nLastObject; i++, objP++) {
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	t = objP->nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		if ((gameData.app.nGameMode & GM_MULTI_COOP) ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))
+		if (IsCoopGame ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))
 			ReleaseObject ((short) i);
 		else {
 			playerObjs [nPlayers] = i;
@@ -1800,7 +1800,7 @@ if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
 	int i;
 	for (i = 0; i < gameData.multi.nPlayers; i++)
 		gameData.multi.players [i].flags |= netGame.playerFlags [i];
-}
+	}
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
@@ -2084,7 +2084,7 @@ void InitPlayerPosition (int bRandom)
 
 	gameData.objs.console->position.vPos = gameData.multi.playerInit [bNewPlayer].position.vPos;
 	gameData.objs.console->position.mOrient = gameData.multi.playerInit [bNewPlayer].position.mOrient;
- 	RelinkObject (OBJ_IDX (gameData.objs.console),gameData.multi.playerInit [bNewPlayer].nSegment);
+ 	RelinkObject (OBJ_IDX (gameData.objs.console), gameData.multi.playerInit [bNewPlayer].nSegment);
 done:
 	ResetPlayerObject ();
 	ResetCruise ();

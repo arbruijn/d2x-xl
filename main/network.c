@@ -937,7 +937,7 @@ sbyte object_buffer [IPX_MAX_DATA_SIZE];
 
 void NetworkSendObjects (void)
 {
-	short remote_objnum;
+	short nRemoteObj;
 	sbyte owner;
 	int loc, i, h, t;
 
@@ -977,7 +977,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		networkData.bSendObjectMode = 0;
 		SET_SHORT (object_buffer, loc, -1);            
 		SET_BYTE (object_buffer, loc, nPlayer);                            
-		/* Placeholder for remote_objnum, not used here */          
+		/* Placeholder for nRemoteObj, not used here */          
 		loc += 2;
 		networkData.nSendObjNum = 0;
 		objCount_frame = 1;
@@ -1004,12 +1004,12 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		objCount_frame++;
 		objCount++;
 
-		remote_objnum = ObjnumLocalToRemote ((short)i, &owner);
+		nRemoteObj = ObjnumLocalToRemote ((short)i, &owner);
 		Assert (owner == multiData.nObjOwner [i]);
 
 		SET_SHORT (object_buffer, loc, i);      
 		SET_BYTE (object_buffer, loc, owner);                                 
-		SET_SHORT (object_buffer, loc, remote_objnum); 
+		SET_SHORT (object_buffer, loc, nRemoteObj); 
 		SET_BYTES (object_buffer, loc, gameData.objs.objects + i, sizeof (tObject));
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			SwapObject ((tObject *) (object_buffer + loc - sizeof (tObject)));
@@ -1056,7 +1056,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		
 			// Send sync packet which tells the tPlayer who he is and to start!
 			NetworkSendRejoinSync (nPlayer);
-			networkData.bVerifyPlayerJoined=nPlayer;
+			networkData.bVerifyPlayerJoined = nPlayer;
 
 			// Turn off send tObject mode
 			networkData.nSendObjNum = -1;
@@ -2357,7 +2357,7 @@ void NetworkReadObjectPacket (ubyte *data)
 {
 	// Object from another net tPlayer we need to sync with
 
-	short nObject, remote_objnum;
+	short nObject, nRemoteObj;
 	sbyte obj_owner;
 	int nSegment, i;
 	tObject *objP;
@@ -2368,13 +2368,13 @@ void NetworkReadObjectPacket (ubyte *data)
 	static int nFrame = 0;
 	int nobj = data [1];
 	int loc = 3;
-	int remote_frame_num = data [2];
+	int nRemoteFrame = data [2];
 	
 nFrame++;
 for (i = 0; i < nobj; i++) {
 	GET_SHORT (data, loc, nObject);                   
 	GET_BYTE (data, loc, obj_owner);                                          
-	GET_SHORT (data, loc, remote_objnum);
+	GET_SHORT (data, loc, nRemoteObj);
 	if (nObject == -1) {
 		// Clear tObject array
 		InitObjects ();
@@ -2392,13 +2392,13 @@ for (i = 0; i < nobj; i++) {
 			mode = 0;
 			}
 #if 1				
-		con_printf (CON_DEBUG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, remote_frame_num);
-		con_printf (CON_DEBUG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, remote_objnum);
+		con_printf (CON_DEBUG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, nRemoteFrame);
+		con_printf (CON_DEBUG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
 #endif
-		if (remote_objnum != objectCount) {
+		if (nRemoteObj != objectCount) {
 			Int3 ();
 			}
-		if (NetworkVerifyObjects (remote_objnum, objectCount)) {
+		if (NetworkVerifyObjects (nRemoteObj, objectCount)) {
 			// Failed to sync up 
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 			networkData.nStatus = NETSTAT_MENU;                          
@@ -2407,7 +2407,7 @@ for (i = 0; i < nobj; i++) {
 		nFrame = 0;
 		}
 	else {
-		if (nFrame != remote_frame_num)
+		if (nFrame != nRemoteFrame)
 			Int3 ();
 #if 1				
 		con_printf (CON_DEBUG, "Got a nType 3 tObject packet!\n");
@@ -2416,7 +2416,7 @@ for (i = 0; i < nobj; i++) {
 		if ((obj_owner == my_pnum) || (obj_owner == -1)) {
 			if (mode != 1)
 				Int3 (); // SEE ROB
-			nObject = remote_objnum;
+			nObject = nRemoteObj;
 			//if (nObject > gameData.objs.nLastObject)
 			//{
 			//      gameData.objs.nLastObject = nObject;
@@ -2444,17 +2444,19 @@ for (i = 0; i < nobj; i++) {
 			objP->attachedObj = -1;
 			if (nSegment > -1)
 				LinkObject (OBJ_IDX (objP), nSegment);
+			if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
+				RemapLocalPlayerObject (nObject, nRemoteObj);
 			if (obj_owner == my_pnum) 
 				MapObjnumLocalToLocal (nObject);
 			else if (obj_owner != -1)
-				MapObjnumLocalToRemote (nObject, remote_objnum, obj_owner);
+				MapObjnumLocalToRemote (nObject, nRemoteObj, obj_owner);
 			else
 				multiData.nObjOwner [nObject] = -1;
 			}
 		} // For a standard onbject
 	} // For each tObject in packet
 gameData.objs.nObjects = objectCount;
-gameData.objs.nLastObject = gameData.objs.nObjects - 1;
+//gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 }
 	
 //------------------------------------------------------------------------------
