@@ -69,7 +69,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (sideP->nOvlTex + (((short) sideP->nOvlOrient) << 6));
+		s = INTEL_SHORT (sideP->nOvlTex + (((short) sideP->nOvlOrient) << 14));
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
 			t = INTEL_INT (((int) uvlP->u));
