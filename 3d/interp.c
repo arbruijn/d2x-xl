@@ -568,9 +568,8 @@ for (;;)
 			break;
 
 		case OP_SORTNORM:
-			G3GetPolyModelMinMax (p+WORDVAL (p+28), &vMin, &vMax);
-//			(*pnSubObjs)++;
-			G3GetPolyModelMinMax (p+WORDVAL (p+30), &vMin, &vMax);
+			G3GetPolyModelMinMax (p + WORDVAL (p+28), &vMin, &vMax);
+			G3GetPolyModelMinMax (p + WORDVAL (p+30), &vMin, &vMax);
 			p += 32;
 			break;
 
@@ -580,7 +579,7 @@ for (;;)
 			break;
 
 		case OP_SUBCALL:
-			G3GetPolyModelMinMax (p+WORDVAL (p+16), &vMin, &vMax);
+			G3GetPolyModelMinMax (p + WORDVAL (p+16), &vMin, &vMax);
 			p += 20;
 			break;
 
@@ -689,9 +688,9 @@ for (;;)
 
 		case OP_SORTNORM:
 //			(*pnSubObjs)++;
-			G3CountPolyModelItems (p+WORDVAL (p+28), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
+			G3CountPolyModelItems (p + WORDVAL (p+28), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
 //			(*pnSubObjs)++;
-			G3CountPolyModelItems (p+WORDVAL (p+30), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
+			G3CountPolyModelItems (p + WORDVAL (p+30), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
 			p += 32;
 			break;
 
@@ -703,7 +702,7 @@ for (;;)
 
 		case OP_SUBCALL: {
 			(*pnSubObjs)++;
-			G3CountPolyModelItems (p+WORDVAL (p+16), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
+			G3CountPolyModelItems (p + WORDVAL (p+16), pnSubObjs, pnVerts, pnFaces, pnFaceVerts, pnAdjFaces);
 			p += 20;
 			break;
 			}
@@ -1169,10 +1168,10 @@ for (;;)
 			}
 
 		case OP_SORTNORM:
-			G3GetPolyModelItems (p+WORDVAL (p+28), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
+			G3GetPolyModelItems (p + WORDVAL (p+28), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
 				pf = po->faces.pFaces + po->iFace;
-			G3GetPolyModelItems (p+WORDVAL (p+30), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
+			G3GetPolyModelItems (p + WORDVAL (p+30), pAnimAngles, po, bInitModel, bShadowData, nThis, nParent);
 			if (bInitModel)
 				pf = po->faces.pFaces + po->iFace;
 			p += 32;
@@ -1194,7 +1193,7 @@ for (;;)
 			po->subObjs.pSubObjs [nChild].vPos = *VECPTR (p+4);
 			po->subObjs.pSubObjs [nChild].vAngles = *a;
 			G3StartInstanceAngles (VECPTR (p+4), a);
-			G3GetPolyModelItems (p+WORDVAL (p+16), pAnimAngles, po, bInitModel, bShadowData, nChild, nThis);
+			G3GetPolyModelItems (p + WORDVAL (p+16), pAnimAngles, po, bInitModel, bShadowData, nChild, nThis);
 			G3DoneInstance ();
 			if (bInitModel)
 				pf = po->faces.pFaces + po->iFace;
@@ -2169,12 +2168,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (NULL, p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		p += 32;
 		}
@@ -2193,7 +2192,7 @@ for (;;) {
 		else
 			a = &zeroAngles;
 		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
 		p += 20;
 		}
@@ -2300,13 +2299,13 @@ for (;;) {
 		case OP_SORTNORM:
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 				//draw back then front
-				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
-				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
 
 				}
 			else {			//not facing.  draw front then back
-				G3DrawMorphingModel (p+WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
-				G3DrawMorphingModel (p+WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
 				}
 			p += 32;
 			break;
@@ -2316,7 +2315,7 @@ for (;;) {
 			G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 			G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
 			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
-			p+=36;
+			p += 36;
 			break;
 			}
 
@@ -2327,7 +2326,7 @@ for (;;) {
 			else
 				a = &zeroAngles;
 			G3StartInstanceAngles (VECPTR (p+4), a);
-			G3DrawPolyModel (NULL, p+WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL, nModel);
 			G3DoneInstance ();
 			p += 20;
 			break;
@@ -2383,8 +2382,8 @@ for (;;) {
 			}
 
 		case OP_SORTNORM:
-			InitSubModel (p+WORDVAL (p+28));
-			InitSubModel (p+WORDVAL (p+30));
+			InitSubModel (p + WORDVAL (p+28));
+			InitSubModel (p + WORDVAL (p+30));
 			p += 32;
 			break;
 
@@ -2393,7 +2392,7 @@ for (;;) {
 			break;
 
 		case OP_SUBCALL: {
-			InitSubModel (p+WORDVAL (p+16));
+			InitSubModel (p + WORDVAL (p+16));
 			p += 20;
 			break;
 			}

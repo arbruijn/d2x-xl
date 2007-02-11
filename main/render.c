@@ -2028,9 +2028,9 @@ void AddObjectToSegList(int nObject, int listnum)
 /* qsort.c  --  Non-Recursive ANSI Quicksort function             */
 /* Public domain by Raymond Gardner, Englewood CO  February 1991  */
 /******************************************************************/
-#define  COMP(a, b)  ((*comp)((void *)(a), (void *)(b)))
+#define  _COMP(a, b)  ((*comp)((void *)(a), (void *)(b)))
 #define  T 7 // subfiles of <= T elements will be insertion sorteded (T >= 3)
-#define  SWAP(a, b)  (swap_bytes((char *)(a), (char *)(b), size))
+#define  _SWAP(a, b)  (swap_bytes((char *)(a), (char *)(b), size))
 
 static void swap_bytes(char *a, char *b, size_t nbytes)
 {
@@ -2054,27 +2054,27 @@ void qsort(void *basep, size_t nelems, size_t size,
    for ( ;;) {                 /* repeat until break...          */
       if ( limit - base > thresh) {  /* if more than T elements  */
                                       /*   swap base with middle  */
-         SWAP((((limit-base)/size)/2)*size+base, base);
+         _SWAP((((limit-base)/size)/2)*size+base, base);
          i = base + size;             /* i scans left to right    */
          j = limit - size;            /* j scans right to left    */
-         if ( COMP(i, j) > 0)        /* Sedgewick's              */
-            SWAP(i, j);               /*    three-element sort    */
-         if ( COMP(base, j) > 0)     /*        sets things up    */
-            SWAP(base, j);            /*            so that       */
-         if ( COMP(i, base) > 0)     /*      *i <= *base <= *j   */
-            SWAP(i, base);            /* *base is pivot element   */
+         if ( _COMP(i, j) > 0)        /* Sedgewick's              */
+            _SWAP(i, j);               /*    three-element sort    */
+         if ( _COMP(base, j) > 0)     /*        sets things up    */
+            _SWAP(base, j);            /*            so that       */
+         if ( _COMP(i, base) > 0)     /*      *i <= *base <= *j   */
+            _SWAP(i, base);            /* *base is pivot element   */
          for ( ;;) {                 /* loop until break         */
             do                        /* move i right             */
                i += size;             /*        until *i >= pivot */
-            while ( COMP(i, base) < 0);
+            while ( _COMP(i, base) < 0);
             do                        /* move j left              */
                j -= size;             /*        until *j <= pivot */
-            while ( COMP(j, base) > 0);
+            while ( _COMP(j, base) > 0);
             if ( i > j)              /* if pointers crossed      */
                break;                 /*     break loop           */
-            SWAP(i, j);       /* else swap elements, keep scanning*/
+            _SWAP(i, j);       /* else swap elements, keep scanning*/
          }
-         SWAP(base, j);         /* move pivot into correct place  */
+         _SWAP(base, j);         /* move pivot into correct place  */
          if ( j - base > limit - i) {  /* if left subfile larger */
             sp [0] = base;             /* stack left subfile base  */
             sp [1] = j;                /*    and limit             */
@@ -2087,8 +2087,8 @@ void qsort(void *basep, size_t nelems, size_t size,
          sp += 2;                     /* increment stack pointer  */
       } else {      /* else subfile is small, use insertion sort  */
          for ( j = base, i = j+size; i < limit; j = i, i += size)
-            for ( ; COMP(j, j+size) > 0; j -= size) {
-               SWAP(j, j+size);
+            for ( ; _COMP(j, j+size) > 0; j -= size) {
+               _SWAP(j, j+size);
                if ( j == base)
                   break;
             }

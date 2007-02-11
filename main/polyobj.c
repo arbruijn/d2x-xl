@@ -927,9 +927,7 @@ if (pdm) {
 #ifdef WORDS_NEED_ALIGNMENT
 AlignPolyModelData (pm);
 #endif
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__) 
-G3SwapPolyModelData (pm->modelData);
-#endif
+G3CheckAndSwap (pm->modelData);
 //verify (pm->modelData);
 G3InitPolyModel (pm->modelData);
 }
