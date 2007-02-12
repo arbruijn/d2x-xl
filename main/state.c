@@ -1212,9 +1212,9 @@ if (!bBetweenLevels)	{
 	CFWriteInt (gameData.matCens.nBotCenters, fp);
 	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		StateSaveMatCen (gameData.matCens.botGens + i, fp);
-	CFWriteInt (gameData.matCens.nBotCenters, fp);
-	for (i = 0; i < gameData.matCens.nBotCenters; i++)
-		StateSaveMatCen (gameData.matCens.botGens + i, fp);
+	CFWriteInt (gameData.matCens.nEquipCenters, fp);
+	for (i = 0; i < gameData.matCens.nEquipCenters; i++)
+		StateSaveMatCen (gameData.matCens.equipGens + i, fp);
 	StateSaveReactorTrigger (&gameData.reactor.triggers, fp);
 	CFWriteInt (gameData.matCens.nFuelCenters, fp);
 	for (i = 0; i < gameData.matCens.nFuelCenters; i++)
@@ -2210,10 +2210,10 @@ if (!bBetweenLevels)	{
 	for (i = 0; i < gameData.matCens.nBotCenters; i++)
 		StateRestoreMatCen (gameData.matCens.botGens + i, fp);
 	if (sgVersion >= 30) {
-		if (CFReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nBotCenters, fp))
+		if (CFReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.matCens.nEquipCenters, fp))
 			return 0;
-		for (i = 0; i < gameData.matCens.nBotCenters; i++)
-			StateRestoreMatCen (gameData.matCens.botGens + i, fp);
+		for (i = 0; i < gameData.matCens.nEquipCenters; i++)
+			StateRestoreMatCen (gameData.matCens.equipGens + i, fp);
 		}
 	else {
 		gameData.matCens.nBotCenters = 0;

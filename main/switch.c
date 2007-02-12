@@ -964,7 +964,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++)
 for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 	if (TriggerHasTarget (gameData.trigs.objTriggers + i, nSegment, nSide))
 		return -i - 1;
-return i;
+return 0;
 }
 
 //------------------------------------------------------------------------------
