@@ -2686,10 +2686,11 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if (gameOpts->render.bDynLighting = m [nDynLightOpt].value) {
-		if (optObjectLight >= 0)
-			gameOpts->ogl.bLightObjects = m [optObjectLight].value;
-		}
+	if (!gameStates.app.bGameRunning)
+		if (gameOpts->render.bDynLighting = m [nDynLightOpt].value) {
+			if (optObjectLight >= 0)
+				gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+			}
 	if (optColoredLight >= 0)
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
 	if (nGunColorOpt >= 0)
