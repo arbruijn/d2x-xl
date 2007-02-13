@@ -2519,7 +2519,7 @@ if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
 UnlinkObject (nObject);
 Assert (gameData.objs.objects [0].next != 0);
-if (objP->nType == OBJ_ROBOT)
+if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
 	ExecObjTriggers (nObject);
 objP->nType = OBJ_NONE;		//unused!
 objP->nSignature = -1;

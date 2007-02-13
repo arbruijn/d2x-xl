@@ -301,7 +301,7 @@ if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multi.nPlayerPositio
 }
 #endif
 if (IS_D2_OEM && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel==8) {
-	for (i=0;i<nPlayers;i++)
+	for (i = 0; i < nPlayers; i++)
 		if (gameData.multi.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
 			ExecMessageBox ("Warning!",NULL,1,TXT_OK,"This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");	
 			return;
@@ -1186,9 +1186,12 @@ gameData.app.fusion.xAutoFireTime = 0;
 gameData.app.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
-if (gameStates.app.bD1Mission)
-	gameData.multi.players[gameData.multi.nLocalPlayer].shields =
-	gameData.multi.players[gameData.multi.nLocalPlayer].energy = F1_0 * 100;
+if (gameStates.app.bD1Mission) {
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < INITIAL_ENERGY)
+		gameData.multi.players[gameData.multi.nLocalPlayer].energy = INITIAL_ENERGY;
+	if (gameData.multi.players[gameData.multi.nLocalPlayer].shields < INITIAL_SHIELDS)
+		gameData.multi.players[gameData.multi.nLocalPlayer].shields = INITIAL_SHIELDS;
+	}
 }
 
 //------------------------------------------------------------------------------

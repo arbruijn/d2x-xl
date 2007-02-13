@@ -73,15 +73,17 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 
 void ResetPogEffects (void)
 {
-	int		i, bD1;
-	eclip		*ecP;
+	int				i, bD1;
+	eclip				*ecP;
 	tWallClip		*wcP;
 	tVideoClip		*vcP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
-	for (i = gameData.eff.nEffects [bD1], ecP = gameData.eff.effects [bD1]; i; i--, ecP++)
+	for (i = gameData.eff.nEffects [bD1], ecP = gameData.eff.effects [bD1]; i; i--, ecP++) {
 		//if (ecP->flags & EF_FROMPOG)
 			ecP->flags &= ~(EF_ALTFMT | EF_FROMPOG | EF_INITIALIZED);
+			ecP->nCurFrame = 0;
+			}
 for (i = gameData.walls.nAnims [gameStates.app.bD1Data], wcP = gameData.walls.pAnims; i; i--, wcP++)
 	//if (wcP->flags & WCF_FROMPOG)
 		wcP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
@@ -92,7 +94,7 @@ for (i = gameData.eff.nClips [0], vcP = gameData.eff.vClips [0]; i; i--, vcP++)
 
 // ----------------------------------------------------------------------------
 
-void ResetSpecialEffects()
+void ResetSpecialEffects (void)
 {
 	int				i, bD1;
 	eclip				*ecP;
@@ -263,6 +265,8 @@ xEffectTime += gameData.time.xFrame;
 			}
 		else if ((ecP->flags & EF_ALTFMT) && (BM_FRAMECOUNT (bmP) > 1)) {
 			OglLoadBmTexture (bmP, 1, 0);
+			if (ecP->nCurFrame >= BM_FRAMECOUNT (bmP))
+				BM_FRAMECOUNT (bmP) = BM_FRAMECOUNT (bmP) - 1;
 			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + ecP->nCurFrame;
 			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 0);
 			}
