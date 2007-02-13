@@ -388,7 +388,7 @@ void InitPlayerStatsGame ()
 
 #define TEAMKEY(_p)	((GetTeam (_p) == TEAM_RED) ? KEY_RED : KEY_BLUE)
 
-void init_ammo_and_energy (void)
+void InitAmmoAndEnergy (void)
 {
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].energy < INITIAL_ENERGY)
 		gameData.multi.players [gameData.multi.nLocalPlayer].energy = INITIAL_ENERGY;
@@ -408,6 +408,8 @@ void init_ammo_and_energy (void)
 
 extern	ubyte	bLastAfterburnerState;
 
+//------------------------------------------------------------------------------
+
 // Setup tPlayer for new level (After completion of previous level)
 void InitPlayerStatsLevel (int bSecret)
 {
@@ -426,7 +428,7 @@ gameData.multi.players [gameData.multi.nLocalPlayer].hostagesLevel = count_numbe
 gameData.multi.players [gameData.multi.nLocalPlayer].hostagesTotal += gameData.multi.players [gameData.multi.nLocalPlayer].hostagesLevel;
 gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board = 0;
 if (!bSecret) {
-	init_ammo_and_energy ();
+	InitAmmoAndEnergy ();
 	gameData.multi.players [gameData.multi.nLocalPlayer].flags &=  
 		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
 	gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = 0;
@@ -438,7 +440,7 @@ if (!bSecret) {
 			gameData.multi.players [gameData.multi.nLocalPlayer].flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 	}
 else if (gameStates.app.bD1Mission)
-	init_ammo_and_energy ();
+	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
 Last_laser_firedTime = xNextLaserFireTime = gameData.time.xGame; // added by RH, solved demo playback bug

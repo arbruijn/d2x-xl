@@ -203,7 +203,7 @@ int StartExtraBotSound (int nChannel, short nLevel, short nBot)
 StopBriefingSound (&nChannel);
 if (!gameStates.app.bHaveExtraData)
 	return -1;
-if (! (p = FindExtraBotSound (nLevel, nBot)))
+if (!(p = FindExtraBotSound (nLevel, nBot)))
 	return -1;
 return StartBriefingSound (nChannel, -1, 8 * F1_0, p->pszName);
 }
@@ -256,7 +256,9 @@ int LoadBriefImg (char *pszImg, grsBitmap *bmP, int bFullScr)
 
 strcpy (szImg, pszImg);
 strlwr (szImg);
-if (! (ps = strstr (szImg, "b.pcx")) && (ps = strstr (szImg, ".pcx"))) {
+if (ps = strstr (szImg, "b.pcx"))
+	 c = 'b';
+else if (ps = strstr (szImg, ".pcx")) {
 	c = *--ps;
 	strcpy (--ps, "0b.pcx");
 	*ps = c;
@@ -551,7 +553,7 @@ void ShowBitmapFrame (int bRedraw)
 			grdCurCanv = curCanvSave
 		);
 		d_free (bitmap_canv);
-		if (! (bRedraw || Door_divCount)) {
+		if (!(bRedraw || Door_divCount)) {
 #if 1
 		Door_divCount = DOOR_DIV_INIT;
 #else
@@ -710,7 +712,7 @@ GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NU
 GrPrintF (Briefing_text_x+1, Briefing_text_y, message);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 
-if (! (bRedraw || gameOpts->menus.nStyle)) 
+if (!(bRedraw || gameOpts->menus.nStyle)) 
 	GrUpdate (0);
 
 //	if (the_char != ' ')
@@ -722,7 +724,7 @@ return w;
 
 //-----------------------------------------------------------------------------
 
-int load_briefing_screen (int nScreen)
+int LoadBriefingScreen (int nScreen)
 {
 	int	pcx_error;
 	char *szBriefScreen;
@@ -976,7 +978,7 @@ while (!done) {
 		Briefing_text_x = x;
 		Briefing_text_y = y;
 		//if (bHaveScreen)
-		load_briefing_screen (nScreen);
+		LoadBriefingScreen (nScreen);
 		briefBuf = Briefing_screens [nScreen];
 		bsp = &briefBuf;
 		init_char_pos (bsp, 1);
@@ -1191,8 +1193,8 @@ while (!done) {
 				}
 			else if (ch == 'P') {		//	New page.
 				if (!GotZ) {
-					Int3 (); // Hey ryan!!!! You gotta load a screen before you start
-					        // printing to it! You know, $Z !!!
+					Int3 (); // Hey ryan!!!!You gotta load a screen before you start
+					        // printing to it!You know, $Z !!!
 					//if (message > pj)
 		  			LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
 					bHaveScreen = 1;
@@ -1226,7 +1228,7 @@ while (!done) {
 					DumbAdjust--;
 				Briefing_text_x = bsp->text_ulx;
 				if (Briefing_text_y > bsp->text_uly + bsp->text_height) {
-					load_briefing_screen (nScreen);
+					LoadBriefingScreen (nScreen);
 					Briefing_text_x = bsp->text_ulx;
 					Briefing_text_y = bsp->text_uly;
 				}
@@ -1239,8 +1241,8 @@ while (!done) {
 			}
 		else {
 			if (!GotZ) {
-				Int3 (); // Hey ryan!!!! You gotta load a screen before you start
-				        // printing to it! You know, $Z !!!
+				Int3 (); // Hey ryan!!!!You gotta load a screen before you start
+				        // printing to it!You know, $Z !!!
 				//if (message > pj)
 					LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
 				}
@@ -1327,7 +1329,7 @@ while (!done) {
 							}
  						pi = message;
 						if (curDrawBuffer == GL_FRONT) {
-							load_briefing_screen (nScreen);
+							LoadBriefingScreen (nScreen);
 							GrUpdate (0);
 							}
 						Briefing_text_x = bsp->text_ulx;
