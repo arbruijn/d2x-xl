@@ -220,6 +220,7 @@ if (gameStates.gameplay.bKillBossCheat)
 // Must toggle walls whether it is a boss or control center.
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 	WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
+ExecObjTriggers (OBJ_IDX (objP));
 // And start the countdown stuff.
 if (!(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount))
 	gameData.reactor.bDestroyed = 1;
@@ -386,14 +387,14 @@ void InitReactorForLevel (void)
 {
 	int		i;
 	tObject	*objP;
-	short		nReactorObj=-1, nBossObj=-1;
+	short		nReactorObj = -1, nBossObj = -1;
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
 extraGameInfo [0].nBossCount = 0;
 gameStates.gameplay.nReactorCount = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	if (objP->nType == OBJ_CNTRLCEN) {
-		if (nReactorObj != -1) {
+		if ((nReactorObj != -1) && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
 			con_printf (1, "Warning: Two or more control centers including %i and %i\n", i, nReactorObj);
 #endif

@@ -690,13 +690,13 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-		if (objP->nType != OBJ_ROBOT)
+		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
 			return 1;
 		if (!(bBotTrigger || gameData.bots.pInfo [objP->id].companion))
 			return 1;
 		}
 	else
-		if (objP->nType != OBJ_ROBOT)
+		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
 			return 1;
 		}
 #if 1
