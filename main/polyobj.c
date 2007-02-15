@@ -657,16 +657,18 @@ else {
 
 	for (i = 0; flags; flags >>= 1, i++)
 		if (flags & 1) {
-			vmsVector ofs;
+			vmsVector vOffs;
 
-			Assert (i < po->nModels);
+			//Assert (i < po->nModels);
+			if (i < po->nModels) {
 			//if submodel, rotate around its center point, not pivot point
-			VmVecAvg (&ofs, po->subModels.mins + i, po->subModels.maxs + i);
-			VmVecNegate (&ofs);
-			G3StartInstanceMatrix (&ofs, NULL);
-			G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
-								  animAngles, light, glowValues, color, NULL, nModel);
-			G3DoneInstance ();
+				VmVecAvg (&vOffs, po->subModels.mins + i, po->subModels.maxs + i);
+				VmVecNegate (&vOffs);
+				G3StartInstanceMatrix (&vOffs, NULL);
+				G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
+									  animAngles, light, glowValues, color, NULL, nModel);
+				G3DoneInstance ();
+				}
 			}	
 	}
 G3DoneInstance ();

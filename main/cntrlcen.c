@@ -220,7 +220,8 @@ if (gameStates.gameplay.bKillBossCheat)
 // Must toggle walls whether it is a boss or control center.
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 	WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
-ExecObjTriggers (OBJ_IDX (objP));
+if (objP)
+	ExecObjTriggers (OBJ_IDX (objP));
 // And start the countdown stuff.
 if (!(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses && extraGameInfo [0].nBossCount))
 	gameData.reactor.bDestroyed = 1;
