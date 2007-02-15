@@ -1124,7 +1124,7 @@ if (bRadar) {
 	gameStates.app.bAutoMap = 0;
 	return;
 	}
-GetSlowTick ();
+Get40FpsTick ();
 while (!bDone)	{
 	if (!nLeaveMode && Controls [0].automapState && (TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME)
 		nLeaveMode = 1;

@@ -105,7 +105,9 @@ extern int bDoingLightingHack;
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 ((F1_0 * 29) / 100)
 
-#define	HOMINGMSL_SCALE	16
+static   int nMslTurnSpeeds [3] = {4, 8, 16};
+
+#define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
 #define	MAX_SMART_DISTANCE	 (F1_0*150)
 #define	MAX_OBJDISTS			30
@@ -1304,21 +1306,18 @@ void CreateFlare (tObject *objP)
 
 //-------------------------------------------------------------------------------------------
 //	Set tObject *objP's orientation to (or towards if I'm ambitious) its velocity.
+
+#define HOMER_MAX_FPS	40
+#define HOMER_MIN_DELAY (1000 / HOMER_MAX_FPS)
+
 void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *norm_vel)
 {
 	vmsVector	new_fvec;
-	fix frameTime;
+	fix 			frameTime;
 
-if (!gameStates.limitFPS.bHomers || gameOpts->legacy.bHomers)
-	frameTime = gameData.time.xFrame;
-else {
-	if (!gameStates.app.b40fpsTick)
-		return;
-	else {
-		int fps = (int) ((1000 + gameStates.app.nDeltaTime / 2) / gameStates.app.nDeltaTime);
-		frameTime = fps ? (f1_0 + fps / 2) / fps : f1_0;
-		}
-	}
+if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
+	return;
+frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.nDeltaTime) : gameData.time.xFrame;
 new_fvec = *norm_vel;
 VmVecScale (&new_fvec, /*gameData.time.xFrame*/ frameTime * HOMINGMSL_SCALE);
 VmVecInc (&new_fvec, &objP->position.mOrient.fVec);

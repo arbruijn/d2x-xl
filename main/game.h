@@ -398,7 +398,7 @@ int GrToggleFullScreenGame(void);
 
 void ShowInGameWarning (char *s);
 
-void GetSlowTick (void);
+void Get40FpsTick (void);
 /*
  * reads a tFlickeringLight structure from a CFILE
  */

@@ -4627,6 +4627,9 @@ else {
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMaxSmokeGrenades: %d\n", extraGameInfo [1].nMaxSmokeGrenades);
 	LogErr ("   bCompetition: %d\n", extraGameInfo [1].bCompetition);
+	LogErr ("   bFlickerLights: %d\n", extraGameInfo [1].bFlickerLights);
+	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
+	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
 	LogErr ("   nLightRange: %d\n", extraGameInfo [1].nLightRange);

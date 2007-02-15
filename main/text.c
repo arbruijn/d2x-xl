@@ -1616,7 +1616,9 @@ char *defaultGameTexts [][2] = {
 	{"Rauchgranate", "Smoke Grenade"},
 	{"Rauchgranaten", "Smoke Grenades"},
 	{"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
+	{"Raketen-~Manoevrierfaehigkeit", "missile ~Turn speed"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2100,7 +2102,10 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, proximity mines work as smoke grenades. You cannot\ndestroy smoke grenades, but they will also not explode at\ncontact and not do any damage. A ship can carry up to four\nsmoke grenades, and depending on the setting below you cannot\ndrop more than four simultaneously nto avoid smoke grenade spamming."},
 	{"Hier kann die Anzahl maximal gleichzeitig von einem Spieler\nabgeworfener Rauchgranaten begrenzt werden.", 
 	 "Limit the number of smoke grenades a player can deploy at any\ngiven time."},
+	{"Hier kann eingestellt werden, wie schnell zielsuchende Raketen\nihre Flugrichtung aendern koennen.", 
+	 "Adjust the turn speed of homing missiles here."},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};

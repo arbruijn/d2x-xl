@@ -12,41 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header for timer functions
- *
- * Old Log:
- * Revision 1.8  1994/12/10  12:27:23  john
- * Added TimerGetApproxSeconds.
- *
- * Revision 1.7  1994/12/10  12:10:25  john
- * Added types.h.
- *
- * Revision 1.6  1994/12/10  12:07:06  john
- * Added tick counter variable.
- *
- * Revision 1.5  1994/11/15  12:04:15  john
- * Cleaned up timer code a bit... took out unused functions
- * like timer_get_milliseconds, etc.
- *
- * Revision 1.4  1994/04/28  23:50:08  john
- * Changed calling for initTimer.  Made the function that the
- * timer calls be a far function. All of this was done to make
- * our timer system compatible with the HMI sound stuff.
- *
- * Revision 1.3  1994/02/17  15:57:12  john
- * Changed key libary to C.
- *
- * Revision 1.2  1994/01/18  10:58:34  john
- * Added TimerGetFixedSeconds
- *
- * Revision 1.1  1993/07/10  13:10:41  matt
- * Initial revision
- *
- */
-
-
 #ifndef _TIMER_H
 #define _TIMER_H
 
@@ -125,5 +90,7 @@ void timer_delay(fix seconds);
 #define approx_fsec_to_usec(fsec) ((fsec) << 4)
 #define ApproxMSecToFSec(msec) ((msec) << 6)
 #define approx_fsec_to_msec(fsec) ((fsec) >> 6)
+
+#define secs2f(s)	(i2f ((s) / 1000) | (i2f ((s) % 1000) / 1000))
 
 #endif

@@ -25,6 +25,7 @@ fix TimerGetApproxSeconds(void)
 }
 
 #if 0//def _WIN32
+
 QLONG TimerGetFixedSeconds(void)
 {
 	QLONG x, s, ms;
@@ -38,13 +39,14 @@ QLONG TimerGetFixedSeconds(void)
 	return x;
 }
 #else
-fix TimerGetFixedSeconds(void)
+
+fix TimerGetFixedSeconds (void)
 {
-	fix x;
-	unsigned long tv_now = SDL_GetTicks();
-	x=i2f(tv_now/1000) | FixDiv(i2f(tv_now % 1000),i2f(1000));
-	return x;
+	unsigned long ms = SDL_GetTicks ();
+
+	return secs2f (ms);
 }
+
 #endif
 
 void timer_delay(fix seconds)

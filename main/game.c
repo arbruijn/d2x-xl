@@ -837,12 +837,6 @@ if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
 // Limit frametime to be between 5 and 150 fps.
 gameData.time.xRealFrame = gameData.time.xFrame;
-#if 0
-if (gameData.time.xFrame < F1_0/150) 
-	gameData.time.xFrame = F1_0/150;
-if (gameData.time.xFrame > F1_0/5) 
-	gameData.time.xFrame = F1_0/5;
-#endif
 gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
@@ -2066,7 +2060,7 @@ void DoAmbientSounds ()
 
 //-----------------------------------------------------------------------------
 
-void GetSlowTick (void)
+void Get40FpsTick (void)
 {
 gameStates.app.nSDLTicks = SDL_GetTicks ();
 gameStates.app.nDeltaTime = gameStates.app.nSDLTicks - gameStates.app.nLastTick;
@@ -2143,7 +2137,7 @@ int GameLoop (int RenderFlag, int bReadControls)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-GetSlowTick ();
+Get40FpsTick ();
 #ifdef _DEBUG
 //	Used to slow down frame rate for testing things.
 //	RenderFlag = 1; // DEBUG

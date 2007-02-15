@@ -140,9 +140,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static int	nFPSopt, nRSDopt, 
 				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
-				nFusionOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
+				nFusionRampOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
-				nUseSmokeOpt, nUseCamOpt,
+				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt,
 				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nDynLightOpt, 
 				nShadowReachOpt, nOglMaxLightsOpt,
 				optZPass, optShadowVolume, nSyncSmokeSizes,
@@ -3008,6 +3008,8 @@ do {
 
 //------------------------------------------------------------------------------
 
+static char *pszMslTurnSpeeds [3];
+
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem * m;
@@ -3042,7 +3044,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 
-	m = menus + nFusionOpt;
+	m = menus + nFusionRampOpt;
 	v = m->value + 2;
 	if (extraGameInfo [0].nFusionPowerMod != v) {
 		extraGameInfo [0].nFusionPowerMod = v;
@@ -3053,6 +3055,14 @@ if (gameOpts->app.bExpertMode) {
 	v = m->value;
 	if (extraGameInfo [0].bSmokeGrenades != v) {
 		extraGameInfo [0].bSmokeGrenades = v;
+		*key = -2;
+		return;
+		}
+	m = menus + nMslTurnSpeedOpt;
+	v = m->value;
+	if (extraGameInfo [0].nMslTurnSpeed != v) {
+		extraGameInfo [0].nMslTurnSpeed = v;
+		sprintf (m->text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
 		*key = -2;
 		return;
 		}
@@ -3081,10 +3091,12 @@ void GameplayOptionsMenu ()
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
 			optIdleAnims = -1;
 	char	szRespawnDelay [60];
-	char	szDifficulty [50];
-	char	szSpeedBoost [50];
-	char	szFusionPower [50];
-	char	szMaxSmokeGrens [50];
+	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
+			szMslTurnSpeed [50];
+
+pszMslTurnSpeeds [0] = TXT_SLOW;
+pszMslTurnSpeeds [1] = TXT_MEDIUM;
+pszMslTurnSpeeds [2] = TXT_STANDARD;
 
 do {
 	memset (&m, 0, sizeof (m));
@@ -3105,7 +3117,11 @@ do {
 		sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
 		*szFusionPower = *(TXT_FUSION_PWR - 1);
 		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
-		nFusionOpt = opt++;
+		nFusionRampOpt = opt++;
+		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, extraGameInfo [0].nMslTurnSpeed * 50, '%');
+		*szMslTurnSpeed = *(TXT_FUSION_PWR - 1);
+		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
+		nMslTurnSpeedOpt = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);

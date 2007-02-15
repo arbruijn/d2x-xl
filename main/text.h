@@ -1648,9 +1648,9 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_GRENADE			GT(866)
 #define TXT_SMOKE_GRENADES			GT(867)
 #define TXT_MAX_SMOKEGRENS			GT(868)
+#define TXT_MSL_TURNSPEED			GT(869)
 
 #if 0
-#define TXT_				GT(869)
 #define TXT_				GT(870)
 #define TXT_				GT(871)
 #define TXT_				GT(872)
@@ -2051,10 +2051,10 @@ void LoadGameTexts(void);
 #define HTX_FLICKERLIGHTS			HT(249)				
 #define HTX_GPLAY_SMOKEGRENADES	HT(250)				
 #define HTX_GPLAY_MAXGRENADES		HT(251)				
+#define HTX_GPLAY_MSL_TURNSPEED	HT(252)				
 
 #if 0
 				
-#define HTX_					HT(252)				
 #define HTX_					HT(253)				
 #define HTX_					HT(254)				
 #define HTX_					HT(255)				
