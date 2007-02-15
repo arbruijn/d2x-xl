@@ -3118,7 +3118,7 @@ do {
 		*szFusionPower = *(TXT_FUSION_PWR - 1);
 		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
 		nFusionRampOpt = opt++;
-		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, extraGameInfo [0].nMslTurnSpeed * 50, '%');
+		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
 		*szMslTurnSpeed = *(TXT_FUSION_PWR - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		nMslTurnSpeedOpt = opt++;

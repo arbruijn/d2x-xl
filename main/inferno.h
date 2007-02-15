@@ -1093,6 +1093,7 @@ typedef struct tObjectData {
 	tSpeedBoostData	speedBoost [MAX_OBJECTS];
 	vmsVector			vRobotGoals [MAX_OBJECTS];
 	fix					xLastAfterburnerTime [MAX_OBJECTS];
+	fix					xCreationTime [MAX_OBJECTS];
 	short					nFirstDropped;
 	short					nLastDropped;
 	short					nFreeDropped;

@@ -890,6 +890,7 @@ ShowBoxedMessage (TXT_LOADING);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 				 (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (gameData.segs.xSegments));
+memset (gameData.objs.xCreationTime, 0, sizeof (gameData.objs.xCreationTime));
 /*---*/LogErr ("   loading texture brightness info\n");
 LoadTextureBrightness (pszLevelName);
 nLoadRes = LoadLevelSub (pszLevelName);		//actually load the data from disk!

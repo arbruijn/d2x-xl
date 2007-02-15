@@ -2433,6 +2433,7 @@ Assert (nSegment != -1);
 objP->nSegment = -1;					//set to zero by memset, above
 LinkObject (nObject, nSegment);
 //	Set (or not) persistent bit in physInfo.
+gameData.objs.xCreationTime [nObject] = gameData.time.xGame;
 if (objP->nType == OBJ_WEAPON) {
 	Assert (objP->controlType == CT_WEAPON);
 	objP->mType.physInfo.flags |= WI_persistent (objP->id) * PF_PERSISTENT;

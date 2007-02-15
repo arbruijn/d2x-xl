@@ -1616,7 +1616,7 @@ char *defaultGameTexts [][2] = {
 	{"Rauchgranate", "Smoke Grenade"},
 	{"Rauchgranaten", "Smoke Grenades"},
 	{"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
-	{"Raketen-~Manoevrierfaehigkeit", "missile ~Turn speed"},
+	{"~Wendigkeit von Raketen: %s", "missile ~Turn speed: %s"},
 #if 0
 	{"", ""},
 #endif

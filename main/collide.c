@@ -1402,6 +1402,8 @@ if (robot->flags & OF_EXPLODING)
 	return 0;
 if (robot->shields < 0) 
 	return 0;	//robot already dead...
+if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robot)] < F1_0)
+	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
 	// guidebot may kill other bots
@@ -1650,6 +1652,7 @@ if (rInfoP->bossFlag) {
 		bInvulBoss = !bDamage;
 		}
 	}
+
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
 if ((rInfoP->companion) && 

@@ -1085,7 +1085,7 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 //	See if legal to keep tracking currently tracked tObject.  If not, see if another tObject is trackable.  If not, return -1,
 //	else return tObject number of tracking tObject.
 //	Computes and returns a fairly precise dot product.
-int track_track_goal (int nTrackGoal, tObject *tracker, fix *dot)
+int TrackTrackGoal (int nTrackGoal, tObject *tracker, fix *dot)
 {
 	//	Every 8 frames for each tObject, scan all gameData.objs.objects.
 	if (object_is_trackable (nTrackGoal, tracker, dot) && (((OBJ_IDX (tracker) ^ gameData.app.nFrameCount) % 8) != 0)) {
@@ -1388,7 +1388,7 @@ if ((objP->nType == OBJ_WEAPON) &&
 		}
 
 		//	Make sure the tObject we are tracking is still trackable.
-		nTrackGoal = track_track_goal (nTrackGoal, objP, &dot);
+		nTrackGoal = TrackTrackGoal (nTrackGoal, objP, &dot);
 		if (nTrackGoal == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
 			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
 			if ((xDistToPlayer < gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist) || (gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist < 0))
