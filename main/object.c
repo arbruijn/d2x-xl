@@ -504,7 +504,7 @@ else
 	xLight = ComputeObjectLight (objP, NULL);
 //make robots brighter according to robot glow field
 if (objP->nType == OBJ_ROBOT)
-	xLight += (gameData.bots.pInfo [objP->id].glow << 12);		//convert 4:4 to 16:16
+	xLight += (ROBOTINFO (objP->id).glow << 12);		//convert 4:4 to 16:16
 else if (objP->nType == OBJ_WEAPON) {
 	if (objP->id == FLARE_ID)
 		xLight += F1_0 * 2;
@@ -626,7 +626,7 @@ else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime+CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
-		if (gameData.bots.pInfo [objP->id].bossFlag) {
+		if (ROBOTINFO (objP->id).bossFlag) {
 			int i = FindBoss (OBJ_IDX (objP));
 			if (i >= 0)
 				DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
@@ -883,7 +883,7 @@ if (objP)
 	if (objP->nType == OBJ_CNTRLCEN)
 		return &reactorDefColor;
 	else if (objP->nType == OBJ_ROBOT) {
-		if (!gameData.bots.pInfo [objP->id].companion)
+		if (!ROBOTINFO (objP->id).companion)
 			return &botDefColor;
 		}
 	else if (objP->nType == OBJ_PLAYER) {
@@ -907,7 +907,7 @@ else if (objP->nType == OBJ_ROBOT) {
 	xMaxShields = RobotDefaultShields (objP);
 	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
 #if 0
-	if (gameData.bots.pInfo [objP->id].companion)
+	if (gameData.bots.info [0][objP->id].companion)
 		fDmg /= 2;
 #endif
 	}
@@ -1740,7 +1740,7 @@ void RenderObject (tObject *objP, int nWindowNum)
 
 if ((OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console)) {
-	if (bSpectate = (gameStates.app.bSpectating && !nWindowNum)) {
+	if (bSpectate = (gameStates.app.bFreeCam && !nWindowNum)) {
 		savePos = objP->position;
 		objP->position = gameStates.app.playerPos;
 		}
@@ -2329,7 +2329,8 @@ int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector 
 					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
 {
-	short nObject;
+	short		nObject;
+	int		bD1Robot;
 	tObject *objP;
 
 #ifdef _DEBUG
@@ -2341,7 +2342,7 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	}	
 else if (nType == OBJ_ROBOT) {
-	if (gameData.bots.pInfo [id].bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 	}
 else if (nType == OBJ_CNTRLCEN)

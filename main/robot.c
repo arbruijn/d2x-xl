@@ -98,7 +98,7 @@ void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
 	Assert(objP->renderType==RT_POLYOBJ || objP->renderType==RT_MORPH);
 	Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
-	r = &gameData.bots.pInfo[objP->id];
+	r = &ROBOTINFO (objP->id);
 	pm =&gameData.models.polyModels [r->nModel];
 
 	if (gun_num >= r->nGuns)
@@ -138,13 +138,9 @@ void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
 //takes the robot nType (tObject id), gun number, and desired state
 int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state)
 {
-
-	Assert(gun_num <= gameData.bots.pInfo[robotType].nGuns);
-
-	*jp_list_ptr = &gameData.bots.joints[gameData.bots.pInfo[robotType].animStates[gun_num][state].offset];
-
-	return gameData.bots.pInfo[robotType].animStates[gun_num][state].n_joints;
-
+Assert(gun_num <= ROBOTINFO (robotType).nGuns);
+*jp_list_ptr = &gameData.bots.joints [ROBOTINFO (robotType).animStates[gun_num][state].offset];
+return ROBOTINFO (robotType).animStates[gun_num][state].n_joints;
 }
 
 
@@ -158,7 +154,7 @@ void setRobotState(tObject *objP,int state)
 
 	Assert(objP->nType == OBJ_ROBOT);
 
-	ri = &gameData.bots.pInfo[objP->id];
+	ri = &ROBOTINFO (objP->id);
 
 	for (g=0;g<ri->nGuns+1;g++) {
 

@@ -384,15 +384,16 @@ Restart: ;
 
 tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 {
-	short		nObject;
-	tObject	*objP;
-	ubyte		default_behavior;
+	short			nObject;
+	tObject		*objP;
+	tRobotInfo	*botInfoP;
+	ubyte			default_behavior;
 
 	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
 	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
 
 	nObject = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
-								  &vmdIdentityMatrix, gameData.models.polyModels [gameData.bots.pInfo [object_id].nModel].rad,
+								  &vmdIdentityMatrix, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
 				 				  (ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
 
 	if (nObject < 0) {
@@ -405,14 +406,15 @@ tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 
 	objP = gameData.objs.objects + nObject;
 	//Set polygon-tObject-specific data
-	objP->rType.polyObjInfo.nModel = gameData.bots.pInfo [objP->id].nModel;
+	botInfoP = &ROBOTINFO (objP->id);
+	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
 	//set Physics info
-	objP->mType.physInfo.mass = gameData.bots.pInfo [objP->id].mass;
-	objP->mType.physInfo.drag = gameData.bots.pInfo [objP->id].drag;
+	objP->mType.physInfo.mass = botInfoP->mass;
+	objP->mType.physInfo.drag = botInfoP->drag;
 	objP->mType.physInfo.flags |= (PF_LEVELLING);
-	objP->shields = gameData.bots.pInfo [objP->id].strength;
-	default_behavior = gameData.bots.pInfo [objP->id].behavior;
+	objP->shields = RobotDefaultShields (objP);
+	default_behavior = botInfoP->behavior;
 	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
 	CreateNSegmentPath (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
 	gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);

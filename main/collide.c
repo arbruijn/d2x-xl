@@ -94,11 +94,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CollideRobotAndWall (tObject * robot, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
 	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
-	tRobotInfo	*rInfoP = gameData.bots.pInfo + robot->id;
+	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
 
 if ((robot->id == ROBOT_BRAIN) || 
 		(robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
-		(rInfoP->companion == 1) || 
+		(botInfoP->companion == 1) || 
 		(robot->cType.aiInfo.behavior == AIB_SNIPE)) {
 	int	nWall = WallNumI (hitseg, hitwall);
 	if (nWall != -1) {
@@ -109,9 +109,9 @@ if ((robot->id == ROBOT_BRAIN) ||
 				!(wallP->flags & WALL_DOOR_LOCKED)) {
 			WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 		// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
-		//-- } else if ((rInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
+		//-- } else if ((botInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
 			} 
-		else if ((rInfoP->companion == 1) && (wallP->nType == WALL_DOOR)) {
+		else if ((botInfoP->companion == 1) && (wallP->nType == WALL_DOOR)) {
 			if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
 				if (wallP->keys != KEY_NONE) {
 					if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
@@ -121,7 +121,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 				}
 			} 
-		else if (rInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
+		else if (botInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
 			if (wallP->keys != KEY_NONE)
 				if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
 					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
@@ -167,7 +167,7 @@ if ((otherObjP->nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 	damage = 0x7fffffff;
 	switch (objP->nType) {
 		case OBJ_ROBOT:
-			if (gameData.bots.pInfo [objP->id].attackType == 1) {
+			if (ROBOTINFO (objP->id).attackType == 1) {
 				if (otherObjP->nType == OBJ_WEAPON)
 					result = ApplyDamageToRobot (objP, damage/4, otherObjP->cType.laserInfo.nParentObj);
 				else
@@ -180,13 +180,13 @@ if ((otherObjP->nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 					result = ApplyDamageToRobot (objP, damage/2, OBJ_IDX (otherObjP));
 				}		
 			if (result && (otherObjP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature))
-				AddPointsToScore (gameData.bots.pInfo [objP->id].scoreValue);
+				AddPointsToScore (ROBOTINFO (objP->id).scoreValue);
 			break;
 
 		case OBJ_PLAYER:
 			//	If colliding with a claw nType robot, do damage proportional to gameData.time.xFrame because you can Collide with those
 			//	bots every frame since they don't move.
-			if ((otherObjP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [otherObjP->id].attackType))
+			if ((otherObjP->nType == OBJ_ROBOT) && (ROBOTINFO (otherObjP->id).attackType))
 				damage = FixMul (damage, gameData.time.xFrame*2);
 			//	Make trainee easier.
 			if (gameStates.app.nDifficultyLevel == 0)
@@ -254,7 +254,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			force2.p.y = vForce->p.y / 4;
 			force2.p.z = vForce->p.z / 4;
 			PhysApplyForce (objP, &force2);
-			if (bDamage && ((otherObjP->nType != OBJ_ROBOT) || !gameData.bots.pInfo [otherObjP->id].companion)) {
+			if (bDamage && ((otherObjP->nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->id).companion)) {
 				xForceMag = VmVecMagQuick (&force2);
 				ApplyForceDamage (objP, xForceMag, otherObjP);
 				}
@@ -262,7 +262,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 		}
 	else {
 		if (objP->nType == OBJ_ROBOT) {
-			if (gameData.bots.pInfo [objP->id].bossFlag)
+			if (ROBOTINFO (objP->id).bossFlag)
 				return;
 			vRotForce.p.x = vForce->p.x / (4 + gameStates.app.nDifficultyLevel);
 			vRotForce.p.y = vForce->p.y / (4 + gameStates.app.nDifficultyLevel);
@@ -674,7 +674,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 		int	ok_to_blow = 0;
 
 		if (blower->cType.laserInfo.parentType == OBJ_ROBOT)
-			if (gameData.bots.pInfo [gameData.objs.objects [blower->cType.laserInfo.nParentObj].id].companion)
+			if (ROBOTINFO (gameData.objs.objects [blower->cType.laserInfo.nParentObj].id).companion)
 				ok_to_blow = 1;
 
 		if (!(ok_to_blow || (blower->cType.laserInfo.parentType == OBJ_PLAYER))) {
@@ -892,14 +892,13 @@ if ((weapon->mType.physInfo.velocity.p.x == 0) &&
 	}
 #endif
 bBlewUp = CheckEffectBlowup (segP, hitwall, vHitPt, weapon, 0);
-if ((weapon->cType.laserInfo.parentType == OBJ_ROBOT) && 
-		(gameData.bots.pInfo [wObjP->id].companion==1)) {
+if ((weapon->cType.laserInfo.parentType == OBJ_ROBOT) && ROBOTINFO (wObjP->id).companion) {
 	robot_escort = 1;
 	if (gameData.app.nGameMode & GM_MULTI) {
 		Int3 ();  // Get Jason!
 	   return 1;
 	   }	
-playernum = gameData.multi.nLocalPlayer;		//if single tPlayer, he's the tPlayer's buddy
+	playernum = gameData.multi.nLocalPlayer;		//if single tPlayer, he's the tPlayer's buddy
 	}
 else {
 	robot_escort = 0;
@@ -1134,15 +1133,15 @@ if (nCollisionSeg != -1)
 	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
 
 if (playerObjP->id == gameData.multi.nLocalPlayer) {
-	if (gameData.bots.pInfo [robot->id].companion)	//	Player and companion don't Collide.
+	if (ROBOTINFO (robot->id).companion)	//	Player and companion don't Collide.
 		return 1;
-	if (gameData.bots.pInfo [robot->id].kamikaze) {
+	if (ROBOTINFO (robot->id).kamikaze) {
 		ApplyDamageToRobot (robot, robot->shields+1, OBJ_IDX (playerObjP));
 		if (playerObjP == gameData.objs.console)
-			AddPointsToScore (gameData.bots.pInfo [robot->id].scoreValue);
+			AddPointsToScore (ROBOTINFO (robot->id).scoreValue);
 		}
 
-	if (gameData.bots.pInfo [robot->id].thief) {
+	if (ROBOTINFO (robot->id).thief) {
 		if (gameData.ai.localInfo [OBJ_IDX (robot)].mode == AIM_THIEF_ATTACK) {
 			xLastThiefHitTime = gameData.time.xGame;
 			AttemptToStealItem (robot, playerObjP->id);
@@ -1163,7 +1162,7 @@ else
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the robot stole.
-if ((!bTheftAttempt) && !gameData.bots.pInfo [robot->id].energyDrain)
+if (!bTheftAttempt && !ROBOTINFO (robot->id).energyDrain)
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 BumpTwoObjects (robot, playerObjP, 1, vHitPt);
 return 1; 
@@ -1407,10 +1406,10 @@ if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robot)] < F1_0)
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
 	// guidebot may kill other bots
-	if ((killerObjP->nType == OBJ_ROBOT) && !gameData.bots.pInfo [killerObjP->id].companion)
+	if ((killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
 		return 0;
 	}
-if (gameData.bots.pInfo [robot->id].bossFlag) {
+if (ROBOTINFO (robot->id).bossFlag) {
 	int i = FindBoss (OBJ_IDX (robot));
 	if (i >= 0)
 		gameData.boss [i].nHitTime = gameData.time.xGame;
@@ -1418,7 +1417,7 @@ if (gameData.bots.pInfo [robot->id].bossFlag) {
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
-if (gameData.bots.pInfo [robot->id].companion) {
+if (ROBOTINFO (robot->id).companion) {
 //		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) || gameStates.app.cheats.bMadBuddy)
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
@@ -1427,13 +1426,13 @@ if (gameData.bots.pInfo [robot->id].companion) {
 //	if (robot->controlType == CT_REMOTE)
 //		return 0; // Can't damange a robot controlled by another tPlayer
 
-// -- MK, 10/21/95, unused!--	if (gameData.bots.pInfo [robot->id].bossFlag)
+// -- MK, 10/21/95, unused!--	if (ROBOTINFO (objP->id).bossFlag)
 //		Boss_been_hit = 1;
 
 robot->shields -= damage;
 
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
-if (gameData.bots.pInfo [robot->id].bossFlag) {
+if (ROBOTINFO (robot->id).bossFlag) {
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
 		if ((robot->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
 			if (gameData.app.nGameMode & GM_MULTI) {
@@ -1457,13 +1456,13 @@ if (gameData.bots.pInfo [robot->id].bossFlag) {
 
 if (robot->shields < 0) {
 	if (gameData.app.nGameMode & GM_MULTI) {
-		bIsThief = (gameData.bots.pInfo [robot->id].thief != 0);
+		bIsThief = (ROBOTINFO (robot->id).thief != 0);
 		if (bIsThief)
 			memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-		if (MultiExplodeRobotSub (OBJ_IDX (robot), nKillerObj, gameData.bots.pInfo [robot->id].thief)) {
+		if (MultiExplodeRobotSub (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief)) {
 			if (bIsThief)	
 				memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-		MultiSendRobotExplode (OBJ_IDX (robot), nKillerObj, gameData.bots.pInfo [robot->id].thief);
+		MultiSendRobotExplode (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief);
 		if (bIsThief)	
 			memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 		return 1;
@@ -1477,20 +1476,20 @@ if (robot->shields < 0) {
 		gameData.multi.players [gameData.multi.nLocalPlayer].numKillsTotal++;
 		}
 
-	if (gameData.bots.pInfo [robot->id].bossFlag) {
+	if (ROBOTINFO (robot->id).bossFlag) {
 		StartBossDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
 		}
-	else if (gameData.bots.pInfo [robot->id].bDeathRoll) {
+	else if (ROBOTINFO (robot->id).bDeathRoll) {
 		StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
 		}
 	else {
 		if (robot->id == SPECIAL_REACTOR_ROBOT)
 			SpecialReactorStuff ();
-	//if (gameData.bots.pInfo [robot->id].smartBlobs)
-	//	CreateSmartChildren (robot, gameData.bots.pInfo [robot->id].smartBlobs);
-	//if (gameData.bots.pInfo [robot->id].badass)
-	//	ExplodeBadassObject (robot, F1_0*gameData.bots.pInfo [robot->id].badass, F1_0*40, F1_0*150);
-		ExplodeObject (robot, gameData.bots.pInfo [robot->id].kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
+	//if (ROBOTINFO (objP->id).smartBlobs)
+	//	CreateSmartChildren (robot, ROBOTINFO (objP->id).smartBlobs);
+	//if (ROBOTINFO (objP->id).badass)
+	//	ExplodeBadassObject (robot, F1_0*ROBOTINFO (objP->id).badass, F1_0*40, F1_0*150);
+		ExplodeObject (robot, ROBOTINFO (robot->id).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
 		}
 	return 1;
 	}
@@ -1522,7 +1521,7 @@ int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 	int	bDamage = 1;
 	int	bKinetic = WI_matter (weapon->id);
 
-d2BossIndex = gameData.bots.pInfo [robot->id].bossFlag - BOSS_D2;
+d2BossIndex = ROBOTINFO (robot->id).bossFlag - BOSS_D2;
 Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 
 //	See if should spew a bot.
@@ -1635,7 +1634,7 @@ int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
 { 
 	int	bDamage = 1;
 	int	bInvulBoss = 0;
-	tRobotInfo *rInfoP = gameData.bots.pInfo + robot->id;
+	tRobotInfo *botInfoP = &ROBOTINFO (robot->id);
 	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
 
 if ((weapon->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
@@ -1643,11 +1642,11 @@ if ((weapon->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
-if (rInfoP->bossFlag) {
+if (botInfoP->bossFlag) {
 	int i = FindBoss (OBJ_IDX (robot));
 	if (i >= 0)
 		gameData.boss [i].nHitTime = gameData.time.xGame;
-	if (rInfoP->bossFlag >= BOSS_D2) {
+	if (botInfoP->bossFlag >= BOSS_D2) {
 		bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
 		bInvulBoss = !bDamage;
 		}
@@ -1655,7 +1654,7 @@ if (rInfoP->bossFlag) {
 
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
-if ((rInfoP->companion) && 
+if ((botInfoP->companion) && 
 	 ((weapon->cType.laserInfo.parentType != OBJ_ROBOT) && 
 	  !gameStates.app.cheats.bRobotsKillRobots))
 	return 1;
@@ -1672,11 +1671,11 @@ if (weapon->cType.laserInfo.nParentSig == robot->nSignature)
 	return 1;
 //	Changed, 10/04/95, put out blobs based on skill level and power of weapon doing damage.
 //	Also, only a weapon hit from a tPlayer weapon causes smart blobs.
-if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
+if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (botInfoP->energyBlobs))
 	if ((robot->shields > 0) && bIsEnergyWeapon [weapon->id]) {
 		int	num_blobs;
 		fix	probval = (gameStates.app.nDifficultyLevel+2) * min (weapon->shields, robot->shields);
-		probval = rInfoP->energyBlobs * probval/ (NDL*32);
+		probval = botInfoP->energyBlobs * probval/ (NDL*32);
 		num_blobs = probval >> 16;
 		if (2*d_rand () < (probval & 0xffff))
 			num_blobs++;
@@ -1711,14 +1710,14 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 			}
 	  	else
 			MultiRobotRequestChange (robot, gameData.objs.objects [weapon->cType.laserInfo.nParentObj].id);
-		if (rInfoP->nExp1VClip > -1)
-			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, (robot->size/2*3)/4, (ubyte) rInfoP->nExp1VClip);
+		if (botInfoP->nExp1VClip > -1)
+			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, (robot->size/2*3)/4, (ubyte) botInfoP->nExp1VClip);
 		else if (gameData.weapons.info [weapon->id].robot_hit_vclip > -1)
 			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, wInfoP->impact_size, (ubyte) wInfoP->robot_hit_vclip);
 		if (expl_obj)
 			AttachObject (robot, expl_obj);
-		if (bDamage && (rInfoP->nExp1Sound > -1))
-			DigiLinkSoundToPos (rInfoP->nExp1Sound, robot->nSegment, 0, vHitPt, 0, F1_0);
+		if (bDamage && (botInfoP->nExp1Sound > -1))
+			DigiLinkSoundToPos (botInfoP->nExp1Sound, robot->nSegment, 0, vHitPt, 0, F1_0);
 		if (!(weapon->flags & OF_HARMLESS)) {
 			fix	damage = weapon->shields;
 			if (bDamage)
@@ -1728,7 +1727,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 			//	Cut Gauss damage on bosses because it just breaks the game.  Bosses are so easy to
 			//	hit, and missing a robot is what prevents the Gauss from being game-breaking.
 			if (weapon->id == GAUSS_ID) {
-				if (rInfoP->bossFlag)
+				if (botInfoP->bossFlag)
 					damage = damage * (2*NDL-gameStates.app.nDifficultyLevel)/ (2*NDL);
 				}
 			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
@@ -1736,12 +1735,12 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (rInfoP->energyBlobs))
 			if (!ApplyDamageToRobot (robot, damage, weapon->cType.laserInfo.nParentObj))
 				BumpTwoObjects (robot, weapon, 0, vHitPt);		//only bump if not dead. no damage from bump
 			else if (weapon->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
-				AddPointsToScore (rInfoP->scoreValue);
+				AddPointsToScore (botInfoP->scoreValue);
 				DetectEscortGoalAccomplished (OBJ_IDX (robot));
 				}
 			}
 		//	If Gauss Cannon, spin robot.
-		if ((robot != NULL) && (!rInfoP->companion) && (!rInfoP->bossFlag) && (weapon->id == GAUSS_ID)) {
+		if ((robot != NULL) && (!botInfoP->companion) && (!botInfoP->bossFlag) && (weapon->id == GAUSS_ID)) {
 			tAIStatic	*aip = &robot->cType.aiInfo;
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
@@ -2182,7 +2181,7 @@ void ApplyDamageToPlayer (tObject *playerObjP, tObject *killer, fix damage)
 //				gameData.multi.players [gameData.multi.nLocalPlayer].nKillerObj = OBJ_IDX (killer);
 			playerObjP->flags |= OF_SHOULD_BE_DEAD;
 			if (gameData.escort.nObjNum != -1)
-				if (killer && (killer->nType == OBJ_ROBOT) && (gameData.bots.pInfo [killer->id].companion))
+				if (killer && (killer->nType == OBJ_ROBOT) && (ROBOTINFO (killer->id).companion))
 					gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 // -- removed, 09/06/95, MK --  else if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < LOSE_WEAPON_THRESHOLD) {
@@ -2276,10 +2275,10 @@ return 1;
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
 int CollidePlayerAndNastyRobot (tObject * playerObjP, tObject * robot, vmsVector *vHitPt)
 {
-//	if (!(gameData.bots.pInfo [robot->id].energyDrain && gameData.multi.players [playerObjP->id].energy))
+//	if (!(ROBOTINFO (objP->id).energyDrain && gameData.multi.players [playerObjP->id].energy))
 ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (playerObjP, robot, 0, vHitPt))	{//no damage from bump
-	DigiLinkSoundToPos (gameData.bots.pInfo [robot->id].clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
+	DigiLinkSoundToPos (ROBOTINFO (robot->id).clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 	ApplyDamageToPlayer (playerObjP, robot, F1_0* (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
@@ -2328,8 +2327,8 @@ int CollideRobotAndMatCen (tObject *objP)
 DigiLinkSoundToPos (SOUND_ROBOT_HIT, objP->nSegment, 0, &objP->position.vPos, 0, F1_0);
 //	DigiPlaySample (SOUND_ROBOT_HIT, F1_0);
 
-if (gameData.bots.pInfo [objP->id].nExp1VClip > -1)
-	ObjectCreateExplosion ((short) objP->nSegment, &objP->position.vPos, (objP->size/2*3)/4, (ubyte) gameData.bots.pInfo [objP->id].nExp1VClip);
+if (ROBOTINFO (objP->id).nExp1VClip > -1)
+	ObjectCreateExplosion ((short) objP->nSegment, &objP->position.vPos, (objP->size/2*3)/4, (ubyte) ROBOTINFO (objP->id).nExp1VClip);
 for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 	if (WALL_IS_DOORWAY (segp, tSide, NULL) & WID_FLY_FLAG) {
 		vmsVector	exit_point;

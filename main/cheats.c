@@ -49,7 +49,7 @@ int KillAllBuddyBots (void)
 	//int	boss_index = -1;
 
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].companion) {
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		else 
@@ -72,7 +72,7 @@ void KillAllRobots (void)
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) &&
-		 !(gameData.bots.pInfo [objP->id].companion || gameData.bots.pInfo [objP->id].bossFlag)) {
+		 !(ROBOTINFO (objP->id).companion || ROBOTINFO (objP->id).bossFlag)) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -95,7 +95,7 @@ void KillAllBossRobots (void)
 	tObject	*objP;
 
 for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].bossFlag) {
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -155,7 +155,7 @@ void KillThief (void)
 	tObject *objP;
 
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && gameData.bots.pInfo [objP->id].thief) {
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
 		if (gameStates.app.bNostalgia)
 			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 		else {
@@ -191,13 +191,13 @@ HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
 void KillBuddy (void)
 {
 	int     i;
+	tObject	*objP = gameData.objs.objects;
 
 	//	Kill buddy.
-for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
-			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-			HUDInitMessage (TXT_BUDDY_TOASTED);
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
+		gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		HUDInitMessage (TXT_BUDDY_TOASTED);
 		}
 }
 

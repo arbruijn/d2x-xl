@@ -457,7 +457,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 //	into a new tSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity problems.
 if (objP->nType == OBJ_ROBOT)
-	if (gameData.bots.pInfo [objP->id].companion)
+	if (ROBOTINFO (objP->id).companion)
 		MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
 
 #if PATH_VALIDATION
@@ -492,7 +492,7 @@ if (numPoints <= 4)
 	return numPoints;
 
 //	Prevent the buddy from polishing his path twice in one frame, which can cause him to get hung up.  Pretty ugly, huh?
-if (gameData.bots.pInfo [objP->id].companion) {
+if (ROBOTINFO (objP->id).companion) {
 	if (gameData.app.nFrameCount == Last_buddy_polish_path_frame)
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
@@ -896,7 +896,7 @@ void AIFollowPath (tObject *objP, int player_visibility, int nPrevVisibility, vm
 
 	vmsVector	vGoalPoint, new_vGoalPoint;
 	fix			xDistToGoal;
-	tRobotInfo	*robptr = &gameData.bots.pInfo [objP->id];
+	tRobotInfo	*robptr = &ROBOTINFO (objP->id);
 	int			forced_break, original_dir, original_index;
 	fix			xDistToPlayer;
 	short			nGoalSeg;
@@ -966,14 +966,14 @@ if (!(player_visibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(g
 		return;
 		} 
 	else {
-		tRobotInfo	*robptr = &gameData.bots.pInfo [objP->id];
+		tRobotInfo	*robptr = &ROBOTINFO (objP->id);
 		fix	cur_speed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel]/2;
 		fix	distance_travellable = FixMul (gameData.time.xFrame, cur_speed);
 		// int	nConnSide = FindConnectedSide (objP->nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the tSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
 		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&gameData.segs.segments]objP->nSegment], nConnSide) & WID_FLY_FLAG) {
-		if (!gameData.bots.pInfo [objP->id].companion && !gameData.bots.pInfo [objP->id].thief) {
+		if (!ROBOTINFO (objP->id).companion && !ROBOTINFO (objP->id).thief) {
 			if (distance_travellable >= xDistToGoal) {
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 				} 
@@ -1200,7 +1200,7 @@ void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int player_vis
 	vmsVector	vNormFwd;
 	fix			xSpeedScale;
 	fix			dot;
-	tRobotInfo	*robptr = &gameData.bots.pInfo [objP->id];
+	tRobotInfo	*robptr = &ROBOTINFO (objP->id);
 	fix			xMaxSpeed;
 
 //	If evading tPlayer, use highest difficulty level speed, plus something based on diff level
@@ -1376,7 +1376,7 @@ void AttemptToResumePath (tObject *objP)
 //	int				nGoalSegnum, object_segnum, 
 	int				nAbsIndex, nNewPathIndex;
 
-if ((aip->behavior == AIB_STATION) && (gameData.bots.pInfo [objP->id].companion != 1))
+if ((aip->behavior == AIB_STATION) && (ROBOTINFO (objP->id).companion != 1))
 	if (d_rand () > 8192) {
 		tAILocal			*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
 
@@ -1545,7 +1545,7 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 	fix			dot;
 	fix			xMaxSpeed;
 
-	xMaxSpeed = gameData.bots.pInfo [objP->id].xMaxSpeed [gameStates.app.nDifficultyLevel];
+	xMaxSpeed = ROBOTINFO (objP->id).xMaxSpeed [gameStates.app.nDifficultyLevel];
 
 	VmVecSub (&vNormToGoal, vGoalPoint, &vCurPos);
 	VmVecNormalizeQuick (&vNormToGoal);

@@ -1502,7 +1502,9 @@ inline int HUDShowFlashGauge (int h, int *bFlash, int tToggle)
 	time_t t = gameStates.app.nSDLTicks;
 	int b = *bFlash;
 
-if (gameStates.app.bPlayerIsDead || gameStates.app.bPlayerExploded)
+if (gameStates.app.bPlayerIsDead || 
+	 gameStates.app.bPlayerExploded || 
+	 !gameOpts->render.cockpit.bFlashGauges)
 	b = 0;
 else if (b == 2) {
 	if (h > 20)

@@ -165,17 +165,17 @@ void PagingTouchRobot (int robot_index)
 	int i;
 
 	// Page in robot_index
-	PagingTouchModel (gameData.bots.pInfo [robot_index].nModel);
-	if (gameData.bots.pInfo [robot_index].nExp1VClip>-1)
-		PagingTouchVClip (&gameData.eff.vClips [0][gameData.bots.pInfo [robot_index].nExp1VClip], 0);
-	if (gameData.bots.pInfo [robot_index].nExp2VClip>-1)
-		PagingTouchVClip (&gameData.eff.vClips [0][gameData.bots.pInfo [robot_index].nExp2VClip], 0);
+	PagingTouchModel (ROBOTINFO (robot_index).nModel);
+	if (ROBOTINFO (robot_index).nExp1VClip>-1)
+		PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robot_index).nExp1VClip], 0);
+	if (ROBOTINFO (robot_index).nExp2VClip>-1)
+		PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robot_index).nExp2VClip], 0);
 
 	// Page in his weapons
-	PagingTouchWeapon (gameData.bots.pInfo [robot_index].nWeaponType);
+	PagingTouchWeapon (ROBOTINFO (robot_index).nWeaponType);
 
 	// A super-boss can gate in robots...
-	if (gameData.bots.pInfo [robot_index].bossFlag==2)	{
+	if (ROBOTINFO (robot_index).bossFlag==2)	{
 		for (i=0; i<13; i++)
 			PagingTouchRobot (super_boss_gateType_list [i]);
 

@@ -243,7 +243,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (gameData.bots.pInfo [objP->id].companion && (gameData.app.nGameMode & GM_MULTI))
+		if (ROBOTINFO (objP->id).companion && (gameData.app.nGameMode & GM_MULTI))
 			ReleaseObject ((short) i);		//kill the buddy in netgames
 		}
 	}
@@ -2101,13 +2101,14 @@ done:
 fix RobotDefaultShields (tObject *objP)
 {
 	tRobotInfo	*botInfoP;
-	int			objId;
+	int			objId, i;
 	fix			shields;
 
 Assert (objP->nType == OBJ_ROBOT);
 objId = objP->id;
 Assert (objId < gameData.bots.nTypes [0]);
-botInfoP = gameData.bots.pInfo + objId;
+i = gameStates.app.bD1Mission && (objId < gameData.bots.nTypes [1]);
+botInfoP = gameData.bots.info [i] + objId;
 //	Boost shield for Thief and Buddy based on level.
 shields = botInfoP->strength;
 if (botInfoP->thief || botInfoP->companion) {

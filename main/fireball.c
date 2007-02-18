@@ -153,7 +153,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								PhysApplyForce (obj0P, &vForce);
 
 								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
-								if ((objP != NULL) && (!gameData.bots.pInfo [obj0P->id].bossFlag) && (gameData.weapons.info [objP->id].flash)) {
+								if ((objP != NULL) && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
 									tAIStatic	*aip = &obj0P->cType.aiInfo;
 									int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
 
@@ -164,7 +164,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 										obj0P->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
 										obj0P->mType.physInfo.flags |= PF_USES_THRUST;
 
-										//@@if (gameData.bots.pInfo [obj0P->id].companion)
+										//@@if (ROBOTINFO (obj0P->id).companion)
 										//@@	BuddyMessage ("Daisy, Daisy, Give me...");
 									} else
 										aip->SKIP_AI_COUNT--;
@@ -180,16 +180,16 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 									PhysApplyRot (obj0P, &vNegForce);
 								}
 								if (obj0P->shields >= 0) {
-									if (gameData.bots.pInfo [obj0P->id].bossFlag)
-										if (bossProps [gameStates.app.bD1Mission] [gameData.bots.pInfo [obj0P->id].bossFlag-BOSS_D2].bInvulKinetic)
+									if (ROBOTINFO (obj0P->id).bossFlag)
+										if (bossProps [gameStates.app.bD1Mission] [ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
 											damage /= 4;
 
 									if (ApplyDamageToRobot (obj0P, damage, parent))
 										if ((objP != NULL) && (parent == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
-											AddPointsToScore (gameData.bots.pInfo [obj0P->id].scoreValue);
+											AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
 								}
 
-								if ((objP != NULL) && (gameData.bots.pInfo [obj0P->id].companion) && (!gameData.weapons.info [objP->id].flash)) {
+								if ((objP != NULL) && (ROBOTINFO (obj0P->id).companion) && (!gameData.weapons.info [objP->id].flash)) {
 									int	i, count;
 									char	ouch_str [6*4 + 2];
 
@@ -310,8 +310,8 @@ tObject *ObjectCreateBadassExplosion (
 		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
 
 // -- 	if (objP->nType == OBJ_ROBOT)
-// -- 		if (gameData.bots.pInfo [objP->id].smartBlobs)
-// -- 			CreateSmartChildren (objP, gameData.bots.pInfo [objP->id].smartBlobs);
+// -- 		if (ROBOTINFO (objP->id).smartBlobs)
+// -- 			CreateSmartChildren (objP, ROBOTINFO (objP->id).smartBlobs);
 
 	return rval;
 }
@@ -1326,7 +1326,7 @@ switch (nType) {
 //				vNewPos.y += (d_rand ()-16384)*7;
 //				vNewPos.z += (d_rand ()-16384)*6;
 			nObject = CreateObject (OBJ_ROBOT, id, -1, nSegment, &vNewPos, &vmdIdentityMatrix, 
-										 gameData.models.polyModels [gameData.bots.pInfo [id].nModel].rad, 
+										 gameData.models.polyModels [ROBOTINFO (id).nModel].rad, 
 										 CT_AI, MT_PHYSICS, RT_POLYOBJ, 1);
 			if (nObject < 0) {
 #if TRACE
@@ -1339,14 +1339,14 @@ switch (nType) {
 				multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
 			objP = &gameData.objs.objects [nObject];
 			//Set polygon-tObject-specific data
-			objP->rType.polyObjInfo.nModel = gameData.bots.pInfo [objP->id].nModel;
+			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
 			objP->rType.polyObjInfo.nSubObjFlags = 0;
 			//set Physics info
 			objP->mType.physInfo.velocity = new_velocity;
-			objP->mType.physInfo.mass = gameData.bots.pInfo [objP->id].mass;
-			objP->mType.physInfo.drag = gameData.bots.pInfo [objP->id].drag;
+			objP->mType.physInfo.mass = ROBOTINFO (objP->id).mass;
+			objP->mType.physInfo.drag = ROBOTINFO (objP->id).drag;
 			objP->mType.physInfo.flags |= (PF_LEVELLING);
-			objP->shields = gameData.bots.pInfo [objP->id].strength;
+			objP->shields = ROBOTINFO (objP->id).strength;
 			objP->cType.aiInfo.behavior = AIB_NORMAL;
 			gameData.ai.localInfo [OBJ_IDX (objP)].playerAwarenessType = PA_WEAPON_ROBOT_COLLISION;
 			gameData.ai.localInfo [OBJ_IDX (objP)].playerAwarenessTime = F1_0*3;
@@ -1463,20 +1463,17 @@ return ObjectCreateEgg (objP);
 
 //------------------------------------------------------------------------------
 //what tVideoClip does this explode with?
-short GetExplosionVClip (tObject *obj, int stage)
+short GetExplosionVClip (tObject *objP, int stage)
 {
-	if (obj->nType==OBJ_ROBOT) {
-
-		if (stage==0 && gameData.bots.pInfo [obj->id].nExp1VClip>-1)
-				return gameData.bots.pInfo [obj->id].nExp1VClip;
-		else if (stage==1 && gameData.bots.pInfo [obj->id].nExp2VClip>-1)
-				return gameData.bots.pInfo [obj->id].nExp2VClip;
-
+if (objP->nType==OBJ_ROBOT) {
+	if (stage==0 && ROBOTINFO (objP->id).nExp1VClip>-1)
+		return ROBOTINFO (objP->id).nExp1VClip;
+	else if (stage==1 && ROBOTINFO (objP->id).nExp2VClip>-1)
+		return ROBOTINFO (objP->id).nExp2VClip;
 	}
-	else if ((obj->nType == OBJ_PLAYER) && (gameData.pig.ship.player->expl_vclip_num >- 1))
-			return gameData.pig.ship.player->expl_vclip_num;
-
-	return VCLIP_SMALL_EXPLOSION;		//default
+else if ((objP->nType == OBJ_PLAYER) && (gameData.pig.ship.player->expl_vclip_num >- 1))
+	return gameData.pig.ship.player->expl_vclip_num;
+return VCLIP_SMALL_EXPLOSION;		//default
 }
 
 //------------------------------------------------------------------------------
@@ -1602,7 +1599,7 @@ void DoExplosionSequence (tObject *obj)
 		tObject *explObjP, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
 		ubyte nVClip;
 		vmsVector *vSpawnPos;
-		fix badass = (fix) gameData.bots.pInfo [delObjP->id].badass;
+		fix badass = (fix) ROBOTINFO (delObjP->id).badass;
 
 		if ((obj->cType.explInfo.nDeleteObj < 0) || (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
@@ -1641,7 +1638,7 @@ void DoExplosionSequence (tObject *obj)
 				ObjectCreateEgg (delObjP);
 			}
 		else if ((delObjP->nType == OBJ_ROBOT) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside this code!!
-			tRobotInfo	*robptr = &gameData.bots.pInfo [delObjP->id];
+			tRobotInfo	*robptr = &ROBOTINFO (delObjP->id);
 			if (robptr->containsCount && ((robptr->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
 				if (( (d_rand () * 16) >> 15) < robptr->containsProb) {
 					delObjP->containsCount = ((d_rand () * robptr->containsCount) >> 15) + 1;
@@ -1660,9 +1657,9 @@ void DoExplosionSequence (tObject *obj)
 			}
 		}
 
-		if (gameData.bots.pInfo [delObjP->id].nExp2Sound > -1)
-			DigiLinkSoundToPos (gameData.bots.pInfo [delObjP->id].nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
-			//PLAY_SOUND_3D (gameData.bots.pInfo [delObjP->id].nExp2Sound, vSpawnPos, delObjP->nSegment);
+		if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
+			DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
+			//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
 
 		obj->cType.explInfo.nSpawnTime = -1;
 

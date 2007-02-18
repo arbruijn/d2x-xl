@@ -630,7 +630,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 						t = h;
 						c = !c;
 						}
-					if (gameData.bots.pInfo[objP->id].companion)
+					if (ROBOTINFO (objP->id).companion)
 						if (c)
 							GrSetColorRGB (0, 123, 151, 255); //gr_getcolor (47, 1, 47)); 
 						else

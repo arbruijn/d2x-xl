@@ -845,7 +845,7 @@ if (objP->nType == OBJ_ROBOT) {
 	if (objP->cType.aiInfo.CLOAKED)
 		return 0;
 	//	Your missiles don't track your escort.
-	if (gameData.bots.pInfo [objP->id].companion && 
+	if (ROBOTINFO (objP->id).companion && 
 		 (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
 		return 0;
 	}
@@ -952,13 +952,10 @@ else {
 		if (curObjP->nType == OBJ_ROBOT) {
 			if (curObjP->cType.aiInfo.CLOAKED)
 				continue;
-
-		//	Your missiles don't track your escort.
-		if (gameData.bots.pInfo [curObjP->id].companion)
-			if (tracker->cType.laserInfo.parentType == OBJ_PLAYER)
+			//	Your missiles don't track your escort.
+			if (ROBOTINFO (curObjP->id).companion && (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
 				continue;
 			}
-
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 		dist = VmVecNormalizeQuick (&vecToCurObj);
 		if (dist < max_trackableDist) {
@@ -1049,8 +1046,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	if ((curObjP->nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
 		continue;
 	//	Your missiles don't track your escort.
-	if ((gameData.bots.pInfo [curObjP->id].companion) && 
-		 (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
+	if ((ROBOTINFO (curObjP->id).companion) && (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
 		continue;
 
 	VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
@@ -1914,7 +1910,7 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 
 					//	Your shots won't track the buddy.
 					if (parentType == OBJ_PLAYER)
-						if (gameData.bots.pInfo [curObjP->id].companion)
+						if (ROBOTINFO (curObjP->id).companion)
 							continue;
 				}
 

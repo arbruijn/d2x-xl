@@ -272,7 +272,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.console->flags & OF_SHOULD_BE
 //	Dematerialize Buddy!
 for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
+		if (ROBOTINFO (gameData.objs.objects [i].id).companion) {
 			ObjectCreateExplosion (gameData.objs.objects [i].nSegment, &gameData.objs.objects [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
 			gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
 		}

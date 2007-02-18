@@ -94,7 +94,7 @@ else if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
 	rval = 0;
 	}
 #endif
-else if (gameData.bots.pInfo [gameData.objs.objects [nObject].id].bossFlag) {
+else if (ROBOTINFO (gameData.objs.objects [nObject].id).bossFlag) {
 	int i = FindBoss (nObject);
 	if ((i >= 0) && gameData.boss [i].nDying == 1)
 		return 0;
@@ -200,7 +200,7 @@ int MultiAddControlledRobot (int nObject, int agitation)
 	int lowest_agitated_bot = -1;
 	int first_freeRobot = -1;
 
-if (gameData.bots.pInfo [gameData.objs.objects [nObject].id].bossFlag) // this is a boss, so make sure he gets a slot
+if (ROBOTINFO (gameData.objs.objects [nObject].id).bossFlag) // this is a boss, so make sure he gets a slot
 	agitation= (agitation*3)+gameData.multi.nLocalPlayer;  
 if (gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM -= 1;
@@ -395,7 +395,6 @@ if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
 	}
 if (gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER != gameData.multi.nLocalPlayer)
 	return;
-//	gameData.objs.objects [nObject].physInfo.drag = gameData.bots.pInfo [gameData.objs.objects [nObject].id].drag; // Set drag to normal
 i = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
 multiData.robots.lastSendTime [i] = gameData.time.xGame;
 multiData.robots.sendPending [i] = 1+force;
@@ -641,7 +640,6 @@ if (gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 		gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_SLOT_NUM++;
 	}
 setThrust_from_velocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
-//	gameData.objs.objects [nRobot].physInfo.drag = gameData.bots.pInfo [gameData.objs.objects [nRobot].id].drag >> 4; // Set drag to low
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&gameData.objs.objects [nRobot], (tShortPos *) (buf+bufP), 0);
 #else
@@ -683,7 +681,7 @@ if (nGun == -1 || nGun==-2)
 	VmVecAdd (&vGunPoint, &gameData.objs.objects [nRobot].position.vPos, &vFire);
 else 
 	CalcGunPoint (&vGunPoint, &gameData.objs.objects [nRobot], nGun);
-robotP = &gameData.bots.pInfo [gameData.objs.objects [nRobot].id];
+robotP = &ROBOTINFO (gameData.objs.objects [nRobot].id);
 if (nGun == -1) 
 	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
@@ -727,20 +725,20 @@ else if (robotP->cType.aiInfo.REMOTE_OWNER == -1 && NetworkIAmMaster ()) {
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
 	//MultiDeleteControlledRobot (OBJ_IDX (robotP));
 	}
-if (bIsThief || gameData.bots.pInfo [robotP->id].thief)
+if (bIsThief || ROBOTINFO (robotP->id).thief)
 	DropStolenItems (robotP);
-if (gameData.bots.pInfo [robotP->id].bossFlag) {
+if (ROBOTINFO (robotP->id).bossFlag) {
 	int i = FindBoss (nRobot);
 	if ((i >= 0) && gameData.boss [i].nDying)
 		return 0;
 	StartBossDeathSequence (robotP);	
 	}
-else if (gameData.bots.pInfo [robotP->id].bDeathRoll)
+else if (ROBOTINFO (robotP->id).bDeathRoll)
 	StartRobotDeathSequence (robotP);
 else {
 	if (robotP->id == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
-	if (gameData.bots.pInfo [robotP->id].kamikaze)
+	if (ROBOTINFO (robotP->id).kamikaze)
 		ExplodeObject (robotP,1);	//	Kamikaze, explode right away, IN YOUR FACE!
 	else
 		ExplodeObject (robotP,STANDARD_EXPL_DELAY);
@@ -770,7 +768,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject))
 	return;
 rval = MultiExplodeRobotSub (nRobot, nKiller,thief);
 if (rval && (nKiller == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
-	AddPointsToScore (gameData.bots.pInfo [gameData.objs.objects [nRobot].id].scoreValue);
+	AddPointsToScore (ROBOTINFO (gameData.objs.objects [nRobot].id).scoreValue);
 }
 
 //-----------------------------------------------------------------------------
@@ -847,7 +845,7 @@ nBossIdx = FindBoss (nBossObj);
 if (nBossIdx < 0)
 	return;
 bossObjP = gameData.objs.objects + nBossObj;
-if ((bossObjP->nType != OBJ_ROBOT) || !(gameData.bots.pInfo [bossObjP->id].bossFlag)) {
+if ((bossObjP->nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->id).bossFlag)) {
 	Int3 (); // Got boss actions for a robot who's not a boss?
 	return;
 	}
@@ -974,7 +972,7 @@ if (delObjP->nType != OBJ_ROBOT) {
 	Int3 (); // dropping powerups for non-robot, Rob's fault
 	return;
 	}
-robotP = &gameData.bots.pInfo [delObjP->id];
+robotP = &ROBOTINFO (delObjP->id);
 multiData.create.nLoc = 0;
 if (delObjP->containsCount > 0) { 
 	//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.

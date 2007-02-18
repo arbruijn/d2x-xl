@@ -650,7 +650,7 @@ typedef struct tApplicationStates {
 	int bInitialized;
 	int bD2XLevel;
 	int bEnterGame;
-	int bSpectating;
+	int bFreeCam;
 	int bGameRunning;
 	int bGameSuspended;
 	int bGameAborted;
@@ -689,6 +689,7 @@ typedef struct tApplicationStates {
 	int bFixModels;
 	int bAltModels;
 	int bEnableShadows;
+	int bEnableFreeCam;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
@@ -1207,6 +1208,9 @@ typedef struct tRobotData {
 	tRobotInfo			*pInfo;
 	tPOFObject			*pPofData;
 } tRobotData;
+
+#define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
+#define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
 
 typedef struct tSoundData {
 	tDigiSound			sounds [2][MAX_SOUND_FILES];

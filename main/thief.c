@@ -196,7 +196,7 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 						//	If path is real short, try again, allowing to go through tPlayer's tSegment
 						if (aip->nPathLength < 4) {
 							CreateNSegmentPath(objP, 10, -1);
-						} else if (objP->shields* 4 < gameData.bots.pInfo[objP->id].strength) {
+						} else if (objP->shields* 4 < ROBOTINFO (objP->id).strength) {
 							//	If robot really low on hits, will run through tPlayer with even longer path
 							if (aip->nPathLength < 8) {
 								CreateNSegmentPath(objP, 10, -1);

@@ -1897,14 +1897,13 @@ int Cockpit_3dView[2]={CV_NONE,CV_NONE};
 //returns ptr to escort robot, or NULL
 tObject *find_escort ()
 {
-	int i;
+	int 		i;
+	tObject	*objP = gameData.objs.objects;
 
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects[i].nType == OBJ_ROBOT)
-			if (gameData.bots.pInfo[gameData.objs.objects[i].id].companion)
-				return &gameData.objs.objects[i];
-
-	return NULL;
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion)
+		return objP;
+return NULL;
 }
 
 //-----------------------------------------------------------------------------

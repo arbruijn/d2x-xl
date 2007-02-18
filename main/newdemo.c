@@ -554,10 +554,10 @@ switch (objP->nType) {
 			objP->movementType = MT_PHYSICS;
 		else
 			objP->movementType = MT_NONE;
-		objP->size = gameData.models.polyModels [gameData.bots.pInfo [objP->id].nModel].rad;
-		objP->rType.polyObjInfo.nModel = gameData.bots.pInfo [objP->id].nModel;
+		objP->size = gameData.models.polyModels [ROBOTINFO (objP->id).nModel].rad;
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
-		objP->cType.aiInfo.CLOAKED = (gameData.bots.pInfo [objP->id].cloakType?1:0);
+		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->id).cloakType?1:0);
 		break;
 
 	case OBJ_POWERUP:
@@ -601,7 +601,7 @@ else {
 	objP->lifeleft = (fix) ((int) objP->lifeleft << 12);
 	}
 if (objP->nType == OBJ_ROBOT) {
-	if (gameData.bots.pInfo [objP->id].bossFlag) {
+	if (ROBOTINFO (objP->id).bossFlag) {
 		sbyte cloaked;
 		cloaked = NDReadByte ();
 		objP->cType.aiInfo.CLOAKED = cloaked;
@@ -779,7 +779,7 @@ else {
 	NDWriteByte ((ubyte)life);
 	}
 if (o.nType == OBJ_ROBOT) {
-	if (gameData.bots.pInfo [o.id].bossFlag) {
+	if (ROBOTINFO (o.id).bossFlag) {
 		int i = FindBoss (OBJ_IDX (objP));
 		if ((i >= 0) &&
 			 (gameData.time.xGame > gameData.boss [i].nCloakStartTime) && 

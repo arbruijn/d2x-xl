@@ -1096,8 +1096,8 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_S:
-			{
-			if (gameStates.app.bSpectating = !gameStates.app.bSpectating)
+			if ((!IsMultiGame || IsCoopGame) && gameStates.app.bEnableFreeCam) {
+			if (gameStates.app.bFreeCam = !gameStates.app.bFreeCam)
 				gameStates.app.playerPos = gameData.objs.viewer->position;
 			else
 				gameData.objs.viewer->position = gameStates.app.playerPos;

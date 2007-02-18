@@ -105,8 +105,8 @@ void InitBuddyForLevel (void)
 	gameData.escort.nGoalIndex = -1;
 	gameData.escort.bMsgsSuppressed = 0;
 
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
+	for (i = 0; i <= gameData.objs.nLastObject; i++)
+		if (ROBOTINFO (gameData.objs.objects [i].id).companion)
 			break;
 	if (i <= gameData.objs.nLastObject)
 		gameData.escort.nObjNum = i;
@@ -197,9 +197,9 @@ int BuddyMayTalk (void)
 
 	if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
 		 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
-		!gameData.bots.pInfo [gameData.objs.objects [gameData.escort.nObjNum].id].companion) {
+		!ROBOTINFO (gameData.objs.objects [gameData.escort.nObjNum].id).companion) {
 		for (i=0; i<=gameData.objs.nLastObject; i++)
-			if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
+			if (ROBOTINFO (gameData.objs.objects [i].id).companion)
 				break;
 		if (i > gameData.objs.nLastObject)
 			return 0;
@@ -407,7 +407,7 @@ void EscortSetSpecialGoal (int special_key)
 			int	i;
 
 			for (i=0; i<=gameData.objs.nLastObject; i++)
-				if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && gameData.bots.pInfo [gameData.objs.objects [i].id].companion) {
+				if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && ROBOTINFO (gameData.objs.objects [i].id).companion) {
 					HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 					break;
 				}
@@ -510,7 +510,7 @@ int GetBossId (void)
 int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 {
 	if (gameData.segs.segments [nSegment].objects != -1) {
-		int		nObject = gameData.segs.segments [nSegment].objects;
+		int		id, nObject = gameData.segs.segments [nSegment].objects;
 
 		while (nObject != -1) {
 			tObject	*curObjP = &gameData.objs.objects [nObject];
@@ -522,13 +522,11 @@ int ExistsInMine2 (int nSegment, int objtype, int objid, int special)
 
 			if (curObjP->nType == objtype) {
 				//	Don't find escort robots if looking for robot!
-				if ((curObjP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [curObjP->id].companion))
+				id = curObjP->id;
+				if ((curObjP->nType == OBJ_ROBOT) && ROBOTINFO (id).companion)
 					;
 				else if (objid == -1) {
-					if ((objtype == OBJ_POWERUP) && 
-						 (curObjP->id != POW_KEY_BLUE) && 
-						 (curObjP->id != POW_KEY_GOLD) && 
-						 (curObjP->id != POW_KEY_RED))
+					if ((objtype == OBJ_POWERUP) && (id != POW_KEY_BLUE) && (id != POW_KEY_GOLD) && (id != POW_KEY_RED))
 						return nObject;
 					else
 						return nObject;
@@ -958,14 +956,14 @@ if (Buddy_last_missileTime > gameData.time.xGame)
 if (Buddy_last_missileTime + F1_0*2 < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
+		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !ROBOTINFO (gameData.objs.objects [i].id).companion)
 			if (MaybeBuddyFireMega (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
 	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
+		if ((gameData.objs.objects [i].nType == OBJ_ROBOT) && !ROBOTINFO (gameData.objs.objects [i].id).companion)
 			if (MaybeBuddyFireSmart (i)) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
@@ -1135,7 +1133,7 @@ void DoEscortMenu (void)
 
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
 		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			if (gameData.bots.pInfo [gameData.objs.objects [i].id].companion)
+			if (ROBOTINFO (gameData.objs.objects [i].id).companion)
 				break;
 	}
 

@@ -490,7 +490,7 @@ if (rad < 0)
 	size = 0;
 else {
 	size = objP->size;
-	if (objP->nType == OBJ_ROBOT && gameData.bots.pInfo [objP->id].attackType)
+	if (objP->nType == OBJ_ROBOT && ROBOTINFO (objP->id).attackType)
 		size = (size*3)/4;
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
 	if (objP->nType == OBJ_PLAYER &&
@@ -677,7 +677,7 @@ if (flags & FQ_CHECK_OBJS)
 				if (gameData.objs.objects [nObject].nType == OBJ_ROBOT)
 					// -- MK: 11/18/95, 4claws glomming together...this is easy.  -- if (!(gameData.bots.pInfo [gameData.objs.objects [nObject].id].attackType && gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attackType))
 						continue;
-				if (gameData.bots.pInfo [gameData.objs.objects [nThisObject].id].attackType)
+				if (ROBOTINFO (gameData.objs.objects [nThisObject].id).attackType)
 					nFudgedRad = (rad*3)/4;
 					}
 			//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
@@ -730,7 +730,7 @@ if (flags & FQ_CHECK_OBJS) {
 		if (nThisType == OBJ_ROBOT) {
 			if (nOtherType == OBJ_ROBOT)
 				continue;
-			if (gameData.bots.pInfo [thisObjP->id].attackType)
+			if (ROBOTINFO (thisObjP->id).attackType)
 				nFudgedRad = (rad * 3) / 4;
 			}
 		//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
@@ -1179,7 +1179,7 @@ fq.p1 = vDest;
 fq.rad = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
-if (gameStates.app.bSpectating && (objP == gameData.objs.viewer))
+if (gameStates.app.bFreeCam && (objP == gameData.objs.viewer))
 	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
 else
 	fq.startSeg = objP ? objP->nSegment : nSegment;

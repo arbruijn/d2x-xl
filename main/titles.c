@@ -601,16 +601,16 @@ void ShowSpinningRobotFrame (int nRobot)
 
 		curCanvSave = grdCurCanv;
 		grdCurCanv = robotCanv;
-		Assert (gameData.bots.pInfo[nRobot].nModel != -1);
+		Assert (ROBOTINFO (nRobot).nModel != -1);
 		if (bInitRobot) 
 			{
 //			GrPaletteStepLoad (robot_palette);
 			LoadPalette ("", "", 0, 0, 1);
-			OglCachePolyModelTextures (gameData.bots.pInfo[nRobot].nModel);
+			OglCachePolyModelTextures (ROBOTINFO (nRobot).nModel);
 			GrPaletteStepLoad (NULL);
 			bInitRobot = 0;
 			}
- 		DrawModelPicture (gameData.bots.pInfo[nRobot].nModel, &Robot_angles);
+ 		DrawModelPicture (ROBOTINFO (nRobot).nModel, &Robot_angles);
 		grdCurCanv = curCanvSave;
 	}
 

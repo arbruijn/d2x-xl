@@ -160,23 +160,23 @@ if (objP->nType == OBJ_ROBOT) {
 		objP->id %= gameData.bots.nTypes [0];
 	// Make sure model number & size are correct...
 	if (objP->renderType == RT_POLYOBJ) {
-		Assert(gameData.bots.pInfo[objP->id].nModel != -1);
+		Assert(ROBOTINFO (objP->id).nModel != -1);
 			//if you fail this assert, it means that a robot in this level
 			//hasn't been loaded, possibly because he's marked as
 			//non-shareware.  To see what robot number, print objP->id.
-		Assert(gameData.bots.pInfo[objP->id].always_0xabcd == 0xabcd);
+		Assert(ROBOTINFO (objP->id).always_0xabcd == 0xabcd);
 			//if you fail this assert, it means that the robot_ai for
 			//a robot in this level hasn't been loaded, possibly because
 			//it's marked as non-shareware.  To see what robot number,
 			//print objP->id.
-		objP->rType.polyObjInfo.nModel = gameData.bots.pInfo[objP->id].nModel;
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
 		objP->size = gameData.models.polyModels[objP->rType.polyObjInfo.nModel].rad;
 		}
 	if (objP->id == 65)						//special "reactor" robots
 		objP->movementType = MT_NONE;
 	if (objP->movementType == MT_PHYSICS) {
-		objP->mType.physInfo.mass = gameData.bots.pInfo[objP->id].mass;
-		objP->mType.physInfo.drag = gameData.bots.pInfo[objP->id].drag;
+		objP->mType.physInfo.mass = ROBOTINFO (objP->id).mass;
+		objP->mType.physInfo.drag = ROBOTINFO (objP->id).drag;
 		}
 	}
 else {		//Robots taken care of above

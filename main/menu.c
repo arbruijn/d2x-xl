@@ -1282,6 +1282,7 @@ try_again:
 }
 
 gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
+WritePlayerFile ();
 if (!DifficultyMenu ())
 	return;
 GrPaletteFadeOut (NULL, 32, 0 );
@@ -1406,6 +1407,7 @@ i = m [nDiffOpt].value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = i;
 	gameStates.app.nDifficultyLevel = i;
+	WritePlayerFile ();
 	InitGateIntervals ();
 	}
 if (optLevel > 0)
@@ -2461,6 +2463,7 @@ do {
 		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
+		GET_VAL (gameOpts->render.smoke.bDebris, optDebrisSmoke);
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
 		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);

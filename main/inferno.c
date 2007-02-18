@@ -979,6 +979,8 @@ void EvalAppArgs (void)
 
 if (t = FindArg ("-enable_shadows"))
 	gameStates.app.bEnableShadows = NumArg (t, 1);
+if (t = FindArg ("-enable_freecam"))
+	gameStates.app.bEnableFreeCam = NumArg (t, 1);
 if (t = FindArg ("-pured2"))
 	gameStates.app.bNostalgia = 3;
 else if (t = FindArg ("-nostalgia"))

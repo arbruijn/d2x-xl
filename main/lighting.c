@@ -562,7 +562,7 @@ switch (nObjType) {
 		break;
 
 	case OBJ_ROBOT:
-		return F1_0*gameData.bots.pInfo [objP->id].lightcast;
+		return F1_0*ROBOTINFO (objP->id).lightcast;
 		break;
 
 	case OBJ_WEAPON: {

@@ -952,7 +952,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 			if (rate < F1_0/4)
 				rate = F1_0/4;
 			//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
-			if (!gameData.bots.pInfo [objP->id].thief && !gameData.bots.pInfo [objP->id].attackType) {
+			if (!ROBOTINFO (objP->id).thief && !ROBOTINFO (objP->id).attackType) {
 				if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame < 3*F1_0/4) {
 					fix	tval = FixDiv (F1_0, 8*gameData.time.xFrame);
 					int	addval;

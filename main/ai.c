@@ -244,6 +244,7 @@ return (ailp->nextPrimaryFire <= 0) || ((robotP->nSecWeaponType != -1) && (ailp-
 // ----------------------------------------------------------------------------
 // Make a robot near the tPlayer snipe.
 #define	MNRS_SEG_MAX	70
+
 void make_nearbyRobot_snipe (void)
 {
 	int bfs_length, i;
@@ -256,12 +257,12 @@ void make_nearbyRobot_snipe (void)
 
 		while (nObject != -1) {
 			tObject *objP = gameData.objs.objects + nObject;
-			tRobotInfo *robotP = gameData.bots.pInfo + objP->id;
+			tRobotInfo *robotP = &ROBOTINFO (objP->id);
 
 			if ((objP->nType == OBJ_ROBOT) && (objP->id != ROBOT_BRAIN)) {
 				if ((objP->cType.aiInfo.behavior != AIB_SNIPE) && 
 					 (objP->cType.aiInfo.behavior != AIB_RUN_FROM) && 
-					 !gameData.bots.pInfo [objP->id].bossFlag && 
+					 !ROBOTINFO (objP->id).bossFlag && 
 					 !robotP->companion) {
 					objP->cType.aiInfo.behavior = AIB_SNIPE;
 					gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
@@ -375,7 +376,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 	VmVecNormalize (VmVecSub (&vVecToGoal, &vGoal, &objP->position.vPos));
 	if (i == 8)
 		h = 1;
-	else if (AITurnTowardsVector (&vVecToGoal, objP, gameData.bots.pInfo [objP->id].turnTime [2]) < F1_0 - F1_0 / 5) {
+	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->id).turnTime [2]) < F1_0 - F1_0 / 5) {
 		if (VmVecDot (&vVecToGoal, &objP->position.mOrient.fVec) > F1_0 - F1_0 / 5)
 			h = rand () % 2 == 0;
 		else
@@ -431,7 +432,7 @@ void DoAIFrame (tObject *objP)
 		return;
 	}
 
-	robotP = gameData.bots.pInfo + objP->id;
+	robotP = &ROBOTINFO (objP->id);
 	Assert (robotP->always_0xabcd == 0xabcd);
 
 	if (DoAnyRobotDyingFrame (objP))
@@ -734,7 +735,7 @@ _exit_cheat:
 		bObjAnimates = 0;        // If we're not doing the animation, then should pretend it doesn't animate.
 	}
 
-	switch (gameData.bots.pInfo [objP->id].bossFlag) {
+	switch (ROBOTINFO (objP->id).bossFlag) {
 	case 0:
 		break;
 
@@ -1332,7 +1333,7 @@ _exit_cheat:
 	// If new state = fire, then set all gun states to fire.
 	if ((aip->GOAL_STATE == AIS_FIRE) ) {
 		int i,num_guns;
-		num_guns = gameData.bots.pInfo [objP->id].nGuns;
+		num_guns = ROBOTINFO (objP->id).nGuns;
 		for (i=0; i<num_guns; i++)
 			ailp->goalState [i] = AIS_FIRE;
 	}
@@ -1428,7 +1429,7 @@ _exit_cheat:
 	// Switch to next gun for next fire.
 	if (player_visibility == 0) {
 		aip->CURRENT_GUN++;
-		if (aip->CURRENT_GUN >= gameData.bots.pInfo [objP->id].nGuns)
+		if (aip->CURRENT_GUN >= ROBOTINFO (objP->id).nGuns)
 		{
 			if ((robotP->nGuns == 1) || (robotP->nSecWeaponType == -1))  // Two weapon types hack.
 				aip->CURRENT_GUN = 0;
@@ -1621,7 +1622,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 		else {
 			tObject *objP = gameData.objs.objects;
 			for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-				if ((objP->nType == OBJ_ROBOT) && (gameData.bots.pInfo [objP->id].bossFlag))
+				if ((objP->nType == OBJ_ROBOT) && (ROBOTINFO (objP->id).bossFlag))
 					DoBossDyingFrame (objP);
 		}
 	}
