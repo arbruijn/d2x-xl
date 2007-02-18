@@ -69,7 +69,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 		s = INTEL_SHORT (sideP->nBaseTex);
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
-		s = INTEL_SHORT (sideP->nOvlTex + (((short) sideP->nOvlOrient) << 14));
+		s = INTEL_SHORT (sideP->nOvlOrient + (((short) sideP->nOvlTex) << 2));
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);
 		for (k = 0, uvlP = sideP->uvls; k < 4; k++, uvlP++) {
 			t = INTEL_INT (((int) uvlP->u));
@@ -78,7 +78,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			t = INTEL_INT (((int) uvlP->l));
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
-		}
+			}
 		for (k = 0, normP = sideP->normals; k < 2; k++, normP++) {
 			t = INTEL_INT (((int) normP->p.x));
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
@@ -86,8 +86,8 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
 			t = INTEL_INT (((int) normP->p.z));
 			BEDoCheckSumCalc ((ubyte *) &t, 4, &sum1, &sum2);
+			}
 		}
-	}
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++) {
 		s = INTEL_SHORT (segP->children [j]);
 		BEDoCheckSumCalc ((ubyte *) &s, 2, &sum1, &sum2);

@@ -2330,8 +2330,7 @@ int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector 
 						int bIgnoreLimits)
 {
 	short		nObject;
-	int		bD1Robot;
-	tObject *objP;
+	tObject	*objP;
 
 #ifdef _DEBUG
 if (nType == OBJ_WEAPON) {
