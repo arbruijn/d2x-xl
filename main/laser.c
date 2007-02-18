@@ -1024,14 +1024,15 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	vmsVector	vecToCurObj;
 	tObject		*curObjP = gameData.objs.objects + nObject;
 
-	if ((curObjP->nType == track_objType1) || (curObjP->nType == track_objType2))
-		continue;
-	if ((curObjP->nType != OBJ_WEAPON) || ((curObjP->id != PROXMINE_ID) && (curObjP->id != SMARTMINE_ID))) 
-		continue;
-	if (curObjP->cType.laserInfo.nParentSig == tracker->cType.laserInfo.nParentSig)
-		continue;
-	bIsProximity = 1;
-
+	if ((curObjP->nType != track_objType1) && (curObjP->nType != track_objType2)) {
+		if (curObjP->nType != OBJ_WEAPON) 
+			continue;
+		if ((curObjP->id != PROXMINE_ID) && (curObjP->id != SMARTMINE_ID))
+			continue;
+		if (curObjP->cType.laserInfo.nParentSig == tracker->cType.laserInfo.nParentSig)
+			continue;
+		bIsProximity = 1;
+		}
 	if (nObject == tracker->cType.laserInfo.nParentObj) // Don't track shooter
 		continue;
 
@@ -1084,7 +1085,7 @@ int TrackTrackGoal (int nTrackGoal, tObject *tracker, fix *dot)
 	int	nFrame;
 	int	goalType, goal2Type = -1;
 
-if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
+//if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
 	//	Every 8 frames for each tObject, scan all gameData.objs.objects.
 nFrame = OBJ_IDX (tracker) ^ gameData.app.nFrameCount;
 if (ObjectIsTrackeable (nTrackGoal, tracker, dot)) {

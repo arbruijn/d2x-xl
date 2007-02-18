@@ -2022,7 +2022,7 @@ if ((gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) &&
 	y = nIconPos ? grdCurScreen->sc_h - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;
-n = (gameOpts->gameplay.bInventory && !IsMultiGame) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
+n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (grdCurScreen->sc_w - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
 for (j = firstItem; j < n; j++) {

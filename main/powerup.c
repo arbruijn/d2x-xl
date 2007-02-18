@@ -435,7 +435,7 @@ void UsePowerup (int id)
 if (bApply = (id < 0))
 	id = -id;
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
-	if (!bApply && (gameOpts->gameplay.bInventory && !IsMultiGame) && ((id == POW_CLOAK) || (id == POW_INVUL)))
+	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
 	if (gameData.app.nGameMode & GM_MULTI) // Added by Rob, take this out if it turns out to be not good for net games!
 		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
@@ -450,14 +450,14 @@ int ApplyInvul (int bForce, int nPlayer)
 {
 	tPlayer *playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
 
-if (!(bForce || ((gameOpts->gameplay.bInventory && !IsMultiGame) && playerP->nInvuls)))
+if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nInvuls)))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_INVULNERABLE);
 	return 0;
 	}
-if (gameOpts->gameplay.bInventory && !IsMultiGame)
+if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
 	playerP->nInvuls--;
 if (ISLOCALPLAYER (nPlayer)) {
 	playerP->invulnerableTime = gameData.time.xGame;
@@ -477,14 +477,14 @@ int ApplyCloak (int bForce, int nPlayer)
 {
 	tPlayer *playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
 
-if (!(bForce || ((gameOpts->gameplay.bInventory && !IsMultiGame) && playerP->nCloaks)))
+if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nCloaks)))
 	return 0;
 if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_CLOAKED);
 	return 0;
 	}
-if (gameOpts->gameplay.bInventory && !IsMultiGame)
+if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
 	playerP->nCloaks--;
 if (ISLOCALPLAYER (nPlayer)) {
 	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like tPlayer fires laser).
@@ -718,7 +718,7 @@ switch (objP->id) {
 		break;
 
 	case POW_CLOAK:
-		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
+		if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) {
 			if (playerP->nCloaks == 255) {
 				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
@@ -734,7 +734,7 @@ switch (objP->id) {
 		break;
 
 	case POW_INVUL:
-		if (gameOpts->gameplay.bInventory && !IsMultiGame) {
+		if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) {
 			if (playerP->nInvuls == 255) {
 				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
