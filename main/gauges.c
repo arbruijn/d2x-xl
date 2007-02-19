@@ -1348,14 +1348,14 @@ if (!IsMultiGame || IsCoopGame) {
 	char	szInfo [20];
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		y = 2 * Line_spacing;
+		y = 3 * Line_spacing;
 		}
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-		y = Line_spacing;
+		y = 2 * Line_spacing;
 		}
 	else if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
 				(gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-		y = Line_spacing;
+		y = 2 * Line_spacing;
 		if (gameStates.render.fonts.bHires)
 			y += Line_spacing;
 		}
@@ -3905,25 +3905,30 @@ for (i = 0; i < n_players; i++) {
 	GrPrintF (x0+indent, y, "%s", name);
 
 	if (multiData.kills.bShowList==2) {
-		if (gameData.multi.players[player_num].netKilledTotal+gameData.multi.players[player_num].netKillsTotal<=0)
+		if (gameData.multi.players [player_num].netKilledTotal + gameData.multi.players[player_num].netKillsTotal <= 0)
 			GrPrintF (x1, y, TXT_NOT_AVAIL);
 		else
 			GrPrintF (x1, y, "%d%%", 
-				 (int) ((double)gameData.multi.players[player_num].netKillsTotal/
-						 ((double)gameData.multi.players[player_num].netKilledTotal+
-						 (double)gameData.multi.players[player_num].netKillsTotal)*100.0));		
+				 (int) ((double) gameData.multi.players [player_num].netKillsTotal /
+						 ((double) gameData.multi.players [player_num].netKilledTotal +
+						  (double) gameData.multi.players [player_num].netKillsTotal) * 100.0));		
 		}
-	else if (multiData.kills.bShowList == 3)	
+	else if (multiData.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
-			GrPrintF (x1, y, "%3d [%d/%d]", multiData.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1], gameData.entropy.nTotalRooms);
+			GrPrintF (x1, y, "%3d [%d/%d]", 
+						 multiData.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1], 
+						 gameData.entropy.nTotalRooms);
 		else
 			GrPrintF (x1, y, "%3d", multiData.kills.nTeam [i]);
+		}
 	else if (gameData.app.nGameMode & GM_MULTI_COOP)
-		GrPrintF (x1, y, "%-6d", gameData.multi.players[player_num].score);
+		GrPrintF (x1, y, "%-6d", gameData.multi.players [player_num].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
-      GrPrintF (x1, y, "%3d (%d)", gameData.multi.players[player_num].netKillsTotal, gameData.multi.players[player_num].nKillGoalCount);
+      GrPrintF (x1, y, "%3d (%d)", 
+					 gameData.multi.players [player_num].netKillsTotal, 
+					 gameData.multi.players [player_num].nKillGoalCount);
    else
-		GrPrintF (x1, y, "%3d", gameData.multi.players[player_num].netKillsTotal);
+		GrPrintF (x1, y, "%3d", gameData.multi.players [player_num].netKillsTotal);
 	if (gameStates.render.cockpit.bShowPingStats && (player_num != gameData.multi.nLocalPlayer)) {
 		if (bGetPing)
 			PingPlayer (player_num);

@@ -243,7 +243,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	40, // MULTI_MONSTERBALL
 	2,  //MULTI_CHEATING
 	5,  //MULTI_TRIGGER_EXT
-	18	 //MULTI_SYNC_KILLS
+	16	 //MULTI_SYNC_KILLS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -2223,25 +2223,42 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 
 void MultiDoSyncKills (char *buf)
 {
-	int	i, nPlayer = (int) buf [1];
-	short	*bufP = (short *) (buf + 2);
+	int	nPlayer = (int) buf [1];
+	char	*bufP = buf + 2;
 
-for (i = 0, bufP = (short *) (multiData.msg.buf + 2); i < MAX_NUM_NET_PLAYERS; i++, bufP++)
-	multiData.kills.matrix [gameData.multi.nLocalPlayer][i] = GET_INTEL_SHORT (bufP);
+gameData.multi.players [nPlayer].score = GET_INTEL_INT (bufP);
+bufP += 4;
+gameData.multi.players [nPlayer].nKillGoalCount = GET_INTEL_SHORT (bufP);
+bufP += 2;
+gameData.multi.players [nPlayer].netKilledTotal = GET_INTEL_SHORT (bufP);
+bufP += 2;
+gameData.multi.players [nPlayer].netKillsTotal = GET_INTEL_SHORT (bufP);
+bufP += 2;
+gameData.multi.players [nPlayer].numKillsLevel = GET_INTEL_SHORT (bufP);
+bufP += 2;
+gameData.multi.players [nPlayer].numKillsTotal = GET_INTEL_SHORT (bufP);
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiSendSyncKills (void)
 {
-	int		i;
-	short		*bufP;
+	char	*bufP = multiData.msg.buf + 2;
 
 multiData.msg.buf [0] = (char) MULTI_SYNC_KILLS;
 multiData.msg.buf [1] = gameData.multi.nLocalPlayer;           
-for (i = 0, bufP = (short *) (multiData.msg.buf + 2); i < MAX_NUM_NET_PLAYERS; i++, bufP++)
-	PUT_INTEL_SHORT (bufP, multiData.kills.matrix [gameData.multi.nLocalPlayer] + i);
-MultiSendData (multiData.msg.buf, 2 + MAX_NUM_NET_PLAYERS * sizeof (short), 0);
+PUT_INTEL_INT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].score);
+bufP += 4;
+PUT_INTEL_SHORT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].nKillGoalCount);
+bufP += 2;
+PUT_INTEL_SHORT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].netKilledTotal);
+bufP += 2;
+PUT_INTEL_SHORT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].netKillsTotal);
+bufP += 2;
+PUT_INTEL_SHORT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel);
+bufP += 2;
+PUT_INTEL_SHORT (bufP, gameData.multi.players [gameData.multi.nLocalPlayer].numKillsTotal);
+MultiSendData (multiData.msg.buf, 16, 0);
 }
 
 //-----------------------------------------------------------------------------
