@@ -2089,26 +2089,53 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
+int IsValidTeleportDest (vmsVector *vPos, int nMinDist)
+{
+	tObject		*objP = gameData.objs.objects;
+	int			i;
+	vmsVector	vOffs;
+	fix			xDist;
+
+for (i = gameData.objs.nLastObject; i; i--, objP++) {
+	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
+		xDist = VmVecMag (VmVecSub (&vOffs, vPos, &objP->position.vPos));
+		if (xDist > ((nMinDist + objP->size) * 3 / 2))
+			return 1;
+		}
+	}
+return 0;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 void TeleportBoss (tObject *objP)
 {
-	short			i, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
-	vmsVector	vBossDir;
+	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = OBJ_IDX (objP);
+	vmsVector	vBossDir, vNewPos;
 
 //	Pick a random tSegment from the list of boss-teleportable-to segments.
 i = FindBoss (OBJ_IDX (objP));
 if (i < 0)
 	return;
 Assert (gameData.boss [i].nTeleportSegs > 0);
-nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
-nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];
-Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
-if (gameData.app.nGameMode & GM_MULTI)
-	MultiSendBossActions (nObject, 1, nRandSeg, 0);
-COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, nRandSeg);
+do {
+	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
+	nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];
+	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
+	if (gameData.app.nGameMode & GM_MULTI)
+		MultiSendBossActions (nObject, 1, nRandSeg, 0);
+	COMPUTE_SEGMENT_CENTER_I (&vNewPos, nRandSeg);
+	if (IsValidTeleportDest (&vNewPos, objP->size))
+		break;
+	}
+	while (--nAttempts);
+if (!nAttempts)
+	return;
 RelinkObject (nObject, nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
-VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &objP->position.vPos);
+objP->position.vPos = vNewPos;
+VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &vNewPos);
 VmVector2Matrix (&objP->position.mOrient, &vBossDir, NULL, NULL);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);

@@ -2267,7 +2267,7 @@ void MultiSyncKills (void)
 {
 	static	time_t	t0;
 
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.nSDLTicks - t0 > 3000)) {
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.nSDLTicks - t0 > 1000)) {
 	t0 = gameStates.app.nSDLTicks;
 	MultiSendSyncKills ();
 	}

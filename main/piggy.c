@@ -1566,8 +1566,11 @@ void PiggyFreeHiresAnimations (void)
 	grsBitmap	*bmP;
 
 for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1]; bD1 < 2; bD1++)
-	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++)
+	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++) {
+		if (bmP - gameData.pig.tex.bitmaps [0] == 1998)
+			i = i;
 		PiggyFreeHiresAnimation (bmP, bD1);
+		}
 }
 
 //------------------------------------------------------------------------------

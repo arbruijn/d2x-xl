@@ -1096,12 +1096,12 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_CTRLED + KEY_ALTED + KEY_S:
-			if ((!IsMultiGame || IsCoopGame) && gameStates.app.bEnableFreeCam) {
+			if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
+				return 0;
 			if (gameStates.app.bFreeCam = !gameStates.app.bFreeCam)
 				gameStates.app.playerPos = gameData.objs.viewer->position;
 			else
 				gameData.objs.viewer->position = gameStates.app.playerPos;
-			}
 			break;
 
 		case KEY_COMMAND + KEY_SHIFTED + KEY_P:

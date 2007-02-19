@@ -1407,9 +1407,9 @@ i = m [nDiffOpt].value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = i;
 	gameStates.app.nDifficultyLevel = i;
-	WritePlayerFile ();
 	InitGateIntervals ();
 	}
+WritePlayerFile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
 GrPaletteFadeOut (NULL, 32, 0);
@@ -2452,6 +2452,7 @@ do {
 		nPlrSmokeOpt =
 		optBotSmoke =
 		optMissSmoke =
+		optDebrisSmoke =
 		optSmokeColl =
 		optSmokeDisp = -1;
 
