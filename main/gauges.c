@@ -1384,7 +1384,7 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		y = 3 + Line_spacing;
+		y = 6 + 2 * Line_spacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);
@@ -1458,7 +1458,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 			}
 		}
 	else
-		GrPrintF (x, y, "x %d", gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX]);
+		GrPrintF (x, y, "x %d", gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]);
 	}
 }
 

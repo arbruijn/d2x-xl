@@ -188,7 +188,7 @@ void show_framerate()
 	char temp[50];
 	static time_t t, t0 = -1;
 	static fix rate = 0;
-	int x = 8, y = 5; // position measured from lower right corner
+	int x = 8, y = 6; // position measured from lower right corner
    //static int q;
 
 	frameTimeTotal += gameData.time.xRealFrame - frameTime_list[frameTime_cntr];
@@ -205,7 +205,9 @@ void show_framerate()
 	ftoa( temp, rate );	// Convert fixed to string
 	if (gameData.app.nGameMode & GM_MULTI)
 		y = 7;
-	GrPrintF(grdCurCanv->cv_w-(x*GAME_FONT->ft_w),grdCurCanv->cv_h-y*(GAME_FONT->ft_h+GAME_FONT->ft_h/4),"FPS: %s ", temp );
+	GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w),
+				 grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4),
+				 "FPS: %s ", temp);
 }
 
 //------------------------------------------------------------------------------
