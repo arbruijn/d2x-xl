@@ -2116,91 +2116,59 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 void ApplyDamageToPlayer (tObject *playerObjP, tObject *killer, fix damage)
 {
-	tPlayer *playerP = gameData.multi.players + playerObjP->id;
-	tPlayer *killerP = (killer && (killer->nType == OBJ_PLAYER)) ? gameData.multi.players + killer->id : NULL;
-	if (gameStates.app.bPlayerIsDead)
-		return;
+tPlayer *playerP = gameData.multi.players + playerObjP->id;
+tPlayer *killerP = (killer && (killer->nType == OBJ_PLAYER)) ? gameData.multi.players + killer->id : NULL;
+if (gameStates.app.bPlayerIsDead)
+	return;
 
-	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
-		return;
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-		return;
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
+	return;
+if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
+	return;
 
-	if (killer == playerObjP) {
-		if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
+if (killer == playerObjP) {
+	if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
+		return;
+	}
+else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && 
+			!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
+	if (gameData.app.nGameMode & GM_TEAM) {
+		if (GetTeam (playerObjP->id) == GetTeam (killer->id))
 			return;
 		}
-	else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && 
-				!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
-		if (gameData.app.nGameMode & GM_TEAM) {
-			if (GetTeam (playerObjP->id) == GetTeam (killer->id))
-				return;
-			}
-		else if (gameData.app.nGameMode & GM_MULTI_COOP)
-			return;
-		}
-	if (gameStates.app.bEndLevelSequence)
+	else if (gameData.app.nGameMode & GM_MULTI_COOP)
 		return;
+	}
+if (gameStates.app.bEndLevelSequence)
+	return;
 
-	gameData.multi.bWasHit [playerObjP->id] = -1;
-	//for the tPlayer, the 'real' shields are maintained in the gameData.multi.players []
-	//array.  The shields value in the tPlayer's tObject are, I think, not
-	//used anywhere.  This routine, however, sets the gameData.objs.objects shields to
-	//be a mirror of the value in the Player structure. 
+gameData.multi.bWasHit [playerObjP->id] = -1;
+//for the tPlayer, the 'real' shields are maintained in the gameData.multi.players []
+//array.  The shields value in the tPlayer's tObject are, I think, not
+//used anywhere.  This routine, however, sets the gameData.objs.objects shields to
+//be a mirror of the value in the Player structure. 
 
-	if (playerObjP->id == gameData.multi.nLocalPlayer) {		//is this the local tPlayer?
-
-		//	MK: 08/14/95: This code can never be reached.  See the return about 12 lines up.
-// -- 		if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
-// -- 
-// -- 			//invincible, so just do blue flash
-// -- 
-// -- 			PALETTE_FLASH_ADD (0, 0, f2i (damage)*4);	//flash blue
-// -- 
-// -- 		} 
-// -- 		else {		//take damage, do red flash
-
-			if ((gameData.app.nGameMode & GM_ENTROPY)&& extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
-				double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
-				if (h < 0.5)
-					h = 0.5;
-				else if (h > 1.0)
-					h = 1.0;
-				if (!(damage = (fix) ((double) damage * h)))
-					damage = 1;
-				}
-			playerP->shields -= damage;
-			MultiSendShields ();
-			PALETTE_FLASH_ADD (f2i (damage)*4, -f2i (damage/2), -f2i (damage/2));	//flash red
-
-// -- 		}
-
-		if (playerP->shields < 0)	{
-  			playerP->nKillerObj = OBJ_IDX (killer);
-//			if (killer && (killer->nType == OBJ_PLAYER))
-//				gameData.multi.players [gameData.multi.nLocalPlayer].nKillerObj = OBJ_IDX (killer);
-			playerObjP->flags |= OF_SHOULD_BE_DEAD;
-			if (gameData.escort.nObjNum != -1)
-				if (killer && (killer->nType == OBJ_ROBOT) && (ROBOTINFO (killer->id).companion))
-					gameData.escort.xSorryTime = gameData.time.xGame;
+if (playerObjP->id == gameData.multi.nLocalPlayer) {		//is this the local tPlayer?
+	if ((gameData.app.nGameMode & GM_ENTROPY)&& extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
+		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
+		if (h < 0.5)
+			h = 0.5;
+		else if (h > 1.0)
+			h = 1.0;
+		if (!(damage = (fix) ((double) damage * h)))
+			damage = 1;
 		}
-// -- removed, 09/06/95, MK --  else if (gameData.multi.players [gameData.multi.nLocalPlayer].shields < LOSE_WEAPON_THRESHOLD) {
-// -- removed, 09/06/95, MK -- 			int	randnum = d_rand ();
-// -- removed, 09/06/95, MK -- 
-// -- removed, 09/06/95, MK -- 			if (FixMul (gameData.multi.players [gameData.multi.nLocalPlayer].shields, randnum) < damage/4) {
-// -- removed, 09/06/95, MK -- 				if (d_rand () > 20000) {
-// -- removed, 09/06/95, MK -- 					destroySecondaryWeapon (gameData.weapons.nSecondary);
-// -- removed, 09/06/95, MK -- 				} else if (gameData.weapons.nPrimary == 0) {
-// -- removed, 09/06/95, MK -- 					if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-// -- removed, 09/06/95, MK -- 						destroyPrimaryWeapon (MAX_PRIMARY_WEAPONS);	//	This means to destroy quad laser.
-// -- removed, 09/06/95, MK -- 					else if (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel > 0)
-// -- removed, 09/06/95, MK -- 						destroyPrimaryWeapon (gameData.weapons.nPrimary);
-// -- removed, 09/06/95, MK -- 				} else
-// -- removed, 09/06/95, MK -- 					destroyPrimaryWeapon (gameData.weapons.nPrimary);
-// -- removed, 09/06/95, MK -- 			} else
-// -- removed, 09/06/95, MK -- 				; 
-// -- removed, 09/06/95, MK -- 		}
-		playerObjP->shields = playerP->shields;		//mirror
+	playerP->shields -= damage;
+	MultiSendShields ();
+	PALETTE_FLASH_ADD (f2i (damage)*4, -f2i (damage/2), -f2i (damage/2));	//flash red
+	if (playerP->shields < 0)	{
+  		playerP->nKillerObj = OBJ_IDX (killer);
+		playerObjP->flags |= OF_SHOULD_BE_DEAD;
+		if (gameData.escort.nObjNum != -1)
+			if (killer && (killer->nType == OBJ_ROBOT) && (ROBOTINFO (killer->id).companion))
+				gameData.escort.xSorryTime = gameData.time.xGame;
+		}
+	playerObjP->shields = playerP->shields;		//mirror
 	}
 }
 
