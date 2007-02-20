@@ -1649,10 +1649,10 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_GRENADES			GT(867)
 #define TXT_MAX_SMOKEGRENS			GT(868)
 #define TXT_MSL_TURNSPEED			GT(869)
+#define TXT_HELP_PAUSE_D2X			GT(870)
+#define TXT_HELP_PRTSCN_D2X		GT(871)
 
 #if 0
-#define TXT_				GT(870)
-#define TXT_				GT(871)
 #define TXT_				GT(872)
 #define TXT_				GT(873)
 #define TXT_				GT(874)

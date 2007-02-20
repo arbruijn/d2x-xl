@@ -1617,6 +1617,8 @@ char *defaultGameTexts [][2] = {
 	{"Rauchgranaten", "Smoke Grenades"},
 	{"max. Rauch~Granaten: %d", "max. smoke ~Grenades: %d"},
 	{"~Wendigkeit von Raketen: %s", "missile ~Turn speed: %s"},
+	{"Alt+P\t  Pause", "Alt+P\t  Pause"},
+	{"Alt+F9\t  Bildschirmabzug speichern", "Alt+F9\t  save screenshot"},
 #if 0
 	{"", ""},
 #endif
