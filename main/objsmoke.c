@@ -17,25 +17,29 @@
 #include "object.h"
 #include "objsmoke.h"
 
-#define SHIP_MAX_PARTS		50
-#define PLR_PART_LIFE		-4000
-#define PLR_PART_SPEED		40
+#define SHIP_MAX_PARTS				50
+#define PLR_PART_LIFE				-4000
+#define PLR_PART_SPEED				40
 
-#define BOT_MAX_PARTS		50
-#define BOT_PART_LIFE		-6000
-#define BOT_PART_SPEED		300
+#define BOT_MAX_PARTS				50
+#define BOT_PART_LIFE				-6000
+#define BOT_PART_SPEED				300
 
-#define MSL_MAX_PARTS		500
-#define MSL_PART_LIFE		-3000
-#define MSL_PART_SPEED		30
+#define MSL_MAX_PARTS				500
+#define MSL_PART_LIFE				-3000
+#define MSL_PART_SPEED				30
 
-#define BOMB_MAX_PARTS		60
-#define BOMB_PART_LIFE		-16000
-#define BOMB_PART_SPEED		200
+#define BOMB_MAX_PARTS				60
+#define BOMB_PART_LIFE				-16000
+#define BOMB_PART_SPEED				200
 
-#define DEBRIS_MAX_PARTS	50
-#define DEBRIS_PART_LIFE	-2000
-#define DEBRIS_PART_SPEED	30
+#define DEBRIS_MAX_PARTS			50
+#define DEBRIS_PART_LIFE			-2000
+#define DEBRIS_PART_SPEED			30
+
+#define STATIC_SMOKE_MAX_PARTS	100
+#define STATIC_SMOKE_PART_LIFE	-3200
+#define STATIC_SMOKE_PART_SPEED	1000
 
 #define REACTOR_MAX_PARTS	50
 
@@ -413,6 +417,41 @@ else
 
 //------------------------------------------------------------------------------
 
+void DoStaticSmoke (tObject *objP)
+{
+	int			nLife, nParts, nSpeed, nSize, nDrift, i;
+	vmsVector	pos, offs, dir;
+	tTrigger		*trigP;
+
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic))
+	return;
+objP->renderType = RT_NONE;
+i = (int) OBJ_IDX (objP);
+if (gameData.smoke.objects [i] < 0) {
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE);
+	nLife = (trigP && trigP->value) ? trigP->value : 5;
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED);
+	nSpeed = (trigP && trigP->value) ? trigP->value * 3 : 15;
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS);
+	nParts = (trigP && trigP->value) ? trigP->value * 25 : STATIC_SMOKE_MAX_PARTS;
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE);
+	nSize = (trigP && trigP->value) ? trigP->value : 5;
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT);
+	nDrift = (trigP && trigP->value) ? trigP->value * 200 : nSpeed * 50;
+	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, F1_0 * nSpeed);
+	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, &dir, 
+															objP->nSegment, 1, -nParts, -PARTICLE_SIZE (nSize, 1), 
+															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 0, i);
+	}
+offs.p.x = (F1_0 / 4 - d_rand ()) << 4;
+offs.p.y = (F1_0 / 4 - d_rand ()) << 4;
+offs.p.z = (F1_0 / 4 - d_rand ()) << 4;
+VmVecAdd (&pos, &objP->position.vPos, &offs);
+SetSmokePos (gameData.smoke.objects [i], &pos);
+}
+
+//------------------------------------------------------------------------------
+
 int DoObjectSmoke (tObject *objP)
 {
 int t = objP->nType;
@@ -424,6 +463,8 @@ if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
+else if (t == OBJ_SMOKE)
+	DoStaticSmoke (objP);
 else if (t == OBJ_CNTRLCEN)
 	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
@@ -467,6 +508,18 @@ if (!gameOpts->render.smoke.bRobots)
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_NONE)
 		KillObjectSmoke (i);
+}
+
+//------------------------------------------------------------------------------
+
+void StaticSmokeFrame (void)
+{
+	tObject	*objP = gameData.objs.objects;
+	int		i;
+
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if (objP->nType == OBJ_SMOKE)
+		DoStaticSmoke (objP);
 }
 
 //------------------------------------------------------------------------------

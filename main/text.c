@@ -1619,6 +1619,7 @@ char *defaultGameTexts [][2] = {
 	{"~Wendigkeit von Raketen: %s", "missile ~Turn speed: %s"},
 	{"Alt+P\t  Pause", "Alt+P\t  Pause"},
 	{"Alt+F9\t  Bildschirmabzug speichern", "Alt+F9\t  save screenshot"},
+	{"s~Tatischer Rauch", "s~Tatic smoke"},
 #if 0
 	{"", ""},
 #endif
@@ -2106,6 +2107,8 @@ char *defaultHelpTexts [][2] = {
 	 "Limit the number of smoke grenades a player can deploy at any\ngiven time."},
 	{"Hier kann eingestellt werden, wie schnell zielsuchende Raketen\nihre Flugrichtung aendern koennen.", 
 	 "Adjust the turn speed of homing missiles here."},
+	{"Wenn angekreuzt, wird Rauch dargestellt, der von festen Orten\nin einer Mine ausgeht.", 
+	 "If checked smoke dissipating from fixed locations in a mine\nis rendered."},
 #if 0
 	{"", ""},
 #endif

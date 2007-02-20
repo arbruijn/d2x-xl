@@ -45,7 +45,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_SHIELD_DAMAGE	 17
 #define TT_ENERGY_DRAIN		 18
 #define TT_CHANGE_TEXTURE	 19
-#define NUM_TRIGGER_TYPES   20
+#define TT_SMOKE_LIFE		 20
+#define TT_SMOKE_SPEED		 21
+#define TT_SMOKE_DENS		 22
+#define TT_SMOKE_SIZE		 23
+#define TT_SMOKE_DRIFT		 24
+#define NUM_TRIGGER_TYPES   25
 
 // Trigger flags
 
@@ -160,6 +165,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);
+tTrigger *FindObjTrigger (short nObject, short nType);
 
 extern vmsVector	speedBoostSrc, speedBoostDest;
 

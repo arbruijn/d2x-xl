@@ -24,6 +24,7 @@ typedef struct tParticle {
 	vmsVector	pos;				//position
 	vmsVector	transPos;		//transformed position
 	vmsVector	dir;				//movement direction
+	vmsVector	drift;
 	char			nType;			//black or white
 	char			nOrient;
 	char			nRotDir;

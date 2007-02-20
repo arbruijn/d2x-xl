@@ -85,7 +85,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define STANDARD_EXPL_DELAY (f1_0/4)
 
-//##void CollideFireballAnd_wall (tObject *fireball, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
+//##void CollideFireballAndWall (tObject *fireball, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
 //##	return; 
 //##}
 
@@ -132,7 +132,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 	return;
 }
 
-//##void CollideHostageAnd_wall (tObject * hostage, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
+//##void CollideHostageAndWall (tObject * hostage, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
 //##	return;
 //##}
 
@@ -1034,11 +1034,11 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideCameraAnd_wall (tObject * camera, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
+//##void CollideCameraAndWall (tObject * camera, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
 //##	return;
 //##}
 
-//##void CollidePowerupAnd_wall (tObject * powerup, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
+//##void CollidePowerupAndWall (tObject * powerup, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	{
 //##	return;
 //##}
 
@@ -2678,6 +2678,7 @@ void CollideInit ()
 	ENABLE_COLLISION  (OBJ_PLAYER, OBJ_CLUTTER)
 	ENABLE_COLLISION  (OBJ_PLAYER, OBJ_MARKER);
 	ENABLE_COLLISION  (OBJ_PLAYER, OBJ_CAMBOT);
+	DISABLE_COLLISION (OBJ_PLAYER, OBJ_SMOKE);
 	ENABLE_COLLISION  (OBJ_PLAYER, OBJ_MONSTERBALL);
 	DISABLE_COLLISION (OBJ_FIREBALL, OBJ_ROBOT);
 	DISABLE_COLLISION (OBJ_FIREBALL, OBJ_HOSTAGE);
@@ -2687,6 +2688,7 @@ void CollideInit ()
 	DISABLE_COLLISION (OBJ_FIREBALL, OBJ_POWERUP);
 	DISABLE_COLLISION (OBJ_FIREBALL, OBJ_DEBRIS);
 	ENABLE_COLLISION  (OBJ_FIREBALL, OBJ_CAMBOT);
+	DISABLE_COLLISION  (OBJ_FIREBALL, OBJ_SMOKE);
 	DISABLE_COLLISION (OBJ_ROBOT, OBJ_HOSTAGE);
 	ENABLE_COLLISION  (OBJ_ROBOT, OBJ_PLAYER);
 	ENABLE_COLLISION  (OBJ_ROBOT, OBJ_WEAPON);
@@ -2706,6 +2708,7 @@ void CollideInit ()
 	ENABLE_COLLISION  (OBJ_WEAPON, OBJ_CNTRLCEN)
 	ENABLE_COLLISION  (OBJ_WEAPON, OBJ_CLUTTER)
 	ENABLE_COLLISION  (OBJ_WEAPON, OBJ_CAMBOT);
+	DISABLE_COLLISION  (OBJ_WEAPON, OBJ_SMOKE);
 	ENABLE_COLLISION  (OBJ_WEAPON, OBJ_MONSTERBALL);
 	DISABLE_COLLISION (OBJ_CAMERA, OBJ_CAMERA);
 	DISABLE_COLLISION (OBJ_CAMERA, OBJ_POWERUP);
@@ -2715,6 +2718,7 @@ void CollideInit ()
 	ENABLE_COLLISION  (OBJ_POWERUP, OBJ_WALL);
 	DISABLE_COLLISION (OBJ_DEBRIS, OBJ_DEBRIS);
 	ENABLE_COLLISION  (OBJ_ROBOT, OBJ_CAMBOT);
+	DISABLE_COLLISION  (OBJ_ROBOT, OBJ_SMOKE);
 
 }
 
@@ -2734,20 +2738,22 @@ switch (A->nType)	{
 		CollideDebrisAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_FIREBALL:	
-		break;		//collideFireballAnd_wall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;		//CollideFireballAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_ROBOT:		
 		CollideRobotAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_HOSTAGE:		
-		break;		//collideHostageAnd_wall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;		//CollideHostageAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_CAMERA:		
-		break;		//collideCameraAnd_wall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;		//CollideCameraAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+	case OBJ_SMOKE:		
+		break;		//CollideSmokeAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_POWERUP:		
-		break;		//collidePowerupAnd_wall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;		//CollidePowerupAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_GHOST:		
 		break;	//do nothing
 	case OBJ_MONSTERBALL:		
-		break;		//collidePowerupAnd_wall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;		//CollidePowerupAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	default:
 		Error ("Unhandled tObject nType hit wall in Collide.c \n");
 	}

@@ -191,7 +191,7 @@ int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 						  short nSegment, int nLife, 
 						  int nSpeed, int nType, float nScale, int nCurTime, int bStart)
 {
-	vmsVector	vDir;
+	vmsVector	vDrift;
 	int			nRad;
 
 if (nScale < 0)
@@ -252,8 +252,8 @@ if (pDir) {
 	a.b = randN (F1_0 / 4) - F1_0 / 8;
 	a.h = randN (F1_0 / 4) - F1_0 / 8;
 	VmAngles2Matrix (&m, &a);
-	VmVecNormalize (VmVecRotate (&vDir, pDir, &m));
-	d = (double) VmVecDeltaAng (&vDir, pDir, NULL);
+	VmVecNormalize (VmVecRotate (&vDrift, pDir, &m));
+	d = (double) VmVecDeltaAng (&vDrift, pDir, NULL);
 	if (d) {
 		d = exp ((F1_0 / 8) / d);
 		nSpeed = (fix) ((double) nSpeed / d);
@@ -261,20 +261,22 @@ if (pDir) {
 	pParticle->glColor.g =
 	pParticle->glColor.b = 1.0;//(double) (64 + randN (64)) / 255.0;
 #else
-	vDir = *pDir;
+	vDrift = *pDir;
 #endif
-	VmVecScaleAdd (&pParticle->pos, pPos, &vDir, 200);
-	VmVecScale (&vDir, nSpeed);
+	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, 200);
+	VmVecScale (&vDrift, nSpeed);
+	pParticle->dir = *pDir;
 	}
 else {
 	vmsVector	vOffs;
-	vDir.p.x = nSpeed - randN (2 * nSpeed);
-	vDir.p.y = nSpeed - randN (2 * nSpeed);
-	vDir.p.z = nSpeed - randN (2 * nSpeed);
-	vOffs = vDir;
-	VmVecScaleAdd (&pParticle->pos, pPos, &vDir, 10);
+	vDrift.p.x = nSpeed - randN (2 * nSpeed);
+	vDrift.p.y = nSpeed - randN (2 * nSpeed);
+	vDrift.p.z = nSpeed - randN (2 * nSpeed);
+	vOffs = vDrift;
+	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, 10);
+	VmVecZero (&pParticle->dir);
 	}
-pParticle->dir = vDir;
+pParticle->drift = vDrift;
 if (nLife < 0)
 	nLife = -nLife;
 if (gameOpts->render.smoke.bDisperse)
@@ -384,7 +386,9 @@ int MoveParticle (tParticle *pParticle, int nCurTime)
 {
 	int			j;
 	fix			t, dot;
-	vmsVector	pos, dir;
+	vmsVector	pos, drift;
+	fix			drag = fl2f ((float) pParticle->nLife / (float) pParticle->nTTL);
+
 
 if (pParticle->nLife <= 0)
 	return 0;
@@ -395,22 +399,23 @@ t = nCurTime - pParticle->nMoved;
 		pParticle->nDelay -= t;
 	else {
 		pos = pParticle->pos;
-		dir = pParticle->dir;
+		drift = pParticle->drift;
 		if (pParticle->nType != 3) {
-			dir.p.x = ChangeDir (dir.p.x);
-			dir.p.y = ChangeDir (dir.p.y);
-			dir.p.z = ChangeDir (dir.p.z);
+			drift.p.x = ChangeDir (drift.p.x);
+			drift.p.y = ChangeDir (drift.p.y);
+			drift.p.z = ChangeDir (drift.p.z);
 			}
 		for (j = 0; j < 2; j++) {
-			VmVecScaleAdd (&pParticle->pos, &pos, &dir, t);
+			VmVecScaleInc (&drift, &pParticle->dir, drag);
+			VmVecScaleAdd (&pParticle->pos, &pos, &drift, t);
 			if (gameOpts->render.smoke.bCollisions && CollideParticleAndWall (pParticle)) {	//reflect the particle
 				if (j)
 					return 0;
-				else if (!(dot = VmVecDot (&dir, wallNorm)))
+				else if (!(dot = VmVecDot (&drift, wallNorm)))
 					return 0;
 				else {
-					VmVecScaleAdd (&dir, &pParticle->dir, wallNorm, -2 * dot);
-					//VmVecScaleAdd (&pParticle->pos, &pos, &dir, 2 * t);
+					VmVecScaleAdd (&drift, &pParticle->drift, wallNorm, -2 * dot);
+					//VmVecScaleAdd (&pParticle->pos, &pos, &drift, 2 * t);
 					pParticle->nBounce = 3;
 					continue;
 					}
@@ -421,7 +426,7 @@ t = nCurTime - pParticle->nMoved;
 				break;
 				}
 			}
-		pParticle->dir = dir;
+		pParticle->drift = drift;
 		if (pParticle->nTTL >= 0) {
 			int nRad = pParticle->nRad;
 		if (pParticle->nWidth < nRad) {
@@ -434,7 +439,7 @@ t = nCurTime - pParticle->nMoved;
 			pParticle->glColor.a *= 1.0725;
 			}
 #if 0
-			//VmVecScaleFrac (&pParticle->dir, t - ((t / 10) ? t / 10 : 1), t);
+			//VmVecScaleFrac (&pParticle->drift, t - ((t / 10) ? t / 10 : 1), t);
 			decay = 1.0 - (double) t / (double) pParticle->nTTL;
 			pParticle->glColor.a *= decay;
 			HUDMessage (0, "%1.5f", decay);

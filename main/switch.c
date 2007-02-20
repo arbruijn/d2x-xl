@@ -881,6 +881,13 @@ switch (trigP->nType) {
 		DoChangeTexture (trigP);
 		break;
 
+	case TT_SMOKE_LIFE:
+	case TT_SMOKE_SPEED:
+	case TT_SMOKE_DENS:
+	case TT_SMOKE_SIZE:
+	case TT_SMOKE_DRIFT:
+		break;
+
 	default:
 		Int3 ();
 		break;
@@ -888,6 +895,22 @@ switch (trigP->nType) {
 if (trigP->flags & TF_ALTERNATE)
 		trigP->nType = oppTrigTypes [trigP->nType];
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+tTrigger *FindObjTrigger (short nObject, short nType)
+{
+	short i = gameData.trigs.firstObjTrigger [nObject];
+
+while (i >= 0) {
+	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
+		break;
+	if (gameData.trigs.objTriggers [i].nType == nType)
+		return gameData.trigs.objTriggers + i;
+	i = gameData.trigs.objTriggerRefs [i].next;
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------

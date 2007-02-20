@@ -72,8 +72,8 @@ char	Special_names [MAX_CENTER_TYPES][11] = {
 	"REPAIRCEN ",
 	"CONTROLCEN",
 	"ROBOTMAKER",
-	"GOAL_RED",
-	"GOAL_BLUE",
+	"GOAL_RED  ",
+	"GOAL_BLUE ",
 };
 #endif
 
@@ -188,6 +188,11 @@ void BotGenCreate (tSegment *segP, int oldType)
 
 Assert (stationType == SEGMENT_IS_ROBOTMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
+if (seg2p->nMatCen >= gameFileInfo.botGen.count) {
+	seg2p->special = SEGMENT_IS_NOTHING;
+	seg2p->nMatCen = -1;
+	return;
+	}
 switch (oldType) {
 	case SEGMENT_IS_FUELCEN:
 	case SEGMENT_IS_REPAIRCEN:
@@ -207,13 +212,14 @@ gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
 COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
-seg2p->nMatCen = gameData.matCens.nBotCenters;
-gameData.matCens.botGens [gameData.matCens.nBotCenters].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.botGens [gameData.matCens.nBotCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.botGens [gameData.matCens.nBotCenters].nSegment = SEG2_IDX (seg2p);
+i = seg2p->nMatCen;
+gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.botGens [i].nSegment = SEG2_IDX (seg2p);
 if (oldType == SEGMENT_IS_NOTHING)
 	gameData.matCens.botGens [gameData.matCens.nBotCenters].nFuelCen = gameData.matCens.nFuelCenters;
-gameData.matCens.nBotCenters++;
+if (gameData.matCens.nBotCenters <= i)
+	gameData.matCens.nBotCenters = i + 1;
 gameData.matCens.nFuelCenters++;
 }
 
@@ -228,6 +234,11 @@ void EquipGenCreate (tSegment *segP, int oldType)
 
 Assert (stationType == SEGMENT_IS_EQUIPMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
+if (seg2p->nMatCen >= gameFileInfo.equipGen.count) {
+	seg2p->special = SEGMENT_IS_NOTHING;
+	seg2p->nMatCen = -1;
+	return;
+	}
 switch (oldType) {
 	case SEGMENT_IS_FUELCEN:
 	case SEGMENT_IS_REPAIRCEN:
@@ -248,14 +259,16 @@ gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
 gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (SEG_IDX (segP), -1) == 0;
-COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
-seg2p->nMatCen = gameData.matCens.nEquipCenters;
-gameData.matCens.equipGens [gameData.matCens.nEquipCenters].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.equipGens [gameData.matCens.nEquipCenters].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nSegment = SEG2_IDX (seg2p);
+COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, SEG_IDX (segP));
+//seg2p->nMatCen = gameData.matCens.nEquipCenters;
+i = seg2p->nMatCen;
+gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.equipGens [i].nSegment = SEG2_IDX (seg2p);
 if (oldType == SEGMENT_IS_NOTHING)
 	gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nFuelCen = gameData.matCens.nFuelCenters;
-gameData.matCens.nEquipCenters++;
+if (gameData.matCens.nEquipCenters <= i)
+	 gameData.matCens.nEquipCenters = i + 1;
 gameData.matCens.nFuelCenters++;
 }
 
@@ -750,29 +763,31 @@ else {
 // Called once per frame, replenishes fuel supply.
 void FuelcenUpdateAll ()
 {
-	int i;
+	int				i, t;
+	tFuelCenInfo	*fuelCenP = gameData.matCens.fuelCenters;
 	fix xAmountToReplenish = FixMul (gameData.time.xFrame,gameData.matCens.xFuelRefillSpeed);
 
-for (i = 0; i < gameData.matCens.nFuelCenters; i++)	{
-	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER)	{
+for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
+	t = fuelCenP->nType;
+	if (t == SEGMENT_IS_ROBOTMAKER) {
 		if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY))
 			VirusGenHandler (gameData.matCens.fuelCenters + i);
 		else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
 			BotGenHandler (gameData.matCens.fuelCenters + i);
 		}
-	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_EQUIPMAKER) {
+	else if (t == SEGMENT_IS_EQUIPMAKER) {
 		if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
 			EquipGenHandler (gameData.matCens.fuelCenters + i);
 		}
-	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_CONTROLCEN)	{
+	else if (t == SEGMENT_IS_CONTROLCEN) {
 		//controlcen_proc (gameData.matCens.fuelCenters + i);
 		}
-	else if ((gameData.matCens.fuelCenters [i].xMaxCapacity > 0) && 
-				(gameData.matCens.playerSegP != gameData.segs.segments + gameData.matCens.fuelCenters [i].nSegment)) {
-		if (gameData.matCens.fuelCenters [i].xCapacity < gameData.matCens.fuelCenters [i].xMaxCapacity) {
- 			gameData.matCens.fuelCenters [i].xCapacity += xAmountToReplenish;
-			if (gameData.matCens.fuelCenters [i].xCapacity >= gameData.matCens.fuelCenters [i].xMaxCapacity) {
-				gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
+	else if ((fuelCenP->xMaxCapacity > 0) && 
+				(gameData.matCens.playerSegP != gameData.segs.segments + fuelCenP->nSegment)) {
+		if (fuelCenP->xCapacity < fuelCenP->xMaxCapacity) {
+ 			fuelCenP->xCapacity += xAmountToReplenish;
+			if (fuelCenP->xCapacity >= fuelCenP->xMaxCapacity) {
+				fuelCenP->xCapacity = fuelCenP->xMaxCapacity;
 				//gauge_message ("Fuel center is fully recharged!   ");
 				}
 			}

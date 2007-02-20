@@ -2356,7 +2356,8 @@ void SmokeOptionsMenu ()
 	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optSmokeColl, optSmokeDisp;
+	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optStaticSmoke,
+			optSmokeColl, optSmokeDisp;
 
 	pszSize [0] = TXT_SMALL;
 	pszSize [1] = TXT_MEDIUM;
@@ -2426,6 +2427,8 @@ do {
 				}
 			ADD_CHECK (opt, TXT_SMOKE_DEBRIS, gameOpts->render.smoke.bDebris, KEY_D, HTX_ADVRND_DEBRISSMOKE);
 			optDebrisSmoke = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_STATIC, gameOpts->render.smoke.bStatic, KEY_S, HTX_ADVRND_STATICSMOKE);
+			optStaticSmoke = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 			optSmokeColl = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
@@ -2453,6 +2456,7 @@ do {
 		optBotSmoke =
 		optMissSmoke =
 		optDebrisSmoke =
+		optStaticSmoke =
 		optSmokeColl =
 		optSmokeDisp = -1;
 
@@ -2465,6 +2469,7 @@ do {
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
 		GET_VAL (gameOpts->render.smoke.bDebris, optDebrisSmoke);
+		GET_VAL (gameOpts->render.smoke.bStatic, optStaticSmoke);
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
 		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);

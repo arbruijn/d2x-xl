@@ -146,7 +146,7 @@ if (i < 123) {
 int Gamesave_num_players=0;
 
 int N_save_pof_names;
-char Save_pof_names[MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
+char Save_pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 void CheckAndFixMatrix(vmsMatrix *m);
 
@@ -170,7 +170,7 @@ if (objP->nType == OBJ_ROBOT) {
 			//it's marked as non-shareware.  To see what robot number,
 			//print objP->id.
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
-		objP->size = gameData.models.polyModels[objP->rType.polyObjInfo.nModel].rad;
+		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
 	if (objP->id == 65)						//special "reactor" robots
 		objP->movementType = MT_NONE;
@@ -182,9 +182,9 @@ if (objP->nType == OBJ_ROBOT) {
 else {		//Robots taken care of above
 	if (objP->renderType == RT_POLYOBJ) {
 		int i;
-		char *name = Save_pof_names[objP->rType.polyObjInfo.nModel];
+		char *name = Save_pof_names [objP->rType.polyObjInfo.nModel];
 		for (i=0;i<gameData.models.nPolyModels;i++)
-			if (!stricmp(Pof_names[i],name)) {		//found it!	
+			if (!stricmp(Pof_names [i],name)) {		//found it!	
 				objP->rType.polyObjInfo.nModel = i;
 				break;
 				}
@@ -224,7 +224,7 @@ if (objP->nType == OBJ_WEAPON)	{
 		// Make sure model number & size are correct...		
 		Assert(objP->renderType == RT_POLYOBJ);
 		objP->rType.polyObjInfo.nModel = gameData.weapons.info[objP->id].nModel;
-		objP->size = gameData.models.polyModels[objP->rType.polyObjInfo.nModel].rad;
+		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
 	}
 if (objP->nType == OBJ_CNTRLCEN) {
@@ -232,7 +232,7 @@ if (objP->nType == OBJ_CNTRLCEN) {
 	objP->controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
 		objP->id = 0;                         // used to be only one kind of reactor
-		objP->rType.polyObjInfo.nModel = gameData.reactor.reactors[0].nModel;// descent 1 reactor
+		objP->rType.polyObjInfo.nModel = gameData.reactor.reactors [0].nModel;// descent 1 reactor
 		}
 #ifdef EDITOR
 	{
@@ -401,7 +401,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 			objP->cType.aiInfo.behavior = CFReadByte(f);
 
 			for (i=0;i<MAX_AI_FLAGS;i++)
-				objP->cType.aiInfo.flags[i] = CFReadByte(f);
+				objP->cType.aiInfo.flags [i] = CFReadByte(f);
 
 			objP->cType.aiInfo.nHideSegment = CFReadShort(f);
 			objP->cType.aiInfo.nHideIndex = CFReadShort(f);
@@ -490,7 +490,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 			objP->rType.polyObjInfo.nModel		= CFReadInt(f);
 
 			for (i=0;i<MAX_SUBMODELS;i++)
-				CFReadAngVec(&objP->rType.polyObjInfo.animAngles[i],f);
+				CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i],f);
 
 			objP->rType.polyObjInfo.nSubObjFlags	= CFReadInt(f);
 
@@ -608,7 +608,7 @@ void writeObject(tObject *objP,FILE *f)
 			gs_write_byte(objP->cType.aiInfo.behavior,f);
 
 			for (i=0;i<MAX_AI_FLAGS;i++)
-				gs_write_byte(objP->cType.aiInfo.flags[i],f);
+				gs_write_byte(objP->cType.aiInfo.flags [i],f);
 
 			gs_write_short(objP->cType.aiInfo.nHideSegment,f);
 			gs_write_short(objP->cType.aiInfo.nHideIndex,f);
@@ -680,7 +680,7 @@ void writeObject(tObject *objP,FILE *f)
 			gs_write_int(objP->rType.polyObjInfo.nModel,f);
 
 			for (i=0;i<MAX_SUBMODELS;i++)
-				gs_write_angvec(&objP->rType.polyObjInfo.animAngles[i],f);
+				gs_write_angvec(&objP->rType.polyObjInfo.animAngles [i],f);
 
 			gs_write_int(objP->rType.polyObjInfo.nSubObjFlags,f);
 
@@ -996,32 +996,32 @@ if (gameFileInfo.walls.offset > -1) {
 		for (i=0;i<gameFileInfo.walls.count;i++) {
 
 			if (gameTopFileInfo.fileinfo_version >= 20)
-				wall_read(&gameData.walls.walls[i], LoadFile); // v20 walls and up.
+				wall_read(&gameData.walls.walls [i], LoadFile); // v20 walls and up.
 			else if (gameTopFileInfo.fileinfo_version >= 17) {
 				v19_wall w;
 
 				v19_wall_read(&w, LoadFile);
-				gameData.walls.walls[i].nSegment	   = w.nSegment;
-				gameData.walls.walls[i].nSide			= w.nSide;
-				gameData.walls.walls[i].nLinkedWall	= w.nLinkedWall;
-				gameData.walls.walls[i].nType			= w.nType;
-				gameData.walls.walls[i].flags			= w.flags;
-				gameData.walls.walls[i].hps			= w.hps;
-				gameData.walls.walls[i].nTrigger		= w.nTrigger;
-				gameData.walls.walls[i].nClip			= w.nClip;
-				gameData.walls.walls[i].keys			= w.keys;
-				gameData.walls.walls[i].state			= WALL_DOOR_CLOSED;
+				gameData.walls.walls [i].nSegment	   = w.nSegment;
+				gameData.walls.walls [i].nSide			= w.nSide;
+				gameData.walls.walls [i].nLinkedWall	= w.nLinkedWall;
+				gameData.walls.walls [i].nType			= w.nType;
+				gameData.walls.walls [i].flags			= w.flags;
+				gameData.walls.walls [i].hps			= w.hps;
+				gameData.walls.walls [i].nTrigger		= w.nTrigger;
+				gameData.walls.walls [i].nClip			= w.nClip;
+				gameData.walls.walls [i].keys			= w.keys;
+				gameData.walls.walls [i].state			= WALL_DOOR_CLOSED;
 			} else {
 				v16_wall w;
 
 				v16_wall_read(&w, LoadFile);
-				gameData.walls.walls[i].nSegment = gameData.walls.walls[i].nSide = gameData.walls.walls[i].nLinkedWall = -1;
-				gameData.walls.walls[i].nType		= w.nType;
-				gameData.walls.walls[i].flags		= w.flags;
-				gameData.walls.walls[i].hps		= w.hps;
-				gameData.walls.walls[i].nTrigger	= w.nTrigger;
-				gameData.walls.walls[i].nClip		= w.nClip;
-				gameData.walls.walls[i].keys		= w.keys;
+				gameData.walls.walls [i].nSegment = gameData.walls.walls [i].nSide = gameData.walls.walls [i].nLinkedWall = -1;
+				gameData.walls.walls [i].nType		= w.nType;
+				gameData.walls.walls [i].flags		= w.flags;
+				gameData.walls.walls [i].hps		= w.hps;
+				gameData.walls.walls [i].nTrigger	= w.nTrigger;
+				gameData.walls.walls [i].nClip		= w.nClip;
+				gameData.walls.walls [i].keys		= w.keys;
 			}
 
 		}
@@ -1037,20 +1037,20 @@ if (gameFileInfo.doors.offset > -1) {
 	if (!CFSeek(LoadFile, gameFileInfo.doors.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.doors.count;i++) {
 			if (gameTopFileInfo.fileinfo_version >= 20)
-				active_door_read(&gameData.walls.activeDoors[i], LoadFile); // version 20 and up
+				active_door_read(&gameData.walls.activeDoors [i], LoadFile); // version 20 and up
 			else {
 				v19_door d;
 				int p;
 
 				v19_door_read(&d, LoadFile);
-				gameData.walls.activeDoors[i].nPartCount = d.nPartCount;
+				gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 				for (p=0;p<d.nPartCount;p++) {
 					short cseg,cside;
 
-					cseg = gameData.segs.segments[d.seg[p]].children[d.nSide[p]];
+					cseg = gameData.segs.segments [d.seg[p]].children[d.nSide[p]];
 					cside = FindConnectedSide(gameData.segs.segments + d.seg[p], gameData.segs.segments + cseg);
-					gameData.walls.activeDoors[i].nFrontWall[p] = WallNumI (d.seg[p], d.nSide[p]);
-					gameData.walls.activeDoors[i].nBackWall[p] = WallNumI (cseg, cside);
+					gameData.walls.activeDoors [i].nFrontWall[p] = WallNumI (d.seg[p], d.nSide[p]);
+					gameData.walls.activeDoors [i].nBackWall[p] = WallNumI (cseg, cside);
 				}
 			}
 
@@ -1129,16 +1129,16 @@ if (gameFileInfo.triggers.offset > -1) {
 				if (trig.flags & TRIGGER_ONE_SHOT)
 					flags = TF_ONE_SHOT;
 
-				gameData.trigs.triggers[i].nType = nType;
-				gameData.trigs.triggers[i].flags = flags;
-				gameData.trigs.triggers[i].nLinks = trig.nLinks;
-				gameData.trigs.triggers[i].nLinks = trig.nLinks;
-				gameData.trigs.triggers[i].value = trig.value;
-				gameData.trigs.triggers[i].time = trig.time;
+				gameData.trigs.triggers [i].nType = nType;
+				gameData.trigs.triggers [i].flags = flags;
+				gameData.trigs.triggers [i].nLinks = trig.nLinks;
+				gameData.trigs.triggers [i].nLinks = trig.nLinks;
+				gameData.trigs.triggers [i].value = trig.value;
+				gameData.trigs.triggers [i].time = trig.time;
 
 				for (t=0;t<trig.nLinks;t++) {
-					gameData.trigs.triggers[i].nSegment [t] = trig.nSegment [t];
-					gameData.trigs.triggers[i].nSide [t] = trig.nSide [t];
+					gameData.trigs.triggers [i].nSegment [t] = trig.nSegment [t];
+					gameData.trigs.triggers [i].nSide [t] = trig.nSide [t];
 				}
 			}
 		}
@@ -1186,28 +1186,38 @@ if (gameFileInfo.botGen.offset > -1) {
 	con_printf(CON_DEBUG, "   loading botGen data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.botGen.offset,SEEK_SET))	{
-		for (i=0;i<gameFileInfo.botGen.count;i++) {
+		for (i = 0; i < gameFileInfo.botGen.count; i++) {
 			if (gameTopFileInfo.fileinfo_version < 27) {
 				old_tMatCenInfo m;
 
 				OldMatCenInfoRead(&m, LoadFile);
 
-				gameData.matCens.botGens[i].objFlags[0] = m.objFlags;
-				gameData.matCens.botGens[i].objFlags[1] = 0;
-				gameData.matCens.botGens[i].xHitPoints = m.xHitPoints;
-				gameData.matCens.botGens[i].xInterval = m.xInterval;
-				gameData.matCens.botGens[i].nSegment = m.nSegment;
-				gameData.matCens.botGens[i].nFuelCen = m.nFuelCen;
+				gameData.matCens.botGens [i].objFlags [0] = m.objFlags;
+				gameData.matCens.botGens [i].objFlags [1] = 0;
+				gameData.matCens.botGens [i].xHitPoints = m.xHitPoints;
+				gameData.matCens.botGens [i].xInterval = m.xInterval;
+				gameData.matCens.botGens [i].nSegment = m.nSegment;
+				gameData.matCens.botGens [i].nFuelCen = m.nFuelCen;
 			}
 			else
-				MatCenInfoRead(&gameData.matCens.botGens[i], LoadFile);
+				MatCenInfoRead (gameData.matCens.botGens + i, LoadFile);
 
 			//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-
-			for (j=0; j<=gameData.segs.nLastSegment; j++)
-				if (gameData.segs.segment2s[j].special == SEGMENT_IS_ROBOTMAKER)
-					if (gameData.segs.segment2s[j].nMatCen == i)
-						gameData.matCens.botGens[i].nFuelCen = gameData.segs.segment2s[j].value;
+#if 0
+			j = gameData.matCens.equipGens [i].nSegment;
+			if (gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER) {
+				gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+				gameData.segs.segment2s [j].nMatCen = i;
+				}
+			else
+				gameData.matCens.botGens [i].objFlags [0] =
+				gameData.matCens.botGens [i].objFlags [1] = 0;
+#else
+			for (j = 0; j <= gameData.segs.nLastSegment; j++)
+				if (gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER)
+					if (gameData.segs.segment2s [j].nMatCen == i)
+						gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+#endif
 		}
 	}
 }
@@ -1221,14 +1231,24 @@ if (gameFileInfo.equipGen.offset > -1) {
 	con_printf(CON_DEBUG, "   loading EquipGen data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.equipGen.offset,SEEK_SET))	{
-		for (i=0;i<gameFileInfo.equipGen.count;i++) {
-			MatCenInfoRead(&gameData.matCens.equipGens[i], LoadFile);
-
+		for (i = 0; i < gameFileInfo.equipGen.count; i++) {
+			MatCenInfoRead (gameData.matCens.equipGens + i, LoadFile);
+#if 0
+			j = gameData.matCens.equipGens [i].nSegment;
+			if (gameData.segs.segment2s [j].special == SEGMENT_IS_EQUIPMAKER) {
+				gameData.matCens.equipGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+				gameData.segs.segment2s [j].nMatCen = i;
+				}
+			else
+				gameData.matCens.equipGens [i].objFlags [0] =
+				gameData.matCens.equipGens [i].objFlags [1] = 0;
+#else
 			//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-			for (j=0; j<=gameData.segs.nLastSegment; j++)
-				if (gameData.segs.segment2s[j].special == SEGMENT_IS_EQUIPMAKER)
-					if (gameData.segs.segment2s[j].nMatCen == i)
-						gameData.matCens.equipGens[i].nFuelCen = gameData.segs.segment2s[j].value;
+			for (j = 0; j <= gameData.segs.nLastSegment; j++)
+				if ((gameData.segs.segment2s [j].special == SEGMENT_IS_EQUIPMAKER) &&
+					 (gameData.segs.segment2s [j].nMatCen == i))
+					gameData.matCens.equipGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+#endif
 		}
 	}
 }
@@ -1278,7 +1298,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 				con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			} else
-				delta_light_read(&gameData.render.lights.deltas[i], LoadFile);
+				delta_light_read(&gameData.render.lights.deltas [i], LoadFile);
 		}
 	}
 }
@@ -1288,13 +1308,13 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 ResetObjects(gameFileInfo.objects.count);
 
 for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
-	gameData.objs.objects[i].next = gameData.objs.objects[i].prev = -1;
-	if (gameData.objs.objects[i].nType != OBJ_NONE) {
-		int objsegnum = gameData.objs.objects[i].nSegment;
+	gameData.objs.objects [i].next = gameData.objs.objects [i].prev = -1;
+	if (gameData.objs.objects [i].nType != OBJ_NONE) {
+		int objsegnum = gameData.objs.objects [i].nSegment;
 		if ((objsegnum < 0) || (objsegnum > gameData.segs.nLastSegment))		//bogus tObject
-			gameData.objs.objects[i].nType = OBJ_NONE;
+			gameData.objs.objects [i].nType = OBJ_NONE;
 		else {
-			gameData.objs.objects[i].nSegment = -1;			//avoid Assert()
+			gameData.objs.objects [i].nSegment = -1;			//avoid Assert()
 			LinkObject(i,objsegnum);
 		}
 	}
@@ -1328,11 +1348,11 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 
 //go through all walls, killing references to invalid triggers
 for (i=0;i<gameData.walls.nWalls;i++)
-	if (gameData.walls.walls[i].nTrigger >= gameData.trigs.nTriggers) {
+	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls[i].nTrigger,i);
+		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls [i].nTrigger,i);
 #endif
-		gameData.walls.walls[i].nTrigger = NO_TRIGGER;	//kill tTrigger
+		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 	}
 
 //go through all triggers, killing unused ones
@@ -1341,7 +1361,7 @@ for (i=0;i<gameData.trigs.nTriggers;) {
 
 	//	Find which wall this tTrigger is connected to.
 	for (w=0; w<gameData.walls.nWalls; w++)
-		if (gameData.walls.walls[w].nTrigger == i)
+		if (gameData.walls.walls [w].nTrigger == i)
 			break;
 
 #ifdef EDITOR
@@ -1364,27 +1384,27 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 	gameData.walls.walls [i].controllingTrigger = -1;
 
 for (t=0; t<gameData.trigs.nTriggers; t++) {
-	for (l = 0; l<gameData.trigs.triggers[t].nLinks; l++) {
+	for (l = 0; l<gameData.trigs.triggers [t].nLinks; l++) {
 
-		seg_num = gameData.trigs.triggers[t].nSegment [l];
-		side_num = gameData.trigs.triggers[t].nSide [l];
+		seg_num = gameData.trigs.triggers [t].nSegment [l];
+		side_num = gameData.trigs.triggers [t].nSide [l];
 		nWall = WallNumI (seg_num, side_num);
 
-		// -- if (gameData.walls.walls[nWall].controllingTrigger != -1)
+		// -- if (gameData.walls.walls [nWall].controllingTrigger != -1)
 		// -- 	Int3();
 
 		//check to see that if a tTrigger requires a wall that it has one,
 		//and if it requires a botGen that it has one
 
-		if (gameData.trigs.triggers[t].nType == TT_MATCEN) {
-			if (gameData.segs.segment2s[seg_num].special != SEGMENT_IS_ROBOTMAKER)
+		if (gameData.trigs.triggers [t].nType == TT_MATCEN) {
+			if (gameData.segs.segment2s [seg_num].special != SEGMENT_IS_ROBOTMAKER)
 				Int3();		//botGen tTrigger doesn't point to botGen
 		}
-		else if (gameData.trigs.triggers[t].nType != TT_LIGHT_OFF && gameData.trigs.triggers[t].nType != TT_LIGHT_ON) {	//light triggers don't require walls
+		else if (gameData.trigs.triggers [t].nType != TT_LIGHT_OFF && gameData.trigs.triggers [t].nType != TT_LIGHT_ON) {	//light triggers don't require walls
 			if (!IS_WALL (nWall))
 				Int3();	//	This is illegal.  This tTrigger requires a wall
 			else
-				gameData.walls.walls[nWall].controllingTrigger = t;
+				gameData.walls.walls [nWall].controllingTrigger = t;
 		}
 	}
 }
@@ -1408,8 +1428,8 @@ if (gameTopFileInfo.fileinfo_version < 17) {
 	for (nSide=0; nSide<6; nSide++) {
 		short	wallnum = WallNumI (gameData.segs.nLastSegment, nSide);
 		if (IS_WALL (wallnum))
-			if ((gameData.walls.walls[wallnum].nSegment != gameData.segs.nLastSegment) || 
-					(gameData.walls.walls[wallnum].nSide != nSide))
+			if ((gameData.walls.walls [wallnum].nSegment != gameData.segs.nLastSegment) || 
+					(gameData.walls.walls [wallnum].nSide != nSide))
 				Int3();	//	Error.  Bogus walls in this tSegment.
 							// Consult Yuan or Mike.
 	}
@@ -1554,7 +1574,7 @@ con_printf(CON_DEBUG, "   loading dynamic lights ...\n");
 gameData.render.lights.flicker.nLights = CFReadInt(LoadFile);
 Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
 for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
-	ReadFlickeringLight(&gameData.render.lights.flicker.lights[i], LoadFile);
+	ReadFlickeringLight(&gameData.render.lights.flicker.lights [i], LoadFile);
 }
 else
 	gameData.render.lights.flicker.nLights = 0;
@@ -1732,7 +1752,7 @@ int CountDeltaLightRecords(void)
 	int	total = 0;
 
 	for (i=0; i<gameData.render.lights.nStatic; i++) {
-		total += gameData.render.lights.deltaIndices[i].count;
+		total += gameData.render.lights.deltaIndices [i].count;
 	}
 
 	return total;
@@ -1796,7 +1816,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE PLAYER INFO ===========================
 
 	player.offset = ftell(SaveFile);
-	fwrite(&gameData.multi.players[gameData.multi.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
+	fwrite(&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
 
 	//==================== SAVE OBJECT INFO ===========================
 
@@ -1805,7 +1825,7 @@ int SaveGameData(FILE * SaveFile)
 	{
 		int i;
 		for (i=0;i<gameFileInfo.objects.count;i++)
-			writeObject(&gameData.objs.objects[i],SaveFile);
+			writeObject(&gameData.objs.objects [i],SaveFile);
 	}
 
 	//==================== SAVE WALL INFO =============================
@@ -1929,10 +1949,10 @@ int saveLevel_sub(char * filename, int compiled_version)
 	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
 
 	//make sure tPlayer is in a tSegment
-	if (UpdateObjectSeg(&gameData.objs.objects[gameData.multi.players[0].nObject]) == 0) {
+	if (UpdateObjectSeg(&gameData.objs.objects [gameData.multi.players [0].nObject]) == 0) {
 		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
 			gameData.objs.console->nSegment = 0;
-		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments[gameData.objs.console->nSegment]);
+		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments [gameData.objs.console->nSegment]);
 	}
  
 	FixObjectSegs();
@@ -2037,26 +2057,26 @@ void dump_mine_info(void)
 	for (nSegment=0; nSegment<=gameData.segs.nLastSegment; nSegment++) {
 		for (nSide=0; nSide<MAX_SIDES_PER_SEGMENT; nSide++) {
 			int	vertnum;
-			tSide	*sidep = &gameData.segs.segments[nSegment].sides[nSide];
+			tSide	*sidep = &gameData.segs.segments [nSegment].sides [nSide];
 
-			if (gameData.segs.segment2s[nSegment].xAvgSegLight > max_sl)
-				max_sl = gameData.segs.segment2s[nSegment].xAvgSegLight;
+			if (gameData.segs.segment2s [nSegment].xAvgSegLight > max_sl)
+				max_sl = gameData.segs.segment2s [nSegment].xAvgSegLight;
 
 			for (vertnum=0; vertnum<4; vertnum++) {
-				if (sidep->uvls[vertnum].u < min_u)
-					min_u = sidep->uvls[vertnum].u;
-				else if (sidep->uvls[vertnum].u > max_u)
-					max_u = sidep->uvls[vertnum].u;
+				if (sidep->uvls [vertnum].u < min_u)
+					min_u = sidep->uvls [vertnum].u;
+				else if (sidep->uvls [vertnum].u > max_u)
+					max_u = sidep->uvls [vertnum].u;
 
-				if (sidep->uvls[vertnum].v < min_v)
-					min_v = sidep->uvls[vertnum].v;
-				else if (sidep->uvls[vertnum].v > max_v)
-					max_v = sidep->uvls[vertnum].v;
+				if (sidep->uvls [vertnum].v < min_v)
+					min_v = sidep->uvls [vertnum].v;
+				else if (sidep->uvls [vertnum].v > max_v)
+					max_v = sidep->uvls [vertnum].v;
 
-				if (sidep->uvls[vertnum].l < min_l)
-					min_l = sidep->uvls[vertnum].l;
-				else if (sidep->uvls[vertnum].l > max_l)
-					max_l = sidep->uvls[vertnum].l;
+				if (sidep->uvls [vertnum].l < min_l)
+					min_l = sidep->uvls [vertnum].l;
+				else if (sidep->uvls [vertnum].l > max_l)
+					max_l = sidep->uvls [vertnum].l;
 			}
 
 		}
@@ -2093,17 +2113,17 @@ void DoLoadSaveLevels(int save)
 	no_oldLevel_file_error=1;
 
 	for (level_num=1;level_num<=gameData.missions.nLastLevel;level_num++) {
-		LoadLevelSub(gameData.missions.szLevelNames[level_num-1]);
+		LoadLevelSub(gameData.missions.szLevelNames [level_num-1]);
 		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
-			saveLevel_sub(gameData.missions.szLevelNames[level_num-1],1);
+			saveLevel_sub(gameData.missions.szLevelNames [level_num-1],1);
 	}
 
 	for (level_num = -1; level_num >= gameData.missions.nLastSecretLevel; level_num--) {
-		LoadLevelSub(gameData.missions.szSecretLevelNames[-level_num-1]);
+		LoadLevelSub(gameData.missions.szSecretLevelNames [-level_num-1]);
 		LoadPalette(szCurrentLevelPalette,1,1,0);		//don't change screen
 		if (save)
-			saveLevel_sub (gameData.missions.szSecretLevelNames[-level_num-1],1);
+			saveLevel_sub (gameData.missions.szSecretLevelNames [-level_num-1],1);
 	}
 
 	no_oldLevel_file_error=0;

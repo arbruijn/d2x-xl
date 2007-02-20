@@ -1151,6 +1151,7 @@ if (i) {
 	gameOptions [1].render.smoke.bRobots = 0;
 	gameOptions [1].render.smoke.bMissiles = 0;
 	gameOptions [1].render.smoke.bDebris = 0;
+	gameOptions [1].render.smoke.bStatic = 0;
 	gameOptions [1].render.smoke.bCollisions = 0;
 	gameOptions [1].render.smoke.bDisperse = 0;
 	gameOptions [1].render.smoke.bSort = 0;
@@ -1240,6 +1241,7 @@ else {
 	gameOptions [0].render.smoke.bRobots = 1;
 	gameOptions [0].render.smoke.bMissiles = 1;
 	gameOptions [0].render.smoke.bDebris = 1;
+	gameOptions [0].render.smoke.bStatic = 1;
 	gameOptions [0].render.smoke.bCollisions = 0;
 	gameOptions [0].render.smoke.bDisperse = 0;
 	gameOptions [0].render.smoke.bSort = 0;
