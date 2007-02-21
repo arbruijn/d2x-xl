@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in tObject.c
-#define MAX_OBJECT_TYPES    18
+#define MAX_OBJECT_TYPES 19
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision

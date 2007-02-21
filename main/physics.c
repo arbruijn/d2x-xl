@@ -274,13 +274,16 @@ CheckAndFixMatrix (&objP->position.mOrient);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int BounceObject (tObject *objP, fvi_info	hi, float fOffs)
+int BounceObject (tObject *objP, fvi_info	hi, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
 
-GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
-if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->size / 100)) {
+if (!pxSideDists) {
+	GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
+	pxSideDists = xSideDists;
+	}
+if ((0 <= (xSideDist = pxSideDists [hi.hit.nSide])) && (xSideDist < objP->size - objP->size / 100)) {
 #if 0
 	objP->position.vPos = objP->vLastPos;
 #else
@@ -303,7 +306,7 @@ if ((xSideDist = xSideDists [hi.hit.nSide]) && (xSideDist < objP->size - objP->s
 	RelinkObject (OBJ_IDX (objP), nSegment);
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
-		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - xSideDists [nWallHitSide], r);
+		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - pxSideDists [nWallHitSide], r);
 #endif
 	return 1;
 	}
@@ -332,7 +335,7 @@ fq.ignoreObjList = NULL;
 fq.flags = 0;
 fate = FindVectorIntersection (&fq, &hi);
 if (fate == HIT_WALL)
-	BounceObject (objP, hi, 0.25f);
+	BounceObject (objP, hi, 0.25f, NULL);
 }
 
 #endif
@@ -477,10 +480,11 @@ retryMove:
 				if (sbd.bBoosted)
 					sbd.bBoosted = 0;
 				break;
+				}
 			}
-		} else
+		else
 			break;
-	}
+		}
 	VmVecAdd (&vNewPos, &objP->position.vPos, &vFrame);
 	ignoreObjList [nIgnoreObjs] = -1;
 	fq.p0 = &objP->position.vPos;
@@ -551,7 +555,7 @@ retryMove:
 			objP->flags |= OF_SHOULD_BE_DEAD;
 		break;
 		}
-	Assert (!((fate==HIT_WALL) && ((nWallHitSeg == -1) || (nWallHitSeg > gameData.segs.nLastSegment))));
+	Assert (!((fate == HIT_WALL) && ((nWallHitSeg == -1) || (nWallHitSeg > gameData.segs.nLastSegment))));
 	vSavePos = objP->position.vPos;			//save the tObject's position
 	nSaveSeg = objP->nSegment;
 	// update tObject's position and tSegment number
@@ -607,7 +611,7 @@ retryMove:
 		else {
 //retryMove2:
 			attemptedDist = VmVecMag (&vFrame);
-			xSimTime = FixMulDiv (xSimTime, attemptedDist-actualDist, attemptedDist);
+			xSimTime = FixMulDiv (xSimTime, attemptedDist - actualDist, attemptedDist);
 			xMovedTime = xOldSimTime - xSimTime;
 			if ((xSimTime < 0) || (xSimTime > xOldSimTime)) {
 				xSimTime = xOldSimTime;
@@ -646,7 +650,7 @@ retryMove:
 			Assert (nWallHitSeg > -1);
 			Assert (nWallHitSide > -1);
 			GetSideDistsAll (&objP->position.vPos, nWallHitSeg, xSideDists);
-			bRetry = BounceObject (objP, hi, 0.1f);
+			bRetry = BounceObject (objP, hi, 0.1f, xSideDists);
 			if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 				int forcefield_bounce;		//bounce off a forcefield
 

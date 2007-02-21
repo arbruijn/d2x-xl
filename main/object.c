@@ -3442,7 +3442,7 @@ return 1;
 void FixObjectSegs ()
 {
 	int i;
-
+return;
 for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType != OBJ_NONE)
 		if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {

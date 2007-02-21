@@ -97,16 +97,16 @@ void CollideRobotAndWall (tObject * robot, fix hitspeed, short hitseg, short hit
 	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
 
 if ((robot->id == ROBOT_BRAIN) || 
-		(robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
-		(botInfoP->companion == 1) || 
-		(robot->cType.aiInfo.behavior == AIB_SNIPE)) {
+	 (robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
+	 (botInfoP->companion == 1) || 
+	 (robot->cType.aiInfo.behavior == AIB_SNIPE)) {
 	int	nWall = WallNumI (hitseg, hitwall);
 	if (nWall != -1) {
 		wall *wallP = gameData.walls.walls + nWall;
 		if ((wallP->nType == WALL_DOOR) &&
-				(wallP->keys == KEY_NONE) && 
-				(wallP->state == WALL_DOOR_CLOSED) && 
-				!(wallP->flags & WALL_DOOR_LOCKED)) {
+			 (wallP->keys == KEY_NONE) && 
+			 (wallP->state == WALL_DOOR_CLOSED) && 
+			 !(wallP->flags & WALL_DOOR_LOCKED)) {
 			WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 		// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
 		//-- } else if ((botInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {

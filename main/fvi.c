@@ -660,12 +660,12 @@ fviHitData.nNestCount++;
 if (flags & FQ_CHECK_OBJS)
 	for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
 		if (!(gameData.objs.objects [nObject].flags & OF_SHOULD_BE_DEAD) &&
-				!(nThisObject == nObject) &&
-				(ignoreObjList==NULL || !ObjectInList(nObject, ignoreObjList)) &&
+				(nThisObject != nObject) &&
+				(!ignoreObjList || !ObjectInList(nObject, ignoreObjList)) &&
 				!LasersAreRelated (nObject, nThisObject) &&
 				!((nThisObject > -1) &&
-				(CollisionResult [gameData.objs.objects [nThisObject].nType][gameData.objs.objects [nObject].nType] == RESULT_NOTHING) &&
-			 	(CollisionResult [gameData.objs.objects [nObject].nType][gameData.objs.objects [nThisObject].nType] == RESULT_NOTHING))) {
+				  (CollisionResult [gameData.objs.objects [nThisObject].nType][gameData.objs.objects [nObject].nType] == RESULT_NOTHING) &&
+			 	  (CollisionResult [gameData.objs.objects [nObject].nType][gameData.objs.objects [nThisObject].nType] == RESULT_NOTHING))) {
 			int nFudgedRad = rad;
 
 			//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
