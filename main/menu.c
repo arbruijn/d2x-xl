@@ -3144,7 +3144,7 @@ do {
 			opt++;
 			}
 		else
-			nMaxSmokeGrenOpt = 1;
+			nMaxSmokeGrenOpt = -1;
 		ADD_CHECK (opt, TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
 		optFixedSpawn = opt++;
 		ADD_CHECK (opt, TXT_DUAL_LAUNCH, extraGameInfo [0].bDualMissileLaunch, KEY_U, HTX_GPLAY_DUALLAUNCH);

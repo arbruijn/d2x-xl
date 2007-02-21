@@ -1300,7 +1300,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 			if (gameData.matCens.botGens [j].nFuelCen == i)
 				break;
 			}
-#	if 1
+#	if 0
 		if (j == gameData.matCens.nBotCenters)
 			j = j;
 #	else
