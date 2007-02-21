@@ -441,11 +441,11 @@ if (gameData.smoke.objects [i] < 0) {
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, F1_0 * nSpeed);
 	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, &dir, 
 															objP->nSegment, 1, -nParts, -PARTICLE_SIZE (nSize, 1), 
-															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 0, i);
+															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 2, i);
 	}
-offs.p.x = (F1_0 / 4 - d_rand ()) << 4;
-offs.p.y = (F1_0 / 4 - d_rand ()) << 4;
-offs.p.z = (F1_0 / 4 - d_rand ()) << 4;
+offs.p.x = (F1_0 / 4 - d_rand ()) << 5;
+offs.p.y = (F1_0 / 4 - d_rand ()) << 5;
+offs.p.z = (F1_0 / 4 - d_rand ()) << 5;
 VmVecAdd (&pos, &objP->position.vPos, &offs);
 SetSmokePos (gameData.smoke.objects [i], &pos);
 }
@@ -517,6 +517,10 @@ void StaticSmokeFrame (void)
 	tObject	*objP = gameData.objs.objects;
 	int		i;
 
+if (!SHOW_SMOKE)
+	return;
+if (!gameOpts->render.smoke.bStatic)
+	return;
 for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
 	if (objP->nType == OBJ_SMOKE)
 		DoStaticSmoke (objP);
@@ -537,6 +541,7 @@ if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG 
 #endif
 	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
 ObjectSmokeFrame ();
+StaticSmokeFrame ();
 //if (SHOW_SMOKE)
 	MoveSmoke ();
 }

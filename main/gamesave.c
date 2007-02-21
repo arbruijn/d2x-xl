@@ -1214,8 +1214,8 @@ if (gameFileInfo.botGen.offset > -1) {
 				gameData.matCens.botGens [i].objFlags [1] = 0;
 #else
 			for (j = 0; j <= gameData.segs.nLastSegment; j++)
-				if (gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER)
-					if (gameData.segs.segment2s [j].nMatCen == i)
+				if ((gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER) &&
+					 (gameData.segs.segment2s [j].nMatCen == i))
 						gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
 #endif
 		}

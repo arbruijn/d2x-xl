@@ -96,10 +96,10 @@ void reset_allRobot_centers ()
 	int i;
 
 	// Remove all materialization centers
-	for (i=0; i<gameData.segs.nSegments; i++)
-		if (gameData.segs.segment2s [i].special == SEGMENT_IS_ROBOTMAKER) {
-			gameData.segs.segment2s [i].special = SEGMENT_IS_NOTHING;
-			gameData.segs.segment2s [i].nMatCen = -1;
+for (i = 0; i < gameData.segs.nSegments; i++)
+	if (gameData.segs.segment2s [i].special == SEGMENT_IS_ROBOTMAKER) {
+		gameData.segs.segment2s [i].special = SEGMENT_IS_NOTHING;
+		gameData.segs.segment2s [i].nMatCen = -1;
 		}
 }
 #endif
@@ -108,10 +108,9 @@ void reset_allRobot_centers ()
 // Turns a tSegment into a fully charged up fuel center...
 void FuelCenCreate (tSegment *segP, int oldType)
 {
-	tSegment2	*seg2p = gameData.segs.segment2s + (SEG_IDX (segP));
-
-	int	stationType = seg2p->special;
-	int	i;
+	short			nSegment = SEG_IDX (segP);
+	tSegment2	*seg2p = gameData.segs.segment2s + nSegment;
+	int			i, stationType = seg2p->special;
 	
 switch (stationType)	{
 	case SEGMENT_IS_NOTHING:
@@ -130,9 +129,10 @@ switch (stationType)	{
 	case SEGMENT_IS_REPAIRCEN:
 	case SEGMENT_IS_CONTROLCEN:
 	case SEGMENT_IS_ROBOTMAKER:
+	case SEGMENT_IS_EQUIPMAKER:
 		break;
 	default:
-		Error ("Segment %d has invalid\nstation nType %d in fuelcen.c\n", SEG_IDX (segP), stationType);
+		Error ("Segment %d has invalid\nstation nType %d in fuelcen.c\n", nSegment, stationType);
 	}
 
 Assert ((seg2p != NULL));
@@ -156,7 +156,7 @@ gameData.matCens.fuelCenters [i].nType = stationType;
 gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.xFuelMaxAmount;
 gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
-gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
 //	gameData.matCens.fuelCenters [i].NextRobotType = -1;
@@ -182,9 +182,9 @@ else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 // This function is separate from other fuelcens because we don't want values reset.
 void BotGenCreate (tSegment *segP, int oldType)
 {
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
-	int	stationType = seg2p->special;
-	int	i;
+	short			nSegment = SEG_IDX (segP);
+	tSegment2	*seg2p = &gameData.segs.segment2s [nSegment];
+	int			i, stationType = seg2p->special;
 
 Assert (stationType == SEGMENT_IS_ROBOTMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
@@ -208,18 +208,16 @@ gameData.matCens.fuelCenters [i].nType = stationType;
 gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
 gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
-gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
 COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, seg2p-gameData.segs.segment2s);
-i = seg2p->nMatCen;
+i = gameData.matCens.nBotCenters++;
 gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.botGens [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.botGens [i].nSegment = nSegment;
 if (oldType == SEGMENT_IS_NOTHING)
-	gameData.matCens.botGens [gameData.matCens.nBotCenters].nFuelCen = gameData.matCens.nFuelCenters;
-if (gameData.matCens.nBotCenters <= i)
-	gameData.matCens.nBotCenters = i + 1;
+	gameData.matCens.botGens [i].nFuelCen = gameData.matCens.nFuelCenters;
 gameData.matCens.nFuelCenters++;
 }
 
@@ -228,7 +226,8 @@ gameData.matCens.nFuelCenters++;
 // This function is separate from other fuelcens because we don't want values reset.
 void EquipGenCreate (tSegment *segP, int oldType)
 {
-	tSegment2	*seg2p = gameData.segs.segment2s  + SEG_IDX (segP);
+	short			nSegment = SEG_IDX (segP);
+	tSegment2	*seg2p = gameData.segs.segment2s  + nSegment;
 	int			stationType = seg2p->special;
 	int			i;
 
@@ -255,18 +254,18 @@ gameData.matCens.fuelCenters [i].nType = stationType;
 gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
 gameData.matCens.fuelCenters [i].xCapacity = i2f (gameStates.app.nDifficultyLevel + 3);
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
-gameData.matCens.fuelCenters [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
-gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (SEG_IDX (segP), -1) == 0;
-COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, SEG_IDX (segP));
+gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (nSegment, -1) == 0;
+COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, nSegment);
 //seg2p->nMatCen = gameData.matCens.nEquipCenters;
 i = seg2p->nMatCen;
 gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.equipGens [i].nSegment = SEG2_IDX (seg2p);
+gameData.matCens.equipGens [i].nSegment = nSegment;
 if (oldType == SEGMENT_IS_NOTHING)
-	gameData.matCens.equipGens [gameData.matCens.nEquipCenters].nFuelCen = gameData.matCens.nFuelCenters;
+	gameData.matCens.equipGens [i].nFuelCen = gameData.matCens.nFuelCenters;
 if (gameData.matCens.nEquipCenters <= i)
 	 gameData.matCens.nEquipCenters = i + 1;
 gameData.matCens.nFuelCenters++;
@@ -1292,16 +1291,21 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
 		gameData.matCens.fuelCenters [i].nLives = 3;
 		gameData.matCens.fuelCenters [i].bEnabled = 0;
-			gameData.matCens.fuelCenters [i].xDisableTime = 0;
-#ifndef NDEBUG
-{
-			//	Make sure this fuelcen is pointed at by a matcen.
-			int	j;
-			for (j=0; j<gameData.matCens.nBotCenters; j++) {
-				if (gameData.matCens.botGens [j].nFuelCen == i)
-					break;
+		gameData.matCens.fuelCenters [i].xDisableTime = 0;
+#ifdef _DEBUG
+		{
+		//	Make sure this fuelcen is pointed at by a matcen.
+		int	j;
+		for (j = 0; j < gameData.matCens.nBotCenters; j++) {
+			if (gameData.matCens.botGens [j].nFuelCen == i)
+				break;
 			}
-			Assert (j != gameData.matCens.nBotCenters);
+#	if 1
+		if (j == gameData.matCens.nBotCenters)
+			j = j;
+#	else
+		Assert (j != gameData.matCens.nBotCenters);
+#	endif
 }
 #endif
 
@@ -1309,7 +1313,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 
 #ifndef NDEBUG
 	//	Make sure all matcens point at a fuelcen
-	for (i=0; i < gameData.matCens.nBotCenters; i++) {
+	for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 		int	nFuelCen = gameData.matCens.botGens [i].nFuelCen;
 
 		Assert (nFuelCen < gameData.matCens.nFuelCenters);
@@ -1321,18 +1325,18 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 
 //-----------------------------------------------------------------------------
 
-short flag_goal_list [MAX_SEGMENTS];
-short flag_goal_roots [2] = {-1, -1};
-short blueFlag_goals = -1;
+short flagGoalList [MAX_SEGMENTS];
+short flagGoalRoots [2] = {-1, -1};
+short blueFlagGoals = -1;
 
 // create linked lists of all segments with special nType blue and red goal
 
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	tSegment2		*seg2P = gameData.segs.segment2s;
+	tSegment2	*seg2P = gameData.segs.segment2s;
 
-memset (flag_goal_list, 0xff, sizeof (flag_goal_list));
+memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
 	if (seg2P->special == SEGMENT_IS_GOAL_BLUE) {
 		j = 0;
@@ -1344,8 +1348,8 @@ for (h = i = 0; i <= gameData.segs.nLastSegment; i++, seg2P++) {
 		}
 	else
 		continue;
-	flag_goal_list [i] = flag_goal_roots [j];
-	flag_goal_roots [j] = i;
+	flagGoalList [i] = flagGoalRoots [j];
+	flagGoalRoots [j] = i;
 	}
 return h;
 }
@@ -1359,7 +1363,7 @@ int FlagAtHome (int nFlagId)
 	int		i, j;
 	tObject	*objP;
 
-for (i = flag_goal_roots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flag_goal_list [i])
+for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
 	for (j = gameData.segs.segments [i].objects; j >= 0; j = objP->next) {
 		objP = gameData.objs.objects + j;
 		if ((objP->nType == OBJ_POWERUP) && (objP->id == nFlagId))

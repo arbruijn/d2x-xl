@@ -291,6 +291,14 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 #endif
 		gameData.ai.localInfo [i].mode = AIM_IDLING;
 		}
+	else if (objP->nType == OBJ_SMOKE) {
+		objP->id	= 0;
+		objP->size = 0;
+		objP->lifeleft = IMMORTAL_TIME;
+		objP->controlType = CT_NONE;
+		objP->movementType = MT_NONE;
+		objP->rType.polyObjInfo.nModel = 0;
+		}
 }
 
 //	-----------------------------------------------------------------------------------------------------------
