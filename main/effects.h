@@ -96,8 +96,8 @@ typedef struct eclip {
 	tVideoClip   vc;             //embedded tVideoClip
 	fix     time_left;      //for sequencing
 	int     nCurFrame;      //for sequencing
-	short   changing_wall_texture;      //Which element of Textures array to replace.
-	short   changingObject_texture;    //Which element of ObjBitmapPtrs array to replace.
+	short   changingWallTexture;      //Which element of Textures array to replace.
+	short   changingObjectTexture;    //Which element of ObjBitmapPtrs array to replace.
 	int     flags;          //see above
 	int     crit_clip;      //use this clip instead of above one when mine critical
 	int     dest_bm_num;    //use this bitmap when monitor destroyed

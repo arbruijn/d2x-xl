@@ -1444,9 +1444,9 @@ return -1;
 //------------------------------------------------------------------------------
 
 #define	CHANGING_TEXTURE(_eP)	\
-			(((_eP)->changing_wall_texture >= 0) ? \
-			 (_eP)->changing_wall_texture : \
-			 (_eP)->changingObject_texture)
+			(((_eP)->changingWallTexture >= 0) ? \
+			 (_eP)->changingWallTexture : \
+			 (_eP)->changingObjectTexture)
 
 eclip *FindEffect (eclip *ecP, int tNum)
 {
@@ -1465,7 +1465,7 @@ for (h = gameData.eff.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
 #if 0
 			int t = FindTextureByIndex (tNum);
 			if (t >= 0)
-				ecP->changing_wall_texture = t;
+				ecP->changingWallTexture = t;
 #endif
 			return ecP;
 			}
@@ -1707,7 +1707,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "rock098")) {
+	if (strstr (bmName, "glow02")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}

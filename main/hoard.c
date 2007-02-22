@@ -170,7 +170,7 @@ if (!gameData.hoard.bInitialized) {
 	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
 	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;
 	*ecP = gameData.eff.pEffects [94];        //copy from blue goal
-	ecP->changing_wall_texture = gameData.pig.tex.nTextures [0];
+	ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
 	ecP->vc.nFrameCount = gameData.hoard.goal.nFrames;
 	ecP->flags &= ~EF_INITIALIZED;
 

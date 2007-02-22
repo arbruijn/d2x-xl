@@ -217,6 +217,9 @@ vclip_read_n (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
 gameData.eff.nEffects [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
 EClipReadN (gameData.eff.effects [0], gameData.eff.nEffects [0], fp);
+// red glow texture animates way too fast
+gameData.eff.effects [0][32].vc.xTotalTime *= 10;
+gameData.eff.effects [0][32].vc.xFrameTime *= 10;
 gameData.walls.nAnims [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d wall animations\n", gameData.walls.nAnims [0]);
 WClipReadN (gameData.walls.anims [0], gameData.walls.nAnims [0], fp);

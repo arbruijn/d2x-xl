@@ -77,7 +77,7 @@ void PagingTouchWallEffects (int nTexture)
 	eclip *ecP = gameData.eff.pEffects;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
-	if (ecP->changing_wall_texture == nTexture) {
+	if (ecP->changingWallTexture == nTexture) {
 		PagingTouchVClip (&ecP->vc, gameStates.app.bD1Data);
 		if (ecP->dest_bm_num > -1)
 			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->dest_bm_num], gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
@@ -99,7 +99,7 @@ void PagingTouchObjectEffects (int nTexture)
 	eclip *ecP = gameData.eff.pEffects;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
-	if (ecP->changingObject_texture == nTexture)
+	if (ecP->changingObjectTexture == nTexture)
 		PagingTouchVClip (&ecP->vc, 0);
 }
 

@@ -749,7 +749,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 						DigiKillSoundLinkedToSegment (SEG_IDX (seg), tSide, nSound);
 					if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].nSegment == -1)) {
 						eclip	*new_ec = gameData.eff.pEffects + ecP->dest_eclip;
-						int 	bm_num = new_ec->changing_wall_texture;
+						int 	bm_num = new_ec->changingWallTexture;
 #if TRACE
 						con_printf (CON_DEBUG, "bm_num = %d \n", bm_num);
 #endif

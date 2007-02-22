@@ -47,7 +47,7 @@ fix EffectFrameTime (eclip *ecP)
 #if 0//def _DEBUG
 return ecP->vc.xFrameTime;
 #else
-if ((ecP->changing_wall_texture < 0) && (ecP->changingObject_texture < 0))
+if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
 	return ecP->vc.xFrameTime;
 else {
 	grsBitmap	*bmP = gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index;
@@ -106,10 +106,10 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_ALTFMT | EF_INITIALIZED);	//restart any stopped effects
 		bmi = ecP->vc.frames [ecP->nCurFrame];
 		//reset bitmap, which could have been changed by a crit_clip
-		if (ecP->changing_wall_texture != -1)
-			gameData.pig.tex.bmIndex [bD1][ecP->changing_wall_texture] = bmi;
-		if (ecP->changingObject_texture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObject_texture] = bmi;
+		if (ecP->changingWallTexture != -1)
+			gameData.pig.tex.bmIndex [bD1][ecP->changingWallTexture] = bmi;
+		if (ecP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
 
 	}
 }
@@ -211,7 +211,7 @@ xEffectTime += gameData.time.xFrame;
 	for (i = 0, ecP = gameData.eff.pEffects; 
 		  i < gameData.eff.nEffects [gameStates.app.bD1Data]; 
 		  i++, ecP++) {
-		if ((t = ecP->changing_wall_texture) == -1)
+		if ((t = ecP->changingWallTexture) == -1)
 			continue;
 		if (ecP->flags & EF_STOPPED)
 			continue;
@@ -272,7 +272,7 @@ xEffectTime += gameData.time.xFrame;
 		}
 
 	for (i = 0, ecP = gameData.eff.effects [0]; i < gameData.eff.nEffects [0]; i++, ecP++) {
-		if ((t = ecP->changingObject_texture) == -1)
+		if ((t = ecP->changingObjectTexture) == -1)
 			continue;
 		if (ecP->flags & EF_STOPPED)
 			continue;
@@ -322,7 +322,7 @@ xEffectTime += gameData.time.xFrame;
 		else {
 			bmi = ecP->vc.frames [ecP->nCurFrame];
 		//*ecP->bm_ptr = &gameData.pig.tex.bitmaps [gameData.eff.effects [0][n].vc.frames [gameData.eff.effects [0][n]..nCurFrame].index];
-		//if (ecP->changingObject_texture != -1)
+		//if (ecP->changingObjectTexture != -1)
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
 		}
@@ -341,18 +341,18 @@ void RestoreEffectBitmapIcons()
 for (i=0, j=gameData.eff.nEffects [gameStates.app.bD1Data], ecP = gameData.eff.pEffects;i<j;i++, ecP++)
 	if (!(ecP->flags & EF_CRITICAL))	{
 		bmi = ecP->vc.frames [0];
-		if (ecP->changing_wall_texture != -1)
-			gameData.pig.tex.pBmIndex[ecP->changing_wall_texture] = bmi;
-		if (ecP->changingObject_texture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObject_texture] = bmi;
+		if (ecP->changingWallTexture != -1)
+			gameData.pig.tex.pBmIndex[ecP->changingWallTexture] = bmi;
+		if (ecP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
 		}
 for (i = 0, j = gameData.eff.nEffects [0], ecP = gameData.eff.effects [0]; i < j; i++, ecP++)
 	if (! (ecP->flags & EF_CRITICAL)) {
 		bmi = ecP->vc.frames [0];
-		if (ecP->changing_wall_texture != -1)
-			gameData.pig.tex.bmIndex [0][ecP->changing_wall_texture] = bmi;
-		if (ecP->changingObject_texture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObject_texture] = bmi;
+		if (ecP->changingWallTexture != -1)
+			gameData.pig.tex.bmIndex [0][ecP->changingWallTexture] = bmi;
+		if (ecP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
 		}
 			//if (gameData.eff.pEffects [i].bm_ptr != -1)
 			//	*gameData.eff.pEffects [i].bm_ptr = &gameData.pig.tex.bitmaps [gameData.eff.pEffects [i].vc.frames [0].index];
@@ -367,10 +367,10 @@ void StopEffect(int effect_num)
 ecP->flags |= EF_STOPPED;
 ecP->nCurFrame = 0;
 //*ecP->bm_ptr = &gameData.pig.tex.bitmaps [ecP->vc.frames [0].index];
-if (ecP->changing_wall_texture != -1)
-	gameData.pig.tex.pBmIndex[ecP->changing_wall_texture] = ecP->vc.frames [0];
-if (ecP->changingObject_texture != -1)
-	gameData.pig.tex.objBmIndex [ecP->changingObject_texture] = ecP->vc.frames [0];
+if (ecP->changingWallTexture != -1)
+	gameData.pig.tex.pBmIndex[ecP->changingWallTexture] = ecP->vc.frames [0];
+if (ecP->changingObjectTexture != -1)
+	gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = ecP->vc.frames [0];
 }
 
 // ----------------------------------------------------------------------------
@@ -395,8 +395,8 @@ for (; n; n--, ecP++) {
 	vclip_read_n(&ecP->vc, 1, fp);
 	ecP->time_left = CFReadFix(fp);
 	ecP->nCurFrame = CFReadInt(fp);
-	ecP->changing_wall_texture = CFReadShort(fp);
-	ecP->changingObject_texture = CFReadShort(fp);
+	ecP->changingWallTexture = CFReadShort(fp);
+	ecP->changingObjectTexture = CFReadShort(fp);
 	ecP->flags = CFReadInt(fp);
 	ecP->crit_clip = CFReadInt(fp);
 	ecP->dest_bm_num = CFReadInt(fp);

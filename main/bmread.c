@@ -448,8 +448,8 @@ int bm_init_use_tbl()
 	Num_effects = 0;
 	for (i=0; i<MAX_EFFECTS; i++ ) {
 		//Effects [gameStates.app.bD1Data][i].bm_ptr = (grsBitmap **) -1;
-		Effects [gameStates.app.bD1Data][i].changing_wall_texture = -1;
-		Effects [gameStates.app.bD1Data][i].changingObject_texture = -1;
+		Effects [gameStates.app.bD1Data][i].changingWallTexture = -1;
+		Effects [gameStates.app.bD1Data][i].changingObjectTexture = -1;
 		Effects [gameStates.app.bD1Data][i].nSegment = -1;
 		Effects [gameStates.app.bD1Data][i].vc.nFrameCount = -1;		//another mark of being unused
 	}
@@ -659,8 +659,8 @@ int bm_init_use_tbl()
 	//check for refereced but unused clip count
 	for (i=0; i<MAX_EFFECTS; i++ )
 		if (	(
-				  (Effects [gameStates.app.bD1Data][i].changing_wall_texture!=-1) ||
-				  (Effects [gameStates.app.bD1Data][i].changingObject_texture!=-1)
+				  (Effects [gameStates.app.bD1Data][i].changingWallTexture!=-1) ||
+				  (Effects [gameStates.app.bD1Data][i].changingObjectTexture!=-1)
              )
 			 && (Effects [gameStates.app.bD1Data][i].vc.nFrameCount==-1) )
 			Error("EClip %d referenced (by polygon tObject?), but not defined",i);
@@ -711,9 +711,9 @@ void verify_textures()
 		Error("%d textures were not 64x64.  See mono screen for list.",j);
 
 	for (i=0;i<Num_effects;i++)
-		if (Effects [gameStates.app.bD1Data][i].changingObject_texture != -1)
-			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObject_texture].index].bm_props.w!=64 || 
-				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObject_texture].index].bm_props.h!=64)
+		if (Effects [gameStates.app.bD1Data][i].changingObjectTexture != -1)
+			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bm_props.w!=64 || 
+				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bm_props.h!=64)
 				Error("Effect %d is used on tObject, but is not 64x64",i);
 
 }
@@ -823,7 +823,7 @@ void bm_read_eclip()
 		Assert(critFlag==0);
 
 		if (clipCount == 0) {
-			Effects [gameStates.app.bD1Data][nClip].changing_wall_texture = textureCount;
+			Effects [gameStates.app.bD1Data][nClip].changingWallTexture = textureCount;
 			Assert(tmapCount < MAX_TEXTURES);
 	  		TmapList[tmapCount++] = textureCount;
 			Textures [gameStates.app.bD1Data][textureCount] = bitmap;
@@ -851,7 +851,7 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bm[clipCount];
 
 		if (!obj_eclip && !critFlag) {
-			Effects [gameStates.app.bD1Data][nClip].changing_wall_texture = textureCount;
+			Effects [gameStates.app.bD1Data][nClip].changingWallTexture = textureCount;
 			Assert(tmapCount < MAX_TEXTURES);
   			TmapList[tmapCount++] = textureCount;
 			Textures [gameStates.app.bD1Data][textureCount] = bm[clipCount];
@@ -864,12 +864,12 @@ void bm_read_eclip()
 
 		if (obj_eclip) {
 
-			if (Effects [gameStates.app.bD1Data][nClip].changingObject_texture == -1) {		//first time referenced
-				Effects [gameStates.app.bD1Data][nClip].changingObject_texture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
+			if (Effects [gameStates.app.bD1Data][nClip].changingObjectTexture == -1) {		//first time referenced
+				Effects [gameStates.app.bD1Data][nClip].changingObjectTexture = gameData.pig.tex.nObjBitmaps;		// XChange ObjectBitmaps
 				gameData.pig.tex.nObjBitmaps++;
 			}
 
-			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][nClip].changingObject_texture] = Effects [gameStates.app.bD1Data][nClip].vc.frames[0];
+			gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][nClip].changingObjectTexture] = Effects [gameStates.app.bD1Data][nClip].vc.frames[0];
 		}
 
 		//if for an tObject, Effects_bm_ptrs set in tObject load
@@ -1204,12 +1204,12 @@ grsBitmap *load_polymodel_bitmap(char *name)
 
 		eclip_num = atoi(name+1);
 
-		if (Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture == -1) {		//first time referenced
-			Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture = gameData.pig.tex.nObjBitmaps;
+		if (Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture == -1) {		//first time referenced
+			Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 			gameData.pig.tex.nObjBitmaps++;
 		} else {
-			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][eclip_num].changingObject_texture;
+			gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = Effects [gameStates.app.bD1Data][eclip_num].changingObjectTexture;
 		}
 		Assert(gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 		Assert(N_ObjBitmapPtrs < MAX_OBJ_BITMAPS);

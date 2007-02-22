@@ -755,14 +755,14 @@ TexMergeInit (100);
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1];i++,ec++) {
-		if ((ec->changing_wall_texture == -1) && (ec->changingObject_texture == -1))
+		if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))
 			continue;
 		if (ec->vc.nFrameCount > max_efx)
 			max_efx = ec->vc.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
 		for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ec++) {
-			if ((ec->changing_wall_texture == -1) && (ec->changingObject_texture == -1))
+			if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))
 				continue;
 	//			if (ec->vc.nFrameCount>max_efx)
 	//				max_efx=ec->vc.nFrameCount;
