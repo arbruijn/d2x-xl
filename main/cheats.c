@@ -802,7 +802,7 @@ tCheat cheats [] = {
 	{szRapidFireCheat, RapidFireCheat, -1, 1, 0}, 
 	{szRobotsKillRobotsCheat, RobotsKillRobotsCheat, -1, 1, 0}, 
 	{/*szUnlockAllCheat*/"yptonite", UnlockAllCheat, 1, 0, 0}, 
-	{szSuperWowieCheat, SuperWowieCheat, 1, 1, 0}, 
+	{szSuperWowieCheat, SuperWowieCheat, 1, 0, 0}, 
 	{szWowieCheat, WowieCheat, 1, 1, 0}, 
 	// Descent 1
 	{"ahimsa", AhimsaCheat, 1, 0, 1}, 

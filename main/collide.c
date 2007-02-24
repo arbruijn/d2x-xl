@@ -1401,8 +1401,9 @@ void MultiSendFinishGame ();
 //	Return 1 if robot died, else return 0
 int ApplyDamageToRobot (tObject *robot, fix damage, int nKillerObj)
 {
-	char bIsThief;
-	char tempStolen [MAX_STOLEN_ITEMS];	
+	char		bIsThief;
+	char		tempStolen [MAX_STOLEN_ITEMS];	
+	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
 
 if (robot->flags & OF_EXPLODING) 
 	return 0;
@@ -1411,7 +1412,6 @@ if (robot->shields < 0)
 if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robot)] < F1_0)
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
-	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
 	// guidebot may kill other bots
 	if ((killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
 		return 0;
@@ -1463,47 +1463,48 @@ if (ROBOTINFO (robot->id).bossFlag) {
 		}
 	}
 
-if (robot->shields < 0) {
-	if (IsMultiGame) {
-		bIsThief = (ROBOTINFO (robot->id).thief != 0);
-		if (bIsThief)
-			memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-		if (MultiExplodeRobotSub (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief)) {
-			if (bIsThief)	
-				memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-		MultiSendRobotExplode (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief);
-		if (bIsThief)	
-			memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
-		return 1;
-		}
-	else
-		return 0;
+if (robot->shields >= 0) {
+	if (killerObjP == gameData.objs.console)
+		ExecObjTriggers (OBJ_IDX (robot), 1);
+	return 0;
 	}
-
-	if (nKillerObj >= 0) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel++;
-		gameData.multi.players [gameData.multi.nLocalPlayer].numKillsTotal++;
-		}
-
-	if (ROBOTINFO (robot->id).bossFlag) {
-		StartBossDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
-		}
-	else if (ROBOTINFO (robot->id).bDeathRoll) {
-		StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
-		}
-	else {
-		if (robot->id == SPECIAL_REACTOR_ROBOT)
-			SpecialReactorStuff ();
-	//if (ROBOTINFO (objP->id).smartBlobs)
-	//	CreateSmartChildren (robot, ROBOTINFO (objP->id).smartBlobs);
-	//if (ROBOTINFO (objP->id).badass)
-	//	ExplodeBadassObject (robot, F1_0*ROBOTINFO (objP->id).badass, F1_0*40, F1_0*150);
-		ExplodeObject (robot, ROBOTINFO (robot->id).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
-		}
+if (IsMultiGame) {
+	bIsThief = (ROBOTINFO (robot->id).thief != 0);
+	if (bIsThief)
+		memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
+	if (MultiExplodeRobotSub (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief)) {
+		if (bIsThief)	
+			memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
+	MultiSendRobotExplode (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief);
+	if (bIsThief)	
+		memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
 	return 1;
 	}
 else
 	return 0;
+}
+
+if (nKillerObj >= 0) {
+	gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel++;
+	gameData.multi.players [gameData.multi.nLocalPlayer].numKillsTotal++;
+	}
+
+if (ROBOTINFO (robot->id).bossFlag) {
+	StartBossDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
+	}
+else if (ROBOTINFO (robot->id).bDeathRoll) {
+	StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
+	}
+else {
+	if (robot->id == SPECIAL_REACTOR_ROBOT)
+		SpecialReactorStuff ();
+//if (ROBOTINFO (objP->id).smartBlobs)
+//	CreateSmartChildren (robot, ROBOTINFO (objP->id).smartBlobs);
+//if (ROBOTINFO (objP->id).badass)
+//	ExplodeBadassObject (robot, F1_0*ROBOTINFO (objP->id).badass, F1_0*40, F1_0*150);
+	ExplodeObject (robot, ROBOTINFO (robot->id).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
+	}
+return 1;
 }
 
 extern int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);

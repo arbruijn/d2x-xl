@@ -145,21 +145,22 @@ inline int DoExecObjTrigger (tTrigger *trigP, short nObject, int bDamage)
 {
 	fix	v = 10 - trigP->value;
 
-if (bDamage != ((trigP->type == TT_TELEPORT) || (trigP->type == TT_SPAWN_BOT)))
+if (bDamage != ((trigP->nType == TT_TELEPORT) || (trigP->nType == TT_SPAWN_BOT)))
 	return 0;
 if (v >= 10)
 	return 0;
+if ((fix) (ObjectDamage (gameData.objs.objects + nObject) * 100) > v * 10)
+	return 0;
 if (!(trigP->flags & TF_PERMANENT))
 	trigP->value = 0;
-return (fix) (ObjectDamage (gameData.objs.objects + nObject) * 100) <= (trigP->value - 1) * 10;
+return 1;
 }
 
 //-----------------------------------------------------------------
 
 void DoSpawnBot (tTrigger *trigP, short nObject)
 {
-if (DoExecObjTrigger (trigP, nObject))
-	SpawnBotTrigger (gameData.objs.objects + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
+SpawnBotTrigger (gameData.objs.objects + nObject, trigP->nLinks ? trigP->nSegment [0] : -1);
 }
 
 //-----------------------------------------------------------------

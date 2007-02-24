@@ -1994,6 +1994,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos, short objType)
 	short			nObject, nSegment, maxRobotTypes;
 	short			nBossIndex, nBossId = ROBOTINFO (objP->id).bossFlag;
 	tRobotInfo	*pri;
+	vmsVector	vPos;
 
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
@@ -2004,6 +2005,10 @@ if (nSegment == -1) {
 #endif
 	return -1;
 	}	
+if (!pos) {
+	pos = &vPos;
+	COMPUTE_SEGMENT_CENTER_I (pos, nSegment);
+	}
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * d_rand ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
