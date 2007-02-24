@@ -65,12 +65,12 @@ typedef struct tReactorTriggers {
 	short   nSide [MAX_CONTROLCEN_LINKS];
 } __pack__ tReactorTriggers;
 
-typedef struct reactor {
+typedef struct tReactorProps {
 	int nModel;
 	int nGuns;
 	vmsVector gunPoints[MAX_CONTROLCEN_GUNS];
 	vmsVector gun_dirs[MAX_CONTROLCEN_GUNS];
-} __pack__ reactor;
+} __pack__ tReactorProps;
 
 #define MAX_REACTORS 7
 
@@ -82,7 +82,7 @@ extern vmsVector Gun_pos[MAX_CONTROLCEN_GUNS];
 void DoReactorFrame(tObject *obj);
 // Initialize control center for a level.
 // Call when a new level is started.
-void InitReactorForLevel(void);
+void InitReactorForLevel(int bRestore);
 void DoReactorDestroyedStuff(tObject *objp);
 void DoReactorDeadFrame(void);
 fix ReactorStrength (void);
@@ -94,12 +94,14 @@ fix ReactorStrength (void);
 /*
  * reads n reactor structs from a CFILE
  */
-extern int ReactorReadN(reactor *r, int n, CFILE *fp);
+extern int ReactorReadN(tReactorProps *r, int n, CFILE *fp);
 
 /*
  * reads n tReactorTriggers structs from a CFILE
  */
 extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFILE *fp);
 #endif
+
+int FindReactor (tObject *objP);
 
 #endif /* _CNTRLCEN_H */

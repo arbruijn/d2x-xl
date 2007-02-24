@@ -3021,8 +3021,8 @@ static char *pszMslTurnSpeeds [3];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	tMenuItem * m;
-	int				v;
+	tMenuItem	*m;
+	int			v;
 
 m = menus + nDiffOpt;
 v = m->value;
@@ -3098,7 +3098,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1;
+			optIdleAnims = -1, optAwareness = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
 			szMslTurnSpeed [50];
@@ -3169,6 +3169,8 @@ do {
 		optSmartWeaponSwitch = opt++;
 		ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = opt++;
+		ADD_CHECK (opt, TXT_AI_AWARENESS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_AWARENESS);
+		optAwareness = opt++;
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
@@ -3208,6 +3210,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
+	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
 	}
 else {
 #if EXPMODE_DEFAULTS

@@ -50,7 +50,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_SMOKE_DENS		 22
 #define TT_SMOKE_SIZE		 23
 #define TT_SMOKE_DRIFT		 24
-#define NUM_TRIGGER_TYPES   25
+#define TT_COUNTDOWN			 25
+#define TT_SPAWN_BOT			 26
+#define NUM_TRIGGER_TYPES   27
 
 // Trigger flags
 
@@ -120,20 +122,21 @@ typedef struct tObjTriggerRef {
 	short		nObject;
 } tObjTriggerRef;
 
-
+#if 0
 extern tTrigger Triggers[MAX_TRIGGERS];
 extern int Num_triggers;
 extern tTrigger ObjTriggers[MAX_TRIGGERS];
 extern tObjTriggerRef ObjTriggerRefs[MAX_OBJ_TRIGGERS];
 extern short FirstObjTrigger [MAX_OBJECTS_D2X];
 extern int Num_obj_triggers;
+#endif
 
 extern void TriggerInit();
 extern void CheckTrigger(tSegment *seg, short tSide, short nObject,int shot);
 extern int CheckTriggerSub (short nObject, tTrigger *triggers, int num_triggers, int trigger_num, 
 									 int player_num, int shot, int bBotTrigger);
 extern void TriggersFrameProcess();
-void ExecObjTriggers (short nObject);
+void ExecObjTriggers (short nObject, int bDamage);
 
 #ifdef FAST_FILE_IO
 #define v29_trigger_read(t, fp) CFRead(t, sizeof(v29_trigger), 1, fp)
@@ -165,7 +168,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);
-tTrigger *FindObjTrigger (short nObject, short nType);
+tTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
 
 extern vmsVector	speedBoostSrc, speedBoostDest;
 

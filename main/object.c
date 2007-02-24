@@ -2521,7 +2521,7 @@ if (objP->nType == OBJ_DEBRIS)
 UnlinkObject (nObject);
 Assert (gameData.objs.objects [0].next != 0);
 if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
-	ExecObjTriggers (nObject);
+	ExecObjTriggers (nObject, 0);
 objP->nType = OBJ_NONE;		//unused!
 objP->nSignature = -1;
 objP->nSegment=-1;				// zero it!
@@ -2549,8 +2549,10 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordRestoreCockpit ();
 gameStates.app.bPlayerIsDead = 0;
 gameStates.app.bPlayerExploded = 0;
-ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
-gameData.objs.deadPlayerCamera = NULL;
+if (gameData.objs.deadPlayerCamera) {
+	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
+	gameData.objs.deadPlayerCamera = NULL;
+	}
 SelectCockpit (gameStates.render.cockpit.nModeSave);
 gameStates.render.cockpit.nModeSave = -1;
 gameData.objs.viewer = viewerSaveP;
@@ -2735,8 +2737,12 @@ void StartPlayerDeathSequence (tObject *player)
 	
 Assert (player == gameData.objs.console);
 gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
-if ((gameStates.app.bPlayerIsDead != 0) || (gameData.objs.deadPlayerCamera != NULL))
+if (gameStates.app.bPlayerIsDead)
 	return;
+if (gameData.objs.deadPlayerCamera) {
+	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
+	gameData.objs.deadPlayerCamera = NULL;
+	}
 StopConquerWarning ();
 //Assert (gameStates.app.bPlayerIsDead == 0);
 //Assert (gameData.objs.deadPlayerCamera == NULL);
@@ -2803,19 +2809,39 @@ void DeleteAllObjsThatShouldBeDead ()
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	objP = gameData.objs.objects + i;
-	if ((objP->nType != OBJ_NONE) && (objP->flags & OF_SHOULD_BE_DEAD)) {
-		Assert ((objP->nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
-		if (objP->nType != OBJ_PLAYER) 
-			ReleaseObject ((short) i);
-		else {
-			if (objP->id == gameData.multi.nLocalPlayer) {
-				if (nLocalDeadPlayerObj == -1) {
-					StartPlayerDeathSequence (objP);
-					nLocalDeadPlayerObj = OBJ_IDX (objP);
-					}
-				else
-					Int3 ();
+	if (objP->nType == OBJ_NONE)
+		continue;
+	if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
+#if 1
+#	ifdef _DEBUG
+		if (objP->shields < 0)
+			objP = objP;
+#	endif
+		continue;
+#else
+		if (objP->shields >= 0)
+			continue;
+		objP->flags |= OF_SHOULD_BE_DEAD;
+		if (objP->nType == OBJ_ROBOT) {
+			if (ROBOTINFO (objP->id).bossFlag)
+				StartBossDeathSequence (objP);
+			else
+				StartRobotDeathSequence (objP);
+			continue;
+			}
+#endif
+		}
+	Assert ((objP->nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
+	if (objP->nType != OBJ_PLAYER) 
+		ReleaseObject ((short) i);
+	else {
+		if (objP->id == gameData.multi.nLocalPlayer) {
+			if (nLocalDeadPlayerObj == -1) {
+				StartPlayerDeathSequence (objP);
+				nLocalDeadPlayerObj = OBJ_IDX (objP);
 				}
+			else
+				Int3 ();
 			}
 		}
 	}

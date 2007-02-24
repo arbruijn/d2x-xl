@@ -132,6 +132,7 @@ void DisableMatCens (void);
 void InitAllMatCens (void);
 void BotGenCreate (tSegment *segP, int oldType);
 void FuelCenCheckForHoardGoal(tSegment *segp);
+void SpawnBotTrigger (tObject *objP, short nSegment);
 
 #ifdef FAST_FILE_IO
 #define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_tMatCenInfo), 1, fp)

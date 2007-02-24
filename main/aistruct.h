@@ -12,105 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Structs and constants for AI system.
- * object.h depends on this.
- * ai.h depends on object.h.
- * Get it?
- *
- * Old Log:
- * Revision 1.2  1995/10/10  11:49:04  allender
- * PC ai code
- *
- * Revision 1.1  1995/05/16  15:54:08  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:30:19  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.34  1995/01/25  13:50:46  mike
- * Robots make angry sounds.
- *
- * Revision 1.33  1994/12/29  12:44:56  rob
- * Added new coop robot flag.
- *
- * Revision 1.32  1994/12/20  20:41:54  rob
- * Added new ai flag for multiplayer robots.
- *
- * Revision 1.31  1994/12/19  16:37:39  rob
- * Added a new flag for remote controlled objects.
- *
- * Revision 1.30  1994/12/07  00:36:07  mike
- * fix PhysApplyRot for robots -- ai was bashing effect in next frame.
- *
- * Revision 1.29  1994/12/02  22:06:28  mike
- * add fields to allow robots to make awareness sounds every so often, not every damn blasted frame
- *
- * Revision 1.28  1994/11/04  17:18:35  yuan
- * Increased MAX_SEG_POINTS to 2500.
- *
- * Revision 1.27  1994/10/17  21:19:22  mike
- * robot cloaking.
- *
- * Revision 1.26  1994/10/12  21:28:38  mike
- * Add new ai mode: AIM_OPEN_DOOR.
- * Add GOALSIDE to aip.
- *
- * Revision 1.25  1994/09/25  23:41:08  matt
- * Changed the tObject load & save code to read/write the structure fields one
- * at a time (rather than the whole structure at once).  This mean that the
- * tObject structure can be changed without breaking the load/save functions.
- * As a result of this change, the localObject data can be and has been
- * incorporated into the tObject array.  Also, timeleft is now a property
- * of all objects, and the tObject structure has been otherwise cleaned up.
- *
- * Revision 1.24  1994/09/21  12:28:11  mike
- * Change AI behavior for when tPlayer cloaked
- *
- * Revision 1.23  1994/09/19  21:43:00  mike
- * Add follow_path_start_seg and follow_path_end_seg to aistruct.h.
- *
- * Revision 1.22  1994/09/18  18:06:14  mike
- * Add Last_uncloakedTime and Last_uncloaked_position variables.
- *
- * Revision 1.21  1994/09/15  16:31:38  mike
- * Define GREEN_GUY
- * Add previousVisibility to tAILocal struct.
- *
- * Revision 1.20  1994/09/12  19:12:45  mike
- * Change some bytes to ints in tAILocal so I could set watchpoints.
- *
- * Revision 1.19  1994/08/25  21:53:31  mike
- * Add behavior, taking place of what used to be mode.
- *
- * Revision 1.18  1994/08/23  16:38:09  mike
- * nRapidFireCount in tAILocal.
- *
- * Revision 1.17  1994/08/19  17:38:23  mike
- * *** empty log message ***
- *
- * Revision 1.16  1994/08/17  22:18:58  mike
- * add timeSinceProcessed to tAILocal.
- *
- * Revision 1.15  1994/08/10  19:52:25  mike
- * Add nOverallAgitation.
- *
- * Revision 1.14  1994/08/04  16:32:32  mike
- * Add timePlayerSeen.
- *
- * Revision 1.13  1994/07/28  16:58:11  mike
- * Move constants from ai.c
- *
- * Revision 1.12  1994/07/19  15:26:24  mike
- * New tAIStatic and tAILocal structures.
- *
- * Revision 1.11  1994/07/15  15:17:19  matt
- * Changes MAX_AI_FLAGS for better alignment
- *
- */
-
 #ifndef _AISTRUCT_H
 #define _AISTRUCT_H
 
@@ -121,11 +22,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SEGMENTS_PER_PATH       20
 
-#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after tPlayer weapon hits nearby wall
-//#define PA_PLAYER_VISIBLE           2   // Level of robot awareness if robot is looking towards tPlayer, and tPlayer not hidden
 #define PA_NEARBY_ROBOT_FIRED       1   // Level of robot awareness after nearby robot fires a weapon
+#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after tPlayer weapon hits nearby wall
+//#define PA_PLAYER_VISIBLE         2   // Level of robot awareness if robot is looking towards tPlayer, and tPlayer not hidden
 #define PA_PLAYER_COLLISION         3   // Level of robot awareness after tPlayer bumps into robot
-#define PA_WEAPON_ROBOT_COLLISION   4   // Level of robot awareness after tPlayer weapon hits nearby robot
+#define PA_RETURN_FIRE					4	 // Level of robot awareness while firing back after having been hit by player
+#define PA_WEAPON_ROBOT_COLLISION   5   // Level of robot awareness after tPlayer weapon hits nearby robot
 
 //#define PAE_WEAPON_HIT_WALL         1   // weapon hit wall, create tPlayer awareness
 //#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit wall, create tPlayer awareness
@@ -174,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AISM_HIDING                 1
 
 #define AI_MAX_STATE    7
-#define AI_MAX_EVENT    4
+#define AI_MAX_EVENT    5
 
 #define AIS_NONE        0
 #define AIS_REST        1

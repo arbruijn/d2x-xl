@@ -95,8 +95,8 @@ int AIMultiplayerAwareness (tObject *objP, int awarenessLevel);
 
 // In escort.c
 void DoEscortFrame (tObject *objP, fix dist_to_player, int player_visibility);
-void DoSnipeFrame (tObject *objP, fix dist_to_player, int player_visibility, vmsVector *vec_to_player);
-void DoThiefFrame (tObject *objP, fix dist_to_player, int player_visibility, vmsVector *vec_to_player);
+void DoSnipeFrame (tObject *objP);
+void DoThiefFrame (tObject *objP);
 
 #ifndef NDEBUG
 void force_dump_aiObjects_all (char *msg);
@@ -128,7 +128,7 @@ typedef struct {
 extern fix xDistToLastPlayerPosFiredAt;
 extern vmsVector vLastPlayerPosFiredAt;
 
-#define MAX_AWARENESS_EVENTS 64
+#define MAX_AWARENESS_EVENTS 256
 typedef struct tAwarenessEvent {
 	short       nSegment; // tSegment the event occurred in
 	short       nType;   // nType of event, defines behavior
@@ -136,7 +136,7 @@ typedef struct tAwarenessEvent {
 } tAwarenessEvent;
 
 #define AIS_MAX 8
-#define AIE_MAX 4
+#define AIE_MAX 5
 
 #define ESCORT_GOAL_UNSPECIFIED -1
 
@@ -270,10 +270,10 @@ extern void mprintf_animation_info (tObject *objP);
 extern void AIFrameAnimation (tObject *objP);
 extern int DoSillyAnimation (tObject *objP);
 extern int OpenableDoorsInSegment (short nSegment);
-extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, vmsVector *vec_to_player, int *player_visibility, tRobotInfo *robptr, int *flag);
+extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
 extern void DoFiringStuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
 extern int AIMaybeDoActualFiringStuff (tObject *obj, tAIStatic *aip);
-extern void AIDoActualFiringStuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, vmsVector *vec_to_player, fix dist_to_player, vmsVector *gun_point, int player_visibility, int object_animates, int gun_num);
+extern void AIDoActualFiringStuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, int gun_num);
 extern void DoSuperBossStuff (tObject *objP, fix dist_to_player, int player_visibility);
 extern void DoBossStuff (tObject *objP, int player_visibility);
 // -- unused, 08/07/95 -- extern void ai_turn_randomly (vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);

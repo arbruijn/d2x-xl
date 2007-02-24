@@ -551,7 +551,7 @@ void editor_reset_stuff_onLevel ()
 	MorphInit ();
 	InitAllMatCens ();
 	InitPlayerStatsNewShip ();
-	InitReactorForLevel ();
+	InitReactorForLevel (0);
 	AutomapClearVisited ();
 	InitStuckObjects ();
 	InitThiefForLevel ();
@@ -1330,7 +1330,7 @@ else {
 if (gameStates.app.bFirstSecretVisit)
 	CopyDefaultsToRobotsAll ();
 TurnCheatsOff ();
-InitReactorForLevel ();
+InitReactorForLevel (0);
 //	Say tPlayer can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 gameStates.app.bFirstSecretVisit = 0;
@@ -1825,10 +1825,10 @@ ResetPaletteAdd ();
 InitThiefForLevel ();
 InitStuckObjects ();
 GameFlushInputs ();		// clear out the keyboard
-if (!(gameData.app.nGameMode & GM_MULTI))
+if (!IsMultiGame)
 	FilterObjectsFromLevel ();
 TurnCheatsOff ();
-if (!(gameData.app.nGameMode & GM_MULTI) && !gameStates.app.cheats.bEnabled) {
+if (!(IsMultiGame || gameStates.app.cheats.bEnabled)) {
 	SetHighestLevel (gameData.missions.nCurrentLevel);
 	}	
 else
@@ -1842,7 +1842,8 @@ else {
 	StartLevel (0);		// Note link to above if!
 	}
 CopyDefaultsToRobotsAll ();
-InitReactorForLevel ();
+if (!bRestore)
+	InitReactorForLevel (0);
 InitAIObjects ();
 #if 0
 gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls =

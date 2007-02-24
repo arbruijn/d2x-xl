@@ -349,7 +349,7 @@ extern tObject *monsterballP;
 void DoPhysicsSim (tObject *objP)
 {
 	short					ignoreObjList [MAX_IGNORE_OBJS], nIgnoreObjs;
-	int					iseg;
+	int					iseg, i;
 	int					bRetry;
 	int					fate;
 	vmsVector			vFrame;			//movement in this frame
@@ -502,7 +502,13 @@ retryMove:
 
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
+	memset (&hi, 0, sizeof (hi));
 	fate = FindVectorIntersection (&fq, &hi);
+	if (fate == HIT_BAD_P0) {
+		fq.startSeg = FindSegByPoint (&vNewPos, objP->nSegment);
+		if (fq.startSeg >= 0)
+			fate = FindVectorIntersection (&fq, &hi);
+		}
 #ifdef _DEBUG
 	if (fate == HIT_WALL)
 		fate = FindVectorIntersection (&fq, &hi);
@@ -515,36 +521,27 @@ retryMove:
 			count--;
 	}
 
-#ifdef _DEBUG
-	if (fate == HIT_BAD_P0) {
-#if 0 //TRACE				
-		con_printf (CON_DEBUG, "Warning: Bad p0 in physics! Object = %i, nType = %i [%s]\n", 
-			objP - gameData.objs.objects, objP->nType, ObjectType_names [objP->nType]);
-#endif
-		Int3 ();
+if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
+	nPhysSegs--;
+#if 1//def RELEASE
+i = MAX_FVI_SEGS - nPhysSegs - 1;
+if (i > 0) {
+	if (i > hi.nSegments)
+		i = hi.nSegments;
+	if (i < 0)
+		FindVectorIntersection (&fq, &hi);
+	memcpy (physSegList + nPhysSegs, hi.segList, i * sizeof (*physSegList));
+	nPhysSegs += i;
 	}
-#endif
-
-	//if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_MONSTERBALL)) 
-		{
-		int i;
-
-		if (nPhysSegs && (physSegList [nPhysSegs-1] == hi.segList [0]))
-			nPhysSegs--;
-#ifdef RELEASE
-		i = MAX_FVI_SEGS - nPhysSegs - 1;
-		if (i > hi.nSegments)
-			i = hi.nSegments;
-		memcpy (physSegList + nPhysSegs, hi.segList, i * sizeof (*physSegList));
-		nPhysSegs += i;
+else
+	i = i;
 #else
-			for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
-				if (hi.segList [i] > gameData.segs.nLastSegment)
-					LogErr ("Invalid segment in segment list #1\n");
-				physSegList [nPhysSegs++] = hi.segList [i++];
-				}
+	for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
+		if (hi.segList [i] > gameData.segs.nLastSegment)
+			LogErr ("Invalid segment in segment list #1\n");
+		physSegList [nPhysSegs++] = hi.segList [i++];
+		}
 #endif
-	}
 
 	ipos = hi.hit.vPoint;
 	iseg = hi.hit.nSegment;
@@ -650,7 +647,11 @@ retryMove:
 			Assert (nWallHitSeg > -1);
 			Assert (nWallHitSide > -1);
 			GetSideDistsAll (&objP->position.vPos, nWallHitSeg, xSideDists);
+#if UNSTICK_OBJECT == 2
 			bRetry = BounceObject (objP, hi, 0.1f, xSideDists);
+#else
+			bRetry = 0;
+#endif
 			if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 				int forcefield_bounce;		//bounce off a forcefield
 

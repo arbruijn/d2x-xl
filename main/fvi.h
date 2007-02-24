@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define HIT_OBJECT	2		//we hit an tObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point not is specified tSegment
 
-#define MAX_FVI_SEGS 100
+#define MAX_FVI_SEGS 1000
 
 typedef struct fvi_hit_info {
 	int 			nType;						//what sort of intersection

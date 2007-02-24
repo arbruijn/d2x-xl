@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (tObject *objP, vmsVector* vGoalPoint, int player_visibility, vmsVector *vec_to_player);
+void AIPathSetOrientAndVel (tObject *objP, vmsVector* vGoalPoint, int playerVisibility, vmsVector *vec_to_player);
 void MaybeAIPathGarbageCollect (void);
 void AIPathGarbageCollect (void);
 #if PATH_VALIDATION
@@ -675,7 +675,8 @@ if (nEndSeg != -1) {
 	aip->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!aip->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
 	ailp->mode = AIM_FOLLOW_PATH;
-	ailp->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
+	if (ailp->playerAwarenessType < PA_RETURN_FIRE)
+		ailp->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
 }
@@ -705,7 +706,8 @@ if (nEndSeg != -1) {
 		}
 	aip->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!aip->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
-	ailp->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
+	if (ailp->playerAwarenessType < PA_RETURN_FIRE)
+		ailp->playerAwarenessType = 0;		//	If robot too aware of tPlayer, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
 }
@@ -743,7 +745,8 @@ if (nEndSeg != -1) {
 		}
 	aip->PATH_DIR = 1;		//	Initialize to moving forward.
 	ailp->mode = AIM_FOLLOW_PATH;
-	ailp->playerAwarenessType = 0;
+	if (ailp->playerAwarenessType < PA_RETURN_FIRE)
+		ailp->playerAwarenessType = 0;
 	}
 MaybeAIPathGarbageCollect ();
 }
@@ -777,7 +780,7 @@ if (gameData.ai.freePointSegs - gameData.ai.pointSegs + MAX_PATH_LENGTH*2 > MAX_
 	}
 aip->PATH_DIR = 1;		//	Initialize to moving forward.
 ailp->mode = AIM_FOLLOW_PATH;
-//	If this robot is visible (player_visibility is not available) and it's running away, move towards outside with
+//	If this robot is visible (playerVisibility is not available) and it's running away, move towards outside with
 //	randomness to prevent a stream of bots from going away down the center of a corridor.
 if (gameData.ai.localInfo [OBJ_IDX (objP)].nPrevVisibility) {
 	if (aip->nPathLength) {
@@ -890,7 +893,7 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (tObject *objP, int player_visibility, int nPrevVisibility, vmsVector *vec_to_player)
+void AIFollowPath (tObject *objP, int playerVisibility, int nPrevVisibility, vmsVector *vec_to_player)
 {
 	tAIStatic		*aip = &objP->cType.aiInfo;
 
@@ -960,7 +963,7 @@ if (gameStates.app.bPlayerIsDead)
 else
 	xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.console->position.vPos);
 	//	Efficiency hack: If far away from tPlayer, move in big quantized jumps.
-if (!(player_visibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
+if (!(playerVisibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(gameData.app.nGameMode & GM_MULTI)) {
 	if (xDistToGoal < F1_0*2) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
@@ -990,7 +993,7 @@ if (!(player_visibility || nPrevVisibility) && (xDistToPlayer > F1_0*200) && !(g
 	}
 //	If running from tPlayer, only run until can't be seen.
 if (ailp->mode == AIM_RUN_FROM_OBJECT) {
-	if ((player_visibility == 0) && (ailp->playerAwarenessType == 0)) {
+	if ((playerVisibility == 0) && (ailp->playerAwarenessType == 0)) {
 		fix vel_scale = F1_0 - gameData.time.xFrame/2;
 		if (vel_scale < F1_0/2)
 			vel_scale = F1_0/2;
@@ -1016,7 +1019,7 @@ if (ailp->mode == AIM_RUN_FROM_OBJECT) {
 				break;
 				}
 			}
-		if (player_visibility) {
+		if (playerVisibility) {
 			ailp->playerAwarenessType = 1;
 			ailp->playerAwarenessTime = F1_0;
 			}
@@ -1057,7 +1060,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		//	if tPlayer visible, then make a new path, else just return.
 		if (robptr->companion) {
 			if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
-				if (player_visibility) {
+				if (playerVisibility) {
 					CreateNSegmentPath (objP, 16 + d_rand () * 16, -1);
 					aip->nPathLength = SmoothPath (objP, &gameData.ai.pointSegs [aip->nHideIndex], aip->nPathLength);
 					Assert (aip->nPathLength != 0);
@@ -1170,7 +1173,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	}	//	end while
 //	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->position.mOrient) for this tObject.
 //--Int3_if (( (aip->nCurPathIndex >= 0) && (aip->nCurPathIndex < aip->nPathLength));
-AIPathSetOrientAndVel (objP, &vGoalPoint, player_visibility, vec_to_player);
+AIPathSetOrientAndVel (objP, &vGoalPoint, playerVisibility, vec_to_player);
 //--Int3_if (( (aip->nCurPathIndex >= 0) && (aip->nCurPathIndex < aip->nPathLength));
 }
 
@@ -1191,7 +1194,7 @@ return 0;
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int player_visibility, vmsVector *vec_to_player)
+void AIPathSetOrientAndVel (tObject *objP, vmsVector *vGoalPoint, int playerVisibility, vmsVector *vec_to_player)
 {
 	vmsVector	vCurVel = objP->mType.physInfo.velocity;
 	vmsVector	vNormCurVel;
@@ -1239,7 +1242,7 @@ VmVecScale (&vNormCurVel, xSpeedScale);
 objP->mType.physInfo.velocity = vNormCurVel;
 if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (robptr->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
-		if ((player_visibility) && (vec_to_player != NULL))
+		if ((playerVisibility) && (vec_to_player != NULL))
 			vNormToGoal = *vec_to_player;
 		else
 			VmVecNegate (&vNormToGoal);

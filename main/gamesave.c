@@ -232,7 +232,7 @@ if (objP->nType == OBJ_CNTRLCEN) {
 	objP->controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
 		objP->id = 0;                         // used to be only one kind of reactor
-		objP->rType.polyObjInfo.nModel = gameData.reactor.reactors [0].nModel;// descent 1 reactor
+		objP->rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
 #ifdef EDITOR
 	{
@@ -1215,8 +1215,10 @@ if (gameFileInfo.botGen.offset > -1) {
 #else
 			for (j = 0; j <= gameData.segs.nLastSegment; j++)
 				if ((gameData.segs.segment2s [j].special == SEGMENT_IS_ROBOTMAKER) &&
-					 (gameData.segs.segment2s [j].nMatCen == i))
-						gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+					 (gameData.segs.segment2s [j].nMatCen == i)) {
+					gameData.matCens.botGens [i].nFuelCen = gameData.segs.segment2s [j].value;
+					break;
+					}
 #endif
 		}
 	}

@@ -1499,7 +1499,7 @@ void MultiDoCtrlcenFire (char *buf)
 	vmsVector to_target;
 	char gun_num;
 	short nObject;
-	int count = 1;
+	int i, count = 1;
 
 memcpy (&to_target, buf + count, 12);          
 count += 12;
@@ -1510,7 +1510,8 @@ to_target.p.z = (fix)INTEL_INT ((int)to_target.p.z);
 #endif
 gun_num = buf [count++];                       
 nObject = GET_INTEL_SHORT (buf + count);      
-CreateNewLaserEasy (&to_target, &Gun_pos [(int)gun_num], nObject, CONTROLCEN_WEAPON_NUM, 1);
+if (0 >= (i = FindReactor (gameData.objs.objects + nObject)))
+	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int)gun_num, nObject, CONTROLCEN_WEAPON_NUM, 1);
 }
 
 //-----------------------------------------------------------------------------

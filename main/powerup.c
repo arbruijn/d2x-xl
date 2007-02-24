@@ -120,6 +120,8 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 	""
 	};
 
+#define	MAX_INV_ITEMS	((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 10 : 5)
+
 //------------------------------------------------------------------------------
 
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
@@ -719,7 +721,7 @@ switch (objP->id) {
 
 	case POW_CLOAK:
 		if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) {
-			if (playerP->nCloaks == 255) {
+			if (playerP->nCloaks == MAX_INV_ITEMS) {
 				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}
@@ -735,7 +737,7 @@ switch (objP->id) {
 
 	case POW_INVUL:
 		if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) {
-			if (playerP->nInvuls == 255) {
+			if (playerP->nInvuls == MAX_INV_ITEMS) {
 				if (ISLOCALPLAYER (nPlayer))
 					HUDInitMessage ("%s", TXT_INVENTORY_FULL);
 				}

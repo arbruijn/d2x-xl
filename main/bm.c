@@ -284,7 +284,7 @@ gameData.pig.tex.nFirstMultiBitmap = CFReadInt (fp);
 
 gameData.reactor.nReactors = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
-ReactorReadN (gameData.reactor.reactors, gameData.reactor.nReactors, fp);
+ReactorReadN (gameData.reactor.props, gameData.reactor.nReactors, fp);
 
 gameData.models.nMarkerModel = CFReadInt (fp);
 if (gameData.pig.tex.nHamFileVersion < 3) {

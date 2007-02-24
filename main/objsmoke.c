@@ -303,8 +303,8 @@ if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
-		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 1.0,
-																-1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED * 8, 0, i);
+		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 3.0,
+																-1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i);
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
@@ -405,7 +405,7 @@ if (nParts) {
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts,
 																-PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 0, i);
 		}
-	offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () % 15 + 16);
+	offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
 	offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
 	offs.p.z = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
 	VmVecAdd (&pos, &objP->position.vPos, &offs);
@@ -428,28 +428,28 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic))
 objP->renderType = RT_NONE;
 i = (int) OBJ_IDX (objP);
 if (gameData.smoke.objects [i] < 0) {
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
 	nLife = (trigP && trigP->value) ? trigP->value : 5;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
 	j = (trigP && trigP->value) ? trigP->value : 5;
 	for (nSpeed = 0; j; j--)
 		nSpeed += j;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
 	nParts = (trigP && trigP->value) ? trigP->value * 25 : STATIC_SMOKE_MAX_PARTS;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 	j = (trigP && trigP->value) ? trigP->value : 5;
 	for (nSize = 0; j; j--)
 		nSize += j;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
 	nDrift = (trigP && trigP->value) ? trigP->value * 200 : nSpeed * 50;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, F1_0 * nSpeed);
 	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, &dir, 
 															objP->nSegment, 1, -nParts, -PARTICLE_SIZE (nSize, 2.0f), 
 															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 2, i);
 	}
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT);
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
 i = (trigP && trigP->value) ? trigP->value * 3 : 15;
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE);
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 i += ((trigP && trigP->value) ? trigP->value * 3 : 15) / 2;
 i /= 2;
 j = i - i / 2;

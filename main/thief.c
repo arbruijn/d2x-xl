@@ -135,10 +135,10 @@ void RecreateThief(tObject *objP)
 
 //	----------------------------------------------------------------------------
 
-void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsVector *vec_to_player)
+void DoThiefFrame(tObject *objP)
 {
 	int			nObject = OBJ_IDX (objP);
-	tAILocal		*ailp = &gameData.ai.localInfo[nObject];
+	tAILocal		*ailp = gameData.ai.localInfo + nObject;
 	fix			connectedDistance;
 
 	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
@@ -147,7 +147,7 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 		gameData.thief.xReInitTime = 0x3f000000;
 	}
 
-	if ((dist_to_player > F1_0*500) && (ailp->nextActionTime > 0))
+	if ((gameData.ai.xDistToPlayer > F1_0*500) && (ailp->nextActionTime > 0))
 		return;
 
 	if (gameStates.app.bPlayerIsDead)
@@ -161,13 +161,13 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 				ailp->mode = AIM_THIEF_ATTACK;
 				ailp->nextActionTime = THIEF_ATTACK_TIME/2;
 				return;
-			} else if (player_visibility) {
+			} else if (gameData.ai.nPlayerVisibility) {
 				CreateNSegmentPath(objP, 15, gameData.objs.console->nSegment);
 				ailp->mode = AIM_THIEF_RETREAT;
 				return;
 			}
 
-			if ((dist_to_player > F1_0*50) && (ailp->nextActionTime > 0))
+			if ((gameData.ai.xDistToPlayer > F1_0*50) && (ailp->nextActionTime > 0))
 				return;
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
@@ -185,9 +185,9 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 			if (ailp->nextActionTime < 0) {
 				ailp->mode = AIM_THIEF_WAIT;
 				ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel];
-			} else if ((dist_to_player < F1_0*100) || player_visibility || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
-				AIFollowPath(objP, player_visibility, player_visibility, vec_to_player);
-				if ((dist_to_player < F1_0*100) || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
+			} else if ((gameData.ai.xDistToPlayer < F1_0*100) || gameData.ai.nPlayerVisibility || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
+				AIFollowPath(objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
+				if ((gameData.ai.xDistToPlayer < F1_0*100) || (ailp->playerAwarenessType >= PA_PLAYER_COLLISION)) {
 					tAIStatic	*aip = &objP->cType.aiInfo;
 					if (((aip->nCurPathIndex <=1) && (aip->PATH_DIR == -1)) || ((aip->nCurPathIndex >= aip->nPathLength-1) && (aip->PATH_DIR == 1))) {
 						ailp->playerAwarenessType = 0;
@@ -229,24 +229,24 @@ void DoThiefFrame(tObject *objP, fix dist_to_player, int player_visibility, vmsV
 				CreatePathToPlayer(objP, 100, 0);
 				ailp->mode = AIM_THIEF_ATTACK;
 			} else {
-				if (player_visibility && (dist_to_player < F1_0*100)) {
+				if (gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer < F1_0*100)) {
 					//	If the tPlayer is close to looking at the thief, thief shall run away.
 					//	No more stupid thief trying to sneak up on you when you're looking right at him!
-					if (dist_to_player > F1_0*60) {
-						fix	dot = VmVecDot(vec_to_player, &gameData.objs.console->position.mOrient.fVec);
+					if (gameData.ai.xDistToPlayer > F1_0*60) {
+						fix dot = VmVecDot(&gameData.ai.vVecToPlayer, &gameData.objs.console->position.mOrient.fVec);
 						if (dot < -F1_0/2) {	//	Looking at least towards thief, so thief will run!
 							CreateNSegmentPath(objP, 10, gameData.objs.console->nSegment);
 							gameData.ai.localInfo[OBJ_IDX (objP)].nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 							gameData.ai.localInfo[OBJ_IDX (objP)].mode = AIM_THIEF_RETREAT;
 						}
 					} 
-					AITurnTowardsVector(vec_to_player, objP, F1_0/4);
-					MoveTowardsPlayer(objP, vec_to_player);
+					AITurnTowardsVector(&gameData.ai.vVecToPlayer, objP, F1_0/4);
+					MoveTowardsPlayer(objP, &gameData.ai.vVecToPlayer);
 				} else {
 					tAIStatic	*aip = &objP->cType.aiInfo;
 					//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
 					if ((aip->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
-						AIFollowPath(objP, player_visibility, player_visibility, vec_to_player);
+						AIFollowPath(objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
 						ailp->mode = AIM_THIEF_ATTACK;
 					}
 				}

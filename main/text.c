@@ -1620,6 +1620,7 @@ char *defaultGameTexts [][2] = {
 	{"Alt+P\t  Pause", "Alt+P\t  Pause"},
 	{"Alt+F9\t  Bildschirmabzug speichern", "Alt+F9\t  save screenshot"},
 	{"s~Tatischer Rauch", "s~Tatic smoke"},
+	{"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
 #if 0
 	{"", ""},
 #endif
@@ -2109,6 +2110,8 @@ char *defaultHelpTexts [][2] = {
 	 "Adjust the turn speed of homing missiles here."},
 	{"Wenn angekreuzt, wird Rauch dargestellt, der von festen Orten\nin einer Mine ausgeht.", 
 	 "If checked smoke dissipating from fixed locations in a mine\nis rendered."},
+	{"Wenn angekreuzt, bemerken Roboter den Spieler frueher und\nverfolgen ihn laenger.", 
+	 "If checked, robots will notice the player from further\naway and pursue him or her longer."},
 #if 0
 	{"", ""},
 #endif

@@ -94,17 +94,21 @@ void KillAllBossRobots (void)
 	int		i, nKilled = 0;
 	tObject	*objP;
 
-for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
-		nKilled++;
-		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-		else {
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-			objP->flags |= OF_ARMAGEDDON;
+if (gameStates.gameplay.bKillBossCheat)
+	gameStates.gameplay.bKillBossCheat = 0;
+else {
+	for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+		if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
+			nKilled++;
+			if (gameStates.app.bNostalgia)
+				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			else {
+				ApplyDamageToRobot (objP, objP->shields + 1, -1);
+				objP->flags |= OF_ARMAGEDDON;
+				}
+			gameStates.gameplay.bKillBossCheat = 1;
 			}
-		gameStates.gameplay.bKillBossCheat = 1;
-		}
+	}
 HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
 }
 
@@ -668,6 +672,16 @@ SetLastSuperWeaponStates ();
 
 //------------------------------------------------------------------------------
 
+void SuperWowieCheat (void)
+{
+AccessoryCheat ();
+WowieCheat ();
+InvulCheat ();
+CloakCheat ();
+}
+
+//------------------------------------------------------------------------------
+
 void EnableD1Cheats (void)
 {
 gameStates.app.cheats.bD1CheatsEnabled = !gameStates.app.cheats.bD1CheatsEnabled;
@@ -757,6 +771,7 @@ char szRapidFireCheat [9]			= "*jLgHi'J";    //only Matt knows / wildfire
 char szRobotsKillRobotsCheat [9] = "rT6xD__S"; // New for 1.1 / silkwing
 char szUnlockAllCheat [9]			= "vsx[%o, H";	 // cr-yptonite / New for D2X-XL
 char szWowieCheat [9]				= "F_JMO3CV";    //only Matt knows / h-onestbob
+char szSuperWowieCheat [9]			= "minemine";
 
 tCheat cheats [] = {
 	// Descent 2
@@ -787,6 +802,7 @@ tCheat cheats [] = {
 	{szRapidFireCheat, RapidFireCheat, -1, 1, 0}, 
 	{szRobotsKillRobotsCheat, RobotsKillRobotsCheat, -1, 1, 0}, 
 	{/*szUnlockAllCheat*/"yptonite", UnlockAllCheat, 1, 0, 0}, 
+	{szSuperWowieCheat, SuperWowieCheat, 1, 1, 0}, 
 	{szWowieCheat, WowieCheat, 1, 1, 0}, 
 	// Descent 1
 	{"ahimsa", AhimsaCheat, 1, 0, 1}, 

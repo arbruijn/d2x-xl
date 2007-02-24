@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				30
+#define STATE_VERSION				31
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -656,11 +656,14 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.matCens.nFuelCenters, sizeof (int), 1, fp);
 	CFWrite (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters, fp);
 // Save the control cen info
-	CFWrite (&gameData.reactor.bHit, sizeof (int), 1, fp);
-	CFWrite (&gameData.reactor.bSeenPlayer, sizeof (int), 1, fp);
-	CFWrite (&gameData.reactor.nNextFireTime, sizeof (int), 1, fp);
 	CFWrite (&gameData.reactor.bPresent, sizeof (int), 1, fp);
-	CFWrite (&gameData.reactor.nDeadObj, sizeof (int), 1, fp);
+	for (i = 0; i < MAX_BOSS_COUNT; i++) {
+		CFWrite (&gameData.reactor.states [i].nObject, sizeof (int), 1, fp);
+		CFWrite (&gameData.reactor.states [i].bHit, sizeof (int), 1, fp);
+		CFWrite (&gameData.reactor.states [i].bSeenPlayer, sizeof (int), 1, fp);
+		CFWrite (&gameData.reactor.states [i].nNextFireTime, sizeof (int), 1, fp);
+		CFWrite (&gameData.reactor.states [i].nDeadObj, sizeof (int), 1, fp);
+		}
 // Save the AI state
 	AISaveBinState (fp);
 
@@ -1221,11 +1224,14 @@ if (!bBetweenLevels)	{
 		StateSaveFuelCen (gameData.matCens.fuelCenters + i, fp);
 	//fpos = CFTell (fp);
 // Save the control cen info
-	CFWriteInt (gameData.reactor.bHit, fp);
-	CFWriteInt (gameData.reactor.bSeenPlayer, fp);
-	CFWriteInt (gameData.reactor.nNextFireTime, fp);
 	CFWriteInt (gameData.reactor.bPresent, fp);
-	CFWriteInt (gameData.reactor.nDeadObj, fp);
+	for (i = 0; i < MAX_BOSS_COUNT; i++) {
+		CFWriteInt (gameData.reactor.states [i].nObject, fp);
+		CFWriteInt (gameData.reactor.states [i].bHit, fp);
+		CFWriteInt (gameData.reactor.states [i].bSeenPlayer, fp);
+		CFWriteInt (gameData.reactor.states [i].nNextFireTime, fp);
+		CFWriteInt (gameData.reactor.states [i].nDeadObj, fp);
+		}
 	//fpos = CFTell (fp);
 // Save the AI state
 	AISaveUniState (fp);
@@ -2226,11 +2232,25 @@ if (!bBetweenLevels)	{
 		StateRestoreFuelCen (gameData.matCens.fuelCenters + i, fp);
 	//fpos = CFTell (fp);
 	// Restore the control cen info
-	gameData.reactor.bHit = CFReadInt (fp);
-	gameData.reactor.bSeenPlayer = CFReadInt (fp);
-	gameData.reactor.nNextFireTime = CFReadInt (fp);
-	gameData.reactor.bPresent = CFReadInt (fp);
-	gameData.reactor.nDeadObj = CFReadInt (fp);
+	if (sgVersion < 31) {
+		gameData.reactor.states [0].bHit = CFReadInt (fp);
+		gameData.reactor.states [0].bSeenPlayer = CFReadInt (fp);
+		gameData.reactor.states [0].nNextFireTime = CFReadInt (fp);
+		gameData.reactor.bPresent = CFReadInt (fp);
+		gameData.reactor.states [0].nDeadObj = CFReadInt (fp);
+		}
+	else {
+		int	i;
+
+		gameData.reactor.bPresent = CFReadInt (fp);
+		for (i = 0; i < MAX_BOSS_COUNT; i++) {
+			gameData.reactor.states [i].nObject = CFReadInt (fp);
+			gameData.reactor.states [i].bHit = CFReadInt (fp);
+			gameData.reactor.states [i].bSeenPlayer = CFReadInt (fp);
+			gameData.reactor.states [i].nNextFireTime = CFReadInt (fp);
+			gameData.reactor.states [i].nDeadObj = CFReadInt (fp);
+			}
+		}
 	//fpos = CFTell (fp);
 	// Restore the AI state
 	AIRestoreUniState (fp, sgVersion);
@@ -2443,11 +2463,11 @@ if (!bBetweenLevels)	{
 	CFRead (gameData.matCens.fuelCenters, sizeof (tFuelCenInfo), gameData.matCens.nFuelCenters, fp);
 
 	// Restore the control cen info
-	gameData.reactor.bHit = CFReadInt (fp);
-	gameData.reactor.bSeenPlayer = CFReadInt (fp);
-	gameData.reactor.nNextFireTime = CFReadInt (fp);
+	gameData.reactor.states [0].bHit = CFReadInt (fp);
+	gameData.reactor.states [0].bSeenPlayer = CFReadInt (fp);
+	gameData.reactor.states [0].nNextFireTime = CFReadInt (fp);
 	gameData.reactor.bPresent = CFReadInt (fp);
-	gameData.reactor.nDeadObj = CFReadInt (fp);
+	gameData.reactor.states [0].nDeadObj = CFReadInt (fp);
 	// Restore the AI state
 	AIRestoreBinState (fp, sgVersion);
 	// Restore the automap visited info
@@ -2579,11 +2599,10 @@ FixObjectSegs ();
 FixObjectSizes ();
 ComputeNearestLights ();
 ComputeStaticDynLighting ();
+InitReactorForLevel (1);
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
-//SetLastSuperWeaponStates ();
- // Get rid of ships that aren't connected in the restored game
-if (gameData.app.nGameMode & GM_MULTI) {
+else {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
 	  if (gameData.multi.players [i].connected != 1) {
 			NetworkDisconnectPlayer (i);

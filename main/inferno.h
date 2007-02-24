@@ -268,6 +268,7 @@ typedef struct tGameplayOptions {
 	int bShieldWarning;
 	int bInventory;
 	int bIdleAnims;
+	int nAIAwareness;
 } tGameplayOptions;
 
 #define UNIQUE_JOY_AXES	5
@@ -375,6 +376,7 @@ typedef struct tGameplayStates {
 	int bTagFlag;
 	int nShieldFlash;
 	int nReactorCount;
+	int nLastReactor;
 	fix nPlayerSpeed;
 	vmsVector vTgtDir;
 	int nDirSteps;
@@ -1426,23 +1428,6 @@ typedef struct tCountdownData {
 	int					nTotalTime;
 } tCountdownData;
 
-#include "cntrlcen.h"
-
-typedef struct tReactorData {
-	reactor				reactors [MAX_REACTORS];
-	tReactorTriggers	triggers;
-	int					nReactors;
-	int					bPresent;
-	int					bDisabled;
-	int					bHit;
-	int					bDestroyed;
-	int					bSeenPlayer;
-	int					nNextFireTime;
-	int					nDeadObj;
-	int					nStrength;
-	tCountdownData		countdown;
-} tReactorData;
-
 #define NUM_MARKERS         16
 #define MARKER_MESSAGE_LEN  40
 
@@ -1518,6 +1503,32 @@ typedef struct tBossData {
 	sbyte					bDyingSoundPlaying;
 } tBossData;
 
+#include "cntrlcen.h"
+
+typedef struct tReactorStates {
+	int					nObject;
+	int					bHit;
+	int					bSeenPlayer;
+	int					nNextFireTime;
+	int					nDeadObj;
+	int					nStrength;
+	int					nGuns;
+	vmsVector			vGunPos [MAX_CONTROLCEN_GUNS];
+	vmsVector			vGunDir [MAX_CONTROLCEN_GUNS];
+} tReactorStates;
+
+typedef struct tReactorData {
+	tReactorProps		props [MAX_REACTORS];
+	tReactorTriggers	triggers;
+	tReactorStates		states [MAX_BOSS_COUNT];
+	tCountdownData		countdown;
+	int					nReactors;
+	int					nStrength;
+	int					bPresent;
+	int					bDisabled;
+	int					bDestroyed;
+} tReactorData;
+
 #include "ai.h"
 
 typedef struct tAIData {
@@ -1532,12 +1543,19 @@ typedef struct tAIData {
 	fvi_info				hitData;
 	short					nBelievedPlayerSeg;
 	vmsVector			vBelievedPlayerPos;
+	vmsVector			vLastPlayerPosFiredAt;
 	fix					nDistToLastPlayerPosFiredAt;
 	tAILocal				localInfo [MAX_OBJECTS];
 	tAICloakInfo		cloakInfo [MAX_AI_CLOAK_INFO];
 	tPointSeg			pointSegs [MAX_POINT_SEGS];
 	tPointSeg			*freePointSegs;
 	int					nAwarenessEvents;
+	int					nMaxAwareness;
+	fix					xDistToPlayer;
+	vmsVector			vVecToPlayer;
+	vmsVector			vGunPoint;
+	int					nPlayerVisibility;
+	int					bObjAnimates;
 	tAwarenessEvent	awarenessEvents [MAX_AWARENESS_EVENTS];
 } tAIData;
 

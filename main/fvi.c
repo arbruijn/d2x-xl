@@ -550,6 +550,7 @@ if (masks.centerMask) {
 	hitData->hit.nSide = 0;
 	hitData->hit.nObject = 0;
 	hitData->hit.nSideSegment = -1;
+	hitData->nSegments = 0;
 	return hitData->hit.nType;
 	}
 segsVisited [0] = fq->startSeg;

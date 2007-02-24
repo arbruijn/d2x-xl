@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	The only reason this routine is called (as of 10/12/94) is so Brain guys can open doors.
 void CollideRobotAndWall (tObject * robot, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
-	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
+	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robot);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
 
 if ((robot->id == ROBOT_BRAIN) || 
@@ -561,7 +561,7 @@ int CheckVolatileSegment (tObject *objP, int nSegment)
 	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_WATER)
 		d = 0;
 	else if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_LAVA)
-		d = gameData.pig.tex.tMapInfo [0][404].damage;
+		d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
 	else {
 #ifdef TACTILE
 		if (TactileStick && !(gameData.app.nFrameCount & 15))
@@ -1189,7 +1189,7 @@ if (gameData.reactor.bDestroyed != 1) {
 
 void ApplyDamageToReactor (tObject *controlcen, fix damage, short who)
 {
-	int	whotype;
+	int	whotype, i;
 
 	//	Only allow a tPlayer to damage the control center.
 
@@ -1213,7 +1213,8 @@ if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_C
 	return;
 	}
 if (gameData.objs.objects [who].id == gameData.multi.nLocalPlayer) {
-	gameData.reactor.bHit = 1;
+	if (0 >= (i = FindReactor (controlcen)))
+		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();
 	}
 if (controlcen->shields >= 0)
@@ -1238,8 +1239,11 @@ if ((controlcen->shields < 0) && !(controlcen->flags& (OF_EXPLODING|OF_DESTROYED
 
 int CollidePlayerAndReactor (tObject * controlcen, tObject * playerObjP, vmsVector *vHitPt)
 { 
+	int	i;
+
 if (playerObjP->id == gameData.multi.nLocalPlayer) {
-	gameData.reactor.bHit = 1;
+	if (0 >= (i = FindReactor (controlcen)))
+		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();				//	In case tPlayer cloaked, make control center know where he is.
 	}
 if (BumpTwoObjects (controlcen, playerObjP, 1, vHitPt))
@@ -1304,13 +1308,16 @@ else
 
 int CollideWeaponAndReactor (tObject * weapon, tObject *controlcen, vmsVector *vHitPt)
 {
+	int	i;
+
 if (weapon->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weapon))
 		return 1;
 if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
 	fix	damage = weapon->shields;
 	if (gameData.objs.objects [weapon->cType.laserInfo.nParentObj].id == gameData.multi.nLocalPlayer)
-		gameData.reactor.bHit = 1;
+		if (0 <= (i = FindReactor (controlcen)))
+			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (weapon->id))
 		ExplodeBadassWeapon (weapon, vHitPt);
 	else
@@ -1433,7 +1440,8 @@ robot->shields -= damage;
 
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (ROBOTINFO (robot->id).bossFlag) {
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
+	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
 		if ((robot->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
 			if (gameData.app.nGameMode & GM_MULTI) {
 				if (!MultiAllPlayersAlive ()) // everyones gotta be alive
@@ -1445,7 +1453,8 @@ if (ROBOTINFO (robot->id).bossFlag) {
 				}		
 			else
 				{	// NOTE LINK TO ABOVE!!!
-				if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || gameStates.app.bPlayerIsDead)
+				if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
+					 gameStates.app.bPlayerIsDead)
 					robot->shields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
 				else
 					DoFinalBossHacks ();
@@ -1455,7 +1464,7 @@ if (ROBOTINFO (robot->id).bossFlag) {
 	}
 
 if (robot->shields < 0) {
-	if (gameData.app.nGameMode & GM_MULTI) {
+	if (IsMultiGame) {
 		bIsThief = (ROBOTINFO (robot->id).thief != 0);
 		if (bIsThief)
 			memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
@@ -1497,7 +1506,7 @@ else
 	return 0;
 }
 
-extern int BossSpewRobot (tObject *objP, vmsVector *pos);
+extern int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);
 
 //--ubyte	Boss_teleports [NUM_D2_BOSSES] = 				{1, 1, 1, 1, 1, 1};		// Set byte if this boss can teleport
 //--ubyte	Boss_cloaks [NUM_D2_BOSSES] = 					{1, 1, 1, 1, 1, 1};		// Set byte if this boss can cloak
@@ -1531,9 +1540,9 @@ if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {
 		int i = FindBoss (OBJ_IDX (robot));
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
-				 (BossSpewRobot (robot, vHitPt) != -1))
+				 (BossSpewRobot (robot, vHitPt, -1) != -1))
 				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-			BossSpewRobot (robot, vHitPt);
+			BossSpewRobot (robot, vHitPt, -1);
 			}
 		}
 	}
@@ -2200,7 +2209,7 @@ if (weapon->id == EARTHSHAKER_ID)
 damage = FixMul (damage, weapon->cType.laserInfo.multiplier);
 if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
 	damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	damage = FixMul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);
 if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
 	if (weapon->cType.laserInfo.nLastHitObj == OBJ_IDX (playerObjP))
