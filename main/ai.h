@@ -98,6 +98,8 @@ void DoEscortFrame (tObject *objP, fix dist_to_player, int player_visibility);
 void DoSnipeFrame (tObject *objP);
 void DoThiefFrame (tObject *objP);
 
+int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);
+
 #ifndef NDEBUG
 void force_dump_aiObjects_all (char *msg);
 #else

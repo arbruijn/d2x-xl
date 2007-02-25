@@ -1,18 +1,18 @@
 #ifndef __CHEATS_H
 #define __CHEATS_H
 
-void KillAllRobots (void);
-void KillEverything (void);
-void KillThief (void);
+void KillAllRobots (int bVerbose);
+void KillEverything (int bVerbose);
+void KillThief (int bVerbose);
 #ifndef RELEASE
-void KillAllSnipers (void);
+void KillAllSnipers (int bVerbose);
 #endif
-void KillBuddy (void);
+void KillBuddy (int bVerbose);
 void FinalCheats (int key);
+SuperWowieCheat (int bVerbose);
 
 #ifndef RELEASE
-void DoCheatMenu (void);
+void DoCheatMenu ();
 #endif
-
 
 #endif //__CHEATS_H

@@ -377,6 +377,7 @@ typedef struct tGameplayStates {
 	int nShieldFlash;
 	int nReactorCount;
 	int nLastReactor;
+	int bMineMineCheat;
 	fix nPlayerSpeed;
 	vmsVector vTgtDir;
 	int nDirSteps;

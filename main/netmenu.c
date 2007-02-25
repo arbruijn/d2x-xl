@@ -671,7 +671,7 @@ if (optSpotSize >= 0) {
 
 void NetworkD2XOptions ()
  {
-  int		opt = 0, i, j, choice = 0;
+  int		opt = 0, i, j, choice = 0, optCheckPort = -1;
   char	szSpotSize [50];
   tMenuItem m [40];
 
@@ -728,9 +728,11 @@ do {
 		optDisableReactor = -1;
 #endif
 #if UDP_SAFEMODE
-	ADD_CHECK (opt, TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MISC_UDPQUAL);
+	ADD_CHECK (opt, TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MULTI2_UDPQUAL);
 	optSafeUDP = opt++;
 #endif
+	ADD_CHECK (opt, TXT_CHECK_PORT, extraGameInfo [0].bCheckUDPPort, KEY_P, HTX_MULTI2_CHECKPORT);
+	optCheckPort = opt++;
 	if (extraGameInfo [1].bDarkness) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -805,6 +807,7 @@ if (optAutoTeams >= 0)
 #if UDP_SAFEMODE
 extraGameInfo [0].bSafeUDP = (m [optSafeUDP].value != 0);
 #endif
+extraGameInfo [0].bCheckUDPPort = (m [optCheckPort].value != 0);
 extraGameInfo [1].bRotateLevels = m [optRotateLevels].value;
 if (!COMPETITION) {
 	GET_VAL (extraGameInfo [1].bEnableCheats, optMultiCheats);

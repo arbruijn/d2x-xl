@@ -40,171 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "key.h"
 
-//------------------------------------------------------------------------------
-
-int KillAllBuddyBots (void)
-{
-	int	i, nKilled = 0;
-	tObject *objP;
-	//int	boss_index = -1;
-
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
-		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-		else 
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-		HUDInitMessage (TXT_BUDDY_TOASTED);
-		nKilled++;
-		}
-HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
-return nKilled;
-}
-
-//------------------------------------------------------------------------------
-
-void KillAllRobots (void)
-{
-	int	i, nKilled = 0;
-	tObject *objP;
-	//int	boss_index = -1;
-
-// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) &&
-		 !(ROBOTINFO (objP->id).companion || ROBOTINFO (objP->id).bossFlag)) {
-		nKilled++;
-		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-		else {
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-			objP->flags |= OF_ARMAGEDDON;
-			}
-		}
-// Toast the buddy if nothing else toasted!
-if (!nKilled)
-	nKilled += KillAllBuddyBots ();
-HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
-}
-
-//------------------------------------------------------------------------------
-
-void KillAllBossRobots (void)
-{
-	int		i, nKilled = 0;
-	tObject	*objP;
-
-if (gameStates.gameplay.bKillBossCheat)
-	gameStates.gameplay.bKillBossCheat = 0;
-else {
-	for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
-		if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
-			nKilled++;
-			if (gameStates.app.bNostalgia)
-				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-			else {
-				ApplyDamageToRobot (objP, objP->shields + 1, -1);
-				objP->flags |= OF_ARMAGEDDON;
-				}
-			gameStates.gameplay.bKillBossCheat = 1;
-			}
-	}
-HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
-}
-
-//	--------------------------------------------------------------------------
-//	Detonate reactor.
-//	Award tPlayer all powerups in mine.
-//	Place tPlayer just outside exit.
-//	Kill all bots in mine.
-//	Yippee!!
-void KillEverything (void)
-{
-	int     i, j;
-
-HUDInitMessage (TXT_KILL_ETC);
-for (i=0; i<=gameData.objs.nLastObject; i++) {
-	switch (gameData.objs.objects [i].nType) {
-		case OBJ_ROBOT:
-			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-			break;
-		case OBJ_POWERUP:
-			DoPowerup (gameData.objs.objects + i, -1);
-			break;
-		}
-	}
-extraGameInfo [0].nBossCount =
-extraGameInfo [1].nBossCount = 0;
-DoReactorDestroyedStuff (NULL);
-for (i = 0; i < gameData.trigs.nTriggers; i++) {
-	if (gameData.trigs.triggers [i].nType == TT_EXIT) {
-		for (j = 0; j < gameData.walls.nWalls; j++) {
-			if (gameData.walls.walls [j].nTrigger == i) {
-				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.console->position.vPos, gameData.walls.walls [j].nSegment);
-				RelinkObject (OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
-				return;
-				}
-			}
-		}
-	}
-// make sure exit gets opened
-gameStates.gameplay.bKillBossCheat = 0;
-}
-
-//------------------------------------------------------------------------------
-
-void KillThief (void)
-{
-	int     i;
-	tObject *objP;
-
-for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
-		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-		else {
-			ApplyDamageToRobot (objP, objP->shields + 1, -1);
-			objP->flags |= OF_ARMAGEDDON;
-			}
-		HUDInitMessage (TXT_THIEF_TOASTED);
-		}
-}
-
-//------------------------------------------------------------------------------
-
-#ifndef RELEASE
-
-void KillAllSnipers (void)
-{
-	int     i, nKilled=0;
-
-//	Kill all snipers.
-for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
-			nKilled++;
-			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
-		}
-HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
-void KillBuddy (void)
-{
-	int     i;
-	tObject	*objP = gameData.objs.objects;
-
-	//	Kill buddy.
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
-		gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
-		HUDInitMessage (TXT_BUDDY_TOASTED);
-		}
-}
-
 //	Cheat functions ------------------------------------------------------------
 
 char old_IntMethod;
@@ -272,7 +107,180 @@ return item;
 
 //------------------------------------------------------------------------------
 
-void AccessoryCheat (void)
+int KillAllBuddyBots (int bVerbose)
+{
+	int	i, nKilled = 0;
+	tObject *objP;
+	//int	boss_index = -1;
+
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+		else 
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+		if (bVerbose)
+			HUDInitMessage (TXT_BUDDY_TOASTED);
+		nKilled++;
+		}
+if (bVerbose)
+	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
+return nKilled;
+}
+
+//------------------------------------------------------------------------------
+
+void KillAllRobots (int bVerbose)
+{
+	int	i, nKilled = 0;
+	tObject *objP;
+	//int	boss_index = -1;
+
+// Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) &&
+		 !(ROBOTINFO (objP->id).companion || ROBOTINFO (objP->id).bossFlag)) {
+		nKilled++;
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		else {
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			objP->flags |= OF_ARMAGEDDON;
+			}
+		}
+// Toast the buddy if nothing else toasted!
+if (!nKilled)
+	nKilled += KillAllBuddyBots (bVerbose);
+if (bVerbose)
+	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
+}
+
+//------------------------------------------------------------------------------
+
+void KillAllBossRobots (int bVerbose)
+{
+	int		i, nKilled = 0;
+	tObject	*objP;
+
+if (gameStates.gameplay.bKillBossCheat)
+	gameStates.gameplay.bKillBossCheat = 0;
+else {
+	for (i = 0, objP = gameData.objs.objects; i<=gameData.objs.nLastObject; i++, objP++)
+		if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
+			nKilled++;
+			if (gameStates.app.bNostalgia)
+				objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			else {
+				ApplyDamageToRobot (objP, objP->shields + 1, -1);
+				objP->flags |= OF_ARMAGEDDON;
+				}
+			gameStates.gameplay.bKillBossCheat = 1;
+			}
+	}
+if (bVerbose)
+	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
+}
+
+//	--------------------------------------------------------------------------
+//	Detonate reactor.
+//	Award tPlayer all powerups in mine.
+//	Place tPlayer just outside exit.
+//	Kill all bots in mine.
+//	Yippee!!
+void KillEverything (int bVerbose)
+{
+	int     i, j;
+
+if (bVerbose)
+	HUDInitMessage (TXT_KILL_ETC);
+for (i=0; i<=gameData.objs.nLastObject; i++) {
+	switch (gameData.objs.objects [i].nType) {
+		case OBJ_ROBOT:
+			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			break;
+		case OBJ_POWERUP:
+			DoPowerup (gameData.objs.objects + i, -1);
+			break;
+		}
+	}
+extraGameInfo [0].nBossCount =
+extraGameInfo [1].nBossCount = 0;
+DoReactorDestroyedStuff (NULL);
+for (i = 0; i < gameData.trigs.nTriggers; i++) {
+	if (gameData.trigs.triggers [i].nType == TT_EXIT) {
+		for (j = 0; j < gameData.walls.nWalls; j++) {
+			if (gameData.walls.walls [j].nTrigger == i) {
+				COMPUTE_SEGMENT_CENTER_I (&gameData.objs.console->position.vPos, gameData.walls.walls [j].nSegment);
+				RelinkObject (OBJ_IDX (gameData.objs.console), gameData.walls.walls [j].nSegment);
+				return;
+				}
+			}
+		}
+	}
+// make sure exit gets opened
+gameStates.gameplay.bKillBossCheat = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void KillThief (int bVerbose)
+{
+	int     i;
+	tObject *objP;
+
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
+		if (gameStates.app.bNostalgia)
+			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+		else {
+			ApplyDamageToRobot (objP, objP->shields + 1, -1);
+			objP->flags |= OF_ARMAGEDDON;
+			}
+		if (bVerbose)
+			HUDInitMessage (TXT_THIEF_TOASTED);
+		}
+}
+
+//------------------------------------------------------------------------------
+
+#ifndef RELEASE
+
+void KillAllSnipers (int bVerbose)
+{
+	int     i, nKilled=0;
+
+//	Kill all snipers.
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
+			nKilled++;
+			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+		}
+if (bVerbose)
+	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
+void KillBuddy (int bVerbose)
+{
+	int     i;
+	tObject	*objP = gameData.objs.objects;
+
+	//	Kill buddy.
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
+		gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		if (bVerbose)
+			HUDInitMessage (TXT_BUDDY_TOASTED);
+		}
+}
+
+//------------------------------------------------------------------------------
+
+void AccessoryCheat (int bVerbose)
 {
 if (!gameStates.app.bD1Mission) {
 	LOCALPLAYER.flags |= 
@@ -281,96 +289,107 @@ if (!gameStates.app.bD1Mission) {
 		PLAYER_FLAGS_AMMO_RACK | 
 		PLAYER_FLAGS_CONVERTER;
 	}
-HUDInitMessage (TXT_ACCESSORIES);
+if (bVerbose)
+	HUDInitMessage (TXT_ACCESSORIES);
 }
 
 //------------------------------------------------------------------------------
 
-void AcidCheat (void)
+void AcidCheat (int bVerbose)
 {
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;
 	gameStates.render.nInterpolationMethod = old_IntMethod;
 	OglSetFOV (DEFAULT_FOV);
-	HUDInitMessage (TXT_COMING_DOWN);
+	if (bVerbose)
+		HUDInitMessage (TXT_COMING_DOWN);
 	}
 else {
 	gameStates.app.cheats.bAcid=1;
 	old_IntMethod=gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod=1;
 	OglSetFOV (FISHEYE_FOV);
-	HUDInitMessage (TXT_GOING_UP);
+	if (bVerbose)
+		HUDInitMessage (TXT_GOING_UP);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void AhimsaCheat (void)
+void AhimsaCheat (int bVerbose)
 {
 gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
-if (gameStates.app.cheats.bRobotsFiring)
-	HUDInitMessage (TXT_BOTFIRE_ON);
+if (gameStates.app.cheats.bRobotsFiring) {
+	if (bVerbose)
+		HUDInitMessage (TXT_BOTFIRE_ON);
+	}
 else {
 	DoCheatPenalty ();
-	HUDInitMessage (TXT_BOTFIRE_OFF);
+	if (bVerbose)
+		HUDInitMessage (TXT_BOTFIRE_OFF);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void AllKeysCheat (void)
+void AllKeysCheat (int bVerbose)
 {
-HUDInitMessage (TXT_ALL_KEYS);
+if (bVerbose)
+	HUDInitMessage (TXT_ALL_KEYS);
 LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 }
 
 //------------------------------------------------------------------------------
 
-void BlueOrbCheat (void)
+void BlueOrbCheat (int bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.shields, MAX_SHIELDS)) {
 	MultiSendShields ();
 	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, 
 						f2ir (LOCALPLAYER.shields));
 	}
-else
+else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
 
 //------------------------------------------------------------------------------
 
-void BuddyDudeCheat (void)
+void BuddyDudeCheat (int bVerbose)
 {
 gameStates.app.cheats.bMadBuddy = !gameStates.app.cheats.bMadBuddy;
 if (gameStates.app.cheats.bMadBuddy) {
 	strcpy (gameData.escort.szName, "Wingnut");
-	HUDInitMessage (TXT_GB_ANGRY, gameData.escort.szName);
+	if (bVerbose)
+		HUDInitMessage (TXT_GB_ANGRY, gameData.escort.szName);
 	}
 else {
 	strcpy (gameData.escort.szName, gameData.escort.szRealName);
-	HUDInitMessage (TXT_GB_CALM, gameData.escort.bMayTalk);
+	if (bVerbose)
+		HUDInitMessage (TXT_GB_CALM, gameData.escort.bMayTalk);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void BuddyLifeCheat (void)
+void BuddyLifeCheat (int bVerbose)
 {
-HUDInitMessage (TXT_GB_CLONE);
+if (bVerbose)
+	HUDInitMessage (TXT_GB_CLONE);
 CreateBuddyBot ();
 }
 
 //------------------------------------------------------------------------------
 
-void BouncyCheat (void)
+void BouncyCheat (int bVerbose)
 {
-HUDInitMessage (TXT_WPN_BOUNCE);
+if (bVerbose)
+	HUDInitMessage (TXT_WPN_BOUNCE);
 gameStates.app.cheats.bBouncingWeapons = 1;
 }
 
 //------------------------------------------------------------------------------
 
-void CloakCheat (void)
+void CloakCheat (int bVerbose)
 {
 	int	bCloaked;
 
@@ -379,13 +398,14 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 else if (LOCALPLAYER.cloakTime == 0x7fffffff)
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
-HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
+if (bVerbose)
+	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
 LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f (1000);
 }
 
 //------------------------------------------------------------------------------
 
-void CubeWarpCheat (void)
+void CubeWarpCheat (int bVerbose)
 {
 int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
 if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
@@ -397,18 +417,18 @@ if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 
 //------------------------------------------------------------------------------
 
-void ElectroCheat (void)
+void ElectroCheat (int bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))	
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, 
 						 f2ir (LOCALPLAYER.energy));
-else
+else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
 
 //------------------------------------------------------------------------------
 
-void ExtraLifeCheat (void)
+void ExtraLifeCheat (int bVerbose)
 {
 LOCALPLAYER.lives++;
 PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
@@ -416,21 +436,21 @@ PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 
 //------------------------------------------------------------------------------
 
-void FinishLevelCheat (void)
+void FinishLevelCheat (int bVerbose)
 {
-KillEverything ();
+KillEverything (bVerbose);
 }
 
 //------------------------------------------------------------------------------
 
-void FramerateCheat (void)
+void FramerateCheat (int bVerbose)
 {
 gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
 }
 
 //------------------------------------------------------------------------------
 
-void FullMapCheat (void)
+void FullMapCheat (int bVerbose)
 {
 if (gameStates.render.bAllVisited)
 	gameStates.render.bViewDist++;
@@ -438,22 +458,24 @@ else if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL)
 	gameStates.render.bAllVisited = 1;
 else
 	LOCALPLAYER.flags |= PLAYER_FLAGS_MAP_ALL;
-HUDInitMessage (TXT_FULL_MAP);
+if (bVerbose)
+	HUDInitMessage (TXT_FULL_MAP);
 }
 
 //------------------------------------------------------------------------------
 
-void GasolineCheat (void)
+void GasolineCheat (int bVerbose)
 {
 LOCALPLAYER.shields = MAX_SHIELDS;
 MultiSendShields ();
 LOCALPLAYER.energy = MAX_ENERGY;
-HUDInitMessage (TXT_SLURP);
+if (bVerbose)
+	HUDInitMessage (TXT_SLURP);
 }
 
 //------------------------------------------------------------------------------
 
-void HomingCheat (void)
+void HomingCheat (int bVerbose)
 {
 if (!gameStates.app.cheats.bHomingWeapons) {
 	int	i;
@@ -463,13 +485,14 @@ if (!gameStates.app.cheats.bHomingWeapons) {
 		OldHomingState [i] = WI_homingFlag (i);
 		WI_set_homingFlag (i, 1);
 		}
-	HUDInitMessage (TXT_WPN_HOMING);
+	if (bVerbose)
+		HUDInitMessage (TXT_WPN_HOMING);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void InvulCheat (void)
+void InvulCheat (int bVerbose)
 {
 	int	bInvul;
 
@@ -478,7 +501,8 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
-HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
+if (bVerbose)
+	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f (1000);
 SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
 }
@@ -488,136 +512,154 @@ SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f,
 void fill_background ();
 void LoadBackgroundBitmap ();
 
-void JohnHeadCheat (void)
+void JohnHeadCheat (int bVerbose)
 {
 gameStates.app.cheats.bJohnHeadOn = !gameStates.app.cheats.bJohnHeadOn;
 LoadBackgroundBitmap ();
 fill_background ();
-HUDInitMessage (gameStates.app.cheats.bJohnHeadOn? TXT_HI_JOHN : TXT_BYE_JOHN);
+if (bVerbose)
+	HUDInitMessage (gameStates.app.cheats.bJohnHeadOn? TXT_HI_JOHN : TXT_BYE_JOHN);
 }
 
 //------------------------------------------------------------------------------
 
-void KillBossCheat (void)
+void KillBossCheat (int bVerbose)
 {
-HUDInitMessage (TXT_BAMBI_WINS);
-KillAllBossRobots ();
+if (bVerbose)
+	HUDInitMessage (TXT_BAMBI_WINS);
+KillAllBossRobots (bVerbose);
 }
 
 //------------------------------------------------------------------------------
 
-void KillBuddyCheat (void)
+void KillBuddyCheat (int bVerbose)
 {
-HUDInitMessage (TXT_TRUE_DREAMS);
-KillAllBuddyBots ();
+if (bVerbose)
+	HUDInitMessage (TXT_TRUE_DREAMS);
+KillAllBuddyBots (bVerbose);
 }
 
 //------------------------------------------------------------------------------
 
-void KillThiefCheat (void)
+void KillThiefCheat (int bVerbose)
 {
-HUDInitMessage (TXT_RIGHTEOUS);
-KillThief ();
+if (bVerbose)
+	HUDInitMessage (TXT_RIGHTEOUS);
+KillThief (bVerbose);
 }
 
 //------------------------------------------------------------------------------
 
-void KillRobotsCheat (void)
+void KillRobotsCheat (int bVerbose)
 {
-HUDInitMessage (TXT_ARMAGEDDON);
-KillAllRobots ();
+if (bVerbose)
+	HUDInitMessage (TXT_ARMAGEDDON);
+KillAllRobots (bVerbose);
 ShakerRockStuff ();
 }
 
 //------------------------------------------------------------------------------
 
-void LevelWarpCheat (void)
+void LevelWarpCheat (int bVerbose)
 {
-int newLevel_num = MenuGetValue (TXT_WARP_TO_LEVEL);
-if ((newLevel_num > 0) && (newLevel_num <= gameData.missions.nLastLevel)) {
+int nNewLevel = MenuGetValue (TXT_WARP_TO_LEVEL);
+if ((nNewLevel > 0) && (nNewLevel <= gameData.missions.nLastLevel)) {
 	DoCheatPenalty ();
-	StartNewLevel (newLevel_num, 0);
+	StartNewLevel (nNewLevel, 0);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void MonsterCheat (void)
+void MonsterCheat (int bVerbose)
 {
 gameStates.app.cheats.bMonsterMode = !gameStates.app.cheats.bMonsterMode;
-HUDInitMessage (gameStates.app.cheats.bMonsterMode ? TXT_MONSTER_ON : TXT_MONSTER_OFF);
+if (bVerbose)
+	HUDInitMessage (gameStates.app.cheats.bMonsterMode ? TXT_MONSTER_ON : TXT_MONSTER_OFF);
 }
 
 //------------------------------------------------------------------------------
 
-void PhysicsCheat (void)
+void PhysicsCheat (int bVerbose)
 {
 gameStates.app.cheats.bPhysics = 0xbada55;
-HUDInitMessage (TXT_LOUP_GAROU);
+if (bVerbose)
+	HUDInitMessage (TXT_LOUP_GAROU);
 }
 
 //------------------------------------------------------------------------------
 
-void RapidFireCheat (void)
+void RapidFireCheat (int bVerbose)
 {
 if (gameStates.app.cheats.bLaserRapidFire) {
 	gameStates.app.cheats.bLaserRapidFire = 0;
-	HUDInitMessage ("%s", TXT_RAPIDFIRE_OFF);
+	if (bVerbose)
+		HUDInitMessage ("%s", TXT_RAPIDFIRE_OFF);
 	}
 else {
 	gameStates.app.cheats.bLaserRapidFire = 0xbada55;
 	DoCheatPenalty ();
-	HUDInitMessage ("%s", TXT_RAPIDFIRE_ON);
+	if (bVerbose)
+		HUDInitMessage ("%s", TXT_RAPIDFIRE_ON);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RobotsKillRobotsCheat (void)
+void RobotsKillRobotsCheat (int bVerbose)
 {
 gameStates.app.cheats.bRobotsKillRobots = !gameStates.app.cheats.bRobotsKillRobots;
-if (!gameStates.app.cheats.bRobotsKillRobots)
-	HUDInitMessage (TXT_KILL_PLAYER);
+if (!gameStates.app.cheats.bRobotsKillRobots) {
+	if (bVerbose)
+		HUDInitMessage (TXT_KILL_PLAYER);
+	}
 else {
 	DoCheatPenalty ();
-	HUDInitMessage (TXT_RABID_BOTS);
+	if (bVerbose)
+		HUDInitMessage (TXT_RABID_BOTS);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void TurboCheat (void)
+void TurboCheat (int bVerbose)
 {
 gameStates.app.cheats.bTurboMode = !gameStates.app.cheats.bTurboMode;
-if (!gameStates.app.cheats.bTurboMode) 
-	HUDInitMessage (TXT_DILATED);
+if (!gameStates.app.cheats.bTurboMode) {
+	if (bVerbose)
+		HUDInitMessage (TXT_DILATED);
+	}
 else {
-	HUDInitMessage (TXT_SWOOSH);
+	if (bVerbose)
+		HUDInitMessage (TXT_SWOOSH);
 	DoCheatPenalty ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void UnlockAllCheat (void)
+void UnlockAllCheat (int bVerbose)
 {
 #if 1//def _DEBUG
 UnlockAllWalls (!gameStates.app.cheats.nUnlockLevel);
-HUDInitMessage (!gameStates.app.cheats.nUnlockLevel ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
+if (bVerbose)
+	HUDInitMessage (!gameStates.app.cheats.nUnlockLevel ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
 #else
 UnlockAllWalls (gameStates.app.bD1Mission || !gameStates.app.cheats.nUnlockLevel);
-HUDInitMessage ((gameStates.app.bD1Mission || !gameStates.app.cheats.nUnlockLevel) ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
+if (bVerbose)
+	HUDInitMessage ((gameStates.app.bD1Mission || !gameStates.app.cheats.nUnlockLevel) ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);
 #endif
 gameStates.app.cheats.nUnlockLevel = 1;
 }
 
 //------------------------------------------------------------------------------
 
-void WowieCheat (void)
+void WowieCheat (int bVerbose)
 {
 	int	h, i;
 
-HUDInitMessage (TXT_WOWIE_ZOWIE);
+if (bVerbose)
+	HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
 	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
 	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
@@ -672,20 +714,28 @@ SetLastSuperWeaponStates ();
 
 //------------------------------------------------------------------------------
 
-void SuperWowieCheat (void)
+void SuperWowieCheat (int bVerbose)
 {
-AccessoryCheat ();
-WowieCheat ();
-InvulCheat ();
-CloakCheat ();
+if (gameStates.gameplay.bMineMineCheat) {
+	WowieCheat (bVerbose);
+	GasolineCheat (bVerbose);
+	}
+else {
+	AccessoryCheat (bVerbose);
+	WowieCheat (bVerbose);
+	InvulCheat (bVerbose);
+	CloakCheat (bVerbose);
+	gameStates.gameplay.bMineMineCheat = 1;
+	}
 }
 
 //------------------------------------------------------------------------------
 
-void EnableD1Cheats (void)
+void EnableD1Cheats (int bVerbose)
 {
 gameStates.app.cheats.bD1CheatsEnabled = !gameStates.app.cheats.bD1CheatsEnabled;
-HUDInitMessage (gameStates.app.cheats.bD1CheatsEnabled ? TXT_WANNA_CHEAT : LOCALPLAYER.score ? TXT_GOODGUY : TXT_TOOLATE);
+if (bVerbose)
+	HUDInitMessage (gameStates.app.cheats.bD1CheatsEnabled ? TXT_WANNA_CHEAT : LOCALPLAYER.score ? TXT_GOODGUY : TXT_TOOLATE);
 }
 
 //------------------------------------------------------------------------------
@@ -693,7 +743,7 @@ HUDInitMessage (gameStates.app.cheats.bD1CheatsEnabled ? TXT_WANNA_CHEAT : LOCAL
 #define CHEATSPOT 14
 #define CHEATEND 15
 
-typedef void tCheatFunc (void);
+typedef void tCheatFunc (int bVerbose);
 typedef tCheatFunc *pCheatFunc;	
 
 typedef struct tCheat {
@@ -732,7 +782,7 @@ if (pCheat->bPunish > 0) {
 		MultiSendCheating ();
 	}
 if (pCheat->cheatFunc) {
-	pCheat->cheatFunc ();
+	pCheat->cheatFunc (1);
 	}
 return 1;
 }

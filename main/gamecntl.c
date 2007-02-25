@@ -171,10 +171,6 @@ extern void DropCurrentWeapon();
 
 void FinalCheats(int key);
 
-#ifndef RELEASE
-void DoCheatMenu(void);
-#endif
-
 void HandleGameKey(int key);
 int HandleSystemKey(int key);
 void HandleTestKey(int key);
@@ -1607,7 +1603,7 @@ void HandleTestKey(int key)
 			break;
 
 		case KEY_DEBUGGED+KEY_R+KEY_SHIFTED:
-			KillAllRobots();
+			KillAllRobots (1);
 			break;
 
 		#ifdef EDITOR		//editor-specific functions
@@ -1820,7 +1816,7 @@ void HandleTestKey(int key)
 			break;
 
 		case KEY_DEBUGGED+KEY_SHIFTED+KEY_B:
-			KillEverything();
+			KillEverything (1);
 			break;
 	}
 }

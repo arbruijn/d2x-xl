@@ -1653,9 +1653,9 @@ void LoadGameTexts(void);
 #define TXT_HELP_PRTSCN_D2X		GT(871)
 #define TXT_SMOKE_STATIC			GT(872)
 #define TXT_AI_AWARENESS			GT(873)
+#define TXT_CHECK_PORT				GT(874)
 
 #if 0
-#define TXT_				GT(874)
 #define TXT_				GT(875)
 #define TXT_				GT(876)
 #define TXT_				GT(877)
@@ -1855,7 +1855,7 @@ void LoadGameTexts(void);
 #define HTX_MISC_ESCORTKEYS		HT(63)				
 #define HTX_MISC_FASTRESPAWN		HT(64)				
 #define HTX_MISC_USEMACROS			HT(65)				
-#define HTX_MISC_UDPQUAL			HT(66)				
+#define HTX_MULTI2_UDPQUAL			HT(66)				
 #define HTX_MISC_SMARTSEARCH		HT(67)				
 #define HTX_MISC_SHOWLVLVER		HT(68)				
 #define HTX_MISC_EXPMODE			HT(69)				
@@ -2054,10 +2054,10 @@ void LoadGameTexts(void);
 #define HTX_GPLAY_MSL_TURNSPEED	HT(252)				
 #define HTX_ADVRND_STATICSMOKE	HT(253)				
 #define HTX_GPLAY_AWARENESS		HT(254)				
+#define HTX_MULTI2_CHECKPORT		HT(255)				
 
 #if 0
 				
-#define HTX_					HT(255)				
 #define HTX_					HT(256)				
 #define HTX_					HT(257)				
 #define HTX_					HT(258)				

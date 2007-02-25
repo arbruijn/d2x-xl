@@ -391,11 +391,7 @@ if ((gameStates.multi.nGameType == IPX_GAME) ||
 		return 1;
 	}
 else if (gameStates.multi.nGameType == UDP_GAME) {
-#ifdef _DEBUG
-	if (memcmp (network1, network2, sizeof (network_info)))	//bCheck the port too
-#else
-	if (memcmp (network1, network2, sizeof (network_info) - 2))
-#endif
+	if (memcmp (network1, network2, extraGameInfo [1].bCheckUDPPort ? sizeof (network_info) : sizeof (network_info) - 2))	//bCheck the port too
 		return 1;
 	}
 #ifdef MACINTOSH
@@ -686,7 +682,7 @@ for (i = 0; i < gameData.multi.nPlayers; i++) {
 			}
 		}
 	else if (gameStates.multi.nGameType == UDP_GAME) {
-		if (!memcmp (gameData.multi.players [i].netAddress, local_address, 4) &&	//ignore the port
+		if (!memcmp (gameData.multi.players [i].netAddress, local_address, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
 			 !stricmp (gameData.multi.players [i].callsign, their->player.callsign)) {
 			nPlayer = i;
 			memcpy (gameData.multi.players [i].netAddress, local_address, 6);
@@ -2588,7 +2584,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	return 0;
 #endif
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	return memcmp (pNetwork->ipx.node, LOCAL_NODE, 4) ? 1 : 0;
+	return memcmp (pNetwork->ipx.node, LOCAL_NODE, extraGameInfo [1].bCheckUDPPort ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
 if (pNetwork->appletalk.node != networkData.mySeq.player.network.appletalk.node)
@@ -4506,6 +4502,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bShockwaves = 0;
 	extraGameInfo [i].bCompetition = 0;
 	extraGameInfo [i].bPowerupLights = i;
+	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nSpotSize = 2 - i;
@@ -4628,6 +4625,7 @@ else {
 	LogErr ("   nMaxSmokeGrenades: %d\n", extraGameInfo [1].nMaxSmokeGrenades);
 	LogErr ("   bCompetition: %d\n", extraGameInfo [1].bCompetition);
 	LogErr ("   bFlickerLights: %d\n", extraGameInfo [1].bFlickerLights);
+	LogErr ("   bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);

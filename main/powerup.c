@@ -779,6 +779,7 @@ switch (objP->id) {
 			if (playerP->laserLevel <= MAX_LASER_LEVEL)
 				playerP->laserLevel = MAX_LASER_LEVEL;
 			playerP->laserLevel++;
+			bLastPrimaryWasSuper [LASER_INDEX] = 1;
 			if (ISLOCALPLAYER (nPlayer)) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordLaserLevel (nOldLevel, playerP->laserLevel);

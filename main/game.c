@@ -108,6 +108,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "banlist.h"
 #include "input.h"
 #include "interp.h"
+#include "cheats.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -2166,6 +2167,8 @@ if (nDebugSlowdown) {
 		SetFunctionMode (FMODE_MENU);
 		return 1;
 		}
+	if (gameStates.gameplay.bMineMineCheat)
+		SuperWowieCheat (0);
 	AutoBalanceTeams ();
 	MultiSendTyping ();
 	MultiSendWeapons (0);

@@ -349,7 +349,6 @@ else {
 void SpawnBotTrigger (tObject *objP, short nSegment)
 {
 	tSegment2		*seg2p = &gameData.segs.segment2s [nSegment];
-	vmsVector		pos, delta;
 	tFuelCenInfo	*matCenP;
 	short				nType;
 

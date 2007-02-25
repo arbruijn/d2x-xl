@@ -1621,6 +1621,7 @@ char *defaultGameTexts [][2] = {
 	{"Alt+F9\t  Bildschirmabzug speichern", "Alt+F9\t  save screenshot"},
 	{"s~Tatischer Rauch", "s~Tatic smoke"},
 	{"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
+	{"UDP-~Port pruefen", "check UDP ~Port"},
 #if 0
 	{"", ""},
 #endif
@@ -2112,6 +2113,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked smoke dissipating from fixed locations in a mine\nis rendered."},
 	{"Wenn angekreuzt, bemerken Roboter den Spieler frueher und\nverfolgen ihn laenger.", 
 	 "If checked, robots will notice the player from further\naway and pursue him or her longer."},
+	{"Wenn angekreuzt, werden IP-Adresse und Portnummer der\nMitspieler dazu verwendet festzustellen, ob ein Spieler schon am Spiel\nteilnimmt. Das ist sinnvoll, wenn mehrere Teilnehmer die\nselbe IP-Adresse haben.\n\nIst die Option nicht angekreuzt, wird\nnur die IP-Adresse geprueft. Das ist sinnvoll, wenn andere\nSpieler Portnummer 0 verwenden, da sich dann u.U. staendig\nderen Port aendert.", 
+	 "If checked IP address and port number of the players\nwill be used to determine whether a player is already participating\nin the match. This makes sense when several players share an\nIP address.\n\nIf the option is unchecked, only the IP address\nis checked. This is recommendable if a participant is using\nport number 0, because that can cause his actual port number\nto constantly change."},
 #if 0
 	{"", ""},
 #endif
