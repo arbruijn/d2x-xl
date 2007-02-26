@@ -47,6 +47,8 @@ else
 	return defaultHelpTexts [_i][gameStates.app.bEnglish];
 }
 
+#define TXT_VERTIGO	"Vertigo"
+
 #define TXT_NEW_GAME            GAMETEXT ( 0)
 #define TXT_VIEW_SCORES         GAMETEXT ( 1)
 #define TXT_QUIT                GAMETEXT ( 2)

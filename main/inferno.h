@@ -1977,6 +1977,7 @@ extern float fInfinity [];
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 
 void D2SetCaption (void);
+void PrintVersionInfo (void);
 
 #endif
 

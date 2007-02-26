@@ -137,7 +137,6 @@ extern int bSaveScreenShot;
 
 void GameLoop (int, int);
 void GameRenderFrame ();
-void PrintVersionInfo (void);
 
 int ExecMenu4 (char * title, char * subtitle, int nItems, tMenuItem * item, 
 					  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
