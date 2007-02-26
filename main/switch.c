@@ -147,6 +147,8 @@ inline int DoExecObjTrigger (tTrigger *trigP, short nObject, int bDamage)
 
 if (bDamage != ((trigP->nType == TT_TELEPORT) || (trigP->nType == TT_SPAWN_BOT)))
 	return 0;
+if (!bDamage)
+	return 1;
 if (v >= 10)
 	return 0;
 if ((fix) (ObjectDamage (gameData.objs.objects + nObject) * 100) > v * 10)
@@ -948,6 +950,7 @@ switch (trigP->nType) {
 		break;
 
 	case TT_COUNTDOWN:
+		InitCountdown (trigP, 1);
 		break;
 
 	default:
@@ -1020,11 +1023,12 @@ if (gameData.app.nGameMode & GM_MULTI)
 
 void TriggersFrameProcess ()
 {
-	int i;
+	int		i;
+	tTrigger	*trigP = gameData.trigs.triggers;
 
-for (i = 0; i < gameData.trigs.nTriggers; i++)
-	if (gameData.trigs.triggers [i].time >= 0)
-		gameData.trigs.triggers [i].time -= gameData.time.xFrame;
+for (i = gameData.trigs.nTriggers; i; i--, trigP++)
+	if ((trigP->nType != TT_COUNTDOWN) && (trigP->time >= 0))
+		trigP->time -= gameData.time.xFrame;
 }
 
 //------------------------------------------------------------------------------

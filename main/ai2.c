@@ -2126,6 +2126,8 @@ i = FindBoss (OBJ_IDX (objP));
 if (i < 0)
 	return;
 Assert (gameData.boss [i].nTeleportSegs > 0);
+if (gameData.boss [i].nTeleportSegs <= 0)
+	return;
 do {
 	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
 	nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];

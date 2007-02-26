@@ -207,6 +207,21 @@ else {
 }
 
 //	-----------------------------------------------------------------------------
+
+void InitCountdown (tTrigger *trigP, int bReactorDestroyed)
+{
+if (trigP && (trigP->time > 0))
+	gameData.reactor.countdown.nTotalTime = trigP->time;
+else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
+	gameData.reactor.countdown.nTotalTime = gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL-gameStates.app.nDifficultyLevel-1)/2;
+else
+	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
+gameData.reactor.countdown.nTimer = i2f (gameData.reactor.countdown.nTotalTime);
+if (bReactorDestroyed)
+	gameData.reactor.bDestroyed = 1;
+}
+
+//	-----------------------------------------------------------------------------
 //	Called when control center gets destroyed.
 //	This code is common to whether control center is implicitly imbedded in a boss,
 //	or is an tObject of its own.
@@ -231,15 +246,7 @@ if (bFinalCountdown ||
 	if (bFinalCountdown)
 		if (gameData.missions.nCurrentLevel < 0)
 			CFDelete ("secret.sgc", gameFolders.szSaveDir);
-	if (bFinalCountdown || bReactor)
-		gameData.reactor.bDestroyed = 1;
-	if (trigP && (trigP->time > 0))
-		gameData.reactor.countdown.nTotalTime = trigP->time;
-	else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
-		gameData.reactor.countdown.nTotalTime = gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL-gameStates.app.nDifficultyLevel-1)/2;
-	else
-		gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
-	gameData.reactor.countdown.nTimer = i2f (gameData.reactor.countdown.nTotalTime);
+	InitCountdown (trigP, bFinalCountdown || bReactor);
 	}
 if (bReactor) {
 	ExecObjTriggers (OBJ_IDX (objP), 0);
