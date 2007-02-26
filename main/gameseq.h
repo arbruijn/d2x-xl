@@ -93,7 +93,7 @@ void open_message_window(void);
 void close_message_window(void);
 
 // create flash for tPlayer appearance
-extern void CreatePlayerAppearanceEffect(tObject *player_obj);
+extern void CreatePlayerAppearanceEffect (tObject *playerObjP);
 
 // goto whatever secrect level is appropriate given the current level
 extern void goto_secretLevel();

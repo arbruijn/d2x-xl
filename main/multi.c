@@ -2538,7 +2538,7 @@ MultiSendData (multiData.msg.buf, count, 2);
 
 //-----------------------------------------------------------------------------
 
-void multi_send_restore_game (ubyte slot, uint id)
+void MultiSendRestoreGame (ubyte slot, uint id)
 {
 	int count = 0;
 
@@ -3039,7 +3039,7 @@ void MultiInitiateRestoreGame ()
 	ubyte slot;
 	char filename [128];
 
-if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
+if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_LOAD_DEADPLRS);
@@ -3056,7 +3056,7 @@ if (!gameData.app.nStateGameId)
 	return;
 slot--;
 //StartTime ();
-multi_send_restore_game (slot, gameData.app.nStateGameId);
+MultiSendRestoreGame (slot, gameData.app.nStateGameId);
 MultiDoFrame ();
 MultiRestoreGame (slot, gameData.app.nStateGameId);
 }
@@ -3085,12 +3085,12 @@ void MultiRestoreGame (ubyte slot, uint id)
 	int nPlayer, i;
 	uint thisid;
 
-if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
+if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 saved_player = gameData.multi.players [gameData.multi.nLocalPlayer];
 sprintf (filename, "%s.mg%d", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, slot);
 gameData.app.bGamePaused = 1;
-for (i = 0;i<gameData.multi.nPlayers;i++)
+for (i = 0; i < gameData.multi.nPlayers; i++)
 	MultiStripRobots (i);
 thisid = StateGetGameId (filename);
 if (thisid != id) {

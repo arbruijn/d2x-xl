@@ -71,12 +71,12 @@ void (*pWarnFunc)(char *s) = warn_printf;
 //provides a function to call with warning messages
 void SetWarnFunc(void (*f)(char *s))
 {
-	pWarnFunc = f;
+pWarnFunc = f;
 }
 
 //------------------------------------------------------------------------------
 //uninstall warning function - install default //printf
-void ClearWarnFunc(void (*f)(char *s))
+void ClearWarnFunc (void (*f)(char *s))
 {
 #ifdef _WIN32
 pWarnFunc = NULL;
@@ -92,9 +92,9 @@ void _CDECL_ set_exit_message(char *fmt,...)
 	va_list arglist;
 	int len;
 
-va_start(arglist,fmt);
-len = vsprintf(szExitMsg,fmt,arglist);
-va_end(arglist);
+va_start (arglist,fmt);
+len = vsprintf (szExitMsg,fmt,arglist);
+va_end (arglist);
 if (len==-1 || len>MAX_MSG_LEN) 
 	Error("Message too long in set_exit_message (len=%d, max=%d)",len,MAX_MSG_LEN);
 }

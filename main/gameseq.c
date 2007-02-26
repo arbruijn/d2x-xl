@@ -654,15 +654,13 @@ fix flashDist=fl2f (.9);
 //create flash for tPlayer appearance
 void CreatePlayerAppearanceEffect (tObject *playerObjP)
 {
-	vmsVector pos;
-	tObject *effectObjP;
+	vmsVector	pos;
+	tObject		*effectObjP;
+#ifdef _DEBUG
+	int			nObject = OBJ_IDX (playerObjP);
 
-#ifndef NDEBUG
-	{
-	int nObject = OBJ_IDX (playerObjP);
 	if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
 		Int3 (); // See Rob, trying to track down weird network bug
-	}
 #endif
 if (playerObjP == gameData.objs.viewer)
 	VmVecScaleAdd (&pos, &playerObjP->position.vPos, &playerObjP->position.mOrient.fVec, FixMul (playerObjP->size,flashDist));

@@ -2167,8 +2167,10 @@ if (nDebugSlowdown) {
 		SetFunctionMode (FMODE_MENU);
 		return 1;
 		}
-	if (gameStates.gameplay.bMineMineCheat)
-		SuperWowieCheat (0);
+	if (gameStates.gameplay.bMineMineCheat) {
+		WowieCheat (0);
+		GasolineCheat (0);
+		}
 	AutoBalanceTeams ();
 	MultiSendTyping ();
 	MultiSendWeapons (0);

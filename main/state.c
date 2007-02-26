@@ -1110,7 +1110,7 @@ CFWriteInt (gameData.missions.nNextLevel, fp);
 //Save gameData.time.xGame
 CFWriteFix (gameData.time.xGame, fp);
 // If coop save, save all
-if (gameData.app.nGameMode & GM_MULTI_COOP) {
+if (IsCoopGame) {
 	CFWriteInt (gameData.app.nStateGameId, fp);
 	StateSaveNetGame (fp);
 	//fpos = CFTell (fp);
@@ -1503,7 +1503,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int StateSetServerPlayer (tPlayer *restore_players, int nPlayers, char *pszServerCallSign,
+int StateSetServerPlayer (tPlayer *restoredPlayers, int nPlayers, char *pszServerCallSign,
 								  int *pnOtherObjNum, int *pnServerObjNum)
 {
 	int	i,
@@ -1523,17 +1523,17 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 				}
 		}
 	if (nServerPlayer > 0) {
-		nOtherObjNum = restore_players [0].nObject;
-		nServerObjNum = restore_players [nServerPlayer].nObject;
+		nOtherObjNum = restoredPlayers [0].nObject;
+		nServerObjNum = restoredPlayers [nServerPlayer].nObject;
 		{
 		tNetPlayerInfo h = netPlayers.players [0];
 		netPlayers.players [0] = netPlayers.players [nServerPlayer];
 		netPlayers.players [nServerPlayer] = h;
 		}
 		{
-		tPlayer h = restore_players [0];
-		restore_players [0] = restore_players [nServerPlayer];
-		restore_players [nServerPlayer] = h;
+		tPlayer h = restoredPlayers [0];
+		restoredPlayers [0] = restoredPlayers [nServerPlayer];
+		restoredPlayers [nServerPlayer] = h;
 		}
 		if (gameStates.multi.bServer || NetworkIAmMaster ())
 			gameData.multi.nLocalPlayer = 0;
@@ -1552,20 +1552,20 @@ return nServerPlayer;
 
 //------------------------------------------------------------------------------
 
-void StateGetConnectedPlayers (tPlayer *restore_players, int nPlayers)
+void StateGetConnectedPlayers (tPlayer *restoredPlayers, int nPlayers)
 {
 	int	i, j;
 
 for (i = 0; i < nPlayers; i++) {
 	for (j = 0; j < nPlayers; j++) {
-      if ((!stricmp (restore_players [i].callsign, gameData.multi.players [j].callsign)) && 
+      if ((!stricmp (restoredPlayers [i].callsign, gameData.multi.players [j].callsign)) && 
 			 gameData.multi.players [j].connected) {
-			restore_players [i].connected = 1;
+			restoredPlayers [i].connected = 1;
 			break;
 			}
 		}
 	}
-memcpy (gameData.multi.players, restore_players, sizeof (tPlayer) * nPlayers);
+memcpy (gameData.multi.players, restoredPlayers, sizeof (tPlayer) * nPlayers);
 gameData.multi.nPlayers = nPlayers;
 if (NetworkIAmMaster ()) {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
@@ -2057,7 +2057,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
 {
-	tPlayer	restore_players [MAX_PLAYERS];
+	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
@@ -2079,7 +2079,7 @@ nNextLevel = CFReadInt (fp);
 gameData.time.xGame = CFReadFix (fp);
 // Start new game....
 StateRestoreMultiGame (szOrgCallSign, bMulti, bSecretRestore);
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, netPlayers.players [0].callsign);
@@ -2089,14 +2089,14 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	StateRestoreNetPlayers (fp);
 	//fpos = CFTell (fp);
 	nPlayers = CFReadInt (fp);
-	//for (i = 0; i < nPlayers; i++)
-		nSavedLocalPlayer = gameData.multi.nLocalPlayer;
+	nSavedLocalPlayer = gameData.multi.nLocalPlayer;
+	gameData.multi.nLocalPlayer = CFReadInt (fp);
 	for (i = 0; i < nPlayers; i++)
-		StateRestorePlayer (restore_players + i, fp);
+		StateRestorePlayer (restoredPlayers + i, fp);
 	//fpos = CFTell (fp);
 	// make sure the current game host is in tPlayer slot #0
-	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
-	StateGetConnectedPlayers (restore_players, nPlayers);
+	nServerPlayer = StateSetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
+	StateGetConnectedPlayers (restoredPlayers, nPlayers);
 	}
 //Read tPlayer info
 if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
@@ -2314,7 +2314,7 @@ return 1;
 
 int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
 {
-	tPlayer	restore_players [MAX_PLAYERS];
+	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
@@ -2347,9 +2347,9 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	CFRead (&gameData.multi.nLocalPlayer, sizeof (gameData.multi.nLocalPlayer), 1, fp);
 	nSavedLocalPlayer = gameData.multi.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
-		CFRead (restore_players + i, sizeof (tPlayer), 1, fp);
-	nServerPlayer = StateSetServerPlayer (restore_players, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
-	StateGetConnectedPlayers (restore_players, nPlayers);
+		CFRead (restoredPlayers + i, sizeof (tPlayer), 1, fp);
+	nServerPlayer = StateSetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
+	StateGetConnectedPlayers (restoredPlayers, nPlayers);
 	}
 
 //Read tPlayer info
@@ -2604,7 +2604,7 @@ if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {
 	for (i = 0; i < gameData.multi.nPlayers; i++) {
-	  if (gameData.multi.players [i].connected != 1) {
+	  if (!gameData.multi.players [i].connected) {
 			NetworkDisconnectPlayer (i);
   			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [i].nObject);
 	      }

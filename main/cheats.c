@@ -716,10 +716,8 @@ SetLastSuperWeaponStates ();
 
 void SuperWowieCheat (int bVerbose)
 {
-if (gameStates.gameplay.bMineMineCheat) {
-	WowieCheat (bVerbose);
-	GasolineCheat (bVerbose);
-	}
+if (gameStates.gameplay.bMineMineCheat)
+	gameStates.gameplay.bMineMineCheat = 0;
 else {
 	AccessoryCheat (bVerbose);
 	WowieCheat (bVerbose);

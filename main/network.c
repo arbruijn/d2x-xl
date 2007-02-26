@@ -342,13 +342,12 @@ int NetworkIAmMaster (void)
 
 	int i;
 
-	if (!(gameData.app.nGameMode & GM_NETWORK))
-		return (gameData.multi.nLocalPlayer == 0);
-
-	for (i = 0; i < gameData.multi.nLocalPlayer; i++)
-		if (gameData.multi.players [i].connected)
-			return 0;
-	return 1;
+if (!IsMultiGame)
+	return (gameData.multi.nLocalPlayer == 0);
+for (i = 0; i < gameData.multi.nLocalPlayer; i++)
+	if (gameData.multi.players [i].connected)
+		return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -2866,7 +2865,7 @@ void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 NetworkListen ();
 if (networkData.nStatus != NETSTAT_WAITING)  // Status changed to playing, exit the menu
 	*key = -2;
-if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1+F1_0*2)) {
+else if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1 + F1_0 * 2)) {
 	int i;
 
 	// Poll time expired, re-send request
@@ -2891,10 +2890,11 @@ int NetworkWaitForSync (void)
 	
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
-m [0].nType=NM_TYPE_TEXT; 
+m [0].nType = NM_TYPE_TEXT; 
 m [0].text = text;
-m [1].nType=NM_TYPE_TEXT; 
+m [1].nType = NM_TYPE_TEXT; 
 m [1].text = TXT_NET_LEAVE;
+networkData.bRejoined = 0;
 i = NetworkSendRequest ();
 if (i < 0)
 	return -1;
@@ -3228,7 +3228,7 @@ int NetworkListen ()
 {
 	int size;
 	ubyte packet [IPX_MAX_DATA_SIZE];
-	int i, t, nPackets, loopmax=999;
+	int i, t, nPackets, loopmax = 999;
 
 CleanUploadDests ();
 AddServerToTracker ();
@@ -3242,8 +3242,8 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
 	con_printf (CON_DEBUG, "Calling NetworkListen () when not in net game.\n");
 #endif
-networkData.bWaitingForPlayerInfo=1;
-networkData.nSecurityFlag=NETSECURITY_OFF;
+networkData.bWaitingForPlayerInfo = 1;
+networkData.nSecurityFlag = NETSECURITY_OFF;
 
 t = SDL_GetTicks ();
 if (gameStates.multi.nGameType >= IPX_GAME) {

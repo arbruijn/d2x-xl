@@ -1439,7 +1439,7 @@ char *defaultGameTexts [][2] = {
 	{"Kein(e) %s in der Mine", "No %s in mine."},
 	{"Kann %s nicht erreichen", "Can't reach %s."},
 	{"Hey, Dein Scheinwerfer ist an!", "Hey, your headlight's on!"},
-	{"Ups, 'chulligung ...", "Oops, sorry 'bout that..."},
+	{"Ups, 'schulligung ...", "Oops, sorry 'bout that..."},
 	{"Ich komm und hol Dich.", "Coming back to get you."},
 	{"KLICK!", "CLICK!"},
 	{"AAAHUGA!", "GAHOOGA!"},
