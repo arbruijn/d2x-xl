@@ -3191,7 +3191,7 @@ do {
 	opt++;
 	ADD_MENU (opt, strupr (TXT_CONTROLS_), KEY_O, HTX_OPTIONS_CONFIG);
 	optConfig = opt++;
-#if defined (_WIN32) || defined (__linux__)
+#if defined (_WIN32) || defined (__unix__)
 	optJoyCal = -1;
 #else
 	ADD_MENU (opt, TXT_CAL_JOYSTICK, KEY_J, HTX_OPTIONS_CALSTICK);

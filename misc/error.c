@@ -146,7 +146,7 @@ if (grdCurScreen && pWarnFunc)
 #if defined (WIN32)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
-#elif defined (__linux__)
+#elif defined (__unix__)
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);

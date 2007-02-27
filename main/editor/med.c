@@ -779,7 +779,7 @@ int DosShell()
 	//fflush(stdout);
 
 	key_close();
-#ifndef __LINUX__
+#ifndef __unix__
 	ok = spawnl(P_WAIT,getenv("COMSPEC"), NULL );
 #else
         system("");
