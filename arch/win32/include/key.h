@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added KEY_PRINT_SCREEN
  * 
  * Revision 1.17  1994/08/31  12:22:13  john
- * Added KEY_DEBUGGED
+ * Added KEYDBGGED
  * 
  * Revision 1.16  1994/08/24  18:53:50  john
  * Made Cyberman read like normal mouse; added dpmi module; moved
@@ -154,7 +154,7 @@ extern char * key_text[256];
 #define KEY_SHIFTED     0x100
 #define KEY_ALTED       0x200
 #define KEY_CTRLED      0x400
-#define KEY_DEBUGGED	0x800
+#define KEYDBGGED	0x800
 
 #define KEY_0           11
 #define KEY_1           2

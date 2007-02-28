@@ -151,7 +151,7 @@ extern int bOcclusionQuery;
 #	ifdef GL_VERSION_20
 #		undef GL_VERSION_20
 #	endif
-#elif defined (__unix__)
+#elif defined (__linux__)
 #	ifdef GL_VERSION_20
 #		undef GL_VERSION_20
 #	endif

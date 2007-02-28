@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"	//	for powerup outline drawing
 #include "editor/editor.h"
 #endif
-
+//#define _DEBUG
 int ReturnFlagHome (tObject *pObj);
 void InvalidateEscortGoal (void);
 char GetKeyValue (char);
@@ -257,7 +257,7 @@ AddPointsToScore (score);
 
 //------------------------------------------------------------------------------
 
-//#ifndef RELEASE
+//#ifdef _DEBUG
 //	Give the megawow powerup!
 void DoMegaWowPowerup (int quantity)
 {
@@ -751,7 +751,7 @@ switch (objP->id) {
 			}
 		break;
 
-#ifndef RELEASE
+#ifdef _DEBUG
 	case POW_MEGAWOW:
 		DoMegaWowPowerup (50);
 		bUsed = 1;

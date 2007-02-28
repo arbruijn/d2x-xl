@@ -255,7 +255,7 @@ void DoThiefFrame(tObject *objP)
 
 		default:
 #if TRACE
-			con_printf (CON_DEBUG,"Thief mode (broken) = %d\n",ailp->mode);
+			con_printf (CONDBG,"Thief mode (broken) = %d\n",ailp->mode);
 #endif
 			// -- Int3();	//	Oops, illegal mode for thief behavior.
 			ailp->mode = AIM_THIEF_ATTACK;
@@ -518,7 +518,7 @@ void DropStolenItems(tObject *objP)
 {
 	int	i;
 #if TRACE
-        con_printf (CON_DEBUG,"Dropping thief items!\n");
+        con_printf (CONDBG,"Dropping thief items!\n");
 #endif
 	// -- compress_stolen_items();
 

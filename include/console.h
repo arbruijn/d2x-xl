@@ -18,7 +18,7 @@
 #define CON_URGENT   -1
 #define CON_NORMAL    0
 #define CON_VERBOSE   1
-#define CON_DEBUG     2
+#define CONDBG     2
 
 int  con_init(void);
 void con_resize(void);

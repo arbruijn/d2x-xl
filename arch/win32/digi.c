@@ -510,7 +510,7 @@ void DigiPauseMidi() {}
 void DigiResumeMidi() {}
 #endif
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 void DigiDebug()
 {
 	int i;

@@ -831,9 +831,9 @@ if (!bRender)
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
 		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
 #if TRACE	
-			//con_printf (CON_DEBUG, "Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n", tmap1, gameData.pig.tex.nTextures);
+			//con_printf (CONDBG, "Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n", tmap1, gameData.pig.tex.nTextures);
 #endif
-#ifndef RELEASE
+#ifdef _DEBUG
 			Int3();
 #endif
 		sideP->nBaseTex = 0;
@@ -1314,7 +1314,7 @@ void DoRenderObject(int nObject, int nWindow)
 			// A nice fat hack: keeps the tPlayer ship from showing up in the
 			// small extra view when guiding a missile in the big window
 #if TRACE	
-			//con_printf (CON_DEBUG, "Returning from RenderObject prematurely...\n");
+			//con_printf (CONDBG, "Returning from RenderObject prematurely...\n");
 #endif
   			return; 
 			}
@@ -3267,7 +3267,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						lCnt++;
 						if (lCnt >= MAX_RENDER_SEGS) {
 #if TRACE								
-							//con_printf (CON_DEBUG, "Too many segs in render list!!\n"); 
+							//con_printf (CONDBG, "Too many segs in render list!!\n"); 
 #endif
 							goto done_list;
 							}
@@ -3538,7 +3538,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	TransformSideCenters ();
 #endif
 	RotateSideNorms ();
-#if defined(EDITOR) && !defined(NDEBUG)
+#if defined(EDITOR) && defined (_DEBUG)
 	if (bShowOnlyCurSide) {
 		RotateList (8, Cursegp->verts);
 		RenderSide (Cursegp, Curside);

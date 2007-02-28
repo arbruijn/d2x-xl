@@ -43,6 +43,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "fvi_a.h"
 
+//#define _DEBUG
+
 //	-----------------------------------------------------------------------------
 //find the point on the specified plane where the line intersects
 //returns true if point found, false if line parallel to plane
@@ -62,7 +64,7 @@ den = -VmVecDot (plane_norm, &d);
 num -= rad;			//move point out by rad
 if (!den)
 	return 0;
-else if (den > 0) {
+if (den > 0) {
 	if ((num > den) || (-num >> 15 >= den)) //frac greater than one
 		return 0;
 	}
@@ -88,7 +90,7 @@ typedef struct vec2d {
 
 //given largest componant of normal, return i & j
 //if largest componant is negative, swap i & j
-int ij_table [3][2] =        {
+int ijTable [3][2] =        {
 							{2, 1},          //pos x biggest
 							{0, 2},          //pos y biggest
 							{1, 0},          //pos z biggest
@@ -124,23 +126,22 @@ else
 t.p.x = labs (vNormal.v [0]); 
 t.p.y = labs (vNormal.v [1]); 
 t.p.z = labs (vNormal.v [2]);
-
 if (t.p.x > t.p.y) 
 	if (t.p.x > t.p.z) 
-		biggest=0; 
+		biggest = 0; 
 	else 
-		biggest=2;
-	else if (t.p.y > t.p.z) 
-		biggest = 1; 
-	else 
-		biggest=2;
+		biggest = 2;
+else if (t.p.y > t.p.z) 
+	biggest = 1; 
+else 
+	biggest = 2;
 if (vNormal.v [biggest] > 0) {
-	i = ij_table [biggest][0];
-	j = ij_table [biggest][1];
+	i = ijTable [biggest][0];
+	j = ijTable [biggest][1];
 	}
 else {
-	i = ij_table [biggest][1];
-	j = ij_table [biggest][0];
+	i = ijTable [biggest][1];
+	j = ijTable [biggest][0];
 	}
 //now do the 2d problem in the i, j plane
 check_i = checkP->v [i];
@@ -191,8 +192,7 @@ if (gameStates.render.bRendering) {
 	v0 = &gameData.segs.points [vertList [iFace * 3 + nEdge]].p3_vec;
 	v1 = &gameData.segs.points [vertList [iFace * 3 + ((nEdge + 1) % nv)]].p3_vec;
 	}
-else 
-	{
+else {
 	v0 = gameData.segs.vertices + vertList [iFace * 3 + nEdge];
 	v1 = gameData.segs.vertices + vertList [iFace * 3 + ((nEdge + 1) % nv)];
 	}
@@ -514,7 +514,7 @@ int FVICompute (vmsVector *intP, short *intS, vmsVector *p0, short nStartSeg, vm
 					 short *nSegments, int entrySegP);
 
 //Find out if a vector intersects with anything.
-//Fills in hitData, an fvi_info structure (see header file).
+//Fills in hitData, an tFVIData structure (see header file).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -523,7 +523,7 @@ int FVICompute (vmsVector *intP, short *intS, vmsVector *p0, short nStartSeg, vm
 //  ingore_obj			ignore collisions with this tObject
 //  check_objFlag	determines whether collisions with gameData.objs.objects are checked
 //Returns the hitData->nHitType
-int FindVectorIntersection (fvi_query *fq, fvi_info *hitData)
+int FindVectorIntersection (fvi_query *fq, tFVIData *hitData)
 {
 	int			nHitType, nNewHitType;
 	short			nHitSegment, nHitSegment2;
@@ -614,10 +614,9 @@ int ObjectInList(short nObject, short *obj_list)
 {
 	short t;
 
-	while ((t=*obj_list)!=-1 && t!=nObject) 
-		obj_list++;
-
-	return (t==nObject);
+while ((t=*obj_list) != -1 && t != nObject) 
+	obj_list++;
+return (t==nObject);
 
 }
 
@@ -662,7 +661,7 @@ if (flags & FQ_CHECK_OBJS)
 	for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
 		if (!(gameData.objs.objects [nObject].flags & OF_SHOULD_BE_DEAD) &&
 				(nThisObject != nObject) &&
-				(!ignoreObjList || !ObjectInList(nObject, ignoreObjList)) &&
+				(!ignoreObjList || !ObjectInList (nObject, ignoreObjList)) &&
 				!LasersAreRelated (nObject, nThisObject) &&
 				!((nThisObject > -1) &&
 				  (CollisionResult [gameData.objs.objects [nThisObject].nType][gameData.objs.objects [nObject].nType] == RESULT_NOTHING) &&
@@ -685,18 +684,15 @@ if (flags & FQ_CHECK_OBJS)
 			if (gameData.objs.objects [nThisObject].nType == OBJ_PLAYER &&
 					((gameData.objs.objects [nObject].nType == OBJ_PLAYER) ||
 					((gameData.app.nGameMode&GM_MULTI_COOP) &&  gameData.objs.objects [nObject].nType == OBJ_WEAPON && gameData.objs.objects [nObject].cType.laserInfo.parentType == OBJ_PLAYER)))
-				nFudgedRad = rad/2;	//(rad*3)/4;
-
+				nFudgedRad = rad / 2;	//(rad*3)/4;
 			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, gameData.objs.objects + nObject, 
-												&gameData.objs.objects [nThisObject]);
-
-			if (d)          //we have intersection
-				if (d < dMin) {
-					fviHitData.nObject = nObject;
-					Assert(fviHitData.nObject!=-1);
-					dMin = d;
-					vClosestHitPoint = vHitPoint;
-					nHitType = HIT_OBJECT;
+											 gameData.objs.objects + nThisObject);
+			if (d && (d < dMin)) {
+				fviHitData.nObject = nObject;
+				Assert (fviHitData.nObject != -1);
+				dMin = d;
+				vClosestHitPoint = vHitPoint;
+				nHitType = HIT_OBJECT;
 				}
 		}
 
@@ -704,6 +700,7 @@ if ((nThisObject > -1) && (CollisionResult [gameData.objs.objects [nThisObject].
 	rad = 0;		//HACK - ignore when edges hit walls
 #else
 nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].nType;
+#if 1
 if (flags & FQ_CHECK_OBJS) {
 	//LogErr ("   checking objects...");
 	for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
@@ -739,9 +736,7 @@ if (flags & FQ_CHECK_OBJS) {
 			 ((nOtherType == OBJ_PLAYER) ||
 			  (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 			nFudgedRad = rad / 2;
-
 		d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
-
 		if (d && (d < dMin)) {
 			fviHitData.nObject = nObject;
 			Assert(fviHitData.nObject != -1);
@@ -752,12 +747,12 @@ if (flags & FQ_CHECK_OBJS) {
 		}
 	//LogErr ("done\n");
 	}
-
+#endif
 if ((nThisObject > -1) && (CollisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	rad = 0;		//HACK - ignore when edges hit walls
 #endif
 //now, check tSegment walls
-startMask = GetSegMasks (p0, nStartSeg, (p1 == NULL) ? 0 : rad).faceMask;
+startMask = GetSegMasks (p0, nStartSeg, rad).faceMask;
 masks = GetSegMasks (p1, nStartSeg, rad);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
@@ -776,18 +771,9 @@ if (endMask = masks.faceMask) { //on the back of at least one iFace
 				if (segP->children [nSide] == entrySegP)
 					continue;		//don't go back through entry nSide
 				//did we go through this wall/door?
-				if (startMask & bit)	{	//start was also though.  Do extra check
-					//LogErr ("   SpecialCheckLineToFace...");
-					nFaceHitType = SpecialCheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad);
-					//LogErr ("done\n");
-					}
-				else {
-					//NOTE LINK TO ABOVE!!
-					//LogErr ("   CheckLineToFace...");
-					nFaceHitType = CheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad);
-					//LogErr ("done\n");
-					}
-				//LogErr ("   nFaceHitType = %d\n", nFaceHitType);
+				nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
+					SpecialCheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad) :
+					CheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, rad);
 				if (nFaceHitType) { //through this wall/door
 					int widFlag = WALL_IS_DOORWAY (segP, nSide, gameData.objs.objects + nThisObject);
 					//LogErr ("done\n");
@@ -862,7 +848,7 @@ if (endMask = masks.faceMask) { //on the back of at least one iFace
 								if (subHitSeg != -1) 
 									nHitNoneSegment = subHitSeg;
 								//copy segList
-								if (flags&FQ_GET_SEGLIST) {
+								if (flags & FQ_GET_SEGLIST) {
 #if FVI_NEWCODE != 2
 									int i;
 									for (i = 0; (i < nTempSegs) && (i < MAX_FVI_SEGS - 1); i++)
@@ -971,7 +957,7 @@ void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int 
 //when do I return 0 & 1 for non-transparent walls?
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 #if TRACE
-	con_printf (CON_DEBUG, "Bad nSegment (%d) in FindHitPointUV()\n", nSegment);
+	con_printf (CONDBG, "Bad nSegment (%d) in FindHitPointUV()\n", nSegment);
 #endif
 	*u = *v = 0;
 	return;
@@ -1171,7 +1157,7 @@ int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSeg
 {
 	fvi_query	fq;
 	int			nHitType;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 
 	//see if we can see this tPlayer
 

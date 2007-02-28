@@ -609,7 +609,7 @@ int load_mine_data (CFILE *loadFile)
 				if (tmapTimes_used [i])
 					count++;
 #if TRACE
-			con_printf (CON_DEBUG, "This mine has %d unique textures in it (~%d KB)\n", count, (count*4096) /1024 );
+			con_printf (CONDBG, "This mine has %d unique textures in it (~%d KB)\n", count, (count*4096) /1024 );
 #endif
 		}
 	
@@ -622,7 +622,7 @@ int load_mine_data (CFILE *loadFile)
 	if ( mine_fileinfo.vertex_howmany > MAX_VERTICES )
 		{
 #if TRACE
-		con_printf (CON_DEBUG, "Num vertices exceeds maximum.  Loading MAX %d vertices\n", MAX_VERTICES);
+		con_printf (CONDBG, "Num vertices exceeds maximum.  Loading MAX %d vertices\n", MAX_VERTICES);
 #endif
 		mine_fileinfo.vertex_howmany = MAX_VERTICES;
 		}
@@ -649,7 +649,7 @@ int load_mine_data (CFILE *loadFile)
 	// New check added to make sure we don't read in too many segments.
 	if ( mine_fileinfo.segment_howmany > MAX_SEGMENTS ) {
 #if TRACE
-		con_printf (CON_DEBUG, "Num segments exceeds maximum.  Loading MAX %d segments\n", MAX_SEGMENTS);
+		con_printf (CONDBG, "Num segments exceeds maximum.  Loading MAX %d segments\n", MAX_SEGMENTS);
 #endif
 		mine_fileinfo.segment_howmany = MAX_SEGMENTS;
 		mine_fileinfo.segment2_howmany = MAX_SEGMENTS;
@@ -728,7 +728,7 @@ int load_mine_data (CFILE *loadFile)
 					if ((WALL_IS_DOORWAY (gameData.segs.segments + i, j, NULL) & WID_RENDER_FLAG))
 						if (gameData.segs.segments [i].sides [j].nBaseTex < 0)	{
 #if TRACE
-							con_printf (CON_DEBUG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
+							con_printf (CONDBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
 							Int3 ();
 							gameData.segs.segments [i].sides [j].nBaseTex = gameData.pig.tex.nTextures-1;
@@ -740,7 +740,7 @@ int load_mine_data (CFILE *loadFile)
 						if ((WALL_IS_DOORWAY (gameData.segs.segments + i, j, NULL) & WID_RENDER_FLAG))
 							if (xlated_tmap <= 0)	{
 #if TRACE
-								con_printf (CON_DEBUG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
+								con_printf (CONDBG, "Couldn't find texture '%s' for Segment %d, tSide %d\n", old_tmap_list [tmap_xlate], i, j);
 #endif
 								Int3 ();
 								gameData.segs.segments [i].sides [j].nOvlTex = gameData.pig.tex.nTextures - 1;
@@ -1719,8 +1719,8 @@ nCompiledVersion = CFReadByte (loadFile);
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
 if (nCompiledVersion!=COMPILED_MINE_VERSION)
-	con_printf (CON_DEBUG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
-con_printf (CON_DEBUG, "   compiled mine version = %d\n", nCompiledVersion);
+	con_printf (CONDBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
+con_printf (CONDBG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
 if (bNewFileFormat)
 	gameData.segs.nVertices = CFReadShort (loadFile);
@@ -1728,7 +1728,7 @@ else
 	gameData.segs.nVertices = CFReadInt (loadFile);
 Assert ( gameData.segs.nVertices <= MAX_VERTICES );
 #if TRACE
-con_printf (CON_DEBUG, "   %d vertices\n", gameData.segs.nVertices);
+con_printf (CONDBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
 if (bNewFileFormat)
 	gameData.segs.nSegments = CFReadShort (loadFile);
@@ -1736,7 +1736,7 @@ else
 	gameData.segs.nSegments = CFReadInt (loadFile);
 Assert ( gameData.segs.nSegments <= MAX_SEGMENTS );
 #if TRACE
-con_printf (CON_DEBUG, "   %d segments\n", gameData.segs.nSegments);
+con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
 	CFReadVector (gameData.segs.vertices+i, loadFile);
@@ -1748,7 +1748,7 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	}
 memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));
 #if TRACE
-con_printf (CON_DEBUG, "   loading segments ...\n");
+con_printf (CONDBG, "   loading segments ...\n");
 #endif
 gameData.segs.nLastVertex = gameData.segs.nVertices-1;
 gameData.segs.nLastSegment = gameData.segs.nSegments-1;

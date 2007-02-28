@@ -230,7 +230,7 @@ int IpxGetPacketData (ubyte *data)
 
 while (driver->PacketReady (&ipxSocketData)) {
 	size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
-#if 0//def _DEBUG
+#ifdef _DEBUG
 	HUDMessage (0, "received %d bytes from %d.%d.%d.%d:%u", 
 					size,
 					ipx_udpSrc.src_node [0],

@@ -2110,7 +2110,7 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
-#ifdef RELEASE
+#ifndef _DEBUG
 			glEnableClientState (GL_VERTEX_ARRAY);
 			glVertexPointer (3, GL_FLOAT, 0, v);
 			glDrawArrays (GL_QUADS, 0, 4);

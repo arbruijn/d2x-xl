@@ -1642,7 +1642,7 @@ if (!bomb)
 if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXIMITY_INDEX))
 	return;
 count = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[bomb];
-#ifndef RELEASE
+#ifdef _DEBUG
 count = min (count, 99);	//only have room for 2 digits - cheating give 200
 #endif
 countx = (bomb==PROXIMITY_INDEX)?count:-count;
@@ -3850,7 +3850,7 @@ for (i = 0; i < n_players; i++) {
 		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb [player_num].r, player_rgb [player_num].g, player_rgb [player_num].b), 1, 0, 0);
 	if (multiData.kills.bShowList == 3) {
 		if (GetTeam (gameData.multi.nLocalPlayer) == i) {
-#if 0//def _DEBUG
+#ifdef _DEBUG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d", 
 						teamInd [0], netGame.team_name [i], 
 						netPlayers.players [i].network.ipx.node [0], 
@@ -3865,7 +3865,7 @@ for (i = 0; i < n_players; i++) {
 			indent = 0;
 			}
 		else {
-#if 0//def _DEBUG
+#ifdef _DEBUG
 			sprintf (name, "%-8s %d.%d.%d.%d:%d", 
 						netGame.team_name [i], 
 						netPlayers.players [i].network.ipx.node [0], 
@@ -3881,7 +3881,7 @@ for (i = 0; i < n_players; i++) {
 			}
 		}
 	else
-#if 0//def _DEBUG
+#ifdef _DEBUG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d", 
 					gameData.multi.players [player_num].callsign, 
 					netPlayers.players [player_num].network.ipx.node [0], 
@@ -3893,7 +3893,7 @@ for (i = 0; i < n_players; i++) {
 #else
 		strcpy (name, gameData.multi.players [player_num].callsign);	// Note link to above if!!
 #endif
-#if 0//def _DEBUG
+#ifdef _DEBUG
 	x1 += LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
@@ -3933,7 +3933,7 @@ for (i = 0; i < n_players; i++) {
 		if (bGetPing)
 			PingPlayer (player_num);
 		if (pingStats [player_num].sent) {
-#if 0//def _DEBUG
+#ifdef _DEBUG
 			GrPrintF (x1 + xo, y, "%lu %d %d", 
 						  pingStats [player_num].ping, 
 						  pingStats [player_num].sent, 
@@ -3950,7 +3950,7 @@ for (i = 0; i < n_players; i++) {
 
 //	-----------------------------------------------------------------------------
 
-#ifndef RELEASE
+#ifdef _DEBUG
 extern int Saving_movie_frames;
 #else
 #define Saving_movie_frames 0
@@ -3963,7 +3963,7 @@ int CanSeeObject (int nObject, int bCheckObjs)
 {
 	fvi_query fq;
 	int nHitType;
-	fvi_info hit_data;
+	tFVIData hit_data;
 
 	//see if we can see this tPlayer
 
@@ -4142,7 +4142,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
 			}
 		}
-#ifndef RELEASE
+#ifdef _DEBUG
 		if (!(gameData.app.nGameMode&GM_MULTI && multiData.kills.bShowList) && !Saving_movie_frames)
 			ShowTime ();
 #endif

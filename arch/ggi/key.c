@@ -251,7 +251,7 @@ void keyboard_handler(int button, ubyte state)
 
 	keyState = state;
 	event_key = giiKeyTranslate(button);
-	//con_printf (CON_DEBUG,"keyboard_handler(%i,%i):%i\n",button,state,event_key);
+	//con_printf (CONDBG,"keyboard_handler(%i,%i):%i\n",button,state,event_key);
 
 	//=====================================================
 	//Here a translation from win keycodes to mac keycodes!
@@ -297,7 +297,7 @@ void keyboard_handler(int button, ubyte state)
 			if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL])
 				keycode |= KEY_CTRLED;
                         if ( keyd_pressed[KEY_DELETE] )
-                                keycode |= KEY_DEBUGGED;
+                                keycode |= KEYDBGGED;
 			temp = key_data.keytail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
@@ -441,9 +441,9 @@ unsigned int key_get_shift_status()
 	if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL] )
 		shift_status |= KEY_CTRLED;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (keyd_pressed[KEY_DELETE])
-		shift_status |=KEY_DEBUGGED;
+		shift_status |=KEYDBGGED;
 #endif
 
 	return shift_status;

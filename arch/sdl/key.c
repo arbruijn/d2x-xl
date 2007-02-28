@@ -433,7 +433,7 @@ void key_handler(SDL_KeyboardEvent *event)
 				keycode |= KEY_COMMAND;
 #ifdef _DEBUG
       if ( keyd_pressed[KEY_DELETE] )
-				keycode |= KEY_DEBUGGED;
+				keycode |= KEYDBGGED;
 #endif				
 			temp = key_data.keytail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
@@ -595,7 +595,7 @@ unsigned int key_get_shift_status()
 
 #ifdef _DEBUG
 	if (keyd_pressed[KEY_DELETE])
-		shift_status |=KEY_DEBUGGED;
+		shift_status |=KEYDBGGED;
 #endif
 
 	return shift_status;

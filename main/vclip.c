@@ -41,7 +41,7 @@ int iFrame;
 if (timeToLive > pvc->xTotalTime)
 	timeToLive = timeToLive % pvc->xTotalTime;
 iFrame = (pvc->xTotalTime - timeToLive) / pvc->xFrameTime;
-#if 0//def _DEBUG
+#ifdef _DEBUG
 HUDMessage (0, "%d/%d %d/%d", iFrame, nFrames, timeToLive, pvc->xFrameTime);
 #endif
 return (iFrame < nFrames) ? iFrame : nFrames - 1;

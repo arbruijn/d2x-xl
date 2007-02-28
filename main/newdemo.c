@@ -3268,7 +3268,7 @@ strcpy (filename2, filename);
 ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0);
 if (ndInFile==NULL) {
 #if TRACE				
-	con_printf (CON_DEBUG, "Error reading '%s'\n", filename);
+	con_printf (CONDBG, "Error reading '%s'\n", filename);
 #endif
 	return;
 	}
@@ -3315,7 +3315,7 @@ longjmp (gameExitPoint, 0);               // Exit game loop
 
 //	-----------------------------------------------------------------------------
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 
 #define BUF_SIZE 16384
 

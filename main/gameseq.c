@@ -290,7 +290,7 @@ for (i = 0; i < nPlayers; i++) {
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
 gameData.multi.nPlayerPositions = nPlayers;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multi.nPlayerPositions != 4)) ||
 	  (!(gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multi.nPlayerPositions != 8)))
 {
@@ -968,6 +968,8 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
+gameData.physics.side.nSegment =
+gameData.physics.side.nSide = -1;
 if (SHOW_DYN_LIGHT)
 	memset (gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
 memset (gameData.render.color.segments, 0, sizeof (gameData.render.color.segments));
@@ -1762,7 +1764,7 @@ if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
 GameSeqInitNetworkPlayers (); // Initialize the gameData.multi.players array for
-#if 0//def _DEBUG										  // this level
+#ifdef _DEBUG										  // this level
 InitHoardData ();
 SetMonsterballForces ();
 #endif

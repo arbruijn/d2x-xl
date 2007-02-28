@@ -1121,6 +1121,17 @@ typedef struct tObjectData {
 	tPowerupData		pwrUp;
 } tObjectData;
 
+typedef struct tFVISideData {
+	int					vertices [6];
+	int					nFaces;
+	short					nSegment;
+	short					nSide;
+} tFVISideData;
+
+typedef struct tPhysicsData {
+	short					ignoreObjs [MAX_OBJECTS];
+	tFVISideData		side;
+} tPhysicsData;
 
 //------------------------------------------------------------------------------
 
@@ -1541,7 +1552,7 @@ typedef struct tAIData {
 	vmsVector			vHitPos;
 	int					nHitType;
 	int					nHitSeg;
-	fvi_info				hitData;
+	tFVIData				hitData;
 	short					nBelievedPlayerSeg;
 	vmsVector			vBelievedPlayerPos;
 	vmsVector			vLastPlayerPosFiredAt;
@@ -1878,6 +1889,7 @@ typedef struct tGameData {
 #ifdef _DEBUG
 	tSpeedtestData		speedtest;
 #endif
+	tPhysicsData		physics;
 	tApplicationData	app;
 } tGameData;
 

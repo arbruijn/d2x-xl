@@ -66,7 +66,7 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "editor/editor.h"
 #include "editor/kdefs.h"
 #endif
-
+//#define _DEBUG
 #ifdef _DEBUG
 #include "string.h"
 #include <time.h>
@@ -120,12 +120,12 @@ void InitAISystem (void)
 	int	i;
 
 #if TRACE	
-	con_printf (CON_DEBUG, "Trying to d_malloc %i bytes for gameData.bots.pInfo.\n", 
+	con_printf (CONDBG, "Trying to d_malloc %i bytes for gameData.bots.pInfo.\n", 
 					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #endif
 	gameData.bots.pInfo = (tRobotInfo *) d_malloc (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #if TRACE	
-	con_printf (CON_DEBUG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
+	con_printf (CONDBG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
 #endif
 	for (i = 0; i < gameData.bots.nTypes; i++) {
 		gameData.bots.pInfo [i].fieldOfView = F1_0/2;
@@ -190,7 +190,7 @@ if (behavior != -1) {
 	} 
 else if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
 #if TRACE	
-	con_printf (CON_DEBUG, " [obj %i -> normal] ", nObject);
+	con_printf (CONDBG, " [obj %i -> normal] ", nObject);
 #endif
 	aip->behavior = AIB_NORMAL;
 	}
@@ -248,7 +248,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 
 	if (buddy_id == gameData.bots.nTypes [0]) {
 #if TRACE	
-		con_printf (CON_DEBUG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.pInfo!\n");
+		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.pInfo!\n");
 #endif
 		return;
 	}
@@ -409,7 +409,7 @@ void InitAIObjects (void)
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nObject = -1;
 #ifdef _DEBUG
-	gameData.boss [i].xPrevShields = -1;
+//	gameData.boss [i].xPrevShields = -1;
 #endif
 	}
 for (i = j = 0, objP = gameData.objs.objects; i < MAX_OBJECTS; i++, objP++) {
@@ -997,7 +997,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	else {
 		//	Well, they are not directly connected, so use FindVectorIntersection to see if they are unobstructed.
 		fvi_query	fq;
-		fvi_info		hit_data;
+		tFVIData		hit_data;
 		int			fate;
 
 		fq.startSeg				= objP->nSegment;
@@ -1379,36 +1379,36 @@ void mprintf_animation_info (tObject *objP)
 	if (!gameData.ai.bInfoEnabled)
 		return;
 #if TRACE	
-	con_printf (CON_DEBUG, "Goal = ");
+	con_printf (CONDBG, "Goal = ");
 	switch (aip->GOAL_STATE) {
-		case AIS_NONE:	con_printf (CON_DEBUG, "NONE ");	break;
-		case AIS_REST:	con_printf (CON_DEBUG, "REST ");	break;
-		case AIS_SRCH:	con_printf (CON_DEBUG, "SRCH ");	break;
-		case AIS_LOCK:	con_printf (CON_DEBUG, "LOCK ");	break;
-		case AIS_FLIN:	con_printf (CON_DEBUG, "FLIN ");	break;
-		case AIS_FIRE:	con_printf (CON_DEBUG, "FIRE ");	break;
-		case AIS_RECO:	con_printf (CON_DEBUG, "RECO ");	break;
-		case AIS_ERR_:	con_printf (CON_DEBUG, "ERR_ ");	break;
+		case AIS_NONE:	con_printf (CONDBG, "NONE ");	break;
+		case AIS_REST:	con_printf (CONDBG, "REST ");	break;
+		case AIS_SRCH:	con_printf (CONDBG, "SRCH ");	break;
+		case AIS_LOCK:	con_printf (CONDBG, "LOCK ");	break;
+		case AIS_FLIN:	con_printf (CONDBG, "FLIN ");	break;
+		case AIS_FIRE:	con_printf (CONDBG, "FIRE ");	break;
+		case AIS_RECO:	con_printf (CONDBG, "RECO ");	break;
+		case AIS_ERR_:	con_printf (CONDBG, "ERR_ ");	break;
 	}
-	con_printf (CON_DEBUG, " Cur = ");
+	con_printf (CONDBG, " Cur = ");
 	switch (aip->CURRENT_STATE) {
-		case AIS_NONE:	con_printf (CON_DEBUG, "NONE ");	break;
-		case AIS_REST:	con_printf (CON_DEBUG, "REST ");	break;
-		case AIS_SRCH:	con_printf (CON_DEBUG, "SRCH ");	break;
-		case AIS_LOCK:	con_printf (CON_DEBUG, "LOCK ");	break;
-		case AIS_FLIN:	con_printf (CON_DEBUG, "FLIN ");	break;
-		case AIS_FIRE:	con_printf (CON_DEBUG, "FIRE ");	break;
-		case AIS_RECO:	con_printf (CON_DEBUG, "RECO ");	break;
-		case AIS_ERR_:	con_printf (CON_DEBUG, "ERR_ ");	break;
+		case AIS_NONE:	con_printf (CONDBG, "NONE ");	break;
+		case AIS_REST:	con_printf (CONDBG, "REST ");	break;
+		case AIS_SRCH:	con_printf (CONDBG, "SRCH ");	break;
+		case AIS_LOCK:	con_printf (CONDBG, "LOCK ");	break;
+		case AIS_FLIN:	con_printf (CONDBG, "FLIN ");	break;
+		case AIS_FIRE:	con_printf (CONDBG, "FIRE ");	break;
+		case AIS_RECO:	con_printf (CONDBG, "RECO ");	break;
+		case AIS_ERR_:	con_printf (CONDBG, "ERR_ ");	break;
 	}
-	con_printf (CON_DEBUG, " Aware = ");
+	con_printf (CONDBG, " Aware = ");
 	switch (ailp->playerAwarenessType) {
-		case AIE_FIRE: con_printf (CON_DEBUG, "FIRE "); break;
-		case AIE_HITT: con_printf (CON_DEBUG, "HITT "); break;
-		case AIE_COLL: con_printf (CON_DEBUG, "COLL "); break;
-		case AIE_HURT: con_printf (CON_DEBUG, "HURT "); break;
+		case AIE_FIRE: con_printf (CONDBG, "FIRE "); break;
+		case AIE_HITT: con_printf (CONDBG, "HITT "); break;
+		case AIE_COLL: con_printf (CONDBG, "COLL "); break;
+		case AIE_HURT: con_printf (CONDBG, "HURT "); break;
 	}
-	con_printf (CON_DEBUG, "Next fire = %6.3f, Time = %6.3f\n", f2fl (ailp->nextPrimaryFire), f2fl (ailp->playerAwarenessTime));
+	con_printf (CONDBG, "Next fire = %6.3f, Time = %6.3f\n", f2fl (ailp->nextPrimaryFire), f2fl (ailp->playerAwarenessTime));
 #endif
 }
 #endif
@@ -1658,7 +1658,7 @@ if (ROBOTINFO (objP->id).bossFlag) {
 	}
 	else {
 #if TRACE
-		con_printf (CON_DEBUG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
+		con_printf (CONDBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", OBJ_IDX (objP));
 #endif
 		ApplyDamageToRobot (objP, objP->shields*2, OBJ_IDX (objP));
 	}
@@ -2001,7 +2001,7 @@ Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 nSegment = pos ? FindSegByPoint (pos, objP->nSegment) : objP->nSegment;
 if (nSegment == -1) {
 #if TRACE
-	con_printf (CON_DEBUG, "Tried to spew a bot outside the mine! Aborting!\n");
+	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
 	return -1;
 	}	
@@ -2200,7 +2200,7 @@ int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *b
 	if (StartTime + roll_duration - sound_duration < gameData.time.xGame) {
 		if (!*bDyingSoundPlaying) {
 #if TRACE
-			con_printf (CON_DEBUG, "Starting death sound!\n");
+			con_printf (CONDBG, "Starting death sound!\n");
 #endif
 			*bDyingSoundPlaying = 1;
 			DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, sound_scale, sound_scale*256);	//	F1_0*512 means play twice as loud
@@ -2303,7 +2303,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #ifdef _DEBUG
 if (objP->shields != gameData.boss [i].xPrevShields) {
 #if TRACE
-	con_printf (CON_DEBUG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
+	con_printf (CONDBG, "Boss shields = %7.3f, tObject %i\n", f2fl (objP->shields), OBJ_IDX (objP));
 #endif
 	gameData.boss [i].xPrevShields = objP->shields;
 	}

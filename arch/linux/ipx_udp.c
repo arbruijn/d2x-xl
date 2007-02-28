@@ -231,7 +231,7 @@ static int have_empty_address () {
 
 static void msg (const char *fmt,...)
 {
-#ifndef RELEASE
+#ifdef _DEBUG
 	va_list ap;
 
 	fputs (MSGHDR,stdout);
@@ -1223,7 +1223,7 @@ if (!(bTracker
 	dataLen -= bSafeMode ? 22 : 14;
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
-#ifndef RELEASE
+#ifdef _DEBUG
 else
 	bTracker = 1;
 #endif

@@ -6,7 +6,7 @@
 #include <mmsystem.h>
 #include "args.h"
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 #ifdef _MSC_VER
 #include <crtdbg.h>
 #endif
@@ -108,7 +108,7 @@ void arch_init_start()
 {
 	WNDCLASS wcDescentClass;
 
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 	#ifdef _MSC_VER
 	if (FindArg("-memdbg"))
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | /* _CRTDBG_CHECK_ALWAYS_DF | */
@@ -170,7 +170,7 @@ void arch_init()
 	ddrval=IDirectDraw_SetCooperativeLevel(lpDD,g_hWnd,DDSCL_NORMAL);
 	else
 	{
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 		ddrval=IDirectDraw_SetCooperativeLevel(lpDD,g_hWnd,
 			DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN|DDSCL_ALLOWREBOOT);
 #else

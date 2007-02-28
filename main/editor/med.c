@@ -779,7 +779,7 @@ int DosShell()
 	//fflush(stdout);
 
 	key_close();
-#ifndef __unix__
+#ifndef __LINUX__
 	ok = spawnl(P_WAIT,getenv("COMSPEC"), NULL );
 #else
         system("");
@@ -1211,7 +1211,7 @@ void editor(void)
 		//do editor stuff
 		GrSetCurFont(editor_font);
 		ui_mega_process();
-		last_keypress &= ~KEY_DEBUGGED;		//	mask off delete key bit which has no function in editor.
+		last_keypress &= ~KEYDBGGED;		//	mask off delete key bit which has no function in editor.
 		ui_window_do_gadgets(EditorWindow);
 		doRobot_window();
 		doObject_window();

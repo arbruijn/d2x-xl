@@ -500,7 +500,7 @@ return 0;
 void gr_upoly_tmap (int nverts, int *vert )
 {
 #if TRACE	
-con_printf (CON_DEBUG, "gr_upoly_tmap: unhandled\n");//should never get called
+con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 #endif
 }
 
@@ -509,7 +509,7 @@ con_printf (CON_DEBUG, "gr_upoly_tmap: unhandled\n");//should never get called
 void DrawTexPolyFlat (grsBitmap *bm, int nv, g3sPoint **vertlist)
 {
 #if TRACE	
-con_printf (CON_DEBUG, "DrawTexPolyFlat: unhandled\n");//should never get called
+con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
 #endif
 }
 
@@ -1547,7 +1547,7 @@ else
 		}
 	else {
 #if TRACE	
-		con_printf (CON_DEBUG, "G3DrawTexPoly: unhandled tmap_drawer %p\n", tmap_drawer_ptr);
+		con_printf (CONDBG, "G3DrawTexPoly: unhandled tmap_drawer %p\n", tmap_drawer_ptr);
 #endif
 		}
 #if OGL_CLEANUP

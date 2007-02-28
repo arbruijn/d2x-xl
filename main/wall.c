@@ -182,6 +182,9 @@ int WallIsDoorWay (tSegment * segP, short nSide)
 	wall * wallP = gameData.walls.walls + WallNumP (segP, nSide);
 #ifdef _DEBUG
 	short nSegment = SEG_IDX (segP);
+
+Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
+Assert(nSide>=0 && nSide<6);
 #endif
 //--Covered by macro	// No child.
 //--Covered by macro	if (segP->children[nSide] == -1)
@@ -193,10 +196,6 @@ int WallIsDoorWay (tSegment * segP, short nSide)
 //--Covered by macro // No wall present.
 //--Covered by macro	if (!IS_WALL (WallNumP (segP, nSide)))
 //--Covered by macro		return WID_NO_WALL;
-
-Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
-Assert(nSide>=0 && nSide<6);
-
 
 nType = wallP->nType;
 flags = wallP->flags;
@@ -315,7 +314,7 @@ void WallReset (tSegment *seg, short tSide)
 
 if (!IS_WALL (i)) {
 #if TRACE
-	con_printf (CON_DEBUG, "Resetting Illegal Wall\n");
+	con_printf (CONDBG, "Resetting Illegal Wall\n");
 #endif
 	return;
 	}
@@ -461,7 +460,7 @@ void WallDamage (tSegment *seg, short tSide, fix damage)
 
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CON_DEBUG, "Damaging illegal wall\n");
+	con_printf (CONDBG, "Damaging illegal wall\n");
 #endif
 	return;
 	}
@@ -1092,7 +1091,7 @@ for (p = 0; p < d->nPartCount; p++) {
 	tSide = w->nSide;
 	if (!IS_WALL (WallNumP (seg, tSide))) {
 #if TRACE
-		con_printf (CON_DEBUG, "Trying to DoDoorClose on Illegal wall\n");
+		con_printf (CONDBG, "Trying to DoDoorClose on Illegal wall\n");
 #endif
 		return;
 		}
@@ -1149,7 +1148,7 @@ void WallIllusionOff(tSegment *seg, short tSide)
 
 	if (!IS_WALL (WallNumP (seg, tSide))) {
 #if TRACE
-		con_printf (CON_DEBUG, "Trying to shut off illusion illegal wall\n");
+		con_printf (CONDBG, "Trying to shut off illusion illegal wall\n");
 #endif
 		return;
 	}
@@ -1185,7 +1184,7 @@ else {
 nWall = WallNumP (seg, tSide);
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CON_DEBUG, "Trying to turn on illusion illegal wall\n");
+	con_printf (CONDBG, "Trying to turn on illusion illegal wall\n");
 #endif
 	return;
 	}
@@ -1221,7 +1220,7 @@ for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 		w->keys = 0;
 		}
 	else if (!bOnlyDoors 
-#ifdef RELEASE
+#ifndef _DEBUG
 				&& (w->nType == WALL_CLOSED)
 #endif
 			 )
@@ -1369,7 +1368,7 @@ void WallToggle(tSegment *seg, short tSide)
 
 	if (!IS_WALL (nWall)) {
 #if TRACE
-	 	con_printf (CON_DEBUG, "Illegal WallToggle\n");
+	 	con_printf (CONDBG, "Illegal WallToggle\n");
 #endif
 		return;
 	}
@@ -1396,7 +1395,7 @@ void ResetWalls()
 
 	if (gameData.walls.nWalls < 0) {
 #if TRACE
-		con_printf (CON_DEBUG, "Illegal gameData.walls.nWalls\n");
+		con_printf (CONDBG, "Illegal gameData.walls.nWalls\n");
 #endif
 		return;
 	}

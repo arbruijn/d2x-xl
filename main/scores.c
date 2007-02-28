@@ -86,7 +86,7 @@ char scores_filename[128];
 
 char * get_scores_filename()
 {
-#ifndef RELEASE
+#ifdef _DEBUG
 	// Only use the MINER variable for internal developement
 	char *p;
 	p=getenv( "MINER" );

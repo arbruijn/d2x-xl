@@ -44,7 +44,7 @@ static char rcsid [] = "$Id: effects.c,v 1.5 2003/10/10 09:36:34 btb Exp $";
 
 fix EffectFrameTime (eclip *ecP)
 {
-#if 0//def _DEBUG
+#ifdef _DEBUG
 return ecP->vc.xFrameTime;
 #else
 if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))

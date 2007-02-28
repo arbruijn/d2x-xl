@@ -19,7 +19,7 @@
 # include <SDL.h>
 #endif
 
-#ifdef __unix__
+#ifdef __linux__
 #include <sys/ioctl.h>
 #include <linux/cdrom.h>
 #endif
@@ -119,7 +119,7 @@ void _CDECL_ RBAStop()
 
 void RBASetVolume(int volume)
 {
-#ifdef __unix__
+#ifdef __linux__
 	int cdfile, level;
 	struct cdrom_volctrl volctrl;
 

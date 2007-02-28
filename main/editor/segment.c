@@ -613,7 +613,7 @@ int med_set_vertex(int vnum,vmsVector *vp)
 		gameData.segs.nVertices++;
 		if ((vnum > gameData.segs.nLastVertex) && (vnum < NEW_SEGMENT_VERTICES)) {
 #if TRACE
-			con_printf (CON_DEBUG,"Warning -- setting a previously unset vertex, index = %i.\n",vnum);
+			con_printf (CONDBG,"Warning -- setting a previously unset vertex, index = %i.\n",vnum);
 #endif
 			gameData.segs.nLastVertex = vnum;
 		}
@@ -701,7 +701,7 @@ int check_for_degenerate_segment(tSegment *sp)
 		degeneracyFlag = 0;
 	else {
 #if TRACE
-		con_printf (CON_DEBUG, "tSegment #%i is degenerate due to cross product check.\n", SEG_IDX (sp));
+		con_printf (CONDBG, "tSegment #%i is degenerate due to cross product check.\n", SEG_IDX (sp));
 #endif
 		degeneracyFlag = 1;
 	}
@@ -802,7 +802,7 @@ void med_extract_matrix_from_segment(tSegment *sp,vmsMatrix *rotmat)
 
 	if (((forwardvec.x == 0) && (forwardvec.y == 0) && (forwardvec.z == 0)) || ((upvec.x == 0) && (upvec.y == 0) && (upvec.z == 0))) {
 #if TRACE
-		con_printf (CON_DEBUG, "Trapped null vector in med_extract_matrix_from_segment, returning identity matrix.\n");
+		con_printf (CONDBG, "Trapped null vector in med_extract_matrix_from_segment, returning identity matrix.\n");
 #endif
 		*rotmat = vmdIdentityMatrix;
 		return;
@@ -1336,7 +1336,7 @@ int med_delete_segment(tSegment *sp)
 	// Don't try to delete if tSegment doesn't exist.
 	if (sp->nSegment == -1) {
 #if TRACE
-		con_printf (CON_DEBUG,"Tried to delete a non-existent tSegment (nSegment == -1)\n");
+		con_printf (CONDBG,"Tried to delete a non-existent tSegment (nSegment == -1)\n");
 #endif
 		return 1;
 	}
@@ -1478,7 +1478,7 @@ int med_rotate_segment(tSegment *seg, vmsMatrix *rotmat)
 
 	if (med_delete_segment(seg)) {
 #if TRACE
-		con_printf (CON_DEBUG,"Error in rotation: Unable to delete tSegment %i\n",SEG_IDX (seg));
+		con_printf (CONDBG,"Error in rotation: Unable to delete tSegment %i\n",SEG_IDX (seg));
 #endif
 		}
 	if (Curside == WFRONT)
@@ -1761,7 +1761,7 @@ int med_form_bridge_segment(tSegment *seg1, int side1, tSegment *seg2, int side2
                 bs->children[(int) sideOpposite[AttachSide]] = -1;
 		if (med_delete_segment(bs)) {
 #if TRACE
-			con_printf (CON_DEBUG, "Oops, tried to delete bridge tSegment (because it's degenerate), but couldn't.\n");
+			con_printf (CONDBG, "Oops, tried to delete bridge tSegment (because it's degenerate), but couldn't.\n");
 #endif
 			Int3();
 		}
@@ -2244,7 +2244,7 @@ void check_for_overlapping_segment(int nSegment)
 			masks = GetSegMasks(&segcenter, i, 0);
 			if (masks.centerMask == 0) {
 #if TRACE
-				con_printf (CON_DEBUG, "Segment %i center is contained in tSegment %i\n", nSegment, i);
+				con_printf (CONDBG, "Segment %i center is contained in tSegment %i\n", nSegment, i);
 #endif
 				continue;
 			}
@@ -2257,7 +2257,7 @@ void check_for_overlapping_segment(int nSegment)
 				masks = GetSegMasks(&presult, i, 0);
 				if (masks.centerMask == 0) {
 #if TRACE
-					con_printf (CON_DEBUG, "Segment %i near vertex %i is contained in tSegment %i\n", nSegment, v, i);
+					con_printf (CONDBG, "Segment %i near vertex %i is contained in tSegment %i\n", nSegment, v, i);
 #endif
 					break;
 				}
@@ -2277,11 +2277,11 @@ void check_for_overlapping_segments(void)
 
 	for (i=0; i<=gameData.segs.nLastSegment; i++) {
 #if TRACE
-		con_printf (CON_DEBUG, "+");
+		con_printf (CONDBG, "+");
 #endif
 		check_for_overlapping_segment(i);
 	}
 
-	con_printf (CON_DEBUG, "\nDone!\n");
+	con_printf (CONDBG, "\nDone!\n");
 }
 

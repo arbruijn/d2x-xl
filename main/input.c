@@ -186,7 +186,7 @@ else if (!a)
 	return 0;
 else {
 		double	d;
-#ifndef RELEASE
+#if 0//def _DEBUG
 		double	p, h, e;
 #endif
 
@@ -194,7 +194,7 @@ else {
 		a = dMaxAxis;
 	else if (a < -dMaxAxis)
 		a = -dMaxAxis;
-#ifdef RELEASE
+#if 1//ndef _DEBUG
 	d = dMaxAxis * pow (fabs ((double) a / dMaxAxis), (double) joy_sens_mod [nAxis % 4] / 16.0);
 #else
 	h = fabs ((double) a / dMaxAxis);
@@ -695,7 +695,7 @@ return h;
 
 inline int DeltaAxis (int v)
 {
-#if 0//def _DEBUG
+#ifdef _DEBUG
 int a = gameOpts->input.bLinearJoySens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 if (a)
 	HUDMessage (0, "%d", a);
@@ -1301,7 +1301,7 @@ void CybermouseAdjust ()
 char GetKeyValue (char key)
   {
 #if TRACE
-	con_printf (CON_DEBUG,"Returning %c!\n",kcKeyboard [ (int)key].value);
+	con_printf (CONDBG,"Returning %c!\n",kcKeyboard [ (int)key].value);
 #endif
 	return (kcKeyboard [ (int)key].value);
   }

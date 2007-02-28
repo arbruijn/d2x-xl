@@ -25,13 +25,13 @@
 #define MSGC_WEAPON_EMPTY	1024 // No weapons (no primary weapons available)
 #define MSGC_WEAPON_SELECT	2048 // Manual weapon selection
 #define MSGC_UNKNOWN		4096 // Unknown: External control interface message
-#define MSGC_DEBUG		    8192 // Unknown: External control interface message
+#define MSGCDBG		    8192 // Unknown: External control interface message
 
 #define MSGC_NOREDUNDANCY	(~(MSGC_PICKUP_TOOMUCH | MSGC_PICKUP_ALREADY))
 #define MSGC_PLAYERMESSAGES	(~(MSGC_PICKUP_TOOMUCH | MSGC_PICKUP_ALREADY | MSGC_PICKUP_OK))
 
 #define HUD_MESSAGE_LENGTH	150
-#ifdef RELEASE
+#ifndef _DEBUG
 #	define HUD_MAX_MSGS 4 // 80 //max to display in scrollback mode (and as such, the max to store, period)
 #else
 #	define HUD_MAX_MSGS 4

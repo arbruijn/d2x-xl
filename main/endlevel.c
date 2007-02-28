@@ -546,7 +546,7 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 	if ((explosion_wait2-=gameData.time.xFrame) < 0) {
 		vmsVector tpnt;
 		fvi_query fq;
-		fvi_info hit_data;
+		tFVIData hit_data;
 		//create little explosion on wall
 		VmVecCopyScale (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*100);
 		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.uVec, (d_rand ()-RAND_MAX/2)*100);
@@ -1197,7 +1197,7 @@ if (!ifile) {
 	if (!ifile) {
 		if (level_num==1) {
 #if TRACE
-			con_printf (CON_DEBUG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
+			con_printf (CONDBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
 #endif
 			gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 			return;

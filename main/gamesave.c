@@ -206,7 +206,7 @@ if (objP->nType == OBJ_POWERUP) {
 		gameData.multi.powerupsInMine[objP->id]++;
 		gameData.multi.maxPowerupsAllowed[objP->id]++;
 #if TRACE
-		con_printf (CON_DEBUG,"PowerupLimiter: ID=%d\n",objP->id);
+		con_printf (CONDBG,"PowerupLimiter: ID=%d\n",objP->id);
 		if (objP->id>MAX_POWERUP_TYPES)
 			con_printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
@@ -505,7 +505,7 @@ void ReadObject(tObject *objP,CFILE *f,int version)
 				int xlated_tmo = tmap_xlate_table[tmo];
 				if (xlated_tmo < 0)	{
 #if TRACE
-					con_printf (CON_DEBUG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
+					con_printf (CONDBG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
 #endif
 					Int3();
 					xlated_tmo = 0;
@@ -820,7 +820,7 @@ start_offset = CFTell(LoadFile);
 //===================== READ FILE INFO ========================
 
 #if TRACE
-con_printf(CON_DEBUG, "   \nloading game data ...\n");
+con_printf(CONDBG, "   \nloading game data ...\n");
 #endif
 // Set default values
 gameFileInfo.level				=	-1;
@@ -966,7 +966,7 @@ Gamesave_num_players = 0;
 if (gameFileInfo.objects.offset > -1) {
 	tObject	*objP = gameData.objs.objects;
 #if TRACE
-	con_printf(CON_DEBUG, "   loading tObject data ...\n");
+	con_printf(CONDBG, "   loading tObject data ...\n");
 #endif
 	if (CFSeek(LoadFile, gameFileInfo.objects.offset, SEEK_SET))
 		Error("Error seeking to tObject.offset in gamesave.c");
@@ -990,7 +990,7 @@ gameData.objs.nFreeDropped = 0;
 
 if (gameFileInfo.walls.offset > -1) {
 #if TRACE
-	con_printf(CON_DEBUG, "   loading wall data ...\n");
+	con_printf(CONDBG, "   loading wall data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.walls.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.walls.count;i++) {
@@ -1032,7 +1032,7 @@ if (gameFileInfo.walls.offset > -1) {
 
 if (gameFileInfo.doors.offset > -1) {
 #if TRACE
-	con_printf(CON_DEBUG, "   loading door data ...\n");
+	con_printf(CONDBG, "   loading door data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.doors.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.doors.count;i++) {
@@ -1065,7 +1065,7 @@ if (gameFileInfo.doors.offset > -1) {
 
 if (gameFileInfo.triggers.offset > -1) {
 #if TRACE
-	con_printf(CON_DEBUG, "   loading tTrigger data ...\n");
+	con_printf(CONDBG, "   loading tTrigger data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.triggers.count;i++) {
@@ -1169,7 +1169,7 @@ if (gameFileInfo.triggers.offset > -1) {
 
 if (gameFileInfo.control.offset > -1) {
 #if TRACE
-	con_printf(CON_DEBUG, "   loading reactor data ...\n");
+	con_printf(CONDBG, "   loading reactor data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.control.offset, SEEK_SET))
 	{
@@ -1183,7 +1183,7 @@ if (gameFileInfo.botGen.offset > -1) {
 	int	j;
 
 #if TRACE
-	con_printf(CON_DEBUG, "   loading botGen data ...\n");
+	con_printf(CONDBG, "   loading botGen data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.botGen.offset,SEEK_SET))	{
 		for (i = 0; i < gameFileInfo.botGen.count; i++) {
@@ -1230,7 +1230,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 	int	j;
 
 #if TRACE
-	con_printf(CON_DEBUG, "   loading EquipGen data ...\n");
+	con_printf(CONDBG, "   loading EquipGen data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.equipGen.offset,SEEK_SET))	{
 		for (i = 0; i < gameFileInfo.equipGen.count; i++) {
@@ -1263,13 +1263,13 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 	int	i;
 
 #if TRACE
-	con_printf(CON_DEBUG, "   loading light index data ...\n");
+	con_printf(CONDBG, "   loading light index data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.lightDeltaIndices.offset, SEEK_SET))	{
 		gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
 		if (gameTopFileInfo.fileinfo_version < 29) {
 #if TRACE
-			con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+			con_printf (CONDBG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
 #endif
 			Int3();	//shouldn't be here!!!
 			}
@@ -1291,13 +1291,13 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 	int	i;
 
 #if TRACE
-	con_printf(CON_DEBUG, "   loading light data ...\n");
+	con_printf(CONDBG, "   loading light data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.lightDeltas.offset, SEEK_SET))	{
 		for (i=0; i<gameFileInfo.lightDeltas.count; i++) {
 			if (gameTopFileInfo.fileinfo_version < 29) {
 #if TRACE
-				con_printf (CON_DEBUG, "Warning: Old mine version.  Not reading delta light info.\n");
+				con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			} else
 				delta_light_read(&gameData.render.lights.deltas [i], LoadFile);
@@ -1352,7 +1352,7 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 for (i=0;i<gameData.walls.nWalls;i++)
 	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls [i].nTrigger,i);
+		con_printf (CONDBG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls [i].nTrigger,i);
 #endif
 		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 	}
@@ -1369,7 +1369,7 @@ for (i=0;i<gameData.trigs.nTriggers;) {
 #ifdef EDITOR
 	if (w == gameData.walls.nWalls) {
 #if TRACE
-		con_printf (CON_DEBUG,"Removing unreferenced tTrigger %d\n",i);
+		con_printf (CONDBG,"Removing unreferenced tTrigger %d\n",i);
 #endif
 		RemoveTriggerNum(i);
 	}
@@ -1468,7 +1468,7 @@ extern void	SetAmbientSoundFlags(void);
 //6 -> 7  added flickering lights
 //7 -> 8  made version 8 to be not compatible with D2 1.0 & 1.1
 
-#ifndef RELEASE
+#ifdef _DEBUG
 char *Level_being_loaded=NULL;
 #endif
 
@@ -1492,7 +1492,7 @@ int LoadLevelSub(char * filename_passed)
 		memset (gameData.multi.maxPowerupsAllowed, 0, sizeof (gameData.multi.maxPowerupsAllowed));
 		memset (gameData.multi.powerupsInMine, 0, sizeof (gameData.multi.powerupsInMine));
 		}
-#ifndef RELEASE
+#ifdef _DEBUG
 Level_being_loaded = filename_passed;
 #endif
 strcpy(filename,filename_passed);
@@ -1514,7 +1514,7 @@ LoadFile = CFOpen (filename, "", "rb", gameStates.app.bD1Mission);
 if (!LoadFile)	{
 	#ifdef EDITOR
 #if TRACE
-		con_printf (CON_DEBUG,"Can't open level file <%s>\n", filename);
+		con_printf (CONDBG,"Can't open level file <%s>\n", filename);
 #endif
 		return 1;
 	#else
@@ -1534,7 +1534,7 @@ sig = CFReadInt(LoadFile);
 gameData.segs.nLevelVersion = CFReadInt(LoadFile);
 gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
 #if TRACE
-con_printf (CON_DEBUG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
+con_printf (CONDBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
 #endif
 minedata_offset = CFReadInt(LoadFile);
 gamedata_offset = CFReadInt(LoadFile);
@@ -1571,7 +1571,7 @@ if (gameData.segs.nLevelVersion >= 7) {
 	int i;
 
 #if TRACE
-con_printf(CON_DEBUG, "   loading dynamic lights ...\n");
+con_printf(CONDBG, "   loading dynamic lights ...\n");
 #endif
 gameData.render.lights.flicker.nLights = CFReadInt(LoadFile);
 Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));

@@ -614,7 +614,7 @@ else {
 	}
 }
 
-#ifndef RELEASE
+#ifdef _DEBUG
 
 //	----------------------------------------------------------------------------------------
 //	Show tPlayer which weapons he has, how much ammo...
@@ -625,25 +625,25 @@ void ShowWeaponStatus(void)
 #if TRACE
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	if (gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags & (1 << i))
-		con_printf (CON_DEBUG, "HAVE");
+		con_printf (CONDBG, "HAVE");
 	else
-		con_printf (CON_DEBUG, "    ");
-	con_printf (CON_DEBUG, 
+		con_printf (CONDBG, "    ");
+	con_printf (CONDBG, 
 		"  Weapon: %20s, charges: %4i\n", 
 		PRIMARY_WEAPON_NAMES(i), gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i]);
 	}
-	con_printf (CON_DEBUG, "\n");
+	con_printf (CONDBG, "\n");
 	for (i=0; i<MAX_SECONDARY_WEAPONS; i++) {
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags & (1 << i))
-			con_printf (CON_DEBUG, "HAVE");
+			con_printf (CONDBG, "HAVE");
 		else
-			con_printf (CON_DEBUG, "    ");
-		con_printf (CON_DEBUG, 
+			con_printf (CONDBG, "    ");
+		con_printf (CONDBG, 
 			"  Weapon: %20s, charges: %4i\n", 
 			SECONDARY_WEAPON_NAMES(i), gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i]);
 	}
-con_printf (CON_DEBUG, "\n");
-con_printf (CON_DEBUG, "\n");
+con_printf (CONDBG, "\n");
+con_printf (CONDBG, "\n");
 #endif
 }
 
@@ -1121,7 +1121,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 								//	Need to do a more expensive check to make sure there isn't an obstruction.
 								if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
 									fvi_query	fq;
-									fvi_info		hit_data;
+									tFVIData		hit_data;
 									int			fate;
 
 									fq.startSeg = gameData.objs.objects[i].nSegment;

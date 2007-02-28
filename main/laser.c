@@ -540,7 +540,7 @@ if (nLockObj != -1)
 	vGoalPos = gameData.objs.objects [nLockObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	int			fate;
 	vmsVector	vPerturb, perturbed_fvec;
 
@@ -764,7 +764,7 @@ return nObject;
 int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	tObject		*parentObjP = &gameData.objs.objects [parent];
 	int			fate;
 
@@ -798,7 +798,7 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	int			fate;
 
 fq.p0					= &objP1->position.vPos;
@@ -1150,7 +1150,7 @@ int LaserPlayerFireSpreadDelay (
 	int			Fate; 
 	vmsVector	LaserPos, LaserDir, pnt;
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	vmsVector	gun_point;
 	vmsMatrix	m;
 	int			nObject;
@@ -1543,7 +1543,7 @@ return rVal;
 // -- {
 // -- 	int			i;
 // -- 	fvi_query	fq;
-// -- 	fvi_info		hit_data;
+// -- 	tFVIData		hit_data;
 // -- 	vmsVector	vEndPos;
 // -- 	vmsVector	norm_dir;
 // -- 	int			fate;

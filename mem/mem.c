@@ -367,7 +367,7 @@ void *mem_malloc (unsigned int size, char * var, char * filename, int line, int 
 {
 	int *ptr;
 
-#ifdef RELEASE
+#ifndef _DEBUG
 
 if (!(ptr = (int *) malloc (size))) {
 #if 1//TRACE

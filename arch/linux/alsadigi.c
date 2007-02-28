@@ -539,13 +539,13 @@ void DigiGetSoundLoc(vmsMatrix * listener, vmsVector * vListenerPos, int nListen
 		pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG);
 		if (pathDistance > -1)	{
 			*volume = maxVolume - FixDiv (pathDistance,maxDistance);
-			//con_printf (CON_DEBUG, "Sound path distance %.2f, volume is %d / %d\n", f2fl(distance), *volume, maxVolume);
+			//con_printf (CONDBG, "Sound path distance %.2f, volume is %d / %d\n", f2fl(distance), *volume, maxVolume);
 			if (*volume <= 0)
 				*volume = 0;
 			else {
 				angle_from_ear = VmVecDeltaAngNorm(&listener->rVec,&vector_toSound,&listener->uVec);
 				FixSinCos(angle_from_ear,&sinang,&cosang);
-				//con_printf (CON_DEBUG, "volume is %.2f\n", f2fl(*volume));
+				//con_printf (CONDBG, "volume is %.2f\n", f2fl(*volume));
 				if (gameConfig.bReverseChannels) 
 					cosang = -cosang;
 				*pan = (cosang + F1_0)/2;

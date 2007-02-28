@@ -44,8 +44,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	Length in segments of avoidance path
 #define	AVOID_SEG_LENGTH	7
-
-#ifdef RELEASE
+//#define _DEBUG
+#ifndef _DEBUG
 #	define	PATH_VALIDATION	0
 #else
 #	define	PATH_VALIDATION	1
@@ -168,7 +168,7 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRa
 	int			count;
 	int			nTempSeg;
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	int			nHitType;
 
 j = *nPoints;
@@ -304,7 +304,7 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	vmsVector		vCenter;
 	int				nThisSeg, nParentSeg;
 	fvi_query		fq;
-	fvi_info			hit_data;
+	tFVIData			hit_data;
 	int				hitType;
 	int				bAvoidPlayer;
 
@@ -413,7 +413,7 @@ for (i = qTail; i >= 0; ) {
 if (bSafeMode && ((pointSegP - gameData.ai.pointSegs) + 2 * lNumPoints + 1 >= MAX_POINT_SEGS)) {
 	//	Ouch! Cannot insert center points in path.  So return unsafe path.
 #if TRACE
-	con_printf (CON_DEBUG, "Resetting all paths because of bSafeMode.p.\n");
+	con_printf (CONDBG, "Resetting all paths because of bSafeMode.p.\n");
 #endif
 	AIResetAllPaths ();
 	*numPoints = lNumPoints;
@@ -484,7 +484,7 @@ int SmoothPath (tObject *objP, tPointSeg *pointSegP, int numPoints)
 {
 	int			i, nFirstPoint = 0;
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	int			hitType;
 
 
@@ -532,14 +532,14 @@ int ValidatePath (int debugFlag, tPointSeg *pointSegP, int numPoints)
 nCurSeg = pointSegP->nSegment;
 if ((nCurSeg < 0) || (nCurSeg > gameData.segs.nLastSegment)) {
 #if TRACE
-	con_printf (CON_DEBUG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+	con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 	Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
 	return 0;
 	}
 #if TRACE
 if (debugFlag == 999)
-	con_printf (CON_DEBUG, "That's curious...\n");
+	con_printf (CONDBG, "That's curious...\n");
 #endif
 if (numPoints == 0)
 	return 1;
@@ -547,7 +547,7 @@ for (i = 1; i < numPoints; i++) {
 	nNextSeg = pointSegP [i].nSegment;
 	if ((nNextSeg < 0) || (nNextSeg > gameData.segs.nLastSegment)) {
 #if TRACE
-		con_printf (CON_DEBUG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+		con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 		Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
 		return 0;
@@ -558,7 +558,7 @@ for (i = 1; i < numPoints; i++) {
 				break;
 		if (nSide == MAX_SIDES_PER_SEGMENT) {
 #if TRACE
-			con_printf (CON_DEBUG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
+			con_printf (CONDBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.pointSegs, numPoints);
 #endif
 			Int3 ();
 			return 0;
@@ -617,7 +617,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 // -- 		CreateNSegmentPath (objP, 3, -1);
 // --
 // -- 	if (nEndSeg == -1) {
-// -- 		; //con_printf (CON_DEBUG, "Object %i, nHideSegment = -1, not creating path.\n", OBJ_IDX (objP));
+// -- 		; //con_printf (CONDBG, "Object %i, nHideSegment = -1, not creating path.\n", OBJ_IDX (objP));
 // -- 	} else {
 // -- 		CreatePathPoints (objP, nStartSeg, nEndSeg, gameData.ai.freePointSegs, &aip->nPathLength, -1, 0, 0, -1);
 // -- 		aip->nHideIndex = gameData.ai.freePointSegs - gameData.ai.pointSegs;
@@ -866,7 +866,7 @@ else
 // -- too much work -- int attackKillObject (tObject *objP)
 // -- too much work -- {
 // -- too much work -- 	tObject		*kill_objp;
-// -- too much work -- 	fvi_info		hit_data;
+// -- too much work -- 	tFVIData		hit_data;
 // -- too much work -- 	int			fate;
 // -- too much work -- 	fvi_query	fq;
 // -- too much work --
@@ -1121,7 +1121,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//	If not, turn around.
 			int			nOppositeEndIndex;
 			vmsVector	*vOppositeEndPoint;
-			fvi_info		hit_data;
+			tFVIData		hit_data;
 			int			fate;
 			fvi_query	fq;
 
@@ -1651,7 +1651,7 @@ void player_follow_path (tObject *objP)
 		//	If went all the way around to original point, in same direction, then get out of here!
 		if (Player_cur_path_index == original_index) {
 #if TRACE
-			con_printf (CON_DEBUG, "Forcing break because tPlayer path wrapped, count = %i.\n", count);
+			con_printf (CONDBG, "Forcing break because tPlayer path wrapped, count = %i.\n", count);
 #endif
 			Player_following_pathFlag = 0;
 			forced_break = 1;
@@ -1681,7 +1681,7 @@ void create_player_path_to_segment (int nSegment)
 
 	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &Player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
-		con_printf (CON_DEBUG, "Unable to form path of length %i for myself\n", 100);
+		con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 		}
 

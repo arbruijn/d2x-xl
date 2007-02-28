@@ -288,7 +288,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 	grsBitmap title_bm;
 	char new_filename [FILENAME_LEN+1] = "";
 
-	#ifdef RELEASE
+	#ifndef _DEBUG
 	if (from_hog_only)
 		strcpy (new_filename,"\x01");	//only read from hog file
 	#endif
@@ -299,7 +299,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 	title_bm.bm_texBuf=NULL;
 	if ((pcx_error = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
-		con_printf (CON_DEBUG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n",filename, pcx_errormsg (pcx_error), pcx_error);
+		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n",filename, pcx_errormsg (pcx_error), pcx_error);
 #endif
 		Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n",filename, pcx_errormsg (pcx_error), pcx_error);
 	}
@@ -755,7 +755,7 @@ int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
 	int pcx_error;
 
 #if TRACE
-	con_printf (CON_DEBUG,"Loading new briefing <%s>\n",szBriefScreen);
+	con_printf (CONDBG,"Loading new briefing <%s>\n",szBriefScreen);
 #endif
 	strcpy (curBriefScreenName,szBriefScreen);
 	//WIN (DEFINE_SCREEN (curBriefScreenName);
@@ -1175,7 +1175,7 @@ while (!done) {
 						break;
 					} while (!keypress);
 				if (keypress) {
-#ifndef NDEBUG
+#ifdef _DEBUG
 					if (keypress == KEY_BACKSP)
 						Int3 ();
 					else
@@ -1311,7 +1311,7 @@ while (!done) {
 						DeInitRobotMovie ();
 					bRobotPlaying=0;
 					nRobot = -1;
-#ifndef NDEBUG
+#ifdef _DEBUG
 					if (keypress == KEY_BACKSP)
 						Int3 ();
 #endif
@@ -1405,7 +1405,7 @@ if ((tfile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mi
 	strcat (nfilename, ".txb");
 	if ((ifile = CFOpen (nfilename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) == NULL) {
 #if TRACE
-		con_printf (CON_DEBUG,"can't open %s!\n",nfilename);
+		con_printf (CONDBG,"can't open %s!\n",nfilename);
 #endif
 		return (0);
 		}
@@ -1509,7 +1509,7 @@ int ShowBriefingScreen (int nScreen, int allow_keys, short nLevel)
 {
 brief_palette_254_bash = 0;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CON_DEBUG, "Skipping briefing screen [%s]\n", &Briefing_screens[nScreen].bs_name);
+	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &Briefing_screens[nScreen].bs_name);
 	return 0;
 	}
 if (gameStates.app.bD1Mission) {
@@ -1522,7 +1522,7 @@ if (gameStates.app.bD1Mission) {
 #else
 	if ((pcx_error=pcx_read_fullscr (Briefing_screens[nScreen].bs_name, 1))!=PCX_ERROR_NONE) {
 #endif
-		con_printf (CON_DEBUG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", Briefing_screens[nScreen].bs_name, pcx_errormsg (pcx_error), pcx_error);
+		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", Briefing_screens[nScreen].bs_name, pcx_errormsg (pcx_error), pcx_error);
 		Int3 ();
 		return 0;
 		}
@@ -1550,10 +1550,10 @@ void DoBriefingScreens (char *filename, int level_num)
 	int	bEnding = (strstr (filename, "endreg") != NULL);
 
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CON_DEBUG, "Skipping all briefing screens.\n");
+	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	return;
 	}
-con_printf (CON_DEBUG,"Trying briefing screen <%s>\n",filename);
+con_printf (CONDBG,"Trying briefing screen <%s>\n",filename);
 LogErr ("Looking for briefing screen '%s'\n", filename);
 if (!filename)
 	return;
@@ -1582,7 +1582,7 @@ WINDOS (
 	DDGrSetCurrentCanvas (NULL),
 	GrSetCurrentCanvas (NULL)
 	);
-con_printf (CON_DEBUG,"Playing briefing screen <%s>, level %d\n",filename,level_num);
+con_printf (CONDBG,"Playing briefing screen <%s>, level %d\n",filename,level_num);
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
 	gamePalette = LoadPalette (NULL,NULL,1,1,1);

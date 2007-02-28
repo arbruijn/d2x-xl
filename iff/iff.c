@@ -94,7 +94,7 @@ typedef struct fake_file {
 #define anim_sig MAKE_SIG('A','N','I','M')
 #define dlta_sig MAKE_SIG('D','L','T','A')
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 //void printsig(long s)
 //{
 //	char *t=(char *) &s;
@@ -275,7 +275,7 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 	char ignore=0;
 	unsigned char *data_end;
 	int end_pos;
-        #ifndef NDEBUG
+        #ifdef _DEBUG
 	int rowCount=0;
         #endif
 
@@ -361,7 +361,7 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 					{memset(p,c,nn); p+=nn;}
 			}
 
-			#ifndef NDEBUG
+			#ifdef _DEBUG
 			if ((p-bmheader->raw_data) % width == 0)
 					rowCount++;
 

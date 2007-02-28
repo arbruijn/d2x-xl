@@ -310,13 +310,13 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 		bmp[i] = new_bmp;
 #if TRACE
 		if (!i)
-			con_printf (CON_DEBUG, "Registering %bObjectRendered in piggy file.", tempname );
+			con_printf (CONDBG, "Registering %bObjectRendered in piggy file.", tempname );
 		else
-			con_printf (CON_DEBUG, ".");
+			con_printf (CONDBG, ".");
 #endif
 	}
 #if TRACE
-	con_printf (CON_DEBUG, "\n");
+	con_printf (CONDBG, "\n");
 #endif
 }
 
@@ -665,14 +665,14 @@ int bm_init_use_tbl()
 			 && (Effects [gameStates.app.bD1Data][i].vc.nFrameCount==-1) )
 			Error("EClip %d referenced (by polygon tObject?), but not defined",i);
 
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 	{
 		int used;
 		for (i=used=0; i<numSounds; i++ )
 			if (Sounds [gameStates.app.bD1Data][i] != 255)
 				used++;
 #if TRACE
-		con_printf (CON_DEBUG,"Sound slots used: %d of %d, highest index %d\n",used,MAX_SOUNDS,numSounds);
+		con_printf (CONDBG,"Sound slots used: %d of %d, highest index %d\n",used,MAX_SOUNDS,numSounds);
 #endif
 		//make sure all alt sounds refer to valid main sounds
 		for (i=used=0; i<numSounds; i++ ) {
@@ -1418,7 +1418,7 @@ void bm_readRobot()
 
 	if ((glow > i2f(15)) || (glow < 0) || (glow != 0 && glow < 0x1000)) {
 #if TRACE
-		con_printf (CON_DEBUG,"Invalid glow value %x for robot %d\n",glow,NRobotTypes);
+		con_printf (CONDBG,"Invalid glow value %x for robot %d\n",glow,NRobotTypes);
 #endif
 		Int3();
 	}

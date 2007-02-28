@@ -144,8 +144,10 @@ void ReadFlyingControls(tObject *objP)
 			MultiSendGuidedInfo (gmObjP, 0);
 		}
 	else {
+#ifdef _DEBUG
 		if (Controls [0].headingTime)
 			Controls [0].headingTime = Controls [0].headingTime;
+#endif
 		objP->mType.physInfo.rotThrust.p.x = Controls [0].pitchTime;
 		objP->mType.physInfo.rotThrust.p.y = Controls [0].headingTime;//Controls [0].headingTime ? f1_0 / 4 : 0; //Controls [0].headingTime;
 		objP->mType.physInfo.rotThrust.p.z = Controls [0].bankTime;

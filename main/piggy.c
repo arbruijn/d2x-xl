@@ -1976,7 +1976,7 @@ void PiggyWritePigFile (char *filename)
 		}
 	fclose (pig_fp);
 #if TRACE				
-	con_printf (CON_DEBUG, " Dumped %d assorted bitmaps.\n", gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
+	con_printf (CONDBG, " Dumped %d assorted bitmaps.\n", gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 #endif
 	fprintf (fp1, " Dumped %d assorted bitmaps.\n", gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 
@@ -2020,7 +2020,7 @@ void PiggyDumpAll ()
 	if (bMustWriteHamFile || nBitmapFilesNew) {
 
 #if TRACE				
-		con_printf (CON_DEBUG, "Creating %s...",DEFAULT_HAMFILE);
+		con_printf (CONDBG, "Creating %s...",DEFAULT_HAMFILE);
 #endif
 
 		ham_fp = fopen (DEFAULT_HAMFILE, "wb");                       //open HAM file
@@ -2047,14 +2047,14 @@ void PiggyDumpAll ()
 	
 		fclose (ham_fp);
 #if TRACE				
-		con_printf (CON_DEBUG, "\n");
+		con_printf (CONDBG, "\n");
 #endif
 	}
 	
 	if (nSoundFilesNew) {
 
 #if TRACE				
-		con_printf (CON_DEBUG, "Creating %s...",DEFAULT_HAMFILE);
+		con_printf (CONDBG, "Creating %s...",DEFAULT_HAMFILE);
 #endif
 		// Now dump sound file
 		ham_fp = fopen (DEFAULT_SNDFILE, "wb");
@@ -2066,7 +2066,7 @@ void PiggyDumpAll ()
 		fwrite (&gameData.pig.snd.nSoundFiles [0], sizeof (int), 1, ham_fp);
 	
 #if TRACE				
-		con_printf (CON_DEBUG, "\nDumping sounds...");
+		con_printf (CONDBG, "\nDumping sounds...");
 #endif	
 		sound_data_start = ftell (ham_fp);
 		sound_data_start += gameData.pig.snd.nSoundFiles [0]*sizeof (DiskSoundHeader);
@@ -2095,13 +2095,13 @@ void PiggyDumpAll ()
 
 		fclose (ham_fp);
 #if TRACE				
-		con_printf (CON_DEBUG, "\n");
+		con_printf (CONDBG, "\n");
 #endif
 	}
 
 	fprintf (fp1, "Total sound size: %d bytes\n", data_offset-sound_data_start);
 #if TRACE				
-	con_printf (CON_DEBUG, " Dumped %d assorted sounds.\n", gameData.pig.snd.nSoundFiles [0]);
+	con_printf (CONDBG, " Dumped %d assorted sounds.\n", gameData.pig.snd.nSoundFiles [0]);
 #endif
 	fprintf (fp1, " Dumped %d assorted sounds.\n", gameData.pig.snd.nSoundFiles [0]);
 
@@ -2611,7 +2611,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	}
 if (i >= nBitmapNum) {
 #if TRACE				
-	con_printf (CON_DEBUG, "could not find bitmap %s\n", name);
+	con_printf (CONDBG, "could not find bitmap %s\n", name);
 #endif
 	return bmi;
 	}

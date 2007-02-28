@@ -141,7 +141,7 @@ void GrShowCanvas( grs_canvas *canv )
 void GrSetCurrentCanvas( grs_canvas *canv )
 {
 #if 0 //TRACE
-con_printf (CON_DEBUG, 
+con_printf (CONDBG, 
 	"grd_set_current_canvas (canv=%p, grdCurCanv=%p, grdCurScreen=%p)\n", 
 	canv, grdCurCanv, grdCurScreen);
 #endif

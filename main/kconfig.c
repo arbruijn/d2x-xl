@@ -1171,10 +1171,10 @@ for (;;) {
 			KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
 			return;
 #ifdef TABLE_CREATION
-		case KEY_DEBUGGED+KEY_F12:	{
+		case KEYDBGGED+KEY_F12:	{
 			FILE * fp;
 #if TRACE		
-			con_printf (CON_DEBUG, "start table creation\n");
+			con_printf (CONDBG, "start table creation\n");
 #endif
 			for (i=0; i < NUM_KEY_CONTROLS; i++)	{
 				kcKeyboard [i].u = FindNextItemUp (kcKeyboard,NUM_KEY_CONTROLS, i);
@@ -1239,7 +1239,7 @@ for (;;) {
 			fprintf (fp, "};");
 			fclose (fp);
 #if TRACE		
-			con_printf (CON_DEBUG, "end table creation\n");
+			con_printf (CONDBG, "end table creation\n");
 #endif
 			}
 		break;

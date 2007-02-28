@@ -1083,7 +1083,7 @@ int tex_format_verify (ogl_texture *tex)
 				break;
 			default:
 #if TRACE	
-				con_printf (CON_DEBUG,"...no tex format to fall back on\n");
+				con_printf (CONDBG,"...no tex format to fall back on\n");
 #endif
 				return 1;
 		}
@@ -1784,7 +1784,7 @@ glPointParameterfARB		= (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress ("glPoin
 #	endif
 #endif
 
-#ifdef RELEASE
+#ifndef _DEBUG
 #	ifdef _WIN32
 glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glActiveStencilFaceEXT");
 #	endif

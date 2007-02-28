@@ -1712,7 +1712,7 @@ if (gameData.multi.nPlayers > netGame.nMaxPlayers) {
 	gameData.multi.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 	}
-#ifdef RELEASE
+#ifndef _DEBUG
 if (gameData.multi.nPlayers < 2) {
 	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
@@ -1722,7 +1722,7 @@ if (gameData.multi.nPlayers < 2) {
 	}
 #endif
 
-#ifdef RELEASE
+#ifndef _DEBUG
 if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 	  netGame.gameMode == NETGAME_CAPTURE_FLAG || 
 	  netGame.gameMode == NETGAME_TEAM_HOARD) && 
@@ -1785,7 +1785,7 @@ for (i = gameData.multi.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.players [i].rank = 0;
 	}
 #if 1				
-con_printf (CON_DEBUG, "Select teams: Game mode is %d\n", netGame.gameMode);
+con_printf (CONDBG, "Select teams: Game mode is %d\n", netGame.gameMode);
 #endif
 if (netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 	 netGame.gameMode == NETGAME_CAPTURE_FLAG ||
@@ -1928,7 +1928,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 		}
 	}
 	// send a request for game info every 3 seconds
-#if 0//def _DEBUG
+#ifdef _DEBUG
 if (!networkData.nActiveGames)
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -1945,7 +1945,7 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 	networkData.bGamesChanged = 0;
 	networkData.nLastActiveGames = networkData.nActiveGames;
 #if 1				
-	con_printf (CON_DEBUG, "Found %d netgames.\n", networkData.nActiveGames);
+	con_printf (CONDBG, "Found %d netgames.\n", networkData.nActiveGames);
 #endif
 	// Copy the active games data into the menu options
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
@@ -2137,7 +2137,7 @@ if (gameStates.multi.bUseTracker) {
 	GetServerFromList (choice);
 	}
 // Check for valid mission name
-con_printf (CON_DEBUG, TXT_LOADING_MSN, AGI.szMissionName);
+con_printf (CONDBG, TXT_LOADING_MSN, AGI.szMissionName);
 if (!(LoadMissionByName (AGI.szMissionName, -1) ||
 		(DownloadMission (AGI.szMissionName) &&
 		 LoadMissionByName (AGI.szMissionName, -1)))) {
@@ -2196,7 +2196,7 @@ int ConnectionSecLevel [] = {12, 3, 5, 7};
 int AppletalkConnectionPacketLevel [] = {0, 1, 0};
 int AppletalkConnectionSecLevel [] = {10, 3, 8};
 
-#ifdef RELEASE
+#ifndef _DEBUG
 int NetworkChooseConnect ()
 {
 return 1;

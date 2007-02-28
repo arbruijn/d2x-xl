@@ -204,7 +204,7 @@ void warning_printf(FILE *my_file, char * format, ... )
 	vsprintf(message,format,args);
 	va_end(args);
 #if TRACE
-	con_printf (CON_DEBUG, "%s", message);
+	con_printf (CONDBG, "%s", message);
 #endif	
 	fprintf(my_file, "%s", message);
 }
@@ -1039,7 +1039,7 @@ void sayTotals_all(void)
 
 	for (i=First_dumpLevel; i<=Last_dumpLevel; i++) {
 #if TRACE
-		con_printf (CON_DEBUG, "Level %i\n", i+1);
+		con_printf (CONDBG, "Level %i\n", i+1);
 #endif
 		LoadLevelSub(AdamLevel_names[i]);
 		sayTotals(my_file, AdamLevel_names[i]);

@@ -246,7 +246,7 @@ extern int  Robot_firing_enabled;
 // so we don't want to call it again (for this tObject) unless we have to.
 extern vmsVector   Hit_pos;
 extern int          HitType, Hit_seg;
-extern fvi_info     hitData;
+extern tFVIData     hitData;
 
 extern int              Num_tAwarenessEvents;
 extern tAwarenessEvent  Awareness_events [MAX_AWARENESS_EVENTS];

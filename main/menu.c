@@ -327,7 +327,7 @@ nMenuChoice [opt++] = MENU_SHOW_CREDITS;
 #endif
 ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 nMenuChoice [opt++] = MENU_QUIT;
-#ifndef RELEASE
+#ifdef _DEBUG
 if (!(gameData.app.nGameMode & GM_MULTI ))   {
 	//m [opt].nType=NM_TYPE_TEXT;
 	//m [opt++].text=" Debug options:";
@@ -551,7 +551,7 @@ switch (select) {
 		PlayMenuSong ();
 		break;
 
-#ifndef RELEASE
+#ifdef _DEBUG
 	case MENU_LOAD_LEVEL: {
 		tMenuItem m;
 		char text[10]="";
@@ -3191,7 +3191,7 @@ do {
 	opt++;
 	ADD_MENU (opt, strupr (TXT_CONTROLS_), KEY_O, HTX_OPTIONS_CONFIG);
 	optConfig = opt++;
-#if defined (_WIN32) || defined (__unix__)
+#if defined (_WIN32) || defined (__linux__)
 	optJoyCal = -1;
 #else
 	ADD_MENU (opt, TXT_CAL_JOYSTICK, KEY_J, HTX_OPTIONS_CALSTICK);

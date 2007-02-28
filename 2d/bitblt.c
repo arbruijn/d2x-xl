@@ -41,7 +41,7 @@ void gr_linear_movsd(ubyte * source, ubyte * dest, unsigned int nbytes);
 
 #define THRESHOLD   8
 
-#ifdef RELEASE
+#ifndef _DEBUG
 #define test_byteblit   0
 #else
 ubyte test_byteblit = 0;

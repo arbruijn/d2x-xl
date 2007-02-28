@@ -127,13 +127,7 @@ void GamePaletteStepUp (int r, int g, int b);
 #include "editor/editor.h"
 #endif
 
-//#define _MARK_ON 1
-#ifdef __WATCOMC__
-#if __WATCOMC__ < 1000
-#include <wsample.h>            //should come after inferno.h to get mark setting
-#endif
-#endif
-
+//#define _DEBUG
 
 void FreeHoardData (void);
 int ReadControls (void);		// located in gamecntl.c
@@ -150,7 +144,7 @@ int	SpeedtestCount=0;				//	number of times to do the debug test.
 
 fix ThisLevelTime=0;
 
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 fix TimerValue,actual_lastTimerValue,_last_frametime;
 int gameData.time.xStops,gameData.time.xStarts;
 int gameData.time.xStopped,gameData.time.xStarted;
@@ -229,7 +223,7 @@ void shrink_window (void);
 
 void fill_background ();
 
-#ifndef RELEASE
+#ifdef _DEBUG
 void show_framerate (void);
 void ftoa (char *string, fix f);
 #endif
@@ -713,16 +707,16 @@ if (++gameData.time.nPaused == 1) {
 	fix xTime = TimerGetFixedSeconds ();
 	gameData.time.xSlack = xTime - gameData.time.xLast;
 	if (gameData.time.xSlack < 0) {
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 		Int3 ();		//get Matt!!!!
 #endif
 		gameData.time.xLast = 0;
 		}
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 	gameData.time.xStopped = xTime;
 	#endif
 }
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStops++;
 #endif
 }
@@ -734,16 +728,16 @@ void StartTime ()
 Assert (gameData.time.nPaused > 0);
 if (!--gameData.time.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 	if (gameData.time.xLast < 0)
 		Int3 ();		//get Matt!!!!
 #endif
 	gameData.time.xLast = xTime - gameData.time.xSlack;
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 	gameData.time.xStarted = time;
 #endif
 	}
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStarts++;
 #endif
 }
@@ -785,7 +779,7 @@ gameData.time.xLast = TimerGetFixedSeconds ();
 
 //------------------------------------------------------------------------------
 
-#ifndef RELEASE
+#ifdef _DEBUG
 extern int Saving_movie_frames;
 int Movie_fixed_frametime;
 #else
@@ -806,7 +800,7 @@ if (gameData.app.bGamePaused) {
 	gameData.time.xRealFrame = 0;
 	return;
 	}
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 _last_frametime = last_frametime;
 #endif
 do {
@@ -816,7 +810,7 @@ do {
 	if (gameOpts->render.nMaxFPS < 2)
 		break;
 	} while (gameData.time.xFrame < minFrameTime);
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 TimerValue = timerValue;
 #endif
 #ifdef _DEBUG
@@ -831,7 +825,7 @@ if (gameData.time.xFrame == 0)
 	Int3 ();	//	Call Mike or Matt or John!  Your interrupts are probably trashed!
 	}
 #endif
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 actual_lastTimerValue = gameData.time.xLast;
 #endif
 if (gameStates.app.cheats.bTurboMode)
@@ -861,7 +855,7 @@ if (Debug_pause) {
 #if Arcade_mode
 gameData.time.xFrame /= 2;
 #endif
-#if defined (TIMER_TEST) && !defined (NDEBUG)
+#if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStops = gameData.time.xStarts = 0;
 #endif
 //	Set value to determine whether homing missile can see target.
@@ -1088,7 +1082,7 @@ if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_IN
 				}
 #endif
 #if TRACE
-				//con_printf (CON_DEBUG, " --- You have been DE-INVULNERABLEIZED! ---\n");
+				//con_printf (CONDBG, " --- You have been DE-INVULNERABLEIZED! ---\n");
 #endif
 			}
 		bFakingInvul=0;
@@ -1581,11 +1575,11 @@ SetScreenMode (SCREEN_GAME);
 ResetPaletteAdd ();
 SetWarnFunc (ShowInGameWarning);
 #if TRACE
-//con_printf (CON_DEBUG, "   InitCockpit d:\temp\dm_test.\n");
+//con_printf (CONDBG, "   InitCockpit d:\temp\dm_test.\n");
 #endif
 InitCockpit ();
 #if TRACE
-//con_printf (CON_DEBUG, "   InitGauges d:\temp\dm_test.\n");
+//con_printf (CONDBG, "   InitGauges d:\temp\dm_test.\n");
 #endif
 InitGauges ();
 //DigiInitSounds ();
@@ -1600,7 +1594,7 @@ keyd_repeat = 1;                // Do allow repeat in game
 #endif
 gameData.objs.viewer = gameData.objs.console;
 #if TRACE
-//con_printf (CON_DEBUG, "   FlyInit d:\temp\dm_test.\n");
+//con_printf (CONDBG, "   FlyInit d:\temp\dm_test.\n");
 #endif
 FlyInit (gameData.objs.console);
 gameStates.app.bGameSuspended = 0;
@@ -1613,7 +1607,7 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 }
 #endif
 #if TRACE
-//con_printf (CON_DEBUG, "   FixObjectSegs d:\temp\dm_test.\n");
+//con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
 }
@@ -1653,7 +1647,7 @@ for (;;) {
 	gameStates.app.bConfigMenu = 0;
 	if (gameData.objs.console != &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]) {
 #if TRACE
-	    //con_printf (CON_DEBUG,"gameData.multi.nLocalPlayer=%d nObject=%d",gameData.multi.nLocalPlayer,gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
+	    //con_printf (CONDBG,"gameData.multi.nLocalPlayer=%d nObject=%d",gameData.multi.nLocalPlayer,gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
 #endif
 	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]);
 		}
@@ -1912,7 +1906,7 @@ return NULL;
 extern void ProcessSmartMinesFrame (void);
 extern void DoSeismicStuff (void);
 
-#ifndef RELEASE
+#ifdef _DEBUG
 int Saving_movie_frames=0;
 int __Movie_frame_num=0;
 
@@ -1933,7 +1927,7 @@ void flush_movie_buffer ()
 
 	StopTime ();
 #if TRACE
-	//con_printf (CON_DEBUG,"Flushing movie bufferd:\temp\dm_test.");
+	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
 	bmMovie.bm_texBuf = Movie_frame_buffer;
 
@@ -1945,14 +1939,14 @@ void flush_movie_buffer ()
 
 		if (f % 5 == 0) {
 #if TRACE
-			//con_printf (CON_DEBUG,"%3d/%3d\10\10\10\10\10\10\10",f,nMovieFrames);
+			//con_printf (CONDBG,"%3d/%3d\10\10\10\10\10\10\10",f,nMovieFrames);
 #endif
 		}			
 	}
 
 	nMovieFrames=0;
 #if TRACE
-	//con_printf (CON_DEBUG,"done   \n");
+	//con_printf (CONDBG,"done   \n");
 #endif
 	StartTime ();
 }
@@ -2157,7 +2151,7 @@ if (nDebugSlowdown) {
 }
 #endif
 
-#ifndef RELEASE
+#ifdef _DEBUG
 	if (FindArg ("-invulnerability")) {
 		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
@@ -2217,7 +2211,7 @@ if (nDebugSlowdown) {
 			gameData.multi.players[gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
-//con_printf (CON_DEBUG, "      MultiSendFlags\n");
+//con_printf (CONDBG, "      MultiSendFlags\n");
 				MultiSendFlags ((char) gameData.multi.nLocalPlayer);
 				}
 #endif
@@ -2251,7 +2245,7 @@ if (nDebugSlowdown) {
 		gameStates.app.bUsingConverter = 0;
 		//show_extraViews ();		//missile view, buddy bot, etc.
 
-#ifndef RELEASE
+#ifdef _DEBUG
 		if (Saving_movie_frames)
 			save_movie_frame ();
 #endif
@@ -2537,22 +2531,17 @@ void FireLaser ()
 //	This could easily be made difficulty level dependent.
 void PowerupGrabCheat (tObject *player, int nObject)
 {
-	fix	powerup_size;
-	fix	player_size;
+	fix	powerup_size = gameData.objs.objects [nObject].size;
+	fix	player_size = player->size;
 	fix	dist;
 
-	Assert (gameData.objs.objects[nObject].nType == OBJ_POWERUP);
-
-	powerup_size = gameData.objs.objects[nObject].size;
-	player_size = player->size;
-
-	dist = VmVecDistQuick (&gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
-
-	if ((dist < 2* (powerup_size + player_size)) && !(gameData.objs.objects[nObject].flags & OF_SHOULD_BE_DEAD)) {
-		vmsVector	collision_point;
-
-		VmVecAvg (&collision_point, &gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
-		CollidePlayerAndPowerup (player, gameData.objs.objects + nObject, &collision_point);
+Assert (gameData.objs.objects[nObject].nType == OBJ_POWERUP);
+dist = VmVecDistQuick (&gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
+if ((dist < 2 * (powerup_size + player_size)) && 
+	 !(gameData.objs.objects[nObject].flags & OF_SHOULD_BE_DEAD)) {
+	vmsVector	collision_point;
+	VmVecAvg (&collision_point, &gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
+	CollidePlayerAndPowerup (player, gameData.objs.objects + nObject, &collision_point);
 	}
 }
 
@@ -2564,18 +2553,18 @@ void PowerupGrabCheat (tObject *player, int nObject)
 //	way before the tPlayer gets there.
 void PowerupGrabCheatAll (void)
 {
-	tSegment	*segp;
+if (gameStates.app.b40fpsTick) {
+	tSegment	*segP;
 	int		nObject;
 
-	segp = gameData.segs.segments + gameData.objs.console->nSegment;
-	nObject = segp->objects;
-
+	segP = gameData.segs.segments + gameData.objs.console->nSegment;
+	nObject = segP->objects;
 	while (nObject != -1) {
 		if (gameData.objs.objects[nObject].nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.console, nObject);
 		nObject = gameData.objs.objects[nObject].next;
+		}
 	}
-
 }
 
 int	nLastLevelPathCreated = -1;
@@ -2600,7 +2589,7 @@ int mark_player_path_to_segment (int nSegment)
 
 	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
-		//con_printf (CON_DEBUG, "Unable to form path of length %i for myself\n", 100);
+		//con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 		return 0;
 	}
@@ -2623,7 +2612,7 @@ int mark_player_path_to_segment (int nSegment)
 
 		nSegment = gameData.ai.pointSegs[player_hide_index+i].nSegment;
 #if TRACE
-		//con_printf (CON_DEBUG, "%3i ", nSegment);
+		//con_printf (CONDBG, "%3i ", nSegment);
 #endif
 		seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
 
@@ -2641,7 +2630,7 @@ int mark_player_path_to_segment (int nSegment)
 		objP->lifeleft = F1_0*100 + d_rand () * 4;
 	}
 #if TRACE
-	//con_printf (CON_DEBUG, "\n");
+	//con_printf (CONDBG, "\n");
 #endif
 	return 1;
 }
@@ -2657,7 +2646,7 @@ int CreateSpecialPath (void)
 		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
 			if (gameData.segs.segments[i].children[j] == -2) {
 #if TRACE
-				//con_printf (CON_DEBUG, "Exit at tSegment %i\n", i);
+				//con_printf (CONDBG, "Exit at tSegment %i\n", i);
 #endif
 				return mark_player_path_to_segment (i);
 			}
@@ -2669,7 +2658,7 @@ int CreateSpecialPath (void)
 
 
 //-----------------------------------------------------------------------------
-#ifndef RELEASE
+#ifdef _DEBUG
 int	Max_objCount_mike = 0;
 
 //	Shows current number of used gameData.objs.objects.
@@ -2680,22 +2669,22 @@ void show_freeObjects (void)
 		int	count=0;
 
 #if TRACE
-		//con_printf (CON_DEBUG, "gameData.objs.nLastObject = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject, MAX_OBJECTS);
+		//con_printf (CONDBG, "gameData.objs.nLastObject = %3i, MAX_OBJECTS = %3i, now used = ", gameData.objs.nLastObject, MAX_OBJECTS);
 #endif
 		for (i=0; i<=gameData.objs.nLastObject; i++)
 			if (gameData.objs.objects[i].nType != OBJ_NONE)
 				count++;
 #if TRACE
-		//con_printf (CON_DEBUG, "%3i", count);
+		//con_printf (CONDBG, "%3i", count);
 #endif
 		if (count > Max_objCount_mike) {
 			Max_objCount_mike = count;
 #if TRACE
-			//con_printf (CON_DEBUG, " ***");
+			//con_printf (CONDBG, " ***");
 #endif
 		}
 #if TRACE
-		//con_printf (CON_DEBUG, "\n");
+		//con_printf (CONDBG, "\n");
 #endif
 	}
 

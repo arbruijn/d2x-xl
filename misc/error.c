@@ -146,7 +146,7 @@ if (grdCurScreen && pWarnFunc)
 #if defined (WIN32)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
-#elif defined (__unix__)
+#elif defined (__linux__)
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
@@ -160,8 +160,8 @@ void _CDECL_ Error (char *fmt,...)
 {
 	va_list arglist;
 
-#if (defined(NDEBUG) && defined(RELEASE))
-strcpy(szExitMsg, TXT_TITLE_ERROR); // don't put the new line in for dialog output
+#ifndef _DEBUG
+strcpy (szExitMsg, TXT_TITLE_ERROR); // don't put the new line in for dialog output
 #else
 sprintf (szExitMsg, "\n%s", TXT_TITLE_ERROR);
 #endif
@@ -173,7 +173,7 @@ D2MsgBox (szExitMsg, MB_ICONERROR);
 Int3();
 if (!err_initialized) 
 	print_exit_message();
-#ifdef RELEASE
+#ifndef _DEBUG
 //exit (2);
 #endif
 }

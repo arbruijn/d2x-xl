@@ -305,7 +305,7 @@ void UpdateMouseState (DIDEVICEOBJECTDATA *pdidod)
 			break;//hm, handle this?
 		default:
 #if TRACE	
-			con_printf (CON_DEBUG,"unknown mouse event %i\n",iEvt);
+			con_printf (CONDBG,"unknown mouse event %i\n",iEvt);
 #endif
 //			exit (iEvt);//not happy.
 			break;

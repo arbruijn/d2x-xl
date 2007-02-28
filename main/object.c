@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _3DFX
 #include "3dfx_des.h"
 #endif
-
+//#define _DEBUG
 extern vmsVector playerThrust;
 extern int bSpeedBost;
 
@@ -609,7 +609,9 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 						bmiP [12];
 	int				i;
 
+#ifdef _DEBUG
 	Assert (pm->nTextures <= 12);
+#endif
 	for (i = 0; i < 12; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
 	DrawPolygonModel (objP, &objP->position.vPos, 
@@ -2055,7 +2057,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		if (gameData.objs.objects [nObject].nSegment != nSegment)	{
 			#ifdef _DEBUG
 #if TRACE				
-			con_printf (CON_DEBUG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
+			con_printf (CONDBG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
 #endif
 			Int3 ();
 			#endif
@@ -2374,7 +2376,7 @@ if (GetSegMasks (pos, nSegment, 0).centerMask)
 	if ((nSegment = FindSegByPoint (pos, nSegment)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
-		con_printf (CON_DEBUG, "Bad segment in CreateObject (nType=%d)\n", nType);
+		con_printf (CONDBG, "Bad segment in CreateObject (nType=%d)\n", nType);
 #	endif
 #endif
 		return -1;		//don't create this tObject
@@ -2450,7 +2452,7 @@ else if (objP->controlType == CT_EXPLOSION)
 #ifdef _DEBUG
 #if TRACE				
 if (bPrintObjectInfo)	
-	con_printf (CON_DEBUG, "Created tObject %d of nType %d\n", nObject, objP->nType);
+	con_printf (CONDBG, "Created tObject %d of nType %d\n", nObject, objP->nType);
 #endif
 #endif
 if (objP->nType == OBJ_DEBRIS)
@@ -2579,7 +2581,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	//	Camera is too close to tPlayer tObject, so move it away.
 	vmsVector	player_camera_vec;
 	fvi_query	fq;
-	fvi_info		hit_data;
+	tFVIData		hit_data;
 	vmsVector	local_p1;
 
 	VmVecSub (&player_camera_vec, camera_pos, &objP->position.vPos);
@@ -2856,7 +2858,7 @@ Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject));
 Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
 UnlinkObject (nObject);
 LinkObject (nObject, newsegnum);
-#if 0//def _DEBUG
+#ifdef _DEBUG
 #if TRACE				
 if (GetSegMasks (&gameData.objs.objects [nObject].position.vPos, 
 					  gameData.objs.objects [nObject].nSegment, 0).centerMask)
@@ -3513,7 +3515,7 @@ void ClearTransientObjects (int clear_all)
 			#ifdef _DEBUG
 #if TRACE				
 			if (gameData.objs.objects [nObject].lifeleft > i2f (2))
-				con_printf (CON_DEBUG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+				con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
 #endif
 			#endif
 			ReleaseObject (nObject);
@@ -3521,7 +3523,7 @@ void ClearTransientObjects (int clear_all)
 		#ifdef _DEBUG
 #if TRACE				
 		 else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
-			con_printf (CON_DEBUG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+			con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
 #endif
 		#endif
 }

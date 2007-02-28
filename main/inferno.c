@@ -337,7 +337,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -bigpig         %s\n", "FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -bspgen         %s\n", "FIXME: Undocumented");
 //	con_printf ((int) con_threshold.value, "  -cdproxy        %s\n", "FIXME: Undocumented");
-#ifndef NDEBUG
+#ifdef _DEBUG
 	con_printf ((int) con_threshold.value, "  -checktime      %s\n", "FIXME: Undocumented");
 	con_printf ((int) con_threshold.value, "  -showmeminfo    %s\n", "FIXME: Undocumented");
 #endif
@@ -345,7 +345,7 @@ void PrintCmdLineHelp ()
 #ifdef SDL_INPUT
 	con_printf ((int) con_threshold.value, "  -grabmouse      %s\n", "Keeps the mouse from wandering out of the window");
 #endif
-#ifndef RELEASE
+#ifdef _DEBUG
 	con_printf ((int) con_threshold.value, "  -invulnerability %s\n", "Make yourself invulnerable");
 #endif
 	con_printf ((int) con_threshold.value, "  -ipxnetwork <num> %s\n", "Use IPX network number <num>");
@@ -360,7 +360,7 @@ void PrintCmdLineHelp ()
 #ifdef __DJGPP__
 	con_printf ((int) con_threshold.value, "  -nocyberman     %s\n", "FIXME: Undocumented");
 #endif
-#ifndef NDEBUG
+#ifdef _DEBUG
 	con_printf ((int) con_threshold.value, "  -nofade         %s\n", "Disable fades");
 #endif
 	con_printf ((int) con_threshold.value, "  -nomatrixcheat  %s\n", "FIXME: Undocumented");
@@ -370,7 +370,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -nomixer        %s\n", "Don't crank music volume");
 	con_printf ((int) con_threshold.value, "  -sound22k       %s\n", "Use 22 KHz sound sample rate");
 	con_printf ((int) con_threshold.value, "  -sound11k       %s\n", "Use 11 KHz sound sample rate");
-#ifndef RELEASE
+#ifdef _DEBUG
 	con_printf ((int) con_threshold.value, "  -nomovies       %s\n", "Don't play movies");
 	con_printf ((int) con_threshold.value, "  -noscreens      %s\n", "Skip briefing screens");
 #endif
@@ -607,10 +607,8 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 #	ifdef __unix__
 if (getenv ("HOME"))
 	strcpy (gameFolders.szHomeDir, getenv ("HOME"));
-#		if 0
 if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolders.szHomeDir, gameFolders.szGameDir, "d2x-xl", "d2x-xl"))
 		*gameFolders.szGameDir = '\0';
-#		endif
 #	endif //__unix__
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 		*gameFolders.szGameDir = '\0';
@@ -644,7 +642,7 @@ GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
-#ifdef __unix__
+#ifdef __linux__
 if (*gameFolders.szHomeDir) {
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 	if (!CFMkDir (szDataRootDir)) {
@@ -667,7 +665,7 @@ GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
 if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
-#if 0//def __unix__
+#if 0//def __linux__
 	{
 	*gameFolders.szConfigDir = '\0';
 	if (GetAppFolder (gameFolders.szGameDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
@@ -1688,7 +1686,7 @@ void InitInputStates (void)
 gameStates.input.nMouseType = -1;
 gameStates.input.nJoyType = -1;
 gameStates.input.bCybermouseActive = 0;
-#ifdef RELEASE
+#ifndef _DEBUG
 gameStates.input.bGrabMouse = 1;
 #else
 gameStates.input.bGrabMouse = 0;
@@ -2122,7 +2120,7 @@ if (FindArg ("-?") || FindArg ("-help") || FindArg ("?") || FindArg ("-h")) {
 
 void ShowTitleScreens (void)
 {
-#ifndef RELEASE
+#ifdef _DEBUG
 if (FindArg ("-notitles"))
 	SongsPlaySong (SONG_TITLE, 1);
 else
@@ -2160,7 +2158,7 @@ void ShowLoadingScreen (void)
 	char filename[14];
 
 #if TRACE		
-con_printf(CON_DEBUG, "\nShowing loading screen...\n"); fflush (fErr);
+con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 strcpy (filename, gameStates.menus.bHires?"descentb.pcx":"descent.pcx");
 if (! CFExist (filename, gameFolders.szDataDir, 0))
@@ -2554,7 +2552,7 @@ InitArgs (argc, argv);
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
-#ifdef __unix__
+#ifdef __linux__
 	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
 	fErr = fopen (fnErr, "wt");
 #else
@@ -2687,11 +2685,11 @@ WriteConfigFile ();
 WritePlayerFile ();
 /*---*/LogErr ("Releasing tracker list\n");
 DestroyTrackerList ();
-#ifndef RELEASE
+#ifdef _DEBUG
 if (!FindArg ("-notitles"))
 #endif
 	//show_order_form ();
-#ifndef NDEBUG
+#ifdef _DEBUG
 if (FindArg ("-showmeminfo"))
 	bShowMemInfo = 1;		// Make memory statistics show
 #endif

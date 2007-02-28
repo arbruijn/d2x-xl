@@ -2046,7 +2046,7 @@ launchOption:
 			
 			break;
 
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 		case KEY_BACKSP:	
 			if ((choice>-1) &&(item [choice].nType!=NM_TYPE_INPUT)&&(item [choice].nType!=NM_TYPE_INPUT_MENU))
 				Int3 (); 

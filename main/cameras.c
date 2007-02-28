@@ -337,7 +337,7 @@ nCameras = 0;
 
 void GetCameraUVL (tCamera *pc, uvl *uvlCopy)
 {
-#ifdef RELEASE
+#ifndef _DEBUG
 if (pc->bHaveUVL)
 	memcpy (uvlCopy, pc->uvlList, sizeof (pc->uvlList));
 else 

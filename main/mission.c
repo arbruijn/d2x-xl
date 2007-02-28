@@ -471,7 +471,7 @@ switch (gameData.missions.nBuiltinHogSize) {
 			Error("Could not find required mission file <%s>", FULL_MISSION_FILENAME ".mn2");
 		break;
 	default:
-#if 0//def _DEBUG
+#ifdef _DEBUG
 		Warning(TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, FULL_MISSION_FILENAME ".mn2");
 #endif
 		gameData.missions.nBuiltinHogSize = FULL_MISSION_HOGSIZE;
@@ -544,7 +544,7 @@ void AddMissionsToList
 				strcpy (gameData.missions.list [c].filename, TXT_MSN_OVERFLOW);
 
 	#if TRACE
-				con_printf (CON_DEBUG, "Warning: more missions than D2X-XL can handle\n");
+				con_printf (CONDBG, "Warning: more missions than D2X-XL can handle\n");
 	#endif			
 			}
 		}

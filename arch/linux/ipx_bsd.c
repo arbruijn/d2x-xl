@@ -118,7 +118,7 @@ static int ipx_bsd_OpenSocket(ipx_socket_t *sk, int port)
 	/* turn on socket debugging */
 	if (d.network) {
 		enter_priv_on();
-		if (setsockopt(sock, SOL_SOCKET, SO_DEBUG, &opt, sizeof(opt)) == -1) {
+		if (setsockopt(sock, SOL_SOCKET, SODBG, &opt, sizeof(opt)) == -1) {
 			leave_priv_setting();
 			FAIL("IPX: could not set socket option for debugging.\n");
 			return -1;

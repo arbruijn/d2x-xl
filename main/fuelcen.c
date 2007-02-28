@@ -90,7 +90,7 @@ gameData.matCens.nBotCenters = 0;
 gameData.matCens.nEquipCenters = 0;
 }
 
-#ifndef NDEBUG		//this is sometimes called by people from the debugger
+#ifdef _DEBUG		//this is sometimes called by people from the debugger
 void reset_allRobot_centers ()
 {
 	int i;
@@ -230,7 +230,7 @@ void EquipGenCreate (tSegment *segP, int oldType)
 	tSegment2	*seg2p = gameData.segs.segment2s  + nSegment;
 	int			stationType = seg2p->special;
 	int			i;
-return;
+
 Assert (stationType == SEGMENT_IS_EQUIPMAKER);
 Assert (gameData.matCens.nFuelCenters > -1);
 if (seg2p->nMatCen >= gameFileInfo.equipGen.count) {
@@ -302,7 +302,7 @@ void MatCenTrigger (short nSegment)
 	int				nObject;
 
 #if TRACE
-con_printf (CON_DEBUG, "Trigger matcen, tSegment %i\n", nSegment);
+con_printf (CONDBG, "Trigger matcen, tSegment %i\n", nSegment);
 #endif
 if (seg2p->special == SEGMENT_IS_EQUIPMAKER) {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2p->nMatCen].nFuelCen;
@@ -457,7 +457,7 @@ tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 
 int Num_extryRobots = 15;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 int	FrameCount_last_msg = 0;
 #endif
 
@@ -520,7 +520,7 @@ if (!matCenP->bEnabled)
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -586,7 +586,7 @@ if (gameStates.entropy.bExitSequence || (gameData.segs.xSegments [matCenP->nSegm
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -653,7 +653,7 @@ if (matCenP->xDisableTime > 0) {
 	matCenP->xDisableTime -= gameData.time.xFrame;
 	if (matCenP->xDisableTime <= 0) {
 #if TRACE
-		con_printf (CON_DEBUG, "Robot center #%i gets disabled due to time running out.\n", 
+		con_printf (CONDBG, "Robot center #%i gets disabled due to time running out.\n", 
 						FUELCEN_IDX (matCenP));
 #endif
 		matCenP->bEnabled = 0;
@@ -668,7 +668,7 @@ if (matCenP->xCapacity <= 0)
 nMatCen = gameData.segs.segment2s [matCenP->nSegment].nMatCen;
 if (nMatCen == -1) {
 #if TRACE
-	con_printf (CON_DEBUG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
+	con_printf (CONDBG, "Dysfunctional robot generator at %d\n", matCenP->nSegment);
 #endif
 	return;
 	}
@@ -680,10 +680,10 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 if ((gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel - 
 	  gameData.multi.players [gameData.multi.nLocalPlayer].numKillsLevel) >= 
 	 (Gamesave_num_orgRobots + Num_extryRobots)) {
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE
-		con_printf (CON_DEBUG, "Cannot morph until you kill one!\n");
+		con_printf (CONDBG, "Cannot morph until you kill one!\n");
 #endif
 		FrameCount_last_msg = gameData.app.nFrameCount;
 		}
@@ -713,7 +713,7 @@ if (!matCenP->bFlag) {
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
 #if TRACE
-		con_printf (CON_DEBUG, "Cannot morph: center %i has already put out %i robots.\n", nMyStation, nCount);
+		con_printf (CONDBG, "Cannot morph: center %i has already put out %i robots.\n", nMyStation, nCount);
 #endif
 		matCenP->xTimer /= 2;
 		return;
@@ -727,7 +727,7 @@ if (!matCenP->bFlag) {
 		nCount++;
 		if (nCount > MAX_OBJECTS) {
 #if TRACE
-			con_printf (CON_DEBUG, "Object list in tSegment %d is circular.", nSegment);
+			con_printf (CONDBG, "Object list in tSegment %d is circular.", nSegment);
 #endif
 			Int3 ();
 			return;
@@ -757,11 +757,11 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	if (nType < 0)
 		return;
 #if TRACE
-	con_printf (CON_DEBUG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
+	con_printf (CONDBG, "Morph: (nType = %i) (seg = %i) (capacity = %08x)\n", nType, matCenP->nSegment, matCenP->xCapacity);
 #endif
 	if (!(objP = CreateMorphRobot (gameData.segs.segments + matCenP->nSegment, &vPos, nType))) {
 #if TRACE
-		con_printf (CON_DEBUG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
+		con_printf (CONDBG, "Warning: CreateMorphRobot returned NULL (no gameData.objs.objects left?)\n");
 #endif
 		return;
 		}
@@ -1460,7 +1460,7 @@ if (seg2p->special==SEGMENT_IS_GOAL_BLUE)	{
 		  FlagAtHome (POW_BLUEFLAG)) {		
 		{
 #if TRACE
-		con_printf (CON_DEBUG,"In goal tSegment BLUE\n");
+		con_printf (CONDBG,"In goal tSegment BLUE\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
@@ -1472,7 +1472,7 @@ else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
 		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) &&
 		 FlagAtHome (POW_REDFLAG)) {		
 #if TRACE
-		con_printf (CON_DEBUG,"In goal tSegment RED\n");
+		con_printf (CONDBG,"In goal tSegment RED\n");
 #endif
 		MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
 		gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
@@ -1499,7 +1499,7 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
 		if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX])
 		{
 #if TRACE
-				con_printf (CON_DEBUG,"In orb goal!\n");
+				con_printf (CONDBG,"In orb goal!\n");
 #endif
 				MultiSendOrbBonus ((char) gameData.multi.nLocalPlayer);
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));

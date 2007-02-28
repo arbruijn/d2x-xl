@@ -72,6 +72,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "text.h"
 
+//#define _DEBUG
+
 #ifdef TACTILE
 #include "tactile.h"
 #endif 
@@ -254,6 +256,11 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			force2.p.y = vForce->p.y / 4;
 			force2.p.z = vForce->p.z / 4;
 			PhysApplyForce (objP, &force2);
+#if 0
+			HUDMessage (0, "%1.2f   %1.2f", 
+							VmVecMag (&objP->mType.physInfo.velocity) / 65536.0, 
+							VmVecMag (&force2) / 65536.0);
+#endif
 			if (bDamage && ((otherObjP->nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->id).companion)) {
 				xForceMag = VmVecMagQuick (&force2);
 				ApplyForceDamage (objP, xForceMag, otherObjP);
@@ -326,7 +333,7 @@ else
 if (t) {
 	Assert (t->movementType == MT_PHYSICS);
 	VmVecCopyScale (&vForce, &t->mType.physInfo.velocity, -t->mType.physInfo.mass);
-#ifdef _DEBUG
+#if 1//def _DEBUG
 	if (vForce.p.x || vForce.p.y || vForce.p.z)
 #endif
 	PhysApplyForce (t, &vForce);
@@ -751,7 +758,7 @@ int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blow
 						eclip	*new_ec = gameData.eff.pEffects + ecP->dest_eclip;
 						int 	bm_num = new_ec->changingWallTexture;
 #if TRACE
-						con_printf (CON_DEBUG, "bm_num = %d \n", bm_num);
+						con_printf (CONDBG, "bm_num = %d \n", bm_num);
 #endif
 						new_ec->time_left = EffectFrameTime (new_ec);
 						new_ec->nCurFrame = 0;
@@ -805,7 +812,7 @@ int OkToDoOmegaDamage (tObject *weapon)
 
 	if (gameData.objs.objects [nParentObj].nSignature != parent_sig) {
 #if TRACE
-		con_printf (CON_DEBUG, "Parent of omega blob not consistent with tObject information. \n");
+		con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
 #endif
 		}
 	else {
@@ -850,11 +857,11 @@ if (weapon->id == OMEGA_ID)
 if (weapon->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weapon->position.mOrient.fVec, sideP->normals);
 #if TRACE
-	con_printf (CON_DEBUG, "Guided missile dot = %7.3f \n", f2fl (dot));
+	con_printf (CONDBG, "Guided missile dot = %7.3f \n", f2fl (dot));
 #endif
 	if (dot < -F1_0/6) {
 #if TRACE
-		con_printf (CON_DEBUG, "Guided missile loses bounciness. \n");
+		con_printf (CONDBG, "Guided missile loses bounciness. \n");
 #endif
 		weapon->mType.physInfo.flags &= ~PF_BOUNCE;
 	}
@@ -876,7 +883,7 @@ if (keyd_pressed [KEY_LAPOSTRO])
 	if (weapon->cType.laserInfo.nParentObj == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
 #if TRACE
-		con_printf (CON_DEBUG, "Your laser hit at tSegment = %i, tSide = %i \n", hitseg, hitwall);
+		con_printf (CONDBG, "Your laser hit at tSegment = %i, tSide = %i \n", hitseg, hitwall);
 #endif
 		HUDInitMessage ("Hit at tSegment = %i, tSide = %i", hitseg, hitwall);
 		if (weapon->id < 4)
@@ -1198,7 +1205,7 @@ if ((who < 0) || (who > gameData.objs.nLastObject))
 whotype = gameData.objs.objects [who].nType;
 if (whotype != OBJ_PLAYER) {
 #if TRACE
-	con_printf (CON_DEBUG, "Damage to control center by tObject of nType %i prevented by MK! \n", whotype);
+	con_printf (CONDBG, "Damage to control center by tObject of nType %i prevented by MK! \n", whotype);
 #endif
 	return;
 	}
@@ -1256,7 +1263,7 @@ return 1;
 int CollidePlayerAndMarker (tObject * marker, tObject * playerObjP, vmsVector *vHitPt)
 { 
 #if TRACE
-con_printf (CON_DEBUG, "Collided with marker %d! \n", marker->id);
+con_printf (CONDBG, "Collided with marker %d! \n", marker->id);
 #endif
 if (playerObjP->id==gameData.multi.nLocalPlayer) {
 	int drawn;
@@ -1557,7 +1564,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
 	dot = VmVecDot (&tvec1, &robot->position.mOrient.fVec);
 #if TRACE
-	con_printf (CON_DEBUG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
+	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
 	if (dot > Boss_invulnerable_dot) {
 		short	new_obj;
@@ -1982,7 +1989,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_REDFLAG);
 		}
 
-#ifdef RELEASE			
+#ifndef _DEBUG			
 		if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 #endif
 		if ((gameData.app.nGameMode & GM_HOARD) || 
@@ -1991,7 +1998,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			
 			int maxCount, i;
 #if TRACE
-			con_printf (CON_DEBUG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXIMITY_INDEX]);
+			con_printf (CONDBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXIMITY_INDEX]);
 #endif	
 			maxCount = playerP->secondaryAmmo [PROXIMITY_INDEX];
 			if ((gameData.app.nGameMode & GM_HOARD) && (maxCount > 12))
@@ -2043,7 +2050,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			int	amount = playerP->primaryAmmo [VULCAN_INDEX];
 			if (amount > 200) {
 #if TRACE
-				con_printf (CON_DEBUG, "Surprising amount of vulcan ammo: %i bullets. \n", amount);
+				con_printf (CONDBG, "Surprising amount of vulcan ammo: %i bullets. \n", amount);
 #endif
 				amount = 200;
 			}
@@ -2187,7 +2194,7 @@ if (playerObjP->id == gameData.multi.nLocalPlayer) {		//is this the local tPlaye
 int CollidePlayerAndWeapon (tObject * playerObjP, tObject * weapon, vmsVector *vHitPt)
 {
 	fix		damage = weapon->shields;
-	tObject * killer=NULL;
+	tObject * killer = NULL;
 
 	//	In multiplayer games, only do damage to another tPlayer if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
@@ -2236,7 +2243,7 @@ MaybeKillWeapon (weapon, playerObjP);
 BumpTwoObjects (playerObjP, weapon, 0, vHitPt);	//no damage from bump
 if (!WI_damage_radius (weapon->id)) {
 	if (weapon->cType.laserInfo.nParentObj > -1)
-		killer = &gameData.objs.objects [weapon->cType.laserInfo.nParentObj];
+		killer = gameData.objs.objects + weapon->cType.laserInfo.nParentObj;
 
 //		if (weapon->id == SMARTMSL_BLOB_ID)
 //			damage /= 4;
@@ -2356,6 +2363,8 @@ else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData
 	}
 return 1; 
 }
+
+//	-----------------------------------------------------------------------------
 
 int CollidePlayerAndMonsterball (tObject * playerObjP, tObject * monsterball, vmsVector *vHitPt) 
 { 

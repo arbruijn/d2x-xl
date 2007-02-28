@@ -461,21 +461,21 @@ if (game->gameStatus == NETSTAT_STARTING)
    return 1;
 if (game->gameStatus != NETSTAT_PLAYING) {
 #if 1      
-	con_printf (CON_DEBUG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
+	con_printf (CONDBG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
 #endif
 	return 0;
     }
 
 if (game->version_major == 0 && D2X_MAJOR>0) {
 #if 1      
-	con_printf (CON_DEBUG, "Error:Can't join because version majors don't match!\n");
+	con_printf (CONDBG, "Error:Can't join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
 if (game->version_major>0 && D2X_MAJOR == 0) {
 #if 1      
-	con_printf (CON_DEBUG, "Error:Can't join because version majors2 don't match!\n");
+	con_printf (CONDBG, "Error:Can't join because version majors2 don't match!\n");
 #endif
 	return 0;
 	}
@@ -494,7 +494,7 @@ if (!(game->gameFlags & NETGAME_FLAG_CLOSED)) {
 		return 1;
 	}
 if (!people) {
-	con_printf (CON_DEBUG, "Error! Can't join because people == NULL!\n");
+	con_printf (CONDBG, "Error! Can't join because people == NULL!\n");
 	return 0;
    }
 // Search to see if we were already in this closed netgame in progress
@@ -505,7 +505,7 @@ for (i = 0; i < nNumPlayers; i++)
 							  &people->players [i].network))
 		return 1;
 #if 1      
-con_printf (CON_DEBUG, "Error: Can't join because at end of list!\n");
+con_printf (CONDBG, "Error: Can't join because at end of list!\n");
 #endif
 return 0;
 }
@@ -626,7 +626,7 @@ if (HoardEquipped ()) {
 // ignore since they'll request again later
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed)) {
 #if 1      
-	con_printf (CON_DEBUG, "Ignored request from new tPlayer to join during endgame.\n");
+	con_printf (CONDBG, "Ignored request from new tPlayer to join during endgame.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -651,7 +651,7 @@ if (networkData.bSendObjects || networkData.bSendingExtras) {
 #endif
 if (their->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
-	con_printf (CON_DEBUG, "Dumping tPlayer due to old level number.\n");
+	con_printf (CONDBG, "Dumping tPlayer due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -742,7 +742,7 @@ else {
 #if 0		
 	if (gameData.multi.players [nPlayer].connected)	{
 #if 1      
-		con_printf (CON_DEBUG, "Extra REQUEST from tPlayer ignored.\n");
+		con_printf (CONDBG, "Extra REQUEST from tPlayer ignored.\n");
 #endif
 		return;
 		}
@@ -916,7 +916,7 @@ void NetworkStopResync (tSequencePacket *their)
 if (!CmpNetPlayers (networkData.playerRejoining.player.callsign, their->player.callsign, 
 						  &networkData.playerRejoining.player.network, &their->player.network)) {
 #if 1      
-	con_printf (CON_DEBUG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
+	con_printf (CONDBG, "Aborting resync for tPlayer %s.\n", their->player.callsign);
 #endif
 	networkData.bSendObjects = 0;
 	networkData.bSendingExtras = 0;
@@ -1725,7 +1725,7 @@ Assert (tmpPlayersInfo != NULL);
 i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
-	con_printf (CON_DEBUG, "Too many netgames.\n");
+	con_printf (CONDBG, "Too many netgames.\n");
 #endif		
 	return;
 	}
@@ -1872,7 +1872,7 @@ int NetworkBadPacketSize (int nLength, int nExpectedLength, char *pszId)
 {
 if (nLength == nExpectedLength)
 	return 0;
-con_printf (CON_DEBUG, "WARNING! Received invalid size for %s\n", pszId);
+con_printf (CONDBG, "WARNING! Received invalid size for %s\n", pszId);
 LogErr ("Networking: Bad size for %s\n", pszId);
 #ifdef _DEBUG
 HUDMessage (0, "invalid %s", pszId);
@@ -1890,7 +1890,7 @@ int NetworkBadSecurity (int nSecurity, char *pszId)
 if (nSecurity == netGame.nSecurity)
 #endif
 	return 0;
-con_printf (CON_DEBUG, "Bad security for %s\n", pszId);
+con_printf (CONDBG, "Bad security for %s\n", pszId);
 LogErr ("Networking: Bad security for %s\n", pszId);
 return 1;
 }
@@ -1950,7 +1950,7 @@ switch (pid) {
 				memcpy (&tmpPlayersBase, data, sizeof (tAllNetPlayersInfo));
 			if (NetworkBadSecurity (tmpPlayersBase.nSecurity, "PID_PLAYERSINFO"))
 				break;
-			con_printf (CON_DEBUG, "Got a waiting PID_PLAYERSINFO!\n");
+			con_printf (CONDBG, "Got a waiting PID_PLAYERSINFO!\n");
 			if (NetworkBadPacketSize (length, ALLNETPLAYERSINFO_SIZE, "PID_PLAYERSINFO"))
 				return 0;
 			tmpPlayersInfo=&tmpPlayersBase;
@@ -2146,7 +2146,7 @@ switch (pid) {
 			NetworkReadEndLevelPacket (data);
 #if 1				
 		else
-			con_printf (CON_DEBUG, "Junked endlevel packet.\n");
+			con_printf (CONDBG, "Junked endlevel packet.\n");
 #endif
 		break;
 
@@ -2158,7 +2158,7 @@ switch (pid) {
 			NetworkReadEndLevelShortPacket (data);
 #if 1				
 		else
-			con_printf (CON_DEBUG, "Junked short endlevel packet!\n");
+			con_printf (CONDBG, "Junked short endlevel packet!\n");
 #endif
 		break;
 
@@ -2223,7 +2223,7 @@ switch (pid) {
 
 	default:
 #if 1				
-		con_printf (CON_DEBUG, "Ignoring invalid packet nType %d.\n", pid);
+		con_printf (CONDBG, "Ignoring invalid packet nType %d.\n", pid);
 		LogErr ("Netgame: Ignoring invalid packet nType %d.\n", pid);
 #endif
 		Int3 (); // Invalid network packet nType, see ROB
@@ -2234,7 +2234,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 void DumpSegments ()
 {
 	FILE * fp;
@@ -2242,7 +2242,7 @@ void DumpSegments ()
 fp = fopen ("TEST.DMP", "wb");
 fwrite (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1), 1, fp);    
 fclose (fp);
-con_printf (CON_DEBUG, "SS=%d\n", sizeof (tSegment));
+con_printf (CONDBG, "SS=%d\n", sizeof (tSegment));
 }
 #endif
 
@@ -2387,8 +2387,8 @@ for (i = 0; i < nobj; i++) {
 			mode = 0;
 			}
 #if 1				
-		con_printf (CON_DEBUG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, nRemoteFrame);
-		con_printf (CON_DEBUG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
+		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, nRemoteFrame);
+		con_printf (CONDBG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
 #endif
 		if (nRemoteObj != objectCount) {
 			Int3 ();
@@ -2405,7 +2405,7 @@ for (i = 0; i < nobj; i++) {
 		if (nFrame != nRemoteFrame)
 			Int3 ();
 #if 1				
-		con_printf (CON_DEBUG, "Got a nType 3 tObject packet!\n");
+		con_printf (CONDBG, "Got a nType 3 tObject packet!\n");
 #endif
 		objectCount++;
 		if ((obj_owner == my_pnum) || (obj_owner == -1)) {
@@ -2663,7 +2663,7 @@ for (i = 0, playerP = tmpPlayersInfo->players; i < gameData.multi.nPlayers; i++,
 		if (gameData.multi.nLocalPlayer != -1) {
 			Int3 (); // Hey, we've found ourselves twice
 			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
-			con_printf (CON_DEBUG, TXT_FOUND_TWICE);
+			con_printf (CONDBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return; 
 			}
@@ -2871,7 +2871,7 @@ else if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1 + F1_0 * 2)) {
 	// Poll time expired, re-send request
 	t1 = TimerGetApproxSeconds ();
 #if 1				
-	con_printf (CON_DEBUG, "Re-sending join request.\n");
+	con_printf (CONDBG, "Re-sending join request.\n");
 #endif
 	i = NetworkSendRequest ();
 	if (i < 0)
@@ -2911,7 +2911,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL)
 	if (DownloadMission (netGame.szMissionName))
 		return 1;
 #if 1				
-con_printf (CON_DEBUG, "Aborting join.\n");
+con_printf (CONDBG, "Aborting join.\n");
 #endif
 me.nType = PID_QUIT_JOINING;
 memcpy (me.player.callsign, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN+1);
@@ -3133,7 +3133,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 				networkData.nSecurityNum=TempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
 #if 1				
-					con_printf (CON_DEBUG, "HUH? Game=%d Player=%d\n", 
+					con_printf (CONDBG, "HUH? Game=%d Player=%d\n", 
 									networkData.nSecurityNum, tmpPlayersInfo->nSecurity);
 #endif
 					memcpy (&activeNetGames [choice], (ubyte *)&TempNetInfo, sizeof (tNetgameInfo));
@@ -3240,7 +3240,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 		return -1;
 #if 1				
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
-	con_printf (CON_DEBUG, "Calling NetworkListen () when not in net game.\n");
+	con_printf (CONDBG, "Calling NetworkListen () when not in net game.\n");
 #endif
 networkData.bWaitingForPlayerInfo = 1;
 networkData.nSecurityFlag = NETSECURITY_OFF;
@@ -3276,7 +3276,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 		return 0;
 #if 1				
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
-	con_printf (CON_DEBUG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
+	con_printf (CONDBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
 #endif		
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
@@ -3349,14 +3349,14 @@ if ((networkData.mySyncPack.data_size+len) > networkData.nMaxXDataSize) {
 	NetworkDoFrame (1, 0);
 	if (networkData.mySyncPack.data_size != 0) {
 #if 1				
-	con_printf (CON_DEBUG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.mySyncPack.data_size);
+	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.mySyncPack.data_size);
 #endif
 	Int3 ();
 	}
 //              Int3 ();         // Trying to send too much!
 //              return;
 #if 1				
-	con_printf (CON_DEBUG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
+	con_printf (CONDBG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
 #endif
 	Assert (bCheck == ptr [0]);
 	}
@@ -3393,7 +3393,7 @@ HUDInitMessage ("%s %s", gameData.multi.players [nPlayer].callsign, TXT_DISCONNE
 for (i = 0; i < gameData.multi.nPlayers; i++)
 	if (gameData.multi.players [i].connected) 
 		n++;
-#ifdef RELEASE
+#ifndef _DEBUG
 if (n == 1)
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
 #endif
@@ -3668,7 +3668,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
 #if 1				
-	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->level_num);
+	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->level_num);
 #endif
 	return;
 	}
@@ -3691,7 +3691,7 @@ if  (pd->numpackets != gameData.multi.players [nTheirPlayer].nPacketsGot) {
 			nTheirPlayer, 
 			nMissedPackets);
 	else
-		con_printf (CON_DEBUG, 
+		con_printf (CONDBG, 
 			"Got %d late packets from tPlayer #%d (%d total)\n", 
 			gameData.multi.players [nTheirPlayer].nPacketsGot-pd->numpackets, 
 			nTheirPlayer, 
@@ -3808,7 +3808,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	}
 if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
 #if 1				
-	con_printf (CON_DEBUG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.level_num);
+	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.level_num);
 #endif
 	return;
 	}
@@ -3823,13 +3823,13 @@ if  (new_pd.numpackets != gameData.multi.players [nTheirPlayer].nPacketsGot)    
 		networkData.nTotalMissedPackets += new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
 #if 1				
 	if (nMissedPackets > 0)       
-		con_printf (CON_DEBUG, 
+		con_printf (CONDBG, 
 			"Missed %d packets from tPlayer #%d (%d total)\n", 
 			new_pd.numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot, 
 			nTheirPlayer, 
 			nMissedPackets);
 	else
-		con_printf (CON_DEBUG, 
+		con_printf (CONDBG, 
 			"Got %d late packets from tPlayer #%d (%d total)\n", 
 			gameData.multi.players [nTheirPlayer].nPacketsGot-new_pd.numpackets, 
 			nTheirPlayer, 
@@ -3926,7 +3926,7 @@ void NetworkHandlePingReturn (ubyte pnum)
 {
 if ((pnum >= gameData.multi.nPlayers) || !pingStats [pnum].launchTime) {
 #if 1				
-	 con_printf (CON_DEBUG, "Got invalid PING RETURN from %s!\n", gameData.multi.players [pnum].callsign);
+	 con_printf (CONDBG, "Got invalid PING RETURN from %s!\n", gameData.multi.players [pnum].callsign);
 #endif
    return;
 	}
@@ -4049,7 +4049,7 @@ void NetworkSendExtras ()
 Assert (networkData.nPlayerJoiningExtras >- 1);
 if (!NetworkIAmMaster ()) {
 #if 1				
-  con_printf (CON_DEBUG, "Hey! I'm not the master and I was gonna send info!\n");
+  con_printf (CONDBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
 	}
 if (networkData.bSendingExtras == 40)
@@ -4114,7 +4114,7 @@ void NetworkProcessNakedPData (char *data, int len)
 
 if (pnum < 0) {
 #if 1				
-   con_printf (CON_DEBUG, "Naked packet is bad!\n");
+   con_printf (CONDBG, "Naked packet is bad!\n");
 #endif
 	Int3 (); // This packet is bogus!!
 	return;
@@ -4184,7 +4184,7 @@ else if (rank > 8)
 	rank = 8;
 
 #if 1				
-con_printf (CON_DEBUG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
+con_printf (CONDBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
 #endif
 return (rank+1);
  }
@@ -4227,8 +4227,8 @@ void NetworkProcessNamesReturn (char *data)
    
 if (networkData.nNamesInfoSecurity != (*(int *) (data+1))) {
 #if 1				
-  con_printf (CON_DEBUG, "Bad security on names return!\n");
-  con_printf (CON_DEBUG, "NIS=%d data=%d\n", networkData.nNamesInfoSecurity, (*(int *) (data+1)));
+  con_printf (CONDBG, "Bad security on names return!\n");
+  con_printf (CONDBG, "NIS=%d data=%d\n", networkData.nNamesInfoSecurity, (*(int *) (data+1)));
 #endif
 	return;
 	}
@@ -4299,7 +4299,7 @@ void NetworkSendPlayerNames (tSequencePacket *their)
 
 if (!their) {
 #if 1				
-	con_printf (CON_DEBUG, "Got a tPlayer name without a return address! Get Jason\n");
+	con_printf (CONDBG, "Got a tPlayer name without a return address! Get Jason\n");
 #endif
 	return;
 	}

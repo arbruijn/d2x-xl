@@ -24,7 +24,7 @@
 //removed 07/11/99 by adb - now option
 ////added 02/20/99 by adb - put descent in a window, sort of. Needed for debugging
 ////(needs a 256 color mode to be useful)
-//#ifndef NDEBUG
+//#ifdef _DEBUG
 //#define DD_NOT_EXCL
 //#endif
 //end remove - adb

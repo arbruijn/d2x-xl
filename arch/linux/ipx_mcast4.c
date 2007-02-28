@@ -30,7 +30,7 @@
 #include "newmenu.h"
 #include "../../main/multi.h"
 
-//#define IPX_MCAST4_DEBUG
+//#define IPX_MCAST4DBG
 
 extern unsigned char ipx_MyAddress[10];
 
@@ -87,7 +87,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#ifdef IPX_MCAST4_DEBUG
+#ifdef IPX_MCAST4DBG
 /* Dump raw form of IP address/port by fancy output to user
  */
 static void dumpraddr(unsigned char *a)
@@ -196,7 +196,7 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 	if(toaddr.sin_addr.s_addr == INADDR_BROADCAST)
 		toaddr.sin_addr.s_addr = DESCENT2_ANNOUNCE_ADDR;
 
-#ifdef IPX_MCAST4_DEBUG
+#ifdef IPX_MCAST4DBG
 	/*printf(MSGHDR "sendto((%d),Node=[4] %02X %02X,Socket=%02X %02X,s_port=%u,",
 	       dataLen,
 	       IPXHeader->Destination.Node[4], IPXHeader->Destination.Node[5],
@@ -220,7 +220,7 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsi
 	if((size = recvfrom(sk->fd, outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize)) < 0)
 		return -1;
 
-#ifdef IPX_MCAST4_DEBUG
+#ifdef IPX_MCAST4DBG
 	//printf(MSGHDR "Got packet from ");
 	dumpaddr(&fromaddr);
 	//puts("");
@@ -258,7 +258,7 @@ static int ipx_mcast4_HandleNetgameAuxData(ipx_socket_t *sk, const u_char buf[NE
 	// Get the multicast session
 	memcpy(&game_addr, buf + 1, sizeof(game_addr));
 
-#ifdef IPX_MCAST4_DEBUG
+#ifdef IPX_MCAST4DBG
 	{
 		struct sockaddr_in tmpaddr;
 		tmpaddr.sin_addr = game_addr;
@@ -310,7 +310,7 @@ static void ipx_mcast4_HandleLeaveGame(ipx_socket_t *sk)
 
 	Assert(game_addr.s_addr != 0);
 
-#ifdef IPX_MCAST4_DEBUG
+#ifdef IPX_MCAST4DBG
 	//printf("Unsubscribing from game's multicast group: ");
 	dumpraddr(&game_addr.s_addr);
 	//printf("\n");

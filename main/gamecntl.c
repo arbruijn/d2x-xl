@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-//#define DOOR_DEBUGGING
+//#define DOORDBGGING
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -499,7 +499,7 @@ while (gameData.app.bGamePaused) {
 			}
 		gameStates.menus.nInMenu--;
 		}
-#ifndef RELEASE
+#ifdef _DEBUG
 		HandleTestKey(key);
 #endif
 		bScreenChanged = HandleSystemKey(key);
@@ -535,7 +535,7 @@ void DoShowNetgameHelp()
 	tMenuItem m[30];
    char mtext[30][60];
 	int i, num=0, eff;
-#ifndef RELEASE
+#ifdef _DEBUG
 	int pl;
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
@@ -556,7 +556,7 @@ void DoShowNetgameHelp()
    sprintf (mtext[num], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers); num++;
    sprintf (mtext[num], TXT_INFO_PPS, netGame.nPacketsPerSec); num++;
    sprintf (mtext[num], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No"); num++;
-#ifndef RELEASE
+#ifdef _DEBUG
 		pl=(int)(((double)networkData.nTotalMissedPackets/(double)networkData.nTotalPacketsGot)*100.0);
 		if (pl<0)
 		  pl=0;
@@ -806,16 +806,16 @@ void HandleDemoKey(int key)
 		case KEY_BACKSP:
 			Int3();
 			break;
-		case KEY_DEBUGGED + KEY_I:
+		case KEYDBGGED + KEY_I:
 			gameData.demo.bInterpolate = !gameData.demo.bInterpolate;
 #if TRACE
 			if (gameData.demo.bInterpolate)
-				con_printf (CON_DEBUG, "demo playback interpolation now on\n");
+				con_printf (CONDBG, "demo playback interpolation now on\n");
 			else
-				con_printf (CON_DEBUG, "demo playback interpolation now off\n");
+				con_printf (CONDBG, "demo playback interpolation now off\n");
 #endif
 			break;
-		case KEY_DEBUGGED + KEY_K: {
+		case KEYDBGGED + KEY_K: {
 			int how_many, c;
 			char filename[FILENAME_LEN], num[16];
 			tMenuItem m[6];
@@ -927,13 +927,13 @@ int select_next_window_function(int w)
 void SongsGotoNextSong();
 void SongsGotoPrevSong();
 
-#ifdef DOOR_DEBUGGING
+#ifdef DOORDBGGING
 dump_door_debugging_info()
 {
 	tObject *objP;
 	vmsVector new_pos;
 	fvi_query fq;
-	fvi_info hit_info;
+	tFVIData hit_info;
 	int fate;
 	FILE *dfile;
 	int wall_numn;
@@ -1029,7 +1029,7 @@ int HandleSystemKey(int key)
 	if (!gameStates.app.bPlayerIsDead)
 		switch (key) {
 
-			#ifdef DOOR_DEBUGGING
+			#ifdef DOORDBGGING
 			case KEY_LAPOSTRO+KEY_SHIFTED:
 				dump_door_debugging_info();
 				break;
@@ -1513,26 +1513,26 @@ void HandleGameKey(int key)
 void toggle_movie_saving(void);
 extern char Language[];
 
-#ifndef RELEASE
+#ifdef _DEBUG
 
 void HandleTestKey(int key)
 {
 	switch (key) {
 
-		case KEY_DEBUGGED+KEY_0:	
+		case KEYDBGGED+KEY_0:	
 			ShowWeaponStatus();   break;
 
 		#ifdef SHOW_EXIT_PATH
-		case KEY_DEBUGGED+KEY_1:	
+		case KEYDBGGED+KEY_1:	
 			CreateSpecialPath();  
 			break;
 		#endif
 
-		case KEY_DEBUGGED+KEY_Y:
+		case KEYDBGGED+KEY_Y:
 			DoReactorDestroyedStuff(NULL);
 			break;
 
-	case KEY_DEBUGGED+KEY_ALTED+KEY_D:
+	case KEYDBGGED+KEY_ALTED+KEY_D:
 			networkData.nNetLifeKills=4000; 
 			networkData.nNetLifeKilled=5;
 			MultiAddLifetimeKills();
@@ -1553,11 +1553,11 @@ void HandleTestKey(int key)
 			exit (0);
 			break;
 
-		case KEY_DEBUGGED+KEY_S:				
+		case KEYDBGGED+KEY_S:				
 			DigiReset(); 
 			break;
 
-		case KEY_DEBUGGED+KEY_P:
+		case KEYDBGGED+KEY_P:
 			if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;		//robots move
 			else
@@ -1565,21 +1565,21 @@ void HandleTestKey(int key)
 			break;
 
 
-		case KEY_DEBUGGED+KEY_K:	
+		case KEYDBGGED+KEY_K:	
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = 1;	
 			MultiSendShields ();
 			break;				
 						//	a virtual kill
-		case KEY_DEBUGGED+KEY_SHIFTED + KEY_K:  
+		case KEYDBGGED+KEY_SHIFTED + KEY_K:  
 			gameData.multi.players [gameData.multi.nLocalPlayer].shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
 			
-		case KEY_DEBUGGED+KEY_X: 
+		case KEYDBGGED+KEY_X: 
 			gameData.multi.players [gameData.multi.nLocalPlayer].lives++; 
 			break; // Extra life cheat key.
 			
-		case KEY_DEBUGGED+KEY_H:
+		case KEYDBGGED+KEY_H:
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
 				gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
 				if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
@@ -1588,31 +1588,31 @@ void HandleTestKey(int key)
 					AIDoCloakStuff();
 					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
 #if TRACE
-					con_printf (CON_DEBUG, "You are cloaked!\n");
+					con_printf (CONDBG, "You are cloaked!\n");
 #endif
 				} else
 #if TRACE
-					con_printf (CON_DEBUG, "You are DE-cloaked!\n");
+					con_printf (CONDBG, "You are DE-cloaked!\n");
 #endif
 //				}
 			break;
 
 
-		case KEY_DEBUGGED+KEY_R:
+		case KEYDBGGED+KEY_R:
 			gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
 			break;
 
-		case KEY_DEBUGGED+KEY_R+KEY_SHIFTED:
+		case KEYDBGGED+KEY_R+KEY_SHIFTED:
 			KillAllRobots (1);
 			break;
 
 		#ifdef EDITOR		//editor-specific functions
 
-		case KEY_E + KEY_DEBUGGED:
+		case KEY_E + KEYDBGGED:
 			NetworkLeaveGame();
 			SetFunctionMode (FMODE_EDITOR);
 			break;
-	case KEY_Q + KEY_SHIFTED + KEY_DEBUGGED:
+	case KEY_Q + KEY_SHIFTED + KEYDBGGED:
 		{
 			char pal_save[768];
 			memcpy(pal_save, grPalette, 768);
@@ -1626,55 +1626,55 @@ void HandleTestKey(int key)
 			GrPaletteStepLoad (NULL);
 			break;
 		}
-		case KEY_C + KEY_SHIFTED + KEY_DEBUGGED:
+		case KEY_C + KEY_SHIFTED + KEYDBGGED:
 			if (!( gameData.app.nGameMode & GM_MULTI ))
 				MovePlayerToSegment(Cursegp, Curside);
 			break;   //move eye to curseg
 
 
-		case KEY_DEBUGGED+KEY_W:	
+		case KEYDBGGED+KEY_W:	
 			DrawWorldFromGame(); 
 			break;
 
 		#endif  //#ifdef EDITOR
 
 		//flythrough keys
-		// case KEY_DEBUGGED+KEY_SHIFTED+KEY_F: toggle_flythrough(); break;
+		// case KEYDBGGED+KEY_SHIFTED+KEY_F: toggle_flythrough(); break;
 		// case KEY_LEFT:		ft_preference=FP_LEFT; break;
 		// case KEY_RIGHT:				ft_preference=FP_RIGHT; break;
 		// case KEY_UP:		ft_preference=FP_UP; break;
 		// case KEY_DOWN:		ft_preference=FP_DOWN; break;
 
 #ifdef _DEBUG
-		case KEY_DEBUGGED+KEY_LAPOSTRO: 
+		case KEYDBGGED+KEY_LAPOSTRO: 
 			ShowView_textTimer = 0x30000; 
 			ObjectGotoNextViewer(); 
 			break;
-		case KEY_DEBUGGED+KEY_CTRLED+KEY_LAPOSTRO: 
+		case KEYDBGGED+KEY_CTRLED+KEY_LAPOSTRO: 
 			ShowView_textTimer = 0x30000; 
 			ObjectGotoPrevViewer(); 
 			break;
 #endif
-		case KEY_DEBUGGED+KEY_SHIFTED+KEY_LAPOSTRO: 
+		case KEYDBGGED+KEY_SHIFTED+KEY_LAPOSTRO: 
 			gameData.objs.viewer=gameData.objs.console; 
 			break;
 
 	#ifdef _DEBUG
-		case KEY_DEBUGGED+KEY_O: 
+		case KEYDBGGED+KEY_O: 
 			ToggleOutlineMode(); 
 			break;
 	#endif
-		case KEY_DEBUGGED+KEY_T:
+		case KEYDBGGED+KEY_T:
 			*Toggle_var = !*Toggle_var;
 #if TRACE
-			con_printf (CON_DEBUG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
+			con_printf (CONDBG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
 #endif
 			break;
-		case KEY_DEBUGGED + KEY_L:
+		case KEYDBGGED + KEY_L:
 			if (++gameStates.render.nLighting >= 2) 
 				gameStates.render.nLighting = 0; 
 			break;
-		case KEY_DEBUGGED + KEY_SHIFTED + KEY_L:
+		case KEYDBGGED + KEY_SHIFTED + KEY_L:
 			Beam_brightness=0x38000-Beam_brightness; 
 			break;
 		case KEY_PAD5: 
@@ -1682,24 +1682,24 @@ void HandleTestKey(int key)
 			break;
 
 #ifdef _DEBUG
-		case KEY_DEBUGGED + KEY_F11: 
+		case KEYDBGGED + KEY_F11: 
 			PlayTestSound(); 
 			break;
-		case KEY_DEBUGGED + KEY_SHIFTED+KEY_F11: 
+		case KEYDBGGED + KEY_SHIFTED+KEY_F11: 
 			AdvanceSound(); 
 			PlayTestSound(); 
 			break;
 #endif
 
-		case KEY_DEBUGGED +KEY_F4: {
-			//fvi_info hit_data;
+		case KEYDBGGED +KEY_F4: {
+			//tFVIData hit_data;
 			//vmsVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
 			//vmsVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
 			//FindVectorIntersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
 			break;
 		}
 
-		case KEY_DEBUGGED + KEY_M:
+		case KEYDBGGED + KEY_M:
 			gameStates.app.bDebugSpew = !gameStates.app.bDebugSpew;
 			if (gameStates.app.bDebugSpew) {
 				mopen( 0, 8, 1, 78, 16, "Debug Spew");
@@ -1710,16 +1710,16 @@ void HandleTestKey(int key)
 			}
 			break;
 
-		case KEY_DEBUGGED + KEY_C:
+		case KEYDBGGED + KEY_C:
 
 			FullPaletteSave();
 			DoCheatMenu();
 			PaletteRestore();
 			break;
-		case KEY_DEBUGGED + KEY_SHIFTED + KEY_A:
+		case KEYDBGGED + KEY_SHIFTED + KEY_A:
 			DoMegaWowPowerup(10);
 			break;
-		case KEY_DEBUGGED + KEY_A:	{
+		case KEYDBGGED + KEY_A:	{
 			DoMegaWowPowerup(200);
 //								if ( gameData.app.nGameMode & GM_MULTI )     {
 //									ExecMessageBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
@@ -1731,11 +1731,11 @@ void HandleTestKey(int key)
 						break;
 		}
 
-		case KEY_DEBUGGED+KEY_F:	
+		case KEYDBGGED+KEY_F:	
 		gameStates.render.frameRate.value = !gameStates.render.frameRate.value; 
 		break;
 
-		case KEY_DEBUGGED+KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
+		case KEYDBGGED+KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
 			slew_stop();
 			GameFlushInputs();
 			if ( gameData.objs.console->controlType != CT_FLYING ) {
@@ -1747,42 +1747,42 @@ void HandleTestKey(int key)
 			}
 			break;
 
-		case KEY_DEBUGGED+KEY_COMMA: 
+		case KEYDBGGED+KEY_COMMA: 
 			xRenderZoom = FixMul(xRenderZoom, 62259); 
 			break;
-		case KEY_DEBUGGED+KEY_PERIOD: 
+		case KEYDBGGED+KEY_PERIOD: 
 			xRenderZoom = FixMul(xRenderZoom, 68985); 
 			break;
 
-		case KEY_DEBUGGED+KEY_P+KEY_SHIFTED: 
+		case KEYDBGGED+KEY_P+KEY_SHIFTED: 
 			Debug_pause = 1; 
 			break;
 
 #ifdef _DEBUG
-		case KEY_DEBUGGED+KEY_F8: 
+		case KEYDBGGED+KEY_F8: 
 			SpeedtestInit(); 
 			gameData.speedtest.nCount = 1;	 
 			break;
-		case KEY_DEBUGGED+KEY_F9: 
+		case KEYDBGGED+KEY_F9: 
 			SpeedtestInit(); 
 			gameData.speedtest.nCount = 10;	 
 			break;
 
-		case KEY_DEBUGGED+KEY_D:
+		case KEYDBGGED+KEY_D:
 			if ((Game_double_buffer = !Game_double_buffer)!=0)
 				InitCockpit();
 			break;
 #endif
 
 		#ifdef EDITOR
-		case KEY_DEBUGGED+KEY_Q:
+		case KEYDBGGED+KEY_Q:
 			StopTime();
 			dump_used_textures_all();
 			StartTime();
 			break;
 		#endif
 
-		case KEY_DEBUGGED+KEY_B: {
+		case KEYDBGGED+KEY_B: {
 			tMenuItem m;
 			char text[FILENAME_LEN]="";
 			int item;
@@ -1798,29 +1798,29 @@ void HandleTestKey(int key)
 			break;
 		}
 
-		case KEY_DEBUGGED+KEY_F5:
+		case KEYDBGGED+KEY_F5:
 			toggle_movie_saving();
 			break;
 
-		case KEY_DEBUGGED+KEY_SHIFTED+KEY_F5: {
+		case KEYDBGGED+KEY_SHIFTED+KEY_F5: {
 			extern int Movie_fixed_frametime;
 			Movie_fixed_frametime = !Movie_fixed_frametime;
 			break;
 		}
 
-		case KEY_DEBUGGED+KEY_ALTED+KEY_F5:
+		case KEYDBGGED+KEY_ALTED+KEY_F5:
 			gameData.time.xGame = i2f(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
-			con_printf (CON_DEBUG, "gameData.time.xGame bashed to %d secs\n", f2i(gameData.time.xGame));
+			con_printf (CONDBG, "gameData.time.xGame bashed to %d secs\n", f2i(gameData.time.xGame));
 #endif
 			break;
 
-		case KEY_DEBUGGED+KEY_SHIFTED+KEY_B:
+		case KEYDBGGED+KEY_SHIFTED+KEY_B:
 			KillEverything (1);
 			break;
 	}
 }
-#endif		//#ifndef RELEASE
+#endif		//#ifdef _DEBUG
 
 //	Cheat functions ------------------------------------------------------------
 
@@ -1838,7 +1838,7 @@ void SpeedtestInit(void)
 	gameData.speedtest.nSide = 0;
 	gameData.speedtest.nFrameStart = gameData.app.nFrameCount;
 #if TRACE
-	con_printf (CON_DEBUG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
+	con_printf (CONDBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
 #endif
 }
 
@@ -1862,7 +1862,7 @@ void SpeedtestFrame(void)
 
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
-		con_printf (CON_DEBUG, ".");
+		con_printf (CONDBG, ".");
 #endif
 		}
 	gameData.speedtest.nSegment++;
@@ -1875,7 +1875,7 @@ void SpeedtestFrame(void)
 			f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
 			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / f2fl(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
 #if TRACE
-		con_printf (CON_DEBUG, "%s", msg);
+		con_printf (CONDBG, "%s", msg);
 #endif
 		HUDInitMessage(msg);
 
@@ -1974,7 +1974,7 @@ if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending || multiData.m
 	continue;		//get next key
 	}
 #ifdef _DEBUG
-if ((key&KEY_DEBUGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
+if ((key&KEYDBGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
 	multiData.msg.nReceiver = 100;		// Send to everyone...
 	sprintf( multiData.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 	}
@@ -1989,7 +1989,7 @@ if (gameStates.app.bPlayerIsDead)
 		HandleEndlevelKey(key);
 	else if (gameData.demo.nState == ND_STATE_PLAYBACK ) {
 		HandleDemoKey(key);
-#ifndef RELEASE
+#ifdef _DEBUG
 		HandleTestKey(key);
 #endif
 		}
@@ -1998,7 +1998,7 @@ if (gameStates.app.bPlayerIsDead)
 		HandleSystemKey(key);
 		HandleVRKey(key);
 		HandleGameKey(key);
-#ifndef RELEASE
+#ifdef _DEBUG
 		HandleTestKey(key);
 #endif
 		}

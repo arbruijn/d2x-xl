@@ -537,7 +537,7 @@ while (!done) {
 			// Check timeout for idle players
 			if (TimerGetApproxSeconds () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
 	#if TRACE
-				con_printf (CON_DEBUG, "idle timeout for tPlayer %d.\n", i);
+				con_printf (CONDBG, "idle timeout for tPlayer %d.\n", i);
 	#endif
 				gameData.multi.players [i].connected = 0;
 				NetworkSendEndLevelSub (i);

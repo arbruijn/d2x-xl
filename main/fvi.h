@@ -23,9 +23,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define HIT_NONE		0		//we hit nothing
 #define HIT_WALL		1		//we hit - guess - a wall
 #define HIT_OBJECT	2		//we hit an tObject - which one?  no way to tell...
-#define HIT_BAD_P0	3		//start point not is specified tSegment
+#define HIT_BAD_P0	3		//start point is not in specified tSegment
 
-#define MAX_FVI_SEGS 1000
+#define MAX_FVI_SEGS 200
 
 typedef struct fvi_hit_info {
 	int 			nType;						//what sort of intersection
@@ -40,11 +40,11 @@ typedef struct fvi_hit_info {
 } fvi_hit_info;
 
 //this data structure gets filled in by FindVectorIntersection()
-typedef struct fvi_info {
+typedef struct tFVIData {
 	fvi_hit_info	hit;
 	short 			nSegments;					//how many segs we went through
 	short 			segList [MAX_FVI_SEGS];	//list of segs vector went through
-} fvi_info;
+} tFVIData;
 
 //flags for fvi query
 #define FQ_CHECK_OBJS	1		//check against objects?
@@ -65,7 +65,7 @@ typedef struct fvi_query {
 } fvi_query;
 
 //Find out if a vector intersects with anything.
-//Fills in hit_data, an fvi_info structure (see above).
+//Fills in hit_data, an tFVIData structure (see above).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -74,7 +74,7 @@ typedef struct fvi_query {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hit_data->hitType
-int FindVectorIntersection(fvi_query *fq,fvi_info *hit_data);
+int FindVectorIntersection(fvi_query *fq,tFVIData *hit_data);
 
 //finds the uv coords of the given point on the given seg & tSide
 //fills in u & v. if l is non-NULL fills it in also

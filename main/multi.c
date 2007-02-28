@@ -1191,7 +1191,7 @@ void MultiDoPlayerExplode (char *buf)
 	char		nRemoteCreated;
 
 nPlayer = buf [1];
-#ifdef NDEBUG
+#ifndef _DEBUG
 if ((nPlayer < 0) || (nPlayer >= gameData.multi.nPlayers))
 	return;
 #else
@@ -2801,7 +2801,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 			BashToShield (i, "Red flag");
 		}
 	}
-#ifdef RELEASE
+#ifndef _DEBUG
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif	
 	InitHoardData ();
@@ -4896,7 +4896,7 @@ void MultiProcessData (char *buf, int len)
 	fflush (RecieveLogFile);
 #endif
 con_printf (CON_VERBOSE, "multi data %d\n", nType);
-#ifdef RELEASE
+#ifndef _DEBUG
 	if (nType <= MULTI_MAX_TYPE) {
 		tMultiHandlerInfo	*pmh = multiHandlers + nType;
 		if (pmh->fpMultiHandler && !(gameStates.app.bEndLevelSequence && pmh->noEndLevelSeq))

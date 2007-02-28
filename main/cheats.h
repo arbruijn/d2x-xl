@@ -4,14 +4,16 @@
 void KillAllRobots (int bVerbose);
 void KillEverything (int bVerbose);
 void KillThief (int bVerbose);
-#ifndef RELEASE
+#ifdef _DEBUG
 void KillAllSnipers (int bVerbose);
 #endif
 void KillBuddy (int bVerbose);
 void FinalCheats (int key);
 SuperWowieCheat (int bVerbose);
+void WowieCheat (int bVerbose);
+void GasolineCheat (int bVerbose);
 
-#ifndef RELEASE
+#ifdef _DEBUG
 void DoCheatMenu ();
 #endif
 

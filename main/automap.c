@@ -831,7 +831,7 @@ if (gameData.marker.nHighlight > -1 && gameData.marker.objects[gameData.marker.n
 
 extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 
-#ifdef RELEASE
+#ifndef _DEBUG
 #	define	MAP_BACKGROUND_FILENAME \
 				(bAutomapHires?"\x01MAPB.PCX":"\x01MAP.PCX")	//load only from hog file
 #else
@@ -906,7 +906,7 @@ t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
 //Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
 if (bRadar) {
-#ifdef RELEASE
+#ifndef _DEBUG
 	if (! (gameData.app.nGameMode & GM_MULTI))
 		memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
 #endif
@@ -918,7 +918,7 @@ if (bRadar) {
 		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
 		bRadar ? bAutomapVisited : bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
-#ifdef RELEASE
+#ifndef _DEBUG
 if (bRadar && ! (gameData.app.nGameMode & GM_MULTI))
 	memcpy (bAutomapVisited, bRadarVisited, sizeof (bRadarVisited));
 #endif
@@ -1000,8 +1000,8 @@ while (c = KeyInKey ()) {
 				bDone = 1;
 			break;
 
-		#ifndef NDEBUG
-		case KEY_DEBUGGED+KEY_F: {
+		#ifdef _DEBUG
+		case KEYDBGGED+KEY_F: {
 			int i;
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
 				bAutomapVisited[i] = 1;
@@ -1052,7 +1052,7 @@ while (c = KeyInKey ()) {
 			AMDeleteMarker ();
 			break;
 
-		#ifndef RELEASE
+		#ifdef _DEBUG
 		case KEY_COMMA:
 			if (gameData.marker.fScale>.5)
 				gameData.marker.fScale-=.5;

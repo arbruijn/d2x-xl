@@ -114,7 +114,7 @@ void InitHoardData (void)
 	ubyte					*bmDataP;
 
 if (gameOpts->app.bDemoData) {
-#ifdef RELEASE
+#ifndef _DEBUG
 	Warning ("Hoard data not available with demo data.");
 #endif
 	return;

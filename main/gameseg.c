@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "gamesave.h"
 #include "lighting.h"
-
+//#define _DEBUG
 #ifdef RCS
 static char rcsid [] = "$Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $";
 #endif
@@ -46,7 +46,7 @@ static char rcsid [] = "$Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $";
 
 #ifdef COMPACT_SEGS
 
-//#define CACHE_DEBUG 1
+//#define CACHEDBG 1
 #define MAX_CACHE_NORMALS 128
 #define CACHE_MASK 127
 
@@ -59,7 +59,7 @@ typedef struct normCacheElement {
 typedef struct tNormCache {
 	int					bInitialized;
 	normCacheElement	cache [MAX_CACHE_NORMALS];
-#ifdef CACHE_DEBUG
+#ifdef CACHEDBG
 	int					nCounter;
 	int					nHits;
 	int					nMisses;
@@ -96,7 +96,7 @@ int FindNormCacheElement (int nSegment, int nSide, int faceFlags)
 if (!normCache.bInitialized) 
 	NormCacheInit ();
 
-#ifdef CACHE_DEBUG
+#ifdef CACHEDBG
 #if TRACE		
 	if (( (++normCache.nCounter % 5000) == 1) && (normCache.nHits+normCache.nMisses > 0))
 		con_printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache.nMisses*100)/ (normCache.nHits+normCache.nMisses), normCache.nHits, normCache.nMisses);
@@ -106,7 +106,7 @@ if (!normCache.bInitialized)
 	i = ((nSegment<<2) ^ nSide) & CACHE_MASK;
 	if ((normCache.cache [i].nSegment == nSegment) && ((normCache.cache [i].nSide&0xf) == nSide)) {
 		uint f1;
-#ifdef CACHE_DEBUG
+#ifdef CACHEDBG
 		normCache.nHits++;
 #endif
 		f1 = normCache.cache [i].nSide>>4;
@@ -119,7 +119,7 @@ if (!normCache.bInitialized)
 		normCache.cache [i].nSide |= faceFlags<<4;
 		return i;
 	}
-#ifdef CACHE_DEBUG
+#ifdef CACHEDBG
 	normCache.nMisses++;
 #endif
 
@@ -505,49 +505,53 @@ void CreateAbsVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
 	tSide	*sideP = gameData.segs.segments [nSegment].sides + nSide;
 	int  *sv = sideToVertsInt [nSide];
 
+if ((gameData.physics.side.nSegment == nSegment) && (gameData.physics.side.nSide == nSide)) {
+	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
+	*nFaces = gameData.physics.side.nFaces;
+	return;
+	}	
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
 switch (sideP->nType) {
 	case SIDE_IS_QUAD:
-
 		vertices [0] = vp [sv [0]];
 		vertices [1] = vp [sv [1]];
 		vertices [2] = vp [sv [2]];
 		vertices [3] = vp [sv [3]];
-
-		*nFaces = 1;
+		gameData.physics.side.nFaces = 1;
 		break;
-	case SIDE_IS_TRI_02:
-		*nFaces = 2;
 
+	case SIDE_IS_TRI_02:
+		gameData.physics.side.nFaces = 2;
 		vertices [0] = vp [sv [0]];
 		vertices [1] = vp [sv [1]];
 		vertices [2] = vp [sv [2]];
-
 		vertices [3] = vp [sv [2]];
 		vertices [4] = vp [sv [3]];
 		vertices [5] = vp [sv [0]];
-
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS (), 
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
-	case SIDE_IS_TRI_13:
-		*nFaces = 2;
 
+	case SIDE_IS_TRI_13:
+		gameData.physics.side.nFaces = 2;
 		vertices [0] = vp [sv [3]];
 		vertices [1] = vp [sv [0]];
 		vertices [2] = vp [sv [1]];
-
 		vertices [3] = vp [sv [1]];
 		vertices [4] = vp [sv [2]];
 		vertices [5] = vp [sv [3]];
-
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
+
 	default:
 		Error ("Illegal tSide nType (3), nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, nSegment, nSide);
 		break;
 	}
+gameData.physics.side.nSegment = nSegment;
+gameData.physics.side.nSide = nSide;
+memcpy (gameData.physics.side.vertices, vertices, sizeof (gameData.physics.side.vertices));
+*nFaces = gameData.physics.side.nFaces;
 }
 
 // -------------------------------------------------------------------------------
@@ -887,7 +891,7 @@ return mask;
 }
 
 // -------------------------------------------------------------------------------
-#ifndef NDEBUG
+#ifdef _DEBUG
 #ifndef COMPACT_SEGS
 //returns true if errors detected
 int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum, int cfacenum)
@@ -899,7 +903,7 @@ int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum,
 
 	if (n0->p.x != -n1->p.x  ||  n0->p.y != -n1->p.y  ||  n0->p.z != -n1->p.z) {
 #if TRACE
-		con_printf (CON_DEBUG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
+		con_printf (CONDBG, "Seg %x, tSide %d, norm %d doesn't match seg %x, tSide %d, norm %d:\n"
 				"   %8x %8x %8x\n"
 				"   %8x %8x %8x (negated)\n", 
 				nSegment, nSide, facenum, csegnum, csidenum, cfacenum, 
@@ -942,7 +946,7 @@ int CheckSegmentConnections (void)
 
 				if (csidenum == -1) {
 #if TRACE
-					con_printf (CON_DEBUG, "Could not find connected tSide for seg %x back to seg %x, tSide %d\n", csegnum, nSegment, nSide);
+					con_printf (CONDBG, "Could not find connected tSide for seg %x back to seg %x, tSide %d\n", csegnum, nSegment, nSide);
 #endif
 					errors = 1;
 					continue;
@@ -954,7 +958,7 @@ int CheckSegmentConnections (void)
 
 				if (con_num_faces != nFaces) {
 #if TRACE
-					con_printf (CON_DEBUG, "Seg %x, tSide %d: nFaces (%d) mismatch with seg %x, tSide %d (%d)\n", nSegment, nSide, nFaces, csegnum, csidenum, con_num_faces);
+					con_printf (CONDBG, "Seg %x, tSide %d: nFaces (%d) mismatch with seg %x, tSide %d (%d)\n", nSegment, nSide, nFaces, csegnum, csidenum, con_num_faces);
 #endif
 					errors = 1;
 				}
@@ -970,7 +974,7 @@ int CheckSegmentConnections (void)
 							 vertexList [2] != con_vertex_list [ (t+2)%4] ||
 							 vertexList [3] != con_vertex_list [ (t+1)%4]) {
 #if TRACE
-							con_printf (CON_DEBUG, "Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
+							con_printf (CONDBG, "Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x %x\n"
 									"  %x %x %x %x\n", 
 									nSegment, nSide, csegnum, csidenum, 
@@ -993,14 +997,14 @@ int CheckSegmentConnections (void)
 								 vertexList [3] != con_vertex_list [5] ||
 								 vertexList [5] != con_vertex_list [3]) {
 #if TRACE
-								con_printf (CON_DEBUG, 
+								con_printf (CONDBG, 
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
 									"  %x %x %x  %x %x %x\n", 
 									nSegment, nSide, csegnum, csidenum, 
 									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5], 
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], con_vertex_list [5]);
-								con_printf (CON_DEBUG, 
+								con_printf (CONDBG, 
 									"Changing seg:tSide %4i:%i from %i to %i\n", 
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
@@ -1019,14 +1023,14 @@ int CheckSegmentConnections (void)
 								 vertexList [2] != con_vertex_list [3] ||
 								 vertexList [3] != con_vertex_list [2]) {
 #if TRACE
-								con_printf (CON_DEBUG, 
+								con_printf (CONDBG, 
 									"Seg %x, tSide %d: vertex list mismatch with seg %x, tSide %d\n"
 									"  %x %x %x  %x %x %x\n"
 									"  %x %x %x  %x %x %x\n", 
 									nSegment, nSide, csegnum, csidenum, 
 									vertexList [0], vertexList [1], vertexList [2], vertexList [3], vertexList [4], vertexList [5], 
 									con_vertex_list [0], con_vertex_list [1], con_vertex_list [2], con_vertex_list [3], con_vertex_list [4], vertexList [5]);
-								con_printf (CON_DEBUG, 
+								con_printf (CONDBG, 
 									"Changing seg:tSide %4i:%i from %i to %i\n", 
 									csegnum, csidenum, gameData.segs.segments [csegnum].sides [csidenum].nType, 5-gameData.segs.segments [csegnum].sides [csidenum].nType);
 #endif
@@ -1066,8 +1070,8 @@ int TraceSegs (vmsVector *p0, int nOldSeg)
 Assert ((nOldSeg <= gameData.segs.nLastSegment) && (nOldSeg >= 0));
 if (nTraceDepth >= gameData.segs.nSegments) {
 #if TRACE
-	con_printf (CON_DEBUG, "TraceSegs: Segment not found\n");
-	con_printf (CON_DEBUG, "TraceSegs (gameseg.c) - Something went wrong - infinite loop\n");
+	con_printf (CONDBG, "TraceSegs: Segment not found\n");
+	con_printf (CONDBG, "TraceSegs (gameseg.c) - Something went wrong - infinite loop\n");
 #endif
 	return -1;
 }
@@ -1930,7 +1934,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 		if (gameData.segs.segments [s].nSegment != -1) {
 			if (!said) {
 #if TRACE		
-				con_printf (CON_DEBUG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
+				con_printf (CONDBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
 #endif
 				}
 			said++;
@@ -1938,13 +1942,13 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 			}
 	if (said) {
 #if TRACE		
-		con_printf (CON_DEBUG, "%i fixed.\n", said);
+		con_printf (CONDBG, "%i fixed.\n", said);
 #endif
 		}
 	}
 #endif
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 #	ifndef COMPACT_SEGS
 if (CheckSegmentConnections ())
 	Int3 ();		//Get Matt, si vous plait.

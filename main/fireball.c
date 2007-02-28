@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "text.h"
 #include "hudmsg.h"
-
+//#define _DEBUG
 #define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this 
 
 //--unused-- ubyte	Frame_processed [MAX_OBJECTS];
@@ -230,7 +230,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 										gameData.render.xFlashEffect = fe;
 										PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
 #if TRACE
-										con_printf (CON_DEBUG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
+										con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
 #endif
 									}
 								}
@@ -533,7 +533,7 @@ int PickConnectedSegment (tObject *objP, int max_depth)
 		cur_depth = depth [seg_queue [tail]];
 	}
 #if TRACE
-	con_printf (CON_DEBUG, "...failed at depth %i, returning -1\n", cur_depth);
+	con_printf (CONDBG, "...failed at depth %i, returning -1\n", cur_depth);
 #endif
 	return -1;
 }
@@ -861,7 +861,7 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) && 
 						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG)));
 #if TRACE
-con_printf (CON_DEBUG, "ChooseDropSegment:");
+con_printf (CONDBG, "ChooseDropSegment:");
 #endif
 if (bUseInitSgm) {
 	tObject *initObjP = FindInitObject (objP);
@@ -894,7 +894,7 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 		}
 	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multi.players [pnum].nObject, nCurDropDepth);
 #if TRACE
-	con_printf (CON_DEBUG, " %d", nSegment);
+	con_printf (CONDBG, " %d", nSegment);
 #endif
 	if (nSegment == -1) {
 		nCurDropDepth--;
@@ -930,7 +930,7 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 }
 #if TRACE
 if (nSegment != -1)
-	con_printf (CON_DEBUG, " dist=%x\n", nDist);
+	con_printf (CONDBG, " dist=%x\n", nDist);
 #endif
 if (nSegment == -1) {
 #if TRACE
@@ -1134,7 +1134,7 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	if (delObjP->containsId == POW_CLOAK) {
 		if (WeaponNearby (delObjP, delObjP->containsId)) {
 #if TRACE
-			con_printf (CON_DEBUG, "Bashing cloak into nothing because there's one nearby.\n");
+			con_printf (CONDBG, "Bashing cloak into nothing because there's one nearby.\n");
 #endif
 			delObjP->containsCount = 0;
 		}
@@ -1205,7 +1205,7 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	//	else the room gets full of energy.
 	if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
 #if TRACE
-		con_printf (CON_DEBUG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
+		con_printf (CONDBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
 #endif
 		delObjP->containsCount = 0;
 	}
@@ -1381,7 +1381,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 			if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
-					con_printf (CON_DEBUG, "Not dropping shield!\n");
+					con_printf (CONDBG, "Not dropping shield!\n");
 #endif
 					return -1;
 					}
@@ -1389,7 +1389,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 			else  if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
-					con_printf (CON_DEBUG, "Not dropping shield!\n");
+					con_printf (CONDBG, "Not dropping shield!\n");
 #endif
 					return -1;
 					}
@@ -1399,7 +1399,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 			if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
-					con_printf (CON_DEBUG, "Not dropping energy!\n");
+					con_printf (CONDBG, "Not dropping energy!\n");
 #endif
 					return -1;
 					}
@@ -1407,7 +1407,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 			else if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
-					con_printf (CON_DEBUG, "Not dropping energy!\n");
+					con_printf (CONDBG, "Not dropping energy!\n");
 #endif
 					return -1;
 					}
@@ -1535,7 +1535,7 @@ if (delayTime) {		//wait a little while before creating explosion
 	//now set explosion-specific data
 	objP->lifeleft = delayTime;
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (hitObjP);
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (objP->cType.explInfo.nDeleteObj < 0)
 		Int3 (); // See Rob!
 #endif
@@ -1551,7 +1551,7 @@ else {
 	if (!explObjP) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
-		con_printf (CON_DEBUG, "Couldn't start explosion, deleting tObject now\n");
+		con_printf (CONDBG, "Couldn't start explosion, deleting tObject now\n");
 #endif
 		return;
 		}
@@ -1605,7 +1605,7 @@ void DoExplosionSequence (tObject *obj)
 
 		if ((obj->cType.explInfo.nDeleteObj < 0) || (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
-			con_printf (CON_DEBUG, "Illegal value for nDeleteObj in fireball.c\n");
+			con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif
 			Int3 (); // get Rob, please... thanks
 			return;
@@ -1679,7 +1679,7 @@ void DoExplosionSequence (tObject *obj)
 
 			explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
 			explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
-#ifndef NDEBUG
+#ifdef _DEBUG
 			if (obj->cType.explInfo.nDeleteObj < 0)
 		  		Int3 (); // See Rob!
 #endif
@@ -1688,7 +1688,7 @@ void DoExplosionSequence (tObject *obj)
 		else {
 			MaybeDeleteObject (delObjP);
 #if TRACE
-			con_printf (CON_DEBUG, "Couldn't create secondary explosion, deleting tObject now\n");
+			con_printf (CONDBG, "Couldn't create secondary explosion, deleting tObject now\n");
 #endif
 		}
 
@@ -1730,7 +1730,7 @@ void ExplodeWall (short nSegment, short nSide)
 
 	if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-		con_printf (CON_DEBUG, "Couldn't find d_free slot for exploding wall!\n");
+		con_printf (CONDBG, "Couldn't find d_free slot for exploding wall!\n");
 #endif
 		Int3 ();
 		return;
@@ -1884,7 +1884,7 @@ if (nDropSeg >= 0) {
 		return 1;
 		}
 	}
-#ifdef RELEASE
+#ifndef _DEBUG
 Warning (TXT_NO_MONSTERBALL);
 #endif
 gameData.app.nGameMode &= ~GM_MONSTERBALL;
@@ -1908,7 +1908,7 @@ for (i = 0, objP = gameData.objs.objects; i < gameData.objs.nObjects; i++, objP+
 			gameData.hoard.nMonsterballSeg = objP->nSegment;
 		ReleaseObject (i);
 		}
-#ifdef RELEASE
+#ifndef _DEBUG
 if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #endif

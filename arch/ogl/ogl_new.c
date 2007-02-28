@@ -174,7 +174,7 @@ else {//lightmapping disabled - render old way
 		}
 	else {
 	#if TRACE	
-			con_printf (CON_DEBUG,"G3DrawTexPoly: unhandled tmap_drawer %p\n",tmap_drawer_ptr);
+			con_printf (CONDBG,"G3DrawTexPoly: unhandled tmap_drawer %p\n",tmap_drawer_ptr);
 	#endif
 		}
 	tMapColor.index =

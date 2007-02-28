@@ -510,7 +510,7 @@ if (ssp->mixChunk) {
 	ssp->mixChunk = NULL;
 	}
 #endif
-#ifndef NDEBUG
+#ifdef _DEBUG
 VerifySoundChannelFree (gameStates.sound.digi.nNextChannel);
 #endif
 if (ssp->bResampled) {
@@ -790,7 +790,7 @@ for (ssp = SoundSlots, i = sizeofa (SoundSlots); i; i--, ssp++)
 }
 
 //------------------------------------------------------------------------------
-#ifndef NDEBUG
+#ifdef _DEBUG
 void DigiDebug ()
 {
 	int i;

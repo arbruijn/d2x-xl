@@ -1373,7 +1373,7 @@ tBitmapIndex ReadExtraBitmapIFF (char * filename)
 	//newBm->bm_handle=0;
 	if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
-		con_printf (CON_DEBUG, 
+		con_printf (CONDBG, 
 			"Error loading exit model bitmap <%s> - IFF error: %s\n", 
 			filename, iff_errormsg (iff_error));
 #endif			

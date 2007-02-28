@@ -27,7 +27,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "vecmat.h"
 #include "inferno.h"
 #include "error.h"
-
+//#define _DEBUG
 #define EXACT_VEC_MAG	1
 #define ENABLE_SSE		0
 
@@ -624,9 +624,9 @@ return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns 1/mag of source vec. uses approx 1/mag
-fix VmVecCopyNormalizeQuick(vmsVector *dest, vmsVector *src)
+fix VmVecCopyNormalizeQuick (vmsVector *dest, vmsVector *src)
 {
-fix im = VmVecInvMag(src);
+fix im = VmVecInvMag (src);
 dest->p.x = FixMul (src->p.x, im);
 dest->p.y = FixMul (src->p.y, im);
 dest->p.z = FixMul (src->p.z, im);
@@ -637,7 +637,7 @@ return im;
 
 // ------------------------------------------------------------------------
 //normalize a vector. returns 1/mag of source vec. uses approx 1/mag
-fix VmVecNormalizeQuick(vmsVector *v)
+fix VmVecNormalizeQuick (vmsVector *v)
 {
 return VmVecCopyNormalizeQuick(v, v);
 }

@@ -18,7 +18,7 @@
 
 #include "gamefont.h"
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 #ifdef _MSC_VER
 #include <crtdbg.h>
 #endif
@@ -46,7 +46,7 @@ static HBITMAP screen_bitmap;
 
 void arch_init_start()
 {
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 	#ifdef _MSC_VER
 	if (FindArg("-memdbg"))
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_CHECK_ALWAYS_DF | 
@@ -225,7 +225,7 @@ void show_dd_error(HRESULT hr, char *loc)
 
 	strcpy(buf, loc);
 	len = (int) strlen(buf);
-	#ifdef NDEBUG
+	#ifndef _DEBUG
 	sprintf(buf + len, "%x", hr);
 	#else
 	GetDDErrorString(hr, buf + len, sizeof(buf) - len);

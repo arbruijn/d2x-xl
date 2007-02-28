@@ -514,7 +514,7 @@ else
 void SpecialReactorStuff (void)
 {
 #if TRACE
-con_printf (CON_DEBUG, "Mucking with reactor countdown time.\n");
+con_printf (CONDBG, "Mucking with reactor countdown time.\n");
 #endif
 if (gameData.reactor.bDestroyed) {
 	gameData.reactor.countdown.nTimer += i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL-1-gameStates.app.nDifficultyLevel)*gameStates.app.nBaseCtrlCenExplTime/ (NDL-1));

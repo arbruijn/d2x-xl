@@ -910,7 +910,7 @@ if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 	return 0;
 	}
 #if TRACE
-con_printf (CON_DEBUG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
+con_printf (CONDBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
 nWeaponObj = CreateNewLaserEasy ( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, MEGAMSL_ID, 1);
@@ -933,7 +933,7 @@ if (dist > F1_0*80)
 if (!ObjectToObjectVisibility (buddyObjP, objP, FQ_TRANSWALL))
 	return 0;
 #if TRACE
-con_printf (CON_DEBUG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
+con_printf (CONDBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
 nWeaponObj = CreateNewLaserEasy ( &buddyObjP->position.mOrient.fVec, &buddyObjP->position.vPos, nObject, SMARTMSL_ID, 1);
@@ -1013,7 +1013,7 @@ if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	if (player_visibility)
 		if (gameData.escort.xLastPathCreated + F1_0*3 < gameData.time.xGame) {
 #if TRACE
-			con_printf (CON_DEBUG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
+			con_printf (CONDBG, "Frame %i: Buddy creating new scram path.\n", gameData.app.nFrameCount);
 #endif
 			CreateNSegmentPath (objP, 10 + d_rand () * 16, gameData.objs.console->nSegment);
 			gameData.escort.xLastPathCreated = gameData.time.xGame;
@@ -1184,7 +1184,7 @@ void DoEscortMenu (void)
 	}
 
 	switch (next_goal) {
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 		case ESCORT_GOAL_UNSPECIFIED:
 			Int3 ();
 			sprintf (goal_str, "ERROR");

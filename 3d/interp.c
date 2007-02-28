@@ -1559,7 +1559,7 @@ return INFINITY;
 #else //slower method
 
 	fvi_query	fq;
-	fvi_info		fi;
+	tFVIData		fi;
 	vmsVector	v;
 
 if (!gameOpts->render.shadows.nClip)
@@ -1805,7 +1805,7 @@ nClip = gameOpts->render.shadows.nClip ? po->pfClipDist ? gameOpts->render.shado
 fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
-#if 0//def _DEBUG
+#ifdef _DEBUG
 	if (pf->bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
 		v1 = v0 = pf->vCenterf;
@@ -2207,7 +2207,7 @@ for (;;) {
 return 1;
 }
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 int nestCount;
 #endif
 
@@ -2346,7 +2346,9 @@ return 1;
 
 void InitSubModel (ubyte *p)
 {
+#ifdef _DEBUG
 Assert (++nestCount < 1000);
+#endif
 for (;;) {
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -2411,7 +2413,7 @@ for (;;) {
 //init code for bitmap models
 void G3InitPolyModel (void *modelP)
 {
-	#ifndef NDEBUG
+	#ifdef _DEBUG
 	nestCount = 0;
 	#endif
 

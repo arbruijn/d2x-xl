@@ -33,7 +33,7 @@ static char rcsid[] = "$Id: text.c,v 1.11 2003/11/26 12:26:33 btb Exp $";
 #include "args.h"
 #include "compbit.h"
 
-#ifdef RELEASE
+#ifndef _DEBUG
 #	define DUMP_TEXTS 0
 #else
 #	define DUMP_TEXTS 0
@@ -1349,7 +1349,7 @@ char *defaultGameTexts [][2] = {
 	{"%s Joystickhats gefunden, aber nur %s unterstuetzt.\n", "Found joystick %d hats, only %d supported.\n"},
 	{"Kennung der HXM-Datei unzulaessig", "ID of HXM! file incorrect"},
 	{"Version der HXM-Datei zu alt (%d)", "HXM! version too old (%d)"},
-	{"Robotnr. %d aus <%s> unzulaessig.\n(Bereich = 0 - %d)", "Robot number %d from <%s>\nout of range in.\n(Range = 0 - %d)"},
+	{"Robotnr. %d aus <%s> unzulaessig.\n(Bereich = 0 - %d)\nEventuell ist die Vertigo-\nErweiterung nicht installiert", "Robot number %d from <%s>\nout of range in.\n(Range = 0 - %d)You probably do not have\nthe Vertigo extension installed"},
 	{"Konnte Leveldatei <%s> nicht laden", "Couldn't load level file\n<%s>"},
 	{"Dieser Level ist nicht fuer Entropie geeignet!\nWechsle zu Team-Anarchie.", "This level is not Entropy enabled!\nChanging game mode to Team Anarchy."},
 	{"Kann Hilfetexte nicht laden", "Cannot load help text file."},

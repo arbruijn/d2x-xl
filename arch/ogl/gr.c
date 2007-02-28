@@ -283,13 +283,13 @@ void OglGetVerInfo(void)
 #ifdef GL_ARB_multitexture
 	gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
 #if 0 //TRACE	
-	con_printf (CON_DEBUG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
+	con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
 #endif
 #endif
 #ifdef GL_SGIS_multitexture
 	gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
 #if TRACE	
-	con_printf (CON_DEBUG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
+	con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
 #endif	
 #endif
 
@@ -454,7 +454,7 @@ int OglInitLoadLibrary(void)
 		if(retcode)
 		{
 #if TRACE	
-			con_printf (CON_DEBUG,"OpenGL successfully loaded\n");
+			con_printf (CONDBG,"OpenGL successfully loaded\n");
 #endif	
 			if(!glEnd)
 			{
@@ -862,7 +862,7 @@ void WriteScreenShot (char *szSaveName, int w, int h, unsigned char *buf, int nF
 	FILE *f = fopen (szSaveName, "wb");
 if (!f) {
 #if TRACE	
-	con_printf (CON_DEBUG,"screenshot error, couldn't open %s (err %i)\n",szSaveName,errno);
+	con_printf (CONDBG,"screenshot error, couldn't open %s (err %i)\n",szSaveName,errno);
 #endif
 	}
 else {
@@ -910,7 +910,7 @@ else {
 #endif
 #if TRACE	
 	if (r <= 0)
-		con_printf (CON_DEBUG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
+		con_printf (CONDBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
 #endif
 	fclose (f);
 	}

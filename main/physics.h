@@ -91,7 +91,7 @@ void DoPhysicsSim(tObject *obj);
 // returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
 // Stuff hit_info with fvi data as set by FindVectorIntersection.
 // for fviFlags, refer to fvi.h for the fvi query flags
-int physics_lookahead(tObject *obj, fix t, int fviFlags, fix *hitTime, fvi_info *hit_info);
+int physics_lookahead(tObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData *hit_info);
 
 // Applies an instantaneous force on an tObject, resulting in an instantaneous
 // change in velocity.

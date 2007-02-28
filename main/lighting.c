@@ -167,12 +167,12 @@ Cache_lookups++;
 	if ((cache_frame == 0) || (cache_frame + Lighting_frame_delta <= gameData.app.nFrameCount)) {
 		int			bApplyLight=0;
 		fvi_query	fq;
-		fvi_info		hit_data;
+		tFVIData		hit_data;
 		int			nSegment, hitType;
 
 		nSegment = -1;
 
-		#ifndef NDEBUG
+		#ifdef _DEBUG
 		nSegment = FindSegByPoint (vObjPos, nObjSeg);
 		if (nSegment == -1) {
 			Int3 ();		//	Obj_pos is not in nObjSeg!
@@ -364,7 +364,7 @@ if (xObjIntensity) {
 				if (objP->id != gameData.multi.nLocalPlayer) {
 					vmsVector	tvec;
 					fvi_query	fq;
-					fvi_info		hit_data;
+					tFVIData		hit_data;
 					int			fate;
 
 					VmVecScaleAdd (&tvec, vObjPos, &objP->position.mOrient.fVec, F1_0*200);
@@ -1059,7 +1059,7 @@ int AddFlicker (int nSegment, int nSide, fix delay, unsigned long mask)
 	tFlickeringLight *flP;
 
 #if TRACE
-	//con_printf (CON_DEBUG,"AddFlicker: %d:%d %x %x\n",nSegment,nSide,delay,mask);
+	//con_printf (CONDBG,"AddFlicker: %d:%d %x %x\n",nSegment,nSide,delay,mask);
 #endif
 	//see if there's already an entry for this seg/tSide
 

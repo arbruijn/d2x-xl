@@ -23,7 +23,7 @@ void GameplayOptionsMenu ();
 int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
-#ifdef RELEASE  // read only from hog file
+#ifndef _DEBUG  // read only from hog file
 #define MENU_PCX_MAC_SHARE ("\x01menub.pcx")
 #define MENU_PCX_SHAREWARE ("\x01menud.pcx")
 #define MENU_PCX_OEM (gameStates.menus.bHires?"\x01menuob.pcx":"\x01menuo.pcx")

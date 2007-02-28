@@ -513,7 +513,7 @@ void ogl_init_font(grs_font * font)
 	font->ft_bitmaps=(grsBitmap*)d_malloc(nchars * sizeof(grsBitmap));
 	memset (font->ft_bitmaps, 0, nchars * sizeof(grsBitmap));
 #if TRACE	
-//	con_printf (CON_DEBUG,"ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n",
+//	con_printf (CONDBG,"ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n",
 //		(font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth",(font->ftFlags & FT_COLOR)?"color":"mono",nchars,tw,th);
 #endif		
 	//	s[1]=0;

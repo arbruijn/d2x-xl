@@ -345,7 +345,7 @@ if (player_file_version>=23) {
   if (swap)
 	  i = SWAPINT(i);
 #if TRACE				
-	con_printf (CON_DEBUG,"Reading: lifetime checksum is %d\n",i);
+	con_printf (CONDBG,"Reading: lifetime checksum is %d\n",i);
 #endif
 	if (i!=get_lifetime_checksum (networkData.nNetLifeKills,networkData.nNetLifeKilled)) {
 		networkData.nNetLifeKills=0; networkData.nNetLifeKilled=0;
@@ -983,7 +983,7 @@ int WritePlayerFile()
 		CFWriteInt(networkData.nNetLifeKilled, fp);
 		i=get_lifetime_checksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE				
-		con_printf (CON_DEBUG,"Writing: Lifetime checksum is %d\n",i);
+		con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
 		CFWriteInt(i,fp);
 	}

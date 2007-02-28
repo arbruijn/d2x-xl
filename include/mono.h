@@ -33,7 +33,7 @@ void _CDECL_ _do_mprintf(int n, char *fmt, ...)
 	vsprintf (buffer, fmt, arglist);
 	va_end (arglist);
 	
-	con_printf (CON_DEBUG, buffer);
+	con_printf (CONDBG, buffer);
 }
 
 #ifdef _WIN32

@@ -179,7 +179,7 @@ void key_handler(int scancode, int press)
 			if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL])
 				keycode |= KEY_CTRLED;
                         if ( keyd_pressed[KEY_DELETE] )
-                                keycode |= KEY_DEBUGGED;
+                                keycode |= KEYDBGGED;
 			temp = key_data.keytail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
@@ -328,9 +328,9 @@ unsigned int key_get_shift_status()
 	if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL] )
 		shift_status |= KEY_CTRLED;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (keyd_pressed[KEY_DELETE])
-		shift_status |=KEY_DEBUGGED;
+		shift_status |=KEYDBGGED;
 #endif
 
 	return shift_status;

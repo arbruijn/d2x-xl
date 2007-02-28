@@ -65,7 +65,7 @@ char ai_rcsid [] = "$Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $";
 #endif
 
 #include "string.h"
-
+//#define _DEBUG
 #ifdef _DEBUG
 #include <time.h>
 #endif
@@ -331,7 +331,7 @@ void MakeNearbyRobotSnipe (void)
 					objP->cType.aiInfo.behavior = AIB_SNIPE;
 					gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
 #if TRACE	
-					con_printf (CON_DEBUG, "Making robot #%i go into snipe mode!\n", nObject);
+					con_printf (CONDBG, "Making robot #%i go into snipe mode!\n", nObject);
 #endif
 					return;
 				}
@@ -340,7 +340,7 @@ void MakeNearbyRobotSnipe (void)
 		}
 	}
 #if TRACE	
-	con_printf (CON_DEBUG, "Couldn't find a robot to make snipe!\n");
+	con_printf (CONDBG, "Couldn't find a robot to make snipe!\n");
 #endif
 }
 
@@ -518,13 +518,13 @@ if (nBreakOnObject != -1)
 		Int3 (); // Contact Mike: This is a debug break
 #endif
 #if TRACE	
-	//con_printf (CON_DEBUG, "Object %i: behavior = %02x, mode = %i, awareness = %i, time = %7.3f\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, f2fl (ailp->playerAwarenessTime));
-	//con_printf (CON_DEBUG, "Object %i: behavior = %02x, mode = %i, awareness = %i, cur=%i, goal=%i\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, aip->CURRENT_STATE, aip->GOAL_STATE);
+	//con_printf (CONDBG, "Object %i: behavior = %02x, mode = %i, awareness = %i, time = %7.3f\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, f2fl (ailp->playerAwarenessTime));
+	//con_printf (CONDBG, "Object %i: behavior = %02x, mode = %i, awareness = %i, cur=%i, goal=%i\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, aip->CURRENT_STATE, aip->GOAL_STATE);
 #endif
 	//Assert ((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR);
 if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
 #if TRACE	
-		//con_printf (CON_DEBUG, "Object %i behavior is %i, setting to AIB_NORMAL, fix in editor!\n", nObject, aip->behavior);
+		//con_printf (CONDBG, "Object %i behavior is %i, setting to AIB_NORMAL, fix in editor!\n", nObject, aip->behavior);
 #endif
 		aip->behavior = AIB_NORMAL;
 	}
@@ -683,7 +683,7 @@ _exit_cheat:
 					break;
 				case AIM_BEHIND:
 #if TRACE	
-					con_printf (CON_DEBUG, "Hiding robot (%i) collided much.\n", OBJ_IDX (objP));
+					con_printf (CONDBG, "Hiding robot (%i) collided much.\n", OBJ_IDX (objP));
 #endif
 					MoveTowardsSegmentCenter (objP);
 					objP->mType.physInfo.velocity.p.x = 0;
@@ -1303,7 +1303,7 @@ switch (ailp->mode) {
 
 	default:
 #if TRACE	
-		con_printf (CON_DEBUG, "Unknown mode = %i in robot %i, behavior = %i\n", ailp->mode, OBJ_IDX (objP), aip->behavior);
+		con_printf (CONDBG, "Unknown mode = %i in robot %i, behavior = %i\n", ailp->mode, OBJ_IDX (objP), aip->behavior);
 #endif
 		ailp->mode = AIM_CHASE_OBJECT;
 		break;
@@ -1473,7 +1473,7 @@ if (!gameData.ai.nPlayerVisibility) {
 
 funcExit:
 
-#if 0//def _DEBUG
+#ifdef _DEBUG
 HUDMessage (0, "%s %s %d %d %d", 
 				state_text [aip->flags [1]], state_text [aip->flags [2]],
 				gameData.ai.xDistToPlayer / F1_0, 

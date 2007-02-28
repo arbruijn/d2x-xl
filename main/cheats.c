@@ -243,7 +243,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 //------------------------------------------------------------------------------
 
-#ifndef RELEASE
+#ifdef _DEBUG
 
 void KillAllSnipers (int bVerbose)
 {
@@ -761,7 +761,7 @@ inline int Cheat (tCheat *pCheat)
 if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pCheat->pszCheat), 
 				pCheat->pszCheat))
 	return 0;	// not this cheatcode
-#ifdef RELEASE
+#ifndef _DEBUG
 if (pCheat->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
@@ -901,7 +901,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 
 //------------------------------------------------------------------------------
 // Internal Cheat Menu
-#ifndef RELEASE
+#ifdef _DEBUG
 void DoCheatMenu ()
 {
 	int mmn;

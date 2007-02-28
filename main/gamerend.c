@@ -69,11 +69,11 @@ static char rcsid[] = "$Id: gamerend.c,v 1.13 2003/10/12 09:38:48 btb Exp $";
 
 extern int LinearSVGABuffer;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 extern int Debug_pause;				//John's debugging pause system
 #endif
 
-#ifndef RELEASE
+#ifdef _DEBUG
 extern int Saving_movie_frames;
 #else
 #define Saving_movie_frames 0
@@ -211,7 +211,7 @@ void show_framerate()
 }
 
 //------------------------------------------------------------------------------
-#ifndef NDEBUG
+#ifdef _DEBUG
 
 fix ShowView_textTimer = -1;
 
@@ -309,7 +309,7 @@ void renderCountdown_gauge()
 
 void game_draw_hud_stuff()
 {
-#ifndef NDEBUG
+#ifdef _DEBUG
 	if (Debug_pause) {
 		GrSetCurFont( MEDIUM1_FONT );
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -953,18 +953,10 @@ void GameRenderFrameMono(void)
 			VR_render_sub_buffer[0].cv_bitmap.bm_props.h)
 	);
 
-	if ( Game_double_buffer ) {	
-		WINDOS(
-			DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
-			GrSetCurrentCanvas(&VR_render_sub_buffer[0])
+	WINDOS(
+		DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
+		GrSetCurrentCanvas(&VR_render_sub_buffer[0])
 		);
-	}
-	else	{
-		WINDOS(
-			DDGrSetCurrentCanvas(&Screen_3d_window),
-			GrSetCurrentCanvas(&Screen_3d_window)
-		);
-	}
 	
 	gm = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
 	if (gm && 
@@ -990,18 +982,10 @@ void GameRenderFrameMono(void)
   		{
 			UpdateRenderedData(0, gameData.objs.viewer, 0, 0);
 			if (RenderCameras ()) {
-				if ( Game_double_buffer ) {
-					WINDOS(
-						DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
-						GrSetCurrentCanvas(&VR_render_sub_buffer[0])
-						);
-				}
-				else	{
-					WINDOS(
-						DDGrSetCurrentCanvas(&Screen_3d_window),
-						GrSetCurrentCanvas(&Screen_3d_window)
-						);
-					}
+				WINDOS(
+					DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
+					GrSetCurrentCanvas(&VR_render_sub_buffer[0])
+					);
 				}
 			RenderFrame(0, 0);
   			WakeupRenderedObjects(gameData.objs.viewer, 0);
@@ -1032,35 +1016,19 @@ void GameRenderFrameMono(void)
 		WIN(DDGRLOCK(dd_grd_curcanv)); 	// Must lock DD canvas!!!
 		UpdateRenderedData (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
 		if (RenderCameras ()) {
-			if ( Game_double_buffer ) {
-				WINDOS(
-					DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
-					GrSetCurrentCanvas(&VR_render_sub_buffer[0])
+			WINDOS(
+				DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
+				GrSetCurrentCanvas(&VR_render_sub_buffer[0])
 				);
-			}
-			else	{
-				WINDOS(
-					DDGrSetCurrentCanvas(&Screen_3d_window),
-					GrSetCurrentCanvas(&Screen_3d_window)
-					);
-				}
 			}
 		RenderFrame(0, 0);
 		WIN(DDGRUNLOCK(dd_grd_curcanv));
 	 }
 
-	if ( Game_double_buffer ) {	
-		WINDOS(
-			DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
-			GrSetCurrentCanvas(&VR_render_sub_buffer[0])
+	WINDOS(
+		DDGrSetCurrentCanvas(&dd_VR_render_sub_buffer[0]),
+		GrSetCurrentCanvas(&VR_render_sub_buffer[0])
 		);
-	}
-	else	{
-		WINDOS(
-			DDGrSetCurrentCanvas(&Screen_3d_window),
-			GrSetCurrentCanvas(&Screen_3d_window)
-		);
-	}
 
 	if (!no_draw_hud)	{
 		WIN(DDGRLOCK(dd_grd_curcanv));
@@ -1070,21 +1038,16 @@ void GameRenderFrameMono(void)
 
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 		show_extraViews();		//missile view, buddy bot, etc.
-	if ( Game_double_buffer ) {		//copy to visible screen
-		if ( !Game_cockpit_copy_code )	{
-			if ( VR_screenFlags&VRF_USE_PAGING )	{	
-				nVRCurrentPage = !nVRCurrentPage;
-				GrSetCurrentCanvas( &VR_screen_pages[nVRCurrentPage] );
-				GrBmUBitBlt( VR_render_sub_buffer[0].cv_w, VR_render_sub_buffer[0].cv_h, VR_render_sub_buffer[0].cv_bitmap.bm_props.x, VR_render_sub_buffer[0].cv_bitmap.bm_props.y, 0, 0, &VR_render_sub_buffer[0].cv_bitmap, &VR_screen_pages[nVRCurrentPage].cv_bitmap );
-				gr_wait_for_retrace = 0;
-				GrShowCanvas( &VR_screen_pages[nVRCurrentPage] );
-				gr_wait_for_retrace = 1;
+	if ( !Game_cockpit_copy_code )	{
+		if ( VR_screenFlags&VRF_USE_PAGING )	{	
+			nVRCurrentPage = !nVRCurrentPage;
+			GrSetCurrentCanvas( &VR_screen_pages[nVRCurrentPage] );
+			GrBmUBitBlt( VR_render_sub_buffer[0].cv_w, VR_render_sub_buffer[0].cv_h, VR_render_sub_buffer[0].cv_bitmap.bm_props.x, VR_render_sub_buffer[0].cv_bitmap.bm_props.y, 0, 0, &VR_render_sub_buffer[0].cv_bitmap, &VR_screen_pages[nVRCurrentPage].cv_bitmap );
+			gr_wait_for_retrace = 0;
+			GrShowCanvas( &VR_screen_pages[nVRCurrentPage] );
+			gr_wait_for_retrace = 1;
 			}
-		} else	
-			{
-			gr_ibitblt( &VR_render_sub_buffer[0].cv_bitmap, &VR_screen_pages[0].cv_bitmap, Scanline_double );
 		}
-	}
 
 	if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR) {
 
@@ -1342,7 +1305,7 @@ void shrink_window()
 		}
 
 #if TRACE
-   con_printf (CON_DEBUG,"Cockpit mode=%d\n",gameStates.render.cockpit.nMode);
+   con_printf (CONDBG,"Cockpit mode=%d\n",gameStates.render.cockpit.nMode);
 #endif
 	if (Game_window_w > WINDOW_MIN_W) {
 		//int x,y;
@@ -1351,7 +1314,7 @@ void shrink_window()
 		Game_window_h -= WINDOW_H_DELTA;
 
 #if TRACE
-  con_printf (CON_DEBUG,"NewW=%d NewH=%d VW=%d maxH=%d\n",Game_window_w,Game_window_h,max_window_w,max_window_h);
+  con_printf (CONDBG,"NewW=%d NewH=%d VW=%d maxH=%d\n",Game_window_w,Game_window_h,max_window_w,max_window_h);
 #endif                  
 		if ( Game_window_w < WINDOW_MIN_W )
 			Game_window_w = WINDOW_MIN_W;
@@ -1374,7 +1337,7 @@ StartTime ();
 //------------------------------------------------------------------------------
 
 static 
-#ifdef RELEASE
+#ifndef _DEBUG
 inline 
 #endif
 void DrawCockpit (int h, int y)
