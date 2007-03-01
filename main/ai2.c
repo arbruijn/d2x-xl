@@ -806,8 +806,8 @@ else {
 //	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
 void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collision_point)
 {
-	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (robot)];
-	tRobotInfo *botInfoP = &ROBOTINFO (robot->id);
+	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robot);
+	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
 
 //#ifdef _DEBUG
 	if (!gameStates.app.cheats.bRobotsFiring)
@@ -2455,15 +2455,11 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 				ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
 
 				// Switch to next gun for next fire.  If has 2 gun types, select gun #1, if exists.
-				if (++aip->CURRENT_GUN >= botInfoP->nGuns) {
-#if 1
-					aip->CURRENT_GUN = 0;
-#else
+				if (++(aip->CURRENT_GUN) >= botInfoP->nGuns) {
 					if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))
 						aip->CURRENT_GUN = 0;
 					else
 						aip->CURRENT_GUN = 1;
-#endif
 					}
 				}
 			}
@@ -2474,8 +2470,9 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 				(gameData.weapons.info [botInfoP->nSecWeaponType].homingFlag == 1)))) {
 		fix dist;
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
-		if (((!gameData.ai.bObjAnimates) || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
-			 && (((ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
+		if ((!gameData.ai.bObjAnimates || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
+			 && (((ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || 
+				  ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
 			 && ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->position.vPos)) > F1_0*40)) {
 			if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 				return;
@@ -2483,12 +2480,12 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 			aip->GOAL_STATE = AIS_RECO;
 			ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
 			// Switch to next gun for next fire.
-			if (++aip->CURRENT_GUN >= botInfoP->nGuns)
+			if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
 				aip->CURRENT_GUN = 0;
 			}
 		else {
 			// Switch to next gun for next fire.
-			if (++aip->CURRENT_GUN >= botInfoP->nGuns)
+			if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
 				aip->CURRENT_GUN = 0;
 			}
 		}
@@ -2538,15 +2535,11 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 				aip->GOAL_STATE = AIS_RECO;
 				ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
 				// Switch to next gun for next fire.
-				if (++aip->CURRENT_GUN >= botInfoP->nGuns) {
-#if 1
-						aip->CURRENT_GUN = 0;
-#else
+				if (++(aip->CURRENT_GUN) >= botInfoP->nGuns) {
 					if (botInfoP->nGuns == 1)
 						aip->CURRENT_GUN = 0;
 					else
 						aip->CURRENT_GUN = 1;
-#endif
 					}
 				}
 			}

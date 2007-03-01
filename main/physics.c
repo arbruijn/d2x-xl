@@ -477,7 +477,7 @@ retryMove:
 #if 0
 	iSeg = FindSegByPoint (&vNewPos, objP->nSegment);
 	if (iSeg < 0) {
-#if 1//def _DEBUG
+#if 0//def _DEBUG
 		static int nBadSegs = 0;
 		
 		HUDMessage (0, "bad dest seg %d", nBadSegs++);
@@ -505,7 +505,7 @@ retryMove:
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
 	fviResult = FindVectorIntersection (&fq, &hi);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
 		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
 #endif
@@ -643,7 +643,7 @@ retryMove:
 		fix			xHitSpeed, xWallPart;
 		// Find hit speed	
 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		if (objP->nType == OBJ_PLAYER)
 			HUDMessage (0, "WALL CONTACT");
 		fviResult = FindVectorIntersection (&fq, &hi);
@@ -652,13 +652,13 @@ retryMove:
 		xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			if (objP->nType == OBJ_PLAYER)
 				HUDMessage (0, "BUMP!");
 #endif
 			}
 		else {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			if (objP->nType == OBJ_PLAYER)
 				HUDMessage (0, "SCREEEEEEEEEECH");
 #endif

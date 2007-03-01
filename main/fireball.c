@@ -1060,7 +1060,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) ||
 			}
 		}
 	nObject = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject, 
-											1, OBJ_POWERUP, nPowerupType);
+											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
 	nSegment = ChooseDropSegment (gameData.objs.objects + nObject, &bFixedPos, nDropState);
@@ -1632,75 +1632,62 @@ void DoExplosionSequence (tObject *obj)
 		else
 			explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
 
-		if ((delObjP->containsCount > 0) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside of this code!!
+		if ((delObjP->containsCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
 			//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 			if (delObjP->containsType == OBJ_POWERUP)
 				MaybeReplacePowerupWithEnergy (delObjP);
 			if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
 				ObjectCreateEgg (delObjP);
 			}
-		else if ((delObjP->nType == OBJ_ROBOT) && !(gameData.app.nGameMode & GM_MULTI)) { // Multiplayer handled outside this code!!
-			tRobotInfo	*robptr = &ROBOTINFO (delObjP->id);
-			if (robptr->containsCount && ((robptr->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
-				if (( (d_rand () * 16) >> 15) < robptr->containsProb) {
-					delObjP->containsCount = ((d_rand () * robptr->containsCount) >> 15) + 1;
-					delObjP->containsType = robptr->containsType;
-					delObjP->containsId = robptr->containsId;
+		if ((delObjP->nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
+			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->id);
+			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
+				if (d_rand () % 16 + 1 < botInfoP->containsProb) {
+					delObjP->containsCount = (d_rand () % botInfoP->containsCount) + 1;
+					delObjP->containsType = botInfoP->containsType;
+					delObjP->containsId = botInfoP->containsId;
 					MaybeReplacePowerupWithEnergy (delObjP);
 					ObjectCreateEgg (delObjP);
+					}
 				}
-			}
-
-			if (robptr->thief)
+			if (botInfoP->thief)
 				DropStolenItems (delObjP);
-
-			if (robptr->companion) {
+			if (botInfoP->companion) {
 				DropBuddyMarker (delObjP);
 			}
 		}
-
 		if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
 			DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
 			//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
-
 		obj->cType.explInfo.nSpawnTime = -1;
-
 		//make debris
 		if (delObjP->renderType==RT_POLYOBJ)
 			ExplodePolyModel (delObjP);		//explode a polygon model
-
 		//set some parm in explosion
 		if (explObjP) {
-
 			if (delObjP->movementType == MT_PHYSICS) {
 				explObjP->movementType = MT_PHYSICS;
 				explObjP->mType.physInfo = delObjP->mType.physInfo;
-			}
-
+				}
 			explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
 			explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifdef _DEBUG
 			if (obj->cType.explInfo.nDeleteObj < 0)
 		  		Int3 (); // See Rob!
 #endif
-
-		}
+			}
 		else {
 			MaybeDeleteObject (delObjP);
 #if TRACE
 			con_printf (CONDBG, "Couldn't create secondary explosion, deleting tObject now\n");
 #endif
+			}
 		}
-
-	}
-
 	//See if we should delete an tObject
-	if (obj->lifeleft <= obj->cType.explInfo.nDeleteTime) {
-		tObject *delObjP = gameData.objs.objects+obj->cType.explInfo.nDeleteObj;
-
-		obj->cType.explInfo.nDeleteTime = -1;
-
-		MaybeDeleteObject (delObjP);
+if (obj->lifeleft <= obj->cType.explInfo.nDeleteTime) {
+	tObject *delObjP = gameData.objs.objects+obj->cType.explInfo.nDeleteObj;
+	obj->cType.explInfo.nDeleteTime = -1;
+	MaybeDeleteObject (delObjP);
 	}
 }
 
