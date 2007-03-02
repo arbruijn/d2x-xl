@@ -2054,12 +2054,17 @@ void DoAmbientSounds ()
 
 //-----------------------------------------------------------------------------
 
-void Get40FpsTick (void)
+void GetSlowTicks (void)
 {
 gameStates.app.nSDLTicks = SDL_GetTicks ();
-gameStates.app.nDeltaTime = gameStates.app.nSDLTicks - gameStates.app.nLastTick;
-if (gameStates.app.b40fpsTick = (gameStates.app.nDeltaTime >= 25))
-	gameStates.app.nLastTick = gameStates.app.nSDLTicks;
+gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick40fps.nLastTick;
+if (gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25))
+	gameStates.app.tick40fps.nLastTick = gameStates.app.nSDLTicks;
+gameStates.app.tick60fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick60fps.nLastTick;
+if (gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + ++gameStates.app.tick60fps.nSlack) / 3)) {
+	gameStates.app.tick60fps.nLastTick = gameStates.app.nSDLTicks;
+	gameStates.app.tick60fps.nSlack %= 3;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -2131,7 +2136,7 @@ int GameLoop (int RenderFlag, int bReadControls)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-Get40FpsTick ();
+GetSlowTicks ();
 #ifdef _DEBUG
 //	Used to slow down frame rate for testing things.
 //	RenderFlag = 1; // DEBUG
@@ -2497,7 +2502,7 @@ void FireLaser ()
 				gameData.app.fusion.xAutoFireTime = gameData.time.xGame -1;	//	Fire now!
 			} else
 				gameData.app.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
-			if (gameStates.limitFPS.bFusion && !gameStates.app.b40fpsTick)
+			if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 				return;
 			if (gameData.app.fusion.xCharge < F1_0*2)
 				PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, 0, gameData.app.fusion.xCharge >> 11);
@@ -2553,7 +2558,7 @@ if ((dist < 2 * (powerup_size + player_size)) &&
 //	way before the tPlayer gets there.
 void PowerupGrabCheatAll (void)
 {
-if (gameStates.app.b40fpsTick) {
+if (gameStates.app.tick40fps.bTick) {
 	tSegment	*segP;
 	int		nObject;
 

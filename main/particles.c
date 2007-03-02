@@ -1260,7 +1260,7 @@ else {
 
 int MoveSmoke (void)
 {
-if (!gameStates.app.b40fpsTick)
+if (!gameStates.app.tick40fps.bTick)
 	return 0;
 #if 0
 if (!EGI_FLAG (bUseSmoke, 0, 1, 0))

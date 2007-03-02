@@ -636,15 +636,21 @@ typedef struct tEntropyStates {
 	int nTimeLastMoved;
 } tEntropyStates;
 
+typedef struct tSlowTick {
+	int bTick;
+	int nTime;
+	int nSlack;
+	int nLastTick;
+} tSlowTick;
+
 typedef struct tApplicationStates {
+	tSlowTick tick40fps;
+	tSlowTick tick60fps;
 #if MULTI_THREADED
 	int bExit;
 	int bMultiThreaded;
 #endif
 	int nSDLTicks;
-	int nLastTick;
-	int b40fpsTick;
-	int nDeltaTime;
 	int nExtGameStatus;
 	int nFunctionMode;
 	int nLastFuncMode;
@@ -1131,6 +1137,7 @@ typedef struct tFVISideData {
 typedef struct tPhysicsData {
 	short					ignoreObjs [MAX_OBJECTS];
 	tFVISideData		side;
+	fix					xTime;
 } tPhysicsData;
 
 //------------------------------------------------------------------------------

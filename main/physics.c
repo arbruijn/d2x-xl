@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -121,7 +121,7 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 	if (abs (delta_ang) > DAMP_ANG) {
 		vmsMatrix mRotate, new_pm;
 
-		roll_ang = FixMul (gameData.time.xFrame, ROLL_RATE);
+		roll_ang = FixMul (gameData.physics.xTime, ROLL_RATE);
 		if (abs (delta_ang) < roll_ang) 
 			roll_ang = delta_ang;
 		else if (delta_ang < 0) 
@@ -146,7 +146,7 @@ void SetObjectTurnRoll (tObject *objP)
 	fixang desired_bank = -FixMul (objP->mType.physInfo.rotVel.p.y, TURNROLL_SCALE);
 	if (objP->mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
-		max_roll = FixMul (ROLL_RATE, gameData.time.xFrame);
+		max_roll = FixMul (ROLL_RATE, gameData.physics.xTime);
 		delta_ang = desired_bank - objP->mType.physInfo.turnRoll;
 		if (labs (delta_ang) < max_roll)
 			max_roll = delta_ang;
@@ -192,9 +192,9 @@ void DoPhysicsSimRot (tObject *objP)
 	tPhysicsInfo *pi;
 
 #if 0
-Assert (gameData.time.xFrame > 0); 		//Get MATT if hit this!
+Assert (gameData.physics.xTime > 0); 		//Get MATT if hit this!
 #else
-if (gameData.time.xFrame <= 0)
+if (gameData.physics.xTime <= 0)
 	return;
 #endif
 pi = &objP->mType.physInfo;
@@ -203,8 +203,8 @@ if (!(pi->rotVel.p.x || pi->rotVel.p.y || pi->rotVel.p.z ||
 	return;
 if (objP->mType.physInfo.drag) {
 	vmsVector	accel;
-	int			nTries = gameData.time.xFrame / FT;
-	fix			r = gameData.time.xFrame % FT;
+	int			nTries = gameData.physics.xTime / FT;
+	fix			r = gameData.physics.xTime % FT;
 	fix			k = FixDiv (r, FT);
 	fix			xDrag = (objP->mType.physInfo.drag * 5) / 2;
 	fix			xScale = f1_0 - xDrag;
@@ -239,9 +239,9 @@ if (objP->mType.physInfo.turnRoll) {
 	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 	objP->position.mOrient = new_pm;
 	}
-tangles.p = FixMul (objP->mType.physInfo.rotVel.p.x, gameData.time.xFrame);
-tangles.h = FixMul (objP->mType.physInfo.rotVel.p.y, gameData.time.xFrame);
-tangles.b = FixMul (objP->mType.physInfo.rotVel.p.z, gameData.time.xFrame);
+tangles.p = FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
+tangles.h = FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
+tangles.b = FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
 VmAngles2Matrix (&mRotate, &tangles);
 VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
 objP->position.mOrient = mNewOrient;
@@ -324,7 +324,7 @@ fq.ignoreObjList = NULL;
 fq.flags = 0;
 fviResult = FindVectorIntersection (&fq, &hi);
 if (fviResult == HIT_WALL)
-	BounceObject (objP, hi, 0.1f, NULL);
+	BounceObject (objP, hi, f2fl (objP->size - VmVecDist (&objP->position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
 }
 
 #endif
@@ -343,7 +343,7 @@ void DoPhysicsSim (tObject *objP)
 	int					fviResult;
 	vmsVector			vFrame;				//movement in this frame
 	vmsVector			vNewPos, iPos;		//position after this frame
-	int					nTries=0;
+	int					nTries = 0;
 	short					nObject = OBJ_IDX (objP);
 	short					nWallHitSeg, nWallHitSide;
 	tFVIData				hi;
@@ -385,7 +385,7 @@ if (!(pi->velocity.p.x || pi->velocity.p.y || pi->velocity.p.z)) {
 
 nPhysSegs = 0;
 bSimpleFVI = (objP->nType != OBJ_PLAYER);
-xSimTime = gameData.time.xFrame;
+xSimTime = gameData.physics.xTime;
 vStartPos = objP->position.vPos;
 nIgnoreObjs = 0;
 Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
@@ -792,7 +792,7 @@ retryMove:
 		vmsVector vMoved;
 		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
 		VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
-							 FixMulDiv (FixDiv (f1_0, gameData.time.xFrame), 100, xTimeScale));
+							 FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
 #ifdef BUMP_HACK
 		if ((objP == gameData.objs.console) && 
 			 !(objP->mType.physInfo.velocity.p.x || 
@@ -980,8 +980,8 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 				rate = F1_0/4;
 			//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
 			if (!ROBOTINFO (objP->id).thief && !ROBOTINFO (objP->id).attackType) {
-				if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame < 3*F1_0/4) {
-					fix	tval = FixDiv (F1_0, 8*gameData.time.xFrame);
+				if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
+					fix	tval = FixDiv (F1_0, 8*gameData.physics.xTime);
 					int	addval;
 
 					addval = f2i (tval);

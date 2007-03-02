@@ -1057,10 +1057,10 @@ if (gameStates.limitFPS.bControls) {
 		gameStates.input.kcPollTime = gameData.time.xFrame;
 	else {
 		if (gameData.app.bGamePaused)
-			Get40FpsTick ();
+			GetSlowTicks ();
 		kcFrameCount++;
 		gameStates.input.kcPollTime += gameData.time.xFrame;
-		if (!gameStates.app.b40fpsTick)
+		if (!gameStates.app.tick40fps.bTick)
 			return 1;
 		}
 	}

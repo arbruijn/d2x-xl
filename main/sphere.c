@@ -280,7 +280,7 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
 if (!pRotSphere)
 	return -1;
 if (sdP->pPulse) {
-	if (gameStates.app.b40fpsTick) {
+	if (gameStates.app.tick40fps.bTick) {
 		sdP->pPulse->fScale += sdP->pPulse->fDir;
 		if (sdP->pPulse->fScale > 1.0f) {
 			sdP->pPulse->fScale = 1.0f;

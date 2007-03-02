@@ -200,7 +200,7 @@ void DoSpecialEffects()
 	static fix xEffectTime = 0;
 
 xEffectTime += gameData.time.xFrame;
-//if (gameStates.app.b40fpsTick) 
+//if (gameStates.app.tick40fps.bTick) 
 	{
 		grsBitmap		*bmP;
 		eclip				*ecP;

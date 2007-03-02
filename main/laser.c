@@ -522,7 +522,7 @@ weaponObjP->cType.laserInfo.parentType = OBJ_PLAYER;
 weaponObjP->cType.laserInfo.nParentObj = gameData.multi.players [pnum].nObject;
 weaponObjP->cType.laserInfo.nParentSig = gameData.objs.objects [gameData.multi.players [pnum].nObject].nSignature;
 
-if (gameStates.limitFPS.bOmega && !gameStates.app.b40fpsTick)
+if (gameStates.limitFPS.bOmega && !gameStates.app.tick40fps.bTick)
 	nLockObj = -1;
 else
 	nLockObj = FindHomingObject (vFiringPos, weaponObjP);
@@ -1081,7 +1081,7 @@ int TrackTrackGoal (int nTrackGoal, tObject *tracker, fix *dot)
 	int	nFrame;
 	int	goalType, goal2Type = -1;
 
-//if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
+//if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each tObject, scan all gameData.objs.objects.
 nFrame = OBJ_IDX (tracker) ^ gameData.app.nFrameCount;
 if (ObjectIsTrackeable (nTrackGoal, tracker, dot)) {
@@ -1090,7 +1090,7 @@ if (ObjectIsTrackeable (nTrackGoal, tracker, dot)) {
 			return nTrackGoal;
 		}
 	else {
-		if (gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
+		if (gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 			return nTrackGoal;
 		}
 	}
@@ -1309,9 +1309,9 @@ void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *norm_vel)
 	vmsVector	new_fvec;
 	fix 			frameTime;
 
-if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.b40fpsTick)
+if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	return;
-frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.nDeltaTime) : gameData.time.xFrame;
+frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 new_fvec = *norm_vel;
 VmVecScale (&new_fvec, /*gameData.time.xFrame*/ frameTime * HOMINGMSL_SCALE);
 VmVecInc (&new_fvec, &objP->position.mOrient.fVec);

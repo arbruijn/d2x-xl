@@ -1360,7 +1360,7 @@ void DoSeismicStuff (void)
 {
 	int		stv_save;
 
-if (gameStates.limitFPS.bSeismic && !gameStates.app.b40fpsTick)
+if (gameStates.limitFPS.bSeismic && !gameStates.app.tick40fps.bTick)
 	return;
 stv_save = gameStates.gameplay.seismic.nVolume;
 gameStates.gameplay.seismic.nMagnitude = 0;

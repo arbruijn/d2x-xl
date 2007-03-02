@@ -55,6 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "fuelcen.h"
 #include "endlevel.h"
+#include "timer.h"
 
 #include "sounds.h"
 #include "collide.h"
@@ -3320,10 +3321,11 @@ int MoveAllObjects ()
 
 //	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
-
 if (gameData.objs.nLastObject > nMaxUsedObjects)
 	FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
-
+if (!gameStates.app.tick60fps.bTick)
+	return 1;
+gameData.physics.xTime = secs2f (gameStates.app.tick60fps.nTime);
 DeleteAllObjsThatShouldBeDead ();
 if (gameOpts->gameplay.bAutoLeveling)
 	gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;

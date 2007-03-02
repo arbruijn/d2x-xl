@@ -183,7 +183,7 @@ if (!gameOpts->app.bDemoData) {
 //process this powerup for this frame
 void DoPowerupFrame (tObject *objP)
 {
-//if (gameStates.app.b40fpsTick) 
+//if (gameStates.app.tick40fps.bTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);

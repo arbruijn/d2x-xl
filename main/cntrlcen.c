@@ -137,7 +137,7 @@ if (!gameData.reactor.bDestroyed) {
 	return;
 	}
 cdtFrameTime += gameData.time.xRealFrame;
-if (gameStates.limitFPS.bCountDown && !gameStates.app.b40fpsTick)
+if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and SHAREWARE only
 	// On last level, we don't want a countdown.

@@ -684,7 +684,7 @@ else {
 
 void UpdatePlayerOrient (void)
 {
-if (gameStates.app.b40fpsTick && gameStates.gameplay.nDirSteps)
+if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 	TriggerSetObjOrient (gameData.multi.players [gameData.multi.nLocalPlayer].nObject, -1, -1, 0, gameStates.gameplay.nDirSteps--);
 }
 
