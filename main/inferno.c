@@ -607,8 +607,10 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 #	ifdef __unix__
 if (getenv ("HOME"))
 	strcpy (gameFolders.szHomeDir, getenv ("HOME"));
+#		if 0
 if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolders.szHomeDir, gameFolders.szGameDir, "d2x-xl", "d2x-xl"))
 		*gameFolders.szGameDir = '\0';
+#		endif
 #	endif //__unix__
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 		*gameFolders.szGameDir = '\0';
