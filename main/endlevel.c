@@ -344,7 +344,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	NetworkDoFrame (1, 1);
 	}
 Assert (last_segnum == gameData.endLevel.exit.nSegNum);
-if (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1)
+if (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1)
 	SongsPlaySong (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.console->movementType = MT_NONE;			//movement handled by flythrough
@@ -545,7 +545,7 @@ if (!gameStates.render.bOutsideMine) {
 if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 	if ((explosion_wait2-=gameData.time.xFrame) < 0) {
 		vmsVector tpnt;
-		fvi_query fq;
+		tVFIQuery fq;
 		tFVIData hit_data;
 		//create little explosion on wall
 		VmVecCopyScale (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*100);
@@ -559,7 +559,8 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 		fq.p0					= &gameData.objs.console->position.vPos;
 		fq.p1					= &tpnt;
 		fq.startSeg			= gameData.objs.console->nSegment;
-		fq.rad				= 0;
+		fq.radP0				= 
+		fq.radP1				= 0;
 		fq.thisObjNum		= 0;
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;

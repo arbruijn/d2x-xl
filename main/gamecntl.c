@@ -932,7 +932,7 @@ dump_door_debugging_info()
 {
 	tObject *objP;
 	vmsVector new_pos;
-	fvi_query fq;
+	tVFIQuery fq;
 	tFVIData hit_info;
 	int fate;
 	FILE *dfile;

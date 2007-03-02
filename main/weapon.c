@@ -1120,14 +1120,15 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 								//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
 								//	Need to do a more expensive check to make sure there isn't an obstruction.
 								if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
-									fvi_query	fq;
+									tVFIQuery	fq;
 									tFVIData		hit_data;
 									int			fate;
 
 									fq.startSeg = gameData.objs.objects[i].nSegment;
 									fq.p0	= &gameData.objs.objects[i].position.vPos;
 									fq.p1 = &gameData.objs.objects[j].position.vPos;
-									fq.rad = 0;
+									fq.radP0 =
+									fq.radP1 = 0;
 									fq.thisObjNum = i;
 									fq.ignoreObjList = NULL;
 									fq.flags	= 0;

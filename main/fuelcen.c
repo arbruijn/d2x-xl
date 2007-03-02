@@ -293,7 +293,7 @@ else
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in tSegment nSegment
-void MatCenTrigger (short nSegment)
+int MatCenTrigger (short nSegment)
 {
 	// -- tSegment		*segP = &gameData.segs.segments [nSegment];
 	tSegment2		*seg2p = &gameData.segs.segment2s [nSegment];
@@ -306,8 +306,7 @@ con_printf (CONDBG, "Trigger matcen, tSegment %i\n", nSegment);
 #endif
 if (seg2p->special == SEGMENT_IS_EQUIPMAKER) {
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [seg2p->nMatCen].nFuelCen;
-	matCenP->bEnabled = !matCenP->bEnabled;
-	return;
+	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
 Assert (seg2p->special == SEGMENT_IS_ROBOTMAKER);
 Assert (seg2p->nMatCen < gameData.matCens.nFuelCenters);
@@ -315,9 +314,9 @@ Assert ((seg2p->nMatCen >= 0) && (seg2p->nMatCen <= gameData.segs.nLastSegment))
 
 matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [seg2p->nMatCen].nFuelCen;
 if (matCenP->bEnabled)
-	return;
+	return 0;
 if (!matCenP->nLives)
-	return;
+	return 0;
 //	MK: 11/18/95, At insane, matcens work forever!
 if (gameStates.app.nDifficultyLevel+1 < NDL)
 	matCenP->nLives--;
@@ -342,6 +341,7 @@ else {
 #endif
 	Int3 ();
 	}
+return 0;
 }
 
 //------------------------------------------------------------

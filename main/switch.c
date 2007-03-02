@@ -410,7 +410,7 @@ return ret;
 
 void PrintTriggerMessage (int nPlayer, int trig, int shot, char *message)
  {
-	char *pl;		//points to 's' or nothing for plural word
+	char		*pl;		//points to 's' or nothing for plural word
 	tTrigger	*triggers;
 
 if (nPlayer < 0)
@@ -428,13 +428,19 @@ if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
 
 //------------------------------------------------------------------------------
 
-void DoMatCen (tTrigger *trigP)
+void DoMatCen (tTrigger *trigP, int bMessage)
 {
-	int i;
+	int i, h [3] = {0,0,0};
 
 short *segs = trigP->nSegment;
 for (i = trigP->nLinks; i; i--, segs++)
-	MatCenTrigger (*segs);
+	h [MatCenTrigger (*segs)]++;
+if (bMessage) {
+	if (h [1])
+		HUDInitMessage (TXT_EQUIPGENS_ON, (h [1] == 1) ? "" : "s");
+	if (h [2])
+		HUDInitMessage (TXT_EQUIPGENS_OFF, (h [2] == 1) ? "" : "s");
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -868,7 +874,7 @@ switch (trigP->nType) {
 
 	case TT_MATCEN:
 		if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS))
-			DoMatCen (trigP);
+			DoMatCen (trigP, nPlayer == gameData.multi.nLocalPlayer);
 		break;
 
 	case TT_ILLUSION_ON:
@@ -934,7 +940,7 @@ switch (trigP->nType) {
 
 	case TT_CHANGE_TEXTURE:
 		DoChangeTexture (trigP);
-		PrintTriggerMessage (nPlayer,nTrigger, shot, "Changing Wall!");
+		PrintTriggerMessage (nPlayer, nTrigger, shot, "Changing Wall!");
 		break;
 
 	case TT_SPAWN_BOT:

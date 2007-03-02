@@ -55,15 +55,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //  Special versions of mission routines for d1 builtins
 //
 
-int load_mission_d1(int mission_num)
+int load_mission_d1(int nMission)
 {
 	int i;
 
 	CFUseD1HogFile("descent.hog");
 
-	gameData.missions.nCurrentMission = mission_num;
-	gameStates.app.szCurrentMissionFile = gameData.missions.list [mission_num].filename;
-	gameStates.app.szCurrentMission = gameData.missions.list [mission_num].szMissionName;
+	gameData.missions.nCurrentMission = nMission;
+	gameStates.app.szCurrentMissionFile = gameData.missions.list [nMission].filename;
+	gameStates.app.szCurrentMission = gameData.missions.list [nMission].szMissionName;
 
 	switch (gameData.missions.nD1BuiltinHogSize) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
@@ -142,11 +142,11 @@ int load_mission_d1(int mission_num)
 //  Special versions of mission routines for shareware
 //
 
-int load_mission_shareware(int mission_num)
+int load_mission_shareware(int nMission)
 {
-	gameData.missions.nCurrentMission = mission_num;
-	gameStates.app.szCurrentMissionFile = gameData.missions.list [mission_num].filename;
-	gameStates.app.szCurrentMission = gameData.missions.list [mission_num].szMissionName;
+	gameData.missions.nCurrentMission = nMission;
+	gameStates.app.szCurrentMissionFile = gameData.missions.list [nMission].filename;
+	gameStates.app.szCurrentMission = gameData.missions.list [nMission].szMissionName;
 
 	switch (gameData.missions.nBuiltinHogSize) {
 	case MAC_SHARE_MISSION_HOGSIZE:
@@ -184,11 +184,11 @@ int load_mission_shareware(int mission_num)
 //  Special versions of mission routines for Diamond/S3 version
 //
 
-int load_mission_oem(int mission_num)
+int load_mission_oem(int nMission)
 {
-gameData.missions.nCurrentMission = mission_num;
-gameStates.app.szCurrentMissionFile = gameData.missions.list [mission_num].filename;
-gameStates.app.szCurrentMission = gameData.missions.list [mission_num].szMissionName;
+gameData.missions.nCurrentMission = nMission;
+gameStates.app.szCurrentMissionFile = gameData.missions.list [nMission].filename;
+gameStates.app.szCurrentMission = gameData.missions.list [nMission].szMissionName;
 gameData.missions.nSecretLevels = 2;
 gameData.missions.nLastLevel = 8;
 gameData.missions.nLastSecretLevel = -2;
@@ -273,7 +273,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ ml_sort_func (mle *e0, mle *e1)
+int _CDECL_ MLSortFunc (tMsnListEntry *e0, tMsnListEntry *e1)
 {
 	char	*s1 = e0->szMissionName,
 			*s2 = e1->szMissionName;
@@ -326,7 +326,7 @@ if (!fp)
 strcpy(temp,filename);
 if ((t = strchr(temp, '.')) == NULL)
 	return 0;	//missing extension
-gameData.missions.list [count].descent_version = (t [3] == '2') ? 2 : 1;
+gameData.missions.list [count].nDescentVersion = (t [3] == '2') ? 2 : 1;
 *t = '\0';
 // look if it's .mn2 or .msn
 strcpy( gameData.missions.list [count].filename, temp);
@@ -356,7 +356,7 @@ if (p) {
 	while (isspace (*t) || (t - p > MISSION_NAME_LEN)) 
 		*t-- = '\0';
 	if (gameOpts->menus.bShowLevelVersion) {
-		sprintf (gameData.missions.list [count].szMissionName, "[%d] %s", gameData.missions.list [count].descent_version, p);
+		sprintf (gameData.missions.list [count].szMissionName, "[%d] %s", gameData.missions.list [count].nDescentVersion, p);
 		strcat (temp, filename);
 		}
 	else
@@ -376,7 +376,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void add_d1_builtin_mission_to_list(int *count)
+void AddBuiltinD1MissionToList(int *count)
 {
 	if (!CFExist("descent.hog", gameFolders.szDataDir, 1))
 		return;
@@ -419,7 +419,7 @@ void add_d1_builtin_mission_to_list(int *count)
 	}
 
 	strcpy(gameData.missions.szD1BuiltinMissionFilename, gameData.missions.list [*count].filename);
-	gameData.missions.list [*count].descent_version = 1;
+	gameData.missions.list [*count].nDescentVersion = 1;
 	gameData.missions.list [*count].bAnarchyOnly = 0;
 	gameData.missions.list [*count].location = ML_DATADIR;
 	++(*count);
@@ -427,7 +427,7 @@ void add_d1_builtin_mission_to_list(int *count)
 
 //------------------------------------------------------------------------------
 
-void add_d2x_builtin_mission_to_list(int *count)
+void AddBuiltinD2XMissionToList(int *count)
 {
 if (CFExist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 	strcpy(gameData.missions.list [*count].filename,"d2x");
@@ -435,7 +435,7 @@ if (CFExist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 		strcpy (gameData.missions.list [*count].szMissionName,"[2] Descent 2: Vertigo");
 	else
 		strcpy (gameData.missions.list [*count].szMissionName,"Descent 2: Vertigo");
-	gameData.missions.list [*count].descent_version = 2;
+	gameData.missions.list [*count].nDescentVersion = 2;
 	gameData.missions.list [*count].bAnarchyOnly = 0;
 	gameData.missions.list [*count].location = ML_MSNROOTDIR;
 	++(*count);
@@ -444,13 +444,13 @@ if (CFExist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 
 //------------------------------------------------------------------------------
 
-void add_builtin_mission_to_list(int *count)
+void AddBuiltinMissionToList (int *count)
 {
 gameData.missions.nBuiltinHogSize = CFSize ("descent2.hog", gameFolders.szDataDir, 0);
 if (gameData.missions.nBuiltinHogSize == -1)
 	gameData.missions.nBuiltinHogSize = CFSize ("d2demo.hog", gameFolders.szDataDir, 0);
 
-retry:
+//retry:
 
 switch (gameData.missions.nBuiltinHogSize) {
 	case SHAREWARE_MISSION_HOGSIZE:
@@ -479,7 +479,7 @@ switch (gameData.missions.nBuiltinHogSize) {
 		//goto retry;
 	}
 strcpy (gameData.missions.szBuiltinMissionFilename, gameData.missions.list [*count].filename);
-gameData.missions.list [*count].descent_version = 2;
+gameData.missions.list [*count].nDescentVersion = 2;
 gameData.missions.list [*count].bAnarchyOnly = 0;
 gameData.missions.list [*count].location = ML_DATADIR;
 ++(*count);
@@ -509,7 +509,7 @@ void AddMissionsToList
 	if (c + bSubFolder >= MAX_MISSIONS) 
 		return;
 	if (bSubFolder && !bHaveSubFolders && !nLocation) {
-		gameData.missions.list [c].descent_version = 0;	//directory
+		gameData.missions.list [c].nDescentVersion = 0;	//directory
 		*gameData.missions.list [c].filename = '\0';
 		strcpy (gameData.missions.list [c].szMissionName, "[..]");
 		c++;
@@ -521,7 +521,7 @@ void AddMissionsToList
 				if (!(strcmp (ffs.name, ".") && strcmp (ffs.name, "..")))
 					continue;
 				if (bFindDirs) {
-						gameData.missions.list [c].descent_version = 0;	//directory
+						gameData.missions.list [c].nDescentVersion = 0;	//directory
 						*gameData.missions.list [c].filename = '\0';
 						sprintf (gameData.missions.list [c].szMissionName, "[%s]", ffs.name);
 						c++;
@@ -540,7 +540,7 @@ void AddMissionsToList
 			} while ((c < MAX_MISSIONS) && !FFN (&ffs, bFindDirs));
 			FFC (&ffs);
 			if (c >= MAX_MISSIONS) {
-				gameData.missions.list [c].descent_version = 0;	//directory
+				gameData.missions.list [c].nDescentVersion = 0;	//directory
 				strcpy (gameData.missions.list [c].filename, TXT_MSN_OVERFLOW);
 
 	#if TRACE
@@ -554,7 +554,7 @@ void AddMissionsToList
 
 //------------------------------------------------------------------------------
 /* move <szMissionName> to <place> on mission list, increment <place> */
-void promote (char * szMissionName, int * top_place, int num_missions)
+void PromoteMission (char * szMissionName, int * nTopPlace, int nMissionCount)
 {
 	int i;
 	char name [FILENAME_LEN], * t;
@@ -562,15 +562,15 @@ void promote (char * szMissionName, int * top_place, int num_missions)
 	if ((t = strchr(name,'.')) != NULL)
 		*t = 0; //kill extension
 	////printf("promoting: %s\n", name);
-	for (i = *top_place; i < num_missions; i++)
+	for (i = *nTopPlace; i < nMissionCount; i++)
 		if (!stricmp(gameData.missions.list [i].filename, name)) {
 			//swap mission positions
-			mle temp;
+			tMsnListEntry temp;
 
-			temp = gameData.missions.list [*top_place];
-			gameData.missions.list [*top_place] = gameData.missions.list [i];
+			temp = gameData.missions.list [*nTopPlace];
+			gameData.missions.list [*nTopPlace] = gameData.missions.list [i];
 			gameData.missions.list [i] = temp;
-			++(*top_place);
+			++(*nTopPlace);
 			break;
 		}
 }
@@ -601,101 +601,87 @@ gameFolders.szMsnSubFolder [strlen (gameFolders.szMsnSubFolder) - 1] = '/';
 
 //------------------------------------------------------------------------------
 
-int BuildMissionList(int anarchy_mode, int nSubFolder)
+int BuildMissionList (int anarchy_mode, int nSubFolder)
 {
-	static int num_missions=-1;
+	static int nMissionCount = -1;
 	int count = 0;
-	int top_place, bSubFolder, bHaveSubFolders;
+	int nTopPlace, bSubFolder, bHaveSubFolders;
 
-	//now search for levels on disk
+//now search for levels on disk
+if (nSubFolder >= 0) {
+	if (strcmp (gameData.missions.list [nSubFolder].szMissionName, "[..]"))
+		MoveMsnFolderDown (nSubFolder);
+	else
+		MoveMsnFolderUp ();
+	}
 
-//@@Took out this code because after this routine was called once for
-//@@a list of single-tPlayer missions, a subsequent call for a list of
-//@@anarchy missions would not scan again, and thus would not ffs the
-//@@anarchy-only missions.  If we retain the minimum level of install,
-//@@we may want to put the code back in, having it always scan for all
-//@@missions, and have the code that uses it sort out the ones it wants.
-//@@	if (num_missions != -1) {
-//@@		if (gameData.missions.nCurrentMission != 0)
-//@@			LoadMission(0);				//set built-in mission as default
-//@@		return num_missions;
-//@@	}
-
-	if (nSubFolder >= 0) {
-		if (strcmp (gameData.missions.list [nSubFolder].szMissionName, "[..]"))
-			MoveMsnFolderDown (nSubFolder);
-		else
-			MoveMsnFolderUp ();
-		}
-
-	bSubFolder = (*gameFolders.szMsnSubFolder != '\0');
-	if (!bSubFolder && gameOpts->app.bSinglePlayer) {
-		strcpy (gameFolders.szMsnSubFolder, "single/");
+bSubFolder = (*gameFolders.szMsnSubFolder != '\0');
+if (!bSubFolder && gameOpts->app.bSinglePlayer) {
+	strcpy (gameFolders.szMsnSubFolder, "single/");
 //		bSubFolder = 1;
-		}
-	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubFolder, "single"))) {
-		if (gameOpts->app.nVersionFilter & 2) {
-			add_builtin_mission_to_list(&count);  //read built-in first
-			if (gameOpts->app.bSinglePlayer)
-				add_d2x_builtin_mission_to_list(&count);  //read built-in first
-			}
-		if (gameOpts->app.nVersionFilter & 1)
-			add_d1_builtin_mission_to_list(&count);
-		}
-	nBuiltIns = count;
-	sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubFolder);
-	bHaveSubFolders = 0;
+	}
+if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubFolder, "single"))) {
 	if (gameOpts->app.nVersionFilter & 2) {
-		AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+		AddBuiltinMissionToList(&count);  //read built-in first
+		if (gameOpts->app.bSinglePlayer)
+			AddBuiltinD2XMissionToList(&count);  //read built-in first
+		}
+	if (gameOpts->app.nVersionFilter & 1)
+		AddBuiltinD1MissionToList(&count);
+	}
+nBuiltIns = count;
+sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubFolder);
+bHaveSubFolders = 0;
+if (gameOpts->app.nVersionFilter & 2) {
+	AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+	bHaveSubFolders = 1;
+	}
+if (gameOpts->app.nVersionFilter & 1) {
+	AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+	bHaveSubFolders = 1;
+	}
+if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
+	bHaveSubFolders = 0;
+	sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubFolder);
+	if (gameOpts->app.nVersionFilter & 2) {
+		AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 		bHaveSubFolders = 1;
 		}
 	if (gameOpts->app.nVersionFilter & 1) {
-		AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
+		AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 		bHaveSubFolders = 1;
-		}
-	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
-		bHaveSubFolders = 0;
-		sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubFolder);
-		if (gameOpts->app.nVersionFilter & 2) {
-			AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
-			bHaveSubFolders = 1;
-			}
-		if (gameOpts->app.nVersionFilter & 1) {
-			AddMissionsToList(&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
-			bHaveSubFolders = 1;
 		}
 	}
 
-	// move original missions (in story-chronological order)
-	// to top of mission list
-	top_place = 0;
-	if (bSubFolder) {
-		gameData.missions.nBuiltinMission =
-		gameData.missions.nD1BuiltinMission = -1;
-		}
-	else {
-		promote("descent", &top_place, count); // original descent 1 mission
-		gameData.missions.nD1BuiltinMission = top_place - 1;
-		promote(gameData.missions.szBuiltinMissionFilename, &top_place, count); // d2 or d2demo
-		gameData.missions.nBuiltinMission = top_place - 1;
-		promote("d2x", &top_place, count); // vertigo
-		}
-	if (count > top_place)
-		qsort(gameData.missions.list + top_place,
-		      count - top_place,
-		      sizeof(*gameData.missions.list),
- 				(int (_CDECL_ *)( const void *, const void * ))ml_sort_func);
+// move original missions (in story-chronological order)
+// to top of mission list
+nTopPlace = 0;
+if (bSubFolder) {
+	gameData.missions.nBuiltinMission =
+	gameData.missions.nD1BuiltinMission = -1;
+	}
+else {
+	PromoteMission ("descent", &nTopPlace, count); // original descent 1 mission
+	gameData.missions.nD1BuiltinMission = nTopPlace - 1;
+	PromoteMission (gameData.missions.szBuiltinMissionFilename, &nTopPlace, count); // d2 or d2demo
+	gameData.missions.nBuiltinMission = nTopPlace - 1;
+	PromoteMission ("d2x", &nTopPlace, count); // vertigo
+	}
+if (count > nTopPlace)
+	qsort (gameData.missions.list + nTopPlace,
+		    count - nTopPlace,
+		    sizeof (*gameData.missions.list),
+ 			 (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
 
+if (count > nTopPlace)
+	qsort(gameData.missions.list + nTopPlace,
+		   count - nTopPlace,
+		   sizeof(*gameData.missions.list),
+		   (int (_CDECL_ *)( const void *, const void * ))MLSortFunc);
 
-	if (count > top_place)
-		qsort(gameData.missions.list + top_place,
-		      count - top_place,
-		      sizeof(*gameData.missions.list),
-		      (int (_CDECL_ *)( const void *, const void * ))ml_sort_func);
-
-	//LoadMission(0);   //set built-in mission as default
-	num_missions = count;
-	return count;
+//LoadMission(0);   //set built-in mission as default
+nMissionCount = count;
+return count;
 }
 
 //------------------------------------------------------------------------------
@@ -827,21 +813,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void InitExtraRobotMovie(char *filename);
+void InitExtraRobotMovie (char *filename);
 
 //values for built-in mission
 
 //loads the specfied mission from the mission list.
 //BuildMissionList() must have been called.
 //Returns true if mission loaded ok, else false.
-int LoadMission(int mission_num)
+int LoadMission (int nMission)
 {
 	CFILE		*fp;
 	char		szFolder [FILENAME_LEN], szFile [FILENAME_LEN];
 	int		i, bFoundHogFile;
 	
 gameData.missions.nEnhancedMission = 0;
-if (mission_num == gameData.missions.nD1BuiltinMission) {
+if (nMission == gameData.missions.nD1BuiltinMission) {
 	CFUseD1HogFile("descent.hog");
 	switch (gameData.missions.nD1BuiltinHogSize) {
 	default:
@@ -856,19 +842,19 @@ if (mission_num == gameData.missions.nD1BuiltinMission) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
 	case D1_MAC_SHARE_MISSION_HOGSIZE:
-		return load_mission_d1(mission_num);
+		return load_mission_d1(nMission);
 		break;
 		}
 	}
 
-if (mission_num == gameData.missions.nBuiltinMission) {
+if (nMission == gameData.missions.nBuiltinMission) {
 	switch (gameData.missions.nBuiltinHogSize) {
 	case SHAREWARE_MISSION_HOGSIZE:
 	case MAC_SHARE_MISSION_HOGSIZE:
-		return load_mission_shareware(mission_num);
+		return load_mission_shareware(nMission);
 		break;
 	case OEM_MISSION_HOGSIZE:
-		return load_mission_oem(mission_num);
+		return load_mission_oem(nMission);
 		break;
 	default:
 		Int3(); // fall through
@@ -879,15 +865,15 @@ if (mission_num == gameData.missions.nBuiltinMission) {
 		break;
 		}
 	}
-gameData.missions.nCurrentMission = mission_num;
+gameData.missions.nCurrentMission = nMission;
 #if TRACE
-con_printf (CON_VERBOSE, "Loading mission %d\n", mission_num );
+con_printf (CON_VERBOSE, "Loading mission %d\n", nMission );
 #endif
 	//read mission from file
-switch (gameData.missions.list [mission_num].location) {
+switch (gameData.missions.list [nMission].location) {
 	case ML_MISSIONDIR:
 	case ML_ALTHOGDIR:
-		strcpy (szFolder, gameFolders.szMissionDirs [gameData.missions.list [mission_num].location]);
+		strcpy (szFolder, gameFolders.szMissionDirs [gameData.missions.list [nMission].location]);
 		break;
 	case ML_CDROM:
 		sprintf (szFolder, "%s/", CDROM_dir);
@@ -905,8 +891,8 @@ switch (gameData.missions.list [mission_num].location) {
 		break;
 	}
 sprintf (szFile, "%s%s", 
-			gameData.missions.list [mission_num].filename,
-			(gameData.missions.list [mission_num].descent_version == 2) ? ".mn2" : ".msn");
+			gameData.missions.list [nMission].filename,
+			(gameData.missions.list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
 strlwr (szFile);
 if (!(fp = CFOpen (szFile, szFolder, "rb", 0))) {
 	gameData.missions.nCurrentMission = -1;
@@ -914,22 +900,22 @@ if (!(fp = CFOpen (szFile, szFolder, "rb", 0))) {
 	}
 //for non-builtin missions, load HOG
 CFUseAltHogFile ("");
-if (strcmp(gameData.missions.list [mission_num].filename, gameData.missions.szBuiltinMissionFilename)) {
-	sprintf (szFile, "%s%s.hog", szFolder, gameData.missions.list [mission_num].filename);
+if (strcmp(gameData.missions.list [nMission].filename, gameData.missions.szBuiltinMissionFilename)) {
+	sprintf (szFile, "%s%s.hog", szFolder, gameData.missions.list [nMission].filename);
 	strlwr (szFile);
 	bFoundHogFile = CFUseAltHogFile (szFile);
 	if (bFoundHogFile) {
 		// for Descent 1 missions, load descent.hog
-		if ((gameData.missions.list [mission_num].descent_version == 1) && 
-				strcmp (gameData.missions.list [mission_num].filename, "descent"))
+		if ((gameData.missions.list [nMission].nDescentVersion == 1) && 
+				strcmp (gameData.missions.list [nMission].filename, "descent"))
 			if (!CFUseD1HogFile ("descent.hog"))
 				Warning(TXT_NO_HOG);
 		}
 	else {
 		sprintf (szFile, "%s%s%s", 
 					szFolder,
-					gameData.missions.list [mission_num].filename,
-					(gameData.missions.list [mission_num].descent_version == 2) ? ".rl2" : ".rdl");
+					gameData.missions.list [nMission].filename,
+					(gameData.missions.list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
 		strlwr (szFile);
 		bFoundHogFile = CFUseAltHogFile (szFile);
 		CFClose (fp);
@@ -963,26 +949,26 @@ return 1;
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int LoadMissionByName(char *szMissionName, int nSubFolder)
+int LoadMissionByName (char *szMissionName, int nSubFolder)
 {
 	int n, i, j;
 
-	if (nSubFolder < 0) {
-		*gameFolders.szMsnSubFolder = '\0';
-		LogErr ("   searching mission '%s'\n", szMissionName);
+if (nSubFolder < 0) {
+	*gameFolders.szMsnSubFolder = '\0';
+	LogErr ("   searching mission '%s'\n", szMissionName);
+	}
+n = BuildMissionList (1, nSubFolder);
+for (i = 0; i < n; i++)
+	if (!stricmp (szMissionName, gameData.missions.list [i].filename))
+		return LoadMission (i);
+for (i = 0; i < n; i++)
+	if (!gameData.missions.list [i].nDescentVersion && strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
+		if (j = LoadMissionByName (szMissionName, i))
+			return j;
+		MoveMsnFolderUp ();
+		n = BuildMissionList (1, -1);
 		}
-	n = BuildMissionList (1, nSubFolder);
-	for (i = 0; i < n; i++)
-		if (!stricmp (szMissionName, gameData.missions.list [i].filename))
-			return LoadMission (i);
-	for (i = 0; i < n; i++)
-		if (!gameData.missions.list [i].descent_version && strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
-			if (j = LoadMissionByName (szMissionName, i))
-				return j;
-			MoveMsnFolderUp ();
-			n = BuildMissionList (1, -1);
-			}
-	return 0;		//couldn't ffs mission
+return 0;		//couldn't ffs mission
 }
 
 //------------------------------------------------------------------------------
@@ -992,21 +978,21 @@ int FindMissionByName(char *szMissionName, int nSubFolder)
 {
 	int n,i,j;
 
-	if (nSubFolder < 0)
-		*gameFolders.szMsnSubFolder = '\0';
-	n = BuildMissionList (1, nSubFolder);
-	for (i = 0; i < n; i++) 
-		if (!stricmp (szMissionName, gameData.missions.list [i].filename))
-			return gameData.missions.list [i].descent_version;
-	for (i = 0; i < n; i++)
-		if (!gameData.missions.list [i].descent_version && 
-			 strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
-			if (j = FindMissionByName (szMissionName, i))
-				return j;
-			MoveMsnFolderUp ();
-			n = BuildMissionList (1, -1);
-			}
-	return 0;		//couldn't ffs mission
+if (nSubFolder < 0)
+	*gameFolders.szMsnSubFolder = '\0';
+n = BuildMissionList (1, nSubFolder);
+for (i = 0; i < n; i++) 
+	if (!stricmp (szMissionName, gameData.missions.list [i].filename))
+		return gameData.missions.list [i].nDescentVersion;
+for (i = 0; i < n; i++)
+	if (!gameData.missions.list [i].nDescentVersion && 
+			strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
+		if (j = FindMissionByName (szMissionName, i))
+			return j;
+		MoveMsnFolderUp ();
+		n = BuildMissionList (1, -1);
+		}
+return 0;		//couldn't ffs mission
 }
 
 //------------------------------------------------------------------------------

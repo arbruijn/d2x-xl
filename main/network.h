@@ -258,7 +258,7 @@ typedef struct tMpParams {
 	ubyte	bShowAllNames;
 	ubyte	bShortPackets;
 	ubyte	nPPS;
-	mle	mission;
+	tMsnListEntry	mission;
 } tMpParams;
 
 extern tMpParams mpParams;

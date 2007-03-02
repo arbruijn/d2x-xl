@@ -1622,6 +1622,8 @@ char *defaultGameTexts [][2] = {
 	{"s~Tatischer Rauch", "s~Tatic smoke"},
 	{"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
 	{"UDP-~Port pruefen", "check UDP ~Port"},
+	{"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
+	{"Ausruestungsgenerator%n deaktiviert", "equipment generator%s deactivated"},
 #if 0
 	{"", ""},
 #endif

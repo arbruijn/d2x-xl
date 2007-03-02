@@ -539,7 +539,7 @@ ReleaseObject (OBJ_IDX (weaponObjP));
 if (nLockObj != -1)
 	vGoalPos = gameData.objs.objects [nLockObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	int			fate;
 	vmsVector	vPerturb, perturbed_fvec;
@@ -550,7 +550,8 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vFiringPos;
 	fq.p1	= &vGoalPos;
-	fq.rad = 0;
+	fq.radP0 =
+	fq.radP1 = 0;
 	fq.thisObjNum = OBJ_IDX (parentObjP);
 	fq.ignoreObjList = NULL;
 	fq.flags = FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS;		//what about trans walls???
@@ -763,7 +764,7 @@ return nObject;
 //	Calls CreateNewLaser, but takes care of the tSegment and point computation for you.
 int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	tObject		*parentObjP = &gameData.objs.objects [parent];
 	int			fate;
@@ -775,13 +776,14 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same tSegment as the source point.
 
-	fq.p0						= &parentObjP->position.vPos;
-	fq.startSeg				= parentObjP->nSegment;
-	fq.p1						= vPosition;
-	fq.rad					= 0;
-	fq.thisObjNum			= OBJ_IDX (parentObjP);
+	fq.p0					= &parentObjP->position.vPos;
+	fq.startSeg			= parentObjP->nSegment;
+	fq.p1					= vPosition;
+	fq.radP0				=
+	fq.radP1				= 0;
+	fq.thisObjNum		= OBJ_IDX (parentObjP);
 	fq.ignoreObjList	= NULL;
-	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
+	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
 	fate = FindVectorIntersection (&fq, &hit_data);
 	if (fate != HIT_NONE  || hit_data.hit.nSegment==-1) {
@@ -797,14 +799,15 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 //	Calls fvi.
 int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	int			fate;
 
 fq.p0					= &objP1->position.vPos;
 fq.startSeg			= objP1->nSegment;
 fq.p1					= &objP2->position.vPos;
-fq.rad				= 0x10;
+fq.radP0				= 
+fq.radP1				= 0x10;
 fq.thisObjNum		= OBJ_IDX (objP1);
 fq.ignoreObjList	= NULL;
 fq.flags				= transType;
@@ -1149,7 +1152,7 @@ int LaserPlayerFireSpreadDelay (
 	short			LaserSeg;
 	int			Fate; 
 	vmsVector	LaserPos, LaserDir, pnt;
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	vmsVector	gun_point;
 	vmsMatrix	m;
@@ -1179,7 +1182,8 @@ int LaserPlayerFireSpreadDelay (
 	fq.p0						= &objP->position.vPos;
 	fq.startSeg				= objP->nSegment;
 	fq.p1						= &LaserPos;
-	fq.rad					= 0x10;
+	fq.radP0					=
+	fq.radP1					= 0x10;
 	fq.thisObjNum			= OBJ_IDX (objP);
 	fq.ignoreObjList	= NULL;
 	fq.flags					= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
@@ -1542,7 +1546,7 @@ return rVal;
 // -- int create_lightning_blobs (vmsVector *vDirection, vmsVector *start_pos, int start_segnum, int parent)
 // -- {
 // -- 	int			i;
-// -- 	fvi_query	fq;
+// -- 	tVFIQuery	fq;
 // -- 	tFVIData		hit_data;
 // -- 	vmsVector	vEndPos;
 // -- 	vmsVector	norm_dir;

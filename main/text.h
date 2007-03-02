@@ -1656,10 +1656,10 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_STATIC			GT(872)
 #define TXT_AI_AWARENESS			GT(873)
 #define TXT_CHECK_PORT				GT(874)
+#define TXT_EQUIPGENS_ON			GT(875)
+#define TXT_EQUIPGENS_OFF			GT(876)
 
 #if 0
-#define TXT_				GT(875)
-#define TXT_				GT(876)
 #define TXT_				GT(877)
 #define TXT_				GT(878)
 #define TXT_				GT(879)

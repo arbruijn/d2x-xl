@@ -328,7 +328,7 @@ void PlayLevelSong (int nLevel)
 {
 	int nSong;
 	int nTracks;
-	int bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
+	int bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 
 Assert(nLevel != 0);
 if (!gameData.songs.bInitialized)

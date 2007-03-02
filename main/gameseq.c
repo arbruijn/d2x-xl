@@ -886,7 +886,7 @@ GrPaletteStepLoad (NULL);
 ShowBoxedMessage (TXT_LOADING);
 /*---*/LogErr ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
-				 (gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1);
+				 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (gameData.segs.xSegments));
 memset (gameData.objs.xCreationTime, 0, sizeof (gameData.objs.xCreationTime));
 /*---*/LogErr ("   loading texture brightness info\n");
@@ -962,6 +962,7 @@ GrPaletteStepLoad (NULL);		//actually load the palette
 RebuildGfxFx (1, 1);
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;
+gameStates.gameplay.bMineMineCheat = 0;
 gameStates.render.bAllVisited = 0;
 gameStates.render.bViewDist = 1;
 gameStates.render.bHaveSkyBox = -1;
@@ -1961,7 +1962,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 			}
 		}
 	else {	//not the built-in mission.  check for add-on briefing
-		if ((gameData.missions.list [gameData.missions.nCurrentMission].descent_version == 1) &&
+		if ((gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1) &&
 			 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission)) {
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)

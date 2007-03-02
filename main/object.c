@@ -2581,7 +2581,7 @@ xCameraPlayerDist = VmVecDistQuick (camera_pos, &objP->position.vPos);
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	//	Camera is too close to tPlayer tObject, so move it away.
 	vmsVector	player_camera_vec;
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	vmsVector	local_p1;
 
@@ -2604,7 +2604,8 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 
 		fq.p1					= &local_p1;
 		fq.startSeg			= objP->nSegment;
-		fq.rad				= 0;
+		fq.radP0				=
+		fq.radP1				= 0;
 		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;

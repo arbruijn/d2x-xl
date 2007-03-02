@@ -167,7 +167,7 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRa
 	vmsVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	int			nHitType;
 
@@ -240,7 +240,8 @@ for (i = 1, --j; i < j; i++) {
 		fq.p0					= &ptSegs [i].point;
 		fq.startSeg			= ptSegs [i].nSegment;
 		fq.p1					= &vGoalPos;
-		fq.rad				= objP->size;
+		fq.radP0				=
+		fq.radP1				= objP->size;
 		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
@@ -303,7 +304,7 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	tSegment			*segP;
 	vmsVector		vCenter;
 	int				nThisSeg, nParentSeg;
-	fvi_query		fq;
+	tVFIQuery		fq;
 	tFVIData			hit_data;
 	int				hitType;
 	int				bAvoidPlayer;
@@ -359,7 +360,8 @@ while (nCurSeg != nEndSeg) {
 			fq.p0					= &objP->position.vPos;
 			fq.startSeg			= objP->nSegment;
 			fq.p1					= &vCenter;
-			fq.rad				= objP->size;
+			fq.radP0				=
+			fq.radP1				= objP->size;
 			fq.thisObjNum		= OBJ_IDX (objP);
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
@@ -483,7 +485,7 @@ int	Last_buddy_polish_path_frame;
 int SmoothPath (tObject *objP, tPointSeg *pointSegP, int numPoints)
 {
 	int			i, nFirstPoint = 0;
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		hit_data;
 	int			hitType;
 
@@ -499,7 +501,8 @@ if (ROBOTINFO (objP->id).companion) {
 	}
 fq.p0					= &objP->position.vPos;
 fq.startSeg			= objP->nSegment;
-fq.rad				= objP->size;
+fq.radP0				=
+fq.radP1				= objP->size;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
 fq.flags				= 0;
@@ -868,7 +871,7 @@ else
 // -- too much work -- 	tObject		*kill_objp;
 // -- too much work -- 	tFVIData		hit_data;
 // -- too much work -- 	int			fate;
-// -- too much work -- 	fvi_query	fq;
+// -- too much work -- 	tVFIQuery	fq;
 // -- too much work --
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
@@ -1123,7 +1126,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			vmsVector	*vOppositeEndPoint;
 			tFVIData		hit_data;
 			int			fate;
-			fvi_query	fq;
+			tVFIQuery	fq;
 
 			// See which end we're nearer and look at the opposite end point.
 			if (abs (aip->nCurPathIndex - aip->nPathLength) < aip->nCurPathIndex) {
@@ -1139,7 +1142,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			fq.p0					= &objP->position.vPos;
 			fq.startSeg			= objP->nSegment;
 			fq.p1					= vOppositeEndPoint;
-			fq.rad				= objP->size;
+			fq.radP0				=
+			fq.radP1				= objP->size;
 			fq.thisObjNum		= OBJ_IDX (objP);
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0; 				//what about trans walls???

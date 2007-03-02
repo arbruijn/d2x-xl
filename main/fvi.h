@@ -55,14 +55,14 @@ typedef struct tFVIData {
 #define FQ_SEE_OBJS		32
 
 //this data contains the parms to fvi()
-typedef struct fvi_query {
-	vmsVector	*p0,*p1;
+typedef struct tVFIQuery {
+	vmsVector	*p0, *p1;
 	short			startSeg;
-	fix			rad;
+	fix			radP0, radP1;
 	short			thisObjNum;
 	short			*ignoreObjList;
 	int			flags;
-} fvi_query;
+} tVFIQuery;
 
 //Find out if a vector intersects with anything.
 //Fills in hit_data, an tFVIData structure (see above).
@@ -74,7 +74,7 @@ typedef struct fvi_query {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hit_data->hitType
-int FindVectorIntersection(fvi_query *fq,tFVIData *hit_data);
+int FindVectorIntersection(tVFIQuery *fq,tFVIData *hit_data);
 
 //finds the uv coords of the given point on the given seg & tSide
 //fills in u & v. if l is non-NULL fills it in also

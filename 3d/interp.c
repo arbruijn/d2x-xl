@@ -1558,7 +1558,7 @@ return INFINITY;
 
 #else //slower method
 
-	fvi_query	fq;
+	tVFIQuery	fq;
 	tFVIData		fi;
 	vmsVector	v;
 

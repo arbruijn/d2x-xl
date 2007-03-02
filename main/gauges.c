@@ -3961,7 +3961,7 @@ extern int Saving_movie_frames;
 
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	fvi_query fq;
+	tVFIQuery fq;
 	int nHitType;
 	tFVIData hit_data;
 
@@ -3969,7 +3969,8 @@ int CanSeeObject (int nObject, int bCheckObjs)
 
 fq.p0 = &gameData.objs.viewer->position.vPos;
 fq.p1 = &gameData.objs.objects[nObject].position.vPos;
-fq.rad = 0;
+fq.radP0 = 
+fq.radP1 = 0;
 fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewer);
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewer->nSegment;

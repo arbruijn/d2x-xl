@@ -166,7 +166,7 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vOb
 Cache_lookups++;
 	if ((cache_frame == 0) || (cache_frame + Lighting_frame_delta <= gameData.app.nFrameCount)) {
 		int			bApplyLight=0;
-		fvi_query	fq;
+		tVFIQuery	fq;
 		tFVIData		hit_data;
 		int			nSegment, hitType;
 
@@ -183,7 +183,8 @@ Cache_lookups++;
 		fq.p0					= vObjPos;
 		fq.startSeg			= nObjSeg;
 		fq.p1					= vVertPos;
-		fq.rad				= 0;
+		fq.radP0				=
+		fq.radP1				= 0;
 		fq.thisObjNum		= nObject;
 		fq.ignoreObjList	= NULL;
 		fq.flags				= FQ_TRANSWALL;
@@ -363,7 +364,7 @@ if (xObjIntensity) {
 					}
 				if (objP->id != gameData.multi.nLocalPlayer) {
 					vmsVector	tvec;
-					fvi_query	fq;
+					tVFIQuery	fq;
 					tFVIData		hit_data;
 					int			fate;
 
@@ -372,7 +373,8 @@ if (xObjIntensity) {
 					fq.startSeg			= objP->nSegment;
 					fq.p0					= vObjPos;
 					fq.p1					= &tvec;
-					fq.rad				= 0;
+					fq.radP0				=
+					fq.radP1				= 0;
 					fq.thisObjNum		= nObject;
 					fq.ignoreObjList	= NULL;
 					fq.flags				= FQ_TRANSWALL;

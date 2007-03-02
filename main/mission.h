@@ -53,13 +53,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAC_FULL_MISSION_HOGSIZE    7110007 // v1.1 - 1.2
 
 //mission list entry
-typedef struct mle {
-	char    filename[FILENAME_LEN];                // path and filename without extension
-	char    szMissionName[MISSION_NAME_LEN+5];
+typedef struct tMsnListEntry {
+	char    filename [FILENAME_LEN];                // path and filename without extension
+	char    szMissionName [MISSION_NAME_LEN+5];
 	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
 	ubyte   location;                   // see defines below
-	ubyte   descent_version;            // descent 1 or descent 2?
-} mle;
+	ubyte   nDescentVersion;            // descent 1 or descent 2?
+} tMsnListEntry;
 
 //values that describe where a mission is located
 #define ML_MISSIONDIR   0
@@ -84,12 +84,12 @@ typedef struct mle {
 //fills in the global list of missions.  Returns the number of missions
 //in the list.  If anarchy_mode set, don't include non-anarchy levels.
 //if there is only one mission, this function will call LoadMission on it.
-int BuildMissionList(int anarchy_mode, int nSubFolder);
+int BuildMissionList (int anarchy_mode, int nSubFolder);
 
 //loads the specfied mission from the mission list.  BuildMissionList()
 //must have been called.  If BuildMissionList() returns 0, this function
 //does not need to be called.  Returns true if mission loaded ok, else false.
-int LoadMission(int mission_num);
+int LoadMission (int nMission);
 
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.

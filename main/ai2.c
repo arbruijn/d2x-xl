@@ -548,7 +548,7 @@ return dot;
 int ObjectCanSeePlayer (tObject *objP, vmsVector *pos, fix fieldOfView, vmsVector *vVecToPlayer)
 {
 	fix			dot;
-	fvi_query	fq;
+	tVFIQuery	fq;
 
 	//	Assume that robot's gun tip is in same tSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
@@ -574,7 +574,8 @@ if ((pos->p.x != objP->position.vPos.p.x) ||
 else
 	fq.startSeg	= objP->nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
-fq.rad				= F1_0/4;
+fq.radP0				= 
+fq.radP0				= F1_0/4;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
@@ -996,17 +997,18 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	else {
 		//	Well, they are not directly connected, so use FindVectorIntersection to see if they are unobstructed.
-		fvi_query	fq;
+		tVFIQuery	fq;
 		tFVIData		hit_data;
 		int			fate;
 
-		fq.startSeg				= objP->nSegment;
-		fq.p0						= &objP->position.vPos;
-		fq.p1						= vFirePoint;
-		fq.rad					= 0;
-		fq.thisObjNum			= OBJ_IDX (objP);
+		fq.startSeg			= objP->nSegment;
+		fq.p0					= &objP->position.vPos;
+		fq.p1					= vFirePoint;
+		fq.radP0				= 
+		fq.radP1				= 0;
+		fq.thisObjNum		= OBJ_IDX (objP);
 		fq.ignoreObjList	= NULL;
-		fq.flags					= FQ_TRANSWALL;
+		fq.flags				= FQ_TRANSWALL;
 
 		fate = FindVectorIntersection (&fq, &hit_data);
 		if (fate != HIT_NONE) {

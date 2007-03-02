@@ -1425,7 +1425,7 @@ typedef struct tMissionData {
 	int					nD1BuiltinHogSize;
 	char					szBuiltinMissionFilename [9];
 	char					szD1BuiltinMissionFilename [9];
-	mle					list [MAX_MISSIONS + 1];
+	tMsnListEntry					list [MAX_MISSIONS + 1];
 	char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 	char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
 	int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];

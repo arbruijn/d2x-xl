@@ -1118,13 +1118,13 @@ do {
 	GameFlushInputs ();
 	if (nNewMission == -1)
 		return -1;      //abort!
-	} while (!gameData.missions.list [nNewMission].descent_version);
+	} while (!gameData.missions.list [nNewMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, szMsnNames [nNewMission]);
 if (!LoadMission (nNewMission)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
-gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].descent_version == 1);
+gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].nDescentVersion == 1);
 gameData.missions.nLastMission = nNewMission;
 if (bAnarchyOnly)
 	*bAnarchyOnly = gameData.missions.list [nNewMission].bAnarchyOnly;
@@ -1169,13 +1169,13 @@ do {
 		return;         //abort!
 	nFolder = nMission;
 	}
-while (!gameData.missions.list [nMission].descent_version);
+while (!gameData.missions.list [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
 if (!LoadMission (nMission)) {
 	ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
-gameStates.app.bD1Mission = (gameData.missions.list [nMission].descent_version == 1);
+gameStates.app.bD1Mission = (gameData.missions.list [nMission].nDescentVersion == 1);
 gameData.missions.nLastMission = nMission;
 nNewLevel = 1;
 

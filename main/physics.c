@@ -309,7 +309,7 @@ return 0;
 void UnstickObject (tObject *objP)
 {
 	tFVIData			hi;
-	fvi_query		fq;
+	tVFIQuery		fq;
 	int				fviResult;
 
 if ((objP->nType == OBJ_PLAYER) && 
@@ -318,7 +318,8 @@ if ((objP->nType == OBJ_PLAYER) &&
 	return;
 fq.p0 = fq.p1 = &objP->position.vPos;
 fq.startSeg = objP->nSegment;
-fq.rad = objP->size;
+fq.radP0 = 0;
+fq.radP1 = objP->size;
 fq.thisObjNum = OBJ_IDX (objP);
 fq.ignoreObjList = NULL;
 fq.flags = 0;
@@ -347,7 +348,7 @@ void DoPhysicsSim (tObject *objP)
 	short					nObject = OBJ_IDX (objP);
 	short					nWallHitSeg, nWallHitSide;
 	tFVIData				hi;
-	fvi_query			fq;
+	tVFIQuery			fq;
 	vmsVector			vSavePos;
 	int					nSaveSeg;
 	fix					xDrag;
@@ -491,7 +492,7 @@ retryMove:
 	fq.p0 = &objP->position.vPos;
 	fq.startSeg = objP->nSegment;
 	fq.p1 = &vNewPos;
-	fq.rad = objP->size;
+	fq.radP0 = fq.radP1 = objP->size;
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs;
 	fq.flags = FQ_CHECK_OBJS;
