@@ -1839,26 +1839,28 @@ for (i = 0; i < 2; i++) {
 					  nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
-		if (bHave && ammoType [i][l]) {
+		if (ammoType [i][l]) {
 			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [ (l == 6) ? 1 : l]);
 			bLoaded = (nAmmo > 0);
-			if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {
-				if (!i && (l % 5 == 1)) { //Gauss/Vulcan
-					nAmmo = f2i (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
+			if (bHave) {
+				if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {
+					if (!i && (l % 5 == 1)) { //Gauss/Vulcan
+						nAmmo = f2i (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
 #if 0
-					sprintf (szAmmo, "%d.%d", nAmmo / 1000, (nAmmo % 1000) / 100);
+						sprintf (szAmmo, "%d.%d", nAmmo / 1000, (nAmmo % 1000) / 100);
 #else
-					if (nAmmo && (nAmmo < 1000)) {
-						sprintf (szAmmo, ".%d", nAmmo / 100);
-						nAmmoColor = RED_RGBA;
+						if (nAmmo && (nAmmo < 1000)) {
+							sprintf (szAmmo, ".%d", nAmmo / 100);
+							nAmmoColor = RED_RGBA;
+							}
+						else
+							sprintf (szAmmo, "%d", nAmmo / 1000);
+#endif
 						}
 					else
-						sprintf (szAmmo, "%d", nAmmo / 1000);
-#endif
+						sprintf (szAmmo, "%d", nAmmo);
+					GrGetStringSize (szAmmo, &fw, &fh, &faw);
 					}
-				else
-					sprintf (szAmmo, "%d", nAmmo);
-				GrGetStringSize (szAmmo, &fw, &fh, &faw);
 				}
 			}
 		else {
