@@ -185,8 +185,8 @@ DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL);
 int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops)
 {
 #ifdef NEWDEMO
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordSound (nSound);
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordSound (nSound);
 #endif
 nSound = (nSound < 0) ? - nSound : DigiXlatSound (nSound);
 if (nSound < 0) 

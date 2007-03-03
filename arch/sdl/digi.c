@@ -148,6 +148,12 @@ struct tSoundSlot {
 	ubyte				bResampled;
 } SoundSlots[MAX_SOUND_SLOTS];
 
+//------------------------------------------------------------------------------
+
+void SDLCALL Mix_FinishChannel (int nChannel)
+{
+SoundSlots [nChannel].playing = 0;
+}
 
 //------------------------------------------------------------------------------
 
@@ -267,6 +273,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	Mix_Resume (-1);
 	Mix_ResumeMusic ();
 	Mix_AllocateChannels (MAX_SOUND_SLOTS);
+	Mix_ChannelFinished (Mix_FinishChannel);
 	}
 else 
 #endif
@@ -319,8 +326,8 @@ void DigiStopAllChannels ()
 {
 	int i;
 
-	for (i = 0; i < MAX_SOUND_SLOTS; i++)
-		DigiStopSound (i);
+for (i = 0; i < MAX_SOUND_SLOTS; i++)
+	DigiStopSound (i);
 }
 
 //------------------------------------------------------------------------------
@@ -454,11 +461,13 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 	struct tSoundSlot *ssp;
 	tDigiSound *gsp;
 
+if (nSound == 26)
+	nSound = nSound;
 if (!gameStates.app.bUseSound)
 	return -1;
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
-if (! (pszWAV && gameOpts->sound.bUseSDLMixer)) {
+if (!(pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
 	gsp = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound] + nSound % gameData.pig.snd.nSoundFiles [gameOpts->sound.bD1Sound];

@@ -1531,7 +1531,6 @@ typedef struct tReactorStates {
 	int					nNextFireTime;
 	int					nDeadObj;
 	int					nStrength;
-	int					nGuns;
 	vmsVector			vGunPos [MAX_CONTROLCEN_GUNS];
 	vmsVector			vGunDir [MAX_CONTROLCEN_GUNS];
 } tReactorStates;

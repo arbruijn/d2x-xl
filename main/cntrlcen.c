@@ -83,11 +83,11 @@ nBestGun = -1;
 
 for (i = 0; i < nGunCount; i++) {
 	fix			dot;
-	vmsVector	gun_vec;
+	vmsVector	vGun;
 
-	VmVecSub (&gun_vec, vObjPos, &vGunPos[i]);
-	VmVecNormalizeQuick (&gun_vec);
-	dot = VmVecDot (vGunDir + i, &gun_vec);
+	VmVecSub (&vGun, vObjPos, &vGunPos[i]);
+	VmVecNormalizeQuick (&vGun);
+	dot = VmVecDot (vGunDir + i, &vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
 		nBestGun = i;
@@ -187,7 +187,7 @@ else {
 	int flashValue = f2i (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
 	if (oldTime > 0)
 		DigiPlaySample (SOUND_MINE_BLEW_UP, F1_0);
-	PALETTE_FLASH_SET (flashValue,flashValue,flashValue);
+	PALETTE_FLASH_SET (flashValue, flashValue, flashValue);
 	if (gameStates.ogl.palAdd.blue > 64) {
 		WINDOS (
 			DDGrSetCurrentCanvas (NULL),
@@ -307,14 +307,14 @@ if (!gameStates.app.cheats.bRobotsFiring)
 #endif
 
 if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
-	if (!(gameData.app.nFrameCount % 8)) {		//	Do every so often...
+	if (gameStates.app.tick40fps.bTick) {		//	Do ever so often...
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int			i;
 		tSegment		*segP = gameData.segs.segments + objP->nSegment;
 
 		// This is a hack.  Since the control center is not processed by
-		// ai_do_frame, it doesn't know to deal with cloaked dudes.  It
+		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
 		// seems to work in single-tPlayer mode because it is actually using
 		// the value of Believed_player_position that was set by the last
 		// person to go through ai_do_frame.  But since a no-robots game
@@ -322,7 +322,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (gameData.app.nGameMode & GM_MULTI)
-			gameData.ai.vBelievedPlayerPos = gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].position.vPos;
+			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -344,14 +344,15 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 //	Periodically, make the reactor fall asleep if tPlayer not visible.
 if (rStatP->bHit || rStatP->bSeenPlayer) {
-	if ((LastTime_cc_vis_check + F1_0*5 < gameData.time.xGame) || (LastTime_cc_vis_check > gameData.time.xGame)) {
+	if ((LastTime_cc_vis_check + F1_0 * 5 < gameData.time.xGame) || 
+		 (LastTime_cc_vis_check > gameData.time.xGame)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 
 		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
 		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
 		LastTime_cc_vis_check = gameData.time.xGame;
-		if (xDistToPlayer < F1_0*120) {
+		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
 				rStatP->bHit = 0;
@@ -360,10 +361,10 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 	}
 
 if ((rStatP->nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
-		nBestGun = CalcBestReactorGun (rStatP->nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.ai.vBelievedPlayerPos);
+	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
+		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.ai.vBelievedPlayerPos);
 	else
-		nBestGun = CalcBestReactorGun (rStatP->nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.objs.console->position.vPos);
+		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.objs.console->position.vPos);
 
 	if (nBestGun != -1) {
 		int			nRandProb, count;
@@ -376,7 +377,7 @@ if ((rStatP->nNextFireTime < 0) && !(gameStates.app.bPlayerIsDead && (gameData.t
 			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			} 
 		else {
-			VmVecSub (&vecToGoal, &gameData.objs.console->position.vPos, &rStatP->vGunPos[nBestGun]);
+			VmVecSub (&vecToGoal, &gameData.objs.console->position.vPos, &rStatP->vGunPos [nBestGun]);
 			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			}
 		if (xDistToPlayer > F1_0*300) {
@@ -432,7 +433,7 @@ return i2f (gameData.reactor.nStrength);
 //	If this level contains a boss and mode == multiplayer, do control center stuff.
 void InitReactorForLevel (int bRestore)
 {
-	int		i, j;
+	int		i, j, nGuns;
 	tObject	*objP;
 	short		nReactorObj = -1, nBossObj = -1;
 	tReactorStates	*rStatP = gameData.reactor.states;
@@ -455,8 +456,8 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 			else
 				rStatP = gameData.reactor.states + gameStates.gameplay.nReactorCount;
 			if (rStatP->nDeadObj < 0) {
-				rStatP->nGuns = gameData.reactor.props [objP->id].nGuns;
-				for (j = 0; j < rStatP->nGuns; j++)
+				nGuns = gameData.reactor.props [objP->id].nGuns;
+				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
 				if (!bRestore) {
