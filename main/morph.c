@@ -204,9 +204,8 @@ void DoMorphFrame (tObject *objP)
 	tPolyModel	*pmP;
 	tMorphInfo	*mdP;
 
-mdP = MorphFindData (objP);
-if (mdP == NULL) {					//maybe loaded half-morphed from disk
-	objP->flags |= OF_SHOULD_BE_DEAD;		//.so kill it
+if (!(mdP = MorphFindData (objP))) {	//maybe loaded half-morphed from disk
+	objP->flags |= OF_SHOULD_BE_DEAD;	//so kill it
 	return;
 	}
 pmP = gameData.models.polyModels + mdP->objP->rType.polyObjInfo.nModel;
@@ -216,14 +215,12 @@ for (i = 0; i < pmP->nModels; i++)
 		if (!MorphUpdatePoints (pmP, i, mdP))
 			mdP->submodelActive [i] = 0;
       else if (mdP->nMorphingPoints [i] == 0) {		//maybe start submodel
-			//int t;
 			mdP->submodelActive [i] = 2;		//not animating, just visible
 			mdP->nSubmodelsActive--;		//this one done animating
 			for (t = 0; t < pmP->nModels; t++)
-				if (pmP->subModels.parents [t] == i) {		//start this one
+				if (pmP->subModels.parents [t] == i) 		//start this one
 					if (mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP))
 						mdP->nSubmodelsActive++;
-					}
 			}
 		}
 if (!mdP->nSubmodelsActive) {			//done morphing!

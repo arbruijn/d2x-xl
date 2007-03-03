@@ -1518,6 +1518,7 @@ extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
 extraGameInfo [1].bRadarEnabled = ((netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);
+extraGameInfo [1].bWiggle = 1;
 extraGameInfo [1].nType = PID_EXTRA_GAMEINFO;
 memcpy (extraGameInfo [1].szGameName, mpParams.szGameName, sizeof (mpParams.szGameName));
 extraGameInfo [1].nSecurity = netGame.nSecurity;

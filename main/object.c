@@ -93,7 +93,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _3DFX
 #include "3dfx_des.h"
 #endif
-//#define _DEBUG
+
+#define LIMIT_PHYSICS_FPS	1
+
 extern vmsVector playerThrust;
 extern int bSpeedBost;
 
@@ -444,7 +446,7 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 		//pulse rate will change!
 		xCloakTimer -= gameData.time.xFrame;
 		while (xCloakTimer < 0) {
-			xCloakTimer += xCloakFadeoutDuration/12;
+			xCloakTimer += xCloakFadeoutDuration / 12;
 			nCloakDelta += nCloakDir;
 			if (nCloakDelta == 0 || nCloakDelta == 4)
 				nCloakDir = -nCloakDir;
@@ -815,19 +817,8 @@ if (nSegment != -1) {
 	}
 }
 
-// -- mk, 02/05/95 -- #define	VCLIP_INVULNERABILITY_EFFECT	VCLIP_SMALL_EXPLOSION
-// -- mk, 02/05/95 --
-// -- mk, 02/05/95 -- // -----------------------------------------------------------------------------
-// -- mk, 02/05/95 -- void do_player_invulnerability_effect (tObject *objP)
-// -- mk, 02/05/95 -- {
-// -- mk, 02/05/95 -- 	if (d_rand () < gameData.time.xFrame*8) {
-// -- mk, 02/05/95 -- 		CreateVClipOnObject (objP, F1_0, VCLIP_INVULNERABILITY_EFFECT);
-// -- mk, 02/05/95 -- 	}
-// -- mk, 02/05/95 -- }
-
 // -----------------------------------------------------------------------------
 //	Render an tObject.  Calls one of several routines based on nType
-
 // -----------------------------------------------------------------------------
 
 void RenderPlayerShield (tObject *objP)
@@ -2285,7 +2276,7 @@ if (nToFree > olind) {
 #endif
 	nToFree = olind;
 	}
-for (i = 0; i<nToFree; i++) {
+for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if (objP->nType == OBJ_DEBRIS) {
 		nToFree--;
@@ -2294,16 +2285,16 @@ for (i = 0; i<nToFree; i++) {
 	}
 if (!nToFree)
 	return nOrgNumToFree;
-for (i = 0; i<nToFree; i++) {
+for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
-	if ((objP->nType == OBJ_FIREBALL)  && (objP->cType.explInfo.nDeleteObj==-1)) {
+	if ((objP->nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDeleteObj == -1)) {
 		nToFree--;
 		objP->flags |= OF_SHOULD_BE_DEAD;
 		}
 	}
 if (!nToFree)
 	return nOrgNumToFree;
-for (i = 0; i<nToFree; i++) {
+for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
 		nToFree--;
@@ -2312,7 +2303,7 @@ for (i = 0; i<nToFree; i++) {
 	}
 if (!nToFree)
 	return nOrgNumToFree;
-for (i = 0; i<nToFree; i++) {
+for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if ((objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID)) {
 		nToFree--;
@@ -2689,7 +2680,7 @@ if (gameStates.app.bPlayerIsDead) {
 			}
 		}
 	else {
-		if (d_rand () < gameData.time.xFrame*4) {
+		if (d_rand () < gameData.time.xFrame * 4) {
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSendCreateExplosion (gameData.multi.nLocalPlayer);
 			CreateSmallFireballOnObject (gameData.objs.console, F1_0, 1);
@@ -3279,16 +3270,12 @@ int MoveOneObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
-//if (gameStates.gameplay.bNoBotAI && (objP->nType != OBJ_PLAYER))
-//	return 1;
-if (objP->nType == OBJ_WEAPON && objP->id == MERCURYMSL_ID)
-	objP = objP;
 objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 
 	 (objP->lifeleft != ONE_FRAME_TIME)&& 
-	 (gameData.time.xFrame != F1_0))
-	objP->lifeleft -= gameData.time.xFrame;		//...inevitable countdown towards death
+	 (gameData.physics.xTime != F1_0))
+	objP->lifeleft -= gameData.physics.xTime;		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
 if (HandleObjectControl (objP))
 	return 1;
@@ -3324,9 +3311,13 @@ int MoveAllObjects ()
 //	RemoveIncorrectObjects ();
 if (gameData.objs.nLastObject > nMaxUsedObjects)
 	FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
+#if LIMIT_PHYSICS_FPS
 if (!gameStates.app.tick60fps.bTick)
 	return 1;
 gameData.physics.xTime = secs2f (gameStates.app.tick60fps.nTime);
+#else
+gameData.physics.xTime = gameData.time.xFrame;
+#endif
 DeleteAllObjsThatShouldBeDead ();
 if (gameOpts->gameplay.bAutoLeveling)
 	gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;

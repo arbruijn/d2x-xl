@@ -325,7 +325,11 @@ fq.ignoreObjList = NULL;
 fq.flags = 0;
 fviResult = FindVectorIntersection (&fq, &hi);
 if (fviResult == HIT_WALL)
+#if 1
+	BounceObject (objP, hi, 0.1f, NULL);
+#else
 	BounceObject (objP, hi, f2fl (objP->size - VmVecDist (&objP->position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
+#endif
 }
 
 #endif

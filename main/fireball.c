@@ -107,12 +107,12 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 		int i, t, id;
 		tObject * obj0P = gameData.objs.objects;
 					 
-		// -- now legal for badass explosions on a wall. Assert (objP != NULL);
+		// -- now legal for xBadAss explosions on a wall. Assert (objP != NULL);
 
 		for (i=0; i<=gameData.objs.nLastObject; i++)	{
 			t = obj0P->nType;
 			id = obj0P->id;
-			//	Weapons used to be affected by badass explosions, but this introduces serious problems.
+			//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
 			//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
 			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 			if ((obj0P!=objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
@@ -171,7 +171,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 								}
 
-								//	When a robot gets whacked by a badass force, he looks towards it because robots tend to get blasted from behind.
+								//	When a robot gets whacked by a xBadAss force, he looks towards it because robots tend to get blasted from behind.
 								{
 									vmsVector vNegForce;
 									vNegForce.p.x = vForce.p.x * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
@@ -317,7 +317,7 @@ tObject *ObjectCreateBadassExplosion (
 }
 
 //------------------------------------------------------------------------------
-//blows up a badass weapon, creating the badass explosion
+//blows up a xBadAss weapon, creating the xBadAss explosion
 //return the explosion tObject
 tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
 {
@@ -358,7 +358,7 @@ tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force
 }
 
 //------------------------------------------------------------------------------
-//blows up the tPlayer with a badass explosion
+//blows up the tPlayer with a xBadAss explosion
 //return the explosion tObject
 tObject *ExplodeBadassPlayer (tObject *objP)
 {
@@ -1588,104 +1588,101 @@ void DoExplosionSequence (tObject *obj)
 {
 	int t;
 
-	Assert (obj->controlType == CT_EXPLOSION);
-
-	//See if we should die of old age
-	if (obj->lifeleft <= 0) 	{	// We died of old age
-		obj->flags |= OF_SHOULD_BE_DEAD;
-		obj->lifeleft = 0;
+Assert (obj->controlType == CT_EXPLOSION);
+//See if we should die of old age
+if (obj->lifeleft <= 0) 	{	// We died of old age
+	obj->flags |= OF_SHOULD_BE_DEAD;
+	obj->lifeleft = 0;
 	}
-
-	//See if we should create a secondary explosion
-	if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
-		tObject *explObjP, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
-		ubyte nVClip;
-		vmsVector *vSpawnPos;
-		fix badass = (fix) ROBOTINFO (delObjP->id).badass;
-
-		if ((obj->cType.explInfo.nDeleteObj < 0) || (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
+//See if we should create a secondary explosion
+if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
+	tObject		*explObjP, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
+	ubyte			nVClip;
+	vmsVector	*vSpawnPos;
+	fix			xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
+	if ((obj->cType.explInfo.nDeleteObj < 0) || 
+		 (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
-			con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
+		con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif
-			Int3 (); // get Rob, please... thanks
-			return;
+		Int3 (); // get Rob, please... thanks
+		return;
 		}
-		vSpawnPos = &delObjP->position.vPos;
-		t = delObjP->nType;
-		if (( (t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
-			 (delObjP->nSegment == -1)) {
-			Int3 ();	//pretty bad
-			return;
+	vSpawnPos = &delObjP->position.vPos;
+	t = delObjP->nType;
+	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
+			(delObjP->nSegment == -1)) {
+		Int3 ();	//pretty bad
+		return;
 		}
-		nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
-		if (delObjP->nType == OBJ_ROBOT && badass)
-			explObjP = ObjectCreateBadassExplosion (
-				NULL, 
-				delObjP->nSegment, 
-				vSpawnPos, 
-				FixMul (delObjP->size, EXPLOSION_SCALE), 
-				nVClip, 
-				F1_0 * badass, 
-				i2f (4) * badass, 
-				i2f (35) * badass, 
-				-1);
-		else
-			explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
-
-		if ((delObjP->containsCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
-			//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
-			if (delObjP->containsType == OBJ_POWERUP)
+	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
+	if ((delObjP->nType == OBJ_ROBOT) && xBadAss)
+		explObjP = ObjectCreateBadassExplosion (
+			NULL, 
+			delObjP->nSegment, 
+			vSpawnPos, 
+			FixMul (delObjP->size, EXPLOSION_SCALE), 
+			nVClip, 
+			F1_0 * xBadAss, 
+			i2f (4) * xBadAss, 
+			i2f (35) * xBadAss, 
+			-1);
+	else
+		explObjP = ObjectCreateExplosion (delObjP->nSegment, vSpawnPos, FixMul (delObjP->size, EXPLOSION_SCALE), nVClip);
+	if ((delObjP->containsCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
+		//	If dropping a weapon that the tPlayer has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
+		if (delObjP->containsType == OBJ_POWERUP)
+			MaybeReplacePowerupWithEnergy (delObjP);
+		if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
+			ObjectCreateEgg (delObjP);
+		}
+	if ((delObjP->nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
+		tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->id);
+		if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
+			if (d_rand () % 16 + 1 < botInfoP->containsProb) {
+				delObjP->containsCount = (d_rand () % botInfoP->containsCount) + 1;
+				delObjP->containsType = botInfoP->containsType;
+				delObjP->containsId = botInfoP->containsId;
 				MaybeReplacePowerupWithEnergy (delObjP);
-			if ((delObjP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))
 				ObjectCreateEgg (delObjP);
-			}
-		if ((delObjP->nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
-			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->id);
-			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->flags & OF_ARMAGEDDON))) {
-				if (d_rand () % 16 + 1 < botInfoP->containsProb) {
-					delObjP->containsCount = (d_rand () % botInfoP->containsCount) + 1;
-					delObjP->containsType = botInfoP->containsType;
-					delObjP->containsId = botInfoP->containsId;
-					MaybeReplacePowerupWithEnergy (delObjP);
-					ObjectCreateEgg (delObjP);
-					}
 				}
-			if (botInfoP->thief)
-				DropStolenItems (delObjP);
-			if (botInfoP->companion) {
-				DropBuddyMarker (delObjP);
 			}
+		if (botInfoP->thief)
+			DropStolenItems (delObjP);
+		if (botInfoP->companion) {
+			DropBuddyMarker (delObjP);
 		}
-		if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
-			DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
-			//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
-		obj->cType.explInfo.nSpawnTime = -1;
-		//make debris
-		if (delObjP->renderType==RT_POLYOBJ)
-			ExplodePolyModel (delObjP);		//explode a polygon model
-		//set some parm in explosion
-		if (explObjP) {
-			if (delObjP->movementType == MT_PHYSICS) {
-				explObjP->movementType = MT_PHYSICS;
-				explObjP->mType.physInfo = delObjP->mType.physInfo;
-				}
-			explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
-			explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
+	}
+	if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
+		DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
+		//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
+	obj->cType.explInfo.nSpawnTime = -1;
+	//make debris
+	if (delObjP->renderType==RT_POLYOBJ)
+		ExplodePolyModel (delObjP);		//explode a polygon model
+	//set some parm in explosion
+	if (explObjP) {
+		if (delObjP->movementType == MT_PHYSICS) {
+			explObjP->movementType = MT_PHYSICS;
+			explObjP->mType.physInfo = delObjP->mType.physInfo;
+			}
+		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
+		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifdef _DEBUG
-			if (obj->cType.explInfo.nDeleteObj < 0)
-		  		Int3 (); // See Rob!
+		if (obj->cType.explInfo.nDeleteObj < 0)
+		  	Int3 (); // See Rob!
 #endif
-			}
-		else {
-			MaybeDeleteObject (delObjP);
-#if TRACE
-			con_printf (CONDBG, "Couldn't create secondary explosion, deleting tObject now\n");
-#endif
-			}
 		}
+	else {
+		MaybeDeleteObject (delObjP);
+#if TRACE
+		con_printf (CONDBG, "Couldn't create secondary explosion, deleting tObject now\n");
+#endif
+		}
+	}
 	//See if we should delete an tObject
 if (obj->lifeleft <= obj->cType.explInfo.nDeleteTime) {
-	tObject *delObjP = gameData.objs.objects+obj->cType.explInfo.nDeleteObj;
+	tObject *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
 	obj->cType.explInfo.nDeleteTime = -1;
 	MaybeDeleteObject (delObjP);
 	}

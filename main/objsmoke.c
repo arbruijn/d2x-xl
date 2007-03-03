@@ -438,8 +438,11 @@ if (gameData.smoke.objects [i] < 0) {
 	nParts = (trigP && trigP->value) ? trigP->value * 25 : STATIC_SMOKE_MAX_PARTS;
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 	j = (trigP && trigP->value) ? trigP->value : 5;
-	for (nSize = 0; j; j--)
-		nSize += j;
+	if (gameOpts->render.smoke.bDisperse)
+		for (nSize = 0; j; j--)
+			nSize += j;
+	else
+		nSize = j + 1;
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
 	nDrift = (trigP && trigP->value) ? trigP->value * 200 : nSpeed * 50;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, F1_0 * nSpeed);

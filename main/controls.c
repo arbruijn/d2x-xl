@@ -63,10 +63,6 @@ void WiggleObject (tObject *objP)
 
 if (gameStates.render.nShadowPass == 2) 
 	return;
-#ifndef _DEBUG
-if (IsMultiGame)
-	return;
-#endif
 if (!EGI_FLAG (bWiggle, 1, 0, 1))
 	return;
 nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];

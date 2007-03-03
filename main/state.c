@@ -643,8 +643,8 @@ if (!bBetweenLevels)	{
 			CFWrite (&gameData.segs.segments [i].sides [j].nBaseTex, sizeof (short), 1, fp);
 			nTexture = gameData.segs.segments [i].sides [j].nOvlTex | (gameData.segs.segments [i].sides [j].nOvlOrient << 14);
 			CFWrite (&nTexture, sizeof (short), 1, fp);
+			}
 		}
-	}
 // Save the fuelcen info
 	CFWrite (&gameData.reactor.bDestroyed, sizeof (int), 1, fp);
 	CFWrite (&gameData.reactor.countdown.nTimer, sizeof (int), 1, fp);
@@ -669,8 +669,7 @@ if (!bBetweenLevels)	{
 
 // Save the automap visited info
 	CFWrite (bAutomapVisited, sizeof (ubyte) * MAX_SEGMENTS, 1, fp);
-
-}
+	}
 CFWrite (&gameData.app.nStateGameId, sizeof (uint), 1, fp);
 CFWrite (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1, fp);
 CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
@@ -1609,7 +1608,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix 
-	if (objP->shields < 0) {
+	if ((objP->nType != OBJ_CNTRLCEN) && (objP->shields < 0)) {
 		j = FindBoss (i);
 		if ((j < 0) || (gameData.boss [j].nDying != i))
 			objP->nType = OBJ_NONE;
@@ -1621,12 +1620,12 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 			gameData.objs.nNextSignature = objP->nSignature;
 		}
 	//look for, and fix, boss with bogus shields
-	if (objP->nType == OBJ_ROBOT && ROBOTINFO (objP->id).bossFlag) {
-		fix save_shields = objP->shields;
+	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
+		fix xShieldSave = objP->shields;
 		CopyDefaultsToRobot (objP);		//calculate starting shields
 		//if in valid range, use loaded shield value
-		if (save_shields > 0 && (save_shields <= objP->shields))
-			objP->shields = save_shields;
+		if (xShieldSave > 0 && (xShieldSave <= objP->shields))
+			objP->shields = xShieldSave;
 		else
 			objP->shields /= 2;  //give tPlayer a break
 		}
@@ -1825,6 +1824,8 @@ void StateRestoreObject (tObject *objP, CFILE *fp)
 {
 objP->nSignature = CFReadInt (fp);      
 objP->nType = (ubyte) CFReadByte (fp); 
+if (objP->nType == OBJ_CNTRLCEN)
+	objP->nType = objP->nType;
 objP->id = (ubyte) CFReadByte (fp);
 objP->next = CFReadShort (fp);
 objP->prev = CFReadShort (fp);

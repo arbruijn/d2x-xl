@@ -132,7 +132,7 @@ void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 	grsBitmap	*bmP;
 	
-xPowerupTime += gameData.time.xFrame;
+xPowerupTime += gameData.physics.xTime;
 
 if (vcP->flags & WCF_ALTFMT) {
 	if (vcP->flags & WCF_INITIALIZED) {
