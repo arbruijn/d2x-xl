@@ -376,14 +376,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void AddBuiltinD1MissionToList(int *count)
+void AddBuiltinD1MissionToList (int *count)
 {
-	if (!CFExist("descent.hog", gameFolders.szDataDir, 1))
-		return;
-
-	gameData.missions.nD1BuiltinHogSize = CFSize("descent.hog",gameFolders.szDataDir, 0);
-
-	switch (gameData.missions.nD1BuiltinHogSize) {
+if (!CFExist("descent.hog", gameFolders.szDataDir, 1))
+	return;
+gameData.missions.nD1BuiltinHogSize = CFSize("descent.hog",gameFolders.szDataDir, 0);
+switch (gameData.missions.nD1BuiltinHogSize) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
 	case D1_MAC_SHARE_MISSION_HOGSIZE:
@@ -391,16 +389,17 @@ void AddBuiltinD1MissionToList(int *count)
 		strcpy(gameData.missions.list [*count].szMissionName, D1_SHAREWARE_MISSION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
+
 	case D1_OEM_MISSION_HOGSIZE:
 	case D1_OEM_10_MISSION_HOGSIZE:
 		strcpy(gameData.missions.list [*count].filename, D1_MISSION_FILENAME);
 		strcpy(gameData.missions.list [*count].szMissionName, D1_OEM_MISSION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
+
 	default:
 #ifdef _DEBUG
-		//Warning(TXT_D1_HOGSIZE, gameData.missions.nD1BuiltinHogSize);
-		Int3();
+		Warning (TXT_D1_HOGSIZE, gameData.missions.nD1BuiltinHogSize);
 #endif
 		// fall through
 	case D1_MISSION_HOGSIZE:
@@ -427,7 +426,7 @@ void AddBuiltinD1MissionToList(int *count)
 
 //------------------------------------------------------------------------------
 
-void AddBuiltinD2XMissionToList(int *count)
+void AddBuiltinD2XMissionToList (int *count)
 {
 if (CFExist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 	strcpy(gameData.missions.list [*count].filename,"d2x");
@@ -450,32 +449,32 @@ gameData.missions.nBuiltinHogSize = CFSize ("descent2.hog", gameFolders.szDataDi
 if (gameData.missions.nBuiltinHogSize == -1)
 	gameData.missions.nBuiltinHogSize = CFSize ("d2demo.hog", gameFolders.szDataDir, 0);
 
-//retry:
-
 switch (gameData.missions.nBuiltinHogSize) {
 	case SHAREWARE_MISSION_HOGSIZE:
 	case MAC_SHARE_MISSION_HOGSIZE:
-		strcpy (gameData.missions.list [*count].filename,SHAREWARE_MISSION_FILENAME);
-		strcpy (gameData.missions.list [*count].szMissionName,SHAREWARE_MISSION_NAME);
+		strcpy (gameData.missions.list [*count].filename, SHAREWARE_MISSION_FILENAME);
+		strcpy (gameData.missions.list [*count].szMissionName, SHAREWARE_MISSION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
+
 	case OEM_MISSION_HOGSIZE:
-		strcpy (gameData.missions.list [*count].filename,OEM_MISSION_FILENAME);
-		strcpy (gameData.missions.list [*count].szMissionName,OEM_MISSION_NAME);
+		strcpy (gameData.missions.list [*count].filename, OEM_MISSION_FILENAME);
+		strcpy (gameData.missions.list [*count].szMissionName, OEM_MISSION_NAME);
 		gameData.missions.list [*count].bAnarchyOnly = 0;
 		break;
+
+	default:
+#ifdef _DEBUG
+		Warning (TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, "descent2.hog");
+#endif
+		gameData.missions.nBuiltinHogSize = FULL_MISSION_HOGSIZE;	//fall through
+
 	case FULL_MISSION_HOGSIZE:
 	case FULL_10_MISSION_HOGSIZE:
 	case MAC_FULL_MISSION_HOGSIZE:
 		if (!ReadMissionFile (FULL_MISSION_FILENAME ".mn2", 0, ML_CURDIR))
 			Error ("Could not find required mission file <%s>", FULL_MISSION_FILENAME ".mn2");
 		break;
-	default:
-#ifdef _DEBUG
-		Warning (TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, FULL_MISSION_FILENAME ".mn2");
-#endif
-		gameData.missions.nBuiltinHogSize = FULL_MISSION_HOGSIZE;
-		Int3(); //fall through
 		//goto retry;
 	}
 strcpy (gameData.missions.szBuiltinMissionFilename, gameData.missions.list [*count].filename);
