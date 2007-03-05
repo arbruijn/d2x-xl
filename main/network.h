@@ -170,7 +170,7 @@ typedef struct tExtraGameInfo {
 	char		bFriendlyFire;
 	char		bInhibitSuicide;
 	char		bFixedRespawns;
-	long		nSpawnDelay;
+	int		nSpawnDelay;
 	char		bEnhancedCTF;
 	char		bRadarEnabled;
 	char		bPowerupsOnRadar;

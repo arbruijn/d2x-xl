@@ -61,7 +61,7 @@ tServerList trackerList;
 int FindTracker (tUdpAddress *addr)
 {
 	int				i;
-	unsigned	long	a;
+	unsigned	int	a;
 	short				p;
 
 a = UDP_ADDR (addr);
@@ -178,14 +178,20 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int IsTracker (unsigned long addr, ushort port)
+int IsTracker (unsigned int addr, ushort port)
 {
 	int	i;
-	short p;
+#ifdef _DEBUG
+	unsigned int a;
+	ushort p;
+#endif
 
 port = ntohs (port);
 for (i = 0; i < trackerList.nServers; i++) {
+#ifdef _DEBUG
+	a = UDP_ADDR (trackerList.servers + i);
 	p = UDP_PORT (trackerList.servers + i);
+#endif
 	if ((addr == UDP_ADDR (trackerList.servers + i)) && 
 		 (port == UDP_PORT (trackerList.servers + i)))
 		return 1;

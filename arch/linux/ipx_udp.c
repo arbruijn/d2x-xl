@@ -16,11 +16,11 @@
  *
  * Changes:
  * --------
- * 0.99.1 - now the default broadcast list also contains all point-to-point
+ * 0.99.1 - now the default IP interface list also contains all point-to-point
  *          links with their destination peer addresses
  * 0.99.2 - commented a bit :-) 
- *        - now adds to broadcast list each host it gets some packet from
- *          which is already not covered by local physical ethernet broadcast
+ *        - now adds to IP interface list each host it gets some packet from
+ *          which is already not covered by local physical ethernet IP interface
  *        - implemented short-nSignature packet format
  *        - compatibility mode for old D1X releases due to the previous bullet
  *
@@ -34,9 +34,9 @@
  *    options!
  *
  * Add command line argument "-udp". In default operation D1X will send
- * broadcasts too all the local interfaces found. But you may also use
+ * IP interfaces too all the local interfaces found. But you may also use
  * additional parameter specified after "-udp" to modify the default
- * broadcasting style and UDP port numbers binding:
+ * IP interfaceing style and UDP port numbers binding:
  *
  * ./d1x -udp [@SHIFT]=HOST_LIST   Broadcast ONLY to HOST_LIST
  * ./d1x -udp [@SHIFT]+HOST_LIST   Broadcast both to local ifaces & to HOST_LIST
@@ -59,7 +59,7 @@
  *
  * ./d1x -udp =192.168.4.255
  *  - Run distant Descent which will participate with remote network
- *    192.168.4.0 with netmask 255.255.255.0 (broadcast has 192.168.4.255)
+ *    192.168.4.0 with netmask 255.255.255.0 (IP interface has 192.168.4.255)
  *  - You'll have to also setup hosts in that network accordingly:
  * ./d1x -udp +UPPER_DISTANT_MACHINE_NAME
  *
@@ -466,16 +466,18 @@ destListSize = 0;
 
 //------------------------------------------------------------------------------
 /* This function is called during init and has to grab all system interfaces
- * and collect their broadcast-destination addresses (and their netmasks).
+ * and collect their IP interface-destination addresses (and their netmasks).
  * Typically it finds only one ethernet card and so returns address in
  * the style "192.168.1.255" with netmask "255.255.255.0".
  * Broadcast addresses are filled into "broads", netmasks to "broadmasks".
  */
  
-#ifdef __macosx__
-#	define	_IOCTL(_s,_f,_c)	(ioctl (_s, _f, _c) >= 0)
+static int _ioRes;
+
+#if 1//def __macosx__
+#	define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) >= 0)
 #else
-#	define	_IOCTL(_s,_f,_c)	(ioctl (_s, _f, _c) != 0)
+#	define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) != 0)
 #endif
 
 /* Stolen from my GGN */
@@ -483,7 +485,7 @@ static int addiflist (void)
 {
 	unsigned 				cnt = MAX_BRDINTERFACES, i, j;
 	struct ifconf 			ifconf;
-	int 						sock;
+	int 						sock, ioRes;
 	struct sockaddr_in	*sinp, *sinmp;
 
 d_free (broads);
@@ -512,45 +514,56 @@ chk (broads = d_malloc (j * sizeof (*broads)));
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	// Only copy the address if it meets our criteria.
-	if (ifa->ifa_flags & IF_NOTFLAGS || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
+	if ((ifa->ifa_flags & IF_NOTFLAGS) || !((ifa->ifa_flags & IF_REQFLAGS) && (ifa->ifa_addr->sa_family == AF_INET)))
 		continue;
 	j++;
 	sinp = (struct sockaddr_in *) ifa->ifa_broadaddr;
 	sinmp = (struct sockaddr_in *) ifa->ifa_dstaddr;
 #else // non-getifaddrs () code for Linux variants
-	if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-		FAIL ("Creating socket () failure during broadcast detection: %m");
+	sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (sock < 0)
+		FAIL ("Creating IP socket failed:\n%m");
 #	ifdef SIOCGIFCOUNT
-	if (ioctl (sock, SIOCGIFCOUNT, &cnt))
+	if (!_IOCTL (sock, SIOCGIFCOUNT, &cnt))
 		{ /* //msg ("Getting iterface count error: %m"); */ }
 	else
 		cnt = cnt * 2 + 2;
 #	endif
 	ifconf.ifc_len = cnt * sizeof (struct ifreq);
 	chk (ifconf.ifc_req = d_malloc (ifconf.ifc_len));
-	if (!_IOCTL (sock, SIOCGIFCONF, &ifconf) || (ifconf.ifc_len % sizeof (struct ifreq))) {
-	close (sock);
-	FAIL ("ioctl (SIOCGIFCONF) failure during broadcast detection: %m");
-	}
+#ifdef _DEBUG
+	memset (ifconf.ifc_req, 0, ifconf.ifc_len);
+	ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
+	if (ioRes < 0) {
+#else
+	 if (!_IOCTL (sock, SIOCGIFCONF, &ifconf)) {
+#endif
+		close (sock);
+		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+		}
+	if (ifconf.ifc_len % sizeof (struct ifreq)) {
+		close (sock);
+		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
+		}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
 chk (broads = d_malloc (cnt * sizeof (*broads)));
 broadsize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (udp,\"%s\",SIOCGIFFLAGS) error: %m", ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFFLAGS)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
 		}
 	if (((ifconf.ifc_req [i].ifr_flags & IF_REQFLAGS) != IF_REQFLAGS) ||
 		  (ifconf.ifc_req [i].ifr_flags & IF_NOTFLAGS))
 		continue;
 	if (!_IOCTL (sock, (ifconf.ifc_req [i].ifr_flags & IFF_BROADCAST) ? SIOCGIFBRDADDR : SIOCGIFDSTADDR, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (udp,\"%s\",SIOCGIF{DST/BRD}ADDR) error: %m",ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIF{DST/BRD}ADDR)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinp = (struct sockaddr_in *) &ifconf.ifc_req [i].ifr_broadaddr;
 	if (!_IOCTL (sock, SIOCGIFNETMASK, ifconf.ifc_req + i)) {
 		close (sock);
-		FAIL ("ioctl (udp,\"%s\",SIOCGIFNETMASK) error: %m", ifconf.ifc_req [i].ifr_name);
+		FAIL ("ioctl (UDP (%d),\"%s\",SIOCGIFNETMASK)\nerror: %m", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinmp = (struct sockaddr_in *)&ifconf.ifc_req [i].ifr_addr;
 	if (sinp->sin_family!=AF_INET || sinmp->sin_family!=AF_INET) 
@@ -759,7 +772,7 @@ else {
 		memcpy (ns,s,s2-s);
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 
-			//msg ("Ignored broadcast-destination \"%s\" as being invalid",ns);
+			//msg ("Ignored IP interface-destination \"%s\" as being invalid",ns);
 		d_free (ns);
 		chkbroadsize ();
 		sin=broads + broadnum++;
@@ -918,8 +931,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 /* Here we'll send the packet to our host. If it is unicast packet, send
- * it to IP address/port as retrieved from IPX address. Otherwise (broadcast)
- * we'll repeat the same data to each host in our broadcasting list.
+ * it to IP address/port as retrieved from IPX address. Otherwise (IP interface)
+ * we'll repeat the same data to each host in our IP interfaceing list.
  */
 
 static int UDPSendPacket (
@@ -1149,7 +1162,7 @@ return 1;
 /* Here we will receive new packet to the given buffer. Both formats of packets
  * are supported, we fallback to old format when first obsolete packet is seen.
  * If the (valid) packet is received from unknown host, we will add it to our
- * broadcasting list. FIXME: For now such autoconfigured hosts are NEVER removed.
+ * IP interfaceing list. FIXME: For now such autoconfigured hosts are NEVER removed.
  */
 
 static int UDPReceivePacket (

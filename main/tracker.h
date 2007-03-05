@@ -6,7 +6,7 @@
 
 typedef unsigned char tUdpAddress [6];
 
-#define UDP_ADDR(_a)	*((unsigned long *) (_a))
+#define UDP_ADDR(_a)	*((unsigned int *) (_a))
 #define UDP_PORT(_a)	*((short *) (((char *) (_a)) + 4))
 
 #define	MAX_TRACKER_SERVERS	(512 / sizeof (tUdpAddress))
@@ -26,7 +26,7 @@ int AddServerToTracker (void);
 int RequestServerListFromTracker (void);
 int ReceiveServerListFromTracker (ubyte *data);
 void SetServerFromList (tServerList *psl, int i);
-int IsTracker (unsigned long ip, ushort port);
+int IsTracker (unsigned int addr, ushort port);
 int GetServerFromList (int i);
 int ActiveTrackerCount (int bQueryTrackers);
 

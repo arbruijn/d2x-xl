@@ -992,7 +992,7 @@ int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 	static float	fLightRanges [3] = {10, 14.142f, 20};
 
 	int				j, nType, bInRad;
-	float				fLightRange = fLightRanges [gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].nLightRange : 1];
+	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
 						vertColor = {0.0f, 0.0f, 0.0f, 1.0f};
