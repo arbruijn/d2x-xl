@@ -7,7 +7,7 @@ double octaves = 6;
 
 double Noise1D (int x)			 
 {
-double h = (long) pow (x << 13, x);
+double h = (int) pow (x << 13, x);
 h = h * (h * (h * 15731 + 789221) + 1376312589);
 return 1.0 - ((int) h & 0x7fffffff) / 1073741824.0;    
 }

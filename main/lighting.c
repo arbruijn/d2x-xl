@@ -1055,7 +1055,7 @@ if (flP)
 #ifdef EDITOR
 
 //returns 1 if ok, 0 if error
-int AddFlicker (int nSegment, int nSide, fix delay, unsigned long mask)
+int AddFlicker (int nSegment, int nSide, fix delay, unsigned int mask)
 {
 	int l;
 	tFlickeringLight *flP;

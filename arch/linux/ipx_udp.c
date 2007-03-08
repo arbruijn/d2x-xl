@@ -1177,7 +1177,7 @@ static int UDPReceivePacket (
 if (0 > (dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize))) {
 		return -1;
 	}
-bTracker = IsTracker (* ((unsigned long *) &fromAddr.sin_addr), * ((ushort *) &fromAddr.sin_port));
+bTracker = IsTracker (* ((unsigned int *) &fromAddr.sin_addr), * ((ushort *) &fromAddr.sin_port));
 #if UDPDEBUG
 	//msg ("ReceivePacket, dataLen=%d", dataLen);
 	//printf (MSGHDR "recvfrom ((%d-8=%d),",dataLen,dataLen-8);

@@ -758,10 +758,10 @@ else {
 #if 1
 if ((triggers == gameData.trigs.triggers) && 
 	 (trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-	long trigP = gameStates.app.nSDLTicks;
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (trigP - gameData.trigs.delay [nTrigger] < 750))
+	int t = gameStates.app.nSDLTicks;
+	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
-	gameData.trigs.delay [nTrigger] = trigP;
+	gameData.trigs.delay [nTrigger] = t;
 	}
 #endif
 if (trigP->flags & TF_ONE_SHOT)		//if this is a one-shot...

@@ -22,7 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static int Installed = 0;
 
-static unsigned long old_tv;
+static unsigned int old_tv;
 
 fix TimerGetFixedSeconds()
 {
@@ -34,7 +34,7 @@ fix TimerGetFixedSeconds()
    started as the timer wraps around to 0. Ever had Windows not crash for 47
    consecutive days? Thought not. */
 
-        unsigned long tv_now=timeGetTime()-old_tv;
+        unsigned int tv_now = timeGetTime() - old_tv;
         x=i2f(tv_now/1000) | FixDiv(i2f(tv_now % 1000),i2f(1000);
 	return x;
 }

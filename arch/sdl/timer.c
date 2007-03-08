@@ -42,7 +42,7 @@ QLONG TimerGetFixedSeconds(void)
 
 fix TimerGetFixedSeconds (void)
 {
-	unsigned long ms = SDL_GetTicks ();
+	unsigned int ms = SDL_GetTicks ();
 
 	return secs2f (ms);
 }

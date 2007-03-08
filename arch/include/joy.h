@@ -154,7 +154,7 @@ struct sdl_joystick {
 	int button_map [MAX_BUTTONS_PER_JOYSTICK];
 };
 
-extern struct sdl_joystick/*SDL_Joystick*/ SDL_Joysticks[MAX_JOYSTICKS];
+struct sdl_joystick/*SDL_Joystick*/ SDL_Joysticks[MAX_JOYSTICKS];
 
 //==========================================================================
 // This initializes the joy and does a "quick" calibration which
@@ -163,11 +163,11 @@ extern struct sdl_joystick/*SDL_Joystick*/ SDL_Joysticks[MAX_JOYSTICKS];
 // joystick was detected, 1 if everything is ok.
 // joy_init() is called.
 
-extern int joy_init();
-extern void joy_close();
+int joy_init();
+void joy_close();
 
-extern char joy_installed;
-extern char joy_present;
+char joy_installed;
+char joy_present;
 
 //==========================================================================
 // The following 3 routines can be used to zero in on better joy
@@ -180,9 +180,9 @@ extern char joy_present;
 // left position is usually always 0,0 on most joys.  But, the safest
 // bet is to do all three, or let the user choose which ones to set.
 
-extern void joy_set_ul();
-extern void joy_set_lr();
-extern void joy_set_cen();
+void joy_set_ul();
+void joy_set_lr();
+void joy_set_cen();
 
 
 //==========================================================================
@@ -191,44 +191,44 @@ extern void joy_set_cen();
 // is in the lower right hand corner. Always returns 0,0 if no stick
 // is present.
 
-extern void JoyGetPos(int *x, int *y);
+void JoyGetPos(int *x, int *y);
 
 //==========================================================================
 // This just reads the buttons and returns their status.  When bit 0
 // is 1, button 1 is pressed, when bit 1 is 1, button 2 is pressed.
-extern int JoyGetBtns();
+int JoyGetBtns();
 
 //==========================================================================
 // This returns the number of times a button went either down or up since
 // the last call to this function.
-extern int JoyGetButtonUpCnt(int btn);
-extern int JoyGetButtonDownCnt(int btn);
+int JoyGetButtonUpCnt(int btn);
+int JoyGetButtonDownCnt(int btn);
 
 //==========================================================================
 // This returns how long (in approximate milliseconds) that each of the
 // buttons has been held down since the last call to this function.
 // It is the total time... say you pressed it down for 3 ticks, released
 // it, and held it down for 6 more ticks. The time returned would be 9.
-extern fix JoyGetButtonDownTime(int btn);
+fix JoyGetButtonDownTime(int btn);
 
-extern unsigned long joy_read_raw_buttons();
-extern unsigned long JoyReadRawAxis(unsigned long mask, int *axis);
-extern void JoyFlush();
-extern ubyte JoyGetPresentMask();
-extern void JoySetTimerRate(int maxValue);
-extern int JoyGetTimerRate();
+unsigned int joy_read_raw_buttons();
+unsigned int JoyReadRawAxis(unsigned int mask, int *axis);
+void JoyFlush();
+ubyte JoyGetPresentMask();
+void JoySetTimerRate(int maxValue);
+int JoyGetTimerRate();
 
-extern int JoyGetButtonState(int btn);
-extern void JoySetCenFake(int channel);
-extern ubyte JoyReadStick(ubyte masks, int *axis);
-extern void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max);
-extern void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max);
-extern void JoySetBtnValues(int btn, int state, fix timedown, int downcount, int upcount);
-extern int JoyGetScaledReading(int raw, int axn);
-extern void JoySetSlowReading(int flag);
-extern int JoySetDeadzone (int nRelZone, int nAxis);
+int JoyGetButtonState(int btn);
+void JoySetCenFake(int channel);
+ubyte JoyReadStick(ubyte masks, int *axis);
+void JoyGetCalVals(int *axis_min, int *axis_center, int *axis_max);
+void JoySetCalVals(int *axis_min, int *axis_center, int *axis_max);
+void JoySetBtnValues(int btn, int state, fix timedown, int downcount, int upcount);
+int JoyGetScaledReading(int raw, int axn);
+void JoySetSlowReading(int flag);
+int JoySetDeadzone (int nRelZone, int nAxis);
 
-extern int joyDeadzone [4];
-extern int joyDeadzone_rel [4];
+int joyDeadzone [4];
+int joyDeadzone_rel [4];
 
 #endif // _JOY_H

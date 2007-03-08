@@ -3431,7 +3431,7 @@ void MultiCheckForEntropyWinner ()
 	int		h, i;
 	char		t, bGotRoom [2] = {0, 0};
 
-	static long		countDown;
+	static int		countDown;
 	
 if (!(gameData.app.nGameMode & GM_ENTROPY))
 	return;

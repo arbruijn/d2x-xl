@@ -81,7 +81,7 @@ typedef struct fake_file {
 
 #define MIN(a,b) ((a<b)?a:b)
 
-#define MAKE_SIG(a,b,c,d) (((long)(a)<<24)+((long)(b)<<16)+((c)<<8)+(d))
+#define MAKE_SIG(a,b,c,d) (((int)(a)<<24)+((int)(b)<<16)+((c)<<8)+(d))
 
 #define form_sig MAKE_SIG('F','O','R','M')
 #define ilbm_sig MAKE_SIG('I','L','B','M')
@@ -95,7 +95,7 @@ typedef struct fake_file {
 #define dlta_sig MAKE_SIG('D','L','T','A')
 
 #ifdef _DEBUG
-//void printsig(long s)
+//void printsig(int s)
 //{
 //	char *t=(char *) &s;
 //
@@ -104,7 +104,7 @@ typedef struct fake_file {
 //}
 #endif
 
-long get_sig(FFILE *f)
+int get_sig(FFILE *f)
 {
 	char s[4];
 
@@ -133,10 +133,10 @@ long get_sig(FFILE *f)
 	s[3] = f->data[f->position++];
 #endif
 
-	return(*((long *) s));
+	return(*((int *) s));
 }
 
-int put_sig(long sig,FILE *f)
+int put_sig(int sig,FILE *f)
 {
 	char *s = (char *) &sig;
 
@@ -187,7 +187,7 @@ int put_word(int n,FILE *f)
 	return put_byte(c1,f);
 }
 
-int put_long(long n,FILE *f)
+int put_long(int n,FILE *f)
 {
 	int n0,n1;
 
@@ -199,7 +199,7 @@ int put_long(long n,FILE *f)
 
 }
 
-long get_long(FFILE *f)
+int get_long(FFILE *f)
 {
 	unsigned char c0,c1,c2,c3;
 
@@ -221,11 +221,11 @@ long get_long(FFILE *f)
 
 //  if (c0==0xff) return(EOF);
 
-	return(((long)c3<<24) + ((long)c2<<16) + ((long)c1<<8) + c0);
+	return(((int)c3<<24) + ((int)c2<<16) + ((int)c1<<8) + c0);
 
 }
 
-int parse_bmhd(FFILE *ifile,long len,iff_bitmap_header *bmheader)
+int parse_bmhd(FFILE *ifile,int len,iff_bitmap_header *bmheader)
 {
 	len++;  /* so no "parm not used" warning */
 
@@ -266,7 +266,7 @@ int parse_bmhd(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 
 
 //  the buffer pointed to by raw_data is stuffed with a pointer to decompressed pixel data
-int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
+int parse_body(FFILE *ifile,int len,iff_bitmap_header *bmheader)
 {
 	unsigned char  *p=bmheader->raw_data;
 	int width,depth;
@@ -386,11 +386,11 @@ int parse_body(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 }
 
 //modify passed bitmap
-int parse_delta(FFILE *ifile,long len,iff_bitmap_header *bmheader)
+int parse_delta(FFILE *ifile,int len,iff_bitmap_header *bmheader)
 {
 	unsigned char  *p=bmheader->raw_data;
 	int y;
-	long chunk_end = ifile->position + len;
+	int chunk_end = ifile->position + len;
 
 	get_long(ifile);		//longword, seems to be equal to 4.  Don't know what it is
 
@@ -455,7 +455,7 @@ int parse_delta(FFILE *ifile,long len,iff_bitmap_header *bmheader)
 }
 
 //  the buffer pointed to by raw_data is stuffed with a pointer to bitplane pixel data
-void skip_chunk(FFILE *ifile,long len)
+void skip_chunk(FFILE *ifile,int len)
 {
 	//int c,i;
 	int ilen;
@@ -477,11 +477,11 @@ void skip_chunk(FFILE *ifile,long len)
 
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int iff_parse_ilbm_pbm(FFILE *ifile,long formType,iff_bitmap_header *bmheader,int form_len,grsBitmap *prev_bm)
+int iff_parse_ilbm_pbm(FFILE *ifile,int formType,iff_bitmap_header *bmheader,int form_len,grsBitmap *prev_bm)
 {
-	long sig,len;
+	int sig,len;
 	//char ignore=0;
-	long start_pos,end_pos;
+	int start_pos,end_pos;
 
 	start_pos = ifile->position;
 	end_pos = start_pos-4+form_len;
@@ -723,8 +723,8 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 {
 	int ret;			//return code
 	iff_bitmap_header bmheader;
-	long sig,form_len;
-	long formType;
+	int sig,form_len;
+	int formType;
 
 	bmheader.raw_data = bm->bm_texBuf;
 
@@ -825,7 +825,7 @@ int iff_read_into_bitmap(char *ifilename, grsBitmap *bm)
 int write_bmhd(FILE *ofile,iff_bitmap_header *bitmap_header)
 {
 	put_sig(bmhd_sig,ofile);
-	put_long((long) BMHD_SIZE,ofile);
+	put_long((int) BMHD_SIZE,ofile);
 
 	put_word(bitmap_header->w,ofile);
 	put_word(bitmap_header->h,ofile);
@@ -947,9 +947,9 @@ int write_body(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)
 {
 	int w=bitmap_header->w,h=bitmap_header->h;
 	int y,odd=w&1;
-	long len = EVEN(w) * h,newlen,total_len=0;
+	int len = EVEN(w) * h,newlen,total_len=0;
 	ubyte *p=bitmap_header->raw_data,*new_span;
-	long save_pos;
+	int save_pos;
 
 	put_sig(body_sig,ofile);
 	save_pos = ftell(ofile);
@@ -994,7 +994,7 @@ int write_tiny(CFILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)
 	int x,y,xofs,odd;
 	ubyte *p = bitmap_header->raw_data;
 	ubyte tspan[80],new_span[80*2];
-	long save_pos;
+	int save_pos;
 
 	skip = max((bitmap_header->w+79)/80,(bitmap_header->h+63)/64);
 
@@ -1041,9 +1041,9 @@ int write_tiny(CFILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)
 int write_pbm(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)			/* writes a pbm iff file */
 {
 	int ret;
-	long raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
-	long body_size,tiny_size,pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof(pal_entry)*(1<<bitmap_header->nplanes)+8;
-	long save_pos;
+	int raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
+	int body_size,tiny_size,pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof(pal_entry)*(1<<bitmap_header->nplanes)+8;
+	int save_pos;
 
 ////printf("write_pbm\n");
 
@@ -1135,8 +1135,8 @@ int iff_read_animbrush(char *ifilename,grsBitmap **bm_list,int max_bitmaps,int *
 	int ret;			//return code
 	FFILE ifile;
 	iff_bitmap_header bmheader;
-	long sig,form_len;
-	long formType;
+	int sig,form_len;
+	int formType;
 
 	*n_bitmaps=0;
 

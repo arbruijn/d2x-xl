@@ -77,8 +77,8 @@ return -1;
 
 static void CallTracker (int i, ubyte *pData, int nDataLen)
 {
-	unsigned long		network = 0;
-	tUdpAddress			tracker;
+	unsigned int	network = 0;
+	tUdpAddress		tracker;
 
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));

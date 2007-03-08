@@ -400,7 +400,7 @@ int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc, int nColo
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
 	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	ubyte		*pData, *pSrc, *pDest;
-	long		cSum [4];
+	int		cSum [4];
 
 if (!bmP->bm_texBuf)
 	return 0;

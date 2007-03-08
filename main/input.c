@@ -88,7 +88,7 @@ tControlInfo Controls [4];
 			else if ((_val) > (_max)) \
 				(_val) = (fix) (_max)
 
-static long kcFrameCount = 0;
+static int	kcFrameCount = 0;
 static int	nMaxTurnRate;
 
 

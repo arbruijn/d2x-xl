@@ -51,6 +51,6 @@ int	RBAResume();
 int RBAGetTrackNum();
 
 // get the cddb discid for the current cd.
-unsigned long RBAGetDiscID();
+unsigned int RBAGetDiscID();
 
 #endif

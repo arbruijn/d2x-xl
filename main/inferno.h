@@ -894,7 +894,7 @@ extern int nMaxNearestLights [21];
 typedef struct tFlickeringLight {
 	short				nSegment;
 	short				nSide;
-	unsigned long	mask;     // determines flicker pattern
+	unsigned int	mask;     // determines flicker pattern
 	fix				timer;    // time until next change
 	fix				delay;    // time between changes
 } tFlickeringLight;
@@ -1066,7 +1066,7 @@ typedef struct tTriggerData {
 	tTrigger				objTriggers [MAX_TRIGGERS];
 	tObjTriggerRef		objTriggerRefs [MAX_OBJ_TRIGGERS];
 	short					firstObjTrigger [MAX_OBJECTS_D2X];
-	long					delay [MAX_TRIGGERS];
+	int					delay [MAX_TRIGGERS];
 	int					nTriggers;
 	int					nObjTriggers;
 } tTriggerData;

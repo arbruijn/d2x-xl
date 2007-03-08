@@ -143,10 +143,10 @@ static void patternRow4Pixels2x1(unsigned char *pFrame, unsigned char pat, unsig
 // depending on the corresponding two-bit value in pat0, pat1, pat2, and pat3.
 static void patternQuadrant4Pixels(unsigned char *pFrame, unsigned char pat0, unsigned char pat1, unsigned char pat2, unsigned char pat3, unsigned char *p)
 {
-	unsigned long mask = 0x00000003UL;
+	unsigned int mask = 3;
 	int shift=0;
 	int i;
-	unsigned long pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
+	unsigned int pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
 
 	for (i=0; i<16; i++)
 	{
