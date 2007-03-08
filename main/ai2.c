@@ -575,7 +575,7 @@ else
 	fq.startSeg	= objP->nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				= 
-fq.radP0				= F1_0/4;
+fq.radP1				= F1_0/4;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???

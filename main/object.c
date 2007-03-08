@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
-#define LIMIT_PHYSICS_FPS	1
+#define LIMIT_PHYSICS_FPS	0
 
 extern vmsVector playerThrust;
 extern int bSpeedBost;

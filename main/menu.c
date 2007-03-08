@@ -3100,7 +3100,7 @@ do {
 		optSmartWeaponSwitch = opt++;
 		ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = opt++;
-		ADD_CHECK (opt, TXT_AI_AWARENESS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_AWARENESS);
+		ADD_CHECK (opt, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = opt++;
 		}
 	ADD_TEXT (opt, "", 0);
