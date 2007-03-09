@@ -591,7 +591,7 @@ retryMove:
 				n = FindSegByPoint (&objP->vLastPos, objP->nSegment);
 			if (n == -1) {
 				objP->position.vPos = objP->vLastPos;
-				RelinkObject (nObject, n);
+				RelinkObject (nObject, objP->nSegment);
 				}
 			else {
 				vmsVector vCenter;
