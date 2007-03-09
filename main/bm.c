@@ -1204,6 +1204,7 @@ int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 	int			nBotTypeSave = gameData.bots.nTypes [0], 
 					nBotJointSave = gameData.bots.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
+	tRobotInfo	botInfoSave;
 	char			szFilename [FILENAME_LEN];
 
 ChangeFilenameExtension (szFilename, szLevelName, ".hxm");
@@ -1233,8 +1234,15 @@ for (j = 0; j < t; j++) {
 		}
 	if (bAltModels)
 		CFSeek (fp, sizeof (tRobotInfo), SEEK_CUR);
-	else
+	else {
+		botInfoSave = gameData.bots.info [0][i];
 		RobotInfoReadN (gameData.bots.info [0] + i, 1, fp);
+		//preserve original boss flag for modified Descent 2 and Vertigo bosses to allow
+		//proper handling of special boss properties like being invulnerable to certain
+		//weapon types or having that special vulnerable spot
+		if (gameData.bots.info [0][i].bossFlag && botInfoSave.bossFlag)
+			gameData.bots.info [0][i].bossFlag = botInfoSave.bossFlag;
+		}
 	}
 t = CFReadInt (fp);			//read number of joints
 for (j = 0; j < t; j++) {
@@ -1242,7 +1250,7 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 			Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-					i,szLevelName,MAX_ROBOT_JOINTS-1);
+					i, szLevelName, MAX_ROBOT_JOINTS - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -1253,7 +1261,7 @@ for (j = 0; j < t; j++) {
 		}
 	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
 		Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-				i,szLevelName,gameData.bots.nJoints-1);
+				i, szLevelName, gameData.bots.nJoints - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -1267,7 +1275,7 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-					i,szLevelName,gameData.models.nPolyModels-1);
+					 i, szLevelName, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -1326,7 +1334,8 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		}
 	else if (i < 0 || i >= MAX_OBJ_BITMAPS) {
-		Error ("Object bitmap number (%d) out of range in (%s).  Range = [0..%d].",i,szLevelName,MAX_OBJ_BITMAPS-1);
+		Error ("Object bitmap number (%d) out of range in (%s).  Range = [0..%d].",
+				 i, szLevelName, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -1338,7 +1347,8 @@ t = CFReadInt (fp);			//read number of objbitmapptrs
 for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read objbitmapptr number
 	if (i<0 || i>=MAX_OBJ_BITMAPS) {
-		Error ("Object bitmap pointer (%d) out of range in (%s).  Range = [0..%d].",i,szLevelName,MAX_OBJ_BITMAPS-1);
+		Error ("Object bitmap pointer (%d) out of range in (%s).  Range = [0..%d].",
+				 i, szLevelName, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;

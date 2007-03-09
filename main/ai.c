@@ -1668,7 +1668,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 
 
 //	-------------------------------------------------------------------------------------------------
-extern fix Boss_invulnerable_dot;
+extern fix nBossInvulDot;
 
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
@@ -1679,7 +1679,7 @@ gameData.ai.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead=0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
-Boss_invulnerable_dot = F1_0/4 - i2f (gameStates.app.nDifficultyLevel)/8;
+nBossInvulDot = F1_0/4 - i2f (gameStates.app.nDifficultyLevel)/8;
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.boss [i].nDyingStartTime = 0;
 }

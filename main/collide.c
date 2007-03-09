@@ -1516,19 +1516,9 @@ return 1;
 
 extern int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);
 
-//--ubyte	Boss_teleports [NUM_D2_BOSSES] = 				{1, 1, 1, 1, 1, 1};		// Set byte if this boss can teleport
-//--ubyte	Boss_cloaks [NUM_D2_BOSSES] = 					{1, 1, 1, 1, 1, 1};		// Set byte if this boss can cloak
-//--ubyte	Boss_spews_bots_energy [NUM_D2_BOSSES] = 	{1, 1, 0, 0, 1, 1};		//	Set byte if boss spews bots when hit by energy weapon.
-//--ubyte	Boss_spews_bots_matter [NUM_D2_BOSSES] = 	{0, 0, 1, 0, 1, 1};		//	Set byte if boss spews bots when hit by matter weapon.
-//--ubyte	Boss_invulnerable_energy [NUM_D2_BOSSES] = {0, 0, 1, 1, 0, 0};		//	Set byte if boss is invulnerable to energy weapons.
-//--ubyte	Boss_invulnerable_matter [NUM_D2_BOSSES] = {0, 0, 0, 1, 0, 0};		//	Set byte if boss is invulnerable to matter weapons.
-//--ubyte	Boss_invulnerable_spot [NUM_D2_BOSSES] = 	{0, 0, 0, 0, 1, 1};		//	Set byte if boss is invulnerable in all but a certain spot. (Dot product fVec|vec_to_collision < BOSS_INVULNERABLE_DOT)
-
-//#define	BOSS_INVULNERABLE_DOT	0		//	If a boss is invulnerable over most of his body, fVec (dot)vec_to_collision must be less than this for damage to occur.
-int	Boss_invulnerable_dot = 0;
-
-int	Buddy_gave_hintCount = 5;
-fix	LastTime_buddy_gave_hint = 0;
+int	nBossInvulDot = 0;
+int	nBuddyGaveHintCount = 5;
+fix	xLastTimeBuddyGameHint = 0;
 
 //	------------------------------------------------------------------------------------------------------
 //	Return true if damage done to boss, else return false.
@@ -1566,23 +1556,23 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
-	if (dot > Boss_invulnerable_dot) {
-		short	new_obj;
+	if (dot > nBossInvulDot) {
+		short	nNewObj;
 		short	nSegment;
 
 		nSegment = FindSegByPoint (vHitPt, robot->nSegment);
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 		bDamage = 0;
 
-		if (LastTime_buddy_gave_hint == 0)
-			LastTime_buddy_gave_hint = d_rand ()*32 + F1_0*16;
+		if (xLastTimeBuddyGameHint == 0)
+			xLastTimeBuddyGameHint = d_rand ()*32 + F1_0*16;
 
-		if (Buddy_gave_hintCount) {
-			if (LastTime_buddy_gave_hint + F1_0*20 < gameData.time.xGame) {
+		if (nBuddyGaveHintCount) {
+			if (xLastTimeBuddyGameHint + F1_0*20 < gameData.time.xGame) {
 				int	sval;
 
-				Buddy_gave_hintCount--;
-				LastTime_buddy_gave_hint = gameData.time.xGame;
+				nBuddyGaveHintCount--;
+				xLastTimeBuddyGameHint = gameData.time.xGame;
 				sval = (d_rand ()*4) >> 15;
 				switch (sval) {
 					case 0:	
@@ -1605,14 +1595,14 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		//	Cause weapon to bounce.
 		//	Make a copy of this weapon, because the physics wants to destroy it.
 		if (!WI_matter (weapon->id)) {
-			new_obj = CreateObject (weapon->nType, weapon->id, -1, weapon->nSegment, &weapon->position.vPos, 
+			nNewObj = CreateObject (weapon->nType, weapon->id, -1, weapon->nSegment, &weapon->position.vPos, 
 											&weapon->position.mOrient, weapon->size, weapon->controlType, weapon->movementType, weapon->renderType, 1);
 
-			if (new_obj != -1) {
+			if (nNewObj != -1) {
 				vmsVector	vec_to_point;
 				vmsVector	weap_vec;
 				fix			speed;
-				tObject		*newObjP = gameData.objs.objects + new_obj;
+				tObject		*newObjP = gameData.objs.objects + nNewObj;
 
 				if (weapon->renderType == RT_POLYOBJ) {
 					newObjP->rType.polyObjInfo.nModel = gameData.weapons.info [newObjP->id].nModel;

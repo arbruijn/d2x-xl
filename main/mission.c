@@ -398,7 +398,7 @@ switch (gameData.missions.nD1BuiltinHogSize) {
 		break;
 
 	default:
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		Warning (TXT_D1_HOGSIZE, gameData.missions.nD1BuiltinHogSize);
 #endif
 		// fall through

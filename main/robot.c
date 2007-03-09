@@ -332,90 +332,90 @@ static int jointlist_read_n(jointlist *jl, int n, CFILE *fp)
 /*
  * reads n tRobotInfo structs from a CFILE
  */
-int RobotInfoReadN(tRobotInfo *ri, int n, CFILE *fp)
+int RobotInfoReadN(tRobotInfo *pri, int n, CFILE *fp)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++) {
-		ri[i].nModel = CFReadInt(fp);
-		for (j = 0; j < MAX_GUNS; j++)
-			CFReadVector(&(ri[i].gunPoints[j]), fp);
-		CFRead(ri[i].gunSubModels, MAX_GUNS, 1, fp);
+for (i = 0; i < n; i++, pri++) {
+	pri->nModel = CFReadInt(fp);
+	for (j = 0; j < MAX_GUNS; j++)
+		CFReadVector(&(pri->gunPoints[j]), fp);
+	CFRead(pri->gunSubModels, MAX_GUNS, 1, fp);
 
-		ri[i].nExp1VClip = CFReadShort(fp);
-		ri[i].nExp1Sound = CFReadShort(fp);
+	pri->nExp1VClip = CFReadShort(fp);
+	pri->nExp1Sound = CFReadShort(fp);
 
-		ri[i].nExp2VClip = CFReadShort(fp);
-		ri[i].nExp2Sound = CFReadShort(fp);
+	pri->nExp2VClip = CFReadShort(fp);
+	pri->nExp2Sound = CFReadShort(fp);
 
-		ri[i].nWeaponType = CFReadByte(fp);
-		ri[i].nSecWeaponType = CFReadByte(fp);
-		ri[i].nGuns = CFReadByte(fp);
-		ri[i].containsId = CFReadByte(fp);
+	pri->nWeaponType = CFReadByte(fp);
+	pri->nSecWeaponType = CFReadByte(fp);
+	pri->nGuns = CFReadByte(fp);
+	pri->containsId = CFReadByte(fp);
 
-		ri[i].containsCount = CFReadByte(fp);
-		ri[i].containsProb = CFReadByte(fp);
-		ri[i].containsType = CFReadByte(fp);
-		ri[i].kamikaze = CFReadByte(fp);
+	pri->containsCount = CFReadByte(fp);
+	pri->containsProb = CFReadByte(fp);
+	pri->containsType = CFReadByte(fp);
+	pri->kamikaze = CFReadByte(fp);
 
-		ri[i].scoreValue = CFReadShort(fp);
-		ri[i].badass = CFReadByte(fp);
-		ri[i].energyDrain = CFReadByte(fp);
+	pri->scoreValue = CFReadShort(fp);
+	pri->badass = CFReadByte(fp);
+	pri->energyDrain = CFReadByte(fp);
 
-		ri[i].lighting = CFReadFix(fp);
-		ri[i].strength = CFReadFix(fp);
+	pri->lighting = CFReadFix(fp);
+	pri->strength = CFReadFix(fp);
 
-		ri[i].mass = CFReadFix(fp);
-		ri[i].drag = CFReadFix(fp);
+	pri->mass = CFReadFix(fp);
+	pri->drag = CFReadFix(fp);
 
-		for (j = 0; j < NDL; j++)
-			ri[i].fieldOfView[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			ri[i].primaryFiringWait[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			ri[i].secondaryFiringWait[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			ri[i].turnTime[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			ri[i].xMaxSpeed[j] = CFReadFix(fp);
-		for (j = 0; j < NDL; j++)
-			ri[i].circleDistance[j] = CFReadFix(fp);
-		CFRead(ri[i].nRapidFireCount, NDL, 1, fp);
+	for (j = 0; j < NDL; j++)
+		pri->fieldOfView[j] = CFReadFix(fp);
+	for (j = 0; j < NDL; j++)
+		pri->primaryFiringWait[j] = CFReadFix(fp);
+	for (j = 0; j < NDL; j++)
+		pri->secondaryFiringWait[j] = CFReadFix(fp);
+	for (j = 0; j < NDL; j++)
+		pri->turnTime[j] = CFReadFix(fp);
+	for (j = 0; j < NDL; j++)
+		pri->xMaxSpeed[j] = CFReadFix(fp);
+	for (j = 0; j < NDL; j++)
+		pri->circleDistance[j] = CFReadFix(fp);
+	CFRead(pri->nRapidFireCount, NDL, 1, fp);
 
-		CFRead(ri[i].evadeSpeed, NDL, 1, fp);
+	CFRead(pri->evadeSpeed, NDL, 1, fp);
 
-		ri[i].cloakType = CFReadByte(fp);
-		ri[i].attackType = CFReadByte(fp);
+	pri->cloakType = CFReadByte(fp);
+	pri->attackType = CFReadByte(fp);
 
-		ri[i].seeSound = CFReadByte(fp);
-		ri[i].attackSound = CFReadByte(fp);
-		ri[i].clawSound = CFReadByte(fp);
-		ri[i].tauntSound = CFReadByte(fp);
+	pri->seeSound = CFReadByte(fp);
+	pri->attackSound = CFReadByte(fp);
+	pri->clawSound = CFReadByte(fp);
+	pri->tauntSound = CFReadByte(fp);
 
-		ri[i].bossFlag = CFReadByte(fp);
-		ri[i].companion = CFReadByte(fp);
-		ri[i].smartBlobs = CFReadByte(fp);
-		ri[i].energyBlobs = CFReadByte(fp);
+	pri->bossFlag = CFReadByte(fp);
+	pri->companion = CFReadByte(fp);
+	pri->smartBlobs = CFReadByte(fp);
+	pri->energyBlobs = CFReadByte(fp);
 
-		ri[i].thief = CFReadByte(fp);
-		ri[i].pursuit = CFReadByte(fp);
-		ri[i].lightcast = CFReadByte(fp);
-		ri[i].bDeathRoll = CFReadByte(fp);
+	pri->thief = CFReadByte(fp);
+	pri->pursuit = CFReadByte(fp);
+	pri->lightcast = CFReadByte(fp);
+	pri->bDeathRoll = CFReadByte(fp);
 
-		ri[i].flags = CFReadByte(fp);
-		CFRead(ri[i].pad, 3, 1, fp);
+	pri->flags = CFReadByte(fp);
+	CFRead(pri->pad, 3, 1, fp);
 
-		ri[i].deathrollSound = CFReadByte(fp);
-		ri[i].glow = CFReadByte(fp);
-		ri[i].behavior = CFReadByte(fp);
-		ri[i].aim = CFReadByte(fp);
+	pri->deathrollSound = CFReadByte(fp);
+	pri->glow = CFReadByte(fp);
+	pri->behavior = CFReadByte(fp);
+	pri->aim = CFReadByte(fp);
 
-		for (j = 0; j < MAX_GUNS + 1; j++)
-			jointlist_read_n(ri[i].animStates[j], N_ANIM_STATES, fp);
+	for (j = 0; j < MAX_GUNS + 1; j++)
+		jointlist_read_n(pri->animStates[j], N_ANIM_STATES, fp);
 
-		ri[i].always_0xabcd = CFReadInt(fp);
+	pri->always_0xabcd = CFReadInt(fp);
 	}
-	return i;
+return i;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
