@@ -216,7 +216,8 @@ inline int ControlsReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.bSyncJoyAxes && (kcJoystick [23].value == i))		// If this is the throttle
+if (gameOpts->input.bSyncJoyAxes && 
+	 ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
 if (h > joyDeadzoneScaled) 
 	h = ((h - joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
@@ -265,7 +266,7 @@ if (gameStates.limitFPS.bJoystick) {
 #endif
 				}	
 			}
-		bUseJoystick=1;
+		bUseJoystick = 1;
 		}
 	else {
 		for (i = 0; i < JOY_MAX_AXES; i++)
@@ -422,7 +423,7 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.app.bAutoMap)) {
 		//----------------Weapon 1----------------
 		if ((HaveD2XKey (kcD2X, 0)) ||
 			 (JoyGetButtonState (kcD2X [1].value) &&
-			 (d2xJoystickState [0]!=d2xJoystick_ostate [0])))
+			 (d2xJoystickState [0] != d2xJoystick_ostate [0])))
 		{
 			//int i, valu=0;
 			DoSelectWeapon (0,0);
@@ -436,49 +437,49 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.app.bAutoMap)) {
 		//----------------Weapon 2----------------
 		if ((HaveD2XKey (kcD2X, 2)) ||
 			 (JoyGetButtonState (kcD2X [3].value) &&
-			 (d2xJoystickState [1]!=d2xJoystick_ostate [1])))
+			 (d2xJoystickState [1] != d2xJoystick_ostate [1])))
 			DoSelectWeapon (1,0);
 		//----------------Weapon 3----------------
 		if ((HaveD2XKey (kcD2X, 4)) ||
 			 (JoyGetButtonState (kcD2X [5].value) &&
-			 (d2xJoystickState [2]!=d2xJoystick_ostate [2])))
+			 (d2xJoystickState [2] != d2xJoystick_ostate [2])))
 			DoSelectWeapon (2,0);
 		//----------------Weapon 4----------------
 		if ((HaveD2XKey (kcD2X, 6)) ||
 			 (JoyGetButtonState (kcD2X [7].value) &&
-			 (d2xJoystickState [3]!=d2xJoystick_ostate [3])))
+			 (d2xJoystickState [3] != d2xJoystick_ostate [3])))
 			DoSelectWeapon (3,0);
 		//----------------Weapon 5----------------
 		if ((HaveD2XKey (kcD2X, 8)) ||
 			 (JoyGetButtonState (kcD2X [9].value) &&
-			 (d2xJoystickState [4]!=d2xJoystick_ostate [4])))
+			 (d2xJoystickState [4] != d2xJoystick_ostate [4])))
 			DoSelectWeapon (4,0);
 
 		//--------- Read secondary weapon select ----------
 		//----------------Weapon 6----------------
 		if ((HaveD2XKey (kcD2X, 10)) ||
 			 (JoyGetButtonState (kcD2X [11].value) &&
-			 (d2xJoystickState [5]!=d2xJoystick_ostate [5])))
+			 (d2xJoystickState [5] != d2xJoystick_ostate [5])))
 			DoSelectWeapon (0,1);
 		//----------------Weapon 7----------------
 		if ((HaveD2XKey (kcD2X, 12)) ||
 			 (JoyGetButtonState (kcD2X [13].value) &&
-			 (d2xJoystickState [6]!=d2xJoystick_ostate [6])))
+			 (d2xJoystickState [6] != d2xJoystick_ostate [6])))
 			DoSelectWeapon (1,1);
 		//----------------Weapon 8----------------
 		if ((HaveD2XKey (kcD2X, 14)) ||
 			 (JoyGetButtonState (kcD2X [15].value) &&
-			 (d2xJoystickState [7]!=d2xJoystick_ostate [7])))
+			 (d2xJoystickState [7] != d2xJoystick_ostate [7])))
 			DoSelectWeapon (2,1);
 		//----------------Weapon 9----------------
 		if ((HaveD2XKey (kcD2X, 16)) ||
 			 (JoyGetButtonState (kcD2X [17].value) &&
-			 (d2xJoystickState [8]!=d2xJoystick_ostate [8])))
+			 (d2xJoystickState [8] != d2xJoystick_ostate [8])))
 			DoSelectWeapon (3,1);
 		//----------------Weapon 0----------------
 		if ((HaveD2XKey (kcD2X, 18)) ||
 			 (JoyGetButtonState (kcD2X [19].value) &&
-			 (d2xJoystickState [9]!=d2xJoystick_ostate [9])))
+			 (d2xJoystickState [9] != d2xJoystick_ostate [9])))
 			DoSelectWeapon (4,1);
 		memcpy (d2xJoystick_ostate,d2xJoystickState,10*sizeof (int));
 	}
@@ -709,119 +710,125 @@ return gameOpts->input.bLinearJoySens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] 
 
 void ControlsDoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
-	int	v;
+	int	i, v;
 
-if (bGetSlideBank == 0) {
-	if ((v = kcJoystick [5].value) < 255) 
-		*bSlideOn |= JoyGetButtonState (v);
-	if ((v = kcJoystick [10].value) < 255)
-		*bBankOn |= JoyGetButtonState (v);
-	return;
-	}
-// Buttons
-if (bGetSlideBank == 2) {
-	if ((v = kcJoystick [0].value) < 255) {
-		Controls [0].firePrimaryState |= JoyGetButtonState (v);
-		Controls [0].firePrimaryDownCount += JoyGetButtonDownCnt (v);
+for (i = 0; i < 60; i += 30) {
+	if (bGetSlideBank == 0) {
+		if ((v = kcJoystick [i + 5].value) < 255) 
+			*bSlideOn |= JoyGetButtonState (v);
+		if ((v = kcJoystick [i + 10].value) < 255)
+			*bBankOn |= JoyGetButtonState (v);
+		return;
 		}
-	if ((v = kcJoystick [1].value) < 255) {
-		Controls [0].fireSecondaryState |= JoyGetButtonState (v);
-		Controls [0].fireSecondaryDownCount += JoyGetButtonDownCnt (v);
-		}
-	if ((v = kcJoystick [2].value) < 255) 
-		Controls [0].forwardThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [3].value) < 255) 
-		Controls [0].forwardThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [4].value) < 255) 
-		Controls [0].fireFlareDownCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick [6].value) < 255) 
-		Controls [0].sidewaysThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [7].value) < 255) 
-		Controls [0].sidewaysThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [8].value) < 255) 
-		Controls [0].verticalThrustTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [9].value) < 255) 
-		Controls [0].verticalThrustTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [11].value) < 255) 
-		Controls [2].bankTime += JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [12].value) < 255) 
-		Controls [2].bankTime -= JoyGetButtonDownTime (v);
-	if ((v = kcJoystick [25].value) < 255) {
-		Controls [0].rearViewDownCount += JoyGetButtonDownCnt (v);
-		Controls [0].rearViewDownState |= JoyGetButtonState (v);
-		}
-	if ((v = kcJoystick [26].value) < 255) 
-		Controls [0].dropBombDownCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick [27].value) < 255) 
-		Controls [0].afterburnerState |= JoyGetButtonState (v);
-	if ((v = kcJoystick [28].value) < 255) 
-		Controls [0].cyclePrimaryCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick [29].value) < 255) 
-		Controls [0].cycleSecondaryCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick [30].value) < 255) 
-		Controls [0].headlightCount += JoyGetButtonDownCnt (v);
-	if (((v = kcJoystick [31].value) < 255) && JoyGetButtonDownCnt (v))
-		KCToggleBomb ();
-	if ((v = kcJoystick [32].value) < 255) 
-		Controls [0].toggleIconsCount += JoyGetButtonDownCnt (v);
-	if ((v = kcJoystick [33].value) < 255) 
-		Controls [0].automapDownCount += JoyGetButtonDownCnt (v);
+	// Buttons
+	if (bGetSlideBank == 2) {
+		if ((v = kcJoystick [i + 0].value) < 255) {
+			Controls [0].firePrimaryState |= JoyGetButtonState (v);
+			Controls [0].firePrimaryDownCount += JoyGetButtonDownCnt (v);
+			}
+		if ((v = kcJoystick [i + 1].value) < 255) {
+			Controls [0].fireSecondaryState |= JoyGetButtonState (v);
+			Controls [0].fireSecondaryDownCount += JoyGetButtonDownCnt (v);
+			}
+		if ((v = kcJoystick [i + 2].value) < 255) 
+			Controls [0].forwardThrustTime += JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 3].value) < 255) 
+			Controls [0].forwardThrustTime -= JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 4].value) < 255) 
+			Controls [0].fireFlareDownCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 6].value) < 255) 
+			Controls [0].sidewaysThrustTime -= JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 7].value) < 255) 
+			Controls [0].sidewaysThrustTime += JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 8].value) < 255) 
+			Controls [0].verticalThrustTime += JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 9].value) < 255) 
+			Controls [0].verticalThrustTime -= JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 11].value) < 255) 
+			Controls [2].bankTime += JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 12].value) < 255) 
+			Controls [2].bankTime -= JoyGetButtonDownTime (v);
+		if ((v = kcJoystick [i + 19].value) < 255) {
+			Controls [0].rearViewDownCount += JoyGetButtonDownCnt (v);
+			Controls [0].rearViewDownState |= JoyGetButtonState (v);
+			}
+		if ((v = kcJoystick [i + 20].value) < 255) 
+			Controls [0].dropBombDownCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 21].value) < 255) 
+			Controls [0].afterburnerState |= JoyGetButtonState (v);
+		if ((v = kcJoystick [i + 22].value) < 255) 
+			Controls [0].cyclePrimaryCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 23].value) < 255) 
+			Controls [0].cycleSecondaryCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 24].value) < 255) 
+			Controls [0].headlightCount += JoyGetButtonDownCnt (v);
+		if (((v = kcJoystick [i + 25].value) < 255) && JoyGetButtonDownCnt (v))
+			KCToggleBomb ();
+		if ((v = kcJoystick [i + 26].value) < 255) 
+			Controls [0].toggleIconsCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 27].value) < 255) 
+			Controls [0].automapDownCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 28].value) < 255) 
+			Controls [0].useCloakDownCount += JoyGetButtonDownCnt (v);
+		if ((v = kcJoystick [i + 29].value) < 255) 
+			Controls [0].useInvulDownCount += JoyGetButtonDownCnt (v);
 
-	// Axis movements
-	if ((v = kcJoystick [17].value) < 255)
-		if (kcJoystick [18].value)		// If inverted...
-			Controls [0].sidewaysThrustTime += joyAxis [v];
-		else
-			Controls [0].sidewaysThrustTime -= joyAxis [v];
-	if ((v = kcJoystick [19].value) < 255)
-		if (kcJoystick [20].value)		// If inverted...
-			Controls [0].verticalThrustTime -= joyAxis [v];
-		else
-			Controls [0].verticalThrustTime += joyAxis [v];
-	if ((v = kcJoystick [21].value) < 255)
-		if (kcJoystick [22].value)		// If inverted...
-			Controls [2].bankTime += joyAxis [v];
-		else
-			Controls [2].bankTime -= joyAxis [v];
-	if ((v = kcJoystick [23].value) < 255)
-		if (kcJoystick [24].value)		// If inverted...
-			Controls [0].forwardThrustTime += joyAxis [v];
-		else
-			Controls [0].forwardThrustTime -= joyAxis [v];
-
-	// special continuous slide & bank handling
-	if (*bSlideOn) {
-		if ((v = kcJoystick [13].value) < 255)
-			if (kcJoystick [14].value)		// If inverted...
+		// Axis movements
+		if ((v = kcJoystick [i + 15].value) < 255)
+			if (kcJoystick [62].value)		// If inverted...
+				Controls [0].sidewaysThrustTime += joyAxis [v];
+			else
+				Controls [0].sidewaysThrustTime -= joyAxis [v];
+		if ((v = kcJoystick [i + 16].value) < 255)
+			if (kcJoystick [63].value)		// If inverted...
 				Controls [0].verticalThrustTime -= joyAxis [v];
 			else
 				Controls [0].verticalThrustTime += joyAxis [v];
-		if ((v = kcJoystick [15].value) < 255)
-			if (kcJoystick [16].value)		// If inverted...
-				Controls [0].sidewaysThrustTime -= joyAxis [v];
+		if ((v = kcJoystick [i + 17].value) < 255)
+			if (kcJoystick [64].value)		// If inverted...
+				Controls [2].bankTime += joyAxis [v];
 			else
-				Controls [0].sidewaysThrustTime += joyAxis [v];
-		}
-	else {
-		if ((v = kcJoystick [13].value) < 255)
-			if (kcJoystick [14].value)		// If inverted...
-				Controls [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
-			else 
-				Controls [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
-		if (!*bBankOn) {
-			if ((v = kcJoystick [15].value) < 255)
-				if (kcJoystick [16].value)		// If inverted...
-					Controls [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //kcFrameCount;
+				Controls [2].bankTime -= joyAxis [v];
+		if ((v = kcJoystick [i + 18].value) < 255)
+			if (kcJoystick [65].value)		// If inverted...
+				Controls [0].forwardThrustTime += joyAxis [v];
+			else
+				Controls [0].forwardThrustTime -= joyAxis [v];
+
+		// special continuous slide & bank handling
+		if (*bSlideOn) {
+			if ((v = kcJoystick [i + 13].value) < 255)
+				if (kcJoystick [60].value)		// If inverted...
+					Controls [0].verticalThrustTime -= joyAxis [v];
 				else
-					Controls [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // kcFrameCount;
+					Controls [0].verticalThrustTime += joyAxis [v];
+			if ((v = kcJoystick [i + 14].value) < 255)
+				if (kcJoystick [61].value)		// If inverted...
+					Controls [0].sidewaysThrustTime -= joyAxis [v];
+				else
+					Controls [0].sidewaysThrustTime += joyAxis [v];
 			}
-		}
-	if (*bBankOn) {
-		if ((v = kcJoystick [15].value) < 255)
-			if (kcJoystick [16].value)		// If inverted...
-				Controls [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
-			else
-				Controls [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+		else {
+			if ((v = kcJoystick [i + 13].value) < 255)
+				if (kcJoystick [60].value)		// If inverted...
+					Controls [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+				else 
+					Controls [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+			if (!*bBankOn) {
+				if ((v = kcJoystick [i + 14].value) < 255)
+					if (kcJoystick [61].value)		// If inverted...
+						Controls [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //kcFrameCount;
+					else
+						Controls [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // kcFrameCount;
+				}
+			}
+		if (*bBankOn) {
+			if ((v = kcJoystick [i + 14].value) < 255)
+				if (kcJoystick [61].value)		// If inverted...
+					Controls [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+				else
+					Controls [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+			}
 		}
 	}
 }

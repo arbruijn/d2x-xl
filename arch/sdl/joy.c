@@ -46,14 +46,13 @@ void joy_button_handler (SDL_JoyButtonEvent *jbe)
 {
 	int button;
 
-	if ((jbe->which >= MAX_JOYSTICKS) || (jbe->button > MAX_BUTTONS_PER_JOYSTICK))
-		return;
-	button = SDL_Joysticks [jbe->which].button_map [jbe->button] + jbe->which * MAX_BUTTONS_PER_JOYSTICK;
-	Joystick.buttons [button].state = jbe->state;
-	switch (jbe->type) {
+if ((jbe->which >= MAX_JOYSTICKS) || (jbe->button > MAX_BUTTONS_PER_JOYSTICK))
+	return;
+button = SDL_Joysticks [jbe->which].button_map [jbe->button] + jbe->which * MAX_BUTTONS_PER_JOYSTICK;
+Joystick.buttons [button].state = jbe->state;
+switch (jbe->type) {
 	case SDL_JOYBUTTONDOWN:
-		Joystick.buttons [button].time_wentDown
-			= TimerGetFixedSeconds();
+		Joystick.buttons [button].time_wentDown = TimerGetFixedSeconds();
 		Joystick.buttons [button].numDowns++;
 		break;
 	case SDL_JOYBUTTONUP:
@@ -235,25 +234,24 @@ int JoyGetBtns()
 
 //------------------------------------------------------------------------------
 
-int JoyGetButtonDownCnt (int btn )
+int JoyGetButtonDownCnt (int nButton)
 {
 	int numDowns;
 
-	if (!gameOpts->input.nJoysticks)
-		return 0;
+if (!gameOpts->input.nJoysticks)
+	return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
-   event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
+   event_poll (SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	numDowns = Joystick.buttons [btn].numDowns;
-	Joystick.buttons [btn].numDowns = 0;
-
-	return numDowns;
+numDowns = Joystick.buttons [nButton].numDowns;
+Joystick.buttons [nButton].numDowns = 0;
+return numDowns;
 }
 
 //------------------------------------------------------------------------------
 
-fix JoyGetButtonDownTime(int btn)
+fix JoyGetButtonDownTime(int nButton)
 {
 	fix time = F0_0;
 
@@ -263,10 +261,10 @@ if (!gameOpts->input.nJoysticks)
 if (gameOpts->legacy.bInput)
    event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-switch (Joystick.buttons [btn].state) {
+switch (Joystick.buttons [nButton].state) {
 	case SDL_PRESSED:
-		time = TimerGetFixedSeconds() - Joystick.buttons [btn].time_wentDown;
-		Joystick.buttons [btn].time_wentDown = TimerGetFixedSeconds();
+		time = TimerGetFixedSeconds() - Joystick.buttons [nButton].time_wentDown;
+		Joystick.buttons [nButton].time_wentDown = TimerGetFixedSeconds();
 		break;
 	case SDL_RELEASED:
 		time = 0;
@@ -312,18 +310,18 @@ void JoyFlush()
 
 //------------------------------------------------------------------------------
 
-int JoyGetButtonState (int btn )
+int JoyGetButtonState (int nButton )
 {
 	if (!gameOpts->input.nJoysticks)
 		return 0;
 
-if(btn >= JOY_MAX_BUTTONS)
+if(nButton >= JOY_MAX_BUTTONS)
 		return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
    event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	return Joystick.buttons [btn].state;
+	return Joystick.buttons [nButton].state;
 }
 
 //------------------------------------------------------------------------------

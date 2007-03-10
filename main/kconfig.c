@@ -235,42 +235,75 @@ kcItem kcKeyboard [NUM_KEY_CONTROLS] = {
 ubyte kcKbdFlags [NUM_KEY_CONTROLS];
 
 kcItem kcJoystick [NUM_JOY_CONTROLS] = {
-	{  0, 25, 46, 85, 26, 15,  1, 24,  5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
-	{  1, 25, 54, 85, 26,  0,  4,  5,  6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
-	{  2, 25, 94, 85, 26, 35,  3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
-	{  3, 25,102, 85, 26,  2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
-	{  4, 25, 62, 85, 26,  1, 26,  6,  7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
-	{  5,180, 46, 79, 26, 23,  6,  0,  1,"Slide on", 274, BT_JOY_BUTTON, 255 },
-	{  6,180, 54, 79, 26,  5,  7,  1,  4,"Slide left", 275, BT_JOY_BUTTON, 255 },
-	{  7,180, 62, 79, 26,  6,  8,  4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
-	{  8,180, 70, 79, 26,  7,  9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
-	{  9,180, 78, 79, 26,  8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
-	{ 10,180, 86, 79, 26,  9, 11, 35,  2,"Bank on", 279, BT_JOY_BUTTON, 255 },
-	{ 11,180, 94, 79, 26, 10, 12,  2,  3,"Bank left", 280, BT_JOY_BUTTON, 255 },
-	{ 12,180,102, 79, 26, 11, 28,  3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
-	{ 13, 22,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
-	{ 14, 22,162, 99,  8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
-	{ 15, 22,170, 51, 26, 13,  0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
-	{ 16, 22,170, 99,  8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
-	{ 17,164,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
-	{ 18,164,162,106,  8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
-	{ 19,164,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
-	{ 20,164,170,106,  8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
-	{ 21,164,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
-	{ 22,164,178,106,  8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
-	{ 23,164,186, 58, 26, 21,  5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
-	{ 24,164,186,106,  8, 22, 13, 23,  0,"throttle", 305, BT_INVERT, 255 },
-	{ 25, 25,110, 85, 26,  3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
-	{ 26, 25, 70, 85, 26,  4, 34,  7,  8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
-	{ 27, 25,118, 85, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
-	{ 28,180,110, 79, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
-	{ 29,180,118, 79, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
-	{ 30, 25,126, 85, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
-	{ 31,180,126, 79, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
-	{ 32,180,134, 79, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
-	{ 33, 25,134, 85, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
-	{ 34, 25, 78, 85, 26, 26, 35, 8,   9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
-	{ 35, 25, 86, 85, 26, 34,  2, 9,  10,"Use Invul", 752, BT_JOY_BUTTON, 255 }
+	{  0, 15, 46, 71, 26, 15,  1, 24,  5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
+	{  1, 15, 54, 71, 26,  0,  4,  5,  6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
+	{  2, 15, 94, 71, 26, 35,  3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+	{  3, 15,102, 71, 26,  2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
+	{  4, 15, 62, 71, 26,  1, 26,  6,  7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
+	{  5,158, 46, 71, 26, 23,  6,  0,  1,"Slide on", 274, BT_JOY_BUTTON, 255 },
+	{  6,158, 54, 71, 26,  5,  7,  1,  4,"Slide left", 275, BT_JOY_BUTTON, 255 },
+	{  7,158, 62, 71, 26,  6,  8,  4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
+	{  8,158, 70, 71, 26,  7,  9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
+	{  9,158, 78, 71, 26,  8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
+	{ 10,158, 86, 71, 26,  9, 11, 35,  2,"Bank on", 279, BT_JOY_BUTTON, 255 },
+	{ 11,158, 94, 71, 26, 10, 12,  2,  3,"Bank left", 280, BT_JOY_BUTTON, 255 },
+	{ 12,158,102, 71, 26, 11, 28,  3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+	{ 13, 15,162, 51, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
+	{ 15, 15,170, 51, 26, 13,  0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
+	{ 17,158,162, 58, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
+	{ 19,158,170, 58, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
+	{ 21,158,178, 58, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
+	{ 23,158,186, 58, 26, 21,  5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
+	{ 25, 15,110, 71, 26,  3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
+	{ 26, 15, 70, 71, 26,  4, 34,  7,  8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+	{ 27, 15,118, 71, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
+	{ 28,158,110, 71, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
+	{ 29,158,118, 71, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
+	{ 30, 15,126, 71, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
+	{ 31,158,126, 71, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
+	{ 32,158,134, 71, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
+	{ 33, 15,134, 71, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+	{ 34, 15, 78, 71, 26, 26, 35, 8,   9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
+	{ 35, 15, 86, 71, 26, 34,  2, 9,  10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
+
+	{ 36, 15, 46, 100, 26, 15,  1, 24,  5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
+	{ 37, 15, 54, 100, 26,  0,  4,  5,  6,"Fire secondary", 283, BT_JOY_BUTTON, 255 },
+	{ 38, 15, 94, 100, 26, 35,  3, 10, 11,"Accelerate", 285, BT_JOY_BUTTON, 255 },
+	{ 39, 15,102, 100, 26,  2, 25, 11, 12,"reverse", 286, BT_JOY_BUTTON, 255 },
+	{ 40, 15, 62, 100, 26,  1, 26,  6,  7,"Fire flare", 284, BT_JOY_BUTTON, 255 },
+	{ 41,158, 46, 100, 26, 23,  6,  0,  1,"Slide on", 274, BT_JOY_BUTTON, 255 },
+	{ 42,158, 54, 100, 26,  5,  7,  1,  4,"Slide left", 275, BT_JOY_BUTTON, 255 },
+	{ 43,158, 62, 100, 26,  6,  8,  4, 26,"Slide right", 276, BT_JOY_BUTTON, 255 },
+	{ 44,158, 70, 100, 26,  7,  9, 26, 34,"Slide up", 277, BT_JOY_BUTTON, 255 },
+	{ 45,158, 78, 100, 26,  8, 10, 34, 35,"Slide down", 278, BT_JOY_BUTTON, 255 },
+	{ 46,158, 86, 100, 26,  9, 11, 35,  2,"Bank on", 279, BT_JOY_BUTTON, 255 },
+	{ 47,158, 94, 100, 26, 10, 12,  2,  3,"Bank left", 280, BT_JOY_BUTTON, 255 },
+	{ 48,158,102, 100, 26, 11, 28,  3, 25,"Bank right", 281, BT_JOY_BUTTON, 255 },
+	{ 49, 15,162, 80, 26, 33, 15, 32, 14,"Pitch U/D", 300, BT_JOY_AXIS, 255 },
+	{ 50, 15,170, 80, 26, 13,  0, 18, 16,"Turn L/R", 301, BT_JOY_AXIS, 255 },
+	{ 51,158,162, 87, 26, 32, 19, 14, 18,"Slide L/R", 302, BT_JOY_AXIS, 255 },
+	{ 52,158,170, 87, 26, 17, 21, 16, 20,"Slide U/D", 303, BT_JOY_AXIS, 255 },
+	{ 53,158,178, 87, 26, 19, 23, 20, 22,"Bank L/R", 304, BT_JOY_AXIS, 255 },
+	{ 54,158,186, 87, 26, 21,  5, 22, 24,"throttle", 305, BT_JOY_AXIS, 255 },
+	{ 55, 15,110, 100, 26,  3, 27, 12, 28,"Rear View", 288, BT_JOY_BUTTON, 255 },
+	{ 56, 15, 70, 100, 26,  4, 34,  7,  8,"Drop Bomb", 287, BT_JOY_BUTTON, 255 },
+	{ 57, 15,118, 100, 26, 25, 30, 28, 29,"Afterburner", 293, BT_JOY_BUTTON, 255 },
+	{ 58,158,110, 100, 26, 12, 29, 25, 27,"Cycle Primary", 294, BT_JOY_BUTTON, 255 },
+	{ 59,158,118, 100, 26, 28, 31, 27, 30,"Cycle Secondary", 295, BT_JOY_BUTTON, 255 },
+	{ 60, 15,126, 100, 26, 27, 33, 29, 31,"Headlight", 297, BT_JOY_BUTTON, 255 },
+	{ 61,158,126, 100, 26, 29, 32, 30, 33,"Toggle Bomb", 299, BT_JOY_BUTTON, 255 },
+	{ 62,158,134, 100, 26, 31, 18, 33, 13,"Toggle Icons", 653, BT_JOY_BUTTON, 255 },
+	{ 63, 15,134, 100, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
+	{ 64, 15, 78, 100, 26, 26, 35, 8,   9,"Use Cloak", 751, BT_JOY_BUTTON, 255 },
+	{ 65, 15, 86, 100, 26, 34,  2, 9,  10,"Use Invul", 752, BT_JOY_BUTTON, 255 },
+
+	{ 14, 15,162,115,  8, 33, 16, 13, 17,"Pitch U/D", 300, BT_INVERT, 255 },
+	{ 16, 15,170,115,  8, 14, 17, 15, 19,"Turn L/R", 301, BT_INVERT, 255 },
+	{ 18,158,162,123,  8, 32, 20, 17, 15,"Slide L/R", 302, BT_INVERT, 255 },
+	{ 20,158,170,123,  8, 18, 22, 19, 21,"Slide U/D", 303, BT_INVERT, 255 },
+	{ 22,158,178,123,  8, 20, 24, 21, 23,"Bank L/R", 304, BT_INVERT, 255 },
+	{ 24,158,186,123,  8, 22, 13, 23,  0,"throttle", 305, BT_INVERT, 255 }
+
 };
 
 kcItem kcMouse [NUM_MOUSE_CONTROLS] = {
@@ -427,26 +460,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifdef TABLE_CREATION
-int find_item_at (kcItem * items, int nitems, int x, int y)
+int FindItemAt (kcItem * items, int nItems, int x, int y)
 {
 	int i;
 	
-	for (i=0; i<nitems; i++)	{
-		if (((items [i].x+items [i].w1)==x) && (items [i].y==y))
-			return i;
+for (i=0; i<nItems; i++)	{
+	if (((items [i].x + items [i].w1) == x) && (items [i].y == y))
+		return i;
 	}
-	return -1;
+return -1;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemUp (kcItem * items, int nitems, int citem)
+int FindNextItemUp (kcItem * items, int nItems, int cItem)
 {
 	int x, y, i;
 
-	y = items [citem].y;
-	x = items [citem].x+items [citem].w1;
+	y = items [cItem].y;
+	x = items [cItem].x + items [cItem].w1;
 	
 do {	
 	if (--y < 0) {
@@ -454,19 +486,19 @@ do {
 		if (--x < 0) 
 			x = grdCurCanv->cv_bitmap.bm_props.w-1;
 		}
-	i = find_item_at (items, nitems, x, y);
+	i = FindItemAt (items, nItems, x, y);
 } while (i < 0);
 return i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemDown (kcItem * items, int nitems, int citem)
+int FindNextItemDown (kcItem * items, int nItems, int cItem)
 {
 	int x, y, i;
 
-	y = items [citem].y;
-	x = items [citem].x+items [citem].w1;
+	y = items [cItem].y;
+	x = items [cItem].x+items [cItem].w1;
 	
 do {	
 	if (++y > grdCurCanv->cv_bitmap.bm_props.h-1) {
@@ -474,19 +506,19 @@ do {
 		if (++x > grdCurCanv->cv_bitmap.bm_props.w-1)
 			x = 0;
 		}
-	i = find_item_at (items, nitems, x, y);
+	i = FindItemAt (items, nItems, x, y);
 } while (i < 0);
 return i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemRight (kcItem * items, int nitems, int citem)
+int FindNextItemRight (kcItem * items, int nItems, int cItem)
 {
 	int x, y, i;
 
-	y = items [citem].y;
-	x = items [citem].x+items [citem].w1;
+	y = items [cItem].y;
+	x = items [cItem].x+items [cItem].w1;
 	
 do {	
 	if (++x > grdCurCanv->cv_bitmap.bm_props.w-1) {
@@ -495,19 +527,19 @@ do {
 		if (++y > grdCurCanv->cv_bitmap.bm_props.h-1)
 			y = 0;
 		}
-	i = find_item_at (items, nitems, x, y);
+	i = FindItemAt (items, nItems, x, y);
 } while (i < 0);
 return i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemLeft (kcItem * items, int nitems, int citem)
+int FindNextItemLeft (kcItem *items, int nItems, int cItem)
 {
 	int x, y, i;
 
-	y = items [citem].y;
-	x = items [citem].x+items [citem].w1;
+	y = items [cItem].y;
+	x = items [cItem].x + items [cItem].w1;
 	
 do {	
 	if (--x < 0) {
@@ -515,11 +547,10 @@ do {
 		if (--y < 0) 
 			y = grdCurCanv->cv_bitmap.bm_props.h-1;
 		}
-	i = find_item_at (items, nitems, x, y);
+	i = FindItemAt (items, nItems, x, y);
 } while (i < 0);
 return i;
 }
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -654,10 +685,10 @@ if (items == kcJoystick)	{
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES);
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (81), KC_LHY (145+8), TXT_AXIS);
-	GrString (KC_LHX (111), KC_LHY (145+8), TXT_INVERT);
-	GrString (KC_LHX (222), KC_LHY (145+8), TXT_AXIS);
-	GrString (KC_LHX (252), KC_LHY (145+8), TXT_INVERT);
+	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS);
+	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT);
+	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS);
+	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT);
 } else if (items == kcMouse)	{
 	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	GrSetColorRGBi (RGBA_PAL2 (31,27,6));
@@ -685,13 +716,13 @@ else if (items == kcD2X)
 
 //------------------------------------------------------------------------------
 
-void KCDrawTable (kcItem *items, int nitems, int citem)
+void KCDrawTable (kcItem *items, int nItems, int cItem)
 {
 	int	i;
 
-for (i = 0; i < nitems; i++)
+for (i = 0; i < nItems; i++)
 	KCDrawItemExt (items + i, 0, 0);
-KCDrawItemExt (items + citem, 1, 0);
+KCDrawItemExt (items + cItem, 1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -756,8 +787,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
-	GrURect (KC_LHX (item->w1+item->x), KC_LHY (item->y-1), 
-				KC_LHX (item->w1+item->x+item->w2), KC_LHY (item->y)+h);
+	GrURect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
+				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?");
@@ -973,7 +1004,77 @@ return BT_NONE;
 
 //------------------------------------------------------------------------------
 
-void KConfigSub (kcItem * items, int nitems, char * title)
+void LinkKbdEntries (void)
+{
+	int	i;
+
+for (i = 0; i < NUM_KEY_CONTROLS; i++)	{
+	kcKeyboard [i].u = FindNextItemUp (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].d = FindNextItemDown (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].l = FindNextItemLeft (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].r = FindNextItemRight (kcKeyboard,NUM_KEY_CONTROLS, i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LinkJoyEntries (void)
+{
+	int	i;
+
+for (i = 0; i < NUM_JOY_CONTROLS; i++)	{
+	kcJoystick [i].u = FindNextItemUp (kcJoystick,NUM_JOY_CONTROLS, i);
+	kcJoystick [i].d = FindNextItemDown (kcJoystick,NUM_JOY_CONTROLS, i);
+	kcJoystick [i].l = FindNextItemLeft (kcJoystick,NUM_JOY_CONTROLS, i);
+	kcJoystick [i].r = FindNextItemRight (kcJoystick,NUM_JOY_CONTROLS, i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LinkMouseEntries (void)
+{
+	int	i;
+
+for (i = 0; i < NUM_MOUSE_CONTROLS; i++)	{
+	kcMouse [i].u = FindNextItemUp (kcMouse,NUM_MOUSE_CONTROLS, i);
+	kcMouse [i].d = FindNextItemDown (kcMouse,NUM_MOUSE_CONTROLS, i);
+	kcMouse [i].l = FindNextItemLeft (kcMouse,NUM_MOUSE_CONTROLS, i);
+	kcMouse [i].r = FindNextItemRight (kcMouse,NUM_MOUSE_CONTROLS, i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LinkD2XEntries (void)
+{
+	int	i;
+
+for (i = 0; i < NUM_D2X_CONTROLS; i++)	{
+	kcKeyboard [i].u = FindNextItemUp (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].d = FindNextItemDown (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].l = FindNextItemLeft (kcKeyboard,NUM_KEY_CONTROLS, i);
+	kcKeyboard [i].r = FindNextItemRight (kcKeyboard,NUM_KEY_CONTROLS, i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LinkTableEntries (int tableFlags)
+{
+if (tableFlags & 1)
+	LinkKbdEntries ();
+if (tableFlags & 2)
+	LinkJoyEntries ();
+if (tableFlags & 4)
+	LinkMouseEntries ();
+if (tableFlags & 8)
+	LinkD2XEntries ();
+}
+
+//------------------------------------------------------------------------------
+
+void KConfigSub (kcItem * items, int nItems, char * title)
 {
 WINDOS (
 	dd_grs_canvas * save_canvas,
@@ -983,7 +1084,7 @@ WINDOS (
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x, close_y, close_size;
 
-	int	i,k,ocitem,citem;
+	int	i,k,ocitem,cItem;
 	int	time_stopped = 0;
 	int	bRedraw = 0;
 	int	nChangeMode = BT_NONE, nPrevMode = BT_NONE;
@@ -994,7 +1095,7 @@ WIN (old_bg_pcx = _SCRContext.bkg_filename);
 WIN (DEFINE_SCREEN (NULL));
 
 All_items = items;
-Num_items = nitems;
+Num_items = nItems;
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
 GrPaletteStepUp (0, 0, 0);
@@ -1016,9 +1117,10 @@ NMDrawBackground (&bg, xOffs, yOffs,
 	yOffs + 479 /*grdCurCanv->cv_bitmap.bm_props.h - 1*/, 0);
 GrPaletteStepLoad (NULL);
 
-citem = 0;
+cItem = 0;
 SDL_ShowCursor (1);
 mouseState = omouseState = 0;
+LinkTableEntries (1 | 2 | 4 | 8);
 for (;;) {
 //	Windows addendum to allow for KConfig input.
 	do {
@@ -1039,29 +1141,29 @@ for (;;) {
 				GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
 			WIN (DDGRUNLOCK (dd_grd_curcanv));	
-			KCDrawTable (items, nitems, citem);
+			KCDrawTable (items, nItems, cItem);
 			}
 		SDL_ShowCursor (0);
 		switch (nChangeMode) {
 			case BT_KEY:
-				nChangeMode = KCChangeKey (items + citem);
+				nChangeMode = KCChangeKey (items + cItem);
 				break;
 			case BT_MOUSE_BUTTON:
-				nChangeMode = KCChangeMouseButton (items + citem);
+				nChangeMode = KCChangeMouseButton (items + cItem);
 				break;
 			case BT_MOUSE_AXIS:
-				nChangeMode = KCChangeMouseAxis (items + citem);
+				nChangeMode = KCChangeMouseAxis (items + cItem);
 				break;
 			case BT_JOY_BUTTON:
-				nChangeMode = KCChangeJoyButton (items + citem);
+				nChangeMode = KCChangeJoyButton (items + cItem);
 				break;
 			case BT_JOY_AXIS:
 				if (nChangeMode != nPrevMode)
 					ControlsReadJoystick (start_axis);
-				nChangeMode = KCChangeJoyAxis (items + citem);
+				nChangeMode = KCChangeJoyAxis (items + cItem);
 				break;
 			case BT_INVERT:
-				nChangeMode = KCChangeInvert (items + citem);
+				nChangeMode = KCChangeInvert (items + cItem);
 				break;
 			default:
 				nChangeMode = BT_NONE;
@@ -1082,7 +1184,7 @@ for (;;) {
 		if (MultiMenuPoll () == -1)
 			k = -2;
 		}
-	ocitem = citem;
+	ocitem = cItem;
 	switch (k)	{
 		case KEY_BACKSP:
 			Int3 ();
@@ -1092,8 +1194,8 @@ for (;;) {
 			SaveScreenShot (NULL, 0);
 			break;							
 		case KEY_CTRLED+KEY_D:
-			items [citem].value = 255;
-			KCDrawItem (items + citem, 1);
+			items [cItem].value = 255;
+			KCDrawItem (items + cItem, 1);
 			break;
 		case KEY_CTRLED+KEY_R:	
 			if (items==kcKeyboard)	{
@@ -1122,48 +1224,48 @@ for (;;) {
 					KCDrawItem (items + i, 0);
 					}
 				}
-			KCDrawItem (items + citem, 1);
+			KCDrawItem (items + cItem, 1);
 			break;
 		case KEY_DELETE:
-			items [citem].value=255;
-			KCDrawItem (items + citem, 1);
+			items [cItem].value=255;
+			KCDrawItem (items + cItem, 1);
 			break;
 		case KEY_UP: 		
 		case KEY_PAD8:
 #ifdef TABLE_CREATION
-			if (items [citem].u==-1) 
-				items [citem].u=FindNextItemUp (items,nitems, citem);
+			if (items [cItem].u==-1) 
+				items [cItem].u=FindNextItemUp (items,nItems, cItem);
 #endif
-			citem = items [citem].u; 
+			cItem = items [cItem].u; 
 			break;
 		
 		case KEY_DOWN: 	
 		case KEY_PAD2:
 #ifdef TABLE_CREATION
-			if (items [citem].d==-1) 
-				items [citem].d=FindNextItemDown (items,nitems, citem);
+			if (items [cItem].d==-1) 
+				items [cItem].d=FindNextItemDown (items,nItems, cItem);
 #endif
-			citem = items [citem].d; 
+			cItem = items [cItem].d; 
 			break;
 		case KEY_LEFT: 	
 		case KEY_PAD4:
 #ifdef TABLE_CREATION
-			if (items [citem].l==-1) 
-				items [citem].l=FindNextItemLeft (items,nitems, citem);
+			if (items [cItem].l==-1) 
+				items [cItem].l=FindNextItemLeft (items,nItems, cItem);
 #endif
-			citem = items [citem].l; 
+			cItem = items [cItem].l; 
 			break;
 		case KEY_RIGHT: 	
 		case KEY_PAD6:
 #ifdef TABLE_CREATION
-			if (items [citem].r==-1) 
-				items [citem].r=FindNextItemRight (items,nitems, citem);
+			if (items [cItem].r==-1) 
+				items [cItem].r=FindNextItemRight (items,nItems, cItem);
 #endif
-			citem = items [citem].r; 
+			cItem = items [cItem].r; 
 			break;
 		case KEY_ENTER:	
 		case KEY_PADENTER:	
-			nChangeMode = items [citem].nType;
+			nChangeMode = items [cItem].nType;
 			GameFlushInputs ();
 			break;
 		case -2:	
@@ -1172,28 +1274,11 @@ for (;;) {
 			return;
 #ifdef TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
-			FILE * fp;
+			FILE *fp;
 #if TRACE		
 			con_printf (CONDBG, "start table creation\n");
 #endif
-			for (i=0; i < NUM_KEY_CONTROLS; i++)	{
-				kcKeyboard [i].u = FindNextItemUp (kcKeyboard,NUM_KEY_CONTROLS, i);
-				kcKeyboard [i].d = FindNextItemDown (kcKeyboard,NUM_KEY_CONTROLS, i);
-				kcKeyboard [i].l = FindNextItemLeft (kcKeyboard,NUM_KEY_CONTROLS, i);
-				kcKeyboard [i].r = FindNextItemRight (kcKeyboard,NUM_KEY_CONTROLS, i);
-				}
-			for (i=0; i < NUM_JOY_CONTROLS; i++)	{
-				kcJoystick [i].u = FindNextItemUp (kcJoystick,NUM_JOY_CONTROLS, i);
-				kcJoystick [i].d = FindNextItemDown (kcJoystick,NUM_JOY_CONTROLS, i);
-				kcJoystick [i].l = FindNextItemLeft (kcJoystick,NUM_JOY_CONTROLS, i);
-				kcJoystick [i].r = FindNextItemRight (kcJoystick,NUM_JOY_CONTROLS, i);
-				}
-			for (i=0; i < NUM_MOUSE_CONTROLS; i++)	{
-				kcMouse [i].u = FindNextItemUp (kcMouse,NUM_MOUSE_CONTROLS, i);
-				kcMouse [i].d = FindNextItemDown (kcMouse,NUM_MOUSE_CONTROLS, i);
-				kcMouse [i].l = FindNextItemLeft (kcMouse,NUM_MOUSE_CONTROLS, i);
-				kcMouse [i].r = FindNextItemRight (kcMouse,NUM_MOUSE_CONTROLS, i);
-				}
+			LinkTableEntries (1 | 2 | 4 | 8);
 			fp = fopen ("KConfig.cod", "wt");
 			fprintf (fp, "ubyte controlSettings.defaults [CONTROL_MAX_TYPES][MAX_CONTROLS] = {\n");
 			for (i=0; i<CONTROL_MAX_TYPES; i++)	{
@@ -1252,14 +1337,14 @@ for (;;) {
 			mx -= xOffs;
 			my -= yOffs;
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
-			for (i = 0; i < nitems; i++)	{
+			for (i = 0; i < nItems; i++)	{
 				item_height = KCGetItemHeight (items + i);
 				x1 = grdCurCanv->cv_bitmap.bm_props.x + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
 				y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-					citem = i;
+					cItem = i;
 					break;
 				}
 			}
@@ -1271,13 +1356,13 @@ for (;;) {
 			mx -= xOffs;
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
-			item_height = KCGetItemHeight (items + citem);
-			x1 = grdCurCanv->cv_bitmap.bm_props.x + LHX (items [citem].x) + LHX (items [citem].w1);
-			x2 = x1 + LHX (items [citem].w2);
-			y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [citem].y);
+			item_height = KCGetItemHeight (items + cItem);
+			x1 = grdCurCanv->cv_bitmap.bm_props.x + LHX (items [cItem].x) + LHX (items [cItem].w1);
+			x2 = x1 + LHX (items [cItem].w2);
+			y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [cItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
-				nChangeMode = items [citem].nType;
+				nChangeMode = items [cItem].nType;
 				GameFlushInputs ();
 			} else {
 				x1 = grdCurCanv->cv_bitmap.bm_props.x + close_x + LHX (1);
@@ -1290,10 +1375,10 @@ for (;;) {
 				}
 			}
 		}
-		if (ocitem!=citem)	{
+		if (ocitem!=cItem)	{
 			SDL_ShowCursor (0);
 			KCDrawItem (items + ocitem, 0);
-			KCDrawItem (items + citem, 1);
+			KCDrawItem (items + cItem, 1);
 			SDL_ShowCursor (1);
 		}
 	}
@@ -1387,10 +1472,10 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 			GrSetColorRGBi (RGBA_PAL2 (21, 0, 24));
 		else
 			GrSetColorRGBi (RGBA_PAL2 (16, 0, 19));
-		GrURect (KC_LHX (item->w1+item->x), KC_LHY (item->y-1), 
-					KC_LHX (item->w1+item->x+item->w2), KC_LHY (item->y)+h);
+		GrURect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
+					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 		GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
-		x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
+		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
 		GrString (x, KC_LHY (item->y), btext);
 //		PA_DFX (pa_set_backbuffer_current ();
 

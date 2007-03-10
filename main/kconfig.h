@@ -201,7 +201,7 @@ typedef struct kcItem {
 #define MAX_D2X_CONTROLS    40
 
 #define NUM_KEY_CONTROLS    64
-#define NUM_JOY_CONTROLS	 36
+#define NUM_JOY_CONTROLS	 66
 #define NUM_MOUSE_CONTROLS	 31
 #define MAX_CONTROLS        64		// there are actually 48, so this leaves room for more
 
