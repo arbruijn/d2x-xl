@@ -1978,54 +1978,58 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 //	----------------------------------------------------------------------------------------------------------
 //	Set the tSegment nDepth of all segments from nStartSeg in *segbuf.
 //	Returns maximum nDepth value.
+static int head, tail, nSegment, nChild, nSide;
+
 int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
 {
-	int	i, curseg;
+	//int	nSegment, nSide, nChild;
 	ubyte	visited [MAX_SEGMENTS];
-	int	queue [MAX_SEGMENTS];
-	int	head, tail;
-	int	nDepth;
-	int	parent_depth=0;
+	short	queue [MAX_SEGMENTS];
+	//int	head = 0;
+	//int	tail = 0;
+	int	nDepth = 1;
+	int	nParentDepth = 0;
+	short	*childP;
 
 	nDepth = 1;
 	head = 0;
 	tail = 0;
 
-#if 1
-	memset (visited, 0, sizeof (visited));
-#else
-	for (i=0; i<=gameData.segs.nLastSegment; i++)
-		visited [i] = 0;
+if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
+	return 1;
+if (segbuf [nStartSeg] == 0)
+	return 1;
+queue [tail++] = nStartSeg;
+visited [nStartSeg] = 1;
+segbuf [nStartSeg] = nDepth++;
+memset (visited, 0, sizeof (*visited) * gameData.segs.nSegments);
+if (nDepth == 0)
+	nDepth = 255;
+while (head < tail) {
+	nSegment = queue [head++];
+	nParentDepth = segbuf [nSegment];
+	childP = gameData.segs.segments [nSegment].children;
+	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
+		nChild = *childP;
+		if (nChild < 0)
+			continue;
+#ifdef _DEBUG
+		if (nChild >= gameData.segs.nSegments) {
+			Error ("Invalid segment in SetSegmentDepths()\nsegment=%d, side=%d, child=%d",
+					 nSegment, nSide, nChild);
+			return 1;
+			}
 #endif
-	if (segbuf [nStartSeg] == 0)
-		return 1;
-
-	queue [tail++] = nStartSeg;
-	visited [nStartSeg] = 1;
-	segbuf [nStartSeg] = nDepth++;
-
-	if (nDepth == 0)
-		nDepth = 255;
-
-	while (head < tail) {
-		curseg = queue [head++];
-		parent_depth = segbuf [curseg];
-
-		for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-			int	childnum;
-
-			childnum = gameData.segs.segments [curseg].children [i];
-			if (childnum != -1)
-				if (segbuf [childnum])
-					if (!visited [childnum]) {
-						visited [childnum] = 1;
-						segbuf [childnum] = parent_depth+1;
-						queue [tail++] = childnum;
-					}
+		if (!segbuf [nChild])
+			continue;
+		if (visited [nChild])
+			continue;
+		visited [nChild] = 1;
+		segbuf [nChild] = nParentDepth + 1;
+		queue [tail++] = nChild;
 		}
 	}
-
-	return (parent_depth+1) * gameStates.render.bViewDist;
+return (nParentDepth + 1) * gameStates.render.bViewDist;
 }
 
 //these constants should match the ones in seguvs

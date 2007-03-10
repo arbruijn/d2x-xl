@@ -907,16 +907,16 @@ t2 = t1;
 //Fill in bAutomapVisited from gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment
 if (bRadar) {
 #ifndef _DEBUG
-	if (! (gameData.app.nGameMode & GM_MULTI))
+	if (!IsMultiGame)
 		memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
 #endif
-	memset (bAutomapVisited, 1, sizeof (bRadarVisited));
+	memset (bAutomapVisited, 1, sizeof (*bAutomapVisited) * gameData.segs.nSegments);
 	}
 *pnSegmentLimit =
 *pnMaxSegsAway = 
 	SetSegmentDepths (
-		gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject].nSegment, 
-		bRadar ? bAutomapVisited : bAutomapVisited);
+		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment, 
+		bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 #ifndef _DEBUG
 if (bRadar && ! (gameData.app.nGameMode & GM_MULTI))
