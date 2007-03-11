@@ -461,7 +461,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
 				if (!bRestore) {
-				rStatP->nObject = i;
+					rStatP->nObject = i;
 					objP->shields = ReactorStrength ();
 					//	Say the control center has not yet been hit.
 					rStatP->bHit = 0;
@@ -497,17 +497,19 @@ if (nReactorObj == -1) {
 	}
 #endif
 
-if (/*EGI_FLAG (bDisableReactor, 0, 0) ||*/
-	 ((nBossObj != -1) && (nReactorObj != -1) && 
-	  !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))) {
-	BashToShield (nReactorObj, "reactor");
+if (!BOSS_COUNT || !gameStates.gameplay.nReactorCount || 
+	 !gameStates.app.bD2XLevel || gameStates.gameplay.bMultiBosses)
+	gameData.reactor.bDisabled = 0;
+else {
+	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
+		BashToShield (gameData.reactor.states [j].nObject, "reactor");
+		gameData.reactor.states [j].nObject = -1;
+		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
-	extraGameInfo [0].nBossCount--;
-	gameStates.gameplay.nReactorCount--;
+	extraGameInfo [0].nBossCount -= gameStates.gameplay.nReactorCount;
+	gameStates.gameplay.nReactorCount = 0;
 	}
-else
-	gameData.reactor.bDisabled = 0;
 }
 
 //------------------------------------------------------------------------------
