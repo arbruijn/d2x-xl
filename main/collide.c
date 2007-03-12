@@ -669,128 +669,116 @@ void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector *
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CheckEffectBlowup (tSegment *seg, short tSide, vmsVector *pnt, tObject *blower, int bForceBlowup)
+int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blower, int bForceBlowup)
 {
-	int tm, tmf, ec, db;
-	int nWall, trig_num;
-
-	db=0;
-
+	int			tm, tmf, ec, nBitmap = 0;
+	int			nWall, nTrigger;
+	int			bOkToBlow = 0, nSwitchType = -1;
+	int			x = 0, y = 0;
+	short			nSound, bPermaTrigger;
+	ubyte			vc;
+	fix			u, v;
+	fix			xDestSize;
+	eclip			*ecP;
+	grsBitmap	*bmP;
 	//	If this wall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
-	{
-		int	ok_to_blow = 0;
 
-		if (blower->cType.laserInfo.parentType == OBJ_ROBOT)
-			if (ROBOTINFO (gameData.objs.objects [blower->cType.laserInfo.nParentObj].id).companion)
-				ok_to_blow = 1;
+if (blower->cType.laserInfo.parentType == OBJ_ROBOT)
+	if (ROBOTINFO (gameData.objs.objects [blower->cType.laserInfo.nParentObj].id).companion)
+		bOkToBlow = 1;
 
-		if (!(ok_to_blow || (blower->cType.laserInfo.parentType == OBJ_PLAYER))) {
-			int	nWall;
-			nWall = WallNumP (seg, tSide);
-			if (IS_WALL (nWall)) {
-				if (gameData.walls.walls [nWall].nTrigger < gameData.trigs.nTriggers)
-					return 0;
-			}
-		}
+if (!(bOkToBlow || (blower->cType.laserInfo.parentType == OBJ_PLAYER))) {
+	int nWall = WallNumP (segP, nSide);
+	if (IS_WALL (nWall)&& 
+		 (gameData.walls.walls [nWall].nTrigger < gameData.trigs.nTriggers))
+		return 0;
 	}
 
+if (!(tm = segP->sides [nSide].nOvlTex))
+	return 0;
 
-	if ((tm = seg->sides [tSide].nOvlTex)) {
+tmf = segP->sides [nSide].nOvlOrient;		//tm flags
+ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
+if (ec < 0) {
+	if (gameData.pig.tex.pTMapInfo [tm].destroyed == -1)
+		return 0;
+	nBitmap = -1;
+	nSwitchType = 0;
+	}
+else {
+	ecP = gameData.eff.pEffects + ec;
+	if (ecP->flags & EF_ONE_SHOT)
+		return 0;
+	nBitmap = ecP->nDestBm;
+	if (nBitmap < 0)
+		return 0;
+	nSwitchType = 1;
+	}
+//check if it's an animation (monitor) or casts light
+bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
+PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm], gameStates.app.bD1Data);
+//this can be blown up...did we hit it?
+if (!bForceBlowup) {
+	FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, 0);	//evil: always say face zero
+	bForceBlowup = !PixelTranspType (tm, tmf, u, v);
+	}
+if (!bForceBlowup) 
+	return 0;
 
-		eclip *ecP;
-		int bOneShot;
+if (IsMultiGame && netGame.AlwaysLighting && !nSwitchType)
+	return 0;
+//note: this must get called before the texture changes, 
+//because we use the light value of the texture to change
+//the static light in the tSegment
+nWall = WallNumP (segP, nSide);
+bPermaTrigger = 
+	IS_WALL (nWall) && 
+	((nTrigger = gameData.walls.walls [nWall].nTrigger) != NO_TRIGGER) &&
+	(gameData.trigs.triggers [nTrigger].flags & TF_PERMANENT);
+if (!bPermaTrigger)
+	SubtractLight (SEG_IDX (segP), nSide);
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordEffectBlowup (SEG_IDX (segP), nSide, pnt);
+if (nSwitchType) {
+	xDestSize = ecP->dest_size;
+	vc = ecP->dest_vclip;
+	}
+else {
+	xDestSize = i2f (20);
+	vc = 3;
+	}
+ObjectCreateExplosion (SEG_IDX (segP), pnt, xDestSize, vc);
+if (nSwitchType) {
+	if ((nSound = gameData.eff.pVClips [vc].nSound) != -1)
+		DigiLinkSoundToPos (nSound, SEG_IDX (segP), 0, pnt,  0, F1_0);
+	if ((nSound = ecP->nSound) != -1)		//kill sound
+		DigiKillSoundLinkedToSegment (SEG_IDX (segP), nSide, nSound);
+	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].nSegment == -1)) {
+		eclip	*newEcP = gameData.eff.pEffects + ecP->dest_eclip;
+		int nNewBm = newEcP->changingWallTexture;
+		newEcP->time_left = EffectFrameTime (newEcP);
+		newEcP->nCurFrame = 0;
+		newEcP->nSegment = SEG_IDX (segP);
+		newEcP->nSide = nSide;
+		newEcP->flags |= EF_ONE_SHOT;
+		newEcP->nDestBm = ecP->nDestBm;
 
-		tmf = seg->sides [tSide].nOvlOrient;		//tm flags
-		ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
-		ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
-		db = ecP ? ecP->dest_bm_num : -1;
-		bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
-		//check if it's an animation (monitor) or casts light
-		if (((ec != -1) && (db != -1) && !bOneShot) ||	
-			 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
-			fix u, v;
-			grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tm].index;
-			int x = 0, y = 0;
-
-			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm], gameStates.app.bD1Data);
-			//this can be blown up...did we hit it?
-			if (!bForceBlowup) {
-				FindHitPointUV (&u, &v, NULL, pnt, seg, tSide, 0);	//evil: always say face zero
-				bForceBlowup = !PixelTranspType (tm, tmf, u, v);
-				}
-			if (bForceBlowup) {		//not trans, thus on effect
-				short nSound, bPermaTrigger;
-				ubyte vc;
-				fix xDestSize;
-
-				if ((gameData.app.nGameMode & GM_MULTI) && netGame.AlwaysLighting)
-			   	if (ec == -1 || db == -1 || bOneShot)
-				   	return (0);
-				//note: this must get called before the texture changes, 
-				//because we use the light value of the texture to change
-				//the static light in the tSegment
-				nWall = WallNumP (seg, tSide);
-				bPermaTrigger = 
-					IS_WALL (nWall) && 
-					 ((trig_num = gameData.walls.walls [nWall].nTrigger) != NO_TRIGGER) &&
-					 (gameData.trigs.triggers [trig_num].flags & TF_PERMANENT);
-				if (!bPermaTrigger)
-					SubtractLight (SEG_IDX (seg), tSide);
-
-				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordEffectBlowup (SEG_IDX (seg), tSide, pnt);
-
-				if (ec!=-1) {
-					xDestSize = ecP->dest_size;
-					vc = ecP->dest_vclip;
-					}
-				else {
-					xDestSize = i2f (20);
-					vc = 3;
-					}
-				ObjectCreateExplosion (SEG_IDX (seg), pnt, xDestSize, vc);
-				if ((ec!=-1) && (db!=-1) && !bOneShot) {
-					if ((nSound = gameData.eff.pVClips [vc].nSound) != -1)
-		  				DigiLinkSoundToPos (nSound, SEG_IDX (seg), 0, pnt,  0, F1_0);
-					if ((nSound = ecP->nSound) != -1)		//kill sound
-						DigiKillSoundLinkedToSegment (SEG_IDX (seg), tSide, nSound);
-					if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].nSegment == -1)) {
-						eclip	*new_ec = gameData.eff.pEffects + ecP->dest_eclip;
-						int 	bm_num = new_ec->changingWallTexture;
-#if TRACE
-						con_printf (CONDBG, "bm_num = %d \n", bm_num);
-#endif
-						new_ec->time_left = EffectFrameTime (new_ec);
-						new_ec->nCurFrame = 0;
-						new_ec->nSegment = SEG_IDX (seg);
-						new_ec->nSide = tSide;
-						new_ec->flags |= EF_ONE_SHOT;
-						new_ec->dest_bm_num = ecP->dest_bm_num;
-
-						Assert (bm_num!=0 && seg->sides [tSide].nOvlTex!=0);
-						seg->sides [tSide].nOvlTex = bm_num;		//replace with destoyed
-					}
-					else {
-						Assert (db!=0 && seg->sides [tSide].nOvlTex!=0);
-						if (!bPermaTrigger)
-							seg->sides [tSide].nOvlTex = db;		//replace with destoyed
-					}
-				}
-				else {
-					if (!bPermaTrigger)
-						seg->sides [tSide].nOvlTex = gameData.pig.tex.pTMapInfo [tm].destroyed;
-
-					//assume this is a light, and play light sound
-		  			DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, SEG_IDX (seg), 0, pnt,  0, F1_0);
-				}
-
-
-				return 1;		//blew up!
-			}
+		Assert ((nNewBm != 0) && (segP->sides [nSide].nOvlTex != 0));
+		segP->sides [nSide].nOvlTex = nNewBm;		//replace with destoyed
+		}
+	else {
+		Assert ((nBitmap != 0) && (segP->sides [nSide].nOvlTex != 0));
+		if (!bPermaTrigger)
+			segP->sides [nSide].nOvlTex = nBitmap;		//replace with destoyed
 		}
 	}
-
-	return 0;		//didn't blow up
+else {
+	if (!bPermaTrigger)
+		segP->sides [nSide].nOvlTex = gameData.pig.tex.pTMapInfo [tm].destroyed;
+	//assume this is a light, and play light sound
+	DigiLinkSoundToPos (SOUND_LIGHT_BLOWNUP, SEG_IDX (segP), 0, pnt,  0, F1_0);
+	}
+return 1;		//blew up!
 }
 
 //	Copied from laser.c!

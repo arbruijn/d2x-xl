@@ -1633,14 +1633,9 @@ game_err = LoadMineDataCompiled(LoadFile, 0);
 if (game_err == -1) {   //error!!
 	CFClose(LoadFile);
 	return 3;
-}
-
-//======================== CLOSE FILE =============================
-
+	}
 CFClose(LoadFile);
-
-SetAmbientSoundFlags();
-
+SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);
 if (Errors_in_mine) {

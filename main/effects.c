@@ -244,9 +244,9 @@ xEffectTime += gameData.time.xFrame;
 #ifdef _DEBUG
 					Assert (ecP->nSegment!=-1);
 					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert (ecP->dest_bm_num!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert (ecP->nDestBm!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
 #endif
-					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->dest_bm_num;		//replace with destroyed
+					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destroyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}
@@ -296,9 +296,9 @@ xEffectTime += gameData.time.xFrame;
 	#ifdef _DEBUG
 					Assert(ecP->nSegment!=-1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert(ecP->dest_bm_num!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert(ecP->nDestBm!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
 	#endif
-					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->dest_bm_num;		//replace with destoyed
+					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destoyed
 					ecP->flags &= ~EF_ONE_SHOT;
 					ecP->nSegment = -1;		//done with this
 					}
@@ -399,7 +399,7 @@ for (; n; n--, ecP++) {
 	ecP->changingObjectTexture = CFReadShort(fp);
 	ecP->flags = CFReadInt(fp);
 	ecP->crit_clip = CFReadInt(fp);
-	ecP->dest_bm_num = CFReadInt(fp);
+	ecP->nDestBm = CFReadInt(fp);
 	ecP->dest_vclip = CFReadInt(fp);
 	ecP->dest_eclip = CFReadInt(fp);
 	ecP->dest_size = CFReadFix(fp);

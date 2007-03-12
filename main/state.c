@@ -2601,6 +2601,7 @@ FixObjectSizes ();
 ComputeNearestLights ();
 ComputeStaticDynLighting ();
 InitReactorForLevel (1);
+SetEquipGenStates ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {

@@ -776,7 +776,7 @@ void set_texture_name(char *name)
 void bm_read_eclip()
 {
 	tBitmapIndex bitmap;
-	int dest_bm_num = 0;
+	int nDestBm = 0;
 
 	Assert(nClip < MAX_EFFECTS);
 
@@ -805,7 +805,7 @@ void bm_read_eclip()
 		}
 		else if (Textures [gameStates.app.bD1Data][i].index == 0)		//was found, but registered out
 			Textures [gameStates.app.bD1Data][i] = bm_load_sub(dest_bm);
-		dest_bm_num = i;
+		nDestBm = i;
 	}
 
 	if (!abmFlag)	{
@@ -886,7 +886,7 @@ void bm_read_eclip()
 
 	if (dest_bm) {			//deal with bitmap for blown up clip
 
-		Effects [gameStates.app.bD1Data][nClip].dest_bm_num = dest_bm_num;
+		Effects [gameStates.app.bD1Data][nClip].nDestBm = nDestBm;
 
 		if (dest_vclip==-1)
 			Error("Desctruction tVideoClip missing on line %d",linenum);
@@ -899,7 +899,7 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][nClip].dest_eclip = dest_eclip;
 	}
 	else {
-		Effects [gameStates.app.bD1Data][nClip].dest_bm_num = -1;
+		Effects [gameStates.app.bD1Data][nClip].nDestBm = -1;
 		Effects [gameStates.app.bD1Data][nClip].dest_eclip = -1;
 	}
 

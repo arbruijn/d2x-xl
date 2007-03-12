@@ -222,6 +222,17 @@ gameData.matCens.nFuelCenters++;
 }
 
 //------------------------------------------------------------
+
+void SetEquipGenStates (void)
+{
+	int	i;
+
+for (i = 0; i < gameData.matCens.nEquipCenters; i++)
+	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled = 
+		FindTriggerTarget (gameData.matCens.fuelCenters [i].nSegment, -1) == 0;
+}
+
+//------------------------------------------------------------
 // Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
 // This function is separate from other fuelcens because we don't want values reset.
 void EquipGenCreate (tSegment *segP, int oldType)
@@ -257,7 +268,7 @@ gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i]
 gameData.matCens.fuelCenters [i].nSegment = nSegment;
 gameData.matCens.fuelCenters [i].xTimer = -1;
 gameData.matCens.fuelCenters [i].bFlag = 0;
-gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (nSegment, -1) == 0;
+//gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (nSegment, -1) == 0;
 COMPUTE_SEGMENT_CENTER_I (&gameData.matCens.fuelCenters [i].vCenter, nSegment);
 //seg2p->nMatCen = gameData.matCens.nEquipCenters;
 i = seg2p->nMatCen;

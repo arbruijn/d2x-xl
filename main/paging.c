@@ -79,8 +79,8 @@ void PagingTouchWallEffects (int nTexture)
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		PagingTouchVClip (&ecP->vc, gameStates.app.bD1Data);
-		if (ecP->dest_bm_num > -1)
-			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->dest_bm_num], gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+		if (ecP->nDestBm > -1)
+			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->nDestBm], gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->dest_vclip > -1)
 			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)

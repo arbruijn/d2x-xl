@@ -1790,7 +1790,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 
 			ec=gameData.pig.tex.pTMapInfo[tm].eclip_num;
 			ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
-			db = ecP ? ecP->dest_bm_num : -1;
+			db = ecP ? ecP->nDestBm : -1;
 
 			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||	
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo[tm].destroyed != -1))) {

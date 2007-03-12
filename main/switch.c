@@ -991,14 +991,15 @@ void ExecObjTriggers (short nObject, int bDamage)
 	short		i = gameData.trigs.firstObjTrigger [nObject], j = 0;
 
 while ((i >= 0) && (j < 256)) {
-//	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
-//		break;
+	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
+		break;
 	if (DoExecObjTrigger (gameData.trigs.objTriggers + i, nObject, bDamage)) {
 		CheckTriggerSub (nObject, gameData.trigs.objTriggers, gameData.trigs.nObjTriggers, i, -1, 1, 1);
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
-//	gameData.trigs.objTriggerRefs [i].nObject = -1;
+	if (bDamage)
+		gameData.trigs.objTriggerRefs [i].nObject = -1;
 	i = gameData.trigs.objTriggerRefs [i].next;
 	j++;
 	}
@@ -1021,7 +1022,7 @@ if (CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers,
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (SEG_IDX (segP), nSide, nObject, shot);
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	MultiSendTrigger (nTrigger, nObject);
 }
 
@@ -1052,16 +1053,83 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int FindTriggerTarget (short nSegment, short nSide)
+wall *FindTriggerWall (short nTrigger)
 {
 	int	i;
 
-for (i = 0; i < gameData.trigs.nTriggers; i++)
+for (i = 0; i < gameData.walls.nWalls; i++)
+	if (gameData.walls.walls [i].nTrigger == nTrigger)
+		return gameData.walls.walls + i;
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+int FindTriggerSegSide (short nTrigger)
+{
+	wall	*wallP = FindTriggerWall (nTrigger);
+
+return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
+}
+
+//------------------------------------------------------------------------------
+
+int ObjTriggerIsValid (int nTrigger)
+{
+	int	h, i, j;
+
+for (i = 0; i < gameData.objs.nLastObject; i++) {
+	j = gameData.trigs.firstObjTrigger [i];
+	if (j < 0)
+		continue;
+	if (gameData.trigs.objTriggerRefs [j].nObject < 0)
+		continue;
+	h = 0;
+	while ((j >= 0) && (h < 256)) {
+		if (j == nTrigger)
+			return 1;
+		j = gameData.trigs.objTriggerRefs [j].next;
+		h++;
+		}
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int FindTriggerTarget (short nSegment, short nSide)
+{
+	int	i, nSegSide, nOvlTex, ec;
+
+for (i = 0; i < gameData.trigs.nTriggers; i++) {
+	nSegSide = FindTriggerSegSide (i);
+	if (nSegSide == -1)
+		continue;
+	nOvlTex = gameData.segs.segments [nSegSide / 65536].sides [nSegSide & 0xffff].nOvlTex;
+	if (nOvlTex <= 0)
+		continue;
+	ec = gameData.pig.tex.pTMapInfo [nOvlTex].eclip_num;
+	if (ec < 0) {
+		if (gameData.pig.tex.pTMapInfo [nOvlTex].destroyed == -1)
+			continue;
+		}
+	else {
+		eclip *ecP = gameData.eff.pEffects + ec;
+		if (ecP->flags & EF_ONE_SHOT)
+			continue;
+		if (ecP->nDestBm < 0)
+			continue;
+		}
 	if (TriggerHasTarget (gameData.trigs.triggers + i, nSegment, nSide))
 		return i + 1;
-for (i = 0; i < gameData.trigs.nObjTriggers; i++)
-	if (TriggerHasTarget (gameData.trigs.objTriggers + i, nSegment, nSide))
-		return -i - 1;
+	}
+for (i = 0; i < gameData.trigs.nObjTriggers; i++) {
+	if (!TriggerHasTarget (gameData.trigs.objTriggers + i, nSegment, nSide))
+		continue;
+	if (!ObjTriggerIsValid (i))
+		continue;
+	return -i - 1;
+	}
 return 0;
 }
 

@@ -849,7 +849,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		if (((tm = sideP->nOvlTex) != 0) &&
 				((ec = gameData.pig.tex.pTMapInfo [tm].eclip_num) != -1) &&
-				((bm = gameData.eff.pEffects [ec].dest_bm_num) != -1)) {
+				((bm = gameData.eff.pEffects [ec].nDestBm) != -1)) {
 			if (vector & (1 << count))
 				sideP->nOvlTex = bm;
 			count++;
@@ -874,7 +874,7 @@ int NetworkCreateMonitorVector (void)
 	tSide *sideP;
 
 for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.eff.pEffects[i].dest_bm_num) > 0) {
+	if ((h = gameData.eff.pEffects[i].nDestBm) > 0) {
 		for (j = 0; j < num_blown_bitmaps; j++)
 			if (blown_bitmaps [j] == h)
 				break;
@@ -889,7 +889,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		if ((tm = sideP->nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.pTMapInfo [tm].eclip_num) != -1) &&
-					(gameData.eff.pEffects[ec].dest_bm_num != -1)) {
+					(gameData.eff.pEffects[ec].nDestBm != -1)) {
 				monitor_num++;
 				Assert (monitor_num < 32);
 				}

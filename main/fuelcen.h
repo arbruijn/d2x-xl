@@ -134,6 +134,7 @@ void BotGenCreate (tSegment *segP, int oldType);
 void FuelCenCheckForHoardGoal(tSegment *segp);
 void SpawnBotTrigger (tObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
+void SetEquipGenStates (void);
 
 #ifdef FAST_FILE_IO
 #define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_tMatCenInfo), 1, fp)

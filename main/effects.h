@@ -100,7 +100,7 @@ typedef struct eclip {
 	short   changingObjectTexture;    //Which element of ObjBitmapPtrs array to replace.
 	int     flags;          //see above
 	int     crit_clip;      //use this clip instead of above one when mine critical
-	int     dest_bm_num;    //use this bitmap when monitor destroyed
+	int     nDestBm;    //use this bitmap when monitor destroyed
 	int     dest_vclip;     //what tVideoClip to play when exploding
 	int     dest_eclip;     //what eclip to play when exploding
 	fix     dest_size;      //3d size of explosion

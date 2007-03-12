@@ -982,6 +982,7 @@ D2SetCaption ();
 if (!bRestore) {
 	ComputeNearestLights ();
 	ComputeStaticDynLighting ();
+	SetEquipGenStates ();
 	}
 return 1;
 }
