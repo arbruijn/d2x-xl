@@ -723,7 +723,7 @@ if (!(bmP->bm_props.flags & BM_FLAG_RLE))
 if (!(expandBuf = d_malloc (bmP->bm_props.h * bmP->bm_props.rowsize)))
 	return -1;
 
-bBigRLE = bmP->bm_props.flags & BM_FLAG_RLE_BIG;
+bBigRLE = (bmP->bm_props.flags & BM_FLAG_RLE_BIG) != 0;
 if (bBigRLE)
 	pSrc = bmP->bm_texBuf + 4 + 2 * bmP->bm_props.h;
 else

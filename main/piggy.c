@@ -2233,7 +2233,7 @@ ChangeFilenameExtension (szFilename, level_name, ".pog");
 fp = CFOpen (szFilename, gameFolders.szDataDir,"rb",0);
 if (fp) {
 	int					id, version, nBitmapNum, bTGA;
-	int					bmDataSize, offset;
+	int					bmDataSize, bmDataOffset, bmOffset;
 	ushort				*indices;
 	DiskBitmapHeader	*bmh;
 
@@ -2255,10 +2255,11 @@ if (fp) {
 	for (i = 0; i < nBitmapNum; i++)
 		DiskBitmapHeaderRead (bmh + i, fp);
 #endif
-	bmDataSize = CFLength (fp,0) - CFTell (fp);
+	bmDataOffset = CFTell (fp);
+	bmDataSize = CFLength (fp, 0) - bmDataOffset;
 
 	for (i = 0; i < nBitmapNum; i++) {
-		offset = bmh [i].offset;
+		bmOffset = bmh [i].offset;
 		memset (&bm, 0, sizeof (grsBitmap));
 		bm.bm_props.flags |= bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA);
 		bm.bm_props.w = bm.bm_props.rowsize = bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8);
@@ -2268,12 +2269,13 @@ if (fp) {
 			bm.bm_props.h = bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4);
 		if (!(bm.bm_props.w * bm.bm_props.h))
 			continue;
-		if (offset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
+		if (bmOffset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
 			break;
 		bm.bm_avgColor = bmh [i].bm_avgColor;
 		bm.bmType = BM_TYPE_ALT;
 		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bTGA)))
 			break;
+		CFSeek (fp, bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
 			int	nFrames = bm.bm_props.h / bm.bm_props.w;
 			tTgaHeader	h;
@@ -2316,6 +2318,7 @@ if (fp) {
 				}
 			bm.bm_palette = gamePalette;
 			j = indices [i];
+			rle_expand (&bm, NULL, 0);
 			bm.bm_props = gameData.pig.tex.pBitmaps [j].bm_props;
 			GrRemapBitmapGood (&bm, gamePalette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
