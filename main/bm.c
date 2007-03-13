@@ -79,27 +79,23 @@ int ComputeAvgPixel (grsBitmap *newBm)
 	int	total_red, total_green, total_blue;
 	ubyte	*palette;
 
-	pptr = (char *)newBm->bm_texBuf;
-
-	total_red = 0;
-	total_green = 0;
-	total_blue = 0;
-
-	palette = newBm->bm_palette;
-	for (row=0;row<newBm->bm_props.h;row++)
-		for (column=0;column<newBm->bm_props.w;column++) {
-			color = *pptr++;
-			total_red += palette [color*3];
-			total_green += palette [color*3+1];
-			total_blue += palette [color*3+2];
+pptr = (char *)newBm->bm_texBuf;
+total_red = 0;
+total_green = 0;
+total_blue = 0;
+palette = newBm->bm_palette;
+for (row = 0; row < newBm->bm_props.h; row++)
+	for (column = 0; column < newBm->bm_props.w; column++) {
+		color = *pptr++;
+		total_red += palette [color*3];
+		total_green += palette [color*3+1];
+		total_blue += palette [color*3+2];
 		}
-
-	size = newBm->bm_props.h * newBm->bm_props.w * 2;
-	total_red /= size;
-	total_green /= size;
-	total_blue /= size;
-
-	return GrFindClosestColor (palette, total_red, total_green, total_blue);
+size = newBm->bm_props.h * newBm->bm_props.w * 2;
+total_red /= size;
+total_green /= size;
+total_blue /= size;
+return GrFindClosestColor (palette, total_red, total_green, total_blue);
 }
 
 //---------------- Variables for tObject textures ----------------
@@ -114,19 +110,19 @@ int ReadTMapInfoN (tTexMapInfo *ti, int n, CFILE *fp)
 {
 	int i;
 
-	for (i = 0;i < n;i++) {
-		ti [i].flags = CFReadByte (fp);
-		ti [i].pad [0] = CFReadByte (fp);
-		ti [i].pad [1] = CFReadByte (fp);
-		ti [i].pad [2] = CFReadByte (fp);
-		ti [i].lighting = CFReadFix (fp);
-		ti [i].damage = CFReadFix (fp);
-		ti [i].eclip_num = CFReadShort (fp);
-		ti [i].destroyed = CFReadShort (fp);
-		ti [i].slide_u = CFReadShort (fp);
-		ti [i].slide_v = CFReadShort (fp);
+for (i = 0;i < n;i++) {
+	ti [i].flags = CFReadByte (fp);
+	ti [i].pad [0] = CFReadByte (fp);
+	ti [i].pad [1] = CFReadByte (fp);
+	ti [i].pad [2] = CFReadByte (fp);
+	ti [i].lighting = CFReadFix (fp);
+	ti [i].damage = CFReadFix (fp);
+	ti [i].eclip_num = CFReadShort (fp);
+	ti [i].destroyed = CFReadShort (fp);
+	ti [i].slide_u = CFReadShort (fp);
+	ti [i].slide_v = CFReadShort (fp);
 	}
-	return i;
+return i;
 }
 #endif
 
@@ -136,14 +132,14 @@ int ReadTMapInfoND1 (tTexMapInfo *ti, int n, CFILE *fp)
 {
 	int i;
 
-	for (i = 0;i < n;i++) {
-		CFSeek (fp, 13, SEEK_CUR);// skip filename
-		ti [i].flags = CFReadByte (fp);
-		ti [i].lighting = CFReadFix (fp);
-		ti [i].damage = CFReadFix (fp);
-		ti [i].eclip_num = CFReadInt (fp);
+for (i = 0;i < n;i++) {
+	CFSeek (fp, 13, SEEK_CUR);// skip filename
+	ti [i].flags = CFReadByte (fp);
+	ti [i].lighting = CFReadFix (fp);
+	ti [i].damage = CFReadFix (fp);
+	ti [i].eclip_num = CFReadInt (fp);
 	}
-	return i;
+return i;
 }
 
 //-----------------------------------------------------------------
@@ -154,18 +150,18 @@ int BMInit ()
 {
 	int	i;
 
-	for (i = 0;i < MAX_OBJECTS;i++)
-		gameData.weapons.color [i].red =
-		gameData.weapons.color [i].green =
-		gameData.weapons.color [i].blue = 1.0;
-	InitPolygonModels ();
-	if (! PiggyInit ())				// This calls BMReadAll
-		Error ("Cannot open pig and/or ham file");
+for (i = 0; i < MAX_OBJECTS; i++)
+	gameData.weapons.color [i].red =
+	gameData.weapons.color [i].green =
+	gameData.weapons.color [i].blue = 1.0;
+InitPolygonModels ();
+if (! PiggyInit ())				// This calls BMReadAll
+	Error ("Cannot open pig and/or ham file");
 /*---*/LogErr ("   Loading sound data\n");
-	PiggyReadSounds ();
+PiggyReadSounds ();
 /*---*/LogErr ("   Initializing endlevel data\n");
-	InitEndLevel ();		//this is in bm_init_use_tbl (), so I gues it goes here
-	return 0;
+InitEndLevel ();		//this is in bm_init_use_tbl (), so I gues it goes here
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1215,18 +1211,19 @@ if (t!= MAKE_SIG ('!','X','M','H'))
 	Warning (TXT_HXM_ID);
 t = CFReadInt (fp);			//read version
 if (t < 1)
-	Warning (TXT_HXM_VERSION,t);
+	Warning (TXT_HXM_VERSION, t);
 t = CFReadInt (fp);			//read number of robots
 for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read robot number
+			Error (TXT_ROBOT_NO, szLevelName, i, MAX_ROBOT_TYPES);
 	if (bAddBots) {
 		if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES)
-			Error (TXT_ROBOT_NO, i, szLevelName, MAX_ROBOT_TYPES);
+			Error (TXT_ROBOT_NO, szLevelName, i, MAX_ROBOT_TYPES);
 		else
 			i = gameData.bots.nTypes [0]++;
 		}
 	else if (i < 0 || i >= gameData.bots.nTypes [0]) {
-		Error (TXT_ROBOT_NO, i, szLevelName, gameData.bots.nTypes [0]-1);
+		Error (TXT_ROBOT_NO, szLevelName, i, gameData.bots.nTypes [0] - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -1249,8 +1246,8 @@ for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read joint number
 	if (bAddBots) {
 		if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
-			Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-					i, szLevelName, MAX_ROBOT_JOINTS - 1);
+			Error ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
+					szLevelName, i, MAX_ROBOT_JOINTS - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -1260,8 +1257,8 @@ for (j = 0; j < t; j++) {
 			i = gameData.bots.nJoints++;
 		}
 	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
-		Error ("Robots joint (%d) out of range in (%s).  Range = [0..%d].",
-				i, szLevelName, gameData.bots.nJoints - 1);
+		Error ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
+				szLevelName, i, gameData.bots.nJoints - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -1274,8 +1271,8 @@ for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read model number
 	if (bAddBots) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
-			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-					 i, szLevelName, gameData.models.nPolyModels - 1);
+			Error ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
+					 szLevelName, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -1289,8 +1286,8 @@ for (j = 0; j < t; j++) {
 			if (i < MAX_POLYGON_MODELS) 
 				gameData.models.nPolyModels = i + 1;
 			else {
-				Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-						 i, szLevelName, gameData.models.nPolyModels - 1);
+				Error ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
+						 szLevelName, i, gameData.models.nPolyModels - 1);
 				gameData.bots.nTypes [0] = nBotTypeSave;
 				gameData.bots.nJoints = nBotJointSave;
 				gameData.models.nPolyModels = nPolyModelSave;
@@ -1298,8 +1295,8 @@ for (j = 0; j < t; j++) {
 				}
 			}
 		else {
-			Error ("Polygon model (%d) out of range in (%s).  Range = [0..%d].",
-					 i, szLevelName, gameData.models.nPolyModels - 1);
+			Error ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
+					 szLevelName, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [0] = nBotTypeSave;
 			gameData.bots.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
@@ -1334,8 +1331,8 @@ for (j = 0; j < t; j++) {
 	if (bAddBots) {
 		}
 	else if (i < 0 || i >= MAX_OBJ_BITMAPS) {
-		Error ("Object bitmap number (%d) out of range in (%s).  Range = [0..%d].",
-				 i, szLevelName, MAX_OBJ_BITMAPS - 1);
+		Error ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
+				 szLevelName, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
@@ -1347,8 +1344,8 @@ t = CFReadInt (fp);			//read number of objbitmapptrs
 for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read objbitmapptr number
 	if (i<0 || i>=MAX_OBJ_BITMAPS) {
-		Error ("Object bitmap pointer (%d) out of range in (%s).  Range = [0..%d].",
-				 i, szLevelName, MAX_OBJ_BITMAPS - 1);
+		Error ("%s: Object bitmap pointer (%d) out of range (valid range = 0 - %d).",
+				 szLevelName, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
 		gameData.bots.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;

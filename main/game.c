@@ -288,11 +288,25 @@ GrPaletteStepUp (0, 0, 0);
 void ShowInGameWarning (char *s)
 {
 if (grdCurScreen) {
-	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
+	char	*hs, *ps = strstr (s, "Error");
+
+	if (ps > s) {	//skip trailing non alphanum chars
+		for (hs = ps - 1; (hs > s) && !isalnum (*hs); hs++)
+			;
+		if (hs > s)
+			ps = NULL;
+		}
+	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StopTime ();
 	gameData.menu.warnColor = RED_RGBA;
 	gameData.menu.colorOverride = gameData.menu.warnColor;
-	ExecMessageBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
+	if (!ps)
+		ExecMessageBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
+	else {
+		for (ps += 5; *ps && !isalnum (*ps); ps++)
+			;
+		ExecMessageBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
+		}
 	gameData.menu.colorOverride = 0;
 	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StartTime ();
