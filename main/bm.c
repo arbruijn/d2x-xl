@@ -1215,7 +1215,6 @@ if (t < 1)
 t = CFReadInt (fp);			//read number of robots
 for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read robot number
-			Error (TXT_ROBOT_NO, szLevelName, i, MAX_ROBOT_TYPES);
 	if (bAddBots) {
 		if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES)
 			Error (TXT_ROBOT_NO, szLevelName, i, MAX_ROBOT_TYPES);
