@@ -2120,7 +2120,7 @@ if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].
 	return;
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
-if ((killer->nType == OBJ_ROBOT) && ROBOTINFO (killer->id).companion)
+if (killer && (killer->nType == OBJ_ROBOT) && ROBOTINFO (killer->id).companion)
 	return;
 if (killer == playerObjP) {
 	if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
