@@ -1384,7 +1384,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		if (1 || IsCoopGame) {
 			char szMsg [100];
 			
-			sprintf (szMsg, "%c%c%s", 1, GrFindClosestColor (gamePalette, 200, 0, 0), TXT_ONLY_PLAYER);
+			sprintf (szMsg, "%c%c%c%c%s", 1, 95 + 128, 128, 128, TXT_ONLY_PLAYER);
 			HUDInitMessage (szMsg);
 			}
 		else

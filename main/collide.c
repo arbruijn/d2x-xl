@@ -100,7 +100,7 @@ void CollideRobotAndWall (tObject * robot, fix hitspeed, short hitseg, short hit
 
 if ((robot->id == ROBOT_BRAIN) || 
 	 (robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
-	 (botInfoP->companion == 1) || 
+	 botInfoP->companion || 
 	 (robot->cType.aiInfo.behavior == AIB_SNIPE)) {
 	int	nWall = WallNumI (hitseg, hitwall);
 	if (nWall != -1) {
@@ -111,9 +111,9 @@ if ((robot->id == ROBOT_BRAIN) ||
 			 !(wallP->flags & WALL_DOOR_LOCKED)) {
 			WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 		// -- Changed from this, 10/19/95, MK: Don't want buddy getting stranded from tPlayer
-		//-- } else if ((botInfoP->companion == 1) && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
+		//-- } else if (botInfoP->companion && (gameData.walls.walls [nWall].nType == WALL_DOOR) && (gameData.walls.walls [nWall].keys != KEY_NONE) && (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED) && !(gameData.walls.walls [nWall].flags & WALL_DOOR_LOCKED)) {
 			} 
-		else if ((botInfoP->companion == 1) && (wallP->nType == WALL_DOOR)) {
+		else if (botInfoP->companion && (wallP->nType == WALL_DOOR)) {
 			if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
 				if (wallP->keys != KEY_NONE) {
 					if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
@@ -1735,7 +1735,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (botInfoP->energyBlobs
 				}
 			}
 		//	If Gauss Cannon, spin robot.
-		if ((robot != NULL) && (!botInfoP->companion) && (!botInfoP->bossFlag) && (weapon->id == GAUSS_ID)) {
+		if (robot && (!botInfoP->companion) && (!botInfoP->bossFlag) && (weapon->id == GAUSS_ID)) {
 			tAIStatic	*aip = &robot->cType.aiInfo;
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
@@ -2109,10 +2109,10 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 //	-----------------------------------------------------------------------------
 
-void ApplyDamageToPlayer (tObject *playerObjP, tObject *killer, fix damage)
+void ApplyDamageToPlayer (tObject *playerObjP, tObject *killerObjP, fix damage)
 {
 tPlayer *playerP = gameData.multi.players + playerObjP->id;
-tPlayer *killerP = (killer && (killer->nType == OBJ_PLAYER)) ? gameData.multi.players + killer->id : NULL;
+tPlayer *killerP = (killerObjP && (killerObjP->nType == OBJ_PLAYER)) ? gameData.multi.players + killerObjP->id : NULL;
 if (gameStates.app.bPlayerIsDead)
 	return;
 
@@ -2120,16 +2120,16 @@ if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].
 	return;
 if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
-if (killer && (killer->nType == OBJ_ROBOT) && ROBOTINFO (killer->id).companion)
+if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->id).companion)
 	return;
-if (killer == playerObjP) {
+if (killerObjP == playerObjP) {
 	if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bInhibitSuicide)
 		return;
 	}
 else if (killerP && gameStates.app.bHaveExtraGameInfo [1] && 
 			!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 	if (gameData.app.nGameMode & GM_TEAM) {
-		if (GetTeam (playerObjP->id) == GetTeam (killer->id))
+		if (GetTeam (playerObjP->id) == GetTeam (killerObjP->id))
 			return;
 		}
 	else if (gameData.app.nGameMode & GM_MULTI_COOP)
@@ -2158,10 +2158,10 @@ if (playerObjP->id == gameData.multi.nLocalPlayer) {		//is this the local tPlaye
 	MultiSendShields ();
 	PALETTE_FLASH_ADD (f2i (damage)*4, -f2i (damage/2), -f2i (damage/2));	//flash red
 	if (playerP->shields < 0)	{
-  		playerP->nKillerObj = OBJ_IDX (killer);
+  		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		playerObjP->flags |= OF_SHOULD_BE_DEAD;
 		if (gameData.escort.nObjNum != -1)
-			if (killer && (killer->nType == OBJ_ROBOT) && (ROBOTINFO (killer->id).companion))
+			if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && (ROBOTINFO (killerObjP->id).companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 	playerObjP->shields = playerP->shields;		//mirror

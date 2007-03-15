@@ -2350,8 +2350,7 @@ if (nType == OBJ_POWERUP) {
 #endif
 	if (!bIgnoreLimits && TooManyPowerups (id)) {
 #ifdef _DEBUG
-		HUDInitMessage ("%c%cDiscarding excess %s!", 1, 
-							 (char) GrFindClosestColor (gamePalette, 63, 31, 0), pszPowerup [id]);
+		HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [id]);
 		TooManyPowerups (id);
 #endif
 		return -2;

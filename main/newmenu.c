@@ -613,8 +613,6 @@ else {
 		grdCurCanv->cv_font = SELECTED_FONT;
 	else
 		grdCurCanv->cv_font = NORMAL_FONT;
-//	if (!bIsCurrent && (gameOpts->menus.altBg.bHave > 0))
-//		GrSetFontColor (GrFindClosestColorCurrent (29, 29, 47), -1);
 	}
 return grdCurCanv->cv_font_fg_color.index;
 }

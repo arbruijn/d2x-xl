@@ -98,23 +98,20 @@ void InitBuddyForLevel (void)
 {
 	int	i;
 
-	gameData.escort.bMayTalk = 0;
-	gameData.escort.nObjNum = -1;
-	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
-	gameData.escort.nSpecialGoal = -1;
-	gameData.escort.nGoalIndex = -1;
-	gameData.escort.bMsgsSuppressed = 0;
-
-	for (i = 0; i <= gameData.objs.nLastObject; i++)
-		if (ROBOTINFO (gameData.objs.objects [i].id).companion)
-			break;
-	if (i <= gameData.objs.nLastObject)
-		gameData.escort.nObjNum = i;
-
-	gameData.escort.xSorryTime = -F1_0;
-
-	gameData.escort.bSearchingMarker = -1;
-	gameData.escort.nLastKey = -1;
+gameData.escort.bMayTalk = 0;
+gameData.escort.nObjNum = -1;
+gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
+gameData.escort.nSpecialGoal = -1;
+gameData.escort.nGoalIndex = -1;
+gameData.escort.bMsgsSuppressed = 0;
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (ROBOTINFO (gameData.objs.objects [i].id).companion)
+		break;
+if (i <= gameData.objs.nLastObject)
+	gameData.escort.nObjNum = i;
+gameData.escort.xSorryTime = -F1_0;
+gameData.escort.bSearchingMarker = -1;
+gameData.escort.nLastKey = -1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -185,57 +182,49 @@ while ((head != tail) && (head < max_segs)) {
 int BuddyMayTalk (void)
 {
 	int		i;
-	tSegment	*segp;
+	tSegment	*segP;
 
-	if (gameData.objs.objects [gameData.escort.nObjNum].nType != OBJ_ROBOT) {
-		gameData.escort.bMayTalk = 0;
+if (gameData.objs.objects [gameData.escort.nObjNum].nType != OBJ_ROBOT) {
+	gameData.escort.bMayTalk = 0;
+	return 0;
+	}
+if (gameData.escort.bMayTalk)
+	return 1;
+if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
+	 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
+	!ROBOTINFO (gameData.objs.objects [gameData.escort.nObjNum].id).companion) {
+	for (i=0; i<=gameData.objs.nLastObject; i++)
+		if (ROBOTINFO (gameData.objs.objects [i].id).companion)
+			break;
+	if (i > gameData.objs.nLastObject)
 		return 0;
+	else
+		gameData.escort.nObjNum = i;
 	}
-
-	if (gameData.escort.bMayTalk)
-		return 1;
-
-	if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
-		 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
-		!ROBOTINFO (gameData.objs.objects [gameData.escort.nObjNum].id).companion) {
-		for (i=0; i<=gameData.objs.nLastObject; i++)
-			if (ROBOTINFO (gameData.objs.objects [i].id).companion)
-				break;
-		if (i > gameData.objs.nLastObject)
+segP = gameData.segs.segments + gameData.objs.objects [gameData.escort.nObjNum].nSegment;
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	short	nWall = WallNumP (segP, (short) i);
+	if (IS_WALL (nWall)) {
+		if ((gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
+			! (gameData.walls.walls [nWall].flags & WALL_BLASTED))
 			return 0;
-		else
-			gameData.escort.nObjNum = i;
-	}
-
-	segp = gameData.segs.segments + gameData.objs.objects [gameData.escort.nObjNum].nSegment;
-
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
-		short	nWall = WallNumP (segp, (short) i);
-
-		if (IS_WALL (nWall)) {
-			if ((gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
-				! (gameData.walls.walls [nWall].flags & WALL_BLASTED))
-				return 0;
 		}
+	//	Check one level deeper.
+	if (IS_CHILD (segP->children [i])) {
+		int		j;
+		tSegment	*csegp = &gameData.segs.segments [segP->children [i]];
 
-		//	Check one level deeper.
-		if (IS_CHILD (segp->children [i])) {
-			int		j;
-			tSegment	*csegp = &gameData.segs.segments [segp->children [i]];
-
-			for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
-				short	wall2 = WallNumP (csegp, (short) j);
-
-				if (IS_WALL (wall2)) {
-					if ((gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && ! (gameData.walls.walls [wall2].flags & WALL_BLASTED))
-						return 0;
+		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
+			short	wall2 = WallNumP (csegp, (short) j);
+			if (IS_WALL (wall2)) {
+				if ((gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && ! (gameData.walls.walls [wall2].flags & WALL_BLASTED))
+					return 0;
 				}
 			}
 		}
 	}
-
-	gameData.escort.bMayTalk = 1;
-	return 1;
+gameData.escort.bMayTalk = 1;
+return 1;
 }
 
 //	--------------------------------------------------------------------------------------------
@@ -349,33 +338,34 @@ void ChangeGuidebotName ()
 //	-----------------------------------------------------------------------------
 void _CDECL_ BuddyMessage (char * format, ... )
 {
-	if (gameData.escort.bMsgsSuppressed)
-		return;
-
-	if (gameData.app.nGameMode & GM_MULTI)
-		return;
-
+if (gameData.escort.bMsgsSuppressed)
+	return;
+if (gameData.app.nGameMode & GM_MULTI)
+	return;
 if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) || 
 	 (gameData.escort.xLastMsgTime > gameData.time.xGame)) {
 	if (BuddyMayTalk ()) {
-		char	gb_str [16], new_format [128];
+		char		szMsg [200];
 		va_list	args;
-		int t;
+		int		l = (int) strlen (gameData.escort.szName);
 
-		va_start (args, format );
-		vsprintf (new_format, format, args);
+		va_start (args, format);
+		vsprintf (szMsg + l + 10, format, args);
 		va_end (args);
 
-		gb_str [0] = 1;
-		gb_str [1] = GrFindClosestColor (gamePalette, 28, 28, 0);
-		strcpy (&gb_str [2], gameData.escort.szName);
-		t = (int) strlen (gb_str);
-		gb_str [t] = ':';
-		gb_str [t+1] = 1;
-		gb_str [t+2] = GrFindClosestColor (gamePalette, 0, 31, 0);
-		gb_str [t+3] = 0;
+		szMsg [0] = 1;
+		szMsg [1] = 127 + 128;
+		szMsg [2] = 127 + 128;
+		szMsg [3] = 0 + 128;
+		memcpy (szMsg + 4, gameData.escort.szName, l);
+		szMsg [l+4] = ':';
+		szMsg [l+5] = ' ';
+		szMsg [l+6] = 1;
+		szMsg [l+7] = 0 + 128;
+		szMsg [l+8] = 127 + 128;
+		szMsg [l+9] = 0 + 128;
 
-		HUDInitMessage ("%s %s", gb_str, new_format);
+		HUDInitMessage (szMsg);
 		gameData.escort.xLastMsgTime = gameData.time.xGame;
 		}
 	}
@@ -1081,7 +1071,7 @@ void InvalidateEscortGoal (void)
 
 // --------------------------------------------------------------------------------------------------------------
 
-int ShowEscortHelp (char *goal_str, char *tstr)
+int ShowEscortHelp (char *pszGoal, char *tstr)
 {
 
 	int				nItems;
@@ -1103,7 +1093,7 @@ int ShowEscortHelp (char *goal_str, char *tstr)
 		"T.  %s Messages"
 		};
 
-sprintf (szGoal, TXT_GOAL_NEXT, goal_str);
+sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);
 memset (m, 0, sizeof (m));
 for (nItems = 1; nItems < 10; nItems++) {
@@ -1124,7 +1114,7 @@ void DoEscortMenu (void)
 	int	i;
 	int	paused;
 	int	next_goal;
-	char	goal_str [32], tstr [32];
+	char	szGoal [32], tstr [32];
 
 	if (gameData.app.nGameMode & GM_MULTI) {
 		HUDInitMessage (TXT_GB_MULTIPLAYER);
@@ -1187,27 +1177,27 @@ void DoEscortMenu (void)
 	#ifdef _DEBUG
 		case ESCORT_GOAL_UNSPECIFIED:
 			Int3 ();
-			sprintf (goal_str, "ERROR");
+			sprintf (szGoal, "ERROR");
 			break;
 	#endif
 			
 		case ESCORT_GOAL_BLUE_KEY:
-			sprintf (goal_str, TXT_GB_BLUEKEY);
+			sprintf (szGoal, TXT_GB_BLUEKEY);
 			break;
 		case ESCORT_GOAL_GOLD_KEY:
-			sprintf (goal_str, TXT_GB_YELLOWKEY);
+			sprintf (szGoal, TXT_GB_YELLOWKEY);
 			break;
 		case ESCORT_GOAL_RED_KEY:
-			sprintf (goal_str, TXT_GB_REDKEY);
+			sprintf (szGoal, TXT_GB_REDKEY);
 			break;
 		case ESCORT_GOAL_CONTROLCEN:
-			sprintf (goal_str, TXT_GB_REACTOR);
+			sprintf (szGoal, TXT_GB_REACTOR);
 			break;
 		case ESCORT_GOAL_BOSS:
-			sprintf (goal_str, TXT_GB_BOSS);
+			sprintf (szGoal, TXT_GB_BOSS);
 			break;
 		case ESCORT_GOAL_EXIT:
-			sprintf (goal_str, TXT_GB_EXIT);
+			sprintf (szGoal, TXT_GB_EXIT);
 			break;
 		case ESCORT_GOAL_MARKER1:
 		case ESCORT_GOAL_MARKER2:
@@ -1218,7 +1208,7 @@ void DoEscortMenu (void)
 		case ESCORT_GOAL_MARKER7:
 		case ESCORT_GOAL_MARKER8:
 		case ESCORT_GOAL_MARKER9:
-			sprintf (goal_str, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
+			sprintf (szGoal, TXT_GB_MARKER, next_goal-ESCORT_GOAL_MARKER1+1);
 			break;
 
 	}
@@ -1228,7 +1218,7 @@ void DoEscortMenu (void)
 	else
 		sprintf (tstr, TXT_GB_ENABLE);
 
-	i = ShowEscortHelp (goal_str, tstr);
+	i = ShowEscortHelp (szGoal, tstr);
 	if (i < 11) {
 		gameData.escort.bSearchingMarker = -1;
 		gameData.escort.nLastKey = -1;

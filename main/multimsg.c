@@ -626,7 +626,7 @@ return strnicmp (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, 
 void MultiDoMsg (char *buf)
 {
 	char *colon;
-	char *tilde, msgBuf [100];
+	char *tilde, msgBuf [200];
 	int tloc, t, l;
 	int bufP = 2;
 
@@ -646,13 +646,18 @@ if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain
 		return;
 	}
 msgBuf [0] = 1;
-msgBuf [1] = GrFindClosestColor (gamePalette, 63, 47, 0);
-strcpy (msgBuf + 2, gameData.multi.players [buf [1]].callsign);
+msgBuf [1] = 127 + 128;
+msgBuf [2] = 95 + 128;
+msgBuf [3] = 0 + 128;
+strcpy (msgBuf + 4, gameData.multi.players [buf [1]].callsign);
 t = (int) strlen (msgBuf);
 msgBuf [t] = ':';
-msgBuf [t+1] = 1;
-msgBuf [t+2] = GrFindClosestColor (gamePalette, 31, 23, 0);
-msgBuf [t+3] = 0;
+msgBuf [t+1] = ' ';
+msgBuf [t+2] = 1;
+msgBuf [t+3] = 63 + 128;
+msgBuf [t+4] = 47 + 128;
+msgBuf [t+5] = 0 + 128;
+msgBuf [t+6] = 0;
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 HUDPlayerMessage ("%s %s", msgBuf, buf+2);
 }

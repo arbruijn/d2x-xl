@@ -172,20 +172,50 @@ return ((grdCurCanv->cv_bitmap.bm_props.w - get_line_width (s)) / 2);
 //note we subtract one from color, since 255 is "transparent" so it'll never be used, and 0 would otherwise end the string.
 //function must already have orig_color var set (or they could be passed as args...)
 //perhaps some sort of recursive orig_color nType thing would be better, but that would be way too much trouble for little gain
-int gr_message_colorLevel=1;
+int grMsgColorLevel = 1;
+
+inline char *CheckEmbeddedColors (char *text_ptr, char c, int orig_color)
+{
+if ((c >= 1) && (c <= 3)) { 
+	if (*++text_ptr) { 
+		if (grMsgColorLevel >= c) { 
+			FG_COLOR.rgb = 1; 
+			FG_COLOR.color.red = text_ptr [0]; 
+			FG_COLOR.color.green = text_ptr [1]; 
+			FG_COLOR.color.blue = text_ptr [2]; 
+			FG_COLOR.color.alpha = 0; 
+			} 
+		text_ptr += 3; 
+		} 
+	} 
+else if ((c >= 4) && (c <= 6)) { 
+	if (grMsgColorLevel >= *text_ptr - 3) { 
+		FG_COLOR.index = orig_color; 
+		FG_COLOR.rgb = 0; 
+		} 
+	text_ptr++; 
+	}
+return text_ptr;
+}
+
 #define CHECK_EMBEDDED_COLORS() \
-	if ((c >= 0x01) && (c <= 0x03)) { \
+	if ((c >= 1) && (c <= 3)) { \
 		if (*++text_ptr) { \
-			if (gr_message_colorLevel >= c) \
-				FG_COLOR.index = *text_ptr; \
-				FG_COLOR.rgb = 0; \
-			text_ptr++; \
+			if (grMsgColorLevel >= c) { \
+				FG_COLOR.rgb = 1; \
+				FG_COLOR.color.red = text_ptr [0] - 128; \
+				FG_COLOR.color.green = text_ptr [1] - 128; \
+				FG_COLOR.color.blue = text_ptr [2] - 128; \
+				FG_COLOR.color.alpha = 0; \
+				} \
+			text_ptr += 3; \
 			} \
 		} \
-	else if ((c >= 0x04) && (c <= 0x06)) { \
-		if (gr_message_colorLevel >= *text_ptr - 3) \
+	else if ((c >= 4) && (c <= 6)) { \
+		if (grMsgColorLevel >= *text_ptr - 3) { \
 			FG_COLOR.index = orig_color; \
 			FG_COLOR.rgb = 0; \
+			} \
 		text_ptr++; \
 		}
 
@@ -311,7 +341,7 @@ if (BG_COLOR.rgb) {
 	BG_COLOR.index = GrFindClosestColor (FONT->ft_parent_bitmap.bm_palette, 
 													 BG_COLOR.color.red, BG_COLOR.color.green, BG_COLOR.color.blue);
 	}
-orig_color=FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
+orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 bits=0;
 VideoOffset1 = y * ROWSIZE + x;
 
@@ -354,14 +384,35 @@ VideoOffset1 = y * ROWSIZE + x;
 				get_char_width(c, text_ptr[1], &width, &spacing);
 				letter = c - FMINCHAR;
 				if (!INFONT(letter) || c <= 0x06) {	//not in font, draw as space
+#if 0
 					CHECK_EMBEDDED_COLORS() 
-					else{
+#else
+					if ((c >= 1) && (c <= 3)) {
+						if (*++text_ptr) {
+							if (grMsgColorLevel >= c) {
+								FG_COLOR.rgb = 1;
+								FG_COLOR.color.red = text_ptr [0] - 128;
+								FG_COLOR.color.green = text_ptr [1] - 128;
+								FG_COLOR.color.blue = text_ptr [2] - 128;
+								FG_COLOR.color.alpha = 0;
+								}
+							text_ptr += 3;
+							}
+						}
+					else if ((c >= 4) && (c <= 6)) {
+						if (grMsgColorLevel >= *text_ptr - 3) {
+							FG_COLOR.index = orig_color;
+							FG_COLOR.rgb = 0;
+							}
+						text_ptr++;
+						}
+#endif
+					else {
 						VideoOffset += spacing;
 						text_ptr++;
-					}
+						}
 					continue;
-				}
-
+					}
 				if (FFLAGS & FT_PROPORTIONAL)
 					fp = FCHARS[letter];
 				else
@@ -629,13 +680,35 @@ while (next_row != NULL) {
 		letter = c - FMINCHAR;
 		get_char_width (c, text_ptr [1], &width, &spacing);
 		if (!INFONT(letter) || (c <= 0x06)) {	//not in font, draw as space
-			CHECK_EMBEDDED_COLORS()
-		else {
-			xx += spacing;
-			text_ptr++;
+#if 0
+			CHECK_EMBEDDED_COLORS() 
+#else
+			if ((c >= 1) && (c <= 3)) {
+				if (*++text_ptr) {
+					if (grMsgColorLevel >= c) {
+						FG_COLOR.rgb = 1;
+						FG_COLOR.color.red = 2 * (text_ptr [0] - 128);
+						FG_COLOR.color.green = 2 * (text_ptr [1] - 128);
+						FG_COLOR.color.blue = 2 * (text_ptr [2] - 128);
+						FG_COLOR.color.alpha = 255;
+						}
+					text_ptr += 3;
+					}
+				}
+			else if ((c >= 4) && (c <= 6)) {
+				if (grMsgColorLevel >= *text_ptr - 3) {
+					FG_COLOR.index = orig_color;
+					FG_COLOR.rgb = 0;
+					}
+				text_ptr++;
+				}
+#endif
+			else {
+				xx += spacing;
+				text_ptr++;
+				}
+			continue;
 			}
-		continue;
-		}
 		bmf = FONT->ft_bitmaps + letter;
 		bmf->bm_props.flags |= BM_FLAG_TRANSPARENT;
 		if (FFLAGS & FT_COLOR)
@@ -716,13 +789,35 @@ while (next_row != NULL) {
 		letter = c - FMINCHAR;
 		get_char_width (c, text_ptr [1], &cw, &spacing);
 		if (!INFONT (letter) || (c <= 0x06)) {	//not in font, draw as space
-			CHECK_EMBEDDED_COLORS()
-		else {
-			x += spacing;
-			text_ptr++;
+#if 0
+			CHECK_EMBEDDED_COLORS() 
+#else
+			if ((c >= 1) && (c <= 3)) {
+				if (*++text_ptr) {
+					if (grMsgColorLevel >= c) {
+						FG_COLOR.rgb = 1;
+						FG_COLOR.color.red = text_ptr [0] - 128;
+						FG_COLOR.color.green = text_ptr [1] - 128;
+						FG_COLOR.color.blue = text_ptr [2] - 128;
+						FG_COLOR.color.alpha = 0;
+						}
+					text_ptr += 3;
+					}
+				}
+			else if ((c >= 4) && (c <= 6)) {
+				if (grMsgColorLevel >= *text_ptr - 3) {
+					FG_COLOR.index = orig_color;
+					FG_COLOR.rgb = 0;
+					}
+				text_ptr++;
+				}
+#endif
+			else {
+				x += spacing;
+				text_ptr++;
+				}
+			continue;
 			}
-		continue;
-		}
 		if (bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey)))
 			nKey = 0;
 		bmfP = (bHotKey && (FONT != SMALL_FONT)) ? SELECTED_FONT->ft_bitmaps + letter : FONT->ft_bitmaps + letter;

@@ -434,36 +434,33 @@ tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 	tRobotInfo	*botInfoP;
 	ubyte			default_behavior;
 
-	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
-	gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
-
-	nObject = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
-								  &vmdIdentityMatrix, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
-				 				  (ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
-
-	if (nObject < 0) {
+gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
+gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
+nObject = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
+								&vmdIdentityMatrix, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
+				 				(ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
+if (nObject < 0) {
 #if TRACE
-		con_printf (1, "Can't create morph robot.  Aborting morph.\n");
+	con_printf (1, "Can't create morph robot.  Aborting morph.\n");
 #endif
-		Int3 ();
-		return NULL;
+	Int3 ();
+	return NULL;
 	}
-
-	objP = gameData.objs.objects + nObject;
-	//Set polygon-tObject-specific data
-	botInfoP = &ROBOTINFO (objP->id);
-	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
-	objP->rType.polyObjInfo.nSubObjFlags = 0;
-	//set Physics info
-	objP->mType.physInfo.mass = botInfoP->mass;
-	objP->mType.physInfo.drag = botInfoP->drag;
-	objP->mType.physInfo.flags |= (PF_LEVELLING);
-	objP->shields = RobotDefaultShields (objP);
-	default_behavior = botInfoP->behavior;
-	InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
-	CreateNSegmentPath (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
-	gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
-	return objP;
+objP = gameData.objs.objects + nObject;
+//Set polygon-tObject-specific data
+botInfoP = &ROBOTINFO (objP->id);
+objP->rType.polyObjInfo.nModel = botInfoP->nModel;
+objP->rType.polyObjInfo.nSubObjFlags = 0;
+//set Physics info
+objP->mType.physInfo.mass = botInfoP->mass;
+objP->mType.physInfo.drag = botInfoP->drag;
+objP->mType.physInfo.flags |= (PF_LEVELLING);
+objP->shields = RobotDefaultShields (objP);
+default_behavior = botInfoP->behavior;
+InitAIObject (OBJ_IDX (objP), default_behavior, -1);		//	Note, -1 = tSegment this robot goes to to hide, should probably be something useful
+CreateNSegmentPath (objP, 6, -1);		//	Create a 6 tSegment path from creation point.
+gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
+return objP;
 }
 
 int Num_extryRobots = 15;
@@ -496,13 +493,14 @@ if (objP) {
 
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags)
 {
-	int	i, flags, nObjIndex, nTypes = 0;
-	sbyte	objTypes [64];
+	int				i, nObjIndex, nTypes = 0;
+	unsigned int	flags;
+	sbyte				objTypes [64];
 
 memset (objTypes, 0, sizeof (objTypes));
 for (i = 0; i < 2; i++) {
 	nObjIndex = i * 32;
-	flags = objFlags [i];
+	flags = (unsigned int) objFlags [i];
 	while (flags) {
 		if (flags & 1)
 			objTypes [nTypes++] = nObjIndex;

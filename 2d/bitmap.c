@@ -275,35 +275,33 @@ GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 #ifdef BITMAP_SELECTOR
 int GrBitmapAssignSelector(grsBitmap * bmP)
 {
-	if  (!dpmi_allocate_selector(bmP->bm_texBuf, bmP->bm_props.w*bmP->bm_props.h, &bmP->bm_selector)) {
-		bmP->bm_selector = 0;
-		return 1;
+if  (!dpmi_allocate_selector(bmP->bm_texBuf, bmP->bm_props.w*bmP->bm_props.h, &bmP->bm_selector)) {
+	bmP->bm_selector = 0;
+	return 1;
 	}
-	return 0;
+return 0;
 }
 #endif
 
 //------------------------------------------------------------------------------
 
-void GrBitmapCheckTransparency(grsBitmap * bmP)
+void GrBitmapCheckTransparency (grsBitmap * bmP)
 {
 	int x, y;
 	ubyte * data;
 
 	data = bmP->bm_texBuf;
 
-	for (y=0; y<bmP->bm_props.h; y++)	{
-		for (x=0; x<bmP->bm_props.w; x++)	{
-			if  (*data++ == TRANSPARENCY_COLOR)	{
-				GrSetTransparent (bmP, 1);
-				return;
+for (y = 0; y < bmP->bm_props.h; y++)	{
+	for (x = 0; x < bmP->bm_props.w; x++)	{
+		if  (*data++ == TRANSPARENCY_COLOR)	{
+			GrSetTransparent (bmP, 1);
+			return;
 			}
 		}
-		data += bmP->bm_props.rowsize - bmP->bm_props.w;
+	data += bmP->bm_props.rowsize - bmP->bm_props.w;
 	}
-
-	bmP->bm_props.flags = 0;
-
+bmP->bm_props.flags = 0;
 }
 
 //------------------------------------------------------------------------------

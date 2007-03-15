@@ -75,21 +75,23 @@ extern int PickConnectedSegment(tObject *objP, int max_depth);
 //	-----------------------------------------------------------------------------
 void _CDECL_ ThiefMessage(char * format, ... )
 {
-	char	gb_str[16], new_format[128];
+	char	szMsg [128];
 	va_list	args;
 
-va_start(args, format );
-vsprintf(new_format, format, args);
+va_start (args, format);
+vsprintf (szMsg + 15, format, args);
 va_end(args);
 
-gb_str[0] = 1;
-gb_str[1] = GrFindClosestColor (gamePalette, 28, 0, 0);
-strcpy(&gb_str[2], "THIEF:");
-gb_str[8] = 1;
-gb_str[9] = GrFindClosestColor (gamePalette, 0, 31, 0);
-gb_str[10] = 0;
-
-HUDInitMessage("%s %s", gb_str, new_format);
+szMsg [0] = 1;
+szMsg [1] = 127 + 128;
+szMsg [2] = 0 + 128;
+szMsg [3] = 0 + 128;
+memcpy (szMsg + 4, "THIEF: ", 6);
+szMsg [11] = 1;
+szMsg [12] = 0 + 128;
+szMsg [13] = 63 + 128;
+szMsg [14] = 0 + 128;
+HUDInitMessage(szMsg);
 }
 
 //	------------------------------------------------------------------------------------------------------

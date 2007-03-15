@@ -150,7 +150,7 @@ if ( pMsgs->xTimer < 0)	{
 
 if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == -1)
-		pMsgs->nColor = RGBA_PAL2 (0,28,0);
+		pMsgs->nColor = GREEN_RGBA;
 
 	if ((VR_render_mode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
 		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (VR_render_sub_buffer [0].cv_bitmap.bm_props.y >= (max_window_h/8))) {
@@ -193,7 +193,7 @@ if (pMsgs->nMessages > 0) {
 			else {
 				WIN (DDGRLOCK (dd_grd_curcanv));
 					if (pMsgs->nColor == -1)
-						pMsgs->nColor = RGBA_PAL2 (0,28,0);
+						pMsgs->nColor = GREEN_RGBA;
 					GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
 					PA_DFX (pa_set_frontbuffer_current ());
 					PA_DFX (GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg));
@@ -291,8 +291,22 @@ pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
 /* Produce a colorised version and send it to the console */
 con_message [0] = CC_COLOR;
-con_message [1] = (pMsgs->nColor == -1) ? nType ? GrFindClosestColor (gamePalette, 63,47,0) : GrFindClosestColor (gamePalette, 0,28,0) : pMsgs->nColor;
-con_message [2] = '\0';
+if (pMsgs->nColor != -1) {
+	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
+	con_message [2] = (char) RGBA_GREEN (pMsgs->nColor) / 2 + 128;
+	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
+	}
+else if (nType) {
+	con_message [1] = 127 + 128;
+	con_message [2] = 95 + 128;
+	con_message [3] = 0 + 128;
+	}
+else {
+	con_message [1] = 0 + 128;
+	con_message [3] = 0 + 128;
+	con_message [2] = 63 + 128;
+	}
+con_message [4] = '\0';
 strcat (con_message, pszMsg);
 #if TRACE		
 con_printf (CON_NORMAL, "%s\n", con_message);
