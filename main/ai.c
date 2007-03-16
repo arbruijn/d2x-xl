@@ -944,7 +944,7 @@ if (botInfoP->companion) {
 		else
 			; 
 
-		if (bDoStuff && (VmVecDot (&gameData.objs.console->position.mOrient.fVec, &gameData.ai.vVecToPlayer) < F1_0/3)) {
+		if (bDoStuff && (VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer) < F1_0 / 2)) {
 			CreateNewLaserEasy ( &objP->position.mOrient.fVec, &objP->position.vPos, OBJ_IDX (objP), FLARE_ID, 1);
 			ailp->nextPrimaryFire = F1_0/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.

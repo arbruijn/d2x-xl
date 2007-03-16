@@ -435,7 +435,7 @@ void InitReactorForLevel (int bRestore)
 {
 	int		i, j, nGuns;
 	tObject	*objP;
-	short		nReactorObj = -1, nBossObj = -1;
+	short		nBossObj = -1;
 	tReactorStates	*rStatP = gameData.reactor.states;
 
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
@@ -443,12 +443,14 @@ extraGameInfo [0].nBossCount = 0;
 gameStates.gameplay.nReactorCount = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	if (objP->nType == OBJ_CNTRLCEN) {
-		if ((nReactorObj != -1) && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
+		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
-			con_printf (1, "Warning: Two or more control centers including %i and %i\n", i, nReactorObj);
+			con_printf (1, "Warning: Two or more control centers including %i and %i\n", 
+							gameData.reactor.states [0].nObject, i);
 #endif
 			}				
-		else {
+		//else 
+			{
 			//	Compute all gun positions.
 			objP = gameData.objs.objects + i;
 			if (bRestore && (0 <= (j = FindReactor (objP))))
@@ -460,8 +462,8 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
+				rStatP->nObject = i;
 				if (!bRestore) {
-					rStatP->nObject = i;
 					objP->shields = ReactorStrength ();
 					//	Say the control center has not yet been hit.
 					rStatP->bHit = 0;
@@ -478,7 +480,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
 		extraGameInfo [0].nBossCount++;
-		if (nBossObj != -1) {
+		if (BOSS_COUNT > 1) {
 #if TRACE
 			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, nBossObj);
 #endif
@@ -489,7 +491,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	}
 
 #ifdef _DEBUG
-if (nReactorObj == -1) {
+if (!gameStates.gameplay.nReactorCount) {
 #if TRACE
 	con_printf (1, "Warning: No control center.\n");
 #endif

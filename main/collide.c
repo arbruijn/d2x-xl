@@ -1650,8 +1650,8 @@ if (botInfoP->bossFlag) {
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
 if ((botInfoP->companion) && 
-	 ((weapon->cType.laserInfo.parentType != OBJ_ROBOT) && 
-	  !gameStates.app.cheats.bRobotsKillRobots))
+	 (weapon->cType.laserInfo.parentType == OBJ_ROBOT) && 
+	  !gameStates.app.cheats.bRobotsKillRobots)
 	return 1;
 if (weapon->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
@@ -2542,11 +2542,8 @@ return 1;
 
 int CollideTwoObjects (tObject * A, tObject * B, vmsVector *vHitPt)
 {
-	int collisionType;	
-		
-	collisionType = COLLISION_OF (A->nType, B->nType);
-
-	switch (collisionType)	{
+	int collisionType = COLLISION_OF (A->nType, B->nType);
+switch (collisionType)	{
 	NO_SAME_COLLISION (OBJ_FIREBALL, OBJ_FIREBALL,  CollideFireballAndFireball)
 	DO_SAME_COLLISION (OBJ_ROBOT, 	OBJ_ROBOT, 		CollideRobotAndRobot)
 	NO_SAME_COLLISION (OBJ_HOSTAGE, 	OBJ_HOSTAGE, 	CollideHostageAndHostage)
