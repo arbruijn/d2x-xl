@@ -433,7 +433,7 @@ return i2f (gameData.reactor.nStrength);
 //	If this level contains a boss and mode == multiplayer, do control center stuff.
 void InitReactorForLevel (int bRestore)
 {
-	int		i, j, nGuns;
+	int		i, j, nGuns, bNew;
 	tObject	*objP;
 	short		nBossObj = -1;
 	tReactorStates	*rStatP = gameData.reactor.states;
@@ -453,17 +453,17 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 			{
 			//	Compute all gun positions.
 			objP = gameData.objs.objects + i;
-			if (bRestore && (0 <= (j = FindReactor (objP))))
-				rStatP = gameData.reactor.states + j;
-			else
+			if (bNew = (!bRestore || (0 > (j = FindReactor (objP)))))
 				rStatP = gameData.reactor.states + gameStates.gameplay.nReactorCount;
+			else
+				rStatP = gameData.reactor.states + j;
 			if (rStatP->nDeadObj < 0) {
 				nGuns = gameData.reactor.props [objP->id].nGuns;
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
 				rStatP->nObject = i;
-				if (!bRestore) {
+				if (bNew) {
 					objP->shields = ReactorStrength ();
 					//	Say the control center has not yet been hit.
 					rStatP->bHit = 0;
