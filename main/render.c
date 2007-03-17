@@ -3090,7 +3090,7 @@ void BuildSegmentList (short nStartSeg, int nWindow)
 	int		nChildren, bCheckBehind;					//how many sides in childList
 	tSegment	*segP;
 
-bCheckBehind = (gameStates.render.nShadowPass == 1);
+bCheckBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
 if (!++nVisited) {
 	memset (bVisited, 0, sizeof (bVisited));
 	nVisited = 1;
@@ -3638,6 +3638,8 @@ inline void RenderMineSegment (int nn)
 {
 	int nSegment = nRenderList [nn];
 
+if (nSegment == 213)
+	nSegment = nSegment;
 if ((nSegment != -1) && !VISITED (nSegment)) {
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)

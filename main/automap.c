@@ -372,15 +372,8 @@ void ClearMarkers ()
 
 void AutomapClearVisited ()	
 {
-#if 1
-	memset (bAutomapVisited, 0, sizeof (bAutomapVisited));
-#else
-	int i;
-
-	for (i=0; i<MAX_SEGMENTS; i++)
-		bAutomapVisited[i] = 0;
-#endif
-	ClearMarkers ();
+memset (bAutomapVisited, 0, sizeof (bAutomapVisited));
+ClearMarkers ();
 }
 
 grs_canvas *name_canv_left,*name_canv_right;
