@@ -181,6 +181,8 @@ int GrFindClosestColor (ubyte *palette, int r, int g, int b)
 if (!palette)
 	palette = defaultPalette;
 plP = (tPaletteList *) palette;
+if (!palette)
+	return -1;
 n = plP->nComputedColors;
 //if (!n)
 //	InitComputedColors (plP);

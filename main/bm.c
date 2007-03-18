@@ -155,7 +155,7 @@ for (i = 0; i < MAX_OBJECTS; i++)
 	gameData.weapons.color [i].green =
 	gameData.weapons.color [i].blue = 1.0;
 InitPolygonModels ();
-if (! PiggyInit ())				// This calls BMReadAll
+if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
 /*---*/LogErr ("   Loading sound data\n");
 PiggyReadSounds ();
