@@ -493,7 +493,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 			}
 		}
 
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag) {
+	if (IS_BOSS (objP)) {
 		extraGameInfo [0].nBossCount++;
 		if (BOSS_COUNT > 1) {
 #if TRACE

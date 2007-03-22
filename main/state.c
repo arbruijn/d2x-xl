@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				31
+#define STATE_VERSION				32
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1820,12 +1820,14 @@ playerP->hoursTotal = CFReadByte (fp);            // Hours played (since timeTot
 
 //------------------------------------------------------------------------------
 
-void StateRestoreObject (tObject *objP, CFILE *fp)
+void StateRestoreObject (tObject *objP, CFILE *fp, int sgVersion)
 {
 objP->nSignature = CFReadInt (fp);      
 objP->nType = (ubyte) CFReadByte (fp); 
 if (objP->nType == OBJ_CNTRLCEN)
 	objP->nType = objP->nType;
+else if ((sgVersion < 32) && IS_BOSS (objP))
+	gameData.boss [extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
 objP->id = (ubyte) CFReadByte (fp);
 objP->next = CFReadShort (fp);
 objP->prev = CFReadShort (fp);
@@ -2138,8 +2140,9 @@ if (!bBetweenLevels)	{
 	//fpos = CFTell (fp);
 	h = CFReadInt (fp);
 	gameData.objs.nLastObject = h - 1;
+	extraGameInfo [0].nBossCount = 0;
 	for (i = 0; i < h; i++)
-		StateRestoreObject (gameData.objs.objects + i, fp);
+		StateRestoreObject (gameData.objs.objects + i, fp, sgVersion);
 	//fpos = CFTell (fp);
 	StateFixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;

@@ -998,7 +998,7 @@ while ((i >= 0) && (j < 256)) {
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
-	if (bDamage)
+	if (!bDamage)
 		gameData.trigs.objTriggerRefs [i].nObject = -1;
 	i = gameData.trigs.objTriggerRefs [i].next;
 	j++;

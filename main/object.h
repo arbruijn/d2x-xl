@@ -506,4 +506,8 @@ extern ubyte bIsMissile [];
 #define	SHOW_OBJ_FX \
 			(!(gameStates.app.bNostalgia || COMPETITION))
 
+#define	IS_BOSS(_objP)	(((_objP)->nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->id).bossFlag)
+
+#define	IS_BOSS_I(_i)	IS_BOSS (gameData.objs.objects + (_i))
+
 #endif

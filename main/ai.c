@@ -1914,10 +1914,11 @@ CFWriteInt (gameData.ai.nOverallAgitation, fp);
 for (i = 0; i < MAX_OBJECTS; i++)
 	AISaveLocalInfo (gameData.ai.localInfo + i, fp);
 for (i = 0; i < MAX_POINT_SEGS; i++)
-	AISavePointSeg (gameData.ai.pointSegs+  i, fp);
+	AISavePointSeg (gameData.ai.pointSegs + i, fp);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	AISaveCloakInfo (gameData.ai.cloakInfo + i, fp);
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
+	CFWriteShort (gameData.boss [i].nObject, fp);
 	CFWriteFix (gameData.boss [i].nCloakStartTime, fp);
 	CFWriteFix (gameData.boss [i].nCloakEndTime , fp);
 	CFWriteFix (gameData.boss [i].nLastTeleportTime , fp);
@@ -2048,6 +2049,8 @@ if (version < 29) {
 	}
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
+		if (version > 31)
+			gameData.boss [0].nObject = CFReadShort (fp);
 		gameData.boss [i].nCloakStartTime = CFReadFix (fp);
 		gameData.boss [i].nCloakEndTime = CFReadFix (fp);
 		gameData.boss [i].nLastTeleportTime = CFReadFix (fp);
