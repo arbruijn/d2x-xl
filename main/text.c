@@ -1626,7 +1626,7 @@ char *defaultGameTexts [][2] = {
 	{"UDP-~Port pruefen", "check UDP ~Port"},
 	{"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
 	{"Ausruestungsgenerator%n deaktiviert", "equipment generator%s deactivated"},
-	{"Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},
+	{"~Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},
 #if 0
 	{"", ""},
 #endif
