@@ -257,8 +257,6 @@ if (bReactor) {
 	}
 }
 
-int	xLastReactorVisCheckTime = 0;
-
 //	-----------------------------------------------------------------------------
 
 int FindReactor (tObject *objP)
@@ -344,14 +342,14 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 
 //	Periodically, make the reactor fall asleep if tPlayer not visible.
 if (rStatP->bHit || rStatP->bSeenPlayer) {
-	if ((xLastReactorVisCheckTime + F1_0 * 5 < gameData.time.xGame) || 
-		 (xLastReactorVisCheckTime > gameData.time.xGame)) {
+	if ((rStatP->xLastVisCheckTime + F1_0 * 5 < gameData.time.xGame) || 
+		 (rStatP->xLastVisCheckTime > gameData.time.xGame)) {
 		vmsVector	vecToPlayer;
 		fix			xDistToPlayer;
 
 		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
 		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
-		xLastReactorVisCheckTime = gameData.time.xGame;
+		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
@@ -473,6 +471,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 				gameStates.gameplay.nLastReactor = j;
 			if (bNew)
 				rStatP->nDeadObj = -1;
+			rStatP->xLastVisCheckTime = 0;
 			if (rStatP->nDeadObj < 0) {
 				nGuns = gameData.reactor.props [objP->id].nGuns;
 				for (j = 0; j < nGuns; j++)
