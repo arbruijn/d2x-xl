@@ -1658,9 +1658,9 @@ void LoadGameTexts(void);
 #define TXT_CHECK_PORT				GT(874)
 #define TXT_EQUIPGENS_ON			GT(875)
 #define TXT_EQUIPGENS_OFF			GT(876)
+#define TXT_COOP_PENALTY			GT(877)
 
 #if 0
-#define TXT_				GT(877)
 #define TXT_				GT(878)
 #define TXT_				GT(879)
 #define TXT_				GT(880)
@@ -2057,10 +2057,10 @@ void LoadGameTexts(void);
 #define HTX_ADVRND_STATICSMOKE	HT(253)				
 #define HTX_GPLAY_AWARENESS		HT(254)				
 #define HTX_MULTI2_CHECKPORT		HT(255)				
+#define HTX_COOP_PENALTY			HT(256)				
 
 #if 0
 				
-#define HTX_					HT(256)				
 #define HTX_					HT(257)				
 #define HTX_					HT(258)				
 #define HTX_					HT(259)				

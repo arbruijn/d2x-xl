@@ -934,10 +934,10 @@ if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 GrSetCurFont (GAME_FONT);
-if (((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)))
-	sprintf (score_str, "%s: %5d", TXT_KILLS, gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal);
+if ((IsMultiGame && !IsCoopGame))
+	sprintf (score_str, "%s: %5d", TXT_KILLS, gameData.multi.players [gameData.multi.nLocalPlayer].netKillsTotal);
 else
-	sprintf (score_str, "%s: %5d", TXT_SCORE, gameData.multi.players[gameData.multi.nLocalPlayer].score);
+	sprintf (score_str, "%s: %5d", TXT_SCORE, gameData.multi.players [gameData.multi.nLocalPlayer].score);
 GrGetStringSize (score_str, &w, &h, &aw);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (grdCurCanv->cv_w-w-LHX (2), 3, score_str);

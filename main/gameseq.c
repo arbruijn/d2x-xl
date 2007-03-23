@@ -854,8 +854,15 @@ if (gameData.missions.nEnhancedMission) {
 
 	sprintf (t,"%s.ham", gameStates.app.szCurrentMissionFile);
 	/*---*/LogErr ("   reading additional robots\n");
-	if (!BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission))
-		BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
+	switch (BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
+		case -1:
+			return 0;
+		case 1:
+			break;
+		default:
+			if (0 > BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission))
+				return 0;
+		}
 	strncpy (t, gameStates.app.szCurrentMissionFile, 6);
 	strcat (t, "-l.mvl");
 	/*---*/LogErr ("   initializing additional robot movies\n");
@@ -915,10 +922,11 @@ else {
 /*---*/LogErr ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 /*---*/LogErr ("   loading cambot\n");
-gameData.bots.nCamBotId = LoadRobotReplacements ("cambot.hxm", 1, 0) ? gameData.bots.nTypes [0] - 1 : -1;
+gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 /*---*/LogErr ("   loading replacement robots\n");
-LoadRobotReplacements (pszLevelName, 0, 0);
+if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
+	return 0;
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1));
@@ -1680,6 +1688,9 @@ GrPaletteStepLoad (NULL);
 //	DigiPauseDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
+if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
+	gameData.multi.players [gameData.multi.nLocalPlayer].score = 
+	(gameData.multi.players [gameData.multi.nLocalPlayer].score * (100 - nCoopPenalties [extraGameInfo [1].nCoopPenalty])) / 100;
 if (gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;

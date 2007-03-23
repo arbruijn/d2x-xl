@@ -444,7 +444,7 @@ int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd, optHitInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
-int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition;
+int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
 
 //------------------------------------------------------------------------------
 
@@ -621,6 +621,13 @@ if (v != extraGameInfo [1].bCompetition) {
 	*key = -2;
 	return;
 	}
+v = menus [optPenalty].value;
+if (v != extraGameInfo [1].nCoopPenalty) {
+	extraGameInfo [1].nCoopPenalty = v;
+	sprintf (menus [optPenalty].text, TXT_COOP_PENALTY, nCoopPenalties [v], '%');
+	menus [optPenalty].rebuild = 1;
+	return;
+	}
 v = menus [optDarkness].value;
 if (v != extraGameInfo [1].bDarkness) {
 	extraGameInfo [1].bDarkness = v;
@@ -673,6 +680,7 @@ void NetworkD2XOptions ()
  {
   int		opt = 0, i, j, choice = 0, optCheckPort = -1;
   char	szSpotSize [50];
+  char	szPenalty [50];
   tMenuItem m [40];
 
 do {
@@ -761,6 +769,11 @@ do {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	if (!extraGameInfo [1].bCompetition) {
+		sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [extraGameInfo [1].nCoopPenalty], '%');
+		strupr (szPenalty + 1);
+		*szPenalty = *(TXT_COOP_PENALTY - 1);
+		ADD_SLIDER (opt, szPenalty + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
+		optPenalty = opt++;
 		ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
 		optTgtInd = opt++;
 		ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
@@ -780,8 +793,11 @@ do {
 			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
 			optHitInd = opt++;
 			}
-		else
+		else {
+			optPenalty =
 			optHitInd = -1;
+			extraGameInfo [1].nCoopPenalty = 0;
+			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}

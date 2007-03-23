@@ -139,6 +139,8 @@ tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 
+int nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
+
 tExtraGameInfo extraGameInfo [2];
 
 tMpParams mpParams = {
@@ -1517,6 +1519,7 @@ extraGameInfo [1].bDarkness = egi1Save.bDarkness;
 extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
+extraGameInfo [1].nCoopPenalty = egi1Save.nCoopPenalty;
 extraGameInfo [1].bRadarEnabled = ((netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);
 extraGameInfo [1].bWiggle = 1;
 extraGameInfo [1].nType = PID_EXTRA_GAMEINFO;
@@ -4506,6 +4509,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
+	extraGameInfo [i].nCoopPenalty = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;
@@ -4629,6 +4633,7 @@ else {
 	LogErr ("   bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
+	LogErr ("   nCoopPenalty: %d\n", nCoopPenalties [extraGameInfo [1].nCoopPenalty]);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
 	LogErr ("   nLightRange: %d\n", extraGameInfo [1].nLightRange);

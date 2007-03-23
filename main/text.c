@@ -1626,6 +1626,7 @@ char *defaultGameTexts [][2] = {
 	{"UDP-~Port pruefen", "check UDP ~Port"},
 	{"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
 	{"Ausruestungsgenerator%n deaktiviert", "equipment generator%s deactivated"},
+	{"Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},
 #if 0
 	{"", ""},
 #endif
@@ -2119,6 +2120,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, robots will notice the player from further\naway and pursue him or her longer."},
 	{"Wenn angekreuzt, werden IP-Adresse und Portnummer der\nMitspieler dazu verwendet festzustellen, ob ein Spieler schon am Spiel\nteilnimmt. Das ist sinnvoll, wenn mehrere Teilnehmer die\nselbe IP-Adresse haben.\n\nIst die Option nicht angekreuzt, wird\nnur die IP-Adresse geprueft. Das ist sinnvoll, wenn andere\nSpieler Portnummer 0 verwenden, da sich dann u.U. staendig\nderen Port aendert.", 
 	 "If checked IP address and port number of the players\nwill be used to determine whether a player is already participating\nin the match. This makes sense when several players share an\nIP address.\n\nIf the option is unchecked, only the IP address\nis checked. This is recommendable if a participant is using\nport number 0, because that can cause his actual port number\nto constantly change."},
+	{"Hier kann eingestellt werden, um wieviel Prozent der Punkte-\nstand eines Spielers in kooperativen Spielen verringert wird,\nwenn er abgeschossen wird.\n\nDamit soll den Spielern ein Anreiz gegeben werden, nicht\nblind drauflos zu stuermen, sondern wirklich zusammen\nzu spielen und einander zu unterstuetzen.", 
+	 "Here you can adjust by how many percent a player's score is\nreduced in cooperative games if the player gets killed.\n\nThat way you can give an incentive to actually play together\nand support each other instead of storming blindly\ninto enemy fire for the sake of gaining a higher score."},
 #if 0
 	{"", ""},
 #endif

@@ -181,7 +181,7 @@ else {
 			BM_OVERRIDE (hbmP) = bmfP;
 			bmfP->bm_handle = j;
 			bmfP++;
-		}	
+			}	
 		}
 	else {
 		for (i = 0; i < nFrames; i++) {
@@ -230,8 +230,10 @@ xEffectTime += gameData.time.xFrame;
 				bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 0, &nFrames);
 				if (!bmP)
 					ecP->flags &= ~EF_ALTFMT;
+#if 0
 				else if (!gameOpts->ogl.bGlTexMerge)
 					ecP->flags &= ~EF_ALTFMT;
+#endif
 				else
 					ecP->flags |= EF_INITIALIZED;
 				}
@@ -242,9 +244,9 @@ xEffectTime += gameData.time.xFrame;
 			if (ecP->nCurFrame >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
 #ifdef _DEBUG
-					Assert (ecP->nSegment!=-1);
+					Assert (ecP->nSegment != -1);
 					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert (ecP->nDestBm!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert (ecP->nDestBm != 0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
 #endif
 					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destroyed
 					ecP->flags &= ~EF_ONE_SHOT;
@@ -260,12 +262,14 @@ xEffectTime += gameData.time.xFrame;
 			bmi = gameData.eff.pEffects [n].vc.frames [gameData.eff.pEffects [n].nCurFrame];
 			gameData.pig.tex.pBmIndex [t] = bmi;
 			}
-		else if ((ecP->flags & EF_ALTFMT) && (BM_FRAMECOUNT (bmP) > 1)) {
+		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (BM_FRAMECOUNT (bmP) > 1)) {
 			OglLoadBmTexture (bmP, 1, 0);
 			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + min (ecP->nCurFrame, BM_FRAMECOUNT (bmP) - 1);
 			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 0);
 			}
 		else {
+			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
+				ecP->nCurFrame = 0;
 			bmi = ecP->vc.frames [ecP->nCurFrame];
 			gameData.pig.tex.pBmIndex [t] = bmi;
 			}

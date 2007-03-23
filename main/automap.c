@@ -1446,7 +1446,7 @@ switch (gameData.segs.segment2s[nSegment].special)	{
 		color = RGBA_PAL2 (13, 13, 13);
 		break;
 	case SEGMENT_IS_REPAIRCEN:
-		color = RGBA_PAL2 (0, 31, 0);
+		color = RGBA_PAL2 (0, 15, 31);
 		break;
 	case SEGMENT_IS_CONTROLCEN:
 		if (gameData.reactor.bPresent)
