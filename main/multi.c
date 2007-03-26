@@ -1136,9 +1136,9 @@ else if (weapon >= MISSILE_ADJUST) {
 						  weapon_id, weapon_gun, 1, 0);
 	}
 else {
-	fix save_charge = gameData.app.fusion.xCharge;
+	fix save_charge = gameData.fusion.xCharge;
 	if (weapon == FUSION_INDEX)
-		gameData.app.fusion.xCharge = flags << 12;
+		gameData.fusion.xCharge = flags << 12;
 	if (weapon == LASER_ID) {
 		if (flags & LASER_QUAD)
 			gameData.multi.players [nPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
@@ -1147,7 +1147,7 @@ else {
 		}
 	LaserFireObject ((short) gameData.multi.players [nPlayer].nObject, weapon, (int)buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
-		gameData.app.fusion.xCharge = save_charge;
+		gameData.fusion.xCharge = save_charge;
 	}
 }
 

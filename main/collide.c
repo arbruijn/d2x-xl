@@ -2007,7 +2007,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
 		if (nObject!=-1)
-			gameData.objs.objects [nObject].cType.powerupInfo.count = (playerObjP->id==gameData.multi.nLocalPlayer)?xOmegaCharge:MAX_OMEGA_CHARGE;
+			gameData.objs.objects [nObject].cType.powerupInfo.count = (playerObjP->id==gameData.multi.nLocalPlayer)?gameData.laser.xOmegaCharge:MAX_OMEGA_CHARGE;
 		//	Drop the secondary weapons
 		//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))

@@ -111,7 +111,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 18- Took out saving of old cheat status
 // 19- Saved cheats_enabled flag
 // 20- gameStates.app.bFirstSecretVisit
-// 22- xOmegaCharge
+// 22- gameData.laser.xOmegaCharge
 
 #define NUM_SAVES		9
 #define THUMBNAIL_W	100
@@ -690,7 +690,7 @@ CFWrite (&gameStates.ogl.palAdd.green, sizeof (int), 1, fp);
 CFWrite (&gameStates.ogl.palAdd.blue, sizeof (int), 1, fp);
 CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS, fp);
 CFWrite (&gameStates.app.bFirstSecretVisit, sizeof (gameStates.app.bFirstSecretVisit), 1, fp);
-CFWrite (&xOmegaCharge, sizeof (xOmegaCharge), 1, fp);
+CFWrite (&gameData.laser.xOmegaCharge, sizeof (gameData.laser.xOmegaCharge), 1, fp);
 }
 
 //------------------------------------------------------------------------------
@@ -1261,7 +1261,7 @@ CFWriteShort (gameStates.ogl.palAdd.green, fp);
 CFWriteShort (gameStates.ogl.palAdd.blue, fp);
 CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS, fp);
 CFWriteInt (gameStates.app.bFirstSecretVisit, fp);
-CFWriteFix (xOmegaCharge, fp);
+CFWriteFix (gameData.laser.xOmegaCharge, fp);
 CFWriteShort (gameData.missions.nEnteredFromLevel, fp);
 
 }
@@ -2265,11 +2265,11 @@ if (!bBetweenLevels)	{
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	//fpos = CFTell (fp);
 	//	Restore hacked up weapon system stuff.
-	gameData.app.fusion.xNextSoundTime = gameData.time.xGame;
-	gameData.app.fusion.xAutoFireTime = 0;
-	xNextLaserFireTime = gameData.time.xGame;
-	xNextMissileFireTime = gameData.time.xGame;
-	Last_laser_firedTime = gameData.time.xGame;
+	gameData.fusion.xNextSoundTime = gameData.time.xGame;
+	gameData.fusion.xAutoFireTime = 0;
+	gameData.laser.xNextFireTime = gameData.time.xGame;
+	gameData.missiles.xNextFireTime = gameData.time.xGame;
+	gameData.laser.xLastFiredTime = gameData.time.xGame;
 	}
 gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) CFReadInt (fp);
@@ -2306,7 +2306,7 @@ else
 	gameStates.app.bFirstSecretVisit = CFReadInt (fp);
 
 if (bSecretRestore != 1)
-	xOmegaCharge = CFReadFix (fp);
+	gameData.laser.xOmegaCharge = CFReadFix (fp);
 else
 	CFReadFix (fp);
 if (sgVersion > 27)
@@ -2478,11 +2478,11 @@ if (!bBetweenLevels)	{
 	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 
 	//	Restore hacked up weapon system stuff.
-	gameData.app.fusion.xNextSoundTime = gameData.time.xGame;
-	gameData.app.fusion.xAutoFireTime = 0;
-	xNextLaserFireTime = gameData.time.xGame;
-	xNextMissileFireTime = gameData.time.xGame;
-	Last_laser_firedTime = gameData.time.xGame;
+	gameData.fusion.xNextSoundTime = gameData.time.xGame;
+	gameData.fusion.xAutoFireTime = 0;
+	gameData.laser.xNextFireTime = gameData.time.xGame;
+	gameData.missiles.xNextFireTime = gameData.time.xGame;
+	gameData.laser.xLastFiredTime = gameData.time.xGame;
 
 }
 gameData.app.nStateGameId = 0;
@@ -2552,7 +2552,7 @@ else
 
 if (sgVersion >= 22) {
 	if (bSecretRestore != 1)
-		CFRead (&xOmegaCharge, sizeof (fix), 1, fp);
+		CFRead (&gameData.laser.xOmegaCharge, sizeof (fix), 1, fp);
 	else {
 		fix	dummy_fix;
 		CFRead (&dummy_fix, sizeof (fix), 1, fp);

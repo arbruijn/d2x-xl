@@ -68,8 +68,3 @@ int sideToVertsInt[MAX_SIDES_PER_SEGMENT][4] = {
 			{ encrypt(3,2,1,0) },			// front
 };		
 
-// Texture map stuff
-
-fix	xNextLaserFireTime;			//	Time at which tPlayer can next fire his selected laser.
-fix	xNextMissileFireTime;			//	Time at which tPlayer can next fire his selected missile.
-//--unused-- fix	Laser_delayTime = F1_0/6;		//	Delay between laser fires.

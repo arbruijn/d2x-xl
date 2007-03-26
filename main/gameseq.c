@@ -443,7 +443,7 @@ else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
-Last_laser_firedTime = xNextLaserFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
+gameData.laser.xLastFiredTime = gameData.laser.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
@@ -1193,8 +1193,8 @@ gameStates.render.bDoAppearanceEffect = 1;
 AIResetAllPaths ();
 ResetTime ();
 ResetRearView ();
-gameData.app.fusion.xAutoFireTime = 0;
-gameData.app.fusion.xCharge = 0;
+gameData.fusion.xAutoFireTime = 0;
+gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 if (gameStates.app.bD1Mission) {
@@ -2211,8 +2211,8 @@ InitAIObjects ();
 #endif
 ResetTime ();
 ResetRearView ();
-gameData.app.fusion.xAutoFireTime = 0;
-gameData.app.fusion.xCharge = 0;
+gameData.fusion.xAutoFireTime = 0;
+gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
 //DigiClose ();

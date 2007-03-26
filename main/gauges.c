@@ -921,7 +921,6 @@ void GetHostageWindowCoords (int *x, int *y, int *w, int *h)
 #define cv_h  cv_bitmap.bm_props.h
 
 extern fix ThisLevelTime;
-extern fix xOmegaCharge;
 
 void HUDShowScore ()
 {
@@ -2163,7 +2162,7 @@ void HUDShowWeapons (void)
 			strcpy (weapon_str, weapon_name);
 			break;
 		case OMEGA_INDEX:
-			sprintf (weapon_str, "%s: %03i", weapon_name, xOmegaCharge * 100/MAX_OMEGA_CHARGE);
+			sprintf (weapon_str, "%s: %03i", weapon_name, gameData.laser.xOmegaCharge * 100/MAX_OMEGA_CHARGE);
 			convert_1s (weapon_str);
 			break;
 
@@ -2182,10 +2181,10 @@ void HUDShowWeapons (void)
 	}
 
 	if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-		if (xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
+		if (gameData.laser.xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordPrimaryAmmo (Old_Omega_charge[nVRCurrentPage], xOmegaCharge);
-			Old_Omega_charge[nVRCurrentPage] = xOmegaCharge;
+				NDRecordPrimaryAmmo (Old_Omega_charge[nVRCurrentPage], gameData.laser.xOmegaCharge);
+			Old_Omega_charge[nVRCurrentPage] = gameData.laser.xOmegaCharge;
 		}
 	}
 
@@ -3400,11 +3399,11 @@ void DrawWeaponBoxes ()
 			}
 
 			if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-				if (xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
+				if (gameData.laser.xOmegaCharge != Old_Omega_charge[nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo (Old_Omega_charge[nVRCurrentPage], xOmegaCharge);
-					DrawPrimaryAmmoInfo (xOmegaCharge * 100/MAX_OMEGA_CHARGE);
-					Old_Omega_charge[nVRCurrentPage] = xOmegaCharge;
+						NDRecordPrimaryAmmo (Old_Omega_charge[nVRCurrentPage], gameData.laser.xOmegaCharge);
+					DrawPrimaryAmmoInfo (gameData.laser.xOmegaCharge * 100/MAX_OMEGA_CHARGE);
+					Old_Omega_charge[nVRCurrentPage] = gameData.laser.xOmegaCharge;
 				}
 			}
 		}

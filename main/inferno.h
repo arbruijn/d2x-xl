@@ -1465,13 +1465,6 @@ typedef struct tMarkerData {
 	char					szInput [40];
 } tMarkerData;
 
-typedef struct tFusionData {
-	fix	xAutoFireTime;
-	fix	xCharge;
-	fix	xNextSoundTime;
-	fix	xLastSoundTime;
-} tFusionData;
-
 typedef struct tTimeData {
 	fix					xFrame;	//  since last frame, in seconds
 	fix					xRealFrame;
@@ -1489,10 +1482,7 @@ typedef struct tApplicationData {
 	int					nFrameCount;
 	int					nGameMode;
 	int					bGamePaused;
-	int					nGlobalLaserFiringCount;
-	int					nGlobalMissileFiringCount;
 	uint					nStateGameId;
-	tFusionData			fusion;
 } tApplicationData;
 
 #define MAX_SEGS_VISITED			1000
@@ -1862,6 +1852,26 @@ typedef struct tSpeedtestData {
 	} tSpeedtestData;
 #endif
 
+typedef struct tLaserData {
+	fix		xLastFiredTime;
+	fix		xNextFireTime;
+	fix		xOmegaCharge;
+	int		nLastOmegaFireFrame;
+	int		nGlobalFiringCount;
+} tLaserData;
+
+typedef struct tFusionData {
+	fix	xAutoFireTime;
+	fix	xCharge;
+	fix	xNextSoundTime;
+	fix	xLastSoundTime;
+} tFusionData;
+
+typedef struct tMissileData {
+	fix		xNextFireTime;
+	int		nGlobalFiringCount;
+} tMissileData;
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -1900,6 +1910,9 @@ typedef struct tGameData {
 	tSpeedtestData		speedtest;
 #endif
 	tPhysicsData		physics;
+	tLaserData			laser;
+	tFusionData			fusion;
+	tMissileData		missiles;
 	tApplicationData	app;
 } tGameData;
 

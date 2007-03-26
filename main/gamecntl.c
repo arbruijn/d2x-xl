@@ -286,11 +286,11 @@ if (Controls [0].fireFlareDownCount)
 		CreateFlare(gameData.objs.console);
 if (AllowedToFireMissile()) {
 	i = secondaryWeaponToWeaponInfo[gameData.weapons.nSecondary];
-	gameData.app.nGlobalMissileFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
+	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
 	}
-if (gameData.app.nGlobalMissileFiringCount) {
+if (gameData.missiles.nGlobalFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for normal missile firing
-	gameData.app.nGlobalMissileFiringCount--;
+	gameData.missiles.nGlobalFiringCount--;
 	}
 if (Controls [0].cyclePrimaryCount) {
 	for (i = 0; i < Controls [0].cyclePrimaryCount; i++)
@@ -304,8 +304,8 @@ if (Controls [0].headlightCount) {
 	for (i=0;i<Controls [0].headlightCount;i++)
 	toggle_headlight_active ();
 	}
-if (gameData.app.nGlobalMissileFiringCount < 0)
-	gameData.app.nGlobalMissileFiringCount = 0;
+if (gameData.missiles.nGlobalFiringCount < 0)
+	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (Controls [0].dropBombDownCount) {
 	if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))

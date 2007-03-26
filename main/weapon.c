@@ -267,13 +267,13 @@ if (!bSecondary) {
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
 	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure tPlayer has energy to omega
-		if (playerP->energy || xOmegaCharge)
+		if (playerP->energy || gameData.laser.xOmegaCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	else {
 /*
 		if (nWeapon == SUPER_LASER_INDEX) {	
-			if (playerP->energy || xOmegaCharge)
+			if (playerP->energy || gameData.laser.xOmegaCharge)
 				returnValue |= HAS_ENERGY_FLAG;
 		}
 */
@@ -346,8 +346,8 @@ if (!bSecondary) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
-		xNextLaserFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
-		gameData.app.nGlobalLaserFiringCount = 0;
+		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
+		gameData.laser.nGlobalFiringCount = 0;
 		} 
 	else {
 		// Select super version if available.
@@ -387,8 +387,8 @@ else {
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
-		xNextMissileFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
-		gameData.app.nGlobalMissileFiringCount = 0;
+		gameData.missiles.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
+		gameData.missiles.nGlobalFiringCount = 0;
 		}
 	else {
 		if (bWaitForRearm) {
@@ -1293,7 +1293,7 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject != -1)
-		gameData.objs.objects[nObject].cType.powerupInfo.count = xOmegaCharge;
+		gameData.objs.objects[nObject].cType.powerupInfo.count = gameData.laser.xOmegaCharge;
 	}
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendDropWeapon (nObject, seed);

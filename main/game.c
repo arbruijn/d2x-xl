@@ -1330,14 +1330,14 @@ void DeadPlayerFrame (void);
 int AllowedToFireLaser (void)
 {
 if (gameStates.app.bPlayerIsDead) {
-	gameData.app.nGlobalMissileFiringCount = 0;
+	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
-if ((xNextLaserFireTime > gameData.time.xGame) &&  (xNextLaserFireTime < gameData.time.xGame + 2*F1_0))
+if ((gameData.laser.xNextFireTime > gameData.time.xGame) &&  (gameData.laser.xNextFireTime < gameData.time.xGame + 2*F1_0))
 	return 0;
 return 1;
 }
@@ -1368,8 +1368,8 @@ int AllowedToFireMissile (void)
 //	be a long while before missile can be fired, then there must be some mistake!
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
-if (xNextMissileFireTime > gameData.time.xGame) 
-	if (xNextMissileFireTime < gameData.time.xGame + 5 * F1_0)
+if (gameData.missiles.xNextFireTime > gameData.time.xGame) 
+	if (gameData.missiles.xNextFireTime < gameData.time.xGame + 5 * F1_0)
 		return 0;
 return 1;
 }
@@ -2087,12 +2087,12 @@ extern int flFrameTime;
 
 int FusionBump (void)
 {
-if (gameData.app.fusion.xAutoFireTime) {
+if (gameData.fusion.xAutoFireTime) {
 	if (gameData.weapons.nPrimary != FUSION_INDEX)
-		gameData.app.fusion.xAutoFireTime = 0;
-	else if (gameData.time.xGame + flFrameTime/2 >= gameData.app.fusion.xAutoFireTime) {
-		gameData.app.fusion.xAutoFireTime = 0;
-		gameData.app.nGlobalLaserFiringCount = 1;
+		gameData.fusion.xAutoFireTime = 0;
+	else if (gameData.time.xGame + flFrameTime/2 >= gameData.fusion.xAutoFireTime) {
+		gameData.fusion.xAutoFireTime = 0;
+		gameData.laser.nGlobalFiringCount = 1;
 		}
 	else {
 		vmsVector	vRand;
@@ -2102,13 +2102,13 @@ if (gameData.app.fusion.xAutoFireTime) {
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;
-		gameData.app.nGlobalLaserFiringCount = 0;
+		gameData.laser.nGlobalFiringCount = 0;
 		gameData.objs.console->mType.physInfo.rotVel.p.x += (d_rand () - 16384)/8;
 		gameData.objs.console->mType.physInfo.rotVel.p.z += (d_rand () - 16384)/8;
 		MakeRandomVector (&vRand);
 		xBump = F1_0*4;
-		if (gameData.app.fusion.xCharge > F1_0*2)
-			xBump = gameData.app.fusion.xCharge*4;
+		if (gameData.fusion.xCharge > F1_0*2)
+			xBump = gameData.fusion.xCharge*4;
 		BumpOneObject (gameData.objs.console, &vRand, xBump);
 		}
 	}
@@ -2363,14 +2363,14 @@ if (nDebugSlowdown) {
 			}
 		if (!FusionBump ())
 			return 1;
-		if (gameData.app.nGlobalLaserFiringCount) {
+		if (gameData.laser.nGlobalFiringCount) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
-			// if (gameData.app.fusion.xCharge > F1_0*2)
-			// 	gameData.app.fusion.xCharge = F1_0*2;
-			gameData.app.nGlobalLaserFiringCount -= LaserFireLocalPlayer ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject, gameData.weapons.nPrimary);
+			// if (gameData.fusion.xCharge > F1_0*2)
+			// 	gameData.fusion.xCharge = F1_0*2;
+			gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject, gameData.weapons.nPrimary);
 			}
-		if (gameData.app.nGlobalLaserFiringCount < 0)
-			gameData.app.nGlobalLaserFiringCount = 0;
+		if (gameData.laser.nGlobalFiringCount < 0)
+			gameData.laser.nGlobalFiringCount = 0;
 		}
 	if (gameStates.render.bDoAppearanceEffect) {
 		CreatePlayerAppearanceEffect (gameData.objs.console);
@@ -2500,46 +2500,36 @@ int flFrameTime = 0;
 
 void FireLaser ()
 {
-	int nAmmo, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+	int i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
-gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
-if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))
-	nAmmo = gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [1];
-else
-	nAmmo = gameData.multi.players [gameData.multi.nLocalPlayer].energy;
-if (nAmmo <= 0) {
-	gameData.app.nGlobalLaserFiringCount = 0;
-	Controls [0].firePrimaryState = 0;
-	Controls [0].firePrimaryDownCount = 0;
-	return;
-	}
-if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.app.nGlobalLaserFiringCount) {
+gameData.laser.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
+if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
 	if ((gameData.multi.players [gameData.multi.nLocalPlayer].energy < F1_0 * 2) && 
-		 (gameData.app.fusion.xAutoFireTime == 0)) {
-		gameData.app.nGlobalLaserFiringCount = 0;
+		 (gameData.fusion.xAutoFireTime == 0)) {
+		gameData.laser.nGlobalFiringCount = 0;
 		} 
 	else {
 		flFrameTime += gameData.time.xFrame;
-		if (gameData.app.fusion.xCharge == 0)
+		if (gameData.fusion.xCharge == 0)
 			gameData.multi.players[gameData.multi.nLocalPlayer].energy -= F1_0*2;
-		gameData.app.fusion.xCharge += flFrameTime;
+		gameData.fusion.xCharge += flFrameTime;
 		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= flFrameTime;
 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
 			gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
-			gameData.app.fusion.xAutoFireTime = gameData.time.xGame -1;	//	Fire now!
+			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
 			} 
 		else
-			gameData.app.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
+			gameData.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
 		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 			return;
-		if (gameData.app.fusion.xCharge < F1_0*2)
-			PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, 0, gameData.app.fusion.xCharge >> 11);
+		if (gameData.fusion.xCharge < F1_0*2)
+			PALETTE_FLASH_ADD (gameData.fusion.xCharge >> 11, 0, gameData.fusion.xCharge >> 11);
 		else
-			PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, gameData.app.fusion.xCharge >> 11, 0);
-		if (gameData.time.xGame < gameData.app.fusion.xLastSoundTime)		//gametime has wrapped
-			gameData.app.fusion.xNextSoundTime = gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
-		if (gameData.app.fusion.xNextSoundTime < gameData.time.xGame) {
-			if (gameData.app.fusion.xCharge > F1_0*2) {
+			PALETTE_FLASH_ADD (gameData.fusion.xCharge >> 11, gameData.fusion.xCharge >> 11, 0);
+		if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
+			gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
+		if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
+			if (gameData.fusion.xCharge > F1_0*2) {
 				DigiPlaySample (11, F1_0);
 				ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
 				} 
@@ -2549,8 +2539,8 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.app.nGlobalLaserFiri
 				if (gameData.app.nGameMode & GM_MULTI)
 					MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
 					}
-			gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
-			gameData.app.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
+			gameData.fusion.xLastSoundTime = gameData.time.xGame;
+			gameData.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
 			}
 		flFrameTime = 0;
 		}

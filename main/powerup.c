@@ -658,7 +658,7 @@ switch (objP->id) {
 	case POW_OMEGA:
 		bUsed = PickupPrimary (OMEGA_INDEX, nPlayer);
 		if (bUsed)
-			xOmegaCharge = objP->cType.powerupInfo.count;
+			gameData.laser.xOmegaCharge = objP->cType.powerupInfo.count;
 		else if (!(gameData.app.nGameMode & GM_MULTI))
 			bUsed = PickupEnergy (nPlayer);
 		break;

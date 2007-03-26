@@ -2089,6 +2089,7 @@ SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
 gameData.smoke.iFreeSmoke = -1;
 gameData.smoke.iUsedSmoke = -1;
+gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 InitEndLevelData ();
 SetDataVersion (-1);
 }

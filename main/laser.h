@@ -115,7 +115,7 @@ int LasersAreRelated(int o1, int o2);
 int LaserPlayerFireSpreadDelay (tObject *objP, ubyte laserType, int gun_num, fix spreadr, 
 										  fix spreadu, fix delayTime, int makeSound, int harmless);
 
-int LaserFireLocalPlayer(void);
+int LocalPlayerFireLaser(void);
 void DoMissileFiring(int do_autoselect);
 void NetMissileFiring(int tPlayer, int weapon, int flags);
 

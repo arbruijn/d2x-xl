@@ -145,7 +145,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Make global Global_laser_firingCount.
  *
  * Revision 1.44  1994/08/31  19:26:57  mike
- * Prototypes for xNextLaserFireTime, Laser_delayTime.
+ * Prototypes for xNextLaserFireTime, gameData.laser.xDelayTime.
  *
  * Revision 1.43  1994/08/18  10:47:22  john
  * Cleaned up game sequencing and tPlayer death stuff
@@ -212,16 +212,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //#include "segment.h"
 
 // from mglobal.c
-extern fix xNextLaserFireTime;    // Time at which tPlayer can next fire his selected laser.
-extern fix Last_laser_firedTime;
-extern fix xNextMissileFireTime;  // Time at which tPlayer can next fire his selected missile.
-extern fix Laser_delayTime;        // Delay between laser fires.
-extern int Cheats_enabled;
-
-extern int MissileView_enabled;
-
-extern tObject *MissileViewer;
-
 #define CV_NONE             0
 #define CV_ESCORT           1
 #define CV_REAR             2
