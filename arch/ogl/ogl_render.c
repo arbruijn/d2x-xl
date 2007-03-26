@@ -572,24 +572,26 @@ if (! (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) && color) {
 
 static inline void ScaleColor (tFaceColor *color, float l)
 {
+if (l >= 0) {
 #if 1
 #	if 0
-color->color.red *= l;
-color->color.green *= l;
-color->color.blue *= l;
+	color->color.red *= l;
+	color->color.green *= l;
+	color->color.blue *= l;
 #	else
-	float m = color->color.red;
+		float m = color->color.red;
 
-if (m < color->color.green)
-	m = color->color.green;
-if (m < color->color.blue)
-	m = color->color.blue;
-m = l / m;
-color->color.red *= m;
-color->color.green *= m;
-color->color.blue *= m;
+	if (m < color->color.green)
+		m = color->color.green;
+	if (m < color->color.blue)
+		m = color->color.blue;
+	m = l / m;
+	color->color.red *= m;
+	color->color.green *= m;
+	color->color.blue *= m;
 #	endif
 #endif
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -641,9 +643,10 @@ if (SHOW_DYN_LIGHT)
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
 	OglColor4sf (tMapColor.color.red, tMapColor.color.green, tMapColor.color.blue, s);
-	tMapColor.color.red =
-	tMapColor.color.green =
-	tMapColor.color.blue = 1.0;
+	if (l >= 0)
+		tMapColor.color.red =
+		tMapColor.color.green =
+		tMapColor.color.blue = 1.0;
 	}	
 #if VERTEX_LIGHTING
 else if (i >= sizeof (vertColors) / sizeof (tFaceColor))

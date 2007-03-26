@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "ogl_init.h"
 
-#define SHOW_PLAYER_IP		1
+#define SHOW_PLAYER_IP		0
 
 void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
 extern void DrawGuidedCrosshair (void);
@@ -1842,7 +1842,7 @@ for (i = 0; i < 2; i++) {
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
-			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [ (l == 6) ? 1 : l]);
+			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [(l == 6) ? 1 : l]);
 			bLoaded = (nAmmo > 0);
 			if (bHave) {
 				if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {

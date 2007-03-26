@@ -1379,6 +1379,21 @@ gameData.objs.objects [nLocalObj].flags |= OF_SHOULD_BE_DEAD; // quick and painl
 
 //-----------------------------------------------------------------------------
 
+void MultiOnlyPlayerMsg (int bMsgBox)
+{
+if (bMsgBox)
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
+else {
+	char szMsg [100];
+	
+	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
+	sprintf (szMsg, "%c%c%c%c%s", 1, 127 + 128, 63 + 128, 128, TXT_ONLY_PLAYER);
+	HUDInitMessage (szMsg);
+	}
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiDoQuit (char *buf)
 {
 if (gameData.app.nGameMode & GM_NETWORK) {
@@ -1393,14 +1408,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		if (gameData.multi.players [i].connected) 
 			n++;
 	if (n == 1)
-		if (1 || IsCoopGame) {
-			char szMsg [100];
-			
-			sprintf (szMsg, "%c%c%c%c%s", 1, 95 + 128, 128, 128, TXT_ONLY_PLAYER);
-			HUDInitMessage (szMsg);
-			}
-		else
-			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
+		MultiOnlyPlayerMsg (0);
 	}
 
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {

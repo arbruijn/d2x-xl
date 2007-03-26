@@ -81,6 +81,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia /*|| COMPETITION*/) && \
 			 gameStates.render.bHaveDynLights && \
-			 gameOpts->render.bDynLighting)
+			 gameOpts->render.bDynLighting && \
+			 (gameOpts->ogl.bLightObjects || !gameStates.render.nState))
 
 #endif /* _LIGHTING_H */

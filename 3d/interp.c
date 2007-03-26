@@ -37,6 +37,8 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "gameseg.h"
 #include "lighting.h"
 
+extern tFaceColor tMapColor;
+
 //------------------------------------------------------------------------------
 
 //shadow clipping
@@ -2159,6 +2161,7 @@ for (;;) {
 			p += 30;
 			for (i = 0; i < nv; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
+			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			}
 		else

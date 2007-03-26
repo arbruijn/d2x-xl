@@ -3399,7 +3399,7 @@ for (i = 0; i < gameData.multi.nPlayers; i++)
 		n++;
 #ifndef _DEBUG
 if (n == 1)
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
+	MultiOnlyPlayerMsg (0);
 #endif
 }
 

@@ -41,30 +41,30 @@ void g3_init(void)
 void _CDECL_ g3_close(void) {}
 
 //start the frame
-void G3StartFrame(int bFlat, int bResetColorBuf)
+void G3StartFrame (int bFlat, int bResetColorBuf)
 {
 	fix s;
 
 	//set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w)<<15;
-xCanvH2 = (nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h)<<15;
+xCanvW2 = (nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w) << 15;
+xCanvH2 = (nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h) << 15;
 #ifdef __powerc
-fxCanvW2 = f2fl((nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w)<<15);
-fxCanvH2 = f2fl((nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h)<<15);
+fxCanvW2 = f2fl ((nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w) << 15);
+fxCanvH2 = f2fl ((nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h) << 15);
 #endif
 
 //compute aspect ratio for this canvas
-s = FixMulDiv(grdCurScreen->sc_aspect,nCanvasHeight,nCanvasWidth);
+s = FixMulDiv (grdCurScreen->sc_aspect, nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x
 	viewInfo.windowScale.p.x = s;
 	viewInfo.windowScale.p.y = f1_0;
 }
 else {
-	viewInfo.windowScale.p.y = FixDiv(f1_0,s);
+	viewInfo.windowScale.p.y = FixDiv (f1_0, s);
 	viewInfo.windowScale.p.x = f1_0;
 }
 viewInfo.windowScale.p.z = f1_0;		//always 1
-init_free_points();
+init_free_points ();
 OglStartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;
 }

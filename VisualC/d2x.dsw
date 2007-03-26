@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "SDL"="..\..\SDL-1.2.10\VisualC\SDL\SDL.dsp" - Package Owner=<4>
+Project: "SDL"="..\..\..\SDL-1.2.11\VisualC\SDL\SDL.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "SDL_mixer"="..\..\SDL_mixer-1.2.6\VisualC\SDL_mixer.dsp" - Package Owner=<4>
+Project: "SDL_mixer"="..\..\..\SDL_mixer-1.2.7\VisualC\SDL_mixer.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -39,7 +39,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "SDLmain"="..\..\SDL-1.2.10\VisualC\SDLmain\SDLmain.dsp" - Package Owner=<4>
+Project: "SDLmain"="..\..\..\SDL-1.2.11\VisualC\SDLmain\SDLmain.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -81,7 +81,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "mikmod"="..\..\SDL_mixer-1.2.6\VisualC\mikmod\mikmod.dsp" - Package Owner=<4>
+Project: "mikmod"="..\..\..\SDL_mixer-1.2.7\VisualC\mikmod\mikmod.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -93,7 +93,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "native_midi"="..\..\SDL_mixer-1.2.6\VisualC\native_midi\native_midi.dsp" - Package Owner=<4>
+Project: "native_midi"="..\..\..\SDL_mixer-1.2.7\VisualC\native_midi\native_midi.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -105,7 +105,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "playmus"="..\..\SDL_mixer-1.2.6\VisualC\playmus\playmus.dsp" - Package Owner=<4>
+Project: "playmus"="..\..\..\SDL_mixer-1.2.7\VisualC\playmus\playmus.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -117,7 +117,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "playwave"="..\..\SDL_mixer-1.2.6\VisualC\playwave\playwave.dsp" - Package Owner=<4>
+Project: "playwave"="..\..\..\SDL_mixer-1.2.7\VisualC\playwave\playwave.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -129,7 +129,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "timidity"="..\..\SDL_mixer-1.2.6\VisualC\timidity\timidity.dsp" - Package Owner=<4>
+Project: "timidity"="..\..\..\SDL_mixer-1.2.7\VisualC\timidity\timidity.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

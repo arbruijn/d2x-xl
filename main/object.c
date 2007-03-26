@@ -501,8 +501,10 @@ fix CalcObjectLight (tObject *objP, fix *xEngineGlow)
 {
 	fix xLight;
 
-if ((gameData.app.nGameMode & GM_MULTI) && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER))
+if (IsMultiGame && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER)) {
 	xLight = F1_0; //	If option set for bright players in netgame, brighten them
+	gameOpts->ogl.bLightObjects = 0;
+	}
 else
 	xLight = ComputeObjectLight (objP, NULL);
 //make robots brighter according to robot glow field
@@ -1760,6 +1762,7 @@ if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 	}
 mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
+gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 switch (objP->renderType) {
 	case RT_NONE:	
@@ -1769,7 +1772,9 @@ switch (objP->renderType) {
 	case RT_POLYOBJ:
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
+			int bDynObjLight = gameOpts->ogl.bLightObjects;
 			DrawPolygonObject (objP);
+			gameOpts->ogl.bLightObjects = bDynObjLight;
 			RenderThrusterFlames (objP);
 			RenderPlayerShield (objP);
 			RenderTargetIndicator (objP, NULL);

@@ -2500,44 +2500,57 @@ int flFrameTime = 0;
 
 void FireLaser ()
 {
-	int i = primaryWeaponToWeaponInfo[gameData.weapons.nPrimary];
-	gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
-	if ((gameData.weapons.nPrimary == FUSION_INDEX) && (gameData.app.nGlobalLaserFiringCount)) {
-		if ((gameData.multi.players[gameData.multi.nLocalPlayer].energy < F1_0*2) && (gameData.app.fusion.xAutoFireTime == 0)) {
-			gameData.app.nGlobalLaserFiringCount = 0;
-		} else {
-			flFrameTime += gameData.time.xFrame;
-			if (gameData.app.fusion.xCharge == 0)
-				gameData.multi.players[gameData.multi.nLocalPlayer].energy -= F1_0*2;
-			gameData.app.fusion.xCharge += flFrameTime;
-			gameData.multi.players[gameData.multi.nLocalPlayer].energy -= flFrameTime;
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
-				gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
-				gameData.app.fusion.xAutoFireTime = gameData.time.xGame -1;	//	Fire now!
-			} else
-				gameData.app.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
-			if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
-				return;
-			if (gameData.app.fusion.xCharge < F1_0*2)
-				PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, 0, gameData.app.fusion.xCharge >> 11);
-			else
-				PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, gameData.app.fusion.xCharge >> 11, 0);
-			if (gameData.time.xGame < gameData.app.fusion.xLastSoundTime)		//gametime has wrapped
-				gameData.app.fusion.xNextSoundTime = gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
-			if (gameData.app.fusion.xNextSoundTime < gameData.time.xGame) {
-				if (gameData.app.fusion.xCharge > F1_0*2) {
-					DigiPlaySample (11, F1_0);
-					ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
-				} else {
-					CreateAwarenessEvent (gameData.objs.console, PA_WEAPON_ROBOT_COLLISION);
-					DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
-					#ifdef NETWORK
-					if (gameData.app.nGameMode & GM_MULTI)
-						MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
-					#endif
-				}
-				gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
-				gameData.app.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
+	int nAmmo, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+
+gameData.app.nGlobalLaserFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
+if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))
+	nAmmo = gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [1];
+else
+	nAmmo = gameData.multi.players [gameData.multi.nLocalPlayer].energy;
+if (nAmmo <= 0) {
+	gameData.app.nGlobalLaserFiringCount = 0;
+	Controls [0].firePrimaryState = 0;
+	Controls [0].firePrimaryDownCount = 0;
+	return;
+	}
+if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.app.nGlobalLaserFiringCount) {
+	if ((gameData.multi.players [gameData.multi.nLocalPlayer].energy < F1_0 * 2) && 
+		 (gameData.app.fusion.xAutoFireTime == 0)) {
+		gameData.app.nGlobalLaserFiringCount = 0;
+		} 
+	else {
+		flFrameTime += gameData.time.xFrame;
+		if (gameData.app.fusion.xCharge == 0)
+			gameData.multi.players[gameData.multi.nLocalPlayer].energy -= F1_0*2;
+		gameData.app.fusion.xCharge += flFrameTime;
+		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= flFrameTime;
+		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
+			gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
+			gameData.app.fusion.xAutoFireTime = gameData.time.xGame -1;	//	Fire now!
+			} 
+		else
+			gameData.app.fusion.xAutoFireTime = gameData.time.xGame + flFrameTime/2 + 1;
+		if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
+			return;
+		if (gameData.app.fusion.xCharge < F1_0*2)
+			PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, 0, gameData.app.fusion.xCharge >> 11);
+		else
+			PALETTE_FLASH_ADD (gameData.app.fusion.xCharge >> 11, gameData.app.fusion.xCharge >> 11, 0);
+		if (gameData.time.xGame < gameData.app.fusion.xLastSoundTime)		//gametime has wrapped
+			gameData.app.fusion.xNextSoundTime = gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
+		if (gameData.app.fusion.xNextSoundTime < gameData.time.xGame) {
+			if (gameData.app.fusion.xCharge > F1_0*2) {
+				DigiPlaySample (11, F1_0);
+				ApplyDamageToPlayer (gameData.objs.console, gameData.objs.console, d_rand () * 4);
+				} 
+			else {
+				CreateAwarenessEvent (gameData.objs.console, PA_WEAPON_ROBOT_COLLISION);
+				DigiPlaySample (SOUND_FUSION_WARMUP, F1_0);
+				if (gameData.app.nGameMode & GM_MULTI)
+					MultiSendPlaySound (SOUND_FUSION_WARMUP, F1_0);
+					}
+			gameData.app.fusion.xLastSoundTime = gameData.time.xGame;
+			gameData.app.fusion.xNextSoundTime = gameData.time.xGame + F1_0/8 + d_rand ()/4;
 			}
 		flFrameTime = 0;
 		}

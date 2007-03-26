@@ -96,16 +96,16 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				GlobalOptimizations="FALSE"
-				InlineFunctionExpansion="0"
-				EnableIntrinsicFunctions="FALSE"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="0"
-				OmitFramePointers="FALSE"
-				EnableFiberSafeOptimizations="FALSE"
-				OptimizeForProcessor="0"
-				OptimizeForWindowsApplication="FALSE"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="TRUE"
+				EnableFiberSafeOptimizations="TRUE"
+				OptimizeForProcessor="1"
+				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
@@ -123,7 +123,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -3278,10 +3278,10 @@
 				RelativePath="..\..\main\reorder.h">
 			</File>
 			<File
-				RelativePath="..\..\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\..\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\include\rle.h">
@@ -3393,10 +3393,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

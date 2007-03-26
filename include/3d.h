@@ -170,12 +170,13 @@ void G3ProjectPoint(g3sPoint *point);
 #if 1
 static inline ubyte G3EncodePoint(g3sPoint *p)
 {
-ubyte cc=0;
+ubyte cc = 0;
 fix z = p->p3_z;
+fix x = FixMulDiv (p->p3_x, viewInfo.scale.p.x, viewInfo.zoom);
 
-if (p->p3_x > z)
+if (x > z)
 	cc |= CC_OFF_RIGHT;
-if (p->p3_x < -z)
+if (x < -z)
 	cc |= CC_OFF_LEFT;
 if (p->p3_y > z)
 	cc |= CC_OFF_TOP;

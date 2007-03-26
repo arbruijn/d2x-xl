@@ -171,16 +171,18 @@ static int
 	optVirLife, optVirStab, optRevRooms, optEnergyFill, optShieldFill, optShieldDmg, 
 	optOvrTex, optBrRooms, optFF, optSuicide, optPlrHand, optTogglesMenu, optTextureMenu;
 
-int opt_cinvul, opt_team_anarchy, opt_coop, optPlayersOnMap, opt_closed, optMaxNet, 
-	 optEntropy, opt_monsterball, optEntOpts, optMBallOpts;
-int last_cinvul = 0, lastMaxNet, opt_hoard, opt_team_hoard;
-int opt_refuse, opt_capture, optEnhancedCTF;
+int nLastReactorLife = 0;
+int optReactorLife, optAnarchy, optTeamAnarchy, optRobotAnarchy, optCoop;
+int optPlayersOnMap, optMaxNet;
+int optEntOpts, optMBallOpts;
+int lastMaxNet, optCTF, optEnhancedCTF, optHoard, optTeamHoard, optEntropy, optMonsterball;
+int optOpenGame, optClosedGame, optRestrictedGame;
 
 #define	WF(_f)	 ((short) (( (nFilter) & (1 << (_f))) != 0))
 
 void SetAllAllowablesTo (int nFilter)
 {
-	last_cinvul = 0;   //default to zero
+	nLastReactorLife = 0;   //default to zero
    
 netGame.DoMegas = WF (0);
 netGame.DoSmarts = WF (1);
@@ -397,12 +399,12 @@ if ((cItem >= optGameTypes) && (cItem < optGameTypes + nGameTypes)) {
 		}
 	}
 if ((menus [optEntropy].value == (optEntOpts < 0)) ||
-	 (menus [opt_monsterball].value == (optMBallOpts < 0)))
+	 (menus [optMonsterball].value == (optMBallOpts < 0)))
 	*key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
 //even in a match and progress, and allows players to switch teams
-if (menus [opt_coop].value) {
+if (menus [optCoop].value) {
 	oldmaxnet = 1;
 	if (menus [optMaxNet].value>2)  {
 		menus [optMaxNet].value = 2;
@@ -450,10 +452,10 @@ int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPena
 
 void NetworkMoreOptionsPoll (int nitems, tMenuItem * menus, int * key, int cItem)
 {
-if (last_cinvul != menus [opt_cinvul].value)   {
-	sprintf (menus [opt_cinvul].text, "%s: %d %s", TXT_REACTOR_LIFE, menus [opt_cinvul].value*5, TXT_MINUTES_ABBREV);
-	last_cinvul = menus [opt_cinvul].value;
-	menus [opt_cinvul].rebuild = 1;
+if (nLastReactorLife != menus [optReactorLife].value)   {
+	sprintf (menus [optReactorLife].text, "%s: %d %s", TXT_REACTOR_LIFE, menus [optReactorLife].value*5, TXT_MINUTES_ABBREV);
+	nLastReactorLife = menus [optReactorLife].value;
+	menus [optReactorLife].rebuild = 1;
    }
   
 if (menus [optPlayTime].value != LastPTA) {
@@ -504,7 +506,7 @@ do {
 	strupr (szInvul + 1);
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
 	ADD_SLIDER (opt, szInvul + 1, mpParams.nReactorLife, 0, 10, KEY_R, HTX_MULTI2_REACTOR); 
-	opt_cinvul = opt++;
+	optReactorLife = opt++;
 	sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 	*szPlayTime = * (TXT_MAXTIME - 1);
 	ADD_SLIDER (opt, szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
@@ -550,7 +552,7 @@ do {
 	LastKillGoal = netGame.KillGoal;
 	LastPTA = mpParams.nMaxTime;
 
-	doMenu:
+doMenu:
 
 	gameStates.app.nExtGameStatus = GAMESTAT_MORE_NETGAME_OPTIONS; 
 	Assert (sizeofa (m) >= opt);
@@ -558,7 +560,7 @@ do {
 	} while (i == -2);
 
    //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
-mpParams.nReactorLife = m [opt_cinvul].value;
+mpParams.nReactorLife = m [optReactorLife].value;
 netGame.control_invulTime = mpParams.nReactorLife * 5 * F1_0 * 60;
 
 if (i == optSetPower) {
@@ -567,7 +569,7 @@ if (i == optSetPower) {
 	goto doMenu;
 	}
 mpParams.nPPS = atoi (packstring);
-if (mpParams.nPPS>20) {
+if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 }
@@ -621,12 +623,14 @@ if (v != extraGameInfo [1].bCompetition) {
 	*key = -2;
 	return;
 	}
-v = menus [optPenalty].value;
-if (v != extraGameInfo [1].nCoopPenalty) {
-	extraGameInfo [1].nCoopPenalty = v;
-	sprintf (menus [optPenalty].text, TXT_COOP_PENALTY, nCoopPenalties [v], '%');
-	menus [optPenalty].rebuild = 1;
-	return;
+if (optPenalty > 0) {
+	v = menus [optPenalty].value;
+	if (v != extraGameInfo [1].nCoopPenalty) {
+		extraGameInfo [1].nCoopPenalty = v;
+		sprintf (menus [optPenalty].text, TXT_COOP_PENALTY, nCoopPenalties [v], '%');
+		menus [optPenalty].rebuild = 1;
+		return;
+		}
 	}
 v = menus [optDarkness].value;
 if (v != extraGameInfo [1].bDarkness) {
@@ -769,11 +773,15 @@ do {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	if (!extraGameInfo [1].bCompetition) {
-		sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [extraGameInfo [1].nCoopPenalty], '%');
-		strupr (szPenalty + 1);
-		*szPenalty = *(TXT_COOP_PENALTY - 1);
-		ADD_SLIDER (opt, szPenalty + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
-		optPenalty = opt++;
+		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
+			sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [extraGameInfo [1].nCoopPenalty], '%');
+			strupr (szPenalty + 1);
+			*szPenalty = *(TXT_COOP_PENALTY - 1);
+			ADD_SLIDER (opt, szPenalty + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
+			optPenalty = opt++;
+			}
+		else
+			optPenalty = -1;
 		ADD_RADIO (opt, TXT_TGTIND_NONE, 0, KEY_A, 1, HTX_CPIT_TGTIND);
 		optTgtInd = opt++;
 		ADD_RADIO (opt, TXT_TGTIND_SQUARE, 0, KEY_R, 1, HTX_CPIT_TGTIND);
@@ -805,47 +813,46 @@ do {
 		optTgtInd =
 		optDmgInd = -1;
 	i = ExecMenu1 (NULL, TXT_D2XOPTIONS_TITLE, opt, m, NetworkD2XOptionsPoll, &choice);
-} while (i == -2);
-
   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
-extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
-if (optDarkness >= 0) {
-	if (mpParams.bDarkness = extraGameInfo [1].bDarkness) {
-		extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
-		extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
+	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
+	if (optDarkness >= 0) {
+		if (mpParams.bDarkness = extraGameInfo [1].bDarkness) {
+			extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
+			extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
+			}
 		}
-	}
-GET_VAL (extraGameInfo [1].bTowFlags, optTowFlags);
-GET_VAL (extraGameInfo [1].bTeamDoors, optTeamDoors);
-mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
-if (optAutoTeams >= 0)
-	extraGameInfo [0].bAutoBalanceTeams = (m [optAutoTeams].value != 0);
-#if UDP_SAFEMODE
-extraGameInfo [0].bSafeUDP = (m [optSafeUDP].value != 0);
-#endif
-extraGameInfo [0].bCheckUDPPort = (m [optCheckPort].value != 0);
-extraGameInfo [1].bRotateLevels = m [optRotateLevels].value;
-if (!COMPETITION) {
-	GET_VAL (extraGameInfo [1].bEnableCheats, optMultiCheats);
-	mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
-	GET_VAL (extraGameInfo [0].bFriendlyFire, optFF);
-	GET_VAL (extraGameInfo [0].bInhibitSuicide, optSuicide);
-	GET_VAL (extraGameInfo [1].bMouseLook, optMouseLook);
-	if (optFastPitch >= 0)
-		extraGameInfo [1].bFastPitch = m [optFastPitch].value ? 1 : 2;
-	GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
-	GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
-	if (optTgtInd >= 0) {
-		for (j = 0; j < 3; j++)
-			if (m [optTgtInd + j].value) {
-				extraGameInfo [1].bTargetIndicators = j;
-				break;
-				}
-		GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
+	GET_VAL (extraGameInfo [1].bTowFlags, optTowFlags);
+	GET_VAL (extraGameInfo [1].bTeamDoors, optTeamDoors);
+	mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
+	if (optAutoTeams >= 0)
+		extraGameInfo [0].bAutoBalanceTeams = (m [optAutoTeams].value != 0);
+	#if UDP_SAFEMODE
+	extraGameInfo [0].bSafeUDP = (m [optSafeUDP].value != 0);
+	#endif
+	extraGameInfo [0].bCheckUDPPort = (m [optCheckPort].value != 0);
+	extraGameInfo [1].bRotateLevels = m [optRotateLevels].value;
+	if (!COMPETITION) {
+		GET_VAL (extraGameInfo [1].bEnableCheats, optMultiCheats);
+		mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
+		GET_VAL (extraGameInfo [0].bFriendlyFire, optFF);
+		GET_VAL (extraGameInfo [0].bInhibitSuicide, optSuicide);
+		GET_VAL (extraGameInfo [1].bMouseLook, optMouseLook);
+		if (optFastPitch >= 0)
+			extraGameInfo [1].bFastPitch = m [optFastPitch].value ? 1 : 2;
+		GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
+		GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
+		if (optTgtInd >= 0) {
+			for (j = 0; j < 3; j++)
+				if (m [optTgtInd + j].value) {
+					extraGameInfo [1].bTargetIndicators = j;
+					break;
+					}
+			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
+			}
+		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
+		GET_VAL (extraGameInfo [1].bHitIndicators, optHitInd);
 		}
-	GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
-	GET_VAL (extraGameInfo [1].bHitIndicators, optHitInd);
-	}
+	} while (i == -2);
 }
 
 //------------------------------------------------------------------------------
@@ -1189,11 +1196,51 @@ extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].value + 2;
 
 //------------------------------------------------------------------------------
 
+int NetworkGetGameType (tMenuItem *m, int bAnarchyOnly)
+{
+	int bHoard = HoardEquipped ();
+		   
+if (m [optAnarchy].value)
+	mpParams.nGameMode = NETGAME_ANARCHY;
+else if (m [optTeamAnarchy].value)
+	mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
+else if (m [optCTF].value) {
+	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
+	extraGameInfo [0].bEnhancedCTF = 0;
+	}
+else if (m [optEnhancedCTF].value) {
+	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
+	extraGameInfo [0].bEnhancedCTF = 1;
+	}
+else if (bHoard && m [optHoard].value)
+	mpParams.nGameMode = NETGAME_HOARD;
+else if (bHoard && m [optTeamHoard].value)
+	mpParams.nGameMode = NETGAME_TEAM_HOARD;
+else if (bHoard && m [optEntropy].value)
+	mpParams.nGameMode = NETGAME_ENTROPY;
+else if (bHoard && m [optMonsterball].value)
+	mpParams.nGameMode = NETGAME_MONSTERBALL;
+else if (bAnarchyOnly) {
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
+	m [optAnarchy].value = 1;
+	m [optRobotAnarchy].value =
+	m [optCoop].value = 0;
+	return 0;
+	}               
+else if (m [optRobotAnarchy].value) 
+	mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
+else if (m [optCoop].value) 
+	mpParams.nGameMode = NETGAME_COOPERATIVE;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
-	int opt, opt_name, optLevel, optLevelText, opt_mode, optMoreOpts, 
-		 opt_access, opt_mission, optMissionName, optD2XOpts, optConfigMenu;
+	int opt, optGameName, optLevel, optLevelText, optMoreOpts, 
+		 optMission, optMissionName, optD2XOpts, optConfigMenu;
 	tMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char szLevelText [32];
@@ -1203,6 +1250,7 @@ int NetworkGetGameParams (int bAutoRun)
 
 	int nNewMission = gameData.missions.nLastMission;
 	int bAnarchyOnly = 0;
+	int bHoard = HoardEquipped ();
 
 SetAllAllowablesTo (mpParams.nWeaponFilter);
 networkData.nNamesInfoSecurity = -1;
@@ -1253,9 +1301,9 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 ADD_TEXT (opt, TXT_DESCRIPTION, 0); 
 opt++;
 ADD_INPUT (opt, name, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
-opt_name = opt++;
+optGameName = opt++;
 ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-opt_mission = opt++;
+optMission = opt++;
 ADD_TEXT (opt, "", 0);
 m [opt].rebuild = 1; 
 optMissionName = opt++;
@@ -1275,48 +1323,48 @@ if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 
 optGameTypes = opt;
 ADD_RADIO (opt, TXT_ANARCHY, 0, KEY_A, 0, HTX_MULTI_ANARCHY);
-opt_mode = opt++;
+optAnarchy = opt++;
 ADD_RADIO (opt, TXT_TEAM_ANARCHY, 0, KEY_T, 0, HTX_MULTI_TEAMANA);
-opt_team_anarchy = opt++;
+optTeamAnarchy = opt++;
 ADD_RADIO (opt, TXT_ANARCHY_W_ROBOTS, 0, KEY_R, 0, HTX_MULTI_BOTANA);
-opt++;
+optRobotAnarchy = opt++;
 ADD_RADIO (opt, TXT_COOP, 0, KEY_P, 0, HTX_MULTI_COOP);
-opt_coop = opt++;
+optCoop = opt++;
 ADD_RADIO (opt, TXT_CTF, 0, KEY_F, 0, HTX_MULTI_CTF);
-opt_capture = opt++;
+optCTF = opt++;
 if (!gameStates.app.bNostalgia) {
 	ADD_RADIO (opt, TXT_CTF_PLUS, 0, KEY_T, 0, HTX_MULTI_CTFPLUS);
 	optEnhancedCTF = opt++;
 	}
 
 optEntropy =
-opt_monsterball = -1;
-if (HoardEquipped ()) {
+optMonsterball = -1;
+if (bHoard) {
 	ADD_RADIO (opt, TXT_HOARD, 0, KEY_H, 0, HTX_MULTI_HOARD);
-	opt_hoard = opt++;
+	optHoard = opt++;
 	ADD_RADIO (opt, TXT_TEAM_HOARD, 0, KEY_H, 0, HTX_MULTI_TEAMHOARD);
-	opt_team_hoard = opt++;
+	optTeamHoard = opt++;
 	if (!gameStates.app.bNostalgia) {
 		ADD_RADIO (opt, TXT_ENTROPY, 0, KEY_Y, 0, HTX_MULTI_ENTROPY);
 		optEntropy = opt++;
 		ADD_RADIO (opt, TXT_MONSTERBALL, 0, KEY_B, 0, HTX_MULTI_MONSTERBALL);
-		opt_monsterball = opt++;
+		optMonsterball = opt++;
 		}
 	} 
 nGameTypes = opt - optGameTypes;
 ADD_TEXT (opt, "", 0); 
 opt++; 
 
-m [opt_mode + NMCLAMP (mpParams.nGameType, 0, opt - opt_mode - 1)].value = 1;
+m [optGameTypes + NMCLAMP (mpParams.nGameType, 0, opt - optGameTypes - 1)].value = 1;
 	
 ADD_RADIO (opt, TXT_OPEN_GAME, 0, KEY_O, 1, HTX_MULTI_OPENGAME);
-opt_access = opt++;
+optOpenGame = opt++;
 ADD_RADIO (opt, TXT_CLOSED_GAME, 0, KEY_C, 1, HTX_MULTI_CLOSEDGAME);
-opt_closed = opt++;
+optClosedGame = opt++;
 ADD_RADIO (opt, TXT_RESTR_GAME, 0, KEY_R, 1, HTX_MULTI_RESTRGAME);
-opt_refuse = opt++;
+optRestrictedGame = opt++;
 
-m [opt_access + NMCLAMP (mpParams.nGameAccess, 0, 2)].value = 1;
+m [optOpenGame + NMCLAMP (mpParams.nGameAccess, 0, 2)].value = 1;
 
 //      m [opt].nType = NM_TYPE_CHECK; m [opt].text = TXT_SHOW_IDS; m [opt].value = 0; opt++;
 
@@ -1342,7 +1390,7 @@ if (!gameStates.app.bNostalgia) {
 		ADD_MENU (opt, TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
 		optEntOpts = opt++;
 		}
-	if (m [opt_monsterball].value) {
+	if (m [optMonsterball].value) {
 		ADD_MENU (opt, TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
 		optMBallOpts = opt++;
 		}
@@ -1376,7 +1424,7 @@ key = ExecMenu1 (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NUL
 if (key == -1)
 	return -1;
 else if (choice == optMoreOpts) {
-	if (m [opt_mode+3].value)
+	if (m [optGameTypes + 3].value)
 		gameData.app.nGameMode = GM_MULTI_COOP;
 		NetworkMoreGameOptions ();
 		gameData.app.nGameMode = 0;
@@ -1391,6 +1439,7 @@ else if (choice == optMoreOpts) {
 		goto doMenu;
 	}
 else if (!gameStates.app.bNostalgia && (optD2XOpts >= 0) && (choice == optD2XOpts)) {
+	NetworkGetGameType (m, bAnarchyOnly);
 	NetworkD2XOptions ();
 	goto doMenu;
 	}
@@ -1406,7 +1455,7 @@ else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optCon
 	ConfigMenu ();
 	goto doMenu;
 	}
-else if (choice == opt_mission) {
+else if (choice == optMission) {
 	int h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		goto doMenu;
@@ -1414,75 +1463,45 @@ else if (choice == opt_mission) {
 	m [optMissionName].rebuild = 1;
 	goto build_menu;
 	}
-netGame.bRefusePlayers = m [opt_refuse].value;
 
 if (key != -1) {
-	int j;
+	int j, bHoard = HoardEquipped ();
 		   
-gameData.multi.nMaxPlayers = m [optMaxNet].value+2;
-netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
-			
-for (j = 0; j < networkData.nActiveGames; j++)
-	if (!stricmp (activeNetGames [j].szGameName, name)) {
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
+	gameData.multi.nMaxPlayers = m [optMaxNet].value + 2;
+	netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
+				
+	for (j = 0; j < networkData.nActiveGames; j++)
+		if (!stricmp (activeNetGames [j].szGameName, name)) {
+			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
+			goto doMenu;
+		}
+	strncpy (mpParams.szGameName, name, sizeof (mpParams.szGameName));
+	mpParams.nLevel = atoi (szLevel);
+	if ((gameData.missions.nLastLevel > 0) && ((mpParams.nLevel < 1) || 
+		 (mpParams.nLevel > gameData.missions.nLastLevel))) {
+		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
+		sprintf (szLevel, "1");
 		goto doMenu;
 	}
-strncpy (mpParams.szGameName, name, sizeof (mpParams.szGameName));
-mpParams.nLevel = atoi (szLevel);
-if ((gameData.missions.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > gameData.missions.nLastLevel))) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
-	sprintf (szLevel, "1");
-	goto doMenu;
-}
 
-for (i = opt_mode; i < opt_access; i++)
-	if (m [i].value) {
-		mpParams.nGameType = i - opt_mode;
-		break;
-		}
+	for (i = optGameTypes; i < optOpenGame; i++)
+		if (m [i].value) {
+			mpParams.nGameType = i - optGameTypes;
+			break;
+			}
 
-for (i = opt_access; i < optMaxNet; i++)
-	if (m [i].value) {
-		mpParams.nGameAccess = i - opt_access;
-		break;
-		}
+	for (i = optOpenGame; i < optMaxNet; i++)
+		if (m [i].value) {
+			mpParams.nGameAccess = i - optOpenGame;
+			break;
+			}
 
-if (m [opt_mode].value)
-	mpParams.nGameMode = NETGAME_ANARCHY;
-else if (m [opt_mode+1].value) {
-	mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
+	if (!NetworkGetGameType (m, bAnarchyOnly))
+		goto doMenu;
+	if (m [optClosedGame].value)
+		netGame.gameFlags |= NETGAME_FLAG_CLOSED;
+	netGame.bRefusePlayers = m [optRestrictedGame].value;
 	}
-else if (m [opt_capture].value) {
-	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
-	extraGameInfo [0].bEnhancedCTF = 0;
-	}
-else if (m [optEnhancedCTF].value) {
-	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
-	extraGameInfo [0].bEnhancedCTF = 1;
-	}
-else if (HoardEquipped () && m [opt_hoard].value)
-	mpParams.nGameMode = NETGAME_HOARD;
-else if (HoardEquipped () && m [opt_team_hoard].value)
-	mpParams.nGameMode = NETGAME_TEAM_HOARD;
-else if (HoardEquipped () && m [optEntropy].value)
-	mpParams.nGameMode = NETGAME_ENTROPY;
-else if (HoardEquipped () && m [opt_monsterball].value)
-	mpParams.nGameMode = NETGAME_MONSTERBALL;
-else if (bAnarchyOnly) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
-	m [opt_mode+2].value = 0;
-	m [opt_mode+3].value = 0;
-	m [opt_mode].value = 1;
-	goto doMenu;
-	}               
-else if (m [opt_mode+2].value) 
-	mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
-else if (m [opt_mode+3].value) 
-	mpParams.nGameMode = NETGAME_COOPERATIVE;
-else Int3 (); // Invalid mode -- see Rob
-if (m [opt_closed].value)
-	netGame.gameFlags |= NETGAME_FLAG_CLOSED;
-}
 NetworkSetGameMode (mpParams.nGameMode);
 if (key == -2)
 	goto build_menu;

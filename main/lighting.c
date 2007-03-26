@@ -57,6 +57,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 //int	Use_fvi_lighting = 0;
 
+extern tFaceColor tMapColor, lightColor, vertColors [4];
+
 fix	dynamicLight [MAX_VERTICES];
 tRgbColorf dynamicColor [MAX_VERTICES];
 char  bGotDynColor [MAX_VERTICES];
@@ -873,8 +875,7 @@ return sum >> 3;
 }
 
 // ----------------------------------------------------------------------------------------------
-fix object_light [MAX_OBJECTS];
-int object_sig [MAX_OBJECTS];
+
 tObject *oldViewer;
 int reset_lighting_hack;
 
@@ -901,26 +902,31 @@ if (!rotated_pnt) {
 	rotated_pnt = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
-light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
+if (gameOpts->render.bDynLighting && !gameOpts->ogl.bLightObjects) {
+	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
+	light = -F1_0;
+	}
+else
+	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
-if (!reset_lighting_hack && (object_sig [nObject] == objP->nSignature)) {
+if (!reset_lighting_hack && (gameData.objs.nLightSig [nObject] == objP->nSignature)) {
 	fix xDeltaLight, xFrameDelta;
 
-	xDeltaLight = light - object_light [nObject];
+	xDeltaLight = light - gameData.objs.xLight [nObject];
 	xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
 	if (abs (xDeltaLight) <= xFrameDelta)
-		object_light [nObject] = light;		//we've hit the goal
+		gameData.objs.xLight [nObject] = light;		//we've hit the goal
 	else
 		if (xDeltaLight < 0)
-			light = object_light [nObject] -= xFrameDelta;
+			light = gameData.objs.xLight [nObject] -= xFrameDelta;
 		else
-			light = object_light [nObject] += xFrameDelta;
+			light = gameData.objs.xLight [nObject] += xFrameDelta;
 	}
 else {		//new tObject, initialize
-	object_sig [nObject] = objP->nSignature;
-	object_light [nObject] = light;
-}
+	gameData.objs.nLightSig [nObject] = objP->nSignature;
+	gameData.objs.xLight [nObject] = light;
+	}
 //Next, add in headlight on this tObject
 // -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
 light += ComputeHeadlightLightOnObject (objP);

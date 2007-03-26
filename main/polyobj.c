@@ -624,8 +624,8 @@ else {
 #ifdef _3DFX
       gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
 #endif
+		}
 	}
-}
 
 #ifdef PIGGY_USE_PAGING
 // Make sure the textures for this tObject are paged in...

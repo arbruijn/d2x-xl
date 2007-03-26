@@ -509,5 +509,6 @@ void SetPlayerPaths (void);
 void MultiSyncKills (void);
 void MultiRefillPowerups (void);
 void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
+void MultiOnlyPlayerMsg (int bMsgBox);
 
 #endif /* _MULTI_H */

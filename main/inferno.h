@@ -1105,6 +1105,9 @@ typedef struct tObjectData {
 	vmsVector			vRobotGoals [MAX_OBJECTS];
 	fix					xLastAfterburnerTime [MAX_OBJECTS];
 	fix					xCreationTime [MAX_OBJECTS];
+	fix					xLight [MAX_OBJECTS];
+	int					nLightSig [MAX_OBJECTS];
+	tFaceColor			color;
 	short					nFirstDropped;
 	short					nLastDropped;
 	short					nFreeDropped;

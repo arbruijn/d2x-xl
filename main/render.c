@@ -1368,13 +1368,13 @@ void DoRenderObject(int nObject, int nWindow)
 
 #ifdef _DEBUG
 int bDrawBoxes=0;
-int bWindowCheck = 1, draw_edges = 0, bNewSegSorting = 1, bPreDrawSegs = 0;
+int bWindowCheck = 1, bDrawEdges = 0, bNewSegSorting = 1, bPreDrawSegs = 0;
 int no_migrate_segs=1, migrateObjects=1;
 int check_bWindowCheck=0;
 #else
 #define bDrawBoxes			0
 #define bWindowCheck			1
-#define draw_edges			0
+#define bDrawEdges			0
 #define bNewSegSorting		1
 #define bPreDrawSegs			0
 #define no_migrate_segs		1
@@ -1600,17 +1600,19 @@ typedef struct window {
 	short left, top, right, bot;
 } window;
 
-ubyte code_window_point(fix x, fix y, window *w)
+ubyte code_window_point (fix x, fix y, window *w)
 {
-	ubyte code=0;
+	ubyte code = 0;
 
-	if (x <= w->left)  code |= 1;
-	if (x >= w->right) code |= 2;
-
-	if (y <= w->top) code |= 4;
-	if (y >= w->bot) code |= 8;
-
-	return code;
+if (x <= w->left)  
+	code |= 1;
+else if (x >= w->right) 
+	code |= 2;
+if (y <= w->top) 
+	code |= 4;
+else if (y >= w->bot) 
+	code |= 8;
+return code;
 }
 
 //------------------------------------------------------------------------------
@@ -3148,6 +3150,10 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		for (c = nChildren = 0; c < MAX_SIDES_PER_SEGMENT; c++) {		//build list of sides
 			wid = WALL_IS_DOORWAY (segP, c, NULL);
 			nChild = segP->children [c];
+#ifdef _DEBUG
+			if (nChild == nDbgSeg)
+				nChild = nChild;
+#endif
 			if ((bWindowCheck || ((nChild > -1) && !VISITED (nChild))) && (wid & WID_RENDPAST_FLAG)) {
 				if (bCheckBehind) {
 					andCodes = 0xff;
@@ -3169,43 +3175,45 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		if (bNewSegSorting && (nChildren > 1))
 			SortSegChildren (segP, nChildren, childList);
 #endif
-		//for (c=0;c<MAX_SIDES_PER_SEGMENT;c++)	{
-		//	nChild=segP->children [c];
 		for (c = 0; c < nChildren; c++) {
 			nSide = childList [c];
 			nChild = segP->children [nSide];
+#ifdef _DEBUG
+			if (nChild == nDbgSeg)
+				nChild = nChild;
+#endif
 			//if ( (bWindowCheck || !bVisited [nChild])&& (WALL_IS_DOORWAY(segP, c))) {
 			{
 				if (bWindowCheck) {
 					int i;
 					ubyte codes_and_3d, codes_and_2d;
 					short _x, _y, min_x = 32767, max_x = -32767, min_y = 32767, max_y = -32767;
-					int bDontProj = 0;	//a point wasn't projected
+					int bNotProjected = 0;	//a point wasn't projected
 					if (bRotated < 2) {
 						if (!bRotated)
-							RotateList(8, segP->verts);
+							RotateList (8, segP->verts);
 						ProjectList (8, segP->verts);
 						bRotated = 2;
 						}
 					s2v = sideToVerts [nSide];
 					for (i = 0, codes_and_3d = codes_and_2d = 0xff; i < 4; i++) {
 						int p = sv [s2v [i]];
-						g3sPoint *pnt = gameData.segs.points+p;
+						g3sPoint *pnt = gameData.segs.points + p;
 						if (!(pnt->p3Flags & PF_PROJECTED)) {
-							bDontProj = 1; 
+							bNotProjected = 1; 
 							break;
 							}
 						_x = f2i (pnt->p3_sx);
 						_y = f2i (pnt->p3_sy);
 						codes_and_3d &= pnt->p3_codes;
-						codes_and_2d &= code_window_point(_x, _y, checkWinP);
+						codes_and_2d &= code_window_point (_x, _y, checkWinP);
 #ifdef _DEBUG
-						if (draw_edges) {
+						if (bDrawEdges) {
 							GrSetColorRGB (128, 0, 128, 255);
-							gr_uline(pnt->p3_sx, pnt->p3_sy, 
+							gr_uline (pnt->p3_sx, pnt->p3_sy, 
 								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sx, 
 								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sy);
-						}
+							}
 #endif
 						if (_x < min_x) 
 							min_x = _x;
@@ -3215,39 +3223,39 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							min_y = _y;
 						if (_y > max_y) 
 							max_y = _y;
-					}
+						}
 #ifdef _DEBUG
 					if (bDrawBoxes)
 						DrawWindowBox (WHITE_RGBA, min_x, min_y, max_x, max_y);
 #endif
-					if (bDontProj || !(codes_and_3d || codes_and_2d)) {	//maybe add this tSegment
+					if (bNotProjected || !(codes_and_3d || codes_and_2d)) {	//maybe add this tSegment
 						int rp = nRenderPos [nChild];
-						window *new_w = renderWindows + lCnt;
+						window *pNewWin = renderWindows + lCnt;
 
-						if (bDontProj) 
-							*new_w = *checkWinP;
+						if (bNotProjected) 
+							*pNewWin = *checkWinP;
 						else {
-							new_w->left  = max(checkWinP->left, min_x);
-							new_w->right = min(checkWinP->right, max_x);
-							new_w->top   = max(checkWinP->top, min_y);
-							new_w->bot   = min(checkWinP->bot, max_y);
+							pNewWin->left  = max (checkWinP->left, min_x);
+							pNewWin->right = min (checkWinP->right, max_x);
+							pNewWin->top   = max (checkWinP->top, min_y);
+							pNewWin->bot   = min (checkWinP->bot, max_y);
 						}
 						//see if this segP already visited, and if so, does current window
 						//expand the old window?
 						if (rp != -1) {
 							window *rwP = renderWindows + rp;
-							if (new_w->left < rwP->left ||
-								 new_w->top < rwP->top ||
-								 new_w->right > rwP->right ||
-								 new_w->bot > rwP->bot) {
-								new_w->left  = min(new_w->left, rwP->left);
-								new_w->right = max(new_w->right, rwP->right);
-								new_w->top   = min(new_w->top, rwP->top);
-								new_w->bot   = max(new_w->bot, rwP->bot);
+							if (pNewWin->left < rwP->left ||
+								 pNewWin->top < rwP->top ||
+								 pNewWin->right > rwP->right ||
+								 pNewWin->bot > rwP->bot) {
+								pNewWin->left  = min(pNewWin->left, rwP->left);
+								pNewWin->right = max(pNewWin->right, rwP->right);
+								pNewWin->top   = min(pNewWin->top, rwP->top);
+								pNewWin->bot   = max(pNewWin->bot, rwP->bot);
 								if (no_migrate_segs) {
 									//no_renderFlag [lCnt] = 1;
 									nRenderList [lCnt] = -1;
-									*rwP = *new_w;		//get updated window
+									*rwP = *pNewWin;		//get updated window
 									nProcessed [rp] = 0;		//force reprocess
 									goto no_add;
 								}
@@ -3259,7 +3267,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 #ifdef _DEBUG
 						if (bDrawBoxes)
-							DrawWindowBox(5, new_w->left, new_w->top, new_w->right, new_w->bot);
+							DrawWindowBox (5, pNewWin->left, pNewWin->top, pNewWin->right, pNewWin->bot);
 #endif
 						nRenderPos [nChild] = lCnt;
 						nRenderList [lCnt] = nChild;
@@ -3638,8 +3646,6 @@ inline void RenderMineSegment (int nn)
 {
 	int nSegment = nRenderList [nn];
 
-if (nSegment == 213)
-	nSegment = nSegment;
 if ((nSegment != -1) && !VISITED (nSegment)) {
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
