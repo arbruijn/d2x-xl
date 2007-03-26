@@ -60,6 +60,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "ogl_init.h"
 
+#define SHOW_PLAYER_IP		1
+
 void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
 extern void DrawGuidedCrosshair (void);
 extern void DoAutomap (int key_code, int bRadar);
@@ -3852,7 +3854,7 @@ for (i = 0; i < n_players; i++) {
 		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb [player_num].r, player_rgb [player_num].g, player_rgb [player_num].b), 1, 0, 0);
 	if (multiData.kills.bShowList == 3) {
 		if (GetTeam (gameData.multi.nLocalPlayer) == i) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d", 
 						teamInd [0], netGame.team_name [i], 
 						netPlayers.players [i].network.ipx.node [0], 
@@ -3867,7 +3869,7 @@ for (i = 0; i < n_players; i++) {
 			indent = 0;
 			}
 		else {
-#ifdef _DEBUG
+#if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d", 
 						netGame.team_name [i], 
 						netPlayers.players [i].network.ipx.node [0], 
@@ -3883,7 +3885,7 @@ for (i = 0; i < n_players; i++) {
 			}
 		}
 	else
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d", 
 					gameData.multi.players [player_num].callsign, 
 					netPlayers.players [player_num].network.ipx.node [0], 
@@ -3895,7 +3897,7 @@ for (i = 0; i < n_players; i++) {
 #else
 		strcpy (name, gameData.multi.players [player_num].callsign);	// Note link to above if!!
 #endif
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	x1 += LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
@@ -3935,7 +3937,7 @@ for (i = 0; i < n_players; i++) {
 		if (bGetPing)
 			PingPlayer (player_num);
 		if (pingStats [player_num].sent) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			GrPrintF (x1 + xo, y, "%lu %d %d", 
 						  pingStats [player_num].ping, 
 						  pingStats [player_num].sent, 

@@ -3348,7 +3348,7 @@ if (!networkData.mySyncPackInited) {
 	}
 if (urgent)
 	networkData.bPacketUrgent = 1;
-if ((networkData.mySyncPack.data_size+len) > networkData.nMaxXDataSize) {
+if ((networkData.mySyncPack.data_size + len) > networkData.nMaxXDataSize) {
 	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
 	if (networkData.mySyncPack.data_size != 0) {
@@ -3452,7 +3452,7 @@ if ((networkData.nStatus != NETSTAT_PLAYING) || (gameStates.app.bEndLevelSequenc
 	goto listen;
 
 if (NakedPacketLen) {
-	Assert (NakedPacketDestPlayer>-1);
+	Assert (NakedPacketDestPlayer >- 1);
 	if (gameStates.multi.nGameType >= IPX_GAME) 
 		IPXSendPacketData ((ubyte *) NakedBuf, NakedPacketLen, 
 								 netPlayers.players [NakedPacketDestPlayer].network.ipx.server, 
@@ -3677,14 +3677,13 @@ if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
 	return;
 	}
 
-theirObjP = &gameData.objs.objects [theirObjNum];
+theirObjP = gameData.objs.objects + theirObjNum;
 //------------- Keep track of missed packets -----------------
 gameData.multi.players [nTheirPlayer].nPacketsGot++;
 networkData.nTotalPacketsGot++;
 ResetPlayerTimeout (nTheirPlayer, -1);
 if  (pd->numpackets != gameData.multi.players [nTheirPlayer].nPacketsGot) {
-	int nMissedPackets;
-	nMissedPackets = pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
+	int nMissedPackets = pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
 	if ((pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot)>0)
 		networkData.nTotalMissedPackets += pd->numpackets-gameData.multi.players [nTheirPlayer].nPacketsGot;
 #if 1				
@@ -3712,7 +3711,7 @@ if ((theirObjP->renderType != pd->obj_renderType) && (pd->obj_renderType == RT_P
 	MultiMakeGhostPlayer (nTheirPlayer);
 RelinkObject (theirObjNum, pd->obj_segnum);
 if (theirObjP->movementType == MT_PHYSICS)
-	setThrust_from_velocity (theirObjP);
+	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multi.players [nTheirPlayer].connected) {
 	gameData.multi.players [nTheirPlayer].connected = 1;
@@ -3846,7 +3845,7 @@ ExtractShortPos (theirObjP, &new_pd.thepos, 0);
 if ((theirObjP->renderType != new_pd.obj_renderType) && (new_pd.obj_renderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nTheirPlayer);
 if (theirObjP->movementType == MT_PHYSICS)
-	setThrust_from_velocity (theirObjP);
+	SetThrustFromVelocity (theirObjP);
 //------------ Welcome them back if reconnecting --------------
 if (!gameData.multi.players [nTheirPlayer].connected) {
 	gameData.multi.players [nTheirPlayer].connected = 1;

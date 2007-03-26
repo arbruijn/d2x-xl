@@ -26,6 +26,12 @@ void DoSmokeFrame (void);
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
+void KillObjectSmoke (int i);
+
+#else
+
 static inline void KillObjectSmoke (int i)
 {
 if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
@@ -33,6 +39,8 @@ if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
 	gameData.smoke.objects [i] = -1;
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 #endif //__OBJSMOKE_H

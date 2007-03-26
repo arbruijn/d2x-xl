@@ -45,6 +45,20 @@
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
+void KillObjectSmoke (int i)
+{
+if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
+	SetSmokeLife (gameData.smoke.objects [i], 0);
+	gameData.smoke.objects [i] = -1;
+	}
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 void KillPlayerSmoke (int i)
 {
 KillObjectSmoke (gameData.multi.players [i].nObject);

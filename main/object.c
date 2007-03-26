@@ -2202,14 +2202,10 @@ return nObject;
 //the tObject has been unlinked
 void FreeObject (int nObject)
 {
-	int id = gameData.objs.objects [nObject].id;
-
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 KillObjectSmoke (nObject);
 RemoveDynLight (-1, -1, nObject);
-if (gameData.objs.objects [nObject].nType == OBJ_ROBOT)
-	id = gameData.objs.objects [nObject].id;
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject)
@@ -2349,7 +2345,7 @@ if (nType == OBJ_POWERUP) {
 	nType = nType;
 #endif
 	if (!bIgnoreLimits && TooManyPowerups (id)) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [id]);
 		TooManyPowerups (id);
 #endif
@@ -2486,19 +2482,21 @@ extern void NDRecordGuidedEnd ();
 //remove tObject from the world
 void ReleaseObject (short nObject)
 {
-	int pnum;
+	int nParent;
 	tObject *objP = gameData.objs.objects + nObject;
 
 Assert (nObject != -1);
 Assert (nObject != 0);
 Assert (objP->nType != OBJ_NONE);
+if (objP->nType == OBJ_PLAYER)
+	objP = objP;
 Assert (objP != gameData.objs.console);
 if (objP->nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);
 	if (objP->id == GUIDEDMSL_ID) {
-		pnum=gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
-		if (pnum!=gameData.multi.nLocalPlayer)
-			gameData.objs.guidedMissile [pnum]=NULL;
+		nParent = gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
+		if (nParent != gameData.multi.nLocalPlayer)
+			gameData.objs.guidedMissile [nParent] = NULL;
 		else if (gameData.demo.nState==ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();
 		}

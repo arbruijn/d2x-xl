@@ -755,6 +755,10 @@ while (changed) {
 extern tObject *objP_find_first_ofType (int);
 char bMultiSuicide = 0;
 
+#include "ipx_drv.h"
+
+extern struct ipx_recv_data ipx_udpSrc;
+
 void MultiComputeKill (int nKiller, int nKilled)
 {
 	// Figure out the results of a network kills and add it to the
@@ -848,9 +852,9 @@ t1 = GetTeam (nKillerPlayer);
 if (nKillerPlayer == nKilledPlayer) {
 	if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 		if (gameData.app.nGameMode & GM_TEAM)
-			multiData.kills.nTeam [GetTeam (nKilledPlayer)] -= 1;
-		gameData.multi.players [nKilledPlayer].netKilledTotal += 1;
-		gameData.multi.players [nKilledPlayer].netKillsTotal -= 1;
+			multiData.kills.nTeam [GetTeam (nKilledPlayer)]--;
+		gameData.multi.players [nKilledPlayer].netKilledTotal++;
+		gameData.multi.players [nKilledPlayer].netKillsTotal--;
 		if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordMultiKill (nKilledPlayer, -1);
 		}
@@ -884,23 +888,31 @@ else {
 		}
 	else if (gameData.app.nGameMode & GM_TEAM) {
 		if (t0 == t1) {
-			multiData.kills.nTeam [t0] -= 1;
-			pKiller->netKillsTotal -= 1;
-			pKiller->nKillGoalCount -= 1;
+			multiData.kills.nTeam [t0]--;
+			pKiller->netKillsTotal--;
+			pKiller->nKillGoalCount--;
 			}
 		else {
-			multiData.kills.nTeam [t1] += 1;
-			pKiller->netKillsTotal += 1;
-			pKiller->nKillGoalCount += 1;
+			multiData.kills.nTeam [t1]++;
+			pKiller->netKillsTotal++;
+			pKiller->nKillGoalCount++;
 			}
 		}
 	else {
-		pKiller->netKillsTotal += 1;
-		pKiller->nKillGoalCount += 1;
+		static int nKillMsgs = 0;
+	LogErr ("received kill message %d from %d.%d.%d.%d:%u\n", 
+				++nKillMsgs,
+					ipx_udpSrc.src_node [0],
+					ipx_udpSrc.src_node [1],
+					ipx_udpSrc.src_node [2],
+					ipx_udpSrc.src_node [3],
+					*((ushort *) (ipx_udpSrc.src_node + 4)));
+		pKiller->netKillsTotal++;
+		pKiller->nKillGoalCount++;
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKillerPlayer, 1);
-	multiData.kills.matrix [nKillerPlayer][nKilledPlayer] += 1;
+	multiData.kills.matrix [nKillerPlayer][nKilledPlayer]++;
 	pKilled->netKilledTotal += 1;
 	if (nKillerPlayer == gameData.multi.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
@@ -1161,7 +1173,7 @@ memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + 10), 14);
 ExtractShortPos (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject], &sp, 1);
 #endif
 if (gameData.objs.objects [gameData.multi.players [nPlayer].nObject].movementType == MT_PHYSICS)
-	setThrust_from_velocity (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject]);
+	SetThrustFromVelocity (&gameData.objs.objects [gameData.multi.players [nPlayer].nObject]);
 }
 
 //-----------------------------------------------------------------------------
@@ -1350,7 +1362,7 @@ if (networkData.bSendObjects && NetworkObjnumIsPast (nLocalObj))
 if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = gameData.objs.objects [nLocalObj].id;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multi.powerupsInMine [id]);
 #endif
 		if (gameData.multi.powerupsInMine [id] > 0)
@@ -1834,20 +1846,20 @@ extern FILE *RecieveLogFile;
 
 void MultiProcessBigData (char *buf, int len)
 {
-	int nType, sub_len, bytes_processed = 0;
+	int nType, nMsgLen, nBytesProcessed = 0;
 
-while (bytes_processed < len) {
-	nType = buf [bytes_processed];
+while (nBytesProcessed < len) {
+	nType = buf [nBytesProcessed];
 	if ((nType < 0) || (nType > MULTI_MAX_TYPE))
 		return;
-	sub_len = multiMessageLengths [nType];
-	Assert (sub_len > 0);
-	if ((bytes_processed+sub_len) > len) {
+	nMsgLen = multiMessageLengths [nType];
+	Assert (nMsgLen > 0);
+	if ((nBytesProcessed + nMsgLen) > len) {
 		Int3 ();
 		return;
 		}
-	MultiProcessData (buf + bytes_processed, sub_len);
-	bytes_processed += sub_len;
+	MultiProcessData (buf + nBytesProcessed, nMsgLen);
+	nBytesProcessed += nMsgLen;
 	}
 }
 
@@ -2285,7 +2297,7 @@ void MultiSendRemObj (int nObject)
 
 if ((gameData.objs.objects [nObject].nType == OBJ_POWERUP) && (gameData.app.nGameMode & GM_NETWORK)) {
 	id = gameData.objs.objects [nObject].id;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	HUDMessage (0, "requesting to remove %s (%d present)", pszPowerup [id], gameData.multi.powerupsInMine [id]);
 #endif
 	if (gameData.multi.powerupsInMine [id] > 0) {
@@ -4903,8 +4915,7 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 			pmh->fpMultiHandler (buf);
 		}
 #else //_DEBUG
-	switch (nType)
-	{
+	switch (nType) {
 	case MULTI_POSITION:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoPosition (buf); 

@@ -230,7 +230,7 @@ int IpxGetPacketData (ubyte *data)
 
 while (driver->PacketReady (&ipxSocketData)) {
 	size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	HUDMessage (0, "received %d bytes from %d.%d.%d.%d:%u", 
 					size,
 					ipx_udpSrc.src_node [0],
@@ -248,7 +248,6 @@ while (driver->PacketReady (&ipxSocketData)) {
 	offs = IsTracker (*((unsigned int *) ipx_udpSrc.src_node), *((ushort *) (ipx_udpSrc.src_node + 4))) ? 0 : 4;
 	memcpy (data, buf + offs, size - offs);
 	return size - offs;
-
 	}
 return 0;
 }

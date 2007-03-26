@@ -796,7 +796,7 @@ static int UDPSendPacket
 #ifdef _DEBUG
 	int h;
 #endif
-	int				iDest, nUdpRes, extraDataLen = 0, bBroadcast;
+	int				iDest, nUdpRes, extraDataLen = 0, bBroadcast = 0;
 	tDestListEntry *pdl;
 #if UDP_SAFEMODE
 	tPacketProps	*ppp;
@@ -825,14 +825,14 @@ memset (&(destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (AddDestToList (&destAddr) >= 0)))
 	return -1;
-if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST))
-	bBroadcast = 0;
-else {
-	if (destAddrNum <= (bBroadcast = FindDestInList (&destAddr)))
-		bBroadcast = -1;
+if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
+	bBroadcast = 1;
+	iDest = 0;
 	}
-for (iDest = bBroadcast; iDest < destAddrNum; iDest++) { 
-	if (bBroadcast < 0)
+else if (destAddrNum <= (iDest = FindDestInList (&destAddr)))
+	iDest = -1;
+for (; iDest < destAddrNum; iDest++) { 
+	if (iDest < 0)
 		dest = &destAddr;
 	else {
 		pdl = destList + iDest;
@@ -897,7 +897,7 @@ for (iDest = bBroadcast; iDest < destAddrNum; iDest++) {
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
 		h = WSAGetLastError ();
 #endif
-	if (bBroadcast) 
+	if (bBroadcast <= 0) 
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
 		else
@@ -1099,7 +1099,7 @@ memset (rd->src_network, 0, 4);
 memcpy (rd->src_node, &fromAddr.sin_addr, 4);
 memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
 rd->pktType = 0;
-#if 1//def UDPDEBUG
+#if 0//def UDPDEBUG
 //printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
 con_printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
 				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],

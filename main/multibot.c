@@ -639,7 +639,7 @@ if (gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_OWNER != nPlayer) {
 	else
 		gameData.objs.objects [nRobot].cType.aiInfo.REMOTE_SLOT_NUM++;
 	}
-setThrust_from_velocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
+SetThrustFromVelocity (&gameData.objs.objects [nRobot]); // Try to smooth out movement
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 ExtractShortPos (&gameData.objs.objects [nRobot], (tShortPos *) (buf+bufP), 0);
 #else

@@ -1011,7 +1011,7 @@ void PhysApplyRot (tObject *objP, vmsVector *vForce)
 
 //this routine will set the thrust for an tObject to a value that will
 // (hopefully) maintain the tObject's current velocity
-void setThrust_from_velocity (tObject *objP)
+void SetThrustFromVelocity (tObject *objP)
 {
 	fix k;
 
