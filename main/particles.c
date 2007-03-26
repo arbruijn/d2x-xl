@@ -1274,9 +1274,8 @@ else
 
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.smoke + i;
-		if ((gameData.smoke.objects [i] != pSmoke->nObject) || 
-			 (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature)) {
-			SetSmokeLife (i, 0);
+		if (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature) {
+			DestroySmoke (i);
 			continue;
 			}
 #ifdef _DEBUG

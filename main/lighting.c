@@ -284,7 +284,7 @@ void ApplyLight (
 if (SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
-			if (! (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
 				gameData.render.lights.dynamic.nHeadLights [objP->id] = AddOglHeadLight (objP);
@@ -424,7 +424,7 @@ if (xObjIntensity) {
 							if (dot < maxDot)
 								dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 							else if (! (gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
-								dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / (8 * spotSize);
+								dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
 							}
 						}
 					}
