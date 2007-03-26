@@ -1274,6 +1274,11 @@ else
 
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.smoke + i;
+		if ((gameData.smoke.objects [i] != pSmoke->nObject) || 
+			 (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature)) {
+			SetSmokeLife (i, 0);
+			continue;
+			}
 #ifdef _DEBUG
 		if (gameData.objs.objects [pSmoke->nObject].nType == 255)
 			i = i;

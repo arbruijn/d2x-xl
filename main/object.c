@@ -2515,7 +2515,7 @@ if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
 	ExecObjTriggers (nObject, 0);
 objP->nType = OBJ_NONE;		//unused!
 objP->nSignature = -1;
-objP->nSegment=-1;				// zero it!
+objP->nSegment = -1;				// zero it!
 FreeObject (nObject);
 SpawnLeftoverPowerups (nObject);
 }
