@@ -938,7 +938,7 @@ return 1;
 static int UDPSendPacket (
 	ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen) 
 {
-	int						i = dataLen, extraDataLen = 0, j, nUdpRes, bBroadcast;
+	int						iDest, extraDataLen = 0, j, nUdpRes, bBroadcast;
 	tDestListEntry 		*pdl;
 	tPacketProps			*ppp;
 	static ubyte			buf [MAX_PACKETSIZE + 14 + 4];
@@ -971,17 +971,17 @@ memset (& (destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (AddDestToList (&destAddr) >= 0)))
 	return 1;
-if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST))
-	bBroadcast = 0;
-else {
-	if (destAddrNum <= (bBroadcast = FindDestInList (&destAddr)))
-		bBroadcast = -1;
+if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
+	bBroadcast = 1;
+	iDest = 0;
 	}
-for (i = bBroadcast; i < destAddrNum; i++) { 
-	if (bBroadcast < 0)
+else if (destAddrNum <= (iDest = FindDestInList (&destAddr)))
+	iDest = -1;
+for (; iDest < destAddrNum; iDest++) { 
+	if (iDest < 0)
 		dest = &destAddr;
 	else {
-		pdl = destList + i;
+		pdl = destList + iDest;
 		dest = &pdl->addr;
 		}
 	// copy destination IP and port to outBuf
@@ -1039,8 +1039,8 @@ for (i = bBroadcast; i < destAddrNum; i++) {
 	*/
 #endif
 	nUdpRes = sendto (mysock->fd, bufP, dataLen + extraDataLen, 0, (struct sockaddr *) dest, sizeof (*dest));
-//msg ("sendto (%d) returned %d", dataLen + (gameStates.multi.bTrackerCall ? 0 : 14), i);
-	if (bBroadcast) 
+//msg ("sendto (%d) returned %d", dataLen + (gameStates.multi.bTrackerCall ? 0 : 14), iDest);
+	if (bBroadcast <= 0) 
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
 		else
