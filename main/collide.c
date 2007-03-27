@@ -1214,8 +1214,8 @@ if (gameData.objs.objects [who].id == gameData.multi.nLocalPlayer) {
 	}
 if (controlcen->shields >= 0)
 	controlcen->shields -= damage;
-if ((controlcen->shields < 0) && !(controlcen->flags& (OF_EXPLODING|OF_DESTROYED))) {
-	if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
+if ((controlcen->shields < 0) && !(controlcen->flags & (OF_EXPLODING | OF_DESTROYED))) {
+	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (controlcen);
 	if (gameData.app.nGameMode & GM_MULTI) {
