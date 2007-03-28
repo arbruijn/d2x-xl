@@ -455,6 +455,8 @@ typedef struct tOglStates {
 	int bAntiAliasing;
 	int bAntiAliasingOk;
 	int bVoodooHack;
+	int bTextureCompression;
+	int bHaveTexCompression;
 	int texMinFilter;
 	int texMagFilter;
 	int nTexMagFilterState;
@@ -700,6 +702,7 @@ typedef struct tApplicationStates {
 	int bAltModels;
 	int bEnableShadows;
 	int bEnableFreeCam;
+	int bTextureCache;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;

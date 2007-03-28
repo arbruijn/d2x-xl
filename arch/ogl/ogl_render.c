@@ -1390,7 +1390,7 @@ else
 	if (tmap_drawer_ptr == DrawTexPolyFlat) { // currently only required for cloaked poly models
 		OglActiveTexture (GL_TEXTURE0_ARB);
 		glDisable (GL_TEXTURE_2D);
-		glColor4f (0, 0, 0, 1.0f - (gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS));
+		glColor4d (0, 0, 0, GrAlpha ());
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 			//G3SetNormal (*ppl, pvNormal);

@@ -1038,6 +1038,12 @@ if (t = FindArg ("-render_opt"))
 if (t = FindArg ("-gl_transform"))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
+if (t = FindArg ("-texture_cache"))
+	gameStates.app.bTextureCache = NumArg (t, 1);
+#if 0
+if (t = FindArg ("-gl_texcompress"))
+	gameStates.ogl.bTextureCompression = NumArg (t, 1);
+#endif
 }
 
 // ----------------------------------------------------------------------------

@@ -505,6 +505,8 @@ else {
 	if (!gameStates.render.textures.bGlsTexMergeOk)
 		gameOpts->ogl.bGlTexMerge = 0;
 	}
+if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
+	gameStates.ogl.bHaveTexCompression = 0;
 }
 
 //------------------------------------------------------------------------------

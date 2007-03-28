@@ -120,7 +120,7 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 	""
 	};
 
-#define	MAX_INV_ITEMS	((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 10 : 5)
+#define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))
 
 //------------------------------------------------------------------------------
 
@@ -881,26 +881,51 @@ return bUsed;
 
 //------------------------------------------------------------------------------
 
+int SpawnPowerup (tObject *spitterP, ubyte nId, int nCount)
+{
+	int			i;
+	short			nObject;
+	vmsVector	velSave;
+	tObject		*objP;
+
+if (nCount <= 0)
+	return 0;
+gameData.multi.powerupsInMine [nId] += nCount;
+velSave = spitterP->mType.physInfo.velocity;
+spitterP->mType.physInfo.velocity.p.x =
+spitterP->mType.physInfo.velocity.p.y =
+spitterP->mType.physInfo.velocity.p.z = 0;
+for (i = nCount; i; i--) {
+	nObject = SpitPowerup (spitterP, nId, d_rand ());
+	objP = gameData.objs.objects + nObject;
+	MultiSendCreatePowerup (nId, objP->nSegment, nObject, &objP->position.vPos);
+	}
+spitterP->mType.physInfo.velocity = velSave;
+return nCount;
+}
+
+//------------------------------------------------------------------------------
+
 void SpawnLeftoverPowerups (short nObject)
 {
-	ubyte		nLeft = gameData.multi.leftoverPowerups [nObject].nCount;
-	short		i;
-	tObject	*objP;
+SpawnPowerup (gameData.multi.leftoverPowerups [nObject].spitterP, 
+				  gameData.multi.leftoverPowerups [nObject].nType,
+				  gameData.multi.leftoverPowerups [nObject].nCount);
+memset (gameData.multi.leftoverPowerups + nObject, 0, 
+		  sizeof (gameData.multi.leftoverPowerups [nObject]));
+}
 
-if (nLeft) {	//leave powerups that cannot be picked up in mine
-	ubyte nType = gameData.multi.leftoverPowerups [nObject].nType;
-	tObject spitter = *gameData.multi.leftoverPowerups [nObject].spitterP;
-	spitter.mType.physInfo.velocity.p.x =
-	spitter.mType.physInfo.velocity.p.y =
-	spitter.mType.physInfo.velocity.p.z = 0;
-	for (; nLeft; nLeft--) {
-		i = SpitPowerup (&spitter, nType, d_rand ());
-		objP = gameData.objs.objects + i;
-		MultiSendCreatePowerup (nType, objP->nSegment, i, &objP->position.vPos);
-		}
-	gameData.multi.powerupsInMine [nType] += nLeft;
-	memset (gameData.multi.leftoverPowerups + nObject, 0, sizeof (gameData.multi.leftoverPowerups [nObject]));
-	}
+//------------------------------------------------------------------------------
+
+void CheckInventory (void)
+{
+	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tObject	*objP = gameData.objs.objects + playerP->nObject;
+
+if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
+	playerP->nCloaks = MAX_INV_ITEMS;
+if (SpawnPowerup (objP, POW_INVUL, playerP->nInvuls - MAX_INV_ITEMS))
+	playerP->nInvuls = MAX_INV_ITEMS;
 }
 
 //-----------------------------------------------------------------------------

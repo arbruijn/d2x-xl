@@ -145,6 +145,7 @@ short PowerupToModel (short nPowerup);
 short WeaponToModel (short nWeapon);
 short PowerupsOnShips (int nPowerup);
 void SpawnLeftoverPowerups (short nObject);
+void CheckInventory (void);
 
 #define	PowerupsInMine(_nPowerup) \
 			((gameStates.multi.nGameType == UDP_GAME) ? \

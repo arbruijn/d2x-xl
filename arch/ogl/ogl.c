@@ -60,6 +60,15 @@
 
 //------------------------------------------------------------------------------
 
+#if TEXTURE_COMPRESSION
+#	ifndef GL_VERSION_20
+#		ifdef _WIN32
+PFNGLGETCOMPRESSEDTEXIMAGEPROC	glGetCompressedTexImage = NULL;
+PFNGLCOMPRESSEDTEXIMAGE2DPROC		glCompressedTexImage2D = NULL;
+#		endif
+#	endif
+#endif
+
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20
 PFNGLACTIVETEXTUREARBPROC			glActiveTexture = NULL;
@@ -376,11 +385,11 @@ while (bytes>ogl_mem_target){
 
 //------------------------------------------------------------------------------
 
-int ogl_bindteximage (ogl_texture *tex)
+int ogl_bindteximage (ogl_texture *texP)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
-OGL_BINDTEX (tex->pbuffer.texId);
+OGL_BINDTEX (texP->pbuffer.texId);
 #		if 1
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -392,25 +401,25 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 #		endif
-OGL_BINDTEX (tex->pbuffer.texId);
+OGL_BINDTEX (texP->pbuffer.texId);
 #	endif
 #	ifdef _WIN32
 #		ifdef _DEBUG
-if (!tex->pbuffer.bBound) {
-	tex->pbuffer.bBound = wglBindTexImageARB (tex->pbuffer.hBuf, WGL_FRONT_LEFT_ARB);
-	if (!tex->pbuffer.bBound) {
+if (!texP->pbuffer.bBound) {
+	texP->pbuffer.bBound = wglBindTexImageARB (texP->pbuffer.hBuf, WGL_FRONT_LEFT_ARB);
+	if (!texP->pbuffer.bBound) {
 		char *psz = (char *) gluErrorString (glGetError ());
 		return 1;
 		}
 	}
 #		else
-if (!(tex->pbuffer.bBound ||
-	 (tex->pbuffer.bBound = wglBindTexImageARB (tex->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))))
+if (!(texP->pbuffer.bBound ||
+	 (texP->pbuffer.bBound = wglBindTexImageARB (texP->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))))
 	return 1;
 #		endif
 #	endif
 #elif RENDER2TEXTURE == 2
-OGL_BINDTEX (tex->fbuffer.texId);
+OGL_BINDTEX (texP->fbuffer.texId);
 #endif
 return 0;
 }
@@ -419,32 +428,32 @@ return 0;
 
 int OglBindBmTex (grsBitmap *bmP, int nTransp)
 {
-	ogl_texture	*tex;
+	ogl_texture	*texP;
 #if RENDER2TEXTURE
 	int			bPBuffer;
 #endif
 
 bmP = BmOverride (bmP);
-tex = bmP->glTexture;
+texP = bmP->glTexture;
 #if RENDER2TEXTURE
-if (bPBuffer = tex && (tex->handle < 0)) {
-	if (ogl_bindteximage (tex))
+if (bPBuffer = texP && (texP->handle < 0)) {
+	if (ogl_bindteximage (texP))
 		return 1;
 	}
 else
 #endif
 	{
-	if (!(tex && (tex->handle > 0))) {
+	if (!(texP && (texP->handle > 0))) {
 		if (OglLoadBmTexture (bmP, 1, nTransp))
 			return 1;
 		bmP = BmOverride (bmP);
-		tex = bmP->glTexture;
+		texP = bmP->glTexture;
 #if 1//def _DEBUG
-		if (!tex)
+		if (!texP)
 			OglLoadBmTexture (bmP, 1, nTransp);
 #endif
 		}
-	OGL_BINDTEX (tex->handle);
+	OGL_BINDTEX (texP->handle);
 	}
 bmP->glTexture->lastrend = gameData.time.xGame;
 bmP->glTexture->numrend++;
@@ -857,40 +866,6 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-
-int tex_format_supported (int iformat,int format)
-{
-	switch (iformat){
-		case GL_INTENSITY4:
-			if (!gameOpts->ogl.bIntensity4) 
-				return 0; 
-			break;
-
-		case GL_LUMINANCE4_ALPHA4:
-			if (!gameOpts->ogl.bLuminance4Alpha4) 
-				return 0; 
-			break;
-
-		case GL_RGBA2:
-			if (!gameOpts->ogl.bRgba2) 
-				return 0; 
-			break;
-		}
-	if (gameOpts->ogl.bGetTexLevelParam){
-		GLint internalFormat;
-		glTexImage2D (GL_PROXY_TEXTURE_2D, 0, iformat, 64, 64, 0,
-				format, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);//NULL?
-		glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0,
-				GL_TEXTURE_INTERNAL_FORMAT,
-				&internalFormat);
-		return (internalFormat==iformat);
-		}
-	else
-		return 1;
-}
-
-
-//------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
 int pow2ize (int x)
 {
@@ -934,7 +909,7 @@ void OglFillTexBuf (
 	int nTransp,
 	int superTransp)
 {
-//	GLushort *tex= (GLushort *)texp;
+//	GLushort *texP= (GLushort *)texp;
 	unsigned char *data = bmP->bm_texBuf;
 	int x, y, c, i;
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
@@ -960,6 +935,7 @@ void OglFillTexBuf (
 					case GL_LUMINANCE:
 						 (*(texp++)) = 0;
 						break;
+
 					case GL_LUMINANCE_ALPHA:
 #if 1
 						* ((GLushort *) texp) = 0;
@@ -981,7 +957,7 @@ void OglFillTexBuf (
 #endif
 						break;
 					}
-//				 (*(tex++)) = 0;
+//				 (*(texP++)) = 0;
 				}
 			else {
 				switch (nType) {
@@ -1051,7 +1027,7 @@ void OglFillTexBuf (
 							else
 								(*(texp++)) = 255;//not transparent
 							}
-						//				 (*(tex++)) =  (gameData.render.ogl.palette [c*3]>>1) + ((gameData.render.ogl.palette [c*3+1]>>1)<<5) + ((gameData.render.ogl.palette [c*3+2]>>1)<<10) + (1<<15);
+						//				 (*(texP++)) =  (gameData.render.ogl.palette [c*3]>>1) + ((gameData.render.ogl.palette [c*3+1]>>1)<<5) + ((gameData.render.ogl.palette [c*3+2]>>1)<<10) + (1<<15);
 						break;
 					}
 			}
@@ -1060,56 +1036,156 @@ void OglFillTexBuf (
 }
 
 //------------------------------------------------------------------------------
+//create texture buffer from data already in RGBA format
 
-int tex_format_verify (ogl_texture *tex)
+ubyte *OglCopyTexBuf (ogl_texture *texP, int dxo, int dyo, ubyte *data)
 {
-	while (!tex_format_supported (tex->internalformat,tex->format)){
-		switch (tex->internalformat){
-			case GL_INTENSITY4:
-				if (gameOpts->ogl.bLuminance4Alpha4){
-					tex->internalformat=GL_LUMINANCE4_ALPHA4;
-					tex->format=GL_LUMINANCE_ALPHA;
-					break;
-				}//note how it will fall through here if the statement is false
-			case GL_LUMINANCE4_ALPHA4:
-				if (gameOpts->ogl.bRgba2){
-					tex->internalformat=GL_RGBA2;
-					tex->format=GL_RGBA;
-					break;
-				}//note how it will fall through here if the statement is false
-			case GL_RGBA2:
-				tex->internalformat=gameOpts->ogl.bRgbaFormat;
-				tex->format=GL_RGBA;
-				break;
-			default:
-#if TRACE	
-				con_printf (CONDBG,"...no tex format to fall back on\n");
-#endif
-				return 1;
+if (!dxo && !dyo && (texP->w == texP->tw) && (texP->h == texP->th))
+	return data;	//can use data 1:1
+else {	//need to reformat
+	int		h, w, tw;
+	GLubyte	*bufP;
+	
+	h = texP->lw / texP->w;
+	w = (texP->w - dxo) * h;
+	data += texP->lw * dyo + h * dxo;
+	bufP = gameData.render.ogl.texBuf;
+	tw = texP->tw * h;
+	h = tw - w;
+	for (; dyo < texP->h; dyo++, data += texP->lw) {
+		memcpy (bufP, data, w);
+		bufP += w;
+		memset (bufP, 0, h);
+		bufP += h;
 		}
+	memset (bufP, 0, texP->th * tw - (bufP - gameData.render.ogl.texBuf));
+	return gameData.render.ogl.texBuf;
 	}
-	return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void TexSetSizeSub (ogl_texture *tex,int dbits,int bits,int w, int h)
+int TexFormatSupported (ogl_texture *texP)
+{
+	GLint nFormat = 0;
+
+if (!gameOpts->ogl.bGetTexLevelParam)
+	return 1;
+
+switch (texP->format) {
+	case GL_RGBA:
+		if (texP->internalformat == 4)
+			return 1;
+		break;
+
+	case GL_INTENSITY4:
+		if (gameOpts->ogl.bIntensity4 == -1) 
+			return 1; 
+		if (!gameOpts->ogl.bIntensity4) 
+			return 0; 
+		break;
+
+	case GL_LUMINANCE4_ALPHA4:
+		if (gameOpts->ogl.bLuminance4Alpha4 == -1) 
+			return 1; 
+		if (!gameOpts->ogl.bLuminance4Alpha4) 
+			return 0; 
+		break;
+
+	case GL_RGBA2:
+		if (gameOpts->ogl.bRgba2 == -1) 
+			return 1;
+		if (!gameOpts->ogl.bRgba2) 
+			return 0; 
+		break;
+	}
+
+glTexImage2D (GL_PROXY_TEXTURE_2D, 0, texP->internalformat, texP->tw, texP->th, 0,
+				  texP->format, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);//NULL?
+glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
+switch (texP->format) {
+	case GL_RGBA:
+		if ((nFormat != GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) &&
+			 (nFormat != GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) &&
+			 (nFormat != GL_COMPRESSED_RGBA_S3TC_DXT5_EXT))
+			texP->internalformat = 4;
+		else
+			nFormat = texP->internalformat;
+		break;
+
+	case GL_INTENSITY4:
+		gameOpts->ogl.bIntensity4 = (nFormat == texP->internalformat) ? -1 : 0;
+		break;
+
+	case GL_LUMINANCE4_ALPHA4:
+		gameOpts->ogl.bLuminance4Alpha4 = (nFormat == texP->internalformat) ? -1 : 0;
+		break;
+
+	case GL_RGBA2:
+		gameOpts->ogl.bRgba2 = (nFormat == texP->internalformat) ? -1 : 0;
+		break;
+
+	default:
+		break;
+	}
+return nFormat == texP->internalformat;
+}
+
+//------------------------------------------------------------------------------
+
+int TexFormatVerify (ogl_texture *texP)
+{
+while (!TexFormatSupported (texP)) {
+	switch (texP->format) {
+		case GL_INTENSITY4:
+			if (gameOpts->ogl.bLuminance4Alpha4) {
+				texP->internalformat = 2;
+				texP->format = GL_LUMINANCE_ALPHA;
+				break;
+				}
+
+		case GL_LUMINANCE4_ALPHA4:
+			if (gameOpts->ogl.bRgba2) {
+				texP->internalformat = 4;
+				texP->format = GL_RGBA;
+				break;
+				}
+
+		case GL_RGBA2:
+		case GL_RGBA:
+			texP->internalformat = 4;
+			texP->format = GL_RGBA;
+			break;
+
+		default:
+#if TRACE	
+			con_printf (CONDBG,"...no texP format to fall back on\n");
+#endif
+			return 1;
+		}
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void TexSetSizeSub (ogl_texture *texP,int dbits,int bits,int w, int h)
 {
 	int u;
 
-if (tex->tw != w || tex->th != h)
-	u = (int) ((tex->w / (double) tex->tw * w) * (tex->h / (double) tex->th * h));
+if (texP->tw != w || texP->th != h)
+	u = (int) ((texP->w / (double) texP->tw * w) * (texP->h / (double) texP->th * h));
 else
-	u = (int) (tex->w * tex->h);
+	u = (int) (texP->w * texP->h);
 if (bits <= 0) //the beta nvidia GLX server. doesn't ever return any bit sizes, so just use some assumptions.
 	bits = dbits;
-tex->bytes = (int) (((double) w * h * bits) / 8.0);
-tex->bytesu = (int) (((double) u * bits) / 8.0);
+texP->bytes = (int) (((double) w * h * bits) / 8.0);
+texP->bytesu = (int) (((double) u * bits) / 8.0);
 }
 
 //------------------------------------------------------------------------------
 
-void TexSetSize (ogl_texture *tex)
+void TexSetSize (ogl_texture *texP)
 {
 	GLint	w, h;
 	int	bi = 16, a = 0;
@@ -1133,28 +1209,69 @@ if (gameOpts->ogl.bGetTexLevelParam) {
 	a += t;
 	}
 else {
-	w = tex->tw;
-	h = tex->th;
-}
-switch (tex->format) {
+	w = texP->tw;
+	h = texP->th;
+	}
+switch (texP->format) {
 	case GL_LUMINANCE:
-		bi=8;
+		bi = 8;
 		break;
 	case GL_LUMINANCE_ALPHA:
-		bi=8;
+		bi = 8;
 		break;
 	case GL_RGBA:
-		bi=32;
+	case GL_COMPRESSED_RGBA:
+	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		bi = 32;
 		break;
 	case GL_ALPHA:
-		bi=8;
+		bi = 8;
 		break;
 	default:
 		Error ("TexSetSize unknown texformat\n");
 		break;
 	}
-TexSetSizeSub (tex, bi , a, w, h);
+TexSetSizeSub (texP, bi , a, w, h);
 }
+
+//------------------------------------------------------------------------------
+
+#if TEXTURE_COMPRESSION
+
+int OglCompressTexture (grsBitmap *bmP, ogl_texture *texP)
+{
+	GLint nFormat, nParam;
+	ubyte	*data;
+
+if (texP->internalformat != GL_COMPRESSED_RGBA)
+	return 0;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_ARB, &nParam);
+if (nParam) {
+	glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
+	if ((nFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
+		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
+		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
+		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
+		if (nParam && (data = (ubyte *) d_malloc (nParam))) {
+			d_free (bmP->bm_texBuf);
+			glGetCompressedTexImage (GL_TEXTURE_2D, 0, (GLvoid *) data);
+			bmP->bm_texBuf = data;
+			bmP->bm_bufSize = nParam;
+			bmP->bm_format = nFormat;
+			bmP->bm_compressed = 1;
+			}
+		}
+	}
+if (bmP->bm_compressed)
+	return 1;
+texP->format = GL_RGBA;
+texP->internalformat = 4;
+return 0;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 //loads a palettized bitmap into a ogl RGBA texture.
@@ -1162,80 +1279,77 @@ TexSetSizeSub (tex, bi , a, w, h);
 //In theory this could be a problem for repeating textures, but all real
 //textures (not sprites, etc) in descent are 64x64, so we are ok.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *tex, int nTransp, int superTransp)
+int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *texP, int nTransp, int superTransp)
 {
-	unsigned char *data = bmP->bm_texBuf;
-	GLubyte	*bufP = gameData.render.ogl.texBuf;
-//	int internalformat=GL_RGBA;
-//	int format=GL_RGBA;
-//int filltype=0;
-tex->tw = pow2ize (tex->w);
-tex->th = pow2ize (tex->h);//calculate smallest texture size that can accomodate us (must be multiples of 2)
-//	tex->tw=tex->w;tex->th=tex->h;//feeling lucky?
+	ubyte			*data = bmP->bm_texBuf;
+	GLubyte		*bufP = gameData.render.ogl.texBuf;
+	ogl_texture	tex;
+	int			bLocalTexture;
+
+if (texP) {
+	bLocalTexture = 0;
+	//calculate smallest texture size that can accomodate us (must be multiples of 2)
+#if TEXTURE_COMPRESSION
+	if (bmP->bm_compressed) {
+		texP->w = bmP->bm_props.w;
+		texP->h = bmP->bm_props.h;
+		}
+#endif
+	texP->tw = pow2ize (texP->w);
+	texP->th = pow2ize (texP->h);
+	}
+else {
+	bLocalTexture = 1;
+	texP = &tex;
+	tex.tw = pow2ize (tex.w = bmP->bm_props.w);
+	tex.th = pow2ize (tex.h = bmP->bm_props.h);
+	tex.lw = 4 * tex.w;
+	tex.format = GL_RGBA;
+	tex.internalformat = 4;
+	tex.handle = 0;
+	}
 
 if (gr_badtexture > 0) 
 	return 1;
 
-#ifndef __macosx__
-// always fails on OS X, but textures work fine!
-//if (nTransp >= 0)
-if (tex_format_verify (tex))
-	return 1;
+#if TEXTURE_COMPRESSION
+#	ifndef __macosx__
+if (!(bmP->bm_compressed || superTransp || BM_PARENT (bmP))) {
+	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
+		 (texP->format == GL_RGBA) && (texP->tw >= 64) && (texP->th >= texP->tw))
+		texP->internalformat = GL_COMPRESSED_RGBA;
+	if (TexFormatVerify (texP))
+		return 1;
+	}
+#	endif
 #endif
 
 //calculate u/v values that would make the resulting texture correctly sized
-tex->u = (float) ((double) tex->w / (double) tex->tw);
-tex->v = (float) ((double) tex->h / (double) tex->th);
+texP->u = (float) ((double) texP->w / (double) texP->tw);
+texP->v = (float) ((double) texP->h / (double) texP->th);
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (tex->handle < 0) 
-	{
-#if 0
-	if (ogl_bindteximage (tex))
-		return 1;
-#	endif
-	}
-else
+if (texP->handle >= 0) 
 #endif
 	{
-	if (data)
-		if (nTransp >= 0)
-			OglFillTexBuf (bmP, gameData.render.ogl.texBuf, tex->lw, tex->w, tex->h, dxo, dyo, tex->tw, tex->th, 
-								tex->format, nTransp, superTransp);
-		else {
-#if 0
-			memcpy (bufP = gameData.render.ogl.texBuf, data, tex->w * tex->h * 4);
+#if TEXTURE_COMPRESSION
+	if (data && !bmP->bm_compressed)
 #else
-			if (!dxo && !dyo && (tex->w == tex->tw) && (tex->h == tex->th))
-				bufP = data;
-			else {
-				int h, w, tw;
-				
-				h = tex->lw / tex->w;
-				w = (tex->w - dxo) * h;
-				data += tex->lw * dyo + h * dxo;
-				bufP = gameData.render.ogl.texBuf;
-				tw = tex->tw * h;
-				h = tw - w;
-				for (; dyo < tex->h; dyo++, data += tex->lw) {
-					memcpy (bufP, data, w);
-					bufP += w;
-					memset (bufP, 0, h);
-					bufP += h;
-					}
-				memset (bufP, 0, tex->th * tw - (bufP - gameData.render.ogl.texBuf));
-				bufP = gameData.render.ogl.texBuf;
-				}
+	if (data)
 #endif
-			}
+		if (nTransp >= 0)
+			OglFillTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
+								texP->format, nTransp, superTransp);
+		else
+			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
 	// Generate OpenGL texture IDs.
-	glGenTextures (1, &tex->handle);
+	glGenTextures (1, &texP->handle);
 	//set priority
-	glPrioritizeTextures (1, &tex->handle, &tex->prio);
+	glPrioritizeTextures (1, &texP->handle, &texP->prio);
 	// Give our data to OpenGL.
-	OGL_BINDTEX (tex->handle);
+	OGL_BINDTEX (texP->handle);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	if (tex->wantmip) {
+	if (texP->wantmip) {
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
 		}
@@ -1245,19 +1359,34 @@ else
 		}
 //	bMipMap=0;//mipmaps aren't used in GL_NEAREST anyway, and making the mipmaps is pretty slow
 //however, if texturing mode becomes an ingame option, they would need to be made regardless, so it could switch to them later.  OTOH, texturing mode could just be made a command line arg.
-	if (tex->wantmip && gameStates.ogl.bNeedMipMaps)
-		gluBuild2DMipmaps (
-				GL_TEXTURE_2D, tex->internalformat, 
-				tex->tw, tex->th, tex->format, 
+#if TEXTURE_COMPRESSION
+	if (bmP->bm_compressed) {
+		glCompressedTexImage2D (
+			GL_TEXTURE_2D, 0, bmP->bm_format,
+			texP->tw, texP->th, 0, bmP->bm_bufSize, bmP->bm_texBuf);
+		}
+	else 
+#endif
+		{
+		if (texP->wantmip && gameStates.ogl.bNeedMipMaps)
+			gluBuild2DMipmaps (
+				GL_TEXTURE_2D, texP->internalformat, 
+				texP->tw, texP->th, texP->format, 
 				GL_UNSIGNED_BYTE, 
 				bufP);
-	else
-		glTexImage2D (
-			GL_TEXTURE_2D, 0, tex->internalformat,
-			tex->tw, tex->th, 0, tex->format, // RGBA textures.
-			GL_UNSIGNED_BYTE, // imageData is a GLubyte pointer.
-			bufP);
-	TexSetSize (tex);
+		else
+			glTexImage2D (
+				GL_TEXTURE_2D, 0, texP->internalformat,
+				texP->tw, texP->th, 0, texP->format, // RGBA textures.
+				GL_UNSIGNED_BYTE, // imageData is a GLubyte pointer.
+				bufP);
+#if TEXTURE_COMPRESSION
+		OglCompressTexture (bmP, texP);
+#endif
+		TexSetSize (texP);
+		}
+	if (bLocalTexture)
+		glDeleteTextures (1, &texP->handle);
 	}
 r_texcount++; 
 return 0;
@@ -1790,6 +1919,18 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 #	endif
 #endif
 
+#if TEXTURE_COMPRESSION
+gameStates.ogl.bHaveTexCompression = 1;
+#	ifndef GL_VERSION_20
+#		ifdef _WIN32
+	glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC) wglGetProcAddress ("glGetCompressedTexImage");
+	glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) wglGetProcAddress ("glCompressedTexImage2D");
+	gameStates.ogl.bHaveTexCompression = glGetCompressedTexImage && glCompressedTexImage2D;
+#		endif
+#	endif
+#else
+gameStates.ogl.bHaveTexCompression = 0;
+#endif
 //This function initializes the multitexturing stuff.  Pixel Shader stuff should be put here eventually.
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20

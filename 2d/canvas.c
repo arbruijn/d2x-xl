@@ -213,7 +213,7 @@ if (dFade && grdCurCanv->cv_color.rgb) {
 	grdCurCanv->cv_color.color.red = (ubyte) (grdCurCanv->cv_color.color.red * dFade);
 	grdCurCanv->cv_color.color.green = (ubyte) (grdCurCanv->cv_color.color.green * dFade);
 	grdCurCanv->cv_color.color.blue = (ubyte) (grdCurCanv->cv_color.color.blue * dFade);
-	grdCurCanv->cv_color.color.alpha = (ubyte) ((float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS * 255.0f);
+	//grdCurCanv->cv_color.color.alpha = (ubyte) ((float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS * 255.0f);
 	}
 }
 

@@ -415,83 +415,86 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 	fix	xCloakFadeinDuration = F1_0;
 	fix	xCloakFadeoutDuration = F1_0;
 
-
+if (xCloakStartTime != 0x7fffffff)
 	xTotalCloakedTime = xCloakEndTime - xCloakStartTime;
-	switch (objP->nType) {
-		case OBJ_PLAYER:
-			xCloakFadeinDuration = CLOAK_FADEIN_DURATION_PLAYER;
-			xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_PLAYER;
-			break;
-		case OBJ_ROBOT:
-			xCloakFadeinDuration = CLOAK_FADEIN_DURATION_ROBOT;
-			xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_ROBOT;
-			break;
-		default:
-			Int3 ();		//	Contact Mike: Unexpected tObject nType in DrawCloakedObject.
+else 
+	xTotalCloakedTime = gameData.time.xGame;
+switch (objP->nType) {
+	case OBJ_PLAYER:
+		xCloakFadeinDuration = CLOAK_FADEIN_DURATION_PLAYER;
+		xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_PLAYER;
+		break;
+	case OBJ_ROBOT:
+		xCloakFadeinDuration = CLOAK_FADEIN_DURATION_ROBOT;
+		xCloakFadeoutDuration = CLOAK_FADEOUT_DURATION_ROBOT;
+		break;
+	default:
+		Int3 ();		//	Contact Mike: Unexpected tObject nType in DrawCloakedObject.
 	}
 
-	xCloakDeltaTime = gameData.time.xGame - xCloakStartTime;
-	if (xCloakDeltaTime < xCloakFadeinDuration / 2) {
-
-		xLightScale = FixDiv (xCloakFadeinDuration / 2 - xCloakDeltaTime, xCloakFadeinDuration / 2);
-		bFading = 1;
+xCloakDeltaTime = gameData.time.xGame - ((xCloakStartTime == 0x7fffffff) ? 0 : xCloakStartTime);
+if (xCloakDeltaTime < xCloakFadeinDuration / 2) {
+	xLightScale = FixDiv (xCloakFadeinDuration / 2 - xCloakDeltaTime, xCloakFadeinDuration / 2);
+	bFading = 1;
 	}
-	else if (xCloakDeltaTime < xCloakFadeinDuration) {
-		nCloakValue = f2i (FixDiv (xCloakDeltaTime - xCloakFadeinDuration / 2, xCloakFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
-	} else if (gameData.time.xGame < xCloakEndTime-xCloakFadeoutDuration) {
-		static int nCloakDelta = 0, nCloakDir = 1;
-		static fix xCloakTimer = 0;
+else if (xCloakDeltaTime < xCloakFadeinDuration) {
+	nCloakValue = f2i (FixDiv (xCloakDeltaTime - xCloakFadeinDuration / 2, xCloakFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
+	} 
+else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - xCloakFadeoutDuration)) {
+	static int nCloakDelta = 0, nCloakDir = 1;
+	static fix xCloakTimer = 0;
 
-		//note, if more than one cloaked tObject is visible at once, the
-		//pulse rate will change!
-		xCloakTimer -= gameData.time.xFrame;
-		while (xCloakTimer < 0) {
-			xCloakTimer += xCloakFadeoutDuration / 12;
-			nCloakDelta += nCloakDir;
-			if (nCloakDelta == 0 || nCloakDelta == 4)
-				nCloakDir = -nCloakDir;
+	//note, if more than one cloaked tObject is visible at once, the
+	//pulse rate will change!
+	xCloakTimer -= gameData.time.xFrame;
+	while (xCloakTimer < 0) {
+		xCloakTimer += xCloakFadeoutDuration / 12;
+		nCloakDelta += nCloakDir;
+		if (nCloakDelta == 0 || nCloakDelta == 4)
+			nCloakDir = -nCloakDir;
 		}
-		nCloakValue = CLOAKED_FADE_LEVEL - nCloakDelta;
-	} else if (gameData.time.xGame < xCloakEndTime - xCloakFadeoutDuration / 2) {
-		nCloakValue = f2i (FixDiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
-	} else {
-		xLightScale = FixDiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
-		bFading = 1;
+	nCloakValue = CLOAKED_FADE_LEVEL - nCloakDelta;
+	} 
+else if (gameData.time.xGame < xCloakEndTime - xCloakFadeoutDuration / 2) {
+	nCloakValue = f2i (FixDiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
+	} 
+else {
+	xLightScale = FixDiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
+	bFading = 1;
 	}
+if (bFading) {
+	fix xNewLight, xSaveGlow;
+	tBitmapIndex * nAltTextures = NULL;
 
-	if (bFading) {
-		fix xNewLight, xSaveGlow;
-		tBitmapIndex * nAltTextures = NULL;
-
-		if (objP->rType.polyObjInfo.nAltTextures > 0)
-			nAltTextures = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
-		xNewLight = FixMul (light, xLightScale);
-		xSaveGlow = glow [0];
-		glow [0] = FixMul (glow [0], xLightScale);
-		DrawPolygonModel (objP, &objP->position.vPos, 
-				   &objP->position.mOrient, 
-				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
-				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
-				   xNewLight, 
-				   glow, 
-				   nAltTextures, 
-					NULL);
+	if (objP->rType.polyObjInfo.nAltTextures > 0)
+		nAltTextures = MultiPlayerTextures [objP->rType.polyObjInfo.nAltTextures-1];
+	xNewLight = FixMul (light, xLightScale);
+	xSaveGlow = glow [0];
+	glow [0] = FixMul (glow [0], xLightScale);
+	DrawPolygonModel (objP, &objP->position.vPos, 
+							&objP->position.mOrient, 
+							(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+							objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
+							xNewLight, 
+							glow, 
+							nAltTextures, 
+							NULL);
 		glow [0] = xSaveGlow;
 	}
-	else {
-		gameStates.render.grAlpha = (float) nCloakValue;
-		GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
-		G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-		DrawPolygonModel (objP, &objP->position.vPos, 
-				   &objP->position.mOrient, 
-				   (vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
-				   objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
-				   light, 
-				   glow, 
-				   NULL, 
-					NULL);
-		G3SetSpecialRender (NULL, NULL, NULL);
-		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+else {
+	gameStates.render.grAlpha = (float) nCloakValue;
+	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
+	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
+	DrawPolygonModel (objP, &objP->position.vPos, 
+						   &objP->position.mOrient, 
+							(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+							objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
+							light, 
+							glow, 
+							NULL, 
+							NULL);
+	G3SetSpecialRender (NULL, NULL, NULL);
+	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	}
 }
 
@@ -631,7 +634,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 }
 else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime+CLOAK_TIME_MAX);
+		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime + CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
 		if (ROBOTINFO (objP->id).bossFlag) {
 			int i = FindBoss (OBJ_IDX (objP));
@@ -644,7 +647,7 @@ else {
 	else {
 		tBitmapIndex *bmiAltTex = NULL;
 		if (objP->rType.polyObjInfo.nAltTextures > 0)
-			bmiAltTex = multi_player_textures [objP->rType.polyObjInfo.nAltTextures-1];
+			bmiAltTex = MultiPlayerTextures [objP->rType.polyObjInfo.nAltTextures-1];
 
 		//	Snipers get bright when they fire.
 		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0/8) {

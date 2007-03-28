@@ -2384,6 +2384,7 @@ if (nDebugSlowdown) {
 		}
 #endif
 	}
+CheckInventory ();
 //LogErr ("OmegaChargeFrame \n");
 OmegaChargeFrame ();
 //LogErr ("SlideTextures \n");

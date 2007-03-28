@@ -2526,7 +2526,7 @@ int _CDECL_ ExecMessageBox (char *title, char *filename, int nChoices, ...)
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MESSAGEBOX_TEXT_SIZE];
-	tMenuItem	*nmMsgItems = NULL;
+	tMenuItem		nmMsgItems [10];
 
 
 if (!nChoices)
@@ -2534,10 +2534,7 @@ if (!nChoices)
 if (bTiny = (nChoices < 0))
 	nChoices = -nChoices;
 va_start (args, nChoices);
-nmMsgItems = (tMenuItem *) d_malloc (h = nChoices * sizeof (tMenuItem));
-if (!nmMsgItems)
-	return -1;
-memset (nmMsgItems, 0, h);
+memset (nmMsgItems, 0, h = nChoices * sizeof (tMenuItem));
 for (i = l = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
 	h = (int) strlen (s);
@@ -2563,7 +2560,6 @@ if (!bTiny) {
 i = bTiny ? 
 	 ExecMenutiny (NULL, title, nChoices, nmMsgItems, NULL) :
 	 ExecMenu (title, nm_text, nChoices, nmMsgItems, NULL, filename);
-d_free (nmMsgItems);
 return i;
 }
 

@@ -162,17 +162,21 @@ typedef struct _grs_altBmData {
 typedef struct _grsBitmap {
 	grs_bmProps		bm_props;
 	ubyte				*bm_palette;
-	unsigned char	*bm_texBuf;		// ptr to texture data...
+	ubyte				*bm_texBuf;		// ptr to texture data...
 											//   Linear = *parent+(rowsize*y+x)
 											//   ModeX = *parent+(rowsize*y+x/4)
 											//   SVGA = *parent+(rowsize*y+x)
-	unsigned short	bm_handle;		//for application.  initialized to 0
+	ushort			bm_handle;		//for application.  initialized to 0
 	ubyte				bm_avgColor;	//  Average color of all pixels in texture map.
 	tRgbColorb		bm_avgRGB;
 	ubyte				bm_wallAnim :1;
 	ubyte				bm_fromPog :1;
 	ubyte				bmType :3;
-
+#if TEXTURE_COMPRESSION
+	ubyte				bm_compressed :1;
+	int				bm_format;
+	int				bm_bufSize;
+#endif
 	int				bm_transparentFrames [4];
 	int				bm_supertranspFrames [4];
 

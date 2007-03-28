@@ -23,6 +23,8 @@
 
 #define LIGHTMAPS 1
 
+#define TEXTURE_COMPRESSION	0
+
 #ifdef _DEBUG
 #	define DBG_SHADERS	1
 #else

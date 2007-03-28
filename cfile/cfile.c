@@ -377,25 +377,29 @@ int CFError(CFILE *cfile)
 
 int CFExist (char *filename, char *folder, int bUseD1Hog) 
 {
-	int length;
-	FILE *fp;
+	int	length, bNoHOG;
+	FILE	*fp;
 
-	if (filename[0] != '\x01')
-		fp = CFGetFileHandle (filename, folder, "rb");		// Check for non-hog file first...
-	else {
-		fp = NULL;		//don't look in dir, only in hogfile
-		filename++;
+if (*filename != '\x01') {
+	bNoHOG = (*filename == '\x02');
+	fp = CFGetFileHandle (filename + bNoHOG, folder, "rb"); // Check for non-hog file first...
 	}
-	if (fp) 	{
-		fclose(fp);
-		return 1;
+else {
+	fp = NULL;		//don't look in dir, only in hogfile
+	filename++;
 	}
-	fp = CFFindLibFile (filename, &length, bUseD1Hog);
-	if (fp) 	{
-		fclose(fp);
-		return 2;		// file found in hog
+if (fp) {
+	fclose(fp);
+	return 1;
 	}
-	return 0;		// Couldn't find it.
+if (bNoHOG)
+	return 0;
+fp = CFFindLibFile (filename, &length, bUseD1Hog);
+if (fp) {
+	fclose(fp);
+	return 2;		// file found in hog
+	}
+return 0;		// Couldn't find it.
 }
 
 // ----------------------------------------------------------------------------
@@ -965,7 +969,7 @@ return pData;
 
 void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
-	int	i, j, l = (int) strlen (szFullPath) - 1;
+	int	h, i, j, l = (int) strlen (szFullPath) - 1;
 
 i = l;
 #ifdef _WIN32
@@ -984,12 +988,12 @@ if (szFolder) {
 	szFolder [i] = '\0';
 	}
 if (szFile) {
-	if (j > i)
-		strncpy (szFile, szFullPath + i, j - i);
-	szFile [j - i] = '\0';
+	if (!j || (j > i))
+		strncpy (szFile, szFullPath + i, h = (j ? j : l + 1) - i);
+	szFile [h] = '\0';
 	}
 if (szExt) {
-	if (j < l)
+	if (j && (j < l))
 		strncpy (szExt, szFullPath + j, l - j);
 	szExt [l - j] = '\0';
 	}

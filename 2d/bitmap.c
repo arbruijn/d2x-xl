@@ -158,7 +158,7 @@ bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
 bmP->glTexture = bmParent->glTexture;
 bmP->bm_palette = bmParent->bm_palette;
 BM_PARENT (bmP) = bmParent;
-	bmP->bm_texBuf = bmParent->bm_texBuf+(unsigned int) ((y*bmParent->bm_props.rowsize)+x);
+bmP->bm_texBuf = bmParent->bm_texBuf + (unsigned int) ((y * bmParent->bm_props.rowsize) + x);
 }
 
 //------------------------------------------------------------------------------
