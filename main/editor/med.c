@@ -422,9 +422,9 @@ int	GotoGameCommon(int mode) {
 
 //@@	init_player_stats();
 //@@
-//@@	gameData.multi.playerInit.position.vPos = Player->position.vPos;
-//@@	gameData.multi.playerInit.position.mOrient = Player->position.mOrient;
-//@@	gameData.multi.playerInit.nSegment = Player->nSegment;	
+//@@	gameData.multiplayer.playerInit.position.vPos = Player->position.vPos;
+//@@	gameData.multiplayer.playerInit.position.mOrient = Player->position.mOrient;
+//@@	gameData.multiplayer.playerInit.nSegment = Player->nSegment;	
 	
 // -- must always save gamesave.sav because the restore-gameData.objs.objects code relies on it
 // -- that code could be made smarter and use the original file, if appropriate.

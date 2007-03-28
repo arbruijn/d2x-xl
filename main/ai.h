@@ -40,8 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BOSS_ALIEN1 25
 #define BOSS_ALIEN2 26
 
-extern tAILocal aiLocalInfo [MAX_OBJECTS];
-
 fix MoveTowardsSegmentCenter (tObject *objP);
 fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist);
 int GateInRobot (short nObject, ubyte nType, short nSegment);

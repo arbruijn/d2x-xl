@@ -135,14 +135,9 @@ return AIDoorIsOpenable (NULL, gameData.segs.segments + curseg, nSide);
 void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs)
 {
 	int		head, tail;
-	sbyte		bVisited [MAX_SEGMENTS];
+	sbyte		bVisited [MAX_SEGMENTS_D2X];
 
-#if 1
 	memset (bVisited, 0, MAX_SEGMENTS * sizeof (sbyte));
-#else
-	for (i=0; i<MAX_SEGMENTS; i++)
-		bVisited [i] = 0;
-#endif
 	head = 0;
 	tail = 0;
 
@@ -544,7 +539,7 @@ return -1;
 int ExistsInMine (int start_seg, int objtype, int objid, int special)
 {
 	int	nSegIdx, nSegment;
-	short	bfs_list [MAX_SEGMENTS];
+	short	bfs_list [MAX_SEGMENTS_D2X];
 	int	length;
 	int	nObject;
 
@@ -973,9 +968,9 @@ void DoEscortFrame (tObject *objP, fix xDistToPlayer, int player_visibility)
 
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
-		if (f2i (gameData.multi.players [gameData.multi.nLocalPlayer].energy) < 40)
-			if ((f2i (gameData.multi.players [gameData.multi.nLocalPlayer].energy)/2) & 2)
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
+		if (f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) < 40)
+			if ((f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)
 					BuddyMessage (TXT_HEADLIGHT_WARN);
 	}

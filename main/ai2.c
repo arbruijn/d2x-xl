@@ -73,6 +73,7 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #endif
 
 extern int nSegsVisited;
+extern ubyte bVisited [];
 
 void TeleportBoss (tObject *objP);
 int BossFitsInSeg (tObject *bossObjP, int nSegment);
@@ -324,8 +325,6 @@ while (tail != head) {
 			}
 		else if (head + QUEUE_SIZE == tail + QUEUE_SIZE - 1)
 			goto errorExit;	//	queue overflow.  Make it bigger!
-		if (nSegments > 406)
-			nSegments = nSegments;
 		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
 			continue;
 		if (nSegments >= MAX_BOSS_TELEPORT_SEGS - 1)
@@ -582,7 +581,7 @@ fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | 
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))) {
+// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))) {
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
 dot = VmVecDot (vVecToPlayer, &objP->position.mOrient.fVec);
@@ -816,18 +815,18 @@ void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collisi
 //#endif
 
 	//	If tPlayer is dead, stop firing.
-	if (gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nType == OBJ_GHOST)
+	if (gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nType == OBJ_GHOST)
 		return;
 
 	if (botInfoP->attackType == 1) {
 		if (ailp->nextPrimaryFire <= 0) {
-			if (!(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
+			if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
 				if (VmVecDistQuick (&gameData.objs.console->position.vPos, &robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2) {
 					CollidePlayerAndNastyRobot (playerobjP, robot, collision_point);
-					if (botInfoP->energyDrain && gameData.multi.players [gameData.multi.nLocalPlayer].energy) {
-						gameData.multi.players [gameData.multi.nLocalPlayer].energy -= botInfoP->energyDrain * F1_0;
-						if (gameData.multi.players [gameData.multi.nLocalPlayer].energy < 0)
-							gameData.multi.players [gameData.multi.nLocalPlayer].energy = 0;
+					if (botInfoP->energyDrain && gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) {
+						gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= botInfoP->energyDrain * F1_0;
+						if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy < 0)
+							gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = 0;
 						// -- unused, use clawSound in bitmaps.tbl -- DigiLinkSoundToPos (SOUND_ROBOT_SUCKED_PLAYER, playerobjP->nSegment, 0, collision_point, 0, F1_0);
 					}
 				}
@@ -870,7 +869,7 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 	tWeaponInfo	*wptr;
 	tRobotInfo	*botInfoP;
 
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
 		return 0;
 
 	player_movement_dir = gameData.objs.console->mType.physInfo.velocity;
@@ -969,7 +968,7 @@ if (ROBOTINFO (objP->id).bossFlag) {
 		return;
 	}
 //	If tPlayer is cloaked, maybe don't fire based on how long cloaked and randomness.
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
 	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX/4) &&
 		 (d_rand () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX)/2)) {
@@ -1426,7 +1425,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 	//	Now, if in robot's field of view, lock onto tPlayer
 	fix	dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
 	if ((dot >= 7 * F1_0 / 8) || 
-		 (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
+		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
 		tAIStatic	*aip = &objP->cType.aiInfo;
 		tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (objP);
 
@@ -1490,7 +1489,7 @@ void DoAiRobotHit (tObject *objP, int nType)
 #ifdef _DEBUG
 int	bDoAIFlag=1;
 int	Cvv_test=0;
-int	Cvv_lastTime [MAX_OBJECTS];
+int	Cvv_lastTime [MAX_OBJECTS_D2X];
 int	Gun_point_hack=0;
 #endif
 
@@ -1515,7 +1514,7 @@ if (*flag) {
 		gameData.ai.nPlayerVisibility = 0;
 	}
 else {
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 		fix			deltaTime, dist;
 		int			cloak_index = (OBJ_IDX (objP)) % MAX_AI_CLOAK_INFO;
 
@@ -1752,11 +1751,11 @@ if ((objP == NULL) || (ROBOTINFO (objP->id).companion == 1)) {
 			
 	if (wallP->keys != KEY_NONE) {
 		if (wallP->keys == KEY_BLUE)
-			return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY);
+			return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY);
 		else if (wallP->keys == KEY_GOLD)
-			return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY);
+			return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY);
 		else if (wallP->keys == KEY_RED)
-			return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY);
+			return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY);
 		}
 
 	if (wallP->nType == WALL_CLOSED)
@@ -1825,7 +1824,7 @@ else if ((objP->id == ROBOT_BRAIN) || (objP->cType.aiInfo.behavior == AIB_RUN_FR
 		if ((wallP->nType == WALL_DOOR) && (wallP->keys == KEY_NONE) && !(wallP->flags & WALL_DOOR_LOCKED))
 			return 1;
 		else if (wallP->keys != KEY_NONE) {	//	Allow bots to open doors to which tPlayer has keys.
-			if (wallP->keys & gameData.multi.players [gameData.multi.nLocalPlayer].flags)
+			if (wallP->keys & gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags)
 				return 1;
 			}
 		}
@@ -1967,7 +1966,7 @@ if (nObject < 0) {
 	} 
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.objs.objects [nObject].lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
-multiData.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
+gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
 objP = gameData.objs.objects + nObject;
 //Set polygon-tObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
@@ -1984,8 +1983,8 @@ ObjectCreateExplosion (nSegment, &vObjPos, i2f (10), VCLIP_MORPHING_ROBOT);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, &vObjPos, 0 , F1_0);
 MorphStart (objP);
 gameData.boss [nBoss].nLastGateTime = gameData.time.xGame;
-gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsLevel++;
-gameData.multi.players [gameData.multi.nLocalPlayer].numRobotsTotal++;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel++;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsTotal++;
 return OBJ_IDX (objP);
 }
 
@@ -2147,7 +2146,7 @@ RelinkObject (nObject, nRandSeg);
 gameData.boss [i].nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at tPlayer
 objP->position.vPos = vNewPos;
-VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos, &vNewPos);
+VmVecSub (&vBossDir, &gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos, &vNewPos);
 VmVector2Matrix (&objP->position.mOrient, &vBossDir, NULL, NULL);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);

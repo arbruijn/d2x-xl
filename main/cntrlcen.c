@@ -320,7 +320,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
+			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -360,7 +360,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 
 if ((rStatP->nNextFireTime < 0) && 
 	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)
 		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.ai.vBelievedPlayerPos);
 	else
 		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.objs.console->position.vPos);
@@ -371,7 +371,7 @@ if ((rStatP->nNextFireTime < 0) &&
 		fix			xDistToPlayer;
 		fix			xDeltaFireTime;
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 			VmVecSub (&vecToGoal, &gameData.ai.vBelievedPlayerPos, &rStatP->vGunPos [nBestGun]);
 			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
 			} 

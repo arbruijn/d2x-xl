@@ -165,7 +165,7 @@ if (!bmP ||
 	if (bmP)
 		GrFreeBitmap (bmP);
 	cacheP->bitmap =
-	bmP = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 1);
+	bmP = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 4);
 	if (!bmP)
 		return NULL;
 	}
@@ -240,15 +240,23 @@ typedef struct frac {
 	int	c, d;
 } frac;
 
-inline tRGBA *C (ubyte *palP, ubyte *b, int i, int bTGA, int *pbST)
+inline tRGBA *C (ubyte *palP, ubyte *b, int i, int bpp, int *pbST)
 {
 	static	tRGBA	c;
 	int bST;
 
-if (bTGA) {
+if (bpp == 4) {
 	c = ((tRGBA *) (b)) [i];
 	if (*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128)))
 		c.a = 0;
+	return &c;
+	}
+if (bpp == 3) {
+	*((tRGB *) &c) = ((tRGB *) (b)) [i];
+	if (*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128)))
+		c.a = 0;
+	else
+		c.a = 255;
 	return &c;
 	}
 i = b [i];
@@ -296,7 +304,7 @@ void MergeTextures (
 {
 	tRGBA		*c;
 	int		i, x, y, bw, bh, tw, th, dw, dh;
-	int		bTopTGA, bBtmTGA, bST = 0;
+	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
 	tRGBA		*dest_data = (tRGBA *) dest_bmp->bm_texBuf;
 
@@ -354,8 +362,8 @@ if (w > bmTop->bm_props.w)
 	w = h = bmBot->bm_props.w;
 scale.c = scale.d = 1;
 #endif
-bTopTGA = (bmTop->bm_props.flags & BM_FLAG_TGA) != 0;
-bBtmTGA = (bmBot->bm_props.flags & BM_FLAG_TGA) != 0;
+bTopBPP = bmTop->bm_bpp;
+bBtmBPP = bmBot->bm_bpp;
 #ifdef _DEBUG
 memset (dest_data, 253, dest_bmp->bm_props.w * dest_bmp->bm_props.h * 4);
 #endif
@@ -364,9 +372,9 @@ switch(nType)	{
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * TOPSCALE (y) + TOPSCALE (x), bTopTGA, &bST);
+				c = C (top_pal, top_data, tw * TOPSCALE (y) + TOPSCALE (x), bTopBPP, &bST);
 				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -374,9 +382,9 @@ switch(nType)	{
 		// 
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopTGA, &bST);
+				c = C (top_pal, top_data, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopBPP, &bST);
 				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -384,9 +392,9 @@ switch(nType)	{
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopTGA, &bST);
+				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopBPP, &bST);
 				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
 				dest_data [i] = *c;
 			}
 		break;
@@ -394,9 +402,9 @@ switch(nType)	{
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopTGA, &bST);
+				c = C (top_pal, top_data, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopBPP, &bST);
 				if (!(bST || c->a))
-					c = C (btmPalette, bottom_data, BTMIDX, bBtmTGA, &bST);
+					c = C (btmPalette, bottom_data, BTMIDX, bBtmBPP, &bST);
 				dest_data [i] = *c;
 			}
 		break;

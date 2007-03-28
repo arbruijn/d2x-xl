@@ -20,9 +20,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MIN_LIGHT_DIST  (F1_0*4)
 
 extern fix Beam_brightness;
+#if 0
 extern fix dynamicLight[MAX_VERTICES];
 extern tRgbColorf dynamicColor[MAX_VERTICES];
 extern char bGotDynColor [MAX_VERTICES];
+#endif
 
 extern void SetDynamicLight(void);
 

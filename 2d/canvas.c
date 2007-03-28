@@ -38,7 +38,7 @@ grs_canvas *GrCreateCanvas(int w, int h)
 	grs_canvas *newCanv;
 	
 	newCanv = (grs_canvas *)d_malloc( sizeof(grs_canvas) );
-	GrInitBitmapAlloc (&newCanv->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 0);
+	GrInitBitmapAlloc (&newCanv->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 
 	newCanv->cv_color.index = 0;
 	newCanv->cv_color.rgb = 0;
@@ -84,7 +84,7 @@ wreal = w;
 #else
 wreal = (pixtype == BM_MODEX) ? w / 4 : w;
 #endif
-GrInitBitmap (&canv->cv_bitmap, pixtype, 0, 0, w, h, wreal, pixdata, 0);
+GrInitBitmap (&canv->cv_bitmap, pixtype, 0, 0, w, h, wreal, pixdata, 1);
 }
 
 //	-----------------------------------------------------------------------------

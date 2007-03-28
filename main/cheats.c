@@ -65,8 +65,8 @@ LOCALPLAYER.shields = i2f (1);
 MultiSendShields ();
 LOCALPLAYER.energy = i2f (1);
 if (gameData.app.nGameMode & GM_MULTI) {
-	multiData.msg.nReceiver = 100;		// Send to everyone...
-	sprintf (multiData.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
+	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
+	sprintf (gameData.multigame.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
 	}
 HUDInitMessage (TXT_TAKE_THAT);
 }
@@ -504,7 +504,7 @@ bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + i2f (1000);
-SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
+SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 }
 
 //------------------------------------------------------------------------------

@@ -470,7 +470,7 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 
 
 	/* Load the dirty rectangle for user input */
-	newinfo->InputBackground = GrCreateBitmap(w, newinfo->ConsoleSurface->cv_font->ft_h, 0);
+	newinfo->InputBackground = GrCreateBitmap(w, newinfo->ConsoleSurface->cv_font->ft_h, 1);
 #if 0
 	SDL_FillRect(newinfo->InputBackground, NULL, SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
@@ -817,7 +817,7 @@ int CON_Background(ConsoleInformation *console, grsBitmap *image)
 	/* Load a new background */
 	if (console->BackgroundImage)
 		GrFreeBitmap(console->BackgroundImage);
-	console->BackgroundImage = GrCreateBitmap(console->ConsoleSurface->cv_w, console->ConsoleSurface->cv_h, 0);
+	console->BackgroundImage = GrCreateBitmap(console->ConsoleSurface->cv_w, console->ConsoleSurface->cv_h, 1);
 	GrBitmapScaleTo(image, console->BackgroundImage);
 
 #if 0
@@ -883,11 +883,11 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 
 	/* resize console surface */
 	GrFreeBitmapData(&console->ConsoleSurface->cv_bitmap);
-	GrInitBitmapAlloc(&console->ConsoleSurface->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 0);
+	GrInitBitmapAlloc(&console->ConsoleSurface->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 
 	/* Load the dirty rectangle for user input */
 	GrFreeBitmap(console->InputBackground);
-	console->InputBackground = GrCreateBitmap(w, console->ConsoleSurface->cv_font->ft_h, 0);
+	console->InputBackground = GrCreateBitmap(w, console->ConsoleSurface->cv_font->ft_h, 1);
 
 	/* Now reset some stuff dependent on the previous size */
 	console->ConsoleScrollBack = 0;

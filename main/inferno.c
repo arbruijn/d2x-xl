@@ -212,9 +212,9 @@ void D2SetCaption (void)
 	char	szCaption [200];
 
 strcpy (szCaption, DESCENT_VERSION);
-if (*gameData.multi.players [gameData.multi.nLocalPlayer].callsign) {
+if (*gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign) {
 	strcat (szCaption, " [");
-	strcat (szCaption, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+	strcat (szCaption, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 	strcat (szCaption, "]");
 	strupr (szCaption);
 	}
@@ -474,7 +474,7 @@ int bDisableHires=0;
 
 void DoSelectPlayer (void)
 {
-	gameData.multi.players[gameData.multi.nLocalPlayer].callsign[0] = '\0';
+	gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign[0] = '\0';
 
 if (!gameData.demo.bAuto) 	{
 	KeyFlush ();
@@ -717,62 +717,62 @@ void EvalAutoNetGameArgs (void)
 	static char *pszTypes [] = {"anarchy", "coop", "ctf", "ctf+", "hoard", "entropy", NULL};
 	static char	*pszConnect [] = {"ipx", "udp", "", "multicast", NULL};
 
-memset (&gameData.multi.autoNG, 0, sizeof (gameData.multi.autoNG));
+memset (&gameData.multiplayer.autoNG, 0, sizeof (gameData.multiplayer.autoNG));
 if ((t = FindArg ("-ng_player")) && (p = Args [t+1])) {
-	strncpy (gameData.multi.autoNG.szPlayer, Args [t+1], 8);
-	gameData.multi.autoNG.szPlayer [8] = '\0';
+	strncpy (gameData.multiplayer.autoNG.szPlayer, Args [t+1], 8);
+	gameData.multiplayer.autoNG.szPlayer [8] = '\0';
 	}
 if ((t = FindArg ("-ng_file")) && (p = Args [t+1])) {
-	strncpy (gameData.multi.autoNG.szFile, Args [t+1], FILENAME_LEN - 1);
-	gameData.multi.autoNG.szFile [FILENAME_LEN - 1] = '\0';
+	strncpy (gameData.multiplayer.autoNG.szFile, Args [t+1], FILENAME_LEN - 1);
+	gameData.multiplayer.autoNG.szFile [FILENAME_LEN - 1] = '\0';
 	}
 if ((t = FindArg ("-ng_mission")) && (p = Args [t+1])) {
-	strncpy (gameData.multi.autoNG.szMission, Args [t+1], 12);
-	gameData.multi.autoNG.szMission [12] = '\0';
+	strncpy (gameData.multiplayer.autoNG.szMission, Args [t+1], 12);
+	gameData.multiplayer.autoNG.szMission [12] = '\0';
 	}
 if (t = FindArg ("-ngLevel"))
-	gameData.multi.autoNG.nLevel = NumArg (t, 1);
+	gameData.multiplayer.autoNG.nLevel = NumArg (t, 1);
 else
-	gameData.multi.autoNG.nLevel = 1;
+	gameData.multiplayer.autoNG.nLevel = 1;
 if ((t = FindArg ("-ng_name")) && (p = Args [t+1])) {
-	strncpy (gameData.multi.autoNG.szName, Args [t+1], 80);
-	gameData.multi.autoNG.szPlayer [80] = '\0';
+	strncpy (gameData.multiplayer.autoNG.szName, Args [t+1], 80);
+	gameData.multiplayer.autoNG.szPlayer [80] = '\0';
 	}
 if ((t = FindArg ("-ng_ipaddr")) && (p = Args [t+1]))
-	bHaveIp = stoip (Args [t+1], gameData.multi.autoNG.ipAddr);
+	bHaveIp = stoip (Args [t+1], gameData.multiplayer.autoNG.ipAddr);
 if ((t = FindArg ("-ng_connect")) && (p = Args [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (*pszConnect [t] && !strcmp (p, pszConnect [t])) {
-			gameData.multi.autoNG.uConnect = t;
+			gameData.multiplayer.autoNG.uConnect = t;
 			break;
 			}
 	}
 if ((t = FindArg ("-ng_join")) && (p = Args [t+1])) {
 	strlwr (p);
-	gameData.multi.autoNG.bHost = !strcmp (p, "host");
+	gameData.multiplayer.autoNG.bHost = !strcmp (p, "host");
 	}
 if ((t = FindArg ("-ngType")) && (p = Args [t+1])) {
 	strlwr (p);
 	for (t = 0; pszTypes [t]; t++)
 		if (!strcmp (p, pszTypes [t])) {
-			gameData.multi.autoNG.uType = t;
+			gameData.multiplayer.autoNG.uType = t;
 			break;
 			}
 	}
 if (t = FindArg ("-ng_team"))
-	gameData.multi.autoNG.bTeam = NumArg (t, 1);
-if (gameData.multi.autoNG.bHost)
-	gameData.multi.autoNG.bValid = 
-		*gameData.multi.autoNG.szPlayer &&
-		*gameData.multi.autoNG.szName &&
-		*gameData.multi.autoNG.szFile &&
-		*gameData.multi.autoNG.szMission;
+	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);
+if (gameData.multiplayer.autoNG.bHost)
+	gameData.multiplayer.autoNG.bValid = 
+		*gameData.multiplayer.autoNG.szPlayer &&
+		*gameData.multiplayer.autoNG.szName &&
+		*gameData.multiplayer.autoNG.szFile &&
+		*gameData.multiplayer.autoNG.szMission;
 else
-	gameData.multi.autoNG.bValid = 
-		*gameData.multi.autoNG.szPlayer &&
+	gameData.multiplayer.autoNG.bValid = 
+		*gameData.multiplayer.autoNG.szPlayer &&
 		bHaveIp;
-if (gameData.multi.autoNG.bValid)
+if (gameData.multiplayer.autoNG.bValid)
 	gameOptions [0].movies.nLevel = 0;
 }
 
@@ -835,7 +835,7 @@ if (t=FindArg ("-movie_quality"))
 	gameOptions [0].movies.nQuality = NumArg (t, 0);
 if (FindArg ("-lowresmovies"))
 	gameOptions [0].movies.bHires = 0;
-if (gameData.multi.autoNG.bValid)
+if (gameData.multiplayer.autoNG.bValid)
 	gameOptions [0].movies.nLevel = 0;
 }
 
@@ -1038,8 +1038,10 @@ if (t = FindArg ("-render_opt"))
 if (t = FindArg ("-gl_transform"))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
-if (t = FindArg ("-texture_cache"))
-	gameStates.app.bTextureCache = NumArg (t, 1);
+if (t = FindArg ("-cache_textures"))
+	gameStates.app.bCacheTextures = NumArg (t, 1);
+if ((t = FindArg ("-model_quality")) && *Args [t+1])
+	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if (t = FindArg ("-gl_texcompress"))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
@@ -1052,6 +1054,14 @@ void EvalAppArgs (void)
 {
 	int	t;
 
+if ((t = FindArg ("-max_segments")) && *Args [t+1]) {
+	t = NumArg (t, MAX_SEGMENTS_D2X);
+	if (t < MAX_SEGMENTS_D2)
+		t = MAX_SEGMENTS_D2;
+	else if (t > MAX_SEGMENTS_D2X)
+		t = MAX_SEGMENTS_D2X;
+	gameData.segs.nMaxSegments = t;
+	}
 if (t = FindArg ("-enable_shadows"))
 	gameStates.app.bEnableShadows = NumArg (t, 1);
 if (t = FindArg ("-enable_freecam"))
@@ -1119,6 +1129,8 @@ if (t = FindArg ("-autodemo")) {
 else
 	gameData.demo.bAuto = 0;
 gameStates.app.bMacData = FindArg ("-macdata");
+if (gameStates.app.bNostalgia)
+	gameData.segs.nMaxSegments = MAX_SEGMENTS_D2;
 }
 
 // ----------------------------------------------------------------------------
@@ -1826,6 +1838,7 @@ gameStates.render.nShadowPass = 0;
 gameStates.render.bShadowMaps = 0;
 gameStates.render.bHeadlightOn = 0;
 gameStates.render.bPaletteFadedOut = 0;
+gameStates.render.nModelQuality = 3;
 gameStates.render.cockpit.bShowPingStats = 0;
 gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
 gameStates.render.cockpit.nNextMode = -1;
@@ -2003,15 +2016,16 @@ void InitGameData (void)
 	int	i;
 
 memset (&gameData, 0, sizeof (gameData));
+gameData.segs.nMaxSegments = MAX_SEGMENTS_D2X;
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.reactor.states [i].nDeadObj = -1;
 gameData.bots.nCamBotId = -1;
 gameData.bots.nCamBotModel = -1;
 gameData.pig.ship.player = &gameData.pig.ship.only;
-gameData.multi.nPlayers = 1;
-gameData.multi.nLocalPlayer = 0;
-gameData.multi.nMaxPlayers = -1;
-gameData.multi.nPlayerPositions = -1;
+gameData.multiplayer.nPlayers = 1;
+gameData.multiplayer.nLocalPlayer = 0;
+gameData.multiplayer.nMaxPlayers = -1;
+gameData.multiplayer.nPlayerPositions = -1;
 gameData.missions.nCurrentLevel = 0;
 gameData.missions.nLastMission = -1;
 gameData.missions.nLastLevel = -1;
@@ -2062,11 +2076,13 @@ gameData.escort.nSpecialGoal = -1;
 gameData.escort.nGoalIndex = -1;
 gameData.escort.bMsgsSuppressed = 0;
 gameData.objs.nNextSignature = 1;
+gameData.objs.nMaxUsedObjects = MAX_OBJECTS - 20;
 memset (gameData.objs.guidedMissileSig, 0xff, sizeof (gameData.objs.guidedMissileSig));
 gameData.render.morph.xRate = MORPH_RATE;
 gameData.render.ogl.nSrcBlend = GL_SRC_ALPHA;
 gameData.render.ogl.nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
 memset (&gameData.render.lights.dynamic, 0xff, sizeof (gameData.render.lights.dynamic));
+gameData.render.lights.bInitDynColoring = 1;
 gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
 gameData.models.nSimpleModelThresholdScale = 5;
@@ -2098,6 +2114,332 @@ gameData.smoke.iUsedSmoke = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 InitEndLevelData ();
 SetDataVersion (-1);
+}
+
+// ----------------------------------------------------------------------------
+
+#define	GETMEM(_t,_p,_s,_f)	(_p) = (_t *) GetMem ((_s) * sizeof (*(_p)), _f)
+
+void *GetMem (size_t size, char filler)
+{
+	void	*p = d_malloc (size);
+
+if (p) {
+	memset (p, filler, size);
+	return p;
+	}
+Error (TXT_OUT_OF_MEMORY);
+exit (1);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocSegmentData (void)
+{
+GETMEM (vmsVector, gameData.segs.vertices, MAX_VERTICES, 0);
+GETMEM (fVector, gameData.segs.fVertices, MAX_VERTICES, 0);
+GETMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS, 0);
+GETMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS, 0);
+GETMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS, 0);
+GETMEM (g3sPoint, gameData.segs.points, MAX_VERTICES, 0);
+#if CALC_SEGRADS
+GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
+GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
+#endif
+GETMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS, 0);
+GETMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS, 0);
+GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
+GETMEM (ubyte, gameData.segs.bVertVis, MAX_SEGMENTS * VERTVIS_FLAGS, 0);
+GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * SEGVIS_FLAGS, 0);
+GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocObjectData (void)
+{
+GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
+GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
+GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, 0xff);
+GETMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS, 0);
+GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, 0xff);
+GETMEM (tObject, gameData.objs.init, MAX_OBJECTS, 0);
+GETMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS, 0);
+GETMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS, 0);
+GETMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
+GETMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS, 0);
+GETMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS, 0);
+GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
+GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
+GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocSmokeData (void)
+{
+GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, 0);
+GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocCameraData (void)
+{
+GETMEM (char, gameData.cameras.nSides, MAX_SEGMENTS * 6, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocRenderColorData (void)
+{
+	int	i;
+
+for (i = 0; i < 6; i++) {
+	GETMEM (tFaceColor, gameData.render.color.lights [i], MAX_SEGMENTS, 0);
+	GETMEM (tFaceColor, gameData.render.color.sides [i], MAX_SEGMENTS, 0);
+	}
+GETMEM (tFaceColor, gameData.render.color.segments, MAX_SEGMENTS, 0);
+GETMEM (tFaceColor, gameData.render.color.vertices, MAX_VERTICES, 0);
+GETMEM (float, gameData.render.color.vertBright, MAX_VERTICES, 0);
+GETMEM (tFaceColor, gameData.render.color.ambient, MAX_VERTICES, 0);	//static light values
+GETMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocRenderLightData (void)
+{
+GETMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+GETMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, 0);
+GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
+GETMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);
+GETMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS, 0);
+GETMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS, 0);
+GETMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES, 0);
+GETMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES, 0);
+GETMEM (char, gameData.render.lights.bGotDynColor, MAX_VERTICES, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocPhysicsData (void)
+{
+GETMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocShadowData (void)
+{
+GETMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocWeaponData (void)
+{
+GETMEM (tRgbColorf, gameData.weapons.color, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocMultiData (void)
+{
+GETMEM (tLeftoverPowerup, gameData.multiplayer.leftoverPowerups, MAX_OBJECTS, 0);
+GETMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS, 0);  // Remote tObject number for each local tObject
+GETMEM (short, gameData.multigame.localToRemote, MAX_OBJECTS, 0);
+GETMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS, 0);   // Who created each tObject in my universe, -1 = loaded at start
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocAIData (void)
+{
+GETMEM (tAILocal, gameData.ai.localInfo, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocDemoData (void)
+{
+GETMEM (sbyte, gameData.demo.bWasRecorded,  MAX_OBJECTS, 0);
+GETMEM (sbyte, gameData.demo.bViewWasRecorded, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocGameData (void)
+{
+AllocSegmentData ();
+AllocObjectData ();
+AllocSmokeData ();
+AllocCameraData ();
+AllocRenderColorData ();
+AllocRenderLightData ();
+AllocShadowData ();
+AllocPhysicsData ();
+AllocWeaponData ();
+AllocAIData ();
+AllocMultiData ();
+AllocDemoData ();
+}
+
+// ----------------------------------------------------------------------------
+
+#define FREEMEM(_t,_p,_s) {d_free (_p); (_p) = (_t *) NULL; }
+
+void FreeSegmentData (void)
+{
+FREEMEM (vmsVector, gameData.segs.vertices, MAX_VERTICES);
+FREEMEM (fVector, gameData.segs.fVertices, MAX_VERTICES);
+FREEMEM (tSegment, gameData.segs.segments, MAX_SEGMENTS);
+FREEMEM (tSegment2, gameData.segs.segment2s, MAX_SEGMENTS);
+FREEMEM (xsegment, gameData.segs.xSegments, MAX_SEGMENTS);
+FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
+#if CALC_SEGRADS
+FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
+FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
+#endif
+FREEMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS);
+FREEMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS);
+FREEMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6);
+FREEMEM (ubyte, gameData.segs.bVertVis, MAX_SEGMENTS * VERTVIS_FLAGS);
+FREEMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * SEGVIS_FLAGS);
+FREEMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeObjectData (void)
+{
+FREEMEM (tObject, gameData.objs.objects, MAX_OBJECTS);
+FREEMEM (short, gameData.objs.freeList, MAX_OBJECTS);
+FREEMEM (short, gameData.objs.parentObjs, MAX_OBJECTS);
+FREEMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS);
+FREEMEM (short, gameData.objs.firstChild, MAX_OBJECTS);
+FREEMEM (tObject, gameData.objs.init, MAX_OBJECTS);
+FREEMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS);
+FREEMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS);
+FREEMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS);
+FREEMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS);
+FREEMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS);
+FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
+FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
+FREEMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeSmokeData (void)
+{
+FREEMEM (short, gameData.smoke.objects, MAX_OBJECTS);
+FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeCameraData (void)
+{
+FREEMEM (char, gameData.cameras.nSides, MAX_SEGMENTS * 6);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeRenderColorData (void)
+{
+	int	i;
+
+for (i = 0; i < 6; i++) {
+	FREEMEM (tFaceColor, gameData.render.color.lights [i], MAX_SEGMENTS);
+	FREEMEM (tFaceColor, gameData.render.color.sides [i], MAX_SEGMENTS);
+	}
+FREEMEM (tFaceColor, gameData.render.color.segments, MAX_SEGMENTS);
+FREEMEM (tFaceColor, gameData.render.color.vertices, MAX_VERTICES);
+FREEMEM (float, gameData.render.color.vertBright, MAX_VERTICES);
+FREEMEM (tFaceColor, gameData.render.color.ambient, MAX_VERTICES);	//static light values
+FREEMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeRenderLightData (void)
+{
+FREEMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+FREEMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+FREEMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS);
+FREEMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6);
+FREEMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES);
+FREEMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS);
+FREEMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS);
+FREEMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES);
+FREEMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES);
+FREEMEM (char, gameData.render.lights.bGotDynColor, MAX_VERTICES);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreePhysicsData (void)
+{
+FREEMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeShadowData (void)
+{
+FREEMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeWeaponData (void)
+{
+FREEMEM (tRgbColorf, gameData.weapons.color, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeMultiData (void)
+{
+FREEMEM (tLeftoverPowerup, gameData.multiplayer.leftoverPowerups, MAX_OBJECTS);
+FREEMEM (short, gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * MAX_OBJECTS);  // Remote tObject number for each local tObject
+FREEMEM (short, gameData.multigame.localToRemote, MAX_OBJECTS);
+FREEMEM (sbyte, gameData.multigame.nObjOwner, MAX_OBJECTS);   // Who created each tObject in my universe, -1 = loaded at start
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeAIData (void)
+{
+FREEMEM (tAILocal, gameData.ai.localInfo, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeDemoData (void)
+{
+FREEMEM (sbyte, gameData.demo.bWasRecorded,  MAX_OBJECTS);
+FREEMEM (sbyte, gameData.demo.bViewWasRecorded, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeGameData (void)
+{
+FreeSegmentData ();
+FreeObjectData ();
+FreeSmokeData ();
+FreeCameraData ();
+FreeRenderColorData ();
+FreeRenderLightData ();
+FreeShadowData ();
+FreePhysicsData ();
+FreeWeaponData ();
+FreeAIData ();
+FreeMultiData ();
+FreeDemoData ();
 }
 
 // ----------------------------------------------------------------------------
@@ -2308,7 +2650,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 					}
 #endif
 				}
-			if (gameData.multi.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
+			if (gameData.multiplayer.autoNG.bValid && (gameStates.app.nFunctionMode != FMODE_GAME))
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			break;
 
@@ -2322,7 +2664,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrPaletteFadeIn (NULL, 0, 0);
 			ResetPaletteAdd ();
 			GrPaletteFadeOut (NULL, 0, 0);
-			if (gameData.multi.autoNG.bValid)
+			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU) {
 				DigiStopAllChannels ();
@@ -2341,7 +2683,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			if (gameStates.app.nFunctionMode == FMODE_GAME) {
 				gameData.app.nGameMode = GM_EDITOR;
 				editor_reset_stuff_onLevel ();
-				gameData.multi.nPlayers = 1;
+				gameData.multiplayer.nPlayers = 1;
 				}
 			break;
 #endif
@@ -2581,6 +2923,7 @@ error_init (NULL, NULL);
 *szAutoMission = '\0';
 EvalArgs ();
 InitGameOptions (1);
+AllocGameData ();
 /*---*/LogErr ("Creating default tracker list\n");
 CreateTrackerList ();
 CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
@@ -2698,6 +3041,7 @@ DestroyTrackerList ();
 if (!FindArg ("-notitles"))
 #endif
 	//show_order_form ();
+FreeGameData ();
 #ifdef _DEBUG
 if (FindArg ("-showmeminfo"))
 	bShowMemInfo = 1;		// Make memory statistics show
@@ -2720,7 +3064,7 @@ if ((i = FindArg ("-autoload"))) {
 	strcpy (Auto_file, Args[i+1]);
 	}
 if (Auto_exit) {
-	strcpy (gameData.multi.players[0].callsign, "dummy");
+	strcpy (gameData.multiplayer.players[0].callsign, "dummy");
 	} 
 else
 #endif

@@ -120,7 +120,7 @@ grsBitmap *ReadParticleImage (char *szFile)
 {
 	grsBitmap	*bmP = NULL;
 
-if (!(bmP = GrCreateBitmap (0, 0, 0)))
+if (!(bmP = GrCreateBitmap (0, 0, 4)))
 	return NULL;
 if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
 	bmP->bmType = BM_TYPE_ALT;

@@ -221,11 +221,11 @@ if (pMsgs->nMessages > 0) {
 		} else
 			yStart = SMALL_FONT->ft_h / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			tObject *gmP = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
+			tObject *gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 			if (gmP && 
 				 (gmP->nType == OBJ_WEAPON) && 
 				 (gmP->id == GUIDEDMSL_ID) &&
-			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]))
+			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]))
 				yStart += SMALL_FONT->ft_h + 3;
 			}
 
@@ -364,7 +364,7 @@ void PlayerDeadMessage (void)
 if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 	tHUDMessage	*pMsgs = gameData.hud.msgs;
 
-   if ( gameData.multi.players [gameData.multi.nLocalPlayer].lives < 2) {
+   if ( gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives < 2) {
       int x, y, w, h, aw;
       GrSetCurFont ( HUGE_FONT);
       GrGetStringSize ( TXT_GAME_OVER, &w, &h, &aw);
@@ -397,7 +397,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 //------------------------------------------------------------------------------
 // void say_afterburner_status (void)
 // {
-// 	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
+// 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 // 		InitHUDMessage ("Afterburner engaged.");
 // 	else
 // 		InitHUDMessage ("Afterburner disengaged.");

@@ -143,10 +143,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short nCameras = 0;
-char nSideCameras [MAX_SEGMENTS][6];
-tCamera cameras [MAX_CAMERAS];
-
 int CreateCamera (tCamera *pc, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 						tObject *objP, int bShadowMap, int bTeleport)
 {
@@ -209,7 +205,7 @@ if (objP) {
 	pc->curAngle =
 	pc->curDelta = 0;
 	pc->t0 = 0;
-	gameData.objs.cameraRef [OBJ_IDX (objP)] = nCameras;
+	gameData.objs.cameraRef [OBJ_IDX (objP)] = gameData.cameras.nCameras;
 	}
 else {
 	pc->objP = &pc->obj;
@@ -261,7 +257,8 @@ int CreateCameras (void)
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
-memset (nSideCameras, 0xFF, sizeof (nSideCameras));
+for (i = 0; i < 6; i++)
+	memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 	t = wallP->nTrigger;
 	if (t >= gameData.trigs.nTriggers)
@@ -269,13 +266,13 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP+
 	triggerP = gameData.trigs.triggers + t;
 	if (triggerP->nType == TT_CAMERA) {
 		for (j = 0; j < triggerP->nLinks; j++)
-			if (CreateCamera (cameras + nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->nSegment [j], triggerP->nSide [j], NULL, 0, 0))
-				nSideCameras [triggerP->nSegment [j]][triggerP->nSide [j]] = (char) nCameras++;
+			if (CreateCamera (gameData.cameras.cameras + gameData.cameras.nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->nSegment [j], triggerP->nSide [j], NULL, 0, 0))
+				gameData.cameras.nSides [triggerP->nSegment [j] * 6 + triggerP->nSide [j]] = (char) gameData.cameras.nCameras++;
 		}
 #if TELEPORT_CAMERAS
 	else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->nType == TT_TELEPORT)) {
-		if (CreateCamera (cameras + nCameras, triggerP->nSegment [0], triggerP->nSide [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
-			nSideCameras [wallP->nSegment][wallP->nSide] = (char) nCameras++;
+		if (CreateCamera (gameData.cameras.cameras + gameData.cameras.nCameras, triggerP->nSegment [0], triggerP->nSide [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+			gameData.cameras.nSides [wallP->nSegment * 6 + wallP->nSide] = (char) gameData.cameras.nCameras++;
 		}
 #endif
 	}
@@ -285,12 +282,12 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		triggerP = gameData.trigs.objTriggers + j;
 		if (triggerP->nType == TT_CAMERA) {
 			for (k = 0; k < triggerP->nLinks; k++)
-				if (CreateCamera (cameras + nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))
-					nSideCameras [triggerP->nSegment [k]][triggerP->nSide [k]] = (char) nCameras++;
+				if (CreateCamera (gameData.cameras.cameras + gameData.cameras.nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))
+					gameData.cameras.nSides [triggerP->nSegment [k] * 6 + triggerP->nSide [k]] = (char) gameData.cameras.nCameras++;
 			}
 		}
 	}
-return nCameras;
+return gameData.cameras.nCameras;
 }
 
 //------------------------------------------------------------------------------
@@ -316,7 +313,7 @@ if (bRender2TextureOk)
 void DestroyCameras (void)
 {
 	int i;
-	tCamera	*pc = cameras;
+	tCamera	*pc = gameData.cameras.cameras;
 
 #if RENDER2TEXTURE == 1
 if (bRender2TextureOk)
@@ -326,11 +323,10 @@ if (bRender2TextureOk)
 	glXMakeCurrent (hGlDC, hGlWindow, hGlRC);
 #	endif
 #endif
-for (i = nCameras; i; i--, pc++)
+for (i = gameData.cameras.nCameras; i; i--, pc++)
 	DestroyCamera (pc);
-memset (cameras, 0, sizeof (cameras));
-memset (nSideCameras, 0xFF, sizeof (nSideCameras));
-nCameras = 0;
+memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides ));
+gameData.cameras.nCameras = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -608,7 +604,7 @@ return pc->bValid;
 int RenderCameras (void)
 {
 	int		i;
-	tCamera	*pc = cameras, *pCurCam = NULL;
+	tCamera	*pc = gameData.cameras.cameras, *pCurCam = NULL;
 	tObject	*viewerSave = gameData.objs.viewer;
 	time_t	t;
 	int		nCamsRendered;
@@ -625,7 +621,7 @@ if (IsMultiGame && !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].
 nCamsRendered = 0;
 #if 1 //render only one camera per frame
 t = SDL_GetTicks ();
-for (i = 0; i < nCameras; i++, pc++) {
+for (i = 0; i < gameData.cameras.nCameras; i++, pc++) {
 	pc->nWaitFrames++;
 	if (!pc->bVisible)
 		continue;
@@ -649,7 +645,7 @@ if (pc = pCurCam) {
 	pc->nTimeout = gameStates.app.nSDLTicks; //SDL_GetTicks ();
 #else
 t = gameStates.app.nSDLTicks; //SDL_GetTicks ();
-for (i = 0; i < nCameras; i++, pc++) {
+for (i = 0; i < gameData.cameras.nCameras; i++, pc++) {
 	if (!pc->bVisible)
 		continue;
 	if (gameOpts->render.cameras.nFPS) {

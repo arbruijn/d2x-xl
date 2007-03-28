@@ -198,18 +198,18 @@ void TransferEnergyToShield(fix time)
 
 	if (time <= 0)
 		return;
-	e = min(min(time*CONVERTER_RATE, gameData.multi.players [gameData.multi.nLocalPlayer].energy - INITIAL_ENERGY), 
-		         (MAX_SHIELDS-gameData.multi.players [gameData.multi.nLocalPlayer].shields)*CONVERTER_SCALE);
+	e = min(min(time*CONVERTER_RATE, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy - INITIAL_ENERGY), 
+		         (MAX_SHIELDS-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields)*CONVERTER_SCALE);
 	if (e <= 0) {
-		if (gameData.multi.players [gameData.multi.nLocalPlayer].energy <= INITIAL_ENERGY)
+		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy <= INITIAL_ENERGY)
 			HUDInitMessage(TXT_TRANSFER_ENERGY, f2i(INITIAL_ENERGY));
 		else
 			HUDInitMessage(TXT_TRANSFER_SHIELDS);
 		return;
 	}
 
-	gameData.multi.players [gameData.multi.nLocalPlayer].energy  -= e;
-	gameData.multi.players [gameData.multi.nLocalPlayer].shields += e/CONVERTER_SCALE;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy  -= e;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields += e/CONVERTER_SCALE;
 	MultiSendShields ();
 	gameStates.app.bUsingConverter = 1;
 	if (last_playTime > gameData.time.xGame)
@@ -263,8 +263,8 @@ if (gameData.app.nGameMode & GM_HOARD)
 bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
 otherBomb = SMART_MINE_INDEX + PROXIMITY_INDEX - bomb;
 
-if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb] &&
-	 gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [otherBomb]) {
+if (!gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [bomb] &&
+	 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [otherBomb]) {
 	bomb = otherBomb;
 	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMART_MINE_INDEX);
 	}
@@ -470,14 +470,14 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 PauseGame ();
 SetPopupScreenMode();
 GrPaletteStepLoad (NULL);
-formatTime(totalTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeTotal) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursTotal*3600);
-formatTime(xLevelTime, f2i(gameData.multi.players [gameData.multi.nLocalPlayer].timeLevel) + gameData.multi.players [gameData.multi.nLocalPlayer].hoursLevel*3600);
+formatTime(totalTime, f2i(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal) + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursTotal*3600);
+formatTime(xLevelTime, f2i(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel) + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board, xLevelTime, totalTime);
+			  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board, xLevelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
-				  gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board);
+				  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board);
 
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
@@ -552,7 +552,7 @@ void DoShowNetgameHelp()
 	sprintf (mtext[num], TXT_INFO_LEVEL, netGame.nLevel); num++;
 	sprintf (mtext[num], TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.difficulty)); num++;
 	sprintf (mtext[num], TXT_INFO_MODE, GT (537 + netGame.gameMode)); num++;
-	sprintf (mtext[num], TXT_INFO_SERVER, gameData.multi.players [NetworkWhoIsMaster()].callsign); num++;
+	sprintf (mtext[num], TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWhoIsMaster()].callsign); num++;
    sprintf (mtext[num], TXT_INFO_PLRNUM, NetworkHowManyConnected(), netGame.nMaxPlayers); num++;
    sprintf (mtext[num], TXT_INFO_PPS, netGame.nPacketsPerSec); num++;
    sprintf (mtext[num], TXT_INFO_SHORTPKT, netGame.bShortPackets ? "Yes" : "No"); num++;
@@ -566,28 +566,28 @@ void DoShowNetgameHelp()
      { sprintf (mtext[num], TXT_INFO_KILLGOAL, netGame.KillGoal*5); num++; }
    sprintf (mtext[num], " "); num++;
    sprintf (mtext[num], TXT_INFO_PLRSCONN); num++;
-   netPlayers.players [gameData.multi.nLocalPlayer].rank=GetMyNetRanking();
-   for (i=0;i<gameData.multi.nPlayers;i++)
-     if (gameData.multi.players [i].connected)
+   netPlayers.players [gameData.multiplayer.nLocalPlayer].rank=GetMyNetRanking();
+   for (i=0;i<gameData.multiplayer.nPlayers;i++)
+     if (gameData.multiplayer.players [i].connected)
 	  {		  
       if (!gameOpts->multi.bNoRankings)
 		 {
-			if (i==gameData.multi.nLocalPlayer)
+			if (i==gameData.multiplayer.nLocalPlayer)
 				sprintf (mtext[num], "%s%s (%d/%d)", 
 							pszRankStrings[netPlayers.players [i].rank], 
-							gameData.multi.players [i].callsign, 
+							gameData.multiplayer.players [i].callsign, 
 							networkData.nNetLifeKills, 
 							networkData.nNetLifeKilled); 
 			else
 				sprintf (mtext[num], "%s%s %d/%d", 
 							pszRankStrings[netPlayers.players [i].rank], 
-							gameData.multi.players [i].callsign, 
-							multiData.kills.matrix[gameData.multi.nLocalPlayer][i], 
-							multiData.kills.matrix[i][gameData.multi.nLocalPlayer]); 
+							gameData.multiplayer.players [i].callsign, 
+							gameData.multigame.kills.matrix[gameData.multiplayer.nLocalPlayer][i], 
+							gameData.multigame.kills.matrix[i][gameData.multiplayer.nLocalPlayer]); 
 			num++;
 		 }
 	   else
-  		 sprintf (mtext[num++], "%s", gameData.multi.players [i].callsign); 
+  		 sprintf (mtext[num++], "%s", gameData.multiplayer.players [i].callsign); 
 	  }
 
 	
@@ -603,7 +603,7 @@ void DoShowNetgameHelp()
 	 if (PhallicMan==-1)
 		 sprintf (mtext[num], TXT_NO_RECORD2); 
 	 else
-		 sprintf (mtext[num], TXT_RECORD3, gameData.multi.players [PhallicMan].callsign, PhallicLimit); 
+		 sprintf (mtext[num], TXT_RECORD3, gameData.multiplayer.players [PhallicMan].callsign, PhallicLimit); 
 	num++;
 	}
   else if (!gameOpts->multi.bNoRankings)
@@ -717,10 +717,10 @@ inline int GuidedInMainView (void)
 	tObject *gmP;
 
 return gameOpts->render.cockpit.bGuidedInMainView &&
-		 (gmP = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]) && 
+		 (gmP = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]) && 
 		 (gmP->nType == OBJ_WEAPON) && 
 		 (gmP->id == GUIDEDMSL_ID) && 
-		 (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer]);
+		 (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]);
 }
 
 //------------------------------------------------------------------------------
@@ -751,7 +751,7 @@ void HandleDemoKey(int key)
 			break;
 
 		case KEY_F7:
-			multiData.kills.bShowList = (multiData.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
+			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
 			break;
 			
 		case KEY_CTRLED+KEY_F7:
@@ -886,16 +886,16 @@ int select_next_window_function(int w)
 				Cockpit_3dView[w] = CV_COOP;
 				while (1) {
 					CoopView_player[w]++;
-					if (CoopView_player[w] == gameData.multi.nPlayers) {
+					if (CoopView_player[w] == gameData.multiplayer.nPlayers) {
 						Cockpit_3dView[w] = CV_MARKER;
 						goto case_marker;
 					}
-					if (CoopView_player[w]==gameData.multi.nLocalPlayer)
+					if (CoopView_player[w]==gameData.multiplayer.nLocalPlayer)
 						continue;
 
 					if (gameData.app.nGameMode & GM_MULTI_COOP)
 						break;
-					else if (GetTeam(CoopView_player[w]) == GetTeam(gameData.multi.nLocalPlayer))
+					else if (GetTeam(CoopView_player[w]) == GetTeam(gameData.multiplayer.nLocalPlayer))
 						break;
 				}
 				break;
@@ -906,8 +906,8 @@ int select_next_window_function(int w)
 			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.bAllowMarkerView) {	//anarchy only
 				Cockpit_3dView[w] = CV_MARKER;
 				if (gameData.marker.viewers [w] == -1)
-					gameData.marker.viewers [w] = gameData.multi.nLocalPlayer * 2;
-				else if (gameData.marker.viewers [w] == gameData.multi.nLocalPlayer * 2)
+					gameData.marker.viewers [w] = gameData.multiplayer.nLocalPlayer * 2;
+				else if (gameData.marker.viewers [w] == gameData.multiplayer.nLocalPlayer * 2)
 					gameData.marker.viewers [w]++;
 				else
 					Cockpit_3dView[w] = CV_NONE;
@@ -938,14 +938,14 @@ dump_door_debugging_info()
 	FILE *dfile;
 	int wall_numn;
 
-	obj = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	obj = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 	VmVecScaleAdd(&new_pos, &objP->position.vPos, &objP->position.mOrient.fVec, i2f(100);
 
 	fq.p0						= &objP->position.vPos;
 	fq.startseg				= objP->nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
-	fq.thisobjnum			= gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	fq.thisobjnum			= gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 	fq.ignore_obj_list	= NULL;
 	fq.flags					= 0;
 
@@ -1169,10 +1169,10 @@ int HandleSystemKey(int key)
 			break;
 #endif
 		case KEY_ALTED+KEY_F4:
-			multiData.bShowReticleName = (multiData.bShowReticleName+1)%2;
+			gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName+1)%2;
 
 		case KEY_F7:
-			multiData.kills.bShowList = (multiData.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
+			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
 			if (gameData.app.nGameMode & GM_MULTI)
 				MultiSortKillList();
 			bStopPlayerMovement = 0;
@@ -1476,7 +1476,7 @@ void HandleGameKey(int key)
 		 break;
 
 		case KEY_ALTED + KEY_CTRLED + KEY_T:
-			SwitchTeam (gameData.multi.nLocalPlayer, 0);
+			SwitchTeam (gameData.multiplayer.nLocalPlayer, 0);
 			break;
 		case KEY_F6:
 			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && !(gameData.app.nGameMode & GM_TEAM))
@@ -1566,27 +1566,27 @@ void HandleTestKey(int key)
 
 
 		case KEYDBGGED+KEY_K:	
-			gameData.multi.players [gameData.multi.nLocalPlayer].shields = 1;	
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = 1;	
 			MultiSendShields ();
 			break;				
 						//	a virtual kill
 		case KEYDBGGED+KEY_SHIFTED + KEY_K:  
-			gameData.multi.players [gameData.multi.nLocalPlayer].shields = -1;	 
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
 			
 		case KEYDBGGED+KEY_X: 
-			gameData.multi.players [gameData.multi.nLocalPlayer].lives++; 
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives++; 
 			break; // Extra life cheat key.
 			
 		case KEYDBGGED+KEY_H:
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
-				gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
-				if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
+				if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 					if (gameData.app.nGameMode & GM_MULTI)
 						MultiSendCloak();
 					AIDoCloakStuff();
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame;
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame;
 #if TRACE
 					con_printf (CONDBG, "You are cloaked!\n");
 #endif
@@ -1723,8 +1723,8 @@ void HandleTestKey(int key)
 			DoMegaWowPowerup(200);
 //								if ( gameData.app.nGameMode & GM_MULTI )     {
 //									ExecMessageBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
-//									multiData.msg.nReceiver = 100;		// Send to everyone...
-//									sprintf( multiData.msg.szMsg, "%s cheated!", gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+//									gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
+//									sprintf( gameData.multigame.msg.szMsg, "%s cheated!", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 //								} else {
 //									DoMegaWowPowerup();
 //								}
@@ -1929,7 +1929,7 @@ int ReadControls()
 gameStates.app.bPlayerFiredLaserThisFrame=-1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		if ( (gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
-			|| multiData.msg.bSending || multiData.msg.bDefining
+			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			memset( &Controls, 0, sizeof(tControlInfo) );
 		else
@@ -1969,14 +1969,14 @@ while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 		MarkerInputMessage (key);
 			continue;
 		}
-if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending || multiData.msg.bDefining ))	{
+if ( (gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining ))	{
 	MultiMsgInputSub( key );
 	continue;		//get next key
 	}
 #ifdef _DEBUG
 if ((key&KEYDBGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
-	multiData.msg.nReceiver = 100;		// Send to everyone...
-	sprintf( multiData.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
+	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
+	sprintf( gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 	}
 #endif
 #ifdef CONSOLE

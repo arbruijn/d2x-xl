@@ -1357,6 +1357,37 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int OOF_ReadTGA (char *pszFile, grsBitmap *bmP)
+{
+	char			fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
+	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
+
+CFSplitPath (pszFile, NULL, fn, NULL);
+if (nShrinkFactor > 1) {
+	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
+	if (ReadTGA (fnShrunk, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
+		return 1;
+	}
+if (!ReadTGA (pszFile, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
+	return 0;
+if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
+	if (gameStates.app.bCacheTextures) {
+		tTgaHeader	h;
+		CFILE			*fp;
+
+		strcat (fn, ".tga");
+		if (!(fp = CFOpen (fn, gameFolders.szModelDir, "rb", 0)))
+			return 1;
+		if (ReadTGAHeader (fp, &h, NULL))
+			SaveTGA (fn, gameFolders.szModelDir, &h, bmP);
+		CFClose (fp);
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int OOF_ReloadTextures (void)
 {
 	tOOFObject *po;
@@ -1365,7 +1396,7 @@ int OOF_ReloadTextures (void)
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
 	if (po->textures.pszNames && po->textures.pBitmaps)
 		for (j = 0; j < po->textures.nTextures; j++)
-			if (!ReadTGA (po->textures.pszNames [j], gameFolders.szModelDir, po->textures.pBitmaps + j, -1, 1.0, 0, 0))
+			if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j))
 				OOF_FreeObject (po);
 return 1;
 }
@@ -1429,7 +1460,7 @@ if (!i)
 o.textures.pszNames [i] = d_malloc (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
-	if (!ReadTGA (o.textures.pszNames [i], gameFolders.szModelDir, o.textures.pBitmaps + i, -1, 1.0, 0, 0)) {
+	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i)) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
@@ -2437,7 +2468,7 @@ return r;
 
 int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 {
-	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights [gameData.objs.console->nSegment];
+	short			i, *pnl = gameData.render.lights.dynamic.nNearestSegLights + gameData.objs.console->nSegment * MAX_NEAREST_LIGHTS;
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {

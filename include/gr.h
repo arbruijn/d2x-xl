@@ -169,11 +169,12 @@ typedef struct _grsBitmap {
 	ushort			bm_handle;		//for application.  initialized to 0
 	ubyte				bm_avgColor;	//  Average color of all pixels in texture map.
 	tRgbColorb		bm_avgRGB;
+	ubyte				bm_bpp :3;
+	ubyte				bmType :3;
 	ubyte				bm_wallAnim :1;
 	ubyte				bm_fromPog :1;
-	ubyte				bmType :3;
 #if TEXTURE_COMPRESSION
-	ubyte				bm_compressed :1;
+	ubyte				bm_compressed;
 	int				bm_format;
 	int				bm_bufSize;
 #endif
@@ -181,7 +182,7 @@ typedef struct _grsBitmap {
 	int				bm_supertranspFrames [4];
 
 	struct _ogl_texture	*glTexture;
-	union {
+	struct {
 		grs_stdBmData		std;
 		grs_altBmData		alt;
 		} bm_data;
@@ -334,23 +335,23 @@ void GrClearCanvas(unsigned int color);
 // Bitmap functions:
 
 // Allocate a bitmap and its pixel data buffer.
-grsBitmap *GrCreateBitmap(int w, int h, int bTGA);
+grsBitmap *GrCreateBitmap(int w, int h, int bpp);
 
 // Allocated a bitmap and makes its data be raw_data that is already somewhere.
-grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char * raw_data, int bTGA );
+grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char * raw_data, int bpp);
 
 // Creates a bitmap which is part of another bitmap
 grsBitmap *GrCreateSubBitmap(grsBitmap *bm, int x, int y, int w, int h);
 
-void *GrAllocBitmapData (int w, int h, int bTGA);
+void *GrAllocBitmapData (int w, int h, int bpp);
 
 void GrInitBitmapAlloc (grsBitmap *bmP, int mode, int x, int y, int w, int h, 
-								int nBytesPerLine, int bTGA);
+								int nBytesPerLine, int bpp);
 
 void GrInitSubBitmap (grsBitmap *bm, grsBitmap *bmParent, int x, int y, int w, int h );
 
 void GrInitBitmap (grsBitmap *bm, int mode, int x, int y, int w, int h, int bytesPerLine, 
-						 unsigned char * data, int bTGA);
+						 unsigned char * data, int bpp);
 // Free the bitmap and its pixel data
 void GrFreeBitmap(grsBitmap *bm);
 
@@ -629,6 +630,6 @@ extern tScrSize scrSizes [];
 char *ScrSizeArg (int x, int y);
 int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
-
+int GrBitmapHasTransparency (grsBitmap *bmP);
 
 #endif /* def _GR_H */

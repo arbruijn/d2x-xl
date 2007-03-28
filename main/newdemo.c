@@ -894,7 +894,7 @@ NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VER
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
 if (gameData.app.nGameMode & GM_MULTI)
-	NDWriteInt (gameData.app.nGameMode | (gameData.multi.nLocalPlayer << 16));
+	NDWriteInt (gameData.app.nGameMode | (gameData.multiplayer.nLocalPlayer << 16));
 else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
@@ -904,31 +904,31 @@ if (gameData.app.nGameMode & GM_TEAM) {
 	NDWriteString (netGame.team_name [1]);
 	}
 if (gameData.app.nGameMode & GM_MULTI) {
-	NDWriteByte ((sbyte)gameData.multi.nPlayers);
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
-		NDWriteString (gameData.multi.players [i].callsign);
-		NDWriteByte (gameData.multi.players [i].connected);
+	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		NDWriteString (gameData.multiplayer.players [i].callsign);
+		NDWriteByte (gameData.multiplayer.players [i].connected);
 		if (gameData.app.nGameMode & GM_MULTI_COOP)
-			NDWriteInt (gameData.multi.players [i].score);
+			NDWriteInt (gameData.multiplayer.players [i].score);
 		else {
-			NDWriteShort ((short)gameData.multi.players [i].netKilledTotal);
-			NDWriteShort ((short)gameData.multi.players [i].netKillsTotal);
+			NDWriteShort ((short)gameData.multiplayer.players [i].netKilledTotal);
+			NDWriteShort ((short)gameData.multiplayer.players [i].netKillsTotal);
 			}
 		}
 	} 
 else
 	// NOTE LINK TO ABOVE!!!
-	NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].score);
+	NDWriteInt (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score);
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i]);
+	NDWriteShort ((short)gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i]);
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i]);
-NDWriteByte ((sbyte)gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel);
+	NDWriteShort ((short)gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i]);
+NDWriteByte ((sbyte)gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel);
 //  Support for missions added here
 NDWriteString (gameStates.app.szCurrentMissionFile);
-NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].energy)));
-NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].shields)));
-NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].flags);        // be sure players flags are set
+NDWriteByte ((sbyte) (f2ir (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy)));
+NDWriteByte ((sbyte) (f2ir (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields)));
+NDWriteInt (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 gameData.demo.nStartFrame = gameData.app.nFrameCount;
@@ -946,8 +946,8 @@ if (gameData.demo.bNoSpace) {
 	return;
 	}
 StopTime ();
-memset (gameData.demo.bWasRecorded, 0, sizeof (gameData.demo.bWasRecorded));
-memset (gameData.demo.bViewWasRecorded, 0, sizeof (gameData.demo.bViewWasRecorded));
+memset (gameData.demo.bWasRecorded, 0, sizeof (*gameData.demo.bWasRecorded) * MAX_OBJECTS);
+memset (gameData.demo.bViewWasRecorded, 0, sizeof (*gameData.demo.bViewWasRecorded) * MAX_OBJECTS);
 memset (gameData.demo.bRenderingWasRecorded, 0, sizeof (gameData.demo.bRenderingWasRecorded));
 frame_number -= gameData.demo.nStartFrame;
 Assert (frame_number >= 0);
@@ -965,7 +965,7 @@ void NDRecordRenderObject (tObject * objP)
 {
 if (gameData.demo.bViewWasRecorded [OBJ_IDX (objP)])
 	return;
-//if (obj==&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject] && !gameStates.app.bPlayerIsDead)
+//if (obj==&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject] && !gameStates.app.bPlayerIsDead)
 //	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
@@ -1374,9 +1374,9 @@ NDWriteByte (ND_EVENT_MULTI_CONNECT);
 NDWriteByte ((sbyte)pnum);
 NDWriteByte ((sbyte)new_player);
 if (!new_player) {
-	NDWriteString (gameData.multi.players [pnum].callsign);
-	NDWriteInt (gameData.multi.players [pnum].netKilledTotal);
-	NDWriteInt (gameData.multi.players [pnum].netKillsTotal);
+	NDWriteString (gameData.multiplayer.players [pnum].callsign);
+	NDWriteInt (gameData.multiplayer.players [pnum].netKilledTotal);
+	NDWriteInt (gameData.multiplayer.players [pnum].netKillsTotal);
 	}
 NDWriteString (new_callsign);
 StartTime ();
@@ -1419,7 +1419,7 @@ void NDRecordMultiScore (int pnum, int score)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_SCORE);
 NDWriteByte ((sbyte)pnum);
-NDWriteInt (score - gameData.multi.players [pnum].score);      // called before score is changed!!!!
+NDWriteInt (score - gameData.multiplayer.players [pnum].score);      // called before score is changed!!!!
 StartTime ();
 }
 
@@ -1595,20 +1595,20 @@ if (gameData.demo.nGameMode & GM_TEAM) {
 if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
 	c = NDReadByte ();
-	gameData.multi.nPlayers = (int)c;
+	gameData.multiplayer.nPlayers = (int)c;
 	// changed this to above two lines -- breaks on the mac because of
 	// endian issues
-	//		NDReadByte ((sbyte *)&gameData.multi.nPlayers);
-	for (i = 0 ; i < gameData.multi.nPlayers; i++) {
-		gameData.multi.players [i].cloakTime = 0;
-		gameData.multi.players [i].invulnerableTime = 0;
-		NDReadString (gameData.multi.players [i].callsign);
-		gameData.multi.players [i].connected = (sbyte) NDReadByte ();
+	//		NDReadByte ((sbyte *)&gameData.multiplayer.nPlayers);
+	for (i = 0 ; i < gameData.multiplayer.nPlayers; i++) {
+		gameData.multiplayer.players [i].cloakTime = 0;
+		gameData.multiplayer.players [i].invulnerableTime = 0;
+		NDReadString (gameData.multiplayer.players [i].callsign);
+		gameData.multiplayer.players [i].connected = (sbyte) NDReadByte ();
 		if (gameData.demo.nGameMode & GM_MULTI_COOP)
-			gameData.multi.players [i].score = NDReadInt ();
+			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
-			gameData.multi.players [i].netKilledTotal = NDReadShort ();
-			gameData.multi.players [i].netKillsTotal = NDReadShort ();
+			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
+			gameData.multiplayer.players [i].netKillsTotal = NDReadShort ();
 			}
 		}
 	gameData.app.nGameMode = gameData.demo.nGameMode;
@@ -1616,14 +1616,14 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	gameData.app.nGameMode = GM_NORMAL;
 	}
 else
-	gameData.multi.players [gameData.multi.nLocalPlayer].score = NDReadInt ();      // Note link to above if!
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score = NDReadInt ();      // Note link to above if!
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = NDReadShort ();
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i] = NDReadShort ();
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-		gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = NDReadShort ();
+		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
-if (laserLevel != gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = laserLevel;
+if (laserLevel != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel) {
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = laserLevel;
 	UpdateLaserWeaponInfo ();
 	}
 // Support for missions
@@ -1644,20 +1644,20 @@ gameData.demo.xRecordedTotal = 0;
 gameData.demo.xPlaybackTotal = 0;
 energy = NDReadByte ();
 shield = NDReadByte ();
-gameData.multi.players [gameData.multi.nLocalPlayer].flags = NDReadInt ();
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags = NDReadInt ();
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+	gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 	}
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 gameData.weapons.nPrimary = NDReadByte ();
 gameData.weapons.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (energy);
-gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (shield);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = i2f (energy);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = i2f (shield);
 bJustStartedPlayback=1;
 return 0;
 }
@@ -1735,7 +1735,7 @@ if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		gameData.segs.segments [nSegment].objects = -1;
 ResetObjects (1);
-gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = -F1_0;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
 	if (gameData.demo.nFrameCount == 890)
@@ -2003,11 +2003,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (energy);
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = i2f (energy);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_energy != 255)
-					gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (old_energy);
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = i2f (old_energy);
 				}
 			}
 			break;
@@ -2041,11 +2041,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (shield);
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = i2f (shield);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
-					gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (old_shield);
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = i2f (old_shield);
 				}
 			}
 			break;
@@ -2053,40 +2053,40 @@ while (!bDone) {
 		case ND_EVENT_PLAYER_FLAGS: {
 			uint oflags;
 
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags = NDReadInt ();
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags = NDReadInt ();
 			CATCH_BAD_READ
-			oflags = gameData.multi.players [gameData.multi.nLocalPlayer].flags >> 16;
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= 0xffff;
+			oflags = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags >> 16;
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= 0xffff;
 
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 ((gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
-				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multi.nLocalPlayer);
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = 0;
+					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
+				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = 0;
-				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
-				gameData.multi.players [gameData.multi.nLocalPlayer].flags = oflags;
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = 0;
+				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags = oflags;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
-					gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multi.nLocalPlayer);
+				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED)) {
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = 0;
+					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
-				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-					gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = 0;
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = 0;
 				}
 			UpdateLaserWeaponInfo ();     // in case of quad laser change
 			}
@@ -2139,7 +2139,7 @@ while (!bDone) {
 			short distance;
 
 			distance = NDReadShort ();
-			gameData.multi.players [gameData.multi.nLocalPlayer].homingObjectDist = 
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = 
 				i2f ((int) distance << 16);
 			}
 			break;
@@ -2256,15 +2256,15 @@ while (!bDone) {
 			sbyte pnum = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multi.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloakTime = 0;
+				gameData.multiplayer.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [pnum].cloakTime = 0;
 				gameData.demo.bPlayersCloaked &= ~ (1 << pnum);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multi.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.multiplayer.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << pnum);
 				}
 			}
@@ -2274,15 +2274,15 @@ while (!bDone) {
 			sbyte pnum = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multi.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.multiplayer.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << pnum);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multi.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multi.players [pnum].cloakTime = 0;
+				gameData.multiplayer.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [pnum].cloakTime = 0;
 				gameData.demo.bPlayersCloaked &= ~ (1 << pnum);
 				}
 			}
@@ -2292,11 +2292,11 @@ while (!bDone) {
 			sbyte pnum = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [pnum].netKilledTotal--;
+				gameData.multiplayer.players [pnum].netKilledTotal--;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [pnum].netKilledTotal++;
+				gameData.multiplayer.players [pnum].netKilledTotal++;
 			}
 			break;
 
@@ -2305,16 +2305,16 @@ while (!bDone) {
 			sbyte kill = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multi.players [pnum].netKillsTotal -= kill;
+				gameData.multiplayer.players [pnum].netKillsTotal -= kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
-					multiData.kills.nTeam [GetTeam (pnum)] -= kill;
+					gameData.multigame.kills.nTeam [GetTeam (pnum)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multi.players [pnum].netKillsTotal += kill;
+				gameData.multiplayer.players [pnum].netKillsTotal += kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
-					multiData.kills.nTeam [GetTeam (pnum)] += kill;
+					gameData.multigame.kills.nTeam [GetTeam (pnum)] += kill;
 				}
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 			MultiSortKillList ();
@@ -2337,24 +2337,24 @@ while (!bDone) {
 			NDReadString (new_callsign);
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multi.players [pnum].connected = 0;
+				gameData.multiplayer.players [pnum].connected = 0;
 				if (!new_player) {
-					memcpy (gameData.multi.players [pnum].callsign, old_callsign, CALLSIGN_LEN+1);
-					gameData.multi.players [pnum].netKilledTotal = killedTotal;
-					gameData.multi.players [pnum].netKillsTotal = killsTotal;
+					memcpy (gameData.multiplayer.players [pnum].callsign, old_callsign, CALLSIGN_LEN+1);
+					gameData.multiplayer.players [pnum].netKilledTotal = killedTotal;
+					gameData.multiplayer.players [pnum].netKillsTotal = killsTotal;
 					}
 				else
-					gameData.multi.nPlayers--;
+					gameData.multiplayer.nPlayers--;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multi.players [pnum].connected = 1;
-				gameData.multi.players [pnum].netKillsTotal = 0;
-				gameData.multi.players [pnum].netKilledTotal = 0;
-				memcpy (gameData.multi.players [pnum].callsign, new_callsign, CALLSIGN_LEN+1);
+				gameData.multiplayer.players [pnum].connected = 1;
+				gameData.multiplayer.players [pnum].netKillsTotal = 0;
+				gameData.multiplayer.players [pnum].netKilledTotal = 0;
+				memcpy (gameData.multiplayer.players [pnum].callsign, new_callsign, CALLSIGN_LEN+1);
 				if (new_player)
-					gameData.multi.nPlayers++;
+					gameData.multiplayer.nPlayers++;
 				}
 			}
 			break;
@@ -2363,11 +2363,11 @@ while (!bDone) {
 			sbyte pnum = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [pnum].connected = 0;
+				gameData.multiplayer.players [pnum].connected = 0;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [pnum].connected = 1;
+				gameData.multiplayer.players [pnum].connected = 1;
 			}
 			break;
 
@@ -2375,11 +2375,11 @@ while (!bDone) {
 			sbyte pnum = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [pnum].connected = 1;
+				gameData.multiplayer.players [pnum].connected = 1;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [pnum].connected = 0;
+				gameData.multiplayer.players [pnum].connected = 0;
 			}
 			break;
 
@@ -2388,11 +2388,11 @@ while (!bDone) {
 			int score = NDReadInt ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [pnum].score -= score;
+				gameData.multiplayer.players [pnum].score -= score;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [pnum].score += score;
+				gameData.multiplayer.players [pnum].score += score;
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 			MultiSortKillList ();
 			gameData.app.nGameMode = GM_NORMAL;
@@ -2403,11 +2403,11 @@ while (!bDone) {
 			int score = NDReadInt ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].score -= score;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score -= score;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].score += score;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score += score;
 			}
 			break;
 
@@ -2416,11 +2416,11 @@ while (!bDone) {
 			short new_ammo = NDReadShort ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [gameData.weapons.nPrimary] = old_ammo;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [gameData.weapons.nPrimary] = old_ammo;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [gameData.weapons.nPrimary] = new_ammo;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [gameData.weapons.nPrimary] = new_ammo;
 			}
 			break;
 
@@ -2429,11 +2429,11 @@ while (!bDone) {
 			short new_ammo = NDReadShort ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [gameData.weapons.nSecondary] = old_ammo;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [gameData.weapons.nSecondary] = old_ammo;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [gameData.weapons.nSecondary] = new_ammo;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [gameData.weapons.nSecondary] = new_ammo;
 			}
 			break;
 
@@ -2469,13 +2469,13 @@ while (!bDone) {
 			newLevel = (sbyte) NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = oldLevel;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = oldLevel;
 				UpdateLaserWeaponInfo ();
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = newLevel;
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = newLevel;
 				UpdateLaserWeaponInfo ();
 				}
 			}
@@ -2531,8 +2531,8 @@ while (!bDone) {
 			else {
 				loadedLevel = newLevel;
 				for (i = 0; i < MAX_PLAYERS; i++) {
-					gameData.multi.players [i].cloakTime = 0;
-					gameData.multi.players [i].flags &= ~PLAYER_FLAGS_CLOAKED;
+					gameData.multiplayer.players [i].cloakTime = 0;
+					gameData.multiplayer.players [i].flags &= ~PLAYER_FLAGS_CLOAKED;
 					}
 				}
 			if ((loadedLevel < gameData.missions.nLastSecretLevel) || 
@@ -2654,45 +2654,45 @@ bshort = NDReadShort ();
 bint = NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = i2f (energy);
-gameData.multi.players [gameData.multi.nLocalPlayer].shields = i2f (shield);
-gameData.multi.players [gameData.multi.nLocalPlayer].flags = NDReadInt ();
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << gameData.multi.nLocalPlayer);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = i2f (energy);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = i2f (shield);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags = NDReadInt ();
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+	gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 	}
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 gameData.weapons.nPrimary = NDReadByte ();
 gameData.weapons.nSecondary = NDReadByte ();
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [i] = NDReadShort ();
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i] = NDReadShort ();
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [i] = NDReadShort ();
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
-if (laserLevel != gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = laserLevel;
+if (laserLevel != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel) {
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = laserLevel;
 	UpdateLaserWeaponInfo ();
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	c = NDReadByte ();
-	gameData.multi.nPlayers = (int)c;
+	gameData.multiplayer.nPlayers = (int)c;
 	// see newdemo_read_start_demo for explanation of
 	// why this is commented out
-	//		NDReadByte ((sbyte *)&gameData.multi.nPlayers);
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
-		NDReadString (gameData.multi.players [i].callsign);
-		gameData.multi.players [i].connected = NDReadByte ();
+	//		NDReadByte ((sbyte *)&gameData.multiplayer.nPlayers);
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		NDReadString (gameData.multiplayer.players [i].callsign);
+		gameData.multiplayer.players [i].connected = NDReadByte ();
 		if (gameData.demo.nGameMode & GM_MULTI_COOP)
-			gameData.multi.players [i].score = NDReadInt ();
+			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
-			gameData.multi.players [i].netKilledTotal = NDReadShort ();
-			gameData.multi.players [i].netKillsTotal = NDReadShort ();
+			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
+			gameData.multiplayer.players [i].netKillsTotal = NDReadShort ();
 			}
 		}
 	}
 else
-	gameData.multi.players [gameData.multi.nLocalPlayer].score = NDReadInt ();
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score = NDReadInt ();
 CFSeek (ndInFile, loc, SEEK_SET);
 CFSeek (ndInFile, -frame_length, SEEK_CUR);
 gameData.demo.nFrameCount = NDReadInt ();            // get the frame count
@@ -2749,7 +2749,8 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 	ubyte			renderType;
 	tObject		*curObjP, *objP, *i, *j;
 
-static tObject curObjs [MAX_OBJECTS];
+	static tObject curObjs [MAX_OBJECTS_D2X];
+
 factor = FixDiv (d_play, d_recorded);
 if (factor > F1_0)
 	factor = F1_0;
@@ -2840,9 +2841,9 @@ void NDPlayBackOneFrame ()
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (gameData.demo.bPlayersCloaked &(1 << i))
-		gameData.multi.players [i].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
-	gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+		gameData.multiplayer.players [i].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 if (gameData.demo.nVcrState == ND_STATE_PAUSED)       // render a frame or not
 	return;
 if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
@@ -3050,8 +3051,8 @@ void NDStopRecording ()
 NDWriteByte (ND_EVENT_EOF);
 NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
 if (gameData.app.nGameMode & GM_MULTI) {
-	for (l = 0; l < gameData.multi.nPlayers; l++) {
-		if (gameData.multi.players [l].flags & PLAYER_FLAGS_CLOAKED)
+	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
+		if (gameData.multiplayer.players [l].flags & PLAYER_FLAGS_CLOAKED)
 			cloaked |= (1 << l);
 		}
 	NDWriteByte (cloaked);
@@ -3063,39 +3064,39 @@ else {
 NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
 byteCount += 10;       // from gameData.demo.nFrameBytesWritten
-NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].energy)));
-NDWriteByte ((sbyte) (f2ir (gameData.multi.players [gameData.multi.nLocalPlayer].shields)));
-NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].flags);        // be sure players flags are set
+NDWriteByte ((sbyte) (f2ir (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy)));
+NDWriteByte ((sbyte) (f2ir (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields)));
+NDWriteInt (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 byteCount += 8;
 for (l = 0; l < MAX_PRIMARY_WEAPONS; l++)
-	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [l]);
+	NDWriteShort ((short)gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [l]);
 for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
-	NDWriteShort ((short)gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l]);
+	NDWriteShort ((short)gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [l]);
 byteCount += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
-NDWriteByte (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel);
+NDWriteByte (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel);
 byteCount++;
 if (gameData.app.nGameMode & GM_MULTI) {
-	NDWriteByte ((sbyte)gameData.multi.nPlayers);
+	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
 	byteCount++;
-	for (l = 0; l < gameData.multi.nPlayers; l++) {
-		NDWriteString (gameData.multi.players [l].callsign);
-		byteCount += ((int) strlen (gameData.multi.players [l].callsign) + 2);
-		NDWriteByte ((sbyte) gameData.multi.players [l].connected);
+	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
+		NDWriteString (gameData.multiplayer.players [l].callsign);
+		byteCount += ((int) strlen (gameData.multiplayer.players [l].callsign) + 2);
+		NDWriteByte ((sbyte) gameData.multiplayer.players [l].connected);
 		if (gameData.app.nGameMode & GM_MULTI_COOP) {
-			NDWriteInt (gameData.multi.players [l].score);
+			NDWriteInt (gameData.multiplayer.players [l].score);
 			byteCount += 5;
 			}
 		else {
-			NDWriteShort ((short)gameData.multi.players [l].netKilledTotal);
-			NDWriteShort ((short)gameData.multi.players [l].netKillsTotal);
+			NDWriteShort ((short)gameData.multiplayer.players [l].netKilledTotal);
+			NDWriteShort ((short)gameData.multiplayer.players [l].netKillsTotal);
 			byteCount += 5;
 			}
 		}
 	} 
 else {
-	NDWriteInt (gameData.multi.players [gameData.multi.nLocalPlayer].score);
+	NDWriteInt (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score);
 	byteCount += 4;
 	}
 NDWriteShort (byteCount);
@@ -3274,7 +3275,7 @@ if (ndInFile==NULL) {
 	}
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
-strncpy (gameData.demo.callSignSave, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, CALLSIGN_LEN);
+strncpy (gameData.demo.callSignSave, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, CALLSIGN_LEN);
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
 if (NDReadDemoStart (rnd_demo)) {
 	CFClose (ndInFile);
@@ -3305,7 +3306,7 @@ void NDStopPlayback ()
 CFClose (ndInFile);
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
-strncpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
+strncpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
 gameStates.render.cockpit.nMode = gameData.demo.nOldCockpit;
 gameData.app.nGameMode = GM_GAME_OVER;
 SetFunctionMode (FMODE_MENU);

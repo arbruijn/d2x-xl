@@ -1065,7 +1065,7 @@ int TraceSegs (vmsVector *p0, int nOldSeg)
 	fix				xSideDists [6], xMaxDist;
 	int				nSide, bit, check = -1;
 	static int		nTraceDepth = 0;
-	static char		bVisited [MAX_SEGMENTS];
+	static char		bVisited [MAX_SEGMENTS_D2X];
 	
 Assert ((nOldSeg <= gameData.segs.nLastSegment) && (nOldSeg >= 0));
 if (nTraceDepth >= gameData.segs.nSegments) {
@@ -1268,9 +1268,9 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 	short				nSide;
 	int				qTail = 0, qHead = 0;
 	int				i, nCurDepth, nPoints;
-	sbyte				visited [MAX_SEGMENTS];
-	segQueueEntry	segmentQ [MAX_SEGMENTS];
-	short				nDepth [MAX_SEGMENTS];
+	sbyte				visited [MAX_SEGMENTS_D2X];
+	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
+	short				nDepth [MAX_SEGMENTS_D2X];
 	tPointSeg		pointSegs [MAX_LOC_POINT_SEGS];
 	fix				dist;
 	tSegment			*segP;
@@ -1921,7 +1921,7 @@ void ValidateSegmentAll (void)
 	int	s;
 
 gameOpts->render.nMathFormat = 0;
-memset (gameData.segs.points, 0, sizeof (gameData.segs.points));
+memset (gameData.segs.points, 0, sizeof (*gameData.segs.points) * MAX_VERTICES);
 for (s = 0; s <= gameData.segs.nLastSegment; s++)
 #ifdef EDITOR
 	if (gameData.segs.segments [s].nSegment != -1)
@@ -1983,8 +1983,8 @@ static int head, tail, nSegment, nChild, nSide;
 int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
 {
 	//int	nSegment, nSide, nChild;
-	ubyte	visited [MAX_SEGMENTS];
-	short	queue [MAX_SEGMENTS];
+	ubyte	visited [MAX_SEGMENTS_D2X];
+	short	queue [MAX_SEGMENTS_D2X];
 	//int	head = 0;
 	//int	tail = 0;
 	int	nDepth = 1;
@@ -2202,7 +2202,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		dlP = gameData.render.lights.deltas + dliP->d2.index;
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
 			uvlP = gameData.segs.segments [dlP->nSegment].sides [dlP->nSide].uvls;
-			pSegLightDelta = &gameData.render.lights.segDeltas [dlP->nSegment][dlP->nSide];
+			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 			for (k = 0; k < 4; k++, uvlP++) {
 				dl = dir * dlP->vert_light [k] * DL_SCALE;
 				lNew = (uvlP->l += dl);
@@ -2307,7 +2307,7 @@ void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
 {
 	short		i, j;
 	tSegment2	*seg2p;
-	static sbyte   marked_segs [MAX_SEGMENTS];
+	static sbyte   marked_segs [MAX_SEGMENTS_D2X];
 
 	//	Now, all segments containing ambient lava or water sound makers are flagged.
 	//	Additionally flag all segments which are within range of them.

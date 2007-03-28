@@ -412,44 +412,6 @@ typedef struct tNetgameInfo {
 	ubyte   AuxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
 } __pack__ tNetgameInfo;
 
-typedef struct tMultiCreateData {
-	int					nObjNums [MAX_NET_CREATE_OBJECTS];
-	int					nLoc;
-} tMultiCreateData;
-
-typedef struct tMultiLaserData {
-	int					bFired;
-	int					nGun;
-	int					nFlags;
-	int					nLevel;
-	short					nTrack;
-} tMultiLaserData;
-
-
-typedef struct tMultiMsgData {
-	char					bSending;
-	char					bDefining;
-	int					nIndex;
-	char					szMsg [MAX_MESSAGE_LEN];
-	char					szMacro [4][MAX_MESSAGE_LEN];
-	char					buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
-	int					nReceiver;
-} tMultiMsgData;
-
-typedef struct tMultiMenuData {
-	char					bInvoked;
-	char					bLeave;
-} tMultiMenuData;
-
-typedef struct tMultiKillData {
-	char					pFlags [MAX_NUM_NET_PLAYERS];
-	int					nSorted [MAX_NUM_NET_PLAYERS];
-	short					matrix [MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
-	short					nTeam [2];
-	char					bShowList;
-	fix					xShowListTimer;
-} tMultiKillData;
-
 #define MAX_ROBOTS_CONTROLLED 5
 
 typedef struct tMultiRobotData {
@@ -463,24 +425,6 @@ typedef struct tMultiRobotData {
 	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
 } tMultiRobotData;
 
-typedef struct tMultiData {
-	int					nWhoKilledCtrlcen;
-	char					bShowReticleName;
-	char					bIsGuided;
-	char					bQuitGame;
-	tMultiCreateData	create;
-	tMultiLaserData	laser;
-	tMultiMsgData		msg;
-	tMultiMenuData		menu;
-	tMultiKillData		kills;
-	tMultiRobotData	robots;
-	short					remoteToLocal [MAX_NUM_NET_PLAYERS][MAX_OBJECTS];  // Remote tObject number for each local tObject
-	short					localToRemote [MAX_OBJECTS];
-	sbyte					nObjOwner [MAX_OBJECTS];   // Who created each tObject in my universe, -1 = loaded at start
-	int					bGotoSecret;
-} tMultiData;
-
-extern tMultiData multiData;
 extern struct tNetgameInfo netGame;
 extern struct tAllNetPlayersInfo netPlayers;
 

@@ -557,6 +557,7 @@ typedef struct tRenderStates {
 	int bD2XLights;
 	int bRendering;
 	int nFrameFlipFlop;
+	int nModelQuality;
 	int nState;	//0: render geometry, 1: render objects
 	ubyte nRenderingType;
 	fix nFlashScale;
@@ -702,7 +703,7 @@ typedef struct tApplicationStates {
 	int bAltModels;
 	int bEnableShadows;
 	int bEnableFreeCam;
-	int bTextureCache;
+	int bCacheTextures;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
@@ -779,14 +780,14 @@ typedef struct tLightRef {
 } tLightRef;
 
 typedef struct tColorData {
-	tFaceColor	lights [MAX_SEGMENTS][6];
-	tFaceColor	sides [MAX_SEGMENTS][6];
-	tFaceColor	segments [MAX_SEGMENTS];
-	tFaceColor	vertices [MAX_VERTICES];
-	float			vertBright [MAX_VERTICES];
-	tFaceColor	ambient [MAX_VERTICES];	//static light values
+	tFaceColor	*lights [6];
+	tFaceColor	*sides [6];
+	tFaceColor	*segments;
+	tFaceColor	*vertices;
+	float			*vertBright;
+	tFaceColor	*ambient;	//static light values
 	tFaceColor	textures [MAX_WALL_TEXTURES];
-	tLightRef	visibleLights [MAX_SEGMENTS * 6];
+	tLightRef	*visibleLights;
 	int			nVisibleLights;
 	tRgbColorf	flagTag;
 } tColorData;
@@ -881,9 +882,9 @@ typedef struct tShaderLightData {
 
 typedef struct tDynLightData {
 	tDynLight			lights [MAX_OGL_LIGHTS];
-	short					nNearestSegLights [MAX_SEGMENTS][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
-	short					nNearestVertLights [MAX_VERTICES][MAX_NEAREST_LIGHTS];	//the 8 nearest static lights for every tSegment
-	short					owners [MAX_OBJECTS];
+	short					*nNearestSegLights;	//the 8 nearest static lights for every tSegment
+	short					*nNearestVertLights;	//the 8 nearest static lights for every tSegment
+	short					*owners;
 	short					nLights;
 	short					nHeadLights [MAX_PLAYERS];
 	short					nSegment;
@@ -911,12 +912,19 @@ typedef struct tFlickerLightData {
 
 typedef struct tLightData {
 	int					nStatic;
-	fix					segDeltas [MAX_SEGMENTS][6];
-	dl_index				deltaIndices [MAX_DL_INDICES];
-	delta_light			deltas [MAX_DELTA_LIGHTS];
-	ubyte					subtracted [MAX_SEGMENTS];
+	fix					*segDeltas;
+	dl_index				*deltaIndices;
+	delta_light			*deltas;
+	ubyte					*subtracted;
 	tDynLightData		dynamic;
 	tFlickerLightData	flicker;
+	fix					*dynamicLight;
+	tRgbColorf			*dynamicColor;
+	char					*bGotDynColor;
+	char					bGotGlobalDynColor;
+	char					bStartDynColoring;
+	char					bInitDynColoring;
+	tRgbColorf			globalDynColor;
 } tLightData;
 
 typedef struct tShadowData {
@@ -928,7 +936,7 @@ typedef struct tShadowData {
 	tObject			lightSource;
 	tOOF_vector		vLightPos;
 	vmsVector		vLightDir [MAX_SHADOW_LIGHTS];
-	short				objLights [MAX_OBJECTS][MAX_SHADOW_LIGHTS];
+	short				*objLights;
 	ubyte				nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 } tShadowData;
 
@@ -1025,19 +1033,20 @@ typedef struct tSlideSegs {
 #define VERTVIS_FLAGS	((MAX_VERTICES + 3) >> 2)
 
 typedef struct tSegmentData {
-	vmsVector			vertices [MAX_VERTICES];
-	fVector				fVertices [MAX_VERTICES];
-	tSegment				segments [MAX_SEGMENTS];
-	tSegment2			segment2s [MAX_SEGMENTS];
-	xsegment				xSegments [MAX_SEGMENTS];
-	g3sPoint				points [MAX_VERTICES];
+	int					nMaxSegments;
+	vmsVector			*vertices;
+	fVector				*fVertices;
+	tSegment				*segments;
+	tSegment2			*segment2s;
+	xsegment				*xSegments;
+	g3sPoint				*points;
 #if CALC_SEGRADS
-	fix					segRads [MAX_SEGMENTS][2];
+	fix					*segRads [2];
 #endif
-	vmsVector			segCenters [MAX_SEGMENTS][2];
-	vmsVector			sideCenters [MAX_SEGMENTS * 6];
-	ubyte					bVertVis [MAX_SEGMENTS * VERTVIS_FLAGS];
-	ubyte					bSegVis [MAX_SEGMENTS * SEGVIS_FLAGS];
+	vmsVector			*segCenters [2];
+	vmsVector			*sideCenters;
+	ubyte					*bVertVis;
+	ubyte					*bSegVis;
 	int					nVertices;
 	int					nLastVertex;
 	short					nSegments;
@@ -1045,7 +1054,7 @@ typedef struct tSegmentData {
 	int					nLevelVersion;
 	char					szLevelFilename [FILENAME_LEN];
 	tSecretData			secret;
-	tSlideSegs			slideSegs [MAX_SEGMENTS];
+	tSlideSegs			*slideSegs;
 	short					nSlideSegs;
 	int					bHaveSlideSegs;
 } tSegmentData;
@@ -1055,13 +1064,13 @@ typedef struct tWallData {
 	tExplWall			explWalls [MAX_EXPLODING_WALLS];
 	tActiveDoor			activeDoors [MAX_DOORS];
 	tCloakingWall		cloaking [MAX_CLOAKING_WALLS];
-	tWallClip					anims [2][MAX_WALL_ANIMS];
+	tWallClip			anims [2][MAX_WALL_ANIMS];
 	int					bitmaps [MAX_WALL_ANIMS];
 	int					nWalls;
 	int					nOpenDoors; 
 	int					nCloaking;
 	int					nAnims [2];
-	tWallClip					*pAnims;
+	tWallClip			*pAnims;
 } tWallData;
 
 typedef struct tTriggerData {
@@ -1097,25 +1106,25 @@ typedef struct tSpeedBoostData {
 
 typedef struct tObjectData {
 	tObjTypeData		types;
-	tObject				objects [MAX_OBJECTS];
-	short					freeList [MAX_OBJECTS];
-	short					parentObjs [MAX_OBJECTS];
-	tObjectRef			childObjs [MAX_OBJECTS];
-	short					firstChild [MAX_OBJECTS];
-	tObject				init [MAX_OBJECTS];
-	tObjDropInfo		dropInfo [MAX_OBJECTS];
-	tSpeedBoostData	speedBoost [MAX_OBJECTS];
-	vmsVector			vRobotGoals [MAX_OBJECTS];
-	fix					xLastAfterburnerTime [MAX_OBJECTS];
-	fix					xCreationTime [MAX_OBJECTS];
-	fix					xLight [MAX_OBJECTS];
-	int					nLightSig [MAX_OBJECTS];
+	tObject				*objects;
+	short					*freeList;
+	short					*parentObjs;
+	tObjectRef			*childObjs;
+	short					*firstChild;
+	tObject				*init;
+	tObjDropInfo		*dropInfo;
+	tSpeedBoostData	*speedBoost;
+	vmsVector			*vRobotGoals;
+	fix					*xLastAfterburnerTime;
+	fix					*xCreationTime;
+	fix					*xLight;
+	int					*nLightSig;
 	tFaceColor			color;
 	short					nFirstDropped;
 	short					nLastDropped;
 	short					nFreeDropped;
 	short					nDropped;
-	ushort				cameraRef [MAX_OBJECTS];
+	ushort				*cameraRef;
 	tObject				*guidedMissile [MAX_PLAYERS];
 	int					guidedMissileSig [MAX_PLAYERS];
 	tObject				*console;
@@ -1126,6 +1135,7 @@ typedef struct tObjectData {
 	int					nObjects;
 	int					nLastObject;
 	int					nObjectLimit;
+	int					nMaxUsedObjects;
 	int					nNextSignature;
 	int					nChildFreeList;
 	int					nDrops;
@@ -1141,7 +1151,7 @@ typedef struct tFVISideData {
 } tFVISideData;
 
 typedef struct tPhysicsData {
-	short					ignoreObjs [MAX_OBJECTS];
+	short					*ignoreObjs;
 	tFVISideData		side;
 	fix					xTime;
 } tPhysicsData;
@@ -1334,7 +1344,7 @@ typedef struct tWeaponData {
 	int					nTypes [2];
 	tWeaponInfo			info [MAX_WEAPON_TYPES];
 	tD1WeaponInfo		infoD1 [D1_MAX_WEAPON_TYPES];
-	tRgbColorf			color [MAX_OBJECTS];
+	tRgbColorf			*color;
 	ubyte					bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 } tWeaponData;
 
@@ -1405,10 +1415,68 @@ typedef struct tMultiplayerData {
 	ubyte					powerupsInMine [MAX_POWERUP_TYPES];
 	ubyte					powerupsOnShip [MAX_POWERUP_TYPES];
 	ubyte					maxPowerupsAllowed [MAX_POWERUP_TYPES];
-	tLeftoverPowerup	leftoverPowerups [MAX_OBJECTS];
+	tLeftoverPowerup	*leftoverPowerups;
 	tAutoNetGame		autoNG;
 	fix					xStartAbortMenuTime;
 } tMultiplayerData;
+
+#include "multi.h"
+
+typedef struct tMultiCreateData {
+	int					nObjNums [MAX_NET_CREATE_OBJECTS];
+	int					nLoc;
+} tMultiCreateData;
+
+typedef struct tMultiLaserData {
+	int					bFired;
+	int					nGun;
+	int					nFlags;
+	int					nLevel;
+	short					nTrack;
+} tMultiLaserData;
+
+
+typedef struct tMultiMsgData {
+	char					bSending;
+	char					bDefining;
+	int					nIndex;
+	char					szMsg [MAX_MESSAGE_LEN];
+	char					szMacro [4][MAX_MESSAGE_LEN];
+	char					buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
+	int					nReceiver;
+} tMultiMsgData;
+
+typedef struct tMultiMenuData {
+	char					bInvoked;
+	char					bLeave;
+} tMultiMenuData;
+
+typedef struct tMultiKillData {
+	char					pFlags [MAX_NUM_NET_PLAYERS];
+	int					nSorted [MAX_NUM_NET_PLAYERS];
+	short					matrix [MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
+	short					nTeam [2];
+	char					bShowList;
+	fix					xShowListTimer;
+} tMultiKillData;
+
+typedef struct tMultiGameData {
+	int					nWhoKilledCtrlcen;
+	char					bShowReticleName;
+	char					bIsGuided;
+	char					bQuitGame;
+	tMultiCreateData	create;
+	tMultiLaserData	laser;
+	tMultiMsgData		msg;
+	tMultiMenuData		menu;
+	tMultiKillData		kills;
+	tMultiRobotData	robots;
+	short					*remoteToLocal;  // Remote tObject number for each local tObject
+	short					*localToRemote;
+	sbyte					*nObjOwner;   // Who created each tObject in my universe, -1 = loaded at start
+	int					bGotoSecret;
+	int					nTypingTimeout;
+} tMultiGameData;
 
 #define LEVEL_NAME_LEN 36       //make sure this is a multiple of 4!
 
@@ -1431,7 +1499,7 @@ typedef struct tMissionData {
 	int					nD1BuiltinHogSize;
 	char					szBuiltinMissionFilename [9];
 	char					szD1BuiltinMissionFilename [9];
-	tMsnListEntry					list [MAX_MISSIONS + 1];
+	tMsnListEntry		list [MAX_MISSIONS + 1];
 	char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 	char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
 	int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
@@ -1560,7 +1628,7 @@ typedef struct tAIData {
 	vmsVector			vBelievedPlayerPos;
 	vmsVector			vLastPlayerPosFiredAt;
 	fix					nDistToLastPlayerPosFiredAt;
-	tAILocal				localInfo [MAX_OBJECTS];
+	tAILocal				*localInfo;
 	tAICloakInfo		cloakInfo [MAX_AI_CLOAK_INFO];
 	tPointSeg			pointSegs [MAX_POINT_SEGS];
 	tPointSeg			*freePointSegs;
@@ -1673,8 +1741,8 @@ typedef struct tDemoData {
 	int				bAuto;
 	char				fnAuto [FILENAME_LEN];
 
-	sbyte				bWasRecorded [MAX_OBJECTS];
-	sbyte				bViewWasRecorded [MAX_OBJECTS];
+	sbyte				*bWasRecorded;
+	sbyte				*bViewWasRecorded;
 	sbyte				bRenderingWasRecorded [32];
 
 	char				callSignSave [CALLSIGN_LEN+1];
@@ -1709,8 +1777,8 @@ typedef struct tDemoData {
 
 typedef struct tSmokeData {
 	tSmoke			smoke [MAX_SMOKE];
-	short				objects [MAX_OBJECTS];
-	time_t			objExplTime [MAX_OBJECTS];
+	short				*objects;
+	time_t			*objExplTime;
 	int				iFreeSmoke;
 	int				iUsedSmoke;
 } tSmokeData;
@@ -1875,6 +1943,12 @@ typedef struct tMissileData {
 	int		nGlobalFiringCount;
 } tMissileData;
 
+typedef struct tCameraData {
+	short		nCameras;
+	tCamera	cameras [MAX_CAMERAS];
+	char		*nSides;
+} tCameraData;
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -1885,7 +1959,8 @@ typedef struct tGameData {
 	tEffectData			eff;
 	tPigData				pig;
 	tModelData			models;
-	tMultiplayerData	multi;
+	tMultiplayerData	multiplayer;
+	tMultiGameData		multigame;
 	tMuzzleData			muzzle;
 	tWeaponData			weapons;
 	tMissionData		missions;
@@ -1916,6 +1991,7 @@ typedef struct tGameData {
 	tLaserData			laser;
 	tFusionData			fusion;
 	tMissileData		missiles;
+	tCameraData			cameras;
 	tApplicationData	app;
 } tGameData;
 
@@ -1991,9 +2067,9 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 #define	CLAMP(_val,_minVal,_maxVal)	\
 			{if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
-#define LOCALPLAYER	gameData.multi.players [gameData.multi.nLocalPlayer]
+#define LOCALPLAYER	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer]
 
-#define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multi.nLocalPlayer))
+#define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multiplayer.nLocalPlayer))
 
 #define INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 

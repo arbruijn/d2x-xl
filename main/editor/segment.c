@@ -1384,7 +1384,7 @@ int med_delete_segment(tSegment *sp)
 
 	// If deleted tSegment = group tSegment, wipe it off the group list.
 	if (sp->group > -1) 
-			delete_segment_from_group(SEG_IDX (sp), sp->group);
+			DeleteSegmentFromGroup(SEG_IDX (sp), sp->group);
 
 	// If we deleted something which was not connected to anything, must now select a new current tSegment.
 	if (Cursegp == sp)

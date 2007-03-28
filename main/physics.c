@@ -313,7 +313,7 @@ void UnstickObject (tObject *objP)
 	int				fviResult;
 
 if ((objP->nType == OBJ_PLAYER) && 
-	 (objP->id == gameData.multi.nLocalPlayer) && 
+	 (objP->id == gameData.multiplayer.nLocalPlayer) && 
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
 fq.p0 = fq.p1 = &objP->position.vPos;
@@ -895,7 +895,7 @@ if (objP->mType.physInfo.mass == 0)
 if (objP->movementType != MT_PHYSICS)
 	return;
 #ifdef TACTILE
-  if (TactileStick && (obj == gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
+  if (TactileStick && (obj == gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
 	Tactile_apply_force (vForce, &objP->position.mOrient);
 #endif
 //Add in acceleration due to force

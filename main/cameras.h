@@ -36,12 +36,6 @@ typedef struct tCamera {
 	time_t		t0;
 } tCamera;
 
-extern tCamera cameras [MAX_CAMERAS];
-extern char nSideCameras [MAX_SEGMENTS][6];
-extern char bRenderCameras;
-extern int bFullScreenCameras;
-extern int nCameraFPS;
-
 int CreateCameras (void);
 void DestroyCameras (void);
 int RenderCameras (void);

@@ -144,18 +144,18 @@ void game_draw_multi_message()
 {
 	char temp_string[MAX_MULTI_MESSAGE_LEN+25];
 
-	if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bSending))	{
+	if ( (gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending))	{
 		GrSetCurFont( GAME_FONT );    //GAME_FONT );
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf( temp_string, "%s: %s_", TXT_MESSAGE, multiData.msg.szMsg );
+		sprintf( temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg );
 		DrawCenteredText(grdCurCanv->cv_bitmap.bm_props.h/2-16, temp_string );
 
 	}
 
-	if ( (gameData.app.nGameMode&GM_MULTI) && (multiData.msg.bDefining))	{
+	if ( (gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 		GrSetCurFont( GAME_FONT );    //GAME_FONT );
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf( temp_string, "%s #%d: %s_", TXT_MACRO, multiData.msg.bDefining, multiData.msg.szMsg );
+		sprintf( temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg );
 		DrawCenteredText(grdCurCanv->cv_bitmap.bm_props.h/2-16, temp_string );
 	}
 }
@@ -357,7 +357,7 @@ void game_draw_hud_stuff()
 
 	if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 		renderCountdown_gauge();
-		if ( gameData.multi.nLocalPlayer > -1 && gameData.objs.viewer->nType==OBJ_PLAYER && gameData.objs.viewer->id==gameData.multi.nLocalPlayer )	{
+		if ( gameData.multiplayer.nLocalPlayer > -1 && gameData.objs.viewer->nType==OBJ_PLAYER && gameData.objs.viewer->id==gameData.multiplayer.nLocalPlayer )	{
 			int	x = 3;
 			int	y = grdCurCanv->cv_bitmap.bm_props.h;
 
@@ -524,21 +524,21 @@ void game_render_frame_stereo()
 		actual_eye_offset = VR_eye_offset;
 	}
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+	if (gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer] && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		actual_eye_offset = 0;
 
 	GrSetCurrentCanvas(&RenderCanvas[0]);
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
+	if (gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";
 		tObject *viewer_save = gameData.objs.viewer;
 		int w,h,aw;
 
-		gameData.objs.viewer = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
+		gameData.objs.viewer = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer];
 
 		WIN(DDGRLOCK(dd_grd_curcanv); 	// Must lock DD canvas!!!
   		{
@@ -606,10 +606,10 @@ void game_render_frame_stereo()
 	// Draw the right eye's view
 	GrSetCurrentCanvas(&RenderCanvas[1]);
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && 
-		 gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+	if (gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer] && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && 
+		 gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
 		GrBitmap(0,0,&RenderCanvas[0].cv_bitmap);
 	else {
@@ -805,7 +805,7 @@ void show_extraViews()
    	return;
     } 
 
-	if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer]) {
+	if (gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer] && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer]) {
 		if (gameOpts->render.cockpit.bGuidedInMainView)
 		 {
 			gameStates.render.nRenderingType=6+(1<<4);
@@ -814,17 +814,17 @@ void show_extraViews()
 		else
 		 {
 			gameStates.render.nRenderingType=1+(1<<4);
-			DoCockpitWindowView(1,gameData.objs.guidedMissile[gameData.multi.nLocalPlayer],0,WBU_GUIDED,"GUIDED");
+			DoCockpitWindowView(1,gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer],0,WBU_GUIDED,"GUIDED");
 	    }
 			
 		did_missileView=1;
 	}
 	else {
 
-		if (gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]) {		//used to be active
+		if (gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]) {		//used to be active
 			if (!gameOpts->render.cockpit.bGuidedInMainView)
 				DoCockpitWindowView(1,NULL,0,WBU_STATIC,NULL);
-			gameData.objs.guidedMissile[gameData.multi.nLocalPlayer] = NULL;
+			gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer] = NULL;
 		}
 
 		if (gameData.objs.missileViewer && !gameStates.render.bExternalView) {		//do missile view
@@ -887,8 +887,8 @@ void show_extraViews()
 
 	         gameStates.render.nRenderingType=255; // don't handle coop stuff			
 				
-				if (tPlayer!=-1 && gameData.multi.players[tPlayer].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(tPlayer) == GetTeam(gameData.multi.nLocalPlayer)))))
-					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multi.players[CoopView_player[w]].nObject],0,WBU_COOP,gameData.multi.players[CoopView_player[w]].callsign);
+				if (tPlayer!=-1 && gameData.multiplayer.players[tPlayer].connected && ((gameData.app.nGameMode & GM_MULTI_COOP) || ((gameData.app.nGameMode & GM_TEAM) && (GetTeam(tPlayer) == GetTeam(gameData.multiplayer.nLocalPlayer)))))
+					DoCockpitWindowView(w,&gameData.objs.objects[gameData.multiplayer.players[CoopView_player[w]].nObject],0,WBU_COOP,gameData.multiplayer.players[CoopView_player[w]].callsign);
 				else {
 					DoCockpitWindowView(w,NULL,0,WBU_WEAPON,NULL);
 					Cockpit_3dView[w] = CV_NONE;
@@ -958,11 +958,11 @@ void GameRenderFrameMono(void)
 		GrSetCurrentCanvas(&VR_render_sub_buffer[0])
 		);
 	
-	gm = gameData.objs.guidedMissile [gameData.multi.nLocalPlayer];
+	gm = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 	if (gm && 
 		 gm->nType==OBJ_WEAPON && 
 		 gm->id==GUIDEDMSL_ID && 
-		 gm->nSignature==gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer] && 
+		 gm->nSignature==gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView) {
 		char *msg = "Guided Missile View";
 		tObject *viewer_save = gameData.objs.viewer;
@@ -976,7 +976,7 @@ void GameRenderFrameMono(void)
 			 return;
 		   }
   
-		gameData.objs.viewer = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
+		gameData.objs.viewer = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer];
 
 		WIN(DDGRLOCK(dd_grd_curcanv)); 	// Must lock DD canvas!!!
   		{
@@ -1524,7 +1524,7 @@ void ShowBoxedMessage(char *msg)
 	// Save the background of the display
 	bg.x=x; bg.y=y; bg.w=w; bg.h=h;
 	if (!gameOpts->menus.nStyle) {
-		bg.bmp = GrCreateBitmap( w+BOX_BORDER, h+BOX_BORDER, 0 );
+		bg.bmp = GrCreateBitmap( w+BOX_BORDER, h+BOX_BORDER, 1);
 		WIN( DDGRLOCK(dd_grd_curcanv));
 		GrBmUBitBlt(w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, &(grdCurCanv->cv_bitmap), bg.bmp );
 		WIN( DDGRUNLOCK(dd_grd_curcanv));

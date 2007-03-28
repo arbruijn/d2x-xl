@@ -264,25 +264,25 @@ void DoMegaWowPowerup (int quantity)
 	int i;
 
 PowerupBasic (30, 0, 30, 1, "MEGA-WOWIE-ZOWIE!");
-gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
-gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags = 0xffff;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags = 0xffff;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo[i] = VULCAN_AMMO_MAX;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo[i] = VULCAN_AMMO_MAX;
 for (i = 0; i < 3; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = quantity;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[i] = quantity;
 for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[i] = quantity/5;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
-gameData.multi.players [gameData.multi.nLocalPlayer].energy = F1_0 * 200;
-gameData.multi.players [gameData.multi.nLocalPlayer].shields = F1_0 * 200;
+	NDRecordLaserLevel (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = F1_0 * 200;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = F1_0 * 200;
 MultiSendShields ();
-gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
-gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 12;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 15;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 15;
 UpdateLaserWeaponInfo ();
 }
 //#endif
@@ -291,7 +291,7 @@ UpdateLaserWeaponInfo ();
 
 int PickupEnergy (int nPlayer)
 {
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->energy < MAX_ENERGY) {
 	fix boost = 3 * F1_0 * (NDL - gameStates.app.nDifficultyLevel + 1);
@@ -314,7 +314,7 @@ return 0;
 
 int PickupShield (int nPlayer)
 {
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->shields < MAX_SHIELDS) {
 	fix boost = 3 * F1_0 * (NDL - gameStates.app.nDifficultyLevel + 1);
@@ -340,7 +340,7 @@ return 0;
 int PickupKey (tObject *objP, int nKey, char *pszKey, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
 	if (playerP->flags & nKey)
 		return 0;
@@ -359,16 +359,16 @@ return 0;
 int PickupFlag (tObject *objP, int nThisTeam, int nOtherTeam, char *pszFlag, int nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.nGameMode & GM_CAPTURE) {
-		if (GetTeam ((char) gameData.multi.nLocalPlayer) == nOtherTeam) {
+		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
 			ResetFlightPath (&gameData.pig.flags [nThisTeam].path, 10, -1);
-			MultiSendGotFlag ((char) gameData.multi.nLocalPlayer);
+			MultiSendGotFlag ((char) gameData.multiplayer.nLocalPlayer);
 			return 1;
 			}
-		if (GetTeam ((char) gameData.multi.nLocalPlayer) == nThisTeam) {
+		if (GetTeam ((char) gameData.multiplayer.nLocalPlayer) == nThisTeam) {
 			ReturnFlagHome (objP);
 			}
 		}
@@ -380,7 +380,7 @@ return 0;
 
 int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot, int nPlayer)
 {
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 	int		bUsed = 0;
 
 if (playerP->flags & nEquipment) {
@@ -406,7 +406,7 @@ return bUsed;
 int PickUpVulcanAmmo (int nPlayer)
 {
 	int		bUsed=0, max;
-	tPlayer	*playerP = gameData.multi.players + nPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
 int	pwSave = gameData.weapons.nPrimary;		
 // Ugh, save selected primary weapon around the picking up of the ammo.  
@@ -418,7 +418,7 @@ if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, nPlayer)) {
 	} 
 else {
 	max = nMaxPrimaryAmmo [VULCAN_INDEX];
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
 		max *= 2;
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) max), TXT_VULCAN_ROUNDS);
@@ -450,7 +450,7 @@ MultiSendWeapons (1);
 
 int ApplyInvul (int bForce, int nPlayer)
 {
-	tPlayer *playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
+	tPlayer *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
 
 if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nInvuls)))
 	return 0;
@@ -467,7 +467,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendInvul ();
 	PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
-	SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
+	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	UsePowerup (-POW_INVUL);
 	}
 return 1;
@@ -477,7 +477,7 @@ return 1;
 
 int ApplyCloak (int bForce, int nPlayer)
 {
-	tPlayer *playerP = gameData.multi.players + ((nPlayer < 0) ? gameData.multi.nLocalPlayer : nPlayer);
+	tPlayer *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
 
 if (!(bForce || ((gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && playerP->nCloaks)))
 	return 0;
@@ -513,9 +513,9 @@ int DoPowerup (tObject *objP, int nPlayer)
 	int		id = objP->id;
 
 if (nPlayer < 0)
-	nPlayer = gameData.multi.nLocalPlayer;
-playerP = gameData.multi.players + nPlayer;
-bLocalPlayer = (nPlayer == gameData.multi.nLocalPlayer);
+	nPlayer = gameData.multiplayer.nLocalPlayer;
+playerP = gameData.multiplayer.players + nPlayer;
+bLocalPlayer = (nPlayer == gameData.multiplayer.nLocalPlayer);
 if (bLocalPlayer &&
 	 ((gameStates.app.bPlayerIsDead) || 
 	  (gameData.objs.console->nType == OBJ_GHOST) || 
@@ -815,7 +815,7 @@ switch (objP->id) {
 				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (bHeadLights, 0, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendFlags ((char) gameData.multi.nLocalPlayer);
+					MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 				}
 			bUsed = 1;
 			}
@@ -833,7 +833,7 @@ switch (objP->id) {
 		if (gameData.app.nGameMode & GM_HOARD) {	
 			if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 12) {
 				if (ISLOCALPLAYER (nPlayer)) {
-					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
+					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 					}
 				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
@@ -842,7 +842,7 @@ switch (objP->id) {
 				}
 			}
 		else if (gameData.app.nGameMode & GM_ENTROPY) {
-			if (objP->matCenCreator != GetTeam ((char) gameData.multi.nLocalPlayer) + 1) {
+			if (objP->matCenCreator != GetTeam ((char) gameData.multiplayer.nLocalPlayer) + 1) {
 				if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 					 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
 					 ((gameData.segs.xSegments [objP->nSegment].owner != objP->matCenCreator) ||
@@ -852,7 +852,7 @@ switch (objP->id) {
 			else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
 						(playerP->secondaryAmmo [PROXIMITY_INDEX] < playerP->secondaryAmmo [SMART_MINE_INDEX])) {
 				if (ISLOCALPLAYER (nPlayer)) {
-					MultiSendGotOrb ((char) gameData.multi.nLocalPlayer);
+					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 					}
 				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
@@ -890,7 +890,7 @@ int SpawnPowerup (tObject *spitterP, ubyte nId, int nCount)
 
 if (nCount <= 0)
 	return 0;
-gameData.multi.powerupsInMine [nId] += nCount;
+gameData.multiplayer.powerupsInMine [nId] += nCount;
 velSave = spitterP->mType.physInfo.velocity;
 spitterP->mType.physInfo.velocity.p.x =
 spitterP->mType.physInfo.velocity.p.y =
@@ -908,18 +908,18 @@ return nCount;
 
 void SpawnLeftoverPowerups (short nObject)
 {
-SpawnPowerup (gameData.multi.leftoverPowerups [nObject].spitterP, 
-				  gameData.multi.leftoverPowerups [nObject].nType,
-				  gameData.multi.leftoverPowerups [nObject].nCount);
-memset (gameData.multi.leftoverPowerups + nObject, 0, 
-		  sizeof (gameData.multi.leftoverPowerups [nObject]));
+SpawnPowerup (gameData.multiplayer.leftoverPowerups [nObject].spitterP, 
+				  gameData.multiplayer.leftoverPowerups [nObject].nType,
+				  gameData.multiplayer.leftoverPowerups [nObject].nCount);
+memset (gameData.multiplayer.leftoverPowerups + nObject, 0, 
+		  sizeof (*gameData.multiplayer.leftoverPowerups));
 }
 
 //------------------------------------------------------------------------------
 
 void CheckInventory (void)
 {
-	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 	tObject	*objP = gameData.objs.objects + playerP->nObject;
 
 if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
@@ -1158,12 +1158,12 @@ short PowerupsOnShips (int nPowerup)
 {
 	int	nType;
 	short h, i, nWeapon = PowerupToWeapon (nPowerup, &nType);
-	tPlayer	*playerP = gameData.multi.players;
+	tPlayer	*playerP = gameData.multiplayer.players;
 
 if (nWeapon < 0)
 	return 0;
-for (h = i = 0; i < gameData.multi.nPlayers; i++, playerP++) {
-	if ((i == gameData.multi.nLocalPlayer) && 
+for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+	if ((i == gameData.multiplayer.nLocalPlayer) && 
 		 (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
 	if (playerP->shields < 0)

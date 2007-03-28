@@ -370,7 +370,7 @@ memset (nMenuChoice, 0, sizeof (nMenuChoice));
 memset (m, 0, sizeof (m));
 //LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
-if (!gameData.multi.players[gameData.multi.nLocalPlayer].callsign[0]) {
+if (!gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign[0]) {
 	SelectPlayer ();
 	return 0;
 }
@@ -380,7 +380,7 @@ if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	return 0;
 }
 
-if (gameData.multi.autoNG.bValid) {
+if (gameData.multiplayer.autoNG.bValid) {
 	ExecMenuOption (MENU_MULTIPLAYER);
 	return 0;
 	}
@@ -3805,8 +3805,8 @@ void MultiplayerMenu ()
 		{MENU_START_KALI_NETGAME, MENU_JOIN_KALI_NETGAME}
 	};
 
-if (gameData.multi.autoNG.bValid)
-	ExecMenuOption (choiceMap [gameData.multi.autoNG.uConnect][!gameData.multi.autoNG.bHost]);
+if (gameData.multiplayer.autoNG.bValid)
+	ExecMenuOption (choiceMap [gameData.multiplayer.autoNG.uConnect][!gameData.multiplayer.autoNG.bHost]);
 else {
 	do {
 		old_game_mode = gameData.app.nGameMode;

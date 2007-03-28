@@ -49,7 +49,7 @@ GLhandleARB lmFS [3] = {0,0,0};
 GLhandleARB lmVS [3] = {0,0,0}; 
 
 int numLightMaps; 
-ogl_texture lightMaps [MAX_SEGMENTS * 6];  //Level Lightmaps
+ogl_texture *lightMaps = NULL;  //Level Lightmaps
 tLightMap *lightData = NULL;  //Level lights
 
 #ifndef GL_VERSION_20
@@ -295,7 +295,7 @@ return (gameData.pig.tex.pTMapInfo[tMapNum].lighting > 0);
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
-char sideFlags [MAX_SEGMENTS * 6]; 
+char sideFlags [MAX_SEGMENTS_D2X * 6]; 
 #endif
 
 int CountLights (void)
@@ -320,7 +320,7 @@ for (segNum = 0, segP = gameData.segs.segments;
 			continue; 	//skip open sides
 #endif
 		if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex) ||
-			 (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum][sideNum].index)) {
+			 (gameStates.app.bD2XLevel && gameData.render.color.lights [sideNum][segNum].index)) {
 			nLights++;
 #ifdef _DEBUG
 			sideFlags [segNum * 6 + sideNum] = 1; 
@@ -721,10 +721,14 @@ if (!(numLightMaps = CountLights ()))
 	return 0;
 if (!(lightData = d_malloc (sizeof (tLightMap) * numLightMaps)))
 	return numLightMaps = 0; 
-memset (lightMaps, 0, sizeof (lightMaps)); 
+if (!(lightMaps = (ogl_texture *) d_malloc (MAX_SEGMENTS * 6 * sizeof (*lightMaps)))) {
+	d_free (lightData);
+	return numLightMaps = 0; 
+	}
+memset (lightMaps, 0, sizeof (*lightMaps) * MAX_SEGMENTS * 6); 
 memset (lightData, 0, sizeof (tLightMap) * numLightMaps); 
 numLightMaps = 0; 
-for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++)	{
+for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++) {
 	for (sideNum = 0; sideNum < 6; sideNum++) {
 		//check for point lights
 #if TEXTURE_CHECK
@@ -747,11 +751,11 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++)	{
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
 			}
-		if (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum][sideNum].index) { 
+		if (gameStates.app.bD2XLevel && gameData.render.color.lights [sideNum][segNum].index) { 
 			bIsLight = 1;
-			tempLight.color [0] = (GLfloat) gameData.render.color.lights [segNum][sideNum].color.red; 
-			tempLight.color [1] = (GLfloat) gameData.render.color.lights [segNum][sideNum].color.green; 
-			tempLight.color [2] = (GLfloat) gameData.render.color.lights [segNum][sideNum].color.blue; 
+			tempLight.color [0] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.red; 
+			tempLight.color [1] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.green; 
+			tempLight.color [2] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.blue; 
 			tempLight.range = baseRange; 
 			}
 		//Process found light.

@@ -91,7 +91,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "object.h"
 
-#define MAX_RENDER_SEGS     MAX_SEGMENTS
+#define MAX_RENDER_SEGS     MAX_SEGMENTS_D2X
 #define OBJS_PER_SEG        5
 #define N_EXTRA_OBJ_LISTS   50
 
@@ -130,8 +130,6 @@ extern fix xRenderZoom;     // the tPlayer's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
-extern unsigned char bVisited[MAX_SEGMENTS];
-
 extern int nRenderSegs;
 extern short nRenderList[MAX_RENDER_SEGS];
 

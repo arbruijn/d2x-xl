@@ -1473,7 +1473,7 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	fix			xDist;
 #endif
 	static		unsigned int nVisited = 0;
-	static		unsigned int bVisited [MAX_SEGMENTS];
+	static		unsigned int bVisited [MAX_SEGMENTS_D2X];
 
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
 	return INFINITY;
@@ -1514,8 +1514,8 @@ for (;;) {
 		nChild = segP->children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
-		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters [nChild] + 1);
-		if (xDist <= gameData.segs.segRads [nChild]) {
+		xDist = VmLinePointDist (vPos, &v, gameData.segs.segCenters [1] + nChild);
+		if (xDist <= gameData.segs.segRads [0][nChild]) {
 			nHitSide = LineHitsFace (&vHit, vPos, &v, nSegment, nSide);
 			break;
 			}
@@ -1987,7 +1987,7 @@ if (!gameStates.render.bShadowMaps) {
 CHECK();
 OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
-pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
+pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (gameOpts->render.shadows.bFast) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
@@ -2035,7 +2035,7 @@ if (gameOpts->render.shadows.bFast) {
 else {
 	h = OBJ_IDX (objP);
 	j = (int) (gameData.render.shadows.pLight - gameData.render.lights.dynamic.shader.lights);
-	pnl = gameData.render.shadows.objLights [h];
+	pnl = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, pnl++) {
 		if (*pnl < 0)
 			break;

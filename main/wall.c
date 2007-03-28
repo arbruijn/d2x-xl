@@ -1289,7 +1289,7 @@ if (w->nType == WALL_BLASTABLE) {
 	return WHP_BLASTABLE;
 	}
 
-if (playernum != gameData.multi.nLocalPlayer)	//return if was robot fire
+if (playernum != gameData.multiplayer.nLocalPlayer)	//return if was robot fire
 	return WHP_NOT_SPECIAL;
 
 Assert(playernum > -1);
@@ -1306,24 +1306,24 @@ else
 	show_message = 1;
 
 if (w->keys == KEY_BLUE) {
-	if (!(gameData.multi.players[playernum].flags & PLAYER_FLAGS_BLUE_KEY)) {
-		if (playernum==gameData.multi.nLocalPlayer)
+	if (!(gameData.multiplayer.players[playernum].flags & PLAYER_FLAGS_BLUE_KEY)) {
+		if (playernum==gameData.multiplayer.nLocalPlayer)
 			if (show_message)
 				HUDInitMessage("%s %s",TXT_BLUE,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (w->keys == KEY_RED) {
-	if (!(gameData.multi.players[playernum].flags & PLAYER_FLAGS_RED_KEY)) {
-		if (playernum==gameData.multi.nLocalPlayer)
+	if (!(gameData.multiplayer.players[playernum].flags & PLAYER_FLAGS_RED_KEY)) {
+		if (playernum==gameData.multiplayer.nLocalPlayer)
 			if (show_message)
 				HUDInitMessage("%s %s",TXT_RED,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (w->keys == KEY_GOLD) {
-	if (!(gameData.multi.players[playernum].flags & PLAYER_FLAGS_GOLD_KEY)) {
-		if (playernum==gameData.multi.nLocalPlayer)
+	if (!(gameData.multiplayer.players[playernum].flags & PLAYER_FLAGS_GOLD_KEY)) {
+		if (playernum==gameData.multiplayer.nLocalPlayer)
 			if (show_message)
 				HUDInitMessage("%s %s",TXT_YELLOW,TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
@@ -1331,7 +1331,7 @@ else if (w->keys == KEY_GOLD) {
 	}
 if (w->nType == WALL_DOOR) {
 	if ((w->flags & WALL_DOOR_LOCKED) && !(special_boss_opening_allowed (SEG_IDX (seg), tSide))) {
-		if (playernum == gameData.multi.nLocalPlayer)
+		if (playernum == gameData.multiplayer.nLocalPlayer)
 			if (show_message)
 				HUDInitMessage(TXT_CANT_OPEN_DOOR);
 		return WHP_NO_KEY;
@@ -1825,7 +1825,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 void BlastNearbyGlass(tObject *objP, fix damage)
 {
 	int		i;
-	sbyte   visited[MAX_SEGMENTS];
+	sbyte   visited[MAX_SEGMENTS_D2X];
 	tSegment	*cursegp;
 
 	cursegp = &gameData.segs.segments[objP->nSegment];

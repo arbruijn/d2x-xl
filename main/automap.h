@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern void DoAutomap(int key_code, int bRadar);
 extern void AutomapClearVisited();
-extern ubyte bAutomapVisited[MAX_SEGMENTS];
+extern ubyte bAutomapVisited[MAX_SEGMENTS_D2X];
 void DropBuddyMarker(tObject *objp);
 
 //added on 9/30/98 by Matt Mueller for selectable automap modes

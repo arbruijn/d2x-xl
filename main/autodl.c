@@ -137,7 +137,7 @@ static void SetDownloadFlag (int nPlayer, int nFlag)
 {
 	int	i;
 
-for (i = 0; i < gameData.multi.nPlayers; i++) {
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!memcmp (&uploadDests [nPlayer].addr.server, &netPlayers.players [i].network.ipx.server, 4) &&
 		 !memcmp (&uploadDests [nPlayer].addr.node, &netPlayers.players [i].network.ipx.node, 6)) {
 		bDownloading [i] = nFlag;

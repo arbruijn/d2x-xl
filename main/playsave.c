@@ -175,10 +175,10 @@ Cockpit_3dView[0]=CV_NONE;
 Cockpit_3dView[1]=CV_NONE;
 
 // Default taunt macros
-strcpy(multiData.msg.szMacro[0], TXT_GET_ALONG);
-strcpy(multiData.msg.szMacro[1], TXT_GOT_PRESENT);
-strcpy(multiData.msg.szMacro[2], TXT_HANKERING);
-strcpy(multiData.msg.szMacro[3], TXT_URANUS);
+strcpy(gameData.multigame.msg.szMacro[0], TXT_GET_ALONG);
+strcpy(gameData.multigame.msg.szMacro[1], TXT_GOT_PRESENT);
+strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
+strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills=0; 
 networkData.nNetLifeKilled=0;	
 #if 0
@@ -209,9 +209,9 @@ int ReadPlayerFile(int bOnlyWindowSizes)
 	int	swap = 0;
 	int	gameOptsSize, nMaxControls;
 
-Assert(gameData.multi.nLocalPlayer>=0 && gameData.multi.nLocalPlayer<MAX_PLAYERS);
+Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
-sprintf(filename, "%.8s.plr", gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
+sprintf(filename, "%.8s.plr", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
 if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
 	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
 	return errno;
@@ -293,7 +293,7 @@ if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestL
 	int len = MAX_MESSAGE_LEN;
 
 	for (i = 0; i < 4; i++)
-		if (CFRead(multiData.msg.szMacro[i], len, 1, fp) != 1)
+		if (CFRead(gameData.multigame.msg.szMacro[i], len, 1, fp) != 1)
 			{errno_ret			= errno; break;}
 }
 
@@ -893,7 +893,7 @@ return i;
 //write out tPlayer's saved games.  returns errno (0 == no error)
 int WritePlayerFile()
 {
-	char filename[FILENAME_LEN];		// because of ":gameData.multi.players:" path
+	char filename[FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
 	CFILE *fp;
 	int errno_ret, h, i, j;
 
@@ -903,7 +903,7 @@ int WritePlayerFile()
 
 	errno_ret = WriteConfigFile();
 
-	sprintf(filename,"%s.plr",gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
+	sprintf(filename,"%s.plr",gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
 	fp = CFOpen(filename, gameFolders.szProfDir, "wb", 0);
 
 #if 0
@@ -913,7 +913,7 @@ int WritePlayerFile()
 		//if the callsign is the name of a tty device, prepend a char
 
 		fclose(fp);
-		sprintf(filename,"$%.7s.plr",gameData.multi.players[gameData.multi.nLocalPlayer].callsign);
+		sprintf(filename,"$%.7s.plr",gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
 		fp			= fopen(filename,"wb");
 	}
 #endif
@@ -950,7 +950,7 @@ int WritePlayerFile()
 		return errno_ret;
 	}
 
-	if ((CFWrite(multiData.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4))
+	if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4))
 	{
 		errno_ret			= errno;
 		CFClose(fp);

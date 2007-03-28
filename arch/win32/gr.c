@@ -305,6 +305,7 @@ int GrSetMode(u_int32_t mode)
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
+		 grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 
        backbuffer = d_malloc(w*h);

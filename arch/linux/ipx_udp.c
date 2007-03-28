@@ -1232,7 +1232,7 @@ if (!(bTracker
 #endif			
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (netPlayers.players [gameData.multi.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
+	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
 	dataLen -= bSafeMode ? 22 : 14;
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker

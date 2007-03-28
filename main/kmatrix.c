@@ -84,41 +84,41 @@ void kmatrix_draw_item (int  i, int *sorted)
 
 	// Print tPlayer name.
 
-GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)) + xOffs, y, "%s", gameData.multi.players [sorted [i]].callsign);
+GrPrintF (LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [sorted [i]].callsign);
   if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
-   GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)-15),y,"%c",ConditionLetters [gameData.multi.players [sorted [i]].connected]);
+   GrPrintF (LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)-15),y,"%c",ConditionLetters [gameData.multiplayer.players [sorted [i]].connected]);
    
-for (j=0; j<gameData.multi.nPlayers; j++) {
-	x = LHX (70 + CENTERING_OFFSET (gameData.multi.nPlayers) + j*25) + xOffs;
+for (j=0; j<gameData.multiplayer.nPlayers; j++) {
+	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
 	if (sorted [i]==sorted [j]) {
-		if (multiData.kills.matrix [sorted [i]] [sorted [j]] == 0) {
+		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] == 0) {
 			GrSetFontColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (x, y, "%d", multiData.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			} 
 		else {
 			GrSetFontColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (x, y, "-%d", multiData.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (x, y, "-%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			}
 		} 
 	else {
-		if (multiData.kills.matrix [sorted [i]] [sorted [j]] <= 0) {
+		if (gameData.multigame.kills.matrix [sorted [i]] [sorted [j]] <= 0) {
 			GrSetFontColorRGBi (RGBA_PAL2 (10,10,10), 1, 0, 0);
-			GrPrintF (x, y, "%d", multiData.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			} 
 		else {
 			GrSetFontColorRGBi (RGBA_PAL2 (25,25,25), 1, 0, 0);
-			GrPrintF (x, y, "%d", multiData.kills.matrix [sorted [i]] [sorted [j]]);
+			GrPrintF (x, y, "%d", gameData.multigame.kills.matrix [sorted [i]] [sorted [j]]);
 			}
 		}
 	}
 
-if (gameData.multi.players [sorted [i]].netKilledTotal + gameData.multi.players [sorted [i]].netKillsTotal==0)
+if (gameData.multiplayer.players [sorted [i]].netKilledTotal + gameData.multiplayer.players [sorted [i]].netKillsTotal==0)
 	sprintf (temp,"N/A");
 else
-   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multi.players [sorted [i]].netKillsTotal/ ((double)gameData.multi.players [sorted [i]].netKilledTotal+ (double)gameData.multi.players [sorted [i]].netKillsTotal))*100.0));		
-x = LHX (60 + CENTERING_OFFSET (gameData.multi.nPlayers) + gameData.multi.nPlayers*25) + xOffs;
+   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multiplayer.players [sorted [i]].netKillsTotal/ ((double)gameData.multiplayer.players [sorted [i]].netKilledTotal+ (double)gameData.multiplayer.players [sorted [i]].netKillsTotal))*100.0));		
+x = LHX (60 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
-GrPrintF (x ,y,"%4d/%s",gameData.multi.players [sorted [i]].netKillsTotal,temp);
+GrPrintF (x ,y,"%4d/%s",gameData.multiplayer.players [sorted [i]].netKillsTotal,temp);
 }
 
 //-----------------------------------------------------------------------------
@@ -128,14 +128,14 @@ void kmatrix_draw_coop_item (int  i, int *sorted)
 	int  x, y = LHY (50+i*9) + yOffs;
 
 // Print tPlayer name.
-GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)) + xOffs, y, "%s", gameData.multi.players [sorted [i]].callsign);
-GrPrintF (LHX (CENTERING_OFFSET (gameData.multi.nPlayers)-15) + xOffs,y,"%c",ConditionLetters [gameData.multi.players [sorted [i]].connected]);
+GrPrintF (LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [sorted [i]].callsign);
+GrPrintF (LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)-15) + xOffs,y,"%c",ConditionLetters [gameData.multiplayer.players [sorted [i]].connected]);
 x = CENTERSCREEN + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
-GrPrintF (x, y, "%d", gameData.multi.players [sorted [i]].score);
+GrPrintF (x, y, "%d", gameData.multiplayer.players [sorted [i]].score);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (60,40,10),1, 0, 0);
-GrPrintF (x, y, "%d", gameData.multi.players [sorted [i]].netKilledTotal);
+GrPrintF (x, y, "%d", gameData.multiplayer.players [sorted [i]].netKilledTotal);
 }
 
 //-----------------------------------------------------------------------------
@@ -150,19 +150,19 @@ if (Kmatrix_nomovie_message) {
 	GrPrintF (CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
 
-for (j=0; j<gameData.multi.nPlayers; j++) {
+for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (sorted [j]);
 	else
 		color = sorted [j];
-	x = LHX (70 + CENTERING_OFFSET (gameData.multi.nPlayers) + j*25) + xOffs;
-	if (gameData.multi.players [sorted [j]].connected==0)
+	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
+	if (gameData.multiplayer.players [sorted [j]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
       GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb  [color].b), 1, 0, 0);
-	GrPrintF (x, LHY (40) + yOffs, "%c", gameData.multi.players [sorted [j]].callsign [0]);
+	GrPrintF (x, LHY (40) + yOffs, "%c", gameData.multiplayer.players [sorted [j]].callsign [0]);
 	}
-x = LHX (72 + CENTERING_OFFSET (gameData.multi.nPlayers) + gameData.multi.nPlayers*25) + xOffs;
+x = LHX (72 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
 GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 GrPrintF (x, LHY (40) + yOffs, "K/E");
 }
@@ -205,7 +205,7 @@ if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIA
 	GrPrintF (CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (gameData.multi.players [gameData.multi.nLocalPlayer].connected==7) {
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected==7) {
    GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
    GrPrintF (CENTERSCREEN- (sw/2), y,"Waiting for other players...");
    }
@@ -231,14 +231,14 @@ void kmatrix_draw_coop_deaths (int *sorted)
 	int	sw, sh, aw;
 	char	reactor_message [50];
 	
-y = LHY (55 + gameData.multi.nPlayers * 9) + yOffs;
+y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
 //	GrSetFontColor (gr_getcolor (player_rgb [j].r,player_rgb [j].g,player_rgb [j].b),-1);
 GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrPrintF (x, y, TXT_DEATHS);
-for (j=0; j<gameData.multi.nPlayers; j++) {
+for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	x = CENTERSCREEN+LHX (50) + xOffs;
-	GrPrintF (x, y, "%d", gameData.multi.players [sorted [j]].netKilledTotal);
+	GrPrintF (x, y, "%d", gameData.multiplayer.players [sorted [j]].netKilledTotal);
 	}
 y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
@@ -252,7 +252,7 @@ if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIA
    GrPrintF (CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (gameData.multi.players [gameData.multi.nLocalPlayer].connected==7) {
+if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected==7) {
 	GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
 	GrPrintF (CENTERSCREEN- (sw/2), y,"Waiting for other players...");
 	}
@@ -302,7 +302,7 @@ if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
 if (PhallicMan==-1)
 	strcpy (message,TXT_NO_RECORD);
 else
-	sprintf (message, TXT_BEST_RECORD, gameData.multi.players [PhallicMan].callsign,PhallicLimit);
+	sprintf (message, TXT_BEST_RECORD, gameData.multiplayer.players [PhallicMan].callsign,PhallicLimit);
 grdCurCanv->cv_font = SMALL_FONT;
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
 GrGetStringSize (message, &sw, &sh, &aw);
@@ -334,12 +334,12 @@ GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE	);
 grdCurCanv->cv_font = SMALL_FONT;
 MultiGetKillList (sorted);
 kmatrix_draw_names (sorted);
-for (i=0; i<gameData.multi.nPlayers; i++) {
+for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (sorted [i]);
 	else
 		color = sorted [i];
-	if (gameData.multi.players [sorted [i]].connected==0)
+	if (gameData.multiplayer.players [sorted [i]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
 		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb [color].b), 1, 0, 0);
@@ -367,9 +367,9 @@ GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY"	);
 grdCurCanv->cv_font = SMALL_FONT;
 MultiGetKillList (sorted);
 kmatrix_draw_coop_names (sorted);
-for (i=0; i<gameData.multi.nPlayers; i++) {
+for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	color = sorted [i];
-	if (gameData.multi.players [sorted [i]].connected==0)
+	if (gameData.multiplayer.players [sorted [i]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
 		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb [color].b), 1, 0, 0);
@@ -394,7 +394,7 @@ void KMatrixQuit (bkg *bg, int bQuit, int bNetwork)
 if (bNetwork)
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
-	gameData.multi.players [gameData.multi.nLocalPlayer].connected = 0;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 0;
 	MultiLeaveGame ();
 	}
 Kmatrix_nomovie_message = 0;
@@ -432,15 +432,15 @@ memset (&bg, 0, sizeof (bg));
 bNetwork=gameData.app.nGameMode & GM_NETWORK;
 
 for (i = 0; i <MAX_NUM_NET_PLAYERS; i++)
-	DigiKillSoundLinkedToObject (gameData.multi.players [i].nObject);
+	DigiKillSoundLinkedToObject (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
 bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
 GameFlushInputs ();
 done = 0;
-for (i = 0; i < gameData.multi.nPlayers; i++)
-	oldstates  [i] = gameData.multi.players [i].connected;
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	oldstates  [i] = gameData.multiplayer.players [i].connected;
 if (bNetwork)
 	NetworkEndLevel (&key);
 while (!done) {
@@ -456,7 +456,7 @@ while (!done) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;
 				}
-			gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
@@ -467,7 +467,7 @@ while (!done) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;	
 				}
-			gameData.multi.players [gameData.multi.nLocalPlayer].connected=7;
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected=7;
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
@@ -486,14 +486,14 @@ while (!done) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;
 				}
-			gameData.multi.players  [gameData.multi.nLocalPlayer].connected = 7;
+			gameData.multiplayer.players  [gameData.multiplayer.nLocalPlayer].connected = 7;
 			if (bNetwork)	
 				NetworkSendEndLevelPacket ();
 			break;
 
 		case KEY_ESC:
 			if (gameData.app.nGameMode & GM_NETWORK) {
-				gameData.multi.xStartAbortMenuTime = TimerGetApproxSeconds ();
+				gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
 				choice=ExecMessageBox1 (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 				}
 			else
@@ -517,7 +517,7 @@ while (!done) {
 			break;
 		}
 	if ((TimerGetApproxSeconds () >= entryTime + MAX_VIEW_TIME) && 
-		 (gameData.multi.players [gameData.multi.nLocalPlayer].connected != 7)) {
+		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected != 7)) {
 		if (LAST_OEM_LEVEL) {
 			KMatrixQuit (&bg, 1, bNetwork);
 			return;
@@ -526,37 +526,37 @@ while (!done) {
 			done=1;
 			break;
 			}
-		gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
+		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
 		if (bNetwork)
 			NetworkSendEndLevelPacket ();
 		}	
 	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
 		NetworkEndLevelPoll2 (0, NULL, &key, 0);
-		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multi.nPlayers; i++) {
-			if (gameData.multi.players [i].connected && i!=gameData.multi.nLocalPlayer) {
+		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
 			// Check timeout for idle players
 			if (TimerGetApproxSeconds () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
 	#if TRACE
 				con_printf (CONDBG, "idle timeout for tPlayer %d.\n", i);
 	#endif
-				gameData.multi.players [i].connected = 0;
+				gameData.multiplayer.players [i].connected = 0;
 				NetworkSendEndLevelSub (i);
 				}
 			}
-		if (gameData.multi.players [i].connected!=oldstates [i]) {
-			if (ConditionLetters [gameData.multi.players [i].connected] != ConditionLetters [oldstates [i]])
+		if (gameData.multiplayer.players [i].connected!=oldstates [i]) {
+			if (ConditionLetters [gameData.multiplayer.players [i].connected] != ConditionLetters [oldstates [i]])
 				nKMatrixKillsChanged = 1;
-				oldstates [i] = gameData.multi.players [i].connected;
+				oldstates [i] = gameData.multiplayer.players [i].connected;
 				NetworkSendEndLevelPacket ();
 				}
-			if (gameData.multi.players [i].connected==0 || gameData.multi.players [i].connected==7)
+			if (gameData.multiplayer.players [i].connected==0 || gameData.multiplayer.players [i].connected==7)
 				nReady++;
-			if (gameData.multi.players [i].connected!=1)
+			if (gameData.multiplayer.players [i].connected!=1)
 				nEscaped++;
 			}
-		if (nReady >= gameData.multi.nPlayers)
+		if (nReady >= gameData.multiplayer.nPlayers)
 			done = 1;
-		if (nEscaped >= gameData.multi.nPlayers)
+		if (nEscaped >= gameData.multiplayer.nPlayers)
 			gameData.reactor.countdown.nSecsLeft = -1;
 		if (previousSeconds_left != gameData.reactor.countdown.nSecsLeft) {
 			previousSeconds_left = gameData.reactor.countdown.nSecsLeft;
@@ -568,7 +568,7 @@ while (!done) {
 			}
 		}
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].connected = 7;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
 // Restore background and exit
 GrPaletteFadeOut (NULL, 32, 0);
 GameFlushInputs ();

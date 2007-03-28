@@ -200,11 +200,11 @@ if (objP->nType == OBJ_POWERUP) {
 	objP->cType.powerupInfo.creationTime = 0;
 	if (gameData.app.nGameMode & GM_NETWORK) {
 	  if (MultiPowerupIs4Pack(objP->id)) {
-			gameData.multi.powerupsInMine[objP->id-1]+=4;
-	 		gameData.multi.maxPowerupsAllowed[objP->id-1]+=4;
+			gameData.multiplayer.powerupsInMine[objP->id-1]+=4;
+	 		gameData.multiplayer.maxPowerupsAllowed[objP->id-1]+=4;
 			}
-		gameData.multi.powerupsInMine[objP->id]++;
-		gameData.multi.maxPowerupsAllowed[objP->id]++;
+		gameData.multiplayer.powerupsInMine[objP->id]++;
+		gameData.multiplayer.maxPowerupsAllowed[objP->id]++;
 #if TRACE
 		con_printf (CONDBG,"PowerupLimiter: ID=%d\n",objP->id);
 		if (objP->id>MAX_POWERUP_TYPES)
@@ -1489,8 +1489,8 @@ int LoadLevelSub(char * filename_passed)
 	gameData.segs.bHaveSlideSegs = 0;
 
    if (gameData.app.nGameMode & GM_NETWORK) {
-		memset (gameData.multi.maxPowerupsAllowed, 0, sizeof (gameData.multi.maxPowerupsAllowed));
-		memset (gameData.multi.powerupsInMine, 0, sizeof (gameData.multi.powerupsInMine));
+		memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
+		memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 		}
 #ifdef _DEBUG
 Level_being_loaded = filename_passed;
@@ -1813,7 +1813,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE PLAYER INFO ===========================
 
 	player.offset = ftell(SaveFile);
-	fwrite(&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
+	fwrite(&gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
 
 	//==================== SAVE OBJECT INFO ===========================
 
@@ -1946,7 +1946,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 	compressObjects();		//after this, gameData.objs.nLastObject == num gameData.objs.objects
 
 	//make sure tPlayer is in a tSegment
-	if (UpdateObjectSeg(&gameData.objs.objects [gameData.multi.players [0].nObject]) == 0) {
+	if (UpdateObjectSeg(&gameData.objs.objects [gameData.multiplayer.players [0].nObject]) == 0) {
 		if (gameData.objs.console->nSegment > gameData.segs.nLastSegment)
 			gameData.objs.console->nSegment = 0;
 		COMPUTE_SEGMENT_CENTER(&gameData.objs.console->position.vPos,&(gameData.segs.segments [gameData.objs.console->nSegment]);

@@ -599,7 +599,7 @@ void write_player_text(FILE *my_file)
 	int	i, num_players=0;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
-	fprintf(my_file, "gameData.multi.players:\n");
+	fprintf(my_file, "gameData.multiplayer.players:\n");
 	for (i=0; i<=gameData.objs.nLastObject; i++) {
 		if (gameData.objs.objects[i].nType == OBJ_PLAYER) {
 			num_players++;

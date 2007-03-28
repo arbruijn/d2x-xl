@@ -376,7 +376,7 @@ void RLECacheInit ()
 	int i;
 	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
 		rle_cache[i].rle_bitmap = NULL;
-		rle_cache[i].expanded_bitmap = GrCreateBitmap (64, 64, 0);
+		rle_cache[i].expanded_bitmap = GrCreateBitmap (64, 64, 1);
 		rle_cache[i].last_used = 0;
 		Assert (rle_cache[i].expanded_bitmap != NULL);
 	}

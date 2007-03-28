@@ -936,9 +936,9 @@ if ((gameData.hud.msgs [0].nMessages > 0) &&
 	return;
 GrSetCurFont (GAME_FONT);
 if ((IsMultiGame && !IsCoopGame))
-	sprintf (score_str, "%s: %5d", TXT_KILLS, gameData.multi.players [gameData.multi.nLocalPlayer].netKillsTotal);
+	sprintf (score_str, "%s: %5d", TXT_KILLS, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].netKillsTotal);
 else
-	sprintf (score_str, "%s: %5d", TXT_SCORE, gameData.multi.players [gameData.multi.nLocalPlayer].score);
+	sprintf (score_str, "%s: %5d", TXT_SCORE, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score);
 GrGetStringSize (score_str, &w, &h, &aw);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (grdCurCanv->cv_w-w-LHX (2), 3, score_str);
@@ -1053,9 +1053,9 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 
 	GrSetCurFont (GAME_FONT);
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) 
-		sprintf (score_str, "%5d", gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal);
+		sprintf (score_str, "%5d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKillsTotal);
 	else
-		sprintf (score_str, "%5d", gameData.multi.players[gameData.multi.nLocalPlayer].score);
+		sprintf (score_str, "%5d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score);
 	GrGetStringSize (score_str, &w, &h, &aw);
 
 	x = SB_SCORE_RIGHT-w-LHX (2);
@@ -1159,8 +1159,8 @@ void PlayHomingWarning (void)
 	if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead)
 		return;
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist >= 0) {
-		beep_delay = gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist/128;
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist >= 0) {
+		beep_delay = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist/128;
 		if (beep_delay > F1_0)
 			beep_delay = F1_0;
 		else if (beep_delay < F1_0/8)
@@ -1203,7 +1203,7 @@ void ShowHomingWarning (void)
 
 WIN (DDGRLOCK (dd_grd_curcanv))
 {
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist >= 0) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist >= 0) {
 		if (gameData.time.xGame & 0x4000) {
 			//if (Last_homing_warning_shown[nVRCurrentPage] != 1) 
 			{
@@ -1250,7 +1250,7 @@ void HUDShowHomingWarning (void)
 {
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 		return;
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist >= 0) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist >= 0) {
 		if (gameData.time.xGame & 0x4000) {
 			int x=0x8000, y=grdCurCanv->cv_h-Line_spacing;
 
@@ -1278,18 +1278,18 @@ void HUDShowKeys (void)
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 		return;
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY) {
 		PAGE_IN_GAUGE (KEY_ICON_BLUE);
 		GrUBitmapM (2, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_BLUE)]);
 
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY) {
 		PAGE_IN_GAUGE (KEY_ICON_YELLOW);
 		GrUBitmapM (2+dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_YELLOW)]);
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY) {
 		PAGE_IN_GAUGE (KEY_ICON_RED);
 		GrUBitmapM (2+2*dx, y, &gameData.pig.tex.bitmaps [0][GET_GAUGE_INDEX (KEY_ICON_RED)]);
 	}
@@ -1435,15 +1435,15 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
 		int	w, h, aw;
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] >= 
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] >= 
 				extraGameInfo [1].entropy.nCaptureVirusLimit)
 			GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		else
 			GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 		sprintf (szInfo, 
 			"x %d [%d]", 
-			gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX], 
-			gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[SMART_MINE_INDEX]);
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX], 
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[SMART_MINE_INDEX]);
 		GrPrintF (x, y, szInfo);
 		if (gameStates.entropy.bConquering) {
 			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) - 
@@ -1459,7 +1459,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 			}
 		}
 	else
-		GrPrintF (x, y, "x %d", gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]);
+		GrPrintF (x, y, "x %d", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]);
 	}
 }
 
@@ -1470,7 +1470,7 @@ void HUDShowFlag (void)
 if (!gameOpts->render.cockpit.bHUD && 
 	 ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 	return;
-if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) {
+if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) {
 	int x = 0, y = 0, icon;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
@@ -1490,7 +1490,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players[gameData.mu
 		}
 	else
 		Int3 ();		//what sort of cockpit?
-	icon = (GetTeam (gameData.multi.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
+	icon = (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) ? FLAG_ICON_RED : FLAG_ICON_BLUE;
 	PAGE_IN_GAUGE (icon);
 	GrUBitmapM (x, y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (icon));
 	}
@@ -1542,7 +1542,7 @@ void HUDShowEnergy (void)
 if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 	return;
 
-h = gameData.multi.players[gameData.multi.nLocalPlayer].energy ? f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].energy) : 0;
+h = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy ? f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 5 : 1) * Line_spacing;
 	GrSetCurFont (GAME_FONT);
@@ -1575,7 +1575,7 @@ else {
 skipGauge:
 
 if (gameData.demo.nState==ND_STATE_RECORDING) {
-	int energy = f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].energy);
+	int energy = f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy);
 
 	if (energy != old_energy[nVRCurrentPage]) {
 		NDRecordPlayerEnergy (old_energy[nVRCurrentPage], energy);
@@ -1592,7 +1592,7 @@ void HUDShowAfterburner (void)
 
 	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 		return;
-	if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
+	if (!(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
 		return;		//don't draw if don't have
 
 
@@ -1642,7 +1642,7 @@ if (!bomb)
 	return;
 if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXIMITY_INDEX))
 	return;
-count = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[bomb];
+count = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[bomb];
 #ifdef _DEBUG
 count = min (count, 99);	//only have room for 2 digits - cheating give 200
 #endif
@@ -1746,7 +1746,7 @@ void HUDShowWeaponIcons (void)
 	static ubyte ammoType [2][10] = {{0, 1, 0, 0, 0, 0, 1, 0, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 	static int bInitIcons = 1;
 
-ll = gameData.multi.players [gameData.multi.nLocalPlayer].laserLevel;
+ll = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel;
 if (gameOpts->render.weaponIcons.bShowAmmo) {
 	GrSetCurFont (SMALL_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -1819,7 +1819,7 @@ for (i = 0; i < 2; i++) {
 		if (bInitIcons)
 			continue;
 		if (i)
-			bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryWeaponFlags & (1 << l));
+			bHave = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags & (1 << l));
 		else if (!l) {
 			bHave = (ll <= MAX_LASER_LEVEL);
 			if (!bHave)
@@ -1831,9 +1831,9 @@ for (i = 0; i < 2; i++) {
 				continue;
 			}
 		else {
-			bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags & (1 << l));
+			bHave = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & (1 << l));
 			if (bHave && extraGameInfo [0].bSmartWeaponSwitch && ((l == 1) || (l == 2)) &&
-				 gameData.multi.players [gameData.multi.nLocalPlayer].primaryWeaponFlags & (1 << (l + 5)))
+				 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & (1 << (l + 5)))
 				continue;
 			}
 		HUDBitBlt (nIconScale * - (x + (w - bmP->bm_props.w) / (2 * nIconScale)), 
@@ -1841,7 +1841,7 @@ for (i = 0; i < 2; i++) {
 		*szAmmo = '\0';
 		nAmmoColor = GREEN_RGBA;
 		if (ammoType [i][l]) {
-			int nAmmo = (i ? gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [l] : gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [(l == 6) ? 1 : l]);
+			int nAmmo = (i ? gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [l] : gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [(l == 6) ? 1 : l]);
 			bLoaded = (nAmmo > 0);
 			if (bHave) {
 				if (bLoaded && gameOpts->render.weaponIcons.bShowAmmo) {
@@ -1865,7 +1865,7 @@ for (i = 0; i < 2; i++) {
 				}
 			}
 		else {
-			bLoaded = (gameData.multi.players [gameData.multi.nLocalPlayer].energy > gameData.weapons.info [l].energy_usage);
+			bLoaded = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy > gameData.weapons.info [l].energy_usage);
 			if (l == 0) { //Lasers
 				sprintf (szAmmo, "%d", (ll > MAX_LASER_LEVEL) ? MAX_LASER_LEVEL + 1 : ll + 1);
 				GrGetStringSize (szAmmo, &fw, &fh, &faw);
@@ -1976,7 +1976,7 @@ switch (bFlag) {
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
-		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0;
+		return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0;
 	case PLAYER_FLAGS_MAP_ALL:
 		return 0;
 	case PLAYER_FLAGS_AMMO_RACK:
@@ -1984,9 +1984,9 @@ switch (bFlag) {
 	case PLAYER_FLAGS_QUAD_LASERS:
 		return 0;
 	case PLAYER_FLAGS_CLOAKED:
-		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) != 0;
+		return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) != 0;
 	case PLAYER_FLAGS_INVULNERABLE:
-		return (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) != 0;
+		return (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 	}
 return 0;
 }
@@ -2038,20 +2038,20 @@ for (j = firstItem; j < n; j++) {
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_INVUL) {
-		if (bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls > 0))
-			sprintf (szCount, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].nInvuls);
+		if (bHave = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nInvuls > 0))
+			sprintf (szCount, "%d", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nInvuls);
 		else
-			bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
+			bHave = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & nInvFlags [j];
 		}
 	else if (j == INV_ITEM_CLOAK) {
-		if (bHave = (gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks > 0))
-			sprintf (szCount, "%d", gameData.multi.players [gameData.multi.nLocalPlayer].nCloaks);
+		if (bHave = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nCloaks > 0))
+			sprintf (szCount, "%d", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nCloaks);
 		else
-			bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
+			bHave = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & nInvFlags [j];
 		}
 	else
-		bHave = gameData.multi.players [gameData.multi.nLocalPlayer].flags & nInvFlags [j];
-	bArmed = (gameData.multi.players [gameData.multi.nLocalPlayer].energy > nEnergyType [j]);
+		bHave = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & nInvFlags [j];
+	bArmed = (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy > nEnergyType [j]);
 	if (bHave) {
 		//gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS * 2 / 3;
 		if (bArmed)
@@ -2140,17 +2140,17 @@ void HUDShowWeapons (void)
 
 	switch (gameData.weapons.nPrimary) {
 		case LASER_INDEX:
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-				sprintf (weapon_str, "%s %s %i", TXT_QUAD, weapon_name, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel+1);
+			if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
+				sprintf (weapon_str, "%s %s %i", TXT_QUAD, weapon_name, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel+1);
 			else
-				sprintf (weapon_str, "%s %i", weapon_name, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel+1);
+				sprintf (weapon_str, "%s %i", weapon_name, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel+1);
 			break;
 
 		case SUPER_LASER_INDEX:	Int3 (); break;	//no such thing as super laser
 
 		case VULCAN_INDEX:		
 		case GAUSS_INDEX:			
-			sprintf (weapon_str, "%s: %i", weapon_name, f2i ((unsigned) gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE)); 
+			sprintf (weapon_str, "%s: %i", weapon_name, f2i ((unsigned) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE)); 
 			convert_1s (weapon_str);
 			break;
 
@@ -2173,10 +2173,10 @@ void HUDShowWeapons (void)
 	GrPrintF (grdCurCanv->cv_bitmap.bm_props.w-5-w, y-2*Line_spacing, weapon_str);
 
 	if (gameData.weapons.nPrimary == VULCAN_INDEX) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammoCount[0][nVRCurrentPage]) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary] != old_ammoCount[0][nVRCurrentPage]) {
 			if (gameData.demo.nState == ND_STATE_RECORDING)
-				NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
-			old_ammoCount[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
+				NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary]);
+			old_ammoCount[0][nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[gameData.weapons.nPrimary];
 		}
 	}
 
@@ -2190,14 +2190,14 @@ void HUDShowWeapons (void)
 
 	weapon_name = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 
-	sprintf (weapon_str, "%s %d", weapon_name, gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+	sprintf (weapon_str, "%s %d", weapon_name, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
 	GrGetStringSize (weapon_str, &w, &h, &aw);
 	GrPrintF (grdCurCanv->cv_bitmap.bm_props.w-5-w, y-Line_spacing, weapon_str);
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-		old_ammoCount[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+			NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+		old_ammoCount[1][nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 	}
 
 	ShowBombCount (grdCurCanv->cv_bitmap.bm_props.w- (3*GAME_FONT->ft_w+ (gameStates.render.fonts.bHires?0:2)), y-3*Line_spacing, -1, 1);
@@ -2211,7 +2211,7 @@ void HUDShowCloakInvul (void)
 		return;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
 		int	y = grdCurCanv->cv_h;
 
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -2219,11 +2219,11 @@ void HUDShowCloakInvul (void)
 		else
 			y -= 4*Line_spacing;
 
-		if ((gameData.multi.players[gameData.multi.nLocalPlayer].cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > F1_0*3) || (gameData.time.xGame & 0x8000))
+		if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].cloakTime+CLOAK_TIME_MAX - gameData.time.xGame > F1_0*3) || (gameData.time.xGame & 0x8000))
 			GrPrintF (2, y, "%s", TXT_CLOAKED);
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
 		int	y = grdCurCanv->cv_h;
 
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -2231,7 +2231,7 @@ void HUDShowCloakInvul (void)
 		else
 			y -= 5*Line_spacing;
 
-		if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000))
+		if (((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000))
 			GrPrintF (2, y, "%s", TXT_INVULNERABLE);
 	}
 
@@ -2249,7 +2249,7 @@ if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FU
 	return;
 //	GrSetCurrentCanvas (&VR_render_sub_buffer[0]);	//render off-screen
 
-h = (gameData.multi.players[gameData.multi.nLocalPlayer].shields >= 0) ? f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].shields) : 0; 
+h = (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields >= 0) ? f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields) : 0; 
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 6 : 2) * Line_spacing;
 	GrSetCurFont (GAME_FONT);
@@ -2299,7 +2299,7 @@ else {
 skipGauge:
 
 if (gameData.demo.nState==ND_STATE_RECORDING) {
-	int shields = f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].shields);
+	int shields = f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields);
 
 	if (shields != old_shields[nVRCurrentPage]) {		// Draw the shield gauge
 		NDRecordPlayerShields (old_shields[nVRCurrentPage], shields);
@@ -2321,16 +2321,16 @@ void HUDShowLives ()
 	if (gameData.app.nGameMode & GM_MULTI) {
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-		GrPrintF (10, 3, "%s: %d", TXT_DEATHS, gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal);
+		GrPrintF (10, 3, "%s: %d", TXT_DEATHS, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKilledTotal);
 	} 
-	else if (gameData.multi.players[gameData.multi.nLocalPlayer].lives > 1)  {
+	else if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives > 1)  {
 		grsBitmap *bm;
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 		PAGE_IN_GAUGE (GAUGE_LIVES);
 		bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_LIVES);
 		GrUBitmapM (10, 3, bm);
-		GrPrintF (10+bm->bm_props.w+bm->bm_props.w/2, 4, "x %d", gameData.multi.players[gameData.multi.nLocalPlayer].lives-1);
+		GrPrintF (10+bm->bm_props.w+bm->bm_props.w/2, 4, "x %d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives-1);
 	}
 
 }
@@ -2378,7 +2378,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 		int x;
 
 	WIN (DDGRLOCK (dd_grd_curcanv));
-		sprintf (killed_str, "%5d", gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal);
+		sprintf (killed_str, "%5d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKilledTotal);
 		GrGetStringSize (killed_str, &w, &h, &aw);
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
 		HUDRect (last_x[ (gameStates.video.nDisplayMode?2:0)+nVRCurrentPage], y+1, SB_SCORE_RIGHT, y+GAME_FONT->ft_h);
@@ -2390,7 +2390,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 		return;
 	}
 
-	if (frc || old_lives[nVRCurrentPage]==-1 || gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[nVRCurrentPage]) {
+	if (frc || old_lives[nVRCurrentPage]==-1 || gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives != old_lives[nVRCurrentPage]) {
 	WIN (DDGRLOCK (dd_grd_curcanv));
 
 		//erase old icons
@@ -2402,21 +2402,21 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
       PA_DFX (pa_set_backbuffer_current ());
 	   HUDRect (x, y, SB_SCORE_RIGHT, y+bm->bm_props.h);
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].lives-1 > 0) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives-1 > 0) {
 			GrSetCurFont (GAME_FONT);
 			GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 			PAGE_IN_GAUGE (GAUGE_LIVES);
 			#ifdef PA_3DFX_VOODOO
 		      PA_DFX (pa_set_frontbuffer_current ();
 				GrUBitmapM (x, y, bm);
-				GrPrintF (x+bm->bm_props.w+GAME_FONT->ft_w, y, "x %d", gameData.multi.players[gameData.multi.nLocalPlayer].lives-1);
+				GrPrintF (x+bm->bm_props.w+GAME_FONT->ft_w, y, "x %d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives-1);
 			#endif
 
 	      PA_DFX (pa_set_backbuffer_current ());
 			/*GrUBitmapM*/HUDBitBlt (x, y, bm, F1_0, 0);
-			HUDPrintF (x+bm->bm_props.w+GAME_FONT->ft_w, y, "x %d", gameData.multi.players[gameData.multi.nLocalPlayer].lives-1);
+			HUDPrintF (x+bm->bm_props.w+GAME_FONT->ft_w, y, "x %d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives-1);
 
-//			GrPrintF (x+12, y, "x %d", gameData.multi.players[gameData.multi.nLocalPlayer].lives-1);
+//			GrPrintF (x+12, y, "x %d", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives-1);
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
@@ -2434,8 +2434,8 @@ extern int Piggy_bitmap_cache_next;
 
 void ShowTime ()
 {
-	int secs = f2i (gameData.multi.players[gameData.multi.nLocalPlayer].timeLevel) % 60;
-	int mins = f2i (gameData.multi.players[gameData.multi.nLocalPlayer].timeLevel) / 60;
+	int secs = f2i (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].timeLevel) % 60;
+	int mins = f2i (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].timeLevel) / 60;
 
 GrSetCurFont (GAME_FONT);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -2469,17 +2469,17 @@ void AddPointsToScore (int points)
 		return;
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 		return;
-	prev_score=gameData.multi.players[gameData.multi.nLocalPlayer].score;
-	gameData.multi.players[gameData.multi.nLocalPlayer].score += points;
+	prev_score=gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score;
+	gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score += points;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordPlayerScore (points);
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		MultiSendScore ();
 	if (gameData.app.nGameMode & GM_MULTI)
 		return;
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
 		short snd;
-		gameData.multi.players[gameData.multi.nLocalPlayer].lives += gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives += gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
 		PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 		if ((snd=gameData.objs.pwrUp.info[POW_EXTRA_LIFE].hitSound) > -1)
 			DigiPlaySample (snd, F1_0);
@@ -2495,9 +2495,9 @@ void AddBonusPointsToScore (int points)
 	if (points == 0 || gameStates.app.cheats.bEnabled)
 		return;
 
-	prev_score=gameData.multi.players[gameData.multi.nLocalPlayer].score;
+	prev_score=gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score;
 
-	gameData.multi.players[gameData.multi.nLocalPlayer].score += points;
+	gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score += points;
 
 
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -2506,9 +2506,9 @@ void AddBonusPointsToScore (int points)
 	if (gameData.app.nGameMode & GM_MULTI)
 		return;
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score/EXTRA_SHIP_SCORE != prev_score/EXTRA_SHIP_SCORE) {
 		short snd;
-		gameData.multi.players[gameData.multi.nLocalPlayer].lives += gameData.multi.players[gameData.multi.nLocalPlayer].score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives += gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score/EXTRA_SHIP_SCORE - prev_score/EXTRA_SHIP_SCORE;
 		if ((snd=gameData.objs.pwrUp.info[POW_EXTRA_LIFE].hitSound) > -1)
 			DigiPlaySample (snd, F1_0);
 	}
@@ -2886,11 +2886,11 @@ void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
 	grsBitmap *bm = NULL;
 
 	if (gameData.app.nGameMode & GM_TEAM)	{
-		PAGE_IN_GAUGE (GAUGE_SHIPS+GetTeam (gameData.multi.nLocalPlayer));
-		bm =gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS+GetTeam (gameData.multi.nLocalPlayer));
+		PAGE_IN_GAUGE (GAUGE_SHIPS+GetTeam (gameData.multiplayer.nLocalPlayer));
+		bm =gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS+GetTeam (gameData.multiplayer.nLocalPlayer));
 	} else {
-		PAGE_IN_GAUGE (GAUGE_SHIPS+gameData.multi.nLocalPlayer);
-		bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS+gameData.multi.nLocalPlayer);
+		PAGE_IN_GAUGE (GAUGE_SHIPS+gameData.multiplayer.nLocalPlayer);
+		bm = gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_SHIPS+gameData.multiplayer.nLocalPlayer);
 	}
 	
 
@@ -3026,7 +3026,7 @@ WINDOS (
 );
 
 WIN (DDGRLOCK (dd_grd_curcanv));
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY)	{
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY)	{
 		PAGE_IN_GAUGE (GAUGE_BLUE_KEY);
 		/*GrUBitmapM*/HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY), F1_0, 0);
 	} else {
@@ -3034,7 +3034,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		/*GrUBitmapM*/HUDBitBlt (GAUGE_BLUE_KEY_X, GAUGE_BLUE_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_BLUE_KEY_OFF), F1_0, 0);
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY)	{
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY)	{
 		PAGE_IN_GAUGE (GAUGE_GOLD_KEY);
 		/*GrUBitmapM*/HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY), F1_0, 0);
 	} else {
@@ -3042,7 +3042,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		/*GrUBitmapM*/HUDBitBlt (GAUGE_GOLD_KEY_X, GAUGE_GOLD_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_GOLD_KEY_OFF), F1_0, 0);
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY)	{
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY)	{
 		PAGE_IN_GAUGE (GAUGE_RED_KEY);
 		/*GrUBitmapM*/HUDBitBlt (GAUGE_RED_KEY_X,  GAUGE_RED_KEY_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (GAUGE_RED_KEY), F1_0, 0);
 	} else {
@@ -3113,7 +3113,7 @@ void DrawWeaponInfoSub (int info_index, gauge_box *box, int pic_x, int pic_y, ch
 
 		sprintf (temp_str, "%s: 0", TXT_LVL);
 
-		temp_str[5] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel+1 + '0';
+		temp_str[5] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel+1 + '0';
 
 //		PA_DFX (pa_set_frontbuffer_current ();
 //		PA_DFX (GrPrintF (text_x, text_y+Line_spacing, temp_str);
@@ -3121,7 +3121,7 @@ void DrawWeaponInfoSub (int info_index, gauge_box *box, int pic_x, int pic_y, ch
 		NO_DFX (HUDPrintF (text_x, text_y+Line_spacing, temp_str);)
 		PA_DFX (HUDPrintF (text_x, text_y+12, temp_str));
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) {
 			strcpy (temp_str, TXT_QUAD);
 //			PA_DFX (pa_set_frontbuffer_current ();
 //			PA_DFX (GrPrintF (text_x, text_y+2*Line_spacing, temp_str);
@@ -3251,7 +3251,7 @@ WINDOS (
 WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetCurFont (GAME_FONT);
 
-	laserLevel_changed = (nWeaponType==0 && weapon_num==LASER_INDEX && (gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel != old_laserLevel[nVRCurrentPage]));
+	laserLevel_changed = (nWeaponType==0 && weapon_num==LASER_INDEX && (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel != old_laserLevel[nVRCurrentPage]));
 
 	if ((weapon_num != old_weapon[nWeaponType][nVRCurrentPage] || laserLevel_changed) && weapon_boxStates[nWeaponType] == WS_SET) {
 		weapon_boxStates[nWeaponType] = WS_FADING_OUT;
@@ -3259,11 +3259,11 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		}
 		
 	if ((old_weapon[nWeaponType][nVRCurrentPage] == -1) || 1/* (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)*/) {
-		DrawWeaponInfo (nWeaponType, weapon_num, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
+		DrawWeaponInfo (nWeaponType, weapon_num, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel);
 		old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
 		old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 		Old_Omega_charge[nVRCurrentPage]=-1;
-		old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
+		old_laserLevel[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel;
 		drewFlag=1;
 		weapon_boxStates[nWeaponType] = WS_SET;
 		}
@@ -3278,8 +3278,8 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			weapon_boxStates[nWeaponType] = WS_FADING_IN;
 			old_weapon[nWeaponType][nVRCurrentPage] = weapon_num;
 			old_weapon[nWeaponType][!nVRCurrentPage] = weapon_num;
-			old_laserLevel[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
-			old_laserLevel[!nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel;
+			old_laserLevel[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel;
+			old_laserLevel[!nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel;
 			weapon_box_fadeValues[nWeaponType] = 0;
 			}
 		}
@@ -3288,7 +3288,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 			weapon_boxStates[nWeaponType] = WS_FADING_OUT;
 			}
 		else {
-			DrawWeaponInfo (nWeaponType, weapon_num, gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel);
+			DrawWeaponInfo (nWeaponType, weapon_num, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel);
 			old_ammoCount[nWeaponType][nVRCurrentPage]=-1;
 			Old_Omega_charge[nVRCurrentPage]=-1;
 			drewFlag=1;
@@ -3390,11 +3390,11 @@ void DrawWeaponBoxes ()
 
 		if (weapon_boxStates[0] == WS_SET) {
 			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-				if (gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammoCount[0][nVRCurrentPage]) {
+				if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[VULCAN_INDEX] != old_ammoCount[0][nVRCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
-					DrawPrimaryAmmoInfo (f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX]));
-					old_ammoCount[0][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
+						NDRecordPrimaryAmmo (old_ammoCount[0][nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[VULCAN_INDEX]);
+					DrawPrimaryAmmoInfo (f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[VULCAN_INDEX]));
+					old_ammoCount[0][nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].primaryAmmo[VULCAN_INDEX];
 				}
 			}
 
@@ -3420,12 +3420,12 @@ void DrawWeaponBoxes ()
 			);
 
 		if (weapon_boxStates[1] == WS_SET)
-			if (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
+			if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary] != old_ammoCount[1][nVRCurrentPage]) {
 				oldBombcount[nVRCurrentPage] = 0x7fff;	//force redraw
 				if (gameData.demo.nState == ND_STATE_RECORDING)
-					NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-				DrawSecondaryAmmoInfo (gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
-				old_ammoCount[1][nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
+					NDRecordSecondaryAmmo (old_ammoCount[1][nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+				DrawSecondaryAmmoInfo (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary]);
+				old_ammoCount[1][nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[gameData.weapons.nSecondary];
 			}
 	}
 	else if (weapon_box_user[1] == WBU_STATIC)
@@ -3522,7 +3522,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	/*GrUBitmapM*/HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, &Canv_SBAfterburnerGauge->cv_bitmap, F1_0, 0);
 #endif
 	//draw legend
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 		GrSetFontColorRGBi (RGBA_PAL2 (45, 0, 0), 1, 0, 0);
 	else 
 		GrSetFontColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
@@ -3591,7 +3591,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 void SBDrawKeys ()
 {
 	grsBitmap * bm;
-	int flags = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+	int flags = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
 
 WINDOS (
 	DDGrSetCurrentCanvas (GetCurrentGameScreen ()), 
@@ -3637,7 +3637,7 @@ WINDOS (
 );
 WIN (DDGRLOCK (dd_grd_curcanv));
 
-	if (((gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000)) {
+	if (((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > F1_0*4) || (gameData.time.xGame & 0x8000)) {
 
 		if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)	{
 			PAGE_IN_GAUGE (GAUGE_INVULNERABLE+invulnerable_frame);
@@ -3661,9 +3661,9 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				invulnerable_frame=0;
 		}
 	} else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		SBDrawShieldBar (f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].shields));
+		SBDrawShieldBar (f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields));
 	else
-		DrawShieldBar (f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].shields));
+		DrawShieldBar (f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields));
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
@@ -3720,7 +3720,7 @@ void ShowReticle (int force_big_one)
 	nPrimaryBm = (bLaserReady && bLaserAmmo==HAS_ALL);
 	nSecondaryBm = (bMissileReady && bMissileAmmo==HAS_ALL);
 	if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) && 
-		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS))
+		 (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS))
 		nPrimaryBm++;
 
 	if (secondaryWeaponToGunNum[gameData.weapons.nSecondary]==7)
@@ -3788,13 +3788,13 @@ void HUDShowKillList ()
 // players in pixel double mode.
 if (bGetPing)
 	networkData.tLastPingStat = t;
-if (multiData.kills.xShowListTimer > 0) {
-	multiData.kills.xShowListTimer -= gameData.time.xFrame;
-	if (multiData.kills.xShowListTimer < 0)
-		multiData.kills.bShowList = 0;
+if (gameData.multigame.kills.xShowListTimer > 0) {
+	gameData.multigame.kills.xShowListTimer -= gameData.time.xFrame;
+	if (gameData.multigame.kills.xShowListTimer < 0)
+		gameData.multigame.kills.bShowList = 0;
 	}
 GrSetCurFont (GAME_FONT);
-n_players = (multiData.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
+n_players = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (player_list);
 n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
 //If font size changes, this code might not work right anymore 
 //Assert (GAME_FONT->ft_h==5 && GAME_FONT->ft_w==7);
@@ -3809,7 +3809,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
 		faw = get_fontTotal_width (GAME_FONT) / (GAME_FONT->ft_maxchar - GAME_FONT->ft_minchar + 1);
-		if (multiData.kills.bShowList == 2)
+		if (gameData.multigame.kills.bShowList == 2)
 			xo = faw*24;//was +25;
 		else if (gameData.app.nGameMode & GM_MULTI_COOP)
 			xo = faw*14;//was +30;
@@ -3835,11 +3835,11 @@ for (i = 0; i < n_players; i++) {
 		}
 	else if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
 		 x1 = LHX (43) - LHX (18);
-	player_num = (multiData.kills.bShowList == 3) ? i : player_list[i];
-	if (multiData.kills.bShowList == 1 || multiData.kills.bShowList==2) {
+	player_num = (gameData.multigame.kills.bShowList == 3) ? i : player_list[i];
+	if (gameData.multigame.kills.bShowList == 1 || gameData.multigame.kills.bShowList==2) {
 		int color;
 
-		if (gameData.multi.players[player_num].connected != 1)
+		if (gameData.multiplayer.players[player_num].connected != 1)
 			GrSetFontColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
 			if (gameData.app.nGameMode & GM_TEAM)
@@ -3851,8 +3851,8 @@ for (i = 0; i < n_players; i++) {
 		}	
 	else 
 		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb [player_num].r, player_rgb [player_num].g, player_rgb [player_num].b), 1, 0, 0);
-	if (multiData.kills.bShowList == 3) {
-		if (GetTeam (gameData.multi.nLocalPlayer) == i) {
+	if (gameData.multigame.kills.bShowList == 3) {
+		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d", 
 						teamInd [0], netGame.team_name [i], 
@@ -3886,7 +3886,7 @@ for (i = 0; i < n_players; i++) {
 	else
 #if 0//def _DEBUG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d", 
-					gameData.multi.players [player_num].callsign, 
+					gameData.multiplayer.players [player_num].callsign, 
 					netPlayers.players [player_num].network.ipx.node [0], 
 					netPlayers.players [player_num].network.ipx.node [1], 
 					netPlayers.players [player_num].network.ipx.node [2], 
@@ -3894,7 +3894,7 @@ for (i = 0; i < n_players; i++) {
 					netPlayers.players [player_num].network.ipx.node [5] +
 					 (unsigned) netPlayers.players [player_num].network.ipx.node [4] * 256);
 #else
-		strcpy (name, gameData.multi.players [player_num].callsign);	// Note link to above if!!
+		strcpy (name, gameData.multiplayer.players [player_num].callsign);	// Note link to above if!!
 #endif
 #if 0//def _DEBUG
 	x1 += LHX (100);
@@ -3907,32 +3907,32 @@ for (i = 0; i < n_players; i++) {
 		}
 	GrPrintF (x0+indent, y, "%s", name);
 
-	if (multiData.kills.bShowList==2) {
-		if (gameData.multi.players [player_num].netKilledTotal + gameData.multi.players[player_num].netKillsTotal <= 0)
+	if (gameData.multigame.kills.bShowList==2) {
+		if (gameData.multiplayer.players [player_num].netKilledTotal + gameData.multiplayer.players[player_num].netKillsTotal <= 0)
 			GrPrintF (x1, y, TXT_NOT_AVAIL);
 		else
 			GrPrintF (x1, y, "%d%%", 
-				 (int) ((double) gameData.multi.players [player_num].netKillsTotal /
-						 ((double) gameData.multi.players [player_num].netKilledTotal +
-						  (double) gameData.multi.players [player_num].netKillsTotal) * 100.0));		
+				 (int) ((double) gameData.multiplayer.players [player_num].netKillsTotal /
+						 ((double) gameData.multiplayer.players [player_num].netKilledTotal +
+						  (double) gameData.multiplayer.players [player_num].netKillsTotal) * 100.0));		
 		}
-	else if (multiData.kills.bShowList == 3) {
+	else if (gameData.multigame.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
 			GrPrintF (x1, y, "%3d [%d/%d]", 
-						 multiData.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1], 
+						 gameData.multigame.kills.nTeam [i], gameData.entropy.nTeamRooms [i + 1], 
 						 gameData.entropy.nTotalRooms);
 		else
-			GrPrintF (x1, y, "%3d", multiData.kills.nTeam [i]);
+			GrPrintF (x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
 		}
 	else if (gameData.app.nGameMode & GM_MULTI_COOP)
-		GrPrintF (x1, y, "%-6d", gameData.multi.players [player_num].score);
+		GrPrintF (x1, y, "%-6d", gameData.multiplayer.players [player_num].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
       GrPrintF (x1, y, "%3d (%d)", 
-					 gameData.multi.players [player_num].netKillsTotal, 
-					 gameData.multi.players [player_num].nKillGoalCount);
+					 gameData.multiplayer.players [player_num].netKillsTotal, 
+					 gameData.multiplayer.players [player_num].nKillGoalCount);
    else
-		GrPrintF (x1, y, "%3d", gameData.multi.players [player_num].netKillsTotal);
-	if (gameStates.render.cockpit.bShowPingStats && (player_num != gameData.multi.nLocalPlayer)) {
+		GrPrintF (x1, y, "%3d", gameData.multiplayer.players [player_num].netKillsTotal);
+	if (gameStates.render.cockpit.bShowPingStats && (player_num != gameData.multiplayer.nLocalPlayer)) {
 		if (bGetPing)
 			PingPlayer (player_num);
 		if (pingStats [player_num].sent) {
@@ -4001,19 +4001,19 @@ void ShowHUDNames ()
 	int nColor;
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
-						 (netGame.ShowAllNames && multiData.bShowReticleName));
-bShowTeamNames = (multiData.bShowReticleName &&
+						 (netGame.ShowAllNames && gameData.multigame.bShowReticleName));
+bShowTeamNames = (gameData.multigame.bShowReticleName &&
 						 ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
-nTeam = GetTeam (gameData.multi.nLocalPlayer);
-for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
+nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);
+for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
-	bShowName = (gameStates.multi.bPlayerIsTyping [p] || (bShowAllNames && !(gameData.multi.players[p].flags & PLAYER_FLAGS_CLOAKED)) || (bShowTeamNames && GetTeam (p)==nTeam));
-	bHasFlag = (gameData.multi.players[p].connected && gameData.multi.players[p].flags & PLAYER_FLAGS_FLAG);
+	bShowName = (gameStates.multi.bPlayerIsTyping [p] || (bShowAllNames && !(gameData.multiplayer.players[p].flags & PLAYER_FLAGS_CLOAKED)) || (bShowTeamNames && GetTeam (p)==nTeam));
+	bHasFlag = (gameData.multiplayer.players[p].connected && gameData.multiplayer.players[p].flags & PLAYER_FLAGS_FLAG);
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) 
-		nObject = gameData.multi.players [p].nObject;
+		nObject = gameData.multiplayer.players [p].nObject;
 	else {
 		//if this is a demo, the nObject in the tPlayer struct is wrong, 
 		//so we search the tObject list for the nObject
@@ -4048,7 +4048,7 @@ for (p = 0; p < gameData.multi.nPlayers; p++) {	//check all players
 						colorP = player_rgb + nColor;
 						}
 
-					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multi.players[p].callsign);
+					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players[p].callsign);
 					GrGetStringSize (s, &w, &h, &aw);
 					GrSetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
 					x1 = f2i (x)-w/2;
@@ -4141,13 +4141,13 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				HUDShowKeys ();
 			HUDShowCloakInvul ();
 
-			if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage])) {
-				NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
-				oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+			if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags != oldFlags[nVRCurrentPage])) {
+				NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags);
+				oldFlags[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
 			}
 		}
 #ifdef _DEBUG
-		if (!(gameData.app.nGameMode&GM_MULTI && multiData.kills.bShowList) && !Saving_movie_frames)
+		if (!(gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList) && !Saving_movie_frames)
 			ShowTime ();
 #endif
 		if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!bUsePlayerHeadAngles))
@@ -4164,7 +4164,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		if (gameStates.render.cockpit.nMode!=CM_STATUS_BAR && !Saving_movie_frames)
 			HUDShowLives ();
 
-		if (gameData.app.nGameMode&GM_MULTI && multiData.kills.bShowList)
+		if (gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList)
 			HUDShowKillList ();
 #if 0
 		DrawWeaponBoxes ();
@@ -4190,9 +4190,9 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 void RenderGauges ()
 {
 	static int old_display_mode = 0;
-	int energy = f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].energy);
-	int shields = f2ir (gameData.multi.players[gameData.multi.nLocalPlayer].shields);
-	int cloak = ((gameData.multi.players[gameData.multi.nLocalPlayer].flags&PLAYER_FLAGS_CLOAKED) != 0);
+	int energy = f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy);
+	int shields = f2ir (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields);
+	int cloak = ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags&PLAYER_FLAGS_CLOAKED) != 0);
 	int frc=0;
 
 if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
@@ -4226,8 +4226,8 @@ WINDOS (
 GrSetCurFont (GAME_FONT);
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist >= 0)
-		NDRecordHomingDistance (gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist);
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist >= 0)
+		NDRecordHomingDistance (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist);
 
 DrawWeaponBoxes ();
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
@@ -4248,7 +4248,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	DrawAfterburnerBar (xAfterburnerCharge);
 	old_afterburner[nVRCurrentPage] = xAfterburnerCharge;
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawNumericalDisplay (shields, energy);
 		DrawInvulnerableShip ();
 		old_shields[nVRCurrentPage] = shields ^ 1;
@@ -4263,10 +4263,10 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		old_shields[nVRCurrentPage] = shields;
 	}
 
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage]) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags != oldFlags[nVRCurrentPage]) {
 		if (gameData.demo.nState==ND_STATE_RECORDING)
-			NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
-		oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+			NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags);
+		oldFlags[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
 	}
 	DrawKeys ();
 	ShowHomingWarning ();
@@ -4288,7 +4288,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 		SBDrawAfterburner ();
 		old_afterburner[nVRCurrentPage] = xAfterburnerCharge;
 	}
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawInvulnerableShip ();
 		old_shields[nVRCurrentPage] = shields ^ 1;
 		SBDrawShieldNum (shields);
@@ -4302,36 +4302,36 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 			old_shields[nVRCurrentPage] = shields;
 			SBDrawShieldNum (shields);
 		}
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].flags != oldFlags[nVRCurrentPage] || frc) {
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags != oldFlags[nVRCurrentPage] || frc) {
 		if (gameData.demo.nState==ND_STATE_RECORDING)
-			NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multi.players[gameData.multi.nLocalPlayer].flags);
+			NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags);
 		SBDrawKeys ();
-		oldFlags[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].flags;
+		oldFlags[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
 	}
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 	{
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal != old_lives[nVRCurrentPage] || frc) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKilledTotal != old_lives[nVRCurrentPage] || frc) {
 			SBShowLives ();
-			old_lives[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].netKilledTotal;
+			old_lives[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKilledTotal;
 		}
 	}
 	else
 	{
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].lives != old_lives[nVRCurrentPage] || frc) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives != old_lives[nVRCurrentPage] || frc) {
 			SBShowLives ();
-			old_lives[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].lives;
+			old_lives[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].lives;
 		}
 	}
 	if ((gameData.app.nGameMode&GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal != old_score[nVRCurrentPage] || frc) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKillsTotal != old_score[nVRCurrentPage] || frc) {
 			SBShowScore ();
-			old_score[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].netKillsTotal;
+			old_score[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].netKillsTotal;
 		}
 	}
 	else {
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].score != old_score[nVRCurrentPage] || frc) {
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score != old_score[nVRCurrentPage] || frc) {
 			SBShowScore ();
-			old_score[nVRCurrentPage] = gameData.multi.players[gameData.multi.nLocalPlayer].score;
+			old_score[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score;
 		}
 
 		//if (scoreTime)
@@ -4342,7 +4342,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
 	DrawPlayerShip (cloak, old_cloak[nVRCurrentPage], SHIP_GAUGE_X, SHIP_GAUGE_Y);
 else if (frc || (cloak != old_cloak[nVRCurrentPage]) || nCloakFadeState || 
-	 (cloak && gameData.time.xGame>gameData.multi.players[gameData.multi.nLocalPlayer].cloakTime+CLOAK_TIME_MAX-i2f (3))) {
+	 (cloak && gameData.time.xGame>gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].cloakTime+CLOAK_TIME_MAX-i2f (3))) {
 	DrawPlayerShip (cloak, old_cloak[nVRCurrentPage], SB_SHIP_GAUGE_X, SB_SHIP_GAUGE_Y);
 
 	old_cloak[nVRCurrentPage]=cloak;
@@ -4355,7 +4355,7 @@ else if (frc || (cloak != old_cloak[nVRCurrentPage]) || nCloakFadeState ||
 void UpdateLaserWeaponInfo (void)
 {
 	if (old_weapon[0][nVRCurrentPage] == 0)
-		if (!(gameData.multi.players[gameData.multi.nLocalPlayer].laserLevel > MAX_LASER_LEVEL && old_laserLevel[nVRCurrentPage] <= MAX_LASER_LEVEL))
+		if (!(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].laserLevel > MAX_LASER_LEVEL && old_laserLevel[nVRCurrentPage] <= MAX_LASER_LEVEL))
 			old_weapon[0][nVRCurrentPage] = -1;
 }
 

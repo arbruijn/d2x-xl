@@ -872,7 +872,7 @@ if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
 	return;
 	}
 if(dest->bm_props.nType != BM_LINEAR) {
-	grsBitmap *tmp = GrCreateBitmap (dest->bm_props.w, dest->bm_props.h, 0);
+	grsBitmap *tmp = GrCreateBitmap (dest->bm_props.w, dest->bm_props.h, 1);
 	GrBitmapScaleTo(src, tmp);
 	GrBitmap(0, 0, tmp);
 	GrFreeBitmap(tmp);

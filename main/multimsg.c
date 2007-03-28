@@ -51,14 +51,14 @@ void MultiSendMessage (void)
 {
 	int bufP = 0;
 
-if (multiData.msg.nReceiver != -1) {
-	multiData.msg.buf [bufP++] = (char)MULTI_MESSAGE;            
-	multiData.msg.buf [bufP++] = (char)gameData.multi.nLocalPlayer;                       
-	strncpy (multiData.msg.buf + bufP, multiData.msg.szMsg, MAX_MESSAGE_LEN); 
+if (gameData.multigame.msg.nReceiver != -1) {
+	gameData.multigame.msg.buf [bufP++] = (char)MULTI_MESSAGE;            
+	gameData.multigame.msg.buf [bufP++] = (char)gameData.multiplayer.nLocalPlayer;                       
+	strncpy (gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
 	bufP += MAX_MESSAGE_LEN;
-	multiData.msg.buf [bufP-1] = '\0';
-	MultiSendData (multiData.msg.buf, bufP, 0);
-	multiData.msg.nReceiver = -1;
+	gameData.multigame.msg.buf [bufP-1] = '\0';
+	MultiSendData (gameData.multigame.msg.buf, bufP, 0);
+	gameData.multigame.msg.nReceiver = -1;
 	}
 }
 
@@ -101,23 +101,23 @@ int MultiMessageFeedback (void)
 	int bFound = 0;
 	int i, l;
 	
-char *colon = strrchr (multiData.msg.szMsg, ':');
+char *colon = strrchr (gameData.multigame.msg.szMsg, ':');
 if (!colon)
 	return 0;
-l = (int) (colon - multiData.msg.szMsg);
+l = (int) (colon - gameData.multigame.msg.szMsg);
 if (!l || (l > CALLSIGN_LEN))
 	return 0;
 sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
-if ((gameData.app.nGameMode & GM_TEAM) && (atoi (multiData.msg.szMsg) > 0) && 
-	 (atoi (multiData.msg.szMsg) < 3)) {
+if ((gameData.app.nGameMode & GM_TEAM) && (atoi (gameData.multigame.msg.szMsg) > 0) && 
+	 (atoi (gameData.multigame.msg.szMsg) < 3)) {
 	sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-				TXT_TEAM, netGame.team_name [atoi (multiData.msg.szMsg)-1]);
+				TXT_TEAM, netGame.team_name [atoi (gameData.multigame.msg.szMsg)-1]);
 	bFound = 1;
 	}
 if (!bFound)
 	if (gameData.app.nGameMode & GM_TEAM) {
-		for (i = 0; i < gameData.multi.nPlayers; i++) {
-			if (!strnicmp (netGame.team_name [i], multiData.msg.szMsg, l)) {
+		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if (!strnicmp (netGame.team_name [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
 					strcat (szFeedbackResult, ", ");
 				bFound++;
@@ -129,17 +129,17 @@ if (!bFound)
 			}
 		}
 if (!bFound)
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
-		if ((!strnicmp (gameData.multi.players [i].callsign, multiData.msg.szMsg, l)) && 
-			(i != gameData.multi.nLocalPlayer) && 
-			(gameData.multi.players [i].connected)) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if ((!strnicmp (gameData.multiplayer.players [i].callsign, gameData.multigame.msg.szMsg, l)) && 
+			(i != gameData.multiplayer.nLocalPlayer) && 
+			(gameData.multiplayer.players [i].connected)) {
 			if (bFound)
 				strcat (szFeedbackResult, ", ");
 			bFound++;
 			if (!(bFound % 4))
 				strcat (szFeedbackResult, "\n");
 			sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s", 
-						gameData.multi.players [i].callsign);
+						gameData.multiplayer.players [i].callsign);
 			}
 		}
 if (!bFound)
@@ -174,13 +174,13 @@ switch (key) {
 	default:
 		Int3 ();
 	}
-if (!multiData.msg.szMacro [key][0]) {
+if (!gameData.multigame.msg.szMacro [key][0]) {
 	HUDInitMessage (TXT_NO_MACRO);
 	return;
 	}
-strcpy (multiData.msg.szMsg, multiData.msg.szMacro [key]);
-multiData.msg.nReceiver = 100;
-HUDInitMessage ("%s '%s'", TXT_SENDING, multiData.msg.szMsg);
+strcpy (gameData.multigame.msg.szMsg, gameData.multigame.msg.szMacro [key]);
+gameData.multigame.msg.nReceiver = 100;
+HUDInitMessage ("%s '%s'", TXT_SENDING, gameData.multigame.msg.szMsg);
 MultiMessageFeedback ();
 }
 
@@ -201,18 +201,16 @@ gameStates.multi.bPlayerIsTyping [buf [1]] = 0;
 
 //-----------------------------------------------------------------------------
 
-int nTypingTimeout = 0;
-
 void MultiSendTyping (void)
 {
-if (gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer]) {
+if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer]) {
 	int t = gameStates.app.nSDLTicks;
-	if (t - nTypingTimeout > 1000) {
-		nTypingTimeout = t;
-		multiData.msg.buf [0] = (char) MULTI_START_TYPING;
-		multiData.msg.buf [1] = (char) gameData.multi.nLocalPlayer; 
-		multiData.msg.buf [2] = multiData.msg.bSending;
-		MultiSendData (multiData.msg.buf, 3, 0);
+	if (t - gameData.multigame.nTypingTimeout > 1000) {
+		gameData.multigame.nTypingTimeout = t;
+		gameData.multigame.msg.buf [0] = (char) MULTI_START_TYPING;
+		gameData.multigame.msg.buf [1] = (char) gameData.multiplayer.nLocalPlayer; 
+		gameData.multigame.msg.buf [2] = gameData.multigame.msg.bSending;
+		MultiSendData (gameData.multigame.msg.buf, 3, 0);
 		}
 	}
 }
@@ -223,13 +221,13 @@ void MultiSendMsgStart (char nMsg)
 {
 if (gameData.app.nGameMode&GM_MULTI) {
 	if (nMsg > 0)
-		multiData.msg.bDefining = nMsg;
+		gameData.multigame.msg.bDefining = nMsg;
 	else
-		multiData.msg.bSending = -nMsg;
-	multiData.msg.nIndex = 0;
-	multiData.msg.szMsg [multiData.msg.nIndex] = 0;
-	gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer] = 1;
-	nTypingTimeout = 0;
+		gameData.multigame.msg.bSending = -nMsg;
+	gameData.multigame.msg.nIndex = 0;
+	gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex] = 0;
+	gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
+	gameData.multigame.nTypingTimeout = 0;
 	MultiSendTyping ();
 	}
 }
@@ -238,14 +236,14 @@ if (gameData.app.nGameMode&GM_MULTI) {
 
 void MultiSendMsgQuit ()
 {
-multiData.msg.bSending = 0;
-multiData.msg.bDefining = 0;
-multiData.msg.nIndex = 0;
-gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer] = 0;
-multiData.msg.buf [0] = (char) MULTI_QUIT_TYPING;
-multiData.msg.buf [1] = (char) gameData.multi.nLocalPlayer; 
-multiData.msg.buf [2] = 0;
-MultiSendData (multiData.msg.buf, 3, 0);
+gameData.multigame.msg.bSending = 0;
+gameData.multigame.msg.bDefining = 0;
+gameData.multigame.msg.nIndex = 0;
+gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 0;
+gameData.multigame.msg.buf [0] = (char) MULTI_QUIT_TYPING;
+gameData.multigame.msg.buf [1] = (char) gameData.multiplayer.nLocalPlayer; 
+gameData.multigame.msg.buf [2] = 0;
+MultiSendData (gameData.multigame.msg.buf, 3, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -255,34 +253,34 @@ int KickPlayer (int bBan)
 	int i, name_index = 5 - bBan;
 	char *pszKick = GT (589 + bBan);
 
-if (strlen (multiData.msg.szMsg) > 5)
-	while (multiData.msg.szMsg [name_index] == ' ')
+if (strlen (gameData.multigame.msg.szMsg) > 5)
+	while (gameData.multigame.msg.szMsg [name_index] == ' ')
 		name_index++;
 
 if (!NetworkIAmMaster ()) {
-	HUDInitMessage (TXT_KICK_RIGHTS, gameData.multi.players [NetworkWhoIsMaster ()].callsign, pszKick);
+	HUDInitMessage (TXT_KICK_RIGHTS, gameData.multiplayer.players [NetworkWhoIsMaster ()].callsign, pszKick);
 	MultiSendMsgQuit ();
 	return 1;
 	}
-if (strlen (multiData.msg.szMsg) <= (size_t) name_index) {
+if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {
 	HUDInitMessage (TXT_KICK_NAME, pszKick);
 	MultiSendMsgQuit ();
 	return 1;
 	}
 
-if (multiData.msg.szMsg [name_index] == '#' && isdigit (multiData.msg.szMsg [name_index+1])) {
+if (gameData.multigame.msg.szMsg [name_index] == '#' && isdigit (gameData.multigame.msg.szMsg [name_index+1])) {
 	int players [MAX_NUM_NET_PLAYERS];
-	int listpos = multiData.msg.szMsg [name_index+1] - '0';
+	int listpos = gameData.multigame.msg.szMsg [name_index+1] - '0';
 
-	if (multiData.kills.bShowList == 1 || multiData.kills.bShowList == 2) {
-		if (listpos == 0 || listpos  >= gameData.multi.nPlayers) {
+	if (gameData.multigame.kills.bShowList == 1 || gameData.multigame.kills.bShowList == 2) {
+		if (listpos == 0 || listpos  >= gameData.multiplayer.nPlayers) {
 			HUDInitMessage (TXT_KICK_PLR, pszKick);
 			MultiSendMsgQuit ();
 			return 1;
 			}
 		MultiGetKillList (players);
 		i = players [listpos];
-		if ((i != gameData.multi.nLocalPlayer) && (gameData.multi.players [i].connected))
+		if ((i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected))
 			goto kick_player;
 		}
 	else 
@@ -291,8 +289,8 @@ if (multiData.msg.szMsg [name_index] == '#' && isdigit (multiData.msg.szMsg [nam
 	return 1;
 	}
 
-for (i = 0; i < gameData.multi.nPlayers; i++)
-	if ((!strnicmp (gameData.multi.players [i].callsign, &multiData.msg.szMsg [name_index], strlen (multiData.msg.szMsg)-name_index)) && (i != gameData.multi.nLocalPlayer) && (gameData.multi.players [i].connected)) {
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected)) {
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
 			NetworkDumpPlayer (
@@ -306,9 +304,9 @@ kick_player:;
 				netPlayers.players [i].network.appletalk.socket, 
 				7);
 
-		HUDInitMessage (TXT_DUMPING, gameData.multi.players [i].callsign);
+		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
 		if (bBan)
-			AddPlayerToBanList (gameData.multi.players [i].callsign);
+			AddPlayerToBanList (gameData.multiplayer.players [i].callsign);
 		MultiSendMsgQuit ();
 		return 1;
 		}
@@ -328,19 +326,19 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		}
 	else {
 		int name_index = 5;
-		if (strlen (multiData.msg.szMsg) > 5)
-			while (multiData.msg.szMsg [name_index] == ' ')
+		if (strlen (gameData.multigame.msg.szMsg) > 5)
+			while (gameData.multigame.msg.szMsg [name_index] == ' ')
 				name_index++;
-		if (strlen (multiData.msg.szMsg) <= (size_t) name_index) {
+		if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {
 			HUDInitMessage (TXT_PING_NAME);
 			return 1;
 			}
-		for (i = 0; i < gameData.multi.nPlayers; i++) {
-			if ((!strnicmp (gameData.multi.players [i].callsign, &multiData.msg.szMsg [name_index], strlen (multiData.msg.szMsg)-name_index)) && 
-				 (i != gameData.multi.nLocalPlayer) && (gameData.multi.players [i].connected)) {
+		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && 
+				 (i != gameData.multiplayer.nLocalPlayer) && (gameData.multiplayer.players [i].connected)) {
 				pingStats [i].launchTime = TimerGetFixedSeconds ();
 				NetworkSendPing ((ubyte) i);
-				HUDInitMessage (TXT_PINGING, gameData.multi.players [i].callsign);
+				HUDInitMessage (TXT_PINGING, gameData.multiplayer.players [i].callsign);
 				MultiSendMsgQuit ();
 				return 1;
 				}
@@ -361,19 +359,19 @@ return 0;
 
 int HandicapPlayer (void)
 {
-	char *mytempbuf = multiData.msg.szMsg + 9;
+	char *mytempbuf = gameData.multigame.msg.szMsg + 9;
 
 xStartingShields = atol (mytempbuf);
 if (xStartingShields < 10) {
 	xStartingShields = 10;
-	sprintf (multiData.msg.szMsg, TXT_NEW_HANDICAP, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, xStartingShields);
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, xStartingShields);
 	}
 else if (xStartingShields > 100) {
-	sprintf (multiData.msg.szMsg, TXT_CHEAT_ALERT, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+	sprintf (gameData.multigame.msg.szMsg, TXT_CHEAT_ALERT, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 	xStartingShields = 100;
 	}
 else
-	sprintf (multiData.msg.szMsg, TXT_NEW_HANDICAP, gameData.multi.players [gameData.multi.nLocalPlayer].callsign, xStartingShields);
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, xStartingShields);
 HUDInitMessage (TXT_HANDICAP_ALERT, xStartingShields);
 xStartingShields = i2f (xStartingShields);
 return 0;
@@ -387,21 +385,21 @@ int MovePlayer (void)
 
 if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM)) {
 	int name_index = 5;
-	if (strlen (multiData.msg.szMsg) > 5)
-		while (multiData.msg.szMsg [name_index] == ' ')
+	if (strlen (gameData.multigame.msg.szMsg) > 5)
+		while (gameData.multigame.msg.szMsg [name_index] == ' ')
 			name_index++;
 
 	if (!NetworkIAmMaster ()) {
-		HUDInitMessage (TXT_MOVE_RIGHTS, gameData.multi.players [NetworkWhoIsMaster ()].callsign);
+		HUDInitMessage (TXT_MOVE_RIGHTS, gameData.multiplayer.players [NetworkWhoIsMaster ()].callsign);
 		return 1;
 		}
-	if (strlen (multiData.msg.szMsg) <= (size_t) name_index) {
+	if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {
 		HUDInitMessage (TXT_MOVE_NAME);
 		return 1;
 		}
-	for (i = 0; i < gameData.multi.nPlayers; i++)
-		if ((!strnicmp (gameData.multi.players [i].callsign, &multiData.msg.szMsg [name_index], strlen (multiData.msg.szMsg)-name_index)) && (gameData.multi.players [i].connected)) {
-			if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multi.players [i].flags & PLAYER_FLAGS_FLAG)) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (gameData.multiplayer.players [i].connected)) {
+			if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG)) {
 				HUDInitMessage (TXT_MOVE_FLAG);
 				return 1;
 				}
@@ -416,18 +414,18 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 #else
 				netGame.teamVector ^= (1<<i);
 #endif
-			for (t = 0;t<gameData.multi.nPlayers;t++)
-				if (gameData.multi.players [t].connected)
-					MultiResetObjectTexture (gameData.objs.objects + gameData.multi.players [t].nObject);
+			for (t = 0;t<gameData.multiplayer.nPlayers;t++)
+				if (gameData.multiplayer.players [t].connected)
+					MultiResetObjectTexture (gameData.objs.objects + gameData.multiplayer.players [t].nObject);
 
 			NetworkSendNetgameUpdate ();
-			sprintf (multiData.msg.szMsg, TXT_TEAMCHANGE3, gameData.multi.players [i].callsign);
-			if (i == gameData.multi.nLocalPlayer) {
+			sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [i].callsign);
+			if (i == gameData.multiplayer.nLocalPlayer) {
 				HUDInitMessage (TXT_TEAMCHANGE1);
 				ResetCockpit ();
 				}
 			else
-				HUDInitMessage (TXT_TEAMCHANGE2, gameData.multi.players [i].callsign);
+				HUDInitMessage (TXT_TEAMCHANGE2, gameData.multiplayer.players [i].callsign);
 #endif
 			break;
 		}
@@ -439,35 +437,35 @@ return 0;
 
 void MultiSendMsgEnd ()
 {
-multiData.msg.nReceiver = 100;
-if (!strnicmp (multiData.msg.szMsg, TXT_NAMES_OFF, 6)) {
+gameData.multigame.msg.nReceiver = 100;
+if (!strnicmp (gameData.multigame.msg.szMsg, TXT_NAMES_OFF, 6)) {
 	bNameReturning = 1-bNameReturning;
 	HUDInitMessage (TXT_NAMERET, bNameReturning? TXT_NR_ACTIVE : TXT_NR_DISABLED);
 	}
-else if (!strnicmp (multiData.msg.szMsg, TXT_HANDICAP, 9)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_HANDICAP, 9)) {
 	if (HandicapPlayer ())
 		return;
 	}
-else if (!strnicmp (multiData.msg.szMsg, TXT_BOMBS_OFF, 7))
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BOMBS_OFF, 7))
 	netGame.DoSmartMine = 0;
-else if (!(gameStates.render.cockpit.bShowPingStats || strnicmp (multiData.msg.szMsg, TXT_PING, 5))) {
+else if (!(gameStates.render.cockpit.bShowPingStats || strnicmp (gameData.multigame.msg.szMsg, TXT_PING, 5))) {
 	if (PingPlayer (-1))
 		return;
 	}
-else if (!strnicmp (multiData.msg.szMsg, TXT_MOVE, 5)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_MOVE, 5)) {
 	if (MovePlayer ())
 		return;
 	}
-else if (!strnicmp (multiData.msg.szMsg, TXT_KICK, 5) && (gameData.app.nGameMode & GM_NETWORK)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_KICK, 5) && (gameData.app.nGameMode & GM_NETWORK)) {
 	if (KickPlayer (0))
 		return;
 	}
-else if (!strnicmp (multiData.msg.szMsg, TXT_BAN, 4) && (gameData.app.nGameMode & GM_NETWORK)) {
+else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BAN, 4) && (gameData.app.nGameMode & GM_NETWORK)) {
 	if (KickPlayer (1))
 		return;
 	}
 else
-	HUDInitMessage ("%s '%s'", TXT_SENDING, multiData.msg.szMsg);
+	HUDInitMessage ("%s '%s'", TXT_SENDING, gameData.multigame.msg.szMsg);
 MultiSendMessage ();
 MultiMessageFeedback ();
 MultiSendMsgQuit ();
@@ -477,8 +475,8 @@ MultiSendMsgQuit ();
 
 void MultiDefineMacroEnd ()
 {
-Assert (multiData.msg.bDefining > 0);
-strcpy (multiData.msg.szMacro [multiData.msg.bDefining-1], multiData.msg.szMsg);
+Assert (gameData.multigame.msg.bDefining > 0);
+strcpy (gameData.multigame.msg.szMacro [gameData.multigame.msg.bDefining-1], gameData.multigame.msg.szMsg);
 WritePlayerFile ();
 MultiSendMsgQuit ();
 }
@@ -497,15 +495,15 @@ switch (key) {
 	case KEY_LEFT:
 	case KEY_BACKSP:
 	case KEY_PAD4:
-		if (multiData.msg.nIndex > 0)
-			multiData.msg.nIndex--;
-		multiData.msg.szMsg [multiData.msg.nIndex] = 0;
+		if (gameData.multigame.msg.nIndex > 0)
+			gameData.multigame.msg.nIndex--;
+		gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex] = 0;
 		break;
 
 	case KEY_ENTER:
-		if (multiData.msg.bSending)
+		if (gameData.multigame.msg.bSending)
 			MultiSendMsgEnd ();
-		else if (multiData.msg.bDefining)
+		else if (gameData.multigame.msg.bDefining)
 			MultiDefineMacroEnd ();
 		GameFlushInputs ();
 		break;
@@ -514,32 +512,32 @@ switch (key) {
 		if (key > 0) {
 			int ascii = KeyToASCII (key);
 			if (ascii < 255) {
-				if (multiData.msg.nIndex < MAX_MESSAGE_LEN-2) {
-					multiData.msg.szMsg [multiData.msg.nIndex++] = ascii;
-					multiData.msg.szMsg [multiData.msg.nIndex] = 0;
+				if (gameData.multigame.msg.nIndex < MAX_MESSAGE_LEN-2) {
+					gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex++] = ascii;
+					gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex] = 0;
 					}
-				else if (multiData.msg.bSending) {
+				else if (gameData.multigame.msg.bSending) {
 					int i;
 					char * ptext, *pcolon;
 					ptext = NULL;
-					multiData.msg.szMsg [multiData.msg.nIndex++] = ascii;
-					multiData.msg.szMsg [multiData.msg.nIndex] = 0;
-					for (i = multiData.msg.nIndex-1; i >= 0; i--) {
-						if (multiData.msg.szMsg [i] == 32) {
-							ptext = &multiData.msg.szMsg [i+1];
-							multiData.msg.szMsg [i] = 0;
+					gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex++] = ascii;
+					gameData.multigame.msg.szMsg [gameData.multigame.msg.nIndex] = 0;
+					for (i = gameData.multigame.msg.nIndex-1; i >= 0; i--) {
+						if (gameData.multigame.msg.szMsg [i] == 32) {
+							ptext = &gameData.multigame.msg.szMsg [i+1];
+							gameData.multigame.msg.szMsg [i] = 0;
 							break;
 							}
 						}
 					MultiSendMsgEnd ();
 					if (ptext) {
-						multiData.msg.bSending = 1;
-						pcolon = strchr (multiData.msg.szMsg, ':');
+						gameData.multigame.msg.bSending = 1;
+						pcolon = strchr (gameData.multigame.msg.szMsg, ':');
 						if (pcolon)
 							strcpy (pcolon+1, ptext);
 						else
-							strcpy (multiData.msg.szMsg, ptext);
-						multiData.msg.nIndex = (int) strlen (multiData.msg.szMsg);
+							strcpy (gameData.multigame.msg.szMsg, ptext);
+						gameData.multigame.msg.nIndex = (int) strlen (gameData.multigame.msg.szMsg);
 						}
 					}
 				}
@@ -556,15 +554,15 @@ void MultiSendMsgDialog (void)
 
 if (!(gameData.app.nGameMode & GM_MULTI))
 	return;
-multiData.msg.szMsg [0] = 0;             // Get rid of old contents
+gameData.multigame.msg.szMsg [0] = 0;             // Get rid of old contents
 memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_INPUT; 
-m [0].text = multiData.msg.szMsg; 
+m [0].text = gameData.multigame.msg.szMsg; 
 m [0].text_len = MAX_MESSAGE_LEN-1;
 choice = ExecMenu (NULL, TXT_SEND_MESSAGE, 1, m, NULL, NULL);
-if ((choice > -1) && (strlen (multiData.msg.szMsg) > 0)) {
-	multiData.msg.nReceiver = 100;
-	HUDInitMessage ("%s '%s'", TXT_SENDING, multiData.msg.szMsg);
+if ((choice > -1) && (strlen (gameData.multigame.msg.szMsg) > 0)) {
+	gameData.multigame.msg.nReceiver = 100;
+	HUDInitMessage ("%s '%s'", TXT_SENDING, gameData.multigame.msg.szMsg);
 	MultiMessageFeedback ();
 	}
 }
@@ -594,7 +592,7 @@ static int IsMyTeamId (char *bufP, int nLen)
 
 if (!(gameData.app.nGameMode & GM_TEAM))
 	return 0;
-i = GetTeam (gameData.multi.nLocalPlayer);
+i = GetTeam (gameData.multiplayer.nLocalPlayer);
 if (i == atoi (bufP) - 1)
 	return 1;
 if (!strnicmp (netGame.team_name [i], bufP, nLen))
@@ -608,8 +606,8 @@ static int IsPlayerId (char *bufP, int nLen)
 {
 	int	i;
 
-for (i = 0; i < gameData.multi.nPlayers; i++)
-	if (!strnicmp (gameData.multi.players [i].callsign, bufP, nLen))
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (!strnicmp (gameData.multiplayer.players [i].callsign, bufP, nLen))
 		return 1;
 return 0;
 }
@@ -618,7 +616,7 @@ return 0;
 
 static int IsMyPlayerId (char *bufP, int nLen)
 {
-return strnicmp (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, bufP, nLen) == 0;
+return strnicmp (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, bufP, nLen) == 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -634,8 +632,8 @@ if ((tilde = strchr (buf + bufP, '$'))) {
 	tloc = (int) (tilde - (buf + bufP));				
 	if (tloc > 0)
 		strncpy (msgBuf, buf + bufP, tloc);
-	strcpy (msgBuf + tloc, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
-	strcpy (msgBuf + strlen (gameData.multi.players [gameData.multi.nLocalPlayer].callsign) + tloc, buf + bufP + tloc + 1);
+	strcpy (msgBuf + tloc, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	strcpy (msgBuf + strlen (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign) + tloc, buf + bufP + tloc + 1);
 	strcpy (buf + bufP, msgBuf);
 	}
 if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain team or tPlayer
@@ -649,7 +647,7 @@ msgBuf [0] = 1;
 msgBuf [1] = 127 + 128;
 msgBuf [2] = 95 + 128;
 msgBuf [3] = 0 + 128;
-strcpy (msgBuf + 4, gameData.multi.players [buf [1]].callsign);
+strcpy (msgBuf + 4, gameData.multiplayer.players [buf [1]].callsign);
 t = (int) strlen (msgBuf);
 msgBuf [t] = ':';
 msgBuf [t+1] = ' ';

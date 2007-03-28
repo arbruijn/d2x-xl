@@ -149,12 +149,12 @@ void CheckInventory (void);
 
 #define	PowerupsInMine(_nPowerup) \
 			((gameStates.multi.nGameType == UDP_GAME) ? \
-			 (gameData.multi.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup)) : \
-			 gameData.multi.powerupsInMine [_nPowerup])
+			 (gameData.multiplayer.powerupsInMine [_nPowerup] + PowerupsOnShips (_nPowerup)) : \
+			 gameData.multiplayer.powerupsInMine [_nPowerup])
 
 #define	TooManyPowerups(_nPowerup) \
 			IsMultiGame && PowerupClass (_nPowerup) && \
-			(PowerupsInMine (_nPowerup) >= gameData.multi.maxPowerupsAllowed [_nPowerup])
+			(PowerupsInMine (_nPowerup) >= gameData.multiplayer.maxPowerupsAllowed [_nPowerup])
 
 extern char *pszPowerup [MAX_POWERUP_TYPES];
 

@@ -239,9 +239,9 @@ memset (m, 0, sizeof (m));
 for (i = 0; i < NUM_SAVES; i++)	{
 	sc_bmp [i] = NULL;
 	if (!bMulti)
-		sprintf (filename [i], "%s.sg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, i);
+		sprintf (filename [i], "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
 	else
-		sprintf (filename [i], "%s.mg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, i);
+		sprintf (filename [i], "%s.mg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
 	valid = 0;
 	fp = CFOpen (filename [i], gameFolders.szSaveDir, "rb", 0);
 	if (fp) {
@@ -307,9 +307,9 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	for (i = 0, j = 0; i < NUM_SAVES + 1; i++, j++) {
 		sc_bmp [i] = NULL;
 		if (!bMulti)
-			sprintf (filename [i], "%s.sg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, i);
+			sprintf (filename [i], "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
 		else
-			sprintf (filename [i], "%s.mg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, i);
+			sprintf (filename [i], "%s.mg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
 		valid = 0;
 		fp = CFOpen (filename [i], gameFolders.szSaveDir, "rb", 0);
 		if (fp) {
@@ -326,11 +326,11 @@ int StateGetRestoreFile (char * fname, int bMulti)
 					m [j+NM_IMG_SPACE].text = szDesc [j];
 					// Read thumbnail
 					if (sgVersion < 26) {
-						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W,THUMBNAIL_H, 0);
+						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W,THUMBNAIL_H, 1);
 						CFRead (sc_bmp [i]->bm_texBuf, THUMBNAIL_W * THUMBNAIL_H, 1, fp);
 						}
 					else {
-						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_LW,THUMBNAIL_LH, 0);
+						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_LW,THUMBNAIL_LH, 1);
 						CFRead (sc_bmp [i]->bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 						}
 					if (sgVersion >= 9) {
@@ -535,7 +535,7 @@ if (!pszFilenameOverride) {
 	if (tfp) {
 		char	newname [128];
 
-		sprintf (newname, "%s.sg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, NUM_SAVES);
+		sprintf (newname, "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, NUM_SAVES);
 		CFSeek (tfp, DESC_OFFSET, SEEK_SET);
 		CFWrite (" [autosave backup]", sizeof (char)*DESC_LENGTH, 1, tfp);
 		CFClose (tfp);
@@ -569,13 +569,13 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	CFWrite (&gameData.app.nStateGameId, sizeof (int), 1, fp);
 	CFWrite (&netGame, sizeof (tNetgameInfo), 1, fp);
 	CFWrite (&netPlayers, sizeof (tAllNetPlayersInfo), 1, fp);
-	CFWrite (&gameData.multi.nPlayers, sizeof (int), 1, fp);
-	CFWrite (&gameData.multi.nLocalPlayer, sizeof (int), 1, fp);
-	for (i = 0; i < gameData.multi.nPlayers; i++)
-		CFWrite (&gameData.multi.players [i], sizeof (tPlayer), 1, fp);
+	CFWrite (&gameData.multiplayer.nPlayers, sizeof (int), 1, fp);
+	CFWrite (&gameData.multiplayer.nLocalPlayer, sizeof (int), 1, fp);
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+		CFWrite (&gameData.multiplayer.players [i], sizeof (tPlayer), 1, fp);
 	}
 //Save tPlayer info
-CFWrite (&gameData.multi.players [gameData.multi.nLocalPlayer], sizeof (tPlayer), 1, fp);
+CFWrite (&gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer], sizeof (tPlayer), 1, fp);
 // Save the current weapon info
 CFWrite (&gameData.weapons.nPrimary, sizeof (sbyte), 1, fp);
 CFWrite (&gameData.weapons.nSecondary, sizeof (sbyte), 1, fp);
@@ -589,7 +589,7 @@ if (!bBetweenLevels)	{
 		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
 		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].position.mOrient = cameras [gameData.objs.cameraRef [i]].orient;
+			gameData.objs.objects [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
 		else if (gameData.objs.objects [i].renderType==RT_MORPH) {
 			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
@@ -1115,14 +1115,14 @@ if (IsCoopGame) {
 	//fpos = CFTell (fp);
 	StateSaveNetPlayers (fp);
 	//fpos = CFTell (fp);
-	CFWriteInt (gameData.multi.nPlayers, fp);
-	CFWriteInt (gameData.multi.nLocalPlayer, fp);
-	for (i = 0; i < gameData.multi.nPlayers; i++)
-		StateSavePlayer (gameData.multi.players + i, fp);
+	CFWriteInt (gameData.multiplayer.nPlayers, fp);
+	CFWriteInt (gameData.multiplayer.nLocalPlayer, fp);
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+		StateSavePlayer (gameData.multiplayer.players + i, fp);
 	//fpos = CFTell (fp);
 	}
 //Save tPlayer info
-StateSavePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
+StateSavePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, fp);
 // Save the current weapon info
 CFWriteByte (gameData.weapons.nPrimary, fp);
 CFWriteByte (gameData.weapons.nSecondary, fp);
@@ -1136,7 +1136,7 @@ if (!bBetweenLevels)	{
 		if (gameData.objs.objects [i].nType == OBJ_NONE) 
 			continue;
 		if (gameData.objs.objects [i].nType == OBJ_CAMERA)
-			gameData.objs.objects [i].position.mOrient = cameras [gameData.objs.cameraRef [i]].orient;
+			gameData.objs.objects [i].position.mOrient = gameData.cameras.cameras [gameData.objs.cameraRef [i]].orient;
 		else if (gameData.objs.objects [i].renderType == RT_MORPH) {
 			tMorphInfo *md = MorphFindData (gameData.objs.objects + i);
 			if (md) {
@@ -1306,7 +1306,7 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 	cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH);
 	if (cnv)	{
 		ubyte			*buf;
-		grsBitmap	tmp;
+		grsBitmap	bm;
 		int			k, x, y;
 		grs_canvas * cnv_save;
 		cnv_save = grdCurCanv;
@@ -1320,13 +1320,14 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 		if (curDrawBuffer == GL_BACK)
 			GameRenderFrame ();
 		glReadBuffer (GL_FRONT);
-		buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
+		bm.bm_bpp = 3;
+		buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
 		glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
-		tmp.bm_props.w = grdCurScreen->sc_w;
-		tmp.bm_props.h = grdCurScreen->sc_h;
-		tmp.bm_texBuf = buf;
+		bm.bm_props.w = grdCurScreen->sc_w;
+		bm.bm_props.h = grdCurScreen->sc_h;
+		bm.bm_texBuf = buf;
 		// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-		ShrinkTGA (&tmp, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0, 3);
+		ShrinkTGA (&bm, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0);
 		GrPaletteStepLoad (NULL);
 		// convert the resized TGA to bmp
 		for (y = 0; y < THUMBNAIL_LH; y++) {
@@ -1370,7 +1371,7 @@ return 1;
 //	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (void)
 {
-	int	nPlayerObj = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	int	nPlayerObj = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 
 COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [nPlayerObj].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
@@ -1433,7 +1434,7 @@ if (!bSecretRestore && !(gameData.app.nGameMode & GM_MULTI)) {
 	//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
 if ((filenum != (NUM_SAVES + 1)) && bInGame) {
 	char	temp_filename [128];
-	sprintf (temp_filename, "%s.sg%x", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, NUM_SAVES);
+	sprintf (temp_filename, "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, NUM_SAVES);
 	StateSaveAll (!bInGame, bSecretRestore, temp_filename);
 	}
 if (!bSecretRestore && bInGame) {
@@ -1486,13 +1487,13 @@ return 0;
 void StateRestoreMultiGame (char *pszOrgCallSign, int bMulti, int bSecretRestore)
 {
 if (bMulti)
-	strcpy (pszOrgCallSign, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+	strcpy (pszOrgCallSign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 else {
 	gameData.app.nGameMode = GM_NORMAL;
 	SetFunctionMode (FMODE_GAME);
 	ChangePlayerNumTo (0);
-	strcpy (pszOrgCallSign, gameData.multi.players [0].callsign);
-	gameData.multi.nPlayers = 1;
+	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
+	gameData.multiplayer.nPlayers = 1;
 	if (!bSecretRestore) {
 		InitMultiPlayerObject ();	//make sure tPlayer's tObject set up
 		InitPlayerStatsGame ();		//clear all stats
@@ -1512,7 +1513,7 @@ int StateSetServerPlayer (tPlayer *restoredPlayers, int nPlayers, char *pszServe
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (gameStates.multi.bServer || NetworkIAmMaster ())
-		nServerPlayer = gameData.multi.nLocalPlayer;
+		nServerPlayer = gameData.multiplayer.nLocalPlayer;
 	else {
 		nServerPlayer = -1;
 		for (i = 0; i < nPlayers; i++)
@@ -1535,14 +1536,14 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		restoredPlayers [nServerPlayer] = h;
 		}
 		if (gameStates.multi.bServer || NetworkIAmMaster ())
-			gameData.multi.nLocalPlayer = 0;
-		else if (!gameData.multi.nLocalPlayer)
-			gameData.multi.nLocalPlayer = nServerPlayer;
+			gameData.multiplayer.nLocalPlayer = 0;
+		else if (!gameData.multiplayer.nLocalPlayer)
+			gameData.multiplayer.nLocalPlayer = nServerPlayer;
 		}
-	memcpy (netPlayers.players [gameData.multi.nLocalPlayer].network.ipx.node, 
+	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, 
 			 IpxGetMyLocalAddress (), 6);
-	* ((ushort *) (netPlayers.players [gameData.multi.nLocalPlayer].network.ipx.node + 4)) = 
-		htons (* ((ushort *) (netPlayers.players [gameData.multi.nLocalPlayer].network.ipx.node + 4)));
+	* ((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
+		htons (* ((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
 	}
 *pnOtherObjNum = nOtherObjNum;
 *pnServerObjNum = nServerObjNum;
@@ -1557,20 +1558,20 @@ void StateGetConnectedPlayers (tPlayer *restoredPlayers, int nPlayers)
 
 for (i = 0; i < nPlayers; i++) {
 	for (j = 0; j < nPlayers; j++) {
-      if ((!stricmp (restoredPlayers [i].callsign, gameData.multi.players [j].callsign)) && 
-			 gameData.multi.players [j].connected) {
+      if ((!stricmp (restoredPlayers [i].callsign, gameData.multiplayer.players [j].callsign)) && 
+			 gameData.multiplayer.players [j].connected) {
 			restoredPlayers [i].connected = 1;
 			break;
 			}
 		}
 	}
-memcpy (gameData.multi.players, restoredPlayers, sizeof (tPlayer) * nPlayers);
-gameData.multi.nPlayers = nPlayers;
+memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (tPlayer) * nPlayers);
+gameData.multiplayer.nPlayers = nPlayers;
 if (NetworkIAmMaster ()) {
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
-		if (i == gameData.multi.nLocalPlayer)
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if (i == gameData.multiplayer.nLocalPlayer)
 			continue;
-   	gameData.multi.players [i].connected = 0;
+   	gameData.multiplayer.players [i].connected = 0;
 		}
 	}
 }
@@ -1585,11 +1586,11 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 	gameData.objs.objects [nOtherObjNum] = h;
 	gameData.objs.objects [nServerObjNum].id = nServerObjNum;
 	gameData.objs.objects [nOtherObjNum].id = 0;
-	if (gameData.multi.nLocalPlayer == nServerObjNum) {
+	if (gameData.multiplayer.nLocalPlayer == nServerObjNum) {
 		gameData.objs.objects [nServerObjNum].controlType = CT_FLYING;
 		gameData.objs.objects [nOtherObjNum].controlType = CT_REMOTE;
 		}
-	else if (gameData.multi.nLocalPlayer == nOtherObjNum) {
+	else if (gameData.multiplayer.nLocalPlayer == nOtherObjNum) {
 		gameData.objs.objects [nServerObjNum].controlType = CT_REMOTE;
 		gameData.objs.objects [nOtherObjNum].controlType = CT_FLYING;
 		}
@@ -1636,7 +1637,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 
 void StateAwardReturningPlayer (tPlayer *retPlayerP, fix xOldGameTime)
 {
-tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+tPlayer *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 playerP->level = retPlayerP->level;
 playerP->last_score = retPlayerP->last_score;
 playerP->timeLevel = retPlayerP->timeLevel;
@@ -2092,8 +2093,8 @@ if (IsMultiGame) {
 	StateRestoreNetPlayers (fp);
 	//fpos = CFTell (fp);
 	nPlayers = CFReadInt (fp);
-	nSavedLocalPlayer = gameData.multi.nLocalPlayer;
-	gameData.multi.nLocalPlayer = CFReadInt (fp);
+	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
+	gameData.multiplayer.nLocalPlayer = CFReadInt (fp);
 	for (i = 0; i < nPlayers; i++)
 		StateRestorePlayer (restoredPlayers + i, fp);
 	//fpos = CFTell (fp);
@@ -2106,19 +2107,19 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+nLocalObjNum = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
-	StateRestorePlayer (gameData.multi.players + gameData.multi.nLocalPlayer, fp);
+	StateRestorePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, fp);
 else {
 	tPlayer	retPlayer;
 	StateRestorePlayer (&retPlayer, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].nObject = nLocalObjNum;
-strcpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, szOrgCallSign);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject = nLocalObjNum;
+strcpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
-	gameData.multi.players [gameData.multi.nLocalPlayer].level = nNextLevel;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = nNextLevel;
 // Restore the weapon states
 gameData.weapons.nPrimary = CFReadByte (fp);
 gameData.weapons.nSecondary = CFReadByte (fp);
@@ -2347,9 +2348,9 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	CFRead (&gameData.app.nStateGameId, sizeof (int), 1, fp);
 	CFRead (&netGame, sizeof (tNetgameInfo), 1, fp);
 	CFRead (&netPlayers, sizeof (tAllNetPlayersInfo), 1, fp);
-	CFRead (&nPlayers, sizeof (gameData.multi.nPlayers), 1, fp);
-	CFRead (&gameData.multi.nLocalPlayer, sizeof (gameData.multi.nLocalPlayer), 1, fp);
-	nSavedLocalPlayer = gameData.multi.nLocalPlayer;
+	CFRead (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1, fp);
+	CFRead (&gameData.multiplayer.nLocalPlayer, sizeof (gameData.multiplayer.nLocalPlayer), 1, fp);
+	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	for (i = 0; i < nPlayers; i++)
 		CFRead (restoredPlayers + i, sizeof (tPlayer), 1, fp);
 	nServerPlayer = StateSetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
@@ -2361,19 +2362,19 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+nLocalObjNum = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
-	CFRead (gameData.multi.players + gameData.multi.nLocalPlayer, sizeof (tPlayer), 1, fp);
+	CFRead (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, sizeof (tPlayer), 1, fp);
 else {
 	tPlayer	retPlayer;
 	CFRead (&retPlayer, sizeof (tPlayer), 1, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multi.players [gameData.multi.nLocalPlayer].nObject = nLocalObjNum;
-strcpy (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, szOrgCallSign);
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject = nLocalObjNum;
+strcpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
-	gameData.multi.players [gameData.multi.nLocalPlayer].level = nNextLevel;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = nNextLevel;
 // Restore the weapon states
 CFRead (&gameData.weapons.nPrimary, sizeof (sbyte), 1, fp);
 CFRead (&gameData.weapons.nSecondary, sizeof (sbyte), 1, fp);
@@ -2608,16 +2609,16 @@ SetEquipGenStates ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
-	  if (!gameData.multi.players [i].connected) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	  if (!gameData.multiplayer.players [i].connected) {
 			NetworkDisconnectPlayer (i);
-  			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multi.players [i].nObject);
+  			CreatePlayerAppearanceEffect (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
 	      }
 		}
 	}
 gameData.objs.viewer = 
 gameData.objs.console = 
-	gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+	gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 StartTime ();
 return 1;
 }

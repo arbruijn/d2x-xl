@@ -799,10 +799,10 @@ if (endMask = masks.faceMask) { //on the back of at least one iFace
 					SpecialCheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
 					CheckLineToFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
 				if (nFaceHitType) { //through this wall/door
-					int widResult = WALL_IS_DOORWAY (segP, nSide, gameData.objs.objects + nThisObject);
+					int widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
 					//LogErr ("done\n");
 					//if what we have hit is a door, check the adjoining segP
-					if ((nThisObject == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) && 
+					if ((nThisObject == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) && 
 						 (gameStates.app.cheats.bPhysics == 0xBADA55)) {
 						int childSide = segP->children [nSide];
 						if (childSide >= 0) {
@@ -1072,7 +1072,11 @@ else {
 	}
 offs = bmy * w + bmx;
 if (bmP->bm_props.flags & BM_FLAG_TGA) {
-	ubyte *p = bmP->bm_texBuf + offs * 4;
+	ubyte *p;
+	
+	if (bmP->bm_bpp == 3)	//no alpha -> no transparency
+		return 0;
+	p = bmP->bm_texBuf + offs * bmP->bm_bpp;
 	// check super transparency color
 	if ((gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) ?
 	    (p[3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
@@ -1082,7 +1086,7 @@ if (bmP->bm_props.flags & BM_FLAG_TGA) {
 		return 1;
 	}
 else {
-	c = bmP->bm_texBuf[offs];
+	c = bmP->bm_texBuf [offs];
 	if (c == SUPER_TRANSP_COLOR) 
 		return -1;
 	if (c == TRANSPARENCY_COLOR) 

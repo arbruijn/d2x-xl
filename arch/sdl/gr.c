@@ -190,6 +190,7 @@ grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
 grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
 grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
 grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
+grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
 grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
 grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;

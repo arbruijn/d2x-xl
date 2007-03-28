@@ -189,7 +189,7 @@ typedef struct {
 } segQueueEntry;
 
 #define MAX_POINT_SEGS_D2  2500
-#define MAX_POINT_SEGS  	25000
+#define MAX_POINT_SEGS  	(MAX_SEGMENTS_D2X * 4)
 
 // These are the information for a robot describing the location of
 // the tPlayer last time he wasn't cloaked, and the time at which he

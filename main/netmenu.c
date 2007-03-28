@@ -275,15 +275,15 @@ if (TimerGetApproxSeconds () > (t1+ENDLEVEL_SEND_INTERVAL)) {
 	t1 = TimerGetApproxSeconds ();
 	}
 NetworkListen ();
-for (i = 0; i < gameData.multi.nPlayers; i++) {
-	if ((gameData.multi.players [i].connected != 1) && 
-		 (gameData.multi.players [i].connected != 5) && 
-		 (gameData.multi.players [i].connected != 6))
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if ((gameData.multiplayer.players [i].connected != 1) && 
+		 (gameData.multiplayer.players [i].connected != 5) && 
+		 (gameData.multiplayer.players [i].connected != 6))
 		num_ready++;
-	if (gameData.multi.players [i].connected == 4)
+	if (gameData.multiplayer.players [i].connected == 4)
 		goto_secret = 1;                                        
 	}
-if (num_ready == gameData.multi.nPlayers) {// All players have checked in or are disconnected
+if (num_ready == gameData.multiplayer.nPlayers) {// All players have checked in or are disconnected
 	if (goto_secret)
 		*key = -3;
 	else
@@ -299,13 +299,13 @@ void NetworkEndLevelPoll3 (int nitems, tMenuItem * menus, int * key, int cItem)
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
  
-if (TimerGetApproxSeconds () > (gameData.multi.xStartAbortMenuTime+ (F1_0 * 8)))
+if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime+ (F1_0 * 8)))
 	*key = -2;
 NetworkListen ();
-for (i = 0; i < gameData.multi.nPlayers; i++)
-	if ((gameData.multi.players [i].connected != 1) && (gameData.multi.players [i].connected != 5) && (gameData.multi.players [i].connected != 6))
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if ((gameData.multiplayer.players [i].connected != 1) && (gameData.multiplayer.players [i].connected != 5) && (gameData.multiplayer.players [i].connected != 6))
 		num_ready++;
-if (num_ready == gameData.multi.nPlayers) // All players have checked in or are disconnected
+if (num_ready == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	*key = -2;
 }
 
@@ -324,7 +324,7 @@ if (!menus [0].value) {
 	menus [0].rebuild = 1;
 	}
 for (i = 1; i < nitems; i++) {
-	if ((i >= gameData.multi.nPlayers) && menus [i].value) {
+	if ((i >= gameData.multiplayer.nPlayers) && menus [i].value) {
 		menus [i].value = 0;
 		menus [i].rebuild = 1;
 		}
@@ -332,16 +332,16 @@ for (i = 1; i < nitems; i++) {
 nm = 0;
 for (i = 0; i < nitems; i++) {
 	if (menus [i].value) {
-		if (++nm > gameData.multi.nPlayers)   {
+		if (++nm > gameData.multiplayer.nPlayers)   {
 			menus [i].value = 0;
 			menus [i].rebuild = 1;
 			}
 		}
 	}
-if (nm > gameData.multi.nMaxPlayers) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
+if (nm > gameData.multiplayer.nMaxPlayers) {
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last tPlayer highlighted
-	for (i = gameData.multi.nPlayers; i > 0; i--)
+	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
 		if (menus [i].value == 1) {
 			menus [i].value = 0;
 			menus [i].rebuild = 1;
@@ -357,25 +357,25 @@ NetworkListen ();
 if (n < netGame.nNumPlayers) {
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	if (gameOpts->multi.bNoRankings)
-	   sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %-20s", gameData.multi.nPlayers, netPlayers.players [gameData.multi.nPlayers-1].callsign);
+	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %-20s", gameData.multiplayer.nPlayers, netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
 	else
-	   sprintf (menus [gameData.multi.nPlayers - 1].text, "%d. %s%-20s", gameData.multi.nPlayers, pszRankStrings [netPlayers.players [gameData.multi.nPlayers-1].rank], netPlayers.players [gameData.multi.nPlayers-1].callsign);
-	menus [gameData.multi.nPlayers - 1].rebuild = 1;
-	if (gameData.multi.nPlayers <= gameData.multi.nMaxPlayers)
-		menus [gameData.multi.nPlayers - 1].value = 1;
+	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %s%-20s", gameData.multiplayer.nPlayers, pszRankStrings [netPlayers.players [gameData.multiplayer.nPlayers-1].rank], netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
+	menus [gameData.multiplayer.nPlayers - 1].rebuild = 1;
+	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
+		menus [gameData.multiplayer.nPlayers - 1].value = 1;
 	} 
 else if (n > netGame.nNumPlayers) {
 	// One got removed...
    DigiPlaySample (SOUND_HUD_KILL, F1_0);
-	for (i = 0; i < gameData.multi.nPlayers; i++) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameOpts->multi.bNoRankings)	
 			sprintf (menus [i].text, "%d. %-20s", i+1, netPlayers.players [i].callsign);
 		else
 			sprintf (menus [i].text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers.players [i].rank], netPlayers.players [i].callsign);
-		menus [i].value = (i < gameData.multi.nMaxPlayers);
+		menus [i].value = (i < gameData.multiplayer.nMaxPlayers);
 		menus [i].rebuild = 1;
 		}
-	for (i = gameData.multi.nPlayers; i<n; i++)  {
+	for (i = gameData.multiplayer.nPlayers; i<n; i++)  {
 		sprintf (menus [i].text, "%d. ", i+1);          // Clear out the deleted entries...
 		menus [i].value = 0;
 		menus [i].rebuild = 1;
@@ -1258,10 +1258,10 @@ networkData.nNamesInfoSecurity = -1;
 if (nNewMission >= 0)
 	bAnarchyOnly = gameData.missions.list [nNewMission].bAnarchyOnly;
 for (i = 0; i < MAX_PLAYERS; i++)
-	if (i!= gameData.multi.nLocalPlayer)
-		gameData.multi.players [i].callsign [0] = 0;
+	if (i!= gameData.multiplayer.nLocalPlayer)
+		gameData.multiplayer.players [i].callsign [0] = 0;
 
-gameData.multi.nMaxPlayers = MAX_NUM_NET_PLAYERS;
+gameData.multiplayer.nMaxPlayers = MAX_NUM_NET_PLAYERS;
 //netGame.KillGoal = 0;
 //netGame.xPlayTimeAllowed = 0;
 //netGame.bAllowMarkerView = 1;
@@ -1274,7 +1274,7 @@ if (!(FindArg ("-pps") && FindArg ("-shortpackets")))
 	if (!NetworkChooseConnect ())
 		return -1;
 
-sprintf (name, "%s%s", gameData.multi.players [gameData.multi.nLocalPlayer].callsign, TXT_S_GAME);	
+sprintf (name, "%s%s", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, TXT_S_GAME);	
 if (bAutoRun)
 	return 1;
 
@@ -1370,9 +1370,9 @@ m [optOpenGame + NMCLAMP (mpParams.nGameAccess, 0, 2)].value = 1;
 
 ADD_TEXT (opt, "", 0);
 opt++; 
-sprintf (szMaxNet + 1, TXT_MAX_PLAYERS, gameData.multi.nMaxPlayers);
+sprintf (szMaxNet + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
 *szMaxNet = * (TXT_MAX_PLAYERS - 1);
-lastMaxNet = gameData.multi.nMaxPlayers - 2;
+lastMaxNet = gameData.multiplayer.nMaxPlayers - 2;
 ADD_SLIDER (opt, szMaxNet + 1, lastMaxNet, 0, lastMaxNet, KEY_X, HTX_MULTI_MAXPLRS); 
 optMaxNet = opt++;
 ADD_TEXT (opt, "", 0);
@@ -1467,8 +1467,8 @@ else if (choice == optMission) {
 if (key != -1) {
 	int j, bHoard = HoardEquipped ();
 		   
-	gameData.multi.nMaxPlayers = m [optMaxNet].value + 2;
-	netGame.nMaxPlayers = gameData.multi.nMaxPlayers;
+	gameData.multiplayer.nMaxPlayers = m [optMaxNet].value + 2;
+	netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 				
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].szGameName, name)) {
@@ -1604,7 +1604,7 @@ int NetworkSelectTeams (void)
 
 	// One-time initialization
 
-	for (i = gameData.multi.nPlayers/2; i < gameData.multi.nPlayers; i++) // Put first half of players on team A
+	for (i = gameData.multiplayer.nPlayers/2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
 	{
 		teamVector |= (1 << i);
 	}
@@ -1622,7 +1622,7 @@ doMenu:
 	m [0].text_len = CALLSIGN_LEN; 
 
 	opt = 1;
-	for (i = 0; i < gameData.multi.nPlayers; i++)
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	{
 		if (!(teamVector & (1 << i)))
 		{
@@ -1637,7 +1637,7 @@ doMenu:
 	m [opt].text = team_names [1]; 
 	m [opt].text_len = CALLSIGN_LEN; 
 	opt++;
-	for (i = 0; i < gameData.multi.nPlayers; i++)
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	{
 		if (teamVector & (1 << i))
 		{
@@ -1706,17 +1706,17 @@ for (i = 0; i< MAX_PLAYERS+4; i++) {
 	}
 m [0].value = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
-	sprintf (text [0], "%d. %-20s", 1, gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
+	sprintf (text [0], "%d. %-20s", 1, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
 else
-	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.players [gameData.multi.nLocalPlayer].rank], gameData.multi.players [gameData.multi.nLocalPlayer].callsign);
-sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multi.nMaxPlayers, TXT_TEAM_PRESS_ENTER);
+	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.players [gameData.multiplayer.nLocalPlayer].rank], gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, TXT_TEAM_PRESS_ENTER);
 
 GetPlayersAgain:
 
 gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
 Assert (sizeofa (m) >= MAX_PLAYERS + 4);
 j = ExecMenu1 (NULL, title, MAX_PLAYERS + 4, m, NetworkStartPoll, &choice);
-nSavePlayers = gameData.multi.nPlayers;
+nSavePlayers = gameData.multiplayer.nPlayers;
 if (j < 0) {
 	// Aborted!                                     
 	// Dump all players and go back to menu mode
@@ -1737,21 +1737,21 @@ abort:
 	return 0;
 	}
 // Count number of players chosen
-gameData.multi.nPlayers = 0;
+gameData.multiplayer.nPlayers = 0;
 for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].value) 
-		gameData.multi.nPlayers++;
+		gameData.multiplayer.nPlayers++;
 	}
-if (gameData.multi.nPlayers > netGame.nMaxPlayers) {
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multi.nMaxPlayers, TXT_NETPLAYERS_IN);
-	gameData.multi.nPlayers = nSavePlayers;
+if (gameData.multiplayer.nPlayers > netGame.nMaxPlayers) {
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
+	gameData.multiplayer.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 	}
 #ifndef _DEBUG
-if (gameData.multi.nPlayers < 2) {
+if (gameData.multiplayer.nPlayers < 2) {
 	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
-	gameData.multi.nPlayers = nSavePlayers;
+	gameData.multiplayer.nPlayers = nSavePlayers;
 	goto GetPlayersAgain;
 #	endif
 	}
@@ -1761,9 +1761,9 @@ if (gameData.multi.nPlayers < 2) {
 if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 	  netGame.gameMode == NETGAME_CAPTURE_FLAG || 
 	  netGame.gameMode == NETGAME_TEAM_HOARD) && 
-	 (gameData.multi.nPlayers < 2)) {
+	 (gameData.multiplayer.nPlayers < 2)) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
-	gameData.multi.nPlayers = nSavePlayers;
+	gameData.multiplayer.nPlayers = nSavePlayers;
 #if 0		
 	goto GetPlayersAgain;
 #endif		
@@ -1771,32 +1771,32 @@ if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 #endif
 
 // Remove players that aren't marked.
-gameData.multi.nPlayers = 0;
+gameData.multiplayer.nPlayers = 0;
 for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].value) {
-		if (i > gameData.multi.nPlayers) {
+		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				memcpy (netPlayers.players [gameData.multi.nPlayers].network.ipx.node, 
+				memcpy (netPlayers.players [gameData.multiplayer.nPlayers].network.ipx.node, 
 				netPlayers.players [i].network.ipx.node, 6);
-				memcpy (netPlayers.players [gameData.multi.nPlayers].network.ipx.server, 
+				memcpy (netPlayers.players [gameData.multiplayer.nPlayers].network.ipx.server, 
 				netPlayers.players [i].network.ipx.server, 4);
 				}
 			else {
-				netPlayers.players [gameData.multi.nPlayers].network.appletalk.node = netPlayers.players [i].network.appletalk.node;
-				netPlayers.players [gameData.multi.nPlayers].network.appletalk.net = netPlayers.players [i].network.appletalk.net;
-				netPlayers.players [gameData.multi.nPlayers].network.appletalk.socket = netPlayers.players [i].network.appletalk.socket;
+				netPlayers.players [gameData.multiplayer.nPlayers].network.appletalk.node = netPlayers.players [i].network.appletalk.node;
+				netPlayers.players [gameData.multiplayer.nPlayers].network.appletalk.net = netPlayers.players [i].network.appletalk.net;
+				netPlayers.players [gameData.multiplayer.nPlayers].network.appletalk.socket = netPlayers.players [i].network.appletalk.socket;
 				}
 			memcpy (
-				netPlayers.players [gameData.multi.nPlayers].callsign, 
+				netPlayers.players [gameData.multiplayer.nPlayers].callsign, 
 				netPlayers.players [i].callsign, CALLSIGN_LEN+1);
-			netPlayers.players [gameData.multi.nPlayers].version_major = netPlayers.players [i].version_major;
-			netPlayers.players [gameData.multi.nPlayers].version_minor = netPlayers.players [i].version_minor;
-			netPlayers.players [gameData.multi.nPlayers].rank = netPlayers.players [i].rank;
-			ClipRank (&netPlayers.players [gameData.multi.nPlayers].rank);
+			netPlayers.players [gameData.multiplayer.nPlayers].version_major = netPlayers.players [i].version_major;
+			netPlayers.players [gameData.multiplayer.nPlayers].version_minor = netPlayers.players [i].version_minor;
+			netPlayers.players [gameData.multiplayer.nPlayers].rank = netPlayers.players [i].rank;
+			ClipRank (&netPlayers.players [gameData.multiplayer.nPlayers].rank);
 			NetworkCheckForOldVersion ((char)i);
 			}
-		gameData.multi.players [gameData.multi.nPlayers].connected = 1;
-		gameData.multi.nPlayers++;
+		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
+		gameData.multiplayer.nPlayers++;
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
@@ -1804,7 +1804,7 @@ for (i = 0; i < nSavePlayers; i++) {
 		}
 	}
 
-for (i = gameData.multi.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
+for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		memset (netPlayers.players [i].network.ipx.node, 0, 6);
 		memset (netPlayers.players [i].network.ipx.server, 0, 4);
@@ -2049,7 +2049,7 @@ if (bPlaySound)
 
 int NetworkBrowseGames (void)
 {
-	int choice, i, bAutoRun = gameData.multi.autoNG.bValid;
+	int choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
 	bkg bg;
 	tMenuItem m [MAX_ACTIVE_NETGAMES + 5];
 
@@ -2064,7 +2064,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 //LogErr ("   NetworkInit\n");
 NetworkInit ();
-gameData.multi.nPlayers = 0;
+gameData.multiplayer.nPlayers = 0;
 setjmp (gameExitPoint);
 networkData.bSendObjects = 0; 
 networkData.bSendingExtras = 0;
@@ -2205,7 +2205,7 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 memcpy (&netGame, activeNetGames + choice, sizeof (tNetgameInfo));
 memcpy (&netPlayers, activeNetPlayers + choice, sizeof (tAllNetPlayersInfo));
 gameStates.app.nDifficultyLevel = netGame.difficulty;
-gameData.multi.nMaxPlayers = netGame.nMaxPlayers;
+gameData.multiplayer.nMaxPlayers = netGame.nMaxPlayers;
 ChangePlayerNumTo (1);
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to

@@ -42,8 +42,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WFRONT                      5
 
 #define MAX_SEGMENTS_D2					900
-#define MAX_SEGMENTS						6000
+#define MAX_SEGMENTS_D2X				6000
+#define MAX_SEGMENTS						gameData.segs.nMaxSegments
 #define MAX_SEGMENT_VERTICES			(MAX_SEGMENTS * 4 + 8)
+#define MAX_SEGMENT_VERTICES_D2X		(MAX_SEGMENTS_D2X * 4 + 8)
 
 //normal everyday vertices
 
@@ -52,9 +54,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef EDITOR   //verts for the new tSegment
 # define NUM_NEW_SEG_VERTICES   8
 # define NEW_SEGMENT_VERTICES   (MAX_SEGMENT_VERTICES)
-# define MAX_VERTICES           (MAX_SEGMENT_VERTICES+NUM_NEW_SEG_VERTICES)
+# define MAX_VERTICES           (MAX_SEGMENT_VERTICES + NUM_NEW_SEG_VERTICES)
+# define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X + NUM_NEW_SEG_VERTICES)
 #else           //No editor
 # define MAX_VERTICES           (MAX_SEGMENT_VERTICES)
+# define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X)
 #endif
 
 // Returns true if nSegment references a child, else returns false.
@@ -71,12 +75,12 @@ typedef struct uvl {
 
 #ifdef COMPACT_SEGS
 typedef struct tSide {
-	sbyte   nType;           // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+	sbyte   nType;          //replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
 	ubyte   pad;            //keep us longword alligned
 	short   nWall;
 	short   nTexture [2];
 	uvl     uvls [4];
-	//vmsVector normals[2];  // 2 normals, if quadrilateral, both the same.
+	//vmsVector normals[2]; // 2 normals, if quadrilateral, both the same.
 } tSide;
 #else
 typedef struct tSide {
@@ -165,12 +169,16 @@ extern void GetSideNormals(tSegment *sp, int nSide, vmsVector * vm1, vmsVector *
 //--repair-- 	short   special_segment; // if specialType indicates repair center, this is the base of the repair center
 //--repair-- } lsegment;
 
+#ifdef EDITOR
+
 typedef struct {
 	int     num_segments;
 	int     num_vertices;
-	short   segments[MAX_SEGMENTS];
-	short   vertices[MAX_VERTICES];
+	short   segments [MAX_SEGMENTS];
+	short   vertices [MAX_VERTICES];
 } group;
+
+#endif
 
 // Globals from mglobal.c
 extern sbyte sideToVerts[MAX_SIDES_PER_SEGMENT][4];       // sideToVerts[my_side] is list of vertices forming tSide my_side.
@@ -209,8 +217,8 @@ typedef union {
 #define MAX_DL_INDICES_D2    500
 #define MAX_DELTA_LIGHTS_D2  10000
 
-#define MAX_DL_INDICES       3000
-#define MAX_DELTA_LIGHTS     50000
+#define MAX_DL_INDICES       (MAX_SEGMENTS / 2)
+#define MAX_DELTA_LIGHTS     (MAX_SEGMENTS * 10)
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
@@ -225,6 +233,8 @@ void ClearLightSubtracted(void);
 // functions instead.  The tSegment data structure is GUARANTEED to
 // change MANY TIMES.  If you read the tSegment data structure
 // directly, your code will break, I PROMISE IT!
+
+#ifdef EDITOR
 
 // Return a pointer to the list of vertex indices for the current
 // tSegment in vp and the number of vertices in *nv.
@@ -243,10 +253,12 @@ void med_validate_segment_side(tSegment *sp, short tSide);
 extern int med_delete_segment(tSegment *sp);
 
 // Delete tSegment from group
-extern void delete_segment_from_group(int segment_num, int group_num);
+extern void DeleteSegmentFromGroup (int nSegment, int nGroup);
 
 // Add tSegment to group
-extern void add_segment_to_group(int segment_num, int group_num);
+extern void AddSegmentToGroup (int nSegment, int nGroup);
+
+#endif
 
 // Verify that all vertices are legal.
 extern void med_check_all_vertices();

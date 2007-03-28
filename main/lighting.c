@@ -59,15 +59,6 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 
 extern tFaceColor tMapColor, lightColor, vertColors [4];
 
-fix	dynamicLight [MAX_VERTICES];
-tRgbColorf dynamicColor [MAX_VERTICES];
-char  bGotDynColor [MAX_VERTICES];
-//tFaceColor DyngameData.render.vertices [MAX_VERTICES];
-char  bGotGlobalDynColor;
-char  bStartDynColoring;
-char  bInitDynColoring = 1;
-tRgbColorf globalDynColor;
-
 #define	LIGHTING_CACHE_SIZE	4096	//	Must be power of 2!
 #define	LIGHTING_FRAME_DELTA	256	//	Recompute cache value every 8 frames.
 #define	LIGHTING_CACHE_SHIFT	8
@@ -224,12 +215,12 @@ Cache_hits++;
 
 void InitDynColoring (void)
 {
-if (!gameOpts->render.bDynLighting && bInitDynColoring) {
-	bInitDynColoring = 0;
-	memset (bGotDynColor, 0, sizeof (bGotDynColor));
+if (!gameOpts->render.bDynLighting && gameData.render.lights.bInitDynColoring) {
+	gameData.render.lights.bInitDynColoring = 0;
+	memset (gameData.render.lights.bGotDynColor, 0, sizeof (*gameData.render.lights.bGotDynColor) * MAX_VERTICES);
 	}
-bGotGlobalDynColor = 0;
-bStartDynColoring = 0;
+gameData.render.lights.bGotGlobalDynColor = 0;
+gameData.render.lights.bStartDynColoring = 0;
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -244,13 +235,13 @@ if (!color)
 if (!bForce && (color->red == 1.0) && (color->green == 1.0) && (color->blue == 1.0))
 	return;
 #endif
-if (bStartDynColoring) {
+if (gameData.render.lights.bStartDynColoring) {
 	InitDynColoring ();
 	}
 if (!pDynColor) {
-	SetDynColor (color, &globalDynColor, 0, &bGotGlobalDynColor, bForce);
-	pDynColor = dynamicColor + nVertex;
-	pbGotDynColor = bGotDynColor + nVertex;
+	SetDynColor (color, &gameData.render.lights.globalDynColor, 0, &gameData.render.lights.bGotGlobalDynColor, bForce);
+	pDynColor = gameData.render.lights.dynamicColor + nVertex;
+	pbGotDynColor = gameData.render.lights.bGotDynColor + nVertex;
 	}
 if (*pbGotDynColor) {
 	pDynColor->red = (pDynColor->red + color->red) / 2;
@@ -280,10 +271,10 @@ void ApplyLight (
 	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0, 0);
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
-	tObject		*objP = gameData.objs.objects + nObject;
-	tPlayer		*playerP = gameData.multi.players + objP->id;
+	tObject		*objP = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	tPlayer		*playerP = objP ? gameData.multiplayer.players + objP->id : NULL;
 
-if (SHOW_DYN_LIGHT) {
+if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
@@ -322,13 +313,13 @@ if (xObjIntensity) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
-	if ((objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
+	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
 		xObjIntensity = 0;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
-	bForceColor = (objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL);
+	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL));
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
-	if ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER)) {
+	if (objP && ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
 
 		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
@@ -346,7 +337,7 @@ if (xObjIntensity) {
 					if (dist < MIN_LIGHT_DIST)
 						dist = MIN_LIGHT_DIST;
 
-					dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
+					gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 					if (bUseColor)
 						SetDynColor (color, NULL, nVertex, NULL, 0);
 					}
@@ -357,14 +348,14 @@ if (xObjIntensity) {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0*200;
 
-		if (objP->nType == OBJ_PLAYER)
-			if (gameStates.render.bHeadlightOn = (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+		if (objP && (objP->nType == OBJ_PLAYER))
+			if (gameStates.render.bHeadlightOn = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
 					color->red = color->green = color->blue = 1.0;
 					}
-				if (objP->id != gameData.multi.nLocalPlayer) {
+				if (objP->id != gameData.multiplayer.nLocalPlayer) {
 					vmsVector	tvec;
 					tVFIQuery	fq;
 					tFVIData		hit_data;
@@ -410,7 +401,7 @@ if (xObjIntensity) {
 						if (bUseColor)
 							SetDynColor (color, NULL, nVertex, NULL, bForceColor);
 						if (!headlightShift) 
-							dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
+							gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
 							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
@@ -424,9 +415,9 @@ if (xObjIntensity) {
 							else
 								maxDot = F1_0 / 2;
 							if (dot < maxDot)
-								dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
+								gameData.render.lights.dynamicLight [nVertex] += FixDiv (xOrigIntensity, FixMul (HEADLIGHT_SCALE, dist));	//	Do the normal thing, but darken around headlight.
 							else if (! (gameData.app.nGameMode & GM_MULTI) || (dist < maxHeadlightDist))
-								dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
+								gameData.render.lights.dynamicLight [nVertex] += FixMul (FixMul (dot, dot), xOrigIntensity) / 8;//(8 * spotSize);
 							}
 						}
 					}
@@ -468,7 +459,7 @@ fix	objLightXlat [16] =
 	 0x3123, 0x29af, 0x1f03, 0x032a};
 
 //	Flag array of gameData.objs.objects lit last frame.  Guaranteed to process this frame if lit last frame.
-sbyte   lightingObjects [MAX_OBJECTS];
+sbyte   lightingObjects [MAX_OBJECTS_D2X];
 
 #define	MAX_HEADLIGHTS	8
 tObject	*Headlights [MAX_HEADLIGHTS];
@@ -492,17 +483,17 @@ color->blue = 1.0;
 *pbGotColor = 0;
 switch (nObjType) {
 	case OBJ_PLAYER:
-		 if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
+		 if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
 			if (nHeadLights < MAX_HEADLIGHTS)
 				Headlights [nHeadLights++] = objP;
 			return HEADLIGHT_SCALE;
 			}
-		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX]) {
+		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXIMITY_INDEX]) {
 		
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 
-		  	hoardlight = i2f (gameData.multi.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
+		  	hoardlight = i2f (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
@@ -510,7 +501,7 @@ switch (nObjType) {
 			hoardlight=FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
-		else if (objP->id == gameData.multi.nLocalPlayer) {
+		else if (objP->id == gameData.multiplayer.nLocalPlayer) {
 			return max (VmVecMagQuick (&playerThrust)/4, F1_0*2) + F1_0/2;
 			}
 		else {
@@ -625,10 +616,10 @@ void SetDynamicLight (void)
 	int			vv, nv;
 	int			nObject, nVertex, nSegment;
 	int			nRenderVertices;
-	short			renderVertices [MAX_VERTICES];
-	sbyte			render_vertexFlags [MAX_VERTICES];
+	short			renderVertices [MAX_VERTICES_D2X];
+	sbyte			render_vertexFlags [MAX_VERTICES_D2X];
 	int			iRenderSeg, v;
-	sbyte			newLightingObjects [MAX_OBJECTS];
+	sbyte			newLightingObjects [MAX_OBJECTS_D2X];
 	char			bGotColor, bKeepDynColoring = 0;
 	tObject		*objP;
 	vmsVector	*objPos;
@@ -641,8 +632,8 @@ if (!gameOpts->render.bDynamicLight)
 	return;
 
 memset (render_vertexFlags, 0, gameData.segs.nLastVertex + 1);
-bStartDynColoring = 1;
-if (bInitDynColoring) {
+gameData.render.lights.bStartDynColoring = 1;
+if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
 	}
 
@@ -674,9 +665,9 @@ if (!gameOpts->render.bDynLighting) {
 		if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 			{
-			dynamicLight [nVertex] = 0;
-			bGotDynColor [nVertex] = 0;
-			memset (dynamicColor + nVertex, 0, sizeof (*dynamicColor));
+			gameData.render.lights.dynamicLight [nVertex] = 0;
+			gameData.render.lights.bGotDynColor [nVertex] = 0;
+			memset (gameData.render.lights.dynamicColor + nVertex, 0, sizeof (*gameData.render.lights.dynamicColor));
 			}
 		}
 	}
@@ -755,10 +746,10 @@ if (!bKeepDynColoring)
 
 void toggle_headlight_active ()
 {
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) {
-		gameData.multi.players [gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) {
+		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendFlags ((char) gameData.multi.nLocalPlayer);		
+			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);		
 	}
 }
 
@@ -817,7 +808,7 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 // -- Unused --
 // -- Unused -- 	light = Beam_brightness;
 // -- Unused --
-// -- Unused -- 	if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) && (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) && gameData.objs.viewer==&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject] && gameData.multi.players [gameData.multi.nLocalPlayer].energy > 0) {
+// -- Unused -- 	if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) && gameData.objs.viewer==&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject] && gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy > 0) {
 // -- Unused -- 		light *= HEADLIGHT_BOOST_SCALE;
 // -- Unused -- 		use_beam = 1;	//give us beam effect
 // -- Unused -- 	}
@@ -863,14 +854,14 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 fix ComputeSegDynamicLight (int nSegment)
 {
 short *verts = gameData.segs.segments [nSegment].verts;
-fix sum = dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts++];
-sum += dynamicLight [*verts];
+fix sum = gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts++];
+sum += gameData.render.lights.dynamicLight [*verts];
 return sum >> 3;
 }
 
@@ -941,7 +932,7 @@ void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 {
 xEngineGlowValue [0] = f1_0/5;
 if (objP->movementType == MT_PHYSICS) {
-	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multi.nLocalPlayer)) {
+	if ((objP->nType == OBJ_PLAYER) && (objP->mType.physInfo.flags & PF_USES_THRUST) && (objP->id == gameData.multiplayer.nLocalPlayer)) {
 		fix thrust_mag = VmVecMagQuick (&objP->mType.physInfo.thrust);
 		xEngineGlowValue [0] += (FixDiv (thrust_mag,gameData.pig.ship.player->maxThrust)*4)/5;
 	}
@@ -952,9 +943,9 @@ if (objP->movementType == MT_PHYSICS) {
 	}
 //set value for tPlayer headlight
 if (objP->nType == OBJ_PLAYER) {
-	if ((gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
+	if ((gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
 		 !gameStates.app.bEndLevelSequence)
-		xEngineGlowValue [1] =  (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
+		xEngineGlowValue [1] =  (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
 	else
 		xEngineGlowValue [1] = -3;			//don't draw
 	}
@@ -1506,13 +1497,23 @@ void AddDynLights (void)
 	tSegment		*segP;
 	tSide			*sideP;
 	tFaceColor	*pc;
+	short			*pSegLights, *pVertLights, *pOwners;
 
 gameStates.render.bHaveDynLights = 1;
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.bDynLighting)
-	memset (&gameData.render.color.vertices, 0, sizeof (gameData.render.color.vertices));
-memset (&gameData.render.color.ambient, 0, sizeof (gameData.render.color.ambient));
+	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
+memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
+pSegLights = gameData.render.lights.dynamic.nNearestSegLights;
+pVertLights = gameData.render.lights.dynamic.nNearestVertLights;
+pOwners = gameData.render.lights.dynamic.owners;
 memset (&gameData.render.lights.dynamic, 0xff, sizeof (gameData.render.lights.dynamic));
+memset (pSegLights, 0xff, sizeof (*pSegLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+memset (pVertLights, 0xff, sizeof (*pVertLights) * MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+memset (pOwners, 0xff, sizeof (*pOwners) * MAX_OBJECTS);
+gameData.render.lights.dynamic.nNearestSegLights = pSegLights;
+gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
+gameData.render.lights.dynamic.owners = pOwners;
 gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
@@ -1625,7 +1626,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 {
 //if (gameOpts->render.bDynLighting) 
 	{
-	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights [nVertex];
+	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short	i, j;
 
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
@@ -1659,7 +1660,7 @@ if ((nLastSeg == nSegment) && (nLastType == nType))
 nLastSeg = nSegment;
 nLastType = nType;
 if (gameOpts->render.bDynLighting) {
-	short	*pnl = gameData.render.lights.dynamic.nNearestSegLights [nSegment];
+	short	*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short	i, j;
 
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
@@ -1825,7 +1826,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (gameData.render.lights.dynamic.nHeadLights [nPlayer] < 0)
 		continue;
 	pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nHeadLights [nPlayer];
-	objP = gameData.objs.objects + gameData.multi.players [nPlayer].nObject;
+	objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
 	pl->vPos = objP->position.vPos;
 	pl->vDir = objP->position.mOrient.fVec;
 	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 3);

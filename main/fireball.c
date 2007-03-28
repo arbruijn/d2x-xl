@@ -115,10 +115,10 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 			//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
 			//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
 			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
-			if ((obj0P!=objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
+			if ((obj0P != objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
 			    ((t==OBJ_WEAPON && (id==PROXMINE_ID || id==SMARTMINE_ID || id==SMALLMINE_ID)) || 
 			     (t == OBJ_CNTRLCEN) || 
-			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && 
+			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && (parent >= 0) &&
 			     ((gameData.objs.objects [parent].nType != OBJ_ROBOT) || (gameData.objs.objects [parent].id != id))))) {
 				dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
 				// Make damage be from 'maxdamage' to 0.0, where 0.0 is 'maxdistance' away;
@@ -185,7 +185,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 											damage /= 4;
 
 									if (ApplyDamageToRobot (obj0P, damage, parent))
-										if ((objP != NULL) && (parent == gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
+										if ((objP != NULL) && (parent == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
 											AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
 								}
 
@@ -217,7 +217,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								vmsVector	vForce2;
 
 								//	Hack!Warning!Test code!
-								if ((objP != NULL) && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multi.nLocalPlayer) {
+								if ((objP != NULL) && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
 									int	fe;
 
 									fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
@@ -454,8 +454,8 @@ int PickConnectedSegment (tObject *objP, int max_depth)
 	int		start_seg;
 	int		head, tail;
 	int		seg_queue [QUEUE_SIZE*2];
-	sbyte		bVisited [MAX_SEGMENTS];
-	sbyte		depth [MAX_SEGMENTS];
+	sbyte		bVisited [MAX_SEGMENTS_D2X];
+	sbyte		depth [MAX_SEGMENTS_D2X];
 	sbyte		side_rand [MAX_SIDES_PER_SEGMENT];
 
 	start_seg = objP->nSegment;
@@ -776,8 +776,8 @@ if (gameStates.entropy.bConquerWarning) {
 
 int CheckConquerRoom (xsegment *segP)
 {
-	tPlayer	*playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
-	int		team = GetTeam (gameData.multi.nLocalPlayer) + 1;
+	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	int		team = GetTeam (gameData.multiplayer.nLocalPlayer) + 1;
 	time_t	t;
 
 gameStates.entropy.bConquering = 0;
@@ -830,7 +830,7 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 	}
 StopConquerWarning ();
 if (segP->owner)
-	MultiSendCaptureBonus ((char) gameData.multi.nLocalPlayer);
+	MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
 playerP->secondaryAmmo [PROXIMITY_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusLimit;
 if (playerP->secondaryAmmo [SMART_MINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
 	playerP->secondaryAmmo [SMART_MINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
@@ -876,23 +876,23 @@ if (pbFixedPos)
 	*pbFixedPos = 0;
 d_srand (TimerGetFixedSeconds ());
 nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
-player_pos = &gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.vPos;
-player_seg = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
+player_pos = &gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos;
+player_seg = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
-	pnum = (d_rand () * gameData.multi.nPlayers) >> 15;
+	pnum = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
 	count = 0;
-	while ((count < gameData.multi.nPlayers) && 
-				 ((gameData.multi.players [pnum].connected == 0) || (pnum==gameData.multi.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
-				 (GetTeam (pnum)==GetTeam (gameData.multi.nLocalPlayer))))) {
-		pnum = (pnum+1)%gameData.multi.nPlayers;
+	while ((count < gameData.multiplayer.nPlayers) && 
+				 ((gameData.multiplayer.players [pnum].connected == 0) || (pnum==gameData.multiplayer.nLocalPlayer) || ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && 
+				 (GetTeam (pnum)==GetTeam (gameData.multiplayer.nLocalPlayer))))) {
+		pnum = (pnum+1)%gameData.multiplayer.nPlayers;
 		count++;
 		}
-	if (count == gameData.multi.nPlayers) {
+	if (count == gameData.multiplayer.nPlayers) {
 		//if can't valid non-tPlayer person, use the tPlayer
-		pnum = gameData.multi.nLocalPlayer;
+		pnum = gameData.multiplayer.nLocalPlayer;
 		//return (d_rand () * gameData.segs.nLastSegment) >> 15;
 		}
-	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multi.players [pnum].nObject, nCurDropDepth);
+	nSegment = PickConnectedSegment (gameData.objs.objects + gameData.multiplayer.players [pnum].nObject, nCurDropDepth);
 #if TRACE
 	con_printf (CONDBG, " %d", nSegment);
 #endif
@@ -1031,13 +1031,13 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) ||
 	MultiSendWeapons (1);
 #if 0
 	if ((gameData.app.nGameMode & GM_NETWORK) && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
-		if (gameData.multi.powerupsInMine [nPowerupType] >= gameData.multi.maxPowerupsAllowed [nPowerupType])
+		if (gameData.multiplayer.powerupsInMine [nPowerupType] >= gameData.multiplayer.maxPowerupsAllowed [nPowerupType])
 			return 0;
 		}
 #endif
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
-	multiData.create.nLoc = 0;
+	gameData.multigame.create.nLoc = 0;
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
@@ -1059,7 +1059,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) ||
 			DelDropInfo (nObject);
 			}
 		}
-	nObject = CallObjectCreateEgg (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject, 
+	nObject = CallObjectCreateEgg (gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, 
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
@@ -1169,9 +1169,9 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	}
 
 	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multi.players [gameData.multi.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
 	else if (weapon_index != -1) {
 		if ((PlayerHasWeapon (weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
@@ -1191,7 +1191,7 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 			}
 		}
 	} else if (delObjP->containsId == POW_QUADLASER)
-		if ((gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
+		if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
 			if (d_rand () > 16384) {
 				delObjP->containsType = OBJ_POWERUP;
 				delObjP->containsId = POW_ENERGY;
@@ -1253,7 +1253,7 @@ switch (nType) {
 			vNewPos = *pos;
 
 			if (gameData.app.nGameMode & GM_MULTI) {	
-				if (multiData.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
+				if (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
 #if TRACE
 					con_printf (1, "Not enough slots to drop all powerups!\n");
 #endif
@@ -1280,7 +1280,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (gameData.app.nGameMode & GM_MULTI)
-				multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
+				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = gameData.objs.objects + nObject;
 			objP->mType.physInfo.velocity = new_velocity;
 			objP->mType.physInfo.drag = 512;	//1024;
@@ -1336,7 +1336,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (gameData.app.nGameMode & GM_MULTI)
-				multiData.create.nObjNums [multiData.create.nLoc++] = nObject;
+				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = &gameData.objs.objects [nObject];
 			//Set polygon-tObject-specific data
 			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->id).nModel;
@@ -1378,7 +1378,7 @@ int ObjectCreateEgg (tObject *objP)
 if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
 		if (objP->containsId == POW_SHIELD_BOOST) {
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (100)) {
+			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -1386,7 +1386,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else  if (gameData.multi.players [gameData.multi.nLocalPlayer].shields >= i2f (150)) {
+			else  if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -1396,7 +1396,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 				}
 			} 
 		else if (objP->containsId == POW_ENERGY) {
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (100)) {
+			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");
@@ -1404,7 +1404,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else if (gameData.multi.players [gameData.multi.nLocalPlayer].energy >= i2f (150)) {
+			else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");
@@ -1430,7 +1430,7 @@ rval = DropPowerup (
 	&objP->mType.physInfo.velocity, 
 	&objP->position.vPos, objP->nSegment);
 if (rval != -1) {
-	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multi.nLocalPlayer))
+	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
 	if (objP->nType == OBJ_ROBOT && objP->containsType==OBJ_POWERUP) {
 		if (objP->containsId==POW_VULCAN || objP->containsId==POW_GAUSS)
@@ -1912,15 +1912,15 @@ if (!(gameData.app.nGameMode & GM_MONSTERBALL))
 	return 0;
 if (!gameData.hoard.monsterballP)
 	return 0;
-if (gameData.hoard.nLastHitter != gameData.multi.players [gameData.multi.nLocalPlayer].nObject)
+if (gameData.hoard.nLastHitter != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject)
 	return 0;
 special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].special;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
 	return 0;
-if ((GetTeam (gameData.multi.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
-	MultiSendCaptureBonus (gameData.multi.nLocalPlayer);
+if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
+	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 else
-	MultiSendCaptureBonus (-gameData.multi.nLocalPlayer - 1);
+	MultiSendCaptureBonus (-gameData.multiplayer.nLocalPlayer - 1);
 CreatePlayerAppearanceEffect (gameData.hoard.monsterballP);
 RemoveMonsterball ();
 CreateMonsterball ();

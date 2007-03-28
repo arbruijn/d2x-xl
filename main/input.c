@@ -512,12 +512,12 @@ void KCToggleBomb (void)
 {
 int bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
 if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
-	 (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] &&
-	  !gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX])) {
+	 (!gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX] &&
+	  !gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX])) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 	HUDInitMessage (TXT_NOBOMBS);
 	}
-else if (!gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [bomb]) {
+else if (!gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [bomb]) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMART_MINE_INDEX)? TXT_SMART_MINES : 
 						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
@@ -599,7 +599,7 @@ if (bGetSlideBank == 2) {
 		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255) 
 			Controls [0].dropBombDownCount += keyDownCount (v);
 		// charge chield
-		if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_CONVERTER) {
+		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CONVERTER) {
 			if (keyd_pressed [v = HaveKey (kcKeyboard, 56 + i)])
 				TransferEnergyToShield (KeyDownTime (v));
 			}
@@ -1262,9 +1262,9 @@ gameStates.input.nCruiseSpeed=0;
 
 void CybermouseAdjust ()
  {
-/*	if (gameData.multi.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
+/*	if (gameData.multiplayer.nLocalPlayer > -1)	{
+		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
@@ -1276,8 +1276,8 @@ void CybermouseAdjust ()
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.mOrient,&tempm);
-				gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].position.mOrient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient,&tempm);
+				gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient = ViewMatrix;		
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')

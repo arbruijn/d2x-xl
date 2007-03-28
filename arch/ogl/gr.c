@@ -375,6 +375,7 @@ return 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
+	grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_palette = defaultPalette; //just need some valid palette here
 	//grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;

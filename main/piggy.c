@@ -273,23 +273,24 @@ return 1;
 int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
-	int				i, j, n, nFrames;
+	int				i, j, n, nFrames, nBytes = ph->bits / 8;
 	int				h = bmP->bm_props.h;
 	int				w = bmP->bm_props.w;
-	tRgbaColorb		*p;
 
-if (!(bmP->bm_texBuf || (bmP->bm_texBuf = d_malloc (ph->height * w * 4))))
+if (!(bmP->bm_texBuf || (bmP->bm_texBuf = d_malloc (ph->height * w * nBytes))))
 	 return 0;
-p = ((tRgbaColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
 if (!bmP->bm_texBuf) {
-	int nSize = ph->width * ph->height * 4;
+	int nSize = ph->width * ph->height * nBytes;
 	if (!(bmP->bm_texBuf = d_malloc (nSize)))
 		return 0;
 	}
+bmP->bm_bpp = nBytes;
 memset (bmP->bm_transparentFrames, 0, sizeof (bmP->bm_transparentFrames));
 memset (bmP->bm_supertranspFrames, 0, sizeof (bmP->bm_supertranspFrames));
 if (ph->bits == 24) {
 	tBGRA	c;
+	tRgbColorb *p = ((tRgbColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
+
 	for (i = bmP->bm_props.h; i; i--) {
 		for (j = w; j; j--, p++) {
 			if (CFRead (&c, 1, 3, fp) != (size_t) 3)
@@ -304,16 +305,17 @@ if (ph->bits == 24) {
 				p->green = (ubyte) (c.g * brightness);
 				p->blue = (ubyte) (c.b * brightness);
 				}
-			p->alpha = (alpha < 0) ? 255 : alpha;
+			//p->alpha = (alpha < 0) ? 255 : alpha;
 			}
 		p -= 2 * w;
 		}
 	}
 else if (bReverse) {
 	tRGBA	c;
+	tRgbaColorb	*p = (tRgbaColorb *) bmP->bm_texBuf;
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+
 	nFrames = h / w - 1;
-	p = (tRgbaColorb *) bmP->bm_texBuf;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;
 		for (j = w; j; j--, p++) {
@@ -361,7 +363,9 @@ else if (bReverse) {
 	}	
 else {
 	tBGRA	c;
+	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;
@@ -418,24 +422,40 @@ int WriteTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
 	int				i, j, n, nFrames;
 	int				h = bmP->bm_props.h;
 	int				w = bmP->bm_props.w;
-	tRgbaColorb		*p;
 
-p = ((tRgbaColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
 if (ph->bits == 24) {
-	tBGRA	c;
-	for (i = bmP->bm_props.h; i; i--) {
-		for (j = w; j; j--, p++) {
-			c.r = p->red;
-			c.g = p->green;
-			c.b = p->blue;
-			if (CFWrite (&c, 1, 3, fp) != (size_t) 3)
-				return 0;
+	if (bmP->bm_bpp == 3) {
+		tBGR	c;
+		tRgbColorb *p = ((tRgbColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
+		for (i = bmP->bm_props.h; i; i--) {
+			for (j = w; j; j--, p++) {
+				c.r = p->red;
+				c.g = p->green;
+				c.b = p->blue;
+				if (CFWrite (&c, 1, 3, fp) != (size_t) 3)
+					return 0;
+				}
+			p -= 2 * w;
 			}
-		p -= 2 * w;
+		}
+	else {
+		tBGR	c;
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
+		for (i = bmP->bm_props.h; i; i--) {
+			for (j = w; j; j--, p++) {
+				c.r = p->red;
+				c.g = p->green;
+				c.b = p->blue;
+				if (CFWrite (&c, 1, 3, fp) != (size_t) 3)
+					return 0;
+				}
+			p -= 2 * w;
+			}
 		}
 	}
 else {
 	tBGRA	c;
+	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
 	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -483,7 +503,7 @@ h.descriptor = (char) CFReadByte (fp);
 if (h.identSize)
 	CFSeek (fp, h.identSize, SEEK_CUR);
 if (bmP) {
-	GrInitBitmap (bmP, 0, 0, 0, h.width, h.height, h.width, NULL, 1);
+	GrInitBitmap (bmP, 0, 0, 0, h.width, h.height, h.width, NULL, bmP->bm_bpp = h.bits / 8);
 	}
 if (ph)
 	*ph = h;
@@ -506,6 +526,8 @@ CFWriteShort (ph->xStart, fp);
 CFWriteShort (ph->yStart, fp);
 CFWriteShort (ph->width, fp);
 CFWriteShort (ph->height, fp);
+if (!GrBitmapHasTransparency (bmP))
+	ph->bits = 24;
 CFWriteByte (ph->bits, fp);
 CFWriteByte (ph->descriptor, fp);
 if (ph->identSize)
@@ -587,10 +609,11 @@ return r;
 
 //---------------------------------------------------------------
 
-int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc, int nColorBytes)
+int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 {
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
 	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int		bpp = bmP->bm_bpp;
 	ubyte		*pData, *pSrc, *pDest;
 	int		cSum [4];
 
@@ -608,7 +631,7 @@ nFactor2 = xFactor * yFactor;
 if (!bRealloc)
 	pDest = pData = bmP->bm_texBuf;
 else {
-	if (!(pData = d_malloc (xMax * yMax * nColorBytes)))
+	if (!(pData = d_malloc (xMax * yMax * bpp)))
 		return 0;
 	bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
 	pDest = pData;
@@ -620,7 +643,7 @@ for (yDest = 0; yDest < yMax; yDest++) {
 		nSuperTransp = 0;
 		for (y = yFactor; y; ySrc++, y--) {
 			xSrc = xDest * xFactor;
-			pSrc = bmP->bm_texBuf + (ySrc * w + xSrc) * nColorBytes;
+			pSrc = bmP->bm_texBuf + (ySrc * w + xSrc) * bpp;
 			for (x = xFactor; x; xSrc++, x--) {
 				if (bShaderMerge)
 					bSuperTransp = (pSrc [3] == 1);
@@ -628,10 +651,10 @@ for (yDest = 0; yDest < yMax; yDest++) {
 					bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
 				if (bSuperTransp) {
 					nSuperTransp++;
-					pSrc += nColorBytes;
+					pSrc += bpp;
 					}
 				else
-					for (i = 0; i < nColorBytes; i++)
+					for (i = 0; i < bpp; i++)
 						cSum [i] += *pSrc++;
 				}
 			}
@@ -648,17 +671,17 @@ for (yDest = 0; yDest < yMax; yDest++) {
 				pDest [2] = 128;
 				pDest [3] = 0;
 				}
-			pDest += nColorBytes;
+			pDest += bpp;
 			}
 		else {
-			for (i = 0; i < nColorBytes; i++, pDest++) {
+			for (i = 0; i < bpp; i++, pDest++) {
 				*pDest = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
 				if (i == 3)	//alpha treatment round to 0 or 255 depending on the average alpha
 					if (*pDest < 128)
 						*pDest = 0;
 					else if (*pDest > 127)
 						*pDest = 255;
-				CBRK (pDest - pData > yMax * xMax * nColorBytes);
+				CBRK (pDest - pData > yMax * xMax * bpp);
 				}
 			}
 		}
@@ -684,7 +707,7 @@ grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
 
 if (bmP->bm_data.std.bm_mask)
 	return bmP->bm_data.std.bm_mask;
-if (!(bmP->bm_data.std.bm_mask = GrCreateBitmap (bmP->bm_props.w, bmP->bm_props.h, 0)))
+if (!(bmP->bm_data.std.bm_mask = GrCreateBitmap (bmP->bm_props.w, bmP->bm_props.h, 1)))
 	return NULL;
 for (pi = bmP->bm_texBuf, pm = bmP->bm_data.std.bm_mask->bm_texBuf; i; i--, pi += 4, pm++)
 	if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
@@ -1860,7 +1883,7 @@ void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
 	int				i, org_i, temp, nSize, nOffset, nFrames, nShrinkFactor, 
 						bRedone = 0, bTGA;
 	CFILE				*fp = NULL;
-	char				fn [FILENAME_LEN], fnShrinked [FILENAME_LEN], bmName [20];
+	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN], bmName [20];
 	tTgaHeader		h;
 
 	//bD1 = gameStates.app.bD1Mission;
@@ -1898,7 +1921,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "rock")) {
+	if (strstr (bmName, "ship1-2")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -1906,9 +1929,10 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 #endif
 	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	sprintf (fnShrinked, "%s%s%s-%d.tga", gameFolders.szTextureDir [bD1], 
+	sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
 	bTGA = 0;
+	bmP->bm_bpp = 1;
 	if (gameStates.app.bNostalgia)
 		gameOpts->render.textures.bUseHires = 0;
 	if (*bmName && gameOpts->render.textures.bUseHires &&
@@ -1926,7 +1950,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			}
 		else 
 #endif
-		if ((gameStates.app.bTextureCache && (nShrinkFactor > 1) && (fp = CFOpen (fnShrinked, "", "rb", 0))) || 
+		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && (fp = CFOpen (fnShrunk, "", "rb", 0))) || 
 			 (fp = CFOpen (fn, "", "rb", 0))) {
 			LogErr ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 			bTGA = 1;
@@ -2044,9 +2068,9 @@ reloadTextures:
 				SaveS3TC (bmP, gameFolders.szTextureDir [bD1], bmName);
 			else 
 #endif
-			if ((bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1, 4)) {
+			if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 				nSize /= (nShrinkFactor * nShrinkFactor);
-				if (gameStates.app.bTextureCache)
+				if (gameStates.app.bCacheTextures)
 					SaveTGA (bmName, gameFolders.szTextureDir [bD1], &h, bmP);
 				}
 			}
@@ -2485,13 +2509,14 @@ if (fp) {
 			bm.bm_props.h = bm.bm_props.w * bmh [i].height;
 		else
 			bm.bm_props.h = bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4);
+		bm.bm_bpp = bTGA ? 4 : 1;
 		if (!(bm.bm_props.w * bm.bm_props.h))
 			continue;
 		if (bmOffset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
 			break;
 		bm.bm_avgColor = bmh [i].bm_avgColor;
 		bm.bmType = BM_TYPE_ALT;
-		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bTGA)))
+		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bm.bm_bpp)))
 			break;
 		CFSeek (fp, bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
@@ -2505,7 +2530,7 @@ if (fp) {
 				d_free (bm.bm_texBuf);
 				break;
 				}
-			bm.bm_props.rowsize *= 4;
+			bm.bm_props.rowsize *= bm.bm_bpp;
 			bm.bm_data.alt.bm_frameCount = (ubyte) nFrames;
 			if (nFrames > 1) {
 				eclip	*ecP = NULL;
@@ -2921,7 +2946,7 @@ bih.biYPelsPerMeter = (unsigned int) CFReadInt (fp);
 bih.biClrUsed = (unsigned int) CFReadInt (fp);
 bih.biClrImportant = (unsigned int) CFReadInt (fp);
 
-if (!(bmp = GrCreateBitmap (bih.biWidth, bih.biHeight, 0))) {
+if (!(bmp = GrCreateBitmap (bih.biWidth, bih.biHeight, 1))) {
 	CFClose (fp);
 	return NULL;
 	}

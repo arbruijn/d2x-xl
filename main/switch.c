@@ -416,7 +416,7 @@ void PrintTriggerMessage (int nPlayer, int trig, int shot, char *message)
 if (nPlayer < 0)
 	triggers = gameData.trigs.objTriggers;
 else {
-	if (nPlayer != gameData.multi.nLocalPlayer)
+	if (nPlayer != gameData.multiplayer.nLocalPlayer)
 		return;
 	triggers = gameData.trigs.triggers;
 	}
@@ -691,7 +691,7 @@ else {
 void UpdatePlayerOrient (void)
 {
 if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
-	TriggerSetObjOrient (gameData.multi.players [gameData.multi.nLocalPlayer].nObject, -1, -1, 0, gameStates.gameplay.nDirSteps--);
+	TriggerSetObjOrient (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, -1, -1, 0, gameStates.gameplay.nDirSteps--);
 }
 
 //------------------------------------------------------------------------------
@@ -740,7 +740,7 @@ trigP = triggers + nTrigger;
 if (trigP->flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != gameData.multi.players [gameData.multi.nLocalPlayer].nObject))
+	if (!IsMultiGame && (nObject != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
 		return 1;
 	}
 else {
@@ -770,14 +770,14 @@ if (trigP->flags & TF_ONE_SHOT)		//if this is a one-shot...
 switch (trigP->nType) {
 
 	case TT_EXIT:
-		if (nPlayer != gameData.multi.nLocalPlayer)
+		if (nPlayer != gameData.multiplayer.nLocalPlayer)
 			break;
 		DigiStopAll ();		//kill the sounds
 		if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 			StartEndLevelSequence (0);
 			} 
 		else if (gameData.missions.nCurrentLevel < 0) {
-			if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
+			if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
 					gameStates.app.bPlayerIsDead)
 				break;
 			ExitSecretLevel ();
@@ -796,9 +796,9 @@ switch (trigP->nType) {
 	case TT_SECRET_EXIT: {
 		int	truth;
 
-		if (nPlayer != gameData.multi.nLocalPlayer)
+		if (nPlayer != gameData.multiplayer.nLocalPlayer)
 			break;
-		if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
+		if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
 				gameStates.app.bPlayerIsDead)
 			break;
 		if (gameData.app.nGameMode & GM_MULTI) {
@@ -874,7 +874,7 @@ switch (trigP->nType) {
 
 	case TT_MATCEN:
 		if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_ROBOTS))
-			DoMatCen (trigP, nPlayer == gameData.multi.nLocalPlayer);
+			DoMatCen (trigP, nPlayer == gameData.multiplayer.nLocalPlayer);
 		break;
 
 	case TT_ILLUSION_ON:
@@ -904,9 +904,9 @@ switch (trigP->nType) {
 			}
 		else {
 			if (bIsPlayer) {
-				if (nPlayer != gameData.multi.nLocalPlayer)
+				if (nPlayer != gameData.multiplayer.nLocalPlayer)
 					break;
-				if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
+				if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
 						gameStates.app.bPlayerIsDead)
 					break;
 				}
@@ -919,9 +919,9 @@ switch (trigP->nType) {
 
 	case TT_SPEEDBOOST:
 		if (bIsPlayer) {
-			if (nPlayer != gameData.multi.nLocalPlayer)
+			if (nPlayer != gameData.multiplayer.nLocalPlayer)
 				break;
-			if ((gameData.multi.players [gameData.multi.nLocalPlayer].shields < 0) || 
+			if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
 				 gameStates.app.bPlayerIsDead)
 				break;
 			}
@@ -931,11 +931,11 @@ switch (trigP->nType) {
 		break;
 
 	case TT_SHIELD_DAMAGE:
-		gameData.multi.players [gameData.multi.nLocalPlayer].shields += gameData.trigs.triggers [nTrigger].value;
+		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields += gameData.trigs.triggers [nTrigger].value;
 		break;
 
 	case TT_ENERGY_DRAIN:
-		gameData.multi.players [gameData.multi.nLocalPlayer].energy += gameData.trigs.triggers [nTrigger].value;
+		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy += gameData.trigs.triggers [nTrigger].value;
 		break;
 
 	case TT_CHANGE_TEXTURE:

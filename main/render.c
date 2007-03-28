@@ -84,8 +84,6 @@ int _CDECL_ D2X_RenderThread (void *p);
 int _CDECL_ D2X_OpenGLThread (void *p);
 
 extern tFaceColor tMapColor, lightColor, vertColors [4];
-extern tRgbColorf globalDynColor;
-extern char bGotGlobalDynColor;
 char bUseGlobalColor = 0;
 
 #if DBG_SHADOWS
@@ -103,7 +101,7 @@ unsigned int	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
 int nRLFrameCount=-1;
-int nRotatedLast [MAX_VERTICES];
+int nRotatedLast [MAX_VERTICES_D2X];
 
 // When any render function needs to know what's looking at it, it should 
 // access gameData.objs.viewer members.
@@ -115,11 +113,7 @@ static int renderState = -1;
 fix xRenderZoom = 0x9000;					//the player's zoom factor
 fix xRenderZoomScale = 1;					//the player's zoom factor
 
-ubyte bObjectRendered [MAX_OBJECTS];
-
-GLuint glSegOccQuery [MAX_SEGMENTS];
-GLuint glObjOccQuery [MAX_OBJECTS];
-char bSidesRendered [MAX_SEGMENTS];
+ubyte bObjectRendered [MAX_OBJECTS_D2X];
 
 #ifdef EDITOR
 int	Render_only_bottom = 0;
@@ -381,10 +375,12 @@ typedef struct tFaceListEntry {
 	tFaceProps	props;
 } tFaceListEntry;
 
-static tFaceListEntry	faceList [6 * 2 * MAX_SEGMENTS];
+#if APPEND_LAYERED_TEXTURES
+static tFaceListEntry	faceList [6 * 2 * MAX_SEGMENTS_D2X];
 static short				faceListRoots [MAX_TEXTURES];
 static short				faceListTails [MAX_TEXTURES];
 static short				nFaceListSize;
+#endif
 
 //------------------------------------------------------------------------------
 // If any color component > 1, scale all components down so that the greatest == 1.
@@ -421,7 +417,7 @@ if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) {
 else
 	memset (vertColors, 0, sizeof (vertColors));
 #else
-	tFaceColor *colorP = gameData.render.color.sides [nSegment] + nSide;
+	tFaceColor *colorP = gameData.render.color.sides [nSide] + nSegment;
 	if (colorP->index)
 		lightColor = *colorP;
 	else
@@ -456,7 +452,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 #if LMAP_LIGHTADJUST
 		if (USE_LIGHTMAPS) {
 			else {
-				propsP->uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [propsP->segNum][propsP->sideNum];
+				propsP->uvls [i].l = F1_0 / 2 + gameData.render.lights.segDeltas [propsP->segNum * 6 + propsP->sideNum];
 				if (propsP->uvls [i].l < 0)
 					propsP->uvls [i].l = 0;
 				}
@@ -466,7 +462,7 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 			propsP->uvls [i].l = FixMul (gameStates.render.nFlashScale, propsP->uvls [i].l);
 		}
 	//add in dynamic light (from explosions, etc.)
-	dynLight = dynamicLight [nVertex = propsP->vp [i]];
+	dynLight = gameData.render.lights.dynamicLight [nVertex = propsP->vp [i]];
 #ifdef _DEBUG
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
@@ -492,21 +488,21 @@ for (i = 0; i < propsP->nv; i++, pvc++) {
 #endif
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] /*&& gameOpts->render.color.bGunLight*/) {
 		if (bUseGlobalColor) {
-			if (bGotGlobalDynColor) {
+			if (gameData.render.lights.bGotGlobalDynColor) {
 				tMapColor.index = 1;
-				memcpy (&tMapColor.color, &globalDynColor, sizeof (tRgbColorf));
+				memcpy (&tMapColor.color, &gameData.render.lights.globalDynColor, sizeof (tRgbColorf));
 				}
 			}
-		else if (bGotDynColor [nVertex]) {
+		else if (gameData.render.lights.bGotDynColor [nVertex]) {
 #ifdef _DEBUG //convenient place for a debug breakpoint
 			if (propsP->segNum == nDbgSeg && propsP->sideNum == nDbgSide)
 				propsP->segNum = propsP->segNum;
 #endif
-			pdc = dynamicColor + nVertex;
+			pdc = gameData.render.lights.dynamicColor + nVertex;
 			//pvc->index = -1;
 			if (gameOpts->render.color.bMix) {
 #if 0
-				pvc->color.red = (pvc->color.red + dynamicColor [nVertex].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
+				pvc->color.red = (pvc->color.red + gameData.render.lights.dynamicColor [nVertex].red * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.green = (pvc->color.green + pdc->green * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 				pvc->color.blue = (pvc->color.blue + pdc->blue * gameOpts->render.color.bMix) / (float) (gameOpts->render.color.bMix + 1);
 #else
@@ -801,13 +797,13 @@ if (!bRender)
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
 		return;
 		}
-	nCamNum = nSideCameras [props.segNum][props.sideNum];
+	nCamNum = gameData.cameras.nSides [props.segNum * 6 + props.sideNum];
 	bIsTeleCam = 0;
 	bIsMonitor = extraGameInfo [0].bUseCameras && 
 					 (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
 					 !gameStates.render.cameras.bActive && (nCamNum >= 0);
 	if (bIsMonitor) {
-		pc = cameras + nCamNum;
+		pc = gameData.cameras.cameras + nCamNum;
 		bIsTeleCam = pc->bTeleport;
 #if RENDER2TEXTURE
 		bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
@@ -933,18 +929,18 @@ drawWireFrame:
 		DrawOutline (props.nv, pointlist);
 	}
 else {
-	tFaceListEntry	*flp = faceList + nFaceListSize;
 #if APPEND_LAYERED_TEXTURES
+	tFaceListEntry	*flp = faceList + nFaceListSize;
 	short				t = props.nBaseTex;
 	if (!props.nOvlTex || (faceListRoots [props.nBaseTex] < 0)) {
 #else
 	short				t = props.nOvlTex ? props.nOvlTex : props.nBaseTex;
 #endif
+#if APPEND_LAYERED_TEXTURES
 		flp->nextFace = faceListRoots [t];
 		if (faceListTails [t] < 0)
 			faceListTails [t] = nFaceListSize;
 		faceListRoots [t] = nFaceListSize++;
-#if APPEND_LAYERED_TEXTURES
 		}
 	else {
 		tFaceListEntry	*flh = faceList + faceListTails [t];
@@ -954,7 +950,9 @@ else {
 		}
 #endif
 	props.renderState = (char) renderState;
+#if APPEND_LAYERED_TEXTURES
 	flp->props = props;
+#endif
 	}
 }
 
@@ -1066,8 +1064,6 @@ void RenderSide (tSegment *segP, short nSide)
 				return;
 			break;
 		}
-//CBRK (props.segNum == 123 && props.sideNum == 2);
-	bSidesRendered [props.segNum]++;
 	normals [0] = sideP->normals [0];
 	normals [1] = sideP->normals [1];
 #if LIGHTMAPS
@@ -1505,7 +1501,7 @@ if (!cc.and) {		//all off screen?
 			char		sideNums [6];
 			int		i; 
 			double	d, dMin, dx, dy, dz;
-			tObject	*objP = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+			tObject	*objP = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 			sideNums [sn] = (char) sn;
@@ -1650,7 +1646,7 @@ GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
 int MattFindConnectedSide(int seg0, int seg1);
 
 #ifdef _DEBUG
-char visited2 [MAX_SEGMENTS];
+char visited2 [MAX_SEGMENTS_D2X];
 #endif
 
 typedef struct tSegZRef {
@@ -1659,9 +1655,9 @@ typedef struct tSegZRef {
 	short	nSegment;
 } tSegZRef;
 
-static tSegZRef segZRef [MAX_SEGMENTS];
+static tSegZRef segZRef [MAX_SEGMENTS_D2X];
 
-ubyte bVisited [MAX_SEGMENTS];
+ubyte bVisited [MAX_SEGMENTS_D2X];
 ubyte nVisited = 255;
 short nRenderList [MAX_RENDER_SEGS];
 short nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
@@ -1671,7 +1667,7 @@ int	lCntSave, sCntSave;
 #define VISITED(_ch)	(bVisited [_ch] == nVisited)
 #define VISIT(_ch) (bVisited [_ch] = nVisited)
 //@@short *persp_ptr;
-short nRenderPos [MAX_SEGMENTS];	//where in render_list does this tSegment appear?
+short nRenderPos [MAX_SEGMENTS_D2X];	//where in render_list does this tSegment appear?
 //ubyte no_renderFlag [MAX_RENDER_SEGS];
 window renderWindows [MAX_RENDER_SEGS];
 
@@ -2675,7 +2671,7 @@ DestroyShadowMaps ();
 int GatherShadowLightSources (void)
 {
 	tObject			*objP = gameData.objs.objects;
-	int				h, i, j, n, m = gameOpts->render.shadows.nLights;
+	int				h, i, j, k, n, m = gameOpts->render.shadows.nLights;
 	short				*pnl;
 //	tDynLight		*pl;
 	tShaderLight	*psl;
@@ -2688,7 +2684,8 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	if (!bObjectRendered [h])
 		continue;
-	pnl = gameData.render.lights.dynamic.nNearestSegLights [objP->nSegment];
+	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
+	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
 		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!psl->bState)
@@ -2705,10 +2702,10 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 				continue;
 			}
 		gameData.render.shadows.vLightDir [n] = vLightDir;
-		gameData.render.shadows.objLights [h][n++] = *pnl;
+		gameData.render.shadows.objLights [k + n++] = *pnl;
 		psl->bShadow = 1;
 		}
-	gameData.render.shadows.objLights [h][n] = -1;
+	gameData.render.shadows.objLights [k + n] = -1;
 	}
 psl = gameData.render.lights.dynamic.shader.lights;
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
@@ -3039,10 +3036,10 @@ if (left < r)
 // be rendered in reverse order (furthest first), to achieve proper rendering of
 // transparent walls layered in a view axis.
 
-static short segList [MAX_SEGMENTS];
-static short segDist [MAX_SEGMENTS];
-static char  bRenderSegObjs [MAX_SEGMENTS];
-static char  bRenderObjs [MAX_OBJECTS];
+static short segList [MAX_SEGMENTS_D2X];
+static short segDist [MAX_SEGMENTS_D2X];
+static char  bRenderSegObjs [MAX_SEGMENTS_D2X];
+static char  bRenderObjs [MAX_OBJECTS_D2X];
 static int nRenderObjs;
 static short nSegListSize;
 
@@ -3052,7 +3049,7 @@ void BuildSegList (void)
 	tSegment	*segP;
 
 memset (segDist, 0xFF, sizeof (segDist));
-segNum = gameData.objs.objects [gameData.multi.players [gameData.multi.nLocalPlayer].nObject].nSegment;
+segNum = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment;
 i = j = 0;
 segDist [segNum] = 0;
 segList [j++] = segNum;
@@ -3514,7 +3511,7 @@ void TransformSideCenters (void)
 	int	i;
 
 for (i = 0; i < gameData.segs.nSegments; i++)
-	G3TransformPoint (gameData.segs.segCenters [i] + 1, gameData.segs.segCenters [i], 0);
+	G3TransformPoint (gameData.segs.segCenters [1] + i, gameData.segs.segCenters [0] + i, 0);
 }
 
 #endif

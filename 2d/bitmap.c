@@ -39,46 +39,46 @@ bmP->bm_texBuf = data;
 
 //------------------------------------------------------------------------------
 
-void *GrAllocBitmapData (int w, int h, int bTGA)
+void *GrAllocBitmapData (int w, int h, int bpp)
 {
-return (w * h) ? d_malloc (bTGA ? w * h * 4 : MAX_BMP_SIZE (w, h)) : NULL;
+return (w * h) ? d_malloc ((bpp > 1) ? w * h * bpp : MAX_BMP_SIZE (w, h)) : NULL;
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char *data, int bTGA)
+grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char *data, int bpp)
 {
     grsBitmap *bmP;
 
 bmP = (grsBitmap *) d_malloc (sizeof (grsBitmap));
 if (bmP)
-	GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bTGA);
+	GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bpp);
 return bmP;
 }
 
 //------------------------------------------------------------------------------
 
-grsBitmap *GrCreateBitmap (int w, int h, int bTGA)
+grsBitmap *GrCreateBitmap (int w, int h, int bpp)
 {
-return GrCreateBitmapSub (w, h, GrAllocBitmapData (w, h, bTGA), bTGA);
+return GrCreateBitmapSub (w, h, GrAllocBitmapData (w, h, bpp), bpp);
 }
-
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 
 void GrInitBitmap  (
 	grsBitmap *bmP, int mode, int x, int y, int w, int h, int nBytesPerLine, 
-	unsigned char *data, int bTGA) // TODO: virtualize
+	unsigned char *data, int bpp) // TODO: virtualize
 {
+CBRK (!bpp);
 memset (bmP, 0, sizeof  (*bmP));
 bmP->bm_props.x = x;
 bmP->bm_props.y = y;
 bmP->bm_props.w = w;
 bmP->bm_props.h = h;
+bmP->bm_bpp = bpp;
 bmP->bm_props.nType = mode;
-bmP->bm_props.rowsize = bTGA ? nBytesPerLine * 4 : nBytesPerLine;
-if (bTGA)
+bmP->bm_props.rowsize = nBytesPerLine * bpp;
+if (bpp > 2)
 	bmP->bm_props.flags = (char) BM_FLAG_TGA;
 GrSetBitmapData (bmP, data);
 }
@@ -86,9 +86,9 @@ GrSetBitmapData (bmP, data);
 //------------------------------------------------------------------------------
 
 void GrInitBitmapAlloc (grsBitmap *bmP, int mode, int x, int y, int w, int h, 
-								int nBytesPerLine, int bTGA)
+								int nBytesPerLine, int bpp)
 {
-GrInitBitmap (bmP, mode, x, y, w, h, nBytesPerLine, GrAllocBitmapData (w, h, bTGA), bTGA);
+GrInitBitmap (bmP, mode, x, y, w, h, nBytesPerLine, GrAllocBitmapData (w, h, bpp), bpp);
 }
 
 //------------------------------------------------------------------------------
@@ -152,6 +152,7 @@ bmP->bm_props.x = x + bmParent->bm_props.x;
 bmP->bm_props.y = y + bmParent->bm_props.y;
 bmP->bm_props.w = w;
 bmP->bm_props.h = h;
+bmP->bm_bpp = bmParent->bm_bpp;
 bmP->bm_props.flags = bmParent->bm_props.flags;
 bmP->bm_props.nType = bmParent->bm_props.nType;
 bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
@@ -302,6 +303,24 @@ for (y = 0; y < bmP->bm_props.h; y++)	{
 	data += bmP->bm_props.rowsize - bmP->bm_props.w;
 	}
 bmP->bm_props.flags = 0;
+}
+
+//---------------------------------------------------------------
+
+int GrBitmapHasTransparency (grsBitmap *bmP)
+{
+	int	i, nFrames;
+
+if (bmP->bm_props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+	return 1;
+nFrames = bmP->bm_props.h / bmP->bm_props.w;
+for (i = 1; i < nFrames; i++) {
+	if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
+		return 1;
+	if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
+		return 1;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------

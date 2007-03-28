@@ -116,11 +116,11 @@ void ReadFlyingControls(tObject *objP)
 		return;
 	}
 
-	if ((objP->nType!=OBJ_PLAYER) || (objP->id!=gameData.multi.nLocalPlayer)) 
+	if ((objP->nType!=OBJ_PLAYER) || (objP->id!=gameData.multiplayer.nLocalPlayer)) 
 		return;	//references to tPlayerShip require that this obj be the tPlayer
 
-	gmObjP = gameData.objs.guidedMissile[gameData.multi.nLocalPlayer];
-	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig[gameData.multi.nLocalPlayer])) {
+	gmObjP = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer];
+	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer])) {
 		vmsAngVec rotangs;
 		vmsMatrix rotmat,tempm;
 		fix speed;
@@ -132,8 +132,8 @@ void ReadFlyingControls(tObject *objP)
 		rotangs.b = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
 		rotangs.h = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
 		VmAngles2Matrix(&rotmat,&rotangs);
-		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->position.mOrient,&rotmat);
-		gameData.objs.guidedMissile[gameData.multi.nLocalPlayer]->position.mOrient = tempm;
+		VmMatMul(&tempm,&gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->position.mOrient,&rotmat);
+		gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]->position.mOrient = tempm;
 		speed = WI_speed (gmObjP->id,gameStates.app.nDifficultyLevel);
 		VmVecCopyScale(&gmObjP->mType.physInfo.velocity, &gmObjP->position.mOrient.fVec,speed);
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -149,7 +149,7 @@ void ReadFlyingControls(tObject *objP)
 		objP->mType.physInfo.rotThrust.p.z = Controls [0].bankTime;
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
-	if (gameData.multi.players [gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{
+	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{
 		if (Controls [0].afterburnerState) {			//tPlayer has key down
 			//if (forwardThrustTime >= 0) { 		//..and isn't moving backward
 			{
@@ -173,12 +173,12 @@ void ReadFlyingControls(tObject *objP)
 	
 			//charge up to full
 			charge_up = min(gameData.time.xFrame/8,f1_0 - xAfterburnerCharge);	//recharge over 8 seconds
-			cur_energy = gameData.multi.players [gameData.multi.nLocalPlayer].energy - i2f (10);
+			cur_energy = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy - i2f (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
 			charge_up = min (charge_up,cur_energy / 10);
 			xAfterburnerCharge += charge_up;
-			gameData.multi.players [gameData.multi.nLocalPlayer].energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
 		}
 	}
 	// Set tObject's thrust vector for forward/backward

@@ -585,7 +585,7 @@ else {
 		else if (objP->nType == OBJ_PLAYER) {
 			if (!gameOpts->render.shadows.bPlayers)
 				return;
-			if (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+			if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
 				return;
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {

@@ -61,7 +61,7 @@ if ((i >= 0) && (gameData.smoke.objects [i] >= 0)) {
 
 void KillPlayerSmoke (int i)
 {
-KillObjectSmoke (gameData.multi.players [i].nObject);
+KillObjectSmoke (gameData.multiplayer.players [i].nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -158,12 +158,12 @@ void DoPlayerSmoke (tObject *objP, int i)
 
 if (i < 0)
 	i = objP->id;
-if (gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED) {
+if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) {
 	KillObjectSmoke (i);
 	return;
 	}
 j = OBJ_IDX (objP);
-if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multi.nLocalPlayer)) {
+if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->position.mOrient.fVec;
 	VmVecSub (&mn, &objP->position.vPos, &objP->vLastPos);
 	VmVecNormalize (&fn);
@@ -189,14 +189,14 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 		DropAfterburnerBlobs (objP, 2, i2f (1), -1, gameData.objs.console, 1); //F1_0 / 4);
 	}
 #endif
-if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multi.players [i].connected)
+if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [i].connected)
 	nParts = 0;
 else if (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;
-else if ((i == gameData.multi.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multi.players [i].shields < 0)))
+else if ((i == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [i].shields < 0)))
 	nParts = 0;
 else {
-	h = f2ir (gameData.multi.players [i].shields);
+	h = f2ir (gameData.multiplayer.players [i].shields);
 	nParts = 10 - h / 5;
 	nScale = f2fl (objP->size);
 	if (h <= 25)
@@ -518,8 +518,8 @@ void PlayerSmokeFrame (void)
 
 if (!gameOpts->render.smoke.bPlayers)
 	return;
-for (i = 0; i < gameData.multi.nPlayers; i++)
-	DoPlayerSmoke (gameData.objs.objects + gameData.multi.players [i].nObject, i);
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	DoPlayerSmoke (gameData.objs.objects + gameData.multiplayer.players [i].nObject, i);
 }
 
 //------------------------------------------------------------------------------
@@ -567,7 +567,7 @@ if (!gameStates.render.bExternalView)
 #else
 if (!gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif
-	DoPlayerSmoke (gameData.objs.viewer, gameData.multi.nLocalPlayer);
+	DoPlayerSmoke (gameData.objs.viewer, gameData.multiplayer.nLocalPlayer);
 ObjectSmokeFrame ();
 StaticSmokeFrame ();
 //if (SHOW_SMOKE)

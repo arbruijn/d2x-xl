@@ -276,7 +276,7 @@ if (gameStates.app.bNostalgia || !gameOpts->menus.nStyle)
 else if (gameOpts->menus.altBg.bHave > 0)
 	gameOpts->menus.altBg.bHave++;
 else if (!gameOpts->menus.altBg.bHave) {
-	if (pAltBg = GrCreateBitmap (0, 0, 0)) {
+	if (pAltBg = GrCreateBitmap (0, 0, 1)) {
 		memset (pAltBg, 0, sizeof (*pAltBg));
 		gameOpts->menus.altBg.bHave = 
 			ReadTGA (gameOpts->menus.altBg.szName, NULL, pAltBg, 
@@ -343,7 +343,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		pcx_error = pcx_get_dimensions (filename, &width, &height);
 		if (pcx_error != PCX_ERROR_NONE)
 			Error ("Could not open pcx file <%s>\n", filename);
-		bmp = GrCreateBitmap (width, height, 0);
+		bmp = GrCreateBitmap (width, height, 1);
 		Assert (bmp != NULL);
 		}
 	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.nType, 0);
@@ -431,7 +431,7 @@ else {
 	y2 = y1 + h - 1;
 #if 0
 	{
-		grsBitmap *tmp = GrCreateBitmap (w, h);
+		grsBitmap *tmp = GrCreateBitmap (w, h, 1);
 		GrBitmapScaleTo (&nm_background, tmp);
 		WIN (DDGRLOCK (dd_grd_curcanv);
 		glDisable (GL_BLEND);
@@ -506,7 +506,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 		bg->saved = NULL;
 		if (!gameOpts->menus.nStyle) {
 			if (!bg->background) {
-				bg->background = GrCreateBitmap (w, h, 1);
+				bg->background = GrCreateBitmap (w, h, 4);
 				Assert (bg->background != NULL);
 				}
 			WIN (DDGRLOCK (dd_grd_curcanv));
@@ -538,7 +538,7 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 		DisableForces ();
 #endif
 	if (!(gameOpts->menus.nStyle || bg->saved)) {
-		bg->saved = GrCreateBitmap (w, h, 0);
+		bg->saved = GrCreateBitmap (w, h, 1);
 		Assert (bg->saved != NULL);
 		}
 	bg->saved->bm_palette = defaultPalette;
@@ -1635,7 +1635,7 @@ if (!(gameOpts->menus.nStyle || ((gameData.app.nGameMode & GM_MULTI) && (gameSta
 	}
 
 if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI))
-	nTypingTimeout = 0;
+	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
@@ -1688,7 +1688,7 @@ while (!done) {
 	if (cItemP)
 		*cItemP = choice;
 	if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI)) {
-		gameStates.multi.bPlayerIsTyping [gameData.multi.nLocalPlayer] = 1;
+		gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
 		MultiSendTyping ();
 		}
 	if (!JOYDEFS_CALIBRATING)
@@ -2785,7 +2785,7 @@ ReadFileNames:
 			if ((VR_offscreen_buffer->cv_w >= w_w) &&(VR_offscreen_buffer->cv_h >= w_h)) 
 				bg.background = &VR_offscreen_buffer->cv_bitmap;
 			else
-				bg.background = GrCreateBitmap (w_w, w_h, 0);
+				bg.background = GrCreateBitmap (w_w, w_h, 1);
 			Assert (bg.background != NULL);
 			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, &grdCurCanv->cv_bitmap, bg.background);
@@ -2807,7 +2807,7 @@ ReadFileNames:
 	} else {
 		NMFileSort (NumFiles-1, filenames+ (FILENAME_LEN+1));		// Don't sort first one!
 		for (i=0; i<NumFiles; i++)	{
-			if (!stricmp (gameData.multi.players [gameData.multi.nLocalPlayer].callsign, filenames+i* (FILENAME_LEN+1)))	{
+			if (!stricmp (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, filenames+i* (FILENAME_LEN+1)))	{
 				bDblClick = 1;
 				cItem = i;
 			}
@@ -3295,7 +3295,7 @@ WIN (int win_redraw=0);
 			bg.background = &VR_offscreen_buffer->cv_bitmap;
 		else
 			//bg.background = GrCreateBitmap (width, (height + title_height));
-			bg.background = GrCreateBitmap (total_width, total_height, 0);
+			bg.background = GrCreateBitmap (total_width, total_height, 1);
 		Assert (bg.background != NULL);
 		WIN (DDGRLOCK (dd_grd_curcanv));
 			//GrBmBitBlt (wx+width+border_size, wy+height+border_size, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cv_bitmap, bg.background);

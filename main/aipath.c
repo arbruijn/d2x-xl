@@ -155,7 +155,7 @@ int	Ai_path_debug=0;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Move points halfway to outside of tSegment.
-static tPointSeg newPtSegs [MAX_SEGMENTS];
+static tPointSeg newPtSegs [MAX_SEGMENTS_D2X];
 
 void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, tObject *objP, int bRandom)
 {
@@ -294,9 +294,9 @@ int CreatePathPoints (tObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	short				nSide, hSide;
 	int				qTail = 0, qHead = 0;
 	int				h, i, j;
-	sbyte				bVisited [MAX_SEGMENTS];
-	segQueueEntry	segmentQ [MAX_SEGMENTS];
-	short				depth [MAX_SEGMENTS];
+	sbyte				bVisited [MAX_SEGMENTS_D2X];
+	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
+	short				depth [MAX_SEGMENTS_D2X];
 	int				nCurDepth;
 	sbyte				randomXlate [MAX_SIDES_PER_SEGMENT];
 	tPointSeg		*origPointSegs = pointSegP;
@@ -1269,7 +1269,7 @@ void AIPathGarbageCollect (void)
 	int			objind, i, nOldIndex;
 	tObject		*objP;
 	tAIStatic	*aip;
-	obj_path		objectList [MAX_OBJECTS];
+	obj_path		objectList [MAX_OBJECTS_D2X];
 
 #ifdef _DEBUG
 force_dump_aiObjects_all ("***** Start AIPathGarbageCollect *****");

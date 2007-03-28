@@ -1627,6 +1627,8 @@ char *defaultGameTexts [][2] = {
 	{"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
 	{"Ausruestungsgenerator%n deaktiviert", "equipment generator%s deactivated"},
 	{"~Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},
+	{"Zuwenig Speicher vorhanden.", "Not enough memory available."},
+	{"Der Level ist zu gross fuer D2X-XL.", "The level is too large for D2X-XL."},
 #if 0
 	{"", ""},
 #endif

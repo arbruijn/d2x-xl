@@ -1060,11 +1060,11 @@ extern int been_in_editor;
 void DoCloakStuff (void)
 {
 	int i;
-	for (i = 0; i < gameData.multi.nPlayers; i++)
-		if (gameData.multi.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-			if (gameData.time.xGame - gameData.multi.players[i].cloakTime > CLOAK_TIME_MAX) {
-				gameData.multi.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
-				if (i == gameData.multi.nLocalPlayer) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
+			if (gameData.time.xGame - gameData.multiplayer.players[i].cloakTime > CLOAK_TIME_MAX) {
+				gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
+				if (i == gameData.multiplayer.nLocalPlayer) {
 					DigiPlaySample (SOUND_CLOAK_OFF, F1_0);
 					#ifdef NETWORK
 					if (gameData.app.nGameMode & GM_MULTI)
@@ -1083,10 +1083,10 @@ int bFakingInvul=0;
 
 void DoInvulnerableStuff (void)
 {
-if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) &&
-	 (gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime != 0x7fffffff)) {
-	if (gameData.time.xGame - gameData.multi.players [gameData.multi.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
-		gameData.multi.players[gameData.multi.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
+if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) &&
+	 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime != 0x7fffffff)) {
+	if (gameData.time.xGame - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			DigiPlaySample (SOUND_INVULNERABILITY_OFF, F1_0);
 #ifdef NETWORK
@@ -1132,10 +1132,10 @@ extern void MultiSendSoundFunction (char,char);
 
 void DoAfterburnerStuff (void)
 {
-if (!(gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
+if (!(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
 	xAfterburnerCharge=0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
-	if (DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject))
+	if (DigiKillSoundLinkedToObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject))
 #ifdef NETWORK
 		MultiSendSoundFunction (0,0)
 #endif
@@ -1144,8 +1144,8 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfterburnerState)) || 
 	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !xAfterburnerCharge))) {
 	if (xAfterburnerCharge && Controls [0].afterburnerState && 
-		 (gameData.multi.players[gameData.multi.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
-		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 
+		 (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
+		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, 
 										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1153,8 +1153,8 @@ else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfter
 #endif
 		}
 	else {
-		DigiKillSoundLinkedToObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
-		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multi.players[gameData.multi.nLocalPlayer].nObject, 
+		DigiKillSoundLinkedToObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject);
+		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, 
 										0, F1_0, i2f (256));
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1170,11 +1170,11 @@ xLastAfterburnerCharge = xAfterburnerCharge;
 // -- //	if energy < F1_0/2, recharge up to F1_0/2
 // -- void recharge_energy_frame (void)
 // -- {
-// -- 	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < gameData.weapons.info[0].energy_usage) {
-// -- 		gameData.multi.players[gameData.multi.nLocalPlayer].energy += gameData.time.xFrame/4;
+// -- 	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy < gameData.weapons.info[0].energy_usage) {
+// -- 		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy += gameData.time.xFrame/4;
 // --
-// -- 		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy > gameData.weapons.info[0].energy_usage)
-// -- 			gameData.multi.players[gameData.multi.nLocalPlayer].energy = gameData.weapons.info[0].energy_usage;
+// -- 		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy > gameData.weapons.info[0].energy_usage)
+// -- 			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = gameData.weapons.info[0].energy_usage;
 // -- 	}
 // -- }
 
@@ -1352,7 +1352,7 @@ int AllowedToFireFlare (void)
 	if (NextFlare_fireTime > gameData.time.xGame)
 		if (NextFlare_fireTime < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
 			return 0;
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
 		NextFlare_fireTime = gameData.time.xGame + F1_0/4;
 	else
 		NextFlare_fireTime = gameData.time.xGame + FLARE_BIG_DELAY;
@@ -1659,19 +1659,19 @@ for (;;) {
 		// GAME LOOP!
 	gameStates.app.bAutoMap = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]) {
+	if (gameData.objs.console != &gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject]) {
 #if TRACE
-	    //con_printf (CONDBG,"gameData.multi.nLocalPlayer=%d nObject=%d",gameData.multi.nLocalPlayer,gameData.multi.players[gameData.multi.nLocalPlayer].nObject);
+	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject);
 #endif
-	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multi.players[gameData.multi.nLocalPlayer].nObject]);
+	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject]);
 		}
-	player_shields = gameData.multi.players[gameData.multi.nLocalPlayer].shields;
+	player_shields = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields;
 	gameStates.app.nExtGameStatus=GAMESTAT_RUNNING;
 	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
 		continue;
 	//if the tPlayer is taking damage, give up guided missile control
-	if (gameData.multi.players[gameData.multi.nLocalPlayer].shields != player_shields)
-		ReleaseGuidedMissile (gameData.multi.nLocalPlayer);
+	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields != player_shields)
+		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
 	if (gameStates.app.bConfigMenu) {
@@ -2172,8 +2172,8 @@ if (nDebugSlowdown) {
 
 #ifdef _DEBUG
 	if (FindArg ("-invulnerability")) {
-		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
 #endif
 	if (!MultiProtectGame ()) {
@@ -2207,31 +2207,31 @@ if (nDebugSlowdown) {
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
 
-	if ((gameData.multi.players[gameData.multi.nLocalPlayer].flags & 
+	if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & 
 		  (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == 
 		 (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
 		static int bTurnedOff=0;
-		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= (gameData.time.xFrame*3/8);
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy < i2f (10)) {
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= (gameData.time.xFrame*3/8);
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy < i2f (10)) {
 			if (!bTurnedOff) {
-				gameData.multi.players[gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+				gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				bTurnedOff = 1;
 #ifdef NETWORK
 				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendFlags ((char) gameData.multi.nLocalPlayer);
+					MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 #endif
 			}
 		}
 		else
 			bTurnedOff = 0;
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
-			gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
-			gameData.multi.players[gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy <= 0) {
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = 0;
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
 //con_printf (CONDBG, "      MultiSendFlags\n");
-				MultiSendFlags ((char) gameData.multi.nLocalPlayer);
+				MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 				}
 #endif
 		}
@@ -2345,7 +2345,7 @@ if (nDebugSlowdown) {
 			}
 		}
 	else { // Note the link to above!
-		gameData.multi.players[gameData.multi.nLocalPlayer].homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
 //LogErr ("MoveAllObjects\n");
 		if (!MoveAllObjects ())
 			return 0;
@@ -2367,7 +2367,7 @@ if (nDebugSlowdown) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.fusion.xCharge > F1_0*2)
 			// 	gameData.fusion.xCharge = F1_0*2;
-			gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (gameData.multi.players[gameData.multi.nLocalPlayer].nObject, gameData.weapons.nPrimary);
+			gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, gameData.weapons.nPrimary);
 			}
 		if (gameData.laser.nGlobalFiringCount < 0)
 			gameData.laser.nGlobalFiringCount = 0;
@@ -2377,10 +2377,10 @@ if (nDebugSlowdown) {
 		gameStates.render.bDoAppearanceEffect = 0;
 #ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
-		gameData.multi.players[gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-		gameData.multi.players[gameData.multi.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
 		bFakingInvul = 1;
-		SetSpherePulse (gameData.multi.spherePulse + gameData.multi.nLocalPlayer, 0.02f, 0.5f);
+		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
 #endif
 	}
@@ -2505,18 +2505,18 @@ void FireLaser ()
 
 gameData.laser.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
-	if ((gameData.multi.players [gameData.multi.nLocalPlayer].energy < F1_0 * 2) && 
+	if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy < F1_0 * 2) && 
 		 (gameData.fusion.xAutoFireTime == 0)) {
 		gameData.laser.nGlobalFiringCount = 0;
 		} 
 	else {
 		flFrameTime += gameData.time.xFrame;
 		if (gameData.fusion.xCharge == 0)
-			gameData.multi.players[gameData.multi.nLocalPlayer].energy -= F1_0*2;
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= F1_0*2;
 		gameData.fusion.xCharge += flFrameTime;
-		gameData.multi.players[gameData.multi.nLocalPlayer].energy -= flFrameTime;
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].energy <= 0) {
-			gameData.multi.players[gameData.multi.nLocalPlayer].energy = 0;
+		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= flFrameTime;
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy <= 0) {
+			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = 0;
 			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
 			} 
 		else

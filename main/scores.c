@@ -204,23 +204,23 @@ void int_to_string( int number, char *dest )
 
 void scores_fill_struct(stats_info * stats)
 {
-		strcpy( stats->name, gameData.multi.players[gameData.multi.nLocalPlayer].callsign );
-		stats->score = gameData.multi.players[gameData.multi.nLocalPlayer].score;
-		stats->endingLevel = gameData.multi.players[gameData.multi.nLocalPlayer].level;
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].numRobotsTotal > 0 )	
-			stats->kill_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].numKillsTotal*100)/gameData.multi.players[gameData.multi.nLocalPlayer].numRobotsTotal;
+		strcpy( stats->name, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign );
+		stats->score = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score;
+		stats->endingLevel = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].level;
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].numRobotsTotal > 0 )	
+			stats->kill_ratio = (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].numKillsTotal*100)/gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].numRobotsTotal;
 		else
 			stats->kill_ratio = 0;
 
-		if (gameData.multi.players[gameData.multi.nLocalPlayer].hostagesTotal > 0 )	
-			stats->hostage_ratio = (gameData.multi.players[gameData.multi.nLocalPlayer].hostages_rescuedTotal*100)/gameData.multi.players[gameData.multi.nLocalPlayer].hostagesTotal;
+		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].hostagesTotal > 0 )	
+			stats->hostage_ratio = (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].hostages_rescuedTotal*100)/gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].hostagesTotal;
 		else
 			stats->hostage_ratio = 0;
 
-		stats->seconds = f2i(gameData.multi.players[gameData.multi.nLocalPlayer].timeTotal)+(gameData.multi.players[gameData.multi.nLocalPlayer].hoursTotal*3600);
+		stats->seconds = f2i(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].timeTotal)+(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].hoursTotal*3600);
 
 		stats->diffLevel = gameStates.app.nDifficultyLevel;
-		stats->startingLevel = gameData.multi.players[gameData.multi.nLocalPlayer].startingLevel;
+		stats->startingLevel = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].startingLevel;
 }
 
 //------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ void scores_maybe_add_player(int abortFlag)
 	
 	position = MAX_HIGH_SCORES;
 	for (i=0; i<MAX_HIGH_SCORES; i++ )	{
-		if ( gameData.multi.players[gameData.multi.nLocalPlayer].score > Scores.stats[i].score )	{
+		if ( gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].score > Scores.stats[i].score )	{
 			position = i;
 			break;
 		}

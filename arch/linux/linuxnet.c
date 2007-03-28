@@ -48,14 +48,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx_udp.h"
 #include "ipx_mcast4.h"
 #include "error.h"
-#include "../../main/player.h"	/* for gameData.multi.players */
+#include "../../main/player.h"	/* for gameData.multiplayer.players */
 #include "../../main/multi.h"	/* for netPlayers */
 //added 05/17/99 Matt Mueller - needed to redefine FD_* so that no asm is used
 //#include "checker.h"
 //end addition -MM
 #include "byteswap.h"
 #include "network.h"
-#include "../../main/player.h"	/* for gameData.multi.players */
+#include "../../main/player.h"	/* for gameData.multiplayer.players */
 #include "../../main/multi.h"	/* for netPlayers */
 #include "tracker.h"
 #include "hudmsg.h"
@@ -494,11 +494,11 @@ if (driver->SendGamePacket) {
 else {
 	// Loop through all the players unicasting the packet.
 	int i;
-	//printf ("Sending game packet: gameData.multi.nPlayers = %i\n", gameData.multi.nPlayers);
-	for (i=0; i<gameData.multi.nPlayers; i++) {
-		if (gameData.multi.players [i].connected && (i != gameData.multi.nLocalPlayer))
+	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
+	for (i=0; i<gameData.multiplayer.nPlayers; i++) {
+		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
 			IPXSendPacketData (data, datasize, netPlayers.players[i].network.ipx.server, 
-									 netPlayers.players[i].network.ipx.node, gameData.multi.players[i].netAddress);
+									 netPlayers.players[i].network.ipx.node, gameData.multiplayer.players[i].netAddress);
 		}
 	return datasize;
 	}

@@ -576,7 +576,7 @@ fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;				
 fLight [2] = (float) xEngineGlow [1] / 65536.0f;				
 if (objP->nType == OBJ_PLAYER)
-	bCloaked = (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
+	bCloaked = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
 else if (objP->nType == OBJ_ROBOT)
 	bCloaked = objP->cType.aiInfo.CLOAKED;
 else
@@ -633,8 +633,8 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 							NULL);
 }
 else {
-	if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multi.players [objP->id].cloakTime, gameData.multi.players [objP->id].cloakTime + CLOAK_TIME_MAX);
+	if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
 		if (ROBOTINFO (objP->id).bossFlag) {
 			int i = FindBoss (OBJ_IDX (objP));
@@ -659,7 +659,7 @@ else {
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = 2.0f;
+				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
 				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 				}
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
@@ -838,29 +838,29 @@ if (SHOW_SHADOWS &&
 	return;
 #endif
 if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
-	 !(gameData.multi.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
+	 !(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
-	UseSpherePulse (&gameData.render.shield, gameData.multi.spherePulse + i);
-	if (gameData.multi.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
+	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
-	else if (gameData.multi.bWasHit [i]) {
-		if (gameData.multi.bWasHit [i] < 0) {
-			gameData.multi.bWasHit [i] = 1;
-			gameData.multi.nLastHitTime [i] = gameStates.app.nSDLTicks;
-			SetSpherePulse (gameData.multi.spherePulse + i, 0.1f, 0.5f);
+	else if (gameData.multiplayer.bWasHit [i]) {
+		if (gameData.multiplayer.bWasHit [i] < 0) {
+			gameData.multiplayer.bWasHit [i] = 1;
+			gameData.multiplayer.nLastHitTime [i] = gameStates.app.nSDLTicks;
+			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.1f, 0.5f);
 			}
-		else if (gameStates.app.nSDLTicks - gameData.multi.nLastHitTime [i] >= 300) {
-			gameData.multi.bWasHit [i] = 0;
-			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.4f);
+		else if (gameStates.app.nSDLTicks - gameData.multiplayer.nLastHitTime [i] >= 300) {
+			gameData.multiplayer.bWasHit [i] = 0;
+			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
 			}
 		}
-	if (gameData.multi.bWasHit [i])
+	if (gameData.multiplayer.bWasHit [i])
 		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
 	else {
-		if (gameData.multi.spherePulse [i].fSpeed == 0.0f)
-			SetSpherePulse (gameData.multi.spherePulse + i, 0.02f, 0.5f);
-		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multi.players [i].shields) / 400.0f);
+		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
+			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
+		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
 		}
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
@@ -901,7 +901,7 @@ float ObjectDamage (tObject *objP)
 	fix	xMaxShields;
 
 if (objP->nType == OBJ_PLAYER)
-	fDmg = f2fl (gameData.multi.players [objP->id].shields) / 100;
+	fDmg = f2fl (gameData.multiplayer.players [objP->id].shields) / 100;
 else if (objP->nType == OBJ_ROBOT) {
 	xMaxShields = RobotDefaultShields (objP);
 	fDmg = f2fl (objP->shields) / f2fl (xMaxShields);
@@ -1019,7 +1019,7 @@ if (!CanSeeObject (OBJ_IDX (objP), 1))
 #endif
 if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	if (nPlayer >= 0) {
-		if (gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
+		if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 			return;
 		}
 	else if (objP->nType == OBJ_ROBOT) {
@@ -1028,8 +1028,8 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 		}
 	}
 if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
-	if (GetTeam (nPlayer) != GetTeam (gameData.multi.nLocalPlayer)) {
-		if (!(gameData.multi.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
+	if (GetTeam (nPlayer) != GetTeam (gameData.multiplayer.nLocalPlayer)) {
+		if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
 			return;
 		pc = ObjectFrameColor (NULL, NULL);
 		}
@@ -1164,7 +1164,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (IsTeamGame && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
+if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
 		vmsVector		vPos = objP->position.vPos;
 		fVector			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
@@ -1323,7 +1323,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 	return;
 #endif
-if ((objP->nType == OBJ_PLAYER) && (gameData.multi.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
 fLength = fSpeed / 60.0f;
@@ -1737,7 +1737,7 @@ void RenderObject (tObject *objP, int nWindowNum)
 	int			oofIdx;
 #endif
 
-if ((OBJ_IDX (objP) == gameData.multi.players [gameData.multi.nLocalPlayer].nObject) &&
+if ((OBJ_IDX (objP) == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console)) {
 	if (bSpectate = (gameStates.app.bFreeCam && !nWindowNum)) {
 		savePos = objP->position;
@@ -2226,7 +2226,7 @@ if (nObject == gameData.objs.nLastObject)
 int FreeObjectSlots (int num_used)
 {
 	int		i, olind;
-	int		objList [MAX_OBJECTS];
+	int		objList [MAX_OBJECTS_D2X];
 	int		nAlreadyFree, nToFree, nOrgNumToFree;
 	tObject	*objP;
 
@@ -2453,9 +2453,9 @@ if (bPrintObjectInfo)
 if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount++;
 if (IsMultiGame && (nType == OBJ_POWERUP) && PowerupClass (id)) {
-	gameData.multi.powerupsInMine [(int) id]++;
+	gameData.multiplayer.powerupsInMine [(int) id]++;
 	if (MultiPowerupIs4Pack (id))
-		gameData.multi.powerupsInMine [(int) id - 1] += 4;
+		gameData.multiplayer.powerupsInMine [(int) id - 1] += 4;
 	}
 return nObject;
 }
@@ -2503,7 +2503,7 @@ if (objP->nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);
 	if (objP->id == GUIDEDMSL_ID) {
 		nParent = gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
-		if (nParent != gameData.multi.nLocalPlayer)
+		if (nParent != gameData.multiplayer.nLocalPlayer)
 			gameData.objs.guidedMissile [nParent] = NULL;
 		else if (gameData.demo.nState==ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();
@@ -2560,7 +2560,7 @@ gameData.objs.console->flags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
 gameData.objs.console->controlType = nControlTypeSave;
 gameData.objs.console->renderType = nRenderTypeSave;
-gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
+gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 gameStates.app.bPlayerEggsDropped = 0;
 }
 
@@ -2634,7 +2634,7 @@ if (gameStates.app.bPlayerIsDead) {
 
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
-		tObject *player = gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject;
+		tObject *player = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
 		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
 											 &player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 		if (nObject != -1)
@@ -2651,9 +2651,9 @@ if (gameStates.app.bPlayerIsDead) {
 	VmVector2Matrix (&gameData.objs.deadPlayerCamera->position.mOrient, &fVec, NULL, NULL);
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
-		if (gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board > 1)
-			HUDInitMessage (TXT_SHIP_DESTROYED_2, gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board);
-		else if (gameData.multi.players [gameData.multi.nLocalPlayer].hostages_on_board == 1)
+		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board > 1)
+			HUDInitMessage (TXT_SHIP_DESTROYED_2, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board);
+		else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board == 1)
 			HUDInitMessage (TXT_SHIP_DESTROYED_1);
 		else
 			HUDInitMessage (TXT_SHIP_DESTROYED_0);
@@ -2677,7 +2677,7 @@ if (gameStates.app.bPlayerIsDead) {
 			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
 			gameData.objs.console->renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.console->nType = OBJ_GHOST;						//..and kill intersections
-			gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)
 				gameStates.app.bDeathSequenceAborted = 1;
@@ -2687,7 +2687,7 @@ if (gameStates.app.bPlayerIsDead) {
 	else {
 		if (d_rand () < gameData.time.xFrame * 4) {
 			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSendCreateExplosion (gameData.multi.nLocalPlayer);
+				MultiSendCreateExplosion (gameData.multiplayer.nLocalPlayer);
 			CreateSmallFireballOnObject (gameData.objs.console, F1_0, 1);
 			}
 		}
@@ -2716,9 +2716,9 @@ void AdjustMineSpawn ()
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
+	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
 nProximityDropped = 0;
 nSmartminesDropped = 0;
 }
@@ -2753,14 +2753,14 @@ nKilledInFrame = gameData.app.nFrameCount;
 nKilledObjNum = OBJ_IDX (player);
 gameStates.app.bDeathSequenceAborted = 0;
 if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendKill (gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
+	MultiSendKill (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
 //		If Hoard, increase number of orbs by 1
 //    Only if you haven't killed yourself
 //		This prevents cheating
 	if (gameData.app.nGameMode & GM_HOARD)
 		if (!bMultiSuicide)
-			if (gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]<12)
-				gameData.multi.players [gameData.multi.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]++;
+			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]<12)
+				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]++;
 	}
 gameStates.ogl.palAdd.red = 40;
 gameStates.app.bPlayerIsDead = 1;
@@ -2768,7 +2768,7 @@ gameStates.app.bPlayerIsDead = 1;
    if (TactileStick)
 	Buffeting (70);
 #endif
-//gameData.multi.players [gameData.multi.nLocalPlayer].flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
+//gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
 VmVecZero (&player->mType.physInfo.rotThrust);
 VmVecZero (&player->mType.physInfo.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
@@ -2790,7 +2790,7 @@ nPlayerFlagsSave = player->flags;
 nControlTypeSave = player->controlType;
 nRenderTypeSave = player->renderType;
 player->flags &= ~OF_SHOULD_BE_DEAD;
-//	gameData.multi.players [gameData.multi.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+//	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
 player->controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
 	player->shields = F1_0*1000;
@@ -2835,7 +2835,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (objP->nType != OBJ_PLAYER) 
 		ReleaseObject ((short) i);
 	else {
-		if (objP->id == gameData.multi.nLocalPlayer) {
+		if (objP->id == gameData.multiplayer.nLocalPlayer) {
 			if (nLocalDeadPlayerObj == -1) {
 				StartPlayerDeathSequence (objP);
 				nLocalDeadPlayerObj = OBJ_IDX (objP);
@@ -2915,7 +2915,7 @@ VmVecZero (&objP->mType.physInfo.rotVel);
 void StopPlayerMovement (void)
 {
 if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
-	StopObjectMovement (gameData.objs.objects + gameData.multi.players [gameData.multi.nLocalPlayer].nObject);
+	StopObjectMovement (gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
 	memset (&playerThrust, 0, sizeof (playerThrust));
 //	gameData.time.xFrame = F1_0;
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
@@ -2932,7 +2932,7 @@ void MoveCamera (tObject *objP)
 #define	DEG675	 (DEG45 + (F1_0 / 16))
 #define	DEG1		 (F1_0 / (4 * 90))	
 	
-	tCamera	*pc = cameras + gameData.objs.cameraRef [OBJ_IDX (objP)];
+	tCamera	*pc = gameData.cameras.cameras + gameData.objs.cameraRef [OBJ_IDX (objP)];
 	fixang	curAngle = pc->curAngle;
 	fixang	curDelta = pc->curDelta;
 
@@ -3027,9 +3027,9 @@ void HandleSpecialSegments (tObject *objP)
 	fix fuel, shields;
 	tSegment *segP = gameData.segs.segments + objP->nSegment;
 	xsegment *xsegP = gameData.segs.xSegments + objP->nSegment;
-	tPlayer *playerP = gameData.multi.players + gameData.multi.nLocalPlayer;
+	tPlayer *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
-if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
+if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == objP->id)) {
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 FuelCenCheckForGoal (segP);
    else if (gameData.app.nGameMode & GM_HOARD)
@@ -3039,7 +3039,7 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multi.nLocalPlayer == objP->id)) {
 			 Controls [0].verticalThrustTime || 
 			 Controls [0].sidewaysThrustTime ||
 			 (xsegP->owner < 0) ||
-			 (xsegP->owner == GetTeam (gameData.multi.nLocalPlayer) + 1)) {
+			 (xsegP->owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)) {
 			StopConquerWarning ();
 			gameStates.entropy.nTimeLastMoved = -1;
 			}
@@ -3205,8 +3205,8 @@ return 0;
 
 void CheckGuidedMissileThroughExit (tObject *objP, short nPrevSegment)
 {
-if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) && 
-	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multi.nLocalPlayer])) {
+if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
+	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
 	if (nPrevSegment != objP->nSegment) {
 		short	nConnSide = FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments+nPrevSegment);
 		if (nConnSide != -1) {
@@ -3216,7 +3216,7 @@ if ((objP == gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]) &&
 				nTrigger = gameData.walls.walls [nWall].nTrigger;
 				if ((nTrigger < gameData.trigs.nTriggers) &&
 					 (gameData.trigs.triggers [nTrigger].nType == TT_EXIT))
-					gameData.objs.guidedMissile [gameData.multi.nLocalPlayer]->lifeleft = 0;
+					gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->lifeleft = 0;
 				}
 			}
 		}
@@ -3231,7 +3231,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
 	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendDropBlobs ((char) gameData.multi.nLocalPlayer);
+		MultiSendDropBlobs ((char) gameData.multiplayer.nLocalPlayer);
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
@@ -3303,8 +3303,6 @@ CheckAfterburnerBlobDrop (objP);
 return 1;
 }
 
-int	nMaxUsedObjects = MAX_OBJECTS - 20;
-
 //--------------------------------------------------------------------
 //move all gameData.objs.objects for the current frame
 int MoveAllObjects ()
@@ -3314,8 +3312,8 @@ int MoveAllObjects ()
 
 //	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
-if (gameData.objs.nLastObject > nMaxUsedObjects)
-	FreeObjectSlots (nMaxUsedObjects);		//	Free all possible tObject slots.
+if (gameData.objs.nLastObject > gameData.objs.nMaxUsedObjects)
+	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible tObject slots.
 #if LIMIT_PHYSICS_FPS
 if (!gameStates.app.tick60fps.bTick)
 	return 1;
@@ -3666,8 +3664,8 @@ for (i = 0; i < MAX_OBJECTS; i++) {
 	}
 gameData.objs.childObjs [i - 1].nextObj = -1;
 gameData.objs.nChildFreeList = 0;
-memset (gameData.objs.firstChild, 0xff, sizeof (gameData.objs.firstChild));
-memset (gameData.objs.parentObjs, 0xff, sizeof (gameData.objs.parentObjs));
+memset (gameData.objs.firstChild, 0xff, sizeof (*gameData.objs.firstChild) * MAX_OBJECTS);
+memset (gameData.objs.parentObjs, 0xff, sizeof (*gameData.objs.parentObjs) * MAX_OBJECTS);
 }
 
 //------------------------------------------------------------------------------

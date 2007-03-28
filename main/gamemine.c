@@ -968,7 +968,7 @@ int ComputeNearestSegmentLights (int i)
 {
 	tSegment				*segP;
 	tDynLight			*pl;
-	int					h, j, l, m, n, nMaxLights;
+	int					h, j, k, l, m, n, nMaxLights;
 	vmsVector			center, dist;
 	struct tLightDist	*pDists;
 
@@ -1000,10 +1000,11 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	if (n)
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
+	k = i * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.dynamic.nNearestSegLights [i][l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nNearestSegLights [k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.dynamic.nNearestSegLights [i][l] = -1;
+		gameData.render.lights.dynamic.nNearestSegLights [k + l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1019,7 +1020,7 @@ int ComputeNearestVertexLights (int i)
 {
 	vmsVector			*vertP;
 	tDynLight			*pl;
-	int					h, j, l, n, nMaxLights;
+	int					h, j, k, l, n, nMaxLights;
 	vmsVector			dist;
 	struct tLightDist	*pDists;
 
@@ -1054,10 +1055,11 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	if (n)
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
+	k = i * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		gameData.render.lights.dynamic.nNearestVertLights [i][l] = pDists [l].nIndex;
+		gameData.render.lights.dynamic.nNearestVertLights [k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		gameData.render.lights.dynamic.nNearestVertLights [i][l] = -1;
+		gameData.render.lights.dynamic.nNearestVertLights [k + l] = -1;
 	}
 d_free (pDists);
 return 1;
@@ -1343,9 +1345,9 @@ void ComputeSegSideCenters (int nSegment)
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
 for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; nSegment++, segP++) {
-	ComputeSegmentCenter (gameData.segs.segCenters [nSegment], segP);
+	ComputeSegmentCenter (gameData.segs.segCenters [0] + nSegment, segP);
 #if CALC_SEGRADS
-	GetSideDists (gameData.segs.segCenters [nSegment], nSegment, xSideDists, 0);
+	GetSideDists (gameData.segs.segCenters [0] + nSegment, nSegment, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, i++) {
@@ -1356,14 +1358,14 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 #endif
 		}
 #if CALC_SEGRADS
-	gameData.segs.segRads [nSegment][0] = xMinDist;
+	gameData.segs.segRads [0][nSegment] = xMinDist;
 	for (k = 0, xMaxDist = 0; k < 8; k++) {
-		VmVecSub (&v, gameData.segs.segCenters [nSegment], gameData.segs.vertices + segP->verts [k]);
+		VmVecSub (&v, gameData.segs.segCenters [0] + nSegment, gameData.segs.vertices + segP->verts [k]);
 		xDist = VmVecMag (&v);
 		if (xMaxDist < xDist)
 			xMaxDist = xDist;
 		}	
-	gameData.segs.segRads [nSegment][1] = xMaxDist;
+	gameData.segs.segRads [1][nSegment] = xMaxDist;
 #endif
 	}
 }
@@ -1405,7 +1407,7 @@ void ComputeVertexVisibility (int startI)
 	vmsVector	c, d, *vertP;
 
 if (startI <= 0) {
-	memset (gameData.segs.bVertVis, 0, sizeof (gameData.segs.bVertVis));
+	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * MAX_SEGMENTS * VERTVIS_FLAGS);
 	// every segment can see itself and its neighbours
 	}
 INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
@@ -1431,8 +1433,8 @@ for (i = startI; i < endI; i++) {
 #endif
 		SetVertVis (i, v, 1);
 #if CALC_SEGRADS
-		VmVecSub (&d, gameData.segs.segCenters [i], vertP);
-		if (VmVecMag (&d) > F1_0 * 125 + gameData.segs.segRads [i][1])
+		VmVecSub (&d, gameData.segs.segCenters [0] + i, vertP);
+		if (VmVecMag (&d) > F1_0 * 125 + gameData.segs.segRads [1][i])
 			continue;
 #endif
 		for (j = 0; j < 6; j++) {
@@ -1456,7 +1458,7 @@ void ComputeSegmentVisibility (int startI)
 	tSegment		*segP;
 
 if (startI <= 0) {
-	memset (gameData.segs.bSegVis, 0, sizeof (gameData.segs.bSegVis));
+	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * MAX_SEGMENTS * SEGVIS_FLAGS);
 	// every segment can see itself and its neighbours
 	for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 		SetSegVis (i, i);
@@ -1734,7 +1736,10 @@ if (bNewFileFormat)
 	gameData.segs.nSegments = CFReadShort (loadFile);
 else
 	gameData.segs.nSegments = CFReadInt (loadFile);
-Assert ( gameData.segs.nSegments <= MAX_SEGMENTS );
+if (gameData.segs.nSegments >= MAX_SEGMENTS) {
+	Warning (TXT_LEVEL_TOO_LARGE);
+	return -1;
+	}
 #if TRACE
 con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 #endif

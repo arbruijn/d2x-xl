@@ -57,6 +57,7 @@
 #include "menu.h"
 #include "newmenu.h"
 #include "gauges.h"
+#include "gr.h"
 
 //------------------------------------------------------------------------------
 
@@ -494,9 +495,9 @@ for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, bufP++) {
 		}
 	}
 if (j) {
-	bmP->bm_avgRGB.red = 4 * (ubyte) (r / j);
-	bmP->bm_avgRGB.green = 4 * (ubyte) (g / j);
-	bmP->bm_avgRGB.blue = 4 * (ubyte) (b / j);
+	bmP->bm_avgRGB.red = 4 *(ubyte) (r / j);
+	bmP->bm_avgRGB.green = 4 *(ubyte) (g / j);
+	bmP->bm_avgRGB.blue = 4 *(ubyte) (b / j);
 	j *= 63;	//palette entries are all /4, so do not divide by 256
 	color->red = (float) r / (float) j;
 	color->green = (float) g / (float) j;
@@ -895,144 +896,143 @@ return (minColor + maxColor) / 2;
 
 //------------------------------------------------------------------------------
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
-void OglFillTexBuf (
-	grsBitmap *bmP,
-	GLubyte *texp,
-	int truewidth,
-	int width,
-	int height,
-	int dxo,
-	int dyo,
-	int twidth,
-	int theight,
-	int nType,
-	int nTransp,
-	int superTransp)
+int OglFillTexBuf (
+	grsBitmap	*bmP,
+	GLubyte		*texBuf,
+	int			truewidth,
+	int			width,
+	int			height,
+	int			dxo,
+	int			dyo,
+	int			tWidth,
+	int			tHeight,
+	int			nFormat,
+	int			nTransp,
+	int			superTransp)
 {
-//	GLushort *texP= (GLushort *)texp;
-	unsigned char *data = bmP->bm_texBuf;
-	int x, y, c, i;
-	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
-	gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bm_palette : bmP->bm_palette);
+//	GLushort *texP= (GLushort *)texBuf;
+	ubyte	*data = bmP->bm_texBuf;
+	int	x, y, c, i;
+	int	bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
-	if (!gameData.render.ogl.palette)
-		gameData.render.ogl.palette = defaultPalette;
-	if (!gameData.render.ogl.palette)
-		return;
-	if (twidth * theight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
-		Error ("texture too big %i %i",twidth,theight);
+gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bm_palette : bmP->bm_palette);
+if (!gameData.render.ogl.palette)
+	gameData.render.ogl.palette = defaultPalette;
+if (!gameData.render.ogl.palette)
+	return nFormat;
+if (tWidth * tHeight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
+	Error ("texture too big %i %i",tWidth, tHeight);
 
-	i = 0;
-	for (y = 0; y < theight; y++) {
-		i = dxo + truewidth * (y + dyo);
-		for (x = 0; x < twidth; x++){
-			if ((x < width) && (y < height))
-				c = data [i++];
-			else
-				c = TRANSPARENCY_COLOR;//fill the pad space with transparancy
-			if ((int) c == TRANSPARENCY_COLOR) {
-				switch (nType) {
-					case GL_LUMINANCE:
-						 (*(texp++)) = 0;
-						break;
+if ((tWidth <= width) && (tHeight <= height) && !GrBitmapHasTransparency (bmP))
+	nFormat = GL_RGB;
 
-					case GL_LUMINANCE_ALPHA:
-#if 1
-						* ((GLushort *) texp) = 0;
-						texp += 2; 
-#else
-						 (*(texp++)) = 0;
-						 (*(texp++)) = 0;
-#endif
-						break;
-					case GL_RGBA:
-#if 1
-						* ((GLuint *) texp) = 0;
-						texp += 4;
-#else
-						 (*(texp++)) = 0;
-						 (*(texp++)) = 0;
-						 (*(texp++)) = 0;
-						 (*(texp++)) = 0;//transparent pixel
-#endif
-						break;
-					}
-//				 (*(texP++)) = 0;
+restart:
+
+i = 0;
+for (y = 0; y < tHeight; y++) {
+	i = dxo + truewidth *(y + dyo);
+	for (x = 0; x < tWidth; x++){
+		if ((x < width) && (y < height))
+			c = data [i++];
+		else
+			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
+		if ((int) c == TRANSPARENCY_COLOR) {
+			switch (nFormat) {
+				case GL_LUMINANCE:
+					(*(texBuf++)) = 0;
+					break;
+
+				case GL_LUMINANCE_ALPHA:
+					*((GLushort *) texBuf) = 0;
+					texBuf += 2; 
+					break;
+
+				case GL_RGB:
+					nFormat = GL_RGBA;
+					goto restart;
+					break;
+
+				case GL_RGBA:
+					*((GLuint *) texBuf) = 0;
+					texBuf += 4;
+					break;
 				}
-			else {
-				switch (nType) {
-					case GL_LUMINANCE://these could prolly be done to make the intensity based upon the intensity of the resulting color, but its not needed for anything (yet?) so no point. :)
-						 (*(texp++)) = 255;
-						break;
-					case GL_LUMINANCE_ALPHA:
-						 (*(texp++)) = 255;
-						 (*(texp++)) = 255;
-						break;
-					case GL_RGBA:
-						if (superTransp && (c == SUPER_TRANSP_COLOR)) {
-							if (bShaderMerge) {
-								(*(texp++)) = 0;
-								(*(texp++)) = 0;
-								(*(texp++)) = 0;
-								(*(texp++)) = 1;
-								}
-							else {
-								(*(texp++)) = 120;
-								(*(texp++)) =  88;
-								(*(texp++)) = 128;
-								(*(texp++)) = 0;
-								}
+//				 (*(texP++)) = 0;
+			}
+		else {
+			switch (nFormat) {
+				case GL_LUMINANCE://these could prolly be done to make the intensity based upon the intensity of the resulting color, but its not needed for anything (yet?) so no point. :)
+						(*(texBuf++)) = 255;
+					break;
+
+				case GL_LUMINANCE_ALPHA:
+						(*(texBuf++)) = 255;
+						(*(texBuf++)) = 255;
+					break;
+
+				case GL_RGB: {
+					int j = c * 3;
+					int r = gameData.render.ogl.palette [j] * 4;
+					int g = gameData.render.ogl.palette [j + 1] * 4;
+					int b = gameData.render.ogl.palette [j + 2] * 4;
+					(*(texBuf++)) = r;
+					(*(texBuf++)) = g;
+					(*(texBuf++)) = b;
+					}
+					break;
+
+				case GL_RGBA:
+					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
+						if (bShaderMerge) {
+							*((GLushort *) texBuf) = 0;
+							texBuf += 2; 
+							(*(texBuf++)) = 0;
+							(*(texBuf++)) = 1;
 							}
 						else {
-							int h = 0, i = 0, j = c * 3;
-							int r = gameData.render.ogl.palette [j] * 4;
-							int g = gameData.render.ogl.palette [j + 1] * 4;
-							int b = gameData.render.ogl.palette [j + 2] * 4;
-							(*(texp++)) = r;
-							(*(texp++)) = g;
-							(*(texp++)) = b;
+							(*(texBuf++)) = 120;
+							(*(texBuf++)) =  88;
+							(*(texBuf++)) = 128;
+							(*(texBuf++)) = 0;
+							}
+						}
+					else {
+						int h = 0, i = 0, j = c * 3;
+						int r = gameData.render.ogl.palette [j] * 4;
+						int g = gameData.render.ogl.palette [j + 1] * 4;
+						int b = gameData.render.ogl.palette [j + 2] * 4;
+						(*(texBuf++)) = r;
+						(*(texBuf++)) = g;
+						(*(texBuf++)) = b;
+						if (nTransp == 1) {
 #if 0
-							if (r) {
-								h++;
-								i += 3;
-								}
-							if (g) {
-								h++;
-								i += 5;
-								}
-							if (b) {
-								h++;
-								i += 2;
-								}
-#endif
-							if (nTransp == 1) {
-#if 0
-								 (*(texp++)) =  (r + g + b) / 3;//transparency based on color intensity
+								(*(texBuf++)) =  (r + g + b) / 3;//transparency based on color intensity
 #else //chromatic intensity considered
 #	if 0 //non-linear formula
-								{
-								double a = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
-								a *= a;
-								(*(texp++)) = (ubyte) (a * 255.0);
-								}
+							{
+							double a = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
+							a *= a;
+							(*(texBuf++)) = (ubyte) (a * 255.0);
+							}
 #	else
-								(*(texp++)) = (r * 3 + g * 5 + b * 2) / 10;//transparency based on color intensity
+							(*(texBuf++)) = (r * 3 + g * 5 + b * 2) / 10;//transparency based on color intensity
 #	endif
 #endif
-								}
-#if 1
-							else if (nTransp == 2)
-								(*(texp++)) = c ? 255 : 0;
-#endif
-							else
-								(*(texp++)) = 255;//not transparent
 							}
-						//				 (*(texP++)) =  (gameData.render.ogl.palette [c*3]>>1) + ((gameData.render.ogl.palette [c*3+1]>>1)<<5) + ((gameData.render.ogl.palette [c*3+2]>>1)<<10) + (1<<15);
-						break;
-					}
+#if 1
+						else if (nTransp == 2)
+							(*(texBuf++)) = c ? 255 : 0;
+#endif
+						else
+							(*(texBuf++)) = 255;//not transparent
+						}
+					//				 (*(texP++)) =  (gameData.render.ogl.palette [c*3]>>1) + ((gameData.render.ogl.palette [c*3+1]>>1)<<5) + ((gameData.render.ogl.palette [c*3+2]>>1)<<10) + (1<<15);
+					break;
+				}
 			}
 		}
 	}
+return nFormat;
 }
 
 //------------------------------------------------------------------------------
@@ -1073,6 +1073,11 @@ if (!gameOpts->ogl.bGetTexLevelParam)
 	return 1;
 
 switch (texP->format) {
+	case GL_RGB:
+		if (texP->internalformat == 3)
+			return 1;
+		break;
+
 	case GL_RGBA:
 		if (texP->internalformat == 4)
 			return 1;
@@ -1157,6 +1162,11 @@ while (!TexFormatSupported (texP)) {
 			texP->format = GL_RGBA;
 			break;
 
+		case GL_RGB:
+			texP->internalformat = 3;
+			texP->format = GL_RGB;
+			break;
+
 		default:
 #if TRACE	
 			con_printf (CONDBG,"...no texP format to fall back on\n");
@@ -1174,7 +1184,7 @@ void TexSetSizeSub (ogl_texture *texP,int dbits,int bits,int w, int h)
 	int u;
 
 if (texP->tw != w || texP->th != h)
-	u = (int) ((texP->w / (double) texP->tw * w) * (texP->h / (double) texP->th * h));
+	u = (int) ((texP->w / (double) texP->tw * w) *(texP->h / (double) texP->th * h));
 else
 	u = (int) (texP->w * texP->h);
 if (bits <= 0) //the beta nvidia GLX server. doesn't ever return any bit sizes, so just use some assumptions.
@@ -1188,7 +1198,7 @@ texP->bytesu = (int) (((double) u * bits) / 8.0);
 void TexSetSize (ogl_texture *texP)
 {
 	GLint	w, h;
-	int	bi = 16, a = 0;
+	int	nBits = 16, a = 0;
 
 if (gameOpts->ogl.bGetTexLevelParam) {
 		GLint t;
@@ -1214,26 +1224,33 @@ else {
 	}
 switch (texP->format) {
 	case GL_LUMINANCE:
-		bi = 8;
+		nBits = 8;
 		break;
+
 	case GL_LUMINANCE_ALPHA:
-		bi = 8;
+		nBits = 8;
 		break;
+
+	case GL_RGB:
+		nBits = 24;
+
 	case GL_RGBA:
 	case GL_COMPRESSED_RGBA:
 	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-		bi = 32;
+		nBits = 32;
 		break;
+
 	case GL_ALPHA:
-		bi = 8;
+		nBits = 8;
 		break;
+
 	default:
 		Error ("TexSetSize unknown texformat\n");
 		break;
 	}
-TexSetSizeSub (texP, bi , a, w, h);
+TexSetSizeSub (texP, nBits, a, w, h);
 }
 
 //------------------------------------------------------------------------------
@@ -1266,8 +1283,14 @@ if (nParam) {
 	}
 if (bmP->bm_compressed)
 	return 1;
-texP->format = GL_RGBA;
-texP->internalformat = 4;
+if (bmP->bm_bpp == 3) {
+	texP->format = GL_RGB;
+	texP->internalformat = 3;
+	}
+else {
+	texP->format = GL_RGB;
+	texP->internalformat = 4;
+	}
 return 0;
 }
 
@@ -1286,6 +1309,7 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *texP, int nTr
 	ogl_texture	tex;
 	int			bLocalTexture;
 
+CBRK (bmP && !bmP->bm_bpp);
 if (texP) {
 	bLocalTexture = 0;
 	//calculate smallest texture size that can accomodate us (must be multiples of 2)
@@ -1303,10 +1327,21 @@ else {
 	texP = &tex;
 	tex.tw = pow2ize (tex.w = bmP->bm_props.w);
 	tex.th = pow2ize (tex.h = bmP->bm_props.h);
-	tex.lw = 4 * tex.w;
-	tex.format = GL_RGBA;
-	tex.internalformat = 4;
+	if (bmP->bm_bpp == 3) {
+		texP->format = GL_RGB;
+		texP->internalformat = 3;
+		}
+	else {
+		texP->format = GL_RGB;
+		texP->internalformat = 4;
+		}
 	tex.handle = 0;
+	}
+if (bmP && (bmP->bm_bpp == 3)) {
+	CBRK (superTransp != 0);
+	texP->format = GL_RGB;
+	texP->internalformat = 3;
+	texP->lw = bmP->bm_bpp * texP->w;
 	}
 
 if (gr_badtexture > 0) 
@@ -1316,7 +1351,8 @@ if (gr_badtexture > 0)
 #	ifndef __macosx__
 if (!(bmP->bm_compressed || superTransp || BM_PARENT (bmP))) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
-		 (texP->format == GL_RGBA) && (texP->tw >= 64) && (texP->th >= texP->tw))
+		 ((texP->format == GL_RGBA) || (texP->format == GL_RGB)) && 
+		 (texP->tw >= 64) && (texP->th >= texP->tw))
 		texP->internalformat = GL_COMPRESSED_RGBA;
 	if (TexFormatVerify (texP))
 		return 1;
@@ -1337,9 +1373,15 @@ if (texP->handle >= 0)
 #else
 	if (data)
 #endif
-		if (nTransp >= 0)
-			OglFillTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
-								texP->format, nTransp, superTransp);
+		if (nTransp >= 0) {
+			texP->format = 
+				OglFillTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
+									texP->format, nTransp, superTransp);
+			if (texP->format == GL_RGB)
+				texP->internalformat = 3;
+			else if (texP->format == GL_RGBA)
+				texP->internalformat = 4;
+			}
 		else
 			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
 	// Generate OpenGL texture IDs.
@@ -1418,7 +1460,7 @@ if (!(t = bmP->glTexture)) {
 	OglInitTexture (t, bMask);
 	t->lw = bmP->bm_props.w;
 	if (bmP->bm_props.flags & BM_FLAG_TGA)
-		t->lw *= 4;
+		t->lw *= bmP->bm_bpp;
 	t->w = bmP->bm_props.w;
 	t->h = bmP->bm_props.h;
 	t->wantmip = bMipMap && !bMask;
@@ -1640,7 +1682,7 @@ if (fSize <= 0) {
 	}
 #endif
 
-if (!(bufP = (char *) d_malloc (sizeof (char) * (fSize + 1)))) {
+if (!(bufP = (char *) d_malloc (sizeof (char) *(fSize + 1)))) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}

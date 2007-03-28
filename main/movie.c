@@ -304,7 +304,7 @@ void ShowPauseMessage(char *msg)
 	movie_bg.y=y; 
 	movie_bg.w=w; 
 	movie_bg.h=h;
-	movie_bg.bmp = GrCreateBitmap( w+BOX_BORDER, h+BOX_BORDER );
+	movie_bg.bmp = GrCreateBitmap( w+BOX_BORDER, h+BOX_BORDER, 1);
 	GrBmUBitBlt(w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, &(grdCurCanv->cv_bitmap), movie_bg.bmp );
 #endif
 	GrSetColorRGB (0, 0, 0, 255);

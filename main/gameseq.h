@@ -29,12 +29,13 @@ extern int LastLevel, Last_secretLevel, Last_mission;   //set by mission code
 // CurrentLevel_num starts at 1 for the first level
 // -1,-2,-3 are secret levels
 // 0 means not a real level loaded
+#if 0
 extern int CurrentLevel_num, NextLevel_num;
 extern char CurrentLevel_name[LEVEL_NAME_LEN];
 extern tObjPosition Player_init[MAX_PLAYERS];
 extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
-
+#endif
 // This is the highest level the tPlayer has ever reached
 extern int Player_highestLevel;
 

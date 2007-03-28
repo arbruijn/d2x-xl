@@ -148,7 +148,7 @@ ysize = header.Ymax - header.Ymin + 1;
 
 	if ( bitmapType == BM_LINEAR )	{
 		if ( bmP->bm_texBuf == NULL )	{
-			GrInitBitmapAlloc (bmP, bitmapType, 0, 0, xsize, ysize, xsize, 0);
+			GrInitBitmapAlloc (bmP, bitmapType, 0, 0, xsize, ysize, xsize, 1);
 		}
 	}
 
