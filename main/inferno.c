@@ -2210,9 +2210,11 @@ GETMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6, 0);
 
 void AllocRenderLightData (void)
 {
-GETMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-GETMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, 0);
+if (!gameStates.app.bNostalgia) {
+	GETMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+	GETMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
+	GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, 0);
+	}
 GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
 GETMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);
 GETMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS, 0);
@@ -2233,7 +2235,8 @@ GETMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS, 0);
 
 void AllocShadowData (void)
 {
-GETMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS, 0);
+if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
+	GETMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2366,9 +2369,11 @@ FREEMEM (tLightRef, gameData.render.color.visibleLights, MAX_SEGMENTS * 6);
 
 void FreeRenderLightData (void)
 {
-FREEMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-FREEMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
-FREEMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS);
+if (!gameStates.app.bNostalgia) {
+	FREEMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+	FREEMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS);
+	FREEMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS);
+	}
 FREEMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6);
 FREEMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES);
 FREEMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS);
@@ -2389,7 +2394,8 @@ FREEMEM (short, gameData.physics.ignoreObjs, MAX_OBJECTS);
 
 void FreeShadowData (void)
 {
-FREEMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS);
+if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
+	FREEMEM (short, gameData.render.shadows.objLights, MAX_OBJECTS * MAX_SHADOW_LIGHTS);
 }
 
 // ----------------------------------------------------------------------------
