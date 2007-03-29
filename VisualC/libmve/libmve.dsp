@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gr /Zp1 /MD /W3 /GX /O2 /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "..\..\include" /I "..\..\..\SDL-1.2.8\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D WIN_VER=0x0500 /YX /FD /c
+# ADD CPP /nologo /Gr /Zp1 /MD /W3 /GX /O2 /I "..\..\include" /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "\projekte\SDL-1.2.11\include" /I "\projekte\SDL_mixer-1.2.7" /I "\projekte\libvorbis-1.1.2\include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D WIN_VER=0x0500 /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Zp1 /MDd /W3 /Gm /GX /ZI /Od /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "..\..\include" /I "..\..\..\SDL-1.2.8\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D WIN_VER=0x0500 /FD /GZ /c
+# ADD CPP /nologo /Zp1 /MDd /W3 /Gm /GX /ZI /Od /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "..\..\include" /I "\projekte\SDL-1.2.11\include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D WIN_VER=0x0500 /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"

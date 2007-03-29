@@ -2165,7 +2165,7 @@ return shields;
 //------------------------------------------------------------------------------
 //	Initialize default parameters for one robot, copying from gameData.bots.pInfo to *objP.
 //	What about setting size!?  Where does that come from?
-inline void CopyDefaultsToRobot (tObject *objP)
+void CopyDefaultsToRobot (tObject *objP)
 {
 objP->shields = RobotDefaultShields (objP);
 }

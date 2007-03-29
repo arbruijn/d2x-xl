@@ -491,7 +491,7 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckAndSwap (void *modelP)
+int G3CheckAndSwap (void *modelP)
 {
 	short	h = WORDVAL (modelP);
 

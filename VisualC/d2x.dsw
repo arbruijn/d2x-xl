@@ -35,6 +35,12 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name timidity
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDLmain
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -64,6 +70,27 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name SDL_mixer
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mikmod
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name native_midi
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name playmus
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name playwave
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDLmain
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name timidity
     End Project Dependency
 }}}
 

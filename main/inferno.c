@@ -3057,7 +3057,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int _CDECL_ main (int argc, char *argv[])
+int SDLCALL main (int argc, char *argv[])
 {
 gameStates.app.bInitialized = 0;
 if (Initialize (argc, argv))
