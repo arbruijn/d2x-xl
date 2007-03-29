@@ -417,7 +417,7 @@ GLhandleARB tmShaderProgs [3] = {0,0,0};
 GLhandleARB tmf [3] = {0,0,0}; 
 GLhandleARB tmv [3] = {0,0,0}; 
 
-#ifdef DBG_SHADERS
+#if DBG_SHADERS
 
 char *texMergeFS [3] = {"texmerge1.frag", "texmerge2.frag","texmerge3.frag"};
 char *texMergeVS [3] = {"texmerge12.vert", "texmerge12.vert", "texmerge3.vert"};
@@ -499,7 +499,7 @@ else {
 			DeleteShaderProg (tmShaderProgs + i);
 		b = CreateShaderProg (tmShaderProgs + i) &&
 			 CreateShaderFunc (tmShaderProgs + i, tmf + i, tmv + i, texMergeFS [i], texMergeVS [i], 1) &&
-			 LinkShaderProg (tmShaderProgs + i);
+-			 LinkShaderProg (tmShaderProgs + i);
 		if (i == 2)
 			gameStates.render.textures.bHaveMaskShader = b;
 		else

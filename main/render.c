@@ -2485,12 +2485,15 @@ GLhandleARB shadowProg = 0;
 GLhandleARB shadowFS = 0; 
 GLhandleARB shadowVS = 0; 
 
-#ifdef DBG_SHADERS
+#if DBG_SHADERS
 
 char *pszShadowFS = "shadows.frag";
 char *pszShadowVS = "shadows.vert";
 
 #else
+
+char *pszShadowFS = "shadows.frag";
+char *pszShadowVS = "shadows.vert";
 
 #endif
 

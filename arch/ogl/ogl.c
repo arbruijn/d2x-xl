@@ -1821,7 +1821,7 @@ if (*vsP) {
 	}
 vs = glCreateShaderObject (GL_VERTEX_SHADER_ARB); 
 fs = glCreateShaderObject (GL_FRAGMENT_SHADER_ARB); 
-#ifdef DBG_SHADERS	
+#if DBG_SHADERS	
 if (bFromFile) {
 	vsName = LoadShader (vsName); 
 	fsName = LoadShader (fsName); 
@@ -1831,7 +1831,7 @@ if (bFromFile) {
 #endif
 glShaderSource (vs, 1, (const GLcharARB **) &vsName, NULL); 
 glShaderSource (fs, 1, (const GLcharARB **) &fsName, NULL); 
-#ifdef DBG_SHADERS	
+#if DBG_SHADERS	
 if (bFromFile) {
 	d_free (vsName); 
 	d_free (fsName); 

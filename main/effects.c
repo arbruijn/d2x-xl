@@ -155,6 +155,7 @@ if (gameOpts->ogl.bGlTexMerge) {
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
 		hbmP = pBitmaps + j;
+		CBRK (hbmP->bm_bpp == 0);
 		if (BM_OVERRIDE (hbmP) != bmP)
 			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
 		BM_OVERRIDE (hbmP) = bmP;
@@ -180,7 +181,7 @@ else {
 			PiggyFreeBitmap (hbmP, j, gameStates.app.bD1Data);
 			BM_OVERRIDE (hbmP) = bmfP;
 			bmfP->bm_handle = j;
-			bmfP++;
+			bmfP += nFrameStep;
 			}	
 		}
 	else {
@@ -224,7 +225,8 @@ xEffectTime += gameData.time.xFrame;
 		if (ecP->flags & EF_ALTFMT) {
 			if (ecP->flags & EF_INITIALIZED) {
 				bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index);
-				nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+				if (gameOpts->ogl.bGlTexMerge)
+					nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
 				}
 			else {
 				bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 0, &nFrames);
@@ -240,8 +242,7 @@ xEffectTime += gameData.time.xFrame;
 			}
 		while (ft && (ecP->time_left < 0)) {
 			ecP->time_left += ft;
-			ecP->nCurFrame++;
-			if (ecP->nCurFrame >= nFrames) {
+			if (++(ecP->nCurFrame) >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
 #ifdef _DEBUG
 					Assert (ecP->nSegment != -1);

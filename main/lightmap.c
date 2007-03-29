@@ -79,7 +79,7 @@ int InitLightData (void);
 
 //------------------------------------------------------------------------------
 
-#ifdef DBG_SHADERS
+#if DBG_SHADERS
 
 char *lightMapFS [3] = {"lightmaps1.frag", "lightmaps2.frag", "lightmaps3.frag"};
 char *lightMapVS [3] = {"lightmaps1.vert", "lightmaps2.vert", "lightmaps3.vert"};
