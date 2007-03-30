@@ -2375,23 +2375,22 @@ return 1;
 //	Return true if weapon does proximity (as opposed to only contact) damage when it explodes.
 int MaybeDetonateWeapon (tObject *weapon1, tObject *weapon2, vmsVector *vHitPt)
 {
-if (gameData.weapons.info [weapon1->id].damage_radius) {
-	fix	dist = VmVecDistQuick (&weapon1->position.vPos, &weapon2->position.vPos);
-	if (dist < F1_0*5) {
-		MaybeKillWeapon (weapon1, weapon2);
-		if (weapon1->flags & OF_SHOULD_BE_DEAD) {
-			ExplodeBadassWeapon (weapon1, vHitPt);
-			DigiLinkSoundToPos (gameData.weapons.info [weapon1->id].robot_hitSound, weapon1->nSegment , 0, vHitPt, 0, F1_0);
-		}
-		return 1;
-		} 
-	else {
-		weapon1->lifeleft = min (dist/64, F1_0);
-		return 1;
+	fix	dist;
+
+if (!gameData.weapons.info [weapon1->id].damage_radius)
+	return 0;
+
+dist = VmVecDistQuick (&weapon1->position.vPos, &weapon2->position.vPos);
+if (dist >= F1_0*5)
+	weapon1->lifeleft = min (dist/64, F1_0);
+else {
+	MaybeKillWeapon (weapon1, weapon2);
+	if (weapon1->flags & OF_SHOULD_BE_DEAD) {
+		ExplodeBadassWeapon (weapon1, vHitPt);
+		DigiLinkSoundToPos (gameData.weapons.info [weapon1->id].robot_hitSound, weapon1->nSegment , 0, vHitPt, 0, F1_0);
 		}
 	}
-else
-	return 0;
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -2400,6 +2399,7 @@ int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHi
 { 
 	int	id1 = weapon1->id;
 	int	id2 = weapon2->id;
+	int	bKill1, bKill2;
 	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
 if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  
@@ -2413,14 +2413,16 @@ else if (id2 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon2))
 		return 1;
 	}
-if (WI_destructable (id1) || WI_destructable (id2)) {
+bKill1 = WI_destructable (id1) || (EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id1]);
+bKill2 = WI_destructable (id2) || (EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id2]);
+if (bKill1 || bKill2) {
 	//	Bug reported by Adam Q. Pletcher on September 9, 1994, smart bomb homing missiles were toasting each other.
 	if ((id1 == id2) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))
 		return 1;
-	if (WI_destructable (id1))
+	if (bKill1)
 		if (MaybeDetonateWeapon (weapon1, weapon2, vHitPt))
 			MaybeDetonateWeapon (weapon2, weapon1, vHitPt);
-	if (WI_destructable (id2))
+	if (bKill2)
 		if (MaybeDetonateWeapon (weapon2, weapon1, vHitPt))
 			MaybeDetonateWeapon (weapon1, weapon2, vHitPt);
 	}

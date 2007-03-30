@@ -1592,7 +1592,7 @@ char *defaultGameTexts [][2] = {
 	{"~Langsam rotieren", "spin ~Slowly"},
 	{"~Mittelschnell rotieren", "spin ~Medium fast"},
 	{"~Schnell rotieren", "spin ~Fast"},
-	{"stehende roboter an~Imieren", "animate ~Idling robots"},
+	{"stehende roboter an~Imieren", "animate i~Dling robots"},
 	{"Bambi macht Godzilla platt!", "Bambi stomps Godzilla!"},
 	{"exakt", "precise"},
 	{"Zielmarkierungen", "Target Indicators"},
@@ -1629,6 +1629,7 @@ char *defaultGameTexts [][2] = {
 	{"~Koop-Todesmalus: %d%c", "coop death ~Penalty: %d%c"},
 	{"Zuwenig Speicher vorhanden.", "Not enough memory available."},
 	{"Der Level ist zu gross fuer D2X-XL.", "The level is too large for D2X-XL."},
+	{"Raketen ab~Schiessen", "~Shoot down Missiles"},
 #if 0
 	{"", ""},
 #endif
@@ -2124,6 +2125,7 @@ char *defaultHelpTexts [][2] = {
 	 "If checked IP address and port number of the players\nwill be used to determine whether a player is already participating\nin the match. This makes sense when several players share an\nIP address.\n\nIf the option is unchecked, only the IP address\nis checked. This is recommendable if a participant is using\nport number 0, because that can cause his actual port number\nto constantly change."},
 	{"Hier kann eingestellt werden, um wieviel Prozent der Punkte-\nstand eines Spielers in kooperativen Spielen verringert wird,\nwenn er abgeschossen wird.\n\nDamit soll den Spielern ein Anreiz gegeben werden, nicht\nblind drauflos zu stuermen, sondern wirklich zusammen\nzu spielen und einander zu unterstuetzen.", 
 	 "Here you can adjust by how many percent a player's score is\nreduced in cooperative games if the player gets killed.\n\nThat way you can give an incentive to actually play together\nand support each other instead of storming blindly\ninto enemy fire for the sake of gaining a higher score."},
+	{"Wenn angekreuzt koennen anfliegende Raketen abgeschossen werden.", "If checked incoming missiles can be shot down."},
 #if 0
 	{"", ""},
 #endif

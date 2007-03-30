@@ -3029,7 +3029,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1, optAwareness = -1;
+			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
 			szMslTurnSpeed [50];
@@ -3094,11 +3094,13 @@ do {
 		optMultiBosses = opt++;
 		ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
 		optFluidPhysics = opt++;
-		ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_A, HTX_GPLAY_HITANGLES);
+		ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_H, HTX_GPLAY_HITANGLES);
 		optHitAngles = opt++;
 		ADD_CHECK (opt, TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 		optSmartWeaponSwitch = opt++;
-		ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_I, HTX_GPLAY_IDLEANIMS);
+		ADD_CHECK (opt, TXT_SHOOT_MISSILES, extraGameInfo [0].bShootMissiles, KEY_S, HTX_GPLAY_SHOOTMISSILES);
+		optShootMissiles = opt++;
+		ADD_CHECK (opt, TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_D, HTX_GPLAY_IDLEANIMS);
 		optIdleAnims = opt++;
 		ADD_CHECK (opt, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = opt++;
@@ -3136,6 +3138,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bImmortalPowerups = m [optImmortal].value;
 	extraGameInfo [0].bMultiBosses = m [optMultiBosses].value;
 	extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].value;
+	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
@@ -3152,6 +3155,7 @@ else {
 	extraGameInfo [0].bImmortalPowerups = 0;
 	extraGameInfo [0].bMultiBosses = 1;
 	extraGameInfo [0].bSmartWeaponSwitch = 0;
+	extraGameInfo [0].bShootMissiles = 0;
 	extraGameInfo [0].bFluidPhysics = 1;
 	extraGameInfo [0].nWeaponDropMode = 1;
 	gameOpts->gameplay.bInventory = 0;

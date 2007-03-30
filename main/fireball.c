@@ -1429,7 +1429,7 @@ rval = DropPowerup (
 	objP->containsCount, 
 	&objP->mType.physInfo.velocity, 
 	&objP->position.vPos, objP->nSegment);
-if (rval != -1) {
+if (rval >= 0) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
 	if (objP->nType == OBJ_ROBOT && objP->containsType==OBJ_POWERUP) {

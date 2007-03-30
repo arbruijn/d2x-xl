@@ -725,6 +725,9 @@ if (flags & FQ_CHECK_OBJS) {
 	//LogErr ("   checking objects...");
 	for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
 		otherObjP = gameData.objs.objects + nObject;
+		if (thisObjP->nType == OBJ_WEAPON && otherObjP->nType == OBJ_WEAPON && bIsMissile [otherObjP->id] && 
+			 !bIsMissile [thisObjP->id])
+			nObject = nObject;
 		nOtherType = otherObjP->nType;
 		if (otherObjP->flags & OF_SHOULD_BE_DEAD)
 			continue;
