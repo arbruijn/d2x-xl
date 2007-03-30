@@ -2050,7 +2050,7 @@ if (version < 29) {
 else {
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if (version > 31)
-			gameData.boss [0].nObject = CFReadShort (fp);
+			gameData.boss [i].nObject = CFReadShort (fp);
 		gameData.boss [i].nCloakStartTime = CFReadFix (fp);
 		gameData.boss [i].nCloakEndTime = CFReadFix (fp);
 		gameData.boss [i].nLastTeleportTime = CFReadFix (fp);
