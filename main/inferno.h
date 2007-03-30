@@ -780,8 +780,8 @@ typedef struct tLightRef {
 } tLightRef;
 
 typedef struct tColorData {
-	tFaceColor	*lights [6];
-	tFaceColor	*sides [6];
+	tFaceColor	*lights;
+	tFaceColor	*sides;
 	tFaceColor	*segments;
 	tFaceColor	*vertices;
 	float			*vertBright;

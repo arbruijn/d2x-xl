@@ -2186,19 +2186,15 @@ GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
 
 void AllocCameraData (void)
 {
-GETMEM (char, gameData.cameras.nSides, MAX_SEGMENTS * 6, 0);
+GETMEM (char, gameData.cameras.nSides, 2 * MAX_SEGMENTS * 6, 0);
 }
 
 // ----------------------------------------------------------------------------
 
 void AllocRenderColorData (void)
 {
-	int	i;
-
-for (i = 0; i < 6; i++) {
-	GETMEM (tFaceColor, gameData.render.color.lights [i], MAX_SEGMENTS, 0);
-	GETMEM (tFaceColor, gameData.render.color.sides [i], MAX_SEGMENTS, 0);
-	}
+GETMEM (tFaceColor, gameData.render.color.lights, MAX_SEGMENTS * 6, 0);
+GETMEM (tFaceColor, gameData.render.color.sides, MAX_SEGMENTS * 6, 0);
 GETMEM (tFaceColor, gameData.render.color.segments, MAX_SEGMENTS, 0);
 GETMEM (tFaceColor, gameData.render.color.vertices, MAX_VERTICES, 0);
 GETMEM (float, gameData.render.color.vertBright, MAX_VERTICES, 0);
@@ -2352,12 +2348,8 @@ FREEMEM (char, gameData.cameras.nSides, MAX_SEGMENTS * 6);
 
 void FreeRenderColorData (void)
 {
-	int	i;
-
-for (i = 0; i < 6; i++) {
-	FREEMEM (tFaceColor, gameData.render.color.lights [i], MAX_SEGMENTS);
-	FREEMEM (tFaceColor, gameData.render.color.sides [i], MAX_SEGMENTS);
-	}
+FREEMEM (tFaceColor, gameData.render.color.lights, MAX_SEGMENTS);
+FREEMEM (tFaceColor, gameData.render.color.sides, MAX_SEGMENTS);
 FREEMEM (tFaceColor, gameData.render.color.segments, MAX_SEGMENTS);
 FREEMEM (tFaceColor, gameData.render.color.vertices, MAX_VERTICES);
 FREEMEM (float, gameData.render.color.vertBright, MAX_VERTICES);

@@ -417,7 +417,7 @@ if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) {
 else
 	memset (vertColors, 0, sizeof (vertColors));
 #else
-	tFaceColor *colorP = gameData.render.color.sides [nSide] + nSegment;
+	tFaceColor *colorP = gameData.render.color.sides + nSegment * MAX_SEGMENTS + nSide;
 	if (colorP->index)
 		lightColor = *colorP;
 	else
@@ -797,7 +797,7 @@ if (!bRender)
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
 		return;
 		}
-	nCamNum = gameData.cameras.nSides [props.segNum * 6 + props.sideNum];
+	nCamNum = gameData.cameras.nSides  ? gameData.cameras.nSides [props.segNum * 6 + props.sideNum] : -1;
 	bIsTeleCam = 0;
 	bIsMonitor = extraGameInfo [0].bUseCameras && 
 					 (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 

@@ -178,6 +178,7 @@ else
 	pc->texBuf.bm_props.h = i;
 	}
 pc->texBuf.bm_props.rowsize = grdCurCanv->cv_bitmap.bm_props.w;
+pc->texBuf.bm_bpp = 4;
 #if RENDER2TEXTURE
 if (!OglCreateCamBuf (pc)) 
 #endif
@@ -257,8 +258,7 @@ int CreateCameras (void)
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
-for (i = 0; i < 6; i++)
-	memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
+memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 	t = wallP->nTrigger;
 	if (t >= gameData.trigs.nTriggers)
@@ -325,7 +325,8 @@ if (bRender2TextureOk)
 #endif
 for (i = gameData.cameras.nCameras; i; i--, pc++)
 	DestroyCamera (pc);
-memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides ));
+if (gameData.cameras.nSides)
+	memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
 gameData.cameras.nCameras = 0;
 }
 

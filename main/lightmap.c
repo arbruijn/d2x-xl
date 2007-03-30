@@ -320,7 +320,7 @@ for (segNum = 0, segP = gameData.segs.segments;
 			continue; 	//skip open sides
 #endif
 		if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex) ||
-			 (gameStates.app.bD2XLevel && gameData.render.color.lights [sideNum][segNum].index)) {
+			 (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].index)) {
 			nLights++;
 #ifdef _DEBUG
 			sideFlags [segNum * 6 + sideNum] = 1; 
@@ -751,11 +751,11 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++) {
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
 			}
-		if (gameStates.app.bD2XLevel && gameData.render.color.lights [sideNum][segNum].index) { 
+		if (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].index) { 
 			bIsLight = 1;
-			tempLight.color [0] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.red; 
-			tempLight.color [1] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.green; 
-			tempLight.color [2] = (GLfloat) gameData.render.color.lights [sideNum][segNum].color.blue; 
+			tempLight.color [0] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.red; 
+			tempLight.color [1] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.green; 
+			tempLight.color [2] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.blue; 
 			tempLight.range = baseRange; 
 			}
 		//Process found light.

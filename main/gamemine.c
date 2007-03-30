@@ -1302,7 +1302,7 @@ gameData.render.shadows.nLights = 0;
 #if LIGHTMAPS
 if (gameStates.app.bD2XLevel) { 
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
-	pc = &gameData.render.color.lights [0][0] + i;
+	pc = gameData.render.color.lights + i;
 	for (; i < j; i++, pc++) {
 		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
 #if 0//SHADOWS
