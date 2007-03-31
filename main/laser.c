@@ -252,7 +252,7 @@ if (id1 == ROBOT_SMARTMINE_ID || id2 == ROBOT_SMARTMINE_ID ||
 	 id1 == SMARTMINE_ID || id2 == SMARTMINE_ID ||
 	 id1 == SMALLMINE_ID || id2 == SMALLMINE_ID)
 	return 0;
-if (EGI_FLAG (bShootMissiles, 0, 0, 0) && (bIsMissile [id1] || bIsMissile [id2]))
+if (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && (bIsMissile [id1] || bIsMissile [id2]))
 	return 0;
 return 1;
 }

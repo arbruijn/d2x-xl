@@ -106,7 +106,7 @@ static short d2OpaqueDoors [] = {
 	901,
 	-1};
 
-ubyte bogus_data [1024*1204];
+ubyte bogus_data [4096*4096];
 grsBitmap bogus_bitmap;
 ubyte bogus_bitmap_initialized=0;
 tDigiSound bogusSound;

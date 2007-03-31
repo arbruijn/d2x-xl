@@ -2413,8 +2413,8 @@ else if (id2 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon2))
 		return 1;
 	}
-bKill1 = WI_destructable (id1) || (EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id1]);
-bKill2 = WI_destructable (id2) || (EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id2]);
+bKill1 = WI_destructable (id1) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id1]);
+bKill2 = WI_destructable (id2) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id2]);
 if (bKill1 || bKill2) {
 	//	Bug reported by Adam Q. Pletcher on September 9, 1994, smart bomb homing missiles were toasting each other.
 	if ((id1 == id2) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))
