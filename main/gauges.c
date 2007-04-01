@@ -4423,13 +4423,9 @@ void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, 
 	gameStates.render.bRearView = rearViewFlag;
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
-
-		w = VR_render_buffer[0].cv_bitmap.bm_props.w/cockpitWindowScale [gameOpts->render.cockpit.nWindowSize];			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
-
+		w = (int) (VR_render_buffer[0].cv_bitmap.bm_props.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
 		h = i2f (w) / grdCurScreen->sc_aspect;
-
 		dx = (win==0)?- (w+ (w/10)): (w/10);
-
 		switch (gameOpts->render.cockpit.nWindowPos) {
 			case 0:
 				window_x = win ? 
