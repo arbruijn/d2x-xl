@@ -348,17 +348,17 @@ if ((gameData.escort.xLastMsgTime + F1_0 < gameData.time.xGame) ||
 		vsprintf (szMsg + l + 10, format, args);
 		va_end (args);
 
-		szMsg [0] = 1;
-		szMsg [1] = 127 + 128;
-		szMsg [2] = 127 + 128;
-		szMsg [3] = 0 + 128;
+		szMsg [0] = (char) 1;
+		szMsg [1] = (char) (127 + 128);
+		szMsg [2] = (char) (127 + 128);
+		szMsg [3] = (char) (0 + 128);
 		memcpy (szMsg + 4, gameData.escort.szName, l);
 		szMsg [l+4] = ':';
 		szMsg [l+5] = ' ';
-		szMsg [l+6] = 1;
-		szMsg [l+7] = 0 + 128;
-		szMsg [l+8] = 127 + 128;
-		szMsg [l+9] = 0 + 128;
+		szMsg [l+6] = (char) 1;
+		szMsg [l+7] = (char) (0 + 128);
+		szMsg [l+8] = (char) (127 + 128);
+		szMsg [l+9] = (char) (0 + 128);
 
 		HUDInitMessage (szMsg);
 		gameData.escort.xLastMsgTime = gameData.time.xGame;
@@ -985,7 +985,7 @@ if (gameData.escort.xSorryTime + F1_0 > gameData.time.xGame) {
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 if (!gameData.escort.bMayTalk)
 	if (xDistToPlayer > F1_0*100)
-		aip->SKIP_AI_COUNT = (F1_0/4)/gameData.time.xFrame;
+		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / gameData.time.xFrame);
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the tObject has been told to get lost and has come to the end of its path.
 //	If the tPlayer is now visible, then create a path.

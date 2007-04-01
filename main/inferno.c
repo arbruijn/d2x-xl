@@ -2160,9 +2160,9 @@ void AllocObjectData (void)
 {
 GETMEM (tObject, gameData.objs.objects, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.freeList, MAX_OBJECTS, 0);
-GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, 0xff);
+GETMEM (short, gameData.objs.parentObjs, MAX_OBJECTS, (char) 0xff);
 GETMEM (tObjectRef, gameData.objs.childObjs, MAX_OBJECTS, 0);
-GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, 0xff);
+GETMEM (short, gameData.objs.firstChild, MAX_OBJECTS, (char) 0xff);
 GETMEM (tObject, gameData.objs.init, MAX_OBJECTS, 0);
 GETMEM (tObjDropInfo, gameData.objs.dropInfo, MAX_OBJECTS, 0);
 GETMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS, 0);

@@ -745,7 +745,7 @@ void AIFrameAnimation (tObject *objP)
 
 		if (delta_to_goal) {
 			scaled_delta_angle = FixMul (deltaangp->p, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->p += scaled_delta_angle;
+			curangp->p += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
 				curangp->p = goalangp->p;
 		}
@@ -758,7 +758,7 @@ void AIFrameAnimation (tObject *objP)
 
 		if (delta_to_goal) {
 			scaled_delta_angle = FixMul (deltaangp->b, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->b += scaled_delta_angle;
+			curangp->b += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
 				curangp->b = goalangp->b;
 		}
@@ -771,7 +771,7 @@ void AIFrameAnimation (tObject *objP)
 
 		if (delta_to_goal) {
 			scaled_delta_angle = FixMul (deltaangp->h, gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curangp->h += scaled_delta_angle;
+			curangp->h += (fixang) scaled_delta_angle;
 			if (abs (delta_to_goal) < abs (scaled_delta_angle))
 				curangp->h = goalangp->h;
 		}

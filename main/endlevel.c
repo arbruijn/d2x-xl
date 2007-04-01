@@ -409,28 +409,28 @@ if (abs (delta_angs.p) < frame_turn) {
 	}
 else
 	if (delta_angs.p > 0)
-		cur_angles->p += frame_turn;
+		cur_angles->p += (fixang) frame_turn;
 	else
-		cur_angles->p -= frame_turn;
+		cur_angles->p -= (fixang) frame_turn;
 
 if (abs (delta_angs.b) < frame_turn) {
-	cur_angles->b = desired_angles->b;
+	cur_angles->b = (fixang) desired_angles->b;
 	mask |= 2;
 	}
 else
 	if (delta_angs.b > 0)
-		cur_angles->b += frame_turn;
+		cur_angles->b += (fixang) frame_turn;
 	else
-		cur_angles->b -= frame_turn;
+		cur_angles->b -= (fixang) frame_turn;
 if (abs (delta_angs.h) < frame_turn) {
-	cur_angles->h = desired_angles->h;
+	cur_angles->h = (fixang) desired_angles->h;
 	mask |= 4;
 	}
 else
 	if (delta_angs.h > 0)
-		cur_angles->h += frame_turn;
+		cur_angles->h += (fixang) frame_turn;
 	else
-		cur_angles->h -= frame_turn;
+		cur_angles->h -= (fixang) frame_turn;
 return mask;
 }
 
@@ -644,7 +644,7 @@ slew_obj = gameData.objs.endLevelCamera;
 		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.fVec, FixMul (gameData.time.xFrame, -2*gameData.endLevel.xCurFlightSpeed));
 		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.uVec, FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
 		VmExtractAnglesMatrix (&cam_angles, &gameData.objs.endLevelCamera->position.mOrient);
-		cam_angles.b += FixMul (bank_rate, gameData.time.xFrame);
+		cam_angles.b += (fixang) FixMul (bank_rate, gameData.time.xFrame);
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &cam_angles);
 #endif
 		timer -= gameData.time.xFrame;
@@ -960,7 +960,7 @@ void StartEndLevelFlyThrough (int n, tObject *objP, fix speed)
 flydata = flyObjects + n;
 flydata->objP = objP;
 flydata->firstTime = 1;
-flydata->speed = speed?speed:DEFAULT_SPEED;
+flydata->speed = speed ? speed : DEFAULT_SPEED;
 flydata->offset_frac = 0;
 }
 
@@ -968,9 +968,9 @@ flydata->offset_frac = 0;
 
 static vmsAngVec *angvec_add2_scale (vmsAngVec *dest, vmsVector *src, fix s)
 {
-dest->p += FixMul (src->p.x, s);
-dest->b += FixMul (src->p.z, s);
-dest->h += FixMul (src->p.y, s);
+dest->p += (fixang) FixMul (src->p.x, s);
+dest->b += (fixang) FixMul (src->p.z, s);
+dest->h += (fixang) FixMul (src->p.y, s);
 return dest;
 }
 

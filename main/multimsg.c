@@ -643,19 +643,19 @@ if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain
 		  (IsPlayerId (buf + bufP, l) && !IsMyPlayerId (buf + bufP, l))))
 		return;
 	}
-msgBuf [0] = 1;
-msgBuf [1] = 127 + 128;
-msgBuf [2] = 95 + 128;
-msgBuf [3] = 0 + 128;
+msgBuf [0] = (char) 1;
+msgBuf [1] = (char) (127 + 128);
+msgBuf [2] = (char) (95 + 128);
+msgBuf [3] = (char) (0 + 128);
 strcpy (msgBuf + 4, gameData.multiplayer.players [buf [1]].callsign);
 t = (int) strlen (msgBuf);
 msgBuf [t] = ':';
 msgBuf [t+1] = ' ';
-msgBuf [t+2] = 1;
-msgBuf [t+3] = 95 + 128;
-msgBuf [t+4] = 63 + 128;
-msgBuf [t+5] = 0 + 128;
-msgBuf [t+6] = 0;
+msgBuf [t+2] = (char) 1;
+msgBuf [t+3] = (char) (95 + 128);
+msgBuf [t+4] = (char) (63 + 128);
+msgBuf [t+5] = (char) (0 + 128);
+msgBuf [t+6] = (char) 0;
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 HUDPlayerMessage ("%s %s", msgBuf, buf+2);
 }

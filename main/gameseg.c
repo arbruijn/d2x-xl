@@ -1404,7 +1404,7 @@ sbyte convert_to_byte (fix f)
 	else if (f <= -0x00010000)
 		return -MATRIX_MAX;
 	else
-		return f >> MATRIX_PRECISION;
+		return (sbyte) (f >> MATRIX_PRECISION);
 }
 
 #define VEL_PRECISION 12
@@ -1432,15 +1432,15 @@ void CreateShortPos (tShortPos *spp, tObject *objP, int swap_bytes)
 	*segP++ = convert_to_byte (orient.fVec.p.z);
 
 	pv = gameData.segs.vertices + gameData.segs.segments [objP->nSegment].verts [0];
-	spp->xo = (objP->position.vPos.p.x - pv->p.x) >> RELPOS_PRECISION;
-	spp->yo = (objP->position.vPos.p.y - pv->p.y) >> RELPOS_PRECISION;
-	spp->zo = (objP->position.vPos.p.z - pv->p.z) >> RELPOS_PRECISION;
+	spp->xo = (short) ((objP->position.vPos.p.x - pv->p.x) >> RELPOS_PRECISION);
+	spp->yo = (short) ((objP->position.vPos.p.y - pv->p.y) >> RELPOS_PRECISION);
+	spp->zo = (short) ((objP->position.vPos.p.z - pv->p.z) >> RELPOS_PRECISION);
 
 	spp->nSegment = objP->nSegment;
 
- 	spp->velx = (objP->mType.physInfo.velocity.p.x) >> VEL_PRECISION;
-	spp->vely = (objP->mType.physInfo.velocity.p.y) >> VEL_PRECISION;
-	spp->velz = (objP->mType.physInfo.velocity.p.z) >> VEL_PRECISION;
+ 	spp->velx = (short) ((objP->mType.physInfo.velocity.p.x) >> VEL_PRECISION);
+	spp->vely = (short) ((objP->mType.physInfo.velocity.p.y) >> VEL_PRECISION);
+	spp->velz = (short) ((objP->mType.physInfo.velocity.p.z) >> VEL_PRECISION);
 
 // swap the short values for the big-endian machines.
 

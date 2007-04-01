@@ -294,10 +294,10 @@ void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop
 	if (gameStates.sound.digi.nLoopingChannel>-1)
 		DigiStopSound (gameStates.sound.digi.nLoopingChannel);
 
-	gameStates.sound.digi.nLoopingSound = nSound;
-	gameStates.sound.digi.nLoopingVolume = maxVolume;
-	gameStates.sound.digi.nLoopingStart = loop_start;
-	gameStates.sound.digi.nLoopingEnd = loop_end;
+	gameStates.sound.digi.nLoopingSound = (short) nSound;
+	gameStates.sound.digi.nLoopingVolume = (short) maxVolume;
+	gameStates.sound.digi.nLoopingStart = (short) loop_start;
+	gameStates.sound.digi.nLoopingEnd = (short) loop_end;
 	DigiPlaySampleLoopingSub ();
 }
 
@@ -307,7 +307,7 @@ void DigiChangeLoopingVolume (fix volume)
 {
 	if (gameStates.sound.digi.nLoopingChannel > -1)
 		DigiSetChannelVolume (gameStates.sound.digi.nLoopingChannel, volume);
-	gameStates.sound.digi.nLoopingVolume = volume;
+	gameStates.sound.digi.nLoopingVolume = (short) volume;
 }
 
 //------------------------------------------------------------------------------

@@ -121,7 +121,7 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 	if (abs (delta_ang) > DAMP_ANG) {
 		vmsMatrix mRotate, new_pm;
 
-		roll_ang = FixMul (gameData.physics.xTime, ROLL_RATE);
+		roll_ang = (fixang) FixMul (gameData.physics.xTime, ROLL_RATE);
 		if (abs (delta_ang) < roll_ang) 
 			roll_ang = delta_ang;
 		else if (delta_ang < 0) 
@@ -143,10 +143,10 @@ void SetObjectTurnRoll (tObject *objP)
 {
 //if (!gameStates.app.bD1Mission) 
 {
-	fixang desired_bank = -FixMul (objP->mType.physInfo.rotVel.p.y, TURNROLL_SCALE);
+	fixang desired_bank = (fixang) -FixMul (objP->mType.physInfo.rotVel.p.y, TURNROLL_SCALE);
 	if (objP->mType.physInfo.turnRoll != desired_bank) {
 		fixang delta_ang, max_roll;
-		max_roll = FixMul (ROLL_RATE, gameData.physics.xTime);
+		max_roll = (fixang) FixMul (ROLL_RATE, gameData.physics.xTime);
 		delta_ang = desired_bank - objP->mType.physInfo.turnRoll;
 		if (labs (delta_ang) < max_roll)
 			max_roll = delta_ang;
@@ -239,9 +239,9 @@ if (objP->mType.physInfo.turnRoll) {
 	VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 	objP->position.mOrient = new_pm;
 	}
-tangles.p = FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
-tangles.h = FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
-tangles.b = FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
+tangles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
+tangles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
+tangles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
 VmAngles2Matrix (&mRotate, &tangles);
 VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
 objP->position.mOrient = mNewOrient;

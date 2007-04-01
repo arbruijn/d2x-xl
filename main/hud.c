@@ -297,14 +297,14 @@ if (pMsgs->nColor != -1) {
 	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
 	}
 else if (nType) {
-	con_message [1] = 127 + 128;
-	con_message [2] = 95 + 128;
-	con_message [3] = 0 + 128;
+	con_message [1] = (char) (127 + 128);
+	con_message [2] = (char) (95 + 128);
+	con_message [3] = (char) (0 + 128);
 	}
 else {
-	con_message [1] = 0 + 128;
-	con_message [3] = 0 + 128;
-	con_message [2] = 63 + 128;
+	con_message [1] = (char) (0 + 128);
+	con_message [3] = (char) (0 + 128);
+	con_message [2] = (char) (63 + 128);
 	}
 con_message [4] = '\0';
 strcat (con_message, pszMsg);

@@ -304,13 +304,13 @@ if (gameStates.gameplay.seismic.nMagnitude) {
 	if (added_flash < F1_0)
 		added_flash *= 16;
 
-	flash_ang += FixMul(gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, added_flash+F1_0));
-	FixFastSinCos(flash_ang, &gameStates.render.nFlashScale, NULL);
+	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, added_flash+F1_0));
+	FixFastSinCos (flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + F1_0*3)/4;	//	gets in range 0.5 to 1.0
 	}
 else {
-	flash_ang += FixMul(gameStates.render.nFlashRate, gameData.time.xFrame);
-	FixFastSinCos(flash_ang, &gameStates.render.nFlashScale, NULL);
+	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, gameData.time.xFrame);
+	FixFastSinCos (flash_ang, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + f1_0)/2;
 	if (gameStates.app.nDifficultyLevel == 0)
 		gameStates.render.nFlashScale = (gameStates.render.nFlashScale+F1_0*3)/4;
@@ -2458,7 +2458,7 @@ if (!bHaveShadowBuf) {
 	memset (&shadowBuf, 0, sizeof (shadowBuf));
 	shadowBuf.bm_props.w = STB_SIZE_X;
 	shadowBuf.bm_props.h = STB_SIZE_Y;
-	shadowBuf.bm_props.flags = BM_FLAG_TGA;
+	shadowBuf.bm_props.flags = (char) BM_FLAG_TGA;
 	shadowBuf.bm_texBuf = shadowTexBuf;
 	OglLoadBmTextureM (&shadowBuf, 0, -1, 0, NULL);
 	bHaveShadowBuf = 1;
@@ -3203,8 +3203,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							bNotProjected = 1; 
 							break;
 							}
-						_x = f2i (pnt->p3_sx);
-						_y = f2i (pnt->p3_sy);
+						_x = (short) f2i (pnt->p3_sx);
+						_y = (short) f2i (pnt->p3_sy);
 						codes_and_3d &= pnt->p3_codes;
 						codes_and_2d &= code_window_point (_x, _y, checkWinP);
 #ifdef _DEBUG

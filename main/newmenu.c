@@ -84,17 +84,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
-char NORMAL_RADIO_BOX [2] = {127, 0};
-char CHECKED_RADIO_BOX [2] = {128, 0};
-char NORMAL_CHECK_BOX [2] = {129, 0};
-char CHECKED_CHECK_BOX [2] = {130, 0};
+char NORMAL_RADIO_BOX [2] = {(char) 127, 0};
+char CHECKED_RADIO_BOX [2] = {(char) 128, 0};
+char NORMAL_CHECK_BOX [2] = {(char) 129, 0};
+char CHECKED_CHECK_BOX [2] = {(char) 130, 0};
 char CURSOR_STRING [2] = {'_', 0};
-char SLIDER_LEFT [2] = {131, 0};
-char SLIDER_RIGHT [2] = {132, 0};
-char SLIDER_MIDDLE [2] = {133, 0};
-char SLIDER_MARKER [2] = {134, 0};
-char UP_ARROW_MARKER [2] = {135, 0};
-char DOWN_ARROW_MARKER [2] = {136, 0};
+char SLIDER_LEFT [2] = {(char) 131, 0};
+char SLIDER_RIGHT [2] = {(char) 132, 0};
+char SLIDER_MIDDLE [2] = {(char) 133, 0};
+char SLIDER_MARKER [2] = {(char) 134, 0};
+char UP_ARROW_MARKER [2] = {(char) 135, 0};
+char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 
 ubyte			menuPalette [256*3];
 static		char *pszCurBg = NULL;

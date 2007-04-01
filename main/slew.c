@@ -136,12 +136,16 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 		if (abs(joy_x) < JOY_NULL) joy_x = 0;
 		if (abs(joy_y) < JOY_NULL) joy_y = 0;
 	
-		if (btns)
-			if (!rotang.p) rotang.p = FixMul(-joy_y * 512,gameData.time.xFrame); else;
-		else
-			if (joyy_moved) objP->mType.physInfo.velocity.p.z = -joy_y * 8192;
-	
-		if (!rotang.h) rotang.h = FixMul(joy_x * 512,gameData.time.xFrame);
+		if (btns) {
+			if (!rotang.p) 
+				rotang.p = (fixang) FixMul (-joy_y * 512,gameData.time.xFrame);
+			}
+		else {
+			if (joyy_moved) 
+				objP->mType.physInfo.velocity.p.z = -joy_y * 8192;
+			}
+		if (!rotang.h) 
+			rotang.h = (fixang) FixMul(joy_x * 512,gameData.time.xFrame);
 	
 		if (joyx_moved) old_joy_x = joy_x;
 		if (joyy_moved) old_joy_y = joy_y;

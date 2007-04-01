@@ -440,7 +440,7 @@ void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
 
 	for (i=0; i<MUZZLE_QUEUE_MAX; i++) {
 		if (gameData.muzzle.info [i].createTime) {
-			time_since_flash = currentTime - gameData.muzzle.info [i].createTime;
+			time_since_flash = (short) (currentTime - gameData.muzzle.info [i].createTime);
 			if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
 				ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, 
 								gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos, 

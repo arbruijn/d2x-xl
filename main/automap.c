@@ -935,9 +935,9 @@ if (Controls [0].firePrimaryDownCount)	{
 	}
 if (Controls [0].forwardThrustTime)
 	VmVecScaleInc (&amData.viewTarget, &amData.viewMatrix.fVec, Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
-pvTAngles->p += FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
-pvTAngles->h += FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
-pvTAngles->b += FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+pvTAngles->p += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
+pvTAngles->h += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
+pvTAngles->b += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 VmAngles2Matrix (&m, pvTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime)	{

@@ -467,7 +467,7 @@ if (menus [optPlayTime].value != LastPTA) {
 		return;
 		}
 
-	mpParams.nMaxTime = netGame.xPlayTimeAllowed = menus [optPlayTime].value;
+	netGame.xPlayTimeAllowed = mpParams.nMaxTime = menus [optPlayTime].value;
 	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 	LastPTA = netGame.xPlayTimeAllowed;
 	menus [optPlayTime].rebuild = 1;

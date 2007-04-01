@@ -82,15 +82,15 @@ va_start (args, format);
 vsprintf (szMsg + 15, format, args);
 va_end(args);
 
-szMsg [0] = 1;
-szMsg [1] = 127 + 128;
-szMsg [2] = 0 + 128;
-szMsg [3] = 0 + 128;
+szMsg [0] = (char) 1;
+szMsg [1] = (char) (127 + 128);
+szMsg [2] = (char) (0 + 128);
+szMsg [3] = (char) (0 + 128);
 memcpy (szMsg + 4, "THIEF: ", 6);
-szMsg [11] = 1;
-szMsg [12] = 0 + 128;
-szMsg [13] = 63 + 128;
-szMsg [14] = 0 + 128;
+szMsg [11] = (char) 1;
+szMsg [12] = (char) (0 + 128);
+szMsg [13] = (char) (63 + 128);
+szMsg [14] = (char) (0 + 128);
 HUDInitMessage(szMsg);
 }
 

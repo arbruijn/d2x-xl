@@ -534,9 +534,9 @@ void BMReadGameDataD1 (CFILE * fp)
 {
 	int				h, i, j;
 #if 1
-	tD1WallClip			w;
+	tD1WallClip		w;
 	D1_tmap_info	t;
-//	D1Robot_info	r;
+	//D1Robot_info	r;
 #endif
 	tWallClip				*pw;
 	tTexMapInfo		*pt;

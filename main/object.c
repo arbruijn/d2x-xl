@@ -2873,9 +2873,9 @@ void SpinObject (tObject *objP)
 	vmsMatrix rotmat, new_pm;
 
 Assert (objP->movementType == MT_SPINNING);
-rotangs.p = FixMul (objP->mType.spinRate.p.x, gameData.time.xFrame);
-rotangs.h = FixMul (objP->mType.spinRate.p.y, gameData.time.xFrame);
-rotangs.b = FixMul (objP->mType.spinRate.p.z, gameData.time.xFrame);
+rotangs.p = (fixang) FixMul (objP->mType.spinRate.p.x, gameData.time.xFrame);
+rotangs.h = (fixang) FixMul (objP->mType.spinRate.p.y, gameData.time.xFrame);
+rotangs.b = (fixang) FixMul (objP->mType.spinRate.p.z, gameData.time.xFrame);
 VmAngles2Matrix (&rotmat, &rotangs);
 VmMatMul (&new_pm, &objP->position.mOrient, &rotmat);
 objP->position.mOrient = new_pm;
