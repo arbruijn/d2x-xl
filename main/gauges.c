@@ -68,6 +68,8 @@ extern void DoAutomap (int key_code, int bRadar);
 
 double cmScaleX, cmScaleY;
 
+#define HUD_ASPECT	((double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w / 0.75)
+
 tBitmapIndex Gauges[MAX_GAUGE_BMS];   // Array of all gauge bitmaps.
 tBitmapIndex Gauges_hires[MAX_GAUGE_BMS];   // hires gauges
 
@@ -4093,93 +4095,93 @@ extern int last_drawn_cockpit[2];
 void DrawHUD ()
 {
 
-	if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
-		return;
-   if (gameStates.render.cockpit.nMode==CM_STATUS_BAR){
-   //ogl needs to redraw every frame, at least currently.
-   //	InitCockpit ();
-	last_drawn_cockpit[0]=-1;
-	last_drawn_cockpit[1]=-1;
-   InitGauges ();
-	//	vr_reset_display ();
-    }
-	cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
-	cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
-                                          
-	Line_spacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
+if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
+	return;
+if (gameStates.render.cockpit.nMode==CM_STATUS_BAR){
+//ogl needs to redraw every frame, at least currently.
+//	InitCockpit ();
+last_drawn_cockpit[0]=-1;
+last_drawn_cockpit[1]=-1;
+InitGauges ();
+//	vr_reset_display ();
+   }
+cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0 * HUD_ASPECT;
+cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
+                                       
+Line_spacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 	//	Show score so long as not in rearview
-	if (!(gameStates.render.bRearView || Saving_movie_frames || (gameStates.render.cockpit.nMode == CM_REAR_VIEW) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))) {
-		HUDShowScore ();
-		if (scoreTime)
-			HUDShowScoreAdded ();
+if (!(gameStates.render.bRearView || Saving_movie_frames || (gameStates.render.cockpit.nMode == CM_REAR_VIEW) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))) {
+	HUDShowScore ();
+	if (scoreTime)
+		HUDShowScoreAdded ();
 	}
 
-	if (!(gameStates.render.bRearView || Saving_movie_frames || (gameStates.render.cockpit.nMode == CM_REAR_VIEW)))
-	 HUDShowTimerCount ();
+if (!(gameStates.render.bRearView || Saving_movie_frames || (gameStates.render.cockpit.nMode == CM_REAR_VIEW)))
+	HUDShowTimerCount ();
 
-	//	Show other stuff if not in rearview or letterbox.
-	if (!(gameStates.render.bRearView || (gameStates.render.cockpit.nMode == CM_REAR_VIEW))) { // && gameStates.render.cockpit.nMode!=CM_LETTERBOX) {
-		if (gameStates.render.cockpit.nMode==CM_STATUS_BAR || gameStates.render.cockpit.nMode==CM_FULL_SCREEN)
-			HUDShowHomingWarning ();
+//	Show other stuff if not in rearview or letterbox.
+if (!(gameStates.render.bRearView || (gameStates.render.cockpit.nMode == CM_REAR_VIEW))) { // && gameStates.render.cockpit.nMode!=CM_LETTERBOX) {
+	if (gameStates.render.cockpit.nMode==CM_STATUS_BAR || gameStates.render.cockpit.nMode==CM_FULL_SCREEN)
+		HUDShowHomingWarning ();
 
-		if ((gameStates.render.cockpit.nMode==CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode==CM_LETTERBOX)) {
-			if (!gameOpts->render.cockpit.bTextGauges) {
-				if (gameOpts->render.cockpit.bScaleGauges) {
-					xScale = (double) grdCurCanv->cv_h / 480.0;
-					yScale = (double) grdCurCanv->cv_h / 640.0;
-					}
-				else
-					xScale = yScale = 1;
+	if ((gameStates.render.cockpit.nMode==CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode==CM_LETTERBOX)) {
+		if (!gameOpts->render.cockpit.bTextGauges) {
+			if (gameOpts->render.cockpit.bScaleGauges) {
+				xScale = (double) grdCurCanv->cv_h / 480.0;
+				yScale = (double) grdCurCanv->cv_h / 640.0;
 				}
-			HUDShowEnergy ();
-			HUDShowShield ();
-			HUDShowAfterburner ();
-			HUDShowWeapons ();
-			if (!Saving_movie_frames)
-				HUDShowKeys ();
-			HUDShowCloakInvul ();
+			else
+				xScale = yScale = 1;
+			}
+		HUDShowEnergy ();
+		HUDShowShield ();
+		HUDShowAfterburner ();
+		HUDShowWeapons ();
+		if (!Saving_movie_frames)
+			HUDShowKeys ();
+		HUDShowCloakInvul ();
 
-			if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags != oldFlags[nVRCurrentPage])) {
-				NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags);
-				oldFlags[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
+		if ((gameData.demo.nState==ND_STATE_RECORDING) && (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags != oldFlags[nVRCurrentPage])) {
+			NDRecordPlayerFlags (oldFlags[nVRCurrentPage], gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags);
+			oldFlags[nVRCurrentPage] = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags;
 			}
 		}
 #ifdef _DEBUG
-		if (!(gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList) && !Saving_movie_frames)
-			ShowTime ();
+	if (!(gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList) && !Saving_movie_frames)
+		ShowTime ();
 #endif
-		if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!bUsePlayerHeadAngles))
-			ShowReticle (0);
+	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!bUsePlayerHeadAngles))
+		ShowReticle (0);
 
-		ShowHUDNames ();
-		if (gameStates.render.cockpit.nMode != CM_REAR_VIEW) {
-			HUDShowFlag ();
-			HUDShowOrbs ();
-			}
-		if (!Saving_movie_frames)
-			HUDRenderMessageFrame ();
+	ShowHUDNames ();
+	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW) {
+		HUDShowFlag ();
+		HUDShowOrbs ();
+		}
+	if (!Saving_movie_frames)
+		HUDRenderMessageFrame ();
 
-		if (gameStates.render.cockpit.nMode!=CM_STATUS_BAR && !Saving_movie_frames)
-			HUDShowLives ();
+	if (gameStates.render.cockpit.nMode!=CM_STATUS_BAR && !Saving_movie_frames)
+		HUDShowLives ();
 
-		if (gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList)
-			HUDShowKillList ();
+	if (gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList)
+		HUDShowKillList ();
 #if 0
-		DrawWeaponBoxes ();
+	DrawWeaponBoxes ();
 #endif
-		return;
+	return;
 	}
 
-	if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW) {
-		HUDRenderMessageFrame ();
-		GrSetCurFont (GAME_FONT);
-		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-		if (gameData.demo.nState == ND_STATE_PLAYBACK)
-			GrPrintF (0x8000, grdCurCanv->cv_h-14, TXT_REAR_VIEW);
-		else
-			GrPrintF (0x8000, grdCurCanv->cv_h-10, TXT_REAR_VIEW);
+if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW) {
+	HUDRenderMessageFrame ();
+	GrSetCurFont (GAME_FONT);
+	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+	if (gameData.demo.nState == ND_STATE_PLAYBACK)
+		GrPrintF (0x8000, grdCurCanv->cv_h-14, TXT_REAR_VIEW);
+	else
+		GrPrintF (0x8000, grdCurCanv->cv_h-10, TXT_REAR_VIEW);
 	}
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
@@ -4198,7 +4200,7 @@ void RenderGauges ()
 if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 	return;
 
-cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
+cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0 * HUD_ASPECT;
 cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
 
 PA_DFX (frc=0);
