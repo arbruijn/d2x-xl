@@ -377,7 +377,7 @@ int CFError(CFILE *cfile)
 
 int CFExist (char *filename, char *folder, int bUseD1Hog) 
 {
-	int	length, bNoHOG;
+	int	length, bNoHOG = 0;
 	FILE	*fp;
 
 if (*filename != '\x01') {
