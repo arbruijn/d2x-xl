@@ -74,53 +74,57 @@ gameFolders.bAltHogDirInited =
 
 // ----------------------------------------------------------------------------
 //in case no one installs one
-int default_errorCounter=0;
+int defaultErrorCounter = 0;
 
 //ptr to counter of how many critical errors
-int *critical_errorCounter_ptr=&default_errorCounter;
+int *criticalErrorCounterPtr = &defaultErrorCounter;
 
 // ----------------------------------------------------------------------------
 //tell cfile about your critical error counter
 void CFSetCriticalErrorCounterPtr(int *ptr)
 {
-	critical_errorCounter_ptr = ptr;
+criticalErrorCounterPtr = ptr;
 }
 
 // ----------------------------------------------------------------------------
 
-FILE * CFGetFileHandle (char *filename, char *folder, char *mode) 
+inline void CFCriticalError (int error)
+{
+if (*criticalErrorCounterPtr)
+	if (error)
+		*criticalErrorCounterPtr += error;
+	else
+		*criticalErrorCounterPtr = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+FILE *CFGetFileHandle (char *filename, char *folder, char *mode) 
 {
 	FILE	*fp;
 	char	fn [FILENAME_LEN], *pfn;
-  
-  if (!*filename)
-    return NULL;
-  if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
-    sprintf (fn, "%s/%s", folder, filename);
-    pfn = fn;
+
+CFCriticalError (0);
+if (!*filename) {
+	CFCriticalError (1);
+	return NULL;
 	}
-  else
-    pfn = filename;
-  
-  *critical_errorCounter_ptr = 0;
-  fp = fopen (pfn, mode);
-  if (fp && *critical_errorCounter_ptr) {
-    fclose(fp);
-    fp = NULL;
+if ((*filename != '/') && (strstr (filename, "./") != filename) && *folder) {
+	sprintf (fn, "%s/%s", folder, filename);
+   pfn = fn;
 	}
+ else
+ 	pfn = filename;
   
-  if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
-    sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
-    pfn = fn;
-    *critical_errorCounter_ptr = 0;
-    fp = fopen (pfn, mode);
-    if (fp && *critical_errorCounter_ptr) {
-      fclose(fp);
-      fp = NULL;
-		}
+	fp = fopen (pfn, mode);
+ if (!fp && gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
+   sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
+   pfn = fn;
+   fp = fopen (pfn, mode);
 	}
-  //if (!fp) LogErr ("CFGetFileHandle(): error opening %s\n", pfn);
-  return fp;
+//if (!fp) LogErr ("CFGetFileHandle(): error opening %s\n", pfn);
+CFCriticalError (fp == NULL);
+return fp;
 }
 
 // ----------------------------------------------------------------------------
@@ -133,53 +137,51 @@ int CFInitHogFile (char *fname, char *folder, hogfile *hog_files, int *nfiles)
 	char	fn [FILENAME_LEN];
 	char  *psz;
 
-	if (*folder) {
-		sprintf (fn, "%s/%s", folder, fname);
-		fname = fn;
-		}
-
-	*nfiles = 0;
-	fp = CFGetFileHandle (fname, "", "rb");
-	if (fp == NULL) 
-		return 0;
-
-	if ((psz = strstr (fname, ".rdl")) || (psz = strstr (fname, ".rl2"))) {
-		while ((psz >= fname) && (*psz != '\\') && (*psz != '/') && (*psz != ':'))
-			psz--;
-		*nfiles = 1;
-		strncpy (hog_files [0].name, psz + 1, 13);
-		hog_files [0].offset = 0;
-		hog_files [0].length = -1;
-		return 1;
-		}
-
-	fread (id, 3, 1, fp);
-	if (strncmp (id, "DHF", 3)) {
-		fclose(fp);
-		return 0;
+CFCriticalError (0);
+if (*folder) {
+	sprintf (fn, "%s/%s", folder, fname);
+	fname = fn;
+	}
+*nfiles = 0;
+fp = CFGetFileHandle (fname, "", "rb");
+if (fp == NULL)
+	return 0;
+if ((psz = strstr (fname, ".rdl")) || (psz = strstr (fname, ".rl2"))) {
+	while ((psz >= fname) && (*psz != '\\') && (*psz != '/') && (*psz != ':'))
+		psz--;
+	*nfiles = 1;
+	strncpy (hog_files [0].name, psz + 1, 13);
+	hog_files [0].offset = 0;
+	hog_files [0].length = -1;
+	return 1;
 	}
 
-	while (1) 
-	{
-		if (*nfiles >= MAX_HOGFILES) {
-			fclose(fp);
-			Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
+fread (id, 3, 1, fp);
+if (strncmp (id, "DHF", 3)) {
+	fclose(fp);
+	return 0;
+	}
+
+for (;;) {
+	if (*nfiles >= MAX_HOGFILES) {
+		fclose(fp);
+		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
 		}
-		i = (int) fread (hog_files[*nfiles].name, 13, 1, fp);
-		if (i != 1) 	{		//eof here is ok
-			fclose(fp);
-			return 1;
+	i = (int) fread (hog_files[*nfiles].name, 13, 1, fp);
+	if (i != 1) 	{		//eof here is ok
+		fclose(fp);
+		return 1;
 		}
-		i = (int) fread (&len, 4, 1, fp);
-		if (i != 1) 	{
-			fclose(fp);
-			return 0;
+	i = (int) fread (&len, 4, 1, fp);
+	if (i != 1) 	{
+		fclose(fp);
+		return 0;
 		}
-		hog_files[*nfiles].length = INTEL_INT(len);
-		hog_files[*nfiles].offset = ftell (fp);
-		*nfiles = (*nfiles) + 1;
-		// Skip over
-		i = fseek (fp, INTEL_INT(len), SEEK_CUR);
+	hog_files[*nfiles].length = INTEL_INT(len);
+	hog_files[*nfiles].offset = ftell (fp);
+	*nfiles = (*nfiles) + 1;
+	// Skip over
+	i = fseek (fp, INTEL_INT(len), SEEK_CUR);
 	}
 }
 
@@ -501,21 +503,23 @@ return fp ? fp->size : 0;
 // returns:   number of full elements actually written
 //
 //
-int CFWrite (void *buf, int elsize, int nelem, CFILE *cfile)
+int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *fp)
 {
-	int items_written;
+	int nWritten;
 
-	Assert(cfile != NULL);
-	Assert(buf != NULL);
-	Assert(elsize > 0);
-
-	Assert(cfile->file != NULL);
-	Assert(cfile->lib_offset == 0);
-
-	items_written = (int) fwrite(buf, elsize, nelem, cfile->file);
-	cfile->raw_position = ftell(cfile->file);
-
-	return items_written;
+if (!fp) {
+	CFCriticalError (1);
+	return 0;
+	}
+Assert(fp != NULL);
+Assert(buf != NULL);
+Assert(nElemSize > 0);
+Assert(fp->file != NULL);
+Assert(fp->lib_offset == 0);
+nWritten = (int) fwrite (buf, nElemSize, nElemCount, fp->file);
+fp->raw_position = ftell(fp->file);
+CFCriticalError (nWritten != nElemCount);
+return nWritten;
 }
 
 // ----------------------------------------------------------------------------
@@ -528,15 +532,12 @@ int CFPutC(int c, CFILE *cfile)
 {
 	int char_written;
 
-	Assert(cfile != NULL);
-
-	Assert(cfile->file != NULL);
-	Assert(cfile->lib_offset == 0);
-
-	char_written = fputc(c, cfile->file);
-	cfile->raw_position = ftell(cfile->file);
-
-	return char_written;
+Assert(cfile != NULL);
+Assert(cfile->file != NULL);
+Assert(cfile->lib_offset == 0);
+char_written = fputc(c, cfile->file);
+cfile->raw_position = ftell(cfile->file);
+return char_written;
 }
 
 // ----------------------------------------------------------------------------
@@ -563,15 +564,12 @@ int CFPutS(char *str, CFILE *cfile)
 {
 	int ret;
 
-	Assert(cfile != NULL);
-	Assert(str != NULL);
-
-	Assert(cfile->file != NULL);
-
-	ret = fputs(str, cfile->file);
-	cfile->raw_position = ftell(cfile->file);
-
-	return ret;
+Assert(cfile != NULL);
+Assert(str != NULL);
+Assert(cfile->file != NULL);
+ret = fputs(str, cfile->file);
+cfile->raw_position = ftell(cfile->file);
+return ret;
 }
 
 // ----------------------------------------------------------------------------
@@ -624,14 +622,15 @@ char * CFGetS (char * buf, size_t n, CFILE * fp)
 
 size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE * fp) 
 {
-	unsigned int i, size = (int) (elsize * nelem);
-	if (!fp || (size < 1))
-		return 0;
-
-	i = (int) fread (buf, 1, size, fp->file);
-	nCFileError = (i != size);
-	fp->raw_position += i;
-	return i/elsize;
+unsigned int i, size = (int) (elsize * nelem);
+if (!fp || (size < 1)) {
+	CFCriticalError (1);
+	return 0;
+	}
+i = (int) fread (buf, 1, size, fp->file);
+CFCriticalError (i != size);
+fp->raw_position += i;
+return i / elsize;
 }
 
 
@@ -648,7 +647,7 @@ int CFSeek (CFILE *fp, long int offset, int where)
 {
 	int c, goal_position;
 
-	switch (where) 	{
+switch (where) {
 	case SEEK_SET:
 		goal_position = offset;
 		break;
@@ -661,9 +660,10 @@ int CFSeek (CFILE *fp, long int offset, int where)
 	default:
 		return 1;
 	}	
-	c = fseek (fp->file, fp->lib_offset + goal_position, SEEK_SET);
-	fp->raw_position = ftell(fp->file)-fp->lib_offset;
-	return c;
+c = fseek (fp->file, fp->lib_offset + goal_position, SEEK_SET);
+CFCriticalError (c);
+fp->raw_position = ftell(fp->file)-fp->lib_offset;
+return c;
 }
 
 // ----------------------------------------------------------------------------
@@ -673,7 +673,7 @@ int CFClose(CFILE *fp)
 	int result;
 
 if (!fp)
-	return nCFileError;
+	return 0;
 result = fclose (fp->file);
 d_free (fp);
 return result;
@@ -687,8 +687,7 @@ int CFReadInt (CFILE *file)
 {
 	int32_t i;
 
-if (CFRead (&i, sizeof (i), 1, file) != 1)
-	return nCFileError;
+CFCriticalError (CFRead (&i, sizeof (i), 1, file) != 1);
 //Error ("Error reading int in CFReadInt()");
 return INTEL_INT (i);
 }
@@ -699,8 +698,7 @@ short CFReadShort (CFILE *file)
 {
 	int16_t s;
 
-if (CFRead (&s, sizeof (s), 1, file) != 1)
-	return nCFileError;
+CFCriticalError (CFRead (&s, sizeof (s), 1, file) != 1);
 //Error ("Error reading short in CFReadShort()");
 return INTEL_SHORT (s);
 }
@@ -723,8 +721,7 @@ float CFReadFloat (CFILE *file)
 {
 	float f;
 
-if (CFRead (&f, sizeof (f), 1, file) != 1)
-	return (float) nCFileError;
+CFCriticalError (CFRead (&f, sizeof (f), 1, file) != 1);
 //Error ("Error reading float in CFReadFloat()");
 return INTEL_FLOAT (f);
 }
@@ -736,8 +733,7 @@ double CFReadDouble (CFILE *file)
 {
 	double d;
 
-if (CFRead (&d, sizeof (d), 1, file) != 1)
-	return nCFileError;
+CFCriticalError (CFRead (&d, sizeof (d), 1, file) != 1);
 return INTEL_DOUBLE (d);
 }
 
@@ -747,8 +743,7 @@ fix CFReadFix (CFILE *file)
 {
 	fix f;
 
-if (CFRead (&f, sizeof (f), 1, file) != 1)
-	return nCFileError;
+CFCriticalError (CFRead (&f, sizeof (f), 1, file) != 1);
 //Error ("Error reading fix in CFReadFix()");
 return (fix) INTEL_INT ((int) f);
 return f;
@@ -760,8 +755,7 @@ fixang CFReadFixAng (CFILE *file)
 {
 	fixang f;
 
-if (CFRead (&f, 2, 1, file) != 1)
-	return nCFileError;
+CFCriticalError (CFRead (&f, 2, 1, file) != 1);
 //Error("Error reading fixang in CFReadFixAng()");
 return (fixang) INTEL_SHORT ((int) f);
 }

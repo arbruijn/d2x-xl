@@ -2393,7 +2393,7 @@ return (Controls [0].zoomDownCount > 0);
 //------------------------------------------------------------------------------
 
 int bUsePlayerHeadAngles = 0;
-extern int critical_errorCounter_ptr, nDescentCriticalError;
+extern int criticalErrorCounterPtr, nDescentCriticalError;
 
 extern int Num_tmaps_drawn;
 extern int nTotalPixels;

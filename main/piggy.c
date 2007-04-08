@@ -2000,9 +2000,7 @@ reloadTextures:
 	if (bRedone)
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
 	bRedone = 1;
-	nDescentCriticalError = 0;
-	CFSeek (fp, nOffset, SEEK_SET);
-	if (nDescentCriticalError) {
+	if (CFSeek (fp, nOffset, SEEK_SET)) {
 		PiggyCriticalError ();
 		goto reloadTextures;
 		}

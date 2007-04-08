@@ -2101,6 +2101,7 @@ if (gameOpts->render.cockpit.bHUD ||
 	  (gameStates.render.cockpit.nMode != CM_LETTERBOX))) {
 	HUDShowObjTally ();
 	if (EGI_FLAG (nWeaponIcons, 0, 1, 0)) {
+		cmScaleX *= HUD_ASPECT;
 		HUDShowWeaponIcons ();
 		if (gameOpts->render.weaponIcons.bEquipment) {
 			if (bHaveInvBms < 0)
@@ -2108,6 +2109,7 @@ if (gameOpts->render.cockpit.bHUD ||
 			if (bHaveInvBms > 0)
 				HUDShowInventoryIcons ();
 			}
+		cmScaleX /= HUD_ASPECT;
 		}
 	}
 }
@@ -3706,44 +3708,46 @@ void ShowReticle (int force_big_one)
 	int nCrossBm, nPrimaryBm, nSecondaryBm;
 	int bHiresReticle, bSmallReticle, ofs, nGaugeIndex;
 
-   if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
-		WIN (DDGRLOCK (dd_grd_curcanv));
-		DrawGuidedCrosshair ();
-		WIN (DDGRUNLOCK (dd_grd_curcanv);)
-		return;
-	   }
+if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
+	WIN (DDGRLOCK (dd_grd_curcanv));
+	DrawGuidedCrosshair ();
+	WIN (DDGRUNLOCK (dd_grd_curcanv);)
+	return;
+	}
 
-	x = grdCurCanv->cv_w / 2;
-	y = grdCurCanv->cv_h / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
-	bLaserReady = AllowedToFireLaser ();
-	bMissileReady = AllowedToFireMissile ();
-	bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1);
-	bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1);
-	nPrimaryBm = (bLaserReady && bLaserAmmo==HAS_ALL);
-	nSecondaryBm = (bMissileReady && bMissileAmmo==HAS_ALL);
-	if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) && 
-		 (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS))
-		nPrimaryBm++;
+x = grdCurCanv->cv_w / 2;
+y = grdCurCanv->cv_h / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
+bLaserReady = AllowedToFireLaser ();
+bMissileReady = AllowedToFireMissile ();
+bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1);
+bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1);
+nPrimaryBm = (bLaserReady && bLaserAmmo==HAS_ALL);
+nSecondaryBm = (bMissileReady && bMissileAmmo==HAS_ALL);
+if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) && 
+		(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS))
+	nPrimaryBm++;
 
-	if (secondaryWeaponToGunNum[gameData.weapons.nSecondary]==7)
-		nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
-	else if (nSecondaryBm && !(nMissileGun&1))
-			nSecondaryBm++;
+if (secondaryWeaponToGunNum[gameData.weapons.nSecondary]==7)
+	nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
+else if (nSecondaryBm && !(nMissileGun&1))
+		nSecondaryBm++;
 
-	nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
+nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
 
-	Assert (nPrimaryBm <= 2);
-	Assert (nSecondaryBm <= 4);
-	Assert (nCrossBm <= 1);
+Assert (nPrimaryBm <= 2);
+Assert (nSecondaryBm <= 4);
+Assert (nCrossBm <= 1);
 #ifdef _DEBUG
-	if (gameStates.render.bExternalView)
+if (gameStates.render.bExternalView)
 #else	
-	if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif	
-		return;
-      if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bitmap.bm_props.w > 320)){                
-      	OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
-       } else {
+	return;
+cmScaleX *= HUD_ASPECT;
+if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bitmap.bm_props.w > 320)){                
+   OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
+   } 
+else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	bSmallReticle = !(grdCurCanv->cv_bitmap.bm_props.w * 3 > max_window_w*2 || force_big_one);
@@ -3768,9 +3772,10 @@ void ShowReticle (int force_big_one)
 		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), 
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
-       }
+   }
 if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
+cmScaleX /= HUD_ASPECT;
 }
 
 //	-----------------------------------------------------------------------------
@@ -4105,7 +4110,7 @@ last_drawn_cockpit[1]=-1;
 InitGauges ();
 //	vr_reset_display ();
    }
-cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0 * HUD_ASPECT;
+cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
 cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
                                        
 Line_spacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
@@ -4200,7 +4205,7 @@ void RenderGauges ()
 if (!gameOpts->render.cockpit.bHUD && ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || (gameStates.render.cockpit.nMode == CM_LETTERBOX)))
 	return;
 
-cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0 * HUD_ASPECT;
+cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
 cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
 
 PA_DFX (frc=0);
